@@ -61,7 +61,8 @@
   P35 Playwright `79 / 79`, full Playwright `405 / 405`, build/docs/diff green
 - GitHub CI: Docs/Unit/Build 성공, Playwright E2E 성공
 - Vercel production: 성공, <https://flowme2605.vercel.app>
-- production smoke: 390px/1024px 6개 시나리오 통과, overflow/console/page error `0`
+- production smoke: PR #162 closeout에 390px/1024px 6개 시나리오와
+  overflow/console/page error `0`으로 기록됐으나 원시 artifact 경로는 연결되지 않음
 - Text authoring: design complete, implementation not started
 - Projection/full-corpus/benchmark/playbook: research evidence, runtime delivery 아님
 - Full-corpus archive QA: validator `61 / 61`, targeted tests `14 / 14`, desktop/tablet/mobile browser QA `PASS`; decision은 `DRAFT_PENDING_USER_REVIEW`
@@ -74,7 +75,8 @@
   byte identity, 또는 remote archive 확인 후 제거했다.
 - `.tmp/npm-cache-clean`, `.tmp/npm-tmp`, `.tmp/ms-playwright`,
   `.tmp/flowme-p24-next`에서 약 `501.7 MiB`의 명확한 cache/build output을 제거했다.
-- 원시 Claude review, quarantine, smoke evidence, 현재 연구 import 데이터는 보존했다.
+- 원시 Claude review, quarantine, 현재 연구 import 데이터는 보존했다.
+  production smoke는 closeout 수치만 기록됐고 원시 artifact 경로는 열거되지 않았다.
 - `flow-ux-subtract`는 archive에는 남겼지만 canonical skill로 승격하지 않았다.
 
 ## Closeout

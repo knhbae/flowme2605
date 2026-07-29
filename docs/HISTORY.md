@@ -6,7 +6,8 @@ No tagged releases yet.
 
 - Released a state-based `/` entry router with three primary destinations, result-first public Flows, one-kind-at-a-time adjustment, cross-Flow date-grouped `할 일`, an adjacent Flow library and focused workspace, a Calendar date lens, and scope-first export without migrating P34 identities or local storage.
 - Merged [PR #161](https://github.com/knhbae/flowme2605/pull/161) as `4a51b08ce9c5410f4ddf492562a5e885b0fda09c`; GitHub Docs/Unit/Build and Playwright E2E succeeded, and Vercel production reached <https://flowme2605.vercel.app>.
-- Verified focused unit `13 / 13`, all unit `694 / 694`, P35 Playwright `79 / 79`, full Playwright `405 / 405`, production build `18 / 18`, and a bounded six-scenario production smoke at 390px and 1024px with overflow, console, and page-error counts `0`.
+- Verified focused unit `13 / 13`, all unit `694 / 694`, P35 Playwright `79 / 79`, full Playwright `405 / 405`, and production build `18 / 18`. The later PR #162 closeout records a bounded six-scenario production smoke at 390px and 1024px with overflow, console, and page-error counts `0`; it does not link the raw smoke artifact, and the literal-route hardening did not independently rerun it.
+- Added `2 / 2` non-fixture regressions for literal `/my` and the fresh one-Flow `/my?experiment=off` rollback path without changing runtime, storage, or schema behavior.
 - Published the [P35 R13 evidence](./content-audit/2026-07-29-p35-r13-final-internal-gate/README.md). No semantic version tag was created; observed-user sessions remain `0`, and external Calendar/VTODO round-trip remains unrun.
 
 ## 2026-07-25 - P34 Execution CRUD UX

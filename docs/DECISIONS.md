@@ -37,7 +37,7 @@ Do not use this for:
 
 ### 2026-07-29 - P35 uses a state-based root router and three primary destinations
 
-**Decision:** Remove Home from the persistent primary navigation. Keep `Flow 찾기`, `캘린더`, and `내 Flow` as the three primary destinations on mobile and wide layouts. Treat `/` as a state-based entry router: an empty local workspace continues to `/flows`, while a workspace with a saved Flow continues to `/my`. Keep Flow creation in the secondary menu and keep public `/f/[slug]` pages as share-entry surfaces.
+**Decision:** Remove Home from the persistent primary navigation. Keep `Flow 찾기`, `캘린더`, and `내 Flow` as the three primary destinations on mobile and wide layouts. Treat `/` as a state-based entry router: when no valid saved Flow or saved Flow Map entry exists it continues to `/flows`; when at least one such entry exists it continues to `/my`. Other draft, check, anchor, or UI state alone does not make the root enter `/my`. Keep Flow creation in the secondary menu and keep public `/f/[slug]` pages as share-entry surfaces.
 
 **Reason:** The standalone Home surface duplicated discovery and continuation jobs already owned by `/flows` and `/my`. A three-destination frame makes each top-level job explicit without changing source, personal overlay, run, occurrence, export, or localStorage ownership.
 
@@ -45,7 +45,7 @@ Do not use this for:
 
 **Reopen when:** Observed users repeatedly need a separate overview destination, state-based entry sends them to the wrong job, or a concrete accessibility or recovery failure cannot be solved inside the three destinations. Agent simulation and screenshots alone do not justify reopening it.
 
-**Related docs:** [P35 design package](./specs/2026-07-26-flowme-mece-ux-reset/design-package.md), [P35 bounded revision handoff](./specs/2026-07-26-flowme-mece-ux-reset/p35-bounded-revision-developer-handoff-ko.md), [P35-01 evidence](./content-audit/2026-07-26-p35-01-entry-router-evidence/README.md)
+**Related docs:** [P35 design package](./specs/2026-07-26-flowme-mece-ux-reset/design-package.md), [P35 bounded revision handoff](./specs/2026-07-26-flowme-mece-ux-reset/p35-bounded-revision-developer-handoff-ko.md), [P35-01 evidence](./content-audit/2026-07-26-p35-01-entry-router-evidence/README.md), [P35 R13 goal](./specs/2026-07-26-flowme-mece-ux-reset/p35-r13-final-internal-gate-goal-ko.md), [P35 literal-route follow-up](./content-audit/2026-07-29-p35-release-hardening/README.md)
 
 ### 2026-07-29 - My Flow adopts a date-grouped Todo view while preserving the Flow library
 

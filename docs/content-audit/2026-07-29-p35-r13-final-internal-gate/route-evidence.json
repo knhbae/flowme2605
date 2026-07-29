@@ -1,6 +1,7 @@
 {
   "generatedAt": "2026-07-29T11:00:00+09:00",
-  "evidenceScope": "current_local_p35_r13",
+  "evidenceScope": "historical_local_p35_r13_pre_publish",
+  "historicalSnapshot": true,
   "verdict": "publish_ready_for_internal_review",
   "observedUserCount": 0,
   "baseline": {
@@ -41,9 +42,9 @@
     },
     {
       "id": "rollback-boundary",
-      "route": "/my?experiment=off",
-      "fixture": null,
-      "rollbackChangesStoredData": false,
+      "route": "/my?demo=ux12&experiment=off",
+      "fixture": "ux12",
+      "rollbackChangesStoredDataInFixture": false,
       "result": "supported",
       "evidenceKind": ["current_source", "current_browser_automation"]
     }

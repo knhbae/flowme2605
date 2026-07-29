@@ -23,18 +23,27 @@ limits the default row to row-open plus one completion checkbox, and opens the
 whole plan automatically only on the first post-save entry.
 [PR #161](https://github.com/knhbae/flowme2605/pull/161) merged as
 `4a51b08ce9c5410f4ddf492562a5e885b0fda09c`; GitHub CI and Vercel production
-succeeded, and a bounded six-scenario production smoke passed at 390px and
-1024px. Internal evidence is focused unit `13 / 13`, all unit `694 / 694`,
+succeeded. The later PR #162 closeout records a bounded six-scenario production
+smoke at 390px and 1024px, but does not link the raw smoke artifact. Internal
+evidence is focused unit `13 / 13`, all unit `694 / 694`,
 P35 Playwright `79 / 79`, full Playwright `405 / 405`, and build/docs/diff
 checks green. Observed-user sessions remain `0`; real Calendar/VTODO round-trip
 remains unrun. See the
 [P35 R13 evidence](./content-audit/2026-07-29-p35-r13-final-internal-gate/README.md).
 
+The bounded [P35 literal-route release-evidence follow-up](./content-audit/2026-07-29-p35-release-hardening/README.md)
+adds two non-fixture E2E cases for literal `/my` and `/my?experiment=off`.
+Its byte-equivalence evidence is limited to the fresh one-Flow public-save
+representative state; pre-existing workspace normalization remains outside its
+scope. It changes no runtime, storage, or schema behavior, did not independently
+rerun the PR #162 smoke record, and creates no additional product gate.
+
 The text-authoring UX, projection/event corpus, full-corpus UI lab, vertical
 service benchmark, and research-to-product playbook are decision inputs. They
 do not create five parallel implementation programs. Text authoring remains a
 design-complete, implementation-unstarted candidate whose first possible slice
-is `TA-01`; it is not automatically the next active gate.
+is `TA-01`; it requires explicit owner promotion and is not automatically the
+next active gate.
 
 ## Released Baseline
 
@@ -302,15 +311,16 @@ Detailed scope: [Save, Personalize, Execute Journey Reset](./specs/2026-07-18-sa
 ## Operating Queue
 
 There is no active external-user gate. P35 is the canonical production baseline,
-and there is no active implementation program. External user observation stays
-outside the queue until the owner explicitly reopens it.
+and there is no active implementation or release-evidence program. External user
+observation stays outside the queue until the owner explicitly reopens it.
 
 | Lane | Owner | Work | Next checkpoint | Done when |
 | --- | --- | --- | --- | --- |
 | Active decision | Owner | P35 production review | Review the live three-destination frame, My Flow date groups, and first-entry behavior, then choose keep, bounded fix, or block | Decision and any exact route/viewport mismatch are explicit |
 | Next, gated | Owner | Promote at most one post-P35 slice | Choose `TA-01`, one evidence-backed correction, or no new implementation | One bounded scope is promoted; research shelves do not become parallel programs |
 | Research shelf | AI | Text authoring, projection/event, full-corpus UI, vertical benchmark, research-to-product evidence | Keep source, inference, runtime impact, and unverified external evidence separate | Decision inputs stay reproducible without claiming runtime delivery |
-| Completed | AI | P35 implementation and release | Preserve the state router, three primary destinations, stable P34 data contracts, and evidence boundary | PR #161, merge `4a51b08`, CI/Vercel green, full E2E `405 / 405`, production smoke `6 / 6`, observed users `0` |
+| Completed evidence | AI | P35 literal-route hardening | Preserve the two non-fixture regressions without turning evidence work into a product program | Literal `/my` and the fresh one-Flow rollback case pass `2 / 2`; runtime, storage, schema, and observed-user state are unchanged |
+| Completed | AI | P35 implementation and release | Preserve the state router, three primary destinations, stable P34 data contracts, and evidence boundary | PR #161, merge `4a51b08`, CI/Vercel green, full E2E `405 / 405`; PR #162 records production smoke `6 / 6` without a linked raw artifact; observed users `0` |
 | Completed | AI | P34-00~08 implementation and release | Preserve P33 identities, storage, 24/5 no-auto-merge, and rollback boundary | PR #157, merge `98ede0f`, CI/Vercel green, audit `0`, full E2E `326 / 326`, production smoke green |
 | Completed | AI | P33-01~07 implementation, stabilization, and release | Preserve additive metadata, explicit duplicate choice, and stable identities | PR #156, merge `7948bc4`, CI/Vercel green, audit `0`, canonical production smoke green |
 | Completed | AI | P32-01~07 implementation and release | Preserve B1 and stable identities | PR #154, merge `30281a7`, CI green, production smoke `7 / 7` |
@@ -354,13 +364,14 @@ These gates cannot be closed by automated tests or simulated personas.
 
 ## Next Decision
 
-Review the [P35 R13 evidence](./content-audit/2026-07-29-p35-r13-final-internal-gate/README.md)
-and answer one question: keep the candidate, request one bounded correction with
-an exact route/viewport/expected-versus-actual gap, or block it. Do not promote
-text authoring, another broad UX reset, a real AI/crawler backend, account
-persistence, creator/update pilot, direct integrations, permanent delete, or
-observed-user recruitment merely because automated gates are green. After P35
-publish truth is explicit, promote at most one bounded next slice.
+Review the production surface with the
+[P35 R13 evidence](./content-audit/2026-07-29-p35-r13-final-internal-gate/README.md),
+and answer one question: keep P35, request one bounded correction with an exact
+route/viewport/expected-versus-actual gap, or block it. Do not promote text
+authoring, another broad UX reset, a real AI/crawler backend, account persistence,
+creator/update pilot, direct integrations, permanent delete, or observed-user
+recruitment merely because automated gates are green. Promote at most one next
+slice only after the owner decision.
 
 ## Gated Backlog
 

@@ -1,5 +1,7 @@
 # P35-R13 최종 내부 검증 목표
 
+> 현재 상태: P35는 [PR #161](https://github.com/knhbae/flowme2605/pull/161)과 merge `4a51b08`로 production 기준선이 되었다. PR/main CI와 Vercel Production이 성공했고, 후속 PR #162 closeout은 canonical URL 도달성과 390px·1024px의 제한된 production smoke `6 / 6`을 기록하지만 원시 artifact를 연결하지 않는다. 저장된 실제 Flow로 literal `/my`와 `/my?experiment=off`를 확인하는 비-fixture E2E `2 / 2`가 bounded release evidence로 추가됐으며 runtime·storage·schema는 바뀌지 않았다. 해당 production smoke는 독립 재실행하지 않았고 관찰 사용자는 `0`이다.
+
 ## 1. 승인된 제품 결정
 
 P35-R13은 다음 owner 결정을 정본으로 사용한다.
@@ -20,7 +22,7 @@ P35-R13은 다음 owner 결정을 정본으로 사용한다.
 
 ## 2. 유지하는 계약
 
-- 상태 기반 `/` entry router와 `Flow 찾기 / 캘린더 / 내 Flow` 3탭 전역 navigation
+- 상태 기반 `/` entry router와 `Flow 찾기 / 캘린더 / 내 Flow` 3개 primary destination
 - public `/f` shell
 - canonical Flow와 stable Item identity
 - source / personal overlay / execution run / occurrence / export ownership
@@ -39,7 +41,7 @@ P35-R13은 다음 owner 결정을 정본으로 사용한다.
 - plain `/my`는 `할 일`을 연다.
 - `view`, `mode=flow`, `flow` target이 있으면 focused Flow를 연다.
 - `할 일 / Flow` 전환은 같은 My Flow 내부에서 이루어진다.
-- rollback query `experiment=off`는 R13 publish gate까지 유지한다.
+- rollback query `experiment=off`는 P35 production review와 bounded release hardening 동안 유지한다.
 
 ### 3.2 날짜별 low-command 행
 
@@ -118,13 +120,15 @@ npm.cmd run docs:check
 npm.cmd test
 npm.cmd run build
 npx.cmd playwright test tests/e2e/p35-r3-receipt-workspace-continuity.spec.ts tests/e2e/p35-r12-cross-flow-todo-experiment.spec.ts tests/e2e/p35-r13-final-internal-gate.spec.ts --workers=1
-npx.cmd playwright test tests/e2e/p35-*.spec.ts --workers=1
+npx.cmd playwright test tests/e2e/p35-release-hardening-literal-routes.spec.ts --workers=1
+npx.cmd playwright test tests/e2e/p35- --workers=1
 npm.cmd run test:e2e -- --workers=1
 git diff --check
 ```
 
-Windows wildcard는 shell에서 직접 확장하지 않을 수 있으므로 실제 P35 전체 실행에서는
-Playwright의 `--grep` 또는 명시적 파일 목록을 사용한다.
+Windows wildcard는 shell에서 직접 확장하지 않을 수 있다. 위 `tests/e2e/p35-`는
+Playwright의 path 정규식으로 사용하며, 먼저 `--list`에서 P35 23개 파일이
+선택되는지 확인한다.
 
 ## 8. Evidence
 
