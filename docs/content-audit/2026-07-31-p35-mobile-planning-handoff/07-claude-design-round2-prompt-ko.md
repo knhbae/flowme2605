@@ -1,6 +1,6 @@
 # Claude Design 2차 대조 작업 프롬프트
 
-1차 독립 답변을 받은 뒤 `06-owner-feedback-normalized-ko.md`와 함께 아래 본문을 전달합니다.
+1차 독립 답변을 받은 뒤 [제품 소유자 피드백 정리본](./06-owner-feedback-normalized-ko.md)과 함께 아래 본문을 전달합니다.
 
 ---
 

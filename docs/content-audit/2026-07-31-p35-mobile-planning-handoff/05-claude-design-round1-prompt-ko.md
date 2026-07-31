@@ -8,10 +8,10 @@
 
 GitHub에 공개된 다음 자료를 먼저 읽고 작업해 주세요.
 
-1. `01-planning-session-brief-ko.md` — 목표와 범위
-2. `02-production-evidence-index-ko.md` — Production 모바일 화면과 상태
-3. `03-architecture-facts-ko.md` — 로컬 접근 없이 볼 수 있는 코드 구조 사실
-4. `04-screen-state-and-variant-matrix-ko.md` — Flow 유형과 상태 비교
+1. [목표와 범위](./01-planning-session-brief-ko.md)
+2. [Production 모바일 화면과 상태](./02-production-evidence-index-ko.md)
+3. [로컬 접근 없이 볼 수 있는 코드 구조 사실](./03-architecture-facts-ko.md)
+4. [Flow 유형과 상태 비교](./04-screen-state-and-variant-matrix-ko.md)
 
 로컬 저장소에는 접근할 수 없습니다. 제품 소유자의 평가나 개선 의견은 아직 제공하지 않았습니다. 먼저 화면과 구조 사실만으로 독립적인 진단과 제안을 만들어 주세요.
 

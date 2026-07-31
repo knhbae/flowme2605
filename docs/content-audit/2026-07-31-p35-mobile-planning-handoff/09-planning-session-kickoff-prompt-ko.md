@@ -10,11 +10,11 @@ FlowMe P35 모바일 Production의 다음 UX·구조 결정을 위한 기획 세
 
 필수 자료:
 
-1. `01-planning-session-brief-ko.md`
-2. `02-production-evidence-index-ko.md`
-3. `03-architecture-facts-ko.md`
-4. `04-screen-state-and-variant-matrix-ko.md`
-5. `06-owner-feedback-normalized-ko.md`
+1. [기획 세션 브리프](./01-planning-session-brief-ko.md)
+2. [Production 화면 증거](./02-production-evidence-index-ko.md)
+3. [코드 구조 사실](./03-architecture-facts-ko.md)
+4. [화면 상태·차이 비교표](./04-screen-state-and-variant-matrix-ko.md)
+5. [제품 소유자 피드백 정리본](./06-owner-feedback-normalized-ko.md)
 
 ## 이번 세션의 목표
 

@@ -4,6 +4,7 @@
 
 ## 가장 먼저 볼 링크
 
+- [Claude Design 1차 작업 시작](./00-claude-design-round1-start-here-ko.md)
 - [기획 세션 시작 문서](./01-planning-session-brief-ko.md)
 - [Production 화면 증거](./02-production-evidence-index-ko.md)
 - [원격 검토용 구조 사실](./03-architecture-facts-ko.md)
@@ -31,7 +32,7 @@
 
 ### 2. Claude Design 1차 검토
 
-Claude Design에는 아래 다섯 문서만 먼저 제공합니다.
+Claude Design에는 `00-claude-design-round1-start-here-ko.md` GitHub 링크를 먼저 전달합니다. 그 문서에서 아래 다섯 자료로만 이동하게 합니다.
 
 1. `01-planning-session-brief-ko.md`
 2. `02-production-evidence-index-ko.md`
