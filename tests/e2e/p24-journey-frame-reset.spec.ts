@@ -35,9 +35,9 @@ test.describe('P24 save-personalize-execute journey frame', () => {
     await expect(page.getByTestId('public-flow-hero')).toContainText('이사 D-30 준비');
     await expect(page.getByTestId('public-flow-hero')).toContainText('캘린더 · 24개');
     await expect(page.locator('body')).not.toContainText('이사일 1개를 넣으면 원문 체크리스트');
-    await expect(page.getByTestId('public-flow-reference-details')).not.toHaveAttribute('open', '');
+    await expect(page.getByTestId('public-flow-reference-details')).toHaveCount(0);
     await expect(page.getByTestId('public-flow-save-primary-mobile')).toHaveAccessibleName(
-      '캘린더 24개로 시작',
+      '이사일 정하고 캘린더로 시작',
     );
     await captureEvidence(page, '01-moving-artifact-first-mobile.png');
 
@@ -133,7 +133,7 @@ test.describe('P24 save-personalize-execute journey frame', () => {
     await expect(page.getByTestId('public-flow-save-primary-mobile')).toHaveText(
       '체크리스트 10개로 시작',
     );
-    await expect(page.getByTestId('public-flow-reference-details')).not.toHaveAttribute('open', '');
+    await expect(page.getByTestId('public-flow-reference-details')).toHaveCount(0);
     await captureEvidence(page, '05-vehicle-public-compact-mobile.png');
 
     const receipt = await savePublicFlow(
@@ -148,7 +148,9 @@ test.describe('P24 save-personalize-execute journey frame', () => {
 
     await expect(page).toHaveURL('/my?view=flows&flow=vehicle-inspection-prep');
     const workspace = await openMyFlowLibraryFlow(page, 'vehicle-inspection-prep');
-    await expect(workspace).toContainText('자동차검사 준비');
+    await expect(
+      workspace.getByRole('heading', { level: 2, name: '자동차검사 D-14 준비' }),
+    ).toBeVisible();
     await expect(workspace.getByTestId('my-flow-whole-flow-outline')).toHaveAttribute(
       'data-effective-row-count',
       '10',

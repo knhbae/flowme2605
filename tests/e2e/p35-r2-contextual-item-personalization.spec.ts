@@ -73,7 +73,17 @@ test.describe('P35-R2 contextual public item personalization', () => {
     await editor.getByTestId('public-flow-item-editor-save').click();
 
     await expect(editor).toHaveCount(0);
-    await expect(stableEditTrigger).toBeFocused();
+    const parentEditor = page.getByTestId('public-flow-personal-adjustment');
+    await expect(parentEditor).toBeVisible();
+    await expect(page.locator('[role="dialog"]')).toHaveCount(1);
+    const parentItem = parentEditor.locator(
+      `[data-testid="public-flow-adjustment-item-row"][data-item-id="${itemId}"]`,
+    );
+    await expect(parentItem).toContainText('이사 방식 최종 결정');
+    await expect(parentItem).toContainText('8월 15일');
+    await parentEditor.getByTestId('public-flow-adjustment-apply').click();
+
+    await expect(parentEditor).toHaveCount(0);
     const editedRow = preview.locator(
       `[data-testid="public-flow-artifact-preview-row"][data-item-id="${itemId}"]`,
     );
@@ -89,10 +99,16 @@ test.describe('P35-R2 contextual public item personalization', () => {
     await expect(page.getByTestId('public-flow-item-editor-date-input')).toHaveValue('2030-08-15');
     await page.keyboard.press('Escape');
     await expect(page.getByTestId('public-flow-item-editor')).toHaveCount(0);
+    await expect(page.getByTestId('public-flow-personal-adjustment')).toBeVisible();
+    await page.getByTestId('public-flow-adjustment-cancel').click();
     await expect(stableEditTrigger).toBeFocused();
 
     await page.getByTestId('public-flow-save-primary-mobile').click();
-    await expect(page.getByTestId('public-flow-saved-receipt')).toBeVisible();
+    const receipt = page.getByTestId('public-flow-saved-receipt');
+    await expect(receipt).toBeVisible();
+    const receiptBeforeReload = await receipt.textContent();
+    await page.reload();
+    await expect(page.getByTestId('public-flow-saved-receipt')).toHaveText(receiptBeforeReload ?? '');
 
     const stored = await page.evaluate(({ savedItemId }) => {
       const drafts = JSON.parse(
@@ -152,6 +168,8 @@ test.describe('P35-R2 contextual public item personalization', () => {
     expect(editorBox!.x + editorBox!.width).toBeGreaterThanOrEqual(1023);
     expect(editorBox!.width).toBeLessThanOrEqual(470);
     await editor.getByTestId('public-flow-item-editor-cancel').click();
+    await expect(page.getByTestId('public-flow-personal-adjustment')).toBeVisible();
+    await page.getByTestId('public-flow-adjustment-cancel').click();
 
     await page.getByTestId('public-flow-adjust-entry').click();
     const panel = page.getByTestId('public-flow-personal-adjustment');

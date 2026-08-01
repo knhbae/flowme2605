@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { toContentDisplayTitle, toUserFacingMapTitle, toUserFacingSourceTitle } from '@/lib/flow/display-title';
+import { buildFlowMapActionContract } from '@/lib/flow/flow-map-action-contract';
 import {
   buildSourceBackedFlowMapPublishPackage,
   getSourceBackedFlowMapQualityDecision,
@@ -30,6 +31,14 @@ function getUserFacingMapSummary(summary: string): string {
     .replace(/\s*\d+개 묶음,\s*/g, ' ')
     .replace(/\s*\d+개 묶음 ·\s*/g, ' ')
     .replace(/\s*\d+개 묶음\s*/g, ' ');
+}
+
+function getMapRiskLevels(publishPackage: SourceBackedFlowMapPublishPackage) {
+  return Array.from(new Set(
+    publishPackage.creator.sourceRows
+      .map((row) => row.riskLevel)
+      .filter((riskLevel): riskLevel is NonNullable<typeof riskLevel> => Boolean(riskLevel)),
+  ));
 }
 
 function NotFoundMap() {
@@ -75,6 +84,24 @@ function ReviewHoldMap({ publishPackage }: { publishPackage: SourceBackedFlowMap
     : needsMedicalSourceFit
       ? '공식 이유식 안내 보기'
       : '최신 공식 내용 확인';
+  const hasSeparateReviewSource = Boolean(map.reviewUrl && map.reviewUrl !== map.sourceUrl);
+  const identitySourceLabel = hasSeparateReviewSource
+    ? needsMedicalSourceFit
+      ? '참고 식단표 원문'
+      : '원문 보기'
+    : sourceLinkLabel;
+  const actionContract = buildFlowMapActionContract({
+    mapId: map.id,
+    title: displayTitle,
+    sourceUrl: map.sourceUrl,
+    sourceLabel: identitySourceLabel,
+    surface: 'public_preview',
+    saveMode: publicSurface.saveMode,
+    executionState: 'review_hold',
+    editable: false,
+    exportable: false,
+    riskLevels: getMapRiskLevels(publishPackage),
+  });
 
   return (
     <main data-testid="flow-map-public" className="min-h-screen bg-[#FAFAF8] px-4 py-5 sm:px-5 sm:py-8">
@@ -82,6 +109,9 @@ function ReviewHoldMap({ publishPackage }: { publishPackage: SourceBackedFlowMap
         <PlatformNav />
         <section
           data-testid="flow-map-review-hold"
+          data-map-execution-state={actionContract.controller.executionState}
+          data-map-edit-capability={actionContract.capabilities.edit ? 'available' : 'hidden'}
+          data-map-save-capability={actionContract.capabilities.save ? 'available' : 'hidden'}
           className="border-t-4 border-[#E2A62B] bg-white px-5 py-7 shadow-[0_18px_50px_rgba(31,35,48,0.07)] sm:px-8 sm:py-10"
         >
           <p className="text-sm font-semibold text-[#8A5A00]">{eyebrow}</p>
@@ -94,27 +124,38 @@ function ReviewHoldMap({ publishPackage }: { publishPackage: SourceBackedFlowMap
           <p className="mt-2 max-w-2xl break-keep text-sm leading-6 text-slate-600">
             {description}
           </p>
-          <div className="mt-6 flex flex-wrap gap-2">
-            <a
-              data-testid="flow-map-source-link"
-              className="inline-flex min-h-11 items-center justify-center bg-[#3654FF] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#2944DB]"
-              href={map.reviewUrl ?? map.sourceUrl}
-              target="_blank"
-              rel="noreferrer"
+          {actionContract.risk.caution ? (
+            <p
+              data-testid="flow-map-risk-caution"
+              data-adjacent-to-action={actionContract.risk.caution.adjacentToActionId}
+              className="mt-4 border-l-2 border-[#E2A62B] bg-amber-50 px-3 py-2 text-sm font-semibold leading-6 text-amber-950"
             >
-              {sourceLinkLabel}
-            </a>
-            {needsMedicalSourceFit && map.reviewUrl && map.reviewUrl !== map.sourceUrl ? (
+              {actionContract.risk.caution.text}
+            </p>
+          ) : null}
+          <div className="mt-6 flex flex-wrap gap-2">
+            {hasSeparateReviewSource ? (
               <a
-                data-testid="flow-map-reference-source-link"
-                className="inline-flex min-h-11 items-center justify-center border border-[#D9D6CF] bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:border-[#3654FF]/40 hover:text-[#3654FF]"
-                href={map.sourceUrl}
+                data-testid="flow-map-review-source-link"
+                className="inline-flex min-h-11 items-center justify-center bg-[#3654FF] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#2944DB]"
+                href={map.reviewUrl}
                 target="_blank"
                 rel="noreferrer"
               >
-                참고 식단표 원문
+                {sourceLinkLabel}
               </a>
             ) : null}
+            <a
+              data-testid="flow-map-source-link"
+              data-flow-identity-slot="source"
+              data-map-action-intent={actionContract.identity.source.intent}
+              className={`inline-flex min-h-11 items-center justify-center px-4 py-2.5 text-sm font-semibold ${hasSeparateReviewSource ? 'border border-[#D9D6CF] bg-white text-slate-700 hover:border-[#3654FF]/40 hover:text-[#3654FF]' : 'bg-[#3654FF] text-white hover:bg-[#2944DB]'}`}
+              href={actionContract.identity.source.href}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {actionContract.identity.source.label}
+            </a>
             <Link
               className="inline-flex min-h-11 items-center justify-center border border-[#D9D6CF] bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:border-[#3654FF]/40 hover:text-[#3654FF]"
               href="/flows"
@@ -138,6 +179,7 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
   const { map, public: publicSurface } = publishPackage;
   const displayTitle = toUserFacingMapTitle(publicSurface.title);
   const chooseChildBeforeSave = publicSurface.saveMode === 'choose_child';
+  const riskLevels = getMapRiskLevels(publishPackage);
   const choiceCopy = publicSurface.choiceCopy ?? {
     resultPromise: '준비표 하나를 고른 뒤 필요한 설정을 확인해 저장합니다.',
     heading: '먼저 준비표 하나를 고르세요.',
@@ -156,9 +198,30 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
     title: step.title,
     summary: step.detailItems[0],
   }));
+  const actionContract = buildFlowMapActionContract({
+    mapId: map.id,
+    title: displayTitle,
+    sourceUrl: map.sourceUrl,
+    sourceLabel: '원문 보기',
+    surface: 'public_preview',
+    saveMode: publicSurface.saveMode,
+    executionState: 'executable',
+    editable: !chooseChildBeforeSave,
+    exportable: false,
+    selection: chooseChildBeforeSave
+      ? undefined
+      : { selectedCount: previewSteps.length, totalCount: previewSteps.length },
+    riskLevels,
+  });
   const decisionActions = chooseChildBeforeSave ? (
-    <div data-testid="flow-map-choose-child" className="grid gap-2">
-      <p className="text-xs font-semibold text-[#6E6B64]">사용할 Flow를 고르세요</p>
+    <div
+      data-testid="flow-map-choose-child"
+      data-map-action-intent={actionContract.actions.primary?.intent}
+      className="grid gap-2"
+    >
+      <p className="text-xs font-semibold text-[#6E6B64]">
+        {actionContract.actions.primary?.label ?? '사용할 Flow를 고르세요'}
+      </p>
       {publicSurface.childFlows.map((flow) => (
         <Link
           key={flow.slug}
@@ -169,11 +232,23 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
           <span className="shrink-0 text-xs text-[#3654FF]">열기 →</span>
         </Link>
       ))}
+      {actionContract.risk.caution ? (
+        <p
+          data-testid="flow-map-risk-caution"
+          data-adjacent-to-action={actionContract.risk.caution.adjacentToActionId}
+          className="border-l-2 border-amber-500 bg-amber-50 px-3 py-2 text-xs font-semibold leading-5 text-amber-950"
+        >
+          {actionContract.risk.caution.text}
+        </p>
+      ) : null}
     </div>
   ) : (
     <SourceBackedFlowMapSaveButton
       mapId={map.id}
       mapTitle={displayTitle}
+      sourceUrl={actionContract.identity.source.href}
+      sourceLabel={actionContract.identity.source.label}
+      riskLevels={riskLevels}
       savedFlows={publicSurface.childFlows.map((flow) => ({
         slug: flow.slug,
         title: toContentDisplayTitle(flow.title),
@@ -185,7 +260,12 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
   );
 
   return (
-    <main data-testid="flow-map-public" className={`${chooseChildBeforeSave ? '' : 'flowme-mobile-map-save-clearance'} min-h-screen bg-[#FAFAF8] px-4 py-5 pb-28 sm:px-5 sm:py-8 sm:pb-16`}>
+    <main
+      data-testid="flow-map-public"
+      data-map-save-mode={actionContract.controller.saveMode}
+      data-map-execution-state={actionContract.controller.executionState}
+      className={`${chooseChildBeforeSave ? '' : 'flowme-mobile-map-save-clearance'} min-h-screen bg-[#FAFAF8] px-4 py-5 pb-28 sm:px-5 sm:py-8 sm:pb-16`}
+    >
       <div className="mx-auto max-w-5xl">
       <PlatformNav />
       <FlowSaveBeforeFrame
@@ -195,7 +275,7 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
         title={displayTitle}
         categoryLabel={publicSurface.categoryLabel}
         sourceLabel={toUserFacingSourceTitle(publicSurface.sourceTitle)}
-        sourceHref={map.sourceUrl}
+        sourceHref={actionContract.identity.source.href}
         inputLabel={chooseChildBeforeSave ? 'Flow별 설정' : publicSurface.setupInput?.label ?? '입력 없음'}
         resultLabel={chooseChildBeforeSave ? `선택지 ${publicSurface.childFlows.length}개` : publicSurface.artifacts[0] ?? '실행 준비'}
         itemCount={previewSteps.length}
@@ -220,8 +300,16 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
             <p className="rounded-full bg-[#FAFAF8] px-2.5 py-1 text-xs font-semibold text-[#6E6B64]">
               {chooseChildBeforeSave ? choiceCopy.inputLabel : publicSurface.setupInput ? '입력 1개' : '입력 없음'}
             </p>
-            <a data-testid="flow-map-source-link" className="rounded-full border border-[#E7E4DD] bg-white px-2.5 py-1 text-xs font-semibold text-[#3654FF] hover:border-[#3654FF]/40" href={map.sourceUrl} target="_blank" rel="noreferrer">
-              원문 보기
+            <a
+              data-testid="flow-map-source-link"
+              data-flow-identity-slot="source"
+              data-map-action-intent={actionContract.identity.source.intent}
+              className="rounded-full border border-[#E7E4DD] bg-white px-2.5 py-1 text-xs font-semibold text-[#3654FF] hover:border-[#3654FF]/40"
+              href={actionContract.identity.source.href}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {actionContract.identity.source.label}
             </a>
           </div>
         </div>

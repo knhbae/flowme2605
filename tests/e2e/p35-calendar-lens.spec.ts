@@ -97,7 +97,18 @@ test.describe('P35-06 Calendar lens and shared completion primitive', () => {
     expect(rowKey).toBeTruthy();
     expect(flowSlug).toBeTruthy();
 
-    const completion = taskShell.getByTestId('my-flow-task-complete-control');
+    await expect(taskShell.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+    await taskShell.getByRole('button', { name: /Flow에서 열기/ }).click();
+    await expect(page).toHaveURL(new RegExp(
+      `/my\\?view=flows&flow=${flowSlug}&item=.*&demo=ux20`,
+    ));
+    await expect(page.locator('main[data-p32-workspace-state="focused"]')).toBeVisible();
+    const detailSheet = page.getByTestId('my-flow-item-detail-sheet');
+    await expect(detailSheet).toBeVisible();
+    const detail = detailSheet.getByTestId('my-flow-item-detail');
+    const completion = detail.getByTestId('my-flow-task-complete-control');
+    await expect(completion).toHaveCount(1);
+    await expect(page.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
     const initiallyChecked = await completion.isChecked();
     if (initiallyChecked) {
       await completion.click();
@@ -105,8 +116,7 @@ test.describe('P35-06 Calendar lens and shared completion primitive', () => {
         'data-completion-result',
         'reopened',
       );
-      await page.getByTestId('my-flow-completion-open').click();
-      await expect(completion).toBeFocused();
+      await expect(completion).not.toBeChecked();
       await completion.click();
       await expect(page.getByTestId('my-flow-completion-snackbar')).toHaveCount(0);
       await expect(completion).toBeChecked();
@@ -119,17 +129,8 @@ test.describe('P35-06 Calendar lens and shared completion primitive', () => {
         'data-completion-result',
         'reopened',
       );
-      await page.getByTestId('my-flow-completion-open').click();
-      await expect(completion).toBeFocused();
       await expect(completion).not.toBeChecked();
     }
-
-    await taskShell.getByRole('button', { name: /Flow에서 열기/ }).click();
-    await expect(page).toHaveURL(new RegExp(
-      `/my\\?view=flows&flow=${flowSlug}&item=.*&demo=ux20`,
-    ));
-    await expect(page.locator('main[data-p32-workspace-state="focused"]')).toBeVisible();
-    await expect(page.getByTestId('my-flow-item-detail-sheet')).toBeVisible();
 
     expect(await inspectPageQuality(page)).toEqual({
       horizontalOverflow: 0,

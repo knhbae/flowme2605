@@ -3,7 +3,7 @@ import test from 'node:test';
 import { buildFlowRunHistoryListExportArtifacts } from './flow-run-history';
 import type { FlowRunRecord } from './storage';
 
-test('completed run memo export preserves private notes and keeps unsent corrections separate', () => {
+test('completed run general exports include Item memo but exclude private notes and unsent corrections', () => {
   const run: FlowRunRecord = {
     schemaVersion: 1,
     runId: 'run-1',
@@ -24,6 +24,7 @@ test('completed run memo export preserves private notes and keeps unsent correct
           title: '박스 준비',
           status: 'done',
           scheduleState: 'unscheduled',
+          memo: '다음 실행에도 쓸 Item 메모',
           personalOrderRank: 0,
         },
       ],
@@ -48,10 +49,9 @@ test('completed run memo export preserves private notes and keeps unsent correct
 
   const artifacts = buildFlowRunHistoryListExportArtifacts(run, '이사 준비');
   assert.ok(artifacts);
-  assert.match(artifacts.memoText, /실행 중 남긴 메모/u);
-  assert.match(artifacts.memoText, /중간 크기 박스가 들기 편했어요/u);
-  assert.match(artifacts.memoText, /원본에 알릴 점 \(아직 전송되지 않음\)/u);
-  assert.match(artifacts.memoText, /무게 제한 안내가 필요해요/u);
+  assert.match(artifacts.memoText, /다음 실행에도 쓸 Item 메모/u);
+  assert.doesNotMatch(artifacts.memoText, /중간 크기 박스가 들기 편했어요/u);
+  assert.doesNotMatch(artifacts.memoText, /무게 제한 안내가 필요해요/u);
   assert.doesNotMatch(artifacts.checklistText, /무게 제한 안내/u);
   assert.doesNotMatch(artifacts.sheetTsv, /무게 제한 안내/u);
 });

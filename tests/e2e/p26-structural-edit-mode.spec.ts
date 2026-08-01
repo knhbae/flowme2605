@@ -95,7 +95,7 @@ test('personal draft structure mode separates execution from add, reorder, remov
   await expect(flow.getByTestId('personal-draft-structural-controls')).toHaveCount(0);
   await expect(flow.getByTestId('personal-draft-reorder-controls')).toHaveCount(0);
   await expect(flow.getByTestId('personal-draft-delete-item')).toHaveCount(0);
-  await expect(flow.getByTestId('my-flow-task-complete-control').first()).toBeVisible();
+  await expect(flow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
 
   await setStructureMode(flow, true);
   const outline = flow.getByTestId('my-flow-whole-flow-outline');
@@ -186,17 +186,22 @@ test('personal draft structure mode separates execution from add, reorder, remov
   const addedIndex = checklist.indexOf('충전기 위치 확인');
   expect(addedIndex).toBeGreaterThanOrEqual(0);
   const effectiveItems = getPersonalDraftEffectiveItems(flow);
-  const itemOrder = await effectiveItems.evaluateAll(
-    (nodes) => nodes.map((node) => node.getAttribute('data-item-id')),
-  );
-  expect(itemOrder).toEqual(orderAfter);
-  const orderedTitles = await effectiveItems.evaluateAll((nodes) => nodes.map((node) => {
-    const row = node.querySelector<HTMLElement>('[data-testid="my-flow-mobile-structure-step-row"]');
-    return (row?.innerText ?? '')
-      .split(/\n+/u)
-      .map((line) => line.replace(/\s+/gu, ' ').trim())
-      .find((line) => !/^단계 \d+$/u.test(line) && !/^(열기|열림|완료)$/u.test(line)) ?? '';
-  }));
+  const effectiveEntries = await effectiveItems.evaluateAll((nodes) => {
+    const seen = new Set<string>();
+    return nodes.flatMap((node) => {
+      const id = node.getAttribute('data-item-id');
+      if (!id || seen.has(id)) return [];
+      seen.add(id);
+      const row = node.querySelector<HTMLElement>('[data-testid="my-flow-mobile-structure-step-row"]');
+      const title = (row?.innerText ?? '')
+        .split(/\n+/u)
+        .map((line) => line.replace(/\s+/gu, ' ').trim())
+        .find((line) => !/^단계 \d+$/u.test(line) && !/^(열기|열림|완료)$/u.test(line)) ?? '';
+      return [{ id, title }];
+    });
+  });
+  expect(effectiveEntries.map(({ id }) => id)).toEqual(orderAfter);
+  const orderedTitles = effectiveEntries.map(({ title }) => title);
   const exportTitleOffsets = orderedTitles.map((title) => checklist.indexOf(title));
   expect(exportTitleOffsets.every((offset) => offset >= 0)).toBe(true);
   expect(exportTitleOffsets).toEqual(exportTitleOffsets.slice().sort((left, right) => left - right));

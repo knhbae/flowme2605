@@ -57,6 +57,9 @@ export async function openMyFlowLibraryFlow(
       ) {
         await planToggle.click();
       }
+      if (await existingMobileWorkspace.getByTestId('my-flow-whole-flow-outline').isVisible().catch(() => false)) {
+        await expandMyFlowWholePlan(existingMobileWorkspace);
+      }
     }
     return existingMobileWorkspace;
   }
@@ -79,6 +82,9 @@ export async function openMyFlowLibraryFlow(
       (await planToggle.getAttribute('aria-expanded')) === 'false'
     ) {
       await planToggle.click();
+    }
+    if (await workspace.getByTestId('my-flow-whole-flow-outline').isVisible().catch(() => false)) {
+      await expandMyFlowWholePlan(workspace);
     }
   }
   return workspace;
@@ -146,8 +152,8 @@ export async function expandMyFlowWholePlan(flow: Locator): Promise<Locator> {
   return outline;
 }
 
-export function getMyFlowVisibleExecutionRows(flow: Locator): Locator {
-  return flow.getByTestId('my-flow-execution-row-shell');
+export async function getMyFlowVisibleExecutionRows(flow: Locator): Promise<Locator> {
+  return flow.locator('[data-testid="my-flow-execution-row-shell"]:visible');
 }
 
 export async function openPersonalDraftListExport(flow: Locator): Promise<Locator> {

@@ -2,13 +2,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { expect, test, type Page } from '@playwright/test';
-import { openPublicDetailWorkspaceForDeepInspection } from './helpers/open-public-detail-workspace';
 
 const evidenceRoot = process.env.FLOWME_P35_R1_EVIDENCE_DIR;
-
-test.beforeEach(async ({ page }) => {
-  await openPublicDetailWorkspaceForDeepInspection(page);
-});
 
 function collectBrowserErrors(page: Page) {
   const errors: string[] = [];
@@ -71,8 +66,8 @@ async function openPreflight(page: Page) {
   const entry = page.getByTestId('public-flow-export-secondary-entry');
   await entry.scrollIntoViewIfNeeded();
   await entry.getByTestId('public-flow-export-secondary-toggle').click();
-  await expect(entry).toHaveAttribute('open', '');
-  await expect(entry).toHaveAttribute('data-p35-marker', 'P35-R1-PUBLIC-ARTIFACT-PREFLIGHT');
+  await expect(page.getByTestId('public-flow-export-branch')).toBeVisible();
+  await expect(entry).toHaveAttribute('data-p35-marker', /P35-PUBLIC-EXPORT-ONE-LAYER/);
   return entry;
 }
 
@@ -190,7 +185,8 @@ test.describe('P35-R1 public artifact preflight parity', () => {
     await expect(provisionalCalendar).toBeDisabled();
     await expect(provisionalCalendar).toHaveAttribute('data-export-state', 'disabled');
 
-    await entry.getByTestId('public-flow-export-secondary-toggle').click();
+    await page.getByTestId('public-flow-export-branch-close').click();
+    await expect(page.getByTestId('public-flow-export-branch')).toHaveCount(0);
     await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
     entry = await openPreflight(page);
     await expect(entry).toHaveAttribute('data-preflight-schedule-state', 'committed');

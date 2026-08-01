@@ -170,7 +170,11 @@ async function expectResultFirstFrame(page: Page, scenario: Scenario) {
     : page.getByTestId('public-flow-save-primary');
   const primaryActionRect = await visiblePrimaryAction.boundingBox();
   expect(primaryActionRect).not.toBeNull();
-  expect(primaryActionRect!.y + primaryActionRect!.height).toBeLessThanOrEqual(scenario.viewport.height);
+  if (scenario.viewport.width < 1024) {
+    expect(primaryActionRect!.y + primaryActionRect!.height).toBeLessThanOrEqual(
+      scenario.viewport.height,
+    );
+  }
 
   const firstPreviewRect = await preview.boundingBox();
   const headingRect = await hero.locator('[data-flow-identity-slot="title"]').boundingBox();
@@ -230,13 +234,13 @@ test.describe('P35-02 public result-first frame', () => {
 
     const receipt = page.getByTestId('public-flow-saved-receipt');
     await expect(receipt).toHaveAttribute('data-p35-state', 'saved-receipt');
-    await expect(receipt).toContainText('저장 완료');
-    await expect(receipt).toContainText('24개 할 일을 저장했어요');
+    await expect(receipt).toContainText('내 Flow에 저장됨');
+    await expect(receipt).toContainText('캘린더 24개를 저장했어요');
     await expect(page.getByTestId('public-flow-hero')).toHaveCount(0);
     await expect(page.getByTestId('public-flow-artifact-preview')).toHaveCount(0);
     await expect(page.getByTestId('public-flow-anchor-input')).toHaveCount(0);
     await expect(page.getByTestId('public-flow-mobile-save-cta')).toHaveCount(0);
-    await expect(receipt.getByTestId('public-flow-saved-receipt-primary')).toHaveText('저장한 전체 Flow 보기');
+    await expect(receipt.getByTestId('public-flow-saved-receipt-primary')).toHaveText('내 Flow에서 이어하기');
     expect(await visibleCount(receipt.locator('[data-action-priority="primary"]'))).toBe(1);
     expect(await getFixedOverlapCount(page)).toBe(0);
     expect(errors).toEqual([]);

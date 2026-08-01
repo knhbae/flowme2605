@@ -2,17 +2,14 @@
 
 import Link from 'next/link';
 
-import { FlowArtifactSummary, FlowReceipt } from './FlowExecutionPrimitives';
+import { FlowReceipt } from './FlowExecutionPrimitives';
 import { FLOW_UI_PRIMARY_ACTION_CLASS } from './flow-ui';
-import { markMyFlowFirstEntryPlan } from '@/lib/flow/my-flow-local-ia';
+import type { EffectiveFlowResult } from '@/lib/flow/effective-flow-snapshot';
+import { markMyFlowFirstEntry } from '@/lib/flow/my-flow-local-ia';
 
 type SavedFlowReceiptFrameProps = {
   title: string;
-  categoryLabel?: string;
-  sourceLabel?: string;
-  sourceHref?: string;
-  itemCount: number;
-  resultLabel: string;
+  result: EffectiveFlowResult;
   dateRangeLabel?: string;
   savedContentSummary?: string;
   receiptTitle?: string;
@@ -22,23 +19,19 @@ type SavedFlowReceiptFrameProps = {
 
 export function SavedFlowReceiptFrame({
   title,
-  categoryLabel,
-  sourceLabel,
-  sourceHref,
-  itemCount,
-  resultLabel,
+  result,
   dateRangeLabel,
   savedContentSummary,
   receiptTitle,
   receiptSummary,
   primaryHref,
 }: SavedFlowReceiptFrameProps) {
-  const metrics = [
-    { label: '저장 이름', value: title },
-    { label: '전체', value: savedContentSummary ?? `할 일 ${itemCount}개` },
-    { label: '주요 결과', value: resultLabel },
-    dateRangeLabel ? { label: '일정 범위', value: dateRangeLabel } : null,
-  ].filter((metric): metric is { label: string; value: string } => Boolean(metric));
+  const scheduleSummary = result.counts.dated > 0
+    ? result.counts.undated > 0
+      ? `날짜 있음 ${result.counts.dated}개 · 날짜 없음 ${result.counts.undated}개`
+      : dateRangeLabel ?? `날짜 있음 ${result.counts.dated}개`
+    : '날짜 없음';
+  const savedResultSummary = savedContentSummary ?? `${result.label} ${result.counts.total}개`;
 
   return (
     <section
@@ -50,31 +43,19 @@ export function SavedFlowReceiptFrame({
       data-flow-anatomy="saved-receipt"
       className="border-y border-[var(--flowme-border-strong)] py-5 sm:py-7"
     >
-      <FlowArtifactSummary
-        eyebrow="저장 완료"
-        title={title}
-        categoryLabel={categoryLabel}
-        sourceLabel={sourceLabel}
-        sourceHref={sourceHref}
-      />
       <FlowReceipt
         data-testid="public-flow-saved-receipt-status"
         role="status"
         aria-live="polite"
         tone="success"
         label="내 Flow에 저장됨"
-        title={receiptTitle ?? `${itemCount}개 할 일을 저장했어요`}
-        summary={receiptSummary ?? '저장한 전체 계획을 확인할 수 있습니다.'}
-        className="mt-5"
-      />
-      <dl className="mt-4 grid gap-px overflow-hidden rounded-md border border-[var(--flowme-border)] bg-[var(--flowme-border)] sm:grid-cols-2">
-        {metrics.map((metric) => (
-          <div key={metric.label} className="min-w-0 bg-[var(--flowme-surface)] px-3 py-3">
-            <dt className="text-[10px] font-semibold text-[var(--flowme-text-tertiary)]">{metric.label}</dt>
-            <dd className="mt-1 break-keep text-sm font-semibold text-[var(--flowme-text)]">{metric.value}</dd>
-          </div>
-        ))}
-      </dl>
+        title={receiptTitle ?? `${savedResultSummary}를 저장했어요`}
+        summary={`${title} · ${scheduleSummary}`}
+      >
+        <p className="mt-2 break-keep text-sm font-medium text-[var(--flowme-text-secondary)]">
+          {receiptSummary ?? '내 Flow에서 다음 할 일부터 이어갈 수 있습니다.'}
+        </p>
+      </FlowReceipt>
       <div className="mt-5 sm:max-w-md">
         <Link
           data-testid="public-flow-saved-receipt-primary"
@@ -85,10 +66,17 @@ export function SavedFlowReceiptFrame({
             if (typeof window === 'undefined') return;
             const target = new URL(primaryHref, window.location.origin);
             const flowSlug = target.searchParams.get('flow') ?? '';
-            markMyFlowFirstEntryPlan(window.sessionStorage, flowSlug);
+            markMyFlowFirstEntry(window.sessionStorage, flowSlug);
           }}
         >
-          저장한 전체 Flow 보기
+          내 Flow에서 이어하기
+        </Link>
+        <Link
+          data-testid="public-flow-saved-receipt-browse"
+          className="mt-2 inline-flex min-h-9 w-full items-center justify-center text-sm font-semibold text-[var(--flowme-text-secondary)] underline-offset-4 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+          href="/flows"
+        >
+          Flow 찾기로 돌아가기
         </Link>
       </div>
     </section>

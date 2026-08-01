@@ -32,6 +32,8 @@ export type PublicFlowAdjustmentItem = {
   date?: string;
   dateLabel: string;
   included: boolean;
+  canMoveUp: boolean;
+  canMoveDown: boolean;
 };
 
 export type PublicFlowItemEditorDraft = {
@@ -50,12 +52,15 @@ type PublicFlowAdjustmentPanelProps = {
   anchorLabel?: string;
   anchorDraft?: string;
   items: PublicFlowAdjustmentItem[];
+  itemEditNotice?: string;
   routineEditor?: ReactNode;
+  initialFocusSelector?: string;
   applyDisabled?: boolean;
   onKindChange: (kind: PublicFlowAdjustmentKind) => void;
   onTitleChange: (value: string) => void;
   onAnchorChange?: (value: string) => void;
   onItemIncludedChange: (itemId: string, included: boolean) => void;
+  onItemMove: (itemId: string, direction: 'up' | 'down') => void;
   onItemEdit: (item: PublicFlowAdjustmentItem, returnFocusSelector: string) => void;
   onApply: () => void;
   onCancel: () => void;
@@ -98,41 +103,37 @@ export function PublicFlowAdjustmentPanel({
   anchorLabel,
   anchorDraft,
   items,
+  itemEditNotice,
   routineEditor,
+  initialFocusSelector,
   applyDisabled = false,
   onKindChange,
   onTitleChange,
   onAnchorChange,
   onItemIncludedChange,
+  onItemMove,
   onItemEdit,
   onApply,
   onCancel,
 }: PublicFlowAdjustmentPanelProps) {
-  const panelTitle = kindOptions.find((option) => option.kind === kind)?.label ?? 'Flow 조정';
+  const panelTitle = kindOptions.find((option) => option.kind === kind)?.label ?? 'Flow 편집';
 
   return (
-    <section
-      data-testid="public-flow-personal-adjustment"
-      data-adjustment-kind={kind}
-      data-p35-marker="P35-ADJUST-ONE-KIND"
-      tabIndex={-1}
-      aria-labelledby="public-flow-personal-adjustment-title"
-      className="border-b border-[var(--flowme-border-strong)] py-5 outline-none sm:py-7"
-      onKeyDown={(event) => {
-        if (event.key === 'Escape') {
-          event.preventDefault();
-          onCancel();
-        }
+    <FlowBottomSheet
+      testId="public-flow-personal-adjustment"
+      headingId="public-flow-personal-adjustment-title"
+      title="Flow 편집"
+      onClose={onCancel}
+      initialFocusSelector={
+        initialFocusSelector ?? "[data-testid='public-flow-adjustment-kind-name']"
+      }
+      p35Marker="P35-ATOMIC-FULL-HEIGHT-EDITOR"
+      dialogProps={{
+        'data-adjustment-kind': kind,
+        'data-editor-transaction': 'atomic',
       }}
+      className="inset-0 max-h-none rounded-none px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-[calc(1rem+env(safe-area-inset-top))] sm:inset-y-0 sm:left-auto sm:right-0 sm:w-[min(34rem,96vw)] sm:max-h-none sm:rounded-none sm:px-6 sm:pb-6 sm:pt-5"
     >
-      <div>
-        <div>
-          <p className="text-xs font-semibold text-[var(--flowme-action)]">Flow 조정</p>
-          <h2 id="public-flow-personal-adjustment-title" className="mt-1 text-xl font-bold text-[var(--flowme-text)]">
-            한 번에 한 가지만 바꾸기
-          </h2>
-        </div>
-      </div>
 
       <div
         data-testid="public-flow-adjustment-kind-picker"
@@ -209,17 +210,48 @@ export function PublicFlowAdjustmentPanel({
         ) : null}
 
         {kind === 'items' ? (
-          <div
-            data-testid="public-flow-adjustment-item-list"
-            className="mt-3 max-h-[min(58vh,32rem)] overflow-y-auto border-y border-[var(--flowme-border)] bg-white"
-          >
-            {items.map((item) => (
+          <div className="mt-3">
+            {itemEditNotice ? (
+              <p
+                data-testid="public-flow-adjustment-item-format-notice"
+                className="mb-3 border-l-2 border-[var(--flowme-warning)] bg-[var(--flowme-warning-soft)] px-2 py-1.5 text-xs font-medium leading-5 text-[var(--flowme-warning-strong)]"
+              >
+                {itemEditNotice}
+              </p>
+            ) : null}
+            <div
+              data-testid="public-flow-adjustment-item-list"
+              className="max-h-[min(58vh,32rem)] overflow-y-auto border-y border-[var(--flowme-border)] bg-white"
+            >
+              {items.map((item) => (
               <div
                 key={item.id}
                 data-testid="public-flow-adjustment-item-row"
                 data-item-id={item.id}
-                className="grid min-h-14 grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-2 border-b border-[var(--flowme-border)] px-2 py-2.5 last:border-b-0"
+                className="grid min-h-14 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 border-b border-[var(--flowme-border)] px-2 py-2.5 last:border-b-0"
               >
+                <span className="grid grid-cols-2 gap-0.5" role="group" aria-label={`${item.title} 순서`}>
+                  <button
+                    type="button"
+                    data-testid="public-flow-adjustment-item-move-up"
+                    className={FLOW_UI_COMPACT_ACTION_CLASS}
+                    aria-label={`${item.title} 위로 이동`}
+                    disabled={!item.canMoveUp}
+                    onClick={() => onItemMove(item.id, 'up')}
+                  >
+                    ↑
+                  </button>
+                  <button
+                    type="button"
+                    data-testid="public-flow-adjustment-item-move-down"
+                    className={FLOW_UI_COMPACT_ACTION_CLASS}
+                    aria-label={`${item.title} 아래로 이동`}
+                    disabled={!item.canMoveDown}
+                    onClick={() => onItemMove(item.id, 'down')}
+                  >
+                    ↓
+                  </button>
+                </span>
                 <button
                   type="button"
                   data-testid="public-flow-adjustment-item-edit"
@@ -238,25 +270,18 @@ export function PublicFlowAdjustmentPanel({
                     {item.dateLabel}
                   </span>
                 </button>
-                <button
-                  type="button"
-                  className={FLOW_UI_COMPACT_ACTION_CLASS}
-                  aria-label={`${item.title} 수정`}
-                  onClick={() => onItemEdit(
-                    item,
-                    `[data-testid="public-flow-adjustment-item-edit"][data-item-id="${CSS.escape(item.id)}"]`,
-                  )}
-                >
-                  수정
-                </button>
-                <input
-                  type="checkbox"
-                  checked={item.included}
-                  aria-label={`${item.title} Flow에 포함`}
-                  onChange={(event) => onItemIncludedChange(item.id, event.target.checked)}
-                />
-              </div>
-            ))}
+                <label className="flex min-h-10 items-center gap-1.5 text-xs font-semibold text-[var(--flowme-text-secondary)]">
+                  <span>포함</span>
+                  <input
+                    type="checkbox"
+                    checked={item.included}
+                    aria-label={`${item.title} Flow에 포함`}
+                    onChange={(event) => onItemIncludedChange(item.id, event.target.checked)}
+                  />
+                </label>
+                </div>
+              ))}
+            </div>
           </div>
         ) : null}
 
@@ -267,7 +292,7 @@ export function PublicFlowAdjustmentPanel({
         ) : null}
       </section>
 
-      <div className="sticky bottom-0 z-30 mt-5 flex justify-end gap-2 border-t border-[var(--flowme-border)] bg-[#F5F7F6]/95 py-3 backdrop-blur">
+      <div className="sticky bottom-0 z-30 mt-5 flex justify-end gap-2 border-t border-[var(--flowme-border)] bg-white/95 py-3 backdrop-blur">
         <button
           type="button"
           data-testid="public-flow-adjustment-cancel"
@@ -284,10 +309,10 @@ export function PublicFlowAdjustmentPanel({
           disabled={applyDisabled}
           onClick={onApply}
         >
-          변경 적용
+          이 내용으로 적용
         </button>
       </div>
-    </section>
+    </FlowBottomSheet>
   );
 }
 
@@ -315,7 +340,9 @@ export function PublicFlowItemEditor({
       onClose={onClose}
       initialFocusSelector='[data-testid="public-flow-item-editor-title-input"]'
       returnFocusSelector={returnFocusSelector}
-      className="sm:inset-y-0 sm:left-auto sm:right-0 sm:w-[min(28rem,92vw)] sm:max-h-none sm:rounded-none sm:pb-6"
+      p35Marker="P35-ATOMIC-FULL-HEIGHT-ITEM-EDITOR"
+      dialogProps={{ 'data-editor-transaction': 'atomic-child' }}
+      className="inset-0 max-h-none rounded-none px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-[calc(1rem+env(safe-area-inset-top))] sm:inset-y-0 sm:left-auto sm:right-0 sm:w-[min(28rem,92vw)] sm:max-h-none sm:rounded-none sm:px-6 sm:pb-6 sm:pt-5"
     >
       <form
         data-p35-marker="P35-R2-CONTEXTUAL-ITEM-EDIT-390 P35-R2-ITEM-INSPECTOR-1024"

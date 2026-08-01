@@ -87,7 +87,7 @@ test.describe('P28 shared save-before experience', () => {
     await page.getByTestId('flow-url-lookup-entry').getByRole('button', { name: 'Flow 찾기' }).click();
 
     const result = page.getByTestId('flow-url-lookup-result');
-    const sharedWorkspaceLink = result.getByRole('link', { name: '전체 내용 열고 조정' });
+    const sharedWorkspaceLink = result.getByRole('link', { name: '미리보기에서 편집' });
     await expect(sharedWorkspaceLink).toHaveAttribute('href', '/f/moving-d30-basic');
     await expect(result.getByTestId('flow-url-quick-start')).not.toHaveAttribute('open', '');
     await sharedWorkspaceLink.click();
@@ -96,14 +96,15 @@ test.describe('P28 shared save-before experience', () => {
     await expectNoHorizontalOverflow(page);
   });
 
-  test('wide save-before keeps two major panes and the detailed workbench collapsed', async ({ page }) => {
+  test('wide save-before keeps the result and direct export without a duplicate detail workspace', async ({ page }) => {
     await page.setViewportSize({ width: 1024, height: 768 });
     await page.goto('/f/moving-d30-basic');
     await clearLocalState(page);
 
     const decision = page.getByTestId('flow-save-before-decision');
     await expect(page.getByTestId('flow-save-before-primary-result').getByTestId('public-flow-artifact-preview')).toBeVisible();
-    await expect(page.getByTestId('public-flow-detail-workspace')).not.toHaveAttribute('open', '');
+    await expect(page.getByTestId('public-flow-detail-workspace')).toHaveCount(0);
+    await expect(page.getByTestId('public-flow-export-secondary-entry')).toBeVisible();
     await expect(page.getByTestId('public-flow-artifact-preview')).toBeVisible();
     await capture(page, '02-wide-save-before-moving.png');
     await expectNoHorizontalOverflow(page);
@@ -131,6 +132,13 @@ test.describe('P28 shared save-before experience', () => {
     await editor.getByTestId('public-routine-schedule-editor-duration').selectOption('45');
     await editor.getByTestId('public-routine-schedule-editor-end-mode').selectOption('count');
     await editor.getByTestId('public-routine-schedule-editor-occurrence-count').fill('8');
+    await page.getByTestId('public-flow-export-secondary-toggle').click();
+    const exportBranch = page.getByTestId('public-flow-export-branch');
+    const resources = exportBranch.getByTestId('flow-resource-block');
+    await expect(resources).toBeVisible();
+    await expect(resources.getByRole('link', { name: '원문 열기' })).toBeVisible();
+    await expect(resources.getByRole('checkbox')).toHaveCount(0);
+    await exportBranch.getByTestId('public-flow-export-branch-close').click();
     await page.getByTestId('public-flow-save-primary-mobile').click();
 
     const saved = await page.evaluate(() => JSON.parse(
@@ -144,11 +152,6 @@ test.describe('P28 shared save-before experience', () => {
     });
 
     await expect(page.getByTestId('public-flow-saved-receipt')).toBeVisible();
-    await page.getByTestId('public-flow-detail-workspace').locator(':scope > summary').click();
-    const resources = page.getByTestId('flow-resource-block');
-    await expect(resources).toBeVisible();
-    await expect(resources.getByRole('link', { name: '원문 열기' })).toBeVisible();
-    await expect(resources.getByRole('checkbox')).toHaveCount(0);
     await expect(page.getByTestId('exact-video-result-card')).toHaveCount(0);
     await expect(page.locator('body')).not.toContainText('강도 낮춤');
     await expect(page.locator('body')).not.toContainText('휴식으로 변경');

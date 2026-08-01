@@ -1,7 +1,6 @@
 import { expect, test } from '@playwright/test';
 import {
   expandMyFlowWholePlan,
-  getMyFlowVisibleExecutionRows,
   openMyFlowLibraryFlow,
 } from './helpers/my-flow-library';
 import { openSavedPublicFlow } from './helpers/public-flow-save';
@@ -126,11 +125,13 @@ test.describe('P27 reversible lifecycle foundation', () => {
     await page.setViewportSize({ width: 1024, height: 768 });
     await saveMovingFlow(page);
 
-    const flowCard = await openMyFlowLibraryFlow(page, 'moving-d30-basic');
-    await expect(getMyFlowVisibleExecutionRows(flowCard)).toHaveCount(4);
+    const flowCard = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'plan');
+    const outline = await expandMyFlowWholePlan(flowCard);
+    const getOutlineRows = () => outline.getByTestId('my-flow-execution-row-shell');
+    await expect(getOutlineRows()).toHaveCount(24);
 
     const removeFirstItem = async () => {
-      await getMyFlowVisibleExecutionRows(flowCard).first().getByRole('button', { name: /열기/ }).click();
+      await getOutlineRows().first().getByRole('button', { name: /열기/ }).click();
       const detail = flowCard.getByTestId('my-flow-workspace-detail-pane').getByTestId('my-flow-item-detail');
       await enterMyFlowDetailEditMode(detail);
       await expect(detail).toHaveAttribute('data-surface-context', 'flow');
@@ -140,22 +141,24 @@ test.describe('P27 reversible lifecycle foundation', () => {
     };
 
     await removeFirstItem();
-    await expect(getMyFlowVisibleExecutionRows(flowCard)).toHaveCount(3);
+    await expect(getOutlineRows()).toHaveCount(23);
     await expect(flowCard.getByTestId('my-flow-batch-undo')).toContainText('Flow에서 뺐어요');
     await flowCard.getByTestId('my-flow-batch-undo-action').click();
-    await expect(getMyFlowVisibleExecutionRows(flowCard)).toHaveCount(4);
+    await expect(getOutlineRows()).toHaveCount(24);
 
     await removeFirstItem();
-    await expect(getMyFlowVisibleExecutionRows(flowCard)).toHaveCount(3);
+    await expect(getOutlineRows()).toHaveCount(23);
     await page.reload();
 
-    const reloadedCard = await openMyFlowLibraryFlow(page, 'moving-d30-basic');
-    await expect(getMyFlowVisibleExecutionRows(reloadedCard)).toHaveCount(3);
+    const reloadedCard = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'plan');
+    const reloadedOutline = await expandMyFlowWholePlan(reloadedCard);
+    const reloadedOutlineRows = reloadedOutline.getByTestId('my-flow-execution-row-shell');
+    await expect(reloadedOutlineRows).toHaveCount(23);
     const excluded = reloadedCard.getByTestId('my-flow-excluded-steps');
     await excluded.locator('summary').click();
     await expect(excluded.getByTestId('my-flow-excluded-step-row')).toHaveCount(1);
     await excluded.getByTestId('my-flow-restore-excluded-item').click();
-    await expect(getMyFlowVisibleExecutionRows(reloadedCard)).toHaveCount(4);
+    await expect(reloadedOutlineRows).toHaveCount(24);
   });
 
   test('workout confirmation items and resources use a persistent personal overlay', async ({ page }) => {
@@ -270,7 +273,7 @@ test.describe('P27 reversible lifecycle foundation', () => {
     }));
     expect(persisted.itemStates['flow-moving-item-1']).toMatchObject({ personalExcluded: true });
     expect(persisted.itemStates['flow-moving-item-1'].note).toBe('하자 사진과 관리실 연락 메모');
-    expect(persisted.itemStates['flow-moving-item-0']).toBeUndefined();
+    expect(persisted.itemStates['flow-moving-item-0']).toEqual({ personalOrder: 0 });
     expect(persisted.saved.anchor).toBe('2030-08-15');
     expect(persisted.saved.personalTitle).toBe('내 이사 준비');
 
@@ -278,8 +281,8 @@ test.describe('P27 reversible lifecycle foundation', () => {
     await expect(page).toHaveURL('/my?view=flows&flow=moving-d30-basic');
     const flowCard = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'plan');
     await expect(flowCard).toBeVisible();
-    await expandMyFlowWholePlan(flowCard);
-    const outlineRows = getMyFlowVisibleExecutionRows(flowCard);
+    const outline = await expandMyFlowWholePlan(flowCard);
+    const outlineRows = outline.getByTestId('my-flow-execution-row-shell');
     await expect(outlineRows).toHaveCount(23);
     await expect(outlineRows.nth(0)).toContainText('이사 방식 정하기');
     await expect(outlineRows.nth(1)).toContainText('필요 없는 물건 정리하기');
@@ -320,7 +323,9 @@ test.describe('P27 reversible lifecycle foundation', () => {
     await expect(adjustment.getByTestId('public-flow-adjustment-item-row')).toHaveCount(24);
     await expect(adjustment).not.toContainText('Markdown');
     await expect(adjustment).not.toContainText('발행');
-    await expect(adjustment.getByRole('button', { name: /아래로 이동/ })).toHaveCount(0);
+    const moveDownControls = adjustment.getByRole('button', { name: /아래로 이동/ });
+    await expect(moveDownControls).toHaveCount(24);
+    await expect(moveDownControls.last()).toBeDisabled();
     await expect(adjustment.locator('[data-testid="public-flow-adjustment-title"]')).toHaveCount(0);
     await expect(adjustment.locator('[data-testid="public-flow-adjustment-date"]')).toHaveCount(0);
     await expectNoHorizontalOverflow(page);
@@ -447,7 +452,8 @@ test.describe('P27 reversible lifecycle foundation', () => {
     await expect(receipt.getByTestId('public-flow-saved-receipt-status')).toContainText('24');
     await receipt.getByTestId('public-flow-saved-receipt-primary').click();
 
-    const flow = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'record');
+    const flow = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'plan');
+    await expandMyFlowWholePlan(flow);
     await expect(flow.getByTestId('my-flow-whole-flow-outline')).toHaveAttribute('data-effective-row-count', '24');
     const exportRegion = flow.getByTestId('my-flow-export-surface');
     const exportButton = exportRegion.getByTestId('my-flow-export-entry');

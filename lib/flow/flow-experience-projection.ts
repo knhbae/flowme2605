@@ -155,6 +155,27 @@ function getOrderRank(item: FlowItem, orderOverride: string[]): number {
   return overrideIndex >= 0 ? overrideIndex : orderOverride.length + item.order;
 }
 
+function getProjectionItems(bundle: FlowBundle): FlowItem[] {
+  if (bundle.flow.content_type !== 'meal_plan' || bundle.items.length > 0) {
+    return bundle.items;
+  }
+
+  return (bundle.mealSlots ?? []).map((slot) => ({
+    id: slot.id,
+    flow_id: slot.flow_id,
+    ...(slot.section_id ? { section_id: slot.section_id } : {}),
+    title: slot.menu_title,
+    description: slot.new_ingredients.length > 0
+      ? `새 재료: ${slot.new_ingredients.join(', ')}`
+      : undefined,
+    type: 'calendar',
+    day_offset: slot.day_offset,
+    duration_days: slot.duration_days,
+    role: 'action',
+    order: slot.order,
+  }));
+}
+
 export function buildFlowExperienceProjection(
   bundle: FlowBundle,
   options: FlowExperienceProjectionOptions = {},
@@ -167,7 +188,7 @@ export function buildFlowExperienceProjection(
   const completed = new Set(options.completedItemIds ?? []);
   const sections = new Map(bundle.sections.map((section) => [section.id, section.title]));
 
-  const rows = bundle.items
+  const rows = getProjectionItems(bundle)
     .map((item): FlowExperienceProjectionRow => {
       const detail = bundle.itemDetails?.find((entry) => entry.item_id === item.id);
       const override = itemOverrides[item.id];

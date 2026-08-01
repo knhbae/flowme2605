@@ -105,7 +105,7 @@ test.describe('P32 focused My Flow workspace', () => {
     ).toBe(true);
     await capture(page, 'p32-02-focused-moving-export-390.png');
     await capture(page, 'p32-02-focused-moving-export-viewport-390.png', false);
-    await exportSurface.getByRole('button', { name: /가져가기 닫기/ }).click();
+    await exportSurface.getByRole('button', { name: /옮기기 닫기/ }).click();
 
     const firstRow = workspace.getByTestId('my-flow-execution-row-shell').first();
     await firstRow.getByRole('button', { name: /열기/ }).click();

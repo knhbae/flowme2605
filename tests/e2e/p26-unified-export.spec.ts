@@ -7,12 +7,7 @@ import {
   getOpenMyFlowItemDetail,
   openMyFlowLibraryFlow,
 } from './helpers/my-flow-library';
-import { openPublicDetailWorkspaceForDeepInspection } from './helpers/open-public-detail-workspace';
 import { openSavedPublicFlow, savePublicFlow } from './helpers/public-flow-save';
-
-test.beforeEach(async ({ page }) => {
-  await openPublicDetailWorkspaceForDeepInspection(page);
-});
 
 const evidenceDir = process.env.FLOWME_P26_16_EVIDENCE_DIR;
 
@@ -55,9 +50,13 @@ test('public whole Flow export predicts dates, output count, and result receipt'
   await page.reload();
   await page.getByLabel('이사일').fill('2026-08-30');
 
+  await expect(page.getByTestId('public-flow-detail-workspace')).toHaveCount(0);
   const exportEntry = page.getByTestId('public-flow-export-secondary-entry');
+  await expect(exportEntry.getByTestId('public-flow-export-secondary-toggle')).toContainText('옮기기');
   await exportEntry.getByTestId('public-flow-export-secondary-toggle').click();
-  const panel = exportEntry.getByTestId('my-flow-export-panel');
+  const exportBranch = page.getByTestId('public-flow-export-branch');
+  await expect(exportBranch).toBeVisible();
+  const panel = exportBranch.getByTestId('my-flow-export-panel');
   await expect(panel.getByTestId('my-flow-export-scope-control')).toContainText('Flow 전체');
   await expect(panel.getByTestId('my-flow-export-scope-summary')).toContainText('Flow 전체');
   const calendar = panel.getByRole('button', { name: /캘린더 파일 받기/ });
@@ -78,14 +77,19 @@ test('public whole Flow export predicts dates, output count, and result receipt'
   await capture(page, panel, '01-public-whole-flow-mobile.png');
 
   await page.goto('/f/vehicle-inspection-prep');
+  await expect(page.getByTestId('public-flow-detail-workspace')).toHaveCount(0);
   const undatedEntry = page.getByTestId('public-flow-export-secondary-entry');
+  await expect(undatedEntry.getByTestId('public-flow-export-secondary-toggle')).toContainText('옮기기');
   await undatedEntry.getByTestId('public-flow-export-secondary-toggle').click();
-  const undatedCalendar = undatedEntry.getByTestId('my-flow-export-calendar');
+  const undatedBranch = page.getByTestId('public-flow-export-branch');
+  await expect(undatedBranch).toBeVisible();
+  const undatedCalendar = undatedBranch.getByTestId('my-flow-export-calendar');
   await expect(undatedCalendar).toHaveCount(0);
   await expect(
-    undatedEntry.locator('[data-recommendation-visible="true"][data-export-state="disabled"]'),
+    undatedBranch.locator('[data-recommendation-visible="true"][data-export-state="disabled"]'),
   ).toHaveCount(0);
-  await undatedEntry.getByTestId('public-flow-export-secondary-toggle').click();
+  await undatedBranch.getByTestId('public-flow-export-branch-close').click();
+  await expect(undatedBranch).toHaveCount(0);
 
   await expect(page.getByTestId('public-flow-artifact-preview')).toHaveAttribute(
     'data-selected-shape',

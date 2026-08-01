@@ -54,7 +54,7 @@ test('undated public Flow supports reversible My Flow batch scheduling and ICS p
     '0',
   );
   await expect(exportBefore.getByTestId('my-flow-export-calendar')).toBeDisabled();
-  await exportBefore.getByRole('button', { name: /가져가기 닫기/ }).click();
+  await exportBefore.getByRole('button', { name: /옮기기 닫기/ }).click();
 
   const outline = savedFlow.getByTestId('my-flow-whole-flow-outline');
   await savedFlow.getByTestId('my-flow-batch-mode-toggle').first().click();

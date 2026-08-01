@@ -3,6 +3,8 @@ import path from 'node:path';
 
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import {
+  closeOpenMyFlowItemDetail,
+  getOpenMyFlowItemDetail,
   openMyFlowLibraryFlow,
   openPersonalDraftListExport,
 } from './helpers/my-flow-library';
@@ -122,12 +124,19 @@ test('legacy personal draft values migrate to one stable identity across My Flow
     .first();
   await expect(item).toHaveAttribute('data-item-id', legacy.itemId);
   await expect(item).toContainText('8월 3일');
-  const complete = item.getByRole('checkbox', { name: '여권 유효기간 다시 확인하기 완료 체크' });
+  await expect(item.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+  await item.getByRole('button', { name: /열기/ }).click();
+  const detail = getOpenMyFlowItemDetail(page);
+  await expect(detail).toBeVisible();
+  const complete = detail.getByTestId('my-flow-task-complete-control');
+  await expect(complete).toHaveCount(1);
+  await expect(page.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
   await complete.click();
-  const reopen = item.getByRole('checkbox', { name: '여권 유효기간 다시 확인하기 다시 열기' });
-  await expect(reopen).toBeChecked();
-  await reopen.click();
+  await expect(complete).toBeChecked();
+  await expect(complete).toHaveAccessibleName(/다시 열기/);
+  await complete.click();
   await expect(complete).not.toBeChecked();
+  await closeOpenMyFlowItemDetail(page);
   await capture(page, flowShell, '01-migrated-personal-draft-mobile.png');
 
   flowShell = await openMyFlowLibraryFlow(page, legacy.flowSlug, 'record');
@@ -157,6 +166,7 @@ test('legacy personal draft values migrate to one stable identity across My Flow
     .locator(`[data-testid="my-flow-execution-row-shell"][data-item-id="${legacy.itemId}"]`)
     .filter({ hasText: '여권 유효기간 다시 확인하기' });
   await expect(calendarItem).toBeVisible();
+  await expect(calendarItem.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
   await capture(page, page.locator('main'), '02-migrated-calendar-wide.png');
 
   expect(browserErrors).toEqual([]);

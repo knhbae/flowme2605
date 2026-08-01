@@ -88,7 +88,7 @@ export type PermanentSavedFlowDeletionResult = {
   publicSourcePreserved: boolean;
 };
 
-export type SavedFlowArtifactMode = 'calendar' | 'checklist' | 'sheet';
+export type SavedFlowArtifactMode = 'calendar' | 'checklist' | 'sheet' | 'memo';
 
 export type SavedFlowRoutineEnd =
   | { mode: 'source' }
@@ -427,7 +427,7 @@ export function dismissStorageNotice(): void {
 }
 
 function isSavedFlowArtifactMode(value: unknown): value is SavedFlowArtifactMode {
-  return value === 'calendar' || value === 'checklist' || value === 'sheet';
+  return value === 'calendar' || value === 'checklist' || value === 'sheet' || value === 'memo';
 }
 
 function isSavedFlowRoutineTime(value: unknown): value is string {

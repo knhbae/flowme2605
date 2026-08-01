@@ -2,10 +2,12 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
+  consumeMyFlowFirstEntry,
   consumeMyFlowFirstEntryPlan,
   getMyFlowLibraryControlVisibility,
   getMyFlowWorkspaceHref,
   getMyFlowViewHref,
+  markMyFlowFirstEntry,
   markMyFlowFirstEntryPlan,
   parseMyFlowWorkspaceTarget,
   parseMyFlowViewQuery,
@@ -44,20 +46,36 @@ test('Calendar deep links preserve the Flow and optional stable item identity', 
     }),
     '/my?view=flows&flow=moving-d30-basic&item=moving-d30-basic%3A%3Astep-1',
   );
+  assert.equal(
+    getMyFlowWorkspaceHref({
+      flowSlug: 'moving-d30-basic',
+      itemKey: 'moving-d30-basic::step-1',
+      itemDate: '2026-07-13',
+    }),
+    '/my?view=flows&flow=moving-d30-basic&item=moving-d30-basic%3A%3Astep-1&date=2026-07-13',
+  );
   assert.deepEqual(
-    parseMyFlowWorkspaceTarget('?view=flows&flow=moving-d30-basic&item=item%3A1'),
-    { flowSlug: 'moving-d30-basic', itemKey: 'item:1' },
+    parseMyFlowWorkspaceTarget('?view=flows&flow=moving-d30-basic&item=item%3A1&date=2026-07-13'),
+    { flowSlug: 'moving-d30-basic', itemKey: 'item:1', itemDate: '2026-07-13' },
   );
   assert.equal(parseMyFlowWorkspaceTarget('?view=flows'), null);
 });
 
-test('saved receipt expands the whole plan once without creating persistent product state', () => {
+test('saved receipt marks the compact first entry once without creating persistent product state', () => {
+  const storage = createSessionStorageFixture();
+  markMyFlowFirstEntry(storage, 'moving-d30-basic');
+
+  assert.equal(consumeMyFlowFirstEntry(storage, 'vehicle-inspection-prep'), false);
+  assert.equal(consumeMyFlowFirstEntry(storage, 'moving-d30-basic'), true);
+  assert.equal(consumeMyFlowFirstEntry(storage, 'moving-d30-basic'), false);
+});
+
+test('legacy first-entry-plan helpers keep the same session key and one-shot handoff', () => {
   const storage = createSessionStorageFixture();
   markMyFlowFirstEntryPlan(storage, 'moving-d30-basic');
 
-  assert.equal(consumeMyFlowFirstEntryPlan(storage, 'vehicle-inspection-prep'), false);
   assert.equal(consumeMyFlowFirstEntryPlan(storage, 'moving-d30-basic'), true);
-  assert.equal(consumeMyFlowFirstEntryPlan(storage, 'moving-d30-basic'), false);
+  assert.equal(consumeMyFlowFirstEntry(storage, 'moving-d30-basic'), false);
 });
 
 test('My Flow local summary supports empty, one, three, and twenty Flow states', () => {

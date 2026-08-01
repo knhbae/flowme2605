@@ -395,7 +395,7 @@ test('wide discovery and My Flow keep action columns purposeful', async ({ page 
   await expect(publicPreview.getByTestId('public-flow-artifact-preview-row')).toHaveCount(10);
   await expect(publicDecision.getByTestId('public-flow-primary-setup')).toHaveCount(0);
   await expect(publicDecision.getByTestId('public-flow-save-primary')).toBeVisible();
-  await expect(page.getByTestId('public-flow-detail-workspace')).toBeVisible();
+  await expect(page.getByTestId('public-flow-detail-workspace')).toHaveCount(0);
   await expectNoHorizontalOverflow(page);
 
   await page.goto('/f/moving-d30-basic');
@@ -488,7 +488,7 @@ test('flow finding URL lookup reuses existing source-backed Flows first', async 
   await expect(result).toBeVisible();
   await expect(result).toContainText('이미 만들어진 Flow가 있어요');
   await expect(result).toContainText('중1 수학');
-  await expect(result.getByRole('link', { name: '전체 내용 열고 조정' })).toHaveAttribute('href', '/f/source-backed-middle-school-math-1');
+  await expect(result.getByRole('link', { name: '미리보기에서 편집' })).toHaveAttribute('href', '/f/source-backed-middle-school-math-1');
   await expect(result.getByTestId('flow-url-quick-start')).not.toHaveAttribute('open', '');
   await expect(result).toContainText('캘린더');
   await expect(result).toContainText('메모 문서');
@@ -568,7 +568,7 @@ test('flow finding turns a plain memo into an editable private draft and lands i
   await openCurrentMyFlowLibrary(page);
   const memoDraftFlow = await openMyFlowLibraryFlow(page, storedDraft.flow.slug);
   const memoDraftSettings = memoDraftFlow.getByTestId('my-flow-personal-copy-settings-open');
-  await expect(memoDraftSettings).toHaveText('Flow 조정');
+  await expect(memoDraftSettings).toHaveText('Flow 편집');
   await expect(memoDraftSettings).toHaveAttribute('aria-label', /첫 할 일 날짜 바꾸기/);
 
   await page.goto('/calendar');
@@ -714,7 +714,7 @@ test('flow finding production candidates can be revisited edited resolved and re
   const result = page.getByTestId('flow-url-lookup-result');
   await expect(page.getByLabel('URL 또는 메모')).toHaveValue('https://mathbang.net/13');
   await expect(result).toContainText('이미 만들어진 Flow가 있어요');
-  await expect(result.getByRole('link', { name: '전체 내용 열고 조정' })).toHaveAttribute('href', '/f/source-backed-middle-school-math-1');
+  await expect(result.getByRole('link', { name: '미리보기에서 편집' })).toHaveAttribute('href', '/f/source-backed-middle-school-math-1');
   await expect(result.getByTestId('flow-url-quick-start')).not.toHaveAttribute('open', '');
 
   const storedCandidates = await page.evaluate(() => JSON.parse(window.localStorage.getItem('flow:url-first:supply-candidates') || '[]'));
@@ -766,12 +766,12 @@ test('flow finding manual registered production candidate resolves to a startabl
   const result = page.getByTestId('flow-url-lookup-result');
   await expect(page.getByLabel('URL 또는 메모')).toHaveValue('https://www.samsungsvc.co.kr/solution/28524');
   await expect(result).toContainText('이미 만들어진 Flow가 있어요');
-  await expect(result.getByRole('link', { name: '전체 내용 열고 조정' })).toHaveAttribute('href', '/f/source-backed-aircon-filter-cleaning');
+  await expect(result.getByRole('link', { name: '미리보기에서 편집' })).toHaveAttribute('href', '/f/source-backed-aircon-filter-cleaning');
   await openUrlFirstQuickStart(result);
 
   await result.getByTestId('url-first-start-date-input').fill('2026-07-06');
-  await result.getByLabel('내보내기 방식').selectOption('calendar');
-  await result.getByRole('button', { name: '시작하기' }).click();
+  await result.getByLabel('결과 형식').selectOption('calendar');
+  await result.getByRole('button', { name: '내 Flow에 저장' }).click();
 
   await expect(page).toHaveURL(/\/my\?savedMap=aircon-filter-cleaning/);
   await expect(page.getByTestId('my-flow-post-save-panel')).toBeVisible();
@@ -892,7 +892,7 @@ test('flow finding URL lookup starts a hit with date, option, My Flow save, and 
   await openUrlFirstQuickStart(result);
   await expect(result.getByLabel('시작일')).toBeVisible();
   await result.getByLabel('학습 시작일').fill('2026-07-15');
-  await result.getByLabel('내보내기 방식').selectOption('markdown');
+  await result.getByLabel('결과 형식').selectOption('markdown');
 
   const markdownDownloadPromise = page.waitForEvent('download');
   await result.getByRole('button', { name: '메모 문서 받기' }).click();
@@ -904,7 +904,7 @@ test('flow finding URL lookup starts a hit with date, option, My Flow save, and 
   expect(markdown).toContain('2026-07-15');
   expect(markdown).toContain('middle-school-math-1');
 
-  await result.getByRole('button', { name: '시작하기' }).click();
+  await result.getByRole('button', { name: '내 Flow에 저장' }).click();
   await expect(page).toHaveURL(/\/my\?savedMap=middle-school-math-1/);
   await expect(page.getByTestId('my-flow-post-save-panel')).toBeVisible();
   await expect(page.getByTestId('my-flow-workspace')).toHaveCount(0);
@@ -934,7 +934,7 @@ test('flow finding URL lookup starts a hit with date, option, My Flow save, and 
   const blockedResult = page.getByTestId('flow-url-lookup-result');
   await expect(blockedResult).toContainText('저장 대기');
   await expect(blockedResult.getByLabel('시작일')).toHaveCount(0);
-  await expect(blockedResult.getByRole('button', { name: '시작하기' })).toHaveCount(0);
+  await expect(blockedResult.getByRole('button', { name: '내 Flow에 저장' })).toHaveCount(0);
   await expectNoHorizontalOverflow(page);
 });
 
@@ -951,7 +951,7 @@ test('flow finding URL lookup starts a lightweight customized personal copy', as
   const result = page.getByTestId('flow-url-lookup-result');
   await expect(result).toContainText('이미 만들어진 Flow가 있어요');
   await openUrlFirstQuickStart(result);
-  await result.getByRole('button', { name: '내게 맞게 조정' }).click();
+  await result.getByRole('button', { name: '저장 전 편집' }).click();
 
   const customPanel = result.getByTestId('flow-url-custom-start-panel');
   await expect(customPanel).toBeVisible();
@@ -964,7 +964,7 @@ test('flow finding URL lookup starts a lightweight customized personal copy', as
   }
 
   await result.getByLabel('학습 시작일').fill('2026-07-15');
-  await result.getByLabel('내보내기 방식').selectOption('markdown');
+  await result.getByLabel('결과 형식').selectOption('markdown');
 
   const markdownDownloadPromise = page.waitForEvent('download');
   await result.getByRole('button', { name: '메모 문서 받기' }).click();
@@ -977,7 +977,7 @@ test('flow finding URL lookup starts a lightweight customized personal copy', as
   expect(markdown).toContain('1. 소인수분해');
   expect(markdown).not.toContain('2. 정수와 유리수');
 
-  await result.getByRole('button', { name: '시작하기' }).click();
+  await result.getByRole('button', { name: '내 Flow에 저장' }).click();
   await expect(page).toHaveURL(/\/my\?savedMap=middle-school-math-1/);
   await expect(page.getByTestId('my-flow-workspace')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-post-save-confirmation')).toHaveText('내 Flow에 저장됨');
@@ -994,9 +994,9 @@ test('flow finding URL lookup starts a lightweight customized personal copy', as
   await expect(personalFlow).toContainText('시험 전 소인수분해만');
   await expect(personalFlow).toHaveAttribute('data-copy-kind', 'personal');
   await expect(personalFlow.getByTestId('my-flow-workspace-progress-summary')).toContainText('전체 0/1 완료');
-  const activeRows = getMyFlowVisibleExecutionRows(personalFlow);
-  await expect(activeRows).toContainText('소인수분해');
-  await expect(activeRows).not.toContainText('정수와 유리수');
+  const activeRows = await getMyFlowVisibleExecutionRows(personalFlow);
+  await expect(activeRows.filter({ hasText: '소인수분해' }).first()).toBeVisible();
+  await expect(activeRows.filter({ hasText: '정수와 유리수' })).toHaveCount(0);
   const excludedSteps = personalFlow.getByTestId('my-flow-excluded-steps');
   await expect(excludedSteps).toContainText('Flow에서 제외한 할 일');
   await expect(excludedSteps).toContainText('정수와 유리수');
@@ -1079,7 +1079,7 @@ test('my flow personal copy settings can readjust saved title date and included 
   const result = page.getByTestId('flow-url-lookup-result');
   await expect(result).toContainText('이미 만들어진 Flow가 있어요');
   await openUrlFirstQuickStart(result);
-  await result.getByRole('button', { name: '내게 맞게 조정' }).click();
+  await result.getByRole('button', { name: '저장 전 편집' }).click();
 
   const customPanel = result.getByTestId('flow-url-custom-start-panel');
   await expect(customPanel).toBeVisible();
@@ -1091,7 +1091,7 @@ test('my flow personal copy settings can readjust saved title date and included 
     await stepBoxes.nth(index).uncheck();
   }
   await result.getByLabel('시작일').fill('2026-07-15');
-  await result.getByRole('button', { name: '시작하기' }).click();
+  await result.getByRole('button', { name: '내 Flow에 저장' }).click();
   await expect(page).toHaveURL(/\/my\?savedMap=middle-school-math-1/);
   await openPostSaveWorkspaceIfPresent(page);
 
@@ -1117,9 +1117,9 @@ test('my flow personal copy settings can readjust saved title date and included 
 
   await expect(personalFlow).toContainText('1학기 앞부분 복습');
   await expect(personalFlow.getByTestId('my-flow-workspace-progress-summary')).toContainText('전체 0/1 완료');
-  const activeRows = getMyFlowVisibleExecutionRows(personalFlow);
-  await expect(activeRows).toContainText('정수와 유리수');
-  await expect(activeRows).not.toContainText('소인수분해');
+  const activeRows = await getMyFlowVisibleExecutionRows(personalFlow);
+  await expect(activeRows.filter({ hasText: '정수와 유리수' }).first()).toBeVisible();
+  await expect(activeRows.filter({ hasText: '소인수분해' })).toHaveCount(0);
   const excludedSteps = personalFlow.getByTestId('my-flow-excluded-steps');
   await expect(excludedSteps).toContainText('소인수분해');
   await expect(excludedSteps).not.toContainText('정수와 유리수');
@@ -1214,15 +1214,15 @@ test('post-save moving item edits feed memo checklist calendar and sheet-row exp
     personalFlow
       .getByTestId('my-flow-shape-aware-execution')
       .getByTestId('my-flow-execution-row-shell'),
-  ).toHaveCount(4);
+  ).toHaveCount(3);
   await expandMyFlowWholePlan(personalFlow);
   await expect(
-    getMyFlowVisibleExecutionRows(personalFlow)
+    (await getMyFlowVisibleExecutionRows(personalFlow))
       .filter({ hasText: '이사 방식 정하기' })
       .first(),
   ).toBeVisible();
 
-  const editableRow = getMyFlowVisibleExecutionRows(personalFlow)
+  const editableRow = (await getMyFlowVisibleExecutionRows(personalFlow))
     .filter({ hasText: '이사 방식 정하기' })
     .first();
   const editableArticle = editableRow.locator('article[data-item-id]').first();
@@ -1384,7 +1384,7 @@ test('legacy AJD save entry lands on the canonical 24-item My Flow copy', async 
   await expect(page).toHaveURL('/f/moving-d30-basic');
   await page.getByLabel('이사일').fill('2026-07-31');
   await page.getByTestId('public-flow-save-primary-mobile').click();
-  await expect(page.getByTestId('public-flow-saved-receipt')).toContainText('할 일 24개');
+  await expect(page.getByTestId('public-flow-saved-receipt')).toContainText('캘린더 24개');
   await page.getByTestId('public-flow-saved-receipt-primary').click();
   await expect(page).toHaveURL('/my?view=flows&flow=moving-d30-basic');
 
@@ -1656,7 +1656,9 @@ test('fridge and washer setup path is a visible input action before browse navig
     const setup = page.getByTestId('public-flow-hero');
     await expect(setup).toHaveAttribute('data-visual-structure', 'artifact-first');
     await expect(page.getByTestId('public-flow-adjust-entry-mobile')).toBeVisible();
-    await expect(page.getByTestId('flow-public-secondary-browse-link')).toBeVisible();
+    await expect(
+      page.getByTestId('flow-public-shell').getByRole('link', { name: /Flow 찾기/ }),
+    ).toHaveAttribute('href', '/flows');
   }
 });
 
@@ -2145,9 +2147,11 @@ test('my flow management uses one local library while calendar stays global', as
   await firstExecutionRow.getByRole('button', { name: /열기/ }).click();
   const inlineDetail = page.locator('[data-testid="my-flow-item-detail"]:visible').first();
   await expect(inlineDetail).toBeVisible();
-  await firstExecutionRow.getByTestId('my-flow-task-complete-control').check();
-  await expect(firstExecutionRow.getByTestId('my-flow-task-complete-control')).toBeChecked();
-  await expect(firstExecutionRow.getByTestId('my-flow-task-complete-control')).toHaveAccessibleName(/다시 열기/);
+  await expect(firstExecutionRow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+  const completion = inlineDetail.getByTestId('my-flow-task-complete-control');
+  await completion.check();
+  await expect(completion).toBeChecked();
+  await expect(completion).toHaveAccessibleName(/다시 열기/);
 });
 
 test('my flow mobile library puts the saved Flow before secondary controls', async ({ page }) => {
@@ -2193,13 +2197,17 @@ test('my flow focused workspace exposes reversible completion without a separate
     .first();
   const rowKey = await executionRow.getAttribute('data-row-key');
   expect(rowKey).toBeTruthy();
-  const completion = executionRow.getByTestId('my-flow-task-complete-control');
+  await expect(executionRow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+  await executionRow.getByRole('button', { name: /열기/ }).click();
+  let detail = getOpenMyFlowItemDetail(page);
+  const completion = detail.getByTestId('my-flow-task-complete-control');
   await expect(completion).toHaveAttribute('type', 'checkbox');
   await completion.click();
   await expect(page.getByTestId('my-flow-completion-snackbar')).toHaveAttribute(
     'data-completion-result',
     'completed',
   );
+  await closeOpenMyFlowItemDetail(page);
   const planToggle = workspace.getByTestId('my-flow-workspace-plan-toggle');
   if (
     await planToggle.isVisible().catch(() => false) &&
@@ -2207,11 +2215,13 @@ test('my flow focused workspace exposes reversible completion without a separate
   ) {
     await planToggle.click();
   }
+  await expandMyFlowWholePlan(workspace);
   const wholeFlowOutline = workspace.getByTestId('my-flow-whole-flow-outline');
-  const toggleAllGroups = wholeFlowOutline.getByTestId('my-flow-whole-flow-toggle-all-groups');
-  if (await toggleAllGroups.isVisible().catch(() => false)) await toggleAllGroups.click();
   const completedRow = wholeFlowOutline.locator(`article[data-row-key="${rowKey}"]`);
-  const reopen = completedRow.getByTestId('my-flow-task-complete-control');
+  await expect(completedRow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+  await completedRow.getByRole('button', { name: /열기/ }).click();
+  detail = getOpenMyFlowItemDetail(page);
+  const reopen = detail.getByTestId('my-flow-task-complete-control');
   await expect(reopen).toBeChecked();
   await expect(reopen).toHaveAccessibleName(/다시 열기/);
   await reopen.click();
@@ -2219,8 +2229,7 @@ test('my flow focused workspace exposes reversible completion without a separate
     'data-completion-result',
     'reopened',
   );
-  const reopenedRow = workspace.locator(`article[data-row-key="${rowKey}"]:visible`).first();
-  await expect(reopenedRow.getByTestId('my-flow-task-complete-control')).not.toBeChecked();
+  await expect(reopen).not.toBeChecked();
   await expect(page.getByTestId('my-flow-view-today')).toHaveCount(0);
 });
 test('my flow mobile library renders one row per saved Flow without queue duplication', async ({ page }) => {
@@ -2385,7 +2394,7 @@ test('calendar route distinguishes multiple saved flows on the same selected dat
   await expect(agendaRows.getByTestId('my-flow-row-progress-chip')).toHaveCount(0);
   await expect(agendaRows.getByTestId('my-flow-row-open-label')).toHaveCount(agendaRowCount);
   await expect(agendaRows.getByRole('button', { name: /열기/ })).toHaveCount(agendaRowCount);
-  await expect(agendaRows.getByTestId('my-flow-task-complete-control')).toHaveCount(agendaRowCount);
+  await expect(agendaRows.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
   await expect(agendaRows.getByRole('button', { name: /^완료$/ })).toHaveCount(0);
 
   await page.setViewportSize({ width: 1024, height: 768 });
@@ -2603,7 +2612,7 @@ test('source-backed flow map public page stays save-before focused', async ({ pa
   await expect(publicMap).toContainText('거듭제곱');
   await expect(publicMap.getByTestId('flow-map-public-step-items').first()).toContainText(/체크 \d+개/);
   await expect(publicMap.getByText('메모 · 원문').first()).toBeVisible();
-  await expect(publicMap.getByRole('button', { name: '그대로 시작' })).toBeVisible();
+  await expect(publicMap.getByRole('button', { name: '전체 저장하고 시작' })).toBeVisible();
   await expect(publicMap).not.toContainText(/source fit|PoC|개발자|평가 점수/i);
   await expect(publicMap).not.toContainText(/제작자 편집|초안 저장|새 공개 버전/i);
 });
@@ -2611,7 +2620,7 @@ test('source-backed flow map public page stays save-before focused', async ({ pa
 test('source-backed flow map public page saves into the real My Flow path', async ({ page }) => {
   await page.goto('/flow-maps/middle-school-math-1');
 
-  await page.getByRole('button', { name: '그대로 시작' }).click();
+  await page.getByRole('button', { name: '전체 저장하고 시작' }).click();
   await expect(page).toHaveURL('/my?savedMap=middle-school-math-1');
   await expect(page.getByTestId('flow-map-creator')).toHaveCount(0);
   await expect(page.locator('body')).not.toContainText(/제작자 편집|초안 저장|새 공개 버전/i);
@@ -2668,7 +2677,7 @@ test('source-backed flow map public page saves into the real My Flow path', asyn
 
 test('my flow separates ready source-backed content from review-needed saved flows', async ({ page }) => {
   await page.goto('/flow-maps/middle-school-math-1');
-  await page.getByRole('button', { name: '그대로 시작' }).click();
+  await page.getByRole('button', { name: '전체 저장하고 시작' }).click();
   await expect(page).toHaveURL('/my?savedMap=middle-school-math-1');
 
   await page.evaluate(() => {
@@ -2710,7 +2719,7 @@ test('source-backed single progress map opens item detail in the mobile focused 
   await expect(detail).not.toContainText('Item');
   await expect(detail.getByTestId('my-flow-item-checklist')).toBeVisible();
   await expect(detail.getByTestId('my-flow-detail-portable-export').locator(':scope > summary'))
-    .toContainText('현재 항목 1개 가져가기');
+    .toContainText('현재 항목 1개 옮기기');
 });
 test('canonical moving aliases save one 24-item timeline without creating a legacy map copy', async ({ page }) => {
   const movingDate = createMovingDateFixture();
@@ -2764,7 +2773,10 @@ test('task completion controls use one checkbox pattern in My Flow and Calendar'
   const rowKey = await executionRow.getAttribute('data-row-key');
   expect(rowKey).toBeTruthy();
   const stableExecutionRow = flow.locator(`article[data-row-key="${rowKey}"]`);
-  const myFlowComplete = stableExecutionRow.getByTestId('my-flow-task-complete-control');
+  await expect(stableExecutionRow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+  await executionRow.getByRole('button', { name: /열기/ }).click();
+  let detail = getOpenMyFlowItemDetail(page);
+  const myFlowComplete = detail.getByTestId('my-flow-task-complete-control');
   await expect(myFlowComplete).toHaveAttribute('type', 'checkbox');
   await expect(myFlowComplete).toHaveAccessibleName(/완료/);
   await myFlowComplete.click();
@@ -2775,7 +2787,16 @@ test('task completion controls use one checkbox pattern in My Flow and Calendar'
 
   await page.goto('/calendar');
   const selectedDay = await openMyFlowCalendarSelectedDay(page);
-  const calendarComplete = selectedDay.getByTestId('my-flow-task-complete-control').first();
+  await expect(selectedDay.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+  await selectedDay.getByRole('button', { name: /열기/ }).first().click();
+  const calendarFlow = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'execute');
+  const calendarFlowRow = calendarFlow
+    .getByTestId('my-flow-workspace-execute')
+    .getByTestId('my-flow-execution-row-shell')
+    .first();
+  await calendarFlowRow.getByRole('button', { name: /열기/ }).click();
+  detail = getOpenMyFlowItemDetail(page);
+  const calendarComplete = detail.getByTestId('my-flow-task-complete-control');
   await expect(calendarComplete).toHaveAttribute('type', 'checkbox');
   await expect(page.getByTestId('my-flow-task-complete-button')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-task-complete-mixed')).toHaveCount(0);
@@ -3021,13 +3042,13 @@ test('completed personal Flow reviews item changes before starting a new source 
   await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
   const result = page.getByTestId('flow-url-lookup-result');
   await openUrlFirstQuickStart(result);
-  await result.getByRole('button', { name: '내게 맞게 조정' }).click();
+  await result.getByRole('button', { name: '저장 전 편집' }).click();
   const customPanel = result.getByTestId('flow-url-custom-start-panel');
   const stepBoxes = customPanel.locator('input[type="checkbox"]');
   const stepCount = await stepBoxes.count();
   for (let index = 1; index < stepCount; index += 1) await stepBoxes.nth(index).uncheck();
   await result.getByLabel('학습 시작일').fill('2026-07-15');
-  await result.getByRole('button', { name: '시작하기' }).click();
+  await result.getByRole('button', { name: '내 Flow에 저장' }).click();
   await expect(page).toHaveURL(/\/my\?savedMap=middle-school-math-1/);
 
   await page.evaluate(() => {
@@ -3361,7 +3382,7 @@ test('source-backed undated checklist can add and remove a personal date', async
     await page.screenshot({ path: `${evidenceDir}/screenshots/03-source-undated-date-persisted-wide.png`, fullPage: true });
   }
   expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
-  await wideDetail.getByTestId('my-flow-undated-item-date-clear').click();
+  await wideDetail.getByTestId('my-flow-detail-date-input').fill('');
   await expect(wideDetail.getByTestId('my-flow-detail-date-input')).toHaveValue('');
   await wideDetail.getByTestId('my-flow-detail-save-changes').click();
 
@@ -3743,7 +3764,7 @@ test('my flow ux12 keeps single-flow detail lightweight inside the Flow view', a
   await expect(usedCarOverviewCard).toHaveAttribute('data-flow-slug', 'used-car-buying-check');
   await expect(usedCarOverviewCard).toBeVisible();
   await expandMyFlowWholePlan(usedCarOverviewCard);
-  const usedCarTargetRow = getMyFlowVisibleExecutionRows(usedCarOverviewCard)
+  const usedCarTargetRow = (await getMyFlowVisibleExecutionRows(usedCarOverviewCard))
     .filter({ hasText: '원하는 차종의 연식·주행거리별 시세 확인하기' })
     .first();
   await usedCarTargetRow.getByRole('button', { name: /열기/ }).click();
@@ -3751,8 +3772,8 @@ test('my flow ux12 keeps single-flow detail lightweight inside the Flow view', a
   await expect(flowDetail).toBeVisible();
   await expect(flowDetail.getByTestId('my-flow-detail-title-input')).toHaveCount(0);
   await expect(flowDetail.getByTestId('my-flow-log-fields')).toHaveCount(0);
-  await expect(usedCarTargetRow.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
-  await expect(flowDetail.getByRole('checkbox', { name: /완료 체크$/ })).toHaveCount(0);
+  await expect(usedCarTargetRow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+  await expect(flowDetail.getByRole('checkbox', { name: /완료 체크$/ })).toHaveCount(1);
   await enterMyFlowDetailEditMode(flowDetail);
   await expect(flowDetail.getByTestId('my-flow-detail-memo')).toBeVisible();
   await expect(flowDetail.locator('[data-testid^="my-flow-proof"]')).toHaveCount(0);
@@ -3906,7 +3927,7 @@ test('my flow mobile keeps one saved Flow in one library and focused workspace',
     'data-p35-marker',
     'P35-R0-NEXT-DATE-GROUP',
   );
-  await expect(temporalNextGroup.getByTestId('my-flow-execution-row-shell')).toHaveCount(4);
+  await expect(temporalNextGroup.getByTestId('my-flow-execution-row-shell')).toHaveCount(3);
   const planToggle = workspace.getByTestId('my-flow-workspace-plan-toggle');
   await expect(planToggle).toBeVisible();
   await planToggle.click();
@@ -3942,7 +3963,7 @@ test('my flow mobile item opens editable detail from the focused Flow workspace'
   await expect(mobileDetail).not.toContainText('할 일 상태');
   await expect(mobileDetail).toContainText('실행할 일');
   await expect(mobileDetail.getByTestId('my-flow-detail-title-input')).toHaveCount(0);
-  await expect(mobileDetail.getByRole('checkbox', { name: /완료 체크$/ })).toHaveCount(0);
+  await expect(mobileDetail.getByRole('checkbox', { name: /완료 체크$/ })).toHaveCount(1);
   await expect(mobileDetail.getByRole('checkbox', { name: /이번 회차 완료 체크$/ })).toHaveCount(0);
   await expect(mobileDetail.getByRole('button', { name: '수정', exact: true })).toHaveCount(0);
   await enterMyFlowDetailEditMode(mobileDetail);
@@ -4030,7 +4051,7 @@ test('my flow mobile calendar keeps date selection separate and gives events usa
   const selectedDayFirstRowBox = await selectedDayFirstRow.boundingBox();
   expect(selectedDayFirstRowBox?.height ?? 9999).toBeLessThanOrEqual(92);
   await expect(selectedDayFirstRow.getByTestId('my-flow-row-date-meta')).toBeHidden();
-  await expect(routineSelectedDay.getByRole('checkbox', { name: /이번 회차 완료 체크$/ }).first()).toBeVisible();
+  await expect(routineSelectedDay.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
   await page.getByTestId('my-flow-calendar-day-sheet-close').click();
 
   await page.getByTestId('my-flow-month-picker').fill('2026-05');
@@ -4060,8 +4081,8 @@ test('my flow and calendar details separate execution from explicit editing', as
   await expect(detail).toHaveAttribute('data-detail-mode', 'execute');
   await expect(detail).toHaveAttribute('data-default-primary-action-count', '2');
   await expect(detail.getByTestId('my-flow-detail-title-input')).toHaveCount(0);
-  await expect(usedCarFirstRow.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
-  await expect(detail.getByRole('checkbox', { name: /완료 체크$/ })).toHaveCount(0);
+  await expect(usedCarFirstRow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+  await expect(detail.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
   await expect(detail.getByRole('button', { name: '닫기', exact: true })).toBeVisible();
   await expect(detail.getByTestId('my-flow-detail-edit-toggle')).not.toBeVisible();
   await expect(detail.getByTestId('my-flow-detail-source-link')).not.toBeVisible();
@@ -4093,9 +4114,7 @@ test('my flow and calendar details separate execution from explicit editing', as
   const event = page.locator('.fc-daygrid-day[data-date="2026-05-28"] .fc-event[aria-label*="필기와 실기 시험 범위 나누기"]').first();
   await event.click();
   const selectedDay = await openMyFlowCalendarSelectedDay(page);
-  const selectedDayCompletion = selectedDay.locator('article').first().getByTestId('my-flow-task-complete-control');
-  await expect(selectedDayCompletion).toBeVisible();
-  await expect(selectedDayCompletion).toHaveAttribute('aria-label', /완료 체크|다시 열기/);
+  await expect(selectedDay.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-item-detail-sheet')).toHaveCount(0);
   const openFlow = selectedDay.getByRole('button', { name: /Flow에서 열기/ }).first();
   await expect(openFlow).toBeVisible();
@@ -4245,8 +4264,7 @@ test('moving mobile keeps save sticky and full-flow export secondary', async ({ 
   await expect(stickySave.getByRole('button', { name: '체크리스트 복사' })).toHaveCount(0);
   await expect(stickySave.getByRole('button', { name: '엑셀 받기' })).toHaveCount(0);
 
-  const detailWorkspace = page.getByTestId('public-flow-detail-workspace');
-  await detailWorkspace.locator(':scope > summary').click();
+  await expect(page.getByTestId('public-flow-detail-workspace')).toHaveCount(0);
   const flowExport = page.getByTestId('public-flow-export-secondary-entry');
   await expect(flowExport).toBeVisible();
   await expect(flowExport).not.toHaveAttribute('open', '');
@@ -4324,7 +4342,7 @@ test('personal baby food schedule blocks new public execution while preserving a
 
 
 
-test('public share shell keeps browse link reachable after the primary path', async ({ page }) => {
+test('public share shell keeps the Flow finding escape reachable', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
 
   for (const route of [
@@ -4338,16 +4356,12 @@ test('public share shell keeps browse link reachable after the primary path', as
     await page.goto(route);
 
     const shell = page.getByTestId('flow-public-shell');
-    const browseLink = page.getByTestId('flow-public-secondary-browse-link');
+    const browseLink = shell.getByRole('link', { name: /Flow 찾기/ });
     await expect(shell).toBeVisible();
     await expect(browseLink).toBeVisible();
-    await expect(browseLink).toHaveText('콘텐츠 더 보기');
     await expect(browseLink).toHaveAttribute('href', '/flows');
     await expect(browseLink).not.toHaveAttribute('tabindex', '-1');
     await expect(browseLink).not.toHaveAttribute('aria-hidden', 'true');
-    await expect(browseLink).toHaveCSS('border-top-width', '0px');
-    await expect(browseLink).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
-    await expect(browseLink).toHaveCSS('font-size', '12px');
 
     const focusableEntries = await page.evaluate(() =>
       Array.from(document.querySelectorAll<HTMLElement>('a[href], button, input, textarea, select, [tabindex]'))
@@ -4367,23 +4381,12 @@ test('public share shell keeps browse link reachable after the primary path', as
         })
         .map((element) => ({
           text: (element.textContent ?? '').replace(/\s+/g, ' ').trim(),
+          href: element instanceof HTMLAnchorElement ? element.getAttribute('href') ?? '' : '',
           testId: element.dataset.testid ?? element.closest<HTMLElement>('[data-testid]')?.dataset.testid ?? '',
         })),
     );
-    const browseIndex = focusableEntries.findIndex((entry) => entry.testId === 'flow-public-secondary-browse-link');
-    const primaryIndex = focusableEntries.findIndex(
-      (entry) =>
-        entry.testId === 'public-flow-mobile-save-cta' ||
-        entry.testId === 'public-flow-primary-setup' ||
-        entry.testId === 'public-flow-save-actions' ||
-        entry.text.includes('그대로 시작') ||
-        entry.text.includes('날짜 없이 시작') ||
-        entry.text.includes('이 날짜로 시작'),
-    );
+    const browseIndex = focusableEntries.findIndex((entry) => entry.href === '/flows');
     expect(browseIndex).toBeGreaterThanOrEqual(0);
-    if (primaryIndex >= 0) {
-      expect(browseIndex).toBeGreaterThan(primaryIndex);
-    }
 
     const saveButton = page.getByRole('button', { name: /그대로 시작|날짜 없이 시작|이 날짜로 시작/ }).first();
     if ((await saveButton.count()) > 0 && (await saveButton.isVisible())) {
@@ -4739,7 +4742,7 @@ test('public routine hydration stays stable across opposite browser time zones',
 
     await page.goto('/f/washer-tub-clean-monthly');
     await expect(page.getByTestId('public-flow-artifact-preview')).toBeVisible();
-    await expect(page.getByTestId('public-flow-detail-workspace')).not.toHaveAttribute('open', '');
+    await expect(page.getByTestId('public-flow-detail-workspace')).toHaveCount(0);
     await page.waitForTimeout(100);
     expect(hydrationErrors).toEqual([]);
     await context.close();
@@ -4985,8 +4988,11 @@ test('completed My Flow starts a new dated run without overwriting the previous 
   expect(pastRunClipboard).toContain('완료\t견적 후보 다시 확인\t2026-07-15');
   await pastRunExport.getByRole('button', { name: '메모로 복사' }).click();
   pastRunClipboard = await page.evaluate(() => navigator.clipboard.readText());
-  expect(pastRunClipboard).toContain('내 실행 회고');
-  expect(pastRunClipboard).toContain('견적 후보를 먼저 줄여두니 다음 단계가 쉬웠어요.');
+  expect(pastRunClipboard).toContain('견적 후보 다시 확인');
+  expect(pastRunClipboard).toContain('이번에는 후보 두 곳만 비교');
+  expect(pastRunClipboard).not.toContain('내 실행 회고');
+  expect(pastRunClipboard).not.toContain('견적 후보를 먼저 줄여두니 다음 단계가 쉬웠어요.');
+  expect(pastRunClipboard).not.toContain('관리사무소 운영 시간을 먼저 확인하도록 원본 순서를 검토해 주세요.');
   await expect(pastRunExport.getByTestId('my-flow-past-run-export-feedback')).toHaveText('지난 실행 메모 복사됨');
   await expectNoHorizontalOverflow(page);
   if (historyEvidenceDir) {
@@ -5385,11 +5391,10 @@ test('my flow and calendar expose distinct task-first and date-first execution l
     .getByTestId('my-flow-workspace-execute')
     .getByTestId('my-flow-execution-row-shell')
     .first();
-  const myFlowCheckboxBox = await myFlowPrimaryRow.getByTestId('my-flow-task-complete-control').boundingBox();
-  const myFlowOpenBox = await myFlowPrimaryRow.getByRole('button', { name: /열기/ }).boundingBox();
-  expect(myFlowCheckboxBox).not.toBeNull();
-  expect(myFlowOpenBox).not.toBeNull();
-  expect(myFlowCheckboxBox!.x).toBeGreaterThan(myFlowOpenBox!.x);
+  await expect(myFlowPrimaryRow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+  await myFlowPrimaryRow.getByRole('button', { name: /열기/ }).click();
+  await expect(getOpenMyFlowItemDetail(page).getByTestId('my-flow-task-complete-control')).toHaveCount(1);
+  await closeOpenMyFlowItemDetail(page);
 
   await page.goto('/calendar?demo=ux12');
   await expect(page.getByTestId('my-flow-workspace')).toHaveAttribute('data-surface-role', 'date-first');
@@ -5398,11 +5403,8 @@ test('my flow and calendar expose distinct task-first and date-first execution l
   await expect(selectedDay).toHaveAttribute('data-calendar-layout', 'selected-day-execution');
   await expect(selectedDay.getByTestId('my-flow-selected-date-group').first()).toHaveAttribute('data-density', 'compact');
   const calendarRow = selectedDay.getByTestId('my-flow-execution-row-shell').first();
-  const calendarCheckboxBox = await calendarRow.getByTestId('my-flow-task-complete-control').boundingBox();
-  const calendarOpenBox = await calendarRow.getByRole('button', { name: /Flow에서 열기/ }).boundingBox();
-  expect(calendarCheckboxBox).not.toBeNull();
-  expect(calendarOpenBox).not.toBeNull();
-  expect(calendarCheckboxBox!.x).toBeGreaterThan(calendarOpenBox!.x);
+  await expect(calendarRow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+  await expect(calendarRow.getByRole('button', { name: /Flow에서 열기/ })).toBeVisible();
 });
 
 test('url lookup keeps the result focused and makes the catalog secondary', async ({ page }) => {

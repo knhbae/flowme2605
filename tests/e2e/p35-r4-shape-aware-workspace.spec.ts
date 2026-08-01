@@ -3,7 +3,11 @@ import path from 'node:path';
 
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
-import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
+import {
+  closeOpenMyFlowItemDetail,
+  getOpenMyFlowItemDetail,
+  openMyFlowLibraryFlow,
+} from './helpers/my-flow-library';
 
 const evidenceRoot = process.env.FLOWME_P35_R4_EVIDENCE_DIR;
 
@@ -134,12 +138,23 @@ test.describe('P35-R4 shape-aware My Flow workspace', () => {
     await expect(execution).toHaveAttribute('data-execution-kind', 'nearest_date_group');
     await expect(execution).toHaveAttribute('data-p35-marker', 'P35-R4-DATED-NEXT-GROUP');
     await expect(execution.getByTestId('flow-date-rail')).toHaveCount(1);
-    await expect(execution.getByTestId('my-flow-execution-row-shell')).toHaveCount(4);
+    await expect(execution.getByTestId('my-flow-execution-row-shell')).toHaveCount(3);
     await expect(workspace.getByTestId('my-flow-optional-history')).toHaveCount(0);
     await expectContinuousOrder(workspace, false);
     await capture(page, 'p35-r4-dated-next-group-390.png', execution);
 
-    await execution.getByTestId('my-flow-task-complete-control').first().click();
+    const firstExecutionRow = execution.getByTestId('my-flow-execution-row-shell').first();
+    await expect(firstExecutionRow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+    await firstExecutionRow.getByRole('button', { name: /열기/ }).click();
+    const detail = getOpenMyFlowItemDetail(page);
+    const completion = detail.getByTestId('my-flow-task-complete-control');
+    await expect(completion).toHaveCount(1);
+    await expect(page.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
+    await completion.click();
+    await expect(workspace.getByTestId('my-flow-workspace-progress-summary')).toContainText(
+      '전체 1/24 완료',
+    );
+    await closeOpenMyFlowItemDetail(page);
     await expect(workspace.getByTestId('my-flow-optional-history')).toBeVisible();
     await expectContinuousOrder(workspace, true);
     expect(errors).toEqual([]);
@@ -204,7 +219,14 @@ test.describe('P35-R4 shape-aware My Flow workspace', () => {
     expect(firstOccurrenceId).toBeTruthy();
     await expect(occurrence).toContainText(formatKoreanMonthDay(firstDate));
 
-    await occurrence.getByTestId('my-flow-task-complete-control').click();
+    await expect(occurrence.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+    await occurrence.getByRole('button', { name: /열기/ }).click();
+    let detail = getOpenMyFlowItemDetail(page);
+    let completion = detail.getByTestId('my-flow-task-complete-control');
+    await expect(completion).toHaveCount(1);
+    await expect(page.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
+    await completion.click();
+    await closeOpenMyFlowItemDetail(page);
     await expect.poll(
       () => occurrence.getAttribute('data-occurrence-id'),
     ).not.toBe(firstOccurrenceId);
@@ -214,6 +236,12 @@ test.describe('P35-R4 shape-aware My Flow workspace', () => {
     await page.getByTestId('my-flow-completion-undo').click();
     await expect(occurrence).toHaveAttribute('data-occurrence-id', firstOccurrenceId ?? '');
     await expect(occurrence).toContainText(formatKoreanMonthDay(firstDate));
+    await occurrence.getByRole('button', { name: /열기/ }).click();
+    detail = getOpenMyFlowItemDetail(page);
+    completion = detail.getByTestId('my-flow-task-complete-control');
+    await expect(completion).toHaveCount(1);
+    await expect(completion).not.toBeChecked();
+    await closeOpenMyFlowItemDetail(page);
     await capture(page, 'p35-r8a-routine-next-occurrence-390.png', execution);
     expect(errors).toEqual([]);
   });
@@ -235,7 +263,8 @@ test.describe('P35-R4 shape-aware My Flow workspace', () => {
       'data-p35-r8-marker',
       'P35-R8A-SERIES-OCCURRENCE-COUNT',
     );
-    await expect(receipt).toContainText('반복 계획 1개 · 계속 반복');
+    await expect(receipt).toContainText('반복 계획 1개를 저장했어요');
+    await expect(receipt).toContainText('계속 반복');
     await receipt.getByTestId('public-flow-saved-receipt-primary').click();
 
     const workspace = await openMyFlowLibraryFlow(

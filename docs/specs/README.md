@@ -40,6 +40,10 @@ Only **Active Gate** is the current execution backlog. Unchecked boxes inside ga
 
 ### Active Gate
 
+- [2026-08-01 P35 Production Mobile Convergence](./2026-08-01-p35-production-mobile-convergence/README.md) completed P0-01 through P0-08 locally on a dedicated branch from `c09f859`: one effective result snapshot, date/save/result continuity, public edit/export parity, one atomic mobile editor, a reduced public shell and receipt, a compact My Flow handoff with Item completion, one lossless memo facade, and a map/source/risk/recovery action adapter. Internal checks passed with 597/597 unit/contract tests and 413/413 Playwright tests. Text-to-Flow and observed-user sessions remain outside this program. The active gate is now owner approval for commit, push, PR/merge, and Vercel deployment; none has been performed.
+
+### Previous Gate (superseded 2026-08-01)
+
 - No new implementation spec is active. P35 is released; the current product gate is the owner's production review and keep, bounded-fix, or block decision. Separately, the completed [P35 literal-route release-evidence follow-up](../content-audit/2026-07-29-p35-release-hardening/README.md) adds two non-fixture cases: literal `/my` opens the saved-Flow cross-Flow `할 일` view with the adjacent `Flow` view, and in a fresh one-Flow public-save representative state literal `/my?experiment=off` opens the legacy Flow hub without changing any `flow:*` localStorage key/value bytes. Pre-existing workspace normalization is outside this evidence. The follow-up changes no runtime, storage, or schema behavior and does not itself promote or block another product slice. Do not promote `TA-01`, another P35 revision, or a separate research package until the owner decision names exactly one scope.
 
 ### Design And Research Shelf

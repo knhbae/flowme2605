@@ -149,18 +149,22 @@ test.describe('P29-01 moving artifact-first save and receipt', () => {
 
     await page.getByTestId('public-flow-adjust-entry-mobile').click();
     const adjustment = page.getByTestId('public-flow-personal-adjustment');
-    await expect(adjustment).toBeFocused();
+    await expect(adjustment.getByTestId('public-flow-adjustment-kind-name')).toBeFocused();
     await expect(adjustment).toHaveAttribute('data-adjustment-kind', 'name');
     await capture(page, 'p29-01-moving-adjust-390.png');
 
     await adjustment.getByTestId('public-flow-adjustment-name-input').fill('우리 집 이사 준비');
     await adjustment.getByTestId('public-flow-adjustment-apply').click();
+    await expect(adjustment).toHaveCount(0);
+    await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
     await page.getByTestId('public-flow-save-primary-mobile').click();
 
     const receipt = page.getByTestId('public-flow-saved-receipt');
     await expect(receipt).toHaveAttribute('data-p29-marker', 'P29-SAVED-RECEIPT-DISTINCT');
-    await expect(receipt.getByRole('heading', { name: '우리 집 이사 준비' })).toBeVisible();
-    await expect(receipt.getByTestId('public-flow-saved-receipt-primary')).toHaveAccessibleName('저장한 전체 Flow 보기');
+    const receiptStatus = receipt.getByTestId('public-flow-saved-receipt-status');
+    await expect(receiptStatus).toContainText('캘린더 24개를 저장했어요');
+    await expect(receiptStatus).toContainText('우리 집 이사 준비');
+    await expect(receipt.getByTestId('public-flow-saved-receipt-primary')).toHaveAccessibleName('내 Flow에서 이어하기');
     await expect(receipt.locator('[data-action-priority="primary"]')).toHaveCount(1);
     await expect(page.getByTestId('public-flow-hero')).toHaveCount(0);
     await expect(page.getByTestId('public-flow-anchor-input')).toHaveCount(0);
@@ -205,8 +209,10 @@ test.describe('P29-01 moving artifact-first save and receipt', () => {
     await clearLocalState(page);
     await expect(page.getByTestId('public-flow-hero')).toHaveAttribute('data-experience-architecture', 'p35-result-first');
     await expect(page.getByTestId('public-flow-saved-receipt')).toHaveCount(0);
-    await expect(page.getByTestId('public-flow-detail-workspace').locator('[data-presentation-mode="export-only"]')).toHaveCount(1);
-    await expect(page.getByTestId('public-flow-detail-workspace').getByLabel('Flow artifact workbench')).toHaveCount(0);
+    await expect(page.getByTestId('public-flow-detail-workspace')).toHaveCount(0);
+    const exportEntry = page.getByTestId('public-flow-export-secondary-entry');
+    await expect(exportEntry).toBeVisible();
+    await expect(exportEntry.getByTestId('public-flow-export-secondary-toggle')).toContainText('옮기기');
   });
 
   test('routine keeps advanced inputs behind one summary and previews the next three occurrences', async ({ page }) => {
@@ -369,11 +375,13 @@ test.describe('P29-06 artifact recommendation and export scope', () => {
     await expect(preview.getByTestId('flow-artifact-shape-choice')).toHaveCount(0);
     await expect(preview.getByTestId('flow-artifact-recommendation-reason')).toHaveCount(0);
 
-    const workspace = page.getByTestId('public-flow-detail-workspace');
-    await workspace.locator('summary').first().click();
-    const exportEntry = workspace.getByTestId('public-flow-export-secondary-entry');
+    await expect(page.getByTestId('public-flow-detail-workspace')).toHaveCount(0);
+    const exportEntry = page.getByTestId('public-flow-export-secondary-entry');
+    await expect(exportEntry.getByTestId('public-flow-export-secondary-toggle')).toContainText('옮기기');
     await exportEntry.getByTestId('public-flow-export-secondary-toggle').click();
-    const panel = exportEntry.getByTestId('my-flow-export-panel');
+    const exportBranch = page.getByTestId('public-flow-export-branch');
+    await expect(exportBranch).toBeVisible();
+    const panel = exportBranch.getByTestId('my-flow-export-panel');
     await expect(panel.getByTestId('my-flow-export-recommendations')).toHaveAttribute(
       'data-p29-marker',
       'P29-ARTIFACT-EXPORT-PREFLIGHT',
@@ -486,7 +494,11 @@ test.describe('P29-07 shared visual and accessibility contract', () => {
     await page.getByTestId('public-flow-save-primary-mobile').click();
     const receipt = page.getByTestId('public-flow-saved-receipt');
     await expect(receipt).toHaveAttribute('data-flow-anatomy', 'saved-receipt');
-    await expect(receipt.locator('[data-flow-anatomy="flow-identity"]')).toHaveCount(1);
+    const receiptStatus = receipt.getByTestId('public-flow-saved-receipt-status');
+    await expect(receiptStatus).toHaveAttribute('data-flow-anatomy', 'result-receipt');
+    await expect(receiptStatus).toContainText('캘린더 24개를 저장했어요');
+    await expect(receiptStatus).toContainText('이사 D-30 준비');
+    await expect(receipt.getByTestId('public-flow-saved-receipt-primary')).toHaveAccessibleName('내 Flow에서 이어하기');
 
     await page.goto('/my?demo=ux20&view=flows');
     const libraryRow = page.getByTestId('my-flow-mobile-structure-row').first();

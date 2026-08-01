@@ -2,7 +2,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { expect, test, type Page } from '@playwright/test';
-import { openMyFlowCalendarSelectedDay } from './helpers/my-flow-library';
+import {
+  getOpenMyFlowItemDetail,
+  openMyFlowCalendarSelectedDay,
+} from './helpers/my-flow-library';
 
 const evidenceRoot = process.env.FLOWME_P26_15_EVIDENCE_DIR;
 
@@ -49,7 +52,8 @@ test('Calendar keeps Flow scope, selected-day execution, and My Flow date owners
   expect(await groups.count()).toBeGreaterThan(0);
   const selectedFlowSlug = await groups.first().getAttribute('data-flow-slug');
   expect(selectedFlowSlug).toBeTruthy();
-  await page.getByTestId('my-flow-calendar-day-sheet-close').click();
+  await page.keyboard.press('Escape');
+  await expect(page.getByTestId('my-flow-calendar-day-sheet')).toHaveCount(0);
 
   const pickerTrigger = page.getByTestId('calendar-flow-scope-picker-trigger');
   await pickerTrigger.click();
@@ -71,31 +75,35 @@ test('Calendar keeps Flow scope, selected-day execution, and My Flow date owners
 
   const execution = filteredSelectedDay.getByTestId('my-flow-execution-row-shell').first();
   await expect(execution).toBeVisible();
-  const completion = execution.getByTestId('my-flow-task-complete-control');
+  await expect(execution.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+  await capture(page, '01-mobile-scope-and-selected-day.png');
+  await execution.getByRole('button', { name: /Flow에서 열기/ }).click();
+  await expect(page).toHaveURL(/\/my\?view=flows&flow=/);
+  await expect(page.locator('main[data-p32-workspace-state="focused"]')).toBeVisible();
+  const detail = getOpenMyFlowItemDetail(page);
+  await expect(detail).toBeVisible();
+  const completion = detail.getByTestId('my-flow-task-complete-control');
+  await expect(completion).toHaveCount(1);
+  await expect(page.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
   const initiallyChecked = await completion.isChecked();
-  await completion.click();
-  await expect(page.getByTestId('my-flow-completion-snackbar')).toHaveAttribute(
-    'data-completion-result',
-    initiallyChecked ? 'reopened' : 'completed',
-  );
-  if (!initiallyChecked) {
-    await expect(page.getByTestId('my-flow-completion-undo')).toHaveCount(0);
+  if (initiallyChecked) {
     await completion.click();
     await expect(page.getByTestId('my-flow-completion-snackbar')).toHaveAttribute(
       'data-completion-result',
       'reopened',
     );
+    await expect(completion).not.toBeChecked();
+  } else {
+    await completion.click();
+    await expect(page.getByTestId('my-flow-completion-snackbar')).toHaveCount(0);
+    await expect(completion).toBeChecked();
+    await completion.click();
+    await expect(page.getByTestId('my-flow-completion-snackbar')).toHaveAttribute(
+      'data-completion-result',
+      'reopened',
+    );
+    await expect(completion).not.toBeChecked();
   }
-  await expect(completion).not.toBeChecked();
-  await expect(
-    page.getByTestId('my-flow-completion-snackbar').getByTestId('my-flow-completion-open'),
-  ).toBeFocused();
-
-  await capture(page, '01-mobile-scope-and-selected-day.png');
-  await execution.getByRole('button', { name: /Flow에서 열기/ }).click();
-  await expect(page).toHaveURL(/\/my\?view=flows&flow=/);
-  await expect(page.locator('main[data-p32-workspace-state="focused"]')).toBeVisible();
-  await expect(page.getByTestId('my-flow-item-detail-sheet')).toBeVisible();
 
   await page.setViewportSize({ width: 1024, height: 768 });
   await page.goto('/calendar?demo=ux20');
@@ -135,10 +143,14 @@ test('Calendar distinguishes routine occurrences from ordinary tasks without inl
   const occurrence = selectedDay
     .locator('[data-testid="my-flow-execution-row-shell"][data-calendar-item-kind="occurrence"]')
     .first();
+  await expect(occurrence.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
   await expect(occurrence.getByRole('button', { name: /Flow에서 열기/ })).toBeVisible();
   await capture(page, '03-mobile-routine-occurrence-filter.png');
   await occurrence.getByRole('button', { name: /Flow에서 열기/ }).click();
   await expect(page).toHaveURL(/\/my\?view=flows&flow=curated-allblanc-morning-workout/);
-  await expect(page.getByTestId('my-flow-item-detail-sheet')).toBeVisible();
+  const detail = getOpenMyFlowItemDetail(page);
+  await expect(detail).toBeVisible();
+  await expect(detail.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
+  await expect(page.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
   expect(browserErrors).toEqual([]);
 });

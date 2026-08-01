@@ -1,13 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { expect, test, type Page } from '@playwright/test';
-import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
-import { openPublicDetailWorkspaceForDeepInspection } from './helpers/open-public-detail-workspace';
 import { openSavedPublicFlow, savePublicFlow } from './helpers/public-flow-save';
-
-test.beforeEach(async ({ page }) => {
-  await openPublicDetailWorkspaceForDeepInspection(page);
-});
 
 const evidenceDir = process.env.FLOW_EVIDENCE_DIR;
 const browserErrors = new WeakMap<Page, string[]>();
@@ -33,6 +27,52 @@ async function capture(page: Page, filename: string) {
   await page.screenshot({ path: path.join(screenshots, filename), fullPage: true });
 }
 
+test('an example moving schedule stays provisional until the person chooses a real date or explicit undated save', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/f/moving-d30-basic');
+
+  await expect(page.getByTestId('public-flow-provisional-schedule')).toHaveText(
+    '예시 일정 · 저장되지 않음',
+  );
+  await expect(page.getByTestId('public-flow-artifact-preview')).toHaveAttribute(
+    'data-selected-shape',
+    'calendar',
+  );
+
+  const primary = page.getByTestId('public-flow-save-primary-mobile');
+  await expect(primary).toHaveText('이사일 정하고 캘린더로 시작');
+  await primary.click();
+  await expect(page.getByTestId('public-flow-anchor-input')).toBeFocused();
+  await expect(page.getByTestId('public-flow-saved-receipt')).toHaveCount(0);
+  await expect.poll(() => page.evaluate(() => (
+    window.localStorage.getItem('flow:saved:moving-d30-basic')
+  ))).toBeNull();
+
+  const saveUndated = page.getByTestId('public-flow-save-undated-mobile');
+  await expect(saveUndated).toHaveText('날짜 없이 체크리스트 24개로 시작');
+  await capture(page, '00-provisional-example-mobile.png');
+  const receipt = await savePublicFlow(page, saveUndated);
+  await expect(receipt).toContainText('체크리스트');
+  await expect(receipt).not.toContainText('일정 범위');
+
+  const state = await page.evaluate(() => ({
+    saved: JSON.parse(window.localStorage.getItem('flow:saved:moving-d30-basic') || 'null'),
+    anchor: JSON.parse(window.localStorage.getItem('flow:moving-d30-basic:anchorDate') || 'null'),
+  }));
+  expect(state.saved).toMatchObject({
+    dateIntent: 'undated',
+    selectedArtifactMode: 'checklist',
+  });
+  expect(state.saved.anchor).toBeUndefined();
+  expect(state.anchor).toEqual({ mode: 'undated', anchor: '' });
+  await openSavedPublicFlow(page, receipt);
+  await expect(page.getByTestId('my-flow-shape-aware-execution')).toHaveAttribute(
+    'data-execution-shape',
+    'checklist',
+  );
+  await expect(page.getByTestId('my-flow-temporal-next-group')).toHaveCount(0);
+});
+
 test('a natural undated checklist saves without a competing date mode', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/f/vehicle-inspection-prep');
@@ -48,7 +88,7 @@ test('a natural undated checklist saves without a competing date mode', async ({
   await exportEntry.getByTestId('public-flow-export-secondary-toggle').click();
   const calendarOption = exportEntry.getByRole('button', { name: /캘린더 파일 받기/ });
   await expect(calendarOption).toHaveCount(0);
-  await exportEntry.getByTestId('public-flow-export-secondary-toggle').click();
+  await page.getByTestId('public-flow-export-branch-close').click();
 
   const mobileSave = page.getByTestId('public-flow-save-primary-mobile');
   await expect(mobileSave).toHaveText('체크리스트 10개로 시작');
@@ -65,7 +105,7 @@ test('a natural undated checklist saves without a competing date mode', async ({
   await openSavedPublicFlow(page, receipt);
   const focusedWorkspace = page.getByTestId('my-flow-mobile-workspace');
   await expect(focusedWorkspace).toBeVisible();
-  await expect(focusedWorkspace).toContainText('자동차검사 준비');
+  await expect(focusedWorkspace).toContainText('자동차검사 D-14 준비');
   await page.goto('/calendar');
   await expect(page.locator('.fc-event')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-calendar-unscheduled-tray')).toHaveCount(0);
@@ -85,6 +125,7 @@ test('a date-anchored public Flow persists its one required date and enables ICS
   await exportEntry.getByTestId('public-flow-export-secondary-toggle').click();
   await expect(exportEntry.getByRole('button', { name: /캘린더 파일 받기/ })).toBeVisible();
   await capture(page, '02-custom-date-wide.png');
+  await page.getByTestId('public-flow-export-branch-close').click();
   await desktopSave.click();
 
   const state = await page.evaluate(() => ({

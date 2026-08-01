@@ -3,7 +3,11 @@ import path from 'node:path';
 
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
-import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
+import {
+  closeOpenMyFlowItemDetail,
+  getOpenMyFlowItemDetail,
+  openMyFlowLibraryFlow,
+} from './helpers/my-flow-library';
 
 const evidenceRoot = process.env.FLOWME_P35_R13_EVIDENCE_DIR;
 
@@ -79,14 +83,14 @@ test.describe('P35-R13 final internal gate', () => {
 
     const row = surface
       .getByTestId('my-flow-cross-flow-todo-row')
-      .filter({ has: page.locator('[data-flow-row-slot="completion"]') })
       .first();
     await expect(row).toHaveAttribute(
       'data-p35-r13-item-marker',
       'P35-R13-DATE-GROUPED-LOW-COMMAND-ROW',
     );
     await expect(row.locator('button[data-flow-row-slot="open"]')).toHaveCount(1);
-    await expect(row.getByRole('checkbox')).toHaveCount(1);
+    await expect(row.getByRole('checkbox')).toHaveCount(0);
+    await expect(row.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
     await expect(row.getByTestId('my-flow-row-open-label')).toHaveCount(0);
     await expect(row.locator('[data-testid*="execution-note"]')).toHaveCount(0);
     await page.evaluate(() => window.scrollTo(0, 0));
@@ -94,12 +98,27 @@ test.describe('P35-R13 final internal gate', () => {
 
     const crossFlowKey = await row.getAttribute('data-cross-flow-key');
     expect(crossFlowKey).toBeTruthy();
-    await row.getByRole('checkbox').click();
+    await row.locator('button[data-flow-row-slot="open"]').click();
+    let detail = getOpenMyFlowItemDetail(page);
+    let completion = detail.getByTestId('my-flow-task-complete-control');
+    await expect(completion).toHaveCount(1);
+    await expect(
+      page.locator('[data-testid="my-flow-task-complete-control"]:visible'),
+    ).toHaveCount(1);
+    await completion.click();
+    await closeOpenMyFlowItemDetail(page);
     const completedRow = surface.locator(
       `[data-testid="my-flow-cross-flow-todo-row"][data-cross-flow-key="${crossFlowKey}"][data-group-id="completed"]`,
     );
     await expect(completedRow).toBeVisible();
-    await completedRow.getByRole('checkbox').click();
+    await expect(completedRow.getByRole('checkbox')).toHaveCount(0);
+    await completedRow.locator('button[data-flow-row-slot="open"]').click();
+    detail = getOpenMyFlowItemDetail(page);
+    completion = detail.getByTestId('my-flow-task-complete-control');
+    await expect(completion).toHaveCount(1);
+    await expect(completion).toBeChecked();
+    await completion.click();
+    await closeOpenMyFlowItemDetail(page);
     await expect(
       surface.locator(
         `[data-testid="my-flow-cross-flow-todo-row"][data-cross-flow-key="${crossFlowKey}"]:not([data-group-id="completed"])`,
@@ -110,7 +129,7 @@ test.describe('P35-R13 final internal gate', () => {
     expect(errors).toEqual([]);
   });
 
-  test('390 expands the whole plan once after save and collapses it on reload and library re-entry', async ({ page }) => {
+  test('390 keeps the whole plan collapsed after save, reload, and library re-entry', async ({ page }) => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
     await saveMovingFlow(page);
@@ -124,9 +143,14 @@ test.describe('P35-R13 final internal gate', () => {
     );
     await expect(workspace).toBeVisible();
     let plan = workspace.getByTestId('my-flow-workspace-plan');
-    await expect(plan).toHaveAttribute('data-plan-open', 'true');
-    await expect(workspace.getByTestId('my-flow-workspace-plan-content')).toBeVisible();
-    await capture(page, 'p35-r13-first-entry-plan-open-390.png', workspace);
+    await expect(plan).toHaveAttribute('data-plan-open', 'false');
+    await expect(workspace.getByTestId('my-flow-workspace-plan-content')).toHaveCount(0);
+    const firstEntry = workspace.getByTestId('my-flow-shape-aware-execution');
+    await expect(firstEntry).toHaveAttribute('data-execution-kind', 'nearest_date_group');
+    const nextGroup = firstEntry.getByTestId('my-flow-temporal-next-group');
+    await expect(nextGroup.getByTestId('my-flow-execution-row-shell')).toHaveCount(3);
+    await expect(nextGroup).toContainText('3개 먼저');
+    await capture(page, 'p35-r13-first-entry-plan-collapsed-390.png', workspace);
 
     await page.reload();
     workspace = page.locator(

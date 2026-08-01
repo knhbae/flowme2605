@@ -56,8 +56,8 @@ test('occurrence actions always name the affected recurrence scope', () => {
 });
 
 test('portable export entry labels expose scope and actual count', () => {
-  assert.equal(getExportScopeActionLabel('flow', 24), '전체 24개 가져가기');
-  assert.equal(getExportScopeActionLabel('selected', 3), '선택한 3개 가져가기');
-  assert.equal(getExportScopeActionLabel('item', 1), '현재 항목 1개 가져가기');
-  assert.equal(getExportScopeActionLabel('flow', Number.NaN), '전체 0개 가져가기');
+  assert.equal(getExportScopeActionLabel('flow', 24), '전체 24개 옮기기');
+  assert.equal(getExportScopeActionLabel('selected', 3), '선택한 3개 옮기기');
+  assert.equal(getExportScopeActionLabel('item', 1), '현재 항목 1개 옮기기');
+  assert.equal(getExportScopeActionLabel('flow', Number.NaN), '전체 0개 옮기기');
 });

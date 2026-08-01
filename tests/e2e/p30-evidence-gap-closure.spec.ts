@@ -126,12 +126,14 @@ test.describe('P30-01 mobile export fixed-layer correctness', () => {
     await clearLocalState(page);
     await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
 
-    const workspace = page.getByTestId('public-flow-detail-workspace');
-    await workspace.locator('summary').first().click();
-    const exportEntry = workspace.getByTestId('public-flow-export-secondary-entry');
+    await expect(page.getByTestId('public-flow-detail-workspace')).toHaveCount(0);
+    const exportEntry = page.getByTestId('public-flow-export-secondary-entry');
+    await expect(exportEntry.getByTestId('public-flow-export-secondary-toggle')).toContainText('옮기기');
     await exportEntry.getByTestId('public-flow-export-secondary-toggle').click();
 
-    const panel = exportEntry.getByTestId('my-flow-export-panel');
+    const exportBranch = page.getByTestId('public-flow-export-branch');
+    await expect(exportBranch).toBeVisible();
+    const panel = exportBranch.getByTestId('my-flow-export-panel');
     await expect(panel).toBeVisible();
     await expect(panel.locator('..')).toHaveAttribute('data-p30-marker', 'P30-MOBILE-EXPORT-NO-FIXED-OVERLAP');
     await expect(page.getByTestId('public-flow-mobile-save-cta')).toHaveCount(0);
@@ -148,6 +150,9 @@ test.describe('P30-01 mobile export fixed-layer correctness', () => {
       fixedSaveCtaCount: 0,
       intersectionArea: 0,
     });
+    await exportBranch.getByTestId('public-flow-export-branch-close').click();
+    await expect(exportBranch).toHaveCount(0);
+    await expect(exportEntry.getByTestId('public-flow-export-secondary-toggle')).toBeFocused();
   });
 
   test('My Flow export scrolls its primary action above the persistent tabs and restores entry focus', async ({ page }) => {
@@ -183,7 +188,7 @@ test.describe('P30-01 mobile export fixed-layer correctness', () => {
       intersectionArea: intersectionArea(primaryRect, tabsRect),
     });
 
-    await panel.getByRole('button', { name: /가져가기 닫기/ }).click();
+    await panel.getByRole('button', { name: /옮기기 닫기/ }).click();
     await expect(exportEntry).toBeFocused();
   });
 });
@@ -223,7 +228,7 @@ test.describe('P30-02 mobile workspace focus order', () => {
 });
 
 test.describe('P30-03 save-before decision and contextual adjustment', () => {
-  test('long Flow keeps the full selection list inside one bounded adjustment panel', async ({ page }) => {
+  test('long Flow keeps the full selection list inside one atomic full-height editor', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/f/moving-d30-basic');
     await clearLocalState(page);
@@ -236,8 +241,12 @@ test.describe('P30-03 save-before decision and contextual adjustment', () => {
 
     await page.getByTestId('public-flow-adjust-entry-mobile').click();
     const adjustment = page.getByTestId('public-flow-personal-adjustment');
-    await expect(adjustment).toHaveAttribute('data-p35-marker', 'P35-ADJUST-ONE-KIND');
+    await expect(adjustment).toHaveAttribute('data-p35-marker', 'P35-ATOMIC-FULL-HEIGHT-EDITOR');
+    await expect(adjustment).toHaveAttribute('data-editor-transaction', 'atomic');
+    await expect(adjustment).toHaveAttribute('role', 'dialog');
+    await expect(adjustment).toHaveAttribute('aria-modal', 'true');
     await expect(adjustment).toHaveAttribute('data-adjustment-kind', 'name');
+    await expect(adjustment.getByTestId('public-flow-adjustment-kind-name')).toBeFocused();
     await expect(adjustment.getByTestId('public-flow-adjustment-item-list')).toHaveCount(0);
     await expect(adjustment.locator('[data-testid="public-flow-adjustment-title"]')).toHaveCount(0);
     await expect(adjustment.locator('[data-testid="public-flow-adjustment-date"]')).toHaveCount(0);

@@ -2995,6 +2995,19 @@ test('saved flow record normalization keeps explicit save metadata', () => {
       dateIntent: 'undated',
     },
   );
+  assert.deepEqual(
+    normalizeSavedFlowRecord({
+      slug: 'pet-health-observation',
+      savedAt: '2026-08-01T00:00:00.000Z',
+      selectedArtifactMode: 'memo',
+    }),
+    {
+      slug: 'pet-health-observation',
+      savedAt: '2026-08-01T00:00:00.000Z',
+      selectedArtifactMode: 'memo',
+      dateIntent: 'undated',
+    },
+  );
 });
 
 test('entry router detects only valid saved Flow records without mutating storage', () => {

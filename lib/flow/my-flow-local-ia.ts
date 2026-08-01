@@ -5,6 +5,7 @@ export type MyFlowWorkspaceView = 'flow';
 export type MyFlowWorkspaceTarget = {
   flowSlug: string;
   itemKey?: string;
+  itemDate?: string;
 };
 
 export type MyFlowLocalSummaryInput = {
@@ -36,6 +37,11 @@ export type MyFlowLibraryControlVisibility = {
 export const MY_FLOW_SEARCH_THRESHOLD = 5;
 export const MY_FLOW_FIRST_ENTRY_PLAN_SESSION_KEY =
   'flowme:my-flow:first-entry-plan';
+// Keep the established session key so existing save receipts survive the P0
+// presentation correction. The marker now means "focus the compact first
+// entry"; it must no longer imply that the whole plan should expand.
+export const MY_FLOW_FIRST_ENTRY_SESSION_KEY =
+  MY_FLOW_FIRST_ENTRY_PLAN_SESSION_KEY;
 
 type MyFlowSessionStorage = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>;
 
@@ -55,6 +61,8 @@ export function getMyFlowWorkspaceHref(target: MyFlowWorkspaceTarget): string {
   const params = new URLSearchParams({ view: 'flows', flow: target.flowSlug.trim() });
   const itemKey = target.itemKey?.trim();
   if (itemKey) params.set('item', itemKey);
+  const itemDate = target.itemDate?.trim() ?? '';
+  if (itemKey && /^\d{4}-\d{2}-\d{2}$/u.test(itemDate)) params.set('date', itemDate);
   return `/my?${params.toString()}`;
 }
 
@@ -64,31 +72,49 @@ export function parseMyFlowWorkspaceTarget(search: string): MyFlowWorkspaceTarge
   const flowSlug = params.get('flow')?.trim() ?? '';
   if (!flowSlug) return null;
   const itemKey = params.get('item')?.trim() ?? '';
+  const itemDate = params.get('date')?.trim() ?? '';
   return {
     flowSlug,
     ...(itemKey ? { itemKey } : {}),
+    ...(itemKey && /^\d{4}-\d{2}-\d{2}$/u.test(itemDate) ? { itemDate } : {}),
   };
 }
 
-export function markMyFlowFirstEntryPlan(
+export function markMyFlowFirstEntry(
   storage: MyFlowSessionStorage,
   flowSlug: string,
 ): void {
   const normalized = flowSlug.trim();
   if (!normalized) return;
-  storage.setItem(MY_FLOW_FIRST_ENTRY_PLAN_SESSION_KEY, normalized);
+  storage.setItem(MY_FLOW_FIRST_ENTRY_SESSION_KEY, normalized);
 }
 
-export function consumeMyFlowFirstEntryPlan(
+export function consumeMyFlowFirstEntry(
   storage: MyFlowSessionStorage,
   flowSlug: string,
 ): boolean {
   const normalized = flowSlug.trim();
-  if (!normalized || storage.getItem(MY_FLOW_FIRST_ENTRY_PLAN_SESSION_KEY) !== normalized) {
+  if (!normalized || storage.getItem(MY_FLOW_FIRST_ENTRY_SESSION_KEY) !== normalized) {
     return false;
   }
-  storage.removeItem(MY_FLOW_FIRST_ENTRY_PLAN_SESSION_KEY);
+  storage.removeItem(MY_FLOW_FIRST_ENTRY_SESSION_KEY);
   return true;
+}
+
+/** @deprecated Use markMyFlowFirstEntry; the first entry no longer opens the plan. */
+export function markMyFlowFirstEntryPlan(
+  storage: MyFlowSessionStorage,
+  flowSlug: string,
+): void {
+  markMyFlowFirstEntry(storage, flowSlug);
+}
+
+/** @deprecated Use consumeMyFlowFirstEntry; the first entry no longer opens the plan. */
+export function consumeMyFlowFirstEntryPlan(
+  storage: MyFlowSessionStorage,
+  flowSlug: string,
+): boolean {
+  return consumeMyFlowFirstEntry(storage, flowSlug);
 }
 
 export function summarizeMyFlowLocalIa(flows: MyFlowLocalSummaryInput[]): MyFlowLocalSummary {

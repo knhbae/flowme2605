@@ -334,6 +334,7 @@ export function FlowBottomSheet({
   onClose,
   initialFocusSelector,
   returnFocusSelector,
+  dialogProps,
   className = '',
   children,
 }: {
@@ -346,6 +347,12 @@ export function FlowBottomSheet({
   onClose: () => void;
   initialFocusSelector?: string;
   returnFocusSelector?: string;
+  dialogProps?: Omit<
+    ComponentPropsWithoutRef<'section'>,
+    'children' | 'className' | 'role' | 'aria-modal' | 'aria-labelledby'
+  > & {
+    [key: `data-${string}`]: string | number | undefined;
+  };
   className?: string;
   children: ReactNode;
 }) {
@@ -386,11 +393,6 @@ export function FlowBottomSheet({
   }, [initialFocusSelector, returnFocusSelector]);
 
   const handleKeyDown = (event: ReactKeyboardEvent<HTMLElement>) => {
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      onClose();
-      return;
-    }
     if (event.key !== 'Tab') return;
     const focusable = Array.from(dialogRef.current?.querySelectorAll<HTMLElement>(
       'button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
@@ -417,6 +419,7 @@ export function FlowBottomSheet({
         onClick={onClose}
       />
       <section
+        {...dialogProps}
         ref={dialogRef}
         role="dialog"
         aria-modal="true"

@@ -49,6 +49,7 @@ type FlowExportPanelProps = {
   preferredDestination?: FlowExportDestination;
   sourceLabel?: string;
   destinationCopyOverride?: Partial<Record<FlowExportDestination, { label: string; result: string }>>;
+  destinationNotices?: Partial<Record<FlowExportDestination, string>>;
   destinationTestId?: (destination: FlowExportDestination) => string;
   onOpenChange: (open: boolean) => void;
   onScopeChange: (scope: Exclude<FlowExportScope, 'item'>) => void;
@@ -83,6 +84,7 @@ export function FlowExportPanel({
   preferredDestination,
   sourceLabel,
   destinationCopyOverride,
+  destinationNotices,
   destinationTestId,
   onOpenChange,
   onScopeChange,
@@ -295,12 +297,11 @@ export function FlowExportPanel({
           <div className="flex items-center justify-between gap-3">
             <div>
               <h4 className="text-base font-semibold text-[var(--flowme-text)]">{FLOW_EXECUTION_ACTIONS.exportFlow.label}</h4>
-              <p className="mt-0.5 text-xs font-semibold text-[var(--flowme-text-secondary)]">범위와 형식을 고르면 바로 가져갑니다.</p>
             </div>
             {showClose ? (
               <button
                 type="button"
-                aria-label={`${flowTitle} 가져가기 닫기`}
+                aria-label={`${flowTitle} 옮기기 닫기`}
                 title="닫기"
                 className={FLOW_UI_ICON_ACTION_CLASS}
                 onClick={() => {
@@ -324,7 +325,7 @@ export function FlowExportPanel({
               <div
                 data-testid="my-flow-export-scope-control"
                 className="mt-1 flex min-h-11 items-center justify-between border-y border-[var(--flowme-border)] py-2"
-                aria-label="가져갈 범위"
+                aria-label="옮길 범위"
               >
                 <span className="text-sm font-semibold text-[var(--flowme-text)]">{scopeLabel}</span>
                 <span className="sr-only"> · {plan.includedCount}개</span>
@@ -334,7 +335,7 @@ export function FlowExportPanel({
                 data-testid="my-flow-export-scope-control"
                 className={`mt-1 grid-cols-2 ${FLOW_UI_SEGMENTED_CLASS}`}
                 role="group"
-                aria-label="가져갈 범위"
+                aria-label="옮길 범위"
               >
                 <button
                   type="button"
@@ -364,7 +365,7 @@ export function FlowExportPanel({
                 items={selectableItems}
                 selectedKeys={selectedKeys}
                 itemTestId="my-flow-export-selectable-item"
-                selectionAriaLabel={(item) => `${item.title} 가져갈 항목으로 선택`}
+                selectionAriaLabel={(item) => `${item.title} 옮길 항목으로 선택`}
                 onToggleItem={(key) => {
                   onSelectedKeysChange(
                     selectedKeys.includes(key)
@@ -468,6 +469,18 @@ export function FlowExportPanel({
                 </div>
               </details>
             ) : null}
+            {destinations.flatMap((destination) => {
+              const notice = destinationNotices?.[destination]?.trim();
+              return notice ? [(
+                <p
+                  key={destination}
+                  data-testid={`my-flow-export-${destination}-format-notice`}
+                  className="mt-2 border-l-2 border-[var(--flowme-warning)] bg-[var(--flowme-warning-soft)] px-2 py-1.5 text-xs font-medium leading-5 text-[var(--flowme-warning-strong)]"
+                >
+                  {notice}
+                </p>
+              )] : [];
+            })}
 
             <div hidden aria-hidden="true">
               {exportRecommendation.unavailable.map((destination) => (

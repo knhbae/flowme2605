@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
+  buildPersonalStructuralPortableScheduleFields,
   buildMyFlowStepChecklistText,
   buildMyFlowStepIcs,
   buildMyFlowMultiStepIcs,
@@ -19,6 +20,9 @@ import {
   buildPersonalStructuralRecurrenceSeriesId,
   type PersonalStructuralRecurrenceSeries,
 } from './personal-structural-recurrence';
+import {
+  buildPersonalStructuralScheduleProjection,
+} from './personal-structural-schedule';
 import {
   buildPersonalStructuralProjection,
 } from './personal-structural-projection';
@@ -693,7 +697,7 @@ test('personal structural list exports share all-day and timed schedule labels w
   );
 });
 
-test('past run list exports preserve the stored order, values, status, and reflection', () => {
+test('past run list exports preserve stored Item order, values, and status without private reflection', () => {
   const run: FlowRunRecord = {
     schemaVersion: 1,
     runId: 'run-1',
@@ -744,8 +748,47 @@ test('past run list exports preserve the stored order, values, status, and refle
   assert.match(artifacts.checklistText, /두 번째 할 일 \(스킵\)/);
   assert.match(artifacts.sheetTsv, /2026-07-12/);
   assert.match(artifacts.memoText, /당시 메모/);
-  assert.match(artifacts.memoText, /내 실행 회고/);
-  assert.match(artifacts.memoText, /다음에도 같은 순서로/);
+  assert.doesNotMatch(artifacts.memoText, /내 실행 회고/);
+  assert.doesNotMatch(artifacts.memoText, /다음에도 같은 순서로/);
+});
+
+test('personal structural schedule adapter keeps committed timed fields and clears them for all-day', () => {
+  const timedProjection = buildPersonalStructuralScheduleProjection({
+    schedule: {
+      mode: 'fixed_date',
+      date: '2026-08-12',
+      time: '09:30',
+      durationMinutes: 45,
+      timeZone: 'Asia/Seoul',
+    },
+    identityNamespace: 'draft-copy',
+    itemId: 'personal-item-a',
+  });
+  const timedFields = buildPersonalStructuralPortableScheduleFields(timedProjection);
+  assert.deepEqual(timedFields, {
+    stableEventIdentitySeed: timedProjection.stableEventIdentitySeed,
+    time: '09:30',
+    durationMinutes: 45,
+    timeZone: 'Asia/Seoul',
+  });
+  const timedIcs = buildMyFlowStepIcs({
+    ...baseInput,
+    date: '2026-08-12',
+    repeatPreset: '',
+    ...timedFields,
+  }).replaceAll('\r\n ', '');
+  assert.match(timedIcs, /DTSTART;TZID=Asia\/Seoul:20260812T093000/);
+  assert.match(timedIcs, /DTEND;TZID=Asia\/Seoul:20260812T101500/);
+
+  const allDayProjection = buildPersonalStructuralScheduleProjection({
+    schedule: { mode: 'fixed_date', date: '2026-08-12' },
+    identityNamespace: 'draft-copy',
+    itemId: 'personal-item-a',
+  });
+  assert.deepEqual(
+    buildPersonalStructuralPortableScheduleFields(allDayProjection),
+    { stableEventIdentitySeed: allDayProjection.stableEventIdentitySeed },
+  );
 });
 
 test('legacy past run stays summary-only and status labels remain user-facing', () => {

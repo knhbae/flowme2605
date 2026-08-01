@@ -4,6 +4,7 @@ import path from 'node:path';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
 import {
+  closeOpenMyFlowItemDetail,
   getOpenMyFlowItemDetail,
   openMyFlowCalendarSelectedDay,
 } from './helpers/my-flow-library';
@@ -123,13 +124,29 @@ test.describe('P35-R12 cross-flow Todo experiment', () => {
     const stableOpenRow = experiment.locator(
       `[data-testid="my-flow-cross-flow-todo-row"][data-cross-flow-key="${crossFlowKey}"]:not([data-group-id="completed"])`,
     );
-    await stableOpenRow.getByTestId('my-flow-task-complete-control').click();
+    await expect(stableOpenRow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+    await stableOpenRow.locator('[data-flow-row-slot="open"]').click();
+    let detail = getOpenMyFlowItemDetail(page);
+    let completion = detail.getByTestId('my-flow-task-complete-control');
+    await expect(completion).toHaveCount(1);
+    await expect(
+      page.locator('[data-testid="my-flow-task-complete-control"]:visible'),
+    ).toHaveCount(1);
+    await completion.click();
+    await closeOpenMyFlowItemDetail(page);
     const completedRow = experiment.locator(
       `[data-testid="my-flow-cross-flow-todo-row"][data-cross-flow-key="${crossFlowKey}"][data-group-id="completed"]`,
     );
     await expect(completedRow).toBeVisible();
+    await expect(completedRow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
     await expect(page.getByTestId('my-flow-completion-snackbar')).toHaveCount(0);
-    await completedRow.getByTestId('my-flow-task-complete-control').click();
+    await completedRow.locator('[data-flow-row-slot="open"]').click();
+    detail = getOpenMyFlowItemDetail(page);
+    completion = detail.getByTestId('my-flow-task-complete-control');
+    await expect(completion).toHaveCount(1);
+    await expect(completion).toBeChecked();
+    await completion.click();
+    await closeOpenMyFlowItemDetail(page);
     await expect(
       experiment.locator(
         `[data-testid="my-flow-cross-flow-todo-row"][data-cross-flow-key="${crossFlowKey}"]:not([data-group-id="completed"])`,

@@ -1,17 +1,9 @@
 import { expect, test, type Page } from '@playwright/test';
-import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
-import { openPublicDetailWorkspaceForDeepInspection } from './helpers/open-public-detail-workspace';
+import {
+  getOpenMyFlowItemDetail,
+  openMyFlowLibraryFlow,
+} from './helpers/my-flow-library';
 import { openSavedPublicFlow, savePublicFlow } from './helpers/public-flow-save';
-
-test.beforeEach(async ({ page }) => {
-  await openPublicDetailWorkspaceForDeepInspection(page);
-});
-
-type FocusableEntry = {
-  text: string;
-  href: string;
-  testId: string;
-};
 
 type StickyPrimaryEntry = {
   text: string;
@@ -34,46 +26,7 @@ const CLOSED_REVIEW_FLOW_ROUTES = [
 ];
 
 const PUBLIC_START_ACTION_PATTERN =
-  /그대로 시작|날짜 없이 시작|이 날짜로 시작|(?:Flow 실행|실행표|캘린더(?: 일정)?|체크리스트|메모|시트) \d+(?:개|행)로 시작/;
-
-async function collectFocusableEntries(page: Page) {
-  return page.evaluate<FocusableEntry[]>(() => {
-    const selector = [
-      'a[href]',
-      'button',
-      'input',
-      'textarea',
-      'select',
-      '[tabindex]',
-    ].join(',');
-
-    return Array.from(document.querySelectorAll<HTMLElement>(selector))
-      .filter((element) => {
-        const style = window.getComputedStyle(element);
-        const rect = element.getBoundingClientRect();
-        const ariaHidden = element.getAttribute('aria-hidden') === 'true';
-        const disabled =
-          element.hasAttribute('disabled') ||
-          element.getAttribute('aria-disabled') === 'true';
-        const tabIndex = element.getAttribute('tabindex');
-
-        return (
-          !ariaHidden &&
-          !disabled &&
-          tabIndex !== '-1' &&
-          style.display !== 'none' &&
-          style.visibility !== 'hidden' &&
-          rect.width > 0 &&
-          rect.height > 0
-        );
-      })
-      .map((element) => ({
-        text: (element.textContent ?? '').replace(/\s+/g, ' ').trim(),
-        href: element instanceof HTMLAnchorElement ? element.getAttribute('href') ?? '' : '',
-        testId: element.dataset.testid ?? element.closest<HTMLElement>('[data-testid]')?.dataset.testid ?? '',
-      }));
-  });
-}
+  /그대로 시작|날짜 없이 시작|이 날짜로 시작|(?:이사일|시작일) 정하고 캘린더로 시작|(?:Flow 실행|실행표|캘린더(?: 일정)?|체크리스트|메모|시트) \d+(?:개|행)로 시작/;
 
 async function collectVisibleMobileStickyPrimaryEntries(page: Page) {
   return page.evaluate<StickyPrimaryEntry[]>(() => {
@@ -143,7 +96,7 @@ async function collectPublicFlowUnitHierarchy(page: Page) {
       return style.visibility !== 'hidden' && style.display !== 'none' && rect.width > 0 && rect.height > 0;
     };
     const visibleText = (element: Element) => (element.textContent ?? '').replace(/\s+/g, ' ').trim();
-    const exportLikePattern = /(받기|복사|파일|시트|캘린더|문서|내보내기|가져가기)/;
+    const exportLikePattern = /(받기|복사|파일|시트|캘린더|문서|내보내기|가져가기|옮기기)/;
 
     const secondaryEntries = Array.from(document.querySelectorAll('[data-testid="public-flow-export-secondary-entry"]'))
       .filter(isVisible);
@@ -205,47 +158,26 @@ test.describe('public share shell secondary browse order', () => {
       await page.setViewportSize({ width: 390, height: 844 });
       await page.goto(route);
 
-      const visibleSaveActions = await page.getByRole('button', { name: PUBLIC_START_ACTION_PATTERN }).evaluateAll((elements) =>
-        elements.filter((element) => {
-          const style = window.getComputedStyle(element);
-          const rect = element.getBoundingClientRect();
-          return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0;
-        }).length,
-      );
-      expect(visibleSaveActions).toBe(1);
+      const visiblePrimaryActions = await collectVisibleMobileStickyPrimaryEntries(page);
+      expect(visiblePrimaryActions).toHaveLength(1);
+      expect(visiblePrimaryActions[0]?.text).toMatch(PUBLIC_START_ACTION_PATTERN);
     });
   }
 
   for (const route of APPROVED_PUBLIC_SHARE_ROUTES) {
-    test(`${route} keeps browse navigation reachable after the save path`, async ({ page }) => {
+    test(`${route} keeps Flow finding reachable in the public header`, async ({ page }) => {
       await page.setViewportSize({ width: 390, height: 844 });
       await page.goto(route);
 
       const shell = page.getByTestId('flow-public-shell');
-      const browseLink = page.getByTestId('flow-public-secondary-browse-link');
+      const browseLink = shell.getByRole('link', { name: /Flow 찾기$/ });
 
       await expect(shell).toBeVisible();
       await expect(browseLink).toBeVisible();
-      await expect(browseLink).toHaveText('콘텐츠 더 보기');
       await expect(browseLink).toHaveAttribute('href', '/flows');
       await expect(browseLink).not.toHaveAttribute('tabindex', '-1');
       await expect(browseLink).not.toHaveAttribute('aria-hidden', 'true');
-
-      const focusableEntries = await collectFocusableEntries(page);
-      const browseIndex = focusableEntries.findIndex(
-        (entry) => entry.testId === 'flow-public-secondary-browse-link',
-      );
-      const primaryIndex = focusableEntries.findIndex(
-        (entry) =>
-          entry.testId === 'public-flow-primary-setup' ||
-          entry.testId === 'public-flow-mobile-save-cta' ||
-          entry.testId === 'public-flow-save-actions' ||
-          PUBLIC_START_ACTION_PATTERN.test(entry.text),
-      );
-
-      expect(browseIndex).toBeGreaterThanOrEqual(0);
-      expect(primaryIndex).toBeGreaterThanOrEqual(0);
-      expect(browseIndex).toBeGreaterThan(primaryIndex);
+      await expect(page.getByTestId('flow-public-secondary-browse-link')).toHaveCount(0);
     });
 
     test(`${route} keeps the mobile sticky primary action save-oriented`, async ({ page }) => {
@@ -268,19 +200,25 @@ test.describe('public share shell secondary browse order', () => {
     test(`${route} keeps eligible export as an optional flow-level secondary action`, async ({ page }) => {
       await page.setViewportSize({ width: 390, height: 844 });
       await page.goto(route);
+      await expect(page.getByTestId('public-flow-detail-workspace')).toHaveCount(0);
       const exportEntry = page.getByTestId('public-flow-export-secondary-entry');
+      const exportBranch = page.getByTestId('public-flow-export-branch');
       const exportEntryCount = await exportEntry.count();
       expect(exportEntryCount).toBeLessThanOrEqual(1);
       if (exportEntryCount === 1) {
+        await expect(exportEntry.getByTestId('public-flow-export-secondary-toggle')).toContainText('옮기기');
         await exportEntry.getByTestId('public-flow-export-secondary-toggle').click();
-        await expect(page.getByTestId('public-flow-export-format-option').first()).toBeVisible();
+        await expect(exportBranch).toBeVisible();
+        await expect(exportBranch.getByTestId('public-flow-export-format-option').first()).toBeVisible();
       }
 
       const hierarchy = await collectPublicFlowUnitHierarchy(page);
       expect(hierarchy.exportSecondaryEntryCount).toBe(exportEntryCount);
       if (exportEntryCount === 1) {
-        expect(hierarchy.exportSecondaryEntryLabels[0]).toMatch(/Flow|파일|가져가기/);
+        expect(hierarchy.exportSecondaryEntryLabels[0]).toMatch(/옮기기/);
         expect(hierarchy.exportFormatOptionCount).toBeGreaterThanOrEqual(1);
+        await exportBranch.getByTestId('public-flow-export-branch-close').click();
+        await expect(exportBranch).toHaveCount(0);
       } else {
         expect(hierarchy.exportFormatOptionCount).toBe(0);
       }
@@ -312,7 +250,7 @@ test.describe('public share shell secondary browse order', () => {
       expect(response?.status()).toBe(404);
       await expect(page.getByTestId('public-flow-share-shell')).toHaveCount(0);
       await expect(page.getByRole('heading', { name: '이 Flow는 지금 열 수 없어요' })).toBeVisible();
-      await expect(page.getByRole('link', { name: '다른 Flow 찾기' })).toHaveAttribute('href', '/flows');
+      await expect(page.getByRole('link', { name: 'Flow 찾기' })).toHaveAttribute('href', '/flows');
       await expect(page.getByRole('button', { name: PUBLIC_START_ACTION_PATTERN })).toHaveCount(0);
       await expect(page.getByTestId('public-flow-export-secondary-entry')).toHaveCount(0);
       await expect(page.getByTestId('mobile-export-bar')).toHaveCount(0);
@@ -345,8 +283,14 @@ test.describe('public share shell secondary browse order', () => {
     await expect(execution).toContainText('현재 행');
     await expect(execution).toContainText('다음 행');
 
-    const postSaveComplete = execution.getByTestId('my-flow-task-complete-control').first();
+    const postSaveRow = execution.getByTestId('my-flow-execution-row-shell').first();
+    await expect(postSaveRow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+    await postSaveRow.getByRole('button', { name: /열기/ }).click();
+    const detail = getOpenMyFlowItemDetail(page);
+    const postSaveComplete = detail.getByTestId('my-flow-task-complete-control');
     await expect(postSaveComplete).toBeVisible();
+    await expect(postSaveComplete).toHaveCount(1);
+    await expect(page.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
     await expect(postSaveComplete).toHaveAttribute('type', 'checkbox');
     await expect(postSaveComplete).toHaveAttribute('aria-label', /완료/);
     await expect(execution.getByRole('button', { name: /^완료$/ })).toHaveCount(0);

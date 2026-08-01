@@ -6,6 +6,7 @@ import {
   PERSONAL_STRUCTURAL_MAX_DURATION_MINUTES,
   PERSONAL_STRUCTURAL_MIN_DURATION_MINUTES,
   isPersonalStructuralIanaTimeZone,
+  type PersonalStructuralScheduleProjection,
 } from './personal-structural-schedule';
 
 export type MyFlowStepRepeatPreset = '' | 'daily' | 'weekly' | 'monthly';
@@ -32,6 +33,36 @@ export type MyFlowPortableStepExportInput = {
   completionCriteria?: string;
   caution?: string;
 };
+
+export type MyFlowPortableScheduleFields = Pick<
+  MyFlowPortableStepExportInput,
+  'time' | 'durationMinutes' | 'timeZone' | 'stableEventIdentitySeed'
+>;
+
+/**
+ * Adapts a committed personal-structure schedule to the portable Step export.
+ * An all-day projection intentionally returns no timed fields, so an older
+ * editor draft cannot leak a stale time back into Calendar or list exports.
+ */
+export function buildPersonalStructuralPortableScheduleFields(
+  projection?: PersonalStructuralScheduleProjection,
+): MyFlowPortableScheduleFields {
+  if (!projection) return {};
+  const identity = {
+    stableEventIdentitySeed: projection.stableEventIdentitySeed,
+  };
+  if (projection.scheduleState !== 'timed' || !projection.startTime) {
+    return identity;
+  }
+  return {
+    ...identity,
+    time: projection.startTime,
+    ...(projection.durationMinutes !== undefined
+      ? { durationMinutes: projection.durationMinutes }
+      : {}),
+    ...(projection.timeZone ? { timeZone: projection.timeZone } : {}),
+  };
+}
 
 const repeatLabels: Record<string, string> = {
   daily: '매일',

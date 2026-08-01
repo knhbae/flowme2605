@@ -59,8 +59,8 @@ test.describe('P35-R3 receipt to focused workspace continuity', () => {
 
     const receipt = page.getByTestId('public-flow-saved-receipt');
     await expect(receipt).toHaveAttribute('data-p35-marker', 'P35-R3-SINGLE-SAVED-RECEIPT');
-    await expect(receipt).toContainText('24개 할 일을 저장했어요');
-    await expect(receipt).toContainText('저장한 전체 Flow 보기');
+    await expect(receipt).toContainText('캘린더 24개를 저장했어요');
+    await expect(receipt).toContainText('내 Flow에서 이어하기');
     await expect(receipt.locator('[data-action-priority="primary"]')).toHaveCount(1);
     await expect(receipt.getByRole('link', { name: '캘린더에서 보기' })).toHaveCount(0);
     await expect(receipt.getByRole('button')).toHaveCount(0);
@@ -77,9 +77,16 @@ test.describe('P35-R3 receipt to focused workspace continuity', () => {
     await expect(workspace.getByTestId('my-flow-workspace-plan')).toBeVisible();
     await expect(workspace.getByTestId('my-flow-workspace-plan')).toHaveAttribute(
       'data-plan-open',
-      'true',
+      'false',
     );
-    await expect(workspace.getByTestId('my-flow-workspace-plan-content')).toBeVisible();
+    await expect(workspace.getByTestId('my-flow-workspace-plan-content')).toHaveCount(0);
+    const firstEntry = workspace.getByTestId('my-flow-shape-aware-execution');
+    const firstEntryRows = firstEntry.getByTestId('my-flow-execution-row-shell');
+    expect(await firstEntryRows.count()).toBeGreaterThan(0);
+    expect(await firstEntryRows.count()).toBeLessThanOrEqual(3);
+    await expect(workspace.getByTestId('my-flow-workspace-progress-summary')).toContainText(
+      '전체 0/24 완료',
+    );
     await expect(workspace.locator('[data-testid^="my-flow-workspace-tab-"]')).toHaveCount(0);
     await capture(page, 'p35-r3-focused-workspace-390.png');
 

@@ -23,7 +23,7 @@ export type FlowManagementCommand = {
 
 export const FLOW_COMMAND_LABELS = {
   manageFlow: 'Flow 관리',
-  adjustFlow: 'Flow 조정',
+  adjustFlow: 'Flow 편집',
   reuseFlow: '새 실행으로 다시 쓰기',
   viewSource: '원문 보기',
   archiveFlow: '보관',
@@ -139,7 +139,7 @@ export function getExportScopeActionLabel(
   const normalizedCount = Number.isFinite(count)
     ? Math.max(0, Math.floor(count))
     : 0;
-  if (scope === 'selected') return `선택한 ${normalizedCount}개 가져가기`;
-  if (scope === 'item') return `현재 항목 ${normalizedCount}개 가져가기`;
-  return `전체 ${normalizedCount}개 가져가기`;
+  if (scope === 'selected') return `선택한 ${normalizedCount}개 옮기기`;
+  if (scope === 'item') return `현재 항목 ${normalizedCount}개 옮기기`;
+  return `전체 ${normalizedCount}개 옮기기`;
 }

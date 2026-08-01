@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { expect, test, type Page } from '@playwright/test';
+import { getOpenMyFlowItemDetail } from './helpers/my-flow-library';
 
 const evidenceRoot = process.env.FLOWME_P26_08_EVIDENCE_DIR;
 
@@ -76,14 +77,21 @@ test.describe('P26-08 My Flow local IA', () => {
     await page.getByTestId('my-flow-mobile-structure-open').click();
     const workspace = page.getByTestId('my-flow-mobile-workspace');
     await expect(workspace).toHaveAttribute('data-p35-marker', 'P35-PERSONAL-SINGLE-FOCUS');
-    const completion = workspace
-      .getByTestId('my-flow-temporal-next-group')
-      .getByTestId('my-flow-task-complete-control')
-      .first();
+    const execution = workspace.getByTestId('my-flow-shape-aware-execution');
+    const firstEntry = execution.getByTestId('my-flow-temporal-next-group');
+    await expect(firstEntry.getByTestId('my-flow-execution-row-shell')).toHaveCount(3);
+    await expect(execution.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+    const row = firstEntry.getByTestId('my-flow-execution-row-shell').first();
+    await row.getByRole('button', { name: /열기/ }).click();
+    const detail = getOpenMyFlowItemDetail(page);
+    await expect(detail).toBeVisible();
+    const completion = detail.getByTestId('my-flow-task-complete-control');
+    await expect(completion).toHaveCount(1);
+    await expect(page.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
     await completion.click();
     const snackbar = page.getByTestId('my-flow-completion-snackbar');
     await expect(snackbar).toHaveAttribute('data-completion-result', 'completed');
-    await snackbar.getByTestId('my-flow-completion-undo').click();
+    await snackbar.getByTestId('my-flow-completion-undo').press('Enter');
     await expect(completion).not.toBeChecked();
     await expect(completion).toBeFocused();
 

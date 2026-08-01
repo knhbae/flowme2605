@@ -127,7 +127,7 @@ test.describe('P31 mobile journey reconstruction', () => {
 
     let flow = await openMyFlowLibraryFlow(page, 'moving-d30-basic');
     await expandMyFlowWholePlan(flow);
-    const firstRow = getMyFlowVisibleExecutionRows(flow)
+    const firstRow = (await getMyFlowVisibleExecutionRows(flow))
       .filter({ hasText: '이사 방식 정하기' })
       .first();
     await firstRow.getByRole('button', { name: /이사 방식 정하기 열기/ }).click();

@@ -81,20 +81,29 @@ test.describe('P35-04 My Flow safe split and dead-view removal', () => {
     const executionRow = row.locator('article[data-row-key]').first();
     const rowIdentity = await executionRow.getAttribute('data-row-key');
     expect(rowIdentity).toBeTruthy();
-    const completion = row.getByTestId('my-flow-task-complete-control');
+    await expect(row.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+    await row.getByRole('button', { name: /Flow에서 열기/ }).click();
+    const detail = page.locator('[data-testid="my-flow-item-detail"]:visible').last();
+    await expect(detail).toBeVisible();
+    const itemIdentity = await detail.getAttribute('data-item-id');
+    expect(itemIdentity).toBeTruthy();
+    const completion = detail.getByTestId('my-flow-task-complete-control');
+    await expect(completion).toHaveCount(1);
+    await expect(page.locator('[data-testid="my-flow-task-complete-control"]:visible')).toHaveCount(1);
     const initialLabel = await completion.getAttribute('aria-label');
     expect(initialLabel).toBeTruthy();
     await completion.click();
-    await expect(row.getByTestId('my-flow-task-complete-control')).not.toHaveAttribute(
+    await expect(completion).not.toHaveAttribute(
       'aria-label',
       initialLabel ?? '',
     );
-    await row.getByTestId('my-flow-task-complete-control').click();
-    await expect(row.getByTestId('my-flow-task-complete-control')).toHaveAttribute(
+    await completion.click();
+    await expect(completion).toHaveAttribute(
       'aria-label',
       initialLabel ?? '',
     );
-    await expect(executionRow).toHaveAttribute('data-row-key', rowIdentity ?? '');
+    await expect(detail).toHaveAttribute('data-item-id', itemIdentity ?? '');
+    await expect(page).toHaveURL(/\/my\?view=flows&flow=.*&item=.*/u);
     expect(await page.evaluate(() => Object.keys(localStorage).filter((key) => key.startsWith('flow:saved:'))))
       .toEqual([]);
 

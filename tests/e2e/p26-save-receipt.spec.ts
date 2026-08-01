@@ -111,7 +111,7 @@ test('canonical moving alias and URL-first hit keep their receipt contracts', as
   const result = page.getByTestId('flow-url-lookup-result');
   await result.getByTestId('flow-url-quick-start').locator('summary').click();
   await result.getByLabel('학습 시작일').fill('2030-09-01');
-  await result.getByRole('button', { name: '시작하기' }).click();
+  await result.getByRole('button', { name: '내 Flow에 저장' }).click();
 
   const urlFirstHandoff = /\/my\?savedMap=middle-school-math-1$/;
   const urlFirstReceipt = await assertCanonicalReceipt(page, urlFirstHandoff);

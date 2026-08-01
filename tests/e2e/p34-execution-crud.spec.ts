@@ -119,7 +119,7 @@ test.describe('P34 execution CRUD', () => {
       .getByRole('menuitem')
       .evaluateAll((elements) => elements.map((element) => element.textContent?.trim()));
     expect(visibleCommands).toEqual([
-      'Flow 조정',
+      'Flow 편집',
       '원문 보기',
       '보관보관함에서 복구하거나 영구 삭제할 수 있어요.',
     ]);
@@ -239,7 +239,7 @@ test.describe('P34 execution CRUD', () => {
     await capture(page, 'p34-04-draft-structure-mode-390.png');
   });
 
-  test('public save-before keeps the artifact visible while editing one adjustment kind', async ({ page }) => {
+  test('public save-before keeps the artifact visible inside one atomic adjustment editor', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/f/moving-d30-basic');
     await page.evaluate(() => window.localStorage.clear());
@@ -251,8 +251,9 @@ test.describe('P34 execution CRUD', () => {
     const adjustment = page.getByTestId('public-flow-personal-adjustment');
     await expect(adjustment).toHaveAttribute(
       'data-p35-marker',
-      'P35-ADJUST-ONE-KIND',
+      'P35-ATOMIC-FULL-HEIGHT-EDITOR',
     );
+    await expect(adjustment).toHaveAttribute('data-editor-transaction', 'atomic');
     await expect(adjustment.getByTestId('public-flow-adjustment-result-before')).toContainText('24개');
     await adjustment.getByTestId('public-flow-adjustment-kind-anchor').click();
     await expect(adjustment.getByTestId('public-flow-adjustment-anchor-input')).toHaveValue('2030-08-15');
@@ -273,7 +274,7 @@ test.describe('P34 execution CRUD', () => {
     await saveUndatedVehicleFlow(page);
     const workspace = await openVehicleWorkspace(page);
     const exportEntry = workspace.getByTestId('my-flow-export-entry');
-    await expect(exportEntry).toContainText(/전체 \d+개 가져가기/);
+    await expect(exportEntry).toContainText(/전체 \d+개 옮기기/);
     await exportEntry.click();
     const panel = workspace.getByTestId('my-flow-export-panel');
     await expect(panel).toHaveAttribute('data-p34-marker', 'P34-07-SCOPE-FIRST-EXPORT');

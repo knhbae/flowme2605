@@ -86,7 +86,15 @@ test('mobile focused drill-in keeps feedback and the editor above persistent nav
     .getByTestId('my-flow-temporal-next-group')
     .getByTestId('my-flow-execution-row-shell')
     .first();
-  const completion = execution.getByTestId('my-flow-task-complete-control');
+  await expect(execution.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+  const open = execution.getByRole('button', { name: /열기/ });
+  await expectMinimumTarget(open);
+  await open.click();
+  const detail = getOpenMyFlowItemDetail(page);
+  await expect(detail).toBeVisible();
+  const completion = detail.getByTestId('my-flow-task-complete-control');
+  await expect(completion).toHaveCount(1);
+  await expect(page.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
   await completion.click();
   const notice = page.getByTestId('my-flow-completion-snackbar');
   await expect(notice).toHaveAttribute('data-layer-priority', 'notice');
@@ -96,13 +104,10 @@ test('mobile focused drill-in keeps feedback and the editor above persistent nav
   expect((noticeBox?.y ?? 0) + (noticeBox?.height ?? 0)).toBeLessThanOrEqual((navigationBox?.y ?? 0) - 4);
   await expectMinimumTarget(notice.getByRole('button'));
   await capture(page, '01-mobile-fixed-layer-stack.png');
-  await notice.getByTestId('my-flow-completion-undo').click();
+  await notice.getByTestId('my-flow-completion-undo').press('Enter');
+  await expect(completion).not.toBeChecked();
+  await expect(completion).toBeFocused();
 
-  const open = execution.getByRole('button', { name: /열기/ });
-  await expectMinimumTarget(open);
-  await open.click();
-  const detail = getOpenMyFlowItemDetail(page);
-  await expect(detail).toBeVisible();
   await capture(page, '02-mobile-focused-item-detail.png');
   const quickEdit = detail.getByTestId('my-flow-quick-item-edit');
   if (await quickEdit.isVisible().catch(() => false)) {
@@ -135,8 +140,12 @@ test('wide workspaces keep the active detail and selected-day agenda inside the 
   const detailPaneBox = await detailPane.boundingBox();
   expect(detailPaneBox).not.toBeNull();
   expect(detailPaneBox?.height ?? 0).toBeLessThanOrEqual(736);
-  await flow.getByTestId('my-flow-execution-row-shell').first().getByRole('button', { name: /열기/ }).click();
+  const wideRow = flow.getByTestId('my-flow-execution-row-shell').first();
+  await expect(wideRow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+  await wideRow.getByRole('button', { name: /열기/ }).click();
   await expect(detailPane.getByTestId('my-flow-item-detail')).toBeVisible();
+  await expect(detailPane.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
+  await expect(page.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
   await capture(page, '04-wide-outline-detail-workspace.png', true);
 
   await page.goto('/calendar');

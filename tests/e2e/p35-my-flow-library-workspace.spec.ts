@@ -190,25 +190,48 @@ test.describe('P35-05 My Flow library and focused workspace', () => {
     await detail.getByTestId('my-flow-editor-cancel').click();
     await closeOpenMyFlowItemDetail(page);
 
-    const completion = executionShell.getByTestId('my-flow-task-complete-control');
+    await expect(executionShell.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+    await executionShell.getByRole('button', { name: /열기/ }).click();
+    const completionDetail = getOpenMyFlowItemDetail(page);
+    await expect(completionDetail).toBeVisible();
+    const completion = completionDetail.getByTestId('my-flow-task-complete-control');
+    await expect(completion).toHaveCount(1);
+    await expect(page.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
     await completion.click();
     await expect(page.getByTestId('my-flow-completion-snackbar')).toHaveAttribute(
       'data-completion-result',
       'completed',
     );
     await expect(page.getByTestId('my-flow-completion-undo')).toBeVisible();
+    await expect(workspace.getByTestId('my-flow-workspace-progress-summary')).toContainText(
+      '전체 1/24 완료',
+    );
+    await closeOpenMyFlowItemDetail(page);
     await workspace.getByTestId('my-flow-workspace-plan-toggle').click();
     const wholeFlowOutline = workspace.getByTestId('my-flow-whole-flow-outline');
     await expect(wholeFlowOutline).toBeVisible();
-    await wholeFlowOutline.getByTestId('my-flow-whole-flow-toggle-all-groups').click();
-    const completedRow = wholeFlowOutline.locator(`article[data-row-key="${rowKey}"]`);
-    await expect(completedRow.getByTestId('my-flow-task-complete-control')).toBeChecked();
-    await expect(completedRow.getByTestId('my-flow-task-complete-control')).toHaveAccessibleName(/다시 열기$/);
-    await completedRow.getByTestId('my-flow-task-complete-control').click();
+    let completedRow = wholeFlowOutline.locator(`article[data-row-key="${rowKey}"]`);
+    if ((await completedRow.count()) === 0) {
+      await wholeFlowOutline.getByTestId('my-flow-whole-flow-toggle-all-groups').click();
+      completedRow = wholeFlowOutline.locator(`article[data-row-key="${rowKey}"]`);
+    }
+    await expect(completedRow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+    await completedRow.getByRole('button', { name: /열기/ }).click();
+    const completedDetail = getOpenMyFlowItemDetail(page);
+    const reopen = completedDetail.getByTestId('my-flow-task-complete-control');
+    await expect(reopen).toHaveCount(1);
+    await expect(reopen).toBeChecked();
+    await expect(reopen).toHaveAccessibleName(/다시 열기$/);
+    await reopen.click();
+    await expect(workspace.getByTestId('my-flow-workspace-progress-summary')).toContainText(
+      '전체 0/24 완료',
+    );
+    await closeOpenMyFlowItemDetail(page);
     const reopenedRow = workspace
       .getByTestId('my-flow-shape-aware-execution')
       .locator(`article[data-row-key="${rowKey}"]`);
-    await expect(reopenedRow.getByTestId('my-flow-task-complete-control')).not.toBeChecked();
+    await expect(reopenedRow).toBeVisible();
+    await expect(reopenedRow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
     await expect(page.getByTestId('my-flow-completion-snackbar')).toHaveAttribute(
       'data-completion-result',
       'reopened',
