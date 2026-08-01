@@ -93,5 +93,6 @@
 - [x] 390x844 목표 경로에서 horizontal overflow, console error, page error가 0이다.
 - [x] `git diff --check`가 종료 코드 0으로 통과했다.
 - [x] 최종 scoped diff와 호환성 감사를 마감했다.
-- [x] commit, push, PR, merge, 배포 상태를 각각 기록했다: 모두 하지 않음.
+- [x] commit, push, Draft PR, Preview 상태를 기록했다: 구현 commit `1b669f9`,
+  Draft PR #165, Vercel Preview Ready. merge와 Production 배포는 하지 않음.
 - [x] 관찰 사용자 근거는 `0`이며 검증으로 주장하지 않는다.

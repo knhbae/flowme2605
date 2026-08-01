@@ -31,7 +31,10 @@ Flow Map 단일 snapshot, Text-to-Flow, 실제 사용자 관찰, 게시·배포�
 - 물리 저장소 migration 또는 기존 키 삭제
 - `/flow-maps` 제거 또는 route canonicalization
 - Flow Map 전체 결과의 단일 `EffectiveFlowSnapshot` 전환
-- commit, push, PR, merge, Vercel 배포
+- merge, Vercel Production 배포
+
+commit, push, Draft PR, Vercel Preview는 구현 완료 뒤 별도 승인된 게시 단계로
+진행했고 아래 상태 장부에 기록한다.
 
 ## 2. 구현 근거
 
@@ -107,12 +110,13 @@ Flow Map 단일 snapshot, Text-to-Flow, 실제 사용자 관찰, 게시·배포�
 
 | 상태 | 결과 |
 | --- | --- |
-| 로컬 수정 | 있음 — 전용 worktree에만 있음 |
-| commit | 없음 |
-| push | 없음 |
-| PR | 없음 |
+| 로컬 수정 | branch에 커밋, 전용 worktree clean |
+| commit | 구현 commit `1b669f9` |
+| push | `origin/codex/p35-production-mobile-p0` |
+| PR | Draft [#165](https://github.com/knhbae/flowme2605/pull/165) |
 | merge | 없음 |
-| Vercel deployment | 없음 |
+| Vercel Preview | [Ready](https://flowme2605-git-codex-p35-production-mobile-p0-flowme.vercel.app) |
+| Vercel Production | 없음 |
 | 관찰 사용자 session | `0` |
 
 이 장부는 각 상태를 독립적으로 기록한다. 빌드 또는 테스트 통과를 배포 완료로
@@ -131,5 +135,5 @@ Flow Map 단일 snapshot, Text-to-Flow, 실제 사용자 관찰, 게시·배포�
 1. Flow Map의 여러 하위 Flow 결과를 단일 snapshot으로 합성하는 일은 이번 P0를
    차단하지 않는 후속 구조 과제다.
 2. Text-to-Flow 연결과 실제 사용자 관찰은 각각 별도 작업으로 진행한다.
-3. 게시가 필요하면 commit -> push -> PR/merge -> Vercel을 각각 별도 승인과
-   확인으로 진행한다.
+3. owner가 Preview를 확인한 뒤 Draft 해제/merge와 Vercel Production 배포를
+   각각 별도 승인과 확인으로 진행한다.

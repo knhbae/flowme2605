@@ -6,7 +6,7 @@
 
 **작업 시작 기준 commit:** `c09f859` (`v0.1.0`, P35 production)
 
-**검증 대상:** 위 commit에서 분리한 전용 worktree의 미커밋 변경
+**검증 대상:** 위 commit에서 분리한 `codex/p35-production-mobile-p0` branch와 Draft PR #165
 
 **작업 위치:** `codex/p35-production-mobile-p0` 전용 worktree
 
@@ -64,11 +64,13 @@ Text-to-Flow 연결과 실제 사용자 관찰은 이번 프로그램에 포함�
 
 ## 게시 상태
 
-- 로컬 수정: 있음
-- commit: 하지 않음
-- push: 하지 않음
-- PR/merge: 하지 않음
-- Vercel 배포: 하지 않음
+- 로컬 수정: branch에 커밋, 전용 worktree clean
+- commit: 구현 commit `1b669f9`
+- push: `origin/codex/p35-production-mobile-p0`
+- PR: Draft [#165](https://github.com/knhbae/flowme2605/pull/165)
+- merge: 하지 않음
+- Vercel Preview: [Ready](https://flowme2605-git-codex-p35-production-mobile-p0-flowme.vercel.app)
+- Vercel Production: 하지 않음
 - 관찰 사용자 검증: 하지 않음 (`0`)
 
 ## 문서
