@@ -24,12 +24,12 @@ docs/content-audit/2026-08-04-p35-post-p0-06-independent-review-handoff/05a-code
 
 ### 1-B. Claude Design에 보낼 문구
 
-아래의 `<CLAUDE_BLIND_COMMIT_URL>`은 게시 후 생기는 06a 파일의 commit 고정 링크로 바꾼다.
+아래 링크는 1차 패키지 commit에 고정되어 있다.
 
 ```text
 이전 FlowMe 기획·디자인 검토 맥락이 없는 새 Claude Design 대화입니다. 아래 GitHub 1차 블라인드 프롬프트만 따라 FlowMe의 근본 UX/IA 문제를 독립적으로 발견해줘.
 
-<CLAUDE_BLIND_COMMIT_URL>
+https://github.com/knhbae/flowme2605/blob/1e1d05720021553dabcd2badab91db751e70fcc3/docs/content-audit/2026-08-04-p35-post-p0-06-independent-review-handoff/06a-claude-design-blind-root-discovery-prompt-ko.md
 
 이 단계에서는 00 해석 경계·README·01·02·03·04·05·06·07·두 JSON·승인 방향과 Codex 결과를 읽지 마. 00a 원문과 00b blind 증거만 사용해. Critical 입력이 열리지 않으면 누락을 알려주고 멈추고, Auxiliary 입력만 빠졌으면 PARTIAL_INPUT으로 계속해줘. 결과 파일명·고정 시각을 남기고 observed user는 0명, user understanding은 NOT_ASSESSED로 표시해줘.
 ```
@@ -61,12 +61,12 @@ docs/content-audit/2026-08-04-p35-post-p0-06-independent-review-handoff/05-codex
 
 ### 3-B. Claude Design에 보낼 문구
 
-아래의 `<CLAUDE_STAGE2_COMMIT_URL>`은 게시 후 생기는 06 파일의 commit 고정 링크로 바꾼다.
+아래 링크는 1차 패키지 commit에 고정되어 있다.
 
 ```text
 1차 blind 결과가 고정됐습니다. 이제 아래 GitHub 2차 프롬프트로 기존 계약·승인 방향을 반증하고 S01~S13, D0~D6, U01~U10을 모두 검토해줘.
 
-<CLAUDE_STAGE2_COMMIT_URL>
+https://github.com/knhbae/flowme2605/blob/1e1d05720021553dabcd2badab91db751e70fcc3/docs/content-audit/2026-08-04-p35-post-p0-06-independent-review-handoff/06-claude-design-post-p0-06-review-prompt-ko.md
 
 1차 결과 파일명·고정 시각·hash를 입력 manifest에 적고, 1차 결론 중 유지·수정·기각된 것을 별도 delta로 남겨줘. Codex 결과는 아직 보지 마. 제안 화면은 After가 아니라 Proposal로 표시하고, 화면 자료만으로 확인할 수 없는 runtime은 LOCAL_CONFIRMATION_REQUIRED로 남겨줘. observed user는 0명, user understanding은 NOT_ASSESSED로 유지해줘.
 ```
