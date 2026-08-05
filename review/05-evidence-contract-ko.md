@@ -4,30 +4,33 @@ Evidence는 세 등급으로 분류한다. 필수 evidence가 비어 있으면 �
 
 ## REQUIRED_GLOBAL
 
-모든 scenario가 공유하는 chain of custody다.
+모든 scenario가 공유하는 chain of custody다. 아래 값은 asset commit A와 candidate provenance에서 확정했다. reviewer 공통 문서에는 role 격리를 위해 full provenance·candidate manifest·seed contract URL을 싣지 않는다. Codex는 07 allowlist에서만 원본을 확인하고 Claude Design은 08 allowlist의 safe global만 사용한다.
 
 | 필드 | 요구 사항 | 현재 값 |
 |---|---|---|
-| `product_candidate_sha` | 검토 대상 제품 commit SHA | `TBD` |
-| `product_candidate_ref` | branch/tag 설명용 값; SHA를 대신하지 않음 | `TBD` |
-| `product_clean_tree_proof` | candidate checkout의 `git status --short --branch` 원문 | `TBD` |
-| `product_clean_tree_proof_sha256` | 위 원문 파일 SHA-256 | `TBD` |
-| `build_id` | candidate에서 생성된 runtime build identity | `TBD` |
-| `build_command` | 정확한 명령과 exit code | `TBD` |
-| `build_log_sha256` | 전체 build log SHA-256 | `TBD` |
-| `blind_evidence_publication_sha` | capture·raw artifact를 먼저 게시한 blind-only asset commit A SHA | `TBD` |
-| `blind_release_index_sha` | A의 direct URL·hash를 채운 allowlist와 prompt를 게시한 blind-only index commit B SHA; coordinator launch record에 외부 기록 | `TBD` |
-| `blind_publication_base_url` | Claude가 열 수 있는 commit-pinned base URL | `TBD` |
-| `runtime_url` | Codex 전용 URL; Claude 입력이 아님 | `TBD` |
-| `seed_reset_command` | fixture 초기화 명령과 결과 | `TBD` |
-| `seed_manifest_sha256` | seed/fixture manifest SHA-256 | `TBD` |
-| `captured_at_kst` | capture 시작/종료 시각 | `TBD` |
-| `browser_os_versions` | browser, OS, locale | `TBD` |
-| `timezone_locale` | timezone, locale, DST fixture 기준 | `TBD` |
-| `review_session_ids` | fresh Codex/Claude session IDs | `TBD` |
+| `product_candidate_sha` | 검토 대상 제품 commit SHA | `c48911757fb529941d00efc2162338ffa8b7686a` |
+| `product_candidate_ref` | branch/tag 설명용 값; SHA를 대신하지 않음 | `codex/p35-round2-candidate-20260805 → origin/codex/p35-round2-candidate-20260805@c48911757fb529941d00efc2162338ffa8b7686a` |
+| `product_clean_tree_proof` | candidate checkout의 git status --short --branch 원문 | [direct proof](https://raw.githubusercontent.com/knhbae/flowme2605/0af680a215d49e648dd10f97eeb7954e5c689297/evidence/candidate/git-status-short-branch.txt) · `## codex/p35-round2-candidate-20260805...origin/codex/p35-round2-candidate-20260805` |
+| `product_clean_tree_proof_sha256` | 위 원문 파일 SHA-256 | `08411ee7d7ddd20c5f49af3c2d2a88c5cef9dc9202cf333436ee76519fc5a031` |
+| `build_id` | candidate에서 생성된 runtime build identity | `gdh4DIMGS69Kcn0GBTJtl` |
+| `build_command` | 정확한 명령과 exit code | `npm.cmd run build` · exit `0` |
+| `build_log_sha256` | 전체 build log SHA-256 | [direct build log](https://raw.githubusercontent.com/knhbae/flowme2605/0af680a215d49e648dd10f97eeb7954e5c689297/evidence/candidate/build.log) · `3a2d2a7897db61584092a511fdd6e9163265bcd2fba6bdf8ea96d724097e1a26` |
+| `runtime_build_identity` | served /flows HTML이 같은 BUILD_ID를 포함하는지 확인 | `PASS` · HTTP `200` · contains `true` · `7c200184dfbc0fdce7f45f97589df7d099291b008e4e71a6fc9d13ddcb5785b2` |
+| `blind_evidence_publication_sha` | capture·raw artifact를 먼저 게시한 blind-only asset commit A SHA | `0af680a215d49e648dd10f97eeb7954e5c689297` |
+| `blind_release_index_sha` | allowlist와 prompt를 게시할 blind-only index commit B SHA | `EXTERNAL_LAUNCH_ENVELOPE_REQUIRED_AFTER_INDEX_COMMIT` |
+| `blind_publication_transport` | role별 allowlist의 file-level direct URL만 사용 | `0af680a215d49e648dd10f97eeb7954e5c689297` · verified via role-specific allowlist |
+| `runtime_url` | Codex 전용 URL; Claude 입력이 아님 | `CODEX_ONLY_NOT_DISCLOSED` |
+| `seed_reset_command` | fixture 초기화 명령과 결과 | `npm.cmd run evidence:p35-round2:rehearse` · `THREE_GROUP_MANIFESTS_CAPTURED` · `d330b15f7b66467fc7472e3391b029cf0e084676b361710aff467cd3a96c4d75` |
+| `seed_manifest_sha256` | seed/fixture manifest SHA-256 | `d330b15f7b66467fc7472e3391b029cf0e084676b361710aff467cd3a96c4d75` |
+| `captured_at_kst` | capture 시작/종료 시각 | `2026-08-05T15:08:06+09:00 → 2026-08-05T15:08:34+09:00` |
+| `browser_os_versions` | browser, OS, locale | `chromium 150.0.7871.184 · Chromium 150.0.7871.184 · Windows_NT 10.0.26200 x64 · Windows_NT 10.0.26200 x64 · Node v24.17.0` |
+| `timezone_locale` | timezone, locale, DST fixture 기준 | `timezone Asia/Seoul · locale ko-KR` |
+| `review_session_ids` | fresh Codex/Claude session IDs | `FREEZE_TIME_SESSION_IDS_RECORDED_AT_REVIEW_START` |
 | `observed_users` | 항상 실제 수치 | `0` |
 
-`product_candidate_sha`, `build_id`, `blind_evidence_publication_sha`, `blind_release_index_sha`는 서로 다른 identity다. 값이 우연히 같아도 각 생성 근거를 별도로 기록한다. product checkout이 dirty이면 `NOT_READY`; clean proof가 없으면 시작하지 않는다. Git commit은 자기 SHA를 자기 파일 내용에 포함할 수 없으므로 asset commit A를 먼저 만들고, index commit B의 allowlist가 A를 참조한다. B의 SHA는 B 밖의 coordinator launch record에 고정한다.
+`EXTERNAL_LAUNCH_ENVELOPE_REQUIRED_AFTER_INDEX_COMMIT`와 `FREEZE_TIME_SESSION_IDS_RECORDED_AT_REVIEW_START`는 evidence 미제공이나 미결 placeholder를 뜻하지 않는다. index commit B SHA는 commit 직후 외부 launch envelope에 기록한다. reviewer session ID는 사전 입력이 아니라 실제 fresh session 시작과 동시에 생성해 각 freeze record와 coordinator envelope에 기록한다. 두 lifecycle 값을 조작할 수 없으면 전달 또는 검토를 중단한다.
+
+`product_candidate_sha`, `build_id`, `blind_evidence_publication_sha`, `blind_release_index_sha`는 서로 다른 identity다. product source, runtime build, asset commit A, index commit B를 각각 검증한다.
 
 ## REQUIRED_PER_SCENARIO
 

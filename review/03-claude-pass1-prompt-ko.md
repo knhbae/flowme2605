@@ -1,5 +1,9 @@
 # Claude Design Pass 1 — blind static IA/visual/copy review
 
+> Claude 입력 allowlist: [S17이 제외된 static allowlist](./08-claude-static-evidence-allowlist.md)
+>
+> S17 URL은 Claude package에 제공하지 않으며 열거나 점수에 포함하지 않습니다.
+
 ## 세션 조건
 
 이 프롬프트를 **새 Claude Design 세션**의 첫 요청으로 사용하세요. inherited context, 메모리, 이전 대화, 다른 reviewer 결과를 사용하지 마세요. coordinator가 직접 제공한 이 prompt의 commit-pinned B URL, 게시 확정 단계에서 함께 생성되는 S17 제외 static evidence allowlist의 commit-pinned B URL, 그리고 두 문서가 직접 연결한 자료만 입력입니다. 공통 README나 Codex allowlist를 탐색하지 마세요. 조건을 지킬 수 없으면 `BLIND_CONTAMINATED`로 중단하세요.
