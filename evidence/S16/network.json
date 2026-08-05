@@ -1,0 +1,114 @@
+[
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "document",
+    "url": "http://127.0.0.1:3114/flow-maps/curated-wedding-checklist-family",
+    "status": 200,
+    "at": "2026-08-05T18:16:49+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/?_rsc=0z6gPf5KMrcpuihi",
+    "status": 200,
+    "at": "2026-08-05T18:16:49+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/flows?_rsc=0z6gPf5KMrcpuihi",
+    "status": 200,
+    "at": "2026-08-05T18:16:49+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/calendar?_rsc=0z6gPf5KMrcpuihi",
+    "status": 200,
+    "at": "2026-08-05T18:16:49+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/my?_rsc=0z6gPf5KMrcpuihi",
+    "status": 200,
+    "at": "2026-08-05T18:16:49+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/f/curated-wedding-naver-timeline?_rsc=0z6gPf5KMrcpuihi",
+    "status": 200,
+    "at": "2026-08-05T18:16:49+09:00"
+  },
+  {
+    "kind": "failed",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/my?_rsc=0z6gPf5KMrcpuihi",
+    "failure": "net::ERR_ABORTED",
+    "at": "2026-08-05T18:16:49+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/f/curated-wedding-gongysd-atoz?_rsc=0z6gPf5KMrcpuihi",
+    "status": 200,
+    "at": "2026-08-05T18:16:49+09:00"
+  },
+  {
+    "kind": "failed",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/f/curated-wedding-gongysd-atoz?_rsc=0z6gPf5KMrcpuihi",
+    "failure": "net::ERR_ABORTED",
+    "at": "2026-08-05T18:16:49+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "document",
+    "url": "http://127.0.0.1:3114/flow-maps/middle-school-math-1",
+    "status": 200,
+    "at": "2026-08-05T18:16:50+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/?_rsc=WZEHu8IXvr373sDl",
+    "status": 200,
+    "at": "2026-08-05T18:16:50+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/flows?_rsc=WZEHu8IXvr373sDl",
+    "status": 200,
+    "at": "2026-08-05T18:16:50+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/calendar?_rsc=WZEHu8IXvr373sDl",
+    "status": 200,
+    "at": "2026-08-05T18:16:50+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/my?_rsc=WZEHu8IXvr373sDl",
+    "status": 200,
+    "at": "2026-08-05T18:16:50+09:00"
+  }
+]

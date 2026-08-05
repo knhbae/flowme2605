@@ -1,0 +1,39 @@
+{
+  "beforeDuplicate": {
+    "local": {
+      "flow:moving-d30-basic:anchorDate": "{\"mode\":\"custom\",\"anchor\":\"2031-09-01\"}",
+      "flow:saved:moving-d30-basic": "{\"slug\":\"moving-d30-basic\",\"savedAt\":\"2031-08-01T00:00:00.000Z\",\"selectedArtifactMode\":\"calendar\",\"dateIntent\":\"custom\",\"anchor\":\"2031-09-01\"}"
+    },
+    "session": {}
+  },
+  "afterDuplicate": {
+    "local": {
+      "flow:export-receipts:v1": "{\"schemaVersion\":1,\"receipts\":[{\"schemaVersion\":1,\"kind\":\"persistent_receipt\",\"receiptId\":\"saved_transfer::moving-d30-basic::8c861de2-9f0c-4a28-a531-0b4bfafe79f7\",\"requestId\":\"saved_transfer::moving-d30-basic::8c861de2-9f0c-4a28-a531-0b4bfafe79f7\",\"route\":\"saved_transfer\",\"savedPlanId\":\"moving-d30-basic\",\"outcome\":\"success\",\"createdAt\":\"2026-08-05T09:16:34.342Z\",\"completedAt\":\"2026-08-05T09:16:34.670Z\",\"snapshot\":{\"kind\":\"effective_execution\",\"version\":\"2026-05-20T00:00:00.000Z|personal:1c7a2cf7|execution:44b6ac2e\",\"hash\":\"a09472d3\",\"identity\":{\"flowId\":\"flow-moving\",\"flowSlug\":\"moving-d30-basic\",\"sourceVersion\":\"2026-05-20T00:00:00.000Z\",\"personalVersion\":\"personal:1c7a2cf7\",\"executionVersion\":\"execution:44b6ac2e\"}},\"scope\":{\"kind\":\"flow\"},\"format\":\"checklist\",\"artifactKind\":\"portable_checklist\",\"itemIds\":[\"flow-moving-item-0\",\"flow-moving-item-1\",\"flow-moving-item-2\",\"flow-moving-item-3\",\"flow-moving-item-4\",\"flow-moving-item-5\",\"flow-moving-item-6\",\"flow-moving-item-7\",\"flow-moving-item-8\",\"flow-moving-item-9\",\"flow-moving-item-10\",\"flow-moving-item-11\",\"flow-moving-item-12\",\"flow-moving-item-13\",\"flow-moving-item-14\",\"flow-moving-item-15\",\"flow-moving-item-16\",\"flow-moving-item-17\",\"flow-moving-item-18\",\"flow-moving-item-19\",\"flow-moving-item-20\",\"flow-moving-item-21\",\"flow-moving-item-22\",\"flow-moving-item-23\"],\"itemCount\":24,\"projectionOutputCount\":24,\"outputCount\":24,\"countUnits\":{\"itemCount\":\"item\",\"projectionOutputCount\":\"projection_output\",\"outputCount\":\"artifact_output\"},\"omitted\":{\"heldItemIds\":[],\"unavailableItemIds\":[],\"excludedItemIds\":[],\"reasonsByItemId\":{}},\"oneWay\":true,\"duplicateRisk\":true,\"artifact\":{\"target\":\"clipboard\",\"mediaType\":\"text/plain;charset=utf-8\",\"payloadHash\":\"d18141ac\",\"payloadByteLength\":3754,\"itemIds\":[\"flow-moving-item-0\",\"flow-moving-item-1\",\"flow-moving-item-2\",\"flow-moving-item-3\",\"flow-moving-item-4\",\"flow-moving-item-5\",\"flow-moving-item-6\",\"flow-moving-item-7\",\"flow-moving-item-8\",\"flow-moving-item-9\",\"flow-moving-item-10\",\"flow-moving-item-11\",\"flow-moving-item-12\",\"flow-moving-item-13\",\"flow-moving-item-14\",\"flow-moving-item-15\",\"flow-moving-item-16\",\"flow-moving-item-17\",\"flow-moving-item-18\",\"flow-moving-item-19\",\"flow-moving-item-20\",\"flow-moving-item-21\",\"flow-moving-item-22\",\"flow-moving-item-23\"],\"itemCount\":24,\"outputCount\":24}}]}",
+      "flow:moving-d30-basic:anchorDate": "{\"mode\":\"custom\",\"anchor\":\"2031-09-01\"}",
+      "flow:saved:moving-d30-basic": "{\"slug\":\"moving-d30-basic\",\"savedAt\":\"2031-08-01T00:00:00.000Z\",\"selectedArtifactMode\":\"calendar\",\"dateIntent\":\"custom\",\"anchor\":\"2031-09-01\"}"
+    },
+    "session": {}
+  },
+  "beforeFailure": {
+    "local": {
+      "flow:moving-d30-basic:anchorDate": "{\"mode\":\"custom\",\"anchor\":\"2031-09-01\"}",
+      "flow:saved:moving-d30-basic": "{\"slug\":\"moving-d30-basic\",\"savedAt\":\"2031-08-01T00:00:00.000Z\",\"selectedArtifactMode\":\"calendar\",\"dateIntent\":\"custom\",\"anchor\":\"2031-09-01\"}"
+    },
+    "session": {}
+  },
+  "afterFailure": {
+    "local": {
+      "flow:moving-d30-basic:anchorDate": "{\"mode\":\"custom\",\"anchor\":\"2031-09-01\"}",
+      "flow:saved:moving-d30-basic": "{\"slug\":\"moving-d30-basic\",\"savedAt\":\"2031-08-01T00:00:00.000Z\",\"selectedArtifactMode\":\"calendar\",\"dateIntent\":\"custom\",\"anchor\":\"2031-09-01\"}"
+    },
+    "session": {}
+  },
+  "afterRetry": {
+    "local": {
+      "flow:export-receipts:v1": "{\"schemaVersion\":1,\"receipts\":[{\"schemaVersion\":1,\"kind\":\"persistent_receipt\",\"receiptId\":\"saved_transfer::moving-d30-basic::f084dec1-b4fb-4814-83b9-b68b9da7edbe\",\"requestId\":\"saved_transfer::moving-d30-basic::f084dec1-b4fb-4814-83b9-b68b9da7edbe\",\"route\":\"saved_transfer\",\"savedPlanId\":\"moving-d30-basic\",\"outcome\":\"success\",\"createdAt\":\"2026-08-05T09:16:36.238Z\",\"completedAt\":\"2026-08-05T09:16:36.363Z\",\"snapshot\":{\"kind\":\"effective_execution\",\"version\":\"2026-05-20T00:00:00.000Z|personal:1c7a2cf7|execution:44b6ac2e\",\"hash\":\"a09472d3\",\"identity\":{\"flowId\":\"flow-moving\",\"flowSlug\":\"moving-d30-basic\",\"sourceVersion\":\"2026-05-20T00:00:00.000Z\",\"personalVersion\":\"personal:1c7a2cf7\",\"executionVersion\":\"execution:44b6ac2e\"}},\"scope\":{\"kind\":\"flow\"},\"format\":\"checklist\",\"artifactKind\":\"portable_checklist\",\"itemIds\":[\"flow-moving-item-0\",\"flow-moving-item-1\",\"flow-moving-item-2\",\"flow-moving-item-3\",\"flow-moving-item-4\",\"flow-moving-item-5\",\"flow-moving-item-6\",\"flow-moving-item-7\",\"flow-moving-item-8\",\"flow-moving-item-9\",\"flow-moving-item-10\",\"flow-moving-item-11\",\"flow-moving-item-12\",\"flow-moving-item-13\",\"flow-moving-item-14\",\"flow-moving-item-15\",\"flow-moving-item-16\",\"flow-moving-item-17\",\"flow-moving-item-18\",\"flow-moving-item-19\",\"flow-moving-item-20\",\"flow-moving-item-21\",\"flow-moving-item-22\",\"flow-moving-item-23\"],\"itemCount\":24,\"projectionOutputCount\":24,\"outputCount\":24,\"countUnits\":{\"itemCount\":\"item\",\"projectionOutputCount\":\"projection_output\",\"outputCount\":\"artifact_output\"},\"omitted\":{\"heldItemIds\":[],\"unavailableItemIds\":[],\"excludedItemIds\":[],\"reasonsByItemId\":{}},\"oneWay\":true,\"duplicateRisk\":true,\"artifact\":{\"target\":\"clipboard\",\"mediaType\":\"text/plain;charset=utf-8\",\"payloadHash\":\"d18141ac\",\"payloadByteLength\":3754,\"itemIds\":[\"flow-moving-item-0\",\"flow-moving-item-1\",\"flow-moving-item-2\",\"flow-moving-item-3\",\"flow-moving-item-4\",\"flow-moving-item-5\",\"flow-moving-item-6\",\"flow-moving-item-7\",\"flow-moving-item-8\",\"flow-moving-item-9\",\"flow-moving-item-10\",\"flow-moving-item-11\",\"flow-moving-item-12\",\"flow-moving-item-13\",\"flow-moving-item-14\",\"flow-moving-item-15\",\"flow-moving-item-16\",\"flow-moving-item-17\",\"flow-moving-item-18\",\"flow-moving-item-19\",\"flow-moving-item-20\",\"flow-moving-item-21\",\"flow-moving-item-22\",\"flow-moving-item-23\"],\"itemCount\":24,\"outputCount\":24}}]}",
+      "flow:moving-d30-basic:anchorDate": "{\"mode\":\"custom\",\"anchor\":\"2031-09-01\"}",
+      "flow:saved:moving-d30-basic": "{\"slug\":\"moving-d30-basic\",\"savedAt\":\"2031-08-01T00:00:00.000Z\",\"selectedArtifactMode\":\"calendar\",\"dateIntent\":\"custom\",\"anchor\":\"2031-09-01\"}"
+    },
+    "session": {}
+  }
+}

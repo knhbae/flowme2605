@@ -1,0 +1,353 @@
+{
+  "scenarioId": "S14",
+  "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+  "orderedStateIds": [
+    "count_1_editor",
+    "count_8_editor",
+    "count_24_editor",
+    "count_50_editor",
+    "count_50_artifact_receipt"
+  ],
+  "fullScreenFiles": [
+    {
+      "stateId": "count_1_editor",
+      "relativePath": "S14/01-01-items-editor-full.png",
+      "bytes": 19375,
+      "sha256": "4e9d41a859fc88686e0a96347fb39084873082872837013e37cd373772c9afa7",
+      "mime": "image/png",
+      "route": "http://127.0.0.1:3114/my?flow=personal-copy%3Aevidence-count-1"
+    },
+    {
+      "stateId": "count_8_editor",
+      "relativePath": "S14/02-08-items-editor-full.png",
+      "bytes": 47025,
+      "sha256": "c5d6d4abc015c20c8ed47261b6c38df03c11332141894b6103df44c5ae0bcd85",
+      "mime": "image/png",
+      "route": "http://127.0.0.1:3114/my?flow=personal-copy%3Aevidence-count-8"
+    },
+    {
+      "stateId": "count_24_editor",
+      "relativePath": "S14/03-24-items-editor-full.png",
+      "bytes": 74776,
+      "sha256": "0d0939ecf5f55134081187f72e40bec30c0ab0da22651a0ac5517cb07f64a6ce",
+      "mime": "image/png",
+      "route": "http://127.0.0.1:3114/my?flow=personal-copy%3Aevidence-count-24"
+    },
+    {
+      "stateId": "count_50_editor",
+      "relativePath": "S14/04-50-items-editor-full.png",
+      "bytes": 119994,
+      "sha256": "37b76a5ad985fbbbbc05287627c46e857f26e229535a87535017251dc7bcf357",
+      "mime": "image/png",
+      "route": "http://127.0.0.1:3114/my?flow=personal-copy%3Aevidence-count-50"
+    },
+    {
+      "stateId": "count_50_artifact_receipt",
+      "relativePath": "S14/05-50-items-artifact-receipt-full.png",
+      "bytes": 83066,
+      "sha256": "0d70b3c2b26eef3aeb06b021b999180c5b31d79fa9e7a899c01afaa74cc707f3",
+      "mime": "image/png",
+      "route": "http://127.0.0.1:3114/my?flow=personal-copy%3Aevidence-count-50"
+    }
+  ],
+  "actionSequence": [
+    "build real saved bundle with 1 item",
+    "repeat with 8, 24, and 50 items",
+    "open shared plan editor and collect ordered data-item-id values",
+    "generate actual 50-item checklist clipboard artifact"
+  ],
+  "gaps": [],
+  "routeState": "http://127.0.0.1:3114/my?flow=personal-copy%3Aevidence-count-50",
+  "capturedAtKst": "2026-08-05T18:16:46+09:00",
+  "consoleNetworkStatus": {
+    "consoleErrors": 0,
+    "failedRequests": 3,
+    "expectedNavigationOrPrefetchAborts": 3,
+    "unexpectedFailedRequests": 0,
+    "httpErrors": 0
+  },
+  "pageQuality": {
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "devicePixelRatio": 1
+    },
+    "scroll": {
+      "documentWidth": 390,
+      "documentHeight": 2254,
+      "horizontalOverflow": 0
+    },
+    "unnamedInteractiveCount": 0,
+    "horizontallyClippedInteractiveCount": 0,
+    "brokenRelations": [],
+    "replacementCharacterCount": 0,
+    "visibleInteractiveCount": 31
+  },
+  "seedId": "synthetic-real-storage-density-1-8-24-50",
+  "seedSha256": "3798feac6f5b2ed80e1643321e7d5bc70ea8e9b43f8027665697b57ed5086c55",
+  "viewportInput": {
+    "width": 390,
+    "height": 844,
+    "zoom": 1,
+    "motion": "no-preference"
+  },
+  "countsWithUnits": {
+    "1": {
+      "Items": 1,
+      "uniqueItemIds": 1,
+      "artifactLines": null
+    },
+    "8": {
+      "Items": 8,
+      "uniqueItemIds": 8,
+      "artifactLines": null
+    },
+    "24": {
+      "Items": 24,
+      "uniqueItemIds": 24,
+      "artifactLines": null
+    },
+    "50": {
+      "Items": 50,
+      "uniqueItemIds": 50,
+      "artifactLines": 50
+    }
+  },
+  "density": {
+    "1": {
+      "expectedCount": 1,
+      "DOMRowCount": 1,
+      "itemIds": [
+        "personal-copy:evidence-count-1-item-01"
+      ],
+      "idsPreserved": true,
+      "uniqueIdCount": 1,
+      "quality": {
+        "viewport": {
+          "width": 390,
+          "height": 844,
+          "devicePixelRatio": 1
+        },
+        "scroll": {
+          "documentWidth": 390,
+          "documentHeight": 879,
+          "horizontalOverflow": 0
+        },
+        "unnamedInteractiveCount": 1,
+        "horizontallyClippedInteractiveCount": 0,
+        "brokenRelations": [],
+        "replacementCharacterCount": 0,
+        "visibleInteractiveCount": 26
+      },
+      "payloadSha256": "f962ac86738cf10aa62bf577c759938d90fb35e08e00e33c5d481dc828fa9402"
+    },
+    "8": {
+      "expectedCount": 8,
+      "DOMRowCount": 8,
+      "itemIds": [
+        "personal-copy:evidence-count-8-item-01",
+        "personal-copy:evidence-count-8-item-02",
+        "personal-copy:evidence-count-8-item-03",
+        "personal-copy:evidence-count-8-item-04",
+        "personal-copy:evidence-count-8-item-05",
+        "personal-copy:evidence-count-8-item-06",
+        "personal-copy:evidence-count-8-item-07",
+        "personal-copy:evidence-count-8-item-08"
+      ],
+      "idsPreserved": true,
+      "uniqueIdCount": 8,
+      "quality": {
+        "viewport": {
+          "width": 390,
+          "height": 844,
+          "devicePixelRatio": 1
+        },
+        "scroll": {
+          "documentWidth": 390,
+          "documentHeight": 1522,
+          "horizontalOverflow": 0
+        },
+        "unnamedInteractiveCount": 1,
+        "horizontallyClippedInteractiveCount": 0,
+        "brokenRelations": [],
+        "replacementCharacterCount": 0,
+        "visibleInteractiveCount": 63
+      },
+      "payloadSha256": "c44179c129db7bcfe7bd74856e76918c0bed5caa7e5b336103a8bd3efc82247f"
+    },
+    "24": {
+      "expectedCount": 24,
+      "DOMRowCount": 24,
+      "itemIds": [
+        "personal-copy:evidence-count-24-item-01",
+        "personal-copy:evidence-count-24-item-02",
+        "personal-copy:evidence-count-24-item-03",
+        "personal-copy:evidence-count-24-item-04",
+        "personal-copy:evidence-count-24-item-05",
+        "personal-copy:evidence-count-24-item-06",
+        "personal-copy:evidence-count-24-item-07",
+        "personal-copy:evidence-count-24-item-08",
+        "personal-copy:evidence-count-24-item-09",
+        "personal-copy:evidence-count-24-item-10",
+        "personal-copy:evidence-count-24-item-11",
+        "personal-copy:evidence-count-24-item-12",
+        "personal-copy:evidence-count-24-item-13",
+        "personal-copy:evidence-count-24-item-14",
+        "personal-copy:evidence-count-24-item-15",
+        "personal-copy:evidence-count-24-item-16",
+        "personal-copy:evidence-count-24-item-17",
+        "personal-copy:evidence-count-24-item-18",
+        "personal-copy:evidence-count-24-item-19",
+        "personal-copy:evidence-count-24-item-20",
+        "personal-copy:evidence-count-24-item-21",
+        "personal-copy:evidence-count-24-item-22",
+        "personal-copy:evidence-count-24-item-23",
+        "personal-copy:evidence-count-24-item-24"
+      ],
+      "idsPreserved": true,
+      "uniqueIdCount": 24,
+      "quality": {
+        "viewport": {
+          "width": 390,
+          "height": 844,
+          "devicePixelRatio": 1
+        },
+        "scroll": {
+          "documentWidth": 390,
+          "documentHeight": 2546,
+          "horizontalOverflow": 0
+        },
+        "unnamedInteractiveCount": 1,
+        "horizontallyClippedInteractiveCount": 0,
+        "brokenRelations": [],
+        "replacementCharacterCount": 0,
+        "visibleInteractiveCount": 143
+      },
+      "payloadSha256": "1e39ab0dff41a2e5beb587bfaa5ca47a996ec9063cb35864dfb743f1873b6c00"
+    },
+    "50": {
+      "expectedCount": 50,
+      "DOMRowCount": 50,
+      "itemIds": [
+        "personal-copy:evidence-count-50-item-01",
+        "personal-copy:evidence-count-50-item-02",
+        "personal-copy:evidence-count-50-item-03",
+        "personal-copy:evidence-count-50-item-04",
+        "personal-copy:evidence-count-50-item-05",
+        "personal-copy:evidence-count-50-item-06",
+        "personal-copy:evidence-count-50-item-07",
+        "personal-copy:evidence-count-50-item-08",
+        "personal-copy:evidence-count-50-item-09",
+        "personal-copy:evidence-count-50-item-10",
+        "personal-copy:evidence-count-50-item-11",
+        "personal-copy:evidence-count-50-item-12",
+        "personal-copy:evidence-count-50-item-13",
+        "personal-copy:evidence-count-50-item-14",
+        "personal-copy:evidence-count-50-item-15",
+        "personal-copy:evidence-count-50-item-16",
+        "personal-copy:evidence-count-50-item-17",
+        "personal-copy:evidence-count-50-item-18",
+        "personal-copy:evidence-count-50-item-19",
+        "personal-copy:evidence-count-50-item-20",
+        "personal-copy:evidence-count-50-item-21",
+        "personal-copy:evidence-count-50-item-22",
+        "personal-copy:evidence-count-50-item-23",
+        "personal-copy:evidence-count-50-item-24",
+        "personal-copy:evidence-count-50-item-25",
+        "personal-copy:evidence-count-50-item-26",
+        "personal-copy:evidence-count-50-item-27",
+        "personal-copy:evidence-count-50-item-28",
+        "personal-copy:evidence-count-50-item-29",
+        "personal-copy:evidence-count-50-item-30",
+        "personal-copy:evidence-count-50-item-31",
+        "personal-copy:evidence-count-50-item-32",
+        "personal-copy:evidence-count-50-item-33",
+        "personal-copy:evidence-count-50-item-34",
+        "personal-copy:evidence-count-50-item-35",
+        "personal-copy:evidence-count-50-item-36",
+        "personal-copy:evidence-count-50-item-37",
+        "personal-copy:evidence-count-50-item-38",
+        "personal-copy:evidence-count-50-item-39",
+        "personal-copy:evidence-count-50-item-40",
+        "personal-copy:evidence-count-50-item-41",
+        "personal-copy:evidence-count-50-item-42",
+        "personal-copy:evidence-count-50-item-43",
+        "personal-copy:evidence-count-50-item-44",
+        "personal-copy:evidence-count-50-item-45",
+        "personal-copy:evidence-count-50-item-46",
+        "personal-copy:evidence-count-50-item-47",
+        "personal-copy:evidence-count-50-item-48",
+        "personal-copy:evidence-count-50-item-49",
+        "personal-copy:evidence-count-50-item-50"
+      ],
+      "idsPreserved": true,
+      "uniqueIdCount": 50,
+      "quality": {
+        "viewport": {
+          "width": 390,
+          "height": 844,
+          "devicePixelRatio": 1
+        },
+        "scroll": {
+          "documentWidth": 390,
+          "documentHeight": 4210,
+          "horizontalOverflow": 0
+        },
+        "unnamedInteractiveCount": 1,
+        "horizontallyClippedInteractiveCount": 0,
+        "brokenRelations": [],
+        "replacementCharacterCount": 0,
+        "visibleInteractiveCount": 273
+      },
+      "payloadSha256": "a036692c604aebfc542268cff517446b83f584690ecf7213f34e26f23506f93d",
+      "artifact": {
+        "bytes": 7867,
+        "sha256": "b132d7e6989dbf7aab49c833769367a7295b7b05403133515232ba1021c83d8b",
+        "checklistLineCount": 50,
+        "confirmationAttrs": {
+          "data-transfer-state": "confirming",
+          "data-transfer-route": "saved_transfer",
+          "data-transfer-persistence": "persistent_receipt",
+          "data-transfer-request-id": "saved_transfer::personal-copy:evidence-count-50::e3480d14-1bdd-4258-b9fb-3a3fe13398a8",
+          "data-transfer-saved-plan-id": "personal-copy:evidence-count-50",
+          "data-transfer-snapshot-kind": "effective_execution",
+          "data-transfer-snapshot-version": "2031-08-05T00:00:00.000Z|personal:db4da014|execution:44b6ac2e",
+          "data-transfer-snapshot-hash": "4eeeaf03",
+          "data-transfer-format": "checklist",
+          "data-transfer-artifact-kind": "portable_checklist",
+          "data-transfer-target": "clipboard",
+          "data-transfer-scope": "flow",
+          "data-transfer-item-ids": "personal-copy:evidence-count-50-item-01,personal-copy:evidence-count-50-item-02,personal-copy:evidence-count-50-item-03,personal-copy:evidence-count-50-item-04,personal-copy:evidence-count-50-item-05,personal-copy:evidence-count-50-item-06,personal-copy:evidence-count-50-item-07,personal-copy:evidence-count-50-item-08,personal-copy:evidence-count-50-item-09,personal-copy:evidence-count-50-item-10,personal-copy:evidence-count-50-item-11,personal-copy:evidence-count-50-item-12,personal-copy:evidence-count-50-item-13,personal-copy:evidence-count-50-item-14,personal-copy:evidence-count-50-item-15,personal-copy:evidence-count-50-item-16,personal-copy:evidence-count-50-item-17,personal-copy:evidence-count-50-item-18,personal-copy:evidence-count-50-item-19,personal-copy:evidence-count-50-item-20,personal-copy:evidence-count-50-item-21,personal-copy:evidence-count-50-item-22,personal-copy:evidence-count-50-item-23,personal-copy:evidence-count-50-item-24,personal-copy:evidence-count-50-item-25,personal-copy:evidence-count-50-item-26,personal-copy:evidence-count-50-item-27,personal-copy:evidence-count-50-item-28,personal-copy:evidence-count-50-item-29,personal-copy:evidence-count-50-item-30,personal-copy:evidence-count-50-item-31,personal-copy:evidence-count-50-item-32,personal-copy:evidence-count-50-item-33,personal-copy:evidence-count-50-item-34,personal-copy:evidence-count-50-item-35,personal-copy:evidence-count-50-item-36,personal-copy:evidence-count-50-item-37,personal-copy:evidence-count-50-item-38,personal-copy:evidence-count-50-item-39,personal-copy:evidence-count-50-item-40,personal-copy:evidence-count-50-item-41,personal-copy:evidence-count-50-item-42,personal-copy:evidence-count-50-item-43,personal-copy:evidence-count-50-item-44,personal-copy:evidence-count-50-item-45,personal-copy:evidence-count-50-item-46,personal-copy:evidence-count-50-item-47,personal-copy:evidence-count-50-item-48,personal-copy:evidence-count-50-item-49,personal-copy:evidence-count-50-item-50",
+          "data-transfer-item-count": "50",
+          "data-transfer-projection-output-count": "50",
+          "data-transfer-output-count": "50",
+          "data-transfer-omitted-item-ids": "",
+          "data-transfer-omitted-count": "0",
+          "data-transfer-one-way": "true",
+          "data-transfer-duplicate-risk": "true",
+          "data-transfer-return-focus-selector": "[data-testid=\"my-flow-export-entry\"]",
+          "data-receipt-storage-key": "flow:export-receipts:v1",
+          "data-snapshot-kind": "effective_execution",
+          "data-snapshot-version": "2031-08-05T00:00:00.000Z|personal:db4da014|execution:44b6ac2e",
+          "data-snapshot-hash": "4eeeaf03",
+          "data-scope": "flow",
+          "data-format": "checklist",
+          "data-destination": "checklist",
+          "data-item-ids": "personal-copy:evidence-count-50-item-01,personal-copy:evidence-count-50-item-02,personal-copy:evidence-count-50-item-03,personal-copy:evidence-count-50-item-04,personal-copy:evidence-count-50-item-05,personal-copy:evidence-count-50-item-06,personal-copy:evidence-count-50-item-07,personal-copy:evidence-count-50-item-08,personal-copy:evidence-count-50-item-09,personal-copy:evidence-count-50-item-10,personal-copy:evidence-count-50-item-11,personal-copy:evidence-count-50-item-12,personal-copy:evidence-count-50-item-13,personal-copy:evidence-count-50-item-14,personal-copy:evidence-count-50-item-15,personal-copy:evidence-count-50-item-16,personal-copy:evidence-count-50-item-17,personal-copy:evidence-count-50-item-18,personal-copy:evidence-count-50-item-19,personal-copy:evidence-count-50-item-20,personal-copy:evidence-count-50-item-21,personal-copy:evidence-count-50-item-22,personal-copy:evidence-count-50-item-23,personal-copy:evidence-count-50-item-24,personal-copy:evidence-count-50-item-25,personal-copy:evidence-count-50-item-26,personal-copy:evidence-count-50-item-27,personal-copy:evidence-count-50-item-28,personal-copy:evidence-count-50-item-29,personal-copy:evidence-count-50-item-30,personal-copy:evidence-count-50-item-31,personal-copy:evidence-count-50-item-32,personal-copy:evidence-count-50-item-33,personal-copy:evidence-count-50-item-34,personal-copy:evidence-count-50-item-35,personal-copy:evidence-count-50-item-36,personal-copy:evidence-count-50-item-37,personal-copy:evidence-count-50-item-38,personal-copy:evidence-count-50-item-39,personal-copy:evidence-count-50-item-40,personal-copy:evidence-count-50-item-41,personal-copy:evidence-count-50-item-42,personal-copy:evidence-count-50-item-43,personal-copy:evidence-count-50-item-44,personal-copy:evidence-count-50-item-45,personal-copy:evidence-count-50-item-46,personal-copy:evidence-count-50-item-47,personal-copy:evidence-count-50-item-48,personal-copy:evidence-count-50-item-49,personal-copy:evidence-count-50-item-50",
+          "data-projection-output-count": "50",
+          "data-output-count": "50",
+          "data-outcome": "confirming",
+          "data-testid": "my-flow-transfer-confirmation",
+          "data-p35-marker": "P35-P009-RESULT-TRANSFER-CONFIRMATION",
+          "data-flow-ui": "bottom-sheet",
+          "data-layer-priority": "dialog"
+        },
+        "containsLongTitle": true,
+        "containsTab": true,
+        "containsBackslash": true
+      }
+    }
+  },
+  "persistentWriteCount": 1,
+  "reviewerStatus": "LOCAL_REHEARSAL"
+}

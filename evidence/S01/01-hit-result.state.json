@@ -1,0 +1,391 @@
+{
+  "capturedAt": "2026-08-05T09:15:12.151Z",
+  "route": "http://127.0.0.1:3114/flows",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "headings": [
+    {
+      "tag": "h1",
+      "level": null,
+      "text": "URL·메모로 계획 찾기",
+      "testId": null
+    },
+    {
+      "tag": "h2",
+      "level": null,
+      "text": "이미 만들어진 계획이 있어요",
+      "testId": null
+    }
+  ],
+  "actions": [
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "FLOW",
+      "accessibleName": "FLOW",
+      "testId": null,
+      "href": "/",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "summary",
+      "type": null,
+      "role": null,
+      "text": "메뉴≡",
+      "accessibleName": "보조 메뉴 열기",
+      "testId": null,
+      "href": null,
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "계획 만들기내 콘텐츠를 실행할 계획으로 정리",
+      "accessibleName": "계획 만들기내 콘텐츠를 실행할 계획으로 정리",
+      "testId": null,
+      "href": "/flows/new",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "계획 찾기",
+      "accessibleName": "계획 찾기",
+      "testId": null,
+      "href": "/flows",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "캘린더",
+      "accessibleName": "캘린더",
+      "testId": null,
+      "href": "/calendar",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "내 계획",
+      "accessibleName": "내 계획",
+      "testId": null,
+      "href": "/my",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "input",
+      "type": "text",
+      "role": null,
+      "text": "",
+      "accessibleName": "",
+      "testId": "flow-url-lookup-input",
+      "href": null,
+      "value": "https://mathbang.net/13?utm_source=evidence",
+      "checked": false,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "submit",
+      "role": null,
+      "text": "계획 찾기",
+      "accessibleName": "계획 찾기",
+      "testId": null,
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "미리보기에서 편집",
+      "accessibleName": "미리보기에서 편집",
+      "testId": null,
+      "href": "/f/source-backed-middle-school-math-1",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "summary",
+      "type": null,
+      "role": null,
+      "text": "바로 저장시작일과 결과 형식 선택",
+      "accessibleName": "바로 저장시작일과 결과 형식 선택",
+      "testId": null,
+      "href": null,
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "원문 내용 그대로",
+      "accessibleName": "원문 내용 그대로",
+      "testId": "flow-url-start-mode-direct",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": "true"
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "저장 전 편집",
+      "accessibleName": "저장 전 편집",
+      "testId": "flow-url-start-mode-custom",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": "false"
+    },
+    {
+      "tag": "input",
+      "type": "date",
+      "role": null,
+      "text": "",
+      "accessibleName": "학습 시작일",
+      "testId": "url-first-start-date-input",
+      "href": null,
+      "value": "",
+      "checked": false,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "select",
+      "type": null,
+      "role": null,
+      "text": "캘린더메모 문서체크리스트",
+      "accessibleName": "결과 형식",
+      "testId": "url-first-export-mode-select",
+      "href": null,
+      "value": "calendar",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "메모 문서 받기",
+      "accessibleName": "메모 문서 받기",
+      "testId": "url-first-memo-document-download",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "내 계획에 저장",
+      "accessibleName": "내 계획에 저장",
+      "testId": null,
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "다른 계획 둘러보기+",
+      "accessibleName": "다른 계획 둘러보기+",
+      "testId": "flow-catalog-after-lookup-toggle",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": "false",
+      "pressed": null
+    }
+  ],
+  "validation": [],
+  "geometry": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "document": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 887
+    },
+    "horizontalOverflow": 0
+  },
+  "importantNodes": [
+    {
+      "testId": "platform-nav",
+      "data": {
+        "data-testid": "platform-nav",
+        "data-p35-q3-copy": "on"
+      }
+    },
+    {
+      "testId": "platform-mobile-tabs",
+      "data": {
+        "data-testid": "platform-mobile-tabs",
+        "data-layer-priority": "navigation",
+        "data-p30-marker": "P30-MOBILE-WORKSPACE-FOCUS-ORDER",
+        "data-p35-marker": "P35-ENTRY-ROUTER-3TAB"
+      }
+    },
+    {
+      "testId": "flow-map-catalog-section",
+      "data": {
+        "data-testid": "flow-map-catalog-section"
+      }
+    },
+    {
+      "testId": "flow-catalog-hero",
+      "data": {
+        "data-testid": "flow-catalog-hero"
+      }
+    },
+    {
+      "testId": "flow-catalog-count",
+      "data": {
+        "data-testid": "flow-catalog-count"
+      }
+    },
+    {
+      "testId": "flow-url-lookup-entry",
+      "data": {
+        "data-testid": "flow-url-lookup-entry"
+      }
+    },
+    {
+      "testId": "flow-url-lookup-input",
+      "data": {
+        "data-testid": "flow-url-lookup-input"
+      }
+    },
+    {
+      "testId": "flow-url-lookup-result",
+      "data": {
+        "data-testid": "flow-url-lookup-result"
+      }
+    },
+    {
+      "testId": "flow-url-quick-start",
+      "data": {
+        "data-testid": "flow-url-quick-start"
+      }
+    },
+    {
+      "testId": "flow-url-start-panel",
+      "data": {
+        "data-testid": "flow-url-start-panel"
+      }
+    },
+    {
+      "testId": "flow-url-start-mode-direct",
+      "data": {
+        "data-testid": "flow-url-start-mode-direct"
+      }
+    },
+    {
+      "testId": "flow-url-start-mode-custom",
+      "data": {
+        "data-testid": "flow-url-start-mode-custom"
+      }
+    },
+    {
+      "testId": "url-first-start-date-input",
+      "data": {
+        "data-testid": "url-first-start-date-input"
+      }
+    },
+    {
+      "testId": "url-first-date-anchor-help",
+      "data": {
+        "data-testid": "url-first-date-anchor-help"
+      }
+    },
+    {
+      "testId": "url-first-export-mode-select",
+      "data": {
+        "data-testid": "url-first-export-mode-select"
+      }
+    },
+    {
+      "testId": "url-first-memo-document-download",
+      "data": {
+        "data-testid": "url-first-memo-document-download"
+      }
+    },
+    {
+      "testId": "flow-catalog-after-lookup-toggle",
+      "data": {
+        "data-testid": "flow-catalog-after-lookup-toggle"
+      }
+    }
+  ],
+  "browserEvents": {
+    "consoleErrors": [],
+    "pageErrors": [],
+    "requestFailures": []
+  },
+  "evidenceClass": "ACTUAL_UI",
+  "lookupState": "hit",
+  "resultText": "기존 콘텐츠\n이미 만든 준비가 있는지 먼저 찾아봤어요\n이미 만들어진 계획이 있어요\n\n중1 수학 목차 기준으로 저장 가능한 콘텐츠를 찾았어요. 필요한 옵션만 바꾸고 저장 전 확인할 수 있습니다.\n\n옮길 수 있는 형태\n\n캘린더\n메모 문서\n체크리스트\n내 계획\n\n중1 수학 목차 진도표 저장 후 오늘/전체에서 이어보기\n\n미리보기에서 편집\n바로 저장\n시작일과 결과 형식 선택"
+}

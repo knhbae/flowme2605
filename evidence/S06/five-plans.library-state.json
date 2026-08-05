@@ -1,0 +1,16 @@
+{
+  "count": "5",
+  "sizeState": "small",
+  "rowCount": 5,
+  "rowSlugs": [
+    "pet-health-observation",
+    "wedding-d180-basic",
+    "washer-tub-clean-monthly",
+    "travel-packing-list",
+    "moving-d30-basic"
+  ],
+  "todayVisible": true,
+  "todayItemCount": 2,
+  "todoExperimentVisible": false,
+  "selectedView": null
+}

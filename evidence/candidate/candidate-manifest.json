@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "generatedAtUtc": "2026-08-05T09:17:17.519Z",
+  "classification": "CANDIDATE_BOUND_CAPTURE",
+  "candidateEligible": true,
+  "productCandidateSha": "29cb03a65dd1037a3b813b7f43a5a095e4669dce",
+  "buildId": "V29H3kpreESrdkYwzy_q9",
+  "baseUrl": "http://127.0.0.1:3114",
+  "candidateEpoch": "p35-r2-131b8ce629cf1288",
+  "artifacts": [
+    {
+      "role": "product_clean_tree_proof",
+      "relativePath": "candidate/git-status-short-branch.txt",
+      "byteLength": 84,
+      "sha256": "08411ee7d7ddd20c5f49af3c2d2a88c5cef9dc9202cf333436ee76519fc5a031",
+      "mime": "text/plain; charset=utf-8"
+    },
+    {
+      "role": "seed_reset_contract",
+      "relativePath": "candidate/seed-reset-contract.json",
+      "byteLength": 2048,
+      "sha256": "ecbba7c87a8c8f96e3e66d65a1bf2f2b4d59616ce0f4e5ad67f7f5439ff81a27",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "role": "group_manifest_index",
+      "relativePath": "candidate/group-manifest-index.json",
+      "byteLength": 2069,
+      "sha256": "73ff4bc1982b55c222a742ea4e25e40c7fdb3c5d82d6bb82ef694843222a1eac",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "role": "build_log",
+      "relativePath": "candidate/build.log",
+      "byteLength": 2383,
+      "sha256": "cf69325625f543255a9e2878544823c428d2242a258522922d6f3c2f2097646a",
+      "mime": "text/plain; charset=utf-8"
+    },
+    {
+      "role": "build_metadata",
+      "relativePath": "candidate/build-metadata.json",
+      "byteLength": 525,
+      "sha256": "5da8b6152c6f8c3b2b89f42d9c63e3b5bcd6f524b916d9c63f7b44dfc42b9c0c",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "role": "runtime_build_identity",
+      "relativePath": "candidate/runtime-build-identity.json",
+      "byteLength": 253,
+      "sha256": "dade8b4fa9439f63cc861d933f42d891013ec70ff9661234d0a78f4e39afc1c3",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "role": "candidate_provenance",
+      "relativePath": "candidate/candidate-provenance.json",
+      "byteLength": 4786,
+      "sha256": "64587a0407a8eda1c44bb2136aeea954f21dbc32c1782ed8b9d71e64d1cef336",
+      "mime": "application/json; charset=utf-8"
+    }
+  ],
+  "groupManifests": [
+    {
+      "manifest": "group-manifest-s01-s08.json",
+      "relativePath": "group-manifest-s01-s08.json",
+      "byteLength": 47818,
+      "sha256": "377aa94a403122b63fb62a45b1757103eceedaa60a9981cc0d95908387bd030b"
+    },
+    {
+      "manifest": "group-manifest-s09-s16.json",
+      "relativePath": "group-manifest-s09-s16.json",
+      "byteLength": 22196,
+      "sha256": "9772c6cdbc802dc40b01f4d6291ae3707b2a695e5e126c176baf49434d5201f3"
+    },
+    {
+      "manifest": "group-manifest-s17-s23.json",
+      "relativePath": "group-manifest-s17-s23.json",
+      "byteLength": 15381,
+      "sha256": "80900742ed76f9f0d18b8ac55533ff4c7e73d333d909ccb3cb9f3369a04b450a"
+    }
+  ],
+  "selfInventory": "EXCLUDED_TO_AVOID_RECURSIVE_SELF_HASH"
+}

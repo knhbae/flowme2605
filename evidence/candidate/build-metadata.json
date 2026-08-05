@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "status": "PASS",
+  "sourceProvided": true,
+  "sourceFileName": "p35-r2-pprime-29cb03a-runtime2-build.log",
+  "copiedRelativePath": "candidate/build.log",
+  "command": "npm.cmd run build",
+  "exitCode": 0,
+  "byteLength": 2383,
+  "sha256": "cf69325625f543255a9e2878544823c428d2242a258522922d6f3c2f2097646a",
+  "encoding": {
+    "declared": "utf-8",
+    "valid": true,
+    "containsNul": false,
+    "containsReplacementCharacter": false,
+    "error": null
+  },
+  "buildId": "V29H3kpreESrdkYwzy_q9"
+}

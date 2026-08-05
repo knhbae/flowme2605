@@ -1,0 +1,21 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//FLOW MVP//My Flow Step Export//KO
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:washer-tub-monthly-series@flowme.local
+DTSTAMP:20260805T030000Z
+DTSTART;TZID=Asia/Seoul:20310901T100000
+DTEND;TZID=Asia/Seoul:20310901T113000
+SUMMARY:세탁조 클리너로 통세척 실행
+DESCRIPTION:세탁조 클리너로 통세척 실행\n계획: 세탁조 월
+ 간 관리\n일정: 2031-09-01 10:00 · 예상 1시간 30분\n반복: 매
+ 월\n실행 상태: 미완료\n\n원문: S20 deterministic routine fixture
+  https://example.com/routine-source\n
+STATUS:TENTATIVE
+TRANSP:TRANSPARENT
+RRULE:FREQ=MONTHLY
+URL:https://example.com/routine-source
+END:VEVENT
+END:VCALENDAR

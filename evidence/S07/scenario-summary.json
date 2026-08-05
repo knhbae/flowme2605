@@ -1,0 +1,29 @@
+{
+  "scenario": "S07",
+  "status": "LOCAL_CANDIDATE_CAPTURED",
+  "passCount": 1,
+  "errorCount": 0,
+  "knownGaps": [
+    "The detailed mutation journey exercises one canonical Item in one 10-Item saved plan; breadth is covered by S14."
+  ],
+  "variants": [
+    {
+      "scenario": "S07",
+      "variant": "detail-edit-memo-complete-reopen",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "startedAt": "2026-08-05T09:16:02.819Z",
+      "status": "PASS",
+      "error": null,
+      "result": {
+        "personalCopyKey": "personal-copy:842116cd-6141-45a0-975c-7f93caa6e4a0",
+        "itemId": "flow-vehicle-inspection-prep-item-0",
+        "memoPersisted": true,
+        "completedThenReopened": true
+      },
+      "finishedAt": "2026-08-05T09:16:09.415Z"
+    }
+  ]
+}

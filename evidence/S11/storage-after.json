@@ -1,0 +1,7 @@
+{
+  "local": {
+    "flow:moving-d30-basic:anchorDate": "{\"mode\":\"custom\",\"anchor\":\"2031-09-01\"}",
+    "flow:saved:moving-d30-basic": "{\"slug\":\"moving-d30-basic\",\"savedAt\":\"2031-08-01T00:00:00.000Z\",\"selectedArtifactMode\":\"calendar\",\"dateIntent\":\"custom\",\"anchor\":\"2031-09-01\"}"
+  },
+  "session": {}
+}

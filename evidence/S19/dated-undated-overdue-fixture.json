@@ -1,0 +1,34 @@
+{
+  "now": "2026-08-05T12:00:00+09:00",
+  "rows": [
+    {
+      "itemId": "dated-future",
+      "date": "2026-08-06",
+      "scheduleState": "all_day",
+      "expectedBucket": "dated"
+    },
+    {
+      "itemId": "undated",
+      "date": null,
+      "scheduleState": "unscheduled",
+      "expectedBucket": "undated",
+      "calendarProjection": "OMITTED"
+    },
+    {
+      "itemId": "overdue",
+      "date": "2026-08-03",
+      "scheduleState": "all_day",
+      "completionState": "pending",
+      "expectedBucket": "overdue"
+    },
+    {
+      "itemId": "mixed-timed",
+      "date": "2026-08-05",
+      "time": "17:30",
+      "timeZone": "Asia/Seoul",
+      "scheduleState": "timed",
+      "expectedBucket": "dated"
+    }
+  ],
+  "rule": "An undated Item remains undated and is not invented into VEVENT."
+}

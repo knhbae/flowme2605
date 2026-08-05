@@ -1,0 +1,87 @@
+{
+  "scenario": "S01",
+  "status": "LOCAL_CANDIDATE_CAPTURED",
+  "passCount": 5,
+  "errorCount": 0,
+  "knownGaps": [
+    "Lookup resolution is local and deterministic in this build; the error state therefore uses a clearly labeled one-shot localStorage failure injection rather than a nonexistent remote lookup outage."
+  ],
+  "variants": [
+    {
+      "scenario": "S01",
+      "variant": "lookup-hit",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "startedAt": "2026-08-05T09:15:10.568Z",
+      "status": "PASS",
+      "error": null,
+      "result": {
+        "lookupState": "hit"
+      },
+      "finishedAt": "2026-08-05T09:15:12.268Z"
+    },
+    {
+      "scenario": "S01",
+      "variant": "lookup-review-hold",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "startedAt": "2026-08-05T09:15:12.525Z",
+      "status": "PASS",
+      "error": null,
+      "result": {
+        "lookupState": "review"
+      },
+      "finishedAt": "2026-08-05T09:15:14.007Z"
+    },
+    {
+      "scenario": "S01",
+      "variant": "lookup-miss",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "startedAt": "2026-08-05T09:15:14.272Z",
+      "status": "PASS",
+      "error": null,
+      "result": {
+        "lookupState": "miss"
+      },
+      "finishedAt": "2026-08-05T09:15:15.948Z"
+    },
+    {
+      "scenario": "S01",
+      "variant": "lookup-empty",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "startedAt": "2026-08-05T09:15:16.218Z",
+      "status": "PASS",
+      "error": null,
+      "result": {
+        "lookupState": "empty"
+      },
+      "finishedAt": "2026-08-05T09:15:18.068Z"
+    },
+    {
+      "scenario": "S01",
+      "variant": "lookup-error-failure-injection",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "startedAt": "2026-08-05T09:15:18.323Z",
+      "status": "PASS",
+      "error": null,
+      "result": {
+        "lookupState": "error",
+        "evidenceClass": "EVIDENCE_ONLY_FAILURE_INJECTION"
+      },
+      "finishedAt": "2026-08-05T09:15:20.044Z"
+    }
+  ]
+}

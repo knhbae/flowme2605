@@ -1,0 +1,7 @@
+{
+  "savedRecord": "{\"schemaVersion\":2,\"slug\":\"personal-copy:842116cd-6141-45a0-975c-7f93caa6e4a0\",\"savedAt\":\"2026-08-05T09:16:06.489Z\",\"personalCopyKey\":\"personal-copy:842116cd-6141-45a0-975c-7f93caa6e4a0\",\"sourceFlowKey\":\"flow-vehicle-inspection-prep\",\"sourceFlowSlug\":\"vehicle-inspection-prep\",\"sourceVersion\":\"2026-07-12T00:00:00.000Z\",\"lastSaveRequestId\":\"saved-plan:personal-copy:842116cd-6141-45a0-975c-7f93caa6e4a0:1785921365796\",\"savedItemCount\":10,\"personalTitle\":\"자동차검사 D-14 준비\",\"selectedArtifactMode\":\"checklist\",\"dateIntent\":\"undated\"}",
+  "itemDrafts": "{\"personal-copy:842116cd-6141-45a0-975c-7f93caa6e4a0::flow-vehicle-inspection-prep-item-0::draft-overlay\":{\"memo\":\"등록증 원본과 계기판 사진을 함께 확인하고 담당자 이름을 기록\"}}",
+  "checks": "{\"flow-vehicle-inspection-prep-item-0\":false}",
+  "itemState": "{\"flow-vehicle-inspection-prep-item-0\":{\"personalOrder\":0},\"flow-vehicle-inspection-prep-item-1\":{\"personalOrder\":1},\"flow-vehicle-inspection-prep-item-2\":{\"personalOrder\":2},\"flow-vehicle-inspection-prep-item-3\":{\"personalOrder\":3},\"flow-vehicle-inspection-prep-item-4\":{\"personalOrder\":4},\"flow-vehicle-inspection-prep-item-5\":{\"personalOrder\":5},\"flow-vehicle-inspection-prep-item-6\":{\"personalOrder\":6},\"flow-vehicle-inspection-prep-item-7\":{\"personalOrder\":7},\"flow-vehicle-inspection-prep-item-8\":{\"personalOrder\":8},\"flow-vehicle-inspection-prep-item-9\":{\"personalOrder\":9}}",
+  "itemId": "flow-vehicle-inspection-prep-item-0"
+}
