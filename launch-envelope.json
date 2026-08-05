@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "state": "PASS2_INFORMED_CLAUDE_READY_WITH_STATIC_EQUIVALENCE_EXCEPTION",
+  "reviewer": "Claude Design",
+  "reviewerLane": "CLAUDE_DESIGN_ONLY",
+  "candidateIdentity": {
+    "productCandidateSha": "29cb03a65dd1037a3b813b7f43a5a095e4669dce",
+    "candidateEpoch": "p35-r2-131b8ce629cf1288",
+    "buildId": "V29H3kpreESrdkYwzy_q9"
+  },
+  "blindRelease": {
+    "evidenceAssetSha": "64d5651df657c91e793dd1212788e293d6937947",
+    "releaseIndexSha": "83e78f97ea443c93caeb3ffc4bd419a9caf7b849",
+    "launchSha": "3f3d7429d1c0642e88b3a0f0cb884cc5cc95ba56"
+  },
+  "informedClaudeRelease": {
+    "evidenceAssetSha": "5d1917f30f6540d1ede7482b14480a85d8ad7171",
+    "releaseIndexSha": "f7306912006426b87df0d507a2b0dca4a6479622",
+    "launchBranch": "review/p35-round2-informed-claude-pprime-launch"
+  },
+  "reviewInputs": {
+    "prompt": "https://raw.githubusercontent.com/knhbae/flowme2605/f7306912006426b87df0d507a2b0dca4a6479622/review/03-claude-pass2-prompt-ko.md",
+    "allowlist": "https://raw.githubusercontent.com/knhbae/flowme2605/f7306912006426b87df0d507a2b0dca4a6479622/review/07-informed-evidence-allowlist.md",
+    "runtime": "NOT_PROVIDED",
+    "freshSessionRequired": true,
+    "codexCurrentReviewOutputsIncluded": false
+  },
+  "pass1Basis": {
+    "state": "CLAUDE_STATIC_REVIEW_CARRIED_FORWARD_BY_EQUIVALENCE",
+    "strictSameEpochPass1": false,
+    "ownerApprovedProtocolException": true,
+    "originalPass1ProductSha": "c48911757fb529941d00efc2162338ffa8b7686a",
+    "originalPass1BuildId": "gdh4DIMGS69Kcn0GBTJtl",
+    "originalPass1FreezeSha256": "c7fcd3ae89aaf152bdfeb1b76ce29b82a0889d0515991d4146fa16b1144e751e",
+    "staticEquivalenceBridgeSha256": "e0ea8ce91780b8fbb1179289df5b1c885344f0e8d0bac4d6f57d792246837720",
+    "equivalenceEnvelopeSha256": "ec5bf8f66922a734bd4b78bde752a54d1a0bfffa252ad84bb2fb200e7af47cd6",
+    "carryForwardScope": [
+      "STATIC_UX",
+      "INFORMATION_ARCHITECTURE",
+      "VISUAL_DESIGN",
+      "UI_COPY"
+    ],
+    "currentEvidenceRequiredFor": [
+      "RUNTIME",
+      "STORAGE",
+      "SECURITY",
+      "ARTIFACT_CHAIN"
+    ]
+  },
+  "buildContinuity": {
+    "noRebuildSinceCurrentEvidenceFreeze": true,
+    "noRebuildSinceEquivalenceBridge": true,
+    "sameBuildAsOriginalClaudePass1": false,
+    "reasonForDifference": "STATIC_EQUIVALENCE_EXCEPTION"
+  },
+  "reviewOutputs": [
+    "claude-pass2-feedback-trace.md",
+    "claude-pass2-findings.md",
+    "claude-pass2-counterevidence.md",
+    "claude-pass2-verdict.md",
+    "claude-pass2-freeze.json"
+  ],
+  "sessionId": "RECORDED_AT_REVIEW_START",
+  "observedUsers": 0,
+  "deployment": {
+    "state": "NONE",
+    "vercel": "DISABLED",
+    "preview": false,
+    "production": false
+  }
+}
