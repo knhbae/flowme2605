@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "state": "PASS1_BLIND_READY",
+  "productCandidateSha": "29cb03a65dd1037a3b813b7f43a5a095e4669dce",
+  "candidateEpoch": "p35-r2-131b8ce629cf1288",
+  "buildId": "V29H3kpreESrdkYwzy_q9",
+  "blindEvidenceAssetSha": "64d5651df657c91e793dd1212788e293d6937947",
+  "blindReleaseIndexSha": "83e78f97ea443c93caeb3ffc4bd419a9caf7b849",
+  "publishedVerification": {
+    "verdict": "PASS",
+    "failureCount": 0,
+    "reportSha256": "385C85AE4AC6F65A845426978C166F7401154B786884B9161991430CDFB71413",
+    "reportPublished": false
+  },
+  "reviewInputs": {
+    "codex": {
+      "prompt": "https://raw.githubusercontent.com/knhbae/flowme2605/83e78f97ea443c93caeb3ffc4bd419a9caf7b849/review/02-codex-pass1-prompt-ko.md",
+      "allowlist": "https://raw.githubusercontent.com/knhbae/flowme2605/83e78f97ea443c93caeb3ffc4bd419a9caf7b849/review/07-blind-evidence-allowlist-template.md",
+      "runtime": "PROVIDED_SEPARATELY_AT_REVIEW_START"
+    },
+    "claudeDesign": {
+      "prompt": "https://raw.githubusercontent.com/knhbae/flowme2605/83e78f97ea443c93caeb3ffc4bd419a9caf7b849/review/03-claude-pass1-prompt-ko.md",
+      "allowlist": "https://raw.githubusercontent.com/knhbae/flowme2605/83e78f97ea443c93caeb3ffc4bd419a9caf7b849/review/08-claude-static-evidence-allowlist.md",
+      "runtime": "NOT_PROVIDED"
+    }
+  },
+  "sessionIds": {
+    "codex": "RECORDED_AT_REVIEW_START",
+    "claudeDesign": "RECORDED_AT_REVIEW_START"
+  },
+  "observedUsers": 0,
+  "informedReleaseState": "SEALED_UNTIL_BOTH_PASS1_FREEZES",
+  "deploymentState": "NO_PREVIEW_OR_PRODUCTION_DEPLOYMENT"
+}
