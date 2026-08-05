@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "release": "PASS2_INFORMED_CLAUDE_ONLY",
+  "state": "ASSET_CONTENT_READY_FOR_ORPHAN_COMMIT_WITH_STATIC_EQUIVALENCE_EXCEPTION",
+  "reviewer": "Claude Design",
+  "candidateEpoch": "p35-r2-131b8ce629cf1288",
+  "productCandidateSha": "29cb03a65dd1037a3b813b7f43a5a095e4669dce",
+  "buildId": "V29H3kpreESrdkYwzy_q9",
+  "blindEvidenceAssetSha": "64d5651df657c91e793dd1212788e293d6937947",
+  "blindReleaseIndexSha": "83e78f97ea443c93caeb3ffc4bd419a9caf7b849",
+  "ownPass1State": "CLAUDE_STATIC_REVIEW_CARRIED_FORWARD_BY_EQUIVALENCE",
+  "ownOriginalPass1FreezeSha256": "c7fcd3ae89aaf152bdfeb1b76ce29b82a0889d0515991d4146fa16b1144e751e",
+  "equivalenceEnvelopeSha256": "ec5bf8f66922a734bd4b78bde752a54d1a0bfffa252ad84bb2fb200e7af47cd6",
+  "strictSameEpochPass1": false,
+  "codexPass1Included": false,
+  "observedUsers": 0,
+  "deploymentState": "NONE"
+}

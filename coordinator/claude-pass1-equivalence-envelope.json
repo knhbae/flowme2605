@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "state": "CLAUDE_STATIC_REVIEW_CARRIED_FORWARD_BY_EQUIVALENCE",
+  "strictSameEpochPass1": false,
+  "ownerDirectedReuse": true,
+  "candidateEpoch": "p35-r2-131b8ce629cf1288",
+  "originalReview": {
+    "reviewer": "Claude Design",
+    "reviewSessionId": "claude-design-p35r2-pass1-20260805T170837+0900",
+    "productCandidateSha": "c48911757fb529941d00efc2162338ffa8b7686a",
+    "buildId": "gdh4DIMGS69Kcn0GBTJtl",
+    "blindEvidenceAssetSha": "0af680a215d49e648dd10f97eeb7954e5c689297",
+    "blindReleaseIndexSha": "e0d9a5b8f17f1e30ca8a18a273c873aaff696db0",
+    "zipPath": "D:\\flowme2605\\flow-mvp\\claude_work\\Pass 1 리뷰 결과 보고_260805_177.zip",
+    "zipBytes": 26523,
+    "zipSha256": "2e579b8b372b30995006402c60c128a0e448b00fdbde0ce3befd4874ab72a785",
+    "outputs": {
+      "claude-pass1-findings.md": "0dbb9d8df9629c90fd0459664f273ec0378f60440c7f399438b7da57294fe63c",
+      "claude-pass1-scorecard.md": "2a5e120890e4f310435eaa5aab06bb58e02fe56913a150ba8e622c4025d36dcc",
+      "claude-counterevidence-log.md": "b60d62bfeb83b7f56cbccb98859b6e6edcef8ad2302ff2ecd15133946171f9aa",
+      "claude-pass1-freeze.json": "c7fcd3ae89aaf152bdfeb1b76ce29b82a0889d0515991d4146fa16b1144e751e"
+    }
+  },
+  "carriedTo": {
+    "productCandidateSha": "29cb03a65dd1037a3b813b7f43a5a095e4669dce",
+    "buildId": "V29H3kpreESrdkYwzy_q9",
+    "blindEvidenceAssetSha": "64d5651df657c91e793dd1212788e293d6937947",
+    "blindReleaseIndexSha": "83e78f97ea443c93caeb3ffc4bd419a9caf7b849",
+    "launchSha": "3f3d7429d1c0642e88b3a0f0cb884cc5cc95ba56"
+  },
+  "equivalence": {
+    "productChangedPaths": [
+      "package-lock.json",
+      "package.json"
+    ],
+    "productSemanticDelta": "brace-expansion security override 5.0.8 to 5.0.9 only",
+    "applicationCodeChangedPaths": 0,
+    "evidencePathsOld": 297,
+    "evidencePathsCurrent": 297,
+    "evidencePathSetMismatch": 0,
+    "pngTotal": 90,
+    "pngByteIdentical": 88,
+    "pngNonSemanticRenderVariance": 2,
+    "tsvByteIdentical": "3/3",
+    "txtByteIdentical": "8/8",
+    "icsSemanticDelta": "DTSTAMP only in 2 of 4 files",
+    "claudeAllowlistRowsOld": 268,
+    "claudeAllowlistRowsCurrent": 268,
+    "allowlistInvariantRowMismatch": 0,
+    "reviewPromptAndRubric": "BYTE_IDENTICAL"
+  },
+  "bridgeDocument": {
+    "path": "D:\\flowme-review-output\\p35-round2-coordinator\\claude-pass1-static-equivalence-bridge-ko.md",
+    "bytes": 4448,
+    "sha256": "e0ea8ce91780b8fbb1179289df5b1c885344f0e8d0bac4d6f57d792246837720"
+  },
+  "allowedUse": [
+    "static UX",
+    "information architecture",
+    "visual hierarchy",
+    "interaction discoverability",
+    "copy",
+    "static accessibility counterexamples"
+  ],
+  "prohibitedClaims": [
+    "current-epoch PASS1_FROZEN",
+    "current runtime or storage verification by Claude",
+    "security verification by Claude",
+    "observed-user validation"
+  ],
+  "observedUsers": 0,
+  "deploymentState": "NONE",
+  "recordedAtKst": "2026-08-05T19:26:23.6947648+09:00"
+}

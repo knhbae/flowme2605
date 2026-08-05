@@ -1,0 +1,194 @@
+{
+  "schemaVersion": 1,
+  "marker": "PASS1_FROZEN",
+  "reviewer": "Claude Design",
+  "findingIdPrefix": "CD",
+  "pass": "P35 Round 2 — Pass 1 blind static IA/visual/copy review",
+  "verdict": "REVISE",
+  "weightedScore": 59.0,
+  "observedUsers": 0,
+  "session": {
+    "startedAtKst": "2026-08-05T17:08:37+09:00",
+    "finishedAtKst": "2026-08-05T17:36:00+09:00",
+    "reviewSessionId": "claude-design-p35r2-pass1-20260805T170837+0900",
+    "sessionIdRecordedAt": "review_start",
+    "inheritedContext": "none",
+    "priorReviewerOutputRead": "none",
+    "codexAllowlistOpened": false,
+    "runtimeUrlUsed": false,
+    "contaminationStatus": "CLEAN",
+    "blindContaminated": false
+  },
+  "candidate": {
+    "productCandidateSha": "c48911757fb529941d00efc2162338ffa8b7686a",
+    "productCandidateRef": "codex/p35-round2-candidate-20260805",
+    "buildId": "gdh4DIMGS69Kcn0GBTJtl",
+    "cleanTreeProofSha256": "08411ee7d7ddd20c5f49af3c2d2a88c5cef9dc9202cf333436ee76519fc5a031",
+    "cleanTreeProofVerifiedByReviewer": true,
+    "blindEvidencePublicationSha": "0af680a215d49e648dd10f97eeb7954e5c689297",
+    "blindReleaseIndexSha": "e0d9a5b8f17f1e30ca8a18a273c873aaff696db0",
+    "blindReleaseIndexShaSource": "coordinator-provided prompt/allowlist URLs at review start",
+    "capturedAtKst": "2026-08-05T15:08:06+09:00 → 2026-08-05T15:08:34+09:00"
+  },
+  "inputs": {
+    "note": "Only the two coordinator-provided commit-pinned B URLs, the documents they link directly, and the commit-pinned A evidence in the S17-excluded allowlist were used. Byte lengths for the review markdown are as served; their SHA-256 was not computed by the reviewer and is marked NOT_COMPUTED_BY_REVIEWER.",
+    "documents": [
+      {
+        "url": "https://github.com/knhbae/flowme2605/blob/e0d9a5b8f17f1e30ca8a18a273c873aaff696db0/review/03-claude-pass1-prompt-ko.md",
+        "role": "prompt",
+        "bytes": 5983,
+        "sha256": "NOT_COMPUTED_BY_REVIEWER"
+      },
+      {
+        "url": "https://github.com/knhbae/flowme2605/blob/e0d9a5b8f17f1e30ca8a18a273c873aaff696db0/review/08-claude-static-evidence-allowlist.md",
+        "role": "static evidence allowlist (S17 excluded)",
+        "bytes": 124957,
+        "sha256": "NOT_COMPUTED_BY_REVIEWER"
+      },
+      {
+        "url": "https://github.com/knhbae/flowme2605/blob/e0d9a5b8f17f1e30ca8a18a273c873aaff696db0/review/01-neutral-review-brief-ko.md",
+        "role": "linked brief",
+        "bytes": 4178,
+        "sha256": "NOT_COMPUTED_BY_REVIEWER"
+      },
+      {
+        "url": "https://github.com/knhbae/flowme2605/blob/e0d9a5b8f17f1e30ca8a18a273c873aaff696db0/review/04-neutral-scenario-matrix-ko.md",
+        "role": "linked scenario matrix",
+        "bytes": 5994,
+        "sha256": "NOT_COMPUTED_BY_REVIEWER"
+      },
+      {
+        "url": "https://github.com/knhbae/flowme2605/blob/e0d9a5b8f17f1e30ca8a18a273c873aaff696db0/review/05-evidence-contract-ko.md",
+        "role": "linked evidence contract",
+        "bytes": 7179,
+        "sha256": "NOT_COMPUTED_BY_REVIEWER"
+      },
+      {
+        "url": "https://github.com/knhbae/flowme2605/blob/e0d9a5b8f17f1e30ca8a18a273c873aaff696db0/review/06-scorecard-ko.md",
+        "role": "linked scorecard",
+        "bytes": 3537,
+        "sha256": "NOT_COMPUTED_BY_REVIEWER"
+      }
+    ],
+    "evidenceBaseUrl": "https://raw.githubusercontent.com/knhbae/flowme2605/0af680a215d49e648dd10f97eeb7954e5c689297/",
+    "evidenceScenariosOpened": ["GLOBAL", "S01", "S02", "S03", "S04", "S05", "S06", "S07", "S08", "S09", "S10", "S11", "S12", "S13", "S14", "S15", "S16", "S18", "S19", "S20", "S21", "S22", "S23"],
+    "evidenceScenariosNotOpened": ["S17"],
+    "evidenceFilesRetrieved": 163,
+    "evidenceFilesListedButNotRetrieved": 3,
+    "evidenceFilesNotRetrievable": [
+      {
+        "path": "evidence/S01/lookup-empty.storage-after.json",
+        "bytes": 1080753,
+        "sha256": "e8d7f98945ae67a259f0efbedf437f4c52893cd652cf998b1122ffd0d973eeb3",
+        "reason": "oversized for reviewer retrieval; byte length and SHA-256 read from the allowlist only"
+      },
+      {
+        "path": "evidence/S02/all-undated.storage-before.json",
+        "bytes": 1080753,
+        "sha256": "e8d7f98945ae67a259f0efbedf437f4c52893cd652cf998b1122ffd0d973eeb3",
+        "reason": "oversized for reviewer retrieval; byte length and SHA-256 read from the allowlist only"
+      },
+      {
+        "path": "evidence/S03/editor-apply.storage-before.json",
+        "bytes": 1080753,
+        "sha256": "e8d7f98945ae67a259f0efbedf437f4c52893cd652cf998b1122ffd0d973eeb3",
+        "reason": "oversized for reviewer retrieval; byte length and SHA-256 read from the allowlist only"
+      }
+    ],
+    "integritySample": {
+      "method": "SHA-256 recomputed by the reviewer over the retrieved bytes and compared with the allowlist value",
+      "checked": 10,
+      "matched": 10,
+      "mismatched": 0,
+      "files": [
+        { "path": "evidence/candidate/git-status-short-branch.txt", "bytes": 84, "sha256": "08411ee7d7ddd20c5f49af3c2d2a88c5cef9dc9202cf333436ee76519fc5a031", "result": "MATCH" },
+        { "path": "evidence/S01/01-hit-result.png", "bytes": 36488, "sha256": "b1a6b966de70a898628757aeb6329032df447af2269b7ab04b0127ae5fd76127", "result": "MATCH" },
+        { "path": "evidence/S02/03-dated-undated-mixed-public-result.png", "bytes": 38584, "sha256": "93c9a8e74825cce4b122b0ebdc75f101beebcee84f3631260d56f02fe18b8749", "result": "MATCH" },
+        { "path": "evidence/S03/07-item-validation-error.png", "bytes": 17725, "sha256": "08cf53e512afa4cef0cd0c7cb2d77437181da71960144a186707f1cd110d4283", "result": "MATCH" },
+        { "path": "evidence/S04/first-save.saved-record.raw.json", "bytes": 504, "sha256": "9e75c790cac00c4f36015ac6c09b7c41e5ad8d35f12537a0943b6520a582ec86", "result": "MATCH" },
+        { "path": "evidence/S05/checklist-transfer.raw.txt", "bytes": 3754, "sha256": "18e9a2fe3572ee267c1972fc56375f1e9a02c55ada26ebadeab18883e8f0d763", "result": "MATCH" },
+        { "path": "evidence/S05/receipt-storage.raw.json", "bytes": 2427, "sha256": "3ec71ea2afe9ce9062ad04fde2b7f7107baf7803c6dc23bfb202c0a4f3cfa5ef", "result": "MATCH" },
+        { "path": "evidence/S06/05-twenty-plans-library.png", "bytes": 68783, "sha256": "fe17eded521c4cfc34b4ee9d5aaac16a2827c709f26bfcef40fca5b469088713", "result": "MATCH" },
+        { "path": "evidence/S13/raw/malformed.txt", "bytes": 9, "sha256": "f1dec6e9ee608550bd1c39ff2b90134059bac5d02e4e78f6410aed2fbd870bd0", "result": "MATCH" },
+        { "path": "evidence/S18/edge-cases-crlf-utf8.tsv", "bytes": 884, "sha256": "808b99cceeb60a594730151eb8e91493dd99d5e6d30886f969fdb520c8fe3063", "result": "MATCH" }
+      ]
+    }
+  },
+  "outputs": [
+    {
+      "name": "claude-pass1-findings.md",
+      "bytes": 36029,
+      "sha256": "0dbb9d8df9629c90fd0459664f273ec0378f60440c7f399438b7da57294fe63c",
+      "url": "PENDING_COORDINATOR_EXTERNAL_REVIEW_OUTPUT_AREA"
+    },
+    {
+      "name": "claude-pass1-scorecard.md",
+      "bytes": 10603,
+      "sha256": "2a5e120890e4f310435eaa5aab06bb58e02fe56913a150ba8e622c4025d36dcc",
+      "url": "PENDING_COORDINATOR_EXTERNAL_REVIEW_OUTPUT_AREA"
+    },
+    {
+      "name": "claude-counterevidence-log.md",
+      "bytes": 11057,
+      "sha256": "b60d62bfeb83b7f56cbccb98859b6e6edcef8ad2302ff2ecd15133946171f9aa",
+      "url": "PENDING_COORDINATOR_EXTERNAL_REVIEW_OUTPUT_AREA"
+    },
+    {
+      "name": "claude-pass1-freeze.json",
+      "bytes": "SELF",
+      "sha256": "SELF_HASH_EXTERNAL_ENVELOPE_REQUIRED_AFTER_FREEZE_WRITE",
+      "url": "PENDING_COORDINATOR_EXTERNAL_REVIEW_OUTPUT_AREA"
+    }
+  ],
+  "scenarioStatus": {
+    "S01": "REVISE",
+    "S02": "REVISE",
+    "S03": "REVISE",
+    "S04": "PASS_WITH_NOTES",
+    "S05": "PASS",
+    "S06": "REVISE",
+    "S07": "PASS_WITH_NOTES",
+    "S08": "PASS_WITH_NOTES",
+    "S09": "PASS_WITH_NOTES",
+    "S10": "REVISE",
+    "S11": "PASS",
+    "S12": "REVISE",
+    "S13": "REVISE",
+    "S14": "REVISE",
+    "S15": "REVISE",
+    "S16": "PASS_WITH_NOTES",
+    "S17": "NOT_RUN — CODEX_ONLY",
+    "S18": "PASS",
+    "S19": "BLOCKED_BY_MISSING_EVIDENCE (UI sub-claim)",
+    "S20": "PASS_WITH_NOTES (display scope)",
+    "S21": "PASS_WITH_NOTES",
+    "S22": "NOT_ASSESSED",
+    "S23": "RUN"
+  },
+  "notAssessed": {
+    "actualBrowserZoom200": "NOT_RUN — ACTUAL_ZOOM_NOT_ASSESSED",
+    "reflowProxy720x500": "read as viewport reflow only; not interpreted as zoom evidence",
+    "screenReaderSpeech": "NOT_ASSESSED",
+    "performanceBudget": "NOT_ASSESSED",
+    "actualBrowserDstTransition": "NOT_ASSESSED",
+    "s17": "NOT_RUN — CODEX_ONLY"
+  },
+  "findings": {
+    "total": 20,
+    "blocking": 0,
+    "high": 4,
+    "medium": 10,
+    "low": 6,
+    "needsCodexVerification": ["CD-002", "CD-009", "CD-017"],
+    "counterevidenceRequests": ["CE-11", "CE-12"],
+    "hardFailCandidatesPendingVerification": [
+      "public quick path persistent storage diff is non-empty (CD-002)",
+      "required scenario sub-claim blocked by missing evidence (S19 UI states)"
+    ]
+  },
+  "claims": {
+    "productModified": false,
+    "productDeployed": false,
+    "statement": "This review did not modify or deploy the product. It reports observations from static evidence only."
+  }
+}
