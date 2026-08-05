@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "release": "PASS2_INFORMED_CODEX_ONLY",
+  "state": "INDEX_CONTENT_READY_EXTERNAL_LAUNCH_ENVELOPE_PENDING",
+  "reviewer": "Codex",
+  "candidateEpoch": "p35-r2-131b8ce629cf1288",
+  "productCandidateSha": "29cb03a65dd1037a3b813b7f43a5a095e4669dce",
+  "buildId": "V29H3kpreESrdkYwzy_q9",
+  "blindEvidenceAssetSha": "64d5651df657c91e793dd1212788e293d6937947",
+  "blindReleaseIndexSha": "83e78f97ea443c93caeb3ffc4bd419a9caf7b849",
+  "informedEvidenceAssetSha": "7e662ee9c118d1070020d2f1ed0a094508b452dd",
+  "informedReleaseIndexSha": "EXTERNAL_LAUNCH_ENVELOPE_REQUIRED_AFTER_INDEX_COMMIT",
+  "ownPass1State": "PASS1_FROZEN",
+  "strictSameEpochPass1": true,
+  "currentEvidenceRowCount": 283,
+  "observedUsers": 0,
+  "deploymentState": "NONE"
+}
