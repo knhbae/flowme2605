@@ -1,0 +1,469 @@
+{
+  "schemaVersion": 1,
+  "scenarioId": "S17",
+  "generatedAt": "2026-08-05T06:08:34.366Z",
+  "baseUrl": "http://127.0.0.1:3121",
+  "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+  "observedUsers": 0,
+  "sourceSnapshot": {
+    "head": "c48911757fb529941d00efc2162338ffa8b7686a",
+    "shortHead": "c48911757fb5",
+    "branch": "codex/p35-round2-candidate-20260805",
+    "buildId": "gdh4DIMGS69Kcn0GBTJtl",
+    "dirty": false,
+    "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+    "gitStatusSha256": "08411ee7d7ddd20c5f49af3c2d2a88c5cef9dc9202cf333436ee76519fc5a031"
+  },
+  "title": "Current runtime rollback flags, route state, and persistent-write trace",
+  "owner": "CODEX_ONLY",
+  "claudeDesignStatus": "NOT_RUN_CODEX_ONLY",
+  "reviewerStatus": "CODEX_EXECUTED_LOCAL_REHEARSAL",
+  "scope": {
+    "assessed": [
+      "exact lowercase off semantics",
+      "uppercase OFF control semantics",
+      "route and rendered main data attributes",
+      "localStorage/sessionStorage mutation journal during initial render"
+    ],
+    "notAssessed": [
+      "migration safety against real historical production accounts",
+      "Claude Design execution"
+    ]
+  },
+  "capturedCaseCount": 6,
+  "expectedCaseCount": 6,
+  "noWriteCaseCount": 6,
+  "storageContractFailureCount": 0,
+  "storageContractFailures": [],
+  "cases": [
+    {
+      "id": "public-default",
+      "surface": "public",
+      "route": "/f/moving-d30-basic",
+      "queryMode": "default-on",
+      "startedAt": "2026-08-05T06:08:35.777Z",
+      "finishedAt": "2026-08-05T06:08:37.429Z",
+      "httpStatus": 200,
+      "expectedFlagEvaluation": {
+        "saveLifecycle": true,
+        "editorTransaction": true,
+        "capabilityResult": true,
+        "quickLocalResult": true,
+        "savedTransfer": true,
+        "savedPlanLibrary": true,
+        "visualSubtraction": true,
+        "q3Copy": true
+      },
+      "expectedSeed": {
+        "local": {
+          "flow:evidence:s17:sentinel": "preserve-local"
+        },
+        "session": {
+          "flow:evidence:s17:session-sentinel": "preserve-session"
+        }
+      },
+      "href": "http://127.0.0.1:3121/f/moving-d30-basic",
+      "pathname": "/f/moving-d30-basic",
+      "search": "",
+      "title": "이사 D-30 준비 | FlowMe",
+      "mainAttributes": {
+        "data-p35-p004-save-lifecycle": "on",
+        "data-p35-p007-capability-result": "on",
+        "data-p35-q1-quick-local": "on",
+        "data-p35-q1-quick-eligible": "true",
+        "data-p35-q1-quick-reason": "eligible",
+        "data-p35-q3-copy": "on"
+      },
+      "mainTextExcerpt": "FLOW 계획 찾기 공유 화면 계획 미리보기 이사 이사 D-30 준비 원문 · 이사 체크리스트 참고 결과 미리보기 현재 계획 · 24개 주 결과 체크리스트 · 24개 다른 결과 시트 · 24행 다른 결과 메모 · 24개 먼저 확인할 결과 체크리스트 · 24개 날짜 없음 · 이사 방식 정하기 D-30 큰 준비 · 이사할 집 하자 점검하기 D-30 큰 준비 완료 기준 · 주요 공간 사진과 하자 목록을 집주인 또는 중개인에게 공유했다. · 필요 없는 물건 정리하기 D-30 큰 준비 나머지 21개 보기 ⌄ 입력이 더 필요한 결과 캘린더 날짜를 정하면 최대 24개 설정 이사일 예시 · 이사일 9월 3일 (목) 계획 수정 이사일 정하기 저장 없이 체크리스트 복사 내 계획에 저장되지 않음 · 보관하려면 저장 버튼 날짜 없이 내 계획에 저장",
+      "storageAfter": {
+        "local": {
+          "flow:evidence:s17:sentinel": {
+            "bytes": 14,
+            "sha256": "f9d8a4ff906464dd6ee9c951f2b454f8f58f031c1249b671bf8e83f664e99053",
+            "valueExcerpt": "preserve-local"
+          }
+        },
+        "session": {
+          "flow:evidence:s17:session-sentinel": {
+            "bytes": 16,
+            "sha256": "07ee03f6468514dd64dcda330e130c48d1552f906fe6f1ab8e2079d322e1073c",
+            "valueExcerpt": "preserve-session"
+          }
+        }
+      },
+      "storageWrites": [],
+      "persistentWriteCount": 0,
+      "noPersistentWritesObserved": true,
+      "seedPreserved": true,
+      "unexpectedLocalKeys": [],
+      "unexpectedSessionKeys": [],
+      "initialRenderStorageContract": "PASS",
+      "screenshot": "public-default.png",
+      "browserErrors": [],
+      "captureStatus": "CAPTURED_CURRENT_RUNTIME"
+    },
+    {
+      "id": "public-exact-off",
+      "surface": "public",
+      "route": "/f/moving-d30-basic?saveLifecycle=off&editorTransaction=off&capabilityResult=off&quickLocalResult=off&visualSubtraction=off&q3Copy=off",
+      "queryMode": "exact-lowercase-off",
+      "startedAt": "2026-08-05T06:08:37.636Z",
+      "finishedAt": "2026-08-05T06:08:39.065Z",
+      "httpStatus": 200,
+      "expectedFlagEvaluation": {
+        "saveLifecycle": false,
+        "editorTransaction": false,
+        "capabilityResult": false,
+        "quickLocalResult": false,
+        "savedTransfer": true,
+        "savedPlanLibrary": true,
+        "visualSubtraction": false,
+        "q3Copy": false
+      },
+      "expectedSeed": {
+        "local": {
+          "flow:evidence:s17:sentinel": "preserve-local"
+        },
+        "session": {
+          "flow:evidence:s17:session-sentinel": "preserve-session"
+        }
+      },
+      "href": "http://127.0.0.1:3121/f/moving-d30-basic?saveLifecycle=off&editorTransaction=off&capabilityResult=off&quickLocalResult=off&visualSubtraction=off&q3Copy=off",
+      "pathname": "/f/moving-d30-basic",
+      "search": "?saveLifecycle=off&editorTransaction=off&capabilityResult=off&quickLocalResult=off&visualSubtraction=off&q3Copy=off",
+      "title": "이사 D-30 준비 | FlowMe",
+      "mainAttributes": {
+        "data-p35-p004-save-lifecycle": "off",
+        "data-p35-p007-capability-result": "off",
+        "data-p35-q1-quick-local": "off",
+        "data-p35-q1-quick-eligible": "false",
+        "data-p35-q1-quick-reason": "feature_disabled",
+        "data-p35-q3-copy": "off"
+      },
+      "mainTextExcerpt": "FLOW Flow 찾기 공유 화면 Flow 미리보기 이사 이사 D-30 준비 원문 · 이사 체크리스트 참고 예시 일정 · 저장되지 않음 먼저 확인할 결과 캘린더 · 24개 8월 4일 - 9월 4일 04 (화) 이사 방식 정하기 D-30 큰 준비 수정 이사할 집 하자 점검하기 D-30 큰 준비 완료 기준 · 주요 공간 사진과 하자 목록을 집주인 또는 중개인에게 공유했다. 수정 필요 없는 물건 정리하기 D-30 큰 준비 수정 나머지 21개 보기 ⌄ 이사일 예시 · 이사일 9월 3일 (목) Flow 편집 이사일 정하고 캘린더로 시작 날짜 없이 체크리스트 24개로 시작 내 도구로 옮기기 캘린더·체크리스트·시트 중 선택",
+      "storageAfter": {
+        "local": {
+          "flow:evidence:s17:sentinel": {
+            "bytes": 14,
+            "sha256": "f9d8a4ff906464dd6ee9c951f2b454f8f58f031c1249b671bf8e83f664e99053",
+            "valueExcerpt": "preserve-local"
+          }
+        },
+        "session": {
+          "flow:evidence:s17:session-sentinel": {
+            "bytes": 16,
+            "sha256": "07ee03f6468514dd64dcda330e130c48d1552f906fe6f1ab8e2079d322e1073c",
+            "valueExcerpt": "preserve-session"
+          }
+        }
+      },
+      "storageWrites": [],
+      "persistentWriteCount": 0,
+      "noPersistentWritesObserved": true,
+      "seedPreserved": true,
+      "unexpectedLocalKeys": [],
+      "unexpectedSessionKeys": [],
+      "initialRenderStorageContract": "PASS",
+      "screenshot": "public-exact-off.png",
+      "browserErrors": [],
+      "captureStatus": "CAPTURED_CURRENT_RUNTIME"
+    },
+    {
+      "id": "public-uppercase-off",
+      "surface": "public",
+      "route": "/f/moving-d30-basic?saveLifecycle=OFF&editorTransaction=OFF&capabilityResult=OFF&quickLocalResult=OFF&visualSubtraction=OFF&q3Copy=OFF",
+      "queryMode": "uppercase-control",
+      "startedAt": "2026-08-05T06:08:39.217Z",
+      "finishedAt": "2026-08-05T06:08:40.509Z",
+      "httpStatus": 200,
+      "expectedFlagEvaluation": {
+        "saveLifecycle": true,
+        "editorTransaction": true,
+        "capabilityResult": true,
+        "quickLocalResult": true,
+        "savedTransfer": true,
+        "savedPlanLibrary": true,
+        "visualSubtraction": true,
+        "q3Copy": true
+      },
+      "expectedSeed": {
+        "local": {
+          "flow:evidence:s17:sentinel": "preserve-local"
+        },
+        "session": {
+          "flow:evidence:s17:session-sentinel": "preserve-session"
+        }
+      },
+      "href": "http://127.0.0.1:3121/f/moving-d30-basic?saveLifecycle=OFF&editorTransaction=OFF&capabilityResult=OFF&quickLocalResult=OFF&visualSubtraction=OFF&q3Copy=OFF",
+      "pathname": "/f/moving-d30-basic",
+      "search": "?saveLifecycle=OFF&editorTransaction=OFF&capabilityResult=OFF&quickLocalResult=OFF&visualSubtraction=OFF&q3Copy=OFF",
+      "title": "이사 D-30 준비 | FlowMe",
+      "mainAttributes": {
+        "data-p35-p004-save-lifecycle": "on",
+        "data-p35-p007-capability-result": "on",
+        "data-p35-q1-quick-local": "on",
+        "data-p35-q1-quick-eligible": "true",
+        "data-p35-q1-quick-reason": "eligible",
+        "data-p35-q3-copy": "on"
+      },
+      "mainTextExcerpt": "FLOW 계획 찾기 공유 화면 계획 미리보기 이사 이사 D-30 준비 원문 · 이사 체크리스트 참고 결과 미리보기 현재 계획 · 24개 주 결과 체크리스트 · 24개 다른 결과 시트 · 24행 다른 결과 메모 · 24개 먼저 확인할 결과 체크리스트 · 24개 날짜 없음 · 이사 방식 정하기 D-30 큰 준비 · 이사할 집 하자 점검하기 D-30 큰 준비 완료 기준 · 주요 공간 사진과 하자 목록을 집주인 또는 중개인에게 공유했다. · 필요 없는 물건 정리하기 D-30 큰 준비 나머지 21개 보기 ⌄ 입력이 더 필요한 결과 캘린더 날짜를 정하면 최대 24개 설정 이사일 예시 · 이사일 9월 3일 (목) 계획 수정 이사일 정하기 저장 없이 체크리스트 복사 내 계획에 저장되지 않음 · 보관하려면 저장 버튼 날짜 없이 내 계획에 저장",
+      "storageAfter": {
+        "local": {
+          "flow:evidence:s17:sentinel": {
+            "bytes": 14,
+            "sha256": "f9d8a4ff906464dd6ee9c951f2b454f8f58f031c1249b671bf8e83f664e99053",
+            "valueExcerpt": "preserve-local"
+          }
+        },
+        "session": {
+          "flow:evidence:s17:session-sentinel": {
+            "bytes": 16,
+            "sha256": "07ee03f6468514dd64dcda330e130c48d1552f906fe6f1ab8e2079d322e1073c",
+            "valueExcerpt": "preserve-session"
+          }
+        }
+      },
+      "storageWrites": [],
+      "persistentWriteCount": 0,
+      "noPersistentWritesObserved": true,
+      "seedPreserved": true,
+      "unexpectedLocalKeys": [],
+      "unexpectedSessionKeys": [],
+      "initialRenderStorageContract": "PASS",
+      "screenshot": "public-uppercase-off.png",
+      "browserErrors": [],
+      "captureStatus": "CAPTURED_CURRENT_RUNTIME"
+    },
+    {
+      "id": "my-default",
+      "surface": "my",
+      "route": "/my?flow=moving-d30-basic",
+      "queryMode": "default-on",
+      "startedAt": "2026-08-05T06:08:40.633Z",
+      "finishedAt": "2026-08-05T06:08:41.823Z",
+      "httpStatus": 200,
+      "expectedFlagEvaluation": {
+        "saveLifecycle": true,
+        "editorTransaction": true,
+        "capabilityResult": true,
+        "quickLocalResult": true,
+        "savedTransfer": true,
+        "savedPlanLibrary": true,
+        "visualSubtraction": true,
+        "q3Copy": true
+      },
+      "expectedSeed": {
+        "local": {
+          "flow:evidence:s17:sentinel": "preserve-local",
+          "flow:saved:moving-d30-basic": "{\"slug\":\"moving-d30-basic\",\"savedAt\":\"2026-08-05T03:00:00.000Z\",\"selectedArtifactMode\":\"calendar\",\"anchor\":\"2031-09-01\",\"dateIntent\":\"custom\"}",
+          "flow:moving-d30-basic:anchorDate": "{\"mode\":\"custom\",\"anchor\":\"2031-09-01\"}"
+        },
+        "session": {
+          "flow:evidence:s17:session-sentinel": "preserve-session"
+        }
+      },
+      "href": "http://127.0.0.1:3121/my?flow=moving-d30-basic",
+      "pathname": "/my",
+      "search": "?flow=moving-d30-basic",
+      "title": "내 계획",
+      "mainAttributes": {
+        "data-saved-library-flag": "on",
+        "data-p35-q3-copy": "on",
+        "data-p35-q1-saved-transfer": "on",
+        "data-p35-dead-view-marker": "P35-DEAD-VIEW-REMOVAL",
+        "data-p35-my-flow-marker": "P35-MY-LIBRARY-ONLY"
+      },
+      "mainTextExcerpt": "FLOW ≡ 이사 D-30 준비 ‹ 이사 D-30 준비 전체 0/24 완료 계획 관리 다음 할 일 3개 먼저 02 (토) 이사 방식 정하기 큰 준비 이사할 집 하자 점검하기 큰 준비 필요 없는 물건 정리하기 큰 준비 전체 진행 전체 0/24 완료 전체 계획 24개 ⌄ 이사일 바꾸기 전체 24개 옮기기 계획 찾기 캘린더 내 계획",
+      "storageAfter": {
+        "local": {
+          "flow:evidence:s17:sentinel": {
+            "bytes": 14,
+            "sha256": "f9d8a4ff906464dd6ee9c951f2b454f8f58f031c1249b671bf8e83f664e99053",
+            "valueExcerpt": "preserve-local"
+          },
+          "flow:moving-d30-basic:anchorDate": {
+            "bytes": 39,
+            "sha256": "a150b5681f07609973df3a13de32b0d6ea1cfa4d3c10fc5df79af8fbea31b439",
+            "valueExcerpt": "{\"mode\":\"custom\",\"anchor\":\"2031-09-01\"}"
+          },
+          "flow:saved:moving-d30-basic": {
+            "bytes": 142,
+            "sha256": "b605387a2fb017f29e9e82480060609cc97eab2c48ff52a4cf96f69b09f9b0ce",
+            "valueExcerpt": "{\"slug\":\"moving-d30-basic\",\"savedAt\":\"2026-08-05T03:00:00.000Z\",\"selectedArtifactMode\":\"calendar\",\"anchor\":\"2031-09-01\",\"dateIntent\":\"custom\"}"
+          }
+        },
+        "session": {
+          "flow:evidence:s17:session-sentinel": {
+            "bytes": 16,
+            "sha256": "07ee03f6468514dd64dcda330e130c48d1552f906fe6f1ab8e2079d322e1073c",
+            "valueExcerpt": "preserve-session"
+          }
+        }
+      },
+      "storageWrites": [],
+      "persistentWriteCount": 0,
+      "noPersistentWritesObserved": true,
+      "seedPreserved": true,
+      "unexpectedLocalKeys": [],
+      "unexpectedSessionKeys": [],
+      "initialRenderStorageContract": "PASS",
+      "screenshot": "my-default.png",
+      "browserErrors": [],
+      "captureStatus": "CAPTURED_CURRENT_RUNTIME"
+    },
+    {
+      "id": "my-exact-off",
+      "surface": "my",
+      "route": "/my?flow=moving-d30-basic&savedTransfer=off&savedPlanLibrary=off&visualSubtraction=off&q3Copy=off",
+      "queryMode": "exact-lowercase-off",
+      "startedAt": "2026-08-05T06:08:41.975Z",
+      "finishedAt": "2026-08-05T06:08:43.336Z",
+      "httpStatus": 200,
+      "expectedFlagEvaluation": {
+        "saveLifecycle": true,
+        "editorTransaction": true,
+        "capabilityResult": true,
+        "quickLocalResult": true,
+        "savedTransfer": false,
+        "savedPlanLibrary": false,
+        "visualSubtraction": false,
+        "q3Copy": false
+      },
+      "expectedSeed": {
+        "local": {
+          "flow:evidence:s17:sentinel": "preserve-local",
+          "flow:saved:moving-d30-basic": "{\"slug\":\"moving-d30-basic\",\"savedAt\":\"2026-08-05T03:00:00.000Z\",\"selectedArtifactMode\":\"calendar\",\"anchor\":\"2031-09-01\",\"dateIntent\":\"custom\"}",
+          "flow:moving-d30-basic:anchorDate": "{\"mode\":\"custom\",\"anchor\":\"2031-09-01\"}"
+        },
+        "session": {
+          "flow:evidence:s17:session-sentinel": "preserve-session"
+        }
+      },
+      "href": "http://127.0.0.1:3121/my?flow=moving-d30-basic&savedTransfer=off&savedPlanLibrary=off&visualSubtraction=off&q3Copy=off",
+      "pathname": "/my",
+      "search": "?flow=moving-d30-basic&savedTransfer=off&savedPlanLibrary=off&visualSubtraction=off&q3Copy=off",
+      "title": "My Flow",
+      "mainAttributes": {
+        "data-saved-library-flag": "off",
+        "data-p35-q3-copy": "off",
+        "data-p35-q1-saved-transfer": "off",
+        "data-p35-dead-view-marker": "P35-DEAD-VIEW-REMOVAL",
+        "data-p35-my-flow-marker": "P35-MY-LIBRARY-ONLY"
+      },
+      "mainTextExcerpt": "FLOW ≡ 이사 D-30 준비 실행할 할 일 19개 지금 할 일 저장한 Flow ‹ 이사 D-30 준비 전체 0/24 완료 Flow 관리 다음 할 일 3개 먼저 02 (토) 이사 방식 정하기 큰 준비 이사할 집 하자 점검하기 큰 준비 필요 없는 물건 정리하기 큰 준비 전체 진행 전체 0/24 완료 전체 계획 24개 ⌄ 이사일 바꾸기 전체 24개 옮기기 Flow 찾기 캘린더 내 Flow",
+      "storageAfter": {
+        "local": {
+          "flow:evidence:s17:sentinel": {
+            "bytes": 14,
+            "sha256": "f9d8a4ff906464dd6ee9c951f2b454f8f58f031c1249b671bf8e83f664e99053",
+            "valueExcerpt": "preserve-local"
+          },
+          "flow:moving-d30-basic:anchorDate": {
+            "bytes": 39,
+            "sha256": "a150b5681f07609973df3a13de32b0d6ea1cfa4d3c10fc5df79af8fbea31b439",
+            "valueExcerpt": "{\"mode\":\"custom\",\"anchor\":\"2031-09-01\"}"
+          },
+          "flow:saved:moving-d30-basic": {
+            "bytes": 142,
+            "sha256": "b605387a2fb017f29e9e82480060609cc97eab2c48ff52a4cf96f69b09f9b0ce",
+            "valueExcerpt": "{\"slug\":\"moving-d30-basic\",\"savedAt\":\"2026-08-05T03:00:00.000Z\",\"selectedArtifactMode\":\"calendar\",\"anchor\":\"2031-09-01\",\"dateIntent\":\"custom\"}"
+          }
+        },
+        "session": {
+          "flow:evidence:s17:session-sentinel": {
+            "bytes": 16,
+            "sha256": "07ee03f6468514dd64dcda330e130c48d1552f906fe6f1ab8e2079d322e1073c",
+            "valueExcerpt": "preserve-session"
+          }
+        }
+      },
+      "storageWrites": [],
+      "persistentWriteCount": 0,
+      "noPersistentWritesObserved": true,
+      "seedPreserved": true,
+      "unexpectedLocalKeys": [],
+      "unexpectedSessionKeys": [],
+      "initialRenderStorageContract": "PASS",
+      "screenshot": "my-exact-off.png",
+      "browserErrors": [],
+      "captureStatus": "CAPTURED_CURRENT_RUNTIME"
+    },
+    {
+      "id": "my-uppercase-off",
+      "surface": "my",
+      "route": "/my?flow=moving-d30-basic&savedTransfer=OFF&savedPlanLibrary=OFF&visualSubtraction=OFF&q3Copy=OFF",
+      "queryMode": "uppercase-control",
+      "startedAt": "2026-08-05T06:08:43.516Z",
+      "finishedAt": "2026-08-05T06:08:44.845Z",
+      "httpStatus": 200,
+      "expectedFlagEvaluation": {
+        "saveLifecycle": true,
+        "editorTransaction": true,
+        "capabilityResult": true,
+        "quickLocalResult": true,
+        "savedTransfer": true,
+        "savedPlanLibrary": true,
+        "visualSubtraction": true,
+        "q3Copy": true
+      },
+      "expectedSeed": {
+        "local": {
+          "flow:evidence:s17:sentinel": "preserve-local",
+          "flow:saved:moving-d30-basic": "{\"slug\":\"moving-d30-basic\",\"savedAt\":\"2026-08-05T03:00:00.000Z\",\"selectedArtifactMode\":\"calendar\",\"anchor\":\"2031-09-01\",\"dateIntent\":\"custom\"}",
+          "flow:moving-d30-basic:anchorDate": "{\"mode\":\"custom\",\"anchor\":\"2031-09-01\"}"
+        },
+        "session": {
+          "flow:evidence:s17:session-sentinel": "preserve-session"
+        }
+      },
+      "href": "http://127.0.0.1:3121/my?flow=moving-d30-basic&savedTransfer=OFF&savedPlanLibrary=OFF&visualSubtraction=OFF&q3Copy=OFF",
+      "pathname": "/my",
+      "search": "?flow=moving-d30-basic&savedTransfer=OFF&savedPlanLibrary=OFF&visualSubtraction=OFF&q3Copy=OFF",
+      "title": "내 계획",
+      "mainAttributes": {
+        "data-saved-library-flag": "on",
+        "data-p35-q3-copy": "on",
+        "data-p35-q1-saved-transfer": "on",
+        "data-p35-dead-view-marker": "P35-DEAD-VIEW-REMOVAL",
+        "data-p35-my-flow-marker": "P35-MY-LIBRARY-ONLY"
+      },
+      "mainTextExcerpt": "FLOW ≡ 이사 D-30 준비 ‹ 이사 D-30 준비 전체 0/24 완료 계획 관리 다음 할 일 3개 먼저 02 (토) 이사 방식 정하기 큰 준비 이사할 집 하자 점검하기 큰 준비 필요 없는 물건 정리하기 큰 준비 전체 진행 전체 0/24 완료 전체 계획 24개 ⌄ 이사일 바꾸기 전체 24개 옮기기 계획 찾기 캘린더 내 계획",
+      "storageAfter": {
+        "local": {
+          "flow:evidence:s17:sentinel": {
+            "bytes": 14,
+            "sha256": "f9d8a4ff906464dd6ee9c951f2b454f8f58f031c1249b671bf8e83f664e99053",
+            "valueExcerpt": "preserve-local"
+          },
+          "flow:moving-d30-basic:anchorDate": {
+            "bytes": 39,
+            "sha256": "a150b5681f07609973df3a13de32b0d6ea1cfa4d3c10fc5df79af8fbea31b439",
+            "valueExcerpt": "{\"mode\":\"custom\",\"anchor\":\"2031-09-01\"}"
+          },
+          "flow:saved:moving-d30-basic": {
+            "bytes": 142,
+            "sha256": "b605387a2fb017f29e9e82480060609cc97eab2c48ff52a4cf96f69b09f9b0ce",
+            "valueExcerpt": "{\"slug\":\"moving-d30-basic\",\"savedAt\":\"2026-08-05T03:00:00.000Z\",\"selectedArtifactMode\":\"calendar\",\"anchor\":\"2031-09-01\",\"dateIntent\":\"custom\"}"
+          }
+        },
+        "session": {
+          "flow:evidence:s17:session-sentinel": {
+            "bytes": 16,
+            "sha256": "07ee03f6468514dd64dcda330e130c48d1552f906fe6f1ab8e2079d322e1073c",
+            "valueExcerpt": "preserve-session"
+          }
+        }
+      },
+      "storageWrites": [],
+      "persistentWriteCount": 0,
+      "noPersistentWritesObserved": true,
+      "seedPreserved": true,
+      "unexpectedLocalKeys": [],
+      "unexpectedSessionKeys": [],
+      "initialRenderStorageContract": "PASS",
+      "screenshot": "my-uppercase-off.png",
+      "browserErrors": [],
+      "captureStatus": "CAPTURED_CURRENT_RUNTIME"
+    }
+  ]
+}

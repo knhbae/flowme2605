@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "status": "PASS",
+  "sourceProvided": true,
+  "sourceFileName": "build.log",
+  "copiedRelativePath": "candidate/build.log",
+  "command": "npm.cmd run build",
+  "exitCode": 0,
+  "byteLength": 2432,
+  "sha256": "3a2d2a7897db61584092a511fdd6e9163265bcd2fba6bdf8ea96d724097e1a26",
+  "encoding": {
+    "declared": "utf-8",
+    "valid": true,
+    "containsNul": false,
+    "containsReplacementCharacter": false,
+    "error": null
+  },
+  "buildId": "gdh4DIMGS69Kcn0GBTJtl"
+}

@@ -1,0 +1,148 @@
+{
+  "scenarioId": "S16",
+  "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+  "orderedStateIds": [
+    "reduced_motion_dialog",
+    "error_announcement"
+  ],
+  "fullScreenFiles": [
+    {
+      "stateId": "reduced_motion_dialog",
+      "relativePath": "S16/01-reduced-motion-dialog-full.png",
+      "bytes": 39060,
+      "sha256": "07eb1153cdb0ea42473210311f4d147ea7aaaaa09ecefa8f72bac28a44c3d38a",
+      "mime": "image/png",
+      "route": "http://127.0.0.1:3121/flow-maps/curated-wedding-checklist-family"
+    },
+    {
+      "stateId": "error_announcement",
+      "relativePath": "S16/02-error-announcement-full.png",
+      "bytes": 31583,
+      "sha256": "dd1c0d9eff18ad1df431379629515aafe9ea700bfd8c36c35ed60cd7849fc758",
+      "mime": "image/png",
+      "route": "http://127.0.0.1:3121/flow-maps/middle-school-math-1"
+    }
+  ],
+  "actionSequence": [
+    "enable prefers-reduced-motion",
+    "focus disclosure trigger and open with Enter",
+    "record ARIA snapshot and five Tab moves",
+    "Escape and verify focus return",
+    "inject map persistence failure and record alert/live regions"
+  ],
+  "gaps": [
+    "No screen-reader speech output was captured; DOM name/role/relation and live-region evidence only."
+  ],
+  "routeState": "http://127.0.0.1:3121/flow-maps/middle-school-math-1",
+  "capturedAtKst": "2026-08-05T15:08:31+09:00",
+  "consoleNetworkStatus": {
+    "consoleErrors": 0,
+    "failedRequests": 1,
+    "expectedNavigationOrPrefetchAborts": 1,
+    "unexpectedFailedRequests": 0,
+    "httpErrors": 0
+  },
+  "pageQuality": {
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "devicePixelRatio": 1
+    },
+    "scroll": {
+      "documentWidth": 390,
+      "documentHeight": 955,
+      "horizontalOverflow": 0
+    },
+    "unnamedInteractiveCount": 0,
+    "horizontallyClippedInteractiveCount": 0,
+    "brokenRelations": [],
+    "replacementCharacterCount": 0,
+    "visibleInteractiveCount": 37
+  },
+  "seedId": "wedding-help + middle-school-map-error",
+  "seedSha256": "a5b8cd85205ffc6e27615eb61de99af8b3d75e59fec9678fa5703d0fb85bf83d",
+  "viewportInput": {
+    "width": 390,
+    "height": 844,
+    "zoom": 1,
+    "motion": "reduce"
+  },
+  "accessibilityTrace": {
+    "reducedMotion": true,
+    "relationBefore": {
+      "data-testid": "flow-map-choice-help-trigger",
+      "data-flow-context-trigger": "flow-context-_R_2fdinpfivb_-trigger",
+      "data-flow-context-kind": "help"
+    },
+    "ariaSnapshot": "- dialog \"사용할 계획을 고르세요\":\n  - paragraph: 선택 도움말\n  - heading \"사용할 계획을 고르세요\" [level=2]\n  - button \"닫기\"\n  - paragraph: 목적에 맞는 계획 하나를 열어 내용을 확인하세요. 이 단계에서는 아직 내 계획에 저장되지 않습니다.",
+    "focus": [
+      {
+        "step": "trigger",
+        "active": "flow-map-choice-help-trigger"
+      },
+      {
+        "step": "Tab 1",
+        "tag": "BUTTON",
+        "testId": "flow-map-choice-help-sheet-close",
+        "name": "닫기"
+      },
+      {
+        "step": "Tab 2",
+        "tag": "BUTTON",
+        "testId": "flow-map-choice-help-sheet-close",
+        "name": "닫기"
+      },
+      {
+        "step": "Tab 3",
+        "tag": "BUTTON",
+        "testId": "flow-map-choice-help-sheet-close",
+        "name": "닫기"
+      },
+      {
+        "step": "Tab 4",
+        "tag": "BUTTON",
+        "testId": "flow-map-choice-help-sheet-close",
+        "name": "닫기"
+      },
+      {
+        "step": "Tab 5",
+        "tag": "BUTTON",
+        "testId": "flow-map-choice-help-sheet-close",
+        "name": "닫기"
+      }
+    ],
+    "focusReturned": true,
+    "announcementTrace": [
+      {
+        "role": "alert",
+        "live": null,
+        "atomic": null,
+        "text": "저장하지 못했습니다. 선택은 그대로 유지됐어요. 다시 시도해 주세요.",
+        "testId": "flow-map-save-error"
+      }
+    ],
+    "errorAttrs": {
+      "data-testid": "flow-map-save-error"
+    },
+    "pageQuality": {
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "devicePixelRatio": 1
+      },
+      "scroll": {
+        "documentWidth": 390,
+        "documentHeight": 955,
+        "horizontalOverflow": 0
+      },
+      "unnamedInteractiveCount": 0,
+      "horizontallyClippedInteractiveCount": 0,
+      "brokenRelations": [],
+      "replacementCharacterCount": 0,
+      "visibleInteractiveCount": 37
+    },
+    "screenReaderSpeech": "NOT_ASSESSED"
+  },
+  "persistentWriteCount": 0,
+  "reviewerStatus": "LOCAL_REHEARSAL_WITH_NOT_ASSESSED"
+}

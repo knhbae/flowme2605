@@ -1,0 +1,25 @@
+{
+  "equal": true,
+  "before": {
+    "local": {
+      "flow:meta:last-visit": "2026-08-05T06:08:03.278Z",
+      "flow:my-flow:date-overrides": "{}",
+      "flow:my-flow:item-drafts": "{}",
+      "flow:personal-copy:8c31fd3d-080b-4ecc-b35a-32b5b9444c42:anchorDate": "{\"mode\":\"custom\",\"anchor\":\"2032-02-01\"}",
+      "flow:saved:personal-copy:8c31fd3d-080b-4ecc-b35a-32b5b9444c42": "{\"personalTitle\":\"이사 D-30 준비\",\"selectedArtifactMode\":\"calendar\",\"dateIntent\":\"custom\",\"anchor\":\"2032-02-01\",\"schemaVersion\":2,\"slug\":\"personal-copy:8c31fd3d-080b-4ecc-b35a-32b5b9444c42\",\"savedAt\":\"2026-08-05T06:08:03.278Z\",\"personalCopyKey\":\"personal-copy:8c31fd3d-080b-4ecc-b35a-32b5b9444c42\",\"sourceFlowKey\":\"flow-moving\",\"sourceFlowSlug\":\"moving-d30-basic\",\"sourceVersion\":\"2026-05-20T00:00:00.000Z\",\"lastSaveRequestId\":\"save-request:e66e61aa-330c-41f1-bb91-f370d97f1e35\",\"savedItemCount\":24}",
+      "flow_builder_mvp_item_state_personal-copy:8c31fd3d-080b-4ecc-b35a-32b5b9444c42": "{}"
+    },
+    "session": {}
+  },
+  "after": {
+    "local": {
+      "flow:meta:last-visit": "2026-08-05T06:08:03.278Z",
+      "flow:my-flow:date-overrides": "{}",
+      "flow:my-flow:item-drafts": "{}",
+      "flow:personal-copy:8c31fd3d-080b-4ecc-b35a-32b5b9444c42:anchorDate": "{\"mode\":\"custom\",\"anchor\":\"2032-02-01\"}",
+      "flow:saved:personal-copy:8c31fd3d-080b-4ecc-b35a-32b5b9444c42": "{\"personalTitle\":\"이사 D-30 준비\",\"selectedArtifactMode\":\"calendar\",\"dateIntent\":\"custom\",\"anchor\":\"2032-02-01\",\"schemaVersion\":2,\"slug\":\"personal-copy:8c31fd3d-080b-4ecc-b35a-32b5b9444c42\",\"savedAt\":\"2026-08-05T06:08:03.278Z\",\"personalCopyKey\":\"personal-copy:8c31fd3d-080b-4ecc-b35a-32b5b9444c42\",\"sourceFlowKey\":\"flow-moving\",\"sourceFlowSlug\":\"moving-d30-basic\",\"sourceVersion\":\"2026-05-20T00:00:00.000Z\",\"lastSaveRequestId\":\"save-request:e66e61aa-330c-41f1-bb91-f370d97f1e35\",\"savedItemCount\":24}",
+      "flow_builder_mvp_item_state_personal-copy:8c31fd3d-080b-4ecc-b35a-32b5b9444c42": "{}"
+    },
+    "session": {}
+  }
+}

@@ -1,0 +1,975 @@
+{
+  "capturedAt": "2026-08-05T06:07:30.028Z",
+  "route": "http://127.0.0.1:3121/f/moving-d30-basic",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "headings": [
+    {
+      "tag": "h1",
+      "level": null,
+      "text": "이사 D-30 준비",
+      "testId": null
+    },
+    {
+      "tag": "h2",
+      "level": null,
+      "text": "현재 계획 · 24개",
+      "testId": null
+    },
+    {
+      "tag": "h2",
+      "level": null,
+      "text": "체크리스트 · 24개",
+      "testId": null
+    }
+  ],
+  "actions": [
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "FLOW계획 찾기",
+      "accessibleName": "FLOW계획 찾기",
+      "testId": null,
+      "href": "/flows",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "이사 체크리스트 참고",
+      "accessibleName": "이사 체크리스트 참고",
+      "testId": null,
+      "href": "https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "주 결과캘린더 · 일정 24개",
+      "accessibleName": "주 결과캘린더 · 일정 24개",
+      "testId": "flow-capability-result-choice",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": "false"
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "다른 결과체크리스트 · 24개",
+      "accessibleName": "다른 결과체크리스트 · 24개",
+      "testId": "flow-capability-result-choice",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": "true"
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "다른 결과시트 · 24행",
+      "accessibleName": "다른 결과시트 · 24행",
+      "testId": "flow-capability-result-choice",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": "false"
+    },
+    {
+      "tag": "summary",
+      "type": null,
+      "role": null,
+      "text": "다른 형식 1개",
+      "accessibleName": "다른 형식 1개",
+      "testId": null,
+      "href": null,
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "다른 결과메모 · 24개",
+      "accessibleName": "다른 결과메모 · 24개",
+      "testId": "flow-capability-result-choice",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": "false"
+    },
+    {
+      "tag": "summary",
+      "type": null,
+      "role": null,
+      "text": "나머지 21개 보기⌄",
+      "accessibleName": "나머지 21개 보기⌄",
+      "testId": "flow-capability-artifact-preview-expand",
+      "href": null,
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "input",
+      "type": "date",
+      "role": null,
+      "text": "",
+      "accessibleName": "이사일",
+      "testId": "public-flow-anchor-input",
+      "href": null,
+      "value": "2031-09-01",
+      "checked": false,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "계획 수정",
+      "accessibleName": "계획 수정",
+      "testId": "public-flow-adjust-entry-mobile",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "내 계획에 저장",
+      "accessibleName": "내 계획에 저장",
+      "testId": "public-flow-save-primary-mobile",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    }
+  ],
+  "validation": [],
+  "geometry": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "document": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 1074
+    },
+    "horizontalOverflow": 0
+  },
+  "importantNodes": [
+    {
+      "testId": "flow-public-shell",
+      "data": {
+        "data-testid": "flow-public-shell"
+      }
+    },
+    {
+      "testId": "public-flow-hero",
+      "data": {
+        "data-testid": "public-flow-hero",
+        "data-visual-structure": "artifact-first",
+        "data-experience-architecture": "p35-result-first",
+        "data-p29-marker": "P29-SAVE-BEFORE-PRIMARY-RESULT",
+        "data-p30-marker": "P30-SAVE-BEFORE-SINGLE-DECISION",
+        "data-p35-marker": "P35-PUBLIC-RESULT-FIRST",
+        "data-flow-anatomy": "save-before"
+      }
+    },
+    {
+      "testId": "flow-save-before-primary-result",
+      "data": {
+        "data-testid": "flow-save-before-primary-result",
+        "data-flow-identity-slot": "primary-result"
+      }
+    },
+    {
+      "testId": "public-flow-capability-result",
+      "data": {
+        "data-testid": "public-flow-capability-result",
+        "data-capability-lifecycle": "public_preview",
+        "data-capability-state": "결과 미리보기",
+        "data-capability-scope": "현재 계획 · 24개",
+        "data-capability-receipt": "",
+        "data-capability-snapshot-kind": "effective_authoring",
+        "data-capability-snapshot-version": "2026-05-20T00:00:00.000Z|personal:47d25cc7|execution:ee52f9ed",
+        "data-capability-primary-destination": "calendar",
+        "data-capability-selected-destination": "checklist",
+        "data-capability-manifest-hash": "7cf7bf03",
+        "data-capability-manifest-item-ids": "flow-moving-item-0,flow-moving-item-1,flow-moving-item-2,flow-moving-item-3,flow-moving-item-4,flow-moving-item-5,flow-moving-item-6,flow-moving-item-7,flow-moving-item-8,flow-moving-item-9,flow-moving-item-10,flow-moving-item-11,flow-moving-item-12,flow-moving-item-13,flow-moving-item-14,flow-moving-item-15,flow-moving-item-16,flow-moving-item-17,flow-moving-item-18,flow-moving-item-19,flow-moving-item-20,flow-moving-item-21,flow-moving-item-22,flow-moving-item-23",
+        "data-capability-output-count": "24",
+        "data-capability-primary-action": "save-to-personal-plan",
+        "data-capability-primary-action-owner": "public_save_action",
+        "data-capability-secondary-actions": "edit-public-draft"
+      }
+    },
+    {
+      "testId": "flow-capability-immediate-results",
+      "data": {
+        "data-testid": "flow-capability-immediate-results"
+      }
+    },
+    {
+      "testId": "flow-capability-result-choice",
+      "data": {
+        "data-testid": "flow-capability-result-choice",
+        "data-capability-candidate-role": "primary",
+        "data-capability-candidate-state": "available",
+        "data-capability-destination": "calendar",
+        "data-capability-immediate": "true",
+        "data-capability-snapshot-kind": "effective_authoring",
+        "data-capability-manifest-hash": "f9069f53",
+        "data-capability-manifest-item-ids": "flow-moving-item-0,flow-moving-item-1,flow-moving-item-2,flow-moving-item-3,flow-moving-item-4,flow-moving-item-5,flow-moving-item-6,flow-moving-item-7,flow-moving-item-8,flow-moving-item-9,flow-moving-item-10,flow-moving-item-11,flow-moving-item-12,flow-moving-item-13,flow-moving-item-14,flow-moving-item-15,flow-moving-item-16,flow-moving-item-17,flow-moving-item-18,flow-moving-item-19,flow-moving-item-20,flow-moving-item-21,flow-moving-item-22,flow-moving-item-23",
+        "data-capability-manifest-requested-item-ids": "flow-moving-item-0,flow-moving-item-1,flow-moving-item-2,flow-moving-item-3,flow-moving-item-4,flow-moving-item-5,flow-moving-item-6,flow-moving-item-7,flow-moving-item-8,flow-moving-item-9,flow-moving-item-10,flow-moving-item-11,flow-moving-item-12,flow-moving-item-13,flow-moving-item-14,flow-moving-item-15,flow-moving-item-16,flow-moving-item-17,flow-moving-item-18,flow-moving-item-19,flow-moving-item-20,flow-moving-item-21,flow-moving-item-22,flow-moving-item-23",
+        "data-capability-output-count": "24",
+        "data-capability-expected-output-count": "24"
+      }
+    },
+    {
+      "testId": "flow-capability-result-choice",
+      "data": {
+        "data-testid": "flow-capability-result-choice",
+        "data-capability-candidate-role": "available",
+        "data-capability-candidate-state": "available",
+        "data-capability-destination": "checklist",
+        "data-capability-immediate": "true",
+        "data-capability-snapshot-kind": "effective_authoring",
+        "data-capability-manifest-hash": "7cf7bf03",
+        "data-capability-manifest-item-ids": "flow-moving-item-0,flow-moving-item-1,flow-moving-item-2,flow-moving-item-3,flow-moving-item-4,flow-moving-item-5,flow-moving-item-6,flow-moving-item-7,flow-moving-item-8,flow-moving-item-9,flow-moving-item-10,flow-moving-item-11,flow-moving-item-12,flow-moving-item-13,flow-moving-item-14,flow-moving-item-15,flow-moving-item-16,flow-moving-item-17,flow-moving-item-18,flow-moving-item-19,flow-moving-item-20,flow-moving-item-21,flow-moving-item-22,flow-moving-item-23",
+        "data-capability-manifest-requested-item-ids": "flow-moving-item-0,flow-moving-item-1,flow-moving-item-2,flow-moving-item-3,flow-moving-item-4,flow-moving-item-5,flow-moving-item-6,flow-moving-item-7,flow-moving-item-8,flow-moving-item-9,flow-moving-item-10,flow-moving-item-11,flow-moving-item-12,flow-moving-item-13,flow-moving-item-14,flow-moving-item-15,flow-moving-item-16,flow-moving-item-17,flow-moving-item-18,flow-moving-item-19,flow-moving-item-20,flow-moving-item-21,flow-moving-item-22,flow-moving-item-23",
+        "data-capability-output-count": "24",
+        "data-capability-expected-output-count": "24"
+      }
+    },
+    {
+      "testId": "flow-capability-result-choice",
+      "data": {
+        "data-testid": "flow-capability-result-choice",
+        "data-capability-candidate-role": "available",
+        "data-capability-candidate-state": "available",
+        "data-capability-destination": "sheet",
+        "data-capability-immediate": "true",
+        "data-capability-snapshot-kind": "effective_authoring",
+        "data-capability-manifest-hash": "d075f448",
+        "data-capability-manifest-item-ids": "flow-moving-item-0,flow-moving-item-1,flow-moving-item-2,flow-moving-item-3,flow-moving-item-4,flow-moving-item-5,flow-moving-item-6,flow-moving-item-7,flow-moving-item-8,flow-moving-item-9,flow-moving-item-10,flow-moving-item-11,flow-moving-item-12,flow-moving-item-13,flow-moving-item-14,flow-moving-item-15,flow-moving-item-16,flow-moving-item-17,flow-moving-item-18,flow-moving-item-19,flow-moving-item-20,flow-moving-item-21,flow-moving-item-22,flow-moving-item-23",
+        "data-capability-manifest-requested-item-ids": "flow-moving-item-0,flow-moving-item-1,flow-moving-item-2,flow-moving-item-3,flow-moving-item-4,flow-moving-item-5,flow-moving-item-6,flow-moving-item-7,flow-moving-item-8,flow-moving-item-9,flow-moving-item-10,flow-moving-item-11,flow-moving-item-12,flow-moving-item-13,flow-moving-item-14,flow-moving-item-15,flow-moving-item-16,flow-moving-item-17,flow-moving-item-18,flow-moving-item-19,flow-moving-item-20,flow-moving-item-21,flow-moving-item-22,flow-moving-item-23",
+        "data-capability-output-count": "24",
+        "data-capability-expected-output-count": "24"
+      }
+    },
+    {
+      "testId": "flow-capability-result-choice",
+      "data": {
+        "data-testid": "flow-capability-result-choice",
+        "data-capability-candidate-role": "available",
+        "data-capability-candidate-state": "available",
+        "data-capability-destination": "memo",
+        "data-capability-immediate": "false",
+        "data-capability-snapshot-kind": "effective_authoring",
+        "data-capability-manifest-hash": "9601f827",
+        "data-capability-manifest-item-ids": "flow-moving-item-0,flow-moving-item-1,flow-moving-item-2,flow-moving-item-3,flow-moving-item-4,flow-moving-item-5,flow-moving-item-6,flow-moving-item-7,flow-moving-item-8,flow-moving-item-9,flow-moving-item-10,flow-moving-item-11,flow-moving-item-12,flow-moving-item-13,flow-moving-item-14,flow-moving-item-15,flow-moving-item-16,flow-moving-item-17,flow-moving-item-18,flow-moving-item-19,flow-moving-item-20,flow-moving-item-21,flow-moving-item-22,flow-moving-item-23",
+        "data-capability-manifest-requested-item-ids": "flow-moving-item-0,flow-moving-item-1,flow-moving-item-2,flow-moving-item-3,flow-moving-item-4,flow-moving-item-5,flow-moving-item-6,flow-moving-item-7,flow-moving-item-8,flow-moving-item-9,flow-moving-item-10,flow-moving-item-11,flow-moving-item-12,flow-moving-item-13,flow-moving-item-14,flow-moving-item-15,flow-moving-item-16,flow-moving-item-17,flow-moving-item-18,flow-moving-item-19,flow-moving-item-20,flow-moving-item-21,flow-moving-item-22,flow-moving-item-23",
+        "data-capability-output-count": "24",
+        "data-capability-expected-output-count": "24"
+      }
+    },
+    {
+      "testId": "flow-capability-selected-preview",
+      "data": {
+        "data-testid": "flow-capability-selected-preview",
+        "data-capability-destination": "checklist",
+        "data-capability-manifest-hash": "7cf7bf03",
+        "data-capability-manifest-item-ids": "flow-moving-item-0,flow-moving-item-1,flow-moving-item-2,flow-moving-item-3,flow-moving-item-4,flow-moving-item-5,flow-moving-item-6,flow-moving-item-7,flow-moving-item-8,flow-moving-item-9,flow-moving-item-10,flow-moving-item-11,flow-moving-item-12,flow-moving-item-13,flow-moving-item-14,flow-moving-item-15,flow-moving-item-16,flow-moving-item-17,flow-moving-item-18,flow-moving-item-19,flow-moving-item-20,flow-moving-item-21,flow-moving-item-22,flow-moving-item-23",
+        "data-capability-output-count": "24"
+      }
+    },
+    {
+      "testId": "flow-capability-artifact-preview",
+      "data": {
+        "data-testid": "flow-capability-artifact-preview",
+        "data-primary-shape": "checklist",
+        "data-selected-shape": "checklist",
+        "data-p29-marker": "P29-ARTIFACT-RECOMMENDATION",
+        "data-p35-marker": "P35-PUBLIC-RESULT-FIRST",
+        "data-flow-anatomy": "artifact-result"
+      }
+    },
+    {
+      "testId": "flow-artifact-result-summary",
+      "data": {
+        "data-testid": "flow-artifact-result-summary"
+      }
+    },
+    {
+      "testId": "flow-artifact-checklist-preview",
+      "data": {
+        "data-testid": "flow-artifact-checklist-preview"
+      }
+    },
+    {
+      "testId": "flow-capability-artifact-preview-row",
+      "data": {
+        "data-testid": "flow-capability-artifact-preview-row",
+        "data-item-id": "flow-moving-item-0",
+        "data-flow-row-mode": "preview",
+        "data-completion-control": "false",
+        "data-p35-r9-marker": "P35-R9-SHARED-EXECUTION-ROW",
+        "data-p35-r9-preview-marker": "P35-R9-PREVIEW-NOT-COMPLETION"
+      }
+    },
+    {
+      "testId": "flow-capability-artifact-preview-row",
+      "data": {
+        "data-testid": "flow-capability-artifact-preview-row",
+        "data-item-id": "flow-moving-item-1",
+        "data-flow-row-mode": "preview",
+        "data-completion-control": "false",
+        "data-p35-r9-marker": "P35-R9-SHARED-EXECUTION-ROW",
+        "data-p35-r9-preview-marker": "P35-R9-PREVIEW-NOT-COMPLETION"
+      }
+    },
+    {
+      "testId": "flow-capability-artifact-preview-row",
+      "data": {
+        "data-testid": "flow-capability-artifact-preview-row",
+        "data-item-id": "flow-moving-item-2",
+        "data-flow-row-mode": "preview",
+        "data-completion-control": "false",
+        "data-p35-r9-marker": "P35-R9-SHARED-EXECUTION-ROW",
+        "data-p35-r9-preview-marker": "P35-R9-PREVIEW-NOT-COMPLETION"
+      }
+    },
+    {
+      "testId": "flow-capability-artifact-preview-expand",
+      "data": {
+        "data-testid": "flow-capability-artifact-preview-expand"
+      }
+    },
+    {
+      "testId": "flow-artifact-checklist-preview",
+      "data": {
+        "data-testid": "flow-artifact-checklist-preview"
+      }
+    },
+    {
+      "testId": "flow-capability-artifact-preview-row",
+      "data": {
+        "data-testid": "flow-capability-artifact-preview-row",
+        "data-item-id": "flow-moving-item-3",
+        "data-flow-row-mode": "preview",
+        "data-completion-control": "false",
+        "data-p35-r9-marker": "P35-R9-SHARED-EXECUTION-ROW",
+        "data-p35-r9-preview-marker": "P35-R9-PREVIEW-NOT-COMPLETION"
+      }
+    },
+    {
+      "testId": "flow-capability-artifact-preview-row",
+      "data": {
+        "data-testid": "flow-capability-artifact-preview-row",
+        "data-item-id": "flow-moving-item-4",
+        "data-flow-row-mode": "preview",
+        "data-completion-control": "false",
+        "data-p35-r9-marker": "P35-R9-SHARED-EXECUTION-ROW",
+        "data-p35-r9-preview-marker": "P35-R9-PREVIEW-NOT-COMPLETION"
+      }
+    },
+    {
+      "testId": "flow-capability-artifact-preview-row",
+      "data": {
+        "data-testid": "flow-capability-artifact-preview-row",
+        "data-item-id": "flow-moving-item-5",
+        "data-flow-row-mode": "preview",
+        "data-completion-control": "false",
+        "data-p35-r9-marker": "P35-R9-SHARED-EXECUTION-ROW",
+        "data-p35-r9-preview-marker": "P35-R9-PREVIEW-NOT-COMPLETION"
+      }
+    },
+    {
+      "testId": "flow-capability-artifact-preview-row",
+      "data": {
+        "data-testid": "flow-capability-artifact-preview-row",
+        "data-item-id": "flow-moving-item-6",
+        "data-flow-row-mode": "preview",
+        "data-completion-control": "false",
+        "data-p35-r9-marker": "P35-R9-SHARED-EXECUTION-ROW",
+        "data-p35-r9-preview-marker": "P35-R9-PREVIEW-NOT-COMPLETION"
+      }
+    },
+    {
+      "testId": "flow-capability-artifact-preview-row",
+      "data": {
+        "data-testid": "flow-capability-artifact-preview-row",
+        "data-item-id": "flow-moving-item-7",
+        "data-flow-row-mode": "preview",
+        "data-completion-control": "false",
+        "data-p35-r9-marker": "P35-R9-SHARED-EXECUTION-ROW",
+        "data-p35-r9-preview-marker": "P35-R9-PREVIEW-NOT-COMPLETION"
+      }
+    },
+    {
+      "testId": "flow-capability-artifact-preview-row",
+      "data": {
+        "data-testid": "flow-capability-artifact-preview-row",
+        "data-item-id": "flow-moving-item-8",
+        "data-flow-row-mode": "preview",
+        "data-completion-control": "false",
+        "data-p35-r9-marker": "P35-R9-SHARED-EXECUTION-ROW",
+        "data-p35-r9-preview-marker": "P35-R9-PREVIEW-NOT-COMPLETION"
+      }
+    },
+    {
+      "testId": "flow-capability-artifact-preview-row",
+      "data": {
+        "data-testid": "flow-capability-artifact-preview-row",
+        "data-item-id": "flow-moving-item-9",
+        "data-flow-row-mode": "preview",
+        "data-completion-control": "false",
+        "data-p35-r9-marker": "P35-R9-SHARED-EXECUTION-ROW",
+        "data-p35-r9-preview-marker": "P35-R9-PREVIEW-NOT-COMPLETION"
+      }
+    },
+    {
+      "testId": "flow-capability-artifact-preview-row",
+      "data": {
+        "data-testid": "flow-capability-artifact-preview-row",
+        "data-item-id": "flow-moving-item-10",
+        "data-flow-row-mode": "preview",
+        "data-completion-control": "false",
+        "data-p35-r9-marker": "P35-R9-SHARED-EXECUTION-ROW",
+        "data-p35-r9-preview-marker": "P35-R9-PREVIEW-NOT-COMPLETION"
+      }
+    },
+    {
+      "testId": "flow-capability-artifact-preview-row",
+      "data": {
+        "data-testid": "flow-capability-artifact-preview-row",
+        "data-item-id": "flow-moving-item-11",
+        "data-flow-row-mode": "preview",
+        "data-completion-control": "false",
+        "data-p35-r9-marker": "P35-R9-SHARED-EXECUTION-ROW",
+        "data-p35-r9-preview-marker": "P35-R9-PREVIEW-NOT-COMPLETION"
+      }
+    },
+    {
+      "testId": "flow-capability-artifact-preview-row",
+      "data": {
+        "data-testid": "flow-capability-artifact-preview-row",
+        "data-item-id": "flow-moving-item-12",
+        "data-flow-row-mode": "preview",
+        "data-completion-control": "false",
+        "data-p35-r9-marker": "P35-R9-SHARED-EXECUTION-ROW",
+        "data-p35-r9-preview-marker": "P35-R9-PREVIEW-NOT-COMPLETION"
+      }
+    },
+    {
+      "testId": "flow-capability-artifact-preview-row",
+      "data": {
+        "data-testid": "flow-capability-artifact-preview-row",
+        "data-item-id": "flow-moving-item-13",
+        "data-flow-row-mode": "preview",
+        "data-completion-control": "false",
+        "data-p35-r9-marker": "P35-R9-SHARED-EXECUTION-ROW",
+        "data-p35-r9-preview-marker": "P35-R9-PREVIEW-NOT-COMPLETION"
+      }
+    },
+    {
+      "testId": "flow-capability-artifact-preview-row",
+      "data": {
+        "data-testid": "flow-capability-artifact-preview-row",
+        "data-item-id": "flow-moving-item-14",
+        "data-flow-row-mode": "preview",
+        "data-completion-control": "false",
+        "data-p35-r9-marker": "P35-R9-SHARED-EXECUTION-ROW",
+        "data-p35-r9-preview-marker": "P35-R9-PREVIEW-NOT-COMPLETION"
+      }
+    },
+    {
+      "testId": "flow-capability-artifact-preview-row",
+      "data": {
+        "data-testid": "flow-capability-artifact-preview-row",
+        "data-item-id": "flow-moving-item-15",
+        "data-flow-row-mode": "preview",
+        "data-completion-control": "false",
+        "data-p35-r9-marker": "P35-R9-SHARED-EXECUTION-ROW",
+        "data-p35-r9-preview-marker": "P35-R9-PREVIEW-NOT-COMPLETION"
+      }
+    },
+    {
+      "testId": "flow-capability-artifact-preview-row",
+      "data": {
+        "data-testid": "flow-capability-artifact-preview-row",
+        "data-item-id": "flow-moving-item-16",
+        "data-flow-row-mode": "preview",
+        "data-completion-control": "false",
+        "data-p35-r9-marker": "P35-R9-SHARED-EXECUTION-ROW",
+        "data-p35-r9-preview-marker": "P35-R9-PREVIEW-NOT-COMPLETION"
+      }
+    },
+    {
+      "testId": "flow-capability-artifact-preview-row",
+      "data": {
+        "data-testid": "flow-capability-artifact-preview-row",
+        "data-item-id": "flow-moving-item-17",
+        "data-flow-row-mode": "preview",
+        "data-completion-control": "false",
+        "data-p35-r9-marker": "P35-R9-SHARED-EXECUTION-ROW",
+        "data-p35-r9-preview-marker": "P35-R9-PREVIEW-NOT-COMPLETION"
+      }
+    },
+    {
+      "testId": "flow-capability-artifact-preview-row",
+      "data": {
+        "data-testid": "flow-capability-artifact-preview-row",
+        "data-item-id": "flow-moving-item-18",
+        "data-flow-row-mode": "preview",
+        "data-completion-control": "false",
+        "data-p35-r9-marker": "P35-R9-SHARED-EXECUTION-ROW",
+        "data-p35-r9-preview-marker": "P35-R9-PREVIEW-NOT-COMPLETION"
+      }
+    },
+    {
+      "testId": "flow-capability-artifact-preview-row",
+      "data": {
+        "data-testid": "flow-capability-artifact-preview-row",
+        "data-item-id": "flow-moving-item-19",
+        "data-flow-row-mode": "preview",
+        "data-completion-control": "false",
+        "data-p35-r9-marker": "P35-R9-SHARED-EXECUTION-ROW",
+        "data-p35-r9-preview-marker": "P35-R9-PREVIEW-NOT-COMPLETION"
+      }
+    },
+    {
+      "testId": "flow-capability-artifact-preview-row",
+      "data": {
+        "data-testid": "flow-capability-artifact-preview-row",
+        "data-item-id": "flow-moving-item-20",
+        "data-flow-row-mode": "preview",
+        "data-completion-control": "false",
+        "data-p35-r9-marker": "P35-R9-SHARED-EXECUTION-ROW",
+        "data-p35-r9-preview-marker": "P35-R9-PREVIEW-NOT-COMPLETION"
+      }
+    },
+    {
+      "testId": "flow-capability-artifact-preview-row",
+      "data": {
+        "data-testid": "flow-capability-artifact-preview-row",
+        "data-item-id": "flow-moving-item-21",
+        "data-flow-row-mode": "preview",
+        "data-completion-control": "false",
+        "data-p35-r9-marker": "P35-R9-SHARED-EXECUTION-ROW",
+        "data-p35-r9-preview-marker": "P35-R9-PREVIEW-NOT-COMPLETION"
+      }
+    },
+    {
+      "testId": "flow-capability-artifact-preview-row",
+      "data": {
+        "data-testid": "flow-capability-artifact-preview-row",
+        "data-item-id": "flow-moving-item-22",
+        "data-flow-row-mode": "preview",
+        "data-completion-control": "false",
+        "data-p35-r9-marker": "P35-R9-SHARED-EXECUTION-ROW",
+        "data-p35-r9-preview-marker": "P35-R9-PREVIEW-NOT-COMPLETION"
+      }
+    },
+    {
+      "testId": "flow-capability-artifact-preview-row",
+      "data": {
+        "data-testid": "flow-capability-artifact-preview-row",
+        "data-item-id": "flow-moving-item-23",
+        "data-flow-row-mode": "preview",
+        "data-completion-control": "false",
+        "data-p35-r9-marker": "P35-R9-SHARED-EXECUTION-ROW",
+        "data-p35-r9-preview-marker": "P35-R9-PREVIEW-NOT-COMPLETION"
+      }
+    },
+    {
+      "testId": "flow-save-before-decision",
+      "data": {
+        "data-testid": "flow-save-before-decision"
+      }
+    },
+    {
+      "testId": "public-flow-primary-setup",
+      "data": {
+        "data-testid": "public-flow-primary-setup"
+      }
+    },
+    {
+      "testId": "public-flow-anchor-action-row",
+      "data": {
+        "data-testid": "public-flow-anchor-action-row"
+      }
+    },
+    {
+      "testId": "public-flow-anchor-input",
+      "data": {
+        "data-testid": "public-flow-anchor-input"
+      }
+    },
+    {
+      "testId": "public-flow-mobile-save-cta",
+      "data": {
+        "data-testid": "public-flow-mobile-save-cta",
+        "data-p29-marker": "P29-MOBILE-FOCUS-ORDER"
+      }
+    },
+    {
+      "testId": "public-flow-adjust-entry-mobile",
+      "data": {
+        "data-action-priority": "secondary",
+        "data-action-role": "edit-public-draft",
+        "data-action-owner": "shared-plan-editor",
+        "data-testid": "public-flow-adjust-entry-mobile"
+      }
+    },
+    {
+      "testId": "public-flow-save-primary-mobile",
+      "data": {
+        "data-testid": "public-flow-save-primary-mobile",
+        "data-action-priority": "primary",
+        "data-action-role": "save-to-personal-plan",
+        "data-action-owner": "public-save-action"
+      }
+    }
+  ],
+  "browserEvents": {
+    "consoleErrors": [],
+    "pageErrors": [],
+    "requestFailures": []
+  },
+  "evidenceClass": "ACTUAL_UI",
+  "dateShape": "all-dated",
+  "capabilityManifest": {
+    "lifecycle": "public_preview",
+    "snapshotKind": "effective_authoring",
+    "primaryDestination": "calendar",
+    "selectedDestination": "checklist",
+    "selected": {
+      "destination": "checklist",
+      "outputCount": "24",
+      "manifestItemIds": [
+        "flow-moving-item-0",
+        "flow-moving-item-1",
+        "flow-moving-item-2",
+        "flow-moving-item-3",
+        "flow-moving-item-4",
+        "flow-moving-item-5",
+        "flow-moving-item-6",
+        "flow-moving-item-7",
+        "flow-moving-item-8",
+        "flow-moving-item-9",
+        "flow-moving-item-10",
+        "flow-moving-item-11",
+        "flow-moving-item-12",
+        "flow-moving-item-13",
+        "flow-moving-item-14",
+        "flow-moving-item-15",
+        "flow-moving-item-16",
+        "flow-moving-item-17",
+        "flow-moving-item-18",
+        "flow-moving-item-19",
+        "flow-moving-item-20",
+        "flow-moving-item-21",
+        "flow-moving-item-22",
+        "flow-moving-item-23"
+      ],
+      "orderedRenderedRows": [
+        {
+          "index": 0,
+          "itemId": "flow-moving-item-0",
+          "text": "·이사 방식 정하기8월 2일 (토) · D-30 큰 준비"
+        },
+        {
+          "index": 1,
+          "itemId": "flow-moving-item-1",
+          "text": "·이사할 집 하자 점검하기8월 2일 (토) · D-30 큰 준비완료 기준 · 주요 공간 사진과 하자 목록을 집주인 또는 중개인에게 공유했다."
+        },
+        {
+          "index": 2,
+          "itemId": "flow-moving-item-2",
+          "text": "·필요 없는 물건 정리하기8월 2일 (토) · D-30 큰 준비"
+        },
+        {
+          "index": 3,
+          "itemId": "flow-moving-item-3",
+          "text": "·이사/청소 업체 견적 받고 예약하기8월 2일 (토) · D-30 큰 준비"
+        },
+        {
+          "index": 4,
+          "itemId": "flow-moving-item-4",
+          "text": "·우편물/카드/은행 주소 변경하기8월 22일 (금) · D-10 생활 이전 준비"
+        },
+        {
+          "index": 5,
+          "itemId": "flow-moving-item-5",
+          "text": "·정기 배달 서비스 중지 요청하기8월 22일 (금) · D-10 생활 이전 준비"
+        },
+        {
+          "index": 6,
+          "itemId": "flow-moving-item-6",
+          "text": "·대형폐기물 배출 신고와 수거일 확인하기8월 22일 (금) · D-10 생활 이전 준비완료 기준 · 배출 신고 번호와 수거 예정일을 기록했다."
+        },
+        {
+          "index": 7,
+          "itemId": "flow-moving-item-7",
+          "text": "·엘리베이터 또는 사다리차 사용 예약하기8월 22일 (금) · D-10 생활 이전 준비"
+        },
+        {
+          "index": 8,
+          "itemId": "flow-moving-item-8",
+          "text": "·인터넷/정수기 이전 설치 예약하기8월 22일 (금) · D-10 생활 이전 준비"
+        },
+        {
+          "index": 9,
+          "itemId": "flow-moving-item-9",
+          "text": "·도시가스 철거/설치 예약하기8월 29일 (금) · D-3 필수 예약 확인"
+        },
+        {
+          "index": 10,
+          "itemId": "flow-moving-item-10",
+          "text": "·자동이체 해지 또는 변경 확인하기8월 29일 (금) · D-3 필수 예약 확인"
+        },
+        {
+          "index": 11,
+          "itemId": "flow-moving-item-11",
+          "text": "·이사 당일 사용할 물건 따로 포장하기8월 29일 (금) · D-3 필수 예약 확인"
+        },
+        {
+          "index": 12,
+          "itemId": "flow-moving-item-12",
+          "text": "·관리사무소에 이사 시간과 차량 동선 공유하기8월 29일 (금) · D-3 필수 예약 확인"
+        },
+        {
+          "index": 13,
+          "itemId": "flow-moving-item-13",
+          "text": "·이사 업체와 일정 최종 확인하기8월 31일 (일) · D-1 최종 점검"
+        },
+        {
+          "index": 14,
+          "itemId": "flow-moving-item-14",
+          "text": "·이체 한도 증액 확인하기8월 31일 (일) · D-1 최종 점검"
+        },
+        {
+          "index": 15,
+          "itemId": "flow-moving-item-15",
+          "text": "·귀중품과 중요 서류 별도 보관하기8월 31일 (일) · D-1 최종 점검"
+        },
+        {
+          "index": 16,
+          "itemId": "flow-moving-item-16",
+          "text": "·냉장고 음식과 쓰레기 최종 정리하기8월 31일 (일) · D-1 최종 점검"
+        },
+        {
+          "index": 17,
+          "itemId": "flow-moving-item-17",
+          "text": "·전기/가스/수도/관리비 정산하기9월 1일 (월) · D-Day 이사 당일"
+        },
+        {
+          "index": 18,
+          "itemId": "flow-moving-item-18",
+          "text": "·이삿짐 분실/파손 확인하기9월 1일 (월) · D-Day 이사 당일"
+        },
+        {
+          "index": 19,
+          "itemId": "flow-moving-item-19",
+          "text": "·계량기와 집 상태 사진 남기기9월 1일 (월) · D-Day 이사 당일"
+        },
+        {
+          "index": 20,
+          "itemId": "flow-moving-item-20",
+          "text": "·열쇠, 출입카드, 주차등록 인수인계하기9월 1일 (월) · D-Day 이사 당일"
+        },
+        {
+          "index": 21,
+          "itemId": "flow-moving-item-21",
+          "text": "·전입신고와 확정일자 확인하기9월 1일 (월) · D-Day 이사 당일완료 기준 · 전입신고 접수 상태와 확정일자 부여 여부를 각각 확인했다."
+        },
+        {
+          "index": 22,
+          "itemId": "flow-moving-item-22",
+          "text": "·정부24 전입신고 처리 결과 확인하기9월 2일 (화) · D+1 행정 마무리완료 기준 · 처리 완료 또는 보완 필요 상태를 확인하고 캡처/메모를 남겼다."
+        },
+        {
+          "index": 23,
+          "itemId": "flow-moving-item-23",
+          "text": "·임대차 계약 확정일자 부여 여부 확인하기9월 2일 (화) · D+1 행정 마무리완료 기준 · 확정일자 부여일과 계약서 보관 위치를 기록했다."
+        }
+      ]
+    },
+    "candidates": [
+      {
+        "destination": "calendar",
+        "state": "available",
+        "role": "primary",
+        "outputCount": "24",
+        "expectedOutputCount": "24",
+        "manifestItemIds": [
+          "flow-moving-item-0",
+          "flow-moving-item-1",
+          "flow-moving-item-2",
+          "flow-moving-item-3",
+          "flow-moving-item-4",
+          "flow-moving-item-5",
+          "flow-moving-item-6",
+          "flow-moving-item-7",
+          "flow-moving-item-8",
+          "flow-moving-item-9",
+          "flow-moving-item-10",
+          "flow-moving-item-11",
+          "flow-moving-item-12",
+          "flow-moving-item-13",
+          "flow-moving-item-14",
+          "flow-moving-item-15",
+          "flow-moving-item-16",
+          "flow-moving-item-17",
+          "flow-moving-item-18",
+          "flow-moving-item-19",
+          "flow-moving-item-20",
+          "flow-moving-item-21",
+          "flow-moving-item-22",
+          "flow-moving-item-23"
+        ],
+        "text": "주 결과캘린더 · 일정 24개"
+      },
+      {
+        "destination": "checklist",
+        "state": "available",
+        "role": "available",
+        "outputCount": "24",
+        "expectedOutputCount": "24",
+        "manifestItemIds": [
+          "flow-moving-item-0",
+          "flow-moving-item-1",
+          "flow-moving-item-2",
+          "flow-moving-item-3",
+          "flow-moving-item-4",
+          "flow-moving-item-5",
+          "flow-moving-item-6",
+          "flow-moving-item-7",
+          "flow-moving-item-8",
+          "flow-moving-item-9",
+          "flow-moving-item-10",
+          "flow-moving-item-11",
+          "flow-moving-item-12",
+          "flow-moving-item-13",
+          "flow-moving-item-14",
+          "flow-moving-item-15",
+          "flow-moving-item-16",
+          "flow-moving-item-17",
+          "flow-moving-item-18",
+          "flow-moving-item-19",
+          "flow-moving-item-20",
+          "flow-moving-item-21",
+          "flow-moving-item-22",
+          "flow-moving-item-23"
+        ],
+        "text": "다른 결과체크리스트 · 24개"
+      },
+      {
+        "destination": "sheet",
+        "state": "available",
+        "role": "available",
+        "outputCount": "24",
+        "expectedOutputCount": "24",
+        "manifestItemIds": [
+          "flow-moving-item-0",
+          "flow-moving-item-1",
+          "flow-moving-item-2",
+          "flow-moving-item-3",
+          "flow-moving-item-4",
+          "flow-moving-item-5",
+          "flow-moving-item-6",
+          "flow-moving-item-7",
+          "flow-moving-item-8",
+          "flow-moving-item-9",
+          "flow-moving-item-10",
+          "flow-moving-item-11",
+          "flow-moving-item-12",
+          "flow-moving-item-13",
+          "flow-moving-item-14",
+          "flow-moving-item-15",
+          "flow-moving-item-16",
+          "flow-moving-item-17",
+          "flow-moving-item-18",
+          "flow-moving-item-19",
+          "flow-moving-item-20",
+          "flow-moving-item-21",
+          "flow-moving-item-22",
+          "flow-moving-item-23"
+        ],
+        "text": "다른 결과시트 · 24행"
+      },
+      {
+        "destination": "memo",
+        "state": "available",
+        "role": "available",
+        "outputCount": "24",
+        "expectedOutputCount": "24",
+        "manifestItemIds": [
+          "flow-moving-item-0",
+          "flow-moving-item-1",
+          "flow-moving-item-2",
+          "flow-moving-item-3",
+          "flow-moving-item-4",
+          "flow-moving-item-5",
+          "flow-moving-item-6",
+          "flow-moving-item-7",
+          "flow-moving-item-8",
+          "flow-moving-item-9",
+          "flow-moving-item-10",
+          "flow-moving-item-11",
+          "flow-moving-item-12",
+          "flow-moving-item-13",
+          "flow-moving-item-14",
+          "flow-moving-item-15",
+          "flow-moving-item-16",
+          "flow-moving-item-17",
+          "flow-moving-item-18",
+          "flow-moving-item-19",
+          "flow-moving-item-20",
+          "flow-moving-item-21",
+          "flow-moving-item-22",
+          "flow-moving-item-23"
+        ],
+        "text": "다른 결과메모 · 24개"
+      }
+    ]
+  }
+}

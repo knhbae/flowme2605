@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 1,
+  "generatedAtUtc": "2026-08-05T06:08:53.360Z",
+  "generatedAtKst": "2026-08-05T15:08:53.361+09:00",
+  "classification": "CANDIDATE_BOUND_CAPTURE",
+  "candidateEligible": true,
+  "product": {
+    "sha": "c48911757fb529941d00efc2162338ffa8b7686a",
+    "tree": "037ff61455c9bae32e48242da7e8fe212729b130",
+    "ref": "codex/p35-round2-candidate-20260805",
+    "upstreamRef": "origin/codex/p35-round2-candidate-20260805",
+    "upstreamSha": "c48911757fb529941d00efc2162338ffa8b7686a",
+    "clean": true,
+    "dirty": false,
+    "statusShortBranchRelativePath": "candidate/git-status-short-branch.txt",
+    "statusShortBranchSha256": "08411ee7d7ddd20c5f49af3c2d2a88c5cef9dc9202cf333436ee76519fc5a031",
+    "statusShortBranchByteLength": 84
+  },
+  "runtime": {
+    "buildId": "gdh4DIMGS69Kcn0GBTJtl",
+    "baseUrl": "http://127.0.0.1:3121",
+    "buildIdentityProbe": {
+      "schemaVersion": 1,
+      "status": "PASS",
+      "url": "http://127.0.0.1:3121/flows",
+      "httpStatus": 200,
+      "byteLength": 12274,
+      "sha256": "b84d012e853140fc0a882481a045a56589d12a201cfbe670178ca718393b53a4",
+      "containsBuildId": true,
+      "error": null
+    }
+  },
+  "capture": {
+    "candidateEpoch": "p35-r2-c0ba8eecbfa547a5",
+    "command": "npm.cmd run evidence:p35-round2:rehearse",
+    "startedAtUtc": "2026-08-05T06:08:06.515Z",
+    "completedAtUtc": "2026-08-05T06:08:34.366Z",
+    "groupManifestIndexRelativePath": "candidate/group-manifest-index.json",
+    "groupManifests": [
+      {
+        "manifest": "group-manifest-s01-s08.json",
+        "head": "c48911757fb529941d00efc2162338ffa8b7686a",
+        "dirty": false,
+        "buildId": "gdh4DIMGS69Kcn0GBTJtl",
+        "baseUrl": "http://127.0.0.1:3121",
+        "startedAt": "2026-08-05T06:08:06.515Z",
+        "completedAt": "2026-08-05T06:08:06.515Z",
+        "browser": "chromium 150.0.7871.184",
+        "os": null,
+        "locale": "ko-KR",
+        "timezone": "Asia/Seoul",
+        "relativePath": "group-manifest-s01-s08.json",
+        "byteLength": 47818,
+        "sha256": "0df0bbb448098d0479f9e743d34bc42b6ef6a94e100c7c1ca2eb8e35298cbe23"
+      },
+      {
+        "manifest": "group-manifest-s09-s16.json",
+        "head": "c48911757fb529941d00efc2162338ffa8b7686a",
+        "dirty": false,
+        "buildId": "gdh4DIMGS69Kcn0GBTJtl",
+        "baseUrl": "http://127.0.0.1:3121",
+        "startedAt": "2026-08-05T15:08:07+09:00",
+        "completedAt": "2026-08-05T15:08:32+09:00",
+        "browser": "Chromium 150.0.7871.184",
+        "os": "Windows_NT 10.0.26200 x64",
+        "locale": "ko-KR",
+        "timezone": "Asia/Seoul",
+        "relativePath": "group-manifest-s09-s16.json",
+        "byteLength": 22196,
+        "sha256": "acaf1e6430c87bb5f0a7ed0f3b10e55b06ab82d1e725144f8dd289ec1938635b"
+      },
+      {
+        "manifest": "group-manifest-s17-s23.json",
+        "head": "c48911757fb529941d00efc2162338ffa8b7686a",
+        "dirty": false,
+        "buildId": "gdh4DIMGS69Kcn0GBTJtl",
+        "baseUrl": "http://127.0.0.1:3121",
+        "startedAt": "2026-08-05T06:08:34.366Z",
+        "completedAt": "2026-08-05T06:08:34.366Z",
+        "browser": null,
+        "os": null,
+        "locale": null,
+        "timezone": null,
+        "relativePath": "group-manifest-s17-s23.json",
+        "byteLength": 15381,
+        "sha256": "7a0913b09b3d4a40ac80d826980ecdfeda6322f078dd405d4ff87aad0363cec0"
+      }
+    ]
+  },
+  "seedReset": {
+    "contractRelativePath": "candidate/seed-reset-contract.json",
+    "contractSha256": "d330b15f7b66467fc7472e3391b029cf0e084676b361710aff467cd3a96c4d75",
+    "command": "npm.cmd run evidence:p35-round2:rehearse",
+    "result": "THREE_GROUP_MANIFESTS_CAPTURED"
+  },
+  "build": {
+    "schemaVersion": 1,
+    "status": "PASS",
+    "sourceProvided": true,
+    "sourceFileName": "build.log",
+    "copiedRelativePath": "candidate/build.log",
+    "command": "npm.cmd run build",
+    "exitCode": 0,
+    "byteLength": 2432,
+    "sha256": "3a2d2a7897db61584092a511fdd6e9163265bcd2fba6bdf8ea96d724097e1a26",
+    "encoding": {
+      "declared": "utf-8",
+      "valid": true,
+      "containsNul": false,
+      "containsReplacementCharacter": false,
+      "error": null
+    },
+    "buildId": "gdh4DIMGS69Kcn0GBTJtl"
+  },
+  "environment": {
+    "platform": "win32",
+    "osType": "Windows_NT",
+    "osRelease": "10.0.26200",
+    "osVersion": "Windows 11 Home",
+    "architecture": "x64",
+    "node": "v24.17.0",
+    "browsers": [
+      "chromium 150.0.7871.184",
+      "Chromium 150.0.7871.184"
+    ],
+    "operatingSystems": [
+      "Windows_NT 10.0.26200 x64"
+    ],
+    "locales": [
+      "ko-KR"
+    ],
+    "timezones": [
+      "Asia/Seoul"
+    ]
+  },
+  "identityMismatches": [],
+  "cleanCandidateFailures": [],
+  "observedUsers": 0
+}

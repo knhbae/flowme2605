@@ -1,0 +1,145 @@
+{
+  "lifecycle": "public_preview",
+  "snapshotKind": "effective_authoring",
+  "primaryDestination": "checklist",
+  "selectedDestination": "checklist",
+  "selected": {
+    "destination": "checklist",
+    "outputCount": "10",
+    "manifestItemIds": [
+      "flow-vehicle-inspection-prep-item-0",
+      "flow-vehicle-inspection-prep-item-1",
+      "flow-vehicle-inspection-prep-item-2",
+      "flow-vehicle-inspection-prep-item-3",
+      "flow-vehicle-inspection-prep-item-4",
+      "flow-vehicle-inspection-prep-item-5",
+      "flow-vehicle-inspection-prep-item-6",
+      "flow-vehicle-inspection-prep-item-7",
+      "flow-vehicle-inspection-prep-item-8",
+      "flow-vehicle-inspection-prep-item-9"
+    ],
+    "orderedRenderedRows": [
+      {
+        "index": 0,
+        "itemId": "flow-vehicle-inspection-prep-item-0",
+        "text": "·자동차검사 기간과 예약 가능일 확인하기D-14 검사 기간 확인완료 기준 · 차량별 검사 가능 기간과 예약 후보일을 기록했다."
+      },
+      {
+        "index": 1,
+        "itemId": "flow-vehicle-inspection-prep-item-1",
+        "text": "·차량번호와 예약 정보 확인하기D-14 검사 기간 확인완료 기준 · 차량번호와 검사소, 예약 시각을 바로 열 수 있게 저장했다."
+      },
+      {
+        "index": 2,
+        "itemId": "flow-vehicle-inspection-prep-item-2",
+        "text": "·가까운 검사소와 수수료 확인하기D-14 검사 기간 확인"
+      },
+      {
+        "index": 3,
+        "itemId": "flow-vehicle-inspection-prep-item-3",
+        "text": "·번호판과 차대번호 식별 상태 확인하기D-3 차량 상태 점검"
+      },
+      {
+        "index": 4,
+        "itemId": "flow-vehicle-inspection-prep-item-4",
+        "text": "·등화장치와 경음기 작동 확인하기D-3 차량 상태 점검완료 기준 · 주요 등화장치와 경음기가 정상 작동함을 확인했다."
+      },
+      {
+        "index": 5,
+        "itemId": "flow-vehicle-inspection-prep-item-5",
+        "text": "·타이어 마모와 공기압 확인하기D-3 차량 상태 점검"
+      },
+      {
+        "index": 6,
+        "itemId": "flow-vehicle-inspection-prep-item-6",
+        "text": "·오일 누유와 경고등 여부 기록하기D-3 차량 상태 점검"
+      },
+      {
+        "index": 7,
+        "itemId": "flow-vehicle-inspection-prep-item-7",
+        "text": "·예약 시간보다 여유 있게 검사소 도착하기D-Day 검사 당일"
+      },
+      {
+        "index": 8,
+        "itemId": "flow-vehicle-inspection-prep-item-8",
+        "text": "·접수와 수수료 결제 진행하기D-Day 검사 당일"
+      },
+      {
+        "index": 9,
+        "itemId": "flow-vehicle-inspection-prep-item-9",
+        "text": "·검사 결과와 재검사 필요 항목 기록하기D-Day 검사 당일완료 기준 · 검사 결과와 후속 조치 필요 여부를 기록했다."
+      }
+    ]
+  },
+  "candidates": [
+    {
+      "destination": "checklist",
+      "state": "available",
+      "role": "primary",
+      "outputCount": "10",
+      "expectedOutputCount": "10",
+      "manifestItemIds": [
+        "flow-vehicle-inspection-prep-item-0",
+        "flow-vehicle-inspection-prep-item-1",
+        "flow-vehicle-inspection-prep-item-2",
+        "flow-vehicle-inspection-prep-item-3",
+        "flow-vehicle-inspection-prep-item-4",
+        "flow-vehicle-inspection-prep-item-5",
+        "flow-vehicle-inspection-prep-item-6",
+        "flow-vehicle-inspection-prep-item-7",
+        "flow-vehicle-inspection-prep-item-8",
+        "flow-vehicle-inspection-prep-item-9"
+      ],
+      "text": "주 결과체크리스트 · 10개"
+    },
+    {
+      "destination": "sheet",
+      "state": "available",
+      "role": "available",
+      "outputCount": "10",
+      "expectedOutputCount": "10",
+      "manifestItemIds": [
+        "flow-vehicle-inspection-prep-item-0",
+        "flow-vehicle-inspection-prep-item-1",
+        "flow-vehicle-inspection-prep-item-2",
+        "flow-vehicle-inspection-prep-item-3",
+        "flow-vehicle-inspection-prep-item-4",
+        "flow-vehicle-inspection-prep-item-5",
+        "flow-vehicle-inspection-prep-item-6",
+        "flow-vehicle-inspection-prep-item-7",
+        "flow-vehicle-inspection-prep-item-8",
+        "flow-vehicle-inspection-prep-item-9"
+      ],
+      "text": "다른 결과시트 · 10행"
+    },
+    {
+      "destination": "memo",
+      "state": "available",
+      "role": "available",
+      "outputCount": "10",
+      "expectedOutputCount": "10",
+      "manifestItemIds": [
+        "flow-vehicle-inspection-prep-item-0",
+        "flow-vehicle-inspection-prep-item-1",
+        "flow-vehicle-inspection-prep-item-2",
+        "flow-vehicle-inspection-prep-item-3",
+        "flow-vehicle-inspection-prep-item-4",
+        "flow-vehicle-inspection-prep-item-5",
+        "flow-vehicle-inspection-prep-item-6",
+        "flow-vehicle-inspection-prep-item-7",
+        "flow-vehicle-inspection-prep-item-8",
+        "flow-vehicle-inspection-prep-item-9"
+      ],
+      "text": "다른 결과메모 · 10개"
+    },
+    {
+      "destination": "calendar",
+      "state": "conditional",
+      "role": "conditional",
+      "outputCount": "0",
+      "expectedOutputCount": "10",
+      "manifestItemIds": [],
+      "text": "캘린더날짜를 정하면 최대 10개설정"
+    }
+  ]
+}

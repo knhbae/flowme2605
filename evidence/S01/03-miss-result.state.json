@@ -1,0 +1,297 @@
+{
+  "capturedAt": "2026-08-05T06:07:25.384Z",
+  "route": "http://127.0.0.1:3121/flows",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "headings": [
+    {
+      "tag": "h1",
+      "level": null,
+      "text": "URL·메모로 계획 찾기",
+      "testId": null
+    },
+    {
+      "tag": "h2",
+      "level": null,
+      "text": "바로 시작할 계획을 찾지 못했어요",
+      "testId": null
+    }
+  ],
+  "actions": [
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "FLOW",
+      "accessibleName": "FLOW",
+      "testId": null,
+      "href": "/",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "summary",
+      "type": null,
+      "role": null,
+      "text": "메뉴≡",
+      "accessibleName": "보조 메뉴 열기",
+      "testId": null,
+      "href": null,
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "계획 만들기내 콘텐츠를 실행할 계획으로 정리",
+      "accessibleName": "계획 만들기내 콘텐츠를 실행할 계획으로 정리",
+      "testId": null,
+      "href": "/flows/new",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "계획 찾기",
+      "accessibleName": "계획 찾기",
+      "testId": null,
+      "href": "/flows",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "캘린더",
+      "accessibleName": "캘린더",
+      "testId": null,
+      "href": "/calendar",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "내 계획",
+      "accessibleName": "내 계획",
+      "testId": null,
+      "href": "/my",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "input",
+      "type": "text",
+      "role": null,
+      "text": "",
+      "accessibleName": "",
+      "testId": "flow-url-lookup-input",
+      "href": null,
+      "value": "https://example.com/s01-source-not-yet-converted",
+      "checked": false,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "submit",
+      "role": null,
+      "text": "계획 찾기",
+      "accessibleName": "계획 찾기",
+      "testId": null,
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "input",
+      "type": null,
+      "role": null,
+      "text": "",
+      "accessibleName": "계획 이름",
+      "testId": null,
+      "href": null,
+      "value": "",
+      "checked": false,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "textarea",
+      "type": null,
+      "role": null,
+      "text": "",
+      "accessibleName": "원하는 결과",
+      "testId": null,
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "submit",
+      "role": null,
+      "text": "초안 준비하기",
+      "accessibleName": "초안 준비하기",
+      "testId": "flow-url-miss-primary-action",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "다른 계획 둘러보기+",
+      "accessibleName": "다른 계획 둘러보기+",
+      "testId": "flow-catalog-after-lookup-toggle",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": "false",
+      "pressed": null
+    }
+  ],
+  "validation": [],
+  "geometry": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "document": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 991
+    },
+    "horizontalOverflow": 0
+  },
+  "importantNodes": [
+    {
+      "testId": "platform-nav",
+      "data": {
+        "data-testid": "platform-nav",
+        "data-p35-q3-copy": "on"
+      }
+    },
+    {
+      "testId": "platform-mobile-tabs",
+      "data": {
+        "data-testid": "platform-mobile-tabs",
+        "data-layer-priority": "navigation",
+        "data-p30-marker": "P30-MOBILE-WORKSPACE-FOCUS-ORDER",
+        "data-p35-marker": "P35-ENTRY-ROUTER-3TAB"
+      }
+    },
+    {
+      "testId": "flow-map-catalog-section",
+      "data": {
+        "data-testid": "flow-map-catalog-section"
+      }
+    },
+    {
+      "testId": "flow-catalog-hero",
+      "data": {
+        "data-testid": "flow-catalog-hero"
+      }
+    },
+    {
+      "testId": "flow-catalog-count",
+      "data": {
+        "data-testid": "flow-catalog-count"
+      }
+    },
+    {
+      "testId": "flow-url-lookup-entry",
+      "data": {
+        "data-testid": "flow-url-lookup-entry"
+      }
+    },
+    {
+      "testId": "flow-url-lookup-input",
+      "data": {
+        "data-testid": "flow-url-lookup-input"
+      }
+    },
+    {
+      "testId": "flow-url-lookup-result",
+      "data": {
+        "data-testid": "flow-url-lookup-result"
+      }
+    },
+    {
+      "testId": "flow-url-supply-request",
+      "data": {
+        "data-testid": "flow-url-supply-request"
+      }
+    },
+    {
+      "testId": "flow-url-miss-draft-gate",
+      "data": {
+        "data-testid": "flow-url-miss-draft-gate"
+      }
+    },
+    {
+      "testId": "flow-url-supply-candidate-form",
+      "data": {
+        "data-testid": "flow-url-supply-candidate-form"
+      }
+    },
+    {
+      "testId": "flow-url-miss-primary-action",
+      "data": {
+        "data-testid": "flow-url-miss-primary-action"
+      }
+    },
+    {
+      "testId": "flow-catalog-after-lookup-toggle",
+      "data": {
+        "data-testid": "flow-catalog-after-lookup-toggle"
+      }
+    }
+  ],
+  "browserEvents": {
+    "consoleErrors": [],
+    "pageErrors": [],
+    "requestFailures": []
+  },
+  "evidenceClass": "ACTUAL_UI",
+  "lookupState": "miss",
+  "resultText": "준비된 계획 없음\n바로 시작할 계획을 찾지 못했어요\n\n제목과 메모를 남기면 직접 손볼 수 있는 초안을 준비할 수 있어요.\n\n직접 손볼 초안 준비하기\n\n원하는 결과를 여러 할 일로 나눈 뒤 저장 전 살펴볼 수 있어요.\n\n계획 이름\n원하는 결과\n초안 준비하기\n이 기기에 임시 저장돼요"
+}

@@ -1,0 +1,52 @@
+
+> flowme2605@0.1.0 build
+> next build
+
+   ▲ Next.js 15.5.21
+
+   Creating an optimized production build ...
+   Using tsconfig file: ./tsconfig.next.json
+   Using tsconfig file: ./tsconfig.next.json
+   Using tsconfig file: ./tsconfig.next.json
+ ✓ Compiled successfully in 4.7s
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/18) ...
+   Generating static pages (4/18) 
+   Generating static pages (8/18) 
+   Generating static pages (13/18) 
+ ✓ Generating static pages (18/18)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ○ /                                      525 B         380 kB
+├ ○ /_not-found                            131 B         103 kB
+├ ƒ /api/content-flow-review               131 B         103 kB
+├ ○ /calendar                              183 B         748 kB
+├ ○ /content-flows                        111 kB         213 kB
+├ ○ /creators                             2.9 kB         109 kB
+├ ƒ /f/[slug]                              183 B         748 kB
+├ ○ /flow-lab                            2.92 kB         109 kB
+├ ○ /flow-lab/p22-observation            2.43 kB         385 kB
+├ ○ /flow-lab/url-first-p0               3.81 kB         164 kB
+├ ƒ /flow-maps/[map]                     8.78 kB         403 kB
+├ ƒ /flow-maps/[map]/creator             3.98 kB         110 kB
+├ ○ /flows                                 183 B         748 kB
+├ ƒ /flows/[id]/edit                       184 B         748 kB
+├ ○ /flows/new                             182 B         748 kB
+├ ○ /ia-compare                            162 B         111 kB
+├ ○ /ia-compare/b                          162 B         111 kB
+├ ○ /icon.svg                                0 B            0 B
+├ ƒ /my                                    184 B         748 kB
+├ ○ /restart/moving-d30                  7.97 kB         179 kB
+└ ƒ /u/[creator]                           184 B         748 kB
++ First Load JS shared by all             103 kB
+  ├ chunks/255-62902f04efbdd792.js       46.3 kB
+  ├ chunks/4bd1b696-c023c6e3521b1417.js  54.2 kB
+  └ other shared chunks (total)          2.08 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
