@@ -1,0 +1,11 @@
+{
+  "local": {
+    "flow:meta:last-visit": "2026-08-05T05:54:31.031Z",
+    "flow:my-flow:date-overrides": "{}",
+    "flow:my-flow:item-drafts": "{}",
+    "flow:personal-copy:da96504c-a60f-497f-9182-ba0bf67f508f:anchorDate": "{\"mode\":\"custom\",\"anchor\":\"2032-02-01\"}",
+    "flow:saved:personal-copy:da96504c-a60f-497f-9182-ba0bf67f508f": "{\"schemaVersion\":2,\"slug\":\"personal-copy:da96504c-a60f-497f-9182-ba0bf67f508f\",\"savedAt\":\"2026-08-05T05:54:31.031Z\",\"personalCopyKey\":\"personal-copy:da96504c-a60f-497f-9182-ba0bf67f508f\",\"sourceFlowKey\":\"flow-moving\",\"sourceFlowSlug\":\"moving-d30-basic\",\"sourceVersion\":\"2026-05-20T00:00:00.000Z\",\"lastSaveRequestId\":\"saved-plan:personal-copy:da96504c-a60f-497f-9182-ba0bf67f508f:1785909270536\",\"savedItemCount\":24,\"personalTitle\":\"저장 실패 뒤 다시 저장한 계획 제목\",\"selectedArtifactMode\":\"calendar\",\"dateIntent\":\"custom\",\"anchor\":\"2032-02-01\"}",
+    "flow_builder_mvp_item_state_personal-copy:da96504c-a60f-497f-9182-ba0bf67f508f": "{\"flow-moving-item-0\":{\"personalOrder\":0},\"flow-moving-item-1\":{\"personalOrder\":1},\"flow-moving-item-2\":{\"personalOrder\":2},\"flow-moving-item-3\":{\"personalOrder\":3},\"flow-moving-item-4\":{\"personalOrder\":4},\"flow-moving-item-5\":{\"personalOrder\":5},\"flow-moving-item-6\":{\"personalOrder\":6},\"flow-moving-item-7\":{\"personalOrder\":7},\"flow-moving-item-8\":{\"personalOrder\":8},\"flow-moving-item-9\":{\"personalOrder\":9},\"flow-moving-item-10\":{\"personalOrder\":10},\"flow-moving-item-11\":{\"personalOrder\":11},\"flow-moving-item-12\":{\"personalOrder\":12},\"flow-moving-item-13\":{\"personalOrder\":13},\"flow-moving-item-14\":{\"personalOrder\":14},\"flow-moving-item-15\":{\"personalOrder\":15},\"flow-moving-item-16\":{\"personalOrder\":16},\"flow-moving-item-17\":{\"personalOrder\":17},\"flow-moving-item-18\":{\"personalOrder\":18},\"flow-moving-item-19\":{\"personalOrder\":19},\"flow-moving-item-20\":{\"personalOrder\":20},\"flow-moving-item-21\":{\"personalOrder\":21},\"flow-moving-item-22\":{\"personalOrder\":22},\"flow-moving-item-23\":{\"personalOrder\":23}}"
+  },
+  "session": {}
+}

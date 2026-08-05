@@ -1,0 +1,194 @@
+[
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "document",
+    "url": "http://127.0.0.1:3121/my",
+    "status": 200,
+    "at": "2026-08-05T14:54:47+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3121/?_rsc=FuB5XaSZlxv8XCkr",
+    "status": 200,
+    "at": "2026-08-05T14:54:47+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3121/flows?_rsc=FuB5XaSZlxv8XCkr",
+    "status": 200,
+    "at": "2026-08-05T14:54:47+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3121/calendar?_rsc=FuB5XaSZlxv8XCkr",
+    "status": 200,
+    "at": "2026-08-05T14:54:47+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "document",
+    "url": "http://127.0.0.1:3121/my",
+    "status": 200,
+    "at": "2026-08-05T14:54:47+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3121/?_rsc=FuB5XaSZlxv8XCkr",
+    "status": 200,
+    "at": "2026-08-05T14:54:48+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3121/flows?_rsc=FuB5XaSZlxv8XCkr",
+    "status": 200,
+    "at": "2026-08-05T14:54:48+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3121/calendar?_rsc=FuB5XaSZlxv8XCkr",
+    "status": 200,
+    "at": "2026-08-05T14:54:48+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "document",
+    "url": "http://127.0.0.1:3121/my?flow=source-backed-moving-d30",
+    "status": 200,
+    "at": "2026-08-05T14:54:48+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3121/?_rsc=FuB5XaSZlxv8XCkr",
+    "status": 200,
+    "at": "2026-08-05T14:54:48+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3121/flows?_rsc=FuB5XaSZlxv8XCkr",
+    "status": 200,
+    "at": "2026-08-05T14:54:48+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3121/calendar?_rsc=FuB5XaSZlxv8XCkr",
+    "status": 200,
+    "at": "2026-08-05T14:54:48+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "document",
+    "url": "http://127.0.0.1:3121/my?flow=p1-04-missing-base",
+    "status": 200,
+    "at": "2026-08-05T14:54:48+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3121/?_rsc=FuB5XaSZlxv8XCkr",
+    "status": 200,
+    "at": "2026-08-05T14:54:48+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3121/flows?_rsc=FuB5XaSZlxv8XCkr",
+    "status": 200,
+    "at": "2026-08-05T14:54:48+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3121/calendar?_rsc=FuB5XaSZlxv8XCkr",
+    "status": 200,
+    "at": "2026-08-05T14:54:48+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "document",
+    "url": "http://127.0.0.1:3121/my?flow=p1-04-malformed",
+    "status": 200,
+    "at": "2026-08-05T14:54:48+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3121/?_rsc=FuB5XaSZlxv8XCkr",
+    "status": 200,
+    "at": "2026-08-05T14:54:48+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3121/flows?_rsc=FuB5XaSZlxv8XCkr",
+    "status": 200,
+    "at": "2026-08-05T14:54:48+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3121/calendar?_rsc=FuB5XaSZlxv8XCkr",
+    "status": 200,
+    "at": "2026-08-05T14:54:48+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "document",
+    "url": "http://127.0.0.1:3121/my?flow=p1-04-malformed",
+    "status": 200,
+    "at": "2026-08-05T14:54:48+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3121/?_rsc=FuB5XaSZlxv8XCkr",
+    "status": 200,
+    "at": "2026-08-05T14:54:48+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3121/flows?_rsc=FuB5XaSZlxv8XCkr",
+    "status": 200,
+    "at": "2026-08-05T14:54:48+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3121/calendar?_rsc=FuB5XaSZlxv8XCkr",
+    "status": 200,
+    "at": "2026-08-05T14:54:48+09:00"
+  }
+]

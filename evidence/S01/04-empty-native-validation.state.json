@@ -1,0 +1,976 @@
+{
+  "capturedAt": "2026-08-05T05:53:52.599Z",
+  "route": "http://127.0.0.1:3121/flows",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "headings": [
+    {
+      "tag": "h1",
+      "level": null,
+      "text": "URL·메모로 계획 찾기",
+      "testId": null
+    },
+    {
+      "tag": "h2",
+      "level": null,
+      "text": "중1 수학 목차 진도",
+      "testId": null
+    },
+    {
+      "tag": "h2",
+      "level": null,
+      "text": "오픽 모의고사 2주/1달 계획표",
+      "testId": null
+    },
+    {
+      "tag": "h2",
+      "level": null,
+      "text": "월 4권 독서 기록 루틴",
+      "testId": null
+    },
+    {
+      "tag": "h2",
+      "level": null,
+      "text": "신차 구매 7단계 체크리스트",
+      "testId": null
+    },
+    {
+      "tag": "h2",
+      "level": null,
+      "text": "결혼 준비 1년 참고 타임라인",
+      "testId": null
+    },
+    {
+      "tag": "h2",
+      "level": null,
+      "text": "결혼 준비 핵심 4가지 시작표",
+      "testId": null
+    },
+    {
+      "tag": "h2",
+      "level": null,
+      "text": "Allblanc 아침 5분 홈트",
+      "testId": null
+    },
+    {
+      "tag": "h2",
+      "level": null,
+      "text": "Allblanc 노점프 유산소",
+      "testId": null
+    },
+    {
+      "tag": "h2",
+      "level": null,
+      "text": "자동차검사 D-14 준비",
+      "testId": null
+    },
+    {
+      "tag": "h2",
+      "level": null,
+      "text": "이사 D-30 준비",
+      "testId": null
+    }
+  ],
+  "actions": [
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "FLOW",
+      "accessibleName": "FLOW",
+      "testId": null,
+      "href": "/",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "summary",
+      "type": null,
+      "role": null,
+      "text": "메뉴≡",
+      "accessibleName": "보조 메뉴 열기",
+      "testId": null,
+      "href": null,
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "계획 만들기내 콘텐츠를 실행할 계획으로 정리",
+      "accessibleName": "계획 만들기내 콘텐츠를 실행할 계획으로 정리",
+      "testId": null,
+      "href": "/flows/new",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "계획 찾기",
+      "accessibleName": "계획 찾기",
+      "testId": null,
+      "href": "/flows",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "캘린더",
+      "accessibleName": "캘린더",
+      "testId": null,
+      "href": "/calendar",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "내 계획",
+      "accessibleName": "내 계획",
+      "testId": null,
+      "href": "/my",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "input",
+      "type": "text",
+      "role": null,
+      "text": "",
+      "accessibleName": "",
+      "testId": "flow-url-lookup-input",
+      "href": null,
+      "value": "",
+      "checked": false,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "submit",
+      "role": null,
+      "text": "계획 찾기",
+      "accessibleName": "계획 찾기",
+      "testId": null,
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "input",
+      "type": null,
+      "role": null,
+      "text": "",
+      "accessibleName": "",
+      "testId": "flow-catalog-search",
+      "href": null,
+      "value": "",
+      "checked": false,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "전체",
+      "accessibleName": "전체",
+      "testId": null,
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": "true"
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "이사/계약",
+      "accessibleName": "이사/계약",
+      "testId": null,
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": "false"
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "공부",
+      "accessibleName": "공부",
+      "testId": null,
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": "false"
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "아이/건강",
+      "accessibleName": "아이/건강",
+      "testId": null,
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": "false"
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "구매/생활",
+      "accessibleName": "구매/생활",
+      "testId": null,
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": "false"
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "루틴",
+      "accessibleName": "루틴",
+      "testId": null,
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": "false"
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "원문 · 중1 수학 목차",
+      "accessibleName": "원문 · 중1 수학 목차",
+      "testId": "flow-card-source-link",
+      "href": "https://mathbang.net/13",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "중1 수학 목차 진도 더보기",
+      "accessibleName": "중1 수학 목차 진도 더보기",
+      "testId": null,
+      "href": "/flow-maps/middle-school-math-1",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "원문 · 오픽 모의고사 공부 방법",
+      "accessibleName": "원문 · 오픽 모의고사 공부 방법",
+      "testId": "flow-card-source-link",
+      "href": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "오픽 모의고사 2주/1달 계획표 더보기",
+      "accessibleName": "오픽 모의고사 2주/1달 계획표 더보기",
+      "testId": null,
+      "href": "/flow-maps/curated-opic-mock-course",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "원문 · 독서 기록 Naver blog",
+      "accessibleName": "원문 · 독서 기록 Naver blog",
+      "testId": "flow-card-source-link",
+      "href": "https://blog.naver.com/naristyle87/222978131890",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "월 4권 독서 기록 루틴 더보기",
+      "accessibleName": "월 4권 독서 기록 루틴 더보기",
+      "testId": null,
+      "href": "/flow-maps/curated-reading-routine-log",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "원문 · Getcha 신차 구매 절차 참고 가이드",
+      "accessibleName": "원문 · Getcha 신차 구매 절차 참고 가이드",
+      "testId": "flow-card-source-link",
+      "href": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "신차 구매 7단계 체크리스트 더보기",
+      "accessibleName": "신차 구매 7단계 체크리스트 더보기",
+      "testId": null,
+      "href": "/flow-maps/curated-new-car-purchase-guide",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "원문 · 린지 개인 결혼 준비 타임라인",
+      "accessibleName": "원문 · 린지 개인 결혼 준비 타임라인",
+      "testId": "flow-card-source-link",
+      "href": "https://blog.naver.com/wilklove/223518896995",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "결혼 준비 1년 참고 타임라인 더보기",
+      "accessibleName": "결혼 준비 1년 참고 타임라인 더보기",
+      "testId": null,
+      "href": "/f/curated-wedding-naver-timeline",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "원문 · 공여사들 결혼준비 체크리스트 A to Z",
+      "accessibleName": "원문 · 공여사들 결혼준비 체크리스트 A to Z",
+      "testId": "flow-card-source-link",
+      "href": "https://gongysd.com/wedding-notion/?bmode=view&idx=167989966",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "결혼 준비 핵심 4가지 시작표 더보기",
+      "accessibleName": "결혼 준비 핵심 4가지 시작표 더보기",
+      "testId": null,
+      "href": "/f/curated-wedding-gongysd-atoz",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "원문 · Allblanc 매일 아침 5분 전신 운동 영상",
+      "accessibleName": "원문 · Allblanc 매일 아침 5분 전신 운동 영상",
+      "testId": "flow-card-source-link",
+      "href": "https://www.youtube.com/watch?v=fLLScgWQcHc",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "Allblanc 아침 5분 홈트 더보기",
+      "accessibleName": "Allblanc 아침 5분 홈트 더보기",
+      "testId": null,
+      "href": "/f/curated-allblanc-morning-workout",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "원문 · Allblanc 점프 없는 10분 전신 운동 영상",
+      "accessibleName": "원문 · Allblanc 점프 없는 10분 전신 운동 영상",
+      "testId": "flow-card-source-link",
+      "href": "https://www.youtube.com/watch?v=2dail5Imi04",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "Allblanc 노점프 유산소 더보기",
+      "accessibleName": "Allblanc 노점프 유산소 더보기",
+      "testId": null,
+      "href": "/f/curated-allblanc-no-jump-cardio",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "원문 · TS한국교통안전공단 정기검사 대상·기준·유효기간 안내",
+      "accessibleName": "원문 · TS한국교통안전공단 정기검사 대상·기준·유효기간 안내",
+      "testId": "flow-card-source-link",
+      "href": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "자동차검사 D-14 준비 더보기",
+      "accessibleName": "자동차검사 D-14 준비 더보기",
+      "testId": null,
+      "href": "/f/vehicle-inspection-prep",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "원문 · 이사 체크리스트 참고",
+      "accessibleName": "원문 · 이사 체크리스트 참고",
+      "testId": "flow-card-source-link",
+      "href": "https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "이사 D-30 준비 더보기",
+      "accessibleName": "이사 D-30 준비 더보기",
+      "testId": null,
+      "href": "/f/moving-d30-basic",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    }
+  ],
+  "validation": [
+    {
+      "testId": "flow-url-lookup-input",
+      "name": null,
+      "validationMessage": "이 입력란을 작성하세요."
+    }
+  ],
+  "geometry": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "document": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 2724
+    },
+    "horizontalOverflow": 0
+  },
+  "importantNodes": [
+    {
+      "testId": "platform-nav",
+      "data": {
+        "data-testid": "platform-nav",
+        "data-p35-q3-copy": "on"
+      }
+    },
+    {
+      "testId": "platform-mobile-tabs",
+      "data": {
+        "data-testid": "platform-mobile-tabs",
+        "data-layer-priority": "navigation",
+        "data-p30-marker": "P30-MOBILE-WORKSPACE-FOCUS-ORDER",
+        "data-p35-marker": "P35-ENTRY-ROUTER-3TAB"
+      }
+    },
+    {
+      "testId": "flow-map-catalog-section",
+      "data": {
+        "data-testid": "flow-map-catalog-section"
+      }
+    },
+    {
+      "testId": "flow-catalog-hero",
+      "data": {
+        "data-testid": "flow-catalog-hero"
+      }
+    },
+    {
+      "testId": "flow-catalog-count",
+      "data": {
+        "data-testid": "flow-catalog-count"
+      }
+    },
+    {
+      "testId": "flow-url-lookup-entry",
+      "data": {
+        "data-testid": "flow-url-lookup-entry"
+      }
+    },
+    {
+      "testId": "flow-url-lookup-input",
+      "data": {
+        "data-testid": "flow-url-lookup-input"
+      }
+    },
+    {
+      "testId": "flow-catalog-browse-controls",
+      "data": {
+        "data-testid": "flow-catalog-browse-controls"
+      }
+    },
+    {
+      "testId": "flow-catalog-search",
+      "data": {
+        "data-testid": "flow-catalog-search"
+      }
+    },
+    {
+      "testId": "flow-catalog-browse-results",
+      "data": {
+        "data-testid": "flow-catalog-browse-results"
+      }
+    },
+    {
+      "testId": "flow-map-catalog-card",
+      "data": {
+        "data-testid": "flow-map-catalog-card",
+        "data-map-id": "middle-school-math-1",
+        "data-source-kind": "representative",
+        "data-p31-marker": "P31-DISCOVERY-CARD-COMPACT"
+      }
+    },
+    {
+      "testId": "flow-card-support-meta",
+      "data": {
+        "data-testid": "flow-card-support-meta"
+      }
+    },
+    {
+      "testId": "flow-card-source-link",
+      "data": {
+        "data-testid": "flow-card-source-link"
+      }
+    },
+    {
+      "testId": "flow-map-detail-link",
+      "data": {
+        "data-testid": "flow-map-detail-link"
+      }
+    },
+    {
+      "testId": "flow-card-primary-action",
+      "data": {
+        "data-testid": "flow-card-primary-action"
+      }
+    },
+    {
+      "testId": "flow-map-catalog-card",
+      "data": {
+        "data-testid": "flow-map-catalog-card",
+        "data-map-id": "curated-opic-mock-course",
+        "data-source-kind": "curated-source",
+        "data-p31-marker": "P31-DISCOVERY-CARD-COMPACT"
+      }
+    },
+    {
+      "testId": "flow-card-support-meta",
+      "data": {
+        "data-testid": "flow-card-support-meta"
+      }
+    },
+    {
+      "testId": "flow-card-source-link",
+      "data": {
+        "data-testid": "flow-card-source-link"
+      }
+    },
+    {
+      "testId": "flow-map-detail-link",
+      "data": {
+        "data-testid": "flow-map-detail-link"
+      }
+    },
+    {
+      "testId": "flow-card-primary-action",
+      "data": {
+        "data-testid": "flow-card-primary-action"
+      }
+    },
+    {
+      "testId": "flow-map-catalog-card",
+      "data": {
+        "data-testid": "flow-map-catalog-card",
+        "data-map-id": "curated-reading-routine-log",
+        "data-source-kind": "curated-source",
+        "data-p31-marker": "P31-DISCOVERY-CARD-COMPACT"
+      }
+    },
+    {
+      "testId": "flow-card-support-meta",
+      "data": {
+        "data-testid": "flow-card-support-meta"
+      }
+    },
+    {
+      "testId": "flow-card-source-link",
+      "data": {
+        "data-testid": "flow-card-source-link"
+      }
+    },
+    {
+      "testId": "flow-map-detail-link",
+      "data": {
+        "data-testid": "flow-map-detail-link"
+      }
+    },
+    {
+      "testId": "flow-card-primary-action",
+      "data": {
+        "data-testid": "flow-card-primary-action"
+      }
+    },
+    {
+      "testId": "flow-map-catalog-card",
+      "data": {
+        "data-testid": "flow-map-catalog-card",
+        "data-map-id": "curated-new-car-purchase-guide",
+        "data-source-kind": "curated-source",
+        "data-p31-marker": "P31-DISCOVERY-CARD-COMPACT"
+      }
+    },
+    {
+      "testId": "flow-card-support-meta",
+      "data": {
+        "data-testid": "flow-card-support-meta"
+      }
+    },
+    {
+      "testId": "flow-card-source-link",
+      "data": {
+        "data-testid": "flow-card-source-link"
+      }
+    },
+    {
+      "testId": "flow-map-detail-link",
+      "data": {
+        "data-testid": "flow-map-detail-link"
+      }
+    },
+    {
+      "testId": "flow-card-primary-action",
+      "data": {
+        "data-testid": "flow-card-primary-action"
+      }
+    },
+    {
+      "testId": "flow-map-catalog-card",
+      "data": {
+        "data-testid": "flow-map-catalog-card",
+        "data-map-id": "curated-wedding-naver-timeline",
+        "data-source-kind": "curated-source",
+        "data-p31-marker": "P31-DISCOVERY-CARD-COMPACT"
+      }
+    },
+    {
+      "testId": "flow-card-support-meta",
+      "data": {
+        "data-testid": "flow-card-support-meta"
+      }
+    },
+    {
+      "testId": "flow-card-source-link",
+      "data": {
+        "data-testid": "flow-card-source-link"
+      }
+    },
+    {
+      "testId": "flow-map-detail-link",
+      "data": {
+        "data-testid": "flow-map-detail-link"
+      }
+    },
+    {
+      "testId": "flow-card-primary-action",
+      "data": {
+        "data-testid": "flow-card-primary-action"
+      }
+    },
+    {
+      "testId": "flow-map-catalog-card",
+      "data": {
+        "data-testid": "flow-map-catalog-card",
+        "data-map-id": "curated-wedding-gongysd-atoz",
+        "data-source-kind": "curated-source",
+        "data-p31-marker": "P31-DISCOVERY-CARD-COMPACT"
+      }
+    },
+    {
+      "testId": "flow-card-support-meta",
+      "data": {
+        "data-testid": "flow-card-support-meta"
+      }
+    },
+    {
+      "testId": "flow-card-source-link",
+      "data": {
+        "data-testid": "flow-card-source-link"
+      }
+    },
+    {
+      "testId": "flow-map-detail-link",
+      "data": {
+        "data-testid": "flow-map-detail-link"
+      }
+    },
+    {
+      "testId": "flow-card-primary-action",
+      "data": {
+        "data-testid": "flow-card-primary-action"
+      }
+    },
+    {
+      "testId": "flow-map-catalog-card",
+      "data": {
+        "data-testid": "flow-map-catalog-card",
+        "data-map-id": "curated-allblanc-morning-workout",
+        "data-source-kind": "curated-source",
+        "data-p31-marker": "P31-DISCOVERY-CARD-COMPACT"
+      }
+    },
+    {
+      "testId": "flow-card-support-meta",
+      "data": {
+        "data-testid": "flow-card-support-meta"
+      }
+    },
+    {
+      "testId": "flow-card-source-link",
+      "data": {
+        "data-testid": "flow-card-source-link"
+      }
+    },
+    {
+      "testId": "flow-map-detail-link",
+      "data": {
+        "data-testid": "flow-map-detail-link"
+      }
+    },
+    {
+      "testId": "flow-card-primary-action",
+      "data": {
+        "data-testid": "flow-card-primary-action"
+      }
+    },
+    {
+      "testId": "flow-map-catalog-card",
+      "data": {
+        "data-testid": "flow-map-catalog-card",
+        "data-map-id": "curated-allblanc-no-jump-cardio",
+        "data-source-kind": "curated-source",
+        "data-p31-marker": "P31-DISCOVERY-CARD-COMPACT"
+      }
+    },
+    {
+      "testId": "flow-card-support-meta",
+      "data": {
+        "data-testid": "flow-card-support-meta"
+      }
+    },
+    {
+      "testId": "flow-card-source-link",
+      "data": {
+        "data-testid": "flow-card-source-link"
+      }
+    },
+    {
+      "testId": "flow-map-detail-link",
+      "data": {
+        "data-testid": "flow-map-detail-link"
+      }
+    },
+    {
+      "testId": "flow-card-primary-action",
+      "data": {
+        "data-testid": "flow-card-primary-action"
+      }
+    },
+    {
+      "testId": "single-flow-catalog-card",
+      "data": {
+        "data-testid": "single-flow-catalog-card",
+        "data-p31-marker": "P31-DISCOVERY-CARD-COMPACT"
+      }
+    },
+    {
+      "testId": "flow-card-support-meta",
+      "data": {
+        "data-testid": "flow-card-support-meta"
+      }
+    },
+    {
+      "testId": "flow-card-source-link",
+      "data": {
+        "data-testid": "flow-card-source-link"
+      }
+    },
+    {
+      "testId": "flow-card-primary-action",
+      "data": {
+        "data-testid": "flow-card-primary-action"
+      }
+    },
+    {
+      "testId": "single-flow-catalog-card",
+      "data": {
+        "data-testid": "single-flow-catalog-card",
+        "data-p31-marker": "P31-DISCOVERY-CARD-COMPACT"
+      }
+    },
+    {
+      "testId": "flow-card-support-meta",
+      "data": {
+        "data-testid": "flow-card-support-meta"
+      }
+    },
+    {
+      "testId": "flow-card-source-link",
+      "data": {
+        "data-testid": "flow-card-source-link"
+      }
+    },
+    {
+      "testId": "flow-card-primary-action",
+      "data": {
+        "data-testid": "flow-card-primary-action"
+      }
+    }
+  ],
+  "browserEvents": {
+    "consoleErrors": [],
+    "pageErrors": [],
+    "requestFailures": []
+  },
+  "evidenceClass": "ACTUAL_UI",
+  "lookupState": "empty",
+  "inputValidationMessage": "이 입력란을 작성하세요.",
+  "resultCount": 0
+}

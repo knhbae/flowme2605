@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "scenarioId": "S22",
+  "generatedAt": "2026-08-05T05:55:00.088Z",
+  "baseUrl": "http://127.0.0.1:3121",
+  "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+  "observedUsers": 0,
+  "sourceSnapshot": {
+    "head": "83c3a72629ba2bad634f117f1f8077de8aa0e045",
+    "shortHead": "83c3a72629ba",
+    "branch": "codex/p35-round2-candidate-20260805",
+    "buildId": "k7ouW_TvxXXQiPeyjALDo",
+    "dirty": false,
+    "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+    "gitStatusSha256": "08411ee7d7ddd20c5f49af3c2d2a88c5cef9dc9202cf333436ee76519fc5a031"
+  },
+  "title": "Explicit out-of-scope and not-assessed register",
+  "reviewerStatus": "NOT_ASSESSED",
+  "assessments": [
+    {
+      "topic": "performance budgets, Web Vitals, and throttled-device latency",
+      "status": "NOT_ASSESSED",
+      "requiredFutureEvidence": "Agreed budgets plus repeatable mobile throttling run on an immutable candidate."
+    },
+    {
+      "topic": "actual-browser 200 percent zoom and reflow",
+      "status": "NOT_ASSESSED",
+      "requiredFutureEvidence": "Reviewer-controlled browser zoom capture and keyboard path."
+    },
+    {
+      "topic": "screen reader speech output",
+      "status": "NOT_ASSESSED",
+      "requiredFutureEvidence": "NVDA, VoiceOver, or equivalent reviewer log/audio on the candidate."
+    },
+    {
+      "topic": "actual-browser DST transition and UTC-offset download behavior",
+      "status": "NOT_ASSESSED",
+      "requiredFutureEvidence": "Browser clock/timezone run spanning a real DST transition."
+    },
+    {
+      "topic": "observed-user validation",
+      "status": "NOT_ASSESSED",
+      "observedUsers": 0,
+      "reason": "Only the user, Claude Design, and Codex are in this review loop."
+    },
+    {
+      "topic": "immutable candidate and production publication",
+      "status": "NOT_ASSESSED",
+      "reason": "This collector does not publish or deploy."
+    }
+  ],
+  "runtimeReachabilityAtCollection": {
+    "reachable": true,
+    "status": 200,
+    "statusText": "OK",
+    "url": "http://127.0.0.1:3121/flows",
+    "durationMs": 27
+  },
+  "noPassClaim": true
+}

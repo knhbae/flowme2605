@@ -1,0 +1,12 @@
+{
+  "local": {
+    "flow:meta:last-visit": "2026-08-05T05:54:27.329Z",
+    "flow:my-flow:date-overrides": "{}",
+    "flow:my-flow:item-drafts": "{\"personal-copy:ad571d26-189c-47e8-a67e-63bd9e98a44e::flow-vehicle-inspection-prep-item-0::draft-overlay\":{\"memo\":\"등록증 원본과 계기판 사진을 함께 확인하고 담당자 이름을 기록\"}}",
+    "flow:personal-copy:ad571d26-189c-47e8-a67e-63bd9e98a44e:anchorDate": "{\"mode\":\"undated\",\"anchor\":\"\"}",
+    "flow:saved:personal-copy:ad571d26-189c-47e8-a67e-63bd9e98a44e": "{\"schemaVersion\":2,\"slug\":\"personal-copy:ad571d26-189c-47e8-a67e-63bd9e98a44e\",\"savedAt\":\"2026-08-05T05:54:25.836Z\",\"personalCopyKey\":\"personal-copy:ad571d26-189c-47e8-a67e-63bd9e98a44e\",\"sourceFlowKey\":\"flow-vehicle-inspection-prep\",\"sourceFlowSlug\":\"vehicle-inspection-prep\",\"sourceVersion\":\"2026-07-12T00:00:00.000Z\",\"lastSaveRequestId\":\"saved-plan:personal-copy:ad571d26-189c-47e8-a67e-63bd9e98a44e:1785909265248\",\"savedItemCount\":10,\"personalTitle\":\"자동차검사 D-14 준비\",\"selectedArtifactMode\":\"checklist\",\"dateIntent\":\"undated\"}",
+    "flow_builder_mvp_checks_personal-copy:ad571d26-189c-47e8-a67e-63bd9e98a44e": "{\"flow-vehicle-inspection-prep-item-0\":false}",
+    "flow_builder_mvp_item_state_personal-copy:ad571d26-189c-47e8-a67e-63bd9e98a44e": "{\"flow-vehicle-inspection-prep-item-0\":{\"personalOrder\":0},\"flow-vehicle-inspection-prep-item-1\":{\"personalOrder\":1},\"flow-vehicle-inspection-prep-item-2\":{\"personalOrder\":2},\"flow-vehicle-inspection-prep-item-3\":{\"personalOrder\":3},\"flow-vehicle-inspection-prep-item-4\":{\"personalOrder\":4},\"flow-vehicle-inspection-prep-item-5\":{\"personalOrder\":5},\"flow-vehicle-inspection-prep-item-6\":{\"personalOrder\":6},\"flow-vehicle-inspection-prep-item-7\":{\"personalOrder\":7},\"flow-vehicle-inspection-prep-item-8\":{\"personalOrder\":8},\"flow-vehicle-inspection-prep-item-9\":{\"personalOrder\":9}}"
+  },
+  "session": {}
+}

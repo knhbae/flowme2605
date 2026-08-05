@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-05T05:55:22.768Z",
+  "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+  "observedUsers": 0,
+  "scenarioCount": 23,
+  "candidateArtifactCount": 8,
+  "masterManifestByteLength": 123598,
+  "masterManifestSha256": "104CFAB5748E48EEB0EC50132B6DE4181262A2A729B2E9CCA6085BDB37193B75",
+  "hashFailureCount": 0,
+  "localLinkFailureCount": 0,
+  "horizontalOverflowCount": 0,
+  "brokenImageCount": 0,
+  "replacementCharacterCount": 0,
+  "consoleAndPageErrorCount": 0,
+  "hashFailures": [],
+  "linkFailures": [],
+  "checks": [
+    {
+      "viewport": "390x844",
+      "horizontalOverflow": 0,
+      "brokenImages": 0,
+      "replacementCharacters": 0,
+      "scenarioSectionCount": 23,
+      "emptyScenarioSectionCount": 0,
+      "errors": []
+    },
+    {
+      "viewport": "1024x768",
+      "horizontalOverflow": 0,
+      "brokenImages": 0,
+      "replacementCharacters": 0,
+      "scenarioSectionCount": 23,
+      "emptyScenarioSectionCount": 0,
+      "errors": []
+    },
+    {
+      "viewport": "1440x1000",
+      "horizontalOverflow": 0,
+      "brokenImages": 0,
+      "replacementCharacters": 0,
+      "scenarioSectionCount": 23,
+      "emptyScenarioSectionCount": 0,
+      "errors": []
+    }
+  ]
+}

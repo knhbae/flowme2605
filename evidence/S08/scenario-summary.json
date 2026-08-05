@@ -1,0 +1,30 @@
+{
+  "scenario": "S08",
+  "status": "LOCAL_CANDIDATE_CAPTURED",
+  "passCount": 1,
+  "errorCount": 0,
+  "knownGaps": [
+    "Recoverable-error evidence uses a clearly labeled one-shot localStorage failure injection; concurrent-tab conflict breadth remains in the automated gate."
+  ],
+  "variants": [
+    {
+      "scenario": "S08",
+      "variant": "saved-editor-cancel-error-reload",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "startedAt": "2026-08-05T05:54:28.416Z",
+      "status": "PASS",
+      "error": null,
+      "result": {
+        "personalCopyKey": "personal-copy:da96504c-a60f-497f-9182-ba0bf67f508f",
+        "cancelStorageByteEqual": true,
+        "failureStorageByteEqual": true,
+        "retryTitle": "저장 실패 뒤 다시 저장한 계획 제목",
+        "reloadedTitlePresent": true
+      },
+      "finishedAt": "2026-08-05T05:54:32.065Z"
+    }
+  ]
+}

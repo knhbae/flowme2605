@@ -1,0 +1,11 @@
+{
+  "local": {
+    "flow:meta:last-visit": "2026-08-05T05:54:12.770Z",
+    "flow:my-flow:date-overrides": "{}",
+    "flow:my-flow:item-drafts": "{}",
+    "flow:personal-copy:128b8a44-5db5-4e9b-bb44-c1414faaf73b:anchorDate": "{\"mode\":\"custom\",\"anchor\":\"2031-12-01\"}",
+    "flow:saved:personal-copy:128b8a44-5db5-4e9b-bb44-c1414faaf73b": "{\"personalTitle\":\"이사 D-30 준비\",\"selectedArtifactMode\":\"calendar\",\"dateIntent\":\"custom\",\"anchor\":\"2031-12-01\",\"schemaVersion\":2,\"slug\":\"personal-copy:128b8a44-5db5-4e9b-bb44-c1414faaf73b\",\"savedAt\":\"2026-08-05T05:54:12.770Z\",\"personalCopyKey\":\"personal-copy:128b8a44-5db5-4e9b-bb44-c1414faaf73b\",\"sourceFlowKey\":\"flow-moving\",\"sourceFlowSlug\":\"moving-d30-basic\",\"sourceVersion\":\"2026-05-20T00:00:00.000Z\",\"lastSaveRequestId\":\"save-request:9f690d90-3e11-42ad-b3b8-841a50e107af\",\"savedItemCount\":24}",
+    "flow_builder_mvp_item_state_personal-copy:128b8a44-5db5-4e9b-bb44-c1414faaf73b": "{}"
+  },
+  "session": {}
+}

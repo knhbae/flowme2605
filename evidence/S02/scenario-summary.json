@@ -1,0 +1,60 @@
+{
+  "scenario": "S02",
+  "status": "LOCAL_CANDIDATE_CAPTURED",
+  "passCount": 3,
+  "errorCount": 0,
+  "knownGaps": [
+    "For the mixed fixture the UI truthfully selects the lossless checklist (24 Items); the same manifest records Calendar as conditional with 23 current outputs and one undated Item."
+  ],
+  "variants": [
+    {
+      "scenario": "S02",
+      "variant": "all-dated",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "startedAt": "2026-08-05T05:53:54.632Z",
+      "status": "PASS",
+      "error": null,
+      "result": {
+        "dateShape": "all-dated",
+        "outputCount": "24"
+      },
+      "finishedAt": "2026-08-05T05:53:56.546Z"
+    },
+    {
+      "scenario": "S02",
+      "variant": "all-undated",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "startedAt": "2026-08-05T05:53:56.704Z",
+      "status": "PASS",
+      "error": null,
+      "result": {
+        "dateShape": "all-undated",
+        "outputCount": "10"
+      },
+      "finishedAt": "2026-08-05T05:53:57.899Z"
+    },
+    {
+      "scenario": "S02",
+      "variant": "dated-undated-mixed",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "startedAt": "2026-08-05T05:53:58.052Z",
+      "status": "PASS",
+      "error": null,
+      "result": {
+        "dateShape": "mixed",
+        "explicitlyUndatedItemId": "flow-moving-item-5",
+        "outputCount": "24"
+      },
+      "finishedAt": "2026-08-05T05:54:00.028Z"
+    }
+  ]
+}

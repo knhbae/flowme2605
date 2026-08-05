@@ -1,0 +1,1453 @@
+{
+  "capturedAt": "2026-08-05T05:54:25.191Z",
+  "route": "http://127.0.0.1:3121/my?view=flows&flow=personal-copy%3Aad571d26-189c-47e8-a67e-63bd9e98a44e&item=personal-copy%3Aad571d26-189c-47e8-a67e-63bd9e98a44e%3A%3Aflow-vehicle-inspection-prep-item-0%3A%3Anone",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "headings": [
+    {
+      "tag": "h1",
+      "level": null,
+      "text": "자동차검사 D-14 준비",
+      "testId": null
+    },
+    {
+      "tag": "h2",
+      "level": null,
+      "text": "자동차검사 D-14 준비",
+      "testId": null
+    },
+    {
+      "tag": "h2",
+      "level": null,
+      "text": "자동차검사 기간과 예약 가능일 확인하기",
+      "testId": null
+    }
+  ],
+  "actions": [
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "FLOW",
+      "accessibleName": "FLOW",
+      "testId": null,
+      "href": "/",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "summary",
+      "type": null,
+      "role": null,
+      "text": "메뉴≡",
+      "accessibleName": "보조 메뉴 열기",
+      "testId": null,
+      "href": null,
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "계획 만들기내 콘텐츠를 실행할 계획으로 정리",
+      "accessibleName": "계획 만들기내 콘텐츠를 실행할 계획으로 정리",
+      "testId": null,
+      "href": "/flows/new",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "되돌리기",
+      "accessibleName": "되돌리기",
+      "testId": "my-flow-save-undo",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "닫기",
+      "accessibleName": "저장 알림 닫기",
+      "testId": "my-flow-save-banner-dismiss",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "‹",
+      "accessibleName": "저장한 계획 목록으로 돌아가기",
+      "testId": "my-flow-mobile-library-back",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "summary",
+      "type": null,
+      "role": null,
+      "text": "계획 관리",
+      "accessibleName": "자동차검사 D-14 준비 계획 관리",
+      "testId": null,
+      "href": null,
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": "menuitem",
+      "text": "계획 수정",
+      "accessibleName": "계획 수정",
+      "testId": "my-flow-management-adjust",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": "menuitem",
+      "text": "원문 보기",
+      "accessibleName": "원문 보기",
+      "testId": "my-flow-management-source",
+      "href": "/f/vehicle-inspection-prep",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": "menuitem",
+      "text": "보관보관함에서 복구하거나 영구 삭제할 수 있어요.",
+      "accessibleName": "보관보관함에서 복구하거나 영구 삭제할 수 있어요.",
+      "testId": "my-flow-archive-toggle",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "자동차검사 기간과 예약 가능일 확인하기열기",
+      "accessibleName": "자동차검사 기간과 예약 가능일 확인하기 열기 · 자동차검사 준비",
+      "testId": null,
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "차량번호와 예약 정보 확인하기열기",
+      "accessibleName": "차량번호와 예약 정보 확인하기 열기 · 자동차검사 준비",
+      "testId": null,
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "가까운 검사소와 수수료 확인하기열기",
+      "accessibleName": "가까운 검사소와 수수료 확인하기 열기 · 자동차검사 준비",
+      "testId": null,
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "전체 계획10개⌃",
+      "accessibleName": "전체 계획10개⌃",
+      "testId": "my-flow-workspace-plan-toggle",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": "true",
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "여러 할 일 조정",
+      "accessibleName": "여러 할 일 조정",
+      "testId": "my-flow-batch-mode-toggle",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": "false"
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "검사 기간 확인날짜 없음 · 3개 · 0/3 완료⌃",
+      "accessibleName": "검사 기간 확인날짜 없음 · 3개 · 0/3 완료⌃",
+      "testId": "my-flow-whole-flow-section-toggle",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": "true",
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "자동차검사 기간과 예약 가능일 확인하기열기",
+      "accessibleName": "자동차검사 기간과 예약 가능일 확인하기 열기 · 자동차검사 준비",
+      "testId": null,
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "차량번호와 예약 정보 확인하기열기",
+      "accessibleName": "차량번호와 예약 정보 확인하기 열기 · 자동차검사 준비",
+      "testId": null,
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "가까운 검사소와 수수료 확인하기열기",
+      "accessibleName": "가까운 검사소와 수수료 확인하기 열기 · 자동차검사 준비",
+      "testId": null,
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "차량 상태 점검날짜 없음 · 4개 · 0/4 완료⌃",
+      "accessibleName": "차량 상태 점검날짜 없음 · 4개 · 0/4 완료⌃",
+      "testId": "my-flow-whole-flow-section-toggle",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": "true",
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "번호판과 차대번호 식별 상태 확인하기열기",
+      "accessibleName": "번호판과 차대번호 식별 상태 확인하기 열기 · 자동차검사 준비",
+      "testId": null,
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "등화장치와 경음기 작동 확인하기열기",
+      "accessibleName": "등화장치와 경음기 작동 확인하기 열기 · 자동차검사 준비",
+      "testId": null,
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "타이어 마모와 공기압 확인하기열기",
+      "accessibleName": "타이어 마모와 공기압 확인하기 열기 · 자동차검사 준비",
+      "testId": null,
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "오일 누유와 경고등 여부 기록하기열기",
+      "accessibleName": "오일 누유와 경고등 여부 기록하기 열기 · 자동차검사 준비",
+      "testId": null,
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "검사 당일날짜 없음 · 3개 · 0/3 완료⌃",
+      "accessibleName": "검사 당일날짜 없음 · 3개 · 0/3 완료⌃",
+      "testId": "my-flow-whole-flow-section-toggle",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": "true",
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "예약 시간보다 여유 있게 검사소 도착하기열기",
+      "accessibleName": "예약 시간보다 여유 있게 검사소 도착하기 열기 · 자동차검사 준비",
+      "testId": null,
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "접수와 수수료 결제 진행하기열기",
+      "accessibleName": "접수와 수수료 결제 진행하기 열기 · 자동차검사 준비",
+      "testId": null,
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "검사 결과와 재검사 필요 항목 기록하기열기",
+      "accessibleName": "검사 결과와 재검사 필요 항목 기록하기 열기 · 자동차검사 준비",
+      "testId": null,
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "마감일 바꾸기",
+      "accessibleName": "자동차검사 D-14 준비 마감일 바꾸기",
+      "testId": "my-flow-direct-anchor-settings-open",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "전체 10개 옮기기",
+      "accessibleName": "자동차검사 D-14 준비 전체 10개 옮기기",
+      "testId": "my-flow-export-entry",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": "false",
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "",
+      "accessibleName": "자동차검사 기간과 예약 가능일 확인하기 닫기",
+      "testId": null,
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "닫기",
+      "accessibleName": "닫기",
+      "testId": "my-flow-item-detail-sheet-close",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "input",
+      "type": "checkbox",
+      "role": null,
+      "text": "",
+      "accessibleName": "자동차검사 기간과 예약 가능일 확인하기 완료 체크",
+      "testId": "my-flow-task-complete-control",
+      "href": null,
+      "value": "on",
+      "checked": false,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "수정",
+      "accessibleName": "자동차검사 기간과 예약 가능일 확인하기 수정",
+      "testId": "my-flow-quick-item-edit",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "summary",
+      "type": null,
+      "role": null,
+      "text": "메모·일정",
+      "accessibleName": "메모·일정",
+      "testId": null,
+      "href": null,
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "summary",
+      "type": null,
+      "role": null,
+      "text": "현재 항목 1개 옮기기",
+      "accessibleName": "현재 항목 1개 옮기기",
+      "testId": null,
+      "href": null,
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "TS한국교통안전공단 정기검사 대상·기준·유효기간 안내",
+      "accessibleName": "TS한국교통안전공단 정기검사 대상·기준·유효기간 안내",
+      "testId": "my-flow-detail-source-link",
+      "href": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "현재 항목 · 메모로 복사 1개제목과 날짜, 메모를 함께 옮깁니다. · 선택 범위 전체 유지",
+      "accessibleName": "현재 항목 · 메모로 복사 1개",
+      "testId": "my-flow-detail-copy-portable-text",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "현재 항목 · 체크리스트 복사 1개실행 순서와 완료 기준을 함께 옮깁니다. · 선택 범위 전체 유지",
+      "accessibleName": "현재 항목 · 체크리스트 복사 1개",
+      "testId": "my-flow-detail-copy-checklist-text",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "현재 항목 · 시트 행 복사 1행개인 순서를 유지한 행으로 옮깁니다. · 선택 범위 전체 유지",
+      "accessibleName": "현재 항목 · 시트 행 복사 1행",
+      "testId": "my-flow-detail-copy-sheet-row",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "계획 찾기",
+      "accessibleName": "계획 찾기",
+      "testId": null,
+      "href": "/flows",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "캘린더",
+      "accessibleName": "캘린더",
+      "testId": null,
+      "href": "/calendar",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "내 계획",
+      "accessibleName": "내 계획",
+      "testId": null,
+      "href": "/my",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    }
+  ],
+  "validation": [],
+  "geometry": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "document": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 1869
+    },
+    "horizontalOverflow": 0
+  },
+  "importantNodes": [
+    {
+      "testId": "my-flow-saved-library-shell",
+      "data": {
+        "data-saved-library-flag": "on",
+        "data-p35-q3-copy": "on",
+        "data-testid": "my-flow-saved-library-shell",
+        "data-p35-q1-saved-transfer": "on",
+        "data-library-count": "1",
+        "data-library-size-state": "single",
+        "data-p32-workspace-state": "focused",
+        "data-p35-dead-view-marker": "P35-DEAD-VIEW-REMOVAL",
+        "data-p35-my-flow-marker": "P35-MY-LIBRARY-ONLY"
+      }
+    },
+    {
+      "testId": "platform-nav",
+      "data": {
+        "data-testid": "platform-nav",
+        "data-p35-q3-copy": "on"
+      }
+    },
+    {
+      "testId": "my-flow-workspace",
+      "data": {
+        "data-testid": "my-flow-workspace",
+        "data-surface-role": "task-first"
+      }
+    },
+    {
+      "testId": "my-flow-save-banner",
+      "data": {
+        "data-testid": "my-flow-save-banner",
+        "data-flow-slug": "vehicle-inspection-prep",
+        "data-personal-copy-key": "personal-copy:ad571d26-189c-47e8-a67e-63bd9e98a44e",
+        "data-item-count": "10"
+      }
+    },
+    {
+      "testId": "my-flow-save-banner-summary",
+      "data": {
+        "data-testid": "my-flow-save-banner-summary"
+      }
+    },
+    {
+      "testId": "my-flow-save-undo",
+      "data": {
+        "data-testid": "my-flow-save-undo"
+      }
+    },
+    {
+      "testId": "my-flow-save-banner-dismiss",
+      "data": {
+        "data-testid": "my-flow-save-banner-dismiss"
+      }
+    },
+    {
+      "testId": "my-flow-mobile-workspace",
+      "data": {
+        "data-testid": "my-flow-mobile-workspace",
+        "data-flow-slug": "personal-copy:ad571d26-189c-47e8-a67e-63bd9e98a44e",
+        "data-saved-identity": "personal-copy:ad571d26-189c-47e8-a67e-63bd9e98a44e",
+        "data-effective-result-count": "10",
+        "data-effective-date-state": "undated",
+        "data-effective-personal-version": "personal:448cf694",
+        "data-effective-execution-version": "execution:44b6ac2e",
+        "data-copy-kind": "source",
+        "data-workspace-section": "continuous",
+        "data-semantic-order": "execution-plan",
+        "data-p31-marker": "P31-03-DEDICATED-MOBILE-WORKSPACE",
+        "data-p32-marker": "P32-02-FOCUSED-MY-FLOW-WORKSPACE",
+        "data-p32-shared-marker": "P32-06-SHARED-FOCUSED-WORKSPACE",
+        "data-p35-marker": "P35-PERSONAL-SINGLE-FOCUS",
+        "data-p35-r10-marker": "P35-R10-SHAPE-HONESTY",
+        "data-p32-flow-shape": "체크리스트",
+        "data-flow-anatomy": "flow-detail"
+      }
+    },
+    {
+      "testId": "my-flow-mobile-library-back",
+      "data": {
+        "data-testid": "my-flow-mobile-library-back"
+      }
+    },
+    {
+      "testId": "my-flow-workspace-progress-summary",
+      "data": {
+        "data-testid": "my-flow-workspace-progress-summary"
+      }
+    },
+    {
+      "testId": "my-flow-workspace-management-menu",
+      "data": {
+        "data-testid": "my-flow-workspace-management-menu",
+        "data-p34-marker": "P34-01-ACTIVE-FLOW-MANAGE-390"
+      }
+    },
+    {
+      "testId": "my-flow-management-adjust",
+      "data": {
+        "data-testid": "my-flow-management-adjust"
+      }
+    },
+    {
+      "testId": "my-flow-management-source",
+      "data": {
+        "data-testid": "my-flow-management-source"
+      }
+    },
+    {
+      "testId": "my-flow-archive-toggle",
+      "data": {
+        "data-testid": "my-flow-archive-toggle"
+      }
+    },
+    {
+      "testId": "my-flow-workspace-execute",
+      "data": {
+        "data-testid": "my-flow-workspace-execute"
+      }
+    },
+    {
+      "testId": "my-flow-shape-aware-execution",
+      "data": {
+        "data-testid": "my-flow-shape-aware-execution",
+        "data-p35-marker": "P35-R4-CHECKLIST-NEXT",
+        "data-execution-shape": "checklist",
+        "data-execution-kind": "next_items",
+        "data-first-entry-limit": "3",
+        "data-completion-owner": "item_detail",
+        "data-semantic-order": "1"
+      }
+    },
+    {
+      "testId": "my-flow-shape-aware-row",
+      "data": {
+        "data-testid": "my-flow-shape-aware-row",
+        "data-row-role": "next"
+      }
+    },
+    {
+      "testId": "my-flow-execution-row-shell",
+      "data": {
+        "data-testid": "my-flow-execution-row-shell",
+        "data-flow-slug": "personal-copy:ad571d26-189c-47e8-a67e-63bd9e98a44e",
+        "data-calendar-item-kind": "task"
+      }
+    },
+    {
+      "testId": "my-flow-row-title",
+      "data": {
+        "data-testid": "my-flow-row-title",
+        "data-flow-row-slot": "title"
+      }
+    },
+    {
+      "testId": "my-flow-row-open-label",
+      "data": {
+        "data-testid": "my-flow-row-open-label"
+      }
+    },
+    {
+      "testId": "my-flow-shape-aware-row",
+      "data": {
+        "data-testid": "my-flow-shape-aware-row",
+        "data-row-role": "next"
+      }
+    },
+    {
+      "testId": "my-flow-execution-row-shell",
+      "data": {
+        "data-testid": "my-flow-execution-row-shell",
+        "data-flow-slug": "personal-copy:ad571d26-189c-47e8-a67e-63bd9e98a44e",
+        "data-calendar-item-kind": "task"
+      }
+    },
+    {
+      "testId": "my-flow-row-title",
+      "data": {
+        "data-testid": "my-flow-row-title",
+        "data-flow-row-slot": "title"
+      }
+    },
+    {
+      "testId": "my-flow-row-open-label",
+      "data": {
+        "data-testid": "my-flow-row-open-label"
+      }
+    },
+    {
+      "testId": "my-flow-shape-aware-row",
+      "data": {
+        "data-testid": "my-flow-shape-aware-row",
+        "data-row-role": "next"
+      }
+    },
+    {
+      "testId": "my-flow-execution-row-shell",
+      "data": {
+        "data-testid": "my-flow-execution-row-shell",
+        "data-flow-slug": "personal-copy:ad571d26-189c-47e8-a67e-63bd9e98a44e",
+        "data-calendar-item-kind": "task"
+      }
+    },
+    {
+      "testId": "my-flow-row-title",
+      "data": {
+        "data-testid": "my-flow-row-title",
+        "data-flow-row-slot": "title"
+      }
+    },
+    {
+      "testId": "my-flow-row-open-label",
+      "data": {
+        "data-testid": "my-flow-row-open-label"
+      }
+    },
+    {
+      "testId": "my-flow-workspace-plan",
+      "data": {
+        "data-testid": "my-flow-workspace-plan",
+        "data-plan-open": "true",
+        "data-p35-r13-marker": "P35-R13-FIRST-ENTRY-WHOLE-PLAN",
+        "data-semantic-order": "2"
+      }
+    },
+    {
+      "testId": "my-flow-workspace-plan-toggle",
+      "data": {
+        "data-testid": "my-flow-workspace-plan-toggle"
+      }
+    },
+    {
+      "testId": "my-flow-workspace-plan-content",
+      "data": {
+        "data-testid": "my-flow-workspace-plan-content"
+      }
+    },
+    {
+      "testId": "my-flow-batch-mode-toggle",
+      "data": {
+        "data-testid": "my-flow-batch-mode-toggle",
+        "data-structure-edit-toggle": "false"
+      }
+    },
+    {
+      "testId": "my-flow-whole-flow-outline",
+      "data": {
+        "data-testid": "my-flow-whole-flow-outline",
+        "data-flow-slug": "personal-copy:ad571d26-189c-47e8-a67e-63bd9e98a44e",
+        "data-outline-mode": "workspace",
+        "data-p35-r10-marker": "P35-R10-SHAPE-HONESTY",
+        "data-completion-enabled": "true",
+        "data-structure-edit-mode": "false",
+        "data-effective-row-count": "10"
+      }
+    },
+    {
+      "testId": "my-flow-whole-flow-reading-summary",
+      "data": {
+        "data-testid": "my-flow-whole-flow-reading-summary",
+        "data-reading-mode": "timeline"
+      }
+    },
+    {
+      "testId": "my-flow-whole-flow-section",
+      "data": {
+        "data-testid": "my-flow-whole-flow-section",
+        "data-flow-ui": "outline-row",
+        "data-group-open": "true"
+      }
+    },
+    {
+      "testId": "my-flow-whole-flow-section-toggle",
+      "data": {
+        "data-testid": "my-flow-whole-flow-section-toggle"
+      }
+    },
+    {
+      "testId": "my-flow-whole-flow-section-content",
+      "data": {
+        "data-testid": "my-flow-whole-flow-section-content"
+      }
+    },
+    {
+      "testId": "my-flow-whole-flow-current-position",
+      "data": {
+        "data-testid": "my-flow-whole-flow-current-position",
+        "data-p35-r8-marker": "P35-R8C-SINGLE-COMPLETION-OWNER",
+        "data-current-position-count": "3"
+      }
+    },
+    {
+      "testId": "my-flow-execution-row-shell",
+      "data": {
+        "data-testid": "my-flow-execution-row-shell",
+        "data-flow-slug": "personal-copy:ad571d26-189c-47e8-a67e-63bd9e98a44e",
+        "data-calendar-item-kind": "task"
+      }
+    },
+    {
+      "testId": "my-flow-row-title",
+      "data": {
+        "data-testid": "my-flow-row-title",
+        "data-flow-row-slot": "title"
+      }
+    },
+    {
+      "testId": "my-flow-row-open-label",
+      "data": {
+        "data-testid": "my-flow-row-open-label"
+      }
+    },
+    {
+      "testId": "my-flow-execution-row-shell",
+      "data": {
+        "data-testid": "my-flow-execution-row-shell",
+        "data-flow-slug": "personal-copy:ad571d26-189c-47e8-a67e-63bd9e98a44e",
+        "data-calendar-item-kind": "task"
+      }
+    },
+    {
+      "testId": "my-flow-row-title",
+      "data": {
+        "data-testid": "my-flow-row-title",
+        "data-flow-row-slot": "title"
+      }
+    },
+    {
+      "testId": "my-flow-row-open-label",
+      "data": {
+        "data-testid": "my-flow-row-open-label"
+      }
+    },
+    {
+      "testId": "my-flow-execution-row-shell",
+      "data": {
+        "data-testid": "my-flow-execution-row-shell",
+        "data-flow-slug": "personal-copy:ad571d26-189c-47e8-a67e-63bd9e98a44e",
+        "data-calendar-item-kind": "task"
+      }
+    },
+    {
+      "testId": "my-flow-row-title",
+      "data": {
+        "data-testid": "my-flow-row-title",
+        "data-flow-row-slot": "title"
+      }
+    },
+    {
+      "testId": "my-flow-row-open-label",
+      "data": {
+        "data-testid": "my-flow-row-open-label"
+      }
+    },
+    {
+      "testId": "my-flow-whole-flow-section",
+      "data": {
+        "data-testid": "my-flow-whole-flow-section",
+        "data-flow-ui": "outline-row",
+        "data-group-open": "true"
+      }
+    },
+    {
+      "testId": "my-flow-whole-flow-section-toggle",
+      "data": {
+        "data-testid": "my-flow-whole-flow-section-toggle"
+      }
+    },
+    {
+      "testId": "my-flow-whole-flow-section-content",
+      "data": {
+        "data-testid": "my-flow-whole-flow-section-content"
+      }
+    },
+    {
+      "testId": "my-flow-execution-row-shell",
+      "data": {
+        "data-testid": "my-flow-execution-row-shell",
+        "data-flow-slug": "personal-copy:ad571d26-189c-47e8-a67e-63bd9e98a44e",
+        "data-calendar-item-kind": "task"
+      }
+    },
+    {
+      "testId": "my-flow-row-title",
+      "data": {
+        "data-testid": "my-flow-row-title",
+        "data-flow-row-slot": "title"
+      }
+    },
+    {
+      "testId": "my-flow-row-open-label",
+      "data": {
+        "data-testid": "my-flow-row-open-label"
+      }
+    },
+    {
+      "testId": "my-flow-execution-row-shell",
+      "data": {
+        "data-testid": "my-flow-execution-row-shell",
+        "data-flow-slug": "personal-copy:ad571d26-189c-47e8-a67e-63bd9e98a44e",
+        "data-calendar-item-kind": "task"
+      }
+    },
+    {
+      "testId": "my-flow-row-title",
+      "data": {
+        "data-testid": "my-flow-row-title",
+        "data-flow-row-slot": "title"
+      }
+    },
+    {
+      "testId": "my-flow-row-open-label",
+      "data": {
+        "data-testid": "my-flow-row-open-label"
+      }
+    },
+    {
+      "testId": "my-flow-execution-row-shell",
+      "data": {
+        "data-testid": "my-flow-execution-row-shell",
+        "data-flow-slug": "personal-copy:ad571d26-189c-47e8-a67e-63bd9e98a44e",
+        "data-calendar-item-kind": "task"
+      }
+    },
+    {
+      "testId": "my-flow-row-title",
+      "data": {
+        "data-testid": "my-flow-row-title",
+        "data-flow-row-slot": "title"
+      }
+    },
+    {
+      "testId": "my-flow-row-open-label",
+      "data": {
+        "data-testid": "my-flow-row-open-label"
+      }
+    },
+    {
+      "testId": "my-flow-execution-row-shell",
+      "data": {
+        "data-testid": "my-flow-execution-row-shell",
+        "data-flow-slug": "personal-copy:ad571d26-189c-47e8-a67e-63bd9e98a44e",
+        "data-calendar-item-kind": "task"
+      }
+    },
+    {
+      "testId": "my-flow-row-title",
+      "data": {
+        "data-testid": "my-flow-row-title",
+        "data-flow-row-slot": "title"
+      }
+    },
+    {
+      "testId": "my-flow-row-open-label",
+      "data": {
+        "data-testid": "my-flow-row-open-label"
+      }
+    },
+    {
+      "testId": "my-flow-whole-flow-section",
+      "data": {
+        "data-testid": "my-flow-whole-flow-section",
+        "data-flow-ui": "outline-row",
+        "data-group-open": "true"
+      }
+    },
+    {
+      "testId": "my-flow-whole-flow-section-toggle",
+      "data": {
+        "data-testid": "my-flow-whole-flow-section-toggle"
+      }
+    },
+    {
+      "testId": "my-flow-whole-flow-section-content",
+      "data": {
+        "data-testid": "my-flow-whole-flow-section-content"
+      }
+    },
+    {
+      "testId": "my-flow-execution-row-shell",
+      "data": {
+        "data-testid": "my-flow-execution-row-shell",
+        "data-flow-slug": "personal-copy:ad571d26-189c-47e8-a67e-63bd9e98a44e",
+        "data-calendar-item-kind": "task"
+      }
+    },
+    {
+      "testId": "my-flow-row-title",
+      "data": {
+        "data-testid": "my-flow-row-title",
+        "data-flow-row-slot": "title"
+      }
+    },
+    {
+      "testId": "my-flow-row-open-label",
+      "data": {
+        "data-testid": "my-flow-row-open-label"
+      }
+    },
+    {
+      "testId": "my-flow-execution-row-shell",
+      "data": {
+        "data-testid": "my-flow-execution-row-shell",
+        "data-flow-slug": "personal-copy:ad571d26-189c-47e8-a67e-63bd9e98a44e",
+        "data-calendar-item-kind": "task"
+      }
+    },
+    {
+      "testId": "my-flow-row-title",
+      "data": {
+        "data-testid": "my-flow-row-title",
+        "data-flow-row-slot": "title"
+      }
+    },
+    {
+      "testId": "my-flow-row-open-label",
+      "data": {
+        "data-testid": "my-flow-row-open-label"
+      }
+    },
+    {
+      "testId": "my-flow-execution-row-shell",
+      "data": {
+        "data-testid": "my-flow-execution-row-shell",
+        "data-flow-slug": "personal-copy:ad571d26-189c-47e8-a67e-63bd9e98a44e",
+        "data-calendar-item-kind": "task"
+      }
+    },
+    {
+      "testId": "my-flow-row-title",
+      "data": {
+        "data-testid": "my-flow-row-title",
+        "data-flow-row-slot": "title"
+      }
+    },
+    {
+      "testId": "my-flow-row-open-label",
+      "data": {
+        "data-testid": "my-flow-row-open-label"
+      }
+    },
+    {
+      "testId": "my-flow-workspace-commands",
+      "data": {
+        "data-testid": "my-flow-workspace-commands",
+        "data-p32-marker": "P32-05-OBJECT-COMMAND-HIERARCHY"
+      }
+    },
+    {
+      "testId": "my-flow-direct-anchor-settings-open",
+      "data": {
+        "data-testid": "my-flow-direct-anchor-settings-open",
+        "data-action-role": "edit-saved-plan",
+        "data-action-priority": "secondary"
+      }
+    },
+    {
+      "testId": "my-flow-export-surface",
+      "data": {
+        "data-testid": "my-flow-export-surface",
+        "data-flow-ui": "export-plan"
+      }
+    },
+    {
+      "testId": "my-flow-export-entry",
+      "data": {
+        "data-testid": "my-flow-export-entry",
+        "data-action-priority": "secondary",
+        "data-action-role": "transfer-to-own-tool"
+      }
+    },
+    {
+      "testId": "my-flow-item-detail-sheet",
+      "data": {
+        "data-testid": "my-flow-item-detail-sheet",
+        "data-p31-marker": "P31-03-MY-FLOW-ITEM-SHEET",
+        "data-p35-marker": "P35-R9-DETAIL-SINGLE-CLOSE",
+        "data-flow-ui": "bottom-sheet",
+        "data-layer-priority": "dialog"
+      }
+    },
+    {
+      "testId": "my-flow-item-detail-sheet-close",
+      "data": {
+        "data-testid": "my-flow-item-detail-sheet-close"
+      }
+    },
+    {
+      "testId": "my-flow-item-detail",
+      "data": {
+        "data-testid": "my-flow-item-detail",
+        "data-item-id": "flow-vehicle-inspection-prep-item-0",
+        "data-effective-item-id": "flow-vehicle-inspection-prep-item-0",
+        "data-effective-personal-version": "personal:448cf694",
+        "data-effective-execution-version": "execution:44b6ac2e",
+        "data-row-key": "personal-copy:ad571d26-189c-47e8-a67e-63bd9e98a44e::flow-vehicle-inspection-prep-item-0::none",
+        "data-item-type": "check_task",
+        "data-execution-level": "item",
+        "data-surface-context": "flow",
+        "data-can-remove-from-flow": "true",
+        "data-detail-mode": "execute",
+        "data-p34-marker": "P34-04-ITEM-EDITOR",
+        "data-default-primary-action-count": "1",
+        "data-flow-ui": "editor-shell"
+      }
+    },
+    {
+      "testId": "my-flow-routine-action-group",
+      "data": {
+        "data-testid": "my-flow-routine-action-group"
+      }
+    },
+    {
+      "testId": "my-flow-task-complete-label",
+      "data": {
+        "data-testid": "my-flow-task-complete-label"
+      }
+    },
+    {
+      "testId": "my-flow-task-complete-control",
+      "data": {
+        "data-testid": "my-flow-task-complete-control"
+      }
+    },
+    {
+      "testId": "my-flow-quick-item-edit",
+      "data": {
+        "data-testid": "my-flow-quick-item-edit",
+        "data-my-flow-item-edit-entry": "true",
+        "data-action-priority": "secondary"
+      }
+    },
+    {
+      "testId": "my-flow-inline-action-hint",
+      "data": {
+        "data-testid": "my-flow-inline-action-hint"
+      }
+    },
+    {
+      "testId": "my-flow-item-completion-criterion",
+      "data": {
+        "data-testid": "my-flow-item-completion-criterion"
+      }
+    },
+    {
+      "testId": "my-flow-detail-read-summary",
+      "data": {
+        "data-testid": "my-flow-detail-read-summary"
+      }
+    },
+    {
+      "testId": "my-flow-detail-portable-export",
+      "data": {
+        "data-testid": "my-flow-detail-portable-export",
+        "data-export-scope": "item",
+        "data-export-included-count": "1"
+      }
+    },
+    {
+      "testId": "my-flow-detail-source-link",
+      "data": {
+        "data-testid": "my-flow-detail-source-link"
+      }
+    },
+    {
+      "testId": "my-flow-export-surface",
+      "data": {
+        "data-testid": "my-flow-export-surface",
+        "data-p30-marker": "P30-MOBILE-EXPORT-NO-FIXED-OVERLAP",
+        "data-flow-ui": "export-plan"
+      }
+    },
+    {
+      "testId": "my-flow-export-panel",
+      "data": {
+        "data-testid": "my-flow-export-panel",
+        "data-export-scope": "item",
+        "data-export-included-count": "1",
+        "data-export-layout": "compact-preflight",
+        "data-default-expanded-secondary-count": "0",
+        "data-flow-anatomy": "export-preflight",
+        "data-p34-marker": "P34-07-SCOPE-FIRST-EXPORT",
+        "data-p35-marker": "P35-EXPORT-SCOPE-FIRST",
+        "data-p35-count-marker": "P35-EXPORT-COUNT-PARITY",
+        "data-saved-transfer-surface": "confirmation"
+      }
+    },
+    {
+      "testId": "my-flow-export-scope-step",
+      "data": {
+        "data-testid": "my-flow-export-scope-step"
+      }
+    },
+    {
+      "testId": "my-flow-export-scope-control",
+      "data": {
+        "data-testid": "my-flow-export-scope-control"
+      }
+    },
+    {
+      "testId": "my-flow-export-preflight",
+      "data": {
+        "data-testid": "my-flow-export-preflight",
+        "data-p35-r10-marker": "P35-R10-EXPORT-SUMMARY-ONE-OWNER"
+      }
+    },
+    {
+      "testId": "my-flow-export-scope-summary",
+      "data": {
+        "data-testid": "my-flow-export-scope-summary"
+      }
+    },
+    {
+      "testId": "my-flow-export-calendar-summary",
+      "data": {
+        "data-testid": "my-flow-export-calendar-summary"
+      }
+    },
+    {
+      "testId": "my-flow-export-eligibility-summary",
+      "data": {
+        "data-testid": "my-flow-export-eligibility-summary"
+      }
+    },
+    {
+      "testId": "my-flow-export-calendar-recovery",
+      "data": {
+        "data-testid": "my-flow-export-calendar-recovery"
+      }
+    },
+    {
+      "testId": "my-flow-export-recommendations",
+      "data": {
+        "data-testid": "my-flow-export-recommendations",
+        "data-p29-marker": "P29-ARTIFACT-EXPORT-PREFLIGHT"
+      }
+    },
+    {
+      "testId": "my-flow-detail-copy-portable-text",
+      "data": {
+        "data-testid": "my-flow-detail-copy-portable-text",
+        "data-export-count": "1",
+        "data-export-destination": "memo",
+        "data-export-state": "ready",
+        "data-export-preview-selected": "true",
+        "data-export-manifest-availability": "available",
+        "data-export-manifest-item-ids": "flow-vehicle-inspection-prep-item-0",
+        "data-export-manifest-held-item-ids": "",
+        "data-export-manifest-unavailable-item-ids": "",
+        "data-recommendation-role": "primary",
+        "data-recommendation-visible": "true",
+        "data-action-priority": "primary"
+      }
+    },
+    {
+      "testId": "my-flow-detail-copy-checklist-text",
+      "data": {
+        "data-testid": "my-flow-detail-copy-checklist-text",
+        "data-export-count": "1",
+        "data-export-destination": "checklist",
+        "data-export-state": "ready",
+        "data-export-preview-selected": "false",
+        "data-export-manifest-availability": "available",
+        "data-export-manifest-item-ids": "flow-vehicle-inspection-prep-item-0",
+        "data-export-manifest-held-item-ids": "",
+        "data-export-manifest-unavailable-item-ids": "",
+        "data-recommendation-role": "secondary",
+        "data-recommendation-visible": "true",
+        "data-action-priority": "secondary"
+      }
+    },
+    {
+      "testId": "my-flow-detail-copy-sheet-row",
+      "data": {
+        "data-testid": "my-flow-detail-copy-sheet-row",
+        "data-export-count": "1",
+        "data-export-destination": "sheet",
+        "data-export-state": "ready",
+        "data-export-preview-selected": "false",
+        "data-export-manifest-availability": "available",
+        "data-export-manifest-item-ids": "flow-vehicle-inspection-prep-item-0",
+        "data-export-manifest-held-item-ids": "",
+        "data-export-manifest-unavailable-item-ids": "",
+        "data-recommendation-role": "secondary",
+        "data-recommendation-visible": "true",
+        "data-action-priority": "secondary"
+      }
+    },
+    {
+      "testId": "platform-mobile-tabs",
+      "data": {
+        "data-testid": "platform-mobile-tabs",
+        "data-layer-priority": "navigation",
+        "data-p30-marker": "P30-MOBILE-WORKSPACE-FOCUS-ORDER",
+        "data-p35-marker": "P35-ENTRY-ROUTER-3TAB"
+      }
+    }
+  ],
+  "browserEvents": {
+    "consoleErrors": [],
+    "pageErrors": [],
+    "requestFailures": []
+  },
+  "evidenceClass": "ACTUAL_UI",
+  "personalCopyKey": "personal-copy:ad571d26-189c-47e8-a67e-63bd9e98a44e",
+  "itemId": "flow-vehicle-inspection-prep-item-0",
+  "rowKey": "personal-copy:ad571d26-189c-47e8-a67e-63bd9e98a44e::flow-vehicle-inspection-prep-item-0::none"
+}

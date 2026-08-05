@@ -1,0 +1,110 @@
+{
+  "scenarioId": "S13",
+  "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+  "orderedStateIds": [
+    "source_backed_read",
+    "missing_base_fail_safe",
+    "malformed_fail_safe"
+  ],
+  "fullScreenFiles": [
+    {
+      "stateId": "source_backed_read",
+      "relativePath": "S13/01-source-backed-read-full.png",
+      "bytes": 22058,
+      "sha256": "743d79b94e816506665206d9466ad59e7b7849d44335c5ff39a663c73a9c7a8e",
+      "mime": "image/png",
+      "route": "http://127.0.0.1:3121/my?flow=source-backed-moving-d30"
+    },
+    {
+      "stateId": "missing_base_fail_safe",
+      "relativePath": "S13/02-missing-base-full.png",
+      "bytes": 18965,
+      "sha256": "a1e25d19766b563d73af47b65a3bafa827c8c95f5b9ee325338c4c3dd81b0b5d",
+      "mime": "image/png",
+      "route": "http://127.0.0.1:3121/my?flow=p1-04-missing-base"
+    },
+    {
+      "stateId": "malformed_fail_safe",
+      "relativePath": "S13/03-malformed-full.png",
+      "bytes": 18965,
+      "sha256": "a1e25d19766b563d73af47b65a3bafa827c8c95f5b9ee325338c4c3dd81b0b5d",
+      "mime": "image/png",
+      "route": "http://127.0.0.1:3121/my?flow=p1-04-malformed"
+    }
+  ],
+  "actionSequence": [
+    "seed source-backed, missing-base, malformed, and exact-byte sentinels",
+    "open each saved route",
+    "reload malformed route",
+    "compare every raw storage byte"
+  ],
+  "gaps": [],
+  "routeState": "http://127.0.0.1:3121/my?flow=p1-04-malformed",
+  "capturedAtKst": "2026-08-05T14:54:48+09:00",
+  "consoleNetworkStatus": {
+    "consoleErrors": 0,
+    "failedRequests": 0,
+    "expectedNavigationOrPrefetchAborts": 0,
+    "unexpectedFailedRequests": 0,
+    "httpErrors": 0
+  },
+  "pageQuality": {
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "devicePixelRatio": 1
+    },
+    "scroll": {
+      "documentWidth": 390,
+      "documentHeight": 844,
+      "horizontalOverflow": 0
+    },
+    "unnamedInteractiveCount": 0,
+    "horizontallyClippedInteractiveCount": 0,
+    "brokenRelations": [],
+    "replacementCharacterCount": 0,
+    "visibleInteractiveCount": 10
+  },
+  "seedId": "legacy-malformed-missing-base-matrix",
+  "seedSha256": "3547257ed62c231e0481748d462cbff973066d9b439eebddaa7c2a117429df8d",
+  "viewportInput": {
+    "width": 390,
+    "height": 844,
+    "zoom": 1,
+    "motion": "no-preference"
+  },
+  "rawBeforeAfter": {
+    "sourceBacked": {
+      "key": "flow:saved:source-backed-moving-d30",
+      "beforeSha256": "3442606576e8569989183fdf2883b207f7a0ec83893d9d2d58d65cbcddbbb685",
+      "afterSha256": "3442606576e8569989183fdf2883b207f7a0ec83893d9d2d58d65cbcddbbb685",
+      "unchanged": true,
+      "bytes": 129
+    },
+    "missingBase": {
+      "key": "flow:saved:p1-04-missing-base",
+      "beforeSha256": "3f085c17f15bd39a8fbca50dac41a5bed59418a7f9cf0f13022a248f88225a98",
+      "afterSha256": "3f085c17f15bd39a8fbca50dac41a5bed59418a7f9cf0f13022a248f88225a98",
+      "unchanged": true,
+      "bytes": 124
+    },
+    "malformed": {
+      "key": "flow:saved:p1-04-malformed",
+      "beforeSha256": "f1dec6e9ee608550bd1c39ff2b90134059bac5d02e4e78f6410aed2fbd870bd0",
+      "afterSha256": "f1dec6e9ee608550bd1c39ff2b90134059bac5d02e4e78f6410aed2fbd870bd0",
+      "unchanged": true,
+      "bytes": 9
+    },
+    "sentinel": {
+      "key": "flow:p1-04:legacy-matrix-sentinel",
+      "beforeSha256": "5ec7985e0463fe414310ae9eb324998396c233fea078f5fa90f51792817ed144",
+      "afterSha256": "5ec7985e0463fe414310ae9eb324998396c233fea078f5fa90f51792817ed144",
+      "unchanged": true,
+      "bytes": 21
+    }
+  },
+  "wholeStorageByteEqual": true,
+  "silentRewriteCount": 0,
+  "persistentWriteCount": 0,
+  "reviewerStatus": "LOCAL_REHEARSAL"
+}

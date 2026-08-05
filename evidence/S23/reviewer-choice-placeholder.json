@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "scenarioId": "S23",
+  "generatedAt": "2026-08-05T05:55:00.088Z",
+  "baseUrl": "http://127.0.0.1:3121",
+  "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+  "observedUsers": 0,
+  "sourceSnapshot": {
+    "head": "83c3a72629ba2bad634f117f1f8077de8aa0e045",
+    "shortHead": "83c3a72629ba",
+    "branch": "codex/p35-round2-candidate-20260805",
+    "buildId": "k7ouW_TvxXXQiPeyjALDo",
+    "dirty": false,
+    "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+    "gitStatusSha256": "08411ee7d7ddd20c5f49af3c2d2a88c5cef9dc9202cf333436ee76519fc5a031"
+  },
+  "title": "Reviewer-chosen free exploration placeholder",
+  "reviewerStatus": "AWAITING_REVIEWER_SELECTION",
+  "reviewerChosen": {
+    "route": null,
+    "seed": null,
+    "viewport": null,
+    "actionSequence": null,
+    "expectedOutcome": null,
+    "observedOutcome": null,
+    "finding": null,
+    "evidenceFiles": []
+  },
+  "instructions": [
+    "Reviewer chooses the route, seed, viewport, and action sequence after opening the package.",
+    "Record the choice before execution.",
+    "Do not infer a pass, fail, or likely finding from this placeholder."
+  ],
+  "preClaim": "NONE"
+}

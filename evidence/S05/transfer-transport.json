@@ -1,0 +1,7 @@
+{
+  "destination": "checklist",
+  "transport": "clipboard.writeText",
+  "writes": 1,
+  "rawBytes": 3754,
+  "rawSha256": "18e9a2fe3572ee267c1972fc56375f1e9a02c55ada26ebadeab18883e8f0d763"
+}

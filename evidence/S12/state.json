@@ -1,0 +1,217 @@
+{
+  "scenarioId": "S12",
+  "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+  "orderedStateIds": [
+    "duplicate_pending_lock",
+    "duplicate_succeeded",
+    "receipt_reloaded",
+    "receipt_storage_failure",
+    "receipt_only_retry",
+    "back_closes_editor"
+  ],
+  "fullScreenFiles": [
+    {
+      "stateId": "duplicate_pending_lock",
+      "relativePath": "S12/01-duplicate-pending-lock-full.png",
+      "bytes": 76314,
+      "sha256": "a5ce09e6839180c2d6443cc2fc4e1c0d70f55ad190be122ed6d13f49ed74714c",
+      "mime": "image/png",
+      "route": "http://127.0.0.1:3121/my?flow=moving-d30-basic"
+    },
+    {
+      "stateId": "duplicate_succeeded",
+      "relativePath": "S12/02-duplicate-one-receipt-full.png",
+      "bytes": 75524,
+      "sha256": "0802109da74e3cf47cc264818028435b5ca7834919b585853147f2f05d1225c0",
+      "mime": "image/png",
+      "route": "http://127.0.0.1:3121/my?flow=moving-d30-basic"
+    },
+    {
+      "stateId": "receipt_reloaded",
+      "relativePath": "S12/03-receipt-reloaded-full.png",
+      "bytes": 75633,
+      "sha256": "64cbfba2c0abf516f5667b09d3087a289a7ddc2cf2529258e2f21c035235b970",
+      "mime": "image/png",
+      "route": "http://127.0.0.1:3121/my?flow=moving-d30-basic"
+    },
+    {
+      "stateId": "receipt_storage_failure",
+      "relativePath": "S12/04-receipt-storage-failure-full.png",
+      "bytes": 78659,
+      "sha256": "87472cd6c968b573a346ddb400b7da80c60bfc54afa8084ff55dadedc588126b",
+      "mime": "image/png",
+      "route": "http://127.0.0.1:3121/my?flow=moving-d30-basic"
+    },
+    {
+      "stateId": "receipt_only_retry",
+      "relativePath": "S12/05-receipt-only-retry-full.png",
+      "bytes": 75507,
+      "sha256": "7c792d0eaf2d491c4501f1ca31e501e73ae64983f2b1c45979744a1b80bbfd23",
+      "mime": "image/png",
+      "route": "http://127.0.0.1:3121/my?flow=moving-d30-basic"
+    },
+    {
+      "stateId": "back_closes_editor",
+      "relativePath": "S12/06-back-closes-editor-full.png",
+      "bytes": 37429,
+      "sha256": "854c6e8e575ce5ab5c25b04a98a82f7541ff68b6da7098f0e50e65df75755510",
+      "mime": "image/png",
+      "route": "http://127.0.0.1:3121/f/moving-d30-basic"
+    }
+  ],
+  "actionSequence": [
+    "synchronous double click while clipboard pending",
+    "release one artifact and verify one receipt",
+    "reload and recover same receipt",
+    "inject one receipt persistence failure",
+    "retry receipt only without recreating artifact",
+    "Back closes public editor and returns focus"
+  ],
+  "gaps": [],
+  "routeState": "http://127.0.0.1:3121/f/moving-d30-basic",
+  "capturedAtKst": "2026-08-05T14:54:47+09:00",
+  "consoleNetworkStatus": {
+    "consoleErrors": 0,
+    "failedRequests": 12,
+    "expectedNavigationOrPrefetchAborts": 12,
+    "unexpectedFailedRequests": 0,
+    "httpErrors": 0
+  },
+  "pageQuality": {
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "devicePixelRatio": 1
+    },
+    "scroll": {
+      "documentWidth": 390,
+      "documentHeight": 1106,
+      "horizontalOverflow": 0
+    },
+    "unnamedInteractiveCount": 0,
+    "horizontallyClippedInteractiveCount": 0,
+    "brokenRelations": [],
+    "replacementCharacterCount": 0,
+    "visibleInteractiveCount": 12
+  },
+  "seedId": "moving-d30-basic@2031-09-01",
+  "seedSha256": "1ccff0218a0609768148fb2f2e1e01a6973a539dbf2e8ea72cc49a55cb20aea4",
+  "viewportInput": {
+    "width": 390,
+    "height": 844,
+    "zoom": 1,
+    "motion": "no-preference"
+  },
+  "recoveryTrace": {
+    "duplicate": {
+      "requestId": "saved_transfer::moving-d30-basic::44b538f7-2ee7-493e-bf24-ba83435f1f43",
+      "clipboard": {
+        "text": "이사 D-30 준비\n할 일 24개\n\n- [ ] 이사 방식 정하기\n  일정: 2031-08-02 종일\n  설명: 포장이사, 반포장이사, 직접 운반 중 예산과 짐 양에 맞는 방식을 정합니다.\n- [ ] 이사할 집 하자 점검하기\n  일정: 2031-08-02 종일\n  설명: 입주 전 벽지, 누수, 배수, 콘센트, 창문, 도어락 상태를 사진으로 남깁니다.\n  완료 기준: 주요 공간 사진과 하자 목록을 집주인 또는 중개인에게 공유했다.\n- [ ] 필요 없는 물건 정리하기\n  일정: 2031-08-02 종일\n- [ ] 이사/청소 업체 견적 받고 예약하기\n  일정: 2031-08-02 종일\n- [ ] 우편물/카드/은행 주소 변경하기\n  일정: 2031-08-22 종일\n- [ ] 정기 배달 서비스 중지 요청하기\n  일정: 2031-08-22 종일\n- [ ] 대형폐기물 배출 신고와 수거일 확인하기\n  일정: 2031-08-22 종일\n  설명: 지자체 신고 방식과 수거일이 다르므로 이사 전 배출 가능한 날짜를 먼저 확인합니다.\n  완료 기준: 배출 신고 번호와 수거 예정일을 기록했다.\n- [ ] 엘리베이터 또는 사다리차 사용 예약하기\n  일정: 2031-08-22 종일\n- [ ] 인터넷/정수기 이전 설치 예약하기\n  일정: 2031-08-22 종일\n- [ ] 도시가스 철거/설치 예약하기\n  일정: 2031-08-29 종일\n- [ ] 자동이체 해지 또는 변경 확인하기\n  일정: 2031-08-29 종일\n- [ ] 이사 당일 사용할 물건 따로 포장하기\n  일정: 2031-08-29 종일\n- [ ] 관리사무소에 이사 시간과 차량 동선 공유하기\n  일정: 2031-08-29 종일\n  설명: 공동주택은 엘리베이터 보양, 주차 위치, 사다리차 가능 여부를 미리 맞춰야 합니다.\n- [ ] 이사 업체와 일정 최종 확인하기\n  일정: 2031-08-31 종일\n- [ ] 이체 한도 증액 확인하기\n  일정: 2031-08-31 종일\n- [ ] 귀중품과 중요 서류 별도 보관하기\n  일정: 2031-08-31 종일\n- [ ] 냉장고 음식과 쓰레기 최종 정리하기\n  일정: 2031-08-31 종일\n- [ ] 전기/가스/수도/관리비 정산하기\n  일정: 2031-09-01 종일\n- [ ] 이삿짐 분실/파손 확인하기\n  일정: 2031-09-01 종일\n- [ ] 계량기와 집 상태 사진 남기기\n  일정: 2031-09-01 종일\n  설명: 전기, 가스, 수도 계량기와 주요 하자 사진을 남겨 정산과 분쟁 확인에 활용합니다.\n- [ ] 열쇠, 출입카드, 주차등록 인수인계하기\n  일정: 2031-09-01 종일\n- [ ] 전입신고와 확정일자 확인하기\n  일정: 2031-09-01 종일\n  설명: 전입신고와 임대차 계약 확정일자 처리 필요 여부를 같은 날 확인합니다.\n  완료 기준: 전입신고 접수 상태와 확정일자 부여 여부를 각각 확인했다.\n  자료: 정부24 전입신고 - https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000016\n  자료: 인터넷등기소 - https://www.iros.go.kr\n- [ ] 정부24 전입신고 처리 결과 확인하기\n  일정: 2031-09-02 종일\n  설명: 정부24 또는 주민센터에서 전입신고 처리 상태와 세대주 확인 필요 여부를 확인합니다.\n  완료 기준: 처리 완료 또는 보완 필요 상태를 확인하고 캡처/메모를 남겼다.\n  자료: 정부24 - https://www.gov.kr\n- [ ] 임대차 계약 확정일자 부여 여부 확인하기\n  일정: 2031-09-02 종일\n  설명: 임대차 계약서 확정일자 신청 여부와 부여일을 별도로 확인합니다.\n  완료 기준: 확정일자 부여일과 계약서 보관 위치를 기록했다.\n  자료: 인터넷등기소 - https://www.iros.go.kr\n\n계획 원문: 이사 체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363\n",
+        "writes": 1,
+        "successes": 1
+      },
+      "requestIdRecordCount": 1,
+      "onlyReceiptKeyAdded": [
+        "flow:export-receipts:v1"
+      ]
+    },
+    "reload": {
+      "requestId": "saved_transfer::moving-d30-basic::44b538f7-2ee7-493e-bf24-ba83435f1f43",
+      "sameRequestId": true
+    },
+    "failureRetry": {
+      "requestId": "saved_transfer::moving-d30-basic::9d68d6bc-8484-4457-b352-29b3a5830406",
+      "partialAttrs": {
+        "data-transfer-state": "partial_local",
+        "data-transfer-route": "saved_transfer",
+        "data-transfer-persistence": "persistent_receipt",
+        "data-transfer-request-id": "saved_transfer::moving-d30-basic::9d68d6bc-8484-4457-b352-29b3a5830406",
+        "data-transfer-saved-plan-id": "moving-d30-basic",
+        "data-transfer-snapshot-kind": "effective_execution",
+        "data-transfer-snapshot-version": "2026-05-20T00:00:00.000Z|personal:1c7a2cf7|execution:44b6ac2e",
+        "data-transfer-snapshot-hash": "a09472d3",
+        "data-transfer-format": "checklist",
+        "data-transfer-artifact-kind": "portable_checklist",
+        "data-transfer-target": "clipboard",
+        "data-transfer-scope": "flow",
+        "data-transfer-item-ids": "flow-moving-item-0,flow-moving-item-1,flow-moving-item-2,flow-moving-item-3,flow-moving-item-4,flow-moving-item-5,flow-moving-item-6,flow-moving-item-7,flow-moving-item-8,flow-moving-item-9,flow-moving-item-10,flow-moving-item-11,flow-moving-item-12,flow-moving-item-13,flow-moving-item-14,flow-moving-item-15,flow-moving-item-16,flow-moving-item-17,flow-moving-item-18,flow-moving-item-19,flow-moving-item-20,flow-moving-item-21,flow-moving-item-22,flow-moving-item-23",
+        "data-transfer-item-count": "24",
+        "data-transfer-projection-output-count": "24",
+        "data-transfer-output-count": "24",
+        "data-transfer-omitted-item-ids": "",
+        "data-transfer-omitted-count": "0",
+        "data-transfer-one-way": "true",
+        "data-transfer-duplicate-risk": "true",
+        "data-transfer-return-focus-selector": "[data-testid=\"my-flow-export-entry\"]",
+        "data-receipt-storage-key": "flow:export-receipts:v1",
+        "data-snapshot-kind": "effective_execution",
+        "data-snapshot-version": "2026-05-20T00:00:00.000Z|personal:1c7a2cf7|execution:44b6ac2e",
+        "data-snapshot-hash": "a09472d3",
+        "data-scope": "flow",
+        "data-format": "checklist",
+        "data-destination": "checklist",
+        "data-item-ids": "flow-moving-item-0,flow-moving-item-1,flow-moving-item-2,flow-moving-item-3,flow-moving-item-4,flow-moving-item-5,flow-moving-item-6,flow-moving-item-7,flow-moving-item-8,flow-moving-item-9,flow-moving-item-10,flow-moving-item-11,flow-moving-item-12,flow-moving-item-13,flow-moving-item-14,flow-moving-item-15,flow-moving-item-16,flow-moving-item-17,flow-moving-item-18,flow-moving-item-19,flow-moving-item-20,flow-moving-item-21,flow-moving-item-22,flow-moving-item-23",
+        "data-projection-output-count": "24",
+        "data-output-count": "24",
+        "data-outcome": "partial_local",
+        "data-testid": "my-flow-transfer-receipt",
+        "data-p35-marker": "P35-P009-RESULT-TRANSFER-CONFIRMATION",
+        "data-flow-ui": "bottom-sheet",
+        "data-layer-priority": "dialog"
+      },
+      "retryAttrs": {
+        "data-transfer-state": "succeeded",
+        "data-transfer-route": "saved_transfer",
+        "data-transfer-persistence": "persistent_receipt",
+        "data-transfer-request-id": "saved_transfer::moving-d30-basic::9d68d6bc-8484-4457-b352-29b3a5830406",
+        "data-transfer-saved-plan-id": "moving-d30-basic",
+        "data-transfer-snapshot-kind": "effective_execution",
+        "data-transfer-snapshot-version": "2026-05-20T00:00:00.000Z|personal:1c7a2cf7|execution:44b6ac2e",
+        "data-transfer-snapshot-hash": "a09472d3",
+        "data-transfer-format": "checklist",
+        "data-transfer-artifact-kind": "portable_checklist",
+        "data-transfer-target": "clipboard",
+        "data-transfer-scope": "flow",
+        "data-transfer-item-ids": "flow-moving-item-0,flow-moving-item-1,flow-moving-item-2,flow-moving-item-3,flow-moving-item-4,flow-moving-item-5,flow-moving-item-6,flow-moving-item-7,flow-moving-item-8,flow-moving-item-9,flow-moving-item-10,flow-moving-item-11,flow-moving-item-12,flow-moving-item-13,flow-moving-item-14,flow-moving-item-15,flow-moving-item-16,flow-moving-item-17,flow-moving-item-18,flow-moving-item-19,flow-moving-item-20,flow-moving-item-21,flow-moving-item-22,flow-moving-item-23",
+        "data-transfer-item-count": "24",
+        "data-transfer-projection-output-count": "24",
+        "data-transfer-output-count": "24",
+        "data-transfer-omitted-item-ids": "",
+        "data-transfer-omitted-count": "0",
+        "data-transfer-one-way": "true",
+        "data-transfer-duplicate-risk": "true",
+        "data-transfer-return-focus-selector": "[data-testid=\"my-flow-export-entry\"]",
+        "data-receipt-storage-key": "flow:export-receipts:v1",
+        "data-snapshot-kind": "effective_execution",
+        "data-snapshot-version": "2026-05-20T00:00:00.000Z|personal:1c7a2cf7|execution:44b6ac2e",
+        "data-snapshot-hash": "a09472d3",
+        "data-scope": "flow",
+        "data-format": "checklist",
+        "data-destination": "checklist",
+        "data-item-ids": "flow-moving-item-0,flow-moving-item-1,flow-moving-item-2,flow-moving-item-3,flow-moving-item-4,flow-moving-item-5,flow-moving-item-6,flow-moving-item-7,flow-moving-item-8,flow-moving-item-9,flow-moving-item-10,flow-moving-item-11,flow-moving-item-12,flow-moving-item-13,flow-moving-item-14,flow-moving-item-15,flow-moving-item-16,flow-moving-item-17,flow-moving-item-18,flow-moving-item-19,flow-moving-item-20,flow-moving-item-21,flow-moving-item-22,flow-moving-item-23",
+        "data-projection-output-count": "24",
+        "data-output-count": "24",
+        "data-outcome": "success",
+        "data-testid": "my-flow-transfer-receipt",
+        "data-p35-marker": "P35-P009-RESULT-TRANSFER-CONFIRMATION",
+        "data-flow-ui": "bottom-sheet",
+        "data-layer-priority": "dialog"
+      },
+      "clipboard": {
+        "text": "이사 D-30 준비\n할 일 24개\n\n- [ ] 이사 방식 정하기\n  일정: 2031-08-02 종일\n  설명: 포장이사, 반포장이사, 직접 운반 중 예산과 짐 양에 맞는 방식을 정합니다.\n- [ ] 이사할 집 하자 점검하기\n  일정: 2031-08-02 종일\n  설명: 입주 전 벽지, 누수, 배수, 콘센트, 창문, 도어락 상태를 사진으로 남깁니다.\n  완료 기준: 주요 공간 사진과 하자 목록을 집주인 또는 중개인에게 공유했다.\n- [ ] 필요 없는 물건 정리하기\n  일정: 2031-08-02 종일\n- [ ] 이사/청소 업체 견적 받고 예약하기\n  일정: 2031-08-02 종일\n- [ ] 우편물/카드/은행 주소 변경하기\n  일정: 2031-08-22 종일\n- [ ] 정기 배달 서비스 중지 요청하기\n  일정: 2031-08-22 종일\n- [ ] 대형폐기물 배출 신고와 수거일 확인하기\n  일정: 2031-08-22 종일\n  설명: 지자체 신고 방식과 수거일이 다르므로 이사 전 배출 가능한 날짜를 먼저 확인합니다.\n  완료 기준: 배출 신고 번호와 수거 예정일을 기록했다.\n- [ ] 엘리베이터 또는 사다리차 사용 예약하기\n  일정: 2031-08-22 종일\n- [ ] 인터넷/정수기 이전 설치 예약하기\n  일정: 2031-08-22 종일\n- [ ] 도시가스 철거/설치 예약하기\n  일정: 2031-08-29 종일\n- [ ] 자동이체 해지 또는 변경 확인하기\n  일정: 2031-08-29 종일\n- [ ] 이사 당일 사용할 물건 따로 포장하기\n  일정: 2031-08-29 종일\n- [ ] 관리사무소에 이사 시간과 차량 동선 공유하기\n  일정: 2031-08-29 종일\n  설명: 공동주택은 엘리베이터 보양, 주차 위치, 사다리차 가능 여부를 미리 맞춰야 합니다.\n- [ ] 이사 업체와 일정 최종 확인하기\n  일정: 2031-08-31 종일\n- [ ] 이체 한도 증액 확인하기\n  일정: 2031-08-31 종일\n- [ ] 귀중품과 중요 서류 별도 보관하기\n  일정: 2031-08-31 종일\n- [ ] 냉장고 음식과 쓰레기 최종 정리하기\n  일정: 2031-08-31 종일\n- [ ] 전기/가스/수도/관리비 정산하기\n  일정: 2031-09-01 종일\n- [ ] 이삿짐 분실/파손 확인하기\n  일정: 2031-09-01 종일\n- [ ] 계량기와 집 상태 사진 남기기\n  일정: 2031-09-01 종일\n  설명: 전기, 가스, 수도 계량기와 주요 하자 사진을 남겨 정산과 분쟁 확인에 활용합니다.\n- [ ] 열쇠, 출입카드, 주차등록 인수인계하기\n  일정: 2031-09-01 종일\n- [ ] 전입신고와 확정일자 확인하기\n  일정: 2031-09-01 종일\n  설명: 전입신고와 임대차 계약 확정일자 처리 필요 여부를 같은 날 확인합니다.\n  완료 기준: 전입신고 접수 상태와 확정일자 부여 여부를 각각 확인했다.\n  자료: 정부24 전입신고 - https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000016\n  자료: 인터넷등기소 - https://www.iros.go.kr\n- [ ] 정부24 전입신고 처리 결과 확인하기\n  일정: 2031-09-02 종일\n  설명: 정부24 또는 주민센터에서 전입신고 처리 상태와 세대주 확인 필요 여부를 확인합니다.\n  완료 기준: 처리 완료 또는 보완 필요 상태를 확인하고 캡처/메모를 남겼다.\n  자료: 정부24 - https://www.gov.kr\n- [ ] 임대차 계약 확정일자 부여 여부 확인하기\n  일정: 2031-09-02 종일\n  설명: 임대차 계약서 확정일자 신청 여부와 부여일을 별도로 확인합니다.\n  완료 기준: 확정일자 부여일과 계약서 보관 위치를 기록했다.\n  자료: 인터넷등기소 - https://www.iros.go.kr\n\n계획 원문: 이사 체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363\n",
+        "writes": 1,
+        "successes": 1
+      },
+      "storageUnchangedOnFailure": true,
+      "receiptPersistedOnRetry": true,
+      "injectedFailures": 1
+    },
+    "back": {
+      "route": "http://127.0.0.1:3121/f/moving-d30-basic",
+      "editorClosed": true,
+      "focusReturned": true
+    }
+  },
+  "persistentWriteCount": 1,
+  "reviewerStatus": "LOCAL_REHEARSAL"
+}
