@@ -1,8 +1,13 @@
 # P35 Round 2 Pass 1 blind publication
 
-- state: `STAGED_ASSETS_NOT_COMMITTED`
+- state: `INDEX_CONTENT_READY_EXTERNAL_LAUNCH_ENVELOPE_PENDING`
 - product candidate: `29cb03a65dd1037a3b813b7f43a5a095e4669dce`
 - build ID: `6hGywJa2x9eHc-II5umLx`
+- evidence asset SHA: `55fab7dc22b8de6c6cf8a2fba44f3a658fc2566d`
+- index SHA: `EXTERNAL_LAUNCH_ENVELOPE_REQUIRED_AFTER_INDEX_COMMIT`
+- review session IDs: `FREEZE_TIME_SESSION_IDS_RECORDED_AT_REVIEW_START`
 - observed users: `0`
 
-아직 reviewer에게 전달하지 않는다. asset commit SHA를 만든 뒤 index를 확정해야 한다.
+위 두 state는 누락값이 아니다. index commit B SHA는 외부 launch envelope에, fresh reviewer session ID는 각 검토 시작·freeze 시점에 기록한다.
+
+coordinator는 [review/README-ko.md](./review/README-ko.md)를 역할별 전달 전 점검에만 사용한다. reviewer에게는 자기 전용 prompt와 allowlist의 commit-pinned B URL만 전달한다.
