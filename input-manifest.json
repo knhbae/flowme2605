@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "lane": "claude",
+  "candidateEpoch": "p35-r2-131b8ce629cf1288",
+  "productCandidateSha": "29cb03a65dd1037a3b813b7f43a5a095e4669dce",
+  "buildId": "V29H3kpreESrdkYwzy_q9",
+  "informedEvidenceAssetSha": "5d1917f30f6540d1ede7482b14480a85d8ad7171",
+  "blindEvidenceAssetSha": "64d5651df657c91e793dd1212788e293d6937947",
+  "blindReleaseIndexSha": "83e78f97ea443c93caeb3ffc4bd419a9caf7b849",
+  "selfExcluded": "input-manifest.json",
+  "files": [
+    {
+      "path": ".gitattributes",
+      "bytes": 8,
+      "sha256": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da"
+    },
+    {
+      "path": "README-ko.md",
+      "bytes": 754,
+      "sha256": "7cb40e05e1af2fbd8d8a54cac336f487d469a89bd341ceb4608868aba740550b"
+    },
+    {
+      "path": "asset-provenance.json",
+      "bytes": 870,
+      "sha256": "5e93ae744f3419400d2f2500881343adccd88d16a0843f16bb0db6f464c3f59e"
+    },
+    {
+      "path": "coordinator/claude-pass1-equivalence-envelope.json",
+      "bytes": 2984,
+      "sha256": "ec5bf8f66922a734bd4b78bde752a54d1a0bfffa252ad84bb2fb200e7af47cd6"
+    },
+    {
+      "path": "coordinator/claude-pass1-static-equivalence-bridge-ko.md",
+      "bytes": 4448,
+      "sha256": "e0ea8ce91780b8fbb1179289df5b1c885344f0e8d0bac4d6f57d792246837720"
+    },
+    {
+      "path": "informed/01-latest-feedback-verbatim-sealed-ko.md",
+      "bytes": 2913,
+      "sha256": "5a9ba082072df94f2a44201a769e3d0a1ea12cc5c289e1a379c427e916c910a7"
+    },
+    {
+      "path": "informed/04-feedback-root-question-map-ko.md",
+      "bytes": 4932,
+      "sha256": "909b4eaf2b0b4b44a94597a552ef8da69fc6a6e84ca62c71f493ff5a9ad8107a"
+    },
+    {
+      "path": "informed/05-informed-benchmark-ko.md",
+      "bytes": 3452,
+      "sha256": "4a77a028d710f4fe8487394a6eb6b9a7c2bb32ea57fc954511a0437ad4cb411b"
+    },
+    {
+      "path": "own-pass1/claude-counterevidence-log.md",
+      "bytes": 11057,
+      "sha256": "b60d62bfeb83b7f56cbccb98859b6e6edcef8ad2302ff2ecd15133946171f9aa"
+    },
+    {
+      "path": "own-pass1/claude-pass1-findings.md",
+      "bytes": 36029,
+      "sha256": "0dbb9d8df9629c90fd0459664f273ec0378f60440c7f399438b7da57294fe63c"
+    },
+    {
+      "path": "own-pass1/claude-pass1-freeze.json",
+      "bytes": 9196,
+      "sha256": "c7fcd3ae89aaf152bdfeb1b76ce29b82a0889d0515991d4146fa16b1144e751e"
+    },
+    {
+      "path": "own-pass1/claude-pass1-original.zip",
+      "bytes": 26523,
+      "sha256": "2e579b8b372b30995006402c60c128a0e448b00fdbde0ce3befd4874ab72a785"
+    },
+    {
+      "path": "own-pass1/claude-pass1-scorecard.md",
+      "bytes": 10603,
+      "sha256": "2a5e120890e4f310435eaa5aab06bb58e02fe56913a150ba8e622c4025d36dcc"
+    },
+    {
+      "path": "prior-archives/claude-round1-260801.zip",
+      "bytes": 596271,
+      "sha256": "749b84bb49ea2199f9a9a5fa67b0d113a8afc4ca06ef84addca4bd0f433238e3"
+    },
+    {
+      "path": "prior-archives/claude-round2-260803.zip",
+      "bytes": 483288,
+      "sha256": "d78c9e2b560a7eb5c9ed78a1dd62cbef3355468b9382bd3d0ce39dfd0ff35b2b"
+    },
+    {
+      "path": "release-metadata.json",
+      "bytes": 812,
+      "sha256": "a5e2280e90a4bc7cdc318834a233ba289b8c20e1cbcbf9f77e6f47643060ef44"
+    },
+    {
+      "path": "review/03-claude-pass2-prompt-ko.md",
+      "bytes": 5329,
+      "sha256": "b2b5b9d8b8b5b474decd09236d88862d4d3f54b6b2abaf9a750aef03bbd45566"
+    },
+    {
+      "path": "review/06-prior-claude-archive-manifest-ko.md",
+      "bytes": 1057,
+      "sha256": "36bad86742e05748dd4de8adda3cbb0bd65505b71e7e44bfc2be8fe0b90075ae"
+    },
+    {
+      "path": "review/07-informed-evidence-allowlist.md",
+      "bytes": 130733,
+      "sha256": "41666b79778318eeea9cb97b3d23239e980cb1e9d49262a8cb842f519f29821d"
+    },
+    {
+      "path": "vercel.json",
+      "bytes": 50,
+      "sha256": "d8209115a448d5e218f94369a0a9703c7213cf26d71c967565b341d104100ea7"
+    }
+  ]
+}

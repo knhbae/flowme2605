@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "release": "PASS2_INFORMED_CLAUDE_ONLY",
+  "state": "INDEX_CONTENT_READY_EXTERNAL_LAUNCH_ENVELOPE_PENDING",
+  "reviewer": "Claude Design",
+  "candidateEpoch": "p35-r2-131b8ce629cf1288",
+  "productCandidateSha": "29cb03a65dd1037a3b813b7f43a5a095e4669dce",
+  "buildId": "V29H3kpreESrdkYwzy_q9",
+  "blindEvidenceAssetSha": "64d5651df657c91e793dd1212788e293d6937947",
+  "blindReleaseIndexSha": "83e78f97ea443c93caeb3ffc4bd419a9caf7b849",
+  "informedEvidenceAssetSha": "5d1917f30f6540d1ede7482b14480a85d8ad7171",
+  "informedReleaseIndexSha": "EXTERNAL_LAUNCH_ENVELOPE_REQUIRED_AFTER_INDEX_COMMIT",
+  "ownPass1State": "CLAUDE_STATIC_REVIEW_CARRIED_FORWARD_BY_EQUIVALENCE",
+  "strictSameEpochPass1": false,
+  "currentEvidenceRowCount": 268,
+  "observedUsers": 0,
+  "deploymentState": "NONE"
+}
