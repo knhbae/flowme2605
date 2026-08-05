@@ -139,12 +139,39 @@ for (const sensitiveRoot of [repoRoot, path.dirname(repoRoot), os.homedir()]) {
 }
 
 function absolutePathTokens(source) {
-  return [
+  return [...new Set([
     ...(source.match(/(?<![A-Za-z0-9])[A-Za-z]:[\\/][^\s"'<>|,;)\]}]+/gu) ?? []),
-    ...(source.match(/\\\\[A-Za-z0-9._-]+[\\/][^\s"'<>|,;)\]}]+/gu) ?? []),
-    ...(source.match(/(?<!:)\/\/[A-Za-z0-9._-]+\/[^\s"'<>|,;)\]}]+/gu) ?? []),
+    ...(source.match(/(?<![A-Za-z0-9:\\/.-])\\\\[A-Za-z0-9._-]+[\\/][A-Za-z0-9$._-]+(?:[\\/][^\s"'<>|,;)\]}]+)*/gu) ?? []),
+    ...(source.match(/(?<![A-Za-z0-9:./-])\/\/[A-Za-z0-9._-]+\/[A-Za-z0-9$._-]+(?:\/[^\s"'<>|,;)\]}]+)*/gu) ?? []),
     ...(source.match(/\bfile:\/\/\/?[^\s"'<>|,;)\]}]+/giu) ?? []),
-  ];
+  ])];
+}
+
+function collectJsonStrings(value, target = []) {
+  if (typeof value === 'string') {
+    target.push(value);
+    return target;
+  }
+  if (Array.isArray(value)) {
+    for (const entry of value) collectJsonStrings(entry, target);
+    return target;
+  }
+  if (value && typeof value === 'object') {
+    for (const [key, entry] of Object.entries(value)) {
+      target.push(key);
+      collectJsonStrings(entry, target);
+    }
+  }
+  return target;
+}
+
+function pathScanSources(relative, source) {
+  if (!relative.toLowerCase().endsWith('.json')) return [source];
+  try {
+    return collectJsonStrings(JSON.parse(source));
+  } catch {
+    return [source];
+  }
 }
 
 function isAllowedSyntheticPath(relative, token) {
@@ -172,9 +199,11 @@ for (const file of await walk(stageRoot)) {
       contamination.push({ relative, term, location: 'content' });
     }
   }
-  for (const token of absolutePathTokens(source)) {
-    if (!isAllowedSyntheticPath(relative, token)) {
-      contamination.push({ relative, term: token, location: 'absolute_path' });
+  for (const scanSource of pathScanSources(relative, source)) {
+    for (const token of absolutePathTokens(scanSource)) {
+      if (!isAllowedSyntheticPath(relative, token)) {
+        contamination.push({ relative, term: token, location: 'absolute_path' });
+      }
     }
   }
 }
