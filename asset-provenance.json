@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "release": "PASS2_INFORMED_CODEX_ONLY",
+  "state": "ASSET_CONTENT_READY_FOR_ORPHAN_COMMIT",
+  "reviewer": "Codex",
+  "candidateEpoch": "p35-r2-131b8ce629cf1288",
+  "productCandidateSha": "29cb03a65dd1037a3b813b7f43a5a095e4669dce",
+  "buildId": "V29H3kpreESrdkYwzy_q9",
+  "blindEvidenceAssetSha": "64d5651df657c91e793dd1212788e293d6937947",
+  "blindReleaseIndexSha": "83e78f97ea443c93caeb3ffc4bd419a9caf7b849",
+  "ownPass1State": "PASS1_FROZEN",
+  "ownPass1FreezeSha256": "cd5e2477d6b85127524347151d29fd81d12bd488d3e2f3fad931b9e6e590d010",
+  "claudeCurrentPass1Included": false,
+  "observedUsers": 0,
+  "deploymentState": "NONE"
+}

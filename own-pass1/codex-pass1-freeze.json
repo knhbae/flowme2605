@@ -1,0 +1,243 @@
+{
+  "schemaVersion": 1,
+  "reviewType": "CODEX_PASS1_BLIND_RUNTIME_STATE_ARTIFACT",
+  "reviewSessionId": "cbfbea41-d6c7-436a-beb6-dd7d14a07761",
+  "marker": "PASS1_FROZEN",
+  "freezeState": "PASS1_FROZEN",
+  "gate": "REVISE",
+  "contaminationState": "BLIND_CLEAN",
+  "contaminationDetected": false,
+  "observedUsers": 0,
+  "timing": {
+    "startKst": "2026-08-05T18:31:04.516+09:00",
+    "endKst": "2026-08-05T18:54:17.427+09:00",
+    "timezone": "Asia/Seoul"
+  },
+  "identities": {
+    "productCandidateSha": "29cb03a65dd1037a3b813b7f43a5a095e4669dce",
+    "buildId": "V29H3kpreESrdkYwzy_q9",
+    "blindEvidenceAssetShaA": "64d5651df657c91e793dd1212788e293d6937947",
+    "blindReleaseIndexShaB": "83e78f97ea443c93caeb3ffc4bd419a9caf7b849",
+    "runtimeUrl": "http://127.0.0.1:3114",
+    "verified": true
+  },
+  "identityVerification": {
+    "productHeadMatchesUpstream": true,
+    "productClean": true,
+    "productDirty": false,
+    "runtimeFlowsHttpStatus": 200,
+    "runtimeFlowsByteLength": 12274,
+    "runtimeFlowsSha256": "aa01ee57169181479af3053fda3be374d879d0fada0c024410fbf505cee22f52",
+    "runtimeContainsBuildId": true,
+    "identityMismatches": []
+  },
+  "reviewBoundaries": {
+    "performance": "NOT_ASSESSED",
+    "actualBrowserZoom200": "NOT_RUN — ACTUAL_ZOOM_NOT_ASSESSED",
+    "reflowProxy720x500": "ASSESSED_AS_PROXY_ONLY",
+    "screenReaderSpeechOutput": "NOT_ASSESSED",
+    "screenReaderDomRelationsAndKeyboard": "ASSESSED",
+    "observedUserValidation": "NOT_CLAIMED"
+  },
+  "hashAlgorithm": "SHA-256",
+  "inputHashes": {
+    "documents": [
+      {
+        "id": "02-codex-pass1-prompt-ko.md",
+        "bytes": 5757,
+        "sha256": "68489eed73289af7c9fa4659f9eadcfe74ea06fc91235367614dcc0501d14f06"
+      },
+      {
+        "id": "07-blind-evidence-allowlist-template.md",
+        "bytes": 132026,
+        "sha256": "b692672f24f34ba7121318b32a5bd5d27b9ec474a248c64b0af18075183b9eee"
+      },
+      {
+        "id": "01-neutral-review-brief-ko.md",
+        "bytes": 4178,
+        "sha256": "7723e92467bd056210076b08344520c98361d7b912d64bcd61bf713029e66814"
+      },
+      {
+        "id": "04-neutral-scenario-matrix-ko.md",
+        "bytes": 5994,
+        "sha256": "cfc7a137a08c5037a4bca938a19194d73fde448e5654689375ca25f2267da4be"
+      },
+      {
+        "id": "05-evidence-contract-ko.md",
+        "bytes": 7179,
+        "sha256": "52c91ac40e083131d2c6b5c3d0d0c4e608fcb521e4135e9b57c8b02b132b92ed"
+      },
+      {
+        "id": "06-scorecard-ko.md",
+        "bytes": 3537,
+        "sha256": "d2943b5a0390841e5a244a779865f41720fad125862585f47791b4bd5b1e0bbc"
+      }
+    ],
+    "globalEvidence": [
+      {
+        "id": "candidate-manifest",
+        "bytes": 2966,
+        "sha256": "a26a728dcec28e6085c607ae9285feaeb47a8ce3a1e9ca10bc877e1ddb2a42b2"
+      },
+      {
+        "id": "product_clean_tree_proof",
+        "bytes": 84,
+        "sha256": "08411ee7d7ddd20c5f49af3c2d2a88c5cef9dc9202cf333436ee76519fc5a031"
+      },
+      {
+        "id": "seed_reset_contract",
+        "bytes": 2048,
+        "sha256": "ecbba7c87a8c8f96e3e66d65a1bf2f2b4d59616ce0f4e5ad67f7f5439ff81a27"
+      },
+      {
+        "id": "group_manifest_index",
+        "bytes": 2069,
+        "sha256": "73ff4bc1982b55c222a742ea4e25e40c7fdb3c5d82d6bb82ef694843222a1eac"
+      },
+      {
+        "id": "build_log",
+        "bytes": 2383,
+        "sha256": "cf69325625f543255a9e2878544823c428d2242a258522922d6f3c2f2097646a"
+      },
+      {
+        "id": "build_metadata",
+        "bytes": 525,
+        "sha256": "5da8b6152c6f8c3b2b89f42d9c63e3b5bcd6f524b916d9c63f7b44dfc42b9c0c"
+      },
+      {
+        "id": "runtime_build_identity",
+        "bytes": 253,
+        "sha256": "dade8b4fa9439f63cc861d933f42d891013ec70ff9661234d0a78f4e39afc1c3"
+      },
+      {
+        "id": "candidate_provenance",
+        "bytes": 4786,
+        "sha256": "64587a0407a8eda1c44bb2136aeea954f21dbc32c1782ed8b9d71e64d1cef336"
+      }
+    ],
+    "groupManifests": [
+      {
+        "id": "group-manifest-s01-s08.json",
+        "bytes": 47818,
+        "sha256": "377aa94a403122b63fb62a45b1757103eceedaa60a9981cc0d95908387bd030b"
+      },
+      {
+        "id": "group-manifest-s09-s16.json",
+        "bytes": 22196,
+        "sha256": "9772c6cdbc802dc40b01f4d6291ae3707b2a695e5e126c176baf49434d5201f3"
+      },
+      {
+        "id": "group-manifest-s17-s23.json",
+        "bytes": 15381,
+        "sha256": "80900742ed76f9f0d18b8ac55533ff4c7e73d333d909ccb3cb9f3369a04b450a"
+      }
+    ],
+    "selectedRawArtifacts": [
+      {
+        "id": "S10/state.json",
+        "bytes": 5354,
+        "sha256": "8e4c88ef738ec3dfc3a178d635132d9de83ec8b3bd2780e900f0e2063c741500"
+      },
+      {
+        "id": "S16/state.json",
+        "bytes": 4546,
+        "sha256": "f282638d2f27bd348b16e93eaceee89ff4ff3e01044db413fb9e89fc0c12003b"
+      },
+      {
+        "id": "S17/runtime-route-storage-trace.json",
+        "bytes": 21919,
+        "sha256": "4778fa7348ba24f9c56dfba9e0b43b1437c467b0d92a6ddc510a6d2faf12a93f"
+      },
+      {
+        "id": "S18/edge-cases-crlf-utf8.tsv",
+        "bytes": 884,
+        "sha256": "808b99cceeb60a594730151eb8e91493dd99d5e6d30886f969fdb520c8fe3063"
+      },
+      {
+        "id": "S18/parser-result.json",
+        "bytes": 4315,
+        "sha256": "d885751e933a9d00d957688c27405977e8fbd10a54788f9e122459f32c402007"
+      },
+      {
+        "id": "S19/new-york-dst-wall-clock.ics",
+        "bytes": 973,
+        "sha256": "520187e5175b1d46f3375b8501e705ca3b17b6793529ce2a66635af4fe3da2c8"
+      },
+      {
+        "id": "S19/timezone-dst-parser-result.json",
+        "bytes": 5280,
+        "sha256": "44aca9691fc292093b8d697b7eff288eece047d65c42f4e6c2782be26fe71769"
+      },
+      {
+        "id": "S20/routine-monthly-unit-separated.ics",
+        "bytes": 718,
+        "sha256": "e44d8a6f4bc0b7051bd0ff99b7d9dbf585c11a69ee19a59c77ced1f7fb4fe18d"
+      },
+      {
+        "id": "S20/routine-unit-counts.json",
+        "bytes": 2261,
+        "sha256": "3af595cd36ba216013afae21fc63e8ae3a91d98cacdb0cd5fd600604d1a8a0d4"
+      },
+      {
+        "id": "S21/transport-manifest.json",
+        "bytes": 16888,
+        "sha256": "846cb7beb87e430c30101168a29d32da9e861e2550c68b25408a6e9883284f92"
+      },
+      {
+        "id": "S22/not-assessed-manifest.json",
+        "bytes": 2114,
+        "sha256": "ba889d1dfe79e091a6fa1ad05c7980eb925023649d5de9ac9efadb84fee765d2"
+      },
+      {
+        "id": "S23/reviewer-choice-placeholder.json",
+        "bytes": 1167,
+        "sha256": "45b709a252891ba429c08a20f6e09b14b20c006dcf23396093c43d015354a788"
+      }
+    ],
+    "allowlistInventoryVerification": {
+      "rows": 283,
+      "totalBytesFetched": 26924227,
+      "declaredByteAndSha256Failures": 0,
+      "productOrBuildIdentityFailures": 0,
+      "statuses": {
+        "READY": 274,
+        "CODEX_ONLY_READY": 7,
+        "NOT_ASSESSED_ALLOWED": 1,
+        "REVIEWER_ACTION_REQUIRED": 1
+      }
+    }
+  },
+  "outputHashes": [
+    {
+      "path": "D:\\flowme-review-output\\p35-round2-pprime-runtime2-codex-pass1\\codex-pass1-findings.md",
+      "bytes": 6562,
+      "sha256": "151d9d700f73e2092df84d034e9ff2f779eb11ad112c3bbdb0cf4bdc63cebf7c"
+    },
+    {
+      "path": "D:\\flowme-review-output\\p35-round2-pprime-runtime2-codex-pass1\\codex-pass1-scorecard.md",
+      "bytes": 5112,
+      "sha256": "a7a5e8d45565eaa27c20b0fd87501877735d52de690019cd9a1a8800b6f622e1"
+    },
+    {
+      "path": "D:\\flowme-review-output\\p35-round2-pprime-runtime2-codex-pass1\\codex-counterevidence-log.md",
+      "bytes": 5612,
+      "sha256": "efdbf34d8cf609c7e5293aad24ea6fd8e066905ff68f0930ba9b955d84d075ee"
+    },
+    {
+      "path": "D:\\flowme-review-output\\p35-round2-pprime-runtime2-codex-pass1\\codex-pass1-freeze.json",
+      "sha256": "SELF_EXCLUDED_TO_AVOID_RECURSIVE_SELF_HASH"
+    }
+  ],
+  "mutationDeclaration": {
+    "productCodeModified": false,
+    "testsModified": false,
+    "fixturesModified": false,
+    "documentationModified": false,
+    "gitModified": false,
+    "committed": false,
+    "pushed": false,
+    "deployed": false,
+    "externalStateChanged": false,
+    "controlledBrowserSeedResetOnly": true
+  }
+}
