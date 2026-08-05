@@ -1,6 +1,6 @@
 'use client';
 
-import {
+import React, {
   useEffect,
   useRef,
   type ComponentPropsWithoutRef,
@@ -299,12 +299,14 @@ type FlowEditorShellProps = ComponentPropsWithoutRef<'section'> & {
   editing: boolean;
   mobileFullscreen: boolean;
   mode: 'inline' | 'panel' | 'plain';
+  neutralInline?: boolean;
 };
 
 export function FlowEditorShell({
   editing,
   mobileFullscreen,
   mode,
+  neutralInline = false,
   className = '',
   children,
   ...props
@@ -312,7 +314,9 @@ export function FlowEditorShell({
   const layoutClass = editing && mobileFullscreen
     ? 'fixed inset-0 z-[80] overflow-y-auto bg-[var(--flowme-bg)] px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-[calc(1rem+env(safe-area-inset-top))]'
     : mode === 'inline'
-      ? 'mt-2 border-l-2 border-[var(--flowme-action)] bg-[var(--flowme-action-soft)] p-3'
+      ? neutralInline
+        ? 'mt-2 border-l-2 border-[var(--flowme-border-strong)] bg-[var(--flowme-surface-subtle)] p-3'
+        : 'mt-2 border-l-2 border-[var(--flowme-action)] bg-[var(--flowme-action-soft)] p-3'
       : mode === 'panel'
         ? 'border border-[var(--flowme-border)] bg-[var(--flowme-surface)] p-3'
         : 'space-y-3';
@@ -324,6 +328,8 @@ export function FlowEditorShell({
   );
 }
 
+export type FlowBottomSheetCloseCause = 'x' | 'backdrop' | 'escape';
+
 export function FlowBottomSheet({
   testId,
   headingId,
@@ -332,9 +338,12 @@ export function FlowBottomSheet({
   eyebrow,
   title,
   onClose,
+  onRequestClose,
+  dismissible = true,
   initialFocusSelector,
   returnFocusSelector,
   dialogProps,
+  layerClassName = 'z-[80]',
   className = '',
   children,
 }: {
@@ -345,6 +354,8 @@ export function FlowBottomSheet({
   eyebrow?: string;
   title: string;
   onClose: () => void;
+  onRequestClose?: (cause: FlowBottomSheetCloseCause) => void;
+  dismissible?: boolean;
   initialFocusSelector?: string;
   returnFocusSelector?: string;
   dialogProps?: Omit<
@@ -353,51 +364,100 @@ export function FlowBottomSheet({
   > & {
     [key: `data-${string}`]: string | number | undefined;
   };
+  layerClassName?: string;
   className?: string;
   children: ReactNode;
 }) {
   const dialogRef = useRef<HTMLElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const onCloseRef = useRef(onClose);
+  const onRequestCloseRef = useRef(onRequestClose);
+  const dismissibleRef = useRef(dismissible);
+  const returnFocusSelectorRef = useRef(returnFocusSelector);
 
   useEffect(() => {
     onCloseRef.current = onClose;
-  }, [onClose]);
+    onRequestCloseRef.current = onRequestClose;
+    dismissibleRef.current = dismissible;
+    returnFocusSelectorRef.current = returnFocusSelector;
+  }, [dismissible, onClose, onRequestClose, returnFocusSelector]);
+
+  const requestClose = (cause: FlowBottomSheetCloseCause) => {
+    if (!dismissible) return;
+    if (onRequestClose) {
+      onRequestClose(cause);
+      return;
+    }
+    onClose();
+  };
 
   useEffect(() => {
     const returnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      if (!dismissibleRef.current) return;
+      const visibleSheets = Array.from(document.querySelectorAll<HTMLElement>(
+        '[role="dialog"][data-flow-ui="bottom-sheet"]',
+      )).filter((element) => element.getClientRects().length > 0);
+      const activeSheet = document.activeElement instanceof HTMLElement
+        ? document.activeElement.closest<HTMLElement>(
+            '[role="dialog"][data-flow-ui="bottom-sheet"]',
+          )
+        : null;
+      if (activeSheet) {
+        if (activeSheet !== dialogRef.current) return;
+      } else if (visibleSheets.at(-1) !== dialogRef.current) {
+        return;
+      }
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      if (onRequestCloseRef.current) {
+        onRequestCloseRef.current('escape');
+      } else {
+        onCloseRef.current();
+      }
+    };
+    document.addEventListener('keydown', closeOnEscape, true);
+    return () => {
+      document.removeEventListener('keydown', closeOnEscape, true);
+      document.body.style.overflow = previousOverflow;
+      const requestedReturnTarget = returnFocusSelectorRef.current
+        ? Array.from(document.querySelectorAll<HTMLElement>(returnFocusSelectorRef.current)).find(
+            (element) => element.getClientRects().length > 0 && !element.matches(':disabled'),
+          ) ?? null
+        : null;
+      (requestedReturnTarget ?? returnFocus)?.focus({ preventScroll: true });
+    };
+  }, []);
+
+  useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
       const requestedTarget = initialFocusSelector
         ? dialogRef.current?.querySelector<HTMLElement>(initialFocusSelector)
         : null;
-      (requestedTarget ?? closeButtonRef.current)?.focus({ preventScroll: true });
+      const firstFocusable = Array.from(dialogRef.current?.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
+      ) ?? []).find((element) => element.getClientRects().length > 0);
+      (requestedTarget ?? firstFocusable ?? dialogRef.current)?.focus({ preventScroll: true });
     });
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key !== 'Escape') return;
-      event.preventDefault();
-      event.stopPropagation();
-      onCloseRef.current();
-    };
-    document.addEventListener('keydown', closeOnEscape, true);
-    return () => {
-      window.cancelAnimationFrame(frame);
-      document.removeEventListener('keydown', closeOnEscape, true);
-      document.body.style.overflow = previousOverflow;
-      const requestedReturnTarget = returnFocusSelector
-        ? document.querySelector<HTMLElement>(returnFocusSelector)
-        : null;
-      (requestedReturnTarget ?? returnFocus)?.focus({ preventScroll: true });
-    };
-  }, [initialFocusSelector, returnFocusSelector]);
+    return () => window.cancelAnimationFrame(frame);
+  }, [initialFocusSelector]);
 
   const handleKeyDown = (event: ReactKeyboardEvent<HTMLElement>) => {
     if (event.key !== 'Tab') return;
     const focusable = Array.from(dialogRef.current?.querySelectorAll<HTMLElement>(
       'button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
     ) ?? []).filter((element) => element.getClientRects().length > 0);
-    if (focusable.length === 0) return;
+    if (focusable.length === 0) {
+      event.preventDefault();
+      const visibleErrorSummary = Array.from(dialogRef.current?.querySelectorAll<HTMLElement>(
+        '[data-editor-error-summary="true"]',
+      ) ?? []).find((element) => element.getClientRects().length > 0);
+      (visibleErrorSummary ?? dialogRef.current)?.focus({ preventScroll: true });
+      return;
+    }
     const first = focusable[0];
     const last = focusable[focusable.length - 1];
     if (event.shiftKey && document.activeElement === first) {
@@ -410,17 +470,20 @@ export function FlowBottomSheet({
   };
 
   return (
-    <div className="fixed inset-0 z-[80] bg-slate-950/40" data-flow-ui="bottom-sheet-layer">
+    <div className={`fixed inset-0 ${layerClassName} bg-slate-950/40`} data-flow-ui="bottom-sheet-layer">
       <button
         className="absolute inset-0 h-full w-full cursor-default"
         type="button"
         tabIndex={-1}
         aria-label={`${title} 닫기`}
-        onClick={onClose}
+        aria-disabled={!dismissible}
+        disabled={!dismissible}
+        onClick={() => requestClose('backdrop')}
       />
       <section
         {...dialogProps}
         ref={dialogRef}
+        tabIndex={dialogProps?.tabIndex ?? -1}
         role="dialog"
         aria-modal="true"
         aria-labelledby={headingId}
@@ -443,7 +506,8 @@ export function FlowBottomSheet({
             type="button"
             data-testid={`${testId}-close`}
             className={`${FLOW_UI_SECONDARY_ACTION_CLASS} shrink-0`}
-            onClick={onClose}
+            disabled={!dismissible}
+            onClick={() => requestClose('x')}
           >
             닫기
           </button>

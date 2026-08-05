@@ -1,4 +1,5 @@
 import { getArtifactPlan, type ArtifactSurfaceKind, type PrimaryArtifactSurface } from './artifact-plan';
+import { normalizeCompletionCriterion } from './completion-criterion';
 import { addDays, formatLocalDate } from './date';
 import { splitExecutionDetailContent } from './execution-detail-content';
 import { isFlowItemPersonallyExcluded } from './flow-item-state';
@@ -31,6 +32,7 @@ export type FlowExperienceProjectionRow = {
   title: string;
   description?: string;
   memo?: string;
+  completionCriterion?: string;
   section?: string;
   orderRank: number;
   included: boolean;
@@ -197,6 +199,7 @@ export function buildFlowExperienceProjection(
       const included = !explicitlyExcluded.has(item.id) && !isFlowItemPersonallyExcluded(itemStates[item.id]);
       const resources = splitExecutionDetailContent(detail).resources.map((resource) => ({ ...resource }));
       const scheduleState = date ? (item.repeat_rule ? 'recurring' : 'dated') : 'unscheduled';
+      const completionCriterion = normalizeCompletionCriterion(detail?.completion_criteria);
 
       return {
         id: item.id,
@@ -207,6 +210,7 @@ export function buildFlowExperienceProjection(
         title: override?.title?.trim() || item.title,
         ...(item.description ? { description: item.description } : {}),
         ...(override?.memo?.trim() ? { memo: override.memo.trim() } : {}),
+        ...(completionCriterion ? { completionCriterion } : {}),
         ...(item.section_id && sections.get(item.section_id) ? { section: sections.get(item.section_id) } : {}),
         orderRank: getOrderRank(item, orderOverride),
         included,

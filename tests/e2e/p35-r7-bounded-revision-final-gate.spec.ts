@@ -34,7 +34,7 @@ const scenarios: ShapeScenario[] = [
   {
     id: 'calendar',
     slug: 'moving-d30-basic',
-    publicShape: 'calendar',
+    publicShape: 'checklist',
     savedMode: 'calendar',
     itemCount: 24,
     primaryDestination: 'calendar',
@@ -55,7 +55,7 @@ const scenarios: ShapeScenario[] = [
   {
     id: 'routine',
     slug: 'curated-allblanc-morning-workout',
-    publicShape: 'flow_execution',
+    publicShape: 'checklist',
     savedMode: 'calendar',
     itemCount: 1,
     preflightCount: 1,
@@ -179,16 +179,23 @@ async function expectPageQuality(page: Page) {
   expect(quality.mainLandmarkCount).toBeGreaterThanOrEqual(1);
 }
 
-async function openPublicPreflight(page: Page) {
-  await expect(page.getByTestId('public-flow-detail-workspace')).toHaveCount(0);
-  const entry = page.getByTestId('public-flow-export-secondary-entry');
-  await entry.scrollIntoViewIfNeeded();
-  await expect(entry.getByTestId('public-flow-export-secondary-toggle')).toContainText('옮기기');
-  await entry.getByTestId('public-flow-export-secondary-toggle').click();
-  const branch = page.getByTestId('public-flow-export-branch');
-  await expect(branch).toBeVisible();
-  await expect(entry).toHaveAttribute('data-p35-marker', /P35-R1-PUBLIC-ARTIFACT-PREFLIGHT/);
-  return { entry, branch };
+function transferDestination(scenario: ShapeScenario) {
+  return scenario.primaryDestination ?? 'calendar';
+}
+
+async function makeSavedTransferDestinationVisible(
+  panel: Locator,
+  destination: 'calendar' | 'checklist' | 'sheet' | 'memo',
+) {
+  const action = panel.getByTestId(`my-flow-export-${destination}`);
+  if (await action.isVisible().catch(() => false)) return action;
+  const moreFormats = panel.getByTestId('my-flow-export-more-formats');
+  await expect(moreFormats).toBeVisible();
+  if ((await moreFormats.getAttribute('open')) === null) {
+    await moreFormats.locator(':scope > summary').click();
+  }
+  await expect(action).toBeVisible();
+  return action;
 }
 
 async function seedSavedFlow(page: Page, scenario: ShapeScenario) {
@@ -235,9 +242,31 @@ test.describe('P35-R7 bounded revision final gate', () => {
       await page.goto(`/f/${scenario.slug}`);
       await page.evaluate(() => window.localStorage.clear());
       await page.reload();
-      const preview = page.getByTestId('public-flow-artifact-preview');
+      const capability = page.getByTestId('public-flow-capability-result');
+      await expect(capability).toBeVisible();
+      await expect(capability).toHaveAttribute('data-capability-lifecycle', 'public_preview');
+      await expect(capability).toHaveAttribute(
+        'data-capability-snapshot-kind',
+        'effective_authoring',
+      );
+      await expect(capability.locator(
+        '[data-testid="flow-capability-result-choice"]'
+          + '[data-capability-candidate-role="primary"]',
+      )).toHaveCount(1);
+      const selectedPreview = capability.getByTestId('flow-capability-selected-preview');
+      const preview = selectedPreview.getByTestId('flow-capability-artifact-preview');
       await expect(preview).toHaveAttribute('data-selected-shape', scenario.publicShape);
-      await expect(preview.getByTestId('public-flow-artifact-preview-row')).toHaveCount(
+      const manifestIds = (
+        (await selectedPreview.getAttribute('data-capability-manifest-item-ids')) ?? ''
+      ).split(',').filter(Boolean);
+      expect(manifestIds).toHaveLength(scenario.itemCount);
+      await expect(selectedPreview).toHaveAttribute(
+        'data-capability-output-count',
+        String(scenario.itemCount),
+      );
+      const expandPreview = preview.getByTestId('flow-capability-artifact-preview-expand');
+      if (await expandPreview.isVisible().catch(() => false)) await expandPreview.click();
+      await expect(preview.getByTestId('flow-capability-artifact-preview-row')).toHaveCount(
         scenario.itemCount,
       );
       await expect(preview.getByTestId('flow-artifact-shape-choice')).toHaveCount(0);
@@ -245,17 +274,29 @@ test.describe('P35-R7 bounded revision final gate', () => {
       await expectPageQuality(page);
 
       if (scenario.id === 'calendar') {
-        const edit = preview.getByTestId('public-flow-artifact-preview-row-edit').first();
+        const conditionalCalendar = capability.locator(
+          '[data-testid="flow-capability-conditional-result"]'
+            + '[data-capability-destination="calendar"]',
+        );
+        await expect(conditionalCalendar).toHaveAttribute(
+          'data-capability-output-count',
+          '0',
+        );
+        await expect(conditionalCalendar).toHaveAttribute(
+          'data-capability-expected-output-count',
+          String(scenario.itemCount),
+        );
+        const edit = conditionalCalendar.getByTestId('flow-capability-conditional-edit');
         await edit.focus();
         await page.keyboard.press('Enter');
-        const itemEditor = page.getByTestId('public-flow-item-editor');
-        await expect(itemEditor).toBeVisible();
-        await expect(itemEditor.getByTestId('public-flow-item-editor-title-input')).toBeFocused();
+        const planEditor = page.getByTestId('public-flow-personal-adjustment');
+        await expect(planEditor).toBeVisible();
+        await expect(planEditor).toHaveAttribute('data-editor-context', 'public-draft');
+        await expect(planEditor).toHaveAttribute('data-editor-level', 'plan');
+        await expect(planEditor).toHaveAttribute('data-adjustment-kind', 'anchor');
+        await expect(planEditor.locator(':focus')).toHaveCount(1);
         await page.keyboard.press('Escape');
-        await expect(itemEditor).toHaveCount(0);
-        const parentAdjustment = page.getByTestId('public-flow-personal-adjustment');
-        await expect(parentAdjustment).toBeVisible();
-        await parentAdjustment.getByTestId('public-flow-adjustment-cancel').click();
+        await expect(planEditor).toHaveCount(0);
         await expect(edit).toBeFocused();
       }
 
@@ -264,37 +305,36 @@ test.describe('P35-R7 bounded revision final gate', () => {
         await page.getByTestId('public-flow-anchor-input').fill(scenario.anchor);
       }
       await page.setViewportSize({ width: 1024, height: 768 });
-      const { entry: preflight, branch: preflightBranch } = await openPublicPreflight(page);
-      if (scenario.id === 'routine') {
-        await expect(preflight).toHaveAttribute('data-preflight-schedule-state', 'committed');
-        await expect(
-          preflightBranch.locator(
-            '[data-testid="public-flow-export-format-option"][data-export-destination="calendar"]',
-          ),
-        ).toHaveAttribute('data-export-count', String(scenario.preflightCount));
-      } else {
-        await expect(preflight).toHaveAttribute(
-          'data-primary-destination',
-          scenario.primaryDestination!,
-        );
-        await expect(
-          preflightBranch.locator(
-            '[data-testid="public-flow-export-format-option"]'
-            + `[data-export-destination="${scenario.primaryDestination}"]`,
-          ),
-        ).toHaveAttribute('data-export-count', String(scenario.preflightCount));
-      }
-      await expect(
-        preflightBranch.locator('[data-recommendation-visible="true"][data-export-state="disabled"]'),
-      ).toHaveCount(0);
+      await expect(page.getByTestId('public-flow-export-secondary-entry')).toHaveCount(0);
+      const sessionTwoCapability = page.getByTestId('public-flow-capability-result');
+      const destination = transferDestination(scenario);
+      const publicCandidate = sessionTwoCapability.locator(
+        '[data-testid="flow-capability-result-choice"]'
+          + `[data-capability-destination="${destination}"]`,
+      );
+      await expect(publicCandidate).toHaveCount(1);
+      await expect(publicCandidate).toHaveAttribute(
+        'data-capability-output-count',
+        String(scenario.preflightCount),
+      );
+      await publicCandidate.click();
+      const publicTransferPreview = sessionTwoCapability.getByTestId(
+        'flow-capability-selected-preview',
+      );
+      await expect(publicTransferPreview).toHaveAttribute(
+        'data-capability-destination',
+        destination,
+      );
+      await expect(publicTransferPreview).toHaveAttribute(
+        'data-capability-output-count',
+        String(scenario.preflightCount),
+      );
       await capture(
         page,
         `p35-r7-${scenario.id}-session2-preflight-1024.png`,
-        preflightBranch,
+        sessionTwoCapability,
       );
       await expectPageQuality(page);
-      await preflightBranch.getByTestId('public-flow-export-branch-close').click();
-      await expect(preflightBranch).toHaveCount(0);
 
       // Session 3: consume the same source shape inside one personal workspace.
       await seedSavedFlow(page, scenario);
@@ -305,6 +345,61 @@ test.describe('P35-R7 bounded revision final gate', () => {
       const outline = workspace.getByTestId('my-flow-whole-flow-outline');
       await expect(outline).toHaveAttribute('data-effective-row-count', String(scenario.itemCount));
       await expect(workspace.locator('[data-testid^="my-flow-workspace-tab-"]')).toHaveCount(0);
+
+      const transferEntry = workspace.getByTestId('my-flow-export-entry');
+      await expect(transferEntry).toHaveAttribute('data-action-role', 'transfer-to-own-tool');
+      await transferEntry.click();
+      const transferPanel = workspace.getByTestId('my-flow-export-panel');
+      const savedCapability = transferPanel.getByTestId('my-flow-capability-result');
+      await expect(savedCapability).toHaveAttribute('data-capability-lifecycle', 'saved_detail');
+      await expect(savedCapability).toHaveAttribute(
+        'data-capability-snapshot-kind',
+        'effective_execution',
+      );
+      const savedCandidate = savedCapability.locator(
+        '[data-testid="flow-capability-result-choice"]'
+          + `[data-capability-destination="${destination}"]`,
+      );
+      await expect(savedCandidate).toHaveCount(1);
+      await expect(savedCandidate).toHaveAttribute(
+        'data-capability-output-count',
+        String(scenario.preflightCount),
+      );
+      const savedSnapshotKind = (await savedCapability.getAttribute(
+        'data-capability-snapshot-kind',
+      )) ?? '';
+      const savedSnapshotVersion = (await savedCapability.getAttribute(
+        'data-capability-snapshot-version',
+      )) ?? '';
+      const savedSnapshotHash = (await savedCandidate.getAttribute(
+        'data-capability-manifest-hash',
+      )) ?? '';
+      const savedItemIds = (await savedCandidate.getAttribute(
+        'data-capability-manifest-item-ids',
+      )) ?? '';
+      const transferAction = await makeSavedTransferDestinationVisible(
+        transferPanel,
+        destination,
+      );
+      await transferAction.click();
+      const confirmation = transferPanel.getByTestId('my-flow-transfer-confirmation');
+      await expect(confirmation).toBeVisible();
+      await expect(confirmation).toHaveAttribute('data-snapshot-kind', savedSnapshotKind);
+      await expect(confirmation).toHaveAttribute('data-snapshot-version', savedSnapshotVersion);
+      await expect(confirmation).toHaveAttribute('data-snapshot-hash', savedSnapshotHash);
+      await expect(confirmation).toHaveAttribute('data-scope', 'flow');
+      await expect(confirmation).toHaveAttribute('data-format', destination);
+      await expect(confirmation).toHaveAttribute('data-destination', destination);
+      await expect(confirmation).toHaveAttribute('data-item-ids', savedItemIds);
+      await expect(confirmation).toHaveAttribute(
+        'data-output-count',
+        String(scenario.preflightCount),
+      );
+      await confirmation.getByTestId('my-flow-transfer-cancel').click();
+      await expect(confirmation).toHaveCount(0);
+      await expect(transferEntry).toBeFocused();
+      await transferEntry.click();
+      await expect(transferPanel).toHaveCount(0);
 
       const execution = workspace.getByTestId('my-flow-shape-aware-execution');
       if (scenario.executionKind === 'none') {
@@ -323,10 +418,10 @@ test.describe('P35-R7 bounded revision final gate', () => {
           .first()
         : execution.getByTestId('my-flow-execution-row-shell').first();
       await expect(completionShell.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
-      const completionRowKey = await completionShell
-        .locator('article[data-row-key]')
-        .getAttribute('data-row-key');
-      expect(completionRowKey).toBeTruthy();
+      const completionItemId = await completionShell
+        .locator('article[data-item-id]')
+        .getAttribute('data-item-id');
+      expect(completionItemId).toBeTruthy();
       const firstOccurrenceId = scenario.id === 'routine'
         ? await workspace.getByTestId('my-flow-routine-current-occurrence').getAttribute('data-occurrence-id')
         : null;
@@ -362,17 +457,24 @@ test.describe('P35-R7 bounded revision final gate', () => {
           `전체 1/${scenario.itemCount} 완료`,
         );
         await closeOpenMyFlowItemDetail(page);
+        const planToggle = workspace.getByTestId('my-flow-workspace-plan-toggle');
+        if (!(await outline.isVisible().catch(() => false))) {
+          await expect(planToggle).toBeVisible();
+          await planToggle.click();
+          await expect(outline).toBeVisible();
+        }
         const expandAll = outline.getByTestId('my-flow-whole-flow-toggle-all-groups');
         let completedRow = outline.locator(
-          `article[data-row-key="${completionRowKey}"]`,
+          `article[data-item-id="${completionItemId}"]`,
         );
         if (
-          (await completedRow.count()) === 0
+          !(await completedRow.isVisible().catch(() => false))
           && await expandAll.isVisible().catch(() => false)
         ) {
           await expandAll.click();
-          completedRow = outline.locator(`article[data-row-key="${completionRowKey}"]`);
+          completedRow = outline.locator(`article[data-item-id="${completionItemId}"]`);
         }
+        await expect(completedRow).toBeVisible();
         await expect(completedRow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
         await completedRow.getByRole('button', { name: /열기/ }).click();
         detail = getOpenMyFlowItemDetail(page);
@@ -385,7 +487,7 @@ test.describe('P35-R7 bounded revision final gate', () => {
         );
         await closeOpenMyFlowItemDetail(page);
         const reopenedRow = execution.locator(
-          `article[data-row-key="${completionRowKey}"]`,
+          `article[data-item-id="${completionItemId}"]`,
         );
         await expect(reopenedRow).toBeVisible();
         await expect(reopenedRow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);

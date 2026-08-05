@@ -77,7 +77,7 @@ test('Calendar keeps Flow scope, selected-day execution, and My Flow date owners
   await expect(execution).toBeVisible();
   await expect(execution.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
   await capture(page, '01-mobile-scope-and-selected-day.png');
-  await execution.getByRole('button', { name: /Flow에서 열기/ }).click();
+  await execution.getByRole('button', { name: /계획에서 열기/ }).click();
   await expect(page).toHaveURL(/\/my\?view=flows&flow=/);
   await expect(page.locator('main[data-p32-workspace-state="focused"]')).toBeVisible();
   const detail = getOpenMyFlowItemDetail(page);
@@ -144,9 +144,9 @@ test('Calendar distinguishes routine occurrences from ordinary tasks without inl
     .locator('[data-testid="my-flow-execution-row-shell"][data-calendar-item-kind="occurrence"]')
     .first();
   await expect(occurrence.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
-  await expect(occurrence.getByRole('button', { name: /Flow에서 열기/ })).toBeVisible();
+  await expect(occurrence.getByRole('button', { name: /계획에서 열기/ })).toBeVisible();
   await capture(page, '03-mobile-routine-occurrence-filter.png');
-  await occurrence.getByRole('button', { name: /Flow에서 열기/ }).click();
+  await occurrence.getByRole('button', { name: /계획에서 열기/ }).click();
   await expect(page).toHaveURL(/\/my\?view=flows&flow=curated-allblanc-morning-workout/);
   const detail = getOpenMyFlowItemDetail(page);
   await expect(detail).toBeVisible();

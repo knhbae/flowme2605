@@ -1,6 +1,7 @@
 import { addDays, formatDate, formatLocalDate, getRangeEnd } from './date';
 import { getArtifactPlan } from './artifact-plan';
 import { getComparisonConfig, getComparisonRows, getHoldMemoFields, getLogTables, getMemoCardFields } from './artifact-fields';
+import { normalizeCompletionCriterion } from './completion-criterion';
 import { buildEffectiveRoutineProjection } from './effective-routine-projection';
 import type { EffectiveFlowResult } from './effective-flow-snapshot';
 import type { FlowExperienceProjectionRow } from './flow-experience-projection';
@@ -110,7 +111,6 @@ const staleLogStateIgnoredSlugs = new Set(['computer-skills-d30-study']);
 const weekdayColumns = ['월', '화', '수', '목', '금', '토', '일'];
 const weeklyColumns = ['주', ...weekdayColumns];
 const monthlyColumns = ['월/주', ...weekdayColumns];
-const genericCompletionCriteria = '이 항목을 완료했어요.';
 
 function getItemDate(item: FlowItem, anchor?: string): string {
   if (!anchor || item.day_offset === undefined) return '';
@@ -203,8 +203,7 @@ function linkLabelList(detail: ReturnType<typeof getItemDetail>): string {
 }
 
 function completionCriteria(detail: ReturnType<typeof getItemDetail>): string {
-  if (!detail?.completion_criteria || detail.completion_criteria === genericCompletionCriteria) return '';
-  return detail.completion_criteria;
+  return normalizeCompletionCriterion(detail?.completion_criteria) ?? '';
 }
 
 type EffectiveExportRow = {
@@ -920,6 +919,7 @@ function escapeIcsText(value: string): string {
 }
 
 type EffectiveIcsDescriptionDetails = {
+  flowTitle?: string;
   sourceDescription?: string;
   personalMemo?: string;
   executionMemo?: string;
@@ -941,6 +941,9 @@ function buildIcsDescription(
   return [
     userFacingExportSourceText(bundle.flow.description),
     sectionTitle ? '' : bundle.items[0]?.title,
+    effectiveDetails?.flowTitle?.trim()
+      ? `계획: ${userFacingExportSourceText(effectiveDetails.flowTitle)}`
+      : '',
     effectiveDetails?.sourceDescription?.trim()
       ? `설명: ${userFacingExportSourceText(effectiveDetails.sourceDescription)}`
       : '',
@@ -985,6 +988,7 @@ type IcsEntry = {
   actionGuide?: string;
   completionCriteria?: string;
   links?: string;
+  sourceUrl?: string;
   dateWindow?: {
     label: string;
     startDate: string;
@@ -1010,6 +1014,7 @@ function buildIcsEntries(bundle: FlowBundle, anchor?: string): IcsEntry[] {
       actionGuide: [detail?.why, detail?.how].map(userFacingExportSourceText).filter(Boolean).join('\n'),
       completionCriteria: userFacingExportSourceText(detail?.completion_criteria),
       links: linkList(detail),
+      sourceUrl: detail?.links?.[0]?.url ?? bundle.flow.source_url,
       dateWindow: item.date_window && startDate && endDate
         ? {
             label: item.date_window.label,
@@ -1033,6 +1038,7 @@ function buildIcsEntries(bundle: FlowBundle, anchor?: string): IcsEntry[] {
       actionGuide: '',
       completionCriteria: slot.new_ingredients.length ? `New ingredients: ${slot.new_ingredients.join(', ')}` : '',
       links: recipe ? sourceNote(bundle, recipe.risk_level) : sourceNote(bundle),
+      sourceUrl: bundle.flow.source_url,
     });
   }
 
@@ -1064,6 +1070,7 @@ function buildEffectiveIcsEntries(
           ? `새 재료: ${slot.new_ingredients.join(', ')}`
           : '',
         links: recipe ? sourceNote(bundle, recipe.risk_level) : sourceNote(bundle),
+        sourceUrl: bundle.flow.source_url,
       }))
       .sort((left, right) => (
         left.start.getTime() - right.start.getTime()
@@ -1085,7 +1092,7 @@ function buildEffectiveIcsEntries(
       timing: getItemTimingLabel(item),
       orderRank: row.orderRank,
       completed: row.completed,
-      sourceDescription: item.description,
+      sourceDescription: row.description ?? item.description,
       personalMemo: row.memo,
       caution: detail?.caution ?? row.caution,
       actionGuide: [detail?.why, detail?.how]
@@ -1094,6 +1101,7 @@ function buildEffectiveIcsEntries(
         .join('\n'),
       completionCriteria: userFacingExportSourceText(detail?.completion_criteria),
       links: linkList(detail),
+      sourceUrl: detail?.links?.[0]?.url ?? bundle.flow.source_url,
     }))
     .sort((left, right) => (
       left.start.getTime() - right.start.getTime()
@@ -1108,9 +1116,13 @@ export function buildIcsCalendar(
   anchor?: string,
   itemStates: Record<string, FlowItemState> = {},
   effectiveResult?: EffectiveFlowResult,
+  generatedAt?: string,
 ): string {
   const effectiveTitle = getEffectiveFlowTitle(bundle, effectiveResult);
-  const nowStamp = new Date().toISOString().replaceAll('-', '').replaceAll(':', '').replace(/\.\d{3}Z$/, 'Z');
+  const generatedDate = generatedAt && Number.isFinite(Date.parse(generatedAt))
+    ? new Date(generatedAt)
+    : new Date();
+  const nowStamp = generatedDate.toISOString().replaceAll('-', '').replaceAll(':', '').replace(/\.\d{3}Z$/, 'Z');
   const lines = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
@@ -1128,7 +1140,7 @@ export function buildIcsCalendar(
 
   for (const entry of entries) {
     const end = addDays(entry.start, entry.durationDays);
-    const summary = `${effectiveTitle} - ${entry.title}`;
+    const summary = effectiveResult ? entry.title : `${effectiveTitle} - ${entry.title}`;
     const executionMemo = getFlowItemUserNote(itemStates[entry.id]);
     const description = buildIcsDescription(
       bundle,
@@ -1141,6 +1153,7 @@ export function buildIcsCalendar(
       effectiveResult ? undefined : executionMemo,
       effectiveResult
         ? {
+            flowTitle: effectiveTitle,
             sourceDescription: entry.sourceDescription,
             personalMemo: entry.personalMemo,
             executionMemo,
@@ -1158,8 +1171,9 @@ export function buildIcsCalendar(
       `DESCRIPTION:${escapeIcsText(description)}`,
       `STATUS:${entry.completed || checks[entry.id] ? 'CONFIRMED' : 'TENTATIVE'}`,
       'TRANSP:TRANSPARENT',
-      'END:VEVENT',
     );
+    if (entry.sourceUrl) lines.push(`URL:${entry.sourceUrl}`);
+    lines.push('END:VEVENT');
   }
 
   lines.push('END:VCALENDAR');
@@ -1172,6 +1186,7 @@ export function buildCalendarIcs(
   weekdays: string[] = [],
   routineDefinition?: SavedFlowRoutineDefinition,
   effectiveResult?: EffectiveFlowResult,
+  generatedAt?: string,
 ): string {
   const startDate = anchor || formatLocalDate(new Date());
   const effectiveTitle = getEffectiveFlowTitle(bundle, effectiveResult);
@@ -1203,6 +1218,10 @@ export function buildCalendarIcs(
         date: startDate,
         repeat: series,
         sourceUrl: bundle.flow.source_url,
+        generatedAt,
+        status: effectiveResult?.rows.find((row) => row.id === carrierItem.id)?.completed
+          ? 'CONFIRMED'
+          : 'TENTATIVE',
       }).ics;
     }
   }
@@ -1214,10 +1233,14 @@ export function buildCalendarIcs(
     'CALSCALE:GREGORIAN',
     'BEGIN:VEVENT',
     `UID:${bundle.flow.slug}-${compactDate(startDate)}@flow.local`,
-    `DTSTAMP:${compactDate(formatDate(new Date()))}T000000Z`,
+    `DTSTAMP:${(generatedAt && Number.isFinite(Date.parse(generatedAt))
+      ? new Date(generatedAt)
+      : new Date()).toISOString().replaceAll('-', '').replaceAll(':', '').replace(/\.\d{3}Z$/, 'Z')}`,
     `DTSTART;VALUE=DATE:${compactDate(startDate)}`,
     `SUMMARY:${escapeIcsText(effectiveTitle)}`,
     `DESCRIPTION:${escapeIcsText(buildIcsDescription(bundle))}`,
+    `STATUS:${effectiveResult?.rows[0]?.completed ? 'CONFIRMED' : 'TENTATIVE'}`,
+    'TRANSP:TRANSPARENT',
   ];
   if (byday) {
     const durationDays = bundle.flow.routine_duration_days;

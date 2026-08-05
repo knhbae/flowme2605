@@ -50,6 +50,7 @@ type ArtifactWorkbenchProps = {
   exportActions?: ArtifactExportActions;
   presentationMode?: 'full' | 'export-only' | 'export-direct';
   onExportOpenChange?: (open: boolean) => void;
+  q3CopyEnabled?: boolean;
 };
 
 type ArtifactExportActions = {
@@ -184,6 +185,7 @@ export function ArtifactWorkbench({
   exportActions,
   presentationMode = 'full',
   onExportOpenChange,
+  q3CopyEnabled = true,
 }: ArtifactWorkbenchProps) {
   const plan = getArtifactPlan(bundle);
   const total = getExecutableItems(bundle).filter(
@@ -204,6 +206,7 @@ export function ArtifactWorkbench({
           bundle={bundle}
           direct={presentationMode === 'export-direct'}
           onOpenChange={onExportOpenChange}
+          q3CopyEnabled={q3CopyEnabled}
         />
       </section>
     );
@@ -283,7 +286,7 @@ export function ArtifactWorkbench({
           />
         )}
       </div>
-      <FlowLevelExportPanel actions={exportActions} bundle={bundle} onOpenChange={onExportOpenChange} />
+      <FlowLevelExportPanel actions={exportActions} bundle={bundle} onOpenChange={onExportOpenChange} q3CopyEnabled={q3CopyEnabled} />
     </section>
   );
 }
@@ -293,11 +296,13 @@ function FlowLevelExportPanel({
   bundle,
   direct = false,
   onOpenChange,
+  q3CopyEnabled = true,
 }: {
   actions?: ArtifactExportActions;
   bundle: FlowBundle;
   direct?: boolean;
   onOpenChange?: (open: boolean) => void;
+  q3CopyEnabled?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   if (!actions) return null;
@@ -316,11 +321,12 @@ function FlowLevelExportPanel({
       destinations={actions.destinations ?? ['calendar', 'checklist', 'sheet', 'memo']}
       preferredDestination={actions.preferredDestination ?? getPreferredArtifactExportDestination(bundle)}
       sourceLabel={bundle.flow.source_title ? toUserFacingSourceTitle(bundle.flow.source_title) : undefined}
+      q3CopyEnabled={q3CopyEnabled}
       destinationCopyOverride={{
         calendar: { label: FLOW_EXPORT_LABELS.calendarFile, result: '날짜 있는 항목' },
-        checklist: { label: FLOW_EXPORT_LABELS.checklistCopy, result: 'Flow 전체' },
-        sheet: { label: FLOW_EXPORT_LABELS.sheetFile, result: 'Flow 전체' },
-        memo: { label: FLOW_EXPORT_LABELS.memoCopy, result: 'Flow 전체' },
+        checklist: { label: FLOW_EXPORT_LABELS.checklistCopy, result: q3CopyEnabled ? '계획 전체' : 'Flow 전체' },
+        sheet: { label: FLOW_EXPORT_LABELS.sheetFile, result: q3CopyEnabled ? '계획 전체' : 'Flow 전체' },
+        memo: { label: FLOW_EXPORT_LABELS.memoCopy, result: q3CopyEnabled ? '계획 전체' : 'Flow 전체' },
       }}
       destinationNotices={actions.destinationNotices}
       destinationTestId={() => 'public-flow-export-format-option'}
@@ -363,12 +369,16 @@ function FlowLevelExportPanel({
         className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-lg px-1 py-2 outline-none focus-visible:ring-2 focus-visible:ring-[#3654FF]/25"
       >
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-[#1B1A17]">이 Flow 전체 옮기기</p>
+          <p className="text-sm font-semibold text-[#1B1A17]">
+            {q3CopyEnabled ? '이 계획 전체 옮기기' : '이 Flow 전체 옮기기'}
+          </p>
           <p
             data-testid="public-flow-artifact-preflight-summary"
             className="mt-0.5 text-xs leading-5 text-[#737B77]"
           >
-            {actions.preflightSummary ?? '이 Flow에 맞는 결과 형식과 개수를 먼저 확인합니다.'}
+            {actions.preflightSummary ?? (q3CopyEnabled
+              ? '이 계획에 맞는 결과 형식과 개수를 먼저 확인합니다.'
+              : '이 Flow에 맞는 결과 형식과 개수를 먼저 확인합니다.')}
           </p>
         </div>
         <span className="shrink-0 text-xs font-semibold text-[#3654FF] group-open:hidden">형식 보기</span>

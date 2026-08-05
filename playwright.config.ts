@@ -1,6 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const port = 3104;
+const requestedPort = Number.parseInt(process.env.FLOWME_PLAYWRIGHT_PORT ?? '3104', 10);
+const port = Number.isFinite(requestedPort) ? requestedPort : 3104;
 
 export default defineConfig({
   testDir: './tests/e2e',

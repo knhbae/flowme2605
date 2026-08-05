@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import test from 'node:test';
 import {
   LEGACY_MY_FLOW_HIDDEN_FLOWS_STORAGE_KEY,
@@ -6,20 +7,33 @@ import {
   archivePersonalFlow,
   createEmptyPersonalFlowLifecycle,
   loadPersonalFlowLifecycle,
+  readPersonalFlowLifecycle,
   restorePersonalFlow,
   savePersonalFlowLifecycle,
 } from './personal-flow-lifecycle';
 
 function memoryStorage(initial: Record<string, string> = {}) {
   const values = new Map(Object.entries(initial));
+  const writes: Array<{ key: string; value: string }> = [];
   return {
     getItem(key: string) {
       return values.get(key) ?? null;
     },
     setItem(key: string, value: string) {
+      writes.push({ key, value });
       values.set(key, value);
     },
+    snapshot() {
+      return Object.fromEntries(values);
+    },
+    writes() {
+      return [...writes];
+    },
   };
+}
+
+function checksum(value: unknown): string {
+  return createHash('sha256').update(JSON.stringify(value)).digest('hex');
 }
 
 test('personal Flow lifecycle migrates the legacy hidden list without touching execution records', () => {
@@ -38,6 +52,27 @@ test('personal Flow lifecycle migrates the legacy hidden list without touching e
     storage.getItem('flow:run-registry:moving-d30'),
     '{"runs":[{"status":"completed"}]}',
   );
+});
+
+test('read-only lifecycle exposes legacy archived slugs without changing storage bytes', () => {
+  const storage = memoryStorage({
+    [LEGACY_MY_FLOW_HIDDEN_FLOWS_STORAGE_KEY]: JSON.stringify([
+      'moving-d30',
+      'moving-d30',
+      ' washer ',
+    ]),
+    'flow:run-registry:moving-d30': '{"runs":[{"status":"completed"}]}',
+  });
+  const before = checksum(storage.snapshot());
+
+  const result = readPersonalFlowLifecycle(storage, '2026-07-21T00:00:00.000Z');
+
+  assert.equal(result.source, 'legacy_hidden_flows');
+  assert.deepEqual(result.record.archivedFlowSlugs, ['moving-d30', 'washer']);
+  assert.equal(result.record.migration?.source, 'legacy_hidden_flows');
+  assert.equal(storage.getItem(PERSONAL_FLOW_LIFECYCLE_STORAGE_KEY), null);
+  assert.equal(checksum(storage.snapshot()), before);
+  assert.deepEqual(storage.writes(), []);
 });
 
 test('personal Flow archive and restore are reversible and keep a stable Flow slug', () => {

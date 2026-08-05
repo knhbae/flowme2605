@@ -292,12 +292,47 @@ test('unknown URL stays a miss with user-facing disabled-generation copy', () =>
   assert.equal(result.sourceStatus, 'missing');
   assert.deepEqual(result.exportModes, []);
   assert.equal(result.canSaveToMyFlow, false);
-  assert.equal(result.title, '바로 시작할 Flow를 찾지 못했어요');
+  assert.equal(result.title, '바로 시작할 계획을 찾지 못했어요');
   assert.equal(result.summary, '제목과 메모를 남기면 직접 손볼 수 있는 초안을 준비할 수 있어요.');
   assert.equal(result.aiGeneration.enabled, false);
-  assert.match(result.aiGeneration.reason, /기존 Flow를 먼저 찾아보고/);
+  assert.match(result.aiGeneration.reason, /준비된 계획을 먼저 찾아보고/);
+  assert.equal(result.preview.myFlow[0], '아직 저장 가능한 계획이 없어요.');
   assert.doesNotMatch(result.aiGeneration.reason, /\bP\d+\b/);
   assert.doesNotMatch(result.summary, /대기열|파이프라인|\bP\d+\b/);
+});
+
+test('Q3 URL lookup copy defaults to plans and exact rollback restores prior Flow wording', () => {
+  const hit = lookupUrlFirstP0Input(AJD_MOVING_SOURCE_URL);
+  const legacyHit = lookupUrlFirstP0Input(AJD_MOVING_SOURCE_URL, false);
+  assert.equal(hit.title, '이미 준비된 계획이 있어요');
+  assert.equal(hit.summary, '같은 원문 URL 기준으로 이사 D-30 계획을 다시 씁니다. 시작일만 바꾸고 미리볼 수 있습니다.');
+  assert.equal(legacyHit.title, '이미 변환된 Flow가 있어요');
+  assert.equal(legacyHit.summary, '같은 원문 URL 기준으로 이사 D-30 Flow를 재사용합니다. 시작일 옵션만 바꾸고 바로 미리볼 수 있습니다.');
+
+  const reviewUrl = 'https://flowme.local/f/vehicle-inspection-prep?utm_campaign=share';
+  const review = lookupUrlFirstP0Input(reviewUrl);
+  const legacyReview = lookupUrlFirstP0Input(reviewUrl, false);
+  assert.equal(review.title, '원문 확인이 필요한 계획입니다');
+  assert.match(review.summary, /준비 계획은 구조 미리보기만 제공합니다/u);
+  assert.equal(review.preview.myFlow[0], '원문 확인 전에는 내 계획 저장이 열리지 않습니다.');
+  assert.equal(legacyReview.title, '원문 확인이 필요한 Flow입니다');
+  assert.match(legacyReview.summary, /준비 Flow는 구조 미리보기만 제공합니다/u);
+  assert.equal(legacyReview.preview.myFlow[0], '원문 확인 전에는 내 Flow 저장이 열리지 않습니다.');
+
+  const missUrl = 'https://example.com/q3-copy-miss';
+  const miss = lookupUrlFirstP0Input(missUrl);
+  const legacyMiss = lookupUrlFirstP0Input(missUrl, false);
+  assert.equal(miss.title, '바로 시작할 계획을 찾지 못했어요');
+  assert.equal(miss.preview.myFlow[0], '아직 저장 가능한 계획이 없어요.');
+  assert.match(miss.aiGeneration.reason, /준비된 계획을 먼저 찾아보고/u);
+  assert.equal(legacyMiss.title, '바로 시작할 Flow를 찾지 못했어요');
+  assert.equal(legacyMiss.preview.myFlow[0], '아직 저장 가능한 Flow가 없어요.');
+  assert.match(legacyMiss.aiGeneration.reason, /기존 Flow를 먼저 찾아보고/u);
+
+  const genericHit = lookupUrlFirstP0Input('https://mathbang.net/13?utm_source=share');
+  const legacyGenericHit = lookupUrlFirstP0Input('https://mathbang.net/13?utm_source=share', false);
+  assert.equal(genericHit.title, '이미 만들어진 계획이 있어요');
+  assert.equal(legacyGenericHit.title, '이미 만들어진 Flow가 있어요');
 });
 
 test('memo draft remains private and recommends an existing moving Flow', () => {
@@ -322,6 +357,12 @@ test('shared URL-or-memo entry keeps URLs on lookup and sends plain text to a pr
   assert.equal(memo.inputKind, 'memo');
   assert.equal(memo.canSaveToMyFlow, false);
   assert.equal(memo.aiGeneration.enabled, false);
+});
+
+test('Q3 memo recommendation follows the same default and rollback vocabulary', () => {
+  const memo = '이번 주에 이사 견적을 비교하고 관리사무소에 연락하기';
+  assert.match(buildUrlFirstMemoDraft(memo).recommendation?.reason ?? '', /이사 계획을 먼저 다시 쓸 수 있습니다/u);
+  assert.match(buildUrlFirstMemoDraft(memo, false).recommendation?.reason ?? '', /이사 Flow를 먼저 재사용할 수 있습니다/u);
 });
 
 test('memo draft does not recommend an unrelated fixed content route', () => {
@@ -475,4 +516,30 @@ test('non-saveable URL lookup results cannot build a start package', () => {
     assert.equal(started.persistenceRecord, undefined);
     assert.equal(started.markdownExport, undefined);
   }
+});
+
+test('Q3 blocked start package uses plan copy and exact rollback restores Flow copy', () => {
+  const miss = lookupUrlFirstP0Input('https://example.com/q3-blocked-start-package');
+  const input = {
+    startDate: '2026-07-15',
+    exportMode: 'calendar' as const,
+    savedAt: '2026-07-05T00:00:00.000Z',
+  };
+
+  const current = buildUrlFirstStartPackage(miss, input);
+  assert.match(current.gate?.reason ?? '', /저장 가능한 계획/u);
+  assert.equal(
+    current.gate?.requiredAction,
+    '저장 가능한 기존 계획을 먼저 선택해야 합니다.',
+  );
+
+  const rollback = buildUrlFirstStartPackage(miss, {
+    ...input,
+    q3CopyEnabled: false,
+  });
+  assert.match(rollback.gate?.reason ?? '', /Flow화/u);
+  assert.equal(
+    rollback.gate?.requiredAction,
+    '저장 가능한 기존 Flow를 먼저 선택해야 합니다.',
+  );
 });

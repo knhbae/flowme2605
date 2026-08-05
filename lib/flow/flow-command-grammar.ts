@@ -47,6 +47,7 @@ export function buildFlowManagementCommandModel(options: {
   canReuse?: boolean;
   hasSource?: boolean;
   canBackup?: boolean;
+  q3CopyEnabled?: boolean;
 }): FlowManagementCommand[] {
   if (options.archived) {
     const commands: FlowManagementCommand[] = [
@@ -82,7 +83,7 @@ export function buildFlowManagementCommandModel(options: {
   if (options.canAdjust) {
     commands.push({
       id: 'adjust',
-      label: FLOW_COMMAND_LABELS.adjustFlow,
+      label: options.q3CopyEnabled ? '계획 수정' : FLOW_COMMAND_LABELS.adjustFlow,
       role: 'secondary',
     });
   }
@@ -111,10 +112,11 @@ export function buildFlowManagementCommandModel(options: {
 
 export function getStructuralItemCommandLabels(
   ownership: 'source' | 'personal',
+  q3CopyEnabled = false,
 ): { remove: string; restore: string } {
   return ownership === 'source'
     ? {
-        remove: FLOW_COMMAND_LABELS.excludeSourceItem,
+        remove: q3CopyEnabled ? '이 계획에서 제외' : FLOW_COMMAND_LABELS.excludeSourceItem,
         restore: FLOW_COMMAND_LABELS.restoreSourceItem,
       }
     : {

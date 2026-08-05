@@ -68,6 +68,13 @@ test.describe('P35-03 one adjustment kind at a time', () => {
     await capture(page, 'p35-03-adjust-name-390.png');
 
     await page.keyboard.press('Escape');
+    const discardPrompt = panel.getByTestId('flow-editor-discard-prompt');
+    await expect(discardPrompt).toBeVisible();
+    await discardPrompt.getByRole('button', { name: '계속 수정' }).click();
+    await expect(panel).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(discardPrompt).toBeVisible();
+    await discardPrompt.getByRole('button', { name: '변경 버리기' }).click();
     await expect(panel).toHaveCount(0);
     await expect(page.getByTestId('public-flow-adjust-entry-mobile')).toBeFocused();
     await expect(page.locator('[data-flow-identity-slot="title"]')).toHaveText('이사 D-30 준비');
@@ -108,6 +115,9 @@ test.describe('P35-03 one adjustment kind at a time', () => {
     await capture(page, 'p35-03-adjust-anchor-390.png');
 
     await panel.getByTestId('public-flow-adjustment-cancel').click();
+    await panel.getByTestId('flow-editor-discard-prompt')
+      .getByRole('button', { name: '변경 버리기' })
+      .click();
     await expect(page.getByTestId('public-flow-anchor-input')).toHaveValue('2030-09-01');
     await expect(page.getByTestId('flow-artifact-result-summary')).toHaveText(oldSummary ?? '');
     await expect(page.getByTestId('public-flow-adjust-entry-mobile')).toBeFocused();
@@ -129,7 +139,11 @@ test.describe('P35-03 one adjustment kind at a time', () => {
     await page.addInitScript(() => window.localStorage.clear());
     await page.goto('/f/moving-d30-basic');
 
-    const previewEdit = page.getByTestId('public-flow-artifact-preview-row-edit').first();
+    const publicEditEntry = page.getByTestId('public-flow-adjust-entry-mobile');
+    await publicEditEntry.click();
+    const parent = page.getByTestId('public-flow-personal-adjustment');
+    await parent.getByTestId('public-flow-adjustment-kind-items').click();
+    const previewEdit = parent.getByTestId('public-flow-adjustment-item-edit').nth(1);
     const itemId = await previewEdit.getAttribute('data-item-id');
     expect(itemId).toBeTruthy();
     await previewEdit.focus();
@@ -140,7 +154,14 @@ test.describe('P35-03 one adjustment kind at a time', () => {
     await itemEditor.getByTestId('public-flow-item-editor-title-input').fill('적용하면 안 되는 이름');
     await page.goBack();
 
-    const parent = page.getByTestId('public-flow-personal-adjustment');
+    const discardPrompt = itemEditor.getByTestId('flow-editor-discard-prompt');
+    await expect(discardPrompt).toBeVisible();
+    await discardPrompt.getByRole('button', { name: '계속 수정' }).click();
+    await expect(itemEditor).toBeVisible();
+    await page.goBack();
+    await expect(discardPrompt).toBeVisible();
+    await discardPrompt.getByRole('button', { name: '변경 버리기' }).click();
+
     await expect(itemEditor).toHaveCount(0);
     await expect(parent).toBeVisible();
     await expect(parent.locator(
@@ -149,8 +170,8 @@ test.describe('P35-03 one adjustment kind at a time', () => {
 
     await page.goBack();
     await expect(parent).toHaveCount(0);
-    await expect(previewEdit).toBeFocused();
-    await expect(page.getByTestId('public-flow-artifact-preview')).not.toContainText(
+    await expect(publicEditEntry).toBeFocused();
+    await expect(page.getByTestId('public-flow-capability-result')).not.toContainText(
       '적용하면 안 되는 이름',
     );
     await expectNoHorizontalOverflow(page);
@@ -179,27 +200,30 @@ test.describe('P35-03 one adjustment kind at a time', () => {
     await rows.nth(0).getByRole('checkbox').uncheck();
     await rows.nth(1).getByRole('checkbox').uncheck();
     await expect(panel.getByTestId('public-flow-adjustment-result-after')).toContainText('22개');
-    await expect(page.getByTestId('public-flow-artifact-preview').getByRole('heading', { level: 2 }))
-      .toContainText('22개');
+    await expect(page.getByTestId('public-flow-capability-result')).toHaveAttribute(
+      'data-capability-output-count',
+      '22',
+    );
     await capture(page, 'p35-03-adjust-items-1024.png');
 
     await panel.getByTestId('public-flow-adjustment-apply').click();
-    await expect(page.getByTestId('public-flow-save-primary')).toContainText('22개로 시작');
-    await page.getByTestId('public-flow-export-secondary-toggle').click();
-    await expect(page.getByTestId('public-flow-export-branch')).toBeVisible();
-    await expect(page.locator('[role="dialog"]')).toHaveCount(1);
-    await expect(page.getByTestId('my-flow-export-panel')).toHaveAttribute(
-      'data-export-included-count',
+    await expect(page.getByTestId('public-flow-save-primary')).toHaveText('내 계획에 저장');
+    const capability = page.getByTestId('public-flow-capability-result');
+    await expect(capability).toHaveAttribute(
+      'data-capability-output-count',
       '22',
     );
-    await expect(page.getByTestId('public-flow-artifact-preview-row')).toHaveCount(22);
-    const storedOrder = await page.evaluate(({ movedItemId }) => {
+    await capability.getByTestId('flow-capability-artifact-preview-expand').click();
+    await expect(capability.getByTestId('flow-capability-artifact-preview-row')).toHaveCount(22);
+    const legacyStoredOrder = await page.evaluate(({ movedItemId }) => {
       const states = JSON.parse(
         window.localStorage.getItem('flow_builder_mvp_item_state_moving-d30-basic') || '{}',
       ) as Record<string, { personalOrder?: number }>;
       return movedItemId ? states[movedItemId]?.personalOrder : undefined;
     }, { movedItemId: secondItemId });
-    expect(storedOrder).toBe(0);
+    // P0-04 default-on public editing is session-only until the explicit Plan save.
+    // The legacy public item-state key must therefore remain untouched here.
+    expect(legacyStoredOrder).toBeUndefined();
     await expectNoHorizontalOverflow(page);
     expect(errors).toEqual([]);
   });
@@ -231,13 +255,37 @@ test.describe('P35-03 one adjustment kind at a time', () => {
     await capture(page, 'p35-03-adjust-routine-1440.png');
 
     await panel.getByTestId('public-flow-adjustment-apply').click();
-    await expect(page.getByTestId('public-routine-schedule-summary')).toContainText('07:30');
-    await expect(page.getByTestId('flow-artifact-result-summary')).toContainText('07:30');
+    const routineSummary = page.getByTestId('public-routine-schedule-summary');
+    await expect(routineSummary.getByTestId('public-routine-schedule-summary-value'))
+      .toContainText('07:30');
+    await expect(routineSummary.getByTestId('public-routine-schedule-summary-value'))
+      .toContainText('8회');
+    const nextOccurrences = routineSummary
+      .getByTestId('public-routine-schedule-summary-next-occurrences')
+      .getByRole('listitem');
+    await expect(nextOccurrences).toHaveCount(3);
+    for (let index = 0; index < 3; index += 1) {
+      await expect(nextOccurrences.nth(index)).toContainText('07:30');
+    }
     await expect(page.getByTestId('public-flow-adjust-entry')).toBeFocused();
-    await page.getByTestId('public-flow-export-secondary-toggle').click();
-    await expect(page.getByTestId('my-flow-export-calendar-format-notice')).toContainText(
-      '항목별 제목·메모·날짜·포함 여부·순서',
+    const capability = page.getByTestId('public-flow-capability-result');
+    await expect(capability).toHaveAttribute('data-capability-primary-destination', 'checklist');
+    const calendar = capability.locator(
+      '[data-testid="flow-capability-result-choice"][data-capability-destination="calendar"]',
     );
+    await expect(calendar).toHaveAttribute('data-capability-candidate-state', 'available');
+    await expect(calendar).toHaveAttribute('data-capability-candidate-role', 'available');
+    await expect(calendar).toHaveAttribute('data-capability-output-count', '1');
+    expect((await calendar.getAttribute('data-capability-manifest-item-ids'))
+      ?.split(',')
+      .filter(Boolean)).toEqual(['allblanc-morning-run']);
+    await calendar.click();
+    const calendarPreview = capability.getByTestId('flow-capability-selected-preview');
+    await expect(calendarPreview).toHaveAttribute('data-capability-destination', 'calendar');
+    await expect(calendarPreview).toHaveAttribute('data-capability-output-count', '1');
+    await expect(calendarPreview.getByTestId('flow-capability-artifact-preview-row')).toHaveCount(1);
+    await expect(calendarPreview).toContainText('반복 일정');
+    await expect(page.getByTestId('public-flow-export-secondary-entry')).toHaveCount(0);
     await expectNoHorizontalOverflow(page);
     expect(errors).toEqual([]);
   });

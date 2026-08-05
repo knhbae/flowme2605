@@ -117,7 +117,7 @@ test('mobile focused drill-in keeps feedback and the editor above persistent nav
     if ((await readSummary.getAttribute('open')) === null) await readSummary.locator('summary').click();
     await readSummary.getByTestId('my-flow-detail-edit-toggle').click();
   }
-  const editor = page.getByRole('dialog', { name: '할 일 수정' });
+  const editor = page.getByRole('dialog', { name: '수정' });
   await expect(editor).toHaveAttribute('data-editor-layout', 'mobile-full-screen');
   const editorBox = await editor.boundingBox();
   expect(editorBox?.x).toBe(0);
@@ -167,7 +167,7 @@ test('wide workspaces keep the active detail and selected-day agenda inside the 
   expect(browserErrors).toEqual([]);
 });
 
-test('export reports disabled and pending states without changing scope', async ({ page }) => {
+test('legacy savedTransfer=off export reports disabled and pending states without changing scope', async ({ page }) => {
   test.setTimeout(60_000);
   const browserErrors = collectBrowserErrors(page);
   await page.setViewportSize({ width: 390, height: 844 });
@@ -186,11 +186,13 @@ test('export reports disabled and pending states without changing scope', async 
       },
     });
   });
-  await page.goto('/my?view=flows');
+  await page.goto('/my?view=flows&savedTransfer=off');
+  await expect(page.locator('main[data-p35-q1-saved-transfer="off"]')).toBeVisible();
   const flow = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'record');
   const exportSurface = flow.getByTestId('my-flow-export-surface');
   await exportSurface.getByTestId('my-flow-export-entry').click();
   const panel = exportSurface.getByTestId('my-flow-export-panel');
+  await expect(panel).toHaveAttribute('data-saved-transfer-surface', 'legacy');
   const checklist = panel.getByTestId('my-flow-export-checklist');
   await expect(checklist).toHaveAttribute('data-export-state', 'ready');
   await checklist.click();

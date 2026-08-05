@@ -1,7 +1,26 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
+import {
+  EFFECTIVE_FLOW_FORMAT_LOSS_SCHEMA,
+  buildEffectiveFlowProjectionManifest,
+  inspectLegacyFlowCompatibility,
+} from './effective-flow-contract';
+import {
+  P0_CONTRACT_FLOW_BUNDLE,
+  P0_CONTRACT_FLOW_ITEM_IDS,
+  P0_FLOW_MAP_CONTRACT_FIXTURES,
+  P0_LEGACY_SAVED_FLOW_FIXTURES,
+  P0_MATH_FLOW_SLUG,
+  P0_ROLE_RICH_FLOW_BUNDLE,
+  P0_ROLE_RICH_ITEM_IDS,
+} from './effective-flow-contract.fixtures';
 import { buildEffectiveFlowSnapshot } from './effective-flow-snapshot';
+import { buildFlowExportScopePlan } from './export-scope';
+import {
+  buildFlowMapSaveStorageKeyPlan,
+  runFlowMapSaveTransaction,
+} from './flow-map-save-transaction';
 import { setFlowItemPersonalExclusion } from './flow-item-state';
 import { resolvePublicDateIntent } from './public-date-intent';
 import { seedBundles } from './seed-flows';
@@ -568,4 +587,397 @@ test('resolved overlay identities reject non-JSON values', () => {
     }),
     /finite JSON numbers/,
   );
+});
+
+test('P0 contract fixtures classify all-dated, all-undated, and mixed Calendar results without fake dates', () => {
+  const buildFixture = (
+    mode: 'custom' | 'undated',
+    publicItemPersonalizations: Parameters<typeof buildEffectiveFlowSnapshot>[0]['publicItemPersonalizations'] = {},
+  ) => buildEffectiveFlowSnapshot({
+    bundle: P0_CONTRACT_FLOW_BUNDLE,
+    effectiveTitle: P0_CONTRACT_FLOW_BUNDLE.flow.title,
+    dateIntent: resolvePublicDateIntent({
+      anchorType: P0_CONTRACT_FLOW_BUNDLE.flow.anchor_type,
+      mode,
+      customAnchor: mode === 'custom' ? '2030-09-01' : '',
+      exampleAnchor: '',
+    }),
+    publicItemPersonalizations,
+  });
+
+  const dated = buildFixture('custom');
+  const datedCalendar = buildEffectiveFlowProjectionManifest({
+    snapshot: dated,
+    consumer: 'public_preview',
+    destination: 'calendar',
+    snapshotKind: 'effective_authoring',
+  });
+  assert.deepEqual(datedCalendar.eligibleItemIds, [...P0_CONTRACT_FLOW_ITEM_IDS]);
+  assert.deepEqual(datedCalendar.heldItemIds, []);
+  assert.equal(datedCalendar.counts.output, 3);
+  assert.equal(datedCalendar.availability, 'available');
+
+  const undated = buildFixture('undated');
+  const undatedCalendar = buildEffectiveFlowProjectionManifest({
+    snapshot: undated,
+    consumer: 'public_preview',
+    destination: 'calendar',
+    snapshotKind: 'effective_authoring',
+  });
+  assert.deepEqual(undatedCalendar.eligibleItemIds, []);
+  assert.deepEqual(undatedCalendar.heldItemIds, [...P0_CONTRACT_FLOW_ITEM_IDS]);
+  assert.equal(undatedCalendar.counts.output, 0);
+  assert.equal(undatedCalendar.availability, 'conditional');
+  assert.ok(undated.committed.rows.every((row) => row.schedule.date === undefined));
+
+  const mixed = buildFixture('undated', {
+    'p0-contract-item-a': { date: '2030-09-05' },
+  });
+  const mixedCalendar = buildEffectiveFlowProjectionManifest({
+    snapshot: mixed,
+    consumer: 'public_preview',
+    destination: 'calendar',
+    snapshotKind: 'effective_authoring',
+  });
+  assert.deepEqual(mixedCalendar.eligibleItemIds, ['p0-contract-item-a']);
+  assert.deepEqual(mixedCalendar.heldItemIds, [
+    'p0-contract-item-b',
+    'p0-contract-item-c',
+  ]);
+  assert.equal(mixedCalendar.counts.output, 1);
+  assert.equal(mixedCalendar.availability, 'conditional');
+});
+
+test('P0 loss schema covers preserved, transformed, omitted, held, and unavailable outcomes', () => {
+  const treatments = new Set(
+    Object.values(EFFECTIVE_FLOW_FORMAT_LOSS_SCHEMA)
+      .flat()
+      .map((rule) => rule.treatment),
+  );
+  assert.deepEqual([...treatments].sort(), [
+    'held',
+    'omitted',
+    'preserved',
+    'transformed',
+    'unavailable',
+  ]);
+
+  const checklistCompletion = EFFECTIVE_FLOW_FORMAT_LOSS_SCHEMA.checklist.find(
+    (rule) => rule.field === 'completion_criterion' && rule.channel === 'payload',
+  );
+  assert.equal(checklistCompletion?.treatment, 'preserved');
+  const calendarMissingDate = EFFECTIVE_FLOW_FORMAT_LOSS_SCHEMA.calendar.find(
+    (rule) => rule.field === 'schedule_date' && rule.condition === 'when_missing',
+  );
+  assert.equal(calendarMissingDate?.treatment, 'held');
+  assert.match(calendarMissingDate?.reason ?? '', /가짜 VEVENT/);
+});
+
+test('role-rich fixture exposes eligible, held, and unavailable IDs from one snapshot instead of count-only claims', () => {
+  const snapshot = buildEffectiveFlowSnapshot({
+    bundle: P0_ROLE_RICH_FLOW_BUNDLE,
+    effectiveTitle: P0_ROLE_RICH_FLOW_BUNDLE.flow.title,
+    dateIntent: resolvePublicDateIntent({
+      anchorType: P0_ROLE_RICH_FLOW_BUNDLE.flow.anchor_type,
+      mode: 'custom',
+      customAnchor: '2030-09-01',
+      exampleAnchor: '',
+    }),
+    publicItemPersonalizations: {
+      'p0-rich-action': { memo: '개인 메모는 완료 기준과 별도입니다.' },
+    },
+  });
+  const calendar = buildEffectiveFlowProjectionManifest({
+    snapshot,
+    consumer: 'export_preview',
+    destination: 'calendar',
+  });
+  const checklist = buildEffectiveFlowProjectionManifest({
+    snapshot,
+    consumer: 'export_preview',
+    destination: 'checklist',
+  });
+  const memo = buildEffectiveFlowProjectionManifest({
+    snapshot,
+    consumer: 'export_preview',
+    destination: 'memo',
+  });
+
+  assert.deepEqual(calendar.eligibleItemIds, ['p0-rich-action']);
+  assert.deepEqual(calendar.unavailableItemIds, [
+    'p0-rich-warning',
+    'p0-rich-resource',
+  ]);
+  assert.deepEqual(checklist.eligibleItemIds, ['p0-rich-action']);
+  assert.deepEqual(checklist.unavailableItemIds, [
+    'p0-rich-warning',
+    'p0-rich-resource',
+  ]);
+  assert.deepEqual(memo.eligibleItemIds, [...P0_ROLE_RICH_ITEM_IDS]);
+  assert.equal(memo.counts.output, 3);
+  assert.ok(Object.keys(calendar.reasonsByItemId).length === 2);
+});
+
+test('public preview, saved detail, and export consumers keep the same stable Item IDs and scope count', () => {
+  const publicSnapshot = buildEffectiveFlowSnapshot({
+    bundle: P0_CONTRACT_FLOW_BUNDLE,
+    effectiveTitle: '개인화한 P0 계획',
+    dateIntent: resolvePublicDateIntent({
+      anchorType: P0_CONTRACT_FLOW_BUNDLE.flow.anchor_type,
+      mode: 'custom',
+      customAnchor: '2030-09-01',
+      exampleAnchor: '',
+    }),
+    publicItemPersonalizations: {
+      'p0-contract-item-a': {
+        title: '개인화 계약 항목 A',
+        detail: '개인 메모 A',
+        date: '2030-09-05',
+      },
+    },
+  });
+  const savedSnapshot = buildEffectiveFlowSnapshot({
+    bundle: P0_CONTRACT_FLOW_BUNDLE,
+    effectiveTitle: publicSnapshot.effectiveTitle,
+    dateIntent: publicSnapshot.dateIntent,
+    personalLayerState: 'persisted',
+    resolvedRows: {
+      included: publicSnapshot.committed.rows,
+      excluded: publicSnapshot.committed.excludedRows,
+      selectedArtifactMode: publicSnapshot.committed.selectedArtifactMode,
+      personalOverlayIdentity: { fixture: 'p0-consumer-parity' },
+    },
+  });
+  const scope = { kind: 'selected' as const, itemIds: [
+    'p0-contract-item-c',
+    'p0-contract-item-a',
+  ] };
+  const publicManifest = buildEffectiveFlowProjectionManifest({
+    snapshot: publicSnapshot,
+    consumer: 'public_preview',
+    destination: 'checklist',
+    scope,
+    snapshotKind: 'effective_authoring',
+  });
+  const savedManifest = buildEffectiveFlowProjectionManifest({
+    snapshot: savedSnapshot,
+    consumer: 'saved_detail',
+    destination: 'checklist',
+    scope,
+  });
+  const exportManifest = buildEffectiveFlowProjectionManifest({
+    snapshot: savedSnapshot,
+    consumer: 'export_artifact',
+    destination: 'checklist',
+    scope,
+  });
+  const exportScope = buildFlowExportScopePlan({
+    scope: 'selected',
+    items: savedSnapshot.committed.rows.map((row) => ({
+      key: row.id,
+      title: row.title,
+      calendarEligible: Boolean(row.schedule.date),
+      listEligible: row.eligibleShapes.includes('checklist'),
+    })),
+    selectedKeys: scope.itemIds,
+    flowTitle: savedSnapshot.effectiveTitle,
+  });
+
+  const expectedIds = ['p0-contract-item-a', 'p0-contract-item-c'];
+  assert.deepEqual(publicManifest.requestedItemIds, expectedIds);
+  assert.deepEqual(savedManifest.requestedItemIds, expectedIds);
+  assert.deepEqual(exportManifest.requestedItemIds, expectedIds);
+  assert.deepEqual(exportScope.itemsByDestination.checklist.map((item) => item.key), expectedIds);
+  assert.equal(publicManifest.counts.output, 2);
+  assert.equal(savedManifest.counts.output, 2);
+  assert.equal(exportManifest.counts.output, 2);
+  assert.equal(exportScope.countByDestination.checklist, 2);
+  assert.notEqual(publicManifest.snapshotHash, savedManifest.snapshotHash);
+  assert.equal(savedManifest.snapshotHash, exportManifest.snapshotHash);
+});
+
+test('Map 7-of-8 fixture reproduces the legacy mismatch and fixes the expected consumer contract at seven IDs', () => {
+  const mapBundle = bySlug(P0_MATH_FLOW_SLUG);
+  const sourceSnapshot = buildEffectiveFlowSnapshot({
+    bundle: mapBundle,
+    effectiveTitle: mapBundle.flow.title,
+    dateIntent: dateIntent(mapBundle, 'undated'),
+  });
+  const fixture = P0_FLOW_MAP_CONTRACT_FIXTURES.sevenOfEight;
+  const selectedRawIds = fixture.selectedItemIds.map((key) => key.split('::')[1]!);
+  const selectedRows = sourceSnapshot.committed.rows.filter((row) => selectedRawIds.includes(row.id));
+  const excludedRows = sourceSnapshot.committed.rows
+    .filter((row) => !selectedRawIds.includes(row.id))
+    .map((row) => ({ ...row, included: false }));
+  const appliedSnapshot = buildEffectiveFlowSnapshot({
+    bundle: mapBundle,
+    effectiveTitle: '시험 전 핵심 단원',
+    dateIntent: dateIntent(mapBundle, 'undated'),
+    personalLayerState: 'persisted',
+    resolvedRows: {
+      included: selectedRows,
+      excluded: excludedRows,
+      selectedArtifactMode: 'sheet',
+      personalOverlayIdentity: { selectedCanonicalKeys: fixture.selectedItemIds },
+    },
+  });
+  const toMapKeys = (ids: string[]) => ids.map((id) => `${P0_MATH_FLOW_SLUG}::${id}`);
+  const preview = buildEffectiveFlowProjectionManifest({
+    snapshot: appliedSnapshot,
+    consumer: 'flow_map_preview',
+    destination: 'sheet',
+  });
+  const saved = buildEffectiveFlowProjectionManifest({
+    snapshot: appliedSnapshot,
+    consumer: 'flow_map_save',
+    destination: 'sheet',
+  });
+  const exported = buildEffectiveFlowProjectionManifest({
+    snapshot: appliedSnapshot,
+    consumer: 'export_artifact',
+    destination: 'sheet',
+  });
+
+  assert.equal(sourceSnapshot.committed.rows.length, 8);
+  assert.equal(fixture.legacyPreviewItemIds.length, 8);
+  assert.equal(fixture.selectedItemIds.length, 7);
+  assert.notDeepEqual(fixture.legacyPreviewItemIds, fixture.expectedPreviewItemIds);
+  assert.deepEqual(toMapKeys(preview.eligibleItemIds), [...fixture.expectedPreviewItemIds]);
+  assert.deepEqual(toMapKeys(saved.eligibleItemIds), [...fixture.savedItemIds]);
+  assert.deepEqual(toMapKeys(exported.eligibleItemIds), [...fixture.exportItemIds]);
+  assert.equal(preview.counts.output, 7);
+  assert.equal(saved.counts.output, 7);
+  assert.equal(exported.counts.output, 7);
+});
+
+test('memo-first and repeated routine fixtures expose honest natural and transformed results', () => {
+  const memoBundle = bySlug('job-change-risk-check');
+  const memoSnapshot = buildEffectiveFlowSnapshot({
+    bundle: memoBundle,
+    effectiveTitle: memoBundle.flow.title,
+    dateIntent: dateIntent(memoBundle, 'undated'),
+  });
+  const memoManifest = buildEffectiveFlowProjectionManifest({
+    snapshot: memoSnapshot,
+    consumer: 'public_preview',
+    destination: 'memo',
+    snapshotKind: 'effective_authoring',
+  });
+  assert.equal(memoSnapshot.committed.selectedShape, 'memo');
+  assert.equal(memoManifest.counts.output, memoSnapshot.committed.rows.length);
+
+  const routineBundle = bySlug('washer-tub-clean-monthly');
+  const routineSnapshot = buildEffectiveFlowSnapshot({
+    bundle: routineBundle,
+    effectiveTitle: routineBundle.flow.title,
+    dateIntent: dateIntent(routineBundle, 'custom', '2030-09-01'),
+  });
+  const routineCalendar = buildEffectiveFlowProjectionManifest({
+    snapshot: routineSnapshot,
+    consumer: 'export_preview',
+    destination: 'calendar',
+  });
+  assert.ok(routineCalendar.eligibleItemIds.length > 0);
+  assert.equal(routineCalendar.counts.output, 1);
+  assert.equal(routineSnapshot.committed.exportPlan.formats.calendar.outputCount, 1);
+});
+
+test('legacy and missing-base fixtures are classified without rewriting raw storage bytes', () => {
+  for (const fixture of Object.values(P0_LEGACY_SAVED_FLOW_FIXTURES)) {
+    const rawBefore = fixture.raw;
+    const inspection = inspectLegacyFlowCompatibility({
+      storageKey: fixture.storageKey,
+      raw: fixture.raw,
+      baseId: fixture.baseFlowSlug,
+      baseExists: fixture.baseExists,
+    });
+    assert.equal(inspection.state, fixture.expectedState, fixture.storageKey);
+    assert.equal(inspection.raw, rawBefore, fixture.storageKey);
+    assert.equal(inspection.rawPreserved, true, fixture.storageKey);
+    assert.equal(fixture.raw, rawBefore, fixture.storageKey);
+  }
+});
+
+class P002MemoryStorage {
+  private readonly values = new Map<string, string>();
+  private failKey: string | undefined;
+  private failed = false;
+
+  getItem(key: string): string | null {
+    return this.values.get(key) ?? null;
+  }
+
+  setItem(key: string, value: string): void {
+    if (this.failKey === key && !this.failed) {
+      this.failed = true;
+      const error = new Error('simulated storage quota failure');
+      error.name = 'QuotaExceededError';
+      throw error;
+    }
+    this.values.set(key, value);
+  }
+
+  removeItem(key: string): void {
+    this.values.delete(key);
+  }
+
+  failOnceOn(key: string): void {
+    this.failKey = key;
+    this.failed = false;
+  }
+
+  allowWrites(): void {
+    this.failKey = undefined;
+    this.failed = false;
+  }
+}
+
+test('P0-02 Flow Map save transaction restores exact raw values after a partial write and can retry', () => {
+  const storage = new P002MemoryStorage();
+  const plan = buildFlowMapSaveStorageKeyPlan({
+    mapId: 'middle-school-math-1',
+    flowSlugs: ['child-b', 'child-a', 'child-a'],
+  });
+  assert.deepEqual(plan.flowSlugs, ['child-a', 'child-b']);
+  assert.ok(plan.allKeys.includes('flow:map:saved:middle-school-math-1'));
+  assert.ok(plan.allKeys.includes('flow:map:persistence:middle-school-math-1'));
+  assert.ok(plan.allKeys.includes('flow:saved:child-a'));
+  assert.ok(plan.allKeys.includes('flow_builder_mvp_item_state_child-b'));
+  assert.ok(plan.allKeys.includes('flow:canonical:origin:v1'));
+  assert.ok(plan.allKeys.includes('flow:meta:last-visit'));
+
+  storage.setItem(plan.canonicalOriginKey, '{"old":"canonical"}');
+  storage.setItem(plan.lastVisitKey, 'old-visit');
+  storage.setItem(plan.savedFlowKeysBySlug['child-a']!, '{"old":"flow-a"}');
+  const before = Object.fromEntries(plan.allKeys.map((key) => [key, storage.getItem(key)]));
+  storage.failOnceOn(plan.mapPersistenceKey);
+  const failed = runFlowMapSaveTransaction({
+    storage,
+    keys: plan.allKeys,
+    apply: () => {
+      storage.setItem(plan.savedFlowKeysBySlug['child-a']!, '{"new":"flow-a"}');
+      storage.setItem(plan.mapSnapshotKey, '{"new":"snapshot"}');
+      storage.setItem(plan.mapPersistenceKey, '{"new":"persistence"}');
+    },
+  });
+  assert.equal(failed.ok, false);
+  assert.equal(failed.rollbackComplete, true);
+  assert.deepEqual(
+    Object.fromEntries(plan.allKeys.map((key) => [key, storage.getItem(key)])),
+    before,
+  );
+
+  storage.allowWrites();
+  const retried = runFlowMapSaveTransaction({
+    storage,
+    keys: plan.allKeys,
+    apply: () => {
+      storage.setItem(plan.savedFlowKeysBySlug['child-a']!, '{"new":"flow-a"}');
+      storage.setItem(plan.mapSnapshotKey, '{"new":"snapshot"}');
+      storage.setItem(plan.mapPersistenceKey, '{"new":"persistence"}');
+    },
+  });
+  assert.equal(retried.ok, true);
+  assert.equal(storage.getItem(plan.mapSnapshotKey), '{"new":"snapshot"}');
+  assert.equal(storage.getItem(plan.mapPersistenceKey), '{"new":"persistence"}');
 });

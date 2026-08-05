@@ -105,15 +105,27 @@ test.describe('P35-R10 shape honesty and export simplification', () => {
     });
     await page.goto('/my?view=flows&flow=moving-d30-basic');
     const workspace = await openMyFlowLibraryFlow(page, 'moving-d30-basic');
-    await workspace.getByTestId('my-flow-export-entry').click();
+    const transferEntry = workspace.getByTestId('my-flow-export-entry');
+    await expect(transferEntry).toHaveAttribute('data-action-role', 'transfer-to-own-tool');
+    await transferEntry.click();
     const panel = workspace.getByTestId('my-flow-export-panel');
     const summary = panel.getByTestId('my-flow-export-preflight');
+    const capability = panel.getByTestId('my-flow-capability-result');
+
+    await expect(capability).toHaveAttribute('data-capability-lifecycle', 'saved_detail');
+    await expect(capability).toHaveAttribute('data-capability-snapshot-kind', 'effective_execution');
+    await expect(capability).toHaveAttribute('data-capability-primary-action', 'execute-saved-result');
+    await expect(capability).toHaveAttribute(
+      'data-capability-secondary-actions',
+      'edit-saved-plan,transfer-to-own-tool',
+    );
+    await expect(capability.locator('[data-action-role="create-quick-local-result"]')).toHaveCount(0);
 
     await expect(summary).toHaveAttribute(
       'data-p35-r10-marker',
       'P35-R10-EXPORT-SUMMARY-ONE-OWNER',
     );
-    await expect(panel.getByTestId('my-flow-export-scope-summary')).toHaveText('Flow 전체 · 24개');
+    await expect(panel.getByTestId('my-flow-export-scope-summary')).toHaveText('계획 전체 · 24개');
     await expect(panel.getByTestId('my-flow-export-scope-flow').locator('.sr-only')).toHaveCount(1);
     await expect(panel.getByTestId('my-flow-export-scope-selected').locator('.sr-only')).toHaveCount(1);
     const primary = panel.locator('[data-action-priority="primary"][data-recommendation-visible="true"]');
@@ -140,7 +152,7 @@ test.describe('P35-R10 shape honesty and export simplification', () => {
   test('large library filters only by lifecycle state', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/my?demo=ux20&view=flows');
-    const filter = page.getByRole('group', { name: '저장한 Flow 상태 필터' });
+    const filter = page.getByRole('group', { name: '저장한 계획 상태 필터' });
     await expect(filter).toHaveAttribute(
       'data-p35-r10-marker',
       'P35-R10-LIBRARY-FILTER-ONE-AXIS',
@@ -149,7 +161,7 @@ test.describe('P35-R10 shape honesty and export simplification', () => {
     await expect(filter.getByRole('button', { name: '루틴' })).toHaveCount(0);
     await expect(filter.getByRole('button', { name: '전체' })).toBeVisible();
     await expect(filter.getByRole('button', { name: '진행 중' })).toBeVisible();
-    await expect(filter.getByRole('button', { name: '완료' })).toBeVisible();
+    await expect(filter.getByRole('button', { name: '마친 계획' })).toBeVisible();
     await expect(filter.getByRole('button', { name: '보관됨' })).toBeVisible();
     await expect(page.locator('main')).not.toContainText(/source-backed|RRULE|\bStep\b|\bItem\b|내 버전/u);
     await capture(page, 'p35-r10-library-lifecycle-filter-390.png', filter);

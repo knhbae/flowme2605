@@ -23,7 +23,7 @@ const scenarios: RowScenario[] = [
   {
     id: 'calendar',
     slug: 'moving-d30-basic',
-    publicShape: 'calendar',
+    publicShape: 'checklist',
     savedMode: 'calendar',
     executable: true,
     anchor: '2030-09-01',
@@ -38,7 +38,7 @@ const scenarios: RowScenario[] = [
   {
     id: 'routine',
     slug: 'curated-allblanc-morning-workout',
-    publicShape: 'flow_execution',
+    publicShape: 'checklist',
     savedMode: 'calendar',
     executable: true,
   },
@@ -109,10 +109,30 @@ test.describe('P35-R9 shared execution row grammar', () => {
       await page.evaluate(() => window.localStorage.clear());
       await page.reload();
 
-      const preview = page.getByTestId('public-flow-artifact-preview');
+      const capability = page.getByTestId('public-flow-capability-result');
+      await expect(capability).toBeVisible();
+      await expect(capability).toHaveAttribute('data-capability-lifecycle', 'public_preview');
+      await expect(capability).toHaveAttribute(
+        'data-capability-snapshot-kind',
+        'effective_authoring',
+      );
+      await expect(capability.locator(
+        '[data-testid="flow-capability-result-choice"]'
+          + '[data-capability-candidate-role="primary"]',
+      )).toHaveCount(1);
+      const selectedPreview = capability.getByTestId('flow-capability-selected-preview');
+      const preview = selectedPreview.getByTestId('flow-capability-artifact-preview');
       await expect(preview).toHaveAttribute('data-selected-shape', scenario.publicShape);
-      const publicRows = preview.getByTestId('public-flow-artifact-preview-row');
+      const publicRows = preview.getByTestId('flow-capability-artifact-preview-row');
       expect(await publicRows.count()).toBeGreaterThan(0);
+      const manifestIds = (
+        (await selectedPreview.getAttribute('data-capability-manifest-item-ids')) ?? ''
+      ).split(',').filter(Boolean);
+      expect(manifestIds.length).toBeGreaterThan(0);
+      await expect(selectedPreview).toHaveAttribute(
+        'data-capability-output-count',
+        String(manifestIds.length),
+      );
       const firstPublicRow = publicRows.first();
       await expect(firstPublicRow).toHaveAttribute(
         'data-p35-r9-marker',

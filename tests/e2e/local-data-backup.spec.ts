@@ -1,6 +1,56 @@
 import { readFile } from 'node:fs/promises';
 import { expect, test, type Page } from '@playwright/test';
 
+const RECEIPT_STORAGE_KEY = 'flow:export-receipts:v1';
+const RECEIPT_REGISTRY_RAW = JSON.stringify({
+  schemaVersion: 1,
+  receipts: [{
+    schemaVersion: 1,
+    kind: 'persistent_receipt',
+    receiptId: 'p0-09-backup-receipt',
+    requestId: 'p0-09-backup-receipt',
+    route: 'saved_transfer',
+    savedPlanId: 'moving-d30-basic',
+    outcome: 'success',
+    createdAt: '2026-07-11T09:00:00.000Z',
+    completedAt: '2026-07-11T09:00:01.000Z',
+    snapshot: {
+      kind: 'effective_execution',
+      version: 'p0-09-backup-v1',
+      hash: 'p0-09-backup-hash',
+      identity: {
+        flowId: 'moving-d30-basic',
+        flowSlug: 'moving-d30-basic',
+        sourceVersion: 'source-v1',
+        personalVersion: 'personal-v1',
+        executionVersion: 'execution-v1',
+      },
+    },
+    scope: { kind: 'flow' },
+    format: 'memo',
+    artifactKind: 'portable_memo',
+    itemIds: ['moving-item-1'],
+    itemCount: 1,
+    projectionOutputCount: 1,
+    outputCount: 1,
+    omitted: {
+      heldItemIds: [],
+      unavailableItemIds: [],
+      excludedItemIds: [],
+      reasonsByItemId: {},
+    },
+    oneWay: true,
+    duplicateRisk: true,
+    artifact: {
+      target: 'clipboard',
+      mediaType: 'text/plain;charset=utf-8',
+      payloadHash: 'p0-09-payload-hash',
+      payloadByteLength: 10,
+      outputCount: 1,
+    },
+  }],
+});
+
 async function openDataManager(page: Page) {
   const auxiliaryMenu = page.getByTestId('my-flow-auxiliary-menu');
   await expect(auxiliaryMenu).toBeVisible();
@@ -12,7 +62,7 @@ async function openDataManager(page: Page) {
 
 test('My Flow downloads a versioned backup without internal browser state', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.addInitScript(() => {
+  await page.addInitScript(({ receiptStorageKey, receiptRegistryRaw }) => {
     window.localStorage.clear();
     window.localStorage.setItem('flow:saved:moving-d30-basic', JSON.stringify({
       slug: 'moving-d30-basic',
@@ -24,6 +74,10 @@ test('My Flow downloads a versioned backup without internal browser state', asyn
     window.localStorage.setItem('flow_builder_mvp_checks_moving-d30-basic', JSON.stringify({ 'moving-estimate': true }));
     window.localStorage.setItem('flow:auth:demo-user', 'true');
     window.localStorage.setItem('flow:map:update:dismissed', JSON.stringify({ moving: true }));
+    window.localStorage.setItem(receiptStorageKey, receiptRegistryRaw);
+  }, {
+    receiptStorageKey: RECEIPT_STORAGE_KEY,
+    receiptRegistryRaw: RECEIPT_REGISTRY_RAW,
   });
 
   await page.goto('/my');
@@ -50,6 +104,7 @@ test('My Flow downloads a versioned backup without internal browser state', asyn
   expect(backup.summary.savedFlowRecordCount).toBe(1);
   expect(backup.entries['flow:saved:moving-d30-basic']).toBeTruthy();
   expect(backup.entries['flow:moving-d30-basic:anchorDate']).toBeTruthy();
+  expect(backup.entries[RECEIPT_STORAGE_KEY]).toBe(RECEIPT_REGISTRY_RAW);
   expect(backup.entries['flow:auth:demo-user']).toBeUndefined();
   expect(backup.entries['flow:map:update:dismissed']).toBeUndefined();
 });
@@ -80,6 +135,7 @@ test('an empty My Flow can restore a backup while preserving unrelated browser s
       }),
       'flow:moving-d30-basic:anchorDate': JSON.stringify({ mode: 'custom', anchor: '2026-08-15' }),
       'flow_builder_mvp_checks_moving-d30-basic': JSON.stringify({ 'moving-estimate': true }),
+      [RECEIPT_STORAGE_KEY]: RECEIPT_REGISTRY_RAW,
     },
   };
   await page.getByTestId('my-flow-backup-file-input').setInputFiles({
@@ -99,6 +155,8 @@ test('an empty My Flow can restore a backup while preserving unrelated browser s
   await expect(page.getByTestId('my-flow-workspace')).toBeVisible();
   expect(await page.evaluate(() => window.localStorage.getItem('flow:auth:demo-user'))).toBe('true');
   expect(await page.evaluate(() => window.localStorage.getItem('flow:saved:moving-d30-basic'))).toBeTruthy();
+  expect(await page.evaluate((key) => window.localStorage.getItem(key), RECEIPT_STORAGE_KEY))
+    .toBe(RECEIPT_REGISTRY_RAW);
 });
 
 test('My Flow data management remains reachable without overflow on wide screens', async ({ page }) => {

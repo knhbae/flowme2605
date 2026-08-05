@@ -8,6 +8,7 @@ import {
   getOpenMyFlowItemDetail,
   openMyFlowLibraryFlow,
 } from './helpers/my-flow-library';
+import { savePublicFlow } from './helpers/public-flow-save';
 
 const evidenceRoot = process.env.FLOWME_P35_R4_EVIDENCE_DIR;
 
@@ -246,7 +247,7 @@ test.describe('P35-R4 shape-aware My Flow workspace', () => {
     expect(errors).toEqual([]);
   });
 
-  test('open routine receipt and export distinguish one series from rendered occurrences', async ({ page }) => {
+  test('open routine selected plan and export distinguish one series from rendered occurrences', async ({ page }) => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/f/curated-allblanc-morning-workout');
@@ -256,21 +257,14 @@ test.describe('P35-R4 shape-aware My Flow workspace', () => {
     const routineSummary = page.getByTestId('public-routine-schedule-summary');
     await routineSummary.getByTestId('public-routine-schedule-summary-toggle').click();
     await page.getByTestId('public-routine-schedule-editor-end-mode').selectOption('none');
-    await page.getByTestId('public-flow-save-primary-mobile').click();
-
-    const receipt = page.getByTestId('public-flow-saved-receipt');
-    await expect(receipt).toHaveAttribute(
-      'data-p35-r8-marker',
-      'P35-R8A-SERIES-OCCURRENCE-COUNT',
-    );
-    await expect(receipt).toContainText('반복 계획 1개를 저장했어요');
-    await expect(receipt).toContainText('계속 반복');
-    await receipt.getByTestId('public-flow-saved-receipt-primary').click();
+    const saveBanner = await savePublicFlow(page, page.getByTestId('public-flow-save-primary-mobile'));
+    await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toContainText('저장됨');
 
     const workspace = await openMyFlowLibraryFlow(
       page,
       'curated-allblanc-morning-workout',
     );
+    await expect(workspace).toContainText('계속 반복');
     const exportSurface = workspace.getByTestId('my-flow-export-surface');
     await exportSurface.getByTestId('my-flow-export-entry').click();
     const calendarSummary = exportSurface.getByTestId('my-flow-export-calendar-summary');

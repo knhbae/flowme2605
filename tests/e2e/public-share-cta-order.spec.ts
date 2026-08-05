@@ -25,8 +25,7 @@ const CLOSED_REVIEW_FLOW_ROUTES = [
   '/f/real-fitvely-video-body-fat-6kg-method',
 ];
 
-const PUBLIC_START_ACTION_PATTERN =
-  /그대로 시작|날짜 없이 시작|이 날짜로 시작|(?:이사일|시작일) 정하고 캘린더로 시작|(?:Flow 실행|실행표|캘린더(?: 일정)?|체크리스트|메모|시트) \d+(?:개|행)로 시작/;
+const PUBLIC_PRIMARY_ACTION_PATTERN = /내 계획에 저장|(?:이사일|시작일) 정하기/;
 
 async function collectVisibleMobileStickyPrimaryEntries(page: Page) {
   return page.evaluate<StickyPrimaryEntry[]>(() => {
@@ -71,19 +70,19 @@ async function collectVisibleMobileStickyPrimaryEntries(page: Page) {
 }
 
 type PublicFlowUnitHierarchy = {
-  exportSecondaryEntryCount: number;
-  exportFormatOptionCount: number;
+  capabilityResultCount: number;
+  capabilityPrimaryCount: number;
+  capabilityImmediateAvailableCount: number;
+  capabilitySelectedPreviewCount: number;
+  capabilitySelectedOutputCount: number;
+  capabilitySelectedItemIds: string[];
   itemLevelExportLikeLabelCount: number;
   preSaveCheckboxCount: number;
   preSaveCheckboxCompletionLikeLabelCount: number;
   preSaveCheckboxPreviewLabelCount: number;
-  preSaveItemCheckboxPreviewCount: number;
   preSavePreviewControlCount: number;
   preSavePreviewRowCount: number;
-  includedItemMarkerCount: number;
-  heroArtifactPreviewCount: number;
   artifactRepresentationCount: number;
-  exportSecondaryEntryLabels: string[];
   itemLevelExportLikeLabels: string[];
   preSaveCheckboxLabels: string[];
 };
@@ -98,37 +97,51 @@ async function collectPublicFlowUnitHierarchy(page: Page) {
     const visibleText = (element: Element) => (element.textContent ?? '').replace(/\s+/g, ' ').trim();
     const exportLikePattern = /(받기|복사|파일|시트|캘린더|문서|내보내기|가져가기|옮기기)/;
 
-    const secondaryEntries = Array.from(document.querySelectorAll('[data-testid="public-flow-export-secondary-entry"]'))
+    const capabilityResults = Array.from(document.querySelectorAll('[data-testid="public-flow-capability-result"]'))
       .filter(isVisible);
-    const formatOptions = Array.from(document.querySelectorAll('[data-testid="public-flow-export-format-option"]'))
-      .filter(isVisible);
+    const capabilityPrimary = Array.from(document.querySelectorAll(
+      '[data-testid="flow-capability-result-choice"][data-capability-candidate-role="primary"]',
+    )).filter(isVisible);
+    const capabilityImmediateAvailable = Array.from(document.querySelectorAll(
+      '[data-testid="flow-capability-result-choice"]'
+        + '[data-capability-candidate-role="available"]'
+        + '[data-capability-immediate="true"]',
+    )).filter(isVisible);
+    const capabilitySelectedPreviews = Array.from(document.querySelectorAll(
+      '[data-testid="flow-capability-selected-preview"]',
+    )).filter(isVisible);
+    const selectedPreview = capabilitySelectedPreviews[0];
     const itemLevelExportLikeLabels = Array.from(document.querySelectorAll('[data-testid^="mobile-artifact-export-"]'))
       .filter(isVisible)
       .map(visibleText)
       .filter((label) => exportLikePattern.test(label));
-    const previewCheckboxes = Array.from(document.querySelectorAll('[data-testid="artifact-list-card"] input[type="checkbox"]'))
-      .filter(isVisible);
     const publicPreSaveCheckboxes = Array.from(document.querySelectorAll('[aria-label="Flow artifact workbench"] input[type="checkbox"]'))
       .filter(isVisible);
     const publicPreSaveCheckboxLabels = publicPreSaveCheckboxes
       .map((element) => element.getAttribute('aria-label') ?? '')
       .filter(Boolean);
-    const includedItemMarkers = Array.from(document.querySelectorAll('[data-testid="public-flow-included-item-marker"]'))
+    const capabilityArtifactPreviews = Array.from(document.querySelectorAll('[data-testid="flow-capability-artifact-preview"]'))
       .filter(isVisible);
-    const heroArtifactPreviews = Array.from(document.querySelectorAll('[data-testid="public-flow-artifact-preview"]'))
-      .filter(isVisible);
-    const heroArtifactPreviewRows = Array.from(document.querySelectorAll('[data-testid="public-flow-artifact-preview-row"]'))
+    const capabilityArtifactPreviewRows = Array.from(document.querySelectorAll('[data-testid="flow-capability-artifact-preview-row"]'))
       .filter(isVisible);
     const completionLikeCheckboxLabelPattern =
       /(완료|완료 체크|완료 취소|실행판 체크|회차 완료|이유식 완료|관리일 완료|관리 체크|전체 보기 체크|선택 일정 체크|단계 체크)/u;
     const previewCheckboxLabelPattern = /(미리보기|저장 전|선택|포함 표시|확인 표시)/u;
     const previewControls = Array.from(document.querySelectorAll('[aria-label="Flow artifact workbench"] input, [aria-label="Flow artifact workbench"] textarea, [aria-label="Flow artifact workbench"] select, [aria-label="Flow artifact workbench"] button'))
       .filter(isVisible)
-      .filter((element) => !element.closest('[data-testid="public-flow-export-secondary-entry"]'));
+      .filter((element) => !element.closest('[data-testid="public-flow-capability-result"]'));
 
     return {
-      exportSecondaryEntryCount: secondaryEntries.length,
-      exportFormatOptionCount: formatOptions.length,
+      capabilityResultCount: capabilityResults.length,
+      capabilityPrimaryCount: capabilityPrimary.length,
+      capabilityImmediateAvailableCount: capabilityImmediateAvailable.length,
+      capabilitySelectedPreviewCount: capabilitySelectedPreviews.length,
+      capabilitySelectedOutputCount: Number(
+        selectedPreview?.getAttribute('data-capability-output-count') ?? '0',
+      ),
+      capabilitySelectedItemIds: (
+        selectedPreview?.getAttribute('data-capability-manifest-item-ids') ?? ''
+      ).split(',').filter(Boolean),
       itemLevelExportLikeLabelCount: itemLevelExportLikeLabels.length,
       preSaveCheckboxCount: publicPreSaveCheckboxes.length,
       preSaveCheckboxCompletionLikeLabelCount: publicPreSaveCheckboxLabels
@@ -137,13 +150,9 @@ async function collectPublicFlowUnitHierarchy(page: Page) {
       preSaveCheckboxPreviewLabelCount: publicPreSaveCheckboxLabels
         .filter((label) => previewCheckboxLabelPattern.test(label))
         .length,
-      preSaveItemCheckboxPreviewCount: previewCheckboxes.length,
       preSavePreviewControlCount: previewControls.length,
-      preSavePreviewRowCount: heroArtifactPreviewRows.length,
-      includedItemMarkerCount: includedItemMarkers.length,
-      heroArtifactPreviewCount: heroArtifactPreviews.length,
-      artifactRepresentationCount: heroArtifactPreviews.length,
-      exportSecondaryEntryLabels: secondaryEntries.map(visibleText),
+      preSavePreviewRowCount: capabilityArtifactPreviewRows.length,
+      artifactRepresentationCount: capabilityArtifactPreviews.length,
       itemLevelExportLikeLabels,
       preSaveCheckboxLabels: publicPreSaveCheckboxLabels,
     };
@@ -160,7 +169,7 @@ test.describe('public share shell secondary browse order', () => {
 
       const visiblePrimaryActions = await collectVisibleMobileStickyPrimaryEntries(page);
       expect(visiblePrimaryActions).toHaveLength(1);
-      expect(visiblePrimaryActions[0]?.text).toMatch(PUBLIC_START_ACTION_PATTERN);
+      expect(visiblePrimaryActions[0]?.text).toMatch(PUBLIC_PRIMARY_ACTION_PATTERN);
     });
   }
 
@@ -170,7 +179,7 @@ test.describe('public share shell secondary browse order', () => {
       await page.goto(route);
 
       const shell = page.getByTestId('flow-public-shell');
-      const browseLink = shell.getByRole('link', { name: /Flow 찾기$/ });
+      const browseLink = shell.getByRole('link', { name: /계획 찾기$/ });
 
       await expect(shell).toBeVisible();
       await expect(browseLink).toBeVisible();
@@ -190,37 +199,65 @@ test.describe('public share shell secondary browse order', () => {
       expect(stickyPrimaryEntries.length).toBeGreaterThan(0);
 
       const [primaryEntry] = stickyPrimaryEntries;
-      expect(primaryEntry.accessibleName).toMatch(PUBLIC_START_ACTION_PATTERN);
-      expect(primaryEntry.text).toMatch(PUBLIC_START_ACTION_PATTERN);
+      expect(primaryEntry.accessibleName).toMatch(PUBLIC_PRIMARY_ACTION_PATTERN);
+      expect(primaryEntry.text).toMatch(PUBLIC_PRIMARY_ACTION_PATTERN);
       expect(primaryEntry.text).not.toMatch(/도구|파일|받기|복사|다운로드|xlsx|ics/i);
     });
   }
 
   for (const route of APPROVED_PUBLIC_SHARE_ROUTES) {
-    test(`${route} keeps eligible export as an optional flow-level secondary action`, async ({ page }) => {
+    test(`${route} keeps quick local transfer contextual to the capability result`, async ({ page }) => {
       await page.setViewportSize({ width: 390, height: 844 });
       await page.goto(route);
       await expect(page.getByTestId('public-flow-detail-workspace')).toHaveCount(0);
-      const exportEntry = page.getByTestId('public-flow-export-secondary-entry');
-      const exportBranch = page.getByTestId('public-flow-export-branch');
-      const exportEntryCount = await exportEntry.count();
-      expect(exportEntryCount).toBeLessThanOrEqual(1);
-      if (exportEntryCount === 1) {
-        await expect(exportEntry.getByTestId('public-flow-export-secondary-toggle')).toContainText('옮기기');
-        await exportEntry.getByTestId('public-flow-export-secondary-toggle').click();
-        await expect(exportBranch).toBeVisible();
-        await expect(exportBranch.getByTestId('public-flow-export-format-option').first()).toBeVisible();
-      }
-
+      await expect(page.getByTestId('public-flow-export-secondary-entry')).toHaveCount(0);
+      const capability = page.getByTestId('public-flow-capability-result');
+      await expect(capability).toBeVisible();
+      await expect(capability).toHaveAttribute('data-capability-lifecycle', 'public_preview');
+      await expect(capability).toHaveAttribute('data-capability-snapshot-kind', 'effective_authoring');
       const hierarchy = await collectPublicFlowUnitHierarchy(page);
-      expect(hierarchy.exportSecondaryEntryCount).toBe(exportEntryCount);
-      if (exportEntryCount === 1) {
-        expect(hierarchy.exportSecondaryEntryLabels[0]).toMatch(/옮기기/);
-        expect(hierarchy.exportFormatOptionCount).toBeGreaterThanOrEqual(1);
-        await exportBranch.getByTestId('public-flow-export-branch-close').click();
-        await expect(exportBranch).toHaveCount(0);
-      } else {
-        expect(hierarchy.exportFormatOptionCount).toBe(0);
+      expect(hierarchy.capabilityResultCount).toBe(1);
+      expect(hierarchy.capabilityPrimaryCount).toBe(1);
+      expect(hierarchy.capabilityImmediateAvailableCount).toBeLessThanOrEqual(2);
+      expect(hierarchy.capabilitySelectedPreviewCount).toBe(1);
+      expect(hierarchy.capabilitySelectedOutputCount).toBeGreaterThan(0);
+      expect(hierarchy.capabilitySelectedItemIds).toHaveLength(
+        hierarchy.capabilitySelectedOutputCount,
+      );
+
+      const quickEntry = page.getByTestId('public-flow-quick-result-entry');
+      const quickEligible = await page.locator('main').getAttribute('data-p35-q1-quick-eligible');
+      await expect(quickEntry).toHaveCount(quickEligible === 'true' ? 1 : 0);
+      if (quickEligible === 'true') {
+        await expect(quickEntry).toHaveAttribute('data-action-priority', 'secondary');
+        await expect(quickEntry).toHaveAttribute('data-action-role', 'create-quick-local-result');
+        await expect(quickEntry).toHaveAttribute('data-action-owner', 'public-quick-confirmation');
+        await quickEntry.click();
+        const confirmation = page.getByTestId('public-flow-quick-result-confirmation');
+        const selectedPreview = capability.getByTestId('flow-capability-selected-preview');
+        await expect(confirmation).toHaveAttribute(
+          'data-snapshot-kind',
+          (await capability.getAttribute('data-capability-snapshot-kind')) ?? '',
+        );
+        await expect(confirmation).toHaveAttribute(
+          'data-snapshot-version',
+          (await capability.getAttribute('data-capability-snapshot-version')) ?? '',
+        );
+        await expect(confirmation).toHaveAttribute(
+          'data-snapshot-hash',
+          (await selectedPreview.getAttribute('data-capability-manifest-hash')) ?? '',
+        );
+        await expect(confirmation).toHaveAttribute(
+          'data-item-ids',
+          hierarchy.capabilitySelectedItemIds.join(','),
+        );
+        await expect(confirmation).toHaveAttribute(
+          'data-output-count',
+          String(hierarchy.capabilitySelectedOutputCount),
+        );
+        await confirmation.getByTestId('public-flow-quick-result-cancel').click();
+        await expect(confirmation).toHaveCount(0);
+        await expect(quickEntry).toBeFocused();
       }
       expect(hierarchy.itemLevelExportLikeLabelCount).toBe(0);
       expect(hierarchy.preSavePreviewRowCount).toBeGreaterThan(0);
@@ -236,9 +273,14 @@ test.describe('public share shell secondary browse order', () => {
       expect(hierarchy.preSaveCheckboxCompletionLikeLabelCount).toBe(0);
       expect(hierarchy.preSaveCheckboxCount).toBe(0);
       expect(hierarchy.preSaveCheckboxPreviewLabelCount).toBe(0);
-      expect(hierarchy.heroArtifactPreviewCount).toBe(1);
       expect(hierarchy.artifactRepresentationCount).toBe(1);
-      expect(hierarchy.includedItemMarkerCount + hierarchy.preSavePreviewRowCount).toBeGreaterThan(0);
+      expect(hierarchy.capabilityResultCount).toBe(1);
+      expect(hierarchy.capabilityPrimaryCount).toBe(1);
+      expect(hierarchy.capabilitySelectedPreviewCount).toBe(1);
+      expect(hierarchy.capabilitySelectedItemIds).toHaveLength(
+        hierarchy.capabilitySelectedOutputCount,
+      );
+      expect(hierarchy.preSavePreviewRowCount).toBeGreaterThan(0);
     });
   }
 
@@ -249,9 +291,9 @@ test.describe('public share shell secondary browse order', () => {
 
       expect(response?.status()).toBe(404);
       await expect(page.getByTestId('public-flow-share-shell')).toHaveCount(0);
-      await expect(page.getByRole('heading', { name: '이 Flow는 지금 열 수 없어요' })).toBeVisible();
-      await expect(page.getByRole('link', { name: 'Flow 찾기' })).toHaveAttribute('href', '/flows');
-      await expect(page.getByRole('button', { name: PUBLIC_START_ACTION_PATTERN })).toHaveCount(0);
+      await expect(page.getByRole('heading', { name: '이 계획은 지금 열 수 없어요' })).toBeVisible();
+      await expect(page.getByRole('link', { name: '다른 계획 찾기' })).toHaveAttribute('href', '/flows');
+      await expect(page.getByRole('button', { name: PUBLIC_PRIMARY_ACTION_PATTERN })).toHaveCount(0);
       await expect(page.getByTestId('public-flow-export-secondary-entry')).toHaveCount(0);
       await expect(page.getByTestId('mobile-export-bar')).toHaveCount(0);
       await expect(page.getByRole('checkbox')).toHaveCount(0);
@@ -265,10 +307,11 @@ test.describe('public share shell secondary browse order', () => {
     await page.reload();
 
     await expect(page.getByTestId('public-flow-primary-setup')).toHaveCount(0);
-    await expect(page.getByTestId('public-flow-artifact-preview')).toBeVisible();
+    await expect(page.getByTestId('public-flow-capability-result')).toBeVisible();
 
     const mobileSave = page.getByTestId('public-flow-mobile-save-cta');
-    const saveButton = mobileSave.getByRole('button', { name: PUBLIC_START_ACTION_PATTERN });
+    const saveButton = mobileSave.getByTestId('public-flow-save-primary-mobile');
+    await expect(saveButton).toHaveText('내 계획에 저장');
     await expect(saveButton).toBeVisible();
     await saveButton.focus();
     await expect(saveButton).toBeFocused();
@@ -296,8 +339,11 @@ test.describe('public share shell secondary browse order', () => {
     await expect(execution.getByRole('button', { name: /^완료$/ })).toHaveCount(0);
 
     await postSaveComplete.click();
+    await expect(postSaveComplete).toBeChecked();
     await expect.poll(() => page.evaluate(() =>
-      Object.values(JSON.parse(window.localStorage.getItem('flow_builder_mvp_checks_new-car-delivery-check') || '{}')).some(Boolean),
+      Object.keys(window.localStorage)
+        .filter((key) => key.startsWith('flow_builder_mvp_checks_'))
+        .some((key) => Object.values(JSON.parse(window.localStorage.getItem(key) || '{}')).some(Boolean)),
     )).toBe(true);
   });
 });

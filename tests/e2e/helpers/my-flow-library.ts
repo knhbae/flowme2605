@@ -1,10 +1,46 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 
+async function resolveSavedFlowSlug(page: Page, requestedSlug: string): Promise<string> {
+  return page.evaluate((sourceSlug) => {
+    const currentFlow = new URL(window.location.href).searchParams.get('flow');
+    const records = Object.keys(window.localStorage)
+      .filter((key) => key.startsWith('flow:saved:'))
+      .map((key) => {
+        try {
+          const record = JSON.parse(window.localStorage.getItem(key) ?? 'null') as {
+            slug?: string;
+            personalCopyKey?: string;
+            sourceFlowSlug?: string;
+          } | null;
+          return record ? { key, record } : null;
+        } catch {
+          return null;
+        }
+      })
+      .filter((entry): entry is NonNullable<typeof entry> => entry !== null);
+
+    const exact = records.find(({ key, record }) => (
+      key === `flow:saved:${sourceSlug}`
+      || record.slug === sourceSlug
+      || record.personalCopyKey === sourceSlug
+    ));
+    if (exact) return exact.record.personalCopyKey ?? exact.record.slug ?? sourceSlug;
+
+    const sourceCopies = records.filter(({ record }) => record.sourceFlowSlug === sourceSlug);
+    const selected = sourceCopies.find(({ record }) => (
+      record.personalCopyKey === currentFlow || record.slug === currentFlow
+    ));
+    const match = selected ?? sourceCopies.at(-1);
+    return match?.record.personalCopyKey ?? match?.record.slug ?? sourceSlug;
+  }, requestedSlug);
+}
+
 export async function openMyFlowLibraryFlow(
   page: Page,
   flowSlug: string,
   mobileSection: 'execute' | 'plan' | 'record' = 'plan',
 ): Promise<Locator> {
+  const resolvedFlowSlug = await resolveSavedFlowSlug(page, flowSlug);
   const flowView = page.getByTestId('my-flow-todo-experiment-view-flows');
   if (
     await flowView.isVisible().catch(() => false) &&
@@ -20,29 +56,29 @@ export async function openMyFlowLibraryFlow(
     await expect(
       page.locator(
         [
-          `[data-testid="my-flow-overview-card"][data-flow-slug="${flowSlug}"]:visible`,
-          `[data-testid="my-flow-mobile-workspace"][data-flow-slug="${flowSlug}"]:visible`,
-          `[data-testid="my-flow-mobile-structure-row"][data-flow-slug="${flowSlug}"]:visible`,
+          `[data-testid="my-flow-overview-card"][data-flow-slug="${resolvedFlowSlug}"]:visible`,
+          `[data-testid="my-flow-mobile-workspace"][data-flow-slug="${resolvedFlowSlug}"]:visible`,
+          `[data-testid="my-flow-mobile-structure-row"][data-flow-slug="${resolvedFlowSlug}"]:visible`,
           '[data-testid="my-flow-library-workspace"]:visible',
         ].join(', '),
       ).first(),
     ).toBeVisible({ timeout: 10_000 });
   }
   if (wideViewport || await library.isVisible().catch(() => false)) {
-    await library.locator(`[data-testid="my-flow-library-row"][data-flow-slug="${flowSlug}"]`).click();
+    await library.locator(`[data-testid="my-flow-library-row"][data-flow-slug="${resolvedFlowSlug}"]`).click();
     const card = library
       .getByTestId('my-flow-library-detail')
-      .locator(`[data-testid="my-flow-overview-card"][data-flow-slug="${flowSlug}"]`);
+      .locator(`[data-testid="my-flow-overview-card"][data-flow-slug="${resolvedFlowSlug}"]`);
     await expect(card).toBeVisible();
     return card;
   }
 
   const existingCard = page.locator(
-    `[data-testid="my-flow-overview-card"][data-flow-slug="${flowSlug}"]:visible`,
+    `[data-testid="my-flow-overview-card"][data-flow-slug="${resolvedFlowSlug}"]:visible`,
   );
   if (await existingCard.isVisible().catch(() => false)) return existingCard;
   const existingMobileWorkspace = page.locator(
-    `[data-testid="my-flow-mobile-workspace"][data-flow-slug="${flowSlug}"]:visible`,
+    `[data-testid="my-flow-mobile-workspace"][data-flow-slug="${resolvedFlowSlug}"]:visible`,
   );
   if (await existingMobileWorkspace.isVisible().catch(() => false)) {
     const sectionTab = existingMobileWorkspace.getByTestId(
@@ -65,12 +101,12 @@ export async function openMyFlowLibraryFlow(
   }
 
   const compactRow = page.locator(
-    `[data-testid="my-flow-mobile-structure-row"][data-flow-slug="${flowSlug}"]`,
+    `[data-testid="my-flow-mobile-structure-row"][data-flow-slug="${resolvedFlowSlug}"]`,
   );
   await expect(compactRow).toBeVisible();
   await compactRow.getByTestId('my-flow-mobile-structure-open').click();
   const workspace = page.locator(
-    `[data-testid="my-flow-mobile-workspace"][data-flow-slug="${flowSlug}"]:visible`,
+    `[data-testid="my-flow-mobile-workspace"][data-flow-slug="${resolvedFlowSlug}"]:visible`,
   );
   await expect(workspace).toBeVisible();
   const sectionTab = workspace.getByTestId(`my-flow-workspace-tab-${mobileSection}`);

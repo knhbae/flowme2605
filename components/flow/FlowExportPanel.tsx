@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import {
   buildArtifactExportRecommendationVM,
   type ArtifactExportRecommendation,
@@ -13,6 +13,7 @@ import {
   type FlowExportScopeItem,
   type FlowExportScopePlan,
 } from '@/lib/flow/export-scope';
+import type { EffectiveFlowProjectionManifest } from '@/lib/flow/effective-flow-contract';
 import { FlowItemMultiSelect } from './FlowItemMultiSelect';
 import { FlowExportReceipt } from './FlowExportReceipt';
 import { FlowExportPlan } from './FlowExecutionPrimitives';
@@ -32,6 +33,11 @@ export type FlowExportPanelItem = FlowExportScopeItem & {
   resourceCount?: number;
 };
 
+export type FlowExportCapabilityPreviewControls = {
+  selectedDestination?: FlowExportDestination;
+  onSelectDestination: (destination: FlowExportDestination) => void;
+};
+
 type FlowExportPanelProps = {
   flowTitle: string;
   items: FlowExportPanelItem[];
@@ -41,6 +47,7 @@ type FlowExportPanelProps = {
   currentItemKey?: string;
   stableIdentity?: string;
   feedback?: string;
+  persistentReceipt?: FlowExportResultReceipt;
   legacyPersonalDraft?: boolean;
   showEntry?: boolean;
   fixedScope?: boolean;
@@ -51,6 +58,13 @@ type FlowExportPanelProps = {
   destinationCopyOverride?: Partial<Record<FlowExportDestination, { label: string; result: string }>>;
   destinationNotices?: Partial<Record<FlowExportDestination, string>>;
   destinationTestId?: (destination: FlowExportDestination) => string;
+  capabilityPreview?: ReactNode | ((controls: FlowExportCapabilityPreviewControls) => ReactNode);
+  projectionManifests?: Partial<Record<FlowExportDestination, EffectiveFlowProjectionManifest>>;
+  transferLayer?: ReactNode;
+  transferReceipt?: ReactNode;
+  savedTransferSurface?: 'confirmation' | 'legacy';
+  entryActionRole?: string;
+  q3CopyEnabled?: boolean;
   onOpenChange: (open: boolean) => void;
   onScopeChange: (scope: Exclude<FlowExportScope, 'item'>) => void;
   onSelectedKeysChange: (keys: string[]) => void;
@@ -76,6 +90,7 @@ export function FlowExportPanel({
   currentItemKey,
   stableIdentity,
   feedback,
+  persistentReceipt,
   legacyPersonalDraft = false,
   showEntry = true,
   fixedScope = false,
@@ -86,6 +101,13 @@ export function FlowExportPanel({
   destinationCopyOverride,
   destinationNotices,
   destinationTestId,
+  capabilityPreview,
+  projectionManifests,
+  transferLayer,
+  transferReceipt,
+  savedTransferSurface,
+  entryActionRole,
+  q3CopyEnabled = true,
   onOpenChange,
   onScopeChange,
   onSelectedKeysChange,
@@ -93,6 +115,9 @@ export function FlowExportPanel({
 }: FlowExportPanelProps) {
   const [receipt, setReceipt] = useState<FlowExportResultReceipt | null>(null);
   const [pendingDestination, setPendingDestination] = useState<FlowExportDestination | null>(null);
+  const [previewDestination, setPreviewDestination] = useState<FlowExportDestination | undefined>(
+    preferredDestination,
+  );
   const receiptContainerRef = useRef<HTMLDivElement>(null);
   const recommendationContainerRef = useRef<HTMLDivElement>(null);
   const entryButtonRef = useRef<HTMLButtonElement>(null);
@@ -124,7 +149,7 @@ export function FlowExportPanel({
   const selectedCount = selectedPlan.includedCount;
   const entryLabel = getExportScopeActionLabel(scope, plan.includedCount);
   const scopeLabel = scope === 'flow'
-    ? 'Flow 전체'
+    ? q3CopyEnabled ? '계획 전체' : 'Flow 전체'
     : scope === 'selected'
       ? '직접 선택'
       : '현재 항목';
@@ -148,22 +173,36 @@ export function FlowExportPanel({
     [...exportRecommendation.visible, ...exportRecommendation.additional]
       .map((candidate) => [candidate.destination, candidate] as const),
   );
+  const calendarManifest = projectionManifests?.calendar;
+  const calendarOutputCount = calendarManifest?.counts.output ?? plan.countByDestination.calendar;
   const calendarUnavailable = destinations.includes('calendar')
     && plan.includedCount > 0
-    && plan.countByDestination.calendar === 0;
+    && (
+      calendarOutputCount === 0
+      || calendarManifest?.availability === 'held'
+      || calendarManifest?.availability === 'unavailable'
+    );
+  const visibleReceipt = receipt ?? persistentReceipt ?? null;
+  const renderedCapabilityPreview = typeof capabilityPreview === 'function'
+    ? capabilityPreview({
+        selectedDestination: previewDestination,
+        onSelectDestination: setPreviewDestination,
+      })
+    : capabilityPreview;
 
   useEffect(() => {
     setReceipt(null);
     setPendingDestination(null);
-  }, [flowTitle, scope, selectedKeys.join('|')]);
+    setPreviewDestination(preferredDestination);
+  }, [flowTitle, preferredDestination, scope, selectedKeys.join('|')]);
 
   useEffect(() => {
-    if (!receipt) return;
+    if (!visibleReceipt) return;
     const frame = window.requestAnimationFrame(() => {
       receiptContainerRef.current?.scrollIntoView({ block: 'nearest' });
     });
     return () => window.cancelAnimationFrame(frame);
-  }, [receipt]);
+  }, [visibleReceipt]);
 
   useEffect(() => {
     if (!open || window.innerWidth >= 768) return;
@@ -187,14 +226,27 @@ export function FlowExportPanel({
     hidden = false,
   ) => {
     const copy = destinationCopyOverride?.[destination] ?? destinationCopy[destination];
-    const count = plan.countByDestination[destination];
-    const disabled = count === 0;
+    const manifest = projectionManifests?.[destination];
+    const count = manifest?.counts.output ?? plan.countByDestination[destination];
+    const disabled = count === 0
+      || manifest?.availability === 'held'
+      || manifest?.availability === 'unavailable';
     const pending = pendingDestination === destination;
     const anotherDestinationPending = pendingDestination !== null && !pending;
-    const omitted = plan.metrics.omittedCountByDestination[destination];
-    const disabledReason = destination === 'calendar' && plan.includedCount > 0
-      ? '날짜 있는 항목이 없어요'
-      : '항목을 먼저 선택하세요';
+    const omitted = manifest
+      ? manifest.counts.held + manifest.counts.unavailable
+      : plan.metrics.omittedCountByDestination[destination];
+    const manifestReasons = manifest
+      ? Array.from(new Set([
+          ...manifest.heldItemIds,
+          ...manifest.unavailableItemIds,
+        ].map((itemId) => manifest.reasonsByItemId[itemId]).filter(Boolean)))
+      : [];
+    const disabledReason = manifestReasons[0] ?? (
+      destination === 'calendar' && plan.includedCount > 0
+        ? '날짜 있는 항목이 없어요'
+        : '항목을 먼저 선택하세요'
+    );
     const outputUnit = destination === 'sheet' ? '행' : '개';
     const scopedActionLabel = `${exportRecommendation.scopeLabel} · ${copy.label} ${count}${outputUnit}`;
     const role = candidate?.role ?? 'additional';
@@ -220,6 +272,11 @@ export function FlowExportPanel({
         data-export-count={count}
         data-export-destination={destination}
         data-export-state={pending ? 'pending' : disabled ? 'disabled' : 'ready'}
+        data-export-preview-selected={previewDestination === destination ? 'true' : 'false'}
+        data-export-manifest-availability={manifest?.availability}
+        data-export-manifest-item-ids={manifest?.eligibleItemIds.join(',')}
+        data-export-manifest-held-item-ids={manifest?.heldItemIds.join(',')}
+        data-export-manifest-unavailable-item-ids={manifest?.unavailableItemIds.join(',')}
         data-recommendation-role={role}
         data-recommendation-visible={!hidden}
         data-action-priority={role === 'primary' ? 'primary' : 'secondary'}
@@ -230,6 +287,7 @@ export function FlowExportPanel({
         }`}
         onClick={async () => {
           if (pendingDestination) return;
+          setPreviewDestination(destination);
           setPendingDestination(destination);
           setReceipt(null);
           try {
@@ -272,6 +330,7 @@ export function FlowExportPanel({
           type="button"
           data-testid={legacyPersonalDraft ? 'personal-draft-list-export-toggle' : 'my-flow-export-entry'}
           data-action-priority="secondary"
+          data-action-role={entryActionRole}
           aria-expanded={open}
           aria-label={`${flowTitle} ${entryLabel}`}
           className={FLOW_UI_SECONDARY_ACTION_CLASS}
@@ -292,6 +351,7 @@ export function FlowExportPanel({
           data-p34-marker="P34-07-SCOPE-FIRST-EXPORT"
           data-p35-marker="P35-EXPORT-SCOPE-FIRST"
           data-p35-count-marker="P35-EXPORT-COUNT-PARITY"
+          data-saved-transfer-surface={savedTransferSurface}
           className={showEntry ? 'mt-3 border-t border-[var(--flowme-border)] pt-3' : ''}
         >
           <div className="flex items-center justify-between gap-3">
@@ -313,6 +373,12 @@ export function FlowExportPanel({
               </button>
             ) : null}
           </div>
+
+          {renderedCapabilityPreview ? (
+            <div data-testid="my-flow-export-capability-preview" className="mt-3">
+              {renderedCapabilityPreview}
+            </div>
+          ) : null}
 
           <section data-testid="my-flow-export-scope-step" aria-labelledby="my-flow-export-scope-heading">
             <p
@@ -344,7 +410,7 @@ export function FlowExportPanel({
                   className={`min-h-11 rounded-md px-3 py-2 text-sm font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${scope === 'flow' ? FLOW_UI_SEGMENT_ACTIVE_CLASS : FLOW_UI_SEGMENT_IDLE_CLASS}`}
                   onClick={() => onScopeChange('flow')}
                 >
-                  Flow 전체<span className="sr-only"> · {flowPlan.includedCount}개</span>
+                  {q3CopyEnabled ? '계획 전체' : 'Flow 전체'}<span className="sr-only"> · {flowPlan.includedCount}개</span>
                 </button>
                 <button
                   type="button"
@@ -395,8 +461,8 @@ export function FlowExportPanel({
             </p>
             <p data-testid="my-flow-export-calendar-summary" className="text-xs font-semibold text-[var(--flowme-text-secondary)]">
               {plan.metrics.recurringSeriesCount > 0
-                ? `반복 계획 ${plan.metrics.recurringSeriesCount}개 · 캘린더 파일 ${plan.countByDestination.calendar}개 · 화면 회차 ${plan.metrics.visibleOccurrenceCount}개`
-                : `캘린더 ${plan.countByDestination.calendar}개`}
+                ? `반복 계획 ${plan.metrics.recurringSeriesCount}개 · 캘린더 파일 ${calendarOutputCount}개 · 화면 회차 ${plan.metrics.visibleOccurrenceCount}개`
+                : `캘린더 ${calendarOutputCount}개`}
             </p>
           </div>
           <div data-testid="my-flow-export-eligibility-summary" className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs font-medium text-[var(--flowme-text-secondary)]">
@@ -435,7 +501,9 @@ export function FlowExportPanel({
                 data-testid="my-flow-export-calendar-recovery"
                 className="mt-2 border-l-2 border-[var(--flowme-border-strong)] pl-2 text-xs font-medium leading-5 text-[var(--flowme-text-secondary)]"
               >
-                캘린더 파일은 날짜를 정한 항목만 만들 수 있어요. Flow로 돌아가 날짜를 정해 주세요.
+                {q3CopyEnabled
+                  ? '캘린더 파일은 날짜를 정한 항목만 만들 수 있어요. 계획으로 돌아가 날짜를 정해 주세요.'
+                  : '캘린더 파일은 날짜를 정한 항목만 만들 수 있어요. Flow로 돌아가 날짜를 정해 주세요.'}
               </p>
             ) : null}
             <div
@@ -490,17 +558,21 @@ export function FlowExportPanel({
             </div>
           </section>
 
-          {receipt ? (
+          {visibleReceipt ? (
             <div ref={receiptContainerRef} data-testid="my-flow-export-receipt-step">
               <p className="mt-3 text-xs font-semibold text-[var(--flowme-text-secondary)]">3 · 결과</p>
               <FlowExportReceipt
-                receipt={receipt}
+                receipt={visibleReceipt}
                 flowTitle={flowTitle}
                 sourceLabel={sourceLabel}
                 stableIdentity={stableIdentity}
+                q3CopyEnabled={q3CopyEnabled}
               />
             </div>
           ) : null}
+
+          {transferReceipt}
+          {transferLayer}
 
           {feedback ? (
             <p

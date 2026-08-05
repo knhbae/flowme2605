@@ -3,6 +3,7 @@ import path from 'node:path';
 
 import { expect, test, type Page } from '@playwright/test';
 import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
+import { savePublicFlow } from './helpers/public-flow-save';
 
 const evidenceRoot = process.env.FLOWME_P35_R2_EVIDENCE_DIR;
 
@@ -46,12 +47,15 @@ test.describe('P35-R2 contextual public item personalization', () => {
     await page.reload();
     await page.getByTestId('public-flow-anchor-input').fill('2030-09-01');
 
-    const preview = page.getByTestId('public-flow-artifact-preview');
-    const editTrigger = preview.getByTestId('public-flow-artifact-preview-row-edit').first();
+    const preview = page.getByTestId('public-flow-capability-result');
+    await page.getByTestId('public-flow-adjust-entry-mobile').click();
+    const parentEditor = page.getByTestId('public-flow-personal-adjustment');
+    await parentEditor.getByTestId('public-flow-adjustment-kind-items').click();
+    const editTrigger = parentEditor.getByTestId('public-flow-adjustment-item-edit').first();
     const itemId = await editTrigger.getAttribute('data-item-id');
     expect(itemId).toBeTruthy();
-    const stableEditTrigger = preview.locator(
-      `[data-testid="public-flow-artifact-preview-row-edit"][data-item-id="${itemId}"]`,
+    const stableEditTrigger = parentEditor.locator(
+      `[data-testid="public-flow-adjustment-item-edit"][data-item-id="${itemId}"]`,
     );
 
     await stableEditTrigger.focus();
@@ -73,7 +77,6 @@ test.describe('P35-R2 contextual public item personalization', () => {
     await editor.getByTestId('public-flow-item-editor-save').click();
 
     await expect(editor).toHaveCount(0);
-    const parentEditor = page.getByTestId('public-flow-personal-adjustment');
     await expect(parentEditor).toBeVisible();
     await expect(page.locator('[role="dialog"]')).toHaveCount(1);
     const parentItem = parentEditor.locator(
@@ -85,30 +88,32 @@ test.describe('P35-R2 contextual public item personalization', () => {
 
     await expect(parentEditor).toHaveCount(0);
     const editedRow = preview.locator(
-      `[data-testid="public-flow-artifact-preview-row"][data-item-id="${itemId}"]`,
+      `[data-testid="flow-capability-artifact-preview-row"][data-item-id="${itemId}"]`,
     );
     await expect(editedRow).toContainText('이사 방식 최종 결정');
-    const editedDateGroup = editedRow.locator(
-      'xpath=ancestor::section[@data-flow-ui="date-rail-group"]',
-    );
-    await expect(editedDateGroup.getByTestId('flow-date-rail')).toContainText('15');
-    await expect(editedDateGroup.getByTestId('flow-date-rail')).toContainText('(목)');
+    await expect(editedRow).toContainText('8월 15일');
+    await expect(editedRow).toContainText('(목)');
 
-    await stableEditTrigger.click();
+    await page.getByTestId('public-flow-adjust-entry-mobile').click();
+    const reopenedParentEditor = page.getByTestId('public-flow-personal-adjustment');
+    await reopenedParentEditor.getByTestId('public-flow-adjustment-kind-items').click();
+    await reopenedParentEditor.locator(
+      `[data-testid="public-flow-adjustment-item-edit"][data-item-id="${itemId}"]`,
+    ).click();
     await expect(page.getByTestId('public-flow-item-editor')).toHaveCount(1);
     await expect(page.getByTestId('public-flow-item-editor-date-input')).toHaveValue('2030-08-15');
     await page.keyboard.press('Escape');
     await expect(page.getByTestId('public-flow-item-editor')).toHaveCount(0);
-    await expect(page.getByTestId('public-flow-personal-adjustment')).toBeVisible();
-    await page.getByTestId('public-flow-adjustment-cancel').click();
-    await expect(stableEditTrigger).toBeFocused();
+    await expect(reopenedParentEditor).toBeVisible();
+    await reopenedParentEditor.getByTestId('public-flow-adjustment-cancel').click();
+    await expect(page.getByTestId('public-flow-adjust-entry-mobile')).toBeFocused();
 
-    await page.getByTestId('public-flow-save-primary-mobile').click();
-    const receipt = page.getByTestId('public-flow-saved-receipt');
-    await expect(receipt).toBeVisible();
-    const receiptBeforeReload = await receipt.textContent();
+    const saveBanner = await savePublicFlow(page, page.getByTestId('public-flow-save-primary-mobile'));
+    await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toContainText('24');
+    const personalCopyKey = new URL(page.url()).searchParams.get('flow') ?? '';
+    expect(personalCopyKey).toMatch(/^personal-copy:/u);
     await page.reload();
-    await expect(page.getByTestId('public-flow-saved-receipt')).toHaveText(receiptBeforeReload ?? '');
+    await expect(page.getByTestId('my-flow-save-banner')).toHaveCount(0);
 
     const stored = await page.evaluate(({ savedItemId }) => {
       const drafts = JSON.parse(
@@ -125,16 +130,14 @@ test.describe('P35-R2 contextual public item personalization', () => {
       date: '2030-08-15',
     });
 
-    await page.getByTestId('public-flow-saved-receipt-primary').click();
-    await expect(page).toHaveURL('/my?view=flows&flow=moving-d30-basic');
     await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
     const savedWorkspace = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'plan');
     await expect(savedWorkspace).toContainText('이사 방식 최종 결정');
     await expect(savedWorkspace).toContainText('8월 15일');
     await capture(page, 'p35-r2-my-flow-personalized-390.png');
-    const savedRecord = await page.evaluate(() => JSON.parse(
-      window.localStorage.getItem('flow:saved:moving-d30-basic') || 'null',
-    ) as { anchor?: string; dateIntent?: string } | null);
+    const savedRecord = await page.evaluate((copyKey) => JSON.parse(
+      window.localStorage.getItem(`flow:saved:${copyKey}`) || 'null',
+    ) as { anchor?: string; dateIntent?: string } | null, personalCopyKey);
     expect(savedRecord).toMatchObject({
       anchor: '2030-09-01',
       dateIntent: 'custom',
@@ -160,13 +163,22 @@ test.describe('P35-R2 contextual public item personalization', () => {
     await page.reload();
     await page.getByTestId('public-flow-anchor-input').fill('2030-09-01');
 
-    await page.getByTestId('public-flow-artifact-preview-row-edit').first().click();
+    await page.getByTestId('public-flow-adjust-entry').click();
+    const firstPanel = page.getByTestId('public-flow-personal-adjustment');
+    await firstPanel.getByTestId('public-flow-adjustment-kind-items').click();
+    await firstPanel.getByTestId('public-flow-adjustment-item-edit').first().click();
     const editor = page.getByTestId('public-flow-item-editor');
     await expect(editor.locator('[data-p35-marker*="P35-R2-ITEM-INSPECTOR-1024"]')).toHaveCount(1);
+    await expect(editor).toHaveAttribute('data-editor-adapter', 'shared');
+    await expect(editor).toHaveAttribute('data-editor-context', 'public-draft');
+    await expect(editor).toHaveAttribute('data-editor-level', 'item');
     const editorBox = await editor.boundingBox();
     expect(editorBox).not.toBeNull();
+    expect(editorBox!.y).toBeGreaterThanOrEqual(-1);
+    expect(editorBox!.y + editorBox!.height).toBeLessThanOrEqual(769);
+    expect(editorBox!.height).toBeGreaterThanOrEqual(767);
     expect(editorBox!.x + editorBox!.width).toBeGreaterThanOrEqual(1023);
-    expect(editorBox!.width).toBeLessThanOrEqual(470);
+    expect(editorBox!.width).toBeLessThanOrEqual(673);
     await editor.getByTestId('public-flow-item-editor-cancel').click();
     await expect(page.getByTestId('public-flow-personal-adjustment')).toBeVisible();
     await page.getByTestId('public-flow-adjustment-cancel').click();

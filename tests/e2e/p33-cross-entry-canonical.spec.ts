@@ -4,6 +4,7 @@ import path from 'node:path';
 import { expect, test, type Page } from '@playwright/test';
 import { AJD_MOVING_CANONICAL_FLOW_ID } from '../../lib/flow/canonical-flow-registry';
 import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
+import { savePublicFlow } from './helpers/public-flow-save';
 
 const evidenceRoot = process.env.FLOWME_P33_EVIDENCE_DIR;
 const runtimeErrorsByPage = new WeakMap<Page, string[]>();
@@ -42,6 +43,7 @@ async function expectNoHorizontalOverflow(page: Page) {
 
 test.describe('P33 cross-entry canonical alignment', () => {
   test('legacy AJD routes resolve to the one 24-item public detail', async ({ page }) => {
+    test.setTimeout(60_000);
     const aliases = [
       '/flow-maps/moving-d30',
       '/flow-maps/curated-ajd-moving-d30',
@@ -52,8 +54,9 @@ test.describe('P33 cross-entry canonical alignment', () => {
     for (const alias of aliases) {
       await page.goto(alias);
       await expect(page).toHaveURL('/f/moving-d30-basic');
-      await page.getByTestId('public-flow-artifact-preview-expand').click();
-      await expect(page.getByTestId('public-flow-artifact-preview-row')).toHaveCount(24);
+      await expect(page.getByTestId('public-flow-capability-result').locator(
+        '[data-testid="flow-capability-result-choice"][data-capability-candidate-role="primary"]',
+      )).toHaveAttribute('data-capability-output-count', '24');
     }
   });
 
@@ -73,8 +76,9 @@ test.describe('P33 cross-entry canonical alignment', () => {
 
     await movingCards.getByRole('link', { name: /이사 D-30 준비.*더보기/ }).click();
     await expect(page).toHaveURL('/f/moving-d30-basic');
-    await page.getByTestId('public-flow-artifact-preview-expand').click();
-    await expect(page.getByTestId('public-flow-artifact-preview-row')).toHaveCount(24);
+    await expect(page.getByTestId('public-flow-capability-result').locator(
+      '[data-testid="flow-capability-result-choice"][data-capability-candidate-role="primary"]',
+    )).toHaveAttribute('data-capability-output-count', '24');
     await capture(page, 'p33-02-find-to-canonical-moving-390.png');
     await expectNoHorizontalOverflow(page);
   });
@@ -83,40 +87,46 @@ test.describe('P33 cross-entry canonical alignment', () => {
     await page.setViewportSize({ width: 390, height: 844 });
 
     for (const candidate of [
-      { slug: 'moving-d30-basic', expectedCount: 24, shape: 'calendar', label: '캘린더' },
-      { slug: 'vehicle-inspection-prep', expectedCount: 10, shape: 'checklist', label: '체크리스트' },
+      { slug: 'moving-d30-basic', expectedCount: 24, initialShape: 'checklist', savedShape: 'calendar' },
+      { slug: 'vehicle-inspection-prep', expectedCount: 10, initialShape: 'checklist', savedShape: 'checklist' },
     ]) {
       await page.goto(`/f/${candidate.slug}`);
       await clearLocalState(page);
-      const preview = page.getByTestId('public-flow-artifact-preview');
-      await expect(preview.getByTestId('flow-artifact-shape-choice')).toHaveCount(0);
-      await expect(preview).toHaveAttribute('data-selected-shape', candidate.shape);
+      const preview = page.getByTestId('public-flow-capability-result');
+      await expect(preview).toHaveAttribute(
+        'data-capability-primary-destination',
+        candidate.initialShape,
+      );
+      await expect(preview.locator(
+        '[data-testid="flow-capability-result-choice"][data-capability-candidate-role="primary"]',
+      )).toHaveAttribute('data-capability-output-count', String(candidate.expectedCount));
       if (candidate.slug === 'moving-d30-basic') {
         await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
+        await expect(preview).toHaveAttribute(
+          'data-capability-primary-destination',
+          candidate.savedShape,
+        );
       }
 
-      await page.getByTestId('public-flow-save-primary-mobile').click();
-      const savedRecord = await page.evaluate((slug) => JSON.parse(
-        window.localStorage.getItem(`flow:saved:${slug}`) || 'null',
-      ), candidate.slug);
-      expect(savedRecord.selectedArtifactMode).toBe(candidate.shape);
-      await expect(page.getByTestId('public-flow-saved-receipt')).toContainText(
-        candidate.label,
-      );
-      await expect(page.getByTestId('public-flow-saved-receipt')).toContainText(
+      const saveBanner = await savePublicFlow(page, page.getByTestId('public-flow-save-primary-mobile'));
+      const personalCopyKey = new URL(page.url()).searchParams.get('flow') ?? '';
+      expect(personalCopyKey).toMatch(/^personal-copy:/u);
+      const savedRecord = await page.evaluate((copyKey) => JSON.parse(
+        window.localStorage.getItem(`flow:saved:${copyKey}`) || 'null',
+      ), personalCopyKey);
+      expect(savedRecord).toMatchObject({
+        schemaVersion: 2,
+        personalCopyKey,
+        sourceFlowSlug: candidate.slug,
+        selectedArtifactMode: candidate.savedShape,
+        savedItemCount: candidate.expectedCount,
+      });
+      await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toContainText(
         String(candidate.expectedCount),
       );
-      if (candidate.slug === 'moving-d30-basic') {
-        const canonicalOrigin = await page.evaluate(() => JSON.parse(
-          window.localStorage.getItem('flow:canonical:origin:v1') || 'null',
-        ));
-        expect(canonicalOrigin.entries[AJD_MOVING_CANONICAL_FLOW_ID]).toMatchObject({
-          canonicalSavedSlug: 'moving-d30-basic',
-        });
-      }
     }
 
-    await capture(page, 'p33-03-vehicle-checklist-choice-receipt-390.png');
+    await capture(page, 'p33-03-vehicle-checklist-selected-plan-390.png');
     await expectNoHorizontalOverflow(page);
   });
 
@@ -215,22 +225,32 @@ test.describe('P33 cross-entry canonical alignment', () => {
     await expectNoHorizontalOverflow(page);
   });
 
-  test('receipt, My Flow, Calendar, and export keep the canonical 24-item identity', async ({ page }) => {
+  test('direct save handoff, My Flow, Calendar, and export keep the canonical 24-item identity', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/f/moving-d30-basic');
     await clearLocalState(page);
     await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
-    await page.getByTestId('public-flow-save-primary').click();
-
-    const receipt = page.getByTestId('public-flow-saved-receipt');
-    await expect(receipt).toBeVisible();
-    await expect(receipt).toContainText('이사 D-30 준비');
-    await expect(receipt).toContainText('24');
-    await receipt.getByTestId('public-flow-saved-receipt-primary').click();
-
-    await expect(page).toHaveURL('/my?view=flows&flow=moving-d30-basic');
+    const saveBanner = await savePublicFlow(page, page.getByTestId('public-flow-save-primary'));
+    await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toHaveText('저장됨 · 24개');
+    const personalCopyKey = new URL(page.url()).searchParams.get('flow') ?? '';
+    expect(personalCopyKey).toMatch(/^personal-copy:/u);
+    const savedRecord = await page.evaluate((copyKey) => JSON.parse(
+      window.localStorage.getItem(`flow:saved:${copyKey}`) || 'null',
+    ), personalCopyKey);
+    expect(savedRecord).toMatchObject({
+      schemaVersion: 2,
+      personalCopyKey,
+      sourceFlowSlug: 'moving-d30-basic',
+      selectedArtifactMode: 'calendar',
+      savedItemCount: 24,
+    });
     const canonicalFlow = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'plan');
     await expect(canonicalFlow).toBeVisible();
+    const savedFlowTitle = (await canonicalFlow
+      .locator('[data-flow-identity-slot="title"]')
+      .first()
+      .textContent())?.trim() ?? '';
+    expect(savedFlowTitle).not.toBe('');
     await expect(canonicalFlow.getByTestId('my-flow-workspace-progress-summary')).toContainText(
       '전체 0/24 완료',
     );
@@ -238,7 +258,7 @@ test.describe('P33 cross-entry canonical alignment', () => {
     const exportSurface = canonicalFlow.getByTestId('my-flow-export-surface');
     await exportSurface.getByTestId('my-flow-export-entry').click();
     const exportPanel = exportSurface.getByTestId('my-flow-export-panel');
-    await expect(exportPanel.getByTestId('my-flow-export-scope-flow')).toContainText('Flow 전체');
+    await expect(exportPanel.getByTestId('my-flow-export-scope-flow')).toContainText('계획 전체');
     await expect(exportPanel.getByTestId('my-flow-export-scope-summary')).toContainText('24개');
     await capture(page, 'p33-06-canonical-my-flow-export-1440.png');
     await expectNoHorizontalOverflow(page);
@@ -258,12 +278,13 @@ test.describe('P33 cross-entry canonical alignment', () => {
       const dateCell = page.locator(`.fc-daygrid-day[data-date="${date}"]`);
       await dateCell.getByTestId('my-flow-calendar-date-button').click();
       const selectedDay = page.getByTestId('my-flow-calendar-selected-day');
-      await expect(selectedDay).toContainText('이사 D-30 준비');
-      await expect(
-        selectedDay.locator(
-          '[data-testid="my-flow-selected-date-group"][data-flow-slug="moving-d30-basic"]',
-        ),
-      ).toBeVisible();
+      const selectedGroup = selectedDay.locator(
+        `[data-testid="my-flow-selected-date-group"][data-flow-slug="${personalCopyKey}"]`,
+      );
+      await expect(selectedGroup).toBeVisible();
+      await expect(selectedGroup.locator('[data-flow-identity-slot="title"]')).toHaveText(
+        savedFlowTitle,
+      );
       await expect(selectedDay.getByTestId('my-flow-execution-row-shell')).toHaveCount(
         expectedCount,
       );

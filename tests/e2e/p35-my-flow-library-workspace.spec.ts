@@ -79,12 +79,10 @@ test.describe('P35-05 My Flow library and focused workspace', () => {
 
     const main = page.locator('main').first();
     await expect(main).toHaveAttribute('data-p35-my-flow-marker', 'P35-MY-LIBRARY-ONLY');
-    const localViewTabs = page.getByRole('tablist', { name: 'My Flow 보기 방식' });
-    await expect(localViewTabs).toHaveCount(1);
-    await expect(localViewTabs.getByRole('tab', { name: 'Flow' })).toHaveAttribute(
-      'aria-selected',
-      'true',
-    );
+    await expect(main).toHaveAttribute('data-saved-library-flag', 'on');
+    await expect(page.getByTestId('my-flow-saved-library-shell')).toBeVisible();
+    const localViewTabs = page.getByRole('tablist', { name: '내 계획 보기 방식' });
+    await expect(localViewTabs).toHaveCount(0);
     await expect(page.getByTestId('my-flow-view-today')).toHaveCount(0);
     await expect(page.getByTestId('my-flow-view-completed')).toHaveCount(0);
 
@@ -96,6 +94,21 @@ test.describe('P35-05 My Flow library and focused workspace', () => {
     await expect(page.getByTestId('my-flow-list-filter-all')).toHaveCount(0);
 
     await capture(page, 'p35-05-my-library-1-390.png');
+    expect(await inspectPageQuality(page)).toEqual({
+      horizontalOverflow: 0,
+      unnamedInteractiveCount: 0,
+    });
+
+    await page.goto('/my?demo=ux1&view=flows&savedPlanLibrary=off');
+    const rollbackMain = page.locator('main').first();
+    await expect(rollbackMain).toHaveAttribute('data-saved-library-flag', 'off');
+    await expect(page.getByTestId('my-flow-saved-library-shell')).toHaveCount(0);
+    const rollbackViewTabs = page.getByRole('tablist', { name: '내 계획 보기 방식' });
+    await expect(rollbackViewTabs).toHaveCount(1);
+    await expect(rollbackViewTabs.getByRole('tab', { name: '저장한 계획' })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
     expect(await inspectPageQuality(page)).toEqual({
       horizontalOverflow: 0,
       unnamedInteractiveCount: 0,

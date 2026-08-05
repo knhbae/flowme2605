@@ -35,7 +35,23 @@ async function capture(page: Page, locator: Locator, filename: string) {
   }));
 }
 
-test('legacy personal draft values migrate to one stable identity across My Flow Calendar and export', async ({ page }) => {
+async function completeSavedClipboardTransfer(
+  page: Page,
+  panel: Locator,
+  action: Locator,
+): Promise<string> {
+  await action.click();
+  const confirmation = panel.getByTestId('my-flow-transfer-confirmation');
+  await expect(confirmation).toHaveAttribute('data-transfer-route', 'saved_transfer');
+  await confirmation.getByTestId('my-flow-transfer-confirm').click();
+  const receipt = panel.getByTestId('my-flow-transfer-receipt');
+  await expect(receipt).toHaveAttribute('data-transfer-state', 'succeeded');
+  const copied = await page.evaluate(() => navigator.clipboard.readText());
+  await receipt.getByTestId('flow-transfer-success-close').click();
+  return copied;
+}
+
+test('legacy personal draft values remain read-only while one identity reaches My Flow Calendar and export', async ({ page }) => {
   test.setTimeout(120_000);
   const browserErrors: string[] = [];
   page.on('console', (message) => {
@@ -50,7 +66,7 @@ test('legacy personal draft values migrate to one stable identity across My Flow
 
   const lookup = page.getByTestId('flow-url-lookup-entry');
   await lookup.getByLabel('URL 또는 메모').fill('여권을 확인한다. 숙소 주소를 적는다.');
-  await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
+  await lookup.getByRole('button', { name: '계획 찾기' }).click();
   const editor = page.getByTestId('flow-memo-draft-editor');
   await editor.getByLabel('메모 초안 제목').fill('여행 준비 identity 확인');
   await editor.getByTestId('flow-memo-draft-save').click();
@@ -101,19 +117,16 @@ test('legacy personal draft values migrate to one stable identity across My Flow
     };
   }, legacy);
   expect(migrated).toEqual({
-    canonicalDraft: {
+    canonicalDraft: undefined,
+    canonicalDate: undefined,
+    legacyDraftActive: {
       title: '여권 유효기간 다시 확인하기',
       memo: '만료일과 영문 이름을 확인',
     },
-    canonicalDate: '2030-08-03',
-    legacyDraftActive: undefined,
-    legacyDateActive: undefined,
-    manifestSchemaVersion: 1,
-    manifestLegacyDraft: {
-      title: '여권 유효기간 다시 확인하기',
-      memo: '만료일과 영문 이름을 확인',
-    },
-    manifestLegacyDate: '2030-08-03',
+    legacyDateActive: '2030-08-03',
+    manifestSchemaVersion: undefined,
+    manifestLegacyDraft: undefined,
+    manifestLegacyDate: undefined,
   });
 
   await page.getByTestId('my-flow-post-save-view-flow').click();
@@ -148,8 +161,7 @@ test('legacy personal draft values migrate to one stable identity across My Flow
       .locator(':scope > summary')
       .click();
   }
-  await memoAction.click();
-  const memo = await page.evaluate(() => navigator.clipboard.readText());
+  const memo = await completeSavedClipboardTransfer(page, exportSurface, memoAction);
   expect(memo).toContain('여권 유효기간 다시 확인하기');
   expect(memo).toContain('만료일과 영문 이름을 확인');
   expect(memo).toContain('2030-08-03');

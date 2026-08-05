@@ -8,6 +8,7 @@ import {
   buildText,
   buildWorkbookSheets,
 } from './export';
+import { buildMyFlowMultiStepIcs } from './my-flow-step-export';
 import { resolvePublicDateIntent } from './public-date-intent';
 import { seedBundles } from './seed-flows';
 import type { EffectiveFlowResult } from './effective-flow-snapshot';
@@ -125,13 +126,66 @@ function buildResult(): EffectiveFlowResult {
 }
 
 function unfoldIcs(value: string): string {
-  return value.replaceAll('\r\n ', '');
+  return value.replace(/\r?\n[ \t]/gu, '');
 }
 
 function positionOf(value: string, pattern: string): number {
   const position = value.indexOf(pattern);
   assert.notEqual(position, -1, `missing ${pattern}`);
   return position;
+}
+
+function unescapeIcsText(value: string): string {
+  let result = '';
+  for (let index = 0; index < value.length; index += 1) {
+    if (value[index] !== '\\' || index === value.length - 1) {
+      result += value[index];
+      continue;
+    }
+    const escaped = value[index + 1];
+    result += escaped === 'n' || escaped === 'N' ? '\n' : escaped;
+    index += 1;
+  }
+  return result;
+}
+
+function parseCalendarSemanticEvents(value: string) {
+  const components = unfoldIcs(value).match(/BEGIN:VEVENT\r?\n[\s\S]*?\r?\nEND:VEVENT/gu) ?? [];
+  return components.map((component) => {
+    const lines = component.split(/\r?\n/u);
+    const read = (name: string) => {
+      const line = lines.find((candidate) => (
+        candidate.startsWith(`${name}:`) || candidate.startsWith(`${name};`)
+      ));
+      return line ? line.slice(line.indexOf(':') + 1) : '';
+    };
+    const description = unescapeIcsText(read('DESCRIPTION'));
+    const descriptionLines = description.split('\n');
+    const readDescription = (...labels: string[]) => {
+      for (const label of labels) {
+        const prefix = `${label}: `;
+        const line = descriptionLines.find((candidate) => candidate.startsWith(prefix));
+        if (line) return line.slice(prefix.length);
+      }
+      return '';
+    };
+    return {
+      summary: unescapeIcsText(read('SUMMARY')),
+      start: read('DTSTART'),
+      end: read('DTEND'),
+      generatedAt: read('DTSTAMP'),
+      status: read('STATUS'),
+      transparency: read('TRANSP'),
+      sourceUrl: read('URL'),
+      planTitle: readDescription('계획'),
+      sectionTitle: readDescription('구간'),
+      description: readDescription('설명'),
+      completionCriterion: readDescription('완료 기준'),
+      personalMemo: readDescription('개인 메모'),
+      executionMemo: readDescription('실행 메모'),
+      warning: readDescription('항목 주의', '주의'),
+    };
+  }).sort((left, right) => left.summary.localeCompare(right.summary, 'ko'));
 }
 
 test('effective result keeps one personalized truth across text, workbook, and ICS', () => {
@@ -191,7 +245,7 @@ test('effective result keeps one personalized truth across text, workbook, and I
   assert.ok(positionOf(ics, 'UID:effective-export-flow-item-a@flow-mvp')
     < positionOf(ics, 'UID:effective-export-flow-item-c@flow-mvp'));
   assert.match(ics, /DTSTART;VALUE=DATE:20300905/);
-  assert.match(ics, /SUMMARY:내 맞춤 이사 Flow - 개인화 A/);
+  assert.match(ics, /SUMMARY:개인화 A/);
   assert.match(ics, /설명: 원본 설명 A/);
   assert.match(ics, /개인 메모: 개인 메모 A/);
   assert.match(ics, /실행 메모: 실행 메모 A/);
@@ -203,6 +257,107 @@ test('effective result keeps one personalized truth across text, workbook, and I
     assert.ok(Buffer.byteLength(line, 'utf8') <= 75, `ICS line exceeds 75 bytes: ${line}`);
   }
   assert.equal(JSON.stringify(bundle), sourceBefore);
+});
+
+test('public and saved Calendar artifacts are semantically equal for the same canonical result', () => {
+  const baseResult = buildResult();
+  const effectiveResult: EffectiveFlowResult = {
+    ...baseResult,
+    rows: baseResult.rows.map((row) => {
+      if (row.sourceItemId === 'item-a') {
+        return { ...row, description: '개인화 설명 A' };
+      }
+      if (row.sourceItemId === 'item-c') {
+        return { ...row, completed: true };
+      }
+      return row;
+    }),
+  };
+  const generatedAt = '2026-08-05T03:04:05.000Z';
+  const publicIcs = buildIcsCalendar(
+    bundle,
+    {},
+    '2030-09-01',
+    itemStates,
+    effectiveResult,
+    generatedAt,
+  );
+  const savedIcs = buildMyFlowMultiStepIcs(
+    effectiveResult.rows
+      .filter((row) => Boolean(row.schedule.date) && row.eligibleShapes.includes('calendar'))
+      .map((row) => {
+        const item = bundle.items.find((candidate) => candidate.id === row.sourceItemId);
+        const detail = bundle.itemDetails?.find((candidate) => candidate.item_id === row.sourceItemId);
+        const primarySource = detail?.links?.[0];
+        return {
+          flowTitle: effectiveResult.projection.title,
+          stepId: `saved::${row.id}`,
+          stableEventIdentitySeed: `saved::${row.id}`,
+          stepTitle: row.title,
+          sectionTitle: row.section,
+          date: row.schedule.date,
+          description: row.description ?? item?.description,
+          memo: row.memo,
+          executionMemo: itemStates[row.sourceItemId]?.note,
+          executionStatus: row.completed ? 'done' as const : 'pending' as const,
+          completionCriteria: detail?.completion_criteria,
+          caution: detail?.caution ?? row.caution,
+          sourceLabel: primarySource?.label ?? bundle.flow.source_title,
+          sourceUrl: primarySource?.url ?? bundle.flow.source_url,
+          resources: detail?.links?.map((link) => ({ label: link.label, url: link.url })),
+          generatedAt,
+        };
+      }),
+  );
+
+  const publicSemanticEvents = parseCalendarSemanticEvents(publicIcs);
+  const savedSemanticEvents = parseCalendarSemanticEvents(savedIcs);
+  const expectedSemanticEvents = [
+    {
+      summary: '개인화 A',
+      start: '20300905',
+      end: '20300906',
+      generatedAt: '20260805T030405Z',
+      status: 'TENTATIVE',
+      transparency: 'TRANSPARENT',
+      sourceUrl: 'https://example.com/moving/a',
+      planTitle: '내 맞춤 이사 Flow',
+      sectionTitle: '이사 준비',
+      description: '개인화 설명 A',
+      completionCriterion: 'A 확인서를 저장했다.',
+      personalMemo: '개인 메모 A',
+      executionMemo: '실행 메모 A',
+      warning: 'A 계약 조건을 다시 확인한다.',
+    },
+    {
+      summary: '개인화 C',
+      start: '20300906',
+      end: '20300907',
+      generatedAt: '20260805T030405Z',
+      status: 'CONFIRMED',
+      transparency: 'TRANSPARENT',
+      sourceUrl: 'https://example.com/moving',
+      planTitle: '내 맞춤 이사 Flow',
+      sectionTitle: '이사 준비',
+      description: '원본 설명 C',
+      completionCriterion: '',
+      personalMemo: '',
+      executionMemo: '',
+      warning: '',
+    },
+  ].sort((left, right) => left.summary.localeCompare(right.summary, 'ko'));
+
+  assert.deepEqual(publicSemanticEvents, expectedSemanticEvents);
+  assert.deepEqual(savedSemanticEvents, expectedSemanticEvents);
+  assert.deepEqual(publicSemanticEvents, savedSemanticEvents);
+  assert.match(unfoldIcs(publicIcs), /링크:\\n공식 A 링크: https:\/\/example\.com\/moving\/a/u);
+  assert.match(unfoldIcs(savedIcs), /자료: 공식 A 링크 - https:\/\/example\.com\/moving\/a/u);
+  assert.notEqual(publicIcs, savedIcs, 'route-specific PRODID and UID may differ');
+  assert.notDeepEqual(
+    unfoldIcs(publicIcs).match(/^UID:.+$/gmu),
+    unfoldIcs(savedIcs).match(/^UID:.+$/gmu),
+    'stable route-specific UID identity is intentionally outside semantic parity',
+  );
 });
 
 test('date removal stays removed and source-based UID survives title, date, and order changes', () => {
@@ -265,7 +420,7 @@ test('date removal stays removed and source-based UID survives title, date, and 
   const changedIcs = unfoldIcs(buildIcsCalendar(bundle, {}, undefined, {}, changedResult));
   assert.match(firstIcs, /UID:effective-export-flow-item-a@flow-mvp/);
   assert.match(changedIcs, /UID:effective-export-flow-item-a@flow-mvp/);
-  assert.match(changedIcs, /SUMMARY:다시 이름 붙인 Flow - 다시 이름 붙인 A/);
+  assert.match(changedIcs, /SUMMARY:다시 이름 붙인 A/);
   assert.match(changedIcs, /DTSTART;VALUE=DATE:20301224/);
 
   const tiedResult: EffectiveFlowResult = {
@@ -364,7 +519,7 @@ test('meal plan effective rows keep personalization and meal metadata across spe
   assert.match(ics, /X-WR-CALNAME:우리 아이 이유식 Flow/);
   assert.match(ics, new RegExp(`UID:${mealBundle.flow.id}-${first.id}@flow-mvp`));
   assert.match(ics, /DTSTART;VALUE=DATE:20301010/);
-  assert.match(ics, /SUMMARY:우리 아이 이유식 Flow - 첫 쌀미음/);
+  assert.match(ics, /SUMMARY:첫 쌀미음/);
   assert.match(ics, new RegExp(`새 재료: ${first.new_ingredients.join(', ')}`));
   assert.match(ics, /개인 메모: 첫 섭취 반응을 기록합니다\./);
   assert.doesNotMatch(ics, new RegExp(`${excluded.id}@flow-mvp|${excluded.menu_title}`));

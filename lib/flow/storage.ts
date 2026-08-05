@@ -104,8 +104,15 @@ export type SavedFlowRoutineDefinition = {
 };
 
 export type SavedFlowRecord = {
+  schemaVersion?: 2;
   slug: string;
   savedAt: string;
+  personalCopyKey?: string;
+  sourceFlowKey?: string;
+  sourceFlowSlug?: string;
+  sourceVersion?: string;
+  lastSaveRequestId?: string;
+  savedItemCount?: number;
   personalTitle?: string;
   selectedArtifactMode: SavedFlowArtifactMode;
   dateIntent: PersistedPublicDateIntentMode;
@@ -155,6 +162,8 @@ export type MyFlowCompletionFeedback = {
 
 export type ActiveFlowProgress = {
   slug: string;
+  sourceSlug?: string;
+  sourceFlowKey?: string;
   title: string;
   done: number;
   total: number;
@@ -273,13 +282,50 @@ function toRetiredPersonalCopy(bundle: FlowBundle): FlowBundle {
   };
 }
 
-function preserveSavedArchivedBundles(stored: FlowBundle[]): FlowBundle[] {
+type BundleReadStorage = Pick<Storage, 'getItem'>;
+
+type BundleReadResolution = {
+  bundles: FlowBundle[];
+  persistCurrentRegistry: boolean;
+};
+
+function isStoredFlowBundle(value: unknown): value is FlowBundle {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  const candidate = value as Record<string, unknown>;
+  if (!candidate.flow || typeof candidate.flow !== 'object' || Array.isArray(candidate.flow)) {
+    return false;
+  }
+  const flow = candidate.flow as Record<string, unknown>;
+  return (
+    typeof flow.id === 'string'
+    && flow.id.trim().length > 0
+    && typeof flow.slug === 'string'
+    && flow.slug.trim().length > 0
+    && Array.isArray(candidate.sections)
+    && Array.isArray(candidate.items)
+  );
+}
+
+function parseStoredBundles(raw: string | null): FlowBundle[] {
+  if (!raw) return [];
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.filter(isStoredFlowBundle) : [];
+  } catch {
+    return [];
+  }
+}
+
+function preserveSavedArchivedBundles(
+  stored: FlowBundle[],
+  storage: BundleReadStorage,
+): FlowBundle[] {
   const migrated = stored.map((bundle) => {
     const policy = getRuntimeArchivedFlowPolicy(bundle.flow.slug);
     if (
       !policy ||
       bundle.flow.status !== 'published' ||
-      !localStorage.getItem(`${SAVED_FLOW_KEY_PREFIX}${bundle.flow.slug}`)
+      !storage.getItem(`${SAVED_FLOW_KEY_PREFIX}${bundle.flow.slug}`)
     ) {
       return bundle;
     }
@@ -289,7 +335,7 @@ function preserveSavedArchivedBundles(stored: FlowBundle[]): FlowBundle[] {
   const recovered = seedBundles
     .filter((bundle) => (
       Boolean(getRuntimeArchivedFlowPolicy(bundle.flow.slug)) &&
-      Boolean(localStorage.getItem(`${SAVED_FLOW_KEY_PREFIX}${bundle.flow.slug}`)) &&
+      Boolean(storage.getItem(`${SAVED_FLOW_KEY_PREFIX}${bundle.flow.slug}`)) &&
       !storedSlugs.has(bundle.flow.slug)
     ))
     .map((bundle) => JSON.parse(JSON.stringify(bundle)) as FlowBundle)
@@ -298,39 +344,45 @@ function preserveSavedArchivedBundles(stored: FlowBundle[]): FlowBundle[] {
   return [...migrated, ...recovered];
 }
 
-export function getBundles(): FlowBundle[] {
-  if (!canUseStorage()) return cloneSeedBundles();
-
+function resolveBundles(storage: BundleReadStorage): BundleReadResolution {
   const seeds = cloneSeedBundles();
-  const raw = localStorage.getItem(BUNDLES_KEY);
+  const raw = storage.getItem(BUNDLES_KEY);
   if (!raw) {
     const previous = PREVIOUS_BUNDLES_KEYS
-      .map((key) => localStorage.getItem(key))
-      .filter(Boolean)
-      .flatMap((value) => {
-        try {
-          return JSON.parse(value as string) as FlowBundle[];
-        } catch {
-          return [];
-        }
-      })
-    const migrated = mergeSeedBundles(preserveSavedArchivedBundles(previous), seeds);
-    localStorage.setItem(BUNDLES_KEY, JSON.stringify(migrated));
-    return migrated;
+      .map((key) => storage.getItem(key))
+      .flatMap(parseStoredBundles);
+    const migrated = mergeSeedBundles(
+      preserveSavedArchivedBundles(previous, storage),
+      seeds,
+    );
+    return { bundles: migrated, persistCurrentRegistry: true };
   }
 
   try {
-    const stored = preserveSavedArchivedBundles(JSON.parse(raw) as FlowBundle[]);
+    const stored = preserveSavedArchivedBundles(parseStoredBundles(raw), storage);
     const merged = mergeSeedBundles(stored, seeds);
     const serialized = JSON.stringify(merged);
-    if (serialized !== raw) {
-      localStorage.setItem(BUNDLES_KEY, serialized);
-    }
-    return merged;
+    return {
+      bundles: merged,
+      persistCurrentRegistry: serialized !== raw,
+    };
   } catch {
-    localStorage.setItem(BUNDLES_KEY, JSON.stringify(seeds));
-    return seeds;
+    return { bundles: seeds, persistCurrentRegistry: true };
   }
+}
+
+export function readBundles(): FlowBundle[] {
+  if (!canUseStorage()) return cloneSeedBundles();
+  return resolveBundles(localStorage).bundles;
+}
+
+export function getBundles(): FlowBundle[] {
+  if (!canUseStorage()) return cloneSeedBundles();
+  const resolution = resolveBundles(localStorage);
+  if (resolution.persistCurrentRegistry) {
+    localStorage.setItem(BUNDLES_KEY, JSON.stringify(resolution.bundles));
+  }
+  return resolution.bundles;
 }
 
 export function saveBundles(bundles: FlowBundle[]): void {
@@ -502,10 +554,48 @@ export function normalizeSavedFlowRecord(value: unknown): SavedFlowRecord | unde
     ? record.personalTitle.trim().slice(0, 80)
     : undefined;
   const routineDefinition = normalizeSavedFlowRoutineDefinition(record.routineDefinition);
+  const schemaVersion = record.schemaVersion === 2 ? 2 : undefined;
+  const personalCopyKey = typeof record.personalCopyKey === 'string' && record.personalCopyKey.trim()
+    ? record.personalCopyKey.trim()
+    : undefined;
+  const sourceFlowKey = typeof record.sourceFlowKey === 'string' && record.sourceFlowKey.trim()
+    ? record.sourceFlowKey.trim()
+    : undefined;
+  const sourceFlowSlug = typeof record.sourceFlowSlug === 'string' && record.sourceFlowSlug.trim()
+    ? record.sourceFlowSlug.trim()
+    : undefined;
+  const sourceVersion = typeof record.sourceVersion === 'string' && record.sourceVersion.trim()
+    ? record.sourceVersion.trim()
+    : undefined;
+  const lastSaveRequestId = typeof record.lastSaveRequestId === 'string' && record.lastSaveRequestId.trim()
+    ? record.lastSaveRequestId.trim()
+    : undefined;
+  const savedItemCount = Number.isInteger(record.savedItemCount) && Number(record.savedItemCount) >= 0
+    ? Number(record.savedItemCount)
+    : undefined;
+  if (
+    schemaVersion === 2
+    && (
+      !personalCopyKey
+      || personalCopyKey !== record.slug
+      || !sourceFlowKey
+      || !sourceFlowSlug
+      || !sourceVersion
+      || !lastSaveRequestId
+      || savedItemCount === undefined
+    )
+  ) return undefined;
 
   return {
+    ...(schemaVersion ? { schemaVersion } : {}),
     slug: record.slug,
     savedAt: record.savedAt,
+    ...(personalCopyKey ? { personalCopyKey } : {}),
+    ...(sourceFlowKey ? { sourceFlowKey } : {}),
+    ...(sourceFlowSlug ? { sourceFlowSlug } : {}),
+    ...(sourceVersion ? { sourceVersion } : {}),
+    ...(lastSaveRequestId ? { lastSaveRequestId } : {}),
+    ...(savedItemCount !== undefined ? { savedItemCount } : {}),
     ...(personalTitle ? { personalTitle } : {}),
     selectedArtifactMode: isSavedFlowArtifactMode(record.selectedArtifactMode) ? record.selectedArtifactMode : 'calendar',
     dateIntent,
@@ -523,6 +613,29 @@ export function getSavedFlowRecord(slug: string): SavedFlowRecord | undefined {
   } catch {
     return undefined;
   }
+}
+
+export function getAllSavedFlowRecords(
+  storage?: SavedFlowReadStorage,
+): SavedFlowRecord[] {
+  const target = storage ?? (canUseStorage() ? localStorage : undefined);
+  if (!target) return [];
+  const records = new Map<string, SavedFlowRecord>();
+  try {
+    for (let index = 0; index < target.length; index += 1) {
+      const key = target.key(index);
+      if (!key?.startsWith(SAVED_FLOW_KEY_PREFIX)) continue;
+      try {
+        const record = normalizeSavedFlowRecord(JSON.parse(target.getItem(key) || 'null'));
+        if (record) records.set(record.slug, record);
+      } catch {
+        // A malformed saved copy remains untouched and is omitted from runtime reads.
+      }
+    }
+  } catch {
+    return [];
+  }
+  return Array.from(records.values()).sort((left, right) => left.slug.localeCompare(right.slug));
 }
 
 export function hasSavedFlowEntry(storage?: SavedFlowReadStorage): boolean {
@@ -552,12 +665,19 @@ export function hasSavedFlowEntry(storage?: SavedFlowReadStorage): boolean {
   });
 }
 
-export function saveFlowRecord(
+export type SavedFlowRecordWriteInput = Omit<
+  SavedFlowRecord,
+  'slug' | 'savedAt' | 'dateIntent'
+> & {
+  dateIntent?: PersistedPublicDateIntentMode;
+};
+
+export function buildSavedFlowRecord(
   slug: string,
-  value: Omit<SavedFlowRecord, 'slug' | 'savedAt' | 'dateIntent'> & { dateIntent?: PersistedPublicDateIntentMode },
-): SavedFlowRecord | undefined {
-  if (!canUseStorage()) return undefined;
-  const previous = getSavedFlowRecord(slug);
+  value: SavedFlowRecordWriteInput,
+  previous?: SavedFlowRecord,
+  savedAt = new Date().toISOString(),
+): SavedFlowRecord {
   const weekdays = value.weekdays ?? previous?.weekdays;
   const personalTitle = value.personalTitle?.trim().slice(0, 80) || previous?.personalTitle;
   const routineDefinition = normalizeSavedFlowRoutineDefinition(value.routineDefinition ?? previous?.routineDefinition);
@@ -565,8 +685,17 @@ export function saveFlowRecord(
   const dateIntent: PersistedPublicDateIntentMode =
     value.dateIntent === 'undated' ? 'undated' : requestedAnchor ? 'custom' : 'undated';
   const record: SavedFlowRecord = {
+    ...(value.schemaVersion === 2 ? { schemaVersion: 2 as const } : {}),
     slug,
-    savedAt: new Date().toISOString(),
+    savedAt,
+    ...(value.personalCopyKey?.trim() ? { personalCopyKey: value.personalCopyKey.trim() } : {}),
+    ...(value.sourceFlowKey?.trim() ? { sourceFlowKey: value.sourceFlowKey.trim() } : {}),
+    ...(value.sourceFlowSlug?.trim() ? { sourceFlowSlug: value.sourceFlowSlug.trim() } : {}),
+    ...(value.sourceVersion?.trim() ? { sourceVersion: value.sourceVersion.trim() } : {}),
+    ...(value.lastSaveRequestId?.trim() ? { lastSaveRequestId: value.lastSaveRequestId.trim() } : {}),
+    ...(Number.isInteger(value.savedItemCount) && Number(value.savedItemCount) >= 0
+      ? { savedItemCount: Number(value.savedItemCount) }
+      : {}),
     ...(personalTitle ? { personalTitle } : {}),
     selectedArtifactMode: value.selectedArtifactMode,
     dateIntent,
@@ -575,6 +704,15 @@ export function saveFlowRecord(
     ...(weekdays?.length ? { weekdays: Array.from(new Set(weekdays)) } : {}),
     ...(routineDefinition ? { routineDefinition } : {}),
   };
+  return record;
+}
+
+export function saveFlowRecord(
+  slug: string,
+  value: SavedFlowRecordWriteInput,
+): SavedFlowRecord | undefined {
+  if (!canUseStorage()) return undefined;
+  const record = buildSavedFlowRecord(slug, value, getSavedFlowRecord(slug));
   localStorage.setItem(`${SAVED_FLOW_KEY_PREFIX}${slug}`, JSON.stringify(record));
   recordCanonicalFlowWrite(localStorage, slug, record.savedAt);
   localStorage.setItem('flow:meta:last-visit', record.savedAt);
@@ -1177,6 +1315,45 @@ export function getActiveFlowProgress(bundles: FlowBundle[] = getBundles()): Act
       });
     }
   }
+
+  const progressSlugs = new Set(progress.map((entry) => entry.slug));
+  getAllSavedFlowRecords().forEach((savedRecord) => {
+    if (progressSlugs.has(savedRecord.slug)) return;
+    const sourceSlug = savedRecord.sourceFlowSlug?.trim();
+    const sourceFlowKey = savedRecord.sourceFlowKey?.trim();
+    if (!sourceSlug && !sourceFlowKey) return;
+    const sourceBundle = bundles.find((bundle) => (
+      (sourceSlug && bundle.flow.slug === sourceSlug)
+      || (sourceFlowKey && bundle.flow.id === sourceFlowKey)
+    ));
+    if (!sourceBundle) return;
+
+    const copySlug = savedRecord.personalCopyKey ?? savedRecord.slug;
+    const checks = getChecks(copySlug);
+    const itemStates = getItemStates(copySlug);
+    const storedAnchor = getStoredAnchor(copySlug);
+    const ids = sourceBundle.flow.content_type === 'meal_plan'
+      ? (sourceBundle.mealSlots ?? []).map((slot) => slot.id)
+      : sourceBundle.items.map((item) => item.id);
+    const skipped = ids.filter((id) => isFlowItemOmittedFromActiveProjection(itemStates[id])).length;
+    const total = Math.max(ids.length - skipped, 0);
+    const done = ids.filter((id) => checks[id] && !isFlowItemOmittedFromActiveProjection(itemStates[id])).length;
+    progress.push({
+      slug: copySlug,
+      sourceSlug: sourceSlug ?? sourceBundle.flow.slug,
+      sourceFlowKey: sourceFlowKey ?? sourceBundle.flow.id,
+      title: savedRecord.personalTitle ?? sourceBundle.flow.title,
+      done,
+      total,
+      skipped,
+      anchor: storedAnchor.anchor || savedRecord.anchor,
+      anchorMode: normalizePublicDateIntentMode(storedAnchor.mode),
+      ...(savedRecord.weekdays?.length ? { weekdays: savedRecord.weekdays } : {}),
+      ...(savedRecord.routineDefinition ? { routineDefinition: savedRecord.routineDefinition } : {}),
+      lastVisited: savedRecord.savedAt ?? lastVisited,
+    });
+    progressSlugs.add(copySlug);
+  });
 
   return progress;
 }

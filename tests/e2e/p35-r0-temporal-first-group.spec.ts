@@ -8,6 +8,7 @@ import {
   getOpenMyFlowItemDetail,
   openMyFlowLibraryFlow,
 } from './helpers/my-flow-library';
+import { savePublicFlow } from './helpers/public-flow-save';
 
 const evidenceRoot = process.env.FLOWME_P35_R0_EVIDENCE_DIR;
 
@@ -172,11 +173,8 @@ test.describe('P35-R0 temporal first group', () => {
     await expect(warning).toContainText('함께 저장돼요');
     await capture(page, 'p35-r0-past-date-warning-390.png', warning);
 
-    await page.getByTestId('public-flow-save-primary-mobile').click();
-    const receipt = page.getByTestId('public-flow-saved-receipt');
-    await expect(receipt).toContainText('캘린더 24개를 저장했어요');
-    await receipt.getByTestId('public-flow-saved-receipt-primary').click();
-    await expect(page).toHaveURL('/my?view=flows&flow=moving-d30-basic');
+    const saveBanner = await savePublicFlow(page, page.getByTestId('public-flow-save-primary-mobile'));
+    await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toHaveText('저장됨 · 24개');
     await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
 
     let workspace = await openSavedWorkspace(page);
@@ -271,7 +269,7 @@ test.describe('P35-R0 temporal first group', () => {
     const completedCalendarRow = selectedDay
       .locator(`[data-testid="my-flow-execution-row-shell"]:has(article[data-row-key="${firstRowKey}"])`);
     await expect(completedCalendarRow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
-    await completedCalendarRow.getByRole('button', { name: /Flow에서 열기/ }).click();
+    await completedCalendarRow.getByRole('button', { name: /계획에서 열기/ }).click();
     detail = getOpenMyFlowItemDetail(page);
     const reopen = detail.getByTestId('my-flow-task-complete-control');
     await expect(reopen).toHaveCount(1);
@@ -362,8 +360,7 @@ test.describe('P35-R0 temporal first group', () => {
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
     await page.getByTestId('public-flow-anchor-input').fill(today);
-    await page.getByTestId('public-flow-save-primary-mobile').click();
-    await page.getByTestId('public-flow-saved-receipt-primary').click();
+    await savePublicFlow(page, page.getByTestId('public-flow-save-primary-mobile'));
     workspace = await openMyFlowLibraryFlow(
       page,
       'curated-allblanc-morning-workout',

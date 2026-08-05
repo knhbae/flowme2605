@@ -7,6 +7,8 @@ export type PersonalFlowLifecycleStorage = {
   setItem(key: string, value: string): void;
 };
 
+export type PersonalFlowLifecycleReader = Pick<PersonalFlowLifecycleStorage, 'getItem'>;
+
 export type PersonalFlowLifecycleRecord = {
   schemaVersion: typeof PERSONAL_FLOW_LIFECYCLE_SCHEMA_VERSION;
   archivedFlowSlugs: string[];
@@ -93,6 +95,19 @@ export function loadPersonalFlowLifecycle(
   storage: PersonalFlowLifecycleStorage,
   now = new Date().toISOString(),
 ): PersonalFlowLifecycleLoadResult {
+  const readResult = readPersonalFlowLifecycle(storage, now);
+  if (readResult.source !== 'legacy_hidden_flows') return readResult;
+
+  return {
+    ...readResult,
+    record: savePersonalFlowLifecycle(storage, readResult.record),
+  };
+}
+
+export function readPersonalFlowLifecycle(
+  storage: PersonalFlowLifecycleReader,
+  now = new Date().toISOString(),
+): PersonalFlowLifecycleLoadResult {
   const storedRaw = storage.getItem(PERSONAL_FLOW_LIFECYCLE_STORAGE_KEY);
   const storedValue = parseJson(storedRaw);
   if (storedValue && typeof storedValue === 'object' && !Array.isArray(storedValue)) {
@@ -108,7 +123,7 @@ export function loadPersonalFlowLifecycle(
   const legacyValue = parseJson(legacyRaw);
   const legacyArchivedFlowSlugs = normalizeSlugList(legacyValue);
   if (legacyArchivedFlowSlugs.length > 0) {
-    const record = savePersonalFlowLifecycle(storage, {
+    const record = normalizePersonalFlowLifecycle({
       schemaVersion: PERSONAL_FLOW_LIFECYCLE_SCHEMA_VERSION,
       archivedFlowSlugs: legacyArchivedFlowSlugs,
       updatedAt: now,
@@ -116,7 +131,7 @@ export function loadPersonalFlowLifecycle(
         source: 'legacy_hidden_flows',
         migratedAt: now,
       },
-    });
+    }, now);
     return {
       record,
       source: 'legacy_hidden_flows',

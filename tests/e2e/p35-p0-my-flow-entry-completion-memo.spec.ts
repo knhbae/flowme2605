@@ -5,10 +5,10 @@ import {
   expandMyFlowWholePlan,
   getOpenMyFlowItemDetail,
 } from './helpers/my-flow-library';
+import { savePublicFlow } from './helpers/public-flow-save';
 
 const FLOW_SLUG = 'vehicle-inspection-prep';
 const ITEM_DRAFTS_KEY = 'flow:my-flow:item-drafts';
-const CHECKS_KEY = `flow_builder_mvp_checks_${FLOW_SLUG}`;
 const LEGACY_ITEM_STATE_KEY = `flow_builder_mvp_item_state_${FLOW_SLUG}`;
 const EXECUTION_NOTES_KEY = `flow:my-flow:execution-notes:${FLOW_SLUG}`;
 const RUN_REGISTRY_KEY = `flow:run-registry:${FLOW_SLUG}`;
@@ -80,7 +80,7 @@ async function expectCompatibilityStoresPreserved(page: Page, memoKey: string, m
     },
   });
 
-  expect(state.itemDrafts[memoKey]?.memo).toBe(memo);
+  expect(state.itemDrafts).toMatchObject({ [memoKey]: { memo } });
   expect(state.itemDrafts[SENTINEL_DRAFT_KEY]).toEqual({
     title: '다른 Flow 제목',
     memo: '보존할 다른 Flow 메모',
@@ -92,15 +92,35 @@ async function expectCompatibilityStoresPreserved(page: Page, memoKey: string, m
   expect(state.suspiciousMemoKeys).toEqual([]);
 }
 
-async function enterItemEdit(detail: Locator) {
+async function enterItemEdit(page: Page, detail: Locator): Promise<Locator> {
   const quickEdit = detail.getByTestId('my-flow-quick-item-edit');
   if (await quickEdit.isVisible().catch(() => false)) {
     await quickEdit.click();
-    return;
+  } else {
+    const summary = detail.getByTestId('my-flow-detail-read-summary');
+    if ((await summary.getAttribute('open')) === null) await summary.locator('summary').click();
+    await summary.getByTestId('my-flow-detail-edit-toggle').click();
   }
-  const summary = detail.getByTestId('my-flow-detail-read-summary');
-  if ((await summary.getAttribute('open')) === null) await summary.locator('summary').click();
-  await summary.getByTestId('my-flow-detail-edit-toggle').click();
+  const editor = page.locator(
+    '[data-testid="saved-flow-editor-item"]:visible, '
+      + '[data-testid="my-flow-item-detail"][data-detail-mode="edit"]:visible',
+  ).last();
+  await expect(editor).toBeVisible();
+  return editor;
+}
+
+function getItemMemoInput(editor: Locator): Locator {
+  return editor.locator(
+    '[data-testid="saved-flow-editor-item-detail-input"], '
+      + '[data-testid="my-flow-detail-memo"]',
+  );
+}
+
+function getItemEditorCancel(editor: Locator): Locator {
+  return editor.locator(
+    '[data-testid="saved-flow-editor-item-cancel"], '
+      + '[data-testid="my-flow-editor-cancel"]',
+  );
 }
 
 async function openFirstEntryItem(page: Page, execution: Locator) {
@@ -121,19 +141,18 @@ test.describe('P35 P0 My Flow first entry, completion, and memo facade', () => {
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
 
-    await page.getByTestId('public-flow-save-primary-mobile').click();
-    const receipt = page.getByTestId('public-flow-saved-receipt');
-    await expect(receipt).toBeVisible();
-    await expect(receipt.getByTestId('public-flow-saved-receipt-primary')).toHaveAccessibleName(
-      '내 Flow에서 이어하기',
+    const saveBanner = await savePublicFlow(
+      page,
+      page.getByTestId('public-flow-save-primary-mobile'),
     );
+    await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toHaveText('저장됨 · 10개');
+    const personalCopyKey = new URL(page.url()).searchParams.get('flow') ?? '';
+    expect(personalCopyKey).toMatch(/^personal-copy:/u);
     await seedCompatibilityStores(page);
-    await receipt.getByTestId('public-flow-saved-receipt-primary').click();
 
-    await expect(page).toHaveURL(`/my?view=flows&flow=${FLOW_SLUG}`);
     await expect.poll(() => page.evaluate((key) => window.sessionStorage.getItem(key), FIRST_ENTRY_SESSION_KEY)).toBeNull();
     const workspace = page.locator(
-      `[data-testid="my-flow-mobile-workspace"][data-flow-slug="${FLOW_SLUG}"]`,
+      `[data-testid="my-flow-mobile-workspace"][data-flow-slug="${personalCopyKey}"]`,
     );
     await expect(workspace).toBeVisible();
     await expect(workspace).toHaveAttribute('data-effective-result-count', '10');
@@ -170,27 +189,39 @@ test.describe('P35 P0 My Flow first entry, completion, and memo facade', () => {
       'data-effective-personal-version',
       effectivePersonalVersion!,
     );
-    const memoKey = `${FLOW_SLUG}::${itemId}::draft-overlay`;
+    const memoKey = `${personalCopyKey}::${itemId}::draft-overlay`;
+    const personalChecksKey = `flow_builder_mvp_checks_${personalCopyKey}`;
     await expect(opened.detail.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
     await expect(page.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
     await expect(opened.detail.getByTestId('my-flow-inline-note-open')).toHaveCount(0);
 
-    await enterItemEdit(opened.detail);
-    const memoInput = opened.detail.getByTestId('my-flow-detail-memo');
+    const editor = await enterItemEdit(page, opened.detail);
+    const memoInput = getItemMemoInput(editor);
     await expect(memoInput).toHaveCount(1);
-    await expect(memoInput).toHaveValue('');
+    await expect.soft(memoInput).toHaveValue('');
     const memo = '자동차등록증 원본과 사진을 함께 준비';
     await memoInput.fill(memo);
-    const checksBeforeMemoSave = await page.evaluate((key) => window.localStorage.getItem(key), CHECKS_KEY);
-    await opened.detail.getByTestId('my-flow-detail-save-changes').click();
-    await expect(page.getByTestId('my-flow-item-detail-sheet')).toHaveCount(0);
+    const checksBeforeMemoSave = await page.evaluate((key) => window.localStorage.getItem(key), personalChecksKey);
+    await editor.getByTestId('my-flow-detail-save-changes').click();
+    await expect(page.getByTestId('saved-flow-editor-item')).toHaveCount(0);
+    const parentPlanEditor = page.getByTestId('saved-flow-editor-plan');
+    if (await parentPlanEditor.isVisible().catch(() => false)) {
+      await parentPlanEditor.getByTestId('saved-flow-editor-save').click();
+      await expect(parentPlanEditor).toHaveCount(0);
+    }
     await expectCompatibilityStoresPreserved(page, memoKey, memo);
-    expect(await page.evaluate((key) => window.localStorage.getItem(key), CHECKS_KEY)).toBe(checksBeforeMemoSave);
+    expect(await page.evaluate((key) => window.localStorage.getItem(key), personalChecksKey)).toBe(checksBeforeMemoSave);
+    await closeOpenMyFlowItemDetail(page);
 
     const reopened = await openFirstEntryItem(page, execution);
-    await enterItemEdit(reopened.detail);
-    await expect(reopened.detail.getByTestId('my-flow-detail-memo')).toHaveValue(memo);
-    await reopened.detail.getByTestId('my-flow-editor-cancel').click();
+    const reopenedEditor = await enterItemEdit(page, reopened.detail);
+    await expect(getItemMemoInput(reopenedEditor)).toHaveValue(memo);
+    await getItemEditorCancel(reopenedEditor).click();
+    const reopenedParentPlan = page.getByTestId('saved-flow-editor-plan');
+    if (await reopenedParentPlan.isVisible().catch(() => false)) {
+      await reopenedParentPlan.getByTestId('saved-flow-editor-cancel').click();
+      await expect(reopenedParentPlan).toHaveCount(0);
+    }
     await closeOpenMyFlowItemDetail(page);
 
     const completionDetail = (await openFirstEntryItem(page, execution)).detail;
@@ -206,7 +237,7 @@ test.describe('P35 P0 My Flow first entry, completion, and memo facade', () => {
     ).toHaveCount(0);
     const completedChecks = await page.evaluate((key) => (
       JSON.parse(window.localStorage.getItem(key) || '{}')
-    ), CHECKS_KEY);
+    ), personalChecksKey);
     expect(Object.values(completedChecks).some(Boolean)).toBe(true);
     await expectCompatibilityStoresPreserved(page, memoKey, memo);
 
@@ -234,7 +265,7 @@ test.describe('P35 P0 My Flow first entry, completion, and memo facade', () => {
     await closeOpenMyFlowItemDetail(page);
     await page.reload();
     const reloadedWorkspace = page.locator(
-      `[data-testid="my-flow-mobile-workspace"][data-flow-slug="${FLOW_SLUG}"]`,
+      `[data-testid="my-flow-mobile-workspace"][data-flow-slug="${personalCopyKey}"]`,
     );
     await expect(reloadedWorkspace).toBeVisible();
     await expect(reloadedWorkspace.getByTestId('my-flow-workspace-plan')).toHaveAttribute(

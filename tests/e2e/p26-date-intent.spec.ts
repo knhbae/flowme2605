@@ -31,16 +31,20 @@ test('an example moving schedule stays provisional until the person chooses a re
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/f/moving-d30-basic');
 
-  await expect(page.getByTestId('public-flow-provisional-schedule')).toHaveText(
-    '예시 일정 · 저장되지 않음',
+  const capability = page.getByTestId('public-flow-capability-result');
+  await expect(capability).toHaveAttribute('data-capability-primary-destination', 'checklist');
+  await expect(capability.getByTestId('flow-capability-selected-preview')).toHaveAttribute(
+    'data-capability-destination',
+    'checklist',
   );
-  await expect(page.getByTestId('public-flow-artifact-preview')).toHaveAttribute(
-    'data-selected-shape',
-    'calendar',
+  const conditionalCalendar = capability.locator(
+    '[data-testid="flow-capability-conditional-result"][data-capability-destination="calendar"]',
   );
+  await expect(conditionalCalendar).toHaveAttribute('data-capability-output-count', '0');
+  await expect(conditionalCalendar).toHaveAttribute('data-capability-expected-output-count', '24');
 
   const primary = page.getByTestId('public-flow-save-primary-mobile');
-  await expect(primary).toHaveText('이사일 정하고 캘린더로 시작');
+  await expect(primary).toHaveText('이사일 정하기');
   await primary.click();
   await expect(page.getByTestId('public-flow-anchor-input')).toBeFocused();
   await expect(page.getByTestId('public-flow-saved-receipt')).toHaveCount(0);
@@ -49,23 +53,26 @@ test('an example moving schedule stays provisional until the person chooses a re
   ))).toBeNull();
 
   const saveUndated = page.getByTestId('public-flow-save-undated-mobile');
-  await expect(saveUndated).toHaveText('날짜 없이 체크리스트 24개로 시작');
+  await expect(saveUndated).toHaveText('날짜 없이 내 계획에 저장');
   await capture(page, '00-provisional-example-mobile.png');
-  const receipt = await savePublicFlow(page, saveUndated);
-  await expect(receipt).toContainText('체크리스트');
-  await expect(receipt).not.toContainText('일정 범위');
+  const saveBanner = await savePublicFlow(page, saveUndated);
+  await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toContainText('24');
+  const personalCopyKey = new URL(page.url()).searchParams.get('flow') ?? '';
+  expect(personalCopyKey).toMatch(/^personal-copy:/u);
 
-  const state = await page.evaluate(() => ({
-    saved: JSON.parse(window.localStorage.getItem('flow:saved:moving-d30-basic') || 'null'),
-    anchor: JSON.parse(window.localStorage.getItem('flow:moving-d30-basic:anchorDate') || 'null'),
-  }));
+  const state = await page.evaluate((copyKey) => ({
+    saved: JSON.parse(window.localStorage.getItem(`flow:saved:${copyKey}`) || 'null'),
+    anchor: JSON.parse(window.localStorage.getItem(`flow:${copyKey}:anchorDate`) || 'null'),
+    legacySourceRecord: window.localStorage.getItem('flow:saved:moving-d30-basic'),
+  }), personalCopyKey);
   expect(state.saved).toMatchObject({
     dateIntent: 'undated',
     selectedArtifactMode: 'checklist',
   });
   expect(state.saved.anchor).toBeUndefined();
   expect(state.anchor).toEqual({ mode: 'undated', anchor: '' });
-  await openSavedPublicFlow(page, receipt);
+  expect(state.legacySourceRecord).toBeNull();
+  await openSavedPublicFlow(page, saveBanner);
   await expect(page.getByTestId('my-flow-shape-aware-execution')).toHaveAttribute(
     'data-execution-shape',
     'checklist',
@@ -79,30 +86,38 @@ test('a natural undated checklist saves without a competing date mode', async ({
 
   await expect(page.getByTestId('public-flow-date-intent')).toHaveCount(0);
   await expect(page.getByTestId('public-flow-primary-setup')).toHaveCount(0);
-  await expect(page.getByTestId('public-flow-artifact-preview')).toHaveAttribute(
+  await expect(page.getByTestId('flow-capability-artifact-preview')).toHaveAttribute(
     'data-selected-shape',
     'checklist',
   );
 
-  const exportEntry = page.getByTestId('public-flow-export-secondary-entry');
-  await exportEntry.getByTestId('public-flow-export-secondary-toggle').click();
-  const calendarOption = exportEntry.getByRole('button', { name: /캘린더 파일 받기/ });
-  await expect(calendarOption).toHaveCount(0);
-  await page.getByTestId('public-flow-export-branch-close').click();
+  const capability = page.getByTestId('public-flow-capability-result');
+  await expect(capability).toHaveAttribute('data-capability-primary-destination', 'checklist');
+  await expect(capability.locator(
+    '[data-testid="flow-capability-result-choice"][data-capability-destination="calendar"]'
+      + '[data-capability-candidate-role="primary"], '
+      + '[data-testid="flow-capability-result-choice"][data-capability-destination="calendar"]'
+      + '[data-capability-candidate-role="available"][data-capability-immediate="true"]',
+  )).toHaveCount(0);
 
   const mobileSave = page.getByTestId('public-flow-save-primary-mobile');
-  await expect(mobileSave).toHaveText('체크리스트 10개로 시작');
+  await expect(mobileSave).toHaveText('내 계획에 저장');
   await capture(page, '01-natural-undated-mobile.png');
-  const receipt = await savePublicFlow(page, mobileSave);
+  const saveBanner = await savePublicFlow(page, mobileSave);
+  await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toContainText('10');
+  const personalCopyKey = new URL(page.url()).searchParams.get('flow') ?? '';
+  expect(personalCopyKey).toMatch(/^personal-copy:/u);
 
-  const state = await page.evaluate(() => ({
-    saved: JSON.parse(window.localStorage.getItem('flow:saved:vehicle-inspection-prep') || 'null'),
-    anchor: JSON.parse(window.localStorage.getItem('flow:vehicle-inspection-prep:anchorDate') || 'null'),
-  }));
+  const state = await page.evaluate((copyKey) => ({
+    saved: JSON.parse(window.localStorage.getItem(`flow:saved:${copyKey}`) || 'null'),
+    anchor: JSON.parse(window.localStorage.getItem(`flow:${copyKey}:anchorDate`) || 'null'),
+    legacySourceRecord: window.localStorage.getItem('flow:saved:vehicle-inspection-prep'),
+  }), personalCopyKey);
   expect(state.saved.dateIntent).toBe('undated');
   expect(state.saved.anchor).toBeUndefined();
   expect(state.anchor).toEqual({ mode: 'undated', anchor: '' });
-  await openSavedPublicFlow(page, receipt);
+  expect(state.legacySourceRecord).toBeNull();
+  await openSavedPublicFlow(page, saveBanner);
   const focusedWorkspace = page.getByTestId('my-flow-mobile-workspace');
   await expect(focusedWorkspace).toBeVisible();
   await expect(focusedWorkspace).toContainText('자동차검사 D-14 준비');
@@ -119,22 +134,29 @@ test('a date-anchored public Flow persists its one required date and enables ICS
   await page.getByTestId('public-flow-anchor-input').fill('2026-07-28');
   await expect(page.getByTestId('public-flow-date-intent')).toHaveCount(0);
   const desktopSave = page.getByTestId('public-flow-save-primary');
-  await expect(desktopSave).toHaveText('캘린더 24개로 시작');
+  await expect(desktopSave).toHaveText('내 계획에 저장');
 
-  const exportEntry = page.getByTestId('public-flow-export-secondary-entry');
-  await exportEntry.getByTestId('public-flow-export-secondary-toggle').click();
-  await expect(exportEntry.getByRole('button', { name: /캘린더 파일 받기/ })).toBeVisible();
+  const capability = page.getByTestId('public-flow-capability-result');
+  await expect(capability).toHaveAttribute('data-capability-primary-destination', 'calendar');
+  await expect(capability.locator(
+    '[data-testid="flow-capability-result-choice"][data-capability-destination="calendar"]'
+      + '[data-capability-candidate-role="primary"]',
+  )).toHaveCount(1);
   await capture(page, '02-custom-date-wide.png');
-  await page.getByTestId('public-flow-export-branch-close').click();
-  await desktopSave.click();
+  const saveBanner = await savePublicFlow(page, desktopSave);
+  await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toContainText('24');
+  const personalCopyKey = new URL(page.url()).searchParams.get('flow') ?? '';
+  expect(personalCopyKey).toMatch(/^personal-copy:/u);
 
-  const state = await page.evaluate(() => ({
-    saved: JSON.parse(window.localStorage.getItem('flow:saved:moving-d30-basic') || 'null'),
-    anchor: JSON.parse(window.localStorage.getItem('flow:moving-d30-basic:anchorDate') || 'null'),
-  }));
+  const state = await page.evaluate((copyKey) => ({
+    saved: JSON.parse(window.localStorage.getItem(`flow:saved:${copyKey}`) || 'null'),
+    anchor: JSON.parse(window.localStorage.getItem(`flow:${copyKey}:anchorDate`) || 'null'),
+    legacySourceRecord: window.localStorage.getItem('flow:saved:moving-d30-basic'),
+  }), personalCopyKey);
   expect(state.saved.dateIntent).toBe('custom');
   expect(state.saved.anchor).toBe('2026-07-28');
   expect(state.anchor).toEqual({ mode: 'custom', anchor: '2026-07-28' });
+  expect(state.legacySourceRecord).toBeNull();
   await page.goto('/calendar');
   await page.getByTestId('my-flow-month-picker').fill('2026-07');
   await expect(
@@ -145,7 +167,7 @@ test('a date-anchored public Flow persists its one required date and enables ICS
     .click();
   await expect(
     page.getByTestId('my-flow-calendar-selected-day').getByRole('button', {
-      name: /Flow에서 열기/,
+      name: /계획에서 열기/,
     }).first(),
   ).toBeVisible();
   await expect(page.getByTestId('my-flow-item-detail-sheet')).toHaveCount(0);
@@ -158,17 +180,17 @@ test('a natural undated result survives reload without exposing date-mode contro
   await expect(page.getByTestId('public-flow-date-intent')).toHaveCount(0);
   await page.reload();
   await expect(page.getByTestId('public-flow-date-intent')).toHaveCount(0);
-  await expect(page.getByTestId('public-flow-artifact-preview')).toHaveAttribute(
+  await expect(page.getByTestId('flow-capability-artifact-preview')).toHaveAttribute(
     'data-selected-shape',
     'checklist',
   );
   await expect(page.getByTestId('public-flow-save-primary-mobile')).toHaveText(
-    '체크리스트 10개로 시작',
+    '내 계획에 저장',
   );
   await capture(page, '03-explicit-undated-mobile.png');
 });
 
-test('legacy example save migrates to undated and preserves the old preview anchor', async ({ page }) => {
+test('public preview preserves a legacy example save byte-for-byte until the user changes it', async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.setItem(
       'flow:vehicle-inspection-prep:anchorDate',
@@ -185,19 +207,15 @@ test('legacy example save migrates to undated and preserves the old preview anch
     );
   });
   await page.goto('/f/vehicle-inspection-prep');
-  await expect(page.getByTestId('public-flow-saved-receipt')).toBeVisible();
-  await expect.poll(() => page.evaluate(() =>
-    JSON.parse(window.localStorage.getItem('flow:saved:vehicle-inspection-prep') || 'null')?.dateIntent,
-  )).toBe('undated');
+  await expect(page.getByTestId('public-flow-saved-receipt')).toHaveCount(0);
+  await expect(page.getByTestId('public-flow-capability-result')).toBeVisible();
 
   const state = await page.evaluate(() => ({
-    saved: JSON.parse(window.localStorage.getItem('flow:saved:vehicle-inspection-prep') || 'null'),
-    anchor: JSON.parse(window.localStorage.getItem('flow:vehicle-inspection-prep:anchorDate') || 'null'),
+    savedRaw: window.localStorage.getItem('flow:saved:vehicle-inspection-prep'),
+    anchorRaw: window.localStorage.getItem('flow:vehicle-inspection-prep:anchorDate'),
   }));
-  expect(state.saved).toMatchObject({
-    dateIntent: 'undated',
-    legacyExampleAnchor: '2026-08-03',
-  });
-  expect(state.saved.anchor).toBeUndefined();
-  expect(state.anchor).toEqual({ mode: 'undated', anchor: '' });
+  expect(state.savedRaw).toBe(
+    '{"slug":"vehicle-inspection-prep","savedAt":"2026-07-20T00:00:00.000Z","selectedArtifactMode":"calendar","anchor":"2026-08-03"}',
+  );
+  expect(state.anchorRaw).toBe('{"mode":"example","anchor":""}');
 });

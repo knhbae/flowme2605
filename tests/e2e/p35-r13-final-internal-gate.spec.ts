@@ -67,7 +67,7 @@ test.describe('P35-R13 final internal gate', () => {
   test('390 defaults to B with exact date rails and one low-command execution row', async ({ page }) => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/my?demo=ux12');
+    await page.goto('/my?demo=ux12&savedPlanLibrary=off');
 
     const surface = page.getByTestId('my-flow-cross-flow-todo-experiment');
     await expect(surface).toHaveAttribute('data-p35-r13-marker', 'P35-R13-B-INTERNAL-TODO');
@@ -134,12 +134,11 @@ test.describe('P35-R13 final internal gate', () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await saveMovingFlow(page);
 
-    const receipt = page.getByTestId('public-flow-saved-receipt');
-    await receipt.getByTestId('public-flow-saved-receipt-primary').click();
-    await expect(page).toHaveURL('/my?view=flows&flow=moving-d30-basic');
+    await expect.poll(() => new URL(page.url()).searchParams.get('flow')).toMatch(/^personal-copy:/u);
+    const personalCopyKey = new URL(page.url()).searchParams.get('flow') ?? '';
 
     let workspace = page.locator(
-      '[data-testid="my-flow-mobile-workspace"][data-flow-slug="moving-d30-basic"]:visible',
+      `[data-testid="my-flow-mobile-workspace"][data-flow-slug="${personalCopyKey}"]:visible`,
     );
     await expect(workspace).toBeVisible();
     let plan = workspace.getByTestId('my-flow-workspace-plan');
@@ -154,7 +153,7 @@ test.describe('P35-R13 final internal gate', () => {
 
     await page.reload();
     workspace = page.locator(
-      '[data-testid="my-flow-mobile-workspace"][data-flow-slug="moving-d30-basic"]:visible',
+      `[data-testid="my-flow-mobile-workspace"][data-flow-slug="${personalCopyKey}"]:visible`,
     );
     await expect(workspace).toBeVisible();
     plan = workspace.getByTestId('my-flow-workspace-plan');
@@ -162,7 +161,7 @@ test.describe('P35-R13 final internal gate', () => {
     await expect(workspace.getByTestId('my-flow-workspace-plan-content')).toHaveCount(0);
 
     await workspace.getByTestId('my-flow-mobile-library-back').click();
-    workspace = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'execute');
+    workspace = await openMyFlowLibraryFlow(page, personalCopyKey, 'execute');
     await expect(workspace.getByTestId('my-flow-workspace-plan')).toHaveAttribute(
       'data-plan-open',
       'false',
@@ -180,7 +179,7 @@ test.describe('P35-R13 final internal gate', () => {
   test('1024 and 1440 keep the date-grouped list and contextual inspector', async ({ page }) => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 1024, height: 768 });
-    await page.goto('/my?demo=ux12');
+    await page.goto('/my?demo=ux12&savedPlanLibrary=off');
 
     const workspace = page.getByTestId('my-flow-cross-flow-todo-workspace');
     const inspector = page.getByTestId('my-flow-cross-flow-todo-inspector');

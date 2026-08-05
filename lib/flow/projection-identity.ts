@@ -99,6 +99,8 @@ export type ProjectionIdentityStorage = {
   removeItem(key: string): void;
 };
 
+export type ProjectionIdentityReader = Pick<ProjectionIdentityStorage, 'getItem'>;
+
 export type ProjectionIdentityMigrationAlias = {
   legacyKey: string;
   canonicalKey: string;
@@ -125,6 +127,13 @@ export type ProjectionIdentityMigrationResult = {
     | 'malformed_preserved'
     | 'write_failed';
   manifest?: ProjectionIdentityMigrationManifest;
+  warnings: string[];
+};
+
+export type ProjectionIdentityReadResult = {
+  source: 'stored' | 'legacy_overlay' | 'empty' | 'malformed_preserved';
+  itemDrafts: Record<string, unknown>;
+  dateOverrides: Record<string, unknown>;
   warnings: string[];
 };
 
@@ -384,6 +393,77 @@ function mergeDateAliases(
   if (!legacy) return false;
   record[canonicalKey] = record[legacy.legacyKey];
   return true;
+}
+
+export function readProjectionIdentityStorage(
+  storage: ProjectionIdentityReader,
+  options: {
+    flowId: string;
+    itemIds: string[];
+    itemDraftStorageKey: string;
+    dateOverrideStorageKey: string;
+  },
+): ProjectionIdentityReadResult {
+  const flowId = normalizeIdentityPart(options.flowId, 'flow_id');
+  const itemIds = Array.from(new Set(options.itemIds.map((itemId) =>
+    normalizeIdentityPart(itemId, 'item_id'),
+  )));
+  const parsedItemDrafts = parseStoredRecord(storage.getItem(options.itemDraftStorageKey));
+  const parsedDateOverrides = parseStoredRecord(storage.getItem(options.dateOverrideStorageKey));
+  const malformed = !parsedItemDrafts || !parsedDateOverrides;
+  const itemDrafts = parsedItemDrafts ?? {};
+  const dateOverrides = parsedDateOverrides ?? {};
+  const itemDraftAliases = itemIds.flatMap((itemId) =>
+    getLegacyAliases(itemDrafts, flowId, itemId),
+  );
+  const dateOverrideAliases = itemIds.flatMap((itemId) =>
+    getLegacyAliases(dateOverrides, flowId, itemId),
+  );
+  const warnings = [
+    ...(malformed ? ['malformed_projection_storage_preserved'] : []),
+    ...itemIds.flatMap((itemId) => {
+      const count = itemDraftAliases.filter((alias) =>
+        alias.canonicalKey === buildCanonicalFlowValueKey(flowId, itemId),
+      ).length;
+      return count > 1 ? [`multiple_legacy_item_drafts:${itemId}`] : [];
+    }),
+    ...itemIds.flatMap((itemId) => {
+      const count = dateOverrideAliases.filter((alias) =>
+        alias.canonicalKey === buildCanonicalFlowValueKey(flowId, itemId),
+      ).length;
+      return count > 1 ? [`multiple_legacy_date_overrides:${itemId}`] : [];
+    }),
+  ];
+
+  itemIds.forEach((itemId) => {
+    mergeDraftAliases(
+      itemDrafts,
+      itemDraftAliases.filter((alias) =>
+        alias.canonicalKey === buildCanonicalFlowValueKey(flowId, itemId),
+      ),
+    );
+    mergeDateAliases(
+      dateOverrides,
+      dateOverrideAliases.filter((alias) =>
+        alias.canonicalKey === buildCanonicalFlowValueKey(flowId, itemId),
+      ),
+    );
+  });
+
+  const hasStoredValues = Object.keys(itemDrafts).length > 0
+    || Object.keys(dateOverrides).length > 0;
+  return {
+    source: malformed
+      ? 'malformed_preserved'
+      : itemDraftAliases.length > 0 || dateOverrideAliases.length > 0
+        ? 'legacy_overlay'
+        : hasStoredValues
+          ? 'stored'
+          : 'empty',
+    itemDrafts,
+    dateOverrides,
+    warnings,
+  };
 }
 
 function restoreStorageValue(

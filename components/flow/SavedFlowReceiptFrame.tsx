@@ -6,6 +6,7 @@ import { FlowReceipt } from './FlowExecutionPrimitives';
 import { FLOW_UI_PRIMARY_ACTION_CLASS } from './flow-ui';
 import type { EffectiveFlowResult } from '@/lib/flow/effective-flow-snapshot';
 import { markMyFlowFirstEntry } from '@/lib/flow/my-flow-local-ia';
+import { getQ3UserCopyProfile } from '@/lib/flow/q3-user-copy';
 
 type SavedFlowReceiptFrameProps = {
   title: string;
@@ -15,6 +16,7 @@ type SavedFlowReceiptFrameProps = {
   receiptTitle?: string;
   receiptSummary?: string;
   primaryHref: string;
+  q3CopyEnabled?: boolean;
 };
 
 export function SavedFlowReceiptFrame({
@@ -25,7 +27,9 @@ export function SavedFlowReceiptFrame({
   receiptTitle,
   receiptSummary,
   primaryHref,
+  q3CopyEnabled = true,
 }: SavedFlowReceiptFrameProps) {
+  const q3Copy = getQ3UserCopyProfile(q3CopyEnabled);
   const scheduleSummary = result.counts.dated > 0
     ? result.counts.undated > 0
       ? `날짜 있음 ${result.counts.dated}개 · 날짜 없음 ${result.counts.undated}개`
@@ -48,12 +52,14 @@ export function SavedFlowReceiptFrame({
         role="status"
         aria-live="polite"
         tone="success"
-        label="내 Flow에 저장됨"
+        label={q3Copy.receipt.savedTitle}
         title={receiptTitle ?? `${savedResultSummary}를 저장했어요`}
         summary={`${title} · ${scheduleSummary}`}
       >
         <p className="mt-2 break-keep text-sm font-medium text-[var(--flowme-text-secondary)]">
-          {receiptSummary ?? '내 Flow에서 다음 할 일부터 이어갈 수 있습니다.'}
+          {receiptSummary ?? (q3CopyEnabled
+            ? '내 계획에서 다음 할 일부터 이어갈 수 있습니다.'
+            : '내 Flow에서 다음 할 일부터 이어갈 수 있습니다.')}
         </p>
       </FlowReceipt>
       <div className="mt-5 sm:max-w-md">
@@ -69,14 +75,14 @@ export function SavedFlowReceiptFrame({
             markMyFlowFirstEntry(window.sessionStorage, flowSlug);
           }}
         >
-          내 Flow에서 이어하기
+          {q3Copy.receipt.continueInMyPlans}
         </Link>
         <Link
           data-testid="public-flow-saved-receipt-browse"
           className="mt-2 inline-flex min-h-9 w-full items-center justify-center text-sm font-semibold text-[var(--flowme-text-secondary)] underline-offset-4 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
           href="/flows"
         >
-          Flow 찾기로 돌아가기
+          {q3Copy.receipt.returnToDiscovery}
         </Link>
       </div>
     </section>

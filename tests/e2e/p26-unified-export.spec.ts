@@ -7,7 +7,6 @@ import {
   getOpenMyFlowItemDetail,
   openMyFlowLibraryFlow,
 } from './helpers/my-flow-library';
-import { openSavedPublicFlow, savePublicFlow } from './helpers/public-flow-save';
 
 const evidenceDir = process.env.FLOWME_P26_16_EVIDENCE_DIR;
 
@@ -41,11 +40,49 @@ function collectErrors(page: Page) {
   return errors;
 }
 
-test('public whole Flow export predicts dates, output count, and result receipt', async ({ page }) => {
+async function openSavedTransferConfirmation(panel: Locator, destination: Locator) {
+  await destination.click();
+  const confirmation = panel.getByTestId('my-flow-transfer-confirmation');
+  await expect(confirmation).toBeVisible();
+  return confirmation;
+}
+
+async function confirmSavedClipboardTransfer(panel: Locator, destination: Locator) {
+  const confirmation = await openSavedTransferConfirmation(panel, destination);
+  await confirmation.getByTestId('my-flow-transfer-confirm').click();
+  const receipt = panel.getByTestId('my-flow-transfer-receipt');
+  await expect(receipt).toBeVisible();
+  await expect(receipt).toHaveAttribute('data-outcome', 'success');
+  return receipt;
+}
+
+async function acknowledgeSavedTransfer(receipt: Locator) {
+  const acknowledge = receipt.getByTestId('flow-transfer-success-close');
+  if (await acknowledge.isVisible().catch(() => false)) await acknowledge.click();
+}
+
+async function savePublicFlowAndGetFocusedSlug(page: Page, button: Locator) {
+  await button.click();
+  await expect.poll(() => {
+    const url = new URL(page.url());
+    return {
+      pathname: url.pathname,
+      view: url.searchParams.get('view'),
+      flow: url.searchParams.get('flow'),
+    };
+  }).toEqual({
+    pathname: '/my',
+    view: 'flows',
+    flow: expect.stringMatching(/^personal-copy:/u),
+  });
+  return new URL(page.url()).searchParams.get('flow') ?? '';
+}
+
+test('capabilityResult=off public export keeps legacy parity and saved export confirms transfer', async ({ page }) => {
   test.setTimeout(90_000);
   const errors = collectErrors(page);
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/f/moving-d30-basic');
+  await page.goto('/f/moving-d30-basic?capabilityResult=off&quickLocalResult=off');
   await page.evaluate(() => localStorage.clear());
   await page.reload();
   await page.getByLabel('이사일').fill('2026-08-30');
@@ -57,8 +94,8 @@ test('public whole Flow export predicts dates, output count, and result receipt'
   const exportBranch = page.getByTestId('public-flow-export-branch');
   await expect(exportBranch).toBeVisible();
   const panel = exportBranch.getByTestId('my-flow-export-panel');
-  await expect(panel.getByTestId('my-flow-export-scope-control')).toContainText('Flow 전체');
-  await expect(panel.getByTestId('my-flow-export-scope-summary')).toContainText('Flow 전체');
+  await expect(panel.getByTestId('my-flow-export-scope-control')).toContainText('계획 전체');
+  await expect(panel.getByTestId('my-flow-export-scope-summary')).toContainText('계획 전체');
   const calendar = panel.getByRole('button', { name: /캘린더 파일 받기/ });
   const previewCount = Number(await calendar.getAttribute('data-export-count'));
   expect(previewCount).toBeGreaterThan(0);
@@ -76,7 +113,7 @@ test('public whole Flow export predicts dates, output count, and result receipt'
   await expect(receipt.getByTestId('flow-export-result-filename')).toHaveText(download.suggestedFilename());
   await capture(page, panel, '01-public-whole-flow-mobile.png');
 
-  await page.goto('/f/vehicle-inspection-prep');
+  await page.goto('/f/vehicle-inspection-prep?capabilityResult=off&quickLocalResult=off');
   await expect(page.getByTestId('public-flow-detail-workspace')).toHaveCount(0);
   const undatedEntry = page.getByTestId('public-flow-export-secondary-entry');
   await expect(undatedEntry.getByTestId('public-flow-export-secondary-toggle')).toContainText('옮기기');
@@ -95,9 +132,11 @@ test('public whole Flow export predicts dates, output count, and result receipt'
     'data-selected-shape',
     'checklist',
   );
-  await page.getByTestId('public-flow-save-primary-mobile').click();
-  await page.goto('/my?view=flows');
-  let vehicleFlow = await openMyFlowLibraryFlow(page, 'vehicle-inspection-prep', 'plan');
+  const vehicleFlowSlug = await savePublicFlowAndGetFocusedSlug(
+    page,
+    page.getByTestId('public-flow-save-primary-mobile'),
+  );
+  let vehicleFlow = await openMyFlowLibraryFlow(page, vehicleFlowSlug, 'plan');
   const firstVehicleRow = vehicleFlow.getByTestId('my-flow-execution-row-shell').first();
   await firstVehicleRow.getByRole('button', { name: /열기/ }).click();
   const vehicleDetail = getOpenMyFlowItemDetail(page);
@@ -111,11 +150,29 @@ test('public whole Flow export predicts dates, output count, and result receipt'
     }
     await readSummary.getByTestId('my-flow-detail-edit-toggle').click();
   }
-  await vehicleDetail.getByTestId('my-flow-detail-date-input').fill('2026-07-28');
-  await vehicleDetail.getByTestId('my-flow-detail-save-changes').click();
+  const vehicleItemEditor = page.getByTestId('saved-flow-editor-item');
+  await expect(vehicleItemEditor).toBeVisible();
+  await vehicleItemEditor.getByTestId('saved-flow-editor-item-date-input').fill('2026-07-28');
+  await vehicleItemEditor.getByTestId('my-flow-detail-save-changes').click();
+  await expect(vehicleItemEditor).toHaveCount(0);
+  const vehiclePlanEditor = page.getByTestId('saved-flow-editor-plan');
+  await expect(vehiclePlanEditor).toBeVisible();
+  await expect(
+    vehiclePlanEditor
+      .getByTestId('saved-flow-editor-item-row')
+      .first()
+      .getByTestId('saved-flow-editor-item-open'),
+  ).toBeFocused();
+  await expect(vehiclePlanEditor).toHaveAttribute('data-editor-status', 'dirty-valid');
+  const vehicleDiscardPrompt = vehiclePlanEditor.getByTestId('flow-editor-discard-prompt');
+  await expect(vehicleDiscardPrompt).toHaveCount(0);
+  const vehiclePlanSave = vehiclePlanEditor.getByTestId('saved-flow-editor-save');
+  await expect(vehiclePlanSave).toBeEnabled();
+  await vehiclePlanSave.click();
+  await expect(vehiclePlanEditor).toHaveCount(0);
   await closeOpenMyFlowItemDetail(page);
 
-  vehicleFlow = await openMyFlowLibraryFlow(page, 'vehicle-inspection-prep', 'record');
+  vehicleFlow = await openMyFlowLibraryFlow(page, vehicleFlowSlug, 'record');
   const vehicleExport = vehicleFlow.getByTestId('my-flow-export-surface');
   await vehicleExport.getByTestId('my-flow-export-entry').click();
   const scheduledCalendar = vehicleExport.getByTestId('my-flow-export-calendar');
@@ -128,15 +185,16 @@ test('public whole Flow export predicts dates, output count, and result receipt'
     await moreFormats.locator('summary').click();
   }
   await expect(scheduledCalendar).toBeVisible();
+  const scheduledConfirmation = await openSavedTransferConfirmation(vehicleExport, scheduledCalendar);
   const scheduledDownloadPromise = page.waitForEvent('download');
-  await scheduledCalendar.click();
+  await scheduledConfirmation.getByTestId('my-flow-transfer-confirm').click();
   const scheduledDownload = await scheduledDownloadPromise;
   const scheduledDownloadPath = await scheduledDownload.path();
   expect(scheduledDownloadPath).toBeTruthy();
   const scheduledIcs = fs.readFileSync(scheduledDownloadPath!, 'utf8');
   expect((scheduledIcs.match(/BEGIN:VEVENT/g) ?? []).length).toBe(1);
-  await expect(vehicleExport.getByTestId('flow-export-result-receipt')).toHaveAttribute(
-    'data-export-output-count',
+  await expect(vehicleExport.getByTestId('my-flow-transfer-receipt')).toHaveAttribute(
+    'data-output-count',
     '1',
   );
   expect(errors).toEqual([]);
@@ -153,21 +211,22 @@ test('whole, selected, and current item exports share scope language and actual 
   const exportSurface = flow.getByTestId('my-flow-export-surface');
   await exportSurface.getByTestId('my-flow-export-entry').click();
   const panel = exportSurface.getByTestId('my-flow-export-panel');
-  await expect(panel.getByTestId('my-flow-export-scope-flow')).toContainText('Flow 전체');
+  await expect(panel.getByTestId('my-flow-export-scope-flow')).toContainText('계획 전체');
   await panel.getByTestId('my-flow-export-scope-selected').click();
   const choices = panel.getByTestId('my-flow-export-selectable-item');
   await choices.nth(0).getByRole('checkbox').check();
   await choices.nth(1).getByRole('checkbox').check();
   await expect(panel.getByTestId('my-flow-export-scope-summary')).toHaveText('직접 선택 · 2개');
-  await panel.getByTestId('my-flow-export-memo').click();
-  await expect(panel.getByTestId('flow-export-result-receipt')).toHaveAttribute(
-    'data-export-output-count',
-    '2',
+  let transferReceipt = await confirmSavedClipboardTransfer(
+    panel,
+    panel.getByTestId('my-flow-export-memo'),
   );
-  await expect(panel.getByTestId('flow-export-result-receipt')).toContainText('선택 항목');
+  await expect(transferReceipt).toHaveAttribute('data-output-count', '2');
+  await expect(transferReceipt).toContainText('선택한 항목');
   const copiedMemo = await page.evaluate(() => navigator.clipboard.readText());
   expect((copiedMemo.match(/^\d+\. /gmu) ?? []).length).toBe(2);
   await capture(page, panel, '02-selected-items-mobile.png');
+  await acknowledgeSavedTransfer(transferReceipt);
 
   flow = await openMyFlowLibraryFlow(page, 'source-backed-moving-d30', 'plan');
   const firstRow = flow.getByTestId('my-flow-execution-row-shell').first();
@@ -177,11 +236,15 @@ test('whole, selected, and current item exports share scope language and actual 
   if (await currentExport.locator(':scope > summary').count()) {
     await currentExport.locator(':scope > summary').click();
   }
-  await currentExport.getByTestId('my-flow-detail-copy-portable-text').click();
-  const currentReceipt = currentExport.getByTestId('flow-export-result-receipt');
-  await expect(currentReceipt).toHaveAttribute('data-export-scope', 'item');
-  await expect(currentReceipt).toHaveAttribute('data-export-output-count', '1');
+  transferReceipt = await confirmSavedClipboardTransfer(
+    currentExport,
+    currentExport.getByTestId('my-flow-detail-copy-portable-text'),
+  );
+  const currentReceipt = transferReceipt;
+  await expect(currentReceipt).toHaveAttribute('data-scope', 'item');
+  await expect(currentReceipt).toHaveAttribute('data-output-count', '1');
   await expect(currentReceipt).toContainText('현재 항목');
+  await acknowledgeSavedTransfer(currentReceipt);
 
   await closeOpenMyFlowItemDetail(page);
   await page.setViewportSize({ width: 1024, height: 768 });
@@ -213,9 +276,11 @@ test('routine export reports one series event and keeps the canonical RRULE', as
   await page.reload();
   await page.getByTestId('public-flow-anchor-input').fill('2026-07-20');
 
-  const receipt = await savePublicFlow(page, page.getByTestId('public-flow-save-primary-mobile'));
-  await openSavedPublicFlow(page, receipt);
-  const flow = await openMyFlowLibraryFlow(page, 'washer-tub-clean-monthly', 'record');
+  const savedFlowSlug = await savePublicFlowAndGetFocusedSlug(
+    page,
+    page.getByTestId('public-flow-save-primary-mobile'),
+  );
+  const flow = await openMyFlowLibraryFlow(page, savedFlowSlug, 'record');
   const entry = flow.getByTestId('my-flow-export-surface');
   await entry.getByTestId('my-flow-export-entry').click();
   const panel = entry.getByTestId('my-flow-export-panel');
@@ -229,16 +294,17 @@ test('routine export reports one series event and keeps the canonical RRULE', as
   await expect(panel.getByTestId('my-flow-export-calendar-summary')).toContainText('반복 계획 1개');
   const calendar = panel.getByTestId('my-flow-export-calendar');
   await expect(calendar).toBeVisible();
+  const confirmation = await openSavedTransferConfirmation(panel, calendar);
   const downloadPromise = page.waitForEvent('download');
-  await calendar.click();
+  await confirmation.getByTestId('my-flow-transfer-confirm').click();
   const download = await downloadPromise;
   const downloadPath = await download.path();
   expect(downloadPath).toBeTruthy();
   const ics = fs.readFileSync(downloadPath!, 'utf8').replaceAll('\r\n ', '');
   expect((ics.match(/BEGIN:VEVENT/g) ?? []).length).toBe(1);
   expect(ics).toContain('RRULE:FREQ=MONTHLY;BYMONTHDAY=20');
-  await expect(panel.getByTestId('flow-export-result-receipt')).toHaveAttribute(
-    'data-export-output-count',
+  await expect(panel.getByTestId('my-flow-transfer-receipt')).toHaveAttribute(
+    'data-output-count',
     '1',
   );
   await capture(page, panel, '03-routine-series-mobile.png');

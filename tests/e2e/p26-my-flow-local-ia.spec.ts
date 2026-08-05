@@ -41,24 +41,27 @@ async function seedSavedFlows(page: Page, flows: Array<{ slug: string; anchor?: 
 }
 
 test.describe('P26-08 My Flow local IA', () => {
-  test('mobile empty state keeps one library surface and canonicalizes legacy view URLs', async ({ page }) => {
+  test('mobile empty state keeps one saved-library surface across legacy view URLs', async ({ page }) => {
     const browserErrors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
     await page.addInitScript(() => window.localStorage.clear());
     await page.goto('/my?view=now');
 
-    await expect(page).toHaveURL(/view=flows/);
-    await expect(page.getByRole('heading', { level: 1, name: 'My Flow' })).toBeVisible();
-    await expect(page.getByRole('tablist', { name: 'My Flow 보기' })).toHaveCount(0);
-    await expect(page.getByRole('heading', { level: 2, name: '저장한 Flow가 없습니다' })).toBeVisible();
-    const globalMyFlow = page.getByTestId('platform-mobile-tabs').getByRole('link', { name: '내 Flow' });
+    await expect(page).toHaveURL(/view=now/);
+    await expect(page.locator('main')).toHaveAttribute('data-saved-library-flag', 'on');
+    await expect(page.getByTestId('my-flow-saved-library-shell')).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: '내 계획' })).toBeVisible();
+    await expect(page.getByRole('tablist', { name: '내 계획 보기' })).toHaveCount(0);
+    await expect(page.getByRole('heading', { level: 2, name: '저장한 계획이 없습니다' })).toBeVisible();
+    const globalMyFlow = page.getByTestId('platform-mobile-tabs').getByRole('link', { name: '내 계획' });
     await expect(globalMyFlow).toBeVisible();
     await expect(page.getByTestId('my-flow-view-today')).toHaveCount(0);
     await expect(page.getByTestId('my-flow-view-completed')).toHaveCount(0);
 
     await page.goto('/my?view=completed');
-    await expect(page).toHaveURL(/view=flows/);
-    await expect(page.getByRole('heading', { level: 2, name: '저장한 Flow가 없습니다' })).toBeVisible();
+    await expect(page).toHaveURL(/view=completed/);
+    await expect(page.getByTestId('my-flow-saved-library-shell')).toBeVisible();
+    await expect(page.getByRole('heading', { level: 2, name: '저장한 계획이 없습니다' })).toBeVisible();
 
     await capture(page, '01-mobile-empty-library.png');
     expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
@@ -72,7 +75,8 @@ test.describe('P26-08 My Flow local IA', () => {
     await seedSavedFlows(page, [{ slug: 'moving-d30-basic', anchor: '2026-06-26' }]);
     await page.goto('/my?view=now');
 
-    await expect(page).toHaveURL(/view=flows/);
+    await expect(page).toHaveURL(/view=now/);
+    await expect(page.getByTestId('my-flow-saved-library-shell')).toBeVisible();
     await expect(page.getByTestId('my-flow-mobile-structure-row')).toHaveCount(1);
     await page.getByTestId('my-flow-mobile-structure-open').click();
     const workspace = page.getByTestId('my-flow-mobile-workspace');
@@ -142,7 +146,7 @@ test.describe('P26-08 My Flow local IA', () => {
     await workspace.getByTestId('my-flow-library-row').first().click();
     await expect(workspace.getByTestId('my-flow-library-detail').getByTestId('my-flow-overview-card')).toHaveCount(1);
     await expect(page.getByTestId('my-flow-demo-group')).toHaveCount(0);
-    await expect(workspace.getByTestId('my-flow-library-rail').getByRole('heading', { name: '저장한 Flow' })).toBeVisible();
+    await expect(workspace.getByTestId('my-flow-library-rail').getByRole('heading', { name: '저장한 계획' })).toBeVisible();
     await capture(page, '04-wide-twenty-plus-grouped.png');
     expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
     expect(browserErrors).toEqual([]);

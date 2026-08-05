@@ -4,11 +4,11 @@ async function openArtifactFirstOutline(page: import('@playwright/test').Page) {
   const hero = page.getByTestId('public-flow-hero');
   await expect(hero).toHaveAttribute('data-experience-architecture', 'p35-result-first');
 
-  const outline = hero.getByTestId('public-flow-artifact-preview');
+  const outline = hero.getByTestId('public-flow-capability-result');
   await expect(outline).toBeVisible();
-  const expand = outline.getByTestId('public-flow-artifact-preview-expand');
+  const expand = outline.getByTestId('flow-capability-artifact-preview-expand');
   if (await expand.isVisible().catch(() => false)) await expand.click();
-  await expect(outline.getByTestId('public-flow-artifact-preview-row').first()).toBeVisible();
+  await expect(outline.getByTestId('flow-capability-artifact-preview-row').first()).toBeVisible();
 
   return { hero, outline };
 }
@@ -19,12 +19,12 @@ function getPublicIdentitySource(page: import('@playwright/test').Page) {
 
 async function expectClosedSourceRoute(page: import('@playwright/test').Page) {
   await expect(page.getByTestId('public-flow-share-shell')).toHaveCount(0);
-  await expect(page.getByRole('heading', { name: '이 Flow는 지금 열 수 없어요' })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Flow 찾기' })).toHaveAttribute('href', '/flows');
+  await expect(page.getByRole('heading', { name: '이 계획은 지금 열 수 없어요' })).toBeVisible();
+  await expect(page.getByRole('link', { name: '다른 계획 찾기' })).toHaveAttribute('href', '/flows');
   await expect(page.getByTestId('public-flow-detail-workspace')).toHaveCount(0);
   await expect(page.getByLabel('Flow artifact workbench')).toHaveCount(0);
   await expect(page.getByRole('checkbox')).toHaveCount(0);
-  await expect(page.getByRole('button', { name: /그대로 시작|그대로 저장|내 Flow에 저장|날짜 없이 시작|날짜 없이 저장|이 날짜로 시작|이 날짜로 저장/ })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /내 계획에 저장|(?:이사일|시작일) 정하기/ })).toHaveCount(0);
 }
 
 test.describe('field checklist workbench source density', () => {
@@ -35,8 +35,8 @@ test.describe('field checklist workbench source density', () => {
 
       const { hero, outline } = await openArtifactFirstOutline(page);
 
-      await expect(hero.getByTestId('public-flow-artifact-preview').locator('a[href]')).toHaveCount(0);
-      await expect(outline.getByTestId('public-flow-artifact-preview-row').locator('a[href]')).toHaveCount(0);
+      await expect(hero.getByTestId('public-flow-capability-result').locator('a[href]')).toHaveCount(0);
+      await expect(outline.getByTestId('flow-capability-artifact-preview-row').locator('a[href]')).toHaveCount(0);
       await expect(page.getByTestId('public-flow-reference-details')).toHaveCount(0);
       await expect(page.locator('[data-testid="flow-source-card"], [data-testid="flow-source-card-mobile"]')).toHaveCount(0);
       const identitySource = getPublicIdentitySource(page);
@@ -53,26 +53,36 @@ test.describe('field checklist workbench source density', () => {
     await expect(page.getByTestId('public-flow-reference-details')).toHaveCount(0);
     await expect(page.locator('[data-testid="flow-source-card"], [data-testid="flow-source-card-mobile"]')).toHaveCount(0);
     await expect(page.getByTestId('flow-warning-card')).toHaveCount(1);
-    await expect(outline.getByTestId('public-flow-artifact-preview-row').filter({ hasText: '공통 주의' })).toHaveCount(0);
+    await expect(outline.getByTestId('flow-capability-artifact-preview-row').filter({ hasText: '공통 주의' })).toHaveCount(0);
   });
 
   test('/f/fridge-cleanout-weekly-plan keeps export at the flow level on mobile', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/f/fridge-cleanout-weekly-plan');
 
-    const exportEntry = page.getByTestId('public-flow-export-secondary-entry');
     await expect(page.getByTestId('public-flow-detail-workspace')).toHaveCount(0);
-    await expect(exportEntry).toBeVisible();
-    await expect(exportEntry.getByTestId('public-flow-export-secondary-toggle')).toContainText('내 도구로 옮기기');
-    await expect(exportEntry).toContainText('캘린더·체크리스트·시트 중 선택');
+    const capability = page.getByTestId('public-flow-capability-result');
+    expect(await capability.getByTestId('flow-capability-result-choice').count()).toBeGreaterThanOrEqual(2);
     await expect(page.getByTestId('mobile-artifact-export-excel')).toHaveCount(0);
-    await exportEntry.getByTestId('public-flow-export-secondary-toggle').click();
-    const exportBranch = page.getByTestId('public-flow-export-branch');
-    await expect(exportBranch).toBeVisible();
-    await expect(exportBranch.getByTestId('public-flow-export-format-option').first()).toBeVisible();
-    expect(await exportBranch.getByTestId('public-flow-export-format-option').count()).toBeGreaterThanOrEqual(2);
-    await exportBranch.getByTestId('public-flow-export-branch-close').click();
-    await expect(exportBranch).toHaveCount(0);
+    await expect(page.locator('main[data-p35-q1-quick-eligible="false"]')).toBeVisible();
+    await expect(page.getByTestId('public-flow-quick-result-entry')).toHaveCount(0);
+
+    const selected = capability.getByTestId('flow-capability-selected-preview');
+    await expect(selected).toHaveAttribute('data-capability-output-count', '6');
+    const selectedItemIds = (await selected.getAttribute('data-capability-manifest-item-ids'))
+      ?.split(',')
+      .filter(Boolean) ?? [];
+    expect(selectedItemIds).toHaveLength(6);
+
+    const alternative = capability.getByTestId('flow-capability-result-choice').nth(1);
+    await alternative.click();
+    await expect(selected).toHaveAttribute(
+      'data-capability-destination',
+      (await alternative.getAttribute('data-capability-destination')) ?? '',
+    );
+    expect((await selected.getAttribute('data-capability-manifest-item-ids'))
+      ?.split(',')
+      .filter(Boolean)).toEqual(selectedItemIds);
   });
 
   test('/f/curated-new-car-basic keeps internal source trace out of expanded user details', async ({ page }) => {

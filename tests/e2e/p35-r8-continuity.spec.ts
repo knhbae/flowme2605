@@ -5,6 +5,7 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 
 import {
   closeOpenMyFlowItemDetail,
+  expandMyFlowWholePlan,
   getOpenMyFlowItemDetail,
   openMyFlowLibraryFlow,
 } from './helpers/my-flow-library';
@@ -78,36 +79,30 @@ test.describe('P35-R8 semantic and execution continuity', () => {
       'data-p35-r8-resource-marker',
       'P35-R8B-RESOURCE-NOT-EXECUTION',
     );
-    const preview = page.getByTestId('public-flow-artifact-preview');
-    await expect(preview).toHaveAttribute('data-selected-shape', 'checklist');
-    await expect(preview.getByTestId('public-flow-artifact-preview-row')).toHaveCount(4);
+    const preview = page.getByTestId('public-flow-capability-result');
+    await expect(preview).toHaveAttribute('data-capability-primary-destination', 'checklist');
+    await preview.getByTestId('flow-capability-artifact-preview-expand').click();
+    await expect(preview.getByTestId('flow-capability-artifact-preview-row')).toHaveCount(4);
     await expect(preview.getByRole('checkbox')).toHaveCount(0);
 
     await expect(page.getByTestId('public-flow-detail-workspace')).toHaveCount(0);
-    const exportEntry = page.getByTestId('public-flow-export-secondary-entry');
-    await expect(exportEntry.getByTestId('public-flow-export-secondary-toggle')).toContainText('옮기기');
-    await exportEntry.getByTestId('public-flow-export-secondary-toggle').click();
-    const exportBranch = page.getByTestId('public-flow-export-branch');
-    await expect(exportBranch).toBeVisible();
-    await expect(exportEntry).toHaveAttribute('data-primary-destination', 'checklist');
-    const primary = exportBranch.locator(
-      '[data-testid="public-flow-export-format-option"][data-export-destination="checklist"]',
+    const primary = preview.locator(
+      '[data-testid="flow-capability-result-choice"][data-capability-destination="checklist"]',
     );
-    await expect(primary).toHaveAttribute('data-recommendation-role', 'primary');
-    const memo = exportBranch.locator(
-      '[data-testid="public-flow-export-format-option"][data-export-destination="memo"]',
+    await expect(primary).toHaveAttribute('data-capability-candidate-role', 'primary');
+    const memo = preview.locator(
+      '[data-testid="flow-capability-result-choice"][data-capability-destination="memo"]',
     );
-    await expect(memo).toHaveAttribute('data-recommendation-role', 'secondary');
+    await expect(memo).toHaveAttribute('data-capability-candidate-role', 'available');
     await capture(page, 'p35-r8b-safety-public-checklist-390.png', preview);
 
-    await exportBranch.getByTestId('public-flow-export-branch-close').click();
-    await expect(exportBranch).toHaveCount(0);
     await page.getByTestId('public-flow-save-primary-mobile').click();
-    const receipt = page.getByTestId('public-flow-saved-receipt');
-    await expect(receipt).toContainText('체크리스트');
-    await receipt.getByTestId('public-flow-saved-receipt-primary').click();
+    await expect(page).toHaveURL(/\/my\?view=flows&flow=personal-copy%3A/u);
+    const copySlug = new URL(page.url()).searchParams.get('flow') ?? '';
+    await expect(page.getByTestId('public-flow-saved-receipt')).toHaveCount(0);
+    await expect(page.getByTestId('my-flow-save-banner')).toBeVisible();
 
-    const workspace = await openMyFlowLibraryFlow(page, 'overseas-safety-register');
+    const workspace = await openMyFlowLibraryFlow(page, copySlug);
     const execution = workspace.getByTestId('my-flow-shape-aware-execution');
     await expect(execution).toHaveAttribute(
       'data-p35-r8-marker',
@@ -125,7 +120,7 @@ test.describe('P35-R8 semantic and execution continuity', () => {
     await expectNoOverflow(page);
 
     await page.setViewportSize({ width: 1024, height: 768 });
-    const wideWorkspace = await openMyFlowLibraryFlow(page, 'overseas-safety-register');
+    const wideWorkspace = await openMyFlowLibraryFlow(page, copySlug);
     await capture(page, 'p35-r8b-safety-saved-checklist-1024.png', wideWorkspace);
     await expectNoOverflow(page);
     expect(errors).toEqual([]);
@@ -166,7 +161,15 @@ test.describe('P35-R8 semantic and execution continuity', () => {
       '전체 1/24 완료',
     );
     await expect(page.getByTestId('my-flow-completion-undo')).toHaveCount(0);
-    const completedContextRow = outline.locator(`article[data-row-key="${rowKey}"]`);
+    const planToggle = workspace.getByTestId('my-flow-workspace-plan-toggle');
+    await expect(planToggle).toHaveAttribute('aria-expanded', 'false');
+    await expect(outline).toHaveCount(0);
+    await planToggle.click();
+    await expect(planToggle).toHaveAttribute('aria-expanded', 'true');
+    const expandedOutline = await expandMyFlowWholePlan(workspace);
+    await expect(expandedOutline.getByTestId('my-flow-whole-flow-reading-summary'))
+      .toContainText('1/24 완료');
+    const completedContextRow = expandedOutline.locator(`article[data-row-key="${rowKey}"]`);
     await expect(completedContextRow).toBeVisible();
     await expect(completedContextRow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
     await completedContextRow.getByRole('button', { name: /열기/ }).click();

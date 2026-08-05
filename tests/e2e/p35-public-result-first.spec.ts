@@ -8,7 +8,7 @@ const evidenceRoot = process.env.FLOWME_P35_02_EVIDENCE_DIR;
 type Scenario = {
   route: string;
   viewport: { width: number; height: number };
-  shape: 'calendar' | 'checklist' | 'flow_execution' | 'sheet';
+  shape: 'calendar' | 'checklist' | 'sheet' | 'memo';
   resultLabel: string;
   itemCount: number;
   summaryPattern: RegExp;
@@ -20,10 +20,10 @@ const scenarios: Scenario[] = [
   {
     route: '/f/moving-d30-basic',
     viewport: { width: 390, height: 844 },
-    shape: 'calendar',
-    resultLabel: '캘린더',
+    shape: 'checklist',
+    resultLabel: '체크리스트',
     itemCount: 24,
-    summaryPattern: /\d+월 \d+일 - \d+월 \d+일/u,
+    summaryPattern: /^날짜 없음$/u,
     setupVisible: true,
     screenshot: 'p35-02-moving-save-before-390.png',
   },
@@ -40,10 +40,10 @@ const scenarios: Scenario[] = [
   {
     route: '/f/curated-allblanc-morning-workout',
     viewport: { width: 1024, height: 768 },
-    shape: 'flow_execution',
-    resultLabel: 'Flow 실행',
+    shape: 'checklist',
+    resultLabel: '체크리스트',
     itemCount: 1,
-    summaryPattern: /반복 일정/u,
+    summaryPattern: /^날짜 없음$/u,
     setupVisible: true,
     screenshot: 'p35-02-routine-save-before-1024.png',
   },
@@ -119,30 +119,37 @@ async function getFixedOverlapCount(page: Page): Promise<number> {
 
 async function expectResultFirstFrame(page: Page, scenario: Scenario) {
   const hero = page.getByTestId('public-flow-hero');
-  const preview = page.getByTestId('public-flow-artifact-preview');
+  const preview = page.getByTestId('public-flow-capability-result');
+  const selectedPreview = preview.getByTestId('flow-capability-selected-preview');
+  const artifactPreview = selectedPreview.getByTestId('flow-capability-artifact-preview');
   const setup = page.getByTestId('public-flow-primary-setup');
 
   await expect(hero).toHaveAttribute('data-p35-marker', 'P35-PUBLIC-RESULT-FIRST');
   await expect(hero).toHaveAttribute('data-experience-architecture', 'p35-result-first');
   await expect(preview).toHaveCount(1);
-  await expect(preview).toHaveAttribute('data-primary-shape', scenario.shape);
-  await expect(preview).toHaveAttribute('data-selected-shape', scenario.shape);
-  await expect(preview.getByRole('heading', { level: 2 })).toHaveText(
+  await expect(preview).toHaveAttribute('data-capability-lifecycle', 'public_preview');
+  await expect(preview).toHaveAttribute('data-capability-primary-destination', scenario.shape);
+  await expect(preview).toHaveAttribute('data-capability-selected-destination', scenario.shape);
+  await expect(artifactPreview).toHaveAttribute('data-primary-shape', scenario.shape);
+  await expect(artifactPreview).toHaveAttribute('data-selected-shape', scenario.shape);
+  await expect(artifactPreview.getByRole('heading', { level: 2 })).toHaveText(
     `${scenario.resultLabel} · ${scenario.itemCount}개`,
   );
-  await expect(preview.getByTestId('flow-artifact-result-summary')).toHaveText(scenario.summaryPattern);
-  await expect(preview.getByTestId('public-flow-artifact-preview-row')).toHaveCount(scenario.itemCount);
-  await expect(preview.getByTestId('flow-artifact-shape-choice')).toHaveCount(0);
+  await expect(artifactPreview.getByTestId('flow-artifact-result-summary')).toHaveText(scenario.summaryPattern);
+  await expect(preview.getByTestId('flow-capability-artifact-preview-row')).toHaveCount(scenario.itemCount);
+  await expect(preview.getByTestId('flow-capability-result-choice')).toHaveCount(3);
+  await expect(preview.locator('[data-capability-candidate-role="primary"]')).toHaveCount(1);
+  await expect(preview.locator('[data-capability-candidate-role="available"][data-capability-immediate="true"]')).toHaveCount(2);
   await expect(hero.locator('[data-flow-ui="schedule-intent"]')).toHaveCount(0);
   await expect(page.getByTestId('flow-save-before-primary-result')).toContainText(scenario.resultLabel);
   await expect(page.getByRole('heading', { name: '전체 흐름', exact: true })).toHaveCount(0);
   await expect(page.getByText('한눈에 보는 전체 루트', { exact: true })).toHaveCount(0);
 
   if (scenario.itemCount > 3) {
-    await expect(preview.getByTestId('public-flow-artifact-preview-expand')).toHaveAccessibleName(
+    await expect(preview.getByTestId('flow-capability-artifact-preview-expand')).toHaveAccessibleName(
       `나머지 ${scenario.itemCount - 3}개 보기`,
     );
-    await expect(preview.locator('[data-testid="public-flow-artifact-preview-row"]:visible')).toHaveCount(3);
+    await expect(preview.locator('[data-testid="flow-capability-artifact-preview-row"]:visible')).toHaveCount(3);
   }
 
   if (scenario.setupVisible) {
@@ -187,7 +194,7 @@ async function expectResultFirstFrame(page: Page, scenario: Scenario) {
   if (scenario.setupVisible) {
     const setupRect = await setup.boundingBox();
     expect(await page.evaluate(() => {
-      const previewNode = document.querySelector('[data-testid="public-flow-artifact-preview"]');
+      const previewNode = document.querySelector('[data-testid="public-flow-capability-result"]');
       const setupNode = document.querySelector('[data-testid="public-flow-primary-setup"]');
       return Boolean(
         previewNode &&
@@ -220,34 +227,51 @@ test.describe('P35-02 public result-first frame', () => {
     });
   }
 
-  test('save-before controls are replaced by a distinct saved receipt', async ({ page }) => {
+  test('save-before controls hand off directly to the selected saved detail', async ({ page }) => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.addInitScript(() => window.localStorage.clear());
     await page.goto('/f/moving-d30-basic');
+    await page.evaluate(() => {
+      window.localStorage.clear();
+      window.sessionStorage.clear();
+    });
+    await page.reload();
 
     await page.getByTestId('public-flow-anchor-input').fill('2030-09-01');
     const save = page.getByTestId('public-flow-save-primary-mobile');
-    await expect(save).toHaveText('캘린더 24개로 시작');
+    await expect(save).toHaveText('내 계획에 저장');
     await expect(save).toBeEnabled();
     await save.click();
 
-    const receipt = page.getByTestId('public-flow-saved-receipt');
-    await expect(receipt).toHaveAttribute('data-p35-state', 'saved-receipt');
-    await expect(receipt).toContainText('내 Flow에 저장됨');
-    await expect(receipt).toContainText('캘린더 24개를 저장했어요');
+    await expect.poll(() => {
+      const url = new URL(page.url());
+      return {
+        pathname: url.pathname,
+        view: url.searchParams.get('view'),
+        flow: url.searchParams.get('flow'),
+      };
+    }).toEqual({
+      pathname: '/my',
+      view: 'flows',
+      flow: expect.stringMatching(/^personal-copy:/u),
+    });
+    const personalCopyKey = new URL(page.url()).searchParams.get('flow') ?? '';
+    await expect(page.getByTestId('my-flow-save-banner')).toHaveAttribute(
+      'data-personal-copy-key',
+      personalCopyKey,
+    );
+    await expect(page.locator(
+      `[data-testid="my-flow-mobile-workspace"][data-flow-slug="${personalCopyKey}"]`,
+    )).toBeVisible();
+    await expect(page.getByTestId('public-flow-saved-receipt')).toHaveCount(0);
     await expect(page.getByTestId('public-flow-hero')).toHaveCount(0);
-    await expect(page.getByTestId('public-flow-artifact-preview')).toHaveCount(0);
+    await expect(page.getByTestId('public-flow-capability-result')).toHaveCount(0);
     await expect(page.getByTestId('public-flow-anchor-input')).toHaveCount(0);
     await expect(page.getByTestId('public-flow-mobile-save-cta')).toHaveCount(0);
-    await expect(receipt.getByTestId('public-flow-saved-receipt-primary')).toHaveText('내 Flow에서 이어하기');
-    expect(await visibleCount(receipt.locator('[data-action-priority="primary"]'))).toBe(1);
     expect(await getFixedOverlapCount(page)).toBe(0);
     expect(errors).toEqual([]);
 
-    await capture(page, 'p35-02-moving-receipt-390.png');
-    await receipt.getByTestId('public-flow-saved-receipt-primary').click();
-    await expect(page).toHaveURL(/\/my\?/u);
+    await capture(page, 'p35-02-moving-selected-detail-390.png');
   });
 
   test('review-held source content stays honest and cannot enter the save frame', async ({ page }) => {

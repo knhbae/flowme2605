@@ -21,6 +21,15 @@ test('active Flow management keeps adjustment, reuse, source, and archive in one
   );
 });
 
+test('Q3 management changes only the user-facing plan edit label', () => {
+  const legacy = buildFlowManagementCommandModel({ archived: false, canAdjust: true });
+  const q3 = buildFlowManagementCommandModel({ archived: false, canAdjust: true, q3CopyEnabled: true });
+
+  assert.equal(legacy[0]?.label, 'Flow 편집');
+  assert.equal(q3[0]?.label, '계획 수정');
+  assert.deepEqual(q3.map((command) => command.id), legacy.map((command) => command.id));
+});
+
 test('archived Flow management keeps recovery before permanent deletion', () => {
   const commands = buildFlowManagementCommandModel({
     archived: true,
@@ -36,11 +45,21 @@ test('archived Flow management keeps recovery before permanent deletion', () => 
 });
 
 test('source exclusion and personal deletion remain different user actions', () => {
-  assert.deepEqual(getStructuralItemCommandLabels('source'), {
+  const legacySource = {
     remove: '이 Flow에서 제외',
+    restore: '다시 포함',
+  };
+  assert.deepEqual(getStructuralItemCommandLabels('source'), legacySource);
+  assert.deepEqual(getStructuralItemCommandLabels('source', false), legacySource);
+  assert.deepEqual(getStructuralItemCommandLabels('source', true), {
+    remove: '이 계획에서 제외',
     restore: '다시 포함',
   });
   assert.deepEqual(getStructuralItemCommandLabels('personal'), {
+    remove: '항목 삭제',
+    restore: '항목 복구',
+  });
+  assert.deepEqual(getStructuralItemCommandLabels('personal', true), {
     remove: '항목 삭제',
     restore: '항목 복구',
   });

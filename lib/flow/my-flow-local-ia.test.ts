@@ -2,16 +2,22 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
+  buildMyFlowCompactTodayModel,
   consumeMyFlowFirstEntry,
   consumeMyFlowFirstEntryPlan,
   getMyFlowLibraryControlVisibility,
+  getMyFlowLibraryHref,
   getMyFlowWorkspaceHref,
   getMyFlowViewHref,
   markMyFlowFirstEntry,
   markMyFlowFirstEntryPlan,
+  MY_FLOW_SAVED_LIBRARY_SEARCH_THRESHOLD,
+  parseMyFlowLibraryRoute,
   parseMyFlowWorkspaceTarget,
   parseMyFlowViewQuery,
+  selectMyFlowSavedLibraryEntries,
   summarizeMyFlowLocalIa,
+  withMyFlowLibraryScrollY,
 } from './my-flow-local-ia';
 
 function createSessionStorageFixture() {
@@ -110,17 +116,23 @@ test('held content is excluded from ordinary My Flow navigation counts', () => {
   );
 });
 
-test('My Flow library keeps small collections browsable and reveals search at five Flows', () => {
-  for (const flowCount of [0, 1, 3]) {
+test('My Flow library keeps 0/1/5 compact and reveals search at twenty Flows', () => {
+  for (const flowCount of [0, 1, 3, 5]) {
     assert.deepEqual(
-      getMyFlowLibraryControlVisibility({ flowCount }),
+      getMyFlowLibraryControlVisibility({
+        flowCount,
+        searchThreshold: MY_FLOW_SAVED_LIBRARY_SEARCH_THRESHOLD,
+      }),
       { search: false, filters: false, mode: 'compact' },
     );
   }
 
-  for (const flowCount of [5, 12]) {
+  for (const flowCount of [20, 60]) {
     assert.deepEqual(
-      getMyFlowLibraryControlVisibility({ flowCount }),
+      getMyFlowLibraryControlVisibility({
+        flowCount,
+        searchThreshold: MY_FLOW_SAVED_LIBRARY_SEARCH_THRESHOLD,
+      }),
       { search: true, filters: true, mode: 'searchable' },
     );
   }
@@ -138,5 +150,128 @@ test('My Flow library keeps an active query or archive recovery reachable below 
   assert.deepEqual(
     getMyFlowLibraryControlVisibility({ flowCount: 3, filter: 'open' }),
     { search: false, filters: true, mode: 'compact' },
+  );
+});
+
+test('P0-07 rollback keeps the established five-Flow search threshold', () => {
+  assert.deepEqual(
+    getMyFlowLibraryControlVisibility({ flowCount: 5 }),
+    { search: true, filters: true, mode: 'searchable' },
+  );
+});
+
+test('saved-plan library route preserves query/filter/target and keeps scroll in history only', () => {
+  const historyState = withMyFlowLibraryScrollY({ unrelated: 'keep' }, 418.9, 231.4);
+  const href = getMyFlowLibraryHref('/my?demo=ux20&mode=todo#library', {
+    query: ' 이사 ',
+    filter: 'open',
+    target: {
+      flowSlug: 'moving-d30-basic',
+      itemKey: 'moving::pack',
+      itemDate: '2030-09-05',
+    },
+  });
+
+  assert.equal(
+    href,
+    '/my?demo=ux20&view=flows&q=%EC%9D%B4%EC%82%AC&status=open&flow=moving-d30-basic&item=moving%3A%3Apack&date=2030-09-05#library',
+  );
+  assert.deepEqual(parseMyFlowLibraryRoute(new URL(href, 'https://flowme.local').search, historyState), {
+    query: '이사',
+    filter: 'open',
+    target: {
+      flowSlug: 'moving-d30-basic',
+      itemKey: 'moving::pack',
+      itemDate: '2030-09-05',
+    },
+    scrollY: 418,
+    railScrollTop: 231,
+  });
+  assert.equal((historyState as { unrelated?: string }).unrelated, 'keep');
+  assert.doesNotMatch(href, /scroll/u);
+});
+
+test('saved-plan library route rejects unsupported filters and clears stale item identity', () => {
+  assert.deepEqual(parseMyFlowLibraryRoute('?view=flows&status=recent&item=orphan'), {
+    query: '',
+    filter: 'all',
+    target: null,
+    scrollY: 0,
+    railScrollTop: 0,
+  });
+  assert.equal(
+    getMyFlowLibraryHref('/my?view=flows&flow=old&item=old-item&date=2030-01-01', {
+      query: '',
+      filter: 'all',
+      target: null,
+    }),
+    '/my?view=flows',
+  );
+});
+
+test('compact Today is derived, identity-stable, deduplicated, and absent at zero', () => {
+  const row = (key: string, groupId: string, completed = false) => ({
+    key,
+    stableItemId: key.split('::')[1] ?? key,
+    flowSlug: key.split('::')[0] ?? 'flow',
+    groupId,
+    completed,
+    row: { title: key },
+  });
+  const model = buildMyFlowCompactTodayModel([
+    row('moving::pack', 'today'),
+    row('moving::pack', 'today'),
+    row('study::lesson', 'today'),
+    row('routine::run', 'today'),
+    row('future::call', 'upcoming'),
+    row('done::old', 'today', true),
+    row('extra::fourth', 'today'),
+  ]);
+
+  assert.deepEqual(model.items.map((item) => item.key), [
+    'moving::pack',
+    'study::lesson',
+    'routine::run',
+  ]);
+  assert.equal(model.total, 4);
+  assert.equal(model.hiddenCount, 1);
+  assert.equal(model.source, 'effective_execution');
+  assert.equal(model.writeOwner, 'none');
+  assert.deepEqual(buildMyFlowCompactTodayModel([]), {
+    items: [],
+    total: 0,
+    hiddenCount: 0,
+    source: 'effective_execution',
+    writeOwner: 'none',
+  });
+});
+
+test('saved library uses one identity set for recent, active, completed, and archived lenses', () => {
+  const values = {
+    alpha: { marker: 'alpha' },
+    beta: { marker: 'beta' },
+    done: { marker: 'done' },
+    archived: { marker: 'archived' },
+  };
+  const entries = [
+    { stableId: 'plan-b', title: '같은 제목', lastVisited: '2030-09-01', done: 1, total: 3, archived: false, value: values.beta },
+    { stableId: 'plan-a', title: '같은 제목', lastVisited: '2030-09-01', done: 0, total: 3, archived: false, value: values.alpha },
+    { stableId: 'plan-done', title: '완료 계획', lastVisited: '2030-08-01', done: 2, total: 2, archived: false, value: values.done },
+    { stableId: 'plan-archived', title: '보관 계획', lastVisited: '2030-10-01', done: 0, total: 1, archived: true, value: values.archived },
+  ];
+
+  const recent = selectMyFlowSavedLibraryEntries(entries);
+  assert.deepEqual(recent.map((entry) => entry.stableId), ['plan-a', 'plan-b', 'plan-done']);
+  const active = selectMyFlowSavedLibraryEntries(entries, { filter: 'open' });
+  assert.deepEqual(active.map((entry) => entry.stableId), ['plan-a', 'plan-b']);
+  assert.equal(active[0]?.value, values.alpha);
+  assert.equal(active[1]?.value, values.beta);
+  assert.deepEqual(
+    selectMyFlowSavedLibraryEntries(entries, { filter: 'done' }).map((entry) => entry.stableId),
+    ['plan-done'],
+  );
+  assert.deepEqual(
+    selectMyFlowSavedLibraryEntries(entries, { filter: 'archived' }).map((entry) => entry.stableId),
+    ['plan-archived'],
   );
 });

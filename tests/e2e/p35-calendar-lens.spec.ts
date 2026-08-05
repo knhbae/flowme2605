@@ -83,7 +83,7 @@ test.describe('P35-06 Calendar lens and shared completion primitive', () => {
     await expect(selectedDay.getByTestId('my-flow-inline-note-open')).toHaveCount(0);
     await expect(selectedDay.getByTestId('my-flow-calendar-open-flow').first()).toBeVisible();
     await expect(
-      selectedDay.getByRole('button', { name: /Flow에서 열기/ }).first(),
+      selectedDay.getByRole('button', { name: /계획에서 열기/ }).first(),
     ).toBeVisible();
     await capture(page, 'p35-06-calendar-agenda-390.png');
 
@@ -98,7 +98,7 @@ test.describe('P35-06 Calendar lens and shared completion primitive', () => {
     expect(flowSlug).toBeTruthy();
 
     await expect(taskShell.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
-    await taskShell.getByRole('button', { name: /Flow에서 열기/ }).click();
+    await taskShell.getByRole('button', { name: /계획에서 열기/ }).click();
     await expect(page).toHaveURL(new RegExp(
       `/my\\?view=flows&flow=${flowSlug}&item=.*&demo=ux20`,
     ));
@@ -171,7 +171,7 @@ test.describe('P35-06 Calendar lens and shared completion primitive', () => {
     const scope = page.getByTestId('my-flow-calendar-scope-filter');
     await expect(scope).toHaveAttribute('data-scope-presentation', 'picker');
     const trigger = page.getByTestId('calendar-flow-scope-picker-trigger');
-    await expect(trigger).toContainText('전체 Flow');
+    await expect(trigger).toContainText('전체 계획');
     await expect(page.locator('[data-testid^="my-flow-calendar-scope-flow-"]')).toHaveCount(0);
 
     await trigger.click();

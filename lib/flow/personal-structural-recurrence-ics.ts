@@ -31,6 +31,7 @@ export type PersonalStructuralRecurrenceIcsInput = {
   location?: string;
   sourceUrl?: string;
   generatedAt?: string;
+  status?: 'CONFIRMED' | 'TENTATIVE' | 'CANCELLED';
   finiteRangeEnd?: string;
   finiteOccurrenceLimit?: number;
 };
@@ -201,6 +202,7 @@ function buildEventLines(options: {
   exdates?: Array<{ slot: RecurrenceSlot; timeZone?: string }>;
   location?: string;
   sourceUrl?: string;
+  status?: 'CONFIRMED' | 'TENTATIVE' | 'CANCELLED';
 }): string[] {
   const lines = [
     'BEGIN:VEVENT',
@@ -223,6 +225,7 @@ function buildEventLines(options: {
     `SUMMARY:${escapeIcsText(clean(options.title) || '할 일')}`,
     `DESCRIPTION:${escapeIcsText(options.description)}`,
   );
+  if (options.status) lines.push(`STATUS:${options.status}`, 'TRANSP:TRANSPARENT');
   if (clean(options.location)) lines.push(`LOCATION:${escapeIcsText(clean(options.location))}`);
   if (clean(options.sourceUrl)) lines.push(`URL:${clean(options.sourceUrl)}`);
   lines.push('END:VEVENT');
@@ -335,6 +338,7 @@ function buildRruleCalendar(
       recurrenceTimeZone: schedule.timeZone,
       location: input.location,
       sourceUrl: input.sourceUrl,
+      status: input.status,
     }));
     exceptionEventCount += 1;
   });
@@ -349,6 +353,7 @@ function buildRruleCalendar(
     exdates: excludedSlots,
     location: input.location,
     sourceUrl: input.sourceUrl,
+    status: input.status,
   });
   return {
     ics: wrapCalendar([...masterLines, ...exceptionLines]),
@@ -398,6 +403,7 @@ function buildFiniteCalendar(
       projection: occurrence.scheduleProjection,
       location: input.location,
       sourceUrl: input.sourceUrl,
+      status: input.status,
     }),
   );
   return {

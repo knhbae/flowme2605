@@ -27,6 +27,22 @@ function collectConsoleErrors(page: import('@playwright/test').Page) {
   return errors;
 }
 
+async function expectDirectSavedPlan(page: import('@playwright/test').Page) {
+  await expect.poll(() => {
+    const url = new URL(page.url());
+    return {
+      pathname: url.pathname,
+      view: url.searchParams.get('view'),
+      flow: url.searchParams.get('flow'),
+    };
+  }).toEqual({
+    pathname: '/my',
+    view: 'flows',
+    flow: expect.stringMatching(/^personal-copy:/u),
+  });
+  await expect(page.getByTestId('public-flow-saved-receipt')).toHaveCount(0);
+}
+
 async function saveMovingFlow(page: import('@playwright/test').Page) {
   await page.goto('/flow-maps/moving-d30');
   await page.evaluate(() => window.localStorage.clear());
@@ -39,8 +55,7 @@ async function saveMovingFlow(page: import('@playwright/test').Page) {
   } else {
     await page.getByTestId('public-flow-save-primary-mobile').click();
   }
-  await page.getByTestId('public-flow-saved-receipt-primary').click();
-  await expect(page).toHaveURL('/my?view=flows&flow=moving-d30-basic');
+  await expectDirectSavedPlan(page);
 }
 
 test.describe('P25 whole Flow workspace', () => {
@@ -51,7 +66,7 @@ test.describe('P25 whole Flow workspace', () => {
 
     await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
     await expect(page.locator('main')).toHaveAttribute('data-p32-workspace-state', 'focused');
-    await expect(page.getByRole('tablist', { name: 'My Flow 보기' })).toHaveCount(1);
+    await expect(page.getByRole('tablist', { name: /My Flow 보기/ })).toHaveCount(0);
 
     const savedFlow = await openMyFlowLibraryFlow(
       page,
@@ -139,7 +154,7 @@ test.describe('P25 whole Flow workspace', () => {
     await expect(page).toHaveURL('/f/moving-d30-basic');
     await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
     await page.getByTestId('public-flow-save-primary').click();
-    await page.getByTestId('public-flow-saved-receipt-primary').click();
+    await expectDirectSavedPlan(page);
 
     await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
     const selectedFlow = await openMyFlowLibraryFlow(page, 'moving-d30-basic');
@@ -153,7 +168,7 @@ test.describe('P25 whole Flow workspace', () => {
       .getByTestId('my-flow-shape-aware-execution')
       .getByTestId('my-flow-execution-row-shell');
     await expect(currentExecutionRows).toHaveCount(3);
-    await expect(page.getByRole('tablist', { name: 'My Flow 보기' })).toHaveCount(1);
+    await expect(page.getByRole('tablist', { name: /My Flow 보기/ })).toHaveCount(0);
     await expect(page.getByTestId('my-flow-library-back')).toBeVisible();
     const selectedFlowBox = await selectedFlow.boundingBox();
     expect(selectedFlowBox).not.toBeNull();

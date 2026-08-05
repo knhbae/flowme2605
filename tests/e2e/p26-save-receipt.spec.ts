@@ -33,7 +33,7 @@ async function assertCanonicalReceipt(page: Page, expectedHandoff: RegExp) {
   await expect(page).toHaveURL(expectedHandoff);
   const panel = page.getByTestId('my-flow-post-save-panel');
   await expect(panel).toBeVisible();
-  await expect(panel).toContainText('저장된 전체 Flow');
+  await expect(panel).toContainText('저장된 전체 계획');
   await expect(page.getByTestId('my-flow-empty-state')).toHaveCount(0);
 
   const counts = await panel.evaluate((element) => ({
@@ -64,54 +64,55 @@ async function assertReceiptSurvivesReload(page: Page, expectedHandoff: RegExp, 
   expect(after).toEqual(before);
 }
 
-test('public save lands on a reload-safe whole-Flow receipt on mobile', async ({ page }) => {
+test('public save opens the selected personal copy and keeps it reload-safe on mobile', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/f/vehicle-inspection-prep');
   await page.evaluate(() => localStorage.clear());
   await page.reload();
 
-  const savedReceipt = await savePublicFlow(
+  const saveBanner = await savePublicFlow(
     page,
     page.getByTestId('public-flow-save-primary-mobile'),
   );
-  await expect(savedReceipt.locator('[data-action-priority="primary"]')).toHaveCount(1);
-  await expect(savedReceipt.getByTestId('public-flow-saved-receipt-status')).toContainText('10');
-  await capture(page, '01-public-post-save-receipt-mobile.png');
+  await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toContainText('10');
+  const selectedCopy = new URL(page.url()).searchParams.get('flow');
+  expect(selectedCopy).toMatch(/^personal-copy:/u);
+  await capture(page, '01-public-post-save-selected-plan-mobile.png');
   await page.reload();
-  const reloadedReceipt = page.getByTestId('public-flow-saved-receipt');
-  await expect(reloadedReceipt).toBeVisible();
-  await openSavedPublicFlow(page, reloadedReceipt);
-  await expect(page).toHaveURL('/my?view=flows&flow=vehicle-inspection-prep');
+  await expect(page.getByTestId('my-flow-save-banner')).toHaveCount(0);
+  await openSavedPublicFlow(page);
+  expect(new URL(page.url()).searchParams.get('flow')).toBe(selectedCopy);
   const workspace = await openMyFlowLibraryFlow(page, 'vehicle-inspection-prep', 'plan');
   await expect(workspace.getByTestId('my-flow-whole-flow-outline')).toHaveAttribute('data-effective-row-count', '10');
 });
 
-test('canonical moving alias and URL-first hit keep their receipt contracts', async ({ page }) => {
+test('canonical moving alias keeps direct selected-plan handoff and URL-first keeps its receipt contract', async ({ page }) => {
   await page.setViewportSize({ width: 1024, height: 768 });
   await page.goto('/flow-maps/moving-d30');
   await page.evaluate(() => localStorage.clear());
   await page.reload();
   await expect(page).toHaveURL('/f/moving-d30-basic');
   await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
-  const mapReceipt = await savePublicFlow(page, page.getByTestId('public-flow-save-primary'));
-  await expect(mapReceipt.getByTestId('public-flow-saved-receipt-status')).toContainText('24');
-  await capture(page, '02-flow-map-post-save-receipt-wide.png');
+  const mapSaveBanner = await savePublicFlow(page, page.getByTestId('public-flow-save-primary'));
+  await expect(mapSaveBanner.getByTestId('my-flow-save-banner-summary')).toContainText('24');
+  const selectedCopy = new URL(page.url()).searchParams.get('flow');
+  expect(selectedCopy).toMatch(/^personal-copy:/u);
+  await capture(page, '02-flow-map-post-save-selected-plan-wide.png');
   await page.reload();
-  const reloadedMapReceipt = page.getByTestId('public-flow-saved-receipt');
-  await expect(reloadedMapReceipt).toBeVisible();
-  await openSavedPublicFlow(page, reloadedMapReceipt);
-  await expect(page).toHaveURL('/my?view=flows&flow=moving-d30-basic');
+  await expect(page.getByTestId('my-flow-save-banner')).toHaveCount(0);
+  await openSavedPublicFlow(page);
+  expect(new URL(page.url()).searchParams.get('flow')).toBe(selectedCopy);
   const movingWorkspace = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'plan');
   await expect(movingWorkspace.getByTestId('my-flow-whole-flow-outline')).toHaveAttribute('data-effective-row-count', '24');
 
   await page.goto('/flows');
   const lookup = page.getByTestId('flow-url-lookup-entry');
   await lookup.getByLabel('URL 또는 메모').fill('https://mathbang.net/13?utm_source=p26-receipt');
-  await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
+  await lookup.getByRole('button', { name: '계획 찾기' }).click();
   const result = page.getByTestId('flow-url-lookup-result');
   await result.getByTestId('flow-url-quick-start').locator('summary').click();
   await result.getByLabel('학습 시작일').fill('2030-09-01');
-  await result.getByRole('button', { name: '내 Flow에 저장' }).click();
+  await result.getByRole('button', { name: '내 계획에 저장' }).click();
 
   const urlFirstHandoff = /\/my\?savedMap=middle-school-math-1$/;
   const urlFirstReceipt = await assertCanonicalReceipt(page, urlFirstHandoff);
@@ -129,7 +130,7 @@ test('memo draft receipt counts every accepted effective item and survives reloa
 
   const lookup = page.getByTestId('flow-url-lookup-entry');
   await lookup.getByLabel('URL 또는 메모').fill('여권을 확인한다. 보험 서류를 챙긴다. 숙소 주소를 적는다.');
-  await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
+  await lookup.getByRole('button', { name: '계획 찾기' }).click();
   const editor = page.getByTestId('flow-memo-draft-editor');
   await expect(editor.getByTestId('flow-memo-draft-item')).toHaveCount(3);
   await editor.getByLabel('메모 초안 제목').fill('여행 출발 준비');

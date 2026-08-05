@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import {
+  getFirstSavedPersonalDraftSlug,
   getPersonalDraftEffectiveItems,
   openMyFlowLibraryFlow,
   openPersonalDraftListExport,
@@ -23,17 +24,15 @@ async function openFlowView(page: Page) {
 }
 
 async function getDraftFlow(page: Page) {
+  const slug = await getFirstSavedPersonalDraftSlug(page);
   const visibleDraft = page.locator(
-    '[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]:visible, [data-testid="my-flow-mobile-workspace"][data-flow-slug^="url-draft-"]:visible, [data-testid="my-flow-overview-card"][data-flow-slug^="url-draft-"]:visible',
+    `[data-testid="my-flow-mobile-structure-row"][data-flow-slug="${slug}"]:visible, `
+      + `[data-testid="my-flow-mobile-workspace"][data-flow-slug="${slug}"]:visible, `
+      + `[data-testid="my-flow-overview-card"][data-flow-slug="${slug}"]:visible`,
   ).first();
   if (await visibleDraft.isVisible().catch(() => false)) return visibleDraft;
 
-  const libraryRow = page.locator(
-    '[data-testid="my-flow-library-row"][data-flow-slug^="url-draft-"]',
-  ).first();
-  await expect(libraryRow).toBeVisible();
-  const slug = await libraryRow.getAttribute('data-flow-slug');
-  if (!slug) throw new Error('Personal draft Flow slug is missing');
+  await page.goto('/my?view=flows');
   return openMyFlowLibraryFlow(page, slug);
 }
 
@@ -60,6 +59,22 @@ async function setStructureMode(flow: Locator, open: boolean) {
   await expect(toggle).toHaveAttribute('aria-pressed', open ? 'true' : 'false');
 }
 
+async function completeSavedClipboardTransfer(
+  page: Page,
+  panel: Locator,
+  action: Locator,
+): Promise<string> {
+  await action.click();
+  const confirmation = panel.getByTestId('my-flow-transfer-confirmation');
+  await expect(confirmation).toHaveAttribute('data-transfer-route', 'saved_transfer');
+  await confirmation.getByTestId('my-flow-transfer-confirm').click();
+  const receipt = panel.getByTestId('my-flow-transfer-receipt');
+  await expect(receipt).toHaveAttribute('data-transfer-state', 'succeeded');
+  const copied = await page.evaluate(() => navigator.clipboard.readText());
+  await receipt.getByTestId('flow-transfer-success-close').click();
+  return copied;
+}
+
 test.use({ timezoneId: 'Asia/Seoul' });
 
 test('personal draft structure mode separates execution from add, reorder, remove, restore, and export order', async ({ page }) => {
@@ -81,7 +96,7 @@ test('personal draft structure mode separates execution from add, reorder, remov
   await lookup.getByLabel('URL 또는 메모').fill(
     '여권 만료일을 확인한다. 숙소 주소를 저장한다. 보험 서류를 챙긴다.',
   );
-  await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
+  await lookup.getByRole('button', { name: '계획 찾기' }).click();
   const editor = page.getByTestId('flow-memo-draft-editor');
   await expect(editor.getByTestId('flow-memo-draft-item')).toHaveCount(3);
   await editor.getByLabel('메모 초안 제목').fill('여행 준비 구성');
@@ -146,7 +161,7 @@ test('personal draft structure mode separates execution from add, reorder, remov
   await toolbar.getByTestId('my-flow-batch-remove-selected').click();
   await expect(rows.filter({ hasText: '충전기 위치 확인' })).toHaveCount(0);
   const undo = outline.getByTestId('my-flow-batch-undo');
-  await expect(undo).toContainText('1개를 Flow에서 뺐어요');
+  await expect(undo).toContainText('1개를 계획에서 뺐어요');
   await undo.getByTestId('my-flow-batch-undo-action').click();
   addedRow = outline.getByTestId('my-flow-batch-selectable-row').filter({ hasText: '충전기 위치 확인' });
   await expect(addedRow).toHaveAttribute('data-item-id', addedStableId ?? '');
@@ -181,8 +196,11 @@ test('personal draft structure mode separates execution from add, reorder, remov
 
   await setStructureMode(flow, false);
   const exportPanel = await openPersonalDraftListExport(flow);
-  await exportPanel.getByTestId('personal-draft-copy-checklist').click();
-  const checklist = await page.evaluate(() => navigator.clipboard.readText());
+  const checklist = await completeSavedClipboardTransfer(
+    page,
+    exportPanel,
+    exportPanel.getByTestId('personal-draft-copy-checklist'),
+  );
   const addedIndex = checklist.indexOf('충전기 위치 확인');
   expect(addedIndex).toBeGreaterThanOrEqual(0);
   const effectiveItems = getPersonalDraftEffectiveItems(flow);

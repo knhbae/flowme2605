@@ -58,7 +58,7 @@ function formatBackupDate(value: string): string {
   }).format(new Date(value));
 }
 
-export function MyFlowDataManager() {
+export function MyFlowDataManager({ q3CopyEnabled = true }: { q3CopyEnabled?: boolean }) {
   const [open, setOpen] = useState(false);
   const [importPreview, setImportPreview] = useState<FlowMeLocalBackup | null>(null);
   const [feedback, setFeedback] = useState('');
@@ -166,7 +166,7 @@ export function MyFlowDataManager() {
             </div>
 
             <p className="mt-4 break-keep text-sm leading-6 text-slate-700">
-              저장한 Flow, 완료 기록, 개인 수정은 현재 브라우저에만 보관됩니다. 기기를 바꾸거나 브라우저 데이터를 지우기 전에 백업 파일을 받아두세요.
+              {q3CopyEnabled ? '저장한 계획' : '저장한 Flow'}, 완료 기록, 개인 수정은 현재 브라우저에만 보관됩니다. 기기를 바꾸거나 브라우저 데이터를 지우기 전에 백업 파일을 받아두세요.
             </p>
             <p className="mt-2 text-xs leading-5 text-slate-500">기기 사이에서 자동으로 맞춰지지는 않습니다.</p>
 

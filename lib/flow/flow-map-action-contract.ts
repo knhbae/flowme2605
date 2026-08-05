@@ -8,6 +8,7 @@ export type FlowMapSaveMode = 'save_all' | 'choose_child';
 export type FlowMapSelectionState = {
   selectedCount: number;
   totalCount: number;
+  itemIds?: string[];
 };
 
 export type FlowMapAction = {
@@ -133,7 +134,19 @@ function validateSelection(selection?: FlowMapSelectionState): FlowMapSelectionS
   ) {
     throw new RangeError('selection must use non-negative integer counts with selectedCount <= totalCount');
   }
-  return { selectedCount, totalCount };
+  const itemIds = selection.itemIds?.map((itemId) => itemId.trim());
+  if (itemIds) {
+    if (itemIds.some((itemId) => !itemId)) {
+      throw new TypeError('selection itemIds must be non-empty strings');
+    }
+    if (new Set(itemIds).size !== itemIds.length) {
+      throw new TypeError('selection itemIds must be unique');
+    }
+    if (itemIds.length !== selectedCount) {
+      throw new RangeError('selection itemIds length must match selectedCount');
+    }
+  }
+  return { selectedCount, totalCount, ...(itemIds ? { itemIds } : {}) };
 }
 
 function uniqueRiskLevels(levels: (RiskLevel | undefined)[]): RiskLevel[] {

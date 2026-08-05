@@ -113,42 +113,78 @@ async function expectQuality(page: Page) {
 }
 
 test.describe('P35-08 final MECE gate', () => {
-  test('five representative Flow shapes keep one actual result before optional adjustment', async ({ page }) => {
+  test('five representative Flows keep one selected capability result before optional adjustment', async ({ page }) => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
 
     const cases = [
       {
         slug: 'moving-d30-basic',
-        shape: 'calendar',
+        destination: 'checklist',
+        shape: 'checklist',
+        outputCount: 24,
         screenshot: 'p35-08-moving-result-390.png',
       },
       {
         slug: 'vehicle-inspection-prep',
+        destination: 'checklist',
         shape: 'checklist',
+        outputCount: 10,
         screenshot: 'p35-08-vehicle-result-390.png',
       },
       {
         slug: 'curated-allblanc-morning-workout',
-        shape: 'flow_execution',
+        destination: 'checklist',
+        shape: 'checklist',
+        outputCount: 1,
         screenshot: 'p35-08-workout-result-390.png',
       },
       {
         slug: 'source-backed-middle-school-math-1',
+        destination: 'sheet',
         shape: 'sheet',
+        outputCount: 8,
         screenshot: 'p35-08-study-result-390.png',
       },
       {
         slug: 'overseas-safety-register',
+        destination: 'checklist',
         shape: 'checklist',
+        outputCount: 4,
         screenshot: 'p35-08-safety-checklist-result-390.png',
       },
     ] as const;
 
     for (const candidate of cases) {
       await page.goto(`/f/${candidate.slug}`);
-      const preview = page.getByTestId('public-flow-artifact-preview');
-      await expect(preview).toHaveAttribute('data-p35-marker', 'P35-PUBLIC-RESULT-FIRST');
+      const capability = page.getByTestId('public-flow-capability-result');
+      await expect(capability).toHaveAttribute('data-capability-lifecycle', 'public_preview');
+      await expect(capability).toHaveAttribute(
+        'data-capability-snapshot-kind',
+        'effective_authoring',
+      );
+      await expect(capability).toHaveAttribute(
+        'data-capability-primary-destination',
+        candidate.destination,
+      );
+      const primary = capability.locator(
+        '[data-testid="flow-capability-result-choice"]'
+          + '[data-capability-candidate-role="primary"]',
+      );
+      await expect(primary).toHaveCount(1);
+      await expect(primary).toHaveAttribute('data-capability-destination', candidate.destination);
+      await expect(primary).toHaveAttribute(
+        'data-capability-output-count',
+        String(candidate.outputCount),
+      );
+      const selected = capability.getByTestId('flow-capability-selected-preview');
+      await expect(selected).toHaveCount(1);
+      await expect(selected).toHaveAttribute('data-capability-destination', candidate.destination);
+      await expect(selected).toHaveAttribute(
+        'data-capability-output-count',
+        String(candidate.outputCount),
+      );
+      const preview = selected.getByTestId('flow-capability-artifact-preview');
       await expect(preview).toHaveAttribute('data-selected-shape', candidate.shape);
       await expect(preview.getByTestId('flow-artifact-shape-choice')).toHaveCount(0);
       await expect(page.getByTestId('public-flow-personal-adjustment')).toHaveCount(0);
