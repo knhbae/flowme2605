@@ -1,0 +1,403 @@
+{
+  "schemaVersion": 1,
+  "scenarioId": "S21",
+  "generatedAt": "2026-08-05T08:33:33.014Z",
+  "baseUrl": "http://127.0.0.1:3114",
+  "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+  "observedUsers": 0,
+  "sourceSnapshot": {
+    "head": "29cb03a65dd1037a3b813b7f43a5a095e4669dce",
+    "shortHead": "29cb03a65dd1",
+    "branch": "codex/p35-round2-candidate-20260805",
+    "buildId": "6hGywJa2x9eHc-II5umLx",
+    "dirty": false,
+    "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+    "gitStatusSha256": "08411ee7d7ddd20c5f49af3c2d2a88c5cef9dc9202cf333436ee76519fc5a031"
+  },
+  "title": "Filename, MIME, transport, clipboard, download, and raw-hash evidence",
+  "reviewerStatus": "CODEX_EXECUTED_CURRENT_RUNTIME_LOCAL_REHEARSAL",
+  "download": {
+    "status": "CAPTURED_CURRENT_RUNTIME",
+    "filename": "세탁기-통세척-월간-관리-all-calendar.ics",
+    "suggestedFilename": "세탁기-통세척-월간-관리-all-calendar.ics",
+    "transport": "browser_download",
+    "mediaType": "text/calendar;charset=utf-8",
+    "bytes": 1543,
+    "sha256": "841bdf7f0b3b3ccc6ef85391fb4893541532ddfe70c38f2587088bda10d40e89",
+    "veventCount": 1,
+    "hasMonthlyRrule": true,
+    "confirmationAttributes": {
+      "data-transfer-state": "confirming",
+      "data-transfer-route": "saved_transfer",
+      "data-transfer-persistence": "persistent_receipt",
+      "data-transfer-request-id": "saved_transfer::washer-tub-clean-monthly::6d25d259-9935-4eab-a646-6020e6f991da",
+      "data-transfer-saved-plan-id": "washer-tub-clean-monthly",
+      "data-transfer-snapshot-kind": "effective_execution",
+      "data-transfer-snapshot-version": "2026-05-20T00:00:00.000Z|personal:bb9891f2|execution:44b6ac2e",
+      "data-transfer-snapshot-hash": "3aeec483",
+      "data-transfer-format": "calendar",
+      "data-transfer-artifact-kind": "calendar_ics",
+      "data-transfer-target": "local_file",
+      "data-transfer-scope": "flow",
+      "data-transfer-item-ids": "flow-washer-tub-clean-monthly-item-0,flow-washer-tub-clean-monthly-item-1,flow-washer-tub-clean-monthly-item-2",
+      "data-transfer-item-count": "3",
+      "data-transfer-projection-output-count": "1",
+      "data-transfer-output-count": "1",
+      "data-transfer-omitted-item-ids": "",
+      "data-transfer-omitted-count": "0",
+      "data-transfer-one-way": "true",
+      "data-transfer-duplicate-risk": "true",
+      "data-transfer-return-focus-selector": "[data-testid=\"my-flow-export-entry\"]",
+      "data-receipt-storage-key": "flow:export-receipts:v1",
+      "data-snapshot-kind": "effective_execution",
+      "data-snapshot-version": "2026-05-20T00:00:00.000Z|personal:bb9891f2|execution:44b6ac2e",
+      "data-snapshot-hash": "3aeec483",
+      "data-scope": "flow",
+      "data-format": "calendar",
+      "data-destination": "calendar",
+      "data-item-ids": "flow-washer-tub-clean-monthly-item-0,flow-washer-tub-clean-monthly-item-1,flow-washer-tub-clean-monthly-item-2",
+      "data-projection-output-count": "1",
+      "data-output-count": "1",
+      "data-outcome": "confirming",
+      "data-testid": "my-flow-transfer-confirmation",
+      "data-p35-marker": "P35-P009-RESULT-TRANSFER-CONFIRMATION",
+      "data-flow-ui": "bottom-sheet",
+      "data-layer-priority": "dialog"
+    },
+    "receiptAttributes": {
+      "data-transfer-state": "succeeded",
+      "data-transfer-route": "saved_transfer",
+      "data-transfer-persistence": "persistent_receipt",
+      "data-transfer-request-id": "saved_transfer::washer-tub-clean-monthly::6d25d259-9935-4eab-a646-6020e6f991da",
+      "data-transfer-saved-plan-id": "washer-tub-clean-monthly",
+      "data-transfer-snapshot-kind": "effective_execution",
+      "data-transfer-snapshot-version": "2026-05-20T00:00:00.000Z|personal:bb9891f2|execution:44b6ac2e",
+      "data-transfer-snapshot-hash": "3aeec483",
+      "data-transfer-format": "calendar",
+      "data-transfer-artifact-kind": "calendar_ics",
+      "data-transfer-target": "local_file",
+      "data-transfer-scope": "flow",
+      "data-transfer-item-ids": "flow-washer-tub-clean-monthly-item-0,flow-washer-tub-clean-monthly-item-1,flow-washer-tub-clean-monthly-item-2",
+      "data-transfer-item-count": "3",
+      "data-transfer-projection-output-count": "1",
+      "data-transfer-output-count": "1",
+      "data-transfer-omitted-item-ids": "",
+      "data-transfer-omitted-count": "0",
+      "data-transfer-one-way": "true",
+      "data-transfer-duplicate-risk": "true",
+      "data-transfer-return-focus-selector": "[data-testid=\"my-flow-export-entry\"]",
+      "data-receipt-storage-key": "flow:export-receipts:v1",
+      "data-snapshot-kind": "effective_execution",
+      "data-snapshot-version": "2026-05-20T00:00:00.000Z|personal:bb9891f2|execution:44b6ac2e",
+      "data-snapshot-hash": "3aeec483",
+      "data-scope": "flow",
+      "data-format": "calendar",
+      "data-destination": "calendar",
+      "data-item-ids": "flow-washer-tub-clean-monthly-item-0,flow-washer-tub-clean-monthly-item-1,flow-washer-tub-clean-monthly-item-2",
+      "data-projection-output-count": "1",
+      "data-output-count": "1",
+      "data-outcome": "success",
+      "data-testid": "my-flow-transfer-receipt",
+      "data-p35-marker": "P35-P009-RESULT-TRANSFER-CONFIRMATION",
+      "data-flow-ui": "bottom-sheet",
+      "data-layer-priority": "dialog"
+    },
+    "receiptRegistry": [
+      {
+        "schemaVersion": 1,
+        "kind": "persistent_receipt",
+        "receiptId": "saved_transfer::washer-tub-clean-monthly::6d25d259-9935-4eab-a646-6020e6f991da",
+        "requestId": "saved_transfer::washer-tub-clean-monthly::6d25d259-9935-4eab-a646-6020e6f991da",
+        "route": "saved_transfer",
+        "savedPlanId": "washer-tub-clean-monthly",
+        "outcome": "success",
+        "createdAt": "2026-08-05T08:33:45.821Z",
+        "completedAt": "2026-08-05T08:33:46.026Z",
+        "snapshot": {
+          "kind": "effective_execution",
+          "version": "2026-05-20T00:00:00.000Z|personal:bb9891f2|execution:44b6ac2e",
+          "hash": "3aeec483",
+          "identity": {
+            "flowId": "flow-washer-tub-clean-monthly",
+            "flowSlug": "washer-tub-clean-monthly",
+            "sourceVersion": "2026-05-20T00:00:00.000Z",
+            "personalVersion": "personal:bb9891f2",
+            "executionVersion": "execution:44b6ac2e"
+          }
+        },
+        "scope": {
+          "kind": "flow"
+        },
+        "format": "calendar",
+        "artifactKind": "calendar_ics",
+        "itemIds": [
+          "flow-washer-tub-clean-monthly-item-0",
+          "flow-washer-tub-clean-monthly-item-1",
+          "flow-washer-tub-clean-monthly-item-2"
+        ],
+        "itemCount": 3,
+        "projectionOutputCount": 1,
+        "outputCount": 1,
+        "countUnits": {
+          "itemCount": "item",
+          "projectionOutputCount": "projection_output",
+          "outputCount": "artifact_output"
+        },
+        "omitted": {
+          "heldItemIds": [],
+          "unavailableItemIds": [],
+          "excludedItemIds": [],
+          "reasonsByItemId": {}
+        },
+        "oneWay": true,
+        "duplicateRisk": true,
+        "artifact": {
+          "target": "local_file",
+          "mediaType": "text/calendar;charset=utf-8",
+          "filename": "세탁기-통세척-월간-관리-all-calendar.ics",
+          "payloadHash": "39c2fa46",
+          "payloadByteLength": 1543,
+          "itemIds": [
+            "flow-washer-tub-clean-monthly-item-0",
+            "flow-washer-tub-clean-monthly-item-1",
+            "flow-washer-tub-clean-monthly-item-2"
+          ],
+          "itemCount": 3,
+          "outputCount": 1
+        }
+      }
+    ],
+    "browserErrors": [
+      {
+        "type": "requestfailed",
+        "url": "http://127.0.0.1:3114/my?_rsc=8BpXeL850Q_fMXfc",
+        "text": "net::ERR_ABORTED"
+      },
+      {
+        "type": "requestfailed",
+        "url": "http://127.0.0.1:3114/flow-maps/curated-opic-mock-course?_rsc=8BpXeL850Q_fMXfc",
+        "text": "net::ERR_ABORTED"
+      },
+      {
+        "type": "requestfailed",
+        "url": "http://127.0.0.1:3114/flow-maps/curated-reading-routine-log?_rsc=8BpXeL850Q_fMXfc",
+        "text": "net::ERR_ABORTED"
+      },
+      {
+        "type": "requestfailed",
+        "url": "http://127.0.0.1:3114/flow-maps/curated-new-car-purchase-guide?_rsc=8BpXeL850Q_fMXfc",
+        "text": "net::ERR_ABORTED"
+      },
+      {
+        "type": "requestfailed",
+        "url": "http://127.0.0.1:3114/f/curated-wedding-naver-timeline?_rsc=8BpXeL850Q_fMXfc",
+        "text": "net::ERR_ABORTED"
+      },
+      {
+        "type": "requestfailed",
+        "url": "http://127.0.0.1:3114/f/curated-wedding-gongysd-atoz?_rsc=8BpXeL850Q_fMXfc",
+        "text": "net::ERR_ABORTED"
+      }
+    ]
+  },
+  "clipboard": {
+    "status": "CAPTURED_CURRENT_RUNTIME",
+    "filename": null,
+    "storedEvidenceFilename": "browser-clipboard/sheet.tsv",
+    "transport": "navigator.clipboard.writeText",
+    "mediaType": "text/tab-separated-values;charset=utf-8",
+    "bytes": 3001,
+    "sha256": "6af0fa54369d8a7195f1b9fee2ff70932a435dc283a7d2172beae53d7e0e14ac",
+    "attempts": 1,
+    "successes": 1,
+    "parsedRowCount": 4,
+    "parsedColumnCounts": [
+      18,
+      18,
+      18,
+      18
+    ],
+    "confirmationAttributes": {
+      "data-transfer-state": "confirming",
+      "data-transfer-route": "saved_transfer",
+      "data-transfer-persistence": "persistent_receipt",
+      "data-transfer-request-id": "saved_transfer::washer-tub-clean-monthly::3ced54c7-8562-46d9-8f04-3627046c3cbb",
+      "data-transfer-saved-plan-id": "washer-tub-clean-monthly",
+      "data-transfer-snapshot-kind": "effective_execution",
+      "data-transfer-snapshot-version": "2026-05-20T00:00:00.000Z|personal:bb9891f2|execution:44b6ac2e",
+      "data-transfer-snapshot-hash": "84c3324a",
+      "data-transfer-format": "sheet",
+      "data-transfer-artifact-kind": "tabular_sheet",
+      "data-transfer-target": "clipboard",
+      "data-transfer-scope": "flow",
+      "data-transfer-item-ids": "flow-washer-tub-clean-monthly-item-0,flow-washer-tub-clean-monthly-item-1,flow-washer-tub-clean-monthly-item-2",
+      "data-transfer-item-count": "3",
+      "data-transfer-projection-output-count": "3",
+      "data-transfer-output-count": "3",
+      "data-transfer-omitted-item-ids": "",
+      "data-transfer-omitted-count": "0",
+      "data-transfer-one-way": "true",
+      "data-transfer-duplicate-risk": "true",
+      "data-transfer-return-focus-selector": "[data-testid=\"my-flow-export-entry\"]",
+      "data-receipt-storage-key": "flow:export-receipts:v1",
+      "data-snapshot-kind": "effective_execution",
+      "data-snapshot-version": "2026-05-20T00:00:00.000Z|personal:bb9891f2|execution:44b6ac2e",
+      "data-snapshot-hash": "84c3324a",
+      "data-scope": "flow",
+      "data-format": "sheet",
+      "data-destination": "sheet",
+      "data-item-ids": "flow-washer-tub-clean-monthly-item-0,flow-washer-tub-clean-monthly-item-1,flow-washer-tub-clean-monthly-item-2",
+      "data-projection-output-count": "3",
+      "data-output-count": "3",
+      "data-outcome": "confirming",
+      "data-testid": "my-flow-transfer-confirmation",
+      "data-p35-marker": "P35-P009-RESULT-TRANSFER-CONFIRMATION",
+      "data-flow-ui": "bottom-sheet",
+      "data-layer-priority": "dialog"
+    },
+    "receiptAttributes": {
+      "data-transfer-state": "succeeded",
+      "data-transfer-route": "saved_transfer",
+      "data-transfer-persistence": "persistent_receipt",
+      "data-transfer-request-id": "saved_transfer::washer-tub-clean-monthly::3ced54c7-8562-46d9-8f04-3627046c3cbb",
+      "data-transfer-saved-plan-id": "washer-tub-clean-monthly",
+      "data-transfer-snapshot-kind": "effective_execution",
+      "data-transfer-snapshot-version": "2026-05-20T00:00:00.000Z|personal:bb9891f2|execution:44b6ac2e",
+      "data-transfer-snapshot-hash": "84c3324a",
+      "data-transfer-format": "sheet",
+      "data-transfer-artifact-kind": "tabular_sheet",
+      "data-transfer-target": "clipboard",
+      "data-transfer-scope": "flow",
+      "data-transfer-item-ids": "flow-washer-tub-clean-monthly-item-0,flow-washer-tub-clean-monthly-item-1,flow-washer-tub-clean-monthly-item-2",
+      "data-transfer-item-count": "3",
+      "data-transfer-projection-output-count": "3",
+      "data-transfer-output-count": "3",
+      "data-transfer-omitted-item-ids": "",
+      "data-transfer-omitted-count": "0",
+      "data-transfer-one-way": "true",
+      "data-transfer-duplicate-risk": "true",
+      "data-transfer-return-focus-selector": "[data-testid=\"my-flow-export-entry\"]",
+      "data-receipt-storage-key": "flow:export-receipts:v1",
+      "data-snapshot-kind": "effective_execution",
+      "data-snapshot-version": "2026-05-20T00:00:00.000Z|personal:bb9891f2|execution:44b6ac2e",
+      "data-snapshot-hash": "84c3324a",
+      "data-scope": "flow",
+      "data-format": "sheet",
+      "data-destination": "sheet",
+      "data-item-ids": "flow-washer-tub-clean-monthly-item-0,flow-washer-tub-clean-monthly-item-1,flow-washer-tub-clean-monthly-item-2",
+      "data-projection-output-count": "3",
+      "data-output-count": "3",
+      "data-outcome": "success",
+      "data-testid": "my-flow-transfer-receipt",
+      "data-p35-marker": "P35-P009-RESULT-TRANSFER-CONFIRMATION",
+      "data-flow-ui": "bottom-sheet",
+      "data-layer-priority": "dialog"
+    },
+    "receiptRegistry": [
+      {
+        "schemaVersion": 1,
+        "kind": "persistent_receipt",
+        "receiptId": "saved_transfer::washer-tub-clean-monthly::3ced54c7-8562-46d9-8f04-3627046c3cbb",
+        "requestId": "saved_transfer::washer-tub-clean-monthly::3ced54c7-8562-46d9-8f04-3627046c3cbb",
+        "route": "saved_transfer",
+        "savedPlanId": "washer-tub-clean-monthly",
+        "outcome": "success",
+        "createdAt": "2026-08-05T08:33:49.031Z",
+        "completedAt": "2026-08-05T08:33:49.235Z",
+        "snapshot": {
+          "kind": "effective_execution",
+          "version": "2026-05-20T00:00:00.000Z|personal:bb9891f2|execution:44b6ac2e",
+          "hash": "84c3324a",
+          "identity": {
+            "flowId": "flow-washer-tub-clean-monthly",
+            "flowSlug": "washer-tub-clean-monthly",
+            "sourceVersion": "2026-05-20T00:00:00.000Z",
+            "personalVersion": "personal:bb9891f2",
+            "executionVersion": "execution:44b6ac2e"
+          }
+        },
+        "scope": {
+          "kind": "flow"
+        },
+        "format": "sheet",
+        "artifactKind": "tabular_sheet",
+        "itemIds": [
+          "flow-washer-tub-clean-monthly-item-0",
+          "flow-washer-tub-clean-monthly-item-1",
+          "flow-washer-tub-clean-monthly-item-2"
+        ],
+        "itemCount": 3,
+        "projectionOutputCount": 3,
+        "outputCount": 3,
+        "countUnits": {
+          "itemCount": "item",
+          "projectionOutputCount": "projection_output",
+          "outputCount": "artifact_output"
+        },
+        "omitted": {
+          "heldItemIds": [],
+          "unavailableItemIds": [],
+          "excludedItemIds": [],
+          "reasonsByItemId": {}
+        },
+        "oneWay": true,
+        "duplicateRisk": true,
+        "artifact": {
+          "target": "clipboard",
+          "mediaType": "text/tab-separated-values;charset=utf-8",
+          "payloadHash": "8edfb2e3",
+          "payloadByteLength": 3001,
+          "itemIds": [
+            "flow-washer-tub-clean-monthly-item-0",
+            "flow-washer-tub-clean-monthly-item-1",
+            "flow-washer-tub-clean-monthly-item-2"
+          ],
+          "itemCount": 3,
+          "outputCount": 3
+        }
+      }
+    ],
+    "browserErrors": [
+      {
+        "type": "requestfailed",
+        "url": "http://127.0.0.1:3114/my?_rsc=8BpXeL850Q_fMXfc",
+        "text": "net::ERR_ABORTED"
+      },
+      {
+        "type": "requestfailed",
+        "url": "http://127.0.0.1:3114/flow-maps/middle-school-math-1?_rsc=8BpXeL850Q_fMXfc",
+        "text": "net::ERR_ABORTED"
+      },
+      {
+        "type": "requestfailed",
+        "url": "http://127.0.0.1:3114/flow-maps/curated-opic-mock-course?_rsc=8BpXeL850Q_fMXfc",
+        "text": "net::ERR_ABORTED"
+      },
+      {
+        "type": "requestfailed",
+        "url": "http://127.0.0.1:3114/flow-maps/curated-reading-routine-log?_rsc=8BpXeL850Q_fMXfc",
+        "text": "net::ERR_ABORTED"
+      },
+      {
+        "type": "requestfailed",
+        "url": "http://127.0.0.1:3114/flow-maps/curated-new-car-purchase-guide?_rsc=8BpXeL850Q_fMXfc",
+        "text": "net::ERR_ABORTED"
+      },
+      {
+        "type": "requestfailed",
+        "url": "http://127.0.0.1:3114/f/curated-wedding-naver-timeline?_rsc=8BpXeL850Q_fMXfc",
+        "text": "net::ERR_ABORTED"
+      },
+      {
+        "type": "requestfailed",
+        "url": "http://127.0.0.1:3114/f/curated-wedding-gongysd-atoz?_rsc=8BpXeL850Q_fMXfc",
+        "text": "net::ERR_ABORTED"
+      }
+    ]
+  },
+  "transportBoundary": {
+    "currentRuntimeDownloadCaptured": true,
+    "currentRuntimeClipboardCaptured": true,
+    "fallbackArtifactsAreActualTransportEvidence": false
+  }
+}

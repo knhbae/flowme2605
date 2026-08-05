@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-05T08:33:50.512Z",
+  "expectedGroups": [
+    "S01-S08",
+    "S09-S16",
+    "S17-S23"
+  ],
+  "manifests": [
+    {
+      "manifest": "group-manifest-s01-s08.json",
+      "head": "29cb03a65dd1037a3b813b7f43a5a095e4669dce",
+      "dirty": false,
+      "buildId": "6hGywJa2x9eHc-II5umLx",
+      "baseUrl": "http://127.0.0.1:3114",
+      "startedAt": "2026-08-05T08:33:13.096Z",
+      "completedAt": "2026-08-05T08:33:13.096Z",
+      "browser": "chromium 150.0.7871.184",
+      "os": null,
+      "locale": "ko-KR",
+      "timezone": "Asia/Seoul",
+      "relativePath": "group-manifest-s01-s08.json",
+      "byteLength": 47823,
+      "sha256": "59293955c338c0b0b7e462b0e901d6b8438adf160bee1e1a5af278aaa498a978"
+    },
+    {
+      "manifest": "group-manifest-s09-s16.json",
+      "head": "29cb03a65dd1037a3b813b7f43a5a095e4669dce",
+      "dirty": false,
+      "buildId": "6hGywJa2x9eHc-II5umLx",
+      "baseUrl": "http://127.0.0.1:3114",
+      "startedAt": "2026-08-05T17:33:13+09:00",
+      "completedAt": "2026-08-05T17:33:31+09:00",
+      "browser": "Chromium 150.0.7871.184",
+      "os": "Windows_NT 10.0.26200 x64",
+      "locale": "ko-KR",
+      "timezone": "Asia/Seoul",
+      "relativePath": "group-manifest-s09-s16.json",
+      "byteLength": 22201,
+      "sha256": "cc92056d680f7b1c678c4e4c0d320fa4bd17647853201a3c9112c0be0b8deec6"
+    },
+    {
+      "manifest": "group-manifest-s17-s23.json",
+      "head": "29cb03a65dd1037a3b813b7f43a5a095e4669dce",
+      "dirty": false,
+      "buildId": "6hGywJa2x9eHc-II5umLx",
+      "baseUrl": "http://127.0.0.1:3114",
+      "startedAt": "2026-08-05T08:33:33.014Z",
+      "completedAt": "2026-08-05T08:33:33.014Z",
+      "browser": null,
+      "os": null,
+      "locale": null,
+      "timezone": null,
+      "relativePath": "group-manifest-s17-s23.json",
+      "byteLength": 15381,
+      "sha256": "e6cca45d54c50ab95bd0dc16b067d712415cffd8531b4b841100a88f189d9335"
+    }
+  ],
+  "captureStartedAt": "2026-08-05T08:33:13.000Z",
+  "captureCompletedAt": "2026-08-05T08:33:33.014Z"
+}

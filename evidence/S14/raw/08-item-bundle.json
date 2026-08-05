@@ -1,0 +1,158 @@
+{
+  "flow": {
+    "id": "flow-evidence-count-8",
+    "slug": "personal-copy:evidence-count-8",
+    "title": "실제 저장 항목 8개 계획",
+    "description": "저장 데이터 8개 밀도 검증",
+    "category": "evidence",
+    "structure_type": "checklist",
+    "anchor_type": "none",
+    "status": "draft",
+    "primary_destination": "internal_check",
+    "source_status": "real",
+    "source_precision": "exact",
+    "created_at": "2031-08-05T00:00:00.000Z",
+    "updated_at": "2031-08-05T00:00:00.000Z"
+  },
+  "sections": [
+    {
+      "id": "section-evidence-count-8",
+      "flow_id": "flow-evidence-count-8",
+      "title": "항목 8개",
+      "order": 0
+    }
+  ],
+  "items": [
+    {
+      "id": "personal-copy:evidence-count-8-item-01",
+      "flow_id": "flow-evidence-count-8",
+      "section_id": "section-evidence-count-8",
+      "title": "계약서·사진·열쇠🔑 가족과 함께 마지막으로 아주 길게 확인하기 — \"특수\"\t탭 \\ 역슬래시",
+      "description": "첫째 줄: 계약서의 \"특약\"과 사진 #1 확인 ✅\n둘째 줄:\t탭 값, 쉼표, 세미콜론; 역슬래시 \\ 보존\n셋째 줄: <완료>와 개인 기록 분리 🚚",
+      "type": "todo",
+      "role": "action",
+      "order": 0
+    },
+    {
+      "id": "personal-copy:evidence-count-8-item-02",
+      "flow_id": "flow-evidence-count-8",
+      "section_id": "section-evidence-count-8",
+      "title": "02번째 실제 저장 항목",
+      "description": "2번째 항목 설명",
+      "type": "todo",
+      "role": "action",
+      "order": 1
+    },
+    {
+      "id": "personal-copy:evidence-count-8-item-03",
+      "flow_id": "flow-evidence-count-8",
+      "section_id": "section-evidence-count-8",
+      "title": "03번째 실제 저장 항목",
+      "description": "3번째 항목 설명",
+      "type": "todo",
+      "role": "action",
+      "order": 2
+    },
+    {
+      "id": "personal-copy:evidence-count-8-item-04",
+      "flow_id": "flow-evidence-count-8",
+      "section_id": "section-evidence-count-8",
+      "title": "04번째 실제 저장 항목",
+      "description": "4번째 항목 설명",
+      "type": "todo",
+      "role": "action",
+      "order": 3
+    },
+    {
+      "id": "personal-copy:evidence-count-8-item-05",
+      "flow_id": "flow-evidence-count-8",
+      "section_id": "section-evidence-count-8",
+      "title": "05번째 실제 저장 항목",
+      "description": "5번째 항목 설명",
+      "type": "todo",
+      "role": "action",
+      "order": 4
+    },
+    {
+      "id": "personal-copy:evidence-count-8-item-06",
+      "flow_id": "flow-evidence-count-8",
+      "section_id": "section-evidence-count-8",
+      "title": "06번째 실제 저장 항목",
+      "description": "6번째 항목 설명",
+      "type": "todo",
+      "role": "action",
+      "order": 5
+    },
+    {
+      "id": "personal-copy:evidence-count-8-item-07",
+      "flow_id": "flow-evidence-count-8",
+      "section_id": "section-evidence-count-8",
+      "title": "07번째 실제 저장 항목",
+      "description": "7번째 항목 설명",
+      "type": "todo",
+      "role": "action",
+      "order": 6
+    },
+    {
+      "id": "personal-copy:evidence-count-8-item-08",
+      "flow_id": "flow-evidence-count-8",
+      "section_id": "section-evidence-count-8",
+      "title": "08번째 실제 저장 항목",
+      "description": "8번째 항목 설명",
+      "type": "todo",
+      "role": "action",
+      "order": 7
+    }
+  ],
+  "itemDetails": [
+    {
+      "item_id": "personal-copy:evidence-count-8-item-01",
+      "why": "첫째 줄: 계약서의 \"특약\"과 사진 #1 확인 ✅\n둘째 줄:\t탭 값, 쉼표, 세미콜론; 역슬래시 \\ 보존\n셋째 줄: <완료>와 개인 기록 분리 🚚",
+      "how": "첫째 줄: 계약서의 \"특약\"과 사진 #1 확인 ✅\n둘째 줄:\t탭 값, 쉼표, 세미콜론; 역슬래시 \\ 보존\n셋째 줄: <완료>와 개인 기록 분리 🚚",
+      "completion_criteria": "계약서·사진·열쇠🔑 가족과 함께 마지막으로 아주 길게 확인하기 — \"특수\"\t탭 \\ 역슬래시\n필수 #1 & #2, 따옴표 \"완료\", emoji 🧾"
+    },
+    {
+      "item_id": "personal-copy:evidence-count-8-item-02",
+      "why": "2번째 이유",
+      "how": "2번째 방법",
+      "completion_criteria": "2번째 항목을 확인했습니다."
+    },
+    {
+      "item_id": "personal-copy:evidence-count-8-item-03",
+      "why": "3번째 이유",
+      "how": "3번째 방법",
+      "completion_criteria": "3번째 항목을 확인했습니다."
+    },
+    {
+      "item_id": "personal-copy:evidence-count-8-item-04",
+      "why": "4번째 이유",
+      "how": "4번째 방법",
+      "completion_criteria": "4번째 항목을 확인했습니다."
+    },
+    {
+      "item_id": "personal-copy:evidence-count-8-item-05",
+      "why": "5번째 이유",
+      "how": "5번째 방법",
+      "completion_criteria": "5번째 항목을 확인했습니다."
+    },
+    {
+      "item_id": "personal-copy:evidence-count-8-item-06",
+      "why": "6번째 이유",
+      "how": "6번째 방법",
+      "completion_criteria": "6번째 항목을 확인했습니다."
+    },
+    {
+      "item_id": "personal-copy:evidence-count-8-item-07",
+      "why": "7번째 이유",
+      "how": "7번째 방법",
+      "completion_criteria": "7번째 항목을 확인했습니다."
+    },
+    {
+      "item_id": "personal-copy:evidence-count-8-item-08",
+      "why": "8번째 이유",
+      "how": "8번째 방법",
+      "completion_criteria": "8번째 항목을 확인했습니다."
+    }
+  ],
+  "repeatRules": []
+}

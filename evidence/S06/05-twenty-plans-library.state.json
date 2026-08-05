@@ -1,0 +1,852 @@
+{
+  "capturedAt": "2026-08-05T08:33:05.264Z",
+  "route": "http://127.0.0.1:3114/my?demo=ux20",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "headings": [
+    {
+      "tag": "h1",
+      "level": null,
+      "text": "내 계획",
+      "testId": null
+    },
+    {
+      "tag": "h2",
+      "level": null,
+      "text": "오늘 할 일",
+      "testId": null
+    },
+    {
+      "tag": "h3",
+      "level": null,
+      "text": "저장한 계획",
+      "testId": null
+    }
+  ],
+  "actions": [
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "FLOW",
+      "accessibleName": "FLOW",
+      "testId": null,
+      "href": "/",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "계획 찾기",
+      "accessibleName": "계획 찾기",
+      "testId": null,
+      "href": "/flows",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "캘린더",
+      "accessibleName": "캘린더",
+      "testId": null,
+      "href": "/calendar",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "내 계획",
+      "accessibleName": "내 계획",
+      "testId": null,
+      "href": "/my",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "summary",
+      "type": null,
+      "role": null,
+      "text": "메뉴≡",
+      "accessibleName": "보조 메뉴 열기",
+      "testId": null,
+      "href": null,
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "계획 만들기내 콘텐츠를 실행할 계획으로 정리",
+      "accessibleName": "계획 만들기내 콘텐츠를 실행할 계획으로 정리",
+      "testId": null,
+      "href": "/flows/new",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "summary",
+      "type": null,
+      "role": null,
+      "text": "•••",
+      "accessibleName": "내 계획 보조 메뉴",
+      "testId": null,
+      "href": null,
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "스튜디오",
+      "accessibleName": "스튜디오",
+      "testId": "my-flow-studio-link",
+      "href": "/u/my-flow-studio",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "데이터 관리",
+      "accessibleName": "데이터 관리",
+      "testId": "my-flow-data-manager-open",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "필요 없는 물건 정리하기이사 D-30 준비 · 5월 27일부터›",
+      "accessibleName": "이사 D-30 준비 · 필요 없는 물건 정리하기 열기",
+      "testId": "my-flow-today-item",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "이사/청소 업체 견적 받고 예약하기이사 D-30 준비 · 5월 27일부터›",
+      "accessibleName": "이사 D-30 준비 · 이사/청소 업체 견적 받고 예약하기 열기",
+      "testId": "my-flow-today-item",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "input",
+      "type": "search",
+      "role": null,
+      "text": "",
+      "accessibleName": "저장한 계획 검색",
+      "testId": "my-flow-library-rail-search",
+      "href": null,
+      "value": "",
+      "checked": false,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "select",
+      "type": null,
+      "role": null,
+      "text": "전체진행 중마친 계획보관됨",
+      "accessibleName": "전체진행 중마친 계획보관됨",
+      "testId": "my-flow-library-rail-filter",
+      "href": null,
+      "value": "all",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "강아지 건강검진 상담 준비메모 · 날짜 없음전체 0/5 완료날짜 없음 · 식사·간식·목욕·산책·예방접종 정보 정리하기",
+      "accessibleName": "강아지 건강검진 상담 준비 열기",
+      "testId": "my-flow-library-row",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": "false"
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "개발 프로젝트 포트폴리오 4주일정 계획 · 6월 3일 - 6월 30일전체 1/6 완료다음 할 일 · 핵심 기능과 3~5개 화면 범위 정하기",
+      "accessibleName": "개발 프로젝트 포트폴리오 4주 열기",
+      "testId": "my-flow-library-row",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": "false"
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "결혼 준비 D-300 타임라인일정 계획 · 1월 28일 - 11월 23일전체 5/12 완료다음 할 일 · 신혼여행 예산과 일정 후보 정리하기",
+      "accessibleName": "결혼 준비 D-300 타임라인 열기",
+      "testId": "my-flow-library-row",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": "false"
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "국세 미수령 환급금 확인메모 · 날짜 없음전체 2/2 완료",
+      "accessibleName": "국세 미수령 환급금 확인 열기",
+      "testId": "my-flow-library-row",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": "false"
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "삼성 비스포크 AI 콤보 배수필터 청소반복 계획 · 6월 3일 - 7월 1일전체 1/5 완료다음 할 일 · 잔수 제거 도구와 수건 준비",
+      "accessibleName": "삼성 비스포크 AI 콤보 배수필터 청소 열기",
+      "testId": "my-flow-library-row",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": "false"
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "삼성 에어컨 계절 전 점검체크리스트 · 날짜 없음전체 1/5 완료날짜 없음 · 리모컨 표시와 배터리 확인하기",
+      "accessibleName": "삼성 에어컨 계절 전 점검 열기",
+      "testId": "my-flow-library-row",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": "false"
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "성인 예방접종 이력·상담 준비메모 · 날짜 없음전체 1/5 완료날짜 없음 · 누락된 과거 기록은 접종기관에 등록 가능 여부 문의하기",
+      "accessibleName": "성인 예방접종 이력·상담 준비 열기",
+      "testId": "my-flow-library-row",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": "false"
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "세탁기 통세척 월간 관리반복 계획 · 날짜 없음전체 0/3 완료날짜 없음 · 통세척 코스 돌리고 문 열어 건조하기",
+      "accessibleName": "세탁기 통세척 월간 관리 열기",
+      "testId": "my-flow-library-row",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": "false"
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "어린이집 보육료 지원 신청메모 · 날짜 없음전체 1/4 완료날짜 없음 · 신청 방법(복지로 온라인/주민센터) 확인하고 신청하기",
+      "accessibleName": "어린이집 보육료 지원 신청 열기",
+      "testId": "my-flow-library-row",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": "false"
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "여권 신규 발급 준비메모 · 날짜 없음전체 1/4 완료날짜 없음 · 신분증 등 필요 서류 확인하기",
+      "accessibleName": "여권 신규 발급 준비 열기",
+      "testId": "my-flow-library-row",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": "false"
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "여권 재발급 준비메모 · 날짜 없음전체 2/6 완료날짜 없음 · 최근 6개월 이내 여권 사진 준비하기",
+      "accessibleName": "여권 재발급 준비 열기",
+      "testId": "my-flow-library-row",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": "false"
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "여행 짐 싸기 체크리스트메모 · 날짜 없음전체 0/6 완료날짜 없음 · 신분증·여권(해외) 확인하기",
+      "accessibleName": "여행 짐 싸기 체크리스트 열기",
+      "testId": "my-flow-library-row",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": "false"
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "영유아 건강검진 일정체크리스트 · 날짜 없음전체 1/8 완료날짜 없음 · 2차 검진 예약",
+      "accessibleName": "영유아 건강검진 일정 열기",
+      "testId": "my-flow-library-row",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": "false"
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "이사 D-30 준비일정 계획 · 5월 27일 - 6월 27일전체 2/24 완료다음 할 일 · 우편물/카드/은행 주소 변경하기",
+      "accessibleName": "이사 D-30 준비 열기",
+      "testId": "my-flow-library-row",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": "false"
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "자동차검사 D-14 준비일정 계획 · 6월 3일 - 6월 17일전체 3/10 완료다음 할 일 · 번호판과 차대번호 식별 상태 확인하기",
+      "accessibleName": "자동차검사 D-14 준비 열기",
+      "testId": "my-flow-library-row",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": "false"
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "중고차 구매 현장 점검체크리스트 · 날짜 없음전체 1/15 완료날짜 없음 · 원하는 차종의 연식·주행거리별 시세 확인하기",
+      "accessibleName": "중고차 구매 현장 점검 열기",
+      "testId": "my-flow-library-row",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": "false"
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "직장인 영어공부 30일 루틴반복 계획 · 날짜 없음전체 3/12 완료날짜 없음 · 저장한 표현으로 예문 3개 만들기",
+      "accessibleName": "직장인 영어공부 30일 루틴 열기",
+      "testId": "my-flow-library-row",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": "false"
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "컴퓨터활용능력 1급 D-30 학습일정 계획 · 5월 28일 - 6월 26일전체 2/9 완료다음 할 일 · 기출 회독 목표 정하기",
+      "accessibleName": "컴퓨터활용능력 1급 D-30 학습 열기",
+      "testId": "my-flow-library-row",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": "false"
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "Allblanc 노점프 유산소반복 계획 · 6월 3일전체 1/1 완료",
+      "accessibleName": "Allblanc 노점프 유산소 열기",
+      "testId": "my-flow-library-row",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": "false"
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "Allblanc 아침 5분 홈트반복 계획 · 6월 3일전체 1/1 완료",
+      "accessibleName": "Allblanc 아침 5분 홈트 열기",
+      "testId": "my-flow-library-row",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": "false"
+    }
+  ],
+  "validation": [],
+  "geometry": {
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "document": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 1411
+    },
+    "horizontalOverflow": 0
+  },
+  "importantNodes": [
+    {
+      "testId": "my-flow-saved-library-shell",
+      "data": {
+        "data-saved-library-flag": "on",
+        "data-p35-q3-copy": "on",
+        "data-testid": "my-flow-saved-library-shell",
+        "data-p35-q1-saved-transfer": "on",
+        "data-library-count": "20",
+        "data-library-size-state": "searchable",
+        "data-p32-workspace-state": "library",
+        "data-p35-dead-view-marker": "P35-DEAD-VIEW-REMOVAL",
+        "data-p35-my-flow-marker": "P35-MY-LIBRARY-ONLY"
+      }
+    },
+    {
+      "testId": "platform-nav",
+      "data": {
+        "data-testid": "platform-nav",
+        "data-p35-q3-copy": "on"
+      }
+    },
+    {
+      "testId": "platform-primary-tabs",
+      "data": {
+        "data-testid": "platform-primary-tabs",
+        "data-p35-marker": "P35-ENTRY-ROUTER-3TAB"
+      }
+    },
+    {
+      "testId": "my-flow-demo-badge",
+      "data": {
+        "data-testid": "my-flow-demo-badge"
+      }
+    },
+    {
+      "testId": "my-flow-auxiliary-menu",
+      "data": {
+        "data-testid": "my-flow-auxiliary-menu"
+      }
+    },
+    {
+      "testId": "my-flow-studio-link",
+      "data": {
+        "data-testid": "my-flow-studio-link"
+      }
+    },
+    {
+      "testId": "my-flow-data-manager-open",
+      "data": {
+        "data-testid": "my-flow-data-manager-open"
+      }
+    },
+    {
+      "testId": "my-flow-workspace",
+      "data": {
+        "data-testid": "my-flow-workspace",
+        "data-surface-role": "task-first"
+      }
+    },
+    {
+      "testId": "my-flow-today-summary",
+      "data": {
+        "data-testid": "my-flow-today-summary",
+        "data-today-source": "effective_execution",
+        "data-write-owner": "none",
+        "data-today-count": "2"
+      }
+    },
+    {
+      "testId": "my-flow-today-item",
+      "data": {
+        "data-testid": "my-flow-today-item",
+        "data-saved-identity": "moving-d30-basic",
+        "data-item-id": "flow-moving-item-2",
+        "data-cross-flow-key": "moving-d30-basic::flow-moving-item-2"
+      }
+    },
+    {
+      "testId": "my-flow-today-item",
+      "data": {
+        "data-testid": "my-flow-today-item",
+        "data-saved-identity": "moving-d30-basic",
+        "data-item-id": "flow-moving-item-3",
+        "data-cross-flow-key": "moving-d30-basic::flow-moving-item-3"
+      }
+    },
+    {
+      "testId": "my-flow-library-workspace",
+      "data": {
+        "data-testid": "my-flow-library-workspace",
+        "data-library-layout": "rail-canvas-inspector",
+        "data-p29-marker": "P29-MY-FLOW-THREE-PANE",
+        "data-p32-marker": "P32-02-FOCUSED-MY-FLOW-WORKSPACE",
+        "data-p35-marker": "P35-MY-LIBRARY-ONLY",
+        "data-p35-r11-marker": "P35-R11-WIDE-EXECUTION-INSPECTOR"
+      }
+    },
+    {
+      "testId": "my-flow-library-rail",
+      "data": {
+        "data-testid": "my-flow-library-rail"
+      }
+    },
+    {
+      "testId": "my-flow-library-rail-search",
+      "data": {
+        "data-testid": "my-flow-library-rail-search"
+      }
+    },
+    {
+      "testId": "my-flow-library-rail-filter",
+      "data": {
+        "data-testid": "my-flow-library-rail-filter",
+        "data-p35-r10-marker": "P35-R10-LIBRARY-FILTER-ONE-AXIS"
+      }
+    },
+    {
+      "testId": "my-flow-library-scroll-container",
+      "data": {
+        "data-testid": "my-flow-library-scroll-container"
+      }
+    },
+    {
+      "testId": "my-flow-library-row",
+      "data": {
+        "data-testid": "my-flow-library-row",
+        "data-flow-slug": "pet-health-observation",
+        "data-saved-identity": "pet-health-observation",
+        "data-flow-anatomy": "flow-library-row"
+      }
+    },
+    {
+      "testId": "my-flow-library-row",
+      "data": {
+        "data-testid": "my-flow-library-row",
+        "data-flow-slug": "portfolio-4week",
+        "data-saved-identity": "portfolio-4week",
+        "data-flow-anatomy": "flow-library-row"
+      }
+    },
+    {
+      "testId": "my-flow-library-row",
+      "data": {
+        "data-testid": "my-flow-library-row",
+        "data-flow-slug": "wedding-d180-basic",
+        "data-saved-identity": "wedding-d180-basic",
+        "data-flow-anatomy": "flow-library-row"
+      }
+    },
+    {
+      "testId": "my-flow-library-row",
+      "data": {
+        "data-testid": "my-flow-library-row",
+        "data-flow-slug": "tax-refund-find",
+        "data-saved-identity": "tax-refund-find",
+        "data-flow-anatomy": "flow-library-row"
+      }
+    },
+    {
+      "testId": "my-flow-library-row",
+      "data": {
+        "data-testid": "my-flow-library-row",
+        "data-flow-slug": "real-samsung-washer-filter-care",
+        "data-saved-identity": "real-samsung-washer-filter-care",
+        "data-flow-anatomy": "flow-library-row"
+      }
+    },
+    {
+      "testId": "my-flow-library-row",
+      "data": {
+        "data-testid": "my-flow-library-row",
+        "data-flow-slug": "samsung-aircon-seasonal-check",
+        "data-saved-identity": "samsung-aircon-seasonal-check",
+        "data-flow-anatomy": "flow-library-row"
+      }
+    },
+    {
+      "testId": "my-flow-library-row",
+      "data": {
+        "data-testid": "my-flow-library-row",
+        "data-flow-slug": "adult-vaccine-schedule-check",
+        "data-saved-identity": "adult-vaccine-schedule-check",
+        "data-flow-anatomy": "flow-library-row"
+      }
+    },
+    {
+      "testId": "my-flow-library-row",
+      "data": {
+        "data-testid": "my-flow-library-row",
+        "data-flow-slug": "washer-tub-clean-monthly",
+        "data-saved-identity": "washer-tub-clean-monthly",
+        "data-flow-anatomy": "flow-library-row"
+      }
+    },
+    {
+      "testId": "my-flow-library-row",
+      "data": {
+        "data-testid": "my-flow-library-row",
+        "data-flow-slug": "childcare-fee-support-apply",
+        "data-saved-identity": "childcare-fee-support-apply",
+        "data-flow-anatomy": "flow-library-row"
+      }
+    },
+    {
+      "testId": "my-flow-library-row",
+      "data": {
+        "data-testid": "my-flow-library-row",
+        "data-flow-slug": "first-passport-issue",
+        "data-saved-identity": "first-passport-issue",
+        "data-flow-anatomy": "flow-library-row"
+      }
+    },
+    {
+      "testId": "my-flow-library-row",
+      "data": {
+        "data-testid": "my-flow-library-row",
+        "data-flow-slug": "passport-renewal-docs",
+        "data-saved-identity": "passport-renewal-docs",
+        "data-flow-anatomy": "flow-library-row"
+      }
+    },
+    {
+      "testId": "my-flow-library-row",
+      "data": {
+        "data-testid": "my-flow-library-row",
+        "data-flow-slug": "travel-packing-list",
+        "data-saved-identity": "travel-packing-list",
+        "data-flow-anatomy": "flow-library-row"
+      }
+    },
+    {
+      "testId": "my-flow-library-row",
+      "data": {
+        "data-testid": "my-flow-library-row",
+        "data-flow-slug": "infant-health-checkup-schedule",
+        "data-saved-identity": "infant-health-checkup-schedule",
+        "data-flow-anatomy": "flow-library-row"
+      }
+    },
+    {
+      "testId": "my-flow-library-row",
+      "data": {
+        "data-testid": "my-flow-library-row",
+        "data-flow-slug": "moving-d30-basic",
+        "data-saved-identity": "moving-d30-basic",
+        "data-flow-anatomy": "flow-library-row"
+      }
+    },
+    {
+      "testId": "my-flow-library-row",
+      "data": {
+        "data-testid": "my-flow-library-row",
+        "data-flow-slug": "vehicle-inspection-prep",
+        "data-saved-identity": "vehicle-inspection-prep",
+        "data-flow-anatomy": "flow-library-row"
+      }
+    },
+    {
+      "testId": "my-flow-library-row",
+      "data": {
+        "data-testid": "my-flow-library-row",
+        "data-flow-slug": "used-car-buying-check",
+        "data-saved-identity": "used-car-buying-check",
+        "data-flow-anatomy": "flow-library-row"
+      }
+    },
+    {
+      "testId": "my-flow-library-row",
+      "data": {
+        "data-testid": "my-flow-library-row",
+        "data-flow-slug": "english-study-30day-routine",
+        "data-saved-identity": "english-study-30day-routine",
+        "data-flow-anatomy": "flow-library-row"
+      }
+    },
+    {
+      "testId": "my-flow-library-row",
+      "data": {
+        "data-testid": "my-flow-library-row",
+        "data-flow-slug": "computer-skills-d30-study",
+        "data-saved-identity": "computer-skills-d30-study",
+        "data-flow-anatomy": "flow-library-row"
+      }
+    },
+    {
+      "testId": "my-flow-library-row",
+      "data": {
+        "data-testid": "my-flow-library-row",
+        "data-flow-slug": "curated-allblanc-no-jump-cardio",
+        "data-saved-identity": "curated-allblanc-no-jump-cardio",
+        "data-flow-anatomy": "flow-library-row"
+      }
+    },
+    {
+      "testId": "my-flow-library-row",
+      "data": {
+        "data-testid": "my-flow-library-row",
+        "data-flow-slug": "curated-allblanc-morning-workout",
+        "data-saved-identity": "curated-allblanc-morning-workout",
+        "data-flow-anatomy": "flow-library-row"
+      }
+    },
+    {
+      "testId": "my-flow-library-detail",
+      "data": {
+        "data-testid": "my-flow-library-detail"
+      }
+    }
+  ],
+  "browserEvents": {
+    "consoleErrors": [],
+    "pageErrors": [],
+    "requestFailures": []
+  },
+  "evidenceClass": "ACTUAL_UI",
+  "library": {
+    "count": "20",
+    "sizeState": "searchable",
+    "rowCount": 20,
+    "rowSlugs": [
+      "pet-health-observation",
+      "portfolio-4week",
+      "wedding-d180-basic",
+      "tax-refund-find",
+      "real-samsung-washer-filter-care",
+      "samsung-aircon-seasonal-check",
+      "adult-vaccine-schedule-check",
+      "washer-tub-clean-monthly",
+      "childcare-fee-support-apply",
+      "first-passport-issue",
+      "passport-renewal-docs",
+      "travel-packing-list",
+      "infant-health-checkup-schedule",
+      "moving-d30-basic",
+      "vehicle-inspection-prep",
+      "used-car-buying-check",
+      "english-study-30day-routine",
+      "computer-skills-d30-study",
+      "curated-allblanc-no-jump-cardio",
+      "curated-allblanc-morning-workout"
+    ],
+    "todayVisible": true,
+    "todayItemCount": 2,
+    "todoExperimentVisible": false,
+    "selectedView": null
+  }
+}

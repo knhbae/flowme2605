@@ -1,0 +1,286 @@
+{
+  "capturedAt": "2026-08-05T08:33:02.315Z",
+  "route": "http://127.0.0.1:3114/my",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "headings": [
+    {
+      "tag": "h1",
+      "level": null,
+      "text": "내 계획",
+      "testId": null
+    },
+    {
+      "tag": "h2",
+      "level": null,
+      "text": "저장한 계획",
+      "testId": null
+    }
+  ],
+  "actions": [
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "FLOW",
+      "accessibleName": "FLOW",
+      "testId": null,
+      "href": "/",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "summary",
+      "type": null,
+      "role": null,
+      "text": "메뉴≡",
+      "accessibleName": "보조 메뉴 열기",
+      "testId": null,
+      "href": null,
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "계획 만들기내 콘텐츠를 실행할 계획으로 정리",
+      "accessibleName": "계획 만들기내 콘텐츠를 실행할 계획으로 정리",
+      "testId": null,
+      "href": "/flows/new",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "summary",
+      "type": null,
+      "role": null,
+      "text": "•••",
+      "accessibleName": "내 계획 보조 메뉴",
+      "testId": null,
+      "href": null,
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "스튜디오",
+      "accessibleName": "스튜디오",
+      "testId": "my-flow-studio-link",
+      "href": "/u/my-flow-studio",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "데이터 관리",
+      "accessibleName": "데이터 관리",
+      "testId": "my-flow-data-manager-open",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "이사 D-30 준비다음 할 일 · 이사 방식 정하기7월 6일 · 전체 0/24 완료›",
+      "accessibleName": "이사 D-30 준비 열기",
+      "testId": "my-flow-mobile-structure-open",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "계획 찾기",
+      "accessibleName": "계획 찾기",
+      "testId": null,
+      "href": "/flows",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "캘린더",
+      "accessibleName": "캘린더",
+      "testId": null,
+      "href": "/calendar",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "내 계획",
+      "accessibleName": "내 계획",
+      "testId": null,
+      "href": "/my",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    }
+  ],
+  "validation": [],
+  "geometry": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "document": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 844
+    },
+    "horizontalOverflow": 0
+  },
+  "importantNodes": [
+    {
+      "testId": "my-flow-saved-library-shell",
+      "data": {
+        "data-saved-library-flag": "on",
+        "data-p35-q3-copy": "on",
+        "data-testid": "my-flow-saved-library-shell",
+        "data-p35-q1-saved-transfer": "on",
+        "data-library-count": "1",
+        "data-library-size-state": "single",
+        "data-p32-workspace-state": "library",
+        "data-p35-dead-view-marker": "P35-DEAD-VIEW-REMOVAL",
+        "data-p35-my-flow-marker": "P35-MY-LIBRARY-ONLY"
+      }
+    },
+    {
+      "testId": "platform-nav",
+      "data": {
+        "data-testid": "platform-nav",
+        "data-p35-q3-copy": "on"
+      }
+    },
+    {
+      "testId": "my-flow-auxiliary-menu",
+      "data": {
+        "data-testid": "my-flow-auxiliary-menu"
+      }
+    },
+    {
+      "testId": "my-flow-studio-link",
+      "data": {
+        "data-testid": "my-flow-studio-link"
+      }
+    },
+    {
+      "testId": "my-flow-data-manager-open",
+      "data": {
+        "data-testid": "my-flow-data-manager-open"
+      }
+    },
+    {
+      "testId": "my-flow-workspace",
+      "data": {
+        "data-testid": "my-flow-workspace",
+        "data-surface-role": "task-first"
+      }
+    },
+    {
+      "testId": "my-flow-library-heading",
+      "data": {
+        "data-testid": "my-flow-library-heading"
+      }
+    },
+    {
+      "testId": "my-flow-saved-count",
+      "data": {
+        "data-testid": "my-flow-saved-count"
+      }
+    },
+    {
+      "testId": "my-flow-mobile-flow-hub",
+      "data": {
+        "data-testid": "my-flow-mobile-flow-hub",
+        "data-library-mode": "compact",
+        "data-p35-marker": "P35-MY-LIBRARY-ONLY"
+      }
+    },
+    {
+      "testId": "my-flow-mobile-structure-row",
+      "data": {
+        "data-testid": "my-flow-mobile-structure-row",
+        "data-flow-slug": "moving-d30-basic",
+        "data-saved-identity": "moving-d30-basic",
+        "data-p29-marker": "P29-MY-FLOW-COMPACT-LIBRARY",
+        "data-flow-anatomy": "flow-library-row"
+      }
+    },
+    {
+      "testId": "my-flow-mobile-structure-open",
+      "data": {
+        "data-testid": "my-flow-mobile-structure-open"
+      }
+    },
+    {
+      "testId": "platform-mobile-tabs",
+      "data": {
+        "data-testid": "platform-mobile-tabs",
+        "data-layer-priority": "navigation",
+        "data-p30-marker": "P30-MOBILE-WORKSPACE-FOCUS-ORDER",
+        "data-p35-marker": "P35-ENTRY-ROUTER-3TAB"
+      }
+    }
+  ],
+  "browserEvents": {
+    "consoleErrors": [],
+    "pageErrors": [],
+    "requestFailures": []
+  },
+  "evidenceClass": "ACTUAL_UI",
+  "library": {
+    "count": "1",
+    "sizeState": "single",
+    "rowCount": 0,
+    "rowSlugs": [],
+    "todayVisible": false,
+    "todayItemCount": 0,
+    "todoExperimentVisible": false,
+    "selectedView": null
+  }
+}

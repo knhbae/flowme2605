@@ -1,0 +1,296 @@
+{
+  "lifecycle": "public_preview",
+  "snapshotKind": "effective_authoring",
+  "primaryDestination": "calendar",
+  "selectedDestination": "checklist",
+  "selected": {
+    "destination": "checklist",
+    "outputCount": "24",
+    "manifestItemIds": [
+      "flow-moving-item-0",
+      "flow-moving-item-1",
+      "flow-moving-item-2",
+      "flow-moving-item-3",
+      "flow-moving-item-4",
+      "flow-moving-item-5",
+      "flow-moving-item-6",
+      "flow-moving-item-7",
+      "flow-moving-item-8",
+      "flow-moving-item-9",
+      "flow-moving-item-10",
+      "flow-moving-item-11",
+      "flow-moving-item-12",
+      "flow-moving-item-13",
+      "flow-moving-item-14",
+      "flow-moving-item-15",
+      "flow-moving-item-16",
+      "flow-moving-item-17",
+      "flow-moving-item-18",
+      "flow-moving-item-19",
+      "flow-moving-item-20",
+      "flow-moving-item-21",
+      "flow-moving-item-22",
+      "flow-moving-item-23"
+    ],
+    "orderedRenderedRows": [
+      {
+        "index": 0,
+        "itemId": "flow-moving-item-0",
+        "text": "·이사 방식 정하기8월 2일 (토) · D-30 큰 준비"
+      },
+      {
+        "index": 1,
+        "itemId": "flow-moving-item-1",
+        "text": "·이사할 집 하자 점검하기8월 2일 (토) · D-30 큰 준비완료 기준 · 주요 공간 사진과 하자 목록을 집주인 또는 중개인에게 공유했다."
+      },
+      {
+        "index": 2,
+        "itemId": "flow-moving-item-2",
+        "text": "·필요 없는 물건 정리하기8월 2일 (토) · D-30 큰 준비"
+      },
+      {
+        "index": 3,
+        "itemId": "flow-moving-item-3",
+        "text": "·이사/청소 업체 견적 받고 예약하기8월 2일 (토) · D-30 큰 준비"
+      },
+      {
+        "index": 4,
+        "itemId": "flow-moving-item-4",
+        "text": "·우편물/카드/은행 주소 변경하기8월 22일 (금) · D-10 생활 이전 준비"
+      },
+      {
+        "index": 5,
+        "itemId": "flow-moving-item-5",
+        "text": "·정기 배달 서비스 중지 요청하기8월 22일 (금) · D-10 생활 이전 준비"
+      },
+      {
+        "index": 6,
+        "itemId": "flow-moving-item-6",
+        "text": "·대형폐기물 배출 신고와 수거일 확인하기8월 22일 (금) · D-10 생활 이전 준비완료 기준 · 배출 신고 번호와 수거 예정일을 기록했다."
+      },
+      {
+        "index": 7,
+        "itemId": "flow-moving-item-7",
+        "text": "·엘리베이터 또는 사다리차 사용 예약하기8월 22일 (금) · D-10 생활 이전 준비"
+      },
+      {
+        "index": 8,
+        "itemId": "flow-moving-item-8",
+        "text": "·인터넷/정수기 이전 설치 예약하기8월 22일 (금) · D-10 생활 이전 준비"
+      },
+      {
+        "index": 9,
+        "itemId": "flow-moving-item-9",
+        "text": "·도시가스 철거/설치 예약하기8월 29일 (금) · D-3 필수 예약 확인"
+      },
+      {
+        "index": 10,
+        "itemId": "flow-moving-item-10",
+        "text": "·자동이체 해지 또는 변경 확인하기8월 29일 (금) · D-3 필수 예약 확인"
+      },
+      {
+        "index": 11,
+        "itemId": "flow-moving-item-11",
+        "text": "·이사 당일 사용할 물건 따로 포장하기8월 29일 (금) · D-3 필수 예약 확인"
+      },
+      {
+        "index": 12,
+        "itemId": "flow-moving-item-12",
+        "text": "·관리사무소에 이사 시간과 차량 동선 공유하기8월 29일 (금) · D-3 필수 예약 확인"
+      },
+      {
+        "index": 13,
+        "itemId": "flow-moving-item-13",
+        "text": "·이사 업체와 일정 최종 확인하기8월 31일 (일) · D-1 최종 점검"
+      },
+      {
+        "index": 14,
+        "itemId": "flow-moving-item-14",
+        "text": "·이체 한도 증액 확인하기8월 31일 (일) · D-1 최종 점검"
+      },
+      {
+        "index": 15,
+        "itemId": "flow-moving-item-15",
+        "text": "·귀중품과 중요 서류 별도 보관하기8월 31일 (일) · D-1 최종 점검"
+      },
+      {
+        "index": 16,
+        "itemId": "flow-moving-item-16",
+        "text": "·냉장고 음식과 쓰레기 최종 정리하기8월 31일 (일) · D-1 최종 점검"
+      },
+      {
+        "index": 17,
+        "itemId": "flow-moving-item-17",
+        "text": "·전기/가스/수도/관리비 정산하기9월 1일 (월) · D-Day 이사 당일"
+      },
+      {
+        "index": 18,
+        "itemId": "flow-moving-item-18",
+        "text": "·이삿짐 분실/파손 확인하기9월 1일 (월) · D-Day 이사 당일"
+      },
+      {
+        "index": 19,
+        "itemId": "flow-moving-item-19",
+        "text": "·계량기와 집 상태 사진 남기기9월 1일 (월) · D-Day 이사 당일"
+      },
+      {
+        "index": 20,
+        "itemId": "flow-moving-item-20",
+        "text": "·열쇠, 출입카드, 주차등록 인수인계하기9월 1일 (월) · D-Day 이사 당일"
+      },
+      {
+        "index": 21,
+        "itemId": "flow-moving-item-21",
+        "text": "·전입신고와 확정일자 확인하기9월 1일 (월) · D-Day 이사 당일완료 기준 · 전입신고 접수 상태와 확정일자 부여 여부를 각각 확인했다."
+      },
+      {
+        "index": 22,
+        "itemId": "flow-moving-item-22",
+        "text": "·정부24 전입신고 처리 결과 확인하기9월 2일 (화) · D+1 행정 마무리완료 기준 · 처리 완료 또는 보완 필요 상태를 확인하고 캡처/메모를 남겼다."
+      },
+      {
+        "index": 23,
+        "itemId": "flow-moving-item-23",
+        "text": "·임대차 계약 확정일자 부여 여부 확인하기9월 2일 (화) · D+1 행정 마무리완료 기준 · 확정일자 부여일과 계약서 보관 위치를 기록했다."
+      }
+    ]
+  },
+  "candidates": [
+    {
+      "destination": "calendar",
+      "state": "available",
+      "role": "primary",
+      "outputCount": "24",
+      "expectedOutputCount": "24",
+      "manifestItemIds": [
+        "flow-moving-item-0",
+        "flow-moving-item-1",
+        "flow-moving-item-2",
+        "flow-moving-item-3",
+        "flow-moving-item-4",
+        "flow-moving-item-5",
+        "flow-moving-item-6",
+        "flow-moving-item-7",
+        "flow-moving-item-8",
+        "flow-moving-item-9",
+        "flow-moving-item-10",
+        "flow-moving-item-11",
+        "flow-moving-item-12",
+        "flow-moving-item-13",
+        "flow-moving-item-14",
+        "flow-moving-item-15",
+        "flow-moving-item-16",
+        "flow-moving-item-17",
+        "flow-moving-item-18",
+        "flow-moving-item-19",
+        "flow-moving-item-20",
+        "flow-moving-item-21",
+        "flow-moving-item-22",
+        "flow-moving-item-23"
+      ],
+      "text": "주 결과캘린더 · 일정 24개"
+    },
+    {
+      "destination": "checklist",
+      "state": "available",
+      "role": "available",
+      "outputCount": "24",
+      "expectedOutputCount": "24",
+      "manifestItemIds": [
+        "flow-moving-item-0",
+        "flow-moving-item-1",
+        "flow-moving-item-2",
+        "flow-moving-item-3",
+        "flow-moving-item-4",
+        "flow-moving-item-5",
+        "flow-moving-item-6",
+        "flow-moving-item-7",
+        "flow-moving-item-8",
+        "flow-moving-item-9",
+        "flow-moving-item-10",
+        "flow-moving-item-11",
+        "flow-moving-item-12",
+        "flow-moving-item-13",
+        "flow-moving-item-14",
+        "flow-moving-item-15",
+        "flow-moving-item-16",
+        "flow-moving-item-17",
+        "flow-moving-item-18",
+        "flow-moving-item-19",
+        "flow-moving-item-20",
+        "flow-moving-item-21",
+        "flow-moving-item-22",
+        "flow-moving-item-23"
+      ],
+      "text": "다른 결과체크리스트 · 24개"
+    },
+    {
+      "destination": "sheet",
+      "state": "available",
+      "role": "available",
+      "outputCount": "24",
+      "expectedOutputCount": "24",
+      "manifestItemIds": [
+        "flow-moving-item-0",
+        "flow-moving-item-1",
+        "flow-moving-item-2",
+        "flow-moving-item-3",
+        "flow-moving-item-4",
+        "flow-moving-item-5",
+        "flow-moving-item-6",
+        "flow-moving-item-7",
+        "flow-moving-item-8",
+        "flow-moving-item-9",
+        "flow-moving-item-10",
+        "flow-moving-item-11",
+        "flow-moving-item-12",
+        "flow-moving-item-13",
+        "flow-moving-item-14",
+        "flow-moving-item-15",
+        "flow-moving-item-16",
+        "flow-moving-item-17",
+        "flow-moving-item-18",
+        "flow-moving-item-19",
+        "flow-moving-item-20",
+        "flow-moving-item-21",
+        "flow-moving-item-22",
+        "flow-moving-item-23"
+      ],
+      "text": "다른 결과시트 · 24행"
+    },
+    {
+      "destination": "memo",
+      "state": "available",
+      "role": "available",
+      "outputCount": "24",
+      "expectedOutputCount": "24",
+      "manifestItemIds": [
+        "flow-moving-item-0",
+        "flow-moving-item-1",
+        "flow-moving-item-2",
+        "flow-moving-item-3",
+        "flow-moving-item-4",
+        "flow-moving-item-5",
+        "flow-moving-item-6",
+        "flow-moving-item-7",
+        "flow-moving-item-8",
+        "flow-moving-item-9",
+        "flow-moving-item-10",
+        "flow-moving-item-11",
+        "flow-moving-item-12",
+        "flow-moving-item-13",
+        "flow-moving-item-14",
+        "flow-moving-item-15",
+        "flow-moving-item-16",
+        "flow-moving-item-17",
+        "flow-moving-item-18",
+        "flow-moving-item-19",
+        "flow-moving-item-20",
+        "flow-moving-item-21",
+        "flow-moving-item-22",
+        "flow-moving-item-23"
+      ],
+      "text": "다른 결과메모 · 24개"
+    }
+  ]
+}

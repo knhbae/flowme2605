@@ -1,0 +1,70 @@
+{
+  "scenario": "S03",
+  "status": "LOCAL_CANDIDATE_CAPTURED",
+  "passCount": 4,
+  "errorCount": 0,
+  "knownGaps": [],
+  "variants": [
+    {
+      "scenario": "S03",
+      "variant": "editor-cancel",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "startedAt": "2026-08-05T08:32:48.133Z",
+      "status": "PASS",
+      "error": null,
+      "result": {
+        "editorAction": "cancel"
+      },
+      "finishedAt": "2026-08-05T08:32:50.004Z"
+    },
+    {
+      "scenario": "S03",
+      "variant": "editor-apply",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "startedAt": "2026-08-05T08:32:50.133Z",
+      "status": "PASS",
+      "error": null,
+      "result": {
+        "editorAction": "apply",
+        "appliedTitle": "실제 반영한 우리 가족 이사 계획"
+      },
+      "finishedAt": "2026-08-05T08:32:51.199Z"
+    },
+    {
+      "scenario": "S03",
+      "variant": "editor-browser-back",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "startedAt": "2026-08-05T08:32:51.324Z",
+      "status": "PASS",
+      "error": null,
+      "result": {
+        "editorAction": "browser-back-continue"
+      },
+      "finishedAt": "2026-08-05T08:32:52.624Z"
+    },
+    {
+      "scenario": "S03",
+      "variant": "editor-validation-error",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "startedAt": "2026-08-05T08:32:52.758Z",
+      "status": "PASS",
+      "error": null,
+      "result": {
+        "editorAction": "validation-error"
+      },
+      "finishedAt": "2026-08-05T08:32:53.986Z"
+    }
+  ]
+}

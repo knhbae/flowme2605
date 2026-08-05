@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "scenarioId": "S19",
+  "generatedAt": "2026-08-05T08:33:33.014Z",
+  "baseUrl": "http://127.0.0.1:3114",
+  "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+  "observedUsers": 0,
+  "sourceSnapshot": {
+    "head": "29cb03a65dd1037a3b813b7f43a5a095e4669dce",
+    "shortHead": "29cb03a65dd1",
+    "branch": "codex/p35-round2-candidate-20260805",
+    "buildId": "6hGywJa2x9eHc-II5umLx",
+    "dirty": false,
+    "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+    "gitStatusSha256": "08411ee7d7ddd20c5f49af3c2d2a88c5cef9dc9202cf333436ee76519fc5a031"
+  },
+  "title": "Timezone, DST wall-clock, undated, and overdue boundary rehearsal",
+  "reviewerStatus": "CODEX_EXECUTED_LOCAL_REHEARSAL_WITH_EXPLICIT_GAPS",
+  "deterministicIcs": {
+    "filename": "new-york-dst-wall-clock.ics",
+    "mediaType": "text/calendar;charset=utf-8",
+    "bytes": 973,
+    "sha256": "520187e5175b1d46f3375b8501e705ca3b17b6793529ce2a66635af4fe3da2c8",
+    "veventCount": 2,
+    "localStarts": [
+      "DTSTART;TZID=America/New_York:20260307T091500",
+      "DTSTART;TZID=America/New_York:20260309T091500"
+    ],
+    "bothUseNewYorkTzid": true,
+    "bothPreserve0915WallClock": true,
+    "parser": {
+      "lineEnding": "CRLF",
+      "endsWithCrLf": true,
+      "calendarCount": 1,
+      "eventCount": 2,
+      "events": [
+        {
+          "UID": "UID:s19-before-spring-forward@flowme.local",
+          "DTSTART": "DTSTART;TZID=America/New_York:20260307T091500",
+          "DTEND": "DTEND;TZID=America/New_York:20260307T094500",
+          "SUMMARY": "SUMMARY:DST 전날 같은 현지 시각",
+          "STATUS": "STATUS:TENTATIVE"
+        },
+        {
+          "UID": "UID:s19-after-spring-forward@flowme.local",
+          "DTSTART": "DTSTART;TZID=America/New_York:20260309T091500",
+          "DTEND": "DTEND;TZID=America/New_York:20260309T094500",
+          "SUMMARY": "SUMMARY:DST 다음날 같은 현지 시각",
+          "STATUS": "STATUS:TENTATIVE"
+        }
+      ]
+    }
+  },
+  "fixture": {
+    "now": "2026-08-05T12:00:00+09:00",
+    "rows": [
+      {
+        "itemId": "dated-future",
+        "date": "2026-08-06",
+        "scheduleState": "all_day",
+        "expectedBucket": "dated"
+      },
+      {
+        "itemId": "undated",
+        "date": null,
+        "scheduleState": "unscheduled",
+        "expectedBucket": "undated",
+        "calendarProjection": "OMITTED"
+      },
+      {
+        "itemId": "overdue",
+        "date": "2026-08-03",
+        "scheduleState": "all_day",
+        "completionState": "pending",
+        "expectedBucket": "overdue"
+      },
+      {
+        "itemId": "mixed-timed",
+        "date": "2026-08-05",
+        "time": "17:30",
+        "timeZone": "Asia/Seoul",
+        "scheduleState": "timed",
+        "expectedBucket": "dated"
+      }
+    ],
+    "rule": "An undated Item remains undated and is not invented into VEVENT."
+  },
+  "currentUi": {
+    "status": "CAPTURED_CURRENT_RUNTIME",
+    "route": "http://127.0.0.1:3114/my?demo=ux20",
+    "httpStatus": 200,
+    "screenshot": "current-my-overdue-mixed-state.png",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "timezoneId": "Asia/Seoul",
+    "textExcerpt": "FLOW ≡ 내 실행 공간 내 계획 UX20 데모 할 일을 실행하고 저장한 계획을 엽니다. ••• 저장한 계획에서 오늘 할 일 2개 필요 없는 물건 정리하기 이사 D-30 준비 · 5월 27일부터 › 이사/청소 업체 견적 받고 예약하기 이사 D-30 준비 · 5월 27일부터 › 저장한 계획 관리 저장한 계획 20개 전체 진행 중 마친 계획 보관됨 강아지 건강검진 상담 준비 날짜 없음 · 식사·간식·목욕·산책·예방접종 정보 정리하기 날짜 없음 · 전체 0/5 완료 › 개발 프로젝트 포트폴리오 4주 다음 할 일 · 핵심 기능과 3~5개 화면 범위 정하기 6월 6일 · 전체 1/6 완료 › 결혼 준비 D-300 타임라인 다음 할 일 · 신혼여행 예산과 일정 후보 정리하기 7월 27일 · 전체 5/12 완료 › 국세 미수령 환급금 확인 모든 할 일 완료 남은 할 일 없음 · 전체 2/2 완료 › 삼성 비스포크 AI 콤보 배수필터 청소 다음 할 일 · 잔수 제거 도구와 수건 준비 6월 10일 · 전체 1/5 완료 › 삼성 에어컨 계절 전 점검 날짜 없음 · 리모컨 표시와 배터리 확인하기 날짜 없음 · 전체 1/5 완료 › 성인 예방접종 이력·상담 준비 날짜 없음 · 누락된 과거 기록은 접종기관에 등록 가능 여부 문의하기 날짜 없음 · 전체 1/5 완료 › 세탁기 통세척 월간 관리 날짜 없음 · 통세척 코스 돌리고 문 열어 건조하기 날짜 없음 · 전체 0/3 완료 › 12개 더 보기 계획 찾기 캘린더 내 계획",
+    "browserErrors": [],
+    "limitation": "This current UI capture is not a browser DST-offset test."
+  },
+  "assessmentBoundary": {
+    "deterministicIcsGeneration": "ASSESSED",
+    "currentAsiaSeoulUiState": "CAPTURED_CURRENT_RUNTIME",
+    "actualBrowserDstTransitionBehavior": "NOT_ASSESSED",
+    "actualDownloadedFileUtcOffsetSemantics": "NOT_ASSESSED",
+    "reason": "The collector does not change the host/browser clock across a DST transition and therefore makes no browser-DST claim."
+  }
+}

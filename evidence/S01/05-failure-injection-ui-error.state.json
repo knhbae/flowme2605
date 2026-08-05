@@ -1,0 +1,487 @@
+{
+  "capturedAt": "2026-08-05T08:32:43.186Z",
+  "route": "http://127.0.0.1:3114/flows",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "headings": [
+    {
+      "tag": "h1",
+      "level": null,
+      "text": "URL·메모로 계획 찾기",
+      "testId": null
+    },
+    {
+      "tag": "h2",
+      "level": null,
+      "text": "바로 시작할 계획을 찾지 못했어요",
+      "testId": null
+    },
+    {
+      "tag": "h2",
+      "level": null,
+      "text": "내 초안",
+      "testId": null
+    },
+    {
+      "tag": "h3",
+      "level": null,
+      "text": "직접 손볼 초안으로 시작",
+      "testId": null
+    }
+  ],
+  "actions": [
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "FLOW",
+      "accessibleName": "FLOW",
+      "testId": null,
+      "href": "/",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "summary",
+      "type": null,
+      "role": null,
+      "text": "메뉴≡",
+      "accessibleName": "보조 메뉴 열기",
+      "testId": null,
+      "href": null,
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "계획 만들기내 콘텐츠를 실행할 계획으로 정리",
+      "accessibleName": "계획 만들기내 콘텐츠를 실행할 계획으로 정리",
+      "testId": null,
+      "href": "/flows/new",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "계획 찾기",
+      "accessibleName": "계획 찾기",
+      "testId": null,
+      "href": "/flows",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "캘린더",
+      "accessibleName": "캘린더",
+      "testId": null,
+      "href": "/calendar",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "내 계획",
+      "accessibleName": "내 계획",
+      "testId": null,
+      "href": "/my",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "input",
+      "type": "text",
+      "role": null,
+      "text": "",
+      "accessibleName": "",
+      "testId": "flow-url-lookup-input",
+      "href": null,
+      "value": "https://example.com/s01-injected-storage-failure",
+      "checked": false,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "submit",
+      "role": null,
+      "text": "계획 찾기",
+      "accessibleName": "계획 찾기",
+      "testId": null,
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "초안 열기",
+      "accessibleName": "초안 열기",
+      "testId": null,
+      "href": "#flow-url-supply-candidate-list",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "초안 편집 시작",
+      "accessibleName": "초안 편집 시작",
+      "testId": "flow-url-miss-draft-open",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "input",
+      "type": null,
+      "role": null,
+      "text": "",
+      "accessibleName": "초안 제목",
+      "testId": "flow-url-miss-draft-flow-title",
+      "href": null,
+      "value": "실패 뒤에도 남아야 할 제목",
+      "checked": false,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "input",
+      "type": "date",
+      "role": null,
+      "text": "",
+      "accessibleName": "초안 기준일",
+      "testId": "flow-url-miss-draft-anchor-date",
+      "href": null,
+      "value": "2031-09-07",
+      "checked": false,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "구조 편집",
+      "accessibleName": "구조 편집",
+      "testId": "draft-structure-edit-toggle",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": "false",
+      "pressed": null
+    },
+    {
+      "tag": "summary",
+      "type": null,
+      "role": null,
+      "text": "내가 적은 문장",
+      "accessibleName": "내가 적은 문장",
+      "testId": null,
+      "href": null,
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "input",
+      "type": "checkbox",
+      "role": null,
+      "text": "",
+      "accessibleName": "입력 보존과 다시 시도를 확인하기 저장에 포함",
+      "testId": null,
+      "href": null,
+      "value": "on",
+      "checked": true,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "input",
+      "type": null,
+      "role": null,
+      "text": "",
+      "accessibleName": "1번째 할 일 제목",
+      "testId": null,
+      "href": null,
+      "value": "입력 보존과 다시 시도를 확인하기",
+      "checked": false,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "submit",
+      "role": null,
+      "text": "내 계획에 초안 저장",
+      "accessibleName": "내 계획에 초안 저장",
+      "testId": "flow-url-miss-draft-save",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "원문·메모 보기",
+      "accessibleName": "원문·메모 보기",
+      "testId": null,
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "다른 계획 둘러보기+",
+      "accessibleName": "다른 계획 둘러보기+",
+      "testId": "flow-catalog-after-lookup-toggle",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": "false",
+      "pressed": null
+    }
+  ],
+  "validation": [],
+  "geometry": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "document": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 1808
+    },
+    "horizontalOverflow": 0
+  },
+  "importantNodes": [
+    {
+      "testId": "platform-nav",
+      "data": {
+        "data-testid": "platform-nav",
+        "data-p35-q3-copy": "on"
+      }
+    },
+    {
+      "testId": "platform-mobile-tabs",
+      "data": {
+        "data-testid": "platform-mobile-tabs",
+        "data-layer-priority": "navigation",
+        "data-p30-marker": "P30-MOBILE-WORKSPACE-FOCUS-ORDER",
+        "data-p35-marker": "P35-ENTRY-ROUTER-3TAB"
+      }
+    },
+    {
+      "testId": "flow-map-catalog-section",
+      "data": {
+        "data-testid": "flow-map-catalog-section"
+      }
+    },
+    {
+      "testId": "flow-catalog-hero",
+      "data": {
+        "data-testid": "flow-catalog-hero"
+      }
+    },
+    {
+      "testId": "flow-catalog-count",
+      "data": {
+        "data-testid": "flow-catalog-count"
+      }
+    },
+    {
+      "testId": "flow-url-lookup-entry",
+      "data": {
+        "data-testid": "flow-url-lookup-entry"
+      }
+    },
+    {
+      "testId": "flow-url-lookup-input",
+      "data": {
+        "data-testid": "flow-url-lookup-input"
+      }
+    },
+    {
+      "testId": "flow-url-lookup-result",
+      "data": {
+        "data-testid": "flow-url-lookup-result"
+      }
+    },
+    {
+      "testId": "flow-url-supply-request",
+      "data": {
+        "data-testid": "flow-url-supply-request"
+      }
+    },
+    {
+      "testId": "flow-url-miss-draft-gate",
+      "data": {
+        "data-testid": "flow-url-miss-draft-gate"
+      }
+    },
+    {
+      "testId": "flow-url-supply-existing",
+      "data": {
+        "data-testid": "flow-url-supply-existing"
+      }
+    },
+    {
+      "testId": "flow-url-supply-candidate-list",
+      "data": {
+        "data-testid": "flow-url-supply-candidate-list"
+      }
+    },
+    {
+      "testId": "flow-url-miss-draft-entry",
+      "data": {
+        "data-testid": "flow-url-miss-draft-entry"
+      }
+    },
+    {
+      "testId": "flow-url-miss-draft-open",
+      "data": {
+        "data-testid": "flow-url-miss-draft-open"
+      }
+    },
+    {
+      "testId": "flow-url-miss-draft-editor",
+      "data": {
+        "data-testid": "flow-url-miss-draft-editor"
+      }
+    },
+    {
+      "testId": "flow-url-miss-draft-flow-title",
+      "data": {
+        "data-testid": "flow-url-miss-draft-flow-title"
+      }
+    },
+    {
+      "testId": "flow-url-miss-draft-anchor-date",
+      "data": {
+        "data-testid": "flow-url-miss-draft-anchor-date"
+      }
+    },
+    {
+      "testId": "flow-url-miss-draft-suggestion-list",
+      "data": {
+        "data-testid": "flow-url-miss-draft-suggestion-list",
+        "data-p34-marker": "P34-04-DRAFT-PREVIEW"
+      }
+    },
+    {
+      "testId": "draft-structure-edit-toggle",
+      "data": {
+        "data-testid": "draft-structure-edit-toggle"
+      }
+    },
+    {
+      "testId": "draft-source-group",
+      "data": {
+        "data-testid": "draft-source-group"
+      }
+    },
+    {
+      "testId": "draft-item-source-disclosure",
+      "data": {
+        "data-testid": "draft-item-source-disclosure"
+      }
+    },
+    {
+      "testId": "flow-url-miss-draft-item",
+      "data": {
+        "data-testid": "flow-url-miss-draft-item",
+        "data-draft-item-id": "url-p20oz2",
+        "data-draft-day-offset": "0",
+        "data-draft-included": "true",
+        "data-source-fragment-ids": "url-fragment-52rv24"
+      }
+    },
+    {
+      "testId": "flow-url-miss-draft-save",
+      "data": {
+        "data-testid": "flow-url-miss-draft-save"
+      }
+    },
+    {
+      "testId": "flow-url-miss-draft-feedback",
+      "data": {
+        "data-testid": "flow-url-miss-draft-feedback"
+      }
+    },
+    {
+      "testId": "flow-catalog-after-lookup-toggle",
+      "data": {
+        "data-testid": "flow-catalog-after-lookup-toggle"
+      }
+    }
+  ],
+  "browserEvents": {
+    "consoleErrors": [],
+    "pageErrors": [],
+    "requestFailures": []
+  },
+  "evidenceClass": "EVIDENCE_ONLY_FAILURE_INJECTION",
+  "injection": "localStorage.setItem throws once for flow_builder_mvp_bundles_v11",
+  "lookupState": "error",
+  "feedbackText": "초안을 저장하지 못했습니다. 입력한 내용은 그대로예요. 저장 공간을 확인한 뒤 다시 시도해 주세요.",
+  "preservedTitle": "실패 뒤에도 남아야 할 제목",
+  "preservedAnchor": "2031-09-07"
+}

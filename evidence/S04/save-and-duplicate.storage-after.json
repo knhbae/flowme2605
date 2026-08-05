@@ -1,0 +1,14 @@
+{
+  "local": {
+    "flow:meta:last-visit": "2026-08-05T08:32:55.879Z",
+    "flow:my-flow:date-overrides": "{}",
+    "flow:my-flow:item-drafts": "{}",
+    "flow:personal-copy:a25aa8d6-4b09-44a4-82a0-1b94b02c0fb6:anchorDate": "{\"mode\":\"custom\",\"anchor\":\"2031-10-01\"}",
+    "flow:personal-copy:fb62ff88-66f3-4c7a-9723-4c5a3809d254:anchorDate": "{\"mode\":\"custom\",\"anchor\":\"2031-11-01\"}",
+    "flow:saved:personal-copy:a25aa8d6-4b09-44a4-82a0-1b94b02c0fb6": "{\"personalTitle\":\"이사 D-30 준비\",\"selectedArtifactMode\":\"calendar\",\"dateIntent\":\"custom\",\"anchor\":\"2031-10-01\",\"schemaVersion\":2,\"slug\":\"personal-copy:a25aa8d6-4b09-44a4-82a0-1b94b02c0fb6\",\"savedAt\":\"2026-08-05T08:32:54.711Z\",\"personalCopyKey\":\"personal-copy:a25aa8d6-4b09-44a4-82a0-1b94b02c0fb6\",\"sourceFlowKey\":\"flow-moving\",\"sourceFlowSlug\":\"moving-d30-basic\",\"sourceVersion\":\"2026-05-20T00:00:00.000Z\",\"lastSaveRequestId\":\"save-request:36991009-0943-4f46-9a2c-6ba941650154\",\"savedItemCount\":24}",
+    "flow:saved:personal-copy:fb62ff88-66f3-4c7a-9723-4c5a3809d254": "{\"personalTitle\":\"이사 D-30 준비\",\"selectedArtifactMode\":\"calendar\",\"dateIntent\":\"custom\",\"anchor\":\"2031-11-01\",\"schemaVersion\":2,\"slug\":\"personal-copy:fb62ff88-66f3-4c7a-9723-4c5a3809d254\",\"savedAt\":\"2026-08-05T08:32:55.879Z\",\"personalCopyKey\":\"personal-copy:fb62ff88-66f3-4c7a-9723-4c5a3809d254\",\"sourceFlowKey\":\"flow-moving\",\"sourceFlowSlug\":\"moving-d30-basic\",\"sourceVersion\":\"2026-05-20T00:00:00.000Z\",\"lastSaveRequestId\":\"save-request:5bd15530-5681-4749-8364-517cd84ff208\",\"savedItemCount\":24}",
+    "flow_builder_mvp_item_state_personal-copy:a25aa8d6-4b09-44a4-82a0-1b94b02c0fb6": "{}",
+    "flow_builder_mvp_item_state_personal-copy:fb62ff88-66f3-4c7a-9723-4c5a3809d254": "{}"
+  },
+  "session": {}
+}
