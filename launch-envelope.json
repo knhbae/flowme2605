@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "state": "PASS2_INFORMED_CODEX_READY",
+  "reviewer": "Codex",
+  "productCandidateSha": "29cb03a65dd1037a3b813b7f43a5a095e4669dce",
+  "candidateEpoch": "p35-r2-131b8ce629cf1288",
+  "buildId": "V29H3kpreESrdkYwzy_q9",
+  "blindRelease": {
+    "evidenceAssetSha": "64d5651df657c91e793dd1212788e293d6937947",
+    "releaseIndexSha": "83e78f97ea443c93caeb3ffc4bd419a9caf7b849",
+    "launchSha": "3f3d7429d1c0642e88b3a0f0cb884cc5cc95ba56"
+  },
+  "informedRelease": {
+    "lane": "CODEX_ONLY",
+    "evidenceAssetSha": "7e662ee9c118d1070020d2f1ed0a094508b452dd",
+    "releaseIndexSha": "bf27e7b63d62fac9ce29b1c624ae6817de19e7f8"
+  },
+  "reviewInputs": {
+    "prompt": "https://raw.githubusercontent.com/knhbae/flowme2605/bf27e7b63d62fac9ce29b1c624ae6817de19e7f8/review/02-codex-pass2-prompt-ko.md",
+    "allowlist": "https://raw.githubusercontent.com/knhbae/flowme2605/bf27e7b63d62fac9ce29b1c624ae6817de19e7f8/review/07-informed-evidence-allowlist.md",
+    "runtime": "PROVIDED_SEPARATELY_AT_REVIEW_START",
+    "ownPass1": {
+      "state": "PASS1_FROZEN",
+      "strictSameCandidateEpoch": true,
+      "freezeSha256": "cd5e2477d6b85127524347151d29fd81d12bd488d3e2f3fad931b9e6e590d010"
+    },
+    "crossReviewerCurrentOutputsIncluded": false,
+    "claudeStaticCarryForward": {
+      "includedAsCurrentCodexInput": false,
+      "policy": "MUST_NOT_BE_USED_AS_CURRENT_CODEX_INPUT"
+    }
+  },
+  "buildContinuity": {
+    "noRebuildSinceCodexPass1Freeze": true,
+    "productCandidateShaUnchanged": true,
+    "buildIdUnchanged": true
+  },
+  "observedUsers": 0,
+  "deployment": {
+    "state": "NONE",
+    "vercelPreview": "NOT_DEPLOYED",
+    "vercelProduction": "NOT_DEPLOYED"
+  }
+}
