@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "state": "SUPERSEDED_DO_NOT_USE_AS_REVIEW_INPUT",
+  "reason": "RUNTIME_ARTIFACT_UNAVAILABLE_AFTER_PUBLICATION",
+  "superseded": {
+    "productCandidateSha": "29cb03a65dd1037a3b813b7f43a5a095e4669dce",
+    "buildId": "6hGywJa2x9eHc-II5umLx",
+    "blindEvidenceAssetSha": "55fab7dc22b8de6c6cf8a2fba44f3a658fc2566d",
+    "blindReleaseIndexSha": "dd94f77e2f4fbf53fb8fd77c9dbd19e3e0f7a82b",
+    "launchEnvelopeSha": "87c0d8eebe1423789b8192b4706c0dc23c0795da"
+  },
+  "reviewState": {
+    "codex": "NOT_STARTED",
+    "claudeDesign": "NOT_STARTED",
+    "informedRelease": "NOT_PUBLISHED"
+  },
+  "replacement": {
+    "productCandidateSha": "29cb03a65dd1037a3b813b7f43a5a095e4669dce",
+    "buildId": "V29H3kpreESrdkYwzy_q9",
+    "blindEvidenceAssetSha": "64d5651df657c91e793dd1212788e293d6937947",
+    "blindReleaseIndexSha": "83e78f97ea443c93caeb3ffc4bd419a9caf7b849",
+    "launchEnvelopeSha": "3f3d7429d1c0642e88b3a0f0cb884cc5cc95ba56",
+    "state": "PASS1_BLIND_READY"
+  },
+  "observedUsers": 0,
+  "deploymentState": "NO_PREVIEW_OR_PRODUCTION_DEPLOYMENT"
+}
