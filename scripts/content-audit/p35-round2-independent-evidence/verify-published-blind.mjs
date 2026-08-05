@@ -939,10 +939,10 @@ function auditRoleAllowlist(relativePath, text, expectedRows, expectedCount) {
   }
   const s22 = rows.find((row) => row.scenarioId === 'S22');
   const s23 = rows.find((row) => row.scenarioId === 'S23');
-  if (!s22 || !/\|\s*NOT_ASSESSED_ALLOWED\s*\|\s*$/u.test(s22.source)) {
+  if (!s22 || !/\|\s*`?NOT_ASSESSED_ALLOWED`?\s*\|\s*$/u.test(s22.source)) {
     failures.push({ reason: 'S22_nonblocking_status_missing' });
   }
-  if (!s23 || !/\|\s*REVIEWER_ACTION_REQUIRED\s*\|\s*$/u.test(s23.source)) {
+  if (!s23 || !/\|\s*`?REVIEWER_ACTION_REQUIRED`?\s*\|\s*$/u.test(s23.source)) {
     failures.push({ reason: 'S23_reviewer_action_status_missing' });
   }
   if (
