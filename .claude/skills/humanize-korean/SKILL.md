@@ -1,7 +1,7 @@
 ---
 name: humanize-korean
 version: "2.0.0"
-description: Use when the user asks to make Korean AI-generated writing sound naturally human while preserving meaning. Trigger phrases include "AI 티 없애줘", "GPT 문체 제거", "사람이 쓴 것처럼 윤문", "번역투 제거", "한글 AI 윤문", "AI 글 사람처럼", "ChatGPT 티 제거", "휴머나이저", and "humanize Korean". This Codex skill is a community plugin port of epoko77-ai/im-not-ai v2.0.0 with Korean translation-studies taxonomy, post-editese metrics, fast monolith, and strict workflows.
+description: Make Korean writing sound naturally human while preserving meaning when the user explicitly asks to remove AI tone, translation tone, or GPT-like phrasing.
 ---
 
 # Humanize Korean for Codex

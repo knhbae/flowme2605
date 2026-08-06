@@ -1,6 +1,6 @@
 ---
 name: flow-release-readiness
-description: Use when reviewing FlowMe's overall completeness, MVP readiness, launch blockers, remaining backlog, project status, release readiness, or a Korean status briefing. Ground conclusions in the current repo, separate automated QA from observed-user evidence, and create a scannable Korean HTML workboard when the user needs a durable whole-project view.
+description: Review FlowMe completeness, MVP or launch readiness, blockers, and remaining work from current repo evidence. Separate implementation, QA, deployment, and observed-user evidence.
 ---
 
 # FLOW Release Readiness
@@ -10,7 +10,7 @@ Use this skill for evidence-backed review and release triage. Do not implement p
 ## Read Order
 
 1. Read `AGENTS.md`, `agent.md`, and `docs/harness/README.md`.
-2. Read `docs/STATUS.md`, `docs/SERVICE_STRUCTURE.md`, `docs/DECISIONS.md`, `docs/TOOLING.md`, and `docs/specs/README.md`.
+2. Read `docs/PROJECT_CONTROL.md`, `docs/STATUS.md`, `docs/SERVICE_STRUCTURE.md`, `docs/DECISIONS.md`, `docs/TOOLING.md`, and `docs/specs/README.md`.
 3. Inspect the newest relevant files under `docs/content-audit/` and active specs. Prefer current worktree evidence over stale roadmap prose.
 4. Inspect `git status --short --branch`, recent commits, `package.json`, CI, hooks, and the current dependency audit.
 5. Run verification only to the depth needed for a current claim. Never reuse an old pass result as if it ran now.
@@ -51,6 +51,7 @@ The page should show:
 - Current tool/runtime/dependency risks.
 
 Keep the HTML self-contained, responsive, and readable at 390px and desktop widths. If the artifact is created, run `npm run docs:check` and inspect it in a real browser; report when browser verification was not possible.
+When the artifact becomes the new whole-project current view, update only the current-view links in `docs/PROJECT_CONTROL.md`; keep the previous dated HTML immutable.
 
 ## Minimum Verification
 

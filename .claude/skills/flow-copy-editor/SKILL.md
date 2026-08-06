@@ -13,11 +13,16 @@ Use this skill to rewrite copy after the product decision is clear.
 
 ## Edit Procedure
 
-1. Identify the sentence's job: button outcome, action title, how-to detail, warning, source note, or empty-state.
-2. Remove generic motivation unless it changes user behavior.
-3. Add one of: tool, date, object, decision, completion signal, or stop condition.
-4. Keep user-facing words concrete and familiar.
-5. Check that the revised copy still matches the actual UI behavior.
+1. Run the zero-copy test: if layout, control label, value, or state already communicates the sentence's job, delete it instead of rewriting it.
+2. Identify the remaining sentence's job: button outcome, action title, how-to detail, warning, source note, or empty-state.
+3. Remove generic motivation unless it changes user behavior.
+4. Add one of: tool, date, object, decision, completion signal, or stop condition.
+5. Keep user-facing words concrete and familiar.
+6. Check that the revised copy still matches the actual UI behavior.
+
+Do not keep both a heading and helper sentence when they say the same thing.
+Permanent helper copy must explain a consequence, exception, risk, or recovery
+path; move optional how-to detail behind contextual help.
 
 ## Rewrite Patterns
 
@@ -58,3 +63,5 @@ Better:
 ## Stop Conditions
 
 Do not rewrite around a bad product decision. If the button outcome, destination, or source/risk boundary is unclear, return to `flow-ux-review` first.
+Do not delete accessibility labels, safety warnings, source attribution, error
+recovery, or irreversible-action consequences merely to make the screen shorter.

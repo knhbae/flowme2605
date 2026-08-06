@@ -63,3 +63,11 @@ Do not infer a quality win from reduced line count. Compare minimal, adaptive, a
 - The Session Start report now prints two core documents and six request-specific routes instead of a ten-document reading order.
 
 These are context and maintenance measurements only. They do not establish behavioral superiority.
+
+## 2026-08-04 Behavioral Check
+
+Six representative tasks were run once against both the current and a lighter read-only snapshot: two micro fixes, two FlowMe domain tasks, and two status/release tasks. All 12 runs completed without modifying either snapshot, and manual pair review found no material loss in conclusion, ownership boundary, or required verification.
+
+The lighter variant reduced aggregate input tokens by 16.8%, output tokens by 15.8%, elapsed time by 19.0%, and tool calls by 40.0%. This is not a stable cost claim: uncached input increased by 7.6%, and the two micro tasks did not consistently improve. Adopt only the conditional `agent.md` entry and shorter skill discovery descriptions. Keep skill bodies, hooks, CI, workflows, and canonical documents unchanged, then recheck normal-task behavior before any further pruning.
+
+Evidence: [A/B evaluation ledger](../../content-audit/2026-08-04-flowme-harness-lightweight-ab-evaluation-v1.json) and [Korean visual review](../../content-audit/2026-08-04-flowme-agent-harness-skill-lightweight-trend-review-ko.html).

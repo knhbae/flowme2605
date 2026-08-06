@@ -39,6 +39,20 @@ Capture the idea during the same session when it could influence future product 
 
 ## Ideas
 
+### 2026-07-30 - 작성부터 제안·새 버전까지 하나로 이어지는 canonical 경로
+
+**Idea:** 다음 UX 기획·개발이 `/flows/new`, 공개 Flow/Flow Map, My Flow, 원본 내용 알릴 점, 제작자 검토, 발행, 버전 업데이트 중 하나라도 건드리면 범위를 정하기 전에 이 항목을 반드시 다시 꺼낸다. 새 기능을 각각 만들기보다 안정적인 ID와 버전을 공유하는 `TextAuthoringDocument -> 발행 후보 -> 변경 불가능한 PublishedVersion -> UserFlowCopy -> ExecutionRun/내보내기 -> 범위가 제한된 ChangeProposal(J4) -> maintainer 검토와 새 PublishedVersion(J4.5) -> 기존 사용자 버전 검토(J5)` 경로로 연결한다. 현재 J5의 추가·변경·삭제 비교, 개인 수정 충돌 처리, 완료 이력 보존 UX는 재사용하고, 현재 J4의 전송 전 메모에는 근거 URL·확인 시각, 변경점 미리보기, 개인정보 제거, 실제 제출 상태, 검토 결과와 알림을 보완한다. 사용자 화면에서는 GitHub 용어를 그대로 노출하지 않는다.
+
+**Current boundary:** 현재 main의 P35에는 J1~J3, 전송되지 않는 J4 메모 초안, 저장된 일부 FlowMap을 대상으로 하는 J5 버전 검토가 있다. Text Authoring은 별도 checkout의 로컬·미발행 구현이다. 따라서 전부 가설인 것도, 작성부터 업데이트까지 한 경로로 완성된 것도 아니다. 같은 시나리오로 끝까지 검증되지 않았고 이동 Flow도 작성 fixture 27개 항목과 production 24개 항목이 다르며, J5 E2E는 수학 FlowMap을 사용한다. 제작자 계정·서버 저장·제안 전송·검토 큐·실제 외부 Calendar/Todo 왕복도 아직 연결 근거가 없다.
+
+**Why not now:** 이번 요청은 다음 작업에서 잊지 않도록 보존하는 백로그 등록이며 구현 승인이 아니다. 여러 checkout의 로컬 변경과 현재 main 계약을 한 번에 합치면 범위와 소유권이 불명확해진다. 먼저 하나의 실제 콘텐츠와 stable ID/version을 고정한 뒤 연결부 하나씩 검증해야 한다.
+
+**Revisit when:** 위 화면이나 도메인을 다루는 UX 기획·개발 세션을 시작할 때, Text Authoring을 main 또는 발행 경로에 합치기 전, creator publishing·제안 검토 큐·계정 기반 저장·버전 업데이트 범위를 여는 시점에 재검토한다. 첫 승격 후보는 `(A) TextAuthoringDocument -> 발행 후보/immutable version -> 현재 공개·개인 복사·J5 계약` 또는 `(B) J4 제출 -> J4.5 maintainer 검토 -> 새 버전` 중 하나만 고르고, 스코프 문서에 이번에 연결하는 구간과 그대로 두는 구간을 함께 적는다. 콘텐츠 유형별 수정 경계는 이 연결부에 흩어 넣지 말고 이동·레시피·학습·공식/민감 콘텐츠를 아우르는 하나의 정책으로 확인한다.
+
+**Source context:** 2026-07-30 전략 세션의 구현 대조와 사용자 요청. 상세 계약과 수치·서비스 근거는 [collaborative authoring/editability strategy spec](./specs/2026-07-29-collaborative-flow-authoring-editability-strategy-v1/spec.md) 및 [visual strategy report](./content-audit/2026-07-30-flowme-collaborative-authoring-visual-strategy-ceo-ko.html), 현재 J4·J5 근거는 [J4 unsent correction evidence](./content-audit/2026-07-11-claude-design-p22-01-completion-feedback-evidence/README.md)와 [J5 version review evidence](./content-audit/2026-07-11-claude-design-p22-06c-version-review-evidence/README.md)를 본다.
+
+**Visual reference:** [FlowMe 경험 순환 사용자 저니](./content-audit/2026-08-04-flowme-experience-loop-user-journey-visual-ko.html)를 다음 전략·UX 세션에서 사용자에게 보이는 화면 기준안으로 다시 꺼낸다. `경험 작성 -> 경험 기반 Flow 선택 -> 내 상황에 맞춘 실행 -> 실행 중 수정 -> 선택적 개선 제안 -> 경험자 검토 -> 새 내용 공개 -> 다음 사용자의 시작`을 한 사례로 끝까지 연결하며, 가상 인물·반응·수치는 실제 이용 성과나 사용자 검증 근거로 사용하지 않는다.
+
 ### 2026-07-19 - Advanced planner interactions after the P25 workspace model
 
 **Idea:** After P25 proves a coherent whole-Flow, Anytime, Calendar placement, personal adjustment, and export model, consider direct drag-and-drop scheduling, user-defined saved views, timezone controls, and one narrow external Calendar/Task integration. These may improve expert planning speed but must consume the same effective Flow projection and preserve source/personal/run ownership.

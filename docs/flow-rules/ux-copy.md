@@ -2,6 +2,16 @@
 
 UX copy should make the next action predictable. It should not compensate for unclear product decisions with more explanation.
 
+## Zero-Copy First
+
+Before rewriting text, test whether it should exist.
+
+- Delete copy that repeats a heading, button, selected value, visible state, or familiar control.
+- Do not explain a feature merely because it is present.
+- Keep permanent helper text only for a consequence, exception, risk, source boundary, or recovery path the UI cannot express.
+- Move optional instructions and advanced detail behind contextual disclosure.
+- Never remove accessibility names, safety warnings, source attribution, error recovery, undo, or destructive-action consequences for visual simplicity.
+
 ## Copy Principles
 
 ### 1. Outcome Before Mechanism

@@ -1,0 +1,763 @@
+{
+  "schemaVersion": "1.0.0",
+  "generatedAt": "2026-07-29T20:16:43+09:00",
+  "checkedAt": "2026-07-29",
+  "status": "strategy_recommendation_not_user_validated",
+  "objective": "24개 vertical 실행 서비스에서 사용자가 무엇을 수정하고 무엇이 재계산되며 어떤 부분이 앱에 남는지를 8개 실행 패턴으로 압축하고, FlowMe의 콘텐츠 유형별 앱 안·밖 편집 계약을 결정한다.",
+  "coverage": {
+    "verifiedServices": 24,
+    "executionPatterns": 8,
+    "servicesAssignedExactlyOnce": true,
+    "source": "2026-07-28-vertical-execution-service-benchmark-v1.json"
+  },
+  "evidenceBoundary": {
+    "verified": [
+      "2026-07-28 기준 공식 웹사이트·도움말·앱스토어 공개 설명",
+      "24개 서비스의 공개 편집·산출물·다음 행동 설명"
+    ],
+    "notVerified": [
+      "로그인 후 실제 개인화 결과",
+      "장기 사용자의 완주·반복 행동",
+      "외부 도구에서 수정한 결과의 원 서비스 재수입",
+      "양방향 동기화의 충돌 처리",
+      "FlowMe 사용자의 실제 콘텐츠별 편집 선호"
+    ],
+    "interpretationRule": "observedPublic은 공개 근거, flowmeInference는 전략 추론, unknown은 확인하지 못한 동작이다."
+  },
+  "globalPolicy": {
+    "canonical": "출처 기반 기준 콘텐츠와 기본 규칙은 불변 published version으로 보존한다.",
+    "personalOverlay": "기준일, 포함 여부, 개인 제목, 개인 일정, 주기, 선택, 수량, 대체 항목, 개인 메모는 콘텐츠가 허용하는 범위에서 UserFlowCopy가 소유한다.",
+    "executionRun": "완료, skip, hold, 결정, 기록값, 회차 상태는 ExecutionRun 또는 occurrence가 소유한다.",
+    "projection": "Calendar, Todo, Checklist, Sheet, Memo는 같은 effective model의 산출물이며 canonical truth가 아니다.",
+    "outsideEditDefault": "외부에서 수정한 산출물은 독립 개인 사본으로 취급하며 canonical이나 UserFlowCopy에 자동 write-back하지 않는다.",
+    "roundtripRevisitTrigger": "동일 목적지로 반복 export하는 사용 행동과 외부 변경을 다시 가져오려는 반복 요청이 확인될 때 명시적 reimport+diff를 검토한다.",
+    "professionalBoundary": "진단, 처방, 금융·세무 계산, 적응형 추천, 유료 미디어, 예약·결제, 지도 최적화, 기기 제어는 vertical 서비스에 남긴다."
+  },
+  "patternPolicies": [
+    {
+      "id": "goal_to_plan",
+      "label": "목표 → 계획",
+      "representativeServices": [
+        "YNAB",
+        "Runna"
+      ],
+      "observedPublic": {
+        "editableInputs": [
+          "목표 금액·목표일·목표 유형",
+          "현재 수준·주간 거리",
+          "운동 요일·횟수",
+          "목표 보류"
+        ],
+        "recalculation": [
+          "목표 값 변경에 따른 필요액 또는 계획 조정",
+          "일정·운동 요일 변경에 따른 프로그램 조정"
+        ],
+        "portableConnection": [
+          "Runna 운동 세션의 캘린더·웨어러블 연결"
+        ],
+        "appBound": [
+          "금융 계좌·예산 데이터",
+          "러닝 코칭 계산"
+        ]
+      },
+      "flowmeInference": {
+        "editable": [
+          "목표",
+          "기준일",
+          "실행 가능 요일",
+          "개인 일정"
+        ],
+        "behavior": [
+          "기준값 변경 전후 전체 계획 diff를 적용 전에 보여준다.",
+          "주차별 Calendar, 목표 진도 Sheet, 오늘 세션 Checklist로 projection한다."
+        ],
+        "outsideEdit": "외부 일정의 날짜·메모 수정은 독립 개인 산출물로 취급한다."
+      },
+      "unknown": [
+        "외부 수정의 원 계획 반영",
+        "YNAB 목표의 공식 외부 export"
+      ],
+      "roundtripStatus": "outbound_connection_observed_roundtrip_unknown",
+      "flowmeDecision": "support_bounded_anchor_editing",
+      "doNotBuild": [
+        "예산 원장",
+        "운동 코칭 엔진"
+      ]
+    },
+    {
+      "id": "anchor_date_to_timeline",
+      "label": "기준일 → 타임라인",
+      "representativeServices": [
+        "The Knot"
+      ],
+      "observedPublic": {
+        "editableInputs": [
+          "기준일",
+          "지역",
+          "예산·하객 수",
+          "체크 항목 추가·삭제"
+        ],
+        "recalculation": [
+          "기준일 변경 시 체크리스트 기한 갱신"
+        ],
+        "portableConnection": [],
+        "appBound": [
+          "업체 데이터",
+          "예산 도구",
+          "레지스트리·marketplace"
+        ]
+      },
+      "flowmeInference": {
+        "editable": [
+          "기준일",
+          "포함 여부",
+          "개인 추가 Item"
+        ],
+        "behavior": [
+          "source-derived 상대 간격을 보존한다.",
+          "기준일 이동 전 전체 날짜 변경을 preview한다.",
+          "역산 Calendar와 준비 Checklist를 만든다."
+        ],
+        "outsideEdit": "외부 Calendar의 개별 날짜 변경은 projection만 바꾸며 상대 일정 전체를 자동 변경하지 않는다."
+      },
+      "unknown": [
+        "The Knot의 외부 export",
+        "외부 수정 write-back"
+      ],
+      "roundtripStatus": "no_roundtrip_evidence",
+      "flowmeDecision": "priority_pattern",
+      "doNotBuild": [
+        "업체 marketplace",
+        "예산·결제 플랫폼"
+      ]
+    },
+    {
+      "id": "profile_to_daily_plan",
+      "label": "프로필 → 오늘 계획",
+      "representativeServices": [
+        "Kinedu",
+        "BabySparks",
+        "Freeletics",
+        "Dogo",
+        "Hundeo"
+      ],
+      "observedPublic": {
+        "editableInputs": [
+          "나이·월령",
+          "수준",
+          "관심·목표",
+          "환경·장비",
+          "활동 난이도",
+          "완료·진도·피드백"
+        ],
+        "recalculation": [
+          "완료·난이도·성과·관찰에 따른 이후 추천 또는 계획 조정"
+        ],
+        "portableConnection": [],
+        "appBound": [
+          "활동·운동 영상",
+          "발달 추적",
+          "전문가 피드백",
+          "개인화 추천 계산"
+        ]
+      },
+      "flowmeInference": {
+        "editable": [
+          "최소 대상 조건",
+          "개인 일정",
+          "완료",
+          "비공개 관찰 메모"
+        ],
+        "behavior": [
+          "자동 적응 대신 제작자가 명시한 조건 분기만 지원한다.",
+          "하루 한 활동, 주차별 일정, 원문 영상 링크를 projection한다."
+        ],
+        "outsideEdit": "외부에서는 일정·완료·메모만 수정하고 추천 상태는 이식하지 않는다."
+      },
+      "unknown": [
+        "공식 외부 export",
+        "외부 완료 상태 반영"
+      ],
+      "roundtripStatus": "no_roundtrip_evidence",
+      "flowmeDecision": "source_authored_program_only",
+      "doNotBuild": [
+        "발달 진단",
+        "운동 처방",
+        "adaptive recommendation engine"
+      ]
+    },
+    {
+      "id": "content_to_guided_session",
+      "label": "콘텐츠 → 안내 세션",
+      "representativeServices": [
+        "Nike Training Club",
+        "SideChef",
+        "Mealime",
+        "Cricut Design Space"
+      ],
+      "observedPublic": {
+        "editableInputs": [
+          "프로그램 선택",
+          "식사 수·선호·제한",
+          "레시피 교체",
+          "재료·크기·기기 조건"
+        ],
+        "recalculation": [
+          "레시피·식사 교체 시 장보기 목록 갱신",
+          "재료·크기 조정 후 프로젝트 실행값 갱신"
+        ],
+        "portableConnection": [],
+        "appBound": [
+          "운동 영상·트레이너 안내",
+          "단계별 조리 모드·주문",
+          "도안·기기 제어"
+        ]
+      },
+      "flowmeInference": {
+        "editable": [
+          "선택",
+          "인분",
+          "대체 재료",
+          "준비 조건",
+          "개인 메모"
+        ],
+        "behavior": [
+          "원문에서 명시적으로 계산 가능한 파생 목록만 재생성한다.",
+          "식단 Calendar, 장보기 Checklist, 프로젝트 준비표, 원문 링크를 만든다."
+        ],
+        "outsideEdit": "외부 목록 수정은 개인 산출물로 허용하되 원 서비스 계획을 자동 재계산하지 않는다."
+      },
+      "unknown": [
+        "공식 목록 export",
+        "외부 수정 write-back"
+      ],
+      "roundtripStatus": "no_roundtrip_evidence",
+      "flowmeDecision": "support_parameterized_personal_copy",
+      "doNotBuild": [
+        "조리 주문",
+        "운동 영상 호스팅",
+        "도안 재배포",
+        "기기 제어"
+      ]
+    },
+    {
+      "id": "environment_to_maintenance",
+      "label": "환경 → 유지관리",
+      "representativeServices": [
+        "Sweepy",
+        "Tody",
+        "Planta"
+      ],
+      "observedPublic": {
+        "editableInputs": [
+          "공간·대상",
+          "관리 빈도",
+          "관리 강도·가용량",
+          "담당자",
+          "위치·빛·화분 환경",
+          "작업 주기"
+        ],
+        "recalculation": [
+          "설정 변경에 따른 관리 일정 조정"
+        ],
+        "portableConnection": [],
+        "appBound": [
+          "스마트 일정",
+          "청결 상태",
+          "가족 관리",
+          "식물 진단·날씨 변수"
+        ]
+      },
+      "flowmeInference": {
+        "editable": [
+          "대상",
+          "주기",
+          "담당",
+          "시작일",
+          "skip·hold"
+        ],
+        "behavior": [
+          "명시된 주기의 다음 occurrence만 계산한다.",
+          "반복 Checklist, 관리 Calendar, 오늘 할 일, 기록 Memo를 만든다."
+        ],
+        "outsideEdit": "외부 일정은 독립 projection이며 완료·주기 변경은 FlowMe에서 명시적으로 다시 적용한다."
+      },
+      "unknown": [
+        "공식 export",
+        "외부 완료 write-back"
+      ],
+      "roundtripStatus": "no_roundtrip_evidence",
+      "flowmeDecision": "go_for_source_backed_routines",
+      "doNotBuild": [
+        "가사 최적화 점수",
+        "식물 진단",
+        "날씨 기반 추천",
+        "가족 경쟁 시스템"
+      ]
+    },
+    {
+      "id": "progress_to_next_lesson",
+      "label": "진도 → 다음 학습",
+      "representativeServices": [
+        "Duolingo",
+        "Brilliant",
+        "Yousician"
+      ],
+      "observedPublic": {
+        "editableInputs": [
+          "학습 언어·분야·악기",
+          "현재 수준",
+          "일일 목표",
+          "진도·정답·연주 결과"
+        ],
+        "recalculation": [
+          "진도·정답·기술 결과에 따른 다음 문제·복습·레슨 조정"
+        ],
+        "portableConnection": [],
+        "appBound": [
+          "문항",
+          "상호작용 문제",
+          "음원 인식",
+          "피드백",
+          "연속 학습 상태",
+          "라이선스 곡"
+        ]
+      },
+      "flowmeInference": {
+        "editable": [
+          "시작일",
+          "학습 요일",
+          "완료",
+          "학습 메모"
+        ],
+        "behavior": [
+          "공개 커리큘럼 순서만 사용한다.",
+          "학습 Calendar, 공개 회차 진도 Sheet, 오늘 다음 회차 링크를 만든다."
+        ],
+        "outsideEdit": "외부에서는 일정·완료·메모만 편집하고 문항 진도와 점수는 이식하지 않는다."
+      },
+      "unknown": [
+        "공식 진도 export",
+        "외부 완료 반영"
+      ],
+      "roundtripStatus": "no_roundtrip_evidence",
+      "flowmeDecision": "benchmark_only",
+      "doNotBuild": [
+        "adaptive lesson engine",
+        "문항 복제",
+        "음원 평가",
+        "게임 경제"
+      ]
+    },
+    {
+      "id": "state_to_follow_up",
+      "label": "상태 → 후속 행동",
+      "representativeServices": [
+        "TurboTax",
+        "Teal",
+        "Huntr"
+      ],
+      "observedPublic": {
+        "editableInputs": [
+          "지원 단계",
+          "후속 날짜",
+          "메모·활동·문서",
+          "세무 인터뷰 답변·서류"
+        ],
+        "recalculation": [
+          "지원 상태에 따른 후속 행동 관리",
+          "세무 답변·서류 수정에 따른 계산 갱신"
+        ],
+        "portableConnection": [],
+        "appBound": [
+          "공고 분석·이력서 최적화",
+          "지원 분석",
+          "세무 계산·전자 신고"
+        ]
+      },
+      "flowmeInference": {
+        "editable": [
+          "일반 상태",
+          "후속 날짜",
+          "메모",
+          "다음 행동"
+        ],
+        "behavior": [
+          "일반 상태형 Flow는 수동 기록을 폭넓게 지원한다.",
+          "민감 전문 Flow는 준비 Checklist, 마감, 공식 링크만 제공한다."
+        ],
+        "outsideEdit": "일반 상태 Sheet는 독립 수정 가능하지만 민감 신고 데이터는 projection하지 않는다."
+      },
+      "unknown": [
+        "Teal·Huntr 공식 export와 write-back",
+        "외부 상태 충돌 처리"
+      ],
+      "roundtripStatus": "mixed_no_roundtrip_evidence",
+      "flowmeDecision": "split_by_sensitivity",
+      "doNotBuild": [
+        "세무 계산",
+        "전자 신고",
+        "이력서 AI 분석"
+      ]
+    },
+    {
+      "id": "collection_to_itinerary",
+      "label": "모음 → 일정",
+      "representativeServices": [
+        "Wanderlog",
+        "TripIt",
+        "Samsung Food"
+      ],
+      "observedPublic": {
+        "editableInputs": [
+          "장소·예약·레시피 저장",
+          "날짜·순서 이동",
+          "추가 예약",
+          "식단 배치"
+        ],
+        "recalculation": [
+          "순서·날짜 변경 후 동선 확인",
+          "식단 변경 후 목록 갱신",
+          "예약 추가 후 통합 일정 반영"
+        ],
+        "portableConnection": [
+          "TripIt의 캘린더 연결"
+        ],
+        "appBound": [
+          "지도·협업",
+          "예약 이메일 파싱·실시간 알림",
+          "스마트 식단·커뮤니티"
+        ]
+      },
+      "flowmeInference": {
+        "editable": [
+          "항목 추가·삭제",
+          "순서",
+          "날짜",
+          "개인 메모"
+        ],
+        "behavior": [
+          "날짜별 일정, 장소·예약 Sheet, 식단 Calendar, 통합 목록을 만든다.",
+          "지도·예약·레시피 원문 링크를 유지한다."
+        ],
+        "outsideEdit": "외부 Calendar·Sheet 수정은 독립 개인본으로 취급한다."
+      },
+      "unknown": [
+        "외부 수정의 원 일정 반영",
+        "공식 양방향 동기화",
+        "충돌 해결"
+      ],
+      "roundtripStatus": "partial_outbound_connection_roundtrip_unknown",
+      "flowmeDecision": "support_direct_structure_editing",
+      "doNotBuild": [
+        "지도 최적화",
+        "예약 메일 파싱",
+        "실시간 예약 알림",
+        "추천 엔진"
+      ]
+    }
+  ],
+  "contentTypePolicies": [
+    {
+      "id": "link_bucket",
+      "label": "링크·아이디어·기사",
+      "canonicalLocked": [
+        "원문",
+        "출처",
+        "작성자·제작자"
+      ],
+      "personalOverlay": [
+        "개인 제목",
+        "분류",
+        "개인 메모",
+        "실행 여부",
+        "선택 날짜"
+      ],
+      "runState": [
+        "읽음",
+        "보류",
+        "후속 행동"
+      ],
+      "externalDestinations": [
+        "Memo",
+        "Bookmark",
+        "Calendar"
+      ],
+      "publicChangeMode": "출처·최신성·제목 정정 제안",
+      "roundtrip": "none"
+    },
+    {
+      "id": "checklist_procedure",
+      "label": "체크리스트·절차",
+      "canonicalLocked": [
+        "출처가 말한 공통 절차",
+        "공식 조건",
+        "안전 주의"
+      ],
+      "personalOverlay": [
+        "Item 포함·제외",
+        "개인 순서",
+        "개인 제목",
+        "개인 메모",
+        "실행 날짜"
+      ],
+      "runState": [
+        "완료",
+        "skip",
+        "hold"
+      ],
+      "externalDestinations": [
+        "Checklist",
+        "Todo",
+        "Memo"
+      ],
+      "publicChangeMode": "누락·오류 Item 제안",
+      "roundtrip": "none"
+    },
+    {
+      "id": "anchor_timeline",
+      "label": "D-day·목표 계획",
+      "canonicalLocked": [
+        "source-relative 간격",
+        "공식 마감·예약일",
+        "원래 요구 조건"
+      ],
+      "personalOverlay": [
+        "기준일",
+        "시작일",
+        "포함 Item",
+        "가능 요일",
+        "개인 일정 조건"
+      ],
+      "runState": [
+        "회차 완료",
+        "개별 재예약",
+        "hold"
+      ],
+      "externalDestinations": [
+        "Calendar",
+        "Checklist"
+      ],
+      "publicChangeMode": "공통 상대 일정·조건의 변경 제안",
+      "roundtrip": "outbound_only",
+      "recalculation": "기준일 변경 전 전체 날짜 diff를 preview한다."
+    },
+    {
+      "id": "recurring_maintenance",
+      "label": "반복 관리",
+      "canonicalLocked": [
+        "출처 주기",
+        "공통 관리 원칙",
+        "주의·중단 조건"
+      ],
+      "personalOverlay": [
+        "개인 주기",
+        "시작일",
+        "담당자",
+        "대상",
+        "skip·hold 정책"
+      ],
+      "runState": [
+        "occurrence 완료",
+        "occurrence skip",
+        "회차 메모"
+      ],
+      "externalDestinations": [
+        "Recurring Calendar",
+        "Todo",
+        "Memo"
+      ],
+      "publicChangeMode": "공통 주기·방법의 변경 제안",
+      "roundtrip": "outbound_only",
+      "recalculation": "회차 변경은 series를 자동 변경하지 않는다."
+    },
+    {
+      "id": "course_program",
+      "label": "코스·프로그램",
+      "canonicalLocked": [
+        "커리큘럼 순서",
+        "원문 강의·영상",
+        "제작자 설명"
+      ],
+      "personalOverlay": [
+        "시작일",
+        "학습 속도",
+        "선택 세션",
+        "개인 일정"
+      ],
+      "runState": [
+        "진도",
+        "완료",
+        "학습 메모"
+      ],
+      "externalDestinations": [
+        "Calendar",
+        "Todo",
+        "Progress Sheet"
+      ],
+      "publicChangeMode": "커리큘럼·링크 오류 제안",
+      "roundtrip": "none",
+      "appBound": [
+        "적응형 추천",
+        "문항·영상·음원 평가"
+      ]
+    },
+    {
+      "id": "guided_recipe_project",
+      "label": "레시피·식단·프로젝트",
+      "canonicalLocked": [
+        "원 레시피·프로젝트",
+        "제작자 미디어",
+        "공통 절차"
+      ],
+      "personalOverlay": [
+        "인분",
+        "대체 재료",
+        "선택 레시피",
+        "준비 순서",
+        "주간 배치",
+        "개인 메모"
+      ],
+      "runState": [
+        "준비 완료",
+        "실행 결과",
+        "개인 변형 기록"
+      ],
+      "externalDestinations": [
+        "Shopping Checklist",
+        "Sheet",
+        "Calendar",
+        "Memo"
+      ],
+      "publicChangeMode": "원문 오류·검증된 개선 제안",
+      "roundtrip": "none",
+      "appBound": [
+        "조리 모드",
+        "주문",
+        "유료 미디어",
+        "기기 제어"
+      ]
+    },
+    {
+      "id": "state_board",
+      "label": "상태형 Flow",
+      "canonicalLocked": [
+        "공통 상태 정의",
+        "공통 후속 규칙",
+        "원출처"
+      ],
+      "personalOverlay": [
+        "개인 행",
+        "상태",
+        "후속 날짜",
+        "개인 링크"
+      ],
+      "runState": [
+        "상태 이력",
+        "기록값",
+        "활동·메모"
+      ],
+      "externalDestinations": [
+        "Sheet",
+        "Calendar",
+        "Todo"
+      ],
+      "publicChangeMode": "공통 상태·규칙 개선 제안",
+      "roundtrip": "detached_sheet",
+      "appBound": [
+        "전문 분석",
+        "문서 자동 생성"
+      ]
+    },
+    {
+      "id": "collection_itinerary",
+      "label": "여행·모음·일정",
+      "canonicalLocked": [
+        "공개 원본 모음",
+        "장소·예약·레시피 원문 링크"
+      ],
+      "personalOverlay": [
+        "항목 추가·삭제",
+        "선택",
+        "순서",
+        "날짜",
+        "개인 메모"
+      ],
+      "runState": [
+        "방문·사용 완료",
+        "예약 상태",
+        "개인 기록"
+      ],
+      "externalDestinations": [
+        "Calendar",
+        "Sheet",
+        "Memo"
+      ],
+      "publicChangeMode": "공개 정보·링크 정정 제안",
+      "roundtrip": "outbound_only",
+      "appBound": [
+        "지도 최적화",
+        "예약 parsing",
+        "실시간 알림"
+      ]
+    },
+    {
+      "id": "official_sensitive",
+      "label": "공식·민감 과업",
+      "canonicalLocked": [
+        "공식 사실",
+        "자격·마감·조건",
+        "주의·중단 조건",
+        "공식 출처"
+      ],
+      "personalOverlay": [
+        "개인 체크",
+        "마감 알림",
+        "준비 메모"
+      ],
+      "runState": [
+        "진행 상태",
+        "제출 여부"
+      ],
+      "externalDestinations": [
+        "Calendar",
+        "Todo"
+      ],
+      "publicChangeMode": "검토가 필수인 출처 기반 정정 제안",
+      "roundtrip": "prohibited_for_sensitive_data",
+      "appBound": [
+        "진단",
+        "계산",
+        "신고",
+        "결제",
+        "민감 개인정보"
+      ]
+    }
+  ],
+  "decisionSummary": {
+    "support": [
+      "콘텐츠 종류별 개인 overlay",
+      "기준값 변경의 deterministic 재계산과 diff preview",
+      "완료·기록을 canonical content와 분리",
+      "자연스러운 목적지 한 개 우선",
+      "외부 산출물의 명시적 손실 표시"
+    ],
+    "validate": [
+      "사용자가 어느 수정은 FlowMe에서 해야 여러 산출물에 반영되는지 이해하는가",
+      "외부에서 계속할 수정과 FlowMe로 돌아와야 할 수정의 경계",
+      "콘텐츠 종류마다 필요한 최소 편집 UI",
+      "explicit reimport+diff의 실제 수요"
+    ],
+    "defer": [
+      "자동 외부 write-back",
+      "실시간 공동 편집",
+      "전문 서비스 상태의 통합 저장"
+    ],
+    "reject": [
+      "외부 수정의 canonical 자동 반영",
+      "전문 계산·진단·추천 엔진 복제",
+      "모든 콘텐츠에 같은 편집 UI 강제",
+      "개인 실행 기록의 공개 콘텐츠화"
+    ]
+  }
+}

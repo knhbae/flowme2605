@@ -188,6 +188,7 @@ test.describe('P24 save-personalize-execute journey frame', () => {
 
     await page.goto('/flow-maps/middle-school-math-1');
     await page.getByTestId('flow-map-save-all-mobile').click();
+    await expect(page).toHaveURL('/my?savedMap=middle-school-math-1');
 
     await page.goto('/calendar');
     await expect(page.getByTestId('my-flow-calendar-unscheduled-tray')).toHaveCount(0);

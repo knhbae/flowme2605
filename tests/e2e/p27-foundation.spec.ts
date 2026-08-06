@@ -259,10 +259,9 @@ test.describe('P27 reversible lifecycle foundation', () => {
       hasText: '이사할 집 하자 점검하기',
     });
     await excludedRow.getByTestId('my-flow-restore-excluded-item').click();
-    const restored = await page.evaluate((flowSlug) => JSON.parse(
+    await expect.poll(() => page.evaluate((flowSlug) => JSON.parse(
       window.localStorage.getItem(`flow_builder_mvp_item_state_${flowSlug}`) || '{}',
-    )['flow-moving-item-1'], personalCopyKey);
-    expect(restored.personalExcluded).toBeUndefined();
+    )['flow-moving-item-1']?.personalExcluded, personalCopyKey)).toBeUndefined();
 
     await page.reload();
     const restoredAfterReload = await page.evaluate((flowSlug) => JSON.parse(

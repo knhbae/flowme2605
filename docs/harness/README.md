@@ -24,8 +24,8 @@ Avoid by default:
 
 | Lane | Use when | Context and process |
 | --- | --- | --- |
-| Minimal | Clear, low-risk, local fix or answer | `AGENTS.md`, `agent.md`, request-relevant files, current Git state before edits, targeted verification |
-| Standard | Multi-file work, FlowMe product/content work, or user-facing behavior | Minimal lane plus relevant canonical document and skill, short plan, independent review pass, risk-based QA |
+| Minimal | Clear, low-risk, local fix or answer | `AGENTS.md`, request-relevant files, current Git state before edits, targeted verification; add `agent.md` only when FlowMe product rules are involved |
+| Standard | Multi-file work, FlowMe product/content work, or user-facing behavior | Minimal lane plus `agent.md` for FlowMe domain work, relevant canonical document and skill, short plan, independent review pass, risk-based QA |
 | Full | Broad or ambiguous scope, mixed ownership, architecture/security/release/deployment work, or a committed high-risk initiative | Session Start, relevant spec, only needed specialist lenses, broader QA/browser evidence, and Work Closeout |
 
 Choose the lightest lane that still protects the claim. Escalate when evidence reveals wider scope or risk; do not select Full merely because a tool supports subagents.
@@ -34,6 +34,7 @@ Choose the lightest lane that still protects the claim. Escalate when evidence r
 
 `AGENTS.md` is the automatic router. `agent.md` contains stable FlowMe guardrails. The remaining documents are loaded by task type:
 
+- `PROJECT_CONTROL`: stable entry to the latest human-facing stage board and work register.
 - `STATUS` and `ROADMAP`: current focus and committed sequence.
 - `PRODUCT_PRINCIPLES` and relevant `DECISIONS`: durable product judgment.
 - `IDEAS`: deferred-direction review only.
@@ -46,11 +47,12 @@ The repo remains canonical. Notion is a selective human-facing projection for ac
 
 ## Conditional Workflows
 
-[Session Start](../workflows/session-start.md), [Request Interview](../workflows/request-interview.md), [Direction Capture](../workflows/capture-direction.md), and [Work Closeout](../workflows/work-closeout.md) remain available as independent procedures. Their discoverable skills are routers, not mandatory phases:
+[Session Start](../workflows/session-start.md), [Request Interview](../workflows/request-interview.md), [Direction Capture](../workflows/capture-direction.md), [Knowledge Maintenance](../workflows/knowledge-maintenance.md), and [Work Closeout](../workflows/work-closeout.md) remain available as independent procedures. Their discoverable skills are routers, not mandatory phases:
 
 - Session Start: broad/resumed work, context loss, overall review, or mixed ownership.
 - Request Interview: unresolved ambiguity that materially changes outcome or risk.
 - Direction Capture: a confirmed durable rule, actionable deferred idea, approved spec, active blocker, or release fact.
+- Knowledge Maintenance: an explicit audit or cleanup of status, backlog, decisions, ideas, specs, evidence, or control documents; read-only first.
 - Work Closeout: substantial completion, handoff, publish action, status report, or scoped ownership review.
 
 Workflow scripts collect read-only Git and filesystem evidence. They do not decide product direction, edit external systems, run verification, or authorize commit, push, merge, deploy, or cleanup.
@@ -58,6 +60,14 @@ Workflow scripts collect read-only Git and filesystem evidence. They do not deci
 ## Roles
 
 Use the four core passes in [ROLES.md](./ROLES.md) for substantial work: orchestrate/product-frame, implement, review, and evidence/QA. Small tasks may combine them in one agent while still performing a distinct review before reporting completion. Add specialist lenses only when the task contains that risk.
+
+## Report Artifacts
+
+Reports are deliverables, not a mandatory phase. When the user requests a
+briefing, deck, PPTX, DOCX, PDF, visual HTML, or durable progress/research
+summary, load the `flow-report-artifact` skill and then the environment's
+format-specific artifact skill. Produce the actual file and inspect its rendered
+output; a polished chat outline is not a substitute for the requested artifact.
 
 ## Compatibility Position
 
@@ -83,7 +93,7 @@ These deterministic gates are not behavioral prompt overhead and should remain u
 
 ## Evaluation
 
-Reduced instruction size is not proof of better work. Periodically compare Minimal, Standard, and Full lanes across small fixes, FlowMe domain tasks, and repo-wide/release tasks. Record first-pass correctness, unintended files, verification retries, user corrections, elapsed time, and token use when available. The current protocol and baseline live in the [adaptive harness spec](../specs/2026-07-19-adaptive-lean-agent-harness/spec.md).
+Reduced instruction size is not proof of better work. Periodically compare Minimal, Standard, and Full lanes across small fixes, FlowMe domain tasks, and repo-wide/release tasks. Record first-pass correctness, unintended files, verification retries, user corrections, elapsed time, and token use when available. The protocol lives in the [adaptive harness spec](../specs/2026-07-19-adaptive-lean-agent-harness/spec.md); the latest six-pair result is in the [2026-08-04 A/B ledger](../content-audit/2026-08-04-flowme-harness-lightweight-ab-evaluation-v1.json).
 
 ## Documents
 
@@ -91,6 +101,7 @@ Reduced instruction size is not proof of better work. Periodically compare Minim
 | --- | --- |
 | [../../AGENTS.md](../../AGENTS.md) | Automatic entry and context routing |
 | [../../agent.md](../../agent.md) | Stable FlowMe guardrails |
+| [../PROJECT_CONTROL.md](../PROJECT_CONTROL.md) | Stable current-stage and work-register entry |
 | [SDLC.md](./SDLC.md) | Three task lanes and common execution cycle |
 | [ROLES.md](./ROLES.md) | Core passes and optional specialist lenses |
 | [QA.md](./QA.md) | Verification matrix |

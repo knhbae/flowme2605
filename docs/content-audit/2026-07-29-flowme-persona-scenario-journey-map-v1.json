@@ -1,0 +1,820 @@
+{
+  "schemaVersion": "flowme.persona-scenario-journey-map.v1",
+  "generatedAt": "2026-07-29",
+  "checkedAt": "2026-07-29",
+  "status": "RESEARCH_SYNTHESIS_PROPOSED_NOT_RUN",
+  "objective": "역할 기반 research proto-persona 3종을 5단계 예상 저니, 대표 시나리오 S01-S06, 제품 UI 가설 A-E, moments that matter, 5+5+5 관찰 계획에 연결한다.",
+  "evidenceBoundary": {
+    "personaStatus": "research_proto_persona_not_observed_persona",
+    "observedUserSessions": 0,
+    "proposedUserSessions": 15,
+    "uiStatus": "hypothesis_not_runtime",
+    "runtimeStatus": "hypothesis_not_runtime",
+    "adoptionOutcome": "unknown",
+    "businessOutcome": "unknown",
+    "prohibitedClaims": [
+      "실제 사용자 관찰로 확인된 페르소나",
+      "연령·직업·성별·소득 등 근거 없는 인구통계",
+      "구현 또는 runtime에서 작동하는 UI",
+      "사용성·채택·전환·완료 성과가 확인됐다는 주장"
+    ],
+    "requiredLabel": "검증 전 research proto-persona와 예상 저니이며, 실제 사용자 행동이 아니다."
+  },
+  "sourceInputs": [
+    {
+      "path": "./2026-07-29-flowme-collaborative-authoring-editability-strategy-ceo-ko.html",
+      "use": "제품 UI 가설 A-E, 역할별 5+5+5 관찰 계획, 보고서 경계"
+    },
+    {
+      "path": "./2026-07-29-flowme-version-governance-scenario-contract-v1.json",
+      "use": "S01-S06, field ownership, version·proposal·projection 경계, proposed validation thresholds"
+    },
+    {
+      "path": "./2026-07-29-flowme-content-editability-policy-v1.json",
+      "use": "콘텐츠 유형별 개인화·공용 수정·목적지 경계"
+    },
+    {
+      "path": "./2026-07-29-flowme-collaborative-authoring-platform-matrix-v1.json",
+      "use": "wiki식 작은 기여와 GitHub식 review·version 구조의 비교 근거"
+    },
+    {
+      "path": "./2026-07-29-flowme-collaborative-authoring-quantitative-evidence-v1.json",
+      "use": "플랫폼·vertical 조사 범위와 미검증 수치 경계"
+    }
+  ],
+  "researchProtoPersonas": [
+    {
+      "id": "P01-executor",
+      "role": "executor",
+      "displayName": "내 일정으로 바꾸려는 실행 사용자",
+      "status": "research_proto_persona_not_observed",
+      "situation": "이사, 수강, 정기 관리처럼 순서와 날짜가 있는 일을 앞두고 있다. 원문은 참고하고 싶지만 새로운 무거운 플래너보다 익숙한 Calendar·Todo·Checklist를 계속 쓰고 싶다.",
+      "trigger": "구체적인 목표일 또는 시작일이 생겼고, 그 일을 위한 공개 Flow를 발견한다.",
+      "job": "원문의 순서·출처·주의사항은 유지하면서 기준일·포함 항목·개인 일정·메모만 자기 상황에 맞게 바꾸고 익숙한 도구로 옮긴다.",
+      "pains": [
+        "원문 내용을 Calendar나 Todo에 다시 입력해야 한다.",
+        "무엇이 공개 기준 정보이고 무엇이 내 수정인지 구분하기 어렵다.",
+        "새 version이 개인 일정·메모·완료 기록을 덮어쓸까 불안하다.",
+        "외부 Calendar 수정이 FlowMe 원본에도 자동 반영되는지 알기 어렵다."
+      ],
+      "desiredOutcome": "최소한의 개인 anchor와 포함 항목만 정한 뒤 날짜가 있는 항목은 Calendar로, 실행 항목은 Checklist/Todo로, 개인 맥락은 Memo로 가져간다. 새 version은 내 기록을 보존한 채 선택 적용한다.",
+      "firstAction": {
+        "label": "내 실행본 만들기",
+        "uiHypothesis": "B",
+        "status": "hypothesis_not_runtime"
+      },
+      "completionSignals": [
+        "기준일과 포함 항목을 바꾼 개인 실행본이 생성된다.",
+        "Calendar와 Checklist preview가 동일한 effective state를 보여준다.",
+        "날짜 없는 Item은 Calendar event로 강제되지 않는다.",
+        "새 version 검토 뒤에도 개인 일정·메모·완료 기록이 남아 있다."
+      ],
+      "majorRisks": [
+        "공개 기준본을 직접 수정했다고 오해",
+        "새 version의 silent overwrite",
+        "외부 산출물의 양방향 sync 오해",
+        "개인 메모·완료 기록의 의도하지 않은 공개",
+        "개인화 입력이 무거운 작성 도구로 변질"
+      ],
+      "destinations": {
+        "primary": [
+          "Calendar",
+          "Checklist/Todo"
+        ],
+        "supporting": [
+          "Memo"
+        ],
+        "staysInFlowMe": [
+          "source identity",
+          "published version reference",
+          "personal overlay",
+          "execution run state"
+        ],
+        "externalProjectionBoundary": "export 후 독립 사본이며 silent write-back은 없다."
+      },
+      "scenarioIds": [
+        "S02-private-timeline-copy",
+        "S04-published-update",
+        "S05-external-calendar-edit"
+      ],
+      "observationTarget": {
+        "proposedCount": 5,
+        "participantCriterion": "목표일이 있는 실제 과업을 앞두고 최근 Calendar 또는 Checklist를 사용한 사람. FlowMe 기존 사용자일 필요는 없다.",
+        "tasks": [
+          "공개 Flow를 개인 실행본으로 만들기",
+          "개인 기준일·포함 항목을 수정하고 목적지 preview 확인",
+          "Calendar 또는 Checklist로 export",
+          "새 version의 추가·변경·삭제를 선택 적용",
+          "외부 Calendar 한 회차 수정과 FlowMe 원본의 관계 설명"
+        ],
+        "observe": [
+          "첫 행동을 설명 없이 찾는지",
+          "기준본과 개인본을 구분하는지",
+          "적절한 목적지를 고르는지",
+          "detached external projection을 이해하는지",
+          "update 뒤 개인 데이터 보존을 확인하는지"
+        ],
+        "observedCount": 0,
+        "status": "PROPOSED_NOT_RUN"
+      }
+    },
+    {
+      "id": "P02-contributor",
+      "role": "contributor",
+      "displayName": "오류 한 건을 고치려는 기여자",
+      "status": "research_proto_persona_not_observed",
+      "situation": "공개 Flow를 읽거나 개인본으로 실행하다가 오래된 공식 링크, 변경된 마감, 누락된 단계 또는 다른 사용자에게도 영향을 주는 오류 한 건을 발견한다.",
+      "trigger": "현재 공식 출처와 Flow의 내용이 다르거나, 공용 가치가 있는 수정 한 건을 근거와 함께 설명할 수 있다.",
+      "job": "개인본 전체를 공개하지 않고 공용 가치가 있는 Item·field 한 건과 근거만 maintainer에게 보낸다.",
+      "pains": [
+        "문서 전체를 고쳐야 할 것처럼 느껴진다.",
+        "개인화와 공용 수정의 경계가 불분명하다.",
+        "어떤 evidence가 필요한지 모른다.",
+        "제출 뒤 검토 상태와 다음 행동이 보이지 않는다."
+      ],
+      "desiredOutcome": "변경할 field를 선택하고 before·after와 source URL을 제출한다. 개인 완료·일정·메모·민감 정보가 자동 제외됐음을 확인하고 review 상태를 추적한다.",
+      "firstAction": {
+        "label": "정보 수정 제안",
+        "uiHypothesis": "C",
+        "status": "hypothesis_not_runtime"
+      },
+      "completionSignals": [
+        "proposal이 한 Item 또는 한 source change로 제한된다.",
+        "근거 URL과 확인 시점이 포함된다.",
+        "개인 일정·메모·완료 기록은 proposal payload에 없다.",
+        "공개 기준본은 즉시 바뀌지 않고 maintainer review 상태로 남는다."
+      ],
+      "majorRisks": [
+        "개인 기록 또는 민감 정보 유출",
+        "proposal을 canonical 직접 편집으로 오해",
+        "근거 없는 경험담의 공식 정보화",
+        "원작자·출처 귀속 손실",
+        "검토 마찰 때문에 공용 가치가 있는 제안을 포기"
+      ],
+      "destinations": {
+        "primary": [
+          "FlowMe change proposal queue"
+        ],
+        "proposalPayload": [
+          "selected field or Item",
+          "before and after",
+          "source URL",
+          "checked date",
+          "bounded rationale"
+        ],
+        "notDestinations": [
+          "Calendar",
+          "Sheet",
+          "Memo export"
+        ],
+        "personalCopyBoundary": "proposal 제출 여부와 무관하게 개인 실행본과 execution history는 그대로 유지된다."
+      },
+      "scenarioIds": [
+        "S03-micro-correction",
+        "S06-recipe-result"
+      ],
+      "observationTarget": {
+        "proposedCount": 5,
+        "participantCriterion": "실제 문서·가이드에서 최신성 오류나 누락을 발견하고 source로 확인할 수 있는 사람. wiki 또는 개발 도구 경험은 필수가 아니다.",
+        "tasks": [
+          "공용 가치가 있는 수정 한 건 선택",
+          "before·after와 evidence URL 입력",
+          "proposal preview에서 개인 정보 제외 확인",
+          "제출 뒤 review 상태와 다음 행동 설명"
+        ],
+        "observe": [
+          "전체 문서가 아니라 bounded patch를 만드는지",
+          "근거와 개인 경험을 분리하는지",
+          "개인 정보 자동 제외를 이해하는지",
+          "canonical이 즉시 바뀌지 않음을 이해하는지"
+        ],
+        "observedCount": 0,
+        "status": "PROPOSED_NOT_RUN"
+      }
+    },
+    {
+      "id": "P03-creator-maintainer",
+      "role": "creator_or_maintainer",
+      "displayName": "출처와 version을 책임지는 제작자·유지관리자",
+      "status": "research_proto_persona_not_observed",
+      "situation": "반복해서 설명해 온 절차, 공식 가이드, 수업 과정 또는 자신의 경험 콘텐츠를 Flow로 만들고 있다. 발행 후에는 출처 변경과 사용자의 bounded proposal도 검토해야 한다.",
+      "trigger": "일반 텍스트나 기존 문서를 실행 가능한 형태로 만들 필요가 생기거나, 공식 출처 변경 또는 새 proposal이 도착한다.",
+      "job": "전체 콘텐츠를 다시 쓰지 않고 Item·source 단위로 수정한다. proposal evidence와 기존 사용자 영향을 확인한 뒤 새 불변 published version을 발행한다.",
+      "pains": [
+        "구조화 editor가 원문 작성보다 어렵다.",
+        "proposal의 품질과 근거가 제각각이다.",
+        "기존 개인본에 미칠 영향을 예측하기 어렵다.",
+        "삭제 대상 Item에 사용자의 완료 기록이 있을 수 있다.",
+        "초기 maintainer 검토 비용과 제작자 가치가 아직 unknown이다."
+      ],
+      "desiredOutcome": "일반 텍스트를 구조화 preview로 바꾸고 Item 한 개와 source 한 개만 수정한다. proposal을 evidence 요청·수락·거절하고 변경 impact를 확인한 뒤 새 version을 발행한다.",
+      "firstActions": [
+        {
+          "context": "first_authoring",
+          "label": "텍스트 붙여넣기 또는 기존 문서 가져오기",
+          "uiHypothesis": null,
+          "surfaceGap": "authoring-and-draft-preview",
+          "status": "hypothesis_not_runtime"
+        },
+        {
+          "context": "returning_maintenance",
+          "label": "제안 검토",
+          "uiHypothesis": "E",
+          "status": "hypothesis_not_runtime"
+        }
+      ],
+      "completionSignals": [
+        "draft는 source-backed review 전까지 public이 아니다.",
+        "발행본은 immutable version으로 남는다.",
+        "proposal 결정과 evidence가 기록된다.",
+        "추가·변경·삭제 impact가 발행 전에 보인다.",
+        "기존 개인본은 자동 변경되지 않는다.",
+        "개인 상태가 있는 삭제 Item은 명시적 확인 전 보존된다."
+      ],
+      "majorRisks": [
+        "검토 비용이 기여 가치보다 커짐",
+        "낮은 품질 또는 권리 불명확 proposal",
+        "source·caution의 잘못된 자동 병합",
+        "draft의 우발적 공개",
+        "기존 개인본·execution history 훼손",
+        "제작자·원문 귀속 손실"
+      ],
+      "destinations": {
+        "primary": [
+          "FlowMe draft",
+          "source-backed review",
+          "immutable published version",
+          "proposal review queue"
+        ],
+        "reviewActions": [
+          "evidence 요청",
+          "수락",
+          "거절",
+          "새 version 발행 준비"
+        ],
+        "downstreamBoundary": "사용자의 Calendar·Todo·Sheet·Memo는 downstream projection이며 maintainer가 직접 덮어쓰지 않는다."
+      },
+      "scenarioIds": [
+        "S01-text-to-draft",
+        "S03-micro-correction",
+        "S04-published-update"
+      ],
+      "observationTarget": {
+        "proposedCount": 5,
+        "participantCriterion": "체크리스트·가이드·교육자료 등 절차성 콘텐츠를 실제로 작성하거나 유지해 본 사람. FlowMe 기존 제작자일 필요는 없다.",
+        "tasks": [
+          "일반 텍스트를 구조화 draft로 만들기",
+          "Item 한 개와 source 한 개만 수정",
+          "proposal evidence 검토 후 요청·수락·거절 중 선택",
+          "추가·변경·삭제 impact 확인",
+          "기존 개인본을 덮어쓰지 않는 새 version 발행 과정 설명"
+        ],
+        "observe": [
+          "작은 단위 수정을 찾는지",
+          "draft와 published version을 구분하는지",
+          "evidence 요청 기준을 설명할 수 있는지",
+          "existing personal copy impact를 이해하는지",
+          "검토 시간·포기 지점·반복 의향"
+        ],
+        "observedCount": 0,
+        "status": "PROPOSED_NOT_RUN"
+      }
+    }
+  ],
+  "journeyStageContract": [
+    {
+      "stage": 1,
+      "id": "context_entry",
+      "label": "상황에서 진입",
+      "question": "지금 해결하려는 실제 일이 무엇이며 왜 이 Flow를 여는가?"
+    },
+    {
+      "stage": 2,
+      "id": "scoped_change",
+      "label": "필요한 만큼만 바꾸기",
+      "question": "공개 기준본, 개인화, 공용 proposal 중 어떤 변경을 하는가?"
+    },
+    {
+      "stage": 3,
+      "id": "boundary_check",
+      "label": "경계와 결과 미리보기",
+      "question": "무엇이 공개·비공개이며 어느 도구 또는 review queue로 가는가?"
+    },
+    {
+      "stage": 4,
+      "id": "artifact_review_or_publish",
+      "label": "실행·검토·발행",
+      "question": "사용자가 실제로 얻거나 maintainer가 결정하는 결과는 무엇인가?"
+    },
+    {
+      "stage": 5,
+      "id": "return_and_update",
+      "label": "변경 때 돌아오기",
+      "question": "새 version, evidence 요청, 외부 수정 뒤 어떤 선택을 하는가?"
+    }
+  ],
+  "journeyLanes": [
+    {
+      "personaId": "P01-executor",
+      "status": "expected_journey_not_observed",
+      "stages": [
+        {
+          "stage": 1,
+          "action": "공개 기준본에서 출처·제작자·확인일과 전체 흐름을 본다.",
+          "ui": "A",
+          "scenarioIds": [
+            "S02-private-timeline-copy"
+          ],
+          "status": "hypothesis_not_runtime"
+        },
+        {
+          "stage": 2,
+          "action": "내 실행본을 만들고 기준일·포함 Item·개인 메모를 조정한다.",
+          "ui": "B",
+          "scenarioIds": [
+            "S02-private-timeline-copy"
+          ],
+          "status": "hypothesis_not_runtime"
+        },
+        {
+          "stage": 3,
+          "action": "Calendar와 Checklist preview 및 외부 사본 경계를 확인한다.",
+          "ui": "B",
+          "scenarioIds": [
+            "S02-private-timeline-copy",
+            "S05-external-calendar-edit"
+          ],
+          "status": "hypothesis_not_runtime"
+        },
+        {
+          "stage": 4,
+          "action": "Calendar·Checklist/Todo·Memo 중 자연스러운 목적지로 옮기고 실행한다.",
+          "ui": "B",
+          "scenarioIds": [
+            "S02-private-timeline-copy",
+            "S05-external-calendar-edit"
+          ],
+          "status": "hypothesis_not_runtime"
+        },
+        {
+          "stage": 5,
+          "action": "새 version의 추가·변경·삭제를 보고 새 내용 적용·내 설정 유지·일부 적용 중 선택한다.",
+          "ui": "D",
+          "scenarioIds": [
+            "S04-published-update"
+          ],
+          "status": "hypothesis_not_runtime"
+        }
+      ]
+    },
+    {
+      "personaId": "P02-contributor",
+      "status": "expected_journey_not_observed",
+      "stages": [
+        {
+          "stage": 1,
+          "action": "공개본 또는 개인 실행 중 다른 사용자에게도 영향을 주는 오류 한 건을 발견한다.",
+          "ui": "A_or_B",
+          "scenarioIds": [
+            "S03-micro-correction",
+            "S06-recipe-result"
+          ],
+          "status": "hypothesis_not_runtime"
+        },
+        {
+          "stage": 2,
+          "action": "수정할 Item·field 한 건과 before·after를 선택한다.",
+          "ui": "C",
+          "scenarioIds": [
+            "S03-micro-correction",
+            "S06-recipe-result"
+          ],
+          "status": "hypothesis_not_runtime"
+        },
+        {
+          "stage": 3,
+          "action": "evidence URL·확인일을 추가하고 개인 정보 자동 제외를 확인한다.",
+          "ui": "C",
+          "scenarioIds": [
+            "S03-micro-correction",
+            "S06-recipe-result"
+          ],
+          "status": "hypothesis_not_runtime"
+        },
+        {
+          "stage": 4,
+          "action": "근거와 함께 bounded proposal을 보내고 canonical은 즉시 바뀌지 않음을 확인한다.",
+          "ui": "C_to_E",
+          "scenarioIds": [
+            "S03-micro-correction"
+          ],
+          "status": "hypothesis_not_runtime"
+        },
+        {
+          "stage": 5,
+          "action": "review 상태를 확인하고 maintainer가 요청한 evidence만 보완한다.",
+          "ui": "E",
+          "scenarioIds": [
+            "S03-micro-correction"
+          ],
+          "status": "hypothesis_not_runtime"
+        }
+      ]
+    },
+    {
+      "personaId": "P03-creator-maintainer",
+      "status": "expected_journey_not_observed",
+      "stages": [
+        {
+          "stage": 1,
+          "action": "일반 텍스트 또는 기존 문서를 가져와 구조화 draft preview를 연다.",
+          "ui": null,
+          "surfaceGap": "authoring-and-draft-preview",
+          "scenarioIds": [
+            "S01-text-to-draft"
+          ],
+          "status": "hypothesis_not_runtime"
+        },
+        {
+          "stage": 2,
+          "action": "전체를 다시 쓰지 않고 Item 한 개와 source 한 개만 수정한다.",
+          "ui": null,
+          "surfaceGap": "item-and-source-editing",
+          "scenarioIds": [
+            "S01-text-to-draft"
+          ],
+          "status": "hypothesis_not_runtime"
+        },
+        {
+          "stage": 3,
+          "action": "source-backed review와 rights·caution 경계를 확인하거나 들어온 proposal evidence를 검토한다.",
+          "ui": "E_for_proposal_review_only",
+          "surfaceGap": "initial-source-review",
+          "scenarioIds": [
+            "S01-text-to-draft",
+            "S03-micro-correction"
+          ],
+          "status": "hypothesis_not_runtime"
+        },
+        {
+          "stage": 4,
+          "action": "evidence 요청·수락·거절을 기록하고 immutable published version 발행을 준비한다.",
+          "ui": "E",
+          "scenarioIds": [
+            "S03-micro-correction",
+            "S04-published-update"
+          ],
+          "status": "hypothesis_not_runtime"
+        },
+        {
+          "stage": 5,
+          "action": "추가·변경·삭제 impact와 기존 개인본의 무손실 경계를 확인한 뒤 새 version을 발행한다.",
+          "ui": "E_to_D",
+          "scenarioIds": [
+            "S04-published-update"
+          ],
+          "status": "hypothesis_not_runtime"
+        }
+      ]
+    }
+  ],
+  "uiHypotheses": [
+    {
+      "id": "A",
+      "label": "공개 기준본",
+      "primaryActor": "executor_or_contributor",
+      "job": "출처·제작자·version을 확인하고 내 실행본 또는 수정 제안으로 진입",
+      "status": "hypothesis_not_runtime"
+    },
+    {
+      "id": "B",
+      "label": "내 실행본",
+      "primaryActor": "executor",
+      "job": "개인 anchor·포함 항목·메모를 조정하고 목적지 preview 확인",
+      "status": "hypothesis_not_runtime"
+    },
+    {
+      "id": "C",
+      "label": "정보 수정 제안",
+      "primaryActor": "contributor",
+      "job": "공용 가치가 있는 bounded patch와 evidence만 제출",
+      "status": "hypothesis_not_runtime"
+    },
+    {
+      "id": "D",
+      "label": "새 내용 선택 적용",
+      "primaryActor": "executor",
+      "job": "새 published version과 내 설정을 비교하고 Item·field별로 적용",
+      "status": "hypothesis_not_runtime"
+    },
+      {
+        "id": "E",
+        "label": "제안 검토 및 새 version 발행 준비",
+        "primaryActor": "creator_or_maintainer",
+        "job": "proposal evidence·privacy·기존 개인본 impact를 검토하고 새 불변 version 발행을 준비",
+        "requiredElements": [
+          "before and after diff",
+          "evidence URL and checked date",
+        "personal data included: 0",
+        "근거 요청·수락·거절",
+        "기존 개인본 자동 변경 없음",
+        "새 version 발행 준비"
+      ],
+      "status": "hypothesis_not_runtime"
+    }
+  ],
+  "scenarioUiTrace": [
+    {
+      "scenarioId": "S01-text-to-draft",
+      "actors": [
+        "creator_or_maintainer"
+      ],
+      "uiIds": [],
+      "trace": "텍스트 가져오기 → 구조화 draft → Item·source 소규모 수정 → source-backed review",
+      "coverage": "surface_gap",
+      "gap": "A-E에 텍스트 작성·구조화 draft preview·Item/source 편집 화면이 아직 없다. E는 들어온 proposal 검토 화면이다.",
+      "status": "hypothesis_not_runtime"
+    },
+    {
+      "scenarioId": "S02-private-timeline-copy",
+      "actors": [
+        "executor"
+      ],
+      "uiIds": [
+        "A",
+        "B"
+      ],
+      "trace": "공개 D-day Flow 확인 → 내 실행본 생성 → 기준일·포함 Item 변경 → Calendar·Checklist preview",
+      "coverage": "represented",
+      "status": "hypothesis_not_runtime"
+    },
+    {
+      "scenarioId": "S03-micro-correction",
+      "actors": [
+        "contributor",
+        "creator_or_maintainer"
+      ],
+      "uiIds": [
+        "A",
+        "C",
+        "E"
+      ],
+      "trace": "오류 발견 → bounded proposal+evidence 제출 → maintainer 검토",
+      "coverage": "proposed_end_to_end",
+      "status": "hypothesis_not_runtime"
+    },
+    {
+      "scenarioId": "S04-published-update",
+      "actors": [
+        "creator_or_maintainer",
+        "executor"
+      ],
+      "uiIds": [
+        "E",
+        "D"
+      ],
+      "trace": "새 version 발행 impact 확인 → 실행 사용자가 세 방향 diff를 선택 적용 → 개인 상태 보존",
+      "coverage": "proposed_end_to_end",
+      "status": "hypothesis_not_runtime"
+    },
+    {
+      "scenarioId": "S05-external-calendar-edit",
+      "actors": [
+        "executor"
+      ],
+      "uiIds": [
+        "B"
+      ],
+      "trace": "외부 Calendar projection 생성 → 외부에서 한 occurrence 수정 → FlowMe series에 silent write-back 없음",
+      "coverage": "partial_external_surface_not_shown",
+      "gap": "A-E는 FlowMe UI 가설이므로 외부 Calendar 자체 화면은 표현하지 않는다. B에서 detached-after-export 경계를 명시한다.",
+      "status": "hypothesis_not_runtime"
+    },
+    {
+      "scenarioId": "S06-recipe-result",
+      "actors": [
+        "executor",
+        "contributor",
+        "creator_or_maintainer"
+      ],
+      "uiIds": [
+        "B",
+        "C",
+        "E"
+      ],
+      "trace": "인분·대체재 개인화 → 공용 가치가 있는 개선 한 건만 proposal → maintainer review",
+      "coverage": "proposed_end_to_end",
+      "status": "hypothesis_not_runtime"
+    }
+  ],
+  "momentsThatMatter": [
+    {
+      "id": "M01-source-trust-before-copy",
+      "label": "복제 전에 원문을 믿을 수 있는가",
+      "actors": [
+        "executor",
+        "contributor"
+      ],
+      "uiIds": [
+        "A"
+      ],
+      "scenarioIds": [
+        "S02-private-timeline-copy",
+        "S03-micro-correction"
+      ],
+      "mustShow": [
+        "source",
+        "creator or official boundary",
+        "checked date",
+        "published version"
+      ],
+      "failureSignal": "출처 확인 없이 바로 복제하거나 기준본을 공식 사실 전체로 오해한다."
+    },
+    {
+      "id": "M02-minimum-personal-anchor",
+      "label": "무거운 작성 없이 내 상황으로 바뀌는가",
+      "actors": [
+        "executor"
+      ],
+      "uiIds": [
+        "B"
+      ],
+      "scenarioIds": [
+        "S02-private-timeline-copy"
+      ],
+      "mustShow": [
+        "editable anchor",
+        "included Items",
+        "private memo",
+        "locked source"
+      ],
+      "failureSignal": "사용자가 원문 전체를 다시 쓰거나 어떤 값이 개인 값인지 찾지 못한다."
+    },
+    {
+      "id": "M03-destination-preview",
+      "label": "옮기기 전에 무엇이 생길지 보이는가",
+      "actors": [
+        "executor"
+      ],
+      "uiIds": [
+        "B"
+      ],
+      "scenarioIds": [
+        "S02-private-timeline-copy",
+        "S05-external-calendar-edit"
+      ],
+      "mustShow": [
+        "Calendar item count and date range",
+        "Checklist item count",
+        "source link behavior",
+        "detached external copy boundary"
+      ],
+      "failureSignal": "사용자가 잘못된 목적지를 고르거나 외부 수정이 자동 write-back된다고 기대한다."
+    },
+    {
+      "id": "M04-private-to-public-boundary",
+      "label": "개인 변화와 공용 제안을 분리하는가",
+      "actors": [
+        "contributor"
+      ],
+      "uiIds": [
+        "C"
+      ],
+      "scenarioIds": [
+        "S03-micro-correction",
+        "S06-recipe-result"
+      ],
+      "mustShow": [
+        "selected shared field",
+        "evidence required",
+        "personal completion excluded",
+        "personal schedule excluded",
+        "personal memo excluded"
+      ],
+      "failureSignal": "개인 실행본 전체 또는 민감 기록이 proposal에 포함된다."
+    },
+    {
+      "id": "M05-maintainer-evidence-decision",
+      "label": "근거와 impact로 proposal을 판정하는가",
+      "actors": [
+        "creator_or_maintainer"
+      ],
+      "uiIds": [
+        "E"
+      ],
+      "scenarioIds": [
+        "S01-text-to-draft",
+        "S03-micro-correction",
+        "S06-recipe-result"
+      ],
+      "mustShow": [
+        "before and after",
+        "source URL and checked date",
+        "personal data included: 0",
+        "evidence request",
+        "accept",
+        "reject"
+      ],
+      "failureSignal": "근거 없는 변경이 병합되거나 검토 비용 때문에 모든 제안이 방치된다."
+    },
+    {
+      "id": "M06-no-loss-version-update",
+      "label": "새 내용과 내 기록을 안전하게 합치는가",
+      "actors": [
+        "executor",
+        "creator_or_maintainer"
+      ],
+      "uiIds": [
+        "D",
+        "E"
+      ],
+      "scenarioIds": [
+        "S04-published-update"
+      ],
+      "mustShow": [
+        "added changed removed summary",
+        "새 내용 적용",
+        "내 설정 유지",
+        "일부 적용",
+        "personal schedule memo completion preserved"
+      ],
+      "failureSignal": "silent overwrite, 삭제 Item의 execution history 손실, 또는 사용자가 diff를 이해하지 못한다."
+    }
+  ],
+  "proposedValidation": {
+    "status": "PROPOSED_NOT_RUN",
+    "observedSessions": 0,
+    "proposedSessions": 15,
+    "cohorts": [
+      {
+        "personaId": "P01-executor",
+        "proposedCount": 5,
+        "observedCount": 0,
+        "primaryScenarios": [
+          "S02-private-timeline-copy",
+          "S04-published-update",
+          "S05-external-calendar-edit"
+        ]
+      },
+      {
+        "personaId": "P02-contributor",
+        "proposedCount": 5,
+        "observedCount": 0,
+        "primaryScenarios": [
+          "S03-micro-correction",
+          "S06-recipe-result"
+        ]
+      },
+      {
+        "personaId": "P03-creator-maintainer",
+        "proposedCount": 5,
+        "observedCount": 0,
+        "primaryScenarios": [
+          "S01-text-to-draft",
+          "S03-micro-correction",
+          "S04-published-update"
+        ]
+      }
+    ],
+    "proposedThresholds": [
+      {
+        "metric": "기준본·개인본·수정 제안 구분",
+        "threshold": "12/15 이상",
+        "type": "hypothesis_threshold",
+        "observed": "NOT_RUN"
+      },
+      {
+        "metric": "핵심 과업을 설명 없이 완료",
+        "threshold": "10/15 이상",
+        "type": "hypothesis_threshold",
+        "observed": "NOT_RUN"
+      },
+      {
+        "metric": "published update 후 개인 일정·메모·완료 보존",
+        "threshold": "15/15 데이터 무손실",
+        "type": "contract_threshold",
+        "observed": "NOT_RUN"
+      },
+      {
+        "metric": "개인 기록의 proposal 자동 포함",
+        "threshold": "0건",
+        "type": "safety_threshold",
+        "observed": "NOT_RUN"
+      },
+      {
+        "metric": "canonical 또는 외부 projection의 silent overwrite",
+        "threshold": "0건",
+        "type": "safety_threshold",
+        "observed": "NOT_RUN"
+      }
+    ],
+    "qualitativeQuestions": [
+      "어느 수정이 나만의 것이고 어느 수정이 다른 사용자에게도 도움이 되는가?",
+      "왜 새 version이 내 실행본에 자동 적용되지 않았다고 이해하는가?",
+      "외부 Calendar·Sheet를 고친 뒤 FlowMe로 돌아올 필요가 있는 순간은 언제인가?",
+      "제작자는 attribution, source return, update, 재참여 중 무엇에서 가치를 느끼는가?",
+      "각 역할은 어느 화면에서 멈추거나 도움을 요청하는가?"
+    ],
+    "reportingRule": "관찰 전에는 threshold를 결과처럼 표현하지 않는다. 스크린샷·자동 QA·보고서 완성은 observed-user validation이 아니다."
+  }
+}

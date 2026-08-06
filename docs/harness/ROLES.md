@@ -41,6 +41,7 @@ Small, clear tasks may combine all four in one session. Keep review distinct eno
 | Product/UX | Navigation, execution flow, information architecture, or product priority changes | First useful action, cognitive load, familiar-tool portability, and Stage fit |
 | Content/source/risk | Source-to-Flow conversion or sensitive claims | Source fidelity, provenance, omissions, cautions, and natural artifact fit |
 | Visual/browser | Layout, responsive behavior, HTML boards, or interactive controls | Hierarchy, overflow, state feedback, screenshots, console and browser behavior |
+| Report/artifact | PPTX, DOCX, PDF, visual HTML, executive review, or briefing deliverables | Format routing, visual narrative, evidence labeling, file creation, and rendered-output QA |
 | Architecture/security | Shared contracts, persistence, auth, external input, dependencies, or trust boundaries | Ownership, migration, failure modes, data exposure, and rollback |
 | Validation/release | Readiness scores, CI, deployment, external cohorts, or observed sessions | Operational evidence, release state, and QA-versus-validation boundaries |
 | Memory/spec | A durable rule, deferred direction, multi-step initiative, or route ownership changes | Write once to the correct canonical document and link instead of duplicating |
@@ -55,4 +56,5 @@ Do not add a specialist merely because its title matches the task. Add it when o
 | Multi-file behavior change | All four core passes |
 | Source conversion | Core passes plus Content/source/risk |
 | User-facing UX or HTML | Core passes plus Product/UX and Visual/browser |
+| Report, deck, or visual briefing | Core framing, review, and evidence plus Report/artifact; use `flow-report-artifact` |
 | Architecture, security, or release | Core passes plus the matching specialist; use Full lane when blast radius is broad |

@@ -111,6 +111,30 @@ Do not use this for:
 
 **Related docs:** [P0-09 closeout](./specs/2026-08-04-p35-round2-bounded-ux-correction/p0-09-closeout.md), [P0-09 evidence](./specs/2026-08-04-p35-round2-bounded-ux-correction/evidence/p0-09/README.md), [P35 Round 2 full program](./specs/2026-08-04-p35-round2-bounded-ux-correction/full-program.md)
 
+### 2026-08-04 - Harness trims discovery metadata after bounded A/B evidence
+
+**Decision:** Keep `agent.md` conditional for FlowMe product, content, UX, status, release, or broad/ambiguous work; clear low-risk local work starts from `AGENTS.md` and directly involved files/tests. Shorten nine skill discovery descriptions while preserving every skill body. Keep hooks, CI, workflow scripts, canonical documents, and specialist capabilities unchanged. Do not merge or delete skills from this result alone.
+
+**Reason:** A read-only six-pair comparison completed 12/12 runs without repository mutation and retained the material conclusion, ownership boundary, and required verification in all six manual pair reviews. The lighter variant reduced aggregate input by 16.8%, output by 15.8%, elapsed time by 19.0%, and tool calls by 40.0%, but uncached input increased by 7.6% and the two micro tasks were inconsistent. The evidence supports a bounded routing/metadata trim, not a general claim that less context is always cheaper or better.
+
+**Applies to:** `AGENTS.md`, `docs/harness/README.md`, the adaptive harness spec, `.agents/skills/*/SKILL.md` discovery frontmatter, and generated `.claude/skills/` copies.
+
+**Reopen when:** FlowMe constraints are missed, micro tasks repeatedly over-search or retry, full release work omits necessary baseline evidence, supported tools change skill discovery, or ten normal tasks provide stronger evidence for further pruning or rollback.
+
+**Related docs:** [A/B evaluation ledger](./content-audit/2026-08-04-flowme-harness-lightweight-ab-evaluation-v1.json), [Korean visual review](./content-audit/2026-08-04-flowme-agent-harness-skill-lightweight-trend-review-ko.html), [adaptive harness spec](./specs/2026-07-19-adaptive-lean-agent-harness/spec.md)
+
+### 2026-07-29 - Project control uses a stable index and immutable dated snapshots
+
+**Decision:** Use [PROJECT_CONTROL.md](./PROJECT_CONTROL.md) as the stable entry to the latest human-facing stage board and detailed work register. Keep `STATUS.md` limited to current focus, active gate, health, constraints, and immediate actions; preserve removed history in [STATUS_HISTORY.md](./STATUS_HISTORY.md). Treat dated HTML reports as immutable evidence snapshots. The 2026-06-19 service UX and wide-project backlog files are archived and superseded as live control surfaces, not deleted. Run Knowledge Maintenance only on demand, read-only first, and never as an automatic implementation phase.
+
+**Reason:** The repo was preserving direction well but required readers to distinguish a 740-line mixed current/history status file, two older continuously maintained HTML backlogs, and newer dated control boards. A stable pointer plus preserved history removes navigation ambiguity without erasing evidence or adding an always-on harness.
+
+**Applies to:** `AGENTS.md`, `agent.md`, `docs/PROJECT_CONTROL.md`, `docs/STATUS.md`, `docs/STATUS_HISTORY.md`, `docs/ROADMAP.md`, the two 2026-06-19 backlog snapshots, the Knowledge Maintenance workflow and skill, and future whole-project status reports.
+
+**Reopen when:** A maintained database or generated index can provide a simpler stable control surface, or repeated maintenance shows that the current repo routing still leaves conflicting active gates.
+
+**Related docs:** [Knowledge Maintenance workflow](./workflows/knowledge-maintenance.md), [harness README](./harness/README.md), [service UX backlog snapshot](./content-audit/2026-06-19-flowme-service-ux-backlog-ko.html), [wide-project backlog snapshot](./content-audit/2026-06-19-flowme-wide-project-backlog-ko.html)
+
 ### 2026-07-29 - P35 uses a state-based root router and three primary destinations
 
 **Decision:** Remove Home from the persistent primary navigation. Keep `Flow 찾기`, `캘린더`, and `내 Flow` as the three primary destinations on mobile and wide layouts. Treat `/` as a state-based entry router: when no valid saved Flow or saved Flow Map entry exists it continues to `/flows`; when at least one such entry exists it continues to `/my`. Other draft, check, anchor, or UI state alone does not make the root enter `/my`. Keep Flow creation in the secondary menu and keep public `/f/[slug]` pages as share-entry surfaces.
@@ -1820,6 +1844,8 @@ Every pinned review item must provide a directly openable primary artifact link.
 
 ### 2026-06-19 - Service UX backlog is updated after product exploration tasks
 
+> **Superseded as a live control rule on 2026-07-29:** Preserve this HTML as a historical snapshot. Current human-facing control now starts at [PROJECT_CONTROL.md](./PROJECT_CONTROL.md), which links the latest dated board and work register.
+
 **Decision:** Maintain a browseable service UX backlog at `docs/content-audit/2026-06-19-flowme-service-ux-backlog-ko.html`. Update it after a major product/UX task or meaningful milestone, not after every small edit. Use judgment: update when a new PoC/report/spec changes the current judgment, status, completion level, next artifact, or recommended next action. Include the backlog link with the new artifact link in the final handoff when relevant. The backlog's progress section must track completed work, in-progress work, pending/open work, next recommended work, work type or service-flow lane, completion level, dates, artifact links, remaining work, and next action. It should show how product planning, content conversion, creator UX, user UX, and operations/development connect instead of listing tasks as isolated todos. The service-flow lanes should be visually obvious through cards or badges, not buried as plain table text. Completion level should also be visually scannable through a short level label and progress indicator, with a note that it is internal progress rather than user validation.
 
 **Reason:** The FlowMe service questions now span creator onboarding, public detail, My Flow IA, update policy, quality gates, export handoff, discovery, business value, sensitive content, and analytics. Keeping these only in chat makes the direction easy to lose; updating one lightweight backlog lets future PoCs connect back to the overall serviceization work without turning every idea into a committed spec.
@@ -1829,6 +1855,8 @@ Every pinned review item must provide a directly openable primary artifact link.
 **Reopen when:** this backlog becomes too broad to manage in one file or a formal issue/spec tracker replaces content-audit HTML artifacts.
 
 ### 2026-06-19 - Wide project backlog stays separate from service UX backlog
+
+> **Superseded as a live control rule on 2026-07-29:** Preserve this HTML as a historical snapshot. Current human-facing control now starts at [PROJECT_CONTROL.md](./PROJECT_CONTROL.md), which links the latest dated board and work register.
 
 **Decision:** Maintain a broader project backlog at `docs/content-audit/2026-06-19-flowme-wide-project-backlog-ko.html` for cross-cutting work that is larger than the current service UX connection backlog. The broad backlog should separate Stage 0 validation, Source-to-Flow conversion, My Flow management, Creator Map/Flow of Flow work, and long-term platform ideas. Keep it lightweight with tab-like anchor sections rather than a heavy app surface. Update it after major project-level tasks or meaningful planning milestones, not after every small edit. It should include a coverage section that marks whether prior planning/docs/discussion topics are reflected, compressed, or still missing, because this backlog is a decision map rather than a complete archive of previous documents.
 

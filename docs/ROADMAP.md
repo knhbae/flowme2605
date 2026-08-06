@@ -6,7 +6,9 @@
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
 **Next Milestone:** P35 Round 2 MVP PoC gate is closed on P′′ production; no next product slice is active until the Owner explicitly promotes one
 
-Historical 2026-07-29 control surface: [FlowMe P35 stage control board](./content-audit/2026-07-29-flowme-current-stage-control-board-ko.html). Current state is maintained in this roadmap and [STATUS.md](./STATUS.md).
+Human-facing control surface: [FlowMe Project Control](./PROJECT_CONTROL.md).
+The [2026-07-29 P35 stage board](./content-audit/2026-07-29-flowme-current-stage-control-board-ko.html)
+is retained as a dated evidence snapshot rather than the current backlog.
 
 ## Closed MVP Program: P35 Round 2 B/B/B Bounded UX Correction
 
@@ -59,6 +61,12 @@ deployment `dpl_EBDr9CiRuwAUyjMcJwp7g6eBLpNk`, which the Vercel CLI reports as
 an MVP PoC release backed by P′ review findings plus P′′ candidate-bound automated
 and browser evidence. It is not a fresh independent P′′ review pass, a production
 smoke result, or observed-user validation.
+
+The same P35 Round 2 source is now durable on `main` through
+[PR #166](https://github.com/knhbae/flowme2605/pull/166) and merge
+`2af4c92407925cb0643e20c2c22c6e8c5b8b0f64`. That Git integration did not create
+a new production deployment or production-smoke result; the deployment boundary
+above remains the current release truth.
 
 ### Inherited Baseline: P35 MECE UX Reset
 

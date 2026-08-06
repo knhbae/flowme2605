@@ -1,0 +1,2280 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>FlowMe 통합 진행 맵 | 2026-07-30</title>
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --surface: #ffffff;
+      --surface-2: #eef2f5;
+      --text: #17212b;
+      --muted: #5f6b76;
+      --line: #d5dde4;
+      --line-strong: #aebbc6;
+      --ink: #17212b;
+      --teal: #087f78;
+      --teal-soft: #e2f4f1;
+      --blue: #2866b1;
+      --blue-soft: #e7effa;
+      --coral: #c45445;
+      --coral-soft: #f9e9e6;
+      --amber: #9a6400;
+      --amber-soft: #fbf0d5;
+      --green: #2f7a47;
+      --green-soft: #e5f2e8;
+      --gray-soft: #edf0f2;
+      --shadow: 0 12px 34px rgba(23, 33, 43, 0.08);
+      --radius: 8px;
+      --max: 1220px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo",
+        "Segoe UI", sans-serif;
+      font-size: 16px;
+      line-height: 1.65;
+      letter-spacing: 0;
+      word-break: keep-all;
+    }
+
+    a {
+      color: var(--blue);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+
+    a:hover {
+      color: #164d8c;
+    }
+
+    button,
+    a {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button:focus-visible,
+    a:focus-visible {
+      outline: 3px solid rgba(40, 102, 177, 0.28);
+      outline-offset: 3px;
+    }
+
+    code {
+      padding: 0.12rem 0.32rem;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: var(--surface-2);
+      font-family: "Cascadia Code", Consolas, monospace;
+      font-size: 0.88em;
+      overflow-wrap: anywhere;
+    }
+
+    .shell {
+      width: min(calc(100% - 40px), var(--max));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid rgba(213, 221, 228, 0.92);
+      background: rgba(244, 246, 248, 0.96);
+      backdrop-filter: blur(10px);
+    }
+
+    .topbar-inner {
+      min-height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .brand strong {
+      font-size: 15px;
+      line-height: 1.2;
+    }
+
+    .brand span {
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .topnav {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      white-space: nowrap;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .topnav::-webkit-scrollbar {
+      display: none;
+    }
+
+    .topnav a {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .topnav a:hover {
+      color: var(--ink);
+    }
+
+    .report-head {
+      padding: 70px 0 48px;
+      border-bottom: 1px solid var(--line);
+      background: var(--surface);
+    }
+
+    .head-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(340px, 0.65fr);
+      gap: 54px;
+      align-items: end;
+    }
+
+    .report-head h1 {
+      max-width: 760px;
+      margin: 0;
+      font-size: clamp(32px, 4.2vw, 58px);
+      line-height: 1.12;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .report-head .lead {
+      max-width: 760px;
+      margin: 24px 0 0;
+      color: #3d4954;
+      font-size: 19px;
+      line-height: 1.72;
+    }
+
+    .meta-block {
+      border-top: 3px solid var(--ink);
+      padding-top: 18px;
+    }
+
+    .meta-row {
+      display: grid;
+      grid-template-columns: 92px minmax(0, 1fr);
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--line);
+      font-size: 13px;
+    }
+
+    .meta-row span:first-child {
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .meta-row span:last-child {
+      font-weight: 650;
+    }
+
+    .thesis-band {
+      padding: 34px 0;
+      background: var(--ink);
+      color: #fff;
+    }
+
+    .thesis-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(150px, 0.4fr));
+      gap: 28px;
+      align-items: center;
+    }
+
+    .thesis {
+      margin: 0;
+      font-size: 25px;
+      line-height: 1.45;
+      font-weight: 750;
+    }
+
+    .signal {
+      padding-left: 20px;
+      border-left: 1px solid #4a5660;
+    }
+
+    .signal strong {
+      display: block;
+      font-size: 28px;
+      line-height: 1.1;
+    }
+
+    .signal span {
+      display: block;
+      margin-top: 7px;
+      color: #bdc7cf;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    main section {
+      scroll-margin-top: 76px;
+    }
+
+    .band {
+      padding: 72px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .band.white {
+      background: var(--surface);
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(230px, 0.45fr) minmax(0, 1fr);
+      gap: 48px;
+      margin-bottom: 38px;
+      align-items: start;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.25;
+    }
+
+    .section-head p {
+      max-width: 760px;
+      margin: 3px 0 0;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .section-index {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--teal);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .decision-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      border-top: 1px solid var(--line-strong);
+      border-bottom: 1px solid var(--line-strong);
+    }
+
+    .decision {
+      min-width: 0;
+      padding: 24px 26px;
+      border-right: 1px solid var(--line);
+    }
+
+    .decision:last-child {
+      border-right: 0;
+    }
+
+    .decision-num {
+      color: var(--coral);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .decision h3 {
+      margin: 8px 0 7px;
+      font-size: 18px;
+      line-height: 1.42;
+    }
+
+    .decision p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .filterbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 24px;
+      overflow-x: auto;
+      padding-bottom: 3px;
+    }
+
+    .filterbar button {
+      flex: 0 0 auto;
+      min-height: 38px;
+      padding: 0 14px;
+      border: 1px solid var(--line-strong);
+      border-radius: 6px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .filterbar button[aria-pressed="true"] {
+      border-color: var(--ink);
+      background: var(--ink);
+      color: #fff;
+    }
+
+    .loop {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 15px;
+      align-items: stretch;
+    }
+
+    .loop-node {
+      position: relative;
+      min-width: 0;
+      min-height: 218px;
+      padding: 17px 15px 18px;
+      border: 1px solid var(--line);
+      border-top: 4px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: var(--surface);
+      transition: opacity 160ms ease, transform 160ms ease;
+    }
+
+    .loop-node::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: -16px;
+      z-index: 2;
+      width: 15px;
+      height: 1px;
+      background: var(--line-strong);
+    }
+
+    .loop-node:last-child::after {
+      display: none;
+    }
+
+    .loop-node[data-phase="shipped"] {
+      border-top-color: var(--green);
+    }
+
+    .loop-node[data-phase="local"] {
+      border-top-color: var(--blue);
+    }
+
+    .loop-node[data-phase="research"] {
+      border-top-color: var(--amber);
+    }
+
+    .loop-node[data-phase="blocked"] {
+      border-top-color: var(--coral);
+    }
+
+    .loop-node.is-muted {
+      opacity: 0.18;
+      transform: scale(0.985);
+    }
+
+    .loop-step {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .loop-node h3 {
+      min-height: 52px;
+      margin: 8px 0 9px;
+      font-size: 17px;
+      line-height: 1.45;
+    }
+
+    .loop-node p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.58;
+    }
+
+    .state {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 15px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .state::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--line-strong);
+    }
+
+    [data-phase="shipped"] .state::before {
+      background: var(--green);
+    }
+
+    [data-phase="local"] .state::before {
+      background: var(--blue);
+    }
+
+    [data-phase="research"] .state::before {
+      background: var(--amber);
+    }
+
+    [data-phase="blocked"] .state::before {
+      background: var(--coral);
+    }
+
+    .loop-return {
+      margin-top: 22px;
+      padding: 14px 18px;
+      border-left: 4px solid var(--coral);
+      background: var(--coral-soft);
+      color: #78392f;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .tree-map {
+      display: grid;
+      justify-items: center;
+      width: 100%;
+    }
+
+    .tree-root {
+      width: min(100%, 720px);
+      padding: 24px 28px;
+      border-radius: var(--radius);
+      background: var(--ink);
+      color: #fff;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+
+    .tree-root small {
+      display: block;
+      color: #aebbc6;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .tree-root strong {
+      display: block;
+      margin-top: 7px;
+      font-size: 23px;
+      line-height: 1.42;
+    }
+
+    .tree-root span {
+      display: block;
+      margin-top: 8px;
+      color: #cbd4db;
+      font-size: 13px;
+    }
+
+    .tree-stem {
+      width: 1px;
+      height: 30px;
+      background: var(--line-strong);
+    }
+
+    .tree-stage {
+      width: min(100%, 880px);
+      padding: 20px 24px 22px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: var(--surface);
+      text-align: center;
+    }
+
+    .tree-stage > span {
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .tree-stage h3 {
+      margin: 6px 0 5px;
+      font-size: 20px;
+      line-height: 1.4;
+    }
+
+    .tree-stage > p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .tree-routes {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-top: 18px;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .tree-route {
+      padding: 12px 14px;
+      border-right: 1px solid var(--line);
+      text-align: left;
+    }
+
+    .tree-route:last-child {
+      border-right: 0;
+    }
+
+    .tree-route code {
+      display: inline-block;
+      margin-right: 5px;
+      color: var(--ink);
+      font-weight: 800;
+    }
+
+    .tree-route span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .tree-branches {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 22px;
+      width: 100%;
+      padding-top: 30px;
+    }
+
+    .tree-branches::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: calc(16.666% + 11px);
+      right: calc(16.666% + 11px);
+      height: 1px;
+      background: var(--line-strong);
+    }
+
+    .tree-branch {
+      position: relative;
+      min-width: 0;
+    }
+
+    .tree-branch::before {
+      content: "";
+      position: absolute;
+      top: -30px;
+      left: 50%;
+      width: 1px;
+      height: 30px;
+      background: var(--line-strong);
+    }
+
+    .tree-branch-head {
+      min-height: 110px;
+      padding: 18px 20px;
+      border: 1px solid var(--line);
+      border-top: 4px solid var(--teal);
+      border-radius: var(--radius);
+      background: var(--surface);
+    }
+
+    .tree-branch.product .tree-branch-head {
+      border-top-color: var(--blue);
+    }
+
+    .tree-branch.learning .tree-branch-head {
+      border-top-color: var(--amber);
+    }
+
+    .tree-branch-head span {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .tree-branch-head strong {
+      display: block;
+      margin-top: 5px;
+      font-size: 19px;
+      line-height: 1.38;
+    }
+
+    .tree-branch-head p {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .tree-leaves {
+      position: relative;
+      display: grid;
+      gap: 10px;
+      margin: 15px 0 0 18px;
+      padding-left: 18px;
+    }
+
+    .tree-leaves::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 28px;
+      left: 0;
+      width: 1px;
+      background: var(--line-strong);
+    }
+
+    .tree-leaf.loop-node {
+      min-height: 0;
+      padding: 14px 15px;
+      border-top: 1px solid var(--line);
+      border-left: 4px solid var(--line-strong);
+      background: var(--surface);
+    }
+
+    .tree-leaf.loop-node::before {
+      content: "";
+      position: absolute;
+      top: 24px;
+      left: -22px;
+      width: 18px;
+      height: 1px;
+      background: var(--line-strong);
+    }
+
+    .tree-leaf.loop-node::after {
+      display: none;
+    }
+
+    .tree-leaf.loop-node[data-phase="shipped"] {
+      border-top-color: var(--line);
+      border-left-color: var(--green);
+    }
+
+    .tree-leaf.loop-node[data-phase="local"] {
+      border-top-color: var(--line);
+      border-left-color: var(--blue);
+    }
+
+    .tree-leaf.loop-node[data-phase="research"] {
+      border-top-color: var(--line);
+      border-left-color: var(--amber);
+    }
+
+    .tree-leaf.loop-node[data-phase="blocked"] {
+      border-top-color: var(--line);
+      border-left-color: var(--coral);
+    }
+
+    .tree-leaf.loop-node h3 {
+      min-height: 0;
+      margin: 0 0 5px;
+      font-size: 15px;
+    }
+
+    .tree-leaf.loop-node p {
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .tree-leaf .state {
+      margin-top: 9px;
+      font-size: 10px;
+    }
+
+    .truth-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .truth {
+      min-width: 0;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+    }
+
+    .truth.shipped {
+      box-shadow: inset 0 4px 0 var(--green);
+    }
+
+    .truth.local {
+      box-shadow: inset 0 4px 0 var(--blue);
+    }
+
+    .truth.research {
+      box-shadow: inset 0 4px 0 var(--amber);
+    }
+
+    .truth.blocked {
+      box-shadow: inset 0 4px 0 var(--coral);
+    }
+
+    .truth-label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .truth h3 {
+      margin: 9px 0 8px;
+      font-size: 20px;
+      line-height: 1.42;
+    }
+
+    .truth p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .truth .metric {
+      display: block;
+      margin-top: 18px;
+      font-size: 30px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .truth .metric-note {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .ledger {
+      border-top: 1px solid var(--line-strong);
+    }
+
+    .ledger-row {
+      display: grid;
+      grid-template-columns: 185px minmax(230px, 0.85fr) minmax(260px, 1.15fr) 126px;
+      gap: 24px;
+      align-items: center;
+      min-height: 132px;
+      padding: 24px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .ledger-title strong {
+      display: block;
+      font-size: 18px;
+    }
+
+    .ledger-title span {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .ledger-copy {
+      color: #33404c;
+      font-size: 14px;
+    }
+
+    .ledger-copy strong {
+      color: var(--ink);
+    }
+
+    .connection {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 38px;
+      padding: 7px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .connection.strong {
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .connection.partial {
+      background: var(--amber-soft);
+      color: var(--amber);
+    }
+
+    .connection.split {
+      background: var(--blue-soft);
+      color: var(--blue);
+    }
+
+    .connection.break {
+      background: var(--coral-soft);
+      color: var(--coral);
+    }
+
+    .dual-meter {
+      display: grid;
+      gap: 10px;
+    }
+
+    .meter-row {
+      display: grid;
+      grid-template-columns: 78px minmax(90px, 1fr) 54px;
+      gap: 10px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .meter {
+      height: 8px;
+      overflow: hidden;
+      border-radius: 4px;
+      background: var(--gray-soft);
+    }
+
+    .meter span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--teal);
+    }
+
+    .meter-row.risk .meter span {
+      background: var(--coral);
+    }
+
+    .meter-row.local .meter span {
+      background: var(--blue);
+    }
+
+    .handoff-map {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      gap: 34px;
+    }
+
+    .handoff-column {
+      border-top: 3px solid var(--ink);
+    }
+
+    .handoff-column h3 {
+      margin: 20px 0 18px;
+      font-size: 21px;
+    }
+
+    .handoff-row {
+      display: grid;
+      grid-template-columns: 120px minmax(0, 1fr);
+      gap: 18px;
+      padding: 17px 0;
+      border-top: 1px solid var(--line);
+      font-size: 14px;
+    }
+
+    .handoff-row:first-of-type {
+      border-top: 0;
+    }
+
+    .handoff-row strong {
+      line-height: 1.45;
+    }
+
+    .handoff-row p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .disconnect {
+      border-left: 4px solid var(--coral);
+      background: var(--coral-soft);
+      padding: 22px 24px;
+    }
+
+    .disconnect h3 {
+      margin: 0 0 10px;
+      color: #78392f;
+      font-size: 20px;
+    }
+
+    .disconnect p {
+      margin: 0;
+      color: #744a43;
+      font-size: 14px;
+    }
+
+    .disconnect p + p {
+      margin-top: 12px;
+    }
+
+    .timeline {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 0;
+      margin-top: 8px;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      top: 27px;
+      left: 8%;
+      right: 8%;
+      height: 2px;
+      background: var(--line-strong);
+    }
+
+    .timepoint {
+      position: relative;
+      z-index: 1;
+      padding: 0 18px;
+      text-align: center;
+    }
+
+    .time-dot {
+      width: 16px;
+      height: 16px;
+      margin: 20px auto 20px;
+      border: 4px solid var(--surface);
+      border-radius: 50%;
+      background: var(--teal);
+      box-shadow: 0 0 0 1px var(--teal);
+    }
+
+    .timepoint:nth-child(4) .time-dot {
+      background: var(--green);
+      box-shadow: 0 0 0 1px var(--green);
+    }
+
+    .timepoint:nth-child(5) .time-dot {
+      background: var(--blue);
+      box-shadow: 0 0 0 1px var(--blue);
+    }
+
+    .timepoint time {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .timepoint h3 {
+      margin: 8px 0 7px;
+      font-size: 17px;
+      line-height: 1.42;
+    }
+
+    .timepoint p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .gap-list {
+      counter-reset: gaps;
+      border-top: 1px solid var(--line-strong);
+    }
+
+    .gap {
+      counter-increment: gaps;
+      display: grid;
+      grid-template-columns: 58px 225px minmax(0, 1fr) 170px;
+      gap: 22px;
+      align-items: start;
+      padding: 24px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .gap::before {
+      content: "0" counter(gaps);
+      color: var(--coral);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .gap h3 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.45;
+    }
+
+    .gap p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .gap .impact {
+      padding: 8px 10px;
+      border-radius: 6px;
+      background: var(--coral-soft);
+      color: var(--coral);
+      font-size: 12px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .sequence {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0;
+      border-top: 1px solid var(--line-strong);
+    }
+
+    .sequence-step {
+      display: grid;
+      grid-template-columns: 76px minmax(230px, 0.8fr) minmax(0, 1.2fr) 160px;
+      gap: 24px;
+      align-items: center;
+      padding: 23px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .sequence-step .number {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--ink);
+      color: #fff;
+      font-weight: 800;
+    }
+
+    .sequence-step h3 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.42;
+    }
+
+    .sequence-step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .owner {
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 800;
+      text-align: right;
+    }
+
+    .hold-band {
+      margin-top: 30px;
+      padding: 22px 24px;
+      border: 1px solid #e1c98f;
+      border-radius: var(--radius);
+      background: var(--amber-soft);
+    }
+
+    .hold-band strong {
+      display: block;
+      color: #6e4b05;
+    }
+
+    .hold-band p {
+      margin: 7px 0 0;
+      color: #735d30;
+      font-size: 14px;
+    }
+
+    .evidence-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px 28px;
+    }
+
+    .evidence-group {
+      padding-top: 18px;
+      border-top: 3px solid var(--line-strong);
+    }
+
+    .evidence-group h3 {
+      margin: 0 0 12px;
+      font-size: 16px;
+    }
+
+    .evidence-group ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .evidence-group li {
+      padding: 8px 0;
+      border-top: 1px solid var(--line);
+      font-size: 13px;
+    }
+
+    .evidence-group li:first-child {
+      border-top: 0;
+    }
+
+    .method-note {
+      margin-top: 34px;
+      padding: 18px 20px;
+      border-left: 4px solid var(--blue);
+      background: var(--blue-soft);
+      color: #294d76;
+      font-size: 13px;
+    }
+
+    footer {
+      padding: 34px 0 48px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .footer-grid {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      border-top: 1px solid var(--line);
+      padding-top: 20px;
+    }
+
+    @media (max-width: 1040px) {
+      .head-grid {
+        grid-template-columns: 1fr;
+        gap: 34px;
+      }
+
+      .meta-block {
+        max-width: 620px;
+      }
+
+      .thesis-grid {
+        grid-template-columns: 1fr repeat(3, minmax(120px, 0.34fr));
+      }
+
+      .loop {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .loop-node:nth-child(4)::after {
+        display: none;
+      }
+
+      .truth-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .ledger-row {
+        grid-template-columns: 155px minmax(200px, 0.8fr) minmax(230px, 1.2fr) 110px;
+        gap: 16px;
+      }
+
+      .timeline {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        row-gap: 34px;
+      }
+
+      .timeline::before {
+        display: none;
+      }
+
+      .gap {
+        grid-template-columns: 48px 190px minmax(0, 1fr) 145px;
+      }
+    }
+
+    @media (max-width: 760px) {
+      body {
+        font-size: 15px;
+        word-break: normal;
+        overflow-wrap: anywhere;
+      }
+
+      .shell {
+        width: min(calc(100% - 28px), var(--max));
+      }
+
+      .topbar-inner {
+        min-height: 54px;
+      }
+
+      .brand span {
+        display: none;
+      }
+
+      .topnav {
+        gap: 14px;
+      }
+
+      .topnav a:nth-child(2),
+      .topnav a:nth-child(3) {
+        display: none;
+      }
+
+      .report-head {
+        padding: 44px 0 34px;
+      }
+
+      .report-head h1 {
+        font-size: 34px;
+      }
+
+      .report-head .lead {
+        margin-top: 18px;
+        font-size: 17px;
+      }
+
+      .meta-row {
+        grid-template-columns: 76px minmax(0, 1fr);
+      }
+
+      .thesis-band {
+        padding: 28px 0;
+      }
+
+      .thesis-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 20px 10px;
+      }
+
+      .thesis {
+        grid-column: 1 / -1;
+        font-size: 21px;
+      }
+
+      .signal {
+        padding-left: 10px;
+      }
+
+      .signal strong {
+        font-size: 22px;
+      }
+
+      .band {
+        padding: 52px 0;
+      }
+
+      .section-head {
+        grid-template-columns: 1fr;
+        gap: 14px;
+        margin-bottom: 28px;
+      }
+
+      .section-head h2 {
+        font-size: 26px;
+      }
+
+      .decision-strip {
+        grid-template-columns: 1fr;
+      }
+
+      .decision {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .decision:last-child {
+        border-bottom: 0;
+      }
+
+      .loop {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+
+      .loop-node {
+        min-height: auto;
+      }
+
+      .loop-node h3 {
+        min-height: 0;
+      }
+
+      .loop-node::after,
+      .loop-node:nth-child(4)::after {
+        display: block;
+        top: auto;
+        right: auto;
+        bottom: -15px;
+        left: 28px;
+        width: 1px;
+        height: 14px;
+      }
+
+      .loop-node:last-child::after {
+        display: none;
+      }
+
+      .tree-root,
+      .tree-stage {
+        width: 100%;
+      }
+
+      .tree-root {
+        padding: 21px 20px;
+        text-align: left;
+      }
+
+      .tree-root strong {
+        font-size: 20px;
+      }
+
+      .tree-stage {
+        padding: 19px 18px 20px;
+        text-align: left;
+      }
+
+      .tree-routes {
+        grid-template-columns: 1fr;
+      }
+
+      .tree-route {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .tree-route:last-child {
+        border-bottom: 0;
+      }
+
+      .tree-branches {
+        grid-template-columns: 1fr;
+        gap: 22px;
+        padding: 28px 0 0 22px;
+      }
+
+      .tree-branches::before {
+        top: 0;
+        bottom: 38px;
+        left: 0;
+        right: auto;
+        width: 1px;
+        height: auto;
+      }
+
+      .tree-branches::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 50%;
+        height: 1px;
+        background: var(--line-strong);
+      }
+
+      .tree-branch::before {
+        top: 34px;
+        left: -22px;
+        width: 22px;
+        height: 1px;
+      }
+
+      .tree-branch-head {
+        min-height: 0;
+      }
+
+      .tree-leaf.loop-node::after,
+      .tree-leaf.loop-node:last-child::after {
+        display: none;
+      }
+
+      .truth-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .ledger-row {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        padding: 24px 0;
+      }
+
+      .connection {
+        justify-self: start;
+      }
+
+      .handoff-map {
+        grid-template-columns: 1fr;
+      }
+
+      .timeline {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+
+      .timepoint {
+        display: grid;
+        grid-template-columns: 34px minmax(0, 1fr);
+        gap: 12px;
+        padding: 17px 0;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+      }
+
+      .time-dot {
+        grid-row: 1 / 5;
+        margin: 5px auto 0;
+      }
+
+      .timepoint time,
+      .timepoint h3,
+      .timepoint p {
+        grid-column: 2;
+      }
+
+      .timepoint h3 {
+        margin: 2px 0 4px;
+      }
+
+      .gap {
+        grid-template-columns: 40px minmax(0, 1fr);
+        gap: 10px 14px;
+      }
+
+      .gap h3,
+      .gap p,
+      .gap .impact {
+        grid-column: 2;
+      }
+
+      .gap .impact {
+        justify-self: start;
+      }
+
+      .sequence-step {
+        grid-template-columns: 54px minmax(0, 1fr);
+        gap: 12px 14px;
+      }
+
+      .sequence-step h3,
+      .sequence-step p,
+      .sequence-step .owner {
+        grid-column: 2;
+      }
+
+      .owner {
+        text-align: left;
+      }
+
+      .evidence-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-grid {
+        display: block;
+      }
+
+      .footer-grid span {
+        display: block;
+        margin-top: 8px;
+      }
+    }
+
+    @media print {
+      .topbar,
+      .filterbar {
+        display: none;
+      }
+
+      body {
+        background: #fff;
+      }
+
+      .band,
+      .report-head {
+        break-inside: avoid;
+      }
+
+      .loop-node.is-muted {
+        opacity: 1;
+        transform: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <div class="brand">
+        <strong>FlowMe 통합 진행 맵</strong>
+        <span>현재 작업 파일 기준</span>
+      </div>
+      <nav class="topnav" aria-label="보고서 섹션">
+        <a href="#decisions">지금 볼 것</a>
+        <a href="#loop">연결 구조</a>
+        <a href="#workstreams">일별 상태</a>
+        <a href="#next">다음 순서</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="report-head">
+    <div class="shell head-grid">
+      <div>
+        <h1>제품의 큰 틀은 연결됐지만,<br>사용 결과가 다음 기획으로 돌아오지 않고 있다.</h1>
+        <p class="lead">
+          경험기획, 기능기획, 화면 설계, 개발, 데이터기획은 같은 방향으로 가고 있다.
+          다만 최근에 만든 콘텐츠의 품질, 별도로 만든 기능의 제품 반영,
+          실제 사용자의 반응이 아직 한 흐름으로 이어지지 않았다.
+        </p>
+      </div>
+      <div class="meta-block" aria-label="보고서 범위">
+        <div class="meta-row"><span>기준 시점</span><span>2026-07-30</span></div>
+        <div class="meta-row"><span>공개 제품</span><span><code>main@c09f859</code> · P35</span></div>
+        <div class="meta-row"><span>함께 본 작업</span><span>아직 정리되지 않은 작업 · 글로 Flow 만들기 별도 작업본</span></div>
+        <div class="meta-row"><span>확인할 점</span><span>기획·화면·개발·사용 확인이 한 흐름으로 이어지는가</span></div>
+        <div class="meta-row"><span>이번 변경</span><span>이 보고서만 수정 · 제품 기능은 바꾸지 않음</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="thesis-band">
+    <div class="shell thesis-grid">
+      <p class="thesis">
+        현재 단계는 <strong>기능이 없는 아이디어 단계</strong>가 아니라
+        <strong>직접 써볼 수 있는 초기 제품에서 무엇부터 확인할지 정해야 하는 내부 검토 단계</strong>다.
+      </p>
+      <div class="signal">
+        <strong>P35</strong>
+        <span>현재 공개된 제품</span>
+      </div>
+      <div class="signal">
+        <strong>694 / 694</strong>
+        <span>P35 기능 검사 통과</span>
+      </div>
+      <div class="signal">
+        <strong>0</strong>
+        <span>직접 관찰한 사용자</span>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <section class="band white" id="decisions">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <span class="section-index">01 · 지금 결정할 것</span>
+            <h2>내가 지금 확인할 세 가지</h2>
+          </div>
+          <p>
+            새 기능을 더 만들기 전에 현재 제품을 어떻게 볼지 먼저 정해야 한다.
+            이 판단이 없으면 조사, 화면 수정, 별도 개발이 다시 여러 갈래로 늘어난다.
+          </p>
+        </div>
+
+        <div class="decision-strip">
+          <article class="decision">
+            <span class="decision-num">결정 01</span>
+            <h3>P35를 그대로 둘지, 한 가지만 고칠지, 다시 볼지</h3>
+            <p>
+              현재 공개된 <code>/</code>, <code>/flows</code>, <code>/my</code>,
+              <code>/calendar</code>를 하나의 흐름으로 보고 판단한다.
+            </p>
+          </article>
+          <article class="decision">
+            <span class="decision-num">결정 02</span>
+            <h3>글로 Flow 만들기를 다음 기능으로 넣을지</h3>
+            <p>
+              별도 작업본에서는 구현과 자동 검사가 끝났지만 기본 코드와 공개 제품에는
+              들어오지 않았다. 다시 설계할지가 아니라 제품에 넣을지를 정하면 된다.
+            </p>
+          </article>
+          <article class="decision">
+            <span class="decision-num">결정 03</span>
+            <h3>처음부터 끝까지 볼 대표 사용 흐름을 하나 정할지</h3>
+            <p>
+              URL 또는 하루 메모에서 시작해 저장, 오늘 할 일, 캘린더,
+              내가 쓰는 도구로 옮기기까지 한 흐름을 먼저 정한다.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="loop">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <span class="section-index">02 · 전체 진행 구조</span>
+            <h2>TREE로 보는 전체 진행 구조</h2>
+          </div>
+          <p>
+            FlowMe의 한 목표에서 세 업무 묶음이 갈라지고, 각 묶음 아래에서
+            현재 제품·별도 작업·조사·아직 확인하지 못한 일이 어떻게 쌓이는지 보여준다.
+          </p>
+        </div>
+
+        <div class="filterbar" aria-label="진행 상태 필터">
+          <button type="button" data-filter="all" aria-pressed="true">전체</button>
+          <button type="button" data-filter="shipped" aria-pressed="false">현재 제품</button>
+          <button type="button" data-filter="local" aria-pressed="false">별도 작업</button>
+          <button type="button" data-filter="research" aria-pressed="false">조사·설계</button>
+          <button type="button" data-filter="blocked" aria-pressed="false">아직 확인 전</button>
+        </div>
+
+        <div class="tree-map" aria-label="FlowMe 통합 진행 트리">
+          <div class="tree-root">
+            <small>가장 큰 목표 · FlowMe</small>
+            <strong>외부 콘텐츠와 가벼운 하루 계획을 실행 가능한 Flow로 바꾼다</strong>
+            <span>실행 경험을 쌓아 무엇을 얻었고 다음에 무엇을 하면 좋을지 알려주는 플랫폼으로 확장</span>
+          </div>
+
+          <div class="tree-stem" aria-hidden="true"></div>
+
+          <div class="tree-stage">
+            <span>현재 단계 · v0.1.0 / P35</span>
+            <h3>이 브라우저에서 작동하는 초기 제품</h3>
+            <p>URL 또는 메모 → Flow → 저장·내 계획으로 수정 → 실행 → 내 도구로 옮기기</p>
+            <div class="tree-routes" aria-label="현재 제품의 세 목적지">
+              <div class="tree-route"><code>/flows</code><span>찾기·가져오기·초안</span></div>
+              <div class="tree-route"><code>/my</code><span>오늘 실행과 내 Flow</span></div>
+              <div class="tree-route"><code>/calendar</code><span>날짜별 할 일 보기</span></div>
+            </div>
+          </div>
+
+          <div class="tree-stem" aria-hidden="true"></div>
+
+          <div class="tree-branches">
+            <section class="tree-branch value">
+              <header class="tree-branch-head">
+                <span>입력 · 어떤 문제를 풀 것인가</span>
+                <strong>경험·콘텐츠</strong>
+                <p>어떤 순간을 해결하고 무엇을 Flow로 만들지 정의한다.</p>
+              </header>
+              <div class="tree-leaves">
+                <article class="tree-leaf loop-node" data-phase="research">
+                  <h3>경험기획</h3>
+                  <p>URL, 하루 메모, 계획 수정, 공유·재사용에서 생기는 실제 불편을 하나의 방향으로 묶었다.</p>
+                  <span class="state">장기 방향 정리</span>
+                </article>
+                <article class="tree-leaf loop-node" data-phase="blocked">
+                  <h3>콘텐츠기획</h3>
+                  <p>최근 19건은 원문까지 찾아갈 수 있지만 그대로 쓸 수 있는 후보는 0건이다. 완료 기준·날짜·주의사항이 부족하다.</p>
+                  <span class="state">수정 필요 11 · 보류 8</span>
+                </article>
+              </div>
+            </section>
+
+            <section class="tree-branch product">
+              <header class="tree-branch-head">
+                <span>제품으로 만들기 · 기획에서 개발까지</span>
+                <strong>기능·화면·개발</strong>
+                <p>경험 문제를 사용 가능한 화면과 동작으로 번역한다.</p>
+              </header>
+              <div class="tree-leaves">
+                <article class="tree-leaf loop-node" data-phase="shipped">
+                  <h3>기능기획</h3>
+                  <p>P35의 저장 → 내 계획으로 수정 → 오늘 할 일·캘린더 → 내 도구로 옮기기 범위가 명확하다.</p>
+                  <span class="state">현재 제품에 반영</span>
+                </article>
+                <article class="tree-leaf loop-node" data-phase="shipped">
+                  <h3>사용 흐름·화면</h3>
+                  <p>결과를 먼저 보여주고, 내 Flow에서는 오늘 할 일과 날짜별 일정을 바로 보게 했다.</p>
+                  <span class="state">P35 공개 제품에 반영</span>
+                </article>
+                <article class="tree-leaf loop-node" data-phase="shipped">
+                  <h3>현재 개발 완료선</h3>
+                  <p>P35는 코드 합치기, 자동 검사, 공개 배포를 마쳤다. 기능 검사 694/694, 화면 흐름 검사 405/405를 통과했다.</p>
+                  <span class="state">공개 완료</span>
+                </article>
+                <article class="tree-leaf loop-node" data-phase="local">
+                  <h3>다음 개발 후보</h3>
+                  <p>글로 Flow 만들기 TA-01~06은 별도 작업본에서 작동하지만 기본 코드와 공개 제품에는 들어오지 않았다.</p>
+                  <span class="state">별도 작업에서 검사 완료</span>
+                </article>
+              </div>
+            </section>
+
+            <section class="tree-branch learning">
+              <header class="tree-branch-head">
+                <span>배우기 · 데이터와 사용 결과</span>
+                <strong>데이터·사용 확인</strong>
+                <p>의미를 보존하고 사용 결과를 다음 경험기획으로 돌려보낸다.</p>
+              </header>
+              <div class="tree-leaves">
+                <article class="tree-leaf loop-node" data-phase="research">
+                  <h3>데이터기획</h3>
+                  <p>원문 한 줄 → 할 일 → 단계 → Flow 구조와, 누가 무엇을 고쳤는지 관리하는 규칙은 정리됐다.</p>
+                  <span class="state">설계는 탄탄 · 제품 반영은 일부</span>
+                </article>
+                <article class="tree-leaf loop-node" data-phase="shipped">
+                  <h3>자동 검사</h3>
+                  <p>기능 검사, 실제 화면 흐름 검사, 빌드, 공개 화면 점검을 반복할 수 있다.</p>
+                  <span class="state">반복해서 검사 가능</span>
+                </article>
+                <article class="tree-leaf loop-node" data-phase="blocked">
+                  <h3>실사용 학습</h3>
+                  <p>직접 관찰한 사용자, 실제 캘린더·할 일 앱으로 옮긴 결과, 반복 사용 기록이 아직 없다.</p>
+                  <span class="state">직접 관찰 0명</span>
+                </article>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <div class="loop-return">
+          TREE의 마지막 가지가 다시 처음으로 돌아와야 한다:
+          <strong>실사용 학습 → 경험기획 수정 → 다음 한 개의 제품 범위</strong>.
+          현재는 이 길이 비어 있어 자동 검사가 끝난 뒤 사용자의 판단을 기다리는 상태다.
+        </div>
+      </div>
+    </section>
+
+    <section class="band white" id="truth">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <span class="section-index">03 · 서로 다른 완료 상태</span>
+            <h2>서로 다른 네 가지 진행 상태를 나눠 봐야 한다</h2>
+          </div>
+          <p>
+            공개 제품, 별도 작업, 조사·설계 완료, 아직 확인하지 못한 일은 서로 다르다.
+            이 네 가지를 모두 ‘완료’라고 부르면 실제 진행 상황을 오해하게 된다.
+          </p>
+        </div>
+
+        <div class="truth-grid">
+          <article class="truth shipped">
+            <span class="truth-label">현재 공개 제품</span>
+            <h3>P35 개인 실행 제품</h3>
+            <p>
+              URL·메모 가져오기, 공유받은 Flow, 저장, My Flow, 캘린더,
+              내 도구로 옮기기, 보관·복구가 이 브라우저 안에서 작동한다.
+            </p>
+            <span class="metric">405 / 405</span>
+            <span class="metric-note">P35 공개 전 화면 흐름 검사</span>
+          </article>
+          <article class="truth local">
+            <span class="truth-label">별도 작업본</span>
+            <h3>글로 Flow 만들기 TA-01~06</h3>
+            <p>
+              글을 쓰면 구조와 결과를 바로 보여주고 수정, 저장·복구,
+              내 도구로 옮기기까지 된다. 다만 최신 작업은 공개 미리보기에도 전부 들어가지 않았다.
+            </p>
+            <span class="metric">86 / 86</span>
+            <span class="metric-note">기능 검사 · 화면 흐름 검사 19 / 19</span>
+          </article>
+          <article class="truth research">
+            <span class="truth-label">조사·설계 완료</span>
+            <h3>데이터·표현 방식·공동 수정 규칙</h3>
+            <p>
+              실행 항목을 기준으로 캘린더·목록·표·메모에 보여주는 법과,
+              개인 사본·공개본 수정 절차를 정리했다. 실제 제품에 모두 넣은 것은 아니다.
+            </p>
+            <span class="metric">실행 항목 406개</span>
+            <span class="metric-note">표현 방식 확인용 사례</span>
+          </article>
+          <article class="truth blocked">
+            <span class="truth-label">아직 확인하지 못함</span>
+            <h3>사람이 실제로 써본 결과</h3>
+            <p>
+              이해하기 쉬운지, 다시 쓰는지, 실제 캘린더·할 일 앱으로 잘 옮겨지는지,
+              다른 기기에서도 이어지는지 아직 확인하지 않았다.
+            </p>
+            <span class="metric">직접 관찰 0명</span>
+            <span class="metric-note">실제 사용자 반응 없음</span>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="workstreams">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <span class="section-index">04 · 일의 종류별 상태</span>
+            <h2>각 일이 다음 일로 잘 이어지는가</h2>
+          </div>
+          <p>
+            아래 막대는 기능 개수가 아니라 다음 일로 얼마나 잘 이어지는지를 보여준다.
+            자동 검사와 실제 사용자 반응, 데이터 설계와 제품 반영은 따로 봤다.
+          </p>
+        </div>
+
+        <div class="ledger">
+          <article class="ledger-row">
+            <div class="ledger-title">
+              <strong>경험기획</strong>
+              <span>왜 쓰는가 · 어떤 순간인가</span>
+            </div>
+            <div class="ledger-copy">
+              <strong>방향은 일관적이다.</strong> 외부 콘텐츠와 가벼운 메모를 실행 가능한
+              결과로 바꾸고, 장기적으로 실행하면서 얻은 경험과 가치를 쌓는다.
+            </div>
+            <div class="dual-meter" aria-label="경험기획 연결도">
+              <div class="meter-row"><span>큰 방향</span><div class="meter"><span style="width:82%"></span></div><b>분명</b></div>
+              <div class="meter-row risk"><span>실제 사용 근거</span><div class="meter"><span style="width:8%"></span></div><b>없음</b></div>
+            </div>
+            <span class="connection partial">일부만 이어짐</span>
+          </article>
+
+          <article class="ledger-row">
+            <div class="ledger-title">
+              <strong>기능기획</strong>
+              <span>무엇을 만들고 무엇을 미루는가</span>
+            </div>
+            <div class="ledger-copy">
+              <strong>P35에서 만들 것과 미룰 것이 분명하다.</strong> 로그인, 결제,
+              커뮤니티, 외부 서비스 직접 연결은 실제 사용 근거가 생길 때까지 미룬다.
+              지금 바로 개발할 다음 기능은 아직 정하지 않았다.
+            </div>
+            <div class="dual-meter" aria-label="기능기획 연결도">
+              <div class="meter-row"><span>만들 범위</span><div class="meter"><span style="width:88%"></span></div><b>분명</b></div>
+              <div class="meter-row risk"><span>다음 결정</span><div class="meter"><span style="width:38%"></span></div><b>대기</b></div>
+            </div>
+            <span class="connection strong">잘 이어짐</span>
+          </article>
+
+          <article class="ledger-row">
+            <div class="ledger-title">
+              <strong>사용 흐름·화면</strong>
+              <span>사용자가 어떻게 이해하고 움직이는가</span>
+            </div>
+            <div class="ledger-copy">
+              <strong>P25부터 P35까지 화면 구조가 한 방향으로 정리됐다.</strong>
+              결과를 먼저 보여주고, 내 Flow에서 오늘 할 일과 날짜별 일정을 보는 구조다.
+              다만 설명 없이도 이해되는지는 사람이 확인하지 않았다.
+            </div>
+            <div class="dual-meter" aria-label="UX UI 연결도">
+              <div class="meter-row"><span>계획대로 반영</span><div class="meter"><span style="width:84%"></span></div><b>높음</b></div>
+              <div class="meter-row risk"><span>사람이 써본 결과</span><div class="meter"><span style="width:5%"></span></div><b>없음</b></div>
+            </div>
+            <span class="connection partial">화면 정리 · 사용 확인 전</span>
+          </article>
+
+          <article class="ledger-row">
+            <div class="ledger-title">
+              <strong>개발</strong>
+              <span>코드 · 릴리스 · 다음 구현</span>
+            </div>
+            <div class="ledger-copy">
+              <strong>P35는 코드 합치기, 자동 검사, 공개 배포까지 끝났다.</strong>
+              글로 Flow 만들기는 실행 가능한 별도 작업본이지만 기본 코드와 공개 제품에 없다.
+              따라서 개발은 많이 됐지만 결과가 두 곳으로 나뉘어 있다.
+            </div>
+            <div class="dual-meter" aria-label="개발 연결도">
+              <div class="meter-row"><span>공개 제품</span><div class="meter"><span style="width:90%"></span></div><b>강함</b></div>
+              <div class="meter-row local"><span>별도 작업 반영</span><div class="meter"><span style="width:48%"></span></div><b>분리</b></div>
+            </div>
+            <span class="connection split">결과가 두 곳에 있음</span>
+          </article>
+
+          <article class="ledger-row">
+            <div class="ledger-title">
+              <strong>데이터기획</strong>
+              <span>무엇을 보존하고 연결하는가</span>
+            </div>
+            <div class="ledger-copy">
+              <strong>데이터를 다루는 규칙은 잘 정리됐다.</strong> 원문 한 줄 → 할 일 → 단계 → Flow,
+              보여주는 방식, 수정한 사람, 버전 관리가 정의됐다. 다만 공개 제품은 아직
+              이 브라우저 저장소와 기존 데이터 구조를 주로 사용한다.
+            </div>
+            <div class="dual-meter" aria-label="데이터기획 연결도">
+              <div class="meter-row"><span>설계 규칙</span><div class="meter"><span style="width:87%"></span></div><b>강함</b></div>
+              <div class="meter-row risk"><span>제품 반영</span><div class="meter"><span style="width:38%"></span></div><b>부분</b></div>
+            </div>
+            <span class="connection partial">설계가 제품보다 앞섬</span>
+          </article>
+
+          <article class="ledger-row">
+            <div class="ledger-title">
+              <strong>콘텐츠기획</strong>
+              <span>원문이 실제 실행 가치가 되는가</span>
+            </div>
+            <div class="ledger-copy">
+              <strong>원문까지 찾아가기는 쉬워졌지만 실제로 쓰기에는 부족하다.</strong>
+              최근 19건의 할 일 225개는 원문과 연결됐지만 완료 기준, 날짜,
+              주의사항이 하나도 붙지 않았다. 그대로 쓸 수 있는 후보도 0건이다.
+            </div>
+            <div class="dual-meter" aria-label="콘텐츠기획 연결도">
+              <div class="meter-row"><span>원문 추적</span><div class="meter"><span style="width:92%"></span></div><b>강함</b></div>
+              <div class="meter-row risk"><span>실행 완성</span><div class="meter"><span style="width:22%"></span></div><b>약함</b></div>
+            </div>
+            <span class="connection partial">콘텐츠 보완 필요</span>
+          </article>
+
+          <article class="ledger-row">
+            <div class="ledger-title">
+              <strong>검사·운영</strong>
+              <span>무엇을 근거로 다음 결정을 하는가</span>
+            </div>
+            <div class="ledger-copy">
+              <strong>자동 검사는 잘 갖춰졌지만 실제 사용 결과는 없다.</strong>
+              기능 검사, 빌드, 공개 화면 점검은 반복할 수 있다. 반면 무엇을 기록할지,
+              누가 다시 쓰는지, 외부 도구로 잘 옮겨지는지는 아직 확인하지 않았다.
+            </div>
+            <div class="dual-meter" aria-label="검증 운영 연결도">
+              <div class="meter-row"><span>자동 검사</span><div class="meter"><span style="width:94%"></span></div><b>강함</b></div>
+              <div class="meter-row risk"><span>실사용 학습</span><div class="meter"><span style="width:0%"></span></div><b>0</b></div>
+            </div>
+            <span class="connection break">사용 결과가 돌아오지 않음</span>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="band white" id="handoffs">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <span class="section-index">05 · 일 사이의 연결</span>
+            <h2>잘 이어진 부분과 막힌 부분</h2>
+          </div>
+          <p>
+            FlowMe가 느리게 진행되는 것처럼 보이는 이유는 한 일이 적어서가 아니라,
+            조사·설계가 끝난 뒤 실제 제품에 들어가기까지 오래 걸리기 때문이다.
+          </p>
+        </div>
+
+        <div class="handoff-map">
+          <div class="handoff-column">
+            <h3>잘 이어진 경로</h3>
+            <div class="handoff-row">
+              <strong>원칙 → 기능</strong>
+              <p>먼저 캘린더·목록·표·메모로 옮긴다는 원칙이 P35의 세 화면과 전체·단계별 내보내기로 이어졌다.</p>
+            </div>
+            <div class="handoff-row">
+              <strong>기능 → 화면</strong>
+              <p>저장, 내 계획으로 수정, 오늘 실행, 캘린더가 각각 맡을 일을 나눴다.</p>
+            </div>
+            <div class="handoff-row">
+              <strong>화면 → 코드</strong>
+              <p>P25~P35의 화면 결정을 실제 제품에 차례로 넣었고, 기존 기능이 깨지지 않는지 검사하고 되돌릴 길도 남겼다.</p>
+            </div>
+            <div class="handoff-row">
+              <strong>문제 → 데이터 규칙</strong>
+              <p>콘텐츠 모양, 수정한 사람, 반복 일정, 캘린더·목록에 보여주는 방법을 공통 규칙으로 정리했다.</p>
+            </div>
+          </div>
+
+          <div class="handoff-column">
+            <h3>막힌 경로</h3>
+            <div class="handoff-row">
+              <strong>콘텐츠 → 제품</strong>
+              <p>최근에 조사한 19건은 모두 고쳐야 하거나 보류해야 한다. 현재 제품에 넣은 콘텐츠는 0건이다.</p>
+            </div>
+            <div class="handoff-row">
+              <strong>별도 작업 → 기본 코드</strong>
+              <p>글로 Flow 만들기 최신 기능은 별도 작업본에 있다. 기본 문서에는 아직 ‘구현 전’으로 적혀 있다.</p>
+            </div>
+            <div class="handoff-row">
+              <strong>배포 → 학습</strong>
+              <p>직접 관찰한 사용자가 0명이고 이용 기록도 모으지 않아, 왜 다시 쓰거나 그만두는지 알 수 없다.</p>
+            </div>
+            <div class="handoff-row">
+              <strong>연구 → 결정</strong>
+              <p>함께 수정하기, 버전 관리, 결과를 보여주는 방식, 콘텐츠 조사가 사용자 판단을 기다리며 쌓여 있다.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="disconnect" style="margin-top:34px">
+          <h3>문서상 모순처럼 보이는 부분의 실제 의미</h3>
+          <p>
+            기본 작업본의 <code>STATUS.md</code>와 <code>docs/specs/README.md</code>에는 글로 Flow 만들기가
+            ‘설계 완료, 구현 전’으로 적혀 있다. 반면
+            <code>D:\flowme2605\flow-text-authoring-ta</code>에는 작동하는 기능과 최신 검사 결과가 있다.
+          </p>
+          <p>
+            서로 틀린 기록이 아니라 <strong>별도 작업본의 결과가 아직 기본 코드와 공개 제품에
+            들어가지 않은 상태</strong>다. 그래서 ‘현재 공개된 것’과 ‘별도 작업에서 끝난 것’을 나눠 표시했다.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="timeline">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <span class="section-index">06 · 최근에 한 일</span>
+            <h2>최근 흐름은 반복만 한 것이 아니다</h2>
+          </div>
+          <p>
+            7월 후반의 화면 개발은 같은 일을 무작정 반복했다기보다
+            보관·복구, 같은 Flow 식별, 한 Flow에 집중하는 화면, 이동 구조를 차례로 정리한 과정에 가깝다.
+            다만 이제 사람 증거 없이 한 번 더 넓게 고치면 실제 도돌이표가 된다.
+          </p>
+        </div>
+
+        <div class="timeline">
+          <article class="timepoint">
+            <div class="time-dot"></div>
+            <time>7/18~7/20</time>
+            <h3>P24·P25</h3>
+            <p>저장하고 내 계획으로 바꾼 뒤 실행하는 흐름과 전체 Flow 실행 화면을 공개 제품에 넣음.</p>
+          </article>
+          <article class="timepoint">
+            <div class="time-dot"></div>
+            <time>7/21~7/22</time>
+            <h3>P27~P30</h3>
+            <p>보관·복구, 결과 표시, 모바일 화면, 빠진 검사 항목을 차례로 보완함.</p>
+          </article>
+          <article class="timepoint">
+            <div class="time-dot"></div>
+            <time>7/23~7/25</time>
+            <h3>P31~P34</h3>
+            <p>모바일 사용 흐름, 한 Flow에 집중하는 화면, 같은 Flow 식별, 수정·보관·삭제 범위를 정함.</p>
+          </article>
+          <article class="timepoint">
+            <div class="time-dot"></div>
+            <time>7/29</time>
+            <h3>P35</h3>
+            <p>찾기·내 Flow·캘린더 세 화면과 처음 들어오는 흐름을 현재 공개 제품으로 통합함.</p>
+          </article>
+          <article class="timepoint">
+            <div class="time-dot"></div>
+            <time>7/29~7/30</time>
+            <h3>조사·별도 작업 확장</h3>
+            <p>글로 Flow 만들기, 여러 콘텐츠 사례, 결과 표시 규칙, 함께 수정하는 방법을 별도로 정리함.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="band white" id="gaps">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <span class="section-index">07 · 현재 막힌 곳</span>
+            <h2>지금 진행을 막는 다섯 가지</h2>
+          </div>
+          <p>
+            모두를 동시에 구현할 문제가 아니다. 앞 단계의 증거가 있어야 뒤 단계에
+            투자할 수 있도록 순서를 세워야 한다.
+          </p>
+        </div>
+
+        <div class="gap-list">
+          <article class="gap">
+            <h3>P35 방향 결정 대기</h3>
+            <p>다음 개발 하나를 정하기 전에 반드시 끝내야 하는 판단이다.</p>
+            <span class="impact">즉시 결정 필요</span>
+          </article>
+          <article class="gap">
+            <h3>별도 작업 결과가 기본 코드에 없음</h3>
+            <p>글로 Flow 만들기의 코드, 검사 결과, 공개 미리보기가 서로 다른 시점이라 한 번에 확인하기 어렵다.</p>
+            <span class="impact">진행상황 파악 어려움</span>
+          </article>
+          <article class="gap">
+            <h3>콘텐츠에 실행 정보가 부족함</h3>
+            <p>최근 할 일 225개에 완료 기준, 날짜, 주의사항이 없어 화면에 넣어도 실제로 쓰기 어렵다.</p>
+            <span class="impact">실제 사용을 막음</span>
+          </article>
+          <article class="gap">
+            <h3>사람이 직접 써본 결과가 없음</h3>
+            <p>자동 검사는 기능이 작동하는지만 보여준다. 이해하기 쉬운지, 다시 쓰는지, 캘린더로 잘 옮겨지는지는 알 수 없다.</p>
+            <span class="impact">다음 판단 근거 없음</span>
+          </article>
+          <article class="gap">
+            <h3>작업 문서를 읽고 정리하기 어려움</h3>
+            <p>확인 시작 당시 수정한 파일 22개, 새 파일 22개가 정리되지 않았고 일부 긴 문서는 한글이 깨져 있었다.</p>
+            <span class="impact">확인하는 데 오래 걸림</span>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="next">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <span class="section-index">08 · 추천 순서</span>
+            <h2>다음은 이 순서가 가장 합리적이다</h2>
+          </div>
+          <p>
+            여러 일을 동시에 더 벌이는 것이 아니라, 이해하기 쉬운 사용 흐름 하나를
+            공개 제품과 실제 사용 결과까지 끝내는 것이 목표다.
+          </p>
+        </div>
+
+        <div class="sequence">
+          <article class="sequence-step">
+            <span class="number">1</span>
+            <h3>현재 공개된 P35를 직접 보고 결정</h3>
+            <p>그대로 사용, 한 가지만 수정, 다시 검토 중 하나를 고른다. 문제가 있다면 어느 화면에서 무엇이 어려운지 적는다.</p>
+            <span class="owner">내가 지금 결정</span>
+          </article>
+          <article class="sequence-step">
+            <span class="number">2</span>
+            <h3>다음 개발을 하나만 선택</h3>
+            <p>P35에 큰 문제가 없으면 검사까지 끝난 글로 Flow 만들기를 우선 검토한다. 문제가 있으면 P35의 한 가지만 고친다.</p>
+            <span class="owner">나 + AI</span>
+          </article>
+          <article class="sequence-step">
+            <span class="number">3</span>
+            <h3>대표 사용 흐름 하나를 처음부터 끝까지 확인</h3>
+            <p>예: 하루 메모 → 구조 확인 → 저장 → 오늘 할 일 → 캘린더 → 내 도구로 옮기기. 외부 테스트 전에 내가 먼저 이해되는지 확인한다.</p>
+            <span class="owner">제품 확인 단계</span>
+          </article>
+          <article class="sequence-step">
+            <span class="number">4</span>
+            <h3>대표 콘텐츠 3건만 제대로 완성</h3>
+            <p>원문 위치, 완료 기준, 필요한 날짜, 주의사항을 채워 같은 할 일이 목록·캘린더·표·메모에 자연스럽게 보이는지 확인한다.</p>
+            <span class="owner">콘텐츠 + 데이터</span>
+          </article>
+          <article class="sequence-step">
+            <span class="number">5</span>
+            <h3>이해 가능한 상태가 된 뒤 관찰을 연다</h3>
+            <p>기록할 항목을 미리 정하거나 수기 관찰표를 써서 첫 행동, 막힌 곳, 저장, 실행, 내보내기, 다시 방문했는지를 적는다.</p>
+            <span class="owner">사용자 조사 + 운영</span>
+          </article>
+          <article class="sequence-step">
+            <span class="number">6</span>
+            <h3>근거가 생기면 큰 기능을 차례로 연다</h3>
+            <p>다시 쓰는 사람이 생기면 계정 저장, 이용 기록, 제작자 버전 관리, 함께 수정하기, 경험 가치 연결을 차례로 만든다.</p>
+            <span class="owner">나중에 결정</span>
+          </article>
+        </div>
+
+        <div class="hold-band">
+          <strong>지금 동시에 열지 않을 것</strong>
+          <p>
+            옵시디언 같은 전체 작업 공간, 마켓·커뮤니티, 캘린더 양방향 연결,
+            대규모 제작자 협업, 성장·감정 분석, 모바일 앱은 장기 방향으로 남긴다.
+            지금은 대표 사용 흐름 하나와 다시 쓰는 근거가 먼저다.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="band white" id="evidence">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <span class="section-index">09 · 근거 문서</span>
+            <h2>이 판단에 사용한 자료</h2>
+          </div>
+          <p>
+            현재 기본 작업본을 먼저 보고, 별도 작업본과 이전 보고서는 따로 구분했다.
+            링크가 없는 컴퓨터 안의 파일은 공개 제품이 아니라 진행 중인 작업 근거다.
+          </p>
+        </div>
+
+        <div class="evidence-grid">
+          <div class="evidence-group">
+            <h3>현재 제품과 제어</h3>
+            <ul>
+              <li><a href="../STATUS.md">STATUS.md</a></li>
+              <li><a href="../ROADMAP.md">ROADMAP.md</a></li>
+              <li><a href="../PROJECT_CONTROL.md">PROJECT_CONTROL.md</a></li>
+              <li><a href="../SERVICE_STRUCTURE.md">SERVICE_STRUCTURE.md</a></li>
+              <li><a href="../specs/README.md">기획·설계 문서 목록</a></li>
+            </ul>
+          </div>
+          <div class="evidence-group">
+            <h3>원칙과 도구 경계</h3>
+            <ul>
+              <li><a href="../PRODUCT_PRINCIPLES.md">PRODUCT_PRINCIPLES.md</a></li>
+              <li><a href="../TOOLING.md">TOOLING.md</a></li>
+              <li><a href="./2026-07-29-p35-r13-final-internal-gate/README.md">P35 최종 내부 검사</a></li>
+              <li><a href="./2026-07-29-p35-release-hardening/README.md">주소 직접 입력 검사</a></li>
+            </ul>
+          </div>
+          <div class="evidence-group">
+            <h3>데이터와 콘텐츠</h3>
+            <ul>
+              <li><a href="../specs/2026-07-11-canonical-flow-data-model/spec.md">Flow 공통 데이터 구조</a></li>
+              <li><a href="../specs/2026-07-29-flow-projection-semantics-scheduling-event-corpus-v1/spec.md">캘린더·목록·표·메모 표시 규칙</a></li>
+              <li><a href="./2026-07-29-recent-ai-flow-content-evaluation-v1/README.md">최근 AI FLOW 콘텐츠 평가</a></li>
+              <li><a href="../specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/spec.md">여러 콘텐츠 화면 검토 도구</a></li>
+            </ul>
+          </div>
+          <div class="evidence-group">
+            <h3>작성과 협업</h3>
+            <ul>
+              <li><a href="../specs/2026-07-28-flowme-text-authoring-ux-v1/spec.md">글로 Flow 만들기 설계</a></li>
+              <li><a href="../specs/2026-07-29-collaborative-flow-authoring-editability-strategy-v1/spec.md">함께 수정하고 버전을 관리하는 방법</a></li>
+              <li><a href="./2026-07-30-flowme-collaborative-authoring-visual-strategy-ceo-ko.html">협업 전략 시각 보고서</a></li>
+            </ul>
+          </div>
+          <div class="evidence-group">
+            <h3>별도 작업본</h3>
+            <ul>
+              <li><code>D:\flowme2605\flow-text-authoring-ta</code></li>
+              <li><code>docs\content-audit\2026-07-29-flowme-text-authoring-ta-implementation\README.md</code></li>
+              <li><a href="https://flowme2605-pjwmzoq0j-flowme.vercel.app">이전 글로 Flow 만들기 미리보기</a> · 최신 작업과는 다름</li>
+            </ul>
+          </div>
+          <div class="evidence-group">
+            <h3>이전 통합 리뷰</h3>
+            <ul>
+              <li><a href="./2026-07-29-flowme-last-30-days-progress-review-ko.html">최근 30일 진행 리뷰</a></li>
+              <li><a href="./2026-07-29-flowme-current-stage-control-board-ko.html">현재 단계 한눈에 보기</a></li>
+              <li><a href="./2026-07-29-flowme-work-items-review-matrix-ko.html">작업 항목 검토표</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="method-note">
+          <strong>읽을 때 주의:</strong> 자동 검사를 통과했다는 것은 기능이 작동하고 기존 기능이 깨지지 않았다는 뜻이다.
+          공개 미리보기나 배포도 사람이 쉽게 쓸 수 있다는 뜻은 아니다. 이 보고서의 막대는 실제 이용 지표가 아니라
+          현재 자료를 바탕으로 판단한 ‘일과 일 사이의 연결 정도’다.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="shell footer-grid">
+      <strong>FlowMe 전체 진행과 업무 연결 지도</strong>
+      <span>내부 제품 검토용 · 2026-07-30</span>
+    </div>
+  </footer>
+
+  <script>
+    const filterButtons = Array.from(document.querySelectorAll("[data-filter]"));
+    const loopNodes = Array.from(document.querySelectorAll(".loop-node"));
+
+    filterButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const selected = button.dataset.filter;
+
+        filterButtons.forEach((candidate) => {
+          candidate.setAttribute(
+            "aria-pressed",
+            String(candidate === button)
+          );
+        });
+
+        loopNodes.forEach((node) => {
+          const shouldMute =
+            selected !== "all" && node.dataset.phase !== selected;
+          node.classList.toggle("is-muted", shouldMute);
+        });
+      });
+    });
+  </script>
+</body>
+</html>
