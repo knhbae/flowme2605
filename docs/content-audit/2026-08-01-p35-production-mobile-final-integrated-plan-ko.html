@@ -1,0 +1,1174 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <link rel="icon" href="data:,">
+  <title>P35 Production 모바일 UX 최종 통합 기획</title>
+  <style>
+    :root {
+      --navy: #101b3a;
+      --navy-2: #1b2b55;
+      --blue: #3654ff;
+      --blue-2: #2341d8;
+      --mint: #128563;
+      --mint-bg: #eaf8f3;
+      --amber: #8a5a05;
+      --amber-bg: #fff7e7;
+      --red: #a33a45;
+      --red-bg: #fff0f1;
+      --ink: #172039;
+      --muted: #5f6b85;
+      --rule: #dce2ee;
+      --rule-strong: #bdc7da;
+      --paper: #ffffff;
+      --wash: #f5f7fb;
+      --blue-wash: #eef2ff;
+      --shadow: 0 16px 45px rgba(21, 35, 72, 0.09);
+      --content: 1180px;
+      --sidebar: 220px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.66;
+      word-break: keep-all;
+    }
+    a { color: var(--blue-2); }
+    a:hover { color: var(--blue); }
+    code {
+      border-radius: 4px;
+      background: #eef1f7;
+      padding: 0.08em 0.35em;
+      color: #253559;
+      font-family: "Cascadia Code", Consolas, monospace;
+      font-size: 0.9em;
+      word-break: break-all;
+    }
+    .skip-link {
+      position: fixed;
+      z-index: 99;
+      top: 8px;
+      left: 8px;
+      transform: translateY(-160%);
+      background: white;
+      border: 2px solid var(--blue);
+      padding: 10px 14px;
+      font-weight: 800;
+    }
+    .skip-link:focus { transform: translateY(0); }
+
+    .masthead {
+      background: var(--navy);
+      color: white;
+      border-bottom: 4px solid var(--blue);
+    }
+    .masthead-inner {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 30px 42px 26px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 28px;
+      align-items: end;
+    }
+    .masthead h1 {
+      margin: 0;
+      max-width: 900px;
+      font-size: clamp(29px, 3.2vw, 48px);
+      line-height: 1.13;
+      letter-spacing: -0.045em;
+    }
+    .masthead .summary {
+      margin: 15px 0 0;
+      max-width: 920px;
+      color: #dbe3ff;
+      font-size: 17px;
+      line-height: 1.55;
+    }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(120px, 1fr));
+      min-width: 320px;
+      border-left: 1px solid rgba(255,255,255,.26);
+    }
+    .meta-grid div {
+      padding: 8px 14px;
+      border-right: 1px solid rgba(255,255,255,.16);
+      border-bottom: 1px solid rgba(255,255,255,.12);
+    }
+    .meta-grid dt {
+      margin: 0 0 2px;
+      color: #99a8d4;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .meta-grid dd {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 750;
+    }
+    .meta-grid .ready { color: #5ce5aa; }
+
+    .page {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: var(--sidebar) minmax(0, var(--content));
+      gap: 42px;
+      padding: 0 42px 90px;
+    }
+    .toc {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      align-self: start;
+      padding: 34px 20px 32px 0;
+      border-right: 1px solid var(--rule);
+      overflow-y: auto;
+    }
+    .toc strong {
+      display: block;
+      margin-bottom: 12px;
+      font-size: 13px;
+      color: var(--navy);
+    }
+    .toc ol {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      counter-reset: toc;
+    }
+    .toc li { counter-increment: toc; }
+    .toc a {
+      display: grid;
+      grid-template-columns: 22px 1fr;
+      gap: 6px;
+      padding: 8px 2px;
+      color: #4c5872;
+      text-decoration: none;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    .toc a::before {
+      content: counter(toc);
+      color: var(--blue);
+      font-weight: 900;
+    }
+    .toc a:hover, .toc a:focus-visible { color: var(--blue); }
+    .toc-note {
+      margin-top: 24px;
+      padding-top: 18px;
+      border-top: 1px solid var(--rule);
+      font-size: 11px;
+      color: var(--muted);
+    }
+    main { min-width: 0; }
+    section {
+      scroll-margin-top: 20px;
+      padding: 58px 0 8px;
+      border-bottom: 1px solid var(--rule);
+    }
+    section:last-child { border-bottom: 0; }
+    .section-title {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr);
+      gap: 14px;
+      align-items: center;
+      margin: 0 0 24px;
+      color: var(--navy);
+      font-size: clamp(23px, 2.4vw, 32px);
+      line-height: 1.2;
+      letter-spacing: -0.03em;
+    }
+    .section-title .num {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      background: var(--blue);
+      color: white;
+      font-size: 18px;
+      font-weight: 900;
+    }
+    .section-lead {
+      max-width: 900px;
+      margin: -8px 0 26px 56px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+    h3 {
+      margin: 34px 0 14px;
+      color: var(--navy);
+      font-size: 19px;
+      letter-spacing: -0.02em;
+    }
+    h4 { margin: 22px 0 9px; color: var(--navy-2); font-size: 16px; }
+    p { margin: 0 0 14px; }
+    ul, ol { margin-top: 8px; }
+    li + li { margin-top: 5px; }
+
+    .goal {
+      border: 1px solid #aebcff;
+      background: var(--blue-wash);
+      padding: 28px 30px;
+      box-shadow: var(--shadow);
+    }
+    .goal strong {
+      display: block;
+      color: var(--blue-2);
+      font-size: clamp(21px, 2.2vw, 29px);
+      line-height: 1.45;
+      letter-spacing: -0.035em;
+    }
+    .goal p { margin: 13px 0 0; color: #405078; }
+    .principles {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      margin-top: 22px;
+      border-top: 1px solid #bac5fb;
+      border-left: 1px solid #bac5fb;
+    }
+    .principles div {
+      min-height: 120px;
+      padding: 18px;
+      border-right: 1px solid #bac5fb;
+      border-bottom: 1px solid #bac5fb;
+      background: white;
+    }
+    .principles b { display: block; margin-bottom: 7px; color: var(--navy); }
+    .principles span { color: var(--muted); font-size: 13px; }
+
+    .flow-line {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      margin: 22px 0;
+      border-top: 1px solid var(--rule-strong);
+      border-bottom: 1px solid var(--rule-strong);
+    }
+    .flow-line .state {
+      position: relative;
+      min-height: 156px;
+      padding: 20px 16px;
+      border-right: 1px solid var(--rule);
+    }
+    .flow-line .state:last-child { border-right: 0; }
+    .flow-line .state::after {
+      content: "→";
+      position: absolute;
+      z-index: 2;
+      top: 52px;
+      right: -10px;
+      width: 20px;
+      height: 20px;
+      background: white;
+      color: var(--blue);
+      text-align: center;
+      font-weight: 900;
+    }
+    .flow-line .state:last-child::after { display: none; }
+    .state small {
+      display: block;
+      color: var(--blue);
+      font-weight: 900;
+      letter-spacing: .08em;
+    }
+    .state b {
+      display: block;
+      margin: 5px 0 8px;
+      color: var(--navy);
+      font-size: 17px;
+    }
+    .state span { display: block; color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .branch-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 16px 0 26px;
+    }
+    .branch {
+      border-left: 4px solid var(--mint);
+      background: var(--mint-bg);
+      padding: 15px 18px;
+    }
+    .branch.export { border-color: var(--amber); background: var(--amber-bg); }
+    .branch b { display: block; color: var(--navy); }
+    .branch span { color: var(--muted); font-size: 13px; }
+
+    .table-wrap {
+      margin: 16px 0 28px;
+      overflow: hidden;
+      border: 1px solid var(--rule-strong);
+      background: white;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-spacing: 0;
+      font-size: 13px;
+      line-height: 1.48;
+    }
+    th, td {
+      padding: 12px 12px;
+      vertical-align: top;
+      text-align: left;
+      border-right: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+    }
+    th:last-child, td:last-child { border-right: 0; }
+    tr:last-child td { border-bottom: 0; }
+    thead th {
+      background: var(--navy);
+      color: white;
+      font-weight: 800;
+      line-height: 1.3;
+    }
+    tbody th {
+      background: var(--blue-wash);
+      color: var(--navy);
+    }
+    .decision-table col:nth-child(1) { width: 5%; }
+    .decision-table col:nth-child(2) { width: 14%; }
+    .decision-table col:nth-child(3) { width: 16%; }
+    .decision-table col:nth-child(4) { width: 16%; }
+    .decision-table col:nth-child(5) { width: 16%; }
+    .decision-table col:nth-child(6) { width: 18%; }
+    .decision-table col:nth-child(7) { width: 15%; }
+    .decision-table td.final {
+      background: var(--mint-bg);
+      color: #0d5f48;
+      font-weight: 750;
+    }
+    .decision-table td.limit { color: #6a4a12; background: #fffaf0; }
+    .tag {
+      display: inline-block;
+      margin: 0 4px 4px 0;
+      padding: 2px 7px;
+      border: 1px solid currentColor;
+      color: var(--blue-2);
+      font-size: 10px;
+      font-weight: 850;
+      line-height: 1.4;
+    }
+    .tag.fact { color: var(--mint); }
+    .tag.hypothesis { color: var(--amber); }
+    .tag.zero { color: var(--red); }
+
+    .snapshot {
+      display: grid;
+      grid-template-columns: 1fr 50px 1fr 50px 1fr;
+      align-items: stretch;
+      margin: 20px 0 24px;
+    }
+    .snapshot .node {
+      border: 1px solid var(--rule-strong);
+      padding: 20px;
+      background: white;
+    }
+    .snapshot .node.core { border: 2px solid var(--blue); background: var(--blue-wash); }
+    .snapshot .node b { display: block; margin-bottom: 8px; color: var(--navy); }
+    .snapshot .node span { color: var(--muted); font-size: 12px; }
+    .snapshot .arrow {
+      display: grid;
+      place-items: center;
+      color: var(--blue);
+      font-size: 26px;
+      font-weight: 900;
+    }
+    .invariants {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border: 1px solid var(--rule);
+    }
+    .invariants div {
+      padding: 16px 18px;
+      border-right: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+    }
+    .invariants div:nth-child(2n) { border-right: 0; }
+    .invariants b { display: block; margin-bottom: 5px; color: var(--navy); }
+    .invariants span { color: var(--muted); font-size: 13px; }
+
+    .action-table th:nth-child(2), .action-table td:nth-child(2) { background: #f1fbf7; }
+    .action-table th:nth-child(3), .action-table td:nth-child(3) { background: #eef6ff; }
+    .action-table th:nth-child(4), .action-table td:nth-child(4) { background: #fff1f2; }
+    .action-table th:nth-child(5), .action-table td:nth-child(5) { background: #fff9eb; }
+    .action-table th:nth-child(6), .action-table td:nth-child(6) { background: #f3f0ff; }
+    .action-table thead th { background: var(--navy); }
+
+    .p0-list {
+      margin: 24px 0;
+      padding: 0;
+      list-style: none;
+      counter-reset: p0;
+      border-top: 2px solid var(--navy);
+    }
+    .p0-list > li {
+      counter-increment: p0;
+      display: grid;
+      grid-template-columns: 72px minmax(0, 1fr);
+      margin: 0;
+      padding: 22px 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .p0-list > li::before {
+      content: "P0-" counter(p0, decimal-leading-zero);
+      color: var(--blue);
+      font-size: 16px;
+      font-weight: 950;
+    }
+    .p0-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(260px, .8fr);
+      gap: 24px;
+    }
+    .p0-head h3 { margin: 0 0 6px; font-size: 19px; }
+    .p0-head p { margin: 0; color: var(--muted); }
+    .impact {
+      border-left: 3px solid var(--blue);
+      padding-left: 13px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .impact b { color: var(--navy); }
+    .p0-details {
+      grid-column: 2;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px 24px;
+      margin-top: 14px;
+    }
+    .p0-details div { min-width: 0; }
+    .p0-details b { display: block; margin-bottom: 3px; color: var(--navy); font-size: 12px; }
+    .p0-details span { color: var(--muted); font-size: 12px; }
+
+    .scope-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+    .scope-panel {
+      border-top: 5px solid var(--mint);
+      background: var(--mint-bg);
+      padding: 22px 24px;
+    }
+    .scope-panel.out {
+      border-color: var(--red);
+      background: var(--red-bg);
+    }
+    .scope-panel h3 { margin-top: 0; }
+
+    .owner-gates {
+      counter-reset: owner;
+      margin: 24px 0;
+      padding: 0;
+      list-style: none;
+    }
+    .owner-gates li {
+      counter-increment: owner;
+      display: grid;
+      grid-template-columns: 52px minmax(0, 1fr) 148px;
+      gap: 16px;
+      align-items: start;
+      padding: 20px 0;
+      border-top: 1px solid var(--rule-strong);
+    }
+    .owner-gates li::before {
+      content: counter(owner);
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      background: var(--navy);
+      color: white;
+      font-weight: 900;
+    }
+    .owner-gates b { color: var(--navy); }
+    .owner-gates p { margin: 5px 0 0; color: var(--muted); }
+    .owner-gates .default {
+      border: 1px solid var(--mint);
+      background: var(--mint-bg);
+      padding: 8px 10px;
+      color: #0d6048;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 850;
+    }
+    .handoff {
+      margin-top: 30px;
+      border: 2px solid var(--blue);
+      padding: 24px 26px;
+      display: grid;
+      grid-template-columns: 54px 1fr auto;
+      gap: 18px;
+      align-items: center;
+      background: var(--blue-wash);
+    }
+    .handoff .check {
+      display: grid;
+      width: 44px;
+      height: 44px;
+      place-items: center;
+      background: var(--mint);
+      color: white;
+      font-size: 25px;
+      font-weight: 900;
+    }
+    .handoff strong { display: block; color: var(--navy); font-size: 20px; }
+    .handoff span { display: block; margin-top: 3px; color: var(--muted); font-size: 13px; }
+    .handoff .snapshot-call { color: var(--mint); font-size: 17px; font-weight: 900; }
+
+    .evidence {
+      margin-top: 50px;
+      padding: 26px;
+      background: var(--wash);
+      border-top: 1px solid var(--rule-strong);
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .evidence h2 { margin: 0 0 14px; color: var(--navy); font-size: 17px; }
+    .evidence-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px 28px;
+    }
+    .evidence ul { margin: 0; padding-left: 18px; }
+    .evidence .hash { font-family: "Cascadia Code", Consolas, monospace; word-break: break-all; }
+    .qa-line {
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid var(--rule);
+    }
+
+    @media (max-width: 1050px) {
+      .masthead-inner { grid-template-columns: 1fr; }
+      .meta-grid { min-width: 0; }
+      .page { grid-template-columns: 1fr; gap: 0; padding-inline: 26px; }
+      .toc {
+        position: static;
+        height: auto;
+        padding: 20px 0;
+        border-right: 0;
+        border-bottom: 1px solid var(--rule);
+      }
+      .toc ol { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 14px; }
+      .toc-note { display: none; }
+      .flow-line { grid-template-columns: repeat(3, 1fr); }
+      .flow-line .state:nth-child(3) { border-right: 0; }
+      .flow-line .state:nth-child(3)::after { display: none; }
+    }
+
+    @media (max-width: 720px) {
+      body { font-size: 14px; word-break: normal; overflow-x: hidden; }
+      .masthead-inner { padding: 24px 18px 20px; }
+      .masthead h1 { font-size: 30px; }
+      .masthead .summary { font-size: 15px; }
+      .meta-grid { grid-template-columns: 1fr 1fr; }
+      .page { padding: 0 16px 70px; }
+      .toc ol { grid-template-columns: 1fr 1fr; }
+      section { padding-top: 42px; }
+      .section-title { grid-template-columns: 34px 1fr; gap: 10px; font-size: 23px; }
+      .section-title .num { width: 32px; height: 32px; font-size: 15px; }
+      .section-lead { margin-left: 44px; }
+      .goal { padding: 21px 18px; }
+      .principles { grid-template-columns: 1fr; }
+      .principles div { min-height: 0; }
+      .flow-line { grid-template-columns: 1fr; border: 1px solid var(--rule-strong); }
+      .flow-line .state { min-height: 0; border-right: 0; border-bottom: 1px solid var(--rule); }
+      .flow-line .state:last-child { border-bottom: 0; }
+      .flow-line .state::after {
+        content: "↓";
+        top: auto;
+        right: 22px;
+        bottom: -10px;
+      }
+      .flow-line .state:nth-child(3)::after { display: grid; }
+      .flow-line .state:last-child::after { display: none; }
+      .branch-row, .scope-grid, .evidence-grid { grid-template-columns: 1fr; }
+      .scope-grid > *,
+      .table-wrap,
+      table.stack,
+      table.stack tbody,
+      table.stack tr,
+      table.stack th,
+      table.stack td {
+        min-width: 0;
+        max-width: 100%;
+        overflow-wrap: anywhere;
+      }
+      .snapshot { grid-template-columns: 1fr; }
+      .snapshot .arrow { min-height: 36px; transform: rotate(90deg); }
+      .invariants { grid-template-columns: 1fr; }
+      .invariants div { border-right: 0; }
+      .table-wrap { overflow: visible; border: 0; }
+      table.stack,
+      table.stack tbody,
+      table.stack tr,
+      table.stack th,
+      table.stack td { display: block; width: 100%; }
+      table.stack thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+      }
+      table.stack tbody { display: grid; gap: 14px; }
+      table.stack tbody tr {
+        border: 1px solid var(--rule-strong);
+        background: white;
+      }
+      table.stack tbody th,
+      table.stack tbody td {
+        display: grid;
+        grid-template-columns: minmax(96px, 34%) 1fr;
+        gap: 10px;
+        min-height: 44px;
+        padding: 10px 12px;
+        border-right: 0;
+        border-bottom: 1px solid var(--rule);
+        background: white;
+      }
+      table.stack tbody tr > *:last-child { border-bottom: 0; }
+      table.stack tbody th::before,
+      table.stack tbody td::before {
+        content: attr(data-label);
+        color: var(--muted);
+        font-size: 10px;
+        font-weight: 850;
+        letter-spacing: .02em;
+      }
+      table.stack tbody th { background: var(--blue-wash); }
+      table.stack tbody td.final { background: var(--mint-bg); }
+      table.stack tbody td.limit { background: var(--amber-bg); }
+      .p0-list > li { grid-template-columns: 1fr; }
+      .p0-list > li::before { margin-bottom: 9px; }
+      .p0-head { grid-template-columns: 1fr; gap: 12px; }
+      .p0-details { grid-column: 1; grid-template-columns: 1fr; }
+      .owner-gates li { grid-template-columns: 40px 1fr; }
+      .owner-gates .default { grid-column: 2; width: max-content; max-width: 100%; }
+      .handoff { grid-template-columns: 44px 1fr; padding: 20px 17px; }
+      .handoff .snapshot-call { grid-column: 2; }
+    }
+
+    @media print {
+      @page { size: A4 landscape; margin: 12mm; }
+      body { font-size: 10pt; }
+      .masthead { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+      .page { display: block; max-width: none; padding: 0; }
+      .toc { display: none; }
+      section { break-inside: auto; padding-top: 24px; }
+      .table-wrap, .goal, .p0-list > li, .scope-panel, .handoff { break-inside: avoid; }
+      a { color: inherit; text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">본문으로 건너뛰기</a>
+  <header class="masthead">
+    <div class="masthead-inner">
+      <div>
+        <h1>P35 Production 모바일 UX 최종 통합 기획</h1>
+        <p class="summary">오너 피드백, Claude Design 독립 1차 검토, Codex 로컬·코드 검토를 하나의 목표 UX와 구현 순서가 고정된 P0 인계서로 수렴했습니다.</p>
+      </div>
+      <dl class="meta-grid">
+        <div><dt>작성일</dt><dd>2026-08-01</dd></div>
+        <div><dt>코드 기준</dt><dd>main · c09f859b</dd></div>
+        <div><dt>결론</dt><dd>공통 코어 유지 · 제한적 구조 개편</dd></div>
+        <div><dt>상태</dt><dd class="ready">P0 구현 인계</dd></div>
+        <div><dt>Production</dt><dd>배포됨 · 내부 검토 근거</dd></div>
+        <div><dt>사용자 관찰</dt><dd>0건 · 미검증</dd></div>
+      </dl>
+    </div>
+  </header>
+
+  <div class="page">
+    <nav class="toc" aria-label="문서 목차">
+      <strong>목차</strong>
+      <ol>
+        <li><a href="#goal">목표 UX 한 문장</a></li>
+        <li><a href="#flow">확정된 상태 흐름</a></li>
+        <li><a href="#conflicts">오너·Codex·Claude 충돌 결정표</a></li>
+        <li><a href="#contract">공통 계약과 Shape 변형</a></li>
+        <li><a href="#screens">화면별 유지·통합·삭제·조건부·이동</a></li>
+        <li><a href="#p0">구현 순서가 정해진 P0</a></li>
+        <li><a href="#acceptance">완료 조건과 모바일 확인 시나리오</a></li>
+        <li><a href="#scope">P1 및 명시적 비범위</a></li>
+        <li><a href="#owner">오너 확인 항목</a></li>
+      </ol>
+      <div class="toc-note">
+        <b>읽는 기준</b><br>
+        화면 관찰·코드 사실·설계 판단을 분리했습니다. 자동화와 캡처는 QA 근거이며 사용자 검증이 아닙니다.
+      </div>
+    </nav>
+
+    <main id="main">
+      <section id="goal">
+        <h2 class="section-title"><span class="num">1</span><span>목표 UX 한 문장</span></h2>
+        <div class="goal">
+          <strong>사용자는 공개 Flow에서 자신에게 적용될 결과를 정확히 확인하고 필요한 만큼 한 번에 고친 뒤 저장하며, 저장된 Flow에서는 다음 1~3개 행동을 실행하고 같은 결과를 언제든 자신의 도구로 옮긴다.</strong>
+          <p>공개 미리보기, 저장, 저장 결과, My Flow, export는 모두 하나의 effective snapshot을 읽습니다. 화면마다 표현 목적은 달라도 결과명·개수·날짜 상태와 사용자 수정값은 달라지지 않습니다.</p>
+        </div>
+        <div class="principles" aria-label="최종 기획 원칙">
+          <div><b>공통 코어는 유지</b><span>canonical source, stable Item identity, projection, 5개 renderer, recurrence·storage·export 엔진은 다시 만들지 않습니다.</span></div>
+          <div><b>화면은 상태별로 감축</b><span>각 상태는 사용자 질문 하나와 primary action 하나만 소유합니다. 편집·export·복구는 필요할 때만 분기합니다.</span></div>
+          <div><b>결과 계약이 먼저</b><span>시각 개편보다 effective snapshot, 원자적 편집, 저장·export parity를 먼저 닫습니다.</span></div>
+          <div><b>증거 경계 유지</b><span>Production·코드·전문가 검토는 내부 결정 근거입니다. 사용자 관찰 0건이므로 성공이 검증됐다고 표현하지 않습니다.</span></div>
+        </div>
+      </section>
+
+      <section id="flow">
+        <h2 class="section-title"><span class="num">2</span><span>확정된 상태 흐름</span></h2>
+        <p class="section-lead">저장은 public draft를 persisted personal copy로 바꾸는 유일한 ownership 전환입니다. 편집과 export는 현재 상태에서 잠시 열렸다가 원래 상태로 돌아오는 side branch입니다.</p>
+
+        <div class="flow-line" aria-label="주 상태 흐름">
+          <div class="state"><small>S1</small><b>Flow 찾기</b><span>맞는 Flow를 고릅니다.<br>Primary: Flow 열기</span></div>
+          <div class="state"><small>S2</small><b>공개 미리보기</b><span>저장될 결과를 확인합니다.<br>Primary: 내 Flow에 저장</span></div>
+          <div class="state"><small>S3</small><b>저장 처리</b><span>현재 snapshot을 고정합니다.<br>중복 클릭·오류를 제어합니다.</span></div>
+          <div class="state"><small>S4</small><b>저장 완료</b><span>결과와 다음 이동만 확인합니다.<br>Primary: 내 Flow에서 이어하기</span></div>
+          <div class="state"><small>S5</small><b>저장한 Flow</b><span>다음 1~3개와 진행 상태를 봅니다.<br>전체 계획은 접혀 있습니다.</span></div>
+          <div class="state"><small>S6</small><b>Item 상세·실행</b><span>내용을 읽고 완료합니다.<br>수정·메모·export는 보조입니다.</span></div>
+        </div>
+
+        <div class="branch-row">
+          <div class="branch">
+            <b>S2 ↔ E1 · 전용 편집 상태</b>
+            <span>Flow가 transaction을 소유하고 Item은 그 안에서 drilldown합니다. Apply 전에는 저장하지 않으며 Cancel이면 모든 변경을 rollback합니다.</span>
+          </div>
+          <div class="branch export">
+            <b>S2 또는 S5/S6 ↔ X1 · 내 도구로 옮기기</b>
+            <span>Preview에서는 현재 draft, My Flow에서는 persisted snapshot을 사용합니다. receipt에는 export를 두지 않습니다.</span>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="stack">
+            <thead><tr><th>상태</th><th>사용자 질문</th><th>Primary</th><th>Secondary</th><th>금지</th></tr></thead>
+            <tbody>
+              <tr><th data-label="상태">Flow 찾기</th><td data-label="사용자 질문">내 상황에 맞는 Flow인가?</td><td data-label="Primary">Flow 열기</td><td data-label="Secondary">검색·필터</td><td data-label="금지">카드에서 저장한 척하는 CTA</td></tr>
+              <tr><th data-label="상태">공개 미리보기</th><td data-label="사용자 질문">무엇이 몇 개, 어떤 날짜 상태로 저장되나?</td><td data-label="Primary">결과 인지형 <code>…를 내 Flow에 저장</code></td><td data-label="Secondary">내용·일정 바꾸기, 저장하지 않고 내 도구로 옮기기</td><td data-label="금지">inline 편집기, 중첩 export disclosure, 완료 체크</td></tr>
+              <tr><th data-label="상태">전용 편집</th><td data-label="사용자 질문">내 상황에 맞게 무엇을 바꿀까?</td><td data-label="Primary">바꾼 내용 적용</td><td data-label="Secondary">취소·뒤로</td><td data-label="금지">부분 persistence, 동시 editor 2개</td></tr>
+              <tr><th data-label="상태">저장 완료</th><td data-label="사용자 질문">실제로 무엇이 저장됐고 어디서 이어가나?</td><td data-label="Primary">내 Flow에서 이어하기</td><td data-label="Secondary">필요할 때만 되돌리기</td><td data-label="금지">편집·export·전체 계획 반복</td></tr>
+              <tr><th data-label="상태">지금 할 일</th><td data-label="사용자 질문">여러 Flow 중 지금 무엇을 할까?</td><td data-label="Primary">Item 열기·완료</td><td data-label="Secondary">저장한 Flow 보기</td><td data-label="금지">undated Item 전체 평면 나열</td></tr>
+              <tr><th data-label="상태">저장한 Flow</th><td data-label="사용자 질문">이 Flow를 어떻게 이어가고 관리할까?</td><td data-label="Primary">다음 Item 실행</td><td data-label="Secondary">전체 계획, 관리, 내 도구로 옮기기</td><td data-label="금지">첫 진입 전체 계획 자동 확장</td></tr>
+              <tr><th data-label="상태">Item 상세</th><td data-label="사용자 질문">무엇을 하고 완료로 남길까?</td><td data-label="Primary">완료·다시 열기</td><td data-label="Secondary">수정, 메모, 현재 Item 옮기기</td><td data-label="금지">완료 control 부재 또는 중복</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="conflicts">
+        <h2 class="section-title"><span class="num">3</span><span>오너·Codex·Claude 의견 충돌 결정표</span></h2>
+        <p class="section-lead">오너의 화면 불편은 문제 근거로 사용하되 팝업·별도 화면·삭제 같은 표현은 해결책 가설로 분리했습니다. Claude는 독립 UX 감축안, Codex는 전체 로컬 코드·persistence 계약을 확인한 안입니다.</p>
+
+        <div class="table-wrap">
+          <table class="stack decision-table">
+            <colgroup><col><col><col><col><col><col><col></colgroup>
+            <thead><tr><th>#</th><th>결정</th><th>오너 문제 근거</th><th>Codex 로컬 검토</th><th>Claude Design</th><th>최종 결정</th><th>결정 이유·한계</th></tr></thead>
+            <tbody>
+              <tr>
+                <th data-label="#">1</th>
+                <td data-label="결정"><b>Preview export</b></td>
+                <td data-label="오너 문제 근거">F-03/F-05: 결과는 미리 봐야 하지만 저장 전후 UI가 반복되고 현재 화면과 섞임.</td>
+                <td data-label="Codex 로컬 검토">Preview secondary를 유지하되 현재 draft snapshot 사용. receipt에서는 제거.</td>
+                <td data-label="Claude Design">Preview에서 제거하고 저장 후 My Flow 한 곳에만 둠.</td>
+                <td class="final" data-label="최종 결정">유지. <b>저장 primary와 시각적으로 분리된 Flow 단위 secondary 1개</b>. receipt에는 0개, My Flow에는 persisted export.</td>
+                <td class="limit" data-label="결정 이유·한계"><span class="tag fact">현재 원칙</span> Stage 0 export-first와 <code>/f</code>의 save primary + export secondary 계약을 보존. 사용률은 미확인.</td>
+              </tr>
+              <tr>
+                <th data-label="#">2</th>
+                <td data-label="결정"><b>저장 완료</b></td>
+                <td data-label="오너 문제 근거">F-05/F-06/O-02: 중복 UI를 없애고 public→saved 연결을 분명히 해야 함.</td>
+                <td data-label="Codex 로컬 검토">성공·실제 결과·다음 행동만 남긴 짧은 receipt.</td>
+                <td data-label="Claude Design">별도 receipt를 없애고 My Flow 상단 1회 배너로 흡수.</td>
+                <td class="final" data-label="최종 결정">짧은 전환 화면으로 유지. <b>저장 결과 요약 + 내 Flow에서 이어하기</b>만 표시.</td>
+                <td class="limit" data-label="결정 이유·한계"><span class="tag fact">현재 구조</span> success·recovery 경계를 유지하면서 기존 receipt 컴포넌트를 축약. 자동 이동 성공률 비교는 없음.</td>
+              </tr>
+              <tr>
+                <th data-label="#">3</th>
+                <td data-label="결정"><b>모바일 편집</b></td>
+                <td data-label="오너 문제 근거">F-03/F-04/M-02: inline·sheet가 섞이고 Flow/Item 취소 범위가 예측되지 않음.</td>
+                <td data-label="Codex 로컬 검토">full-height sheet 또는 route-like state, Flow→Item 한 navigation stack.</td>
+                <td data-label="Claude Design"><code>/f/[slug]/edit</code> 전용 전체 화면, Item은 행 확장.</td>
+                <td class="final" data-label="최종 결정"><b>전용 full-height 상태</b>로 분리하되 P0에서 새 URL은 만들지 않음. Flow가 transaction을 소유하고 Item은 drilldown.</td>
+                <td class="limit" data-label="결정 이유·한계"><span class="tag fact">코드 근거</span> 새 route의 draft 이관 위험 없이 상태·취소 경계 확보.</td>
+              </tr>
+              <tr>
+                <th data-label="#">4</th>
+                <td data-label="결정"><b><code>할 일 / Flow</code></b></td>
+                <td data-label="오너 문제 근거">M-03/M-06: 두 탭의 이유가 불명확하고 한 Flow 화면은 과밀.</td>
+                <td data-label="Codex 로컬 검토">cross-Flow 실행과 single-Flow 관리라는 두 job을 사용자 언어로 유지.</td>
+                <td data-label="Claude Design">탭 제거, 지금 할 일 상단 + 전체 계획·Flow를 하위 계층으로 흡수.</td>
+                <td class="final" data-label="최종 결정">두 역할을 <b><code>지금 할 일 / 저장한 Flow</code></b>로 단순화해 유지. focused Flow는 drilldown.</td>
+                <td class="limit" data-label="결정 이유·한계"><span class="tag fact">서비스 계약</span> 어느 한쪽을 없애면 실행 또는 관리 job이 사라짐. 명칭 이해는 사용자 관찰 필요.</td>
+              </tr>
+              <tr>
+                <th data-label="#">5</th>
+                <td data-label="결정"><b><code>/f</code> 내비게이션</b></td>
+                <td data-label="오너 문제 근거">F-06: Preview 성격과 저장 후 연결이 불명확. 전체 nav 요구는 아님.</td>
+                <td data-label="Codex 로컬 검토">공유 진입 slim shell을 유지하고 명시적 탈출 경로만 제공.</td>
+                <td data-label="Claude Design">전역 하단 탭을 붙여 찾기·내 Flow로 한 번에 이동.</td>
+                <td class="final" data-label="최종 결정"><b>공유 진입 화면 유지</b>. 상단에 <code>Flow 찾기</code>와 조건부 <code>내 Flow</code> 탈출 경로만 제공. 전체 3-tab nav 없음.</td>
+                <td class="limit" data-label="결정 이유·한계"><span class="tag fact">canonical IA</span> 저장 전 집중도를 지키고 저장 후 <code>/my</code>에서 app frame 재개.</td>
+              </tr>
+              <tr>
+                <th data-label="#">6</th>
+                <td data-label="결정"><b><code>/flow-maps</code></b></td>
+                <td data-label="오너 문제 근거">O-01/F-01/F-07/F-08: 같은 제품인데 CTA·요약·출처 문법이 다름.</td>
+                <td data-label="Codex 로컬 검토">P0는 action shell 통일. route 이동은 map persistence·hold·metadata 보존 뒤 조건부.</td>
+                <td data-label="Claude Design">기존 URL을 alias로 두고 <code>/f</code>로 경로·composition 통합.</td>
+                <td class="final" data-label="최종 결정"><b>P0는 행동 계약만 통일하고 경로·controller 유지.</b> 단일 child 이동도 P1 보존 테스트 뒤 결정.</td>
+                <td class="limit" data-label="결정 이유·한계"><span class="tag fact">코드 근거</span> <code>saveMode</code>, <code>savedMap</code>, snapshot/handoff, multi-child, review hold 보존.</td>
+              </tr>
+              <tr>
+                <th data-label="#">7</th>
+                <td data-label="결정"><b>메모</b></td>
+                <td data-label="오너 문제 근거">M-04/M-05: 행 메모·실행 메모·메모 일정이 같은 것으로 보임.</td>
+                <td data-label="Codex 로컬 검토">UI entry 하나, 기존 3개 상태 모델은 즉시 병합하지 않고 목적·export 의미 보존.</td>
+                <td data-label="Claude Design"><code>내 메모</code> 하나와 draft memo 정본, 실행 메모 무손실 이관.</td>
+                <td class="final" data-label="최종 결정"><b>Item 상세의 메모 진입점 하나.</b> 신규 기본값은 Item memo. 기존 execution/source-correction/legacy note는 adapter로 보존·표시.</td>
+                <td class="limit" data-label="결정 이유·한계"><span class="tag fact">데이터 보호</span> P0에서 물리 병합·삭제·조용한 연결 금지. 장기 migration은 P1.</td>
+              </tr>
+              <tr>
+                <th data-label="#">8</th>
+                <td data-label="결정"><b>출처·위험</b></td>
+                <td data-label="오너 문제 근거">F-08: 경로마다 위치·명칭·깊이가 다름. 원문만 남기자는 의견은 해결 가설.</td>
+                <td data-label="Codex 로컬 검토">직접 원문 항상, 위험 주의는 행동 인접, 긴 provenance만 disclosure.</td>
+                <td data-label="Claude Design">원문은 제목 아래 비접힘, warning/caution은 해당 Item 안, 출처 자세히는 조건부.</td>
+                <td class="final" data-label="최종 결정"><b>직접 원문은 identity에 항상.</b> 높은 위험 주의는 행동 옆에 펼쳐 표시. 긴 제작자·출처 설명만 접음.</td>
+                <td class="limit" data-label="결정 이유·한계"><span class="tag fact">안전 계약</span> <code>riskLevel/sourceDisclosure/reviewState</code>로 결정. hold는 save/export를 차단.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p><span class="tag hypothesis">오너 해결 가설</span>은 문제를 여는 단서로만 사용했습니다. <span class="tag fact">코드·canonical 문서</span>와 충돌하면 현재 persistence·route 보존 계약을 우선했습니다. <span class="tag zero">사용자 관찰 0건</span>이므로 선호와 이해도는 확정 사실이 아닙니다.</p>
+      </section>
+
+      <section id="contract">
+        <h2 class="section-title"><span class="num">4</span><span>공통 계약과 허용 가능한 Shape별 변형</span></h2>
+        <p class="section-lead">P0의 기술적 중심은 새 화면이 아니라 하나의 <code>EffectiveFlowSnapshot</code> read model입니다. 이름은 구현 중 달라져도 입력·출력 불변식은 달라지면 안 됩니다.</p>
+
+        <div class="snapshot" aria-label="effective snapshot 데이터 흐름">
+          <div class="node">
+            <b>입력층 · 보존</b>
+            <span>source baseline + title/detail/date/Item memo overlay + inclusion/order + date intent/recurrence + completion/run overlay + source/risk/review state</span>
+          </div>
+          <div class="arrow">→</div>
+          <div class="node core">
+            <b>하나의 effective snapshot</b>
+            <span>sourceContentVersion + personalOverlayVersion + executionOverlayVersion · stable rows · shape/count/date state · export plan · capabilities</span>
+          </div>
+          <div class="arrow">→</div>
+          <div class="node">
+            <b>소비층 · 동일 의미</b>
+            <span>Preview · save record · receipt · My Flow · Item detail · text/XLSX/ICS export · map adapter</span>
+          </div>
+        </div>
+
+        <div class="invariants">
+          <div><b>결과 불변식</b><span>같은 시점·scope의 shape label, 전체·실행 가능·날짜 있음 count, schedule state는 하나의 resolver 결과로 계산합니다.</span></div>
+          <div><b>편집 불변식</b><span>source는 불변이며 Flow/Item 변경은 working draft에만 쌓입니다. Apply는 한 번, Cancel은 전부 rollback합니다.</span></div>
+          <div><b>저장 불변식</b><span>저장은 source content version을 동결하고 public working overlay를 persisted personal overlay v1로 승격합니다. 저장 후 개인 수정은 overlay version만 올리고 source를 다시 쓰지 않습니다.</span></div>
+          <div><b>export 불변식</b><span>public export는 frozen source + current public draft, My Flow export는 frozen source + current persisted personal overlay + current execution overlay를 입력으로 받습니다.</span></div>
+          <div><b>호환 불변식</b><span>기존 localStorage key, backup/restore, archive, canonical reconciliation을 삭제·일괄 rewrite하지 않고 additive/dual-read로 확장합니다.</span></div>
+          <div><b>안전 불변식</b><span>직접 원문, 위험 주의, review hold, 복구·되돌리기는 단순화를 이유로 제거하지 않습니다.</span></div>
+        </div>
+
+        <p><b>상태 경계:</b> <code>EffectiveFlowSnapshot = FrozenSourceContentVersion + CurrentPersonalOverlay + CurrentExecutionOverlay</code>로 고정합니다. Preview는 working personal overlay를, save·receipt는 저장 순간 persisted overlay v1을, My Flow·Item detail·saved export는 최신 persisted personal overlay를 같은 resolver에 넣습니다. 제목·상세·날짜·포함·순서·Item memo 수정은 <code>personalOverlayVersion</code>을 올리고, completion·run note·source correction은 <code>executionOverlayVersion</code>을 올립니다. 같은 시점·scope의 모든 소비자는 이 3개 version tuple이 같은 snapshot을 읽어야 합니다. text/XLSX는 completion과 Item memo를 지원 필드로 내보내고, ICS는 포함된 Item의 title/detail/date와 Item memo를 description에 반영하되 completion·run note·event 순서는 보장하지 않습니다.</p>
+
+        <h3>모든 Flow가 공유할 shell 계약</h3>
+        <div class="table-wrap">
+          <table class="stack">
+            <thead><tr><th>영역</th><th>공통 값</th><th>허용되는 변화</th><th>금지되는 변화</th></tr></thead>
+            <tbody>
+              <tr><th data-label="영역">Identity</th><td data-label="공통 값">Flow 이름, public/saved 상태, 직접 원문</td><td data-label="허용되는 변화">creator·provenance 상세 깊이</td><td data-label="금지되는 변화">slug별 원문 링크 숨김</td></tr>
+              <tr><th data-label="영역">Result</th><td data-label="공통 값">primary shape, 정확한 count, schedule state</td><td data-label="허용되는 변화">Shape별 renderer와 행 필드</td><td data-label="금지되는 변화">화면마다 다른 결과명·개수</td></tr>
+              <tr><th data-label="영역">Setup</th><td data-label="공통 값">결과를 바꾸는 최소 입력만</td><td data-label="허용되는 변화">anchor, routine, 선택지 유무</td><td data-label="금지되는 변화">category/prefix 문자열로 날짜 임의 계산</td></tr>
+              <tr><th data-label="영역">Action</th><td data-label="공통 값">상태별 primary 1개, secondary 최대 2개</td><td data-label="허용되는 변화">결과 인지형 CTA 목적어</td><td data-label="금지되는 변화">route마다 위치·저장 의미가 다른 CTA</td></tr>
+              <tr><th data-label="영역">Edit</th><td data-label="공통 값">전용 상태, Apply/Cancel/Back/focus 계약</td><td data-label="허용되는 변화">capability에 따른 필드</td><td data-label="금지되는 변화">동시 editor, 부분 저장</td></tr>
+              <tr><th data-label="영역">Source/Risk</th><td data-label="공통 값">직접 원문, risk/review 기반 주의</td><td data-label="허용되는 변화">중요도에 따른 펼침·접힘</td><td data-label="금지되는 변화">footer allowlist로 위험 정보 제거</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Shape별 허용 변형</h3>
+        <div class="table-wrap">
+          <table class="stack">
+            <thead><tr><th>Shape</th><th>필수 결과 표기</th><th>Setup·행 변형</th><th>Export 기본</th><th>특별 규칙</th></tr></thead>
+            <tbody>
+              <tr><th data-label="Shape">Calendar</th><td data-label="필수 결과 표기">캘린더 일정 N개 · 날짜 범위 · provisional/committed</td><td data-label="Setup·행 변형">anchor 필요, Item date·time</td><td data-label="Export 기본">ICS</td><td data-label="특별 규칙">provisional은 미리보기일 뿐 저장 CTA에서 확정처럼 표현 금지. undated Item은 VEVENT 금지.</td></tr>
+              <tr><th data-label="Shape">Checklist</th><td data-label="필수 결과 표기">할 일 N개 · 날짜 없음/일부 날짜</td><td data-label="Setup·행 변형">action·confirmation·decision rows</td><td data-label="Export 기본">text / todo-compatible list</td><td data-label="특별 규칙">resource·warning은 완료 항목 수에서 제외하고 이유를 표기.</td></tr>
+              <tr><th data-label="Shape">Sheet</th><td data-label="필수 결과 표기">실행표 N행 · 핵심 열</td><td data-label="Setup·행 변형">record·decision·comparison fields</td><td data-label="Export 기본">XLSX</td><td data-label="특별 규칙">열 누락·행 제외 수를 export 전에 표시.</td></tr>
+              <tr><th data-label="Shape">Memo</th><td data-label="필수 결과 표기">메모 1개 · 포함 section/Item 수</td><td data-label="Setup·행 변형">읽기·참고·source context 중심</td><td data-label="Export 기본">text / copy</td><td data-label="특별 규칙">memo artifact는 저장소가 아니라 projection/output shape.</td></tr>
+              <tr><th data-label="Shape">Flow execution / routine</th><td data-label="필수 결과 표기">반복 계획 · 다음 실행 · 기간/종료 규칙</td><td data-label="Setup·행 변형">요일·시간·반복 종료, occurrence</td><td data-label="Export 기본">ICS 또는 내부 실행</td><td data-label="특별 규칙">routine 정의와 occurrence 완료를 분리.</td></tr>
+              <tr><th data-label="Shape">Flow map composition</th><td data-label="필수 결과 표기">child 수 · save scope · hold 상태</td><td data-label="Setup·행 변형">choose child / save all / multi-child</td><td data-label="Export 기본">controller 정책에 따름</td><td data-label="특별 규칙">공통 action shell을 쓰되 map persistence·review hold는 유지.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="screens">
+        <h2 class="section-title"><span class="num">5</span><span>화면별 유지·통합·삭제·조건부 노출·이동</span></h2>
+        <p class="section-lead">기능을 더하기 전에 화면에서 빼거나 접을 것을 확정합니다. 오너 피드백 O 2/2, F 8/8, M 6/6의 문제를 모두 아래 조치에 귀속했습니다.</p>
+
+        <div class="table-wrap">
+          <table class="stack action-table">
+            <thead><tr><th>화면·영역</th><th>유지</th><th>통합</th><th>삭제</th><th>조건부 노출</th><th>이동</th></tr></thead>
+            <tbody>
+              <tr><th data-label="화면·영역"><code>/flows</code> 목록</th><td data-label="유지">검색·필터, source-backed Flow 카드, 결과 형태</td><td data-label="통합">카드 요약을 snapshot의 shape/count/date-state 문법으로</td><td data-label="삭제">내부 검토 label, 결과와 다른 저장성 CTA</td><td data-label="조건부 노출">민감 콘텐츠의 주의 상태</td><td data-label="이동">제작·내부 review는 secondary/internal route</td></tr>
+              <tr><th data-label="화면·영역"><code>/f</code> 공개 Preview</th><td data-label="유지">result-first renderer, 최소 setup, 직접 원문, 저장 primary, pre-save export secondary</td><td data-label="통합">결과·CTA·export를 current draft snapshot으로</td><td data-label="삭제">inline editor, 이중 export disclosure, 정적 <code>공유 화면</code>, 변하지 않은 비교, 중복 edit 버튼</td><td data-label="조건부 노출">anchor/routine 입력, 높은 위험 주의, review hold</td><td data-label="이동">Flow·Item 편집은 전용 full-height 상태로</td></tr>
+              <tr><th data-label="화면·영역">전용 편집 상태</th><td data-label="유지">이름·anchor·routine·포함·순서·Item title/detail/date</td><td data-label="통합">Flow draft와 Item draft를 한 transaction/controller로</td><td data-label="삭제">종류 전환 시 draft reset, Item 즉시 persistence, 중복 닫기·취소</td><td data-label="조건부 노출">Shape/capability에 필요한 필드만</td><td data-label="이동">Step/group rename은 P1 또는 보류</td></tr>
+              <tr><th data-label="화면·영역">저장 완료</th><td data-label="유지">성공, 저장된 결과명·개수·날짜 상태, 다음 CTA</td><td data-label="통합">receipt와 saved snapshot</td><td data-label="삭제">setup, 편집, export workbench, 전체 계획</td><td data-label="조건부 노출">즉시 되돌리기·복구</td><td data-label="이동">실행·관리·export는 My Flow로</td></tr>
+              <tr><th data-label="화면·영역"><code>/my</code> 지금 할 일</th><td data-label="유지">exact-date group, completion, cross-Flow 실행</td><td data-label="통합">행 조작을 열기+완료로</td><td data-label="삭제">모든 undated Item의 평면 나열, 행 메모 shortcut</td><td data-label="조건부 노출">undated는 Flow 단위 압축, completed group</td><td data-label="이동">구조 관리·전체 export는 저장한 Flow로</td></tr>
+              <tr><th data-label="화면·영역"><code>/my</code> 저장한 Flow</th><td data-label="유지">library, focused Flow, 다음 1~3개, progress</td><td data-label="통합">공개 Preview와 같은 결과 summary·Item read contract</td><td data-label="삭제">첫 post-save 전체 계획 자동 확장, 기본 노출된 관리 명령</td><td data-label="조건부 노출">전체 계획, 날짜/구조 관리, lifecycle, export</td><td data-label="이동"><code>이 사본 사용</code>은 conflict recovery/data 관리로</td></tr>
+              <tr><th data-label="화면·영역">Item 상세</th><td data-label="유지">source detail, resource, caution, 수정, export, 완료</td><td data-label="통합">완료 owner 1개, 메모 entry 1개, public/My Flow shell 계약</td><td data-label="삭제"><code>바로 할 일</code> 설명, 중복 메모·일정 진입, 완료 없는 modal</td><td data-label="조건부 노출">time/location/repeat/subcheck/run/source-correction</td><td data-label="이동">행 quick memo는 상세 메모로</td></tr>
+              <tr><th data-label="화면·영역">내 도구로 옮기기</th><td data-label="유지">text/XLSX/ICS builder, scope, omission 정보</td><td data-label="통합">한 full-height sheet: 범위→형식→실제 수→실행→결과</td><td data-label="삭제">중첩 disclosure, receipt export, route별 다른 명칭</td><td data-label="조건부 노출">지원 shape·범위·hold 정책</td><td data-label="이동">Item export도 같은 sheet에서 current scope로</td></tr>
+              <tr><th data-label="화면·영역"><code>/flow-maps</code></th><td data-label="유지">route, map controller, saveMode, savedMap, snapshot/handoff, hold</td><td data-label="통합">result summary·CTA·receipt·source/risk·editor transaction 계약</td><td data-label="삭제"><code>내 조건/저장 결과/전체</code> 3칸, legacy CTA 문법, 중복 고정 영역</td><td data-label="조건부 노출">multi-child selection, save all, review hold</td><td data-label="이동">route 통합은 P1 보존 테스트 뒤</td></tr>
+              <tr><th data-label="화면·영역">출처·위험·복구</th><td data-label="유지">직접 원문, 높은 위험 주의, undo/archive, duplicate recovery</td><td data-label="통합">risk/source/review schema 기반 표시</td><td data-label="삭제">slug footer hide, 일반 화면의 상시 <code>이 사본 사용</code></td><td data-label="조건부 노출">긴 provenance, needs_choice, source correction</td><td data-label="이동">주의는 행동 옆, 사본 선택은 recovery 영역</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="p0">
+        <h2 class="section-title"><span class="num">6</span><span>구현 순서가 정해진 P0 작업 목록</span></h2>
+        <p class="section-lead">아래 순서는 의존성 순서입니다. UI shell부터 만들지 않습니다. P0-01의 snapshot 계약이 닫히기 전에는 Preview·receipt·My Flow 시각 변경을 완료로 취급하지 않습니다.</p>
+
+        <ol class="p0-list">
+          <li>
+            <div class="p0-head">
+              <div><h3>Effective snapshot resolver와 결과 어휘 단일화</h3><p>source·personal content overlay·포함·순서·date intent·recurrence와 current execution overlay를 한 번 합성해 모든 소비자가 읽는 read model을 만듭니다.</p></div>
+              <div class="impact"><b>영향</b><br><code>lib/flow/flow-experience-projection.ts</code>, <code>artifact-recommendation.ts</code>, completion/personal-state adapters, types/storage contract, export labels, unit tests</div>
+            </div>
+            <div class="p0-details">
+              <div><b>선행</b><span>없음. 모든 P0의 기반.</span></div>
+              <div><b>산출 계약</b><span>sourceContentVersion + personalOverlayVersion + executionOverlayVersion tuple, stable rows, shape, scope counts, schedule state, export plan, capabilities, source/risk.</span></div>
+              <div><b>금지</b><span>Preview·save·export가 각자 base bundle을 다시 해석.</span></div>
+              <div><b>완료 증거</b><span>5 Shape × public/saved × custom/example/undated + completion/Item memo matrix unit test.</span></div>
+            </div>
+          </li>
+          <li>
+            <div class="p0-head">
+              <div><h3>날짜 의도·저장·receipt·My Flow 결과 연속성</h3><p>예시 캘린더를 확정 결과처럼 저장하지 않고, CTA가 약속한 shape·count·date-state를 저장 후에도 그대로 재생합니다.</p></div>
+              <div class="impact"><b>영향</b><br><code>public-date-intent.ts</code>, <code>AppClient.tsx</code>, <code>SavedFlowReceiptFrame.tsx</code>, saved record</div>
+            </div>
+            <div class="p0-details">
+              <div><b>선행</b><span>P0-01 snapshot/result contract.</span></div>
+              <div><b>결정</b><span>provisional이면 날짜 선택 행동, explicit undated이면 날짜 없는 체크리스트 결과를 명시.</span></div>
+              <div><b>금지</b><span><code>캘린더 N개</code> CTA 뒤 undated checklist receipt.</span></div>
+              <div><b>완료 증거</b><span>빈 날짜 primary, custom date, explicit undated E2E와 save→receipt→My Flow parity assertion.</span></div>
+            </div>
+          </li>
+          <li>
+            <div class="p0-head">
+              <div><h3>공개 personalization의 저장·export parity</h3><p>공개 화면에서 바꾼 Flow 제목, Item title/detail/date, 포함 여부와 순서를 save와 지원되는 export 의미에 반영합니다. text/XLSX는 순서를 보존하고 ICS는 event 순서를 약속하지 않습니다.</p></div>
+              <div class="impact"><b>영향</b><br><code>public-item-personalization.ts</code>, <code>AppClient.tsx</code>, <code>ArtifactWorkbench.tsx</code>, export builders</div>
+            </div>
+            <div class="p0-details">
+              <div><b>선행</b><span>P0-01 snapshot 주입.</span></div>
+              <div><b>결정</b><span>public export는 current public draft snapshot, saved export는 persisted snapshot.</span></div>
+              <div><b>금지</b><span>export handler가 personalization 없이 base bundle 직접 사용.</span></div>
+              <div><b>완료 증거</b><span>title/detail/date/inclusion의 text/XLSX/ICS assertion, order의 text/XLSX assertion. ICS는 포함된 event set만 같고 event order는 비보장임을 검사.</span></div>
+            </div>
+          </li>
+          <li>
+            <div class="p0-head">
+              <div><h3>Flow·Item 원자적 모바일 편집 세션</h3><p>inline 조정과 독립 Item sheet를 하나의 full-height editor state로 교체합니다. Flow draft가 Item draft를 포함합니다.</p></div>
+              <div class="impact"><b>영향</b><br><code>PublicFlowAdjustmentPanel.tsx</code>, <code>AppClient.tsx</code>, <code>SourceBackedFlowMapPage.tsx</code> edit adapter, bottom-sheet/editor controller, focus guard</div>
+            </div>
+            <div class="p0-details">
+              <div><b>선행</b><span>P0-01 effective draft shape.</span></div>
+              <div><b>상태</b><span>baseSnapshot + workingDraft + commit/rollback. 한 시점에 editor 1개. <code>capabilities.edit=false</code>면 CTA를 숨기고, true인 map도 같은 controller를 사용.</span></div>
+              <div><b>금지</b><span>kind 전환 draft reset, Item 즉시 저장, parent cancel 뒤 일부 변경 잔존.</span></div>
+              <div><b>완료 증거</b><span>Flow→Item drilldown, Apply, Cancel, Back, Escape, backdrop, unsaved guard, focus return E2E.</span></div>
+            </div>
+          </li>
+          <li>
+            <div class="p0-head">
+              <div><h3>공개 상태 shell·export 소유권·짧은 receipt</h3><p>Preview는 result-first와 저장 primary를 유지하고, 편집·export는 각각 한 층의 full-height branch로 분리합니다. receipt는 결과 확인만 남깁니다.</p></div>
+              <div class="impact"><b>영향</b><br><code>FlowSaveBeforeFrame.tsx</code>, <code>ArtifactWorkbench.tsx</code>, <code>SavedFlowReceiptFrame.tsx</code>, public header</div>
+            </div>
+            <div class="p0-details">
+              <div><b>선행</b><span>P0-02, P0-03, P0-04.</span></div>
+              <div><b>행동</b><span>Primary 1개. Preview export secondary 1개. receipt export 0개.</span></div>
+              <div><b>내비게이션</b><span>공유 slim shell + Flow 찾기/조건부 내 Flow 탈출. 전체 3-tab nav 없음.</span></div>
+              <div><b>완료 증거</b><span>390×844에서 빈 viewport jump·fixed overlap·중첩 disclosure 없음. 각 상태 primary 1개.</span></div>
+            </div>
+          </li>
+          <li>
+            <div class="p0-head">
+              <div><h3>My Flow 첫 진입과 Item 완료 소유권 단순화</h3><p><code>지금 할 일 / 저장한 Flow</code> 두 역할은 유지하되 저장 직후 focused Flow는 다음 1~3개와 progress만 먼저 보여줍니다.</p></div>
+              <div class="impact"><b>영향</b><br><code>AppClient.tsx</code>, <code>my-flow-cross-flow-todo.ts</code>, whole-flow reading, Item detail shell</div>
+            </div>
+            <div class="p0-details">
+              <div><b>선행</b><span>P0-01 saved snapshot, P0-05 receipt handoff.</span></div>
+              <div><b>행동</b><span>default row는 열기+완료. Item 상세에서도 같은 completion owner를 조작.</span></div>
+              <div><b>감축</b><span>first-entry 전체 계획 자동 확장 제거. undated 대량 Item은 Flow 단위 압축.</span></div>
+              <div><b>완료 증거</b><span>receipt→focused Flow→Item 상세→완료→목록 동기화, literal <code>/my</code> cross-Flow 회귀.</span></div>
+            </div>
+          </li>
+          <li>
+            <div class="p0-head">
+              <div><h3>메모 단일 진입 facade와 기존 데이터 보존</h3><p>사용자는 Item 상세에서 <code>메모</code> 하나만 봅니다. 신규 기본 입력은 Item memo에 쓰고 다른 목적의 기존 메모는 adapter로 보존합니다.</p></div>
+              <div class="impact"><b>영향</b><br>execution notes, <code>my-flow-personal-state.ts</code>, <code>flow-item-state.ts</code>, storage adapters, Item detail</div>
+            </div>
+            <div class="p0-details">
+              <div><b>선행</b><span>P0-06 Item detail ownership.</span></div>
+              <div><b>보존</b><span>Item memo, execution note, source correction, legacy note, run snapshot, export 의미.</span></div>
+              <div><b>금지</b><span>조용한 concatenation, 기존 key 삭제, 실행 기록을 일반 export에 임의 포함.</span></div>
+              <div><b>완료 증거</b><span>각 저장소 단독/동시 데이터 fixture의 backup→upgrade→read→export→restore 무손실 테스트.</span></div>
+            </div>
+          </li>
+          <li>
+            <div class="p0-head">
+              <div><h3>Map action adapter·출처/위험·복구 노출 통일</h3><p><code>/flow-maps</code>의 route와 controller는 유지하면서 CTA·결과 안내·receipt·source/risk·복구 문법을 공통 shell에 맞춥니다.</p></div>
+              <div class="impact"><b>영향</b><br><code>SourceBackedFlowMapPage.tsx</code>, route adapters, source/risk presentation, canonical copy recovery</div>
+            </div>
+            <div class="p0-details">
+              <div><b>선행</b><span>P0-01 공통 snapshot adapter, P0-04 editor transaction, P0-05 action shell.</span></div>
+              <div><b>보존</b><span>기존 URL, saveMode, savedMap, snapshot/handoff, creator/review/hold metadata, archive/restore.</span></div>
+              <div><b>정책</b><span><code>capabilities.edit=true</code>인 map은 P0-04 transaction을 재사용하고 false면 edit CTA 0개. direct source 항상, 높은 위험 주의는 행동 옆, needs_choice만 recovery task.</span></div>
+              <div><b>완료 증거</b><span>editable map Apply/Cancel/rollback과 non-editable CTA 부재, single/multi-child, choose/save-all, review hold, duplicate reconciliation, normal/sensitive source matrix.</span></div>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <section id="acceptance">
+        <h2 class="section-title"><span class="num">7</span><span>각 P0 완료 조건과 모바일 확인 시나리오</span></h2>
+        <p class="section-lead">완료는 “화면이 바뀌었다”가 아니라 아래 시나리오에서 결과 계약·데이터 보존·모바일 조작이 함께 성립할 때만 인정합니다.</p>
+
+        <div class="table-wrap">
+          <table class="stack">
+            <thead><tr><th>P0</th><th>Definition of Done</th><th>390×844 모바일 확인 시나리오</th><th>필수 증거</th></tr></thead>
+            <tbody>
+              <tr><th data-label="P0">01 Snapshot</th><td data-label="Definition of Done">Preview/save/receipt/My Flow/export가 같은 resolver를 사용하고 frozen source·current personal·current execution의 3층 version 경계가 고정됨.</td><td data-label="390×844 모바일 확인 시나리오">moving·checklist·routine·sheet·memo에서 3개 version tuple, shape/count/date-state, completion/Item memo 반영 정책을 추적.</td><td data-label="필수 증거">unit parity matrix + source/personal/execution payload snapshot</td></tr>
+              <tr><th data-label="P0">02 Date parity</th><td data-label="Definition of Done">example은 provisional로 표시되고 custom/undated 각각 CTA·저장·receipt·My Flow가 일치.</td><td data-label="390×844 모바일 확인 시나리오">날짜 빈 moving에서 primary, 날짜 입력 후 primary, 날짜 없이 저장을 각각 수행.</td><td data-label="필수 증거">date-intent unit + 3 E2E</td></tr>
+              <tr><th data-label="P0">03 Edit/export parity</th><td data-label="Definition of Done">공개 title/detail/date/inclusion은 저장·text/XLSX/ICS에, order는 저장·text/XLSX에 반영되며 ICS event order는 비보장.</td><td data-label="390×844 모바일 확인 시나리오">Item 제목·상세·날짜 수정, 한 Item 제외·순서 변경 후 text/XLSX 순서와 ICS event set/content를 각각 확인.</td><td data-label="필수 증거">format-specific payload assertions + round-trip</td></tr>
+              <tr><th data-label="P0">04 Atomic editor</th><td data-label="Definition of Done">active editor 1개, Item 변경은 parent draft에만, Apply 전 persistence 0, Cancel 전체 rollback.</td><td data-label="390×844 모바일 확인 시나리오">Flow 편집→Item drilldown→수정→뒤로→Flow 취소와 적용을 각각 수행. Escape/back/focus도 확인.</td><td data-label="필수 증거">transaction unit + editor E2E + storage diff</td></tr>
+              <tr><th data-label="P0">05 Public shell</th><td data-label="Definition of Done">Primary 1개, export 한 층, receipt export 0, 명시적 탈출 경로, fixed layer 가림 0.</td><td data-label="390×844 모바일 확인 시나리오"><code>/f</code> initial→edit→export→save→receipt 전 구간에서 scroll/Back/close/focus와 action visibility 확인.</td><td data-label="필수 증거">browser screenshot + console/page error + DOM action count</td></tr>
+              <tr><th data-label="P0">06 My Flow</th><td data-label="Definition of Done">first-entry next 1~3+progress, 전체 계획 닫힘, Item 상세 완료 가능, row/detail 상태 동기화.</td><td data-label="390×844 모바일 확인 시나리오">receipt CTA→focused Flow→Item 열기→완료→닫기→지금 할 일/저장한 Flow 양쪽 반영 확인.</td><td data-label="필수 증거">E2E + completion primitive unit</td></tr>
+              <tr><th data-label="P0">07 Memo</th><td data-label="Definition of Done">보이는 entry 1개, 기존 모든 메모 값을 읽고 목적·export 의미를 보존, upgrade/backup 무손실.</td><td data-label="390×844 모바일 확인 시나리오">legacy note·execution note·Item memo가 각각/동시에 있는 fixture에서 상세 열기·수정·export·restore.</td><td data-label="필수 증거">migration adapter fixtures + backup regression</td></tr>
+              <tr><th data-label="P0">08 Map/source/recovery</th><td data-label="Definition of Done">두 route의 행동 계약 동일, editable map은 P0-04 transaction 재사용, non-editable map은 CTA 0개, 고유 저장·위험·복구 의미 보존.</td><td data-label="390×844 모바일 확인 시나리오">map edit Apply/Cancel/rollback 또는 edit CTA 부재를 먼저 확인하고 single/multi-child choose/save-all, review hold, normal/safety, needs_choice를 검사.</td><td data-label="필수 증거">route/controller/editor E2E + storage diff + safety fixtures</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>최종 모바일 통합 시나리오</h3>
+        <ol>
+          <li><code>/flows</code>에서 moving Flow를 열고 결과명·개수·날짜 상태를 기록합니다.</li>
+          <li>전용 편집에서 Flow 제목·기준일·포함 여부와 Item 제목·상세·날짜를 바꿨다가 전체 취소해 원복을 확인합니다.</li>
+          <li>다시 편집해 적용하고 Preview summary와 Item rows가 즉시 갱신되는지 확인합니다.</li>
+          <li><code>저장하지 않고 내 도구로 옮기기</code>에서 범위·형식·실제 개수·빠지는 항목을 확인하고 payload가 Preview와 같은지 검사합니다.</li>
+          <li>결과 인지형 저장 CTA를 누르고 짧은 receipt의 shape·count·date-state가 Preview와 같은지 확인합니다.</li>
+          <li><code>내 Flow에서 이어하기</code>로 focused Flow에 들어가 다음 1~3개와 progress만 먼저 보이는지 확인합니다.</li>
+          <li>Item 상세에서 완료하고 Item memo를 남긴 뒤 row·지금 할 일·저장한 Flow가 같은 3-version tuple을 읽고 text/XLSX에는 완료·메모가 반영되는지 확인합니다. ICS는 title/detail/date/inclusion·Item memo만 반영하며 completion·run note·event order를 약속하지 않습니다.</li>
+          <li>체크리스트형·루틴형에 같은 계약을 반복하고, <code>/flow-maps</code>는 editable이면 공통 편집기의 Apply/Cancel/rollback을, non-editable이면 edit CTA 부재를 확인한 뒤 multi-child·review hold 행동과 안전 계약을 검사합니다.</li>
+        </ol>
+
+        <h3>검증 경계</h3>
+        <ul>
+          <li>자동화, 스크린샷, 렌더 QA, Production 재현은 구조·회귀 증거입니다.</li>
+          <li>사용자가 <code>지금 할 일 / 저장한 Flow</code>, pre-save export, 전용 편집을 이해하고 선호한다는 증거는 아직 없습니다.</li>
+          <li>P0 구현·내부 게이트 뒤 5~8명의 bounded observation을 별도 실시하기 전에는 <code>validated</code>를 사용하지 않습니다.</li>
+        </ul>
+      </section>
+
+      <section id="scope">
+        <h2 class="section-title"><span class="num">8</span><span>P1 및 명시적 비범위</span></h2>
+        <div class="scope-grid">
+          <div class="scope-panel">
+            <h3>P1 · P0 뒤에 이어갈 것</h3>
+            <ul>
+              <li>Step/group personal title overlay와 versioned schema migration</li>
+              <li>단일 child map의 조건부 <code>/f</code> canonicalization: URL·saveMode·savedMap·snapshot/handoff·review metadata 보존 테스트 선행</li>
+              <li>exact-slug presentation helper를 typed variant manifest로 이전하고 dead mount 제거</li>
+              <li>메모 상태 모델의 장기 통합 여부와 명시적 migration·충돌 병합 UX</li>
+              <li><code>AppClient.tsx</code>를 public controller, agenda, Flow workspace, Item detail로 단계적 분해</li>
+              <li>Flow/Item deep link와 editor 새로고침 복구</li>
+              <li>P0 prototype 뒤 bounded observed-user session과 결과 기반 IA 보정</li>
+            </ul>
+          </div>
+          <div class="scope-panel out">
+            <h3>명시적 비범위</h3>
+            <ul>
+              <li>canonical source·Item·stable identity·storage 전체 재작성</li>
+              <li>Text-to-Flow 및 AI backend 확장</li>
+              <li>계정·클라우드·협업·cross-device sync</li>
+              <li>실제 Google/Outlook/Apple Calendar·Todo 직접 연동</li>
+              <li>creator 원본 Step 편집과 publish/version UI</li>
+              <li>모든 <code>/flow-maps</code>의 즉시 route 통합</li>
+              <li>광범위한 visual redesign·브랜딩·마케팅 surface</li>
+              <li>자동화 통과를 사용자 검증으로 승격</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="owner">
+        <h2 class="section-title"><span class="num">9</span><span>오너가 확인할 항목 · 최대 3개</span></h2>
+        <p class="section-lead">아래는 대안을 다시 여는 질문이 아니라 제품 정책 승인 확인입니다. 별도 변경 지시가 없으면 오른쪽 기본 권고를 P0 baseline으로 사용합니다.</p>
+
+        <ol class="owner-gates">
+          <li>
+            <div><b>Preview export 정책</b><p>저장 primary와 경쟁하지 않는 text secondary로 pre-save export를 유지하고, receipt에서는 제거합니다.</p></div>
+            <span class="default">기본 권고 · 승인</span>
+          </li>
+          <li>
+            <div><b>공개 경로 보존 정책</b><p><code>/f</code>는 slim share-entry, <code>/flow-maps</code>는 현재 route/controller를 유지하며 P0에서 행동 계약만 통일합니다.</p></div>
+            <span class="default">기본 권고 · 승인</span>
+          </li>
+          <li>
+            <div><b>메모 데이터 정책</b><p>사용자 진입점만 하나로 통합하고 기존 Item memo·execution/source-correction·legacy note는 P0에서 병합·삭제하지 않습니다.</p></div>
+            <span class="default">기본 권고 · 승인</span>
+          </li>
+        </ol>
+
+        <div class="handoff">
+          <span class="check" aria-hidden="true">✓</span>
+          <div>
+            <strong>P0 구현은 화면 구조 재기획 없이 시작할 수 있습니다.</strong>
+            <span>P0-01부터 의존 순서대로 진행하고, 각 단계의 완료 조건·모바일 시나리오가 통과해야 다음 단계의 UI를 완료로 닫습니다.</span>
+          </div>
+          <span class="snapshot-call">하나의 effective snapshot</span>
+        </div>
+      </section>
+
+      <aside class="evidence" aria-label="출처와 증거 경계">
+        <h2>출처·근거와 산출물 상태</h2>
+        <div class="evidence-grid">
+          <div>
+            <b>세 입력 자료</b>
+            <ul>
+              <li>오너 피드백: <a href="https://github.com/knhbae/flowme2605/blob/965eb54ee85fb06d8beee3bc7fa0060771c33fbc/docs/content-audit/2026-07-31-p35-mobile-planning-handoff/06-owner-feedback-normalized-ko.md">06-owner-feedback-normalized-ko.md</a><br><span class="hash">SHA-256 37EFFF0B…CB4839</span></li>
+              <li>Claude Design 독립 1차 검토: <code>D:\flowme2605\flow-mvp\claude_work\Claude 디자인 1차 검토_260801_1203.zip</code><br><span class="hash">SHA-256 749B84BB…3238E3</span></li>
+              <li>Codex 로컬 검토: <a href="./2026-07-31-p35-mobile-planning-review/README.md">2026-07-31-p35-mobile-planning-review/README.md</a><br><span class="hash">SHA-256 E64133B0…A89E64</span></li>
+            </ul>
+          </div>
+          <div>
+            <b>현재 authoritative 기준</b>
+            <ul>
+              <li><a href="../SERVICE_STRUCTURE.md">SERVICE_STRUCTURE.md</a>: share-entry, My Flow 두 job, map controller, persistence ownership</li>
+              <li><a href="../PRODUCT_PRINCIPLES.md">PRODUCT_PRINCIPLES.md</a>: Stage 0 export-first, 기존 도구로 portable artifact</li>
+              <li>Repo: <code>main</code> / <code>c09f859b30b854f6f897b8ec1eb781fd774fbeca</code> / origin 대비 <code>0 / 0</code></li>
+              <li>기존 dirty worktree는 본 작업 소유가 아니며 수정·포함하지 않음</li>
+            </ul>
+          </div>
+        </div>
+        <p class="qa-line"><b>산출물 검증:</b> 문서 검사 통과(필수 문서 16개·로컬 링크 3,674개), 1440×1100·390×844 실제 브라우저 렌더에서 가로 넘침 0·콘솔 오류 0, 섹션 9개·충돌 결정 8개·P0 8개·오너 확인 3개를 확인했습니다. 이 HTML은 기획·구현 인계 자료이며 제품 코드 변경, 배포, observed-user validation을 포함하지 않습니다.</p>
+      </aside>
+    </main>
+  </div>
+</body>
+</html>
