@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "scenarioId": "S18",
+  "generatedAt": "2026-08-06T01:06:32.831Z",
+  "baseUrl": "http://127.0.0.1:3114",
+  "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+  "observedUsers": 0,
+  "sourceSnapshot": {
+    "head": "f97644abf379c46433847f44aa7bd4da7fadac4a",
+    "shortHead": "f97644abf379",
+    "branch": "codex/p35-round2-correction-pprime2-20260805",
+    "buildId": "FCcpKvvIBhQ1MuM3V6K7p",
+    "dirty": false,
+    "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+    "gitStatusSha256": "45afcb73d07550427bb5381ff77cd972cb9b80404c48da66846545bd5df1775a"
+  },
+  "title": "Deterministic TSV raw-byte and parser edge rehearsal",
+  "reviewerStatus": "CODEX_EXECUTED_LOCAL_REHEARSAL",
+  "generator": "buildPersonalStructuralListExportArtifactsFromRows",
+  "parser": "parseEffectiveFlowTsv",
+  "artifact": {
+    "filename": "edge-cases-crlf-utf8.tsv",
+    "mediaType": "text/tab-separated-values;charset=utf-8",
+    "charset": "utf-8",
+    "newlinePolicy": "CRLF for row separators and embedded line breaks",
+    "bytes": 884,
+    "sha256": "808b99cceeb60a594730151eb8e91493dd99d5e6d30886f969fdb520c8fe3063"
+  },
+  "edgeSignals": {
+    "utf8ByteLength": 884,
+    "unicodeCodePointLength": 539,
+    "hasUtf8Bom": false,
+    "crlfCount": 7,
+    "bareLfCount": 0,
+    "bareCrCount": 0,
+    "tabByteCount": 37,
+    "quoteByteCount": 76,
+    "containsDoubledQuoteEscape": true,
+    "containsBackslash": true,
+    "containsEmoji": true,
+    "endsWithCrLf": true
+  },
+  "parserChecks": {
+    "parsedRowCount": 2,
+    "parsedDataRowCount": 1,
+    "headerColumnCount": 18,
+    "expectedColumnCount": 18,
+    "everyRowHasExpectedColumns": true,
+    "headerMatchesProductionHeaders": true,
+    "titleRoundTripExact": true,
+    "descriptionRoundTripWithCrLf": true,
+    "memoRoundTripWithCrLf": true,
+    "containsLiteralTabInsideParsedTitle": true,
+    "containsLiteralQuoteInsideParsedTitle": true,
+    "containsEmojiAfterParse": true
+  },
+  "parserStatus": "ROUND_TRIP_CONFIRMED",
+  "parsedRows": [
+    [
+      "순서",
+      "상태",
+      "할 일",
+      "날짜",
+      "시간",
+      "예상 시간",
+      "시간대",
+      "반복",
+      "메모",
+      "원문",
+      "설명",
+      "완료 기준",
+      "실행 메모",
+      "항목 주의",
+      "계획 주의",
+      "자료",
+      "계획 원문 이름",
+      "계획 원문 URL"
+    ],
+    [
+      "1",
+      "미완료",
+      "긴 제목\t탭과 \"인용부호\", 역슬래시 \\ 및 이모지 🧭✨",
+      "2031-09-01",
+      "09:15",
+      "1시간 15분",
+      "Asia/Seoul",
+      "매주 월요일",
+      "메모 \"A\"\r\n메모 B\t끝",
+      "원문 \"S18\" https://example.com/source",
+      "첫 줄\r\n둘째 줄에는\t탭과 \"따옴표\"가 있습니다.\r\n셋째 줄은 이모지 🚚",
+      "체크 결과를 저장하고 담당자에게 공유",
+      "실행 기록: 경로 C:\\temp\\flow",
+      "주의: 줄바꿈\r\n유지",
+      "전체 주의 \"원문 확인\"",
+      "{\"label\":\"공식 \\\"자료\\\" 🧪\",\"url\":\"https://example.com/a?x=1&y=탭\"}\r\n{\"label\":\"두 번째\\t자료\",\"url\":\"https://example.com/b\"}",
+      "검토 원문 \"탭/줄바꿈\"",
+      "https://example.com/source?case=s18"
+    ]
+  ],
+  "expectedInput": {
+    "itemId": "s18-edge-item",
+    "title": "긴 제목\t탭과 \"인용부호\", 역슬래시 \\ 및 이모지 🧭✨",
+    "date": "2031-09-01",
+    "scheduleState": "timed",
+    "time": "09:15",
+    "durationMinutes": 75,
+    "timeZone": "Asia/Seoul",
+    "repeatLabel": "매주 월요일",
+    "description": "첫 줄\r\n둘째 줄에는\t탭과 \"따옴표\"가 있습니다.\n셋째 줄은 이모지 🚚",
+    "memo": "메모 \"A\"\r\n메모 B\t끝",
+    "executionMemo": "실행 기록: 경로 C:\\temp\\flow",
+    "completionCriteria": "체크 결과를 저장하고 담당자에게 공유",
+    "itemWarning": "주의: 줄바꿈\r\n유지",
+    "flowWarning": "전체 주의 \"원문 확인\"",
+    "resources": [
+      {
+        "label": "공식 \"자료\" 🧪",
+        "url": "https://example.com/a?x=1&y=탭"
+      },
+      {
+        "label": "두 번째\t자료",
+        "url": "https://example.com/b"
+      }
+    ],
+    "status": "pending",
+    "personalOrderRank": 1,
+    "sourceRef": "원문 \"S18\" https://example.com/source"
+  }
+}

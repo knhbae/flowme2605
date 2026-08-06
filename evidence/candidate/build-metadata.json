@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "status": "PASS",
+  "sourceProvided": true,
+  "sourceFileName": "post-push-build.utf8.log",
+  "copiedRelativePath": "candidate/build.log",
+  "command": "npm.cmd run build",
+  "exitCode": 0,
+  "byteLength": 2433,
+  "sha256": "151acac7d1873ba8be03c4d8a1cbd77011097f8f2fd72bae37044630677549d1",
+  "encoding": {
+    "declared": "utf-8",
+    "valid": true,
+    "containsNul": false,
+    "containsReplacementCharacter": false,
+    "error": null
+  },
+  "buildId": "FCcpKvvIBhQ1MuM3V6K7p"
+}

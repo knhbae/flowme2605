@@ -1,0 +1,147 @@
+이사 D-30 준비
+
+할 일 24개
+
+1. 이사 방식 정하기
+   상태: 미완료
+   일정: 2031-08-02 종일
+   설명: 포장이사, 반포장이사, 직접 운반 중 예산과 짐 양에 맞는 방식을 정합니다.
+   원문: 이사 체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+
+2. 이사할 집 하자 점검하기
+   상태: 미완료
+   일정: 2031-08-02 종일
+   설명: 입주 전 벽지, 누수, 배수, 콘센트, 창문, 도어락 상태를 사진으로 남깁니다.
+   완료 기준: 주요 공간 사진과 하자 목록을 집주인 또는 중개인에게 공유했다.
+   원문: 이사 체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+
+3. 필요 없는 물건 정리하기
+   상태: 미완료
+   일정: 2031-08-02 종일
+   원문: 이사 체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+
+4. 이사/청소 업체 견적 받고 예약하기
+   상태: 미완료
+   일정: 2031-08-02 종일
+   원문: 이사 체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+
+5. 우편물/카드/은행 주소 변경하기
+   상태: 미완료
+   일정: 2031-08-22 종일
+   원문: 이사 체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+
+6. 정기 배달 서비스 중지 요청하기
+   상태: 미완료
+   일정: 2031-08-22 종일
+   원문: 이사 체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+
+7. 대형폐기물 배출 신고와 수거일 확인하기
+   상태: 미완료
+   일정: 2031-08-22 종일
+   설명: 지자체 신고 방식과 수거일이 다르므로 이사 전 배출 가능한 날짜를 먼저 확인합니다.
+   완료 기준: 배출 신고 번호와 수거 예정일을 기록했다.
+   원문: 이사 체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+
+8. 엘리베이터 또는 사다리차 사용 예약하기
+   상태: 미완료
+   일정: 2031-08-22 종일
+   원문: 이사 체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+
+9. 인터넷/정수기 이전 설치 예약하기
+   상태: 미완료
+   일정: 2031-08-22 종일
+   원문: 이사 체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+
+10. 도시가스 철거/설치 예약하기
+   상태: 미완료
+   일정: 2031-08-29 종일
+   원문: 이사 체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+
+11. 자동이체 해지 또는 변경 확인하기
+   상태: 미완료
+   일정: 2031-08-29 종일
+   원문: 이사 체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+
+12. 이사 당일 사용할 물건 따로 포장하기
+   상태: 미완료
+   일정: 2031-08-29 종일
+   원문: 이사 체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+
+13. 관리사무소에 이사 시간과 차량 동선 공유하기
+   상태: 미완료
+   일정: 2031-08-29 종일
+   설명: 공동주택은 엘리베이터 보양, 주차 위치, 사다리차 가능 여부를 미리 맞춰야 합니다.
+   원문: 이사 체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+
+14. 이사 업체와 일정 최종 확인하기
+   상태: 미완료
+   일정: 2031-08-31 종일
+   원문: 이사 체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+
+15. 이체 한도 증액 확인하기
+   상태: 미완료
+   일정: 2031-08-31 종일
+   원문: 이사 체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+
+16. 귀중품과 중요 서류 별도 보관하기
+   상태: 미완료
+   일정: 2031-08-31 종일
+   원문: 이사 체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+
+17. 냉장고 음식과 쓰레기 최종 정리하기
+   상태: 미완료
+   일정: 2031-08-31 종일
+   원문: 이사 체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+
+18. 전기/가스/수도/관리비 정산하기
+   상태: 미완료
+   일정: 2031-09-01 종일
+   원문: 이사 체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+
+19. 이삿짐 분실/파손 확인하기
+   상태: 미완료
+   일정: 2031-09-01 종일
+   원문: 이사 체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+
+20. 계량기와 집 상태 사진 남기기
+   상태: 미완료
+   일정: 2031-09-01 종일
+   설명: 전기, 가스, 수도 계량기와 주요 하자 사진을 남겨 정산과 분쟁 확인에 활용합니다.
+   원문: 이사 체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+
+21. 열쇠, 출입카드, 주차등록 인수인계하기
+   상태: 미완료
+   일정: 2031-09-01 종일
+   원문: 이사 체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+
+22. 전입신고와 확정일자 확인하기
+   상태: 미완료
+   일정: 2031-09-01 종일
+   설명: 전입신고와 임대차 계약 확정일자 처리 필요 여부를 같은 날 확인합니다.
+   완료 기준: 전입신고 접수 상태와 확정일자 부여 여부를 각각 확인했다.
+   자료 1 이름: 정부24 전입신고
+   자료 1 URL: https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000016
+   자료 2 이름: 인터넷등기소
+   자료 2 URL: https://www.iros.go.kr
+   원문: 이사 체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+
+23. 정부24 전입신고 처리 결과 확인하기
+   상태: 미완료
+   일정: 2031-09-02 종일
+   설명: 정부24 또는 주민센터에서 전입신고 처리 상태와 세대주 확인 필요 여부를 확인합니다.
+   완료 기준: 처리 완료 또는 보완 필요 상태를 확인하고 캡처/메모를 남겼다.
+   자료 1 이름: 정부24
+   자료 1 URL: https://www.gov.kr
+   원문: 이사 체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+
+24. 임대차 계약 확정일자 부여 여부 확인하기
+   상태: 미완료
+   일정: 2031-09-02 종일
+   설명: 임대차 계약서 확정일자 신청 여부와 부여일을 별도로 확인합니다.
+   완료 기준: 확정일자 부여일과 계약서 보관 위치를 기록했다.
+   자료 1 이름: 인터넷등기소
+   자료 1 URL: https://www.iros.go.kr
+   원문: 이사 체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+
+계획 원문 이름: 이사 체크리스트 참고
+계획 원문 URL: https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363

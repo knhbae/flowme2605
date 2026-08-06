@@ -1,0 +1,3267 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-06T01:06:57.424Z",
+  "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+  "reviewerRunnable": false,
+  "reasonNotRunnable": [
+    "publication SHA and direct URLs are not assigned",
+    "this local output is not available to Claude Design"
+  ],
+  "observedUsers": 0,
+  "performance": "NOT_ASSESSED",
+  "actualBrowserZoom200": "NOT_ASSESSED",
+  "productCandidateSha": "f97644abf379c46433847f44aa7bd4da7fadac4a",
+  "workingTreeDirty": false,
+  "workingTreeStatus": "",
+  "buildId": "FCcpKvvIBhQ1MuM3V6K7p",
+  "groupManifests": [
+    {
+      "file": "group-manifest-s01-s08.json",
+      "sha256": "28C04107DC0A6DA5AFC9B437EBF45EBE2DEC2F98EDE2EED617CEB2CF91B5875C"
+    },
+    {
+      "file": "group-manifest-s09-s16.json",
+      "sha256": "AA92C9FC24E3F1C46C8D09235F730FD699DCD4A4E40E20EEB19AA5FDFE01CD6F"
+    },
+    {
+      "file": "group-manifest-s17-s23.json",
+      "sha256": "745A4D0A0D0037EB7819C839CD18A0F7D9913A8568E1251AE8D7058217DDFC80"
+    }
+  ],
+  "groupHealth": [
+    {
+      "file": "group-manifest-s01-s08.json",
+      "status": "PASS",
+      "failureCount": 0,
+      "failures": []
+    },
+    {
+      "file": "group-manifest-s09-s16.json",
+      "status": "PASS",
+      "failureCount": 0,
+      "failures": []
+    },
+    {
+      "file": "group-manifest-s17-s23.json",
+      "status": "PASS",
+      "failureCount": 0,
+      "failures": []
+    }
+  ],
+  "groupIdentities": [
+    {
+      "file": "group-manifest-s01-s08.json",
+      "head": "f97644abf379c46433847f44aa7bd4da7fadac4a",
+      "buildId": "FCcpKvvIBhQ1MuM3V6K7p",
+      "dirty": false,
+      "baseUrl": "http://127.0.0.1:3114"
+    },
+    {
+      "file": "group-manifest-s09-s16.json",
+      "head": "f97644abf379c46433847f44aa7bd4da7fadac4a",
+      "buildId": "FCcpKvvIBhQ1MuM3V6K7p",
+      "dirty": false,
+      "baseUrl": "http://127.0.0.1:3114"
+    },
+    {
+      "file": "group-manifest-s17-s23.json",
+      "head": "f97644abf379c46433847f44aa7bd4da7fadac4a",
+      "buildId": "FCcpKvvIBhQ1MuM3V6K7p",
+      "dirty": false,
+      "baseUrl": "http://127.0.0.1:3114"
+    }
+  ],
+  "groupIdentityFailures": [],
+  "candidateProvenance": {
+    "schemaVersion": 1,
+    "generatedAtUtc": "2026-08-06T01:06:56.919Z",
+    "generatedAtKst": "2026-08-06T10:06:56.919+09:00",
+    "classification": "CANDIDATE_BOUND_CAPTURE",
+    "candidateEligible": true,
+    "product": {
+      "sha": "f97644abf379c46433847f44aa7bd4da7fadac4a",
+      "tree": "dc5c83ff160580269b5db4b5582537f229de89fc",
+      "ref": "codex/p35-round2-correction-pprime2-20260805",
+      "upstreamRef": "origin/codex/p35-round2-correction-pprime2-20260805",
+      "upstreamSha": "f97644abf379c46433847f44aa7bd4da7fadac4a",
+      "clean": true,
+      "dirty": false,
+      "statusShortBranchRelativePath": "candidate/git-status-short-branch.txt",
+      "statusShortBranchSha256": "45afcb73d07550427bb5381ff77cd972cb9b80404c48da66846545bd5df1775a",
+      "statusShortBranchByteLength": 102
+    },
+    "runtime": {
+      "buildId": "FCcpKvvIBhQ1MuM3V6K7p",
+      "baseUrl": "http://127.0.0.1:3114",
+      "buildIdentityProbe": {
+        "schemaVersion": 1,
+        "status": "PASS",
+        "url": "http://127.0.0.1:3114/flows",
+        "httpStatus": 200,
+        "byteLength": 12274,
+        "sha256": "ca5607b4b1d0efad1dc72e22bcff216410a5b0e9415b134f592d928be7abfe7f",
+        "containsBuildId": true,
+        "error": null
+      }
+    },
+    "capture": {
+      "candidateEpoch": "p35-r2-5b86b8f359854422",
+      "command": "npm.cmd run evidence:p35-round2:rehearse",
+      "startedAtUtc": "2026-08-06T01:05:43.283Z",
+      "completedAtUtc": "2026-08-06T01:06:32.831Z",
+      "groupManifestIndexRelativePath": "candidate/group-manifest-index.json",
+      "groupManifests": [
+        {
+          "manifest": "group-manifest-s01-s08.json",
+          "head": "f97644abf379c46433847f44aa7bd4da7fadac4a",
+          "dirty": false,
+          "buildId": "FCcpKvvIBhQ1MuM3V6K7p",
+          "baseUrl": "http://127.0.0.1:3114",
+          "startedAt": "2026-08-06T01:05:43.283Z",
+          "completedAt": "2026-08-06T01:05:43.283Z",
+          "browser": "chromium 150.0.7871.188",
+          "os": null,
+          "locale": "ko-KR",
+          "timezone": "Asia/Seoul",
+          "relativePath": "group-manifest-s01-s08.json",
+          "byteLength": 47729,
+          "sha256": "28c04107dc0a6da5afc9b437ebf45ebe2dec2f98ede2eed617ceb2cf91b5875c"
+        },
+        {
+          "manifest": "group-manifest-s09-s16.json",
+          "head": "f97644abf379c46433847f44aa7bd4da7fadac4a",
+          "dirty": false,
+          "buildId": "FCcpKvvIBhQ1MuM3V6K7p",
+          "baseUrl": "http://127.0.0.1:3114",
+          "startedAt": "2026-08-06T10:05:44+09:00",
+          "completedAt": "2026-08-06T10:06:29+09:00",
+          "browser": "Chromium 150.0.7871.188",
+          "os": "Windows_NT 10.0.26200 x64",
+          "locale": "ko-KR",
+          "timezone": "Asia/Seoul",
+          "relativePath": "group-manifest-s09-s16.json",
+          "byteLength": 22211,
+          "sha256": "aa92c9fc24e3f1c46c8d09235f730fd699dcd4a4e40e20eeb19aa5fdfe01cd6f"
+        },
+        {
+          "manifest": "group-manifest-s17-s23.json",
+          "head": "f97644abf379c46433847f44aa7bd4da7fadac4a",
+          "dirty": false,
+          "buildId": "FCcpKvvIBhQ1MuM3V6K7p",
+          "baseUrl": "http://127.0.0.1:3114",
+          "startedAt": "2026-08-06T01:06:32.831Z",
+          "completedAt": "2026-08-06T01:06:32.831Z",
+          "browser": null,
+          "os": null,
+          "locale": null,
+          "timezone": null,
+          "relativePath": "group-manifest-s17-s23.json",
+          "byteLength": 15408,
+          "sha256": "745a4d0a0d0037eb7819c839cd18a0f7d9913a8568e1251ae8d7058217ddfc80"
+        }
+      ]
+    },
+    "seedReset": {
+      "contractRelativePath": "candidate/seed-reset-contract.json",
+      "contractSha256": "f7377e2729b5e07f4c377db94de9bc25d1f2ba0c9cc72c886399d71049909329",
+      "command": "npm.cmd run evidence:p35-round2:rehearse",
+      "result": "THREE_GROUP_MANIFESTS_CAPTURED"
+    },
+    "build": {
+      "schemaVersion": 1,
+      "status": "PASS",
+      "sourceProvided": true,
+      "sourceFileName": "post-push-build.utf8.log",
+      "copiedRelativePath": "candidate/build.log",
+      "command": "npm.cmd run build",
+      "exitCode": 0,
+      "byteLength": 2433,
+      "sha256": "151acac7d1873ba8be03c4d8a1cbd77011097f8f2fd72bae37044630677549d1",
+      "encoding": {
+        "declared": "utf-8",
+        "valid": true,
+        "containsNul": false,
+        "containsReplacementCharacter": false,
+        "error": null
+      },
+      "buildId": "FCcpKvvIBhQ1MuM3V6K7p"
+    },
+    "environment": {
+      "platform": "win32",
+      "osType": "Windows_NT",
+      "osRelease": "10.0.26200",
+      "osVersion": "Windows 11 Home",
+      "architecture": "x64",
+      "node": "v24.17.0",
+      "browsers": [
+        "chromium 150.0.7871.188",
+        "Chromium 150.0.7871.188"
+      ],
+      "operatingSystems": [
+        "Windows_NT 10.0.26200 x64"
+      ],
+      "locales": [
+        "ko-KR"
+      ],
+      "timezones": [
+        "Asia/Seoul"
+      ]
+    },
+    "identityMismatches": [],
+    "cleanCandidateFailures": [],
+    "observedUsers": 0
+  },
+  "candidateManifest": {
+    "schemaVersion": 1,
+    "generatedAtUtc": "2026-08-06T01:06:56.924Z",
+    "classification": "CANDIDATE_BOUND_CAPTURE",
+    "candidateEligible": true,
+    "productCandidateSha": "f97644abf379c46433847f44aa7bd4da7fadac4a",
+    "buildId": "FCcpKvvIBhQ1MuM3V6K7p",
+    "baseUrl": "http://127.0.0.1:3114",
+    "candidateEpoch": "p35-r2-5b86b8f359854422",
+    "artifacts": [
+      {
+        "role": "product_clean_tree_proof",
+        "relativePath": "candidate/git-status-short-branch.txt",
+        "byteLength": 102,
+        "sha256": "45afcb73d07550427bb5381ff77cd972cb9b80404c48da66846545bd5df1775a",
+        "mime": "text/plain; charset=utf-8"
+      },
+      {
+        "role": "seed_reset_contract",
+        "relativePath": "candidate/seed-reset-contract.json",
+        "byteLength": 2048,
+        "sha256": "f7377e2729b5e07f4c377db94de9bc25d1f2ba0c9cc72c886399d71049909329",
+        "mime": "application/json; charset=utf-8"
+      },
+      {
+        "role": "group_manifest_index",
+        "relativePath": "candidate/group-manifest-index.json",
+        "byteLength": 2069,
+        "sha256": "5ef28e41a51382af5bb9555e3ebefcdeb4a814dafb1e9252290f10c332b6ba78",
+        "mime": "application/json; charset=utf-8"
+      },
+      {
+        "role": "build_log",
+        "relativePath": "candidate/build.log",
+        "byteLength": 2433,
+        "sha256": "151acac7d1873ba8be03c4d8a1cbd77011097f8f2fd72bae37044630677549d1",
+        "mime": "text/plain; charset=utf-8"
+      },
+      {
+        "role": "build_metadata",
+        "relativePath": "candidate/build-metadata.json",
+        "byteLength": 509,
+        "sha256": "ebb5dc4fadece9fbf6a2961a1377fe78e2afd4782b0cbf47d13266ea0a040fa8",
+        "mime": "application/json; charset=utf-8"
+      },
+      {
+        "role": "runtime_build_identity",
+        "relativePath": "candidate/runtime-build-identity.json",
+        "byteLength": 253,
+        "sha256": "6271b4562ebe84a95bf47d36c0d2609ac8f5bd0ad5f60b00033219e662c19b5c",
+        "mime": "application/json; charset=utf-8"
+      },
+      {
+        "role": "candidate_provenance",
+        "relativePath": "candidate/candidate-provenance.json",
+        "byteLength": 4789,
+        "sha256": "aeb18c104ce58cbf55eb5359242c41af660901f6695aa6756be29947639ca618",
+        "mime": "application/json; charset=utf-8"
+      }
+    ],
+    "groupManifests": [
+      {
+        "manifest": "group-manifest-s01-s08.json",
+        "relativePath": "group-manifest-s01-s08.json",
+        "byteLength": 47729,
+        "sha256": "28c04107dc0a6da5afc9b437ebf45ebe2dec2f98ede2eed617ceb2cf91b5875c"
+      },
+      {
+        "manifest": "group-manifest-s09-s16.json",
+        "relativePath": "group-manifest-s09-s16.json",
+        "byteLength": 22211,
+        "sha256": "aa92c9fc24e3f1c46c8d09235f730fd699dcd4a4e40e20eeb19aa5fdfe01cd6f"
+      },
+      {
+        "manifest": "group-manifest-s17-s23.json",
+        "relativePath": "group-manifest-s17-s23.json",
+        "byteLength": 15408,
+        "sha256": "745a4d0a0d0037eb7819c839cd18a0f7d9913a8568e1251ae8d7058217ddfc80"
+      }
+    ],
+    "selfInventory": "EXCLUDED_TO_AVOID_RECURSIVE_SELF_HASH"
+  },
+  "candidateArtifacts": [
+    {
+      "relativePath": "candidate/build-metadata.json",
+      "byteLength": 509,
+      "sha256": "EBB5DC4FADECE9FBF6A2961A1377FE78E2AFD4782B0CBF47D13266EA0A040FA8",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "relativePath": "candidate/build.log",
+      "byteLength": 2433,
+      "sha256": "151ACAC7D1873BA8BE03C4D8A1CBD77011097F8F2FD72BAE37044630677549D1",
+      "mime": "application/octet-stream"
+    },
+    {
+      "relativePath": "candidate/candidate-manifest.json",
+      "byteLength": 2967,
+      "sha256": "1EA51E0047974DC7592CAF2B24FF7DF12617B3926A150E0421E5F256B9639DBA",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "relativePath": "candidate/candidate-provenance.json",
+      "byteLength": 4789,
+      "sha256": "AEB18C104CE58CBF55EB5359242C41AF660901F6695AA6756BE29947639CA618",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "relativePath": "candidate/git-status-short-branch.txt",
+      "byteLength": 102,
+      "sha256": "45AFCB73D07550427BB5381FF77CD972CB9B80404C48DA66846545BD5DF1775A",
+      "mime": "text/plain; charset=utf-8"
+    },
+    {
+      "relativePath": "candidate/group-manifest-index.json",
+      "byteLength": 2069,
+      "sha256": "5EF28E41A51382AF5BB9555E3EBEFCDEB4A814DAFB1E9252290F10C332B6BA78",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "relativePath": "candidate/runtime-build-identity.json",
+      "byteLength": 253,
+      "sha256": "6271B4562EBE84A95BF47D36C0D2609AC8F5BD0AD5F60B00033219E662C19B5C",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "relativePath": "candidate/seed-reset-contract.json",
+      "byteLength": 2048,
+      "sha256": "F7377E2729B5E07F4C377DB94DE9BC25D1F2BA0C9CC72C886399D71049909329",
+      "mime": "application/json; charset=utf-8"
+    }
+  ],
+  "manifestIntegrity": {
+    "allowlistedFileCount": 272,
+    "unmanifestedScenarioFileCount": 0,
+    "unmanifestedScenarioFiles": [],
+    "missingManifestFileCount": 0,
+    "missingManifestFiles": [],
+    "hashOrByteFailureCount": 0,
+    "hashOrByteFailures": []
+  },
+  "scenarios": [
+    {
+      "scenarioId": "S01",
+      "title": "URL·메모 lookup 상태",
+      "status": "CANDIDATE_BOUND_LOCAL_CAPTURED",
+      "fileCount": 21,
+      "files": [
+        {
+          "scenarioId": "S01",
+          "relativePath": "S01/01-hit-result.png",
+          "byteLength": 36488,
+          "sha256": "B1A6B966DE70A898628757AEB6329032DF447AF2269B7AB04B0127AE5FD76127",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S01",
+          "relativePath": "S01/01-hit-result.state.json",
+          "byteLength": 9444,
+          "sha256": "90CFBD39C3B0D45D563832366F03C7ACB76AD24F39F6373FE3D4D5ED3C1609E5",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S01",
+          "relativePath": "S01/02-review-hold-result.png",
+          "byteLength": 39008,
+          "sha256": "42FB6161984F5EC824DF02FEB925FA41458AB9081C702312124CDC0B61899223",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S01",
+          "relativePath": "S01/02-review-hold-result.state.json",
+          "byteLength": 6058,
+          "sha256": "F68D2C52B46B8F8313F341759D8FD249A59916D821CE3773D50F98AE4A9FA5AD",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S01",
+          "relativePath": "S01/03-miss-result.png",
+          "byteLength": 38248,
+          "sha256": "8ACF27945645F019513983E8EB7B5D832852FB4E963287D907CBB0909F2510FB",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S01",
+          "relativePath": "S01/03-miss-result.state.json",
+          "byteLength": 6958,
+          "sha256": "6CBDB535CC43C97E65B9C9DB564FB449BD855A5C12E10E427D131297616A6BB7",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S01",
+          "relativePath": "S01/04-empty-native-validation.png",
+          "byteLength": 100277,
+          "sha256": "C900F83EB5E1A4306A2B4B4493C8009E9285D8E710D7A122F0017DA8C574A7C8",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S01",
+          "relativePath": "S01/04-empty-native-validation.state.json",
+          "byteLength": 24094,
+          "sha256": "A10D76CABC6EE204B9A3C7F7819A4CD7DAAE261064F2A56620BFF65C69FDF586",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S01",
+          "relativePath": "S01/05-failure-injection-ui-error.png",
+          "byteLength": 68596,
+          "sha256": "10C107FC563F05D04F0E4C0B5C5C1CAA74EDF5F3B72D24A072CDFE0B5ABE213B",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S01",
+          "relativePath": "S01/05-failure-injection-ui-error.state.json",
+          "byteLength": 11461,
+          "sha256": "34259C678E6E9F69A9422D6BD32C9A6C7EB452FC30F1CEA7957676858A4EFB47",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S01",
+          "relativePath": "S01/lookup-empty.storage-after.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S01",
+          "relativePath": "S01/lookup-empty.storage-before.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S01",
+          "relativePath": "S01/lookup-error-failure-injection.storage-after.json",
+          "byteLength": 394,
+          "sha256": "48213EB02A48D0CF37479D410A28FD1537F70F888FF169F2978D2E540D0454E7",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S01",
+          "relativePath": "S01/lookup-error-failure-injection.storage-before.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S01",
+          "relativePath": "S01/lookup-hit.storage-after.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S01",
+          "relativePath": "S01/lookup-hit.storage-before.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S01",
+          "relativePath": "S01/lookup-miss.storage-after.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S01",
+          "relativePath": "S01/lookup-miss.storage-before.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S01",
+          "relativePath": "S01/lookup-review-hold.storage-after.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S01",
+          "relativePath": "S01/lookup-review-hold.storage-before.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S01",
+          "relativePath": "S01/scenario-summary.json",
+          "byteLength": 2130,
+          "sha256": "DB9C465894E17E2BF56A3FF5FAF3CFACC24DA78DEBC2F388CE61F700CF86551F",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        }
+      ]
+    },
+    {
+      "scenarioId": "S02",
+      "title": "공개 계획의 날짜·capability",
+      "status": "CANDIDATE_BOUND_LOCAL_CAPTURED",
+      "fileCount": 16,
+      "files": [
+        {
+          "scenarioId": "S02",
+          "relativePath": "S02/01-all-dated-public-result.png",
+          "byteLength": 35048,
+          "sha256": "17630CA7DFCEE3730616EDD13CDA8AF84DBE1FE4DBBBCD91587E46C911F8BB91",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S02",
+          "relativePath": "S02/01-all-dated-public-result.state.json",
+          "byteLength": 37310,
+          "sha256": "83449A6D5D0D59BAF9C55B1A77BBB8844F2975644D7B82E65E652F5B53F6D651",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S02",
+          "relativePath": "S02/02-all-undated-public-result.png",
+          "byteLength": 41690,
+          "sha256": "68701EC861CD17B2B8D7F0553FCCD4D4FF358A73D1D4A0AEAA7DC50FEFA00AC0",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S02",
+          "relativePath": "S02/02-all-undated-public-result.state.json",
+          "byteLength": 24809,
+          "sha256": "FB741BE7836954F4ED5D8BC430094AF0E634D533B3CB021D8F7F4FA4CC606825",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S02",
+          "relativePath": "S02/03-dated-undated-mixed-public-result.png",
+          "byteLength": 39183,
+          "sha256": "EB4C54DF66FAEBC57FFE40AD6B8DCED08DC2CC23C7BFEDE2E950D318B86B3723",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S02",
+          "relativePath": "S02/03-dated-undated-mixed-public-result.state.json",
+          "byteLength": 40195,
+          "sha256": "5EEBD8BE368A2E09B40054CB03E4CBC55D36A424A4A77862D6D1DE0824E87962",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S02",
+          "relativePath": "S02/all-dated.capability-manifest.json",
+          "byteLength": 9780,
+          "sha256": "050F1D5CD87FDA0AFA33E461D6769934E86B50E5A8E1DE052146903C79CD3881",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S02",
+          "relativePath": "S02/all-dated.storage-after.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S02",
+          "relativePath": "S02/all-dated.storage-before.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S02",
+          "relativePath": "S02/all-undated.capability-manifest.json",
+          "byteLength": 5366,
+          "sha256": "4AF029333CC4B2AFE78CDC65AC894576192007CF05E8B87947D0702197AB4E6E",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S02",
+          "relativePath": "S02/all-undated.storage-after.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S02",
+          "relativePath": "S02/all-undated.storage-before.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S02",
+          "relativePath": "S02/dated-undated-mixed.capability-manifest.json",
+          "byteLength": 10735,
+          "sha256": "BAFB7CAB6DDEBCA78C5BB4624484F1E451AD0406164CEB272EE6F472E23B366F",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S02",
+          "relativePath": "S02/dated-undated-mixed.storage-after.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S02",
+          "relativePath": "S02/dated-undated-mixed.storage-before.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S02",
+          "relativePath": "S02/scenario-summary.json",
+          "byteLength": 1502,
+          "sha256": "F13B3C3D0AF008AD38E41BB1A8F774985C2EF6774F67603F0729757D8EC7FF12",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        }
+      ]
+    },
+    {
+      "scenarioId": "S03",
+      "title": "공개 Plan·Item 편집 transaction",
+      "status": "CANDIDATE_BOUND_LOCAL_CAPTURED",
+      "fileCount": 23,
+      "files": [
+        {
+          "scenarioId": "S03",
+          "relativePath": "S03/01-plan-editor-dirty-before-cancel.png",
+          "byteLength": 20939,
+          "sha256": "B781974373959C2396D529765FBAB66D01E20BDD25A261C0D51DBEDB9C316203",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S03",
+          "relativePath": "S03/01-plan-editor-dirty-before-cancel.state.json",
+          "byteLength": 30693,
+          "sha256": "90355745A1B21858D263214FF56B7E282CB63F8671E12D197A6029172AAB90CF",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S03",
+          "relativePath": "S03/02-cancel-discard-confirmation.png",
+          "byteLength": 23627,
+          "sha256": "892CA5F45A09010DCF58F8D12D7BACEAD1B4D9E3065548862D4FE95A85B3FE42",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S03",
+          "relativePath": "S03/02-cancel-discard-confirmation.state.json",
+          "byteLength": 32214,
+          "sha256": "A2DF52DBA93DA243B0464481BC7087822861F1720A75988BBE0B0EEF75B192B9",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S03",
+          "relativePath": "S03/03-after-cancel.png",
+          "byteLength": 37563,
+          "sha256": "67F8DB09C410556320F7B3197305E8DA708C945BCACD5ECEDDE3EB5F7E7B13FC",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S03",
+          "relativePath": "S03/03-after-cancel.state.json",
+          "byteLength": 27768,
+          "sha256": "6EEE046D20AB98819D092B4A31183C8ADC0DEAA688AC7F9A2369C00AEADA6B49",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S03",
+          "relativePath": "S03/04-after-plan-apply.png",
+          "byteLength": 37395,
+          "sha256": "212EED24CBF6959BCA206A4818F5C166348C8C1F78EA9826FBE7ABF9A4E1FDF0",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S03",
+          "relativePath": "S03/04-after-plan-apply.state.json",
+          "byteLength": 27034,
+          "sha256": "C99FA2BD9F2FC3C56043F4558544DA9435072974E46A214065984B3FE4DB06A2",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S03",
+          "relativePath": "S03/05-browser-back-discard-confirmation.png",
+          "byteLength": 23387,
+          "sha256": "507A3B89755D47B65D53EBA0E3B9AE3542D103E82D6E950233A3509EA0336375",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S03",
+          "relativePath": "S03/05-browser-back-discard-confirmation.state.json",
+          "byteLength": 32205,
+          "sha256": "E8EFF10E364E654B66AE1F5984FA4C80D7752ED46F78A49BE3FCB14B23A556EF",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S03",
+          "relativePath": "S03/06-browser-back-continue-editing.png",
+          "byteLength": 20270,
+          "sha256": "3728F9EED61C9A53EDBE2086D48087CA18680C281BA2DF01F9E2CE51D07053DF",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S03",
+          "relativePath": "S03/06-browser-back-continue-editing.state.json",
+          "byteLength": 30709,
+          "sha256": "C1834AC12D34F1361760BAB6B986CDA5A64A0A5B7E9EB8D6FD0692A85E7DE46D",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S03",
+          "relativePath": "S03/07-item-validation-error.png",
+          "byteLength": 17679,
+          "sha256": "5FD3B5D87597F38847DE66FF01D070FB2243AB8DB124E4B641976D1EC488C098",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S03",
+          "relativePath": "S03/07-item-validation-error.state.json",
+          "byteLength": 30247,
+          "sha256": "11474C514248F460EA48D7A2E824719F5A867026A67195F10C89E974489ACD6D",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S03",
+          "relativePath": "S03/editor-apply.storage-after.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S03",
+          "relativePath": "S03/editor-apply.storage-before.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S03",
+          "relativePath": "S03/editor-browser-back.storage-after.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S03",
+          "relativePath": "S03/editor-browser-back.storage-before.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S03",
+          "relativePath": "S03/editor-cancel.storage-after.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S03",
+          "relativePath": "S03/editor-cancel.storage-before.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S03",
+          "relativePath": "S03/editor-validation-error.storage-after.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S03",
+          "relativePath": "S03/editor-validation-error.storage-before.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S03",
+          "relativePath": "S03/scenario-summary.json",
+          "byteLength": 1627,
+          "sha256": "D39C16E5CDAE56864E17F23D9FFCC4E2C032ACA76BC72A1CFF3BC18C247C88EF",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        }
+      ]
+    },
+    {
+      "scenarioId": "S04",
+      "title": "저장과 개인 영역 전환",
+      "status": "CANDIDATE_BOUND_LOCAL_CAPTURED",
+      "fileCount": 17,
+      "files": [
+        {
+          "scenarioId": "S04",
+          "relativePath": "S04/01-first-save-destination.png",
+          "byteLength": 26025,
+          "sha256": "6B9AF1E4C85CCE3F3498173594D43E4EEFE29EFA3F8CC7ED335E93003B21A6A5",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S04",
+          "relativePath": "S04/01-first-save-destination.state.json",
+          "byteLength": 15381,
+          "sha256": "5F211F60B2920DA1826CA0637352A09078A6CE3BA22CE84356E70BD8A0D75A5F",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S04",
+          "relativePath": "S04/02-existing-copy-duplicate-choice.png",
+          "byteLength": 44786,
+          "sha256": "E35A744247F6DBC77A751E9C0F5CA1D4F2A16766429AD4653C4701AD373E09A0",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S04",
+          "relativePath": "S04/02-existing-copy-duplicate-choice.state.json",
+          "byteLength": 30121,
+          "sha256": "35EF15325EBC28446247403E1B563536F21CEFF794AB5FAF077BC2725DEE90AF",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S04",
+          "relativePath": "S04/03-new-copy-destination.png",
+          "byteLength": 26109,
+          "sha256": "C087DBA24D8C1FF73F56151C1D6F5A195BB64D0FDAC2DDC3670D7BF046871031",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S04",
+          "relativePath": "S04/03-new-copy-destination.state.json",
+          "byteLength": 15453,
+          "sha256": "C6529E70550BE4C9F1ED59C580DCFC89819532AF4EAFF960A250BF95D65CAA8B",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S04",
+          "relativePath": "S04/04-failure-injection-save-error.png",
+          "byteLength": 38015,
+          "sha256": "7D063072DD9DA454C30871FFD225D9E4084919D3BE8642B65C87F9D5C7059757",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S04",
+          "relativePath": "S04/04-failure-injection-save-error.state.json",
+          "byteLength": 28329,
+          "sha256": "AF879103450F5275FCEC7A7574B9936CA15520CC95679F67023DD0BC06E0E877",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S04",
+          "relativePath": "S04/05-retry-success-destination.png",
+          "byteLength": 25634,
+          "sha256": "125D5F0AB6A9070D4C9A5BFB7CE5ABD09059D4B2923834A3F90D085BBCE0B2DE",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S04",
+          "relativePath": "S04/05-retry-success-destination.state.json",
+          "byteLength": 15403,
+          "sha256": "09D9E9BFFCD981A710B7A7F86A504410BE2444F9418125C708CEF6B9AA46F1A5",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S04",
+          "relativePath": "S04/duplicate.saved-records.json",
+          "byteLength": 1247,
+          "sha256": "49E0498A102F2F9CBEE85D06F92FC61D5640A6D51EBFFD75890D9F1CE187EDD2",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S04",
+          "relativePath": "S04/first-save.saved-record.raw.json",
+          "byteLength": 504,
+          "sha256": "E6ADE75B1F126C3D576B1B08B63D86F30520D36A4BD49604068DF7BE55DD8ED1",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S04",
+          "relativePath": "S04/save-and-duplicate.storage-after.json",
+          "byteLength": 1854,
+          "sha256": "05CCDF8F821ADDA8EBF18098D4B250F5999CD392F7D7469B9ED188E714AAA864",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S04",
+          "relativePath": "S04/save-and-duplicate.storage-before.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S04",
+          "relativePath": "S04/save-retry-failure-injection.storage-after.json",
+          "byteLength": 1013,
+          "sha256": "78DFC36148E323CB74D51A75B9352F28C0FC1F158FEC4C2221C1C1E444FF6B0B",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S04",
+          "relativePath": "S04/save-retry-failure-injection.storage-before.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S04",
+          "relativePath": "S04/scenario-summary.json",
+          "byteLength": 1194,
+          "sha256": "8593D22E155A8EB22DBC91302091744176C9501B6DED707A25BBD99CFDC86E75",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        }
+      ]
+    },
+    {
+      "scenarioId": "S05",
+      "title": "저장 계획의 결과 이동",
+      "status": "CANDIDATE_BOUND_LOCAL_CAPTURED",
+      "fileCount": 12,
+      "files": [
+        {
+          "scenarioId": "S05",
+          "relativePath": "S05/01-saved-transfer-confirmation.png",
+          "byteLength": 81396,
+          "sha256": "E5B0AF35AAC2F309DF89440D704635CB962517D965F630EE9997646236C6D3FE",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S05",
+          "relativePath": "S05/01-saved-transfer-confirmation.state.json",
+          "byteLength": 54372,
+          "sha256": "65A067359A01E73D4451C8264B7B82AB2F84372D3ECC8A2729BA9BF3FFA00FD9",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S05",
+          "relativePath": "S05/02-saved-transfer-receipt.png",
+          "byteLength": 77910,
+          "sha256": "0593C99DCB0B794DE1211F113F3440E034A2C1ED036AB2FC735DD0E5CFC32F40",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S05",
+          "relativePath": "S05/02-saved-transfer-receipt.state.json",
+          "byteLength": 52685,
+          "sha256": "3927EB7481C16DEBB6B967486937AD81798312B0F96D7C732FB8DA3377679A61",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S05",
+          "relativePath": "S05/03-reopened-persisted-receipt.png",
+          "byteLength": 71841,
+          "sha256": "84BC2AEBC87D805E70C7D92600AFEBA59090DDF2B6520775B42E3FE5D1E89C57",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S05",
+          "relativePath": "S05/03-reopened-persisted-receipt.state.json",
+          "byteLength": 51832,
+          "sha256": "47669AC1137F84D81A69E0370128B8BF05D7FFBAD39E1E018F827EC44C04D729",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S05",
+          "relativePath": "S05/checklist-transfer.raw.txt",
+          "byteLength": 3754,
+          "sha256": "18E9A2FE3572EE267C1972FC56375F1E9A02C55ADA26EBADEAB18883E8F0D763",
+          "mime": "text/plain; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S05",
+          "relativePath": "S05/receipt-storage.raw.json",
+          "byteLength": 2633,
+          "sha256": "4507C366D7D6ACC9218E70C807C5DBD5BC8540198303D588BFFA677600D9D44A",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S05",
+          "relativePath": "S05/saved-checklist-transfer.storage-after.json",
+          "byteLength": 3940,
+          "sha256": "FF361752FF15C0230900B6DFBE8BC16B637486B724069F8CBF98CF15EA8F0658",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S05",
+          "relativePath": "S05/saved-checklist-transfer.storage-before.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S05",
+          "relativePath": "S05/scenario-summary.json",
+          "byteLength": 825,
+          "sha256": "015C3E5DCA7E42001F32155F18471976BD6D9577785B6CE93891EFB237602F06",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S05",
+          "relativePath": "S05/transfer-transport.json",
+          "byteLength": 189,
+          "sha256": "307F72E98B0EF6571E2D1BB99B377DBE91EDF4578D06577EC43AEA867814B8CF",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        }
+      ]
+    },
+    {
+      "scenarioId": "S06",
+      "title": "내 계획 0·1·5·20과 Today/Todo",
+      "status": "CANDIDATE_BOUND_LOCAL_CAPTURED",
+      "fileCount": 26,
+      "files": [
+        {
+          "scenarioId": "S06",
+          "relativePath": "S06/01-zero-plans-library.png",
+          "byteLength": 19128,
+          "sha256": "BC385D0A25DDAD1133DDA34FA37ED7A92F4A14ADD6389001F8DCF0A6857EF08B",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S06",
+          "relativePath": "S06/01-zero-plans-library.state.json",
+          "byteLength": 5392,
+          "sha256": "5E5E62AE693A177D4A6E10CE0429336747E044A09CDCF08D388F17CB194ADA61",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S06",
+          "relativePath": "S06/02-one-dated-plan-library.png",
+          "byteLength": 17398,
+          "sha256": "3CEE6F44660DC9F07C86A6C622A8E43B8505CE0923FAA79B0B7B807560C1724A",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S06",
+          "relativePath": "S06/02-one-dated-plan-library.state.json",
+          "byteLength": 6715,
+          "sha256": "2249C02D89D56B68B37C07936883BBFEA4CFA99C39494A4C842627804B562860",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S06",
+          "relativePath": "S06/03-one-undated-plan-library.png",
+          "byteLength": 17595,
+          "sha256": "08438B6D5E1EF7417F96199FB79024A29FFE3F1EE47F5174DDAF50F94D7330D7",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S06",
+          "relativePath": "S06/03-one-undated-plan-library.state.json",
+          "byteLength": 6718,
+          "sha256": "F2DF35B6ACC496435F476D05FA71A095FB1F8AC1F886DE01D42CAD0B8CBF671A",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S06",
+          "relativePath": "S06/04-five-plans-library.png",
+          "byteLength": 43191,
+          "sha256": "3547C226F0CFA148325C52738B94898C556E9F3C30C20B383CAED73860201BCA",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S06",
+          "relativePath": "S06/04-five-plans-library.state.json",
+          "byteLength": 11999,
+          "sha256": "041C120CCBE3AE0076EBD082619F343CD0A6172966D5DFDBA50B1B1FE0E508F2",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S06",
+          "relativePath": "S06/05-twenty-plans-library.png",
+          "byteLength": 91347,
+          "sha256": "625751DD8B2C9FCEB2CBED50EF322BEB1B23B4DBBBEC3B4EBFBA7772A3AE9CEA",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S06",
+          "relativePath": "S06/05-twenty-plans-library.state.json",
+          "byteLength": 24965,
+          "sha256": "072F358AD73913B2E8B4260A4C0DA40CF50CB780B1E60D84CE4F1C8975BB6E87",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S06",
+          "relativePath": "S06/five-plans.library-state.json",
+          "byteLength": 324,
+          "sha256": "0D12E97E0F0006D5485762051F8DE8D7901D7B62BBD65E8EE615F83FCF0A5C2B",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S06",
+          "relativePath": "S06/five-plans.storage-after.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S06",
+          "relativePath": "S06/five-plans.storage-before.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S06",
+          "relativePath": "S06/one-dated-plan.library-state.json",
+          "byteLength": 185,
+          "sha256": "485B9CE82C2219BF0AE0982C6FCF7A59F15E89DBC93AB784B58B14AFCE9340F4",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S06",
+          "relativePath": "S06/one-dated-plan.storage-after.json",
+          "byteLength": 329,
+          "sha256": "09F519E90236DAD2904C60F99A4D954AD11CDDBF5CD87C70748E62FB547A7852",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S06",
+          "relativePath": "S06/one-dated-plan.storage-before.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S06",
+          "relativePath": "S06/one-undated-plan.library-state.json",
+          "byteLength": 185,
+          "sha256": "485B9CE82C2219BF0AE0982C6FCF7A59F15E89DBC93AB784B58B14AFCE9340F4",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S06",
+          "relativePath": "S06/one-undated-plan.storage-after.json",
+          "byteLength": 214,
+          "sha256": "329450FC5646B2A2FA6F1412FC625F33A702066D72B39C45FF4E331262030C06",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S06",
+          "relativePath": "S06/one-undated-plan.storage-before.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S06",
+          "relativePath": "S06/scenario-summary.json",
+          "byteLength": 3901,
+          "sha256": "1980025D9705CD73148A506A0FFA4DF5B68F1AAA7C948CDBE823A0B9A1BFE485",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S06",
+          "relativePath": "S06/twenty-plans.library-state.json",
+          "byteLength": 826,
+          "sha256": "2C0016717651240E3C046985D389070F0DDBE659CABD334C8AB320A79D40180E",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S06",
+          "relativePath": "S06/twenty-plans.storage-after.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S06",
+          "relativePath": "S06/twenty-plans.storage-before.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S06",
+          "relativePath": "S06/zero-plans.library-state.json",
+          "byteLength": 184,
+          "sha256": "5EB00C412EEF6E0738FEF91EE34456DB33653DC30FB43B13D241E7EE30BEC582",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S06",
+          "relativePath": "S06/zero-plans.storage-after.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S06",
+          "relativePath": "S06/zero-plans.storage-before.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        }
+      ]
+    },
+    {
+      "scenarioId": "S07",
+      "title": "항목 상세·메모·완료·되돌리기",
+      "status": "CANDIDATE_BOUND_LOCAL_CAPTURED",
+      "fileCount": 18,
+      "files": [
+        {
+          "scenarioId": "S07",
+          "relativePath": "S07/01-item-detail-open.png",
+          "byteLength": 56324,
+          "sha256": "BD987C9B13F768B2AE89615BA6EBA645B20237DBC98E0F1061089B377852356D",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S07",
+          "relativePath": "S07/01-item-detail-open.state.json",
+          "byteLength": 40566,
+          "sha256": "6AA2121BE7294BF6FBAA08132729AF2BD72BDAE0202A915C314F25695C48E61B",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S07",
+          "relativePath": "S07/02-item-editor-open.png",
+          "byteLength": 52572,
+          "sha256": "9B7F0E6AA3F23EEF07BFDF6CE2BCAE78B5808698C5A48F19B98EAFCBF8EA0967",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S07",
+          "relativePath": "S07/02-item-editor-open.state.json",
+          "byteLength": 45784,
+          "sha256": "3B66BF5DD12B92C7E42F94AB0F161F2F78B90387C5539780D3806AC41AE29831",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S07",
+          "relativePath": "S07/03-memo-saved.png",
+          "byteLength": 56324,
+          "sha256": "BD987C9B13F768B2AE89615BA6EBA645B20237DBC98E0F1061089B377852356D",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S07",
+          "relativePath": "S07/03-memo-saved.state.json",
+          "byteLength": 40482,
+          "sha256": "5F85E4262831F9CF07C09E469C6EF50A0A4905E615743476649727381C276B35",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S07",
+          "relativePath": "S07/04-memo-reopened.png",
+          "byteLength": 56324,
+          "sha256": "BD987C9B13F768B2AE89615BA6EBA645B20237DBC98E0F1061089B377852356D",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S07",
+          "relativePath": "S07/04-memo-reopened.state.json",
+          "byteLength": 40491,
+          "sha256": "2BB1FF36CB77501E5FFDBAB03B39D041BA86CA3F7E14BDD6EBAB6F4A5F5B0169",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S07",
+          "relativePath": "S07/05-item-completed.png",
+          "byteLength": 58890,
+          "sha256": "9EE81F724D2BB7EC09DE47255B3EE7492D6AE29674A3215B57A4996F6E31108F",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S07",
+          "relativePath": "S07/05-item-completed.state.json",
+          "byteLength": 40886,
+          "sha256": "EB63C845908DB190B0C5562285358659FBFCDA0F35777FC5D64270504DE87C8D",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S07",
+          "relativePath": "S07/06-item-reopened.png",
+          "byteLength": 56331,
+          "sha256": "A28BDB798D161079D37E51E05730E7D19858436B70B69A3240FA862B4A94E296",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S07",
+          "relativePath": "S07/06-item-reopened.state.json",
+          "byteLength": 41131,
+          "sha256": "FC55B2E540EB57F67F536FE5F3CF478340A374CB3939AD43503A0234F9871C96",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S07",
+          "relativePath": "S07/07-after-reload.png",
+          "byteLength": 22343,
+          "sha256": "19F85D31FFF223D725F479843FB8F2835C69AEC186135F2E76C46571C263AE4B",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S07",
+          "relativePath": "S07/07-after-reload.state.json",
+          "byteLength": 14002,
+          "sha256": "F46725EB8C024BBD6249731532ADA13C2A7F75488CA02C7F2EFA35744F9274CC",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S07",
+          "relativePath": "S07/detail-edit-memo-complete-reopen.storage-after.json",
+          "byteLength": 1999,
+          "sha256": "04199CB3CF4993180F81F803A6A3B5C5C073782CC5749D7AD2622D178ACD4C88",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S07",
+          "relativePath": "S07/detail-edit-memo-complete-reopen.storage-before.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S07",
+          "relativePath": "S07/item-state.raw.json",
+          "byteLength": 1594,
+          "sha256": "6B43EC3DC11D965101742EEC3652775845ACB49BF02CD1F7714BBAE25A0F71CB",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S07",
+          "relativePath": "S07/scenario-summary.json",
+          "byteLength": 799,
+          "sha256": "3AEC5292A966040883A06D65CD714138FE3BA61B3CF148F0A5539FFC6BB72954",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        }
+      ]
+    },
+    {
+      "scenarioId": "S08",
+      "title": "저장 계획 편집·취소·오류·reload",
+      "status": "CANDIDATE_BOUND_LOCAL_CAPTURED",
+      "fileCount": 15,
+      "files": [
+        {
+          "scenarioId": "S08",
+          "relativePath": "S08/01-saved-editor-dirty-before-cancel.png",
+          "byteLength": 57020,
+          "sha256": "3BCE1B3258E16D5B531832BC7168BC0FC1238FE59350DEBFBB38302D88179CE7",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S08",
+          "relativePath": "S08/01-saved-editor-dirty-before-cancel.state.json",
+          "byteLength": 75603,
+          "sha256": "024888377C74A17373C382D306349FC87F76881431B3F18B1AB8E1B1EE9B5E05",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S08",
+          "relativePath": "S08/02-saved-editor-cancel-confirmation.png",
+          "byteLength": 57906,
+          "sha256": "3ED6204A7437D692DF5B180E7000C3D33D1C3D4B93124FCD90387C518909AB5F",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S08",
+          "relativePath": "S08/02-saved-editor-cancel-confirmation.state.json",
+          "byteLength": 76995,
+          "sha256": "4C4DF2B1C66CC2D0D92279726CD359532427A45A8906E82A6E06FC763DC5D589",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S08",
+          "relativePath": "S08/03-failure-injection-recoverable-error.png",
+          "byteLength": 57386,
+          "sha256": "4F7F06B868825664CA37E089B350A9AEF6AEF7184EAD11F4353615680B914582",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S08",
+          "relativePath": "S08/03-failure-injection-recoverable-error.state.json",
+          "byteLength": 76639,
+          "sha256": "489959C391D5CFD0741077AB4DA60C87BF686D319774C7BC2162CAC0F82A4DFF",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S08",
+          "relativePath": "S08/04-retry-saved-plan.png",
+          "byteLength": 53540,
+          "sha256": "69847F2DED9DFE1C09AD13C0EBB58426DB21CD56C1513D4E8623BF05C9D0700D",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S08",
+          "relativePath": "S08/04-retry-saved-plan.state.json",
+          "byteLength": 27129,
+          "sha256": "EFEF8F7D8513715C6EC3343E13D648B6D76BEDCD4E2D5718F0EB7751C3B19E4E",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S08",
+          "relativePath": "S08/05-saved-editor-reload-persisted.png",
+          "byteLength": 50656,
+          "sha256": "FAA2CFC67266235E6578552E691294F5291496843D6F55691BF6637BFB911097",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S08",
+          "relativePath": "S08/05-saved-editor-reload-persisted.state.json",
+          "byteLength": 26795,
+          "sha256": "13F418C658E1F49A141CB7EA8B821700D2BFB3F0C31B6FDAA0516074F0A735AA",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S08",
+          "relativePath": "S08/cancel-byte-comparison.json",
+          "byteLength": 2111,
+          "sha256": "B1AE08A367FB88A4B5260388A5D65A35B55D74A7A88133833CCCF1451554B3E2",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S08",
+          "relativePath": "S08/reloaded-saved-record.raw.json",
+          "byteLength": 560,
+          "sha256": "7A46D1C0EBD0E148533587CAC8EFD8C0131A54A527CE59E9343F53889B546C4F",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S08",
+          "relativePath": "S08/saved-editor-cancel-error-reload.storage-after.json",
+          "byteLength": 2176,
+          "sha256": "332964F4C11C9DBEF6699A3970CA08094771AA4EC9A71BBC8B9DA22797518681",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S08",
+          "relativePath": "S08/saved-editor-cancel-error-reload.storage-before.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S08",
+          "relativePath": "S08/scenario-summary.json",
+          "byteLength": 906,
+          "sha256": "1FF15202D4F59942AEEF559BEEF40105127027EFF3B5F99BE434FC596510CDAF",
+          "mime": "application/json; charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        }
+      ]
+    },
+    {
+      "scenarioId": "S09",
+      "title": "형식별 fidelity",
+      "status": "CANDIDATE_BOUND_LOCAL_CAPTURED",
+      "fileCount": 18,
+      "files": [
+        {
+          "scenarioId": "S09",
+          "relativePath": "S09/01-calendar-confirmation-full.png",
+          "byteLength": 92181,
+          "sha256": "480026404EC1D183602310333C866A55B599D987F322DCCE6FC0C078C1554008",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S09",
+          "relativePath": "S09/02-calendar-receipt-full.png",
+          "byteLength": 88306,
+          "sha256": "248DE875666E77EDE28F6B4A004D47D867F511996678237124980FD9711E2437",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S09",
+          "relativePath": "S09/03-checklist-confirmation-full.png",
+          "byteLength": 91532,
+          "sha256": "21F4D45585D274E2BD88BC2B70480A27A55D9DF6110A0CEC907EE99127E6413D",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S09",
+          "relativePath": "S09/04-checklist-receipt-full.png",
+          "byteLength": 87428,
+          "sha256": "9D12664F83A3F7E51BBCCBA957615FA4937E007961948B97932C021AC7E845CA",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S09",
+          "relativePath": "S09/05-sheet-confirmation-full.png",
+          "byteLength": 82202,
+          "sha256": "154B6D9D01D442EEAFC7BE59F711285353EDF5AAF48482FCE4BAF2A77166EC17",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S09",
+          "relativePath": "S09/06-sheet-receipt-full.png",
+          "byteLength": 81908,
+          "sha256": "2C39EFC2AEFA29D7650BB93AE2B4EDC4DA2BDDDB07374011E26DA0E476D4FCD2",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S09",
+          "relativePath": "S09/07-memo-confirmation-full.png",
+          "byteLength": 90348,
+          "sha256": "669CB7C343BF00B0F426AFD01965EECAC87A9E471B627841DF2557C08A445341",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S09",
+          "relativePath": "S09/08-memo-receipt-full.png",
+          "byteLength": 86259,
+          "sha256": "7132E9A0E7DAC35A0293BB1B88D5E7DFBD6A2968283A2D569799CF4B728FF0FC",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S09",
+          "relativePath": "S09/09-undated-calendar-recovery-full.png",
+          "byteLength": 88333,
+          "sha256": "20D06FC079234F09425A82F121F85617EFE1F1BDBB13F20AC66F95DD0E25E80C",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S09",
+          "relativePath": "S09/console.json",
+          "byteLength": 3,
+          "sha256": "37517E5F3DC66819F61F5A7BB8ACE1921282415F10551D2DEFA5C3EB0985B570",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S09",
+          "relativePath": "S09/network.json",
+          "byteLength": 9210,
+          "sha256": "8E703400BB5EA6C3BA08D77CFA1FC18913B2676861DDD5080D52B1946B02E143",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S09",
+          "relativePath": "S09/raw/moving-d30-basic-calendar.ics",
+          "byteLength": 19077,
+          "sha256": "1D0E1B3D901F73EFB9FE46CB4B5B1A642A2B96E20FEF53419194D512CCC9C6C8",
+          "mime": "text/calendar;charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S09",
+          "relativePath": "S09/raw/moving-d30-basic-checklist.txt",
+          "byteLength": 3754,
+          "sha256": "6FBF3640408CDF00C73901A9B6BC558D7EA2137EAFCDAA9154405200009D5EED",
+          "mime": "text/plain;charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S09",
+          "relativePath": "S09/raw/moving-d30-basic-memo.md",
+          "byteLength": 8588,
+          "sha256": "1FC48FB95889E122272B6C6F943917682EBB56C6418337F304CCD5893ECA9B67",
+          "mime": "text/markdown;charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S09",
+          "relativePath": "S09/raw/moving-d30-basic-sheet.tsv",
+          "byteLength": 11650,
+          "sha256": "E63BE97D2A3FBACBE76A1FFE013FF404534F11412B5E82CFBCCC7CBEC7779730",
+          "mime": "text/tab-separated-values;charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S09",
+          "relativePath": "S09/state.json",
+          "byteLength": 34953,
+          "sha256": "A1CACCCADC32D1A2327BBB49B74B85869AE89192979524D34D411FDF4708F371",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S09",
+          "relativePath": "S09/storage-after.json",
+          "byteLength": 228,
+          "sha256": "D286D34F872456969D58352B577FD3B3D765C5F5086A5847075BFDB1FB261E32",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S09",
+          "relativePath": "S09/storage-before.json",
+          "byteLength": 329,
+          "sha256": "23C08E99C47255AE632D1738E07722BC1CC338B4A147F8DC2CE2A5F0FBC18C23",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        }
+      ]
+    },
+    {
+      "scenarioId": "S10",
+      "title": "Flow Map 선택·보류·충돌",
+      "status": "CANDIDATE_BOUND_LOCAL_CAPTURED",
+      "fileCount": 12,
+      "files": [
+        {
+          "scenarioId": "S10",
+          "relativePath": "S10/01-choose-child-full.png",
+          "byteLength": 33213,
+          "sha256": "053B7C1AE6BEC98C9CA574F3A3FB4C8E44F1D03EB02187B4CC08F4C04C58D750",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S10",
+          "relativePath": "S10/02-review-hold-full.png",
+          "byteLength": 27905,
+          "sha256": "B86DB6B7F7F0E6F193D4A981C7CA5D74078B681547199ABB6EF77CEDEA59917C",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S10",
+          "relativePath": "S10/03-save-all-editor-full.png",
+          "byteLength": 22779,
+          "sha256": "835811F8B26B4BEA2C5188FEDA871F03569B8B7D9E6B7AAE11CF95EC6A54E0AF",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S10",
+          "relativePath": "S10/04-save-all-adjusted-full.png",
+          "byteLength": 28619,
+          "sha256": "88FB25B6DCF6A9CB7CC3E63AA5DB92E40AAAC387EEF55FC8BD607C1B6C30EB8A",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S10",
+          "relativePath": "S10/05-save-all-failure-full.png",
+          "byteLength": 31377,
+          "sha256": "0C97ED03D79F91EDED45CE8396E2BD5B29E8DA4D8C534D752BFC9E72EC3DEE21",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S10",
+          "relativePath": "S10/06-save-all-success-full.png",
+          "byteLength": 34707,
+          "sha256": "DEE15361468062F2F6C59523D58BB4D70362BA8F71FEBB9BFA8C5F850FA409DD",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S10",
+          "relativePath": "S10/console.json",
+          "byteLength": 3,
+          "sha256": "37517E5F3DC66819F61F5A7BB8ACE1921282415F10551D2DEFA5C3EB0985B570",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S10",
+          "relativePath": "S10/network.json",
+          "byteLength": 7230,
+          "sha256": "068D469B04FD79C839B56282796687B7C2AA0484673A69A3B6A269E7877B3048",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S10",
+          "relativePath": "S10/raw/storage-journal.json",
+          "byteLength": 10583,
+          "sha256": "4049F22A0A9E141BADF87612270CD3C6C84DC07F61B5DB2A5A6DF72E3CE581D1",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S10",
+          "relativePath": "S10/state.json",
+          "byteLength": 5354,
+          "sha256": "EE4B6D07AE15EA045417BD4F22CA76782DC9457EB6C5E82D56627E73246A793B",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S10",
+          "relativePath": "S10/storage-after.json",
+          "byteLength": 10424,
+          "sha256": "BEE5578DB4247F289B586C35231360B037C8E931FE8978A9287569C3C852A79A",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S10",
+          "relativePath": "S10/storage-before.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        }
+      ]
+    },
+    {
+      "scenarioId": "S11",
+      "title": "도움·조건·주의 disclosure",
+      "status": "CANDIDATE_BOUND_LOCAL_CAPTURED",
+      "fileCount": 11,
+      "files": [
+        {
+          "scenarioId": "S11",
+          "relativePath": "S11/01-help-closed-full.png",
+          "byteLength": 37932,
+          "sha256": "59F147B54AEDE8B4F9C362D9B22504351092ECF40518A096DC6F5C25E13D069E",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S11",
+          "relativePath": "S11/02-help-open-enter-full.png",
+          "byteLength": 39060,
+          "sha256": "07EB1153CDB0EA42473210311F4D147EA7AAAAA09ECEFA8F72BAC28A44C3D38A",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S11",
+          "relativePath": "S11/03-condition-result-full.png",
+          "byteLength": 46206,
+          "sha256": "3D396B00298C9A79D1818E3695C8395C03AE1F9569852CD75FA29D8DC4D1F04C",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S11",
+          "relativePath": "S11/04-condition-editor-open-full.png",
+          "byteLength": 29299,
+          "sha256": "DA311A9B61FAC5B254BF798E5C108DDF139FFE3205D43665C9B0D48FF1429CFD",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S11",
+          "relativePath": "S11/05-warning-closed-full.png",
+          "byteLength": 76416,
+          "sha256": "196425643EE96434D1D68E36EEF2253DF8DF250C98C028514C309C003A6866B8",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S11",
+          "relativePath": "S11/06-warning-open-full.png",
+          "byteLength": 79113,
+          "sha256": "F0CE9D95FEEF1C05B630CFC525030B1079BAE8E01B18A6F45422FB87818A20DF",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S11",
+          "relativePath": "S11/console.json",
+          "byteLength": 3,
+          "sha256": "37517E5F3DC66819F61F5A7BB8ACE1921282415F10551D2DEFA5C3EB0985B570",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S11",
+          "relativePath": "S11/network.json",
+          "byteLength": 5136,
+          "sha256": "31D51907BAD9937A318A9CA5F3C371518B24AC3B88317B721585B2A60D112427",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S11",
+          "relativePath": "S11/state.json",
+          "byteLength": 6287,
+          "sha256": "C2C2244BB701ADDE926D8FBC67733766442B8E9152ABEA04638E2F06B5DA1AA7",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S11",
+          "relativePath": "S11/storage-after.json",
+          "byteLength": 329,
+          "sha256": "23C08E99C47255AE632D1738E07722BC1CC338B4A147F8DC2CE2A5F0FBC18C23",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S11",
+          "relativePath": "S11/storage-before.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        }
+      ]
+    },
+    {
+      "scenarioId": "S12",
+      "title": "Back·reload·duplicate·retry·failure",
+      "status": "CANDIDATE_BOUND_LOCAL_CAPTURED",
+      "fileCount": 12,
+      "files": [
+        {
+          "scenarioId": "S12",
+          "relativePath": "S12/01-duplicate-pending-lock-full.png",
+          "byteLength": 76580,
+          "sha256": "D90852473A41761864F01495F52BC566D3C623B069BC5F654676411C8623D741",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S12",
+          "relativePath": "S12/02-duplicate-one-receipt-full.png",
+          "byteLength": 76124,
+          "sha256": "2C0C7921E054E17760D9AE5FB4470586A1BA9257A7DFFB9128C6766E934EC4C1",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S12",
+          "relativePath": "S12/03-receipt-reloaded-full.png",
+          "byteLength": 75466,
+          "sha256": "9372B31DC1BEC9979037D998AF4F34DD33499F60021603FE45E192B93EE8DED7",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S12",
+          "relativePath": "S12/04-receipt-storage-failure-full.png",
+          "byteLength": 78930,
+          "sha256": "F0225D1B6A30B494EEF9DCE6DDF32573A17393C7416E563265E4C64514BFED2C",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S12",
+          "relativePath": "S12/05-receipt-only-retry-full.png",
+          "byteLength": 76108,
+          "sha256": "57ABE3EAC5AFA1261F29613BAE53A9B5DC150C78346D472CF15AA8FDF1FADE71",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S12",
+          "relativePath": "S12/06-back-closes-editor-full.png",
+          "byteLength": 37639,
+          "sha256": "C1C0A75304BA67604A41C16FC8A02EAD01B9340B43729784C27F2AA20A74185C",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S12",
+          "relativePath": "S12/console.json",
+          "byteLength": 3,
+          "sha256": "37517E5F3DC66819F61F5A7BB8ACE1921282415F10551D2DEFA5C3EB0985B570",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S12",
+          "relativePath": "S12/network.json",
+          "byteLength": 10509,
+          "sha256": "DE56B475F6D46601C83B2FAC8D18F6748475A6138967B2AB2E7E6C853E367EA1",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S12",
+          "relativePath": "S12/raw/journals.json",
+          "byteLength": 7461,
+          "sha256": "E95CFA84F8CAA1994683DB8982B80F48601A0A28708751F9C8F9E0FB8EF6C12D",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S12",
+          "relativePath": "S12/state.json",
+          "byteLength": 17820,
+          "sha256": "FCF8D14953F5ACA8A27D5A312FB3C37DA8D91DED75E02870B0C4DF4BFBBD1482",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S12",
+          "relativePath": "S12/storage-after.json",
+          "byteLength": 3154,
+          "sha256": "EA23A752618545CA7C02CE4D1E70113C5E6DB1814160B9A46E9D3D0F0572B9F0",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S12",
+          "relativePath": "S12/storage-before.json",
+          "byteLength": 329,
+          "sha256": "23C08E99C47255AE632D1738E07722BC1CC338B4A147F8DC2CE2A5F0FBC18C23",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        }
+      ]
+    },
+    {
+      "scenarioId": "S13",
+      "title": "legacy·malformed·missing-base",
+      "status": "CANDIDATE_BOUND_LOCAL_CAPTURED",
+      "fileCount": 13,
+      "files": [
+        {
+          "scenarioId": "S13",
+          "relativePath": "S13/01-source-backed-read-full.png",
+          "byteLength": 21946,
+          "sha256": "FB4E1B09863311A266CB61521B9DE9534AAFE4C1646E3D4F7A5D76A41162649F",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S13",
+          "relativePath": "S13/02-missing-base-full.png",
+          "byteLength": 18017,
+          "sha256": "85EFE943DF0CA9451451C6C00E2966D0A3F49D34E783C2692C6A4B0CA466F30A",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S13",
+          "relativePath": "S13/03-malformed-full.png",
+          "byteLength": 18017,
+          "sha256": "85EFE943DF0CA9451451C6C00E2966D0A3F49D34E783C2692C6A4B0CA466F30A",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S13",
+          "relativePath": "S13/console.json",
+          "byteLength": 3,
+          "sha256": "37517E5F3DC66819F61F5A7BB8ACE1921282415F10551D2DEFA5C3EB0985B570",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S13",
+          "relativePath": "S13/network.json",
+          "byteLength": 4851,
+          "sha256": "7E64EA4F8A436295DCE4A31BE7DD0825858D890A74942F585814C6A4DEE14510",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S13",
+          "relativePath": "S13/raw/before-after-hashes.json",
+          "byteLength": 1135,
+          "sha256": "EA534A1D2D6A177C93EDD15D2AE9126E8566D44E989F189FBF4CFE89B3836DB2",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S13",
+          "relativePath": "S13/raw/malformed.txt",
+          "byteLength": 9,
+          "sha256": "F1DEC6E9EE608550BD1C39FF2B90134059BAC5D02E4E78F6410AED2FBD870BD0",
+          "mime": "text/plain;charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S13",
+          "relativePath": "S13/raw/missingBase.txt",
+          "byteLength": 124,
+          "sha256": "3F085C17F15BD39A8FBCA50DAC41A5BED59418A7F9CF0F13022A248F88225A98",
+          "mime": "text/plain;charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S13",
+          "relativePath": "S13/raw/sentinel.txt",
+          "byteLength": 21,
+          "sha256": "5EC7985E0463FE414310AE9EB324998396C233FEA078F5FA90F51792817ED144",
+          "mime": "text/plain;charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S13",
+          "relativePath": "S13/raw/sourceBacked.txt",
+          "byteLength": 129,
+          "sha256": "3442606576E8569989183FDF2883B207F7A0EC83893D9D2D58D65CBCDDBBB685",
+          "mime": "text/plain;charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S13",
+          "relativePath": "S13/state.json",
+          "byteLength": 3641,
+          "sha256": "1BB09C91220405B6578FA335A071AD9B33B3CC2650FA43A7422DE0E85D106572",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S13",
+          "relativePath": "S13/storage-after.json",
+          "byteLength": 592,
+          "sha256": "A81BF0845380E8242B26B8A13B42686FCF78C17C6984E47E1526DB1876DC9AEA",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S13",
+          "relativePath": "S13/storage-before.json",
+          "byteLength": 592,
+          "sha256": "A81BF0845380E8242B26B8A13B42686FCF78C17C6984E47E1526DB1876DC9AEA",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        }
+      ]
+    },
+    {
+      "scenarioId": "S14",
+      "title": "1·8·24·50 Items와 긴 텍스트",
+      "status": "CANDIDATE_BOUND_LOCAL_CAPTURED",
+      "fileCount": 19,
+      "files": [
+        {
+          "scenarioId": "S14",
+          "relativePath": "S14/01-01-items-editor-full.png",
+          "byteLength": 21293,
+          "sha256": "D637B757A01A032B1F68AFA432A5F37DFF4B6381590E502C7816EF4EC9594077",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S14",
+          "relativePath": "S14/02-08-items-editor-full.png",
+          "byteLength": 48876,
+          "sha256": "B7F9DFE5178AD6D7759D9FE7B3F3FEDCD122C05E55527DEFE8F621BFCFF7547B",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S14",
+          "relativePath": "S14/03-24-items-editor-full.png",
+          "byteLength": 76496,
+          "sha256": "AE678443904695E58A17A854DC2EA1DC9E070C5A330F8F6A916940B524CB612B",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S14",
+          "relativePath": "S14/04-50-items-editor-full.png",
+          "byteLength": 121721,
+          "sha256": "BA351753DBEC8DDDA61AC2507B9BBCDC25BAA69241D5A3B5009ADC0B074BB942",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S14",
+          "relativePath": "S14/05-50-items-artifact-receipt-full.png",
+          "byteLength": 83233,
+          "sha256": "6600159803B14EB718FA29C2F4F0D5BE0277215A8EDBCDCFF4E139FAE6B07425",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S14",
+          "relativePath": "S14/console.json",
+          "byteLength": 3,
+          "sha256": "37517E5F3DC66819F61F5A7BB8ACE1921282415F10551D2DEFA5C3EB0985B570",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S14",
+          "relativePath": "S14/network.json",
+          "byteLength": 11610,
+          "sha256": "94B16C3B82F18D56A3A2C8BDD37ED4898DC2A1E391183631F3F6537D42F5EBD5",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S14",
+          "relativePath": "S14/raw/01-item-bundle.json",
+          "byteLength": 1978,
+          "sha256": "F93B3324B8AB46E9E83BE14F0F05A1234DDF6416ADDCB48477A0DE7D5F78425E",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S14",
+          "relativePath": "S14/raw/01-saved-record.json",
+          "byteLength": 394,
+          "sha256": "F3BF5B7D1D36F9339196387DE4C23CBF4139D4444C96D0F7A47BEFA3B6B095B4",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S14",
+          "relativePath": "S14/raw/08-item-bundle.json",
+          "byteLength": 5597,
+          "sha256": "C66BBC67A5BB74205D5F8CC7FCAD6C450C1B34587134814D199F845599CB075C",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S14",
+          "relativePath": "S14/raw/08-saved-record.json",
+          "byteLength": 394,
+          "sha256": "E374774FD06A3802D5568168F761930BAC527631C32BCDE5318DC8A0C0651C5A",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S14",
+          "relativePath": "S14/raw/24-item-bundle.json",
+          "byteLength": 14046,
+          "sha256": "33B0EAECFA09E766A0CB371607C5F4C0539C23331C71A4D4CB7A217E2FF894B2",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S14",
+          "relativePath": "S14/raw/24-saved-record.json",
+          "byteLength": 400,
+          "sha256": "56004E69B5420D50F650BC13E2576437707991A3574491E33EF492EA68FE1D11",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S14",
+          "relativePath": "S14/raw/50-item-bundle.json",
+          "byteLength": 27722,
+          "sha256": "7591748CFADBFDC543FECFAE234DD88A90C9F8E31A92BE6EBCF726E6D1AFAD51",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S14",
+          "relativePath": "S14/raw/50-item-checklist.md",
+          "byteLength": 7867,
+          "sha256": "B132D7E6989DBF7AAB49C833769367A7295B7B05403133515232BA1021C83D8B",
+          "mime": "text/markdown;charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S14",
+          "relativePath": "S14/raw/50-saved-record.json",
+          "byteLength": 400,
+          "sha256": "9DD27E77409FAAEF9DAB61B42077A4AF1AA076C102018E8F31A853E8B45BCB70",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S14",
+          "relativePath": "S14/state.json",
+          "byteLength": 16945,
+          "sha256": "8638996C76DE3B2AF28A45B2590EEE2F3B6A951367C902A9AFDF4D0186D8D591",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S14",
+          "relativePath": "S14/storage-after.json",
+          "byteLength": 30927,
+          "sha256": "1A4D973BA5A610917AF44D1BEAE77F254E713E69BDA4145D340BE8333C67BEED",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S14",
+          "relativePath": "S14/storage-before.json",
+          "byteLength": 2442,
+          "sha256": "9DD36B20536A6838CB8BDAF7E683970B114F5EEBE8EF3B1AC17EEC7F097F82E5",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        }
+      ]
+    },
+    {
+      "scenarioId": "S15",
+      "title": "viewport와 reflow",
+      "status": "CANDIDATE_BOUND_LOCAL_CAPTURED",
+      "fileCount": 9,
+      "files": [
+        {
+          "scenarioId": "S15",
+          "relativePath": "S15/01-my-390x844-full.png",
+          "byteLength": 61268,
+          "sha256": "6D61850DAAB279E97111953ABFC1BF9021B65D53EEF80929DDDD4AF262D0A430",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S15",
+          "relativePath": "S15/02-my-1024x768-full.png",
+          "byteLength": 66131,
+          "sha256": "1FB7C63B85BA57CE5FF256F226D3A70CEE767826BF69AA55DF9E4131625BDF9A",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S15",
+          "relativePath": "S15/03-my-1440x1000-full.png",
+          "byteLength": 91347,
+          "sha256": "625751DD8B2C9FCEB2CBED50EF322BEB1B23B4DBBBEC3B4EBFBA7772A3AE9CEA",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S15",
+          "relativePath": "S15/04-my-720x500-reflow-proxy-full.png",
+          "byteLength": 63887,
+          "sha256": "CCC47133DC77E10C5346C80C6F18A623299040C08FA2673ABDD07B45A80AEF48",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S15",
+          "relativePath": "S15/console.json",
+          "byteLength": 3,
+          "sha256": "37517E5F3DC66819F61F5A7BB8ACE1921282415F10551D2DEFA5C3EB0985B570",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S15",
+          "relativePath": "S15/network.json",
+          "byteLength": 5909,
+          "sha256": "33530F7C24EA4216135721F759C122CD214B5C19373DD47A3FB7335DDD67074D",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S15",
+          "relativePath": "S15/state.json",
+          "byteLength": 6256,
+          "sha256": "674EC8CEA6609F2F0F21DD986302260E82D34CEE59B150D24851182BF68A0F81",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S15",
+          "relativePath": "S15/storage-after.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S15",
+          "relativePath": "S15/storage-before.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        }
+      ]
+    },
+    {
+      "scenarioId": "S16",
+      "title": "keyboard·ARIA·reduced motion",
+      "status": "CANDIDATE_BOUND_LOCAL_CAPTURED",
+      "fileCount": 7,
+      "files": [
+        {
+          "scenarioId": "S16",
+          "relativePath": "S16/01-reduced-motion-dialog-full.png",
+          "byteLength": 39060,
+          "sha256": "07EB1153CDB0EA42473210311F4D147EA7AAAAA09ECEFA8F72BAC28A44C3D38A",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S16",
+          "relativePath": "S16/02-error-announcement-full.png",
+          "byteLength": 31583,
+          "sha256": "DD1C0D9EFF18AD1DF431379629515AAFE9EA700BFD8C36C35ED60CD7849FC758",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S16",
+          "relativePath": "S16/console.json",
+          "byteLength": 3,
+          "sha256": "37517E5F3DC66819F61F5A7BB8ACE1921282415F10551D2DEFA5C3EB0985B570",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S16",
+          "relativePath": "S16/network.json",
+          "byteLength": 3005,
+          "sha256": "D3185636B27418F32CF4E21E71B219FD9E5F94CD169DF6DD0A2F1D36360385EF",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S16",
+          "relativePath": "S16/state.json",
+          "byteLength": 4546,
+          "sha256": "2255DAFE2A72574E885863B2CD07C2871738B6C7472EABB5C943D8615E2B1912",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S16",
+          "relativePath": "S16/storage-after.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S16",
+          "relativePath": "S16/storage-before.json",
+          "byteLength": 35,
+          "sha256": "09B547CAE5CFE9D6E9EB51BCC78E6652F293C60AA718F77F57E58ACA96D067FE",
+          "mime": "application/json",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        }
+      ]
+    },
+    {
+      "scenarioId": "S17",
+      "title": "phase flag rollback — Codex only",
+      "status": "CANDIDATE_BOUND_LOCAL_CAPTURED",
+      "fileCount": 7,
+      "files": [
+        {
+          "scenarioId": "S17",
+          "relativePath": "S17/my-default.png",
+          "byteLength": 21899,
+          "sha256": "3C92776346395FA1AEB52EB44EEBB7EC95B9ECA6384E773AA9D53C97EE1417CC",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S17",
+          "relativePath": "S17/my-exact-off.png",
+          "byteLength": 24456,
+          "sha256": "C40383F41B793107BA9D5545B90F1FB587BC505A7E608B4FFC33A30157114172",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S17",
+          "relativePath": "S17/my-uppercase-off.png",
+          "byteLength": 21899,
+          "sha256": "3C92776346395FA1AEB52EB44EEBB7EC95B9ECA6384E773AA9D53C97EE1417CC",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S17",
+          "relativePath": "S17/public-default.png",
+          "byteLength": 37563,
+          "sha256": "67F8DB09C410556320F7B3197305E8DA708C945BCACD5ECEDDE3EB5F7E7B13FC",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S17",
+          "relativePath": "S17/public-exact-off.png",
+          "byteLength": 34084,
+          "sha256": "DF144292A0A1C2172E3C081E9729451611977413367AB13DA7A804D609DC1BC1",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S17",
+          "relativePath": "S17/public-uppercase-off.png",
+          "byteLength": 37563,
+          "sha256": "67F8DB09C410556320F7B3197305E8DA708C945BCACD5ECEDDE3EB5F7E7B13FC",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S17",
+          "relativePath": "S17/runtime-route-storage-trace.json",
+          "byteLength": 21960,
+          "sha256": "C6BD435738CC54A3F580F84550FD3C13C9CE225FDEEE48D0B4124D95A4FB1054",
+          "mime": "application/json;charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        }
+      ]
+    },
+    {
+      "scenarioId": "S18",
+      "title": "TSV edge fixture",
+      "status": "CANDIDATE_BOUND_LOCAL_CAPTURED",
+      "fileCount": 3,
+      "files": [
+        {
+          "scenarioId": "S18",
+          "relativePath": "S18/edge-cases-crlf-utf8.tsv",
+          "byteLength": 884,
+          "sha256": "808B99CCEEB60A594730151EB8E91493DD99D5E6D30886F969FDB520C8FE3063",
+          "mime": "text/tab-separated-values;charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S18",
+          "relativePath": "S18/edge-cases-raw-hex.txt",
+          "byteLength": 1769,
+          "sha256": "71C74A094446C5CF240366C5CAA12D22528748FCE1B656BDC532537EE2B9947D",
+          "mime": "text/plain;charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S18",
+          "relativePath": "S18/parser-result.json",
+          "byteLength": 4324,
+          "sha256": "6879B80D1C3772C3298221B6000A22662C9E31AB8E804658570C784CB95FEB76",
+          "mime": "application/json;charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        }
+      ]
+    },
+    {
+      "scenarioId": "S19",
+      "title": "timezone·DST·overdue·mixed",
+      "status": "CANDIDATE_BOUND_LOCAL_CAPTURED",
+      "fileCount": 4,
+      "files": [
+        {
+          "scenarioId": "S19",
+          "relativePath": "S19/current-my-overdue-mixed-state.png",
+          "byteLength": 61268,
+          "sha256": "6D61850DAAB279E97111953ABFC1BF9021B65D53EEF80929DDDD4AF262D0A430",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S19",
+          "relativePath": "S19/dated-undated-overdue-fixture.json",
+          "byteLength": 808,
+          "sha256": "98D7CDB65A453CEE2B77B167E18548C2FC82AE7AD39CC55C7F718D107FFFD52B",
+          "mime": "application/json;charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S19",
+          "relativePath": "S19/new-york-dst-wall-clock.ics",
+          "byteLength": 973,
+          "sha256": "520187E5175B1D46F3375B8501E705CA3B17B6793529CE2A66635AF4FE3DA2C8",
+          "mime": "text/calendar;charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S19",
+          "relativePath": "S19/timezone-dst-parser-result.json",
+          "byteLength": 5317,
+          "sha256": "82F8033407066A3186D7C570393ADAC4C11EEE9C77D6DDDCEEBC61369363EA27",
+          "mime": "application/json;charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        }
+      ]
+    },
+    {
+      "scenarioId": "S20",
+      "title": "routine Item·series·VEVENT",
+      "status": "CANDIDATE_BOUND_LOCAL_CAPTURED",
+      "fileCount": 2,
+      "files": [
+        {
+          "scenarioId": "S20",
+          "relativePath": "S20/routine-monthly-unit-separated.ics",
+          "byteLength": 718,
+          "sha256": "E44D8A6F4BC0B7051BD0FF99B7D9DBF585C11A69EE19A59C77CED1F7FB4FE18D",
+          "mime": "text/calendar;charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S20",
+          "relativePath": "S20/routine-unit-counts.json",
+          "byteLength": 2270,
+          "sha256": "11F524BF144313BF4935FBA69A552552D1D543D8CA9A75D9620CAE107A44D65E",
+          "mime": "application/json;charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        }
+      ]
+    },
+    {
+      "scenarioId": "S21",
+      "title": "transport·MIME·파일 전달",
+      "status": "CANDIDATE_BOUND_LOCAL_CAPTURED",
+      "fileCount": 5,
+      "files": [
+        {
+          "scenarioId": "S21",
+          "relativePath": "S21/browser-clipboard/sheet.tsv",
+          "byteLength": 3001,
+          "sha256": "6AF0FA54369D8A7195F1B9FEE2FF70932A435DC283A7D2172BEAE53D7E0E14AC",
+          "mime": "text/tab-separated-values;charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S21",
+          "relativePath": "S21/browser-download/세탁기-통세척-월간-관리-all-calendar.ics",
+          "byteLength": 1543,
+          "sha256": "EB79E0AF741ADD2A4C4F7F55803448CDB9E518BCAD97A1687E3EEFE414A36A3F",
+          "mime": "text/calendar;charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S21",
+          "relativePath": "S21/calendar-download-confirmation.png",
+          "byteLength": 71119,
+          "sha256": "4F05640E3FC8E6B0A3817A286D058864A236F964352AB9D155DE30DEA2B28319",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S21",
+          "relativePath": "S21/sheet-clipboard-confirmation.png",
+          "byteLength": 78065,
+          "sha256": "7A938B5DFDA5E3C39E4009DAF41F886C9516C011B46907693726A9247C971990",
+          "mime": "image/png",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        },
+        {
+          "scenarioId": "S21",
+          "relativePath": "S21/transport-manifest.json",
+          "byteLength": 17432,
+          "sha256": "A19A8C8D5B85AFD49693B013F6D8F8D641E219CF36BBF266D93A05124C91DDB0",
+          "mime": "application/json;charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        }
+      ]
+    },
+    {
+      "scenarioId": "S22",
+      "title": "performance evidence 분류",
+      "status": "NOT_ASSESSED",
+      "fileCount": 1,
+      "files": [
+        {
+          "scenarioId": "S22",
+          "relativePath": "S22/not-assessed-manifest.json",
+          "byteLength": 2123,
+          "sha256": "14188AC901D982160B2BEE0CDCFC556C9364E6CECA578005590B15D03D15AC94",
+          "mime": "application/json;charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        }
+      ]
+    },
+    {
+      "scenarioId": "S23",
+      "title": "reviewer free exploration",
+      "status": "REVIEWER_CHOSEN_NOT_PRECAPTURED",
+      "fileCount": 1,
+      "files": [
+        {
+          "scenarioId": "S23",
+          "relativePath": "S23/reviewer-choice-placeholder.json",
+          "byteLength": 1176,
+          "sha256": "A911CB3629676495157AB222CACD92CD0F484A5C31457C06CBDA21A70A6B0311",
+          "mime": "application/json;charset=utf-8",
+          "transport": "candidate_bound_local_file",
+          "publicationSha": "TBD",
+          "directUrl": "TBD"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "scenarioCount": 23,
+    "capturedScenarioCount": 23,
+    "fileCount": 272,
+    "missingScenarioIds": []
+  }
+}

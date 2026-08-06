@@ -1,0 +1,11 @@
+{
+  "local": {
+    "flow:p1-04:legacy-matrix-sentinel": "  local exact bytes  ",
+    "flow:saved:p1-04-malformed": "{not-json",
+    "flow:saved:p1-04-missing-base": "{\"slug\":\"p1-04-missing-base\",\"savedAt\":\"2031-08-05T00:00:00.000Z\",\"selectedArtifactMode\":\"checklist\",\"dateIntent\":\"undated\"}",
+    "flow:saved:source-backed-moving-d30": "{\"slug\":\"source-backed-moving-d30\",\"savedAt\":\"2031-08-05T00:00:00.000Z\",\"selectedArtifactMode\":\"calendar\",\"dateIntent\":\"undated\"}"
+  },
+  "session": {
+    "flow:p1-04:legacy-matrix-session": "  session exact bytes  "
+  }
+}

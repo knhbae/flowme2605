@@ -1,0 +1,588 @@
+{
+  "capturedAt": "2026-08-06T01:05:03.701Z",
+  "route": "http://127.0.0.1:3114/my?view=flows&flow=personal-copy%3A95bad227-8582-4f9a-832d-a35036f28f79",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "headings": [
+    {
+      "tag": "h1",
+      "level": null,
+      "text": "이사 D-30 준비",
+      "testId": null
+    },
+    {
+      "tag": "h2",
+      "level": null,
+      "text": "이사 D-30 준비",
+      "testId": null
+    }
+  ],
+  "actions": [
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "FLOW",
+      "accessibleName": "FLOW",
+      "testId": null,
+      "href": "/",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "summary",
+      "type": null,
+      "role": null,
+      "text": "메뉴≡",
+      "accessibleName": "보조 메뉴 열기",
+      "testId": null,
+      "href": null,
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "계획 만들기내 콘텐츠를 실행할 계획으로 정리",
+      "accessibleName": "계획 만들기내 콘텐츠를 실행할 계획으로 정리",
+      "testId": null,
+      "href": "/flows/new",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "방금 저장 취소",
+      "accessibleName": "방금 저장한 계획 취소",
+      "testId": "my-flow-save-undo",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "닫기",
+      "accessibleName": "저장 알림 닫기",
+      "testId": "my-flow-save-banner-dismiss",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "‹",
+      "accessibleName": "저장한 계획 목록으로 돌아가기",
+      "testId": "my-flow-mobile-library-back",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "summary",
+      "type": null,
+      "role": null,
+      "text": "계획 관리",
+      "accessibleName": "이사 D-30 준비 계획 관리",
+      "testId": null,
+      "href": null,
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": "menuitem",
+      "text": "계획 수정",
+      "accessibleName": "계획 수정",
+      "testId": "my-flow-management-adjust",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": "menuitem",
+      "text": "원문 보기",
+      "accessibleName": "원문 보기",
+      "testId": "my-flow-management-source",
+      "href": "/f/moving-d30-basic",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": "menuitem",
+      "text": "보관보관함에서 복구하거나 영구 삭제할 수 있어요.",
+      "accessibleName": "보관보관함에서 복구하거나 영구 삭제할 수 있어요.",
+      "testId": "my-flow-archive-toggle",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "이사 방식 정하기큰 준비",
+      "accessibleName": "이사 방식 정하기 열기 · 이사 준비 · 9월 1일",
+      "testId": null,
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "이사할 집 하자 점검하기큰 준비",
+      "accessibleName": "이사할 집 하자 점검하기 열기 · 이사 준비 · 9월 1일",
+      "testId": null,
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "필요 없는 물건 정리하기큰 준비",
+      "accessibleName": "필요 없는 물건 정리하기 열기 · 이사 준비 · 9월 1일",
+      "testId": null,
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "전체 계획24개⌄",
+      "accessibleName": "전체 계획24개⌄",
+      "testId": "my-flow-workspace-plan-toggle",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": "false",
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "이사일 바꾸기",
+      "accessibleName": "이사 D-30 준비 이사일 바꾸기",
+      "testId": "my-flow-direct-anchor-settings-open",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "내 도구로 옮기기 · 24개",
+      "accessibleName": "이사 D-30 준비 내 도구로 옮기기 · 24개",
+      "testId": "my-flow-export-entry",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": "false",
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "계획 찾기",
+      "accessibleName": "계획 찾기",
+      "testId": null,
+      "href": "/flows",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "캘린더",
+      "accessibleName": "캘린더",
+      "testId": null,
+      "href": "/calendar",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "내 계획",
+      "accessibleName": "내 계획",
+      "testId": null,
+      "href": "/my",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    }
+  ],
+  "validation": [],
+  "geometry": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "document": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 890
+    },
+    "horizontalOverflow": 0
+  },
+  "importantNodes": [
+    {
+      "testId": "my-flow-saved-library-shell",
+      "data": {
+        "data-saved-library-flag": "on",
+        "data-p35-q3-copy": "on",
+        "data-testid": "my-flow-saved-library-shell",
+        "data-p35-q1-saved-transfer": "on",
+        "data-library-count": "1",
+        "data-library-size-state": "single",
+        "data-p32-workspace-state": "focused",
+        "data-p35-dead-view-marker": "P35-DEAD-VIEW-REMOVAL",
+        "data-p35-my-flow-marker": "P35-MY-LIBRARY-ONLY"
+      }
+    },
+    {
+      "testId": "platform-nav",
+      "data": {
+        "data-testid": "platform-nav",
+        "data-p35-q3-copy": "on"
+      }
+    },
+    {
+      "testId": "my-flow-workspace",
+      "data": {
+        "data-testid": "my-flow-workspace",
+        "data-surface-role": "task-first"
+      }
+    },
+    {
+      "testId": "my-flow-save-banner",
+      "data": {
+        "data-testid": "my-flow-save-banner",
+        "data-flow-slug": "moving-d30-basic",
+        "data-personal-copy-key": "personal-copy:95bad227-8582-4f9a-832d-a35036f28f79",
+        "data-item-count": "24"
+      }
+    },
+    {
+      "testId": "my-flow-save-banner-summary",
+      "data": {
+        "data-testid": "my-flow-save-banner-summary"
+      }
+    },
+    {
+      "testId": "my-flow-save-undo",
+      "data": {
+        "data-testid": "my-flow-save-undo"
+      }
+    },
+    {
+      "testId": "my-flow-save-banner-dismiss",
+      "data": {
+        "data-testid": "my-flow-save-banner-dismiss"
+      }
+    },
+    {
+      "testId": "my-flow-mobile-workspace",
+      "data": {
+        "data-testid": "my-flow-mobile-workspace",
+        "data-flow-slug": "personal-copy:95bad227-8582-4f9a-832d-a35036f28f79",
+        "data-saved-identity": "personal-copy:95bad227-8582-4f9a-832d-a35036f28f79",
+        "data-effective-result-count": "24",
+        "data-effective-date-state": "custom",
+        "data-effective-personal-version": "personal:62fddcc5",
+        "data-effective-execution-version": "execution:44b6ac2e",
+        "data-copy-kind": "source",
+        "data-workspace-section": "continuous",
+        "data-semantic-order": "execution-plan",
+        "data-p31-marker": "P31-03-DEDICATED-MOBILE-WORKSPACE",
+        "data-p32-marker": "P32-02-FOCUSED-MY-FLOW-WORKSPACE",
+        "data-p32-shared-marker": "P32-06-SHARED-FOCUSED-WORKSPACE",
+        "data-p35-marker": "P35-PERSONAL-SINGLE-FOCUS",
+        "data-p35-r10-marker": "P35-R10-SHAPE-HONESTY",
+        "data-p32-flow-shape": "일정 계획",
+        "data-flow-anatomy": "flow-detail"
+      }
+    },
+    {
+      "testId": "my-flow-mobile-library-back",
+      "data": {
+        "data-testid": "my-flow-mobile-library-back"
+      }
+    },
+    {
+      "testId": "my-flow-workspace-progress-summary",
+      "data": {
+        "data-testid": "my-flow-workspace-progress-summary"
+      }
+    },
+    {
+      "testId": "my-flow-workspace-management-menu",
+      "data": {
+        "data-testid": "my-flow-workspace-management-menu",
+        "data-p34-marker": "P34-01-ACTIVE-FLOW-MANAGE-390"
+      }
+    },
+    {
+      "testId": "my-flow-management-adjust",
+      "data": {
+        "data-testid": "my-flow-management-adjust"
+      }
+    },
+    {
+      "testId": "my-flow-management-source",
+      "data": {
+        "data-testid": "my-flow-management-source"
+      }
+    },
+    {
+      "testId": "my-flow-archive-toggle",
+      "data": {
+        "data-testid": "my-flow-archive-toggle"
+      }
+    },
+    {
+      "testId": "my-flow-workspace-execute",
+      "data": {
+        "data-testid": "my-flow-workspace-execute"
+      }
+    },
+    {
+      "testId": "my-flow-shape-aware-execution",
+      "data": {
+        "data-testid": "my-flow-shape-aware-execution",
+        "data-p35-marker": "P35-R4-DATED-NEXT-GROUP",
+        "data-execution-shape": "dated",
+        "data-execution-kind": "nearest_date_group",
+        "data-semantic-order": "1"
+      }
+    },
+    {
+      "testId": "my-flow-temporal-next-group",
+      "data": {
+        "data-testid": "my-flow-temporal-next-group",
+        "data-p35-marker": "P35-R0-NEXT-DATE-GROUP",
+        "data-temporal-kind": "future",
+        "data-temporal-date": "2031-09-01"
+      }
+    },
+    {
+      "testId": "my-flow-temporal-date-rail-group",
+      "data": {
+        "data-testid": "my-flow-temporal-date-rail-group",
+        "data-flow-ui": "date-rail-group"
+      }
+    },
+    {
+      "testId": "flow-date-rail",
+      "data": {
+        "data-testid": "flow-date-rail"
+      }
+    },
+    {
+      "testId": "my-flow-temporal-timeline-rows",
+      "data": {
+        "data-testid": "my-flow-temporal-timeline-rows"
+      }
+    },
+    {
+      "testId": "my-flow-execution-row-shell",
+      "data": {
+        "data-testid": "my-flow-execution-row-shell",
+        "data-flow-slug": "personal-copy:95bad227-8582-4f9a-832d-a35036f28f79",
+        "data-calendar-item-kind": "task"
+      }
+    },
+    {
+      "testId": "my-flow-row-title",
+      "data": {
+        "data-testid": "my-flow-row-title",
+        "data-flow-row-slot": "title"
+      }
+    },
+    {
+      "testId": "my-flow-row-section-label",
+      "data": {
+        "data-testid": "my-flow-row-section-label"
+      }
+    },
+    {
+      "testId": "my-flow-execution-row-shell",
+      "data": {
+        "data-testid": "my-flow-execution-row-shell",
+        "data-flow-slug": "personal-copy:95bad227-8582-4f9a-832d-a35036f28f79",
+        "data-calendar-item-kind": "task"
+      }
+    },
+    {
+      "testId": "my-flow-row-title",
+      "data": {
+        "data-testid": "my-flow-row-title",
+        "data-flow-row-slot": "title"
+      }
+    },
+    {
+      "testId": "my-flow-row-section-label",
+      "data": {
+        "data-testid": "my-flow-row-section-label"
+      }
+    },
+    {
+      "testId": "my-flow-execution-row-shell",
+      "data": {
+        "data-testid": "my-flow-execution-row-shell",
+        "data-flow-slug": "personal-copy:95bad227-8582-4f9a-832d-a35036f28f79",
+        "data-calendar-item-kind": "task"
+      }
+    },
+    {
+      "testId": "my-flow-row-title",
+      "data": {
+        "data-testid": "my-flow-row-title",
+        "data-flow-row-slot": "title"
+      }
+    },
+    {
+      "testId": "my-flow-row-section-label",
+      "data": {
+        "data-testid": "my-flow-row-section-label"
+      }
+    },
+    {
+      "testId": "my-flow-workspace-plan",
+      "data": {
+        "data-testid": "my-flow-workspace-plan",
+        "data-plan-open": "false",
+        "data-p35-r13-marker": "P35-R13-FIRST-ENTRY-WHOLE-PLAN",
+        "data-semantic-order": "2"
+      }
+    },
+    {
+      "testId": "my-flow-workspace-plan-toggle",
+      "data": {
+        "data-testid": "my-flow-workspace-plan-toggle"
+      }
+    },
+    {
+      "testId": "my-flow-workspace-commands",
+      "data": {
+        "data-testid": "my-flow-workspace-commands",
+        "data-p32-marker": "P32-05-OBJECT-COMMAND-HIERARCHY"
+      }
+    },
+    {
+      "testId": "my-flow-direct-anchor-settings-open",
+      "data": {
+        "data-testid": "my-flow-direct-anchor-settings-open",
+        "data-action-role": "edit-saved-plan",
+        "data-action-priority": "secondary"
+      }
+    },
+    {
+      "testId": "my-flow-export-surface",
+      "data": {
+        "data-testid": "my-flow-export-surface",
+        "data-flow-ui": "export-plan"
+      }
+    },
+    {
+      "testId": "my-flow-export-entry",
+      "data": {
+        "data-testid": "my-flow-export-entry",
+        "data-action-priority": "secondary",
+        "data-action-role": "transfer-to-own-tool"
+      }
+    },
+    {
+      "testId": "platform-mobile-tabs",
+      "data": {
+        "data-testid": "platform-mobile-tabs",
+        "data-layer-priority": "navigation",
+        "data-p30-marker": "P30-MOBILE-WORKSPACE-FOCUS-ORDER",
+        "data-p35-marker": "P35-ENTRY-ROUTER-3TAB"
+      }
+    }
+  ],
+  "browserEvents": {
+    "consoleErrors": [],
+    "pageErrors": [],
+    "requestFailures": []
+  },
+  "evidenceClass": "ACTUAL_UI",
+  "transition": "first-save-to-my-plan",
+  "personalCopyKey": "personal-copy:95bad227-8582-4f9a-832d-a35036f28f79"
+}

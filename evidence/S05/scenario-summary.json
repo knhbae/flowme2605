@@ -1,0 +1,29 @@
+{
+  "scenario": "S05",
+  "status": "LOCAL_CANDIDATE_CAPTURED",
+  "passCount": 1,
+  "errorCount": 0,
+  "knownGaps": [
+    "This S05 rehearsal retains one exact Checklist clipboard artifact and receipt. Cross-format fidelity belongs to S09/S18/S21."
+  ],
+  "variants": [
+    {
+      "scenario": "S05",
+      "variant": "saved-checklist-transfer",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "startedAt": "2026-08-06T01:05:10.110Z",
+      "status": "PASS",
+      "error": null,
+      "result": {
+        "personalCopyKey": "personal-copy:1b957858-015b-47b4-900c-6b86255d6547",
+        "rawBytes": 3754,
+        "rawSha256": "18e9a2fe3572ee267c1972fc56375f1e9a02c55ada26ebadeab18883e8f0d763",
+        "receiptPersisted": true
+      },
+      "finishedAt": "2026-08-06T01:05:15.375Z"
+    }
+  ]
+}
