@@ -19,6 +19,19 @@ test('dated Flow uses the nearest date group before the whole plan', () => {
   assert.deepEqual(model.semanticOrder, ['execution', 'plan']);
 });
 
+test('an explicitly undated saved calendar-origin Flow stays a checklist in My Flow', () => {
+  const model = buildMyFlowShapeAwareWorkspaceModel({
+    structureType: 'timeline',
+    primaryDestination: 'calendar',
+    savedArtifactMode: 'checklist',
+    hasDatedRows: false,
+  });
+
+  assert.equal(model.shape, 'checklist');
+  assert.equal(model.executionUnitKind, 'next_items');
+  assert.equal(model.executionLabel, '이어서 할 일');
+});
+
 test('checklist, routine, and sheet preserve their own execution units', () => {
   assert.equal(buildMyFlowShapeAwareWorkspaceModel({
     structureType: 'checklist',
@@ -56,6 +69,20 @@ test('memo does not synthesize a next action or a fixed history section', () => 
   assert.equal(freshMemo.historyVisible, false);
   assert.deepEqual(freshMemo.semanticOrder, ['plan']);
   assert.deepEqual(memoWithHistory.semanticOrder, ['plan', 'history']);
+});
+
+test('a persisted memo artifact stays non-executable even for a calendar-origin Flow', () => {
+  const model = buildMyFlowShapeAwareWorkspaceModel({
+    structureType: 'timeline',
+    primaryDestination: 'calendar',
+    savedArtifactMode: 'memo',
+    hasDatedRows: true,
+  });
+
+  assert.equal(model.shape, 'memo');
+  assert.equal(model.executionUnitKind, 'none');
+  assert.equal(model.executionVisible, false);
+  assert.deepEqual(model.semanticOrder, ['plan']);
 });
 
 test('history appears only when an execution event exists', () => {

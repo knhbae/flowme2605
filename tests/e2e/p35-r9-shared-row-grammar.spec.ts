@@ -3,7 +3,10 @@ import path from 'node:path';
 
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
-import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
+import {
+  getOpenMyFlowItemDetail,
+  openMyFlowLibraryFlow,
+} from './helpers/my-flow-library';
 
 const evidenceRoot = process.env.FLOWME_P35_R9_EVIDENCE_DIR;
 
@@ -20,7 +23,7 @@ const scenarios: RowScenario[] = [
   {
     id: 'calendar',
     slug: 'moving-d30-basic',
-    publicShape: 'calendar',
+    publicShape: 'checklist',
     savedMode: 'calendar',
     executable: true,
     anchor: '2030-09-01',
@@ -35,7 +38,7 @@ const scenarios: RowScenario[] = [
   {
     id: 'routine',
     slug: 'curated-allblanc-morning-workout',
-    publicShape: 'flow_execution',
+    publicShape: 'checklist',
     savedMode: 'calendar',
     executable: true,
   },
@@ -106,10 +109,30 @@ test.describe('P35-R9 shared execution row grammar', () => {
       await page.evaluate(() => window.localStorage.clear());
       await page.reload();
 
-      const preview = page.getByTestId('public-flow-artifact-preview');
+      const capability = page.getByTestId('public-flow-capability-result');
+      await expect(capability).toBeVisible();
+      await expect(capability).toHaveAttribute('data-capability-lifecycle', 'public_preview');
+      await expect(capability).toHaveAttribute(
+        'data-capability-snapshot-kind',
+        'effective_authoring',
+      );
+      await expect(capability.locator(
+        '[data-testid="flow-capability-result-choice"]'
+          + '[data-capability-candidate-role="primary"]',
+      )).toHaveCount(1);
+      const selectedPreview = capability.getByTestId('flow-capability-selected-preview');
+      const preview = selectedPreview.getByTestId('flow-capability-artifact-preview');
       await expect(preview).toHaveAttribute('data-selected-shape', scenario.publicShape);
-      const publicRows = preview.getByTestId('public-flow-artifact-preview-row');
+      const publicRows = preview.getByTestId('flow-capability-artifact-preview-row');
       expect(await publicRows.count()).toBeGreaterThan(0);
+      const manifestIds = (
+        (await selectedPreview.getAttribute('data-capability-manifest-item-ids')) ?? ''
+      ).split(',').filter(Boolean);
+      expect(manifestIds.length).toBeGreaterThan(0);
+      await expect(selectedPreview).toHaveAttribute(
+        'data-capability-output-count',
+        String(manifestIds.length),
+      );
       const firstPublicRow = publicRows.first();
       await expect(firstPublicRow).toHaveAttribute(
         'data-p35-r9-marker',
@@ -141,30 +164,30 @@ test.describe('P35-R9 shared execution row grammar', () => {
         'data-p35-r9-marker',
         'P35-R9-SHARED-EXECUTION-ROW',
       );
-      await expect(firstSavedRow).toHaveAttribute('data-completion-position', 'trailing');
       await expect(firstSavedRow.locator('[data-flow-row-slot="open"]')).toHaveCount(1);
-      await expect(firstSavedRow.locator('[data-flow-row-slot="completion"]')).toHaveCount(1);
-      const completionIsLast = await firstSavedRow.evaluate((row) => (
-        row.lastElementChild?.getAttribute('data-flow-row-slot') === 'completion'
-      ));
-      expect(completionIsLast).toBe(true);
-      await expect(firstSavedRow.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
+      await expect(firstSavedRow.locator('[data-flow-row-slot="completion"]')).toHaveCount(0);
+      await expect(firstSavedRow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
 
+      const open = firstSavedRow.locator('[data-flow-row-slot="open"]');
+      await open.focus();
+      await page.keyboard.press('Enter');
+      const detail = page.getByTestId('my-flow-item-detail-sheet');
+      await expect(detail).toBeVisible();
+      const itemDetail = getOpenMyFlowItemDetail(page);
+      await expect(itemDetail.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
+      await expect(page.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
       if (scenario.id === 'calendar') {
-        const open = firstSavedRow.locator('[data-flow-row-slot="open"]');
-        await open.focus();
-        await page.keyboard.press('Enter');
-        const detail = page.getByTestId('my-flow-item-detail-sheet');
         await expect(detail).toHaveAttribute('data-p35-marker', 'P35-R9-DETAIL-SINGLE-CLOSE');
         await expect(detail.getByRole('button', { name: /닫기/u })).toHaveCount(1);
         await capture(page, 'p35-r9-shared-row-detail-390.png', detail);
-        await page.keyboard.press('Escape');
-        await expect(open).toBeFocused();
       }
+      await page.keyboard.press('Escape');
+      await expect(detail).toHaveCount(0);
+      await expect(open).toBeFocused();
     });
   }
 
-  test('wide saved rows keep the same trailing completion grammar', async ({ page }) => {
+  test('wide saved rows keep completion in the Item detail', async ({ page }) => {
     const scenario = scenarios[0];
     await page.setViewportSize({ width: 1024, height: 768 });
     await seedSavedFlow(page, scenario);
@@ -174,7 +197,14 @@ test.describe('P35-R9 shared execution row grammar', () => {
       .getByTestId('my-flow-shape-aware-execution')
       .locator('[data-flow-ui="execution-row"]')
       .first();
-    await expect(row).toHaveAttribute('data-completion-position', 'trailing');
+    await expect(row.locator('[data-flow-row-slot="open"]')).toHaveCount(1);
+    await expect(row.locator('[data-flow-row-slot="completion"]')).toHaveCount(0);
+    await expect(row.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+    await row.locator('[data-flow-row-slot="open"]').click();
+    const detail = getOpenMyFlowItemDetail(page);
+    await expect(detail).toBeVisible();
+    await expect(detail.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
+    await expect(page.locator('[data-testid="my-flow-task-complete-control"]:visible')).toHaveCount(1);
     await capture(page, 'p35-r9-shared-row-1024.png', workspace);
   });
 });

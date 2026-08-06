@@ -59,11 +59,21 @@ export type FlowExportResultReceipt = {
   scope: FlowExportScope;
   destination: FlowExportDestination;
   resultKind: FlowExportResultKind;
-  status: 'success' | 'error';
+  status: 'success' | 'error' | 'partial';
   outputCount: number;
   omittedCount: number;
   filename?: string;
   message: string;
+  transferRequestId?: string;
+  snapshotKind?: 'effective_authoring' | 'effective_execution';
+  snapshotVersion?: string;
+  snapshotHash?: string;
+  itemIds?: string[];
+  itemCount?: number;
+  artifactOutputCount?: number;
+  oneWay?: boolean;
+  outcome?: 'success' | 'artifact_failed' | 'partial_local';
+  persistedAt?: string;
 };
 
 const DESTINATION_EXTENSIONS: Record<FlowExportDestination, string> = {

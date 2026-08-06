@@ -86,6 +86,7 @@ export type UrlFirstStartPackageOptions = {
   savedAt?: string;
   customTitle?: string;
   includedStepIds?: string[];
+  q3CopyEnabled?: boolean;
 };
 
 export type UrlFirstStartPackage = {
@@ -115,10 +116,14 @@ type UrlFirstLookupTemplate = Omit<UrlFirstLookupResult, 'input' | 'canonicalUrl
 
 const TRACKING_QUERY_KEYS = new Set(['fbclid', 'gclid']);
 
-const aiDisabledForP0: UrlFirstAiGenerationState = {
-  enabled: false,
-  reason: '지금은 기존 Flow를 먼저 찾아보고, 새로 필요한 URL은 초안 요청으로 보관합니다.',
-};
+function buildAiDisabledForP0(q3CopyEnabled = true): UrlFirstAiGenerationState {
+  return {
+    enabled: false,
+    reason: q3CopyEnabled
+      ? '지금은 준비된 계획을 먼저 찾아보고, 새로 필요한 URL은 초안 요청으로 보관합니다.'
+      : '지금은 기존 Flow를 먼저 찾아보고, 새로 필요한 URL은 초안 요청으로 보관합니다.',
+  };
+}
 
 const movingHitPreview: UrlFirstPreview = {
   calendarFilename: 'moving-d30-flow.ics',
@@ -138,19 +143,29 @@ const movingHitPreview: UrlFirstPreview = {
   myFlow: ['전체 이사 준비 24개', '이사일 기준으로 날짜 계산', '체크 완료 상태는 저장 후 시작'],
 };
 
-const vehicleReviewPreview: UrlFirstPreview = {
-  calendar: [],
-  markdown: [],
-  checklist: [],
-  myFlow: ['원문 확인 전에는 내 Flow 저장이 열리지 않습니다.', '검토 완료 후 캘린더와 체크리스트 export를 다시 계산합니다.'],
-};
+function buildVehicleReviewPreview(q3CopyEnabled = true): UrlFirstPreview {
+  return {
+    calendar: [],
+    markdown: [],
+    checklist: [],
+    myFlow: [
+      q3CopyEnabled ? '원문 확인 전에는 내 계획 저장이 열리지 않습니다.' : '원문 확인 전에는 내 Flow 저장이 열리지 않습니다.',
+      '검토 완료 후 캘린더와 체크리스트 export를 다시 계산합니다.',
+    ],
+  };
+}
 
-const missPreview: UrlFirstPreview = {
-  calendar: [],
-  markdown: [],
-  checklist: [],
-  myFlow: ['아직 저장 가능한 Flow가 없어요.', 'URL과 메모를 초안 요청으로 보관합니다.'],
-};
+function buildMissPreview(q3CopyEnabled = true): UrlFirstPreview {
+  return {
+    calendar: [],
+    markdown: [],
+    checklist: [],
+    myFlow: [
+      q3CopyEnabled ? '아직 저장 가능한 계획이 없어요.' : '아직 저장 가능한 Flow가 없어요.',
+      'URL과 메모를 초안 요청으로 보관합니다.',
+    ],
+  };
+}
 
 const memoDraftPreview: UrlFirstPreview = {
   calendarFilename: 'private-memo-draft.ics',
@@ -220,7 +235,7 @@ function buildSourceBackedPreview(map: SourceBackedMyFlowMap): UrlFirstPreview {
   };
 }
 
-function buildSourceBackedLookupTemplate(map: SourceBackedMyFlowMap): UrlFirstLookupTemplate | undefined {
+function buildSourceBackedLookupTemplate(map: SourceBackedMyFlowMap, q3CopyEnabled = true): UrlFirstLookupTemplate | undefined {
   if (!map.sourceUrl) return undefined;
 
   const executionHeld = !isSourceBackedFlowMapExecutable(map);
@@ -236,7 +251,7 @@ function buildSourceBackedLookupTemplate(map: SourceBackedMyFlowMap): UrlFirstLo
           kind: 'source_rows',
           title: '실행할 자료를 더 골라야 해요',
           reason: '자료 모음은 확인했지만 실제로 쓸 개별 자료와 난이도를 아직 고르는 중이에요.',
-          requiredAction: '원문 자료를 둘러보거나 다른 Flow를 찾아보세요.',
+          requiredAction: q3CopyEnabled ? '원문 자료를 둘러보거나 다른 계획을 찾아보세요.' : '원문 자료를 둘러보거나 다른 Flow를 찾아보세요.',
         }
       : needsMedicalSourceFit
         ? {
@@ -248,7 +263,7 @@ function buildSourceBackedLookupTemplate(map: SourceBackedMyFlowMap): UrlFirstLo
       : {
           kind: 'official_freshness',
           title: '최신 공식 내용 확인이 필요해요',
-          reason: '공식 내용이 달라질 수 있어 현재 내용은 새 실행 Flow로 저장하지 않습니다.',
+          reason: q3CopyEnabled ? '공식 내용이 달라질 수 있어 현재 내용은 새 실행 계획으로 저장하지 않습니다.' : '공식 내용이 달라질 수 있어 현재 내용은 새 실행 Flow로 저장하지 않습니다.',
           requiredAction: '공식 원문에서 최신 내용을 확인해 주세요.',
         }
     : {
@@ -262,14 +277,14 @@ function buildSourceBackedLookupTemplate(map: SourceBackedMyFlowMap): UrlFirstLo
     status: executionHeld ? 'needs_review' : 'hit',
     inputKind: 'url',
     title: canUseDirectly
-      ? '이미 만들어진 Flow가 있어요'
+      ? q3CopyEnabled ? '이미 만들어진 계획이 있어요' : '이미 만들어진 Flow가 있어요'
       : executionHeld
         ? needsSourceRows
           ? '실행할 자료를 더 골라야 해요'
           : needsMedicalSourceFit
             ? '아이 상태에 맞는 확인이 필요해요'
           : '최신 공식 내용 확인이 필요해요'
-        : '기존 Flow가 있지만 확인이 필요해요',
+        : q3CopyEnabled ? '기존 계획이 있지만 확인이 필요해요' : '기존 Flow가 있지만 확인이 필요해요',
     summary: canUseDirectly
       ? `${sourceLabel} 기준으로 저장 가능한 콘텐츠를 찾았어요. 필요한 옵션만 바꾸고 저장 전 확인할 수 있습니다.`
       : executionHeld
@@ -289,7 +304,7 @@ function buildSourceBackedLookupTemplate(map: SourceBackedMyFlowMap): UrlFirstLo
     canExport: canUseDirectly,
     canSaveToMyFlow: canUseDirectly,
     saveMode: canUseDirectly ? 'direct' : executionHeld ? 'blocked' : 'preview_only',
-    aiGeneration: aiDisabledForP0,
+    aiGeneration: buildAiDisabledForP0(q3CopyEnabled),
     preview: executionHeld
       ? needsSourceRows
         ? sourceRowHoldPreview
@@ -305,14 +320,14 @@ function buildSourceBackedLookupTemplate(map: SourceBackedMyFlowMap): UrlFirstLo
   };
 }
 
-function buildSourceBackedLookupEntries(): Array<[string, UrlFirstLookupTemplate]> {
+function buildSourceBackedLookupEntries(q3CopyEnabled = true): Array<[string, UrlFirstLookupTemplate]> {
   const maps = sourceBackedMyFlowMaps.filter(
     (map) => Boolean(map.sourceUrl?.trim()) && isSourceBackedFlowMapDirectRouteAccessible(map),
   );
   const entries: Array<[string, UrlFirstLookupTemplate]> = [];
 
   for (const map of maps) {
-    const template = buildSourceBackedLookupTemplate(map);
+    const template = buildSourceBackedLookupTemplate(map, q3CopyEnabled);
     if (!template) continue;
     const sourceUrls = Array.from(
       new Set([map.sourceUrl, map.reviewUrl].filter((sourceUrl): sourceUrl is string => Boolean(sourceUrl))),
@@ -325,14 +340,17 @@ function buildSourceBackedLookupEntries(): Array<[string, UrlFirstLookupTemplate
   return entries;
 }
 
-const explicitLookupTemplatesByCanonicalUrl = new Map<string, UrlFirstLookupTemplate>([
+function buildExplicitLookupTemplatesByCanonicalUrl(q3CopyEnabled = true): Map<string, UrlFirstLookupTemplate> {
+  return new Map<string, UrlFirstLookupTemplate>([
   [
     canonicalizeFlowSourceUrl(AJD_MOVING_SOURCE_URL),
     {
       status: 'hit',
       inputKind: 'url',
-      title: '이미 변환된 Flow가 있어요',
-      summary: '같은 원문 URL 기준으로 이사 D-30 Flow를 재사용합니다. 시작일 옵션만 바꾸고 바로 미리볼 수 있습니다.',
+      title: q3CopyEnabled ? '이미 준비된 계획이 있어요' : '이미 변환된 Flow가 있어요',
+      summary: q3CopyEnabled
+        ? '같은 원문 URL 기준으로 이사 D-30 계획을 다시 씁니다. 시작일만 바꾸고 미리볼 수 있습니다.'
+        : '같은 원문 URL 기준으로 이사 D-30 Flow를 재사용합니다. 시작일 옵션만 바꾸고 바로 미리볼 수 있습니다.',
       sourceStatus: 'real',
       sourceLabel: toUserFacingSourceTitle('AJD 이사 준비 체크리스트'),
       sourceCheckedAt: '2026-06-23',
@@ -342,7 +360,7 @@ const explicitLookupTemplatesByCanonicalUrl = new Map<string, UrlFirstLookupTemp
       canExport: true,
       canSaveToMyFlow: true,
       saveMode: 'direct',
-      aiGeneration: aiDisabledForP0,
+      aiGeneration: buildAiDisabledForP0(q3CopyEnabled),
       preview: movingHitPreview,
     },
   ],
@@ -351,8 +369,10 @@ const explicitLookupTemplatesByCanonicalUrl = new Map<string, UrlFirstLookupTemp
     {
       status: 'needs_review',
       inputKind: 'url',
-      title: '원문 확인이 필요한 Flow입니다',
-      summary: '자동차검사 D-14 준비 Flow는 구조 미리보기만 제공합니다. 원문 검토가 끝나기 전까지 저장과 export는 막아둡니다.',
+      title: q3CopyEnabled ? '원문 확인이 필요한 계획입니다' : '원문 확인이 필요한 Flow입니다',
+      summary: q3CopyEnabled
+        ? '자동차검사 D-14 준비 계획은 구조 미리보기만 제공합니다. 원문 검토가 끝나기 전까지 저장과 export는 막아둡니다.'
+        : '자동차검사 D-14 준비 Flow는 구조 미리보기만 제공합니다. 원문 검토가 끝나기 전까지 저장과 export는 막아둡니다.',
       sourceStatus: 'needs_review',
       sourceLabel: '자동차검사 D-14 준비',
       sourceCheckedAt: '2026-05-23',
@@ -362,21 +382,27 @@ const explicitLookupTemplatesByCanonicalUrl = new Map<string, UrlFirstLookupTemp
       canExport: false,
       canSaveToMyFlow: false,
       saveMode: 'preview_only',
-      aiGeneration: aiDisabledForP0,
+      aiGeneration: buildAiDisabledForP0(q3CopyEnabled),
       gate: {
         title: 'Export와 저장이 잠겨 있습니다',
         reason: '원문 확인 전에는 캘린더 파일을 만들지 않습니다.',
         requiredAction: '출처 row, 일정 기준, 위험 문구를 검토한 뒤 export를 열어야 합니다.',
       },
-      preview: vehicleReviewPreview,
+      preview: buildVehicleReviewPreview(q3CopyEnabled),
     },
   ],
-]);
+  ]);
+}
 
-const lookupTemplatesByCanonicalUrl = new Map<string, UrlFirstLookupTemplate>([
-  ...buildSourceBackedLookupEntries(),
-  ...explicitLookupTemplatesByCanonicalUrl,
-]);
+function buildLookupTemplatesByCanonicalUrl(q3CopyEnabled = true): Map<string, UrlFirstLookupTemplate> {
+  return new Map<string, UrlFirstLookupTemplate>([
+    ...buildSourceBackedLookupEntries(q3CopyEnabled),
+    ...buildExplicitLookupTemplatesByCanonicalUrl(q3CopyEnabled),
+  ]);
+}
+
+const q3LookupTemplatesByCanonicalUrl = buildLookupTemplatesByCanonicalUrl(true);
+const legacyLookupTemplatesByCanonicalUrl = buildLookupTemplatesByCanonicalUrl(false);
 
 function isTrackingQueryKey(key: string): boolean {
   const lowerKey = key.toLowerCase();
@@ -436,45 +462,49 @@ function withInput(template: UrlFirstLookupTemplate, input: string, canonicalUrl
   };
 }
 
-function buildMiss(input: string, canonicalUrl?: string): UrlFirstLookupResult {
+function buildMiss(input: string, canonicalUrl?: string, q3CopyEnabled = true): UrlFirstLookupResult {
+  const preview = buildMissPreview(q3CopyEnabled);
   return {
     status: 'miss',
     inputKind: 'url',
     input,
     canonicalUrl,
     displayUrl: canonicalUrl ?? input.trim(),
-    title: '바로 시작할 Flow를 찾지 못했어요',
+    title: q3CopyEnabled ? '바로 시작할 계획을 찾지 못했어요' : '바로 시작할 Flow를 찾지 못했어요',
     summary: '제목과 메모를 남기면 직접 손볼 수 있는 초안을 준비할 수 있어요.',
     sourceStatus: 'missing',
     exportModes: [],
     canExport: false,
     canSaveToMyFlow: false,
     saveMode: 'blocked',
-    aiGeneration: aiDisabledForP0,
+    aiGeneration: buildAiDisabledForP0(q3CopyEnabled),
     preview: {
-      calendar: [...missPreview.calendar],
-      markdown: [...missPreview.markdown],
-      checklist: [...missPreview.checklist],
-      myFlow: [...missPreview.myFlow],
+      calendar: [...preview.calendar],
+      markdown: [...preview.markdown],
+      checklist: [...preview.checklist],
+      myFlow: [...preview.myFlow],
     },
   };
 }
 
-export function lookupUrlFirstP0Input(input: string): UrlFirstLookupResult {
+export function lookupUrlFirstP0Input(input: string, q3CopyEnabled = true): UrlFirstLookupResult {
   const trimmed = input.trim();
-  if (!trimmed) return buildMiss(input);
+  if (!trimmed) return buildMiss(input, undefined, q3CopyEnabled);
 
   try {
     const canonicalUrl = canonicalizeFlowSourceUrl(trimmed);
+    const lookupTemplatesByCanonicalUrl = q3CopyEnabled
+      ? q3LookupTemplatesByCanonicalUrl
+      : legacyLookupTemplatesByCanonicalUrl;
     const template = lookupTemplatesByCanonicalUrl.get(canonicalUrl);
     if (template) return withInput(template, input, canonicalUrl);
-    return buildMiss(input, canonicalUrl);
+    return buildMiss(input, canonicalUrl, q3CopyEnabled);
   } catch {
-    return buildMiss(input);
+    return buildMiss(input, undefined, q3CopyEnabled);
   }
 }
 
-export function buildUrlFirstMemoDraft(input: string): UrlFirstLookupResult {
+export function buildUrlFirstMemoDraft(input: string, q3CopyEnabled = true): UrlFirstLookupResult {
   const movingIntent = /이사|전입|짐\s*(?:싸기|정리)|주소\s*변경/u.test(input);
   return {
     status: 'memo_draft',
@@ -504,22 +534,24 @@ export function buildUrlFirstMemoDraft(input: string): UrlFirstLookupResult {
           recommendation: {
             title: '원룸 이사 D-30 일정 지도',
             href: '/flow-maps/moving-d30',
-            reason: '이사 관련 메모라면 이미 검토된 이사 Flow를 먼저 재사용할 수 있습니다.',
+            reason: q3CopyEnabled
+              ? '이사 관련 메모라면 이미 검토된 이사 계획을 먼저 다시 쓸 수 있습니다.'
+              : '이사 관련 메모라면 이미 검토된 이사 Flow를 먼저 재사용할 수 있습니다.',
           },
         }
       : {}),
   };
 }
 
-export function lookupUrlOrMemoP0Input(input: string): UrlFirstLookupResult {
+export function lookupUrlOrMemoP0Input(input: string, q3CopyEnabled = true): UrlFirstLookupResult {
   const trimmed = input.trim();
-  if (!trimmed) return lookupUrlFirstP0Input(input);
+  if (!trimmed) return lookupUrlFirstP0Input(input, q3CopyEnabled);
 
   try {
     canonicalizeFlowSourceUrl(trimmed);
-    return lookupUrlFirstP0Input(input);
+    return lookupUrlFirstP0Input(input, q3CopyEnabled);
   } catch {
-    return buildUrlFirstMemoDraft(input);
+    return buildUrlFirstMemoDraft(input, q3CopyEnabled);
   }
 }
 
@@ -653,7 +685,11 @@ function customizeUrlFirstPersistenceRecord(
   };
 }
 
-function buildUrlFirstBlockedStartPackage(result: UrlFirstLookupResult, reason: string): UrlFirstStartPackage {
+function buildUrlFirstBlockedStartPackage(
+  result: UrlFirstLookupResult,
+  reason: string,
+  q3CopyEnabled = true,
+): UrlFirstStartPackage {
   return {
     status: 'blocked',
     canSaveToMyFlow: false,
@@ -661,7 +697,9 @@ function buildUrlFirstBlockedStartPackage(result: UrlFirstLookupResult, reason: 
     gate: result.gate ?? {
       title: '저장할 수 없습니다',
       reason,
-      requiredAction: '저장 가능한 기존 Flow를 먼저 선택해야 합니다.',
+      requiredAction: q3CopyEnabled
+        ? '저장 가능한 기존 계획을 먼저 선택해야 합니다.'
+        : '저장 가능한 기존 Flow를 먼저 선택해야 합니다.',
     },
   };
 }
@@ -695,13 +733,24 @@ export function buildUrlFirstStartPackage(
   options: UrlFirstStartPackageOptions,
 ): UrlFirstStartPackage {
   const startDate = options.startDate.trim();
+  const q3CopyEnabled = options.q3CopyEnabled !== false;
   const sourceBackedStartPackage = result.flowMapId ? buildSourceBackedFlowMapPublishPackage(result.flowMapId) : undefined;
   const dateAnchorLabel = getSourceBackedFlowMapDateAnchorCopy(sourceBackedStartPackage).label;
   if (!result.canSaveToMyFlow || result.saveMode !== 'direct') {
-    return buildUrlFirstBlockedStartPackage(result, '원문 확인이 끝나지 않았거나 아직 Flow화되지 않은 URL입니다.');
+    return buildUrlFirstBlockedStartPackage(
+      result,
+      q3CopyEnabled
+        ? '원문 확인이 끝나지 않았거나 아직 저장 가능한 계획이 준비되지 않은 URL입니다.'
+        : '원문 확인이 끝나지 않았거나 아직 Flow화되지 않은 URL입니다.',
+      q3CopyEnabled,
+    );
   }
   if (!isPlainDate(startDate)) {
-    return buildUrlFirstBlockedStartPackage(result, `${dateAnchorLabel}은 yyyy-mm-dd 형식이어야 합니다.`);
+    return buildUrlFirstBlockedStartPackage(
+      result,
+      `${dateAnchorLabel}은 yyyy-mm-dd 형식이어야 합니다.`,
+      q3CopyEnabled,
+    );
   }
 
   const selectedArtifactMode = artifactModeForStartExport(options.exportMode);
@@ -715,12 +764,24 @@ export function buildUrlFirstStartPackage(
   if (result.flowMapId) {
     const publishPackage = sourceBackedStartPackage;
     if (!publishPackage) {
-      return buildUrlFirstBlockedStartPackage(result, '연결된 Flow Map을 찾을 수 없습니다.');
+      return buildUrlFirstBlockedStartPackage(
+        result,
+        q3CopyEnabled
+          ? '연결된 계획 구성을 찾을 수 없습니다.'
+          : '연결된 Flow Map을 찾을 수 없습니다.',
+        q3CopyEnabled,
+      );
     }
 
     const stepSelection = getUrlFirstMapStepSelection(publishPackage, options.includedStepIds);
     if (stepSelection.allStepIds.length > 0 && stepSelection.selectedStepIds.size === 0) {
-      return buildUrlFirstBlockedStartPackage(result, '최소 1개 Step은 포함해야 저장할 수 있습니다.');
+      return buildUrlFirstBlockedStartPackage(
+        result,
+        q3CopyEnabled
+          ? '최소 1개 항목은 포함해야 저장할 수 있습니다.'
+          : '최소 1개 Step은 포함해야 저장할 수 있습니다.',
+        q3CopyEnabled,
+      );
     }
     const markdownRows = publishPackage.public.childFlows
       .flatMap((flow) => flow.steps)
@@ -800,5 +861,11 @@ export function buildUrlFirstStartPackage(
     };
   }
 
-  return buildUrlFirstBlockedStartPackage(result, '저장할 Flow를 찾을 수 없습니다.');
+  return buildUrlFirstBlockedStartPackage(
+    result,
+    q3CopyEnabled
+      ? '저장할 계획을 찾을 수 없습니다.'
+      : '저장할 Flow를 찾을 수 없습니다.',
+    q3CopyEnabled,
+  );
 }

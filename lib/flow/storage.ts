@@ -88,7 +88,7 @@ export type PermanentSavedFlowDeletionResult = {
   publicSourcePreserved: boolean;
 };
 
-export type SavedFlowArtifactMode = 'calendar' | 'checklist' | 'sheet';
+export type SavedFlowArtifactMode = 'calendar' | 'checklist' | 'sheet' | 'memo';
 
 export type SavedFlowRoutineEnd =
   | { mode: 'source' }
@@ -104,8 +104,15 @@ export type SavedFlowRoutineDefinition = {
 };
 
 export type SavedFlowRecord = {
+  schemaVersion?: 2;
   slug: string;
   savedAt: string;
+  personalCopyKey?: string;
+  sourceFlowKey?: string;
+  sourceFlowSlug?: string;
+  sourceVersion?: string;
+  lastSaveRequestId?: string;
+  savedItemCount?: number;
   personalTitle?: string;
   selectedArtifactMode: SavedFlowArtifactMode;
   dateIntent: PersistedPublicDateIntentMode;
@@ -155,6 +162,8 @@ export type MyFlowCompletionFeedback = {
 
 export type ActiveFlowProgress = {
   slug: string;
+  sourceSlug?: string;
+  sourceFlowKey?: string;
   title: string;
   done: number;
   total: number;
@@ -273,13 +282,50 @@ function toRetiredPersonalCopy(bundle: FlowBundle): FlowBundle {
   };
 }
 
-function preserveSavedArchivedBundles(stored: FlowBundle[]): FlowBundle[] {
+type BundleReadStorage = Pick<Storage, 'getItem'>;
+
+type BundleReadResolution = {
+  bundles: FlowBundle[];
+  persistCurrentRegistry: boolean;
+};
+
+function isStoredFlowBundle(value: unknown): value is FlowBundle {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  const candidate = value as Record<string, unknown>;
+  if (!candidate.flow || typeof candidate.flow !== 'object' || Array.isArray(candidate.flow)) {
+    return false;
+  }
+  const flow = candidate.flow as Record<string, unknown>;
+  return (
+    typeof flow.id === 'string'
+    && flow.id.trim().length > 0
+    && typeof flow.slug === 'string'
+    && flow.slug.trim().length > 0
+    && Array.isArray(candidate.sections)
+    && Array.isArray(candidate.items)
+  );
+}
+
+function parseStoredBundles(raw: string | null): FlowBundle[] {
+  if (!raw) return [];
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.filter(isStoredFlowBundle) : [];
+  } catch {
+    return [];
+  }
+}
+
+function preserveSavedArchivedBundles(
+  stored: FlowBundle[],
+  storage: BundleReadStorage,
+): FlowBundle[] {
   const migrated = stored.map((bundle) => {
     const policy = getRuntimeArchivedFlowPolicy(bundle.flow.slug);
     if (
       !policy ||
       bundle.flow.status !== 'published' ||
-      !localStorage.getItem(`${SAVED_FLOW_KEY_PREFIX}${bundle.flow.slug}`)
+      !storage.getItem(`${SAVED_FLOW_KEY_PREFIX}${bundle.flow.slug}`)
     ) {
       return bundle;
     }
@@ -289,7 +335,7 @@ function preserveSavedArchivedBundles(stored: FlowBundle[]): FlowBundle[] {
   const recovered = seedBundles
     .filter((bundle) => (
       Boolean(getRuntimeArchivedFlowPolicy(bundle.flow.slug)) &&
-      Boolean(localStorage.getItem(`${SAVED_FLOW_KEY_PREFIX}${bundle.flow.slug}`)) &&
+      Boolean(storage.getItem(`${SAVED_FLOW_KEY_PREFIX}${bundle.flow.slug}`)) &&
       !storedSlugs.has(bundle.flow.slug)
     ))
     .map((bundle) => JSON.parse(JSON.stringify(bundle)) as FlowBundle)
@@ -298,39 +344,45 @@ function preserveSavedArchivedBundles(stored: FlowBundle[]): FlowBundle[] {
   return [...migrated, ...recovered];
 }
 
-export function getBundles(): FlowBundle[] {
-  if (!canUseStorage()) return cloneSeedBundles();
-
+function resolveBundles(storage: BundleReadStorage): BundleReadResolution {
   const seeds = cloneSeedBundles();
-  const raw = localStorage.getItem(BUNDLES_KEY);
+  const raw = storage.getItem(BUNDLES_KEY);
   if (!raw) {
     const previous = PREVIOUS_BUNDLES_KEYS
-      .map((key) => localStorage.getItem(key))
-      .filter(Boolean)
-      .flatMap((value) => {
-        try {
-          return JSON.parse(value as string) as FlowBundle[];
-        } catch {
-          return [];
-        }
-      })
-    const migrated = mergeSeedBundles(preserveSavedArchivedBundles(previous), seeds);
-    localStorage.setItem(BUNDLES_KEY, JSON.stringify(migrated));
-    return migrated;
+      .map((key) => storage.getItem(key))
+      .flatMap(parseStoredBundles);
+    const migrated = mergeSeedBundles(
+      preserveSavedArchivedBundles(previous, storage),
+      seeds,
+    );
+    return { bundles: migrated, persistCurrentRegistry: true };
   }
 
   try {
-    const stored = preserveSavedArchivedBundles(JSON.parse(raw) as FlowBundle[]);
+    const stored = preserveSavedArchivedBundles(parseStoredBundles(raw), storage);
     const merged = mergeSeedBundles(stored, seeds);
     const serialized = JSON.stringify(merged);
-    if (serialized !== raw) {
-      localStorage.setItem(BUNDLES_KEY, serialized);
-    }
-    return merged;
+    return {
+      bundles: merged,
+      persistCurrentRegistry: serialized !== raw,
+    };
   } catch {
-    localStorage.setItem(BUNDLES_KEY, JSON.stringify(seeds));
-    return seeds;
+    return { bundles: seeds, persistCurrentRegistry: true };
   }
+}
+
+export function readBundles(): FlowBundle[] {
+  if (!canUseStorage()) return cloneSeedBundles();
+  return resolveBundles(localStorage).bundles;
+}
+
+export function getBundles(): FlowBundle[] {
+  if (!canUseStorage()) return cloneSeedBundles();
+  const resolution = resolveBundles(localStorage);
+  if (resolution.persistCurrentRegistry) {
+    localStorage.setItem(BUNDLES_KEY, JSON.stringify(resolution.bundles));
+  }
+  return resolution.bundles;
 }
 
 export function saveBundles(bundles: FlowBundle[]): void {
@@ -427,7 +479,7 @@ export function dismissStorageNotice(): void {
 }
 
 function isSavedFlowArtifactMode(value: unknown): value is SavedFlowArtifactMode {
-  return value === 'calendar' || value === 'checklist' || value === 'sheet';
+  return value === 'calendar' || value === 'checklist' || value === 'sheet' || value === 'memo';
 }
 
 function isSavedFlowRoutineTime(value: unknown): value is string {
@@ -502,10 +554,48 @@ export function normalizeSavedFlowRecord(value: unknown): SavedFlowRecord | unde
     ? record.personalTitle.trim().slice(0, 80)
     : undefined;
   const routineDefinition = normalizeSavedFlowRoutineDefinition(record.routineDefinition);
+  const schemaVersion = record.schemaVersion === 2 ? 2 : undefined;
+  const personalCopyKey = typeof record.personalCopyKey === 'string' && record.personalCopyKey.trim()
+    ? record.personalCopyKey.trim()
+    : undefined;
+  const sourceFlowKey = typeof record.sourceFlowKey === 'string' && record.sourceFlowKey.trim()
+    ? record.sourceFlowKey.trim()
+    : undefined;
+  const sourceFlowSlug = typeof record.sourceFlowSlug === 'string' && record.sourceFlowSlug.trim()
+    ? record.sourceFlowSlug.trim()
+    : undefined;
+  const sourceVersion = typeof record.sourceVersion === 'string' && record.sourceVersion.trim()
+    ? record.sourceVersion.trim()
+    : undefined;
+  const lastSaveRequestId = typeof record.lastSaveRequestId === 'string' && record.lastSaveRequestId.trim()
+    ? record.lastSaveRequestId.trim()
+    : undefined;
+  const savedItemCount = Number.isInteger(record.savedItemCount) && Number(record.savedItemCount) >= 0
+    ? Number(record.savedItemCount)
+    : undefined;
+  if (
+    schemaVersion === 2
+    && (
+      !personalCopyKey
+      || personalCopyKey !== record.slug
+      || !sourceFlowKey
+      || !sourceFlowSlug
+      || !sourceVersion
+      || !lastSaveRequestId
+      || savedItemCount === undefined
+    )
+  ) return undefined;
 
   return {
+    ...(schemaVersion ? { schemaVersion } : {}),
     slug: record.slug,
     savedAt: record.savedAt,
+    ...(personalCopyKey ? { personalCopyKey } : {}),
+    ...(sourceFlowKey ? { sourceFlowKey } : {}),
+    ...(sourceFlowSlug ? { sourceFlowSlug } : {}),
+    ...(sourceVersion ? { sourceVersion } : {}),
+    ...(lastSaveRequestId ? { lastSaveRequestId } : {}),
+    ...(savedItemCount !== undefined ? { savedItemCount } : {}),
     ...(personalTitle ? { personalTitle } : {}),
     selectedArtifactMode: isSavedFlowArtifactMode(record.selectedArtifactMode) ? record.selectedArtifactMode : 'calendar',
     dateIntent,
@@ -523,6 +613,29 @@ export function getSavedFlowRecord(slug: string): SavedFlowRecord | undefined {
   } catch {
     return undefined;
   }
+}
+
+export function getAllSavedFlowRecords(
+  storage?: SavedFlowReadStorage,
+): SavedFlowRecord[] {
+  const target = storage ?? (canUseStorage() ? localStorage : undefined);
+  if (!target) return [];
+  const records = new Map<string, SavedFlowRecord>();
+  try {
+    for (let index = 0; index < target.length; index += 1) {
+      const key = target.key(index);
+      if (!key?.startsWith(SAVED_FLOW_KEY_PREFIX)) continue;
+      try {
+        const record = normalizeSavedFlowRecord(JSON.parse(target.getItem(key) || 'null'));
+        if (record) records.set(record.slug, record);
+      } catch {
+        // A malformed saved copy remains untouched and is omitted from runtime reads.
+      }
+    }
+  } catch {
+    return [];
+  }
+  return Array.from(records.values()).sort((left, right) => left.slug.localeCompare(right.slug));
 }
 
 export function hasSavedFlowEntry(storage?: SavedFlowReadStorage): boolean {
@@ -552,29 +665,67 @@ export function hasSavedFlowEntry(storage?: SavedFlowReadStorage): boolean {
   });
 }
 
-export function saveFlowRecord(
+export type SavedFlowRecordWriteInput = Omit<
+  SavedFlowRecord,
+  'slug' | 'savedAt' | 'dateIntent'
+> & {
+  dateIntent?: PersistedPublicDateIntentMode;
+};
+
+export function buildSavedFlowRecord(
   slug: string,
-  value: Omit<SavedFlowRecord, 'slug' | 'savedAt' | 'dateIntent'> & { dateIntent?: PersistedPublicDateIntentMode },
-): SavedFlowRecord | undefined {
-  if (!canUseStorage()) return undefined;
-  const previous = getSavedFlowRecord(slug);
+  value: SavedFlowRecordWriteInput,
+  previous?: SavedFlowRecord,
+  savedAt = new Date().toISOString(),
+): SavedFlowRecord {
+  const schemaVersion = value.schemaVersion ?? previous?.schemaVersion;
+  const personalCopyKey = (value.personalCopyKey ?? previous?.personalCopyKey)?.trim() || undefined;
+  const sourceFlowKey = (value.sourceFlowKey ?? previous?.sourceFlowKey)?.trim() || undefined;
+  const sourceFlowSlug = (value.sourceFlowSlug ?? previous?.sourceFlowSlug)?.trim() || undefined;
+  const sourceVersion = (value.sourceVersion ?? previous?.sourceVersion)?.trim() || undefined;
+  const lastSaveRequestId = (value.lastSaveRequestId ?? previous?.lastSaveRequestId)?.trim() || undefined;
+  const requestedSavedItemCount = value.savedItemCount ?? previous?.savedItemCount;
+  const savedItemCount = Number.isInteger(requestedSavedItemCount) && Number(requestedSavedItemCount) >= 0
+    ? Number(requestedSavedItemCount)
+    : undefined;
   const weekdays = value.weekdays ?? previous?.weekdays;
   const personalTitle = value.personalTitle?.trim().slice(0, 80) || previous?.personalTitle;
   const routineDefinition = normalizeSavedFlowRoutineDefinition(value.routineDefinition ?? previous?.routineDefinition);
   const requestedAnchor = value.anchor?.trim();
+  const legacyExampleAnchor = (value.legacyExampleAnchor ?? previous?.legacyExampleAnchor)?.trim() || undefined;
   const dateIntent: PersistedPublicDateIntentMode =
     value.dateIntent === 'undated' ? 'undated' : requestedAnchor ? 'custom' : 'undated';
   const record: SavedFlowRecord = {
+    ...(schemaVersion === 2 ? { schemaVersion: 2 as const } : {}),
     slug,
-    savedAt: new Date().toISOString(),
+    savedAt,
+    ...(personalCopyKey ? { personalCopyKey } : {}),
+    ...(sourceFlowKey ? { sourceFlowKey } : {}),
+    ...(sourceFlowSlug ? { sourceFlowSlug } : {}),
+    ...(sourceVersion ? { sourceVersion } : {}),
+    ...(lastSaveRequestId ? { lastSaveRequestId } : {}),
+    ...(savedItemCount !== undefined ? { savedItemCount } : {}),
     ...(personalTitle ? { personalTitle } : {}),
     selectedArtifactMode: value.selectedArtifactMode,
     dateIntent,
     ...(dateIntent === 'custom' && requestedAnchor ? { anchor: requestedAnchor } : {}),
-    ...(value.legacyExampleAnchor ? { legacyExampleAnchor: value.legacyExampleAnchor } : {}),
+    ...(legacyExampleAnchor ? { legacyExampleAnchor } : {}),
     ...(weekdays?.length ? { weekdays: Array.from(new Set(weekdays)) } : {}),
     ...(routineDefinition ? { routineDefinition } : {}),
   };
+  const normalized = normalizeSavedFlowRecord(record);
+  if (!normalized) {
+    throw new TypeError('Saved Flow record update would produce an invalid schema-v2 identity.');
+  }
+  return normalized;
+}
+
+export function saveFlowRecord(
+  slug: string,
+  value: SavedFlowRecordWriteInput,
+): SavedFlowRecord | undefined {
+  if (!canUseStorage()) return undefined;
+  const record = buildSavedFlowRecord(slug, value, getSavedFlowRecord(slug));
   localStorage.setItem(`${SAVED_FLOW_KEY_PREFIX}${slug}`, JSON.stringify(record));
   recordCanonicalFlowWrite(localStorage, slug, record.savedAt);
   localStorage.setItem('flow:meta:last-visit', record.savedAt);
@@ -1178,6 +1329,45 @@ export function getActiveFlowProgress(bundles: FlowBundle[] = getBundles()): Act
     }
   }
 
+  const progressSlugs = new Set(progress.map((entry) => entry.slug));
+  getAllSavedFlowRecords().forEach((savedRecord) => {
+    if (progressSlugs.has(savedRecord.slug)) return;
+    const sourceSlug = savedRecord.sourceFlowSlug?.trim();
+    const sourceFlowKey = savedRecord.sourceFlowKey?.trim();
+    if (!sourceSlug && !sourceFlowKey) return;
+    const sourceBundle = bundles.find((bundle) => (
+      (sourceSlug && bundle.flow.slug === sourceSlug)
+      || (sourceFlowKey && bundle.flow.id === sourceFlowKey)
+    ));
+    if (!sourceBundle) return;
+
+    const copySlug = savedRecord.personalCopyKey ?? savedRecord.slug;
+    const checks = getChecks(copySlug);
+    const itemStates = getItemStates(copySlug);
+    const storedAnchor = getStoredAnchor(copySlug);
+    const ids = sourceBundle.flow.content_type === 'meal_plan'
+      ? (sourceBundle.mealSlots ?? []).map((slot) => slot.id)
+      : sourceBundle.items.map((item) => item.id);
+    const skipped = ids.filter((id) => isFlowItemOmittedFromActiveProjection(itemStates[id])).length;
+    const total = Math.max(ids.length - skipped, 0);
+    const done = ids.filter((id) => checks[id] && !isFlowItemOmittedFromActiveProjection(itemStates[id])).length;
+    progress.push({
+      slug: copySlug,
+      sourceSlug: sourceSlug ?? sourceBundle.flow.slug,
+      sourceFlowKey: sourceFlowKey ?? sourceBundle.flow.id,
+      title: savedRecord.personalTitle ?? sourceBundle.flow.title,
+      done,
+      total,
+      skipped,
+      anchor: storedAnchor.anchor || savedRecord.anchor,
+      anchorMode: normalizePublicDateIntentMode(storedAnchor.mode),
+      ...(savedRecord.weekdays?.length ? { weekdays: savedRecord.weekdays } : {}),
+      ...(savedRecord.routineDefinition ? { routineDefinition: savedRecord.routineDefinition } : {}),
+      lastVisited: savedRecord.savedAt ?? lastVisited,
+    });
+    progressSlugs.add(copySlug);
+  });
+
   return progress;
 }
 
@@ -1441,10 +1631,17 @@ export function getFlowRunRegistry(flowSlug: string): FlowRunRegistry {
   }
 }
 
-function saveFlowRunRegistry(flowSlug: string, registry: FlowRunRegistry): FlowRunRegistry | undefined {
+function saveFlowRunRegistry(
+  flowSlug: string,
+  registry: FlowRunRegistry,
+  storage?: Pick<Storage, 'setItem'>,
+): FlowRunRegistry | undefined {
   if (!canUseStorage()) return undefined;
   const normalized = normalizeFlowRunRegistry(flowSlug, registry);
-  localStorage.setItem(`${FLOW_RUN_REGISTRY_KEY_PREFIX}${flowSlug}`, JSON.stringify(normalized));
+  (storage ?? localStorage).setItem(
+    `${FLOW_RUN_REGISTRY_KEY_PREFIX}${flowSlug}`,
+    JSON.stringify(normalized),
+  );
   return normalized;
 }
 
@@ -1489,6 +1686,7 @@ function hasLegacyFlowRunState(flowSlug: string, mapSnapshot?: SavedFlowMapSnaps
 export function ensureLegacyActiveFlowRun(
   flowSlug: string,
   options: EnsureLegacyFlowRunOptions = {},
+  storage?: Pick<Storage, 'setItem'>,
 ): FlowRunRecord | undefined {
   if (!canUseStorage() || !flowSlug.trim()) return undefined;
   const registry = getFlowRunRegistry(flowSlug);
@@ -1519,7 +1717,11 @@ export function ensureLegacyActiveFlowRun(
       : {}),
     reuseMode: 'legacy',
   };
-  const saved = saveFlowRunRegistry(flowSlug, { schemaVersion: 1, activeRunId: runId, runs: [run] });
+  const saved = saveFlowRunRegistry(
+    flowSlug,
+    { schemaVersion: 1, activeRunId: runId, runs: [run] },
+    storage,
+  );
   return saved?.runs.find((entry) => entry.runId === runId);
 }
 
@@ -1556,9 +1758,10 @@ export function captureCurrentFlowRunCompletionSnapshot(
 export function completeActiveFlowRun(
   flowSlug: string,
   options: CompleteActiveFlowRunOptions = {},
+  storage?: Pick<Storage, 'setItem'>,
 ): FlowRunRecord | undefined {
   if (!canUseStorage()) return undefined;
-  const active = getActiveFlowRun(flowSlug) ?? ensureLegacyActiveFlowRun(flowSlug, options);
+  const active = getActiveFlowRun(flowSlug) ?? ensureLegacyActiveFlowRun(flowSlug, options, storage);
   if (!active) return undefined;
   const registry = getFlowRunRegistry(flowSlug);
   const completedAt = options.completedAt?.trim() || getFlowCompletionDetectedAt(flowSlug) || new Date().toISOString();
@@ -1583,7 +1786,7 @@ export function completeActiveFlowRun(
   const saved = saveFlowRunRegistry(flowSlug, {
     schemaVersion: 1,
     runs: registry.runs.map((run) => (run.runId === active.runId ? completed : run)),
-  });
+  }, storage);
   return saved?.runs.find((run) => run.runId === active.runId && run.status === 'completed');
 }
 
@@ -1637,7 +1840,10 @@ function syncExecutionNotesToLatestCompletedFlowRun(
   return saved?.runs.find((run) => run.runId === updated.runId);
 }
 
-function resetCurrentFlowExecutionState(flowSlug: string): void {
+function resetCurrentFlowExecutionState(
+  flowSlug: string,
+  storage: Pick<Storage, 'setItem' | 'removeItem'> = localStorage,
+): void {
   [
     `${CHECKS_KEY_PREFIX}${flowSlug}`,
     `${ANCHOR_KEY_PREFIX}${flowSlug}:anchorDate`,
@@ -1648,9 +1854,9 @@ function resetCurrentFlowExecutionState(flowSlug: string): void {
     `${MY_FLOW_COMPLETION_FEEDBACK_KEY_PREFIX}${flowSlug}`,
     `${MY_FLOW_EXECUTION_NOTES_KEY_PREFIX}${flowSlug}`,
     `${FLOW_COMPLETION_DETECTED_AT_KEY_PREFIX}${flowSlug}`,
-  ].forEach((key) => localStorage.removeItem(key));
+  ].forEach((key) => storage.removeItem(key));
   const stepItemChecks = getMyFlowStepItemChecks();
-  localStorage.setItem(
+  storage.setItem(
     MY_FLOW_STEP_ITEM_CHECKS_KEY,
     JSON.stringify(
       Object.fromEntries(Object.entries(stepItemChecks).filter(([key]) => !key.startsWith(`${flowSlug}::`))),
@@ -1661,10 +1867,11 @@ function resetCurrentFlowExecutionState(flowSlug: string): void {
 function restorePersonalCopyExcludedItemStates(
   flowSlug: string,
   personalCopy?: SourceBackedFlowMapPersonalCopy,
+  storage: Pick<Storage, 'setItem'> = localStorage,
 ): void {
   const excludedStepIds = personalCopy?.excludedStepIdsByFlow[flowSlug] ?? [];
   if (excludedStepIds.length === 0) return;
-  localStorage.setItem(
+  storage.setItem(
     `${ITEM_STATE_KEY_PREFIX}${flowSlug}`,
     JSON.stringify(Object.fromEntries(excludedStepIds.map((stepId) => [
       stepId,
@@ -1682,6 +1889,7 @@ function updateSavedFlowMapProjectionForRun(
     anchor?: string;
     personalCopySnapshot?: SourceBackedFlowMapPersonalCopy;
   },
+  storage: Pick<Storage, 'getItem' | 'setItem'> = localStorage,
 ): SavedFlowMapSnapshot | undefined {
   if (!value.mapId) return undefined;
   const current = getSavedFlowMapSnapshots().find(
@@ -1699,7 +1907,7 @@ function updateSavedFlowMapProjectionForRun(
   if (!value.personalCopySnapshot) delete next.personalCopy;
   const normalized = normalizeSavedFlowMapSnapshot(next);
   if (!normalized) return undefined;
-  localStorage.setItem(`${SAVED_FLOW_MAP_KEY_PREFIX}${value.mapId}`, JSON.stringify(normalized));
+  storage.setItem(`${SAVED_FLOW_MAP_KEY_PREFIX}${value.mapId}`, JSON.stringify(normalized));
   const sourceBackedSnapshot = normalized.stepCountsByFlow
     && normalized.riskLevelsByFlow
     && normalized.sourceCheckedAtByFlow
@@ -1711,7 +1919,7 @@ function updateSavedFlowMapProjectionForRun(
         ...(normalized.anchor ? { anchor: normalized.anchor } : {}),
         ...(() => {
           try {
-            const raw = localStorage.getItem(getSourceBackedFlowMapPersistenceStorageKey(normalized.mapId));
+            const raw = storage.getItem(getSourceBackedFlowMapPersistenceStorageKey(normalized.mapId));
             const baselineRecord = raw ? JSON.parse(raw) as SourceBackedFlowMapPersistenceRecord : undefined;
             return baselineRecord?.recordType === 'saved_source_backed_flow_map' ? { baselineRecord } : {};
           } catch {
@@ -1721,7 +1929,7 @@ function updateSavedFlowMapProjectionForRun(
       })
     : undefined;
   if (persistenceRecord) {
-    localStorage.setItem(
+    storage.setItem(
       getSourceBackedFlowMapPersistenceStorageKey(normalized.mapId),
       JSON.stringify(persistenceRecord),
     );
@@ -1732,8 +1940,10 @@ function updateSavedFlowMapProjectionForRun(
 export function startFlowRunFromCompleted(
   flowSlug: string,
   options: StartFlowRunFromCompletedOptions,
+  storage?: Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>,
 ): FlowRunRecord | undefined {
   if (!canUseStorage() || !flowSlug.trim()) return undefined;
+  const writeStorage = storage ?? localStorage;
   if (options.reuseMode === 'new_anchor' && !options.anchor?.trim()) return undefined;
   const registry = getFlowRunRegistry(flowSlug);
   if (registry.activeRunId) return undefined;
@@ -1745,8 +1955,9 @@ export function startFlowRunFromCompleted(
   const runId = options.runId?.trim() || createFlowRunId(flowSlug);
   if (registry.runs.some((run) => run.runId === runId)) return undefined;
   const startedAt = options.startedAt?.trim() || new Date().toISOString();
+  const currentSavedRecord = getSavedFlowRecord(flowSlug);
   const selectedArtifactMode =
-    options.selectedArtifactMode ?? previous.selectedArtifactMode ?? getSavedFlowRecord(flowSlug)?.selectedArtifactMode ?? 'calendar';
+    options.selectedArtifactMode ?? previous.selectedArtifactMode ?? currentSavedRecord?.selectedArtifactMode ?? 'calendar';
   const hasPersonalCopyOption = Object.prototype.hasOwnProperty.call(options, 'personalCopySnapshot');
   let personalCopySnapshot = hasPersonalCopyOption
     ? normalizeSavedFlowMapPersonalCopy(options.personalCopySnapshot)
@@ -1756,7 +1967,8 @@ export function startFlowRunFromCompleted(
     ? normalizeMyFlowPersonalExecutionState(options.personalExecutionStateSnapshot)
     : previous.personalExecutionStateSnapshot ?? getFlowScopedMyFlowPersonalExecutionState(flowSlug);
   const mapId = options.mapId?.trim() || previous.mapId;
-  const sourceVersion = options.sourceVersion?.trim() || previous.sourceVersion;
+  const requestedSourceVersion = options.sourceVersion?.trim();
+  const sourceVersion = requestedSourceVersion || previous.sourceVersion;
   const anchor = options.anchor?.trim();
   if (options.reuseMode === 'new_anchor' || (options.reuseMode === 'reviewed_version' && anchor)) {
     const newAnchorPlan = prepareFlowRunNewAnchor(
@@ -1775,19 +1987,25 @@ export function startFlowRunFromCompleted(
     );
   }
 
-  resetCurrentFlowExecutionState(flowSlug);
-  restorePersonalCopyExcludedItemStates(flowSlug, personalCopySnapshot);
-  replaceFlowScopedMyFlowPersonalExecutionState(flowSlug, personalExecutionStateSnapshot);
-  const savedRecord: SavedFlowRecord = {
-    slug: flowSlug,
-    savedAt: startedAt,
+  resetCurrentFlowExecutionState(flowSlug, writeStorage);
+  restorePersonalCopyExcludedItemStates(flowSlug, personalCopySnapshot, writeStorage);
+  replaceFlowScopedMyFlowPersonalExecutionState(
+    flowSlug,
+    personalExecutionStateSnapshot,
+    writeStorage,
+  );
+  const savedRecord = buildSavedFlowRecord(flowSlug, {
     selectedArtifactMode,
     dateIntent: anchor ? 'custom' : 'undated',
     ...(anchor ? { anchor } : {}),
-  };
-  localStorage.setItem(`${SAVED_FLOW_KEY_PREFIX}${flowSlug}`, JSON.stringify(savedRecord));
+    ...(requestedSourceVersion ? { sourceVersion: requestedSourceVersion } : {}),
+  }, currentSavedRecord, startedAt);
+  writeStorage.setItem(`${SAVED_FLOW_KEY_PREFIX}${flowSlug}`, JSON.stringify(savedRecord));
   if (anchor) {
-    localStorage.setItem(`${ANCHOR_KEY_PREFIX}${flowSlug}:anchorDate`, JSON.stringify({ mode: 'custom', anchor }));
+    writeStorage.setItem(
+      `${ANCHOR_KEY_PREFIX}${flowSlug}:anchorDate`,
+      JSON.stringify({ mode: 'custom', anchor }),
+    );
   }
   updateSavedFlowMapProjectionForRun(flowSlug, {
     mapId,
@@ -1795,8 +2013,8 @@ export function startFlowRunFromCompleted(
     savedAt: startedAt,
     ...(anchor ? { anchor } : {}),
     ...(personalCopySnapshot ? { personalCopySnapshot } : {}),
-  });
-  localStorage.setItem('flow:meta:last-visit', startedAt);
+  }, writeStorage);
+  writeStorage.setItem('flow:meta:last-visit', startedAt);
 
   const active: FlowRunRecord = {
     schemaVersion: 1,
@@ -1822,6 +2040,6 @@ export function startFlowRunFromCompleted(
     schemaVersion: 1,
     activeRunId: runId,
     runs: [...registry.runs, active],
-  });
+  }, writeStorage);
   return saved?.runs.find((run) => run.runId === runId && run.status === 'active');
 }

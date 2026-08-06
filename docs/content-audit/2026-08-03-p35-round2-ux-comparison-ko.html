@@ -1,0 +1,1372 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>P35 Round 2 현재·A안·B안 UX 비교</title>
+  <link rel="icon" href="data:,">
+  <style>
+    :root {
+      color-scheme: light;
+      --page: #f5f7fa;
+      --surface: #ffffff;
+      --surface-subtle: #f7f9fc;
+      --text: #15171b;
+      --muted: #656b75;
+      --faint: #8a9099;
+      --line: #dfe3e9;
+      --line-strong: #c7cdd6;
+      --blue: #1463e6;
+      --blue-strong: #0e50c5;
+      --blue-soft: #edf4ff;
+      --green: #13884a;
+      --green-soft: #edf8f1;
+      --orange: #b85f00;
+      --orange-soft: #fff5e9;
+      --red: #b42318;
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --shadow: 0 18px 44px rgba(20, 33, 61, 0.10);
+      --content: 1280px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--page);
+      color: var(--text);
+      font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", Inter, system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, input { font: inherit; }
+
+    button, a { -webkit-tap-highlight-color: transparent; }
+
+    a { color: inherit; }
+
+    .page-shell {
+      width: min(100%, var(--content));
+      margin: 0 auto;
+      padding: 30px 28px 72px;
+    }
+
+    .report-header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 24px;
+      align-items: end;
+      padding: 8px 0 28px;
+    }
+
+    h1 {
+      max-width: 850px;
+      margin: 0;
+      font-size: clamp(30px, 4.2vw, 54px);
+      line-height: 1.12;
+      letter-spacing: -0.045em;
+      font-weight: 700;
+    }
+
+    .header-copy {
+      max-width: 760px;
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.65;
+    }
+
+    .header-state {
+      max-width: 290px;
+      padding: 14px 16px;
+      border-left: 3px solid var(--blue);
+      background: var(--surface);
+      color: var(--muted);
+      line-height: 1.5;
+      box-shadow: 0 8px 24px rgba(20, 33, 61, 0.05);
+    }
+
+    .header-state strong {
+      display: block;
+      margin-bottom: 2px;
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .header-state span { font-size: 13px; }
+
+    .decision-lab {
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      box-shadow: 0 12px 32px rgba(20, 33, 61, 0.06);
+    }
+
+    .lab-heading {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .lab-heading h2,
+    .compare-heading h2,
+    .concept-heading h2 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.35;
+      letter-spacing: -0.02em;
+    }
+
+    .lab-heading p,
+    .compare-heading p,
+    .concept-heading p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .reset-button,
+    .mode-button,
+    .step-button {
+      border: 1px solid var(--line-strong);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      transition: border-color .18s ease, background .18s ease, color .18s ease, transform .18s ease;
+    }
+
+    .reset-button:hover,
+    .mode-button:hover,
+    .step-button:hover { border-color: var(--blue); }
+
+    .reset-button:focus-visible,
+    .mode-button:focus-visible,
+    .step-button:focus-visible,
+    .choice-label:has(input:focus-visible) {
+      outline: 3px solid rgba(20, 99, 230, 0.25);
+      outline-offset: 2px;
+    }
+
+    .reset-button {
+      min-height: 42px;
+      padding: 0 15px;
+      border-radius: 999px;
+      font-weight: 650;
+    }
+
+    .choice-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    fieldset {
+      min-width: 0;
+      margin: 0;
+      padding: 0;
+      border: 0;
+    }
+
+    legend {
+      width: 100%;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .choice-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+      padding: 5px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--surface-subtle);
+    }
+
+    .choice-label {
+      position: relative;
+      display: flex;
+      min-height: 58px;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 10px;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      color: var(--muted);
+      cursor: pointer;
+      line-height: 1.35;
+    }
+
+    .choice-label input {
+      position: absolute;
+      inline-size: 1px;
+      block-size: 1px;
+      opacity: 0;
+    }
+
+    .choice-label:has(input:checked) {
+      border-color: #a8c5f7;
+      background: var(--blue-soft);
+      color: var(--text);
+    }
+
+    .choice-mark {
+      display: grid;
+      flex: 0 0 25px;
+      width: 25px;
+      height: 25px;
+      place-items: center;
+      border: 1px solid var(--line-strong);
+      border-radius: 50%;
+      background: var(--surface);
+      color: var(--faint);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .choice-label:has(input:checked) .choice-mark {
+      border-color: var(--blue);
+      background: var(--blue);
+      color: #fff;
+    }
+
+    .choice-copy { min-width: 0; }
+    .choice-copy strong { display: block; font-size: 13px; }
+    .choice-copy span { display: block; margin-top: 2px; font-size: 12px; }
+
+    .recommended-note {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .recommended-note strong { color: var(--blue-strong); }
+
+    .compare-section { margin-top: 28px; }
+
+    .compare-heading {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    .view-modes {
+      display: flex;
+      gap: 5px;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--surface);
+    }
+
+    .mode-button {
+      min-height: 44px;
+      padding: 0 13px;
+      border-color: transparent;
+      border-radius: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .mode-button[aria-pressed="true"] {
+      background: var(--text);
+      color: #fff;
+    }
+
+    .step-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .step-button {
+      min-height: 44px;
+      padding: 0 14px;
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .step-button[aria-pressed="true"] {
+      border-color: var(--blue);
+      background: var(--blue);
+      color: #fff;
+    }
+
+    .step-button .step-number {
+      display: inline-block;
+      margin-right: 5px;
+      opacity: .72;
+    }
+
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .comparison-grid[data-mode="current"] { grid-template-columns: minmax(0, 1fr); }
+    .comparison-grid[data-mode="proposal"] { grid-template-columns: minmax(0, 1fr); }
+    .comparison-grid[data-mode="current"] .proposal-panel { display: none; }
+    .comparison-grid[data-mode="proposal"] .current-panel { display: none; }
+
+    .compare-panel {
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+    }
+
+    .panel-head {
+      display: flex;
+      min-height: 72px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 17px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel-head strong { display: block; font-size: 15px; }
+    .panel-head span { display: block; margin-top: 3px; color: var(--muted); font-size: 12px; }
+
+    .panel-type {
+      flex: 0 0 auto;
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: var(--surface-subtle);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .proposal-panel .panel-type { background: var(--blue-soft); color: var(--blue-strong); }
+
+    .current-stage,
+    .proposal-stage {
+      display: grid;
+      min-height: 770px;
+      place-items: center;
+      padding: 24px;
+      background: #eef1f5;
+    }
+
+    .current-shot-link {
+      display: grid;
+      max-width: 390px;
+      place-items: center;
+      text-decoration: none;
+    }
+
+    .current-shot {
+      display: block;
+      width: 100%;
+      max-height: 720px;
+      object-fit: contain;
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      background: #fff;
+    }
+
+    .mock-phone {
+      position: relative;
+      width: min(100%, 390px);
+      min-height: 700px;
+      overflow: hidden;
+      border: 1px solid #ccd2da;
+      border-radius: 24px;
+      background: #fff;
+      box-shadow: var(--shadow);
+    }
+
+    .mock-statusbar {
+      display: flex;
+      height: 31px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 19px;
+      color: #111;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .mock-appbar {
+      display: flex;
+      min-height: 54px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 0 18px;
+      border-bottom: 1px solid #edf0f4;
+    }
+
+    .mock-appbar strong {
+      font-size: 17px;
+      letter-spacing: -0.02em;
+    }
+
+    .mock-back,
+    .mock-link {
+      display: inline-flex;
+      min-width: 44px;
+      min-height: 44px;
+      align-items: center;
+      justify-content: center;
+      border: 0;
+      background: transparent;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 650;
+      cursor: pointer;
+    }
+
+    .mock-back { color: var(--text); font-size: 20px; }
+
+    .mock-content {
+      display: flex;
+      min-height: 610px;
+      flex-direction: column;
+      padding: 20px 18px 18px;
+    }
+
+    .state-line {
+      margin-bottom: 12px;
+      color: var(--blue-strong);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .mock-content h3 {
+      margin: 0;
+      font-size: 27px;
+      line-height: 1.22;
+      letter-spacing: -0.035em;
+    }
+
+    .mock-meta {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .mock-section-title {
+      margin: 22px 0 9px;
+      font-size: 14px;
+      font-weight: 750;
+    }
+
+    .result-main {
+      padding: 14px;
+      border: 2px solid var(--blue);
+      border-radius: 14px;
+      background: #fff;
+    }
+
+    .result-head,
+    .row-between {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .result-head strong { font-size: 14px; }
+
+    .selected-dot {
+      display: grid;
+      width: 21px;
+      height: 21px;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--blue);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .calendar-mini {
+      margin-top: 12px;
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--surface-subtle);
+    }
+
+    .calendar-mini-row,
+    .task-row,
+    .plan-row,
+    .format-row,
+    .editor-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 44px;
+      border-bottom: 1px solid #e8ebef;
+      font-size: 13px;
+    }
+
+    .calendar-mini-row:last-child,
+    .task-row:last-child,
+    .plan-row:last-child,
+    .format-row:last-child,
+    .editor-row:last-child { border-bottom: 0; }
+
+    .time {
+      flex: 0 0 45px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .option-list {
+      margin-top: 10px;
+      border-top: 1px solid var(--line);
+    }
+
+    .option-row {
+      display: flex;
+      min-height: 48px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      border-bottom: 1px solid var(--line);
+      font-size: 13px;
+    }
+
+    .action-stack {
+      display: grid;
+      gap: 9px;
+      margin-top: auto;
+      padding-top: 20px;
+    }
+
+    .action-row {
+      display: grid;
+      grid-template-columns: 1fr 1.6fr;
+      gap: 9px;
+    }
+
+    .mock-primary,
+    .mock-secondary,
+    .mock-text-action {
+      min-height: 48px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 750;
+    }
+
+    .mock-primary {
+      border: 1px solid var(--blue);
+      background: var(--blue);
+      color: #fff;
+    }
+
+    .mock-primary:hover { background: var(--blue-strong); }
+
+    .mock-secondary {
+      border: 1px solid var(--line-strong);
+      background: #fff;
+      color: var(--text);
+    }
+
+    .mock-text-action {
+      min-height: 44px;
+      border: 0;
+      background: transparent;
+      color: var(--blue);
+    }
+
+    .inline-note {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.45;
+      text-align: center;
+    }
+
+    .field-label {
+      display: block;
+      margin: 0 0 7px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .mock-input {
+      display: flex;
+      min-height: 46px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      padding: 0 12px;
+      border: 1px solid var(--line-strong);
+      border-radius: 9px;
+      background: #fff;
+      color: var(--text);
+      font-size: 13px;
+    }
+
+    .editor-list,
+    .task-list,
+    .plan-list,
+    .format-list {
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .check,
+    .radio {
+      display: grid;
+      flex: 0 0 21px;
+      width: 21px;
+      height: 21px;
+      place-items: center;
+      border: 1.5px solid #9da4ad;
+      background: #fff;
+    }
+
+    .check { border-radius: 5px; }
+    .radio { border-radius: 50%; }
+    .check.checked, .radio.checked { border-color: var(--blue); background: var(--blue); color: #fff; }
+    .radio.checked::after { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #fff; }
+
+    .row-copy { min-width: 0; flex: 1; }
+    .row-copy strong { display: block; font-size: 13px; }
+    .row-copy span { display: block; margin-top: 3px; color: var(--muted); font-size: 11px; }
+    .chevron { color: var(--faint); }
+
+    .success-banner {
+      display: flex;
+      min-height: 48px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 19px;
+      padding: 0 12px;
+      border: 1px solid #bfe3cb;
+      border-radius: 10px;
+      background: var(--green-soft);
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .today-compact {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 18px;
+      padding: 12px 13px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--surface-subtle);
+    }
+
+    .today-compact strong { font-size: 13px; }
+    .today-compact span { color: var(--muted); font-size: 11px; }
+
+    .today-large {
+      margin-bottom: 20px;
+      padding: 15px 14px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+    }
+
+    .today-large h4 { margin: 0 0 8px; font-size: 18px; }
+
+    .recent-row {
+      margin-bottom: 18px;
+      padding: 13px;
+      border: 1px solid #bfd4fa;
+      border-radius: 12px;
+      background: var(--blue-soft);
+    }
+
+    .recent-row strong { display: block; font-size: 14px; }
+    .recent-row span { display: block; margin-top: 4px; color: var(--muted); font-size: 11px; }
+
+    .conditional-row,
+    .warning-row,
+    .common-rule {
+      margin-top: 12px;
+      padding: 11px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .conditional-row { border: 1px solid var(--line); background: var(--surface-subtle); color: var(--muted); }
+    .warning-row { border: 1px solid #f3cf9c; background: var(--orange-soft); color: #794000; }
+    .common-rule { border-left: 3px solid var(--blue); background: var(--blue-soft); color: #1e4178; }
+
+    .detail-block {
+      padding: 17px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .detail-block strong { display: block; margin-bottom: 7px; font-size: 13px; }
+    .detail-block p { margin: 0; font-size: 14px; line-height: 1.55; }
+
+    .map-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 18px 0 10px;
+      padding: 12px 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      font-size: 13px;
+    }
+
+    .preview-count {
+      margin-top: 12px;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: var(--surface-subtle);
+    }
+
+    .preview-count strong { display: block; font-size: 14px; }
+    .preview-count span { display: block; margin-top: 4px; color: var(--muted); font-size: 11px; }
+
+    .demo-feedback {
+      width: min(100%, 390px);
+      min-height: 38px;
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #172135;
+      color: #fff;
+      font-size: 12px;
+      line-height: 1.45;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity .18s ease, transform .18s ease;
+    }
+
+    .demo-feedback.show { opacity: 1; transform: translateY(0); }
+
+    .analysis-strip {
+      display: grid;
+      grid-template-columns: 1.15fr .85fr .7fr;
+      gap: 1px;
+      margin-top: 18px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: var(--line);
+    }
+
+    .analysis-cell { padding: 15px 16px; background: var(--surface); }
+    .analysis-cell span { display: block; margin-bottom: 5px; color: var(--muted); font-size: 11px; font-weight: 700; }
+    .analysis-cell strong { display: block; font-size: 14px; line-height: 1.5; }
+
+    .concept-section {
+      margin-top: 36px;
+      padding-top: 30px;
+      border-top: 1px solid var(--line);
+    }
+
+    .concept-heading { margin-bottom: 16px; }
+
+    details {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: var(--surface);
+    }
+
+    summary {
+      min-height: 52px;
+      padding: 15px 17px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .concept-board-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+      padding: 0 17px 17px;
+    }
+
+    figure { margin: 0; }
+    figure img { display: block; width: 100%; border: 1px solid var(--line); border-radius: 12px; }
+    figcaption { margin-top: 8px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+
+    .report-footer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 28px;
+      padding: 18px 0 0;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .report-footer a { color: var(--blue-strong); }
+
+    @media (max-width: 900px) {
+      .report-header { grid-template-columns: 1fr; align-items: start; }
+      .header-state { max-width: none; }
+      .choice-grid { grid-template-columns: 1fr; }
+      .comparison-grid { grid-template-columns: 1fr; }
+      .analysis-strip { grid-template-columns: 1fr; }
+      .current-stage, .proposal-stage { min-height: auto; }
+    }
+
+    @media (max-width: 520px) {
+      .page-shell { padding: 19px 12px 52px; }
+      .report-header { padding-bottom: 20px; }
+      h1 { font-size: 32px; }
+      .header-copy { font-size: 15px; }
+      .decision-lab { padding: 16px; border-radius: 18px; }
+      .choice-pair { grid-template-columns: 1fr; }
+      .step-nav { display: grid; grid-template-columns: 1fr 1fr; }
+      .step-button { width: 100%; padding: 0 8px; border-radius: 11px; }
+      .compare-heading { align-items: start; }
+      .view-modes { width: 100%; }
+      .mode-button { flex: 1; padding: 0 6px; }
+      .current-stage, .proposal-stage { padding: 12px; }
+      .mock-phone { border-radius: 18px; }
+      .panel-head { min-height: 64px; }
+      .analysis-cell { padding: 14px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page-shell">
+    <header class="report-header">
+      <div>
+        <h1>현재 P35 · A/B UX 비교</h1>
+        <p class="header-copy">왼쪽은 로컬에서 확인한 현재 P35 캡처입니다. 오른쪽은 선택한 A/B 조합을 반영한 구현 전 제안 UI입니다. 위의 세 결정을 바꾸면서 공개 계획부터 저장·실행·내보내기까지 어떻게 달라지는지 확인할 수 있습니다.</p>
+      </div>
+      <div class="header-state" role="note">
+        <strong>제안 화면 · 구현 전</strong>
+        <span>내부 비교 자료이며 실제 사용자 관찰은 0명입니다.</span>
+      </div>
+    </header>
+
+    <section class="decision-lab" aria-labelledby="decision-title">
+      <div class="lab-heading">
+        <div>
+          <h2 id="decision-title">세 가지 안을 직접 바꿔 보기</h2>
+          <p>A/B 선택은 세 쟁점만 바꿉니다. 편집기 통일·결과 형식 감산·중요 경고 노출은 공통 권고입니다.</p>
+        </div>
+        <button type="button" class="reset-button" id="reset-recommended">추천 조합 B/B/B</button>
+      </div>
+
+      <div class="choice-grid">
+        <fieldset>
+          <legend>Q1. 저장 없는 빠른 내보내기</legend>
+          <div class="choice-pair">
+            <label class="choice-label">
+              <input type="radio" name="q1" value="a">
+              <span class="choice-mark">A</span>
+              <span class="choice-copy"><strong>저장 후만</strong><span>공개 화면은 미리보기</span></span>
+            </label>
+            <label class="choice-label">
+              <input type="radio" name="q1" value="b" checked>
+              <span class="choice-mark">B</span>
+              <span class="choice-copy"><strong>제한적 빠른 사용</strong><span>미수정·로컬 결과만</span></span>
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Q2. 내 Flow 일반 진입</legend>
+          <div class="choice-pair">
+            <label class="choice-label">
+              <input type="radio" name="q2" value="a">
+              <span class="choice-mark">A</span>
+              <span class="choice-copy"><strong>Today 우선</strong><span>오늘 실행부터 표시</span></span>
+            </label>
+            <label class="choice-label">
+              <input type="radio" name="q2" value="b" checked>
+              <span class="choice-mark">B</span>
+              <span class="choice-copy"><strong>저장 계획 우선</strong><span>Today는 간단히 요약</span></span>
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Q3. 사용자 화면의 명칭</legend>
+          <div class="choice-pair">
+            <label class="choice-label">
+              <input type="radio" name="q3" value="a">
+              <span class="choice-mark">A</span>
+              <span class="choice-copy"><strong>Flow 유지</strong><span>현재 용어 사용</span></span>
+            </label>
+            <label class="choice-label">
+              <input type="radio" name="q3" value="b" checked>
+              <span class="choice-mark">B</span>
+              <span class="choice-copy"><strong>계획 우선</strong><span>핵심 화면부터 전환</span></span>
+            </label>
+          </div>
+        </fieldset>
+      </div>
+      <div class="recommended-note" id="combination-summary"><strong>현재 선택 B/B/B:</strong> 제한적 빠른 사용 · 저장 계획 우선 · ‘계획’ 명칭</div>
+    </section>
+
+    <section class="compare-section" aria-labelledby="compare-title">
+      <div class="compare-heading">
+        <div>
+          <h2 id="compare-title">화면별 비교</h2>
+          <p>단계를 선택하면 현재 근거 화면과 선택한 안의 제안 화면이 함께 바뀝니다.</p>
+        </div>
+        <div class="view-modes" aria-label="비교 방식">
+          <button type="button" class="mode-button" data-mode="split" aria-pressed="true">나란히</button>
+          <button type="button" class="mode-button" data-mode="current" aria-pressed="false">현재만</button>
+          <button type="button" class="mode-button" data-mode="proposal" aria-pressed="false">선택안만</button>
+        </div>
+      </div>
+
+      <div class="step-nav" role="group" aria-label="비교할 화면">
+        <button type="button" class="step-button" data-step="public" aria-pressed="true"><span class="step-number">1</span>공개 상세</button>
+        <button type="button" class="step-button" data-step="editor" aria-pressed="false"><span class="step-number">2</span>편집</button>
+        <button type="button" class="step-button" data-step="saved" aria-pressed="false"><span class="step-number">3</span>저장 직후</button>
+        <button type="button" class="step-button" data-step="my" aria-pressed="false"><span class="step-number">4</span>내 Flow</button>
+        <button type="button" class="step-button" data-step="item" aria-pressed="false"><span class="step-number">5</span>항목 상세</button>
+        <button type="button" class="step-button" data-step="export" aria-pressed="false"><span class="step-number">6</span>내보내기</button>
+        <button type="button" class="step-button" data-step="map" aria-pressed="false"><span class="step-number">7</span>Flow Map</button>
+      </div>
+
+      <div class="comparison-grid" id="comparison-grid" data-mode="split">
+        <article class="compare-panel current-panel" aria-labelledby="current-panel-title">
+          <div class="panel-head">
+            <div>
+              <strong id="current-panel-title">현재 P35</strong>
+              <span id="current-caption">로컬 runtime 캡처</span>
+            </div>
+            <span class="panel-type">확인된 화면</span>
+          </div>
+          <div class="current-stage">
+            <a class="current-shot-link" id="current-shot-link" href="#" target="_blank" rel="noreferrer">
+              <img class="current-shot" id="current-shot" src="" alt="">
+            </a>
+          </div>
+        </article>
+
+        <article class="compare-panel proposal-panel" aria-labelledby="proposal-panel-title">
+          <div class="panel-head">
+            <div>
+              <strong id="proposal-panel-title">선택한 안</strong>
+              <span id="proposal-caption">B/B/B · 구현 전 제안</span>
+            </div>
+            <span class="panel-type" id="proposal-type">Q1·Q3 선택 반영</span>
+          </div>
+          <div class="proposal-stage">
+            <div>
+              <div id="proposal-root"></div>
+              <div class="demo-feedback" id="demo-feedback" role="status" aria-live="polite"></div>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div class="analysis-strip" aria-live="polite">
+        <div class="analysis-cell"><span>핵심 변화</span><strong id="change-summary"></strong></div>
+        <div class="analysis-cell"><span>관련 피드백</span><strong id="feedback-ids"></strong></div>
+        <div class="analysis-cell"><span>결정 성격</span><strong id="decision-type"></strong></div>
+      </div>
+    </section>
+
+    <section class="concept-section" aria-labelledby="concept-title">
+      <div class="concept-heading">
+        <h2 id="concept-title">추천 B/B/B 전체 보드</h2>
+        <p>아래 이미지는 방향을 한눈에 보기 위한 참고 보드입니다. 위 비교 화면의 한글·상태 계약이 더 정확한 기준입니다.</p>
+      </div>
+      <details>
+        <summary>추천안 전체 흐름 이미지 펼치기</summary>
+        <div class="concept-board-grid">
+          <figure>
+            <img loading="lazy" src="./2026-08-03-p35-round2-ux-comparison-assets/proposed-lifecycle-concept.png" alt="공개 계획, 저장 전 수정, 저장 직후, 내 도구로 옮기기 네 단계 제안 화면">
+            <figcaption>공개 상세 → 저장 전 수정 → 저장 직후 선택 계획 → 내 도구로 옮기기</figcaption>
+          </figure>
+          <figure>
+            <img loading="lazy" src="./2026-08-03-p35-round2-ux-comparison-assets/proposed-my-plan-concept.png" alt="내 계획 일반 진입, 저장한 계획, 항목 상세 세 단계 제안 화면">
+            <figcaption>일반 내 계획 → 저장한 계획 → 항목 상세</figcaption>
+          </figure>
+        </div>
+      </details>
+    </section>
+
+    <footer class="report-footer">
+      <span>현재 화면: Codex Round 2 로컬 캡처 · 제안 화면: 기획 합성안 · 실제 관찰 사용자 0명</span>
+      <a href="./2026-08-03-p35-fundamental-ux-round2-planning-synthesis/README.md">기획·개발 인계 패키지 보기</a>
+    </footer>
+  </main>
+
+  <script>
+    const state = { q1: 'b', q2: 'b', q3: 'b', step: 'public', mode: 'split' };
+
+    const steps = {
+      public: {
+        label: '공개 상세',
+        image: './2026-08-03-p35-fundamental-ux-round2-results/codex/screenshots/S02-01-anchor-selected-duplicate-390.png',
+        alt: '현재 P35 공개 상세에서 선택한 시작일이 아래에 다시 표시되는 화면',
+        caption: '시작일 선택값 반복 · 공개 행동과 결과 형식 확인',
+        change: '선택한 날짜의 중복 표시는 지우고, 가능한 결과를 실제 미리보기로 먼저 보여줍니다.',
+        feedback: 'U01 · U06 · U07 · U09',
+        type: 'Q1·Q3 + 공통 권고'
+      },
+      editor: {
+        label: '편집',
+        image: './2026-08-03-p35-fundamental-ux-round2-results/codex/screenshots/S03-01-public-flow-editor-390.png',
+        alt: '현재 P35 공개 Flow 편집 화면',
+        caption: '공개 편집 화면 · 저장본 편집과 다른 문법',
+        change: '공개와 저장본이 같은 전체 높이 편집 문법을 쓰되, 공개는 변경 반영·저장본은 저장으로 효과를 구분합니다.',
+        feedback: 'U08 · U09',
+        type: '공통 권고'
+      },
+      saved: {
+        label: '저장 직후',
+        image: './2026-08-03-p35-fundamental-ux-round2-results/codex/screenshots/S05-02-save-receipt-390.png',
+        alt: '현재 P35 저장 후 별도 영수증 화면',
+        caption: '별도 저장 receipt · 내 Flow로 한 번 더 이동',
+        change: '별도 receipt 화면을 없애고 방금 저장한 계획 상세에 저장됨·항목 수·되돌리기 배너를 붙입니다.',
+        feedback: 'U01 · U07 · U08',
+        type: '공통 권고'
+      },
+      my: {
+        label: '내 Flow',
+        image: './2026-08-03-p35-fundamental-ux-round2-handoff/screenshots/08-my-flow-today-view.png',
+        alt: '현재 P35 내 Flow Today 중심 화면',
+        caption: 'handoff에 기록된 현재 Today view 캡처',
+        change: 'A는 Today를 첫 화면으로 유지하고, B는 저장 계획 목록을 중심에 두며 Today를 짧은 파생 요약으로 둡니다.',
+        feedback: 'U03 · U07 · U10',
+        type: 'Q2·Q3 결정'
+      },
+      item: {
+        label: '항목 상세',
+        image: './2026-08-03-p35-fundamental-ux-round2-results/codex/screenshots/S09-01-saved-item-detail-390.png',
+        alt: '현재 P35 저장 Item 상세 화면',
+        caption: '파란 실행 영역 · 실행할 일 · 할 일 수정',
+        change: '독립 파란 바탕과 반복 제목을 없애고 완료를 주 행동, 수정을 보조 행동으로 정리합니다.',
+        feedback: 'U04',
+        type: '공통 권고'
+      },
+      export: {
+        label: '내보내기',
+        image: './2026-08-03-p35-fundamental-ux-round2-results/codex/screenshots/S06-02-saved-export-panel-390.png',
+        alt: '현재 P35 저장 Flow 내보내기 패널',
+        caption: '저장본 내보내기 · 형식과 범위가 한 패널에 표시',
+        change: '저장본이 범위·재생성·중복 경고의 주 소유자가 되고, 공개 빠른 사용의 존재만 Q1 A/B로 결정합니다.',
+        feedback: 'U01 · U07 · U09',
+        type: 'Q1·Q3 + 공통 권고'
+      },
+      map: {
+        label: 'Flow Map',
+        image: './2026-08-03-p35-fundamental-ux-round2-results/codex/screenshots/S10-04-flow-map-preview-parity-gap-390.png',
+        alt: '현재 P35 Flow Map 적용 7개와 미리보기 8개가 다른 화면',
+        caption: '3칸 요약 · 적용 7개와 미리보기 8개 불일치',
+        change: '3칸 요약은 한 줄로 줄이고 선택·미리보기·저장 수가 같은 effective snapshot에서 일치하게 합니다.',
+        feedback: 'U05 · Codex HF-01',
+        type: '공통 권고 · P0 hard fail'
+      }
+    };
+
+    function terminology() {
+      if (state.q3 === 'b') {
+        return { find: '계획 찾기', my: '내 계획', edit: '계획 수정', unit: '계획', map: '계획 구성' };
+      }
+      return { find: 'Flow 찾기', my: '내 Flow', edit: 'Flow 수정', unit: 'Flow', map: 'Flow Map' };
+    }
+
+    function phone(content, title, options = {}) {
+      const back = options.back === false ? '<span></span>' : '<button type="button" class="mock-back" data-demo="이전 화면으로 돌아갑니다." aria-label="뒤로">‹</button>';
+      const right = options.right || '<span></span>';
+      return `
+        <div class="mock-phone">
+          <div class="mock-statusbar"><span>9:41</span><span>●  Wi-Fi  ▰</span></div>
+          <div class="mock-appbar">${back}<strong>${title}</strong>${right}</div>
+          ${content}
+        </div>`;
+    }
+
+    function renderPublic(t) {
+      const quick = state.q1 === 'b'
+        ? `<button type="button" class="mock-text-action" data-demo="현재 미수정 계획으로 캘린더 파일을 만듭니다. 저장·이력·재시도는 제공하지 않습니다.">저장 없이 캘린더 파일 받기</button><div class="inline-note">FlowMe에 저장되지 않음</div>`
+        : `<div class="inline-note">실제 파일은 ${t.my}에 저장한 뒤 만들 수 있어요</div>`;
+      const content = `
+        <div class="mock-content">
+          <div class="state-line">공개 ${t.unit} · 저장 전</div>
+          <h3>30일 이사 준비</h3>
+          <p class="mock-meta">할 일 24개 · 시작일 8월 10일</p>
+          <div class="mock-section-title">추천 결과</div>
+          <div class="result-main">
+            <div class="result-head"><strong>캘린더 · 일정 24개</strong><span class="selected-dot">✓</span></div>
+            <div class="calendar-mini">
+              <div class="calendar-mini-row"><span class="time">10:00</span><span>이사업체 견적 비교</span></div>
+              <div class="calendar-mini-row"><span class="time">13:00</span><span>전입신고 준비</span></div>
+              <div class="calendar-mini-row"><span class="time">16:00</span><span>인터넷 이전 신청</span></div>
+            </div>
+          </div>
+          <div class="option-list">
+            <div class="option-row"><span>할 일</span><strong>24개</strong></div>
+            <div class="option-row"><span>시트</span><strong>24개</strong></div>
+          </div>
+          <div class="action-stack">
+            <div class="action-row">
+              <button type="button" class="mock-secondary" data-demo="저장 전 ${t.edit} 화면을 엽니다.">수정</button>
+              <button type="button" class="mock-primary" data-demo="개인 사본을 저장하고 방금 저장한 ${t.unit} 상세로 이동합니다.">${t.my}에 저장</button>
+            </div>
+            ${quick}
+          </div>
+        </div>`;
+      return phone(content, t.find, { back: false, right: '<button type="button" class="mock-link" data-demo="출처와 중요 조건을 봅니다.">출처</button>' });
+    }
+
+    function renderEditor(t) {
+      const content = `
+        <div class="mock-content">
+          <div class="state-line">미저장 변경</div>
+          <label class="field-label">${t.unit} 이름</label>
+          <div class="mock-input"><span>30일 이사 준비</span></div>
+          <label class="field-label">시작일</label>
+          <div class="mock-input"><span>8월 10일</span><span>변경</span></div>
+          <div class="row-between"><div class="mock-section-title">포함할 항목 · 24개</div><button type="button" class="mock-link" data-demo="전체 항목을 선택합니다.">전체 선택</button></div>
+          <div class="editor-list">
+            <div class="editor-row"><span class="check checked">✓</span><span class="row-copy"><strong>이사업체 견적 비교</strong><span>8월 10일 · 10:00</span></span><span class="chevron">›</span></div>
+            <div class="editor-row"><span class="check checked">✓</span><span class="row-copy"><strong>전입신고 준비</strong><span>8월 10일 · 13:00</span></span><span class="chevron">›</span></div>
+            <div class="editor-row"><span class="check checked">✓</span><span class="row-copy"><strong>인터넷 이전 신청</strong><span>8월 10일 · 16:00</span></span><span class="chevron">›</span></div>
+          </div>
+          <div class="common-rule">공개 편집은 현재 미리보기에만 반영됩니다. 저장된 ${t.unit}에서는 같은 구조로 개인 변경을 저장합니다.</div>
+          <div class="action-stack">
+            <div class="action-row"><button type="button" class="mock-secondary" data-demo="변경을 버릴지 확인한 뒤 닫습니다.">취소</button><button type="button" class="mock-primary" data-demo="공개 미리보기만 갱신합니다. 아직 개인 저장본은 아닙니다.">변경 반영</button></div>
+          </div>
+        </div>`;
+      return phone(content, t.edit);
+    }
+
+    function renderSaved(t) {
+      const content = `
+        <div class="mock-content">
+          <div class="success-banner"><span>✓ 저장됨 · 24개</span><button type="button" class="mock-link" data-demo="방금 만든 개인 사본을 되돌립니다.">되돌리기</button></div>
+          <h3>30일 이사 준비</h3>
+          <p class="mock-meta">공개 ${t.unit}에서 저장</p>
+          <div class="mock-section-title">오늘 할 일 · 3개</div>
+          <div class="task-list">
+            <div class="task-row"><span class="radio"></span><span class="row-copy"><strong>이사업체 견적 비교</strong><span>오늘 10:00</span></span></div>
+            <div class="task-row"><span class="radio"></span><span class="row-copy"><strong>전입신고 준비</strong><span>오늘 13:00</span></span></div>
+            <div class="task-row"><span class="radio"></span><span class="row-copy"><strong>인터넷 이전 신청</strong><span>오늘 16:00</span></span></div>
+          </div>
+          <div class="action-stack">
+            <button type="button" class="mock-primary" data-demo="오늘 실행할 항목만 모아서 봅니다.">오늘 할 일 보기</button>
+            <div class="action-row"><button type="button" class="mock-secondary" data-demo="저장된 개인 변경을 수정합니다.">수정</button><button type="button" class="mock-secondary" data-demo="범위·형식·개수를 확인하는 화면을 엽니다.">내 도구로 옮기기</button></div>
+          </div>
+        </div>`;
+      return phone(content, t.my, { right: '<button type="button" class="mock-link" data-demo="보관과 삭제는 보조 메뉴에 있습니다.">•••</button>' });
+    }
+
+    function renderMy(t) {
+      if (state.q2 === 'a') {
+        const content = `
+          <div class="mock-content">
+            <h3>오늘 할 일</h3>
+            <p class="mock-meta">8월 3일 · 3개</p>
+            <div class="today-large">
+              <h4>오늘</h4>
+              <div class="task-row"><span class="radio"></span><span>운전면허 갱신 신청</span></div>
+              <div class="task-row"><span class="radio"></span><span>세탁기 필터 청소</span></div>
+              <div class="task-row"><span class="radio"></span><span>프로젝트 회의 자료 정리</span></div>
+            </div>
+            <div class="conditional-row">저장한 ${t.unit} 목록은 인접 화면에서 찾습니다.</div>
+            <div class="action-stack"><button type="button" class="mock-secondary" data-demo="저장한 ${t.unit} 목록으로 이동합니다.">저장한 ${t.unit} 보기</button></div>
+          </div>`;
+        return phone(content, t.my, { back: false, right: '<button type="button" class="mock-link" data-demo="오늘 할 일을 검색합니다.">검색</button>' });
+      }
+
+      const content = `
+        <div class="mock-content">
+          <div class="today-compact"><div><strong>오늘 · 3개</strong><br><span>이사업체 견적 비교 외 2개</span></div><button type="button" class="mock-link" data-demo="오늘 실행 목록을 엽니다.">모두 보기</button></div>
+          <div class="mock-section-title" style="margin-top:0">최근 저장</div>
+          <div class="recent-row"><strong>30일 이사 준비</strong><span>24개 · 방금 저장</span></div>
+          <div class="mock-section-title">저장한 ${t.unit}</div>
+          <div class="plan-list">
+            <div class="plan-row"><span class="row-copy"><strong>차량 점검 준비</strong><span>할 일 10개</span></span><span class="chevron">›</span></div>
+            <div class="plan-row"><span class="row-copy"><strong>아침 운동 루틴</strong><span>반복 일정</span></span><span class="chevron">›</span></div>
+            <div class="plan-row"><span class="row-copy"><strong>중학교 수학 1학기</strong><span>시트 8개</span></span><span class="chevron">›</span></div>
+            <div class="plan-row"><span class="row-copy"><strong>여행 준비 메모</strong><span>메모 4개</span></span><span class="chevron">›</span></div>
+          </div>
+        </div>`;
+      return phone(content, t.my, { back: false, right: `<button type="button" class="mock-link" data-demo="저장한 ${t.unit} 검색을 엽니다.">검색</button>` });
+    }
+
+    function renderItem(t) {
+      const content = `
+        <div class="mock-content">
+          <h3>타이어 공기압 확인</h3>
+          <p class="mock-meta">차량 점검 준비</p>
+          <div class="detail-block"><strong>완료 기준</strong><p>네 바퀴의 권장 공기압 확인</p></div>
+          <div class="detail-block"><strong>메모</strong><p>주유소 방문 전에 측정</p></div>
+          <div class="detail-block"><strong>출처</strong><p>차량 제조사 권장 기준</p></div>
+          <div class="action-stack">
+            <button type="button" class="mock-primary" data-demo="이 항목의 실행 상태만 완료로 바꿉니다.">완료</button>
+            <button type="button" class="mock-secondary" data-demo="항목의 개인 메모·날짜·완료 기준을 수정합니다.">수정</button>
+          </div>
+        </div>`;
+      return phone(content, '타이어 공기압 확인', { right: '<button type="button" class="mock-link" data-demo="이동·제외·단건 전송·삭제는 보조 메뉴에 있습니다.">•••</button>' });
+    }
+
+    function renderExport(t) {
+      const q1Note = state.q1 === 'b'
+        ? `공개 화면에서는 미수정·로컬 결과만 저장 없이 받을 수 있습니다. 이 화면은 저장본의 재생성·중복 경고를 담당합니다.`
+        : `공개 화면에서는 형식만 미리 봅니다. 실제 파일은 저장한 ${t.unit}의 이 화면에서 만듭니다.`;
+      const content = `
+        <div class="mock-content">
+          <h3>내 도구로 옮기기</h3>
+          <p class="mock-meta">저장한 ${t.unit} · 30일 이사 준비</p>
+          <div class="mock-section-title">범위</div>
+          <div class="mock-input"><span>전체 24개</span><span>변경</span></div>
+          <div class="mock-section-title">결과 형식</div>
+          <div class="format-list">
+            <div class="format-row"><span class="radio checked"></span><span class="row-copy"><strong>캘린더</strong><span>일정 24개</span></span></div>
+            <div class="format-row"><span class="radio"></span><span class="row-copy"><strong>할 일</strong><span>24개</span></span></div>
+            <div class="format-row"><span class="radio"></span><span class="row-copy"><strong>시트</strong><span>24개</span></span></div>
+          </div>
+          <div class="warning-row">같은 일정을 다시 추가하면 중복될 수 있어요.</div>
+          <div class="conditional-row">${q1Note}</div>
+          <div class="action-stack"><button type="button" class="mock-primary" data-demo="현재 범위의 일정 24개가 포함된 파일을 만듭니다.">캘린더 파일 만들기</button><button type="button" class="mock-text-action" data-demo="저장한 ${t.unit} 상세로 돌아갑니다.">취소</button></div>
+        </div>`;
+      return phone(content, '내 도구로 옮기기');
+    }
+
+    function renderMap(t) {
+      const content = `
+        <div class="mock-content">
+          <div class="state-line">공개 ${t.map}</div>
+          <h3>중학교 수학 1학기</h3>
+          <p class="mock-meta">하위 ${t.unit} 중 필요한 범위만 선택</p>
+          <div class="map-summary"><span>선택 범위</span><strong>7 / 전체 8</strong></div>
+          <div class="editor-list">
+            <div class="editor-row"><span class="check checked">✓</span><span class="row-copy"><strong>수와 연산</strong><span>저장</span></span></div>
+            <div class="editor-row"><span class="check checked">✓</span><span class="row-copy"><strong>문자와 식</strong><span>저장</span></span></div>
+            <div class="editor-row"><span class="check"></span><span class="row-copy"><strong>심화 문제</strong><span>검토 보류</span></span></div>
+          </div>
+          <div class="preview-count"><strong>주 결과 · 시트 7개</strong><span>선택 7개 · 미리보기 7개 · 저장 7개</span></div>
+          <div class="action-stack"><button type="button" class="mock-primary" data-demo="선택한 7개만 같은 effective snapshot으로 반영합니다.">선택 7개 반영</button><button type="button" class="mock-secondary" data-demo="변경 전 선택 상태로 돌아갑니다.">취소</button></div>
+        </div>`;
+      return phone(content, t.map);
+    }
+
+    function proposalForStep(step) {
+      const t = terminology();
+      if (step === 'public') return renderPublic(t);
+      if (step === 'editor') return renderEditor(t);
+      if (step === 'saved') return renderSaved(t);
+      if (step === 'my') return renderMy(t);
+      if (step === 'item') return renderItem(t);
+      if (step === 'export') return renderExport(t);
+      return renderMap(t);
+    }
+
+    function combinationText() {
+      const q1 = state.q1 === 'a' ? '저장 후만' : '제한적 빠른 사용';
+      const q2 = state.q2 === 'a' ? 'Today 우선' : '저장 계획 우선';
+      const q3 = state.q3 === 'a' ? 'Flow 유지' : '‘계획’ 명칭';
+      return { short: `${state.q1.toUpperCase()}/${state.q2.toUpperCase()}/${state.q3.toUpperCase()}`, long: `${q1} · ${q2} · ${q3}` };
+    }
+
+    function render() {
+      const step = steps[state.step];
+      const combo = combinationText();
+      const decisionSteps = {
+        public: 'Q1·Q3 선택 반영',
+        my: 'Q2·Q3 선택 반영',
+        export: 'Q1·Q3 선택 반영'
+      };
+      const isDecisionStep = Boolean(decisionSteps[state.step]);
+      const currentShot = document.getElementById('current-shot');
+      currentShot.src = step.image;
+      currentShot.alt = step.alt;
+      document.getElementById('current-shot-link').href = step.image;
+      document.getElementById('current-caption').textContent = step.caption;
+      document.getElementById('proposal-panel-title').textContent = isDecisionStep ? '선택한 안' : '양쪽 공통 권고';
+      document.getElementById('proposal-type').textContent = decisionSteps[state.step] || 'A/B 공통 · Q3 용어만 반영';
+      document.getElementById('proposal-caption').textContent = isDecisionStep
+        ? `${combo.short} · 구현 전 제안`
+        : `A/B와 무관하게 적용 · 구현 전 제안`;
+      document.getElementById('proposal-root').innerHTML = proposalForStep(state.step);
+      document.getElementById('change-summary').textContent = step.change;
+      document.getElementById('feedback-ids').textContent = step.feedback;
+      document.getElementById('decision-type').textContent = step.type;
+      document.getElementById('combination-summary').innerHTML = `<strong>현재 선택 ${combo.short}:</strong> ${combo.long}`;
+      document.getElementById('comparison-grid').dataset.mode = state.mode;
+      const feedback = document.getElementById('demo-feedback');
+      feedback.textContent = '';
+      feedback.classList.remove('show');
+    }
+
+    document.querySelectorAll('input[type="radio"]').forEach((input) => {
+      input.addEventListener('change', (event) => {
+        state[event.target.name] = event.target.value;
+        render();
+      });
+    });
+
+    document.querySelectorAll('.step-button').forEach((button) => {
+      button.addEventListener('click', () => {
+        state.step = button.dataset.step;
+        document.querySelectorAll('.step-button').forEach((item) => item.setAttribute('aria-pressed', String(item === button)));
+        render();
+      });
+    });
+
+    document.querySelectorAll('.mode-button').forEach((button) => {
+      button.addEventListener('click', () => {
+        state.mode = button.dataset.mode;
+        document.querySelectorAll('.mode-button').forEach((item) => item.setAttribute('aria-pressed', String(item === button)));
+        render();
+      });
+    });
+
+    document.getElementById('reset-recommended').addEventListener('click', () => {
+      state.q1 = 'b'; state.q2 = 'b'; state.q3 = 'b';
+      ['q1', 'q2', 'q3'].forEach((name) => {
+        document.querySelector(`input[name="${name}"][value="b"]`).checked = true;
+      });
+      render();
+    });
+
+    document.getElementById('proposal-root').addEventListener('click', (event) => {
+      const action = event.target.closest('[data-demo]');
+      if (!action) return;
+      const feedback = document.getElementById('demo-feedback');
+      feedback.textContent = action.dataset.demo;
+      feedback.classList.add('show');
+    });
+
+    render();
+  </script>
+</body>
+</html>

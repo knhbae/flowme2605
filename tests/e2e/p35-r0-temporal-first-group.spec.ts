@@ -3,7 +3,12 @@ import path from 'node:path';
 
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
-import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
+import {
+  closeOpenMyFlowItemDetail,
+  getOpenMyFlowItemDetail,
+  openMyFlowLibraryFlow,
+} from './helpers/my-flow-library';
+import { savePublicFlow } from './helpers/public-flow-save';
 
 const evidenceRoot = process.env.FLOWME_P35_R0_EVIDENCE_DIR;
 
@@ -168,11 +173,8 @@ test.describe('P35-R0 temporal first group', () => {
     await expect(warning).toContainText('함께 저장돼요');
     await capture(page, 'p35-r0-past-date-warning-390.png', warning);
 
-    await page.getByTestId('public-flow-save-primary-mobile').click();
-    const receipt = page.getByTestId('public-flow-saved-receipt');
-    await expect(receipt).toContainText('24개 할 일을 저장했어요');
-    await receipt.getByTestId('public-flow-saved-receipt-primary').click();
-    await expect(page).toHaveURL('/my?view=flows&flow=moving-d30-basic');
+    const saveBanner = await savePublicFlow(page, page.getByTestId('public-flow-save-primary-mobile'));
+    await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toHaveText('저장됨 · 24개');
     await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
 
     let workspace = await openSavedWorkspace(page);
@@ -180,13 +182,13 @@ test.describe('P35-R0 temporal first group', () => {
     await expect(group).toHaveAttribute('data-p35-marker', 'P35-R0-NEXT-DATE-GROUP');
     await expect(group).toHaveAttribute('data-temporal-kind', 'future');
     await expect(group).toHaveAttribute('data-temporal-date', nextGroupDate);
-    await expect(group.getByTestId('my-flow-execution-row-shell')).toHaveCount(4);
-    await expect(group).toContainText('4개 남음');
+    await expect(group.getByTestId('my-flow-execution-row-shell')).toHaveCount(3);
+    await expect(group).toContainText('3개 먼저');
     await expect(group.getByTestId('flow-date-rail')).toHaveCount(1);
     await expect(group.getByTestId('my-flow-row-date-meta')).toHaveCount(0);
     await expect(
       group.locator('[data-p35-marker="P35-R0-SHARED-TIMELINE-ROW"]'),
-    ).toHaveCount(4);
+    ).toHaveCount(3);
     const firstTimelineRow = group
       .locator('[data-p35-marker="P35-R0-SHARED-TIMELINE-ROW"]')
       .first();
@@ -196,7 +198,8 @@ test.describe('P35-R0 temporal first group', () => {
       await firstTimelineRow
         .locator('button, input[type="checkbox"]')
         .evaluateAll((elements) => elements.map((element) => element.tagName)),
-    ).toEqual(['BUTTON', 'INPUT']);
+    ).toEqual(['BUTTON']);
+    await expect(firstTimelineRow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
     const disclosure = workspace.getByTestId('my-flow-past-items-disclosure');
     await expect(disclosure).toContainText('저장된 지난 할 일 9개 보기');
     await expect(disclosure).not.toHaveAttribute('open', '');
@@ -204,24 +207,48 @@ test.describe('P35-R0 temporal first group', () => {
     await expectPageQuality(page);
 
     const initialRows = await snapshotRows(group);
-    expect(initialRows).toHaveLength(4);
+    expect(initialRows).toHaveLength(3);
     expect(initialRows.every((row) => row.key && row.title)).toBe(true);
 
     const firstRowKey = initialRows[0].key;
-    await group.getByTestId('my-flow-task-complete-control').first().click();
+    await firstTimelineRow.locator('button').first().click();
+    let detail = getOpenMyFlowItemDetail(page);
+    let completion = detail.getByTestId('my-flow-task-complete-control');
+    await expect(completion).toHaveCount(1);
+    await expect(page.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
+    await completion.click();
     await expect(page.getByTestId('my-flow-completion-snackbar')).toHaveAttribute(
       'data-completion-result',
       'completed',
     );
+    await expect(workspace.getByTestId('my-flow-workspace-progress-summary')).toContainText(
+      '전체 1/24 완료',
+    );
+    await closeOpenMyFlowItemDetail(page);
+    await expect(group.locator(`article[data-row-key="${firstRowKey}"]`)).toHaveCount(0);
     await expect(group.getByTestId('my-flow-execution-row-shell')).toHaveCount(3);
     await page.getByTestId('my-flow-completion-undo').click();
-    await expect(group.getByTestId('my-flow-execution-row-shell')).toHaveCount(4);
+    await expect(group.getByTestId('my-flow-execution-row-shell')).toHaveCount(3);
+    await expect(group.locator(`article[data-row-key="${firstRowKey}"]`)).toBeVisible();
+    await expect(workspace.getByTestId('my-flow-workspace-progress-summary')).toContainText(
+      '전체 0/24 완료',
+    );
 
-    await group.getByTestId('my-flow-task-complete-control').first().click();
+    const restoredFirstRow = group
+      .locator('[data-p35-marker="P35-R0-SHARED-TIMELINE-ROW"]')
+      .first();
+    await expect(restoredFirstRow).toHaveAttribute('data-row-key', firstRowKey);
+    await restoredFirstRow.locator('button').first().click();
+    detail = getOpenMyFlowItemDetail(page);
+    completion = detail.getByTestId('my-flow-task-complete-control');
+    await expect(completion).toHaveCount(1);
+    await completion.click();
     await expect(page.getByTestId('my-flow-completion-snackbar')).toHaveAttribute(
       'data-completion-result',
       'completed',
     );
+    await closeOpenMyFlowItemDetail(page);
+    await expect(group.locator(`article[data-row-key="${firstRowKey}"]`)).toHaveCount(0);
     await expect(group.getByTestId('my-flow-execution-row-shell')).toHaveCount(3);
     await page.reload();
     workspace = await openSavedWorkspace(page);
@@ -237,11 +264,15 @@ test.describe('P35-R0 temporal first group', () => {
     await expect(selectedDay.getByTestId('my-flow-execution-row-shell')).toHaveCount(4);
     await expect(selectedDay.getByTestId('my-flow-selected-day-summary')).toContainText('4개 항목 · 3개 남음');
     const calendarRows = await snapshotRows(selectedDay);
-    expect(calendarRows).toEqual(initialRows);
+    expect(calendarRows.slice(0, initialRows.length)).toEqual(initialRows);
 
     const completedCalendarRow = selectedDay
       .locator(`[data-testid="my-flow-execution-row-shell"]:has(article[data-row-key="${firstRowKey}"])`);
-    const reopen = completedCalendarRow.getByTestId('my-flow-task-complete-control');
+    await expect(completedCalendarRow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+    await completedCalendarRow.getByRole('button', { name: /계획에서 열기/ }).click();
+    detail = getOpenMyFlowItemDetail(page);
+    const reopen = detail.getByTestId('my-flow-task-complete-control');
+    await expect(reopen).toHaveCount(1);
     await expect(reopen).toBeChecked();
     await expect(reopen).toHaveAccessibleName(/다시 열기/u);
     await reopen.click();
@@ -249,12 +280,19 @@ test.describe('P35-R0 temporal first group', () => {
       'data-completion-result',
       'reopened',
     );
-    await expect(selectedDay.getByTestId('my-flow-selected-day-summary')).toContainText('4개 남음');
+    await closeOpenMyFlowItemDetail(page);
+
+    await page.goto('/calendar');
+    await page.getByTestId('my-flow-month-picker').fill(nextGroupDate.slice(0, 7));
+    await page.locator(`.fc-daygrid-day[data-date="${nextGroupDate}"]`)
+      .getByTestId('my-flow-calendar-date-button')
+      .click();
+    await expect(page.getByTestId('my-flow-selected-day-summary')).toContainText('4개 남음');
 
     await page.goto('/my?view=flows');
     workspace = await openSavedWorkspace(page);
     group = workspace.getByTestId('my-flow-temporal-next-group');
-    await expect(group.getByTestId('my-flow-execution-row-shell')).toHaveCount(4);
+    await expect(group.getByTestId('my-flow-execution-row-shell')).toHaveCount(3);
     expect(await snapshotRows(group)).toEqual(initialRows);
     await expectPageQuality(page);
     expect(errors).toEqual([]);
@@ -271,11 +309,11 @@ test.describe('P35-R0 temporal first group', () => {
     let group = workspace.getByTestId('my-flow-temporal-next-group');
     await expect(group).toHaveAttribute('data-temporal-kind', 'future');
     await expect(group).toHaveAttribute('data-temporal-date', nextGroupDate);
-    await expect(group.getByTestId('my-flow-execution-row-shell')).toHaveCount(4);
+    await expect(group.getByTestId('my-flow-execution-row-shell')).toHaveCount(3);
     await expect(group.getByTestId('flow-date-rail')).toHaveCount(1);
     await expect(
       group.locator('[data-p35-marker="P35-R0-SHARED-TIMELINE-ROW"]'),
-    ).toHaveCount(4);
+    ).toHaveCount(3);
     await expect(workspace.getByTestId('my-flow-past-items-disclosure')).toContainText(
       '저장된 지난 할 일 9개 보기',
     );
@@ -286,7 +324,7 @@ test.describe('P35-R0 temporal first group', () => {
     await page.reload();
     workspace = await openMyFlowLibraryFlow(page, 'moving-d30-basic');
     group = workspace.getByTestId('my-flow-temporal-next-group');
-    await expect(group.getByTestId('my-flow-execution-row-shell')).toHaveCount(4);
+    await expect(group.getByTestId('my-flow-execution-row-shell')).toHaveCount(3);
     await expectPageQuality(page);
 
     await seedSavedFlow(page, 'moving-d30-basic', 'calendar', allPastAnchor);
@@ -322,8 +360,7 @@ test.describe('P35-R0 temporal first group', () => {
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
     await page.getByTestId('public-flow-anchor-input').fill(today);
-    await page.getByTestId('public-flow-save-primary-mobile').click();
-    await page.getByTestId('public-flow-saved-receipt-primary').click();
+    await savePublicFlow(page, page.getByTestId('public-flow-save-primary-mobile'));
     workspace = await openMyFlowLibraryFlow(
       page,
       'curated-allblanc-morning-workout',

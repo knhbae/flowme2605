@@ -1,6 +1,6 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 
 import {
   FLOW_UI_COMPACT_ACTION_CLASS,
@@ -9,6 +9,28 @@ import {
   FLOW_UI_SECONDARY_ACTION_CLASS,
 } from './flow-ui';
 import { FlowBottomSheet } from './FlowExecutionPrimitives';
+import { FlowEditorSurface } from './FlowEditorSurface';
+import type {
+  FlowEditorCloseEvent,
+  FlowEditorFailure,
+  FlowEditorStatus,
+} from '@/lib/flow/flow-editor-transaction';
+import { selectFlowEditorAdapter } from '@/lib/flow/flow-editor-transaction';
+import {
+  getFlowEditorSurfaceContract,
+  type FlowEditorSchemaCapabilities,
+} from '@/lib/flow/flow-editor-schema';
+import { Q3_USER_COPY_PROFILE } from '@/lib/flow/q3-user-copy';
+
+type PublicSharedEditorTransaction = {
+  status: FlowEditorStatus;
+  failure?: FlowEditorFailure;
+  pendingClose: boolean;
+  onRequestClose: (event: FlowEditorCloseEvent) => void;
+  onContinueEditing: () => void;
+  onDiscardChanges: () => void;
+  onRetry: () => void;
+};
 
 export type PublicFlowAdjustmentKind = 'name' | 'anchor' | 'items' | 'routine';
 
@@ -32,6 +54,11 @@ export type PublicFlowAdjustmentItem = {
   date?: string;
   dateLabel: string;
   included: boolean;
+  canMoveUp: boolean;
+  canMoveDown: boolean;
+  completionCriterion?: string;
+  sourceUrl?: string;
+  warning?: string;
 };
 
 export type PublicFlowItemEditorDraft = {
@@ -39,6 +66,9 @@ export type PublicFlowItemEditorDraft = {
   title: string;
   detail: string;
   date: string;
+  completionCriterion?: string;
+  sourceUrl?: string;
+  warning?: string;
 };
 
 type PublicFlowAdjustmentPanelProps = {
@@ -50,16 +80,161 @@ type PublicFlowAdjustmentPanelProps = {
   anchorLabel?: string;
   anchorDraft?: string;
   items: PublicFlowAdjustmentItem[];
+  itemEditNotice?: string;
   routineEditor?: ReactNode;
+  sourceUrl?: string;
+  warning?: string;
+  initialFocusSelector?: string;
   applyDisabled?: boolean;
   onKindChange: (kind: PublicFlowAdjustmentKind) => void;
   onTitleChange: (value: string) => void;
   onAnchorChange?: (value: string) => void;
   onItemIncludedChange: (itemId: string, included: boolean) => void;
+  onItemMove: (itemId: string, direction: 'up' | 'down') => void;
   onItemEdit: (item: PublicFlowAdjustmentItem, returnFocusSelector: string) => void;
   onApply: () => void;
   onCancel: () => void;
+  transaction?: PublicSharedEditorTransaction;
+  sharedEditorEnabled?: boolean;
+  q3CopyEnabled?: boolean;
 };
+
+function PublicEditorFrame({
+  transaction,
+  adapter,
+  level,
+  testId,
+  headingId,
+  eyebrow,
+  title,
+  initialFocusSelector,
+  returnFocusSelector,
+  p35Marker,
+  adjustmentKind,
+  schemaCapabilities,
+  className,
+  commitLabel,
+  commitTestId,
+  cancelTestId,
+  commitDisabled,
+  onCommit,
+  onCancel,
+  children,
+}: {
+  transaction?: PublicSharedEditorTransaction;
+  adapter: 'shared' | 'legacy';
+  level: 'plan' | 'item';
+  testId: string;
+  headingId: string;
+  eyebrow?: string;
+  title: string;
+  initialFocusSelector?: string;
+  returnFocusSelector?: string;
+  p35Marker: string;
+  adjustmentKind?: PublicFlowAdjustmentKind;
+  schemaCapabilities?: FlowEditorSchemaCapabilities;
+  className: string;
+  commitLabel: string;
+  commitTestId: string;
+  cancelTestId: string;
+  commitDisabled?: boolean;
+  onCommit: () => void;
+  onCancel: () => void;
+  children: ReactNode;
+}) {
+  const contract = getFlowEditorSurfaceContract({
+    context: 'public-draft',
+    level,
+    capabilities: schemaCapabilities,
+  });
+  if (adapter === 'legacy') {
+    return (
+      <FlowBottomSheet
+        testId={testId}
+        headingId={headingId}
+        eyebrow={eyebrow}
+        title={title}
+        onClose={onCancel}
+        initialFocusSelector={initialFocusSelector}
+        returnFocusSelector={returnFocusSelector}
+        p35Marker={p35Marker}
+        dialogProps={{
+          'data-adjustment-kind': adjustmentKind,
+          'data-editor-transaction': level === 'plan' ? 'atomic' : 'atomic-child',
+          'data-editor-adapter': 'legacy',
+        }}
+        className={className}
+      >
+        {children}
+      </FlowBottomSheet>
+    );
+  }
+
+  if (!transaction) return null;
+
+  const errorSummary = transaction.failure
+    ? {
+        title: transaction.status === 'recovery-required'
+          ? '저장 상태를 확인해 주세요'
+          : '변경을 반영하지 못했습니다',
+        errors: [{
+          id: transaction.failure.code,
+          message: transaction.failure.message,
+        }],
+        testId: 'flow-editor-error',
+      }
+    : undefined;
+
+  return (
+    <FlowEditorSurface
+      testId={testId}
+      headingId={headingId}
+      context="public-draft"
+      level={level}
+      status={transaction.status}
+      layout="responsive"
+      semanticRole={contract.semanticRole}
+      commitRole={contract.commitRole}
+      eyebrow={eyebrow}
+      title={title}
+      initialFocusSelector={initialFocusSelector}
+      returnFocusSelector={returnFocusSelector}
+      p35Marker={p35Marker}
+      dialogProps={{
+        'data-adjustment-kind': adjustmentKind,
+        'data-editor-schema-fields': contract.fields.map((field) => field.id).join(','),
+      }}
+      dismissible={transaction.status !== 'submitting' && transaction.status !== 'recovery-required'}
+      onRequestClose={(cause) => transaction.onRequestClose(cause)}
+      errorSummary={errorSummary}
+      discardConfirmation={{
+        open: transaction.pendingClose,
+        onContinueEditing: transaction.onContinueEditing,
+        onDiscardChanges: transaction.onDiscardChanges,
+        testId: 'flow-editor-discard-prompt',
+      }}
+      cancelAction={{
+        label: '취소',
+        testId: cancelTestId,
+        disabled: transaction.status === 'submitting' || transaction.status === 'recovery-required',
+        onAction: () => transaction.onRequestClose('cancel'),
+      }}
+      primaryAction={{
+        label: commitLabel,
+        testId: commitTestId,
+        onAction: onCommit,
+      }}
+      retryAction={transaction.status === 'recoverable-error' ? {
+        label: '다시 시도',
+        testId: 'flow-editor-retry',
+        onAction: transaction.onRetry,
+      } : undefined}
+      className={className}
+    >
+      {children}
+    </FlowEditorSurface>
+  );
+}
 
 function ResultSummary({
   label,
@@ -98,41 +273,61 @@ export function PublicFlowAdjustmentPanel({
   anchorLabel,
   anchorDraft,
   items,
+  itemEditNotice,
   routineEditor,
+  sourceUrl,
+  warning,
+  initialFocusSelector,
   applyDisabled = false,
   onKindChange,
   onTitleChange,
   onAnchorChange,
   onItemIncludedChange,
+  onItemMove,
   onItemEdit,
   onApply,
   onCancel,
+  transaction,
+  sharedEditorEnabled = false,
+  q3CopyEnabled = true,
 }: PublicFlowAdjustmentPanelProps) {
-  const panelTitle = kindOptions.find((option) => option.kind === kind)?.label ?? 'Flow 조정';
+  const panelTitle = kindOptions.find((option) => option.kind === kind)?.label
+    ?? (q3CopyEnabled ? Q3_USER_COPY_PROFILE.publicPreview.editPlan : 'Flow 편집');
+  const adapter = selectFlowEditorAdapter({
+    enabled: sharedEditorEnabled,
+    shared: 'shared' as const,
+    legacy: 'legacy' as const,
+  });
 
   return (
-    <section
-      data-testid="public-flow-personal-adjustment"
-      data-adjustment-kind={kind}
-      data-p35-marker="P35-ADJUST-ONE-KIND"
-      tabIndex={-1}
-      aria-labelledby="public-flow-personal-adjustment-title"
-      className="border-b border-[var(--flowme-border-strong)] py-5 outline-none sm:py-7"
-      onKeyDown={(event) => {
-        if (event.key === 'Escape') {
-          event.preventDefault();
-          onCancel();
-        }
+    <PublicEditorFrame
+      transaction={transaction}
+      adapter={adapter}
+      level="plan"
+      testId="public-flow-personal-adjustment"
+      headingId="public-flow-personal-adjustment-title"
+      eyebrow={q3CopyEnabled ? Q3_USER_COPY_PROFILE.publicPreview.editPlan : undefined}
+      title={q3CopyEnabled ? Q3_USER_COPY_PROFILE.publicPreview.editPlan : 'Flow 편집'}
+      initialFocusSelector={
+        initialFocusSelector ?? "[data-testid='public-flow-adjustment-kind-name']"
+      }
+      p35Marker="P35-ATOMIC-FULL-HEIGHT-EDITOR"
+      adjustmentKind={kind}
+      schemaCapabilities={{
+        title: true,
+        anchor: Boolean(anchorLabel && onAnchorChange),
+        items: true,
+        routine: Boolean(routineEditor),
+        sourceOrSafety: Boolean(sourceUrl || warning),
       }}
+      commitLabel={q3CopyEnabled ? Q3_USER_COPY_PROFILE.publicPreview.applyChanges : '이 내용으로 적용'}
+      commitTestId="public-flow-adjustment-apply"
+      cancelTestId="public-flow-adjustment-cancel"
+      commitDisabled={applyDisabled}
+      onCommit={onApply}
+      onCancel={onCancel}
+      className="inset-0 max-h-none rounded-none px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-[calc(1rem+env(safe-area-inset-top))] sm:inset-y-0 sm:left-auto sm:right-0 sm:w-[min(34rem,96vw)] sm:max-h-none sm:rounded-none sm:px-6 sm:pb-6 sm:pt-5"
     >
-      <div>
-        <div>
-          <p className="text-xs font-semibold text-[var(--flowme-action)]">Flow 조정</p>
-          <h2 id="public-flow-personal-adjustment-title" className="mt-1 text-xl font-bold text-[var(--flowme-text)]">
-            한 번에 한 가지만 바꾸기
-          </h2>
-        </div>
-      </div>
 
       <div
         data-testid="public-flow-adjustment-kind-picker"
@@ -183,9 +378,10 @@ export function PublicFlowAdjustmentPanel({
 
         {kind === 'name' ? (
           <label className="mt-3 block max-w-xl text-sm font-semibold text-[var(--flowme-text)]">
-            내 Flow 이름
+            {q3CopyEnabled ? '내 계획 이름' : '내 Flow 이름'}
             <input
               data-testid="public-flow-adjustment-name-input"
+              data-editor-field="plan-title"
               className={`mt-1 w-full ${FLOW_UI_INPUT_CLASS}`}
               value={titleDraft}
               maxLength={80}
@@ -199,6 +395,7 @@ export function PublicFlowAdjustmentPanel({
             <span className="sr-only">{anchorLabel}</span>
             <input
               data-testid="public-flow-adjustment-anchor-input"
+              data-editor-field="plan-anchor"
               aria-label={anchorLabel}
               className={`mt-1 w-full ${FLOW_UI_INPUT_CLASS}`}
               type="date"
@@ -209,17 +406,51 @@ export function PublicFlowAdjustmentPanel({
         ) : null}
 
         {kind === 'items' ? (
-          <div
-            data-testid="public-flow-adjustment-item-list"
-            className="mt-3 max-h-[min(58vh,32rem)] overflow-y-auto border-y border-[var(--flowme-border)] bg-white"
-          >
-            {items.map((item) => (
+          <div className="mt-3">
+            {itemEditNotice ? (
+              <p
+                data-testid="public-flow-adjustment-item-format-notice"
+                className="mb-3 border-l-2 border-[var(--flowme-warning)] bg-[var(--flowme-warning-soft)] px-2 py-1.5 text-xs font-medium leading-5 text-[var(--flowme-warning-strong)]"
+              >
+                {itemEditNotice}
+              </p>
+            ) : null}
+            <div
+              data-testid="public-flow-adjustment-item-list"
+              data-editor-field="plan-items"
+              data-flow-editor-scroll-key="public-plan-items"
+              tabIndex={-1}
+              className="max-h-[min(58vh,32rem)] overflow-y-auto border-y border-[var(--flowme-border)] bg-white"
+            >
+              {items.map((item) => (
               <div
                 key={item.id}
                 data-testid="public-flow-adjustment-item-row"
                 data-item-id={item.id}
-                className="grid min-h-14 grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-2 border-b border-[var(--flowme-border)] px-2 py-2.5 last:border-b-0"
+                className="grid min-h-14 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 border-b border-[var(--flowme-border)] px-2 py-2.5 last:border-b-0"
               >
+                <span className="grid grid-cols-2 gap-0.5" role="group" aria-label={`${item.title} 순서`}>
+                  <button
+                    type="button"
+                    data-testid="public-flow-adjustment-item-move-up"
+                    className={FLOW_UI_COMPACT_ACTION_CLASS}
+                    aria-label={`${item.title} 위로 이동`}
+                    disabled={!item.canMoveUp}
+                    onClick={() => onItemMove(item.id, 'up')}
+                  >
+                    ↑
+                  </button>
+                  <button
+                    type="button"
+                    data-testid="public-flow-adjustment-item-move-down"
+                    className={FLOW_UI_COMPACT_ACTION_CLASS}
+                    aria-label={`${item.title} 아래로 이동`}
+                    disabled={!item.canMoveDown}
+                    onClick={() => onItemMove(item.id, 'down')}
+                  >
+                    ↓
+                  </button>
+                </span>
                 <button
                   type="button"
                   data-testid="public-flow-adjustment-item-edit"
@@ -238,36 +469,45 @@ export function PublicFlowAdjustmentPanel({
                     {item.dateLabel}
                   </span>
                 </button>
-                <button
-                  type="button"
-                  className={FLOW_UI_COMPACT_ACTION_CLASS}
-                  aria-label={`${item.title} 수정`}
-                  onClick={() => onItemEdit(
-                    item,
-                    `[data-testid="public-flow-adjustment-item-edit"][data-item-id="${CSS.escape(item.id)}"]`,
-                  )}
-                >
-                  수정
-                </button>
-                <input
-                  type="checkbox"
-                  checked={item.included}
-                  aria-label={`${item.title} Flow에 포함`}
-                  onChange={(event) => onItemIncludedChange(item.id, event.target.checked)}
-                />
-              </div>
-            ))}
+                <label className="flex min-h-10 items-center gap-1.5 text-xs font-semibold text-[var(--flowme-text-secondary)]">
+                  <span>포함</span>
+                  <input
+                    type="checkbox"
+                    checked={item.included}
+                    aria-label={`${item.title} ${q3CopyEnabled ? '계획에 포함' : 'Flow에 포함'}`}
+                    onChange={(event) => onItemIncludedChange(item.id, event.target.checked)}
+                  />
+                </label>
+                </div>
+              ))}
+            </div>
           </div>
         ) : null}
 
         {kind === 'routine' ? (
-          <div data-testid="public-flow-adjustment-routine-editor" className="mt-3 max-w-3xl">
+          <div data-testid="public-flow-adjustment-routine-editor" data-editor-field="plan-routine" className="mt-3 max-w-3xl">
             {routineEditor}
           </div>
         ) : null}
       </section>
 
-      <div className="sticky bottom-0 z-30 mt-5 flex justify-end gap-2 border-t border-[var(--flowme-border)] bg-[#F5F7F6]/95 py-3 backdrop-blur">
+      {sharedEditorEnabled && warning ? (
+        <section data-editor-field="source-and-safety" className="mt-4 border-l-2 border-[var(--flowme-warning)] bg-[var(--flowme-warning-soft)] px-3 py-2">
+          <h3 className="text-xs font-semibold text-[var(--flowme-warning-strong)]">주의</h3>
+          <p className="mt-1 whitespace-pre-wrap text-sm font-medium text-[var(--flowme-warning-strong)]">{warning}</p>
+        </section>
+      ) : null}
+      {sharedEditorEnabled && sourceUrl ? (
+        <a
+          data-editor-field="source-and-safety"
+          className="mt-3 inline-flex text-sm font-semibold text-[var(--flowme-action)] underline underline-offset-4"
+          href={sourceUrl}
+          target="_blank"
+          rel="noreferrer"
+        >원문 보기</a>
+      ) : null}
+
+      {!transaction ? <div className="sticky bottom-0 z-30 mt-5 flex justify-end gap-2 border-t border-[var(--flowme-border)] bg-white/95 py-3 backdrop-blur">
         <button
           type="button"
           data-testid="public-flow-adjustment-cancel"
@@ -284,10 +524,10 @@ export function PublicFlowAdjustmentPanel({
           disabled={applyDisabled}
           onClick={onApply}
         >
-          변경 적용
+          {q3CopyEnabled ? Q3_USER_COPY_PROFILE.publicPreview.applyChanges : '이 내용으로 적용'}
         </button>
-      </div>
-    </section>
+      </div> : null}
+    </PublicEditorFrame>
   );
 }
 
@@ -297,38 +537,73 @@ export function PublicFlowItemEditor({
   onChange,
   onSave,
   onClose,
+  transaction,
+  sharedEditorEnabled = false,
+  visualSubtractionEnabled = true,
+  q3CopyEnabled = true,
 }: {
   draft: PublicFlowItemEditorDraft;
   returnFocusSelector?: string;
   onChange: (draft: PublicFlowItemEditorDraft) => void;
   onSave: (draft: PublicFlowItemEditorDraft) => void;
   onClose: () => void;
+  transaction?: PublicSharedEditorTransaction;
+  sharedEditorEnabled?: boolean;
+  visualSubtractionEnabled?: boolean;
+  q3CopyEnabled?: boolean;
 }) {
   const normalizedTitle = draft.title.trim();
+  const adapter = selectFlowEditorAdapter({
+    enabled: sharedEditorEnabled,
+    shared: 'shared' as const,
+    legacy: 'legacy' as const,
+  });
 
   return (
-    <FlowBottomSheet
+    <PublicEditorFrame
+      transaction={transaction}
+      adapter={adapter}
+      level="item"
       testId="public-flow-item-editor"
       headingId="public-flow-item-editor-title"
       eyebrow="할 일 조정"
-      title={normalizedTitle || '할 일 수정'}
-      onClose={onClose}
+      title={normalizedTitle || (visualSubtractionEnabled ? '수정' : '할 일 수정')}
       initialFocusSelector='[data-testid="public-flow-item-editor-title-input"]'
       returnFocusSelector={returnFocusSelector}
-      className="sm:inset-y-0 sm:left-auto sm:right-0 sm:w-[min(28rem,92vw)] sm:max-h-none sm:rounded-none sm:pb-6"
+      p35Marker="P35-ATOMIC-FULL-HEIGHT-ITEM-EDITOR"
+      schemaCapabilities={{
+        title: true,
+        detail: true,
+        date: true,
+        completionCriterion: Boolean(draft.completionCriterion),
+        sourceOrSafety: Boolean(draft.sourceUrl || draft.warning),
+      }}
+      commitLabel={q3CopyEnabled ? Q3_USER_COPY_PROFILE.publicPreview.applyChanges : '이 항목 저장'}
+      commitTestId="public-flow-item-editor-save"
+      cancelTestId="public-flow-item-editor-cancel"
+      commitDisabled={!normalizedTitle}
+      onCommit={() => {
+        if (sharedEditorEnabled || normalizedTitle) {
+          onSave({ ...draft, title: normalizedTitle });
+        }
+      }}
+      onCancel={onClose}
+      className="inset-0 max-h-none rounded-none px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-[calc(1rem+env(safe-area-inset-top))] sm:inset-y-0 sm:left-auto sm:right-0 sm:w-[min(28rem,92vw)] sm:max-h-none sm:rounded-none sm:px-6 sm:pb-6 sm:pt-5"
     >
       <form
         data-p35-marker="P35-R2-CONTEXTUAL-ITEM-EDIT-390 P35-R2-ITEM-INSPECTOR-1024"
         className="mt-5 space-y-4"
         onSubmit={(event) => {
           event.preventDefault();
-          if (normalizedTitle) onSave({ ...draft, title: normalizedTitle });
+          if (transaction) onSave({ ...draft, title: normalizedTitle });
+          else if (normalizedTitle) onSave({ ...draft, title: normalizedTitle });
         }}
       >
         <label className="block text-sm font-semibold text-[var(--flowme-text)]">
           할 일
           <input
             data-testid="public-flow-item-editor-title-input"
+            data-editor-field="item-title"
             className={`mt-1 w-full ${FLOW_UI_INPUT_CLASS}`}
             value={draft.title}
             maxLength={120}
@@ -340,6 +615,7 @@ export function PublicFlowItemEditor({
           상세 내용
           <textarea
             data-testid="public-flow-item-editor-detail-input"
+            data-editor-field="item-detail"
             className={`mt-1 min-h-28 w-full resize-y ${FLOW_UI_INPUT_CLASS}`}
             value={draft.detail}
             maxLength={1000}
@@ -352,6 +628,7 @@ export function PublicFlowItemEditor({
             날짜
             <input
               data-testid="public-flow-item-editor-date-input"
+              data-editor-field="item-date"
               className={`mt-1 w-full ${FLOW_UI_INPUT_CLASS}`}
               type="date"
               value={draft.date}
@@ -369,7 +646,32 @@ export function PublicFlowItemEditor({
             </button>
           ) : null}
         </div>
-        <div className="flex justify-end gap-2 border-t border-[var(--flowme-border)] pt-4">
+        {sharedEditorEnabled && draft.completionCriterion ? (
+          <section data-editor-field="item-completion-criterion" className="border-l-2 border-[var(--flowme-border-strong)] px-3 py-2">
+            <h3 className="text-xs font-semibold text-[var(--flowme-text-secondary)]">완료 기준</h3>
+            <p className="mt-1 whitespace-pre-wrap text-sm font-medium text-[var(--flowme-text)]">
+              {draft.completionCriterion}
+            </p>
+          </section>
+        ) : null}
+        {sharedEditorEnabled && draft.warning ? (
+          <section data-editor-field="source-and-safety" className="border-l-2 border-[var(--flowme-warning)] bg-[var(--flowme-warning-soft)] px-3 py-2">
+            <h3 className="text-xs font-semibold text-[var(--flowme-warning-strong)]">주의</h3>
+            <p className="mt-1 whitespace-pre-wrap text-sm font-medium text-[var(--flowme-warning-strong)]">
+              {draft.warning}
+            </p>
+          </section>
+        ) : null}
+        {sharedEditorEnabled && draft.sourceUrl ? (
+          <a
+            data-editor-field="source-and-safety"
+            className="inline-flex text-sm font-semibold text-[var(--flowme-action)] underline underline-offset-4"
+            href={draft.sourceUrl}
+            target="_blank"
+            rel="noreferrer"
+          >원문 보기</a>
+        ) : null}
+        {!transaction ? <div className="flex justify-end gap-2 border-t border-[var(--flowme-border)] pt-4">
           <button
             type="button"
             data-testid="public-flow-item-editor-cancel"
@@ -384,10 +686,10 @@ export function PublicFlowItemEditor({
             className={FLOW_UI_PRIMARY_ACTION_CLASS}
             disabled={!normalizedTitle}
           >
-            이 항목 저장
+            {q3CopyEnabled ? Q3_USER_COPY_PROFILE.publicPreview.applyChanges : '이 항목 저장'}
           </button>
-        </div>
+        </div> : null}
       </form>
-    </FlowBottomSheet>
+    </PublicEditorFrame>
   );
 }

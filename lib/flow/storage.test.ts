@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import test from 'node:test';
 import curatedSourceAppSeed from '../../docs/content-audit/2026-07-01-curated-source-app-seed-v1.json';
 import { prepareFlowRunNewAnchor } from './flow-run-reuse';
@@ -93,10 +94,12 @@ import {
 } from './runtime-content-policy';
 import {
   cloneSeedBundles,
+  buildSavedFlowRecord,
   clearFlowLocalProgress,
   completeActiveFlowRun,
   ensureLegacyActiveFlowRun,
   getActiveFlowProgress,
+  getAllSavedFlowRecords,
   getActiveFlowRun,
   getBundles,
   getChecks,
@@ -119,6 +122,7 @@ import {
   normalizeSavedFlowRecord,
   permanentlyDeleteSavedFlow,
   recordFlowCompletionState,
+  readBundles,
   saveFlowRecord,
   saveMyFlowCompletionFeedback,
   saveMyFlowExecutionNote,
@@ -165,6 +169,43 @@ function memoryStorage(initial: Record<string, string> = {}): FlowMeStorageLike 
       store.delete(key);
     },
   };
+}
+
+type ObservedStorageOperation = {
+  operation: 'set' | 'remove' | 'clear';
+  key?: string;
+};
+
+function observedMemoryStorage(initial: Record<string, string> = {}) {
+  const store = new Map(Object.entries(initial));
+  const operations: ObservedStorageOperation[] = [];
+  return {
+    get length() {
+      return store.size;
+    },
+    key: (index: number) => Array.from(store.keys())[index] ?? null,
+    getItem: (key: string) => store.get(key) ?? null,
+    setItem: (key: string, value: string) => {
+      operations.push({ operation: 'set', key });
+      store.set(key, value);
+    },
+    removeItem: (key: string) => {
+      operations.push({ operation: 'remove', key });
+      store.delete(key);
+    },
+    clear: () => {
+      operations.push({ operation: 'clear' });
+      store.clear();
+    },
+    snapshot: () => Object.fromEntries(
+      Array.from(store.entries()).sort(([left], [right]) => left.localeCompare(right)),
+    ),
+    operations: () => [...operations],
+  };
+}
+
+function storageChecksum(value: unknown): string {
+  return createHash('sha256').update(JSON.stringify(value)).digest('hex');
 }
 
 function generatedPreviewBundle(): FlowBundle {
@@ -2769,6 +2810,230 @@ test('storage merge removes archived published routes while preserving a user dr
   assert.deepEqual(merged.map((entry) => entry.flow.id), ['flow-local-draft']);
 });
 
+test('readBundles resolves a missing current registry from legacy bytes without any storage writes', () => {
+  const localDraft = bundle('flow-local-read-only', 'read-only-local-draft', '내 로컬 초안');
+  localDraft.flow.status = 'draft';
+  const initial = {
+    flow_builder_mvp_bundles_v10: JSON.stringify([
+      generatedPreviewBundle(),
+      localDraft,
+    ]),
+    unrelated: 'preserve-exactly',
+  };
+  const readStorage = observedMemoryStorage(initial);
+  const migratingStorage = observedMemoryStorage(initial);
+  const previousWindow = globalThis.window;
+  const previousLocalStorage = globalThis.localStorage;
+
+  try {
+    Object.defineProperty(globalThis, 'window', {
+      configurable: true,
+      value: { localStorage: readStorage },
+    });
+    Object.defineProperty(globalThis, 'localStorage', {
+      configurable: true,
+      value: readStorage,
+    });
+    const beforeSnapshot = readStorage.snapshot();
+    const beforeChecksum = storageChecksum(beforeSnapshot);
+    const read = readBundles();
+
+    assert.ok(read.some((entry) => entry.flow.slug === 'read-only-local-draft'));
+    assert.equal(read.some((entry) => entry.flow.id.startsWith('flow-preview-')), false);
+    assert.equal(readStorage.getItem('flow_builder_mvp_bundles_v11'), null);
+    assert.deepEqual(readStorage.snapshot(), beforeSnapshot);
+    assert.equal(storageChecksum(readStorage.snapshot()), beforeChecksum);
+    assert.deepEqual(readStorage.operations(), []);
+
+    Object.defineProperty(globalThis, 'window', {
+      configurable: true,
+      value: { localStorage: migratingStorage },
+    });
+    Object.defineProperty(globalThis, 'localStorage', {
+      configurable: true,
+      value: migratingStorage,
+    });
+    const migrated = getBundles();
+
+    assert.deepEqual(read, migrated);
+    assert.ok(migratingStorage.getItem('flow_builder_mvp_bundles_v11'));
+    assert.deepEqual(migratingStorage.operations(), [{
+      operation: 'set',
+      key: 'flow_builder_mvp_bundles_v11',
+    }]);
+  } finally {
+    Object.defineProperty(globalThis, 'window', {
+      configurable: true,
+      value: previousWindow,
+    });
+    Object.defineProperty(globalThis, 'localStorage', {
+      configurable: true,
+      value: previousLocalStorage,
+    });
+  }
+});
+
+test('readBundles performs current-registry recovery in memory without changing raw bytes', () => {
+  const initial = {
+    flow_builder_mvp_bundles_v11: '[]',
+    'flow:saved:book-finish-one': JSON.stringify({
+      slug: 'book-finish-one',
+      savedAt: '2026-07-01T00:00:00.000Z',
+      selectedArtifactMode: 'checklist',
+    }),
+    unrelated: '{"keep":true}',
+  };
+  const readStorage = observedMemoryStorage(initial);
+  const migratingStorage = observedMemoryStorage(initial);
+  const previousWindow = globalThis.window;
+  const previousLocalStorage = globalThis.localStorage;
+
+  try {
+    Object.defineProperty(globalThis, 'window', {
+      configurable: true,
+      value: { localStorage: readStorage },
+    });
+    Object.defineProperty(globalThis, 'localStorage', {
+      configurable: true,
+      value: readStorage,
+    });
+    const beforeSnapshot = readStorage.snapshot();
+    const beforeChecksum = storageChecksum(beforeSnapshot);
+    const read = readBundles();
+    const recovered = read.find((entry) => entry.flow.slug === 'book-finish-one');
+
+    assert.ok(recovered);
+    assert.equal(recovered.flow.status, 'draft');
+    assert.ok(recovered.flow.tags?.includes(RETIRED_PERSONAL_COPY_TAG));
+    assert.deepEqual(readStorage.snapshot(), beforeSnapshot);
+    assert.equal(storageChecksum(readStorage.snapshot()), beforeChecksum);
+    assert.deepEqual(readStorage.operations(), []);
+
+    Object.defineProperty(globalThis, 'window', {
+      configurable: true,
+      value: { localStorage: migratingStorage },
+    });
+    Object.defineProperty(globalThis, 'localStorage', {
+      configurable: true,
+      value: migratingStorage,
+    });
+    const migrated = getBundles();
+
+    assert.deepEqual(read, migrated);
+    assert.notEqual(migratingStorage.getItem('flow_builder_mvp_bundles_v11'), '[]');
+    assert.deepEqual(migratingStorage.operations(), [{
+      operation: 'set',
+      key: 'flow_builder_mvp_bundles_v11',
+    }]);
+  } finally {
+    Object.defineProperty(globalThis, 'window', {
+      configurable: true,
+      value: previousWindow,
+    });
+    Object.defineProperty(globalThis, 'localStorage', {
+      configurable: true,
+      value: previousLocalStorage,
+    });
+  }
+});
+
+test('readBundles filters malformed current and legacy registry shapes without writes or throws', () => {
+  const legacyDraft = bundle('flow-valid-legacy-v8', 'valid-legacy-v8', 'Valid legacy v8');
+  legacyDraft.flow.status = 'draft';
+  const olderLegacyDraft = bundle('flow-valid-legacy-v5', 'valid-legacy-v5', 'Valid legacy v5');
+  olderLegacyDraft.flow.status = 'draft';
+  const currentDraft = bundle('flow-valid-current', 'valid-current', 'Valid current');
+  currentDraft.flow.status = 'draft';
+  const previousOnlyDraft = bundle('flow-previous-only', 'previous-only', 'Previous only');
+  previousOnlyDraft.flow.status = 'draft';
+  const seedSlug = cloneSeedBundles()[0]?.flow.slug;
+  const cases = [
+    {
+      name: 'legacy v10-v3 recovery',
+      initial: {
+        flow_builder_mvp_bundles_v10: '{}',
+        flow_builder_mvp_bundles_v9: '17',
+        flow_builder_mvp_bundles_v8: JSON.stringify([
+          null,
+          {},
+          { flow: null, sections: [], items: [] },
+          { flow: { id: 'missing-slug' }, sections: [], items: [] },
+          legacyDraft,
+        ]),
+        flow_builder_mvp_bundles_v7: '{broken',
+        flow_builder_mvp_bundles_v6: 'null',
+        flow_builder_mvp_bundles_v5: JSON.stringify([
+          { flow: { id: 'invalid-sections', slug: 'invalid-sections' }, sections: {}, items: [] },
+          olderLegacyDraft,
+        ]),
+        flow_builder_mvp_bundles_v4: JSON.stringify({ bundles: [] }),
+        flow_builder_mvp_bundles_v3: JSON.stringify(['invalid-row']),
+        unrelated: 'preserve-exactly',
+      },
+      expectedSlugs: ['valid-legacy-v8', 'valid-legacy-v5'],
+      absentSlugs: ['invalid-sections'],
+    },
+    {
+      name: 'malformed current rows with an otherwise valid legacy registry',
+      initial: {
+        flow_builder_mvp_bundles_v11: JSON.stringify([
+          null,
+          {},
+          { flow: { id: 'invalid-items', slug: 'invalid-items' }, sections: [], items: 'invalid' },
+          currentDraft,
+        ]),
+        flow_builder_mvp_bundles_v10: JSON.stringify([previousOnlyDraft]),
+        unrelated: '{"keep":true}',
+      },
+      expectedSlugs: ['valid-current'],
+      absentSlugs: ['invalid-items', 'previous-only'],
+    },
+  ];
+  const previousWindow = globalThis.window;
+  const previousLocalStorage = globalThis.localStorage;
+
+  try {
+    cases.forEach((fixture) => {
+      const storage = observedMemoryStorage(fixture.initial);
+      Object.defineProperty(globalThis, 'window', {
+        configurable: true,
+        value: { localStorage: storage },
+      });
+      Object.defineProperty(globalThis, 'localStorage', {
+        configurable: true,
+        value: storage,
+      });
+      const beforeSnapshot = storage.snapshot();
+      const beforeChecksum = storageChecksum(beforeSnapshot);
+      let read: FlowBundle[] = [];
+
+      assert.doesNotThrow(() => {
+        read = readBundles();
+      }, fixture.name);
+
+      assert.ok(seedSlug && read.some((entry) => entry.flow.slug === seedSlug), fixture.name);
+      fixture.expectedSlugs.forEach((slug) => {
+        assert.ok(read.some((entry) => entry.flow.slug === slug), `${fixture.name}: ${slug}`);
+      });
+      fixture.absentSlugs.forEach((slug) => {
+        assert.equal(read.some((entry) => entry.flow.slug === slug), false, `${fixture.name}: ${slug}`);
+      });
+      assert.deepEqual(storage.snapshot(), beforeSnapshot, fixture.name);
+      assert.equal(storageChecksum(storage.snapshot()), beforeChecksum, fixture.name);
+      assert.deepEqual(storage.operations(), [], fixture.name);
+    });
+  } finally {
+    Object.defineProperty(globalThis, 'window', {
+      configurable: true,
+      value: previousWindow,
+    });
+    Object.defineProperty(globalThis, 'localStorage', {
+      configurable: true,
+      value: previousLocalStorage,
+    });
+  }
+});
+
 test('getBundles migrates curated source app seed flows into existing local storage', () => {
   const store = new Map<string, string>();
   const localStorage = {
@@ -2994,6 +3259,98 @@ test('saved flow record normalization keeps explicit save metadata', () => {
       selectedArtifactMode: 'calendar',
       dateIntent: 'undated',
     },
+  );
+  assert.deepEqual(
+    normalizeSavedFlowRecord({
+      slug: 'pet-health-observation',
+      savedAt: '2026-08-01T00:00:00.000Z',
+      selectedArtifactMode: 'memo',
+    }),
+    {
+      slug: 'pet-health-observation',
+      savedAt: '2026-08-01T00:00:00.000Z',
+      selectedArtifactMode: 'memo',
+      dateIntent: 'undated',
+    },
+  );
+});
+
+test('versioned personal saved copies keep source reference identity and enumerate without writes', () => {
+  const copy = {
+    schemaVersion: 2 as const,
+    slug: 'personal-copy:one',
+    personalCopyKey: 'personal-copy:one',
+    sourceFlowKey: 'flow-source-1',
+    sourceFlowSlug: 'source-flow',
+    sourceVersion: 'source:v1',
+    lastSaveRequestId: 'request:one',
+    savedItemCount: 3,
+    savedAt: '2026-08-04T03:00:00.000Z',
+    personalTitle: '내 계획',
+    selectedArtifactMode: 'checklist' as const,
+    dateIntent: 'undated' as const,
+  };
+  assert.deepEqual(normalizeSavedFlowRecord(copy), copy);
+  assert.equal(normalizeSavedFlowRecord({ ...copy, personalCopyKey: 'another-copy' }), undefined);
+  assert.equal(normalizeSavedFlowRecord({ ...copy, sourceFlowSlug: '' }), undefined);
+
+  const storage = memoryStorage({
+    'flow:saved:personal-copy:one': JSON.stringify(copy),
+    'flow:saved:broken': '{broken',
+    unrelated: 'keep',
+  });
+  const before = storage.getItem('flow:saved:personal-copy:one');
+  assert.deepEqual(getAllSavedFlowRecords(storage), [copy]);
+  assert.equal(storage.getItem('flow:saved:personal-copy:one'), before);
+  assert.equal(storage.length, 3);
+});
+
+test('Map-style partial saved-record updates preserve a valid schema-v2 identity', () => {
+  const previous = {
+    schemaVersion: 2 as const,
+    slug: 'personal-copy:map-one',
+    personalCopyKey: 'personal-copy:map-one',
+    sourceFlowKey: 'source-flow-id',
+    sourceFlowSlug: 'source-flow',
+    sourceVersion: 'source:v1',
+    lastSaveRequestId: 'request:one',
+    savedItemCount: 3,
+    savedAt: '2026-08-04T03:00:00.000Z',
+    personalTitle: '내 계획',
+    selectedArtifactMode: 'checklist' as const,
+    dateIntent: 'undated' as const,
+    legacyExampleAnchor: '2026-09-01',
+  };
+
+  const updated = buildSavedFlowRecord(
+    previous.slug,
+    {
+      selectedArtifactMode: 'calendar',
+      anchor: '2026-10-02',
+    },
+    previous,
+    '2026-08-06T09:00:00.000Z',
+  );
+
+  assert.deepEqual(updated, {
+    ...previous,
+    savedAt: '2026-08-06T09:00:00.000Z',
+    selectedArtifactMode: 'calendar',
+    dateIntent: 'custom',
+    anchor: '2026-10-02',
+  });
+  assert.deepEqual(normalizeSavedFlowRecord(updated), updated);
+  assert.throws(
+    () => buildSavedFlowRecord(
+      previous.slug,
+      {
+        selectedArtifactMode: 'calendar',
+        sourceVersion: '',
+      },
+      previous,
+      '2026-08-06T09:01:00.000Z',
+    ),
+    /invalid schema-v2 identity/,
   );
 });
 
@@ -3223,6 +3580,67 @@ test('active flow progress can use an injected bundle list for source-backed rec
       configurable: true,
       value: previousWindow,
     });
+    Object.defineProperty(globalThis, 'localStorage', {
+      configurable: true,
+      value: previousLocalStorage,
+    });
+  }
+});
+
+test('active flow progress materializes a v2 personal identity from its immutable source bundle', () => {
+  const source = bundle('source-flow-id', 'source-flow-slug', '원본 계획');
+  source.items = [
+    {
+      id: 'source-item-1',
+      flow_id: source.flow.id,
+      title: '첫 항목',
+      type: 'todo',
+      order: 0,
+    },
+  ];
+  const personalCopyKey = 'personal-copy:runtime-one';
+  const localStorage = memoryStorage({
+    [`flow:saved:${personalCopyKey}`]: JSON.stringify({
+      schemaVersion: 2,
+      slug: personalCopyKey,
+      personalCopyKey,
+      sourceFlowKey: source.flow.id,
+      sourceFlowSlug: source.flow.slug,
+      sourceVersion: 'source:v1',
+      lastSaveRequestId: 'request:runtime-one',
+      savedItemCount: 1,
+      savedAt: '2026-08-04T04:00:00.000Z',
+      personalTitle: '내 원본 계획',
+      selectedArtifactMode: 'checklist',
+      dateIntent: 'undated',
+    }),
+    [`flow:${personalCopyKey}:anchorDate`]: JSON.stringify({ mode: 'undated', anchor: '' }),
+    [`flow_builder_mvp_item_state_${personalCopyKey}`]: JSON.stringify({
+      'source-item-1': { personalOrder: 0 },
+    }),
+  });
+  const previousWindow = globalThis.window;
+  const previousLocalStorage = globalThis.localStorage;
+  Object.defineProperty(globalThis, 'window', { configurable: true, value: { localStorage } });
+  Object.defineProperty(globalThis, 'localStorage', { configurable: true, value: localStorage });
+
+  try {
+    const progress = getActiveFlowProgress([source]);
+    assert.deepEqual(progress, [{
+      slug: personalCopyKey,
+      sourceSlug: source.flow.slug,
+      sourceFlowKey: source.flow.id,
+      title: '내 원본 계획',
+      done: 0,
+      total: 1,
+      skipped: 0,
+      anchor: undefined,
+      anchorMode: 'undated',
+      lastVisited: '2026-08-04T04:00:00.000Z',
+    }]);
+    assert.equal(localStorage.getItem('flow:saved:source-flow-slug'), null);
+  } finally {
+    Object.defineProperty(globalThis, 'window', { configurable: true, value: previousWindow });
     Object.defineProperty(globalThis, 'localStorage', {
       configurable: true,
       value: previousLocalStorage,
@@ -3493,10 +3911,20 @@ test('flow run registry preserves a completed legacy run before starting a clean
     localStorage.setItem(
       `flow:saved:${flowSlug}`,
       JSON.stringify({
+        schemaVersion: 2,
         slug: flowSlug,
+        personalCopyKey: flowSlug,
+        sourceFlowKey: 'source-backed-moving-d30-id',
+        sourceFlowSlug: flowSlug,
+        sourceVersion: '2026-06-24.1',
+        lastSaveRequestId: 'request:run-one',
+        savedItemCount: 2,
         savedAt: legacyStartedAt,
+        personalTitle: '내 이사 준비',
         selectedArtifactMode: 'calendar',
+        dateIntent: 'custom',
         anchor: '2026-07-31',
+        legacyExampleAnchor: '2026-07-30',
       }),
     );
     localStorage.setItem(`flow:${flowSlug}:anchorDate`, JSON.stringify({ mode: 'custom', anchor: '2026-07-31' }));
@@ -3766,7 +4194,22 @@ test('flow run registry preserves a completed legacy run before starting a clean
       }),
       structuralOverlay,
     );
-    assert.equal(getSavedFlowRecord(flowSlug)?.savedAt, '2026-08-01T00:00:00.000Z');
+    assert.deepEqual(getSavedFlowRecord(flowSlug), {
+      schemaVersion: 2,
+      slug: flowSlug,
+      personalCopyKey: flowSlug,
+      sourceFlowKey: 'source-backed-moving-d30-id',
+      sourceFlowSlug: flowSlug,
+      sourceVersion: '2026-06-24.1',
+      lastSaveRequestId: 'request:run-one',
+      savedItemCount: 2,
+      savedAt: '2026-08-01T00:00:00.000Z',
+      personalTitle: '내 이사 준비',
+      selectedArtifactMode: 'calendar',
+      dateIntent: 'custom',
+      anchor: '2026-09-15',
+      legacyExampleAnchor: '2026-07-30',
+    });
     const activeMapSnapshot = getSavedFlowMapIndexByFlowSlug()[flowSlug];
     assert.equal(activeMapSnapshot.anchor, '2026-09-15');
     assert.equal(activeMapSnapshot.savedAt, '2026-08-01T00:00:00.000Z');

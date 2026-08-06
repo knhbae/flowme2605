@@ -5,6 +5,10 @@ import { resolveCanonicalFlowAlias } from '@/lib/flow/canonical-flow-registry';
 import { toUserFacingMapTitle } from '@/lib/flow/display-title';
 import { NON_INDEXABLE_ROUTE_ROBOTS } from '@/lib/flow/route-indexing-policy';
 import {
+  isP35Q3CopyEnabled,
+  isP35VisualSubtractionEnabled,
+} from '@/lib/flow/p35-round2-flags';
+import {
   buildSourceBackedFlowMapPublishPackage,
   isPublicCatalogSourceBackedFlowMap,
   isSourceBackedFlowMapDirectRouteAccessible,
@@ -48,8 +52,15 @@ export async function generateMetadata({ params }: { params: Promise<{ map: stri
   };
 }
 
-export default async function Page({ params }: { params: Promise<{ map: string }> }) {
+export default async function Page({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ map: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const { map } = await params;
+  const query = await searchParams;
   const mapId = decodeMapId(map);
   const canonical = resolveCanonicalFlowAlias('flow_map_id', mapId)?.entry;
   if (canonical) redirect(canonical.canonicalRoute);
@@ -57,5 +68,25 @@ export default async function Page({ params }: { params: Promise<{ map: string }
   if (!publishPackage || !isSourceBackedFlowMapDirectRouteAccessible(publishPackage.map)) {
     notFound();
   }
-  return <SourceBackedFlowMapPublicPage mapId={mapId} />;
+  const visualSubtractionValue = Array.isArray(query.visualSubtraction)
+    ? query.visualSubtraction[0]
+    : query.visualSubtraction;
+  const q3CopyValue = Array.isArray(query.q3Copy)
+    ? query.q3Copy[0]
+    : query.q3Copy;
+  return (
+    <SourceBackedFlowMapPublicPage
+      mapId={mapId}
+      q3CopyEnabled={isP35Q3CopyEnabled(
+        q3CopyValue === undefined
+          ? ''
+          : `q3Copy=${q3CopyValue}`,
+      )}
+      visualSubtractionEnabled={isP35VisualSubtractionEnabled(
+        visualSubtractionValue === undefined
+          ? ''
+          : `visualSubtraction=${visualSubtractionValue}`,
+      )}
+    />
+  );
 }

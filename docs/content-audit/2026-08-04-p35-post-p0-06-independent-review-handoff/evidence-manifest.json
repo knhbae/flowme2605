@@ -1,0 +1,256 @@
+{
+  "schemaVersion": 1,
+  "preparedAt": "2026-08-04",
+  "product": "FlowMe",
+  "reviewPackage": "p35-post-p0-06-independent-review",
+  "observedUserCount": 0,
+  "userUnderstanding": "NOT_ASSESSED",
+  "textToFlow": "EXCLUDED",
+  "states": {
+    "production": {
+      "namespace": "P35_PRODUCTION_BASELINE",
+      "description": "Current deployed P35 baseline; not changed by this package.",
+      "canonicalUrl": "https://flowme2605.vercel.app",
+      "liveCheckedAt": "2026-08-04T15:36:46+09:00",
+      "anonymousHttpStatus": 200,
+      "server": "Vercel",
+      "identityStatus": "PRODUCTION_IDENTITY_PARTIAL",
+      "latestGithubProductionDeployment": {
+        "id": 5653898523,
+        "state": "success",
+        "sha": "c09f859b30b854f6f897b8ec1eb781fd774fbeca",
+        "createdAt": "2026-07-29T08:06:08Z",
+        "environmentUrl": "https://flowme2605-6pq93epdg-flowme.vercel.app",
+        "anonymousEnvironmentUrlAccess": "VERCEL_LOGIN"
+      },
+      "limitation": "The canonical alias is live and the latest GitHub Production deployment is successful, but anonymous byte-level alias-to-deployment mapping could not be reconfirmed because the deployment URL is protected."
+    },
+    "local": {
+      "namespace": "ROUND2_LOCAL_P0_06",
+      "branch": "codex/p35-production-mobile-p0",
+      "baseHead": "91fb66af063f7041f9442a9dfeb66f9a3e78d723",
+      "publishState": "UNCOMMITTED_RUNTIME_CANDIDATE",
+      "description": "Dirty local candidate through P0-06; the runtime changes themselves are not included in this review-package commit."
+    },
+    "historical": {
+      "namespace": "HISTORICAL_BEFORE",
+      "sourceCommit": "91fb66af063f7041f9442a9dfeb66f9a3e78d723",
+      "captureBaseline": "b215698",
+      "description": "Prior screenshots for comparison only; never label as current After."
+    },
+    "proposal": {
+      "namespace": "PROPOSAL",
+      "description": "P0-07 and later design work; not implemented."
+    },
+    "noCurrentArtifact": {
+      "namespace": "NO_CURRENT_ARTIFACT",
+      "description": "No current implemented screen or reproducible artifact exists."
+    }
+  },
+  "currentLocalEvidenceLimit": {
+    "covers": [
+      "shared Public/Saved Plan/Item editor family",
+      "390x844 full-height surface",
+      "1024x768 and 1440x1000 right-inspector surface",
+      "layout stress for a synthetic 50-item list"
+    ],
+    "doesNotCover": [
+      "general /my information architecture",
+      "capability-based multi-format preview",
+      "real export/transfer and persistent receipt",
+      "Item detail subtraction and completion flow",
+      "help and caution disclosure",
+      "start-date duplicate echo removal",
+      "Flow Map three-column subtraction",
+      "Flow-to-plan copy sweep"
+    ],
+    "dirtyDiffFingerprint": null,
+    "buildId": null,
+    "note": "The source screenshots were generated during the local P0-06 closeout. Exact dirty-diff and build fingerprints were not recorded, so runtime claims require Codex reproduction."
+  },
+  "evidenceKinds": [
+    "RUNTIME_OBSERVED",
+    "CODE_CONFIRMED",
+    "PAYLOAD_CONFIRMED",
+    "STATIC_CAPTURE",
+    "SYNTHETIC_STRESS",
+    "DESIGN_INFERENCE",
+    "UNVERIFIED"
+  ],
+  "implementationStatuses": ["O", "△", "X", "NOT_IMPLEMENTED", "TBD", "N/A"],
+  "proposalCoverage": ["FULL", "PARTIAL", "MISSING", "REJECTED", "LOCAL_CONFIRMATION_REQUIRED"],
+  "assets": [
+    {
+      "id": "LP06-PUBLIC-PLAN-390",
+      "path": "screenshots/local-p0-06/public-plan-390.png",
+      "sha256": "ed6b14d5aec7b86ace0a91a8b60c486fb4bd1423ec206c4b5c8b59f5872da5d9",
+      "bytes": 19193,
+      "namespace": "ROUND2_LOCAL_P0_06",
+      "route": "/f/moving-d30-basic",
+      "viewport": "390x844",
+      "state": "Public Plan editor open",
+      "evidenceKind": "STATIC_CAPTURE",
+      "captureOrigin": "actual-runtime-screenshot"
+    },
+    {
+      "id": "LP06-PUBLIC-ITEM-390",
+      "path": "screenshots/local-p0-06/public-item-390.png",
+      "sha256": "c6621f852ade6993a433f23094e4c8f25e3ab64414d0bc66f8b88a9dbd32597d",
+      "bytes": 18512,
+      "namespace": "ROUND2_LOCAL_P0_06",
+      "route": "/f/moving-d30-basic",
+      "viewport": "390x844",
+      "state": "Public Item editor open from item 6",
+      "evidenceKind": "STATIC_CAPTURE",
+      "captureOrigin": "actual-runtime-screenshot"
+    },
+    {
+      "id": "LP06-SAVED-PLAN-390",
+      "path": "screenshots/local-p0-06/saved-plan-390.png",
+      "sha256": "8c208a9827d957398ae82af65dcb4e34dc5f0d890ce6adffed0ed24fefae42ef",
+      "bytes": 30417,
+      "namespace": "ROUND2_LOCAL_P0_06",
+      "route": "/my?view=flows&flow=personal-copy:*",
+      "viewport": "390x844",
+      "fixture": "moving-d30-basic saved with anchor 2031-08-15",
+      "state": "Saved Plan editor open",
+      "evidenceKind": "STATIC_CAPTURE",
+      "captureOrigin": "actual-runtime-screenshot"
+    },
+    {
+      "id": "LP06-SAVED-ITEM-390",
+      "path": "screenshots/local-p0-06/saved-item-390.png",
+      "sha256": "0e87003dfba474fbcaf8ad32b298fc003636c07052b9383613fc143d9a94ad14",
+      "bytes": 20598,
+      "namespace": "ROUND2_LOCAL_P0_06",
+      "route": "/my?view=flows&flow=personal-copy:*",
+      "viewport": "390x844",
+      "fixture": "moving-d30-basic saved with anchor 2031-08-15",
+      "state": "Saved Item editor open",
+      "evidenceKind": "STATIC_CAPTURE",
+      "captureOrigin": "actual-runtime-screenshot"
+    },
+    {
+      "id": "LP06-PUBLIC-PLAN-1024",
+      "path": "screenshots/local-p0-06/public-plan-1024.png",
+      "sha256": "2f0e5c496d3462f28b31c1ca65d75808ee2e1bc9307f43163f771f75fc79e23b",
+      "bytes": 40948,
+      "namespace": "ROUND2_LOCAL_P0_06",
+      "route": "/f/moving-d30-basic",
+      "viewport": "1024x768",
+      "state": "Public Plan editor open",
+      "evidenceKind": "STATIC_CAPTURE",
+      "captureOrigin": "actual-runtime-screenshot"
+    },
+    {
+      "id": "LP06-PUBLIC-ITEM-1024",
+      "path": "screenshots/local-p0-06/public-item-1024.png",
+      "sha256": "0ee4b581628c84732fef15b96508db5c05967396bc16ddec4e6996bab2a7047b",
+      "bytes": 40752,
+      "namespace": "ROUND2_LOCAL_P0_06",
+      "route": "/f/moving-d30-basic",
+      "viewport": "1024x768",
+      "state": "Public Item editor open",
+      "evidenceKind": "STATIC_CAPTURE",
+      "captureOrigin": "actual-runtime-screenshot"
+    },
+    {
+      "id": "LP06-SAVED-PLAN-1024",
+      "path": "screenshots/local-p0-06/saved-plan-1024.png",
+      "sha256": "b23eeab485c850c064cc9cac1a6294e58ba18acb01c89cb6155d407e709df572",
+      "bytes": 48232,
+      "namespace": "ROUND2_LOCAL_P0_06",
+      "route": "/my?view=flows&flow=personal-copy:*",
+      "viewport": "1024x768",
+      "state": "Saved Plan editor open",
+      "evidenceKind": "STATIC_CAPTURE",
+      "captureOrigin": "actual-runtime-screenshot"
+    },
+    {
+      "id": "LP06-SAVED-ITEM-1024",
+      "path": "screenshots/local-p0-06/saved-item-1024.png",
+      "sha256": "8e91428d03ba63b7b73cb7d966208cbb3059b102fb7db4391edb2bbef64192d7",
+      "bytes": 33958,
+      "namespace": "ROUND2_LOCAL_P0_06",
+      "route": "/my?view=flows&flow=personal-copy:*",
+      "viewport": "1024x768",
+      "state": "Saved Item editor open",
+      "evidenceKind": "STATIC_CAPTURE",
+      "captureOrigin": "actual-runtime-screenshot"
+    },
+    {
+      "id": "LP06-PUBLIC-PLAN-1440",
+      "path": "screenshots/local-p0-06/public-plan-1440.png",
+      "sha256": "c3eccebbb324d7558ec3b8cdc9c019f5b9dc6c1d7d3d3af11442a0659fa15cee",
+      "bytes": 44095,
+      "namespace": "ROUND2_LOCAL_P0_06",
+      "route": "/f/moving-d30-basic",
+      "viewport": "1440x1000",
+      "state": "Public Plan editor open",
+      "evidenceKind": "STATIC_CAPTURE",
+      "captureOrigin": "actual-runtime-screenshot"
+    },
+    {
+      "id": "LP06-PUBLIC-ITEM-1440",
+      "path": "screenshots/local-p0-06/public-item-1440.png",
+      "sha256": "9bcb117723b4390a650e658c78481c4f9655a78b76005b6b271505231b1ea062",
+      "bytes": 43898,
+      "namespace": "ROUND2_LOCAL_P0_06",
+      "route": "/f/moving-d30-basic",
+      "viewport": "1440x1000",
+      "state": "Public Item editor open",
+      "evidenceKind": "STATIC_CAPTURE",
+      "captureOrigin": "actual-runtime-screenshot"
+    },
+    {
+      "id": "LP06-SAVED-PLAN-1440",
+      "path": "screenshots/local-p0-06/saved-plan-1440.png",
+      "sha256": "5496c5e540d8dbe22fbed94a862403afb203348bd0db0877b97f2b169d1ade16",
+      "bytes": 73119,
+      "namespace": "ROUND2_LOCAL_P0_06",
+      "route": "/my?view=flows&flow=personal-copy:*",
+      "viewport": "1440x1000",
+      "state": "Saved Plan editor open",
+      "evidenceKind": "STATIC_CAPTURE",
+      "captureOrigin": "actual-runtime-screenshot"
+    },
+    {
+      "id": "LP06-SAVED-ITEM-1440",
+      "path": "screenshots/local-p0-06/saved-item-1440.png",
+      "sha256": "b99490221dc1874123a4cc1da99c1c8a4db94373616e2110ab72b7b400356dd6",
+      "bytes": 52079,
+      "namespace": "ROUND2_LOCAL_P0_06",
+      "route": "/my?view=flows&flow=personal-copy:*",
+      "viewport": "1440x1000",
+      "state": "Saved Item editor open",
+      "evidenceKind": "STATIC_CAPTURE",
+      "captureOrigin": "actual-runtime-screenshot"
+    },
+    {
+      "id": "LP06-PUBLIC-PLAN-50-STRESS-390",
+      "path": "screenshots/local-p0-06/public-plan-50-items-390.png",
+      "sha256": "d68eeb3298b5944f46470218ec3e120e9512472469009e3681c1d6c168870548",
+      "bytes": 32878,
+      "namespace": "ROUND2_LOCAL_P0_06",
+      "route": "/f/moving-d30-basic",
+      "viewport": "390x844",
+      "state": "Public Plan editor with DOM-cloned rows",
+      "evidenceKind": "SYNTHETIC_STRESS",
+      "captureOrigin": "synthetic-layout-stress",
+      "warning": "Does not prove real 50-item content semantics, save, or projection."
+    }
+  ],
+  "historicalBefore": {
+    "basePath": "../2026-08-03-p35-fundamental-ux-round2-handoff/screenshots/",
+    "count": 14,
+    "labelRequired": "HISTORICAL_BEFORE"
+  },
+  "notImplemented": [
+    { "scope": "P0-07", "items": ["capability matrix", "multi-result preview"] },
+    { "scope": "P0-08", "items": ["general /my library shell", "0/1/5/20 states"] },
+    { "scope": "P0-09", "items": ["saved transfer", "persistent receipt", "guarded public quick"] },
+    { "scope": "P1-01", "items": ["Item detail subtraction", "Flow Map subtraction", "start-date echo removal"] },
+    { "scope": "P1-02", "items": ["plan terminology", "CTA sweep", "help/caution disclosure"] },
+    { "scope": "P1-03", "items": ["format field round-trip parity"] }
+  ]
+}

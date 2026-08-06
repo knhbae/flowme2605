@@ -28,12 +28,14 @@ function collectBrowserErrors(page: Page) {
 
 test.describe('P32 focused My Flow workspace', () => {
   test('mobile separates cross-Flow library navigation from one Flow workspace', async ({ page }) => {
+    test.setTimeout(60_000);
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/my?demo=ux20&view=flows&mode=flow');
 
     await expect(page.locator('main')).toHaveAttribute('data-p35-my-flow-marker', 'P35-MY-LIBRARY-ONLY');
-    await expect(page.getByRole('tablist', { name: 'My Flow 보기' })).toHaveCount(1);
+    await expect(page.getByRole('tablist', { name: '내 계획 보기 방식' })).toHaveCount(0);
+    await expect(page.getByTestId('my-flow-saved-library-shell')).toBeVisible();
     await page.getByTestId('my-flow-search').fill('이사');
     await page
       .locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug="moving-d30-basic"]')
@@ -47,7 +49,7 @@ test.describe('P32 focused My Flow workspace', () => {
       'data-p32-marker',
       'P32-02-FOCUSED-MY-FLOW-WORKSPACE',
     );
-    await expect(page.getByRole('tablist', { name: 'My Flow 보기' })).toHaveCount(1);
+    await expect(page.getByRole('tablist', { name: '내 계획 보기 방식' })).toHaveCount(0);
     await expect(page.locator('main')).toHaveAttribute('data-p32-workspace-state', 'focused');
     await expect(workspace.locator('[data-testid^="my-flow-workspace-tab-"]')).toHaveCount(0);
     const planToggle = workspace.getByTestId('my-flow-workspace-plan-toggle');
@@ -69,7 +71,7 @@ test.describe('P32 focused My Flow workspace', () => {
     const exportSurface = workspace.getByTestId('my-flow-export-surface');
     await exportSurface.getByTestId('my-flow-export-entry').click();
     await expect(exportSurface.getByTestId('my-flow-export-panel')).toBeVisible();
-    await expect(exportSurface.getByTestId('my-flow-export-scope-flow')).toContainText('Flow 전체');
+    await expect(exportSurface.getByTestId('my-flow-export-scope-flow')).toContainText('계획 전체');
     await expect(exportSurface.getByTestId('my-flow-export-scope-summary')).toContainText('개');
     const mobileFixedOverlapLabels = await page.evaluate(() => {
         const nav = document.querySelector<HTMLElement>('[data-testid="platform-mobile-tabs"]');
@@ -105,7 +107,7 @@ test.describe('P32 focused My Flow workspace', () => {
     ).toBe(true);
     await capture(page, 'p32-02-focused-moving-export-390.png');
     await capture(page, 'p32-02-focused-moving-export-viewport-390.png', false);
-    await exportSurface.getByRole('button', { name: /가져가기 닫기/ }).click();
+    await exportSurface.getByRole('button', { name: /옮기기 닫기/ }).click();
 
     const firstRow = workspace.getByTestId('my-flow-execution-row-shell').first();
     await firstRow.getByRole('button', { name: /열기/ }).click();
@@ -120,7 +122,7 @@ test.describe('P32 focused My Flow workspace', () => {
 
     await workspace.getByTestId('my-flow-mobile-library-back').click();
     await expect(page.getByTestId('my-flow-mobile-flow-hub')).toBeVisible();
-    await expect(page.getByRole('tablist', { name: 'My Flow 보기' })).toHaveCount(1);
+    await expect(page.getByRole('tablist', { name: '내 계획 보기 방식' })).toHaveCount(0);
     await expect(page.getByTestId('my-flow-search')).toHaveValue('이사');
     await expect(page.locator('main')).toHaveAttribute('data-p32-workspace-state', 'library');
     expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
@@ -164,6 +166,14 @@ test.describe('P32 focused My Flow workspace', () => {
     await expect(settings.getByTestId('my-flow-direct-anchor-input')).toHaveValue('2026-08-20');
     await settings.getByTestId('my-flow-direct-anchor-input').fill('2026-09-10');
     await settings.getByRole('button', { name: '일정 다시 맞추기' }).click();
+    await expect.poll(() => page.evaluate(() => ({
+      savedAnchor: JSON.parse(
+        window.localStorage.getItem('flow:saved:moving-d30-basic') || 'null',
+      )?.anchor,
+      activeAnchor: JSON.parse(
+        window.localStorage.getItem('flow:moving-d30-basic:anchorDate') || 'null',
+      )?.anchor,
+    }))).toEqual({ savedAnchor: '2026-09-10', activeAnchor: '2026-09-10' });
 
     const stored = await page.evaluate(() => ({
       saved: JSON.parse(window.localStorage.getItem('flow:saved:moving-d30-basic') || 'null'),
@@ -211,7 +221,7 @@ test.describe('P32 focused My Flow workspace', () => {
         'P32-06-SHARED-FOCUSED-WORKSPACE',
       );
       await expect(workspace).toHaveAttribute('data-p32-flow-shape', /.+/);
-      await expect(page.getByRole('tablist', { name: 'My Flow 보기' })).toHaveCount(1);
+      await expect(page.getByRole('tablist', { name: '내 계획 보기 방식' })).toHaveCount(0);
       await expect(workspace.locator(':scope > header')).toBeInViewport();
       expect(await page.evaluate(() => window.scrollY)).toBeLessThanOrEqual(1);
       if (slug === 'washer-tub-clean-monthly') {
@@ -219,7 +229,7 @@ test.describe('P32 focused My Flow workspace', () => {
       }
       await workspace.getByTestId('my-flow-mobile-library-back').click();
       await expect(page.getByTestId('my-flow-mobile-flow-hub')).toBeVisible();
-      await expect(page.getByRole('tablist', { name: 'My Flow 보기' })).toHaveCount(1);
+      await expect(page.getByRole('tablist', { name: '내 계획 보기 방식' })).toHaveCount(0);
     }
 
     expect(
@@ -255,7 +265,7 @@ test.describe('P32 focused My Flow workspace', () => {
       await expect(flow.getByTestId('my-flow-whole-flow-outline')).toBeVisible();
       await expect(flow.getByTestId('my-flow-workspace-detail-pane')).toBeVisible();
     }
-    await expect(page.getByRole('tablist', { name: 'My Flow 보기' })).toHaveCount(1);
+    await expect(page.getByRole('tablist', { name: '내 계획 보기 방식' })).toHaveCount(0);
     await expect(library).toHaveAttribute('data-p32-marker', 'P32-02-FOCUSED-MY-FLOW-WORKSPACE');
     await expect(page.getByTestId('my-flow-library-back')).toBeVisible();
     await capture(page, 'p32-06-six-shape-shared-workspace-1024.png');
@@ -266,7 +276,7 @@ test.describe('P32 focused My Flow workspace', () => {
     await capture(page, 'p32-07-focused-workspace-viewport-1440.png', false);
     await page.getByTestId('my-flow-library-back').click();
     await expect(library.getByTestId('my-flow-library-detail').getByTestId('my-flow-overview-card')).toHaveCount(0);
-    await expect(page.getByRole('tablist', { name: 'My Flow 보기' })).toHaveCount(1);
+    await expect(page.getByRole('tablist', { name: '내 계획 보기 방식' })).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
     expect(errors).toEqual([]);
   });

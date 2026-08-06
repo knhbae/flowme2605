@@ -86,7 +86,15 @@ test('mobile focused drill-in keeps feedback and the editor above persistent nav
     .getByTestId('my-flow-temporal-next-group')
     .getByTestId('my-flow-execution-row-shell')
     .first();
-  const completion = execution.getByTestId('my-flow-task-complete-control');
+  await expect(execution.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+  const open = execution.getByRole('button', { name: /열기/ });
+  await expectMinimumTarget(open);
+  await open.click();
+  const detail = getOpenMyFlowItemDetail(page);
+  await expect(detail).toBeVisible();
+  const completion = detail.getByTestId('my-flow-task-complete-control');
+  await expect(completion).toHaveCount(1);
+  await expect(page.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
   await completion.click();
   const notice = page.getByTestId('my-flow-completion-snackbar');
   await expect(notice).toHaveAttribute('data-layer-priority', 'notice');
@@ -96,13 +104,10 @@ test('mobile focused drill-in keeps feedback and the editor above persistent nav
   expect((noticeBox?.y ?? 0) + (noticeBox?.height ?? 0)).toBeLessThanOrEqual((navigationBox?.y ?? 0) - 4);
   await expectMinimumTarget(notice.getByRole('button'));
   await capture(page, '01-mobile-fixed-layer-stack.png');
-  await notice.getByTestId('my-flow-completion-undo').click();
+  await notice.getByTestId('my-flow-completion-undo').press('Enter');
+  await expect(completion).not.toBeChecked();
+  await expect(completion).toBeFocused();
 
-  const open = execution.getByRole('button', { name: /열기/ });
-  await expectMinimumTarget(open);
-  await open.click();
-  const detail = getOpenMyFlowItemDetail(page);
-  await expect(detail).toBeVisible();
   await capture(page, '02-mobile-focused-item-detail.png');
   const quickEdit = detail.getByTestId('my-flow-quick-item-edit');
   if (await quickEdit.isVisible().catch(() => false)) {
@@ -112,7 +117,7 @@ test('mobile focused drill-in keeps feedback and the editor above persistent nav
     if ((await readSummary.getAttribute('open')) === null) await readSummary.locator('summary').click();
     await readSummary.getByTestId('my-flow-detail-edit-toggle').click();
   }
-  const editor = page.getByRole('dialog', { name: '할 일 수정' });
+  const editor = page.getByRole('dialog', { name: '수정' });
   await expect(editor).toHaveAttribute('data-editor-layout', 'mobile-full-screen');
   const editorBox = await editor.boundingBox();
   expect(editorBox?.x).toBe(0);
@@ -135,8 +140,12 @@ test('wide workspaces keep the active detail and selected-day agenda inside the 
   const detailPaneBox = await detailPane.boundingBox();
   expect(detailPaneBox).not.toBeNull();
   expect(detailPaneBox?.height ?? 0).toBeLessThanOrEqual(736);
-  await flow.getByTestId('my-flow-execution-row-shell').first().getByRole('button', { name: /열기/ }).click();
+  const wideRow = flow.getByTestId('my-flow-execution-row-shell').first();
+  await expect(wideRow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+  await wideRow.getByRole('button', { name: /열기/ }).click();
   await expect(detailPane.getByTestId('my-flow-item-detail')).toBeVisible();
+  await expect(detailPane.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
+  await expect(page.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
   await capture(page, '04-wide-outline-detail-workspace.png', true);
 
   await page.goto('/calendar');
@@ -158,7 +167,7 @@ test('wide workspaces keep the active detail and selected-day agenda inside the 
   expect(browserErrors).toEqual([]);
 });
 
-test('export reports disabled and pending states without changing scope', async ({ page }) => {
+test('legacy savedTransfer=off export reports disabled and pending states without changing scope', async ({ page }) => {
   test.setTimeout(60_000);
   const browserErrors = collectBrowserErrors(page);
   await page.setViewportSize({ width: 390, height: 844 });
@@ -177,11 +186,13 @@ test('export reports disabled and pending states without changing scope', async 
       },
     });
   });
-  await page.goto('/my?view=flows');
+  await page.goto('/my?view=flows&savedTransfer=off');
+  await expect(page.locator('main[data-p35-q1-saved-transfer="off"]')).toBeVisible();
   const flow = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'record');
   const exportSurface = flow.getByTestId('my-flow-export-surface');
   await exportSurface.getByTestId('my-flow-export-entry').click();
   const panel = exportSurface.getByTestId('my-flow-export-panel');
+  await expect(panel).toHaveAttribute('data-saved-transfer-surface', 'legacy');
   const checklist = panel.getByTestId('my-flow-export-checklist');
   await expect(checklist).toHaveAttribute('data-export-state', 'ready');
   await checklist.click();

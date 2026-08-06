@@ -6,9 +6,23 @@ import {
   PERSONAL_STRUCTURAL_MAX_DURATION_MINUTES,
   PERSONAL_STRUCTURAL_MIN_DURATION_MINUTES,
   isPersonalStructuralIanaTimeZone,
+  type PersonalStructuralScheduleProjection,
 } from './personal-structural-schedule';
+import { normalizeCompletionCriterion } from './completion-criterion';
 
 export type MyFlowStepRepeatPreset = '' | 'daily' | 'weekly' | 'monthly';
+
+export type MyFlowPortableExecutionStatus =
+  | 'pending'
+  | 'done'
+  | 'reopened'
+  | 'skipped'
+  | 'held';
+
+export type MyFlowPortableResource = {
+  label?: string;
+  url: string;
+};
 
 export type MyFlowPortableStepExportInput = {
   flowTitle: string;
@@ -24,14 +38,50 @@ export type MyFlowPortableStepExportInput = {
   personalRecurrenceIdentityNamespace?: string;
   repeatPreset?: MyFlowStepRepeatPreset | string;
   location?: string;
+  description?: string;
   memo?: string;
+  executionMemo?: string;
+  executionStatus?: MyFlowPortableExecutionStatus;
+  flowWarning?: string;
   sourceLabel?: string;
   sourceUrl?: string;
+  resources?: MyFlowPortableResource[];
   items?: string[];
   checkedItems?: Record<string, boolean>;
   completionCriteria?: string;
   caution?: string;
+  generatedAt?: string;
 };
+
+export type MyFlowPortableScheduleFields = Pick<
+  MyFlowPortableStepExportInput,
+  'time' | 'durationMinutes' | 'timeZone' | 'stableEventIdentitySeed'
+>;
+
+/**
+ * Adapts a committed personal-structure schedule to the portable Step export.
+ * An all-day projection intentionally returns no timed fields, so an older
+ * editor draft cannot leak a stale time back into Calendar or list exports.
+ */
+export function buildPersonalStructuralPortableScheduleFields(
+  projection?: PersonalStructuralScheduleProjection,
+): MyFlowPortableScheduleFields {
+  if (!projection) return {};
+  const identity = {
+    stableEventIdentitySeed: projection.stableEventIdentitySeed,
+  };
+  if (projection.scheduleState !== 'timed' || !projection.startTime) {
+    return identity;
+  }
+  return {
+    ...identity,
+    time: projection.startTime,
+    ...(projection.durationMinutes !== undefined
+      ? { durationMinutes: projection.durationMinutes }
+      : {}),
+    ...(projection.timeZone ? { timeZone: projection.timeZone } : {}),
+  };
+}
 
 const repeatLabels: Record<string, string> = {
   daily: '매일',
@@ -47,6 +97,46 @@ const repeatRules: Record<string, string> = {
 
 function clean(value?: string): string {
   return (value ?? '').trim();
+}
+
+function appendCompletionCriterion(lines: string[], value?: string): void {
+  const criterion = normalizeCompletionCriterion(value);
+  if (!criterion) return;
+  const [first, ...rest] = criterion.split('\n');
+  lines.push('', `완료 기준: ${first}`);
+  rest.forEach((line) => lines.push(`  ${line}`));
+}
+
+function appendLabeledMultiline(lines: string[], label: string, value?: string): void {
+  const normalized = (value ?? '')
+    .replaceAll('\r\n', '\n')
+    .replaceAll('\r', '\n')
+    .trim();
+  if (!normalized) return;
+  const [first, ...rest] = normalized.split('\n');
+  lines.push('', `${label}: ${first}`);
+  rest.forEach((line) => lines.push(`  ${line}`));
+}
+
+function executionStatusLabel(status?: MyFlowPortableExecutionStatus): string {
+  if (status === 'done') return '완료';
+  if (status === 'skipped') return '스킵';
+  if (status === 'held') return '보류';
+  if (status === 'reopened') return '다시 진행';
+  return status === 'pending' ? '미완료' : '';
+}
+
+function getPortableResources(input: MyFlowPortableStepExportInput): MyFlowPortableResource[] {
+  const seen = new Set<string>();
+  return (input.resources ?? []).flatMap((resource) => {
+    const label = clean(resource.label);
+    const url = clean(resource.url);
+    if (!url) return [];
+    const key = `${label}\u0000${url}`;
+    if (seen.has(key)) return [];
+    seen.add(key);
+    return [{ ...(label ? { label } : {}), url }];
+  });
 }
 
 function compactDate(date: string): string {
@@ -120,7 +210,9 @@ function formatSchedule(date?: string, time?: string, durationMinutes?: number):
 
 function formatChecklistItems(input: MyFlowPortableStepExportInput): string[] {
   const items = (input.items ?? []).map(clean).filter(Boolean);
-  if (items.length === 0) return [`- [ ] ${clean(input.stepTitle) || '할 일'}`];
+  if (items.length === 0) {
+    return [`- [${input.executionStatus === 'done' ? 'x' : ' '}] ${clean(input.stepTitle) || '할 일'}`];
+  }
   return items.map((item, index) => `- [${input.checkedItems?.[String(index)] ? 'x' : ' '}] ${item}`);
 }
 
@@ -139,12 +231,27 @@ export function buildMyFlowStepChecklistText(input: MyFlowPortableStepExportInpu
   const location = clean(input.location);
   const sourceLabel = clean(input.sourceLabel);
   const sourceUrl = clean(input.sourceUrl);
+  const executionStatus = executionStatusLabel(input.executionStatus);
+  const resources = getPortableResources(input);
   const lines = [title];
 
-  if (flowTitle) lines.push(`Flow: ${flowTitle}`);
+  if (flowTitle) lines.push(`계획: ${flowTitle}`);
   if (schedule) lines.push(`일정: ${schedule}`);
   if (location) lines.push(`장소: ${location}`);
+  appendLabeledMultiline(lines, '설명', input.description);
+  if (executionStatus) lines.push(`실행 상태: ${executionStatus}`);
   lines.push('', '체크리스트:', ...formatChecklistItems(input));
+  appendCompletionCriterion(lines, input.completionCriteria);
+  appendLabeledMultiline(lines, '개인 메모', input.memo);
+  appendLabeledMultiline(lines, '실행 메모', input.executionMemo);
+  appendLabeledMultiline(lines, '주의', input.caution);
+  appendLabeledMultiline(lines, '계획 주의', input.flowWarning);
+  if (resources.length > 0) {
+    lines.push('');
+    resources.forEach((resource) => {
+      lines.push(`자료: ${[resource.label, resource.url].filter(Boolean).join(' - ')}`);
+    });
+  }
   if (sourceLabel || sourceUrl) lines.push('', `원문: ${[sourceLabel, sourceUrl].filter(Boolean).join(' ')}`);
 
   return `${lines.join('\n')}\n`;
@@ -153,8 +260,9 @@ export function buildMyFlowStepChecklistText(input: MyFlowPortableStepExportInpu
 export function buildMyFlowStepSheetTsv(input: MyFlowPortableStepExportInput): string {
   const checklist = formatChecklistItems(input).map((line) => line.replace(/^- /, '')).join(' | ');
   const source = [clean(input.sourceLabel), clean(input.sourceUrl)].filter(Boolean).join(' ');
+  const completionCriteria = normalizeCompletionCriterion(input.completionCriteria) ?? '';
   const includeDuration = input.durationMinutes !== undefined;
-  const header = ['Flow', '할 일', '구간', '날짜', '시간', ...(includeDuration ? ['예상 시간'] : []), '반복', '장소', '체크리스트', '메모', '완료 기준', '주의', '원문'];
+  const header = ['계획', '할 일', '구간', '날짜', '시간', ...(includeDuration ? ['예상 시간'] : []), '반복', '장소', '체크리스트', '메모', '완료 기준', '주의', '원문'];
   const row = [
     input.flowTitle,
     input.stepTitle,
@@ -166,7 +274,7 @@ export function buildMyFlowStepSheetTsv(input: MyFlowPortableStepExportInput): s
     input.location,
     checklist,
     input.memo,
-    input.completionCriteria,
+    completionCriteria,
     input.caution,
     source,
   ].map(escapeTsvCell);
@@ -182,19 +290,26 @@ export function buildMyFlowStepPortableText(input: MyFlowPortableStepExportInput
   const time = clean(input.time);
   const repeatPreset = clean(input.repeatPreset);
   const location = clean(input.location);
+  const description = clean(input.description);
   const memo = clean(input.memo);
-  const completionCriteria = clean(input.completionCriteria);
+  const executionMemo = clean(input.executionMemo);
+  const executionStatus = executionStatusLabel(input.executionStatus);
+  const completionCriteria = normalizeCompletionCriterion(input.completionCriteria) ?? '';
   const caution = clean(input.caution);
+  const flowWarning = clean(input.flowWarning);
   const sourceLabel = clean(input.sourceLabel);
   const sourceUrl = clean(input.sourceUrl);
+  const resources = getPortableResources(input);
   const items = (input.items ?? []).map(clean).filter(Boolean);
 
   const lines = [title];
-  if (flowTitle) lines.push(`Flow: ${flowTitle}`);
+  if (flowTitle) lines.push(`계획: ${flowTitle}`);
   if (sectionTitle) lines.push(`구간: ${sectionTitle}`);
   if (date || time) lines.push(`일정: ${formatSchedule(date, time, input.durationMinutes)}`);
   if (repeatPreset && repeatLabels[repeatPreset]) lines.push(`반복: ${getRepeatLabel(repeatPreset)}`);
   if (location) lines.push(`장소: ${location}`);
+  if (description) appendLabeledMultiline(lines, '설명', description);
+  if (executionStatus) lines.push(`실행 상태: ${executionStatus}`);
   if (items.length > 0) {
     lines.push('', '체크:');
     items.forEach((item, index) => {
@@ -202,8 +317,16 @@ export function buildMyFlowStepPortableText(input: MyFlowPortableStepExportInput
     });
   }
   if (completionCriteria) lines.push('', `완료 기준: ${completionCriteria}`);
-  if (memo) lines.push('', `메모: ${memo}`);
-  if (caution) lines.push('', `주의: ${caution}`);
+  if (memo) appendLabeledMultiline(lines, '개인 메모', memo);
+  if (executionMemo) appendLabeledMultiline(lines, '실행 메모', executionMemo);
+  if (caution) appendLabeledMultiline(lines, '주의', caution);
+  if (flowWarning) appendLabeledMultiline(lines, '계획 주의', flowWarning);
+  if (resources.length > 0) {
+    lines.push('');
+    resources.forEach((resource) => {
+      lines.push(`자료: ${[resource.label, resource.url].filter(Boolean).join(' - ')}`);
+    });
+  }
   if (sourceLabel || sourceUrl) lines.push('', `원문: ${[sourceLabel, sourceUrl].filter(Boolean).join(' ')}`);
 
   return `${lines.join('\n')}\n`;
@@ -236,9 +359,18 @@ export function buildMyFlowStepIcs(input: MyFlowPortableStepExportInput): string
       repeat: input.personalRecurrence,
       location: input.location,
       sourceUrl: input.sourceUrl,
+      generatedAt: input.generatedAt,
+      status: input.executionStatus === 'done'
+        ? 'CONFIRMED'
+        : input.executionStatus === 'skipped' || input.executionStatus === 'held'
+          ? 'CANCELLED'
+          : 'TENTATIVE',
     }).ics;
   }
-  const nowStamp = new Date().toISOString().replaceAll('-', '').replaceAll(':', '').replace(/\.\d{3}Z$/, 'Z');
+  const generatedDate = input.generatedAt && Number.isFinite(Date.parse(input.generatedAt))
+    ? new Date(input.generatedAt)
+    : new Date();
+  const nowStamp = generatedDate.toISOString().replaceAll('-', '').replaceAll(':', '').replace(/\.\d{3}Z$/, 'Z');
   const lines = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
@@ -269,6 +401,12 @@ export function buildMyFlowStepIcs(input: MyFlowPortableStepExportInput): string
   lines.push(
     `SUMMARY:${escapeIcsText(clean(input.stepTitle) || '할 일')}`,
     `DESCRIPTION:${escapeIcsText(buildMyFlowStepPortableText(input))}`,
+    `STATUS:${input.executionStatus === 'done'
+      ? 'CONFIRMED'
+      : input.executionStatus === 'skipped' || input.executionStatus === 'held'
+        ? 'CANCELLED'
+        : 'TENTATIVE'}`,
+    'TRANSP:TRANSPARENT',
   );
 
   const location = clean(input.location);

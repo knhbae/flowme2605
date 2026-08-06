@@ -3,7 +3,12 @@ import path from 'node:path';
 
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
-import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
+import {
+  closeOpenMyFlowItemDetail,
+  getOpenMyFlowItemDetail,
+  openMyFlowLibraryFlow,
+} from './helpers/my-flow-library';
+import { savePublicFlow } from './helpers/public-flow-save';
 
 const evidenceRoot = process.env.FLOWME_P35_R4_EVIDENCE_DIR;
 
@@ -134,12 +139,23 @@ test.describe('P35-R4 shape-aware My Flow workspace', () => {
     await expect(execution).toHaveAttribute('data-execution-kind', 'nearest_date_group');
     await expect(execution).toHaveAttribute('data-p35-marker', 'P35-R4-DATED-NEXT-GROUP');
     await expect(execution.getByTestId('flow-date-rail')).toHaveCount(1);
-    await expect(execution.getByTestId('my-flow-execution-row-shell')).toHaveCount(4);
+    await expect(execution.getByTestId('my-flow-execution-row-shell')).toHaveCount(3);
     await expect(workspace.getByTestId('my-flow-optional-history')).toHaveCount(0);
     await expectContinuousOrder(workspace, false);
     await capture(page, 'p35-r4-dated-next-group-390.png', execution);
 
-    await execution.getByTestId('my-flow-task-complete-control').first().click();
+    const firstExecutionRow = execution.getByTestId('my-flow-execution-row-shell').first();
+    await expect(firstExecutionRow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+    await firstExecutionRow.getByRole('button', { name: /열기/ }).click();
+    const detail = getOpenMyFlowItemDetail(page);
+    const completion = detail.getByTestId('my-flow-task-complete-control');
+    await expect(completion).toHaveCount(1);
+    await expect(page.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
+    await completion.click();
+    await expect(workspace.getByTestId('my-flow-workspace-progress-summary')).toContainText(
+      '전체 1/24 완료',
+    );
+    await closeOpenMyFlowItemDetail(page);
     await expect(workspace.getByTestId('my-flow-optional-history')).toBeVisible();
     await expectContinuousOrder(workspace, true);
     expect(errors).toEqual([]);
@@ -204,7 +220,14 @@ test.describe('P35-R4 shape-aware My Flow workspace', () => {
     expect(firstOccurrenceId).toBeTruthy();
     await expect(occurrence).toContainText(formatKoreanMonthDay(firstDate));
 
-    await occurrence.getByTestId('my-flow-task-complete-control').click();
+    await expect(occurrence.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+    await occurrence.getByRole('button', { name: /열기/ }).click();
+    let detail = getOpenMyFlowItemDetail(page);
+    let completion = detail.getByTestId('my-flow-task-complete-control');
+    await expect(completion).toHaveCount(1);
+    await expect(page.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
+    await completion.click();
+    await closeOpenMyFlowItemDetail(page);
     await expect.poll(
       () => occurrence.getAttribute('data-occurrence-id'),
     ).not.toBe(firstOccurrenceId);
@@ -214,11 +237,17 @@ test.describe('P35-R4 shape-aware My Flow workspace', () => {
     await page.getByTestId('my-flow-completion-undo').click();
     await expect(occurrence).toHaveAttribute('data-occurrence-id', firstOccurrenceId ?? '');
     await expect(occurrence).toContainText(formatKoreanMonthDay(firstDate));
+    await occurrence.getByRole('button', { name: /열기/ }).click();
+    detail = getOpenMyFlowItemDetail(page);
+    completion = detail.getByTestId('my-flow-task-complete-control');
+    await expect(completion).toHaveCount(1);
+    await expect(completion).not.toBeChecked();
+    await closeOpenMyFlowItemDetail(page);
     await capture(page, 'p35-r8a-routine-next-occurrence-390.png', execution);
     expect(errors).toEqual([]);
   });
 
-  test('open routine receipt and export distinguish one series from rendered occurrences', async ({ page }) => {
+  test('open routine selected plan and export distinguish one series from rendered occurrences', async ({ page }) => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/f/curated-allblanc-morning-workout');
@@ -228,20 +257,14 @@ test.describe('P35-R4 shape-aware My Flow workspace', () => {
     const routineSummary = page.getByTestId('public-routine-schedule-summary');
     await routineSummary.getByTestId('public-routine-schedule-summary-toggle').click();
     await page.getByTestId('public-routine-schedule-editor-end-mode').selectOption('none');
-    await page.getByTestId('public-flow-save-primary-mobile').click();
-
-    const receipt = page.getByTestId('public-flow-saved-receipt');
-    await expect(receipt).toHaveAttribute(
-      'data-p35-r8-marker',
-      'P35-R8A-SERIES-OCCURRENCE-COUNT',
-    );
-    await expect(receipt).toContainText('반복 계획 1개 · 계속 반복');
-    await receipt.getByTestId('public-flow-saved-receipt-primary').click();
+    const saveBanner = await savePublicFlow(page, page.getByTestId('public-flow-save-primary-mobile'));
+    await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toContainText('저장됨');
 
     const workspace = await openMyFlowLibraryFlow(
       page,
       'curated-allblanc-morning-workout',
     );
+    await expect(workspace).toContainText('계속 반복');
     const exportSurface = workspace.getByTestId('my-flow-export-surface');
     await exportSurface.getByTestId('my-flow-export-entry').click();
     const calendarSummary = exportSurface.getByTestId('my-flow-export-calendar-summary');

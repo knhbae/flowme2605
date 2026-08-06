@@ -21,12 +21,14 @@ type CalendarFlowScopePickerProps = {
   options: CalendarFlowScopePickerOption[];
   selectedSlugs: string[];
   onApply: (selectedSlugs: string[]) => void;
+  q3CopyEnabled?: boolean;
 };
 
 export function CalendarFlowScopePicker({
   options,
   selectedSlugs,
   onApply,
+  q3CopyEnabled = true,
 }: CalendarFlowScopePickerProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -52,9 +54,9 @@ export function CalendarFlowScopePicker({
     return [
       { id: 'selected', label: '선택됨', options: selected },
       { id: 'active', label: '이번 달', options: active },
-      { id: 'other', label: '다른 Flow', options: other },
+      { id: 'other', label: q3CopyEnabled ? '다른 계획' : '다른 Flow', options: other },
     ].filter((group) => group.options.length > 0);
-  }, [draftSelection, visibleOptions]);
+  }, [draftSelection, q3CopyEnabled, visibleOptions]);
 
   const close = () => {
     setOpen(false);
@@ -105,10 +107,10 @@ export function CalendarFlowScopePicker({
   }, [open, selectedSlugs]);
 
   const selectionLabel = selectedSlugs.length === 0
-    ? '전체 Flow'
+    ? q3CopyEnabled ? '전체 계획' : '전체 Flow'
     : selectedSlugs.length === 1
-      ? options.find((option) => option.slug === selectedSlugs[0])?.title ?? '1개 Flow'
-      : `${selectedSlugs.length}개 Flow`;
+      ? options.find((option) => option.slug === selectedSlugs[0])?.title ?? (q3CopyEnabled ? '계획 1개' : '1개 Flow')
+      : q3CopyEnabled ? `계획 ${selectedSlugs.length}개` : `${selectedSlugs.length}개 Flow`;
   const renderOption = (option: CalendarFlowScopePickerOption) => {
     const selected = draftSelection.includes(option.slug);
     return (
@@ -180,17 +182,19 @@ export function CalendarFlowScopePicker({
           >
             <header className="flex items-start justify-between gap-3 border-b border-[var(--flowme-border)] px-4 py-4">
               <div>
-                <h2 id="calendar-flow-scope-picker-title" className="text-lg font-semibold text-[var(--flowme-text)]">볼 Flow 선택</h2>
+                <h2 id="calendar-flow-scope-picker-title" className="text-lg font-semibold text-[var(--flowme-text)]">
+                  {q3CopyEnabled ? '볼 계획 선택' : '볼 Flow 선택'}
+                </h2>
                 <p className="mt-1 text-sm text-[var(--flowme-text-secondary)]">선택하지 않으면 전체 일정을 봅니다.</p>
               </div>
-              <button type="button" className={FLOW_UI_TERTIARY_ACTION_CLASS} aria-label="Flow 선택 닫기" onClick={close}>
+              <button type="button" className={FLOW_UI_TERTIARY_ACTION_CLASS} aria-label={q3CopyEnabled ? '계획 선택 닫기' : 'Flow 선택 닫기'} onClick={close}>
                 닫기
               </button>
             </header>
 
             <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3">
               <label className="block text-xs font-semibold text-[var(--flowme-text-secondary)]">
-                Flow 검색
+                {q3CopyEnabled ? '계획 검색' : 'Flow 검색'}
                 <input
                   ref={searchRef}
                   type="search"
@@ -245,7 +249,9 @@ export function CalendarFlowScopePicker({
                 className={FLOW_UI_PRIMARY_ACTION_CLASS}
                 onClick={apply}
               >
-                {draftSelection.length > 0 ? `${draftSelection.length}개 Flow 보기` : '전체 Flow 보기'}
+                {draftSelection.length > 0
+                  ? q3CopyEnabled ? `계획 ${draftSelection.length}개 보기` : `${draftSelection.length}개 Flow 보기`
+                  : q3CopyEnabled ? '전체 계획 보기' : '전체 Flow 보기'}
               </button>
             </footer>
           </div>

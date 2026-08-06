@@ -2,6 +2,9 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { isP35Q3CopyEnabled } from '@/lib/flow/p35-round2-flags';
+import { getQ3UserCopyProfile } from '@/lib/flow/q3-user-copy';
 
 type NavItem = {
   href: string;
@@ -10,27 +13,48 @@ type NavItem = {
   match: (path: string) => boolean;
 };
 
-const primaryNavItems: NavItem[] = [
-  {
-    href: '/flows',
-    label: 'Flow 찾기',
-    match: (path) =>
-      path === '/flows' ||
-      path.startsWith('/f/') ||
-      (path.startsWith('/flow-maps/') && !path.endsWith('/creator')),
-  },
-  { href: '/calendar', label: '캘린더', match: (path) => path === '/calendar' },
-  { href: '/my', label: '내 Flow', match: (path) => path === '/my' },
-];
+function useQ3NavigationCopy() {
+  const [enabled, setEnabled] = useState(true);
 
-const secondaryNavItems: NavItem[] = [
-  {
-    href: '/flows/new',
-    label: 'Flow 만들기',
-    description: '내 콘텐츠를 실행형 Flow로 정리',
-    match: (path) => path === '/flows/new',
-  },
-];
+  useEffect(() => {
+    const sync = () => setEnabled(isP35Q3CopyEnabled(window.location.search));
+    sync();
+    window.addEventListener('popstate', sync);
+    return () => window.removeEventListener('popstate', sync);
+  }, []);
+
+  return { enabled, copy: getQ3UserCopyProfile(enabled) };
+}
+
+function getPrimaryNavItems(q3CopyEnabled: boolean): NavItem[] {
+  const copy = getQ3UserCopyProfile(q3CopyEnabled);
+  return [
+    {
+      href: '/flows',
+      label: copy.navigation.findPlans,
+      match: (path) =>
+        path === '/flows' ||
+        path.startsWith('/f/') ||
+        (path.startsWith('/flow-maps/') && !path.endsWith('/creator')),
+    },
+    { href: '/calendar', label: '캘린더', match: (path) => path === '/calendar' },
+    { href: '/my', label: copy.navigation.myPlans, match: (path) => path === '/my' },
+  ];
+}
+
+function getSecondaryNavItems(q3CopyEnabled: boolean): NavItem[] {
+  const copy = getQ3UserCopyProfile(q3CopyEnabled);
+  return [
+    {
+      href: '/flows/new',
+      label: copy.navigation.createPlan,
+      description: q3CopyEnabled
+        ? '내 콘텐츠를 실행할 계획으로 정리'
+        : '내 콘텐츠를 실행형 Flow로 정리',
+      match: (path) => path === '/flows/new',
+    },
+  ];
+}
 
 function primaryLinkClass(active: boolean) {
   return `inline-flex min-h-11 items-center rounded-md px-3 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${
@@ -46,6 +70,8 @@ function mobileTabClass(active: boolean) {
 
 export function PlatformMobileTabs() {
   const pathname = usePathname();
+  const { enabled: q3CopyEnabled } = useQ3NavigationCopy();
+  const primaryNavItems = getPrimaryNavItems(q3CopyEnabled);
 
   return (
     <nav
@@ -75,6 +101,9 @@ export function PlatformMobileTabs() {
 
 export function PlatformNav({ includeMobileTabs = true }: { includeMobileTabs?: boolean } = {}) {
   const pathname = usePathname();
+  const { enabled: q3CopyEnabled } = useQ3NavigationCopy();
+  const primaryNavItems = getPrimaryNavItems(q3CopyEnabled);
+  const secondaryNavItems = getSecondaryNavItems(q3CopyEnabled);
 
   return (
     <>
@@ -82,6 +111,7 @@ export function PlatformNav({ includeMobileTabs = true }: { includeMobileTabs?: 
         className="sticky top-0 z-30 mb-6 rounded-b-lg border-b border-[#E7E4DD] bg-white/95 px-1 py-3 backdrop-blur sm:static sm:mb-8 sm:rounded-none sm:bg-transparent sm:px-0 sm:pb-4 sm:pt-0 sm:backdrop-blur-0"
         aria-label="FLOW 서비스 프레임"
         data-testid="platform-nav"
+        data-p35-q3-copy={q3CopyEnabled ? 'on' : 'off'}
       >
         <div className="flex items-center justify-between gap-3">
           <Link className="inline-flex min-h-11 items-center text-lg font-semibold text-[#1B1A17] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]" href="/">

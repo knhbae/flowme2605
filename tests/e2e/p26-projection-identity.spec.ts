@@ -3,6 +3,8 @@ import path from 'node:path';
 
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import {
+  closeOpenMyFlowItemDetail,
+  getOpenMyFlowItemDetail,
   openMyFlowLibraryFlow,
   openPersonalDraftListExport,
 } from './helpers/my-flow-library';
@@ -33,7 +35,23 @@ async function capture(page: Page, locator: Locator, filename: string) {
   }));
 }
 
-test('legacy personal draft values migrate to one stable identity across My Flow Calendar and export', async ({ page }) => {
+async function completeSavedClipboardTransfer(
+  page: Page,
+  panel: Locator,
+  action: Locator,
+): Promise<string> {
+  await action.click();
+  const confirmation = panel.getByTestId('my-flow-transfer-confirmation');
+  await expect(confirmation).toHaveAttribute('data-transfer-route', 'saved_transfer');
+  await confirmation.getByTestId('my-flow-transfer-confirm').click();
+  const receipt = panel.getByTestId('my-flow-transfer-receipt');
+  await expect(receipt).toHaveAttribute('data-transfer-state', 'succeeded');
+  const copied = await page.evaluate(() => navigator.clipboard.readText());
+  await receipt.getByTestId('flow-transfer-success-close').click();
+  return copied;
+}
+
+test('legacy personal draft values remain read-only while one identity reaches My Flow Calendar and export', async ({ page }) => {
   test.setTimeout(120_000);
   const browserErrors: string[] = [];
   page.on('console', (message) => {
@@ -48,7 +66,7 @@ test('legacy personal draft values migrate to one stable identity across My Flow
 
   const lookup = page.getByTestId('flow-url-lookup-entry');
   await lookup.getByLabel('URL 또는 메모').fill('여권을 확인한다. 숙소 주소를 적는다.');
-  await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
+  await lookup.getByRole('button', { name: '계획 찾기' }).click();
   const editor = page.getByTestId('flow-memo-draft-editor');
   await editor.getByLabel('메모 초안 제목').fill('여행 준비 identity 확인');
   await editor.getByTestId('flow-memo-draft-save').click();
@@ -99,19 +117,16 @@ test('legacy personal draft values migrate to one stable identity across My Flow
     };
   }, legacy);
   expect(migrated).toEqual({
-    canonicalDraft: {
+    canonicalDraft: undefined,
+    canonicalDate: undefined,
+    legacyDraftActive: {
       title: '여권 유효기간 다시 확인하기',
       memo: '만료일과 영문 이름을 확인',
     },
-    canonicalDate: '2030-08-03',
-    legacyDraftActive: undefined,
-    legacyDateActive: undefined,
-    manifestSchemaVersion: 1,
-    manifestLegacyDraft: {
-      title: '여권 유효기간 다시 확인하기',
-      memo: '만료일과 영문 이름을 확인',
-    },
-    manifestLegacyDate: '2030-08-03',
+    legacyDateActive: '2030-08-03',
+    manifestSchemaVersion: undefined,
+    manifestLegacyDraft: undefined,
+    manifestLegacyDate: undefined,
   });
 
   await page.getByTestId('my-flow-post-save-view-flow').click();
@@ -122,12 +137,19 @@ test('legacy personal draft values migrate to one stable identity across My Flow
     .first();
   await expect(item).toHaveAttribute('data-item-id', legacy.itemId);
   await expect(item).toContainText('8월 3일');
-  const complete = item.getByRole('checkbox', { name: '여권 유효기간 다시 확인하기 완료 체크' });
+  await expect(item.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+  await item.getByRole('button', { name: /열기/ }).click();
+  const detail = getOpenMyFlowItemDetail(page);
+  await expect(detail).toBeVisible();
+  const complete = detail.getByTestId('my-flow-task-complete-control');
+  await expect(complete).toHaveCount(1);
+  await expect(page.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
   await complete.click();
-  const reopen = item.getByRole('checkbox', { name: '여권 유효기간 다시 확인하기 다시 열기' });
-  await expect(reopen).toBeChecked();
-  await reopen.click();
+  await expect(complete).toBeChecked();
+  await expect(complete).toHaveAccessibleName(/다시 열기/);
+  await complete.click();
   await expect(complete).not.toBeChecked();
+  await closeOpenMyFlowItemDetail(page);
   await capture(page, flowShell, '01-migrated-personal-draft-mobile.png');
 
   flowShell = await openMyFlowLibraryFlow(page, legacy.flowSlug, 'record');
@@ -139,8 +161,7 @@ test('legacy personal draft values migrate to one stable identity across My Flow
       .locator(':scope > summary')
       .click();
   }
-  await memoAction.click();
-  const memo = await page.evaluate(() => navigator.clipboard.readText());
+  const memo = await completeSavedClipboardTransfer(page, exportSurface, memoAction);
   expect(memo).toContain('여권 유효기간 다시 확인하기');
   expect(memo).toContain('만료일과 영문 이름을 확인');
   expect(memo).toContain('2030-08-03');
@@ -157,6 +178,7 @@ test('legacy personal draft values migrate to one stable identity across My Flow
     .locator(`[data-testid="my-flow-execution-row-shell"][data-item-id="${legacy.itemId}"]`)
     .filter({ hasText: '여권 유효기간 다시 확인하기' });
   await expect(calendarItem).toBeVisible();
+  await expect(calendarItem.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
   await capture(page, page.locator('main'), '02-migrated-calendar-wide.png');
 
   expect(browserErrors).toEqual([]);

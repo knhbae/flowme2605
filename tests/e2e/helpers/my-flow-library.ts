@@ -1,10 +1,46 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 
+async function resolveSavedFlowSlug(page: Page, requestedSlug: string): Promise<string> {
+  return page.evaluate((sourceSlug) => {
+    const currentFlow = new URL(window.location.href).searchParams.get('flow');
+    const records = Object.keys(window.localStorage)
+      .filter((key) => key.startsWith('flow:saved:'))
+      .map((key) => {
+        try {
+          const record = JSON.parse(window.localStorage.getItem(key) ?? 'null') as {
+            slug?: string;
+            personalCopyKey?: string;
+            sourceFlowSlug?: string;
+          } | null;
+          return record ? { key, record } : null;
+        } catch {
+          return null;
+        }
+      })
+      .filter((entry): entry is NonNullable<typeof entry> => entry !== null);
+
+    const exact = records.find(({ key, record }) => (
+      key === `flow:saved:${sourceSlug}`
+      || record.slug === sourceSlug
+      || record.personalCopyKey === sourceSlug
+    ));
+    if (exact) return exact.record.personalCopyKey ?? exact.record.slug ?? sourceSlug;
+
+    const sourceCopies = records.filter(({ record }) => record.sourceFlowSlug === sourceSlug);
+    const selected = sourceCopies.find(({ record }) => (
+      record.personalCopyKey === currentFlow || record.slug === currentFlow
+    ));
+    const match = selected ?? sourceCopies.at(-1);
+    return match?.record.personalCopyKey ?? match?.record.slug ?? sourceSlug;
+  }, requestedSlug);
+}
+
 export async function openMyFlowLibraryFlow(
   page: Page,
   flowSlug: string,
   mobileSection: 'execute' | 'plan' | 'record' = 'plan',
 ): Promise<Locator> {
+  const resolvedFlowSlug = await resolveSavedFlowSlug(page, flowSlug);
   const flowView = page.getByTestId('my-flow-todo-experiment-view-flows');
   if (
     await flowView.isVisible().catch(() => false) &&
@@ -20,29 +56,29 @@ export async function openMyFlowLibraryFlow(
     await expect(
       page.locator(
         [
-          `[data-testid="my-flow-overview-card"][data-flow-slug="${flowSlug}"]:visible`,
-          `[data-testid="my-flow-mobile-workspace"][data-flow-slug="${flowSlug}"]:visible`,
-          `[data-testid="my-flow-mobile-structure-row"][data-flow-slug="${flowSlug}"]:visible`,
+          `[data-testid="my-flow-overview-card"][data-flow-slug="${resolvedFlowSlug}"]:visible`,
+          `[data-testid="my-flow-mobile-workspace"][data-flow-slug="${resolvedFlowSlug}"]:visible`,
+          `[data-testid="my-flow-mobile-structure-row"][data-flow-slug="${resolvedFlowSlug}"]:visible`,
           '[data-testid="my-flow-library-workspace"]:visible',
         ].join(', '),
       ).first(),
     ).toBeVisible({ timeout: 10_000 });
   }
   if (wideViewport || await library.isVisible().catch(() => false)) {
-    await library.locator(`[data-testid="my-flow-library-row"][data-flow-slug="${flowSlug}"]`).click();
+    await library.locator(`[data-testid="my-flow-library-row"][data-flow-slug="${resolvedFlowSlug}"]`).click();
     const card = library
       .getByTestId('my-flow-library-detail')
-      .locator(`[data-testid="my-flow-overview-card"][data-flow-slug="${flowSlug}"]`);
+      .locator(`[data-testid="my-flow-overview-card"][data-flow-slug="${resolvedFlowSlug}"]`);
     await expect(card).toBeVisible();
     return card;
   }
 
   const existingCard = page.locator(
-    `[data-testid="my-flow-overview-card"][data-flow-slug="${flowSlug}"]:visible`,
+    `[data-testid="my-flow-overview-card"][data-flow-slug="${resolvedFlowSlug}"]:visible`,
   );
   if (await existingCard.isVisible().catch(() => false)) return existingCard;
   const existingMobileWorkspace = page.locator(
-    `[data-testid="my-flow-mobile-workspace"][data-flow-slug="${flowSlug}"]:visible`,
+    `[data-testid="my-flow-mobile-workspace"][data-flow-slug="${resolvedFlowSlug}"]:visible`,
   );
   if (await existingMobileWorkspace.isVisible().catch(() => false)) {
     const sectionTab = existingMobileWorkspace.getByTestId(
@@ -57,17 +93,20 @@ export async function openMyFlowLibraryFlow(
       ) {
         await planToggle.click();
       }
+      if (await existingMobileWorkspace.getByTestId('my-flow-whole-flow-outline').isVisible().catch(() => false)) {
+        await expandMyFlowWholePlan(existingMobileWorkspace);
+      }
     }
     return existingMobileWorkspace;
   }
 
   const compactRow = page.locator(
-    `[data-testid="my-flow-mobile-structure-row"][data-flow-slug="${flowSlug}"]`,
+    `[data-testid="my-flow-mobile-structure-row"][data-flow-slug="${resolvedFlowSlug}"]`,
   );
   await expect(compactRow).toBeVisible();
   await compactRow.getByTestId('my-flow-mobile-structure-open').click();
   const workspace = page.locator(
-    `[data-testid="my-flow-mobile-workspace"][data-flow-slug="${flowSlug}"]:visible`,
+    `[data-testid="my-flow-mobile-workspace"][data-flow-slug="${resolvedFlowSlug}"]:visible`,
   );
   await expect(workspace).toBeVisible();
   const sectionTab = workspace.getByTestId(`my-flow-workspace-tab-${mobileSection}`);
@@ -79,6 +118,9 @@ export async function openMyFlowLibraryFlow(
       (await planToggle.getAttribute('aria-expanded')) === 'false'
     ) {
       await planToggle.click();
+    }
+    if (await workspace.getByTestId('my-flow-whole-flow-outline').isVisible().catch(() => false)) {
+      await expandMyFlowWholePlan(workspace);
     }
   }
   return workspace;
@@ -127,7 +169,13 @@ export async function openMyFlowCalendarSelectedDay(
 
 export async function closeOpenMyFlowItemDetail(page: Page): Promise<void> {
   const close = page.getByTestId('my-flow-item-detail-sheet-close');
-  if (await close.isVisible().catch(() => false)) await close.click();
+  if (await close.isVisible().catch(() => false)) {
+    // Completion and editor saves may close the sheet before this helper's
+    // click reaches it. Treat that detach as success, but still verify that a
+    // visible sheet was not left behind.
+    await close.click({ timeout: 2_000 }).catch(() => undefined);
+    await expect(close).toHaveCount(0);
+  }
 }
 
 export async function expandMyFlowWholePlan(flow: Locator): Promise<Locator> {
@@ -146,8 +194,8 @@ export async function expandMyFlowWholePlan(flow: Locator): Promise<Locator> {
   return outline;
 }
 
-export function getMyFlowVisibleExecutionRows(flow: Locator): Locator {
-  return flow.getByTestId('my-flow-execution-row-shell');
+export async function getMyFlowVisibleExecutionRows(flow: Locator): Promise<Locator> {
+  return flow.locator('[data-testid="my-flow-execution-row-shell"]:visible');
 }
 
 export async function openPersonalDraftListExport(flow: Locator): Promise<Locator> {

@@ -18,7 +18,7 @@ export const FLOW_EXECUTION_ACTIONS = {
   viewWholeFlow: { label: '전체 Flow 보기', role: 'secondary' },
   openItem: { label: '열기', role: 'utility' },
   editItem: { label: '할 일 조정', role: 'secondary' },
-  exportFlow: { label: '가져가기', role: 'secondary' },
+  exportFlow: { label: '내 도구로 옮기기', role: 'secondary' },
   openCalendar: { label: '캘린더', role: 'utility' },
   close: { label: '닫기', role: 'utility' },
   cancel: { label: '취소', role: 'secondary' },

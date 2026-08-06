@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import test from 'node:test';
 import { buildFlowExportScopePlan } from './export-scope';
 import {
@@ -9,19 +10,33 @@ import {
   FLOW_PROJECTION_DESTINATIONS,
   getProjectionIdentityMigrationStorageKey,
   migrateProjectionIdentityStorage,
+  readProjectionIdentityStorage,
   type ProjectionIdentityStorage,
 } from './projection-identity';
 
 function memoryStorage(initial: Record<string, string> = {}): ProjectionIdentityStorage & {
   snapshot(): Record<string, string>;
+  operations(): Array<{ operation: 'set' | 'remove'; key: string }>;
 } {
   const values = new Map(Object.entries(initial));
+  const operations: Array<{ operation: 'set' | 'remove'; key: string }> = [];
   return {
     getItem: (key) => values.get(key) ?? null,
-    setItem: (key, value) => values.set(key, value),
-    removeItem: (key) => values.delete(key),
+    setItem: (key, value) => {
+      operations.push({ operation: 'set', key });
+      values.set(key, value);
+    },
+    removeItem: (key) => {
+      operations.push({ operation: 'remove', key });
+      values.delete(key);
+    },
     snapshot: () => Object.fromEntries(values),
+    operations: () => [...operations],
   };
+}
+
+function checksum(value: unknown): string {
+  return createHash('sha256').update(JSON.stringify(value)).digest('hex');
 }
 
 const allListDestinations = {
@@ -287,6 +302,81 @@ test('legacy projection values migrate to stable keys without losing originals',
     }).source,
     'already_current',
   );
+});
+
+test('read-only projection identity overlays legacy values on canonical keys without writes', () => {
+  const itemDraftStorageKey = 'flow:my-flow:item-drafts';
+  const dateOverrideStorageKey = 'flow:my-flow:date-overrides';
+  const firstLegacyKey = 'draft-flow::source-a::2026-08-01';
+  const lastLegacyKey = 'draft-flow::source-a::2026-08-02';
+  const canonicalKey = buildCanonicalFlowValueKey('draft-flow', 'source-a');
+  const storage = memoryStorage({
+    [itemDraftStorageKey]: JSON.stringify({
+      [lastLegacyKey]: { title: '두 번째 레거시 제목', memo: '두 번째 메모' },
+      [firstLegacyKey]: { title: '첫 번째 레거시 제목', memo: '첫 번째 메모' },
+      [canonicalKey]: { title: '현재 제목' },
+      'other-flow::item::none': { memo: '다른 Flow' },
+    }),
+    [dateOverrideStorageKey]: JSON.stringify({
+      [lastLegacyKey]: '2026-08-04',
+      [firstLegacyKey]: '2026-08-03',
+      'other-flow::item::none': '2026-09-01',
+    }),
+  });
+  const beforeSnapshot = storage.snapshot();
+  const beforeChecksum = checksum(beforeSnapshot);
+
+  const result = readProjectionIdentityStorage(storage, {
+    flowId: 'draft-flow',
+    itemIds: ['source-a', 'source-a'],
+    itemDraftStorageKey,
+    dateOverrideStorageKey,
+  });
+
+  assert.equal(result.source, 'legacy_overlay');
+  assert.deepEqual(result.itemDrafts[canonicalKey], {
+    title: '현재 제목',
+    memo: '두 번째 메모',
+  });
+  assert.equal(result.dateOverrides[canonicalKey], '2026-08-04');
+  assert.deepEqual(result.itemDrafts[firstLegacyKey], {
+    title: '첫 번째 레거시 제목',
+    memo: '첫 번째 메모',
+  });
+  assert.equal(result.dateOverrides[lastLegacyKey], '2026-08-04');
+  assert.deepEqual(result.warnings, [
+    'multiple_legacy_item_drafts:source-a',
+    'multiple_legacy_date_overrides:source-a',
+  ]);
+  assert.equal(checksum(storage.snapshot()), beforeChecksum);
+  assert.deepEqual(storage.snapshot(), beforeSnapshot);
+  assert.deepEqual(storage.operations(), []);
+  assert.equal(storage.getItem(getProjectionIdentityMigrationStorageKey('draft-flow')), null);
+});
+
+test('read-only projection identity reports malformed bytes while exposing valid legacy dates', () => {
+  const storage = memoryStorage({
+    drafts: '{not-json',
+    dates: JSON.stringify({
+      'draft-flow::source-a::none': '2026-08-03',
+    }),
+  });
+  const beforeChecksum = checksum(storage.snapshot());
+  const canonicalKey = buildCanonicalFlowValueKey('draft-flow', 'source-a');
+
+  const result = readProjectionIdentityStorage(storage, {
+    flowId: 'draft-flow',
+    itemIds: ['source-a'],
+    itemDraftStorageKey: 'drafts',
+    dateOverrideStorageKey: 'dates',
+  });
+
+  assert.equal(result.source, 'malformed_preserved');
+  assert.deepEqual(result.itemDrafts, {});
+  assert.equal(result.dateOverrides[canonicalKey], '2026-08-03');
+  assert.deepEqual(result.warnings, ['malformed_projection_storage_preserved']);
+  assert.equal(checksum(storage.snapshot()), beforeChecksum);
+  assert.deepEqual(storage.operations(), []);
 });
 
 test('malformed projection storage is preserved without a migration manifest', () => {

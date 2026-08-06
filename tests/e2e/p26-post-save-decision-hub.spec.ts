@@ -38,21 +38,21 @@ async function savedFlowRecords(page: Page) {
   ));
 }
 
-test('mobile public save exposes one honest receipt action before Flow-level export', async ({ page }) => {
+test('mobile public save opens one selected plan before Flow-level export', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/f/vehicle-inspection-prep');
   await page.evaluate(() => localStorage.clear());
   await page.reload();
-  const savedReceipt = await savePublicFlow(
+  const saveBanner = await savePublicFlow(
     page,
     page.getByTestId('public-flow-save-primary-mobile'),
   );
-  await expect(savedReceipt.locator('[data-action-priority="primary"]')).toHaveCount(1);
-  await expect(savedReceipt.locator('[data-action-priority="secondary"]')).toHaveCount(0);
-  await expect(savedReceipt.getByTestId('public-flow-saved-receipt-status')).toContainText('10');
-  await openSavedPublicFlow(page, savedReceipt);
+  await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toContainText('10');
+  await expect(page.getByTestId('public-flow-saved-receipt')).toHaveCount(0);
+  await openSavedPublicFlow(page, saveBanner);
 
   const flow = await openMyFlowLibraryFlow(page, 'vehicle-inspection-prep', 'record');
+  await expect(flow.getByTestId('my-flow-workspace-execute')).toHaveCount(1);
   const exportSurface = flow.getByTestId('my-flow-export-surface');
   await exportSurface.getByTestId('my-flow-export-entry').click();
   const exportPanel = exportSurface.getByTestId('my-flow-export-panel');
@@ -68,19 +68,19 @@ test('mobile public save exposes one honest receipt action before Flow-level exp
   expect(await savedFlowRecords(page)).toEqual(recordsBeforeReload);
 });
 
-test('wide dated Flow receipt separates schedule summary, whole outline, and actions', async ({ page }) => {
+test('wide dated public save opens the selected plan with schedule, outline, and actions', async ({ page }) => {
   await page.setViewportSize({ width: 1024, height: 768 });
   await page.goto('/flow-maps/moving-d30');
   await page.evaluate(() => localStorage.clear());
   await page.reload();
   await expect(page).toHaveURL('/f/moving-d30-basic');
   await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
-  const receipt = await savePublicFlow(page, page.getByTestId('public-flow-save-primary'));
-  await expect(receipt.locator('[data-action-priority="primary"]')).toHaveCount(1);
-  await expect(receipt.getByTestId('public-flow-saved-receipt-status')).toContainText('24');
+  const saveBanner = await savePublicFlow(page, page.getByTestId('public-flow-save-primary'));
+  await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toContainText('24');
+  await expect(page.getByTestId('public-flow-saved-receipt')).toHaveCount(0);
   await capture(page, '02-moving-decision-hub-wide.png');
 
-  await openSavedPublicFlow(page, receipt);
+  await openSavedPublicFlow(page, saveBanner);
   await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
   const flow = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'plan');
   await expect(flow.getByTestId('my-flow-whole-flow-outline')).toHaveAttribute('data-effective-row-count', '24');

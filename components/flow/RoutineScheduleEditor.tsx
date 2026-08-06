@@ -1,5 +1,7 @@
 'use client';
 
+import React from 'react';
+
 import type { SavedFlowRoutineDefinition, SavedFlowRoutineEnd } from '@/lib/flow/storage';
 
 export type RoutineScheduleEditorValue = {

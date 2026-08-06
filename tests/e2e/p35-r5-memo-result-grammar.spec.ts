@@ -70,7 +70,7 @@ async function openMemoProposal(page: Page) {
   await page.reload();
   const lookup = page.getByTestId('flow-url-lookup-entry');
   await lookup.getByLabel('URL 또는 메모').fill(fiveActionMemo);
-  await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
+  await lookup.getByRole('button', { name: '계획 찾기' }).click();
   return page.getByTestId('flow-memo-draft-editor');
 }
 

@@ -40,8 +40,8 @@ async function expectPageQuality(page: Page) {
   expect(result.receiptCount).toBeLessThanOrEqual(1);
 }
 
-async function saveMovingFlow(page: Page) {
-  await page.goto('/f/moving-d30-basic');
+async function saveMovingFlow(page: Page, legacy = false) {
+  await page.goto(`/f/moving-d30-basic${legacy ? '?saveLifecycle=off' : ''}`);
   await page.evaluate(() => window.localStorage.clear());
   await page.reload();
   await page.getByTestId('public-flow-anchor-input').fill('2030-09-01');
@@ -52,41 +52,46 @@ async function saveMovingFlow(page: Page) {
 }
 
 test.describe('P35-R3 receipt to focused workspace continuity', () => {
-  test('mobile receipt has one primary action and opens the saved Flow directly', async ({ page }) => {
+  test('mobile save opens the selected personal copy directly with one transient banner', async ({ page }) => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
     await saveMovingFlow(page);
 
-    const receipt = page.getByTestId('public-flow-saved-receipt');
-    await expect(receipt).toHaveAttribute('data-p35-marker', 'P35-R3-SINGLE-SAVED-RECEIPT');
-    await expect(receipt).toContainText('24개 할 일을 저장했어요');
-    await expect(receipt).toContainText('저장한 전체 Flow 보기');
-    await expect(receipt.locator('[data-action-priority="primary"]')).toHaveCount(1);
-    await expect(receipt.getByRole('link', { name: '캘린더에서 보기' })).toHaveCount(0);
-    await expect(receipt.getByRole('button')).toHaveCount(0);
-    await capture(page, 'p35-r3-saved-receipt-390.png');
-
-    const primary = receipt.getByTestId('public-flow-saved-receipt-primary');
-    await expect(primary).toHaveAttribute('href', '/my?view=flows&flow=moving-d30-basic');
-    await primary.click();
-
-    await expect(page).toHaveURL('/my?view=flows&flow=moving-d30-basic');
+    await expect(page).toHaveURL(/\/my\?view=flows&flow=personal-copy%3A/u);
+    const copySlug = new URL(page.url()).searchParams.get('flow') ?? '';
+    expect(copySlug).toMatch(/^personal-copy:/u);
+    await expect(page.getByTestId('public-flow-saved-receipt')).toHaveCount(0);
     await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
-    const workspace = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'execute');
+    const banner = page.getByTestId('my-flow-save-banner');
+    await expect(banner).toBeVisible();
+    await expect(banner.getByTestId('my-flow-save-banner-summary')).toHaveText('저장됨 · 24개');
+    await expect(banner.getByTestId('my-flow-save-undo')).toHaveText('방금 저장 취소');
+    const workspace = await openMyFlowLibraryFlow(page, copySlug, 'execute');
     await expect(workspace).toContainText('이사');
     await expect(workspace.getByTestId('my-flow-workspace-plan')).toBeVisible();
     await expect(workspace.getByTestId('my-flow-workspace-plan')).toHaveAttribute(
       'data-plan-open',
-      'true',
+      'false',
     );
-    await expect(workspace.getByTestId('my-flow-workspace-plan-content')).toBeVisible();
+    await expect(workspace.getByTestId('my-flow-workspace-plan-content')).toHaveCount(0);
+    const firstEntry = workspace.getByTestId('my-flow-shape-aware-execution');
+    const firstEntryRows = firstEntry.getByTestId('my-flow-execution-row-shell');
+    expect(await firstEntryRows.count()).toBeGreaterThan(0);
+    expect(await firstEntryRows.count()).toBeLessThanOrEqual(3);
+    await expect(workspace.getByTestId('my-flow-workspace-progress-summary')).toContainText(
+      '전체 0/24 완료',
+    );
     await expect(workspace.locator('[data-testid^="my-flow-workspace-tab-"]')).toHaveCount(0);
-    await capture(page, 'p35-r3-focused-workspace-390.png');
+    await capture(page, 'p35-r3-direct-focused-workspace-390.png');
 
     await page.reload();
-    await expect(page).toHaveURL('/my?view=flows&flow=moving-d30-basic');
+    expect(new URL(page.url()).pathname).toBe('/my');
+    expect(new URL(page.url()).searchParams.get('view')).toBe('flows');
+    expect(new URL(page.url()).searchParams.get('flow')).toBe(copySlug);
+    expect(new URL(page.url()).searchParams.has('saveReceipt')).toBe(false);
+    await expect(page.getByTestId('my-flow-save-banner')).toHaveCount(0);
     await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
-    const reloadedWorkspace = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'execute');
+    const reloadedWorkspace = await openMyFlowLibraryFlow(page, copySlug, 'execute');
     await expect(reloadedWorkspace).toBeVisible();
     await expect(reloadedWorkspace.getByTestId('my-flow-workspace-plan')).toHaveAttribute(
       'data-plan-open',
@@ -97,26 +102,75 @@ test.describe('P35-R3 receipt to focused workspace continuity', () => {
     expect(errors).toEqual([]);
   });
 
-  test('wide receipt and workspace keep the same single handoff', async ({ page }) => {
+  test('wide save keeps the same direct selected-detail handoff', async ({ page }) => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 1024, height: 768 });
     await saveMovingFlow(page);
 
-    const receipt = page.getByTestId('public-flow-saved-receipt');
-    await expect(receipt.locator('[data-action-priority="primary"]')).toHaveCount(1);
-    await expect(receipt.locator('[data-action-priority="secondary"]')).toHaveCount(0);
-    await expect(receipt.getByRole('link', { name: '캘린더에서 보기' })).toHaveCount(0);
-    await capture(page, 'p35-r3-saved-receipt-1024.png');
-    await receipt.getByTestId('public-flow-saved-receipt-primary').click();
-
-    await expect(page).toHaveURL('/my?view=flows&flow=moving-d30-basic');
+    await expect(page).toHaveURL(/\/my\?view=flows&flow=personal-copy%3A/u);
+    const copySlug = new URL(page.url()).searchParams.get('flow') ?? '';
+    await expect(page.getByTestId('my-flow-save-banner')).toBeVisible();
     await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
-    const workspace = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'plan');
+    const workspace = await openMyFlowLibraryFlow(page, copySlug, 'plan');
     await expect(workspace).toBeVisible();
     await expect(workspace.getByTestId('my-flow-workspace-commands')).toBeVisible();
     await capture(page, 'p35-r3-focused-workspace-1024.png');
     await expectPageQuality(page);
     expect(errors).toEqual([]);
+  });
+
+  test('rollback flag preserves the legacy public receipt handoff', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await saveMovingFlow(page, true);
+    const receipt = page.getByTestId('public-flow-saved-receipt');
+    await expect(receipt).toHaveAttribute('data-p35-marker', 'P35-R3-SINGLE-SAVED-RECEIPT');
+    await expect(receipt.getByTestId('public-flow-saved-receipt-primary')).toHaveAttribute(
+      'href',
+      '/my?view=flows&flow=moving-d30-basic',
+    );
+    const legacyBytes = await page.evaluate(() => Object.fromEntries(
+      Array.from({ length: window.localStorage.length }, (_, index) => window.localStorage.key(index))
+        .filter((key): key is string => Boolean(key))
+        .sort()
+        .map((key) => [key, window.localStorage.getItem(key) ?? '']),
+    ));
+    const savedRaw = legacyBytes['flow:saved:moving-d30-basic'];
+    expect(savedRaw).toBeTruthy();
+    const savedRecord = JSON.parse(savedRaw) as Record<string, unknown>;
+    expect(savedRaw).toBe(JSON.stringify({
+      slug: 'moving-d30-basic',
+      savedAt: savedRecord.savedAt,
+      personalTitle: '이사 D-30 준비',
+      selectedArtifactMode: 'calendar',
+      dateIntent: 'custom',
+      anchor: '2030-09-01',
+    }));
+    expect(savedRecord).not.toHaveProperty('schemaVersion');
+    expect(savedRecord).not.toHaveProperty('personalCopyKey');
+    expect(legacyBytes['flow:moving-d30-basic:anchorDate']).toBe(
+      '{"mode":"custom","anchor":"2030-09-01"}',
+    );
+    expect(legacyBytes['flow:meta:last-visit']).toBe(savedRecord.savedAt);
+    expect(Object.keys(legacyBytes).some((key) => key.includes('personal-copy:'))).toBe(false);
+
+    const canonicalRaw = legacyBytes['flow:canonical:origin:v1'];
+    expect(canonicalRaw).toBeTruthy();
+    const canonical = JSON.parse(canonicalRaw) as {
+      schemaVersion?: number;
+      entries?: Record<string, {
+        canonicalFlowId?: string;
+        canonicalSavedSlug?: string;
+        legacyOriginSlugs?: string[];
+        lastCanonicalWriteAt?: string;
+      }>;
+    };
+    expect(canonical.schemaVersion).toBe(1);
+    expect(Object.values(canonical.entries ?? {})).toEqual([
+      expect.objectContaining({
+        canonicalSavedSlug: 'moving-d30-basic',
+        lastCanonicalWriteAt: savedRecord.savedAt,
+      }),
+    ]);
   });
 
   test('legacy savedFlow handoff is reduced to one primary action', async ({ page }) => {

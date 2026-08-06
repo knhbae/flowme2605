@@ -1,7 +1,7 @@
 # FlowMe Workspace And Backlog Stabilization
 
 **Date:** 2026-08-06  
-**Status:** In progress  
+**Status:** Complete
 **Owner:** Product owner with AI operations support
 
 ## Goal
@@ -14,12 +14,14 @@ behavior accidentally.
 
 ## Current Truth
 
-- Production is sourced from P35 Round 2 commit `f97644a`, but that source is
-  not yet merged to `main`.
-- Draft PR [#166](https://github.com/knhbae/flowme2605/pull/166) is the only
-  integration path for the P35 Round 2 correction branch. Its earlier
-  candidate branch is an ancestor and must not be merged separately.
-- The prior `main` changes are isolated on
+- Production remains sourced from P35 Round 2 commit `f97644a` through Vercel
+  deployment `dpl_EBDr9CiRuwAUyjMcJwp7g6eBLpNk`; production smoke remains
+  `NOT_RUN`.
+- [PR #166](https://github.com/knhbae/flowme2605/pull/166) merged the P35 Round
+  2 source into `main` as `2af4c92407925cb0643e20c2c22c6e8c5b8b0f64` after
+  Docs, Unit, Build, and Playwright `533/533` passed. The merge did not create a
+  new production deployment or observed-user evidence.
+- The prior dirty `main` changes were isolated, split, and published through
   `codex/workspace-backlog-stabilization-20260806`.
 - Text Authoring is preserved at commit `a5d5338` and pushed on its existing
   branch. It remains a separate paused stream until explicitly promoted.
@@ -30,8 +32,12 @@ behavior accidentally.
   validate the P35 Round 2 runtime integration in PR #166.
 - Reproducible `.tmp` output was removed after the unique scheduling-deck
   generator was retained under `scripts/content-audit/`.
-- Product refactoring is deferred until the production source is durable on
-  `main`, the worktree is clean, and a fresh verification baseline exists.
+- All superseded or paused local worktrees were removed only after merge or
+  remote preservation. One active worktree remains.
+- Product refactoring remains deferred to the next explicitly approved slice.
+  If that slice touches Calendar or My Flow, the first candidate is a pure
+  calendar presentation/filter view-model extraction, not a whole
+  `AppClient.tsx` rewrite.
 
 See [inventory.md](./inventory.md) for the evidence snapshot and disposition
 of each worktree.

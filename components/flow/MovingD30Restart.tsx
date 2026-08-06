@@ -20,6 +20,7 @@ import {
 import { formatUserFacingScheduleDate } from '@/lib/flow/date';
 import { toUserFacingSourceTitle } from '@/lib/flow/display-title';
 import { FLOW_EXPORT_LABELS } from '@/lib/flow/export-labels';
+import { withFlowUserDataWriteLock } from '@/lib/flow/storage-write-lock';
 
 const defaultMoveDate = '2026-06-27';
 const KOREAN_WEEKDAY_SHORT = ['일', '월', '화', '수', '목', '금', '토'];
@@ -96,6 +97,7 @@ export function MovingD30Restart() {
   const [showAuthGate, setShowAuthGate] = useState(false);
   const [feedback, setFeedback] = useState('');
   const [saved, setSaved] = useState(false);
+  const [savingToMyFlow, setSavingToMyFlow] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const [newDate, setNewDate] = useState(defaultMoveDate);
   const [newMemo, setNewMemo] = useState('');
@@ -268,21 +270,31 @@ export function MovingD30Restart() {
     return typeof window !== 'undefined' && window.localStorage.getItem('flow:auth:demo-user') === 'true';
   }
 
-  function saveToMyFlow() {
+  async function saveToMyFlow() {
     if (!isDemoLoggedIn()) {
       setShowAuthGate(true);
       return;
     }
-    window.localStorage.setItem(
-      'flow:saved:restart-moving-d30',
-      JSON.stringify({
-        slug: 'restart-moving-d30',
-        savedAt: new Date().toISOString(),
-        selectedArtifactMode: 'calendar',
-        anchor: moveDate,
-        items,
-      }),
-    );
+    if (savingToMyFlow) return;
+    setSavingToMyFlow(true);
+    const result = await withFlowUserDataWriteLock(() => {
+      window.localStorage.setItem(
+        'flow:saved:restart-moving-d30',
+        JSON.stringify({
+          slug: 'restart-moving-d30',
+          savedAt: new Date().toISOString(),
+          selectedArtifactMode: 'calendar',
+          anchor: moveDate,
+          items,
+        }),
+      );
+    });
+    setSavingToMyFlow(false);
+    if (!result.ok) {
+      setSaved(false);
+      setFeedback('내 계획에 저장하지 못했습니다. 다시 시도해 주세요.');
+      return;
+    }
     setSaved(true);
     setFeedback('내 Flow에 저장했습니다');
   }
@@ -598,7 +610,9 @@ export function MovingD30Restart() {
               </button>
               <button
                 type="button"
-                onClick={saveToMyFlow}
+                data-testid="moving-restart-save-to-my-flow"
+                disabled={savingToMyFlow}
+                onClick={() => void saveToMyFlow()}
                 className="min-h-11 rounded-2xl bg-violet-100 px-4 text-sm font-bold text-violet-800"
               >
                 내 Flow로 저장
@@ -729,7 +743,7 @@ export function MovingD30Restart() {
                 onClick={() => {
                   window.localStorage.setItem('flow:auth:demo-user', 'true');
                   setShowAuthGate(false);
-                  saveToMyFlow();
+                  void saveToMyFlow();
                 }}
                 className="min-h-12 rounded-2xl bg-blue-600 px-4 text-sm font-bold text-white"
               >
