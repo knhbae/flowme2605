@@ -1,0 +1,3172 @@
+{
+  "schemaVersion": "flowme-claude-structure-reference-v1",
+  "capturedAt": "2026-08-04T09:42:37.765Z",
+  "source": {
+    "zip": "D:/flowme2605/flow-mvp/claude_work/FlowMe 텍스트 저작 v2_260804_1617.zip",
+    "zipSha256": "10c2090c6a3b3239176e090f8d17a085f8909df7839fcf92dfd4514186e4bdcf",
+    "extractedToTemporaryDirectory": true,
+    "originalModified": false,
+    "htmlEntry": "FlowMe 텍스트 저작 v2.dc.html"
+  },
+  "comparisonContract": {
+    "scope": [
+      "desktop region proportions",
+      "mobile input-structure-result stage controls",
+      "fixed result rail placement",
+      "help and dialog disclosure boundaries"
+    ],
+    "excluded": [
+      "parser behavior",
+      "canonical IDs",
+      "Item or row count parity",
+      "route or standalone semantic parity"
+    ],
+    "semanticParityClaimed": false,
+    "note": "Claude Design is captured only as a structural reference, never as product truth."
+  },
+  "structureComparison": [
+    {
+      "viewport": "1440x900",
+      "comparisonAxes": [
+        "region layout",
+        "mobile stage controls",
+        "result rail visibility",
+        "help disclosure boundary",
+        "viewport overflow"
+      ],
+      "product": {
+        "sourceCase": "V01",
+        "layout": {
+          "mode": "three-pane",
+          "panes": [
+            {
+              "key": "input",
+              "present": true,
+              "visible": true,
+              "active": true,
+              "rect": {
+                "x": 1,
+                "y": 123,
+                "width": 448.03,
+                "height": 772
+              }
+            },
+            {
+              "key": "structure",
+              "present": true,
+              "visible": true,
+              "active": false,
+              "rect": {
+                "x": 449.03,
+                "y": 123,
+                "width": 349.91,
+                "height": 772
+              }
+            },
+            {
+              "key": "result",
+              "present": true,
+              "visible": true,
+              "active": false,
+              "rect": {
+                "x": 798.94,
+                "y": 123,
+                "width": 640.06,
+                "height": 772
+              }
+            }
+          ],
+          "visiblePaneKeys": [
+            "input",
+            "structure",
+            "result"
+          ],
+          "stageNavigation": {
+            "visible": false,
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            }
+          },
+          "stickyFooter": {
+            "visible": false,
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            }
+          }
+        },
+        "resultSlots": [
+          {
+            "kind": "calendar",
+            "geometry": {
+              "x": 815.94,
+              "y": 244.5,
+              "width": 147.27,
+              "height": 56,
+              "top": 244.5,
+              "right": 963.2,
+              "bottom": 300.5,
+              "left": 815.94
+            },
+            "eligible": true,
+            "selected": false
+          },
+          {
+            "kind": "todo",
+            "geometry": {
+              "x": 969.2,
+              "y": 244.5,
+              "width": 147.27,
+              "height": 56,
+              "top": 244.5,
+              "right": 1116.47,
+              "bottom": 300.5,
+              "left": 969.2
+            },
+            "eligible": true,
+            "selected": true
+          },
+          {
+            "kind": "sheet",
+            "geometry": {
+              "x": 1122.47,
+              "y": 244.5,
+              "width": 147.27,
+              "height": 56,
+              "top": 244.5,
+              "right": 1269.73,
+              "bottom": 300.5,
+              "left": 1122.47
+            },
+            "eligible": true,
+            "selected": false
+          },
+          {
+            "kind": "memo",
+            "geometry": {
+              "x": 1275.73,
+              "y": 244.5,
+              "width": 147.27,
+              "height": 56,
+              "top": 244.5,
+              "right": 1423,
+              "bottom": 300.5,
+              "left": 1275.73
+            },
+            "eligible": true,
+            "selected": false
+          }
+        ],
+        "screenshot": "docs/content-audit/2026-08-04-flowme-text-authoring-v2-round2-results/round2-visual-evidence/V01-route-simple-1440x900.png"
+      },
+      "claude": {
+        "initialStageControlCount": 1,
+        "initialResultRailCandidateCount": 4,
+        "resultStageControlFound": false,
+        "resultStageRailCandidateCount": null,
+        "resultStageCandidateCount": null,
+        "helpCandidateCount": 6,
+        "helpDisclosure": {
+          "triggerFound": true,
+          "triggerText": "문법 ?",
+          "openStructure": {
+            "document": {
+              "title": "",
+              "lang": "",
+              "scrollWidth": 1440,
+              "clientWidth": 1440,
+              "scrollHeight": 900,
+              "clientHeight": 900,
+              "horizontalOverflow": false
+            },
+            "visibleLandmarks": [],
+            "largestRootRegions": [
+              {
+                "tag": "div",
+                "className": "",
+                "text": "FLOWME 텍스트 저작 예시 기본 문법 날짜 역순 D-Day · 기준일 없음 링크 · 상세 원본 표 빈 문서 문법 ? 데모 모드 구조를 만드는 줄 # Flow 제목 - 기준일: 2026-08-10 ## 단계 - [",
+                "rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 1440,
+                  "height": 900
+                }
+              }
+            ],
+            "visibleControlCount": 17,
+            "stageCandidates": [
+              {
+                "tag": "button",
+                "role": null,
+                "text": "구조 수정",
+                "ariaLabel": null,
+                "ariaPressed": null,
+                "ariaSelected": null,
+                "rect": {
+                  "x": 688.06,
+                  "y": 280.48,
+                  "width": 74.88,
+                  "height": 30
+                }
+              }
+            ],
+            "resultRailCandidates": [
+              {
+                "tag": "button",
+                "role": null,
+                "text": "캘린더2",
+                "ariaLabel": null,
+                "ariaPressed": "false",
+                "ariaSelected": null,
+                "rect": {
+                  "x": 827.94,
+                  "y": 307.53,
+                  "width": 138.27,
+                  "height": 42
+                }
+              },
+              {
+                "tag": "button",
+                "role": null,
+                "text": "체크/할 일2",
+                "ariaLabel": null,
+                "ariaPressed": "true",
+                "ariaSelected": null,
+                "rect": {
+                  "x": 974.2,
+                  "y": 307.53,
+                  "width": 138.27,
+                  "height": 42
+                }
+              },
+              {
+                "tag": "button",
+                "role": null,
+                "text": "표/엑셀2",
+                "ariaLabel": null,
+                "ariaPressed": "false",
+                "ariaSelected": null,
+                "rect": {
+                  "x": 1120.47,
+                  "y": 307.53,
+                  "width": 138.27,
+                  "height": 42
+                }
+              },
+              {
+                "tag": "button",
+                "role": null,
+                "text": "텍스트15",
+                "ariaLabel": null,
+                "ariaPressed": "false",
+                "ariaSelected": null,
+                "rect": {
+                  "x": 1266.73,
+                  "y": 307.53,
+                  "width": 138.27,
+                  "height": 42
+                }
+              }
+            ],
+            "helpCandidates": [
+              {
+                "tag": "select",
+                "role": null,
+                "text": "기본 문법 날짜 역순 D-Day · 기준일 없음 링크 · 상세 원본 표 빈 문서",
+                "ariaLabel": null,
+                "ariaPressed": null,
+                "ariaSelected": null,
+                "rect": {
+                  "x": 1134.67,
+                  "y": 13,
+                  "width": 138,
+                  "height": 34.14
+                }
+              },
+              {
+                "tag": "button",
+                "role": null,
+                "text": "문법 ?",
+                "ariaLabel": null,
+                "ariaPressed": null,
+                "ariaSelected": null,
+                "rect": {
+                  "x": 1286.67,
+                  "y": 13.8,
+                  "width": 56.58,
+                  "height": 32
+                }
+              },
+              {
+                "tag": "button",
+                "role": null,
+                "text": "설명 ?",
+                "ariaLabel": "캘린더 설명 보기",
+                "ariaPressed": null,
+                "ariaSelected": null,
+                "rect": {
+                  "x": 827.94,
+                  "y": 353.53,
+                  "width": 138.27,
+                  "height": 26
+                }
+              },
+              {
+                "tag": "button",
+                "role": null,
+                "text": "설명 ?",
+                "ariaLabel": "체크/할 일 설명 보기",
+                "ariaPressed": null,
+                "ariaSelected": null,
+                "rect": {
+                  "x": 974.2,
+                  "y": 353.53,
+                  "width": 138.27,
+                  "height": 26
+                }
+              },
+              {
+                "tag": "button",
+                "role": null,
+                "text": "설명 ?",
+                "ariaLabel": "표/엑셀 설명 보기",
+                "ariaPressed": null,
+                "ariaSelected": null,
+                "rect": {
+                  "x": 1120.47,
+                  "y": 353.53,
+                  "width": 138.27,
+                  "height": 26
+                }
+              },
+              {
+                "tag": "button",
+                "role": null,
+                "text": "설명 ?",
+                "ariaLabel": "텍스트 설명 보기",
+                "ariaPressed": null,
+                "ariaSelected": null,
+                "rect": {
+                  "x": 1266.73,
+                  "y": 353.53,
+                  "width": 138.27,
+                  "height": 26
+                }
+              }
+            ],
+            "visibleDialogCount": 0
+          }
+        },
+        "horizontalOverflow": false,
+        "screenshot": "docs/content-audit/2026-08-04-flowme-text-authoring-v2-round2-results/round2-visual-evidence/claude-structure-1440x900.png"
+      },
+      "semanticParityCompared": false,
+      "interpretation": "Only visible hierarchy and interaction boundaries are compared; product data semantics remain authoritative."
+    },
+    {
+      "viewport": "1024x768",
+      "comparisonAxes": [
+        "region layout",
+        "mobile stage controls",
+        "result rail visibility",
+        "help disclosure boundary",
+        "viewport overflow"
+      ],
+      "product": {
+        "sourceCase": "V02",
+        "layout": {
+          "mode": "two-pane",
+          "panes": [
+            {
+              "key": "input",
+              "present": true,
+              "visible": false,
+              "active": false,
+              "rect": {
+                "x": 0,
+                "y": 0,
+                "width": 0,
+                "height": 0
+              }
+            },
+            {
+              "key": "structure",
+              "present": true,
+              "visible": true,
+              "active": false,
+              "rect": {
+                "x": 0,
+                "y": 172,
+                "width": 512,
+                "height": 500
+              }
+            },
+            {
+              "key": "result",
+              "present": true,
+              "visible": true,
+              "active": true,
+              "rect": {
+                "x": 512,
+                "y": 172,
+                "width": 512,
+                "height": 500
+              }
+            }
+          ],
+          "visiblePaneKeys": [
+            "structure",
+            "result"
+          ],
+          "stageNavigation": {
+            "visible": true,
+            "rect": {
+              "x": 0,
+              "y": 70,
+              "width": 1024,
+              "height": 49
+            }
+          },
+          "stickyFooter": {
+            "visible": true,
+            "rect": {
+              "x": 0,
+              "y": 672,
+              "width": 1024,
+              "height": 93
+            }
+          }
+        },
+        "resultSlots": [
+          {
+            "kind": "calendar",
+            "geometry": {
+              "x": 529,
+              "y": 293.5,
+              "width": 115.25,
+              "height": 56,
+              "top": 293.5,
+              "right": 644.25,
+              "bottom": 349.5,
+              "left": 529
+            },
+            "eligible": true,
+            "selected": false
+          },
+          {
+            "kind": "todo",
+            "geometry": {
+              "x": 650.25,
+              "y": 293.5,
+              "width": 115.25,
+              "height": 56,
+              "top": 293.5,
+              "right": 765.5,
+              "bottom": 349.5,
+              "left": 650.25
+            },
+            "eligible": true,
+            "selected": true
+          },
+          {
+            "kind": "sheet",
+            "geometry": {
+              "x": 771.5,
+              "y": 293.5,
+              "width": 115.25,
+              "height": 56,
+              "top": 293.5,
+              "right": 886.75,
+              "bottom": 349.5,
+              "left": 771.5
+            },
+            "eligible": true,
+            "selected": false
+          },
+          {
+            "kind": "memo",
+            "geometry": {
+              "x": 892.75,
+              "y": 293.5,
+              "width": 115.25,
+              "height": 56,
+              "top": 293.5,
+              "right": 1008,
+              "bottom": 349.5,
+              "left": 892.75
+            },
+            "eligible": true,
+            "selected": false
+          }
+        ],
+        "screenshot": "docs/content-audit/2026-08-04-flowme-text-authoring-v2-round2-results/round2-visual-evidence/V02-route-simple-1024x768.png"
+      },
+      "claude": {
+        "initialStageControlCount": 1,
+        "initialResultRailCandidateCount": 4,
+        "resultStageControlFound": false,
+        "resultStageRailCandidateCount": null,
+        "resultStageCandidateCount": null,
+        "helpCandidateCount": 6,
+        "helpDisclosure": {
+          "triggerFound": true,
+          "triggerText": "문법 ?",
+          "openStructure": {
+            "document": {
+              "title": "",
+              "lang": "",
+              "scrollWidth": 1024,
+              "clientWidth": 1024,
+              "scrollHeight": 768,
+              "clientHeight": 768,
+              "horizontalOverflow": false
+            },
+            "visibleLandmarks": [],
+            "largestRootRegions": [
+              {
+                "tag": "div",
+                "className": "",
+                "text": "FLOWME 텍스트 저작 예시 기본 문법 날짜 역순 D-Day · 기준일 없음 링크 · 상세 원본 표 빈 문서 문법 ? 데모 모드 구조를 만드는 줄 # Flow 제목 - 기준일: 2026-08-10 ## 단계 - [",
+                "rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 1024,
+                  "height": 768
+                }
+              }
+            ],
+            "visibleControlCount": 16,
+            "stageCandidates": [
+              {
+                "tag": "button",
+                "role": null,
+                "text": "구조 수정",
+                "ariaLabel": null,
+                "ariaPressed": null,
+                "ariaSelected": null,
+                "rect": {
+                  "x": 914.13,
+                  "y": 329.39,
+                  "width": 74.88,
+                  "height": 30
+                }
+              }
+            ],
+            "resultRailCandidates": [
+              {
+                "tag": "button",
+                "role": null,
+                "text": "캘린더2",
+                "ariaLabel": null,
+                "ariaPressed": "false",
+                "ariaSelected": null,
+                "rect": {
+                  "x": 20,
+                  "y": 579.17,
+                  "width": 236.25,
+                  "height": 42
+                }
+              },
+              {
+                "tag": "button",
+                "role": null,
+                "text": "체크/할 일2",
+                "ariaLabel": null,
+                "ariaPressed": "true",
+                "ariaSelected": null,
+                "rect": {
+                  "x": 264.25,
+                  "y": 579.17,
+                  "width": 236.25,
+                  "height": 42
+                }
+              },
+              {
+                "tag": "button",
+                "role": null,
+                "text": "표/엑셀2",
+                "ariaLabel": null,
+                "ariaPressed": "false",
+                "ariaSelected": null,
+                "rect": {
+                  "x": 508.5,
+                  "y": 579.17,
+                  "width": 236.25,
+                  "height": 42
+                }
+              },
+              {
+                "tag": "button",
+                "role": null,
+                "text": "텍스트15",
+                "ariaLabel": null,
+                "ariaPressed": "false",
+                "ariaSelected": null,
+                "rect": {
+                  "x": 752.75,
+                  "y": 579.17,
+                  "width": 236.25,
+                  "height": 42
+                }
+              }
+            ],
+            "helpCandidates": [
+              {
+                "tag": "select",
+                "role": null,
+                "text": "기본 문법 날짜 역순 D-Day · 기준일 없음 링크 · 상세 원본 표 빈 문서",
+                "ariaLabel": null,
+                "ariaPressed": null,
+                "ariaSelected": null,
+                "rect": {
+                  "x": 718.67,
+                  "y": 13,
+                  "width": 138,
+                  "height": 34.14
+                }
+              },
+              {
+                "tag": "button",
+                "role": null,
+                "text": "문법 ?",
+                "ariaLabel": null,
+                "ariaPressed": null,
+                "ariaSelected": null,
+                "rect": {
+                  "x": 870.67,
+                  "y": 13.8,
+                  "width": 56.58,
+                  "height": 32
+                }
+              },
+              {
+                "tag": "button",
+                "role": null,
+                "text": "설명 ?",
+                "ariaLabel": "캘린더 설명 보기",
+                "ariaPressed": null,
+                "ariaSelected": null,
+                "rect": {
+                  "x": 20,
+                  "y": 625.17,
+                  "width": 236.25,
+                  "height": 26
+                }
+              },
+              {
+                "tag": "button",
+                "role": null,
+                "text": "설명 ?",
+                "ariaLabel": "체크/할 일 설명 보기",
+                "ariaPressed": null,
+                "ariaSelected": null,
+                "rect": {
+                  "x": 264.25,
+                  "y": 625.17,
+                  "width": 236.25,
+                  "height": 26
+                }
+              },
+              {
+                "tag": "button",
+                "role": null,
+                "text": "설명 ?",
+                "ariaLabel": "표/엑셀 설명 보기",
+                "ariaPressed": null,
+                "ariaSelected": null,
+                "rect": {
+                  "x": 508.5,
+                  "y": 625.17,
+                  "width": 236.25,
+                  "height": 26
+                }
+              },
+              {
+                "tag": "button",
+                "role": null,
+                "text": "설명 ?",
+                "ariaLabel": "텍스트 설명 보기",
+                "ariaPressed": null,
+                "ariaSelected": null,
+                "rect": {
+                  "x": 752.75,
+                  "y": 625.17,
+                  "width": 236.25,
+                  "height": 26
+                }
+              }
+            ],
+            "visibleDialogCount": 0
+          }
+        },
+        "horizontalOverflow": false,
+        "screenshot": "docs/content-audit/2026-08-04-flowme-text-authoring-v2-round2-results/round2-visual-evidence/claude-structure-1024x768.png"
+      },
+      "semanticParityCompared": false,
+      "interpretation": "Only visible hierarchy and interaction boundaries are compared; product data semantics remain authoritative."
+    },
+    {
+      "viewport": "390x844",
+      "comparisonAxes": [
+        "region layout",
+        "mobile stage controls",
+        "result rail visibility",
+        "help disclosure boundary",
+        "viewport overflow"
+      ],
+      "product": {
+        "sourceCase": "V03",
+        "layout": {
+          "mode": "single-stage",
+          "panes": [
+            {
+              "key": "input",
+              "present": true,
+              "visible": false,
+              "active": false,
+              "rect": {
+                "x": 0,
+                "y": 0,
+                "width": 0,
+                "height": 0
+              }
+            },
+            {
+              "key": "structure",
+              "present": true,
+              "visible": false,
+              "active": false,
+              "rect": {
+                "x": 0,
+                "y": 0,
+                "width": 0,
+                "height": 0
+              }
+            },
+            {
+              "key": "result",
+              "present": true,
+              "visible": true,
+              "active": true,
+              "rect": {
+                "x": 0,
+                "y": 180,
+                "width": 390,
+                "height": 570
+              }
+            }
+          ],
+          "visiblePaneKeys": [
+            "result"
+          ],
+          "stageNavigation": {
+            "visible": true,
+            "rect": {
+              "x": 0,
+              "y": 70,
+              "width": 390,
+              "height": 49
+            }
+          },
+          "stickyFooter": {
+            "visible": true,
+            "rect": {
+              "x": 0,
+              "y": 750,
+              "width": 390,
+              "height": 93
+            }
+          }
+        },
+        "resultSlots": [
+          {
+            "kind": "calendar",
+            "geometry": {
+              "x": 17,
+              "y": 301.5,
+              "width": 84.75,
+              "height": 56,
+              "top": 301.5,
+              "right": 101.75,
+              "bottom": 357.5,
+              "left": 17
+            },
+            "eligible": true,
+            "selected": false
+          },
+          {
+            "kind": "todo",
+            "geometry": {
+              "x": 107.75,
+              "y": 301.5,
+              "width": 84.75,
+              "height": 56,
+              "top": 301.5,
+              "right": 192.5,
+              "bottom": 357.5,
+              "left": 107.75
+            },
+            "eligible": true,
+            "selected": true
+          },
+          {
+            "kind": "sheet",
+            "geometry": {
+              "x": 198.5,
+              "y": 301.5,
+              "width": 84.75,
+              "height": 56,
+              "top": 301.5,
+              "right": 283.25,
+              "bottom": 357.5,
+              "left": 198.5
+            },
+            "eligible": true,
+            "selected": false
+          },
+          {
+            "kind": "memo",
+            "geometry": {
+              "x": 289.25,
+              "y": 301.5,
+              "width": 84.75,
+              "height": 56,
+              "top": 301.5,
+              "right": 374,
+              "bottom": 357.5,
+              "left": 289.25
+            },
+            "eligible": true,
+            "selected": false
+          }
+        ],
+        "screenshot": "docs/content-audit/2026-08-04-flowme-text-authoring-v2-round2-results/round2-visual-evidence/V03-route-simple-390x844.png"
+      },
+      "claude": {
+        "initialStageControlCount": 5,
+        "initialResultRailCandidateCount": 0,
+        "resultStageControlFound": true,
+        "resultStageRailCandidateCount": 4,
+        "resultStageCandidateCount": 4,
+        "helpCandidateCount": 2,
+        "helpDisclosure": {
+          "triggerFound": true,
+          "triggerText": "문법 ?",
+          "openStructure": {
+            "document": {
+              "title": "",
+              "lang": "",
+              "scrollWidth": 390,
+              "clientWidth": 390,
+              "scrollHeight": 844,
+              "clientHeight": 844,
+              "horizontalOverflow": false
+            },
+            "visibleLandmarks": [],
+            "largestRootRegions": [
+              {
+                "tag": "div",
+                "className": "",
+                "text": "FLOWME 텍스트 저작 예시 기본 문법 날짜 역순 D-Day · 기준일 없음 링크 · 상세 원본 표 빈 문서 문법 ? 데모 모드 구조를 만드는 줄 # Flow 제목 - 기준일: 2026-08-10 ## 단계 - [",
+                "rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 390,
+                  "height": 844
+                }
+              }
+            ],
+            "visibleControlCount": 18,
+            "stageCandidates": [
+              {
+                "tag": "button",
+                "role": "tab",
+                "text": "01 입력",
+                "ariaLabel": null,
+                "ariaPressed": null,
+                "ariaSelected": "false",
+                "rect": {
+                  "x": 12,
+                  "y": 632.88,
+                  "width": 120.66,
+                  "height": 40
+                }
+              },
+              {
+                "tag": "button",
+                "role": "tab",
+                "text": "02 항목 구조",
+                "ariaLabel": null,
+                "ariaPressed": null,
+                "ariaSelected": "false",
+                "rect": {
+                  "x": 134.66,
+                  "y": 632.88,
+                  "width": 120.67,
+                  "height": 40
+                }
+              },
+              {
+                "tag": "button",
+                "role": "tab",
+                "text": "03 결과",
+                "ariaLabel": null,
+                "ariaPressed": null,
+                "ariaSelected": "true",
+                "rect": {
+                  "x": 257.33,
+                  "y": 632.88,
+                  "width": 120.67,
+                  "height": 40
+                }
+              },
+              {
+                "tag": "button",
+                "role": null,
+                "text": "항목 구조",
+                "ariaLabel": null,
+                "ariaPressed": null,
+                "ariaSelected": null,
+                "rect": {
+                  "x": 12,
+                  "y": 792,
+                  "width": 155.5,
+                  "height": 44
+                }
+              }
+            ],
+            "resultRailCandidates": [
+              {
+                "tag": "button",
+                "role": null,
+                "text": "캘린더2",
+                "ariaLabel": null,
+                "ariaPressed": "false",
+                "ariaSelected": null,
+                "rect": {
+                  "x": 16,
+                  "y": 716.92,
+                  "width": 79.75,
+                  "height": 42
+                }
+              },
+              {
+                "tag": "button",
+                "role": null,
+                "text": "체크/할 일2",
+                "ariaLabel": null,
+                "ariaPressed": "true",
+                "ariaSelected": null,
+                "rect": {
+                  "x": 103.75,
+                  "y": 716.92,
+                  "width": 79.75,
+                  "height": 42
+                }
+              },
+              {
+                "tag": "button",
+                "role": null,
+                "text": "표/엑셀2",
+                "ariaLabel": null,
+                "ariaPressed": "false",
+                "ariaSelected": null,
+                "rect": {
+                  "x": 191.5,
+                  "y": 716.92,
+                  "width": 79.75,
+                  "height": 42
+                }
+              },
+              {
+                "tag": "button",
+                "role": null,
+                "text": "텍스트15",
+                "ariaLabel": null,
+                "ariaPressed": "false",
+                "ariaSelected": null,
+                "rect": {
+                  "x": 279.25,
+                  "y": 716.92,
+                  "width": 79.75,
+                  "height": 42
+                }
+              }
+            ],
+            "helpCandidates": [
+              {
+                "tag": "select",
+                "role": null,
+                "text": "기본 문법 날짜 역순 D-Day · 기준일 없음 링크 · 상세 원본 표 빈 문서",
+                "ariaLabel": null,
+                "ariaPressed": null,
+                "ariaSelected": null,
+                "rect": {
+                  "x": 20,
+                  "y": 56.44,
+                  "width": 138,
+                  "height": 34.14
+                }
+              },
+              {
+                "tag": "button",
+                "role": null,
+                "text": "문법 ?",
+                "ariaLabel": null,
+                "ariaPressed": null,
+                "ariaSelected": null,
+                "rect": {
+                  "x": 172,
+                  "y": 57.23,
+                  "width": 56.58,
+                  "height": 32
+                }
+              },
+              {
+                "tag": "button",
+                "role": null,
+                "text": "설명 ?",
+                "ariaLabel": "캘린더 설명 보기",
+                "ariaPressed": null,
+                "ariaSelected": null,
+                "rect": {
+                  "x": 16,
+                  "y": 762.92,
+                  "width": 79.75,
+                  "height": 26
+                }
+              },
+              {
+                "tag": "button",
+                "role": null,
+                "text": "설명 ?",
+                "ariaLabel": "체크/할 일 설명 보기",
+                "ariaPressed": null,
+                "ariaSelected": null,
+                "rect": {
+                  "x": 103.75,
+                  "y": 762.92,
+                  "width": 79.75,
+                  "height": 26
+                }
+              },
+              {
+                "tag": "button",
+                "role": null,
+                "text": "설명 ?",
+                "ariaLabel": "표/엑셀 설명 보기",
+                "ariaPressed": null,
+                "ariaSelected": null,
+                "rect": {
+                  "x": 191.5,
+                  "y": 762.92,
+                  "width": 79.75,
+                  "height": 26
+                }
+              },
+              {
+                "tag": "button",
+                "role": null,
+                "text": "설명 ?",
+                "ariaLabel": "텍스트 설명 보기",
+                "ariaPressed": null,
+                "ariaSelected": null,
+                "rect": {
+                  "x": 279.25,
+                  "y": 762.92,
+                  "width": 79.75,
+                  "height": 26
+                }
+              }
+            ],
+            "visibleDialogCount": 0
+          }
+        },
+        "horizontalOverflow": false,
+        "screenshot": "docs/content-audit/2026-08-04-flowme-text-authoring-v2-round2-results/round2-visual-evidence/claude-structure-390x844.png"
+      },
+      "semanticParityCompared": false,
+      "interpretation": "Only visible hierarchy and interaction boundaries are compared; product data semantics remain authoritative."
+    },
+    {
+      "viewport": "390x600",
+      "comparisonAxes": [
+        "region layout",
+        "mobile stage controls",
+        "result rail visibility",
+        "help disclosure boundary",
+        "viewport overflow"
+      ],
+      "product": {
+        "sourceCase": "V04",
+        "layout": {
+          "mode": "single-stage",
+          "panes": [
+            {
+              "key": "input",
+              "present": true,
+              "visible": false,
+              "active": false,
+              "rect": {
+                "x": 0,
+                "y": 0,
+                "width": 0,
+                "height": 0
+              }
+            },
+            {
+              "key": "structure",
+              "present": true,
+              "visible": false,
+              "active": false,
+              "rect": {
+                "x": 0,
+                "y": 0,
+                "width": 0,
+                "height": 0
+              }
+            },
+            {
+              "key": "result",
+              "present": true,
+              "visible": true,
+              "active": true,
+              "rect": {
+                "x": 0,
+                "y": 168,
+                "width": 390,
+                "height": 354
+              }
+            }
+          ],
+          "visiblePaneKeys": [
+            "result"
+          ],
+          "stageNavigation": {
+            "visible": true,
+            "rect": {
+              "x": 0,
+              "y": 70,
+              "width": 390,
+              "height": 45
+            }
+          },
+          "stickyFooter": {
+            "visible": true,
+            "rect": {
+              "x": 0,
+              "y": 522,
+              "width": 390,
+              "height": 77
+            }
+          }
+        },
+        "resultSlots": [
+          {
+            "kind": "calendar",
+            "geometry": {
+              "x": 17,
+              "y": 289.5,
+              "width": 84.75,
+              "height": 56,
+              "top": 289.5,
+              "right": 101.75,
+              "bottom": 345.5,
+              "left": 17
+            },
+            "eligible": true,
+            "selected": false
+          },
+          {
+            "kind": "todo",
+            "geometry": {
+              "x": 107.75,
+              "y": 289.5,
+              "width": 84.75,
+              "height": 56,
+              "top": 289.5,
+              "right": 192.5,
+              "bottom": 345.5,
+              "left": 107.75
+            },
+            "eligible": true,
+            "selected": true
+          },
+          {
+            "kind": "sheet",
+            "geometry": {
+              "x": 198.5,
+              "y": 289.5,
+              "width": 84.75,
+              "height": 56,
+              "top": 289.5,
+              "right": 283.25,
+              "bottom": 345.5,
+              "left": 198.5
+            },
+            "eligible": true,
+            "selected": false
+          },
+          {
+            "kind": "memo",
+            "geometry": {
+              "x": 289.25,
+              "y": 289.5,
+              "width": 84.75,
+              "height": 56,
+              "top": 289.5,
+              "right": 374,
+              "bottom": 345.5,
+              "left": 289.25
+            },
+            "eligible": true,
+            "selected": false
+          }
+        ],
+        "screenshot": "docs/content-audit/2026-08-04-flowme-text-authoring-v2-round2-results/round2-visual-evidence/V04-route-simple-390x600.png"
+      },
+      "claude": {
+        "initialStageControlCount": 5,
+        "initialResultRailCandidateCount": 0,
+        "resultStageControlFound": true,
+        "resultStageRailCandidateCount": 4,
+        "resultStageCandidateCount": 4,
+        "helpCandidateCount": 2,
+        "helpDisclosure": {
+          "triggerFound": true,
+          "triggerText": "문법 ?",
+          "openStructure": {
+            "document": {
+              "title": "",
+              "lang": "",
+              "scrollWidth": 390,
+              "clientWidth": 390,
+              "scrollHeight": 600,
+              "clientHeight": 600,
+              "horizontalOverflow": false
+            },
+            "visibleLandmarks": [],
+            "largestRootRegions": [
+              {
+                "tag": "div",
+                "className": "",
+                "text": "FLOWME 텍스트 저작 예시 기본 문법 날짜 역순 D-Day · 기준일 없음 링크 · 상세 원본 표 빈 문서 문법 ? 데모 모드 구조를 만드는 줄 # Flow 제목 - 기준일: 2026-08-10 ## 단계 - [",
+                "rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 390,
+                  "height": 600
+                }
+              }
+            ],
+            "visibleControlCount": 3,
+            "stageCandidates": [],
+            "resultRailCandidates": [],
+            "helpCandidates": [
+              {
+                "tag": "select",
+                "role": null,
+                "text": "기본 문법 날짜 역순 D-Day · 기준일 없음 링크 · 상세 원본 표 빈 문서",
+                "ariaLabel": null,
+                "ariaPressed": null,
+                "ariaSelected": null,
+                "rect": {
+                  "x": 20,
+                  "y": 56.44,
+                  "width": 138,
+                  "height": 34.14
+                }
+              },
+              {
+                "tag": "button",
+                "role": null,
+                "text": "문법 ?",
+                "ariaLabel": null,
+                "ariaPressed": null,
+                "ariaSelected": null,
+                "rect": {
+                  "x": 172,
+                  "y": 57.23,
+                  "width": 56.58,
+                  "height": 32
+                }
+              }
+            ],
+            "visibleDialogCount": 0
+          }
+        },
+        "horizontalOverflow": false,
+        "screenshot": "docs/content-audit/2026-08-04-flowme-text-authoring-v2-round2-results/round2-visual-evidence/claude-structure-390x600.png"
+      },
+      "semanticParityCompared": false,
+      "interpretation": "Only visible hierarchy and interaction boundaries are compared; product data semantics remain authoritative."
+    }
+  ],
+  "browser": {
+    "engine": "Chromium",
+    "version": "150.0.7871.184"
+  },
+  "viewports": [
+    {
+      "viewport": "1440x900",
+      "structure": {
+        "document": {
+          "title": "",
+          "lang": "",
+          "scrollWidth": 1440,
+          "clientWidth": 1440,
+          "scrollHeight": 900,
+          "clientHeight": 900,
+          "horizontalOverflow": false
+        },
+        "visibleLandmarks": [],
+        "largestRootRegions": [
+          {
+            "tag": "div",
+            "className": "",
+            "text": "FLOWME 텍스트 저작 예시 기본 문법 날짜 역순 D-Day · 기준일 없음 링크 · 상세 원본 표 빈 문서 문법 ? 데모 모드 01 입력 02 항목 구조 03 결과 입력 원문 # 행사 준비 - 기준일: 2026-",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 1440,
+              "height": 900
+            }
+          }
+        ],
+        "visibleControlCount": 17,
+        "stageCandidates": [
+          {
+            "tag": "button",
+            "role": null,
+            "text": "구조 수정",
+            "ariaLabel": null,
+            "ariaPressed": null,
+            "ariaSelected": null,
+            "rect": {
+              "x": 688.06,
+              "y": 80.39,
+              "width": 74.88,
+              "height": 30
+            }
+          }
+        ],
+        "resultRailCandidates": [
+          {
+            "tag": "button",
+            "role": null,
+            "text": "캘린더2",
+            "ariaLabel": null,
+            "ariaPressed": "false",
+            "ariaSelected": null,
+            "rect": {
+              "x": 827.94,
+              "y": 107.44,
+              "width": 138.27,
+              "height": 42
+            }
+          },
+          {
+            "tag": "button",
+            "role": null,
+            "text": "체크/할 일2",
+            "ariaLabel": null,
+            "ariaPressed": "true",
+            "ariaSelected": null,
+            "rect": {
+              "x": 974.2,
+              "y": 107.44,
+              "width": 138.27,
+              "height": 42
+            }
+          },
+          {
+            "tag": "button",
+            "role": null,
+            "text": "표/엑셀2",
+            "ariaLabel": null,
+            "ariaPressed": "false",
+            "ariaSelected": null,
+            "rect": {
+              "x": 1120.47,
+              "y": 107.44,
+              "width": 138.27,
+              "height": 42
+            }
+          },
+          {
+            "tag": "button",
+            "role": null,
+            "text": "텍스트15",
+            "ariaLabel": null,
+            "ariaPressed": "false",
+            "ariaSelected": null,
+            "rect": {
+              "x": 1266.73,
+              "y": 107.44,
+              "width": 138.27,
+              "height": 42
+            }
+          }
+        ],
+        "helpCandidates": [
+          {
+            "tag": "select",
+            "role": null,
+            "text": "기본 문법 날짜 역순 D-Day · 기준일 없음 링크 · 상세 원본 표 빈 문서",
+            "ariaLabel": null,
+            "ariaPressed": null,
+            "ariaSelected": null,
+            "rect": {
+              "x": 1134.67,
+              "y": 13,
+              "width": 138,
+              "height": 34.14
+            }
+          },
+          {
+            "tag": "button",
+            "role": null,
+            "text": "문법 ?",
+            "ariaLabel": null,
+            "ariaPressed": null,
+            "ariaSelected": null,
+            "rect": {
+              "x": 1286.67,
+              "y": 13.8,
+              "width": 56.58,
+              "height": 32
+            }
+          },
+          {
+            "tag": "button",
+            "role": null,
+            "text": "설명 ?",
+            "ariaLabel": "캘린더 설명 보기",
+            "ariaPressed": null,
+            "ariaSelected": null,
+            "rect": {
+              "x": 827.94,
+              "y": 153.44,
+              "width": 138.27,
+              "height": 26
+            }
+          },
+          {
+            "tag": "button",
+            "role": null,
+            "text": "설명 ?",
+            "ariaLabel": "체크/할 일 설명 보기",
+            "ariaPressed": null,
+            "ariaSelected": null,
+            "rect": {
+              "x": 974.2,
+              "y": 153.44,
+              "width": 138.27,
+              "height": 26
+            }
+          },
+          {
+            "tag": "button",
+            "role": null,
+            "text": "설명 ?",
+            "ariaLabel": "표/엑셀 설명 보기",
+            "ariaPressed": null,
+            "ariaSelected": null,
+            "rect": {
+              "x": 1120.47,
+              "y": 153.44,
+              "width": 138.27,
+              "height": 26
+            }
+          },
+          {
+            "tag": "button",
+            "role": null,
+            "text": "설명 ?",
+            "ariaLabel": "텍스트 설명 보기",
+            "ariaPressed": null,
+            "ariaSelected": null,
+            "rect": {
+              "x": 1266.73,
+              "y": 153.44,
+              "width": 138.27,
+              "height": 26
+            }
+          }
+        ],
+        "visibleDialogCount": 0
+      },
+      "resultStageInteraction": {
+        "controlFound": false,
+        "structure": null
+      },
+      "helpDisclosure": {
+        "triggerFound": true,
+        "triggerText": "문법 ?",
+        "openStructure": {
+          "document": {
+            "title": "",
+            "lang": "",
+            "scrollWidth": 1440,
+            "clientWidth": 1440,
+            "scrollHeight": 900,
+            "clientHeight": 900,
+            "horizontalOverflow": false
+          },
+          "visibleLandmarks": [],
+          "largestRootRegions": [
+            {
+              "tag": "div",
+              "className": "",
+              "text": "FLOWME 텍스트 저작 예시 기본 문법 날짜 역순 D-Day · 기준일 없음 링크 · 상세 원본 표 빈 문서 문법 ? 데모 모드 구조를 만드는 줄 # Flow 제목 - 기준일: 2026-08-10 ## 단계 - [",
+              "rect": {
+                "x": 0,
+                "y": 0,
+                "width": 1440,
+                "height": 900
+              }
+            }
+          ],
+          "visibleControlCount": 17,
+          "stageCandidates": [
+            {
+              "tag": "button",
+              "role": null,
+              "text": "구조 수정",
+              "ariaLabel": null,
+              "ariaPressed": null,
+              "ariaSelected": null,
+              "rect": {
+                "x": 688.06,
+                "y": 280.48,
+                "width": 74.88,
+                "height": 30
+              }
+            }
+          ],
+          "resultRailCandidates": [
+            {
+              "tag": "button",
+              "role": null,
+              "text": "캘린더2",
+              "ariaLabel": null,
+              "ariaPressed": "false",
+              "ariaSelected": null,
+              "rect": {
+                "x": 827.94,
+                "y": 307.53,
+                "width": 138.27,
+                "height": 42
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "체크/할 일2",
+              "ariaLabel": null,
+              "ariaPressed": "true",
+              "ariaSelected": null,
+              "rect": {
+                "x": 974.2,
+                "y": 307.53,
+                "width": 138.27,
+                "height": 42
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "표/엑셀2",
+              "ariaLabel": null,
+              "ariaPressed": "false",
+              "ariaSelected": null,
+              "rect": {
+                "x": 1120.47,
+                "y": 307.53,
+                "width": 138.27,
+                "height": 42
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "텍스트15",
+              "ariaLabel": null,
+              "ariaPressed": "false",
+              "ariaSelected": null,
+              "rect": {
+                "x": 1266.73,
+                "y": 307.53,
+                "width": 138.27,
+                "height": 42
+              }
+            }
+          ],
+          "helpCandidates": [
+            {
+              "tag": "select",
+              "role": null,
+              "text": "기본 문법 날짜 역순 D-Day · 기준일 없음 링크 · 상세 원본 표 빈 문서",
+              "ariaLabel": null,
+              "ariaPressed": null,
+              "ariaSelected": null,
+              "rect": {
+                "x": 1134.67,
+                "y": 13,
+                "width": 138,
+                "height": 34.14
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "문법 ?",
+              "ariaLabel": null,
+              "ariaPressed": null,
+              "ariaSelected": null,
+              "rect": {
+                "x": 1286.67,
+                "y": 13.8,
+                "width": 56.58,
+                "height": 32
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "설명 ?",
+              "ariaLabel": "캘린더 설명 보기",
+              "ariaPressed": null,
+              "ariaSelected": null,
+              "rect": {
+                "x": 827.94,
+                "y": 353.53,
+                "width": 138.27,
+                "height": 26
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "설명 ?",
+              "ariaLabel": "체크/할 일 설명 보기",
+              "ariaPressed": null,
+              "ariaSelected": null,
+              "rect": {
+                "x": 974.2,
+                "y": 353.53,
+                "width": 138.27,
+                "height": 26
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "설명 ?",
+              "ariaLabel": "표/엑셀 설명 보기",
+              "ariaPressed": null,
+              "ariaSelected": null,
+              "rect": {
+                "x": 1120.47,
+                "y": 353.53,
+                "width": 138.27,
+                "height": 26
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "설명 ?",
+              "ariaLabel": "텍스트 설명 보기",
+              "ariaPressed": null,
+              "ariaSelected": null,
+              "rect": {
+                "x": 1266.73,
+                "y": 353.53,
+                "width": 138.27,
+                "height": 26
+              }
+            }
+          ],
+          "visibleDialogCount": 0
+        }
+      },
+      "runtime": {
+        "consoleErrors": [
+          "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        ],
+        "pageErrors": [],
+        "failedRequests": [],
+        "badResponses": [],
+        "externalRequests": [
+          "https://unpkg.com/react@18.3.1/umd/react.production.min.js",
+          "https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js",
+          "https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap",
+          "https://fonts.gstatic.com/s/sourceserif4/v14/vEFF2_tTDB4M7-auWDN0ahZJW3IX2ih5nk3AucvUHf6kDXr4.woff2"
+        ],
+        "replacementCharacters": 0
+      },
+      "screenshot": "docs/content-audit/2026-08-04-flowme-text-authoring-v2-round2-results/round2-visual-evidence/claude-structure-1440x900.png"
+    },
+    {
+      "viewport": "1024x768",
+      "structure": {
+        "document": {
+          "title": "",
+          "lang": "",
+          "scrollWidth": 1024,
+          "clientWidth": 1024,
+          "scrollHeight": 768,
+          "clientHeight": 768,
+          "horizontalOverflow": false
+        },
+        "visibleLandmarks": [],
+        "largestRootRegions": [
+          {
+            "tag": "div",
+            "className": "",
+            "text": "FLOWME 텍스트 저작 예시 기본 문법 날짜 역순 D-Day · 기준일 없음 링크 · 상세 원본 표 빈 문서 문법 ? 데모 모드 01 입력 02 항목 구조 03 결과 입력 원문 # 행사 준비 - 기준일: 2026-",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 1024,
+              "height": 768
+            }
+          }
+        ],
+        "visibleControlCount": 17,
+        "stageCandidates": [
+          {
+            "tag": "button",
+            "role": null,
+            "text": "구조 수정",
+            "ariaLabel": null,
+            "ariaPressed": null,
+            "ariaSelected": null,
+            "rect": {
+              "x": 914.13,
+              "y": 80.39,
+              "width": 74.88,
+              "height": 30
+            }
+          }
+        ],
+        "resultRailCandidates": [
+          {
+            "tag": "button",
+            "role": null,
+            "text": "캘린더2",
+            "ariaLabel": null,
+            "ariaPressed": "false",
+            "ariaSelected": null,
+            "rect": {
+              "x": 20,
+              "y": 451.63,
+              "width": 236.25,
+              "height": 42
+            }
+          },
+          {
+            "tag": "button",
+            "role": null,
+            "text": "체크/할 일2",
+            "ariaLabel": null,
+            "ariaPressed": "true",
+            "ariaSelected": null,
+            "rect": {
+              "x": 264.25,
+              "y": 451.63,
+              "width": 236.25,
+              "height": 42
+            }
+          },
+          {
+            "tag": "button",
+            "role": null,
+            "text": "표/엑셀2",
+            "ariaLabel": null,
+            "ariaPressed": "false",
+            "ariaSelected": null,
+            "rect": {
+              "x": 508.5,
+              "y": 451.63,
+              "width": 236.25,
+              "height": 42
+            }
+          },
+          {
+            "tag": "button",
+            "role": null,
+            "text": "텍스트15",
+            "ariaLabel": null,
+            "ariaPressed": "false",
+            "ariaSelected": null,
+            "rect": {
+              "x": 752.75,
+              "y": 451.63,
+              "width": 236.25,
+              "height": 42
+            }
+          }
+        ],
+        "helpCandidates": [
+          {
+            "tag": "select",
+            "role": null,
+            "text": "기본 문법 날짜 역순 D-Day · 기준일 없음 링크 · 상세 원본 표 빈 문서",
+            "ariaLabel": null,
+            "ariaPressed": null,
+            "ariaSelected": null,
+            "rect": {
+              "x": 718.67,
+              "y": 13,
+              "width": 138,
+              "height": 34.14
+            }
+          },
+          {
+            "tag": "button",
+            "role": null,
+            "text": "문법 ?",
+            "ariaLabel": null,
+            "ariaPressed": null,
+            "ariaSelected": null,
+            "rect": {
+              "x": 870.67,
+              "y": 13.8,
+              "width": 56.58,
+              "height": 32
+            }
+          },
+          {
+            "tag": "button",
+            "role": null,
+            "text": "설명 ?",
+            "ariaLabel": "캘린더 설명 보기",
+            "ariaPressed": null,
+            "ariaSelected": null,
+            "rect": {
+              "x": 20,
+              "y": 497.63,
+              "width": 236.25,
+              "height": 26
+            }
+          },
+          {
+            "tag": "button",
+            "role": null,
+            "text": "설명 ?",
+            "ariaLabel": "체크/할 일 설명 보기",
+            "ariaPressed": null,
+            "ariaSelected": null,
+            "rect": {
+              "x": 264.25,
+              "y": 497.63,
+              "width": 236.25,
+              "height": 26
+            }
+          },
+          {
+            "tag": "button",
+            "role": null,
+            "text": "설명 ?",
+            "ariaLabel": "표/엑셀 설명 보기",
+            "ariaPressed": null,
+            "ariaSelected": null,
+            "rect": {
+              "x": 508.5,
+              "y": 497.63,
+              "width": 236.25,
+              "height": 26
+            }
+          },
+          {
+            "tag": "button",
+            "role": null,
+            "text": "설명 ?",
+            "ariaLabel": "텍스트 설명 보기",
+            "ariaPressed": null,
+            "ariaSelected": null,
+            "rect": {
+              "x": 752.75,
+              "y": 497.63,
+              "width": 236.25,
+              "height": 26
+            }
+          }
+        ],
+        "visibleDialogCount": 0
+      },
+      "resultStageInteraction": {
+        "controlFound": false,
+        "structure": null
+      },
+      "helpDisclosure": {
+        "triggerFound": true,
+        "triggerText": "문법 ?",
+        "openStructure": {
+          "document": {
+            "title": "",
+            "lang": "",
+            "scrollWidth": 1024,
+            "clientWidth": 1024,
+            "scrollHeight": 768,
+            "clientHeight": 768,
+            "horizontalOverflow": false
+          },
+          "visibleLandmarks": [],
+          "largestRootRegions": [
+            {
+              "tag": "div",
+              "className": "",
+              "text": "FLOWME 텍스트 저작 예시 기본 문법 날짜 역순 D-Day · 기준일 없음 링크 · 상세 원본 표 빈 문서 문법 ? 데모 모드 구조를 만드는 줄 # Flow 제목 - 기준일: 2026-08-10 ## 단계 - [",
+              "rect": {
+                "x": 0,
+                "y": 0,
+                "width": 1024,
+                "height": 768
+              }
+            }
+          ],
+          "visibleControlCount": 16,
+          "stageCandidates": [
+            {
+              "tag": "button",
+              "role": null,
+              "text": "구조 수정",
+              "ariaLabel": null,
+              "ariaPressed": null,
+              "ariaSelected": null,
+              "rect": {
+                "x": 914.13,
+                "y": 329.39,
+                "width": 74.88,
+                "height": 30
+              }
+            }
+          ],
+          "resultRailCandidates": [
+            {
+              "tag": "button",
+              "role": null,
+              "text": "캘린더2",
+              "ariaLabel": null,
+              "ariaPressed": "false",
+              "ariaSelected": null,
+              "rect": {
+                "x": 20,
+                "y": 579.17,
+                "width": 236.25,
+                "height": 42
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "체크/할 일2",
+              "ariaLabel": null,
+              "ariaPressed": "true",
+              "ariaSelected": null,
+              "rect": {
+                "x": 264.25,
+                "y": 579.17,
+                "width": 236.25,
+                "height": 42
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "표/엑셀2",
+              "ariaLabel": null,
+              "ariaPressed": "false",
+              "ariaSelected": null,
+              "rect": {
+                "x": 508.5,
+                "y": 579.17,
+                "width": 236.25,
+                "height": 42
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "텍스트15",
+              "ariaLabel": null,
+              "ariaPressed": "false",
+              "ariaSelected": null,
+              "rect": {
+                "x": 752.75,
+                "y": 579.17,
+                "width": 236.25,
+                "height": 42
+              }
+            }
+          ],
+          "helpCandidates": [
+            {
+              "tag": "select",
+              "role": null,
+              "text": "기본 문법 날짜 역순 D-Day · 기준일 없음 링크 · 상세 원본 표 빈 문서",
+              "ariaLabel": null,
+              "ariaPressed": null,
+              "ariaSelected": null,
+              "rect": {
+                "x": 718.67,
+                "y": 13,
+                "width": 138,
+                "height": 34.14
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "문법 ?",
+              "ariaLabel": null,
+              "ariaPressed": null,
+              "ariaSelected": null,
+              "rect": {
+                "x": 870.67,
+                "y": 13.8,
+                "width": 56.58,
+                "height": 32
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "설명 ?",
+              "ariaLabel": "캘린더 설명 보기",
+              "ariaPressed": null,
+              "ariaSelected": null,
+              "rect": {
+                "x": 20,
+                "y": 625.17,
+                "width": 236.25,
+                "height": 26
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "설명 ?",
+              "ariaLabel": "체크/할 일 설명 보기",
+              "ariaPressed": null,
+              "ariaSelected": null,
+              "rect": {
+                "x": 264.25,
+                "y": 625.17,
+                "width": 236.25,
+                "height": 26
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "설명 ?",
+              "ariaLabel": "표/엑셀 설명 보기",
+              "ariaPressed": null,
+              "ariaSelected": null,
+              "rect": {
+                "x": 508.5,
+                "y": 625.17,
+                "width": 236.25,
+                "height": 26
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "설명 ?",
+              "ariaLabel": "텍스트 설명 보기",
+              "ariaPressed": null,
+              "ariaSelected": null,
+              "rect": {
+                "x": 752.75,
+                "y": 625.17,
+                "width": 236.25,
+                "height": 26
+              }
+            }
+          ],
+          "visibleDialogCount": 0
+        }
+      },
+      "runtime": {
+        "consoleErrors": [],
+        "pageErrors": [],
+        "failedRequests": [],
+        "badResponses": [],
+        "externalRequests": [
+          "https://unpkg.com/react@18.3.1/umd/react.production.min.js",
+          "https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js",
+          "https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap",
+          "https://fonts.gstatic.com/s/sourceserif4/v14/vEFF2_tTDB4M7-auWDN0ahZJW3IX2ih5nk3AucvUHf6kDXr4.woff2"
+        ],
+        "replacementCharacters": 0
+      },
+      "screenshot": "docs/content-audit/2026-08-04-flowme-text-authoring-v2-round2-results/round2-visual-evidence/claude-structure-1024x768.png"
+    },
+    {
+      "viewport": "390x844",
+      "structure": {
+        "document": {
+          "title": "",
+          "lang": "",
+          "scrollWidth": 390,
+          "clientWidth": 390,
+          "scrollHeight": 844,
+          "clientHeight": 844,
+          "horizontalOverflow": false
+        },
+        "visibleLandmarks": [],
+        "largestRootRegions": [
+          {
+            "tag": "div",
+            "className": "",
+            "text": "FLOWME 텍스트 저작 예시 기본 문법 날짜 역순 D-Day · 기준일 없음 링크 · 상세 원본 표 빈 문서 문법 ? 데모 모드 01 입력 02 항목 구조 03 결과 입력 원문 # 행사 준비 - 기준일: 2026-",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 390,
+              "height": 844
+            }
+          }
+        ],
+        "visibleControlCount": 10,
+        "stageCandidates": [
+          {
+            "tag": "button",
+            "role": "tab",
+            "text": "01 입력",
+            "ariaLabel": null,
+            "ariaPressed": null,
+            "ariaSelected": "true",
+            "rect": {
+              "x": 12,
+              "y": 111.83,
+              "width": 120.66,
+              "height": 40
+            }
+          },
+          {
+            "tag": "button",
+            "role": "tab",
+            "text": "02 항목 구조",
+            "ariaLabel": null,
+            "ariaPressed": null,
+            "ariaSelected": "false",
+            "rect": {
+              "x": 134.66,
+              "y": 111.83,
+              "width": 120.67,
+              "height": 40
+            }
+          },
+          {
+            "tag": "button",
+            "role": "tab",
+            "text": "03 결과",
+            "ariaLabel": null,
+            "ariaPressed": null,
+            "ariaSelected": "false",
+            "rect": {
+              "x": 257.33,
+              "y": 111.83,
+              "width": 120.67,
+              "height": 40
+            }
+          },
+          {
+            "tag": "button",
+            "role": null,
+            "text": "입력",
+            "ariaLabel": null,
+            "ariaPressed": null,
+            "ariaSelected": null,
+            "rect": {
+              "x": 12,
+              "y": 792,
+              "width": 155.5,
+              "height": 44
+            }
+          },
+          {
+            "tag": "button",
+            "role": null,
+            "text": "항목 구조 보기",
+            "ariaLabel": null,
+            "ariaPressed": null,
+            "ariaSelected": null,
+            "rect": {
+              "x": 175.5,
+              "y": 792,
+              "width": 202.5,
+              "height": 44
+            }
+          }
+        ],
+        "resultRailCandidates": [],
+        "helpCandidates": [
+          {
+            "tag": "select",
+            "role": null,
+            "text": "기본 문법 날짜 역순 D-Day · 기준일 없음 링크 · 상세 원본 표 빈 문서",
+            "ariaLabel": null,
+            "ariaPressed": null,
+            "ariaSelected": null,
+            "rect": {
+              "x": 20,
+              "y": 56.44,
+              "width": 138,
+              "height": 34.14
+            }
+          },
+          {
+            "tag": "button",
+            "role": null,
+            "text": "문법 ?",
+            "ariaLabel": null,
+            "ariaPressed": null,
+            "ariaSelected": null,
+            "rect": {
+              "x": 172,
+              "y": 57.23,
+              "width": 56.58,
+              "height": 32
+            }
+          }
+        ],
+        "visibleDialogCount": 0
+      },
+      "resultStageInteraction": {
+        "controlFound": true,
+        "controlText": "03 결과",
+        "structure": {
+          "document": {
+            "title": "",
+            "lang": "",
+            "scrollWidth": 390,
+            "clientWidth": 390,
+            "scrollHeight": 844,
+            "clientHeight": 844,
+            "horizontalOverflow": false
+          },
+          "visibleLandmarks": [],
+          "largestRootRegions": [
+            {
+              "tag": "div",
+              "className": "",
+              "text": "FLOWME 텍스트 저작 예시 기본 문법 날짜 역순 D-Day · 기준일 없음 링크 · 상세 원본 표 빈 문서 문법 ? 데모 모드 01 입력 02 항목 구조 03 결과 입력 원문 # 행사 준비 - 기준일: 2026-",
+              "rect": {
+                "x": 0,
+                "y": 0,
+                "width": 390,
+                "height": 844
+              }
+            }
+          ],
+          "visibleControlCount": 18,
+          "stageCandidates": [
+            {
+              "tag": "button",
+              "role": "tab",
+              "text": "01 입력",
+              "ariaLabel": null,
+              "ariaPressed": null,
+              "ariaSelected": "false",
+              "rect": {
+                "x": 12,
+                "y": 111.83,
+                "width": 120.66,
+                "height": 40
+              }
+            },
+            {
+              "tag": "button",
+              "role": "tab",
+              "text": "02 항목 구조",
+              "ariaLabel": null,
+              "ariaPressed": null,
+              "ariaSelected": "false",
+              "rect": {
+                "x": 134.66,
+                "y": 111.83,
+                "width": 120.67,
+                "height": 40
+              }
+            },
+            {
+              "tag": "button",
+              "role": "tab",
+              "text": "03 결과",
+              "ariaLabel": null,
+              "ariaPressed": null,
+              "ariaSelected": "true",
+              "rect": {
+                "x": 257.33,
+                "y": 111.83,
+                "width": 120.67,
+                "height": 40
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "항목 구조",
+              "ariaLabel": null,
+              "ariaPressed": null,
+              "ariaSelected": null,
+              "rect": {
+                "x": 12,
+                "y": 792,
+                "width": 155.5,
+                "height": 44
+              }
+            }
+          ],
+          "resultRailCandidates": [
+            {
+              "tag": "button",
+              "role": null,
+              "text": "캘린더2",
+              "ariaLabel": null,
+              "ariaPressed": "false",
+              "ariaSelected": null,
+              "rect": {
+                "x": 16,
+                "y": 195.88,
+                "width": 79.75,
+                "height": 42
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "체크/할 일2",
+              "ariaLabel": null,
+              "ariaPressed": "true",
+              "ariaSelected": null,
+              "rect": {
+                "x": 103.75,
+                "y": 195.88,
+                "width": 79.75,
+                "height": 42
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "표/엑셀2",
+              "ariaLabel": null,
+              "ariaPressed": "false",
+              "ariaSelected": null,
+              "rect": {
+                "x": 191.5,
+                "y": 195.88,
+                "width": 79.75,
+                "height": 42
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "텍스트15",
+              "ariaLabel": null,
+              "ariaPressed": "false",
+              "ariaSelected": null,
+              "rect": {
+                "x": 279.25,
+                "y": 195.88,
+                "width": 79.75,
+                "height": 42
+              }
+            }
+          ],
+          "helpCandidates": [
+            {
+              "tag": "select",
+              "role": null,
+              "text": "기본 문법 날짜 역순 D-Day · 기준일 없음 링크 · 상세 원본 표 빈 문서",
+              "ariaLabel": null,
+              "ariaPressed": null,
+              "ariaSelected": null,
+              "rect": {
+                "x": 20,
+                "y": 56.44,
+                "width": 138,
+                "height": 34.14
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "문법 ?",
+              "ariaLabel": null,
+              "ariaPressed": null,
+              "ariaSelected": null,
+              "rect": {
+                "x": 172,
+                "y": 57.23,
+                "width": 56.58,
+                "height": 32
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "설명 ?",
+              "ariaLabel": "캘린더 설명 보기",
+              "ariaPressed": null,
+              "ariaSelected": null,
+              "rect": {
+                "x": 16,
+                "y": 241.88,
+                "width": 79.75,
+                "height": 26
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "설명 ?",
+              "ariaLabel": "체크/할 일 설명 보기",
+              "ariaPressed": null,
+              "ariaSelected": null,
+              "rect": {
+                "x": 103.75,
+                "y": 241.88,
+                "width": 79.75,
+                "height": 26
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "설명 ?",
+              "ariaLabel": "표/엑셀 설명 보기",
+              "ariaPressed": null,
+              "ariaSelected": null,
+              "rect": {
+                "x": 191.5,
+                "y": 241.88,
+                "width": 79.75,
+                "height": 26
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "설명 ?",
+              "ariaLabel": "텍스트 설명 보기",
+              "ariaPressed": null,
+              "ariaSelected": null,
+              "rect": {
+                "x": 279.25,
+                "y": 241.88,
+                "width": 79.75,
+                "height": 26
+              }
+            }
+          ],
+          "visibleDialogCount": 0
+        }
+      },
+      "helpDisclosure": {
+        "triggerFound": true,
+        "triggerText": "문법 ?",
+        "openStructure": {
+          "document": {
+            "title": "",
+            "lang": "",
+            "scrollWidth": 390,
+            "clientWidth": 390,
+            "scrollHeight": 844,
+            "clientHeight": 844,
+            "horizontalOverflow": false
+          },
+          "visibleLandmarks": [],
+          "largestRootRegions": [
+            {
+              "tag": "div",
+              "className": "",
+              "text": "FLOWME 텍스트 저작 예시 기본 문법 날짜 역순 D-Day · 기준일 없음 링크 · 상세 원본 표 빈 문서 문법 ? 데모 모드 구조를 만드는 줄 # Flow 제목 - 기준일: 2026-08-10 ## 단계 - [",
+              "rect": {
+                "x": 0,
+                "y": 0,
+                "width": 390,
+                "height": 844
+              }
+            }
+          ],
+          "visibleControlCount": 18,
+          "stageCandidates": [
+            {
+              "tag": "button",
+              "role": "tab",
+              "text": "01 입력",
+              "ariaLabel": null,
+              "ariaPressed": null,
+              "ariaSelected": "false",
+              "rect": {
+                "x": 12,
+                "y": 632.88,
+                "width": 120.66,
+                "height": 40
+              }
+            },
+            {
+              "tag": "button",
+              "role": "tab",
+              "text": "02 항목 구조",
+              "ariaLabel": null,
+              "ariaPressed": null,
+              "ariaSelected": "false",
+              "rect": {
+                "x": 134.66,
+                "y": 632.88,
+                "width": 120.67,
+                "height": 40
+              }
+            },
+            {
+              "tag": "button",
+              "role": "tab",
+              "text": "03 결과",
+              "ariaLabel": null,
+              "ariaPressed": null,
+              "ariaSelected": "true",
+              "rect": {
+                "x": 257.33,
+                "y": 632.88,
+                "width": 120.67,
+                "height": 40
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "항목 구조",
+              "ariaLabel": null,
+              "ariaPressed": null,
+              "ariaSelected": null,
+              "rect": {
+                "x": 12,
+                "y": 792,
+                "width": 155.5,
+                "height": 44
+              }
+            }
+          ],
+          "resultRailCandidates": [
+            {
+              "tag": "button",
+              "role": null,
+              "text": "캘린더2",
+              "ariaLabel": null,
+              "ariaPressed": "false",
+              "ariaSelected": null,
+              "rect": {
+                "x": 16,
+                "y": 716.92,
+                "width": 79.75,
+                "height": 42
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "체크/할 일2",
+              "ariaLabel": null,
+              "ariaPressed": "true",
+              "ariaSelected": null,
+              "rect": {
+                "x": 103.75,
+                "y": 716.92,
+                "width": 79.75,
+                "height": 42
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "표/엑셀2",
+              "ariaLabel": null,
+              "ariaPressed": "false",
+              "ariaSelected": null,
+              "rect": {
+                "x": 191.5,
+                "y": 716.92,
+                "width": 79.75,
+                "height": 42
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "텍스트15",
+              "ariaLabel": null,
+              "ariaPressed": "false",
+              "ariaSelected": null,
+              "rect": {
+                "x": 279.25,
+                "y": 716.92,
+                "width": 79.75,
+                "height": 42
+              }
+            }
+          ],
+          "helpCandidates": [
+            {
+              "tag": "select",
+              "role": null,
+              "text": "기본 문법 날짜 역순 D-Day · 기준일 없음 링크 · 상세 원본 표 빈 문서",
+              "ariaLabel": null,
+              "ariaPressed": null,
+              "ariaSelected": null,
+              "rect": {
+                "x": 20,
+                "y": 56.44,
+                "width": 138,
+                "height": 34.14
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "문법 ?",
+              "ariaLabel": null,
+              "ariaPressed": null,
+              "ariaSelected": null,
+              "rect": {
+                "x": 172,
+                "y": 57.23,
+                "width": 56.58,
+                "height": 32
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "설명 ?",
+              "ariaLabel": "캘린더 설명 보기",
+              "ariaPressed": null,
+              "ariaSelected": null,
+              "rect": {
+                "x": 16,
+                "y": 762.92,
+                "width": 79.75,
+                "height": 26
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "설명 ?",
+              "ariaLabel": "체크/할 일 설명 보기",
+              "ariaPressed": null,
+              "ariaSelected": null,
+              "rect": {
+                "x": 103.75,
+                "y": 762.92,
+                "width": 79.75,
+                "height": 26
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "설명 ?",
+              "ariaLabel": "표/엑셀 설명 보기",
+              "ariaPressed": null,
+              "ariaSelected": null,
+              "rect": {
+                "x": 191.5,
+                "y": 762.92,
+                "width": 79.75,
+                "height": 26
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "설명 ?",
+              "ariaLabel": "텍스트 설명 보기",
+              "ariaPressed": null,
+              "ariaSelected": null,
+              "rect": {
+                "x": 279.25,
+                "y": 762.92,
+                "width": 79.75,
+                "height": 26
+              }
+            }
+          ],
+          "visibleDialogCount": 0
+        }
+      },
+      "runtime": {
+        "consoleErrors": [],
+        "pageErrors": [],
+        "failedRequests": [],
+        "badResponses": [],
+        "externalRequests": [
+          "https://unpkg.com/react@18.3.1/umd/react.production.min.js",
+          "https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js",
+          "https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap",
+          "https://fonts.gstatic.com/s/sourceserif4/v14/vEFF2_tTDB4M7-auWDN0ahZJW3IX2ih5nk3AucvUHf6kDXr4.woff2"
+        ],
+        "replacementCharacters": 0
+      },
+      "screenshot": "docs/content-audit/2026-08-04-flowme-text-authoring-v2-round2-results/round2-visual-evidence/claude-structure-390x844.png"
+    },
+    {
+      "viewport": "390x600",
+      "structure": {
+        "document": {
+          "title": "",
+          "lang": "",
+          "scrollWidth": 390,
+          "clientWidth": 390,
+          "scrollHeight": 600,
+          "clientHeight": 600,
+          "horizontalOverflow": false
+        },
+        "visibleLandmarks": [],
+        "largestRootRegions": [
+          {
+            "tag": "div",
+            "className": "",
+            "text": "FLOWME 텍스트 저작 예시 기본 문법 날짜 역순 D-Day · 기준일 없음 링크 · 상세 원본 표 빈 문서 문법 ? 데모 모드 01 입력 02 항목 구조 03 결과 입력 원문 # 행사 준비 - 기준일: 2026-",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 390,
+              "height": 600
+            }
+          }
+        ],
+        "visibleControlCount": 9,
+        "stageCandidates": [
+          {
+            "tag": "button",
+            "role": "tab",
+            "text": "01 입력",
+            "ariaLabel": null,
+            "ariaPressed": null,
+            "ariaSelected": "true",
+            "rect": {
+              "x": 12,
+              "y": 111.83,
+              "width": 120.66,
+              "height": 40
+            }
+          },
+          {
+            "tag": "button",
+            "role": "tab",
+            "text": "02 항목 구조",
+            "ariaLabel": null,
+            "ariaPressed": null,
+            "ariaSelected": "false",
+            "rect": {
+              "x": 134.66,
+              "y": 111.83,
+              "width": 120.67,
+              "height": 40
+            }
+          },
+          {
+            "tag": "button",
+            "role": "tab",
+            "text": "03 결과",
+            "ariaLabel": null,
+            "ariaPressed": null,
+            "ariaSelected": "false",
+            "rect": {
+              "x": 257.33,
+              "y": 111.83,
+              "width": 120.67,
+              "height": 40
+            }
+          },
+          {
+            "tag": "button",
+            "role": null,
+            "text": "입력",
+            "ariaLabel": null,
+            "ariaPressed": null,
+            "ariaSelected": null,
+            "rect": {
+              "x": 12,
+              "y": 548,
+              "width": 155.5,
+              "height": 44
+            }
+          },
+          {
+            "tag": "button",
+            "role": null,
+            "text": "항목 구조 보기",
+            "ariaLabel": null,
+            "ariaPressed": null,
+            "ariaSelected": null,
+            "rect": {
+              "x": 175.5,
+              "y": 548,
+              "width": 202.5,
+              "height": 44
+            }
+          }
+        ],
+        "resultRailCandidates": [],
+        "helpCandidates": [
+          {
+            "tag": "select",
+            "role": null,
+            "text": "기본 문법 날짜 역순 D-Day · 기준일 없음 링크 · 상세 원본 표 빈 문서",
+            "ariaLabel": null,
+            "ariaPressed": null,
+            "ariaSelected": null,
+            "rect": {
+              "x": 20,
+              "y": 56.44,
+              "width": 138,
+              "height": 34.14
+            }
+          },
+          {
+            "tag": "button",
+            "role": null,
+            "text": "문법 ?",
+            "ariaLabel": null,
+            "ariaPressed": null,
+            "ariaSelected": null,
+            "rect": {
+              "x": 172,
+              "y": 57.23,
+              "width": 56.58,
+              "height": 32
+            }
+          }
+        ],
+        "visibleDialogCount": 0
+      },
+      "resultStageInteraction": {
+        "controlFound": true,
+        "controlText": "03 결과",
+        "structure": {
+          "document": {
+            "title": "",
+            "lang": "",
+            "scrollWidth": 390,
+            "clientWidth": 390,
+            "scrollHeight": 600,
+            "clientHeight": 600,
+            "horizontalOverflow": false
+          },
+          "visibleLandmarks": [],
+          "largestRootRegions": [
+            {
+              "tag": "div",
+              "className": "",
+              "text": "FLOWME 텍스트 저작 예시 기본 문법 날짜 역순 D-Day · 기준일 없음 링크 · 상세 원본 표 빈 문서 문법 ? 데모 모드 01 입력 02 항목 구조 03 결과 입력 원문 # 행사 준비 - 기준일: 2026-",
+              "rect": {
+                "x": 0,
+                "y": 0,
+                "width": 390,
+                "height": 600
+              }
+            }
+          ],
+          "visibleControlCount": 18,
+          "stageCandidates": [
+            {
+              "tag": "button",
+              "role": "tab",
+              "text": "01 입력",
+              "ariaLabel": null,
+              "ariaPressed": null,
+              "ariaSelected": "false",
+              "rect": {
+                "x": 12,
+                "y": 111.83,
+                "width": 120.66,
+                "height": 40
+              }
+            },
+            {
+              "tag": "button",
+              "role": "tab",
+              "text": "02 항목 구조",
+              "ariaLabel": null,
+              "ariaPressed": null,
+              "ariaSelected": "false",
+              "rect": {
+                "x": 134.66,
+                "y": 111.83,
+                "width": 120.67,
+                "height": 40
+              }
+            },
+            {
+              "tag": "button",
+              "role": "tab",
+              "text": "03 결과",
+              "ariaLabel": null,
+              "ariaPressed": null,
+              "ariaSelected": "true",
+              "rect": {
+                "x": 257.33,
+                "y": 111.83,
+                "width": 120.67,
+                "height": 40
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "항목 구조",
+              "ariaLabel": null,
+              "ariaPressed": null,
+              "ariaSelected": null,
+              "rect": {
+                "x": 12,
+                "y": 548,
+                "width": 155.5,
+                "height": 44
+              }
+            }
+          ],
+          "resultRailCandidates": [
+            {
+              "tag": "button",
+              "role": null,
+              "text": "캘린더2",
+              "ariaLabel": null,
+              "ariaPressed": "false",
+              "ariaSelected": null,
+              "rect": {
+                "x": 16,
+                "y": 195.88,
+                "width": 79.75,
+                "height": 42
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "체크/할 일2",
+              "ariaLabel": null,
+              "ariaPressed": "true",
+              "ariaSelected": null,
+              "rect": {
+                "x": 103.75,
+                "y": 195.88,
+                "width": 79.75,
+                "height": 42
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "표/엑셀2",
+              "ariaLabel": null,
+              "ariaPressed": "false",
+              "ariaSelected": null,
+              "rect": {
+                "x": 191.5,
+                "y": 195.88,
+                "width": 79.75,
+                "height": 42
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "텍스트15",
+              "ariaLabel": null,
+              "ariaPressed": "false",
+              "ariaSelected": null,
+              "rect": {
+                "x": 279.25,
+                "y": 195.88,
+                "width": 79.75,
+                "height": 42
+              }
+            }
+          ],
+          "helpCandidates": [
+            {
+              "tag": "select",
+              "role": null,
+              "text": "기본 문법 날짜 역순 D-Day · 기준일 없음 링크 · 상세 원본 표 빈 문서",
+              "ariaLabel": null,
+              "ariaPressed": null,
+              "ariaSelected": null,
+              "rect": {
+                "x": 20,
+                "y": 56.44,
+                "width": 138,
+                "height": 34.14
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "문법 ?",
+              "ariaLabel": null,
+              "ariaPressed": null,
+              "ariaSelected": null,
+              "rect": {
+                "x": 172,
+                "y": 57.23,
+                "width": 56.58,
+                "height": 32
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "설명 ?",
+              "ariaLabel": "캘린더 설명 보기",
+              "ariaPressed": null,
+              "ariaSelected": null,
+              "rect": {
+                "x": 16,
+                "y": 241.88,
+                "width": 79.75,
+                "height": 26
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "설명 ?",
+              "ariaLabel": "체크/할 일 설명 보기",
+              "ariaPressed": null,
+              "ariaSelected": null,
+              "rect": {
+                "x": 103.75,
+                "y": 241.88,
+                "width": 79.75,
+                "height": 26
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "설명 ?",
+              "ariaLabel": "표/엑셀 설명 보기",
+              "ariaPressed": null,
+              "ariaSelected": null,
+              "rect": {
+                "x": 191.5,
+                "y": 241.88,
+                "width": 79.75,
+                "height": 26
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "설명 ?",
+              "ariaLabel": "텍스트 설명 보기",
+              "ariaPressed": null,
+              "ariaSelected": null,
+              "rect": {
+                "x": 279.25,
+                "y": 241.88,
+                "width": 79.75,
+                "height": 26
+              }
+            }
+          ],
+          "visibleDialogCount": 0
+        }
+      },
+      "helpDisclosure": {
+        "triggerFound": true,
+        "triggerText": "문법 ?",
+        "openStructure": {
+          "document": {
+            "title": "",
+            "lang": "",
+            "scrollWidth": 390,
+            "clientWidth": 390,
+            "scrollHeight": 600,
+            "clientHeight": 600,
+            "horizontalOverflow": false
+          },
+          "visibleLandmarks": [],
+          "largestRootRegions": [
+            {
+              "tag": "div",
+              "className": "",
+              "text": "FLOWME 텍스트 저작 예시 기본 문법 날짜 역순 D-Day · 기준일 없음 링크 · 상세 원본 표 빈 문서 문법 ? 데모 모드 구조를 만드는 줄 # Flow 제목 - 기준일: 2026-08-10 ## 단계 - [",
+              "rect": {
+                "x": 0,
+                "y": 0,
+                "width": 390,
+                "height": 600
+              }
+            }
+          ],
+          "visibleControlCount": 3,
+          "stageCandidates": [],
+          "resultRailCandidates": [],
+          "helpCandidates": [
+            {
+              "tag": "select",
+              "role": null,
+              "text": "기본 문법 날짜 역순 D-Day · 기준일 없음 링크 · 상세 원본 표 빈 문서",
+              "ariaLabel": null,
+              "ariaPressed": null,
+              "ariaSelected": null,
+              "rect": {
+                "x": 20,
+                "y": 56.44,
+                "width": 138,
+                "height": 34.14
+              }
+            },
+            {
+              "tag": "button",
+              "role": null,
+              "text": "문법 ?",
+              "ariaLabel": null,
+              "ariaPressed": null,
+              "ariaSelected": null,
+              "rect": {
+                "x": 172,
+                "y": 57.23,
+                "width": 56.58,
+                "height": 32
+              }
+            }
+          ],
+          "visibleDialogCount": 0
+        }
+      },
+      "runtime": {
+        "consoleErrors": [],
+        "pageErrors": [],
+        "failedRequests": [],
+        "badResponses": [],
+        "externalRequests": [
+          "https://unpkg.com/react@18.3.1/umd/react.production.min.js",
+          "https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js",
+          "https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap",
+          "https://fonts.gstatic.com/s/sourceserif4/v14/vEFF2_tTDB4M7-auWDN0ahZJW3IX2ih5nk3AucvUHf6kDXr4.woff2"
+        ],
+        "replacementCharacters": 0
+      },
+      "screenshot": "docs/content-audit/2026-08-04-flowme-text-authoring-v2-round2-results/round2-visual-evidence/claude-structure-390x600.png"
+    }
+  ]
+}

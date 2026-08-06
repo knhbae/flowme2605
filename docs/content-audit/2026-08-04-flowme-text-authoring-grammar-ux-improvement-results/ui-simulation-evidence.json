@@ -1,0 +1,165 @@
+{
+  "schemaVersion": "flowme-text-authoring-ui-simulation-v2",
+  "executedAt": "2026-08-04T09:42:55.939Z",
+  "browser": "150.0.7871.184",
+  "routeUrl": "http://127.0.0.1:3104/flows/new",
+  "routeQaUrl": "http://127.0.0.1:3104/flows/new?authoringQa=1",
+  "standaloneUrl": "http://127.0.0.1:4178/docs/content-audit/2026-08-04-flowme-text-authoring-grammar-ux-improvement-results/flowme-text-authoring-v2-test.html",
+  "standaloneQaUrl": "http://127.0.0.1:4178/docs/content-audit/2026-08-04-flowme-text-authoring-grammar-ux-improvement-results/flowme-text-authoring-v2-test.html?authoringQa=1",
+  "viewports": [
+    "1440x900",
+    "1024x768",
+    "390x844",
+    "390x600",
+    "360x640",
+    "844x390",
+    "720x450"
+  ],
+  "commands": [
+    "npm.cmd run build",
+    "npm.cmd run build:text-authoring-html",
+    "npx.cmd tsx scripts/content-audit/capture-text-authoring-grammar-ui.ts"
+  ],
+  "checks": [
+    {
+      "id": "U01",
+      "target": "both",
+      "viewport": "1440x900",
+      "action": "항목 구조 기본 상태와 구조 수정 dialog 확인",
+      "expected": "항목 구조는 읽기 요약 · 수정 도구는 구조 수정 dialog 안에서만 표시 · route/standalone 동일",
+      "observed": "{\"route\":{\"initial\":{\"heading\":\"항목 구조\",\"itemCount\":3,\"editorCount\":0,\"inlineToolbarCount\":0,\"threePane\":true,\"noHorizontalOverflow\":true},\"dialog\":{\"title\":\"구조 수정\",\"selectedItem\":1,\"toolbarCount\":1,\"moveUp\":1,\"merge\":1,\"roleSelect\":1}},\"standalone\":{\"initial\":{\"heading\":\"항목 구조\",\"itemCount\":3,\"editorCount\":0,\"inlineToolbarCount\":0,\"threePane\":true,\"noHorizontalOverflow\":true},\"dialog\":{\"title\":\"구조 수정\",\"selectedItem\":1,\"toolbarCount\":1,\"moveUp\":1,\"merge\":1,\"roleSelect\":1}},\"parity\":true}",
+      "passed": true
+    },
+    {
+      "id": "U02",
+      "target": "both",
+      "viewport": "1440x900 · 390x844",
+      "action": "? 도움말을 키보드로 열고 Escape로 닫기",
+      "expected": "긴 설명은 기본 숨김 · Enter로 열림 · Escape로 닫힘 · focus 유지 · viewport 안에 표시",
+      "observed": "{\"desktop\":{\"syntax\":{\"opened\":\"true\",\"insideViewport\":true,\"closed\":\"false\",\"focusReturned\":true},\"result\":{\"opened\":\"true\",\"insideViewport\":true,\"closed\":\"false\",\"focusReturned\":true},\"noHorizontalOverflow\":true},\"routeMobile\":{\"syntax\":{\"opened\":\"true\",\"insideViewport\":true,\"closed\":\"false\",\"focusReturned\":true},\"result\":{\"opened\":\"true\",\"insideViewport\":true,\"closed\":\"false\",\"focusReturned\":true},\"noHorizontalOverflow\":true},\"standaloneMobile\":{\"syntax\":{\"opened\":\"true\",\"insideViewport\":true,\"closed\":\"false\",\"focusReturned\":true},\"result\":{\"opened\":\"true\",\"insideViewport\":true,\"closed\":\"false\",\"focusReturned\":true},\"noHorizontalOverflow\":true},\"parity\":true}",
+      "passed": true
+    },
+    {
+      "id": "U03",
+      "target": "route",
+      "viewport": "390x844",
+      "action": "입력·구조·결과 stage 끝까지 스크롤",
+      "expected": "각 stage 마지막 요소와 하단 행동 도달 · footer 겹침/가로 overflow/scroll trap 0",
+      "observed": "{\"viewport\":\"390x844\",\"stages\":[{\"stage\":\"input\",\"scrollTop\":0,\"maxScrollTop\":0,\"lastTargetAboveFooter\":true,\"primaryText\":\"구조 확인\",\"noHorizontalOverflow\":true,\"shellScrollTop\":0},{\"stage\":\"structure\",\"scrollTop\":0,\"maxScrollTop\":0,\"lastTargetAboveFooter\":true,\"primaryText\":\"결과 보기 · 3개\",\"noHorizontalOverflow\":true,\"shellScrollTop\":0},{\"stage\":\"result\",\"scrollTop\":942,\"maxScrollTop\":942,\"lastTargetAboveFooter\":true,\"primaryText\":\"개인 초안 저장 · 3개\",\"noHorizontalOverflow\":true,\"shellScrollTop\":0}]}",
+      "passed": true
+    },
+    {
+      "id": "U04",
+      "target": "route",
+      "viewport": "390x600 · 360x640",
+      "action": "짧은 모바일 화면의 세 stage와 마지막 행동 확인",
+      "expected": "두 viewport 모두 stage 끝 도달 · 네 결과 슬롯/저장 행동 접근 · footer 겹침/문구 잘림/overflow 0",
+      "observed": "{\"viewports\":[{\"viewport\":\"390x600\",\"stages\":[{\"stage\":\"input\",\"scrollTop\":207,\"maxScrollTop\":207,\"lastTargetAboveFooter\":true,\"primaryText\":\"구조 확인\",\"noHorizontalOverflow\":true,\"shellScrollTop\":0},{\"stage\":\"structure\",\"scrollTop\":3,\"maxScrollTop\":3,\"lastTargetAboveFooter\":true,\"primaryText\":\"결과 보기 · 3개\",\"noHorizontalOverflow\":true,\"shellScrollTop\":0},{\"stage\":\"result\",\"scrollTop\":1158,\"maxScrollTop\":1158,\"lastTargetAboveFooter\":true,\"primaryText\":\"개인 초안 저장 · 3개\",\"noHorizontalOverflow\":true,\"shellScrollTop\":0}]},{\"viewport\":\"360x640\",\"stages\":[{\"stage\":\"input\",\"scrollTop\":167,\"maxScrollTop\":167,\"lastTargetAboveFooter\":true,\"primaryText\":\"구조 확인\",\"noHorizontalOverflow\":true,\"shellScrollTop\":0},{\"stage\":\"structure\",\"scrollTop\":0,\"maxScrollTop\":0,\"lastTargetAboveFooter\":true,\"primaryText\":\"결과 보기 · 3개\",\"noHorizontalOverflow\":true,\"shellScrollTop\":0},{\"stage\":\"result\",\"scrollTop\":1129,\"maxScrollTop\":1129,\"lastTargetAboveFooter\":true,\"primaryText\":\"개인 초안 저장 · 3개\",\"noHorizontalOverflow\":true,\"shellScrollTop\":0}]}]}",
+      "passed": true
+    },
+    {
+      "id": "U05",
+      "target": "route",
+      "viewport": "844x390",
+      "action": "가로 모바일에서 세 stage와 마지막 행동 확인",
+      "expected": "탭·본문 겹침 0 · 세로 스크롤로 마지막 요소 도달 · 가로 overflow/footer 겹침 0",
+      "observed": "{\"viewport\":\"844x390\",\"stages\":[{\"stage\":\"input\",\"scrollTop\":521,\"maxScrollTop\":521,\"lastTargetAboveFooter\":true,\"primaryText\":\"구조 확인\",\"noHorizontalOverflow\":true,\"shellScrollTop\":0},{\"stage\":\"structure\",\"scrollTop\":180,\"maxScrollTop\":180,\"lastTargetAboveFooter\":true,\"primaryText\":\"결과 보기 · 3개\",\"noHorizontalOverflow\":true,\"shellScrollTop\":0},{\"stage\":\"result\",\"scrollTop\":1240,\"maxScrollTop\":1240,\"lastTargetAboveFooter\":true,\"primaryText\":\"개인 초안 저장 · 3개\",\"noHorizontalOverflow\":true,\"shellScrollTop\":0}]}",
+      "passed": true
+    },
+    {
+      "id": "U06",
+      "target": "both",
+      "viewport": "1440x900",
+      "action": "제목·Item·날짜·Markdown 링크를 저장 없이 순차 수정",
+      "expected": "구조와 결과 즉시 반영 · focus/cursor 유지 · 고정 결과 슬롯 geometry 이동 0 · route/standalone 동일",
+      "observed": "{\"route\":{\"title\":\"실시간 반영 확인\",\"itemCount\":4,\"calendarCount\":3,\"liveRowText\":\"2 실시간 단계 실시간 반영 항목 수정 날짜 2026-08-06 설명 일정 원문: 2026-08-06 날짜: 2026-08-06\",\"linkHref\":\"https://example.com/live\",\"focusAndCursor\":{\"focused\":true,\"selectionStart\":551,\"length\":551},\"geometryStable\":true,\"slotIds\":[\"ta-authoring-result-slot-calendar\",\"ta-authoring-result-slot-todo\",\"ta-authoring-result-slot-sheet\",\"ta-authoring-result-slot-memo\"]},\"standalone\":{\"title\":\"실시간 반영 확인\",\"itemCount\":4,\"calendarCount\":3,\"liveRowText\":\"2 실시간 단계 실시간 반영 항목 수정 날짜 2026-08-06 설명 일정 원문: 2026-08-06 날짜: 2026-08-06\",\"linkHref\":\"https://example.com/live\",\"focusAndCursor\":{\"focused\":true,\"selectionStart\":551,\"length\":551},\"geometryStable\":true,\"slotIds\":[\"ta-authoring-result-slot-calendar\",\"ta-authoring-result-slot-todo\",\"ta-authoring-result-slot-sheet\",\"ta-authoring-result-slot-memo\"]},\"parity\":true}",
+      "passed": true
+    },
+    {
+      "id": "U07",
+      "target": "both",
+      "viewport": "1024x768",
+      "action": "제품 대표 5개와 QA 27개 카탈로그 경계 및 동일 예시 적용 비교",
+      "expected": "제품은 대표 5개만 · QA mode는 27개와 4개 그룹 · route/standalone semantic parity · tablet overflow 0",
+      "observed": "{\"route\":{\"product\":{\"countLabel\":\"대표 5개\",\"productOptions\":5,\"qaOptions\":0,\"internalQaLabel\":0,\"twoPane\":true,\"noHorizontalOverflow\":true,\"semantic\":{\"title\":\"제목입니다.\",\"itemTitles\":[\"첫 번째 항목입니다.\",\"두 번째 항목입니다.\",\"날짜 없는 항목입니다.\"],\"resultRows\":3,\"preflight\":3,\"resultKind\":\"todo\",\"slots\":[{\"id\":\"ta-authoring-result-slot-calendar\",\"eligible\":\"true\",\"selected\":\"false\"},{\"id\":\"ta-authoring-result-slot-todo\",\"eligible\":\"true\",\"selected\":\"true\"},{\"id\":\"ta-authoring-result-slot-sheet\",\"eligible\":\"true\",\"selected\":\"false\"},{\"id\":\"ta-authoring-result-slot-memo\",\"eligible\":\"true\",\"selected\":\"false\"}]}},\"qa\":{\"countLabel\":\"QA 전체 27개\",\"productOptions\":5,\"qaOptions\":27,\"groups\":{\"existing\":8,\"condition\":8,\"compatibility\":6,\"error\":5},\"internalQaLabel\":1,\"twoPane\":true,\"noHorizontalOverflow\":true},\"applied\":{\"title\":\"상대 날짜 · 8월 기준일 적용\",\"itemTitles\":[\"장소 확인\",\"최종 확인\"],\"resultRows\":2,\"preflight\":2,\"resultKind\":\"calendar\",\"slots\":[{\"id\":\"ta-authoring-result-slot-calendar\",\"eligible\":\"true\",\"selected\":\"true\"},{\"id\":\"ta-authoring-result-slot-todo\",\"eligible\":\"true\",\"selected\":\"false\"},{\"id\":\"ta-authoring-result-slot-sheet\",\"eligible\":\"true\",\"selected\":\"false\"},{\"id\":\"ta-authoring-result-slot-memo\",\"eligible\":\"true\",\"selected\":\"false\"}]}},\"standalone\":{\"product\":{\"countLabel\":\"대표 5개\",\"productOptions\":5,\"qaOptions\":0,\"internalQaLabel\":0,\"twoPane\":true,\"noHorizontalOverflow\":true,\"semantic\":{\"title\":\"제목입니다.\",\"itemTitles\":[\"첫 번째 항목입니다.\",\"두 번째 항목입니다.\",\"날짜 없는 항목입니다.\"],\"resultRows\":3,\"preflight\":3,\"resultKind\":\"todo\",\"slots\":[{\"id\":\"ta-authoring-result-slot-calendar\",\"eligible\":\"true\",\"selected\":\"false\"},{\"id\":\"ta-authoring-result-slot-todo\",\"eligible\":\"true\",\"selected\":\"true\"},{\"id\":\"ta-authoring-result-slot-sheet\",\"eligible\":\"true\",\"selected\":\"false\"},{\"id\":\"ta-authoring-result-slot-memo\",\"eligible\":\"true\",\"selected\":\"false\"}]}},\"qa\":{\"countLabel\":\"QA 전체 27개\",\"productOptions\":5,\"qaOptions\":27,\"groups\":{\"existing\":8,\"condition\":8,\"compatibility\":6,\"error\":5},\"internalQaLabel\":1,\"twoPane\":true,\"noHorizontalOverflow\":true},\"applied\":{\"title\":\"상대 날짜 · 8월 기준일 적용\",\"itemTitles\":[\"장소 확인\",\"최종 확인\"],\"resultRows\":2,\"preflight\":2,\"resultKind\":\"calendar\",\"slots\":[{\"id\":\"ta-authoring-result-slot-calendar\",\"eligible\":\"true\",\"selected\":\"true\"},{\"id\":\"ta-authoring-result-slot-todo\",\"eligible\":\"true\",\"selected\":\"false\"},{\"id\":\"ta-authoring-result-slot-sheet\",\"eligible\":\"true\",\"selected\":\"false\"},{\"id\":\"ta-authoring-result-slot-memo\",\"eligible\":\"true\",\"selected\":\"false\"}]}},\"parity\":true}",
+      "passed": true
+    },
+    {
+      "id": "U08",
+      "target": "both",
+      "viewport": "1440x900 · 1024x768 · 390x844 · 390x600 · 360x640 · 844x390 · 1440x900@200%(720x450 CSS)",
+      "action": "키보드 focus-visible과 런타임·문자·요청 오류 기본선 확인",
+      "expected": "주요 조작 focus-visible · keyboard stage/결과 조작 · console/page/request/replacement/external request 0",
+      "observed": "{\"focusResults\":[{\"target\":\"route\",\"stageFocus\":{\"active\":true,\"visible\":true,\"boxShadow\":\"rgb(255, 255, 255) 0px 0px 0px 0px inset, rgba(54, 84, 255, 0.24) 0px 0px 0px 2px inset, rgba(0, 0, 0, 0) 0px 0px 0px 0px\",\"outlineStyle\":\"solid\",\"outlineWidth\":\"2px\"},\"exampleFocus\":{\"active\":true,\"visible\":true,\"boxShadow\":\"rgb(255, 255, 255) 0px 0px 0px 0px, rgba(54, 84, 255, 0.24) 0px 0px 0px 2px, rgba(0, 0, 0, 0) 0px 0px 0px 0px\",\"outlineStyle\":\"solid\",\"outlineWidth\":\"2px\"},\"slotFocus\":{\"active\":true,\"visible\":true,\"boxShadow\":\"rgba(255, 255, 255, 0.52) 0px 0px 0px 0px, rgba(54, 84, 255, 0.125) 0px 0px 0px 1.03945px, rgba(0, 0, 0, 0) 0px 0px 0px 0px\",\"outlineStyle\":\"solid\",\"outlineWidth\":\"2px\"},\"primaryFocus\":{\"active\":true,\"visible\":true,\"boxShadow\":\"rgba(255, 255, 255, 0.73) 0px 0px 0px 0px, rgba(54, 84, 255, 0.173) 0px 0px 0px 1.45728px, rgba(0, 0, 0, 0) 0px 0px 0px 0px\",\"outlineStyle\":\"solid\",\"outlineWidth\":\"2px\"}},{\"target\":\"standalone\",\"stageFocus\":{\"active\":true,\"visible\":true,\"boxShadow\":\"rgba(255, 255, 255, 0.98) 0px 0px 0px 0px inset, rgba(54, 84, 255, 0.235) 0px 0px 0px 1.96313px inset, rgba(0, 0, 0, 0) 0px 0px 0px 0px\",\"outlineStyle\":\"solid\",\"outlineWidth\":\"2px\"},\"exampleFocus\":{\"active\":true,\"visible\":true,\"boxShadow\":\"rgb(255, 255, 255) 0px 0px 0px 0px, rgba(54, 84, 255, 0.24) 0px 0px 0px 2px, rgba(0, 0, 0, 0) 0px 0px 0px 0px\",\"outlineStyle\":\"solid\",\"outlineWidth\":\"2px\"},\"slotFocus\":{\"active\":true,\"visible\":true,\"boxShadow\":\"rgba(255, 255, 255, 0.04) 0px 0px 0px 0px, rgba(54, 84, 255, 0.008) 0px 0px 0px 0.0782157px, rgba(0, 0, 0, 0) 0px 0px 0px 0px\",\"outlineStyle\":\"solid\",\"outlineWidth\":\"2px\"},\"primaryFocus\":{\"active\":true,\"visible\":true,\"boxShadow\":\"rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px\",\"outlineStyle\":\"solid\",\"outlineWidth\":\"2px\"}}],\"viewports\":[\"1440x900\",\"1024x768\",\"390x844\",\"390x600\",\"360x640\",\"844x390\",\"720x450\"],\"consoleErrors\":0,\"pageErrors\":0,\"failedRequests\":0,\"replacementCharacters\":0,\"externalRequests\":0}",
+      "passed": true
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "failedRequests": [],
+  "replacementCharacters": [],
+  "externalRequests": [],
+  "screenshots": [
+    {
+      "label": "Route 구조 수정 dialog",
+      "file": "ui-u01-structure-dialog-1440x900.png",
+      "viewport": "1440x900",
+      "checkId": "U01"
+    },
+    {
+      "label": "Route 모바일 도움말 닫힘 상태",
+      "file": "ui-u02-help-keyboard-390x844.png",
+      "viewport": "390x844",
+      "checkId": "U02"
+    },
+    {
+      "label": "Route 390x844 결과 하단",
+      "file": "ui-u03-stage-scroll-390x844.png",
+      "viewport": "390x844",
+      "checkId": "U03"
+    },
+    {
+      "label": "Route 390x600 결과 하단",
+      "file": "ui-u04-short-390x600.png",
+      "viewport": "390x600",
+      "checkId": "U04"
+    },
+    {
+      "label": "Route 360x640 결과 하단",
+      "file": "ui-u04-short-360x640.png",
+      "viewport": "360x640",
+      "checkId": "U04"
+    },
+    {
+      "label": "Route 가로 모바일 결과 하단",
+      "file": "ui-u05-landscape-844x390.png",
+      "viewport": "844x390",
+      "checkId": "U05"
+    },
+    {
+      "label": "Route 실시간 제목·Item·날짜·링크 반영",
+      "file": "ui-u06-live-reflection-1440x900.png",
+      "viewport": "1440x900",
+      "checkId": "U06"
+    },
+    {
+      "label": "Route QA 27개 카탈로그",
+      "file": "ui-u07-product-qa-boundary-1024x768.png",
+      "viewport": "1024x768",
+      "checkId": "U07"
+    },
+    {
+      "label": "Route 1440x900의 200% 확대 reflow 동등 화면",
+      "file": "ui-u08-zoom-200-equivalent-720x450.png",
+      "viewport": "720x450",
+      "checkId": "U08"
+    },
+    {
+      "label": "Standalone 런타임 기본선",
+      "file": "ui-u08-runtime-a11y-1440x900.png",
+      "viewport": "1440x900",
+      "checkId": "U08"
+    }
+  ],
+  "note": "자동화된 내부 브라우저 QA이며 사용자 관찰 검증이 아니다. route와 standalone parity, 여섯 viewport, keyboard·scroll·runtime 기본선을 U01~U08로 기록했다."
+}

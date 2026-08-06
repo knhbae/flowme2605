@@ -1,10 +1,10 @@
 # Roadmap
 
-**Last Updated:** 2026-07-29<br>
+**Last Updated:** 2026-08-04<br>
 **Current Version:** v0.1.0 (released product PoC)<br>
-**Current Validation Stage:** internal alpha / P35 production baseline / observed users 0<br>
+**Current Validation Stage:** internal alpha / P35 production baseline / Text Authoring v2 local implementation and internal QA complete<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** review P35 in production, then choose keep, one bounded correction, or at most one next product slice
+**Next Milestone:** owner chooses whether to integrate/publish the local Text Authoring v2 or authorize a separate observed-user study
 
 Human-facing control surface: [FlowMe current stage control board](./content-audit/2026-07-29-flowme-current-stage-control-board-ko.html).
 
@@ -38,12 +38,49 @@ representative state; pre-existing workspace normalization remains outside its
 scope. It changes no runtime, storage, or schema behavior, did not independently
 rerun the PR #162 smoke record, and creates no additional product gate.
 
-The text-authoring UX, projection/event corpus, full-corpus UI lab, vertical
-service benchmark, and research-to-product playbook are decision inputs. They
-do not create five parallel implementation programs. Text authoring remains a
-design-complete, implementation-unstarted candidate whose first possible slice
-is `TA-01`; it requires explicit owner promotion and is not automatically the
-next active gate.
+## Active Local Workstream: Text Authoring TA
+
+The non-AI [Text Authoring specification](./specs/2026-07-28-flowme-text-authoring-ux-v1/spec.md)
+is implemented locally on `D:\flowme2605\flow-text-authoring-ta`, branch
+`codex/text-authoring-ta-implementation-20260729`. The 2026-08-04 v2 delta
+closes grammar ownership, projection order, fixed result selection, detailed
+preview, and responsive-density gaps found in the preceding review.
+
+Canonical v2 uses root `- [ ]` Items and indented `  - 속성:` bullets. The
+parser reads prior v1 property lines, but writers emit v2 only. Unmarked prose,
+unknown properties, and unsupported nested checkboxes remain source-linked
+issues rather than invented Items. Raw `- 기준일:` owns relative-date
+resolution. Calendar/ICS sort by resolved date, while source, 체크/할 일,
+표/엑셀, and 텍스트 keep author order; source changes require an explicit
+same-Step operation with undo.
+
+The route keeps four result slots in one geometry, narrows Sheet eligibility,
+shows real table columns and links, separates raw and transformed Text output,
+and places advanced mapping controls behind the read-only `항목 구조` summary.
+Product UI exposes five examples; 27 compatibility/error fixtures remain in
+`?authoringQa=1`. The mobile stage panes scroll independently through their
+last action at 390×844, 390×600, 360×640, and 844×390.
+
+Current evidence is authoring `147 / 147`, full unit `694 / 694`, focused E2E
+`12`, v2 matrix `35 / 35`, browser QA `8 / 8`, and production build `18 / 18`.
+Console errors, page errors, failed requests, replacement characters, external
+requests, and target horizontal overflow are `0`. The standalone HTML is
+`2,090,370` bytes. See the [completion report](./content-audit/2026-08-04-flowme-text-authoring-grammar-ux-improvement-results/README.md).
+
+The current dependency audit is non-green with two transitive High entries in
+the unchanged `exceljs -> archiver -> minimatch/brace-expansion` graph. This
+task did not modify dependency or lock files and did not apply an unrelated
+automatic fix. Remediation plus regression is required before publication.
+
+This checkpoint is local and uncommitted. No push, PR, merge, new Preview, or
+production deployment was performed. The existing Preview is an older
+snapshot; P35 remains production truth. Automated tests and screenshots are
+internal QA, not observed-user validation. Integration/publication and a real
+user study therefore remain separate owner decisions.
+
+The projection/event corpus, full-corpus UI lab, vertical service benchmark, and
+research-to-product playbook remain decision inputs rather than parallel
+implementation programs.
 
 ## Released Baseline
 
@@ -310,15 +347,19 @@ Detailed scope: [Save, Personalize, Execute Journey Reset](./specs/2026-07-18-sa
 
 ## Operating Queue
 
-There is no active external-user gate. P35 is the canonical production baseline,
-and there is no active implementation or release-evidence program. External user
-observation stays outside the queue until the owner explicitly reopens it.
+P35 is the canonical production baseline. Text Authoring v2 is a completed
+local implementation/internal-QA checkpoint on a separate dirty branch. The
+recorded Preview is an older snapshot and is not evidence for v2. Commit, push,
+PR, merge, new Preview, production deploy, and observed-user research remain
+separate owner authorization states.
 
 | Lane | Owner | Work | Next checkpoint | Done when |
 | --- | --- | --- | --- | --- |
-| Active decision | Owner | P35 production review | Review the live three-destination frame, My Flow date groups, and first-entry behavior, then choose keep, bounded fix, or block | Decision and any exact route/viewport mismatch are explicit |
-| Next, gated | Owner | Promote at most one post-P35 slice | Choose `TA-01`, one evidence-backed correction, or no new implementation | One bounded scope is promoted; research shelves do not become parallel programs |
-| Research shelf | AI | Text authoring, projection/event, full-corpus UI, vertical benchmark, research-to-product evidence | Keep source, inference, runtime impact, and unverified external evidence separate | Decision inputs stay reproducible without claiming runtime delivery |
+| Completed local slice | AI | Text Authoring Grammar·Result UX v2 | Preserve v2 contract, scoped code, evidence separation, local storage, and rollback | Authoring `147 / 147`, repository unit `694 / 694`, matrix `35 / 35`, UI `8 / 8`, focused E2E `12`, build `18 / 18`, and Text Authoring-owned TypeScript diagnostics `0` remain coherent; repo-wide diagnostics remain `190` outside this lane |
+| Owner decision | Owner | Choose commit, push, PR, merge, new Preview, or production scope, if any | Authorize each external state explicitly | Every performed publish state has direct evidence |
+| Separate human evidence | Owner | Decide whether to open target-user Text Authoring sessions | Approve a protocol before recruitment | Internal QA is never relabeled as user validation |
+| Historical Preview | Owner-authorized on 2026-07-30 | Preserve the older Preview record without using it as v2 proof | Keep snapshot and production boundaries explicit | Older Preview remains distinct; P35 remains production |
+| Research shelf | AI | Projection/event, full-corpus UI, vertical benchmark, research-to-product evidence | Keep source, inference, runtime impact, and unverified external evidence separate | Decision inputs stay reproducible without claiming runtime delivery |
 | Completed evidence | AI | P35 literal-route hardening | Preserve the two non-fixture regressions without turning evidence work into a product program | Literal `/my` and the fresh one-Flow rollback case pass `2 / 2`; runtime, storage, schema, and observed-user state are unchanged |
 | Completed | AI | P35 implementation and release | Preserve the state router, three primary destinations, stable P34 data contracts, and evidence boundary | PR #161, merge `4a51b08`, CI/Vercel green, full E2E `405 / 405`; PR #162 records production smoke `6 / 6` without a linked raw artifact; observed users `0` |
 | Completed | AI | P34-00~08 implementation and release | Preserve P33 identities, storage, 24/5 no-auto-merge, and rollback boundary | PR #157, merge `98ede0f`, CI/Vercel green, audit `0`, full E2E `326 / 326`, production smoke green |
@@ -351,6 +392,14 @@ observation stays outside the queue until the owner explicitly reopens it.
 | Parallel human check | User | Real backup and restore | Restore one backup in another browser or device | Transfer result and friction are recorded |
 | Review shelf | User, non-blocking | Prompt Lab and recent strategy artifacts | Read when choosing the post-observation investment | Feedback is recorded without delaying P24 sessions |
 
+## Internal Review Gate
+
+This gate is not target-user validation and cannot be used as release evidence.
+
+| Gate | Current state | Pass condition |
+| --- | --- | --- |
+| Text Authoring v2 internal QA | Complete/pass locally | Authoring `147 / 147`, matrix `35 / 35`, UI `8 / 8`, focused E2E `12`, build `18 / 18`; no observed-user-validation claim |
+
 ## Human Validation Gates
 
 These gates cannot be closed by automated tests or simulated personas.
@@ -364,14 +413,12 @@ These gates cannot be closed by automated tests or simulated personas.
 
 ## Next Decision
 
-Review the production surface with the
-[P35 R13 evidence](./content-audit/2026-07-29-p35-r13-final-internal-gate/README.md),
-and answer one question: keep P35, request one bounded correction with an exact
-route/viewport/expected-versus-actual gap, or block it. Do not promote text
-authoring, another broad UX reset, a real AI/crawler backend, account persistence,
-creator/update pilot, direct integrations, permanent delete, or observed-user
-recruitment merely because automated gates are green. Promote at most one next
-slice only after the owner decision.
+The owner chooses whether any publish action is authorized and whether a
+separate target-user authoring study should begin. The 2026-08-04 internal QA
+checkpoint does not itself authorize commit, push, PR, merge, Preview,
+production deployment, direct integrations, or a user-validation claim. Nested
+Items, prose import-assist, recurrence expansion, My Flow integration, and
+external writes require separate specs and gates.
 
 ## Gated Backlog
 

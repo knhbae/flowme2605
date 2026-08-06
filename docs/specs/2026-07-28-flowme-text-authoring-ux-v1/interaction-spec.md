@@ -1,5 +1,9 @@
 # Interaction Spec
 
+> 2026-08-04 v2가 이 문서의 이전 가변 결과·inline 구조 편집 설명보다 우선한다.
+> 제품은 대표 예시 5개를 하나의 select로 보여 주고, 27개 fixture는
+> `?authoringQa=1`에만 둔다. 결과는 네 고정 슬롯이며 구조 편집은 별도 dialog다.
+
 ## Responsive composition
 
 ### 390x844
@@ -13,15 +17,16 @@
 - Input: composer와 source/import 상태
 - Structure: interpreted outline와 issue
 - Result: artifact와 save/export
-- Item edit는 full-height bottom sheet
+- Item edit와 구조 수정은 별도 dialog/sheet
 - 단계 이동 시 입력과 selection을 보존
 - sticky footer에는 현재 단계의 primary action 하나만 둔다.
+- 단계 navigation 아래의 단일 예시 select는 현재 단계를 바꾸지 않는다.
 
 ### 1024x768
 
 - 왼쪽 38%: input/source
 - 오른쪽 62%: structure 또는 result
-- contextual inspector는 오른쪽 drawer
+- contextual inspector와 구조 수정은 별도 drawer/dialog
 - phase switch는 compact segmented control
 - source detail은 접힘
 
@@ -39,35 +44,39 @@
 - paste와 typing을 구분하되 사용자에게 경로를 먼저 고르게 하지 않는다.
 - URL, Markdown, table 감지 결과를 작은 status row로 표시한다.
 - `표 가져오기`는 보조 icon+text action
-- example case selector는 평가 prototype에만 있으며 production primary UI가 아니다.
+- 제목은 즉시 반영하고, 보호되지 않은 원문은 짧은 debounce 뒤 현재 단계의
+  Structure와 Result에 자동 반영한다.
+- 상단 example select는 production의 보조 학습 UI다. 대표 예시 5개가 문법,
+  일반 메모, 상대 날짜, 표, source-backed 영상 목록의 실제 입력과 자연 artifact를
+  연결한다. QA 27개는 제품 화면에서 숨긴다.
+- example을 둘러보는 것만으로 draft/recovery를 만들지 않는다. 작성 중인 값을
+  바꾸려면 discard 확인을 거친다.
+- 저장했거나 구조를 직접 고친 document의 source 변경은 자동으로 덮어쓰지 않고
+  incoming compare state를 만든다.
 
 ## Structure row
 
 기본 anatomy:
 
 ```text
-[role icon] title
-source line indicator
-issue/count summary
+[ - [ ] ] title
+          indented property summary
+[exception role] source line / issue summary
 [more]
 ```
 
-직접 노출:
+기본 화면은 Step/Item 순서와 property summary를 읽기 전용으로 보여 준다.
+`구조 수정` dialog를 연 뒤에만 다음 control을 노출한다.
 
-- row 선택
-- drag handle 또는 keyboard reorder
-- include/exclude 상태
-
-more menu:
-
+- keyboard move up/down
 - 합치기
 - 나누기
-- 들여쓰기
-- 내어쓰기
-- Item/resource/guide 역할
+- Item/resource/guide 역할과 결과 포함 여부
 - 원래 해석으로 복구
 
 완료/실행 control은 authoring row에 두지 않는다.
+Item끼리의 그룹은 `## Step`으로 표현한다. 공백 두 칸 들여쓰기는 Item 아래
+설명·날짜·반복 같은 property의 소속을 나타낸다.
 
 ## Contextual editor
 
@@ -97,16 +106,19 @@ more menu:
 
 ## Artifact preview
 
-- primary artifact를 자동 선택한 이유와 count를 짧게 표시한다.
-- secondary는 실제 데이터가 있고 의미 있을 때만 제공한다.
+- `캘린더 | 체크/할 일 | 표/엑셀 | 텍스트`를 같은 순서와 geometry로 항상
+  표시한다.
+- 사용할 수 없는 슬롯은 제거하지 않고 disabled reason을 도움말로 제공한다.
+- 표/엑셀은 원본 표 또는 반복되는 의미 필드가 있을 때 실제 열·셀·URL을 보인다.
+- 텍스트는 원문 그대로와 정리된 TXT/Markdown을 구분한다.
 - switching 전에 loss summary를 보여 준다.
 - artifact switch는 canonical mapping을 바꾸지 않는다.
 
 예:
 
 ```text
-Todo · 5개 항목
-날짜가 있는 1개만 Calendar에서도 볼 수 있어요.
+체크/할 일 · 5개 항목
+캘린더 · 1개 / 표·엑셀 · 사용 불가 / 텍스트 · 5개
 ```
 
 ## Save paths

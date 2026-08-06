@@ -1,21 +1,72 @@
 {
   "schemaVersion": "flowme-text-authoring-contract-v1",
+  "status": "read_compatibility_only",
+  "supersededForWriteBy": "text-authoring-contract-v2.json",
+  "compatibilityBoundary": "기존 v1 초안, 대시 없는 들여쓴 속성, legacy 별칭을 비파괴로 읽기 위한 계약이다. 새 writer 출력의 정본이 아니다.",
   "decision": "adopt_hybrid_text_preview",
+  "implementationStatus": "local_complete_preview_deployed",
+  "localVerdict": "ready_for_three_party_internal_review",
   "observedUserCount": 0,
-  "claimBoundary": "Deterministic fixtures, screenshots, and agent reviews are not observed-user validation.",
+  "observedUserGate": "excluded_from_current_internal_poc",
+  "internalReviewGate": {
+    "reviewers": ["owner", "claude_code", "codex"],
+    "ownerCoreJourney": "pending",
+    "unresolvedBlockingHigh": "pending",
+    "decision": "pending"
+  },
+  "publishState": {
+    "committed": false,
+    "pushed": false,
+    "pullRequest": false,
+    "merged": false,
+    "deployed": true,
+    "deploymentTarget": "preview",
+    "previewDeployment": {
+      "provider": "vercel",
+      "project": "flowme/flowme2605",
+      "id": "dpl_737mvF8W3haX63f49fFPGu4UKNgG",
+      "url": "https://flowme2605-pjwmzoq0j-flowme.vercel.app",
+      "readyState": "READY",
+      "remoteBuild": "passed_18_of_18",
+      "deployedAt": "2026-07-30T17:29:49+09:00"
+    },
+    "productionChanged": false,
+    "productionDeploymentId": "dpl_FZMaMy7ZvQCLRg1HhHLqMzVYGWXV",
+    "productionBaseline": "P35"
+  },
+  "claimBoundary": "Owner, Claude Code, Codex, automated tests, screenshots, browser inspection, builds, and the READY Preview are internal PoC evidence, not observed-user validation, production deploy, or release evidence.",
   "document": {
     "requiredFields": [
+      "schemaVersion",
       "documentId",
       "ownership",
+      "title",
       "rawText",
       "inputKinds",
+      "primaryInputKind",
       "parseResult",
-      "revision"
+      "revision",
+      "revisionHistory",
+      "lifecycleStatus",
+      "createdAt",
+      "updatedAt"
+    ],
+    "optionalStateFields": [
+      "reviewGates",
+      "sourceState",
+      "forkedFrom",
+      "uiState"
     ],
     "ownershipValues": [
       "personal",
       "creator",
       "suggestion"
+    ],
+    "lifecycleValues": [
+      "draft",
+      "needs_review",
+      "previewed",
+      "archived"
     ],
     "inputKinds": [
       "plain_text",
@@ -55,41 +106,85 @@
     "change_role",
     "include",
     "exclude",
+    "classify_issue",
     "restore",
     "set_property",
+    "record_review_decision",
+    "reopen_review",
+    "stage_source_update",
+    "resolve_source_conflict",
+    "apply_source_update",
+    "reject_source_update",
     "undo"
   ],
+  "authoringGrammar": {
+    "version": "flowme-authoring-markdown-v1",
+    "structureBasis": "commonmark_gfm_subset",
+    "dateFormat": "YYYY-MM-DD",
+    "timeFormat": "HH:mm",
+    "relativeDateFormat": ["D-n", "D-Day", "D+n"],
+    "propertyShape": "two_space_indented_key_colon_value",
+    "linkShape": "[label](url)",
+    "titleOwnership": "title_field_and_first_h1_are_synchronized",
+    "writerPolicy": "canonical_labels_only",
+    "parserPolicy": "canonical_plus_legacy_aliases",
+    "unknownPropertyPolicy": "retain_source_and_create_issue",
+    "repeatPolicy": "preserve_definition_text_without_occurrence_or_rrule_generation",
+    "canonicalLabels": {
+      "detail": "설명",
+      "completion": "완료 기준",
+      "date": "날짜",
+      "relativeDate": "상대 날짜",
+      "anchor": "기준일",
+      "time": "시간",
+      "timezone": "시간대",
+      "duration": "소요 시간",
+      "recurrence": "반복",
+      "place": "장소",
+      "condition": "조건",
+      "resource": "자료",
+      "guide": "안내",
+      "caution": "주의",
+      "source": "출처"
+    }
+  },
   "readableLabels": {
-    "detail": ["자세히", "설명"],
-    "completion": ["완료 기준"],
+    "detail": ["자세히", "설명", "상세", "방법"],
+    "completion": ["완료", "완료 기준"],
     "date": ["날짜"],
+    "relativeDate": ["상대 날짜", "상대일"],
+    "anchor": ["기준일"],
     "time": ["시간"],
+    "timezone": ["시간대"],
     "place": ["장소"],
     "recurrence": ["반복"],
     "condition": ["조건"],
-    "duration": ["예상 시간"],
-    "resource": ["자료", "영상"],
-    "source": ["출처"],
-    "memo": ["메모"]
+    "duration": ["소요 시간", "예상 시간"],
+    "resource": ["자료", "링크", "영상"],
+    "guide": ["안내", "가이드"],
+    "caution": ["주의", "경고"],
+    "source": ["출처"]
   },
   "unsupportedPolicy": {
     "silentDrop": false,
     "retainRawText": true,
     "createIssue": true,
-    "allowedResolutions": [
-      "keep_as_text",
+    "allowedDecisions": [
+      "keep_source_only",
       "convert_to_item",
-      "convert_to_detail",
-      "convert_to_resource",
-      "exclude_from_draft"
-    ]
+      "hold"
+    ],
+    "heldCountsAsOutstanding": true
   },
   "artifactPolicy": {
     "primaryCount": 1,
     "secondaryMax": 2,
     "hideIneligible": true,
     "requireCountAndLossPreflight": true,
-    "undatedCalendarEvents": false
+    "undatedCalendarEvents": false,
+    "repeatTextPreserved": true,
+    "recurrenceOccurrencesGenerated": false,
+    "icsRruleGenerated": false
   },
   "ownershipRules": {
     "sourceMutable": false,
@@ -97,17 +192,162 @@
     "personalCanonicalImpact": "none",
     "completionOwnedBy": "execution_run",
     "occurrenceOwnedBy": "recurrence_occurrence",
-    "publicCorrectionPath": "correction_suggestion"
+    "publicCorrectionPath": "correction_suggestion",
+    "personalOnlyFork": {
+      "newDocumentIdRequired": true,
+      "newRevisionRequired": true,
+      "retainForkedFrom": true,
+      "preserveOriginalDocument": true
+    }
+  },
+  "reviewPolicy": {
+    "kinds": ["rights", "safety"],
+    "statuses": ["required", "evidence_recorded", "personal_only"],
+    "sourceWordingAloneCreatesGate": false,
+    "evidenceRecordedIsFlowMeApproval": false,
+    "localSaveAlwaysAllowed": true,
+    "outwardActions": [
+      "export_file",
+      "request_creator_review",
+      "submit_suggestion"
+    ],
+    "outwardBlockedStatuses": ["required", "personal_only"],
+    "persistThroughStorageAndReceipt": true
+  },
+  "sourceUpdatePolicy": {
+    "statuses": [
+      "current",
+      "source_updated",
+      "conflict_source_vs_user"
+    ],
+    "trigger": "explicit_reparse_of_saved_local_draft",
+    "externalWatcher": false,
+    "automaticMerge": false,
+    "matchBasis": ["stable_entity_id", "explicit"],
+    "forbiddenMatchBasis": ["title_similarity", "order", "fuzzy_text"],
+    "changeKinds": ["changed", "added", "removed"],
+    "compareFields": [
+      "title",
+      "detail",
+      "completion",
+      "schedule",
+      "resources",
+      "sources",
+      "guides",
+      "cautions",
+      "role",
+      "included",
+      "nesting",
+      "order",
+      "step_mapping"
+    ],
+    "resolutions": [
+      "keep_user",
+      "use_incoming",
+      "include_added",
+      "exclude_added",
+      "keep_previous",
+      "remove_removed"
+    ],
+    "retainActiveUntilApplyOrReject": true,
+    "persistOldIncomingAndOwnedValues": true,
+    "outwardActionsBlockedWhilePending": true
+  },
+  "receiptPolicy": {
+    "localDraftStorage": "local_only",
+    "includeReviewState": true,
+    "includeSourceState": true,
+    "exportReceiptAfterSuccessfulGenerationOnly": true,
+    "preflightReceiptParityRequired": true
   },
   "recovery": {
+    "storageKey": "flow:text-authoring:drafts:v1",
+    "localOnly": true,
     "persistRawText": true,
     "persistLatestMapping": true,
     "persistRevisionHistory": true,
+    "persistReviewAndSourceState": true,
     "restoreFocusTarget": true
+  },
+  "verification": {
+    "checkpointDate": "2026-07-31",
+    "authoringUnit": "90/90",
+    "repositoryPretest": "100/100",
+    "repositoryUnit": "594/594",
+    "repositoryTotal": "694/694",
+    "focusedE2E": "23/23_clean",
+    "legacyRollbackE2E": "2/2",
+    "productionBuild": "18/18",
+    "repoWideTsc": {
+      "exitCode": 2,
+      "diagnostics": 190,
+      "textAuthoringOwnedDiagnostics": 0
+    },
+    "eightCaseEndToEndEvidence": [
+      "input",
+      "mapping_or_canonical",
+      "artifact",
+      "browser_local_save_load",
+      "save_export_receipt_parity"
+    ],
+    "securityAuditThisHardening": "passed_0_vulnerabilities",
+    "standaloneHtmlRegenerationThisHardening": "passed_2023183_bytes",
+    "standaloneSmokeThisHardening": "passed_390x600_360x640_844x390"
+  },
+  "mvpPocInternalReviewGate": {
+    "date": "2026-07-30",
+    "hypothesisChain": [
+      "ordinary_text",
+      "source_preserved_flow",
+      "one_minimal_correction",
+      "local_save_reload_recovery",
+      "representative_plain_text_export"
+    ],
+    "reviewers": [
+      "owner",
+      "claude_code",
+      "codex"
+    ],
+    "sameBuildAndScopeRequired": true,
+    "preReviewP0": [
+      "bounded_save_and_revision_history_with_failure_preservation",
+      "same_step_adjacent_item_merge_only",
+      "unsupported_source_semantic_diff_fails_closed",
+      "text_authoring_owned_typescript_diagnostics_zero_plus_regressions"
+    ],
+    "excluded": [
+      "my_flow_integration",
+      "canonical_integration_or_migration",
+      "large_scale_file_decomposition",
+      "backend_or_cloud",
+      "production_deploy",
+      "all_export_format_expansion"
+    ],
+    "continueCandidate": {
+      "allThreeReviewRecordsExist": true,
+      "sameBuildAndScope": true,
+      "ownerCoreJourney": "pass",
+      "unresolvedInScopeBlockingHigh": 0
+    },
+    "decisionValues": [
+      "pending",
+      "continue",
+      "fix",
+      "stop"
+    ],
+    "decisionPolicy": {
+      "pending": "one_or_more_required_records_or_same_build_evidence_is_missing",
+      "continue": "continue_candidate_is_true",
+      "fix": "a_reproducible_in_scope_blocking_or_high_or_owner_journey_defect_remains",
+      "stop": "the_owner_rejects_the_core_hypothesis_or_approach"
+    },
+    "observedUserValidationExcluded": true,
+    "automatedOrAgentQaCountsAsObservedUserValidation": false
   },
   "migration": {
     "canonicalSchemaChangeRequiredForFirstSlice": false,
     "newNamespacedDraftStorage": true,
-    "existingStorageKeysChanged": false
+    "existingStorageKeysChanged": false,
+    "accountOrCloudPersistence": false
   }
 }

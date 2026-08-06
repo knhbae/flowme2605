@@ -1,0 +1,172 @@
+{
+  "schemaVersion": "flowme-text-authoring-ui-simulation-v1",
+  "executedAt": "2026-07-31T14:12:21.043Z",
+  "browser": "150.0.7871.184",
+  "routeUrl": "http://127.0.0.1:3104/flows/new",
+  "standaloneUrl": "http://127.0.0.1:4178/docs/content-audit/2026-07-29-flowme-text-authoring-ta-implementation/flowme-text-authoring-ta-test.html",
+  "commands": [
+    "npx.cmd playwright test tests/e2e/text-authoring.spec.ts",
+    "npx.cmd tsx scripts/content-audit/capture-text-authoring-grammar-ui.ts"
+  ],
+  "checks": [
+    {
+      "id": "SIM-01",
+      "target": "route",
+      "viewport": "1440x900",
+      "action": "기본 문법 예시 열기",
+      "expected": "simple 활성 · - [ ] 표식 3 · Item 3 · 결과 3 · preflight 3 · Item 중첩 조작 없음",
+      "observed": "simple=true · marker=3 · indentControl=0 · {\"title\":\"제목입니다.\",\"items\":3,\"resultRows\":3,\"preflight\":3,\"resultKind\":\"todo\"}",
+      "passed": true
+    },
+    {
+      "id": "SIM-02",
+      "target": "route",
+      "viewport": "1440x900",
+      "action": "원문 끝에 Item 한 줄 추가",
+      "expected": "해석 버튼 없이 Item·결과·preflight 4",
+      "observed": "Item 4 · 결과 4 · preflight 4 · example=false",
+      "passed": true
+    },
+    {
+      "id": "SIM-03",
+      "target": "route",
+      "viewport": "1440x900",
+      "action": "이사 → K-MOOC → Allblanc 예시 전환",
+      "expected": "각각 Calendar 27 · Sheet 14 · Calendar 7",
+      "observed": "이사 27 · K-MOOC 14 · Allblanc 7",
+      "passed": true
+    },
+    {
+      "id": "SIM-04",
+      "target": "route",
+      "viewport": "1440x900",
+      "action": "기본 예시의 Todo → Calendar → Memo 탭 전환",
+      "expected": "행 수 3 → 1 → 3, preflight도 동일",
+      "observed": "Todo 3 → Calendar 1 → Memo 3",
+      "passed": true
+    },
+    {
+      "id": "SIM-05",
+      "target": "route",
+      "viewport": "1440x900",
+      "action": "반복 경계 확인",
+      "expected": "매주 월요일 문구와 ICS RRULE 미지원 경계 표시",
+      "observed": "반복 설정 1개 · 반복 일정 파일은 아직 만들지 않음반복 정의 보존첫 번째 항목입니다. · 매주 월요일현재는 각 항목을 한 번만 미리보기·내보내며, 반복 일정(ICS RRULE)은 만들지 않습니다.",
+      "passed": true
+    },
+    {
+      "id": "SIM-06",
+      "target": "route",
+      "viewport": "1440x900",
+      "action": "날짜를 8월 3일로 변경",
+      "expected": "invalid_date 이슈 1 · Calendar 비활성",
+      "observed": "Issue 1 · Calendar 0",
+      "passed": true
+    },
+    {
+      "id": "SIM-07",
+      "target": "route",
+      "viewport": "1440x900",
+      "action": "날짜를 2026-08-03으로 수정",
+      "expected": "이슈 0 · Calendar 1 자동 활성",
+      "observed": "Issue 0 · Calendar 1",
+      "passed": true
+    },
+    {
+      "id": "SIM-08",
+      "target": "route",
+      "viewport": "390x600 · 360x640 · 844x390",
+      "action": "각 단계에서 pane 끝까지 스크롤",
+      "expected": "하단 도달 · 문서 가로 overflow 0",
+      "observed": "390x600=end · 360x640=end · 844x390=end · overflow 0",
+      "passed": true
+    },
+    {
+      "id": "SIM-09",
+      "target": "route",
+      "viewport": "1024x768",
+      "action": "2-pane 화면 확인",
+      "expected": "tablet two-pane 표시 · 가로 overflow 0",
+      "observed": "two-pane=true · overflow=false",
+      "passed": true
+    },
+    {
+      "id": "SIM-10",
+      "target": "both",
+      "viewport": "1440x900",
+      "action": "이사 예시 semantic snapshot 비교",
+      "expected": "route와 standalone의 제목·Item·결과·preflight 동일",
+      "observed": "{\"title\":\"이사 D-30 체크리스트\",\"items\":27,\"resultRows\":27,\"preflight\":27,\"resultKind\":\"calendar\"}",
+      "passed": true
+    },
+    {
+      "id": "SIM-11",
+      "target": "both",
+      "viewport": "1440x900",
+      "action": "검증 예시 27개 드롭다운과 기준일 예시 비교",
+      "expected": "4개 분류 8·8·6·5 · route와 standalone의 적용 결과 동일",
+      "observed": "{\"total\":27,\"groups\":{\"existing\":8,\"condition\":8,\"compatibility\":6,\"error\":5},\"applied\":{\"title\":\"상대 날짜 · 8월 기준일 적용\",\"anchor\":\"2026-08-10\",\"items\":2,\"preflight\":2}}",
+      "passed": true
+    },
+    {
+      "id": "SIM-12",
+      "target": "both",
+      "viewport": "390x600",
+      "action": "작은 물음표 도움말 열기·닫기",
+      "expected": "설명은 기본 화면에서 숨김 · 클릭 시 같은 칸 아래에 표시 · Escape로 닫힘 · 가로 넘침 없음",
+      "observed": "{\"syntaxBefore\":{\"expanded\":\"false\",\"panelCount\":0},\"syntaxOpen\":{\"expanded\":\"true\",\"hasGrammar\":true},\"syntaxAfterEscape\":{\"expanded\":\"false\",\"panelCount\":0},\"resultPanelBefore\":0,\"resultExpandedAfterEscape\":\"false\",\"resultHasBoundary\":true,\"noOverflow\":true}",
+      "passed": true
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "externalRequests": [],
+  "screenshots": [
+    {
+      "label": "Route 기본 문법",
+      "file": "ui-route-default-1440.png",
+      "viewport": "1440x900"
+    },
+    {
+      "label": "Route 실시간 4개 반영",
+      "file": "ui-route-live-reflection-1440.png",
+      "viewport": "1440x900"
+    },
+    {
+      "label": "Route 정리 메모 · 원문 보존 경계",
+      "file": "ui-route-structured-memo-1440.png",
+      "viewport": "1440x900"
+    },
+    {
+      "label": "Route 잘못된 날짜",
+      "file": "ui-route-invalid-date-1440.png",
+      "viewport": "1440x900"
+    },
+    {
+      "label": "Route 모바일 결과 하단",
+      "file": "ui-route-mobile-result-bottom-390x600.png",
+      "viewport": "390x600"
+    },
+    {
+      "label": "Standalone 이사 27개",
+      "file": "ui-standalone-moving-1440.png",
+      "viewport": "1440x900"
+    },
+    {
+      "label": "Route 27개 드롭다운 · 8월 기준일 적용",
+      "file": "ui-route-example-dropdown-1440.png",
+      "viewport": "1440x900"
+    },
+    {
+      "label": "Route 모바일 27개 드롭다운 · LibriVox 적용",
+      "file": "ui-route-example-dropdown-390x600.png",
+      "viewport": "390x600"
+    },
+    {
+      "label": "Route 모바일 문법 도움말 열림",
+      "file": "ui-route-help-open-390x600.png",
+      "viewport": "390x600"
+    }
+  ],
+  "note": "자동화된 내부 브라우저 QA이며 사용자 관찰 검증이 아니다. route와 standalone은 같은 TextAuthoringWorkspace의 의미 결과를 비교했다."
+}

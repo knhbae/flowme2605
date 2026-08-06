@@ -8,6 +8,12 @@ For the P22 repeated-use gate, use [the P22-00 three-round template](./2026-07-1
 
 Flow Lab also has an observed-session note intake panel that drafts a markdown note for the current export-first candidate routes. The same panel can download a moderator run sheet before the session. Save generated notes in this folder after the session; its downloaded note filenames follow the session-numbered pattern below.
 
+The 2026-08-04 Text Authoring v2 checkpoint does not use this folder. Its
+[completion report](../content-audit/2026-08-04-flowme-text-authoring-grammar-ux-improvement-results/README.md)
+contains automated tests, browser QA, and screenshots only; those records are
+not observed-user sessions. Use this folder only if the owner separately
+authorizes a real participant study and records the behavior with the template.
+
 ## Rules
 
 - Do not mark a route validated from one internal QA pass.

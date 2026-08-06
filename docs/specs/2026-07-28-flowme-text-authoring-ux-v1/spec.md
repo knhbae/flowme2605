@@ -1,11 +1,94 @@
 # FlowMe Text Authoring UX v1
 
 - 작성일: 2026-07-28
-- 문서 상태: design decision
-- 구현 상태: 미구현
+- 문서 상태: design decision + local implementation completion checkpoint
+- 구현 상태: `TA-01`부터 `TA-06`까지 로컬 구현 및 bounded
+  automated/browser gate green
 - 최종 선택: `adopt_hybrid_text_preview`
-- 앱 코드 변경: 없음
-- 관찰 사용자 수: 0
+- 앱 코드 변경: 전용 로컬 브랜치에만 있음; 미커밋·미게시
+- 사용자 관찰: 이번 MVP PoC 내부 게이트에서 제외
+
+> 이 문서는 전체 Text Authoring UX v1 설계를 보존한다. 현재 작성·내보내기 문법의
+> 정본은 [text-authoring-contract-v2.json](./text-authoring-contract-v2.json)이며,
+> [v1 계약](./text-authoring-contract-v1.json)은 기존 초안 읽기 호환 기준으로 남긴다.
+
+현재 구현은 이 설계의 로컬 implementation/readiness gate를 닫았지만 release나
+product validation은 아니다. deterministic contract, responsive shell, mapping
+correction과 issue decision, projection/export, ownership/review/source-update
+lifecycle이 구현됐다. 여덟 source-backed 사례 각각은
+`input -> mapping/canonical -> artifact -> browser-local save/load ->
+save/export receipt parity`를 검증한다.
+
+`TA-03`에서 parser issue는 `원문에만 남기기 / 할 일로 만들기 / 나중에 정하기`로
+분류한다. 원문에만 남기면 source/raw text를 보존하고 Item을 만들지 않으며, 할 일로
+만들면 source와 연결된 Item 하나를 만든다. 나중에 정하기는 해결 완료가 아니라
+outstanding 상태이므로 원래 blocking issue였다면 계속 저장·복구 가능한 blocker로
+남는다. 세 선택은 revision에 기록되고 undo할 수 있다.
+
+자동 테스트, 브라우저 검사, screenshot은 로컬 QA 증거이며 관찰 사용자 검증이 아니다.
+P35 production은 이 로컬 구현으로 변경되지 않았다.
+
+## 0A. 2026-08-04 Text Authoring v2 completion checkpoint
+
+아래 v2 delta가 이 문서의 기존 v1 화면·문법 설명보다 우선한다.
+
+- canonical Item은 root `- [ ]`, 속성은 `  - 속성: 값`이다. v1 속성은 읽기
+  호환으로만 남고 writer는 v2만 출력한다.
+- 표식 없는 prose, unknown property, nested checkbox는 원문과 issue로 보존하며
+  자동 Item으로 만들지 않는다.
+- raw `- 기준일: YYYY-MM-DD`만 상대 날짜를 계산한다. Calendar/ICS는 계산
+  날짜순, source·체크/할 일·표/엑셀·텍스트는 작성순이다. 원문 순서는 사용자의
+  명시적 same-Step block reorder와 undo로만 바뀐다.
+- 결과는 `캘린더 | 체크/할 일 | 표/엑셀 | 텍스트` 고정 슬롯이다. 표/엑셀은
+  원본 표 또는 두 Item 이상의 두 공통 의미 필드를 요구하며 실제 열·URL을 보인다.
+  텍스트는 raw source와 변환된 TXT/Markdown을 구분한다.
+- `항목 구조`는 읽기 전용으로 시작하고 고급 교정은 `구조 수정` dialog에 둔다.
+  제품 예시는 5개, 내부 QA fixture는 `?authoringQa=1`의 27개다.
+
+완료 증거는 authoring `147 / 147`, full unit `694 / 694`, focused E2E `12`,
+v2 matrix `35 / 35`, browser UI `8 / 8`, build `18 / 18`이다. 여섯 viewport의
+overflow와 console/page/request/replacement/external 오류 gate가 모두 green이다.
+[완료 보고](../../content-audit/2026-08-04-flowme-text-authoring-grammar-ux-improvement-results/README.md)를
+현재 로컬 판정의 정본으로 사용한다. commit/push/PR/merge/deploy와 관찰 사용자
+검증은 수행하지 않았다.
+
+## 0. 2026-07-30 MVP PoC three-party internal gate
+
+Text Authoring의 다음 단계는 전체 제품 통합이나 구조 리팩터링이 아니라, 아래 한 가지
+핵심 가설을 오너, Claude Code, Codex가 같은 범위에서 독립 검토하는 MVP PoC다.
+
+```text
+일반 텍스트 입력
+-> 원문을 보존한 Flow 구조 확인
+-> 필요한 곳만 최소 수정
+-> 브라우저 로컬 저장·새로고침 복구
+-> 대표 plain-text export
+```
+
+내부 검토 전에 닫아야 하는 P0는 다음 네 가지뿐이다.
+
+1. 저장 이력과 문서 revision을 bounded cap 안에 유지하고, 저장 실패 시 직전 저장값과
+   현재 편집 내용을 잃지 않는다.
+2. merge는 같은 Step 안의 인접 Item에만 허용하고 Step 경계를 넘으면 fail closed한다.
+3. source update가 아직 비교 계약에 없는 semantic field를 바꾸거나 저장된 staged
+   diff가 빠졌거나 불일치하면 일부만 조용히 적용하지 않고 전체 변경을 fail closed한다.
+4. Text Authoring 소유 경로 TypeScript diagnostics `0`과 기존 회귀를 유지한다.
+
+이번 PoC에서 제외하는 범위는 My Flow 통합, 기존 canonical 모델 통합·migration,
+대규모 파일 분해·전면 리팩터링, backend/cloud/account persistence, production deploy,
+모든 export 형식 확대다. 이 제외 범위는 내부 검토 중 제안이 나와도 자동으로 구현
+backlog가 되지 않으며, 핵심 가설과 직접 연결될 때만 `fix` 후보로 재검토한다.
+
+성공 후보 기준은 오너·Claude Code·Codex의 세 검토 기록이 같은 branch·HEAD·build
+ID와 범위로 모두 존재하고, 오너가
+입력 -> 구조 확인 -> 최소 수정 1회 -> 저장·reload 복구 -> 대표 plain-text export를
+직접 통과하며, 범위 내 미해결 Blocking/High가 `0`인 것이다. 이후 오너가 증거를
+바탕으로 `continue / fix / stop` 중 하나를 결정한다.
+
+실행 절차, reviewer prompt, 체크리스트와 rollup 정본은
+[MVP PoC 3자 내부 검토 키트](../../content-audit/2026-07-29-flowme-text-authoring-ta-implementation/mvp-poc-three-party-review-ko.md)다.
+실제 사용자 관찰은 이번 게이트에서 제외하며, 이 결과를 observed-user validation이나
+release evidence로 표현하지 않는다.
 
 ## 1. 사용자 약속
 
@@ -42,10 +125,10 @@ round-trip 교환 형식이지 필수 작성 언어가 아니다.
 - 빈 문서, 일반 메모, Markdown, TSV/표, URL 혼합 입력
 - 문단과 heading, checklist row, 표 행의 구조 감지
 - 원문 줄과 Flow/Step/Item 연결 표시
-- 합치기, 나누기, 들여쓰기, 내어쓰기, 순서 변경
+- 합치기, 나누기, 순서 변경
 - Item, resource, guide/caution 역할 수정
 - 제목, 상세, 완료 기준 수정
-- 선택적 날짜, 상대 날짜, 시간, 장소, 반복, 조건, 예상 시간
+- 선택적 날짜, 상대 날짜, 시간, 장소, 반복, 조건, 소요 시간
 - source-derived 값과 user-authored 값 구분
 - 개인 초안, 제작자 초안, correction suggestion 분기
 - primary artifact 1개와 의미 있는 secondary artifact 최대 2개
@@ -95,8 +178,10 @@ correction suggestion
 
 - 사용자 질문: 무엇을 Flow로 만들까?
 - 기본 노출: 하나의 composer, 가져온 파일/URL 요약, 작성 중 복구 상태
-- primary action: `구조 확인`
-- secondary: 표 가져오기, 예시 선택
+- primary action: `구조 확인`; 새 source/text는 짧은 debounce 뒤 현재 단계에서
+  Structure와 Result에도 자동 반영
+- secondary: 상단의 `문법 전체 / 여행 메모 -> 할 일 / 이사 D-30 -> 캘린더 /
+  K-MOOC -> 시트 / 영상 7편 -> 캘린더` 예시 전환
 - 숨김: parser 이름, taxonomy enum, backend 필드
 
 ### 5.2 Structure Review
@@ -104,7 +189,10 @@ correction suggestion
 - 사용자 질문: FlowMe가 내용을 어떻게 나눴나?
 - 기본 노출: 원문 줄과 Step/Item 연결, unresolved 표시
 - primary action: `결과 보기`
-- contextual actions: 합치기, 나누기, 들여쓰기, 역할 변경
+- contextual actions: 합치기, 나누기, 순서 변경, 역할 변경
+- issue actions: `원문에만 남기기`, `할 일로 만들기`, `나중에 정하기`
+- `나중에 정하기`로 분류한 issue는 해결 수에 포함하지 않고 outstanding 및 기존
+  blocking 상태를 유지한다.
 - 숨김: 전체 고급 property와 저장 계약
 
 ### 5.3 Result Preview
@@ -118,10 +206,10 @@ correction suggestion
 ### 5.4 Contextual Item Editor
 
 - 사용자 질문: 이 항목에서 무엇을 고칠까?
-- 기본 노출: 제목, 상세, 완료 기준
+- 기본 노출: 제목, 설명, 완료 기준
 - 펼침 정보: 날짜·시간·장소·반복·조건·resource·source
 - primary action: `변경 적용`
-- 취소: 원래 해석으로 되돌리기
+- 취소: 최근 변경 실행 취소
 
 ### 5.5 Ownership Review
 
@@ -137,49 +225,92 @@ correction suggestion
 - primary action: `내 Flow 열기` 또는 생성 파일 확인
 - 중복 CTA와 추가 설정은 두지 않는다.
 
+### 5.7 Review gate policy
+
+권리·안전 review는 source 문구를 법률·안전 판단으로 추론하지 않고 caller/UI가
+명시적으로 만든 requirement에서만 시작한다. creator와 correction suggestion은
+outward-use requirement를 만들고, 개인 lane은 명시적 caution이 있을 때 safety
+requirement를 유지한다.
+
+| Gate status | 로컬 초안 저장 | 외부 파일·다음 outward action |
+|---|---|---|
+| `required` | 허용, `needs_review`로 저장 | 차단 |
+| `evidence_recorded` | 허용 | 다른 blocker가 없으면 허용 |
+| `personal_only` | 허용, `needs_review`로 저장 | 계속 차단 |
+
+`evidence_recorded`는 사용자가 확인 근거를 기록했다는 뜻이며 FlowMe의 승인, 권리
+판정, 안전 판정이 아니다. 비개인 lane에서 `personal_only`를 선택하면 공개 원본과
+분리된 새 개인 document/revision으로 fork하고 원래 초안은 그대로 보존한다.
+
 ## 6. 권장 텍스트 문법
 
 ### 6.1 원칙
 
-- 일반 문장만으로 첫 결과가 나와야 한다.
+- 일반 문장은 원문과 텍스트 결과로 보존하되, 명시적 표식 없이 canonical Item을
+  발명하지 않는다.
 - 익숙한 Markdown heading과 checklist는 구조 힌트로 사용한다.
 - 짧은 속성은 읽을 수 있는 한국어 label을 허용한다.
 - 복잡한 recurrence와 조건은 inspector에서 설정한다.
 - 알 수 없는 syntax는 원문에 남기고 issue로 표시한다.
 - silent drop과 임의 추론을 금지한다.
 
-### 6.2 지원 후보
+### 6.2 현재 지원 문법
 
 ```markdown
 # 8월 제주 여행 준비
+- 기준일: 2026-08-10
 
 ## 예약
 - [ ] 항공권 확인
-  날짜: 2026-08-03
-  시간: 08:20
-  장소: 김포공항
-  완료 기준: 예약번호를 메모에 남김
+  - 날짜: 2026-08-03
+  - 시간: 08:20
+  - 장소: 김포공항
+  - 완료 기준: 예약번호를 메모에 남김
 
 ## 출발 전
 - [ ] 온라인 체크인
-  날짜: D-1
+  - 상대 날짜: D-1
 ```
 
-지원 label:
+공식 Flow field:
 
-- `자세히:` 또는 `설명:`
-- `완료 기준:`
-- `날짜:`
-- `시간:`
-- `장소:`
-- `반복:`
-- `조건:`
-- `예상 시간:`
-- `자료:`
-- `출처:`
-- `메모:`
+- `- 기준일: YYYY-MM-DD`
+
+공식 Item property key는 모두 `  - key: value` 형태로 쓴다.
+
+- `설명`, `완료 기준`, `날짜`, `상대 날짜`
+- `시간`, `시간대`, `소요 시간`, `반복`
+- `장소`, `조건`, `자료`, `안내`, `주의`, `출처`
+
+Flow 기준일은 제목 다음, 첫 Step 전에 `- 기준일: YYYY-MM-DD`로 쓴다. 절대 날짜는
+`YYYY-MM-DD`, 시간은 24시간제 `HH:mm`, 상대 날짜는 `D-3`·`D+2`·`D-Day`
+형식을 사용한다. UI에서 기준일을 바꾸는 경우에도 이 원문 줄을 추가하거나 수정한 뒤
+실제 Calendar 날짜를 계산한다. 숨은 화면 값만으로 날짜를 만들지 않는다.
+
+속성은 대상 Item 바로 아래에 공백 두 칸 이상 들여쓴
+`- 공식 속성: 값` bullet로 쓴다. 같은 Item 안에서는 `날짜:`보다
+`시간:`·`소요 시간:`·`반복:`을 먼저 적어도 같은 일정으로 해석한다.
+날짜만 수정할 때도 나머지 일정 속성은 유지한다.
+
+`반복:`은 현재 정의 문구를 canonical 초안에 보존하고 inspector에서 수정하는
+범위다. 반복 회차를 생성하거나 ICS `RRULE`로 내보내지는 않는다.
+
+첫 `# 제목`과 화면의 제목 입력란은 같은 Flow 제목으로 동기화한다. 기본 예시는
+제목 입력란을 사용해 같은 제목을 두 번 보여 주지 않지만, 붙여 넣거나 내보낸
+Markdown의 `# 제목`도 동일하게 읽고 수정한다.
+
+작성 화면과 Markdown 내보내기는 v2 bullet 표기만 만든다. v1의 대시 없는 들여쓴
+`속성: 값`과 기존의 `상세:`,
+`자세히:`, `방법:`, `완료:`, `상대일:`, `예상 시간:`, `링크:`,
+`영상:`, `가이드:`, `경고:`와 `이름 | URL` 표기는 이전 자료를 위한 입력
+호환 alias로만 유지한다. 알 수 없는 `key: value`는 상세로 조용히 흡수하지 않고
+`unknown_property` issue로 표시한다. 들여쓴 `- [ ]`은 자동 평탄화하지 않고
+`unsupported_nested_item` issue로 원문을 보존한다.
 
 inline token은 읽기 전용 감지 후보로 둘 수 있지만 기본 작성법으로 가르치지 않는다.
+공식 문법과 호환 정책의 정본은
+[Text Authoring Grammar v2](./authoring-grammar-comparison.md#7-text-authoring-grammar-v2)와
+[v2 JSON 계약](./text-authoring-contract-v2.json)이다.
 
 ## 7. 해석 규칙
 
@@ -188,8 +319,11 @@ inline token은 읽기 전용 감지 후보로 둘 수 있지만 기본 작성�
 | 문서 첫 heading | Flow 제목 | 여러 최상위 heading이 독립 계획처럼 보임 |
 | 하위 heading | Step | heading 아래 실행 Item이 없음 |
 | `- [ ]` 행 | Item | URL 또는 설명만 있음 |
-| 일반 bullet | Item 후보 또는 detail | 동사가 없거나 reference 성격 |
-| indented prose | 직전 Item detail | 새 행동 문장처럼 보임 |
+| 일반 bullet | Item | 번호 목록은 v1/import 읽기 호환 |
+| 표식 없는 일반 문장 | 원문 텍스트로 보존 | Item 전환은 사용자가 명시적으로 선택 |
+| `  - 공식 속성: 값` | 직전 Item 속성 | 부모 Item이 없으면 `missing_parent` |
+| `  - 알 수 없는 속성: 값` | 원문 + `unknown_property` | 공식 속성으로 바꿀지 확인 |
+| `  - [ ]` | 원문 + `unsupported_nested_item` | 자동 평탄화 금지 |
 | URL | resource/source link | URL만 있고 source를 확보하지 못함 |
 | 표 행 | Item 또는 source row | 헤더가 불명확하거나 병합 셀이 있음 |
 | 날짜 label | Item date/relative date | 연도, 기준일, timezone 불명확 |
@@ -214,7 +348,8 @@ inline token은 읽기 전용 감지 후보로 둘 수 있지만 기본 작성�
 
 첫 useful preview 전 필수 사용자 입력은 일반 사례에서 0~2개다.
 
-- 상대 날짜 Calendar를 실제 날짜로 만들 때만 기준일을 묻는다.
+- 상대 날짜 Calendar를 실제 날짜로 만들 때만 기준일을 묻고, 답을 원문의
+  `- 기준일: YYYY-MM-DD` 줄에 반영한다.
 - 방문을 선택했을 때만 장소를 묻는다.
 - 이미 진행 중인 과정일 때만 현재 주차/현재 장을 묻는다.
 - recurrence가 source에 없으면 임의 반복을 만들지 않는다.
@@ -228,6 +363,29 @@ inline token은 읽기 전용 감지 후보로 둘 수 있지만 기본 작성�
 4. 같은 필드에서 source와 개인 값이 충돌하면 결과는 개인 값을 사용하되 source 값을 함께 보여 준다.
 5. 실행 완료와 메모는 execution run에 기록하며 authoring document에 쓰지 않는다.
 6. 공개 Flow correction은 제안으로만 저장한다.
+
+### 10.1 Source update contract
+
+- source update는 외부 watcher나 crawler가 자동 감지하는 기능이 아니다.
+  보호 revision이 없는 현재 작업의 입력 변경만 local deterministic parser가
+  짧은 debounce 뒤 다시 계산한다.
+- 저장된 로컬 초안, correction revision이 있는 document, 또는 이미 pending
+  source state가 있는 document의 원문 변경은 live 결과를 덮어쓰지 않는다.
+  입력을 멈추면 incoming snapshot을 stage하고 compare/apply 또는 reject를
+  요구한다.
+- apply 전에는 active source/result를 바꾸지 않고 active, incoming, user-owned
+  값을 함께 보존한다.
+- `source_updated`는 open change가 있는 상태, `conflict_source_vs_user`는
+  user-owned 값이나 구조와 충돌하는 상태다. 둘 다 로컬 저장은 가능하지만 outward
+  action은 apply/reject 전까지 차단한다.
+- title/detail/completion/schedule뿐 아니라
+  resource/source/guide/caution과 role/include/nesting/order/Step mapping도
+  명시적 compare 대상이다.
+- source Item match는 stable entity ID 또는 caller가 제공한 explicit match만
+  허용한다. 제목 유사도나 순서로 자동 병합하지 않는다.
+- added/removed/changed를 각각 선택한 뒤 apply하거나 incoming candidate 전체를
+  reject한다. 이전 source lineage와 user-owned 값은 tombstone/override로
+  보존할 수 있다.
 
 ## 11. 구현 판단
 
@@ -262,7 +420,8 @@ K-MOOC의 `0/14`는 source 사실이 아니라 execution run의 초기/derived �
 ## 12. 완료 기준
 
 - 8개 사례가 `input -> mapping -> artifact -> save/export`로 이어진다.
-- 일반 메모는 전용 문법 없이 첫 preview가 나온다.
+- 일반 메모는 전용 문법 없이 원문·텍스트 preview가 나오며, 명시적 표식 없이
+  canonical Item을 만들지 않는다.
 - K-MOOC 14행과 LibriVox 38장이 축약되지 않는다.
 - resource와 guide가 완료 Item으로 강제되지 않는다.
 - 날짜 없는 Item에 가짜 날짜가 생기지 않는다.
@@ -272,3 +431,25 @@ K-MOOC의 `0/14`는 source 사실이 아니라 execution run의 초기/derived �
 - keyboard로 입력, 구조 확인, Item 수정, 저장까지 가능하다.
 - fixture simulation과 현재 구현이 구분된다.
 - 자동 검토를 실제 사용자 검증으로 표현하지 않는다.
+
+## 13. Local implementation verdict
+
+- 판정: `local_v2_functional_internal_qa_pass_with_dependency_audit_followup`
+- scoped Text Authoring: `147 / 147`
+- full repository unit: pretest `100 / 100` + unit `594 / 594` = `694 / 694`
+- simulation matrix: API `27 / 27` + browser `8 / 8` = `35 / 35`
+- focused Text Authoring E2E: 위험 기반 `12`개 시나리오 통과
+- production build: `18 / 18`
+- Text Authoring-owned TypeScript diagnostics: `0`; repo-wide diagnostics: `190`
+- standalone HTML: `2,090,370` bytes
+- browser runtime: console/page/failed-request/replacement/external-request `0`
+- 사용자 관찰: 수행하지 않았으며 검증 완료로 주장하지 않음
+- publish: no commit, push, PR, merge, new Preview, or production deploy
+- P35 production: unchanged
+- dependency audit: transitive High `2`; dependency/lock unchanged in this task,
+  remediation and regression required before publish
+
+정확한 실행 ledger와 standalone/browser 경계는
+[Text Authoring v2 completion report](../../content-audit/2026-08-04-flowme-text-authoring-grammar-ux-improvement-results/README.md)를
+정본으로 사용한다. 2026-07-30/31의 build와 3자 검토 기록은 historical
+checkpoint이며 현재 v2 판정을 대체하지 않는다.

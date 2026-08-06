@@ -246,3 +246,174 @@ body {
     align-items: center;
   }
 }
+
+/* Text authoring studio: layout is scoped; visual tokens inherit FlowMe. */
+.flowme-authoring-shell[data-library-open="false"] {
+  height: 100dvh;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.flowme-authoring-shell[data-library-open="true"] {
+  overflow: visible;
+}
+
+.flowme-authoring-shell
+  [data-source-stale="true"]
+  :is([data-testid="ta-authoring-item"], [data-testid="ta-authoring-excluded-item"]) {
+  opacity: 0.5;
+}
+
+.ta-inline-help-panel {
+  position: fixed;
+  z-index: 90;
+  top: 50%;
+  left: 50%;
+  width: min(32rem, calc(100vw - 2rem));
+  max-height: min(80dvh, 40rem);
+  transform: translate(-50%, -50%);
+}
+
+@media (max-width: 899px) {
+  .flowme-authoring-shell[data-library-open="false"] {
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .flowme-authoring-shell[data-library-open="false"]
+    > [data-testid="text-authoring-root"] {
+    display: flex;
+    height: 100%;
+    min-height: 0;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .flowme-authoring-shell[data-library-open="false"]
+    > [data-testid="text-authoring-root"]
+    > :is(header, nav, section, footer) {
+    flex: 0 0 auto;
+  }
+
+  .flowme-authoring-shell[data-library-open="false"] .ta-stage-navigation {
+    position: relative;
+    z-index: 40;
+  }
+
+  .flowme-authoring-shell[data-library-open="false"]
+    > [data-testid="text-authoring-root"]
+    > div:has(> [data-testid="ta-osr-1024-two-pane"]) {
+    min-height: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
+  }
+
+  .flowme-authoring-shell[data-library-open="false"]
+    > [data-testid="text-authoring-root"]
+    > div:has(> [data-testid="ta-osr-1024-two-pane"])
+    > div:has(> [data-authoring-pane]) {
+    grid-template-columns: minmax(0, 1fr) !important;
+    height: 100% !important;
+    min-height: 0 !important;
+  }
+
+  .flowme-authoring-shell[data-library-open="false"] [data-authoring-pane] {
+    display: none !important;
+  }
+
+  .flowme-authoring-shell[data-library-open="false"]
+    [data-authoring-pane][data-stage-active="true"] {
+    display: block !important;
+  }
+
+  .flowme-authoring-shell[data-library-open="false"] .ta-pane {
+    min-height: 0 !important;
+  }
+
+  .flowme-authoring-shell[data-library-open="false"] .ta-workspace-footer {
+    position: relative !important;
+    z-index: 40;
+    flex: 0 0 auto;
+  }
+
+  .flowme-authoring-shell[data-library-open="false"]
+    .ta-primary-action
+    > span {
+    overflow: visible;
+    white-space: normal;
+    text-overflow: clip;
+  }
+}
+
+@media (max-width: 899px) and (max-height: 640px) {
+  .flowme-authoring-shell[data-library-open="false"]
+    .ta-stage-navigation
+    button {
+    min-height: 44px;
+    padding-top: 0.375rem;
+    padding-bottom: 0.375rem;
+  }
+
+  .flowme-authoring-shell[data-library-open="false"]
+    [data-testid="ta-authoring-example-switcher"]
+    > div {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+  }
+
+  .flowme-authoring-shell[data-library-open="false"]
+    [data-authoring-pane-scroll] {
+    scroll-padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+
+  .flowme-authoring-shell[data-library-open="false"]
+    .ta-workspace-footer {
+    padding-top: 0.375rem;
+    padding-bottom: calc(0.375rem + env(safe-area-inset-bottom));
+  }
+
+  .flowme-authoring-shell[data-library-open="false"]
+    .ta-workspace-footer
+    > div {
+    gap: 0.375rem;
+  }
+
+  .flowme-authoring-shell[data-library-open="false"]
+    .ta-workspace-footer
+    > div
+    > p {
+    line-height: 0.875rem;
+  }
+}
+
+@media (max-width: 899px) and (max-height: 480px) and (orientation: landscape) {
+  .flowme-authoring-shell[data-library-open="false"]
+    .ta-workspace-header
+    > div {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .flowme-authoring-shell[data-library-open="false"]
+    .ta-workspace-footer
+    > div
+    > p {
+    font-size: 9px;
+    line-height: 0.75rem;
+  }
+}
+
+@media (max-width: 639px) {
+  .ta-inline-help-panel {
+    top: auto;
+    right: 0.75rem;
+    bottom: calc(0.75rem + env(safe-area-inset-bottom));
+    left: 0.75rem;
+    width: auto;
+    max-height: min(76dvh, 36rem);
+    transform: none;
+    border-bottom-right-radius: var(--flowme-radius-surface);
+    border-bottom-left-radius: var(--flowme-radius-surface);
+  }
+}

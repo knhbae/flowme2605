@@ -1,0 +1,254 @@
+{
+  "schemaVersion": "flowme-text-authoring-grammar-ux-contract-v2-candidate",
+  "createdAt": "2026-08-04",
+  "status": "candidate_for_implementation_review",
+  "claimBoundary": "내부 설계 및 자동 시뮬레이션 계약이며 사용자 검증이 아니다.",
+  "invariants": [
+    "원문은 항상 보존한다.",
+    "명시적 구조 표식이 없는 문장은 canonical Item으로 자동 생성하지 않는다.",
+    "속성 bullet 수는 canonical Item 수를 늘리지 않는다.",
+    "Calendar 표시 정렬은 원문을 자동 재작성하지 않는다.",
+    "기준일이 없는 상대 날짜를 실제 날짜로 추정하지 않는다.",
+    "결과 형태 슬롯의 위치와 순서는 입력 내용에 따라 바뀌지 않는다."
+  ],
+  "canonicalSyntax": {
+    "flowTitle": {
+      "pattern": "# {title}",
+      "cardinality": "one_per_document"
+    },
+    "flowAnchor": {
+      "pattern": "- 기준일: YYYY-MM-DD",
+      "scope": "flow",
+      "position": "after_flow_title_before_first_step",
+      "requiredFor": [
+        "relative_date_calendar_projection"
+      ]
+    },
+    "step": {
+      "pattern": "## {step title}",
+      "scope": "flow"
+    },
+    "item": {
+      "pattern": "- [ ] {item title}",
+      "scope": "step",
+      "order": "source_order"
+    },
+    "itemProperty": {
+      "pattern": "  - {official key}: {value}",
+      "minimumIndentSpaces": 2,
+      "requiresCurrentItem": true,
+      "forbidsCheckbox": true,
+      "officialKeys": [
+        "설명",
+        "날짜",
+        "상대 날짜",
+        "시간",
+        "시간대",
+        "소요 시간",
+        "장소",
+        "완료 기준",
+        "반복",
+        "조건",
+        "자료"
+      ]
+    },
+    "plainText": {
+      "definition": "heading, flow field, item, item property 표식에 해당하지 않는 줄",
+      "behavior": "원문 텍스트로 보존하고 Item을 만들지 않는다."
+    },
+    "unsupportedNestedItem": {
+      "pattern": "  - [ ] {child title}",
+      "behavior": "unsupported_nested_item issue로 원문 보존",
+      "mustNot": [
+        "자동 평탄화",
+        "부모 속성으로 해석"
+      ]
+    },
+    "unknownProperty": {
+      "pattern": "  - {unknown key}: {value}",
+      "behavior": "unknown_property issue로 원문 보존",
+      "mustNot": [
+        "새 Item 생성",
+        "설명 필드로 추정"
+      ]
+    }
+  },
+  "parsePrecedence": [
+    "heading",
+    "table_csv_tsv_markdown_table",
+    "flow_level_official_field",
+    "indented_official_property_bullet",
+    "indented_unknown_property_issue",
+    "item_list",
+    "v1_property_compatibility",
+    "plain_text_preservation"
+  ],
+  "compatibility": {
+    "read": [
+      "v1 대시 없는 들여쓴 속성",
+      "1. 또는 2) 번호 목록 가져오기",
+      "legacy 속성 별칭",
+      "CSV, TSV, Markdown table"
+    ],
+    "write": [
+      "v2 item property bullet",
+      "- [ ] item marker",
+      "official property labels only"
+    ],
+    "migration": "v1은 읽되 writer 저장 시 v2로 정규화하고 비파괴 변경 요약을 제공한다.",
+    "versionChangeRequired": [
+      "flowme-authoring-markdown-v1 -> v2",
+      "flowme-supported-markdown-v1 -> v2",
+      "text-authoring contract v1 -> v2"
+    ]
+  },
+  "ordering": {
+    "canonical": "source_order",
+    "todo": "source_order",
+    "sheet": "source_order_unless_user_sorts_view",
+    "text": "source_order",
+    "calendar": {
+      "view": "resolved_date_ascending",
+      "tieBreak": "source_order",
+      "undated": "not_projected_to_calendar",
+      "relativeWithoutAnchor": "not_projected_to_calendar"
+    },
+    "sourceRewriteAction": {
+      "label": "입력도 이 순서로 맞추기",
+      "visibility": "현재 결과 순서와 원문 Item 순서가 다를 때만",
+      "scope": "within_each_step",
+      "effect": "Item 블록과 소유 속성을 함께 이동하고 원문·구조·결과를 한 transaction으로 갱신",
+      "requirements": [
+        "preview_before_apply",
+        "undo",
+        "stable_identity",
+        "same_date_stability",
+        "undated_items_last"
+      ]
+    }
+  },
+  "relativeDate": {
+    "accepted": [
+      "D-{integer}",
+      "D-Day",
+      "D+{integer}"
+    ],
+    "anchorSourceOfTruth": "- 기준일: YYYY-MM-DD in source text",
+    "uiAnchorEdit": "UI에서 기준일을 입력하면 원문 flowAnchor 줄을 즉시 추가 또는 수정",
+    "withoutAnchor": {
+      "calendarEnabled": false,
+      "todoEnabled": true,
+      "issue": "relative_anchor_required",
+      "noDateInference": true
+    }
+  },
+  "resultShapes": {
+    "fixedOrder": [
+      "calendar",
+      "check_todo",
+      "sheet",
+      "text"
+    ],
+    "labels": {
+      "calendar": "캘린더",
+      "check_todo": "체크/할 일",
+      "sheet": "표/엑셀",
+      "text": "텍스트"
+    },
+    "rendering": "항상 네 슬롯을 같은 위치와 폭으로 렌더링",
+    "ineligible": "disabled 상태와 짧은 이유를 도움말로 제공",
+    "checkTodoBoundary": "Phase 1에서는 한 결과 형태다. 추후 체크는 FlowMe 내부 실행, 할 일은 외부 앱 내보내기로 다른 층위에서 분리한다.",
+    "exportFormats": {
+      "calendar": [
+        "ICS"
+      ],
+      "check_todo": [
+        "Markdown",
+        "TXT"
+      ],
+      "sheet": [
+        "XLSX",
+        "CSV",
+        "TSV"
+      ],
+      "text": [
+        "원문 그대로",
+        "정리된 TXT",
+        "정리된 Markdown"
+      ]
+    },
+    "formatVisibility": "CSV, TSV, Markdown 같은 기술 형식은 결과 형태 버튼이 아니라 해당 결과의 내보내기 메뉴에서만 노출"
+  },
+  "sheetIdentity": {
+    "eligibleWhenAny": [
+      "원본 입력이 table, CSV, TSV, Markdown table이다.",
+      "Item 2개 이상에 반복되는 의미 있는 필드가 2열 이상 존재한다."
+    ],
+    "notEligibleWhen": [
+      "제목만 있는 일반 목록",
+      "순서, 항목, 날짜만으로 열을 만들 수 있는 경우"
+    ],
+    "minimumMeaningfulColumns": 2,
+    "preferredColumns": [
+      "단계",
+      "항목",
+      "날짜",
+      "상태 또는 완료 기준",
+      "장소",
+      "자료 링크"
+    ],
+    "previewRequirement": "실제 표 머리글, 행, URL 셀, 가로 스크롤 또는 모바일 행 카드 대체를 보여준다."
+  },
+  "detailVisualization": {
+    "fields": [
+      "설명",
+      "완료 기준",
+      "날짜",
+      "시간",
+      "장소",
+      "반복",
+      "조건",
+      "자료 링크"
+    ],
+    "calendar": "일정 카드 또는 상세 패널",
+    "checkTodo": "제목 아래 보조 행과 클릭 가능한 자료",
+    "sheet": "각 필드 열과 URL 셀",
+    "text": "Markdown 링크를 포함한 읽기 가능한 블록"
+  },
+  "ui": {
+    "desktop": [
+      "입력",
+      "항목 구조",
+      "결과"
+    ],
+    "mobileTabs": [
+      "입력",
+      "구조",
+      "결과"
+    ],
+    "structurePane": {
+      "label": "항목 구조",
+      "defaultMode": "read_only_summary",
+      "advancedAction": "구조 수정"
+    },
+    "help": "긴 설명은 기본 숨김. ? 버튼 또는 contextual popover로만 표시",
+    "examples": "제품 화면은 대표 예시 3~5개 또는 단일 예시 선택기, 27개 전체는 데모/QA 전용",
+    "responsiveViewports": [
+      "1440x900",
+      "1024x768",
+      "390x844",
+      "390x600",
+      "360x640",
+      "844x390"
+    ],
+    "scrollInvariant": "각 모바일 탭에서 마지막 요소까지 키보드와 터치로 도달하며 고정 UI가 내용을 가리지 않는다."
+  },
+  "nonGoals": [
+    "AI 자동 생성 또는 AI 문장 해석",
+    "사용자 검증",
+    "무승인 GitHub push, PR, 배포",
+    "반복 문구를 RRULE로 자동 변환",
+    "모호한 날짜 또는 URL 콘텐츠 추정",
+    "다중 기준일 또는 중첩 Item 실행"
+  ]
+}

@@ -1,0 +1,138 @@
+import type {
+  AuthoringIssueOutcome,
+  UnresolvedAuthoringIssue,
+} from '@/lib/flow/text-authoring/types';
+
+export type AuthoringStage = 'input' | 'result';
+
+// Stored drafts from the three-stage prototype can still contain `structure`.
+// The workspace normalizes that legacy value to the visible result stage.
+export type PersistedAuthoringStage = AuthoringStage | 'structure';
+
+export type AuthoringOwnership = 'personal' | 'creator' | 'suggestion';
+
+export type AuthoringRole =
+  | 'item'
+  | 'resource'
+  | 'guide'
+  | 'caution'
+  | 'detail'
+  | 'completion'
+  | 'unresolved';
+
+export type AuthoringItemView = {
+  itemId: string;
+  blockId: string;
+  stepId: string;
+  title: string;
+  rawText: string;
+  sourceLineLabel: string;
+  role: AuthoringRole;
+  included: boolean;
+  detail: string;
+  completion: string;
+  date: string;
+  relativeDate: string;
+  time: string;
+  timezone: string;
+  place: string;
+  duration: string;
+  repeat: string;
+  condition: string;
+  resource: string;
+  source: string;
+  userCorrected: boolean;
+};
+
+export type AuthoringItemPatch = Pick<
+  AuthoringItemView,
+  | 'title'
+  | 'detail'
+  | 'completion'
+  | 'date'
+  | 'relativeDate'
+  | 'time'
+  | 'timezone'
+  | 'place'
+  | 'duration'
+  | 'repeat'
+  | 'condition'
+  | 'resource'
+>;
+
+export type AuthoringStepView = {
+  stepId: string;
+  title: string;
+  items: AuthoringItemView[];
+};
+
+export type AuthoringCounts = {
+  steps: number;
+  items: number;
+  included: number;
+  unresolved: number;
+  resources: number;
+};
+
+export type AuthoringIssueView = {
+  issueId: string;
+  type: UnresolvedAuthoringIssue['type'];
+  sourceLineLabel: string;
+  rawText: string;
+  reason: string;
+  state: 'open' | 'held';
+  blocking: boolean;
+  availableOutcomes: AuthoringIssueOutcome[];
+};
+
+export type AuthoringDraftStatus =
+  | '작성 중'
+  | '확인 필요'
+  | '결과 확인 완료'
+  | '보관됨';
+
+export type AuthoringDraftView = {
+  draftId: string;
+  title: string;
+  source: string;
+  ownership: AuthoringOwnership;
+  primaryArtifact: string;
+  stepCount: number;
+  itemCount: number;
+  issueCount: number;
+  revisionLabel: string;
+  updatedAtLabel: string;
+  archived: boolean;
+  status: AuthoringDraftStatus;
+};
+
+export type AuthoringPreflightView = {
+  artifact: string;
+  eligibleCount: number;
+  excludedCount: number;
+  undatedCount: number;
+  loss: string[];
+  dateRange: string;
+};
+
+export type AuthoringReceiptView = {
+  receiptId: string;
+  title: string;
+  ownership: AuthoringOwnership;
+  ownershipLabel: string;
+  revisionLabel: string;
+  artifact: string;
+  stepCount: number;
+  itemCount: number;
+  sourcePreserved: boolean;
+  reviewRequiredCount: number;
+  reviewEvidenceCount: number;
+  reviewPersonalOnlyCount: number;
+  sourceState:
+    | 'current'
+    | 'source_updated'
+    | 'conflict_source_vs_user'
+    | 'unknown';
+  sourceOpenChangeCount: number;
+  savedAtLabel: string;
+};

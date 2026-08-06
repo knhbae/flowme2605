@@ -1,0 +1,59 @@
+{
+  "generatedAt": "2026-08-04T12:41:23.396Z",
+  "evidenceKind": "internal-browser-qa",
+  "observedUserSessions": 0,
+  "route": "/flows/new",
+  "screenshots": [
+    "visual-evidence/osr-01-1440-two-pane.png",
+    "visual-evidence/osr-02-1440-item-review-drawer.png",
+    "visual-evidence/osr-03-1024-two-pane.png",
+    "visual-evidence/osr-04-390-input-stage.png",
+    "visual-evidence/osr-05-390-result-stage.png",
+    "visual-evidence/osr-06-390-item-review-sheet.png",
+    "visual-evidence/osr-07-390-item-review-scroll-end.png",
+    "visual-evidence/osr-08-390-review-warning.png",
+    "visual-evidence/osr-09-390-warning-review-sheet.png"
+  ],
+  "checkpoints": {
+    "desktop": {
+      "visiblePaneCount": 2,
+      "structureStageCount": 0,
+      "itemReviewDefaultOpen": false
+    },
+    "tablet": {
+      "visiblePaneCount": 2,
+      "marker": "ta-osr-1024-two-pane"
+    },
+    "mobile": {
+      "stages": [
+        "input",
+        "result"
+      ],
+      "reviewScroll": {
+        "clientHeight": 615,
+        "scrollHeight": 2139,
+        "scrollTop": 1524
+      },
+      "warningReviewNeeded": true,
+      "initialIssueFocusTestId": "ta-authoring-issue-keep-source"
+    },
+    "viewport": {
+      "horizontalOverflow": false,
+      "shellScrollTop": 0
+    }
+  },
+  "runtimeErrors": [],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "consoleErrorDetails": [
+    {
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "url": "http://127.0.0.1:3104/favicon.ico"
+    }
+  ],
+  "failedRequests": [],
+  "actionableConsoleErrors": [],
+  "unexpectedFailedRequests": [],
+  "pass": true
+}

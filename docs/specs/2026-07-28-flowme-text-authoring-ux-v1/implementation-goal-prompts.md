@@ -1,8 +1,11 @@
 # Implementation Goal Prompts
 
-이 문서는 승인 후 개발 agent에 하나씩 전달할 `/goal` 프롬프트다. 이 설계 목표에서는
-구현하지 않는다. TA-01부터 순서대로 진행하고, 각 slice가 gate를 통과한 뒤 다음
-slice를 시작한다.
+이 문서는 `TA-01`부터 `TA-06`까지 구현할 때 사용한 실행 프롬프트 기록이다.
+현재 구현은 전용 작업트리 `D:\flowme2605\flow-text-authoring-ta`에서 완료됐으므로,
+아래의 초기 `flow-mvp` clean-main 지시를 새 구현 시작점으로 다시 사용하지 않는다.
+아래 프롬프트와 3자 검토 키트는 historical implementation record다. 현재 문법과
+결과 UX의 정본은 [v2 contract](./text-authoring-contract-v2.json)와
+[2026-08-04 completion report](../../content-audit/2026-08-04-flowme-text-authoring-grammar-ux-improvement-results/README.md)다.
 
 ## 실행 순서
 
@@ -274,11 +277,11 @@ write path adapter를 분리하고 기존 published/personal 저장 키를 변�
 ## TA-06 `/goal`
 
 ```text
-FlowMe Text Authoring TA-06 regression and observed-user readiness gate를 수행해줘.
+FlowMe Text Authoring TA-06 regression and three-party internal readiness gate를 수행해줘.
 
 목표:
-여덟 사례의 fidelity, responsive operability, accessibility, save/export parity를 자동
-증거로 닫고 실제 사용자 관찰에 넘길 준비가 됐는지 판정한다.
+여덟 사례의 fidelity, responsive operability, accessibility, save/export parity를
+자동 증거로 닫고 오너·Claude Code·Codex 내부 검토에 넘길 준비가 됐는지 판정한다.
 
 범위:
 - 8-case unit fixtures
@@ -291,7 +294,7 @@ FlowMe Text Authoring TA-06 regression and observed-user readiness gate를 수�
 - rollback marker와 screenshot package
 
 비범위:
-- observed-user research 자체
+- observed-user research
 - AI/provider quality claim
 - account/DB/OAuth
 
@@ -300,8 +303,8 @@ Acceptance:
 - 여덟 사례 모두 input -> mapping -> artifact -> save/export evidence가 있다.
 - 390/1024/1440 overflow와 fixed overlap 0
 - console/page error 0
-- 자동 QA와 observed-user evidence가 명확히 분리된다.
-- observed-user count는 실제 관찰 전까지 0이다.
+- 자동 QA와 3자 내부 검토가 observed-user evidence와 명확히 분리된다.
+- 내부 검토 통과를 사용자 검증이나 release evidence로 표현하지 않는다.
 
 검증:
 - npm.cmd run docs:check
@@ -312,7 +315,7 @@ Acceptance:
 - git diff --check
 
 최종 판정:
-- ready_for_bounded_user_observation
+- ready_for_three_party_internal_review
 - bounded_fix_required
 - structural_reopen
 ```

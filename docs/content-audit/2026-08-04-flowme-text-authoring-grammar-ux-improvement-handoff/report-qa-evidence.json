@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "flowme-text-authoring-improvement-handoff-report-qa-v1",
+  "executedAt": "2026-08-04T12:28:16.9870645+09:00",
+  "target": {
+    "file": "flowme-text-authoring-grammar-ux-improvement-ko.html",
+    "bytes": 49566,
+    "sha256": "49d4a6accfb5fe165ad67018963767452097605bca00972af4c59f8dc319c879"
+  },
+  "browser": "Chrome 150.0.7871.184 via Playwright",
+  "claimBoundary": "전달 보고서의 내부 브라우저 QA이며 FlowMe 제품 또는 사용자 검증이 아니다.",
+  "viewports": [
+    "1440x900",
+    "1024x768",
+    "390x844",
+    "390x600",
+    "360x640",
+    "844x390"
+  ],
+  "checks": {
+    "verticalEndReached": "6/6",
+    "horizontalOverflowAbsent": "6/6",
+    "replacementCharacterAbsent": "6/6",
+    "consoleErrorAbsent": "6/6",
+    "pageErrorAbsent": "6/6",
+    "failedRequestAbsent": "6/6",
+    "externalRequestAbsent": "6/6",
+    "scenarioSelector": {
+      "optionCount": 5,
+      "selectedValue": "4",
+      "contentChanged": true
+    },
+    "copyFeedbackVisible": true,
+    "localArtifactLinks": {
+      "passed": "8/8",
+      "status": 200,
+      "files": [
+        "flowme-claude-design-handoff-2026-08-04.zip",
+        "qa-evidence/README.md",
+        "simulation-matrix-v2.json",
+        "grammar-ux-contract-v2-candidate.json",
+        "codex-implementation-prompt-ko.txt",
+        "claude-design-review-prompt-ko.txt",
+        "review-brief-ko.md",
+        "claude-handoff-guide-ko.md"
+      ]
+    }
+  },
+  "verdict": "passed_internal_report_qa"
+}

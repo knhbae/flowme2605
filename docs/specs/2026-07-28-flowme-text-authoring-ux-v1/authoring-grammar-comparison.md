@@ -1,5 +1,9 @@
 # Authoring Grammar Comparison
 
+현재 쓰기 정본은 [text-authoring-contract-v2.json](./text-authoring-contract-v2.json)이다.
+[v1 계약](./text-authoring-contract-v1.json)은 대시 없는 속성과 legacy 별칭을 잃지 않고
+읽기 위한 호환 기준으로만 보존한다.
+
 ## 1. 비교 결론
 
 FlowMe 전용 문법을 새로 가르치지 않는다. 기본은 일반 텍스트와 익숙한 Markdown을
@@ -85,10 +89,12 @@ plain text first
 ### Markdown heading/checklist
 
 - 첫 `#`은 Flow title 후보
-- `##` 이하는 Step 후보
-- `- [ ]`은 Item 후보
-- indented text는 detail 또는 property
-- plain bullet은 Item/resource/guide 후보
+- 줄 앞 `##`는 Step
+- 줄 앞 `- [ ]`는 Item
+- Item 바로 아래에 공백 두 칸으로 들여쓴 `key: value`는 그 Item의 property
+- Item끼리의 묶음은 들여쓴 하위 목록이 아니라 새 `##` Step으로 표현
+- plain bullet, `*`, `+`, 번호 목록은 가져오기 호환 입력으로만 읽고 canonical
+  Markdown에서는 `- [ ]`로 통일
 
 ### Obsidian Markdown
 
@@ -151,3 +157,110 @@ Markdown export는 다음을 보장한다.
 
 Markdown으로 다시 가져오면 같은 Item ID를 보장하지 않는다. `RoundTripReceipt`가
 matched/changed/unresolved 수를 보여 준다.
+
+## 7. Text Authoring Grammar v2
+
+### 7.1 목표
+
+`TA-GRAMMAR-V2`의 목표는 입력 예시, 작성 형식 안내, 실시간 미리보기, Markdown
+내보내기가 아래 한 가지 보이는 문법을 공유하게 하는 것이다.
+
+```text
+일반 메모는 원문으로 보존한다.
++ 구조는 익숙한 Markdown을 쓴다.
++ 날짜와 시간은 ISO 형태를 쓴다.
++ FlowMe 속성은 들여쓴 한국어 property bullet로 쓴다.
+= 사용자는 공식 작성법 한 가지만 배운다.
+```
+
+### 7.2 공식 작성 문법
+
+```markdown
+# 여행 준비
+- 기준일: 2026-08-10
+
+## 예약
+- [ ] 항공권 확인
+  - 설명: 출발 시간과 수하물 조건을 확인한다.
+  - 완료 기준: 예약번호를 메모에 남긴다.
+  - 날짜: 2026-08-03
+  - 시간: 08:20
+  - 시간대: Asia/Seoul
+  - 소요 시간: 20분
+  - 반복: 매주 월요일
+  - 장소: 김포공항
+  - 조건: 가격이 예산 안일 때
+  - 자료: [항공사 예약 페이지](https://example.com)
+  - 안내: 여권 이름과 같은지 확인한다.
+  - 주의: 결제 전 취소 규정을 확인한다.
+  - 출처: [공식 안내](https://example.com/guide)
+
+- [ ] 온라인 체크인
+  - 상대 날짜: D-1
+```
+
+- 구조는 CommonMark/GFM에서 익숙한 `#`, `##`, `- [ ]`,
+  `[이름](https://example.com)`을 쓴다.
+- 속성은 해당 Item 바로 아래에 공백 두 칸 이상 들여쓴
+  `- 공식 속성: 값` bullet 한 줄이다. 속성 bullet은 Item 수를 늘리지 않는다.
+- v2의 정본 계층은 `Flow > Step > Item`이다. Item 안에 Item을 들여쓰는 문법은
+  부모 관계를 보존하지 않으므로 공식 문법에 포함하지 않는다.
+- 절대 날짜는 `YYYY-MM-DD`, 시간은 24시간제 `HH:mm`이다.
+- `D-3`, `D-Day`, `D+2`는 기준일과의 관계를 나타내는 FlowMe의 짧은 확장이다.
+- 실제 기준일은 Flow 제목 다음의 `- 기준일: YYYY-MM-DD` 한 줄만 사용한다.
+  UI에서 기준일을 바꿔도 이 원문 줄을 함께 바꾼다.
+- 제목 입력란과 붙여 넣은 첫 `# 제목`은 같은 Flow 제목이며 서로 즉시 동기화한다.
+- 표식 없는 일반 문장은 원문과 텍스트 결과로 보존하며 canonical Item을 만들지 않는다.
+  기존 자동 문장 분해는 명시적 가져오기 보조 또는 v1 fixture 읽기에만 적용한다.
+
+### 7.3 공식 속성 이름
+
+| 역할 | 공식 표기 |
+|---|---|
+| Flow 기준일 | `- 기준일: YYYY-MM-DD` |
+| 설명 | `  - 설명: ...` |
+| 완료 조건 | `  - 완료 기준: ...` |
+| 절대 일정 | `  - 날짜: YYYY-MM-DD` |
+| 상대 일정 | `  - 상대 날짜: D-3` |
+| 시각 | `  - 시간: HH:mm` |
+| 시간대 | `  - 시간대: Asia/Seoul` |
+| 예상 작업량 | `  - 소요 시간: ...` |
+| 반복 정의 문구 | `  - 반복: ...` |
+| 장소 | `  - 장소: ...` |
+| 실행 조건 | `  - 조건: ...` |
+| 참고 자료 | `  - 자료: [이름](https://example.com)` |
+| 안내 | `  - 안내: ...` |
+| 주의 | `  - 주의: ...` |
+| 출처 | `  - 출처: [이름](https://example.com)` |
+
+### 7.4 호환 정책
+
+작성 화면과 내보내기는 v2 공식 표기만 만든다. 파서는 기존 문서를 잃지 않기 위해
+v1의 대시 없는 들여쓴 `key: value`와
+`상세:`, `자세히:`, `방법:`, `완료:`, `상대일:`, `예상 시간:`, `링크:`,
+`영상:`, `가이드:`, `경고:`와 `이름 | URL` 형태를 입력 호환 alias로만
+받아들인다. 알 수 없는 `key: value`는 설명으로 조용히 흡수하지 않고 원문을
+보존한 `unknown_property` issue로 표시한다. 들여쓴 `- [ ]`은 새 Item으로
+평탄화하지 않고 `unsupported_nested_item` issue로 남긴다.
+
+`반복:`과 `조건:`은 현재 사람이 읽을 수 있는 정의 문구를 보존하는 필드다. 반복
+회차를 만들거나 ICS `RRULE`을 생성하지 않는다. RRULE이나 자연어 날짜 추론을
+작성자에게 요구하는 기능은 v2 범위가 아니다.
+
+### 7.5 완료 기준
+
+- 공식 예시와 도움말에 호환 alias가 노출되지 않는다.
+- 입력 수정과 제목 수정이 Structure와 Result에 즉시 반영된다.
+- 공식 문법으로 내보낸 Markdown은 숨은 metadata 없이 다시 가져와도 같은
+  Flow/Step/Item과 지원 속성을 복원한다.
+- 잘못된 날짜와 알 수 없는 속성은 원문을 잃지 않고 issue가 된다.
+- 속성 bullet과 지원하지 않는 중첩 Item은 ghost Item을 만들지 않는다.
+- 기존 alias와 Step 제목의 상대 날짜 표기는 읽기 호환을 유지한다.
+- 390/1024/1440px와 짧은 화면에서 작성 형식, 입력 끝, 결과 끝에 도달할 수 있다.
+
+### 7.6 제외와 재검토 조건
+
+AI 문장 해석, 자연어 날짜 계산, 실제 반복 회차 생성, RRULE 작성 UI, 외부
+Calendar/Todo/Sheet 쓰기, 공개 배포, 사용자 관찰은 이번 목표에서 제외한다.
+실제 반복 일정 생성이 제품 범위에 들어오거나 공식 문법으로 표현할 수 없는 필드가
+추가될 때 이 결정을 다시 연다.

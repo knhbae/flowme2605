@@ -1,0 +1,3563 @@
+{
+  "schemaVersion": "flowme-text-authoring-simulation-matrix-v2-results",
+  "generatedAt": "2026-08-04T00:00:00.000Z",
+  "source": "docs/content-audit/2026-08-04-flowme-text-authoring-grammar-ux-improvement-handoff/simulation-matrix-v2.json",
+  "sourceSchemaVersion": "flowme-text-authoring-simulation-matrix-v2-candidate",
+  "claimBoundary": "내부 API acceptance와 자동 브라우저 QA 기록이다. 사용자 관찰 검증이 아니다.",
+  "uiEvidence": {
+    "status": "attached",
+    "source": "docs/content-audit/2026-08-04-flowme-text-authoring-grammar-ux-improvement-results/ui-simulation-evidence.json",
+    "checkCount": 8
+  },
+  "summary": {
+    "total": 35,
+    "apiAcceptance": 27,
+    "apiPassed": 27,
+    "apiFailed": 0,
+    "browserQa": 8,
+    "browserPassed": 8,
+    "browserFailed": 0,
+    "passed": 35,
+    "failed": 0,
+    "pendingBrowserQa": 0
+  },
+  "rows": [
+    {
+      "id": "G01",
+      "group": "grammar_roundtrip",
+      "priority": "blocker",
+      "title": "기본 속성 bullet",
+      "mode": "api_acceptance",
+      "actual": {
+        "itemCount": 1,
+        "detail": "설명입니다.",
+        "issueTypes": [],
+        "todoTitles": [
+          "항목"
+        ],
+        "sourcePreserved": true
+      },
+      "pass": true,
+      "status": "passed",
+      "evidence": [
+        {
+          "assertion": "v2 속성 bullet은 새 Item을 만들지 않는다",
+          "expected": 1,
+          "observed": 1,
+          "pass": true
+        },
+        {
+          "assertion": "설명은 바로 위 Item의 detail이다",
+          "expected": "설명입니다.",
+          "observed": "설명입니다.",
+          "pass": true
+        },
+        {
+          "assertion": "속성 bullet 해석 이슈가 없다",
+          "expected": [],
+          "observed": [],
+          "pass": true
+        },
+        {
+          "assertion": "Todo 제목에 속성명이 섞이지 않는다",
+          "expected": [
+            "항목"
+          ],
+          "observed": [
+            "항목"
+          ],
+          "pass": true
+        },
+        {
+          "assertion": "원문은 변경되지 않는다",
+          "expected": true,
+          "observed": true,
+          "pass": true
+        }
+      ],
+      "apis": [
+        "createTextAuthoringDocument",
+        "buildAuthoringArtifactProjection"
+      ]
+    },
+    {
+      "id": "G02",
+      "group": "grammar_roundtrip",
+      "priority": "blocker",
+      "title": "두 Item의 속성 소유권",
+      "mode": "api_acceptance",
+      "actual": {
+        "itemCount": 2,
+        "items": [
+          {
+            "title": "첫 항목",
+            "detail": "첫 설명",
+            "date": "2026-08-01",
+            "links": [
+              {
+                "label": "첫 자료",
+                "url": "https://example.com/first"
+              }
+            ]
+          },
+          {
+            "title": "둘째 항목",
+            "detail": "둘째 설명",
+            "date": "2026-08-02",
+            "links": [
+              {
+                "label": "둘째 자료",
+                "url": "https://example.com/second"
+              }
+            ]
+          }
+        ]
+      },
+      "pass": true,
+      "status": "passed",
+      "evidence": [
+        {
+          "assertion": "Item 수를 보존한다",
+          "expected": 2,
+          "observed": 2,
+          "pass": true
+        },
+        {
+          "assertion": "각 속성은 바로 위 Item에만 귀속된다",
+          "expected": [
+            {
+              "title": "첫 항목",
+              "detail": "첫 설명",
+              "date": "2026-08-01",
+              "links": [
+                {
+                  "label": "첫 자료",
+                  "url": "https://example.com/first"
+                }
+              ]
+            },
+            {
+              "title": "둘째 항목",
+              "detail": "둘째 설명",
+              "date": "2026-08-02",
+              "links": [
+                {
+                  "label": "둘째 자료",
+                  "url": "https://example.com/second"
+                }
+              ]
+            }
+          ],
+          "observed": [
+            {
+              "title": "첫 항목",
+              "detail": "첫 설명",
+              "date": "2026-08-01",
+              "links": [
+                {
+                  "label": "첫 자료",
+                  "url": "https://example.com/first"
+                }
+              ]
+            },
+            {
+              "title": "둘째 항목",
+              "detail": "둘째 설명",
+              "date": "2026-08-02",
+              "links": [
+                {
+                  "label": "둘째 자료",
+                  "url": "https://example.com/second"
+                }
+              ]
+            }
+          ],
+          "pass": true
+        }
+      ],
+      "apis": [
+        "createTextAuthoringDocument"
+      ]
+    },
+    {
+      "id": "G03",
+      "group": "grammar_roundtrip",
+      "priority": "blocker",
+      "title": "공식 속성 전체 세트",
+      "mode": "api_acceptance",
+      "actual": {
+        "itemCount": 1,
+        "detail": "자세한 설명",
+        "completion": "확인 번호를 기록함",
+        "properties": {
+          "date": "2026-08-09",
+          "relative_date": "D-3",
+          "time": "09:30",
+          "timezone": "Asia/Seoul",
+          "duration": "45분",
+          "place": "서울역",
+          "repeat": "매주 월요일",
+          "condition": "비가 오지 않을 때"
+        },
+        "schedule": {
+          "kind": "relative",
+          "raw": "D-3",
+          "dayOffset": -3,
+          "anchorLabel": "2026-08-10",
+          "time": "09:30",
+          "timezone": "Asia/Seoul",
+          "durationMinutes": 45,
+          "repeat": "매주 월요일"
+        },
+        "links": [
+          {
+            "label": "공식 자료",
+            "url": "https://example.com/official"
+          }
+        ],
+        "todoTitles": [
+          "전체 속성 항목"
+        ],
+        "issueTypes": []
+      },
+      "pass": true,
+      "status": "passed",
+      "evidence": [
+        {
+          "assertion": "공식 속성 전체를 넣어도 Item 수가 불어나지 않는다",
+          "expected": 1,
+          "observed": 1,
+          "pass": true
+        },
+        {
+          "assertion": "설명을 보존한다",
+          "expected": "자세한 설명",
+          "observed": "자세한 설명",
+          "pass": true
+        },
+        {
+          "assertion": "완료 기준을 보존한다",
+          "expected": "확인 번호를 기록함",
+          "observed": "확인 번호를 기록함",
+          "pass": true
+        },
+        {
+          "assertion": "지원 필드를 모두 보존한다",
+          "expected": true,
+          "observed": true,
+          "pass": true
+        },
+        {
+          "assertion": "Markdown 링크를 보존한다",
+          "expected": [
+            {
+              "label": "공식 자료",
+              "url": "https://example.com/official"
+            }
+          ],
+          "observed": [
+            {
+              "label": "공식 자료",
+              "url": "https://example.com/official"
+            }
+          ],
+          "pass": true
+        },
+        {
+          "assertion": "속성명이 결과 제목이 되지 않는다",
+          "expected": [
+            "전체 속성 항목"
+          ],
+          "observed": [
+            "전체 속성 항목"
+          ],
+          "pass": true
+        },
+        {
+          "assertion": "공식 속성 해석 이슈가 없다",
+          "expected": [],
+          "observed": [],
+          "pass": true
+        }
+      ],
+      "apis": [
+        "createTextAuthoringDocument",
+        "buildAuthoringArtifactProjection"
+      ]
+    },
+    {
+      "id": "G04",
+      "group": "grammar_roundtrip",
+      "priority": "high",
+      "title": "속성 작성 순서 독립",
+      "mode": "api_acceptance",
+      "actual": {
+        "itemCount": 1,
+        "schedule": {
+          "kind": "absolute",
+          "raw": "2026-08-03",
+          "date": "2026-08-03",
+          "time": "09:30",
+          "timezone": null,
+          "durationMinutes": null,
+          "repeat": "매주"
+        },
+        "detail": "마지막에 쓴 설명",
+        "writerPropertyLabels": [
+          "설명",
+          "날짜",
+          "시간",
+          "반복"
+        ],
+        "normalization": "official_order"
+      },
+      "pass": true,
+      "status": "passed",
+      "evidence": [
+        {
+          "assertion": "속성 순서와 무관하게 Item은 하나다",
+          "expected": 1,
+          "observed": 1,
+          "pass": true
+        },
+        {
+          "assertion": "앞서 쓴 시간도 뒤의 날짜 schedule에 재적용된다",
+          "expected": "09:30",
+          "observed": "09:30",
+          "pass": true
+        },
+        {
+          "assertion": "앞서 쓴 반복도 뒤의 날짜 schedule에 재적용된다",
+          "expected": "매주",
+          "observed": "매주",
+          "pass": true
+        },
+        {
+          "assertion": "설명을 보존한다",
+          "expected": "마지막에 쓴 설명",
+          "observed": "마지막에 쓴 설명",
+          "pass": true
+        },
+        {
+          "assertion": "writer는 공식 순서로 정규화한다",
+          "expected": [
+            "설명",
+            "날짜",
+            "시간",
+            "반복"
+          ],
+          "observed": [
+            "설명",
+            "날짜",
+            "시간",
+            "반복"
+          ],
+          "pass": true
+        }
+      ],
+      "apis": [
+        "createTextAuthoringDocument",
+        "exportTextAuthoringMarkdown"
+      ]
+    },
+    {
+      "id": "G05",
+      "group": "grammar_roundtrip",
+      "priority": "blocker",
+      "title": "미정 속성",
+      "mode": "api_acceptance",
+      "actual": {
+        "itemCount": 1,
+        "itemTitle": "부모 항목",
+        "detail": null,
+        "issueTypes": [
+          "unknown_property"
+        ],
+        "sourceRows": [
+          "# 미정 속성",
+          "## 실행",
+          "- [ ] 부모 항목",
+          "  - 담당자: 홍길동"
+        ],
+        "sourcePreserved": true
+      },
+      "pass": true,
+      "status": "passed",
+      "evidence": [
+        {
+          "assertion": "unknown_property 이슈가 하나 생긴다",
+          "expected": [
+            "unknown_property"
+          ],
+          "observed": [
+            "unknown_property"
+          ],
+          "pass": true
+        },
+        {
+          "assertion": "새 Item을 만들지 않는다",
+          "expected": 1,
+          "observed": 1,
+          "pass": true
+        },
+        {
+          "assertion": "부모 제목을 바꾸지 않는다",
+          "expected": "부모 항목",
+          "observed": "부모 항목",
+          "pass": true
+        },
+        {
+          "assertion": "알 수 없는 값을 설명으로 추정하지 않는다",
+          "expected": null,
+          "observed": null,
+          "pass": true
+        },
+        {
+          "assertion": "문제 행의 원문을 source row로 보존한다",
+          "expected": true,
+          "observed": true,
+          "pass": true
+        },
+        {
+          "assertion": "전체 원문을 보존한다",
+          "expected": true,
+          "observed": true,
+          "pass": true
+        }
+      ],
+      "apis": [
+        "createTextAuthoringDocument"
+      ]
+    },
+    {
+      "id": "G06",
+      "group": "grammar_roundtrip",
+      "priority": "high",
+      "title": "중첩 체크박스 경계",
+      "mode": "api_acceptance",
+      "actual": {
+        "itemCount": 1,
+        "itemTitle": "부모 항목",
+        "nestingLevel": 0,
+        "detail": null,
+        "issueTypes": [
+          "unsupported_nested_item"
+        ],
+        "sourceRows": [
+          "# 중첩 경계",
+          "## 실행",
+          "- [ ] 부모 항목",
+          "  - [ ] 하위 작업"
+        ]
+      },
+      "pass": true,
+      "status": "passed",
+      "evidence": [
+        {
+          "assertion": "중첩 체크박스는 unsupported_nested_item으로 남긴다",
+          "expected": [
+            "unsupported_nested_item"
+          ],
+          "observed": [
+            "unsupported_nested_item"
+          ],
+          "pass": true
+        },
+        {
+          "assertion": "자동 평탄화로 Item을 추가하지 않는다",
+          "expected": 1,
+          "observed": 1,
+          "pass": true
+        },
+        {
+          "assertion": "부모 Item의 nesting을 바꾸지 않는다",
+          "expected": 0,
+          "observed": 0,
+          "pass": true
+        },
+        {
+          "assertion": "부모 속성으로 오인하지 않는다",
+          "expected": null,
+          "observed": null,
+          "pass": true
+        },
+        {
+          "assertion": "중첩 원문을 source row로 보존한다",
+          "expected": true,
+          "observed": true,
+          "pass": true
+        }
+      ],
+      "apis": [
+        "createTextAuthoringDocument"
+      ]
+    },
+    {
+      "id": "G07",
+      "group": "grammar_roundtrip",
+      "priority": "high",
+      "title": "모호한 colon bullet",
+      "mode": "api_acceptance",
+      "actual": {
+        "itemCount": 1,
+        "itemTitle": "부모 항목",
+        "detail": null,
+        "issueTypes": [
+          "unknown_property"
+        ],
+        "sourceRows": [
+          "# 미정 속성",
+          "## 실행",
+          "- [ ] 부모 항목",
+          "  - 책: 읽기"
+        ],
+        "sourcePreserved": true
+      },
+      "pass": true,
+      "status": "passed",
+      "evidence": [
+        {
+          "assertion": "unknown_property 이슈가 하나 생긴다",
+          "expected": [
+            "unknown_property"
+          ],
+          "observed": [
+            "unknown_property"
+          ],
+          "pass": true
+        },
+        {
+          "assertion": "새 Item을 만들지 않는다",
+          "expected": 1,
+          "observed": 1,
+          "pass": true
+        },
+        {
+          "assertion": "부모 제목을 바꾸지 않는다",
+          "expected": "부모 항목",
+          "observed": "부모 항목",
+          "pass": true
+        },
+        {
+          "assertion": "알 수 없는 값을 설명으로 추정하지 않는다",
+          "expected": null,
+          "observed": null,
+          "pass": true
+        },
+        {
+          "assertion": "문제 행의 원문을 source row로 보존한다",
+          "expected": true,
+          "observed": true,
+          "pass": true
+        },
+        {
+          "assertion": "전체 원문을 보존한다",
+          "expected": true,
+          "observed": true,
+          "pass": true
+        }
+      ],
+      "apis": [
+        "createTextAuthoringDocument"
+      ]
+    },
+    {
+      "id": "G08",
+      "group": "grammar_roundtrip",
+      "priority": "blocker",
+      "title": "v1 입력 호환과 v2 정규화",
+      "mode": "api_acceptance",
+      "actual": {
+        "itemCount": 1,
+        "detail": "기존 설명",
+        "date": "2026-08-03",
+        "writesV2Detail": true,
+        "writesV2Date": true,
+        "semanticRoundTrip": true,
+        "reparsedItemCount": 1
+      },
+      "pass": true,
+      "status": "passed",
+      "evidence": [
+        {
+          "assertion": "v1 대시 없는 속성을 읽는다",
+          "expected": [
+            "기존 설명",
+            "2026-08-03"
+          ],
+          "observed": [
+            "기존 설명",
+            "2026-08-03"
+          ],
+          "pass": true
+        },
+        {
+          "assertion": "writer는 v2 설명 bullet을 쓴다",
+          "expected": true,
+          "observed": true,
+          "pass": true
+        },
+        {
+          "assertion": "writer는 v2 날짜 bullet을 쓴다",
+          "expected": true,
+          "observed": true,
+          "pass": true
+        },
+        {
+          "assertion": "실제 parser 재입력에서 의미 필드 손실이 없다",
+          "expected": true,
+          "observed": true,
+          "pass": true
+        },
+        {
+          "assertion": "Item 수가 불변이다",
+          "expected": 1,
+          "observed": 1,
+          "pass": true
+        }
+      ],
+      "apis": [
+        "createTextAuthoringDocument",
+        "exportTextAuthoringMarkdown",
+        "createTextAuthoringDocument(reparse)"
+      ]
+    },
+    {
+      "id": "G09",
+      "group": "grammar_roundtrip",
+      "priority": "blocker",
+      "title": "표식 없는 문장 보존",
+      "mode": "api_acceptance",
+      "actual": {
+        "itemCount": 0,
+        "rawText": "정말 설명입니다. 다음 내용을 참고하세요.",
+        "sourceRows": [
+          "정말 설명입니다. 다음 내용을 참고하세요."
+        ],
+        "issueTypes": [
+          "ambiguous_role"
+        ]
+      },
+      "pass": true,
+      "status": "passed",
+      "evidence": [
+        {
+          "assertion": "표식 없는 문장은 canonical Item을 만들지 않는다",
+          "expected": 0,
+          "observed": 0,
+          "pass": true
+        },
+        {
+          "assertion": "원문 텍스트를 byte-equivalent로 보존한다",
+          "expected": "정말 설명입니다. 다음 내용을 참고하세요.",
+          "observed": "정말 설명입니다. 다음 내용을 참고하세요.",
+          "pass": true
+        },
+        {
+          "assertion": "원문 문장을 source row로 보존한다",
+          "expected": true,
+          "observed": true,
+          "pass": true
+        },
+        {
+          "assertion": "명시적 승인 전 ambiguous_role로 남긴다",
+          "expected": [
+            "ambiguous_role"
+          ],
+          "observed": [
+            "ambiguous_role"
+          ],
+          "pass": true
+        }
+      ],
+      "apis": [
+        "createTextAuthoringDocument"
+      ]
+    },
+    {
+      "id": "G10",
+      "group": "grammar_roundtrip",
+      "priority": "blocker",
+      "title": "v2 export와 reparse 동등성",
+      "mode": "api_acceptance",
+      "actual": {
+        "before": {
+          "flowTitle": "왕복 동등성",
+          "stepTitles": [
+            "준비",
+            "마무리"
+          ],
+          "anchor": "2026-08-10",
+          "items": [
+            {
+              "stepTitle": "준비",
+              "title": "예약 확인",
+              "detail": "예약 정보를 다시 확인합니다.",
+              "completion": "예약 번호를 저장함",
+              "schedule": {
+                "kind": "absolute",
+                "raw": "2026-08-09",
+                "date": "2026-08-09",
+                "time": "09:30",
+                "timezone": "Asia/Seoul",
+                "durationMinutes": 45,
+                "repeat": "매주 월요일"
+              },
+              "properties": [
+                {
+                  "key": "condition",
+                  "label": "조건",
+                  "value": "운행 중일 때"
+                },
+                {
+                  "key": "date",
+                  "label": "날짜",
+                  "value": "2026-08-09"
+                },
+                {
+                  "key": "duration",
+                  "label": "소요 시간",
+                  "value": "45분"
+                },
+                {
+                  "key": "place",
+                  "label": "장소",
+                  "value": "서울역"
+                },
+                {
+                  "key": "repeat",
+                  "label": "반복",
+                  "value": "매주 월요일"
+                },
+                {
+                  "key": "time",
+                  "label": "시간",
+                  "value": "09:30"
+                },
+                {
+                  "key": "timezone",
+                  "label": "시간대",
+                  "value": "Asia/Seoul"
+                }
+              ],
+              "resources": [
+                {
+                  "label": "예약 페이지",
+                  "url": "https://example.com/booking"
+                }
+              ],
+              "sources": [
+                {
+                  "label": "공식 안내",
+                  "url": "https://example.com/source"
+                }
+              ],
+              "guides": [
+                "예약 문자를 준비합니다."
+              ],
+              "cautions": [
+                "이름을 확인합니다."
+              ],
+              "nestingLevel": 0
+            },
+            {
+              "stepTitle": "준비",
+              "title": "사전 알림",
+              "detail": null,
+              "completion": null,
+              "schedule": {
+                "kind": "relative",
+                "raw": "D-3",
+                "dayOffset": -3,
+                "anchorLabel": "2026-08-10",
+                "time": null,
+                "timezone": null,
+                "durationMinutes": null,
+                "repeat": null
+              },
+              "properties": [
+                {
+                  "key": "relative_date",
+                  "label": "상대 날짜",
+                  "value": "D-3"
+                }
+              ],
+              "resources": [],
+              "sources": [],
+              "guides": [],
+              "cautions": [],
+              "nestingLevel": 0
+            },
+            {
+              "stepTitle": "마무리",
+              "title": "결과 기록",
+              "detail": "결과를 메모합니다.",
+              "completion": null,
+              "schedule": null,
+              "properties": [],
+              "resources": [],
+              "sources": [],
+              "guides": [],
+              "cautions": [],
+              "nestingLevel": 0
+            },
+            {
+              "stepTitle": "마무리",
+              "title": "공유",
+              "detail": null,
+              "completion": null,
+              "schedule": null,
+              "properties": [],
+              "resources": [
+                {
+                  "label": "공유 링크",
+                  "url": "https://example.com/share"
+                }
+              ],
+              "sources": [],
+              "guides": [],
+              "cautions": [],
+              "nestingLevel": 0
+            }
+          ]
+        },
+        "after": {
+          "flowTitle": "왕복 동등성",
+          "stepTitles": [
+            "준비",
+            "마무리"
+          ],
+          "anchor": "2026-08-10",
+          "items": [
+            {
+              "stepTitle": "준비",
+              "title": "예약 확인",
+              "detail": "예약 정보를 다시 확인합니다.",
+              "completion": "예약 번호를 저장함",
+              "schedule": {
+                "kind": "absolute",
+                "raw": "2026-08-09",
+                "date": "2026-08-09",
+                "time": "09:30",
+                "timezone": "Asia/Seoul",
+                "durationMinutes": 45,
+                "repeat": "매주 월요일"
+              },
+              "properties": [
+                {
+                  "key": "condition",
+                  "label": "조건",
+                  "value": "운행 중일 때"
+                },
+                {
+                  "key": "date",
+                  "label": "날짜",
+                  "value": "2026-08-09"
+                },
+                {
+                  "key": "duration",
+                  "label": "소요 시간",
+                  "value": "45분"
+                },
+                {
+                  "key": "place",
+                  "label": "장소",
+                  "value": "서울역"
+                },
+                {
+                  "key": "repeat",
+                  "label": "반복",
+                  "value": "매주 월요일"
+                },
+                {
+                  "key": "time",
+                  "label": "시간",
+                  "value": "09:30"
+                },
+                {
+                  "key": "timezone",
+                  "label": "시간대",
+                  "value": "Asia/Seoul"
+                }
+              ],
+              "resources": [
+                {
+                  "label": "예약 페이지",
+                  "url": "https://example.com/booking"
+                }
+              ],
+              "sources": [
+                {
+                  "label": "공식 안내",
+                  "url": "https://example.com/source"
+                }
+              ],
+              "guides": [
+                "예약 문자를 준비합니다."
+              ],
+              "cautions": [
+                "이름을 확인합니다."
+              ],
+              "nestingLevel": 0
+            },
+            {
+              "stepTitle": "준비",
+              "title": "사전 알림",
+              "detail": null,
+              "completion": null,
+              "schedule": {
+                "kind": "relative",
+                "raw": "D-3",
+                "dayOffset": -3,
+                "anchorLabel": "2026-08-10",
+                "time": null,
+                "timezone": null,
+                "durationMinutes": null,
+                "repeat": null
+              },
+              "properties": [
+                {
+                  "key": "relative_date",
+                  "label": "상대 날짜",
+                  "value": "D-3"
+                }
+              ],
+              "resources": [],
+              "sources": [],
+              "guides": [],
+              "cautions": [],
+              "nestingLevel": 0
+            },
+            {
+              "stepTitle": "마무리",
+              "title": "결과 기록",
+              "detail": "결과를 메모합니다.",
+              "completion": null,
+              "schedule": null,
+              "properties": [],
+              "resources": [],
+              "sources": [],
+              "guides": [],
+              "cautions": [],
+              "nestingLevel": 0
+            },
+            {
+              "stepTitle": "마무리",
+              "title": "공유",
+              "detail": null,
+              "completion": null,
+              "schedule": null,
+              "properties": [],
+              "resources": [
+                {
+                  "label": "공유 링크",
+                  "url": "https://example.com/share"
+                }
+              ],
+              "sources": [],
+              "guides": [],
+              "cautions": [],
+              "nestingLevel": 0
+            }
+          ]
+        },
+        "semanticEquivalent": true,
+        "stepCount": 2,
+        "itemCount": 4,
+        "nestingLevels": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "hasDuplicateProperty": false,
+        "visibleV2PropertyCount": 16,
+        "supportedReceipt": {
+          "matchedCount": 4,
+          "changedCount": 0,
+          "unresolvedCount": 0
+        }
+      },
+      "pass": true,
+      "status": "passed",
+      "evidence": [
+        {
+          "assertion": "실제 parser 재입력에서 Step, Item, field, link, schedule이 같다",
+          "expected": true,
+          "observed": true,
+          "pass": true
+        },
+        {
+          "assertion": "Step 수를 보존한다",
+          "expected": 2,
+          "observed": 2,
+          "pass": true
+        },
+        {
+          "assertion": "Item 수를 보존한다",
+          "expected": 4,
+          "observed": 4,
+          "pass": true
+        },
+        {
+          "assertion": "nesting loss가 없다",
+          "expected": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "observed": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "pass": true
+        },
+        {
+          "assertion": "속성 중복이 없다",
+          "expected": false,
+          "observed": false,
+          "pass": true
+        },
+        {
+          "assertion": "지원 Markdown receipt의 변경 수가 0이다",
+          "expected": 0,
+          "observed": 0,
+          "pass": true
+        },
+        {
+          "assertion": "지원 Markdown receipt의 미해결 수가 0이다",
+          "expected": 0,
+          "observed": 0,
+          "pass": true
+        }
+      ],
+      "apis": [
+        "createTextAuthoringDocument",
+        "exportTextAuthoringMarkdown",
+        "createTextAuthoringDocument(reparse)",
+        "checkMarkdownRoundTrip"
+      ]
+    },
+    {
+      "id": "D01",
+      "group": "date_anchor_order",
+      "priority": "blocker",
+      "title": "절대 날짜 역순 입력",
+      "mode": "api_acceptance",
+      "actual": {
+        "sourceOrder": [
+          "늦은 항목",
+          "빠른 항목"
+        ],
+        "todoOrder": [
+          "늦은 항목",
+          "빠른 항목"
+        ],
+        "calendarOrder": [
+          "빠른 항목",
+          "늦은 항목"
+        ],
+        "sourceMutationCount": 0,
+        "rawSourceUnchanged": true,
+        "sourceAlignmentAvailable": true
+      },
+      "pass": true,
+      "status": "passed",
+      "evidence": [
+        {
+          "assertion": "canonical은 작성 순서를 유지한다",
+          "expected": [
+            "늦은 항목",
+            "빠른 항목"
+          ],
+          "observed": [
+            "늦은 항목",
+            "빠른 항목"
+          ],
+          "pass": true
+        },
+        {
+          "assertion": "Todo는 작성 순서를 유지한다",
+          "expected": [
+            "늦은 항목",
+            "빠른 항목"
+          ],
+          "observed": [
+            "늦은 항목",
+            "빠른 항목"
+          ],
+          "pass": true
+        },
+        {
+          "assertion": "Calendar만 날짜 오름차순이다",
+          "expected": [
+            "빠른 항목",
+            "늦은 항목"
+          ],
+          "observed": [
+            "빠른 항목",
+            "늦은 항목"
+          ],
+          "pass": true
+        },
+        {
+          "assertion": "projection은 원문을 자동 변경하지 않는다",
+          "expected": 0,
+          "observed": 0,
+          "pass": true
+        },
+        {
+          "assertion": "원문이 byte-equivalent다",
+          "expected": true,
+          "observed": true,
+          "pass": true
+        },
+        {
+          "assertion": "원문 정렬 적용 가능 상태를 계산할 수 있다",
+          "expected": true,
+          "observed": true,
+          "pass": true
+        }
+      ],
+      "apis": [
+        "createTextAuthoringDocument",
+        "buildAuthoringArtifactProjection"
+      ]
+    },
+    {
+      "id": "D02",
+      "group": "date_anchor_order",
+      "priority": "blocker",
+      "title": "원문 정렬 적용",
+      "mode": "api_acceptance",
+      "actual": {
+        "alignedOrder": [
+          "빠른 항목",
+          "늦은 항목"
+        ],
+        "alignedRawText": "# 날짜 역순\n## 실행\n- [ ] 빠른 항목\n  - 설명: 빠른 설명\n  - 날짜: 2026-08-03\n- [ ] 늦은 항목\n  - 설명: 늦은 설명\n  - 날짜: 2026-08-10",
+        "propertyMovedWithItem": true,
+        "stableItemIds": true,
+        "sourceLineagePreserved": true,
+        "revisionOperation": "align_source_order",
+        "undoRawRestored": true,
+        "undoOrder": [
+          "늦은 항목",
+          "빠른 항목"
+        ]
+      },
+      "pass": true,
+      "status": "passed",
+      "evidence": [
+        {
+          "assertion": "명시적 작업 후 같은 Step 안 Item 순서가 날짜순이다",
+          "expected": [
+            "빠른 항목",
+            "늦은 항목"
+          ],
+          "observed": [
+            "빠른 항목",
+            "늦은 항목"
+          ],
+          "pass": true
+        },
+        {
+          "assertion": "소유 속성이 Item 블록과 함께 이동한다",
+          "expected": true,
+          "observed": true,
+          "pass": true
+        },
+        {
+          "assertion": "stable Item ID를 보존한다",
+          "expected": true,
+          "observed": true,
+          "pass": true
+        },
+        {
+          "assertion": "source lineage를 보존한다",
+          "expected": true,
+          "observed": true,
+          "pass": true
+        },
+        {
+          "assertion": "revision에 명시적 원문 정렬 작업을 기록한다",
+          "expected": "align_source_order",
+          "observed": "align_source_order",
+          "pass": true
+        },
+        {
+          "assertion": "undo가 원문을 복원한다",
+          "expected": true,
+          "observed": true,
+          "pass": true
+        },
+        {
+          "assertion": "undo가 원래 Item 순서를 복원한다",
+          "expected": [
+            "늦은 항목",
+            "빠른 항목"
+          ],
+          "observed": [
+            "늦은 항목",
+            "빠른 항목"
+          ],
+          "pass": true
+        }
+      ],
+      "apis": [
+        "createTextAuthoringDocument",
+        "buildAuthoringArtifactProjection",
+        "applyAuthoringOperation(align_source_order)",
+        "applyAuthoringOperation(undo)"
+      ]
+    },
+    {
+      "id": "D03",
+      "group": "date_anchor_order",
+      "priority": "high",
+      "title": "같은 날짜 안정 정렬",
+      "mode": "api_acceptance",
+      "actual": {
+        "sourceOrder": [
+          "같은 날 첫 항목",
+          "같은 날 둘째 항목"
+        ],
+        "calendarOrder": [
+          "같은 날 첫 항목",
+          "같은 날 둘째 항목"
+        ],
+        "alignedOrder": [
+          "같은 날 첫 항목",
+          "같은 날 둘째 항목"
+        ],
+        "noRewriteNeeded": true
+      },
+      "pass": true,
+      "status": "passed",
+      "evidence": [
+        {
+          "assertion": "같은 날짜의 Calendar 동률은 작성 순서다",
+          "expected": [
+            "같은 날 첫 항목",
+            "같은 날 둘째 항목"
+          ],
+          "observed": [
+            "같은 날 첫 항목",
+            "같은 날 둘째 항목"
+          ],
+          "pass": true
+        },
+        {
+          "assertion": "정렬 적용 후 상대 순서가 같다",
+          "expected": [
+            "같은 날 첫 항목",
+            "같은 날 둘째 항목"
+          ],
+          "observed": [
+            "같은 날 첫 항목",
+            "같은 날 둘째 항목"
+          ],
+          "pass": true
+        },
+        {
+          "assertion": "이미 정렬된 원문은 새 revision을 만들지 않는다",
+          "expected": true,
+          "observed": true,
+          "pass": true
+        }
+      ],
+      "apis": [
+        "createTextAuthoringDocument",
+        "buildAuthoringArtifactProjection",
+        "applyAuthoringOperation(align_source_order)"
+      ]
+    },
+    {
+      "id": "D04",
+      "group": "date_anchor_order",
+      "priority": "blocker",
+      "title": "D-Day 기준일 없음",
+      "mode": "api_acceptance",
+      "actual": {
+        "todoEligible": true,
+        "todoCount": 2,
+        "calendarEligible": false,
+        "calendarCount": 0,
+        "calendarDates": [],
+        "lossReasons": [
+          "relative_anchor_required",
+          "relative_anchor_required",
+          "compatibility_loss",
+          "compatibility_loss"
+        ],
+        "relativeAnchorLossCount": 2
+      },
+      "pass": true,
+      "status": "passed",
+      "evidence": [
+        {
+          "assertion": "체크/할 일은 활성 상태다",
+          "expected": [
+            true,
+            2
+          ],
+          "observed": [
+            true,
+            2
+          ],
+          "pass": true
+        },
+        {
+          "assertion": "기준일 없는 상대 날짜는 Calendar를 만들지 않는다",
+          "expected": [
+            false,
+            0
+          ],
+          "observed": [
+            false,
+            0
+          ],
+          "pass": true
+        },
+        {
+          "assertion": "각 상대 날짜에 relative_anchor_required를 남긴다",
+          "expected": 2,
+          "observed": 2,
+          "pass": true
+        },
+        {
+          "assertion": "실제 날짜를 추정하지 않는다",
+          "expected": [],
+          "observed": [],
+          "pass": true
+        }
+      ],
+      "apis": [
+        "createTextAuthoringDocument",
+        "buildAuthoringArtifactProjection"
+      ]
+    },
+    {
+      "id": "D05",
+      "group": "date_anchor_order",
+      "priority": "blocker",
+      "title": "원문에 기준일 명시",
+      "mode": "api_acceptance",
+      "actual": {
+        "anchorField": "2026-08-10",
+        "scheduleAnchors": [
+          "2026-08-10",
+          "2026-08-10"
+        ],
+        "calendarEligible": true,
+        "calendarDates": [
+          "2026-08-07",
+          "2026-08-10"
+        ],
+        "sourceExpressions": [
+          "D-3",
+          "D-Day"
+        ]
+      },
+      "pass": true,
+      "status": "passed",
+      "evidence": [
+        {
+          "assertion": "원문의 ISO 기준일을 flow field로 보존한다",
+          "expected": "2026-08-10",
+          "observed": "2026-08-10",
+          "pass": true
+        },
+        {
+          "assertion": "상대 schedule에 계산 기준을 연결한다",
+          "expected": [
+            "2026-08-10",
+            "2026-08-10"
+          ],
+          "observed": [
+            "2026-08-10",
+            "2026-08-10"
+          ],
+          "pass": true
+        },
+        {
+          "assertion": "Calendar가 활성화된다",
+          "expected": true,
+          "observed": true,
+          "pass": true
+        },
+        {
+          "assertion": "D-3부터 D-Day까지 날짜순으로 계산한다",
+          "expected": [
+            "2026-08-07",
+            "2026-08-10"
+          ],
+          "observed": [
+            "2026-08-07",
+            "2026-08-10"
+          ],
+          "pass": true
+        },
+        {
+          "assertion": "원문 상대 표현을 결과 근거로 보존한다",
+          "expected": [
+            "D-3",
+            "D-Day"
+          ],
+          "observed": [
+            "D-3",
+            "D-Day"
+          ],
+          "pass": true
+        }
+      ],
+      "apis": [
+        "createTextAuthoringDocument",
+        "buildAuthoringArtifactProjection"
+      ]
+    },
+    {
+      "id": "D06",
+      "group": "date_anchor_order",
+      "priority": "blocker",
+      "title": "UI 기준일 입력의 원문 반영",
+      "mode": "api_acceptance",
+      "actual": {
+        "hiddenOnlyCalendarCount": 0,
+        "persistedRaw": "# UI 기준일\n- 기준일: 2026-08-10\n## 실행\n- [ ] 사전 확인\n  - 상대 날짜: D-3",
+        "anchorLineIndex": 1,
+        "calendarDates": [
+          "2026-08-07"
+        ],
+        "refreshedCalendarDates": [
+          "2026-08-07"
+        ]
+      },
+      "pass": true,
+      "status": "passed",
+      "evidence": [
+        {
+          "assertion": "UI-only anchor option은 Calendar를 활성화하지 않는다",
+          "expected": 0,
+          "observed": 0,
+          "pass": true
+        },
+        {
+          "assertion": "선택한 기준일은 원문 제목 바로 뒤 canonical 줄로 지속된다",
+          "expected": 1,
+          "observed": 1,
+          "pass": true
+        },
+        {
+          "assertion": "원문 반영 직후 Calendar가 계산된다",
+          "expected": [
+            "2026-08-07"
+          ],
+          "observed": [
+            "2026-08-07"
+          ],
+          "pass": true
+        },
+        {
+          "assertion": "같은 원문을 새로 파싱해도 결과가 같다",
+          "expected": [
+            "2026-08-07"
+          ],
+          "observed": [
+            "2026-08-07"
+          ],
+          "pass": true
+        }
+      ],
+      "apis": [
+        "createTextAuthoringDocument",
+        "buildAuthoringArtifactProjection(anchor option boundary)",
+        "createTextAuthoringDocument(persisted raw source)"
+      ]
+    },
+    {
+      "id": "D07",
+      "group": "date_anchor_order",
+      "priority": "high",
+      "title": "절대·상대·미정 날짜 혼합",
+      "mode": "api_acceptance",
+      "actual": {
+        "calendarOrder": [
+          {
+            "title": "상대 날짜 항목",
+            "date": "2026-08-07"
+          },
+          {
+            "title": "절대 날짜 항목",
+            "date": "2026-08-09"
+          }
+        ],
+        "todoOrder": [
+          "절대 날짜 항목",
+          "날짜 없는 항목",
+          "상대 날짜 항목"
+        ],
+        "alignedOrder": [
+          "상대 날짜 항목",
+          "절대 날짜 항목",
+          "날짜 없는 항목"
+        ]
+      },
+      "pass": true,
+      "status": "passed",
+      "evidence": [
+        {
+          "assertion": "계산 가능한 행만 Calendar에 날짜순으로 나온다",
+          "expected": [
+            {
+              "title": "상대 날짜 항목",
+              "date": "2026-08-07"
+            },
+            {
+              "title": "절대 날짜 항목",
+              "date": "2026-08-09"
+            }
+          ],
+          "observed": [
+            {
+              "title": "상대 날짜 항목",
+              "date": "2026-08-07"
+            },
+            {
+              "title": "절대 날짜 항목",
+              "date": "2026-08-09"
+            }
+          ],
+          "pass": true
+        },
+        {
+          "assertion": "모든 Item은 Todo에 작성 순서로 남는다",
+          "expected": [
+            "절대 날짜 항목",
+            "날짜 없는 항목",
+            "상대 날짜 항목"
+          ],
+          "observed": [
+            "절대 날짜 항목",
+            "날짜 없는 항목",
+            "상대 날짜 항목"
+          ],
+          "pass": true
+        },
+        {
+          "assertion": "명시적 원문 정렬에서 날짜 없는 Item은 마지막이다",
+          "expected": [
+            "상대 날짜 항목",
+            "절대 날짜 항목",
+            "날짜 없는 항목"
+          ],
+          "observed": [
+            "상대 날짜 항목",
+            "절대 날짜 항목",
+            "날짜 없는 항목"
+          ],
+          "pass": true
+        }
+      ],
+      "apis": [
+        "createTextAuthoringDocument",
+        "buildAuthoringArtifactProjection",
+        "applyAuthoringOperation(align_source_order)"
+      ]
+    },
+    {
+      "id": "D08",
+      "group": "date_anchor_order",
+      "priority": "high",
+      "title": "모호한 날짜",
+      "mode": "api_acceptance",
+      "actual": {
+        "issueTypes": [
+          "invalid_date",
+          "invalid_date"
+        ],
+        "schedules": [
+          null,
+          null
+        ],
+        "calendarCount": 0,
+        "rawSourceUnchanged": true
+      },
+      "pass": true,
+      "status": "passed",
+      "evidence": [
+        {
+          "assertion": "모호한 날짜마다 invalid_date 이슈를 남긴다",
+          "expected": [
+            "invalid_date",
+            "invalid_date"
+          ],
+          "observed": [
+            "invalid_date",
+            "invalid_date"
+          ],
+          "pass": true
+        },
+        {
+          "assertion": "연도나 날짜를 추정해 schedule을 만들지 않는다",
+          "expected": [
+            null,
+            null
+          ],
+          "observed": [
+            null,
+            null
+          ],
+          "pass": true
+        },
+        {
+          "assertion": "Calendar 일정은 0개다",
+          "expected": 0,
+          "observed": 0,
+          "pass": true
+        },
+        {
+          "assertion": "원문을 보존한다",
+          "expected": true,
+          "observed": true,
+          "pass": true
+        }
+      ],
+      "apis": [
+        "createTextAuthoringDocument",
+        "buildAuthoringArtifactProjection"
+      ]
+    },
+    {
+      "id": "D09",
+      "group": "date_anchor_order",
+      "priority": "high",
+      "title": "Step 경계 안 정렬",
+      "mode": "api_acceptance",
+      "actual": {
+        "stepOrders": [
+          {
+            "stepTitle": "첫 단계",
+            "itemTitles": [
+              "첫 단계 빠름",
+              "첫 단계 늦음"
+            ]
+          },
+          {
+            "stepTitle": "둘째 단계",
+            "itemTitles": [
+              "둘째 단계 빠름",
+              "둘째 단계 늦음"
+            ]
+          }
+        ],
+        "stepMembershipPreserved": true,
+        "stableItemIds": true,
+        "sourceLineagePreserved": true
+      },
+      "pass": true,
+      "status": "passed",
+      "evidence": [
+        {
+          "assertion": "각 Step 내부에서만 날짜순 정렬한다",
+          "expected": [
+            {
+              "stepTitle": "첫 단계",
+              "itemTitles": [
+                "첫 단계 빠름",
+                "첫 단계 늦음"
+              ]
+            },
+            {
+              "stepTitle": "둘째 단계",
+              "itemTitles": [
+                "둘째 단계 빠름",
+                "둘째 단계 늦음"
+              ]
+            }
+          ],
+          "observed": [
+            {
+              "stepTitle": "첫 단계",
+              "itemTitles": [
+                "첫 단계 빠름",
+                "첫 단계 늦음"
+              ]
+            },
+            {
+              "stepTitle": "둘째 단계",
+              "itemTitles": [
+                "둘째 단계 빠름",
+                "둘째 단계 늦음"
+              ]
+            }
+          ],
+          "pass": true
+        },
+        {
+          "assertion": "Item이 다른 Step으로 이동하지 않는다",
+          "expected": true,
+          "observed": true,
+          "pass": true
+        },
+        {
+          "assertion": "stable ID를 보존한다",
+          "expected": true,
+          "observed": true,
+          "pass": true
+        },
+        {
+          "assertion": "source lineage를 보존한다",
+          "expected": true,
+          "observed": true,
+          "pass": true
+        }
+      ],
+      "apis": [
+        "createTextAuthoringDocument",
+        "buildAuthoringArtifactProjection",
+        "applyAuthoringOperation(align_source_order)"
+      ]
+    },
+    {
+      "id": "A01",
+      "group": "result_shape",
+      "priority": "blocker",
+      "title": "고정 결과 형태 슬롯",
+      "mode": "api_acceptance",
+      "actual": {
+        "slotKeys": [
+          [
+            "calendar",
+            "todo",
+            "sheet",
+            "memo"
+          ],
+          [
+            "calendar",
+            "todo",
+            "sheet",
+            "memo"
+          ],
+          [
+            "calendar",
+            "todo",
+            "sheet",
+            "memo"
+          ]
+        ],
+        "viewShapes": [
+          {
+            "calendar": [
+              "artifact",
+              "count",
+              "eligible",
+              "label",
+              "losses",
+              "rows"
+            ],
+            "todo": [
+              "artifact",
+              "count",
+              "eligible",
+              "label",
+              "losses",
+              "rows"
+            ],
+            "sheet": [
+              "artifact",
+              "count",
+              "eligible",
+              "label",
+              "losses",
+              "rows",
+              "sheetColumns"
+            ],
+            "memo": [
+              "artifact",
+              "count",
+              "eligible",
+              "label",
+              "losses",
+              "rows"
+            ]
+          },
+          {
+            "calendar": [
+              "artifact",
+              "count",
+              "dateRange",
+              "eligible",
+              "label",
+              "losses",
+              "rows"
+            ],
+            "todo": [
+              "artifact",
+              "count",
+              "dateRange",
+              "eligible",
+              "label",
+              "losses",
+              "rows"
+            ],
+            "sheet": [
+              "artifact",
+              "count",
+              "eligible",
+              "label",
+              "losses",
+              "rows",
+              "sheetColumns"
+            ],
+            "memo": [
+              "artifact",
+              "count",
+              "dateRange",
+              "eligible",
+              "label",
+              "losses",
+              "rows"
+            ]
+          },
+          {
+            "calendar": [
+              "artifact",
+              "count",
+              "eligible",
+              "label",
+              "losses",
+              "rows"
+            ],
+            "todo": [
+              "artifact",
+              "count",
+              "eligible",
+              "label",
+              "losses",
+              "rows"
+            ],
+            "sheet": [
+              "artifact",
+              "count",
+              "eligible",
+              "label",
+              "losses",
+              "rows",
+              "sheetColumns"
+            ],
+            "memo": [
+              "artifact",
+              "count",
+              "eligible",
+              "label",
+              "losses",
+              "rows"
+            ]
+          }
+        ],
+        "stableViewContracts": [
+          true,
+          true,
+          true
+        ],
+        "eligibility": [
+          {
+            "calendar": false,
+            "todo": true,
+            "sheet": false,
+            "memo": true
+          },
+          {
+            "calendar": true,
+            "todo": true,
+            "sheet": false,
+            "memo": true
+          },
+          {
+            "calendar": false,
+            "todo": true,
+            "sheet": true,
+            "memo": true
+          }
+        ]
+      },
+      "pass": true,
+      "status": "passed",
+      "evidence": [
+        {
+          "assertion": "입력 종류와 무관하게 결과 슬롯 4개의 순서가 고정이다",
+          "expected": [
+            [
+              "calendar",
+              "todo",
+              "sheet",
+              "memo"
+            ],
+            [
+              "calendar",
+              "todo",
+              "sheet",
+              "memo"
+            ],
+            [
+              "calendar",
+              "todo",
+              "sheet",
+              "memo"
+            ]
+          ],
+          "observed": [
+            [
+              "calendar",
+              "todo",
+              "sheet",
+              "memo"
+            ],
+            [
+              "calendar",
+              "todo",
+              "sheet",
+              "memo"
+            ],
+            [
+              "calendar",
+              "todo",
+              "sheet",
+              "memo"
+            ]
+          ],
+          "pass": true
+        },
+        {
+          "assertion": "각 입력 전환에서 결과 슬롯의 필수 API contract가 유지된다",
+          "expected": [
+            true,
+            true,
+            true
+          ],
+          "observed": [
+            true,
+            true,
+            true
+          ],
+          "pass": true
+        },
+        {
+          "assertion": "슬롯 제거 대신 eligible 상태만 달라진다",
+          "expected": true,
+          "observed": true,
+          "pass": true
+        }
+      ],
+      "apis": [
+        "createTextAuthoringDocument",
+        "buildAuthoringArtifactProjection"
+      ]
+    },
+    {
+      "id": "A02",
+      "group": "result_shape",
+      "priority": "high",
+      "title": "일반 목록의 표/엑셀 비활성",
+      "mode": "api_acceptance",
+      "actual": {
+        "todo": {
+          "eligible": true,
+          "count": 3
+        },
+        "memo": {
+          "eligible": true,
+          "count": 3
+        },
+        "sheet": {
+          "eligible": false,
+          "count": 0,
+          "reasons": [
+            "insufficient_tabular_structure"
+          ]
+        }
+      },
+      "pass": true,
+      "status": "passed",
+      "evidence": [
+        {
+          "assertion": "일반 목록은 Todo가 활성이다",
+          "expected": {
+            "eligible": true,
+            "count": 3
+          },
+          "observed": {
+            "eligible": true,
+            "count": 3
+          },
+          "pass": true
+        },
+        {
+          "assertion": "일반 목록은 텍스트/Memo가 활성이다",
+          "expected": {
+            "eligible": true,
+            "count": 3
+          },
+          "observed": {
+            "eligible": true,
+            "count": 3
+          },
+          "pass": true
+        },
+        {
+          "assertion": "제목뿐인 일반 목록의 Sheet는 비활성이다",
+          "expected": [
+            false,
+            0
+          ],
+          "observed": [
+            false,
+            0
+          ],
+          "pass": true
+        },
+        {
+          "assertion": "Sheet 비활성 이유를 제공한다",
+          "expected": true,
+          "observed": true,
+          "pass": true
+        }
+      ],
+      "apis": [
+        "createTextAuthoringDocument",
+        "buildAuthoringArtifactProjection"
+      ]
+    },
+    {
+      "id": "A03",
+      "group": "result_shape",
+      "priority": "high",
+      "title": "원본 표의 표/엑셀 활성",
+      "mode": "api_acceptance",
+      "actual": {
+        "primaryArtifact": "sheet",
+        "eligible": true,
+        "rowCount": 2,
+        "sourceTableRowCount": 2,
+        "columns": [
+          "활동",
+          "담당",
+          "자료"
+        ],
+        "cells": [
+          {
+            "활동": "예약 확인",
+            "담당": "민지",
+            "자료": "https://example.com/booking"
+          },
+          {
+            "활동": "숙소 확인",
+            "담당": "준호",
+            "자료": "https://example.com/stay"
+          }
+        ],
+        "urls": [
+          "https://example.com/booking",
+          "https://example.com/stay"
+        ]
+      },
+      "pass": true,
+      "status": "passed",
+      "evidence": [
+        {
+          "assertion": "원본 표의 Sheet가 활성이다",
+          "expected": true,
+          "observed": true,
+          "pass": true
+        },
+        {
+          "assertion": "원본 표는 Sheet를 우선 추천한다",
+          "expected": "sheet",
+          "observed": "sheet",
+          "pass": true
+        },
+        {
+          "assertion": "원본 열 이름을 유지한다",
+          "expected": [
+            "활동",
+            "담당",
+            "자료"
+          ],
+          "observed": [
+            "활동",
+            "담당",
+            "자료"
+          ],
+          "pass": true
+        },
+        {
+          "assertion": "URL 셀 값을 링크 가능한 문자열로 보존한다",
+          "expected": [
+            "https://example.com/booking",
+            "https://example.com/stay"
+          ],
+          "observed": [
+            "https://example.com/booking",
+            "https://example.com/stay"
+          ],
+          "pass": true
+        },
+        {
+          "assertion": "원본 데이터 행과 결과 행이 1:1이다",
+          "expected": 2,
+          "observed": 2,
+          "pass": true
+        }
+      ],
+      "apis": [
+        "createTextAuthoringDocument",
+        "buildAuthoringArtifactProjection"
+      ]
+    },
+    {
+      "id": "A04",
+      "group": "result_shape",
+      "priority": "high",
+      "title": "반복 필드 목록의 표/엑셀 활성",
+      "mode": "api_acceptance",
+      "actual": {
+        "eligible": true,
+        "count": 3,
+        "columns": [
+          "항목",
+          "설명",
+          "완료 기준",
+          "날짜",
+          "장소"
+        ],
+        "rows": [
+          {
+            "title": "첫 항목",
+            "description": "일정 원문: 2026-08-03\n날짜: 2026-08-03\n장소: 서울",
+            "completion": "첫 확인 완료",
+            "date": "2026-08-03",
+            "place": "서울"
+          },
+          {
+            "title": "둘째 항목",
+            "description": "일정 원문: 2026-08-04\n날짜: 2026-08-04\n장소: 부산",
+            "completion": "둘째 확인 완료",
+            "date": "2026-08-04",
+            "place": "부산"
+          },
+          {
+            "title": "셋째 항목",
+            "description": "일정 원문: 2026-08-05\n날짜: 2026-08-05\n장소: 제주",
+            "completion": "셋째 확인 완료",
+            "date": "2026-08-05",
+            "place": "제주"
+          }
+        ]
+      },
+      "pass": true,
+      "status": "passed",
+      "evidence": [
+        {
+          "assertion": "반복되는 의미 필드 3개가 있으면 Sheet가 활성이다",
+          "expected": true,
+          "observed": true,
+          "pass": true
+        },
+        {
+          "assertion": "모든 Item이 Sheet 행으로 남는다",
+          "expected": 3,
+          "observed": 3,
+          "pass": true
+        },
+        {
+          "assertion": "항목·날짜·장소·완료 기준 열을 제공한다",
+          "expected": true,
+          "observed": true,
+          "pass": true
+        },
+        {
+          "assertion": "단순 순서 열은 생성하지 않는다",
+          "expected": false,
+          "observed": false,
+          "pass": true
+        }
+      ],
+      "apis": [
+        "createTextAuthoringDocument",
+        "buildAuthoringArtifactProjection"
+      ]
+    },
+    {
+      "id": "A05",
+      "group": "result_shape",
+      "priority": "blocker",
+      "title": "원문과 정리 텍스트 구분",
+      "mode": "api_acceptance",
+      "actual": {
+        "rawCopy": "# 원문과 변환\n일반 문장을 그대로 보존합니다.\n## 실행\n- [ ] 확인 항목\n  - 설명: 확인할 내용입니다.",
+        "rawByteEquivalent": true,
+        "plainText": "제목: 원문과 변환\n\n항목 1: 확인 항목\nStep: 실행\n원문 체크: 미완료\n설명: 확인할 내용입니다.\n",
+        "markdown": "# 원문과 변환\n\n## 실행\n\n- [ ] 확인 항목\n  - 설명: 확인할 내용입니다.\n",
+        "plainTextTransformed": true,
+        "markdownTransformed": true,
+        "ambiguousLabelPresent": false
+      },
+      "pass": true,
+      "status": "passed",
+      "evidence": [
+        {
+          "assertion": "원문 그대로 복사는 byte-equivalent다",
+          "expected": true,
+          "observed": true,
+          "pass": true
+        },
+        {
+          "assertion": "정리된 TXT는 원문과 다른 변환 결과다",
+          "expected": true,
+          "observed": true,
+          "pass": true
+        },
+        {
+          "assertion": "정리된 Markdown은 원문과 다른 변환 결과다",
+          "expected": true,
+          "observed": true,
+          "pass": true
+        },
+        {
+          "assertion": "변환 결과에 정리 메모라는 모호한 이름을 넣지 않는다",
+          "expected": false,
+          "observed": false,
+          "pass": true
+        }
+      ],
+      "apis": [
+        "createTextAuthoringDocument",
+        "buildAuthoringArtifactProjection",
+        "serializeAuthoringPlainText",
+        "serializeAuthoringMarkdown"
+      ]
+    },
+    {
+      "id": "A06",
+      "group": "result_shape",
+      "priority": "blocker",
+      "title": "링크와 상세의 결과별 시각화",
+      "mode": "api_acceptance",
+      "actual": {
+        "calendar": {
+          "title": "예약 확인",
+          "description": "예약 정보를 확인합니다.",
+          "completion": "예약 번호를 기록함",
+          "date": "2026-08-03",
+          "time": "09:30",
+          "timezone": "Asia/Seoul",
+          "place": "서울역",
+          "durationMinutes": 45,
+          "repeat": "매주 월요일",
+          "condition": "운행 중일 때",
+          "links": [
+            {
+              "label": "예약 페이지",
+              "url": "https://example.com/booking"
+            }
+          ]
+        },
+        "todo": {
+          "title": "예약 확인",
+          "description": "예약 정보를 확인합니다.",
+          "completion": "예약 번호를 기록함",
+          "date": "2026-08-03",
+          "time": "09:30",
+          "timezone": "Asia/Seoul",
+          "place": "서울역",
+          "durationMinutes": 45,
+          "repeat": "매주 월요일",
+          "condition": "운행 중일 때",
+          "links": [
+            {
+              "label": "예약 페이지",
+              "url": "https://example.com/booking"
+            }
+          ]
+        },
+        "tableColumns": [
+          "Step",
+          "항목",
+          "원문 체크",
+          "설명",
+          "날짜",
+          "시간",
+          "시간대",
+          "장소",
+          "소요 시간(분)",
+          "반복",
+          "조건",
+          "완료 기준",
+          "원문 일정",
+          "자료",
+          "출처",
+          "주의"
+        ],
+        "tableRows": [
+          [
+            "실행",
+            "예약 확인",
+            "미완료",
+            "예약 정보를 확인합니다.",
+            "2026-08-03",
+            "09:30",
+            "Asia/Seoul",
+            "서울역",
+            45,
+            "매주 월요일",
+            "운행 중일 때",
+            "예약 번호를 기록함",
+            "",
+            "예약 페이지: https://example.com/booking",
+            "",
+            ""
+          ]
+        ],
+        "markdown": "# 링크와 상세\n\n## 실행\n\n- [ ] 예약 확인\n  - 설명: 예약 정보를 확인합니다.\n  - 완료 기준: 예약 번호를 기록함\n  - 날짜: 2026-08-03\n  - 시간: 09:30\n  - 시간대: Asia/Seoul\n  - 장소: 서울역\n  - 소요 시간: 45분\n  - 반복: 매주 월요일\n  - 조건: 운행 중일 때\n  - 자료: [예약 페이지](https://example.com/booking)\n"
+      },
+      "pass": true,
+      "status": "passed",
+      "evidence": [
+        {
+          "assertion": "Calendar row가 실행 상세 전체를 제공한다",
+          "expected": {
+            "title": "예약 확인",
+            "description": "예약 정보를 확인합니다.",
+            "completion": "예약 번호를 기록함",
+            "date": "2026-08-03",
+            "time": "09:30",
+            "timezone": "Asia/Seoul",
+            "place": "서울역",
+            "durationMinutes": 45,
+            "repeat": "매주 월요일",
+            "condition": "운행 중일 때",
+            "links": [
+              {
+                "label": "예약 페이지",
+                "url": "https://example.com/booking"
+              }
+            ]
+          },
+          "observed": {
+            "title": "예약 확인",
+            "description": "예약 정보를 확인합니다.",
+            "completion": "예약 번호를 기록함",
+            "date": "2026-08-03",
+            "time": "09:30",
+            "timezone": "Asia/Seoul",
+            "place": "서울역",
+            "durationMinutes": 45,
+            "repeat": "매주 월요일",
+            "condition": "운행 중일 때",
+            "links": [
+              {
+                "label": "예약 페이지",
+                "url": "https://example.com/booking"
+              }
+            ]
+          },
+          "pass": true
+        },
+        {
+          "assertion": "Todo row가 실행 상세와 링크를 제공한다",
+          "expected": {
+            "title": "예약 확인",
+            "description": "예약 정보를 확인합니다.",
+            "completion": "예약 번호를 기록함",
+            "date": "2026-08-03",
+            "time": "09:30",
+            "timezone": "Asia/Seoul",
+            "place": "서울역",
+            "durationMinutes": 45,
+            "repeat": "매주 월요일",
+            "condition": "운행 중일 때",
+            "links": [
+              {
+                "label": "예약 페이지",
+                "url": "https://example.com/booking"
+              }
+            ]
+          },
+          "observed": {
+            "title": "예약 확인",
+            "description": "예약 정보를 확인합니다.",
+            "completion": "예약 번호를 기록함",
+            "date": "2026-08-03",
+            "time": "09:30",
+            "timezone": "Asia/Seoul",
+            "place": "서울역",
+            "durationMinutes": 45,
+            "repeat": "매주 월요일",
+            "condition": "운행 중일 때",
+            "links": [
+              {
+                "label": "예약 페이지",
+                "url": "https://example.com/booking"
+              }
+            ]
+          },
+          "pass": true
+        },
+        {
+          "assertion": "표 export의 자료 셀에 URL이 있다",
+          "expected": true,
+          "observed": true,
+          "pass": true
+        },
+        {
+          "assertion": "Markdown 결과에 Markdown 링크가 있다",
+          "expected": true,
+          "observed": true,
+          "pass": true
+        }
+      ],
+      "apis": [
+        "createTextAuthoringDocument",
+        "buildAuthoringArtifactProjection",
+        "buildAuthoringTableRows",
+        "serializeAuthoringMarkdown"
+      ]
+    },
+    {
+      "id": "A07",
+      "group": "result_shape",
+      "priority": "medium",
+      "title": "내보내기 형식의 맥락화",
+      "mode": "api_acceptance",
+      "actual": {
+        "formatsByArtifact": {
+          "calendar": [
+            "ics"
+          ],
+          "todo": [
+            "markdown",
+            "plain_text"
+          ],
+          "sheet": [
+            "csv",
+            "tsv",
+            "xlsx"
+          ],
+          "memo": [
+            "raw_source",
+            "plain_text",
+            "markdown"
+          ]
+        },
+        "tableFormats": [
+          "csv",
+          "tsv",
+          "xlsx"
+        ],
+        "nonSheetTableLeaks": [],
+        "rawSourceOwners": [
+          {
+            "artifact": "memo",
+            "format": "raw_source"
+          }
+        ]
+      },
+      "pass": true,
+      "status": "passed",
+      "evidence": [
+        {
+          "assertion": "CSV·TSV·XLSX는 Sheet 맥락에만 노출된다",
+          "expected": [],
+          "observed": [],
+          "pass": true
+        },
+        {
+          "assertion": "Sheet 결과 메뉴가 표 내보내기 형식을 제공한다",
+          "expected": [
+            "csv",
+            "tsv",
+            "xlsx"
+          ],
+          "observed": [
+            "csv",
+            "tsv",
+            "xlsx"
+          ],
+          "pass": true
+        },
+        {
+          "assertion": "원문 복사는 Memo/text 맥락에만 있다",
+          "expected": [
+            {
+              "artifact": "memo",
+              "format": "raw_source"
+            }
+          ],
+          "observed": [
+            {
+              "artifact": "memo",
+              "format": "raw_source"
+            }
+          ],
+          "pass": true
+        }
+      ],
+      "apis": [
+        "AUTHORING_ARTIFACT_FORMATS"
+      ]
+    },
+    {
+      "id": "A08",
+      "group": "result_shape",
+      "priority": "medium",
+      "title": "수동 번호 불필요",
+      "mode": "api_acceptance",
+      "actual": {
+        "titles": [
+          "첫 항목",
+          "둘째 항목",
+          "셋째 항목"
+        ],
+        "displayedOrdinals": [
+          1,
+          2,
+          3
+        ],
+        "writerItemLines": [
+          "- [ ] 첫 항목",
+          "- [ ] 둘째 항목",
+          "- [ ] 셋째 항목"
+        ],
+        "numberedItemLines": []
+      },
+      "pass": true,
+      "status": "passed",
+      "evidence": [
+        {
+          "assertion": "번호 목록을 Item 3개로 읽는다",
+          "expected": [
+            "첫 항목",
+            "둘째 항목",
+            "셋째 항목"
+          ],
+          "observed": [
+            "첫 항목",
+            "둘째 항목",
+            "셋째 항목"
+          ],
+          "pass": true
+        },
+        {
+          "assertion": "canonical order로 1, 2, 3을 계산할 수 있다",
+          "expected": [
+            1,
+            2,
+            3
+          ],
+          "observed": [
+            1,
+            2,
+            3
+          ],
+          "pass": true
+        },
+        {
+          "assertion": "writer는 모든 Item을 canonical 체크박스로 쓴다",
+          "expected": 3,
+          "observed": 3,
+          "pass": true
+        },
+        {
+          "assertion": "writer는 수동 번호 표식을 남기지 않는다",
+          "expected": [],
+          "observed": [],
+          "pass": true
+        }
+      ],
+      "apis": [
+        "createTextAuthoringDocument",
+        "exportTextAuthoringMarkdown"
+      ]
+    },
+    {
+      "id": "U01",
+      "group": "responsive_ux",
+      "priority": "high",
+      "title": "항목 구조의 기본 단순화",
+      "mode": "browser_qa",
+      "actual": {
+        "target": "both",
+        "viewport": "1440x900",
+        "action": "항목 구조 기본 상태와 구조 수정 dialog 확인",
+        "expected": "항목 구조는 읽기 요약 · 수정 도구는 구조 수정 dialog 안에서만 표시 · route/standalone 동일",
+        "observed": "{\"route\":{\"initial\":{\"heading\":\"항목 구조\",\"itemCount\":3,\"editorCount\":0,\"inlineToolbarCount\":0,\"threePane\":true,\"noHorizontalOverflow\":true},\"dialog\":{\"title\":\"구조 수정\",\"selectedItem\":1,\"toolbarCount\":1,\"moveUp\":1,\"merge\":1,\"roleSelect\":1}},\"standalone\":{\"initial\":{\"heading\":\"항목 구조\",\"itemCount\":3,\"editorCount\":0,\"inlineToolbarCount\":0,\"threePane\":true,\"noHorizontalOverflow\":true},\"dialog\":{\"title\":\"구조 수정\",\"selectedItem\":1,\"toolbarCount\":1,\"moveUp\":1,\"merge\":1,\"roleSelect\":1}},\"parity\":true}"
+      },
+      "pass": true,
+      "status": "passed",
+      "evidence": [
+        {
+          "source": "docs/content-audit/2026-08-04-flowme-text-authoring-grammar-ux-improvement-results/ui-simulation-evidence.json",
+          "checkId": "U01",
+          "passed": true,
+          "actual": {
+            "target": "both",
+            "viewport": "1440x900",
+            "action": "항목 구조 기본 상태와 구조 수정 dialog 확인",
+            "expected": "항목 구조는 읽기 요약 · 수정 도구는 구조 수정 dialog 안에서만 표시 · route/standalone 동일",
+            "observed": "{\"route\":{\"initial\":{\"heading\":\"항목 구조\",\"itemCount\":3,\"editorCount\":0,\"inlineToolbarCount\":0,\"threePane\":true,\"noHorizontalOverflow\":true},\"dialog\":{\"title\":\"구조 수정\",\"selectedItem\":1,\"toolbarCount\":1,\"moveUp\":1,\"merge\":1,\"roleSelect\":1}},\"standalone\":{\"initial\":{\"heading\":\"항목 구조\",\"itemCount\":3,\"editorCount\":0,\"inlineToolbarCount\":0,\"threePane\":true,\"noHorizontalOverflow\":true},\"dialog\":{\"title\":\"구조 수정\",\"selectedItem\":1,\"toolbarCount\":1,\"moveUp\":1,\"merge\":1,\"roleSelect\":1}},\"parity\":true}"
+          },
+          "capture": {
+            "schemaVersion": "flowme-text-authoring-ui-simulation-v2",
+            "executedAt": "2026-08-04T09:42:55.939Z",
+            "browser": "150.0.7871.184",
+            "routeUrl": "http://127.0.0.1:3104/flows/new",
+            "routeQaUrl": "http://127.0.0.1:3104/flows/new?authoringQa=1",
+            "standaloneUrl": "http://127.0.0.1:4178/docs/content-audit/2026-08-04-flowme-text-authoring-grammar-ux-improvement-results/flowme-text-authoring-v2-test.html",
+            "standaloneQaUrl": "http://127.0.0.1:4178/docs/content-audit/2026-08-04-flowme-text-authoring-grammar-ux-improvement-results/flowme-text-authoring-v2-test.html?authoringQa=1",
+            "viewports": [
+              "1440x900",
+              "1024x768",
+              "390x844",
+              "390x600",
+              "360x640",
+              "844x390",
+              "720x450"
+            ],
+            "commands": [
+              "npm.cmd run build",
+              "npm.cmd run build:text-authoring-html",
+              "npx.cmd tsx scripts/content-audit/capture-text-authoring-grammar-ui.ts"
+            ],
+            "consoleErrors": [],
+            "pageErrors": [],
+            "failedRequests": [],
+            "replacementCharacters": [],
+            "externalRequests": [],
+            "screenshots": [
+              {
+                "label": "Route 구조 수정 dialog",
+                "file": "ui-u01-structure-dialog-1440x900.png",
+                "viewport": "1440x900",
+                "checkId": "U01"
+              },
+              {
+                "label": "Route 모바일 도움말 닫힘 상태",
+                "file": "ui-u02-help-keyboard-390x844.png",
+                "viewport": "390x844",
+                "checkId": "U02"
+              },
+              {
+                "label": "Route 390x844 결과 하단",
+                "file": "ui-u03-stage-scroll-390x844.png",
+                "viewport": "390x844",
+                "checkId": "U03"
+              },
+              {
+                "label": "Route 390x600 결과 하단",
+                "file": "ui-u04-short-390x600.png",
+                "viewport": "390x600",
+                "checkId": "U04"
+              },
+              {
+                "label": "Route 360x640 결과 하단",
+                "file": "ui-u04-short-360x640.png",
+                "viewport": "360x640",
+                "checkId": "U04"
+              },
+              {
+                "label": "Route 가로 모바일 결과 하단",
+                "file": "ui-u05-landscape-844x390.png",
+                "viewport": "844x390",
+                "checkId": "U05"
+              },
+              {
+                "label": "Route 실시간 제목·Item·날짜·링크 반영",
+                "file": "ui-u06-live-reflection-1440x900.png",
+                "viewport": "1440x900",
+                "checkId": "U06"
+              },
+              {
+                "label": "Route QA 27개 카탈로그",
+                "file": "ui-u07-product-qa-boundary-1024x768.png",
+                "viewport": "1024x768",
+                "checkId": "U07"
+              },
+              {
+                "label": "Route 1440x900의 200% 확대 reflow 동등 화면",
+                "file": "ui-u08-zoom-200-equivalent-720x450.png",
+                "viewport": "720x450",
+                "checkId": "U08"
+              },
+              {
+                "label": "Standalone 런타임 기본선",
+                "file": "ui-u08-runtime-a11y-1440x900.png",
+                "viewport": "1440x900",
+                "checkId": "U08"
+              }
+            ],
+            "note": "자동화된 내부 브라우저 QA이며 사용자 관찰 검증이 아니다. route와 standalone parity, 여섯 viewport, keyboard·scroll·runtime 기본선을 U01~U08로 기록했다."
+          }
+        }
+      ],
+      "apis": []
+    },
+    {
+      "id": "U02",
+      "group": "responsive_ux",
+      "priority": "high",
+      "title": "도움말 점진 노출",
+      "mode": "browser_qa",
+      "actual": {
+        "target": "both",
+        "viewport": "1440x900 · 390x844",
+        "action": "? 도움말을 키보드로 열고 Escape로 닫기",
+        "expected": "긴 설명은 기본 숨김 · Enter로 열림 · Escape로 닫힘 · focus 유지 · viewport 안에 표시",
+        "observed": "{\"desktop\":{\"syntax\":{\"opened\":\"true\",\"insideViewport\":true,\"closed\":\"false\",\"focusReturned\":true},\"result\":{\"opened\":\"true\",\"insideViewport\":true,\"closed\":\"false\",\"focusReturned\":true},\"noHorizontalOverflow\":true},\"routeMobile\":{\"syntax\":{\"opened\":\"true\",\"insideViewport\":true,\"closed\":\"false\",\"focusReturned\":true},\"result\":{\"opened\":\"true\",\"insideViewport\":true,\"closed\":\"false\",\"focusReturned\":true},\"noHorizontalOverflow\":true},\"standaloneMobile\":{\"syntax\":{\"opened\":\"true\",\"insideViewport\":true,\"closed\":\"false\",\"focusReturned\":true},\"result\":{\"opened\":\"true\",\"insideViewport\":true,\"closed\":\"false\",\"focusReturned\":true},\"noHorizontalOverflow\":true},\"parity\":true}"
+      },
+      "pass": true,
+      "status": "passed",
+      "evidence": [
+        {
+          "source": "docs/content-audit/2026-08-04-flowme-text-authoring-grammar-ux-improvement-results/ui-simulation-evidence.json",
+          "checkId": "U02",
+          "passed": true,
+          "actual": {
+            "target": "both",
+            "viewport": "1440x900 · 390x844",
+            "action": "? 도움말을 키보드로 열고 Escape로 닫기",
+            "expected": "긴 설명은 기본 숨김 · Enter로 열림 · Escape로 닫힘 · focus 유지 · viewport 안에 표시",
+            "observed": "{\"desktop\":{\"syntax\":{\"opened\":\"true\",\"insideViewport\":true,\"closed\":\"false\",\"focusReturned\":true},\"result\":{\"opened\":\"true\",\"insideViewport\":true,\"closed\":\"false\",\"focusReturned\":true},\"noHorizontalOverflow\":true},\"routeMobile\":{\"syntax\":{\"opened\":\"true\",\"insideViewport\":true,\"closed\":\"false\",\"focusReturned\":true},\"result\":{\"opened\":\"true\",\"insideViewport\":true,\"closed\":\"false\",\"focusReturned\":true},\"noHorizontalOverflow\":true},\"standaloneMobile\":{\"syntax\":{\"opened\":\"true\",\"insideViewport\":true,\"closed\":\"false\",\"focusReturned\":true},\"result\":{\"opened\":\"true\",\"insideViewport\":true,\"closed\":\"false\",\"focusReturned\":true},\"noHorizontalOverflow\":true},\"parity\":true}"
+          },
+          "capture": {
+            "schemaVersion": "flowme-text-authoring-ui-simulation-v2",
+            "executedAt": "2026-08-04T09:42:55.939Z",
+            "browser": "150.0.7871.184",
+            "routeUrl": "http://127.0.0.1:3104/flows/new",
+            "routeQaUrl": "http://127.0.0.1:3104/flows/new?authoringQa=1",
+            "standaloneUrl": "http://127.0.0.1:4178/docs/content-audit/2026-08-04-flowme-text-authoring-grammar-ux-improvement-results/flowme-text-authoring-v2-test.html",
+            "standaloneQaUrl": "http://127.0.0.1:4178/docs/content-audit/2026-08-04-flowme-text-authoring-grammar-ux-improvement-results/flowme-text-authoring-v2-test.html?authoringQa=1",
+            "viewports": [
+              "1440x900",
+              "1024x768",
+              "390x844",
+              "390x600",
+              "360x640",
+              "844x390",
+              "720x450"
+            ],
+            "commands": [
+              "npm.cmd run build",
+              "npm.cmd run build:text-authoring-html",
+              "npx.cmd tsx scripts/content-audit/capture-text-authoring-grammar-ui.ts"
+            ],
+            "consoleErrors": [],
+            "pageErrors": [],
+            "failedRequests": [],
+            "replacementCharacters": [],
+            "externalRequests": [],
+            "screenshots": [
+              {
+                "label": "Route 구조 수정 dialog",
+                "file": "ui-u01-structure-dialog-1440x900.png",
+                "viewport": "1440x900",
+                "checkId": "U01"
+              },
+              {
+                "label": "Route 모바일 도움말 닫힘 상태",
+                "file": "ui-u02-help-keyboard-390x844.png",
+                "viewport": "390x844",
+                "checkId": "U02"
+              },
+              {
+                "label": "Route 390x844 결과 하단",
+                "file": "ui-u03-stage-scroll-390x844.png",
+                "viewport": "390x844",
+                "checkId": "U03"
+              },
+              {
+                "label": "Route 390x600 결과 하단",
+                "file": "ui-u04-short-390x600.png",
+                "viewport": "390x600",
+                "checkId": "U04"
+              },
+              {
+                "label": "Route 360x640 결과 하단",
+                "file": "ui-u04-short-360x640.png",
+                "viewport": "360x640",
+                "checkId": "U04"
+              },
+              {
+                "label": "Route 가로 모바일 결과 하단",
+                "file": "ui-u05-landscape-844x390.png",
+                "viewport": "844x390",
+                "checkId": "U05"
+              },
+              {
+                "label": "Route 실시간 제목·Item·날짜·링크 반영",
+                "file": "ui-u06-live-reflection-1440x900.png",
+                "viewport": "1440x900",
+                "checkId": "U06"
+              },
+              {
+                "label": "Route QA 27개 카탈로그",
+                "file": "ui-u07-product-qa-boundary-1024x768.png",
+                "viewport": "1024x768",
+                "checkId": "U07"
+              },
+              {
+                "label": "Route 1440x900의 200% 확대 reflow 동등 화면",
+                "file": "ui-u08-zoom-200-equivalent-720x450.png",
+                "viewport": "720x450",
+                "checkId": "U08"
+              },
+              {
+                "label": "Standalone 런타임 기본선",
+                "file": "ui-u08-runtime-a11y-1440x900.png",
+                "viewport": "1440x900",
+                "checkId": "U08"
+              }
+            ],
+            "note": "자동화된 내부 브라우저 QA이며 사용자 관찰 검증이 아니다. route와 standalone parity, 여섯 viewport, keyboard·scroll·runtime 기본선을 U01~U08로 기록했다."
+          }
+        }
+      ],
+      "apis": []
+    },
+    {
+      "id": "U03",
+      "group": "responsive_ux",
+      "priority": "blocker",
+      "title": "390x844 세로 스크롤",
+      "mode": "browser_qa",
+      "actual": {
+        "target": "route",
+        "viewport": "390x844",
+        "action": "입력·구조·결과 stage 끝까지 스크롤",
+        "expected": "각 stage 마지막 요소와 하단 행동 도달 · footer 겹침/가로 overflow/scroll trap 0",
+        "observed": "{\"viewport\":\"390x844\",\"stages\":[{\"stage\":\"input\",\"scrollTop\":0,\"maxScrollTop\":0,\"lastTargetAboveFooter\":true,\"primaryText\":\"구조 확인\",\"noHorizontalOverflow\":true,\"shellScrollTop\":0},{\"stage\":\"structure\",\"scrollTop\":0,\"maxScrollTop\":0,\"lastTargetAboveFooter\":true,\"primaryText\":\"결과 보기 · 3개\",\"noHorizontalOverflow\":true,\"shellScrollTop\":0},{\"stage\":\"result\",\"scrollTop\":942,\"maxScrollTop\":942,\"lastTargetAboveFooter\":true,\"primaryText\":\"개인 초안 저장 · 3개\",\"noHorizontalOverflow\":true,\"shellScrollTop\":0}]}"
+      },
+      "pass": true,
+      "status": "passed",
+      "evidence": [
+        {
+          "source": "docs/content-audit/2026-08-04-flowme-text-authoring-grammar-ux-improvement-results/ui-simulation-evidence.json",
+          "checkId": "U03",
+          "passed": true,
+          "actual": {
+            "target": "route",
+            "viewport": "390x844",
+            "action": "입력·구조·결과 stage 끝까지 스크롤",
+            "expected": "각 stage 마지막 요소와 하단 행동 도달 · footer 겹침/가로 overflow/scroll trap 0",
+            "observed": "{\"viewport\":\"390x844\",\"stages\":[{\"stage\":\"input\",\"scrollTop\":0,\"maxScrollTop\":0,\"lastTargetAboveFooter\":true,\"primaryText\":\"구조 확인\",\"noHorizontalOverflow\":true,\"shellScrollTop\":0},{\"stage\":\"structure\",\"scrollTop\":0,\"maxScrollTop\":0,\"lastTargetAboveFooter\":true,\"primaryText\":\"결과 보기 · 3개\",\"noHorizontalOverflow\":true,\"shellScrollTop\":0},{\"stage\":\"result\",\"scrollTop\":942,\"maxScrollTop\":942,\"lastTargetAboveFooter\":true,\"primaryText\":\"개인 초안 저장 · 3개\",\"noHorizontalOverflow\":true,\"shellScrollTop\":0}]}"
+          },
+          "capture": {
+            "schemaVersion": "flowme-text-authoring-ui-simulation-v2",
+            "executedAt": "2026-08-04T09:42:55.939Z",
+            "browser": "150.0.7871.184",
+            "routeUrl": "http://127.0.0.1:3104/flows/new",
+            "routeQaUrl": "http://127.0.0.1:3104/flows/new?authoringQa=1",
+            "standaloneUrl": "http://127.0.0.1:4178/docs/content-audit/2026-08-04-flowme-text-authoring-grammar-ux-improvement-results/flowme-text-authoring-v2-test.html",
+            "standaloneQaUrl": "http://127.0.0.1:4178/docs/content-audit/2026-08-04-flowme-text-authoring-grammar-ux-improvement-results/flowme-text-authoring-v2-test.html?authoringQa=1",
+            "viewports": [
+              "1440x900",
+              "1024x768",
+              "390x844",
+              "390x600",
+              "360x640",
+              "844x390",
+              "720x450"
+            ],
+            "commands": [
+              "npm.cmd run build",
+              "npm.cmd run build:text-authoring-html",
+              "npx.cmd tsx scripts/content-audit/capture-text-authoring-grammar-ui.ts"
+            ],
+            "consoleErrors": [],
+            "pageErrors": [],
+            "failedRequests": [],
+            "replacementCharacters": [],
+            "externalRequests": [],
+            "screenshots": [
+              {
+                "label": "Route 구조 수정 dialog",
+                "file": "ui-u01-structure-dialog-1440x900.png",
+                "viewport": "1440x900",
+                "checkId": "U01"
+              },
+              {
+                "label": "Route 모바일 도움말 닫힘 상태",
+                "file": "ui-u02-help-keyboard-390x844.png",
+                "viewport": "390x844",
+                "checkId": "U02"
+              },
+              {
+                "label": "Route 390x844 결과 하단",
+                "file": "ui-u03-stage-scroll-390x844.png",
+                "viewport": "390x844",
+                "checkId": "U03"
+              },
+              {
+                "label": "Route 390x600 결과 하단",
+                "file": "ui-u04-short-390x600.png",
+                "viewport": "390x600",
+                "checkId": "U04"
+              },
+              {
+                "label": "Route 360x640 결과 하단",
+                "file": "ui-u04-short-360x640.png",
+                "viewport": "360x640",
+                "checkId": "U04"
+              },
+              {
+                "label": "Route 가로 모바일 결과 하단",
+                "file": "ui-u05-landscape-844x390.png",
+                "viewport": "844x390",
+                "checkId": "U05"
+              },
+              {
+                "label": "Route 실시간 제목·Item·날짜·링크 반영",
+                "file": "ui-u06-live-reflection-1440x900.png",
+                "viewport": "1440x900",
+                "checkId": "U06"
+              },
+              {
+                "label": "Route QA 27개 카탈로그",
+                "file": "ui-u07-product-qa-boundary-1024x768.png",
+                "viewport": "1024x768",
+                "checkId": "U07"
+              },
+              {
+                "label": "Route 1440x900의 200% 확대 reflow 동등 화면",
+                "file": "ui-u08-zoom-200-equivalent-720x450.png",
+                "viewport": "720x450",
+                "checkId": "U08"
+              },
+              {
+                "label": "Standalone 런타임 기본선",
+                "file": "ui-u08-runtime-a11y-1440x900.png",
+                "viewport": "1440x900",
+                "checkId": "U08"
+              }
+            ],
+            "note": "자동화된 내부 브라우저 QA이며 사용자 관찰 검증이 아니다. route와 standalone parity, 여섯 viewport, keyboard·scroll·runtime 기본선을 U01~U08로 기록했다."
+          }
+        }
+      ],
+      "apis": []
+    },
+    {
+      "id": "U04",
+      "group": "responsive_ux",
+      "priority": "blocker",
+      "title": "짧은 화면 스크롤",
+      "mode": "browser_qa",
+      "actual": {
+        "target": "route",
+        "viewport": "390x600 · 360x640",
+        "action": "짧은 모바일 화면의 세 stage와 마지막 행동 확인",
+        "expected": "두 viewport 모두 stage 끝 도달 · 네 결과 슬롯/저장 행동 접근 · footer 겹침/문구 잘림/overflow 0",
+        "observed": "{\"viewports\":[{\"viewport\":\"390x600\",\"stages\":[{\"stage\":\"input\",\"scrollTop\":207,\"maxScrollTop\":207,\"lastTargetAboveFooter\":true,\"primaryText\":\"구조 확인\",\"noHorizontalOverflow\":true,\"shellScrollTop\":0},{\"stage\":\"structure\",\"scrollTop\":3,\"maxScrollTop\":3,\"lastTargetAboveFooter\":true,\"primaryText\":\"결과 보기 · 3개\",\"noHorizontalOverflow\":true,\"shellScrollTop\":0},{\"stage\":\"result\",\"scrollTop\":1158,\"maxScrollTop\":1158,\"lastTargetAboveFooter\":true,\"primaryText\":\"개인 초안 저장 · 3개\",\"noHorizontalOverflow\":true,\"shellScrollTop\":0}]},{\"viewport\":\"360x640\",\"stages\":[{\"stage\":\"input\",\"scrollTop\":167,\"maxScrollTop\":167,\"lastTargetAboveFooter\":true,\"primaryText\":\"구조 확인\",\"noHorizontalOverflow\":true,\"shellScrollTop\":0},{\"stage\":\"structure\",\"scrollTop\":0,\"maxScrollTop\":0,\"lastTargetAboveFooter\":true,\"primaryText\":\"결과 보기 · 3개\",\"noHorizontalOverflow\":true,\"shellScrollTop\":0},{\"stage\":\"result\",\"scrollTop\":1129,\"maxScrollTop\":1129,\"lastTargetAboveFooter\":true,\"primaryText\":\"개인 초안 저장 · 3개\",\"noHorizontalOverflow\":true,\"shellScrollTop\":0}]}]}"
+      },
+      "pass": true,
+      "status": "passed",
+      "evidence": [
+        {
+          "source": "docs/content-audit/2026-08-04-flowme-text-authoring-grammar-ux-improvement-results/ui-simulation-evidence.json",
+          "checkId": "U04",
+          "passed": true,
+          "actual": {
+            "target": "route",
+            "viewport": "390x600 · 360x640",
+            "action": "짧은 모바일 화면의 세 stage와 마지막 행동 확인",
+            "expected": "두 viewport 모두 stage 끝 도달 · 네 결과 슬롯/저장 행동 접근 · footer 겹침/문구 잘림/overflow 0",
+            "observed": "{\"viewports\":[{\"viewport\":\"390x600\",\"stages\":[{\"stage\":\"input\",\"scrollTop\":207,\"maxScrollTop\":207,\"lastTargetAboveFooter\":true,\"primaryText\":\"구조 확인\",\"noHorizontalOverflow\":true,\"shellScrollTop\":0},{\"stage\":\"structure\",\"scrollTop\":3,\"maxScrollTop\":3,\"lastTargetAboveFooter\":true,\"primaryText\":\"결과 보기 · 3개\",\"noHorizontalOverflow\":true,\"shellScrollTop\":0},{\"stage\":\"result\",\"scrollTop\":1158,\"maxScrollTop\":1158,\"lastTargetAboveFooter\":true,\"primaryText\":\"개인 초안 저장 · 3개\",\"noHorizontalOverflow\":true,\"shellScrollTop\":0}]},{\"viewport\":\"360x640\",\"stages\":[{\"stage\":\"input\",\"scrollTop\":167,\"maxScrollTop\":167,\"lastTargetAboveFooter\":true,\"primaryText\":\"구조 확인\",\"noHorizontalOverflow\":true,\"shellScrollTop\":0},{\"stage\":\"structure\",\"scrollTop\":0,\"maxScrollTop\":0,\"lastTargetAboveFooter\":true,\"primaryText\":\"결과 보기 · 3개\",\"noHorizontalOverflow\":true,\"shellScrollTop\":0},{\"stage\":\"result\",\"scrollTop\":1129,\"maxScrollTop\":1129,\"lastTargetAboveFooter\":true,\"primaryText\":\"개인 초안 저장 · 3개\",\"noHorizontalOverflow\":true,\"shellScrollTop\":0}]}]}"
+          },
+          "capture": {
+            "schemaVersion": "flowme-text-authoring-ui-simulation-v2",
+            "executedAt": "2026-08-04T09:42:55.939Z",
+            "browser": "150.0.7871.184",
+            "routeUrl": "http://127.0.0.1:3104/flows/new",
+            "routeQaUrl": "http://127.0.0.1:3104/flows/new?authoringQa=1",
+            "standaloneUrl": "http://127.0.0.1:4178/docs/content-audit/2026-08-04-flowme-text-authoring-grammar-ux-improvement-results/flowme-text-authoring-v2-test.html",
+            "standaloneQaUrl": "http://127.0.0.1:4178/docs/content-audit/2026-08-04-flowme-text-authoring-grammar-ux-improvement-results/flowme-text-authoring-v2-test.html?authoringQa=1",
+            "viewports": [
+              "1440x900",
+              "1024x768",
+              "390x844",
+              "390x600",
+              "360x640",
+              "844x390",
+              "720x450"
+            ],
+            "commands": [
+              "npm.cmd run build",
+              "npm.cmd run build:text-authoring-html",
+              "npx.cmd tsx scripts/content-audit/capture-text-authoring-grammar-ui.ts"
+            ],
+            "consoleErrors": [],
+            "pageErrors": [],
+            "failedRequests": [],
+            "replacementCharacters": [],
+            "externalRequests": [],
+            "screenshots": [
+              {
+                "label": "Route 구조 수정 dialog",
+                "file": "ui-u01-structure-dialog-1440x900.png",
+                "viewport": "1440x900",
+                "checkId": "U01"
+              },
+              {
+                "label": "Route 모바일 도움말 닫힘 상태",
+                "file": "ui-u02-help-keyboard-390x844.png",
+                "viewport": "390x844",
+                "checkId": "U02"
+              },
+              {
+                "label": "Route 390x844 결과 하단",
+                "file": "ui-u03-stage-scroll-390x844.png",
+                "viewport": "390x844",
+                "checkId": "U03"
+              },
+              {
+                "label": "Route 390x600 결과 하단",
+                "file": "ui-u04-short-390x600.png",
+                "viewport": "390x600",
+                "checkId": "U04"
+              },
+              {
+                "label": "Route 360x640 결과 하단",
+                "file": "ui-u04-short-360x640.png",
+                "viewport": "360x640",
+                "checkId": "U04"
+              },
+              {
+                "label": "Route 가로 모바일 결과 하단",
+                "file": "ui-u05-landscape-844x390.png",
+                "viewport": "844x390",
+                "checkId": "U05"
+              },
+              {
+                "label": "Route 실시간 제목·Item·날짜·링크 반영",
+                "file": "ui-u06-live-reflection-1440x900.png",
+                "viewport": "1440x900",
+                "checkId": "U06"
+              },
+              {
+                "label": "Route QA 27개 카탈로그",
+                "file": "ui-u07-product-qa-boundary-1024x768.png",
+                "viewport": "1024x768",
+                "checkId": "U07"
+              },
+              {
+                "label": "Route 1440x900의 200% 확대 reflow 동등 화면",
+                "file": "ui-u08-zoom-200-equivalent-720x450.png",
+                "viewport": "720x450",
+                "checkId": "U08"
+              },
+              {
+                "label": "Standalone 런타임 기본선",
+                "file": "ui-u08-runtime-a11y-1440x900.png",
+                "viewport": "1440x900",
+                "checkId": "U08"
+              }
+            ],
+            "note": "자동화된 내부 브라우저 QA이며 사용자 관찰 검증이 아니다. route와 standalone parity, 여섯 viewport, keyboard·scroll·runtime 기본선을 U01~U08로 기록했다."
+          }
+        }
+      ],
+      "apis": []
+    },
+    {
+      "id": "U05",
+      "group": "responsive_ux",
+      "priority": "high",
+      "title": "가로 모바일",
+      "mode": "browser_qa",
+      "actual": {
+        "target": "route",
+        "viewport": "844x390",
+        "action": "가로 모바일에서 세 stage와 마지막 행동 확인",
+        "expected": "탭·본문 겹침 0 · 세로 스크롤로 마지막 요소 도달 · 가로 overflow/footer 겹침 0",
+        "observed": "{\"viewport\":\"844x390\",\"stages\":[{\"stage\":\"input\",\"scrollTop\":521,\"maxScrollTop\":521,\"lastTargetAboveFooter\":true,\"primaryText\":\"구조 확인\",\"noHorizontalOverflow\":true,\"shellScrollTop\":0},{\"stage\":\"structure\",\"scrollTop\":180,\"maxScrollTop\":180,\"lastTargetAboveFooter\":true,\"primaryText\":\"결과 보기 · 3개\",\"noHorizontalOverflow\":true,\"shellScrollTop\":0},{\"stage\":\"result\",\"scrollTop\":1240,\"maxScrollTop\":1240,\"lastTargetAboveFooter\":true,\"primaryText\":\"개인 초안 저장 · 3개\",\"noHorizontalOverflow\":true,\"shellScrollTop\":0}]}"
+      },
+      "pass": true,
+      "status": "passed",
+      "evidence": [
+        {
+          "source": "docs/content-audit/2026-08-04-flowme-text-authoring-grammar-ux-improvement-results/ui-simulation-evidence.json",
+          "checkId": "U05",
+          "passed": true,
+          "actual": {
+            "target": "route",
+            "viewport": "844x390",
+            "action": "가로 모바일에서 세 stage와 마지막 행동 확인",
+            "expected": "탭·본문 겹침 0 · 세로 스크롤로 마지막 요소 도달 · 가로 overflow/footer 겹침 0",
+            "observed": "{\"viewport\":\"844x390\",\"stages\":[{\"stage\":\"input\",\"scrollTop\":521,\"maxScrollTop\":521,\"lastTargetAboveFooter\":true,\"primaryText\":\"구조 확인\",\"noHorizontalOverflow\":true,\"shellScrollTop\":0},{\"stage\":\"structure\",\"scrollTop\":180,\"maxScrollTop\":180,\"lastTargetAboveFooter\":true,\"primaryText\":\"결과 보기 · 3개\",\"noHorizontalOverflow\":true,\"shellScrollTop\":0},{\"stage\":\"result\",\"scrollTop\":1240,\"maxScrollTop\":1240,\"lastTargetAboveFooter\":true,\"primaryText\":\"개인 초안 저장 · 3개\",\"noHorizontalOverflow\":true,\"shellScrollTop\":0}]}"
+          },
+          "capture": {
+            "schemaVersion": "flowme-text-authoring-ui-simulation-v2",
+            "executedAt": "2026-08-04T09:42:55.939Z",
+            "browser": "150.0.7871.184",
+            "routeUrl": "http://127.0.0.1:3104/flows/new",
+            "routeQaUrl": "http://127.0.0.1:3104/flows/new?authoringQa=1",
+            "standaloneUrl": "http://127.0.0.1:4178/docs/content-audit/2026-08-04-flowme-text-authoring-grammar-ux-improvement-results/flowme-text-authoring-v2-test.html",
+            "standaloneQaUrl": "http://127.0.0.1:4178/docs/content-audit/2026-08-04-flowme-text-authoring-grammar-ux-improvement-results/flowme-text-authoring-v2-test.html?authoringQa=1",
+            "viewports": [
+              "1440x900",
+              "1024x768",
+              "390x844",
+              "390x600",
+              "360x640",
+              "844x390",
+              "720x450"
+            ],
+            "commands": [
+              "npm.cmd run build",
+              "npm.cmd run build:text-authoring-html",
+              "npx.cmd tsx scripts/content-audit/capture-text-authoring-grammar-ui.ts"
+            ],
+            "consoleErrors": [],
+            "pageErrors": [],
+            "failedRequests": [],
+            "replacementCharacters": [],
+            "externalRequests": [],
+            "screenshots": [
+              {
+                "label": "Route 구조 수정 dialog",
+                "file": "ui-u01-structure-dialog-1440x900.png",
+                "viewport": "1440x900",
+                "checkId": "U01"
+              },
+              {
+                "label": "Route 모바일 도움말 닫힘 상태",
+                "file": "ui-u02-help-keyboard-390x844.png",
+                "viewport": "390x844",
+                "checkId": "U02"
+              },
+              {
+                "label": "Route 390x844 결과 하단",
+                "file": "ui-u03-stage-scroll-390x844.png",
+                "viewport": "390x844",
+                "checkId": "U03"
+              },
+              {
+                "label": "Route 390x600 결과 하단",
+                "file": "ui-u04-short-390x600.png",
+                "viewport": "390x600",
+                "checkId": "U04"
+              },
+              {
+                "label": "Route 360x640 결과 하단",
+                "file": "ui-u04-short-360x640.png",
+                "viewport": "360x640",
+                "checkId": "U04"
+              },
+              {
+                "label": "Route 가로 모바일 결과 하단",
+                "file": "ui-u05-landscape-844x390.png",
+                "viewport": "844x390",
+                "checkId": "U05"
+              },
+              {
+                "label": "Route 실시간 제목·Item·날짜·링크 반영",
+                "file": "ui-u06-live-reflection-1440x900.png",
+                "viewport": "1440x900",
+                "checkId": "U06"
+              },
+              {
+                "label": "Route QA 27개 카탈로그",
+                "file": "ui-u07-product-qa-boundary-1024x768.png",
+                "viewport": "1024x768",
+                "checkId": "U07"
+              },
+              {
+                "label": "Route 1440x900의 200% 확대 reflow 동등 화면",
+                "file": "ui-u08-zoom-200-equivalent-720x450.png",
+                "viewport": "720x450",
+                "checkId": "U08"
+              },
+              {
+                "label": "Standalone 런타임 기본선",
+                "file": "ui-u08-runtime-a11y-1440x900.png",
+                "viewport": "1440x900",
+                "checkId": "U08"
+              }
+            ],
+            "note": "자동화된 내부 브라우저 QA이며 사용자 관찰 검증이 아니다. route와 standalone parity, 여섯 viewport, keyboard·scroll·runtime 기본선을 U01~U08로 기록했다."
+          }
+        }
+      ],
+      "apis": []
+    },
+    {
+      "id": "U06",
+      "group": "responsive_ux",
+      "priority": "high",
+      "title": "실시간 입력 반영",
+      "mode": "browser_qa",
+      "actual": {
+        "target": "both",
+        "viewport": "1440x900",
+        "action": "제목·Item·날짜·Markdown 링크를 저장 없이 순차 수정",
+        "expected": "구조와 결과 즉시 반영 · focus/cursor 유지 · 고정 결과 슬롯 geometry 이동 0 · route/standalone 동일",
+        "observed": "{\"route\":{\"title\":\"실시간 반영 확인\",\"itemCount\":4,\"calendarCount\":3,\"liveRowText\":\"2 실시간 단계 실시간 반영 항목 수정 날짜 2026-08-06 설명 일정 원문: 2026-08-06 날짜: 2026-08-06\",\"linkHref\":\"https://example.com/live\",\"focusAndCursor\":{\"focused\":true,\"selectionStart\":551,\"length\":551},\"geometryStable\":true,\"slotIds\":[\"ta-authoring-result-slot-calendar\",\"ta-authoring-result-slot-todo\",\"ta-authoring-result-slot-sheet\",\"ta-authoring-result-slot-memo\"]},\"standalone\":{\"title\":\"실시간 반영 확인\",\"itemCount\":4,\"calendarCount\":3,\"liveRowText\":\"2 실시간 단계 실시간 반영 항목 수정 날짜 2026-08-06 설명 일정 원문: 2026-08-06 날짜: 2026-08-06\",\"linkHref\":\"https://example.com/live\",\"focusAndCursor\":{\"focused\":true,\"selectionStart\":551,\"length\":551},\"geometryStable\":true,\"slotIds\":[\"ta-authoring-result-slot-calendar\",\"ta-authoring-result-slot-todo\",\"ta-authoring-result-slot-sheet\",\"ta-authoring-result-slot-memo\"]},\"parity\":true}"
+      },
+      "pass": true,
+      "status": "passed",
+      "evidence": [
+        {
+          "source": "docs/content-audit/2026-08-04-flowme-text-authoring-grammar-ux-improvement-results/ui-simulation-evidence.json",
+          "checkId": "U06",
+          "passed": true,
+          "actual": {
+            "target": "both",
+            "viewport": "1440x900",
+            "action": "제목·Item·날짜·Markdown 링크를 저장 없이 순차 수정",
+            "expected": "구조와 결과 즉시 반영 · focus/cursor 유지 · 고정 결과 슬롯 geometry 이동 0 · route/standalone 동일",
+            "observed": "{\"route\":{\"title\":\"실시간 반영 확인\",\"itemCount\":4,\"calendarCount\":3,\"liveRowText\":\"2 실시간 단계 실시간 반영 항목 수정 날짜 2026-08-06 설명 일정 원문: 2026-08-06 날짜: 2026-08-06\",\"linkHref\":\"https://example.com/live\",\"focusAndCursor\":{\"focused\":true,\"selectionStart\":551,\"length\":551},\"geometryStable\":true,\"slotIds\":[\"ta-authoring-result-slot-calendar\",\"ta-authoring-result-slot-todo\",\"ta-authoring-result-slot-sheet\",\"ta-authoring-result-slot-memo\"]},\"standalone\":{\"title\":\"실시간 반영 확인\",\"itemCount\":4,\"calendarCount\":3,\"liveRowText\":\"2 실시간 단계 실시간 반영 항목 수정 날짜 2026-08-06 설명 일정 원문: 2026-08-06 날짜: 2026-08-06\",\"linkHref\":\"https://example.com/live\",\"focusAndCursor\":{\"focused\":true,\"selectionStart\":551,\"length\":551},\"geometryStable\":true,\"slotIds\":[\"ta-authoring-result-slot-calendar\",\"ta-authoring-result-slot-todo\",\"ta-authoring-result-slot-sheet\",\"ta-authoring-result-slot-memo\"]},\"parity\":true}"
+          },
+          "capture": {
+            "schemaVersion": "flowme-text-authoring-ui-simulation-v2",
+            "executedAt": "2026-08-04T09:42:55.939Z",
+            "browser": "150.0.7871.184",
+            "routeUrl": "http://127.0.0.1:3104/flows/new",
+            "routeQaUrl": "http://127.0.0.1:3104/flows/new?authoringQa=1",
+            "standaloneUrl": "http://127.0.0.1:4178/docs/content-audit/2026-08-04-flowme-text-authoring-grammar-ux-improvement-results/flowme-text-authoring-v2-test.html",
+            "standaloneQaUrl": "http://127.0.0.1:4178/docs/content-audit/2026-08-04-flowme-text-authoring-grammar-ux-improvement-results/flowme-text-authoring-v2-test.html?authoringQa=1",
+            "viewports": [
+              "1440x900",
+              "1024x768",
+              "390x844",
+              "390x600",
+              "360x640",
+              "844x390",
+              "720x450"
+            ],
+            "commands": [
+              "npm.cmd run build",
+              "npm.cmd run build:text-authoring-html",
+              "npx.cmd tsx scripts/content-audit/capture-text-authoring-grammar-ui.ts"
+            ],
+            "consoleErrors": [],
+            "pageErrors": [],
+            "failedRequests": [],
+            "replacementCharacters": [],
+            "externalRequests": [],
+            "screenshots": [
+              {
+                "label": "Route 구조 수정 dialog",
+                "file": "ui-u01-structure-dialog-1440x900.png",
+                "viewport": "1440x900",
+                "checkId": "U01"
+              },
+              {
+                "label": "Route 모바일 도움말 닫힘 상태",
+                "file": "ui-u02-help-keyboard-390x844.png",
+                "viewport": "390x844",
+                "checkId": "U02"
+              },
+              {
+                "label": "Route 390x844 결과 하단",
+                "file": "ui-u03-stage-scroll-390x844.png",
+                "viewport": "390x844",
+                "checkId": "U03"
+              },
+              {
+                "label": "Route 390x600 결과 하단",
+                "file": "ui-u04-short-390x600.png",
+                "viewport": "390x600",
+                "checkId": "U04"
+              },
+              {
+                "label": "Route 360x640 결과 하단",
+                "file": "ui-u04-short-360x640.png",
+                "viewport": "360x640",
+                "checkId": "U04"
+              },
+              {
+                "label": "Route 가로 모바일 결과 하단",
+                "file": "ui-u05-landscape-844x390.png",
+                "viewport": "844x390",
+                "checkId": "U05"
+              },
+              {
+                "label": "Route 실시간 제목·Item·날짜·링크 반영",
+                "file": "ui-u06-live-reflection-1440x900.png",
+                "viewport": "1440x900",
+                "checkId": "U06"
+              },
+              {
+                "label": "Route QA 27개 카탈로그",
+                "file": "ui-u07-product-qa-boundary-1024x768.png",
+                "viewport": "1024x768",
+                "checkId": "U07"
+              },
+              {
+                "label": "Route 1440x900의 200% 확대 reflow 동등 화면",
+                "file": "ui-u08-zoom-200-equivalent-720x450.png",
+                "viewport": "720x450",
+                "checkId": "U08"
+              },
+              {
+                "label": "Standalone 런타임 기본선",
+                "file": "ui-u08-runtime-a11y-1440x900.png",
+                "viewport": "1440x900",
+                "checkId": "U08"
+              }
+            ],
+            "note": "자동화된 내부 브라우저 QA이며 사용자 관찰 검증이 아니다. route와 standalone parity, 여섯 viewport, keyboard·scroll·runtime 기본선을 U01~U08로 기록했다."
+          }
+        }
+      ],
+      "apis": []
+    },
+    {
+      "id": "U07",
+      "group": "responsive_ux",
+      "priority": "medium",
+      "title": "예제 선택기의 제품/QA 경계",
+      "mode": "browser_qa",
+      "actual": {
+        "target": "both",
+        "viewport": "1024x768",
+        "action": "제품 대표 5개와 QA 27개 카탈로그 경계 및 동일 예시 적용 비교",
+        "expected": "제품은 대표 5개만 · QA mode는 27개와 4개 그룹 · route/standalone semantic parity · tablet overflow 0",
+        "observed": "{\"route\":{\"product\":{\"countLabel\":\"대표 5개\",\"productOptions\":5,\"qaOptions\":0,\"internalQaLabel\":0,\"twoPane\":true,\"noHorizontalOverflow\":true,\"semantic\":{\"title\":\"제목입니다.\",\"itemTitles\":[\"첫 번째 항목입니다.\",\"두 번째 항목입니다.\",\"날짜 없는 항목입니다.\"],\"resultRows\":3,\"preflight\":3,\"resultKind\":\"todo\",\"slots\":[{\"id\":\"ta-authoring-result-slot-calendar\",\"eligible\":\"true\",\"selected\":\"false\"},{\"id\":\"ta-authoring-result-slot-todo\",\"eligible\":\"true\",\"selected\":\"true\"},{\"id\":\"ta-authoring-result-slot-sheet\",\"eligible\":\"true\",\"selected\":\"false\"},{\"id\":\"ta-authoring-result-slot-memo\",\"eligible\":\"true\",\"selected\":\"false\"}]}},\"qa\":{\"countLabel\":\"QA 전체 27개\",\"productOptions\":5,\"qaOptions\":27,\"groups\":{\"existing\":8,\"condition\":8,\"compatibility\":6,\"error\":5},\"internalQaLabel\":1,\"twoPane\":true,\"noHorizontalOverflow\":true},\"applied\":{\"title\":\"상대 날짜 · 8월 기준일 적용\",\"itemTitles\":[\"장소 확인\",\"최종 확인\"],\"resultRows\":2,\"preflight\":2,\"resultKind\":\"calendar\",\"slots\":[{\"id\":\"ta-authoring-result-slot-calendar\",\"eligible\":\"true\",\"selected\":\"true\"},{\"id\":\"ta-authoring-result-slot-todo\",\"eligible\":\"true\",\"selected\":\"false\"},{\"id\":\"ta-authoring-result-slot-sheet\",\"eligible\":\"true\",\"selected\":\"false\"},{\"id\":\"ta-authoring-result-slot-memo\",\"eligible\":\"true\",\"selected\":\"false\"}]}},\"standalone\":{\"product\":{\"countLabel\":\"대표 5개\",\"productOptions\":5,\"qaOptions\":0,\"internalQaLabel\":0,\"twoPane\":true,\"noHorizontalOverflow\":true,\"semantic\":{\"title\":\"제목입니다.\",\"itemTitles\":[\"첫 번째 항목입니다.\",\"두 번째 항목입니다.\",\"날짜 없는 항목입니다.\"],\"resultRows\":3,\"preflight\":3,\"resultKind\":\"todo\",\"slots\":[{\"id\":\"ta-authoring-result-slot-calendar\",\"eligible\":\"true\",\"selected\":\"false\"},{\"id\":\"ta-authoring-result-slot-todo\",\"eligible\":\"true\",\"selected\":\"true\"},{\"id\":\"ta-authoring-result-slot-sheet\",\"eligible\":\"true\",\"selected\":\"false\"},{\"id\":\"ta-authoring-result-slot-memo\",\"eligible\":\"true\",\"selected\":\"false\"}]}},\"qa\":{\"countLabel\":\"QA 전체 27개\",\"productOptions\":5,\"qaOptions\":27,\"groups\":{\"existing\":8,\"condition\":8,\"compatibility\":6,\"error\":5},\"internalQaLabel\":1,\"twoPane\":true,\"noHorizontalOverflow\":true},\"applied\":{\"title\":\"상대 날짜 · 8월 기준일 적용\",\"itemTitles\":[\"장소 확인\",\"최종 확인\"],\"resultRows\":2,\"preflight\":2,\"resultKind\":\"calendar\",\"slots\":[{\"id\":\"ta-authoring-result-slot-calendar\",\"eligible\":\"true\",\"selected\":\"true\"},{\"id\":\"ta-authoring-result-slot-todo\",\"eligible\":\"true\",\"selected\":\"false\"},{\"id\":\"ta-authoring-result-slot-sheet\",\"eligible\":\"true\",\"selected\":\"false\"},{\"id\":\"ta-authoring-result-slot-memo\",\"eligible\":\"true\",\"selected\":\"false\"}]}},\"parity\":true}"
+      },
+      "pass": true,
+      "status": "passed",
+      "evidence": [
+        {
+          "source": "docs/content-audit/2026-08-04-flowme-text-authoring-grammar-ux-improvement-results/ui-simulation-evidence.json",
+          "checkId": "U07",
+          "passed": true,
+          "actual": {
+            "target": "both",
+            "viewport": "1024x768",
+            "action": "제품 대표 5개와 QA 27개 카탈로그 경계 및 동일 예시 적용 비교",
+            "expected": "제품은 대표 5개만 · QA mode는 27개와 4개 그룹 · route/standalone semantic parity · tablet overflow 0",
+            "observed": "{\"route\":{\"product\":{\"countLabel\":\"대표 5개\",\"productOptions\":5,\"qaOptions\":0,\"internalQaLabel\":0,\"twoPane\":true,\"noHorizontalOverflow\":true,\"semantic\":{\"title\":\"제목입니다.\",\"itemTitles\":[\"첫 번째 항목입니다.\",\"두 번째 항목입니다.\",\"날짜 없는 항목입니다.\"],\"resultRows\":3,\"preflight\":3,\"resultKind\":\"todo\",\"slots\":[{\"id\":\"ta-authoring-result-slot-calendar\",\"eligible\":\"true\",\"selected\":\"false\"},{\"id\":\"ta-authoring-result-slot-todo\",\"eligible\":\"true\",\"selected\":\"true\"},{\"id\":\"ta-authoring-result-slot-sheet\",\"eligible\":\"true\",\"selected\":\"false\"},{\"id\":\"ta-authoring-result-slot-memo\",\"eligible\":\"true\",\"selected\":\"false\"}]}},\"qa\":{\"countLabel\":\"QA 전체 27개\",\"productOptions\":5,\"qaOptions\":27,\"groups\":{\"existing\":8,\"condition\":8,\"compatibility\":6,\"error\":5},\"internalQaLabel\":1,\"twoPane\":true,\"noHorizontalOverflow\":true},\"applied\":{\"title\":\"상대 날짜 · 8월 기준일 적용\",\"itemTitles\":[\"장소 확인\",\"최종 확인\"],\"resultRows\":2,\"preflight\":2,\"resultKind\":\"calendar\",\"slots\":[{\"id\":\"ta-authoring-result-slot-calendar\",\"eligible\":\"true\",\"selected\":\"true\"},{\"id\":\"ta-authoring-result-slot-todo\",\"eligible\":\"true\",\"selected\":\"false\"},{\"id\":\"ta-authoring-result-slot-sheet\",\"eligible\":\"true\",\"selected\":\"false\"},{\"id\":\"ta-authoring-result-slot-memo\",\"eligible\":\"true\",\"selected\":\"false\"}]}},\"standalone\":{\"product\":{\"countLabel\":\"대표 5개\",\"productOptions\":5,\"qaOptions\":0,\"internalQaLabel\":0,\"twoPane\":true,\"noHorizontalOverflow\":true,\"semantic\":{\"title\":\"제목입니다.\",\"itemTitles\":[\"첫 번째 항목입니다.\",\"두 번째 항목입니다.\",\"날짜 없는 항목입니다.\"],\"resultRows\":3,\"preflight\":3,\"resultKind\":\"todo\",\"slots\":[{\"id\":\"ta-authoring-result-slot-calendar\",\"eligible\":\"true\",\"selected\":\"false\"},{\"id\":\"ta-authoring-result-slot-todo\",\"eligible\":\"true\",\"selected\":\"true\"},{\"id\":\"ta-authoring-result-slot-sheet\",\"eligible\":\"true\",\"selected\":\"false\"},{\"id\":\"ta-authoring-result-slot-memo\",\"eligible\":\"true\",\"selected\":\"false\"}]}},\"qa\":{\"countLabel\":\"QA 전체 27개\",\"productOptions\":5,\"qaOptions\":27,\"groups\":{\"existing\":8,\"condition\":8,\"compatibility\":6,\"error\":5},\"internalQaLabel\":1,\"twoPane\":true,\"noHorizontalOverflow\":true},\"applied\":{\"title\":\"상대 날짜 · 8월 기준일 적용\",\"itemTitles\":[\"장소 확인\",\"최종 확인\"],\"resultRows\":2,\"preflight\":2,\"resultKind\":\"calendar\",\"slots\":[{\"id\":\"ta-authoring-result-slot-calendar\",\"eligible\":\"true\",\"selected\":\"true\"},{\"id\":\"ta-authoring-result-slot-todo\",\"eligible\":\"true\",\"selected\":\"false\"},{\"id\":\"ta-authoring-result-slot-sheet\",\"eligible\":\"true\",\"selected\":\"false\"},{\"id\":\"ta-authoring-result-slot-memo\",\"eligible\":\"true\",\"selected\":\"false\"}]}},\"parity\":true}"
+          },
+          "capture": {
+            "schemaVersion": "flowme-text-authoring-ui-simulation-v2",
+            "executedAt": "2026-08-04T09:42:55.939Z",
+            "browser": "150.0.7871.184",
+            "routeUrl": "http://127.0.0.1:3104/flows/new",
+            "routeQaUrl": "http://127.0.0.1:3104/flows/new?authoringQa=1",
+            "standaloneUrl": "http://127.0.0.1:4178/docs/content-audit/2026-08-04-flowme-text-authoring-grammar-ux-improvement-results/flowme-text-authoring-v2-test.html",
+            "standaloneQaUrl": "http://127.0.0.1:4178/docs/content-audit/2026-08-04-flowme-text-authoring-grammar-ux-improvement-results/flowme-text-authoring-v2-test.html?authoringQa=1",
+            "viewports": [
+              "1440x900",
+              "1024x768",
+              "390x844",
+              "390x600",
+              "360x640",
+              "844x390",
+              "720x450"
+            ],
+            "commands": [
+              "npm.cmd run build",
+              "npm.cmd run build:text-authoring-html",
+              "npx.cmd tsx scripts/content-audit/capture-text-authoring-grammar-ui.ts"
+            ],
+            "consoleErrors": [],
+            "pageErrors": [],
+            "failedRequests": [],
+            "replacementCharacters": [],
+            "externalRequests": [],
+            "screenshots": [
+              {
+                "label": "Route 구조 수정 dialog",
+                "file": "ui-u01-structure-dialog-1440x900.png",
+                "viewport": "1440x900",
+                "checkId": "U01"
+              },
+              {
+                "label": "Route 모바일 도움말 닫힘 상태",
+                "file": "ui-u02-help-keyboard-390x844.png",
+                "viewport": "390x844",
+                "checkId": "U02"
+              },
+              {
+                "label": "Route 390x844 결과 하단",
+                "file": "ui-u03-stage-scroll-390x844.png",
+                "viewport": "390x844",
+                "checkId": "U03"
+              },
+              {
+                "label": "Route 390x600 결과 하단",
+                "file": "ui-u04-short-390x600.png",
+                "viewport": "390x600",
+                "checkId": "U04"
+              },
+              {
+                "label": "Route 360x640 결과 하단",
+                "file": "ui-u04-short-360x640.png",
+                "viewport": "360x640",
+                "checkId": "U04"
+              },
+              {
+                "label": "Route 가로 모바일 결과 하단",
+                "file": "ui-u05-landscape-844x390.png",
+                "viewport": "844x390",
+                "checkId": "U05"
+              },
+              {
+                "label": "Route 실시간 제목·Item·날짜·링크 반영",
+                "file": "ui-u06-live-reflection-1440x900.png",
+                "viewport": "1440x900",
+                "checkId": "U06"
+              },
+              {
+                "label": "Route QA 27개 카탈로그",
+                "file": "ui-u07-product-qa-boundary-1024x768.png",
+                "viewport": "1024x768",
+                "checkId": "U07"
+              },
+              {
+                "label": "Route 1440x900의 200% 확대 reflow 동등 화면",
+                "file": "ui-u08-zoom-200-equivalent-720x450.png",
+                "viewport": "720x450",
+                "checkId": "U08"
+              },
+              {
+                "label": "Standalone 런타임 기본선",
+                "file": "ui-u08-runtime-a11y-1440x900.png",
+                "viewport": "1440x900",
+                "checkId": "U08"
+              }
+            ],
+            "note": "자동화된 내부 브라우저 QA이며 사용자 관찰 검증이 아니다. route와 standalone parity, 여섯 viewport, keyboard·scroll·runtime 기본선을 U01~U08로 기록했다."
+          }
+        }
+      ],
+      "apis": []
+    },
+    {
+      "id": "U08",
+      "group": "responsive_ux",
+      "priority": "blocker",
+      "title": "접근성·오류·네트워크 기본선",
+      "mode": "browser_qa",
+      "actual": {
+        "target": "both",
+        "viewport": "1440x900 · 1024x768 · 390x844 · 390x600 · 360x640 · 844x390 · 1440x900@200%(720x450 CSS)",
+        "action": "키보드 focus-visible과 런타임·문자·요청 오류 기본선 확인",
+        "expected": "주요 조작 focus-visible · keyboard stage/결과 조작 · console/page/request/replacement/external request 0",
+        "observed": "{\"focusResults\":[{\"target\":\"route\",\"stageFocus\":{\"active\":true,\"visible\":true,\"boxShadow\":\"rgb(255, 255, 255) 0px 0px 0px 0px inset, rgba(54, 84, 255, 0.24) 0px 0px 0px 2px inset, rgba(0, 0, 0, 0) 0px 0px 0px 0px\",\"outlineStyle\":\"solid\",\"outlineWidth\":\"2px\"},\"exampleFocus\":{\"active\":true,\"visible\":true,\"boxShadow\":\"rgb(255, 255, 255) 0px 0px 0px 0px, rgba(54, 84, 255, 0.24) 0px 0px 0px 2px, rgba(0, 0, 0, 0) 0px 0px 0px 0px\",\"outlineStyle\":\"solid\",\"outlineWidth\":\"2px\"},\"slotFocus\":{\"active\":true,\"visible\":true,\"boxShadow\":\"rgba(255, 255, 255, 0.52) 0px 0px 0px 0px, rgba(54, 84, 255, 0.125) 0px 0px 0px 1.03945px, rgba(0, 0, 0, 0) 0px 0px 0px 0px\",\"outlineStyle\":\"solid\",\"outlineWidth\":\"2px\"},\"primaryFocus\":{\"active\":true,\"visible\":true,\"boxShadow\":\"rgba(255, 255, 255, 0.73) 0px 0px 0px 0px, rgba(54, 84, 255, 0.173) 0px 0px 0px 1.45728px, rgba(0, 0, 0, 0) 0px 0px 0px 0px\",\"outlineStyle\":\"solid\",\"outlineWidth\":\"2px\"}},{\"target\":\"standalone\",\"stageFocus\":{\"active\":true,\"visible\":true,\"boxShadow\":\"rgba(255, 255, 255, 0.98) 0px 0px 0px 0px inset, rgba(54, 84, 255, 0.235) 0px 0px 0px 1.96313px inset, rgba(0, 0, 0, 0) 0px 0px 0px 0px\",\"outlineStyle\":\"solid\",\"outlineWidth\":\"2px\"},\"exampleFocus\":{\"active\":true,\"visible\":true,\"boxShadow\":\"rgb(255, 255, 255) 0px 0px 0px 0px, rgba(54, 84, 255, 0.24) 0px 0px 0px 2px, rgba(0, 0, 0, 0) 0px 0px 0px 0px\",\"outlineStyle\":\"solid\",\"outlineWidth\":\"2px\"},\"slotFocus\":{\"active\":true,\"visible\":true,\"boxShadow\":\"rgba(255, 255, 255, 0.04) 0px 0px 0px 0px, rgba(54, 84, 255, 0.008) 0px 0px 0px 0.0782157px, rgba(0, 0, 0, 0) 0px 0px 0px 0px\",\"outlineStyle\":\"solid\",\"outlineWidth\":\"2px\"},\"primaryFocus\":{\"active\":true,\"visible\":true,\"boxShadow\":\"rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px\",\"outlineStyle\":\"solid\",\"outlineWidth\":\"2px\"}}],\"viewports\":[\"1440x900\",\"1024x768\",\"390x844\",\"390x600\",\"360x640\",\"844x390\",\"720x450\"],\"consoleErrors\":0,\"pageErrors\":0,\"failedRequests\":0,\"replacementCharacters\":0,\"externalRequests\":0}"
+      },
+      "pass": true,
+      "status": "passed",
+      "evidence": [
+        {
+          "source": "docs/content-audit/2026-08-04-flowme-text-authoring-grammar-ux-improvement-results/ui-simulation-evidence.json",
+          "checkId": "U08",
+          "passed": true,
+          "actual": {
+            "target": "both",
+            "viewport": "1440x900 · 1024x768 · 390x844 · 390x600 · 360x640 · 844x390 · 1440x900@200%(720x450 CSS)",
+            "action": "키보드 focus-visible과 런타임·문자·요청 오류 기본선 확인",
+            "expected": "주요 조작 focus-visible · keyboard stage/결과 조작 · console/page/request/replacement/external request 0",
+            "observed": "{\"focusResults\":[{\"target\":\"route\",\"stageFocus\":{\"active\":true,\"visible\":true,\"boxShadow\":\"rgb(255, 255, 255) 0px 0px 0px 0px inset, rgba(54, 84, 255, 0.24) 0px 0px 0px 2px inset, rgba(0, 0, 0, 0) 0px 0px 0px 0px\",\"outlineStyle\":\"solid\",\"outlineWidth\":\"2px\"},\"exampleFocus\":{\"active\":true,\"visible\":true,\"boxShadow\":\"rgb(255, 255, 255) 0px 0px 0px 0px, rgba(54, 84, 255, 0.24) 0px 0px 0px 2px, rgba(0, 0, 0, 0) 0px 0px 0px 0px\",\"outlineStyle\":\"solid\",\"outlineWidth\":\"2px\"},\"slotFocus\":{\"active\":true,\"visible\":true,\"boxShadow\":\"rgba(255, 255, 255, 0.52) 0px 0px 0px 0px, rgba(54, 84, 255, 0.125) 0px 0px 0px 1.03945px, rgba(0, 0, 0, 0) 0px 0px 0px 0px\",\"outlineStyle\":\"solid\",\"outlineWidth\":\"2px\"},\"primaryFocus\":{\"active\":true,\"visible\":true,\"boxShadow\":\"rgba(255, 255, 255, 0.73) 0px 0px 0px 0px, rgba(54, 84, 255, 0.173) 0px 0px 0px 1.45728px, rgba(0, 0, 0, 0) 0px 0px 0px 0px\",\"outlineStyle\":\"solid\",\"outlineWidth\":\"2px\"}},{\"target\":\"standalone\",\"stageFocus\":{\"active\":true,\"visible\":true,\"boxShadow\":\"rgba(255, 255, 255, 0.98) 0px 0px 0px 0px inset, rgba(54, 84, 255, 0.235) 0px 0px 0px 1.96313px inset, rgba(0, 0, 0, 0) 0px 0px 0px 0px\",\"outlineStyle\":\"solid\",\"outlineWidth\":\"2px\"},\"exampleFocus\":{\"active\":true,\"visible\":true,\"boxShadow\":\"rgb(255, 255, 255) 0px 0px 0px 0px, rgba(54, 84, 255, 0.24) 0px 0px 0px 2px, rgba(0, 0, 0, 0) 0px 0px 0px 0px\",\"outlineStyle\":\"solid\",\"outlineWidth\":\"2px\"},\"slotFocus\":{\"active\":true,\"visible\":true,\"boxShadow\":\"rgba(255, 255, 255, 0.04) 0px 0px 0px 0px, rgba(54, 84, 255, 0.008) 0px 0px 0px 0.0782157px, rgba(0, 0, 0, 0) 0px 0px 0px 0px\",\"outlineStyle\":\"solid\",\"outlineWidth\":\"2px\"},\"primaryFocus\":{\"active\":true,\"visible\":true,\"boxShadow\":\"rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px\",\"outlineStyle\":\"solid\",\"outlineWidth\":\"2px\"}}],\"viewports\":[\"1440x900\",\"1024x768\",\"390x844\",\"390x600\",\"360x640\",\"844x390\",\"720x450\"],\"consoleErrors\":0,\"pageErrors\":0,\"failedRequests\":0,\"replacementCharacters\":0,\"externalRequests\":0}"
+          },
+          "capture": {
+            "schemaVersion": "flowme-text-authoring-ui-simulation-v2",
+            "executedAt": "2026-08-04T09:42:55.939Z",
+            "browser": "150.0.7871.184",
+            "routeUrl": "http://127.0.0.1:3104/flows/new",
+            "routeQaUrl": "http://127.0.0.1:3104/flows/new?authoringQa=1",
+            "standaloneUrl": "http://127.0.0.1:4178/docs/content-audit/2026-08-04-flowme-text-authoring-grammar-ux-improvement-results/flowme-text-authoring-v2-test.html",
+            "standaloneQaUrl": "http://127.0.0.1:4178/docs/content-audit/2026-08-04-flowme-text-authoring-grammar-ux-improvement-results/flowme-text-authoring-v2-test.html?authoringQa=1",
+            "viewports": [
+              "1440x900",
+              "1024x768",
+              "390x844",
+              "390x600",
+              "360x640",
+              "844x390",
+              "720x450"
+            ],
+            "commands": [
+              "npm.cmd run build",
+              "npm.cmd run build:text-authoring-html",
+              "npx.cmd tsx scripts/content-audit/capture-text-authoring-grammar-ui.ts"
+            ],
+            "consoleErrors": [],
+            "pageErrors": [],
+            "failedRequests": [],
+            "replacementCharacters": [],
+            "externalRequests": [],
+            "screenshots": [
+              {
+                "label": "Route 구조 수정 dialog",
+                "file": "ui-u01-structure-dialog-1440x900.png",
+                "viewport": "1440x900",
+                "checkId": "U01"
+              },
+              {
+                "label": "Route 모바일 도움말 닫힘 상태",
+                "file": "ui-u02-help-keyboard-390x844.png",
+                "viewport": "390x844",
+                "checkId": "U02"
+              },
+              {
+                "label": "Route 390x844 결과 하단",
+                "file": "ui-u03-stage-scroll-390x844.png",
+                "viewport": "390x844",
+                "checkId": "U03"
+              },
+              {
+                "label": "Route 390x600 결과 하단",
+                "file": "ui-u04-short-390x600.png",
+                "viewport": "390x600",
+                "checkId": "U04"
+              },
+              {
+                "label": "Route 360x640 결과 하단",
+                "file": "ui-u04-short-360x640.png",
+                "viewport": "360x640",
+                "checkId": "U04"
+              },
+              {
+                "label": "Route 가로 모바일 결과 하단",
+                "file": "ui-u05-landscape-844x390.png",
+                "viewport": "844x390",
+                "checkId": "U05"
+              },
+              {
+                "label": "Route 실시간 제목·Item·날짜·링크 반영",
+                "file": "ui-u06-live-reflection-1440x900.png",
+                "viewport": "1440x900",
+                "checkId": "U06"
+              },
+              {
+                "label": "Route QA 27개 카탈로그",
+                "file": "ui-u07-product-qa-boundary-1024x768.png",
+                "viewport": "1024x768",
+                "checkId": "U07"
+              },
+              {
+                "label": "Route 1440x900의 200% 확대 reflow 동등 화면",
+                "file": "ui-u08-zoom-200-equivalent-720x450.png",
+                "viewport": "720x450",
+                "checkId": "U08"
+              },
+              {
+                "label": "Standalone 런타임 기본선",
+                "file": "ui-u08-runtime-a11y-1440x900.png",
+                "viewport": "1440x900",
+                "checkId": "U08"
+              }
+            ],
+            "note": "자동화된 내부 브라우저 QA이며 사용자 관찰 검증이 아니다. route와 standalone parity, 여섯 viewport, keyboard·scroll·runtime 기본선을 U01~U08로 기록했다."
+          }
+        }
+      ],
+      "apis": []
+    }
+  ]
+}
