@@ -1,0 +1,2803 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="공개 기준본, 개인 실행본, 변경 제안을 분리하는 FlowMe 협업형 작성·편집 제품 결정">
+  <link rel="icon" href="data:,">
+  <title>FlowMe 협업형 작성·편집 전략 v1.3 · Product Decision</title>
+  <style>
+    :root {
+      --ink: #17212b;
+      --muted: #5d6873;
+      --paper: #f5f2ea;
+      --panel: #fffdf8;
+      --line: #d9d4c9;
+      --navy: #17324d;
+      --teal: #0f766e;
+      --teal-soft: #dff3ef;
+      --amber: #b85c22;
+      --amber-soft: #fff0df;
+      --rose: #a23b55;
+      --rose-soft: #fde7ec;
+      --blue-soft: #e6eef6;
+      --shadow: 0 18px 50px rgba(31, 45, 58, .09);
+      --radius: 20px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 0%, rgba(15, 118, 110, .12), transparent 28rem),
+        radial-gradient(circle at 88% 8%, rgba(184, 92, 34, .10), transparent 24rem),
+        var(--paper);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo",
+        "Noto Sans KR", sans-serif;
+      line-height: 1.65;
+      word-break: keep-all;
+    }
+
+    a { color: var(--teal); text-underline-offset: 3px; }
+    a:hover { color: var(--navy); }
+    .shell { width: min(1180px, calc(100% - 36px)); margin: 0 auto; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(18px);
+      background: rgba(245, 242, 234, .88);
+      border-bottom: 1px solid rgba(23, 50, 77, .10);
+    }
+
+    .topbar-inner {
+      min-height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--navy);
+      font-weight: 800;
+      letter-spacing: -.02em;
+    }
+
+    .brand-mark {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      color: white;
+      background: linear-gradient(145deg, var(--navy), var(--teal));
+      font-size: 13px;
+    }
+
+    nav { display: flex; gap: 16px; font-size: 13px; }
+    nav a { color: var(--muted); text-decoration: none; font-weight: 700; }
+    nav a:hover { color: var(--teal); }
+
+    header.hero { padding: 84px 0 54px; }
+    .eyebrow {
+      margin: 0 0 14px;
+      color: var(--teal);
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+    h1 {
+      max-width: 920px;
+      margin-bottom: 22px;
+      color: var(--navy);
+      font-size: clamp(40px, 7vw, 78px);
+      line-height: 1.05;
+      letter-spacing: -.055em;
+    }
+
+    .hero-lead {
+      max-width: 830px;
+      margin-bottom: 30px;
+      color: #344454;
+      font-size: clamp(18px, 2.3vw, 24px);
+      line-height: 1.55;
+      letter-spacing: -.02em;
+    }
+
+    .status-row, .metric-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .validation-status { margin-bottom: 18px; }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 34px;
+      padding: 7px 12px;
+      border: 1px solid rgba(23, 50, 77, .14);
+      border-radius: 999px;
+      background: rgba(255, 253, 248, .76);
+      color: var(--navy);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .pill.warn { color: var(--amber); background: var(--amber-soft); border-color: #f0c69e; }
+    .pill.ok { color: var(--teal); background: var(--teal-soft); border-color: #aadbd3; }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.55fr .85fr;
+      gap: 24px;
+      align-items: stretch;
+      margin-top: 42px;
+    }
+
+    .decision-card, .evidence-card {
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .decision-card {
+      padding: 34px;
+      color: white;
+      background:
+        linear-gradient(140deg, rgba(255,255,255,.07), transparent 40%),
+        var(--navy);
+    }
+
+    .decision-card small {
+      display: block;
+      margin-bottom: 12px;
+      color: #a9d9d3;
+      font-weight: 900;
+      letter-spacing: .08em;
+    }
+
+    .decision-card strong {
+      display: block;
+      margin-bottom: 16px;
+      font-size: clamp(24px, 3.5vw, 40px);
+      line-height: 1.25;
+      letter-spacing: -.035em;
+    }
+
+    .decision-card p { margin-bottom: 0; color: #d9e2e8; }
+    .evidence-card {
+      padding: 30px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+    }
+
+    .evidence-card h3 { margin-bottom: 14px; color: var(--navy); font-size: 18px; }
+    .evidence-card ul { margin: 0; padding-left: 20px; color: var(--muted); }
+
+    main { padding-bottom: 90px; }
+    section { padding: 70px 0 0; scroll-margin-top: 70px; }
+    .section-head {
+      display: grid;
+      grid-template-columns: .65fr 1.35fr;
+      gap: 28px;
+      align-items: end;
+      margin-bottom: 28px;
+    }
+
+    .section-kicker {
+      color: var(--teal);
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      margin-bottom: 0;
+      color: var(--navy);
+      font-size: clamp(30px, 4vw, 48px);
+      line-height: 1.12;
+      letter-spacing: -.04em;
+    }
+
+    .section-copy {
+      margin: 0;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .model-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .model-card {
+      position: relative;
+      min-height: 220px;
+      padding: 24px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--panel);
+    }
+
+    .model-card::after {
+      content: attr(data-step);
+      position: absolute;
+      right: 14px;
+      bottom: -20px;
+      color: rgba(23, 50, 77, .07);
+      font-size: 82px;
+      font-weight: 950;
+      line-height: 1;
+    }
+
+    .model-card .tag {
+      display: inline-block;
+      margin-bottom: 18px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      color: var(--teal);
+      background: var(--teal-soft);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .model-card h3 { margin-bottom: 10px; color: var(--navy); font-size: 21px; }
+    .model-card p { margin-bottom: 0; color: var(--muted); font-size: 15px; }
+
+    .flowline {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin-top: 18px;
+      padding: 18px;
+      border: 1px solid #bdded8;
+      border-radius: 18px;
+      background: linear-gradient(90deg, var(--teal-soft), #f7fbfa);
+    }
+
+    .flow-node {
+      position: relative;
+      padding: 16px 12px;
+      border-radius: 13px;
+      color: var(--navy);
+      background: white;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 850;
+      box-shadow: 0 5px 15px rgba(15, 118, 110, .07);
+    }
+
+    .flow-node:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      top: 50%;
+      right: -13px;
+      z-index: 2;
+      color: var(--teal);
+      transform: translateY(-50%);
+      font-size: 18px;
+    }
+
+    .callout {
+      margin-top: 18px;
+      padding: 20px 22px;
+      border-left: 4px solid var(--amber);
+      border-radius: 0 14px 14px 0;
+      background: var(--amber-soft);
+      color: #653515;
+    }
+
+    .callout strong { color: var(--amber); }
+
+    .table-wrap {
+      position: relative;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--panel);
+      box-shadow: 0 10px 34px rgba(31, 45, 58, .05);
+    }
+
+    table {
+      width: 100%;
+      min-width: 820px;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 17px 16px;
+      border-bottom: 1px solid #e9e5dc;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      position: sticky;
+      top: 58px;
+      z-index: 2;
+      color: var(--navy);
+      background: #f1eee6;
+      font-size: 12px;
+      letter-spacing: .04em;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+    td:first-child { color: var(--navy); font-weight: 850; }
+    .cell-muted { color: var(--muted); }
+    .unknown { color: var(--rose); font-weight: 750; }
+
+    .owner-grid, .decision-grid, .scenario-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .owner-card, .decision-column, .scenario-card {
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--panel);
+    }
+
+    .owner-card h3, .decision-column h3, .scenario-card h3 {
+      margin-bottom: 12px;
+      color: var(--navy);
+      font-size: 18px;
+    }
+
+    .owner-card p, .scenario-card p { margin-bottom: 12px; color: var(--muted); font-size: 14px; }
+    .owner-card ul, .decision-column ul, .scenario-card ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .owner-card.canonical { border-top: 5px solid var(--navy); }
+    .owner-card.personal { border-top: 5px solid var(--teal); }
+    .owner-card.run { border-top: 5px solid var(--amber); }
+    .owner-card.proposal { border-top: 5px solid #6f5ba7; }
+    .owner-card.occurrence { border-top: 5px solid #3d7ea6; }
+    .owner-card.projection { border-top: 5px solid var(--rose); }
+
+    .conflict-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .conflict-item {
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--panel);
+    }
+
+    .conflict-item b { display: block; margin-bottom: 6px; color: var(--navy); }
+    .conflict-item span { color: var(--muted); font-size: 14px; }
+
+    .decision-column.apply { background: #effaf7; border-color: #b9e1da; }
+    .decision-column.validate { background: #f0f5fb; border-color: #c7d8e8; }
+    .decision-column.defer { background: #fff6e9; border-color: #edcfaa; }
+    .decision-column.reject { background: #fff0f3; border-color: #edbcc8; }
+    .decision-grid { grid-template-columns: repeat(4, 1fr); }
+    .decision-column h3 span { display: block; color: var(--muted); font-size: 12px; }
+
+    .scenario-grid { grid-template-columns: repeat(2, 1fr); }
+    .scenario-no {
+      display: inline-grid;
+      width: 34px;
+      height: 34px;
+      place-items: center;
+      margin-bottom: 14px;
+      border-radius: 10px;
+      color: white;
+      background: var(--navy);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .validation {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .validation-panel {
+      padding: 28px;
+      border-radius: var(--radius);
+      color: white;
+      background: var(--navy);
+    }
+
+    .validation-panel.alt { color: var(--ink); background: var(--panel); border: 1px solid var(--line); }
+    .validation-panel h3 { margin-bottom: 15px; font-size: 23px; }
+    .validation-panel ul { margin: 0; padding-left: 20px; }
+    .validation-panel.alt ul { color: var(--muted); }
+    .validation-panel strong { color: #8de0d5; }
+    .validation-panel.alt strong { color: var(--teal); }
+
+    .source-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .source-link {
+      display: block;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--panel);
+      text-decoration: none;
+      font-weight: 800;
+    }
+
+    .proof-kpis {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+    }
+
+    .proof-kpi {
+      min-height: 154px;
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--panel);
+    }
+
+    .proof-kpi.negative {
+      border-color: #edbcc8;
+      background: #fff8f9;
+    }
+
+    .proof-kpi .kpi-icon {
+      display: grid;
+      width: 30px;
+      height: 30px;
+      place-items: center;
+      margin-bottom: 14px;
+      border-radius: 9px;
+      color: var(--teal);
+      background: var(--teal-soft);
+      font-size: 13px;
+      font-weight: 950;
+    }
+
+    .proof-kpi.negative .kpi-icon {
+      color: var(--rose);
+      background: var(--rose-soft);
+    }
+
+    .proof-kpi strong {
+      display: block;
+      color: var(--navy);
+      font-size: clamp(28px, 3vw, 42px);
+      line-height: 1;
+      letter-spacing: -.04em;
+    }
+
+    .proof-kpi.negative strong { color: var(--rose); }
+    .proof-kpi b { display: block; margin: 10px 0 2px; color: var(--ink); font-size: 14px; }
+    .proof-kpi small { color: var(--muted); font-size: 11px; line-height: 1.45; }
+
+    .proof-dashboard {
+      display: grid;
+      grid-template-columns: .88fr 1.12fr;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .proof-panel {
+      padding: 26px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: var(--panel);
+    }
+
+    .proof-panel h3 {
+      margin-bottom: 5px;
+      color: var(--navy);
+      font-size: 20px;
+    }
+
+    .proof-panel > p {
+      margin-bottom: 22px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .decision-chart {
+      display: grid;
+      grid-template-columns: 178px 1fr;
+      gap: 26px;
+      align-items: center;
+    }
+
+    .decision-ring {
+      position: relative;
+      width: 178px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background:
+        conic-gradient(
+          var(--teal) 0 16.7%,
+          #d79820 16.7% 41.7%,
+          var(--navy) 41.7% 95.9%,
+          #c95a6c 95.9% 100%
+        );
+    }
+
+    .decision-ring::after {
+      content: "24\A검증 서비스";
+      position: absolute;
+      inset: 35px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: var(--navy);
+      background: var(--panel);
+      white-space: pre;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 850;
+      line-height: 1.35;
+    }
+
+    .legend-list { display: grid; gap: 10px; }
+    .legend-item {
+      display: grid;
+      grid-template-columns: 10px 1fr auto;
+      gap: 9px;
+      align-items: center;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #ece7dd;
+      font-size: 13px;
+    }
+
+    .legend-item:last-child { border-bottom: 0; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .legend-item b { color: var(--navy); }
+    .legend-item span:last-child { color: var(--muted); font-variant-numeric: tabular-nums; }
+
+    .pattern-list { display: grid; gap: 11px; }
+    .pattern-row {
+      display: grid;
+      grid-template-columns: 128px 1fr 48px;
+      gap: 10px;
+      align-items: center;
+      font-size: 12px;
+    }
+
+    .pattern-row b { color: var(--navy); }
+    .pattern-track {
+      height: 9px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #ebe7de;
+    }
+
+    .pattern-track i {
+      display: block;
+      width: var(--value);
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--teal), #56a89e);
+    }
+
+    .pattern-row span:last-child { color: var(--muted); text-align: right; }
+
+    .proof-boundary {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .boundary-note {
+      padding: 16px 18px;
+      border: 1px solid #b9e1da;
+      border-radius: 14px;
+      color: #155b55;
+      background: #effaf7;
+      font-size: 13px;
+    }
+
+    .boundary-note.warn {
+      border-color: #edbcc8;
+      color: #7d3043;
+      background: #fff0f3;
+    }
+
+    .boundary-note b { display: block; margin-bottom: 3px; }
+
+    .platform-proof-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .platform-proof {
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--panel);
+    }
+
+    .platform-proof.wide { grid-column: span 2; }
+    .platform-proof-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .platform-proof h3 { margin: 0; color: var(--navy); font-size: 18px; }
+    .grade {
+      padding: 4px 8px;
+      border-radius: 999px;
+      color: var(--teal);
+      background: var(--teal-soft);
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    .grade.c { color: var(--amber); background: var(--amber-soft); }
+    .platform-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .platform-metric {
+      padding: 13px;
+      border-radius: 12px;
+      background: #f3f0e9;
+    }
+
+    .platform-metric strong {
+      display: block;
+      color: var(--navy);
+      font-size: 24px;
+      line-height: 1.1;
+    }
+
+    .platform-metric b { display: block; margin-top: 5px; font-size: 12px; }
+    .platform-metric small { display: block; margin-top: 3px; color: var(--muted); font-size: 10px; }
+    .platform-proof .lesson { margin: 14px 0 0; color: var(--ink); font-size: 13px; }
+    .platform-proof .caveat { margin: 6px 0 0; color: var(--rose); font-size: 11px; }
+    .platform-proof a { font-weight: 800; }
+
+    .experiment-bars { display: grid; gap: 9px; }
+    .experiment-row {
+      display: grid;
+      grid-template-columns: 92px 1fr 44px;
+      gap: 8px;
+      align-items: center;
+      font-size: 11px;
+    }
+
+    .experiment-track {
+      height: 8px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #ebe7de;
+    }
+
+    .experiment-track i {
+      display: block;
+      width: var(--value);
+      height: 100%;
+      background: var(--teal);
+      border-radius: inherit;
+    }
+
+    .experiment-row strong { color: var(--navy); text-align: right; }
+    .evidence-timeline {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 0;
+      margin: 18px 0;
+      padding: 22px 12px 12px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--panel);
+    }
+
+    .timeline-point {
+      position: relative;
+      min-height: 90px;
+      padding: 18px 8px 0;
+      border-top: 2px solid #bdded8;
+      color: var(--muted);
+      font-size: 10px;
+      text-align: center;
+    }
+
+    .timeline-point::before {
+      content: "";
+      position: absolute;
+      top: -6px;
+      left: calc(50% - 5px);
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--teal);
+      box-shadow: 0 0 0 4px var(--teal-soft);
+    }
+
+    .timeline-point strong { display: block; margin-bottom: 3px; color: var(--navy); font-size: 11px; }
+
+    .service-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .service-card {
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--panel);
+    }
+
+    .service-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 15px;
+    }
+
+    .service-head h3 { margin: 0; color: var(--navy); font-size: 20px; }
+    .service-head p { margin: 3px 0 0; color: var(--muted); font-size: 11px; }
+    .verdict {
+      padding: 5px 9px;
+      border-radius: 999px;
+      color: var(--teal);
+      background: var(--teal-soft);
+      font-size: 10px;
+      font-weight: 950;
+      text-transform: uppercase;
+    }
+
+    .verdict.partner { color: #8a560e; background: #fff0cf; }
+    .verdict.benchmark { color: var(--navy); background: var(--blue-soft); }
+    .verdict.hold { color: var(--rose); background: var(--rose-soft); }
+
+    .service-flow {
+      display: grid;
+      grid-template-columns: 1fr 18px 1fr 18px 1fr;
+      align-items: stretch;
+    }
+
+    .service-step {
+      min-height: 92px;
+      padding: 12px;
+      border-radius: 12px;
+      background: #f3f0e9;
+    }
+
+    .service-step small {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--teal);
+      font-size: 9px;
+      font-weight: 950;
+      letter-spacing: .06em;
+    }
+
+    .service-step b { display: block; color: var(--navy); font-size: 12px; line-height: 1.45; }
+    .flow-arrow { display: grid; place-items: center; color: var(--teal); font-weight: 900; }
+    .service-boundary {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .service-boundary div {
+      padding: 10px 12px;
+      border-radius: 10px;
+      color: var(--muted);
+      background: #eef7f5;
+      font-size: 10px;
+      line-height: 1.45;
+    }
+
+    .service-boundary div:last-child { background: #f2f0ec; }
+    .service-boundary b { display: block; margin-bottom: 2px; color: var(--ink); }
+    .evidence-badges { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 12px; }
+    .evidence-badge {
+      padding: 4px 7px;
+      border: 1px solid #a9d8d1;
+      border-radius: 999px;
+      color: var(--teal);
+      font-size: 9px;
+      font-weight: 850;
+    }
+
+    .evidence-badge.synthesis { border-color: #e6bd82; color: #9b610d; }
+    .evidence-badge.unknown { border-color: #e4a9b8; color: var(--rose); }
+
+    .ui-contract-note {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 14px;
+      padding: 15px 18px;
+      border: 1px solid #bdded8;
+      border-radius: 14px;
+      color: #155b55;
+      background: #effaf7;
+      font-size: 12px;
+    }
+
+    .ui-contract-note strong { color: var(--teal); }
+    .mock-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .mock-window {
+      overflow: hidden;
+      border: 1px solid #c9c4b9;
+      border-radius: 18px;
+      background: white;
+      box-shadow: 0 14px 34px rgba(31, 45, 58, .09);
+    }
+
+    .mock-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 11px 15px;
+      color: var(--navy);
+      background: #eeeae1;
+      font-size: 11px;
+      font-weight: 850;
+    }
+
+    .mock-dots { color: #a9a196; letter-spacing: 3px; }
+    .mock-body { padding: 20px; }
+    .mock-label {
+      display: inline-block;
+      margin-bottom: 9px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      color: var(--teal);
+      background: var(--teal-soft);
+      font-size: 9px;
+      font-weight: 900;
+    }
+
+    .mock-title { margin-bottom: 6px; color: var(--navy); font-size: 21px; letter-spacing: -.03em; }
+    .mock-sub { margin-bottom: 14px; color: var(--muted); font-size: 11px; }
+    .mock-meta {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+      margin: 12px 0;
+    }
+
+    .mock-meta div { padding: 9px; border-radius: 10px; background: #f4f1eb; }
+    .mock-meta small { display: block; color: var(--muted); font-size: 8px; }
+    .mock-meta b { display: block; margin-top: 2px; color: var(--navy); font-size: 11px; }
+    .mock-list { display: grid; gap: 7px; margin: 13px 0; }
+    .mock-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 10px;
+      border: 1px solid #e4e0d7;
+      border-radius: 9px;
+      color: var(--ink);
+      font-size: 10px;
+    }
+
+    .check {
+      display: grid;
+      width: 18px;
+      height: 18px;
+      flex: 0 0 18px;
+      place-items: center;
+      border: 1px solid #a9d8d1;
+      border-radius: 5px;
+      color: white;
+      background: var(--teal);
+      font-size: 9px;
+    }
+
+    .check.empty { color: transparent; background: white; }
+    .mock-actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px; }
+    .mock-action {
+      flex: 1 1 120px;
+      padding: 10px 12px;
+      border: 1px solid var(--teal);
+      border-radius: 10px;
+      color: var(--teal);
+      background: white;
+      text-align: center;
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    .mock-action.primary { color: white; background: var(--teal); }
+    .mock-action.neutral { border-color: #b9b5ad; color: var(--navy); }
+    .mock-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .mock-field {
+      padding: 10px;
+      border: 1px solid #d9d4c9;
+      border-radius: 9px;
+      color: var(--navy);
+      background: #fffdf8;
+      font-size: 11px;
+      font-weight: 750;
+    }
+
+    .mock-field small { display: block; margin-bottom: 3px; color: var(--muted); font-size: 8px; font-weight: 600; }
+    .mock-field.full { grid-column: span 2; }
+    .projection-preview {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .projection-card {
+      padding: 11px;
+      border: 1px solid #bdded8;
+      border-radius: 10px;
+      background: #f6fbfa;
+    }
+
+    .projection-card b { display: block; color: var(--navy); font-size: 10px; }
+    .projection-card span { color: var(--muted); font-size: 9px; }
+    .proposal-split { display: grid; grid-template-columns: .75fr 1.25fr; gap: 8px; }
+    .source-lock {
+      padding: 12px;
+      border: 1px solid #cbd9e6;
+      border-radius: 10px;
+      color: var(--muted);
+      background: #f1f5f9;
+      font-size: 9px;
+    }
+
+    .source-lock b { display: block; margin-bottom: 5px; color: var(--navy); font-size: 11px; }
+    .proposal-form { display: grid; gap: 7px; }
+    .proposal-form .mock-field { background: white; }
+    .privacy-strip {
+      margin-top: 11px;
+      padding: 9px 11px;
+      border-radius: 9px;
+      color: #6f3d15;
+      background: var(--amber-soft);
+      font-size: 9px;
+      font-weight: 750;
+    }
+
+    .diff-summary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .diff-stat {
+      padding: 11px;
+      border-radius: 10px;
+      background: #f4f1eb;
+      text-align: center;
+    }
+
+    .diff-stat strong { display: block; color: var(--navy); font-size: 21px; }
+    .diff-stat.add strong { color: var(--teal); }
+    .diff-stat.change strong { color: var(--amber); }
+    .diff-stat.remove strong { color: var(--rose); }
+    .diff-stat span { color: var(--muted); font-size: 9px; }
+    .diff-row {
+      display: grid;
+      grid-template-columns: 50px 1fr auto;
+      gap: 8px;
+      align-items: center;
+      padding: 9px 0;
+      border-bottom: 1px solid #ece7dd;
+      font-size: 9px;
+    }
+
+    .diff-row:last-child { border-bottom: 0; }
+    .diff-kind { color: var(--teal); font-weight: 900; }
+    .diff-kind.change { color: var(--amber); }
+    .diff-kind.remove { color: var(--rose); }
+    .diff-choice { color: var(--muted); }
+    .preserve-strip {
+      margin-top: 12px;
+      padding: 9px 11px;
+      border: 1px solid #a9d8d1;
+      border-radius: 9px;
+      color: #155b55;
+      background: #effaf7;
+      text-align: center;
+      font-size: 9px;
+      font-weight: 850;
+    }
+
+    .mock-window.wide { grid-column: 1 / -1; }
+    .review-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .review-pane {
+      padding: 14px;
+      border: 1px solid #d9d4c9;
+      border-radius: 12px;
+      background: #fffdf8;
+    }
+
+    .review-pane.proposed { border-color: #a9d8d1; background: #f4fbf9; }
+    .review-pane small {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .review-pane b { display: block; margin-bottom: 8px; color: var(--navy); font-size: 13px; }
+    .review-pane p { margin-bottom: 0; color: #425262; font-size: 10px; line-height: 1.6; }
+    .review-checks {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .review-check {
+      padding: 10px;
+      border: 1px solid #d9d4c9;
+      border-radius: 10px;
+      background: #f6f3ed;
+      color: var(--muted);
+      font-size: 9px;
+    }
+
+    .review-check strong { display: block; margin-top: 2px; color: var(--navy); font-size: 11px; }
+
+    .persona-status {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 26px;
+      padding: 14px 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .persona-status strong {
+      margin-right: 5px;
+      color: var(--rose);
+      font-size: 12px;
+      letter-spacing: .06em;
+    }
+
+    .persona-stat {
+      padding: 5px 10px;
+      border-radius: 999px;
+      color: var(--navy);
+      background: #ebe7de;
+      font-size: 11px;
+      font-weight: 850;
+    }
+
+    .persona-overview {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 34px;
+    }
+
+    .persona-card {
+      position: relative;
+      padding: 21px 0 0;
+      border-top: 4px solid var(--role-color, var(--teal));
+    }
+
+    .persona-card::before {
+      content: attr(data-persona);
+      position: absolute;
+      top: -14px;
+      right: 0;
+      color: rgba(23, 50, 77, .07);
+      font-size: 58px;
+      font-weight: 950;
+      line-height: 1;
+      letter-spacing: -.06em;
+    }
+
+    .persona-card.executor { --role-color: var(--teal); }
+    .persona-card.contributor { --role-color: var(--amber); }
+    .persona-card.maintainer { --role-color: var(--navy); }
+    .persona-label {
+      display: inline-block;
+      margin-bottom: 8px;
+      color: var(--role-color);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .persona-card h3 { margin-bottom: 7px; color: var(--navy); font-size: 22px; }
+    .persona-card p { min-height: 76px; margin-bottom: 12px; color: var(--muted); font-size: 13px; }
+    .persona-card dl {
+      display: grid;
+      grid-template-columns: 54px 1fr;
+      gap: 6px 8px;
+      margin: 0;
+      font-size: 12px;
+    }
+
+    .persona-card dt { color: var(--muted); font-weight: 700; }
+    .persona-card dd { margin: 0; color: var(--ink); font-weight: 750; }
+
+    .journey-board {
+      overflow: hidden;
+      border: 1px solid #cbc5b9;
+      border-radius: 18px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .journey-phase-head {
+      display: grid;
+      grid-template-columns: 176px repeat(5, minmax(0, 1fr));
+      color: white;
+      background: var(--navy);
+    }
+
+    .journey-phase-head span {
+      min-width: 0;
+      padding: 13px 11px;
+      border-left: 1px solid rgba(255, 255, 255, .14);
+      font-size: 11px;
+      font-weight: 850;
+      line-height: 1.35;
+    }
+
+    .journey-phase-head span:first-child {
+      border-left: 0;
+      color: #a9d9d3;
+      letter-spacing: .08em;
+    }
+
+    .journey-lane {
+      --role-color: var(--teal);
+      display: grid;
+      grid-template-columns: 176px minmax(0, 1fr);
+      border-top: 1px solid var(--line);
+    }
+
+    .journey-lane:first-of-type { border-top: 0; }
+    .journey-lane.contributor { --role-color: var(--amber); }
+    .journey-lane.maintainer { --role-color: var(--navy); }
+    .journey-role {
+      position: relative;
+      min-height: 100%;
+      padding: 22px 18px;
+      list-style: none;
+      border-right: 1px solid var(--line);
+      border-left: 6px solid var(--role-color);
+      background: #f4f1eb;
+      cursor: default;
+    }
+
+    .journey-role::-webkit-details-marker { display: none; }
+    .journey-role::marker { display: none; content: ""; }
+    .journey-role:focus-visible { outline: 3px solid #60a5fa; outline-offset: -3px; }
+    .journey-role b { display: block; color: var(--navy); font-size: 15px; }
+    .journey-role span { display: block; margin-top: 5px; color: var(--muted); font-size: 11px; line-height: 1.45; }
+    .journey-role em {
+      display: inline-block;
+      margin-top: 10px;
+      color: var(--role-color);
+      font-size: 10px;
+      font-style: normal;
+      font-weight: 900;
+    }
+
+    .journey-steps {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .journey-step {
+      position: relative;
+      min-width: 0;
+      min-height: 178px;
+      padding: 20px 13px 18px;
+      border-left: 1px solid #e2ddd3;
+    }
+
+    .journey-step:first-child { border-left: 0; }
+    .journey-step::before {
+      content: attr(data-index);
+      display: grid;
+      width: 26px;
+      height: 26px;
+      margin-bottom: 13px;
+      place-items: center;
+      border: 1px solid var(--role-color);
+      border-radius: 50%;
+      color: var(--role-color);
+      font-size: 10px;
+      font-weight: 950;
+    }
+
+    .journey-step h4 { margin: 0 0 8px; color: var(--navy); font-size: 13px; line-height: 1.45; }
+    .journey-step p { margin-bottom: 10px; color: var(--muted); font-size: 11px; line-height: 1.55; }
+    .journey-step small {
+      display: block;
+      margin-top: 9px;
+      color: #6b5d4e;
+      font-size: 10px;
+      line-height: 1.45;
+    }
+
+    .artifact-chip, .screen-chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 23px;
+      margin: 2px 3px 2px 0;
+      padding: 3px 7px;
+      border: 1px solid color-mix(in srgb, var(--role-color) 45%, white);
+      border-radius: 999px;
+      color: var(--role-color);
+      background: color-mix(in srgb, var(--role-color) 8%, white);
+      font-size: 9px;
+      font-weight: 900;
+      line-height: 1.2;
+    }
+
+    .screen-chip { border-color: #c5bfb4; color: var(--navy); background: #f3f0ea; }
+    .screen-chip.gap { border-style: dashed; color: var(--rose); }
+
+    .journey-handoff {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      align-items: center;
+      gap: 28px;
+      margin-top: 18px;
+      padding: 19px 22px;
+      border: 1px solid #c7c1b6;
+      border-radius: 14px;
+      background: #ebe7de;
+    }
+
+    .handoff-node {
+      position: relative;
+      min-width: 0;
+      color: var(--navy);
+      text-align: center;
+      font-size: 11px;
+      font-weight: 850;
+    }
+
+    .handoff-node:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: -24px;
+      width: 18px;
+      height: 1px;
+      background: var(--teal);
+    }
+
+    .handoff-node:not(:last-child)::before {
+      content: "";
+      position: absolute;
+      top: calc(50% - 3px);
+      right: -24px;
+      width: 7px;
+      height: 7px;
+      border-top: 1px solid var(--teal);
+      border-right: 1px solid var(--teal);
+      transform: rotate(45deg);
+    }
+
+    .moment-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      margin-top: 34px;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .moment {
+      min-height: 128px;
+      padding: 19px;
+      border-left: 1px solid var(--line);
+    }
+
+    .moment:nth-child(3n + 1) { border-left: 0; }
+    .moment:nth-child(n + 4) { border-top: 1px solid var(--line); }
+    .moment span { color: var(--amber); font-size: 10px; font-weight: 950; letter-spacing: .07em; }
+    .moment b { display: block; margin: 7px 0 5px; color: var(--navy); font-size: 14px; }
+    .moment p { margin-bottom: 0; color: var(--muted); font-size: 11px; line-height: 1.55; }
+
+    .coverage-rail {
+      display: grid;
+      grid-template-columns: 180px repeat(6, 1fr);
+      margin-top: 28px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: white;
+    }
+
+    .coverage-label, .coverage-cell { padding: 13px 11px; }
+    .coverage-label {
+      color: white;
+      background: var(--navy);
+      border-radius: 13px 0 0 13px;
+      font-size: 11px;
+      font-weight: 850;
+    }
+
+    .coverage-cell {
+      border-left: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.45;
+    }
+
+    .coverage-cell b { display: block; color: var(--navy); font-size: 12px; }
+    .coverage-cell.gap b { color: var(--rose); }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+    }
+
+    footer {
+      margin-top: 76px;
+      padding: 30px 0 46px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 900px) {
+      nav { display: none; }
+      .hero-grid, .section-head, .validation { grid-template-columns: 1fr; }
+      .model-grid { grid-template-columns: repeat(2, 1fr); }
+      .owner-grid { grid-template-columns: repeat(2, 1fr); }
+      .decision-grid { grid-template-columns: repeat(2, 1fr); }
+      .proof-kpis { grid-template-columns: repeat(3, 1fr); }
+      .proof-dashboard, .decision-chart { grid-template-columns: 1fr; }
+      .decision-ring { margin: 0 auto; }
+      .evidence-timeline { grid-template-columns: repeat(4, 1fr); }
+      .review-checks { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 620px) {
+      .shell { width: min(100% - 24px, 1180px); }
+      header.hero { padding-top: 56px; }
+      h1 { font-size: 43px; }
+      .decision-card, .evidence-card { padding: 24px; }
+      section { padding-top: 54px; }
+      .model-grid, .owner-grid, .decision-grid, .scenario-grid,
+      .conflict-list, .source-list { grid-template-columns: 1fr; }
+      .flowline {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+      .flow-node:not(:last-child)::after {
+        content: "↓";
+        top: auto;
+        right: 50%;
+        bottom: -19px;
+        transform: translateX(50%);
+      }
+      .section-head { gap: 12px; }
+      .section-copy { font-size: 15px; }
+      th { top: 58px; }
+      .proof-kpis, .platform-proof-grid, .service-grid, .mock-grid,
+      .proof-boundary { grid-template-columns: 1fr; }
+      .platform-proof.wide { grid-column: auto; }
+      .platform-metrics { grid-template-columns: 1fr; }
+      .evidence-timeline { grid-template-columns: repeat(2, 1fr); }
+      .pattern-row { grid-template-columns: 105px 1fr 44px; }
+      .service-flow { grid-template-columns: 1fr; gap: 6px; }
+      .flow-arrow { transform: rotate(90deg); }
+      .service-boundary, .mock-fields, .projection-preview,
+      .proposal-split, .review-grid, .review-checks,
+      .persona-overview { grid-template-columns: 1fr; }
+      .mock-field.full { grid-column: auto; }
+      .mock-window.wide { grid-column: auto; }
+      .ui-contract-note { align-items: flex-start; flex-direction: column; }
+      .persona-card p { min-height: 0; }
+      .journey-phase-head { display: none; }
+      .journey-lane { display: block; }
+      .journey-role {
+        min-height: 54px;
+        padding: 15px 16px;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+        cursor: pointer;
+      }
+      .journey-steps { grid-template-columns: 1fr; }
+      .journey-step {
+        min-height: 0;
+        padding: 16px 18px;
+        border-top: 1px solid #e2ddd3;
+        border-left: 0;
+      }
+      .journey-step:first-child { border-top: 0; }
+      .journey-step::before {
+        content: attr(data-index) " · " attr(data-phase);
+        display: block;
+        width: auto;
+        height: auto;
+        margin-bottom: 7px;
+        border: 0;
+        border-radius: 0;
+        font-size: 10px;
+        letter-spacing: .05em;
+      }
+      .journey-handoff { grid-template-columns: 1fr; gap: 22px; }
+      .handoff-node:not(:last-child)::after {
+        top: auto;
+        right: 50%;
+        bottom: -16px;
+        width: 1px;
+        height: 12px;
+      }
+      .handoff-node:not(:last-child)::before {
+        top: auto;
+        right: calc(50% - 3px);
+        bottom: -16px;
+        transform: rotate(135deg);
+      }
+      .moment-grid, .coverage-rail { grid-template-columns: 1fr; }
+      .moment, .moment:nth-child(3n + 1) {
+        border-top: 1px solid var(--line);
+        border-left: 0;
+      }
+      .moment:first-child { border-top: 0; }
+      .coverage-label { border-radius: 13px 13px 0 0; }
+      .coverage-cell { border-top: 1px solid var(--line); border-left: 0; }
+      .table-wrap::before {
+        content: "← 표를 좌우로 이동해 전체 항목을 비교하세요 →";
+        position: sticky;
+        left: 0;
+        display: block;
+        width: calc(100vw - 26px);
+        padding: 9px 12px;
+        color: var(--teal);
+        background: var(--teal-soft);
+        font-size: 10px;
+        font-weight: 850;
+      }
+    }
+
+    @media print {
+      .topbar { display: none; }
+      body { background: white; }
+      .decision-card, .evidence-card, .table-wrap { box-shadow: none; }
+      section { break-inside: avoid; }
+      a { color: inherit; text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="shell topbar-inner">
+      <div class="brand"><span class="brand-mark">FM</span>FlowMe Strategy Lab</div>
+      <nav aria-label="보고서 목차">
+        <a href="#model">결론</a>
+        <a href="#journeys">사용자</a>
+        <a href="#product-ui">화면</a>
+        <a href="#decision">결정</a>
+        <a href="#platforms">근거</a>
+        <a href="#governance">경계</a>
+        <a href="#validation">검증</a>
+      </nav>
+    </div>
+  </div>
+
+  <header class="hero">
+    <div class="shell">
+      <p class="eyebrow">FLOWME PRODUCT DECISION · 2026.07.30</p>
+      <h1>공개본은 보호하고,<br>실행은 내 사본에서</h1>
+      <p class="hero-lead">
+        FlowMe가 만들 것은 또 하나의 편집기가 아니다. 누구나 일반 텍스트로
+        Flow를 시작하되, 공개 기준본은 제안·검토·버전으로 보호한다. 사용자는
+        복사한 실행본에서 날짜·항목·메모를 바꾸고 익숙한 도구로 옮긴다.
+      </p>
+
+      <div class="hero-grid">
+        <article class="decision-card">
+          <small>ONE PRODUCT RULE</small>
+          <strong>작성은 Wiki처럼 쉽게, 공개는 GitHub처럼 통제하고, 실행은 개인 사본에서 자유롭게</strong>
+          <p>
+            공개 기준본·개인 실행본·변경 제안을 같은 편집 상태로 섞지 않는다.
+            Calendar·Todo·Sheet·Memo는 개인 실행본에서 파생되는 산출물이며
+            기준본으로 자동 돌아가지 않는다.
+          </p>
+        </article>
+        <aside class="evidence-card">
+          <h3>지금 승인할 제품 방향</h3>
+          <ul>
+            <li>일반 텍스트 → 구조화 draft로 쉽게 시작</li>
+            <li>공개본 직접 편집 대신 proposal → review</li>
+            <li>날짜·항목·메모는 사용자 소유 개인본에서 변경</li>
+            <li>업데이트는 새 version 비교 후 선택 적용</li>
+            <li>실시간 공동편집·양방향 sync·전문 앱 복제는 보류</li>
+          </ul>
+        </aside>
+      </div>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section id="model">
+      <div class="section-head">
+        <div>
+          <div class="section-kicker">01 · Product decision</div>
+          <h2>FlowMe의 핵심은 편집기가 아니라<br>사본의 분리다</h2>
+        </div>
+        <p class="section-copy">
+          공개 기준본, 개인 실행본, 실행 기록, 외부 산출물, 변경 제안을
+          분리해야 쉽게 쓰면서도 출처와 개인 기록을 함께 보호할 수 있다.
+        </p>
+      </div>
+
+      <div class="model-grid">
+        <article class="model-card" data-step="1">
+          <span class="tag">Wikipedia · wikiHow</span>
+          <h3>작게 쓰고 제안한다</h3>
+          <p>일반 텍스트, Item, SourceRow, 오류·최신성 신고처럼 전체 Flow보다 작은 단위에서 시작한다.</p>
+        </article>
+        <article class="model-card" data-step="2">
+          <span class="tag">GitHub</span>
+          <h3>기준본을 보호한다</h3>
+          <p>공개 version, 개인 사본, 변경 제안, 검토, 새 version, 이력을 분리한다.</p>
+        </article>
+        <article class="model-card" data-step="3">
+          <span class="tag">Figma · Notion</span>
+          <h3>개인본은 자유롭게</h3>
+          <p>완성된 Flow를 한 번에 내 실행본으로 만들고 날짜·포함 항목·메모를 overlay한다.</p>
+        </article>
+        <article class="model-card" data-step="4">
+          <span class="tag">Cookpad · Instructables</span>
+          <h3>실행 결과를 분리한다</h3>
+          <p>개인의 변형과 결과는 비공개로 두고 공용 가치가 있는 개선만 별도 제안한다.</p>
+        </article>
+      </div>
+
+      <div class="flowline" aria-label="권장 콘텐츠 생애주기">
+        <div class="flow-node">불변 공개 Flow</div>
+        <div class="flow-node">내 실행본</div>
+        <div class="flow-node">실행 기록</div>
+        <div class="flow-node">외부 산출물</div>
+        <div class="flow-node">선택한 개선 제안</div>
+      </div>
+
+      <div class="callout">
+        <strong>중요한 구분:</strong> “쉽게 작성한다”는 “누구나 공개 기준본을
+        직접 고친다”는 뜻이 아니다. FlowMe는 Wiki의 작은 기여를 가져오되,
+        공식 사실·제작자 경험·개인 실행 기록을 보호하기 위해 공용 변경은
+        proposal과 review를 거친다.
+      </div>
+    </section>
+
+    <section id="journeys">
+      <div class="section-head">
+        <div>
+          <div class="section-kicker">02 · User meaning</div>
+          <h2>같은 Flow도 역할에 따라<br>다른 사본을 만든다</h2>
+        </div>
+        <p class="section-copy">
+          이 페르소나는 인터뷰로 발견한 인구통계가 아니라 권한과 행동이 다른 연구용
+          proto-persona다. 같은 Flow도 실행자는 개인본을, 기여자는 제안을,
+          유지관리자는 새 기준본을 만든다. 아래 경로는 관찰할 가설이지 사용 성과가 아니다.
+        </p>
+      </div>
+
+      <div class="persona-status" aria-label="페르소나와 저니맵의 검증 상태">
+        <strong>TARGET, NOT RESULT</strong>
+        <span class="persona-stat">역할 3개</span>
+        <span class="persona-stat">역할별 5단계</span>
+        <span class="persona-stat">시나리오 trace 6개</span>
+        <span class="persona-stat">직접 화면 4 / 6</span>
+        <span class="persona-stat">관찰 완료 0 / 15</span>
+        <span class="persona-stat">역할별 목표 5명</span>
+      </div>
+
+      <div class="persona-overview" aria-label="역할 기반 연구 페르소나">
+        <article class="persona-card executor" data-persona="01">
+          <span class="persona-label">P1 · Executor</span>
+          <h3>실행 사용자</h3>
+          <p>쓸 만한 공개 Flow를 발견해 자기 날짜·포함 항목·메모로 바꾸고, 실제 쓰는 도구로 옮기려는 사람.</p>
+          <dl>
+            <dt>시작</dt><dd>목표일이 생기거나 반복 실행이 필요함</dd>
+            <dt>할 일</dt><dd>원본 구조를 잃지 않고 내 실행본 만들기</dd>
+            <dt>산출물</dt><dd>개인본·실행 기록·Calendar/Checklist</dd>
+            <dt>검증</dt><dd>S02 · S04 · S05 / 목표 5명</dd>
+          </dl>
+        </article>
+        <article class="persona-card contributor" data-persona="02">
+          <span class="persona-label">P2 · Contributor</span>
+          <h3>기여자</h3>
+          <p>공개 정보의 오류나 최신성 문제를 발견하고, 개인 기록은 감춘 채 공용 가치가 있는 한 부분만 고치려는 사람.</p>
+          <dl>
+            <dt>시작</dt><dd>오래된 field·링크·주의사항 발견</dd>
+            <dt>할 일</dt><dd>변경 한 건과 근거만 안전하게 제안</dd>
+            <dt>산출물</dt><dd>ChangeProposal·검토 상태</dd>
+            <dt>검증</dt><dd>S03 · S06 / 목표 5명</dd>
+          </dl>
+        </article>
+        <article class="persona-card maintainer" data-persona="03">
+          <span class="persona-label">P3 · Creator / Maintainer</span>
+          <h3>제작자·유지관리자</h3>
+          <p>일반 텍스트를 공개 가능한 구조로 다듬고, 근거 있는 제안을 검토해 새 불변 기준본을 발행하는 사람.</p>
+          <dl>
+            <dt>시작</dt><dd>문서 초안 또는 들어온 수정 제안</dd>
+            <dt>할 일</dt><dd>출처·권리·주의·privacy 확인 후 발행</dd>
+            <dt>산출물</dt><dd>Draft·PublishedVersion v3 → v4</dd>
+            <dt>검증</dt><dd>S01 + proposal review / 목표 5명</dd>
+          </dl>
+        </article>
+      </div>
+
+      <div class="journey-board" aria-label="세 역할의 5단계 예상 사용자 여정">
+        <div class="journey-phase-head" aria-hidden="true">
+          <span>ROLE / SCENARIO</span>
+          <span>01 · 기준본 준비·발견</span>
+          <span>02 · 소유 관계 시작</span>
+          <span>03 · 개인화·기여</span>
+          <span>04 · 실행·검토</span>
+          <span>05 · 갱신·이동</span>
+        </div>
+
+        <details class="journey-lane executor" open>
+          <summary class="journey-role">
+            <b>실행 사용자</b>
+            <span>공개본을 내 상황으로 바꾸고 실행한다.</span>
+            <em>S02 · S04 · S05 / A → B → D</em>
+          </summary>
+          <ol class="journey-steps">
+            <li class="journey-step" data-index="01" data-phase="기준본 준비·발견">
+              <h4>믿을 만한 Flow인지 본다</h4>
+              <p>출처·제작자·공개 version·예상 기간을 확인한다.</p>
+              <span class="screen-chip">A 공개 기준본</span>
+              <small>경계 · 아직 개인 데이터 없음</small>
+            </li>
+            <li class="journey-step" data-index="02" data-phase="소유 관계 시작">
+              <h4>내 실행본을 만든다</h4>
+              <p>버튼 한 번으로 비공개 사본이 생기고 소유자가 사용자가 된다.</p>
+              <span class="artifact-chip">UserFlowCopy</span>
+              <span class="screen-chip">B 내 실행본</span>
+              <small>경계 · 공개 v3는 바뀌지 않음</small>
+            </li>
+            <li class="journey-step" data-index="03" data-phase="개인화·기여">
+              <h4>내 조건만 바꾼다</h4>
+              <p>기준일·포함 Item·개인 일정·메모를 편집한다.</p>
+              <span class="artifact-chip">Personal overlay</span>
+              <small>보호 · 출처·공식 조건·귀속 유지</small>
+            </li>
+            <li class="journey-step" data-index="04" data-phase="실행·검토">
+              <h4>실행하고 기록한다</h4>
+              <p>완료·skip·hold를 남기고 같은 상태에서 산출물을 만든다.</p>
+              <span class="artifact-chip">ExecutionRun</span>
+              <span class="artifact-chip">Projection</span>
+              <small>경계 · Calendar 수정은 detached copy</small>
+            </li>
+            <li class="journey-step" data-index="05" data-phase="갱신·이동">
+              <h4>새 내용만 선택 적용한다</h4>
+              <p>추가·변경·삭제를 보고 내 일정과 기록을 유지하거나 갱신한다.</p>
+              <span class="screen-chip">D 새 기준본 검토</span>
+              <small>보호 · silent overwrite 없음</small>
+            </li>
+          </ol>
+        </details>
+
+        <details class="journey-lane contributor" open>
+          <summary class="journey-role">
+            <b>기여자</b>
+            <span>공용 가치가 있는 한 부분만 근거와 함께 제안한다.</span>
+            <em>S03 · S06 / A·B → C → E</em>
+          </summary>
+          <ol class="journey-steps">
+            <li class="journey-step" data-index="01" data-phase="기준본 준비·발견">
+              <h4>오류 한 건을 발견한다</h4>
+              <p>공개본 또는 실행 중 오래된 field·source·caution을 찾는다.</p>
+              <span class="screen-chip">A 또는 B</span>
+              <small>신호 · 공용 가치가 있는가?</small>
+            </li>
+            <li class="journey-step" data-index="02" data-phase="소유 관계 시작">
+              <h4>수정 제안을 시작한다</h4>
+              <p>전체 개인본이 아니라 바꾸려는 field만 선택한다.</p>
+              <span class="screen-chip">C 수정 제안</span>
+              <small>경계 · canonical 즉시 수정 없음</small>
+            </li>
+            <li class="journey-step" data-index="03" data-phase="개인화·기여">
+              <h4>변경과 근거만 보낸다</h4>
+              <p>제안 내용·근거 URL·확인일을 제출한다.</p>
+              <span class="artifact-chip">ChangeProposal</span>
+              <small>자동 제외 · 메모·완료·일정·민감 정보</small>
+            </li>
+            <li class="journey-step" data-index="04" data-phase="실행·검토">
+              <h4>처리 상태를 확인한다</h4>
+              <p>근거 보완 요청·수락·사유 있는 거절 중 하나를 받는다.</p>
+              <span class="screen-chip">C → E</span>
+              <small>unknown · 처리 시간과 운영비</small>
+            </li>
+            <li class="journey-step" data-index="05" data-phase="갱신·이동">
+              <h4>새 version에서 반영을 본다</h4>
+              <p>수락돼도 기존 v3가 아니라 새 v4에만 포함된다.</p>
+              <span class="artifact-chip">PublishedVersion v4</span>
+              <small>보호 · 기존 개인본은 자동 변경 없음</small>
+            </li>
+          </ol>
+        </details>
+
+        <details class="journey-lane maintainer" open>
+          <summary class="journey-role">
+            <b>제작자·유지관리자</b>
+            <span>초안과 제안을 검토해 새 기준본을 발행한다.</span>
+            <em>S01 + proposal review / draft → E → D</em>
+          </summary>
+          <ol class="journey-steps">
+            <li class="journey-step" data-index="01" data-phase="기준본 준비·발견">
+              <h4>텍스트를 구조로 바꾼다</h4>
+              <p>일반 글을 붙여넣고 Item·출처 단위 preview를 확인한다.</p>
+              <span class="artifact-chip">Draft</span>
+              <span class="screen-chip gap">작성 화면 gap</span>
+              <small>경계 · draft는 public 아님</small>
+            </li>
+            <li class="journey-step" data-index="02" data-phase="소유 관계 시작">
+              <h4>기준본을 처음 발행한다</h4>
+              <p>source·rights·caution을 검토한 뒤 불변 v3를 만든다.</p>
+              <span class="artifact-chip">PublishedVersion v3</span>
+              <small>소유 · 제작자 또는 유지관리자</small>
+            </li>
+            <li class="journey-step" data-index="03" data-phase="개인화·기여">
+              <h4>제안과 근거를 비교한다</h4>
+              <p>원문 diff·공식 URL·확인일·privacy 포함 범위를 함께 본다.</p>
+              <span class="screen-chip">E 제안 검토</span>
+              <small>보호 · 개인 정보 포함 0</small>
+            </li>
+            <li class="journey-step" data-index="04" data-phase="실행·검토">
+              <h4>근거 요청·거절·수락한다</h4>
+              <p>이유와 다음 행동을 남기고 기존 v3는 그대로 둔다.</p>
+              <span class="artifact-chip">Review decision</span>
+              <small>unknown · 검토 품질과 처리 비용</small>
+            </li>
+            <li class="journey-step" data-index="05" data-phase="갱신·이동">
+              <h4>새 불변 v4를 발행한다</h4>
+              <p>실행자에게 update를 알리고 선택 적용 단계로 넘긴다.</p>
+              <span class="screen-chip">E → D</span>
+              <small>경계 · 기존 개인본·run 보존</small>
+            </li>
+          </ol>
+        </details>
+      </div>
+
+      <div class="journey-handoff" aria-label="역할 간 산출물 인계">
+        <div class="handoff-node">기여자의<br>ChangeProposal</div>
+        <div class="handoff-node">maintainer<br>evidence review</div>
+        <div class="handoff-node">새 불변<br>PublishedVersion v4</div>
+        <div class="handoff-node">실행자의<br>review_before_apply</div>
+      </div>
+
+      <div class="moment-grid" aria-label="사용자 관찰에서 확인할 여섯 순간">
+        <article class="moment"><span>M1 · TRUST</span><b>이 Flow를 믿을 수 있는가?</b><p>출처·제작자·version을 보고 복사 여부를 결정하는지 관찰한다.</p></article>
+        <article class="moment"><span>M2 · OWNERSHIP</span><b>이제 이것은 내 것인가?</b><p>복사 직후 비공개·내 소유라는 경계를 이해하는지 확인한다.</p></article>
+        <article class="moment"><span>M3 · PRIVACY</span><b>무엇이 함께 공개되는가?</b><p>선택 field와 근거만 제안되고 개인 상태가 제외됨을 인지하는지 본다.</p></article>
+        <article class="moment"><span>M4 · VERSION</span><b>수락하면 원본이 바뀌는가?</b><p>기존 v3 수정이 아니라 새 v4 생성임을 구분하는지 확인한다.</p></article>
+        <article class="moment"><span>M5 · PRESERVATION</span><b>내 기록은 남는가?</b><p>업데이트 뒤 일정·메모·완료 기록이 보존될 것이라 이해하는지 본다.</p></article>
+        <article class="moment"><span>M6 · PORTABILITY</span><b>외부 수정은 돌아오는가?</b><p>Calendar·Sheet 산출물의 수정이 자동 write-back되지 않음을 확인한다.</p></article>
+      </div>
+
+      <div class="coverage-rail" aria-label="대표 시나리오별 제품 화면 커버리지">
+        <div class="coverage-label">화면 커버리지<br>4 / 6 직접 지원</div>
+        <div class="coverage-cell gap"><b>S01 · 부분</b>E 검토는 있으나 draft 작성 화면은 gap</div>
+        <div class="coverage-cell"><b>S02 · A/B</b>공개본에서 개인본 생성</div>
+        <div class="coverage-cell"><b>S03 · C/E</b>제안과 maintainer 검토</div>
+        <div class="coverage-cell"><b>S04 · D</b>새 version 선택 적용</div>
+        <div class="coverage-cell gap"><b>S05 · 외부</b>Calendar detached 상태 화면은 gap</div>
+        <div class="coverage-cell"><b>S06 · B/C/E</b>개인화 후 작은 기여</div>
+      </div>
+    </section>
+
+    <section id="product-ui">
+      <div class="section-head">
+        <div>
+          <div class="section-kicker">03 · Product experience</div>
+          <h2>다섯 화면이 작성·실행·기여의<br>경계를 보여준다</h2>
+        </div>
+        <p class="section-copy">
+          아래 A–E는 구현 완료 화면이 아니라 제품 계약을 검토하기 위한 code-native
+          UI 가설이다. 사용자 언어는 공개 기준본·내 실행본·수정 제안·새 내용
+          적용·제안 검토로 통일하고, canonical·overlay·proposal은 보조 용어로만 둔다.
+        </p>
+      </div>
+
+      <div class="ui-contract-note">
+        <span><strong>검증 전 제품 가설</strong> · runtime 미구현 · 개인 데이터 자동 공개 없음</span>
+        <span>공개본 → 내 실행본 → 수정 제안 → maintainer 검토 → 새 version 선택 적용</span>
+      </div>
+
+      <div class="mock-grid">
+        <article class="mock-window" aria-label="공개 Flow 미리보기 UI 가설">
+          <div class="mock-bar"><span>A · 공개 기준본</span><span class="mock-dots">•••</span></div>
+          <div class="mock-body">
+            <span class="mock-label">출처 확인 · 공개 v3</span>
+            <h3 class="mock-title">이사 D-30 체크리스트</h3>
+            <p class="mock-sub">FlowMe Library · 원문·제작자·확인일이 잠긴 공개본</p>
+            <div class="mock-meta">
+              <div><small>항목</small><b>24개</b></div>
+              <div><small>예상 기간</small><b>30일</b></div>
+              <div><small>업데이트</small><b>2026.07.28</b></div>
+            </div>
+            <div class="mock-list">
+              <div class="mock-item"><span class="check empty">✓</span><span>D-30 · 계약 해지·이전 일정 확인</span></div>
+              <div class="mock-item"><span class="check empty">✓</span><span>D-21 · 이사업체 견적 비교</span></div>
+              <div class="mock-item"><span class="check empty">✓</span><span>D-7 · 전입신고 준비물 확인</span></div>
+            </div>
+            <div class="mock-actions">
+              <span class="mock-action primary">내 실행본 만들기</span>
+              <span class="mock-action">정보 수정 제안</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="mock-window" aria-label="개인 실행본 편집 UI 가설">
+          <div class="mock-bar"><span>B · 내 실행본</span><span>자동 저장 · 방금 전</span></div>
+          <div class="mock-body">
+            <span class="mock-label">개인 사본 · 원문 변경 0</span>
+            <h3 class="mock-title">이사 D-30 체크리스트</h3>
+            <p class="mock-sub">연필이 있는 값만 내 상황에 맞게 바뀐다.</p>
+            <div class="mock-fields">
+              <div class="mock-field"><small>이사일 · 수정 가능</small>2026년 8월 31일 ✎</div>
+              <div class="mock-field"><small>포함 항목 · 수정 가능</small>18 / 24개 ✎</div>
+              <div class="mock-field full"><small>개인 메모 · 비공개</small>아이 하교 일정과 겹치지 않게 오전 이동</div>
+            </div>
+            <div class="projection-preview">
+              <div class="projection-card"><b>Calendar 미리보기</b><span>8/24~8/31 · 일정 6개</span></div>
+              <div class="projection-card"><b>Checklist 미리보기</b><span>선택 항목 18개 · 완료 0</span></div>
+            </div>
+            <div class="mock-actions">
+              <span class="mock-action primary">내 도구로 옮기기</span>
+              <span class="mock-action neutral">변경 3개 보기</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="mock-window" aria-label="공용 정보 수정 제안 UI 가설">
+          <div class="mock-bar"><span>C · 정보 수정 제안</span><span>검증 전 모델</span></div>
+          <div class="mock-body">
+            <span class="mock-label">작은 기여 · 근거 필수</span>
+            <h3 class="mock-title">공식 마감 한 건 고치기</h3>
+            <p class="mock-sub">내 실행본 전체가 아니라 공용 가치가 있는 field만 제안한다.</p>
+            <div class="proposal-split">
+              <div class="source-lock">
+                <b>잠긴 원문</b>
+                D-7 · 전입신고 준비<br><br>
+                기존: 8월 28일까지<br>
+                확인일: 2026.07.01
+              </div>
+              <div class="proposal-form">
+                <div class="mock-field"><small>변경 유형</small>오래된 공식 정보</div>
+                <div class="mock-field"><small>제안 내용</small>8월 29일까지</div>
+                <div class="mock-field"><small>근거 URL · 필수</small>https://official.example/…</div>
+              </div>
+            </div>
+            <div class="privacy-strip">자동 제외: 완료 상태 · 개인 일정 · 개인 메모 · 민감 정보</div>
+            <div class="mock-actions">
+              <span class="mock-action primary">근거와 함께 제안 보내기</span>
+              <span class="mock-action neutral">취소</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="mock-window" aria-label="새 버전 선택 적용 UI 가설">
+          <div class="mock-bar"><span>D · 새 기준본 v4</span><span>차이 검토 · 3/4 해결</span></div>
+          <div class="mock-body">
+            <span class="mock-label">세 방향 비교 · silent overwrite 없음</span>
+            <h3 class="mock-title">업데이트할 내용을 선택하세요</h3>
+            <div class="diff-summary">
+              <div class="diff-stat add"><strong>+3</strong><span>추가</span></div>
+              <div class="diff-stat change"><strong>2</strong><span>변경</span></div>
+              <div class="diff-stat remove"><strong>1</strong><span>삭제</span></div>
+            </div>
+            <div class="diff-row"><b class="diff-kind">추가</b><span>전입 세대 열람 신청</span><span class="diff-choice">새 내용 적용</span></div>
+            <div class="diff-row"><b class="diff-kind change">변경</b><span>견적 비교 D-21 → D-24</span><span class="diff-choice">내 일정 유지</span></div>
+            <div class="diff-row"><b class="diff-kind remove">삭제</b><span>기존 업체 연락 · 완료 기록 있음</span><span class="diff-choice">항목 보존</span></div>
+            <div class="preserve-strip">완료 기록 12개 · 개인 메모 3개 · 실행 이력 전체가 유지됩니다</div>
+            <div class="mock-actions">
+              <span class="mock-action primary">선택 적용</span>
+              <span class="mock-action neutral">내 설정 모두 유지</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="mock-window wide" aria-label="유지관리자 수정 제안 검토와 새 버전 발행 UI 가설">
+          <div class="mock-bar"><span>E · 제안 검토</span><span>maintainer queue · 1건</span></div>
+          <div class="mock-body">
+            <span class="mock-label">검토 후 새 버전 · 현재 v3 직접 수정 없음</span>
+            <h3 class="mock-title">공식 마감일 수정 제안 검토</h3>
+            <p class="mock-sub">제안된 field·근거·공개 범위를 함께 확인하고, 수락한 변경은 새 v4 후보에만 담는다.</p>
+            <div class="review-grid">
+              <div class="review-pane">
+                <small>현재 공개 v3 · 원문</small>
+                <b>전입신고 준비 마감 · 8월 28일까지</b>
+                <p>출처: 공식 안내 · 마지막 확인 2026.07.01<br>제작자·출처 귀속 유지</p>
+              </div>
+              <div class="review-pane proposed">
+                <small>제안 P-104 · 변경 후</small>
+                <b>전입신고 준비 마감 · 8월 29일까지</b>
+                <p>근거 URL 제출 · 2026.07.29 확인<br>제안자 개인 메모·완료·일정 포함 0</p>
+              </div>
+            </div>
+            <div class="review-checks">
+              <div class="review-check">근거 상태<strong>공식 URL 확인</strong></div>
+              <div class="review-check">공개 범위<strong>field 1개</strong></div>
+              <div class="review-check">기존 개인본<strong>자동 변경 없음</strong></div>
+              <div class="review-check">발행 방식<strong>새 불변 v4</strong></div>
+            </div>
+            <div class="mock-actions">
+              <span class="mock-action neutral">근거 요청</span>
+              <span class="mock-action neutral">사유와 거절</span>
+              <span class="mock-action primary">수락 · 새 버전 발행 준비</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="decision">
+      <div class="section-head">
+        <div>
+          <div class="section-kicker">04 · Build decision</div>
+          <h2>지금 만들 것은<br>복사·제안·검토다</h2>
+        </div>
+        <p class="section-copy">
+          기준본·개인본 분리와 proposal·review는 제품 계약으로 유지한다.
+          실시간 공동편집·양방향 sync·marketplace는 사용 가치가 검증될 때까지 미룬다.
+        </p>
+      </div>
+
+      <div class="decision-grid">
+        <article class="decision-column apply">
+          <h3>유지 <span>STRATEGY CONTRACT</span></h3>
+          <ul>
+            <li>기준본·개인본·run·projection 분리</li>
+            <li>새 version의 silent overwrite 금지</li>
+            <li>공용 변경 proposal + review</li>
+            <li>콘텐츠별 편집 policy</li>
+            <li>원작자·원문 귀속</li>
+          </ul>
+        </article>
+        <article class="decision-column validate">
+          <h3>검증 <span>BEFORE IMPLEMENTATION</span></h3>
+          <ul>
+            <li>1분 micro-contribution</li>
+            <li>기준본·내 실행본 이해</li>
+            <li>새 version 선택 적용 UX</li>
+            <li>maintainer 검토 비용</li>
+            <li>reimport+diff 실제 수요</li>
+          </ul>
+        </article>
+        <article class="decision-column defer">
+          <h3>보류 <span>REVISIT TRIGGER</span></h3>
+          <ul>
+            <li>제작자 직접 발행</li>
+            <li>OAuth·양방향 sync</li>
+            <li>실시간 공동 편집</li>
+            <li>marketplace·평판·랭킹</li>
+          </ul>
+        </article>
+        <article class="decision-column reject">
+          <h3>미적용 <span>DO NOT BUILD</span></h3>
+          <ul>
+            <li>익명 canonical 직접 편집</li>
+            <li>개인 기록 자동 공개</li>
+            <li>좋아요 기반 자동 병합</li>
+            <li>외부 silent write-back</li>
+            <li>전문 vertical engine 복제</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section id="platforms">
+      <div class="section-head">
+        <div>
+          <div class="section-kicker">05 · Platform evidence</div>
+          <h2>Wiki의 낮은 진입 장벽과<br>GitHub의 통제를 결합한다</h2>
+        </div>
+        <p class="section-copy">
+          22개 도감 중 작성·개인화·기여·versioning에 직접 관련된 7개를
+          동일 기준으로 비교했다. 외부 플랫폼의 규모는 FlowMe 성과 증거가 아니다.
+        </p>
+      </div>
+
+      <div class="platform-proof-grid">
+        <article class="platform-proof wide">
+          <div class="platform-proof-head">
+            <h3>GitHub · 기준본을 지키며 변경을 받는 구조</h3>
+            <span class="grade">EVIDENCE A · 2025</span>
+          </div>
+          <div class="platform-metrics">
+            <div class="platform-metric"><strong>1.8억+</strong><b>개발자 계정</b><small>GitHub 전체 · 2025</small></div>
+            <div class="platform-metric"><strong>11.2억</strong><b>공개·오픈소스 기여</b><small>연간 활동 · 2025</small></div>
+            <div class="platform-metric"><strong>4,320만</strong><b>월평균 병합 PR</b><small>월평균 · 2025</small></div>
+          </div>
+          <p class="lesson"><b>가져올 것:</b> 공개 기준본 → 개인 사본 → 검토되는 변경안 → 새 불변 version.</p>
+          <p class="caveat">이 규모는 FlowMe 기여 전환율을 예측하지 않는다. 계정·기여·PR은 서로 다른 단위다. <a href="https://github.blog/news-insights/octoverse/octoverse-a-new-developer-joins-github-every-second-as-ai-leads-typescript-to-1/">공식 근거</a></p>
+        </article>
+
+        <article class="platform-proof">
+          <div class="platform-proof-head">
+            <h3>Wikipedia · 작은 단위 기여</h3>
+            <span class="grade">A/B · 2024</span>
+          </div>
+          <div class="platform-metrics">
+            <div class="platform-metric"><strong>2.6만</strong><b>활동 편집자</b><small>2024 연간 회고</small></div>
+            <div class="platform-metric"><strong>9,820만</strong><b>편집</b><small>2024 연간 활동</small></div>
+            <div class="platform-metric"><strong>전환</strong><b>전문 심사 → 열린 wiki</b><small>2000~2003 역사</small></div>
+          </div>
+          <p class="lesson"><b>가져올 것:</b> 전체 Flow 대신 문장·출처·Item 한 건의 수정 제안.</p>
+          <p class="caveat">편집 수를 참여자 생산성으로 환산하지 않는다. <a href="https://wikimediafoundation.org/wikipedia-year-in-review-2024/">2024 근거</a> · <a href="https://en.wikipedia.org/wiki/Nupedia">운영 전환 근거</a></p>
+        </article>
+
+        <article class="platform-proof">
+          <div class="platform-proof-head">
+            <h3>Figma Community · 미리보기 뒤 사본</h3>
+            <span class="grade">A · 2021 실험</span>
+          </div>
+          <div class="experiment-bars" aria-label="Figma의 특정 2021 공개 실험 결과">
+            <div class="experiment-row"><span>협업 증가</span><span class="experiment-track"><i style="--value:5%"></i></span><strong>+5%</strong></div>
+            <div class="experiment-row"><span>제작자 팔로우</span><span class="experiment-track"><i style="--value:90%"></i></span><strong>+90%</strong></div>
+            <div class="experiment-row"><span>기능 발견</span><span class="experiment-track"><i style="--value:10%"></i></span><strong>+10%</strong></div>
+          </div>
+          <p class="lesson"><b>가져올 것:</b> 전체 결과를 본 직후 “내 실행본 만들기”.</p>
+          <p class="caveat">특정 실험의 증분이며 FlowMe 효과 예측값이 아니다. <a href="https://www.figma.com/blog/by-the-numbers-one-year-of-remote-work/">공식 근거</a></p>
+        </article>
+
+        <article class="platform-proof">
+          <div class="platform-proof-head">
+            <h3>wikiHow · 편집기를 열어도 기여는 생기지 않았다</h3>
+            <span class="grade c">C · 역사 사례</span>
+          </div>
+          <div class="platform-metrics">
+            <div class="platform-metric"><strong>약 2,000</strong><b>첫 달 방문</b><small>2005 창업자 인터뷰</small></div>
+            <div class="platform-metric"><strong>거의 0</strong><b>첫 달 편집</b><small>2005 창업자 인터뷰</small></div>
+            <div class="platform-metric"><strong>2층</strong><b>검토 구조</b><small>2019 보도</small></div>
+          </div>
+          <p class="lesson"><b>가져올 것:</b> 첫 제안에 운영자가 답하고, 근거가 부족하면 다시 요청한다.</p>
+          <p class="caveat">현재 전환율·운영 개입의 인과효과는 unknown이다. <a href="https://www.wired.com/story/wikihow-internet-answer/">보도 근거</a></p>
+        </article>
+
+        <article class="platform-proof">
+          <div class="platform-proof-head">
+            <h3>Notion Marketplace · 복제와 귀속</h3>
+            <span class="grade">A · 2026-07-20</span>
+          </div>
+          <div class="platform-metrics">
+            <div class="platform-metric"><strong>3만+</strong><b>템플릿</b><small>공식 Marketplace 표시</small></div>
+            <div class="platform-metric"><strong>3가지</strong><b>제작 핵심</b><small>발행·판매·프로필</small></div>
+            <div class="platform-metric"><strong>유지</strong><b>제작자 귀속</b><small>복제 후 출처 연결</small></div>
+          </div>
+          <p class="lesson"><b>가져올 것:</b> 개인화된 사본에도 원작자·원문 링크를 남긴다.</p>
+          <p class="caveat">활성 템플릿·복제·반복 사용·매출은 알 수 없다. <a href="https://www.notion.com/templates">공식 근거</a></p>
+        </article>
+
+        <article class="platform-proof">
+          <div class="platform-proof-head">
+            <h3>Instructables · 결과에서 단계로</h3>
+            <span class="grade">A · 현재 소개</span>
+          </div>
+          <div class="platform-metrics">
+            <div class="platform-metric"><strong>수십만</strong><b>공개 프로젝트</b><small>정확한 수 미공개</small></div>
+            <div class="platform-metric"><strong>500+</strong><b>대표 제작자 게시물</b><small>개별 사례</small></div>
+            <div class="platform-metric"><strong>1~100</strong><b>단계 폭</b><small>레시피~제트엔진</small></div>
+          </div>
+          <p class="lesson"><b>가져올 것:</b> 결과·준비·실행 단계를 연결하되 긴 절차를 강제하지 않는다.</p>
+          <p class="caveat">활성률·완성률·평균 단계 수는 unknown이다. <a href="https://www.instructables.com/create/">공식 근거</a></p>
+        </article>
+
+        <article class="platform-proof">
+          <div class="platform-proof-head">
+            <h3>Cookpad · 원본과 개인 변형 분리</h3>
+            <span class="grade">A · 2014 / 2026</span>
+          </div>
+          <div class="platform-metrics">
+            <div class="platform-metric"><strong>5,042만</strong><b>월간 이용</b><small>2014 역사 수치</small></div>
+            <div class="platform-metric"><strong>190만+</strong><b>누적 레시피</b><small>2014 역사 수치</small></div>
+            <div class="platform-metric"><strong>필수</strong><b>원문 링크</b><small>2026 가져오기 원칙</small></div>
+          </div>
+          <p class="lesson"><b>가져올 것:</b> 원본, 비공개 개인 변형, 공용 개선을 나누고 linkback을 지킨다.</p>
+          <p class="caveat">2014 규모를 현재 규모나 정책 효과로 해석하지 않는다. <a href="https://info.cookpad.com/en/ir/wp-content/uploads/2017/06/20150206_Consolidated-Financial-Results-FY-Dec-2014-3Q.pdf">역사 근거</a> · <a href="https://info.cookpad.com/news/%E6%96%B0%E6%A9%9F%E8%83%BD%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6%E3%81%84%E3%81%9F%E3%81%A0%E3%81%84%E3%81%9F%E3%81%94%E6%84%8F%E8%A6%8B%E3%81%A8%E3%80%81%E4%BB%8A%E5%BE%8C%E3%81%AE%E5%8F%96%E3%82%8A">2026 정책</a></p>
+        </article>
+      </div>
+
+      <div class="evidence-timeline" aria-label="성장 추세가 아닌 근거 시점 타임라인">
+        <div class="timeline-point"><strong>2000~03</strong>Wikipedia 운영 전환</div>
+        <div class="timeline-point"><strong>2005</strong>wikiHow 초기</div>
+        <div class="timeline-point"><strong>2014</strong>Cookpad 역사 규모</div>
+        <div class="timeline-point"><strong>2019</strong>wikiHow 검토 보도</div>
+        <div class="timeline-point"><strong>2021</strong>Figma 특정 실험</div>
+        <div class="timeline-point"><strong>2024</strong>Wikipedia 회고</div>
+        <div class="timeline-point"><strong>2025</strong>GitHub Octoverse</div>
+        <div class="timeline-point"><strong>2026</strong>Notion·Cookpad 정책</div>
+      </div>
+      <div class="callout">
+        <strong>타임라인 읽는 법:</strong> 성장 추세가 아니라 근거의 연식과 성격을
+        보여준다. 2014 Cookpad 규모와 2026 정책, 2021 Figma 실험과 2025 GitHub
+        활동을 같은 축에서 성과 순위로 비교하지 않는다.
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>플랫폼</th>
+              <th>핵심 메커니즘</th>
+              <th>FlowMe가 가져올 것</th>
+              <th>가져오지 않을 것</th>
+              <th>아직 검증할 것</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>GitHub</td>
+              <td>기준본·사본·변경안·승인·이력 분리</td>
+              <td>reviewed proposal과 새 불변 version</td>
+              <td>branch·PR 용어, 평판 경쟁</td>
+              <td>검토 비용과 일반 사용자 이해</td>
+            </tr>
+            <tr>
+              <td>Wikipedia</td>
+              <td>문장·출처 단위 작은 기여와 되돌리기</td>
+              <td>출처·최신성·누락 Item 제안</td>
+              <td>민감 Flow 익명 직접 편집</td>
+              <td>작은 기여가 실제 품질을 높이는가</td>
+            </tr>
+            <tr>
+              <td>wikiHow</td>
+              <td>단계 수정 + 초기 운영자의 직접 응대</td>
+              <td>첫 제안에 사람이 답하는 운영</td>
+              <td>편집기만 열면 참여한다는 가정</td>
+              <td>제안당 검토 시간·수락률</td>
+            </tr>
+            <tr>
+              <td>Figma Community</td>
+              <td>미리보기 직후 개인 사본에서 자유 수정</td>
+              <td>한 번에 내 실행본 만들기</td>
+              <td>개인 리믹스를 공용 기여로 간주</td>
+              <td>복제 뒤 실제 개인화 행동</td>
+            </tr>
+            <tr>
+              <td>Notion Marketplace</td>
+              <td>완성본 복제 + 제작자 귀속</td>
+              <td>원작자·원문 링크 유지</td>
+              <td>범용 workspace·marketplace 선행</td>
+              <td>제작자의 귀속·재유입 가치</td>
+            </tr>
+            <tr>
+              <td>Instructables</td>
+              <td>결과·준비·단계 + 실행 후 개선</td>
+              <td>결과 우선, 실행 feedback</td>
+              <td>모든 Flow를 긴 단계형으로 강제</td>
+              <td>다음 사용자에게 유용한 feedback</td>
+            </tr>
+            <tr>
+              <td>Cookpad</td>
+              <td>원본과 개인 실행·변형 기록 분리</td>
+              <td>개인 메모 비공개, 원문 linkback</td>
+              <td>개인 변형의 원본 행세</td>
+              <td>개인 수정과 공용 개선의 경계</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="services">
+      <div class="section-head">
+        <div>
+          <div class="section-kicker">06 · Service boundary</div>
+          <h2>전문 앱의 핵심은 남겨두고<br>실행 항목만 가져온다</h2>
+        </div>
+        <p class="section-copy">
+          공식 페이지에서 확인한 사실, 여러 근거를 묶은 benchmark 분석, 아직
+          확인하지 못한 동작을 분리했다. 핵심 질문은 “전문 앱을 복제할까”가 아니라
+          “어떤 개인 조건과 실행 산출물만 FlowMe가 맡을까”다.
+        </p>
+      </div>
+
+      <div class="service-grid">
+        <article class="service-card">
+          <div class="service-head">
+            <div><h3>Runna</h3><p>목표 → 계획 · <a href="https://www.runna.com/training/training-plans">공식 근거</a></p></div>
+            <span class="verdict">Go</span>
+          </div>
+          <div class="service-flow">
+            <div class="service-step"><small>INPUT</small><b>레이스·현재 능력<br>주간 거리·운동 횟수</b></div>
+            <span class="flow-arrow">→</span>
+            <div class="service-step"><small>EDIT / RECALCULATE</small><b>목표일·운동 요일에 맞춰 계획 조정</b></div>
+            <span class="flow-arrow">→</span>
+            <div class="service-step"><small>RESULT</small><b>주차별 러닝·근력 계획</b></div>
+          </div>
+          <div class="service-boundary">
+            <div><b>FlowMe·앱 밖</b>목표일·요일·회차 → Calendar</div>
+            <div><b>Runna 안</b>코칭 계산·훈련 부하·GPS 엔진</div>
+          </div>
+          <div class="evidence-badges"><span class="evidence-badge">공개 관찰</span><span class="evidence-badge synthesis">분석: 재계산 경계</span><span class="evidence-badge unknown">unknown: 장기 완주·round-trip</span></div>
+        </article>
+
+        <article class="service-card">
+          <div class="service-head">
+            <div><h3>The Knot</h3><p>기준일 → 타임라인 · <a href="https://helpcenter.theknot.com/hc/en-us/articles/20629464134036-What-is-the-timeframe-of-my-Checklist">공식 근거</a></p></div>
+            <span class="verdict partner">Partner</span>
+          </div>
+          <div class="service-flow">
+            <div class="service-step"><small>INPUT</small><b>결혼일·지역<br>예산·하객 수</b></div>
+            <span class="flow-arrow">→</span>
+            <div class="service-step"><small>EDIT / RECALCULATE</small><b>결혼일 변경 시 준비 기한 조정</b></div>
+            <span class="flow-arrow">→</span>
+            <div class="service-step"><small>RESULT</small><b>역산 체크리스트·예산 보드</b></div>
+          </div>
+          <div class="service-boundary">
+            <div><b>FlowMe·앱 밖</b>기준일·포함 항목 → Calendar·Checklist</div>
+            <div><b>The Knot 안</b>업체 데이터·레지스트리·결제</div>
+          </div>
+          <div class="evidence-badges"><span class="evidence-badge">공개 관찰: 날짜 갱신</span><span class="evidence-badge synthesis">분석: 이식 경계</span><span class="evidence-badge unknown">unknown: export·write-back</span></div>
+        </article>
+
+        <article class="service-card">
+          <div class="service-head">
+            <div><h3>Sweepy</h3><p>환경 → 유지관리 · <a href="https://sweepy.com/">공식 근거</a></p></div>
+            <span class="verdict">Go</span>
+          </div>
+          <div class="service-flow">
+            <div class="service-step"><small>INPUT</small><b>공간·방·청소 빈도<br>하루 가용량</b></div>
+            <span class="flow-arrow">→</span>
+            <div class="service-step"><small>EDIT / RECALCULATE</small><b>빈도·담당 변경 시 스마트 일정 조정</b></div>
+            <span class="flow-arrow">→</span>
+            <div class="service-step"><small>RESULT</small><b>공간별 반복 일정·오늘 할 일</b></div>
+          </div>
+          <div class="service-boundary">
+            <div><b>FlowMe·앱 밖</b>주기·담당·skip → Checklist·Calendar</div>
+            <div><b>Sweepy 안</b>청결 상태·가구 공유·가사량 최적화</div>
+          </div>
+          <div class="evidence-badges"><span class="evidence-badge">공개 관찰: Smart Schedule</span><span class="evidence-badge synthesis">분석: 일정 재조정</span><span class="evidence-badge unknown">unknown: 완료 write-back</span></div>
+        </article>
+
+        <article class="service-card">
+          <div class="service-head">
+            <div><h3>SideChef</h3><p>콘텐츠 → 안내 세션 · <a href="https://www.sidechef.com/meal-planner/">공식 근거</a></p></div>
+            <span class="verdict partner">Partner</span>
+          </div>
+          <div class="service-flow">
+            <div class="service-step"><small>INPUT</small><b>식단 기간·식사 수<br>선호·제한</b></div>
+            <span class="flow-arrow">→</span>
+            <div class="service-step"><small>EDIT / RECALCULATE</small><b>레시피 교체 시 장보기 목록 갱신</b></div>
+            <span class="flow-arrow">→</span>
+            <div class="service-step"><small>RESULT</small><b>식단·통합 장보기·조리 세션</b></div>
+          </div>
+          <div class="service-boundary">
+            <div><b>FlowMe·앱 밖</b>인분·대체재·일정 → List·Calendar</div>
+            <div><b>SideChef 안</b>조리 모드·주문·추천·유료 콘텐츠</div>
+          </div>
+          <div class="evidence-badges"><span class="evidence-badge">공개 관찰: 식단 흐름</span><span class="evidence-badge synthesis">분석: 목록 갱신</span><span class="evidence-badge unknown">unknown: 공식 export</span></div>
+        </article>
+
+        <article class="service-card">
+          <div class="service-head">
+            <div><h3>Teal</h3><p>상태 → 후속 행동 · <a href="https://www.tealhq.com/tools/job-application-tracker">공식 근거</a></p></div>
+            <span class="verdict">Go</span>
+          </div>
+          <div class="service-flow">
+            <div class="service-step"><small>INPUT</small><b>채용 공고 URL<br>현재 지원 단계</b></div>
+            <span class="flow-arrow">→</span>
+            <div class="service-step"><small>EDIT / RECALCULATE</small><b>상태·후속 날짜·메모 수정</b></div>
+            <span class="flow-arrow">→</span>
+            <div class="service-step"><small>RESULT</small><b>지원 보드·다음 행동</b></div>
+          </div>
+          <div class="service-boundary">
+            <div><b>FlowMe·앱 밖</b>상태·후속 날짜 → Sheet·Calendar·Todo</div>
+            <div><b>Teal 안</b>공고 분석·이력서 최적화·ATS 점수</div>
+          </div>
+          <div class="evidence-badges"><span class="evidence-badge">공개 관찰: 상태 추적</span><span class="evidence-badge synthesis">분석: 전문 경계</span><span class="evidence-badge unknown">unknown: 상태 write-back</span></div>
+        </article>
+
+        <article class="service-card">
+          <div class="service-head">
+            <div><h3>Duolingo</h3><p>진도 → 다음 학습 · <a href="https://www.duolingo.com/learn">공식 근거</a></p></div>
+            <span class="verdict benchmark">Benchmark</span>
+          </div>
+          <div class="service-flow">
+            <div class="service-step"><small>INPUT</small><b>학습 언어·수준<br>일일 목표</b></div>
+            <span class="flow-arrow">→</span>
+            <div class="service-step"><small>EDIT / RECALCULATE</small><b>진도·정답에 따라 다음 학습 조정</b></div>
+            <span class="flow-arrow">→</span>
+            <div class="service-step"><small>RESULT</small><b>학습 경로·다음 레슨</b></div>
+          </div>
+          <div class="service-boundary">
+            <div><b>FlowMe·앱 밖</b>공개 시리즈의 회차 큐·학습 일정</div>
+            <div><b>Duolingo 안</b>문항·적응형 출제·스트릭·게임 경제</div>
+          </div>
+          <div class="evidence-badges"><span class="evidence-badge">공개 관찰: 학습 경로</span><span class="evidence-badge synthesis">분석: 적응형 경계</span><span class="evidence-badge unknown">unknown: 진도 export</span></div>
+        </article>
+
+        <article class="service-card">
+          <div class="service-head">
+            <div><h3>TripIt</h3><p>모음 → 일정 · <a href="https://www.tripit.com/web">공식 근거</a></p></div>
+            <span class="verdict benchmark">Benchmark</span>
+          </div>
+          <div class="service-flow">
+            <div class="service-step"><small>INPUT</small><b>예약 확인 이메일<br>추가 예약</b></div>
+            <span class="flow-arrow">→</span>
+            <div class="service-step"><small>EDIT / RECALCULATE</small><b>예약 추가·항목 수정 후 일정 통합</b></div>
+            <span class="flow-arrow">→</span>
+            <div class="service-step"><small>RESULT</small><b>항공·숙박·교통 여행 일정</b></div>
+          </div>
+          <div class="service-boundary">
+            <div><b>FlowMe·앱 밖</b>준비 항목·날짜·메모 → Calendar</div>
+            <div><b>TripIt 안</b>이메일 parsing·실시간 항공 알림</div>
+          </div>
+          <div class="evidence-badges"><span class="evidence-badge">공개 관찰: 일정 통합</span><span class="evidence-badge synthesis">분석: 캘린더 경계</span><span class="evidence-badge unknown">unknown: write-back 정확도</span></div>
+        </article>
+
+        <article class="service-card">
+          <div class="service-head">
+            <div><h3>TurboTax</h3><p>상태 → 후속 행동 · <a href="https://turbotax.intuit.com/personal-taxes/mobile-apps/turbotax/">공식 근거</a></p></div>
+            <span class="verdict hold">Hold</span>
+          </div>
+          <div class="service-flow">
+            <div class="service-step"><small>INPUT</small><b>세금 신고 프로필<br>소득·공제 서류</b></div>
+            <span class="flow-arrow">→</span>
+            <div class="service-step"><small>EDIT / RECALCULATE</small><b>답변·서류 수정 시 계산 갱신</b></div>
+            <span class="flow-arrow">→</span>
+            <div class="service-step"><small>RESULT</small><b>신고 절차·신고서</b></div>
+          </div>
+          <div class="service-boundary">
+            <div><b>FlowMe·앱 밖</b>공개 준비 체크·마감·공식 링크만</div>
+            <div><b>TurboTax 안</b>민감 데이터·계산·전자 신고·판단</div>
+          </div>
+          <div class="evidence-badges"><span class="evidence-badge">공개 관찰: 신고 절차</span><span class="evidence-badge synthesis">분석: 민감 경계</span><span class="evidence-badge unknown">unknown: 계산 결과</span></div>
+        </article>
+      </div>
+
+      <div class="callout">
+        <strong>24개 사례의 공통 결론:</strong> 사용자가 바꾸는 것은 원문 전체보다
+        목표일·포함 항목·주기·수량·상태 같은 개인 실행 조건이다. 추천·진단·계산·
+        주문·실시간 데이터는 전문 앱에 남기고, FlowMe는 Calendar·Todo·Sheet·Memo로
+        옮길 수 있는 실행 사본과 원문 귀속을 맡는다.
+      </div>
+    </section>
+
+    <section id="editability">
+      <div class="section-head">
+        <div>
+          <div class="section-kicker">07 · Editability policy</div>
+          <h2>편집 범위는 콘텐츠 종류와<br>잘못됐을 때의 위험으로 정한다</h2>
+        </div>
+        <p class="section-copy">
+          24개 vertical 서비스에서 공통으로 보이는 것은 원본 자유 편집보다
+          “개인 조건 입력 → 파생 계획 조정 → 완료·기록”이다. 앱 밖으로 옮길
+          가치와 앱에 남겨야 할 전문 기능도 유형마다 다르다.
+        </p>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>콘텐츠 유형</th>
+              <th>FlowMe 안에서 개인 수정</th>
+              <th>앱 밖에서 실행</th>
+              <th>기준본·전문 서비스에 남길 것</th>
+              <th>Round-trip</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>링크·아이디어</td>
+              <td>개인 제목·분류·메모·선택 날짜</td>
+              <td>Memo·Bookmark·Calendar</td>
+              <td>원문·출처·작성자</td>
+              <td class="unknown">없음</td>
+            </tr>
+            <tr>
+              <td>체크리스트·절차</td>
+              <td>포함·순서·개인 제목·메모·날짜</td>
+              <td>Todo·Checklist</td>
+              <td>공통 절차·공식 조건·안전</td>
+              <td class="unknown">없음</td>
+            </tr>
+            <tr>
+              <td>D-day·목표</td>
+              <td>기준일·포함 Item·가능 요일</td>
+              <td>Calendar·Checklist</td>
+              <td>공식 마감·source-relative 규칙</td>
+              <td class="unknown">단방향</td>
+            </tr>
+            <tr>
+              <td>반복 관리</td>
+              <td>개인 주기·담당·시작일·skip</td>
+              <td>회차 완료·알림</td>
+              <td>공통 관리 원칙·주의</td>
+              <td class="unknown">단방향</td>
+            </tr>
+            <tr>
+              <td>코스·프로그램</td>
+              <td>시작일·학습 속도·선택 세션</td>
+              <td>Calendar·Todo·진도 Sheet</td>
+              <td>강의·영상·적응형 학습 엔진</td>
+              <td class="unknown">확인 안 됨</td>
+            </tr>
+            <tr>
+              <td>레시피·프로젝트</td>
+              <td>인분·대체재·선택·준비·메모</td>
+              <td>장보기·일정·준비표</td>
+              <td>원 레시피·미디어·주문·기기</td>
+              <td class="unknown">확인 안 됨</td>
+            </tr>
+            <tr>
+              <td>상태형 Flow</td>
+              <td>행·상태·후속 날짜·메모</td>
+              <td>Sheet·Calendar·Todo</td>
+              <td>전문 분석·문서 생성·신고</td>
+              <td class="unknown">detached Sheet</td>
+            </tr>
+            <tr>
+              <td>여행·모음</td>
+              <td>항목 CRUD·순서·날짜·메모</td>
+              <td>Calendar·Sheet</td>
+              <td>지도·예약 parsing·실시간 정보</td>
+              <td class="unknown">부분 outbound만 관찰</td>
+            </tr>
+            <tr>
+              <td>공식·민감</td>
+              <td>개인 체크·알림·준비 메모</td>
+              <td>Calendar·Todo</td>
+              <td>공식 사실·진단·계산·민감 데이터</td>
+              <td class="unknown">금지</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout">
+        <strong>앱 안/밖 판단 기준:</strong> 여러 산출물에 다시 반영돼야 하는
+        의미상 수정—기준일, 포함 여부, 순서, 주기, 수량, 대체 항목, 상태—은
+        FlowMe overlay에 둔다. 특정 Calendar·Todo·Sheet에서만 필요한 시간,
+        알림, 일회성 기록은 우선 외부 사본에 둔다.
+      </div>
+    </section>
+
+    <section id="governance">
+      <div class="section-head">
+        <div>
+          <div class="section-kicker">08 · State safety</div>
+          <h2>상태를 분리해야 업데이트가<br>개인 기록을 덮어쓰지 않는다</h2>
+        </div>
+        <p class="section-copy">
+          기존 canonical 계약을 유지한다. 이번 세션의 새 가설은 공용 변경
+          proposal과 외부 detached projection이다. 승인된 canonical spec은
+          migration 계약이며 현재 runtime 구현 완료를 뜻하지 않는다.
+        </p>
+      </div>
+
+      <div class="owner-grid">
+        <article class="owner-card canonical">
+          <h3>Published version</h3>
+          <p>제작자·유지관리자 검토 후 만들어지는 불변 기준본</p>
+          <ul><li>source·canonical Item</li><li>default schedule</li><li>caution·rights·freshness</li></ul>
+        </article>
+        <article class="owner-card personal">
+          <h3>UserFlowCopy</h3>
+          <p>사용자가 소유하는 비공개 개인 실행본</p>
+          <ul><li>포함·개인 제목</li><li>일정·주기·설정값</li><li>개인 메모</li></ul>
+        </article>
+        <article class="owner-card run">
+          <h3>ExecutionRun</h3>
+          <p>콘텐츠 update가 바꿀 수 없는 개인 실행 이력</p>
+          <ul><li>완료·skip·hold</li><li>decision·record</li><li>run memo</li></ul>
+        </article>
+        <article class="owner-card proposal">
+          <h3>Change proposal</h3>
+          <p>선택한 공용 개선과 근거만 담는 변경안</p>
+          <ul><li>source correction</li><li>누락 Item·canonical 문구</li><li>개인 기록 제외</li></ul>
+        </article>
+        <article class="owner-card occurrence">
+          <h3>Occurrence</h3>
+          <p>반복 Flow의 한 회차에만 적용되는 상태</p>
+          <ul><li>회차 완료</li><li>회차 시간 변경</li><li>series 자동 변경 금지</li></ul>
+        </article>
+        <article class="owner-card projection">
+          <h3>External projection</h3>
+          <p>Calendar·Todo·Sheet·Memo에 만들어진 개인 산출물</p>
+          <ul><li>canonical 아님</li><li>외부 수정 허용</li><li>silent write-back 금지</li></ul>
+        </article>
+      </div>
+
+      <h3 style="margin:34px 0 14px;color:var(--navy);font-size:24px;">충돌 처리의 최소 계약</h3>
+      <div class="conflict-list">
+        <div class="conflict-item"><b>같은 field를 양쪽에서 변경</b><span>field-level three-way review: 새 내용 적용 / 내 설정 유지 / 일부 적용</span></div>
+        <div class="conflict-item"><b>새 Item 추가</b><span>포함 / 제외 / 나중에 검토 중 선택한다.</span></div>
+        <div class="conflict-item"><b>개인 상태가 있는 Item 삭제</b><span>orphan으로 보존하고 명시적 확인 전 이력을 지우지 않는다.</span></div>
+        <div class="conflict-item"><b>source·risk·caution 변경</b><span>자동 적용하지 않고 필수 검토와 원문 열기를 제공한다.</span></div>
+        <div class="conflict-item"><b>한 회차 시간 변경</b><span>해당 occurrence에만 적용하고 series 변경은 별도 action으로 둔다.</span></div>
+        <div class="conflict-item"><b>외부 산출물 수정</b><span>독립 사본으로 유지한다. 추후 수요가 확인되면 reimport+diff를 검토한다.</span></div>
+      </div>
+    </section>
+
+    <section id="scenarios">
+      <div class="section-head">
+        <div>
+          <div class="section-kicker">09 · Remaining gaps</div>
+          <h2>여섯 장면 중 작성과 외부 편집은<br>아직 화면이 비어 있다</h2>
+        </div>
+        <p class="section-copy">
+          기능 목록보다 실제 사용자 장면에서 기준본·개인본·proposal·외부
+          산출물의 경계가 유지되는지 확인한다.
+        </p>
+      </div>
+
+      <div class="scenario-grid">
+        <article class="scenario-card">
+          <span class="scenario-no">S01</span>
+          <h3>일반 텍스트에서 작은 수정</h3>
+          <p>제작자가 구조화 preview에서 Item 한 개와 출처 한 개만 고친다.</p>
+          <ul><li>draft는 public 아님</li><li>source review 전 published 금지</li></ul>
+        </article>
+        <article class="scenario-card">
+          <span class="scenario-no">S02</span>
+          <h3>D-day 개인본 만들기</h3>
+          <p>공개 Flow를 복제하고 기준일·포함 Item을 자기 상황에 맞게 바꾼다.</p>
+          <ul><li>날짜 diff preview</li><li>Calendar·Checklist가 같은 effective state 사용</li></ul>
+        </article>
+        <article class="scenario-card">
+          <span class="scenario-no">S03</span>
+          <h3>공식 정보 한 건 정정</h3>
+          <p>오래된 공식 링크와 caution을 근거와 함께 제안한다.</p>
+          <ul><li>canonical 즉시 변경 금지</li><li>개인 실행 기록 payload 제외</li></ul>
+        </article>
+        <article class="scenario-card">
+          <span class="scenario-no">S04</span>
+          <h3>새 version 선택 적용</h3>
+          <p>추가·변경·삭제를 검토하면서 내 진도·메모·일정을 보존한다.</p>
+          <ul><li>전체 / 유지 / 일부 적용</li><li>removed Item 상태 보존</li></ul>
+        </article>
+        <article class="scenario-card">
+          <span class="scenario-no">S05</span>
+          <h3>외부 Calendar에서 한 회차 이동</h3>
+          <p>외부 수정은 occurrence 사본에 남고 FlowMe의 series를 자동 변경하지 않는다.</p>
+          <ul><li>자동 sync 오해 방지</li><li>series 변경은 별도 action</li></ul>
+        </article>
+        <article class="scenario-card">
+          <span class="scenario-no">S06</span>
+          <h3>레시피 개인화 후 개선 제안</h3>
+          <p>인분·대체재는 개인화하고 공용 가치가 있는 개선 한 건만 제안한다.</p>
+          <ul><li>원 레시피·제작자 유지</li><li>개인 메모·전체 변형은 비공개</li></ul>
+        </article>
+      </div>
+    </section>
+
+    <section id="evidence">
+      <div class="section-head">
+        <div>
+          <div class="section-kicker">10 · Evidence boundary</div>
+          <h2>조사는 구조를 지지하지만<br>채택을 증명하지 않는다</h2>
+        </div>
+        <p class="section-copy">
+          플랫폼 수치는 운영 원리를 이해하는 근거이고, vertical 수치는 조사 범위를
+          보여준다. 어느 숫자도 FlowMe 채택·수정률·재방문을 대신 증명하지 않는다.
+          시점·분모·미검증 상태를 한 화면에서 함께 읽는다.
+        </p>
+      </div>
+
+      <div class="proof-kpis" aria-label="조사 범위와 검증 상태">
+        <article class="proof-kpi">
+          <span class="kpi-icon">AT</span>
+          <strong>22</strong>
+          <b>플랫폼 도감</b>
+          <small>2026-07-21 snapshot<br>직접 비교 7개</small>
+        </article>
+        <article class="proof-kpi">
+          <span class="kpi-icon">VS</span>
+          <strong>24/36</strong>
+          <b>공식 근거 확인</b>
+          <small>66.7% · 2026-07-28<br>deep dive 10개</small>
+        </article>
+        <article class="proof-kpi">
+          <span class="kpi-icon">URL</span>
+          <strong>51</strong>
+          <b>근거 URL</b>
+          <small>공개 웹·공식 지원 문서<br>캡처 20개</small>
+        </article>
+        <article class="proof-kpi negative">
+          <span class="kpi-icon">APP</span>
+          <strong>0/24</strong>
+          <b>로그인 내부 검증</b>
+          <small>개인화 결과·장기 행동<br>확인하지 않음</small>
+        </article>
+        <article class="proof-kpi negative">
+          <span class="kpi-icon">UX</span>
+          <strong>0/15</strong>
+          <b>관찰 사용자</b>
+          <small>아래 threshold는 결과가 아닌<br>사전 가설</small>
+        </article>
+      </div>
+
+      <div class="proof-dashboard">
+        <article class="proof-panel">
+          <h3>24개 서비스 판정 분포</h3>
+          <p>기능 채택 수가 아니라 다음 조사·제휴·보류의 우선순위다.</p>
+          <div class="decision-chart">
+            <div class="decision-ring" aria-label="Go 4, Partner 6, Benchmark 13, Hold 1"></div>
+            <div class="legend-list">
+              <div class="legend-item">
+                <i class="legend-dot" style="background:var(--teal)"></i>
+                <b>Go</b><span>4 · 16.7%</span>
+              </div>
+              <div class="legend-item">
+                <i class="legend-dot" style="background:#d79820"></i>
+                <b>Partner</b><span>6 · 25.0%</span>
+              </div>
+              <div class="legend-item">
+                <i class="legend-dot" style="background:var(--navy)"></i>
+                <b>Benchmark</b><span>13 · 54.2%</span>
+              </div>
+              <div class="legend-item">
+                <i class="legend-dot" style="background:#c95a6c"></i>
+                <b>Hold</b><span>1 · 4.2%</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="proof-panel">
+          <h3>반복해서 발견된 실행 구조</h3>
+          <p>막대는 공식 근거 확인 24개 중 해당 패턴을 가진 서비스의 비율이다.</p>
+          <div class="pattern-list">
+            <div class="pattern-row"><b>프로필 → 오늘 계획</b><span class="pattern-track"><i style="--value:20.8%"></i></span><span>5 · 20.8%</span></div>
+            <div class="pattern-row"><b>콘텐츠 → 안내 세션</b><span class="pattern-track"><i style="--value:16.7%"></i></span><span>4 · 16.7%</span></div>
+            <div class="pattern-row"><b>환경 → 유지관리</b><span class="pattern-track"><i style="--value:12.5%"></i></span><span>3 · 12.5%</span></div>
+            <div class="pattern-row"><b>진도 → 다음 학습</b><span class="pattern-track"><i style="--value:12.5%"></i></span><span>3 · 12.5%</span></div>
+            <div class="pattern-row"><b>상태 → 후속 행동</b><span class="pattern-track"><i style="--value:12.5%"></i></span><span>3 · 12.5%</span></div>
+            <div class="pattern-row"><b>모음 → 일정</b><span class="pattern-track"><i style="--value:12.5%"></i></span><span>3 · 12.5%</span></div>
+            <div class="pattern-row"><b>목표 → 계획</b><span class="pattern-track"><i style="--value:8.3%"></i></span><span>2 · 8.3%</span></div>
+            <div class="pattern-row"><b>기준일 → 타임라인</b><span class="pattern-track"><i style="--value:4.2%"></i></span><span>1 · 4.2%</span></div>
+          </div>
+        </article>
+      </div>
+
+      <div class="proof-boundary">
+        <div class="boundary-note">
+          <b>이 숫자로 결정할 수 있다</b>
+          조사 범위, 반복되는 실행 구조, 어떤 사례를 Go·Partner·Benchmark·Hold로 볼지.
+        </div>
+        <div class="boundary-note warn">
+          <b>이 숫자로 결정할 수 없다</b>
+          FlowMe 채택률, 기여 전환율, 제작자 수익, 운영비, 양방향 동기화 수요.
+        </div>
+      </div>
+    </section>
+
+    <section id="validation">
+      <div class="section-head">
+        <div>
+          <div class="section-kicker">11 · Next proof</div>
+          <h2>다음 결정 전 15명에게<br>세 경계를 검증한다</h2>
+        </div>
+        <p class="section-copy">
+          자동 QA와 문서 완성은 제품 검증이 아니다. 다음 단계는 실행 사용자,
+          기여자, 제작자·유지관리자의 서로 다른 과업을 관찰하는 것이다.
+        </p>
+      </div>
+
+      <div class="status-row validation-status" aria-label="보고서와 검증 상태">
+        <span class="pill warn">전략 권고 v1.3 · 오너 검토 대기</span>
+        <span class="pill">앱 코드 변경 없음</span>
+        <span class="pill">외부 round-trip 미검증</span>
+        <span class="pill">관찰 사용자 0 / 15</span>
+      </div>
+
+      <div class="validation">
+        <article class="validation-panel">
+          <h3>제안된 15개 관찰 세션</h3>
+          <ul>
+            <li><strong>실행 사용자 5명</strong> — 개인본·개인화·export·update</li>
+            <li><strong>기여자 5명</strong> — 작은 제안·근거·개인 정보 분리</li>
+            <li><strong>제작자/maintainer 5명</strong> — 검토·evidence 요청·새 version</li>
+          </ul>
+        </article>
+        <article class="validation-panel alt">
+          <h3>사전 가설 기준</h3>
+          <ul>
+            <li><strong>12/15</strong> 기준본·개인본·proposal 구분</li>
+            <li><strong>10/15</strong> 핵심 과업을 설명 없이 완료</li>
+            <li><strong>15/15</strong> update 후 개인 데이터 무손실</li>
+            <li><strong>0건</strong> 개인 기록의 proposal 자동 포함</li>
+            <li><strong>0건</strong> silent overwrite</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="callout">
+        <strong>현재 상태:</strong> 위 숫자는 관찰 결과가 아니라 제안된 threshold다.
+        로그인 후 vertical 서비스 동작, 외부 수정 write-back, FlowMe 채택,
+        제작자 가치, 운영비는 모두 아직 미검증이거나 <code>unknown</code>이다.
+      </div>
+    </section>
+
+    <section id="sources">
+      <div class="section-head">
+        <div>
+          <div class="section-kicker">12 · Appendix</div>
+          <h2>정확한 근거와 계약은<br>부록에서 확인한다</h2>
+        </div>
+        <p class="section-copy">
+          보고서는 사람용 압축본이다. 정확한 정책·unknown·revisit trigger는
+          JSON 계약과 팀 handoff를 canonical research artifact로 사용한다.
+        </p>
+      </div>
+
+      <div class="source-list">
+        <a class="source-link" href="./2026-07-29-flowme-collaborative-authoring-quantitative-evidence-v1.json">수치·사례 근거 원장 JSON</a>
+        <a class="source-link" href="./2026-07-29-flowme-persona-scenario-journey-map-v1.json">페르소나·시나리오·저니맵 JSON</a>
+        <a class="source-link" href="./2026-07-29-flowme-collaborative-authoring-platform-matrix-v1.json">플랫폼 운영 메커니즘 JSON</a>
+        <a class="source-link" href="./2026-07-29-flowme-content-editability-policy-v1.json">콘텐츠별 편집 정책 JSON</a>
+        <a class="source-link" href="./2026-07-29-flowme-version-governance-scenario-contract-v1.json">Version governance·시나리오 JSON</a>
+        <a class="source-link" href="./2026-07-29-flowme-collaborative-authoring-strategy-team-handoff-ko.md">팀 Handoff</a>
+        <a class="source-link" href="../specs/2026-07-29-collaborative-flow-authoring-editability-strategy-v1/spec.md">전략 Spec</a>
+        <a class="source-link" href="./2026-07-21-flowme-platform-service-dossiers-v1.json">22개 플랫폼 도감</a>
+        <a class="source-link" href="./2026-07-28-vertical-execution-service-benchmark-v1.json">24개 Vertical benchmark</a>
+        <a class="source-link" href="../specs/2026-07-11-canonical-flow-data-model/spec.md">Canonical Flow Data Model</a>
+      </div>
+    </section>
+
+    <footer>
+      <strong>FlowMe Collaborative Authoring &amp; Editability Strategy v1.3 · Product Decision edition</strong><br>
+      2026-07-30 · planning and decision assets only · runtime unchanged ·
+      observed-user validation NOT_RUN · commit/push/PR/deploy not included
+    </footer>
+  </main>
+</body>
+</html>

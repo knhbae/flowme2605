@@ -1,0 +1,599 @@
+{
+  "schemaVersion": "1.0.0",
+  "generatedAt": "2026-07-29T20:16:43+09:00",
+  "checkedAt": "2026-07-29",
+  "status": "strategy_recommendation_not_user_validated",
+  "objective": "FlowMe의 공개 기준본, 개인 실행본, 변경 제안, 실행 기록, occurrence, 외부 projection을 분리하고 published update와 충돌을 안전하게 처리하는 운영 계약을 정의한다.",
+  "implementationBoundary": {
+    "canonicalContract": "approved_migration_contract_not_runtime_migration",
+    "creatorContract": "approved_creator_update_boundary_creator_pilot_gated",
+    "thisPackage": "planning_and_decision_assets_only",
+    "runtimeChanged": false,
+    "observedUserValidation": "NOT_RUN",
+    "observedSessions": {
+      "done": 0,
+      "target": 15
+    }
+  },
+  "sourceContracts": [
+    {
+      "type": "established",
+      "id": "canonical-effective-state",
+      "source": "../specs/2026-07-11-canonical-flow-data-model/spec.md",
+      "lines": "237, 270-292",
+      "contract": "모든 projection은 published version, reviewed resolution, UserFlowCopy, ExecutionRun, occurrence override가 합쳐진 effective state를 읽는다."
+    },
+    {
+      "type": "established",
+      "id": "immutable-source-and-user-history",
+      "source": "../specs/2026-07-11-canonical-flow-data-model/spec.md",
+      "lines": "283-292",
+      "contract": "source·caution은 published content가 소유하고 개인 overlay와 실행 기록은 별도 소유하며 새 버전이 저장 사본을 자동 덮어쓰지 않는다."
+    },
+    {
+      "type": "established",
+      "id": "creator-public-user-separation",
+      "source": "../specs/2026-06-26-creator-publish-step-contract/spec.md",
+      "lines": "31-77, 146-155",
+      "contract": "creator draft, public surface, saved My Flow 실행 상태와 route control을 분리한다."
+    },
+    {
+      "type": "new_hypothesis",
+      "id": "reviewed-micro-contribution",
+      "source": "2026-07-29-flowme-collaborative-authoring-platform-matrix-v1.json",
+      "contract": "일반 사용자의 공용 변경은 canonical 직접 편집이 아니라 bounded proposal로 시작한다."
+    },
+    {
+      "type": "new_hypothesis",
+      "id": "detached-external-projection",
+      "source": "2026-07-29-flowme-content-editability-policy-v1.json",
+      "contract": "외부 산출물의 수정은 explicit reimport+diff가 생기기 전까지 독립 개인 상태이며 canonical이나 overlay에 자동 write-back하지 않는다."
+    }
+  ],
+  "effectiveStateOrder": [
+    "pinnedPublishedVersion",
+    "reviewedVersionResolution",
+    "userFlowCopyOverlay",
+    "executionRun",
+    "occurrenceOverride",
+    "unsavedUiBuffer"
+  ],
+  "entities": {
+    "publishedVersion": {
+      "mutable": false,
+      "owner": "creator_or_maintainer_after_review",
+      "owns": [
+        "sourceRef",
+        "sourceRows",
+        "canonicalItem",
+        "defaultSchedule",
+        "caution",
+        "creatorOfficialBoundary",
+        "rightsAndFreshnessState"
+      ],
+      "changeMode": "new_immutable_version_after_review"
+    },
+    "userFlowCopy": {
+      "privateByDefault": true,
+      "pinsPublishedVersion": true,
+      "owner": "user",
+      "owns": [
+        "personalTitle",
+        "setupValues",
+        "itemInclusion",
+        "titleOverride",
+        "scheduleOverride",
+        "cadenceOverride",
+        "privateMemo",
+        "allowedFieldValues"
+      ],
+      "mayDirectlyChangePublishedVersion": false
+    },
+    "changeProposal": {
+      "owner": "contributor",
+      "targets": [
+        "sourceCorrection",
+        "freshnessIssue",
+        "missingItem",
+        "canonicalText",
+        "sharedScheduleRule",
+        "caution"
+      ],
+      "states": [
+        "draft",
+        "submitted",
+        "needs_evidence",
+        "accepted",
+        "rejected",
+        "withdrawn"
+      ],
+      "canonicalEffect": "none_until_accepted_into_new_version"
+    },
+    "executionRun": {
+      "owner": "user",
+      "owns": [
+        "pendingDoneSkippedHeld",
+        "decisionValue",
+        "recordValues",
+        "runMemo",
+        "completionTimestamp"
+      ],
+      "publishByDefault": false
+    },
+    "occurrence": {
+      "owner": "user",
+      "owns": [
+        "singleOccurrenceState",
+        "singleOccurrenceScheduleOverride",
+        "singleOccurrenceMemo"
+      ],
+      "mayRewriteSeries": false
+    },
+    "versionResolution": {
+      "owner": "user",
+      "states": [
+        "up_to_date",
+        "minor_update_available",
+        "review_before_apply"
+      ],
+      "actions": [
+        "use_latest",
+        "keep_personal",
+        "apply_selected",
+        "retain_removed",
+        "exclude"
+      ]
+    },
+    "projection": {
+      "owner": "derived_personal_artifact",
+      "targets": [
+        "calendar",
+        "checklist",
+        "todo",
+        "sheet",
+        "memo"
+      ],
+      "canonical": false,
+      "writesBackToCanonical": false,
+      "writesBackToOverlay": false
+    }
+  },
+  "fieldOwnership": [
+    {
+      "fieldGroup": "source_identity_and_risk",
+      "fields": [
+        "sourceUrl",
+        "sourceRow",
+        "snapshotHash",
+        "creatorOfficialBoundary",
+        "caution",
+        "risk",
+        "rights",
+        "freshness"
+      ],
+      "owner": "publishedContent",
+      "userDirectEdit": false,
+      "communityMode": "proposal_with_evidence",
+      "projection": "source_link_and_required_caution_only"
+    },
+    {
+      "fieldGroup": "canonical_execution_definition",
+      "fields": [
+        "canonicalTitle",
+        "canonicalDetail",
+        "order",
+        "defaultSchedule",
+        "completionContract",
+        "sharedFields"
+      ],
+      "owner": "publishedContent",
+      "userDirectEdit": "overlay_only",
+      "communityMode": "proposal",
+      "projection": "effective_merged_value"
+    },
+    {
+      "fieldGroup": "personalization",
+      "fields": [
+        "included",
+        "personalTitle",
+        "personalSchedule",
+        "personalCadence",
+        "personalMemo",
+        "allowedFieldValues"
+      ],
+      "owner": "userFlowCopy",
+      "userDirectEdit": true,
+      "communityMode": "not_public_by_default",
+      "projection": "user_overlay_wins"
+    },
+    {
+      "fieldGroup": "execution_state",
+      "fields": [
+        "completion",
+        "skip",
+        "hold",
+        "decision",
+        "recordValue",
+        "runMemo"
+      ],
+      "owner": "executionRun",
+      "userDirectEdit": true,
+      "communityMode": "never_public_by_default",
+      "projection": "destination_specific"
+    },
+    {
+      "fieldGroup": "occurrence_state",
+      "fields": [
+        "occurrenceCompletion",
+        "occurrenceScheduleOverride",
+        "occurrenceMemo"
+      ],
+      "owner": "occurrence",
+      "userDirectEdit": true,
+      "communityMode": "never_public_by_default",
+      "projection": "one_occurrence_only"
+    },
+    {
+      "fieldGroup": "internal_review",
+      "fields": [
+        "qualityScore",
+        "rightsDecision",
+        "promotionStatus",
+        "providerMetadata",
+        "reviewComment"
+      ],
+      "owner": "internalReview",
+      "userDirectEdit": false,
+      "communityMode": "not_exposed",
+      "projection": "never_export"
+    },
+    {
+      "fieldGroup": "external_serialization",
+      "fields": [
+        "ics",
+        "markdown",
+        "csv",
+        "xlsx"
+      ],
+      "owner": "projection",
+      "userDirectEdit": "outside_copy_only",
+      "communityMode": "not_canonical",
+      "projection": "detached_after_export"
+    }
+  ],
+  "stateModel": {
+    "canonicalLifecycle": [
+      "draft",
+      "in_review",
+      "published",
+      "retired"
+    ],
+    "proposalTransitions": [
+      {
+        "from": "draft",
+        "action": "submit",
+        "to": "submitted"
+      },
+      {
+        "from": "submitted",
+        "action": "request_evidence",
+        "to": "needs_evidence"
+      },
+      {
+        "from": "needs_evidence",
+        "action": "resubmit",
+        "to": "submitted"
+      },
+      {
+        "from": "submitted",
+        "action": "accept_into_new_version",
+        "to": "accepted"
+      },
+      {
+        "from": "submitted",
+        "action": "reject_with_reason",
+        "to": "rejected"
+      }
+    ],
+    "personalCopyTransitions": [
+      {
+        "from": "not_saved",
+        "action": "create_private_copy",
+        "to": "pinned_to_published_version"
+      },
+      {
+        "from": "pinned_to_published_version",
+        "action": "edit_personal_overlay",
+        "to": "personalized"
+      },
+      {
+        "from": "personalized",
+        "action": "start_or_continue_run",
+        "to": "executing"
+      },
+      {
+        "from": "executing",
+        "action": "published_update_arrives",
+        "to": "review_before_apply"
+      },
+      {
+        "from": "review_before_apply",
+        "action": "explicit_three_way_resolution",
+        "to": "personalized"
+      }
+    ],
+    "guardrails": [
+      "제안 수락은 기존 published version을 mutate하지 않고 새 version을 만든다.",
+      "개인 overlay와 run history는 제안 제출이나 새 version 발행으로 공개되지 않는다.",
+      "삭제된 Item에 개인 상태가 있으면 orphan으로 유지하고 사용자가 제거할 때까지 보존한다.",
+      "source·caution 변경은 자동 적용하지 않고 필수 검토로 승격한다."
+    ]
+  },
+  "conflictScenarios": [
+    {
+      "id": "publisher_changed_user_overlaid_field",
+      "trigger": "publisher가 canonical title·detail·schedule을 변경했고 사용자가 같은 field를 overlay했다.",
+      "resolution": "field_level_three_way_review",
+      "choices": [
+        "use_latest",
+        "keep_personal",
+        "apply_selected"
+      ],
+      "autoApply": false,
+      "preserveRunHistory": true
+    },
+    {
+      "id": "publisher_added_item",
+      "trigger": "새 published version에 Item이 추가됐다.",
+      "resolution": "show_as_new_unselected_or_policy_selected",
+      "choices": [
+        "include",
+        "exclude",
+        "review_later"
+      ],
+      "autoApply": "only_if_explicit_update_policy_allows",
+      "preserveRunHistory": true
+    },
+    {
+      "id": "publisher_removed_item_with_personal_state",
+      "trigger": "publisher가 Item을 제거했지만 사용자가 메모·완료·일정을 보유한다.",
+      "resolution": "retain_removed_as_orphan",
+      "choices": [
+        "keep_personal",
+        "archive",
+        "remove_after_confirmation"
+      ],
+      "deleteUserHistory": false
+    },
+    {
+      "id": "source_risk_or_caution_changed",
+      "trigger": "공식 조건, 위험, caution, 권리 또는 최신성 상태가 변경됐다.",
+      "resolution": "mandatory_manual_review",
+      "choices": [
+        "acknowledge_and_apply",
+        "stop_using_flow",
+        "open_source"
+      ],
+      "userOverrideSourceFact": false,
+      "autoApply": false
+    },
+    {
+      "id": "single_occurrence_edited",
+      "trigger": "사용자가 반복 Flow의 한 회차 시간이나 상태를 변경했다.",
+      "resolution": "apply_to_occurrence_only",
+      "rewriteSeries": false,
+      "offerSeparateSeriesAction": true
+    },
+    {
+      "id": "concurrent_overlay_or_run_edit",
+      "trigger": "같은 personal copy 또는 run이 서로 다른 revision에서 동시에 저장됐다.",
+      "resolution": "revision_conflict_and_explicit_merge",
+      "lastWriteWins": false,
+      "expectedResponse": "409_or_equivalent_conflict"
+    },
+    {
+      "id": "external_projection_edited",
+      "trigger": "사용자가 Calendar·Todo·Sheet·Memo에서 산출물을 수정했다.",
+      "resolution": "keep_as_detached_external_copy",
+      "automaticWriteback": false,
+      "futureOption": "explicit_reimport_with_diff_after_demand_validation"
+    },
+    {
+      "id": "contributor_proposal_from_personal_change",
+      "trigger": "사용자가 개인 변경 중 일부를 공용 개선으로 제안한다.",
+      "resolution": "copy_only_selected_patch_and_evidence",
+      "includePrivateMemoOrHistory": false,
+      "canonicalEffect": "none_until_maintainer_accepts_new_version"
+    }
+  ],
+  "representativeUxScenarios": [
+    {
+      "id": "S01-text-to-draft",
+      "actor": "creator",
+      "contentType": "checklist_procedure",
+      "task": "일반 텍스트를 구조화 preview로 보고 Item 한 개와 출처 한 개만 고친다.",
+      "firstAction": "텍스트 붙여넣기 또는 기존 문서 가져오기",
+      "expectedBoundary": "draft는 public이 아니며 source-backed review 전 published가 되지 않는다.",
+      "successSignal": "전체 Flow를 다시 쓰지 않고 작은 단위 수정이 가능하다."
+    },
+    {
+      "id": "S02-private-timeline-copy",
+      "actor": "executor",
+      "contentType": "anchor_timeline",
+      "task": "공개 D-day Flow를 내 실행본으로 만들고 기준일·포함 Item을 바꾼다.",
+      "firstAction": "내 실행본 만들기",
+      "expectedBoundary": "canonical relative schedule은 보존되고 개인 날짜만 overlay된다.",
+      "successSignal": "변경 preview 후 Calendar와 Checklist가 같은 effective state에서 생성된다."
+    },
+    {
+      "id": "S03-micro-correction",
+      "actor": "contributor",
+      "contentType": "official_sensitive",
+      "task": "오래된 공식 링크와 변경된 주의사항을 근거와 함께 제안한다.",
+      "firstAction": "정보 수정 제안",
+      "expectedBoundary": "공개 기준본은 즉시 바뀌지 않고 maintainer review로 간다.",
+      "successSignal": "개인 실행 기록 없이 bounded patch와 evidence만 제출된다."
+    },
+    {
+      "id": "S04-published-update",
+      "actor": "executor",
+      "contentType": "course_program",
+      "task": "새 공개 버전의 추가·변경·삭제를 검토하면서 내 진도·메모·일정을 보존한다.",
+      "firstAction": "새 내용 검토",
+      "expectedBoundary": "새 version은 개인본을 자동 덮어쓰지 않는다.",
+      "successSignal": "전체 적용, 내 설정 유지, 일부 적용을 field·Item별로 선택한다."
+    },
+    {
+      "id": "S05-external-calendar-edit",
+      "actor": "executor",
+      "contentType": "recurring_maintenance",
+      "task": "외부 Calendar에서 한 회차 시간을 옮긴다.",
+      "firstAction": "외부 일정 편집",
+      "expectedBoundary": "변경은 외부 occurrence에만 남고 FlowMe series와 canonical cadence를 자동 변경하지 않는다.",
+      "successSignal": "사용자가 외부본과 FlowMe 원본이 자동 동기화되지 않음을 이해한다."
+    },
+    {
+      "id": "S06-recipe-result",
+      "actor": "executor_and_contributor",
+      "contentType": "guided_recipe_project",
+      "task": "인분·대체 재료를 개인화하고 실행 결과 중 한 개선점만 공용 제안한다.",
+      "firstAction": "개인 사본에서 인분 변경",
+      "expectedBoundary": "개인 메모와 전체 변형은 비공개이며 선택한 개선점만 proposal이 된다.",
+      "successSignal": "원 레시피·제작자 링크와 개인 실행 결과가 명확히 분리된다."
+    }
+  ],
+  "decisionMatrix": {
+    "applyAsStrategyContract": [
+      {
+        "id": "separate-canonical-copy-run-projection",
+        "decision": "기준본, 개인본, 실행 기록, 외부 산출물의 소유권을 분리한다.",
+        "reason": "기존 canonical 계약과 일치하고 출처·개인화·이력 손실을 막는다."
+      },
+      {
+        "id": "no-silent-overwrite",
+        "decision": "새 published version과 외부 수정은 개인본이나 기준본을 자동 덮어쓰지 않는다.",
+        "reason": "개인 일정·메모·완료 기록 보존에 필수다."
+      },
+      {
+        "id": "reviewed-public-change",
+        "decision": "공용 콘텐츠 변경은 bounded proposal과 review를 거친다.",
+        "reason": "wiki식 작은 기여와 source·creator protection을 동시에 유지한다."
+      },
+      {
+        "id": "content-specific-editability",
+        "decision": "편집 가능 범위는 콘텐츠 유형별 policy로 정한다.",
+        "reason": "vertical 서비스 비교에서 입력·재계산·app-bound 경계가 유형마다 달랐다."
+      }
+    ],
+    "validateBeforeImplementation": [
+      {
+        "id": "micro-contribution-comprehension",
+        "question": "사용자가 전체 작성 없이 한 Item·출처·최신성만 제안할 수 있는가?"
+      },
+      {
+        "id": "version-review-comprehension",
+        "question": "사용자가 새 내용과 내 설정의 차이를 이해하고 안전하게 선택 적용하는가?"
+      },
+      {
+        "id": "maintainer-cost",
+        "question": "초기 제안의 검토 시간, evidence 요청률, 수락률이 운영 가능한가?"
+      },
+      {
+        "id": "explicit-reimport-demand",
+        "question": "단방향 외부 산출물보다 reimport+diff가 필요한 반복 수요가 실제로 나타나는가?"
+      }
+    ],
+    "defer": [
+      {
+        "id": "creator-direct-publishing",
+        "revisitTrigger": "제작자 5명 이상이 두 번째 Flow 또는 직접 수정을 반복 요청"
+      },
+      {
+        "id": "bidirectional-integration",
+        "revisitTrigger": "같은 목적지로의 반복 export와 외부 변경 재수입 요청이 측정됨"
+      },
+      {
+        "id": "marketplace-reputation",
+        "revisitTrigger": "권리·versioning·품질 신호와 반복 제작자·사용자 집단이 함께 확인됨"
+      },
+      {
+        "id": "real-time-collaboration",
+        "revisitTrigger": "동일본 공동 편집이 개인 copy보다 자연스러운 반복 팀 사례가 확인됨"
+      }
+    ],
+    "reject": [
+      "익명 canonical 직접 편집",
+      "개인 실행 기록 자동 공개",
+      "좋아요·복제 수 기반 자동 병합",
+      "외부 산출물의 silent write-back",
+      "전문 vertical engine 복제",
+      "GitHub 개발자 용어를 그대로 노출"
+    ]
+  },
+  "proposedValidationPlan": {
+    "status": "PROPOSED_NOT_RUN",
+    "sessions": 15,
+    "cohorts": [
+      {
+        "role": "executor",
+        "count": 5,
+        "tasks": [
+          "공개 Flow를 개인본으로 만들기",
+          "개인 조건 수정과 export",
+          "새 version 선택 적용"
+        ]
+      },
+      {
+        "role": "contributor",
+        "count": 5,
+        "tasks": [
+          "오류·최신성 발견",
+          "한 Item 또는 출처 제안",
+          "개인 정보가 제안에 포함되지 않았는지 확인"
+        ]
+      },
+      {
+        "role": "creator_or_maintainer",
+        "count": 5,
+        "tasks": [
+          "제안 검토",
+          "evidence 요청 또는 수락·거절",
+          "새 version 발행과 기존 사용자 영향 확인"
+        ]
+      }
+    ],
+    "proposedThresholds": [
+      {
+        "metric": "기준본·개인본·수정 제안 구분",
+        "threshold": "12/15 이상",
+        "type": "hypothesis_threshold"
+      },
+      {
+        "metric": "핵심 과업을 설명 없이 완료",
+        "threshold": "10/15 이상",
+        "type": "hypothesis_threshold"
+      },
+      {
+        "metric": "published update 후 개인 일정·메모·완료 보존",
+        "threshold": "15/15 데이터 무손실",
+        "type": "contract_threshold"
+      },
+      {
+        "metric": "개인 기록의 proposal 자동 포함",
+        "threshold": "0건",
+        "type": "safety_threshold"
+      },
+      {
+        "metric": "canonical 또는 외부 projection의 silent overwrite",
+        "threshold": "0건",
+        "type": "safety_threshold"
+      }
+    ],
+    "qualitativeQuestions": [
+      "어느 수정이 나만의 것이고 어느 수정이 다른 사용자에게도 도움이 되는가?",
+      "왜 새 version이 내 실행본에 자동 적용되지 않았다고 이해하는가?",
+      "외부 Calendar·Sheet를 고친 뒤 FlowMe로 돌아올 필요가 있는 순간은 언제인가?",
+      "제작자는 attribution, source return, update, 재참여 중 무엇에서 가치를 느끼는가?"
+    ]
+  }
+}
