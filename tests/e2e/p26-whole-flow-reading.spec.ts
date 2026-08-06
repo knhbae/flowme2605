@@ -3,6 +3,7 @@ import path from 'node:path';
 
 import { expect, test, type Page } from '@playwright/test';
 import {
+  expandMyFlowWholePlan,
   getMyFlowVisibleExecutionRows,
   getOpenMyFlowItemDetail,
   openMyFlowLibraryFlow,
@@ -80,14 +81,14 @@ test.describe('P26-09 adaptive whole Flow reading', () => {
     await expect(outline.getByTestId('my-flow-whole-flow-reading-summary')).toContainText('10');
     await expect(outline.getByTestId('my-flow-whole-flow-toggle-all-groups')).toHaveCount(0);
     await expect(outline).toHaveAttribute('data-effective-row-count', '10');
-    await expect(getMyFlowVisibleExecutionRows(flow)).toHaveCount(10);
+    await expect(outline.getByTestId('my-flow-execution-row-shell')).toHaveCount(10);
 
     await capture(page, '02-mobile-ten-item-checklist.png');
     expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
     expect(browserErrors).toEqual([]);
   });
 
-  test('mobile long timeline opens one phase, groups same-date rows, and moves note into detail', async ({ page }) => {
+  test('mobile long timeline renders every logical row and opens one Item detail', async ({ page }) => {
     const browserErrors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
     await seedSavedFlow(page, 'moving-d30-basic', '2026-08-15');
@@ -99,9 +100,10 @@ test.describe('P26-09 adaptive whole Flow reading', () => {
     await expect(summary).toContainText('6단계');
     await expect(summary).toContainText('0/24 완료');
     await expect(outline.getByTestId('my-flow-whole-flow-section')).toHaveCount(6);
-    await expect(outline.getByTestId('my-flow-whole-flow-section-content')).toHaveCount(1);
-    await expect(outline.getByTestId('my-flow-execution-row-shell')).toHaveCount(4);
-    await expect(outline.getByTestId('my-flow-whole-flow-date-group')).toHaveCount(1);
+    await expect(outline.getByTestId('my-flow-whole-flow-section-content')).toHaveCount(6);
+    await expect(outline).toHaveAttribute('data-effective-row-count', '24');
+    await expect(outline.getByTestId('my-flow-execution-row-shell')).toHaveCount(24);
+    expect(await outline.getByTestId('my-flow-whole-flow-date-group').count()).toBeGreaterThan(0);
     await expect(outline.getByTestId('my-flow-inline-note-open')).toHaveCount(0);
     await capture(page, '03-mobile-twenty-four-item-timeline-page.png');
     await outline.evaluate((element) => {
@@ -124,16 +126,17 @@ test.describe('P26-09 adaptive whole Flow reading', () => {
     await page.keyboard.press('Space');
     await expect(firstSectionToggle).toHaveAttribute('aria-expanded', 'true');
 
-    await outline.getByTestId('my-flow-whole-flow-toggle-all-groups').click();
     await expect(outline.getByTestId('my-flow-whole-flow-section-content')).toHaveCount(6);
     await expect(outline).toHaveAttribute('data-effective-row-count', '24');
-    expect(await outline.getByTestId('my-flow-execution-row-shell').count()).toBeGreaterThan(0);
+    await expect(outline.getByTestId('my-flow-execution-row-shell')).toHaveCount(24);
 
-    const firstRow = getMyFlowVisibleExecutionRows(flow).first();
+    const firstRow = (await getMyFlowVisibleExecutionRows(flow)).first();
     await firstRow.getByRole('button', { name: /열기/ }).click();
     const detail = getOpenMyFlowItemDetail(page);
-    await expect(detail.getByTestId('my-flow-detail-execution-note')).toBeVisible();
-    await expect(detail.getByTestId('my-flow-detail-execution-note').getByTestId('my-flow-inline-note-open')).toBeVisible();
+    await expect(detail).toBeVisible();
+    await expect(detail.getByTestId('my-flow-detail-execution-note')).toHaveCount(0);
+    await expect(detail.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
+    await expect(page.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
 
     await capture(page, '03b-mobile-twenty-four-item-expanded-detail.png');
     expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
@@ -147,13 +150,15 @@ test.describe('P26-09 adaptive whole Flow reading', () => {
     await page.goto('/my?view=flows');
 
     const workspace = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'plan');
+    await expandMyFlowWholePlan(workspace);
     const outline = workspace.getByTestId('my-flow-whole-flow-outline');
     await expect(workspace).toHaveAttribute(
       'data-p35-marker',
       'P35-PERSONAL-SINGLE-FOCUS',
     );
     await expect(outline.getByTestId('my-flow-whole-flow-section')).toHaveCount(6);
-    await expect(outline.getByTestId('my-flow-whole-flow-section-content')).toHaveCount(1);
+    await expect(outline.getByTestId('my-flow-whole-flow-section-content')).toHaveCount(6);
+    await expect(outline.getByTestId('my-flow-execution-row-shell')).toHaveCount(24);
     await expect(workspace.getByTestId('my-flow-workspace-detail-pane')).toBeVisible();
     await outline.getByTestId('my-flow-execution-row-shell').first()
       .getByRole('button', { name: /열기/ })

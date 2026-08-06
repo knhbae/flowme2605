@@ -120,34 +120,78 @@ function expectWorkspaceBeforePersistentTabs(trace: FocusStep[], workspaceTestId
 }
 
 test.describe('P30-01 mobile export fixed-layer correctness', () => {
-  test('public export suppresses the fixed save command and keeps the primary result visible', async ({ page }) => {
+  test('public quick-result confirmation occludes the fixed save command and keeps its primary action operable', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/f/moving-d30-basic');
     await clearLocalState(page);
-    await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
 
-    const workspace = page.getByTestId('public-flow-detail-workspace');
-    await workspace.locator('summary').first().click();
-    const exportEntry = workspace.getByTestId('public-flow-export-secondary-entry');
-    await exportEntry.getByTestId('public-flow-export-secondary-toggle').click();
+    await expect(page.getByTestId('public-flow-detail-workspace')).toHaveCount(0);
+    await expect(page.locator('main[data-p35-q1-quick-eligible="true"]')).toBeVisible();
+    const quickEntry = page.getByTestId('public-flow-quick-result-entry');
+    await expect(quickEntry).toBeVisible();
+    await quickEntry.click();
 
-    const panel = exportEntry.getByTestId('my-flow-export-panel');
-    await expect(panel).toBeVisible();
-    await expect(panel.locator('..')).toHaveAttribute('data-p30-marker', 'P30-MOBILE-EXPORT-NO-FIXED-OVERLAP');
-    await expect(page.getByTestId('public-flow-mobile-save-cta')).toHaveCount(0);
+    const confirmation = page.getByTestId('public-flow-quick-result-confirmation');
+    await expect(confirmation).toBeVisible();
+    await expect(confirmation).toHaveAttribute('aria-modal', 'true');
+    await expect.poll(() => page.evaluate(() => document.body.style.overflow)).toBe('hidden');
 
-    const primary = panel.locator('[data-action-priority="primary"][data-recommendation-visible="true"]');
+    const fixedSaveCta = page.getByTestId('public-flow-mobile-save-cta');
+    await expect(fixedSaveCta).toHaveCount(1);
+
+    const primary = confirmation.getByTestId('public-flow-quick-result-execute');
     await expect(primary).toHaveCount(1);
     const primaryRect = await getRect(primary);
+    const fixedSaveCtaRect = await getRect(fixedSaveCta);
     expect(primaryRect.top).toBeGreaterThanOrEqual(0);
     expect(primaryRect.bottom).toBeLessThanOrEqual(844);
+    const layerContract = await page.evaluate(() => {
+      const dialog = document.querySelector<HTMLElement>(
+        '[data-testid="public-flow-quick-result-confirmation"]',
+      );
+      const layer = dialog?.parentElement;
+      const fixed = document.querySelector<HTMLElement>(
+        '[data-testid="public-flow-mobile-save-cta"]',
+      );
+      const primaryAction = document.querySelector<HTMLElement>(
+        '[data-testid="public-flow-quick-result-execute"]',
+      );
+      const hitTest = (element: HTMLElement | null) => {
+        if (!element) return false;
+        const rect = element.getBoundingClientRect();
+        const hit = document.elementFromPoint(
+          rect.left + (rect.width / 2),
+          rect.top + (rect.height / 2),
+        );
+        return Boolean(hit && element.contains(hit));
+      };
+      return {
+        dialogLayer: Number(getComputedStyle(layer!).zIndex),
+        fixedLayer: Number(getComputedStyle(fixed!).zIndex),
+        primaryReceivesPointer: hitTest(primaryAction),
+        fixedReceivesPointer: hitTest(fixed),
+      };
+    });
+    expect(layerContract.dialogLayer).toBeGreaterThan(layerContract.fixedLayer);
+    expect(layerContract.primaryReceivesPointer).toBe(true);
+    expect(layerContract.fixedReceivesPointer).toBe(false);
+    for (let index = 0; index < 5; index += 1) {
+      await page.keyboard.press('Tab');
+      expect(await confirmation.evaluate((element) => element.contains(document.activeElement)))
+        .toBe(true);
+    }
     await capture(page, 'p30-01-public-export-open-390.png', {
       route: '/f/moving-d30-basic',
       viewport: { width: 390, height: 844 },
       primaryRect,
-      fixedSaveCtaCount: 0,
-      intersectionArea: 0,
+      fixedSaveCtaRect,
+      fixedSaveCtaCount: 1,
+      ...layerContract,
+      geometricIntersectionArea: intersectionArea(primaryRect, fixedSaveCtaRect),
     });
+    await page.keyboard.press('Escape');
+    await expect(confirmation).toHaveCount(0);
+    await expect(quickEntry).toBeFocused();
   });
 
   test('My Flow export scrolls its primary action above the persistent tabs and restores entry focus', async ({ page }) => {
@@ -183,7 +227,7 @@ test.describe('P30-01 mobile export fixed-layer correctness', () => {
       intersectionArea: intersectionArea(primaryRect, tabsRect),
     });
 
-    await panel.getByRole('button', { name: /가져가기 닫기/ }).click();
+    await panel.getByRole('button', { name: /옮기기 닫기/ }).click();
     await expect(exportEntry).toBeFocused();
   });
 });
@@ -223,7 +267,7 @@ test.describe('P30-02 mobile workspace focus order', () => {
 });
 
 test.describe('P30-03 save-before decision and contextual adjustment', () => {
-  test('long Flow keeps the full selection list inside one bounded adjustment panel', async ({ page }) => {
+  test('long Flow keeps the full selection list inside one atomic full-height editor', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/f/moving-d30-basic');
     await clearLocalState(page);
@@ -236,8 +280,12 @@ test.describe('P30-03 save-before decision and contextual adjustment', () => {
 
     await page.getByTestId('public-flow-adjust-entry-mobile').click();
     const adjustment = page.getByTestId('public-flow-personal-adjustment');
-    await expect(adjustment).toHaveAttribute('data-p35-marker', 'P35-ADJUST-ONE-KIND');
+    await expect(adjustment).toHaveAttribute('data-p35-marker', 'P35-ATOMIC-FULL-HEIGHT-EDITOR');
+    await expect(adjustment).toHaveAttribute('data-editor-transaction', 'atomic');
+    await expect(adjustment).toHaveAttribute('role', 'dialog');
+    await expect(adjustment).toHaveAttribute('aria-modal', 'true');
     await expect(adjustment).toHaveAttribute('data-adjustment-kind', 'name');
+    await expect(adjustment.getByTestId('public-flow-adjustment-kind-name')).toBeFocused();
     await expect(adjustment.getByTestId('public-flow-adjustment-item-list')).toHaveCount(0);
     await expect(adjustment.locator('[data-testid="public-flow-adjustment-title"]')).toHaveCount(0);
     await expect(adjustment.locator('[data-testid="public-flow-adjustment-date"]')).toHaveCount(0);
@@ -355,7 +403,7 @@ test.describe('P30-05 Calendar evidence, scale, and compact identity', () => {
     await picker.getByTestId('calendar-flow-scope-picker-search').fill(otherTitle!.trim());
     await picker.locator(`[data-flow-slug="${otherSlug}"] input[type="checkbox"]`).check();
     await picker.getByTestId('calendar-flow-scope-picker-apply').click();
-    await expect(trigger).toContainText('2개 Flow');
+    await expect(trigger).toContainText('계획 2개');
     await expect(trigger).toBeFocused();
     await capture(page, 'p30-05-calendar-scope-50-390.png', {
       route: '/calendar?demo=ux50',

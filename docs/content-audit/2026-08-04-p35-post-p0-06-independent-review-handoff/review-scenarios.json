@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "defaultViewport": "390x844",
+  "additionalViewports": ["1024x768", "1440x1000"],
+  "observedUserCount": 0,
+  "scenarios": [
+    {
+      "id": "S01",
+      "name": "날짜형 공개 계획 첫 방문과 시작일 선택",
+      "routes": ["/f/moving-d30-basic"],
+      "rootDecisions": ["D2", "D3", "D6"],
+      "feedback": ["U06", "U07"],
+      "states": ["storage clear", "before anchor", "2031-08-15 entered", "after preview refresh"],
+      "requiredEvidence": ["start-date duplicate check", "primary action", "storage no-write"]
+    },
+    {
+      "id": "S02",
+      "name": "날짜 없는 체크리스트형 공개 계획",
+      "routes": ["/f/vehicle-inspection-prep"],
+      "rootDecisions": ["D0", "D3"],
+      "feedback": ["U07", "U09"],
+      "states": ["default detail", "result preview", "conditional/unavailable formats"],
+      "requiredEvidence": ["no invented dates", "actual item fields", "format rationale"]
+    },
+    {
+      "id": "S03",
+      "name": "반복과 주의가 있는 공개 계획",
+      "routes": ["/f/curated-allblanc-morning-workout"],
+      "rootDecisions": ["D3", "D5"],
+      "feedback": ["U02", "U07"],
+      "states": ["default", "help open", "caution open", "routine edit"],
+      "requiredEvidence": ["always-visible safety", "accessible name", "focus return"]
+    },
+    {
+      "id": "S04",
+      "name": "메모·참고 중심 공개 계획",
+      "routes": ["/f/overseas-safety-register"],
+      "rootDecisions": ["D0", "D3", "D5"],
+      "feedback": ["U02", "U07"],
+      "states": ["default", "memo preview", "unsupported results"],
+      "requiredEvidence": ["source preservation", "no forced task/calendar", "safety visibility"]
+    },
+    {
+      "id": "S05",
+      "name": "Flow Map 8개에서 7개로 수정·적용·저장",
+      "routes": ["/flow-maps/middle-school-math-1"],
+      "rootDecisions": ["D0", "D4", "D5"],
+      "feedback": ["U05", "U08"],
+      "states": ["initial 8", "editor 7 selected", "applied 7", "preview 7", "saved 7"],
+      "requiredEvidence": ["count parity", "three-column purpose", "storage/source invariants"]
+    },
+    {
+      "id": "S06",
+      "name": "Public Plan 편집 clean·dirty·invalid",
+      "routes": ["/f/moving-d30-basic"],
+      "rootDecisions": ["D4", "D6"],
+      "feedback": ["U08"],
+      "states": ["clean open", "dirty close", "invalid submit", "discard", "apply"],
+      "requiredEvidence": ["shared editor attributes", "storage no-write", "Back/focus"]
+    },
+    {
+      "id": "S07",
+      "name": "Public Item 편집 후 부모 Plan 반영",
+      "routes": ["/f/moving-d30-basic"],
+      "rootDecisions": ["D4"],
+      "feedback": ["U04", "U08"],
+      "states": ["Plan editor", "Item editor", "Item apply", "parent Plan return", "Plan apply"],
+      "requiredEvidence": ["parent draft only", "commit labels", "exact return"]
+    },
+    {
+      "id": "S08",
+      "name": "저장 직후 내 계획의 선택 계획으로 이동",
+      "routes": ["/f/moving-d30-basic", "/my?view=flows&flow=personal-copy:*"],
+      "rootDecisions": ["D1", "D2"],
+      "feedback": ["U01", "U07"],
+      "states": ["explicit anchor", "save", "direct selected detail", "reload"],
+      "requiredEvidence": ["no intermediate menu", "one banner", "next action", "saved version identity"]
+    },
+    {
+      "id": "S09",
+      "name": "일반 내 계획 0·1·5·20개와 Today 없음·있음",
+      "routes": ["/my?view=flows"],
+      "rootDecisions": ["D1", "D6"],
+      "feedback": ["U03", "U10"],
+      "states": ["0 plans", "1 plan", "5 plans", "20 plans", "Today empty", "Today populated"],
+      "requiredEvidence": ["fixture marker", "library hierarchy", "selected detail", "mobile and wide"]
+    },
+    {
+      "id": "S10",
+      "name": "Saved Plan·Item 편집과 Item 메모·완료·되돌리기",
+      "routes": ["/my?view=flows&flow=personal-copy:*"],
+      "rootDecisions": ["D1", "D4", "D6"],
+      "feedback": ["U04", "U08"],
+      "states": ["Plan open", "Item open", "Item authoring apply", "Plan cancel", "Plan final save", "Item detail", "memo write/edit", "complete", "undo completion", "reload", "Today and selected Plan reflection"],
+      "requiredEvidence": ["parent draft", "single final authoring commit", "authoring/execution overlay separation", "memo persistence", "completion and reversal persistence", "Today/Plan parity", "focus return"]
+    },
+    {
+      "id": "S11",
+      "name": "capability 기반 여러 결과 preview",
+      "routes": ["/f/moving-d30-basic", "/f/vehicle-inspection-prep", "/f/curated-allblanc-morning-workout", "/f/source-backed-middle-school-math-1", "/f/overseas-safety-register"],
+      "rootDecisions": ["D0", "D3"],
+      "feedback": ["U07", "U09"],
+      "states": ["primary", "available", "conditional", "unavailable"],
+      "requiredEvidence": ["real field preview", "reason for conditional/unavailable", "no forced five formats"]
+    },
+    {
+      "id": "S12",
+      "name": "저장 계획에서 실제 옮기기와 receipt",
+      "routes": ["/my?view=flows&flow=personal-copy:*"],
+      "rootDecisions": ["D2", "D3", "D5"],
+      "feedback": ["U01", "U07"],
+      "states": ["entry", "scope/format confirm", "success", "partial success", "failure", "retry", "receipt reload"],
+      "requiredEvidence": ["version/scope", "duplicate guard", "persistent receipt", "retry semantics"]
+    },
+    {
+      "id": "S13",
+      "name": "rollback·legacy·reload·중복 저장",
+      "routes": ["/f/moving-d30-basic?editorTransaction=off", "/my?editorTransaction=off"],
+      "rootDecisions": ["D0", "D2", "D4"],
+      "feedback": ["U07", "U08"],
+      "states": ["flag off", "legacy read-only", "reload", "duplicate save", "stale journal"],
+      "requiredEvidence": ["no unintended write", "old copy readable", "no duplicate personal copy", "recovery behavior"]
+    }
+  ]
+}

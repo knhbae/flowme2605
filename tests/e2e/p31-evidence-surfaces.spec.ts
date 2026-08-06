@@ -33,6 +33,7 @@ test.describe('P31 final evidence surfaces', () => {
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
     await expect(page).toHaveURL('/flows');
+    await expect(page.getByTestId('flow-map-catalog-section')).toBeVisible({ timeout: 15_000 });
     await expect(
       page.getByTestId('platform-mobile-tabs'),
     ).toHaveAttribute(
@@ -40,7 +41,7 @@ test.describe('P31 final evidence surfaces', () => {
       'P35-ENTRY-ROUTER-3TAB',
     );
     await expect(
-      page.getByTestId('platform-mobile-tabs').getByRole('link', { name: 'Flow 찾기' }),
+      page.getByTestId('platform-mobile-tabs').getByRole('link', { name: '계획 찾기' }),
     ).toBeVisible();
     await expectViewportStable(page);
     await capture(page, 'p35-entry-find-first-390.png');

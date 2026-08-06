@@ -25,17 +25,17 @@ function FlowCatalogServerFallback() {
       <div className="mx-auto max-w-6xl">
         <nav className="mb-8 flex min-h-11 items-center justify-between border-b border-[#E7E4DD] pb-4" aria-label="FLOW 서비스 프레임">
           <a className="text-lg font-semibold text-[#1B1A17]" href="/">FLOW</a>
-          <a className="text-sm font-semibold text-[#3654FF]" href="/my">내 Flow</a>
+          <a className="text-sm font-semibold text-[#3654FF]" href="/my">내 계획</a>
         </nav>
         <section aria-labelledby="flow-catalog-server-title">
-          <p className="text-sm font-semibold text-[#6E6B64]">Flow 찾기</p>
+          <p className="text-sm font-semibold text-[#6E6B64]">계획 찾기</p>
           <h1 id="flow-catalog-server-title" className="mt-1 break-keep text-2xl font-semibold text-[#1B1A17] sm:text-3xl">
-            URL이나 메모로 Flow 찾기
+            URL이나 메모로 계획 찾기
           </h1>
           <p className="mt-2 max-w-2xl break-keep text-sm leading-6 text-[#6E6B64]">
-            링크나 메모를 붙여 넣어 준비된 Flow를 찾거나, 아래 Flow부터 확인할 수 있습니다.
+            링크나 메모를 붙여 넣어 준비된 계획을 찾거나, 아래 계획부터 확인할 수 있습니다.
           </p>
-          <div className="mt-5 grid gap-3 md:grid-cols-3" aria-label="바로 확인할 Flow">
+          <div className="mt-5 grid gap-3 md:grid-cols-3" aria-label="바로 확인할 계획">
             {serverCatalogLinks.map((item) => (
               <a
                 key={item.href}

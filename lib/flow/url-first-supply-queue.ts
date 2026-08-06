@@ -110,8 +110,11 @@ function getUrlFirstDraftTopic(candidate: UrlFirstSupplyCandidate): string {
 }
 
 const DRAFT_SYSTEM_STATE_COPY = [
+  '바로 시작할 계획을 찾지 못했어요',
   '바로 시작할 Flow를 찾지 못했어요',
+  '준비된 계획이 없어요',
   '준비된 Flow가 없어요',
+  '계획을 불러오는 중입니다',
   'Flow를 불러오는 중입니다',
   '초안 요청 정리본',
 ] as const;
@@ -503,14 +506,23 @@ function getUserFacingLastLookupLabel(candidate: UrlFirstSupplyCandidate): strin
   return `${formatKoreanShortDate(candidate.lastLookup.checkedAt)} · ${statusLabel[candidate.lastLookup.status]}`;
 }
 
-function getUserFacingCandidateStatusNote(candidate: UrlFirstSupplyCandidate): string {
+function getUserFacingCandidateStatusNote(candidate: UrlFirstSupplyCandidate, q3CopyEnabled = true): string {
   const availability = getUrlFirstSupplyCandidateAvailability(candidate);
-  if (availability.state === 'executable') return '같은 원문으로 바로 시작할 수 있는 Flow가 준비됐어요.';
+  if (availability.state === 'executable') {
+    return q3CopyEnabled
+      ? '같은 원문으로 바로 시작할 수 있는 계획이 준비됐어요.'
+      : '같은 원문으로 바로 시작할 수 있는 Flow가 준비됐어요.';
+  }
   if (availability.state === 'needs_review') return '원문 확인이 더 필요해 초안 요청으로 보관했어요.';
-  return '아직 바로 시작할 Flow가 없어 초안 요청으로 보관했어요.';
+  return q3CopyEnabled
+    ? '아직 바로 시작할 계획이 없어 초안 요청으로 보관했어요.'
+    : '아직 바로 시작할 Flow가 없어 초안 요청으로 보관했어요.';
 }
 
-export function buildUrlFirstSupplyCandidateUserSummaryMarkdown(candidate: UrlFirstSupplyCandidate): string {
+export function buildUrlFirstSupplyCandidateUserSummaryMarkdown(
+  candidate: UrlFirstSupplyCandidate,
+  q3CopyEnabled = true,
+): string {
   const normalized = normalizeCandidate(candidate);
   if (!normalized) return '';
 
@@ -521,10 +533,12 @@ export function buildUrlFirstSupplyCandidateUserSummaryMarkdown(candidate: UrlFi
     `- 요청 제목: ${normalized.title}`,
     `- 요청 메모: ${normalized.memo || '없음'}`,
     `- 저장일: ${formatKoreanShortDate(normalized.savedAt)}`,
-    `- 현재 상태: ${getUserFacingCandidateStatusNote(normalized)}`,
+    `- 현재 상태: ${getUserFacingCandidateStatusNote(normalized, q3CopyEnabled)}`,
     `- 마지막 확인: ${getUserFacingLastLookupLabel(normalized)}`,
     '',
-    '초안이 준비되면 제목, 날짜, 메모를 손본 뒤 내 Flow와 캘린더로 이어갈 수 있어요.',
+    q3CopyEnabled
+      ? '초안이 준비되면 제목, 날짜, 메모를 손본 뒤 내 계획과 캘린더로 이어갈 수 있어요.'
+      : '초안이 준비되면 제목, 날짜, 메모를 손본 뒤 내 Flow와 캘린더로 이어갈 수 있어요.',
     '',
   ].join('\n');
 }

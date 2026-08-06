@@ -26,19 +26,19 @@ async function expectThreePrimaryDestinations(page: Page, mobile: boolean) {
   await expect(navigation).toHaveAttribute('data-p35-marker', 'P35-ENTRY-ROUTER-3TAB');
   await expect(navigation.getByRole('link')).toHaveCount(3);
   expect(await navigation.getByRole('link').allTextContents()).toEqual([
-    'Flow 찾기',
+    '계획 찾기',
     '캘린더',
-    '내 Flow',
+    '내 계획',
   ]);
   await expect(navigation.getByRole('link', { name: '홈' })).toHaveCount(0);
 
-  const findLink = navigation.getByRole('link', { name: 'Flow 찾기' });
+  const findLink = navigation.getByRole('link', { name: '계획 찾기' });
   await findLink.focus();
   await expect(findLink).toBeFocused();
   await page.keyboard.press('Tab');
   await expect(navigation.getByRole('link', { name: '캘린더' })).toBeFocused();
   await page.keyboard.press('Tab');
-  await expect(navigation.getByRole('link', { name: '내 Flow' })).toBeFocused();
+  await expect(navigation.getByRole('link', { name: '내 계획' })).toBeFocused();
 }
 
 async function getFixedNavigationOverlapCount(page: Page) {
@@ -79,7 +79,7 @@ test.describe('P35-01 entry router and three primary destinations', () => {
     await expect(page.getByTestId('home-continuation')).toHaveCount(0);
     await expect(page.getByTestId('home-url-first-entry')).toHaveCount(0);
     await expectThreePrimaryDestinations(page, true);
-    await expect(page.getByTestId('platform-mobile-tabs').getByRole('link', { name: 'Flow 찾기' }))
+    await expect(page.getByTestId('platform-mobile-tabs').getByRole('link', { name: '계획 찾기' }))
       .toHaveAttribute('aria-current', 'page');
     expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
     expect(await getFixedNavigationOverlapCount(page)).toBe(0);
@@ -105,7 +105,7 @@ test.describe('P35-01 entry router and three primary destinations', () => {
 
     await expect(page).toHaveURL('/my');
     await expectThreePrimaryDestinations(page, true);
-    await expect(page.getByTestId('platform-mobile-tabs').getByRole('link', { name: '내 Flow' }))
+    await expect(page.getByTestId('platform-mobile-tabs').getByRole('link', { name: '내 계획' }))
       .toHaveAttribute('aria-current', 'page');
     expect(await page.evaluate(() => window.localStorage.getItem('flow:saved:moving-d30-basic')))
       .toBe(JSON.stringify({
@@ -125,9 +125,9 @@ test.describe('P35-01 entry router and three primary destinations', () => {
     await page.setViewportSize({ width: 1024, height: 768 });
 
     for (const [route, label] of [
-      ['/flows', 'Flow 찾기'],
+      ['/flows', '계획 찾기'],
       ['/calendar', '캘린더'],
-      ['/my', '내 Flow'],
+      ['/my', '내 계획'],
     ] as const) {
       await page.goto(route);
       await expectThreePrimaryDestinations(page, false);

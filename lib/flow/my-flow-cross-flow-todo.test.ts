@@ -9,7 +9,7 @@ import {
   type MyFlowCrossFlowTodoCandidate,
 } from './my-flow-cross-flow-todo';
 
-type FixtureRow = { id: string };
+type FixtureRow = { id: string; completionCriteria?: string };
 
 function candidate(
   input: Partial<MyFlowCrossFlowTodoCandidate<FixtureRow>> & {
@@ -106,6 +106,29 @@ test('cross-flow Todo excludes memo and resource rows', () => {
 
   assert.deepEqual(projection.rows.map((row) => row.key), ['check']);
   assert.equal(projection.excludedCount, 2);
+});
+
+test('portable completion criterion stays out of Today/Todo grouping and completion state', () => {
+  const projection = buildMyFlowCrossFlowTodoProjection({
+    today: '2030-08-10',
+    candidates: [
+      candidate({
+        key: 'criterion-pending',
+        shape: 'checklist',
+        row: { id: 'criterion-pending', completionCriteria: '사진 두 장을 공유했다.' },
+      }),
+      candidate({
+        key: 'criterion-done',
+        shape: 'checklist',
+        completed: true,
+        row: { id: 'criterion-done', completionCriteria: '답장을 확인했다.' },
+      }),
+    ],
+  });
+
+  assert.equal(projection.rows.find((row) => row.key === 'criterion-pending')?.completed, false);
+  assert.equal(projection.rows.find((row) => row.key === 'criterion-done')?.completed, true);
+  assert.deepEqual(projection.groups.map((group) => group.id), ['undated', 'completed']);
 });
 
 test('cross-flow Todo presents active work in exact date groups before undated and completed work', () => {

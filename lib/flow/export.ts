@@ -1,7 +1,10 @@
 import { addDays, formatDate, formatLocalDate, getRangeEnd } from './date';
 import { getArtifactPlan } from './artifact-plan';
 import { getComparisonConfig, getComparisonRows, getHoldMemoFields, getLogTables, getMemoCardFields } from './artifact-fields';
+import { normalizeCompletionCriterion } from './completion-criterion';
 import { buildEffectiveRoutineProjection } from './effective-routine-projection';
+import type { EffectiveFlowResult } from './effective-flow-snapshot';
+import type { FlowExperienceProjectionRow } from './flow-experience-projection';
 import { foldIcsContentLine } from './ics';
 import {
   getFlowItemUserNote,
@@ -61,6 +64,7 @@ export type WorkbookExportOptions = {
   itemStates?: Record<string, FlowItemState>;
   comparisonState?: FlowComparisonState;
   workbenchState?: FlowWorkbenchState;
+  effectiveResult?: EffectiveFlowResult;
 };
 
 const icsWeekdays: Record<string, string> = {
@@ -107,7 +111,6 @@ const staleLogStateIgnoredSlugs = new Set(['computer-skills-d30-study']);
 const weekdayColumns = ['월', '화', '수', '목', '금', '토', '일'];
 const weeklyColumns = ['주', ...weekdayColumns];
 const monthlyColumns = ['월/주', ...weekdayColumns];
-const genericCompletionCriteria = '이 항목을 완료했어요.';
 
 function getItemDate(item: FlowItem, anchor?: string): string {
   if (!anchor || item.day_offset === undefined) return '';
@@ -200,8 +203,137 @@ function linkLabelList(detail: ReturnType<typeof getItemDetail>): string {
 }
 
 function completionCriteria(detail: ReturnType<typeof getItemDetail>): string {
-  if (!detail?.completion_criteria || detail.completion_criteria === genericCompletionCriteria) return '';
-  return detail.completion_criteria;
+  return normalizeCompletionCriterion(detail?.completion_criteria) ?? '';
+}
+
+type EffectiveExportRow = {
+  row: FlowExperienceProjectionRow;
+  item: FlowItem;
+  detail: ReturnType<typeof getItemDetail>;
+};
+
+type EffectiveMealExportRow = {
+  row: FlowExperienceProjectionRow;
+  slot: MealSlot;
+  recipe: NonNullable<FlowBundle['recipes']>[number] | undefined;
+};
+
+function getEffectiveFlowTitle(
+  bundle: FlowBundle,
+  effectiveResult?: EffectiveFlowResult,
+): string {
+  return effectiveResult?.projection.title.trim() || bundle.flow.title;
+}
+
+function getEffectiveExportRows(
+  bundle: FlowBundle,
+  effectiveResult?: EffectiveFlowResult,
+): EffectiveExportRow[] {
+  if (!effectiveResult) return [];
+  const itemsById = new Map(bundle.items.map((item) => [item.id, item]));
+  return effectiveResult.rows
+    .filter((row) => row.included)
+    .map((row) => {
+      const item = itemsById.get(row.sourceItemId);
+      return item
+        ? { row, item, detail: getItemDetail(bundle, item.id) }
+        : undefined;
+    })
+    .filter((entry): entry is EffectiveExportRow => Boolean(entry))
+    .sort((left, right) => (
+      left.row.orderRank - right.row.orderRank
+      || left.row.sourceItemId.localeCompare(right.row.sourceItemId)
+    ));
+}
+
+function getEffectiveMealExportRows(
+  bundle: FlowBundle,
+  effectiveResult?: EffectiveFlowResult,
+): EffectiveMealExportRow[] {
+  if (!effectiveResult || bundle.flow.content_type !== 'meal_plan') return [];
+  const slotsById = new Map((bundle.mealSlots ?? []).map((slot) => [slot.id, slot]));
+  const recipesById = new Map((bundle.recipes ?? []).map((recipe) => [recipe.id, recipe]));
+  return effectiveResult.rows
+    .filter((row) => row.included)
+    .map((row) => {
+      const slot = slotsById.get(row.sourceItemId);
+      return slot
+        ? { row, slot, recipe: recipesById.get(slot.recipe_id) }
+        : undefined;
+    })
+    .filter((entry): entry is EffectiveMealExportRow => Boolean(entry))
+    .sort((left, right) => (
+      left.row.orderRank - right.row.orderRank
+      || left.row.sourceItemId.localeCompare(right.row.sourceItemId)
+    ));
+}
+
+function getEffectiveRowDates(
+  row: FlowExperienceProjectionRow,
+  item: FlowItem,
+): { startDate: string; endDate: string } {
+  const effectiveDate = row.schedule.date;
+  if (!effectiveDate) return { startDate: '', endDate: '' };
+  const effectiveStart = new Date(effectiveDate);
+
+  return {
+    startDate: effectiveDate,
+    endDate:
+      item.duration_days && item.duration_days > 1
+        ? formatDate(getRangeEnd(effectiveStart, item.duration_days))
+        : '',
+  };
+}
+
+function getEffectiveMealDates(
+  row: FlowExperienceProjectionRow,
+  slot: MealSlot,
+): { startDate: string; endDate: string } {
+  const effectiveDate = row.schedule.date;
+  if (!effectiveDate) return { startDate: '', endDate: '' };
+  const effectiveStart = new Date(effectiveDate);
+  return {
+    startDate: effectiveDate,
+    endDate: formatDate(getRangeEnd(effectiveStart, Math.max(slot.duration_days, 1))),
+  };
+}
+
+function getEffectiveMemoText(
+  row: FlowExperienceProjectionRow,
+  state?: FlowItemState,
+): string {
+  const personalMemo = row.memo?.trim();
+  const executionMemo = getFlowItemUserNote(state)?.trim();
+  return [
+    personalMemo ? `개인 메모: ${personalMemo}` : '',
+    executionMemo ? `실행 메모: ${executionMemo}` : '',
+  ].filter(Boolean).join('\n');
+}
+
+function getEffectiveProgressLabel(
+  rows: FlowExperienceProjectionRow[],
+  checks: Record<string, boolean>,
+): string {
+  const total = rows.length;
+  const done = rows.filter((row) => (
+    row.completed || Boolean(checks[row.sourceItemId])
+  )).length;
+  const percent = total > 0 ? Math.round((done / total) * 100) : 0;
+  return `${done} / ${total} (${percent}%)`;
+}
+
+function getEffectiveSourceContext(
+  item: FlowItem,
+  detail: ReturnType<typeof getItemDetail>,
+): string {
+  return [
+    item.description?.trim()
+      ? `설명: ${userFacingExportSourceText(item.description)}`
+      : '',
+    detail?.why?.trim()
+      ? `왜 필요한가: ${userFacingExportSourceText(detail.why)}`
+      : '',
+  ].filter(Boolean).join('\n');
 }
 
 function userFacingExportSourceText(value?: string): string {
@@ -265,6 +397,7 @@ type CalendarExportRow = {
   section: string;
   title: string;
   status: string;
+  orderRank: number;
 };
 
 function buildCalendarRows(
@@ -272,9 +405,59 @@ function buildCalendarRows(
   checks: Record<string, boolean>,
   anchor?: string,
   itemStates: Record<string, FlowItemState> = {},
+  effectiveResult?: EffectiveFlowResult,
 ): CalendarExportRow[] {
-  if (!anchor) return [];
   const rows: CalendarExportRow[] = [];
+
+  if (effectiveResult) {
+    const regularRows = getEffectiveExportRows(bundle, effectiveResult);
+    const mealRows = getEffectiveMealExportRows(bundle, effectiveResult);
+    for (const { row, item } of regularRows) {
+      const { startDate } = getEffectiveRowDates(row, item);
+      if (!startDate) continue;
+      const duration = Math.max(item.duration_days ?? 1, 1);
+      for (let index = 0; index < duration; index += 1) {
+        rows.push({
+          id: row.sourceItemId,
+          date: formatDate(addDays(new Date(startDate), index)),
+          timing: getItemTimingLabel(item),
+          section: row.section ?? getSectionTitle(bundle, item.section_id),
+          title: duration > 1 ? `${row.title} ${index + 1}일차` : row.title,
+          status: itemStatusLabel(
+            row.completed || Boolean(checks[row.sourceItemId]),
+            itemStates[row.sourceItemId],
+          ),
+          orderRank: row.orderRank,
+        });
+      }
+    }
+    for (const { row, slot } of mealRows) {
+      const { startDate } = getEffectiveMealDates(row, slot);
+      if (!startDate) continue;
+      const duration = Math.max(slot.duration_days, 1);
+      for (let index = 0; index < duration; index += 1) {
+        rows.push({
+          id: row.sourceItemId,
+          date: formatDate(addDays(new Date(startDate), index)),
+          timing: timingLabel(slot.day_offset, slot.duration_days),
+          section: row.section ?? getSectionTitle(bundle, slot.section_id),
+          title: duration > 1 ? `${row.title} ${index + 1}일차` : row.title,
+          status: itemStatusLabel(
+            row.completed || Boolean(checks[row.sourceItemId]),
+            itemStates[row.sourceItemId],
+          ),
+          orderRank: row.orderRank,
+        });
+      }
+    }
+    return rows.sort((left, right) => (
+      left.date.localeCompare(right.date)
+      || left.orderRank - right.orderRank
+      || left.id.localeCompare(right.id)
+    ));
+  }
+
+  if (!anchor) return [];
 
   for (const section of bundle.sections) {
     for (const item of bundle.items.filter((entry) => (
@@ -293,6 +476,7 @@ function buildCalendarRows(
           section: section.title,
           title: duration > 1 ? `${item.title} ${index + 1}일차` : item.title,
           status: itemStatusLabel(Boolean(checks[item.id]), itemStates[item.id]),
+          orderRank: item.order,
         });
       }
     }
@@ -311,11 +495,16 @@ function buildCalendarRows(
         section: getSectionTitle(bundle, slot.section_id),
         title: slot.duration_days > 1 ? `${slot.menu_title} ${index + 1}일차` : slot.menu_title,
         status: itemStatusLabel(Boolean(checks[slot.id]), itemStates[slot.id]),
+        orderRank: slot.order,
       });
     }
   }
 
-  return rows.sort((a, b) => a.date.localeCompare(b.date) || a.title.localeCompare(b.title));
+  return rows.sort((left, right) => (
+    left.date.localeCompare(right.date)
+    || left.orderRank - right.orderRank
+    || left.id.localeCompare(right.id)
+  ));
 }
 
 function getWeekdayIndex(date: string): number {
@@ -565,8 +754,9 @@ export function buildText(
   itemStates: Record<string, FlowItemState> = {},
   comparisonState?: FlowComparisonState,
   workbenchState?: FlowWorkbenchState,
+  effectiveResult?: EffectiveFlowResult,
 ): string {
-  const lines = [bundle.flow.title];
+  const lines = [getEffectiveFlowTitle(bundle, effectiveResult)];
   const anchorLabel = getExportAnchorLabel(bundle);
   lines.push(`${anchorLabel}: ${anchor || (bundle.flow.anchor_type === 'none' ? '없음' : '')}`);
   if (bundle.flow.warning) lines.push(`주의: ${userFacingExportSourceText(bundle.flow.warning)}`);
@@ -576,23 +766,45 @@ export function buildText(
   const workbenchRows = buildWorkbenchRows(bundle, workbenchState);
 
   if (bundle.flow.content_type === 'meal_plan') {
-    for (const section of bundle.sections) {
-      lines.push('', `[${section.title}]`);
-      for (const slot of (bundle.mealSlots ?? []).filter((meal) => (
-        meal.section_id === section.id &&
-        !isFlowItemPersonallyExcluded(itemStates[meal.id])
-      ))) {
-        const { startDate, endDate } = getMealDates(slot, anchor);
+    if (effectiveResult) {
+      let currentSection = '';
+      for (const { row, slot, recipe } of getEffectiveMealExportRows(bundle, effectiveResult)) {
+        const section = row.section ?? getSectionTitle(bundle, slot.section_id);
+        if (section !== currentSection) {
+          currentSection = section;
+          if (section) lines.push('', `[${section}]`);
+        }
+        const { startDate, endDate } = getEffectiveMealDates(row, slot);
         const timing = timingLabel(slot.day_offset, slot.duration_days);
-        const recipe = bundle.recipes?.find((item) => item.id === slot.recipe_id);
         lines.push(`[${timing}${startDate ? ` / ${startDate} ~ ${endDate}` : ''}]`);
-        const state = itemStates[slot.id];
-        const checkbox = checks[slot.id] ? '[x]' : '[ ]';
-        lines.push(`- ${checkbox} ${slot.menu_title}${state?.skipped ? ' (스킵)' : ''}`);
+        const state = itemStates[row.sourceItemId];
+        const checkbox = row.completed || checks[row.sourceItemId] ? '[x]' : '[ ]';
+        lines.push(`- ${checkbox} ${row.title}${state?.skipped ? ' (스킵)' : ''}`);
         lines.push(`  새 재료: ${slot.new_ingredients.join(', ')}`);
-        const userNote = getFlowItemUserNote(state)?.trim();
-        if (userNote) lines.push(`  메모: ${userNote}`);
+        if (row.memo?.trim()) lines.push(`  개인 메모: ${row.memo.trim()}`);
+        const executionMemo = getFlowItemUserNote(state)?.trim();
+        if (executionMemo) lines.push(`  실행 메모: ${executionMemo}`);
         if (recipe) lines.push(`  레시피: ${recipe.title}`);
+      }
+    } else {
+      for (const section of bundle.sections) {
+        lines.push('', `[${section.title}]`);
+        for (const slot of (bundle.mealSlots ?? []).filter((meal) => (
+          meal.section_id === section.id &&
+          !isFlowItemPersonallyExcluded(itemStates[meal.id])
+        ))) {
+          const { startDate, endDate } = getMealDates(slot, anchor);
+          const timing = timingLabel(slot.day_offset, slot.duration_days);
+          const recipe = bundle.recipes?.find((item) => item.id === slot.recipe_id);
+          lines.push(`[${timing}${startDate ? ` / ${startDate} ~ ${endDate}` : ''}]`);
+          const state = itemStates[slot.id];
+          const checkbox = checks[slot.id] ? '[x]' : '[ ]';
+          lines.push(`- ${checkbox} ${slot.menu_title}${state?.skipped ? ' (스킵)' : ''}`);
+          lines.push(`  새 재료: ${slot.new_ingredients.join(', ')}`);
+          const userNote = getFlowItemUserNote(state)?.trim();
+          if (userNote) lines.push(`  메모: ${userNote}`);
+          if (recipe) lines.push(`  레시피: ${recipe.title}`);
+        }
       }
     }
     appendWorkbenchText(lines, workbenchRows);
@@ -608,31 +820,64 @@ export function buildText(
     appendComparisonExport(lines, comparison);
   }
 
-  for (const section of bundle.sections) {
-    lines.push('', `[${section.title}]`);
-    for (const item of bundle.items.filter((entry) => (
-      entry.section_id === section.id &&
-      !isFlowItemPersonallyExcluded(itemStates[entry.id])
-    ))) {
+  if (effectiveResult) {
+    let currentSection = '';
+    for (const { row, item, detail } of getEffectiveExportRows(bundle, effectiveResult)) {
+      const section = row.section ?? getSectionTitle(bundle, item.section_id);
+      if (section !== currentSection) {
+        currentSection = section;
+        if (section) lines.push('', `[${section}]`);
+      }
       const timing = getItemTimingLabel(item);
-      const { startDate, endDate } = getItemDates(item, anchor);
+      const { startDate, endDate } = getEffectiveRowDates(row, item);
       const date = endDate ? `${startDate} ~ ${endDate}` : startDate;
       if (timing || date) lines.push(`[${timing}${date ? ` / ${date}` : ''}]`);
-      const state = itemStates[item.id];
-      // Markdown checkbox so the pasted memo renders as a real checklist in
-      // Notion / Obsidian / Apple Notes / Google Keep. Skipped items stay
-      // unchecked with a (스킵) label since those apps have no skip state.
-      const checkbox = checks[item.id] ? '[x]' : '[ ]';
-      lines.push(`- ${checkbox} ${item.title}${state?.skipped ? ' (스킵)' : ''}`);
-      if (item.description?.trim()) lines.push(`  설명: ${userFacingExportSourceText(item.description)}`);
-      const userNote = getFlowItemUserNote(state)?.trim();
-      if (userNote) lines.push(`  메모: ${userNote}`);
-      const detail = getItemDetail(bundle, item.id);
+      const state = itemStates[row.sourceItemId];
+      const completed = row.completed || Boolean(checks[row.sourceItemId]);
+      const checkbox = completed ? '[x]' : '[ ]';
+      lines.push(`- ${checkbox} ${row.title}${state?.skipped ? ' (스킵)' : ''}`);
+      if (item.description?.trim()) {
+        lines.push(`  설명: ${userFacingExportSourceText(item.description)}`);
+      }
+      if (row.memo?.trim()) lines.push(`  개인 메모: ${row.memo.trim()}`);
+      const executionMemo = getFlowItemUserNote(state)?.trim();
+      if (executionMemo) lines.push(`  실행 메모: ${executionMemo}`);
       const done = completionCriteria(detail);
       if (done) lines.push(`  완료 기준: ${userFacingExportSourceText(done)}`);
-      // Carry the official handoff link into the memo — for a memo-destination
-      // checklist this is the action target the user returns to (정부24, 복지로 등).
-      for (const link of detail?.links ?? []) lines.push(`  링크: ${link.label} - ${link.url}`);
+      if (detail?.caution?.trim()) {
+        lines.push(`  주의: ${userFacingExportSourceText(detail.caution)}`);
+      }
+      for (const link of detail?.links ?? []) {
+        lines.push(`  링크: ${link.label} - ${link.url}`);
+      }
+    }
+  } else {
+    for (const section of bundle.sections) {
+      lines.push('', `[${section.title}]`);
+      for (const item of bundle.items.filter((entry) => (
+        entry.section_id === section.id &&
+        !isFlowItemPersonallyExcluded(itemStates[entry.id])
+      ))) {
+        const timing = getItemTimingLabel(item);
+        const { startDate, endDate } = getItemDates(item, anchor);
+        const date = endDate ? `${startDate} ~ ${endDate}` : startDate;
+        if (timing || date) lines.push(`[${timing}${date ? ` / ${date}` : ''}]`);
+        const state = itemStates[item.id];
+        // Markdown checkbox so the pasted memo renders as a real checklist in
+        // Notion / Obsidian / Apple Notes / Google Keep. Skipped items stay
+        // unchecked with a (스킵) label since those apps have no skip state.
+        const checkbox = checks[item.id] ? '[x]' : '[ ]';
+        lines.push(`- ${checkbox} ${item.title}${state?.skipped ? ' (스킵)' : ''}`);
+        if (item.description?.trim()) lines.push(`  설명: ${userFacingExportSourceText(item.description)}`);
+        const userNote = getFlowItemUserNote(state)?.trim();
+        if (userNote) lines.push(`  메모: ${userNote}`);
+        const detail = getItemDetail(bundle, item.id);
+        const done = completionCriteria(detail);
+        if (done) lines.push(`  완료 기준: ${userFacingExportSourceText(done)}`);
+        // Carry the official handoff link into the memo — for a memo-destination
+        // checklist this is the action target the user returns to (정부24, 복지로 등).
+        for (const link of detail?.links ?? []) lines.push(`  링크: ${link.label} - ${link.url}`);
+      }
     }
   }
 
@@ -673,6 +918,14 @@ function escapeIcsText(value: string): string {
     .replaceAll(';', '\\;');
 }
 
+type EffectiveIcsDescriptionDetails = {
+  flowTitle?: string;
+  sourceDescription?: string;
+  personalMemo?: string;
+  executionMemo?: string;
+  caution?: string;
+};
+
 function buildIcsDescription(
   bundle: FlowBundle,
   sectionTitle = '',
@@ -682,11 +935,18 @@ function buildIcsDescription(
   links?: string,
   dateWindow?: IcsEntry['dateWindow'],
   userMemo?: string,
+  effectiveDetails?: EffectiveIcsDescriptionDetails,
 ): string {
   const exactVideoDetail = sectionTitle ? undefined : bundle.itemDetails?.[0];
   return [
     userFacingExportSourceText(bundle.flow.description),
     sectionTitle ? '' : bundle.items[0]?.title,
+    effectiveDetails?.flowTitle?.trim()
+      ? `계획: ${userFacingExportSourceText(effectiveDetails.flowTitle)}`
+      : '',
+    effectiveDetails?.sourceDescription?.trim()
+      ? `설명: ${userFacingExportSourceText(effectiveDetails.sourceDescription)}`
+      : '',
     userFacingExportSourceText(exactVideoDetail?.how),
     sectionTitle && actionGuide ? userFacingExportSourceText(actionGuide) : '',
     userFacingExportSourceText(exactVideoDetail?.completion_criteria),
@@ -696,6 +956,15 @@ function buildIcsDescription(
     dateWindow ? `예상 기간: ${dateWindow.startDate} ~ ${dateWindow.endDate}` : '',
     completionCriteria ? `완료 기준: ${userFacingExportSourceText(completionCriteria)}` : '',
     userMemo?.trim() ? `내 메모: ${userMemo.trim()}` : '',
+    effectiveDetails?.personalMemo?.trim()
+      ? `개인 메모: ${effectiveDetails.personalMemo.trim()}`
+      : '',
+    effectiveDetails?.executionMemo?.trim()
+      ? `실행 메모: ${effectiveDetails.executionMemo.trim()}`
+      : '',
+    effectiveDetails?.caution?.trim()
+      ? `항목 주의: ${userFacingExportSourceText(effectiveDetails.caution)}`
+      : '',
     bundle.flow.warning ? `주의: ${userFacingExportSourceText(bundle.flow.warning)}` : '',
     links ? `링크:\n${userFacingExportSourceText(links)}` : '',
     bundle.flow.source_url ? `원문: ${bundle.flow.source_url}` : '',
@@ -711,9 +980,15 @@ type IcsEntry = {
   start: Date;
   durationDays: number;
   timing: string;
+  orderRank?: number;
+  completed?: boolean;
+  sourceDescription?: string;
+  personalMemo?: string;
+  caution?: string;
   actionGuide?: string;
   completionCriteria?: string;
   links?: string;
+  sourceUrl?: string;
   dateWindow?: {
     label: string;
     startDate: string;
@@ -735,9 +1010,11 @@ function buildIcsEntries(bundle: FlowBundle, anchor?: string): IcsEntry[] {
       start: addDays(new Date(anchor), item.day_offset ?? 0),
       durationDays: Math.max(item.duration_days ?? 1, 1),
       timing: getItemTimingLabel(item),
+      orderRank: item.order,
       actionGuide: [detail?.why, detail?.how].map(userFacingExportSourceText).filter(Boolean).join('\n'),
       completionCriteria: userFacingExportSourceText(detail?.completion_criteria),
       links: linkList(detail),
+      sourceUrl: detail?.links?.[0]?.url ?? bundle.flow.source_url,
       dateWindow: item.date_window && startDate && endDate
         ? {
             label: item.date_window.label,
@@ -757,13 +1034,80 @@ function buildIcsEntries(bundle: FlowBundle, anchor?: string): IcsEntry[] {
       start: addDays(new Date(anchor), slot.day_offset),
       durationDays: Math.max(slot.duration_days, 1),
       timing: timingLabel(slot.day_offset, slot.duration_days),
+      orderRank: slot.order,
       actionGuide: '',
       completionCriteria: slot.new_ingredients.length ? `New ingredients: ${slot.new_ingredients.join(', ')}` : '',
       links: recipe ? sourceNote(bundle, recipe.risk_level) : sourceNote(bundle),
+      sourceUrl: bundle.flow.source_url,
     });
   }
 
   return entries.sort((a, b) => a.start.getTime() - b.start.getTime() || a.title.localeCompare(b.title));
+}
+
+function buildEffectiveIcsEntries(
+  bundle: FlowBundle,
+  effectiveResult: EffectiveFlowResult,
+): IcsEntry[] {
+  if (bundle.flow.content_type === 'meal_plan') {
+    return getEffectiveMealExportRows(bundle, effectiveResult)
+      .filter(({ row }) => (
+        Boolean(row.schedule.date) && row.eligibleShapes.includes('calendar')
+      ))
+      .map(({ row, slot, recipe }): IcsEntry => ({
+        id: row.sourceItemId,
+        title: row.title,
+        sectionTitle: row.section ?? getSectionTitle(bundle, slot.section_id),
+        start: new Date(row.schedule.date ?? ''),
+        durationDays: Math.max(slot.duration_days, 1),
+        timing: timingLabel(slot.day_offset, slot.duration_days),
+        orderRank: row.orderRank,
+        completed: row.completed,
+        personalMemo: row.memo,
+        caution: recipe?.caution_note,
+        actionGuide: recipe ? `레시피: ${recipe.title}` : '',
+        completionCriteria: slot.new_ingredients.length
+          ? `새 재료: ${slot.new_ingredients.join(', ')}`
+          : '',
+        links: recipe ? sourceNote(bundle, recipe.risk_level) : sourceNote(bundle),
+        sourceUrl: bundle.flow.source_url,
+      }))
+      .sort((left, right) => (
+        left.start.getTime() - right.start.getTime()
+        || (left.orderRank ?? 0) - (right.orderRank ?? 0)
+        || left.id.localeCompare(right.id)
+      ));
+  }
+
+  return getEffectiveExportRows(bundle, effectiveResult)
+    .filter(({ row }) => (
+      Boolean(row.schedule.date) && row.eligibleShapes.includes('calendar')
+    ))
+    .map(({ row, item, detail }): IcsEntry => ({
+      id: row.sourceItemId,
+      title: row.title,
+      sectionTitle: row.section ?? getSectionTitle(bundle, item.section_id),
+      start: new Date(row.schedule.date ?? ''),
+      durationDays: Math.max(item.duration_days ?? 1, 1),
+      timing: getItemTimingLabel(item),
+      orderRank: row.orderRank,
+      completed: row.completed,
+      sourceDescription: row.description ?? item.description,
+      personalMemo: row.memo,
+      caution: detail?.caution ?? row.caution,
+      actionGuide: [detail?.why, detail?.how]
+        .map(userFacingExportSourceText)
+        .filter(Boolean)
+        .join('\n'),
+      completionCriteria: userFacingExportSourceText(detail?.completion_criteria),
+      links: linkList(detail),
+      sourceUrl: detail?.links?.[0]?.url ?? bundle.flow.source_url,
+    }))
+    .sort((left, right) => (
+      left.start.getTime() - right.start.getTime()
+      || (left.orderRank ?? 0) - (right.orderRank ?? 0)
+      || left.id.localeCompare(right.id)
+    ));
 }
 
 export function buildIcsCalendar(
@@ -771,22 +1115,33 @@ export function buildIcsCalendar(
   checks: Record<string, boolean>,
   anchor?: string,
   itemStates: Record<string, FlowItemState> = {},
+  effectiveResult?: EffectiveFlowResult,
+  generatedAt?: string,
 ): string {
-  const nowStamp = new Date().toISOString().replaceAll('-', '').replaceAll(':', '').replace(/\.\d{3}Z$/, 'Z');
+  const effectiveTitle = getEffectiveFlowTitle(bundle, effectiveResult);
+  const generatedDate = generatedAt && Number.isFinite(Date.parse(generatedAt))
+    ? new Date(generatedAt)
+    : new Date();
+  const nowStamp = generatedDate.toISOString().replaceAll('-', '').replaceAll(':', '').replace(/\.\d{3}Z$/, 'Z');
   const lines = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
     'PRODID:-//FLOW MVP//KO',
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
-    `X-WR-CALNAME:${escapeIcsText(bundle.flow.title)}`,
+    `X-WR-CALNAME:${escapeIcsText(effectiveTitle)}`,
   ];
 
-  for (const entry of buildIcsEntries(bundle, anchor).filter(
-    (item) => !isFlowItemOmittedFromActiveProjection(itemStates[item.id]),
-  )) {
+  const entries = effectiveResult
+    ? buildEffectiveIcsEntries(bundle, effectiveResult)
+    : buildIcsEntries(bundle, anchor).filter(
+        (item) => !isFlowItemOmittedFromActiveProjection(itemStates[item.id]),
+      );
+
+  for (const entry of entries) {
     const end = addDays(entry.start, entry.durationDays);
-    const summary = `${bundle.flow.title} - ${entry.title}`;
+    const summary = effectiveResult ? entry.title : `${effectiveTitle} - ${entry.title}`;
+    const executionMemo = getFlowItemUserNote(itemStates[entry.id]);
     const description = buildIcsDescription(
       bundle,
       entry.sectionTitle,
@@ -795,7 +1150,16 @@ export function buildIcsCalendar(
       entry.completionCriteria,
       entry.links,
       entry.dateWindow,
-      getFlowItemUserNote(itemStates[entry.id]),
+      effectiveResult ? undefined : executionMemo,
+      effectiveResult
+        ? {
+            flowTitle: effectiveTitle,
+            sourceDescription: entry.sourceDescription,
+            personalMemo: entry.personalMemo,
+            executionMemo,
+            caution: entry.caution,
+          }
+        : undefined,
     );
     lines.push(
       'BEGIN:VEVENT',
@@ -805,10 +1169,11 @@ export function buildIcsCalendar(
       `DTEND;VALUE=DATE:${formatIcsDate(end)}`,
       `SUMMARY:${escapeIcsText(summary)}`,
       `DESCRIPTION:${escapeIcsText(description)}`,
-      `STATUS:${checks[entry.id] ? 'CONFIRMED' : 'TENTATIVE'}`,
+      `STATUS:${entry.completed || checks[entry.id] ? 'CONFIRMED' : 'TENTATIVE'}`,
       'TRANSP:TRANSPARENT',
-      'END:VEVENT',
     );
+    if (entry.sourceUrl) lines.push(`URL:${entry.sourceUrl}`);
+    lines.push('END:VEVENT');
   }
 
   lines.push('END:VCALENDAR');
@@ -820,8 +1185,11 @@ export function buildCalendarIcs(
   anchor: string,
   weekdays: string[] = [],
   routineDefinition?: SavedFlowRoutineDefinition,
+  effectiveResult?: EffectiveFlowResult,
+  generatedAt?: string,
 ): string {
   const startDate = anchor || formatLocalDate(new Date());
+  const effectiveTitle = getEffectiveFlowTitle(bundle, effectiveResult);
   const carrierItem = bundle.items.slice().sort((left, right) => left.order - right.order)[0];
   if (carrierItem && bundle.flow.structure_type === 'routine') {
     const projection = buildEffectiveRoutineProjection({
@@ -845,11 +1213,15 @@ export function buildCalendarIcs(
       return buildPersonalStructuralRecurrenceIcs({
         identityNamespace: bundle.flow.slug,
         itemId: carrierItem.id,
-        title: bundle.flow.title,
+        title: effectiveTitle,
         description: buildIcsDescription(bundle),
         date: startDate,
         repeat: series,
         sourceUrl: bundle.flow.source_url,
+        generatedAt,
+        status: effectiveResult?.rows.find((row) => row.id === carrierItem.id)?.completed
+          ? 'CONFIRMED'
+          : 'TENTATIVE',
       }).ics;
     }
   }
@@ -861,10 +1233,14 @@ export function buildCalendarIcs(
     'CALSCALE:GREGORIAN',
     'BEGIN:VEVENT',
     `UID:${bundle.flow.slug}-${compactDate(startDate)}@flow.local`,
-    `DTSTAMP:${compactDate(formatDate(new Date()))}T000000Z`,
+    `DTSTAMP:${(generatedAt && Number.isFinite(Date.parse(generatedAt))
+      ? new Date(generatedAt)
+      : new Date()).toISOString().replaceAll('-', '').replaceAll(':', '').replace(/\.\d{3}Z$/, 'Z')}`,
     `DTSTART;VALUE=DATE:${compactDate(startDate)}`,
-    `SUMMARY:${escapeIcsText(bundle.flow.title)}`,
+    `SUMMARY:${escapeIcsText(effectiveTitle)}`,
     `DESCRIPTION:${escapeIcsText(buildIcsDescription(bundle))}`,
+    `STATUS:${effectiveResult?.rows[0]?.completed ? 'CONFIRMED' : 'TENTATIVE'}`,
+    'TRANSP:TRANSPARENT',
   ];
   if (byday) {
     const durationDays = bundle.flow.routine_duration_days;
@@ -893,13 +1269,28 @@ export function buildWorkbookSheets(
   const typeLabel = getTypeLabel(bundle);
   const anchorLabel = getExportAnchorLabel(bundle);
   const itemStates = options.itemStates ?? {};
+  const effectiveResult = options.effectiveResult;
+  const useEffectiveItems = Boolean(
+    effectiveResult && bundle.flow.content_type !== 'meal_plan',
+  );
+  const useEffectiveMealSlots = Boolean(
+    effectiveResult && bundle.flow.content_type === 'meal_plan',
+  );
+  const effectiveRows = effectiveResult && bundle.flow.content_type !== 'meal_plan'
+    ? getEffectiveExportRows(bundle, effectiveResult)
+    : [];
+  const effectiveMealRows = effectiveResult && bundle.flow.content_type === 'meal_plan'
+    ? getEffectiveMealExportRows(bundle, effectiveResult)
+    : [];
   const comparison = buildComparisonExport(bundle, options.comparisonState);
   const workbenchRows = buildWorkbenchRows(bundle, options.workbenchState);
 
   const summaryRows: WorkbookCell[][] = [
-    ['FLOW', bundle.flow.title],
+    ['FLOW', getEffectiveFlowTitle(bundle, effectiveResult)],
     ['카테고리', bundle.flow.category],
-    ['진행률', getProgressLabel(bundle, checks, itemStates)],
+    ['진행률', effectiveResult
+      ? getEffectiveProgressLabel(effectiveResult.rows, checks)
+      : getProgressLabel(bundle, checks, itemStates)],
     ['기준값', bundle.flow.anchor_type === 'none' ? '기준값 없음' : `${anchorLabel}: ${anchor || '미입력'}`],
     ['구조', typeLabel],
     ['상태', bundle.flow.status === 'published' ? '공개 Flow' : '초안 Flow'],
@@ -925,61 +1316,130 @@ export function buildWorkbookSheets(
   const executionRows: WorkbookCell[][] = [];
   const detailRows: WorkbookCell[][] = [];
 
-  for (const section of bundle.sections) {
-    for (const item of bundle.items.filter((entry) => (
-      entry.section_id === section.id &&
-      !isFlowItemPersonallyExcluded(itemStates[entry.id])
-    ))) {
-      const { startDate, endDate } = getItemDates(item, anchor);
-      const detail = getItemDetail(bundle, item.id);
-      const state = itemStates[item.id];
+  if (useEffectiveMealSlots) {
+    for (const { row, slot, recipe } of effectiveMealRows) {
+      const { startDate, endDate } = getEffectiveMealDates(row, slot);
+      const state = itemStates[row.sourceItemId];
+      const section = row.section ?? getSectionTitle(bundle, slot.section_id);
       executionRows.push([
-        itemStatusLabel(Boolean(checks[item.id]), state),
+        itemStatusLabel(
+          row.completed || Boolean(checks[row.sourceItemId]),
+          state,
+        ),
+        timingLabel(slot.day_offset, slot.duration_days),
+        startDate && endDate ? `${startDate} ~ ${endDate}` : '',
+        section,
+        row.title,
+        slot.new_ingredients.length ? `새 재료: ${slot.new_ingredients.join(', ')}` : '',
+        recipe ? `레시피: ${recipe.title}` : '',
+        getEffectiveMemoText(row, state),
+      ]);
+      detailRows.push([
+        row.title,
+        section,
+        slot.allergy_watch_days ? `새 재료 반응 관찰: ${slot.allergy_watch_days}일` : '',
+        recipe ? '레시피 시트에서 재료, 조리 순서, 보관 메모를 확인합니다.' : '',
+        recipe?.caution_note ?? '',
+        sourceNote(bundle, recipe?.risk_level),
+      ]);
+    }
+  } else if (useEffectiveItems) {
+    for (const { row, item, detail } of effectiveRows) {
+      const { startDate, endDate } = getEffectiveRowDates(row, item);
+      const state = itemStates[row.sourceItemId];
+      const section = row.section ?? getSectionTitle(bundle, item.section_id);
+      executionRows.push([
+        itemStatusLabel(
+          row.completed || Boolean(checks[row.sourceItemId]),
+          state,
+        ),
         getItemTimingLabel(item),
         endDate ? `${startDate} ~ ${endDate}` : startDate,
-        section.title,
-        item.title,
+        section,
+        row.title,
         userFacingExportSourceText(completionCriteria(detail)),
         linkLabelList(detail),
-        getFlowItemUserNote(state)?.trim() ?? '',
+        getEffectiveMemoText(row, state),
       ]);
-      if (detail?.why || detail?.how || detail?.caution || detail?.links?.length || item.description) {
+      if (
+        detail?.why
+        || detail?.how
+        || detail?.caution
+        || detail?.links?.length
+        || item.description
+        || row.caution
+      ) {
         detailRows.push([
-          item.title,
-          section.title,
-          userFacingExportSourceText(detail?.why ?? item.description),
+          row.title,
+          section,
+          getEffectiveSourceContext(item, detail),
           userFacingExportSourceText(detail?.how),
-          userFacingExportSourceText(detail?.caution),
-          [sourceNote(bundle, item.risk_level), linkList(detail)].filter(Boolean).join('\n'),
+          userFacingExportSourceText(detail?.caution ?? row.caution),
+          [sourceNote(bundle, item.risk_level), linkList(detail)]
+            .filter(Boolean)
+            .join('\n'),
         ]);
+      }
+    }
+  } else {
+    for (const section of bundle.sections) {
+      for (const item of bundle.items.filter((entry) => (
+        entry.section_id === section.id &&
+        !isFlowItemPersonallyExcluded(itemStates[entry.id])
+      ))) {
+        const { startDate, endDate } = getItemDates(item, anchor);
+        const detail = getItemDetail(bundle, item.id);
+        const state = itemStates[item.id];
+        executionRows.push([
+          itemStatusLabel(Boolean(checks[item.id]), state),
+          getItemTimingLabel(item),
+          endDate ? `${startDate} ~ ${endDate}` : startDate,
+          section.title,
+          item.title,
+          userFacingExportSourceText(completionCriteria(detail)),
+          linkLabelList(detail),
+          getFlowItemUserNote(state)?.trim() ?? '',
+        ]);
+        if (detail?.why || detail?.how || detail?.caution || detail?.links?.length || item.description) {
+          detailRows.push([
+            item.title,
+            section.title,
+            userFacingExportSourceText(detail?.why ?? item.description),
+            userFacingExportSourceText(detail?.how),
+            userFacingExportSourceText(detail?.caution),
+            [sourceNote(bundle, item.risk_level), linkList(detail)].filter(Boolean).join('\n'),
+          ]);
+        }
       }
     }
   }
 
-  for (const slot of (bundle.mealSlots ?? []).filter(
-    (entry) => !isFlowItemPersonallyExcluded(itemStates[entry.id]),
-  )) {
-    const recipe = bundle.recipes?.find((item) => item.id === slot.recipe_id);
-    const { startDate, endDate } = getMealDates(slot, anchor);
-    const state = itemStates[slot.id];
-    executionRows.push([
-      itemStatusLabel(Boolean(checks[slot.id]), state),
-      timingLabel(slot.day_offset, slot.duration_days),
-      startDate && endDate ? `${startDate} ~ ${endDate}` : '',
-      getSectionTitle(bundle, slot.section_id),
-      slot.menu_title,
-      slot.new_ingredients.length ? `새 재료: ${slot.new_ingredients.join(', ')}` : '',
-      recipe ? `레시피: ${recipe.title}` : '',
-      getFlowItemUserNote(state)?.trim() ?? '',
-    ]);
-    detailRows.push([
-      slot.menu_title,
-      getSectionTitle(bundle, slot.section_id),
-      slot.allergy_watch_days ? `새 재료 반응 관찰: ${slot.allergy_watch_days}일` : '',
-      recipe ? '레시피 시트에서 재료, 조리 순서, 보관 메모를 확인합니다.' : '',
-      recipe?.caution_note ?? '',
-      sourceNote(bundle, recipe?.risk_level),
-    ]);
+  if (!useEffectiveMealSlots) {
+    for (const slot of (bundle.mealSlots ?? []).filter(
+      (entry) => !isFlowItemPersonallyExcluded(itemStates[entry.id]),
+    )) {
+      const recipe = bundle.recipes?.find((item) => item.id === slot.recipe_id);
+      const { startDate, endDate } = getMealDates(slot, anchor);
+      const state = itemStates[slot.id];
+      executionRows.push([
+        itemStatusLabel(Boolean(checks[slot.id]), state),
+        timingLabel(slot.day_offset, slot.duration_days),
+        startDate && endDate ? `${startDate} ~ ${endDate}` : '',
+        getSectionTitle(bundle, slot.section_id),
+        slot.menu_title,
+        slot.new_ingredients.length ? `새 재료: ${slot.new_ingredients.join(', ')}` : '',
+        recipe ? `레시피: ${recipe.title}` : '',
+        getFlowItemUserNote(state)?.trim() ?? '',
+      ]);
+      detailRows.push([
+        slot.menu_title,
+        getSectionTitle(bundle, slot.section_id),
+        slot.allergy_watch_days ? `새 재료 반응 관찰: ${slot.allergy_watch_days}일` : '',
+        recipe ? '레시피 시트에서 재료, 조리 순서, 보관 메모를 확인합니다.' : '',
+        recipe?.caution_note ?? '',
+        sourceNote(bundle, recipe?.risk_level),
+      ]);
+    }
   }
 
   const referenceRows = executionRows.filter((row) => {
@@ -994,7 +1454,13 @@ export function buildWorkbookSheets(
       : '기준일과 직접 연결된 항목이 없습니다.',
   ]);
 
-  const calendarRows = buildCalendarRows(bundle, checks, anchor, itemStates);
+  const calendarRows = buildCalendarRows(
+    bundle,
+    checks,
+    anchor,
+    itemStates,
+    effectiveResult,
+  );
   const weeklyRows = buildWeeklyGridRows(calendarRows);
   const monthlyRows = buildMonthlyGridRows(calendarRows);
 
@@ -1092,13 +1558,19 @@ export function buildWorkbookSheets(
       sheets.push({
         name: '반응기록',
         columns: reactionColumns,
-        rows: (bundle.mealSlots ?? []).map((slot) => {
-          const log = options.reactionLogs?.[slot.id] ?? {};
-          const { startDate, endDate } = getMealDates(slot, anchor);
+        rows: (useEffectiveMealSlots
+          ? effectiveMealRows.map(({ row, slot }) => ({ row, slot }))
+          : (bundle.mealSlots ?? []).map((slot) => ({ row: undefined, slot })))
+          .map(({ row, slot }) => {
+          const id = row?.sourceItemId ?? slot.id;
+          const log = options.reactionLogs?.[id] ?? {};
+          const { startDate, endDate } = row
+            ? getEffectiveMealDates(row, slot)
+            : getMealDates(slot, anchor);
           return [
             timingLabel(slot.day_offset, slot.duration_days),
             startDate && endDate ? `${startDate} ~ ${endDate}` : '',
-            slot.menu_title,
+            row?.title ?? slot.menu_title,
             slot.new_ingredients.join(', '),
             log.amount ?? '',
             log.fedAt ?? '',

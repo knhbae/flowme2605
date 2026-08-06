@@ -7,6 +7,7 @@ import {
   openMyFlowCalendarSelectedDay,
   openMyFlowLibraryFlow,
 } from './helpers/my-flow-library';
+import { savePublicFlow } from './helpers/public-flow-save';
 
 const evidenceRoot = process.env.FLOWME_P29_EVIDENCE_DIR;
 
@@ -115,8 +116,8 @@ async function seedP29CalendarFlows(page: Page) {
   });
 }
 
-test.describe('P29-01 moving artifact-first save and receipt', () => {
-  test('mobile reads result before adjustment and save, then replaces inputs with a receipt', async ({ page }) => {
+test.describe('P29-01 moving capability result and selected-plan handoff', () => {
+  test('mobile reads the capability result before adjustment and lands on the selected personal copy', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/f/moving-d30-basic');
     await clearLocalState(page);
@@ -124,17 +125,21 @@ test.describe('P29-01 moving artifact-first save and receipt', () => {
     const hero = page.getByTestId('public-flow-hero');
     await expect(hero).toHaveAttribute('data-p29-marker', 'P29-SAVE-BEFORE-PRIMARY-RESULT');
     await expect(hero).toHaveAttribute('data-experience-architecture', 'p35-result-first');
-    await expect(hero.getByTestId('public-flow-artifact-preview')).toHaveAttribute('data-primary-shape', 'calendar');
-    await expect(hero.getByTestId('public-flow-artifact-preview')).toContainText('캘린더 · 24개');
+    const capability = hero.getByTestId('public-flow-capability-result');
+    const selectedPreview = capability.getByTestId('flow-capability-selected-preview');
+    await expect(capability).toHaveAttribute('data-capability-lifecycle', 'public_preview');
+    await expect(capability).toHaveAttribute('data-capability-primary-destination', 'checklist');
+    await expect(selectedPreview).toHaveAttribute('data-capability-output-count', '24');
+    await expect(selectedPreview.getByTestId('flow-capability-artifact-preview')).toContainText('체크리스트 · 24개');
     await expect(hero.getByRole('button', { name: /제목·날짜·메모 수정/ })).toHaveCount(0);
-    await expect(hero.getByTestId('public-flow-artifact-preview')).not.toHaveAttribute('open', '');
+    await expect(selectedPreview.getByTestId('flow-capability-artifact-preview')).not.toHaveAttribute('open', '');
 
     const focusOrder = await page.evaluate(() => {
       const selectors = [
         '[data-testid="public-flow-hero"] h1',
         '[data-testid="public-flow-hero"] a[target="_blank"]',
         '[data-testid="flow-save-before-primary-result"]',
-        '[data-testid="public-flow-artifact-preview-expand"]',
+        '[data-testid="flow-capability-artifact-preview-expand"]',
         '[data-testid="public-flow-adjust-entry-mobile"]',
         '[data-testid="public-flow-save-primary-mobile"]',
       ];
@@ -149,23 +154,37 @@ test.describe('P29-01 moving artifact-first save and receipt', () => {
 
     await page.getByTestId('public-flow-adjust-entry-mobile').click();
     const adjustment = page.getByTestId('public-flow-personal-adjustment');
-    await expect(adjustment).toBeFocused();
+    await expect(adjustment.getByTestId('public-flow-adjustment-kind-name')).toBeFocused();
     await expect(adjustment).toHaveAttribute('data-adjustment-kind', 'name');
     await capture(page, 'p29-01-moving-adjust-390.png');
 
     await adjustment.getByTestId('public-flow-adjustment-name-input').fill('우리 집 이사 준비');
     await adjustment.getByTestId('public-flow-adjustment-apply').click();
-    await page.getByTestId('public-flow-save-primary-mobile').click();
-
-    const receipt = page.getByTestId('public-flow-saved-receipt');
-    await expect(receipt).toHaveAttribute('data-p29-marker', 'P29-SAVED-RECEIPT-DISTINCT');
-    await expect(receipt.getByRole('heading', { name: '우리 집 이사 준비' })).toBeVisible();
-    await expect(receipt.getByTestId('public-flow-saved-receipt-primary')).toHaveAccessibleName('저장한 전체 Flow 보기');
-    await expect(receipt.locator('[data-action-priority="primary"]')).toHaveCount(1);
+    await expect(adjustment).toHaveCount(0);
+    await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
+    const saveBanner = await savePublicFlow(page, page.getByTestId('public-flow-save-primary-mobile'));
+    await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toHaveText('저장됨 · 24개');
+    const personalCopyKey = new URL(page.url()).searchParams.get('flow') ?? '';
+    expect(personalCopyKey).toMatch(/^personal-copy:/u);
+    await expect(saveBanner).toHaveAttribute('data-personal-copy-key', personalCopyKey);
+    const saved = await page.evaluate((flowSlug) => JSON.parse(
+      window.localStorage.getItem(`flow:saved:${flowSlug}`) || 'null',
+    ), personalCopyKey);
+    expect(saved).toMatchObject({
+      schemaVersion: 2,
+      slug: personalCopyKey,
+      personalCopyKey,
+      sourceFlowSlug: 'moving-d30-basic',
+      personalTitle: '우리 집 이사 준비',
+      savedItemCount: 24,
+    });
+    const selectedFlow = await openMyFlowLibraryFlow(page, personalCopyKey);
+    await expect(selectedFlow).toContainText('우리 집 이사 준비');
+    await expect(selectedFlow.getByTestId('my-flow-workspace-execute')).toHaveCount(1);
     await expect(page.getByTestId('public-flow-hero')).toHaveCount(0);
     await expect(page.getByTestId('public-flow-anchor-input')).toHaveCount(0);
     await expect(page.getByTestId('public-flow-mobile-save-cta')).toHaveCount(0);
-    await capture(page, 'p29-01-moving-receipt-390.png');
+    await capture(page, 'p29-01-moving-selected-plan-390.png');
     await expectNoHorizontalOverflow(page);
   });
 
@@ -176,23 +195,30 @@ test.describe('P29-01 moving artifact-first save and receipt', () => {
 
     const result = page.getByTestId('flow-save-before-primary-result');
     const inspector = page.getByTestId('flow-save-before-decision');
-    await expect(result.getByTestId('public-flow-artifact-preview')).toBeVisible();
+    const capability = result.getByTestId('public-flow-capability-result');
+    await expect(capability).toHaveAttribute('data-capability-lifecycle', 'public_preview');
+    await expect(capability.getByTestId('flow-capability-selected-preview')).toBeVisible();
     await expect(inspector.getByTestId('public-flow-primary-setup')).toBeVisible();
     const positions = await Promise.all([result.boundingBox(), inspector.boundingBox()]);
     expect(positions[0]?.x).toBeLessThan(positions[1]?.x ?? 0);
     expect(Math.abs((positions[0]?.y ?? 0) - (positions[1]?.y ?? 0))).toBeLessThanOrEqual(2);
-    await expect(page.getByTestId('public-flow-artifact-preview')).not.toHaveAttribute('open', '');
+    await expect(
+      capability.getByTestId('flow-capability-selected-preview').getByTestId('flow-capability-artifact-preview'),
+    ).not.toHaveAttribute('open', '');
     await expect(page.getByRole('button', { name: /제목·날짜·메모 수정/ })).toHaveCount(0);
     await capture(page, 'p29-01-moving-save-before-1024.png');
 
     await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
-    await page.getByTestId('public-flow-save-primary').click();
-    await expect(page.getByTestId('public-flow-saved-receipt')).toBeVisible();
-    await capture(page, 'p29-01-moving-receipt-1024.png');
+    const saveBanner = await savePublicFlow(page, page.getByTestId('public-flow-save-primary'));
+    const personalCopyKey = new URL(page.url()).searchParams.get('flow') ?? '';
+    await expect(saveBanner).toHaveAttribute('data-personal-copy-key', personalCopyKey);
+    await expect(await openMyFlowLibraryFlow(page, personalCopyKey)).toBeVisible();
+    await capture(page, 'p29-01-moving-selected-plan-1024.png');
     await expectNoHorizontalOverflow(page);
 
     await page.setViewportSize({ width: 1440, height: 900 });
-    await capture(page, 'p29-01-moving-receipt-1440.png');
+    await capture(page, 'p29-01-moving-selected-plan-1440.png');
+    await page.goto('/f/moving-d30-basic');
     await clearLocalState(page);
     await expect(page.getByTestId('public-flow-hero')).toBeVisible();
     await capture(page, 'p29-01-moving-save-before-1440.png');
@@ -205,8 +231,14 @@ test.describe('P29-01 moving artifact-first save and receipt', () => {
     await clearLocalState(page);
     await expect(page.getByTestId('public-flow-hero')).toHaveAttribute('data-experience-architecture', 'p35-result-first');
     await expect(page.getByTestId('public-flow-saved-receipt')).toHaveCount(0);
-    await expect(page.getByTestId('public-flow-detail-workspace').locator('[data-presentation-mode="export-only"]')).toHaveCount(1);
-    await expect(page.getByTestId('public-flow-detail-workspace').getByLabel('Flow artifact workbench')).toHaveCount(0);
+    await expect(page.getByTestId('public-flow-detail-workspace')).toHaveCount(0);
+    const capability = page.getByTestId('public-flow-capability-result');
+    await expect(capability).toHaveAttribute('data-capability-lifecycle', 'public_preview');
+    await expect(capability).toHaveAttribute('data-capability-primary-destination', 'checklist');
+    await expect(capability.locator(
+      '[data-testid="flow-capability-result-choice"][data-capability-candidate-role="primary"]',
+    )).toHaveAttribute('data-capability-output-count', '10');
+    await expect(page.getByTestId('public-flow-export-secondary-entry')).toHaveCount(0);
   });
 
   test('routine keeps advanced inputs behind one summary and previews the next three occurrences', async ({ page }) => {
@@ -265,7 +297,7 @@ test.describe('P29-04 My Flow action-first library', () => {
     await expectNoHorizontalOverflow(page);
   });
 
-  test('wide exposes a 280px library beside one explicitly selected Flow workspace', async ({ page }) => {
+  test('wide gives the unselected library the canvas and keeps a readable rail beside a selected plan', async ({ page }) => {
     await page.setViewportSize({ width: 1024, height: 768 });
     await page.goto('/my?demo=ux20&view=flows');
 
@@ -274,11 +306,14 @@ test.describe('P29-04 My Flow action-first library', () => {
     await expect(workspace).toHaveAttribute('data-p29-marker', 'P29-MY-FLOW-THREE-PANE');
     expect(await workspace.getByTestId('my-flow-library-row').count()).toBeGreaterThanOrEqual(20);
     const railWidth = await workspace.getByTestId('my-flow-library-rail').evaluate((element) => element.getBoundingClientRect().width);
-    expect(railWidth).toBeGreaterThanOrEqual(278);
-    expect(railWidth).toBeLessThanOrEqual(282);
+    expect(railWidth).toBeGreaterThanOrEqual(700);
     const detail = workspace.getByTestId('my-flow-library-detail');
+    await expect(detail).toBeHidden();
     await expect(detail.getByTestId('my-flow-overview-card')).toHaveCount(0);
     await workspace.getByTestId('my-flow-library-row').first().click();
+    await expect(detail).toBeVisible();
+    const selectedRailWidth = await workspace.getByTestId('my-flow-library-rail').evaluate((element) => element.getBoundingClientRect().width);
+    expect(selectedRailWidth).toBeGreaterThanOrEqual(350);
     await expect(detail.getByTestId('my-flow-overview-card')).toHaveAttribute(
       'data-p35-marker',
       'P35-PERSONAL-SINGLE-FOCUS',
@@ -331,7 +366,7 @@ test.describe('P29-05 Calendar scope and placement workspace', () => {
     await expect(picker.locator('[data-scope-group="selected"]')).toBeVisible();
     await capture(page, 'p29-05-calendar-scope-picker-390.png');
     await picker.getByTestId('calendar-flow-scope-picker-apply').click();
-    await expect(trigger).toContainText('2개 Flow');
+    await expect(trigger).toContainText('계획 2개');
     await expectNoHorizontalOverflow(page);
 
     await trigger.click();
@@ -357,45 +392,73 @@ test.describe('P29-05 Calendar scope and placement workspace', () => {
 });
 
 test.describe('P29-06 artifact recommendation and export scope', () => {
-  test('public whole Flow recommends at most three ready results and keeps identity in receipt', async ({ page }) => {
+  test('public capability result hands off one identity to saved transfer and receipt', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/f/moving-d30-basic');
     await clearLocalState(page);
     await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
 
-    const preview = page.getByTestId('public-flow-artifact-preview');
-    await expect(preview).toHaveAttribute('data-p29-marker', 'P29-ARTIFACT-RECOMMENDATION');
-    await expect(preview).toHaveAttribute('data-selected-shape', 'calendar');
-    await expect(preview.getByTestId('flow-artifact-shape-choice')).toHaveCount(0);
-    await expect(preview.getByTestId('flow-artifact-recommendation-reason')).toHaveCount(0);
+    const publicCapability = page.getByTestId('public-flow-capability-result');
+    const publicSelected = publicCapability.getByTestId('flow-capability-selected-preview');
+    await expect(publicCapability).toHaveAttribute('data-capability-lifecycle', 'public_preview');
+    await expect(publicCapability).toHaveAttribute('data-capability-primary-destination', 'calendar');
+    await publicCapability.locator(
+      '[data-testid="flow-capability-result-choice"][data-capability-destination="calendar"]',
+    ).click();
+    await expect(publicSelected).toHaveAttribute('data-capability-destination', 'calendar');
+    await expect(publicSelected).toHaveAttribute('data-capability-output-count', '24');
+    const publicItemIds = (await publicSelected.getAttribute('data-capability-manifest-item-ids')) ?? '';
+    expect(publicItemIds.split(',').filter(Boolean)).toHaveLength(24);
+    await expect(publicCapability.locator(
+      '[data-testid="flow-capability-result-choice"][data-capability-candidate-role="primary"]',
+    )).toHaveCount(1);
+    expect(await publicCapability.locator(
+      '[data-testid="flow-capability-result-choice"][data-capability-immediate="true"]',
+    ).count()).toBeLessThanOrEqual(3);
 
-    const workspace = page.getByTestId('public-flow-detail-workspace');
-    await workspace.locator('summary').first().click();
-    const exportEntry = workspace.getByTestId('public-flow-export-secondary-entry');
-    await exportEntry.getByTestId('public-flow-export-secondary-toggle').click();
-    const panel = exportEntry.getByTestId('my-flow-export-panel');
+    await expect(page.getByTestId('public-flow-detail-workspace')).toHaveCount(0);
+    await expect(page.getByTestId('public-flow-export-secondary-entry')).toHaveCount(0);
+    const saveBanner = await savePublicFlow(page, page.getByTestId('public-flow-save-primary-mobile'));
+    const personalCopyKey = new URL(page.url()).searchParams.get('flow') ?? '';
+    await expect(saveBanner).toHaveAttribute('data-personal-copy-key', personalCopyKey);
+    const selectedFlow = await openMyFlowLibraryFlow(page, personalCopyKey, 'plan');
+    const exportSurface = selectedFlow.getByTestId('my-flow-export-surface');
+    await exportSurface.getByTestId('my-flow-export-entry').click();
+    const panel = exportSurface.getByTestId('my-flow-export-panel');
+    const savedCapability = panel.getByTestId('my-flow-capability-result');
+    await expect(savedCapability).toHaveAttribute('data-capability-lifecycle', 'saved_detail');
+    await expect(savedCapability).toHaveAttribute('data-capability-snapshot-kind', 'effective_execution');
+    const savedCalendar = savedCapability.locator(
+      '[data-testid="flow-capability-result-choice"][data-capability-destination="calendar"]',
+    );
+    await expect(savedCalendar).toHaveAttribute('data-capability-manifest-item-ids', publicItemIds);
     await expect(panel.getByTestId('my-flow-export-recommendations')).toHaveAttribute(
       'data-p29-marker',
       'P29-ARTIFACT-EXPORT-PREFLIGHT',
     );
-    const visibleRecommendations = panel.locator('[data-recommendation-visible="true"]');
-    expect(await visibleRecommendations.count()).toBeLessThanOrEqual(3);
-    await expect(panel.locator('[data-recommendation-visible="true"][data-export-state="disabled"]')).toHaveCount(0);
+    expect(await savedCapability.locator(
+      '[data-testid="flow-capability-result-choice"][data-capability-immediate="true"]',
+    ).count()).toBeLessThanOrEqual(3);
     const primary = panel.locator('[data-recommendation-role="primary"][data-recommendation-visible="true"]');
     await expect(primary).toHaveCount(1);
-    await expect(primary).toContainText('Flow 전체');
+    await expect(primary).toContainText('계획 전체');
     const predictedCount = Number(await primary.getAttribute('data-export-count'));
     expect(predictedCount).toBeGreaterThan(0);
     await capture(page, 'p29-06-export-preflight-390.png');
 
-    const downloadPromise = page.waitForEvent('download');
     await primary.click();
+    const confirmation = panel.getByTestId('my-flow-transfer-confirmation');
+    await expect(confirmation).toHaveAttribute('data-transfer-saved-plan-id', personalCopyKey);
+    await expect(confirmation).toHaveAttribute('data-item-ids', publicItemIds);
+    await expect(confirmation).toHaveAttribute('data-output-count', String(predictedCount));
+    const downloadPromise = page.waitForEvent('download');
+    await confirmation.getByTestId('my-flow-transfer-confirm').click();
     await downloadPromise;
-    const receipt = panel.getByTestId('flow-export-result-receipt');
-    await expect(receipt).toHaveAttribute('data-p29-marker', 'P29-EXPORT-RECEIPT-IDENTITY');
-    await expect(receipt).toHaveAttribute('data-export-output-count', String(predictedCount));
-    await expect(receipt.getByTestId('flow-export-result-identity')).toContainText('이사');
-    await expect(receipt.getByTestId('flow-export-result-identity')).toContainText('출처');
+    const receipt = panel.getByTestId('my-flow-transfer-receipt');
+    await expect(receipt).toHaveAttribute('data-transfer-saved-plan-id', personalCopyKey);
+    await expect(receipt).toHaveAttribute('data-item-ids', publicItemIds);
+    await expect(receipt).toHaveAttribute('data-output-count', String(predictedCount));
+    await expect(receipt).toHaveAttribute('data-outcome', 'success');
     await capture(page, 'p29-06-export-receipt-390.png');
     await expectNoHorizontalOverflow(page);
   });
@@ -416,8 +479,18 @@ test.describe('P29-06 artifact recommendation and export scope', () => {
     const selectedMemo = panel.getByTestId('my-flow-export-memo');
     await expect(selectedMemo).toContainText('선택한 2개');
     await selectedMemo.click();
-    await expect(panel.getByTestId('flow-export-result-receipt')).toContainText('선택 항목');
-    await expect(panel.getByTestId('flow-export-result-identity')).toContainText('이사');
+    let confirmation = panel.getByTestId('my-flow-transfer-confirmation');
+    await expect(confirmation).toHaveAttribute('data-scope', 'selected');
+    await expect(confirmation).toHaveAttribute('data-output-count', '2');
+    await confirmation.getByTestId('my-flow-transfer-confirm').click();
+    let receipt = panel.getByTestId('my-flow-transfer-receipt');
+    await expect(receipt).toHaveAttribute('data-scope', 'selected');
+    await expect(receipt).toHaveAttribute('data-output-count', '2');
+    await expect(receipt.getByTestId('flow-transfer-success')).toBeVisible();
+    await receipt.getByTestId('flow-transfer-success-close').click();
+    await expect(selectedMemo).toBeFocused();
+    await exportSurface.getByTestId('my-flow-export-entry').click();
+    await expect(panel).toHaveCount(0);
 
     flow = await openMyFlowLibraryFlow(page, 'source-backed-moving-d30', 'plan');
     const firstRow = flow.getByTestId('my-flow-execution-row-shell').first();
@@ -428,8 +501,14 @@ test.describe('P29-06 artifact recommendation and export scope', () => {
     }
     await expect(itemExport.getByTestId('my-flow-detail-copy-portable-text')).toContainText('현재 항목');
     await itemExport.getByTestId('my-flow-detail-copy-portable-text').click();
-    await expect(itemExport.getByTestId('flow-export-result-receipt')).toContainText('현재 항목');
-    await expect(itemExport.getByTestId('flow-export-result-identity')).toBeVisible();
+    confirmation = itemExport.getByTestId('my-flow-transfer-confirmation');
+    await expect(confirmation).toHaveAttribute('data-scope', 'item');
+    await expect(confirmation).toHaveAttribute('data-output-count', '1');
+    await confirmation.getByTestId('my-flow-transfer-confirm').click();
+    receipt = itemExport.getByTestId('my-flow-transfer-receipt');
+    await expect(receipt).toHaveAttribute('data-scope', 'item');
+    await expect(receipt).toHaveAttribute('data-output-count', '1');
+    await expect(receipt.getByTestId('flow-transfer-success')).toBeVisible();
     await expectNoHorizontalOverflow(page);
   });
 });
@@ -483,10 +562,9 @@ test.describe('P29-07 shared visual and accessibility contract', () => {
     await expect(hero.locator('[data-flow-anatomy="artifact-result"]')).toHaveCount(1);
 
     await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
-    await page.getByTestId('public-flow-save-primary-mobile').click();
-    const receipt = page.getByTestId('public-flow-saved-receipt');
-    await expect(receipt).toHaveAttribute('data-flow-anatomy', 'saved-receipt');
-    await expect(receipt.locator('[data-flow-anatomy="flow-identity"]')).toHaveCount(1);
+    const saveBanner = await savePublicFlow(page, page.getByTestId('public-flow-save-primary-mobile'));
+    await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toHaveText('저장됨 · 24개');
+    await expect(page.getByTestId('public-flow-saved-receipt')).toHaveCount(0);
 
     await page.goto('/my?demo=ux20&view=flows');
     const libraryRow = page.getByTestId('my-flow-mobile-structure-row').first();

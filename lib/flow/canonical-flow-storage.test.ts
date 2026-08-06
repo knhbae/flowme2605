@@ -23,6 +23,7 @@ import {
   isFlowMeExecutionStorageKey,
   restoreFlowMeLocalBackup,
 } from './local-data-backup';
+import { FLOW_EXPORT_RECEIPTS_STORAGE_KEY } from './export-receipt-storage';
 
 function memoryStorage(initial: Record<string, string> = {}) {
   const values = new Map(Object.entries(initial));
@@ -312,4 +313,21 @@ test('malformed saved or metadata records cannot hide a valid canonical copy', (
 test('canonical origin and reconciliation metadata are included in local backup scope', () => {
   assert.equal(isFlowMeExecutionStorageKey(CANONICAL_FLOW_ORIGIN_STORAGE_KEY), true);
   assert.equal(isFlowMeExecutionStorageKey(CANONICAL_FLOW_RECONCILIATION_STORAGE_KEY), true);
+});
+
+test('persistent result receipts are retained byte-for-byte by local backup and restore', () => {
+  const receiptRegistryRaw = JSON.stringify({
+    schemaVersion: 1,
+    receipts: [{ receiptId: 'receipt-a', savedPlanId: 'saved-plan-a' }],
+  });
+  const sourceStorage = memoryStorage({
+    [FLOW_EXPORT_RECEIPTS_STORAGE_KEY]: receiptRegistryRaw,
+  });
+  const backup = buildFlowMeLocalBackup(sourceStorage, '2026-08-04T03:00:00.000Z');
+  const restoredStorage = memoryStorage();
+
+  assert.equal(isFlowMeExecutionStorageKey(FLOW_EXPORT_RECEIPTS_STORAGE_KEY), true);
+  assert.equal(backup.entries[FLOW_EXPORT_RECEIPTS_STORAGE_KEY], receiptRegistryRaw);
+  restoreFlowMeLocalBackup(restoredStorage, backup);
+  assert.equal(restoredStorage.getItem(FLOW_EXPORT_RECEIPTS_STORAGE_KEY), receiptRegistryRaw);
 });

@@ -21,6 +21,7 @@ export function FlowManagementMenu({
   marker,
   align = 'right',
   triggerClassName = '',
+  q3CopyEnabled = true,
 }: {
   flowTitle: string;
   actions: FlowManagementMenuAction[];
@@ -29,6 +30,7 @@ export function FlowManagementMenu({
   marker?: string;
   align?: 'left' | 'right';
   triggerClassName?: string;
+  q3CopyEnabled?: boolean;
 }) {
   const detailsRef = useRef<HTMLDetailsElement | null>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
@@ -60,14 +62,14 @@ export function FlowManagementMenu({
         ref={triggerRef}
         data-testid={triggerTestId}
         aria-haspopup="menu"
-        aria-label={`${flowTitle} Flow 관리`}
+        aria-label={`${flowTitle} ${q3CopyEnabled ? '계획 관리' : 'Flow 관리'}`}
         className={`inline-flex min-h-11 cursor-pointer list-none items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:border-blue-300 hover:text-slate-950 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] [&::-webkit-details-marker]:hidden ${triggerClassName}`}
       >
-        Flow 관리
+        {q3CopyEnabled ? '계획 관리' : 'Flow 관리'}
       </summary>
       <div
         role="menu"
-        aria-label={`${flowTitle} Flow 관리`}
+        aria-label={`${flowTitle} ${q3CopyEnabled ? '계획 관리' : 'Flow 관리'}`}
         className={`absolute top-full z-50 mt-1 grid min-w-60 gap-1 rounded-md border border-slate-200 bg-white p-1.5 shadow-[0_14px_36px_rgba(15,23,42,0.16)] ${
           align === 'right' ? 'right-0' : 'left-0'
         }`}

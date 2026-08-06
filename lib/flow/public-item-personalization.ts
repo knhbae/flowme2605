@@ -26,6 +26,11 @@ export type PublicItemPersonalizationPromotion = {
   sourceMutationCount: 0;
 };
 
+export type PublicItemPersonalizationRestore = {
+  personalizations: Record<string, PublicItemPersonalization>;
+  restoredItemCount: number;
+};
+
 function normalizeText(value?: string): string {
   return value?.replace(/\s+/gu, ' ').trim() ?? '';
 }
@@ -92,6 +97,7 @@ export function promotePublicItemPersonalizations(options: {
     );
     const currentDraft = { ...(itemDrafts[valueKey] ?? {}) };
     const sourceTitle = normalizeText(source.title);
+    const sourceDetail = normalizeDetail(source.detail);
     const title = normalizeText(personalization.title);
     const detail = normalizeDetail(personalization.detail);
     const hasTitle = Object.prototype.hasOwnProperty.call(personalization, 'title');
@@ -111,7 +117,7 @@ export function promotePublicItemPersonalizations(options: {
     }
 
     if (hasDetail) {
-      if (detail) {
+      if (detail && detail !== sourceDetail) {
         currentDraft.memo = detail;
         changed = true;
       } else if (Object.prototype.hasOwnProperty.call(currentDraft, 'memo')) {
@@ -145,5 +151,52 @@ export function promotePublicItemPersonalizations(options: {
     dateOverrides,
     promotedItemCount,
     sourceMutationCount: 0,
+  };
+}
+
+export function restorePublicItemPersonalizations(options: {
+  flowSlug: string;
+  sources: PublicItemPersonalizationSource[];
+  itemDrafts: Record<string, StoredMyFlowItemDraft>;
+  dateOverrides: Record<string, string>;
+}): PublicItemPersonalizationRestore {
+  const personalizations: Record<string, PublicItemPersonalization> = {};
+
+  options.sources.forEach((source) => {
+    const valueKey = getPersonalDraftProjectionValueKey(
+      options.flowSlug,
+      source.itemId,
+    );
+    const draft = options.itemDrafts[valueKey] ?? {};
+    const dateOverrideKey = getMyFlowDateOverrideKey(
+      options.flowSlug,
+      source.itemId,
+      source.date,
+    );
+    const storedDateOverride = options.dateOverrides[dateOverrideKey];
+    const restored: PublicItemPersonalization = {};
+
+    if (Object.prototype.hasOwnProperty.call(draft, 'title')) {
+      restored.title = draft.title ?? '';
+    }
+    if (Object.prototype.hasOwnProperty.call(draft, 'memo')) {
+      restored.detail = draft.memo ?? '';
+    }
+    if (storedDateOverride === MY_FLOW_DATE_REMOVED_OVERRIDE) {
+      restored.date = null;
+    } else if (Object.prototype.hasOwnProperty.call(draft, 'date')) {
+      restored.date = draft.date?.trim() || null;
+    } else if (storedDateOverride?.trim() && storedDateOverride !== source.date) {
+      restored.date = storedDateOverride.trim();
+    }
+
+    if (Object.keys(restored).length > 0) {
+      personalizations[source.itemId] = restored;
+    }
+  });
+
+  return {
+    personalizations,
+    restoredItemCount: Object.keys(personalizations).length,
   };
 }

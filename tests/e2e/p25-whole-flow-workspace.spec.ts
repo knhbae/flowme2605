@@ -27,6 +27,22 @@ function collectConsoleErrors(page: import('@playwright/test').Page) {
   return errors;
 }
 
+async function expectDirectSavedPlan(page: import('@playwright/test').Page) {
+  await expect.poll(() => {
+    const url = new URL(page.url());
+    return {
+      pathname: url.pathname,
+      view: url.searchParams.get('view'),
+      flow: url.searchParams.get('flow'),
+    };
+  }).toEqual({
+    pathname: '/my',
+    view: 'flows',
+    flow: expect.stringMatching(/^personal-copy:/u),
+  });
+  await expect(page.getByTestId('public-flow-saved-receipt')).toHaveCount(0);
+}
+
 async function saveMovingFlow(page: import('@playwright/test').Page) {
   await page.goto('/flow-maps/moving-d30');
   await page.evaluate(() => window.localStorage.clear());
@@ -39,8 +55,7 @@ async function saveMovingFlow(page: import('@playwright/test').Page) {
   } else {
     await page.getByTestId('public-flow-save-primary-mobile').click();
   }
-  await page.getByTestId('public-flow-saved-receipt-primary').click();
-  await expect(page).toHaveURL('/my?view=flows&flow=moving-d30-basic');
+  await expectDirectSavedPlan(page);
 }
 
 test.describe('P25 whole Flow workspace', () => {
@@ -51,7 +66,7 @@ test.describe('P25 whole Flow workspace', () => {
 
     await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
     await expect(page.locator('main')).toHaveAttribute('data-p32-workspace-state', 'focused');
-    await expect(page.getByRole('tablist', { name: 'My Flow 보기' })).toHaveCount(1);
+    await expect(page.getByRole('tablist', { name: /My Flow 보기/ })).toHaveCount(0);
 
     const savedFlow = await openMyFlowLibraryFlow(
       page,
@@ -63,32 +78,44 @@ test.describe('P25 whole Flow workspace', () => {
       'P31-03-DEDICATED-MOBILE-WORKSPACE',
     );
     await expect(savedFlow.getByTestId('my-flow-workspace-execute')).toBeVisible();
-    const mobileOutline = savedFlow.getByTestId('my-flow-whole-flow-outline');
     await captureEvidence(page, '01-post-save-whole-flow-mobile.png');
-    await expect(mobileOutline).toHaveAttribute('data-outline-mode', 'workspace');
-    await expect(mobileOutline).toHaveAttribute('data-effective-row-count', '24');
-    await expect(mobileOutline.getByTestId('my-flow-whole-flow-reading-summary')).toContainText('6단계');
-    await expect(mobileOutline.getByTestId('my-flow-whole-flow-reading-summary')).toContainText('0/24 완료');
     const currentExecutionRows = savedFlow
       .getByTestId('my-flow-shape-aware-execution')
       .getByTestId('my-flow-execution-row-shell');
-    await expect(currentExecutionRows).toHaveCount(4);
+    await expect(currentExecutionRows).toHaveCount(3);
     const firstExecutionRow = currentExecutionRows.first();
-    const [completionBox, titleBox] = await Promise.all([
-      firstExecutionRow.getByTestId('my-flow-task-complete-label').boundingBox(),
+    const firstExecutionArticle = firstExecutionRow.locator('article[data-row-key]');
+    const completedRowKey = await firstExecutionArticle.getAttribute('data-row-key');
+    expect(completedRowKey).toBeTruthy();
+    await expect(firstExecutionRow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+    const openButton = firstExecutionRow.getByRole('button', { name: /열기/ });
+    const [openBox, titleBox] = await Promise.all([
+      openButton.boundingBox(),
       firstExecutionRow.getByTestId('my-flow-row-title').boundingBox(),
     ]);
-    expect(completionBox?.width).toBeGreaterThanOrEqual(44);
-    expect(completionBox?.height).toBeGreaterThanOrEqual(44);
+    expect(openBox?.width).toBeGreaterThanOrEqual(44);
+    expect(openBox?.height).toBeGreaterThanOrEqual(44);
     expect(titleBox).not.toBeNull();
     await expect(firstExecutionRow.getByRole('button', { name: /7월 16일/ })).toBeVisible();
     await expect(firstExecutionRow.getByTestId('my-flow-inline-note-open')).toHaveCount(0);
-    await firstExecutionRow.getByRole('button', { name: /열기/ }).click();
-    await expect(getOpenMyFlowItemDetail(page)).toBeVisible();
+    await openButton.click();
+    const itemDetail = getOpenMyFlowItemDetail(page);
+    await expect(itemDetail).toBeVisible();
+    const detailCompletion = itemDetail.getByTestId('my-flow-task-complete-control');
+    await expect(detailCompletion).toHaveCount(1);
+    await expect(page.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
+    await detailCompletion.click();
+    await expect(detailCompletion).toBeChecked();
     await closeOpenMyFlowItemDetail(page);
+    const planToggle = savedFlow.getByTestId('my-flow-workspace-plan-toggle');
+    if ((await planToggle.getAttribute('aria-expanded')) === 'false') await planToggle.click();
+    const mobileOutline = await expandMyFlowWholePlan(savedFlow);
+    await expect(mobileOutline).toHaveAttribute('data-outline-mode', 'workspace');
+    await expect(mobileOutline).toHaveAttribute('data-effective-row-count', '24');
+    await expect(mobileOutline.getByTestId('my-flow-whole-flow-reading-summary')).toContainText('6단계');
+    await expect(mobileOutline.getByTestId('my-flow-whole-flow-reading-summary')).toContainText('1/24 완료');
     await captureEvidence(page, '02-returning-whole-flow-mobile.png');
 
-    await firstExecutionRow.getByTestId('my-flow-task-complete-control').click();
     await page.reload();
     await expect(page).toHaveURL(/view=flows/);
     await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
@@ -96,9 +123,17 @@ test.describe('P25 whole Flow workspace', () => {
     const reopenedOutline = reopenedWorkspace.getByTestId('my-flow-whole-flow-outline');
     await expect(reopenedOutline.getByTestId('my-flow-whole-flow-reading-summary')).toContainText('1/24 완료');
     await expandMyFlowWholePlan(reopenedWorkspace);
-    const completedControl = reopenedWorkspace
-      .locator('[data-testid="my-flow-task-complete-control"]:checked')
-      .first();
+    const completedRow = reopenedWorkspace.locator(
+      `article[data-row-key="${completedRowKey}"]:visible`,
+    ).first();
+    await expect(completedRow).toBeVisible();
+    await expect(completedRow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+    await completedRow.getByRole('button', { name: /열기/ }).click();
+    const completedDetail = getOpenMyFlowItemDetail(page);
+    const completedControl = completedDetail.getByTestId('my-flow-task-complete-control');
+    await expect(completedControl).toHaveCount(1);
+    await expect(page.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
+    await expect(completedControl).toBeChecked();
     await expect(completedControl).toHaveAccessibleName(/다시 열기/);
     await completedControl.click();
     await expect(page.getByTestId('my-flow-completion-snackbar')).toHaveAttribute('data-completion-result', 'reopened');
@@ -119,7 +154,7 @@ test.describe('P25 whole Flow workspace', () => {
     await expect(page).toHaveURL('/f/moving-d30-basic');
     await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
     await page.getByTestId('public-flow-save-primary').click();
-    await page.getByTestId('public-flow-saved-receipt-primary').click();
+    await expectDirectSavedPlan(page);
 
     await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
     const selectedFlow = await openMyFlowLibraryFlow(page, 'moving-d30-basic');
@@ -132,12 +167,15 @@ test.describe('P25 whole Flow workspace', () => {
     const currentExecutionRows = selectedFlow
       .getByTestId('my-flow-shape-aware-execution')
       .getByTestId('my-flow-execution-row-shell');
-    await expect(currentExecutionRows).toHaveCount(4);
-    await expect(page.getByRole('tablist', { name: 'My Flow 보기' })).toHaveCount(1);
+    await expect(currentExecutionRows).toHaveCount(3);
+    await expect(page.getByRole('tablist', { name: /My Flow 보기/ })).toHaveCount(0);
     await expect(page.getByTestId('my-flow-library-back')).toBeVisible();
     const selectedFlowBox = await selectedFlow.boundingBox();
     expect(selectedFlowBox).not.toBeNull();
-    expect(selectedFlowBox!.width).toBeGreaterThan(620);
+    expect(selectedFlowBox!.width).toBeGreaterThan(560);
+    const libraryRailBox = await page.getByTestId('my-flow-library-rail').boundingBox();
+    expect(libraryRailBox).not.toBeNull();
+    expect(libraryRailBox!.width).toBeGreaterThanOrEqual(352);
 
     const detailPane = selectedFlow.getByTestId('my-flow-workspace-detail-pane');
     await expect(detailPane).toBeVisible();
@@ -145,7 +183,9 @@ test.describe('P25 whole Flow workspace', () => {
     await currentExecutionRows.first().getByRole('button', { name: /열기/ }).click();
     await expect(detailPane.getByTestId('my-flow-workspace-flow-summary')).toHaveCount(0);
     await expect(detailPane.getByRole('button', { name: '닫기' })).toBeVisible();
-    await expect(detailPane.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+    await expect(currentExecutionRows.first().getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+    await expect(detailPane.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
+    await expect(page.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
     await expect(workspaceOutline.getByTestId('my-flow-inline-detail')).toHaveCount(0);
     await captureEvidence(page, '04-returning-whole-flow-wide.png');
 

@@ -1,5 +1,13 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
-  "outputDirectory": null
+  "outputDirectory": null,
+  "git": {
+    "deploymentEnabled": {
+      "codex/p35-production-mobile-p0": false,
+      "codex/p35-round2-candidate-20260805": false,
+      "codex/p35-round2-correction-pprime2-20260805": false,
+      "review/p35-round2-*": false
+    }
+  }
 }

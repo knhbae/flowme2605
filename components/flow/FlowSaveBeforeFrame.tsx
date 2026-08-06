@@ -30,13 +30,15 @@ type FlowSaveBeforeFrameProps = {
   setup?: ReactNode;
   actions?: ReactNode;
   composition: 'legacy' | 'artifact-first';
+  showScheduleIntent?: boolean;
+  q3CopyEnabled?: boolean;
 };
 
 export function FlowSaveBeforeFrame({
   rootTestId,
   previewTestId,
   previewRowTestId,
-  eyebrow = 'Flow 미리보기',
+  eyebrow,
   title,
   categoryLabel,
   sourceLabel,
@@ -50,7 +52,10 @@ export function FlowSaveBeforeFrame({
   setup,
   actions,
   composition,
+  showScheduleIntent = true,
+  q3CopyEnabled = true,
 }: FlowSaveBeforeFrameProps) {
+  const displayEyebrow = eyebrow ?? (q3CopyEnabled ? '계획 미리보기' : 'Flow 미리보기');
   const rows = previewRows.slice(0, 5);
   const remainingRows = previewRows.slice(5);
   const remainingCount = Math.max(itemCount - rows.length, 0);
@@ -71,7 +76,7 @@ export function FlowSaveBeforeFrame({
         className="min-h-[calc(100dvh-5rem)] border-y border-[var(--flowme-border-strong)] py-5 sm:min-h-0 sm:py-7"
       >
         <FlowArtifactSummary
-          eyebrow={eyebrow}
+          eyebrow={displayEyebrow}
           title={title}
           categoryLabel={categoryLabel}
           sourceLabel={sourceLabel}
@@ -110,22 +115,30 @@ export function FlowSaveBeforeFrame({
       className="border-y border-[var(--flowme-border-strong)] py-5 sm:py-7"
     >
       <FlowArtifactSummary
-        eyebrow={eyebrow}
+        eyebrow={displayEyebrow}
         title={title}
         categoryLabel={categoryLabel}
         sourceLabel={sourceLabel}
         sourceHref={sourceHref}
       />
-      <FlowScheduleIntent
-        inputLabel={inputLabel}
-        resultLabel={resultLabel}
-        itemCount={itemCount}
-      />
+      {showScheduleIntent ? (
+        <FlowScheduleIntent
+          inputLabel={inputLabel}
+          resultLabel={resultLabel}
+          itemCount={itemCount}
+        />
+      ) : null}
 
       <div className={`mt-4 grid gap-5 ${hasDecisionPane ? 'md:grid-cols-[minmax(0,1.05fr)_minmax(20rem,0.95fr)] md:items-start md:gap-7' : ''}`}>
-        <section data-testid={previewTestId} aria-label="저장될 Flow 요약" className="min-w-0 border-y border-[var(--flowme-border)] bg-[var(--flowme-surface)]">
+        <section
+          data-testid={previewTestId}
+          aria-label={q3CopyEnabled ? '저장될 계획 요약' : '저장될 Flow 요약'}
+          className="min-w-0 border-y border-[var(--flowme-border)] bg-[var(--flowme-surface)]"
+        >
           <div className="flex items-center justify-between gap-3 px-1 py-2.5">
-            <p className="text-xs font-semibold text-[var(--flowme-text-secondary)]">저장될 전체 Flow</p>
+            <p className="text-xs font-semibold text-[var(--flowme-text-secondary)]">
+              {q3CopyEnabled ? '저장될 전체 계획' : '저장될 전체 Flow'}
+            </p>
             <span className="shrink-0 text-xs font-semibold text-[var(--flowme-action)]">{itemCount}개</span>
           </div>
           <ol>
@@ -134,6 +147,7 @@ export function FlowSaveBeforeFrame({
                 key={row.id}
                 data-testid={previewRowTestId}
                 data-flow-outline-row="true"
+                data-flow-item-id={row.id}
                 className={`grid min-w-0 gap-2.5 border-t border-[var(--flowme-border)] px-1 py-2.5 ${onAdjustRow ? 'grid-cols-[2rem_minmax(0,1fr)_auto]' : 'grid-cols-[2rem_minmax(0,1fr)]'}`}
               >
                 <span className="flex h-7 w-7 items-center justify-center rounded-md bg-[var(--flowme-action-soft)] text-[11px] font-semibold text-[var(--flowme-action)]" aria-hidden="true">
@@ -172,6 +186,7 @@ export function FlowSaveBeforeFrame({
                     key={row.id}
                     data-testid={`${previewRowTestId}-remainder`}
                     data-flow-outline-row="true"
+                    data-flow-item-id={row.id}
                     className={`grid min-w-0 gap-2.5 border-t border-[var(--flowme-border)] px-1 py-2.5 ${onAdjustRow ? 'grid-cols-[2rem_minmax(0,1fr)_auto]' : 'grid-cols-[2rem_minmax(0,1fr)]'}`}
                   >
                     <span className="flex h-7 w-7 items-center justify-center rounded-md bg-[var(--flowme-action-soft)] text-[11px] font-semibold text-[var(--flowme-action)]" aria-hidden="true">

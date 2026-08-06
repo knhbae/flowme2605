@@ -2,6 +2,13 @@
 
 No tagged releases yet.
 
+## 2026-08-06 - P35 Round 2 B/B/B MVP Production Closeout
+
+- Deployed P′′ production source `f97644abf379c46433847f44aa7bd4da7fadac4a` with Vercel deployment `dpl_EBDr9CiRuwAUyjMcJwp7g6eBLpNk`; the deployment is `READY` at <https://flowme2605-n6jddq8i9-flowme.vercel.app> and the canonical alias is <https://flowme2605.vercel.app>.
+- Froze candidate provenance as BUILD_ID `T0QkChgscSgPog-0UdvY-` and epoch `p35-r2-4fa6af1728eb5ca5`; S01~S23 are `23/23` accounted (S01~S21 captured, S22 `NOT_ASSESSED`, S23 `REVIEWER_CHOSEN_NOT_PRECAPTURED`), all `3` group manifests pass with failures `0`, and the published verifier reports `PASS` across `33` identity checks, `285` evidence files, and `556` raw URLs with failures `0`.
+- Incorporated the sealed prior Codex and Claude Design review findings—Pass 1 candidate `c489117`, then Pass 2 P′ `29cb03a` ending in `REVISE`—into P′′. Fresh independent P′′ Pass 1/Pass 2 remain `NOT_RUN` and were waived by the Owner for this MVP to avoid repeating the review cycle, so this release does not claim an independent P′′ review `PASS`.
+- Production smoke is `NOT_RUN`; observed-user sessions remain `0`, and actual 200% browser zoom, performance, and external Calendar/VTODO round-trip are `NOT_ASSESSED`. Text-to-flow and the P2 follow-up queue remain excluded. The manual production source branch is not merged to `main`, so a later `main` production deployment can replace it. No semantic version tag was created.
+
 ## 2026-07-29 - P35 MECE UX Reset
 
 - Released a state-based `/` entry router with three primary destinations, result-first public Flows, one-kind-at-a-time adjustment, cross-Flow date-grouped `할 일`, an adjacent Flow library and focused workspace, a Calendar date lens, and scope-first export without migrating P34 identities or local storage.

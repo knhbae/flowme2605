@@ -1,0 +1,604 @@
+import { expect, test, type Locator, type Page } from '@playwright/test';
+
+import { getOpenMyFlowItemDetail } from './helpers/my-flow-library';
+
+const FLOW_SLUG = 'moving-d30-basic';
+const SAVED_FLOW_KEY = `flow:saved:${FLOW_SLUG}`;
+const ANCHOR_KEY = `flow:${FLOW_SLUG}:anchorDate`;
+
+type P008InstrumentedWindow = Window & {
+  __p008LocalStorageMutations?: number;
+  __p008LocalStorageMutationLog?: Array<{
+    operation: 'setItem' | 'removeItem' | 'clear';
+    key?: string;
+    value?: string;
+  }>;
+};
+
+function collectBrowserErrors(page: Page) {
+  const errors: string[] = [];
+  page.on('console', (message) => {
+    if (message.type() === 'error') errors.push(message.text());
+  });
+  page.on('pageerror', (error) => errors.push(error.message));
+  return errors;
+}
+
+async function expectPageQuality(page: Page) {
+  const quality = await page.evaluate(() => {
+    const visible = (element: Element) => {
+      const target = element as HTMLElement;
+      const style = window.getComputedStyle(target);
+      const rect = target.getBoundingClientRect();
+      return style.display !== 'none'
+        && style.visibility !== 'hidden'
+        && rect.width > 0
+        && rect.height > 0;
+    };
+    const unnamedInteractiveCount = Array.from(
+      document.querySelectorAll('button, a[href], input, select, textarea, summary'),
+    ).filter((element) => {
+      if (!visible(element)) return false;
+      const control = element as HTMLElement & { labels?: NodeListOf<HTMLLabelElement> };
+      const labelText = Array.from(control.labels ?? [])
+        .map((label) => label.textContent?.trim() ?? '')
+        .join(' ');
+      return [
+        element.getAttribute('aria-label'),
+        element.getAttribute('aria-labelledby'),
+        element.getAttribute('title'),
+        labelText,
+        element.textContent?.trim(),
+      ].filter(Boolean).join(' ').trim().length === 0;
+    }).length;
+    return {
+      horizontalOverflow: Math.max(
+        0,
+        document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        document.body.scrollWidth - document.body.clientWidth,
+      ),
+      unnamedInteractiveCount,
+    };
+  });
+
+  expect(quality).toEqual({ horizontalOverflow: 0, unnamedInteractiveCount: 0 });
+}
+
+async function expectLibraryShell(
+  page: Page,
+  count: number,
+  sizeState: 'empty' | 'single' | 'small' | 'searchable',
+) {
+  const shell = page.getByTestId('my-flow-saved-library-shell');
+  await expect(shell).toBeVisible();
+  await expect(shell).toHaveAttribute('data-saved-library-flag', 'on');
+  await expect(shell).toHaveAttribute('data-library-count', String(count));
+  await expect(shell).toHaveAttribute('data-library-size-state', sizeState);
+  return shell;
+}
+
+async function seedOneDatedPlan(page: Page) {
+  await page.addInitScript(({ savedFlowKey, anchorKey, flowSlug }) => {
+    window.localStorage.clear();
+    window.localStorage.setItem(savedFlowKey, JSON.stringify({
+      slug: flowSlug,
+      savedAt: '2026-05-28T00:00:00.000Z',
+      selectedArtifactMode: 'calendar',
+      dateIntent: 'custom',
+      anchor: '2026-06-26',
+    }));
+    window.localStorage.setItem(
+      anchorKey,
+      JSON.stringify({ mode: 'custom', anchor: '2026-06-26' }),
+    );
+  }, { savedFlowKey: SAVED_FLOW_KEY, anchorKey: ANCHOR_KEY, flowSlug: FLOW_SLUG });
+}
+
+async function seedUndatedSavedPlan(page: Page, flowSlug: string) {
+  await page.goto('/flows');
+  await page.evaluate((slug) => {
+    window.localStorage.clear();
+    window.localStorage.setItem(`flow:saved:${slug}`, JSON.stringify({
+      slug,
+      savedAt: '2026-05-28T00:00:00.000Z',
+      selectedArtifactMode: 'checklist',
+      dateIntent: 'none',
+    }));
+  }, flowSlug);
+}
+
+async function localStorageRawSnapshot(page: Page): Promise<Record<string, string>> {
+  return page.evaluate(() => Object.fromEntries(
+    Array.from({ length: window.localStorage.length }, (_, index) => window.localStorage.key(index))
+      .filter((key): key is string => Boolean(key))
+      .sort()
+      .map((key) => [key, window.localStorage.getItem(key) ?? '']),
+  ));
+}
+
+async function localStorageMutationLog(page: Page) {
+  return page.evaluate(() => (
+    (window as P008InstrumentedWindow).__p008LocalStorageMutationLog ?? []
+  ));
+}
+
+function chooseBroadHangulQuery(titles: string[]): string {
+  const frequencies = new Map<string, number>();
+  titles.forEach((title) => {
+    const unique = new Set(Array.from(title).filter((character) => /[\uAC00-\uD7A3]/u.test(character)));
+    unique.forEach((character) => {
+      frequencies.set(character, (frequencies.get(character) ?? 0) + 1);
+    });
+  });
+  return Array.from(frequencies.entries())
+    .sort((left, right) => right[1] - left[1] || left[0].localeCompare(right[0]))[0]?.[0] ?? '';
+}
+
+async function firstOpenItemButton(plan: Locator): Promise<Locator> {
+  const firstEntry = plan.getByTestId('my-flow-execution-row-shell').first();
+  await expect(firstEntry).toBeVisible();
+  const open = firstEntry.getByRole('button', { name: /열기/u }).first();
+  await expect(open).toBeVisible();
+  return open;
+}
+
+test.describe('P35 P0-08 saved-plan library', () => {
+  test('390: zero plans has one discovery action and no synthetic Today or controls', async ({ page }) => {
+    const errors = collectBrowserErrors(page);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.addInitScript(() => window.localStorage.clear());
+    await page.goto('/my');
+
+    const shell = await expectLibraryShell(page, 0, 'empty');
+    await expect(shell.getByTestId('my-flow-today-summary')).toHaveCount(0);
+    await expect(shell.getByTestId('my-flow-empty-state')).toBeVisible();
+    await expect(shell.locator('[data-action-role="discover-public-flow"]')).toHaveCount(1);
+    await expect(shell.getByTestId('my-flow-search')).toHaveCount(0);
+    await expect(shell.getByTestId('my-flow-library-rail-search')).toHaveCount(0);
+    await expect(shell.getByTestId('my-flow-mobile-structure-row')).toHaveCount(0);
+    await expect(shell.getByRole('tablist', { name: 'My Flow 보기 방식' })).toHaveCount(0);
+
+    await expectPageQuality(page);
+    expect(errors).toEqual([]);
+  });
+
+  test('390: one ordinary plan stays in the library and Today reuses its saved identity', async ({ page }) => {
+    const errors = collectBrowserErrors(page);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.clock.install({ time: new Date('2026-05-28T09:00:00+09:00') });
+    await seedOneDatedPlan(page);
+    await page.goto('/my');
+
+    const shell = await expectLibraryShell(page, 1, 'single');
+    expect(new URL(page.url()).searchParams.get('flow')).toBeNull();
+    await expect(shell.getByTestId('my-flow-mobile-workspace')).toHaveCount(0);
+    const planRow = shell.getByTestId('my-flow-mobile-structure-row');
+    await expect(planRow).toHaveCount(1);
+    await expect(planRow).toHaveAttribute('data-saved-identity', FLOW_SLUG);
+    await expect(shell.getByTestId('my-flow-search')).toHaveCount(0);
+    await expect(shell.locator('[data-testid^="my-flow-list-filter-"]')).toHaveCount(0);
+
+    const today = shell.getByTestId('my-flow-today-summary');
+    await expect(today).toBeVisible();
+    await expect(today).toHaveAttribute('data-today-source', 'effective_execution');
+    await expect(today).toHaveAttribute('data-write-owner', 'none');
+    const todayItems = today.getByTestId('my-flow-today-item');
+    expect(await todayItems.count()).toBeGreaterThan(0);
+    expect(await todayItems.count()).toBeLessThanOrEqual(3);
+    await expect(todayItems.first()).toHaveAttribute('data-saved-identity', FLOW_SLUG);
+    await expect(todayItems.first()).toHaveAttribute('data-item-id', /\S/u);
+    const todayItemId = await todayItems.first().getAttribute('data-item-id');
+    await todayItems.first().click();
+    await expect.poll(() => new URL(page.url()).searchParams.get('flow')).toBe(FLOW_SLUG);
+    await expect.poll(() => new URL(page.url()).searchParams.has('item')).toBe(true);
+    const selectedWorkspace = shell.locator(
+      `[data-testid="my-flow-mobile-workspace"][data-flow-slug="${FLOW_SLUG}"]`,
+    );
+    await expect(selectedWorkspace).toBeVisible();
+    await expect(getOpenMyFlowItemDetail(page)).toHaveAttribute('data-item-id', todayItemId ?? '');
+
+    await expectPageQuality(page);
+    expect(errors).toEqual([]);
+  });
+
+  test('390: one undated plan does not manufacture a Today wrapper or heading', async ({ page }) => {
+    const errors = collectBrowserErrors(page);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await seedUndatedSavedPlan(page, 'used-car-buying-check');
+    await page.goto('/my');
+
+    const shell = await expectLibraryShell(page, 1, 'single');
+    await expect(shell.getByTestId('my-flow-today-summary')).toHaveCount(0);
+    await expect(shell.locator('#my-flow-compact-today-title')).toHaveCount(0);
+    await expect(shell.getByTestId('my-flow-mobile-structure-row')).toHaveCount(1);
+    await expect(shell.getByTestId('my-flow-mobile-structure-row')).toHaveAttribute(
+      'data-saved-identity',
+      'used-car-buying-check',
+    );
+
+    await expectPageQuality(page);
+    expect(errors).toEqual([]);
+  });
+
+  test('1024: five plans remain a stable compact library without premature search or filters', async ({ page }) => {
+    const errors = collectBrowserErrors(page);
+    await page.setViewportSize({ width: 1024, height: 768 });
+    await page.goto('/my?demo=ux5');
+
+    const shell = await expectLibraryShell(page, 5, 'small');
+    const workspace = shell.getByTestId('my-flow-library-workspace');
+    await expect(workspace).toBeVisible();
+    const rows = workspace.getByTestId('my-flow-library-row');
+    await expect(rows).toHaveCount(5);
+    await expect(rows.first()).toHaveAttribute('data-saved-identity', /\S/u);
+    await expect(rows.last()).toHaveAttribute('data-saved-identity', /\S/u);
+    await expect(workspace.getByTestId('my-flow-library-rail-search')).toHaveCount(0);
+    await expect(workspace.getByTestId('my-flow-library-rail-filter')).toHaveCount(0);
+    await expect(workspace.getByTestId('my-flow-overview-card')).toHaveCount(0);
+    const orderBeforeReload = await rows.evaluateAll((elements) => (
+      elements.map((element) => element.getAttribute('data-saved-identity'))
+    ));
+    await page.reload();
+    const reloadedRows = page.getByTestId('my-flow-library-row');
+    await expect(reloadedRows).toHaveCount(5);
+    expect(await reloadedRows.evaluateAll((elements) => (
+      elements.map((element) => element.getAttribute('data-saved-identity'))
+    ))).toEqual(orderBeforeReload);
+
+    await expectPageQuality(page);
+    expect(errors).toEqual([]);
+  });
+
+  test('1440: twenty plans expose only query plus one status-axis filter', async ({ page }) => {
+    const errors = collectBrowserErrors(page);
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.goto('/my?demo=ux20');
+
+    const shell = await expectLibraryShell(page, 20, 'searchable');
+    const workspace = shell.getByTestId('my-flow-library-workspace');
+    const rail = workspace.getByTestId('my-flow-library-rail');
+    await expect(rail.getByTestId('my-flow-library-row')).toHaveCount(20);
+    await expect(rail.getByTestId('my-flow-library-rail-search')).toBeVisible();
+    const statusFilter = rail.getByTestId('my-flow-library-rail-filter');
+    await expect(statusFilter).toBeVisible();
+    await expect(statusFilter.locator('option')).toHaveCount(4);
+    await expect(rail.locator('input[type="search"]')).toHaveCount(1);
+    await expect(rail.locator('select')).toHaveCount(1);
+
+    await expectPageQuality(page);
+    expect(errors).toEqual([]);
+  });
+
+  test('1024: direct A then rail B returns to the library instead of external history', async ({ page }) => {
+    const errors = collectBrowserErrors(page);
+    await page.setViewportSize({ width: 1024, height: 768 });
+    await page.goto('/flows?source=p008-direct-entry');
+    await page.goto(`/my?demo=ux5&view=flows&flow=${FLOW_SLUG}`);
+
+    await expectLibraryShell(page, 5, 'small');
+    const selectedPlanA = page.locator(
+      `[data-testid="my-flow-overview-card"][data-flow-slug="${FLOW_SLUG}"]`,
+    );
+    await expect(selectedPlanA).toBeVisible();
+    const rail = page.getByTestId('my-flow-library-rail');
+    const planBRow = rail.locator(
+      `[data-testid="my-flow-library-row"]:not([data-flow-slug="${FLOW_SLUG}"])`,
+    ).first();
+    const planBSlug = await planBRow.getAttribute('data-flow-slug');
+    expect(planBSlug).toBeTruthy();
+    await planBRow.click();
+    await expect.poll(() => new URL(page.url()).searchParams.get('flow')).toBe(planBSlug);
+    await expect(page.locator(
+      `[data-testid="my-flow-overview-card"][data-flow-slug="${planBSlug}"]`,
+    )).toBeVisible();
+
+    const historyLength = await page.evaluate(() => window.history.length);
+    await page.getByTestId('my-flow-library-back').click();
+    await expect.poll(() => new URL(page.url()).pathname).toBe('/my');
+    await expect.poll(() => new URL(page.url()).searchParams.has('flow')).toBe(false);
+    await expect(page.getByTestId('my-flow-library-row')).toHaveCount(5);
+    expect(await page.evaluate(() => window.history.length)).toBe(historyLength);
+
+    await expectPageQuality(page);
+    expect(errors).toEqual([]);
+  });
+
+  test('1024: list to plan to item browser Back restores plan then query, status, and rail scroll', async ({ page }) => {
+    const errors = collectBrowserErrors(page);
+    await page.setViewportSize({ width: 1024, height: 600 });
+    await page.goto('/my?demo=ux20');
+    await expectLibraryShell(page, 20, 'searchable');
+
+    const workspace = page.getByTestId('my-flow-library-workspace');
+    const rail = workspace.getByTestId('my-flow-library-rail');
+    const allRows = rail.getByTestId('my-flow-library-row');
+    await expect(allRows).toHaveCount(20);
+    const titles = await allRows.locator('[data-flow-identity-slot="title"]').allTextContents();
+    const query = chooseBroadHangulQuery(titles);
+    expect(query).not.toBe('');
+
+    await rail.getByTestId('my-flow-library-rail-filter').selectOption('open');
+    await rail.getByTestId('my-flow-library-rail-search').fill(query);
+    await expect.poll(() => new URL(page.url()).searchParams.get('status')).toBe('open');
+    await expect.poll(() => new URL(page.url()).searchParams.get('q')).toBe(query);
+    const filteredRows = rail.getByTestId('my-flow-library-row');
+    const filteredCount = await filteredRows.count();
+    expect(filteredCount).toBeGreaterThan(1);
+
+    const scrollContainer = rail.getByTestId('my-flow-library-scroll-container');
+    const expectedScrollTop = await scrollContainer.evaluate((element) => {
+      element.scrollTop = element.scrollHeight;
+      return element.scrollTop;
+    });
+    expect(expectedScrollTop).toBeGreaterThan(0);
+
+    const selectedRow = filteredRows.last();
+    const selectedSlug = await selectedRow.getAttribute('data-flow-slug');
+    expect(selectedSlug).toBeTruthy();
+    await selectedRow.click();
+    await expect.poll(() => new URL(page.url()).searchParams.get('flow')).toBe(selectedSlug);
+    await expect.poll(() => new URL(page.url()).searchParams.get('q')).toBe(query);
+    await expect.poll(() => new URL(page.url()).searchParams.get('status')).toBe('open');
+
+    const plan = workspace
+      .getByTestId('my-flow-library-detail')
+      .locator(`[data-testid="my-flow-overview-card"][data-flow-slug="${selectedSlug}"]`);
+    await expect(plan).toBeVisible();
+    const itemOpener = await firstOpenItemButton(plan);
+    await itemOpener.click();
+    await expect(getOpenMyFlowItemDetail(page)).toBeVisible();
+    await expect.poll(() => new URL(page.url()).searchParams.has('item')).toBe(true);
+
+    await page.goBack();
+    await expect.poll(() => new URL(page.url()).searchParams.has('item')).toBe(false);
+    await expect.poll(() => new URL(page.url()).searchParams.get('flow')).toBe(selectedSlug);
+    await expect(plan).toBeVisible();
+    await expect(getOpenMyFlowItemDetail(page)).toHaveCount(0);
+    await expect(itemOpener).toBeFocused();
+
+    await page.goBack();
+    await expect.poll(() => new URL(page.url()).searchParams.has('flow')).toBe(false);
+    await expect.poll(() => new URL(page.url()).searchParams.get('q')).toBe(query);
+    await expect.poll(() => new URL(page.url()).searchParams.get('status')).toBe('open');
+    await expect(filteredRows).toHaveCount(filteredCount);
+    await expect.poll(async () => scrollContainer.evaluate((element) => element.scrollTop))
+      .toBeGreaterThanOrEqual(Math.max(1, expectedScrollTop - 4));
+    await expect(rail.locator(
+      `[data-testid="my-flow-library-row"][data-flow-slug="${selectedSlug}"]`,
+    )).toBeFocused();
+
+    await expectPageQuality(page);
+    expect(errors).toEqual([]);
+  });
+
+  test('1024: finishing the last open item keeps the selected plan under the open filter', async ({ page }) => {
+    const errors = collectBrowserErrors(page);
+    const flowSlug = 'used-car-buying-check';
+    await page.setViewportSize({ width: 1024, height: 768 });
+    await seedUndatedSavedPlan(page, flowSlug);
+    await page.goto(`/my?view=flows&flow=${flowSlug}`);
+
+    await expectLibraryShell(page, 1, 'single');
+    const selectedPlan = page.locator(
+      `[data-testid="my-flow-overview-card"][data-flow-slug="${flowSlug}"]`,
+    );
+    await expect(selectedPlan).toBeVisible();
+    const outline = selectedPlan.getByTestId('my-flow-whole-flow-outline');
+    await expect(outline).toBeVisible();
+    await outline.getByTestId('my-flow-whole-flow-toggle-all-groups').click();
+    const outlineRows = outline.locator('article[data-row-key]');
+    await expect(outlineRows).toHaveCount(15);
+    const executableIds = await outlineRows.evaluateAll((rows) => (
+      Array.from(new Set(rows
+        .map((row) => row.getAttribute('data-item-id'))
+        .filter((itemId): itemId is string => Boolean(itemId))))
+    ));
+    expect(executableIds.length).toBeGreaterThan(1);
+    await page.evaluate(({ slug, completedIds }) => {
+      window.localStorage.setItem(
+        `flow_builder_mvp_checks_${slug}`,
+        JSON.stringify(Object.fromEntries(completedIds.map((itemId) => [itemId, true]))),
+      );
+    }, { slug: flowSlug, completedIds: executableIds.slice(0, -1) });
+
+    await page.goto(`/my?view=flows&status=open&flow=${flowSlug}`);
+    const filteredSelectedPlan = page.locator(
+      `[data-testid="my-flow-overview-card"][data-flow-slug="${flowSlug}"]`,
+    );
+    await expect(filteredSelectedPlan).toBeVisible();
+    await expect(filteredSelectedPlan.getByTestId('my-flow-workspace-progress-summary'))
+      .toContainText('14/15');
+    const openRows = filteredSelectedPlan
+      .getByTestId('my-flow-shape-aware-execution')
+      .getByTestId('my-flow-execution-row-shell');
+    await expect(openRows).toHaveCount(1);
+    await (await firstOpenItemButton(filteredSelectedPlan)).click();
+    const itemDetail = getOpenMyFlowItemDetail(page);
+    await expect(itemDetail).toBeVisible();
+    const completion = itemDetail.getByTestId('my-flow-task-complete-control');
+    await expect(completion).not.toBeChecked();
+    await completion.click();
+    await expect(completion).toBeChecked();
+
+    await page.goBack();
+    await expect.poll(() => {
+      const url = new URL(page.url());
+      return {
+        flow: url.searchParams.get('flow'),
+        item: url.searchParams.has('item'),
+        status: url.searchParams.get('status'),
+      };
+    }).toEqual({ flow: flowSlug, item: false, status: 'open' });
+    await expect(filteredSelectedPlan).toBeVisible();
+    await expect(filteredSelectedPlan.getByTestId('my-flow-workspace-progress-summary'))
+      .toContainText('15/15');
+
+    await expectPageQuality(page);
+    expect(errors).toEqual([]);
+  });
+
+  test('1024: archiving the last active plan clears selection and persists its archived lens identity', async ({ page }) => {
+    const errors = collectBrowserErrors(page);
+    const flowSlug = 'used-car-buying-check';
+    await page.setViewportSize({ width: 1024, height: 768 });
+    await seedUndatedSavedPlan(page, flowSlug);
+    await page.goto(`/my?view=flows&flow=${flowSlug}`);
+
+    await expectLibraryShell(page, 1, 'single');
+    const selectedPlan = page.locator(
+      `[data-testid="my-flow-overview-card"][data-flow-slug="${flowSlug}"]`,
+    );
+    await expect(selectedPlan).toBeVisible();
+    await selectedPlan.getByTestId('my-flow-management-menu-trigger').click();
+    await selectedPlan.getByTestId('my-flow-archive-toggle').click();
+
+    await expect.poll(() => {
+      const url = new URL(page.url());
+      return {
+        flow: url.searchParams.get('flow'),
+        status: url.searchParams.get('status'),
+      };
+    }).toEqual({ flow: null, status: 'archived' });
+    const archivedRow = page.locator(
+      `[data-testid="my-flow-library-archived-row"][data-flow-slug="${flowSlug}"]`,
+    );
+    await expect(archivedRow).toBeVisible();
+
+    await page.reload();
+    await expect.poll(() => new URL(page.url()).searchParams.get('status')).toBe('archived');
+    await expect(page.locator(
+      `[data-testid="my-flow-library-archived-row"][data-flow-slug="${flowSlug}"]`,
+    )).toBeVisible();
+
+    await expectPageQuality(page);
+    expect(errors).toEqual([]);
+  });
+
+  test('exact savedPlanLibrary=off restores the legacy surface without changing legacy bytes', async ({ page }) => {
+    const errors = collectBrowserErrors(page);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/flows');
+    await page.evaluate(({ savedFlowKey, anchorKey, flowSlug }) => {
+      window.localStorage.clear();
+      window.localStorage.setItem(
+        savedFlowKey,
+        `{"slug":"${flowSlug}","savedAt":"2026-05-28T00:00:00.000Z","selectedArtifactMode":"calendar","anchor":"2026-06-26"}`,
+      );
+      window.localStorage.setItem(anchorKey, '{"mode":"custom","anchor":"2026-06-26"}');
+      window.localStorage.setItem(
+        `flow_builder_mvp_checks_${flowSlug}`,
+        '{"legacy-check":false}',
+      );
+      window.localStorage.setItem(
+        `flow_builder_mvp_item_state_${flowSlug}`,
+        '{"legacy-item":{"note":"keep exact legacy bytes","custom":"sentinel"}}',
+      );
+      window.localStorage.setItem('flow:p0-08:sentinel', '  byte-for-byte sentinel  ');
+    }, { savedFlowKey: SAVED_FLOW_KEY, anchorKey: ANCHOR_KEY, flowSlug: FLOW_SLUG });
+    const before = await localStorageRawSnapshot(page);
+    await page.addInitScript(() => {
+      const originalSetItem = Storage.prototype.setItem;
+      const originalRemoveItem = Storage.prototype.removeItem;
+      const originalClear = Storage.prototype.clear;
+      const state = window as P008InstrumentedWindow;
+      state.__p008LocalStorageMutations = 0;
+      state.__p008LocalStorageMutationLog = [];
+      Storage.prototype.setItem = function p008SetItem(key: string, value: string) {
+        if (this === window.localStorage) {
+          const current = window as P008InstrumentedWindow;
+          current.__p008LocalStorageMutations = (current.__p008LocalStorageMutations ?? 0) + 1;
+          current.__p008LocalStorageMutationLog?.push({ operation: 'setItem', key, value });
+        }
+        return originalSetItem.call(this, key, value);
+      };
+      Storage.prototype.removeItem = function p008RemoveItem(key: string) {
+        if (this === window.localStorage) {
+          const current = window as P008InstrumentedWindow;
+          current.__p008LocalStorageMutations = (current.__p008LocalStorageMutations ?? 0) + 1;
+          current.__p008LocalStorageMutationLog?.push({ operation: 'removeItem', key });
+        }
+        return originalRemoveItem.call(this, key);
+      };
+      Storage.prototype.clear = function p008Clear() {
+        if (this === window.localStorage) {
+          const current = window as P008InstrumentedWindow;
+          current.__p008LocalStorageMutations = (current.__p008LocalStorageMutations ?? 0) + 1;
+          current.__p008LocalStorageMutationLog?.push({ operation: 'clear' });
+        }
+        return originalClear.call(this);
+      };
+    });
+
+    await page.goto('/my');
+    await expectLibraryShell(page, 1, 'single');
+    expect(await localStorageRawSnapshot(page)).toEqual(before);
+    expect(await localStorageMutationLog(page)).toEqual([]);
+    await page.reload();
+    await expectLibraryShell(page, 1, 'single');
+    expect(await localStorageRawSnapshot(page)).toEqual(before);
+    expect(await localStorageMutationLog(page)).toEqual([]);
+
+    await page.goto('/my?savedPlanLibrary=off');
+    const main = page.locator('main').first();
+    await expect(main).toHaveAttribute('data-saved-library-flag', 'off');
+    await expect(page.getByTestId('my-flow-saved-library-shell')).toHaveCount(0);
+    await expect(page.getByTestId('my-flow-cross-flow-todo-experiment')).toBeVisible();
+    await expect(page.getByTestId('my-flow-todo-experiment-view-todo')).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
+    expect(await localStorageRawSnapshot(page)).toEqual(before);
+    expect(await localStorageMutationLog(page)).toEqual([]);
+    await page.reload();
+    await expect(page.getByTestId('my-flow-cross-flow-todo-experiment')).toBeVisible();
+    expect(await localStorageRawSnapshot(page)).toEqual(before);
+    expect(await localStorageMutationLog(page)).toEqual([]);
+
+    await expectPageQuality(page);
+    expect(errors).toEqual([]);
+  });
+
+  test('390: public save deep-link opens the selected plan with one count-accurate banner only once', async ({ page }) => {
+    const errors = collectBrowserErrors(page);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(`/f/${FLOW_SLUG}`);
+    await page.evaluate(() => window.localStorage.clear());
+    await page.reload();
+    await page.getByTestId('public-flow-anchor-input').fill('2031-01-10');
+    await page.getByTestId('public-flow-save-primary-mobile').click();
+
+    await expect.poll(() => {
+      const url = new URL(page.url());
+      return {
+        pathname: url.pathname,
+        flow: url.searchParams.get('flow'),
+        receipt: url.searchParams.has('saveReceipt'),
+      };
+    }).toEqual({
+      pathname: '/my',
+      flow: expect.stringMatching(/^personal-copy:/u),
+      receipt: false,
+    });
+    const personalCopyKey = new URL(page.url()).searchParams.get('flow') ?? '';
+    const shell = page.getByTestId('my-flow-saved-library-shell');
+    await expect(shell).toHaveAttribute('data-saved-library-flag', 'on');
+    const banner = shell.getByTestId('my-flow-save-banner');
+    await expect(banner).toBeVisible();
+    await expect(banner).toHaveAttribute('data-personal-copy-key', personalCopyKey);
+    await expect(banner).toHaveAttribute('data-item-count', '24');
+    await expect(banner.getByTestId('my-flow-save-banner-summary')).toContainText('24');
+    await expect(banner.getByTestId('my-flow-save-undo')).toBeVisible();
+    await expect(
+      shell.locator(`[data-testid="my-flow-mobile-workspace"][data-flow-slug="${personalCopyKey}"]`),
+    ).toBeVisible();
+
+    await page.reload();
+    await expect(page.getByTestId('my-flow-save-banner')).toHaveCount(0);
+    await expect(
+      page.locator(`[data-testid="my-flow-mobile-workspace"][data-flow-slug="${personalCopyKey}"]`),
+    ).toBeVisible();
+
+    await expectPageQuality(page);
+    expect(errors).toEqual([]);
+  });
+});

@@ -1,4 +1,5 @@
 import { getArtifactPlan, type ArtifactSurfaceKind, type PrimaryArtifactSurface } from './artifact-plan';
+import { normalizeCompletionCriterion } from './completion-criterion';
 import { addDays, formatLocalDate } from './date';
 import { splitExecutionDetailContent } from './execution-detail-content';
 import { isFlowItemPersonallyExcluded } from './flow-item-state';
@@ -31,6 +32,7 @@ export type FlowExperienceProjectionRow = {
   title: string;
   description?: string;
   memo?: string;
+  completionCriterion?: string;
   section?: string;
   orderRank: number;
   included: boolean;
@@ -155,6 +157,27 @@ function getOrderRank(item: FlowItem, orderOverride: string[]): number {
   return overrideIndex >= 0 ? overrideIndex : orderOverride.length + item.order;
 }
 
+function getProjectionItems(bundle: FlowBundle): FlowItem[] {
+  if (bundle.flow.content_type !== 'meal_plan' || bundle.items.length > 0) {
+    return bundle.items;
+  }
+
+  return (bundle.mealSlots ?? []).map((slot) => ({
+    id: slot.id,
+    flow_id: slot.flow_id,
+    ...(slot.section_id ? { section_id: slot.section_id } : {}),
+    title: slot.menu_title,
+    description: slot.new_ingredients.length > 0
+      ? `새 재료: ${slot.new_ingredients.join(', ')}`
+      : undefined,
+    type: 'calendar',
+    day_offset: slot.day_offset,
+    duration_days: slot.duration_days,
+    role: 'action',
+    order: slot.order,
+  }));
+}
+
 export function buildFlowExperienceProjection(
   bundle: FlowBundle,
   options: FlowExperienceProjectionOptions = {},
@@ -167,7 +190,7 @@ export function buildFlowExperienceProjection(
   const completed = new Set(options.completedItemIds ?? []);
   const sections = new Map(bundle.sections.map((section) => [section.id, section.title]));
 
-  const rows = bundle.items
+  const rows = getProjectionItems(bundle)
     .map((item): FlowExperienceProjectionRow => {
       const detail = bundle.itemDetails?.find((entry) => entry.item_id === item.id);
       const override = itemOverrides[item.id];
@@ -176,6 +199,7 @@ export function buildFlowExperienceProjection(
       const included = !explicitlyExcluded.has(item.id) && !isFlowItemPersonallyExcluded(itemStates[item.id]);
       const resources = splitExecutionDetailContent(detail).resources.map((resource) => ({ ...resource }));
       const scheduleState = date ? (item.repeat_rule ? 'recurring' : 'dated') : 'unscheduled';
+      const completionCriterion = normalizeCompletionCriterion(detail?.completion_criteria);
 
       return {
         id: item.id,
@@ -186,6 +210,7 @@ export function buildFlowExperienceProjection(
         title: override?.title?.trim() || item.title,
         ...(item.description ? { description: item.description } : {}),
         ...(override?.memo?.trim() ? { memo: override.memo.trim() } : {}),
+        ...(completionCriterion ? { completionCriterion } : {}),
         ...(item.section_id && sections.get(item.section_id) ? { section: sections.get(item.section_id) } : {}),
         orderRank: getOrderRank(item, orderOverride),
         included,

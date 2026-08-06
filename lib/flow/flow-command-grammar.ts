@@ -23,7 +23,7 @@ export type FlowManagementCommand = {
 
 export const FLOW_COMMAND_LABELS = {
   manageFlow: 'Flow 관리',
-  adjustFlow: 'Flow 조정',
+  adjustFlow: 'Flow 편집',
   reuseFlow: '새 실행으로 다시 쓰기',
   viewSource: '원문 보기',
   archiveFlow: '보관',
@@ -47,6 +47,7 @@ export function buildFlowManagementCommandModel(options: {
   canReuse?: boolean;
   hasSource?: boolean;
   canBackup?: boolean;
+  q3CopyEnabled?: boolean;
 }): FlowManagementCommand[] {
   if (options.archived) {
     const commands: FlowManagementCommand[] = [
@@ -82,7 +83,7 @@ export function buildFlowManagementCommandModel(options: {
   if (options.canAdjust) {
     commands.push({
       id: 'adjust',
-      label: FLOW_COMMAND_LABELS.adjustFlow,
+      label: options.q3CopyEnabled ? '계획 수정' : FLOW_COMMAND_LABELS.adjustFlow,
       role: 'secondary',
     });
   }
@@ -111,10 +112,11 @@ export function buildFlowManagementCommandModel(options: {
 
 export function getStructuralItemCommandLabels(
   ownership: 'source' | 'personal',
+  q3CopyEnabled = false,
 ): { remove: string; restore: string } {
   return ownership === 'source'
     ? {
-        remove: FLOW_COMMAND_LABELS.excludeSourceItem,
+        remove: q3CopyEnabled ? '이 계획에서 제외' : FLOW_COMMAND_LABELS.excludeSourceItem,
         restore: FLOW_COMMAND_LABELS.restoreSourceItem,
       }
     : {
@@ -139,7 +141,7 @@ export function getExportScopeActionLabel(
   const normalizedCount = Number.isFinite(count)
     ? Math.max(0, Math.floor(count))
     : 0;
-  if (scope === 'selected') return `선택한 ${normalizedCount}개 가져가기`;
-  if (scope === 'item') return `현재 항목 ${normalizedCount}개 가져가기`;
-  return `전체 ${normalizedCount}개 가져가기`;
+  if (scope === 'selected') return `선택한 ${normalizedCount}개 옮기기`;
+  if (scope === 'item') return `현재 항목 ${normalizedCount}개 옮기기`;
+  return `전체 ${normalizedCount}개 옮기기`;
 }

@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
+  buildPersonalStructuralPortableScheduleFields,
   buildMyFlowStepChecklistText,
   buildMyFlowStepIcs,
   buildMyFlowMultiStepIcs,
@@ -9,7 +10,17 @@ import {
   canBuildMyFlowStepIcs,
   type MyFlowPortableStepExportInput,
 } from './my-flow-step-export';
-import { buildPersonalStructuralListExportArtifacts } from './personal-structural-list-export';
+import {
+  buildPersonalStructuralListExportArtifacts,
+  buildPersonalStructuralListExportArtifactsFromRows,
+  formatPersonalStructuralRepeatLabel,
+  PERSONAL_STRUCTURAL_SHEET_HEADERS,
+} from './personal-structural-list-export';
+import { parseEffectiveFlowTsv } from './effective-flow-artifact-codec';
+import {
+  buildCompletionCriterionFieldContract,
+  GENERIC_COMPLETION_CRITERION,
+} from './completion-criterion';
 import { buildFlowRunHistoryListExportArtifacts, getFlowRunItemStatusLabel } from './flow-run-history';
 import type { FlowRunRecord } from './storage';
 import { buildPersonalStructuralRecurrenceIcs } from './personal-structural-recurrence-ics';
@@ -19,6 +30,9 @@ import {
   buildPersonalStructuralRecurrenceSeriesId,
   type PersonalStructuralRecurrenceSeries,
 } from './personal-structural-recurrence';
+import {
+  buildPersonalStructuralScheduleProjection,
+} from './personal-structural-schedule';
 import {
   buildPersonalStructuralProjection,
 } from './personal-structural-projection';
@@ -47,7 +61,7 @@ test('portable Step text carries edited schedule fields and checked items', () =
   const text = buildMyFlowStepPortableText(baseInput);
 
   assert.match(text, /^이사 방식과 견적 후보 정하기/);
-  assert.match(text, /Flow: 원룸 이사 D-30 준비/);
+  assert.match(text, /계획: 원룸 이사 D-30 준비/);
   assert.match(text, /구간: D-30 범위 쪼개기/);
   assert.match(text, /일정: 2026-06-24 09:30/);
   assert.match(text, /반복: 매주/);
@@ -67,18 +81,129 @@ test('tool handoff exports create checklist text and one spreadsheet row', () =>
   });
 
   assert.match(checklist, /^이사 방식과 견적 후보 정하기/);
-  assert.match(checklist, /Flow: 원룸 이사 D-30 준비/);
+  assert.match(checklist, /계획: 원룸 이사 D-30 준비/);
   assert.match(checklist, /일정: 2026-06-24 09:30/);
   assert.match(checklist, /- \[x\] 포장\/반포장\/용달 중 하나 정하기/);
   assert.match(checklist, /- \[ \] 견적 후보 2~3곳 열기/);
-  assert.doesNotMatch(checklist, /완료 기준:/);
+  assert.match(checklist, /완료 기준: 이사 방식과 견적 후보가 정해졌다\./);
 
   const [header, row] = sheetRow.trimEnd().split('\n');
-  assert.equal(header, 'Flow\t할 일\t구간\t날짜\t시간\t반복\t장소\t체크리스트\t메모\t완료 기준\t주의\t원문');
+  assert.equal(header, '계획\t할 일\t구간\t날짜\t시간\t반복\t장소\t체크리스트\t메모\t완료 기준\t주의\t원문');
   assert.match(row, /^원룸 이사 D-30 준비\t이사 방식과 견적 후보 정하기\tD-30 범위 쪼개기\t2026-06-24\t09:30\t매주\t집\t/);
   assert.match(row, /\[x\] 포장\/반포장\/용달 중 하나 정하기 \| \[ \] 견적 후보 2~3곳 열기/);
   assert.match(row, /첫 줄 \/ 둘째 줄/);
   assert.match(row, /AJD 이사 체크리스트 https:\/\/example\.com\/moving$/);
+});
+
+test('completion criterion contract preserves long multiline Korean and special characters', () => {
+  const longFirstLine = `사진·문서 2개를 확인하고 [필수] #1 & #2를 기록했다 — ${'가'.repeat(180)}`;
+  const criterion = `${longFirstLine}\r\n둘째 줄: <확인> / 탭\t유지 😀\r\n\r\n마지막 줄: 따옴표 "완료"와 '확인'`;
+  const contract = buildCompletionCriterionFieldContract(criterion);
+  const checklist = buildMyFlowStepChecklistText({
+    ...baseInput,
+    completionCriteria: criterion,
+  });
+
+  assert.equal(contract.present, true);
+  assert.equal(contract.value, criterion.replaceAll('\r\n', '\n'));
+  assert.deepEqual(contract.lines, [
+    longFirstLine,
+    '둘째 줄: <확인> / 탭\t유지 😀',
+    '',
+    '마지막 줄: 따옴표 "완료"와 \'확인\'',
+  ]);
+  assert.ok(checklist.includes(`완료 기준: ${longFirstLine}\n  둘째 줄: <확인> / 탭\t유지 😀\n  \n  마지막 줄: 따옴표 "완료"와 '확인'`));
+});
+
+test('empty and generic completion criteria never create an empty checklist label', () => {
+  for (const completionCriteria of [undefined, '', ' \r\n ', GENERIC_COMPLETION_CRITERION]) {
+    const contract = buildCompletionCriterionFieldContract(completionCriteria);
+    const checklist = buildMyFlowStepChecklistText({ ...baseInput, completionCriteria });
+    const memo = buildMyFlowStepPortableText({ ...baseInput, completionCriteria });
+    const sheet = buildMyFlowStepSheetTsv({ ...baseInput, completionCriteria });
+    const ics = buildMyFlowStepIcs({ ...baseInput, completionCriteria });
+    assert.equal(contract.present, false);
+    assert.deepEqual(contract.lines, []);
+    assert.doesNotMatch(checklist, /완료 기준:/);
+    assert.doesNotMatch(memo, /완료 기준:/);
+    assert.doesNotMatch(sheet, new RegExp(GENERIC_COMPLETION_CRITERION));
+    assert.doesNotMatch(ics, /완료 기준:/);
+  }
+});
+
+test('Item checklist keeps criterion, execution state, memos, warnings, resources, and source separate', () => {
+  const checklist = buildMyFlowStepChecklistText({
+    ...baseInput,
+    description: '원문 기반 설명',
+    executionStatus: 'done',
+    executionMemo: '공개 가능한 실행 메모',
+    flowWarning: '계획 전체 주의',
+    resources: [
+      { label: '공식 도구', url: 'https://tool.example.com?a=1&b=2#start' },
+      { label: '공식 도구', url: 'https://tool.example.com?a=1&b=2#start' },
+    ],
+  });
+
+  assert.match(checklist, /설명: 원문 기반 설명/);
+  assert.match(checklist, /실행 상태: 완료/);
+  assert.match(checklist, /완료 기준: 이사 방식과 견적 후보가 정해졌다\./);
+  assert.match(checklist, /개인 메모: 견적 후보 3곳과 포함 범위만 메모/);
+  assert.match(checklist, /실행 메모: 공개 가능한 실행 메모/);
+  assert.match(checklist, /주의: 계약 전 포함 범위를 다시 확인한다\./);
+  assert.match(checklist, /계획 주의: 계획 전체 주의/);
+  assert.equal(checklist.match(/^자료:/gmu)?.length, 1);
+  assert.match(checklist, /자료: 공식 도구 - https:\/\/tool\.example\.com\?a=1&b=2#start/);
+  assert.match(checklist, /원문: AJD 이사 체크리스트 https:\/\/example\.com\/moving/);
+  assert.doesNotMatch(checklist, /PRIVATE_NOTE|SOURCE_CORRECTION|HISTORY_ONLY/);
+});
+
+test('whole and selected list checklist keep completion state separate from criterion and memo', () => {
+  const artifacts = buildPersonalStructuralListExportArtifactsFromRows({
+    flowTitle: '완료 기준 golden 계획',
+    sourceLabel: '원문 이름',
+    sourceUrl: 'https://example.com/source',
+    rows: [
+      {
+        itemId: 'criterion-a',
+        title: '사진 확인하기',
+        scheduleState: 'unscheduled',
+        status: 'done',
+        personalOrderRank: 0,
+        description: '원문 설명은 별도다.',
+        completionCriteria: '사진 2장을 공유했다.\n확인 답장을 받았다.',
+        memo: '개인 메모는 별도다.',
+        executionMemo: '실행 메모도 별도다.',
+        itemWarning: '항목 주의를 확인한다.',
+        flowWarning: '계획 전체 주의를 확인한다.',
+        resources: [
+          { label: '공식 자료', url: 'https://example.com/resource' },
+          { label: '공식 자료', url: 'https://example.com/resource' },
+        ],
+      },
+      {
+        itemId: 'criterion-empty',
+        title: '빈 기준 항목',
+        scheduleState: 'unscheduled',
+        status: 'pending',
+        personalOrderRank: 1,
+        completionCriteria: GENERIC_COMPLETION_CRITERION,
+      },
+    ],
+  });
+
+  assert.equal(artifacts.checklistRows[0].completionCriteria, '사진 2장을 공유했다.\n확인 답장을 받았다.');
+  assert.equal(artifacts.checklistRows[1].completionCriteria, undefined);
+  assert.match(artifacts.checklistText, /- \[x\] 사진 확인하기/);
+  assert.match(artifacts.checklistText, /  설명: 원문 설명은 별도다\./);
+  assert.match(artifacts.checklistText, /  완료 기준: 사진 2장을 공유했다\.\n    확인 답장을 받았다\./);
+  assert.match(artifacts.checklistText, /  개인 메모: 개인 메모는 별도다\./);
+  assert.match(artifacts.checklistText, /  실행 메모: 실행 메모도 별도다\./);
+  assert.match(artifacts.checklistText, /  주의: 항목 주의를 확인한다\./);
+  assert.match(artifacts.checklistText, /  계획 주의: 계획 전체 주의를 확인한다\./);
+  assert.equal(artifacts.checklistText.match(/^  자료:/gmu)?.length, 1);
+  assert.match(artifacts.checklistText, /  자료: 공식 자료 - https:\/\/example\.com\/resource/);
+  assert.doesNotMatch(artifacts.checklistText, new RegExp(GENERIC_COMPLETION_CRITERION));
+  assert.doesNotMatch(artifacts.checklistText, /완료 기준:\s*(?:\n|$)/);
 });
 
 test('Step ICS uses edited date time repeat location memo and source URL', () => {
@@ -98,6 +223,31 @@ test('Step ICS uses edited date time repeat location memo and source URL', () =>
   for (const line of rawIcs.split('\r\n')) {
     assert.ok(Buffer.byteLength(line, 'utf8') <= 75, `ICS line exceeds 75 UTF-8 bytes: ${line}`);
   }
+});
+
+test('Step ICS binds DTSTAMP and execution status to the immutable transfer request', () => {
+  const generatedAt = '2026-08-05T03:04:05.000Z';
+  const done = buildMyFlowStepIcs({
+    ...baseInput,
+    generatedAt,
+    executionStatus: 'done',
+  });
+  const repeated = buildMyFlowStepIcs({
+    ...baseInput,
+    generatedAt,
+    executionStatus: 'done',
+  });
+  const held = buildMyFlowStepIcs({
+    ...baseInput,
+    generatedAt,
+    executionStatus: 'held',
+  });
+
+  assert.equal(done, repeated);
+  assert.match(done, /DTSTAMP:20260805T030405Z/);
+  assert.match(done, /STATUS:CONFIRMED/);
+  assert.match(done, /TRANSP:TRANSPARENT/);
+  assert.match(held, /STATUS:CANCELLED/);
 });
 
 test('Step ICS creates all-day event when time is empty', () => {
@@ -142,6 +292,39 @@ test('scoped Flow ICS combines unique dated items without changing their UIDs', 
   assert.match(ics, /SUMMARY:포장 목록 확인/);
   assert.doesNotMatch(ics, /중복 포장 목록|날짜 없는 준비/);
   assert.match(ics, /UID:flow::packing-list@flowme\.local/);
+});
+
+test('public and saved multi-step Calendar export preserves New York wall-clock TZID on both sides of the 2026 spring DST boundary', () => {
+  const ics = buildMyFlowMultiStepIcs([
+    {
+      ...baseInput,
+      stepId: 'new-york-before-spring-dst',
+      stableEventIdentitySeed: 'flow::new-york-before-spring-dst',
+      stepTitle: 'Before spring DST review',
+      date: '2026-03-07',
+      time: '09:15',
+      durationMinutes: 45,
+      timeZone: 'America/New_York',
+      repeatPreset: '',
+    },
+    {
+      ...baseInput,
+      stepId: 'new-york-after-spring-dst',
+      stableEventIdentitySeed: 'flow::new-york-after-spring-dst',
+      stepTitle: 'After spring DST review',
+      date: '2026-03-09',
+      time: '09:15',
+      durationMinutes: 45,
+      timeZone: 'America/New_York',
+      repeatPreset: '',
+    },
+  ]).replaceAll('\r\n ', '');
+
+  assert.equal((ics.match(/BEGIN:VEVENT/g) ?? []).length, 2);
+  assert.match(ics, /DTSTART;TZID=America\/New_York:20260307T091500/);
+  assert.match(ics, /DTEND;TZID=America\/New_York:20260307T100000/);
+  assert.match(ics, /DTSTART;TZID=America\/New_York:20260309T091500/);
+  assert.match(ics, /DTEND;TZID=America\/New_York:20260309T100000/);
 });
 
 test('saved source routine ICS uses one bounded RRULE master event with a stable series UID', () => {
@@ -584,13 +767,35 @@ test('personal structural list exports share effective rows, personal order, and
   assert.match(artifacts.checklistText, /메모: 만료일까지 확인/);
   assert.doesNotMatch(artifacts.checklistText, /뺀 준비|제외한 준비/);
 
-  const sheetLines = artifacts.sheetTsv.trimEnd().split('\n');
-  assert.equal(sheetLines.length, 4);
-  assert.equal(sheetLines[0], '순서\t상태\t할 일\t날짜\t시간\t예상 시간\t메모\t원문');
-  assert.equal(sheetLines[1].split('\t')[3], '날짜 없음');
-  assert.equal(sheetLines[1].split('\t')[7], '원문 없음');
-  assert.match(sheetLines[2], /^2\t완료\t숙소 주소 다시 확인\t날짜 없음\t\t\t체크인 시간도 함께 보기\t여행 준비 원문/);
-  assert.match(sheetLines[3], /^3\t미완료\t여권 확인\t2026-08-05\t종일\t\t만료일까지 확인\t여행 준비 원문/);
+  const sheetRows = parseEffectiveFlowTsv(artifacts.sheetTsv);
+  assert.equal(sheetRows.length, 4);
+  assert.deepEqual(sheetRows[0], [...PERSONAL_STRUCTURAL_SHEET_HEADERS]);
+  assert.equal(sheetRows[1]![3], '날짜 없음');
+  assert.equal(sheetRows[1]![9], '');
+  assert.deepEqual(sheetRows[2]!.slice(0, 10), [
+    '2',
+    '완료',
+    '숙소 주소 다시 확인',
+    '날짜 없음',
+    '',
+    '',
+    '',
+    '',
+    '체크인 시간도 함께 보기',
+    '여행 준비 원문 https://example.com/travel',
+  ]);
+  assert.deepEqual(sheetRows[3]!.slice(0, 10), [
+    '3',
+    '미완료',
+    '여권 확인',
+    '2026-08-05',
+    '종일',
+    '',
+    '',
+    '',
+    '만료일까지 확인',
+    '여행 준비 원문 https://example.com/travel',
+  ]);
 
   assert.match(artifacts.memoText, /1\. 오프라인 지도 저장/);
   assert.match(artifacts.memoText, /2\. 숙소 주소 다시 확인/);
@@ -632,7 +837,7 @@ test('completion changes list-export status without changing structural membersh
   assert.match(reopened.checklistText, /- \[ \] 여권 확인/);
 });
 
-test('personal structural list exports share all-day and timed schedule labels without exposing timezone', () => {
+test('personal structural list exports preserve all-day, timed, timezone, and repeat fields', () => {
   const overlay = createEmptyPersonalStructuralOverlay({
     savedCopyId: 'timed-list-copy',
     flowId: 'timed-list-flow',
@@ -657,6 +862,7 @@ test('personal structural list exports share all-day and timed schedule labels w
         time: '09:30',
         durationMinutes: 45,
         timeZone: 'Asia/Seoul',
+        repeat: { frequency: 'weekly', interval: 1 },
       },
       createdAt: '2026-07-13T00:00:00.000Z',
       orderKey: 1,
@@ -680,20 +886,87 @@ test('personal structural list exports share all-day and timed schedule labels w
 
   assert.match(artifacts.checklistText, /일정: 2026-08-03 종일/);
   assert.match(artifacts.checklistText, /일정: 2026-08-03 · 09:30 · 예상 45분/);
+  assert.match(artifacts.checklistText, /시간대: Asia\/Seoul/);
+  assert.match(artifacts.checklistText, /반복: 매주/);
   assert.match(artifacts.checklistText, /일정: 날짜 없음/);
-  const sheetLines = artifacts.sheetTsv.trimEnd().split('\n');
-  assert.equal(sheetLines[1].split('\t')[4], '종일');
-  assert.equal(sheetLines[2].split('\t')[4], '09:30');
-  assert.equal(sheetLines[2].split('\t')[5], '45분');
-  assert.equal(sheetLines[3].split('\t')[3], '날짜 없음');
+  const sheetRows = parseEffectiveFlowTsv(artifacts.sheetTsv);
+  assert.equal(sheetRows[1]![4], '종일');
+  assert.equal(sheetRows[2]![4], '09:30');
+  assert.equal(sheetRows[2]![5], '45분');
+  assert.equal(sheetRows[2]![6], 'Asia/Seoul');
+  assert.equal(sheetRows[2]![7], '매주');
+  assert.equal(sheetRows[3]![3], '날짜 없음');
   assert.match(artifacts.memoText, /일정: 2026-08-03 · 09:30 · 예상 45분/);
+  assert.match(artifacts.memoText, /시간대: Asia\/Seoul/);
+  assert.match(artifacts.memoText, /반복: 매주/);
   assert.doesNotMatch(
     [artifacts.checklistText, artifacts.sheetTsv, artifacts.memoText].join('\n'),
-    /Asia\/Seoul|TZID|IANA|floating/iu,
+    /TZID|IANA|floating/iu,
   );
 });
 
-test('past run list exports preserve the stored order, values, status, and reflection', () => {
+test('personal structural repeat labels preserve cadence, weekdays, end, and series status', () => {
+  const pausedSeries: PersonalStructuralRecurrenceSeries = {
+    schemaVersion: 1,
+    seriesId: 'series-weekly',
+    status: 'paused',
+    revisions: [{
+      revision: 1,
+      revisionId: 'series-weekly:revision:1',
+      effectiveFrom: '2026-08-03',
+      rule: {
+        frequency: 'weekly',
+        interval: 2,
+        weekdays: ['MO', 'WE'],
+        end: { mode: 'count', count: 5 },
+      },
+      updatedAt: '2026-08-01T00:00:00.000Z',
+    }],
+    occurrenceOverrides: [],
+    updatedAt: '2026-08-01T00:00:00.000Z',
+  };
+  const endedMonthlySeries: PersonalStructuralRecurrenceSeries = {
+    ...pausedSeries,
+    seriesId: 'series-monthly',
+    status: 'ended',
+    revisions: [
+      {
+        ...pausedSeries.revisions[0]!,
+        revisionId: 'series-monthly:revision:1',
+        rule: { frequency: 'daily', interval: 1 },
+      },
+      {
+        ...pausedSeries.revisions[0]!,
+        revision: 2,
+        revisionId: 'series-monthly:revision:2',
+        effectiveFrom: '2026-09-15',
+        rule: {
+          frequency: 'monthly',
+          interval: 1,
+          dayOfMonth: 15,
+          invalidMonthDayPolicy: 'skip',
+          end: { mode: 'until', date: '2027-03-15' },
+        },
+      },
+    ],
+  };
+
+  assert.equal(
+    formatPersonalStructuralRepeatLabel(pausedSeries),
+    '2주마다 · 월·수 · 5회 · 일시 중지',
+  );
+  assert.equal(formatPersonalStructuralRepeatLabel({ frequency: 'daily', interval: 1 }), '매일');
+  assert.equal(
+    formatPersonalStructuralRepeatLabel({ frequency: 'monthly', interval: 3 }),
+    '3개월마다',
+  );
+  assert.equal(
+    formatPersonalStructuralRepeatLabel(endedMonthlySeries),
+    '매월 · 15일 · 2027-03-15까지 · 종료',
+  );
+});
+
+test('past run list exports preserve stored Item order, values, and status without private reflection', () => {
   const run: FlowRunRecord = {
     schemaVersion: 1,
     runId: 'run-1',
@@ -744,8 +1017,47 @@ test('past run list exports preserve the stored order, values, status, and refle
   assert.match(artifacts.checklistText, /두 번째 할 일 \(스킵\)/);
   assert.match(artifacts.sheetTsv, /2026-07-12/);
   assert.match(artifacts.memoText, /당시 메모/);
-  assert.match(artifacts.memoText, /내 실행 회고/);
-  assert.match(artifacts.memoText, /다음에도 같은 순서로/);
+  assert.doesNotMatch(artifacts.memoText, /내 실행 회고/);
+  assert.doesNotMatch(artifacts.memoText, /다음에도 같은 순서로/);
+});
+
+test('personal structural schedule adapter keeps committed timed fields and clears them for all-day', () => {
+  const timedProjection = buildPersonalStructuralScheduleProjection({
+    schedule: {
+      mode: 'fixed_date',
+      date: '2026-08-12',
+      time: '09:30',
+      durationMinutes: 45,
+      timeZone: 'Asia/Seoul',
+    },
+    identityNamespace: 'draft-copy',
+    itemId: 'personal-item-a',
+  });
+  const timedFields = buildPersonalStructuralPortableScheduleFields(timedProjection);
+  assert.deepEqual(timedFields, {
+    stableEventIdentitySeed: timedProjection.stableEventIdentitySeed,
+    time: '09:30',
+    durationMinutes: 45,
+    timeZone: 'Asia/Seoul',
+  });
+  const timedIcs = buildMyFlowStepIcs({
+    ...baseInput,
+    date: '2026-08-12',
+    repeatPreset: '',
+    ...timedFields,
+  }).replaceAll('\r\n ', '');
+  assert.match(timedIcs, /DTSTART;TZID=Asia\/Seoul:20260812T093000/);
+  assert.match(timedIcs, /DTEND;TZID=Asia\/Seoul:20260812T101500/);
+
+  const allDayProjection = buildPersonalStructuralScheduleProjection({
+    schedule: { mode: 'fixed_date', date: '2026-08-12' },
+    identityNamespace: 'draft-copy',
+    itemId: 'personal-item-a',
+  });
+  assert.deepEqual(
+    buildPersonalStructuralPortableScheduleFields(allDayProjection),
+    { stableEventIdentitySeed: allDayProjection.stableEventIdentitySeed },
+  );
 });
 
 test('legacy past run stays summary-only and status labels remain user-facing', () => {

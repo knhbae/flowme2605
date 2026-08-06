@@ -4,6 +4,7 @@ import path from 'node:path';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
 import {
+  closeOpenMyFlowItemDetail,
   getOpenMyFlowItemDetail,
   openMyFlowCalendarSelectedDay,
 } from './helpers/my-flow-library';
@@ -53,7 +54,7 @@ async function createUndatedPersonalDraft(page: Page) {
   await lookup.getByLabel('URL 또는 메모').fill(
     '여권 만료일을 확인한다.\n숙소 예약번호를 정리한다.',
   );
-  await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
+  await lookup.getByRole('button', { name: '계획 찾기' }).click();
   const editor = page.getByTestId('flow-memo-draft-editor');
   await expect(editor.getByTestId('flow-memo-draft-item')).toHaveCount(2);
   await editor.getByTestId('flow-memo-draft-save').click();
@@ -72,7 +73,7 @@ test.describe('P35-R12 cross-flow Todo experiment', () => {
   test('390 opt-in groups execution rows and rolls back without changing saved data', async ({ page }) => {
     const browserErrors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/my?demo=ux12&experiment=todo');
+    await page.goto('/my?demo=ux12&experiment=todo&savedPlanLibrary=off');
 
     const experiment = page.getByTestId('my-flow-cross-flow-todo-experiment');
     await expect(experiment).toHaveAttribute(
@@ -123,13 +124,29 @@ test.describe('P35-R12 cross-flow Todo experiment', () => {
     const stableOpenRow = experiment.locator(
       `[data-testid="my-flow-cross-flow-todo-row"][data-cross-flow-key="${crossFlowKey}"]:not([data-group-id="completed"])`,
     );
-    await stableOpenRow.getByTestId('my-flow-task-complete-control').click();
+    await expect(stableOpenRow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+    await stableOpenRow.locator('[data-flow-row-slot="open"]').click();
+    let detail = getOpenMyFlowItemDetail(page);
+    let completion = detail.getByTestId('my-flow-task-complete-control');
+    await expect(completion).toHaveCount(1);
+    await expect(
+      page.locator('[data-testid="my-flow-task-complete-control"]:visible'),
+    ).toHaveCount(1);
+    await completion.click();
+    await closeOpenMyFlowItemDetail(page);
     const completedRow = experiment.locator(
       `[data-testid="my-flow-cross-flow-todo-row"][data-cross-flow-key="${crossFlowKey}"][data-group-id="completed"]`,
     );
     await expect(completedRow).toBeVisible();
+    await expect(completedRow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
     await expect(page.getByTestId('my-flow-completion-snackbar')).toHaveCount(0);
-    await completedRow.getByTestId('my-flow-task-complete-control').click();
+    await completedRow.locator('[data-flow-row-slot="open"]').click();
+    detail = getOpenMyFlowItemDetail(page);
+    completion = detail.getByTestId('my-flow-task-complete-control');
+    await expect(completion).toHaveCount(1);
+    await expect(completion).toBeChecked();
+    await completion.click();
+    await closeOpenMyFlowItemDetail(page);
     await expect(
       experiment.locator(
         `[data-testid="my-flow-cross-flow-todo-row"][data-cross-flow-key="${crossFlowKey}"]:not([data-group-id="completed"])`,
@@ -148,7 +165,7 @@ test.describe('P35-R12 cross-flow Todo experiment', () => {
     await expect(page.getByTestId('my-flow-cross-flow-todo-workspace')).toBeVisible();
     await capture(page, 'p35-r12-cross-flow-todo-390.png', experiment);
 
-    await page.goto('/my?demo=ux12&experiment=off');
+    await page.goto('/my?demo=ux12&experiment=off&savedPlanLibrary=off');
     await expect(page.getByTestId('my-flow-cross-flow-todo-experiment')).toHaveCount(0);
     await expect(page.getByTestId('my-flow-mobile-flow-hub')).toBeVisible();
     const storageAfterClose = await page.evaluate(() =>
@@ -166,7 +183,7 @@ test.describe('P35-R12 cross-flow Todo experiment', () => {
     const browserErrors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
     await createUndatedPersonalDraft(page);
-    await page.goto('/my?view=flows&experiment=todo&mode=todo');
+    await page.goto('/my?view=flows&experiment=todo&mode=todo&savedPlanLibrary=off');
 
     const experiment = page.getByTestId('my-flow-cross-flow-todo-experiment');
     const undatedGroup = experiment.getByTestId('my-flow-cross-flow-todo-group-undated');
@@ -177,7 +194,7 @@ test.describe('P35-R12 cross-flow Todo experiment', () => {
     let detail = getOpenMyFlowItemDetail(page);
     await expect(detail).toBeVisible();
     await enterEditMode(detail);
-    let editor = page.getByRole('dialog', { name: '할 일 수정' });
+    let editor = page.getByRole('dialog', { name: '수정' });
     await editor.getByTestId('my-flow-detail-date-input').fill('2030-09-05');
     await editor.getByTestId('my-flow-detail-save-changes').click();
 
@@ -200,7 +217,7 @@ test.describe('P35-R12 cross-flow Todo experiment', () => {
     await expect(calendarRow).toBeVisible();
     await expect(calendarRow).toHaveAttribute('data-item-id', stableItemId!);
 
-    await page.goto('/my?view=flows&experiment=todo&mode=todo');
+    await page.goto('/my?view=flows&experiment=todo&mode=todo&savedPlanLibrary=off');
     const restoredExperiment = page.getByTestId('my-flow-cross-flow-todo-experiment');
     const restoredDatedRow = restoredExperiment.locator(
       `[data-testid="my-flow-cross-flow-todo-row"][data-stable-item-id="${stableItemId}"][data-group-id="upcoming"]`,
@@ -209,7 +226,7 @@ test.describe('P35-R12 cross-flow Todo experiment', () => {
     detail = getOpenMyFlowItemDetail(page);
     await expect(detail).toBeVisible();
     await enterEditMode(detail);
-    editor = page.getByRole('dialog', { name: '할 일 수정' });
+    editor = page.getByRole('dialog', { name: '수정' });
     await editor.getByTestId('my-flow-detail-date-input').fill('');
     await editor.getByTestId('my-flow-detail-save-changes').click();
 
@@ -229,7 +246,7 @@ test.describe('P35-R12 cross-flow Todo experiment', () => {
   test('1024 and 1440 keep a focused list and contextual inspector', async ({ page }) => {
     const browserErrors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 1024, height: 768 });
-    await page.goto('/my?demo=ux12&experiment=todo');
+    await page.goto('/my?demo=ux12&experiment=todo&savedPlanLibrary=off');
     const workspace = page.getByTestId('my-flow-cross-flow-todo-workspace');
     const inspector = page.getByTestId('my-flow-cross-flow-todo-inspector');
     await expect(workspace).toBeVisible();

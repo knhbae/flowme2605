@@ -11,6 +11,7 @@ import {
   type FlowMeLocalBackup,
   type FlowMeStorageLike,
 } from '@/lib/flow/local-data-backup';
+import { withFlowUserDataWriteLock } from '@/lib/flow/storage-write-lock';
 
 const RESTORED_SESSION_KEY = 'flowme:local-backup:restored';
 
@@ -58,10 +59,11 @@ function formatBackupDate(value: string): string {
   }).format(new Date(value));
 }
 
-export function MyFlowDataManager() {
+export function MyFlowDataManager({ q3CopyEnabled = true }: { q3CopyEnabled?: boolean }) {
   const [open, setOpen] = useState(false);
   const [importPreview, setImportPreview] = useState<FlowMeLocalBackup | null>(null);
   const [feedback, setFeedback] = useState('');
+  const [restoring, setRestoring] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -110,14 +112,26 @@ export function MyFlowDataManager() {
     }
   }
 
-  function restoreBackup(): void {
-    if (!importPreview) return;
+  async function restoreBackup(): Promise<void> {
+    if (!importPreview || restoring) return;
+    setRestoring(true);
     try {
-      restoreFlowMeLocalBackup(window.localStorage, importPreview);
+      const result = await withFlowUserDataWriteLock(() => {
+        const validatedBackup = parseFlowMeLocalBackup(serializeFlowMeLocalBackup(importPreview));
+        restoreFlowMeLocalBackup(window.localStorage, validatedBackup);
+      });
+      if (!result.ok) {
+        throw result.error ?? new FlowMeLocalBackupError(
+          'restore_failed',
+          `Could not acquire the Flow user-data write lock: ${result.reason}`,
+        );
+      }
       window.sessionStorage.setItem(RESTORED_SESSION_KEY, 'true');
       window.location.reload();
     } catch (error) {
       setFeedback(getBackupErrorMessage(error));
+    } finally {
+      setRestoring(false);
     }
   }
 
@@ -166,7 +180,7 @@ export function MyFlowDataManager() {
             </div>
 
             <p className="mt-4 break-keep text-sm leading-6 text-slate-700">
-              저장한 Flow, 완료 기록, 개인 수정은 현재 브라우저에만 보관됩니다. 기기를 바꾸거나 브라우저 데이터를 지우기 전에 백업 파일을 받아두세요.
+              {q3CopyEnabled ? '저장한 계획' : '저장한 Flow'}, 완료 기록, 개인 수정은 현재 브라우저에만 보관됩니다. 기기를 바꾸거나 브라우저 데이터를 지우기 전에 백업 파일을 받아두세요.
             </p>
             <p className="mt-2 text-xs leading-5 text-slate-500">기기 사이에서 자동으로 맞춰지지는 않습니다.</p>
 
@@ -225,7 +239,8 @@ export function MyFlowDataManager() {
                   type="button"
                   className="mt-3 min-h-11 w-full rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800"
                   data-testid="my-flow-backup-restore"
-                  onClick={restoreBackup}
+                  disabled={restoring}
+                  onClick={() => void restoreBackup()}
                 >
                   이 백업으로 바꾸기
                 </button>

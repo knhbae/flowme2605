@@ -317,8 +317,10 @@ export function hasMyFlowPersonalExecutionState(state?: MyFlowPersonalExecutionS
 export function replaceFlowScopedMyFlowPersonalExecutionState(
   flowSlug: string,
   state: MyFlowPersonalExecutionState = { itemDrafts: {}, dateOverrides: {} },
+  storage?: Pick<Storage, 'setItem'>,
 ): MyFlowPersonalExecutionState | undefined {
   if (!canUseStorage()) return undefined;
+  const writeStorage = storage ?? window.localStorage;
   const prefix = `${flowSlug}::`;
   const itemDrafts = {
     ...Object.fromEntries(
@@ -340,9 +342,12 @@ export function replaceFlowScopedMyFlowPersonalExecutionState(
     ),
     ...normalizeOccurrenceRecordMap(state.occurrenceRecords),
   };
-  saveStoredMyFlowItemDrafts(itemDrafts);
-  saveStoredMyFlowDateOverrides(dateOverrides);
-  saveStoredMyFlowOccurrenceExecutionRecords(occurrenceRecords);
+  writeStorage.setItem(MY_FLOW_ITEM_DRAFTS_STORAGE_KEY, JSON.stringify(itemDrafts));
+  writeStorage.setItem(MY_FLOW_DATE_OVERRIDES_STORAGE_KEY, JSON.stringify(dateOverrides));
+  writeStorage.setItem(
+    MY_FLOW_OCCURRENCE_EXECUTION_STORAGE_KEY,
+    JSON.stringify(normalizeOccurrenceRecordMap(occurrenceRecords)),
+  );
   return cloneMyFlowPersonalExecutionState(state);
 }
 

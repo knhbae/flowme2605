@@ -69,6 +69,27 @@ async function makeVisible(panel: Locator, destination: Locator) {
   await expect(destination).toBeVisible();
 }
 
+async function openSavedTransferConfirmation(panel: Locator, destination: Locator) {
+  await destination.click();
+  const confirmation = panel.getByTestId('my-flow-transfer-confirmation');
+  await expect(confirmation).toBeVisible();
+  return confirmation;
+}
+
+async function confirmSavedClipboardTransfer(panel: Locator, destination: Locator) {
+  const confirmation = await openSavedTransferConfirmation(panel, destination);
+  await confirmation.getByTestId('my-flow-transfer-confirm').click();
+  const receipt = panel.getByTestId('my-flow-transfer-receipt');
+  await expect(receipt).toBeVisible();
+  await expect(receipt).toHaveAttribute('data-outcome', 'success');
+  return receipt;
+}
+
+async function acknowledgeSavedTransfer(receipt: Locator) {
+  const acknowledge = receipt.getByTestId('flow-transfer-success-close');
+  if (await acknowledge.isVisible().catch(() => false)) await acknowledge.click();
+}
+
 test.describe('P35-07 export scope first and count parity', () => {
   test('mobile whole and selected scopes predict actual ICS, checklist, and sheet counts', async ({ page }) => {
     test.setTimeout(90_000);
@@ -97,20 +118,32 @@ test.describe('P35-07 export scope first and count parity', () => {
     const calendar = panel.getByTestId('my-flow-export-calendar');
     await makeVisible(panel, calendar);
     const calendarCount = Number(await calendar.getAttribute('data-export-count'));
+    const calendarConfirmation = await openSavedTransferConfirmation(panel, calendar);
     const downloadPromise = page.waitForEvent('download');
-    await calendar.click();
+    await calendarConfirmation.getByTestId('my-flow-transfer-confirm').click();
     const download = await downloadPromise;
     const downloadPath = await download.path();
     expect(downloadPath).toBeTruthy();
     const ics = fs.readFileSync(downloadPath!, 'utf8');
+    const unfoldedIcs = ics.replace(/\r?\n[ \t]/g, '');
     expect((ics.match(/BEGIN:VEVENT/g) ?? []).length).toBe(calendarCount);
-    let receipt = panel.getByTestId('flow-export-result-receipt');
-    await expect(receipt).toHaveAttribute('data-export-output-count', String(calendarCount));
-    await expect(receipt).toHaveAttribute('data-export-scope', 'flow');
+    expect(unfoldedIcs).toContain('완료 기준: 견적 후보 2-3곳과 연락처\\, 비용 범위가 메모됐습니다.');
+    let receipt = panel.getByTestId('my-flow-transfer-receipt');
+    await expect(receipt).toHaveAttribute('data-output-count', String(calendarCount));
+    await expect(receipt).toHaveAttribute('data-scope', 'flow');
     await expect(receipt).toHaveAttribute(
-      'data-export-stable-identity',
-      'saved-flow::source-backed-moving-d30',
+      'data-transfer-saved-plan-id',
+      'source-backed-moving-d30',
     );
+    await acknowledgeSavedTransfer(receipt);
+
+    const wholeChecklist = panel.getByTestId('my-flow-export-checklist');
+    await makeVisible(panel, wholeChecklist);
+    receipt = await confirmSavedClipboardTransfer(panel, wholeChecklist);
+    const wholeChecklistText = await page.evaluate(() => navigator.clipboard.readText());
+    expect(wholeChecklistText).toContain('완료 기준: 견적 후보 2-3곳과 연락처, 비용 범위가 메모됐습니다.');
+    expect(wholeChecklistText).toContain('완료 기준: 정산 메모와 행정 확인 결과가 남았습니다.');
+    await acknowledgeSavedTransfer(receipt);
 
     await panel.getByTestId('my-flow-export-scope-selected').click();
     const choices = panel.getByTestId('my-flow-export-selectable-item');
@@ -123,21 +156,24 @@ test.describe('P35-07 export scope first and count parity', () => {
     const checklist = panel.getByTestId('my-flow-export-checklist');
     await makeVisible(panel, checklist);
     expect(Number(await checklist.getAttribute('data-export-count'))).toBe(2);
-    await checklist.click();
+    receipt = await confirmSavedClipboardTransfer(panel, checklist);
     const checklistText = await page.evaluate(() => navigator.clipboard.readText());
     expect((checklistText.match(/^- \[[ x]\] /gmu) ?? []).length).toBe(2);
-    receipt = panel.getByTestId('flow-export-result-receipt');
-    await expect(receipt).toHaveAttribute('data-export-output-count', '2');
-    await expect(receipt).toHaveAttribute('data-export-scope', 'selected');
+    expect(checklistText).toContain('완료 기준: 견적 후보 2-3곳과 연락처, 비용 범위가 메모됐습니다.');
+    expect(checklistText).toContain('완료 기준: 예약일, 수거일, 신고 번호가 메모됐습니다.');
+    expect(checklistText).not.toContain('완료 기준: 관리사무소 공유와 주소 변경 대상 메모가 끝났습니다.');
+    await expect(receipt).toHaveAttribute('data-output-count', '2');
+    await expect(receipt).toHaveAttribute('data-scope', 'selected');
+    await acknowledgeSavedTransfer(receipt);
 
     const sheet = panel.getByTestId('my-flow-export-sheet');
     await makeVisible(panel, sheet);
     expect(Number(await sheet.getAttribute('data-export-count'))).toBe(2);
-    await sheet.click();
+    receipt = await confirmSavedClipboardTransfer(panel, sheet);
     const sheetText = await page.evaluate(() => navigator.clipboard.readText());
     const sheetLines = sheetText.split(/\r?\n/u).filter(Boolean);
     expect(sheetLines.length - 1).toBe(2);
-    await expect(receipt).toHaveAttribute('data-export-output-count', '2');
+    await expect(receipt).toHaveAttribute('data-output-count', '2');
 
     expect(await inspectPageQuality(page)).toEqual({
       horizontalOverflow: 0,
@@ -175,7 +211,7 @@ test.describe('P35-07 export scope first and count parity', () => {
     await expect(panel.getByTestId('my-flow-export-scope-control')).toContainText('현재 항목');
     await expect(panel.getByTestId('my-flow-export-scope-control')).toContainText('1개');
     await expect(panel.getByTestId('my-flow-export-calendar-recovery')).toContainText(
-      'Flow로 돌아가 날짜를 정해 주세요',
+      '계획으로 돌아가 날짜를 정해 주세요',
     );
     await expect(
       panel.locator('[data-recommendation-visible="true"][data-export-state="disabled"]'),
@@ -185,14 +221,16 @@ test.describe('P35-07 export scope first and count parity', () => {
 
     const memo = panel.getByTestId('my-flow-detail-copy-portable-text');
     await makeVisible(panel, memo);
-    await memo.click();
+    const receipt = await confirmSavedClipboardTransfer(panel, memo);
     const memoText = await page.evaluate(() => navigator.clipboard.readText());
     expect(memoText.trim().length).toBeGreaterThan(0);
-    const receipt = panel.getByTestId('flow-export-result-receipt');
-    await expect(receipt).toHaveAttribute('data-export-scope', 'item');
-    await expect(receipt).toHaveAttribute('data-export-output-count', '1');
-    await expect(receipt).toHaveAttribute('data-export-stable-identity', /.+::.+/);
-    await expect(receipt.getByTestId('flow-export-result-next-action')).toBeVisible();
+    await expect(receipt).toHaveAttribute('data-scope', 'item');
+    await expect(receipt).toHaveAttribute('data-output-count', '1');
+    await expect(receipt).toHaveAttribute(
+      'data-transfer-saved-plan-id',
+      'source-backed-middle-school-math-1',
+    );
+    await expect(receipt.getByTestId('flow-transfer-success')).toBeVisible();
 
     await page.setViewportSize({ width: 1440, height: 900 });
     await receipt.scrollIntoViewIfNeeded();

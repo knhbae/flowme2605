@@ -25,6 +25,7 @@ export type MyFlowShapeAwareWorkspaceModel = {
 export type MyFlowShapeAwareWorkspaceInput = {
   structureType: string;
   primaryDestination: string;
+  savedArtifactMode?: 'calendar' | 'checklist' | 'sheet' | 'memo';
   hasDatedRows: boolean;
   historyEventCount?: number;
 };
@@ -83,6 +84,12 @@ function resolveExecutionShape(
   input: MyFlowShapeAwareWorkspaceInput,
 ): MyFlowExecutionShape {
   if (input.structureType === 'routine') return 'routine';
+  if (input.savedArtifactMode === 'sheet') return 'sheet';
+  if (input.savedArtifactMode === 'memo') return 'memo';
+  if (input.savedArtifactMode === 'checklist' && input.primaryDestination === 'calendar') {
+    return 'checklist';
+  }
+  if (input.savedArtifactMode === 'calendar') return 'dated';
   if (input.primaryDestination === 'memo') return 'memo';
   if (input.primaryDestination === 'sheet') return 'sheet';
   if (input.hasDatedRows || input.primaryDestination === 'calendar') return 'dated';

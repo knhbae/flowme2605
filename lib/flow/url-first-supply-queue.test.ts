@@ -92,7 +92,9 @@ test('draft review split and merge preserve source fragment ownership with deter
 });
 
 test('memo draft parser excludes known application state copy from executable titles', () => {
+  assert.deepEqual(buildMemoDraftItemSuggestions('바로 시작할 계획을 찾지 못했어요.'), []);
   assert.deepEqual(buildMemoDraftItemSuggestions('바로 시작할 Flow를 찾지 못했어요.'), []);
+  assert.deepEqual(buildMemoDraftItemSuggestions('계획을 불러오는 중입니다.'), []);
   assert.deepEqual(buildMemoDraftItemSuggestions('Flow를 불러오는 중입니다.'), []);
 });
 
@@ -422,15 +424,26 @@ test('candidate user summary markdown omits production-only handoff wording', ()
   };
 
   const markdown = buildUrlFirstSupplyCandidateUserSummaryMarkdown(candidate);
+  const legacyMarkdown = buildUrlFirstSupplyCandidateUserSummaryMarkdown(candidate, false);
+  const executableCandidate = {
+    ...candidate,
+    canonicalUrl: 'https://mathbang.net/13',
+  };
+  const executableMarkdown = buildUrlFirstSupplyCandidateUserSummaryMarkdown(executableCandidate);
+  const legacyExecutableMarkdown = buildUrlFirstSupplyCandidateUserSummaryMarkdown(executableCandidate, false);
 
   assert.match(markdown, /^# 초안 요청 정리본/m);
   assert.match(markdown, /원문 링크: https:\/\/example\.com\/procedure\?utm_source=user/);
   assert.match(markdown, /요청 제목: 따라 하고 싶은 신차 인수 체크/);
   assert.match(markdown, /요청 메모: 가볍게 따라 하고 싶은 루틴/);
   assert.match(markdown, /저장일: 7월 5일/);
-  assert.match(markdown, /현재 상태: 아직 바로 시작할 Flow가 없어 초안 요청으로 보관했어요\./);
+  assert.match(markdown, /현재 상태: 아직 바로 시작할 계획이 없어 초안 요청으로 보관했어요\./);
   assert.match(markdown, /마지막 확인: 7월 5일 · 아직 준비 전이에요/);
-  assert.match(markdown, /초안이 준비되면 제목, 날짜, 메모를 손본 뒤 내 Flow와 캘린더로 이어갈 수 있어요\./);
+  assert.match(markdown, /초안이 준비되면 제목, 날짜, 메모를 손본 뒤 내 계획과 캘린더로 이어갈 수 있어요\./);
+  assert.match(legacyMarkdown, /현재 상태: 아직 바로 시작할 Flow가 없어 초안 요청으로 보관했어요\./);
+  assert.match(legacyMarkdown, /초안이 준비되면 제목, 날짜, 메모를 손본 뒤 내 Flow와 캘린더로 이어갈 수 있어요\./);
+  assert.match(executableMarkdown, /현재 상태: 같은 원문으로 바로 시작할 수 있는 계획이 준비됐어요\./);
+  assert.match(legacyExecutableMarkdown, /현재 상태: 같은 원문으로 바로 시작할 수 있는 Flow가 준비됐어요\./);
   assert.doesNotMatch(markdown, /handoff/i);
   assert.doesNotMatch(markdown, /Canonical URL/i);
   assert.doesNotMatch(markdown, /Original URL/i);

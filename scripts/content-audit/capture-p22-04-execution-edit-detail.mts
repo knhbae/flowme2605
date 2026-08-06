@@ -169,7 +169,7 @@ try {
   const page = await context.newPage();
 
   let opened = await openMobileMyFlow(page);
-  await expect(opened.detail).toHaveAttribute('data-default-primary-action-count', '2');
+  await expect(opened.detail).toHaveAttribute('data-default-primary-action-count', '1');
   await capture(opened.card, '01-my-flow-execute-mobile.png', {
     id: 'my-flow-execute-mobile',
     route: '/my?demo=ux12',

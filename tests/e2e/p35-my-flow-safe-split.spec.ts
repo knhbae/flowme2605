@@ -37,22 +37,20 @@ test.describe('P35-04 My Flow safe split and dead-view removal', () => {
     const main = page.locator('main').first();
     await expect(main).toHaveAttribute('data-p35-dead-view-marker', 'P35-DEAD-VIEW-REMOVAL');
     await expect(main).toHaveAttribute('data-p35-my-flow-marker', 'P35-MY-LIBRARY-ONLY');
+    await expect(main).toHaveAttribute('data-saved-library-flag', 'on');
+    await expect(page.getByTestId('my-flow-saved-library-shell')).toBeVisible();
     await expect(page.getByTestId('my-flow-calendar-workspace')).toHaveCount(0);
     await expect(page.getByTestId('my-flow-mobile-flow-hub')).toBeVisible();
     await expect(page.getByTestId('my-flow-mobile-structure-row')).toHaveCount(16);
-    const localViewTabs = page.getByRole('tablist', { name: 'My Flow 보기 방식' });
-    await expect(localViewTabs).toHaveCount(1);
-    await expect(localViewTabs.getByRole('tab', { name: 'Flow' })).toHaveAttribute(
-      'aria-selected',
-      'true',
-    );
+    const localViewTabs = page.getByRole('tablist', { name: '내 계획 보기 방식' });
+    await expect(localViewTabs).toHaveCount(0);
     await expect(page.getByTestId('my-flow-view-today')).toHaveCount(0);
     await expect(page.getByTestId('my-flow-view-completed')).toHaveCount(0);
 
     await capture(page, 'p35-04-my-390.png');
     await page.getByTestId('my-flow-mobile-structure-open').first().click();
     await expect(page.locator('main[data-p32-workspace-state="focused"]')).toBeVisible();
-    await expect(page.getByRole('button', { name: '저장한 Flow 목록으로 돌아가기' })).toBeVisible();
+    await expect(page.getByRole('button', { name: '저장한 계획 목록으로 돌아가기' })).toBeVisible();
     expect(await page.evaluate(() => Object.keys(localStorage).filter((key) => key.startsWith('flow:saved:'))))
       .toEqual([]);
 
@@ -81,20 +79,29 @@ test.describe('P35-04 My Flow safe split and dead-view removal', () => {
     const executionRow = row.locator('article[data-row-key]').first();
     const rowIdentity = await executionRow.getAttribute('data-row-key');
     expect(rowIdentity).toBeTruthy();
-    const completion = row.getByTestId('my-flow-task-complete-control');
+    await expect(row.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+    await row.getByRole('button', { name: /계획에서 열기/ }).click();
+    const detail = page.locator('[data-testid="my-flow-item-detail"]:visible').last();
+    await expect(detail).toBeVisible();
+    const itemIdentity = await detail.getAttribute('data-item-id');
+    expect(itemIdentity).toBeTruthy();
+    const completion = detail.getByTestId('my-flow-task-complete-control');
+    await expect(completion).toHaveCount(1);
+    await expect(page.locator('[data-testid="my-flow-task-complete-control"]:visible')).toHaveCount(1);
     const initialLabel = await completion.getAttribute('aria-label');
     expect(initialLabel).toBeTruthy();
     await completion.click();
-    await expect(row.getByTestId('my-flow-task-complete-control')).not.toHaveAttribute(
+    await expect(completion).not.toHaveAttribute(
       'aria-label',
       initialLabel ?? '',
     );
-    await row.getByTestId('my-flow-task-complete-control').click();
-    await expect(row.getByTestId('my-flow-task-complete-control')).toHaveAttribute(
+    await completion.click();
+    await expect(completion).toHaveAttribute(
       'aria-label',
       initialLabel ?? '',
     );
-    await expect(executionRow).toHaveAttribute('data-row-key', rowIdentity ?? '');
+    await expect(detail).toHaveAttribute('data-item-id', itemIdentity ?? '');
+    await expect(page).toHaveURL(/\/my\?view=flows&flow=.*&item=.*/u);
     expect(await page.evaluate(() => Object.keys(localStorage).filter((key) => key.startsWith('flow:saved:'))))
       .toEqual([]);
 

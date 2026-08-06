@@ -55,14 +55,17 @@ async function inspectPageQuality(page: Page) {
   });
 }
 
-async function saveUndatedVehicleFlow(page: Page) {
+async function saveUndatedVehicleFlow(page: Page): Promise<string> {
   await page.goto('/f/vehicle-inspection-prep');
   await page.evaluate(() => window.localStorage.clear());
   await page.reload();
-  await expect(page.getByTestId('public-flow-artifact-preview')).toHaveAttribute(
-    'data-selected-shape',
-    'checklist',
-  );
+  const capability = page.getByTestId('public-flow-capability-result');
+  await expect(capability).toHaveAttribute('data-capability-lifecycle', 'public_preview');
+  await expect(capability).toHaveAttribute('data-capability-primary-destination', 'checklist');
+  await expect(capability.locator(
+    '[data-testid="flow-capability-result-choice"]'
+      + '[data-capability-candidate-role="primary"]',
+  )).toHaveAttribute('data-capability-output-count', '10');
   const mobileSave = page.getByTestId('public-flow-save-primary-mobile');
   const saveButton = await mobileSave.isVisible().catch(() => false)
     ? mobileSave
@@ -72,28 +75,50 @@ async function saveUndatedVehicleFlow(page: Page) {
     saveButton,
   );
   await openSavedPublicFlow(page, receipt);
+  const personalCopyKey = new URL(page.url()).searchParams.get('flow') ?? '';
+  expect(personalCopyKey).toMatch(/^personal-copy:/u);
   const postSaveView = page.getByTestId('my-flow-post-save-view-flow');
   if (await postSaveView.isVisible().catch(() => false)) await postSaveView.click();
   await page.goto('/my?view=flows');
+  return personalCopyKey;
 }
 
-async function openVehicleWorkspace(page: Page): Promise<Locator> {
-  return openMyFlowLibraryFlow(page, 'vehicle-inspection-prep', 'execute');
+async function openVehicleWorkspace(
+  page: Page,
+  flowSlug = 'vehicle-inspection-prep',
+): Promise<Locator> {
+  return openMyFlowLibraryFlow(page, flowSlug, 'execute');
 }
 
 async function openArchivedInventory(page: Page) {
-  const directEntry = page.getByTestId('my-flow-open-archived');
-  if (await directEntry.isVisible().catch(() => false)) {
-    await directEntry.click();
-    return;
-  }
+  const archivedRow = page.getByTestId('my-flow-mobile-archived-row').first();
+  if (await archivedRow.isVisible().catch(() => false)) return;
+
   const visibleFilter = page.getByTestId('my-flow-list-filter-archived').filter({
     visible: true,
   });
   if (await visibleFilter.isVisible().catch(() => false)) {
-    await visibleFilter.click();
+    if ((await visibleFilter.getAttribute('aria-pressed')) !== 'true') {
+      await visibleFilter.click();
+    }
     return;
   }
+
+  const directEntry = page.getByTestId('my-flow-open-archived');
+  if (await directEntry.isVisible().catch(() => false)) {
+    await directEntry.click({ timeout: 5_000 }).catch(() => undefined);
+    if (await archivedRow.isVisible().catch(() => false)) return;
+    const surfacedFilter = page.getByTestId('my-flow-list-filter-archived').filter({
+      visible: true,
+    });
+    if (await surfacedFilter.isVisible().catch(() => false)) {
+      if ((await surfacedFilter.getAttribute('aria-pressed')) !== 'true') {
+        await surfacedFilter.click();
+      }
+      return;
+    }
+  }
+
   const inventoryEntry = page.getByTestId('my-flow-mobile-inventory-open');
   await inventoryEntry.click();
   await page
@@ -108,18 +133,18 @@ test.describe('P34 execution CRUD', () => {
   test('Flow lifecycle uses one command surface and keeps archive recovery safe', async ({ page }) => {
     test.setTimeout(120_000);
     await page.setViewportSize({ width: 390, height: 844 });
-    await saveUndatedVehicleFlow(page);
+    const personalCopyKey = await saveUndatedVehicleFlow(page);
 
-    let workspace = await openVehicleWorkspace(page);
+    let workspace = await openVehicleWorkspace(page, personalCopyKey);
     const management = workspace.getByTestId('my-flow-workspace-management-menu');
     const trigger = management.locator('summary');
-    await expect(trigger).toHaveAccessibleName(/Flow 관리/);
+    await expect(trigger).toHaveAccessibleName(/계획 관리/);
     await trigger.click();
     const visibleCommands = await management
       .getByRole('menuitem')
       .evaluateAll((elements) => elements.map((element) => element.textContent?.trim()));
     expect(visibleCommands).toEqual([
-      'Flow 조정',
+      '계획 수정',
       '원문 보기',
       '보관보관함에서 복구하거나 영구 삭제할 수 있어요.',
     ]);
@@ -130,31 +155,33 @@ test.describe('P34 execution CRUD', () => {
     await expect(page.getByTestId('my-flow-lifecycle-undo')).toBeVisible();
     await page.getByTestId('my-flow-lifecycle-undo').click();
 
-    workspace = await openVehicleWorkspace(page);
+    workspace = await openVehicleWorkspace(page, personalCopyKey);
     await workspace.getByTestId('my-flow-workspace-management-menu').locator('summary').click();
     await workspace
       .getByTestId('my-flow-workspace-management-menu')
       .getByTestId('my-flow-archive-toggle')
       .click();
+    await expect(page.getByTestId('my-flow-lifecycle-snackbar')).toContainText('보관했습니다');
     await page.reload();
     await openArchivedInventory(page);
 
     let archivedRow = page.locator(
-      '[data-testid="my-flow-mobile-archived-row"][data-flow-slug="vehicle-inspection-prep"]',
+      `[data-testid="my-flow-mobile-archived-row"][data-flow-slug="${personalCopyKey}"]`,
     );
     await expect(archivedRow.getByTestId('my-flow-archived-direct-restore')).toBeVisible();
     await capture(page, 'p34-01-archived-restore-390.png');
     await archivedRow.getByTestId('my-flow-archived-direct-restore').click();
 
-    workspace = await openVehicleWorkspace(page);
+    workspace = await openVehicleWorkspace(page, personalCopyKey);
     await workspace.getByTestId('my-flow-workspace-management-menu').locator('summary').click();
     await workspace
       .getByTestId('my-flow-workspace-management-menu')
       .getByTestId('my-flow-archive-toggle')
       .click();
+    await expect(page.getByTestId('my-flow-lifecycle-snackbar')).toContainText('보관했습니다');
     await openArchivedInventory(page);
     archivedRow = page.locator(
-      '[data-testid="my-flow-mobile-archived-row"][data-flow-slug="vehicle-inspection-prep"]',
+      `[data-testid="my-flow-mobile-archived-row"][data-flow-slug="${personalCopyKey}"]`,
     );
     const archivedMenu = archivedRow.getByTestId('my-flow-archived-management-menu');
     await archivedMenu.locator('summary').click();
@@ -162,7 +189,7 @@ test.describe('P34 execution CRUD', () => {
     await deleteTrigger.click();
     const dialog = page.getByTestId('my-flow-permanent-delete-dialog');
     await expect(dialog.getByTestId('my-flow-permanent-delete-cancel')).toBeFocused();
-    await expect(dialog).toContainText('공개 원본 Flow는 그대로 남습니다');
+    await expect(dialog).toContainText('공개 원본 계획은 그대로 남습니다');
     await expect(dialog.getByTestId('my-flow-permanent-delete-backup')).toBeVisible();
     await capture(page, 'p34-01-permanent-delete-backup-390.png');
     await page.keyboard.press('Escape');
@@ -216,7 +243,7 @@ test.describe('P34 execution CRUD', () => {
       .getByTestId('flow-url-lookup-entry')
       .getByLabel('URL 또는 메모')
       .fill('항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 온라인 체크인');
-    await page.getByTestId('flow-url-lookup-entry').getByRole('button', { name: 'Flow 찾기' }).click();
+    await page.getByTestId('flow-url-lookup-entry').getByRole('button', { name: '계획 찾기' }).click();
 
     const editor = page.getByTestId('flow-memo-draft-editor');
     await expect(editor.getByTestId('flow-memo-draft-item')).toHaveCount(5);
@@ -239,25 +266,28 @@ test.describe('P34 execution CRUD', () => {
     await capture(page, 'p34-04-draft-structure-mode-390.png');
   });
 
-  test('public save-before keeps the artifact visible while editing one adjustment kind', async ({ page }) => {
+  test('public save-before keeps the artifact visible inside one atomic adjustment editor', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/f/moving-d30-basic');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
 
     await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
-    await expect(page.getByTestId('public-flow-artifact-preview')).toBeVisible();
+    const capability = page.getByTestId('public-flow-capability-result');
+    await expect(capability).toHaveAttribute('data-capability-lifecycle', 'public_preview');
+    await expect(capability).toHaveAttribute('data-capability-primary-destination', 'calendar');
     await page.getByTestId('public-flow-adjust-entry-mobile').click();
     const adjustment = page.getByTestId('public-flow-personal-adjustment');
     await expect(adjustment).toHaveAttribute(
       'data-p35-marker',
-      'P35-ADJUST-ONE-KIND',
+      'P35-ATOMIC-FULL-HEIGHT-EDITOR',
     );
+    await expect(adjustment).toHaveAttribute('data-editor-transaction', 'atomic');
     await expect(adjustment.getByTestId('public-flow-adjustment-result-before')).toContainText('24개');
     await adjustment.getByTestId('public-flow-adjustment-kind-anchor').click();
     await expect(adjustment.getByTestId('public-flow-adjustment-anchor-input')).toHaveValue('2030-08-15');
     await expect(adjustment.getByTestId('public-flow-adjustment-item-row')).toHaveCount(0);
-    await expect(page.getByTestId('public-flow-artifact-preview')).toBeVisible();
+    await expect(capability).toBeVisible();
     await capture(page, 'p34-03-moving-adjust-390.png');
   });
 
@@ -273,7 +303,7 @@ test.describe('P34 execution CRUD', () => {
     await saveUndatedVehicleFlow(page);
     const workspace = await openVehicleWorkspace(page);
     const exportEntry = workspace.getByTestId('my-flow-export-entry');
-    await expect(exportEntry).toContainText(/전체 \d+개 가져가기/);
+    await expect(exportEntry).toContainText(/내 도구로 옮기기 · \d+개/);
     await exportEntry.click();
     const panel = workspace.getByTestId('my-flow-export-panel');
     await expect(panel).toHaveAttribute('data-p34-marker', 'P34-07-SCOPE-FIRST-EXPORT');
@@ -301,7 +331,7 @@ test.describe('P34 execution CRUD', () => {
       const management = await mobileManagement.count()
         ? mobileManagement
         : workspace.getByTestId('my-flow-management-menu');
-      await expect(management.locator('summary')).toHaveAccessibleName(/Flow 관리/);
+      await expect(management.locator('summary')).toHaveAccessibleName(/계획 관리/);
       await management.locator('summary').click();
       await expect(management.getByRole('menuitem')).toHaveCount(3);
       await capture(page, `p34-01-lifecycle-${viewport.suffix}.png`);

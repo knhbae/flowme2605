@@ -38,12 +38,22 @@ test('undated public Flow supports reversible My Flow batch scheduling and ICS p
   await page.evaluate(() => localStorage.clear());
   await page.reload();
 
-  await expect(page.getByTestId('public-flow-artifact-preview')).toHaveAttribute(
-    'data-selected-shape',
+  const capability = page.getByTestId('public-flow-capability-result');
+  await expect(capability).toHaveAttribute('data-capability-lifecycle', 'public_preview');
+  await expect(capability).toHaveAttribute('data-capability-primary-destination', 'checklist');
+  await expect(capability.locator(
+    '[data-testid="flow-capability-result-choice"]'
+      + '[data-capability-candidate-role="primary"]',
+  )).toHaveAttribute('data-capability-output-count', '10');
+  await expect(capability.getByTestId('flow-capability-selected-preview')).toHaveAttribute(
+    'data-capability-destination',
     'checklist',
   );
   await expect(page.getByTestId('public-flow-primary-setup')).toHaveCount(0);
   await page.getByTestId('public-flow-save-primary-mobile').click();
+  await expect(page).toHaveURL(/\/my\?view=flows&flow=/u);
+  const personalCopyKey = new URL(page.url()).searchParams.get('flow') ?? '';
+  expect(personalCopyKey).not.toBe('');
 
   await page.goto('/my?view=flows');
   let savedFlow = await openMyFlowLibraryFlow(page, 'vehicle-inspection-prep', 'plan');
@@ -54,41 +64,53 @@ test('undated public Flow supports reversible My Flow batch scheduling and ICS p
     '0',
   );
   await expect(exportBefore.getByTestId('my-flow-export-calendar')).toBeDisabled();
-  await exportBefore.getByRole('button', { name: /가져가기 닫기/ }).click();
+  await exportBefore.getByRole('button', { name: /옮기기 닫기/ }).click();
 
-  const outline = savedFlow.getByTestId('my-flow-whole-flow-outline');
+  const storageBeforeEditor = await page.evaluate(() => ({
+    dateOverrides: window.localStorage.getItem('flow:my-flow:date-overrides'),
+    itemDrafts: window.localStorage.getItem('flow:my-flow:item-drafts'),
+  }));
   await savedFlow.getByTestId('my-flow-batch-mode-toggle').first().click();
-  const rows = outline.getByTestId('my-flow-batch-selectable-row');
-  await expect(rows).toHaveCount(10);
+  let planEditor = page.getByTestId('saved-flow-editor-plan');
+  await expect(planEditor).toBeVisible();
+  await expect(planEditor.getByTestId('saved-flow-editor-item-row')).toHaveCount(10);
+  await planEditor.getByTestId('saved-flow-editor-item-open').first().click();
+  let itemEditor = page.getByTestId('saved-flow-editor-item');
+  await itemEditor.getByTestId('saved-flow-editor-item-date-input').fill('2026-07-28');
+  await itemEditor.getByTestId('my-flow-detail-save-changes').click();
+  await planEditor.getByTestId('saved-flow-editor-cancel').click();
+  await planEditor.getByTestId('saved-flow-editor-plan-discard-changes').click();
+  await expect(page.getByTestId('saved-flow-editor-plan')).toHaveCount(0);
+  await expect.poll(() => page.evaluate(() => ({
+    dateOverrides: window.localStorage.getItem('flow:my-flow:date-overrides'),
+    itemDrafts: window.localStorage.getItem('flow:my-flow:item-drafts'),
+  }))).toEqual(storageBeforeEditor);
 
-  await rows.first().getByTestId('my-flow-batch-item-checkbox').check();
-  let toolbar = savedFlow.getByTestId('my-flow-batch-toolbar');
-  await toolbar.getByTestId('my-flow-batch-open-date-tool').click();
-  await toolbar.getByTestId('my-flow-batch-target-date').fill('2026-07-28');
-  await expect(toolbar.getByTestId('my-flow-batch-impact-preview')).toContainText('1개가 바뀝니다');
-  await toolbar.getByTestId('my-flow-batch-apply-date').click();
-  await expect(savedFlow.getByTestId('my-flow-batch-undo')).toContainText('1개 날짜');
-  await savedFlow.getByTestId('my-flow-batch-undo-action').click();
-
-  if ((await savedFlow.getByTestId('my-flow-batch-mode-toggle').first().getAttribute('aria-pressed')) !== 'true') {
-    await savedFlow.getByTestId('my-flow-batch-mode-toggle').first().click();
-  }
+  await savedFlow.getByTestId('my-flow-batch-mode-toggle').first().click();
+  planEditor = page.getByTestId('saved-flow-editor-plan');
+  await expect(planEditor).toBeVisible();
   for (let index = 0; index < 3; index += 1) {
-    await rows.nth(index).getByTestId('my-flow-batch-item-checkbox').check();
+    await planEditor.getByTestId('saved-flow-editor-item-open').nth(index).click();
+    itemEditor = page.getByTestId('saved-flow-editor-item');
+    await itemEditor.getByTestId('saved-flow-editor-item-date-input').fill('2026-07-29');
+    await itemEditor.getByTestId('my-flow-detail-save-changes').click();
+    await expect(planEditor.getByTestId('saved-flow-editor-item-row').nth(index)).toContainText('2026-07-29');
   }
-  toolbar = savedFlow.getByTestId('my-flow-batch-toolbar');
-  await toolbar.getByTestId('my-flow-batch-open-date-tool').click();
-  await toolbar.getByTestId('my-flow-batch-target-date').fill('2026-07-29');
-  await expect(toolbar.getByTestId('my-flow-batch-impact-preview')).toContainText('3개가 바뀝니다');
   await capture(page, '01-my-flow-three-item-date-preview-mobile.png');
-  await toolbar.getByTestId('my-flow-batch-apply-date').click();
+  await planEditor.getByTestId('saved-flow-editor-save').click();
+  await expect(planEditor).toHaveCount(0);
 
-  const overrideCount = await page.evaluate(() =>
-    Object.values(
-      JSON.parse(localStorage.getItem('flow:my-flow:date-overrides') || '{}'),
-    ).filter((value) => value === '2026-07-29').length
-  );
-  expect(overrideCount).toBe(3);
+  const committedItemDates = await page.evaluate((flowSlug) => {
+    const drafts = JSON.parse(
+      localStorage.getItem('flow:my-flow:item-drafts') || '{}',
+    ) as Record<string, { date?: string }>;
+    return Object.entries(drafts)
+      .filter(([key, draft]) => (
+        key.startsWith(`${flowSlug}::`) && draft.date === '2026-07-29'
+      ))
+      .map(([key]) => key);
+  }, personalCopyKey);
+  expect(committedItemDates).toHaveLength(3);
 
   await page.goto('/calendar');
   await page.getByTestId('my-flow-month-picker').fill('2026-07');
@@ -117,8 +139,11 @@ test('undated public Flow supports reversible My Flow batch scheduling and ICS p
   ) {
     await moreFormats.locator(':scope > summary').click();
   }
-  const downloadPromise = page.waitForEvent('download');
   await exportSurface.getByTestId('my-flow-export-calendar').click();
+  const confirmation = page.getByTestId('my-flow-transfer-confirmation');
+  await expect(confirmation).toHaveAttribute('data-transfer-format', 'calendar');
+  const downloadPromise = page.waitForEvent('download');
+  await confirmation.getByTestId('my-flow-transfer-confirm').click();
   const download = await downloadPromise;
   const downloadPath = await download.path();
   expect(downloadPath).toBeTruthy();

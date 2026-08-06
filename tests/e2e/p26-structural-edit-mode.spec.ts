@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import {
+  getFirstSavedPersonalDraftSlug,
   getPersonalDraftEffectiveItems,
   openMyFlowLibraryFlow,
   openPersonalDraftListExport,
@@ -23,17 +24,15 @@ async function openFlowView(page: Page) {
 }
 
 async function getDraftFlow(page: Page) {
+  const slug = await getFirstSavedPersonalDraftSlug(page);
   const visibleDraft = page.locator(
-    '[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]:visible, [data-testid="my-flow-mobile-workspace"][data-flow-slug^="url-draft-"]:visible, [data-testid="my-flow-overview-card"][data-flow-slug^="url-draft-"]:visible',
+    `[data-testid="my-flow-mobile-structure-row"][data-flow-slug="${slug}"]:visible, `
+      + `[data-testid="my-flow-mobile-workspace"][data-flow-slug="${slug}"]:visible, `
+      + `[data-testid="my-flow-overview-card"][data-flow-slug="${slug}"]:visible`,
   ).first();
   if (await visibleDraft.isVisible().catch(() => false)) return visibleDraft;
 
-  const libraryRow = page.locator(
-    '[data-testid="my-flow-library-row"][data-flow-slug^="url-draft-"]',
-  ).first();
-  await expect(libraryRow).toBeVisible();
-  const slug = await libraryRow.getAttribute('data-flow-slug');
-  if (!slug) throw new Error('Personal draft Flow slug is missing');
+  await page.goto('/my?view=flows');
   return openMyFlowLibraryFlow(page, slug);
 }
 
@@ -60,6 +59,22 @@ async function setStructureMode(flow: Locator, open: boolean) {
   await expect(toggle).toHaveAttribute('aria-pressed', open ? 'true' : 'false');
 }
 
+async function completeSavedClipboardTransfer(
+  page: Page,
+  panel: Locator,
+  action: Locator,
+): Promise<string> {
+  await action.click();
+  const confirmation = panel.getByTestId('my-flow-transfer-confirmation');
+  await expect(confirmation).toHaveAttribute('data-transfer-route', 'saved_transfer');
+  await confirmation.getByTestId('my-flow-transfer-confirm').click();
+  const receipt = panel.getByTestId('my-flow-transfer-receipt');
+  await expect(receipt).toHaveAttribute('data-transfer-state', 'succeeded');
+  const copied = await page.evaluate(() => navigator.clipboard.readText());
+  await receipt.getByTestId('flow-transfer-success-close').click();
+  return copied;
+}
+
 test.use({ timezoneId: 'Asia/Seoul' });
 
 test('personal draft structure mode separates execution from add, reorder, remove, restore, and export order', async ({ page }) => {
@@ -81,7 +96,7 @@ test('personal draft structure mode separates execution from add, reorder, remov
   await lookup.getByLabel('URL 또는 메모').fill(
     '여권 만료일을 확인한다. 숙소 주소를 저장한다. 보험 서류를 챙긴다.',
   );
-  await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
+  await lookup.getByRole('button', { name: '계획 찾기' }).click();
   const editor = page.getByTestId('flow-memo-draft-editor');
   await expect(editor.getByTestId('flow-memo-draft-item')).toHaveCount(3);
   await editor.getByLabel('메모 초안 제목').fill('여행 준비 구성');
@@ -95,7 +110,7 @@ test('personal draft structure mode separates execution from add, reorder, remov
   await expect(flow.getByTestId('personal-draft-structural-controls')).toHaveCount(0);
   await expect(flow.getByTestId('personal-draft-reorder-controls')).toHaveCount(0);
   await expect(flow.getByTestId('personal-draft-delete-item')).toHaveCount(0);
-  await expect(flow.getByTestId('my-flow-task-complete-control').first()).toBeVisible();
+  await expect(flow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
 
   await setStructureMode(flow, true);
   const outline = flow.getByTestId('my-flow-whole-flow-outline');
@@ -128,8 +143,14 @@ test('personal draft structure mode separates execution from add, reorder, remov
   await moveUp.focus();
   await page.keyboard.press('Enter');
   rows = outline.getByTestId('my-flow-batch-selectable-row');
+  await expect.poll(async () => rows.evaluateAll(
+    (nodes) => nodes.map((node) => node.getAttribute('data-item-id')),
+  )).toEqual([
+    ...orderBefore.slice(0, -2),
+    addedStableId,
+    orderBefore.at(-2),
+  ]);
   const orderAfter = await rows.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-item-id')));
-  expect(orderAfter.indexOf(addedStableId)).toBe(orderBefore.indexOf(addedStableId) - 1);
   await expect(rows.first().getByTestId('personal-draft-move-up')).toBeDisabled();
   await expect(rows.last().getByTestId('personal-draft-move-down')).toBeDisabled();
 
@@ -146,7 +167,7 @@ test('personal draft structure mode separates execution from add, reorder, remov
   await toolbar.getByTestId('my-flow-batch-remove-selected').click();
   await expect(rows.filter({ hasText: '충전기 위치 확인' })).toHaveCount(0);
   const undo = outline.getByTestId('my-flow-batch-undo');
-  await expect(undo).toContainText('1개를 Flow에서 뺐어요');
+  await expect(undo).toContainText('1개를 계획에서 뺐어요');
   await undo.getByTestId('my-flow-batch-undo-action').click();
   addedRow = outline.getByTestId('my-flow-batch-selectable-row').filter({ hasText: '충전기 위치 확인' });
   await expect(addedRow).toHaveAttribute('data-item-id', addedStableId ?? '');
@@ -181,22 +202,30 @@ test('personal draft structure mode separates execution from add, reorder, remov
 
   await setStructureMode(flow, false);
   const exportPanel = await openPersonalDraftListExport(flow);
-  await exportPanel.getByTestId('personal-draft-copy-checklist').click();
-  const checklist = await page.evaluate(() => navigator.clipboard.readText());
+  const checklist = await completeSavedClipboardTransfer(
+    page,
+    exportPanel,
+    exportPanel.getByTestId('personal-draft-copy-checklist'),
+  );
   const addedIndex = checklist.indexOf('충전기 위치 확인');
   expect(addedIndex).toBeGreaterThanOrEqual(0);
   const effectiveItems = getPersonalDraftEffectiveItems(flow);
-  const itemOrder = await effectiveItems.evaluateAll(
-    (nodes) => nodes.map((node) => node.getAttribute('data-item-id')),
-  );
-  expect(itemOrder).toEqual(orderAfter);
-  const orderedTitles = await effectiveItems.evaluateAll((nodes) => nodes.map((node) => {
-    const row = node.querySelector<HTMLElement>('[data-testid="my-flow-mobile-structure-step-row"]');
-    return (row?.innerText ?? '')
-      .split(/\n+/u)
-      .map((line) => line.replace(/\s+/gu, ' ').trim())
-      .find((line) => !/^단계 \d+$/u.test(line) && !/^(열기|열림|완료)$/u.test(line)) ?? '';
-  }));
+  const effectiveEntries = await effectiveItems.evaluateAll((nodes) => {
+    const seen = new Set<string>();
+    return nodes.flatMap((node) => {
+      const id = node.getAttribute('data-item-id');
+      if (!id || seen.has(id)) return [];
+      seen.add(id);
+      const row = node.querySelector<HTMLElement>('[data-testid="my-flow-mobile-structure-step-row"]');
+      const title = (row?.innerText ?? '')
+        .split(/\n+/u)
+        .map((line) => line.replace(/\s+/gu, ' ').trim())
+        .find((line) => !/^단계 \d+$/u.test(line) && !/^(열기|열림|완료)$/u.test(line)) ?? '';
+      return [{ id, title }];
+    });
+  });
+  expect(effectiveEntries.map(({ id }) => id)).toEqual(orderAfter);
+  const orderedTitles = effectiveEntries.map(({ title }) => title);
   const exportTitleOffsets = orderedTitles.map((title) => checklist.indexOf(title));
   expect(exportTitleOffsets.every((offset) => offset >= 0)).toBe(true);
   expect(exportTitleOffsets).toEqual(exportTitleOffsets.slice().sort((left, right) => left - right));

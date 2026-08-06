@@ -11,7 +11,7 @@ import {
   openMyFlowLibraryFlow,
   openPersonalDraftListExport,
 } from './helpers/my-flow-library';
-import { openSavedPublicFlow } from './helpers/public-flow-save';
+import { openSavedPublicFlow, savePublicFlow } from './helpers/public-flow-save';
 
 async function enterMyFlowDetailEditMode(detail: Locator) {
   const quickEdit = detail.getByTestId('my-flow-quick-item-edit');
@@ -38,6 +38,37 @@ async function openMyFlowDetailTools(detail: Locator) {
   return tools;
 }
 
+async function completeSavedClipboardTransfer(page: Page, action: Locator) {
+  await action.click();
+  const confirmation = page.getByTestId('my-flow-transfer-confirmation');
+  await expect(confirmation).toHaveAttribute('data-transfer-route', 'saved_transfer');
+  await confirmation.getByTestId('my-flow-transfer-confirm').click();
+  const receipt = page.getByTestId('my-flow-transfer-receipt');
+  await expect(receipt).toHaveAttribute(
+    'data-transfer-state',
+    'succeeded',
+  );
+  const copied = await page.evaluate(() => navigator.clipboard.readText());
+  await receipt.getByTestId('flow-transfer-success-close').click();
+  return copied;
+}
+
+async function completeSavedFileTransfer(page: Page, action: Locator) {
+  await action.click();
+  const confirmation = page.getByTestId('my-flow-transfer-confirmation');
+  await expect(confirmation).toHaveAttribute('data-transfer-route', 'saved_transfer');
+  const downloadPromise = page.waitForEvent('download');
+  await confirmation.getByTestId('my-flow-transfer-confirm').click();
+  const download = await downloadPromise;
+  const receipt = page.getByTestId('my-flow-transfer-receipt');
+  await expect(receipt).toHaveAttribute(
+    'data-transfer-state',
+    'succeeded',
+  );
+  await receipt.getByTestId('flow-transfer-success-close').click();
+  return download;
+}
+
 async function expandMyFlowAdvancedEditor(detail: Locator) {
   const toggle = detail.getByTestId('my-flow-editor-advanced-toggle');
   await expect(toggle).toBeVisible();
@@ -50,10 +81,33 @@ async function expandMyFlowAdvancedEditor(detail: Locator) {
 
 async function openPostSaveWorkspaceIfPresent(page: Page) {
   const panel = page.getByTestId('my-flow-post-save-panel');
+  await expect(
+    page.locator(
+      [
+        '[data-testid="my-flow-post-save-panel"]:visible',
+        '[data-testid="my-flow-overview-card"]:visible',
+        '[data-testid="my-flow-mobile-workspace"]:visible',
+        '[data-testid="my-flow-mobile-structure-row"]:visible',
+        '[data-testid="my-flow-library-workspace"]:visible',
+      ].join(', '),
+    ).first(),
+  ).toBeVisible({ timeout: 10_000 });
   if (await panel.isVisible().catch(() => false)) {
     await panel.getByTestId('my-flow-post-save-view-flow').click();
     await expect(panel).toHaveCount(0);
   }
+}
+
+async function openSavedDraftFlow(
+  page: Page,
+  draftSlug: string,
+  mobileSection: 'execute' | 'plan' | 'record' = 'plan',
+) {
+  const currentTarget = new URL(page.url()).searchParams.get('flow');
+  if (currentTarget !== draftSlug) {
+    await page.goto(`/my?view=flows&flow=${encodeURIComponent(draftSlug)}`);
+  }
+  return openMyFlowLibraryFlow(page, draftSlug, mobileSection);
 }
 
 async function setPersonalDraftStructureEditMode(flow: Locator, open: boolean) {
@@ -112,9 +166,9 @@ test.describe('P24 execution trust regressions', () => {
 
     const lookup = page.getByTestId('flow-url-lookup-entry');
     await lookup.getByLabel('URL 또는 메모').fill('https://example.com/p24-local-date');
-    await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
+    await lookup.getByRole('button', { name: '계획 찾기' }).click();
     const result = page.getByTestId('flow-url-lookup-result');
-    await result.getByLabel('Flow 이름').fill('아침 준비 초안');
+    await result.getByLabel('계획 이름').fill('아침 준비 초안');
     await result.getByLabel('원하는 결과').fill('오늘 할 일을 정리해서 시작하기');
     await result.getByRole('button', { name: '초안 준비하기' }).click();
 
@@ -129,7 +183,9 @@ test.describe('P24 execution trust regressions', () => {
     const draftFlow = await openMyFlowLibraryFlow(page, draftSlug);
     await addPersonalDraftItem(draftFlow, '오늘 확인할 일');
 
-    await getMyFlowVisibleExecutionRows(draftFlow)
+    await (await getMyFlowVisibleExecutionRows(draftFlow))
+      .filter({ hasText: '오늘 확인할 일' })
+      .first()
       .getByRole('button', { name: /오늘 확인할 일 열기/ })
       .click();
     const detail = getOpenMyFlowItemDetail(page);
@@ -190,9 +246,10 @@ test.describe('P24 execution trust regressions', () => {
     await movedStep.getByRole('button', { name: /열기/ }).click();
     detail = page.locator('[data-testid="my-flow-item-detail"]:visible').first();
     const tools = await openMyFlowDetailTools(detail);
-    const downloadPromise = page.waitForEvent('download');
-    await tools.getByTestId('my-flow-detail-download-ics').click();
-    const download = await downloadPromise;
+    const download = await completeSavedFileTransfer(
+      page,
+      tools.getByTestId('my-flow-detail-download-ics'),
+    );
     const downloadPath = await download.path();
     expect(downloadPath).toBeTruthy();
     const ics = fs.readFileSync(downloadPath!, 'utf8');
@@ -373,7 +430,7 @@ test.describe('P24 execution trust regressions', () => {
     await lookup.getByLabel('URL 또는 메모').fill(
       '이사 견적을 비교한다. 관리사무소에 연락한다. 주소 변경 대상을 확인한다.',
     );
-    await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
+    await lookup.getByRole('button', { name: '계획 찾기' }).click();
     const editor = page.getByTestId('flow-memo-draft-editor');
     await expect(editor.getByTestId('flow-memo-draft-item')).toHaveCount(3);
     const preview = editor.getByTestId('flow-memo-draft-artifact-preview');
@@ -397,9 +454,10 @@ test.describe('P24 execution trust regressions', () => {
     await editor.getByTestId('flow-memo-draft-save').click();
 
     await expect(page).toHaveURL(/\/my/);
+    const draftSlug = new URL(page.url()).searchParams.get('savedFlow') ?? '';
+    expect(draftSlug).toMatch(/^url-draft-/u);
     await openPostSaveWorkspaceIfPresent(page);
-    const draftSlug = await getFirstSavedPersonalDraftSlug(page);
-    let draftFlow = await openMyFlowLibraryFlow(page, draftSlug);
+    let draftFlow = await openSavedDraftFlow(page, draftSlug);
     let draftItemRows = draftFlow
       .getByTestId('my-flow-whole-flow-outline')
       .getByTestId('my-flow-execution-row-shell');
@@ -420,8 +478,8 @@ test.describe('P24 execution trust regressions', () => {
 
     const exportPanel = await openPersonalDraftListExport(draftFlow);
     await expect(exportPanel.getByTestId('my-flow-export-scope-flow')).toHaveAttribute('aria-pressed', 'true');
-    await expect(exportPanel.getByTestId('my-flow-export-scope-flow')).toHaveText('Flow 전체 · 2개');
-    await expect(exportPanel.getByTestId('my-flow-export-scope-summary')).toHaveText('Flow 전체 · 2개');
+    await expect(exportPanel.getByTestId('my-flow-export-scope-flow')).toHaveText('계획 전체 · 2개');
+    await expect(exportPanel.getByTestId('my-flow-export-scope-summary')).toHaveText('계획 전체 · 2개');
     await expect(exportPanel.getByTestId('my-flow-export-panel')).toHaveAttribute('data-export-included-count', '2');
     await expect(exportPanel.getByTestId('my-flow-export-calendar')).toHaveAttribute('data-export-count', '1');
     await expect(exportPanel.getByTestId('personal-draft-copy-checklist')).toHaveAttribute('data-export-count', '2');
@@ -434,8 +492,7 @@ test.describe('P24 execution trust regressions', () => {
         .locator(':scope > summary')
         .click();
     }
-    await memoAction.click();
-    const copiedMemo = await page.evaluate(() => navigator.clipboard.readText());
+    const copiedMemo = await completeSavedClipboardTransfer(page, memoAction);
     expect(copiedMemo).toContain('할 일 2개');
     expect(copiedMemo).toContain('이사 업체 견적 비교하기');
     expect(copiedMemo).toContain('주소 변경 대상을 확인하기');
@@ -443,13 +500,14 @@ test.describe('P24 execution trust regressions', () => {
     expect(copiedMemo).not.toContain('할 일을 실행할 순서 정하기');
 
     await exportPanel.getByTestId('my-flow-export-scope-selected').click();
-    await exportPanel.getByRole('checkbox', { name: '이사 업체 견적 비교하기 가져갈 항목으로 선택' }).check();
-    await exportPanel.getByRole('checkbox', { name: '주소 변경 대상을 확인하기 가져갈 항목으로 선택' }).check();
+    await exportPanel.getByRole('checkbox', { name: '이사 업체 견적 비교하기 옮길 항목으로 선택' }).check();
+    await exportPanel.getByRole('checkbox', { name: '주소 변경 대상을 확인하기 옮길 항목으로 선택' }).check();
     await expect(exportPanel.getByTestId('my-flow-export-scope-summary')).toHaveText('직접 선택 · 2개');
     await expect(exportPanel.getByTestId('my-flow-export-calendar')).toHaveAccessibleName(/캘린더 파일 1개$/);
-    const calendarDownloadPromise = page.waitForEvent('download');
-    await exportPanel.getByTestId('my-flow-export-calendar').click();
-    const calendarDownload = await calendarDownloadPromise;
+    const calendarDownload = await completeSavedFileTransfer(
+      page,
+      exportPanel.getByTestId('my-flow-export-calendar'),
+    );
     expect(calendarDownload.suggestedFilename()).toMatch(/selected-calendar\.ics$/u);
     const calendarDownloadPath = await calendarDownload.path();
     expect(calendarDownloadPath).toBeTruthy();
@@ -465,8 +523,10 @@ test.describe('P24 execution trust regressions', () => {
         `${exportEvidenceDir}/screenshots/00-personal-draft-selected-export-mobile.png`,
       );
     }
-    await exportPanel.getByTestId('personal-draft-copy-checklist').click();
-    const selectedChecklist = await page.evaluate(() => navigator.clipboard.readText());
+    const selectedChecklist = await completeSavedClipboardTransfer(
+      page,
+      exportPanel.getByTestId('personal-draft-copy-checklist'),
+    );
     expect(selectedChecklist).toContain('이사 업체 견적 비교하기');
     expect(selectedChecklist).toContain('주소 변경 대상을 확인하기');
     expect(selectedChecklist).not.toContain('할 일을 실행할 순서 정하기');
@@ -479,7 +539,7 @@ test.describe('P24 execution trust regressions', () => {
       });
     }
     await page.reload();
-    draftFlow = await openMyFlowLibraryFlow(page, draftSlug);
+    draftFlow = await openSavedDraftFlow(page, draftSlug);
     draftItemRows = draftFlow
       .getByTestId('my-flow-whole-flow-outline')
       .getByTestId('my-flow-execution-row-shell');
@@ -505,7 +565,7 @@ test.describe('P24 execution trust regressions', () => {
     ).toBeLessThanOrEqual(1);
     await page.setViewportSize({ width: 1024, height: 768 });
     await page.goto('/my');
-    const wideDraftFlow = await openMyFlowLibraryFlow(page, draftSlug);
+    const wideDraftFlow = await openSavedDraftFlow(page, draftSlug);
     await expect(wideDraftFlow).toContainText('전체 0/2 완료');
     if (exportEvidenceDir) {
       await wideDraftFlow.getByTestId('personal-draft-list-export-toggle').click();
@@ -542,11 +602,11 @@ test.describe('P24 execution trust regressions', () => {
 
     const flow = await openMyFlowLibraryFlow(page, 'source-backed-moving-d30', 'record');
     const exportSurface = flow.getByTestId('my-flow-export-surface');
-    await expect(exportSurface.getByTestId('my-flow-export-entry')).toContainText(/전체 \d+개 가져가기/);
+    await expect(exportSurface.getByTestId('my-flow-export-entry')).toContainText(/내 도구로 옮기기 · \d+개/);
     await exportSurface.getByTestId('my-flow-export-entry').click();
     await expect(exportSurface.getByTestId('my-flow-export-scope-flow')).toHaveAttribute('aria-pressed', 'true');
-    await expect(exportSurface.getByTestId('my-flow-export-scope-flow')).toHaveText('Flow 전체 · 5개');
-    await expect(exportSurface.getByTestId('my-flow-export-scope-summary')).toHaveText('Flow 전체 · 5개');
+    await expect(exportSurface.getByTestId('my-flow-export-scope-flow')).toHaveText('계획 전체 · 5개');
+    await expect(exportSurface.getByTestId('my-flow-export-scope-summary')).toHaveText('계획 전체 · 5개');
     await expect(exportSurface.getByTestId('my-flow-export-panel')).toHaveAttribute('data-export-included-count', '5');
     await expect(exportSurface.getByTestId('my-flow-export-checklist')).toBeEnabled();
 
@@ -563,8 +623,10 @@ test.describe('P24 execution trust regressions', () => {
     await expect(exportSurface.getByTestId('my-flow-export-checklist')).toHaveAttribute('data-export-count', '2');
     await expect(exportSurface.getByTestId('my-flow-export-sheet')).toHaveAttribute('data-export-count', '2');
     await expect(exportSurface.getByTestId('my-flow-export-memo')).toHaveAttribute('data-export-count', '2');
-    await exportSurface.getByTestId('my-flow-export-memo').click();
-    const copied = await page.evaluate(() => navigator.clipboard.readText());
+    const copied = await completeSavedClipboardTransfer(
+      page,
+      exportSurface.getByTestId('my-flow-export-memo'),
+    );
     expect(copied).toContain(selectedTitles[0]);
     expect(copied).toContain(selectedTitles[1]);
     const unselectedTitle = await choices.nth(2).locator('span > span:first-child').textContent();
@@ -584,7 +646,7 @@ test.describe('P24 execution trust regressions', () => {
     await expect(
       detail.getByTestId('my-flow-detail-portable-export').locator(':scope > summary'),
     ).toHaveText(
-      '현재 항목 1개 가져가기',
+      '현재 항목 1개 옮기기',
     );
     await expect(detail.getByTestId('my-flow-detail-portable-export')).toHaveAttribute('data-export-scope', 'item');
     await expect(detail.getByTestId('my-flow-detail-portable-export')).toHaveAttribute('data-export-included-count', '1');
@@ -618,11 +680,11 @@ test.describe('P24 execution trust regressions', () => {
 
     const lookup = page.getByTestId('flow-url-lookup-entry');
     await lookup.getByLabel('URL 또는 메모').fill('https://example.com/p24-empty-draft');
-    await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
+    await lookup.getByRole('button', { name: '계획 찾기' }).click();
     const result = page.getByTestId('flow-url-lookup-result');
     await result.getByRole('button', { name: '초안 준비하기' }).click();
     await expect(result.getByRole('status')).toHaveText(
-      'Flow 이름이나 원하는 결과 중 하나를 입력해 주세요.',
+      '계획 이름이나 원하는 결과 중 하나를 입력해 주세요.',
     );
     expect(
       await page.evaluate(() =>
@@ -637,7 +699,7 @@ test.describe('P24 execution trust regressions', () => {
     const candidateList = page.getByTestId('flow-url-supply-candidate-list');
     const candidate = candidateList.locator('article').first();
     await expect(candidate).toContainText('여행 전에 여권과 환전 준비를 확인하고 싶어요');
-    await expect(candidate).not.toContainText('바로 시작할 Flow를 찾지 못했어요');
+    await expect(candidate).not.toContainText('바로 시작할 계획을 찾지 못했어요');
     const stored = await page.evaluate(() =>
       JSON.parse(localStorage.getItem('flow:url-first:supply-candidates') || '[]'),
     );
@@ -645,7 +707,7 @@ test.describe('P24 execution trust regressions', () => {
     expect(stored[0].title).toBe('여행 전에 여권과 환전 준비를 확인하고 싶어요');
     await candidate.getByTestId('flow-url-miss-draft-open').click();
     await expect(candidate.getByTestId('flow-url-miss-draft-suggestion-list')).not.toContainText(
-      '바로 시작할 Flow를 찾지 못했어요',
+      '바로 시작할 계획을 찾지 못했어요',
     );
 
     const evidenceDir = process.env.FLOWME_P24_F3B_EVIDENCE_DIR;
@@ -660,7 +722,7 @@ test.describe('P24 execution trust regressions', () => {
     ).toBeLessThanOrEqual(1);
   });
 
-  test('focused Flow completion stays reversible with one control per visible task', async ({ page }) => {
+  test('focused Flow completion stays reversible through one Item-detail control', async ({ page }) => {
     test.setTimeout(120_000);
     const consoleErrors: string[] = [];
     page.on('console', (message) => {
@@ -697,15 +759,16 @@ test.describe('P24 execution trust regressions', () => {
     const title = (await runnable.getByTestId('my-flow-row-title').innerText()).trim();
     expect(rowKey).toBeTruthy();
     expect(itemId).toBeTruthy();
-    await expect(runnable.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
+    await expect(runnable.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
 
     await runnable.getByRole('button', { name: /열기/ }).click();
     const itemDetail = getOpenMyFlowItemDetail(page);
     await expect(itemDetail).toBeVisible();
-    await expect(itemDetail.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
-    await closeOpenMyFlowItemDetail(page);
+    const detailCompletion = itemDetail.getByTestId('my-flow-task-complete-control');
+    await expect(detailCompletion).toHaveCount(1);
+    await expect(page.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
 
-    await runnable.getByTestId('my-flow-task-complete-control').click();
+    await detailCompletion.click();
     const snackbar = page.getByTestId('my-flow-completion-snackbar');
     await expect(snackbar).toBeVisible();
     await expect(snackbar).toHaveAttribute('aria-live', 'polite');
@@ -725,66 +788,69 @@ test.describe('P24 execution trust regressions', () => {
       });
     }
 
-    await snackbar.getByTestId('my-flow-completion-undo').click();
+    await snackbar.getByTestId('my-flow-completion-undo').press('Enter');
     await expect(snackbar).toHaveCount(0);
-    const restored = workspace
-      .getByTestId('my-flow-temporal-next-group')
-      .getByTestId('my-flow-execution-row-shell')
-      .first();
-    await expect(restored).toBeVisible();
-    await expect(restored.getByTestId('my-flow-task-complete-control')).not.toBeChecked();
-    await expect(restored.getByTestId('my-flow-task-complete-control')).toBeFocused();
+    await expect(detailCompletion).not.toBeChecked();
+    await expect(detailCompletion).toBeFocused();
 
-    await restored.getByTestId('my-flow-task-complete-control').click();
+    await detailCompletion.click();
+    await expect(detailCompletion).toBeChecked();
+    await closeOpenMyFlowItemDetail(page);
     await page.reload();
     const reloadedWorkspace = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'plan');
     const reloadedOutline = reloadedWorkspace.getByTestId('my-flow-whole-flow-outline');
-    await reloadedOutline.getByTestId('my-flow-whole-flow-toggle-all-groups').click();
     const completedRow = reloadedOutline.locator(`article[data-row-key="${rowKey}"]`);
     await expect(completedRow).toBeVisible();
-    await expect(completedRow.getByTestId('my-flow-task-complete-control')).toBeChecked();
-    await expect(completedRow.getByTestId('my-flow-task-complete-control')).toHaveAccessibleName(/다시 열기$/);
+    await expect(completedRow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+    await completedRow.getByRole('button', { name: /열기/ }).click();
+    const completedDetail = getOpenMyFlowItemDetail(page);
+    const completedControl = completedDetail.getByTestId('my-flow-task-complete-control');
+    await expect(completedControl).toHaveCount(1);
+    await expect(page.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
+    await expect(completedControl).toBeChecked();
+    await expect(completedControl).toHaveAccessibleName(/다시 열기$/);
     if (evidenceDir) {
       await page.screenshot({
         path: `${evidenceDir}/screenshots/01-persistent-completed-mobile.png`,
         fullPage: true,
       });
     }
-    await completedRow.getByTestId('my-flow-task-complete-control').click();
+    await completedControl.click();
     const reopenNotice = page.getByTestId('my-flow-completion-snackbar');
     await expect(reopenNotice).toHaveAttribute('data-completion-result', 'reopened');
     await expect(reopenNotice).toContainText('다시 열림');
     await expect(reopenNotice.getByTestId('my-flow-completion-open')).toHaveText('항목 보기');
     await expect(reopenNotice.getByTestId('my-flow-completion-open')).toBeFocused();
-    await reopenNotice.getByTestId('my-flow-completion-open').click();
-    await expect(page.locator('main')).toHaveAttribute('data-p32-workspace-state', 'focused');
-    await expect(page.locator('[data-testid="my-flow-item-detail"]:visible')).toHaveCount(1);
-    await expect(page.getByTestId('my-flow-completion-snackbar')).toHaveCount(0);
 
     await page.setViewportSize({ width: 1024, height: 768 });
-    const wideFlow = page.locator(
-      '[data-testid="my-flow-overview-card"][data-flow-slug="moving-d30-basic"]',
-    );
-    await expect(wideFlow).toHaveCount(1);
+    await page.reload();
+    const wideFlow = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'plan');
     await expandMyFlowWholePlan(wideFlow);
-    const wideRow = wideFlow.locator(`article[data-row-key="${rowKey}"]:visible`).first();
-    const wideCompletion = wideRow.getByTestId('my-flow-task-complete-control');
+    const wideRow = wideFlow
+      .getByTestId('my-flow-shape-aware-execution')
+      .locator(`article[data-row-key="${rowKey}"]:visible`)
+      .first();
+    await expect(wideRow).toBeVisible();
+    await expect(wideRow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
     const wideDetailPane = wideFlow.getByTestId('my-flow-workspace-detail-pane');
     await expect(wideDetailPane).toBeVisible();
-    const wideDetail = page.locator('[data-testid="my-flow-item-detail"]:visible');
+    const wideDetail = wideDetailPane.locator(
+      `[data-testid="my-flow-item-detail"][data-item-id="${itemId}"]:visible`,
+    );
+    if (!(await wideDetail.isVisible().catch(() => false))) {
+      await wideRow.getByRole('button', { name: /열기/ }).click();
+    }
     await expect(wideDetail).toHaveCount(1);
-    expect(await wideDetail.getAttribute('data-item-id')).toBe(itemId);
+    const wideCompletion = wideDetail.getByTestId('my-flow-task-complete-control');
+    await expect(wideCompletion).toHaveCount(1);
+    await expect(page.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
     await expect(wideCompletion).not.toBeChecked();
     await wideCompletion.focus();
     await wideCompletion.click();
     const wideNotice = page.getByTestId('my-flow-completion-snackbar');
     await expect(wideNotice.getByTestId('my-flow-completion-undo')).toHaveCount(0);
-    const reopenedWideCompletion = wideFlow
-      .locator(`article[data-row-key="${rowKey}"]:visible`)
-      .first()
-      .getByTestId('my-flow-task-complete-control');
-    await reopenedWideCompletion.click();
-    await expect(reopenedWideCompletion).not.toBeChecked();
+    await wideCompletion.click();
+    await expect(wideCompletion).not.toBeChecked();
     await expect(wideNotice).toHaveAttribute('data-completion-result', 'reopened');
     await expect(wideNotice.getByTestId('my-flow-completion-open')).toBeFocused();
     await expect(wideDetail).toBeVisible();
@@ -837,9 +903,8 @@ test.describe('P24 execution trust regressions', () => {
         const nextDateRows = nextDateGroup.getByTestId('my-flow-execution-row-shell');
         const nextDateRowCount = await nextDateRows.count();
         expect(nextDateRowCount).toBeGreaterThan(1);
-        await expect(nextDateGroup.getByTestId('my-flow-task-complete-control')).toHaveCount(
-          nextDateRowCount,
-        );
+        expect(nextDateRowCount).toBe(3);
+        await expect(nextDateGroup.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
       }
       const planToggle = flow.getByTestId('my-flow-workspace-plan-toggle');
       if (
@@ -931,15 +996,15 @@ test.describe('P24 execution trust regressions', () => {
       const saveArea = page.getByTestId('public-flow-mobile-save-cta');
       const primarySave = saveArea.locator('button[data-action-priority="primary"]');
       await expect(primarySave).toBeVisible();
-      await expect(primarySave).toHaveAccessibleName(/시작/);
-      await primarySave.click();
-      await expect.poll(() => page.evaluate(() =>
-        Boolean(localStorage.getItem('flow:saved:new-car-delivery-check')),
-      )).toBe(true);
-      const receipt = page.getByTestId('public-flow-saved-receipt');
-      await expect(receipt).toBeVisible();
-      await openSavedPublicFlow(page, receipt);
-      await expect(page).toHaveURL('/my?view=flows&flow=new-car-delivery-check');
+      await expect(primarySave).toHaveAccessibleName('내 계획에 저장');
+      const saveBanner = await savePublicFlow(page, primarySave);
+      const personalCopyKey = new URL(page.url()).searchParams.get('flow') ?? '';
+      expect(personalCopyKey).toMatch(/^personal-copy:/u);
+      await expect.poll(() => page.evaluate((copyKey) =>
+        Boolean(localStorage.getItem(`flow:saved:${copyKey}`)),
+      personalCopyKey)).toBe(true);
+      await expect(page.getByTestId('public-flow-saved-receipt')).toHaveCount(0);
+      await openSavedPublicFlow(page, saveBanner);
       const savedFlow = await openMyFlowLibraryFlow(
         page,
         'new-car-delivery-check',
@@ -963,7 +1028,7 @@ test.describe('P24 execution trust regressions', () => {
     expect(consoleErrors).toEqual([]);
   });
 
-  test('My Flow keeps common item edits visible and intent-specific settings progressive', async ({ page }) => {
+  test('My Flow uses the shared saved Item editor for common personal fields only', async ({ page }) => {
     test.setTimeout(180_000);
     const consoleErrors: string[] = [];
     page.on('console', (message) => {
@@ -976,14 +1041,14 @@ test.describe('P24 execution trust regressions', () => {
     await page.reload();
     await expect(page).toHaveURL('/f/moving-d30-basic');
     await page.getByLabel('이사일').fill('2026-07-22');
-    await page.getByTestId('public-flow-save-primary-mobile').click();
-    await page.getByTestId('public-flow-saved-receipt-primary').click();
-    await expect(page).toHaveURL('/my?view=flows&flow=moving-d30-basic');
+    await savePublicFlow(page, page.getByTestId('public-flow-save-primary-mobile'));
+    const personalCopyKey = new URL(page.url()).searchParams.get('flow') ?? '';
+    expect(personalCopyKey).toMatch(/^personal-copy:/u);
 
     const openMovingEditor = async () => {
       const flow = await openMyFlowLibraryFlow(
         page,
-        'moving-d30-basic',
+        personalCopyKey,
         'plan',
       );
       const outline = flow.getByTestId('my-flow-whole-flow-outline');
@@ -994,81 +1059,66 @@ test.describe('P24 execution trust regressions', () => {
       await expect(firstRow).toBeVisible({ timeout: 10_000 });
       await firstRow.locator('button').first().click();
       const detail = getOpenMyFlowItemDetail(page);
-      await enterMyFlowDetailEditMode(detail);
-      return detail;
+      await detail.getByTestId('my-flow-quick-item-edit').click();
+      const editor = page.getByTestId('saved-flow-editor-item');
+      await expect(editor).toBeVisible();
+      return { detail, editor };
     };
 
-    let detail = await openMovingEditor();
-    await expect(detail.getByTestId('my-flow-detail-title-input')).toBeVisible();
-    await expect(detail.getByTestId('my-flow-detail-date-input')).toBeVisible();
-    await expect(detail.locator('input[type="time"]')).toHaveCount(0);
-    await expect(detail.getByTestId('my-flow-detail-memo')).toBeVisible();
-    const advancedToggle = detail.getByTestId('my-flow-editor-advanced-toggle');
-    await expect(advancedToggle).toContainText('세부 일정');
-    await expect(advancedToggle).toContainText('시간');
-    await expect(advancedToggle).toContainText('장소');
-    await expect(advancedToggle).toContainText('반복');
-    await expect(advancedToggle).toHaveAttribute('aria-expanded', 'false');
-    await expect(detail.locator('input[placeholder="장소 없음"]')).toHaveCount(0);
-    await expect(detail.getByTestId('my-flow-detail-repeat-input')).toHaveCount(0);
-    await expect(detail.getByTestId('my-flow-editor-intent-fields')).toHaveCount(0);
+    let opened = await openMovingEditor();
+    let editor = opened.editor;
+    await expect(editor).toHaveAttribute('data-editor-frame', 'shared');
+    await expect(editor).toHaveAttribute('data-editor-level', 'item');
+    await expect(editor.getByTestId('saved-flow-editor-item-title-input')).toBeVisible();
+    await expect(editor.getByTestId('saved-flow-editor-item-date-input')).toBeVisible();
+    await expect(editor.getByTestId('saved-flow-editor-item-detail-input')).toBeVisible();
+    await expect(editor.locator('input[type="time"]')).toHaveCount(0);
+    await expect(editor.locator('input[placeholder="장소 없음"]')).toHaveCount(0);
+    await expect(editor.getByTestId('my-flow-detail-repeat-input')).toHaveCount(0);
+    await expect(editor.getByTestId('my-flow-editor-advanced-toggle')).toHaveCount(0);
     const evidenceDir = process.env.FLOWME_P25_PROGRESSIVE_ADJUSTMENT_EVIDENCE_DIR
       ?? process.env.FLOWME_P24_U2_EVIDENCE_DIR;
     if (evidenceDir) {
       fs.mkdirSync(`${evidenceDir}/screenshots`, { recursive: true });
-      await detail.screenshot({
-        path: `${evidenceDir}/screenshots/00-progressive-editor-basic-mobile.png`,
+      await editor.screenshot({
+        path: `${evidenceDir}/screenshots/00-shared-saved-item-editor-mobile.png`,
       });
     }
 
-    await expandMyFlowAdvancedEditor(detail);
-    await expect(detail.locator('input[type="time"]')).toBeVisible();
-    await expect(detail.locator('input[placeholder="장소 없음"]')).toBeVisible();
-    await expect(detail.getByTestId('my-flow-detail-repeat-input')).toBeVisible();
-    await expect(detail.getByTestId('my-flow-decision-fields')).toHaveCount(0);
-    await expect(detail.getByTestId('my-flow-log-fields')).toHaveCount(0);
-    await detail.locator('input[placeholder="장소 없음"]').fill('집');
-    await detail.getByTestId('my-flow-detail-repeat-input').selectOption('weekly');
-    if (evidenceDir) {
-      await detail.screenshot({
-        path: `${evidenceDir}/screenshots/01-progressive-editor-advanced-mobile.png`,
-      });
-    }
-    await detail.getByTestId('my-flow-detail-save-changes').click();
+    const personalMemo = '세 업체 견적과 가능한 이사 날짜를 비교';
+    const personalDate = '2026-07-25';
+    await editor.getByTestId('saved-flow-editor-item-detail-input').fill(personalMemo);
+    await editor.getByTestId('saved-flow-editor-item-date-input').fill(personalDate);
+    await editor.getByTestId('my-flow-detail-save-changes').click();
+    const planEditor = page.getByTestId('saved-flow-editor-plan');
+    await expect(planEditor).toBeVisible();
+    await planEditor.getByTestId('saved-flow-editor-save').click();
+    await expect(planEditor).toHaveCount(0);
 
+    await closeOpenMyFlowItemDetail(page);
     await page.reload();
-    await openPostSaveWorkspaceIfPresent(page);
-    detail = await openMovingEditor();
-    await expect(detail).toHaveAttribute('data-editor-advanced-expanded', 'false');
-    await expect(detail.getByTestId('my-flow-editor-advanced-toggle')).toContainText('집');
-    await expect(detail.getByTestId('my-flow-editor-advanced-toggle')).toContainText('매주');
-    await expect(detail.locator('input[placeholder="장소 없음"]')).toHaveCount(0);
-    await expect(detail.getByTestId('my-flow-detail-repeat-input')).toHaveCount(0);
-    await expandMyFlowAdvancedEditor(detail);
-    await expect(detail.locator('input[placeholder="장소 없음"]')).toHaveValue('집');
-    await expect(detail.getByTestId('my-flow-detail-repeat-input')).toHaveValue('weekly');
+    opened = await openMovingEditor();
+    editor = opened.editor;
+    await expect(editor.getByTestId('saved-flow-editor-item-detail-input')).toHaveValue(personalMemo);
+    await expect(editor.getByTestId('saved-flow-editor-item-date-input')).toHaveValue(personalDate);
+    await editor.getByTestId('saved-flow-editor-item-cancel').click();
+    await expect(page.getByTestId('saved-flow-editor-item')).toHaveCount(0);
+    await page.getByTestId('saved-flow-editor-cancel').click();
+    await expect(page.getByTestId('saved-flow-editor-plan')).toHaveCount(0);
+    await closeOpenMyFlowItemDetail(page);
+
     await page.setViewportSize({ width: 1024, height: 768 });
-    const wideCard = await openMyFlowLibraryFlow(
-      page,
-      'moving-d30-basic',
-      'plan',
-    );
-    if ((await page.locator('[data-testid="my-flow-item-detail"]:visible').count()) === 0) {
-      await wideCard.getByTestId('my-flow-next-action-open').click();
-    }
-    const wideDetail = page.locator('[data-testid="my-flow-item-detail"]:visible').first();
-    await expect(wideDetail).toBeVisible();
-    if ((await wideDetail.getByTestId('my-flow-editor-advanced-toggle').count()) === 0) {
-      await enterMyFlowDetailEditMode(wideDetail);
-    }
-    await expect(wideDetail).toHaveAttribute('data-editor-advanced-expanded', 'true');
-    await expect(wideDetail.getByTestId('my-flow-editor-advanced-toggle')).toBeVisible();
+    opened = await openMovingEditor();
+    editor = opened.editor;
+    await expect(editor).toHaveAttribute('data-editor-layout', 'responsive');
+    await expect(editor.getByTestId('saved-flow-editor-item-detail-input')).toHaveValue(personalMemo);
+    await expect(editor.getByTestId('saved-flow-editor-item-date-input')).toHaveValue(personalDate);
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth),
     ).toBeLessThanOrEqual(1);
     if (evidenceDir) {
       await page.screenshot({
-        path: `${evidenceDir}/screenshots/02-progressive-editor-revisit-wide.png`,
+        path: `${evidenceDir}/screenshots/01-shared-saved-item-editor-revisit-wide.png`,
         fullPage: true,
       });
     }
@@ -1142,7 +1192,7 @@ test.describe('P24 execution trust regressions', () => {
     await lookup.getByLabel('URL 또는 메모').fill(
       '여권을 확인한다. 보험 서류를 챙긴다. 숙소 주소를 적는다.',
     );
-    await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
+    await lookup.getByRole('button', { name: '계획 찾기' }).click();
     const editor = page.getByTestId('flow-memo-draft-editor');
     await expect(editor.getByTestId('flow-memo-draft-item')).toHaveCount(3);
     await editor.getByLabel('메모 초안 제목').fill('여행 출발 준비');
@@ -1194,32 +1244,33 @@ test.describe('P24 execution trust regressions', () => {
     await expect(exportPanel.getByTestId('my-flow-export-scope-summary')).toHaveText('직접 선택 · 2개');
     await expect(exportPanel.getByTestId('my-flow-export-selectable-item')).toHaveCount(3);
     await expect(exportPanel.getByTestId('my-flow-export-selectable-item').locator('input:checked')).toHaveCount(2);
-    await exportPanel.getByRole('button', { name: /가져가기 닫기/ }).click();
+    await exportPanel.getByRole('button', { name: /옮기기 닫기/ }).click();
 
     await batchToggle.click();
     await outline.getByTestId('my-flow-batch-selectable-row').nth(0).getByTestId('my-flow-batch-item-checkbox').check();
     await outline.getByTestId('my-flow-batch-open-date-tool').click();
     await outline.getByTestId('my-flow-batch-target-date').fill('2026-09-03');
     await outline.getByTestId('my-flow-batch-apply-date').click();
+    await expect(draftFlow.getByTestId('my-flow-batch-undo')).toBeVisible();
     await outline.getByTestId('my-flow-batch-selectable-row').nth(0).getByTestId('my-flow-batch-item-checkbox').check();
     await outline.getByTestId('my-flow-batch-open-date-tool').click();
     await outline.getByTestId('my-flow-batch-operation-remove-date').click();
     await expect(outline.getByTestId('my-flow-batch-impact-preview')).toContainText('1개가 바뀝니다');
     await outline.getByTestId('my-flow-batch-apply-date').click();
-    const removedOverrideState = await page.evaluate(() => {
+    await expect.poll(() => page.evaluate(() => {
       const values = Object.values(JSON.parse(localStorage.getItem('flow:my-flow:date-overrides') || '{}'));
       return {
         removedCount: values.filter((value) => value === '__flowme_unscheduled__').length,
         staleMovedDateCount: values.filter((value) => value === '2026-09-03').length,
       };
-    });
-    expect(removedOverrideState).toEqual({ removedCount: 1, staleMovedDateCount: 0 });
+    })).toEqual({ removedCount: 1, staleMovedDateCount: 0 });
     await draftFlow.getByTestId('my-flow-batch-undo-action').click();
+    await expect(draftFlow.getByTestId('my-flow-batch-undo')).toHaveCount(0);
 
     await outline.getByTestId('my-flow-batch-selectable-row').nth(0).getByTestId('my-flow-batch-item-checkbox').check();
     page.once('dialog', (dialog) => dialog.accept());
     await outline.getByTestId('my-flow-batch-remove-selected').click();
-    await expect(draftFlow.getByTestId('my-flow-batch-undo')).toContainText('1개를 Flow에서 뺐어요');
+    await expect(draftFlow.getByTestId('my-flow-batch-undo')).toContainText('1개를 계획에서 뺐어요');
     await expect(outline.getByTestId('my-flow-batch-selectable-row')).toHaveCount(2);
     await draftFlow.getByTestId('my-flow-batch-undo-action').click();
     await expect(outline.getByTestId('my-flow-batch-selectable-row')).toHaveCount(3);
@@ -1292,9 +1343,9 @@ test.describe('P24 execution trust regressions', () => {
 
     const lookup = page.getByTestId('flow-url-lookup-entry');
     await lookup.getByLabel('URL 또는 메모').fill('https://example.com/p24-calendar-tray');
-    await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
+    await lookup.getByRole('button', { name: '계획 찾기' }).click();
     const result = page.getByTestId('flow-url-lookup-result');
-    await result.getByLabel('Flow 이름').fill('캘린더 배치 초안');
+    await result.getByLabel('계획 이름').fill('캘린더 배치 초안');
     await result.getByLabel('원하는 결과').fill('날짜 없는 준비를 캘린더에 놓기');
     await result.getByRole('button', { name: '초안 준비하기' }).click();
 
@@ -1311,22 +1362,31 @@ test.describe('P24 execution trust regressions', () => {
     await expect(draftFlow).toContainText('충전기 챙기기');
 
     const evidenceDir = process.env.FLOWME_P24_U3_EVIDENCE_DIR;
-    const draftRow = getMyFlowVisibleExecutionRows(draftFlow)
-      .filter({ hasText: '충전기 챙기기' });
+    const draftRow = (await getMyFlowVisibleExecutionRows(draftFlow))
+      .filter({ hasText: '충전기 챙기기' })
+      .first();
     await expect(draftRow).toBeVisible();
-    const completion = draftRow.getByTestId('my-flow-task-complete-control');
-    await completion.click();
-    await expect(page.getByTestId('my-flow-completion-undo')).toHaveCount(0);
-    await completion.uncheck();
-    await expect(completion).not.toBeChecked();
-
+    await expect(draftRow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
     await draftRow.getByRole('button', { name: /충전기 챙기기 열기/ }).click();
     let detail = getOpenMyFlowItemDetail(page);
+    const completion = detail.getByTestId('my-flow-task-complete-control');
+    await expect(completion).toHaveCount(1);
+    await expect(page.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
+    await completion.click();
+    await expect(page.getByTestId('my-flow-completion-undo')).toHaveCount(0);
+    await expect(completion).toBeChecked();
+    await completion.click();
+    await expect(completion).not.toBeChecked();
+
     await enterMyFlowDetailEditMode(detail);
     await expect(detail.getByTestId('my-flow-detail-date-input')).toHaveCount(0);
     await detail.getByTestId('personal-draft-date-mode-fixed').click();
     await detail.getByTestId('my-flow-detail-date-input').fill('2026-07-21');
     await detail.getByTestId('my-flow-detail-save-changes').click();
+    await expect.poll(() => page.evaluate(() => Object.keys(window.localStorage)
+      .filter((key) => key.startsWith('flow:my-flow:structural-overlay:'))
+      .some((key) => window.localStorage.getItem(key)?.includes('"date":"2026-07-21"'))))
+      .toBe(true);
 
     if (evidenceDir) {
       fs.mkdirSync(`${evidenceDir}/screenshots`, { recursive: true });
@@ -1349,7 +1409,7 @@ test.describe('P24 execution trust regressions', () => {
       .getByTestId('my-flow-execution-row-shell')
       .filter({ hasText: '충전기 챙기기' });
     await expect(scheduledRow).toBeVisible();
-    await expect(scheduledRow.getByRole('button', { name: /Flow에서 열기/ })).toBeVisible();
+    await expect(scheduledRow.getByRole('button', { name: /계획에서 열기/ })).toBeVisible();
     await expect(page.getByTestId('my-flow-item-detail-sheet')).toHaveCount(0);
     if (evidenceDir) {
       await page.screenshot({
@@ -1368,7 +1428,7 @@ test.describe('P24 execution trust regressions', () => {
     scheduledRow = selectedDay
       .getByTestId('my-flow-execution-row-shell')
       .filter({ hasText: '충전기 챙기기' });
-    await scheduledRow.getByRole('button', { name: /Flow에서 열기/ }).click();
+    await scheduledRow.getByRole('button', { name: /계획에서 열기/ }).click();
     await expect(page).toHaveURL(/\/my\?view=flows&flow=/);
     detail = getOpenMyFlowItemDetail(page);
     await expect(detail).toBeVisible();
@@ -1397,7 +1457,7 @@ test.describe('P24 execution trust regressions', () => {
     expect(consoleErrors).toEqual([]);
   });
 
-  test('inline execution notes stay one tap away and aggregate separately at completion', async ({ page }) => {
+  test('Item memo stays in detail without a second execution-note surface', async ({ page }) => {
     test.setTimeout(120_000);
     const consoleErrors: string[] = [];
     page.on('console', (message) => {
@@ -1406,8 +1466,6 @@ test.describe('P24 execution trust regressions', () => {
     page.on('pageerror', (error) => consoleErrors.push(error.message));
     const flowSlug = 'moving-d30-basic';
     const flowBundle = seedBundles.find((bundle) => bundle.flow.slug === flowSlug);
-    const firstItem = flowBundle?.items[0];
-    expect(firstItem).toBeTruthy();
     const checks = Object.fromEntries(
       (flowBundle?.items ?? []).map((item, index) => [item.id, index !== 0]),
     );
@@ -1431,120 +1489,69 @@ test.describe('P24 execution trust regressions', () => {
     }, { slug: flowSlug, initialChecks: checks });
 
     await page.goto('/my');
-    const selectedMobileFlow = await openMyFlowLibraryFlow(page, flowSlug, 'plan');
-    const firstRow = selectedMobileFlow.getByTestId('my-flow-execution-row-shell').first();
+    const selectedMobileFlow = await openMyFlowLibraryFlow(page, flowSlug, 'execute');
+    const execution = selectedMobileFlow.getByTestId('my-flow-shape-aware-execution');
+    await expect(execution.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+    await expect(execution.getByTestId('my-flow-inline-note-open')).toHaveCount(0);
+    const firstRow = execution.getByTestId('my-flow-execution-row-shell').first();
+    const itemId = await firstRow.locator('article[data-item-id]').getAttribute('data-item-id');
+    expect(itemId).toBeTruthy();
     await firstRow.getByRole('button', { name: /열기/ }).click();
     const detail = getOpenMyFlowItemDetail(page);
-    const detailNote = detail.getByTestId('my-flow-detail-execution-note');
-    const noteEntry = detailNote.getByTestId('my-flow-inline-note-open');
-    await expect(noteEntry).toBeVisible();
-    await expect(noteEntry).toHaveAttribute('aria-expanded', 'false');
-    await noteEntry.click();
-
-    const notePanel = detailNote.getByTestId('my-flow-inline-note-panel');
-    await expect(notePanel).toBeVisible();
-    await notePanel.getByTestId('my-flow-inline-note-private-input').fill(
-      '업체에 전화하기 전에 비교 기준을 적어두니 빨랐어요.',
-    );
-    await notePanel.getByTestId('my-flow-inline-note-save').click();
-    await expect(notePanel.getByTestId('my-flow-inline-note-status')).toHaveText('내 메모를 저장했어요.');
-    await notePanel.getByTestId('my-flow-inline-note-correction-mode').click();
-    await notePanel.getByTestId('my-flow-inline-note-correction-input').fill(
-      '견적 유효 기간도 확인하도록 원본에 보완해 주세요.',
-    );
-    await notePanel.getByTestId('my-flow-inline-note-save').click();
-    await expect(notePanel).toContainText('아직 원본 작성자에게 전송되지 않아요.');
+    await expect(detail).toBeVisible();
+    await expect(detail.getByTestId('my-flow-detail-execution-note')).toHaveCount(0);
+    await expect(detail.getByTestId('my-flow-inline-note-open')).toHaveCount(0);
+    await expect(detail.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
+    await expect(page.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
+    await enterMyFlowDetailEditMode(detail);
+    const memo = '업체에 전화하기 전에 비교 기준과 견적 유효 기간을 확인한다.';
+    await detail.getByTestId('my-flow-detail-memo').fill(memo);
 
     const evidenceDir = process.env.FLOWME_P24_U4_EVIDENCE_DIR;
     if (evidenceDir) {
       fs.mkdirSync(`${evidenceDir}/screenshots`, { recursive: true });
       await captureWithoutPlatformChrome(
         page,
-        firstRow,
-        `${evidenceDir}/screenshots/00-inline-execution-note-mobile.png`,
+        detail,
+        `${evidenceDir}/screenshots/00-item-memo-detail-mobile.png`,
       );
     }
+    await detail.getByTestId('my-flow-detail-save-changes').click();
+    await expect(page.getByTestId('my-flow-item-detail-sheet')).toHaveCount(0);
+    const persisted = await page.evaluate(({ slug, id }) => ({
+      draft: JSON.parse(localStorage.getItem('flow:my-flow:item-drafts') || '{}')[
+        `${slug}::${id}::draft-overlay`
+      ],
+      legacyExecutionNotes: JSON.parse(
+        localStorage.getItem(`flow:my-flow:execution-notes:${slug}`) || '[]',
+      ),
+    }), { slug: flowSlug, id: itemId });
+    expect(persisted.draft?.memo).toBe(memo);
+    expect(persisted.legacyExecutionNotes).toEqual([]);
 
-    const storedNotes = await page.evaluate((slug) =>
-      JSON.parse(localStorage.getItem(`flow:my-flow:execution-notes:${slug}`) || '[]'),
-    flowSlug);
-    expect(storedNotes.map((note: { kind: string }) => note.kind).sort()).toEqual([
-      'private',
-      'source_correction',
-    ]);
-
-    await notePanel.getByRole('button', { name: /실행 메모 닫기/ }).click();
-    await page.getByTestId('my-flow-item-detail-sheet-close').click();
-    await firstRow.getByTestId('my-flow-task-complete-control').click();
-
-    const feedback = selectedMobileFlow.getByTestId('my-flow-completion-feedback');
-    await expect(feedback.getByTestId('my-flow-completion-private-notes')).toContainText(
-      '업체에 전화하기 전에 비교 기준을 적어두니 빨랐어요.',
-    );
-    await expect(feedback.getByTestId('my-flow-completion-correction-notes')).toContainText(
-      '견적 유효 기간도 확인하도록 원본에 보완해 주세요.',
-    );
-    await expect(feedback.getByTestId('my-flow-completion-correction-notes')).toContainText(
-      '아직 전송되지 않음',
-    );
-    if (evidenceDir) {
-      await captureWithoutPlatformChrome(
-        page,
-        feedback,
-        `${evidenceDir}/screenshots/01-completion-note-aggregation-mobile.png`,
-      );
-    }
+    const rowAfterSave = execution.locator(`article[data-item-id="${itemId}"]`).first();
+    await rowAfterSave.getByRole('button', { name: /열기/ }).click();
+    const completionDetail = getOpenMyFlowItemDetail(page);
+    const completion = completionDetail.getByTestId('my-flow-task-complete-control');
+    await expect(completion).toHaveCount(1);
+    await completion.click();
+    await expect(completion).toBeChecked();
+    await closeOpenMyFlowItemDetail(page);
+    await expect(selectedMobileFlow.getByTestId('my-flow-completion-private-notes')).toHaveCount(0);
+    await expect(selectedMobileFlow.getByTestId('my-flow-completion-correction-notes')).toHaveCount(0);
 
     await page.reload();
-    const reloadedMobileFlow = await openMyFlowLibraryFlow(page, flowSlug, 'record');
-    await expect(reloadedMobileFlow.getByTestId('my-flow-completion-private-notes')).toContainText(
-      '업체에 전화하기 전에 비교 기준을 적어두니 빨랐어요.',
-    );
-
-    await page.setViewportSize({ width: 1024, height: 768 });
-    await page.reload();
-    const wideFlow = await openMyFlowLibraryFlow(page, flowSlug, 'record');
-    await expect(wideFlow.getByTestId('my-flow-completion-private-notes')).toBeVisible();
-    await expect(wideFlow.getByTestId('my-flow-completion-correction-notes')).toBeVisible();
+    const reloadedMobileFlow = await openMyFlowLibraryFlow(page, flowSlug, 'plan');
+    const persistedRow = reloadedMobileFlow.locator(`article[data-item-id="${itemId}"]:visible`).first();
+    await persistedRow.getByRole('button', { name: /열기/ }).click();
+    const persistedDetail = getOpenMyFlowItemDetail(page);
+    await enterMyFlowDetailEditMode(persistedDetail);
+    await expect(persistedDetail.getByTestId('my-flow-detail-memo')).toHaveValue(memo);
     if (evidenceDir) {
       await captureWithoutPlatformChrome(
         page,
-        wideFlow.getByTestId('my-flow-completion-feedback'),
-        `${evidenceDir}/screenshots/02-completion-note-aggregation-wide.png`,
-      );
-    }
-
-    const wideFeedback = wideFlow.getByTestId('my-flow-completion-feedback');
-    await wideFeedback.getByTestId('my-flow-reuse-open').click();
-    const reusePanel = wideFeedback.getByTestId('my-flow-reuse-panel');
-    await reusePanel.getByTestId('my-flow-reuse-anchor-input').fill('2026-10-20');
-    await reusePanel.getByTestId('my-flow-reuse-start').click();
-    await expect(wideFlow.getByTestId('my-flow-completion-feedback')).toHaveCount(0);
-    const pastRuns = wideFlow.getByTestId('my-flow-past-runs');
-    await expect(pastRuns).toBeVisible();
-    await pastRuns.locator(':scope > summary').click();
-    const pastRun = pastRuns.getByTestId('my-flow-past-run').first();
-    await pastRun.locator('summary').first().click();
-    await expect(pastRun.getByTestId('my-flow-past-run-execution-notes')).toContainText(
-      '업체에 전화하기 전에 비교 기준을 적어두니 빨랐어요.',
-    );
-    await expect(pastRun.getByTestId('my-flow-past-run-execution-corrections')).toContainText(
-      '견적 유효 기간도 확인하도록 원본에 보완해 주세요.',
-    );
-    const reuseState = await page.evaluate((slug) => {
-      const registry = JSON.parse(localStorage.getItem(`flow:run-registry:${slug}`) || '{"runs":[]}');
-      return {
-        currentNotes: JSON.parse(localStorage.getItem(`flow:my-flow:execution-notes:${slug}`) || '[]'),
-        completedSnapshot: registry.runs.find((run: { status: string }) => run.status === 'completed')?.completionSnapshot,
-      };
-    }, flowSlug);
-    expect(reuseState.currentNotes).toEqual([]);
-    expect(reuseState.completedSnapshot.executionNotes).toHaveLength(2);
-    if (evidenceDir) {
-      await captureWithoutPlatformChrome(
-        page,
-        pastRun,
-        `${evidenceDir}/screenshots/03-past-run-notes-wide.png`,
+        persistedDetail,
+        `${evidenceDir}/screenshots/01-item-memo-persisted-mobile.png`,
       );
     }
     expect(

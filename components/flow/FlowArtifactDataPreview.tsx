@@ -33,6 +33,18 @@ function getRowMeta(row: FlowExperienceProjectionRow): string[] {
   ].filter(Boolean);
 }
 
+function RowCompletionCriterion({ row }: { row: FlowExperienceProjectionRow }) {
+  if (!row.completionCriterion) return null;
+  return (
+    <span
+      data-flow-row-slot="completion-criterion"
+      className="mt-1 block break-words text-[11px] leading-4 text-[var(--flowme-text-secondary)]"
+    >
+      완료 기준 · {row.completionCriterion}
+    </span>
+  );
+}
+
 type ShapeRowProps = {
   rows: FlowExperienceProjectionRow[];
   remainder?: boolean;
@@ -93,6 +105,7 @@ function FlowExecutionRows({ rows, remainder = false, rowTestId, onRowEdit }: Sh
             {getRowMeta(row).length > 0 ? (
               <span data-flow-row-slot="meta" className="mt-1 block text-[11px] font-medium text-[var(--flowme-text-secondary)]">{getRowMeta(row).join(' · ')}</span>
             ) : null}
+            <RowCompletionCriterion row={row} />
           </span>
           <RowEditButton row={row} onRowEdit={onRowEdit} />
         </li>
@@ -130,6 +143,7 @@ function CalendarRows({ rows, remainder = false, rowTestId, onRowEdit }: ShapeRo
                 <span className="min-w-0" data-flow-row-slot="content">
                   <span data-flow-row-slot="title" className="block break-words text-sm font-semibold leading-5 text-[var(--flowme-text)]">{row.title}</span>
                   {row.section ? <span data-flow-row-slot="meta" className="mt-0.5 block text-[11px] text-[var(--flowme-text-secondary)]">{row.section}</span> : null}
+                  <RowCompletionCriterion row={row} />
                 </span>
                 <RowEditButton row={row} onRowEdit={onRowEdit} />
               </li>
@@ -159,6 +173,7 @@ function ChecklistRows({ rows, remainder = false, rowTestId, onRowEdit }: ShapeR
           <span className="min-w-0 flex-1" data-flow-row-slot="content">
             <span data-flow-row-slot="title" className="block break-words text-sm font-semibold leading-5 text-[var(--flowme-text)]">{row.title}</span>
             {getRowMeta(row).length > 0 ? <span data-flow-row-slot="meta" className="mt-0.5 block text-[11px] text-[var(--flowme-text-secondary)]">{getRowMeta(row).join(' · ')}</span> : null}
+            <RowCompletionCriterion row={row} />
           </span>
           <RowEditButton row={row} onRowEdit={onRowEdit} />
         </li>
@@ -195,6 +210,7 @@ function SheetRows({ rows, remainder = false, rowTestId, onRowEdit }: ShapeRowPr
             <span className="min-w-0" data-flow-row-slot="content">
               <span data-flow-row-slot="title" className="block break-words text-sm font-semibold text-[var(--flowme-text)]">{row.title}</span>
               {row.memo ? <span data-flow-row-slot="meta" className="mt-0.5 line-clamp-1 block text-[11px] text-[var(--flowme-text-secondary)]">{row.memo}</span> : null}
+              <RowCompletionCriterion row={row} />
               <span data-flow-row-slot="meta" className="mt-0.5 block text-[11px] text-[var(--flowme-text-secondary)] sm:hidden">{row.schedule.date ? getDateLabel(row) : '날짜 없음'}</span>
             </span>
             <span className="hidden text-xs text-[var(--flowme-text-secondary)] sm:block">{row.schedule.date ? getDateLabel(row) : '날짜 없음'}</span>
@@ -231,6 +247,7 @@ function MemoRows({ rows, remainder = false, rowTestId, onRowEdit }: ShapeRowPro
           {row.memo || row.description ? (
             <p data-flow-row-slot="meta" className="mt-1 line-clamp-3 text-xs leading-5 text-[var(--flowme-text-secondary)]">{row.memo || row.description}</p>
           ) : null}
+          <RowCompletionCriterion row={row} />
           {getRowMeta(row).length > 0 ? <p className="mt-1 text-[11px] text-[var(--flowme-text-tertiary)]">{getRowMeta(row).join(' · ')}</p> : null}
         </section>
       ))}

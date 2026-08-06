@@ -54,7 +54,7 @@ test('entry router removes the duplicate Home surface and opens the catalog', as
   await page.goto('/');
 
   await expect(page).toHaveURL('/flows');
-  await expect(page.getByRole('heading', { name: 'URL·메모로 Flow 찾기' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'URL·메모로 계획 찾기' })).toBeVisible();
   await expect(page.locator('[data-home-recommendation-card="true"]')).toHaveCount(0);
   await expect(page.getByTestId('home-usage-example')).toHaveCount(0);
   await expect(page.getByTestId('platform-mobile-tabs')).toHaveAttribute(
@@ -93,12 +93,12 @@ test('public save-before shows the whole Flow before one start decision', async 
   await page.goto('/f/vehicle-inspection-prep');
 
   const hero = page.getByTestId('public-flow-hero');
-  const preview = hero.getByTestId('public-flow-artifact-preview');
+  const preview = hero.getByTestId('public-flow-capability-result');
   await expect(hero).toHaveAttribute('data-visual-structure', 'artifact-first');
   await expect(hero).toHaveAttribute('data-experience-architecture', 'p35-result-first');
   await expect(hero.getByText('원문', { exact: true })).toBeVisible();
-  await expect(preview.getByTestId('public-flow-artifact-preview-row')).toHaveCount(10);
-  await expect(preview).not.toHaveAttribute('open', '');
+  await preview.getByTestId('flow-capability-artifact-preview-expand').click();
+  await expect(preview.getByTestId('flow-capability-artifact-preview-row')).toHaveCount(10);
   await expect(hero.getByTestId('public-flow-primary-setup')).toHaveCount(0);
 
   const primaryResult = page.getByTestId('flow-save-before-primary-result');
@@ -109,9 +109,9 @@ test('public save-before shows the whole Flow before one start decision', async 
   ), await decision.elementHandle())).toBe(true);
 
   await expect(page.getByTestId('public-flow-save-primary-mobile')).toHaveText(
-    '체크리스트 10개로 시작',
+    '내 계획에 저장',
   );
-  await expect(page.getByTestId('public-flow-adjust-entry-mobile')).toHaveAccessibleName('Flow 조정');
+  await expect(page.getByTestId('public-flow-adjust-entry-mobile')).toHaveAccessibleName('계획 수정');
   await expect(hero).not.toContainText(/이사일 1개를 기준으로|원문 체크리스트의 실행 단서/u);
   await capture(page, '03-public-save-before-mobile.png');
 });
@@ -124,12 +124,13 @@ test('source-backed map and public Flow use the same artifact-first decision gra
   const canonicalHero = page.getByTestId('public-flow-hero');
   await expect(canonicalHero).toHaveAttribute('data-visual-structure', 'artifact-first');
   await expect(canonicalHero.getByText('원문', { exact: true })).toBeVisible();
-  await page.getByTestId('public-flow-artifact-preview-expand').click();
-  await expect(canonicalHero.getByTestId('public-flow-artifact-preview-row')).toHaveCount(24);
+  const capability = canonicalHero.getByTestId('public-flow-capability-result');
+  await capability.getByTestId('flow-capability-artifact-preview-expand').click();
+  await expect(capability.getByTestId('flow-capability-artifact-preview-row')).toHaveCount(24);
   await expect(page.getByTestId('public-flow-save-primary-mobile')).toHaveAccessibleName(
-    '캘린더 24개로 시작',
+    '이사일 정하기',
   );
-  await expect(page.getByTestId('public-flow-adjust-entry-mobile')).toHaveAccessibleName('Flow 조정');
+  await expect(page.getByTestId('public-flow-adjust-entry-mobile')).toHaveAccessibleName('계획 수정');
   await capture(page, '04-source-backed-save-before-mobile.png');
 
   await page.goto('/flow-maps/curated-wedding-checklist-family');
@@ -151,7 +152,7 @@ test('wide save-before keeps the result and decision parallel without a duplicat
   expect(previewBox).not.toBeNull();
   expect(decisionBox).not.toBeNull();
   expect(Math.abs(previewBox!.y - decisionBox!.y)).toBeLessThan(48);
-  await expect(preview.getByTestId('public-flow-artifact-preview')).toHaveCount(1);
+  await expect(preview.getByTestId('public-flow-capability-result')).toHaveCount(1);
   await expect(page.getByRole('heading', { name: '전체 흐름', exact: true })).toHaveCount(0);
   await expect(page.getByRole('region', { name: 'Flow artifact workbench' })).toHaveCount(0);
   await capture(page, '06-public-save-before-wide.png');

@@ -31,6 +31,22 @@ async function capture(page: Page, locator: Locator, filename: string) {
   }));
 }
 
+async function completeSavedClipboardTransfer(
+  page: Page,
+  panel: Locator,
+  action: Locator,
+): Promise<string> {
+  await action.click();
+  const confirmation = panel.getByTestId('my-flow-transfer-confirmation');
+  await expect(confirmation).toHaveAttribute('data-transfer-route', 'saved_transfer');
+  await confirmation.getByTestId('my-flow-transfer-confirm').click();
+  const receipt = panel.getByTestId('my-flow-transfer-receipt');
+  await expect(receipt).toHaveAttribute('data-transfer-state', 'succeeded');
+  const copied = await page.evaluate(() => navigator.clipboard.readText());
+  await receipt.getByTestId('flow-transfer-success-close').click();
+  return copied;
+}
+
 test('memo intake preserves source fragments through review, save, reload, and whole-Flow export', async ({ page }) => {
   test.setTimeout(120_000);
   const browserErrors: string[] = [];
@@ -48,7 +64,7 @@ test('memo intake preserves source fragments through review, save, reload, and w
   const memo = '8월 제주 여행 준비. 항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인';
   const lookup = page.getByTestId('flow-url-lookup-entry');
   await lookup.getByLabel('URL 또는 메모').fill(memo);
-  await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
+  await lookup.getByRole('button', { name: '계획 찾기' }).click();
 
   const editor = page.getByTestId('flow-memo-draft-editor');
   const rows = editor.getByTestId('flow-memo-draft-item');
@@ -151,8 +167,7 @@ test('memo intake preserves source fragments through review, save, reload, and w
       .click();
   }
   await expect(memoExport).toHaveAttribute('data-export-count', '4');
-  await memoExport.click();
-  const exportedMemo = await page.evaluate(() => navigator.clipboard.readText());
+  const exportedMemo = await completeSavedClipboardTransfer(page, exportPanel, memoExport);
   const exportedIndexes = [
     exportedMemo.indexOf('항공권 최종 확인하기'),
     exportedMemo.indexOf('렌터카 예약하기'),

@@ -35,6 +35,82 @@ Do not use this for:
 
 ## Decisions
 
+### 2026-08-06 - P′ review plus P′′ candidate evidence closes the MVP gate without repeating Pass 1 and Pass 2
+
+**Decision:** Close the P35 Round 2 MVP PoC gate with the sealed prior Codex/Claude Design review findings—Pass 1 candidate `c48911757fb529941d00efc2162338ffa8b7686a`, then Pass 2 P′ `29cb03a65dd1037a3b813b7f43a5a095e4669dce` ending in `REVISE`—their bounded P′′ corrections, and the exact post-push P′′ candidate evidence. The production source SHA is `f97644abf379c46433847f44aa7bd4da7fadac4a`; candidate-evidence BUILD_ID is `T0QkChgscSgPog-0UdvY-` and candidate epoch is `p35-r2-4fa6af1728eb5ca5`. Vercel performs a separate remote rebuild, so production smoke and live runtime BUILD_ID probing remain `NOT_RUN`. S01~S23 are `23/23` accounted: S01~S21 are candidate-bound captures, S22 is `NOT_ASSESSED`, and S23 is `REVIEWER_CHOSEN_NOT_PRECAPTURED`. All three group manifests report `PASS` with failures `0`, and the published verifier reports `PASS` with `33` identity checks, `285` evidence files, `556` raw URLs, and failures `0`. Fresh independent P′′ Pass 1 and Pass 2 are `NOT_RUN`: the Owner waives that repeated cycle for this MVP closeout, and no document may describe P′′ as independently reviewed or passed. Production deployment is authorized. Observed-user validation remains excluded at `0`; text-to-flow and the P2 follow-up candidates remain outside this release.
+
+**Reason:** The independent P′ reviews already identified the applicable problems, P′′ incorporated those findings, and candidate-bound regression and publication evidence verifies the bounded delta. Repeating the complete independent cycle is not required for this MVP PoC decision, but preserving `NOT_RUN` prevents the waiver from being mistaken for independent P′′ approval.
+
+**Applies to:** P35 Round 2 MVP closeout, P′ and P′′ review labels, candidate and publication provenance, production authorization, status and roadmap reporting, and future claims about review or observed-user evidence.
+
+**Supersedes:** The fresh two-pass requirement and no-deployment boundary in the 2026-08-06 candidate-source decision immediately below. It preserves immutable P′ history, the P′ `REVISE` results, candidate identity, evidence isolation, no-PR/no-merge boundaries, and the rule that internal QA is not observed-user validation.
+
+**Reopen when:** A material UI, data, persistence, or export behavior changes after `f97644a`; production smoke finds a release defect; the product moves beyond this MVP PoC gate; observed-user evidence changes the direction; or the Owner explicitly requests independent P′′ certification. P2 follow-ups and text-to-flow reopen only through separate explicit promotion.
+
+**Related docs:** [P35 Round 2 status](./specs/2026-08-04-p35-round2-bounded-ux-correction/README.md), [P′′ closeout](./specs/2026-08-04-p35-round2-bounded-ux-correction/pass2-cross-synthesis-and-pprime2-closeout.md), [project status](./STATUS.md), [roadmap](./ROADMAP.md)
+
+### 2026-08-06 - P′ remains immutable and P′′ becomes the fresh review candidate source
+
+**Decision:** Preserve P′ `29cb03a65dd1037a3b813b7f43a5a095e4669dce` and its sealed Codex/Claude Design Pass 2 results as immutable review history. Supersede only the candidate-target portion of the 2026-08-05 freeze decision: the source for the new review candidate is `codex/p35-round2-correction-pprime2-20260805`, with automatic Vercel Git deployment disabled. The P′′ source may be committed and pushed, then bound to one clean post-push SHA, BUILD_ID, candidate epoch, and S01~S23 evidence set before fresh blind Pass 1 and informed Pass 2. The source documents must not predict their own future commit SHA, BUILD_ID, epoch, or final verification totals; those values belong to post-push candidate provenance. PR creation or update, merge, Preview, Production, and observed-user validation remain unauthorized, and observed users remain `0`.
+
+**Reason:** P′ received `REVISE` from both reviewers, so amending it would destroy the identity of the reviewed candidate. P′′ contains the bounded correction and the later candidate-source hardening, but source presence is not candidate-bound evidence. A new branch and post-push provenance preserve both identities without turning authorization to publish review inputs into authorization to deploy.
+
+**Applies to:** P35 Round 2 P′ and P′′ identity, the P′′ correction branch, clean candidate freeze, candidate provenance, S01~S23 evidence, blind and informed review publication, Vercel branch guards, and current status reporting. URL supply-request queue mutation ordering, legacy-off write/no-write auditing, rapid batch-submit policy, and creator/text-authoring mutation ownership remain P2 follow-up candidates rather than the current execution queue.
+
+**Supersedes:** The P′ branch named as the future candidate target in the 2026-08-05 decision below. It does not rewrite P′ history or relax that decision's no-PR, no-merge, no-deploy, review-isolation, and observed-user boundaries.
+
+**Reopen when:** The Owner explicitly changes the candidate branch, authorizes PR/merge/deployment, promotes one P2 follow-up candidate, or fresh two-pass review requires a new bounded correction candidate.
+
+**Related docs:** [P35 Round 2 status](./specs/2026-08-04-p35-round2-bounded-ux-correction/README.md), [P′′ closeout](./specs/2026-08-04-p35-round2-bounded-ux-correction/pass2-cross-synthesis-and-pprime2-closeout.md), [Owner execution and publication authorization](./content-audit/2026-08-05-p35-round2-final-independent-review-handoff/coordinator/07-owner-publication-authorization-ko.md)
+
+### 2026-08-06 - Overlapping local Flow writes serialize and reject stale ownership
+
+**Decision:** Any production mutation that replaces a whole canonical saved-plan registry or spans saved plans, Flow Maps, personal overlays, execution state, local result receipts, deletion, recovery, or backup restore must acquire the same-origin exclusive Flow user-data write lock. The mutation must re-read the latest stored value after acquiring the lock and apply the user's intent to that value. A stale screen may not fall back to its React snapshot when the stored owner is missing or changed. Undo and rollback restore only values still owned by the operation, using expected-post comparison where needed; an external writer's value is preserved and an indeterminate rollback is reported instead of claimed complete. Browser paths that cannot acquire the lock fail closed. Export receipts bind to the SHA-256 and byte length of the exact UTF-8 bytes handed to the local transport, while legacy receipts remain readable.
+
+**Reason:** P′ and P′′ review found that individually valid UI actions could still lose another tab's newer plan, Map, Item, execution, or receipt state, and that storage implementations can mutate before throwing. One shared ordering and ownership rule prevents silent last-writer-wins corruption without introducing accounts, a server database, or a full persistence rewrite for the MVP PoC.
+
+**Applies to:** P35 Round 2 P′′ public save and recovery, My Plans editing and reuse, Map adjustment and save, completion and notes, batch changes and undo, archive and permanent deletion, receipt append and cleanup, local backup restore, observation fixtures, and the moving restart save. Ephemeral UI preferences, the URL supply-request queue, creator/text-authoring routes, remote synchronization, and text-to-flow remain outside this bounded correction.
+
+**Reopen when:** FlowMe adopts a transactional persistence provider that provides equivalent cross-context ordering and compare-and-set semantics, or measured browser support requires an owner-approved fallback with equally explicit conflict and recovery behavior.
+
+**Related docs:** [P35 Round 2 P′′ closeout](./specs/2026-08-04-p35-round2-bounded-ux-correction/pass2-cross-synthesis-and-pprime2-closeout.md), [P35 Round 2 full program](./specs/2026-08-04-p35-round2-bounded-ux-correction/full-program.md), [independent review handoff](./content-audit/2026-08-05-p35-round2-final-independent-review-handoff/README-ko.md)
+
+### 2026-08-05 - Round 2 freezes on a non-PR candidate branch and excludes observed-user V1
+
+**Decision:** Freeze the approved P35 Round 2 scope on `codex/p35-round2-candidate-20260805`, a new branch with automatic Vercel Git deployment disabled. Do not push the candidate commit to `codex/p35-production-mobile-p0`, because that branch is the head of open Draft PR #165 and updating it would change a PR outside the approval boundary. Commit and push the candidate, rebuild and capture the same SHA, and publish physically separated blind-only review commits without creating a PR, merging, or deploying. Treat Codex, Claude Design, and Owner inspection as internal review only. Observed-user V1 is excluded from this current program and remains `0`.
+
+**Reason:** The Owner approved candidate commit/push and blind review publication but explicitly did not approve PR, merge, Vercel Preview/Production, or observed-user validation. A separate guarded branch preserves both the immutable candidate and the no-PR/no-deploy boundary.
+
+**Applies to:** P35 Round 2 candidate identity, Git push target, Vercel branch configuration, clean-tree provenance, blind review launch, current program status, and observed-user accounting.
+
+**Reopen when:** The Owner explicitly authorizes updating PR #165, creating a new PR, merging, deploying, or starting a separate observed-user program.
+
+**Related docs:** [Owner execution and publication authorization](./content-audit/2026-08-05-p35-round2-final-independent-review-handoff/coordinator/07-owner-publication-authorization-ko.md), [P35 Round 2 full program](./specs/2026-08-04-p35-round2-bounded-ux-correction/full-program.md), [independent review handoff](./content-audit/2026-08-05-p35-round2-final-independent-review-handoff/README-ko.md)
+
+### 2026-08-04 - P35 Round 2 adopts B/B/B for a bounded local UX correction
+
+**Decision:** Approve the P35 Round 2 `B/B/B` direction as a local, unpublished implementation handoff based on `91fb66af063f7041f9442a9dfeb66f9a3e78d723`. Allow a save-free quick result only when the public plan is unmodified, the result is eligible, and the operation is local-only; saved plans continue to own scope selection, regeneration, duplicate handling, history, and remote transfer. Make the general `/my` entry a stable saved-plan library shell, with Today retained only as a compact summary derived from the existing execution state and never as a separate canonical store. Prioritize `계획 찾기 / 내 계획 / 계획 수정` on core user-facing surfaces while retaining the FLOW brand, URLs, internal types, and storage keys. Implement this program in strict ticket order, beginning with the non-UI `P0-01` contract, ownership, loss-schema, and fixture slice only.
+
+**Reason:** The Round 2 review found that the main confusion comes from duplicated action ownership and unclear public-draft, saved-plan, execution, and result boundaries. B/B/B keeps a narrow local convenience path while giving saved plans authoritative transfer ownership, makes saved plans reliably recoverable from `/my`, and tests plainer user-facing language without renaming stable technical identity.
+
+**Applies to:** Public plan preview and eligible local quick results, saved-plan export and receipt, general `/my`, post-save selected-plan handoff, core navigation and editor copy, the P35 Round 2 implementation sequence, and its rollback flags. This decision supersedes only the 2026-07-29 decision that made cross-Flow Todo the default plain `/my` surface; it preserves that decision's state-based root router, three primary destinations, exact-date execution model, contextual row commands, focused Flow workspace, and first post-save plan continuity. The cross-Flow Today/Todo projection remains available as a compact derived summary inside the saved-plan shell.
+
+**Reopen when:** P0 contract evidence shows that the quick-result guard, saved-plan shell, or terminology transition cannot preserve source/base, personal overlay, execution, projection, receipt, and legacy storage boundaries; rollback cannot preserve current P35 behavior without migration; or observed users repeatedly fail to predict what is saved, what is transferred, or where a saved plan is recovered. Owner approval and internal QA are not observed-user validation; the current observed-user count is `0`.
+
+**Related docs:** [P35 Round 2 bounded correction](./specs/2026-08-04-p35-round2-bounded-ux-correction/README.md), [Owner decision record](./content-audit/2026-08-03-p35-fundamental-ux-round2-planning-synthesis/02-p35-round2-owner-decisions-ko.md), [development sequence](./content-audit/2026-08-03-p35-fundamental-ux-round2-planning-synthesis/04-development-sequence-and-tickets-ko.md), [B/B/B comparison](./content-audit/2026-08-03-p35-round2-ux-comparison-ko.html)
+
+### 2026-08-04 - Local result receipts follow the saved plan lifetime
+
+**Decision:** Treat a successful local result receipt as evidence tied to the exact saved plan identity, not as an independent history product. Archiving a saved plan retains its receipts, local backup and restore include their exact stored bytes, and permanent deletion removes only receipts whose `savedPlanId` matches the deleted plan after the plan deletion succeeds. A receipt cleanup failure is an explicit `partial_local` result with a receipt-only retry; malformed storage blocks cleanup rather than deleting uncertain data. Do not apply a silent receipt-count cap. A quota or receipt-write failure remains a visible partial result even when the file or clipboard action succeeded. Download wording claims only that the browser-local dispatch was initiated, not that an external app imported or synchronized it.
+
+**Reason:** A receipt must explain which immutable snapshot, scope, format, destination, identifiers, and counts produced a local result without becoming a second canonical Flow or falsely claiming external delivery. Keeping it through archive supports recovery, while exact permanent-delete cleanup respects the user's deletion intent. Explicit partial states prevent a completed local side effect from being repeated merely because receipt persistence failed.
+
+**Applies to:** P35 Round 2 P0-09 saved-plan transfer, the local receipt registry, backup and restore, archive and permanent deletion, receipt-only retry, quota handling, and browser download copy. It does not create remote history, account sync, background transfer, collaboration, or a persistent quick-result history for unsaved public plans.
+
+**Reopen when:** FlowMe adds an authenticated remote provider, account-level result history or synchronization, a legal retention requirement, or a measured storage policy that requires an owner-approved visible retention limit and migration behavior.
+
+**Related docs:** [P0-09 closeout](./specs/2026-08-04-p35-round2-bounded-ux-correction/p0-09-closeout.md), [P0-09 evidence](./specs/2026-08-04-p35-round2-bounded-ux-correction/evidence/p0-09/README.md), [P35 Round 2 full program](./specs/2026-08-04-p35-round2-bounded-ux-correction/full-program.md)
+
 ### 2026-07-29 - P35 uses a state-based root router and three primary destinations
 
 **Decision:** Remove Home from the persistent primary navigation. Keep `Flow 찾기`, `캘린더`, and `내 Flow` as the three primary destinations on mobile and wide layouts. Treat `/` as a state-based entry router: when no valid saved Flow or saved Flow Map entry exists it continues to `/flows`; when at least one such entry exists it continues to `/my`. Other draft, check, anchor, or UI state alone does not make the root enter `/my`. Keep Flow creation in the secondary menu and keep public `/f/[slug]` pages as share-entry surfaces.

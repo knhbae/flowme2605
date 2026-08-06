@@ -726,10 +726,10 @@ test('scanPrototypeRouteGuardrails flags prototype-only display gate leaks', () 
       '파일 받기',
       '체크리스트 복사',
       '날짜를 편집한 뒤 export합니다.',
-      '내 도구로 가져가기',
-      '내 도구로 가져가기',
+      '내 도구로 옮기기',
+      '내 도구로 옮기기',
     ],
-    exportEntryLabels: ['내 도구로 가져가기'],
+    exportEntryLabels: ['내 도구로 옮기기'],
   });
 
   assert.deepEqual(result.rawRouteSlugHits, ['restart / moving-d30']);
@@ -743,6 +743,6 @@ test('scanPrototypeRouteGuardrails flags prototype-only display gate leaks', () 
   assert.deepEqual(result.englishMonthTimeHits, ['Jan 12', '9:00 AM']);
   assert.deepEqual(result.mixedExportLanguageHits, ['날짜를 편집한 뒤 export합니다.']);
   assert.deepEqual(result.duplicateExportEntryHits, [
-    { label: '내 도구로 가져가기', count: 2 },
+    { label: '내 도구로 옮기기', count: 2 },
   ]);
 });

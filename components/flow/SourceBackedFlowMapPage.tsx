@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import { toContentDisplayTitle, toUserFacingMapTitle, toUserFacingSourceTitle } from '@/lib/flow/display-title';
+import { buildFlowMapActionContract } from '@/lib/flow/flow-map-action-contract';
+import { getQ3UserCopyProfile } from '@/lib/flow/q3-user-copy';
 import {
   buildSourceBackedFlowMapPublishPackage,
   getSourceBackedFlowMapQualityDecision,
@@ -7,41 +9,40 @@ import {
   type SourceBackedFlowMapPublishPackage,
 } from '@/lib/flow/source-backed-my-flow';
 import { PlatformNav } from './PlatformNav';
+import { FlowContextDisclosure } from './FlowContextDisclosure';
 import { FlowSaveBeforeFrame } from './FlowSaveBeforeFrame';
-import { SourceBackedFlowMapSaveButton } from './SourceBackedFlowMapSaveButton';
+import { SourceBackedFlowMapExecutionOutline } from './SourceBackedFlowMapExecutionOutline';
+import { SourceBackedFlowMapSaveExperience } from './SourceBackedFlowMapSaveExperience';
 
 type SourceBackedFlowMapProps = {
   mapId: string;
+  q3CopyEnabled?: boolean;
+  visualSubtractionEnabled?: boolean;
 };
 
-const destinationLabel: Record<string, string> = {
-  calendar: '캘린더',
-  checklist: '체크',
-  hybrid: '캘린더 + 체크',
-  internal_check: '체크',
-  memo: '메모',
-  progress: '진도',
-  sheet: '시트',
-  todo: '할 일',
-};
-
-function getUserFacingMapSummary(summary: string): string {
-  return summary
-    .replace(/\s*\d+개 묶음,\s*/g, ' ')
-    .replace(/\s*\d+개 묶음 ·\s*/g, ' ')
-    .replace(/\s*\d+개 묶음\s*/g, ' ');
+function getMapRiskLevels(publishPackage: SourceBackedFlowMapPublishPackage) {
+  return Array.from(new Set(
+    publishPackage.creator.sourceRows
+      .map((row) => row.riskLevel)
+      .filter((riskLevel): riskLevel is NonNullable<typeof riskLevel> => Boolean(riskLevel)),
+  ));
 }
 
-function NotFoundMap() {
+function NotFoundMap({ q3CopyEnabled }: { q3CopyEnabled: boolean }) {
+  const copy = getQ3UserCopyProfile(q3CopyEnabled);
   return (
     <main className="min-h-screen bg-[#FAFAF8] px-5 py-8">
       <div className="mx-auto max-w-3xl">
       <PlatformNav />
       <section className="rounded-2xl border border-dashed border-[#E7E4DD] bg-white p-8 text-center">
         <h1 className="text-2xl font-semibold text-slate-950">콘텐츠를 찾을 수 없습니다</h1>
-        <p className="mt-2 text-sm text-slate-600">다른 공개 Flow나 내 Flow 데모를 확인해 주세요.</p>
+        <p className="mt-2 text-sm text-slate-600">
+          {q3CopyEnabled
+            ? '다른 공개 계획이나 내 계획 데모를 확인해 주세요.'
+            : '다른 공개 Flow나 내 Flow 데모를 확인해 주세요.'}
+        </p>
         <Link className="mt-5 inline-flex rounded-xl bg-[#3654FF] px-4 py-2 text-sm font-semibold text-white" href="/my?demo=source-backed">
-          내 Flow 보기
+          {q3CopyEnabled ? `${copy.navigation.myPlans} 보기` : '내 Flow 보기'}
         </Link>
       </section>
       </div>
@@ -49,7 +50,13 @@ function NotFoundMap() {
   );
 }
 
-function ReviewHoldMap({ publishPackage }: { publishPackage: SourceBackedFlowMapPublishPackage }) {
+function ReviewHoldMap({
+  publishPackage,
+  q3CopyEnabled,
+}: {
+  publishPackage: SourceBackedFlowMapPublishPackage;
+  q3CopyEnabled: boolean;
+}) {
   const { map, public: publicSurface } = publishPackage;
   const displayTitle = toUserFacingMapTitle(publicSurface.title);
   const qualityDecision = getSourceBackedFlowMapQualityDecision(map.id);
@@ -75,6 +82,24 @@ function ReviewHoldMap({ publishPackage }: { publishPackage: SourceBackedFlowMap
     : needsMedicalSourceFit
       ? '공식 이유식 안내 보기'
       : '최신 공식 내용 확인';
+  const hasSeparateReviewSource = Boolean(map.reviewUrl && map.reviewUrl !== map.sourceUrl);
+  const identitySourceLabel = hasSeparateReviewSource
+    ? needsMedicalSourceFit
+      ? '참고 식단표 원문'
+      : '원문 보기'
+    : sourceLinkLabel;
+  const actionContract = buildFlowMapActionContract({
+    mapId: map.id,
+    title: displayTitle,
+    sourceUrl: map.sourceUrl,
+    sourceLabel: identitySourceLabel,
+    surface: 'public_preview',
+    saveMode: publicSurface.saveMode,
+    executionState: 'review_hold',
+    editable: false,
+    exportable: false,
+    riskLevels: getMapRiskLevels(publishPackage),
+  });
 
   return (
     <main data-testid="flow-map-public" className="min-h-screen bg-[#FAFAF8] px-4 py-5 sm:px-5 sm:py-8">
@@ -82,6 +107,9 @@ function ReviewHoldMap({ publishPackage }: { publishPackage: SourceBackedFlowMap
         <PlatformNav />
         <section
           data-testid="flow-map-review-hold"
+          data-map-execution-state={actionContract.controller.executionState}
+          data-map-edit-capability={actionContract.capabilities.edit ? 'available' : 'hidden'}
+          data-map-save-capability={actionContract.capabilities.save ? 'available' : 'hidden'}
           className="border-t-4 border-[#E2A62B] bg-white px-5 py-7 shadow-[0_18px_50px_rgba(31,35,48,0.07)] sm:px-8 sm:py-10"
         >
           <p className="text-sm font-semibold text-[#8A5A00]">{eyebrow}</p>
@@ -94,32 +122,43 @@ function ReviewHoldMap({ publishPackage }: { publishPackage: SourceBackedFlowMap
           <p className="mt-2 max-w-2xl break-keep text-sm leading-6 text-slate-600">
             {description}
           </p>
-          <div className="mt-6 flex flex-wrap gap-2">
-            <a
-              data-testid="flow-map-source-link"
-              className="inline-flex min-h-11 items-center justify-center bg-[#3654FF] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#2944DB]"
-              href={map.reviewUrl ?? map.sourceUrl}
-              target="_blank"
-              rel="noreferrer"
+          {actionContract.risk.caution ? (
+            <p
+              data-testid="flow-map-risk-caution"
+              data-adjacent-to-action={actionContract.risk.caution.adjacentToActionId}
+              className="mt-4 border-l-2 border-[#E2A62B] bg-amber-50 px-3 py-2 text-sm font-semibold leading-6 text-amber-950"
             >
-              {sourceLinkLabel}
-            </a>
-            {needsMedicalSourceFit && map.reviewUrl && map.reviewUrl !== map.sourceUrl ? (
+              {actionContract.risk.caution.text}
+            </p>
+          ) : null}
+          <div className="mt-6 flex flex-wrap gap-2">
+            {hasSeparateReviewSource ? (
               <a
-                data-testid="flow-map-reference-source-link"
-                className="inline-flex min-h-11 items-center justify-center border border-[#D9D6CF] bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:border-[#3654FF]/40 hover:text-[#3654FF]"
-                href={map.sourceUrl}
+                data-testid="flow-map-review-source-link"
+                className="inline-flex min-h-11 items-center justify-center bg-[#3654FF] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#2944DB]"
+                href={map.reviewUrl}
                 target="_blank"
                 rel="noreferrer"
               >
-                참고 식단표 원문
+                {sourceLinkLabel}
               </a>
             ) : null}
+            <a
+              data-testid="flow-map-source-link"
+              data-flow-identity-slot="source"
+              data-map-action-intent={actionContract.identity.source.intent}
+              className={`inline-flex min-h-11 items-center justify-center px-4 py-2.5 text-sm font-semibold ${hasSeparateReviewSource ? 'border border-[#D9D6CF] bg-white text-slate-700 hover:border-[#3654FF]/40 hover:text-[#3654FF]' : 'bg-[#3654FF] text-white hover:bg-[#2944DB]'}`}
+              href={actionContract.identity.source.href}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {actionContract.identity.source.label}
+            </a>
             <Link
               className="inline-flex min-h-11 items-center justify-center border border-[#D9D6CF] bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:border-[#3654FF]/40 hover:text-[#3654FF]"
               href="/flows"
             >
-              다른 Flow 찾기
+              {q3CopyEnabled ? '다른 계획 찾기' : '다른 Flow 찾기'}
             </Link>
           </div>
         </section>
@@ -128,37 +167,82 @@ function ReviewHoldMap({ publishPackage }: { publishPackage: SourceBackedFlowMap
   );
 }
 
-export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProps) {
+export function SourceBackedFlowMapPublicPage({
+  mapId,
+  q3CopyEnabled = true,
+  visualSubtractionEnabled = true,
+}: SourceBackedFlowMapProps) {
+  const copy = getQ3UserCopyProfile(q3CopyEnabled);
   const publishPackage = buildSourceBackedFlowMapPublishPackage(mapId);
-  if (!publishPackage) return <NotFoundMap />;
+  if (!publishPackage) return <NotFoundMap q3CopyEnabled={q3CopyEnabled} />;
   if (!isSourceBackedFlowMapExecutable(publishPackage.map)) {
-    return <ReviewHoldMap publishPackage={publishPackage} />;
+    return <ReviewHoldMap publishPackage={publishPackage} q3CopyEnabled={q3CopyEnabled} />;
   }
 
   const { map, public: publicSurface } = publishPackage;
   const displayTitle = toUserFacingMapTitle(publicSurface.title);
   const chooseChildBeforeSave = publicSurface.saveMode === 'choose_child';
+  const riskLevels = getMapRiskLevels(publishPackage);
   const choiceCopy = publicSurface.choiceCopy ?? {
     resultPromise: '준비표 하나를 고른 뒤 필요한 설정을 확인해 저장합니다.',
     heading: '먼저 준비표 하나를 고르세요.',
-    body: '각 준비표 화면에서 필요한 설정을 확인한 뒤 내 Flow에 저장합니다.',
-    inputLabel: '준비표별 설정',
+    body: q3CopyEnabled
+      ? '각 준비표 화면에서 필요한 설정을 확인한 뒤 내 계획에 저장합니다.'
+      : '각 준비표 화면에서 필요한 설정을 확인한 뒤 내 Flow에 저장합니다.',
+    inputLabel: q3CopyEnabled ? '계획별 설정' : '준비표별 설정',
     childCtaLabel: '설정하고 시작',
   };
   const previewSteps = publicSurface.childFlows.flatMap((flow) => flow.steps.map((step) => ({
     ...step,
+    itemKey: `${flow.slug}::${step.id}`,
     flowSlug: flow.slug,
     flowTitle: flow.title,
   })));
   const previewRows = previewSteps.map((step) => ({
-    id: `${step.flowSlug}-${step.id}`,
+    id: step.itemKey,
     timing: step.stepTitle ? toUserFacingSourceTitle(step.stepTitle) : undefined,
     title: step.title,
     summary: step.detailItems[0],
   }));
-  const decisionActions = chooseChildBeforeSave ? (
-    <div data-testid="flow-map-choose-child" className="grid gap-2">
-      <p className="text-xs font-semibold text-[#6E6B64]">사용할 Flow를 고르세요</p>
+  const actionContract = buildFlowMapActionContract({
+    mapId: map.id,
+    title: displayTitle,
+    sourceUrl: map.sourceUrl,
+    sourceLabel: '원문 보기',
+    surface: 'public_preview',
+    saveMode: publicSurface.saveMode,
+    executionState: 'executable',
+    editable: !chooseChildBeforeSave,
+    exportable: false,
+    selection: chooseChildBeforeSave
+      ? undefined
+      : { selectedCount: previewSteps.length, totalCount: previewSteps.length },
+    riskLevels,
+  });
+  const decisionActions = (
+    <div
+      data-testid="flow-map-choose-child"
+      data-map-action-intent={actionContract.actions.primary?.intent}
+      className="grid gap-2"
+    >
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-xs font-semibold text-[#6E6B64]">
+          {q3CopyEnabled
+            ? copy.map.selectPlans
+            : actionContract.actions.primary?.label ?? '사용할 Flow를 고르세요'}
+        </p>
+        {q3CopyEnabled ? (
+          <FlowContextDisclosure
+            kind="help"
+            label="계획 선택 도움말"
+            eyebrow="선택 도움말"
+            title="사용할 계획을 고르세요"
+            testId="flow-map-choice-help"
+          >
+            <p>목적에 맞는 계획 하나를 열어 내용을 확인하세요. 이 단계에서는 아직 내 계획에 저장되지 않습니다.</p>
+          </FlowContextDisclosure>
+        ) : null}
+      </div>
       {publicSurface.childFlows.map((flow) => (
         <Link
           key={flow.slug}
@@ -169,149 +253,75 @@ export function SourceBackedFlowMapPublicPage({ mapId }: SourceBackedFlowMapProp
           <span className="shrink-0 text-xs text-[#3654FF]">열기 →</span>
         </Link>
       ))}
+      {actionContract.risk.caution ? (
+        <p
+          data-testid="flow-map-risk-caution"
+          data-adjacent-to-action={actionContract.risk.caution.adjacentToActionId}
+          className="border-l-2 border-amber-500 bg-amber-50 px-3 py-2 text-xs font-semibold leading-5 text-amber-950"
+        >
+          {actionContract.risk.caution.text}
+        </p>
+      ) : null}
     </div>
-  ) : (
-    <SourceBackedFlowMapSaveButton
-      mapId={map.id}
-      mapTitle={displayTitle}
-      savedFlows={publicSurface.childFlows.map((flow) => ({
-        slug: flow.slug,
-        title: toContentDisplayTitle(flow.title),
-        artifactMode: flow.destination === 'sheet' ? 'sheet' : flow.destination === 'calendar' || flow.destination === 'hybrid' ? 'calendar' : 'checklist',
-        steps: flow.steps.map((step) => ({ id: step.id, title: step.title })),
-      }))}
-      setupInput={publicSurface.setupInput}
-    />
   );
 
   return (
-    <main data-testid="flow-map-public" className={`${chooseChildBeforeSave ? '' : 'flowme-mobile-map-save-clearance'} min-h-screen bg-[#FAFAF8] px-4 py-5 pb-28 sm:px-5 sm:py-8 sm:pb-16`}>
+    <main
+      data-testid="flow-map-public"
+      data-map-save-mode={actionContract.controller.saveMode}
+      data-map-execution-state={actionContract.controller.executionState}
+      className={`${chooseChildBeforeSave ? '' : 'flowme-mobile-map-save-clearance'} min-h-screen bg-[#FAFAF8] px-4 py-5 pb-28 sm:px-5 sm:py-8 sm:pb-16`}
+    >
       <div className="mx-auto max-w-5xl">
       <PlatformNav />
-      <FlowSaveBeforeFrame
-        rootTestId="flow-map-hero"
-        previewTestId="flow-map-artifact-preview"
-        previewRowTestId="flow-map-artifact-preview-row"
-        title={displayTitle}
-        categoryLabel={publicSurface.categoryLabel}
-        sourceLabel={toUserFacingSourceTitle(publicSurface.sourceTitle)}
-        sourceHref={map.sourceUrl}
-        inputLabel={chooseChildBeforeSave ? 'Flow별 설정' : publicSurface.setupInput?.label ?? '입력 없음'}
-        resultLabel={chooseChildBeforeSave ? `선택지 ${publicSurface.childFlows.length}개` : publicSurface.artifacts[0] ?? '실행 준비'}
-        itemCount={previewSteps.length}
-        previewRows={previewRows}
-        actions={decisionActions}
-        composition="legacy"
-      />
-
-      <details data-testid="flow-map-execution-outline" className="mt-5 border-y border-[#E7E4DD] py-3 sm:mt-6">
-        <summary className="flex min-h-10 cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-slate-800">
-          <span>전체 내용과 원문</span>
-          <span className="text-xs text-[#6E6B64]">할 일 {previewSteps.length}개</span>
-        </summary>
-        <div className="mt-3 border-t border-[#E7E4DD] pt-4">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <p className="text-sm font-semibold text-[#6E6B64]">원문과 실행 항목</p>
-            <h2 className="mt-1 text-xl font-semibold text-slate-950">{toUserFacingSourceTitle(publicSurface.sourceTitle)}</h2>
-            <p className="mt-1 max-w-2xl break-keep text-sm leading-6 text-[#6E6B64]">{getUserFacingMapSummary(publicSurface.summary)}</p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <p className="rounded-full bg-[#FAFAF8] px-2.5 py-1 text-xs font-semibold text-[#6E6B64]">
-              {chooseChildBeforeSave ? choiceCopy.inputLabel : publicSurface.setupInput ? '입력 1개' : '입력 없음'}
-            </p>
-            <a data-testid="flow-map-source-link" className="rounded-full border border-[#E7E4DD] bg-white px-2.5 py-1 text-xs font-semibold text-[#3654FF] hover:border-[#3654FF]/40" href={map.sourceUrl} target="_blank" rel="noreferrer">
-              원문 보기
-            </a>
-          </div>
-        </div>
-        <div className={`mt-4 grid gap-4 ${publicSurface.childFlows.length > 1 ? 'md:grid-cols-2' : ''}`}>
-          {publicSurface.childFlows.map((flow) => (
-            <article key={flow.slug} className="min-w-0 rounded-lg border border-[#E7E4DD] bg-white p-4">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div>
-                  <h3 className="text-lg font-semibold text-slate-950">{toContentDisplayTitle(flow.title)}</h3>
-                  <p className="mt-1 text-xs font-semibold text-[#6E6B64]">{flow.steps.length}개 할 일</p>
-                </div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="rounded-full bg-[#EEF1FF] px-2.5 py-1 text-xs font-semibold text-[#3654FF]">
-                    {destinationLabel[flow.destination] ?? flow.destination}
-                  </span>
-                  <Link className="rounded-full border border-[#E7E4DD] bg-white px-2.5 py-1 text-xs font-semibold text-[#3654FF] hover:border-[#3654FF]/40" href={`/f/${flow.slug}`}>
-                    {chooseChildBeforeSave ? choiceCopy.childCtaLabel : '바로 시작'}
-                  </Link>
-                </div>
-              </div>
-              {chooseChildBeforeSave ? (
-                <div data-testid="flow-map-child-compact-preview" className="mt-3 border-t border-[#E7E4DD] pt-3">
-                  <ul className="grid gap-2">
-                    {flow.steps.slice(0, 2).map((step, index) => (
-                      <li key={step.id} className="grid grid-cols-[1.5rem_minmax(0,1fr)] gap-2 text-sm leading-5">
-                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#F1F0EC] text-[11px] font-semibold text-[#6E6B64]" aria-hidden="true">
-                          {index + 1}
-                        </span>
-                        <span>
-                          <span className="block break-keep font-semibold text-slate-900">{step.title}</span>
-                          {step.detailItems[0] ? <span className="mt-0.5 block break-keep text-xs text-slate-600">{step.detailItems[0]}</span> : null}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                  {flow.steps.length > 2 ? (
-                    <p className="mt-3 text-xs font-semibold text-[#6E6B64]">나머지 {flow.steps.length - 2}개는 내용 보기에서 확인</p>
-                  ) : null}
-                </div>
-              ) : (
-                <div className="mt-3 grid gap-2">
-                  {flow.steps.map((step, index) => (
-                    <div key={step.id} data-testid="flow-map-execution-step-row" className="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] gap-3 border-t border-[#E7E4DD] py-3 first:border-t-0 first:pt-0">
-                      <span className="flex h-7 w-7 items-center justify-center rounded-md bg-[#EEF1FF] text-xs font-semibold text-[#3654FF]" aria-hidden="true">
-                        {index + 1}
-                      </span>
-                      <div className="min-w-0">
-                        {step.stepTitle ? <p className="text-xs font-semibold text-[#6E6B64]">{toUserFacingSourceTitle(step.stepTitle)}</p> : null}
-                        <p className="mt-1 text-sm font-semibold text-slate-950">{step.title}</p>
-                        {step.detailItems.length > 0 ? (
-                          <>
-                            <p className="mt-2 text-[13px] font-medium leading-5 text-slate-700">
-                              <span className="font-semibold text-slate-500">첫 체크</span> · {step.detailItems[0]}
-                            </p>
-                            <details data-testid="flow-map-public-step-items" className="mt-2 border-y border-[#E7E4DD] py-2.5">
-                              <summary className="cursor-pointer text-xs font-semibold text-slate-600">체크 {step.detailItems.length}개 열기</summary>
-                              <ul className="mt-2 grid gap-1.5 text-[13px] font-medium leading-5 text-slate-700">
-                                {step.detailItems.map((item) => (
-                                  <li key={item} className="flex gap-1.5">
-                                    <span className="mt-0.5 shrink-0 text-slate-400" aria-hidden="true">□</span>
-                                    <span>{item}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            </details>
-                          </>
-                        ) : (
-                          <p className="mt-1 text-xs font-semibold text-slate-500">하위 체크 {step.detailItemCount}개</p>
-                        )}
-                        {step.memo || step.sourceUrl ? (
-                          <details className="mt-2 min-w-0 border-y border-[#E7E4DD] py-2.5">
-                            <summary className="cursor-pointer text-xs font-semibold text-slate-600">메모 · 원문</summary>
-                            {step.memo ? <p className="mt-2 whitespace-pre-wrap break-words text-[13px] leading-5 text-slate-700">{step.memo}</p> : null}
-                            {step.sourceUrl ? (
-                              <a className="mt-2 inline-flex min-h-8 items-center rounded-md border border-[#E7E4DD] bg-white px-2.5 py-1 text-xs font-semibold text-[#3654FF] hover:border-[#3654FF]/40" href={step.sourceUrl} target="_blank" rel="noreferrer">
-                                이 단계 원문 보기
-                              </a>
-                            ) : null}
-                          </details>
-                        ) : null}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </article>
-          ))}
-        </div>
-        </div>
-      </details>
+      {chooseChildBeforeSave ? (
+        <>
+          <FlowSaveBeforeFrame
+            rootTestId="flow-map-hero"
+            previewTestId="flow-map-artifact-preview"
+            previewRowTestId="flow-map-artifact-preview-row"
+            eyebrow={copy.publicPreview.eyebrow}
+            title={displayTitle}
+            categoryLabel={publicSurface.categoryLabel}
+            sourceLabel={toUserFacingSourceTitle(publicSurface.sourceTitle)}
+            sourceHref={actionContract.identity.source.href}
+            inputLabel={q3CopyEnabled ? '계획별 설정' : 'Flow별 설정'}
+            resultLabel={`선택지 ${publicSurface.childFlows.length}개`}
+            itemCount={previewSteps.length}
+            previewRows={previewRows}
+            actions={decisionActions}
+            composition="legacy"
+            showScheduleIntent={!visualSubtractionEnabled}
+            q3CopyEnabled={q3CopyEnabled}
+          />
+          <SourceBackedFlowMapExecutionOutline
+            sourceTitle={publicSurface.sourceTitle}
+            sourceHref={actionContract.identity.source.href}
+            sourceLabel={actionContract.identity.source.label}
+            sourceActionIntent={actionContract.identity.source.intent}
+            summary={publicSurface.summary}
+            inputLabel={choiceCopy.inputLabel}
+            itemCount={previewSteps.length}
+            chooseChildBeforeSave
+            childCtaLabel={choiceCopy.childCtaLabel}
+            flows={publicSurface.childFlows.map((flow) => ({
+              ...flow,
+              steps: flow.steps.map((step) => ({
+                ...step,
+                itemKey: `${flow.slug}::${step.id}`,
+              })),
+            }))}
+          />
+        </>
+      ) : (
+        <SourceBackedFlowMapSaveExperience
+          publishPackage={publishPackage}
+          displayTitle={displayTitle}
+          sourceLabel={actionContract.identity.source.label}
+          q3CopyEnabled={q3CopyEnabled}
+          visualSubtractionEnabled={visualSubtractionEnabled}
+        />
+      )}
       </div>
     </main>
   );
