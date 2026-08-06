@@ -17,6 +17,7 @@ prod-smoke-*.xlsx
 
 # Local browser and research scratch
 .playwright-cli/
+/.tmp/
 /tmp/
 
 # Local environment
