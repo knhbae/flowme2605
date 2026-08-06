@@ -1,0 +1,400 @@
+{
+  "schemaVersion": 1,
+  "manifestName": "group-manifest-s17-s23.json",
+  "generatedAt": "2026-08-06T01:14:22.961Z",
+  "baseUrl": "http://127.0.0.1:3114",
+  "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+  "publicationState": "CANDIDATE_BOUND_CAPTURE_AWAITING_PUBLICATION",
+  "productionReleaseClaim": "NONE",
+  "observedUsers": 0,
+  "sourceSnapshot": {
+    "head": "f97644abf379c46433847f44aa7bd4da7fadac4a",
+    "shortHead": "f97644abf379",
+    "branch": "codex/p35-round2-correction-pprime2-20260805",
+    "buildId": "T0QkChgscSgPog-0UdvY-",
+    "dirty": false,
+    "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+    "gitStatusSha256": "45afcb73d07550427bb5381ff77cd972cb9b80404c48da66846545bd5df1775a",
+    "gitStatus": "## codex/p35-round2-correction-pprime2-20260805...origin/codex/p35-round2-correction-pprime2-20260805\n"
+  },
+  "serverProbe": {
+    "reachable": true,
+    "status": 200,
+    "statusText": "OK",
+    "url": "http://127.0.0.1:3114/flows",
+    "durationMs": 29
+  },
+  "scenarios": [
+    {
+      "scenarioId": "S17",
+      "title": "Current runtime rollback flags, route state, and persistent-write trace",
+      "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+      "reviewerStatus": "CODEX_EXECUTED_LOCAL_REHEARSAL",
+      "fileCount": 7,
+      "files": [
+        "S17/my-default.png",
+        "S17/my-exact-off.png",
+        "S17/my-uppercase-off.png",
+        "S17/public-default.png",
+        "S17/public-exact-off.png",
+        "S17/public-uppercase-off.png",
+        "S17/runtime-route-storage-trace.json"
+      ]
+    },
+    {
+      "scenarioId": "S18",
+      "title": "Deterministic TSV raw-byte and parser edge rehearsal",
+      "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+      "reviewerStatus": "CODEX_EXECUTED_LOCAL_REHEARSAL",
+      "fileCount": 3,
+      "files": [
+        "S18/edge-cases-crlf-utf8.tsv",
+        "S18/edge-cases-raw-hex.txt",
+        "S18/parser-result.json"
+      ]
+    },
+    {
+      "scenarioId": "S19",
+      "title": "Timezone, DST wall-clock, undated, and overdue boundary rehearsal",
+      "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+      "reviewerStatus": "CODEX_EXECUTED_LOCAL_REHEARSAL_WITH_EXPLICIT_GAPS",
+      "fileCount": 4,
+      "files": [
+        "S19/current-my-overdue-mixed-state.png",
+        "S19/dated-undated-overdue-fixture.json",
+        "S19/new-york-dst-wall-clock.ics",
+        "S19/timezone-dst-parser-result.json"
+      ]
+    },
+    {
+      "scenarioId": "S20",
+      "title": "Routine projection with Item, recurrence-series, and VEVENT units kept separate",
+      "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+      "reviewerStatus": "CODEX_EXECUTED_LOCAL_REHEARSAL",
+      "fileCount": 2,
+      "files": [
+        "S20/routine-monthly-unit-separated.ics",
+        "S20/routine-unit-counts.json"
+      ]
+    },
+    {
+      "scenarioId": "S21",
+      "title": "Filename, MIME, transport, clipboard, download, and raw-hash evidence",
+      "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+      "reviewerStatus": "CODEX_EXECUTED_CURRENT_RUNTIME_LOCAL_REHEARSAL",
+      "fileCount": 5,
+      "files": [
+        "S21/browser-clipboard/sheet.tsv",
+        "S21/browser-download/세탁기-통세척-월간-관리-all-calendar.ics",
+        "S21/calendar-download-confirmation.png",
+        "S21/sheet-clipboard-confirmation.png",
+        "S21/transport-manifest.json"
+      ]
+    },
+    {
+      "scenarioId": "S22",
+      "title": "Explicit out-of-scope and not-assessed register",
+      "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+      "reviewerStatus": "NOT_ASSESSED",
+      "fileCount": 1,
+      "files": [
+        "S22/not-assessed-manifest.json"
+      ]
+    },
+    {
+      "scenarioId": "S23",
+      "title": "Reviewer-chosen free exploration placeholder",
+      "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+      "reviewerStatus": "AWAITING_REVIEWER_SELECTION",
+      "fileCount": 1,
+      "files": [
+        "S23/reviewer-choice-placeholder.json"
+      ]
+    }
+  ],
+  "files": [
+    {
+      "scenarioId": "S17",
+      "path": "S17/my-default.png",
+      "bytes": 21899,
+      "sha256": "3c92776346395fa1aeb52eb44eebb7ec95b9eca6384e773aa9d53c97ee1417cc",
+      "mediaType": "image/png",
+      "head": "f97644abf379c46433847f44aa7bd4da7fadac4a",
+      "buildId": "T0QkChgscSgPog-0UdvY-",
+      "dirty": false,
+      "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+      "scenarioStatus": "CODEX_EXECUTED_LOCAL_REHEARSAL"
+    },
+    {
+      "scenarioId": "S17",
+      "path": "S17/my-exact-off.png",
+      "bytes": 24456,
+      "sha256": "c40383f41b793107ba9d5545b90f1fb587bc505a7e608b4ffc33a30157114172",
+      "mediaType": "image/png",
+      "head": "f97644abf379c46433847f44aa7bd4da7fadac4a",
+      "buildId": "T0QkChgscSgPog-0UdvY-",
+      "dirty": false,
+      "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+      "scenarioStatus": "CODEX_EXECUTED_LOCAL_REHEARSAL"
+    },
+    {
+      "scenarioId": "S17",
+      "path": "S17/my-uppercase-off.png",
+      "bytes": 21899,
+      "sha256": "3c92776346395fa1aeb52eb44eebb7ec95b9eca6384e773aa9d53c97ee1417cc",
+      "mediaType": "image/png",
+      "head": "f97644abf379c46433847f44aa7bd4da7fadac4a",
+      "buildId": "T0QkChgscSgPog-0UdvY-",
+      "dirty": false,
+      "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+      "scenarioStatus": "CODEX_EXECUTED_LOCAL_REHEARSAL"
+    },
+    {
+      "scenarioId": "S17",
+      "path": "S17/public-default.png",
+      "bytes": 37563,
+      "sha256": "67f8db09c410556320f7b3197305e8da708c945bcacd5ecedde3eb5f7e7b13fc",
+      "mediaType": "image/png",
+      "head": "f97644abf379c46433847f44aa7bd4da7fadac4a",
+      "buildId": "T0QkChgscSgPog-0UdvY-",
+      "dirty": false,
+      "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+      "scenarioStatus": "CODEX_EXECUTED_LOCAL_REHEARSAL"
+    },
+    {
+      "scenarioId": "S17",
+      "path": "S17/public-exact-off.png",
+      "bytes": 34084,
+      "sha256": "df144292a0a1c2172e3c081e9729451611977413367ab13da7a804d609dc1bc1",
+      "mediaType": "image/png",
+      "head": "f97644abf379c46433847f44aa7bd4da7fadac4a",
+      "buildId": "T0QkChgscSgPog-0UdvY-",
+      "dirty": false,
+      "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+      "scenarioStatus": "CODEX_EXECUTED_LOCAL_REHEARSAL"
+    },
+    {
+      "scenarioId": "S17",
+      "path": "S17/public-uppercase-off.png",
+      "bytes": 37563,
+      "sha256": "67f8db09c410556320f7b3197305e8da708c945bcacd5ecedde3eb5f7e7b13fc",
+      "mediaType": "image/png",
+      "head": "f97644abf379c46433847f44aa7bd4da7fadac4a",
+      "buildId": "T0QkChgscSgPog-0UdvY-",
+      "dirty": false,
+      "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+      "scenarioStatus": "CODEX_EXECUTED_LOCAL_REHEARSAL"
+    },
+    {
+      "scenarioId": "S17",
+      "path": "S17/runtime-route-storage-trace.json",
+      "bytes": 21960,
+      "sha256": "0b98e87fb0a905d2e0bbd9d759671333d981d083766ae57164ea0c42cf3767b2",
+      "mediaType": "application/json;charset=utf-8",
+      "head": "f97644abf379c46433847f44aa7bd4da7fadac4a",
+      "buildId": "T0QkChgscSgPog-0UdvY-",
+      "dirty": false,
+      "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+      "scenarioStatus": "CODEX_EXECUTED_LOCAL_REHEARSAL"
+    },
+    {
+      "scenarioId": "S18",
+      "path": "S18/edge-cases-crlf-utf8.tsv",
+      "bytes": 884,
+      "sha256": "808b99cceeb60a594730151eb8e91493dd99d5e6d30886f969fdb520c8fe3063",
+      "mediaType": "text/tab-separated-values;charset=utf-8",
+      "head": "f97644abf379c46433847f44aa7bd4da7fadac4a",
+      "buildId": "T0QkChgscSgPog-0UdvY-",
+      "dirty": false,
+      "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+      "scenarioStatus": "CODEX_EXECUTED_LOCAL_REHEARSAL"
+    },
+    {
+      "scenarioId": "S18",
+      "path": "S18/edge-cases-raw-hex.txt",
+      "bytes": 1769,
+      "sha256": "71c74a094446c5cf240366c5caa12d22528748fce1b656bdc532537ee2b9947d",
+      "mediaType": "text/plain;charset=utf-8",
+      "head": "f97644abf379c46433847f44aa7bd4da7fadac4a",
+      "buildId": "T0QkChgscSgPog-0UdvY-",
+      "dirty": false,
+      "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+      "scenarioStatus": "CODEX_EXECUTED_LOCAL_REHEARSAL"
+    },
+    {
+      "scenarioId": "S18",
+      "path": "S18/parser-result.json",
+      "bytes": 4324,
+      "sha256": "feeace36c486340f988512bcb94ea33c050a5f93715349779ddcd0b77abbb278",
+      "mediaType": "application/json;charset=utf-8",
+      "head": "f97644abf379c46433847f44aa7bd4da7fadac4a",
+      "buildId": "T0QkChgscSgPog-0UdvY-",
+      "dirty": false,
+      "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+      "scenarioStatus": "CODEX_EXECUTED_LOCAL_REHEARSAL"
+    },
+    {
+      "scenarioId": "S19",
+      "path": "S19/current-my-overdue-mixed-state.png",
+      "bytes": 61268,
+      "sha256": "6d61850daab279e97111953abfc1bf9021b65d53eef80929dddd4af262d0a430",
+      "mediaType": "image/png",
+      "head": "f97644abf379c46433847f44aa7bd4da7fadac4a",
+      "buildId": "T0QkChgscSgPog-0UdvY-",
+      "dirty": false,
+      "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+      "scenarioStatus": "CODEX_EXECUTED_LOCAL_REHEARSAL_WITH_EXPLICIT_GAPS"
+    },
+    {
+      "scenarioId": "S19",
+      "path": "S19/dated-undated-overdue-fixture.json",
+      "bytes": 808,
+      "sha256": "98d7cdb65a453cee2b77b167e18548c2fc82ae7ad39cc55c7f718d107fffd52b",
+      "mediaType": "application/json;charset=utf-8",
+      "head": "f97644abf379c46433847f44aa7bd4da7fadac4a",
+      "buildId": "T0QkChgscSgPog-0UdvY-",
+      "dirty": false,
+      "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+      "scenarioStatus": "CODEX_EXECUTED_LOCAL_REHEARSAL_WITH_EXPLICIT_GAPS"
+    },
+    {
+      "scenarioId": "S19",
+      "path": "S19/new-york-dst-wall-clock.ics",
+      "bytes": 973,
+      "sha256": "520187e5175b1d46f3375b8501e705ca3b17b6793529ce2a66635af4fe3da2c8",
+      "mediaType": "text/calendar;charset=utf-8",
+      "head": "f97644abf379c46433847f44aa7bd4da7fadac4a",
+      "buildId": "T0QkChgscSgPog-0UdvY-",
+      "dirty": false,
+      "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+      "scenarioStatus": "CODEX_EXECUTED_LOCAL_REHEARSAL_WITH_EXPLICIT_GAPS"
+    },
+    {
+      "scenarioId": "S19",
+      "path": "S19/timezone-dst-parser-result.json",
+      "bytes": 5317,
+      "sha256": "bebedfc9e02be0912ccc930a8df6fba85421f66b415fa44998fe786ad6fb162e",
+      "mediaType": "application/json;charset=utf-8",
+      "head": "f97644abf379c46433847f44aa7bd4da7fadac4a",
+      "buildId": "T0QkChgscSgPog-0UdvY-",
+      "dirty": false,
+      "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+      "scenarioStatus": "CODEX_EXECUTED_LOCAL_REHEARSAL_WITH_EXPLICIT_GAPS"
+    },
+    {
+      "scenarioId": "S20",
+      "path": "S20/routine-monthly-unit-separated.ics",
+      "bytes": 718,
+      "sha256": "e44d8a6f4bc0b7051bd0ff99b7d9dbf585c11a69ee19a59c77ced1f7fb4fe18d",
+      "mediaType": "text/calendar;charset=utf-8",
+      "head": "f97644abf379c46433847f44aa7bd4da7fadac4a",
+      "buildId": "T0QkChgscSgPog-0UdvY-",
+      "dirty": false,
+      "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+      "scenarioStatus": "CODEX_EXECUTED_LOCAL_REHEARSAL"
+    },
+    {
+      "scenarioId": "S20",
+      "path": "S20/routine-unit-counts.json",
+      "bytes": 2270,
+      "sha256": "da8068bf8d161200f32713e7944430e25e1993ded5cf2aa32f22050f8ff1c7a8",
+      "mediaType": "application/json;charset=utf-8",
+      "head": "f97644abf379c46433847f44aa7bd4da7fadac4a",
+      "buildId": "T0QkChgscSgPog-0UdvY-",
+      "dirty": false,
+      "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+      "scenarioStatus": "CODEX_EXECUTED_LOCAL_REHEARSAL"
+    },
+    {
+      "scenarioId": "S21",
+      "path": "S21/browser-clipboard/sheet.tsv",
+      "bytes": 3001,
+      "sha256": "6af0fa54369d8a7195f1b9fee2ff70932a435dc283a7d2172beae53d7e0e14ac",
+      "mediaType": "text/tab-separated-values;charset=utf-8",
+      "head": "f97644abf379c46433847f44aa7bd4da7fadac4a",
+      "buildId": "T0QkChgscSgPog-0UdvY-",
+      "dirty": false,
+      "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+      "scenarioStatus": "CODEX_EXECUTED_CURRENT_RUNTIME_LOCAL_REHEARSAL"
+    },
+    {
+      "scenarioId": "S21",
+      "path": "S21/browser-download/세탁기-통세척-월간-관리-all-calendar.ics",
+      "bytes": 1543,
+      "sha256": "03c5571411dd1354a2302d423d2a6e9e33e36b036632dee811a58e9bc559e3b7",
+      "mediaType": "text/calendar;charset=utf-8",
+      "head": "f97644abf379c46433847f44aa7bd4da7fadac4a",
+      "buildId": "T0QkChgscSgPog-0UdvY-",
+      "dirty": false,
+      "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+      "scenarioStatus": "CODEX_EXECUTED_CURRENT_RUNTIME_LOCAL_REHEARSAL"
+    },
+    {
+      "scenarioId": "S21",
+      "path": "S21/calendar-download-confirmation.png",
+      "bytes": 71136,
+      "sha256": "4ab6d1426c944baa16add0b4a65fd48028d229b46bfc96dbde867929cc61d656",
+      "mediaType": "image/png",
+      "head": "f97644abf379c46433847f44aa7bd4da7fadac4a",
+      "buildId": "T0QkChgscSgPog-0UdvY-",
+      "dirty": false,
+      "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+      "scenarioStatus": "CODEX_EXECUTED_CURRENT_RUNTIME_LOCAL_REHEARSAL"
+    },
+    {
+      "scenarioId": "S21",
+      "path": "S21/sheet-clipboard-confirmation.png",
+      "bytes": 56692,
+      "sha256": "79f16a2840cc3f63675f23ccd59a407e360cd2a8e673a64eb3742ba4c1ea3b50",
+      "mediaType": "image/png",
+      "head": "f97644abf379c46433847f44aa7bd4da7fadac4a",
+      "buildId": "T0QkChgscSgPog-0UdvY-",
+      "dirty": false,
+      "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+      "scenarioStatus": "CODEX_EXECUTED_CURRENT_RUNTIME_LOCAL_REHEARSAL"
+    },
+    {
+      "scenarioId": "S21",
+      "path": "S21/transport-manifest.json",
+      "bytes": 17432,
+      "sha256": "85326cb4abe4b76958d23d30bab3b8e9aed61b3a817957105ec7cbf9f8cd0a2d",
+      "mediaType": "application/json;charset=utf-8",
+      "head": "f97644abf379c46433847f44aa7bd4da7fadac4a",
+      "buildId": "T0QkChgscSgPog-0UdvY-",
+      "dirty": false,
+      "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+      "scenarioStatus": "CODEX_EXECUTED_CURRENT_RUNTIME_LOCAL_REHEARSAL"
+    },
+    {
+      "scenarioId": "S22",
+      "path": "S22/not-assessed-manifest.json",
+      "bytes": 2123,
+      "sha256": "3d56dcaebf0b971b8f31474c4c40e42a5585311be399fc020373f7f3b2c2f7ca",
+      "mediaType": "application/json;charset=utf-8",
+      "head": "f97644abf379c46433847f44aa7bd4da7fadac4a",
+      "buildId": "T0QkChgscSgPog-0UdvY-",
+      "dirty": false,
+      "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+      "scenarioStatus": "NOT_ASSESSED"
+    },
+    {
+      "scenarioId": "S23",
+      "path": "S23/reviewer-choice-placeholder.json",
+      "bytes": 1176,
+      "sha256": "b0e06718ba5644dd35e8ea3a7ba1b2452e39d85a3060011d706eaa0352220796",
+      "mediaType": "application/json;charset=utf-8",
+      "head": "f97644abf379c46433847f44aa7bd4da7fadac4a",
+      "buildId": "T0QkChgscSgPog-0UdvY-",
+      "dirty": false,
+      "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+      "scenarioStatus": "AWAITING_REVIEWER_SELECTION"
+    }
+  ],
+  "collectorErrors": [],
+  "integrity": {
+    "algorithm": "SHA-256",
+    "payloadSha256": "47cd84315f58afbbd2a658293400252f4902e01947a4f0275ba70b6be8bdc690",
+    "manifestSelfInventory": "EXCLUDED_TO_AVOID_RECURSIVE_SELF_HASH",
+    "note": "Every owned S17-S23 artifact is inventoried. This root manifest does not claim a hash of itself."
+  }
+}

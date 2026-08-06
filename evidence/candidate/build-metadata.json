@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "status": "PASS",
+  "sourceProvided": true,
+  "sourceFileName": "post-publication-push-build.utf8.log",
+  "copiedRelativePath": "candidate/build.log",
+  "command": "npm.cmd run build",
+  "exitCode": 0,
+  "byteLength": 2432,
+  "sha256": "ccd08e6abe471c56c877b5bedccd877a7024016f69a1e7bb3b9a94e6955993a5",
+  "encoding": {
+    "declared": "utf-8",
+    "valid": true,
+    "containsNul": false,
+    "containsReplacementCharacter": false,
+    "error": null
+  },
+  "buildId": "T0QkChgscSgPog-0UdvY-"
+}

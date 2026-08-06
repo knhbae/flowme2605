@@ -1,0 +1,164 @@
+{
+  "scenarioId": "S11",
+  "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+  "orderedStateIds": [
+    "help_closed",
+    "help_open_enter",
+    "condition_closed",
+    "condition_open",
+    "warning_closed",
+    "warning_open"
+  ],
+  "fullScreenFiles": [
+    {
+      "stateId": "help_closed",
+      "relativePath": "S11/01-help-closed-full.png",
+      "bytes": 37932,
+      "sha256": "59f147b54aede8b4f9c362d9b22504351092ecf40518a096dc6f5c25e13d069e",
+      "mime": "image/png",
+      "route": "http://127.0.0.1:3114/flow-maps/curated-wedding-checklist-family"
+    },
+    {
+      "stateId": "help_open_enter",
+      "relativePath": "S11/02-help-open-enter-full.png",
+      "bytes": 39060,
+      "sha256": "07eb1153cdb0ea42473210311f4d147ea7aaaaa09ecefa8f72bac28a44c3d38a",
+      "mime": "image/png",
+      "route": "http://127.0.0.1:3114/flow-maps/curated-wedding-checklist-family"
+    },
+    {
+      "stateId": "condition_closed",
+      "relativePath": "S11/03-condition-result-full.png",
+      "bytes": 46206,
+      "sha256": "3d396b00298c9a79d1818e3695c8395c03ae1f9569852cd75fa29d8dc4d1f04c",
+      "mime": "image/png",
+      "route": "http://127.0.0.1:3114/f/curated-allblanc-morning-workout"
+    },
+    {
+      "stateId": "condition_open",
+      "relativePath": "S11/04-condition-editor-open-full.png",
+      "bytes": 29299,
+      "sha256": "da311a9b61fac5b254bf798e5c108ddf139ffe3205d43665c9b0d48ff1429cfd",
+      "mime": "image/png",
+      "route": "http://127.0.0.1:3114/f/curated-allblanc-morning-workout"
+    },
+    {
+      "stateId": "warning_closed",
+      "relativePath": "S11/05-warning-closed-full.png",
+      "bytes": 76416,
+      "sha256": "196425643ee96434d1d68e36eef2253df8df250c98c028514c309c003a6866b8",
+      "mime": "image/png",
+      "route": "http://127.0.0.1:3114/my?flow=moving-d30-basic"
+    },
+    {
+      "stateId": "warning_open",
+      "relativePath": "S11/06-warning-open-full.png",
+      "bytes": 79113,
+      "sha256": "f0ce9d95feef1c05b630cfc525030b1079bae8e01b18a6f45422fb87818a20df",
+      "mime": "image/png",
+      "route": "http://127.0.0.1:3114/my?flow=moving-d30-basic"
+    }
+  ],
+  "actionSequence": [
+    "help closed -> Enter open -> Escape focus return -> Space open",
+    "conditional Calendar result -> shared date editor",
+    "one-way warning closed -> Enter open -> Escape focus return"
+  ],
+  "gaps": [],
+  "routeState": "http://127.0.0.1:3114/my?flow=moving-d30-basic",
+  "capturedAtKst": "2026-08-06T10:14:06+09:00",
+  "consoleNetworkStatus": {
+    "consoleErrors": 0,
+    "failedRequests": 5,
+    "expectedNavigationOrPrefetchAborts": 5,
+    "unexpectedFailedRequests": 0,
+    "httpErrors": 0
+  },
+  "pageQuality": {
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "devicePixelRatio": 1
+    },
+    "scroll": {
+      "documentWidth": 390,
+      "documentHeight": 2237,
+      "horizontalOverflow": 0
+    },
+    "unnamedInteractiveCount": 0,
+    "horizontallyClippedInteractiveCount": 0,
+    "brokenRelations": [],
+    "replacementCharacterCount": 0,
+    "visibleInteractiveCount": 36
+  },
+  "seedId": "help-condition-warning-built-in-fixtures",
+  "seedSha256": "65f1e00f06db4b241bbb3737d9498332ebbcb4eb2c49856ba5c70ddd55dc1f5d",
+  "viewportInput": {
+    "width": 390,
+    "height": 844,
+    "zoom": 1,
+    "motion": "no-preference"
+  },
+  "accessibilityTrace": {
+    "focusSequence": [
+      {
+        "action": "focus help",
+        "active": "flow-map-choice-help-trigger"
+      },
+      {
+        "action": "Enter",
+        "active": "닫기"
+      },
+      {
+        "action": "Escape",
+        "returnedToTrigger": true
+      },
+      {
+        "action": "Space",
+        "expanded": "true"
+      }
+    ],
+    "helpClosed": {
+      "data-testid": "flow-map-choice-help-trigger",
+      "data-flow-context-trigger": "flow-context-_R_2fdinpfivb_-trigger",
+      "data-flow-context-kind": "help"
+    },
+    "helpAria": "- dialog \"사용할 계획을 고르세요\":\n  - paragraph: 선택 도움말\n  - heading \"사용할 계획을 고르세요\" [level=2]\n  - button \"닫기\"\n  - paragraph: 목적에 맞는 계획 하나를 열어 내용을 확인하세요. 이 단계에서는 아직 내 계획에 저장되지 않습니다.",
+    "conditionalAttrs": {
+      "data-testid": "flow-capability-conditional-result",
+      "data-capability-candidate-role": "conditional",
+      "data-capability-candidate-state": "conditional",
+      "data-capability-destination": "calendar",
+      "data-capability-snapshot-kind": "effective_authoring",
+      "data-capability-manifest-hash": "0c1cac81",
+      "data-capability-manifest-item-ids": "",
+      "data-capability-manifest-held-item-ids": "allblanc-morning-run",
+      "data-capability-output-count": "0",
+      "data-capability-expected-output-count": "1"
+    },
+    "conditionEditorAttrs": {
+      "data-adjustment-kind": "anchor",
+      "data-editor-schema-fields": "plan-title,plan-anchor,plan-items,plan-routine,source-and-safety",
+      "data-editor-context": "public-draft",
+      "data-editor-level": "plan",
+      "data-editor-status": "clean",
+      "data-editor-layout": "responsive",
+      "data-editor-semantic-role": "unsaved-public-draft",
+      "data-editor-commit-role": "apply-public-draft",
+      "data-editor-dirty": "false",
+      "data-editor-frame": "shared",
+      "data-editor-adapter": "shared",
+      "data-flow-editor-surface": "true",
+      "data-editor-transaction": "atomic",
+      "data-testid": "public-flow-personal-adjustment",
+      "data-p35-marker": "P35-ATOMIC-FULL-HEIGHT-EDITOR",
+      "data-flow-ui": "bottom-sheet",
+      "data-layer-priority": "dialog"
+    },
+    "warningText": "일방향 결과예요. 이후 FlowMe의 수정이 외부 도구에 자동으로 반영되지 않아요.",
+    "warningAria": "- dialog \"외부 도구와 자동으로 연결되지 않아요\":\n  - paragraph: 주의\n  - heading \"외부 도구와 자동으로 연결되지 않아요\" [level=2]\n  - button \"닫기\"\n  - paragraph: 외부 도구에서 만든 결과는 FlowMe의 계획과 동기화되지 않습니다. 계획을 바꾼 뒤 다시 옮길 때는 기존 결과를 지우거나 중복 여부를 확인하세요.",
+    "warningFocusReturned": true
+  },
+  "persistentWriteCount": 0,
+  "reviewerStatus": "LOCAL_REHEARSAL"
+}

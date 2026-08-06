@@ -1,0 +1,414 @@
+{
+  "flow": {
+    "id": "flow-evidence-count-24",
+    "slug": "personal-copy:evidence-count-24",
+    "title": "실제 저장 항목 24개 계획",
+    "description": "저장 데이터 24개 밀도 검증",
+    "category": "evidence",
+    "structure_type": "checklist",
+    "anchor_type": "none",
+    "status": "draft",
+    "primary_destination": "internal_check",
+    "source_status": "real",
+    "source_precision": "exact",
+    "created_at": "2031-08-05T00:00:00.000Z",
+    "updated_at": "2031-08-05T00:00:00.000Z"
+  },
+  "sections": [
+    {
+      "id": "section-evidence-count-24",
+      "flow_id": "flow-evidence-count-24",
+      "title": "항목 24개",
+      "order": 0
+    }
+  ],
+  "items": [
+    {
+      "id": "personal-copy:evidence-count-24-item-01",
+      "flow_id": "flow-evidence-count-24",
+      "section_id": "section-evidence-count-24",
+      "title": "계약서·사진·열쇠🔑 가족과 함께 마지막으로 아주 길게 확인하기 — \"특수\"\t탭 \\ 역슬래시",
+      "description": "첫째 줄: 계약서의 \"특약\"과 사진 #1 확인 ✅\n둘째 줄:\t탭 값, 쉼표, 세미콜론; 역슬래시 \\ 보존\n셋째 줄: <완료>와 개인 기록 분리 🚚",
+      "type": "todo",
+      "role": "action",
+      "order": 0
+    },
+    {
+      "id": "personal-copy:evidence-count-24-item-02",
+      "flow_id": "flow-evidence-count-24",
+      "section_id": "section-evidence-count-24",
+      "title": "02번째 실제 저장 항목",
+      "description": "2번째 항목 설명",
+      "type": "todo",
+      "role": "action",
+      "order": 1
+    },
+    {
+      "id": "personal-copy:evidence-count-24-item-03",
+      "flow_id": "flow-evidence-count-24",
+      "section_id": "section-evidence-count-24",
+      "title": "03번째 실제 저장 항목",
+      "description": "3번째 항목 설명",
+      "type": "todo",
+      "role": "action",
+      "order": 2
+    },
+    {
+      "id": "personal-copy:evidence-count-24-item-04",
+      "flow_id": "flow-evidence-count-24",
+      "section_id": "section-evidence-count-24",
+      "title": "04번째 실제 저장 항목",
+      "description": "4번째 항목 설명",
+      "type": "todo",
+      "role": "action",
+      "order": 3
+    },
+    {
+      "id": "personal-copy:evidence-count-24-item-05",
+      "flow_id": "flow-evidence-count-24",
+      "section_id": "section-evidence-count-24",
+      "title": "05번째 실제 저장 항목",
+      "description": "5번째 항목 설명",
+      "type": "todo",
+      "role": "action",
+      "order": 4
+    },
+    {
+      "id": "personal-copy:evidence-count-24-item-06",
+      "flow_id": "flow-evidence-count-24",
+      "section_id": "section-evidence-count-24",
+      "title": "06번째 실제 저장 항목",
+      "description": "6번째 항목 설명",
+      "type": "todo",
+      "role": "action",
+      "order": 5
+    },
+    {
+      "id": "personal-copy:evidence-count-24-item-07",
+      "flow_id": "flow-evidence-count-24",
+      "section_id": "section-evidence-count-24",
+      "title": "07번째 실제 저장 항목",
+      "description": "7번째 항목 설명",
+      "type": "todo",
+      "role": "action",
+      "order": 6
+    },
+    {
+      "id": "personal-copy:evidence-count-24-item-08",
+      "flow_id": "flow-evidence-count-24",
+      "section_id": "section-evidence-count-24",
+      "title": "08번째 실제 저장 항목",
+      "description": "8번째 항목 설명",
+      "type": "todo",
+      "role": "action",
+      "order": 7
+    },
+    {
+      "id": "personal-copy:evidence-count-24-item-09",
+      "flow_id": "flow-evidence-count-24",
+      "section_id": "section-evidence-count-24",
+      "title": "09번째 실제 저장 항목",
+      "description": "9번째 항목 설명",
+      "type": "todo",
+      "role": "action",
+      "order": 8
+    },
+    {
+      "id": "personal-copy:evidence-count-24-item-10",
+      "flow_id": "flow-evidence-count-24",
+      "section_id": "section-evidence-count-24",
+      "title": "10번째 실제 저장 항목",
+      "description": "10번째 항목 설명",
+      "type": "todo",
+      "role": "action",
+      "order": 9
+    },
+    {
+      "id": "personal-copy:evidence-count-24-item-11",
+      "flow_id": "flow-evidence-count-24",
+      "section_id": "section-evidence-count-24",
+      "title": "11번째 실제 저장 항목",
+      "description": "11번째 항목 설명",
+      "type": "todo",
+      "role": "action",
+      "order": 10
+    },
+    {
+      "id": "personal-copy:evidence-count-24-item-12",
+      "flow_id": "flow-evidence-count-24",
+      "section_id": "section-evidence-count-24",
+      "title": "12번째 실제 저장 항목",
+      "description": "12번째 항목 설명",
+      "type": "todo",
+      "role": "action",
+      "order": 11
+    },
+    {
+      "id": "personal-copy:evidence-count-24-item-13",
+      "flow_id": "flow-evidence-count-24",
+      "section_id": "section-evidence-count-24",
+      "title": "13번째 실제 저장 항목",
+      "description": "13번째 항목 설명",
+      "type": "todo",
+      "role": "action",
+      "order": 12
+    },
+    {
+      "id": "personal-copy:evidence-count-24-item-14",
+      "flow_id": "flow-evidence-count-24",
+      "section_id": "section-evidence-count-24",
+      "title": "14번째 실제 저장 항목",
+      "description": "14번째 항목 설명",
+      "type": "todo",
+      "role": "action",
+      "order": 13
+    },
+    {
+      "id": "personal-copy:evidence-count-24-item-15",
+      "flow_id": "flow-evidence-count-24",
+      "section_id": "section-evidence-count-24",
+      "title": "15번째 실제 저장 항목",
+      "description": "15번째 항목 설명",
+      "type": "todo",
+      "role": "action",
+      "order": 14
+    },
+    {
+      "id": "personal-copy:evidence-count-24-item-16",
+      "flow_id": "flow-evidence-count-24",
+      "section_id": "section-evidence-count-24",
+      "title": "16번째 실제 저장 항목",
+      "description": "16번째 항목 설명",
+      "type": "todo",
+      "role": "action",
+      "order": 15
+    },
+    {
+      "id": "personal-copy:evidence-count-24-item-17",
+      "flow_id": "flow-evidence-count-24",
+      "section_id": "section-evidence-count-24",
+      "title": "17번째 실제 저장 항목",
+      "description": "17번째 항목 설명",
+      "type": "todo",
+      "role": "action",
+      "order": 16
+    },
+    {
+      "id": "personal-copy:evidence-count-24-item-18",
+      "flow_id": "flow-evidence-count-24",
+      "section_id": "section-evidence-count-24",
+      "title": "18번째 실제 저장 항목",
+      "description": "18번째 항목 설명",
+      "type": "todo",
+      "role": "action",
+      "order": 17
+    },
+    {
+      "id": "personal-copy:evidence-count-24-item-19",
+      "flow_id": "flow-evidence-count-24",
+      "section_id": "section-evidence-count-24",
+      "title": "19번째 실제 저장 항목",
+      "description": "19번째 항목 설명",
+      "type": "todo",
+      "role": "action",
+      "order": 18
+    },
+    {
+      "id": "personal-copy:evidence-count-24-item-20",
+      "flow_id": "flow-evidence-count-24",
+      "section_id": "section-evidence-count-24",
+      "title": "20번째 실제 저장 항목",
+      "description": "20번째 항목 설명",
+      "type": "todo",
+      "role": "action",
+      "order": 19
+    },
+    {
+      "id": "personal-copy:evidence-count-24-item-21",
+      "flow_id": "flow-evidence-count-24",
+      "section_id": "section-evidence-count-24",
+      "title": "21번째 실제 저장 항목",
+      "description": "21번째 항목 설명",
+      "type": "todo",
+      "role": "action",
+      "order": 20
+    },
+    {
+      "id": "personal-copy:evidence-count-24-item-22",
+      "flow_id": "flow-evidence-count-24",
+      "section_id": "section-evidence-count-24",
+      "title": "22번째 실제 저장 항목",
+      "description": "22번째 항목 설명",
+      "type": "todo",
+      "role": "action",
+      "order": 21
+    },
+    {
+      "id": "personal-copy:evidence-count-24-item-23",
+      "flow_id": "flow-evidence-count-24",
+      "section_id": "section-evidence-count-24",
+      "title": "23번째 실제 저장 항목",
+      "description": "23번째 항목 설명",
+      "type": "todo",
+      "role": "action",
+      "order": 22
+    },
+    {
+      "id": "personal-copy:evidence-count-24-item-24",
+      "flow_id": "flow-evidence-count-24",
+      "section_id": "section-evidence-count-24",
+      "title": "24번째 실제 저장 항목",
+      "description": "24번째 항목 설명",
+      "type": "todo",
+      "role": "action",
+      "order": 23
+    }
+  ],
+  "itemDetails": [
+    {
+      "item_id": "personal-copy:evidence-count-24-item-01",
+      "why": "첫째 줄: 계약서의 \"특약\"과 사진 #1 확인 ✅\n둘째 줄:\t탭 값, 쉼표, 세미콜론; 역슬래시 \\ 보존\n셋째 줄: <완료>와 개인 기록 분리 🚚",
+      "how": "첫째 줄: 계약서의 \"특약\"과 사진 #1 확인 ✅\n둘째 줄:\t탭 값, 쉼표, 세미콜론; 역슬래시 \\ 보존\n셋째 줄: <완료>와 개인 기록 분리 🚚",
+      "completion_criteria": "계약서·사진·열쇠🔑 가족과 함께 마지막으로 아주 길게 확인하기 — \"특수\"\t탭 \\ 역슬래시\n필수 #1 & #2, 따옴표 \"완료\", emoji 🧾"
+    },
+    {
+      "item_id": "personal-copy:evidence-count-24-item-02",
+      "why": "2번째 이유",
+      "how": "2번째 방법",
+      "completion_criteria": "2번째 항목을 확인했습니다."
+    },
+    {
+      "item_id": "personal-copy:evidence-count-24-item-03",
+      "why": "3번째 이유",
+      "how": "3번째 방법",
+      "completion_criteria": "3번째 항목을 확인했습니다."
+    },
+    {
+      "item_id": "personal-copy:evidence-count-24-item-04",
+      "why": "4번째 이유",
+      "how": "4번째 방법",
+      "completion_criteria": "4번째 항목을 확인했습니다."
+    },
+    {
+      "item_id": "personal-copy:evidence-count-24-item-05",
+      "why": "5번째 이유",
+      "how": "5번째 방법",
+      "completion_criteria": "5번째 항목을 확인했습니다."
+    },
+    {
+      "item_id": "personal-copy:evidence-count-24-item-06",
+      "why": "6번째 이유",
+      "how": "6번째 방법",
+      "completion_criteria": "6번째 항목을 확인했습니다."
+    },
+    {
+      "item_id": "personal-copy:evidence-count-24-item-07",
+      "why": "7번째 이유",
+      "how": "7번째 방법",
+      "completion_criteria": "7번째 항목을 확인했습니다."
+    },
+    {
+      "item_id": "personal-copy:evidence-count-24-item-08",
+      "why": "8번째 이유",
+      "how": "8번째 방법",
+      "completion_criteria": "8번째 항목을 확인했습니다."
+    },
+    {
+      "item_id": "personal-copy:evidence-count-24-item-09",
+      "why": "9번째 이유",
+      "how": "9번째 방법",
+      "completion_criteria": "9번째 항목을 확인했습니다."
+    },
+    {
+      "item_id": "personal-copy:evidence-count-24-item-10",
+      "why": "10번째 이유",
+      "how": "10번째 방법",
+      "completion_criteria": "10번째 항목을 확인했습니다."
+    },
+    {
+      "item_id": "personal-copy:evidence-count-24-item-11",
+      "why": "11번째 이유",
+      "how": "11번째 방법",
+      "completion_criteria": "11번째 항목을 확인했습니다."
+    },
+    {
+      "item_id": "personal-copy:evidence-count-24-item-12",
+      "why": "12번째 이유",
+      "how": "12번째 방법",
+      "completion_criteria": "12번째 항목을 확인했습니다."
+    },
+    {
+      "item_id": "personal-copy:evidence-count-24-item-13",
+      "why": "13번째 이유",
+      "how": "13번째 방법",
+      "completion_criteria": "13번째 항목을 확인했습니다."
+    },
+    {
+      "item_id": "personal-copy:evidence-count-24-item-14",
+      "why": "14번째 이유",
+      "how": "14번째 방법",
+      "completion_criteria": "14번째 항목을 확인했습니다."
+    },
+    {
+      "item_id": "personal-copy:evidence-count-24-item-15",
+      "why": "15번째 이유",
+      "how": "15번째 방법",
+      "completion_criteria": "15번째 항목을 확인했습니다."
+    },
+    {
+      "item_id": "personal-copy:evidence-count-24-item-16",
+      "why": "16번째 이유",
+      "how": "16번째 방법",
+      "completion_criteria": "16번째 항목을 확인했습니다."
+    },
+    {
+      "item_id": "personal-copy:evidence-count-24-item-17",
+      "why": "17번째 이유",
+      "how": "17번째 방법",
+      "completion_criteria": "17번째 항목을 확인했습니다."
+    },
+    {
+      "item_id": "personal-copy:evidence-count-24-item-18",
+      "why": "18번째 이유",
+      "how": "18번째 방법",
+      "completion_criteria": "18번째 항목을 확인했습니다."
+    },
+    {
+      "item_id": "personal-copy:evidence-count-24-item-19",
+      "why": "19번째 이유",
+      "how": "19번째 방법",
+      "completion_criteria": "19번째 항목을 확인했습니다."
+    },
+    {
+      "item_id": "personal-copy:evidence-count-24-item-20",
+      "why": "20번째 이유",
+      "how": "20번째 방법",
+      "completion_criteria": "20번째 항목을 확인했습니다."
+    },
+    {
+      "item_id": "personal-copy:evidence-count-24-item-21",
+      "why": "21번째 이유",
+      "how": "21번째 방법",
+      "completion_criteria": "21번째 항목을 확인했습니다."
+    },
+    {
+      "item_id": "personal-copy:evidence-count-24-item-22",
+      "why": "22번째 이유",
+      "how": "22번째 방법",
+      "completion_criteria": "22번째 항목을 확인했습니다."
+    },
+    {
+      "item_id": "personal-copy:evidence-count-24-item-23",
+      "why": "23번째 이유",
+      "how": "23번째 방법",
+      "completion_criteria": "23번째 항목을 확인했습니다."
+    },
+    {
+      "item_id": "personal-copy:evidence-count-24-item-24",
+      "why": "24번째 이유",
+      "how": "24번째 방법",
+      "completion_criteria": "24번째 항목을 확인했습니다."
+    }
+  ],
+  "repeatRules": []
+}

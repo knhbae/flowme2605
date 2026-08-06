@@ -1,0 +1,235 @@
+{
+  "scenarioId": "S15",
+  "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+  "orderedStateIds": [
+    "mobile_390x844",
+    "tablet_1024x768",
+    "desktop_1440x1000",
+    "reflow_proxy_720x500"
+  ],
+  "fullScreenFiles": [
+    {
+      "stateId": "mobile_390x844",
+      "relativePath": "S15/01-my-390x844-full.png",
+      "bytes": 61268,
+      "sha256": "6d61850daab279e97111953abfc1bf9021b65d53eef80929dddd4af262d0a430",
+      "mime": "image/png",
+      "route": "http://127.0.0.1:3114/my?demo=ux20"
+    },
+    {
+      "stateId": "tablet_1024x768",
+      "relativePath": "S15/02-my-1024x768-full.png",
+      "bytes": 66131,
+      "sha256": "1fb7c63b85ba57ce5ff256f226d3a70cee767826bf69aa55df9e4131625bdf9a",
+      "mime": "image/png",
+      "route": "http://127.0.0.1:3114/my?demo=ux20"
+    },
+    {
+      "stateId": "desktop_1440x1000",
+      "relativePath": "S15/03-my-1440x1000-full.png",
+      "bytes": 91347,
+      "sha256": "625751dd8b2c9fceb2cbed50ef322beb1b23b4dbbbec3b4ebfba7772a3ae9cea",
+      "mime": "image/png",
+      "route": "http://127.0.0.1:3114/my?demo=ux20"
+    },
+    {
+      "stateId": "reflow_proxy_720x500",
+      "relativePath": "S15/04-my-720x500-reflow-proxy-full.png",
+      "bytes": 63887,
+      "sha256": "ccc47133dc77e10c5346c80c6f18a623299040c08fa2673abdd07b45a80aef48",
+      "mime": "image/png",
+      "route": "http://127.0.0.1:3114/my?demo=ux20"
+    }
+  ],
+  "actionSequence": [
+    "capture same 20-plan route at 390, 1024, 1440, and 720x500 reflow proxy"
+  ],
+  "gaps": [
+    "Actual browser 200% zoom was not exercised; 720x500 is a reflow proxy only."
+  ],
+  "routeState": "http://127.0.0.1:3114/my?demo=ux20",
+  "capturedAtKst": "2026-08-06T10:14:18+09:00",
+  "consoleNetworkStatus": {
+    "consoleErrors": 0,
+    "failedRequests": 6,
+    "expectedNavigationOrPrefetchAborts": 6,
+    "unexpectedFailedRequests": 0,
+    "httpErrors": 0
+  },
+  "pageQuality": {
+    "viewport": {
+      "width": 720,
+      "height": 500,
+      "devicePixelRatio": 1
+    },
+    "scroll": {
+      "documentWidth": 720,
+      "documentHeight": 1279,
+      "horizontalOverflow": 0
+    },
+    "unnamedInteractiveCount": 0,
+    "horizontallyClippedInteractiveCount": 0,
+    "brokenRelations": [],
+    "replacementCharacterCount": 0,
+    "visibleInteractiveCount": 25
+  },
+  "seedId": "my-demo-ux20",
+  "seedSha256": "94ee934079874a649894a9bd20f8c41104d7c2c26e9ffeae27e64d047549fefe",
+  "viewportInput": [
+    {
+      "state": "mobile_390x844",
+      "width": 390,
+      "height": 844,
+      "zoom": 1
+    },
+    {
+      "state": "tablet_1024x768",
+      "width": 1024,
+      "height": 768,
+      "zoom": 1
+    },
+    {
+      "state": "desktop_1440x1000",
+      "width": 1440,
+      "height": 1000,
+      "zoom": 1
+    },
+    {
+      "state": "reflow_proxy_720x500",
+      "width": 720,
+      "height": 500,
+      "zoom": 1
+    }
+  ],
+  "viewportParity": {
+    "mobile_390x844": {
+      "route": "http://127.0.0.1:3114/my?demo=ux20",
+      "q3Copy": "on",
+      "quality": {
+        "viewport": {
+          "width": 390,
+          "height": 844,
+          "devicePixelRatio": 1
+        },
+        "scroll": {
+          "documentWidth": 390,
+          "documentHeight": 1301,
+          "horizontalOverflow": 0
+        },
+        "unnamedInteractiveCount": 0,
+        "horizontallyClippedInteractiveCount": 0,
+        "brokenRelations": [],
+        "replacementCharacterCount": 0,
+        "visibleInteractiveCount": 25
+      },
+      "geometry": {
+        "fixedOrSticky": [
+          {
+            "testId": "platform-nav",
+            "position": "sticky",
+            "rect": {
+              "x": 16,
+              "y": 16,
+              "width": 358,
+              "height": 69
+            }
+          },
+          {
+            "testId": "platform-mobile-tabs",
+            "position": "fixed",
+            "rect": {
+              "x": 12,
+              "y": 774,
+              "width": 366,
+              "height": 58
+            }
+          }
+        ]
+      },
+      "visiblePlanRows": 10
+    },
+    "tablet_1024x768": {
+      "route": "http://127.0.0.1:3114/my?demo=ux20",
+      "q3Copy": "on",
+      "quality": {
+        "viewport": {
+          "width": 1024,
+          "height": 768,
+          "devicePixelRatio": 1
+        },
+        "scroll": {
+          "documentWidth": 1024,
+          "documentHeight": 1161,
+          "horizontalOverflow": 0
+        },
+        "unnamedInteractiveCount": 0,
+        "horizontallyClippedInteractiveCount": 0,
+        "brokenRelations": [],
+        "replacementCharacterCount": 0,
+        "visibleInteractiveCount": 33
+      },
+      "geometry": {
+        "fixedOrSticky": []
+      },
+      "visiblePlanRows": 22
+    },
+    "desktop_1440x1000": {
+      "route": "http://127.0.0.1:3114/my?demo=ux20",
+      "q3Copy": "on",
+      "quality": {
+        "viewport": {
+          "width": 1440,
+          "height": 1000,
+          "devicePixelRatio": 1
+        },
+        "scroll": {
+          "documentWidth": 1440,
+          "documentHeight": 1259,
+          "horizontalOverflow": 0
+        },
+        "unnamedInteractiveCount": 0,
+        "horizontallyClippedInteractiveCount": 0,
+        "brokenRelations": [],
+        "replacementCharacterCount": 0,
+        "visibleInteractiveCount": 33
+      },
+      "geometry": {
+        "fixedOrSticky": []
+      },
+      "visiblePlanRows": 22
+    },
+    "reflow_proxy_720x500": {
+      "route": "http://127.0.0.1:3114/my?demo=ux20",
+      "q3Copy": "on",
+      "quality": {
+        "viewport": {
+          "width": 720,
+          "height": 500,
+          "devicePixelRatio": 1
+        },
+        "scroll": {
+          "documentWidth": 720,
+          "documentHeight": 1279,
+          "horizontalOverflow": 0
+        },
+        "unnamedInteractiveCount": 0,
+        "horizontallyClippedInteractiveCount": 0,
+        "brokenRelations": [],
+        "replacementCharacterCount": 0,
+        "visibleInteractiveCount": 25
+      },
+      "geometry": {
+        "fixedOrSticky": []
+      },
+      "visiblePlanRows": 10
+    }
+  },
+  "actualBrowserZoom200": "NOT_ASSESSED",
+  "reflowProxy": {
+    "width": 720,
+    "height": 500,
+    "claimBoundary": "proxy_not_browser_zoom"
+  },
+  "persistentWriteCount": 0,
+  "reviewerStatus": "LOCAL_REHEARSAL_WITH_NOT_ASSESSED"
+}

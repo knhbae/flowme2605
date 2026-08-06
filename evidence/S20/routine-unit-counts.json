@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "scenarioId": "S20",
+  "generatedAt": "2026-08-06T01:14:22.961Z",
+  "baseUrl": "http://127.0.0.1:3114",
+  "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+  "observedUsers": 0,
+  "sourceSnapshot": {
+    "head": "f97644abf379c46433847f44aa7bd4da7fadac4a",
+    "shortHead": "f97644abf379",
+    "branch": "codex/p35-round2-correction-pprime2-20260805",
+    "buildId": "T0QkChgscSgPog-0UdvY-",
+    "dirty": false,
+    "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+    "gitStatusSha256": "45afcb73d07550427bb5381ff77cd972cb9b80404c48da66846545bd5df1775a"
+  },
+  "title": "Routine projection with Item, recurrence-series, and VEVENT units kept separate",
+  "reviewerStatus": "CODEX_EXECUTED_LOCAL_REHEARSAL",
+  "deterministicArtifact": {
+    "filename": "routine-monthly-unit-separated.ics",
+    "mediaType": "text/calendar;charset=utf-8",
+    "bytes": 718,
+    "sha256": "e44d8a6f4bc0b7051bd0ff99b7d9dbf585c11a69ee19a59c77ced1f7fb4fe18d",
+    "unitCounts": {
+      "itemCount": 1,
+      "recurrenceSeriesCount": 1,
+      "veventCount": 1,
+      "projectionOutputCount": 1,
+      "artifactOutputCount": 1
+    },
+    "hasMonthlyRrule": true,
+    "parser": {
+      "lineEnding": "CRLF",
+      "endsWithCrLf": true,
+      "calendarCount": 1,
+      "eventCount": 1,
+      "events": [
+        {
+          "UID": "UID:washer-tub-monthly-series@flowme.local",
+          "DTSTART": "DTSTART;TZID=Asia/Seoul:20310901T100000",
+          "DTEND": "DTEND;TZID=Asia/Seoul:20310901T113000",
+          "SUMMARY": "SUMMARY:세탁조 클리너로 통세척 실행",
+          "STATUS": "STATUS:TENTATIVE",
+          "RRULE": "RRULE:FREQ=MONTHLY"
+        }
+      ]
+    }
+  },
+  "currentUiDownloadCrossCheck": {
+    "status": "CAPTURED_CURRENT_RUNTIME",
+    "filename": "세탁기-통세척-월간-관리-all-calendar.ics",
+    "itemCount": "3",
+    "seriesCount": "1",
+    "veventCount": 1,
+    "rawSha256": "03c5571411dd1354a2302d423d2a6e9e33e36b036632dee811a58e9bc559e3b7"
+  },
+  "unitSemantics": {
+    "item": "One effective user action.",
+    "recurrenceSeries": "One recurrence rule governing occurrences.",
+    "vevent": "One serialized calendar VEVENT component in this artifact.",
+    "warning": "These units are intentionally not interchangeable."
+  }
+}

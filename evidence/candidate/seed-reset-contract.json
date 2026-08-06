@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "contract": "P35_ROUND2_INDEPENDENT_EVIDENCE_SEED_RESET",
+  "captureCommand": "npm.cmd run evidence:p35-round2:rehearse",
+  "result": "THREE_GROUP_MANIFESTS_CAPTURED",
+  "groupManifestCount": 3,
+  "baseUrl": "http://127.0.0.1:3114",
+  "isolation": {
+    "browser": "Each scenario/variant collector owns an isolated Playwright BrowserContext.",
+    "storage": "Collectors explicitly clear or seed localStorage/sessionStorage at their declared start state.",
+    "network": "Runtime is the candidate BUILD_ID served at FLOWME_EVIDENCE_BASE_URL.",
+    "mutationBoundary": "Evidence-only failure injections are labeled in state JSON and never mutate product source."
+  },
+  "collectors": [
+    {
+      "name": "capture-s01-s08.mjs",
+      "repoRelativePath": "scripts/content-audit/p35-round2-independent-evidence/capture-s01-s08.mjs",
+      "byteLength": 58785,
+      "sha256": "784f61b70d966d21ee41a3f40094a5d282f5b2449cf154210b94e35eaa06e17e"
+    },
+    {
+      "name": "capture-s09-s16.mjs",
+      "repoRelativePath": "scripts/content-audit/p35-round2-independent-evidence/capture-s09-s16.mjs",
+      "byteLength": 60714,
+      "sha256": "5fdadcb317ed02834a08451fcf36eff2b5d19c9169fd2ccb485e8d5dadf30992"
+    },
+    {
+      "name": "capture-s17-s23.mjs",
+      "repoRelativePath": "scripts/content-audit/p35-round2-independent-evidence/capture-s17-s23.mjs",
+      "byteLength": 54242,
+      "sha256": "ea31f4de9f0d4c4878f40ad0b0a6ad9e5475cb518994f85a169be9e2fe7490d7"
+    }
+  ],
+  "groupManifests": [
+    {
+      "manifest": "group-manifest-s01-s08.json",
+      "sha256": "c780c3d006d496823b9e1218028920ded9f09e784a3073cb2f9e39ffd19bbeb0",
+      "byteLength": 47729
+    },
+    {
+      "manifest": "group-manifest-s09-s16.json",
+      "sha256": "b26c9be20383454235bd4f62877cb1c45c2d871cf2dabe08fbd84177c40bbc74",
+      "byteLength": 22211
+    },
+    {
+      "manifest": "group-manifest-s17-s23.json",
+      "sha256": "0903f2176ba88ea40a8dbb800bb04019530e6cba0934109291ce1a7575d6fe02",
+      "byteLength": 15408
+    }
+  ]
+}

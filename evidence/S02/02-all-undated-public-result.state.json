@@ -1,0 +1,643 @@
+{
+  "capturedAt": "2026-08-06T01:13:19.077Z",
+  "route": "http://127.0.0.1:3114/f/vehicle-inspection-prep",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "headings": [
+    {
+      "tag": "h1",
+      "level": null,
+      "text": "자동차검사 D-14 준비",
+      "testId": null
+    },
+    {
+      "tag": "h2",
+      "level": null,
+      "text": "현재 계획 · 10개",
+      "testId": null
+    },
+    {
+      "tag": "h2",
+      "level": null,
+      "text": "체크리스트 · 10개",
+      "testId": null
+    },
+    {
+      "tag": "h3",
+      "level": null,
+      "text": "입력이 더 필요한 결과",
+      "testId": null
+    }
+  ],
+  "actions": [
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "FLOW계획 찾기",
+      "accessibleName": "FLOW계획 찾기",
+      "testId": null,
+      "href": "/flows",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "a",
+      "type": null,
+      "role": null,
+      "text": "TS한국교통안전공단 정기검사 대상·기준·유효기간 안내",
+      "accessibleName": "TS한국교통안전공단 정기검사 대상·기준·유효기간 안내",
+      "testId": null,
+      "href": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "선택한 결과체크리스트 · 10개",
+      "accessibleName": "선택한 결과체크리스트 · 10개",
+      "testId": "flow-capability-result-choice",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": "true"
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "다른 결과시트 · 10행",
+      "accessibleName": "다른 결과시트 · 10행",
+      "testId": "flow-capability-result-choice",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": "false"
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "다른 결과메모 · 10개",
+      "accessibleName": "다른 결과메모 · 10개",
+      "testId": "flow-capability-result-choice",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": "false"
+    },
+    {
+      "tag": "summary",
+      "type": null,
+      "role": null,
+      "text": "나머지 7개 보기⌄",
+      "accessibleName": "나머지 7개 보기⌄",
+      "testId": "flow-capability-artifact-preview-expand",
+      "href": null,
+      "value": null,
+      "checked": null,
+      "disabled": null,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "설정",
+      "accessibleName": "설정",
+      "testId": "flow-capability-conditional-edit",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "계획 수정",
+      "accessibleName": "계획 수정",
+      "testId": "public-flow-adjust-entry-mobile",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    },
+    {
+      "tag": "button",
+      "type": "button",
+      "role": null,
+      "text": "내 계획에 저장",
+      "accessibleName": "내 계획에 저장",
+      "testId": "public-flow-save-primary-mobile",
+      "href": null,
+      "value": "",
+      "checked": null,
+      "disabled": false,
+      "expanded": null,
+      "pressed": null
+    }
+  ],
+  "validation": [],
+  "geometry": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "document": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 1124
+    },
+    "horizontalOverflow": 0
+  },
+  "importantNodes": [
+    {
+      "testId": "flow-public-shell",
+      "data": {
+        "data-testid": "flow-public-shell"
+      }
+    },
+    {
+      "testId": "public-flow-hero",
+      "data": {
+        "data-testid": "public-flow-hero",
+        "data-visual-structure": "artifact-first",
+        "data-experience-architecture": "p35-result-first",
+        "data-p29-marker": "P29-SAVE-BEFORE-PRIMARY-RESULT",
+        "data-p30-marker": "P30-SAVE-BEFORE-SINGLE-DECISION",
+        "data-p35-marker": "P35-PUBLIC-RESULT-FIRST",
+        "data-flow-anatomy": "save-before"
+      }
+    },
+    {
+      "testId": "flow-save-before-primary-result",
+      "data": {
+        "data-testid": "flow-save-before-primary-result",
+        "data-flow-identity-slot": "primary-result"
+      }
+    },
+    {
+      "testId": "public-flow-capability-result",
+      "data": {
+        "data-testid": "public-flow-capability-result",
+        "data-capability-lifecycle": "public_preview",
+        "data-capability-state": "결과 미리보기",
+        "data-capability-scope": "현재 계획 · 10개",
+        "data-capability-receipt": "",
+        "data-capability-snapshot-kind": "effective_authoring",
+        "data-capability-snapshot-version": "2026-07-12T00:00:00.000Z|personal:1fb7265c|execution:ee52f9ed",
+        "data-capability-primary-destination": "checklist",
+        "data-capability-selected-destination": "checklist",
+        "data-capability-manifest-hash": "29b8c1ce",
+        "data-capability-manifest-item-ids": "flow-vehicle-inspection-prep-item-0,flow-vehicle-inspection-prep-item-1,flow-vehicle-inspection-prep-item-2,flow-vehicle-inspection-prep-item-3,flow-vehicle-inspection-prep-item-4,flow-vehicle-inspection-prep-item-5,flow-vehicle-inspection-prep-item-6,flow-vehicle-inspection-prep-item-7,flow-vehicle-inspection-prep-item-8,flow-vehicle-inspection-prep-item-9",
+        "data-capability-output-count": "10",
+        "data-capability-primary-action": "save-to-personal-plan",
+        "data-capability-primary-action-owner": "public_save_action",
+        "data-capability-secondary-actions": "edit-public-draft"
+      }
+    },
+    {
+      "testId": "flow-capability-immediate-results",
+      "data": {
+        "data-testid": "flow-capability-immediate-results"
+      }
+    },
+    {
+      "testId": "flow-capability-result-choice",
+      "data": {
+        "data-testid": "flow-capability-result-choice",
+        "data-capability-candidate-role": "primary",
+        "data-capability-candidate-state": "available",
+        "data-capability-destination": "checklist",
+        "data-capability-immediate": "true",
+        "data-capability-snapshot-kind": "effective_authoring",
+        "data-capability-manifest-hash": "29b8c1ce",
+        "data-capability-manifest-item-ids": "flow-vehicle-inspection-prep-item-0,flow-vehicle-inspection-prep-item-1,flow-vehicle-inspection-prep-item-2,flow-vehicle-inspection-prep-item-3,flow-vehicle-inspection-prep-item-4,flow-vehicle-inspection-prep-item-5,flow-vehicle-inspection-prep-item-6,flow-vehicle-inspection-prep-item-7,flow-vehicle-inspection-prep-item-8,flow-vehicle-inspection-prep-item-9",
+        "data-capability-manifest-requested-item-ids": "flow-vehicle-inspection-prep-item-0,flow-vehicle-inspection-prep-item-1,flow-vehicle-inspection-prep-item-2,flow-vehicle-inspection-prep-item-3,flow-vehicle-inspection-prep-item-4,flow-vehicle-inspection-prep-item-5,flow-vehicle-inspection-prep-item-6,flow-vehicle-inspection-prep-item-7,flow-vehicle-inspection-prep-item-8,flow-vehicle-inspection-prep-item-9",
+        "data-capability-output-count": "10",
+        "data-capability-expected-output-count": "10"
+      }
+    },
+    {
+      "testId": "flow-capability-result-choice",
+      "data": {
+        "data-testid": "flow-capability-result-choice",
+        "data-capability-candidate-role": "available",
+        "data-capability-candidate-state": "available",
+        "data-capability-destination": "sheet",
+        "data-capability-immediate": "true",
+        "data-capability-snapshot-kind": "effective_authoring",
+        "data-capability-manifest-hash": "8693aa65",
+        "data-capability-manifest-item-ids": "flow-vehicle-inspection-prep-item-0,flow-vehicle-inspection-prep-item-1,flow-vehicle-inspection-prep-item-2,flow-vehicle-inspection-prep-item-3,flow-vehicle-inspection-prep-item-4,flow-vehicle-inspection-prep-item-5,flow-vehicle-inspection-prep-item-6,flow-vehicle-inspection-prep-item-7,flow-vehicle-inspection-prep-item-8,flow-vehicle-inspection-prep-item-9",
+        "data-capability-manifest-requested-item-ids": "flow-vehicle-inspection-prep-item-0,flow-vehicle-inspection-prep-item-1,flow-vehicle-inspection-prep-item-2,flow-vehicle-inspection-prep-item-3,flow-vehicle-inspection-prep-item-4,flow-vehicle-inspection-prep-item-5,flow-vehicle-inspection-prep-item-6,flow-vehicle-inspection-prep-item-7,flow-vehicle-inspection-prep-item-8,flow-vehicle-inspection-prep-item-9",
+        "data-capability-output-count": "10",
+        "data-capability-expected-output-count": "10"
+      }
+    },
+    {
+      "testId": "flow-capability-result-choice",
+      "data": {
+        "data-testid": "flow-capability-result-choice",
+        "data-capability-candidate-role": "available",
+        "data-capability-candidate-state": "available",
+        "data-capability-destination": "memo",
+        "data-capability-immediate": "true",
+        "data-capability-snapshot-kind": "effective_authoring",
+        "data-capability-manifest-hash": "a09f4e5c",
+        "data-capability-manifest-item-ids": "flow-vehicle-inspection-prep-item-0,flow-vehicle-inspection-prep-item-1,flow-vehicle-inspection-prep-item-2,flow-vehicle-inspection-prep-item-3,flow-vehicle-inspection-prep-item-4,flow-vehicle-inspection-prep-item-5,flow-vehicle-inspection-prep-item-6,flow-vehicle-inspection-prep-item-7,flow-vehicle-inspection-prep-item-8,flow-vehicle-inspection-prep-item-9",
+        "data-capability-manifest-requested-item-ids": "flow-vehicle-inspection-prep-item-0,flow-vehicle-inspection-prep-item-1,flow-vehicle-inspection-prep-item-2,flow-vehicle-inspection-prep-item-3,flow-vehicle-inspection-prep-item-4,flow-vehicle-inspection-prep-item-5,flow-vehicle-inspection-prep-item-6,flow-vehicle-inspection-prep-item-7,flow-vehicle-inspection-prep-item-8,flow-vehicle-inspection-prep-item-9",
+        "data-capability-output-count": "10",
+        "data-capability-expected-output-count": "10"
+      }
+    },
+    {
+      "testId": "flow-capability-selected-preview",
+      "data": {
+        "data-testid": "flow-capability-selected-preview",
+        "data-capability-destination": "checklist",
+        "data-capability-manifest-hash": "29b8c1ce",
+        "data-capability-manifest-item-ids": "flow-vehicle-inspection-prep-item-0,flow-vehicle-inspection-prep-item-1,flow-vehicle-inspection-prep-item-2,flow-vehicle-inspection-prep-item-3,flow-vehicle-inspection-prep-item-4,flow-vehicle-inspection-prep-item-5,flow-vehicle-inspection-prep-item-6,flow-vehicle-inspection-prep-item-7,flow-vehicle-inspection-prep-item-8,flow-vehicle-inspection-prep-item-9",
+        "data-capability-output-count": "10"
+      }
+    },
+    {
+      "testId": "flow-capability-artifact-preview",
+      "data": {
+        "data-testid": "flow-capability-artifact-preview",
+        "data-primary-shape": "checklist",
+        "data-selected-shape": "checklist",
+        "data-p29-marker": "P29-ARTIFACT-RECOMMENDATION",
+        "data-p35-marker": "P35-PUBLIC-RESULT-FIRST",
+        "data-flow-anatomy": "artifact-result"
+      }
+    },
+    {
+      "testId": "flow-artifact-result-summary",
+      "data": {
+        "data-testid": "flow-artifact-result-summary"
+      }
+    },
+    {
+      "testId": "flow-artifact-checklist-preview",
+      "data": {
+        "data-testid": "flow-artifact-checklist-preview"
+      }
+    },
+    {
+      "testId": "flow-capability-artifact-preview-row",
+      "data": {
+        "data-testid": "flow-capability-artifact-preview-row",
+        "data-item-id": "flow-vehicle-inspection-prep-item-0",
+        "data-flow-row-mode": "preview",
+        "data-completion-control": "false",
+        "data-p35-r9-marker": "P35-R9-SHARED-EXECUTION-ROW",
+        "data-p35-r9-preview-marker": "P35-R9-PREVIEW-NOT-COMPLETION"
+      }
+    },
+    {
+      "testId": "flow-capability-artifact-preview-row",
+      "data": {
+        "data-testid": "flow-capability-artifact-preview-row",
+        "data-item-id": "flow-vehicle-inspection-prep-item-1",
+        "data-flow-row-mode": "preview",
+        "data-completion-control": "false",
+        "data-p35-r9-marker": "P35-R9-SHARED-EXECUTION-ROW",
+        "data-p35-r9-preview-marker": "P35-R9-PREVIEW-NOT-COMPLETION"
+      }
+    },
+    {
+      "testId": "flow-capability-artifact-preview-row",
+      "data": {
+        "data-testid": "flow-capability-artifact-preview-row",
+        "data-item-id": "flow-vehicle-inspection-prep-item-2",
+        "data-flow-row-mode": "preview",
+        "data-completion-control": "false",
+        "data-p35-r9-marker": "P35-R9-SHARED-EXECUTION-ROW",
+        "data-p35-r9-preview-marker": "P35-R9-PREVIEW-NOT-COMPLETION"
+      }
+    },
+    {
+      "testId": "flow-capability-artifact-preview-expand",
+      "data": {
+        "data-testid": "flow-capability-artifact-preview-expand"
+      }
+    },
+    {
+      "testId": "flow-artifact-checklist-preview",
+      "data": {
+        "data-testid": "flow-artifact-checklist-preview"
+      }
+    },
+    {
+      "testId": "flow-capability-artifact-preview-row",
+      "data": {
+        "data-testid": "flow-capability-artifact-preview-row",
+        "data-item-id": "flow-vehicle-inspection-prep-item-3",
+        "data-flow-row-mode": "preview",
+        "data-completion-control": "false",
+        "data-p35-r9-marker": "P35-R9-SHARED-EXECUTION-ROW",
+        "data-p35-r9-preview-marker": "P35-R9-PREVIEW-NOT-COMPLETION"
+      }
+    },
+    {
+      "testId": "flow-capability-artifact-preview-row",
+      "data": {
+        "data-testid": "flow-capability-artifact-preview-row",
+        "data-item-id": "flow-vehicle-inspection-prep-item-4",
+        "data-flow-row-mode": "preview",
+        "data-completion-control": "false",
+        "data-p35-r9-marker": "P35-R9-SHARED-EXECUTION-ROW",
+        "data-p35-r9-preview-marker": "P35-R9-PREVIEW-NOT-COMPLETION"
+      }
+    },
+    {
+      "testId": "flow-capability-artifact-preview-row",
+      "data": {
+        "data-testid": "flow-capability-artifact-preview-row",
+        "data-item-id": "flow-vehicle-inspection-prep-item-5",
+        "data-flow-row-mode": "preview",
+        "data-completion-control": "false",
+        "data-p35-r9-marker": "P35-R9-SHARED-EXECUTION-ROW",
+        "data-p35-r9-preview-marker": "P35-R9-PREVIEW-NOT-COMPLETION"
+      }
+    },
+    {
+      "testId": "flow-capability-artifact-preview-row",
+      "data": {
+        "data-testid": "flow-capability-artifact-preview-row",
+        "data-item-id": "flow-vehicle-inspection-prep-item-6",
+        "data-flow-row-mode": "preview",
+        "data-completion-control": "false",
+        "data-p35-r9-marker": "P35-R9-SHARED-EXECUTION-ROW",
+        "data-p35-r9-preview-marker": "P35-R9-PREVIEW-NOT-COMPLETION"
+      }
+    },
+    {
+      "testId": "flow-capability-artifact-preview-row",
+      "data": {
+        "data-testid": "flow-capability-artifact-preview-row",
+        "data-item-id": "flow-vehicle-inspection-prep-item-7",
+        "data-flow-row-mode": "preview",
+        "data-completion-control": "false",
+        "data-p35-r9-marker": "P35-R9-SHARED-EXECUTION-ROW",
+        "data-p35-r9-preview-marker": "P35-R9-PREVIEW-NOT-COMPLETION"
+      }
+    },
+    {
+      "testId": "flow-capability-artifact-preview-row",
+      "data": {
+        "data-testid": "flow-capability-artifact-preview-row",
+        "data-item-id": "flow-vehicle-inspection-prep-item-8",
+        "data-flow-row-mode": "preview",
+        "data-completion-control": "false",
+        "data-p35-r9-marker": "P35-R9-SHARED-EXECUTION-ROW",
+        "data-p35-r9-preview-marker": "P35-R9-PREVIEW-NOT-COMPLETION"
+      }
+    },
+    {
+      "testId": "flow-capability-artifact-preview-row",
+      "data": {
+        "data-testid": "flow-capability-artifact-preview-row",
+        "data-item-id": "flow-vehicle-inspection-prep-item-9",
+        "data-flow-row-mode": "preview",
+        "data-completion-control": "false",
+        "data-p35-r9-marker": "P35-R9-SHARED-EXECUTION-ROW",
+        "data-p35-r9-preview-marker": "P35-R9-PREVIEW-NOT-COMPLETION"
+      }
+    },
+    {
+      "testId": "flow-capability-conditional-result",
+      "data": {
+        "data-testid": "flow-capability-conditional-result",
+        "data-capability-candidate-role": "conditional",
+        "data-capability-candidate-state": "conditional",
+        "data-capability-destination": "calendar",
+        "data-capability-snapshot-kind": "effective_authoring",
+        "data-capability-manifest-hash": "fe0879fe",
+        "data-capability-manifest-item-ids": "",
+        "data-capability-manifest-held-item-ids": "flow-vehicle-inspection-prep-item-0,flow-vehicle-inspection-prep-item-1,flow-vehicle-inspection-prep-item-2,flow-vehicle-inspection-prep-item-3,flow-vehicle-inspection-prep-item-4,flow-vehicle-inspection-prep-item-5,flow-vehicle-inspection-prep-item-6,flow-vehicle-inspection-prep-item-7,flow-vehicle-inspection-prep-item-8,flow-vehicle-inspection-prep-item-9",
+        "data-capability-output-count": "0",
+        "data-capability-expected-output-count": "10"
+      }
+    },
+    {
+      "testId": "flow-capability-conditional-edit",
+      "data": {
+        "data-testid": "flow-capability-conditional-edit",
+        "data-condition-action": "edit_schedule",
+        "data-capability-destination": "calendar"
+      }
+    },
+    {
+      "testId": "flow-save-before-decision",
+      "data": {
+        "data-testid": "flow-save-before-decision"
+      }
+    },
+    {
+      "testId": "flow-warning-card",
+      "data": {
+        "data-testid": "flow-warning-card"
+      }
+    },
+    {
+      "testId": "public-flow-mobile-save-cta",
+      "data": {
+        "data-testid": "public-flow-mobile-save-cta",
+        "data-p29-marker": "P29-MOBILE-FOCUS-ORDER"
+      }
+    },
+    {
+      "testId": "public-flow-adjust-entry-mobile",
+      "data": {
+        "data-action-priority": "secondary",
+        "data-action-role": "edit-public-draft",
+        "data-action-owner": "shared-plan-editor",
+        "data-testid": "public-flow-adjust-entry-mobile"
+      }
+    },
+    {
+      "testId": "public-flow-save-primary-mobile",
+      "data": {
+        "data-testid": "public-flow-save-primary-mobile",
+        "data-action-priority": "primary",
+        "data-action-role": "save-to-personal-plan",
+        "data-action-owner": "public-save-action"
+      }
+    }
+  ],
+  "browserEvents": {
+    "consoleErrors": [],
+    "pageErrors": [],
+    "requestFailures": []
+  },
+  "evidenceClass": "ACTUAL_UI",
+  "dateShape": "all-undated",
+  "capabilityManifest": {
+    "lifecycle": "public_preview",
+    "snapshotKind": "effective_authoring",
+    "primaryDestination": "checklist",
+    "selectedDestination": "checklist",
+    "selected": {
+      "destination": "checklist",
+      "outputCount": "10",
+      "manifestItemIds": [
+        "flow-vehicle-inspection-prep-item-0",
+        "flow-vehicle-inspection-prep-item-1",
+        "flow-vehicle-inspection-prep-item-2",
+        "flow-vehicle-inspection-prep-item-3",
+        "flow-vehicle-inspection-prep-item-4",
+        "flow-vehicle-inspection-prep-item-5",
+        "flow-vehicle-inspection-prep-item-6",
+        "flow-vehicle-inspection-prep-item-7",
+        "flow-vehicle-inspection-prep-item-8",
+        "flow-vehicle-inspection-prep-item-9"
+      ],
+      "orderedRenderedRows": [
+        {
+          "index": 0,
+          "itemId": "flow-vehicle-inspection-prep-item-0",
+          "text": "·자동차검사 기간과 예약 가능일 확인하기D-14 검사 기간 확인완료 기준 · 차량별 검사 가능 기간과 예약 후보일을 기록했다."
+        },
+        {
+          "index": 1,
+          "itemId": "flow-vehicle-inspection-prep-item-1",
+          "text": "·차량번호와 예약 정보 확인하기D-14 검사 기간 확인완료 기준 · 차량번호와 검사소, 예약 시각을 바로 열 수 있게 저장했다."
+        },
+        {
+          "index": 2,
+          "itemId": "flow-vehicle-inspection-prep-item-2",
+          "text": "·가까운 검사소와 수수료 확인하기D-14 검사 기간 확인"
+        },
+        {
+          "index": 3,
+          "itemId": "flow-vehicle-inspection-prep-item-3",
+          "text": "·번호판과 차대번호 식별 상태 확인하기D-3 차량 상태 점검"
+        },
+        {
+          "index": 4,
+          "itemId": "flow-vehicle-inspection-prep-item-4",
+          "text": "·등화장치와 경음기 작동 확인하기D-3 차량 상태 점검완료 기준 · 주요 등화장치와 경음기가 정상 작동함을 확인했다."
+        },
+        {
+          "index": 5,
+          "itemId": "flow-vehicle-inspection-prep-item-5",
+          "text": "·타이어 마모와 공기압 확인하기D-3 차량 상태 점검"
+        },
+        {
+          "index": 6,
+          "itemId": "flow-vehicle-inspection-prep-item-6",
+          "text": "·오일 누유와 경고등 여부 기록하기D-3 차량 상태 점검"
+        },
+        {
+          "index": 7,
+          "itemId": "flow-vehicle-inspection-prep-item-7",
+          "text": "·예약 시간보다 여유 있게 검사소 도착하기D-Day 검사 당일"
+        },
+        {
+          "index": 8,
+          "itemId": "flow-vehicle-inspection-prep-item-8",
+          "text": "·접수와 수수료 결제 진행하기D-Day 검사 당일"
+        },
+        {
+          "index": 9,
+          "itemId": "flow-vehicle-inspection-prep-item-9",
+          "text": "·검사 결과와 재검사 필요 항목 기록하기D-Day 검사 당일완료 기준 · 검사 결과와 후속 조치 필요 여부를 기록했다."
+        }
+      ]
+    },
+    "candidates": [
+      {
+        "destination": "checklist",
+        "state": "available",
+        "role": "primary",
+        "outputCount": "10",
+        "expectedOutputCount": "10",
+        "manifestItemIds": [
+          "flow-vehicle-inspection-prep-item-0",
+          "flow-vehicle-inspection-prep-item-1",
+          "flow-vehicle-inspection-prep-item-2",
+          "flow-vehicle-inspection-prep-item-3",
+          "flow-vehicle-inspection-prep-item-4",
+          "flow-vehicle-inspection-prep-item-5",
+          "flow-vehicle-inspection-prep-item-6",
+          "flow-vehicle-inspection-prep-item-7",
+          "flow-vehicle-inspection-prep-item-8",
+          "flow-vehicle-inspection-prep-item-9"
+        ],
+        "text": "선택한 결과체크리스트 · 10개"
+      },
+      {
+        "destination": "sheet",
+        "state": "available",
+        "role": "available",
+        "outputCount": "10",
+        "expectedOutputCount": "10",
+        "manifestItemIds": [
+          "flow-vehicle-inspection-prep-item-0",
+          "flow-vehicle-inspection-prep-item-1",
+          "flow-vehicle-inspection-prep-item-2",
+          "flow-vehicle-inspection-prep-item-3",
+          "flow-vehicle-inspection-prep-item-4",
+          "flow-vehicle-inspection-prep-item-5",
+          "flow-vehicle-inspection-prep-item-6",
+          "flow-vehicle-inspection-prep-item-7",
+          "flow-vehicle-inspection-prep-item-8",
+          "flow-vehicle-inspection-prep-item-9"
+        ],
+        "text": "다른 결과시트 · 10행"
+      },
+      {
+        "destination": "memo",
+        "state": "available",
+        "role": "available",
+        "outputCount": "10",
+        "expectedOutputCount": "10",
+        "manifestItemIds": [
+          "flow-vehicle-inspection-prep-item-0",
+          "flow-vehicle-inspection-prep-item-1",
+          "flow-vehicle-inspection-prep-item-2",
+          "flow-vehicle-inspection-prep-item-3",
+          "flow-vehicle-inspection-prep-item-4",
+          "flow-vehicle-inspection-prep-item-5",
+          "flow-vehicle-inspection-prep-item-6",
+          "flow-vehicle-inspection-prep-item-7",
+          "flow-vehicle-inspection-prep-item-8",
+          "flow-vehicle-inspection-prep-item-9"
+        ],
+        "text": "다른 결과메모 · 10개"
+      },
+      {
+        "destination": "calendar",
+        "state": "conditional",
+        "role": "conditional",
+        "outputCount": "0",
+        "expectedOutputCount": "10",
+        "manifestItemIds": [],
+        "text": "캘린더날짜를 정하면 최대 10개설정"
+      }
+    ]
+  }
+}

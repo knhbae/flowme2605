@@ -1,0 +1,394 @@
+[
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "document",
+    "url": "http://127.0.0.1:3114/flows",
+    "status": 200,
+    "at": "2026-08-06T10:14:06+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/?_rsc=8BpXeL850Q_fMXfc",
+    "status": 200,
+    "at": "2026-08-06T10:14:07+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/calendar?_rsc=8BpXeL850Q_fMXfc",
+    "status": 200,
+    "at": "2026-08-06T10:14:07+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/my?_rsc=8BpXeL850Q_fMXfc",
+    "status": 200,
+    "at": "2026-08-06T10:14:07+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/flow-maps/middle-school-math-1?_rsc=8BpXeL850Q_fMXfc",
+    "status": 200,
+    "at": "2026-08-06T10:14:07+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/flow-maps/curated-opic-mock-course?_rsc=8BpXeL850Q_fMXfc",
+    "status": 200,
+    "at": "2026-08-06T10:14:07+09:00"
+  },
+  {
+    "kind": "failed",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/my?_rsc=8BpXeL850Q_fMXfc",
+    "failure": "net::ERR_ABORTED",
+    "at": "2026-08-06T10:14:07+09:00"
+  },
+  {
+    "kind": "failed",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/flow-maps/middle-school-math-1?_rsc=8BpXeL850Q_fMXfc",
+    "failure": "net::ERR_ABORTED",
+    "at": "2026-08-06T10:14:07+09:00"
+  },
+  {
+    "kind": "failed",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/flow-maps/curated-opic-mock-course?_rsc=8BpXeL850Q_fMXfc",
+    "failure": "net::ERR_ABORTED",
+    "at": "2026-08-06T10:14:07+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/flow-maps/curated-reading-routine-log?_rsc=8BpXeL850Q_fMXfc",
+    "status": 200,
+    "at": "2026-08-06T10:14:07+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "document",
+    "url": "http://127.0.0.1:3114/my?flow=moving-d30-basic",
+    "status": 200,
+    "at": "2026-08-06T10:14:07+09:00"
+  },
+  {
+    "kind": "failed",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/flow-maps/curated-reading-routine-log?_rsc=8BpXeL850Q_fMXfc",
+    "failure": "net::ERR_ABORTED",
+    "at": "2026-08-06T10:14:07+09:00"
+  },
+  {
+    "kind": "failed",
+    "method": "GET",
+    "resourceType": "script",
+    "url": "http://127.0.0.1:3114/_next/static/chunks/app/calendar/page-1d1511fd97c16ec8.js",
+    "failure": "net::ERR_ABORTED",
+    "at": "2026-08-06T10:14:07+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/?_rsc=FuB5XaSZlxv8XCkr",
+    "status": 200,
+    "at": "2026-08-06T10:14:07+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/flows?_rsc=FuB5XaSZlxv8XCkr",
+    "status": 200,
+    "at": "2026-08-06T10:14:07+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/calendar?_rsc=FuB5XaSZlxv8XCkr",
+    "status": 200,
+    "at": "2026-08-06T10:14:07+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "document",
+    "url": "http://127.0.0.1:3114/my?flow=moving-d30-basic",
+    "status": 200,
+    "at": "2026-08-06T10:14:07+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/?_rsc=FuB5XaSZlxv8XCkr",
+    "status": 200,
+    "at": "2026-08-06T10:14:08+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/flows?_rsc=FuB5XaSZlxv8XCkr",
+    "status": 200,
+    "at": "2026-08-06T10:14:08+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/calendar?_rsc=FuB5XaSZlxv8XCkr",
+    "status": 200,
+    "at": "2026-08-06T10:14:08+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "document",
+    "url": "http://127.0.0.1:3114/my?flow=moving-d30-basic",
+    "status": 200,
+    "at": "2026-08-06T10:14:08+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/?_rsc=FuB5XaSZlxv8XCkr",
+    "status": 200,
+    "at": "2026-08-06T10:14:08+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/flows?_rsc=FuB5XaSZlxv8XCkr",
+    "status": 200,
+    "at": "2026-08-06T10:14:08+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/calendar?_rsc=FuB5XaSZlxv8XCkr",
+    "status": 200,
+    "at": "2026-08-06T10:14:08+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "document",
+    "url": "http://127.0.0.1:3114/flows",
+    "status": 200,
+    "at": "2026-08-06T10:14:08+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/?_rsc=8BpXeL850Q_fMXfc",
+    "status": 200,
+    "at": "2026-08-06T10:14:08+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/my?_rsc=8BpXeL850Q_fMXfc",
+    "status": 200,
+    "at": "2026-08-06T10:14:08+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/calendar?_rsc=8BpXeL850Q_fMXfc",
+    "status": 200,
+    "at": "2026-08-06T10:14:08+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/flow-maps/middle-school-math-1?_rsc=8BpXeL850Q_fMXfc",
+    "status": 200,
+    "at": "2026-08-06T10:14:08+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/flow-maps/curated-opic-mock-course?_rsc=8BpXeL850Q_fMXfc",
+    "status": 200,
+    "at": "2026-08-06T10:14:08+09:00"
+  },
+  {
+    "kind": "failed",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/my?_rsc=8BpXeL850Q_fMXfc",
+    "failure": "net::ERR_ABORTED",
+    "at": "2026-08-06T10:14:08+09:00"
+  },
+  {
+    "kind": "failed",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/flow-maps/curated-opic-mock-course?_rsc=8BpXeL850Q_fMXfc",
+    "failure": "net::ERR_ABORTED",
+    "at": "2026-08-06T10:14:08+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/flow-maps/curated-reading-routine-log?_rsc=8BpXeL850Q_fMXfc",
+    "status": 200,
+    "at": "2026-08-06T10:14:08+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "document",
+    "url": "http://127.0.0.1:3114/my?flow=moving-d30-basic",
+    "status": 200,
+    "at": "2026-08-06T10:14:08+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/?_rsc=FuB5XaSZlxv8XCkr",
+    "status": 200,
+    "at": "2026-08-06T10:14:08+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/flows?_rsc=FuB5XaSZlxv8XCkr",
+    "status": 200,
+    "at": "2026-08-06T10:14:08+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/calendar?_rsc=FuB5XaSZlxv8XCkr",
+    "status": 200,
+    "at": "2026-08-06T10:14:08+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "document",
+    "url": "http://127.0.0.1:3114/flows",
+    "status": 200,
+    "at": "2026-08-06T10:14:09+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/?_rsc=8BpXeL850Q_fMXfc",
+    "status": 200,
+    "at": "2026-08-06T10:14:09+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/my?_rsc=8BpXeL850Q_fMXfc",
+    "status": 200,
+    "at": "2026-08-06T10:14:09+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/calendar?_rsc=8BpXeL850Q_fMXfc",
+    "status": 200,
+    "at": "2026-08-06T10:14:09+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/flow-maps/middle-school-math-1?_rsc=8BpXeL850Q_fMXfc",
+    "status": 200,
+    "at": "2026-08-06T10:14:09+09:00"
+  },
+  {
+    "kind": "failed",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/my?_rsc=8BpXeL850Q_fMXfc",
+    "failure": "net::ERR_ABORTED",
+    "at": "2026-08-06T10:14:09+09:00"
+  },
+  {
+    "kind": "failed",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/flow-maps/middle-school-math-1?_rsc=8BpXeL850Q_fMXfc",
+    "failure": "net::ERR_ABORTED",
+    "at": "2026-08-06T10:14:09+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/flow-maps/curated-opic-mock-course?_rsc=8BpXeL850Q_fMXfc",
+    "status": 200,
+    "at": "2026-08-06T10:14:09+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/flow-maps/curated-reading-routine-log?_rsc=8BpXeL850Q_fMXfc",
+    "status": 200,
+    "at": "2026-08-06T10:14:09+09:00"
+  },
+  {
+    "kind": "failed",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/flow-maps/curated-reading-routine-log?_rsc=8BpXeL850Q_fMXfc",
+    "failure": "net::ERR_ABORTED",
+    "at": "2026-08-06T10:14:09+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "document",
+    "url": "http://127.0.0.1:3114/f/moving-d30-basic",
+    "status": 200,
+    "at": "2026-08-06T10:14:09+09:00"
+  },
+  {
+    "kind": "response",
+    "method": "GET",
+    "resourceType": "fetch",
+    "url": "http://127.0.0.1:3114/flows?_rsc=acFW-JWP-BptFX9H",
+    "status": 200,
+    "at": "2026-08-06T10:14:09+09:00"
+  }
+]

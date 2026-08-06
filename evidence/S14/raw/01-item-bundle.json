@@ -1,0 +1,46 @@
+{
+  "flow": {
+    "id": "flow-evidence-count-1",
+    "slug": "personal-copy:evidence-count-1",
+    "title": "실제 저장 항목 1개 계획",
+    "description": "저장 데이터 1개 밀도 검증",
+    "category": "evidence",
+    "structure_type": "checklist",
+    "anchor_type": "none",
+    "status": "draft",
+    "primary_destination": "internal_check",
+    "source_status": "real",
+    "source_precision": "exact",
+    "created_at": "2031-08-05T00:00:00.000Z",
+    "updated_at": "2031-08-05T00:00:00.000Z"
+  },
+  "sections": [
+    {
+      "id": "section-evidence-count-1",
+      "flow_id": "flow-evidence-count-1",
+      "title": "항목 1개",
+      "order": 0
+    }
+  ],
+  "items": [
+    {
+      "id": "personal-copy:evidence-count-1-item-01",
+      "flow_id": "flow-evidence-count-1",
+      "section_id": "section-evidence-count-1",
+      "title": "계약서·사진·열쇠🔑 가족과 함께 마지막으로 아주 길게 확인하기 — \"특수\"\t탭 \\ 역슬래시",
+      "description": "첫째 줄: 계약서의 \"특약\"과 사진 #1 확인 ✅\n둘째 줄:\t탭 값, 쉼표, 세미콜론; 역슬래시 \\ 보존\n셋째 줄: <완료>와 개인 기록 분리 🚚",
+      "type": "todo",
+      "role": "action",
+      "order": 0
+    }
+  ],
+  "itemDetails": [
+    {
+      "item_id": "personal-copy:evidence-count-1-item-01",
+      "why": "첫째 줄: 계약서의 \"특약\"과 사진 #1 확인 ✅\n둘째 줄:\t탭 값, 쉼표, 세미콜론; 역슬래시 \\ 보존\n셋째 줄: <완료>와 개인 기록 분리 🚚",
+      "how": "첫째 줄: 계약서의 \"특약\"과 사진 #1 확인 ✅\n둘째 줄:\t탭 값, 쉼표, 세미콜론; 역슬래시 \\ 보존\n셋째 줄: <완료>와 개인 기록 분리 🚚",
+      "completion_criteria": "계약서·사진·열쇠🔑 가족과 함께 마지막으로 아주 길게 확인하기 — \"특수\"\t탭 \\ 역슬래시\n필수 #1 & #2, 따옴표 \"완료\", emoji 🧾"
+    }
+  ],
+  "repeatRules": []
+}

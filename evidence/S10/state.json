@@ -1,0 +1,152 @@
+{
+  "scenarioId": "S10",
+  "evidenceClass": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+  "orderedStateIds": [
+    "choose_child",
+    "review_hold",
+    "save_all_editor_open",
+    "save_all_adjusted",
+    "save_all_failure",
+    "save_all_retried"
+  ],
+  "fullScreenFiles": [
+    {
+      "stateId": "choose_child",
+      "relativePath": "S10/01-choose-child-full.png",
+      "bytes": 33213,
+      "sha256": "053b7c1ae6bec98c9ca574f3a3fb4c8e44f1d03eb02187b4cc08f4c04c58d750",
+      "mime": "image/png",
+      "route": "http://127.0.0.1:3114/flow-maps/curated-allblanc-workout-park"
+    },
+    {
+      "stateId": "review_hold",
+      "relativePath": "S10/02-review-hold-full.png",
+      "bytes": 27905,
+      "sha256": "b86db6b7f7f0e6f193d4a981c7ca5d74078b681547199abb6ef77cedea59917c",
+      "mime": "image/png",
+      "route": "http://127.0.0.1:3114/flow-maps/baby-food-map"
+    },
+    {
+      "stateId": "save_all_editor_open",
+      "relativePath": "S10/03-save-all-editor-full.png",
+      "bytes": 22779,
+      "sha256": "835811f8b26b4bea2c5188feda871f03569b8b7d9e6b7aae11cf95ec6a54e0af",
+      "mime": "image/png",
+      "route": "http://127.0.0.1:3114/flow-maps/middle-school-math-1"
+    },
+    {
+      "stateId": "save_all_adjusted",
+      "relativePath": "S10/04-save-all-adjusted-full.png",
+      "bytes": 28619,
+      "sha256": "88fb25b6dcf6a9cb7cc3e63aa5db92e40aaac387eef55fc8bd607c1b6c30eb8a",
+      "mime": "image/png",
+      "route": "http://127.0.0.1:3114/flow-maps/middle-school-math-1"
+    },
+    {
+      "stateId": "save_all_failure",
+      "relativePath": "S10/05-save-all-failure-full.png",
+      "bytes": 31377,
+      "sha256": "0c97ed03d79f91eded45ce8396e2bd5b29e8da4d8c534d752bfc9e72ec3dee21",
+      "mime": "image/png",
+      "route": "http://127.0.0.1:3114/flow-maps/middle-school-math-1"
+    },
+    {
+      "stateId": "save_all_retried",
+      "relativePath": "S10/06-save-all-success-full.png",
+      "bytes": 34707,
+      "sha256": "dee15361468062f2f6c59523d58bb4d70362ba8f71febb9bfa8c5f850fa409dd",
+      "mime": "image/png",
+      "route": "http://127.0.0.1:3114/my?savedMap=middle-school-math-1"
+    }
+  ],
+  "actionSequence": [
+    "inspect choose-child map",
+    "inspect review-hold map",
+    "open save-all editor and exclude one child item",
+    "inject one atomic persistence failure",
+    "verify unchanged storage and retry to My Plans"
+  ],
+  "gaps": [
+    "No distinct product conflict state is exposed; atomic failure/retry is captured instead."
+  ],
+  "routeState": "http://127.0.0.1:3114/my?savedMap=middle-school-math-1",
+  "capturedAtKst": "2026-08-06T10:14:04+09:00",
+  "consoleNetworkStatus": {
+    "consoleErrors": 0,
+    "failedRequests": 6,
+    "expectedNavigationOrPrefetchAborts": 6,
+    "unexpectedFailedRequests": 0,
+    "httpErrors": 0
+  },
+  "pageQuality": {
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "devicePixelRatio": 1
+    },
+    "scroll": {
+      "documentWidth": 390,
+      "documentHeight": 989,
+      "horizontalOverflow": 0
+    },
+    "unnamedInteractiveCount": 0,
+    "horizontallyClippedInteractiveCount": 0,
+    "brokenRelations": [],
+    "replacementCharacterCount": 0,
+    "visibleInteractiveCount": 10
+  },
+  "seedId": "built-in-flow-map-fixtures",
+  "seedSha256": "102c3922e760c2bb03b1d36c2819d35af1fff9cc8c9b83890d9fd03da78f54d1",
+  "viewportInput": {
+    "width": 390,
+    "height": 844,
+    "zoom": 1,
+    "motion": "no-preference"
+  },
+  "mapStates": {
+    "chooseChild": {
+      "links": [
+        {
+          "text": "Allblanc 아침 5분 홈트열기 →",
+          "href": "/f/curated-allblanc-morning-workout"
+        },
+        {
+          "text": "Allblanc 노점프 유산소열기 →",
+          "href": "/f/curated-allblanc-no-jump-cardio"
+        }
+      ]
+    },
+    "reviewHold": {
+      "data-testid": "flow-map-review-hold",
+      "data-map-execution-state": "review_hold",
+      "data-map-edit-capability": "hidden",
+      "data-map-save-capability": "hidden"
+    },
+    "saveAll": {
+      "originalIds": [
+        "source-backed-middle-school-math-1::math-prime-factorization",
+        "source-backed-middle-school-math-1::math-integers-rationals",
+        "source-backed-middle-school-math-1::math-letter-expression",
+        "source-backed-middle-school-math-1::math-coordinate-graph",
+        "source-backed-middle-school-math-1::math-basic-geometry",
+        "source-backed-middle-school-math-1::math-plane-figures",
+        "source-backed-middle-school-math-1::math-solid-figures",
+        "source-backed-middle-school-math-1::math-data-analysis"
+      ],
+      "affectedIds": [
+        "source-backed-middle-school-math-1::math-prime-factorization",
+        "source-backed-middle-school-math-1::math-integers-rationals",
+        "source-backed-middle-school-math-1::math-letter-expression",
+        "source-backed-middle-school-math-1::math-coordinate-graph",
+        "source-backed-middle-school-math-1::math-basic-geometry",
+        "source-backed-middle-school-math-1::math-plane-figures",
+        "source-backed-middle-school-math-1::math-solid-figures"
+      ],
+      "failureText": "저장하지 못했습니다. 선택은 그대로 유지됐어요. 다시 시도해 주세요."
+    },
+    "conflict": "NOT_EXPOSED"
+  },
+  "storageAtomicOnFailure": true,
+  "persistentWriteCount": 2,
+  "reviewerStatus": "LOCAL_REHEARSAL_WITH_GAP"
+}

@@ -1,0 +1,6 @@
+{
+  "local": {
+    "flow:url-first:supply-candidates": "[{\"canonicalUrl\":\"https://example.com/s01-injected-storage-failure\",\"originalUrl\":\"https://example.com/s01-injected-storage-failure\",\"title\":\"저장 실패를 확인할 계획\",\"memo\":\"입력 보존과 다시 시도를 확인\",\"status\":\"miss_request\",\"savedAt\":\"2026-08-06T01:13:13.875Z\"}]"
+  },
+  "session": {}
+}

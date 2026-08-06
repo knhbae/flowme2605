@@ -1,0 +1,44 @@
+{
+  "scenario": "S04",
+  "status": "LOCAL_CANDIDATE_CAPTURED",
+  "passCount": 2,
+  "errorCount": 0,
+  "knownGaps": [
+    "Retry evidence uses a clearly labeled one-shot localStorage failure injection; no remote save provider is in scope."
+  ],
+  "variants": [
+    {
+      "scenario": "S04",
+      "variant": "save-and-duplicate",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "startedAt": "2026-08-06T01:13:29.354Z",
+      "status": "PASS",
+      "error": null,
+      "result": {
+        "firstKey": "personal-copy:6621f6d6-367e-4f93-88a5-72aaf757d1c0",
+        "secondKey": "personal-copy:44ee371a-33dd-41fb-ad2a-f9d4fa6c5faf",
+        "savedRecordCount": 2
+      },
+      "finishedAt": "2026-08-06T01:13:32.242Z"
+    },
+    {
+      "scenario": "S04",
+      "variant": "save-retry-failure-injection",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "startedAt": "2026-08-06T01:13:32.402Z",
+      "status": "PASS",
+      "error": null,
+      "result": {
+        "retry": "success",
+        "personalCopyKey": "personal-copy:1cbc7840-9a70-4c85-8bd6-3cc818fc943f"
+      },
+      "finishedAt": "2026-08-06T01:13:35.060Z"
+    }
+  ]
+}

@@ -1,0 +1,1419 @@
+{
+  "schemaVersion": 1,
+  "evidenceGroup": "S01-S08",
+  "capturedAt": "2026-08-06T01:13:55.205Z",
+  "baseUrl": "http://127.0.0.1:3114",
+  "buildId": "T0QkChgscSgPog-0UdvY-",
+  "git": {
+    "head": "f97644abf379c46433847f44aa7bd4da7fadac4a",
+    "dirty": false,
+    "porcelain": []
+  },
+  "publicationState": "CANDIDATE_BOUND_LOCAL_CAPTURE",
+  "globalKnownGaps": [
+    "No GitHub publication SHA or static evidence URL is assigned by this local-only capture script.",
+    "No observed-user validation is claimed; all evidence is deterministic internal browser simulation."
+  ],
+  "browser": {
+    "engine": "chromium",
+    "version": "150.0.7871.188",
+    "source": "explicit system Chrome",
+    "locale": "ko-KR",
+    "timezoneId": "Asia/Seoul"
+  },
+  "captureScript": {
+    "path": "scripts/content-audit/p35-round2-independent-evidence/capture-s01-s08.mjs",
+    "bytes": 58785,
+    "sha256": "784f61b70d966d21ee41a3f40094a5d282f5b2449cf154210b94e35eaa06e17e"
+  },
+  "scenarioStatuses": [
+    {
+      "scenario": "S01",
+      "status": "LOCAL_CANDIDATE_CAPTURED",
+      "passCount": 5,
+      "errorCount": 0,
+      "knownGaps": [
+        "Lookup resolution is local and deterministic in this build; the error state therefore uses a clearly labeled one-shot localStorage failure injection rather than a nonexistent remote lookup outage."
+      ],
+      "variants": [
+        {
+          "scenario": "S01",
+          "variant": "lookup-hit",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "startedAt": "2026-08-06T01:13:05.516Z",
+          "status": "PASS",
+          "error": null,
+          "result": {
+            "lookupState": "hit"
+          },
+          "finishedAt": "2026-08-06T01:13:06.972Z"
+        },
+        {
+          "scenario": "S01",
+          "variant": "lookup-review-hold",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "startedAt": "2026-08-06T01:13:07.274Z",
+          "status": "PASS",
+          "error": null,
+          "result": {
+            "lookupState": "review"
+          },
+          "finishedAt": "2026-08-06T01:13:08.522Z"
+        },
+        {
+          "scenario": "S01",
+          "variant": "lookup-miss",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "startedAt": "2026-08-06T01:13:08.820Z",
+          "status": "PASS",
+          "error": null,
+          "result": {
+            "lookupState": "miss"
+          },
+          "finishedAt": "2026-08-06T01:13:10.646Z"
+        },
+        {
+          "scenario": "S01",
+          "variant": "lookup-empty",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "startedAt": "2026-08-06T01:13:10.931Z",
+          "status": "PASS",
+          "error": null,
+          "result": {
+            "lookupState": "empty"
+          },
+          "finishedAt": "2026-08-06T01:13:12.494Z"
+        },
+        {
+          "scenario": "S01",
+          "variant": "lookup-error-failure-injection",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "startedAt": "2026-08-06T01:13:12.796Z",
+          "status": "PASS",
+          "error": null,
+          "result": {
+            "lookupState": "error",
+            "evidenceClass": "EVIDENCE_ONLY_FAILURE_INJECTION"
+          },
+          "finishedAt": "2026-08-06T01:13:14.880Z"
+        }
+      ]
+    },
+    {
+      "scenario": "S02",
+      "status": "LOCAL_CANDIDATE_CAPTURED",
+      "passCount": 3,
+      "errorCount": 0,
+      "knownGaps": [
+        "For the mixed fixture the UI truthfully selects the lossless checklist (24 Items); the same manifest records Calendar as conditional with 23 current outputs and one undated Item."
+      ],
+      "variants": [
+        {
+          "scenario": "S02",
+          "variant": "all-dated",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "startedAt": "2026-08-06T01:13:15.163Z",
+          "status": "PASS",
+          "error": null,
+          "result": {
+            "dateShape": "all-dated",
+            "outputCount": "24"
+          },
+          "finishedAt": "2026-08-06T01:13:17.453Z"
+        },
+        {
+          "scenario": "S02",
+          "variant": "all-undated",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "startedAt": "2026-08-06T01:13:17.697Z",
+          "status": "PASS",
+          "error": null,
+          "result": {
+            "dateShape": "all-undated",
+            "outputCount": "10"
+          },
+          "finishedAt": "2026-08-06T01:13:19.081Z"
+        },
+        {
+          "scenario": "S02",
+          "variant": "dated-undated-mixed",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "startedAt": "2026-08-06T01:13:19.263Z",
+          "status": "PASS",
+          "error": null,
+          "result": {
+            "dateShape": "mixed",
+            "explicitlyUndatedItemId": "flow-moving-item-5",
+            "outputCount": "24"
+          },
+          "finishedAt": "2026-08-06T01:13:21.379Z"
+        }
+      ]
+    },
+    {
+      "scenario": "S03",
+      "status": "LOCAL_CANDIDATE_CAPTURED",
+      "passCount": 4,
+      "errorCount": 0,
+      "knownGaps": [],
+      "variants": [
+        {
+          "scenario": "S03",
+          "variant": "editor-cancel",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "startedAt": "2026-08-06T01:13:21.562Z",
+          "status": "PASS",
+          "error": null,
+          "result": {
+            "editorAction": "cancel"
+          },
+          "finishedAt": "2026-08-06T01:13:24.030Z"
+        },
+        {
+          "scenario": "S03",
+          "variant": "editor-apply",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "startedAt": "2026-08-06T01:13:24.168Z",
+          "status": "PASS",
+          "error": null,
+          "result": {
+            "editorAction": "apply",
+            "appliedTitle": "실제 반영한 우리 가족 이사 계획"
+          },
+          "finishedAt": "2026-08-06T01:13:25.751Z"
+        },
+        {
+          "scenario": "S03",
+          "variant": "editor-browser-back",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "startedAt": "2026-08-06T01:13:25.907Z",
+          "status": "PASS",
+          "error": null,
+          "result": {
+            "editorAction": "browser-back-continue"
+          },
+          "finishedAt": "2026-08-06T01:13:27.824Z"
+        },
+        {
+          "scenario": "S03",
+          "variant": "editor-validation-error",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "startedAt": "2026-08-06T01:13:27.972Z",
+          "status": "PASS",
+          "error": null,
+          "result": {
+            "editorAction": "validation-error"
+          },
+          "finishedAt": "2026-08-06T01:13:29.185Z"
+        }
+      ]
+    },
+    {
+      "scenario": "S04",
+      "status": "LOCAL_CANDIDATE_CAPTURED",
+      "passCount": 2,
+      "errorCount": 0,
+      "knownGaps": [
+        "Retry evidence uses a clearly labeled one-shot localStorage failure injection; no remote save provider is in scope."
+      ],
+      "variants": [
+        {
+          "scenario": "S04",
+          "variant": "save-and-duplicate",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "startedAt": "2026-08-06T01:13:29.354Z",
+          "status": "PASS",
+          "error": null,
+          "result": {
+            "firstKey": "personal-copy:6621f6d6-367e-4f93-88a5-72aaf757d1c0",
+            "secondKey": "personal-copy:44ee371a-33dd-41fb-ad2a-f9d4fa6c5faf",
+            "savedRecordCount": 2
+          },
+          "finishedAt": "2026-08-06T01:13:32.242Z"
+        },
+        {
+          "scenario": "S04",
+          "variant": "save-retry-failure-injection",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "startedAt": "2026-08-06T01:13:32.402Z",
+          "status": "PASS",
+          "error": null,
+          "result": {
+            "retry": "success",
+            "personalCopyKey": "personal-copy:1cbc7840-9a70-4c85-8bd6-3cc818fc943f"
+          },
+          "finishedAt": "2026-08-06T01:13:35.060Z"
+        }
+      ]
+    },
+    {
+      "scenario": "S05",
+      "status": "LOCAL_CANDIDATE_CAPTURED",
+      "passCount": 1,
+      "errorCount": 0,
+      "knownGaps": [
+        "This S05 rehearsal retains one exact Checklist clipboard artifact and receipt. Cross-format fidelity belongs to S09/S18/S21."
+      ],
+      "variants": [
+        {
+          "scenario": "S05",
+          "variant": "saved-checklist-transfer",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "startedAt": "2026-08-06T01:13:35.227Z",
+          "status": "PASS",
+          "error": null,
+          "result": {
+            "personalCopyKey": "personal-copy:f4cb8b8f-4c0e-4f38-b3f4-067cd6eed28a",
+            "rawBytes": 3754,
+            "rawSha256": "18e9a2fe3572ee267c1972fc56375f1e9a02c55ada26ebadeab18883e8f0d763",
+            "receiptPersisted": true
+          },
+          "finishedAt": "2026-08-06T01:13:38.701Z"
+        }
+      ]
+    },
+    {
+      "scenario": "S06",
+      "status": "LOCAL_CANDIDATE_CAPTURED",
+      "passCount": 5,
+      "errorCount": 0,
+      "knownGaps": [
+        "The 5/20-plan states use the product demo fixtures. They are internal QA fixtures, not observed-user evidence."
+      ],
+      "variants": [
+        {
+          "scenario": "S06",
+          "variant": "zero-plans",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "startedAt": "2026-08-06T01:13:38.848Z",
+          "status": "PASS",
+          "error": null,
+          "result": {
+            "count": "0",
+            "sizeState": "empty",
+            "rowCount": 0,
+            "rowSlugs": [],
+            "todayVisible": false,
+            "todayItemCount": 0,
+            "todoExperimentVisible": false,
+            "selectedView": null
+          },
+          "finishedAt": "2026-08-06T01:13:39.776Z"
+        },
+        {
+          "scenario": "S06",
+          "variant": "one-dated-plan",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "startedAt": "2026-08-06T01:13:39.948Z",
+          "status": "PASS",
+          "error": null,
+          "result": {
+            "count": "1",
+            "sizeState": "single",
+            "rowCount": 0,
+            "rowSlugs": [],
+            "todayVisible": false,
+            "todayItemCount": 0,
+            "todoExperimentVisible": false,
+            "selectedView": null
+          },
+          "finishedAt": "2026-08-06T01:13:40.969Z"
+        },
+        {
+          "scenario": "S06",
+          "variant": "one-undated-plan",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "startedAt": "2026-08-06T01:13:41.182Z",
+          "status": "PASS",
+          "error": null,
+          "result": {
+            "count": "1",
+            "sizeState": "single",
+            "rowCount": 0,
+            "rowSlugs": [],
+            "todayVisible": false,
+            "todayItemCount": 0,
+            "todoExperimentVisible": false,
+            "selectedView": null
+          },
+          "finishedAt": "2026-08-06T01:13:42.322Z"
+        },
+        {
+          "scenario": "S06",
+          "variant": "five-plans",
+          "viewport": {
+            "width": 1024,
+            "height": 768
+          },
+          "startedAt": "2026-08-06T01:13:42.514Z",
+          "status": "PASS",
+          "error": null,
+          "result": {
+            "count": "5",
+            "sizeState": "small",
+            "rowCount": 5,
+            "rowSlugs": [
+              "pet-health-observation",
+              "wedding-d180-basic",
+              "washer-tub-clean-monthly",
+              "travel-packing-list",
+              "moving-d30-basic"
+            ],
+            "todayVisible": true,
+            "todayItemCount": 2,
+            "todoExperimentVisible": false,
+            "selectedView": null
+          },
+          "finishedAt": "2026-08-06T01:13:43.525Z"
+        },
+        {
+          "scenario": "S06",
+          "variant": "twenty-plans",
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          },
+          "startedAt": "2026-08-06T01:13:43.729Z",
+          "status": "PASS",
+          "error": null,
+          "result": {
+            "count": "20",
+            "sizeState": "searchable",
+            "rowCount": 20,
+            "rowSlugs": [
+              "pet-health-observation",
+              "portfolio-4week",
+              "wedding-d180-basic",
+              "tax-refund-find",
+              "real-samsung-washer-filter-care",
+              "samsung-aircon-seasonal-check",
+              "adult-vaccine-schedule-check",
+              "washer-tub-clean-monthly",
+              "childcare-fee-support-apply",
+              "first-passport-issue",
+              "passport-renewal-docs",
+              "travel-packing-list",
+              "infant-health-checkup-schedule",
+              "moving-d30-basic",
+              "vehicle-inspection-prep",
+              "used-car-buying-check",
+              "english-study-30day-routine",
+              "computer-skills-d30-study",
+              "curated-allblanc-no-jump-cardio",
+              "curated-allblanc-morning-workout"
+            ],
+            "todayVisible": true,
+            "todayItemCount": 2,
+            "todoExperimentVisible": false,
+            "selectedView": null
+          },
+          "finishedAt": "2026-08-06T01:13:45.067Z"
+        }
+      ]
+    },
+    {
+      "scenario": "S07",
+      "status": "LOCAL_CANDIDATE_CAPTURED",
+      "passCount": 1,
+      "errorCount": 0,
+      "knownGaps": [
+        "The detailed mutation journey exercises one canonical Item in one 10-Item saved plan; breadth is covered by S14."
+      ],
+      "variants": [
+        {
+          "scenario": "S07",
+          "variant": "detail-edit-memo-complete-reopen",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "startedAt": "2026-08-06T01:13:45.253Z",
+          "status": "PASS",
+          "error": null,
+          "result": {
+            "personalCopyKey": "personal-copy:dc418fa2-50d3-440f-a11e-19241176ed14",
+            "itemId": "flow-vehicle-inspection-prep-item-0",
+            "memoPersisted": true,
+            "completedThenReopened": true
+          },
+          "finishedAt": "2026-08-06T01:13:50.776Z"
+        }
+      ]
+    },
+    {
+      "scenario": "S08",
+      "status": "LOCAL_CANDIDATE_CAPTURED",
+      "passCount": 1,
+      "errorCount": 0,
+      "knownGaps": [
+        "Recoverable-error evidence uses a clearly labeled one-shot localStorage failure injection; concurrent-tab conflict breadth remains in the automated gate."
+      ],
+      "variants": [
+        {
+          "scenario": "S08",
+          "variant": "saved-editor-cancel-error-reload",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "startedAt": "2026-08-06T01:13:50.965Z",
+          "status": "PASS",
+          "error": null,
+          "result": {
+            "personalCopyKey": "personal-copy:19809e11-6418-45a9-85b5-53d26bb2760c",
+            "cancelStorageByteEqual": true,
+            "failureStorageByteEqual": true,
+            "retryTitle": "저장 실패 뒤 다시 저장한 계획 제목",
+            "reloadedTitlePresent": true
+          },
+          "finishedAt": "2026-08-06T01:13:54.859Z"
+        }
+      ]
+    }
+  ],
+  "files": [
+    {
+      "path": "S01/01-hit-result.png",
+      "bytes": 36488,
+      "sha256": "b1a6b966de70a898628757aeb6329032df447af2269b7ab04b0127ae5fd76127",
+      "mime": "image/png"
+    },
+    {
+      "path": "S01/01-hit-result.state.json",
+      "bytes": 9444,
+      "sha256": "5560048aba826ac3e6d11e465b2080fa38181c8365b7b9548544babdddb014df",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S01/02-review-hold-result.png",
+      "bytes": 39008,
+      "sha256": "42fb6161984f5ec824df02feb925fa41458ab9081c702312124cdc0b61899223",
+      "mime": "image/png"
+    },
+    {
+      "path": "S01/02-review-hold-result.state.json",
+      "bytes": 6058,
+      "sha256": "a0bf7927ffe0d6209ee782d0a17f39b9793a642efdf7ff2f9a1dfd6359fdd6c8",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S01/03-miss-result.png",
+      "bytes": 38248,
+      "sha256": "8acf27945645f019513983e8eb7b5d832852fb4e963287d907cbb0909f2510fb",
+      "mime": "image/png"
+    },
+    {
+      "path": "S01/03-miss-result.state.json",
+      "bytes": 6958,
+      "sha256": "a71afe84f835db9d46c8fd82a598c540ad1200105495b5a4d38ffd7c60bfc1e5",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S01/04-empty-native-validation.png",
+      "bytes": 100353,
+      "sha256": "12fc2627dfd0b7d7a99115227a44da16128af8c70799cc89e908f3fd1b2a65ec",
+      "mime": "image/png"
+    },
+    {
+      "path": "S01/04-empty-native-validation.state.json",
+      "bytes": 24094,
+      "sha256": "a463b288c04b318842d874f9a76751b6390bc25d791de7857ff5befbd27ad103",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S01/05-failure-injection-ui-error.png",
+      "bytes": 68596,
+      "sha256": "10c107fc563f05d04f0e4c0b5c5c1caa74edf5f3b72d24a072cdfe0b5abe213b",
+      "mime": "image/png"
+    },
+    {
+      "path": "S01/05-failure-injection-ui-error.state.json",
+      "bytes": 11461,
+      "sha256": "2e405542f92e530d4105aea6a7af2d88e833c29765dc09658223a2450f5d0465",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S01/lookup-empty.storage-after.json",
+      "bytes": 35,
+      "sha256": "09b547cae5cfe9d6e9eb51bcc78e6652f293c60aa718f77f57e58aca96d067fe",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S01/lookup-empty.storage-before.json",
+      "bytes": 35,
+      "sha256": "09b547cae5cfe9d6e9eb51bcc78e6652f293c60aa718f77f57e58aca96d067fe",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S01/lookup-error-failure-injection.storage-after.json",
+      "bytes": 394,
+      "sha256": "c96eab9d0c0d01f836d74f51bccbc741739ba2c60d4775992ae92a26232b51b4",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S01/lookup-error-failure-injection.storage-before.json",
+      "bytes": 35,
+      "sha256": "09b547cae5cfe9d6e9eb51bcc78e6652f293c60aa718f77f57e58aca96d067fe",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S01/lookup-hit.storage-after.json",
+      "bytes": 35,
+      "sha256": "09b547cae5cfe9d6e9eb51bcc78e6652f293c60aa718f77f57e58aca96d067fe",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S01/lookup-hit.storage-before.json",
+      "bytes": 35,
+      "sha256": "09b547cae5cfe9d6e9eb51bcc78e6652f293c60aa718f77f57e58aca96d067fe",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S01/lookup-miss.storage-after.json",
+      "bytes": 35,
+      "sha256": "09b547cae5cfe9d6e9eb51bcc78e6652f293c60aa718f77f57e58aca96d067fe",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S01/lookup-miss.storage-before.json",
+      "bytes": 35,
+      "sha256": "09b547cae5cfe9d6e9eb51bcc78e6652f293c60aa718f77f57e58aca96d067fe",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S01/lookup-review-hold.storage-after.json",
+      "bytes": 35,
+      "sha256": "09b547cae5cfe9d6e9eb51bcc78e6652f293c60aa718f77f57e58aca96d067fe",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S01/lookup-review-hold.storage-before.json",
+      "bytes": 35,
+      "sha256": "09b547cae5cfe9d6e9eb51bcc78e6652f293c60aa718f77f57e58aca96d067fe",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S01/scenario-summary.json",
+      "bytes": 2130,
+      "sha256": "855b0f8fb094f18fcb52815005dda71238843cdc5eee9b01bc8f2c51b28e754a",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S02/01-all-dated-public-result.png",
+      "bytes": 35048,
+      "sha256": "17630ca7dfcee3730616edd13cda8af84dbe1fe4dbbbcd91587e46c911f8bb91",
+      "mime": "image/png"
+    },
+    {
+      "path": "S02/01-all-dated-public-result.state.json",
+      "bytes": 37310,
+      "sha256": "6585fd5e282a795ed51f77ae1896fdf5246fa83072f246742b46b14267e943ac",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S02/02-all-undated-public-result.png",
+      "bytes": 41690,
+      "sha256": "68701ec861cd17b2b8d7f0553fccd4d4ff358a73d1d4a0aeaa7dc50fefa00ac0",
+      "mime": "image/png"
+    },
+    {
+      "path": "S02/02-all-undated-public-result.state.json",
+      "bytes": 24809,
+      "sha256": "d748a1d39a64e06a1e1fb6294a88d29d4be1bd9fac491dceac7120a4e5e28092",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S02/03-dated-undated-mixed-public-result.png",
+      "bytes": 39183,
+      "sha256": "eb4c54df66faebc57ffe40ad6b8dced08dc2cc23c7bfede2e950d318b86b3723",
+      "mime": "image/png"
+    },
+    {
+      "path": "S02/03-dated-undated-mixed-public-result.state.json",
+      "bytes": 40195,
+      "sha256": "52aa7861df79f36fa37d0b747b5d4a5a3a368923edd5435d8da603ef4a1814ee",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S02/all-dated.capability-manifest.json",
+      "bytes": 9780,
+      "sha256": "050f1d5cd87fda0afa33e461d6769934e86b50e5a8e1de052146903c79cd3881",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S02/all-dated.storage-after.json",
+      "bytes": 35,
+      "sha256": "09b547cae5cfe9d6e9eb51bcc78e6652f293c60aa718f77f57e58aca96d067fe",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S02/all-dated.storage-before.json",
+      "bytes": 35,
+      "sha256": "09b547cae5cfe9d6e9eb51bcc78e6652f293c60aa718f77f57e58aca96d067fe",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S02/all-undated.capability-manifest.json",
+      "bytes": 5366,
+      "sha256": "4af029333cc4b2afe78cdc65ac894576192007cf05e8b87947d0702197ab4e6e",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S02/all-undated.storage-after.json",
+      "bytes": 35,
+      "sha256": "09b547cae5cfe9d6e9eb51bcc78e6652f293c60aa718f77f57e58aca96d067fe",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S02/all-undated.storage-before.json",
+      "bytes": 35,
+      "sha256": "09b547cae5cfe9d6e9eb51bcc78e6652f293c60aa718f77f57e58aca96d067fe",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S02/dated-undated-mixed.capability-manifest.json",
+      "bytes": 10735,
+      "sha256": "bafb7cab6ddebca78c5bb4624484f1e451ad0406164ceb272ee6f472e23b366f",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S02/dated-undated-mixed.storage-after.json",
+      "bytes": 35,
+      "sha256": "09b547cae5cfe9d6e9eb51bcc78e6652f293c60aa718f77f57e58aca96d067fe",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S02/dated-undated-mixed.storage-before.json",
+      "bytes": 35,
+      "sha256": "09b547cae5cfe9d6e9eb51bcc78e6652f293c60aa718f77f57e58aca96d067fe",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S02/scenario-summary.json",
+      "bytes": 1502,
+      "sha256": "67df43371773bfc66c0b2e8cd36f5d138d443932062fbd1ee9149ee812718c00",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S03/01-plan-editor-dirty-before-cancel.png",
+      "bytes": 20939,
+      "sha256": "b781974373959c2396d529765fbab66d01e20bdd25a261c0d51dbedb9c316203",
+      "mime": "image/png"
+    },
+    {
+      "path": "S03/01-plan-editor-dirty-before-cancel.state.json",
+      "bytes": 30693,
+      "sha256": "bfde98f8e0c6f699f6af466149ce8f7ab04814802a662a620b706d51af319ff3",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S03/02-cancel-discard-confirmation.png",
+      "bytes": 23627,
+      "sha256": "892ca5f45a09010dcf58f8d12d7bacead1b4d9e3065548862d4fe95a85b3fe42",
+      "mime": "image/png"
+    },
+    {
+      "path": "S03/02-cancel-discard-confirmation.state.json",
+      "bytes": 32214,
+      "sha256": "f95b8fed0cd6192ff82be66a9f1cad2683631a979e32a5a9a3ea28c4836e1c9c",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S03/03-after-cancel.png",
+      "bytes": 37563,
+      "sha256": "67f8db09c410556320f7b3197305e8da708c945bcacd5ecedde3eb5f7e7b13fc",
+      "mime": "image/png"
+    },
+    {
+      "path": "S03/03-after-cancel.state.json",
+      "bytes": 27768,
+      "sha256": "52196f5b1ab2b1ec33475261424be43a71605260a2ab2a058f3d6d83f6ea38f3",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S03/04-after-plan-apply.png",
+      "bytes": 37395,
+      "sha256": "212eed24cbf6959bca206a4818f5c166348c8c1f78ea9826fbe7abf9a4e1fdf0",
+      "mime": "image/png"
+    },
+    {
+      "path": "S03/04-after-plan-apply.state.json",
+      "bytes": 27034,
+      "sha256": "b69366576df87b9ceb15dac9355e6ee704e0f37ed71a5e536c48a59bc566796d",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S03/05-browser-back-discard-confirmation.png",
+      "bytes": 23387,
+      "sha256": "507a3b89755d47b65d53eba0e3b9ae3542d103e82d6e950233a3509ea0336375",
+      "mime": "image/png"
+    },
+    {
+      "path": "S03/05-browser-back-discard-confirmation.state.json",
+      "bytes": 32205,
+      "sha256": "554bf0c942d9f057f254760538de5f42c9adeb48aab79dd1b29f7d83398d5ab3",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S03/06-browser-back-continue-editing.png",
+      "bytes": 20270,
+      "sha256": "3728f9eed61c9a53edbe2086d48087ca18680c281ba2df01f9e2ce51d07053df",
+      "mime": "image/png"
+    },
+    {
+      "path": "S03/06-browser-back-continue-editing.state.json",
+      "bytes": 30709,
+      "sha256": "5f49cd086560aa07e91e3e2bd3c9004e06eb4103f4e43bb5db7606effd0fc47c",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S03/07-item-validation-error.png",
+      "bytes": 17679,
+      "sha256": "5fd3b5d87597f38847de66ff01d070fb2243ab8db124e4b641976d1ec488c098",
+      "mime": "image/png"
+    },
+    {
+      "path": "S03/07-item-validation-error.state.json",
+      "bytes": 30240,
+      "sha256": "3de0a5419ac0a8a208036c3f215c495b21711a69bee289b9ac37fd1ea118dd55",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S03/editor-apply.storage-after.json",
+      "bytes": 35,
+      "sha256": "09b547cae5cfe9d6e9eb51bcc78e6652f293c60aa718f77f57e58aca96d067fe",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S03/editor-apply.storage-before.json",
+      "bytes": 35,
+      "sha256": "09b547cae5cfe9d6e9eb51bcc78e6652f293c60aa718f77f57e58aca96d067fe",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S03/editor-browser-back.storage-after.json",
+      "bytes": 35,
+      "sha256": "09b547cae5cfe9d6e9eb51bcc78e6652f293c60aa718f77f57e58aca96d067fe",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S03/editor-browser-back.storage-before.json",
+      "bytes": 35,
+      "sha256": "09b547cae5cfe9d6e9eb51bcc78e6652f293c60aa718f77f57e58aca96d067fe",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S03/editor-cancel.storage-after.json",
+      "bytes": 35,
+      "sha256": "09b547cae5cfe9d6e9eb51bcc78e6652f293c60aa718f77f57e58aca96d067fe",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S03/editor-cancel.storage-before.json",
+      "bytes": 35,
+      "sha256": "09b547cae5cfe9d6e9eb51bcc78e6652f293c60aa718f77f57e58aca96d067fe",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S03/editor-validation-error.storage-after.json",
+      "bytes": 35,
+      "sha256": "09b547cae5cfe9d6e9eb51bcc78e6652f293c60aa718f77f57e58aca96d067fe",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S03/editor-validation-error.storage-before.json",
+      "bytes": 35,
+      "sha256": "09b547cae5cfe9d6e9eb51bcc78e6652f293c60aa718f77f57e58aca96d067fe",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S03/scenario-summary.json",
+      "bytes": 1627,
+      "sha256": "288603c0e5f41b7d349f9435ed3b156cdb484331f0e8ed0131765685c6f26abd",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S04/01-first-save-destination.png",
+      "bytes": 26025,
+      "sha256": "6b9af1e4c85cce3f3498173594d43e4eefe29efa3f8cc7ed335e93003b21a6a5",
+      "mime": "image/png"
+    },
+    {
+      "path": "S04/01-first-save-destination.state.json",
+      "bytes": 15381,
+      "sha256": "768de0325ef63dcf728ea16aebe2b31b6ff2950b15eef20d2c38263c86e98438",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S04/02-existing-copy-duplicate-choice.png",
+      "bytes": 44786,
+      "sha256": "e35a744247f6dbc77a751e9c0f5ca1d4f2a16766429ad4653c4701ad373e09a0",
+      "mime": "image/png"
+    },
+    {
+      "path": "S04/02-existing-copy-duplicate-choice.state.json",
+      "bytes": 30121,
+      "sha256": "f065826c7d4a7d86f0c1970f74749a638fb00415035d6b271ec9af1afee3d5d6",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S04/03-new-copy-destination.png",
+      "bytes": 26109,
+      "sha256": "c087dba24d8c1ff73f56151c1d6f5a195bb64d0fdac2ddc3670d7bf046871031",
+      "mime": "image/png"
+    },
+    {
+      "path": "S04/03-new-copy-destination.state.json",
+      "bytes": 15453,
+      "sha256": "c67f990c0a19a79e4f1a5f6098cdc7aab7e7581905ba0dbc77d21f21abb2e8f0",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S04/04-failure-injection-save-error.png",
+      "bytes": 38015,
+      "sha256": "7d063072dd9da454c30871ffd225d9e4084919d3be8642b65c87f9d5c7059757",
+      "mime": "image/png"
+    },
+    {
+      "path": "S04/04-failure-injection-save-error.state.json",
+      "bytes": 28329,
+      "sha256": "3c2171d852ae9306acd7415af18c9149ce129f6446aeddac3310a32a1daefdd2",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S04/05-retry-success-destination.png",
+      "bytes": 25634,
+      "sha256": "125d5f0ab6a9070d4c9a5bfb7ce5abd09059d4b2923834a3f90d085bbce0b2de",
+      "mime": "image/png"
+    },
+    {
+      "path": "S04/05-retry-success-destination.state.json",
+      "bytes": 15403,
+      "sha256": "be15bbbff64f0913d33fb3da2286a34773ae983728049988c8f1143d8a56bea5",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S04/duplicate.saved-records.json",
+      "bytes": 1247,
+      "sha256": "feb73e38d433f0e79d040824736aa656e52f953415589fc4b4e7d7de793722e1",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S04/first-save.saved-record.raw.json",
+      "bytes": 504,
+      "sha256": "e9c5b09ab5837bed7427857951c1c93e8bb6a218f227675fe52244b382ba8d7d",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S04/save-and-duplicate.storage-after.json",
+      "bytes": 1854,
+      "sha256": "83005adbc13f8906110156ab4bfe8ac9bd0bdeaa108e298912aef5a02930dd31",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S04/save-and-duplicate.storage-before.json",
+      "bytes": 35,
+      "sha256": "09b547cae5cfe9d6e9eb51bcc78e6652f293c60aa718f77f57e58aca96d067fe",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S04/save-retry-failure-injection.storage-after.json",
+      "bytes": 1013,
+      "sha256": "20fde7bf00204345bdd786421a16f5f1d4af641d31d0e2ddb8d952abbbd88df5",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S04/save-retry-failure-injection.storage-before.json",
+      "bytes": 35,
+      "sha256": "09b547cae5cfe9d6e9eb51bcc78e6652f293c60aa718f77f57e58aca96d067fe",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S04/scenario-summary.json",
+      "bytes": 1194,
+      "sha256": "2ab431753fa3339850ee41498ea5a192167564ab777df3be22c52e36ad7d84a5",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S05/01-saved-transfer-confirmation.png",
+      "bytes": 81396,
+      "sha256": "e5b0af35aac2f309df89440d704635cb962517d965f630ee9997646236c6d3fe",
+      "mime": "image/png"
+    },
+    {
+      "path": "S05/01-saved-transfer-confirmation.state.json",
+      "bytes": 54372,
+      "sha256": "af3c0aa65c6189e5e8b60fec8e185ae3874cb7acd7136fef9440333830e42e70",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S05/02-saved-transfer-receipt.png",
+      "bytes": 77910,
+      "sha256": "0593c99dcb0b794de1211f113f3440e034a2c1ed036ab2fc735dd0e5cfc32f40",
+      "mime": "image/png"
+    },
+    {
+      "path": "S05/02-saved-transfer-receipt.state.json",
+      "bytes": 52685,
+      "sha256": "211fbdb10a80a71d245b910caed6dada1825cbe17dbba03162701c379cefb2b2",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S05/03-reopened-persisted-receipt.png",
+      "bytes": 71841,
+      "sha256": "84bc2aebc87d805e70c7d92600afeba59090ddf2b6520775b42e3fe5d1e89c57",
+      "mime": "image/png"
+    },
+    {
+      "path": "S05/03-reopened-persisted-receipt.state.json",
+      "bytes": 51832,
+      "sha256": "b93e26bc5c26e2f97518322da4241d4bf1f43b3c082da96be4e4fc3f45c9986e",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S05/checklist-transfer.raw.txt",
+      "bytes": 3754,
+      "sha256": "18e9a2fe3572ee267c1972fc56375f1e9a02c55ada26ebadeab18883e8f0d763",
+      "mime": "text/plain; charset=utf-8"
+    },
+    {
+      "path": "S05/receipt-storage.raw.json",
+      "bytes": 2633,
+      "sha256": "e93582781574381cf44a00ffb471a7927fcc7cc354e0bf2ae28fddd9b55d95d9",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S05/saved-checklist-transfer.storage-after.json",
+      "bytes": 3940,
+      "sha256": "4602b1e548d09785bb5f97c54e8ede7ca77192e8540456e4113560ca20863462",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S05/saved-checklist-transfer.storage-before.json",
+      "bytes": 35,
+      "sha256": "09b547cae5cfe9d6e9eb51bcc78e6652f293c60aa718f77f57e58aca96d067fe",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S05/scenario-summary.json",
+      "bytes": 825,
+      "sha256": "6c9abe3fdb0b0563394a9343137f6cfe226a662ec90548f51aba5c50fdfcc037",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S05/transfer-transport.json",
+      "bytes": 189,
+      "sha256": "307f72e98b0ef6571e2d1bb99b377dbe91edf4578d06577ec43aea867814b8cf",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S06/01-zero-plans-library.png",
+      "bytes": 19128,
+      "sha256": "bc385d0a25ddad1133dda34fa37ed7a92f4a14add6389001f8dcf0a6857ef08b",
+      "mime": "image/png"
+    },
+    {
+      "path": "S06/01-zero-plans-library.state.json",
+      "bytes": 5392,
+      "sha256": "b24f7623cce4d9564f8c083e87743d10ae41bbbe8015812960326b2d75f51376",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S06/02-one-dated-plan-library.png",
+      "bytes": 17398,
+      "sha256": "3cee6f44660dc9f07c86a6c622a8e43b8505ce0923faa79b0b7b807560c1724a",
+      "mime": "image/png"
+    },
+    {
+      "path": "S06/02-one-dated-plan-library.state.json",
+      "bytes": 6715,
+      "sha256": "28c28031e41e4c6681c99827e8ab33283140fa44bc53c95207c9e661342a7a0d",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S06/03-one-undated-plan-library.png",
+      "bytes": 17595,
+      "sha256": "08438b6d5e1ef7417f96199fb79024a29ffe3f1ee47f5174ddaf50f94d7330d7",
+      "mime": "image/png"
+    },
+    {
+      "path": "S06/03-one-undated-plan-library.state.json",
+      "bytes": 6718,
+      "sha256": "b347a6a87a2657acb2e0a30dd258b032bba42df31d380cd758bc97a279a41bb6",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S06/04-five-plans-library.png",
+      "bytes": 43191,
+      "sha256": "3547c226f0cfa148325c52738b94898c556e9f3c30c20b383caed73860201bca",
+      "mime": "image/png"
+    },
+    {
+      "path": "S06/04-five-plans-library.state.json",
+      "bytes": 11999,
+      "sha256": "46e71b287973e701adbd9979970e1cd21bb73297e083bb35e697dc245e0c006d",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S06/05-twenty-plans-library.png",
+      "bytes": 91347,
+      "sha256": "625751dd8b2c9fceb2cbed50ef322beb1b23b4dbbbec3b4ebfba7772a3ae9cea",
+      "mime": "image/png"
+    },
+    {
+      "path": "S06/05-twenty-plans-library.state.json",
+      "bytes": 24965,
+      "sha256": "f9c6fdb12ea434f2de5bca896fb4596446a580fc2b73858ba9d4434c10351ffd",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S06/five-plans.library-state.json",
+      "bytes": 324,
+      "sha256": "0d12e97e0f0006d5485762051f8de8d7901d7b62bbd65e8ee615f83fcf0a5c2b",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S06/five-plans.storage-after.json",
+      "bytes": 35,
+      "sha256": "09b547cae5cfe9d6e9eb51bcc78e6652f293c60aa718f77f57e58aca96d067fe",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S06/five-plans.storage-before.json",
+      "bytes": 35,
+      "sha256": "09b547cae5cfe9d6e9eb51bcc78e6652f293c60aa718f77f57e58aca96d067fe",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S06/one-dated-plan.library-state.json",
+      "bytes": 185,
+      "sha256": "485b9ce82c2219bf0ae0982c6fcf7a59f15e89dbc93ab784b58b14afce9340f4",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S06/one-dated-plan.storage-after.json",
+      "bytes": 329,
+      "sha256": "09f519e90236dad2904c60f99a4d954ad11cddbf5cd87c70748e62fb547a7852",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S06/one-dated-plan.storage-before.json",
+      "bytes": 35,
+      "sha256": "09b547cae5cfe9d6e9eb51bcc78e6652f293c60aa718f77f57e58aca96d067fe",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S06/one-undated-plan.library-state.json",
+      "bytes": 185,
+      "sha256": "485b9ce82c2219bf0ae0982c6fcf7a59f15e89dbc93ab784b58b14afce9340f4",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S06/one-undated-plan.storage-after.json",
+      "bytes": 214,
+      "sha256": "329450fc5646b2a2fa6f1412fc625f33a702066d72b39c45ff4e331262030c06",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S06/one-undated-plan.storage-before.json",
+      "bytes": 35,
+      "sha256": "09b547cae5cfe9d6e9eb51bcc78e6652f293c60aa718f77f57e58aca96d067fe",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S06/scenario-summary.json",
+      "bytes": 3901,
+      "sha256": "19fa97420e769452d2afcba717aea580b22ed63551987f275d840b1b606ff871",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S06/twenty-plans.library-state.json",
+      "bytes": 826,
+      "sha256": "2c0016717651240e3c046985d389070f0ddbe659cabd334c8ab320a79d40180e",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S06/twenty-plans.storage-after.json",
+      "bytes": 35,
+      "sha256": "09b547cae5cfe9d6e9eb51bcc78e6652f293c60aa718f77f57e58aca96d067fe",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S06/twenty-plans.storage-before.json",
+      "bytes": 35,
+      "sha256": "09b547cae5cfe9d6e9eb51bcc78e6652f293c60aa718f77f57e58aca96d067fe",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S06/zero-plans.library-state.json",
+      "bytes": 184,
+      "sha256": "5eb00c412eef6e0738fef91ee34456db33653dc30fb43b13d241e7ee30bec582",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S06/zero-plans.storage-after.json",
+      "bytes": 35,
+      "sha256": "09b547cae5cfe9d6e9eb51bcc78e6652f293c60aa718f77f57e58aca96d067fe",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S06/zero-plans.storage-before.json",
+      "bytes": 35,
+      "sha256": "09b547cae5cfe9d6e9eb51bcc78e6652f293c60aa718f77f57e58aca96d067fe",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S07/01-item-detail-open.png",
+      "bytes": 56324,
+      "sha256": "bd987c9b13f768b2ae89615ba6eba645b20237dbc98e0f1061089b377852356d",
+      "mime": "image/png"
+    },
+    {
+      "path": "S07/01-item-detail-open.state.json",
+      "bytes": 40566,
+      "sha256": "3ded85bda9241317937dc1518419079ccfbf4149a0d133b7a00ec63b98518054",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S07/02-item-editor-open.png",
+      "bytes": 52572,
+      "sha256": "9b7f0e6aa3f23eef07bfdf6ce2bcae78b5808698c5a48f19b98eafcbf8ea0967",
+      "mime": "image/png"
+    },
+    {
+      "path": "S07/02-item-editor-open.state.json",
+      "bytes": 45784,
+      "sha256": "5e8cb1b79ea4748f40a0c9157f6157e0e77a3d6cb478aebf70abf5a9b86dfbb6",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S07/03-memo-saved.png",
+      "bytes": 56324,
+      "sha256": "bd987c9b13f768b2ae89615ba6eba645b20237dbc98e0f1061089b377852356d",
+      "mime": "image/png"
+    },
+    {
+      "path": "S07/03-memo-saved.state.json",
+      "bytes": 40482,
+      "sha256": "79d269af0600ddfc3dd4d010c8b98fcfbe705c6b44ff6b04e2a38153135a266f",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S07/04-memo-reopened.png",
+      "bytes": 56324,
+      "sha256": "bd987c9b13f768b2ae89615ba6eba645b20237dbc98e0f1061089b377852356d",
+      "mime": "image/png"
+    },
+    {
+      "path": "S07/04-memo-reopened.state.json",
+      "bytes": 40491,
+      "sha256": "ff11ef87dba1d0b1d7a84951c2c14efab8c927c987ddb28fd8d6d5ed81d1cfbf",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S07/05-item-completed.png",
+      "bytes": 58890,
+      "sha256": "9ee81f724d2bb7ec09de47255b3ee7492d6ae29674a3215b57a4996f6e31108f",
+      "mime": "image/png"
+    },
+    {
+      "path": "S07/05-item-completed.state.json",
+      "bytes": 40886,
+      "sha256": "d2c588c88bafce2755b5031e708bc342b95653c81f60e87585bef5ec9f939b43",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S07/06-item-reopened.png",
+      "bytes": 56331,
+      "sha256": "a28bdb798d161079d37e51e05730e7d19858436b70b69a3240fa862b4a94e296",
+      "mime": "image/png"
+    },
+    {
+      "path": "S07/06-item-reopened.state.json",
+      "bytes": 41131,
+      "sha256": "61a5bb259665eeac8d64f95cb2db36d6f23be4bcf1dc9076c201e9e2a3e0076e",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S07/07-after-reload.png",
+      "bytes": 22367,
+      "sha256": "5421c285a72080e50d73cc38de280e7bcbb8562a3fd042c42e2998fd12911c9e",
+      "mime": "image/png"
+    },
+    {
+      "path": "S07/07-after-reload.state.json",
+      "bytes": 14002,
+      "sha256": "6ae53a7593393c19e8998b61a95052573b335c3855fd4ba8a4135f7f391f49d1",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S07/detail-edit-memo-complete-reopen.storage-after.json",
+      "bytes": 1999,
+      "sha256": "5c1c7dc3d69ba62bdf06febb8734716297040a9c53e93639cca34d9f6f9c0baf",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S07/detail-edit-memo-complete-reopen.storage-before.json",
+      "bytes": 35,
+      "sha256": "09b547cae5cfe9d6e9eb51bcc78e6652f293c60aa718f77f57e58aca96d067fe",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S07/item-state.raw.json",
+      "bytes": 1594,
+      "sha256": "c8b1746f92fabea8b6d93563e7a4d061f84ddc0aa7d5a744268a9b15b55e9c69",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S07/scenario-summary.json",
+      "bytes": 799,
+      "sha256": "b063c2086ef5947ef52d7168981453f563e9653646f087e5cef017978606f42b",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S08/01-saved-editor-dirty-before-cancel.png",
+      "bytes": 57020,
+      "sha256": "3bce1b3258e16d5b531832bc7168bc0fc1238fe59350debfbb38302d88179ce7",
+      "mime": "image/png"
+    },
+    {
+      "path": "S08/01-saved-editor-dirty-before-cancel.state.json",
+      "bytes": 75603,
+      "sha256": "ce8462dec01991f210fe50907aaae5867f79fd7e76c08072cd7c5bc3c3715b66",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S08/02-saved-editor-cancel-confirmation.png",
+      "bytes": 57906,
+      "sha256": "3ed6204a7437d692df5b180e7000c3d33d1c3d4b93124fcd90387c518909ab5f",
+      "mime": "image/png"
+    },
+    {
+      "path": "S08/02-saved-editor-cancel-confirmation.state.json",
+      "bytes": 76995,
+      "sha256": "e7b490015a547e105d35031350e4751515128d5c916399b6f75b5d4bdf0a5533",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S08/03-failure-injection-recoverable-error.png",
+      "bytes": 57386,
+      "sha256": "4f7f06b868825664ca37e089b350a9aef6aef7184ead11f4353615680b914582",
+      "mime": "image/png"
+    },
+    {
+      "path": "S08/03-failure-injection-recoverable-error.state.json",
+      "bytes": 76639,
+      "sha256": "61d67291a28da014f92040087e0b87c6ccc78eb2b2532d1984cb94f649c41466",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S08/04-retry-saved-plan.png",
+      "bytes": 53540,
+      "sha256": "69847f2ded9dfe1c09ad13c0ebb58426db21cd56c1513d4e8623bf05c9d0700d",
+      "mime": "image/png"
+    },
+    {
+      "path": "S08/04-retry-saved-plan.state.json",
+      "bytes": 27129,
+      "sha256": "fd333a40176dc2715bf103d0dfe9194ab78b695e59d956be71d00ea1b5ea4599",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S08/05-saved-editor-reload-persisted.png",
+      "bytes": 50656,
+      "sha256": "faa2cfc67266235e6578552e691294f5291496843d6f55691bf6637bfb911097",
+      "mime": "image/png"
+    },
+    {
+      "path": "S08/05-saved-editor-reload-persisted.state.json",
+      "bytes": 26795,
+      "sha256": "8acffdf5cc53b3645f03006776ac1d4343386fd8a2edb71262db177e9fd4ee66",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S08/cancel-byte-comparison.json",
+      "bytes": 2111,
+      "sha256": "4d000ee76f94dadcadffdc7eaaaec470b25625f9cf47ab8c12c7c87409f03222",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S08/reloaded-saved-record.raw.json",
+      "bytes": 560,
+      "sha256": "c253b3456e9ee4491da9899068bc7366411c7767fa99be895d3c74f18c53b37b",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S08/saved-editor-cancel-error-reload.storage-after.json",
+      "bytes": 2176,
+      "sha256": "8e75d7d0feb7326bb2ecadef7fa1cc3dab8fbec6dff218b15106b4de145e88a4",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S08/saved-editor-cancel-error-reload.storage-before.json",
+      "bytes": 35,
+      "sha256": "09b547cae5cfe9d6e9eb51bcc78e6652f293c60aa718f77f57e58aca96d067fe",
+      "mime": "application/json; charset=utf-8"
+    },
+    {
+      "path": "S08/scenario-summary.json",
+      "bytes": 906,
+      "sha256": "c758d9beb35a16b45dddda8a837103e625f13113377fc809643163d2124aa54e",
+      "mime": "application/json; charset=utf-8"
+    }
+  ],
+  "manifestSelfExcludedFromFiles": true
+}
