@@ -74,8 +74,8 @@ Flow Map에서 제목을 `시험 전 핵심 단원`으로 바꾸고 8개 중 7�
 
 | Viewport | Before | After |
 |---|---|---|
-| 390×844 | [p0-02-map-before-390x844.png](../../../output/playwright/p0-02-map-before-390x844.png) | [p0-02-map-after-390x844.png](../../../output/playwright/p0-02-map-after-390x844.png) |
-| 1440×1000 | [p0-02-map-before-1440x1000.png](../../../output/playwright/p0-02-map-before-1440x1000.png) | [p0-02-map-after-1440x1000.png](../../../output/playwright/p0-02-map-after-1440x1000.png) |
+| 390×844 | [p0-02-map-before-390x844.png](./evidence/p0-02/p0-02-map-before-390x844.png) | [p0-02-map-after-390x844.png](./evidence/p0-02/p0-02-map-after-390x844.png) |
+| 1440×1000 | [p0-02-map-before-1440x1000.png](./evidence/p0-02/p0-02-map-before-1440x1000.png) | [p0-02-map-after-1440x1000.png](./evidence/p0-02/p0-02-map-after-1440x1000.png) |
 
 After SHA-256:
 
