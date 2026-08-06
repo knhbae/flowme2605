@@ -418,7 +418,7 @@ await writeFile(
   'utf8',
 );
 
-let claudePrompt = await readFile(claudePromptPath, 'utf8');
+let claudePrompt = (await readFile(claudePromptPath, 'utf8')).replace(/\r\n?/gu, '\n');
 claudePrompt = claudePrompt.replaceAll(
   './07-blind-evidence-allowlist-template.md',
   './08-claude-static-evidence-allowlist.md',
