@@ -1,0 +1,1106 @@
+{
+  "schemaVersion": "flowme-recent-ai-flow-content-evaluation-v1",
+  "evaluatedAt": "2026-07-29T23:59:00+09:00",
+  "language": "ko-KR",
+  "evaluationBoundary": {
+    "sourceCommit": "a8d977b",
+    "sourceWorktree": "D:/flowme2605/flow-content-logic-final",
+    "sourceArtifact": "docs/content-audit/2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#corpusData",
+    "batchSelection": "directly_inspected_new_source 중 historical_preview와 boundary_control을 제외한 19건",
+    "startingCohort": 24,
+    "mergedIntoExistingUserJobs": 3,
+    "historicalExcluded": 1,
+    "boundaryExcluded": 1,
+    "evaluatedCandidates": 19,
+    "itemBearingCandidates": 17,
+    "fieldTemplateCandidates": 2,
+    "productionRuntimeChanged": false,
+    "liveSourceRefreshPerformed": false,
+    "observedUserSessions": 0,
+    "validationClaim": "internal_snapshot_review_only"
+  },
+  "dimensions": [
+    "User Need Fit",
+    "Execution Clarity",
+    "Content Fidelity",
+    "Portability",
+    "Cognitive Load",
+    "Copy Specificity",
+    "Source And Safety Separation",
+    "Accessibility And Operability"
+  ],
+  "thresholds": {
+    "draftOnly": {
+      "averageMin": 3.0,
+      "hardFailMax": 0
+    },
+    "publicMvp": {
+      "averageMin": 3.5,
+      "executionClarityMin": 4,
+      "sourceAndSafetyMinForRepresentativeOrSensitive": 4,
+      "hardFailMax": 0
+    },
+    "keepAdditionalGates": {
+      "sourceRefCoverage": 1,
+      "rowDispositionCoverage": 1,
+      "unsupportedActionCount": 0,
+      "inventedScheduleCount": 0
+    }
+  },
+  "batchFacts": {
+    "sourceRows": 290,
+    "items": 225,
+    "itemsWithSourceRowIds": 225,
+    "itemsWithCanonicalSourceRefs": 0,
+    "itemsWithObservableDoneWhen": 0,
+    "itemsWithSchedule": 0,
+    "itemsWithCautionMemoIds": 0,
+    "candidatesRequiringSafetyCaution": 12,
+    "emptyPrimaryDestinations": 2,
+    "batchAverage": 3.06,
+    "candidatesAtOrAboveAverage35": 4,
+    "candidatesWithExecutionClarityAtLeast4": 0,
+    "candidatesWithSourceSafetyAtLeast4": 3,
+    "keep": 0,
+    "revise": 11,
+    "park": 8,
+    "reject": 0
+  },
+  "scoreKey": {
+    "need": "User Need Fit",
+    "execution": "Execution Clarity",
+    "fidelity": "Content Fidelity",
+    "portability": "Portability",
+    "cognitive": "Cognitive Load",
+    "copy": "Copy Specificity",
+    "sourceSafety": "Source And Safety Separation",
+    "accessibility": "Accessibility And Operability"
+  },
+  "evaluations": [
+    {
+      "candidateId": "new:new-a01-seoul-wedding-110",
+      "title": "서울시 결혼 준비 추가금 체크 110선",
+      "sourceUrl": "https://news.seoul.go.kr/economy/archives/562367",
+      "sourceAvailability": "frozen_snapshot_2026-07-29",
+      "sourceCoverage": "representative_rows_12_of_110",
+      "sourceRows": 12,
+      "sourceRowExamples": [
+        "예식장 기본 대관료 확인",
+        "이른 시간 시작 추가비 확인"
+      ],
+      "userNeed": "예식장·스드메 견적을 비교하면서 누락된 추가금과 계약 조건을 기록한다.",
+      "sourceShape": "table_rows",
+      "structure": {
+        "steps": 0,
+        "items": 0,
+        "primaryArtifact": "sheet",
+        "primaryDestinationRecords": 0
+      },
+      "firstAction": null,
+      "completionCoverage": null,
+      "sourceRowIdCoverage": null,
+      "canonicalSourceRefCoverage": null,
+      "scores": {
+        "need": 4,
+        "execution": 1,
+        "fidelity": 2,
+        "portability": 1,
+        "cognitive": 2,
+        "copy": 2,
+        "sourceSafety": 3,
+        "accessibility": 2
+      },
+      "average": 2.13,
+      "lowestReasons": [
+        "110선을 약속하지만 원문 행은 대표 12개만 확보됐다.",
+        "primary Sheet가 generated로 표시되지만 실제 행은 0개라 첫 행동과 결과가 없다."
+      ],
+      "hardFails": [
+        "QH-04",
+        "QH-05"
+      ],
+      "publicationBlockers": [
+        "나머지 98개 source row와 누락 사유 미확보",
+        "Sheet activation 및 destination row 0",
+        "권리 조건 검토 미완료"
+      ],
+      "verdict": "Park",
+      "priorityFixes": [
+        "110개 전체 행을 가져오거나 제목을 검증된 12개 샘플로 축소한다.",
+        "업체별 견적명·항목·기본가·추가금·조건을 갖춘 실제 Sheet 행을 만든다.",
+        "비교 결과와 계약 확정을 구분하고 개인 견적은 private overlay에만 둔다."
+      ]
+    },
+    {
+      "candidateId": "new:new-a02-seoul-museum-group",
+      "title": "서울상상나라 단체관람 준비와 당일 인솔",
+      "sourceUrl": "https://www.seoulchildrensmuseum.org/news/boardView.do?bbsCnum=300&id=935",
+      "sourceAvailability": "frozen_snapshot_2026-07-29",
+      "sourceCoverage": "partial_12_of_30_without_omission_disposition",
+      "sourceRows": 12,
+      "sourceRowExamples": [
+        "홈페이지에서 단체관람을 사전 예약",
+        "퇴장 10분 전 운전기사에게 연락"
+      ],
+      "userNeed": "교사가 단체 견학을 빠뜨림 없이 준비하고 당일 인원·동선·퇴장을 관리한다.",
+      "sourceShape": "procedure_rows",
+      "structure": {
+        "steps": 4,
+        "items": 12,
+        "primaryArtifact": "checklist",
+        "primaryDestinationRecords": 4
+      },
+      "firstAction": "홈페이지에서 단체관람을 사전 예약",
+      "completionCoverage": 0,
+      "sourceRowIdCoverage": 1,
+      "canonicalSourceRefCoverage": 0,
+      "scores": {
+        "need": 5,
+        "execution": 2,
+        "fidelity": 4,
+        "portability": 3,
+        "cognitive": 3,
+        "copy": 2,
+        "sourceSafety": 2,
+        "accessibility": 3
+      },
+      "average": 3.0,
+      "lowestReasons": [
+        "12개 제목은 원문 행과 연결되지만 description과 doneWhen이 모두 비었다.",
+        "필수 관람일 입력이 Item/Calendar에 연결되지 않고 아동 인솔 주의도 실행 화면에 없다."
+      ],
+      "hardFails": [
+        "QH-03"
+      ],
+      "publicationBlockers": [
+        "원문 30개 행 중 18개 누락 및 omission reason 미기록",
+        "canonical SourceRef 0/12",
+        "관람일 schedule 0/12",
+        "child supervision caution 연결 0/12"
+      ],
+      "verdict": "Park",
+      "priorityFixes": [
+        "원문 30개 행 전체를 재검토하고 비실행 행도 omission reason을 남긴다.",
+        "예약 완료·승인 확인·도착 인원 확인처럼 관찰 가능한 완료 기준을 붙인다.",
+        "visitDate를 예약과 당일 인솔 Item에 연결하고 임의 날짜는 만들지 않는다.",
+        "인솔교사 비율·아동 이탈 방지·PII 금지 주의를 별도 caution으로 고정한다."
+      ]
+    },
+    {
+      "candidateId": "new:new-a03-kakaopay-jeonse",
+      "title": "전세 계약 단계별 체크 포인트",
+      "sourceUrl": "https://contents.kakaopay.com/contents/2056",
+      "sourceAvailability": "frozen_snapshot_2026-07-29",
+      "sourceCoverage": "complete",
+      "sourceRows": 8,
+      "sourceRowExamples": [
+        "주변 시세와 비정상적으로 낮은 가격 비교",
+        "주택 인도 후 전세보증보험 가입 여부 점검"
+      ],
+      "userNeed": "전세 계약 단계별 위험 점검을 빠뜨리지 않고 증빙 상태를 관리한다.",
+      "sourceShape": "checklist_rows",
+      "structure": {
+        "steps": 3,
+        "items": 8,
+        "primaryArtifact": "checklist",
+        "primaryDestinationRecords": 3
+      },
+      "firstAction": "주변 시세와 비정상적으로 낮은 가격 비교",
+      "completionCoverage": 0,
+      "sourceRowIdCoverage": 1,
+      "canonicalSourceRefCoverage": 0,
+      "scores": {
+        "need": 5,
+        "execution": 2,
+        "fidelity": 4,
+        "portability": 3,
+        "cognitive": 3,
+        "copy": 2,
+        "sourceSafety": 2,
+        "accessibility": 3
+      },
+      "average": 3.0,
+      "lowestReasons": [
+        "법률·금융 점검이 제목형 checkbox로만 있어 무엇을 증빙하면 완료인지 알 수 없다.",
+        "모두 체크해도 안전한 계약을 보장하지 않는다는 경계와 공식 확인처가 없다."
+      ],
+      "hardFails": [
+        "CH-09"
+      ],
+      "publicationBlockers": [
+        "canonical SourceRef 0/8",
+        "legal_financial_caution 연결 0/8",
+        "원문 freshness와 전문 검토 미확인"
+      ],
+      "verdict": "Revise",
+      "priorityFixes": [
+        "각 행을 확인 전·증빙 확보·전문가 확인 필요 상태로 바꾸고 단순 완료 체크를 금지한다.",
+        "등기부·신분·특약·신고 등 공식 확인처와 확인 시점을 Item에 붙인다.",
+        "위험 신호가 있으면 계약 진행을 멈추고 전문가에게 확인한다는 중단 조건을 둔다."
+      ]
+    },
+    {
+      "candidateId": "new:new-a05-nfa-home-fire",
+      "title": "집의 소방시설 설치·관리 상태 점검",
+      "sourceUrl": "https://nfa.go.kr/nfa/safetyinfo/residentialfire/residentialfire/",
+      "sourceAvailability": "frozen_snapshot_2026-07-29",
+      "sourceCoverage": "complete",
+      "sourceRows": 11,
+      "sourceRowExamples": [
+        "주택용 소방시설 설치 대상 범위 확인",
+        "감지기 배터리 수명 약 10년 확인"
+      ],
+      "userNeed": "집의 방·층별 소방시설 설치 수량과 설치·관리 상태를 점검한다.",
+      "sourceShape": "procedure_rows",
+      "structure": {
+        "steps": 3,
+        "items": 11,
+        "primaryArtifact": "checklist",
+        "primaryDestinationRecords": 3
+      },
+      "firstAction": "주택용 소방시설 설치 대상 범위 확인",
+      "completionCoverage": 0,
+      "sourceRowIdCoverage": 1,
+      "canonicalSourceRefCoverage": 0,
+      "scores": {
+        "need": 5,
+        "execution": 2,
+        "fidelity": 4,
+        "portability": 3,
+        "cognitive": 2,
+        "copy": 2,
+        "sourceSafety": 2,
+        "accessibility": 3
+      },
+      "average": 2.88,
+      "lowestReasons": [
+        "설치 행동·제품 사실·오작동 대응이 동급 체크로 섞였고 상태 판정 기준이 없다.",
+        "소방 안전 주의와 전문가 확인이 Item 또는 Memo에 연결되지 않았다."
+      ],
+      "hardFails": [
+        "QH-03",
+        "CH-09"
+      ],
+      "publicationBlockers": [
+        "canonical SourceRef 0/11",
+        "fire safety caution 연결 0/11",
+        "설치·검사·교체 완료 기준 0/11"
+      ],
+      "verdict": "Revise",
+      "priorityFixes": [
+        "설치 기준·실제 설치 확인·월간 시험·교체 판단을 서로 다른 상태와 완료 기준으로 나눈다.",
+        "오작동·손상·설치 불확실 시 직접 수리보다 전문 점검을 요청하는 중단 조건을 둔다.",
+        "방 수·층 수는 필요한 수량 계산과 Sheet 기록에만 사용한다."
+      ]
+    },
+    {
+      "candidateId": "new:new-a07-seoul-bus-support",
+      "title": "서울시 장애인 버스요금 지원 신청",
+      "sourceUrl": "https://news.seoul.go.kr/welfare/dsbus/ko/conts/view.do?menuId=K_USAGE_INFO",
+      "sourceAvailability": "frozen_snapshot_2026-07-29",
+      "sourceCoverage": "complete",
+      "sourceRows": 7,
+      "sourceRowExamples": [
+        "신청자격 체크리스트 작성",
+        "신청 완료 상태 확인"
+      ],
+      "userNeed": "자격과 준비물을 확인한 뒤 공식 사이트에서 버스요금 지원 신청을 완료한다.",
+      "sourceShape": "procedure_rows",
+      "structure": {
+        "steps": 1,
+        "items": 7,
+        "primaryArtifact": "checklist",
+        "primaryDestinationRecords": 1
+      },
+      "firstAction": "신청자격 체크리스트 작성",
+      "completionCoverage": 0,
+      "sourceRowIdCoverage": 1,
+      "canonicalSourceRefCoverage": 0,
+      "scores": {
+        "need": 5,
+        "execution": 2,
+        "fidelity": 4,
+        "portability": 3,
+        "cognitive": 4,
+        "copy": 2,
+        "sourceSafety": 2,
+        "accessibility": 3
+      },
+      "average": 3.13,
+      "lowestReasons": [
+        "7개 신청 단계가 명확하지만 상세와 완료 기준이 없어 열어도 실행 정보가 늘지 않는다.",
+        "개인정보는 공식 사이트에서만 입력해야 한다는 경계가 실행 화면에 없다."
+      ],
+      "hardFails": [
+        "QH-06"
+      ],
+      "publicationBlockers": [
+        "canonical SourceRef 0/7",
+        "공식 사이트 전환과 신청 완료 receipt 기준 없음",
+        "PII official-site-only 경계 미노출"
+      ],
+      "verdict": "Revise",
+      "priorityFixes": [
+        "신청 유형별 필요한 자격·서류·공식 링크를 조건부로 보여 준다.",
+        "PII는 FLOW에 저장하지 않고 공식 신청 화면에서만 입력하도록 고정한다.",
+        "제출 완료 화면 또는 접수 상태 확인을 최종 doneWhen으로 둔다."
+      ]
+    },
+    {
+      "candidateId": "new:new-a08-income-tax",
+      "title": "종합소득세 신고 여부·기한 관리",
+      "sourceUrl": "https://b.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7664&mi=2224",
+      "sourceAvailability": "frozen_snapshot_2026-07-29",
+      "sourceCoverage": "representative_condition_rows_10_of_20_plus",
+      "sourceRows": 10,
+      "sourceRowExamples": [
+        "종합소득이 있으면 다음 해 5월 1일부터 5월 31일까지 신고·납부",
+        "홈택스 신고 후 위택스로 개인지방소득세 신고 이동 가능"
+      ],
+      "userNeed": "본인의 신고 필요 여부와 적용 기한을 확인하고 해당 신고·납부 deadline을 관리한다.",
+      "sourceShape": "table_rows",
+      "structure": {
+        "steps": 1,
+        "items": 10,
+        "primaryArtifact": "todo",
+        "primaryDestinationRecords": 11
+      },
+      "firstAction": "종합소득이 있으면 다음 해 5월 1일부터 5월 31일까지 신고·납부",
+      "completionCoverage": 0,
+      "sourceRowIdCoverage": 1,
+      "canonicalSourceRefCoverage": 0,
+      "scores": {
+        "need": 5,
+        "execution": 1,
+        "fidelity": 2,
+        "portability": 2,
+        "cognitive": 2,
+        "copy": 2,
+        "sourceSafety": 1,
+        "accessibility": 2
+      },
+      "average": 2.13,
+      "lowestReasons": [
+        "개인별 조건을 판정하기 전의 세법 문장 10개가 실행 Todo 11개로 활성화됐다.",
+        "due deadline·예외·전문 확인 경계가 없고 원문도 대표 10/20+ 행만 확보됐다."
+      ],
+      "hardFails": [
+        "QH-04",
+        "CH-09"
+      ],
+      "publicationBlockers": [
+        "나머지 조건 행과 omission reason 미확보",
+        "taxYear·taxpayerContext 분기 미구현",
+        "Todo due와 세무 caution 없음",
+        "live freshness 미검증"
+      ],
+      "verdict": "Park",
+      "priorityFixes": [
+        "세법 행을 실행 Todo가 아니라 조건 설명으로 두고 사용자 적용 여부를 공식 화면에서 확인하게 한다.",
+        "적용되는 경우에만 신고·납부 Todo와 정확한 due를 생성한다.",
+        "전체 조건·예외를 다시 캡처하고 현재 연도 freshness와 세무 검토를 통과한다."
+      ]
+    },
+    {
+      "candidateId": "new:new-b03-fridge-week",
+      "title": "냉장고 파먹기 평일 5일 식단",
+      "sourceUrl": "https://ohou.se/advices/8086",
+      "sourceAvailability": "frozen_snapshot_2026-07-29",
+      "sourceCoverage": "complete",
+      "sourceRows": 5,
+      "sourceRowExamples": [
+        "월요일 — 두부조림, 가자미살 계란전",
+        "금요일 — 새우계란볶음밥, 김치콩나물국"
+      ],
+      "userNeed": "냉장고 재료를 활용해 평일 5일 메뉴를 순서대로 실행한다.",
+      "sourceShape": "weekday_rows",
+      "structure": {
+        "steps": 5,
+        "items": 5,
+        "primaryArtifact": "sheet",
+        "primaryDestinationRecords": 5
+      },
+      "firstAction": "월요일 — 두부조림, 가자미살 계란전",
+      "completionCoverage": 0,
+      "sourceRowIdCoverage": 1,
+      "canonicalSourceRefCoverage": 0,
+      "scores": {
+        "need": 4,
+        "execution": 2,
+        "fidelity": 4,
+        "portability": 4,
+        "cognitive": 4,
+        "copy": 2,
+        "sourceSafety": 3,
+        "accessibility": 3
+      },
+      "average": 3.25,
+      "lowestReasons": [
+        "요일·메뉴 행과 Sheet 목적지는 자연스럽지만 재료 확인·조리 링크·완료 기준이 없다.",
+        "선택한 시작 주가 실제 날짜에 연결되지 않아 Calendar는 아직 실행 가능하지 않다."
+      ],
+      "hardFails": [],
+      "publicationBlockers": [
+        "canonical SourceRef 0/5",
+        "doneWhen 0/5",
+        "food caution과 레시피 child source 미연결"
+      ],
+      "verdict": "Revise",
+      "priorityFixes": [
+        "메뉴 행을 유지하되 장보기 상태와 각 레시피 링크를 Sheet 열로 보존한다.",
+        "두 메뉴를 각각 완료할 필요가 있으면 Item을 분리하고 그렇지 않으면 한 끼 완료 기준을 명시한다.",
+        "weekStart를 선택한 경우에만 실제 월~금 날짜를 계산한다."
+      ]
+    },
+    {
+      "candidateId": "new:new-b04-organize-seven",
+      "title": "한 공간 정리정돈 7단계",
+      "sourceUrl": "https://ohou.se/advices/28",
+      "sourceAvailability": "frozen_snapshot_2026-07-29",
+      "sourceCoverage": "complete",
+      "sourceRows": 7,
+      "sourceRowExamples": [
+        "어디부터 시작할지 정하기",
+        "결정한 자리에 모든 물건 집어넣기"
+      ],
+      "userNeed": "한 공간을 정해 정리 순서를 놓치지 않고 끝낸다.",
+      "sourceShape": "ordered_procedure",
+      "structure": {
+        "steps": 1,
+        "items": 7,
+        "primaryArtifact": "checklist",
+        "primaryDestinationRecords": 1
+      },
+      "firstAction": "어디부터 시작할지 정하기",
+      "completionCoverage": 0,
+      "sourceRowIdCoverage": 1,
+      "canonicalSourceRefCoverage": 0,
+      "scores": {
+        "need": 5,
+        "execution": 3,
+        "fidelity": 4,
+        "portability": 4,
+        "cognitive": 4,
+        "copy": 3,
+        "sourceSafety": 4,
+        "accessibility": 3
+      },
+      "average": 3.75,
+      "lowestReasons": [
+        "첫 행동과 7단계 순서는 이해되지만 완료 기준이 0/7이라 중간 상태와 끝을 판단하기 어렵다.",
+        "canonical SourceRef 객체와 실제 사용자 조작 근거가 없다."
+      ],
+      "hardFails": [],
+      "publicationBlockers": [
+        "canonical SourceRef 0/7",
+        "doneWhen 0/7",
+        "observed user 0"
+      ],
+      "verdict": "Revise",
+      "priorityFixes": [
+        "정리할 공간 입력 후 첫 Item을 선택한 공간 이름으로 구체화한다.",
+        "각 단계에 사진·분류 완료·정해진 위치 수납처럼 관찰 가능한 doneWhen을 붙인다.",
+        "일정은 사용자가 시작 시간을 선택한 경우에만 보조로 제공한다."
+      ]
+    },
+    {
+      "candidateId": "new:new-b05-storage-projects",
+      "title": "신박 수납 프로젝트 5개",
+      "sourceUrl": "https://ohou.se/advices/9345",
+      "sourceAvailability": "frozen_snapshot_2026-07-29",
+      "sourceCoverage": "complete_project_titles_only",
+      "sourceRows": 5,
+      "sourceRowExamples": [
+        "쓰레기 봉투 수납",
+        "북스탠드 활용 수납"
+      ],
+      "userNeed": "다섯 수납 프로젝트 중 하나를 골라 나중에 실행한다.",
+      "sourceShape": "resource_collection",
+      "structure": {
+        "steps": 1,
+        "items": 5,
+        "primaryArtifact": "todo",
+        "primaryDestinationRecords": 6
+      },
+      "firstAction": "쓰레기 봉투 수납",
+      "completionCoverage": 0,
+      "sourceRowIdCoverage": 1,
+      "canonicalSourceRefCoverage": 0,
+      "scores": {
+        "need": 3,
+        "execution": 2,
+        "fidelity": 4,
+        "portability": 3,
+        "cognitive": 4,
+        "copy": 2,
+        "sourceSafety": 2,
+        "accessibility": 3
+      },
+      "average": 2.88,
+      "lowestReasons": [
+        "프로젝트 이름을 고르는 큐는 보존했지만 선택 후 실행할 child 절차가 없다.",
+        "도구 사용 주의와 완료 기준도 없어 이름을 저장하는 것 이상으로 진행되지 않는다."
+      ],
+      "hardFails": [
+        "QH-06"
+      ],
+      "publicationBlockers": [
+        "child source import 미실행",
+        "canonical SourceRef 0/5",
+        "tool caution 연결 0/5"
+      ],
+      "verdict": "Park",
+      "priorityFixes": [
+        "루트 페이지는 선택용 Todo queue로만 유지하고 선택한 프로젝트 child source를 별도로 가져온다.",
+        "child source를 확인하기 전에는 실행 Checklist를 생성하지 않는다.",
+        "필요 도구·위험·완료 결과를 child source 근거로만 추가한다."
+      ]
+    },
+    {
+      "candidateId": "new:new-b06-wtable-lemon-weekend",
+      "title": "레몬 위크엔드 베이킹 세션",
+      "sourceUrl": "https://wtable.co.kr/recipes/YVHyCaPf13UspJnCxQyBDroh",
+      "sourceAvailability": "frozen_snapshot_2026-07-29",
+      "sourceCoverage": "representative_12_of_19_verified_rows",
+      "sourceRows": 12,
+      "sourceRowExamples": [
+        "달걀을 1시간 전 실온에 꺼내기",
+        "반죽 일부와 버터를 섞어 본 반죽에 합치기"
+      ],
+      "userNeed": "50분 베이킹 세션에서 준비와 조리 단계를 순서대로 따른다.",
+      "sourceShape": "ordered_procedure",
+      "structure": {
+        "steps": 2,
+        "items": 12,
+        "primaryArtifact": "checklist",
+        "primaryDestinationRecords": 2
+      },
+      "firstAction": "달걀을 1시간 전 실온에 꺼내기",
+      "completionCoverage": 0,
+      "sourceRowIdCoverage": 1,
+      "canonicalSourceRefCoverage": 0,
+      "scores": {
+        "need": 4,
+        "execution": 2,
+        "fidelity": 2,
+        "portability": 3,
+        "cognitive": 3,
+        "copy": 2,
+        "sourceSafety": 2,
+        "accessibility": 3
+      },
+      "average": 2.63,
+      "lowestReasons": [
+        "19개 검증 행 중 12개만 포함돼 반죽 합치기에서 끝나며 굽기·시럽·완성이 없다.",
+        "불완전한 12개 Checklist가 완결된 50분 세션처럼 보이고 오븐 주의도 없다."
+      ],
+      "hardFails": [
+        "QH-04"
+      ],
+      "publicationBlockers": [
+        "나머지 7개 source row와 omission reason 미확보",
+        "doneWhen 0/12",
+        "oven heat caution 연결 0/12"
+      ],
+      "verdict": "Park",
+      "priorityFixes": [
+        "굽기·시럽·식힘·완성까지 19개 전체 행을 다시 가져온다.",
+        "원문 단계의 조리 완료 상태와 오븐 화상 주의를 연결한다.",
+        "전체 행을 확보하기 전에는 제목을 완결 세션으로 표시하지 않는다."
+      ]
+    },
+    {
+      "candidateId": "new:new-b07-interior-consultation",
+      "title": "인테리어 상담·실측·견적 비교 준비",
+      "sourceUrl": "https://ohou.se/advices/12360",
+      "sourceAvailability": "frozen_snapshot_2026-07-29",
+      "sourceCoverage": "complete",
+      "sourceRows": 6,
+      "sourceRowExamples": [
+        "전체 공사 흐름과 공사 방식 이해하기",
+        "설명·소통·요구 반영을 기준으로 업체 선택하기"
+      ],
+      "userNeed": "인테리어 상담·실측·견적 비교를 준비하고 업체를 결정한다.",
+      "sourceShape": "compare_decide",
+      "structure": {
+        "steps": 1,
+        "items": 6,
+        "primaryArtifact": "checklist",
+        "primaryDestinationRecords": 1
+      },
+      "firstAction": "전체 공사 흐름과 공사 방식 이해하기",
+      "completionCoverage": 0,
+      "sourceRowIdCoverage": 1,
+      "canonicalSourceRefCoverage": 0,
+      "scores": {
+        "need": 5,
+        "execution": 2,
+        "fidelity": 4,
+        "portability": 3,
+        "cognitive": 3,
+        "copy": 2,
+        "sourceSafety": 4,
+        "accessibility": 3
+      },
+      "average": 3.25,
+      "lowestReasons": [
+        "6개 제목은 보존됐지만 상세·완료 기준이 없어 견적 비교 결과를 남길 수 없다.",
+        "비교·결정 user job인데 primary Checklist가 업체별 값 비교를 충분히 지원하지 않는다."
+      ],
+      "hardFails": [],
+      "publicationBlockers": [
+        "canonical SourceRef 0/6",
+        "doneWhen 0/6",
+        "주소·예산·견적 private overlay 경계 미노출"
+      ],
+      "verdict": "Revise",
+      "priorityFixes": [
+        "준비 행동은 Checklist, 업체별 견적·범위·설명·소통 평가는 Sheet로 분리한다.",
+        "업체 선택은 비교 열이 채워지고 선택 이유를 기록했을 때 완료하도록 한다.",
+        "주소·예산·견적서는 개인 overlay에만 저장한다."
+      ]
+    },
+    {
+      "candidateId": "new:new-b08-banchan-ten",
+      "title": "밑반찬 10종 주간 비축",
+      "sourceUrl": "https://ohou.se/advices/8563",
+      "sourceAvailability": "frozen_snapshot_2026-07-29",
+      "sourceCoverage": "complete",
+      "sourceRows": 5,
+      "sourceRowExamples": [
+        "월요일 — 멸치볶음, 콩나물무침",
+        "금요일 — 어묵볶음, 시래기된장조림"
+      ],
+      "userNeed": "오래 보관 가능한 밑반찬 10종을 요일 묶음으로 만들어 비축한다.",
+      "sourceShape": "weekday_rows",
+      "structure": {
+        "steps": 5,
+        "items": 5,
+        "primaryArtifact": "checklist",
+        "primaryDestinationRecords": 5
+      },
+      "firstAction": "월요일 — 멸치볶음, 콩나물무침",
+      "completionCoverage": 0,
+      "sourceRowIdCoverage": 1,
+      "canonicalSourceRefCoverage": 0,
+      "scores": {
+        "need": 4,
+        "execution": 2,
+        "fidelity": 3,
+        "portability": 3,
+        "cognitive": 3,
+        "copy": 2,
+        "sourceSafety": 3,
+        "accessibility": 3
+      },
+      "average": 2.88,
+      "lowestReasons": [
+        "요일별 두 반찬을 한 Item으로 묶어 하나만 끝난 부분 완료를 기록할 수 없다.",
+        "재료·레시피·보관 주의·완료 기준이 모두 비었다."
+      ],
+      "hardFails": [],
+      "publicationBlockers": [
+        "canonical SourceRef 0/5",
+        "doneWhen 0/5",
+        "food caution과 child recipe 미연결"
+      ],
+      "verdict": "Revise",
+      "priorityFixes": [
+        "각 반찬을 독립 Item으로 두고 요일은 Step 또는 user pacing으로만 유지한다.",
+        "각 레시피 링크와 보관 조건을 연결한다.",
+        "weekStart를 받은 경우에만 날짜별 묶음을 만든다."
+      ]
+    },
+    {
+      "candidateId": "new:new-c01-programmers-kit",
+      "title": "코딩테스트 고득점 Kit 47문제",
+      "sourceUrl": "https://school.programmers.co.kr/learn/challenges?tab=algorithm_practice_kit",
+      "sourceAvailability": "frozen_snapshot_2026-07-29",
+      "sourceCoverage": "complete",
+      "sourceRows": 47,
+      "sourceRowExamples": [
+        "완주하지 못한 선수 · Level 1",
+        "방의 개수"
+      ],
+      "userNeed": "코딩테스트 유형별 47문제 풀이 진도를 관리한다.",
+      "sourceShape": "resource_collection",
+      "structure": {
+        "steps": 10,
+        "items": 47,
+        "primaryArtifact": "todo",
+        "primaryDestinationRecords": 57
+      },
+      "firstAction": "완주하지 못한 선수",
+      "completionCoverage": 0,
+      "sourceRowIdCoverage": 1,
+      "canonicalSourceRefCoverage": 0,
+      "scores": {
+        "need": 5,
+        "execution": 3,
+        "fidelity": 5,
+        "portability": 4,
+        "cognitive": 3,
+        "copy": 3,
+        "sourceSafety": 4,
+        "accessibility": 3
+      },
+      "average": 3.75,
+      "lowestReasons": [
+        "47개 문제와 10개 유형은 정확히 보존됐지만 완료 기준이 0/47이다.",
+        "57개 Todo record는 parent+child 수이므로 destination에서 유형 parent와 문제 task를 분명히 보여 줘야 한다."
+      ],
+      "hardFails": [],
+      "publicationBlockers": [
+        "canonical SourceRef 0/47",
+        "doneWhen 0/47",
+        "계정 진도 접근과 콘텐츠 이용 권리 미검토",
+        "observed user 0"
+      ],
+      "verdict": "Revise",
+      "priorityFixes": [
+        "문제 URL·난이도·유형을 보존하고 채점 통과 또는 풀이 기록을 doneWhen으로 둔다.",
+        "유형은 parent, 47문제는 child Todo로 유지해 중복처럼 보이지 않게 한다.",
+        "startDate와 pacing을 입력한 경우에만 개인 일정에 투영한다."
+      ]
+    },
+    {
+      "candidateId": "new:new-c02-ifixit-hose",
+      "title": "새는 정원 호스 커넥터 교체",
+      "sourceUrl": "https://www.ifixit.com/Guide/How+to+Fix+a+Leaking+Garden+Hose+Connector/189188",
+      "sourceAvailability": "frozen_snapshot_2026-07-29",
+      "sourceCoverage": "complete",
+      "sourceRows": 6,
+      "sourceRowExamples": [
+        "호스를 분리해 안정된 작업면에 놓기",
+        "나사산에 테이프를 감고 연결한 뒤 누수 시험하기"
+      ],
+      "userNeed": "누수 나는 5/8인치 수 호스 커넥터를 교체한다.",
+      "sourceShape": "ordered_procedure",
+      "structure": {
+        "steps": 1,
+        "items": 6,
+        "primaryArtifact": "checklist",
+        "primaryDestinationRecords": 1
+      },
+      "firstAction": "호스를 분리해 안정된 작업면에 놓기",
+      "completionCoverage": 0,
+      "sourceRowIdCoverage": 1,
+      "canonicalSourceRefCoverage": 0,
+      "scores": {
+        "need": 5,
+        "execution": 3,
+        "fidelity": 5,
+        "portability": 4,
+        "cognitive": 4,
+        "copy": 4,
+        "sourceSafety": 2,
+        "accessibility": 3
+      },
+      "average": 3.75,
+      "lowestReasons": [
+        "6단계 원문과 상세는 잘 보존됐지만 절단·플라이어 작업의 안전 주의가 실행 화면에 없다.",
+        "5/8인치 부품 호환과 누수 시험 성공을 완료 기준으로 연결하지 않았다."
+      ],
+      "hardFails": [
+        "QH-03"
+      ],
+      "publicationBlockers": [
+        "canonical SourceRef 0/6",
+        "knife_and_pliers caution 연결 0/6",
+        "CC BY-NC-SA 비상업 조건과 FlowMe 사용 범위 검토 필요"
+      ],
+      "verdict": "Revise",
+      "priorityFixes": [
+        "절단 전 급수 분리·안정된 작업면·보호 장비와 중단 조건을 별도 caution으로 노출한다.",
+        "부품 규격 확인을 첫 필수 조건으로 두고 누수 없음 확인을 최종 doneWhen으로 둔다.",
+        "비상업 라이선스 범위를 확인하기 전 public promotion은 막는다."
+      ]
+    },
+    {
+      "candidateId": "new:new-c03-nps-junior-ranger",
+      "title": "Ice Age Trail Junior Ranger 활동책",
+      "sourceUrl": "https://www.nps.gov/iatr/learn/kidsyouth/junior-ranger.htm",
+      "sourceAvailability": "frozen_snapshot_2026-07-29",
+      "sourceCoverage": "complete",
+      "sourceRows": 12,
+      "sourceRowExamples": [
+        "FOOTSTEPS OF MAMMOTHS",
+        "Create Your Badge"
+      ],
+      "userNeed": "9개 활동을 수행하고 서약·증서·배지를 완성한다.",
+      "sourceShape": "lesson_rows",
+      "structure": {
+        "steps": 2,
+        "items": 12,
+        "primaryArtifact": "checklist",
+        "primaryDestinationRecords": 2
+      },
+      "firstAction": "FOOTSTEPS OF MAMMOTHS",
+      "completionCoverage": 0,
+      "sourceRowIdCoverage": 1,
+      "canonicalSourceRefCoverage": 0,
+      "scores": {
+        "need": 4,
+        "execution": 3,
+        "fidelity": 4,
+        "portability": 3,
+        "cognitive": 3,
+        "copy": 3,
+        "sourceSafety": 2,
+        "accessibility": 3
+      },
+      "average": 3.13,
+      "lowestReasons": [
+        "12개 활동은 보존됐지만 4개 상세가 비고 guardian/outdoor caution이 없다.",
+        "Wisconsin 현장 맥락·증서 이름 privacy·asset 권리의 한국 서비스 적용성이 미확인이다."
+      ],
+      "hardFails": [
+        "QH-03"
+      ],
+      "publicationBlockers": [
+        "canonical SourceRef 0/12",
+        "guardian_and_outdoor caution 연결 0/12",
+        "지역 적용성·asset 권리·certificate privacy 미확인"
+      ],
+      "verdict": "Park",
+      "priorityFixes": [
+        "현장 방문이 필요한 활동과 집에서 가능한 활동을 분리한다.",
+        "보호자 동행·야외 안전·개인 이름 저장 경계를 추가한다.",
+        "지역 한정성과 PDF asset 이용 범위를 확인한 뒤 대상 시장을 결정한다."
+      ]
+    },
+    {
+      "candidateId": "new:new-c04-instructables-origami",
+      "title": "Origami for Everyone 41개 프로젝트",
+      "sourceUrl": "https://www.instructables.com/Origami-For-Everyone/",
+      "sourceAvailability": "frozen_snapshot_2026-07-29",
+      "sourceCoverage": "complete_visible_collection_41",
+      "sourceRows": 41,
+      "sourceRowExamples": [
+        "Open Cube Modular Origami",
+        "How to Fold a Paper Flower"
+      ],
+      "userNeed": "종이접기 프로젝트를 골라 완료 상태와 다음 작품을 관리한다.",
+      "sourceShape": "resource_collection",
+      "structure": {
+        "steps": 1,
+        "items": 41,
+        "primaryArtifact": "todo",
+        "primaryDestinationRecords": 42
+      },
+      "firstAction": "Open Cube Modular Origami",
+      "completionCoverage": 0,
+      "sourceRowIdCoverage": 1,
+      "canonicalSourceRefCoverage": 0,
+      "scores": {
+        "need": 4,
+        "execution": 3,
+        "fidelity": 3,
+        "portability": 4,
+        "cognitive": 3,
+        "copy": 3,
+        "sourceSafety": 3,
+        "accessibility": 3
+      },
+      "average": 3.25,
+      "lowestReasons": [
+        "41개 링크 큐는 유용하지만 원문 소개의 30개 표현과 현재 41개 목록이 충돌한다.",
+        "작품 선택 후 실제 접기 절차는 child source를 다시 열어야 하며 권리도 제작자별로 다르다."
+      ],
+      "hardFails": [],
+      "publicationBlockers": [
+        "30/41 count freshness 불일치",
+        "canonical SourceRef 0/41",
+        "per-project creator rights와 child procedure 미확인"
+      ],
+      "verdict": "Park",
+      "priorityFixes": [
+        "제목을 날짜가 있는 41개 링크 snapshot으로 바꾸거나 원문 count를 다시 확인한다.",
+        "루트는 선택 큐로만 두고 선택한 child source를 별도 FLOW로 가져온다.",
+        "제작자별 권리와 링크 유효성을 확인한다."
+      ]
+    },
+    {
+      "candidateId": "new:new-c05-foodsafety-storage",
+      "title": "Cold Food Storage Chart 53행",
+      "sourceUrl": "https://www.foodsafety.gov/food-safety-charts/cold-food-storage-charts",
+      "sourceAvailability": "frozen_snapshot_2026-07-29",
+      "sourceCoverage": "complete",
+      "sourceRows": 53,
+      "sourceRowExamples": [
+        "Egg, chicken, ham, tuna, and macaroni salads · Refrigerator 3 to 4 days",
+        "Pizza"
+      ],
+      "userNeed": "보관 중인 식품의 종류와 보관 시작일을 기준으로 확인 시점을 관리한다.",
+      "sourceShape": "table_rows",
+      "structure": {
+        "steps": 0,
+        "items": 0,
+        "primaryArtifact": "sheet",
+        "primaryDestinationRecords": 0
+      },
+      "firstAction": null,
+      "completionCoverage": null,
+      "sourceRowIdCoverage": null,
+      "canonicalSourceRefCoverage": null,
+      "scores": {
+        "need": 5,
+        "execution": 1,
+        "fidelity": 4,
+        "portability": 1,
+        "cognitive": 2,
+        "copy": 2,
+        "sourceSafety": 2,
+        "accessibility": 2
+      },
+      "average": 2.38,
+      "lowestReasons": [
+        "53개 원문 행은 확보했지만 primary Sheet가 0행이고 식품 선택 후 확인 시점을 만드는 activation이 없다.",
+        "미국 기준의 한국 적용성·식품 안전 경계·시작일 의미가 확인되지 않았다."
+      ],
+      "hardFails": [
+        "QH-04",
+        "QH-05"
+      ],
+      "publicationBlockers": [
+        "Sheet destination row 0",
+        "foodType·storageState·anchorDate activation 미구현",
+        "한국 적용성과 food safety caution 미확인"
+      ],
+      "verdict": "Park",
+      "priorityFixes": [
+        "53개 행을 실제 Sheet로 내보내고 식품·상태 선택 결과를 한 행으로 활성화한다.",
+        "보관·개봉·조리 중 어떤 날짜를 기준으로 하는지 필수로 구분한다.",
+        "한국 적용성 검토 전에는 미국 공식 기준 snapshot임을 분명히 표시한다."
+      ]
+    },
+    {
+      "candidateId": "new:new-c06-goodfood-lemon",
+      "title": "Lemon drizzle cake 8단계",
+      "sourceUrl": "https://www.bbcgoodfood.com/recipes/lemon-drizzle-cake",
+      "sourceAvailability": "frozen_snapshot_2026-07-29",
+      "sourceCoverage": "complete",
+      "sourceRows": 8,
+      "sourceRowExamples": [
+        "오븐 예열 · 180C/160C fan/gas 4",
+        "완전히 식힌 뒤 꺼내어 제공하기"
+      ],
+      "userNeed": "기본 10조각 분량의 레몬 케이크를 한 세션에 만든다.",
+      "sourceShape": "ordered_procedure",
+      "structure": {
+        "steps": 1,
+        "items": 8,
+        "primaryArtifact": "checklist",
+        "primaryDestinationRecords": 1
+      },
+      "firstAction": "오븐 예열",
+      "completionCoverage": 0,
+      "sourceRowIdCoverage": 1,
+      "canonicalSourceRefCoverage": 0,
+      "scores": {
+        "need": 5,
+        "execution": 3,
+        "fidelity": 5,
+        "portability": 4,
+        "cognitive": 4,
+        "copy": 4,
+        "sourceSafety": 2,
+        "accessibility": 3
+      },
+      "average": 3.75,
+      "lowestReasons": [
+        "8단계와 세부 조리법은 잘 보존됐지만 오븐·알레르기·영국 단위 경계가 없다.",
+        "각 단계 doneWhen과 최종 완성 기준이 0/8이다."
+      ],
+      "hardFails": [
+        "QH-03"
+      ],
+      "publicationBlockers": [
+        "canonical SourceRef 0/8",
+        "oven_and_allergen caution 연결 0/8",
+        "영국 오븐·단위 localization 및 권리 검토 미완료"
+      ],
+      "verdict": "Revise",
+      "priorityFixes": [
+        "오븐 화상·알레르기 주의와 fan oven 단위 설명을 분리해 노출한다.",
+        "굽기 상태·시럽 흡수·완전 식힘을 관찰 가능한 doneWhen으로 둔다.",
+        "권리와 단위 검토 전에는 research-only를 유지한다."
+      ]
+    },
+    {
+      "candidateId": "new:new-c08-todoist-podcast",
+      "title": "Podcast Workflow 23개 작업",
+      "sourceUrl": "https://www.todoist.com/templates/podcast-workflow",
+      "sourceAvailability": "frozen_snapshot_2026-07-29",
+      "sourceCoverage": "complete",
+      "sourceRows": 23,
+      "sourceRowExamples": [
+        "Create 1-page overview with title, audience, content, frequency",
+        "Share on social media"
+      ],
+      "userNeed": "팟캐스트 사전기획부터 배포까지 한 회차 제작 과정을 완료한다.",
+      "sourceShape": "task_hierarchy",
+      "structure": {
+        "steps": 4,
+        "items": 23,
+        "primaryArtifact": "checklist",
+        "primaryDestinationRecords": 4
+      },
+      "firstAction": "Create 1-page overview with title, audience, content, frequency",
+      "completionCoverage": 0,
+      "sourceRowIdCoverage": 1,
+      "canonicalSourceRefCoverage": 0,
+      "scores": {
+        "need": 5,
+        "execution": 3,
+        "fidelity": 3,
+        "portability": 3,
+        "cognitive": 2,
+        "copy": 4,
+        "sourceSafety": 3,
+        "accessibility": 3
+      },
+      "average": 3.25,
+      "lowestReasons": [
+        "원문은 Todoist parent/subtask 계층인데 primary Checklist로 평탄화했다.",
+        "장비 parent와 장비 4개 child가 독립 Item으로 중복 노출되고 완료 기준도 없다."
+      ],
+      "hardFails": [],
+      "publicationBlockers": [
+        "canonical SourceRef 0/23",
+        "doneWhen 0/23",
+        "template 재배포 권리와 guest/sponsor contact privacy 미검토"
+      ],
+      "verdict": "Revise",
+      "priorityFixes": [
+        "Todo를 primary로 바꾸고 원문의 parent/subtask 계층을 보존한다.",
+        "장비 parent는 그룹 또는 집계 상태로만 두고 child 완료를 중복 집계하지 않는다.",
+        "회차 이름·게스트 연락처·스폰서 정보는 private overlay에 둔다."
+      ]
+    }
+  ],
+  "globalFindings": {
+    "usefulness": "원문 선택과 user job은 대부분 명확하고 17개 실행형 후보는 내부 테스트 가치가 있다. 그러나 현재 저장 후 바로 실행 가능한 Public MVP 승인 후보는 0개다.",
+    "conversionCorrectness": "225/225 Item이 sourceRowIds에는 직접 연결되지만 canonical SourceRef 객체, 관찰 가능한 완료 기준, schedule, caution 연결이 모두 0이다. 따라서 행 복사 수준의 추적성은 있으나 완성된 FLOW 변환 계약은 충족하지 못한다.",
+    "strongestCandidates": [
+      "new:new-b04-organize-seven",
+      "new:new-c01-programmers-kit",
+      "new:new-c02-ifixit-hose",
+      "new:new-c06-goodfood-lemon"
+    ],
+    "firstRepairWave": [
+      "new:new-b04-organize-seven",
+      "new:new-c01-programmers-kit",
+      "new:new-c02-ifixit-hose",
+      "new:new-c06-goodfood-lemon",
+      "new:new-a07-seoul-bus-support"
+    ],
+    "observedUserEvidence": "없음. 내부 agent review, validator, browser QA는 실제 사용자 관찰을 대체하지 않는다.",
+    "unknowns": [
+      "2026-07-29 이후 원문 변경 여부",
+      "권리 검토 결과",
+      "한국 적용성이 필요한 해외 안전 콘텐츠의 적합성",
+      "실제 사용자가 저장·첫 행동·재방문을 완료하는지"
+    ]
+  }
+}
