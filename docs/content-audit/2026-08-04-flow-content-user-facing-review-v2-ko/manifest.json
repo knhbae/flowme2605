@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "flowme-user-facing-content-review-v2-manifest",
+  "generatedAt": "2026-08-04T11:55:00.988Z",
+  "reviewDate": "2026-08-04",
+  "sourceData": {
+    "path": "docs/specs/2026-08-04-flow-content-user-facing-review-v2/content-v2.json",
+    "bytes": 20757,
+    "sha256": "sha256:d4b0294143b5d80e744ff035b0f2d76af94cf2262910718774f05139340f9a06"
+  },
+  "output": {
+    "path": "docs/content-audit/2026-08-04-flow-content-user-facing-review-v2-ko/review.html",
+    "bytes": 44728,
+    "sha256": "sha256:f0418a686a2035a74fc581d6a7d78abad842b51b16139c5b4fccc3ba786dcdb4"
+  },
+  "policy": {
+    "contentCount": 4,
+    "originalV1Preserved": true,
+    "sourceLinksVisibleNearTitle": true,
+    "sourceDetailsAndMemoVisible": true,
+    "userFacingContentSeparatedFromReviewRecords": true,
+    "workingIcsDownloads": 3,
+    "workingCsvDownloads": 1,
+    "workingTodoTextDownloads": 1,
+    "sourceRowGapsNotInvented": true,
+    "observedUserValidation": "NOT_RUN"
+  },
+  "contentIds": [
+    "weekday-dinner-five-days-v2",
+    "national-work-study-2026-fall-v2",
+    "busan-friends-2n3d-v2",
+    "kocw-no-code-data-starter-ten-v2"
+  ],
+  "qualityAverages": {
+    "weekday-dinner-five-days-v2": 4.2,
+    "national-work-study-2026-fall-v2": 4.8,
+    "busan-friends-2n3d-v2": 4.4,
+    "kocw-no-code-data-starter-ten-v2": 4.2
+  }
+}

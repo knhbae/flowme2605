@@ -1,0 +1,190 @@
+{
+  "schemaVersion": "flowme-curated-content-review-manifest-v1",
+  "generatedAt": "2026-07-30T01:48:37.235Z",
+  "selectionId": "sha256:b8d949f4055801b4ea1f9291aeedcb3c03228eb062d77e2e4aad9af8033facbd",
+  "source": {
+    "path": "docs/content-audit/2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html",
+    "bytes": 9140908,
+    "sha256": "sha256:021667d19d042a5dfd418f3dbcbf553fd871a08b0fd47703fe716538419aaf56",
+    "corpusFingerprint": "sha256:d56b289fd301805fe1299b867497b0840f8d379d1459ec0148639f8b7d5dce32"
+  },
+  "output": {
+    "path": "docs/content-audit/2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko-parts/review.html",
+    "bytes": 297565,
+    "sha256": "sha256:d5dbcaac5cf35431d06f291b2920038fd9cca852af8587d8c5dfbee4abdf37a0",
+    "hardFileBytes": 1048576
+  },
+  "policy": {
+    "selectedContentCount": 10,
+    "coreReviewCount": 8,
+    "optionalBoundaryCount": 2,
+    "technicalMetadataHiddenFromDefaultUi": true,
+    "fullCorpusPreserved": true,
+    "sourceShaPinned": true,
+    "actualProjectionResultPreserved": true,
+    "reviewQuestionsRequired": true,
+    "observedUserValidation": "NOT_RUN"
+  },
+  "cases": [
+    {
+      "contentId": "canonical:base-moving-d30",
+      "title": "이사 D-30 체크리스트",
+      "group": "date",
+      "core": true,
+      "resultKind": "calendar",
+      "sourceCanonicalContentHash": "sha256:c39d3e01dadc9e9f27f9a80ae36aae2fc9ae32544e87109f64e36e8538d0cb6c",
+      "sourceProjectionCellSha256": "sha256:fe8d841513cd5fcd4c968825234b1788d84319c1abad3ca994a2dda861bce84e",
+      "resultProjectionSha256": "sha256:5c9b734d7ef0a687769cdce3938f5bedc8bb591ed77dbffeacf45a5542b1cb34",
+      "curatedPayloadSha256": "sha256:4890135974e2479d6d715be44ea97e723d75cc771f28628112c4af1d90dc4878",
+      "counts": {
+        "step": 6,
+        "item": 27,
+        "sourceRow": 52
+      }
+    },
+    {
+      "contentId": "canonical:base-baby-food-174",
+      "title": "초기 이유식 D+174~209 식단",
+      "group": "date",
+      "core": true,
+      "resultKind": "calendar",
+      "sourceCanonicalContentHash": "sha256:3fc09c7b8401aea2d60594336d67abe9714395e1bb1ccb1b2a747768bf784750",
+      "sourceProjectionCellSha256": "sha256:ec215f506983bb2e9462428bcaa98644d6a97b8f681f3445ee9b9d18edb9dd13",
+      "resultProjectionSha256": "sha256:fb3012cb11253a7b2a21366a46b0a6c4022ec96c3823085c2bb3d1a5129d42af",
+      "curatedPayloadSha256": "sha256:f7499bdee4fed2d277e08196f459af83a2e534cf1594f9a9a2a0b2032153976c",
+      "counts": {
+        "step": 12,
+        "item": 36,
+        "sourceRow": 36
+      }
+    },
+    {
+      "contentId": "canonical:base-opic-plan",
+      "title": "오픽 모의고사 계획표",
+      "group": "undated",
+      "core": true,
+      "resultKind": "sheet",
+      "sourceCanonicalContentHash": "sha256:e60b32fe5b6a1d9cb0a20e325beae74af3115d5c7749f840288c06160dbb7a2a",
+      "sourceProjectionCellSha256": "sha256:09d28e3d0d5ade42d0419c1300a4c929571da3a7b94df486fbf88c083516ab98",
+      "resultProjectionSha256": "sha256:94ad4cd0246ea9152cb72e605921e9b8c89dc7388fb38f33aaf077b76b2102c0",
+      "curatedPayloadSha256": "sha256:d0d9eb87770a63d5553b4eb145138a75530fef3f857dcc42f4420a5ed14cadd0",
+      "counts": {
+        "step": 7,
+        "item": 42,
+        "sourceRow": 52
+      }
+    },
+    {
+      "contentId": "canonical:base-opentutorials-web1-progress",
+      "title": "생활코딩 WEB1 진도표",
+      "group": "undated",
+      "core": true,
+      "resultKind": "sheet",
+      "sourceCanonicalContentHash": "sha256:5810be5479a829ec44682dcca54f81ce168a51ebc4749a203c59e6b416d6a47c",
+      "sourceProjectionCellSha256": "sha256:64651be8e62bdb7a7ad2214cb9ef6d1911dca54967284f42596a11cf0ce6cddc",
+      "resultProjectionSha256": "sha256:13068ba3092beb8b966d0ecc5fdc8cc3c5a71a2513ea2c9c67b6dce0ea9b7ca2",
+      "curatedPayloadSha256": "sha256:15547d736a4e5a253711c80436599301df84fd5a22454f4ebe58bebcd4ce75b7",
+      "counts": {
+        "step": 1,
+        "item": 26,
+        "sourceRow": 26
+      }
+    },
+    {
+      "contentId": "canonical:base-andstudio-job-prep-videos",
+      "title": "AND 취업 준비 영상 3편",
+      "group": "undated",
+      "core": true,
+      "resultKind": "todo",
+      "sourceCanonicalContentHash": "sha256:97287c74e9a58cb0343189830365c922736cf0343fed20f6ca14f1d1d3410e81",
+      "sourceProjectionCellSha256": "sha256:0b10c8e001096cac5d5b41269cf08770a0ef908bf591b6bcdd73b44b1753d00a",
+      "resultProjectionSha256": "sha256:ab70d685b2c18d3bb9e67ee406de4551ee5f67074dee89b008bee4405c114f1b",
+      "curatedPayloadSha256": "sha256:466236de86c9cb2c61db332a4eb923e31a394759a70051ce9cd8ae3ae487c67f",
+      "counts": {
+        "step": 3,
+        "item": 3,
+        "sourceRow": 3
+      }
+    },
+    {
+      "contentId": "canonical:base-new-car-comparison",
+      "title": "신차 구매 8단계",
+      "group": "decision",
+      "core": true,
+      "resultKind": "checklist",
+      "sourceCanonicalContentHash": "sha256:ebbd23990e6c836a8e2dc45d6878507a6aeec8ebcd6978fe029e85fa7006328f",
+      "sourceProjectionCellSha256": "sha256:38f37a489d67af96b84238847e775bb177d54703073c1921750bdfd15df976a3",
+      "resultProjectionSha256": "sha256:e559ad4c2bea9285eb22e1866fd7e101a104456644f49b6ee084be7a5392a1c0",
+      "curatedPayloadSha256": "sha256:d24e9faa58e0794e513a898c76ef196b40fd5c6af0f045a881a4656f75803bd5",
+      "counts": {
+        "step": 8,
+        "item": 14,
+        "sourceRow": 29
+      }
+    },
+    {
+      "contentId": "generalization:GB-07",
+      "title": "iCloud 백업과 컴퓨터 백업 비교",
+      "group": "decision",
+      "core": true,
+      "resultKind": "memo",
+      "sourceCanonicalContentHash": "sha256:55caa12ec78a4a4f79773ebb85e53a9a4e7ff2ad23a3ad028d2dd52d89ac1d60",
+      "sourceProjectionCellSha256": "sha256:f9681f196425bf899de5eaaa488d63e79ee6437fc67003fd054eabd273287ba7",
+      "resultProjectionSha256": "sha256:fe551f8edf11e5c20215e08e086f41cc34e2036991c25b6369e2d7cbe073b0f3",
+      "curatedPayloadSha256": "sha256:d13b084cbfd0b912d117970ddc0c025de8ee33ca7c4332a6995a2959d3fced99",
+      "counts": {
+        "step": 1,
+        "item": 1,
+        "sourceRow": 6
+      }
+    },
+    {
+      "contentId": "events:event-kr-qnet-exam-lifecycle",
+      "title": "수산양식기사 2026년 정기 기사 3회",
+      "group": "boundary",
+      "core": true,
+      "resultKind": "event",
+      "sourceCanonicalContentHash": "sha256:ad6e42bbde22e354cdf07047fe93f347f4235d7a3a86849ceec16a509391f7a4",
+      "sourceProjectionCellSha256": "sha256:66528d11bfeb72e31b2d29f746fe4898f1d49d37a265966d3d7743d2399ac674",
+      "resultProjectionSha256": "sha256:02451d5233a26a7d3f38ff45152a39734239b2a1fb231abc1a29c5c601d879af",
+      "curatedPayloadSha256": "sha256:519caa5250f0155be57a64a3d5adba17f811a95a4bc87d63b1349c9414854cfe",
+      "counts": {
+        "step": 0,
+        "item": 0,
+        "sourceRow": 7
+      }
+    },
+    {
+      "contentId": "events:event-pattern-nps-rescheduled",
+      "title": "Sandy Hook Park Cleanup",
+      "group": "boundary",
+      "core": false,
+      "resultKind": "eventHold",
+      "sourceCanonicalContentHash": "sha256:d795863c7b4385b12cb3167dff3f5996ab6a59bb0aaa5f1bfc33c138a7c591e5",
+      "sourceProjectionCellSha256": "sha256:cfddccdc8cbcbd0c55b43b531e241128c79a9fd4dc6db6f542d832ec101ad99b",
+      "resultProjectionSha256": "sha256:ad4f5f72a05ff559da54977291eba15326a32df12da943f46797c76bc0bcc515",
+      "curatedPayloadSha256": "sha256:00002172bb21f8c9df01b0b8dbcdb40856a1640e80101e0b6e05b858d036c575",
+      "counts": {
+        "step": 0,
+        "item": 0,
+        "sourceRow": 2
+      }
+    },
+    {
+      "contentId": "new:new-a05-nfa-home-fire",
+      "title": "집의 소방시설 설치·관리 상태 점검",
+      "group": "boundary",
+      "core": false,
+      "resultKind": "checklist",
+      "sourceCanonicalContentHash": "sha256:eaaabf80b565323b13e1b767f408909885e1415300240771481ab2166197f310",
+      "sourceProjectionCellSha256": "sha256:501f43779e258eb6ab9f46d6f076bf2fb28ae64b932c752098d6999de7bb95c3",
+      "resultProjectionSha256": "sha256:4129c9109f0a6027888404e01fed3e79810dc59b60badf7d348844ebece11a01",
+      "curatedPayloadSha256": "sha256:e21db23ffd7a0f49a925bbf1746ca3f04132340ad4e7631abd15391aab460275",
+      "counts": {
+        "step": 3,
+        "item": 11,
+        "sourceRow": 11
+      }
+    }
+  ]
+}

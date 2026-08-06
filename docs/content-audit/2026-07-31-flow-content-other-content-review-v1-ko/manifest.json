@@ -1,0 +1,161 @@
+{
+  "schemaVersion": "flowme-curated-content-review-manifest-v1",
+  "generatedAt": "2026-07-31T11:26:06.880Z",
+  "reviewBatch": "other-content-v1",
+  "selectionId": "sha256:b99aa1328cd9b4519fb90d8567074b5cbe233150fe65fc9498cbe3eb42c313d2",
+  "source": {
+    "path": "docs/content-audit/2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html",
+    "bytes": 9140908,
+    "sha256": "sha256:021667d19d042a5dfd418f3dbcbf553fd871a08b0fd47703fe716538419aaf56",
+    "corpusFingerprint": "sha256:d56b289fd301805fe1299b867497b0840f8d379d1459ec0148639f8b7d5dce32"
+  },
+  "output": {
+    "path": "docs/content-audit/2026-07-31-flow-content-other-content-review-v1-ko/review.html",
+    "bytes": 109279,
+    "sha256": "sha256:e8219fd3e2649f736d7c1b92f45a0d48e9c5f5341b2f16734fda04bd7e0b7cde",
+    "hardFileBytes": 1048576
+  },
+  "policy": {
+    "selectedContentCount": 8,
+    "coreReviewCount": 8,
+    "optionalBoundaryCount": 0,
+    "technicalMetadataHiddenFromDefaultUi": true,
+    "fullCorpusPreserved": true,
+    "sourceShaPinned": true,
+    "actualProjectionResultPreserved": true,
+    "calendarTitleDisplayCandidateOnly": true,
+    "simplifiedUserVerdict": true,
+    "reviewQuestionsRequired": true,
+    "observedUserValidation": "NOT_RUN"
+  },
+  "cases": [
+    {
+      "contentId": "canonical:value-vq-03",
+      "title": "평일 5일 저녁 식단",
+      "group": "date",
+      "core": true,
+      "resultKind": "calendar",
+      "sourceCanonicalContentHash": "sha256:de411885cd747df9e8674d0ba336a8304194c155f0c4b91e95b9bcc02f5409ad",
+      "sourceProjectionCellSha256": "sha256:72f835d7877e686020d86df028763d3765a3344d009971b7b848dfff84f9bd56",
+      "resultProjectionSha256": "sha256:c9b017ce5b55f40a33ef4cda9e25c0ccc60e38e3cae16baf225d46b6113e1867",
+      "curatedPayloadSha256": "sha256:bec3763da9e51d2ff573f98eb61ee6bda04fb48c91fa103e1f0559d9ee94c8d8",
+      "counts": {
+        "step": 1,
+        "item": 5,
+        "sourceRow": 5
+      }
+    },
+    {
+      "contentId": "canonical:value-vq-11",
+      "title": "2026년 2학기 국가근로장학금 신청",
+      "group": "date",
+      "core": true,
+      "resultKind": "calendar",
+      "sourceCanonicalContentHash": "sha256:5a0c9e4d8cb5548775b4610ffdcb1b392e2f479d72989378db139c8b680f213c",
+      "sourceProjectionCellSha256": "sha256:69a36ca393d732e8640daf1b714f361ee122a292b9d8b55a9eaa026d9cb9a6e0",
+      "resultProjectionSha256": "sha256:b294fc4533ca7b6b0eabf8413cd6a234c71874a820f32820c3952caa13cd8e53",
+      "curatedPayloadSha256": "sha256:a45686f9f0ed23a0e5c283c61f13e358ac9f1a63f51b0bddf8a7f2dc2089cad6",
+      "counts": {
+        "step": 5,
+        "item": 5,
+        "sourceRow": 5
+      }
+    },
+    {
+      "contentId": "legacy:preapp:busan-friends-2n3d-route",
+      "title": "부산 2박 3일 뚜벅이 코스",
+      "group": "date",
+      "core": true,
+      "resultKind": "calendar",
+      "sourceCanonicalContentHash": "sha256:9fb85491db8df6af8386d41cea4c33688538f64f6be57ea992f2c3e392e67b74",
+      "sourceProjectionCellSha256": "sha256:ae306695d73496a8002300943ca4fae46b7e099bf6bb973e90d369581eb3ca4a",
+      "resultProjectionSha256": "sha256:5731ec17fdec6089e5af95e0c97b3a61defa757406a1b033169f2d6473330310",
+      "curatedPayloadSha256": "sha256:8eda6f7b20f532feb9f9c4454a46a3b93f9c549b8b5a64ba060315bb7634998e",
+      "counts": {
+        "step": 3,
+        "item": 12,
+        "sourceRow": 12
+      }
+    },
+    {
+      "contentId": "canonical:value-vq-01",
+      "title": "어린이집 보육료 지원 신청",
+      "group": "undated",
+      "core": true,
+      "resultKind": "todo",
+      "sourceCanonicalContentHash": "sha256:020f1bdd3c8c150ffdef655248f814c5563850ae0e8ac6010b68189c49e150e6",
+      "sourceProjectionCellSha256": "sha256:7f418b43473dfe47ae46e6977f0f608e5ef71627c2b6e750392ecc5b306a4507",
+      "resultProjectionSha256": "sha256:c000008b3b14f0b02e7e0d98f981e7852db5774a8e44c2fcfde96157af464692",
+      "curatedPayloadSha256": "sha256:aeef584580d886c031ba2eb26e31c925f41d12b5711c8c420514862e36b37f71",
+      "counts": {
+        "step": 3,
+        "item": 4,
+        "sourceRow": 4
+      }
+    },
+    {
+      "contentId": "canonical:value-vq-12",
+      "title": "반려동물 가족 재난 대응 준비",
+      "group": "undated",
+      "core": true,
+      "resultKind": "checklist",
+      "sourceCanonicalContentHash": "sha256:68748c81fe58c76178b1f18e43bfc5b5a4aa6ef56a6ec9865a7977cc0baa437a",
+      "sourceProjectionCellSha256": "sha256:effbc8210e0287ed6df8d6101ce5d03b313173c0e131fdd32d76d627eeab9f64",
+      "resultProjectionSha256": "sha256:5d0a7e5aa5ef241a6bc0e59d7d4269c5edabf80a28aaceac02fbff83fc77c641",
+      "curatedPayloadSha256": "sha256:22bf430bd9c97ecfee87ade49d08accdfaff6e7fb51410a34c49c09a8263e309",
+      "counts": {
+        "step": 1,
+        "item": 6,
+        "sourceRow": 6
+      }
+    },
+    {
+      "contentId": "canonical:value-vq-05",
+      "title": "코드 없이 따라하는 빅데이터 분석",
+      "group": "decision",
+      "core": true,
+      "resultKind": "sheet",
+      "sourceCanonicalContentHash": "sha256:d376942070e8d5c2c763d405685d604fa76ebfe6386440414430bff384eb8e62",
+      "sourceProjectionCellSha256": "sha256:ba4b350a7327e6530fa765344f34f9a08596fbf159e03d4561839a9fbcf87f45",
+      "resultProjectionSha256": "sha256:3a852d87075bb66083620c2f16f9e248e05febed52453bb57df2b6e630249872",
+      "curatedPayloadSha256": "sha256:f9e36324b444a5cd0dd118da230b9726575458fb4ac6a610f7482c8eec0bd79a",
+      "counts": {
+        "step": 2,
+        "item": 10,
+        "sourceRow": 10
+      }
+    },
+    {
+      "contentId": "canonical:value-vq-06",
+      "title": "식물성 음료 품질비교",
+      "group": "decision",
+      "core": true,
+      "resultKind": "sheet",
+      "sourceCanonicalContentHash": "sha256:4052e683469aaf2708df7b1d2bd679083a90f1ee83aa14f5fecd489e7e4c0755",
+      "sourceProjectionCellSha256": "sha256:6a9bf753c356b1aa6ceb6806f8ae9a8eb8ec7179ead86d06e56df1770720492d",
+      "resultProjectionSha256": "sha256:774e503b0ce294cde2578efa719ef5516dbceb209c9a2ad5ec88a0c6bf914c06",
+      "curatedPayloadSha256": "sha256:b691463bca433a0f49e5056deb0acbde491b1ca00c26c2e0d0e72868b6a5fd47",
+      "counts": {
+        "step": 1,
+        "item": 6,
+        "sourceRow": 6
+      }
+    },
+    {
+      "contentId": "canonical:value-vq-10",
+      "title": "리모델링 공정별 하자 점검",
+      "group": "decision",
+      "core": true,
+      "resultKind": "sheet",
+      "sourceCanonicalContentHash": "sha256:b84007b61868f0de4b84962e0fd82c5d8c29a2ba47c2ccab8fa6e7657fd23676",
+      "sourceProjectionCellSha256": "sha256:22b9e5b7b201189228700a15e39e3aaa09978bc8d8bed4ad09ba3233d83e3880",
+      "resultProjectionSha256": "sha256:2fc040b26f2179f99343e4f813528f142df8c826ced166d8476a2524ceecb4c6",
+      "curatedPayloadSha256": "sha256:32caa4eba532be08a1701e5c8288748b06ac24534883054e8fef3f032a561f0e",
+      "counts": {
+        "step": 2,
+        "item": 13,
+        "sourceRow": 13
+      }
+    }
+  ]
+}
