@@ -3,6 +3,10 @@ import {
   type ResultTransferPersistentReceipt,
   type ResultTransferReceiptWriteResult,
 } from './result-transfer';
+import {
+  FLOW_EXPORT_RECEIPT_WRITE_LOCK,
+  withStorageWriteLock,
+} from './storage-write-lock';
 
 export const FLOW_EXPORT_RECEIPTS_STORAGE_KEY = 'flow:export-receipts:v1';
 export const FLOW_EXPORT_RECEIPTS_SCHEMA_VERSION = 1 as const;
@@ -118,8 +122,12 @@ function sameReceipt(
 function restoreRaw(
   storage: FlowExportReceiptStorage,
   raw: string | null,
+  ownedRaw: string | null,
 ): boolean {
   try {
+    const currentRaw = storage.getItem(FLOW_EXPORT_RECEIPTS_STORAGE_KEY);
+    if (currentRaw === raw) return true;
+    if (currentRaw !== ownedRaw) return false;
     if (raw === null) storage.removeItem(FLOW_EXPORT_RECEIPTS_STORAGE_KEY);
     else storage.setItem(FLOW_EXPORT_RECEIPTS_STORAGE_KEY, raw);
     return storage.getItem(FLOW_EXPORT_RECEIPTS_STORAGE_KEY) === raw;
@@ -189,7 +197,7 @@ export function appendFlowExportReceipt(
       rawAfter: nextRaw,
     };
   } catch (error) {
-    const rollbackComplete = restoreRaw(storage, current.raw);
+    const rollbackComplete = restoreRaw(storage, current.raw, nextRaw);
     let rawAfter: string | null | undefined;
     try {
       rawAfter = storage.getItem(FLOW_EXPORT_RECEIPTS_STORAGE_KEY);
@@ -312,7 +320,7 @@ export function removeFlowExportReceiptsForSavedPlan(
       rawAfter: nextRaw,
     };
   } catch (error) {
-    const rollbackComplete = restoreRaw(storage, current.raw);
+    const rollbackComplete = restoreRaw(storage, current.raw, nextRaw);
     let rawAfter: string | null | undefined;
     try {
       rawAfter = storage.getItem(FLOW_EXPORT_RECEIPTS_STORAGE_KEY);
@@ -331,4 +339,33 @@ export function removeFlowExportReceiptsForSavedPlan(
       ...(rawAfter !== undefined ? { rawAfter } : {}),
     };
   }
+}
+
+export async function removeFlowExportReceiptsForSavedPlanSerialized(
+  storage: FlowExportReceiptStorage,
+  savedPlanId: string,
+): Promise<RemoveFlowExportReceiptsForSavedPlanResult> {
+  const normalizedSavedPlanId = savedPlanId.trim();
+  if (!normalizedSavedPlanId) {
+    return removeFlowExportReceiptsForSavedPlan(storage, savedPlanId);
+  }
+
+  const lockedRemoval = await withStorageWriteLock(
+    FLOW_EXPORT_RECEIPT_WRITE_LOCK,
+    () => removeFlowExportReceiptsForSavedPlan(storage, normalizedSavedPlanId),
+  );
+  if (lockedRemoval.ok) return lockedRemoval.value;
+
+  return {
+    status: 'failed',
+    savedPlanId: normalizedSavedPlanId,
+    removedReceiptIds: [],
+    removedCount: 0,
+    reason: 'write_failed',
+    message: lockedRemoval.reason === 'unavailable' || lockedRemoval.reason === 'lock_failed'
+      ? 'The export receipt cleanup cannot be serialized safely in this browser.'
+      : lockedRemoval.error instanceof Error
+        ? lockedRemoval.error.message
+        : 'The export receipt cleanup ended in an unknown state.',
+  };
 }

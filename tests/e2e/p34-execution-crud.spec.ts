@@ -301,7 +301,7 @@ test.describe('P34 execution CRUD', () => {
     await saveUndatedVehicleFlow(page);
     const workspace = await openVehicleWorkspace(page);
     const exportEntry = workspace.getByTestId('my-flow-export-entry');
-    await expect(exportEntry).toContainText(/전체 \d+개 옮기기/);
+    await expect(exportEntry).toContainText(/내 도구로 옮기기 · \d+개/);
     await exportEntry.click();
     const panel = workspace.getByTestId('my-flow-export-panel');
     await expect(panel).toHaveAttribute('data-p34-marker', 'P34-07-SCOPE-FIRST-EXPORT');

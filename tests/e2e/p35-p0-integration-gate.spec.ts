@@ -438,6 +438,7 @@ test.describe('P35 P0-10 no-new-feature integration gate', () => {
     await expect(receipt).toHaveAttribute('data-outcome', 'success');
     await expect(receipt).toHaveAttribute('data-transfer-request-id', requestId!);
     await expectTransferMetadata(receipt, manifest, 'flow');
+    await expect(page.getByTestId('my-flow-save-banner')).toHaveCount(0);
     const clipboard = await clipboardState(page);
     expect(clipboard.writes).toBe(1);
     expect((clipboard.text.match(/^- \[[ x]\] /gmu) ?? []).length).toBe(24);
@@ -448,9 +449,35 @@ test.describe('P35 P0-10 no-new-feature integration gate', () => {
     expect(changedStorageKeys(storageBeforeTransfer.local, storageAfterTransfer.local)).toEqual([
       receiptStorageKey!,
     ]);
-    expect(storageAfterTransfer.local[receiptStorageKey!]).toContain(requestId!);
+    const storedReceiptRegistry = JSON.parse(storageAfterTransfer.local[receiptStorageKey!]) as {
+      receipts?: Array<{
+        requestId?: string;
+        artifact?: {
+          payloadHash?: string;
+          payloadByteLength?: number;
+          payloadHashAlgorithm?: string;
+          textEncoding?: string;
+          newlinePolicy?: string;
+        };
+      }>;
+    };
+    const storedReceipt = storedReceiptRegistry.receipts?.find((entry) => entry.requestId === requestId);
+    expect(storedReceipt).toBeTruthy();
+    expect(storedReceipt?.artifact).toMatchObject({
+      payloadHash: createHash('sha256').update(clipboard.text, 'utf8').digest('hex'),
+      payloadByteLength: Buffer.byteLength(clipboard.text, 'utf8'),
+      payloadHashAlgorithm: 'sha256',
+      textEncoding: 'utf-8',
+      newlinePolicy: 'preserve',
+    });
     expect(storageAfterTransfer.local[receiptStorageKey!]).toContain(manifest.snapshotHash);
     expect(storageAfterTransfer.local[receiptStorageKey!]).toContain(itemId!);
+
+    const chosenFormat = transferPanel.getByTestId('my-flow-export-checklist');
+    const successClose = receipt.getByTestId('flow-transfer-success-close');
+    await successClose.click();
+    await expect(successClose).toHaveCount(0);
+    await expect(chosenFormat).toBeFocused();
 
     await page.reload();
     workspace = await openMyFlowLibraryFlow(page, personalCopyKey, 'record');

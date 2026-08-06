@@ -7,11 +7,23 @@ import {
   ResultTransferEffectError,
   buildResultTransferArtifactSuccess,
   buildResultTransferRequest,
+  buildResultTransferTransportIdentity,
   createResultTransferRunner,
   fingerprintResultTransferPayload,
   isResultTransferPersistentReceipt,
   type ResultTransferRequest,
 } from './result-transfer';
+
+async function buildObservedArtifactSuccess(
+  request: ResultTransferRequest,
+  completedAt: string,
+) {
+  const transport = await buildResultTransferTransportIdentity(
+    new TextEncoder().encode(request.artifact.payload),
+    'preserve',
+  );
+  return buildResultTransferArtifactSuccess(request, completedAt, transport);
+}
 
 function buildManifest(options: Readonly<{
   snapshotKind?: EffectiveFlowProjectionManifest['snapshotKind'];
@@ -263,6 +275,22 @@ test('request omission lineage is restricted to the requested scope with one rea
   assert.match(request.omitted.reasonsByItemId['item-excluded'] ?? '', /excluded/u);
 });
 
+test('transport identity hashes the exact final bytes with an explicit newline policy', async () => {
+  const identity = await buildResultTransferTransportIdentity(
+    new TextEncoder().encode('abc'),
+    'preserve',
+  );
+
+  assert.deepEqual(identity, {
+    payloadHashAlgorithm: 'sha256',
+    payloadHash: 'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad',
+    payloadByteLength: 3,
+    textEncoding: 'utf-8',
+    newlinePolicy: 'preserve',
+  });
+  assert.equal(Object.isFrozen(identity), true);
+});
+
 test('saved runner performs the artifact before writing one persistent receipt', async () => {
   const request = buildSavedRequest();
   const runner = createResultTransferRunner();
@@ -270,7 +298,7 @@ test('saved runner performs the artifact before writing one persistent receipt',
   const outcome = await runner.run(request, {
     performArtifact(current) {
       order.push('artifact');
-      return buildResultTransferArtifactSuccess(current, '2026-08-04T01:01:00.000Z');
+      return buildObservedArtifactSuccess(current, '2026-08-04T01:01:00.000Z');
     },
     persistReceipt(receipt) {
       order.push('receipt');
@@ -290,8 +318,17 @@ test('saved runner performs the artifact before writing one persistent receipt',
   assert.equal(outcome.receipt?.projectionOutputCount, request.projectionOutputCount);
   assert.equal(outcome.receipt?.outputCount, request.outputCount);
   assert.deepEqual(outcome.receipt?.countUnits, request.countUnits);
-  assert.equal(outcome.receipt?.artifact.payloadHash, request.artifact.payloadHash);
+  assert.match(outcome.receipt?.artifact.payloadHash ?? '', /^[0-9a-f]{64}$/u);
+  assert.notEqual(outcome.receipt?.artifact.payloadHash, request.artifact.payloadHash);
+  assert.equal(outcome.receipt?.artifact.payloadHashAlgorithm, 'sha256');
   assert.equal(outcome.receipt?.artifact.payloadByteLength, request.artifact.payloadByteLength);
+  assert.equal(outcome.receipt?.artifact.textEncoding, 'utf-8');
+  assert.equal(outcome.receipt?.artifact.newlinePolicy, 'preserve');
+  assert.equal(outcome.receipt?.artifact.canonicalPayloadHash, request.artifact.payloadHash);
+  assert.equal(
+    outcome.receipt?.artifact.canonicalPayloadByteLength,
+    request.artifact.payloadByteLength,
+  );
   assert.deepEqual(outcome.receipt?.artifact.itemIds, request.artifact.itemIds);
   assert.equal(outcome.receipt?.artifact.itemCount, request.artifact.itemCount);
   assert.equal(outcome.receipt?.artifact.outputCount, request.artifact.outputCount);
@@ -308,7 +345,7 @@ test('calendar receipt keeps Item, projection, and VEVENT artifact counts distin
   });
   let persisted: unknown;
   const outcome = await createResultTransferRunner().run(request, {
-    performArtifact: (current) => buildResultTransferArtifactSuccess(
+    performArtifact: (current) => buildObservedArtifactSuccess(
       current,
       '2026-08-04T01:01:00.000Z',
     ),
@@ -333,6 +370,46 @@ test('calendar receipt keeps Item, projection, and VEVENT artifact counts distin
   assert.equal(isResultTransferPersistentReceipt(persisted), true);
 });
 
+test('legacy v1 receipts remain readable while partial transport lineage is rejected', async () => {
+  const request = buildSavedRequest({ requestId: 'legacy-v1-receipt' });
+  const outcome = await createResultTransferRunner().run(request, {
+    performArtifact: (current) => buildObservedArtifactSuccess(
+      current,
+      '2026-08-04T01:01:00.000Z',
+    ),
+    persistReceipt: () => ({ status: 'stored' }),
+  });
+  assert.equal(outcome.state, 'succeeded');
+  if (outcome.state !== 'succeeded' || !outcome.receipt) return;
+
+  const {
+    payloadHashAlgorithm: _payloadHashAlgorithm,
+    textEncoding: _textEncoding,
+    newlinePolicy: _newlinePolicy,
+    canonicalPayloadHash: _canonicalPayloadHash,
+    canonicalPayloadByteLength: _canonicalPayloadByteLength,
+    ...legacyArtifact
+  } = outcome.receipt.artifact;
+  const legacyReceipt = {
+    ...outcome.receipt,
+    artifact: {
+      ...legacyArtifact,
+      payloadHash: request.artifact.payloadHash,
+      payloadByteLength: request.artifact.payloadByteLength,
+    },
+  };
+  assert.equal(isResultTransferPersistentReceipt(legacyReceipt), true);
+
+  const incompleteTransportReceipt = {
+    ...outcome.receipt,
+    artifact: {
+      ...outcome.receipt.artifact,
+      canonicalPayloadHash: undefined,
+    },
+  };
+  assert.equal(isResultTransferPersistentReceipt(incompleteTransportReceipt), false);
+});
+
 test('public quick requires handler revalidation and never invokes persistent receipt storage', async () => {
   const request = buildPublicRequest();
   const runner = createResultTransferRunner();
@@ -340,7 +417,7 @@ test('public quick requires handler revalidation and never invokes persistent re
   let receiptCalls = 0;
   const performArtifact = (current: ResultTransferRequest) => {
     artifactCalls += 1;
-    return buildResultTransferArtifactSuccess(current, '2026-08-04T01:01:00.000Z');
+    return buildObservedArtifactSuccess(current, '2026-08-04T01:01:00.000Z');
   };
 
   const missingGuard = await runner.run(request, { performArtifact });
@@ -389,8 +466,13 @@ test('public quick requires handler revalidation and never invokes persistent re
   assert.deepEqual(succeeded.confirmation.artifact, {
     target: request.artifact.target,
     mediaType: request.artifact.mediaType,
-    payloadHash: request.artifact.payloadHash,
+    payloadHash: succeeded.artifact.transport.payloadHash,
     payloadByteLength: request.artifact.payloadByteLength,
+    payloadHashAlgorithm: 'sha256',
+    textEncoding: 'utf-8',
+    newlinePolicy: 'preserve',
+    canonicalPayloadHash: request.artifact.payloadHash,
+    canonicalPayloadByteLength: request.artifact.payloadByteLength,
     itemIds: request.artifact.itemIds,
     itemCount: request.artifact.itemCount,
     outputCount: request.artifact.outputCount,
@@ -415,7 +497,7 @@ test('revalidation rejects rebuilt payload drift before any artifact or receipt 
     }),
     performArtifact(current) {
       artifactCalls += 1;
-      return buildResultTransferArtifactSuccess(current, '2026-08-04T01:01:00.000Z');
+      return buildObservedArtifactSuccess(current, '2026-08-04T01:01:00.000Z');
     },
     persistReceipt() {
       receiptCalls += 1;
@@ -460,7 +542,7 @@ test('receipt failure becomes partial_local and receipt-only retry never regener
   const partial = await runner.run(request, {
     performArtifact(current) {
       artifactCalls += 1;
-      return buildResultTransferArtifactSuccess(current, '2026-08-04T01:01:00.000Z');
+      return buildObservedArtifactSuccess(current, '2026-08-04T01:01:00.000Z');
     },
     persistReceipt() {
       receiptCalls += 1;
@@ -492,7 +574,7 @@ test('blocked receipt storage stays partial_local without offering an impossible
   const runner = createResultTransferRunner();
   const outcome = await runner.run(request, {
     performArtifact(current) {
-      return buildResultTransferArtifactSuccess(current, '2026-08-04T01:01:00.000Z');
+      return buildObservedArtifactSuccess(current, '2026-08-04T01:01:00.000Z');
     },
     persistReceipt() {
       return { status: 'blocked', message: 'unsupported registry' };
@@ -505,14 +587,35 @@ test('blocked receipt storage stays partial_local without offering an impossible
   assert.ok(outcome.state === 'partial_local' && outcome.pendingReceipt);
 });
 
+test('indeterminate receipt rollback stays partial_local without an unsafe retry', async () => {
+  const request = buildSavedRequest({ requestId: 'indeterminate-receipt-rollback' });
+  const outcome = await createResultTransferRunner().run(request, {
+    performArtifact(current) {
+      return buildObservedArtifactSuccess(current, '2026-08-04T01:01:00.000Z');
+    },
+    persistReceipt() {
+      return {
+        status: 'failed',
+        message: 'receipt rollback could not be verified',
+        rollbackComplete: false,
+      };
+    },
+  });
+
+  assert.equal(outcome.state, 'partial_local');
+  assert.equal(outcome.state === 'partial_local' && outcome.failure.code, 'receipt_storage_failed');
+  assert.equal(outcome.receiptRetryAvailable, false);
+  assert.ok(outcome.state === 'partial_local' && outcome.pendingReceipt);
+});
+
 test('artifact parity mismatch is partial_local but cannot be papered over by a receipt retry', async () => {
   const request = buildSavedRequest();
   const runner = createResultTransferRunner();
   let receiptCalls = 0;
   const outcome = await runner.run(request, {
-    performArtifact(current) {
+    async performArtifact(current) {
       return {
-        ...buildResultTransferArtifactSuccess(current, '2026-08-04T01:01:00.000Z'),
+        ...await buildObservedArtifactSuccess(current, '2026-08-04T01:01:00.000Z'),
         outputCount: current.outputCount + 1,
       };
     },
@@ -529,6 +632,41 @@ test('artifact parity mismatch is partial_local but cannot be papered over by a 
   assert.equal(receiptCalls, 0);
 });
 
+test('runner rejects a fabricated transport hash or byte length before writing a receipt', async () => {
+  const request = buildSavedRequest({ requestId: 'fabricated-transport-identity' });
+  const actualTransport = await buildResultTransferTransportIdentity(
+    new TextEncoder().encode(request.artifact.payload),
+    'preserve',
+  );
+  const fabricatedTransports = [
+    { ...actualTransport, payloadHash: '0'.repeat(64) },
+    { ...actualTransport, payloadByteLength: actualTransport.payloadByteLength + 1 },
+  ];
+
+  for (const transport of fabricatedTransports) {
+    let receiptCalls = 0;
+    const outcome = await createResultTransferRunner().run(request, {
+      performArtifact(current) {
+        return buildResultTransferArtifactSuccess(
+          current,
+          '2026-08-04T01:01:00.000Z',
+          transport,
+        );
+      },
+      persistReceipt: () => {
+        receiptCalls += 1;
+        return { status: 'stored' };
+      },
+    });
+
+    assert.equal(outcome.state, 'partial_local');
+    assert.equal(outcome.state === 'partial_local' && outcome.failure.code, 'artifact_result_mismatch');
+    assert.equal(outcome.receiptRetryAvailable, false);
+    assert.equal(outcome.state === 'partial_local' && outcome.pendingReceipt, undefined);
+    assert.equal(receiptCalls, 0);
+  }
+});
+
 test('runner rejects a concurrent duplicate request while the first local effect is pending', async () => {
   const request = buildSavedRequest();
   const runner = createResultTransferRunner();
@@ -539,7 +677,7 @@ test('runner rejects a concurrent duplicate request while the first local effect
   const first = runner.run(request, {
     async performArtifact(current) {
       await gate;
-      return buildResultTransferArtifactSuccess(current, '2026-08-04T01:01:00.000Z');
+      return buildObservedArtifactSuccess(current, '2026-08-04T01:01:00.000Z');
     },
     persistReceipt: () => ({ status: 'stored' }),
   });
@@ -548,7 +686,7 @@ test('runner rejects a concurrent duplicate request while the first local effect
 
   const duplicate = await runner.run(request, {
     performArtifact(current) {
-      return buildResultTransferArtifactSuccess(current, '2026-08-04T01:01:00.000Z');
+      return buildObservedArtifactSuccess(current, '2026-08-04T01:01:00.000Z');
     },
     persistReceipt: () => ({ status: 'stored' }),
   });
@@ -571,7 +709,7 @@ test('pre-effect cancellation creates neither artifact nor receipt', async () =>
     signal: controller.signal,
     performArtifact(current) {
       artifactCalls += 1;
-      return buildResultTransferArtifactSuccess(current, '2026-08-04T01:01:00.000Z');
+      return buildObservedArtifactSuccess(current, '2026-08-04T01:01:00.000Z');
     },
     persistReceipt: () => {
       receiptCalls += 1;

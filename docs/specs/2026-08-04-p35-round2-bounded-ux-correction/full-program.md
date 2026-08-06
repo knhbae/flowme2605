@@ -1,23 +1,27 @@
 # P35 Round 2 B/B/B 전체 프로그램 단계별 개발 목표
 
-**상태:** `INTERNAL_IMPLEMENTATION_GATE_COMPLETE_LOCAL / CANDIDATE_FREEZE_AUTHORIZED` — P0-01~P1-04 PASS, V1은 현재 프로그램에서 제외
+**상태:** `P′ PASS2_REVISE / P′′ CANDIDATE_SOURCE_READY / FINAL_CANDIDATE_EVIDENCE_PENDING / FRESH_TWO_PASS_REVIEW_AUTHORIZED`
 
 **승인일:** 2026-08-04 KST
 
 **Owner 결정:** `Q1-B / Q2-B / Q3-B`
 
-**기준 checkout:** `D:\flowme2605\flow-p35-production-mobile-p0`
+**검토 기준 P′ checkout:** `D:\flowme2605\flow-p35-production-mobile-p0`
 
-**기준 branch / ref:** `codex/p35-production-mobile-p0` / `d5f693776f7cebbce72a247ddb33ca6c5d550900` upstream 기준 local working tree
+**검토 기준 P′ branch / ref:** `codex/p35-round2-candidate-20260805` / `29cb03a65dd1037a3b813b7f43a5a095e4669dce`
 
-**현재 실행 단계:** 구현 티켓 없음 — P1-04까지 local internal PASS. Candidate freeze·동일 SHA evidence·blind Pass 1을 진행하며 V1은 완료 조건이 아니다.
+**보정 P′′ checkout / branch:** `D:\flowme2605\flow-p35-round2-correction-pprime2` / `codex/p35-round2-correction-pprime2-20260805`
 
-**Publish 권한:** `none`
+**현재 실행 단계:** P′에 대한 양쪽 Pass 2 `REVISE` 뒤 P′′ candidate source를 준비했다. Owner가 2026-08-06에 fresh candidate/evidence/two-pass review를 승인했으며, 현재 gate는 final scoped run, clean candidate freeze, post-push provenance, blind-only publication 순서다. Source 문서는 자기 자신이 속할 미래 SHA·BUILD_ID·epoch·최종 count를 주장하지 않는다. V1은 완료 조건이 아니다.
+
+**Publish 권한:** `P′′ commit/push + sequence-gated blind/informed review publication` — PR·merge·Preview·Production은 권한 없음
 **실제 관찰 사용자:** `0명`
+
+**현재 closeout:** [Pass 2 교차 종합과 P′′ 로컬 보정 closeout](./pass2-cross-synthesis-and-pprime2-closeout.md)
 
 ## 1. 문서 목적과 사용법
 
-이 문서는 BBB 보정 프로그램 전체를 개발팀이 **한 단계씩 목표로 삼아 실행**할 수 있게 만든 canonical 운영 문서다. 첫 개발 세션만 다루는 [P0-01 복붙 프롬프트](../../content-audit/2026-08-03-p35-fundamental-ux-round2-planning-synthesis/08-bbb-approved-developer-kickoff-prompt-ko.md)와 달리, 여기에는 `G0/G1 → P0-01~P0-10 → P1-01~P1-04 → V1`의 전체 목표와 단계별 종료 조건이 들어 있다.
+이 문서는 BBB 보정 프로그램 전체를 개발팀이 **한 단계씩 목표로 삼아 실행**할 수 있게 만든 canonical 운영 문서다. 첫 개발 세션만 다루는 [P0-01 복붙 프롬프트](../../content-audit/2026-08-03-p35-fundamental-ux-round2-planning-synthesis/08-bbb-approved-developer-kickoff-prompt-ko.md)와 달리, 여기에는 `G0/G1 → P0-01~P0-10 → P1-01~P1-04 → P′ review → P′′ candidate source/freeze → fresh Pass 1/Pass 2`의 전체 목표와 단계별 종료 조건이 들어 있다. V1은 별도 미래 프로그램이다.
 
 문서별 권위 영역은 다음과 같다.
 
@@ -58,6 +62,9 @@
 - 결과는 `주 결과 1개 + 바로 가능한 보조 최대 2개 + 조건부 + 불가 이유`로 계산한다.
 - 날짜 없는 Item에 가짜 날짜나 VEVENT를 만들지 않는다.
 - Flow Map parity 수정과 legacy migration을 같은 단계에 넣지 않는다.
+- Overlapping Flow user-data mutation은 같은 same-origin exclusive lock을 쓰고, lock 안에서 최신 raw를 다시 읽은 뒤 CAS/expected-post 소유권을 확인한다.
+- Reuse는 completion·Map review·new run을 하나의 planned-key raw rollback transaction으로 처리하고, public copy create/overwrite는 lock 안에서 선택과 target raw를 재검증한다.
+- Receipt는 canonical request fingerprint와 실제 전달한 UTF-8 bytes의 SHA-256·byte length·newline policy를 구분하고, schema-v2 saved identity는 부분 갱신에서도 보존하거나 fail-closed한다.
 - 자동 QA·브라우저 검사·Owner 검토·Claude/Codex 검토는 실제 사용자 관찰이 아니다.
 
 ## 4. 전체 순서와 상태
@@ -79,7 +86,12 @@ flowchart TD
   P101 --> P102["P1-02 · 용어·CTA·도움/주의"]
   P102 --> P103["P1-03 · 형식별 field parity"]
   P103 --> P104["P1-04 · 극단값·접근성·legacy gate"]
-  P104 --> V1["V1 · 별도 승인 사용자 관찰"]
+  P104 --> PP["P′ · 독립 two-pass review · REVISE"]
+  PP --> PPP["P′′ · candidate source ready"]
+  PPP --> CF["clean freeze · post-push evidence"]
+  CF --> R1["fresh blind Pass 1"]
+  R1 --> R2["fresh informed Pass 2"]
+  P104 -.-> V1["V1 · 별도 미래 사용자 관찰"]
 ```
 
 | 순서 | 단계 | 목표 결과 | 현재 상태 |
@@ -100,9 +112,13 @@ flowchart TD
 | 13 | P1-02 | Q3-B 용어·CTA·도움/주의 | **`PASS`** |
 | 14 | P1-03 | 형식별 field parity | **`PASS`** |
 | 15 | P1-04 | 극단값·접근성·legacy 내부 gate | **`PASS`** |
-| 16 | V1 | 실제 참여자 제한 관찰 | `OUT_OF_SCOPE_CURRENT_PROGRAM · observed 0` |
+| 16 | P′ review | immutable candidate 독립 two-pass review | `PASS2_REVISE` |
+| 17 | P′′ candidate source | bounded correction + final source contracts | `CANDIDATE_SOURCE_READY` |
+| 18 | P′′ candidate freeze/evidence | clean push·single post-push build·S01~S23 | `FINAL_CANDIDATE_EVIDENCE_PENDING` |
+| 19 | fresh Pass 1 / Pass 2 | blind 결과 동결 뒤 informed review | `AUTHORIZED_NOT_RUN` |
+| 20 | V1 | 실제 참여자 제한 관찰 | `OUT_OF_SCOPE_CURRENT_PROGRAM · observed 0` |
 
-모든 구현 단계는 표 순서대로 직렬 실행했고 P0-01부터 P1-04까지 각 closeout으로 local internal PASS했다. P1-03 근거는 [format parity closeout](./p1-03-closeout.md)과 [field parity matrix](./p1-03-format-field-parity.md), 최종 내부 gate 근거는 [P1-04 closeout](./p1-04-closeout.md)이다. Candidate preflight는 공개 초기 render가 local/session storage를 쓰지 않는 `0-write` 계약을 추가로 고정했다. 실제 browser zoom과 performance는 `NOT_ASSESSED`이며 `720×500`은 reflow proxy일 뿐 zoom 증거가 아니다. Candidate commit·push와 blind-only A/B는 승인됐지만 PR·merge·Vercel Preview/Production은 승인되지 않았다. V1은 현재 프로그램에서 제외됐고 observed users는 `0명`이다.
+P0-01부터 P1-04까지는 각 closeout으로 local internal PASS했고 P′는 양쪽 Pass 2 `REVISE`로 닫혔다. P′′ source에는 shared user-data lock, lock-then-fresh-reread/CAS, reuse raw transaction, public-copy CAS, exact transported-byte identity, schema-v2 identity preservation, exact candidate/review branch Vercel guard가 반영됐다. 이전 unit/workflow `1,095/1,095`, focused browser `7/7`, full Playwright `530/530`, build `18/18`과 BUILD_ID `O_FcSLodnCeJe3e2F32PC`는 final hardening 전 checkpoint이며 현재 candidate 증거가 아니다. Exact candidate SHA·BUILD_ID·epoch·최종 count와 S01~S23는 clean commit/push 뒤 provenance에 기록한다. 실제 browser zoom과 performance는 `NOT_ASSESSED`; PR·merge·Vercel Preview/Production은 승인되지 않았고 V1은 제외됐으며 observed users는 `0명`이다.
 
 ## 5. 전 단계 공통 운영 규칙
 
@@ -1074,10 +1090,14 @@ Owner가 실제 evidence를 보고 `keep / bounded correction / 추가 관찰` �
 | P1-01 | P0-10 | PASS | `d5f6937` 기반 local / 2026-08-05 | local closeout / 2026-08-05 | [P1-01 closeout](./p1-01-closeout.md) | P1-02 열림 |
 | P1-02 | P1-01 | PASS | `d5f6937` 기반 local / 2026-08-05 | local closeout / 2026-08-05 | [P1-02 closeout](./p1-02-closeout.md) · independent source audit blocker 0 | P1-03 열림 |
 | P1-03 | P1-02 | PASS | `d5f6937` 기반 local / 2026-08-05 | local closeout / 2026-08-05 | [P1-03 closeout](./p1-03-closeout.md) · [format/field parity](./p1-03-format-field-parity.md) | P1-04 열림 |
-| P1-04 | P1-03 | PASS | `d5f6937` 기반 local / 2026-08-05 | local closeout / 2026-08-05 | [P1-04 closeout](./p1-04-closeout.md) | 내부 구현 gate 완료; V1 Owner 승인 대기 |
+| P1-04 | P1-03 | PASS | `d5f6937` 기반 local / 2026-08-05 | local closeout / 2026-08-05 | [P1-04 closeout](./p1-04-closeout.md) | P′ freeze/review로 이동 |
+| P′ review | P1-04 | PASS2_REVISE | `29cb03a` immutable candidate | sealed Pass 2 / 2026-08-05 | Codex·Claude Design 양쪽 `REVISE` | P′ 불변·별도 P′′ correction |
+| P′′ candidate source | P′ review | CANDIDATE_SOURCE_READY | P′ parent 기반 local / 2026-08-06 | source contract only | [P′′ closeout](./pass2-cross-synthesis-and-pprime2-closeout.md) | final scoped run·clean freeze만 승인 |
+| P′′ candidate freeze/evidence | source ready | FINAL_CANDIDATE_EVIDENCE_PENDING | — | — | post-push provenance 소유 | clean commit/push 뒤 시작 |
+| fresh Pass 1 / Pass 2 | candidate-bound evidence | AUTHORIZED_NOT_RUN | — | — | blind freeze → informed review | Pass 1 두 결과 동결 전 Pass 2 금지 |
 | V1 | 미래 별도 Owner 승인 | OUT_OF_SCOPE_CURRENT_PROGRAM | — | — | observed `0` | 현재 프로그램 완료 조건 아님 |
 
-각 단계는 자기 행만 갱신하고 상태를 `NOT_STARTED / READY_TO_START / IN_PROGRESS / PASS / FAIL / BLOCKED` 중 하나로 기록한다. 단계 상태에 publish 상태를 합치지 않는다.
+구현 단계는 자기 행만 갱신하고 상태를 `NOT_STARTED / READY_TO_START / IN_PROGRESS / PASS / FAIL / BLOCKED` 중 하나로 기록한다. Candidate/review 행은 `PASS2_REVISE / CANDIDATE_SOURCE_READY / FINAL_CANDIDATE_EVIDENCE_PENDING / AUTHORIZED_NOT_RUN / OUT_OF_SCOPE_CURRENT_PROGRAM`을 별도로 사용한다. 어떤 상태도 commit/push나 review publication 상태와 합치지 않는다.
 
 ### 23.2 Verification ledger
 
@@ -1099,9 +1119,11 @@ Owner가 실제 evidence를 보고 `keep / bounded correction / 추가 관찰` �
 | P1-02 | copy guard·a11y·viewport | PASS | local / 2026-08-05 | [P1-02 closeout](./p1-02-closeout.md): independent source audit blocker 0, focused integrated 67/67, P35 P0 345/345, full unit/workflow 1070/1070, build 18/18, Q3 default 12/12, rollback 11 PASS+1 intentional SKIP, P1 visual+Q3 17/17, affected P0 39/39, PNG 24장 | core owned Q3 routes·metadata·rollback·3 viewports | 실제 사용자 이해; Text Authoring/creator 별도 route; artifact labels는 P1-03 |
 | P1-03 | format golden·parser round-trip | PASS | local / 2026-08-05 | [P1-03 closeout](./p1-03-closeout.md) · [format/field parity](./p1-03-format-field-parity.md) | 18열 Sheet, Checklist/Memo timezone·repeat, visible omission reason, Calendar semantic equality, pre-lineage v1 read-only | 실제 사용자 이해 |
 | P1-04 | extremes·a11y·legacy·full gate | PASS | local / 2026-08-05 | [P1-04 closeout](./p1-04-closeout.md): full E2E 529/529, workers 4, retries 0, 26.0m; direct 6/6; unit 1,086/1,086; build 18/18, pre-freeze BUILD_ID `vAb8e5TudUXvxEyowetMU` | internal implementation gate; public zero-write; `720×500` reflow proxy | actual zoom·performance `NOT_ASSESSED`; 실제 사용자 이해 |
+| P′ review | sealed Codex·Claude Design two-pass | REVISE | immutable `29cb03a` / 2026-08-05 | sealed review packages | P′ 판정 | P′′ 판정으로 승계 불가 |
+| P′′ candidate source | shared lock·fresh reread/CAS·reuse raw transaction·public-copy CAS·exact bytes·schema-v2·Vercel guard | FINAL_RUN_PENDING | local source / 2026-08-06 | [P′′ closeout](./pass2-cross-synthesis-and-pprime2-closeout.md) · [decision](../../DECISIONS.md) | source contract presence and intended ownership | clean candidate SHA·BUILD_ID·epoch·final count·S01~S23·fresh review |
 | V1 | session logs·usable count·synthesis | OUT_OF_SCOPE_CURRENT_PROGRAM | — | completed `0` | — | 미래 별도 사용자 관찰 프로그램 |
 
-결과는 `PASS / FAIL / SKIP / NOT_RUN`으로 구분한다. 과거 실행 결과를 현재 ref의 PASS로 재사용하지 않는다.
+구현 검증 결과는 `PASS / FAIL / SKIP / NOT_RUN`으로 구분한다. Review verdict의 `REVISE`와 candidate lifecycle의 `FINAL_RUN_PENDING`은 검증 PASS가 아니며 별도 열에서만 쓴다. 과거 실행 결과를 현재 ref의 PASS로 재사용하지 않는다.
 
 ### 23.3 Publish ledger
 
@@ -1123,6 +1145,12 @@ Owner가 실제 evidence를 보고 `keep / bounded correction / 추가 관찰` �
 | P1-02 | copy·disclosure·guard·tests·evidence·docs | 없음 | 안 함 | 안 함 | 미실행 | 안 함 | 안 함 | 안 함 | 2026-08-05 local PASS; publish 권한 없음·관찰 사용자 0 |
 | P1-03 | format/artifact parity·tests·docs | 없음 | 안 함 | 안 함 | 미실행 | 안 함 | 안 함 | 안 함 | 2026-08-05 local PASS; publish 권한 없음·관찰 사용자 0 |
 | P1-04 | final regression·evidence·docs | 없음 | 안 함 | 안 함 | 미실행 | 안 함 | 안 함 | 안 함 | 2026-08-05 local PASS; internal implementation gate only·관찰 사용자 0 |
+| P′ freeze / two-pass review | candidate·review evidence | `29cb03a` | 완료 | 안 함 | 미실행 | 안 함 | 안 함 | 안 함 | Codex·Claude Design Pass 2 `REVISE`; P′ 불변 |
+| P′′ bounded correction checkpoint | runtime·transaction·tests·docs | 없음 | 안 함 | 안 함 | 미실행 | 안 함 | 안 함 | 안 함 | pre-final-hardening historical checkpoint: unit/workflow 1,095/1,095; full Playwright 530/530; build 18/18; BUILD_ID `O_FcSLodnCeJe3e2F32PC` |
+| P′′ candidate source | shared lock·CAS·reuse/public-copy transaction·transport/schema guard·docs | 없음 | 안 함 | 안 함 | 미실행 | 안 함 | 안 함 | 안 함 | `CANDIDATE_SOURCE_READY`; final run pending·관찰 사용자 0 |
+| P′′ candidate freeze/evidence | clean commit·push·single post-push build·S01~S23 | post-push provenance 소유 | 안 함 | 안 함 | 미실행 | 안 함 | 안 함 | 안 함 | `FINAL_CANDIDATE_EVIDENCE_PENDING`; source 문서에 미래 SHA/BUILD_ID/epoch/count 기록 금지 |
+| fresh Pass 1 | blind review publication·independent outputs | blind A/B/C 소유 | 안 함 | 안 함 | 미실행 | 안 함 | 안 함 | 안 함 | 승인됨·미실행; 두 결과를 별도 동결 |
+| fresh Pass 2 | informed review publication·independent outputs | informed publication 소유 | 안 함 | 안 함 | 미실행 | 안 함 | 안 함 | 안 함 | 승인됨·미실행; 두 Pass 1 동결 전 시작 금지 |
 | V1 | NOT_STARTED · Owner 승인 필요 | 없음 | 안 함 | 안 함 | 미실행 | 안 함 | 안 함 | 안 함 | observed users 0 |
 
 ### 23.4 Observed-user ledger
@@ -1176,6 +1204,7 @@ Owner가 실제 evidence를 보고 `keep / bounded correction / 추가 관찰` �
 - OAuth·remote provider·양방향 sync·background retry·collaboration
 - Flow Map parity와 legacy migration 동시 수행
 - Text Authoring/creator publishing 재설계
+- URL supply-request queue mutation ordering, legacy-off write/no-write 감사, rapid batch-submit policy, creator/text-authoring mutation ownership을 P′′에 추가
 - 자동 QA·시뮬레이션·Owner 검토를 observed-user validation으로 표현
 - 이 문서를 근거로 commit·push·PR·merge·deploy 권한을 자동 확대
 

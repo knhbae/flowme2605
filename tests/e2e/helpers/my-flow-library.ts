@@ -169,7 +169,13 @@ export async function openMyFlowCalendarSelectedDay(
 
 export async function closeOpenMyFlowItemDetail(page: Page): Promise<void> {
   const close = page.getByTestId('my-flow-item-detail-sheet-close');
-  if (await close.isVisible().catch(() => false)) await close.click();
+  if (await close.isVisible().catch(() => false)) {
+    // Completion and editor saves may close the sheet before this helper's
+    // click reaches it. Treat that detach as success, but still verify that a
+    // visible sheet was not left behind.
+    await close.click({ timeout: 2_000 }).catch(() => undefined);
+    await expect(close).toHaveCount(0);
+  }
 }
 
 export async function expandMyFlowWholePlan(flow: Locator): Promise<Locator> {

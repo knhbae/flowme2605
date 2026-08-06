@@ -77,6 +77,7 @@ export type FlowEditorSurfaceProps = Readonly<{
   p35Marker?: string;
   dismissible?: boolean;
   initialFocusSelector?: string;
+  skipToActionsLabel?: string;
   returnFocusSelector?: string;
   onRequestClose: (cause: FlowBottomSheetCloseCause) => void;
   errorSummary?: FlowEditorSurfaceErrorSummary;
@@ -135,6 +136,7 @@ export function FlowEditorSurface({
   p35Marker = 'P35-P0-06-SHARED-EDITOR-SURFACE',
   dismissible = true,
   initialFocusSelector,
+  skipToActionsLabel,
   returnFocusSelector,
   onRequestClose,
   errorSummary,
@@ -152,6 +154,8 @@ export function FlowEditorSurface({
   const discardContinueRef = useRef<HTMLButtonElement | null>(null);
   const discardButtonRef = useRef<HTMLButtonElement | null>(null);
   const discardReturnFocusRef = useRef<HTMLElement | null>(null);
+  const cancelActionRef = useRef<HTMLButtonElement | null>(null);
+  const primaryActionRef = useRef<HTMLButtonElement | null>(null);
   const errorSummaryId = `${headingId}-error-summary`;
   const discardHeadingId = `${headingId}-discard-heading`;
   const discardDescriptionId = discardConfirmation?.description
@@ -245,6 +249,21 @@ export function FlowEditorSurface({
       }}
       className={`${EDITOR_LAYOUT_CLASS[layout]} ${className}`}
     >
+      {skipToActionsLabel ? (
+        <button
+          type="button"
+          data-testid={`${testId}-skip-to-actions`}
+          className="sr-only z-30 rounded-md bg-[var(--flowme-action)] px-3 py-2 text-sm font-semibold text-white shadow-lg focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+          onClick={() => {
+            const action = primaryActionRef.current && !primaryActionRef.current.disabled
+              ? primaryActionRef.current
+              : cancelActionRef.current;
+            action?.focus({ preventScroll: true });
+          }}
+        >
+          {skipToActionsLabel}
+        </button>
+      ) : null}
       <div className={`mt-4 min-h-0 flex-1 overflow-y-auto overscroll-contain pb-4 pr-1 ${bodyClassName}`}>
         {visibleErrorSummary?.errors.length ? (
           <section
@@ -286,6 +305,7 @@ export function FlowEditorSurface({
       >
         <div className="flex flex-wrap items-center justify-between gap-2">
           <button
+            ref={cancelActionRef}
             type="button"
             data-testid={cancelAction.testId ?? `${testId}-cancel`}
             data-editor-action-role="cancel"
@@ -311,6 +331,7 @@ export function FlowEditorSurface({
               </button>
             ) : null}
             <button
+              ref={primaryActionRef}
               type="button"
               data-testid={primaryAction.testId ?? `${testId}-primary`}
               data-editor-action-role="commit"

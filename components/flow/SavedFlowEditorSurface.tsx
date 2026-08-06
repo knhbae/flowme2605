@@ -141,7 +141,8 @@ export function SavedFlowPlanEditorSurface({
       commitRole={contract.commitRole}
       eyebrow={q3CopyEnabled ? Q3_USER_COPY_PROFILE.savedDetail.eyebrow : '저장한 Flow'}
       title={q3CopyEnabled ? Q3_USER_COPY_PROFILE.savedDetail.editPlan : 'Flow 편집'}
-      initialFocusSelector='[data-testid="saved-flow-editor-title-input"]'
+      initialFocusSelector='[data-testid="saved-flow-editor-plan-skip-to-actions"]'
+      skipToActionsLabel="편집 작업으로 건너뛰기"
       dialogProps={{
         'data-editor-schema-fields': contract.fields.map((field) => field.id).join(','),
       }}

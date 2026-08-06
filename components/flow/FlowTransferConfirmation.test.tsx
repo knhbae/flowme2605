@@ -246,8 +246,7 @@ test('q3 copy rollback restores transfer copy and removes only the optional caut
       {...callbacks}
     />,
   );
-  assert.match(succeededMarkup, /data-testid="flow-transfer-success-close"[^>]*>\s*확인/u);
-  assert.doesNotMatch(succeededMarkup, /data-testid="flow-transfer-success-close"[^>]*>\s*닫기/u);
+  assert.match(succeededMarkup, /data-testid="flow-transfer-success-close"[^>]*>\s*다른 형식 보기/u);
 });
 
 test('pending locks dismissal and actions while exposing a busy live region', () => {
@@ -354,7 +353,7 @@ test('success distinguishes persistent saved receipt from session-only public co
   assert.match(savedMarkup, /data-transfer-receipt-persistence="persistent_receipt"/u);
   assert.match(savedMarkup, /결과 기록을 남겼어요/u);
   assert.match(savedMarkup, /data-testid="flow-transfer-success-close"/u);
-  assert.match(savedMarkup, /data-testid="flow-transfer-success-close"[^>]*>\s*닫기/u);
+  assert.match(savedMarkup, /data-testid="flow-transfer-success-close"[^>]*>\s*다른 형식 보기/u);
   assert.equal(primaryActionCount(savedMarkup), 1);
   assert.doesNotMatch(savedMarkup, /data-testid="my-flow-transfer-confirm"/u);
 
@@ -369,4 +368,49 @@ test('success distinguishes persistent saved receipt from session-only public co
   assert.match(quickMarkup, /내 계획에는 저장되지 않았어요/u);
   assert.match(quickMarkup, /data-testid="flow-transfer-success-close"[^>]*>\s*닫기/u);
   assert.equal(primaryActionCount(quickMarkup), 1);
+});
+
+test('saved success returns focus to the chosen format while other states keep the opener', () => {
+  const returnFocusSelector = "[data-testid='my-flow-export-entry']";
+  const successReturnFocusSelector = "[data-testid='my-flow-export-calendar']";
+  const confirmingMarkup = renderToStaticMarkup(
+    <FlowTransferConfirmation
+      request={buildRequest()}
+      returnFocusSelector={returnFocusSelector}
+      successReturnFocusSelector={successReturnFocusSelector}
+      {...callbacks}
+    />,
+  );
+  assert.match(
+    confirmingMarkup,
+    /data-transfer-return-focus-selector="\[data-testid=&#x27;my-flow-export-entry&#x27;\]"/u,
+  );
+
+  const savedSuccessMarkup = renderToStaticMarkup(
+    <FlowTransferConfirmation
+      request={buildRequest()}
+      outcome={outcome('succeeded')}
+      returnFocusSelector={returnFocusSelector}
+      successReturnFocusSelector={successReturnFocusSelector}
+      {...callbacks}
+    />,
+  );
+  assert.match(
+    savedSuccessMarkup,
+    /data-transfer-return-focus-selector="\[data-testid=&#x27;my-flow-export-calendar&#x27;\]"/u,
+  );
+
+  const publicSuccessMarkup = renderToStaticMarkup(
+    <FlowTransferConfirmation
+      request={buildRequest('public_quick')}
+      outcome={outcome('succeeded')}
+      returnFocusSelector={returnFocusSelector}
+      successReturnFocusSelector={successReturnFocusSelector}
+      {...callbacks}
+    />,
+  );
+  assert.match(
+    publicSuccessMarkup,
+    /data-transfer-return-focus-selector="\[data-testid=&#x27;my-flow-export-entry&#x27;\]"/u,
+  );
 });

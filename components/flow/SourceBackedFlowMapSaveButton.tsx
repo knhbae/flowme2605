@@ -17,11 +17,22 @@ import {
 import {
   buildFlowMapSaveStorageKeyPlan,
   runFlowMapSaveTransaction,
+  type FlowMapSaveStorage,
 } from '@/lib/flow/flow-map-save-transaction';
 import { getQ3UserCopyProfile } from '@/lib/flow/q3-user-copy';
-import { getItemStates, saveFlowRecord, saveItemStates, type SavedFlowArtifactMode } from '@/lib/flow/storage';
+import {
+  buildSavedFlowRecord,
+  normalizeSavedFlowRecord,
+  type SavedFlowArtifactMode,
+} from '@/lib/flow/storage';
+import type { FlowItemState } from '@/lib/flow/types';
 import { buildPostSaveHref } from '@/lib/flow/post-save-receipt';
 import { setFlowItemPersonalExclusion } from '@/lib/flow/flow-item-state';
+import { recordCanonicalFlowWrite } from '@/lib/flow/canonical-flow-storage';
+import {
+  getFlowMapSaveWriteLockName,
+  withStorageWriteLock,
+} from '@/lib/flow/storage-write-lock';
 import { FlowBottomSheet } from './FlowExecutionPrimitives';
 import {
   FLOW_UI_INPUT_CLASS,
@@ -54,8 +65,11 @@ type SourceBackedFlowMapSaveButtonProps = {
 };
 
 type SaveFailure = {
+  kind: 'conflict' | 'storage';
   rollbackComplete: boolean;
 };
+
+type FlowMapSaveBaselineState = 'loading' | 'ready' | 'failed';
 
 function getStoredPersistenceItemIds(value: unknown): string[] {
   if (!value || typeof value !== 'object') return [];
@@ -75,10 +89,21 @@ function getStoredPersistenceItemIds(value: unknown): string[] {
   });
 }
 
-function parseStoredJson(storage: Storage, key: string): unknown {
+function parseStoredJson(storage: Pick<FlowMapSaveStorage, 'getItem'>, key: string): unknown {
   const raw = storage.getItem(key);
   if (!raw) throw new Error(`Flow Map save did not write ${key}`);
   return JSON.parse(raw) as unknown;
+}
+
+function readStoredItemStates(
+  storage: Pick<FlowMapSaveStorage, 'getItem'>,
+  key: string,
+): Record<string, FlowItemState> {
+  try {
+    return JSON.parse(storage.getItem(key) || '{}') as Record<string, FlowItemState>;
+  } catch {
+    return {};
+  }
 }
 
 export function SourceBackedFlowMapSaveButton({
@@ -101,8 +126,11 @@ export function SourceBackedFlowMapSaveButton({
   const [adjustmentReturnFocusSelector, setAdjustmentReturnFocusSelector] = useState<string | undefined>();
   const [saving, setSaving] = useState(false);
   const [saveFailure, setSaveFailure] = useState<SaveFailure | undefined>();
+  const [saveBaselineState, setSaveBaselineState] = useState<FlowMapSaveBaselineState>('loading');
   const anchorInputRef = useRef<HTMLInputElement>(null);
   const editorHistoryMarkerRef = useRef<string | null>(null);
+  const saveBaselineRawRef = useRef<Record<string, string | null> | undefined>(undefined);
+  const conflictRecoveryRef = useRef<HTMLAnchorElement>(null);
   const needsAnchor = Boolean(setupInput);
   const selectedCount = effectiveSnapshot.counts.effective;
   const selectedItemIdSet = new Set<string>(effectiveSnapshot.itemIds.effective);
@@ -118,13 +146,43 @@ export function SourceBackedFlowMapSaveButton({
   const baseSaveButtonLabel = q3CopyEnabled
     ? copy.map.saveToMyPlans
     : primaryAction?.label ?? '전체 저장하고 시작';
-  const saveButtonLabel = saveFailure ? '다시 저장' : baseSaveButtonLabel;
+  const saveButtonLabel = saveFailure?.kind === 'conflict'
+    ? '최신 저장본 확인 필요'
+    : saveFailure
+      ? '다시 저장'
+      : baseSaveButtonLabel;
   const mobileSaveButtonLabel = needsAnchor && !anchor
     ? `${setupInput?.label ?? '날짜'} 정하기`
     : saveButtonLabel;
   const setupInputHint = setupInput
     ? `${setupInput.label}에 맞춰 할 일 날짜가 정해집니다.`
     : '';
+
+  useEffect(() => {
+    const baselineKeyPlan = buildFlowMapSaveStorageKeyPlan({
+      mapId: effectiveSnapshot.identity.mapId,
+      flowSlugs: [],
+    });
+    try {
+      saveBaselineRawRef.current = {
+        [baselineKeyPlan.mapSnapshotKey]: window.localStorage.getItem(baselineKeyPlan.mapSnapshotKey),
+        [baselineKeyPlan.mapPersistenceKey]: window.localStorage.getItem(baselineKeyPlan.mapPersistenceKey),
+      };
+      setSaveBaselineState('ready');
+    } catch {
+      saveBaselineRawRef.current = undefined;
+      setSaveBaselineState('failed');
+      setSaveFailure({ kind: 'storage', rollbackComplete: false });
+    }
+  }, [effectiveSnapshot.identity.mapId]);
+
+  useEffect(() => {
+    if (saveFailure?.kind !== 'conflict') return;
+    const frame = window.requestAnimationFrame(() => {
+      conflictRecoveryRef.current?.focus();
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [saveFailure?.kind]);
 
   const resetDraftFromApplied = () => {
     setTitleDraft(effectiveSnapshot.effectiveTitle);
@@ -166,7 +224,7 @@ export function SourceBackedFlowMapSaveButton({
   const openAdjustment = (returnFocusSelector: string) => {
     resetDraftFromApplied();
     setAdjustmentReturnFocusSelector(returnFocusSelector);
-    setSaveFailure(undefined);
+    setSaveFailure((current) => current?.kind === 'conflict' ? current : undefined);
     const marker = `flow-map-editor:${effectiveSnapshot.identity.mapId}:${Date.now()}`;
     const currentState = window.history.state && typeof window.history.state === 'object'
       ? window.history.state as Record<string, unknown>
@@ -183,17 +241,17 @@ export function SourceBackedFlowMapSaveButton({
       selectedItemIds: selectedItemIdsDraft,
     });
     onEffectiveSnapshotChange(nextSnapshot);
-    setSaveFailure(undefined);
+    setSaveFailure((current) => current?.kind === 'conflict' ? current : undefined);
     setAdjusting(false);
     leaveEditorHistoryEntry();
   };
 
-  const failSave = (rollbackComplete: boolean) => {
+  const failSave = (rollbackComplete: boolean, kind: SaveFailure['kind'] = 'storage') => {
     setSaving(false);
-    setSaveFailure({ rollbackComplete });
+    setSaveFailure({ kind, rollbackComplete });
   };
 
-  const saveMap = () => {
+  const saveMap = async () => {
     if (saving) return;
     if (needsAnchor && !anchor) {
       setShowRequired(true);
@@ -202,6 +260,11 @@ export function SourceBackedFlowMapSaveButton({
       return;
     }
     if (selectedCount === 0) return;
+    const expectedRaw = saveBaselineRawRef.current;
+    if (saveBaselineState !== 'ready' || !expectedRaw) {
+      failSave(false);
+      return;
+    }
     setSaving(true);
     setSaveFailure(undefined);
 
@@ -245,17 +308,33 @@ export function SourceBackedFlowMapSaveButton({
       mapId: effectiveSnapshot.identity.mapId,
       flowSlugs: includedFlows.map((flow) => flow.slug),
     });
-    const transaction = runFlowMapSaveTransaction({
-      storage: window.localStorage,
-      keys: keyPlan.allKeys,
-      apply: () => {
+    const lockedTransaction = await withStorageWriteLock(
+      getFlowMapSaveWriteLockName(effectiveSnapshot.identity.mapId),
+      () => runFlowMapSaveTransaction({
+        storage: window.localStorage,
+        keys: keyPlan.allKeys,
+        expectedRaw,
+        apply: (transactionStorage) => {
         includedFlows.forEach((flow) => {
-          const record = saveFlowRecord(flow.slug, {
+          const savedFlowKey = keyPlan.savedFlowKeysBySlug[flow.slug]!;
+          let previousRecord: ReturnType<typeof normalizeSavedFlowRecord>;
+          try {
+            previousRecord = normalizeSavedFlowRecord(JSON.parse(
+              transactionStorage.getItem(savedFlowKey) || 'null',
+            ));
+          } catch {
+            previousRecord = undefined;
+          }
+          const record = buildSavedFlowRecord(flow.slug, {
             selectedArtifactMode: flow.artifactMode,
             ...(needsAnchor ? { anchor } : {}),
-          });
-          if (!record) throw new Error(`Could not save Flow record for ${flow.slug}`);
-          const nextItemStates = { ...getItemStates(flow.slug) };
+          }, previousRecord);
+          transactionStorage.setItem(savedFlowKey, JSON.stringify(record));
+          recordCanonicalFlowWrite(transactionStorage, flow.slug, record.savedAt);
+          transactionStorage.setItem(keyPlan.lastVisitKey, record.savedAt);
+
+          const itemStateKey = keyPlan.itemStateKeysBySlug[flow.slug]!;
+          const nextItemStates = { ...readStoredItemStates(transactionStorage, itemStateKey) };
           flow.steps.forEach((step) => {
             const itemId = buildFlowMapCanonicalItemId(flow.slug, step.id);
             const nextState = setFlowItemPersonalExclusion(
@@ -265,16 +344,17 @@ export function SourceBackedFlowMapSaveButton({
             if (nextState) nextItemStates[step.id] = nextState;
             else delete nextItemStates[step.id];
           });
-          saveItemStates(flow.slug, nextItemStates);
+          transactionStorage.setItem(itemStateKey, JSON.stringify(nextItemStates));
+          transactionStorage.setItem(keyPlan.lastVisitKey, new Date().toISOString());
         });
-        window.localStorage.setItem(keyPlan.mapSnapshotKey, JSON.stringify(savedMapSnapshot));
-        window.localStorage.setItem(keyPlan.mapPersistenceKey, JSON.stringify(persistenceRecord));
+        transactionStorage.setItem(keyPlan.mapSnapshotKey, JSON.stringify(savedMapSnapshot));
+        transactionStorage.setItem(keyPlan.mapPersistenceKey, JSON.stringify(persistenceRecord));
 
-        const storedSnapshot = parseStoredJson(window.localStorage, keyPlan.mapSnapshotKey) as {
+        const storedSnapshot = parseStoredJson(transactionStorage, keyPlan.mapSnapshotKey) as {
           title?: unknown;
           stepCountsByFlow?: unknown;
         };
-        const storedPersistence = parseStoredJson(window.localStorage, keyPlan.mapPersistenceKey) as {
+        const storedPersistence = parseStoredJson(transactionStorage, keyPlan.mapPersistenceKey) as {
           map?: { title?: unknown };
         };
         const storedCount = storedSnapshot.stepCountsByFlow
@@ -292,9 +372,18 @@ export function SourceBackedFlowMapSaveButton({
           throw new Error('Stored Flow Map does not match the applied effective snapshot');
         }
       },
-    });
+      }),
+    );
+    if (!lockedTransaction.ok) {
+      failSave(true);
+      return;
+    }
+    const transaction = lockedTransaction.value;
     if (!transaction.ok) {
-      failSave(transaction.rollbackComplete);
+      failSave(
+        transaction.rollbackComplete,
+        transaction.conflictKeys.length > 0 ? 'conflict' : 'storage',
+      );
       return;
     }
     window.location.href = buildPostSaveHref({ kind: 'map', id: effectiveSnapshot.identity.mapId });
@@ -307,7 +396,7 @@ export function SourceBackedFlowMapSaveButton({
       data-map-save-mode={actionContract.controller.saveMode}
       data-map-source-action={actionContract.identity.source.id}
       data-p35-q3-copy={q3CopyEnabled ? 'on' : 'off'}
-      data-save-status={saving ? 'saving' : saveFailure ? 'failed' : 'idle'}
+      data-save-status={saving ? 'saving' : saveFailure?.kind === 'conflict' ? 'conflict' : saveFailure ? 'failed' : 'idle'}
       aria-busy={saving}
     >
       {setupInput ? (
@@ -323,7 +412,7 @@ export function SourceBackedFlowMapSaveButton({
             onChange={(event) => {
               setAnchor(event.target.value);
               setShowRequired(false);
-              setSaveFailure(undefined);
+              setSaveFailure((current) => current?.kind === 'conflict' ? current : undefined);
             }}
           />
           <span className="text-xs font-medium leading-5 text-slate-500">{setupInputHint}</span>
@@ -342,7 +431,22 @@ export function SourceBackedFlowMapSaveButton({
             : `저장 결과 · ${effectiveSnapshot.effectiveTitle} · 할 일 ${selectedCount}개`}
         </p>
       ) : null}
-      {saveFailure ? (
+      {saveFailure?.kind === 'conflict' ? (
+        <div data-testid="flow-map-save-conflict" role="alert" className="grid gap-2 border-l-2 border-amber-500 bg-amber-50 px-3 py-2 text-xs font-semibold leading-5 text-amber-950">
+          <p>
+            다른 탭에서 이 계획을 먼저 저장했어요. 이 화면의 제목과 선택은 그대로 남겨뒀습니다.
+          </p>
+          <a
+            ref={conflictRecoveryRef}
+            className="w-fit underline underline-offset-2"
+            href={buildPostSaveHref({ kind: 'map', id: effectiveSnapshot.identity.mapId })}
+            rel="noreferrer"
+            target="_blank"
+          >
+            새 탭에서 최신 저장본 보기
+          </a>
+        </div>
+      ) : saveFailure ? (
         <p data-testid="flow-map-save-error" role="alert" className="border-l-2 border-red-500 bg-red-50 px-3 py-2 text-xs font-semibold leading-5 text-red-800">
           {saveFailure.rollbackComplete
             ? '저장하지 못했습니다. 선택은 그대로 유지됐어요. 다시 시도해 주세요.'
@@ -364,7 +468,7 @@ export function SourceBackedFlowMapSaveButton({
           data-testid="flow-map-save-all"
           data-map-action-intent={primaryAction?.intent}
           type="button"
-          disabled={saving || !primaryAction || primaryAction.disabled}
+          disabled={saving || saveBaselineState !== 'ready' || saveFailure?.kind === 'conflict' || !primaryAction || primaryAction.disabled}
           onClick={saveMap}
         >
           {saveButtonLabel}
@@ -404,7 +508,7 @@ export function SourceBackedFlowMapSaveButton({
               {q3CopyEnabled ? copy.map.editPlan : '조정'}
             </button>
           ) : null}
-          <button className="inline-flex min-h-10 shrink-0 items-center justify-center rounded-lg bg-[#3654FF] px-3 py-2 text-sm font-semibold text-white disabled:bg-slate-300" data-testid="flow-map-save-all-mobile" data-map-action-intent={primaryAction?.intent} type="button" disabled={saving || !primaryAction || primaryAction.disabled} onClick={saveMap}>
+          <button className="inline-flex min-h-10 shrink-0 items-center justify-center rounded-lg bg-[#3654FF] px-3 py-2 text-sm font-semibold text-white disabled:bg-slate-300" data-testid="flow-map-save-all-mobile" data-map-action-intent={primaryAction?.intent} type="button" disabled={saving || saveBaselineState !== 'ready' || saveFailure?.kind === 'conflict' || !primaryAction || primaryAction.disabled} onClick={saveMap}>
             {mobileSaveButtonLabel}
           </button>
         </div>

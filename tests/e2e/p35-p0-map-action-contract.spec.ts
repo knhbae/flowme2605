@@ -194,6 +194,115 @@ test.describe('P35 P0 Flow Map action contract', () => {
     await assertStoredParity(page, expectedIds);
   });
 
+  test('a stale tab cannot overwrite a newer Flow Map save and keeps its applied selection recoverable', async ({ context, page }) => {
+    test.setTimeout(60_000);
+
+    await page.goto(MAP_URL);
+    await expect(saveTrigger(page, true)).toBeEnabled();
+
+    const stalePage = await context.newPage();
+    await stalePage.setViewportSize({ width: 390, height: 844 });
+    await stalePage.goto(MAP_URL);
+    await expect(saveTrigger(stalePage, true)).toBeEnabled();
+
+    const staleEditor = await openEditor(stalePage, true);
+    await staleEditor.getByTestId('flow-map-custom-title').fill('이 탭에서 고친 계획');
+    await staleEditor.locator('input[type="checkbox"]').last().uncheck();
+    await staleEditor.getByTestId('flow-map-adjust-apply').click();
+    await expect(stalePage.getByTestId('flow-map-effective-snapshot')).toHaveAttribute(
+      'data-flow-map-title',
+      '이 탭에서 고친 계획',
+    );
+    await expect(stalePage.getByTestId('flow-map-effective-snapshot')).toHaveAttribute(
+      'data-flow-map-item-count',
+      '7',
+    );
+
+    await saveTrigger(page, true).click();
+    await expect(page).toHaveURL(`/my?savedMap=${MAP_ID}`);
+    const newerRaw = await readRelevantRawStorage(page);
+
+    await saveTrigger(stalePage, true).click();
+    await expect(stalePage).toHaveURL(MAP_URL);
+    const conflict = stalePage.getByTestId('flow-map-save-conflict');
+    await expect(conflict).toContainText(
+      '다른 탭에서 이 계획을 먼저 저장했어요',
+      { timeout: 15_000 },
+    );
+    await expect(conflict).toContainText('이 화면의 제목과 선택은 그대로 남겨뒀습니다');
+    const latestLink = conflict.getByRole('link', { name: '새 탭에서 최신 저장본 보기' });
+    await expect(latestLink).toHaveAttribute('href', `/my?savedMap=${MAP_ID}`);
+    await expect(latestLink).toHaveAttribute('target', '_blank');
+    await expect(latestLink).toBeFocused();
+    await expect(latestLink).toBeInViewport();
+    await expect(saveTrigger(stalePage, true)).toBeDisabled();
+    await expect(stalePage.getByTestId('flow-map-effective-snapshot')).toHaveAttribute(
+      'data-flow-map-title',
+      '이 탭에서 고친 계획',
+    );
+    await expect(stalePage.getByTestId('flow-map-effective-snapshot')).toHaveAttribute(
+      'data-flow-map-item-count',
+      '7',
+    );
+    expect(await readRelevantRawStorage(stalePage)).toEqual(newerRaw);
+
+    const reopenedEditor = await openEditor(stalePage, true);
+    await reopenedEditor.getByTestId('flow-map-custom-title').fill('충돌 뒤에도 남는 내 초안');
+    await reopenedEditor.getByTestId('flow-map-adjust-apply').click();
+    await expect(conflict).toBeVisible();
+    await expect(saveTrigger(stalePage, true)).toBeDisabled();
+    await expect(stalePage.getByTestId('flow-map-effective-snapshot')).toHaveAttribute(
+      'data-flow-map-title',
+      '충돌 뒤에도 남는 내 초안',
+    );
+    expect(await readRelevantRawStorage(stalePage)).toEqual(newerRaw);
+  });
+
+  test('changing an anchor keeps stale-save recovery visible until the map is refreshed', async ({ context, page }) => {
+    test.setTimeout(60_000);
+    const datedMapId = 'curated-opic-mock-course';
+    const datedFlowSlugs = ['curated-opic-single-mock-review', 'curated-opic-course-row-import'];
+    const datedMapUrl = `/flow-maps/${datedMapId}`;
+    const datedStorageKeys = [
+      ...datedFlowSlugs.flatMap((slug) => [
+        `flow:saved:${slug}`,
+        `flow_builder_mvp_item_state_${slug}`,
+      ]),
+      'flow:canonical:origin:v1',
+      'flow:meta:last-visit',
+      `flow:map:saved:${datedMapId}`,
+      `flow:map:persistence:${datedMapId}`,
+    ];
+    const readDatedRawStorage = (targetPage: Page) => targetPage.evaluate(
+      (keys) => Object.fromEntries(keys.map((key) => [key, window.localStorage.getItem(key)])),
+      datedStorageKeys,
+    );
+
+    await page.goto(datedMapUrl);
+    await expect(page.getByTestId('flow-map-anchor-input')).toBeVisible();
+
+    const stalePage = await context.newPage();
+    await stalePage.setViewportSize({ width: 390, height: 844 });
+    await stalePage.goto(datedMapUrl);
+    await expect(stalePage.getByTestId('flow-map-anchor-input')).toBeVisible();
+
+    await saveTrigger(page, true).click();
+    await expect(page).toHaveURL(`/my?savedMap=${datedMapId}`);
+    const newerRaw = await readDatedRawStorage(page);
+
+    await saveTrigger(stalePage, true).click();
+    const conflict = stalePage.getByTestId('flow-map-save-conflict');
+    await expect(conflict).toBeVisible();
+    await expect(conflict.getByRole('link', { name: '새 탭에서 최신 저장본 보기' })).toBeFocused();
+    await expect(saveTrigger(stalePage, true)).toBeDisabled();
+    expect(await readDatedRawStorage(stalePage)).toEqual(newerRaw);
+
+    await stalePage.getByTestId('flow-map-anchor-input').fill('2026-08-21');
+    await expect(conflict).toBeVisible();
+    await expect(saveTrigger(stalePage, true)).toBeDisabled();
+    expect(await readDatedRawStorage(stalePage)).toEqual(newerRaw);
+  });
+
   test('choose-child keeps child routing and never exposes a map editor or save-all controller', async ({ page }) => {
     await page.goto('/flow-maps/curated-allblanc-workout-park');
 

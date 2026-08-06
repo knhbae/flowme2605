@@ -4,6 +4,7 @@ import {
   type SavedFlowRecord,
 } from './storage';
 import type { FlowItemState } from './types';
+import type { PublicSaveChoice } from './public-save-lifecycle';
 
 export const PUBLIC_FLOW_SAVED_RECORD_KEY_PREFIX = 'flow:saved:';
 export const PUBLIC_FLOW_ITEM_STATE_KEY_PREFIX = 'flow_builder_mvp_item_state_';
@@ -111,6 +112,8 @@ export type PublicFlowSavedCopySummary = {
   personalTitle?: string;
   lastSaveRequestId?: string;
   legacy: boolean;
+  /** Exact bytes inspected when this choice was presented. */
+  savedRecordRaw: string;
 };
 
 export type PublicFlowSavedCopyInspection =
@@ -313,7 +316,10 @@ function parseSavedRecord(raw: string | null): SavedFlowRecord | undefined {
   }
 }
 
-function toSavedCopySummary(record: SavedFlowRecord): PublicFlowSavedCopySummary {
+function toSavedCopySummary(
+  record: SavedFlowRecord,
+  savedRecordRaw: string,
+): PublicFlowSavedCopySummary {
   return {
     personalCopyKey: record.personalCopyKey ?? record.slug,
     sourceFlowKey: record.sourceFlowKey ?? record.slug,
@@ -323,6 +329,7 @@ function toSavedCopySummary(record: SavedFlowRecord): PublicFlowSavedCopySummary
     ...(record.personalTitle ? { personalTitle: record.personalTitle } : {}),
     ...(record.lastSaveRequestId ? { lastSaveRequestId: record.lastSaveRequestId } : {}),
     legacy: record.schemaVersion !== 2,
+    savedRecordRaw,
   };
 }
 
@@ -360,7 +367,7 @@ export function inspectPublicFlowSavedCopies(
         if (malformedMatchesSource) return { kind: 'held', reason: 'malformed_legacy' };
         continue;
       }
-      const summary = toSavedCopySummary(record);
+      const summary = toSavedCopySummary(record, raw as string);
       if (
         summary.sourceFlowKey !== sourceFlowKey
         && summary.sourceFlowSlug !== sourceFlowSlug
@@ -381,6 +388,97 @@ export function inspectPublicFlowSavedCopies(
   return copies.length > 0
     ? { kind: 'choice_required', copies }
     : { kind: 'ready_new', copies: [] };
+}
+
+export type PublicFlowSaveLockedChoiceValidation =
+  | Readonly<{
+      ok: true;
+      status: 'proceed';
+      expectedSavedRecordRaw: string | null;
+    }>
+  | Readonly<{
+      ok: true;
+      status: 'already_committed';
+      copy: PublicFlowSavedCopySummary;
+    }>
+  | Readonly<{
+      ok: false;
+      status: 'stale';
+      reason:
+        | 'inspection_held'
+        | 'existing_copy_changed'
+        | 'overwrite_target_missing'
+        | 'overwrite_target_changed'
+        | 'target_identity_conflict';
+    }>;
+
+/**
+ * Revalidates a UI choice after the shared user-data lock is acquired. The
+ * returned raw value must also be supplied to the write transaction CAS so a
+ * non-cooperating writer cannot change the target between this read and backup.
+ */
+export function validatePublicFlowSaveChoiceUnderLock(
+  storage: PublicFlowSaveStorage,
+  input: {
+    sourceFlowKey: string;
+    sourceFlowSlug: string;
+    idempotencyKey: string;
+    choice: PublicSaveChoice;
+    expectedOverwriteRaw?: string | null;
+  },
+): PublicFlowSaveLockedChoiceValidation {
+  const inspection = inspectPublicFlowSavedCopies(storage, input);
+  if (inspection.kind === 'held') {
+    return { ok: false, status: 'stale', reason: 'inspection_held' };
+  }
+  if (inspection.kind === 'already_committed') {
+    return { ok: true, status: 'already_committed', copy: inspection.copy };
+  }
+
+  const savedRecordKey = getPublicFlowSavedRecordStorageKey(input.choice.personalCopyKey);
+  let currentTargetRaw: string | null;
+  try {
+    currentTargetRaw = storage.getItem(savedRecordKey);
+  } catch {
+    return { ok: false, status: 'stale', reason: 'inspection_held' };
+  }
+
+  if (input.choice.kind === 'create') {
+    if (inspection.kind !== 'ready_new') {
+      return { ok: false, status: 'stale', reason: 'existing_copy_changed' };
+    }
+    return currentTargetRaw === null
+      ? { ok: true, status: 'proceed', expectedSavedRecordRaw: null }
+      : { ok: false, status: 'stale', reason: 'target_identity_conflict' };
+  }
+
+  if (input.choice.kind === 'copy') {
+    return currentTargetRaw === null
+      ? { ok: true, status: 'proceed', expectedSavedRecordRaw: null }
+      : { ok: false, status: 'stale', reason: 'target_identity_conflict' };
+  }
+
+  if (inspection.kind !== 'choice_required') {
+    return { ok: false, status: 'stale', reason: 'overwrite_target_missing' };
+  }
+  const latestTarget = inspection.copies.find(
+    (copy) => copy.personalCopyKey === input.choice.personalCopyKey,
+  );
+  if (!latestTarget) {
+    return { ok: false, status: 'stale', reason: 'overwrite_target_missing' };
+  }
+  if (
+    typeof input.expectedOverwriteRaw !== 'string'
+    || latestTarget.savedRecordRaw !== input.expectedOverwriteRaw
+    || currentTargetRaw !== input.expectedOverwriteRaw
+  ) {
+    return { ok: false, status: 'stale', reason: 'overwrite_target_changed' };
+  }
+  return {
+    ok: true,
+    status: 'proceed',
+    expectedSavedRecordRaw: input.expectedOverwriteRaw,
+  };
 }
 
 function assertSavedRecordLast(

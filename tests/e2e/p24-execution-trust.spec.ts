@@ -602,7 +602,7 @@ test.describe('P24 execution trust regressions', () => {
 
     const flow = await openMyFlowLibraryFlow(page, 'source-backed-moving-d30', 'record');
     const exportSurface = flow.getByTestId('my-flow-export-surface');
-    await expect(exportSurface.getByTestId('my-flow-export-entry')).toContainText(/전체 \d+개 옮기기/);
+    await expect(exportSurface.getByTestId('my-flow-export-entry')).toContainText(/내 도구로 옮기기 · \d+개/);
     await exportSurface.getByTestId('my-flow-export-entry').click();
     await expect(exportSurface.getByTestId('my-flow-export-scope-flow')).toHaveAttribute('aria-pressed', 'true');
     await expect(exportSurface.getByTestId('my-flow-export-scope-flow')).toHaveText('계획 전체 · 5개');
@@ -1251,20 +1251,21 @@ test.describe('P24 execution trust regressions', () => {
     await outline.getByTestId('my-flow-batch-open-date-tool').click();
     await outline.getByTestId('my-flow-batch-target-date').fill('2026-09-03');
     await outline.getByTestId('my-flow-batch-apply-date').click();
+    await expect(draftFlow.getByTestId('my-flow-batch-undo')).toBeVisible();
     await outline.getByTestId('my-flow-batch-selectable-row').nth(0).getByTestId('my-flow-batch-item-checkbox').check();
     await outline.getByTestId('my-flow-batch-open-date-tool').click();
     await outline.getByTestId('my-flow-batch-operation-remove-date').click();
     await expect(outline.getByTestId('my-flow-batch-impact-preview')).toContainText('1개가 바뀝니다');
     await outline.getByTestId('my-flow-batch-apply-date').click();
-    const removedOverrideState = await page.evaluate(() => {
+    await expect.poll(() => page.evaluate(() => {
       const values = Object.values(JSON.parse(localStorage.getItem('flow:my-flow:date-overrides') || '{}'));
       return {
         removedCount: values.filter((value) => value === '__flowme_unscheduled__').length,
         staleMovedDateCount: values.filter((value) => value === '2026-09-03').length,
       };
-    });
-    expect(removedOverrideState).toEqual({ removedCount: 1, staleMovedDateCount: 0 });
+    })).toEqual({ removedCount: 1, staleMovedDateCount: 0 });
     await draftFlow.getByTestId('my-flow-batch-undo-action').click();
+    await expect(draftFlow.getByTestId('my-flow-batch-undo')).toHaveCount(0);
 
     await outline.getByTestId('my-flow-batch-selectable-row').nth(0).getByTestId('my-flow-batch-item-checkbox').check();
     page.once('dialog', (dialog) => dialog.accept());

@@ -252,7 +252,6 @@ test.describe('P24 save-personalize-execute journey frame', () => {
     const library = page.getByTestId('my-flow-library-workspace');
     const flowRail = library.getByTestId('my-flow-library-rail');
     await expect(flowRail).toBeVisible();
-    await expect(flowRail).toContainText('라이브러리');
     await expect(flowRail).toContainText('저장한 계획');
     await expect(flowRail.getByTestId('my-flow-library-row')).toHaveCount(2);
     await expect(flowRail.getByTestId('my-flow-library-rail-filter')).toHaveCount(0);

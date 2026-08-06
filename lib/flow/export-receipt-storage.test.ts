@@ -9,9 +9,14 @@ import {
   getFlowExportReceiptsForSavedPlan,
   readFlowExportReceiptRegistry,
   removeFlowExportReceiptsForSavedPlan,
+  removeFlowExportReceiptsForSavedPlanSerialized,
   type FlowExportReceiptStorage,
 } from './export-receipt-storage';
 import type { ResultTransferPersistentReceipt } from './result-transfer';
+import {
+  FLOW_EXPORT_RECEIPT_WRITE_LOCK,
+  withStorageWriteLock,
+} from './storage-write-lock';
 
 function buildReceipt(options: Readonly<{
   receiptId?: string;
@@ -296,6 +301,38 @@ test('write failure and readback mismatch restore the exact prior raw registry',
   }
 });
 
+test('failed receipt append does not roll back over a concurrent registry replacement', () => {
+  const priorReceipt = buildReceipt({ receiptId: 'receipt-prior' });
+  const otherReceipt = buildReceipt({ receiptId: 'receipt-other' });
+  const priorRaw = JSON.stringify({
+    schemaVersion: FLOW_EXPORT_RECEIPTS_SCHEMA_VERSION,
+    receipts: [priorReceipt],
+  });
+  const otherRaw = JSON.stringify({
+    schemaVersion: FLOW_EXPORT_RECEIPTS_SCHEMA_VERSION,
+    receipts: [priorReceipt, otherReceipt],
+  });
+  const base = memoryStorage({ [FLOW_EXPORT_RECEIPTS_STORAGE_KEY]: priorRaw });
+  let firstWrite = true;
+  const storage: FlowExportReceiptStorage = {
+    getItem: (key) => base.getItem(key),
+    setItem(key, value) {
+      base.setItem(key, value);
+      if (firstWrite) {
+        firstWrite = false;
+        base.setItem(key, otherRaw);
+        throw new Error('write failed after another tab replaced the registry');
+      }
+    },
+    removeItem: (key) => base.removeItem(key),
+  };
+
+  const result = appendFlowExportReceipt(storage, buildReceipt({ receiptId: 'receipt-current' }));
+  assert.equal(result.status, 'failed');
+  assert.equal(result.rollbackComplete, false);
+  assert.equal(base.getItem(FLOW_EXPORT_RECEIPTS_STORAGE_KEY), otherRaw);
+});
+
 test('archiving a saved plan retains its historical receipts until explicit permanent cleanup', () => {
   const storage = memoryStorage({
     'flow:saved:saved-plan-a': '{"slug":"saved-plan-a"}',
@@ -392,4 +429,48 @@ test('permanent cleanup returns a typed retryable failure when the receipt regis
   assert.match(result.message ?? '', /receipt storage is unavailable/u);
   assert.equal(setCalls, 0);
   assert.equal(removeCalls, 0);
+});
+
+test('serialized permanent cleanup preserves a receipt appended by another tab before removing its plan', async () => {
+  const storage = memoryStorage();
+  const receiptA = buildReceipt({ receiptId: 'a-1', savedPlanId: 'saved-plan-a' });
+  const receiptB1 = buildReceipt({ receiptId: 'b-1', savedPlanId: 'saved-plan-b' });
+  const receiptB2 = buildReceipt({ receiptId: 'b-2', savedPlanId: 'saved-plan-b' });
+  assert.equal(appendFlowExportReceipt(storage, receiptA).status, 'stored');
+  assert.equal(appendFlowExportReceipt(storage, receiptB1).status, 'stored');
+
+  let announceSnapshotRead: () => void = () => undefined;
+  const snapshotRead = new Promise<void>((resolve) => {
+    announceSnapshotRead = resolve;
+  });
+  let releaseAppend: () => void = () => undefined;
+  const appendMayWrite = new Promise<void>((resolve) => {
+    releaseAppend = resolve;
+  });
+
+  const appendInAnotherTab = withStorageWriteLock(
+    FLOW_EXPORT_RECEIPT_WRITE_LOCK,
+    async () => {
+      const current = readFlowExportReceiptRegistry(storage);
+      assert.ok(current.registry);
+      announceSnapshotRead();
+      await appendMayWrite;
+      storage.setItem(FLOW_EXPORT_RECEIPTS_STORAGE_KEY, JSON.stringify({
+        schemaVersion: FLOW_EXPORT_RECEIPTS_SCHEMA_VERSION,
+        receipts: [...current.registry.receipts, receiptB2],
+      }));
+    },
+  );
+
+  await snapshotRead;
+  const cleanup = removeFlowExportReceiptsForSavedPlanSerialized(storage, 'saved-plan-a');
+  releaseAppend();
+
+  assert.equal((await appendInAnotherTab).ok, true);
+  const cleanupResult = await cleanup;
+  assert.equal(cleanupResult.status, 'removed');
+  assert.deepEqual(
+    readFlowExportReceiptRegistry(storage).registry?.receipts.map((receipt) => receipt.receiptId),
+    ['b-1', 'b-2'],
+  );
 });

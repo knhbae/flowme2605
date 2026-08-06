@@ -2,6 +2,10 @@ import type {
   EffectiveFlowProjectionManifest,
   EffectiveFlowProjectionScope,
 } from './effective-flow-contract';
+import {
+  FLOW_EXPORT_RECEIPT_WRITE_LOCK,
+  withStorageWriteLock,
+} from './storage-write-lock';
 
 export const RESULT_TRANSFER_SCHEMA_VERSION = 1 as const;
 export const RESULT_TRANSFER_RECEIPT_SCHEMA_VERSION = 1 as const;
@@ -9,6 +13,15 @@ export const RESULT_TRANSFER_RECEIPT_SCHEMA_VERSION = 1 as const;
 export type ResultTransferRoute = 'saved_transfer' | 'public_quick';
 export type ResultTransferPersistence = 'persistent_receipt' | 'session';
 export type ResultTransferArtifactTarget = 'clipboard' | 'local_file';
+export type ResultTransferNewlinePolicy = 'preserve';
+
+export type ResultTransferTransportIdentity = Readonly<{
+  payloadHashAlgorithm: 'sha256';
+  payloadHash: string;
+  payloadByteLength: number;
+  textEncoding: 'utf-8';
+  newlinePolicy: ResultTransferNewlinePolicy;
+}>;
 
 export type ResultTransferCountUnits = Readonly<{
   itemCount: 'item';
@@ -89,7 +102,9 @@ export type ResultTransferArtifactEffectResult = Readonly<{
   itemIds: readonly string[];
   itemCount: number;
   outputCount: number;
-  payloadHash: string;
+  canonicalPayloadHash: string;
+  canonicalPayloadByteLength: number;
+  transport: ResultTransferTransportIdentity;
   completedAt: string;
 }>;
 
@@ -116,6 +131,11 @@ export type ResultTransferSessionConfirmation = Readonly<{
     filename?: string;
     payloadHash: string;
     payloadByteLength: number;
+    payloadHashAlgorithm: 'sha256';
+    textEncoding: 'utf-8';
+    newlinePolicy: ResultTransferNewlinePolicy;
+    canonicalPayloadHash: string;
+    canonicalPayloadByteLength: number;
     itemIds: readonly string[];
     itemCount: number;
     outputCount: number;
@@ -151,6 +171,16 @@ export type ResultTransferPersistentReceipt = Readonly<{
     filename?: string;
     payloadHash: string;
     payloadByteLength: number;
+    /** Present on transport-verifiable v1 receipts; absent on legacy v1 receipts. */
+    payloadHashAlgorithm?: 'sha256';
+    /** Present on transport-verifiable v1 receipts; absent on legacy v1 receipts. */
+    textEncoding?: 'utf-8';
+    /** Present on transport-verifiable v1 receipts; absent on legacy v1 receipts. */
+    newlinePolicy?: ResultTransferNewlinePolicy;
+    /** The canonical request fingerprint, distinct from the transported-byte SHA-256. */
+    canonicalPayloadHash?: string;
+    /** The canonical request UTF-8 byte length before any transport normalization. */
+    canonicalPayloadByteLength?: number;
     /** Added to v1 receipts for complete request-to-artifact lineage. */
     itemIds?: readonly string[];
     /** Added to v1 receipts for complete request-to-artifact lineage. */
@@ -184,7 +214,12 @@ export type ResultTransferFailure = Readonly<{
 
 export type ResultTransferReceiptWriteResult =
   | Readonly<{ status: 'stored' | 'duplicate' }>
-  | Readonly<{ status: 'blocked' | 'failed'; message?: string }>;
+  | Readonly<{ status: 'blocked'; message?: string }>
+  | Readonly<{
+      status: 'failed';
+      message?: string;
+      rollbackComplete?: boolean;
+    }>;
 
 export type ResultTransferSucceededOutcome = Readonly<{
   state: 'succeeded';
@@ -265,7 +300,7 @@ function deepFreeze<T>(value: T): T {
   return Object.freeze(value);
 }
 
-/** Stable v1 payload fingerprint used by confirmation and immediate revalidation. */
+/** Stable v1 canonical-request fingerprint used only for confirmation and immediate revalidation. */
 export function fingerprintResultTransferPayload(value: string): string {
   let hash = 2166136261;
   for (let index = 0; index < value.length; index += 1) {
@@ -458,15 +493,41 @@ export function buildResultTransferRequest(options: Readonly<{
 export function buildResultTransferArtifactSuccess(
   request: ResultTransferRequest,
   completedAt: string,
+  transport: ResultTransferTransportIdentity,
 ): ResultTransferArtifactEffectResult {
+  if (!isResultTransferTransportIdentity(transport)) {
+    throw new ResultTransferContractError('Transport identity must describe the final UTF-8 bytes.');
+  }
   return deepFreeze({
     target: request.artifact.target,
     ...(request.artifact.filename ? { filename: request.artifact.filename } : {}),
     itemIds: [...request.artifact.itemIds],
     itemCount: request.artifact.itemCount,
     outputCount: request.artifact.outputCount,
-    payloadHash: request.artifact.payloadHash,
+    canonicalPayloadHash: request.artifact.payloadHash,
+    canonicalPayloadByteLength: request.artifact.payloadByteLength,
+    transport: { ...transport },
     completedAt: nonEmpty(completedAt, 'completedAt'),
+  });
+}
+
+export async function buildResultTransferTransportIdentity(
+  bytes: Uint8Array,
+  newlinePolicy: ResultTransferNewlinePolicy,
+): Promise<ResultTransferTransportIdentity> {
+  if (!globalThis.crypto?.subtle) {
+    throw new ResultTransferContractError('SHA-256 is unavailable in this runtime.');
+  }
+  const ownedBytes = Uint8Array.from(bytes);
+  const digest = await globalThis.crypto.subtle.digest('SHA-256', ownedBytes);
+  const payloadHash = Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0'))
+    .join('');
+  return deepFreeze({
+    payloadHashAlgorithm: 'sha256',
+    payloadHash,
+    payloadByteLength: ownedBytes.byteLength,
+    textEncoding: 'utf-8',
+    newlinePolicy,
   });
 }
 
@@ -494,8 +555,13 @@ function buildSessionConfirmation(
       target: request.artifact.target,
       mediaType: request.artifact.mediaType,
       ...(request.artifact.filename ? { filename: request.artifact.filename } : {}),
-      payloadHash: request.artifact.payloadHash,
-      payloadByteLength: request.artifact.payloadByteLength,
+      payloadHash: artifact.transport.payloadHash,
+      payloadByteLength: artifact.transport.payloadByteLength,
+      payloadHashAlgorithm: artifact.transport.payloadHashAlgorithm,
+      textEncoding: artifact.transport.textEncoding,
+      newlinePolicy: artifact.transport.newlinePolicy,
+      canonicalPayloadHash: artifact.canonicalPayloadHash,
+      canonicalPayloadByteLength: artifact.canonicalPayloadByteLength,
       itemIds: [...request.artifact.itemIds],
       itemCount: request.artifact.itemCount,
       outputCount: request.artifact.outputCount,
@@ -544,8 +610,13 @@ function buildPersistentReceipt(
       target: request.artifact.target,
       mediaType: request.artifact.mediaType,
       ...(request.artifact.filename ? { filename: request.artifact.filename } : {}),
-      payloadHash: request.artifact.payloadHash,
-      payloadByteLength: request.artifact.payloadByteLength,
+      payloadHash: artifact.transport.payloadHash,
+      payloadByteLength: artifact.transport.payloadByteLength,
+      payloadHashAlgorithm: artifact.transport.payloadHashAlgorithm,
+      textEncoding: artifact.transport.textEncoding,
+      newlinePolicy: artifact.transport.newlinePolicy,
+      canonicalPayloadHash: artifact.canonicalPayloadHash,
+      canonicalPayloadByteLength: artifact.canonicalPayloadByteLength,
       itemIds: [...request.artifact.itemIds],
       itemCount: request.artifact.itemCount,
       outputCount: request.artifact.outputCount,
@@ -579,16 +650,30 @@ function classifyArtifactError(error: unknown): ResultTransferFailure {
   );
 }
 
-function artifactMatchesRequest(
+async function artifactMatchesRequest(
   request: ResultTransferRequest,
   artifact: ResultTransferArtifactEffectResult,
-): boolean {
-  return artifact.target === request.artifact.target
+): Promise<boolean> {
+  const structuralMatch = artifact.target === request.artifact.target
     && artifact.itemCount === request.itemCount
     && sameStrings(artifact.itemIds, request.itemIds)
     && artifact.outputCount === request.outputCount
-    && artifact.payloadHash === request.artifact.payloadHash
+    && artifact.canonicalPayloadHash === request.artifact.payloadHash
+    && artifact.canonicalPayloadByteLength === request.artifact.payloadByteLength
+    && isResultTransferTransportIdentity(artifact.transport)
     && (artifact.filename ?? '') === (request.artifact.filename ?? '');
+  if (!structuralMatch) return false;
+
+  try {
+    const expectedTransport = await buildResultTransferTransportIdentity(
+      new TextEncoder().encode(request.artifact.payload),
+      'preserve',
+    );
+    return artifact.transport.payloadHash === expectedTransport.payloadHash
+      && artifact.transport.payloadByteLength === expectedTransport.payloadByteLength;
+  } catch {
+    return false;
+  }
 }
 
 export type ResultTransferRunDependencies = Readonly<{
@@ -641,18 +726,39 @@ async function writeReceipt(
     };
   }
   try {
-    const result = await persistReceipt(receipt);
+    const lockedWrite = await withStorageWriteLock(
+      FLOW_EXPORT_RECEIPT_WRITE_LOCK,
+      () => persistReceipt(receipt),
+    );
+    if (!lockedWrite.ok) {
+      const unavailable = lockedWrite.reason === 'unavailable' || lockedWrite.reason === 'lock_failed';
+      return {
+        ok: false,
+        failure: failure(
+          unavailable ? 'receipt_storage_blocked' : 'receipt_storage_failed',
+          'receipt',
+          unavailable
+            ? 'Persistent receipt storage cannot be serialized safely in this browser.'
+            : lockedWrite.error instanceof Error
+              ? lockedWrite.error.message
+              : 'The persistent receipt write ended in an unknown state.',
+          false,
+        ),
+      };
+    }
+    const result = lockedWrite.value;
     if (result.status === 'stored' || result.status === 'duplicate') {
       return { ok: true, status: result.status };
     }
     const resultMessage = 'message' in result ? result.message : undefined;
+    const rollbackIndeterminate = result.status === 'failed' && result.rollbackComplete === false;
     return {
       ok: false,
       failure: failure(
         result.status === 'blocked' ? 'receipt_storage_blocked' : 'receipt_storage_failed',
         'receipt',
         resultMessage ?? 'The persistent receipt could not be stored.',
-        result.status !== 'blocked',
+        result.status !== 'blocked' && !rollbackIndeterminate,
       ),
     };
   } catch (error) {
@@ -783,7 +889,7 @@ export function createResultTransferRunner(): ResultTransferRunner {
           });
         }
 
-        if (!artifactMatchesRequest(request, artifact)) {
+        if (!await artifactMatchesRequest(request, artifact)) {
           return deepFreeze({
             state: 'partial_local',
             request,
@@ -928,6 +1034,43 @@ function hasValidOptionalArtifactItemLineage(
     && sameStrings(artifact.itemIds, receiptItemIds);
 }
 
+function isResultTransferTransportIdentity(
+  value: unknown,
+): value is ResultTransferTransportIdentity {
+  return isRecord(value)
+    && value.payloadHashAlgorithm === 'sha256'
+    && typeof value.payloadHash === 'string'
+    && /^[0-9a-f]{64}$/u.test(value.payloadHash)
+    && Number.isInteger(value.payloadByteLength)
+    && Number(value.payloadByteLength) >= 0
+    && value.textEncoding === 'utf-8'
+    && value.newlinePolicy === 'preserve';
+}
+
+function hasValidOptionalTransportLineage(artifact: Record<string, unknown>): boolean {
+  const fields = [
+    'payloadHashAlgorithm',
+    'textEncoding',
+    'newlinePolicy',
+    'canonicalPayloadHash',
+    'canonicalPayloadByteLength',
+  ] as const;
+  const presentCount = fields.filter((field) => artifact[field] !== undefined).length;
+  if (presentCount === 0) return true;
+  return presentCount === fields.length
+    && isResultTransferTransportIdentity({
+      payloadHashAlgorithm: artifact.payloadHashAlgorithm,
+      payloadHash: artifact.payloadHash,
+      payloadByteLength: artifact.payloadByteLength,
+      textEncoding: artifact.textEncoding,
+      newlinePolicy: artifact.newlinePolicy,
+    })
+    && typeof artifact.canonicalPayloadHash === 'string'
+    && /^[0-9a-f]{8}$/u.test(artifact.canonicalPayloadHash)
+    && Number.isInteger(artifact.canonicalPayloadByteLength)
+    && Number(artifact.canonicalPayloadByteLength) >= 0;
+}
+
 export function isResultTransferPersistentReceipt(
   value: unknown,
 ): value is ResultTransferPersistentReceipt {
@@ -982,6 +1125,7 @@ export function isResultTransferPersistentReceipt(
       value.itemIds as string[],
       Number(value.itemCount),
     )
+    || !hasValidOptionalTransportLineage(artifact)
     || (value.format !== 'calendar' && value.projectionOutputCount !== value.outputCount)
     || (value.format === 'calendar' && value.itemCount > 0 && value.outputCount === 0)
   ) {

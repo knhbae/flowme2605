@@ -172,7 +172,10 @@ test.describe('P25 whole Flow workspace', () => {
     await expect(page.getByTestId('my-flow-library-back')).toBeVisible();
     const selectedFlowBox = await selectedFlow.boundingBox();
     expect(selectedFlowBox).not.toBeNull();
-    expect(selectedFlowBox!.width).toBeGreaterThan(620);
+    expect(selectedFlowBox!.width).toBeGreaterThan(560);
+    const libraryRailBox = await page.getByTestId('my-flow-library-rail').boundingBox();
+    expect(libraryRailBox).not.toBeNull();
+    expect(libraryRailBox!.width).toBeGreaterThanOrEqual(352);
 
     const detailPane = selectedFlow.getByTestId('my-flow-workspace-detail-pane');
     await expect(detailPane).toBeVisible();

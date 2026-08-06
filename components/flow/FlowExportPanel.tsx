@@ -147,7 +147,9 @@ export function FlowExportPanel({
     (item) => !item.excluded && !item.tombstoned && item.listEligible !== false,
   );
   const selectedCount = selectedPlan.includedCount;
-  const entryLabel = getExportScopeActionLabel(scope, plan.includedCount);
+  const entryLabel = q3CopyEnabled && !legacyPersonalDraft
+    ? `내 도구로 옮기기 · ${plan.includedCount}개`
+    : getExportScopeActionLabel(scope, plan.includedCount);
   const scopeLabel = scope === 'flow'
     ? q3CopyEnabled ? '계획 전체' : 'Flow 전체'
     : scope === 'selected'
@@ -248,7 +250,10 @@ export function FlowExportPanel({
         : '항목을 먼저 선택하세요'
     );
     const outputUnit = destination === 'sheet' ? '행' : '개';
-    const scopedActionLabel = `${exportRecommendation.scopeLabel} · ${copy.label} ${count}${outputUnit}`;
+    const actionScopeLabel = scope === 'flow'
+      ? scopeLabel
+      : exportRecommendation.scopeLabel;
+    const scopedActionLabel = `${actionScopeLabel} · ${copy.label} ${count}${outputUnit}`;
     const role = candidate?.role ?? 'additional';
 
     return (
@@ -356,7 +361,7 @@ export function FlowExportPanel({
         >
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h4 className="text-base font-semibold text-[var(--flowme-text)]">{FLOW_EXECUTION_ACTIONS.exportFlow.label}</h4>
+              <h4 className={showEntry ? 'sr-only' : 'text-base font-semibold text-[var(--flowme-text)]'}>{FLOW_EXECUTION_ACTIONS.exportFlow.label}</h4>
             </div>
             {showClose ? (
               <button
@@ -527,7 +532,7 @@ export function FlowExportPanel({
             {exportRecommendation.additional.length > 0 ? (
               <details data-testid="my-flow-export-more-formats" className="border-b border-[var(--flowme-border)]">
                 <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 px-2 text-xs font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]">
-                  <span>다른 형식 {exportRecommendation.additional.length}개</span>
+                  <span>형식 {exportRecommendation.visible.length + exportRecommendation.additional.length}개 중 {exportRecommendation.additional.length}개 더</span>
                   <span aria-hidden="true">⌄</span>
                 </summary>
                 <div className="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))]">

@@ -518,6 +518,11 @@ test.describe('P35 P1-04 final internal extremes and accessibility gate', () => 
 
     let planEditor = page.getByTestId('saved-flow-editor-plan');
     await expect(planEditor).toBeVisible();
+    const skipToActions = planEditor.getByTestId('saved-flow-editor-plan-skip-to-actions');
+    await expect(skipToActions).toBeFocused();
+    await expect(skipToActions).toHaveText('편집 작업으로 건너뛰기');
+    await skipToActions.click();
+    await expect(planEditor.getByTestId('saved-flow-editor-save')).toBeFocused();
     const itemList = planEditor.getByTestId('saved-flow-editor-item-list');
     const initialRows = planEditor.getByTestId('saved-flow-editor-item-row');
     await expect(initialRows).toHaveCount(50);
@@ -729,6 +734,9 @@ test.describe('P35 P1-04 final internal extremes and accessibility gate', () => 
     await installStorageWriteCapture(page);
     await page.setViewportSize(MOBILE_VIEWPORT);
     await page.goto('/flows');
+    await expect(page.getByTestId('flow-url-lookup-entry')).toBeVisible();
+    expect(await storageWrites(page)).toEqual([]);
+    expect(await page.evaluate(() => window.localStorage.length)).toBe(0);
     await page.evaluate(({ legacyItemStorageKey }) => {
       window.localStorage.clear();
       window.sessionStorage.clear();

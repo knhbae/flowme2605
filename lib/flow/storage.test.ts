@@ -94,6 +94,7 @@ import {
 } from './runtime-content-policy';
 import {
   cloneSeedBundles,
+  buildSavedFlowRecord,
   clearFlowLocalProgress,
   completeActiveFlowRun,
   ensureLegacyActiveFlowRun,
@@ -3304,6 +3305,55 @@ test('versioned personal saved copies keep source reference identity and enumera
   assert.equal(storage.length, 3);
 });
 
+test('Map-style partial saved-record updates preserve a valid schema-v2 identity', () => {
+  const previous = {
+    schemaVersion: 2 as const,
+    slug: 'personal-copy:map-one',
+    personalCopyKey: 'personal-copy:map-one',
+    sourceFlowKey: 'source-flow-id',
+    sourceFlowSlug: 'source-flow',
+    sourceVersion: 'source:v1',
+    lastSaveRequestId: 'request:one',
+    savedItemCount: 3,
+    savedAt: '2026-08-04T03:00:00.000Z',
+    personalTitle: '내 계획',
+    selectedArtifactMode: 'checklist' as const,
+    dateIntent: 'undated' as const,
+    legacyExampleAnchor: '2026-09-01',
+  };
+
+  const updated = buildSavedFlowRecord(
+    previous.slug,
+    {
+      selectedArtifactMode: 'calendar',
+      anchor: '2026-10-02',
+    },
+    previous,
+    '2026-08-06T09:00:00.000Z',
+  );
+
+  assert.deepEqual(updated, {
+    ...previous,
+    savedAt: '2026-08-06T09:00:00.000Z',
+    selectedArtifactMode: 'calendar',
+    dateIntent: 'custom',
+    anchor: '2026-10-02',
+  });
+  assert.deepEqual(normalizeSavedFlowRecord(updated), updated);
+  assert.throws(
+    () => buildSavedFlowRecord(
+      previous.slug,
+      {
+        selectedArtifactMode: 'calendar',
+        sourceVersion: '',
+      },
+      previous,
+      '2026-08-06T09:01:00.000Z',
+    ),
+    /invalid schema-v2 identity/,
+  );
+});
+
 test('entry router detects only valid saved Flow records without mutating storage', () => {
   const emptyStorage = memoryStorage();
   assert.equal(hasSavedFlowEntry(emptyStorage), false);
@@ -3861,10 +3911,20 @@ test('flow run registry preserves a completed legacy run before starting a clean
     localStorage.setItem(
       `flow:saved:${flowSlug}`,
       JSON.stringify({
+        schemaVersion: 2,
         slug: flowSlug,
+        personalCopyKey: flowSlug,
+        sourceFlowKey: 'source-backed-moving-d30-id',
+        sourceFlowSlug: flowSlug,
+        sourceVersion: '2026-06-24.1',
+        lastSaveRequestId: 'request:run-one',
+        savedItemCount: 2,
         savedAt: legacyStartedAt,
+        personalTitle: '내 이사 준비',
         selectedArtifactMode: 'calendar',
+        dateIntent: 'custom',
         anchor: '2026-07-31',
+        legacyExampleAnchor: '2026-07-30',
       }),
     );
     localStorage.setItem(`flow:${flowSlug}:anchorDate`, JSON.stringify({ mode: 'custom', anchor: '2026-07-31' }));
@@ -4134,7 +4194,22 @@ test('flow run registry preserves a completed legacy run before starting a clean
       }),
       structuralOverlay,
     );
-    assert.equal(getSavedFlowRecord(flowSlug)?.savedAt, '2026-08-01T00:00:00.000Z');
+    assert.deepEqual(getSavedFlowRecord(flowSlug), {
+      schemaVersion: 2,
+      slug: flowSlug,
+      personalCopyKey: flowSlug,
+      sourceFlowKey: 'source-backed-moving-d30-id',
+      sourceFlowSlug: flowSlug,
+      sourceVersion: '2026-06-24.1',
+      lastSaveRequestId: 'request:run-one',
+      savedItemCount: 2,
+      savedAt: '2026-08-01T00:00:00.000Z',
+      personalTitle: '내 이사 준비',
+      selectedArtifactMode: 'calendar',
+      dateIntent: 'custom',
+      anchor: '2026-09-15',
+      legacyExampleAnchor: '2026-07-30',
+    });
     const activeMapSnapshot = getSavedFlowMapIndexByFlowSlug()[flowSlug];
     assert.equal(activeMapSnapshot.anchor, '2026-09-15');
     assert.equal(activeMapSnapshot.savedAt, '2026-08-01T00:00:00.000Z');

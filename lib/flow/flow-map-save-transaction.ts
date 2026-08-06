@@ -14,6 +14,8 @@ export type FlowMapSaveStorage = Pick<
   'getItem' | 'setItem' | 'removeItem'
 >;
 
+type FlowMapSaveOwnedRaw = Readonly<Record<string, readonly (string | null)[]>>;
+
 export type FlowMapSaveRawStorageBackup = {
   keys: string[];
   values: Record<string, string | null>;
@@ -35,13 +37,25 @@ export type FlowMapSaveTransactionResult =
   | {
       ok: true;
       error: undefined;
+      conflictKeys: [];
       rollbackComplete: true;
     }
   | {
       ok: false;
       error: unknown;
+      conflictKeys: string[];
       rollbackComplete: boolean;
     };
+
+export class FlowMapSaveConflictError extends Error {
+  readonly conflictKeys: string[];
+
+  constructor(conflictKeys: readonly string[]) {
+    super(`Flow Map save input changed: ${conflictKeys.join(', ')}`);
+    this.name = 'FlowMapSaveConflictError';
+    this.conflictKeys = [...conflictKeys];
+  }
+}
 
 function assertStorageIdentifier(value: string, field: string): string {
   const normalized = value.trim();
@@ -117,13 +131,30 @@ export function captureFlowMapSaveRawStorageBackup(
 export function restoreFlowMapSaveRawStorageBackup(
   storage: FlowMapSaveStorage,
   backup: FlowMapSaveRawStorageBackup,
+  ownedRaw?: FlowMapSaveOwnedRaw,
 ): boolean {
   let rollbackComplete = true;
   [...backup.keys].reverse().forEach((key) => {
     try {
+      if (ownedRaw && Object.prototype.hasOwnProperty.call(ownedRaw, key)) {
+        const currentRaw = storage.getItem(key);
+        if (currentRaw === backup.values[key]) return;
+        if (!ownedRaw[key]?.includes(currentRaw)) {
+          rollbackComplete = false;
+          return;
+        }
+      } else if (ownedRaw) {
+        return;
+      }
       const raw = backup.values[key];
-      if (raw === null || raw === undefined) storage.removeItem(key);
-      else storage.setItem(key, raw);
+      try {
+        if (raw === null || raw === undefined) storage.removeItem(key);
+        else storage.setItem(key, raw);
+      } catch {
+        // A Storage implementation can mutate and then throw. Final readback,
+        // rather than the throw alone, decides whether rollback completed.
+      }
+      if (storage.getItem(key) !== raw) rollbackComplete = false;
     } catch {
       rollbackComplete = false;
     }
@@ -134,17 +165,56 @@ export function restoreFlowMapSaveRawStorageBackup(
 export function runFlowMapSaveTransaction(options: {
   storage: FlowMapSaveStorage;
   keys: readonly string[];
-  apply: () => void;
+  expectedRaw?: Readonly<Record<string, string | null>>;
+  apply: (storage: FlowMapSaveStorage) => void;
 }): FlowMapSaveTransactionResult {
   let backup: FlowMapSaveRawStorageBackup;
   try {
     backup = captureFlowMapSaveRawStorageBackup(options.storage, options.keys);
   } catch (error) {
-    return { ok: false, error, rollbackComplete: false };
+    return { ok: false, error, conflictKeys: [], rollbackComplete: false };
   }
 
+  const conflictKeys = Object.entries(options.expectedRaw ?? {}).flatMap(([key, expected]) => (
+    backup.values[key] === expected ? [] : [key]
+  ));
+  if (conflictKeys.length > 0) {
+    return {
+      ok: false,
+      error: new FlowMapSaveConflictError(conflictKeys),
+      conflictKeys,
+      rollbackComplete: true,
+    };
+  }
+
+  const ownedRaw: Record<string, Array<string | null>> = {};
+  const latestOwnedRaw: Record<string, string | null> = {};
+  const recordOwnedCandidate = (key: string, raw: string | null) => {
+    const candidates = ownedRaw[key] ?? [];
+    if (!candidates.includes(raw)) candidates.push(raw);
+    ownedRaw[key] = candidates;
+  };
+  let active = true;
+  const transactionStorage: FlowMapSaveStorage = {
+    getItem: (key) => options.storage.getItem(key),
+    setItem(key, value) {
+      if (!active) throw new TypeError('Flow Map save transaction is no longer active');
+      // Record the attempted bytes before delegating: custom/quota-backed
+      // storage can make the write visible and still throw afterward.
+      recordOwnedCandidate(key, value);
+      options.storage.setItem(key, value);
+      latestOwnedRaw[key] = value;
+    },
+    removeItem(key) {
+      if (!active) throw new TypeError('Flow Map save transaction is no longer active');
+      recordOwnedCandidate(key, null);
+      options.storage.removeItem(key);
+      latestOwnedRaw[key] = null;
+    },
+  };
+
   try {
-    const result = options.apply() as unknown;
+    const result = options.apply(transactionStorage) as unknown;
     if (
       result
       && (typeof result === 'object' || typeof result === 'function')
@@ -152,12 +222,24 @@ export function runFlowMapSaveTransaction(options: {
     ) {
       throw new TypeError('Flow Map save transaction apply callback must be synchronous');
     }
-    return { ok: true, error: undefined, rollbackComplete: true };
+    const overwrittenKeys = Object.entries(latestOwnedRaw).flatMap(([key, raw]) => (
+      options.storage.getItem(key) === raw ? [] : [key]
+    ));
+    if (overwrittenKeys.length > 0) throw new FlowMapSaveConflictError(overwrittenKeys);
+    active = false;
+    return { ok: true, error: undefined, conflictKeys: [], rollbackComplete: true };
   } catch (error) {
+    active = false;
+    const rollbackComplete = restoreFlowMapSaveRawStorageBackup(
+      options.storage,
+      backup,
+      ownedRaw,
+    );
     return {
       ok: false,
       error,
-      rollbackComplete: restoreFlowMapSaveRawStorageBackup(options.storage, backup),
+      conflictKeys: error instanceof FlowMapSaveConflictError ? error.conflictKeys : [],
+      rollbackComplete,
     };
   }
 }

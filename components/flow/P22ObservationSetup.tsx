@@ -19,6 +19,7 @@ import {
   saveItemStates,
   saveStoredAnchor,
 } from '@/lib/flow/storage';
+import { withFlowUserDataWriteLock } from '@/lib/flow/storage-write-lock';
 
 const MAP_ID = 'middle-school-math-1';
 const FLOW_SLUG = 'source-backed-middle-school-math-1';
@@ -106,51 +107,63 @@ function buildObservationFixture() {
 
 export function P22ObservationSetup() {
   const [status, setStatus] = useState('');
+  const [writing, setWriting] = useState(false);
 
-  const prepareRepeatUseScenario = () => {
+  const prepareRepeatUseScenario = async () => {
     const fixture = buildObservationFixture();
     if (!fixture) {
       setStatus('관찰 상태를 만들지 못했습니다. 현재 seed와 fixture 연결을 확인해 주세요.');
       return;
     }
 
-    clearObservationState();
-    window.localStorage.setItem(
-      getSourceBackedFlowMapSnapshotStorageKey(MAP_ID),
-      JSON.stringify(fixture.snapshot),
-    );
-    window.localStorage.setItem(
-      getSourceBackedFlowMapPersistenceStorageKey(MAP_ID),
-      JSON.stringify(fixture.persistenceRecord),
-    );
-    saveFlowRecord(FLOW_SLUG, { selectedArtifactMode: 'calendar', anchor: OBSERVATION_ANCHOR });
-    saveStoredAnchor(FLOW_SLUG, { mode: 'custom', anchor: OBSERVATION_ANCHOR });
-    saveChecks(FLOW_SLUG, { [INCLUDED_STEP_ID]: true });
-    saveItemStates(FLOW_SLUG, Object.fromEntries(
-      fixture.snapshot.personalCopy?.excludedStepIdsByFlow[FLOW_SLUG].map((stepId) => [
-        stepId,
-        { personalExcluded: true },
-      ]) ?? [],
-    ));
-    ensureLegacyActiveFlowRun(FLOW_SLUG, {
-      runId: 'p22-observation-completed-run',
-      startedAt: '2026-07-01T09:00:00.000Z',
-      mapSnapshot: fixture.snapshot,
+    setWriting(true);
+    const result = await withFlowUserDataWriteLock(() => {
+      clearObservationState();
+      window.localStorage.setItem(
+        getSourceBackedFlowMapSnapshotStorageKey(MAP_ID),
+        JSON.stringify(fixture.snapshot),
+      );
+      window.localStorage.setItem(
+        getSourceBackedFlowMapPersistenceStorageKey(MAP_ID),
+        JSON.stringify(fixture.persistenceRecord),
+      );
+      saveFlowRecord(FLOW_SLUG, { selectedArtifactMode: 'calendar', anchor: OBSERVATION_ANCHOR });
+      saveStoredAnchor(FLOW_SLUG, { mode: 'custom', anchor: OBSERVATION_ANCHOR });
+      saveChecks(FLOW_SLUG, { [INCLUDED_STEP_ID]: true });
+      saveItemStates(FLOW_SLUG, Object.fromEntries(
+        fixture.snapshot.personalCopy?.excludedStepIdsByFlow[FLOW_SLUG].map((stepId) => [
+          stepId,
+          { personalExcluded: true },
+        ]) ?? [],
+      ));
+      ensureLegacyActiveFlowRun(FLOW_SLUG, {
+        runId: 'p22-observation-completed-run',
+        startedAt: '2026-07-01T09:00:00.000Z',
+        mapSnapshot: fixture.snapshot,
+      });
+      recordFlowCompletionState(FLOW_SLUG, true, OBSERVATION_COMPLETED_AT);
+      return completeActiveFlowRun(FLOW_SLUG, {
+        completedAt: OBSERVATION_COMPLETED_AT,
+        mapSnapshot: fixture.snapshot,
+      });
     });
-    recordFlowCompletionState(FLOW_SLUG, true, OBSERVATION_COMPLETED_AT);
-    const completed = completeActiveFlowRun(FLOW_SLUG, {
-      completedAt: OBSERVATION_COMPLETED_AT,
-      mapSnapshot: fixture.snapshot,
-    });
-    if (!completed) {
+    setWriting(false);
+    if (!result.ok || !result.value) {
       setStatus('완료 실행을 보관하지 못했습니다. 상태를 지운 뒤 다시 준비해 주세요.');
       return;
     }
     window.location.assign('/my');
   };
 
-  const resetScenario = () => {
-    clearObservationState();
+  const resetScenario = async () => {
+    if (writing) return;
+    setWriting(true);
+    const result = await withFlowUserDataWriteLock(clearObservationState);
+    setWriting(false);
+    if (!result.ok) {
+      setStatus('P22 반복 사용 관찰 상태를 지우지 못했습니다. 다시 시도해 주세요.');
+      return;
+    }
     setStatus('P22 반복 사용 관찰 상태를 지웠습니다.');
   };
 
@@ -176,7 +189,8 @@ export function P22ObservationSetup() {
           <button
             type="button"
             data-testid="p22-observation-prepare-version-review"
-            onClick={prepareRepeatUseScenario}
+            disabled={writing}
+            onClick={() => void prepareRepeatUseScenario()}
             className="min-h-11 rounded-md bg-blue-600 px-4 text-sm font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
             반복 사용 상태 준비
@@ -184,7 +198,8 @@ export function P22ObservationSetup() {
           <button
             type="button"
             data-testid="p22-observation-reset"
-            onClick={resetScenario}
+            disabled={writing}
+            onClick={() => void resetScenario()}
             className="min-h-11 rounded-md border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-800 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2"
           >
             준비 상태 지우기

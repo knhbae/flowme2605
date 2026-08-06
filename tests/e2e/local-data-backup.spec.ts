@@ -1,5 +1,10 @@
 import { readFile } from 'node:fs/promises';
 import { expect, test, type Page } from '@playwright/test';
+import {
+  expectFlowUserDataWriteQueued,
+  holdFlowUserDataWriteLock,
+  releaseFlowUserDataWriteLock,
+} from './helpers/flow-user-data-write-lock';
 
 const RECEIPT_STORAGE_KEY = 'flow:export-receipts:v1';
 const RECEIPT_REGISTRY_RAW = JSON.stringify({
@@ -149,7 +154,14 @@ test('an empty My Flow can restore a backup while preserving unrelated browser s
   await expect(preview).toContainText('1개');
   await expect(preview).toContainText('현재 브라우저의 FlowMe 기록을 이 백업 시점으로 바꿉니다');
 
-  await page.getByTestId('my-flow-backup-restore').click();
+  await holdFlowUserDataWriteLock(page);
+  const restoreButton = page.getByTestId('my-flow-backup-restore');
+  await restoreButton.click();
+  await expectFlowUserDataWriteQueued(page);
+  await expect(restoreButton).toBeDisabled();
+  expect(await page.evaluate(() => window.localStorage.getItem('flow:saved:moving-d30-basic'))).toBeNull();
+
+  await releaseFlowUserDataWriteLock(page);
   await expect(page.getByTestId('my-flow-data-manager-feedback')).toContainText('백업 기록을 불러왔습니다');
   await expect(page.getByTestId('my-flow-empty-state')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-workspace')).toBeVisible();

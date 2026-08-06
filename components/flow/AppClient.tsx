@@ -224,12 +224,14 @@ import {
 import {
   buildResultTransferArtifactSuccess,
   buildResultTransferRequest,
+  buildResultTransferTransportIdentity,
   createResultTransferRunner,
   fingerprintResultTransferPayload,
   ResultTransferEffectError,
   type ResultTransferPersistentReceipt,
   type ResultTransferRequest,
   type ResultTransferRunOutcome,
+  type ResultTransferTransportIdentity,
 } from '@/lib/flow/result-transfer';
 import {
   FLOW_EXPORT_RECEIPTS_STORAGE_KEY,
@@ -316,9 +318,35 @@ import {
   readPublicFlowSaveJsonRecord,
   removeFlowScopedRecordEntries,
   runPublicFlowSaveTransaction,
+  validatePublicFlowSaveChoiceUnderLock,
   type PublicFlowSaveRawBackup,
   type PublicFlowSavedCopySummary,
 } from '@/lib/flow/public-flow-save-transaction';
+import { withFlowUserDataWriteLock } from '@/lib/flow/storage-write-lock';
+import {
+  buildFlowRunReuseStorageKeyPlan,
+  runFlowRunReuseStorageTransaction,
+} from '@/lib/flow/flow-run-reuse-storage-transaction';
+import {
+  buildFlowUserDataMutationStorageKeyPlan,
+  captureFlowUserDataMutationExpectedRaw,
+  FLOW_USER_DATA_LAST_VISIT_STORAGE_KEY,
+  runFlowUserDataMutationTransaction,
+} from '@/lib/flow/flow-user-data-mutation-transaction';
+import type { FlowMapSaveStorage } from '@/lib/flow/flow-map-save-transaction';
+import {
+  inspectPermanentSavedFlowDeletion,
+  runPermanentSavedFlowDeletionTransaction,
+  type PermanentSavedFlowDeletionInspection,
+} from '@/lib/flow/permanent-saved-flow-deletion-transaction';
+import {
+  clearPermanentSavedFlowDeletionRecoveryJournal,
+  confirmPermanentSavedFlowDeletionRecoveryJournal,
+  isPermanentSavedFlowDeletionConfirmedForPlan,
+  preparePermanentSavedFlowDeletionRecoveryJournal,
+  readPermanentSavedFlowDeletionRecoveryJournal,
+  type PermanentSavedFlowDeletionRecoveryPhase,
+} from '@/lib/flow/permanent-saved-flow-deletion-recovery-journal';
 import {
   consumePublicFlowSaveHandoff,
   normalizePublicFlowSaveHandoff,
@@ -372,6 +400,7 @@ import {
   saveStoredMyFlowOccurrenceExecutionRecords,
   type StoredMyFlowItemDraft,
 } from '@/lib/flow/my-flow-personal-state';
+import { normalizeMyFlowMutationProjectionValues } from '@/lib/flow/my-flow-mutation-projection';
 import {
   buildCanonicalFlowItemKey,
   readProjectionIdentityStorage,
@@ -520,8 +549,8 @@ import {
   getChecks,
   getCompletedFlowRuns,
   getComparisonState,
+  getFlowRunRegistry,
   getItemStates,
-  permanentlyDeleteSavedFlow,
   getMyFlowCompletionFeedback,
   getMyFlowExecutionNotes,
   getMyFlowStepItemChecks,
@@ -1571,7 +1600,7 @@ function useBundles({ readOnly = false }: { readOnly?: boolean } = {}) {
     setBundles(next);
   };
 
-  return { bundles, persist };
+  return { bundles, persist, replace: setBundles };
 }
 
 type PersonalDraftItemInput = UrlFirstDraftItemSuggestion & {
@@ -2111,7 +2140,7 @@ function FlowMemoDraftPanel({
   q3CopyEnabled,
 }: {
   memo: string;
-  onSaveDraftFlow: (memo: string, input: UrlFirstDraftFlowInput) => UrlFirstDraftFlowSaveResult;
+  onSaveDraftFlow: (memo: string, input: UrlFirstDraftFlowInput) => Promise<UrlFirstDraftFlowSaveResult>;
   q3CopyEnabled: boolean;
 }) {
   const memoItems = useMemo(() => buildMemoDraftItemSuggestions(memo), [memo]);
@@ -2173,13 +2202,13 @@ function FlowMemoDraftPanel({
     setItemEditorReturnFocusSelector(undefined);
   };
 
-  const saveDraftFlow = () => {
+  const saveDraftFlow = async () => {
     if (acceptedItems.length === 0 || hasBlankSelectedTitle) {
       setFeedback(hasBlankSelectedTitle ? '저장할 할 일의 제목을 입력해 주세요.' : '저장할 할 일을 하나 이상 선택해 주세요.');
       return;
     }
     const firstDatedItem = acceptedItems.find((item) => isIsoDateString(item.fixedDate ?? ''));
-    const saved = onSaveDraftFlow(memo, {
+    const saved = await onSaveDraftFlow(memo, {
       flowTitle: draftTitle,
       anchorDate: firstDatedItem?.fixedDate ?? '',
       items: acceptedItems,
@@ -2313,7 +2342,7 @@ function FlowUrlLookupResult({
   result: UrlFirstLookupResult;
   supplyCandidates: UrlFirstSupplyCandidate[];
   onSaveSupplyCandidate: (candidate: UrlFirstSupplyCandidate) => UrlFirstSupplyCandidateUpsertResult;
-  onSaveMemoDraftFlow: (memo: string, input: UrlFirstDraftFlowInput) => UrlFirstDraftFlowSaveResult;
+  onSaveMemoDraftFlow: (memo: string, input: UrlFirstDraftFlowInput) => Promise<UrlFirstDraftFlowSaveResult>;
   q3CopyEnabled: boolean;
 }) {
   const needsSourceRows = result.gate?.kind === 'source_rows';
@@ -2359,6 +2388,10 @@ function FlowUrlLookupResult({
   const [candidateTitle, setCandidateTitle] = useState('');
   const [candidateMemo, setCandidateMemo] = useState('');
   const [candidateFeedback, setCandidateFeedback] = useState('');
+  const startStorageBaselineRef = useRef<{
+    resultIdentity: string;
+    expectedRaw: Record<string, string | null>;
+  } | null>(null);
   const canStart = result.status === 'hit' && result.canSaveToMyFlow;
   const canRequestSupplyCandidate = result.status === 'miss' || (result.status === 'needs_review' && result.saveMode !== 'blocked');
   const unifiedAdjustmentHref = sourceBackedStartPackage?.public.childFlows.length === 1
@@ -2375,6 +2408,28 @@ function FlowUrlLookupResult({
     setCandidateTitle(existingSupplyCandidate?.title ?? '');
     setCandidateMemo(existingSupplyCandidate?.memo ?? '');
     setCandidateFeedback('');
+    if (typeof window === 'undefined') {
+      startStorageBaselineRef.current = null;
+      return;
+    }
+    const baselineFlowSlugs = sourceBackedStartPackage?.public.childFlows.map((flow) => flow.slug)
+      ?? (result.flowSlug ? [result.flowSlug] : []);
+    if (baselineFlowSlugs.length === 0) {
+      startStorageBaselineRef.current = null;
+      return;
+    }
+    const keyPlan = buildFlowUserDataMutationStorageKeyPlan({
+      flowSlugs: baselineFlowSlugs,
+      mapIds: result.flowMapId ? [result.flowMapId] : [],
+    });
+    startStorageBaselineRef.current = {
+      resultIdentity: JSON.stringify({
+        canonicalUrl: result.canonicalUrl,
+        flowMapId: result.flowMapId,
+        flowSlug: result.flowSlug,
+      }),
+      expectedRaw: captureFlowUserDataMutationExpectedRaw(window.localStorage, keyPlan),
+    };
   }, [result.canonicalUrl, result.flowMapId, result.flowSlug, defaultSavedTitle, stepOptionKey, existingSupplyCandidate?.title, existingSupplyCandidate?.memo]);
 
   const buildStartPackage = () =>
@@ -2402,33 +2457,121 @@ function FlowUrlLookupResult({
     setStartFeedback(`${urlFirstExportModeLabels.markdown} 받음`);
   };
 
-  const startFlowFromLookup = () => {
-    const startPackage = buildStartPackage();
-    if (startPackage.status !== 'ready') {
-      setStartFeedback(startPackage.gate?.reason ?? '시작일을 먼저 입력해 주세요.');
+  const startFlowFromLookup = async () => {
+    const locked = await withFlowUserDataWriteLock(() => {
+      const startPackage = buildStartPackage();
+      if (startPackage.status !== 'ready') {
+        return {
+          status: 'held' as const,
+          feedback: startPackage.gate?.reason ?? '시작일을 먼저 입력해 주세요.',
+        };
+      }
+      const targetFlowSlugs = Array.from(new Set([
+        ...startPackage.savedFlows.map((flow) => flow.slug),
+        ...Object.keys(startPackage.itemStatesByFlowSlug ?? {}),
+      ]));
+      const keyPlan = buildFlowUserDataMutationStorageKeyPlan({
+        flowSlugs: targetFlowSlugs,
+        mapIds: startPackage.flowMapId ? [startPackage.flowMapId] : [],
+      });
+      const baseline = startStorageBaselineRef.current;
+      const resultIdentity = JSON.stringify({
+        canonicalUrl: result.canonicalUrl,
+        flowMapId: result.flowMapId,
+        flowSlug: result.flowSlug,
+      });
+      if (
+        !baseline
+        || baseline.resultIdentity !== resultIdentity
+        || keyPlan.allKeys.some((key) => !Object.prototype.hasOwnProperty.call(baseline.expectedRaw, key))
+      ) {
+        return {
+          status: 'held' as const,
+          feedback: '저장 상태가 바뀌었습니다. 최신 내용을 확인한 뒤 다시 시도해 주세요.',
+        };
+      }
+      const expectedRaw = Object.fromEntries(
+        keyPlan.allKeys.map((key) => [key, baseline.expectedRaw[key] ?? null]),
+      );
+      const collidesWithExistingCopy = startPackage.savedFlows.some((flow) => (
+        expectedRaw[keyPlan.savedFlowKeysBySlug[flow.slug]!] !== null
+        || expectedRaw[keyPlan.anchorKeysBySlug[flow.slug]!] !== null
+        || expectedRaw[keyPlan.structuralOverlayKeysBySlug[flow.slug]!] !== null
+      )) || targetFlowSlugs.some((flowSlug) => (
+        expectedRaw[keyPlan.itemStateKeysBySlug[flowSlug]!] !== null
+      )) || Boolean(startPackage.flowMapId && (
+        expectedRaw[keyPlan.mapSnapshotKeysById[startPackage.flowMapId]!] !== null
+        || expectedRaw[keyPlan.mapPersistenceKeysById[startPackage.flowMapId]!] !== null
+      ));
+      if (collidesWithExistingCopy) {
+        return {
+          status: 'held' as const,
+          feedback: '이미 저장된 개인 계획이 있습니다. 기존 계획에서 이어서 진행해 주세요.',
+        };
+      }
+      const savedAt = startPackage.savedMapSnapshot?.savedAt
+        ?? startPackage.persistenceRecord?.saved.savedAt
+        ?? new Date().toISOString();
+      const savedRecords = Object.fromEntries(startPackage.savedFlows.map((flow) => [
+        flow.slug,
+        buildSavedFlowRecord(flow.slug, {
+          selectedArtifactMode: flow.selectedArtifactMode,
+          ...(flow.anchor ? { anchor: flow.anchor } : {}),
+        }, undefined, savedAt),
+      ]));
+      const transaction = runFlowUserDataMutationTransaction({
+        storage: window.localStorage,
+        keyPlan,
+        expectedRaw,
+        apply(storage) {
+          startPackage.savedFlows.forEach((flow) => {
+            storage.setItem(keyPlan.savedFlowKeysBySlug[flow.slug]!, JSON.stringify(savedRecords[flow.slug]));
+            recordCanonicalFlowWrite(storage, flow.slug, savedAt);
+            if (flow.anchor) {
+              storage.setItem(
+                keyPlan.anchorKeysBySlug[flow.slug]!,
+                JSON.stringify({ mode: 'custom', anchor: flow.anchor }),
+              );
+            }
+          });
+          Object.entries(startPackage.itemStatesByFlowSlug ?? {}).forEach(([slug, itemStates]) => {
+            storage.setItem(keyPlan.itemStateKeysBySlug[slug]!, JSON.stringify(itemStates));
+          });
+          if (startPackage.flowMapId && startPackage.savedMapSnapshot) {
+            storage.setItem(
+              keyPlan.mapSnapshotKeysById[startPackage.flowMapId]!,
+              JSON.stringify(startPackage.savedMapSnapshot),
+            );
+          }
+          if (startPackage.flowMapId && startPackage.persistenceRecord) {
+            storage.setItem(
+              keyPlan.mapPersistenceKeysById[startPackage.flowMapId]!,
+              JSON.stringify(startPackage.persistenceRecord),
+            );
+          }
+          storage.setItem(FLOW_USER_DATA_LAST_VISIT_STORAGE_KEY, savedAt);
+        },
+      });
+      if (!transaction.ok) {
+        return {
+          status: 'held' as const,
+          feedback: '저장 상태가 바뀌었습니다. 최신 내용을 확인한 뒤 다시 시도해 주세요.',
+        };
+      }
+      return {
+        status: 'ready' as const,
+        targetHref: startPackage.targetHref ?? '/my',
+      };
+    });
+    if (!locked.ok) {
+      setStartFeedback('다른 저장 작업과 안전하게 순서를 맞추지 못했어요. 잠시 뒤 다시 시도해 주세요.');
       return;
     }
-
-    startPackage.savedFlows.forEach((flow) => {
-      saveFlowRecord(flow.slug, {
-        selectedArtifactMode: flow.selectedArtifactMode,
-        ...(flow.anchor ? { anchor: flow.anchor } : {}),
-      });
-      if (flow.anchor) saveStoredAnchor(flow.slug, { mode: 'custom', anchor: flow.anchor });
-    });
-    Object.entries(startPackage.itemStatesByFlowSlug ?? {}).forEach(([slug, itemStates]) => {
-      saveItemStates(slug, {
-        ...getItemStates(slug),
-        ...itemStates,
-      });
-    });
-    if (startPackage.flowMapId && startPackage.savedMapSnapshot) {
-      window.localStorage.setItem(getSourceBackedFlowMapSnapshotStorageKey(startPackage.flowMapId), JSON.stringify(startPackage.savedMapSnapshot));
+    if (locked.value.status === 'held') {
+      setStartFeedback(locked.value.feedback);
+      return;
     }
-    if (startPackage.flowMapId && startPackage.persistenceRecord) {
-      window.localStorage.setItem(getSourceBackedFlowMapPersistenceStorageKey(startPackage.flowMapId), JSON.stringify(startPackage.persistenceRecord));
-    }
-    window.location.href = startPackage.targetHref ?? '/my';
+    window.location.href = locked.value.targetHref;
   };
 
   const saveSupplyCandidate = () => {
@@ -2737,7 +2880,7 @@ function FlowUrlLookupEntry({
   onInputChange: (value: string) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   onSaveSupplyCandidate: (candidate: UrlFirstSupplyCandidate) => UrlFirstSupplyCandidateUpsertResult;
-  onSaveMemoDraftFlow: (memo: string, input: UrlFirstDraftFlowInput) => UrlFirstDraftFlowSaveResult;
+  onSaveMemoDraftFlow: (memo: string, input: UrlFirstDraftFlowInput) => Promise<UrlFirstDraftFlowSaveResult>;
 }) {
   return (
     <section
@@ -2790,7 +2933,7 @@ function FlowUrlSupplyCandidateCard({
   onRequeryCandidate: (candidate: UrlFirstSupplyCandidate) => void;
   onUpdateCandidate: (canonicalUrl: string, input: UrlFirstSupplyCandidateUpdateInput) => UrlFirstSupplyCandidateUpdateResult;
   onRemoveCandidate: (canonicalUrl: string) => UrlFirstSupplyCandidateRemoveResult;
-  onSaveDraftFlow: (candidate: UrlFirstSupplyCandidate, input: UrlFirstDraftFlowInput) => UrlFirstDraftFlowSaveResult;
+  onSaveDraftFlow: (candidate: UrlFirstSupplyCandidate, input: UrlFirstDraftFlowInput) => Promise<UrlFirstDraftFlowSaveResult>;
 }) {
   const availability = getUrlFirstSupplyCandidateAvailability(candidate);
   const [isEditing, setIsEditing] = useState(false);
@@ -2871,13 +3014,13 @@ function FlowUrlSupplyCandidateCard({
     if (!removed.removed) setFeedback('삭제할 후보를 찾지 못했습니다.');
   };
 
-  const saveDraftFlow = () => {
+  const saveDraftFlow = async () => {
     setDraftSaveTargetHref('');
     if (acceptedDraftItems.length === 0 || hasBlankSelectedDraftTitle) {
       setFeedback(hasBlankSelectedDraftTitle ? '저장할 할 일의 제목을 입력해 주세요.' : '저장할 할 일을 하나 이상 선택해 주세요.');
       return;
     }
-    const saved = onSaveDraftFlow(candidate, {
+    const saved = await onSaveDraftFlow(candidate, {
       flowTitle: draftTitle,
       anchorDate: draftAnchorDate,
       items: acceptedDraftItems,
@@ -3164,7 +3307,7 @@ function FlowUrlSupplyCandidateList({
   onRequeryCandidate: (candidate: UrlFirstSupplyCandidate) => void;
   onUpdateCandidate: (canonicalUrl: string, input: UrlFirstSupplyCandidateUpdateInput) => UrlFirstSupplyCandidateUpdateResult;
   onRemoveCandidate: (canonicalUrl: string) => UrlFirstSupplyCandidateRemoveResult;
-  onSaveDraftFlow: (candidate: UrlFirstSupplyCandidate, input: UrlFirstDraftFlowInput) => UrlFirstDraftFlowSaveResult;
+  onSaveDraftFlow: (candidate: UrlFirstSupplyCandidate, input: UrlFirstDraftFlowInput) => Promise<UrlFirstDraftFlowSaveResult>;
 }) {
   if (candidates.length === 0) return null;
 
@@ -3192,7 +3335,9 @@ function FlowUrlSupplyCandidateList({
 }
 
 export function FlowList() {
-  const { bundles, persist } = useBundles();
+  // Browsing and URL/memo lookup are read-only until the user explicitly saves a draft.
+  // `persist` still writes on that explicit save path.
+  const { bundles, persist } = useBundles({ readOnly: true });
   const searchParams = useSearchParams();
   const q3CopyEnabled = isP35Q3CopyEnabled(searchParams.toString());
   const q3Copy = getQ3UserCopyProfile(q3CopyEnabled);
@@ -3242,30 +3387,39 @@ export function FlowList() {
     setCatalogBrowseOpenAfterLookup(false);
   }
 
-  function handleSaveMemoDraftFlow(memo: string, input: UrlFirstDraftFlowInput): UrlFirstDraftFlowSaveResult {
-    try {
-      const draftPackage = createMemoDraftFlowPackage(memo, input);
-      const nextBundles = [
-        ...bundles.filter((bundle) => bundle.flow.slug !== draftPackage.bundle.flow.slug),
-        draftPackage.bundle,
-      ];
-      persist(nextBundles);
-      saveFlowRecord(draftPackage.bundle.flow.slug, {
-        selectedArtifactMode: draftPackage.anchor ? 'calendar' : 'checklist',
-        ...(draftPackage.anchor ? { anchor: draftPackage.anchor } : {}),
-      });
-      if (draftPackage.anchor) saveStoredAnchor(draftPackage.bundle.flow.slug, { mode: 'custom', anchor: draftPackage.anchor });
-      return {
-        saved: true,
-        slug: draftPackage.bundle.flow.slug,
-        targetHref: buildPostSaveHref({ kind: 'flow', id: draftPackage.bundle.flow.slug }),
-      };
-    } catch {
-      return {
-        saved: false,
-        error: '메모 초안을 저장하지 못했습니다. 입력한 메모는 그대로예요. 저장 공간을 확인한 뒤 다시 시도해 주세요.',
-      };
-    }
+  async function handleSaveMemoDraftFlow(memo: string, input: UrlFirstDraftFlowInput): Promise<UrlFirstDraftFlowSaveResult> {
+    const locked = await withFlowUserDataWriteLock(() => {
+      try {
+        const draftPackage = createMemoDraftFlowPackage(memo, input);
+        const storedBundles = getBundles();
+        const nextBundles = [
+          ...storedBundles.filter((bundle) => bundle.flow.slug !== draftPackage.bundle.flow.slug),
+          draftPackage.bundle,
+        ];
+        persist(nextBundles);
+        saveFlowRecord(draftPackage.bundle.flow.slug, {
+          selectedArtifactMode: draftPackage.anchor ? 'calendar' : 'checklist',
+          ...(draftPackage.anchor ? { anchor: draftPackage.anchor } : {}),
+        });
+        if (draftPackage.anchor) saveStoredAnchor(draftPackage.bundle.flow.slug, { mode: 'custom', anchor: draftPackage.anchor });
+        return {
+          saved: true,
+          slug: draftPackage.bundle.flow.slug,
+          targetHref: buildPostSaveHref({ kind: 'flow', id: draftPackage.bundle.flow.slug }),
+        } satisfies UrlFirstDraftFlowSaveResult;
+      } catch {
+        return {
+          saved: false,
+          error: '메모 초안을 저장하지 못했습니다. 입력한 메모는 그대로예요. 저장 공간을 확인한 뒤 다시 시도해 주세요.',
+        } satisfies UrlFirstDraftFlowSaveResult;
+      }
+    });
+    return locked.ok
+      ? locked.value
+      : {
+          saved: false,
+          error: '다른 저장 작업과 안전하게 순서를 맞추지 못했어요. 입력한 메모는 그대로예요. 잠시 뒤 다시 시도해 주세요.',
+        };
   }
 
   function persistUrlSupplyCandidates(candidates: UrlFirstSupplyCandidate[]) {
@@ -3280,10 +3434,8 @@ export function FlowList() {
     try {
       const candidates = normalizeUrlFirstSupplyCandidates(JSON.parse(window.localStorage.getItem(URL_FIRST_SUPPLY_CANDIDATES_STORAGE_KEY) || '[]'));
       setUrlSupplyCandidates(candidates);
-      window.localStorage.setItem(URL_FIRST_SUPPLY_CANDIDATES_STORAGE_KEY, JSON.stringify(candidates));
     } catch {
       setUrlSupplyCandidates([]);
-      window.localStorage.setItem(URL_FIRST_SUPPLY_CANDIDATES_STORAGE_KEY, JSON.stringify([]));
     }
   }, []);
 
@@ -3316,46 +3468,55 @@ export function FlowList() {
     return removed;
   }
 
-  function handleSaveDraftFlowFromCandidate(candidate: UrlFirstSupplyCandidate, input: UrlFirstDraftFlowInput): UrlFirstDraftFlowSaveResult {
-    try {
-      const existingDraft = findExistingUrlFirstDraftBundle(bundles, candidate);
-      if (existingDraft) {
-        const existingAnchor = getStoredAnchor(existingDraft.flow.slug).anchor;
-        saveFlowRecord(existingDraft.flow.slug, {
-          selectedArtifactMode: existingAnchor ? 'calendar' : 'checklist',
-          ...(existingAnchor ? { anchor: existingAnchor } : {}),
+  async function handleSaveDraftFlowFromCandidate(candidate: UrlFirstSupplyCandidate, input: UrlFirstDraftFlowInput): Promise<UrlFirstDraftFlowSaveResult> {
+    const locked = await withFlowUserDataWriteLock(() => {
+      try {
+        const storedBundles = getBundles();
+        const existingDraft = findExistingUrlFirstDraftBundle(storedBundles, candidate);
+        if (existingDraft) {
+          const existingAnchor = getStoredAnchor(existingDraft.flow.slug).anchor;
+          saveFlowRecord(existingDraft.flow.slug, {
+            selectedArtifactMode: existingAnchor ? 'calendar' : 'checklist',
+            ...(existingAnchor ? { anchor: existingAnchor } : {}),
+          });
+          return {
+            saved: true,
+            reused: true,
+            slug: existingDraft.flow.slug,
+            targetHref: buildPostSaveHref({ kind: 'flow', id: existingDraft.flow.slug }),
+          } satisfies UrlFirstDraftFlowSaveResult;
+        }
+
+        const draftPackage = createUrlFirstDraftFlowPackage(candidate, input);
+        const nextBundles = [
+          ...storedBundles.filter((bundle) => bundle.flow.slug !== draftPackage.bundle.flow.slug),
+          draftPackage.bundle,
+        ];
+        persist(nextBundles);
+        saveFlowRecord(draftPackage.bundle.flow.slug, {
+          selectedArtifactMode: draftPackage.anchor ? 'calendar' : 'checklist',
+          ...(draftPackage.anchor ? { anchor: draftPackage.anchor } : {}),
         });
+        if (draftPackage.anchor) saveStoredAnchor(draftPackage.bundle.flow.slug, { mode: 'custom', anchor: draftPackage.anchor });
+        if (Object.keys(draftPackage.itemStates).length > 0) saveItemStates(draftPackage.bundle.flow.slug, draftPackage.itemStates);
         return {
           saved: true,
-          reused: true,
-          slug: existingDraft.flow.slug,
-          targetHref: buildPostSaveHref({ kind: 'flow', id: existingDraft.flow.slug }),
-        };
+          slug: draftPackage.bundle.flow.slug,
+          targetHref: buildPostSaveHref({ kind: 'flow', id: draftPackage.bundle.flow.slug }),
+        } satisfies UrlFirstDraftFlowSaveResult;
+      } catch {
+        return {
+          saved: false,
+          error: '초안을 저장하지 못했습니다. 입력한 내용은 그대로예요. 저장 공간을 확인한 뒤 다시 시도해 주세요.',
+        } satisfies UrlFirstDraftFlowSaveResult;
       }
-
-      const draftPackage = createUrlFirstDraftFlowPackage(candidate, input);
-      const nextBundles = [
-        ...bundles.filter((bundle) => bundle.flow.slug !== draftPackage.bundle.flow.slug),
-        draftPackage.bundle,
-      ];
-      persist(nextBundles);
-      saveFlowRecord(draftPackage.bundle.flow.slug, {
-        selectedArtifactMode: draftPackage.anchor ? 'calendar' : 'checklist',
-        ...(draftPackage.anchor ? { anchor: draftPackage.anchor } : {}),
-      });
-      if (draftPackage.anchor) saveStoredAnchor(draftPackage.bundle.flow.slug, { mode: 'custom', anchor: draftPackage.anchor });
-      if (Object.keys(draftPackage.itemStates).length > 0) saveItemStates(draftPackage.bundle.flow.slug, draftPackage.itemStates);
-      return {
-        saved: true,
-        slug: draftPackage.bundle.flow.slug,
-        targetHref: buildPostSaveHref({ kind: 'flow', id: draftPackage.bundle.flow.slug }),
-      };
-    } catch {
-      return {
-        saved: false,
-        error: '초안을 저장하지 못했습니다. 입력한 내용은 그대로예요. 저장 공간을 확인한 뒤 다시 시도해 주세요.',
-      };
-    }
+    });
+    return locked.ok
+      ? locked.value
+      : {
+          saved: false,
+          error: '다른 저장 작업과 안전하게 순서를 맞추지 못했어요. 입력한 내용은 그대로예요. 잠시 뒤 다시 시도해 주세요.',
+        };
   }
 
   return (
@@ -3723,6 +3884,7 @@ type MySavedFlow = {
   meta: string;
   selectedArtifactMode: SavedFlowArtifactMode;
   effectiveSnapshot: EffectiveFlowSnapshot;
+  savedRecord?: SavedFlowRecord;
   savedMap?: SavedFlowMapSnapshot;
   demoGroup?: string;
   demoNote?: string;
@@ -3758,7 +3920,23 @@ type ResultTransferUiState = {
   outcome?: ResultTransferRunOutcome;
   pending: boolean;
   returnFocusSelector?: string;
+  successReturnFocusSelector?: string;
 };
+
+export function resolveMyFlowSaveBannerAfterTransfer(
+  banner: PublicFlowSaveHandoff | null,
+  outcome: Readonly<{
+    state: ResultTransferRunOutcome['state'];
+    request: Pick<ResultTransferRequest, 'savedPlanId'>;
+  }>,
+): PublicFlowSaveHandoff | null {
+  const artifactExists = outcome.state === 'succeeded' || outcome.state === 'partial_local';
+  if (artifactExists && banner?.personalCopyKey === outcome.request.savedPlanId) {
+    // A one-way artifact cannot be undone with the save-only handoff.
+    return null;
+  }
+  return banner;
+}
 
 function createResultTransferRequestId(
   route: ResultTransferRequest['route'],
@@ -3780,8 +3958,14 @@ async function performLocalResultTransferArtifact(
         '이 브라우저에서는 클립보드 복사를 사용할 수 없어요.',
       );
     }
+    // Clipboard writes expose text, not returned bytes. Hash the exact UTF-8 writeText input.
+    const transportText = request.artifact.payload;
+    const transportIdentity = await buildResultTransferTransportIdentity(
+      new TextEncoder().encode(transportText),
+      'preserve',
+    );
     try {
-      await navigator.clipboard.writeText(request.artifact.payload);
+      await navigator.clipboard.writeText(transportText);
     } catch (error) {
       const denied = error instanceof DOMException
         && (error.name === 'NotAllowedError' || error.name === 'SecurityError');
@@ -3792,13 +3976,23 @@ async function performLocalResultTransferArtifact(
           : '클립보드에 결과를 복사하지 못했어요.',
       );
     }
-    return buildResultTransferArtifactSuccess(request, new Date().toISOString());
+    return buildResultTransferArtifactSuccess(
+      request,
+      new Date().toISOString(),
+      transportIdentity,
+    );
   }
 
   let blob: Blob;
   let objectUrl = '';
+  let transportIdentity: ResultTransferTransportIdentity;
   try {
     blob = new Blob([request.artifact.payload], { type: request.artifact.mediaType });
+    // Blob.arrayBuffer() is the byte representation that the download URL will transport.
+    transportIdentity = await buildResultTransferTransportIdentity(
+      new Uint8Array(await blob.arrayBuffer()),
+      'preserve',
+    );
     objectUrl = URL.createObjectURL(blob);
   } catch {
     throw new ResultTransferEffectError(
@@ -3823,7 +4017,11 @@ async function performLocalResultTransferArtifact(
     );
   }
   window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
-  return buildResultTransferArtifactSuccess(request, new Date().toISOString());
+  return buildResultTransferArtifactSuccess(
+    request,
+    new Date().toISOString(),
+    transportIdentity,
+  );
 }
 
 function getResultTransferOmittedCount(
@@ -3925,6 +4123,7 @@ function SavedResultTransferReceipt({
 
 type MyFlowBatchAdjustmentState = {
   flowSlug: string;
+  expectedFlowFingerprint: string;
   selectedKeys: string[];
   operation: 'set_date' | 'remove_date';
   targetDate: string;
@@ -3936,10 +4135,15 @@ type MyFlowBatchAdjustmentUndo = {
   count: number;
   label: string;
   previousDateOverrides?: Record<string, string>;
+  expectedDateOverrides?: Record<string, string>;
   previousItemStates?: Record<string, FlowItemState>;
+  expectedItemStates?: Record<string, FlowItemState>;
   previousStructuralOverlay?: PersonalStructuralOverlay;
+  expectedStructuralOverlay?: PersonalStructuralOverlay;
   previousSavedMapSnapshot?: SourceBackedFlowMapSavedSnapshot;
+  expectedSavedMapSnapshot?: SourceBackedFlowMapSavedSnapshot;
   previousPersistenceRecord?: SourceBackedFlowMapPersistenceRecord;
+  expectedPersistenceRecord?: SourceBackedFlowMapPersistenceRecord;
 };
 
 type MyFlowScopeExportItem = {
@@ -3952,6 +4156,7 @@ type MyFlowScopeExportItem = {
 
 type MyFlowPersonalCopySettingsDraft = {
   flowSlug: string;
+  expectedFlowFingerprint: string;
   title: string;
   anchor: string;
   includedStepIds: string[];
@@ -3960,6 +4165,8 @@ type MyFlowPersonalCopySettingsDraft = {
 
 type MyFlowDirectAnchorSettingsDraft = {
   flowSlug: string;
+  expectedFlowFingerprint: string;
+  expectedMapFlowFingerprints: Record<string, string>;
   mapId?: string;
   anchor: string;
   feedback?: string;
@@ -4154,6 +4361,11 @@ type MyFlowPermanentDeleteDialog = {
   flowSlug: string;
   flowTitle: string;
   personalDraft: boolean;
+  expectedDeletionInspection: PermanentSavedFlowDeletionInspection;
+  expectedProgressRaw: string;
+  expectedBundleRaw: string;
+  expectedSavedRecordRaw: string;
+  expectedSavedMapRaw: string;
 };
 type MyFlowReceiptCleanupFailure = {
   savedPlanId: string;
@@ -4163,6 +4375,12 @@ type MyFlowReceiptCleanupFailure = {
   planDeleted: boolean;
   journalPhase?: FlowExportReceiptCleanupJournalPhase;
   recoverySource: 'live' | 'journal';
+};
+type MyFlowPermanentDeleteRecoveryRequired = {
+  savedPlanId: string;
+  flowTitle: string;
+  phase?: PermanentSavedFlowDeletionRecoveryPhase;
+  message: string;
 };
 const MY_FLOW_WEEKDAYS = ['월', '화', '수', '목', '금', '토', '일'];
 
@@ -5753,7 +5971,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
   const [myFlowSavedTransferEnabled, setMyFlowSavedTransferEnabled] = useState<boolean | null>(null);
   const [myFlowVisualSubtractionEnabled, setMyFlowVisualSubtractionEnabled] = useState(true);
   const [myFlowQ3CopyEnabled, setMyFlowQ3CopyEnabled] = useState(true);
-  const { bundles, persist } = useBundles({ readOnly: true });
+  const { bundles, persist, replace: replaceBundles } = useBundles({ readOnly: true });
   const baseMyFlowBundles = useMemo(() => mergeSourceBackedMyFlowBundles(bundles), [bundles]);
   const currentUser = getCurrentUser();
   const isCalendarSurface = surface === 'calendar';
@@ -5810,6 +6028,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
   const [myFlowPermanentDeleteDialog, setMyFlowPermanentDeleteDialog] = useState<MyFlowPermanentDeleteDialog | null>(null);
   const [myFlowPermanentDeleteBackupReady, setMyFlowPermanentDeleteBackupReady] = useState(false);
   const [myFlowPermanentDeleteError, setMyFlowPermanentDeleteError] = useState('');
+  const [myFlowPermanentDeleteRecoveryRequired, setMyFlowPermanentDeleteRecoveryRequired] = useState<MyFlowPermanentDeleteRecoveryRequired | null>(null);
   const [myFlowReceiptCleanupFailure, setMyFlowReceiptCleanupFailure] = useState<MyFlowReceiptCleanupFailure | null>(null);
   const [myFlowCompletionNoticePaused, setMyFlowCompletionNoticePaused] = useState(false);
   const [myFlowRoutineOverflowDate, setMyFlowRoutineOverflowDate] = useState('');
@@ -6005,76 +6224,184 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
   }, [myFlowSavedTransferEnabled]);
 
   useEffect(() => {
-    if (myFlowSavedTransferEnabled !== true || typeof window === 'undefined') {
+    if (typeof window === 'undefined') return;
+    if (myFlowSavedTransferEnabled !== true) {
       setMyFlowReceiptCleanupFailure(null);
-      return;
     }
-    let read: ReturnType<typeof readFlowExportReceiptCleanupJournal>;
-    try {
-      read = readFlowExportReceiptCleanupJournal(window.sessionStorage);
-    } catch {
-      return;
-    }
-    if (read.status === 'valid' && read.journal) {
-      let cleanupJournal = read.journal;
-      if (cleanupJournal.phase === 'prepared') {
-        let savedPlanExists: boolean;
+    let cancelled = false;
+    void (async () => {
+      const locked = await withFlowUserDataWriteLock((): {
+        cleanupFailure: MyFlowReceiptCleanupFailure | null;
+        deletionRecovery: MyFlowPermanentDeleteRecoveryRequired | null;
+      } | undefined => {
+        let cleanupRead: ReturnType<typeof readFlowExportReceiptCleanupJournal>;
+        let deletionRead: ReturnType<typeof readPermanentSavedFlowDeletionRecoveryJournal>;
         try {
-          savedPlanExists = getActiveFlowProgress(myFlowBundles).some(
-            (progress) => progress.slug === cleanupJournal.savedPlanId,
-          );
+          cleanupRead = readFlowExportReceiptCleanupJournal(window.sessionStorage);
+          deletionRead = readPermanentSavedFlowDeletionRecoveryJournal(window.sessionStorage);
         } catch {
-          return;
+          return undefined;
         }
-        if (savedPlanExists) {
-          clearFlowExportReceiptCleanupJournal(
+        const cleanupJournal = cleanupRead.status === 'valid' ? cleanupRead.journal : undefined;
+        const deletionJournal = deletionRead.status === 'valid' ? deletionRead.journal : undefined;
+        const recoveryIdentity = cleanupJournal ?? deletionJournal;
+        const recoveryMessage = '계획 삭제 결과를 확정하지 못한 안전 기록이 남아 있어 결과 기록 자동 삭제를 중지했습니다. 이 기기의 저장 상태를 확인해 주세요.';
+
+        if (
+          deletionRead.status === 'failed'
+          || deletionRead.status === 'malformed'
+          || deletionRead.status === 'unsupported'
+          || cleanupRead.status === 'failed'
+          || cleanupRead.status === 'malformed'
+          || cleanupRead.status === 'unsupported'
+        ) {
+          return recoveryIdentity ? {
+            cleanupFailure: null,
+            deletionRecovery: {
+              savedPlanId: recoveryIdentity.savedPlanId,
+              flowTitle: recoveryIdentity.flowTitle,
+              message: recoveryMessage,
+            },
+          } : undefined;
+        }
+
+        if (!cleanupJournal) {
+          if (deletionJournal?.phase === 'deletion_confirmed') {
+            const cleared = clearPermanentSavedFlowDeletionRecoveryJournal(
+              window.sessionStorage,
+              deletionJournal.savedPlanId,
+            );
+            if (cleared.status === 'cleared' || cleared.status === 'not_found') {
+              return { cleanupFailure: null, deletionRecovery: null };
+            }
+          }
+          return {
+            cleanupFailure: null,
+            deletionRecovery: deletionJournal ? {
+              savedPlanId: deletionJournal.savedPlanId,
+              flowTitle: deletionJournal.flowTitle,
+              phase: deletionJournal.phase,
+              message: recoveryMessage,
+            } : null,
+          };
+        }
+
+        const deletionJournalMatches = Boolean(
+          deletionJournal
+          && deletionJournal.savedPlanId === cleanupJournal.savedPlanId,
+        );
+        const deletionConfirmedForCleanup = isPermanentSavedFlowDeletionConfirmedForPlan(
+          deletionRead,
+          cleanupJournal.savedPlanId,
+        );
+        if (cleanupJournal.phase === 'prepared') {
+          if (!deletionConfirmedForCleanup) {
+            return {
+              cleanupFailure: null,
+              deletionRecovery: {
+                savedPlanId: cleanupJournal.savedPlanId,
+                flowTitle: cleanupJournal.flowTitle,
+                ...(deletionJournalMatches && deletionJournal ? { phase: deletionJournal.phase } : {}),
+                message: recoveryMessage,
+              },
+            };
+          }
+          const promoted = markFlowExportReceiptCleanupRequired(
             window.sessionStorage,
             cleanupJournal.savedPlanId,
           );
-          return;
+          if (promoted.status !== 'stored' || !promoted.journal) {
+            return {
+              cleanupFailure: {
+                savedPlanId: cleanupJournal.savedPlanId,
+                flowTitle: cleanupJournal.flowTitle,
+                planDeleted: true,
+                journalPhase: 'prepared',
+                retryable: true,
+                recoverySource: 'journal',
+                message: '계획 삭제는 확인됐지만 결과 기록 삭제 단계를 준비하지 못했어요. 결과 기록 삭제만 다시 시도해 주세요.',
+              },
+              deletionRecovery: null,
+            };
+          }
         }
-        const promoted = markFlowExportReceiptCleanupRequired(
-          window.sessionStorage,
-          cleanupJournal.savedPlanId,
-        );
-        if (promoted.status !== 'stored' || !promoted.journal) return;
-        cleanupJournal = promoted.journal;
-      }
-      setMyFlowReceiptCleanupFailure({
-        savedPlanId: cleanupJournal.savedPlanId,
-        flowTitle: cleanupJournal.flowTitle,
-        planDeleted: true,
-        journalPhase: cleanupJournal.phase,
-        retryable: true,
-        recoverySource: 'journal',
-        message: '계획 삭제 뒤 남은 이 기기의 결과 기록을 아직 정리하지 못했어요. 결과 기록 삭제만 다시 시도해 주세요.',
+
+        if (!deletionConfirmedForCleanup) {
+          return {
+            cleanupFailure: null,
+            deletionRecovery: {
+              savedPlanId: cleanupJournal.savedPlanId,
+              flowTitle: cleanupJournal.flowTitle,
+              ...(deletionJournalMatches && deletionJournal ? { phase: deletionJournal.phase } : {}),
+              message: recoveryMessage,
+            },
+          };
+        }
+        return {
+          cleanupFailure: {
+            savedPlanId: cleanupJournal.savedPlanId,
+            flowTitle: cleanupJournal.flowTitle,
+            planDeleted: true,
+            journalPhase: 'cleanup_required',
+            retryable: true,
+            recoverySource: 'journal',
+            message: '계획 삭제 뒤 남은 이 기기의 결과 기록을 아직 정리하지 못했어요. 결과 기록 삭제만 다시 시도해 주세요.',
+          },
+          deletionRecovery: null,
+        };
       });
-    }
+      if (cancelled || !locked.ok || locked.value === undefined) return;
+      setMyFlowPermanentDeleteRecoveryRequired(locked.value.deletionRecovery);
+      setMyFlowReceiptCleanupFailure(
+        myFlowSavedTransferEnabled === true ? locked.value.cleanupFailure : null,
+      );
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [myFlowBundles, myFlowSavedTransferEnabled]);
 
   useEffect(() => {
     if (myFlowEditorTransactionEnabled !== true || typeof window === 'undefined') return;
-    const recovery = recoverFlowEditorStorageCommit({
-      storage: window.localStorage,
-      journalStorage: window.sessionStorage,
-    });
-    if (!recovery.found) return;
-    if (recovery.recovered) {
-      setSavedEditorRecoveryBlocked(false);
+    let cancelled = false;
+    void (async () => {
+      const locked = await withFlowUserDataWriteLock(() => {
+        const recovery = recoverFlowEditorStorageCommit({
+          storage: window.localStorage,
+          journalStorage: window.sessionStorage,
+        });
+        if (recovery.found && recovery.recovered) refreshSavedFlowState();
+        return recovery;
+      });
+      if (cancelled) return;
+      if (!locked.ok) {
+        setSavedEditorRecoveryBlocked(true);
+        setSavedEditorRecoveryNotice(
+          '저장 복구 잠금을 확보하지 못했습니다. 이 화면에서 추가 편집을 멈추고 다시 시도해 주세요.',
+        );
+        return;
+      }
+      const recovery = locked.value;
+      if (!recovery.found) return;
+      if (recovery.recovered) {
+        setSavedEditorRecoveryBlocked(false);
+        setSavedEditorRecoveryNotice(
+          recovery.outcome === 'committed'
+            ? myFlowQ3CopyEnabled
+              ? '중단된 계획의 저장 성공 상태를 확인했습니다.'
+              : '중단된 계획 저장이 완료된 상태를 확인했습니다.'
+            : '중단된 계획 저장을 저장 전 상태로 복구했습니다.',
+        );
+        return;
+      }
+      setSavedEditorRecoveryBlocked(true);
       setSavedEditorRecoveryNotice(
-        recovery.outcome === 'committed'
-          ? myFlowQ3CopyEnabled
-            ? '중단된 계획의 저장 성공 상태를 확인했습니다.'
-            : '중단된 계획 저장이 완료된 상태를 확인했습니다.'
-          : '중단된 계획 저장을 저장 전 상태로 복구했습니다.',
+        '중단된 계획 저장을 완전히 복구하지 못했습니다. 이 화면에서 추가 편집을 멈추고 저장 상태를 확인해 주세요.',
       );
-      refreshSavedFlowState();
-      return;
-    }
-    setSavedEditorRecoveryBlocked(true);
-    setSavedEditorRecoveryNotice(
-      '중단된 계획 저장을 완전히 복구하지 못했습니다. 이 화면에서 추가 편집을 멈추고 저장 상태를 확인해 주세요.',
-    );
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [myFlowEditorTransactionEnabled]);
 
   useEffect(() => {
@@ -6380,9 +6707,21 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
       );
     }
   };
-  const undoMyFlowSave = () => {
+  const undoMyFlowSave = async () => {
     if (!myFlowSaveBanner || typeof window === 'undefined') return;
-    const result = undoPublicFlowSaveHandoff(window.localStorage, myFlowSaveBanner);
+    const handoff = myFlowSaveBanner;
+    const locked = await withFlowUserDataWriteLock(() => {
+      const result = undoPublicFlowSaveHandoff(window.localStorage, handoff);
+      if (result.complete || result.conflictKeys.length === 0) refreshSavedFlowState();
+      return result;
+    });
+    if (!locked.ok) {
+      setMyFlowSaveUndoStatus(
+        '저장 취소 잠금을 확보하지 못했어요. 현재 변경은 그대로 유지되며 잠시 후 다시 시도해 주세요.',
+      );
+      return;
+    }
+    const result = locked.value;
     if (!result.complete) {
       if (result.conflictKeys.length > 0) {
         setMyFlowSaveBanner(null);
@@ -6391,16 +6730,14 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
         );
         return;
       }
-      refreshSavedFlowState();
       setMyFlowSaveUndoStatus(result.rollbackComplete
         ? '되돌리지 못해 저장 후 상태를 유지했어요. 잠시 후 다시 시도해 주세요.'
         : '일부 상태를 복구하지 못했어요. 이 화면을 닫지 말고 다시 시도해 주세요.');
       return;
     }
-    const removedNewCopy = myFlowSaveBanner.decision === 'copy';
+    const removedNewCopy = handoff.decision === 'copy';
     setMyFlowSaveBanner(null);
     setMyFlowSaveUndoStatus('방금 저장한 변경을 되돌렸어요.');
-    refreshSavedFlowState();
     if (removedNewCopy) {
       setSelectedSavedFlowSlug('all');
       setMyFlowWorkspaceTarget(null);
@@ -6502,20 +6839,33 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
       return;
     }
     myFlowInitializedDemoModeRef.current = null;
-    if (demoMode === 'legacy') seedMyFlowDemoState(myFlowBundles);
-    if (typeof window !== 'undefined') {
-      const archivedFlowSlugs = readPersonalFlowLifecycle(window.localStorage).record.archivedFlowSlugs;
-      setMyFlowArchivedFlowSlugs(archivedFlowSlugs);
-      setCanonicalSavedCopyGroups(
-        inspectAllCanonicalSavedCopyGroups(window.localStorage, archivedFlowSlugs),
-      );
+    const initializePersistedMyFlowState = () => {
+      if (demoMode === 'legacy') seedMyFlowDemoState(myFlowBundles);
+      if (typeof window !== 'undefined') {
+        const archivedFlowSlugs = readPersonalFlowLifecycle(window.localStorage).record.archivedFlowSlugs;
+        setMyFlowArchivedFlowSlugs(archivedFlowSlugs);
+        setCanonicalSavedCopyGroups(
+          inspectAllCanonicalSavedCopyGroups(window.localStorage, archivedFlowSlugs),
+        );
+      }
+      setMyFlowDismissedMapUpdates(getMyFlowDismissedMapUpdates());
+      setMyFlowExpandedMapUpdateId('');
+      setMyFlowReuseDraft(null);
+      setMyFlowReuseNotice(null);
+      setMyFlowCalendarSelectedFlowSlugs(loadMyFlowCalendarSelectedFlowSlugs());
+      refreshSavedFlowState();
+    };
+    if (demoMode === 'legacy') {
+      let cancelled = false;
+      void (async () => {
+        const locked = await withFlowUserDataWriteLock(initializePersistedMyFlowState);
+        if (!locked.ok && !cancelled) myFlowInitializedDemoModeRef.current = null;
+      })();
+      return () => {
+        cancelled = true;
+      };
     }
-    setMyFlowDismissedMapUpdates(getMyFlowDismissedMapUpdates());
-    setMyFlowExpandedMapUpdateId('');
-    setMyFlowReuseDraft(null);
-    setMyFlowReuseNotice(null);
-    setMyFlowCalendarSelectedFlowSlugs(loadMyFlowCalendarSelectedFlowSlugs());
-    refreshSavedFlowState();
+    initializePersistedMyFlowState();
   }, [initialView, myFlowBundles]);
 
   useEffect(() => {
@@ -6953,6 +7303,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
         meta,
         selectedArtifactMode: effectiveSnapshot.committed.selectedArtifactMode,
         effectiveSnapshot,
+        ...(savedRecord ? { savedRecord } : {}),
         ...(savedMap ? { savedMap } : {}),
         ...(demoFixture ? { demoGroup: demoFixture.group, demoNote: demoFixture.note } : {}),
       });
@@ -7178,18 +7529,24 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     });
     setMyFlowExpandedRoutineKey('');
   };
-  const applyMyFlowRoutineRuleEditorDraft = (flow: MySavedFlow) => {
+  const applyMyFlowRoutineRuleEditorDraft = async (flow: MySavedFlow) => {
     const nextDraft = getMyFlowRoutineEditorDraft(flow);
-    updateMyFlowRoutineRuleDraft(flow, nextDraft);
-    const savedRecord = getSavedFlowRecord(flow.progress.slug);
-    if (savedRecord && nextDraft.weekdays?.length) {
-      saveFlowRecord(flow.progress.slug, {
-        selectedArtifactMode: savedRecord.selectedArtifactMode,
-        ...(savedRecord.anchor ? { anchor: savedRecord.anchor } : {}),
-        weekdays: nextDraft.weekdays,
-        routineDefinition: fromRoutineRuleDraft(nextDraft, flow.bundle.flow.routine_duration_days),
+    if (!isMyFlowScenarioDemo) {
+      const locked = await withFlowUserDataWriteLock(() => {
+        const savedRecord = getSavedFlowRecord(flow.progress.slug);
+        if (savedRecord && nextDraft.weekdays?.length) {
+          saveFlowRecord(flow.progress.slug, {
+            selectedArtifactMode: savedRecord.selectedArtifactMode,
+            ...(savedRecord.anchor ? { anchor: savedRecord.anchor } : {}),
+            weekdays: nextDraft.weekdays,
+            routineDefinition: fromRoutineRuleDraft(nextDraft, flow.bundle.flow.routine_duration_days),
+          });
+          refreshSavedFlowState();
+        }
       });
+      if (!locked.ok) return;
     }
+    updateMyFlowRoutineRuleDraft(flow, nextDraft);
   };
   const occurrenceProjectionTodayDate = showDemoData ? '2026-05-28' : formatLocalDate(new Date());
   const occurrenceVisibleRange = {
@@ -8008,22 +8365,6 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
       ...(draft.caution !== undefined ? { caution: draft.caution } : {}),
     };
   };
-  const updateMyFlowItemDraftByKey = (key: string, patch: MyFlowItemDraft) => {
-    setMyFlowItemDrafts((current) => {
-      const next = {
-        ...current,
-        [key]: {
-          ...current[key],
-          ...patch,
-        },
-      };
-      if (!isMyFlowScenarioDemo) saveStoredMyFlowItemDrafts(next);
-      return next;
-    });
-  };
-  const updateMyFlowItemDraft = (row: MyFlowCalendarRow, patch: MyFlowItemDraft) => {
-    updateMyFlowItemDraftByKey(getMyFlowRowInstanceKey(row), patch);
-  };
   const updateMyFlowEditingDraft = (row: MyFlowCalendarRow, patch: MyFlowItemDraft) => {
     const key = getMyFlowRowInstanceKey(row);
     setMyFlowEditingDrafts((current) => ({
@@ -8034,44 +8375,11 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
       },
     }));
   };
-  const updateMyFlowDateOverrideState = (updater: (current: Record<string, string>) => Record<string, string>) => {
-    setMyFlowDateOverrides((current) => {
-      const next = updater(current);
-      if (!isMyFlowScenarioDemo) saveStoredMyFlowDateOverrides(next);
-      return next;
-    });
-  };
-  const clearMyFlowPersonalDraftLegacySchedule = (flowSlug: string, itemId: string) => {
-    const key = getPersonalDraftProjectionValueKey(flowSlug, itemId);
-    setMyFlowItemDrafts((current) => {
-      const stored = current[key];
-      if (!stored) return current;
-      const {
-        date: _date,
-        time: _time,
-        durationMinutes: _durationMinutes,
-        scheduleMode: _scheduleMode,
-        ...remaining
-      } = stored;
-      if (Object.keys(stored).length === Object.keys(remaining).length) return current;
-      const next = { ...current };
-      if (Object.keys(remaining).length > 0) next[key] = remaining;
-      else delete next[key];
-      if (!isMyFlowScenarioDemo) saveStoredMyFlowItemDrafts(next);
-      return next;
-    });
-    updateMyFlowDateOverrideState((current) => {
-      if (!Object.prototype.hasOwnProperty.call(current, key)) return current;
-      const next = { ...current };
-      delete next[key];
-      return next;
-    });
-  };
-  const updateMyFlowArchiveState = (
+  const updateMyFlowArchiveState = async (
     flow: MySavedFlow,
     action: MyFlowLifecycleUndo['action'],
     recordUndo = true,
-  ) => {
+  ): Promise<boolean> => {
     const flowSlug = flow.progress.slug;
     const flowTitle = getMyFlowDisplayFlowTitle(flow);
     const shouldEnterArchivedFilter =
@@ -8083,20 +8391,31 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
       && flowListFilter === 'archived'
       && myFlowArchivedFlowSlugs.length === 1
       && myFlowArchivedFlowSlugs[0] === flowSlug;
-    setMyFlowArchivedFlowSlugs((current) => {
+    let nextArchivedFlowSlugs: string[];
+    if (isMyFlowScenarioDemo || typeof window === 'undefined') {
       const updatedAt = new Date().toISOString();
       const currentRecord = {
         ...createEmptyPersonalFlowLifecycle(updatedAt),
-        archivedFlowSlugs: current,
+        archivedFlowSlugs: myFlowArchivedFlowSlugs,
       };
       const nextRecord = action === 'archive'
         ? archivePersonalFlow(currentRecord, flowSlug, updatedAt)
         : restorePersonalFlow(currentRecord, flowSlug, updatedAt);
-      if (!isMyFlowScenarioDemo && typeof window !== 'undefined') {
+      nextArchivedFlowSlugs = nextRecord.archivedFlowSlugs;
+    } else {
+      const locked = await withFlowUserDataWriteLock(() => {
+        const updatedAt = new Date().toISOString();
+        const currentRecord = loadPersonalFlowLifecycle(window.localStorage, updatedAt).record;
+        const nextRecord = action === 'archive'
+          ? archivePersonalFlow(currentRecord, flowSlug, updatedAt)
+          : restorePersonalFlow(currentRecord, flowSlug, updatedAt);
         savePersonalFlowLifecycle(window.localStorage, nextRecord);
-      }
-      return nextRecord.archivedFlowSlugs;
-    });
+        return nextRecord.archivedFlowSlugs;
+      });
+      if (!locked.ok) return false;
+      nextArchivedFlowSlugs = locked.value;
+    }
+    setMyFlowArchivedFlowSlugs(nextArchivedFlowSlugs);
     if (shouldEnterArchivedFilter || shouldExitArchivedFilter) {
       const nextFilter = shouldEnterArchivedFilter ? 'archived' : 'all';
       setFlowListFilter(nextFilter);
@@ -8110,57 +8429,81 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
       );
     }
     if (recordUndo) setMyFlowLifecycleUndo({ flowSlug, flowTitle, action });
+    return true;
   };
 
-  const chooseCanonicalSavedCopy = (group: CanonicalSavedCopyGroup, activeOriginSlug: string) => {
+  const chooseCanonicalSavedCopy = async (group: CanonicalSavedCopyGroup, activeOriginSlug: string) => {
     if (typeof window === 'undefined' || isMyFlowScenarioDemo) return;
     const selectedCopy = group.copies.find((copy) => copy.originSlug === activeOriginSlug);
-    const result = applyCanonicalReconciliationDecision(
-      window.localStorage,
-      group.canonicalFlowId,
-      activeOriginSlug,
-    );
-    if (!result) {
+    const locked = await withFlowUserDataWriteLock(() => {
+      const result = applyCanonicalReconciliationDecision(
+        window.localStorage,
+        group.canonicalFlowId,
+        activeOriginSlug,
+      );
+      if (!result) return undefined;
+      const archivedFlowSlugs = loadPersonalFlowLifecycle(window.localStorage).record.archivedFlowSlugs;
+      const groups = inspectAllCanonicalSavedCopyGroups(window.localStorage, archivedFlowSlugs);
+      refreshSavedFlowState();
+      return { archivedFlowSlugs, groups };
+    });
+    if (!locked.ok || !locked.value) {
       setCanonicalReconciliationNotice('사본 선택을 저장하지 못했습니다. 기존 사본은 그대로 남아 있습니다.');
       return;
     }
-    const archivedFlowSlugs = loadPersonalFlowLifecycle(window.localStorage).record.archivedFlowSlugs;
-    setMyFlowArchivedFlowSlugs(archivedFlowSlugs);
-    setCanonicalSavedCopyGroups(
-      inspectAllCanonicalSavedCopyGroups(window.localStorage, archivedFlowSlugs),
-    );
+    setMyFlowArchivedFlowSlugs(locked.value.archivedFlowSlugs);
+    setCanonicalSavedCopyGroups(locked.value.groups);
     setSelectedSavedFlowSlug(activeOriginSlug);
     setSavedView('flow');
     setMyFlowPostSaveWorkspaceOpen(true);
     setCanonicalReconciliationNotice(
       `${selectedCopy?.personalTitle ?? selectedCopy?.title ?? '선택한 사본'}을 계속 사용합니다. 다른 사본은 보관되어 나중에 복구할 수 있습니다.`,
     );
-    refreshSavedFlowState();
   };
 
-  const undoMyFlowLifecycleChange = (undo: MyFlowLifecycleUndo) => {
+  const undoMyFlowLifecycleChange = async (undo: MyFlowLifecycleUndo) => {
     const flow = savedFlows.find((candidate) => candidate.progress.slug === undo.flowSlug);
     if (!flow) {
       setMyFlowLifecycleUndo(null);
       return;
     }
-    updateMyFlowArchiveState(flow, undo.action === 'archive' ? 'restore' : 'archive', false);
-    setMyFlowLifecycleUndo(null);
+    const restored = await updateMyFlowArchiveState(
+      flow,
+      undo.action === 'archive' ? 'restore' : 'archive',
+      false,
+    );
+    if (restored) setMyFlowLifecycleUndo(null);
   };
-  const toggleMyFlowStepItemCheck = (row: MyFlowCalendarRow, itemKey: string) => {
+  const toggleMyFlowStepItemCheck = async (row: MyFlowCalendarRow, itemKey: string) => {
     const key = getMyFlowRowInstanceKey(row);
-    setMyFlowStepItemChecks((current) => {
+    const renderedValue = Boolean((myFlowStepItemChecks[key] ?? {})[itemKey]);
+    if (isMyFlowScenarioDemo) {
+      setMyFlowStepItemChecks((current) => ({
+        ...current,
+        [key]: {
+          ...(current[key] ?? {}),
+          [itemKey]: !(current[key] ?? {})[itemKey],
+        },
+      }));
+      return;
+    }
+    const locked = await withFlowUserDataWriteLock(() => {
+      const current = getMyFlowStepItemChecks();
       const currentRowChecks = current[key] ?? {};
+      if (Boolean(currentRowChecks[itemKey]) !== renderedValue) {
+        return { applied: false as const, checks: current };
+      }
       const next = {
         ...current,
         [key]: {
           ...currentRowChecks,
-          [itemKey]: !currentRowChecks[itemKey],
+          [itemKey]: !renderedValue,
         },
       };
-      if (!isMyFlowScenarioDemo) saveMyFlowStepItemChecks(next);
-      return next;
+      saveMyFlowStepItemChecks(next);
+      return { applied: true as const, checks: next };
     });
+    if (locked.ok) setMyFlowStepItemChecks(locked.value.checks);
   };
   const discardMyFlowEditingDraft = (row: MyFlowCalendarRow) => {
     const key = getMyFlowRowInstanceKey(row);
@@ -8241,20 +8584,29 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     };
   };
   const hasMyFlowEditingDraft = (row: MyFlowCalendarRow) => Boolean(myFlowEditingDrafts[getMyFlowRowInstanceKey(row)]);
-  const saveMyFlowPersonalCopyStepOverlay = (row: MyFlowCalendarRow, editingDraft: MyFlowItemDraft): boolean => {
-    if (typeof window === 'undefined' || !row.flow.savedMap?.personalCopy) return false;
+  const saveMyFlowPersonalCopyStepOverlayWithinWriteLock = (
+    row: MyFlowCalendarRow,
+    editingDraft: MyFlowItemDraft,
+    currentFlow: LockedMyFlowMutationContext,
+    nextItemDrafts: Record<string, StoredMyFlowItemDraft>,
+    itemDraftsChanged: boolean,
+  ): boolean => {
+    if (typeof window === 'undefined' || !currentFlow.savedMap?.personalCopy) return false;
 
-    const sourceSnapshot = toSourceBackedSavedSnapshot(row.flow.savedMap);
+    if (currentFlow.savedMap.mapId !== row.flow.savedMap?.mapId) return false;
+    const sourceSnapshot = toSourceBackedSavedSnapshot(currentFlow.savedMap);
     if (!sourceSnapshot.personalCopy) return false;
 
-    const flowSlug = row.flow.progress.slug;
+    const flowSlug = currentFlow.progress.slug;
     const stepId = baseStateId(row.id);
+    const freshRow = currentFlow.rows.find((candidate) => baseStateId(candidate.id) === stepId);
+    if (!freshRow) return false;
     const currentOverridesByFlow = sourceSnapshot.personalCopy.stepOverridesByFlow ?? {};
     const currentFlowOverrides = currentOverridesByFlow[flowSlug] ?? {};
     const nextOverride: SourceBackedFlowMapPersonalCopyStepOverride = {
       ...(currentFlowOverrides[stepId] ?? {}),
     };
-    const sourceTitle = toUserFacingSourceTitle(row.title).trim();
+    const sourceTitle = toUserFacingSourceTitle(freshRow.title).trim();
 
     if (Object.prototype.hasOwnProperty.call(editingDraft, 'title')) {
       const title = editingDraft.title?.trim() ?? '';
@@ -8291,208 +8643,322 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
       savedAt: new Date().toISOString(),
       includedStepIdsByFlow: sourceSnapshot.personalCopy.includedStepIdsByFlow,
       stepOverridesByFlow: nextOverridesByFlow,
-      baselineRecord: savedFlowMapPersistenceById[sourceSnapshot.mapId],
+      baselineRecord: currentFlow.mapPersistence,
     });
     if (!adjusted) return false;
 
-    window.localStorage.setItem(getSourceBackedFlowMapSnapshotStorageKey(adjusted.snapshot.mapId), JSON.stringify(adjusted.snapshot));
-    window.localStorage.setItem(getSourceBackedFlowMapPersistenceStorageKey(adjusted.snapshot.mapId), JSON.stringify(adjusted.persistenceRecord));
-    refreshSavedFlowState();
-    return true;
+    const keyPlan = buildFlowUserDataMutationStorageKeyPlan({
+      flowSlugs: [flowSlug],
+      mapIds: [adjusted.snapshot.mapId],
+    });
+    const expectedRaw = captureFlowUserDataMutationExpectedRaw(window.localStorage, keyPlan);
+    return runFlowUserDataMutationTransaction({
+      storage: window.localStorage,
+      keyPlan,
+      expectedRaw,
+      apply(storage) {
+        storage.setItem(keyPlan.mapSnapshotKeysById[adjusted.snapshot.mapId]!, JSON.stringify(adjusted.snapshot));
+        storage.setItem(keyPlan.mapPersistenceKeysById[adjusted.snapshot.mapId]!, JSON.stringify(adjusted.persistenceRecord));
+        if (itemDraftsChanged) {
+          storage.setItem(MY_FLOW_ITEM_DRAFTS_STORAGE_KEY, JSON.stringify(nextItemDrafts));
+        }
+      },
+    }).ok;
   };
-  const saveMyFlowEditingDraft = (row: MyFlowCalendarRow) => {
+  const saveMyFlowEditingDraft = async (row: MyFlowCalendarRow) => {
     const key = getMyFlowRowInstanceKey(row);
     const editingDraft = myFlowEditingDrafts[key];
     if (!editingDraft) return;
     const { date, memo, ...itemDraft } = editingDraft;
-    if (memo !== undefined) {
-      const itemMemoWriteKey = getPersonalDraftProjectionValueKey(row.flow.progress.slug, row.id);
-      setMyFlowItemDrafts((current) => {
-        const result = applyItemMemoFacadeWrite({
-          itemDrafts: current,
-          itemMemoWriteKey,
-          value: memo,
-        });
-        if (!isMyFlowScenarioDemo) saveStoredMyFlowItemDrafts(result.itemDrafts);
-        return result.itemDrafts;
-      });
-    }
     if (row.flow.savedMap?.personalCopy) {
-      const { title, ...remainingItemDraft } = itemDraft;
-      const personalPatch: MyFlowItemDraft = {
-        ...(title !== undefined ? { title } : {}),
-        ...(date !== undefined ? { date } : {}),
-      };
-      const savedPersonalOverlay =
-        Object.keys(personalPatch).length > 0 ? saveMyFlowPersonalCopyStepOverlay(row, personalPatch) : true;
-      if (!savedPersonalOverlay) return;
-      if (Object.keys(remainingItemDraft).length > 0) updateMyFlowItemDraft(row, remainingItemDraft);
+      const locked = await withFlowUserDataWriteLock(() => {
+        const currentFlow = getLockedMyFlowExecutionContext(row.flow);
+        if (!currentFlow?.savedMap?.personalCopy) return false;
+        let nextItemDrafts = currentFlow.itemDrafts;
+        let itemDraftsChanged = false;
+        if (memo !== undefined) {
+          const itemMemoWriteKey = getPersonalDraftProjectionValueKey(
+            row.flow.progress.slug,
+            row.id,
+          );
+          nextItemDrafts = applyItemMemoFacadeWrite({
+            itemDrafts: nextItemDrafts,
+            itemMemoWriteKey,
+            value: memo,
+          }).itemDrafts;
+          itemDraftsChanged = true;
+        }
+        const { title, ...remainingItemDraft } = itemDraft;
+        const personalPatch: MyFlowItemDraft = {
+          ...(title !== undefined ? { title } : {}),
+          ...(date !== undefined ? { date } : {}),
+        };
+        if (Object.keys(remainingItemDraft).length > 0) {
+          nextItemDrafts = {
+            ...nextItemDrafts,
+            [key]: {
+              ...nextItemDrafts[key],
+              ...remainingItemDraft,
+            },
+          };
+          itemDraftsChanged = true;
+        }
+        if (Object.keys(personalPatch).length > 0) {
+          if (!saveMyFlowPersonalCopyStepOverlayWithinWriteLock(
+            row,
+            personalPatch,
+            currentFlow,
+            nextItemDrafts,
+            itemDraftsChanged,
+          )) return false;
+        } else if (itemDraftsChanged) {
+          const keyPlan = buildFlowUserDataMutationStorageKeyPlan({
+            flowSlugs: [currentFlow.progress.slug],
+            mapIds: currentFlow.savedMap ? [currentFlow.savedMap.mapId] : [],
+          });
+          const expectedRaw = captureFlowUserDataMutationExpectedRaw(window.localStorage, keyPlan);
+          const transaction = runFlowUserDataMutationTransaction({
+            storage: window.localStorage,
+            keyPlan,
+            expectedRaw,
+            apply(storage) {
+              storage.setItem(MY_FLOW_ITEM_DRAFTS_STORAGE_KEY, JSON.stringify(nextItemDrafts));
+            },
+          });
+          if (!transaction.ok) return false;
+        }
+        return true;
+      });
+      if (!locked.ok || !locked.value) return;
+      refreshSavedFlowState();
       if (date) {
         setMyFlowSelectedDate(date);
         setMyFlowVisibleMonth(getMyFlowMonthStart(date));
       }
-    } else if (isUrlFirstDraftSavedFlow(row.flow)) {
-      const structuralUserItem = row.structuralOwnership === 'user_created';
-      const {
-        time,
-        durationMinutes,
-        scheduleMode,
-        repeatPreset,
-        recurrenceInterval,
-        recurrenceWeekdays,
-        recurrenceEndMode,
-        recurrenceUntil,
-        recurrenceCount,
-        ...itemDraftWithoutStructuralSchedule
-      } = itemDraft;
-      const hasStructuralSchedulePatch =
-        date !== undefined ||
-        time !== undefined ||
-        durationMinutes !== undefined ||
-        scheduleMode !== undefined;
-      const hasStructuralRecurrencePatch =
-        repeatPreset !== undefined ||
-        recurrenceInterval !== undefined ||
-        recurrenceWeekdays !== undefined ||
-        recurrenceEndMode !== undefined ||
-        recurrenceUntil !== undefined ||
-        recurrenceCount !== undefined;
-      const structuralBaseRow = row.structuralOccurrenceId
-        ? row.flow.rows.find(
-            (candidate) =>
-              (candidate.structuralProjectionStableId ?? candidate.id) ===
-              (row.structuralProjectionStableId ?? row.id),
-          ) ?? row
-        : row;
-      const shouldSyncStructuralRecurrence =
-        hasStructuralSchedulePatch && Boolean(structuralBaseRow.structuralRepeat);
-      const resolvedRecurrenceDraft =
-        hasStructuralRecurrencePatch || shouldSyncStructuralRecurrence
-        ? getMyFlowRowEditorDraft(row)
-        : undefined;
-      if (structuralUserItem && (hasStructuralSchedulePatch || hasStructuralRecurrencePatch)) {
-        let structuralOverlay =
-          myFlowStructuralOverlaysBySlug[row.flow.progress.slug] ??
-          createPersonalDraftStructuralOverlay(row.flow.bundle);
-        const currentSchedule = structuralBaseRow.structuralScheduleProjection;
-        const nextDate = date ?? currentSchedule?.calendarDate ?? '';
-        const nextMode = scheduleMode ?? (
-          currentSchedule?.scheduleState === 'timed' ? 'timed' : 'all_day'
-        );
-        const nextTime = time ?? currentSchedule?.startTime ?? '';
-        const nextDuration =
-          durationMinutes ??
-          currentSchedule?.durationMinutes ??
-          PERSONAL_STRUCTURAL_DEFAULT_DURATION_MINUTES;
-        const timedFieldsChanged =
-          nextMode !== currentSchedule?.scheduleState ||
-          nextTime !== (currentSchedule?.startTime ?? '') ||
-          nextDuration !== (
-            currentSchedule?.durationMinutes ??
-            PERSONAL_STRUCTURAL_DEFAULT_DURATION_MINUTES
+      setMyFlowEditorDiscardPromptOpen(false);
+      setMyFlowEditorAdvancedDisclosure(null);
+      discardMyFlowEditingDraft(row);
+      closeMyFlowRowDetail(true);
+      return;
+    }
+    const mergeItemDraft = (
+      drafts: Record<string, MyFlowItemDraft>,
+      draftKey: string,
+      patch: MyFlowItemDraft,
+    ): Record<string, MyFlowItemDraft> => ({
+      ...drafts,
+      [draftKey]: { ...drafts[draftKey], ...patch },
+    });
+    const locked = await withFlowUserDataWriteLock(() => {
+      let nextItemDrafts = isMyFlowScenarioDemo
+        ? myFlowItemDrafts
+        : getStoredMyFlowItemDrafts();
+      let nextDateOverrides = isMyFlowScenarioDemo
+        ? myFlowDateOverrides
+        : getStoredMyFlowDateOverrides();
+      let nextStructuralOverlay: PersonalStructuralOverlay | undefined;
+      if (memo !== undefined) {
+        nextItemDrafts = applyItemMemoFacadeWrite({
+          itemDrafts: nextItemDrafts,
+          itemMemoWriteKey: getPersonalDraftProjectionValueKey(
+            row.flow.progress.slug,
+            row.id,
+          ),
+          value: memo,
+        }).itemDrafts;
+      }
+      if (isUrlFirstDraftSavedFlow(row.flow)) {
+        const structuralUserItem = row.structuralOwnership === 'user_created';
+        const {
+          time,
+          durationMinutes,
+          scheduleMode,
+          repeatPreset,
+          recurrenceInterval,
+          recurrenceWeekdays,
+          recurrenceEndMode,
+          recurrenceUntil,
+          recurrenceCount,
+          ...itemDraftWithoutStructuralSchedule
+        } = itemDraft;
+        const hasStructuralSchedulePatch =
+          date !== undefined ||
+          time !== undefined ||
+          durationMinutes !== undefined ||
+          scheduleMode !== undefined;
+        const hasStructuralRecurrencePatch =
+          repeatPreset !== undefined ||
+          recurrenceInterval !== undefined ||
+          recurrenceWeekdays !== undefined ||
+          recurrenceEndMode !== undefined ||
+          recurrenceUntil !== undefined ||
+          recurrenceCount !== undefined;
+        const structuralBaseRow = row.structuralOccurrenceId
+          ? row.flow.rows.find(
+              (candidate) =>
+                (candidate.structuralProjectionStableId ?? candidate.id) ===
+                (row.structuralProjectionStableId ?? row.id),
+            ) ?? row
+          : row;
+        const shouldSyncStructuralRecurrence =
+          hasStructuralSchedulePatch && Boolean(structuralBaseRow.structuralRepeat);
+        const resolvedRecurrenceDraft =
+          hasStructuralRecurrencePatch || shouldSyncStructuralRecurrence
+            ? getMyFlowRowEditorDraft(row)
+            : undefined;
+        if (structuralUserItem && (hasStructuralSchedulePatch || hasStructuralRecurrencePatch)) {
+          const renderedOverlay = myFlowStructuralOverlaysBySlug[row.flow.progress.slug]
+            ?? createPersonalDraftStructuralOverlay(row.flow.bundle);
+          let structuralOverlay = isMyFlowScenarioDemo
+            ? renderedOverlay
+            : loadPersonalStructuralOverlay(window.localStorage, {
+                savedCopyId: row.flow.progress.slug,
+                flowId: row.flow.bundle.flow.id,
+              }) ?? createPersonalDraftStructuralOverlay(row.flow.bundle);
+          if (JSON.stringify(structuralOverlay) !== JSON.stringify(renderedOverlay)) {
+            refreshSavedFlowState();
+            return { ok: false as const };
+          }
+          const currentSchedule = structuralBaseRow.structuralScheduleProjection;
+          const nextDate = date ?? currentSchedule?.calendarDate ?? '';
+          const nextMode = scheduleMode ?? (
+            currentSchedule?.scheduleState === 'timed' ? 'timed' : 'all_day'
           );
-        if (hasStructuralSchedulePatch) {
-          const scheduled = setPersonalDraftUserItemSchedule({
-            overlay: structuralOverlay,
-            itemId: row.structuralProjectionStableId ?? row.id,
-            date: nextDate,
-            mode: nextMode,
-            time: nextTime,
-            durationMinutes: nextDuration,
-            timeZone:
-              nextMode === 'timed'
-                ? timedFieldsChanged
-                  ? getCurrentDeviceTimeZone()
-                  : currentSchedule?.timeZone
+          const nextTime = time ?? currentSchedule?.startTime ?? '';
+          const nextDuration = durationMinutes
+            ?? currentSchedule?.durationMinutes
+            ?? PERSONAL_STRUCTURAL_DEFAULT_DURATION_MINUTES;
+          const timedFieldsChanged =
+            nextMode !== currentSchedule?.scheduleState ||
+            nextTime !== (currentSchedule?.startTime ?? '') ||
+            nextDuration !== (
+              currentSchedule?.durationMinutes ?? PERSONAL_STRUCTURAL_DEFAULT_DURATION_MINUTES
+            );
+          if (hasStructuralSchedulePatch) {
+            const scheduled = setPersonalDraftUserItemSchedule({
+              overlay: structuralOverlay,
+              itemId: row.structuralProjectionStableId ?? row.id,
+              date: nextDate,
+              mode: nextMode,
+              time: nextTime,
+              durationMinutes: nextDuration,
+              timeZone: nextMode === 'timed'
+                ? timedFieldsChanged ? getCurrentDeviceTimeZone() : currentSchedule?.timeZone
                 : undefined,
-          });
-          if (!scheduled) return;
-          structuralOverlay = scheduled.overlay;
-        }
-        if (resolvedRecurrenceDraft && nextDate) {
-          const recurrence = setPersonalDraftUserItemRecurrence({
-            overlay: structuralOverlay,
-            itemId: row.structuralProjectionStableId ?? row.id,
-            mode:
-              resolvedRecurrenceDraft.repeatPreset === 'daily' ||
-              resolvedRecurrenceDraft.repeatPreset === 'weekly' ||
-              resolvedRecurrenceDraft.repeatPreset === 'monthly'
-                ? resolvedRecurrenceDraft.repeatPreset
-                : 'none',
-            interval: resolvedRecurrenceDraft.recurrenceInterval,
-            weekdays: resolvedRecurrenceDraft.recurrenceWeekdays.filter(
-              (weekday): weekday is PersonalStructuralWeekday =>
-                PERSONAL_STRUCTURAL_WEEKDAYS.includes(
-                  weekday as PersonalStructuralWeekday,
-                ),
-            ),
-            endMode: resolvedRecurrenceDraft.recurrenceEndMode,
-            untilDate: resolvedRecurrenceDraft.recurrenceUntil,
-            occurrenceCount: resolvedRecurrenceDraft.recurrenceCount,
-          });
-          if (!recurrence) return;
-          structuralOverlay = recurrence.overlay;
-        }
-        if (!saveMyFlowStructuralOverlay(row.flow, structuralOverlay)) return;
-        clearMyFlowPersonalDraftLegacySchedule(row.flow.progress.slug, row.id);
-      }
-      const personalDraftItemPatch = structuralUserItem
-        ? itemDraftWithoutStructuralSchedule
-        : {
-            ...itemDraft,
-            ...(date !== undefined ? { date } : {}),
-          };
-      if (Object.keys(personalDraftItemPatch).length > 0) {
-        updateMyFlowItemDraftByKey(
-          getPersonalDraftProjectionValueKey(row.flow.progress.slug, row.id),
-          personalDraftItemPatch,
-        );
-      }
-      if (!structuralUserItem && date !== undefined) {
-        const draftDateKey = getPersonalDraftProjectionValueKey(row.flow.progress.slug, row.id);
-        updateMyFlowDateOverrideState((current) => {
-          const next = { ...current };
-          if (date) {
-            next[draftDateKey] = date;
-          } else {
-            delete next[draftDateKey];
+            });
+            if (!scheduled) return { ok: false as const };
+            structuralOverlay = scheduled.overlay;
           }
-          return next;
-        });
-        if (date) {
-          setMyFlowSelectedDate(date);
-          setMyFlowVisibleMonth(getMyFlowMonthStart(date));
-        }
-      }
-      if (structuralUserItem && date) {
-        setMyFlowSelectedDate(date);
-        setMyFlowVisibleMonth(getMyFlowMonthStart(date));
-      }
-    } else {
-      const { title, ...executionDraft } = itemDraft;
-      if (title !== undefined) {
-        updateMyFlowItemDraftByKey(getPersonalDraftProjectionValueKey(row.flow.progress.slug, row.id), {
-          ...(title !== undefined ? { title } : {}),
-        });
-      }
-      if (Object.keys(executionDraft).length > 0) updateMyFlowItemDraft(row, executionDraft);
-      const manualScheduleKey = !row.date ? getMyFlowManualScheduleKey(row.flow.progress.slug, row.id) : '';
-      const scheduleKey = row.calendarKey ?? manualScheduleKey;
-      if (scheduleKey && date !== undefined) {
-        updateMyFlowDateOverrideState((current) => {
-          const next = { ...current };
-          if (date) {
-            next[scheduleKey] = date;
-          } else {
-            delete next[scheduleKey];
+          if (resolvedRecurrenceDraft && nextDate) {
+            const recurrence = setPersonalDraftUserItemRecurrence({
+              overlay: structuralOverlay,
+              itemId: row.structuralProjectionStableId ?? row.id,
+              mode:
+                resolvedRecurrenceDraft.repeatPreset === 'daily' ||
+                resolvedRecurrenceDraft.repeatPreset === 'weekly' ||
+                resolvedRecurrenceDraft.repeatPreset === 'monthly'
+                  ? resolvedRecurrenceDraft.repeatPreset
+                  : 'none',
+              interval: resolvedRecurrenceDraft.recurrenceInterval,
+              weekdays: resolvedRecurrenceDraft.recurrenceWeekdays.filter(
+                (weekday): weekday is PersonalStructuralWeekday =>
+                  PERSONAL_STRUCTURAL_WEEKDAYS.includes(weekday as PersonalStructuralWeekday),
+              ),
+              endMode: resolvedRecurrenceDraft.recurrenceEndMode,
+              untilDate: resolvedRecurrenceDraft.recurrenceUntil,
+              occurrenceCount: resolvedRecurrenceDraft.recurrenceCount,
+            });
+            if (!recurrence) return { ok: false as const };
+            structuralOverlay = recurrence.overlay;
           }
-          return next;
-        });
-        if (date) {
-          setMyFlowSelectedDate(date);
-          setMyFlowVisibleMonth(getMyFlowMonthStart(date));
+          nextStructuralOverlay = isMyFlowScenarioDemo
+            ? structuralOverlay
+            : savePersonalStructuralOverlay(window.localStorage, structuralOverlay);
+          const legacyKey = getPersonalDraftProjectionValueKey(
+            row.flow.progress.slug,
+            row.id,
+          );
+          const legacyDraft = nextItemDrafts[legacyKey];
+          if (legacyDraft) {
+            const {
+              date: _date,
+              time: _time,
+              durationMinutes: _durationMinutes,
+              scheduleMode: _scheduleMode,
+              ...remaining
+            } = legacyDraft;
+            nextItemDrafts = { ...nextItemDrafts };
+            if (Object.keys(remaining).length > 0) nextItemDrafts[legacyKey] = remaining;
+            else delete nextItemDrafts[legacyKey];
+          }
+          if (Object.prototype.hasOwnProperty.call(nextDateOverrides, legacyKey)) {
+            nextDateOverrides = { ...nextDateOverrides };
+            delete nextDateOverrides[legacyKey];
+          }
+        }
+        const personalDraftItemPatch = structuralUserItem
+          ? itemDraftWithoutStructuralSchedule
+          : { ...itemDraft, ...(date !== undefined ? { date } : {}) };
+        if (Object.keys(personalDraftItemPatch).length > 0) {
+          nextItemDrafts = mergeItemDraft(
+            nextItemDrafts,
+            getPersonalDraftProjectionValueKey(row.flow.progress.slug, row.id),
+            personalDraftItemPatch,
+          );
+        }
+        if (!structuralUserItem && date !== undefined) {
+          const draftDateKey = getPersonalDraftProjectionValueKey(
+            row.flow.progress.slug,
+            row.id,
+          );
+          nextDateOverrides = { ...nextDateOverrides };
+          if (date) nextDateOverrides[draftDateKey] = date;
+          else delete nextDateOverrides[draftDateKey];
+        }
+      } else {
+        const { title, ...executionDraft } = itemDraft;
+        if (title !== undefined) {
+          nextItemDrafts = mergeItemDraft(
+            nextItemDrafts,
+            getPersonalDraftProjectionValueKey(row.flow.progress.slug, row.id),
+            { title },
+          );
+        }
+        if (Object.keys(executionDraft).length > 0) {
+          nextItemDrafts = mergeItemDraft(
+            nextItemDrafts,
+            getMyFlowRowInstanceKey(row),
+            executionDraft,
+          );
+        }
+        const manualScheduleKey = !row.date
+          ? getMyFlowManualScheduleKey(row.flow.progress.slug, row.id)
+          : '';
+        const scheduleKey = row.calendarKey ?? manualScheduleKey;
+        if (scheduleKey && date !== undefined) {
+          nextDateOverrides = { ...nextDateOverrides };
+          if (date) nextDateOverrides[scheduleKey] = date;
+          else delete nextDateOverrides[scheduleKey];
         }
       }
+      if (!isMyFlowScenarioDemo) {
+        saveStoredMyFlowItemDrafts(nextItemDrafts);
+        saveStoredMyFlowDateOverrides(nextDateOverrides);
+      }
+      return { ok: true as const, nextItemDrafts, nextDateOverrides, nextStructuralOverlay };
+    });
+    if (!locked.ok || !locked.value.ok) return;
+    setMyFlowItemDrafts(locked.value.nextItemDrafts);
+    setMyFlowDateOverrides(locked.value.nextDateOverrides);
+    if (locked.value.nextStructuralOverlay) {
+      setMyFlowStructuralOverlaysBySlug((current) => ({
+        ...current,
+        [row.flow.progress.slug]: locked.value.nextStructuralOverlay as PersonalStructuralOverlay,
+      }));
+    }
+    if (date) {
+      setMyFlowSelectedDate(date);
+      setMyFlowVisibleMonth(getMyFlowMonthStart(date));
     }
     setMyFlowEditorDiscardPromptOpen(false);
     setMyFlowEditorAdvancedDisclosure(null);
@@ -9076,7 +9542,261 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     });
   }, [calendarAnchor, selectedSavedFlowSlug, myFlowCalendarScope, myFlowCalendarSelectedFlowSignature, calendarScopedDateSignature, myFlowTodayDate, myFlowVisibleMonth, isCalendarSurface]);
 
-  const recordMyFlowCompletionState = (flow: MySavedFlow, checks: Record<string, boolean>) => {
+  const getMyFlowProgressMutationIdentity = (value: ActiveFlowProgress) => ({
+    slug: value.slug,
+    sourceSlug: value.sourceSlug,
+    sourceFlowKey: value.sourceFlowKey,
+    title: value.title,
+    total: value.total,
+    skipped: value.skipped,
+    anchor: value.anchor ?? '',
+    anchorMode: value.anchorMode,
+    weekdays: value.weekdays,
+    routineDefinition: value.routineDefinition,
+  });
+
+  const getMyFlowRowMutationIdentity = (
+    value: FlowBundle,
+    rowAnchor: string,
+    valueRows: MyFlowRow[],
+  ) => valueRows.map((row) => ({
+    id: row.id,
+    stableId: getMyFlowStableItemId(row),
+    ownership: row.structuralOwnership,
+    orderRank: row.structuralProjectionOrderRank,
+    structuralOccurrenceId: row.structuralOccurrenceId,
+    checkIds: getMyFlowCheckIds(value, row.id, rowAnchor),
+  }));
+
+  const getMyFlowStructuralOverlayMutationIdentity = (
+    value?: PersonalStructuralOverlay,
+  ) => {
+    if (!value) return undefined;
+    const { updatedAt: _displayOnlyUpdatedAt, ...identity } = value;
+    return identity;
+  };
+
+  const buildMyFlowMutationFingerprint = (value: {
+    progress: ActiveFlowProgress;
+    bundle: FlowBundle;
+    savedRecord?: SavedFlowRecord;
+    savedMap?: SavedFlowMapSnapshot;
+    mapPersistence?: SourceBackedFlowMapPersistenceRecord;
+    anchor: string;
+    checks: Record<string, boolean>;
+    itemStates: Record<string, FlowItemState>;
+    itemDrafts: Record<string, StoredMyFlowItemDraft>;
+    dateOverrides: Record<string, string>;
+    structuralOverlay?: PersonalStructuralOverlay;
+    rows: MyFlowRow[];
+  }): string => {
+    const projectionValues = normalizeMyFlowMutationProjectionValues({
+      flowSlug: value.progress.slug,
+      itemIds: [
+        ...value.bundle.items.map((item) => item.id),
+        ...(value.structuralOverlay?.userItems.map((item) => item.itemId) ?? []),
+      ],
+      itemDrafts: value.itemDrafts,
+      dateOverrides: value.dateOverrides,
+    });
+    return JSON.stringify({
+      progress: getMyFlowProgressMutationIdentity(value.progress),
+      bundle: value.bundle,
+      savedRecord: value.savedRecord,
+      savedMap: value.savedMap,
+      mapPersistence: value.mapPersistence,
+      anchor: value.anchor,
+      checks: value.checks,
+      itemStates: value.itemStates,
+      itemDrafts: projectionValues.itemDrafts,
+      dateOverrides: projectionValues.dateOverrides,
+      structuralOverlay: getMyFlowStructuralOverlayMutationIdentity(value.structuralOverlay),
+      rows: getMyFlowRowMutationIdentity(value.bundle, value.anchor, value.rows),
+    });
+  };
+
+  const getRenderedMyFlowMutationFingerprint = (renderedFlow: MySavedFlow): string => (
+    buildMyFlowMutationFingerprint({
+      progress: renderedFlow.progress,
+      bundle: renderedFlow.bundle,
+      savedRecord: renderedFlow.savedRecord,
+      savedMap: renderedFlow.savedMap,
+      mapPersistence: renderedFlow.savedMap
+        ? savedFlowMapPersistenceById[renderedFlow.savedMap.mapId]
+        : undefined,
+      anchor: renderedFlow.anchor,
+      checks: renderedFlow.checks,
+      itemStates: renderedFlow.itemStates,
+      itemDrafts: myFlowItemDrafts,
+      dateOverrides: myFlowDateOverrides,
+      structuralOverlay: isPersonalDraftStructuralEditEligible(renderedFlow.bundle)
+        ? myFlowStructuralOverlaysBySlug[renderedFlow.progress.slug]
+          ?? createPersonalDraftStructuralOverlay(renderedFlow.bundle)
+        : undefined,
+      rows: renderedFlow.rows,
+    })
+  );
+
+  type LockedMyFlowMutationContext = Pick<
+    MySavedFlow,
+    'progress' | 'bundle' | 'anchor' | 'checks' | 'itemStates' | 'rows' | 'savedRecord' | 'savedMap'
+  > & {
+    storedBundles: FlowBundle[];
+    mapPersistence?: SourceBackedFlowMapPersistenceRecord;
+    itemDrafts: Record<string, StoredMyFlowItemDraft>;
+    dateOverrides: Record<string, string>;
+    structuralOverlay?: PersonalStructuralOverlay;
+    fingerprint: string;
+  };
+
+  const getLockedMyFlowExecutionContext = (
+    renderedFlow: MySavedFlow,
+    expectedFingerprint = getRenderedMyFlowMutationFingerprint(renderedFlow),
+  ): LockedMyFlowMutationContext | undefined => {
+    if (typeof window === 'undefined') return undefined;
+    const storedBundles = readBundles();
+    const resolvedBundles = mergeSourceBackedMyFlowBundles(storedBundles);
+    const progress = getActiveFlowProgress(resolvedBundles).find(
+      (candidate) => candidate.slug === renderedFlow.progress.slug,
+    );
+    const sourceBundle = progress
+      ? resolvedBundles.find((entry) => (
+          entry.flow.slug === (progress.sourceSlug ?? progress.slug)
+          || Boolean(progress.sourceFlowKey && entry.flow.id === progress.sourceFlowKey)
+        ))
+      : undefined;
+    if (!progress || !sourceBundle) return undefined;
+
+    const savedMap = getSavedFlowMapIndexByFlowSlug()[progress.slug];
+    const savedRecord = getSavedFlowRecord(progress.slug);
+    const mapPersistence = savedMap
+      ? getStoredMyFlowMapPersistenceRecord(savedMap.mapId)
+      : undefined;
+    const bundle = applySourceBackedPersistenceRecordToBundle(
+      sourceBundle,
+      mapPersistence,
+      savedMap?.personalCopy,
+    );
+    const anchor = progress.anchor ?? '';
+    const checks = getChecks(progress.slug);
+    const itemStates = getItemStates(progress.slug);
+    const itemDrafts = getStoredMyFlowItemDrafts();
+    const dateOverrides = getStoredMyFlowDateOverrides();
+    const sourceRows = getMyFlowRows(bundle, anchor)
+      .map((row, sourceIndex) => ({ row, sourceIndex }))
+      .sort((left, right) => {
+        const leftOrder = itemStates[baseStateId(left.row.id)]?.personalOrder;
+        const rightOrder = itemStates[baseStateId(right.row.id)]?.personalOrder;
+        if (leftOrder === undefined && rightOrder === undefined) return left.sourceIndex - right.sourceIndex;
+        if (leftOrder === undefined) return 1;
+        if (rightOrder === undefined) return -1;
+        return leftOrder - rightOrder || left.sourceIndex - right.sourceIndex;
+      })
+      .map(({ row }) => row);
+    const personalCopyExcludedItemIds = new Set(
+      savedMap?.personalCopy?.excludedStepIdsByFlow[progress.slug] ?? [],
+    );
+    const isSourceBackedRowExcluded = (row: MyFlowRow) => (
+      personalCopyExcludedItemIds.has(baseStateId(row.id))
+      || isUrlFirstStartExcludedItemState(itemStates, row.id)
+    );
+    const structuralEditEligible = isPersonalDraftStructuralEditEligible(bundle);
+    const structuralOverlay = structuralEditEligible
+      ? loadPersonalStructuralOverlay(window.localStorage, {
+          savedCopyId: progress.slug,
+          flowId: bundle.flow.id,
+        }) ?? createPersonalDraftStructuralOverlay(bundle)
+      : undefined;
+    const legacyExcludedItemIds = structuralOverlay
+      ? bundle.items
+          .map((item) => item.id)
+          .filter((itemId) => isUrlFirstStartExcludedItemState(itemStates, itemId))
+      : [];
+    const projectionStructuralOverlay = structuralOverlay && legacyExcludedItemIds.length > 0
+      ? {
+          ...structuralOverlay,
+          selection: {
+            ...structuralOverlay.selection,
+            excludedItemIds: Array.from(new Set([
+              ...structuralOverlay.selection.excludedItemIds,
+              ...legacyExcludedItemIds,
+            ])),
+          },
+        }
+      : structuralOverlay;
+    const structuralExecutionStates: PersonalStructuralExecutionState[] = projectionStructuralOverlay
+      ? Array.from(new Set([
+          ...bundle.items.map((item) => item.id),
+          ...projectionStructuralOverlay.userItems.map((item) => item.itemId),
+        ])).map((itemId) => {
+          const checkIds = getMyFlowCheckIds(bundle, itemId, anchor);
+          const state: PersonalStructuralExecutionState['state'] = isItemStateSkipped(itemStates, itemId)
+            ? 'skipped'
+            : checkIds.length > 0 && checkIds.every((checkId) => checks[checkId])
+              ? 'done'
+              : 'pending';
+          return { itemId, state };
+        })
+      : [];
+    const structuralProjection = projectionStructuralOverlay
+      ? buildPersonalDraftStructuralProjection({
+          bundle,
+          structuralOverlay: projectionStructuralOverlay,
+          valueOverlays: buildPersonalDraftProjectionValueOverlays({
+            flowSlug: progress.slug,
+            sourceItemIds: bundle.items.map((item) => item.id),
+            structuralOverlay: projectionStructuralOverlay,
+            itemDrafts,
+            dateOverrides,
+          }),
+          executionStates: structuralExecutionStates,
+          anchorDate: anchor,
+        })
+      : undefined;
+    const structuralRows = structuralProjection
+      ? structuralProjection.effectiveRows.flatMap((projectionRow) => {
+          const row = mapPersonalDraftProjectionRowToMyFlowRow(bundle, sourceRows, projectionRow);
+          return row ? [row] : [];
+        })
+      : sourceRows;
+    const rows = structuralProjection
+      ? structuralRows
+      : structuralRows.filter((row) => !isSourceBackedRowExcluded(row));
+    const fingerprint = buildMyFlowMutationFingerprint({
+      progress,
+      bundle,
+      savedRecord,
+      savedMap,
+      mapPersistence,
+      anchor,
+      checks,
+      itemStates,
+      itemDrafts,
+      dateOverrides,
+      structuralOverlay,
+      rows,
+    });
+    if (fingerprint !== expectedFingerprint) return undefined;
+
+    return {
+      progress,
+      bundle,
+      anchor,
+      checks,
+      itemStates,
+      rows,
+      savedRecord,
+      savedMap,
+      storedBundles,
+      mapPersistence,
+      itemDrafts,
+      dateOverrides,
+      structuralOverlay,
+      fingerprint,
+    };
+  };
+
+  const recordMyFlowCompletionState = (flow: Pick<MySavedFlow, 'progress' | 'bundle' | 'anchor' | 'rows'>, checks: Record<string, boolean>) => {
     const completed = flow.rows.length > 0 && flow.rows.every((row) => {
       const checkIds = getMyFlowCheckIds(flow.bundle, row.id, flow.anchor);
       return checkIds.length > 0 && checkIds.every((id) => checks[id]);
@@ -9084,11 +9804,12 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     recordFlowCompletionState(flow.progress.slug, completed);
   };
 
-  const setPersonalDraftOccurrenceExecutionState = (
+  const setPersonalDraftOccurrenceExecutionState = async (
     flow: MySavedFlow,
     row: MyFlowCalendarRow,
     nextState: PersonalStructuralOccurrenceExecutionState,
-  ): boolean => {
+    expectedState?: PersonalStructuralOccurrenceExecutionState,
+  ): Promise<boolean> => {
     if (
       !row.structuralOccurrenceId ||
       !row.structuralOccurrenceSeriesId ||
@@ -9100,26 +9821,51 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
       flow.progress.slug,
       row.structuralOccurrenceId,
     );
-    const current = myFlowOccurrenceExecutionRecords[storageKey];
-    const nextRecord = transitionPersonalStructuralOccurrenceExecution({
-      current,
-      occurrenceId: row.structuralOccurrenceId,
-      seriesId: row.structuralOccurrenceSeriesId,
-      revisionId: row.structuralOccurrenceRevisionId,
-      nextState,
-      at: new Date().toISOString(),
-    });
-    setMyFlowOccurrenceExecutionRecords((records) => {
-      const next = { ...records, [storageKey]: nextRecord };
-      if (!isMyFlowScenarioDemo) {
-        saveStoredMyFlowOccurrenceExecutionRecords(next);
+    if (isMyFlowScenarioDemo) {
+      const current = myFlowOccurrenceExecutionRecords[storageKey];
+      const nextRecord = transitionPersonalStructuralOccurrenceExecution({
+        current,
+        occurrenceId: row.structuralOccurrenceId,
+        seriesId: row.structuralOccurrenceSeriesId,
+        revisionId: row.structuralOccurrenceRevisionId,
+        nextState,
+        at: new Date().toISOString(),
+      });
+      setMyFlowOccurrenceExecutionRecords((records) => ({
+        ...records,
+        [storageKey]: nextRecord,
+      }));
+      return true;
+    }
+    const locked = await withFlowUserDataWriteLock(() => {
+      if (!getLockedMyFlowExecutionContext(flow)) {
+        refreshSavedFlowState();
+        return undefined;
       }
+      const records = getStoredMyFlowOccurrenceExecutionRecords();
+      const current = records[storageKey];
+      if (expectedState && (current?.state ?? 'pending') !== expectedState) {
+        refreshSavedFlowState();
+        return undefined;
+      }
+      const nextRecord = transitionPersonalStructuralOccurrenceExecution({
+        current,
+        occurrenceId: row.structuralOccurrenceId as string,
+        seriesId: row.structuralOccurrenceSeriesId as string,
+        revisionId: row.structuralOccurrenceRevisionId as string,
+        nextState,
+        at: new Date().toISOString(),
+      });
+      const next = { ...records, [storageKey]: nextRecord };
+      saveStoredMyFlowOccurrenceExecutionRecords(next);
       return next;
     });
+    if (!locked.ok || !locked.value) return false;
+    setMyFlowOccurrenceExecutionRecords(locked.value);
     return true;
   };
 
-  const toggleSavedFlowItem = (flow: MySavedFlow, rowId: string, rowContext?: MyFlowCalendarRow) => {
+  const toggleSavedFlowItem = async (flow: MySavedFlow, rowId: string, rowContext?: MyFlowCalendarRow) => {
     const rowKey = rowContext
       ? getMyFlowRowInstanceKey(rowContext)
       : `${flow.progress.slug}::${rowId}`;
@@ -9147,7 +9893,12 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
       const currentState = myFlowOccurrenceExecutionRecords[storageKey]?.state ?? 'pending';
       if (currentState === 'skipped' || currentState === 'held') return;
       const nextState = currentState === 'done' ? 'reopened' : 'done';
-      if (!setPersonalDraftOccurrenceExecutionState(flow, rowContext, nextState)) return;
+      if (!await setPersonalDraftOccurrenceExecutionState(
+        flow,
+        rowContext,
+        nextState,
+        currentState,
+      )) return;
       if (nextState === 'done' && shouldOfferMyFlowCompletionUndo({
         completed: true,
         calendarSurface: isCalendarSurface,
@@ -9189,15 +9940,51 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
       return;
     }
 
-    const checkIds = getMyFlowCheckIds(flow.bundle, rowId, flow.anchor);
-    const nextChecked = !checkIds.every((id) => flow.checks[id]);
-    const nextChecks = checkIds.reduce(
-      (next, id) => ({
-        ...next,
-        [id]: nextChecked,
-      }),
-      { ...flow.checks },
-    );
+    let nextChecked: boolean;
+    let nextChecks: Record<string, boolean>;
+    if (isMyFlowScenarioDemo) {
+      const checkIds = getMyFlowCheckIds(flow.bundle, rowId, flow.anchor);
+      nextChecked = !checkIds.every((id) => flow.checks[id]);
+      nextChecks = checkIds.reduce(
+        (next, id) => ({ ...next, [id]: nextChecked }),
+        { ...flow.checks },
+      );
+    } else {
+      const locked = await withFlowUserDataWriteLock(() => {
+        const currentFlow = getLockedMyFlowExecutionContext(flow);
+        if (!currentFlow) {
+          refreshSavedFlowState();
+          return { applied: false as const };
+        }
+        const checkIds = getMyFlowCheckIds(currentFlow.bundle, rowId, currentFlow.anchor);
+        if (
+          checkIds.length === 0
+          || !currentFlow.rows.some((row) => (
+            row.id === rowId || getMyFlowStableItemId(row) === rowId
+          ))
+        ) {
+          refreshSavedFlowState();
+          return { applied: false as const };
+        }
+        const currentChecks = currentFlow.checks;
+        if (checkIds.some((id) => Boolean(currentChecks[id]) !== Boolean(flow.checks[id]))) {
+          refreshSavedFlowState();
+          return { applied: false as const };
+        }
+        const checked = !checkIds.every((id) => currentChecks[id]);
+        const checks = checkIds.reduce(
+          (next, id) => ({ ...next, [id]: checked }),
+          { ...currentChecks },
+        );
+        saveChecks(flow.progress.slug, checks);
+        recordMyFlowCompletionState(currentFlow, checks);
+        refreshSavedFlowState();
+        return { applied: true as const, checked, checks };
+      });
+      if (!locked.ok || !locked.value.applied) return;
+      nextChecked = locked.value.checked;
+      nextChecks = locked.value.checks;
+    }
     const nextFlow = { ...flow, checks: nextChecks };
     const nextReadingModel = buildWholeFlowReadingModel({
       structureType: nextFlow.bundle.flow.structure_type,
@@ -9265,11 +10052,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     }
     if (isMyFlowScenarioDemo) {
       setChecksBySlug((current) => ({ ...current, [flow.progress.slug]: nextChecks }));
-      return;
     }
-    saveChecks(flow.progress.slug, nextChecks);
-    recordMyFlowCompletionState(flow, nextChecks);
-    refreshSavedFlowState();
   };
 
   const focusMyFlowCompletionControl = (rowKey: string) => {
@@ -9339,7 +10122,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     openMyFlowRowFromFlowTab(targetRow.flow, targetRow);
   };
 
-  const undoMyFlowCompletion = (undo: MyFlowCompletionUndo) => {
+  const undoMyFlowCompletion = async (undo: MyFlowCompletionUndo) => {
     if (undo.result !== 'completed') {
       openMyFlowCompletionNoticeItem(undo);
       return;
@@ -9359,66 +10142,137 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
         undo.flowSlug,
         undo.occurrenceId,
       );
-      setMyFlowOccurrenceExecutionRecords((records) => {
-        const nextRecord = transitionPersonalStructuralOccurrenceExecution({
-          current: records[storageKey],
-          occurrenceId: undo.occurrenceId as string,
-          seriesId: undo.occurrenceSeriesId as string,
-          revisionId: undo.occurrenceRevisionId as string,
-          nextState: 'reopened',
-          at: new Date().toISOString(),
+      if (isMyFlowScenarioDemo) {
+        setMyFlowOccurrenceExecutionRecords((records) => {
+          const nextRecord = transitionPersonalStructuralOccurrenceExecution({
+            current: records[storageKey],
+            occurrenceId: undo.occurrenceId as string,
+            seriesId: undo.occurrenceSeriesId as string,
+            revisionId: undo.occurrenceRevisionId as string,
+            nextState: 'reopened',
+            at: new Date().toISOString(),
+          });
+          return { ...records, [storageKey]: nextRecord };
         });
-        const next = { ...records, [storageKey]: nextRecord };
-        if (!isMyFlowScenarioDemo) saveStoredMyFlowOccurrenceExecutionRecords(next);
-        return next;
-      });
+      } else {
+        const locked = await withFlowUserDataWriteLock(() => {
+          if (!getLockedMyFlowExecutionContext(flow)) {
+            refreshSavedFlowState();
+            return undefined;
+          }
+          const records = getStoredMyFlowOccurrenceExecutionRecords();
+          if ((records[storageKey]?.state ?? 'pending') !== 'done') {
+            refreshSavedFlowState();
+            return undefined;
+          }
+          const nextRecord = transitionPersonalStructuralOccurrenceExecution({
+            current: records[storageKey],
+            occurrenceId: undo.occurrenceId as string,
+            seriesId: undo.occurrenceSeriesId as string,
+            revisionId: undo.occurrenceRevisionId as string,
+            nextState: 'reopened',
+            at: new Date().toISOString(),
+          });
+          const next = { ...records, [storageKey]: nextRecord };
+          saveStoredMyFlowOccurrenceExecutionRecords(next);
+          return next;
+        });
+        if (!locked.ok || !locked.value) return;
+        setMyFlowOccurrenceExecutionRecords(locked.value);
+      }
       setMyFlowCompletionUndo(null);
       focusMyFlowCompletionControl(undo.rowKey);
       return;
     }
 
-    const checkIds = getMyFlowCheckIds(flow.bundle, undo.rowId, flow.anchor);
-    const currentChecks = checksBySlug[flow.progress.slug] ?? flow.checks;
-    const nextChecks = checkIds.reduce(
-      (next, id) => ({
-        ...next,
-        [id]: false,
-      }),
-      { ...currentChecks },
-    );
-    setMyFlowCompletionUndo(null);
     if (isMyFlowScenarioDemo) {
+      const checkIds = getMyFlowCheckIds(flow.bundle, undo.rowId, flow.anchor);
+      const currentChecks = checksBySlug[flow.progress.slug] ?? flow.checks;
+      const nextChecks = checkIds.reduce(
+        (next, id) => ({ ...next, [id]: false }),
+        { ...currentChecks },
+      );
       setChecksBySlug((current) => ({ ...current, [flow.progress.slug]: nextChecks }));
+      setMyFlowCompletionUndo(null);
       focusMyFlowCompletionControl(undo.rowKey);
       return;
     }
-    saveChecks(flow.progress.slug, nextChecks);
-    recordMyFlowCompletionState(flow, nextChecks);
-    refreshSavedFlowState();
+    const locked = await withFlowUserDataWriteLock(() => {
+      const currentFlow = getLockedMyFlowExecutionContext(flow);
+      if (!currentFlow) {
+        refreshSavedFlowState();
+        return false;
+      }
+      const checkIds = getMyFlowCheckIds(currentFlow.bundle, undo.rowId, currentFlow.anchor);
+      if (
+        checkIds.length === 0
+        || !currentFlow.rows.some((row) => (
+          row.id === undo.rowId || getMyFlowStableItemId(row) === undo.rowId
+        ))
+      ) {
+        refreshSavedFlowState();
+        return false;
+      }
+      const currentChecks = currentFlow.checks;
+      if (!checkIds.every((id) => currentChecks[id])) {
+        refreshSavedFlowState();
+        return false;
+      }
+      const nextChecks = checkIds.reduce(
+        (next, id) => ({ ...next, [id]: false }),
+        { ...currentChecks },
+      );
+      saveChecks(flow.progress.slug, nextChecks);
+      recordMyFlowCompletionState(currentFlow, nextChecks);
+      refreshSavedFlowState();
+      return true;
+    });
+    if (!locked.ok || !locked.value) return;
+    setMyFlowCompletionUndo(null);
     focusMyFlowCompletionControl(undo.rowKey);
   };
 
-  const completeSavedFlow = (flow: MySavedFlow) => {
-    const executableIds = (isPersonalDraftStructuralEditEligible(flow.bundle)
-      ? Array.from(
-          new Set(flow.rows.flatMap((row) => getMyFlowCheckIds(flow.bundle, row.id, flow.anchor))),
-        )
-      : getExecutableCheckIds(flow.bundle, flow.anchor))
-      .filter((id) => !isItemStateSkipped(flow.itemStates, id));
-    const nextChecks = executableIds.reduce(
-      (next, id) => ({
-        ...next,
-        [id]: true,
-      }),
-      { ...flow.checks },
-    );
+  const completeSavedFlow = async (flow: MySavedFlow): Promise<boolean> => {
     if (isMyFlowScenarioDemo) {
+      const executableIds = isPersonalDraftStructuralEditEligible(flow.bundle)
+        ? Array.from(
+            new Set(flow.rows.flatMap((row) => getMyFlowCheckIds(flow.bundle, row.id, flow.anchor))),
+          )
+        : getExecutableCheckIds(flow.bundle, flow.anchor);
+      const executable = executableIds.filter((id) => !isItemStateSkipped(flow.itemStates, id));
+      const nextChecks = executable.reduce(
+        (next, id) => ({ ...next, [id]: true }),
+        { ...flow.checks },
+      );
       setChecksBySlug((current) => ({ ...current, [flow.progress.slug]: nextChecks }));
-      return;
+      return true;
     }
-    saveChecks(flow.progress.slug, nextChecks);
-    recordMyFlowCompletionState(flow, nextChecks);
-    refreshSavedFlowState();
+    const locked = await withFlowUserDataWriteLock(() => {
+      const currentFlow = getLockedMyFlowExecutionContext(flow);
+      if (!currentFlow) {
+        refreshSavedFlowState();
+        return false;
+      }
+      const executableIds = isPersonalDraftStructuralEditEligible(currentFlow.bundle)
+        ? Array.from(
+            new Set(currentFlow.rows.flatMap((row) => (
+              getMyFlowCheckIds(currentFlow.bundle, row.id, currentFlow.anchor)
+            ))),
+          )
+        : getExecutableCheckIds(currentFlow.bundle, currentFlow.anchor);
+      const executable = executableIds.filter(
+        (id) => !isItemStateSkipped(currentFlow.itemStates, id),
+      );
+      const nextChecks = executable.reduce(
+        (next, id) => ({ ...next, [id]: true }),
+        { ...currentFlow.checks },
+      );
+      saveChecks(flow.progress.slug, nextChecks);
+      recordMyFlowCompletionState(currentFlow, nextChecks);
+      refreshSavedFlowState();
+      return true;
+    });
+    return locked.ok && locked.value;
   };
 
   const openMyFlowCompletionFeedback = (flow: MySavedFlow, mode: MyFlowCompletionFeedbackDraft['mode']) => {
@@ -9441,47 +10295,57 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     setMyFlowCompletionFeedbackDraft((current) => (current ? { ...current, ...patch, status: patch.status ?? '' } : current));
   };
 
-  const saveMyFlowCompletionReflection = (flow: MySavedFlow) => {
-    if (myFlowCompletionFeedbackDraft?.flowSlug !== flow.progress.slug) return;
-    const savedFeedback = myFlowCompletionFeedbackBySlug[flow.progress.slug] ?? getMyFlowCompletionFeedback(flow.progress.slug);
-    const nextFeedback = saveMyFlowCompletionFeedback(flow.progress.slug, {
-      ...(savedFeedback?.sourceCorrectionDraft ? { sourceCorrectionDraft: savedFeedback.sourceCorrectionDraft } : {}),
-      reflection: {
-        outcome: myFlowCompletionFeedbackDraft.outcome,
-        ...(myFlowCompletionFeedbackDraft.reflectionNote.trim()
-          ? { note: myFlowCompletionFeedbackDraft.reflectionNote.trim() }
+  const saveMyFlowCompletionReflection = async (flow: MySavedFlow) => {
+    const feedbackDraft = myFlowCompletionFeedbackDraft;
+    if (feedbackDraft?.flowSlug !== flow.progress.slug) return;
+    const locked = await withFlowUserDataWriteLock(() => {
+      const savedFeedback = getMyFlowCompletionFeedback(flow.progress.slug);
+      return saveMyFlowCompletionFeedback(flow.progress.slug, {
+        ...(savedFeedback?.sourceCorrectionDraft
+          ? { sourceCorrectionDraft: savedFeedback.sourceCorrectionDraft }
           : {}),
-        updatedAt: new Date().toISOString(),
-      },
+        reflection: {
+          outcome: feedbackDraft.outcome,
+          ...(feedbackDraft.reflectionNote.trim()
+            ? { note: feedbackDraft.reflectionNote.trim() }
+            : {}),
+          updatedAt: new Date().toISOString(),
+        },
+      });
     });
-    if (!nextFeedback) return;
+    if (!locked.ok || !locked.value) return;
+    const nextFeedback = locked.value;
     setMyFlowCompletionFeedbackBySlug((current) => ({ ...current, [flow.progress.slug]: nextFeedback }));
     updateMyFlowCompletionFeedbackDraft({ status: '내 회고를 이 기기에 저장했어요.' });
   };
 
-  const saveMyFlowSourceCorrectionDraft = (flow: MySavedFlow) => {
-    if (myFlowCompletionFeedbackDraft?.flowSlug !== flow.progress.slug) return;
-    const correctionNote = myFlowCompletionFeedbackDraft.correctionNote.trim();
+  const saveMyFlowSourceCorrectionDraft = async (flow: MySavedFlow) => {
+    const feedbackDraft = myFlowCompletionFeedbackDraft;
+    if (feedbackDraft?.flowSlug !== flow.progress.slug) return;
+    const correctionNote = feedbackDraft.correctionNote.trim();
     if (!correctionNote) {
       updateMyFlowCompletionFeedbackDraft({ status: '알릴 내용을 적어 주세요.' });
       return;
     }
 
-    const itemRow = flow.rows.find((row) => baseStateId(row.id) === myFlowCompletionFeedbackDraft.correctionScope);
-    const savedFeedback = myFlowCompletionFeedbackBySlug[flow.progress.slug] ?? getMyFlowCompletionFeedback(flow.progress.slug);
-    const nextFeedback = saveMyFlowCompletionFeedback(flow.progress.slug, {
-      ...(savedFeedback?.reflection ? { reflection: savedFeedback.reflection } : {}),
-      sourceCorrectionDraft: {
-        scope: itemRow ? 'item' : 'flow',
-        note: correctionNote,
-        updatedAt: new Date().toISOString(),
-        ...(itemRow
-          ? { itemId: baseStateId(itemRow.id), itemTitle: getMyFlowRowDisplayTitle({ ...itemRow, flow }) }
-          : {}),
-        ...(flow.bundle.flow.source_url ? { sourceUrl: flow.bundle.flow.source_url } : {}),
-      },
+    const itemRow = flow.rows.find((row) => baseStateId(row.id) === feedbackDraft.correctionScope);
+    const locked = await withFlowUserDataWriteLock(() => {
+      const savedFeedback = getMyFlowCompletionFeedback(flow.progress.slug);
+      return saveMyFlowCompletionFeedback(flow.progress.slug, {
+        ...(savedFeedback?.reflection ? { reflection: savedFeedback.reflection } : {}),
+        sourceCorrectionDraft: {
+          scope: itemRow ? 'item' : 'flow',
+          note: correctionNote,
+          updatedAt: new Date().toISOString(),
+          ...(itemRow
+            ? { itemId: baseStateId(itemRow.id), itemTitle: getMyFlowRowDisplayTitle({ ...itemRow, flow }) }
+            : {}),
+          ...(flow.bundle.flow.source_url ? { sourceUrl: flow.bundle.flow.source_url } : {}),
+        },
+      });
     });
-    if (!nextFeedback) return;
+    if (!locked.ok || !locked.value) return;
+    const nextFeedback = locked.value;
     setMyFlowCompletionFeedbackBySlug((current) => ({ ...current, [flow.progress.slug]: nextFeedback }));
     updateMyFlowCompletionFeedbackDraft({ status: '전송 전 메모를 이 기기에 저장했어요.' });
   };
@@ -9609,133 +10473,288 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     } : current);
   };
 
-  const startMyFlowReuse = (flow: MySavedFlow) => {
-    if (myFlowReuseDraft?.flowSlug !== flow.progress.slug) return;
+  const startMyFlowReuse = async (flow: MySavedFlow) => {
+    if (myFlowReuseDraft?.flowSlug !== flow.progress.slug || typeof window === 'undefined') return;
+    const reuseDraft = myFlowReuseDraft;
     const anchorContext = getMyFlowReuseAnchorContext(flow);
     const requiresAnchor = anchorContext.required;
-    const anchor = myFlowReuseDraft.anchor.trim();
+    const anchor = reuseDraft.anchor.trim();
     if (requiresAnchor && !/^\d{4}-\d{2}-\d{2}$/.test(anchor)) {
       updateMyFlowReuseDraft({ status: `${anchorContext.label}을 선택해 주세요.` });
       return;
     }
-    if (requiresAnchor && myFlowReuseDraft.fixedDateOverrideCount > 0 && !myFlowReuseDraft.fixedDatePolicy) {
+    if (requiresAnchor && reuseDraft.fixedDateOverrideCount > 0 && !reuseDraft.fixedDatePolicy) {
       updateMyFlowReuseDraft({ status: '따로 바꾼 날짜를 어떻게 처리할지 선택해 주세요.' });
       return;
     }
 
-    const versionNotice = getMyFlowVersionNoticeForFlow(flow);
-    const sourceSnapshot = flow.savedMap ? toSourceBackedSavedSnapshot(flow.savedMap) : undefined;
-    const versionResult = myFlowReuseDraft.versionMode === 'latest'
-      && versionNotice?.versionReview
-      && versionNotice.savedRecord
-      && sourceSnapshot
-      ? buildFlowVersionReviewPersonalCopy({
-          review: versionNotice.versionReview,
-          savedRecord: versionNotice.savedRecord,
-          personalCopy: sourceSnapshot.personalCopy,
-          selections: myFlowReuseDraft.versionSelections,
-          flowSlug: flow.progress.slug,
-        })
-      : undefined;
-    if (myFlowReuseDraft.versionMode === 'latest' && !versionResult?.personalCopy) {
-      updateMyFlowReuseDraft({ status: versionResult?.unresolvedKeys.length ? '바뀐 할 일의 처리 방법을 모두 선택해 주세요.' : '새 내용을 불러오지 못했습니다.' });
-      return;
-    }
-    if (myFlowReuseDraft.versionMode === 'latest' && versionNotice?.versionReview?.sensitive && !myFlowReuseDraft.sensitiveReviewConfirmed) {
-      updateMyFlowReuseDraft({ status: '공식·민감 일정의 변경 내용을 확인해 주세요.' });
-      return;
-    }
-    const reviewedVersion = myFlowReuseDraft.versionMode === 'latest' && sourceSnapshot && versionResult?.personalCopy
-      ? buildSourceBackedFlowMapReviewedVersion(sourceSnapshot, versionResult.personalCopy, {
-          savedAt: new Date().toISOString(),
-          ...(requiresAnchor ? { anchor } : {}),
-        })
-      : undefined;
-    if (myFlowReuseDraft.versionMode === 'latest' && !reviewedVersion) {
-      updateMyFlowReuseDraft({ status: '선택한 새 내용을 저장하지 못했습니다.' });
-      return;
-    }
-
-    const completedRun = completeActiveFlowRun(flow.progress.slug, {
-      mapSnapshot: flow.savedMap,
-      flowTitle: getMyFlowDisplayFlowTitle(flow),
-      itemSnapshots: buildMyFlowRunItemSnapshots(flow),
-    })
-      ?? getCompletedFlowRuns(flow.progress.slug)[0];
-    if (!completedRun) {
-      updateMyFlowReuseDraft({ status: '지난 실행을 보관하지 못했습니다. 다시 시도해 주세요.' });
-      return;
-    }
-
-    const personalExecutionState = completedRun.personalExecutionStateSnapshot
-      ?? getFlowScopedMyFlowPersonalExecutionState(flow.progress.slug);
-    const nextPersonalExecutionStateSnapshot =
-      requiresAnchor && myFlowReuseDraft.fixedDatePolicy === 'keep_fixed_dates'
-        ? rekeyMyFlowPersonalExecutionStateForAnchor(personalExecutionState, {
+    const locked = await withFlowUserDataWriteLock(() => {
+      const storedMap = getSavedFlowMapIndexByFlowSlug()[flow.progress.slug];
+      const failStaleReuse = () => {
+        refreshSavedFlowState();
+        return {
+          ok: false as const,
+          status: '저장된 계획이 바뀌었습니다. 최신 내용을 확인한 뒤 다시 시작해 주세요.',
+        };
+      };
+      if (!flow.savedMap && storedMap) return failStaleReuse();
+      const storedBundles = getBundles();
+      const resolvedBundles = mergeSourceBackedMyFlowBundles(storedBundles);
+      const currentProgress = getActiveFlowProgress(resolvedBundles).find(
+        (candidate) => candidate.slug === flow.progress.slug,
+      );
+      const currentSourceBundle = currentProgress
+        ? resolvedBundles.find((entry) => (
+            entry.flow.slug === (currentProgress.sourceSlug ?? currentProgress.slug)
+            || Boolean(currentProgress.sourceFlowKey && entry.flow.id === currentProgress.sourceFlowKey)
+          ))
+        : undefined;
+      const storedPersistence = storedMap
+        ? getStoredMyFlowMapPersistenceRecord(storedMap.mapId)
+        : undefined;
+      const currentEffectiveBundle = currentSourceBundle
+        ? applySourceBackedPersistenceRecordToBundle(
+            currentSourceBundle,
+            storedPersistence,
+            storedMap?.personalCopy,
+          )
+        : undefined;
+      const toReuseProgressIdentity = (progress: ActiveFlowProgress) => ({
+        slug: progress.slug,
+        title: progress.title,
+        done: progress.done,
+        total: progress.total,
+        skipped: progress.skipped,
+        anchor: progress.anchor ?? '',
+        anchorMode: progress.anchorMode,
+        sourceSlug: progress.sourceSlug,
+        sourceFlowKey: progress.sourceFlowKey,
+        weekdays: progress.weekdays,
+        routineDefinition: progress.routineDefinition,
+      });
+      const structuralEditEligible = isPersonalDraftStructuralEditEligible(flow.bundle);
+      const currentStructuralOverlay = currentEffectiveBundle && structuralEditEligible
+        ? loadPersonalStructuralOverlay(window.localStorage, {
+            savedCopyId: flow.progress.slug,
+            flowId: currentEffectiveBundle.flow.id,
+          }) ?? createPersonalDraftStructuralOverlay(currentEffectiveBundle)
+        : undefined;
+      const renderedStructuralOverlay = structuralEditEligible
+        ? myFlowStructuralOverlaysBySlug[flow.progress.slug]
+          ?? createPersonalDraftStructuralOverlay(flow.bundle)
+        : undefined;
+      const projectionItemIds = Array.from(new Set([
+        ...flow.bundle.items.map((item) => item.id),
+        ...(currentStructuralOverlay?.userItems.map((item) => item.itemId) ?? []),
+        ...(renderedStructuralOverlay?.userItems.map((item) => item.itemId) ?? []),
+      ]));
+      const currentProjectionValues = normalizeMyFlowMutationProjectionValues({
+        flowSlug: flow.progress.slug,
+        itemIds: projectionItemIds,
+        itemDrafts: getStoredMyFlowItemDrafts(),
+        dateOverrides: getStoredMyFlowDateOverrides(),
+      });
+      const renderedProjectionValues = normalizeMyFlowMutationProjectionValues({
+        flowSlug: flow.progress.slug,
+        itemIds: projectionItemIds,
+        itemDrafts: myFlowItemDrafts,
+        dateOverrides: myFlowDateOverrides,
+      });
+      if (
+        !currentProgress
+        || !currentEffectiveBundle
+        || JSON.stringify(toReuseProgressIdentity(currentProgress))
+          !== JSON.stringify(toReuseProgressIdentity(flow.progress))
+        || JSON.stringify(currentEffectiveBundle) !== JSON.stringify(flow.bundle)
+        || JSON.stringify(getChecks(flow.progress.slug)) !== JSON.stringify(flow.checks)
+        || JSON.stringify(getItemStates(flow.progress.slug)) !== JSON.stringify(flow.itemStates)
+        || JSON.stringify(currentProjectionValues) !== JSON.stringify(renderedProjectionValues)
+        || JSON.stringify(getFlowOccurrenceExecutionRecords(
+          flow.progress.slug,
+          getStoredMyFlowOccurrenceExecutionRecords(),
+        )) !== JSON.stringify(getFlowOccurrenceExecutionRecords(
+          flow.progress.slug,
+          myFlowOccurrenceExecutionRecords,
+        ))
+      ) return failStaleReuse();
+      if (structuralEditEligible) {
+        if (
+          JSON.stringify(getMyFlowStructuralOverlayMutationIdentity(currentStructuralOverlay))
+            !== JSON.stringify(getMyFlowStructuralOverlayMutationIdentity(renderedStructuralOverlay))
+        ) return failStaleReuse();
+      }
+      if (flow.savedMap) {
+        if (
+          !storedMap
+          || storedMap.mapId !== flow.savedMap.mapId
+          || JSON.stringify(storedMap) !== JSON.stringify(flow.savedMap)
+        ) return failStaleReuse();
+        const renderedPersistence = savedFlowMapPersistenceById[flow.savedMap.mapId];
+        if (
+          JSON.stringify(storedPersistence) !== JSON.stringify(renderedPersistence)
+        ) return failStaleReuse();
+      }
+      const latestSavedMap = storedMap;
+      const sourceSnapshot = latestSavedMap
+        ? toSourceBackedSavedSnapshot(latestSavedMap)
+        : undefined;
+      const versionNotice = latestSavedMap
+        ? getMyFlowMapUpdateNotice(
+            latestSavedMap,
+            getStoredMyFlowMapPersistenceRecord(latestSavedMap.mapId),
+            myFlowQ3CopyEnabled,
+          )
+        : undefined;
+      const versionResult = reuseDraft.versionMode === 'latest'
+        && versionNotice?.versionReview
+        && versionNotice.savedRecord
+        && sourceSnapshot
+        ? buildFlowVersionReviewPersonalCopy({
+            review: versionNotice.versionReview,
+            savedRecord: versionNotice.savedRecord,
+            personalCopy: sourceSnapshot.personalCopy,
+            selections: reuseDraft.versionSelections,
             flowSlug: flow.progress.slug,
-            previousItems: getMyFlowRows(flow.bundle, flow.anchor).map((row) => ({
-              itemId: row.id,
-              date: row.date,
-            })),
-            nextItems: getMyFlowRows(flow.bundle, anchor).map((row) => ({
-              itemId: row.id,
-              date: row.date,
-            })),
           })
-        : personalExecutionState;
+        : undefined;
+      if (reuseDraft.versionMode === 'latest' && !versionResult?.personalCopy) {
+        return {
+          ok: false as const,
+          status: versionResult?.unresolvedKeys.length
+            ? '바뀐 할 일의 처리 방법을 모두 선택해 주세요.'
+            : '새 내용을 불러오지 못했습니다.',
+        };
+      }
+      if (
+        reuseDraft.versionMode === 'latest' &&
+        versionNotice?.versionReview?.sensitive &&
+        !reuseDraft.sensitiveReviewConfirmed
+      ) {
+        return { ok: false as const, status: '공식·민감 일정의 변경 내용을 확인해 주세요.' };
+      }
+      const reviewedVersion = reuseDraft.versionMode === 'latest'
+        && sourceSnapshot
+        && versionResult?.personalCopy
+        ? buildSourceBackedFlowMapReviewedVersion(sourceSnapshot, versionResult.personalCopy, {
+            savedAt: new Date().toISOString(),
+            ...(requiresAnchor ? { anchor } : {}),
+          })
+        : undefined;
+      if (reuseDraft.versionMode === 'latest' && !reviewedVersion) {
+        return { ok: false as const, status: '선택한 새 내용을 저장하지 못했습니다.' };
+      }
 
-    if (reviewedVersion && typeof window !== 'undefined') {
-      window.localStorage.setItem(
-        getSourceBackedFlowMapSnapshotStorageKey(reviewedVersion.snapshot.mapId),
-        JSON.stringify(reviewedVersion.snapshot),
-      );
-      window.localStorage.setItem(
-        getSourceBackedFlowMapPersistenceStorageKey(reviewedVersion.snapshot.mapId),
-        JSON.stringify(reviewedVersion.persistenceRecord),
-      );
-    }
-
-    const nextRun = startFlowRunFromCompleted(flow.progress.slug, {
-      previousRunId: completedRun.runId,
-      reuseMode: myFlowReuseDraft.versionMode === 'latest'
-        ? 'reviewed_version'
-        : requiresAnchor ? 'new_anchor' : 'same_copy',
-      ...(requiresAnchor ? { anchor } : {}),
-      ...(requiresAnchor && myFlowReuseDraft.fixedDatePolicy
-        ? { fixedDatePolicy: myFlowReuseDraft.fixedDatePolicy }
-        : {}),
-      personalExecutionStateSnapshot: nextPersonalExecutionStateSnapshot,
-      ...(reviewedVersion
-        ? {
-            mapId: reviewedVersion.snapshot.mapId,
-            sourceVersion: reviewedVersion.snapshot.version,
-            personalCopySnapshot: reviewedVersion.snapshot.personalCopy,
+      const reuseKeyPlan = buildFlowRunReuseStorageKeyPlan({
+        flowSlug: flow.progress.slug,
+        mapIds: [
+          latestSavedMap?.mapId,
+          reviewedVersion?.snapshot.mapId,
+          ...getFlowRunRegistry(flow.progress.slug).runs.map((run) => run.mapId),
+        ],
+      });
+      let transactionFailureStatus = '새 실행을 저장하지 못했습니다. 잠시 뒤 다시 시도해 주세요.';
+      const reuseTransaction = runFlowRunReuseStorageTransaction({
+        storage: window.localStorage,
+        keyPlan: reuseKeyPlan,
+        apply(transactionStorage) {
+          const completedRun = completeActiveFlowRun(flow.progress.slug, {
+            mapSnapshot: latestSavedMap,
+            flowTitle: getMyFlowDisplayFlowTitle(flow),
+            itemSnapshots: buildMyFlowRunItemSnapshots(flow),
+          }, transactionStorage) ?? getCompletedFlowRuns(flow.progress.slug)[0];
+          if (!completedRun) {
+            transactionFailureStatus = '지난 실행을 보관하지 못했습니다. 다시 시도해 주세요.';
+            throw new Error('The current Flow run could not be completed for reuse.');
           }
-        : {}),
+
+          const personalExecutionState = completedRun.personalExecutionStateSnapshot
+            ?? getFlowScopedMyFlowPersonalExecutionState(flow.progress.slug);
+          const nextPersonalExecutionStateSnapshot =
+            requiresAnchor && reuseDraft.fixedDatePolicy === 'keep_fixed_dates'
+              ? rekeyMyFlowPersonalExecutionStateForAnchor(personalExecutionState, {
+                  flowSlug: flow.progress.slug,
+                  previousItems: getMyFlowRows(flow.bundle, flow.anchor).map((row) => ({
+                    itemId: row.id,
+                    date: row.date,
+                  })),
+                  nextItems: getMyFlowRows(flow.bundle, anchor).map((row) => ({
+                    itemId: row.id,
+                    date: row.date,
+                  })),
+                })
+              : personalExecutionState;
+
+          if (reviewedVersion) {
+            transactionStorage.setItem(
+              getSourceBackedFlowMapSnapshotStorageKey(reviewedVersion.snapshot.mapId),
+              JSON.stringify(reviewedVersion.snapshot),
+            );
+            transactionStorage.setItem(
+              getSourceBackedFlowMapPersistenceStorageKey(reviewedVersion.snapshot.mapId),
+              JSON.stringify(reviewedVersion.persistenceRecord),
+            );
+          }
+
+          const nextRun = startFlowRunFromCompleted(flow.progress.slug, {
+            previousRunId: completedRun.runId,
+            reuseMode: reuseDraft.versionMode === 'latest'
+              ? 'reviewed_version'
+              : requiresAnchor ? 'new_anchor' : 'same_copy',
+            ...(requiresAnchor ? { anchor } : {}),
+            ...(requiresAnchor && reuseDraft.fixedDatePolicy
+              ? { fixedDatePolicy: reuseDraft.fixedDatePolicy }
+              : {}),
+            personalExecutionStateSnapshot: nextPersonalExecutionStateSnapshot,
+            ...(reviewedVersion
+              ? {
+                  mapId: reviewedVersion.snapshot.mapId,
+                  sourceVersion: reviewedVersion.snapshot.version,
+                  personalCopySnapshot: reviewedVersion.snapshot.personalCopy,
+                }
+              : {}),
+          }, transactionStorage);
+          if (!nextRun) {
+            transactionFailureStatus = '새 실행을 시작하지 못했습니다. 날짜와 선택을 확인해 주세요.';
+            throw new Error('The next Flow run could not be started.');
+          }
+        },
+      });
+      if (!reuseTransaction.ok) {
+        refreshSavedFlowState();
+        return {
+          ok: false as const,
+          status: reuseTransaction.rollbackComplete
+            ? transactionFailureStatus
+            : '새 실행 저장을 완전히 복구하지 못했습니다. 최신 내용을 확인한 뒤 다시 시도해 주세요.',
+        };
+      }
+      refreshSavedFlowState();
+      return { ok: true as const };
     });
-    if (!nextRun) {
-      updateMyFlowReuseDraft({ status: '새 실행을 시작하지 못했습니다. 날짜와 선택을 확인해 주세요.' });
+    if (!locked.ok) {
+      updateMyFlowReuseDraft({ status: '새 실행을 위한 저장 잠금을 확보하지 못했습니다. 잠시 후 다시 시도해 주세요.' });
+      return;
+    }
+    if (!locked.value.ok) {
+      updateMyFlowReuseDraft({ status: locked.value.status });
       return;
     }
 
     setMyFlowReuseDraft(null);
     setMyFlowCompletionFeedbackDraft(null);
     setMyFlowPersonalCopySettingsDraft(null);
-    setMyFlowItemDrafts(getStoredMyFlowItemDrafts());
-    setMyFlowDateOverrides(getStoredMyFlowDateOverrides());
-    setMyFlowOccurrenceExecutionRecords(getStoredMyFlowOccurrenceExecutionRecords());
     setMyFlowReuseNotice({
       flowSlug: flow.progress.slug,
-      message: myFlowReuseDraft.versionMode === 'latest'
+      message: reuseDraft.versionMode === 'latest'
         ? `${requiresAnchor ? `새 ${anchorContext.label} ${formatMyFlowDisplayDate(anchor)}로 ` : ''}새 내용을 반영해 시작했어요. 지난 실행은 이전 내용 그대로 남아 있어요.`
         : requiresAnchor
           ? `새 ${anchorContext.label} ${formatMyFlowDisplayDate(anchor)}로 시작했어요. 지난 실행은 기록으로 남아 있어요.`
           : '새 실행을 시작했어요. 지난 실행은 기록으로 남아 있어요.',
       detail: [
-        myFlowReuseDraft.fixedDatePolicy === 'keep_fixed_dates'
-          ? `따로 고친 날짜 ${myFlowReuseDraft.fixedDateOverrideCount}개 유지`
-          : myFlowReuseDraft.fixedDatePolicy === 'reset_to_anchor'
-            ? `따로 고친 날짜 ${myFlowReuseDraft.fixedDateOverrideCount}개 재계산`
+        reuseDraft.fixedDatePolicy === 'keep_fixed_dates'
+          ? `따로 고친 날짜 ${reuseDraft.fixedDateOverrideCount}개 유지`
+          : reuseDraft.fixedDatePolicy === 'reset_to_anchor'
+            ? `따로 고친 날짜 ${reuseDraft.fixedDateOverrideCount}개 재계산`
             : '',
         '완료 체크 새로 시작',
       ].filter(Boolean).join(' · '),
@@ -9743,7 +10762,6 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     setSelectedSavedFlowSlug(flow.progress.slug);
     setSavedView('flow');
     resetMyFlowRowDetailState();
-    refreshSavedFlowState();
   };
 
   const renderTaskCompletionCheckbox = ({
@@ -9814,252 +10832,518 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
 
   const openMyFlowPermanentDeleteDialog = (flow: MySavedFlow) => {
     if (!archivedFlowSlugSet.has(flow.progress.slug) || isMyFlowScenarioDemo) return;
+    if (typeof window === 'undefined') return;
+    const personalDraft = isUrlFirstDraftSavedFlow(flow);
+    const expectedDeletionInspection = inspectPermanentSavedFlowDeletion(
+      window.localStorage,
+      { flowSlug: flow.progress.slug, personalDraft },
+    );
+    if (!expectedDeletionInspection) {
+      setMyFlowPermanentDeleteError('삭제할 계획의 최신 저장 상태를 확인하지 못했습니다. 잠시 뒤 다시 시도해 주세요.');
+      return;
+    }
     setMyFlowPermanentDeleteBackupReady(false);
     setMyFlowPermanentDeleteError('');
     setMyFlowPermanentDeleteDialog({
       flowSlug: flow.progress.slug,
       flowTitle: getMyFlowDisplayFlowTitle(flow),
-      personalDraft: isUrlFirstDraftSavedFlow(flow),
+      personalDraft,
+      expectedDeletionInspection,
+      expectedProgressRaw: JSON.stringify(flow.progress),
+      expectedBundleRaw: JSON.stringify(flow.bundle),
+      expectedSavedRecordRaw: JSON.stringify(flow.savedRecord ?? null),
+      expectedSavedMapRaw: JSON.stringify(flow.savedMap ?? null),
     });
   };
 
-  const removeSavedFlow = () => {
+  const removeSavedFlow = async () => {
     if (!myFlowPermanentDeleteDialog || typeof window === 'undefined') return;
+    const deleteDialog = myFlowPermanentDeleteDialog;
     const flow = savedFlows.find(
-      (candidate) => candidate.progress.slug === myFlowPermanentDeleteDialog.flowSlug,
+      (candidate) => candidate.progress.slug === deleteDialog.flowSlug,
     );
     if (!flow || !archivedFlowSlugSet.has(flow.progress.slug)) {
       setMyFlowPermanentDeleteDialog(null);
       return;
     }
-    let cleanupJournalStorage: Storage;
-    try {
-      cleanupJournalStorage = window.sessionStorage;
-    } catch {
-      setMyFlowPermanentDeleteError(
-        '삭제 안전 기록에 접근할 수 없어 계획을 삭제하지 않았어요. 브라우저 저장소 접근을 확인한 뒤 다시 시도해 주세요.',
+    const flowTitle = getMyFlowDisplayFlowTitle(flow);
+    const locked = await withFlowUserDataWriteLock(() => {
+      let freshBundles: FlowBundle[];
+      let freshArchivedFlowSlugs: string[];
+      try {
+        freshBundles = readBundles();
+        freshArchivedFlowSlugs = readPersonalFlowLifecycle(
+          window.localStorage,
+        ).record.archivedFlowSlugs;
+      } catch {
+        return {
+          kind: 'not_deleted' as const,
+          message: '최신 계획 상태를 안전하게 읽지 못해 삭제하지 않았어요. 저장소 상태를 확인한 뒤 다시 시도해 주세요.',
+        };
+      }
+      const freshProgress = getActiveFlowProgress(freshBundles).find(
+        (candidate) => candidate.slug === deleteDialog.flowSlug,
       );
-      return;
-    }
-    const journalPreparation = prepareFlowExportReceiptCleanupJournal(
-      cleanupJournalStorage,
-      {
-        savedPlanId: flow.progress.slug,
-        flowTitle: getMyFlowDisplayFlowTitle(flow),
-      },
-    );
-    if (journalPreparation.status !== 'stored') {
-      setMyFlowPermanentDeleteError(
-        journalPreparation.journal?.phase === 'cleanup_required'
-          ? `${journalPreparation.journal.flowTitle}의 이전 결과 기록 삭제를 먼저 마쳐 주세요. 현재 계획은 삭제하지 않았어요.`
-          : '삭제 안전 기록을 만들거나 확인하지 못해 계획을 삭제하지 않았어요. 저장소 상태를 확인한 뒤 다시 시도해 주세요.',
+      const freshSourceBundle = freshProgress
+        ? freshBundles.find((entry) => (
+            entry.flow.slug === (freshProgress.sourceSlug ?? freshProgress.slug)
+            || Boolean(freshProgress.sourceFlowKey && entry.flow.id === freshProgress.sourceFlowKey)
+          ))
+        : undefined;
+      const freshSavedMap = getSavedFlowMapIndexByFlowSlug()[deleteDialog.flowSlug];
+      const freshPersistence = freshSavedMap
+        ? getStoredMyFlowMapPersistenceRecord(freshSavedMap.mapId)
+        : undefined;
+      const freshBundle = freshSourceBundle
+        ? applySourceBackedPersistenceRecordToBundle(
+            freshSourceBundle,
+            freshPersistence,
+            freshSavedMap?.personalCopy,
+          )
+        : undefined;
+      const freshSavedRecord = getSavedFlowRecord(deleteDialog.flowSlug);
+      const freshPersonalDraft = Boolean(
+        freshProgress
+        && freshBundle
+        && (
+          freshProgress.slug.startsWith('url-draft-')
+          || freshBundle.flow.slug.startsWith('url-draft-')
+        )
       );
-      return;
-    }
-    const result = permanentlyDeleteSavedFlow(flow.progress.slug, {
-      personalDraft: myFlowPermanentDeleteDialog.personalDraft,
-    });
-    if (!result) {
-      const cleared = clearFlowExportReceiptCleanupJournal(
+      if (
+        !freshProgress
+        || !freshBundle
+        || !freshArchivedFlowSlugs.includes(deleteDialog.flowSlug)
+        || freshPersonalDraft !== deleteDialog.personalDraft
+        || JSON.stringify(freshProgress) !== deleteDialog.expectedProgressRaw
+        || JSON.stringify(freshBundle) !== deleteDialog.expectedBundleRaw
+        || JSON.stringify(freshSavedRecord ?? null) !== deleteDialog.expectedSavedRecordRaw
+        || JSON.stringify(freshSavedMap ?? null) !== deleteDialog.expectedSavedMapRaw
+      ) {
+        refreshSavedFlowState();
+        return {
+          kind: 'not_deleted' as const,
+          message: '확인한 뒤 계획 상태가 바뀌어 삭제를 멈췄어요. 최신 계획을 다시 확인해 주세요.',
+        };
+      }
+      let cleanupJournalStorage: Storage;
+      try {
+        cleanupJournalStorage = window.sessionStorage;
+      } catch {
+        return {
+          kind: 'not_deleted' as const,
+          message: '삭제 안전 기록에 접근할 수 없어 계획을 삭제하지 않았어요. 브라우저 저장소 접근을 확인한 뒤 다시 시도해 주세요.',
+        };
+      }
+      const existingCleanupJournal = readFlowExportReceiptCleanupJournal(cleanupJournalStorage);
+      if (existingCleanupJournal.status !== 'empty') {
+        const existing = existingCleanupJournal.status === 'valid'
+          ? existingCleanupJournal.journal
+          : undefined;
+        const message = existing
+          ? `${existing.flowTitle}의 이전 삭제 작업을 먼저 확인해 주세요. 현재 계획은 삭제하지 않았어요.`
+          : '기존 삭제 안전 기록을 확인할 수 없어 계획을 삭제하지 않았어요. 저장소 상태를 확인해 주세요.';
+        return existing ? {
+          kind: 'recovery_required' as const,
+          message,
+          recovery: {
+            savedPlanId: existing.savedPlanId,
+            flowTitle: existing.flowTitle,
+            message,
+          },
+        } : {
+          kind: 'not_deleted' as const,
+          message,
+        };
+      }
+      const deletionRecoveryPreparation = preparePermanentSavedFlowDeletionRecoveryJournal(
         cleanupJournalStorage,
-        flow.progress.slug,
+        { savedPlanId: flow.progress.slug, flowTitle },
       );
-      setMyFlowPermanentDeleteError(
-        cleared.status === 'cleared' || cleared.status === 'not_found'
-          ? '계획을 삭제하지 못했어요. 저장 상태를 확인한 뒤 다시 시도해 주세요.'
-          : '계획을 삭제하지 못했고 삭제 안전 기록도 닫지 못했어요. 저장소 상태를 확인해 주세요.',
+      if (deletionRecoveryPreparation.status !== 'stored') {
+        const existing = deletionRecoveryPreparation.journal;
+        const message = existing
+          ? `${existing.flowTitle}의 삭제 결과를 먼저 확인해 주세요. 현재 계획은 삭제하지 않았어요.`
+          : '삭제 복구 기록을 만들거나 확인하지 못해 계획을 삭제하지 않았어요. 저장소 상태를 확인해 주세요.';
+        return existing ? {
+          kind: 'recovery_required' as const,
+          message,
+          recovery: {
+            savedPlanId: existing.savedPlanId,
+            flowTitle: existing.flowTitle,
+            phase: existing.phase,
+            message,
+          },
+        } : {
+          kind: 'not_deleted' as const,
+          message,
+        };
+      }
+      const journalPreparation = prepareFlowExportReceiptCleanupJournal(
+        cleanupJournalStorage,
+        { savedPlanId: flow.progress.slug, flowTitle },
       );
-      return;
-    }
-    setMyFlowPermanentDeleteError('');
-    const journalRequired = markFlowExportReceiptCleanupRequired(
-      cleanupJournalStorage,
-      flow.progress.slug,
-    );
-    if (journalRequired.status !== 'stored') {
-      setMyFlowReceiptCleanupFailure({
-        savedPlanId: flow.progress.slug,
-        flowTitle: getMyFlowDisplayFlowTitle(flow),
-        planDeleted: true,
-        journalPhase: 'prepared',
-        retryable: true,
-        recoverySource: 'live',
-        message: '계획은 삭제했지만 결과 기록 삭제 상태를 안전하게 확정하지 못해 이 기기의 결과 기록은 지우지 않았어요. 결과 기록 삭제만 다시 시도해 주세요.',
-      });
-    } else {
-      const receiptCleanup = removeFlowExportReceiptsForSavedPlan(
-        window.localStorage,
-        flow.progress.slug,
-      );
-      if (receiptCleanup.status === 'removed' || receiptCleanup.status === 'not_found') {
-        setMyFlowExportReceipts((current) => current.filter(
-          (receipt) => receipt.savedPlanId !== flow.progress.slug,
-        ));
-        const journalClear = clearFlowExportReceiptCleanupJournal(
+      if (journalPreparation.status !== 'stored') {
+        const recoveryClear = clearPermanentSavedFlowDeletionRecoveryJournal(
           cleanupJournalStorage,
           flow.progress.slug,
         );
-        if (journalClear.status === 'cleared' || journalClear.status === 'not_found') {
-          setMyFlowReceiptCleanupFailure(null);
-        } else {
-          setMyFlowReceiptCleanupFailure({
+        if (recoveryClear.status !== 'cleared' && recoveryClear.status !== 'not_found') {
+          const message = '계획은 삭제하지 않았지만 삭제 복구 기록을 닫지 못했습니다. 결과 기록 자동 삭제를 중지하고 저장 상태 확인이 필요합니다.';
+          return {
+            kind: 'recovery_required' as const,
+            message,
+            recovery: {
+              savedPlanId: flow.progress.slug,
+              flowTitle,
+              phase: 'prepared' as const,
+              message,
+            },
+          };
+        }
+        return {
+          kind: 'not_deleted' as const,
+          message: journalPreparation.journal?.phase === 'cleanup_required'
+            ? `${journalPreparation.journal.flowTitle}의 이전 결과 기록 삭제를 먼저 마쳐 주세요. 현재 계획은 삭제하지 않았어요.`
+            : '삭제 안전 기록을 만들거나 확인하지 못해 계획을 삭제하지 않았어요. 저장소 상태를 확인한 뒤 다시 시도해 주세요.',
+        };
+      }
+      const deletion = runPermanentSavedFlowDeletionTransaction({
+        storage: window.localStorage,
+        expected: deleteDialog.expectedDeletionInspection,
+      });
+      if (!deletion.ok) {
+        if (
+          deletion.reason === 'transaction_failed'
+          && deletion.transaction
+          && !deletion.transaction.rollbackComplete
+        ) {
+          const message = '계획 삭제 결과를 확정하지 못했습니다. 결과 기록 자동 삭제를 중지했습니다. 저장 상태를 새로 확인해 주세요.';
+          return {
+            kind: 'recovery_required' as const,
+            message,
+            recovery: {
+              savedPlanId: flow.progress.slug,
+              flowTitle,
+              phase: 'prepared' as const,
+              message,
+            },
+          };
+        }
+        const cleared = clearFlowExportReceiptCleanupJournal(
+          cleanupJournalStorage,
+          flow.progress.slug,
+        );
+        const recoveryCleared = clearPermanentSavedFlowDeletionRecoveryJournal(
+          cleanupJournalStorage,
+          flow.progress.slug,
+        );
+        return {
+          kind: 'not_deleted' as const,
+          message: (cleared.status === 'cleared' || cleared.status === 'not_found')
+            && (recoveryCleared.status === 'cleared' || recoveryCleared.status === 'not_found')
+            ? '계획을 삭제하지 못했어요. 저장 상태를 확인한 뒤 다시 시도해 주세요.'
+            : '계획을 삭제하지 못했고 삭제 복구 기록도 닫지 못했어요. 저장소 상태를 확인해 주세요.',
+        };
+      }
+      const deletionConfirmed = confirmPermanentSavedFlowDeletionRecoveryJournal(
+        cleanupJournalStorage,
+        flow.progress.slug,
+      );
+      if (deletionConfirmed.status !== 'stored') {
+        const message = '계획 저장 자료는 삭제됐지만 삭제 완료 기록을 확정하지 못했습니다. 결과 기록 자동 삭제를 중지하고 저장 상태를 확인해야 합니다.';
+        return {
+          kind: 'recovery_required' as const,
+          message,
+          recovery: {
             savedPlanId: flow.progress.slug,
-            flowTitle: getMyFlowDisplayFlowTitle(flow),
+            flowTitle,
+            phase: 'prepared' as const,
+            message,
+          },
+        };
+      }
+
+      let receiptsRemoved = false;
+      let cleanupFailure: MyFlowReceiptCleanupFailure | null = null;
+      let recoveryRequired: MyFlowPermanentDeleteRecoveryRequired | null = null;
+      const journalRequired = markFlowExportReceiptCleanupRequired(
+        cleanupJournalStorage,
+        flow.progress.slug,
+      );
+      if (journalRequired.status !== 'stored') {
+        cleanupFailure = {
+          savedPlanId: flow.progress.slug,
+          flowTitle,
+          planDeleted: true,
+          journalPhase: 'prepared',
+          retryable: true,
+          recoverySource: 'live',
+          message: '계획은 삭제했지만 결과 기록 삭제 상태를 안전하게 확정하지 못해 이 기기의 결과 기록은 지우지 않았어요. 결과 기록 삭제만 다시 시도해 주세요.',
+        };
+      } else {
+        const receiptCleanup = removeFlowExportReceiptsForSavedPlan(
+          window.localStorage,
+          flow.progress.slug,
+        );
+        if (receiptCleanup.status === 'removed' || receiptCleanup.status === 'not_found') {
+          receiptsRemoved = true;
+          const journalClear = clearFlowExportReceiptCleanupJournal(
+            cleanupJournalStorage,
+            flow.progress.slug,
+          );
+          if (journalClear.status !== 'cleared' && journalClear.status !== 'not_found') {
+            cleanupFailure = {
+              savedPlanId: flow.progress.slug,
+              flowTitle,
+              planDeleted: true,
+              journalPhase: 'cleanup_required',
+              retryable: true,
+              recoverySource: 'live',
+              message: '결과 기록은 삭제했지만 삭제 상태 표시를 닫지 못했어요. 결과 기록 삭제만 다시 시도하면 상태를 안전하게 확인합니다.',
+            };
+          } else {
+            const recoveryClear = clearPermanentSavedFlowDeletionRecoveryJournal(
+              cleanupJournalStorage,
+              flow.progress.slug,
+            );
+            if (recoveryClear.status !== 'cleared' && recoveryClear.status !== 'not_found') {
+              recoveryRequired = {
+                savedPlanId: flow.progress.slug,
+                flowTitle,
+                phase: 'deletion_confirmed',
+                message: '계획과 결과 기록은 삭제했지만 삭제 복구 기록을 닫지 못했습니다. 저장소 상태를 확인해 주세요.',
+              };
+            }
+          }
+        } else {
+          cleanupFailure = {
+            savedPlanId: flow.progress.slug,
+            flowTitle,
             planDeleted: true,
             journalPhase: 'cleanup_required',
             retryable: true,
             recoverySource: 'live',
-            message: '결과 기록은 삭제했지만 삭제 상태 표시를 닫지 못했어요. 결과 기록 삭제만 다시 시도하면 상태를 안전하게 확인합니다.',
-          });
+            message: receiptCleanup.status === 'failed'
+              ? '계획은 삭제했지만 이 기기의 결과 기록을 지우지 못했어요. 결과 기록 삭제만 다시 시도해 주세요.'
+              : '계획은 삭제했지만 결과 기록 저장소를 안전하게 읽을 수 없어 기록을 지우지 않았어요. 백업을 확인한 뒤 저장소 복구가 필요합니다.',
+          };
         }
-      } else {
-        setMyFlowReceiptCleanupFailure({
-          savedPlanId: flow.progress.slug,
-          flowTitle: getMyFlowDisplayFlowTitle(flow),
-          planDeleted: true,
-          journalPhase: 'cleanup_required',
-          retryable: true,
-          recoverySource: 'live',
-          message: receiptCleanup.status === 'failed'
-            ? '계획은 삭제했지만 이 기기의 결과 기록을 지우지 못했어요. 결과 기록 삭제만 다시 시도해 주세요.'
-            : '계획은 삭제했지만 결과 기록 저장소를 안전하게 읽을 수 없어 기록을 지우지 않았어요. 백업을 확인한 뒤 저장소 복구가 필요합니다.',
-        });
       }
+      if (deleteDialog.personalDraft) replaceBundles(readBundles());
+      refreshSavedFlowState();
+      return {
+        kind: 'deleted' as const,
+        receiptsRemoved,
+        cleanupFailure,
+        recoveryRequired,
+      };
+    });
+    if (!locked.ok) {
+      setMyFlowPermanentDeleteError(
+        '계획 삭제를 위한 저장 잠금을 확보하지 못했어요. 잠시 후 다시 시도해 주세요.',
+      );
+      return;
     }
+    if (locked.value.kind === 'not_deleted') {
+      setMyFlowPermanentDeleteError(locked.value.message);
+      return;
+    }
+    if (locked.value.kind === 'recovery_required') {
+      try {
+        replaceBundles(readBundles());
+      } catch {
+        // Keep the last rendered bundles; the recovery warning remains fail-closed.
+      }
+      refreshSavedFlowState();
+      setMyFlowPermanentDeleteRecoveryRequired(locked.value.recovery);
+      setMyFlowPermanentDeleteError(locked.value.message);
+      setMyFlowPermanentDeleteBackupReady(false);
+      return;
+    }
+    setMyFlowPermanentDeleteError('');
+    setMyFlowPermanentDeleteRecoveryRequired(locked.value.recoveryRequired);
+    if (locked.value.receiptsRemoved) {
+      setMyFlowExportReceipts((current) => current.filter(
+        (receipt) => receipt.savedPlanId !== flow.progress.slug,
+      ));
+    }
+    setMyFlowReceiptCleanupFailure(locked.value.cleanupFailure);
     setMyFlowArchivedFlowSlugs((current) => current.filter((slug) => slug !== flow.progress.slug));
     setMyFlowLifecycleUndo(null);
     setMyFlowPermanentDeleteDialog(null);
     setSelectedSavedFlowSlug('all');
     setFlowListFilter('all');
     resetMyFlowRowDetailState();
-    if (myFlowPermanentDeleteDialog.personalDraft) {
-      persist(getBundles());
-    } else {
-      refreshSavedFlowState();
-    }
   };
 
-  const retryMyFlowReceiptCleanup = () => {
+  const retryMyFlowReceiptCleanup = async () => {
     if (!myFlowReceiptCleanupFailure || typeof window === 'undefined') return;
-    let cleanupJournalStorage: Storage;
-    let journalRead: ReturnType<typeof readFlowExportReceiptCleanupJournal>;
-    try {
-      cleanupJournalStorage = window.sessionStorage;
-      journalRead = readFlowExportReceiptCleanupJournal(cleanupJournalStorage);
-    } catch {
-      setMyFlowReceiptCleanupFailure((current) => current ? {
-        ...current,
-        retryable: true,
-        message: '삭제 작업 기록에 접근할 수 없어 결과 기록은 지우지 않았어요. 브라우저 저장소 접근을 확인한 뒤 다시 시도해 주세요.',
-      } : current);
-      return;
-    }
-    if (
-      journalRead.status !== 'valid'
-      || !journalRead.journal
-      || journalRead.journal.savedPlanId !== myFlowReceiptCleanupFailure.savedPlanId
-    ) {
-      setMyFlowReceiptCleanupFailure((current) => current ? {
-        ...current,
-        retryable: true,
-        message: '삭제 작업 기록을 안전하게 확인할 수 없어 결과 기록은 지우지 않았어요. 저장소 상태를 확인한 뒤 다시 시도해 주세요.',
-      } : current);
-      return;
-    }
-    let cleanupJournal = journalRead.journal;
-    if (cleanupJournal.phase === 'prepared') {
-      let savedPlanExists: boolean;
+    const cleanupFailure = myFlowReceiptCleanupFailure;
+    const locked = await withFlowUserDataWriteLock(() => {
+      let cleanupJournalStorage: Storage;
+      let journalRead: ReturnType<typeof readFlowExportReceiptCleanupJournal>;
+      let recoveryRead: ReturnType<typeof readPermanentSavedFlowDeletionRecoveryJournal>;
       try {
-        savedPlanExists = getActiveFlowProgress(myFlowBundles).some(
-          (progress) => progress.slug === cleanupJournal.savedPlanId,
-        );
+        cleanupJournalStorage = window.sessionStorage;
+        journalRead = readFlowExportReceiptCleanupJournal(cleanupJournalStorage);
+        recoveryRead = readPermanentSavedFlowDeletionRecoveryJournal(cleanupJournalStorage);
       } catch {
-        setMyFlowReceiptCleanupFailure((current) => current ? {
-          ...current,
-          retryable: true,
-          message: '계획 삭제 여부를 확인할 수 없어 결과 기록은 지우지 않았어요. 저장소 상태를 확인한 뒤 다시 시도해 주세요.',
-        } : current);
-        return;
+        return {
+          kind: 'failed' as const,
+          message: '삭제 작업 기록에 접근할 수 없어 결과 기록은 지우지 않았어요. 브라우저 저장소 접근을 확인한 뒤 다시 시도해 주세요.',
+        };
       }
-      if (savedPlanExists) {
-        const journalClear = clearFlowExportReceiptCleanupJournal(
+      if (
+        journalRead.status !== 'valid'
+        || !journalRead.journal
+        || journalRead.journal.savedPlanId !== cleanupFailure.savedPlanId
+      ) {
+        return {
+          kind: 'failed' as const,
+          message: '삭제 작업 기록을 안전하게 확인할 수 없어 결과 기록은 지우지 않았어요. 저장소 상태를 확인한 뒤 다시 시도해 주세요.',
+        };
+      }
+      if (
+        !isPermanentSavedFlowDeletionConfirmedForPlan(
+          recoveryRead,
+          cleanupFailure.savedPlanId,
+        )
+      ) {
+        return {
+          kind: 'recovery_required' as const,
+          recovery: {
+            savedPlanId: cleanupFailure.savedPlanId,
+            flowTitle: cleanupFailure.flowTitle,
+            ...(recoveryRead.status === 'valid' && recoveryRead.journal?.savedPlanId === cleanupFailure.savedPlanId
+              ? { phase: recoveryRead.journal.phase }
+              : {}),
+            message: '계획 삭제 완료를 확인할 수 없어 결과 기록은 지우지 않았습니다. 이 기기의 저장 상태를 확인해 주세요.',
+          },
+        };
+      }
+      let cleanupJournal = journalRead.journal;
+      if (cleanupJournal.phase === 'prepared') {
+        const promoted = markFlowExportReceiptCleanupRequired(
           cleanupJournalStorage,
           cleanupJournal.savedPlanId,
         );
-        if (journalClear.status === 'cleared' || journalClear.status === 'not_found') {
-          setMyFlowReceiptCleanupFailure(null);
+        if (promoted.status !== 'stored' || !promoted.journal) {
+          return {
+            kind: 'failed' as const,
+            message: '결과 기록 삭제 상태를 아직 확정하지 못했어요. 저장소 상태를 확인한 뒤 다시 시도해 주세요.',
+          };
         }
-        return;
+        cleanupJournal = promoted.journal;
       }
-      const promoted = markFlowExportReceiptCleanupRequired(
-        cleanupJournalStorage,
-        cleanupJournal.savedPlanId,
+      const cleanup = removeFlowExportReceiptsForSavedPlan(
+        window.localStorage,
+        cleanupFailure.savedPlanId,
       );
-      if (promoted.status !== 'stored' || !promoted.journal) {
-        setMyFlowReceiptCleanupFailure((current) => current ? {
-          ...current,
-          retryable: true,
-          message: '결과 기록 삭제 상태를 아직 확정하지 못했어요. 저장소 상태를 확인한 뒤 다시 시도해 주세요.',
-        } : current);
-        return;
+      if (cleanup.status !== 'removed' && cleanup.status !== 'not_found') {
+        return {
+          kind: 'failed' as const,
+          journalPhase: cleanupJournal.phase,
+          message: cleanup.status === 'failed'
+            ? '결과 기록을 아직 지우지 못했어요. 저장 공간을 확인한 뒤 기록 삭제만 다시 시도해 주세요.'
+            : '결과 기록 저장소를 안전하게 읽을 수 없어 자동 삭제를 중단했어요.',
+        };
       }
-      cleanupJournal = promoted.journal;
-      setMyFlowReceiptCleanupFailure((current) => current ? {
-        ...current,
-        journalPhase: cleanupJournal.phase,
-      } : current);
-    }
-    const cleanup = removeFlowExportReceiptsForSavedPlan(
-      window.localStorage,
-      myFlowReceiptCleanupFailure.savedPlanId,
-    );
-    if (cleanup.status === 'removed' || cleanup.status === 'not_found') {
-      setMyFlowExportReceipts((current) => current.filter(
-        (receipt) => receipt.savedPlanId !== myFlowReceiptCleanupFailure.savedPlanId,
-      ));
       const journalClear = clearFlowExportReceiptCleanupJournal(
         cleanupJournalStorage,
-        myFlowReceiptCleanupFailure.savedPlanId,
+        cleanupFailure.savedPlanId,
       );
-      if (journalClear.status === 'cleared' || journalClear.status === 'not_found') {
-        setMyFlowReceiptCleanupFailure(null);
-      } else {
-        setMyFlowReceiptCleanupFailure((current) => current ? {
-          ...current,
-          retryable: true,
+      if (journalClear.status !== 'cleared' && journalClear.status !== 'not_found') {
+        return {
+          kind: 'cleaned_journal_open' as const,
           message: '결과 기록은 삭제했지만 삭제 상태 표시를 닫지 못했어요. 결과 기록 삭제만 다시 시도해 주세요.',
-        } : current);
+        };
       }
+      const recoveryClear = clearPermanentSavedFlowDeletionRecoveryJournal(
+        cleanupJournalStorage,
+        cleanupFailure.savedPlanId,
+      );
+      return recoveryClear.status === 'cleared' || recoveryClear.status === 'not_found'
+        ? { kind: 'cleaned' as const }
+        : {
+            kind: 'cleaned_recovery_open' as const,
+            recovery: {
+              savedPlanId: cleanupFailure.savedPlanId,
+              flowTitle: cleanupFailure.flowTitle,
+              phase: 'deletion_confirmed' as const,
+              message: '결과 기록은 삭제했지만 삭제 복구 기록을 닫지 못했습니다. 저장소 상태를 확인해 주세요.',
+            },
+          };
+    });
+    if (!locked.ok) {
+      setMyFlowReceiptCleanupFailure((current) => current ? {
+        ...current,
+        retryable: true,
+        message: '결과 기록 삭제를 위한 저장 잠금을 확보하지 못했어요. 잠시 후 다시 시도해 주세요.',
+      } : current);
+      return;
+    }
+    if (locked.value.kind === 'recovery_required') {
+      setMyFlowPermanentDeleteRecoveryRequired(locked.value.recovery);
+      setMyFlowReceiptCleanupFailure(null);
+      return;
+    }
+    if (
+      locked.value.kind === 'cleaned'
+      || locked.value.kind === 'cleaned_journal_open'
+      || locked.value.kind === 'cleaned_recovery_open'
+    ) {
+      setMyFlowExportReceipts((current) => current.filter(
+        (receipt) => receipt.savedPlanId !== cleanupFailure.savedPlanId,
+      ));
+    }
+    if (locked.value.kind === 'cleaned') {
+      setMyFlowReceiptCleanupFailure(null);
+      setMyFlowPermanentDeleteRecoveryRequired(null);
+      return;
+    }
+    if (locked.value.kind === 'cleaned_recovery_open') {
+      setMyFlowReceiptCleanupFailure(null);
+      setMyFlowPermanentDeleteRecoveryRequired(locked.value.recovery);
       return;
     }
     setMyFlowReceiptCleanupFailure((current) => current ? {
       ...current,
       retryable: true,
-      message: cleanup.status === 'failed'
-        ? '결과 기록을 아직 지우지 못했어요. 저장 공간을 확인한 뒤 기록 삭제만 다시 시도해 주세요.'
-        : '결과 기록 저장소를 안전하게 읽을 수 없어 자동 삭제를 중단했어요.',
+      ...('journalPhase' in locked.value ? { journalPhase: locked.value.journalPhase } : {}),
+      message: locked.value.message ?? '결과 기록 삭제 상태를 확인하지 못했어요. 다시 시도해 주세요.',
     } : current);
   };
 
-  const saveMyFlowStructuralOverlay = (
+  const mutateMyFlowStructuralOverlay = async (
     flow: MySavedFlow,
-    overlay: PersonalStructuralOverlay,
-  ): boolean => {
+    update: (current: PersonalStructuralOverlay) => PersonalStructuralOverlay | undefined,
+  ): Promise<{
+    previous: PersonalStructuralOverlay;
+    saved: PersonalStructuralOverlay;
+  } | undefined> => {
     if (
       typeof window === 'undefined' ||
       isMyFlowScenarioDemo ||
       !isPersonalDraftStructuralEditEligible(flow.bundle)
-    ) return false;
-    try {
-      const saved = savePersonalStructuralOverlay(window.localStorage, overlay);
-      setMyFlowStructuralOverlaysBySlug((current) => ({
-        ...current,
-        [flow.progress.slug]: saved,
-      }));
-      return true;
-    } catch {
-      return false;
-    }
+    ) return undefined;
+    const locked = await withFlowUserDataWriteLock(() => {
+      const previous = loadPersonalStructuralOverlay(window.localStorage, {
+        savedCopyId: flow.progress.slug,
+        flowId: flow.bundle.flow.id,
+      }) ?? createPersonalDraftStructuralOverlay(flow.bundle);
+      const next = update(previous);
+      if (!next) return undefined;
+      const saved = savePersonalStructuralOverlay(window.localStorage, next);
+      return { previous, saved };
+    });
+    if (!locked.ok || !locked.value) return undefined;
+    const mutation = locked.value;
+    setMyFlowStructuralOverlaysBySlug((current) => ({
+      ...current,
+      [flow.progress.slug]: mutation.saved,
+    }));
+    return mutation;
   };
 
   const updateMyFlowBatchAdjustment = (patch: Partial<MyFlowBatchAdjustmentState>) => {
@@ -10422,6 +11706,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     setMyFlowStructuralAddTitle('');
     setMyFlowBatchAdjustment({
       flowSlug: flow.progress.slug,
+      expectedFlowFingerprint: getRenderedMyFlowMutationFingerprint(flow),
       selectedKeys: [],
       operation: 'set_date',
       targetDate: myFlowTodayDate,
@@ -10519,65 +11804,119 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     });
   };
 
-  const applyMyFlowBatchDateAdjustment = (flow: MySavedFlow) => {
+  const applyMyFlowBatchDateAdjustment = async (flow: MySavedFlow) => {
     if (
       typeof window === 'undefined' ||
       isMyFlowScenarioDemo ||
       myFlowBatchAdjustment?.flowSlug !== flow.progress.slug
     ) return;
-    const rows = getMyFlowBatchRows(flow);
-    const plan = buildMyFlowBatchDatePlan(flow, rows);
-    if (!plan?.canApply) return;
-    const selectedKeySet = new Set(myFlowBatchAdjustment.selectedKeys);
-    const selectedRows = rows.filter((row) => selectedKeySet.has(
-      getMyFlowBatchSelectionKey(flow.progress.slug, row),
-    ));
-    if (selectedRows.length !== plan.preview.counts.selectedCount) return;
-    if (selectedRows.some((row) => Boolean(
-      row.structuralRepeat || row.flow.bundle.flow.structure_type === 'routine'
-    ))) return;
-
-    const previousDateOverrides = { ...myFlowDateOverrides };
-    const nextDateOverrides = { ...myFlowDateOverrides };
-    const previousStructuralOverlay = isPersonalDraftStructuralEditEligible(flow.bundle)
-      ? myFlowStructuralOverlaysBySlug[flow.progress.slug] ?? createPersonalDraftStructuralOverlay(flow.bundle)
-      : undefined;
-    let nextStructuralOverlay = previousStructuralOverlay;
-
-    for (const row of selectedRows) {
-      const isPersonalUserItem = Boolean(
-        nextStructuralOverlay && row.structuralOwnership === 'user_created',
+    const batchAdjustment = myFlowBatchAdjustment;
+    const renderedDateOverrideKeyBySelectionKey = new Map(
+      getMyFlowBatchRows(flow).flatMap((row) => {
+        const overrideKey = row.effectiveDateOverrideKey ?? row.calendarKey;
+        return overrideKey
+          ? [[getMyFlowBatchSelectionKey(flow.progress.slug, row), overrideKey] as const]
+          : [];
+      }),
+    );
+    const locked = await withFlowUserDataWriteLock(() => {
+      const currentFlow = getLockedMyFlowExecutionContext(
+        flow,
+        batchAdjustment.expectedFlowFingerprint,
       );
-      if (isPersonalUserItem && nextStructuralOverlay) {
-        const nextDate = myFlowBatchAdjustment.operation === 'set_date'
-          ? myFlowBatchAdjustment.targetDate
-          : '';
-        const scheduled = setPersonalDraftUserItemDate({
-          overlay: nextStructuralOverlay,
-          itemId: row.structuralProjectionStableId ?? row.id,
-          date: nextDate,
-        });
-        if (!scheduled) return;
-        nextStructuralOverlay = scheduled.overlay;
-        continue;
-      }
-      const overrideKey =
-        row.calendarKey ??
-        row.effectiveDateOverrideKey ??
-        getMyFlowDateOverrideKey(flow.progress.slug, row.id, row.date);
-      nextDateOverrides[overrideKey] = myFlowBatchAdjustment.operation === 'set_date'
-        ? myFlowBatchAdjustment.targetDate
-        : MY_FLOW_DATE_REMOVED_OVERRIDE;
-    }
+      if (!currentFlow) return undefined;
+      const freshFlow = { ...flow, ...currentFlow };
+      const rows = getMyFlowBatchRows(freshFlow);
+      const plan = buildMyFlowBatchDatePlan(freshFlow, rows);
+      if (!plan?.canApply) return undefined;
+      const selectedKeySet = new Set(batchAdjustment.selectedKeys);
+      const selectedRows = rows.filter((row) => selectedKeySet.has(
+        getMyFlowBatchSelectionKey(currentFlow.progress.slug, row),
+      ));
+      if (selectedRows.length !== plan.preview.counts.selectedCount) return undefined;
+      if (selectedRows.some((row) => Boolean(
+        row.structuralRepeat || row.flow.bundle.flow.structure_type === 'routine'
+      ))) return undefined;
 
-    try {
-      if (nextStructuralOverlay && nextStructuralOverlay !== previousStructuralOverlay) {
-        savePersonalStructuralOverlay(window.localStorage, nextStructuralOverlay);
+      const previousDateOverrides = currentFlow.dateOverrides;
+      const nextDateOverrides = { ...previousDateOverrides };
+      const previousStructuralOverlay = currentFlow.structuralOverlay;
+      let nextStructuralOverlay = previousStructuralOverlay;
+      for (const row of selectedRows) {
+        const isPersonalUserItem = Boolean(
+          nextStructuralOverlay && row.structuralOwnership === 'user_created',
+        );
+        if (isPersonalUserItem && nextStructuralOverlay) {
+          const nextDate = batchAdjustment.operation === 'set_date'
+            ? batchAdjustment.targetDate
+            : '';
+          const scheduled = setPersonalDraftUserItemDate({
+            overlay: nextStructuralOverlay,
+            itemId: row.structuralProjectionStableId ?? row.id,
+            date: nextDate,
+          });
+          if (!scheduled) return undefined;
+          nextStructuralOverlay = scheduled.overlay;
+          continue;
+        }
+        const selectionKey = getMyFlowBatchSelectionKey(currentFlow.progress.slug, row);
+        const overrideKey = renderedDateOverrideKeyBySelectionKey.get(selectionKey)
+          ?? row.calendarKey
+          ?? row.effectiveDateOverrideKey
+          ?? getMyFlowDateOverrideKey(currentFlow.progress.slug, row.id, row.date);
+        nextDateOverrides[overrideKey] = batchAdjustment.operation === 'set_date'
+          ? batchAdjustment.targetDate
+          : MY_FLOW_DATE_REMOVED_OVERRIDE;
       }
-      saveStoredMyFlowDateOverrides(nextDateOverrides);
-    } catch {
-      return;
-    }
+      const keyPlan = buildFlowUserDataMutationStorageKeyPlan({
+        flowSlugs: [currentFlow.progress.slug],
+        mapIds: currentFlow.savedMap ? [currentFlow.savedMap.mapId] : [],
+      });
+      const expectedRaw = captureFlowUserDataMutationExpectedRaw(window.localStorage, keyPlan);
+      const transaction = runFlowUserDataMutationTransaction({
+        storage: window.localStorage,
+        keyPlan,
+        expectedRaw,
+        apply(storage) {
+          if (nextStructuralOverlay && nextStructuralOverlay !== previousStructuralOverlay) {
+            nextStructuralOverlay = savePersonalStructuralOverlay(storage, nextStructuralOverlay);
+          }
+          storage.setItem(MY_FLOW_DATE_OVERRIDES_STORAGE_KEY, JSON.stringify(nextDateOverrides));
+        },
+      });
+      if (!transaction.ok) return undefined;
+      const nextFlowFingerprint = buildMyFlowMutationFingerprint({
+        progress: currentFlow.progress,
+        bundle: currentFlow.bundle,
+        savedRecord: currentFlow.savedRecord,
+        savedMap: currentFlow.savedMap,
+        mapPersistence: currentFlow.mapPersistence,
+        anchor: currentFlow.anchor,
+        checks: currentFlow.checks,
+        itemStates: currentFlow.itemStates,
+        itemDrafts: currentFlow.itemDrafts,
+        dateOverrides: nextDateOverrides,
+        structuralOverlay: nextStructuralOverlay,
+        rows: currentFlow.rows,
+      });
+      return {
+        count: selectedRows.length,
+        previousDateOverrides,
+        nextDateOverrides,
+        previousStructuralOverlay,
+        nextStructuralOverlay,
+        nextFlowFingerprint,
+      };
+    });
+    if (!locked.ok || !locked.value) return;
+    const {
+      previousDateOverrides,
+      nextDateOverrides,
+      previousStructuralOverlay,
+      nextStructuralOverlay,
+      nextFlowFingerprint,
+      count,
+    } = locked.value;
 
     if (nextStructuralOverlay && nextStructuralOverlay !== previousStructuralOverlay) {
       setMyFlowStructuralOverlaysBySlug((current) => ({
@@ -10588,108 +11927,170 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     setMyFlowDateOverrides(nextDateOverrides);
     setMyFlowBatchAdjustmentUndo({
       flowSlug: flow.progress.slug,
-      count: selectedRows.length,
-      label: myFlowBatchAdjustment.operation === 'set_date'
-        ? `${selectedRows.length}개 날짜를 ${formatMyFlowDisplayDate(myFlowBatchAdjustment.targetDate)}로 바꿨어요.`
-        : `${selectedRows.length}개의 날짜를 없앴어요.`,
+      count,
+      label: batchAdjustment.operation === 'set_date'
+        ? `${count}개 날짜를 ${formatMyFlowDisplayDate(batchAdjustment.targetDate)}로 바꿨어요.`
+        : `${count}개의 날짜를 없앴어요.`,
       previousDateOverrides,
+      expectedDateOverrides: nextDateOverrides,
       ...(previousStructuralOverlay ? { previousStructuralOverlay } : {}),
+      ...(nextStructuralOverlay ? { expectedStructuralOverlay: nextStructuralOverlay } : {}),
     });
     if (isPersonalDraftStructuralEditEligible(flow.bundle)) {
-      updateMyFlowBatchAdjustment({ selectedKeys: [], activeTool: 'none' });
+      updateMyFlowBatchAdjustment({
+        expectedFlowFingerprint: nextFlowFingerprint,
+        selectedKeys: [],
+        activeTool: 'none',
+      });
     } else {
       setMyFlowBatchAdjustment(null);
     }
   };
 
-  const persistMyFlowSourceBackedIncludedSteps = (
+  const persistMyFlowSourceBackedIncludedSteps = async (
     flow: MySavedFlow,
-    includedStepIds: string[],
+    updateIncludedStepIds: string[] | ((current: string[]) => string[]),
     label: string,
     count = 1,
-  ): boolean => {
+  ): Promise<boolean> => {
     if (typeof window === 'undefined' || isMyFlowScenarioDemo || !flow.savedMap) return false;
-    const previousSavedMapSnapshot = toSourceBackedSavedSnapshot(flow.savedMap);
-    const previousPersistenceRecord = savedFlowMapPersistenceById[previousSavedMapSnapshot.mapId];
-    const editableSnapshot = initializeSourceBackedFlowMapPersonalCopy(
-      previousSavedMapSnapshot,
-      previousPersistenceRecord,
-    );
-    if (!editableSnapshot) return false;
-    const sourceStepIds = [
-      ...getMyFlowRows(flow.bundle, flow.anchor),
-      ...flow.excludedRows,
-    ].map((row) => baseStateId(row.id));
-    const sourceStepIdSet = new Set(sourceStepIds);
-    const normalizedIncludedStepIds = Array.from(new Set(includedStepIds))
-      .filter((itemId) => sourceStepIdSet.has(itemId));
-    if (normalizedIncludedStepIds.length === 0) return false;
+    const expectedFlowFingerprint = myFlowBatchAdjustment?.flowSlug === flow.progress.slug
+      ? myFlowBatchAdjustment.expectedFlowFingerprint
+      : getRenderedMyFlowMutationFingerprint(flow);
+    const locked = await withFlowUserDataWriteLock(() => {
+      const currentFlow = getLockedMyFlowExecutionContext(flow, expectedFlowFingerprint);
+      if (!currentFlow?.savedMap || currentFlow.savedMap.mapId !== flow.savedMap?.mapId) return undefined;
+      const previousSavedMapSnapshot = toSourceBackedSavedSnapshot(currentFlow.savedMap);
+      const previousPersistenceRecord = currentFlow.mapPersistence;
+      const editableSnapshot = initializeSourceBackedFlowMapPersonalCopy(
+        previousSavedMapSnapshot,
+        previousPersistenceRecord,
+      );
+      if (!editableSnapshot) return undefined;
+      const sourceStepIds = Array.from(new Set([
+        ...getMyFlowRows(currentFlow.bundle, editableSnapshot.anchor ?? currentFlow.anchor)
+          .map((row) => baseStateId(row.id)),
+        ...currentFlow.bundle.items.map((item) => item.id),
+      ]));
+      const sourceStepIdSet = new Set(sourceStepIds);
+      const storedIncludedStepIds = editableSnapshot.personalCopy
+        ?.includedStepIdsByFlow[flow.progress.slug] ?? [];
+      const currentIncludedStepIds = storedIncludedStepIds.length > 0
+        ? storedIncludedStepIds.filter((itemId) => sourceStepIdSet.has(itemId))
+        : sourceStepIds;
+      const requestedIncludedStepIds = typeof updateIncludedStepIds === 'function'
+        ? updateIncludedStepIds(currentIncludedStepIds)
+        : updateIncludedStepIds;
+      const normalizedIncludedStepIds = Array.from(new Set(requestedIncludedStepIds))
+        .filter((itemId) => sourceStepIdSet.has(itemId));
+      if (normalizedIncludedStepIds.length === 0) return undefined;
 
-    const adjusted = buildSourceBackedFlowMapPersonalCopyAdjustment(editableSnapshot, {
-      title: editableSnapshot.title,
-      anchor: editableSnapshot.anchor,
-      savedAt: new Date().toISOString(),
-      includedStepIdsByFlow: {
-        ...editableSnapshot.personalCopy?.includedStepIdsByFlow,
-        [flow.progress.slug]: normalizedIncludedStepIds,
-      },
-      stepOverridesByFlow: editableSnapshot.personalCopy?.stepOverridesByFlow,
-      baselineRecord: previousPersistenceRecord,
+      const adjusted = buildSourceBackedFlowMapPersonalCopyAdjustment(editableSnapshot, {
+        title: editableSnapshot.title,
+        anchor: editableSnapshot.anchor,
+        savedAt: new Date().toISOString(),
+        includedStepIdsByFlow: {
+          ...editableSnapshot.personalCopy?.includedStepIdsByFlow,
+          [flow.progress.slug]: normalizedIncludedStepIds,
+        },
+        stepOverridesByFlow: editableSnapshot.personalCopy?.stepOverridesByFlow,
+        baselineRecord: previousPersistenceRecord,
+      });
+      if (!adjusted) return undefined;
+      const keyPlan = buildFlowUserDataMutationStorageKeyPlan({
+        flowSlugs: [currentFlow.progress.slug],
+        mapIds: [adjusted.snapshot.mapId],
+      });
+      const expectedRaw = captureFlowUserDataMutationExpectedRaw(window.localStorage, keyPlan);
+      const transaction = runFlowUserDataMutationTransaction({
+        storage: window.localStorage,
+        keyPlan,
+        expectedRaw,
+        apply(storage) {
+          storage.setItem(keyPlan.mapSnapshotKeysById[adjusted.snapshot.mapId]!, JSON.stringify(adjusted.snapshot));
+          storage.setItem(keyPlan.mapPersistenceKeysById[adjusted.snapshot.mapId]!, JSON.stringify(adjusted.persistenceRecord));
+        },
+      });
+      if (!transaction.ok) return undefined;
+      return {
+        previousSavedMapSnapshot,
+        previousPersistenceRecord,
+        expectedSavedMapSnapshot: adjusted.snapshot,
+        expectedPersistenceRecord: adjusted.persistenceRecord,
+      };
     });
-    if (!adjusted) return false;
-
-    try {
-      window.localStorage.setItem(
-        getSourceBackedFlowMapSnapshotStorageKey(adjusted.snapshot.mapId),
-        JSON.stringify(adjusted.snapshot),
-      );
-      window.localStorage.setItem(
-        getSourceBackedFlowMapPersistenceStorageKey(adjusted.snapshot.mapId),
-        JSON.stringify(adjusted.persistenceRecord),
-      );
-    } catch {
-      return false;
-    }
-
+    if (!locked.ok || !locked.value) return false;
+    refreshSavedFlowState();
     setMyFlowBatchAdjustmentUndo({
       flowSlug: flow.progress.slug,
       count,
       label,
-      previousSavedMapSnapshot,
-      ...(previousPersistenceRecord ? { previousPersistenceRecord } : {}),
+      previousSavedMapSnapshot: locked.value.previousSavedMapSnapshot,
+      expectedSavedMapSnapshot: locked.value.expectedSavedMapSnapshot,
+      expectedPersistenceRecord: locked.value.expectedPersistenceRecord,
+      ...(locked.value.previousPersistenceRecord
+        ? { previousPersistenceRecord: locked.value.previousPersistenceRecord }
+        : {}),
     });
     setMyFlowBatchAdjustment(null);
     resetMyFlowRowDetailState();
-    refreshSavedFlowState();
     return true;
   };
 
-  const persistMyFlowCanonicalIncludedItemStates = (
+  const persistMyFlowCanonicalIncludedItemStates = async (
     flow: MySavedFlow,
-    nextItemStates: Record<string, FlowItemState>,
+    updateItemStates: Record<string, FlowItemState> | ((current: Record<string, FlowItemState>) => Record<string, FlowItemState>),
     label: string,
     count = 1,
-  ): boolean => {
+    recordUndo = true,
+  ): Promise<boolean> => {
     if (typeof window === 'undefined' || isMyFlowScenarioDemo || flow.savedMap) return false;
-    const previousItemStates = getItemStates(flow.progress.slug);
-    try {
-      saveItemStates(flow.progress.slug, nextItemStates);
-    } catch {
-      return false;
-    }
-    setMyFlowBatchAdjustmentUndo({
-      flowSlug: flow.progress.slug,
-      count,
-      label,
-      previousItemStates,
+    const expectedFlowFingerprint = myFlowBatchAdjustment?.flowSlug === flow.progress.slug
+      ? myFlowBatchAdjustment.expectedFlowFingerprint
+      : getRenderedMyFlowMutationFingerprint(flow);
+    const locked = await withFlowUserDataWriteLock(() => {
+      const currentFlow = getLockedMyFlowExecutionContext(flow, expectedFlowFingerprint);
+      if (!currentFlow || currentFlow.savedMap) return undefined;
+      const previousItemStates = currentFlow.itemStates;
+      const nextItemStates = typeof updateItemStates === 'function'
+        ? updateItemStates(previousItemStates)
+        : updateItemStates;
+      const keyPlan = buildFlowUserDataMutationStorageKeyPlan({
+        flowSlugs: [currentFlow.progress.slug],
+      });
+      const expectedRaw = captureFlowUserDataMutationExpectedRaw(window.localStorage, keyPlan);
+      const transaction = runFlowUserDataMutationTransaction({
+        storage: window.localStorage,
+        keyPlan,
+        expectedRaw,
+        apply(storage) {
+          storage.setItem(
+            keyPlan.itemStateKeysBySlug[currentFlow.progress.slug]!,
+            JSON.stringify(nextItemStates),
+          );
+          storage.setItem(FLOW_USER_DATA_LAST_VISIT_STORAGE_KEY, new Date().toISOString());
+        },
+      });
+      if (!transaction.ok) return undefined;
+      return { previousItemStates, expectedItemStates: nextItemStates };
     });
+    if (!locked.ok || !locked.value) return false;
+    refreshSavedFlowState();
+    if (recordUndo) {
+      setMyFlowBatchAdjustmentUndo({
+        flowSlug: flow.progress.slug,
+        count,
+        label,
+        previousItemStates: locked.value.previousItemStates,
+        expectedItemStates: locked.value.expectedItemStates,
+      });
+    }
     setMyFlowBatchAdjustment(null);
     resetMyFlowRowDetailState();
-    refreshSavedFlowState();
     return true;
   };
 
-  const removeMyFlowBatchItems = (flow: MySavedFlow) => {
+  const removeMyFlowBatchItems = async (flow: MySavedFlow) => {
     if (
       typeof window === 'undefined' ||
       isMyFlowScenarioDemo ||
@@ -10704,25 +12105,26 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
 
     if (isPersonalDraftStructuralEditEligible(flow.bundle)) {
       if (!window.confirm(`선택한 ${rows.length}개 할 일을 목록에서 뺄까요? 나중에 구성 편집에서 복구할 수 있어요.`)) return;
-      const previousStructuralOverlay =
-        myFlowStructuralOverlaysBySlug[flow.progress.slug] ??
-        createPersonalDraftStructuralOverlay(flow.bundle);
-      let nextOverlay = previousStructuralOverlay;
-      for (const row of rows) {
-        const deleted = deletePersonalDraftStructuralItem({
-          bundle: flow.bundle,
-          overlay: nextOverlay,
-          itemId: row.structuralProjectionStableId ?? row.id,
-        });
-        if (!deleted) return;
-        nextOverlay = deleted.overlay;
-      }
-      if (!saveMyFlowStructuralOverlay(flow, nextOverlay)) return;
+      const mutation = await mutateMyFlowStructuralOverlay(flow, (current) => {
+        let nextOverlay = current;
+        for (const row of rows) {
+          const deleted = deletePersonalDraftStructuralItem({
+            bundle: flow.bundle,
+            overlay: nextOverlay,
+            itemId: row.structuralProjectionStableId ?? row.id,
+          });
+          if (!deleted) return undefined;
+          nextOverlay = deleted.overlay;
+        }
+        return nextOverlay;
+      });
+      if (!mutation) return;
       setMyFlowBatchAdjustmentUndo({
         flowSlug: flow.progress.slug,
         count: rows.length,
         label: `${rows.length}개를 ${myFlowQ3CopyEnabled ? '계획' : 'Flow'}에서 뺐어요.`,
-        previousStructuralOverlay,
+        previousStructuralOverlay: mutation.previous,
+        expectedStructuralOverlay: mutation.saved,
       });
       updateMyFlowBatchAdjustment({ selectedKeys: [], activeTool: 'none' });
       resetMyFlowRowDetailState();
@@ -10731,139 +12133,212 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
 
     if (!flow.savedMap?.personalCopy) {
       if (flow.savedMap || rows.length >= flow.rows.length) return;
-      const previousItemStates = getItemStates(flow.progress.slug);
-      const nextItemStates = { ...previousItemStates };
-      rows.forEach((row) => {
-        const itemId = baseStateId(row.id);
-        const nextState = setFlowItemPersonalExclusion(nextItemStates[itemId], true);
-        if (nextState) nextItemStates[itemId] = nextState;
-      });
-      persistMyFlowCanonicalIncludedItemStates(
+      await persistMyFlowCanonicalIncludedItemStates(
         flow,
-        nextItemStates,
+        (currentItemStates) => {
+          const nextItemStates = { ...currentItemStates };
+          rows.forEach((row) => {
+            const itemId = baseStateId(row.id);
+            const nextState = setFlowItemPersonalExclusion(nextItemStates[itemId], true);
+            if (nextState) nextItemStates[itemId] = nextState;
+          });
+          return nextItemStates;
+        },
         `${rows.length}개를 ${myFlowQ3CopyEnabled ? '계획' : 'Flow'}에서 뺐어요.`,
         rows.length,
       );
       return;
     }
-    const currentIncluded = flow.savedMap.personalCopy.includedStepIdsByFlow[flow.progress.slug] ?? [];
     const removedIds = new Set(rows.map((row) => baseStateId(row.id)));
-    const nextIncluded = currentIncluded.filter((itemId) => !removedIds.has(itemId));
-    if (nextIncluded.length === 0) {
-      updateMyFlowBatchAdjustment({ selectedKeys: [] });
-      return;
-    }
-    persistMyFlowSourceBackedIncludedSteps(
+    const saved = await persistMyFlowSourceBackedIncludedSteps(
       flow,
-      nextIncluded,
+      (currentIncluded) => currentIncluded.filter((itemId) => !removedIds.has(itemId)),
       `${rows.length}개를 ${myFlowQ3CopyEnabled ? '계획' : 'Flow'}에서 뺐어요.`,
       rows.length,
     );
+    if (!saved) updateMyFlowBatchAdjustment({ selectedKeys: [] });
   };
 
-  const undoMyFlowBatchAdjustment = () => {
+  const undoMyFlowBatchAdjustment = async () => {
     if (typeof window === 'undefined' || !myFlowBatchAdjustmentUndo) return;
-    try {
-      if (myFlowBatchAdjustmentUndo.previousDateOverrides) {
-        saveStoredMyFlowDateOverrides(myFlowBatchAdjustmentUndo.previousDateOverrides);
-        setMyFlowDateOverrides(myFlowBatchAdjustmentUndo.previousDateOverrides);
+    const undo = myFlowBatchAdjustmentUndo;
+    const locked = await withFlowUserDataWriteLock(() => {
+      const failClosed = () => ({ applied: false as const });
+      const renderedUndoFlow = savedFlows.find((candidate) => candidate.progress.slug === undo.flowSlug);
+      const currentFlow = renderedUndoFlow
+        ? getLockedMyFlowExecutionContext(renderedUndoFlow)
+        : undefined;
+      if (!currentFlow) return failClosed();
+      if (
+        undo.previousDateOverrides
+        && (
+          !undo.expectedDateOverrides
+          || JSON.stringify(normalizeMyFlowMutationProjectionValues({
+            flowSlug: undo.flowSlug,
+            itemIds: [
+              ...currentFlow.bundle.items.map((item) => item.id),
+              ...(currentFlow.structuralOverlay?.userItems.map((item) => item.itemId) ?? []),
+            ],
+            itemDrafts: currentFlow.itemDrafts,
+            dateOverrides: currentFlow.dateOverrides,
+          }).dateOverrides) !== JSON.stringify(normalizeMyFlowMutationProjectionValues({
+            flowSlug: undo.flowSlug,
+            itemIds: [
+              ...currentFlow.bundle.items.map((item) => item.id),
+              ...(currentFlow.structuralOverlay?.userItems.map((item) => item.itemId) ?? []),
+            ],
+            itemDrafts: currentFlow.itemDrafts,
+            dateOverrides: undo.expectedDateOverrides,
+          }).dateOverrides)
+        )
+      ) return failClosed();
+      if (
+        undo.previousItemStates
+        && (
+          !undo.expectedItemStates
+          || JSON.stringify(currentFlow.itemStates) !== JSON.stringify(undo.expectedItemStates)
+        )
+      ) return failClosed();
+      if (undo.previousStructuralOverlay) {
+        if (
+          !undo.expectedStructuralOverlay
+          || JSON.stringify(getMyFlowStructuralOverlayMutationIdentity(currentFlow.structuralOverlay))
+            !== JSON.stringify(getMyFlowStructuralOverlayMutationIdentity(undo.expectedStructuralOverlay))
+        ) {
+          return failClosed();
+        }
       }
-      if (myFlowBatchAdjustmentUndo.previousItemStates) {
-        saveItemStates(
-          myFlowBatchAdjustmentUndo.flowSlug,
-          myFlowBatchAdjustmentUndo.previousItemStates,
-        );
+      if (undo.previousSavedMapSnapshot) {
+        const currentSnapshot = currentFlow.savedMap;
+        const currentPersistence = currentFlow.mapPersistence;
+        if (
+          !undo.expectedSavedMapSnapshot
+          || !undo.expectedPersistenceRecord
+          || JSON.stringify(currentSnapshot) !== JSON.stringify(undo.expectedSavedMapSnapshot)
+          || JSON.stringify(currentPersistence) !== JSON.stringify(undo.expectedPersistenceRecord)
+        ) return failClosed();
       }
-      if (myFlowBatchAdjustmentUndo.previousStructuralOverlay) {
-        const restored = savePersonalStructuralOverlay(
-          window.localStorage,
-          myFlowBatchAdjustmentUndo.previousStructuralOverlay,
-        );
-        setMyFlowStructuralOverlaysBySlug((current) => ({
-          ...current,
-          [myFlowBatchAdjustmentUndo.flowSlug]: restored,
-        }));
-      }
-      if (myFlowBatchAdjustmentUndo.previousSavedMapSnapshot) {
-        window.localStorage.setItem(
-          getSourceBackedFlowMapSnapshotStorageKey(myFlowBatchAdjustmentUndo.previousSavedMapSnapshot.mapId),
-          JSON.stringify(myFlowBatchAdjustmentUndo.previousSavedMapSnapshot),
-        );
-      }
-      if (myFlowBatchAdjustmentUndo.previousPersistenceRecord) {
-        window.localStorage.setItem(
-          getSourceBackedFlowMapPersistenceStorageKey(myFlowBatchAdjustmentUndo.previousPersistenceRecord.map.id),
-          JSON.stringify(myFlowBatchAdjustmentUndo.previousPersistenceRecord),
-        );
-      }
-    } catch {
+
+      let restoredStructuralOverlay: PersonalStructuralOverlay | undefined;
+      const mapId = undo.previousSavedMapSnapshot?.mapId;
+      const keyPlan = buildFlowUserDataMutationStorageKeyPlan({
+        flowSlugs: [undo.flowSlug],
+        mapIds: mapId ? [mapId] : [],
+      });
+      const expectedRaw = captureFlowUserDataMutationExpectedRaw(window.localStorage, keyPlan);
+      const transaction = runFlowUserDataMutationTransaction({
+        storage: window.localStorage,
+        keyPlan,
+        expectedRaw,
+        apply(storage) {
+          if (undo.previousDateOverrides) {
+            storage.setItem(MY_FLOW_DATE_OVERRIDES_STORAGE_KEY, JSON.stringify(undo.previousDateOverrides));
+          }
+          if (undo.previousItemStates) {
+            storage.setItem(
+              keyPlan.itemStateKeysBySlug[undo.flowSlug]!,
+              JSON.stringify(undo.previousItemStates),
+            );
+            storage.setItem(FLOW_USER_DATA_LAST_VISIT_STORAGE_KEY, new Date().toISOString());
+          }
+          if (undo.previousStructuralOverlay) {
+            restoredStructuralOverlay = savePersonalStructuralOverlay(storage, undo.previousStructuralOverlay);
+          }
+          if (undo.previousSavedMapSnapshot && mapId) {
+            storage.setItem(
+              keyPlan.mapSnapshotKeysById[mapId]!,
+              JSON.stringify(undo.previousSavedMapSnapshot),
+            );
+            if (undo.previousPersistenceRecord) {
+              storage.setItem(
+                keyPlan.mapPersistenceKeysById[mapId]!,
+                JSON.stringify(undo.previousPersistenceRecord),
+              );
+            } else {
+              storage.removeItem(keyPlan.mapPersistenceKeysById[mapId]!);
+            }
+          }
+        },
+      });
+      if (!transaction.ok) return failClosed();
+      return { applied: true as const, restoredStructuralOverlay };
+    });
+    if (!locked.ok || !locked.value.applied) {
+      refreshSavedFlowState();
       return;
     }
-    setMyFlowBatchAdjustmentUndo(null);
     refreshSavedFlowState();
+    if (undo.previousDateOverrides) {
+      setMyFlowDateOverrides(undo.previousDateOverrides);
+    }
+    const restoredStructuralOverlay = locked.value.restoredStructuralOverlay;
+    if (restoredStructuralOverlay) {
+      setMyFlowStructuralOverlaysBySlug((current) => ({
+        ...current,
+        [undo.flowSlug]: restoredStructuralOverlay,
+      }));
+    }
+    setMyFlowBatchAdjustmentUndo(null);
   };
 
-  const addMyFlowPersonalDraftItem = (flow: MySavedFlow) => {
+  const addMyFlowPersonalDraftItem = async (flow: MySavedFlow) => {
     if (!isPersonalDraftStructuralEditEligible(flow.bundle)) return;
-    const overlay =
-      myFlowStructuralOverlaysBySlug[flow.progress.slug] ??
-      createPersonalDraftStructuralOverlay(flow.bundle);
     const itemId = typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
       ? `personal-item-${crypto.randomUUID()}`
       : `personal-item-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-    const created = createPersonalDraftUserItem({
-      overlay,
-      title: myFlowStructuralAddTitle,
-      itemId,
-    });
-    if (!created || !saveMyFlowStructuralOverlay(flow, created.overlay)) return;
+    const mutation = await mutateMyFlowStructuralOverlay(flow, (current) => (
+      createPersonalDraftUserItem({
+        overlay: current,
+        title: myFlowStructuralAddTitle,
+        itemId,
+      })?.overlay
+    ));
+    if (!mutation) return;
     setMyFlowStructuralAddTitle('');
     setMyFlowStructuralAddOpenSlug('');
     setMyFlowStructuralUndo(null);
     setMyFlowExpandedStructureStepSlug(flow.progress.slug);
   };
 
-  const deleteMyFlowPersonalDraftItem = (row: MyFlowCalendarRow) => {
+  const deleteMyFlowPersonalDraftItem = async (row: MyFlowCalendarRow) => {
     const flow = row.flow;
     if (!isPersonalDraftStructuralEditEligible(flow.bundle)) return;
-    const overlay =
-      myFlowStructuralOverlaysBySlug[flow.progress.slug] ??
-      createPersonalDraftStructuralOverlay(flow.bundle);
-    const deleted = deletePersonalDraftStructuralItem({
-      bundle: flow.bundle,
-      overlay,
-      itemId: row.id,
+    let deletedUndo: PersonalDraftStructuralUndo | undefined;
+    const mutation = await mutateMyFlowStructuralOverlay(flow, (current) => {
+      const deleted = deletePersonalDraftStructuralItem({
+        bundle: flow.bundle,
+        overlay: current,
+        itemId: row.id,
+      });
+      deletedUndo = deleted?.undo;
+      return deleted?.overlay;
     });
-    if (!deleted || !saveMyFlowStructuralOverlay(flow, deleted.overlay)) return;
-    setMyFlowStructuralUndo(deleted.undo);
+    if (!mutation || !deletedUndo) return;
+    setMyFlowStructuralUndo(deletedUndo);
     resetMyFlowRowDetailState();
   };
 
-  const undoMyFlowPersonalDraftDelete = (flow: MySavedFlow) => {
-    if (!myFlowStructuralUndo || myFlowStructuralUndo.flowSlug !== flow.progress.slug) return;
-    const overlay =
-      myFlowStructuralOverlaysBySlug[flow.progress.slug] ??
-      createPersonalDraftStructuralOverlay(flow.bundle);
-    const restored = undoPersonalDraftStructuralDelete({
-      overlay,
-      undo: myFlowStructuralUndo,
-    });
-    if (!saveMyFlowStructuralOverlay(flow, restored)) return;
+  const undoMyFlowPersonalDraftDelete = async (flow: MySavedFlow) => {
+    const undo = myFlowStructuralUndo;
+    if (!undo || undo.flowSlug !== flow.progress.slug) return;
+    const mutation = await mutateMyFlowStructuralOverlay(flow, (current) => (
+      undoPersonalDraftStructuralDelete({ overlay: current, undo })
+    ));
+    if (!mutation) return;
     setMyFlowStructuralUndo(null);
     setMyFlowExpandedStructureStepSlug(flow.progress.slug);
   };
 
-  const restoreMyFlowPersonalDraftItem = (flow: MySavedFlow, itemId: string) => {
+  const restoreMyFlowPersonalDraftItem = async (flow: MySavedFlow, itemId: string) => {
     if (!isPersonalDraftStructuralEditEligible(flow.bundle)) return;
-    const overlay =
-      myFlowStructuralOverlaysBySlug[flow.progress.slug] ??
-      createPersonalDraftStructuralOverlay(flow.bundle);
-    const restored = restorePersonalDraftStructuralItem({
-      bundle: flow.bundle,
-      overlay,
-      itemId,
-    });
-    if (!restored || !saveMyFlowStructuralOverlay(flow, restored)) return;
+    const mutation = await mutateMyFlowStructuralOverlay(flow, (current) => (
+      restorePersonalDraftStructuralItem({
+        bundle: flow.bundle,
+        overlay: current,
+        itemId,
+      })
+    ));
+    if (!mutation) return;
     if (
       myFlowStructuralUndo?.flowSlug === flow.progress.slug &&
       myFlowStructuralUndo.itemId === itemId
@@ -10881,78 +12356,79 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     ));
   };
 
-  const removeMyFlowItemFromSavedFlow = (row: MyFlowCalendarRow) => {
+  const removeMyFlowItemFromSavedFlow = async (row: MyFlowCalendarRow) => {
     if (isPersonalDraftStructuralEditEligible(row.flow.bundle)) {
-      deleteMyFlowPersonalDraftItem(row);
+      await deleteMyFlowPersonalDraftItem(row);
       return;
     }
     const itemId = baseStateId(row.id);
     if (!row.flow.savedMap) {
       if (row.flow.rows.length <= 1) return;
-      const currentItemStates = getItemStates(row.flow.progress.slug);
-      persistMyFlowCanonicalIncludedItemStates(
+      await persistMyFlowCanonicalIncludedItemStates(
         row.flow,
-        {
+        (currentItemStates) => ({
           ...currentItemStates,
           [itemId]: setFlowItemPersonalExclusion(currentItemStates[itemId], true) ?? {},
-        },
+        }),
         `${getMyFlowRowDisplayTitle(row)}을 ${myFlowQ3CopyEnabled ? '계획' : 'Flow'}에서 뺐어요.`,
       );
       return;
     }
-    const currentIncluded = getMyFlowSourceBackedIncludedStepIds(row.flow);
-    const nextIncluded = currentIncluded.filter((candidate) => candidate !== itemId);
-    if (nextIncluded.length === 0 || nextIncluded.length === currentIncluded.length) return;
-    persistMyFlowSourceBackedIncludedSteps(
+    await persistMyFlowSourceBackedIncludedSteps(
       row.flow,
-      nextIncluded,
+      (currentIncluded) => currentIncluded.filter((candidate) => candidate !== itemId),
       `${getMyFlowRowDisplayTitle(row)}을 ${myFlowQ3CopyEnabled ? '계획' : 'Flow'}에서 뺐어요.`,
     );
   };
 
-  const restoreMyFlowExcludedItem = (flow: MySavedFlow, row: MyFlowRow) => {
+  const restoreMyFlowExcludedItem = async (flow: MySavedFlow, row: MyFlowRow) => {
     const itemId = baseStateId(row.id);
     if (isPersonalDraftStructuralEditEligible(flow.bundle)) {
-      restoreMyFlowPersonalDraftItem(flow, itemId);
+      await restoreMyFlowPersonalDraftItem(flow, itemId);
       return;
     }
     if (!flow.savedMap) {
-      const currentItemStates = getItemStates(flow.progress.slug);
-      const currentState = currentItemStates[itemId];
-      if (!isFlowItemPersonallyExcluded(currentState)) return;
-      const nextItemStates = { ...currentItemStates };
-      const restoredState = setFlowItemPersonalExclusion(currentState, false);
-      if (restoredState) nextItemStates[itemId] = restoredState;
-      else delete nextItemStates[itemId];
-      saveItemStates(flow.progress.slug, nextItemStates);
-      refreshSavedFlowState();
+      await persistMyFlowCanonicalIncludedItemStates(
+        flow,
+        (currentItemStates) => {
+          const currentState = currentItemStates[itemId];
+          if (!isFlowItemPersonallyExcluded(currentState)) return currentItemStates;
+          const nextItemStates = { ...currentItemStates };
+          const restoredState = setFlowItemPersonalExclusion(currentState, false);
+          if (restoredState) nextItemStates[itemId] = restoredState;
+          else delete nextItemStates[itemId];
+          return nextItemStates;
+        },
+        `${toUserFacingSourceTitle(row.title)}을 다시 넣었어요.`,
+        1,
+        false,
+      );
       return;
     }
-    const currentIncluded = getMyFlowSourceBackedIncludedStepIds(flow);
-    if (currentIncluded.includes(itemId)) return;
-    persistMyFlowSourceBackedIncludedSteps(
+    await persistMyFlowSourceBackedIncludedSteps(
       flow,
-      [...currentIncluded, itemId],
+      (currentIncluded) => currentIncluded.includes(itemId)
+        ? currentIncluded
+        : [...currentIncluded, itemId],
       `${toUserFacingSourceTitle(row.title)}을 다시 넣었어요.`,
     );
   };
 
-  const moveMyFlowPersonalDraftItem = (
+  const moveMyFlowPersonalDraftItem = async (
     flow: MySavedFlow,
     itemId: string,
     direction: 'up' | 'down',
   ) => {
     if (!isPersonalDraftStructuralEditEligible(flow.bundle)) return;
-    const overlay =
-      myFlowStructuralOverlaysBySlug[flow.progress.slug] ??
-      createPersonalDraftStructuralOverlay(flow.bundle);
-    const reordered = movePersonalDraftStructuralItem({
-      bundle: flow.bundle,
-      overlay,
-      itemId,
-      direction,
-    });
-    if (!reordered || !saveMyFlowStructuralOverlay(flow, reordered)) return;
+    const mutation = await mutateMyFlowStructuralOverlay(flow, (current) => (
+      movePersonalDraftStructuralItem({
+        bundle: flow.bundle,
+        overlay: current,
+        itemId,
+        direction,
+      })
+    ));
+    if (!mutation) return;
     setMyFlowExpandedStructureStepSlug(flow.progress.slug);
   };
 
@@ -11040,20 +12516,26 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     setMyFlowExecutionNoteDraft((current) => (current ? { ...current, ...patch, status: patch.status ?? '' } : current));
   };
 
-  const saveCurrentMyFlowExecutionNote = (remove = false) => {
+  const saveCurrentMyFlowExecutionNote = async (remove = false) => {
     const draft = myFlowExecutionNoteDraft;
     if (!draft) return;
     const draftNote = draft.mode === 'private' ? draft.privateNote : draft.correctionNote;
     if (!remove && !draftNote.trim()) return;
     const note = remove ? '' : draftNote;
-    const saved = saveMyFlowExecutionNote(draft.flowSlug, {
-      itemId: draft.rowKey,
-      itemTitle: draft.itemTitle,
-      kind: draft.mode,
-      note,
-      ...(draft.itemDate ? { itemDate: draft.itemDate } : {}),
-      ...(draft.mode === 'source_correction' && draft.sourceUrl ? { sourceUrl: draft.sourceUrl } : {}),
-    });
+    const locked = await withFlowUserDataWriteLock(() => saveMyFlowExecutionNote(
+      draft.flowSlug,
+      {
+        itemId: draft.rowKey,
+        itemTitle: draft.itemTitle,
+        kind: draft.mode,
+        note,
+        ...(draft.itemDate ? { itemDate: draft.itemDate } : {}),
+        ...(draft.mode === 'source_correction' && draft.sourceUrl
+          ? { sourceUrl: draft.sourceUrl }
+          : {}),
+      },
+    ));
+    const saved = locked.ok ? locked.value : undefined;
     if (!saved) {
       updateMyFlowExecutionNoteDraft({ status: '저장하지 못했어요. 다시 시도해 주세요.' });
       return;
@@ -11437,6 +12919,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     destination: FlowExportDestination,
     plan: FlowExportScopePlan,
     returnFocusSelector: string,
+    successReturnFocusSelector: string = returnFocusSelector,
   ) => {
     const request = buildSavedResultTransferRequest(flow, destination, plan);
     setMyFlowResultTransfer({
@@ -11444,6 +12927,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
       request,
       pending: false,
       returnFocusSelector,
+      successReturnFocusSelector,
     });
   };
 
@@ -11496,6 +12980,10 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
       setMyFlowResultTransfer((state) => state?.request.requestId === current.request.requestId
         ? { ...state, pending: false, outcome }
         : state);
+      setMyFlowSaveBanner((banner) => resolveMyFlowSaveBannerAfterTransfer(
+        banner,
+        outcome,
+      ));
     } finally {
       myFlowResultTransferPendingRef.current = '';
     }
@@ -11708,6 +13196,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     setMyFlowExpandedStructureSlug(flow.progress.slug);
     setMyFlowPersonalCopySettingsDraft({
       flowSlug: flow.progress.slug,
+      expectedFlowFingerprint: getRenderedMyFlowMutationFingerprint(flow),
       title: flow.savedMap?.personalCopy ? toUserFacingMapTitle(flow.savedMap.title) : getMyFlowDisplayFlowTitle(flow),
       anchor: flow.anchor,
       includedStepIds: getMyFlowPersonalCopyIncludedStepIds(flow),
@@ -11732,116 +13221,210 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     });
   };
 
-  const saveMyFlowDraftSettings = (flow: MySavedFlow) => {
-    if (typeof window === 'undefined' || !isUrlFirstDraftSavedFlow(flow) || myFlowPersonalCopySettingsDraft?.flowSlug !== flow.progress.slug) return;
+  const saveMyFlowDraftSettings = async (flow: MySavedFlow) => {
+    const settingsDraft = myFlowPersonalCopySettingsDraft;
+    if (
+      typeof window === 'undefined'
+      || !isUrlFirstDraftSavedFlow(flow)
+      || settingsDraft?.flowSlug !== flow.progress.slug
+    ) return;
 
-    const stepRows = getMyFlowPersonalCopyStepRows(flow);
-    const allStepIds = stepRows.map((row) => baseStateId(row.id));
-    const allStepIdSet = new Set(allStepIds);
-    const includedStepIds = myFlowPersonalCopySettingsDraft.includedStepIds.filter((id) => allStepIdSet.has(id));
-    if (includedStepIds.length === 0) {
+    const locked = await withFlowUserDataWriteLock(() => {
+      const currentFlow = getLockedMyFlowExecutionContext(
+        flow,
+        settingsDraft.expectedFlowFingerprint,
+      );
+      if (!currentFlow) return undefined;
+      const freshFlow = { ...flow, ...currentFlow };
+      if (!isUrlFirstDraftSavedFlow(freshFlow) || currentFlow.savedMap?.personalCopy) return undefined;
+      const stepRows = getMyFlowPersonalCopyStepRows(freshFlow);
+      const allStepIds = stepRows.map((row) => baseStateId(row.id));
+      const allStepIdSet = new Set(allStepIds);
+      const includedStepIds = settingsDraft.includedStepIds.filter((id) => allStepIdSet.has(id));
+      if (includedStepIds.length === 0) return { validation: 'empty' as const };
+
+      const nextTitle = settingsDraft.title.trim() || getMyFlowDisplayFlowTitle(freshFlow);
+      const nextAnchor = settingsDraft.anchor.trim();
+      const updatedAt = new Date().toISOString();
+      const updatedBundles = currentFlow.storedBundles.map((bundle) => (
+        bundle.flow.slug === currentFlow.progress.slug
+          ? {
+              ...bundle,
+              flow: {
+                ...bundle.flow,
+                title: nextTitle,
+                anchor_type: nextAnchor && bundle.flow.anchor_type === 'none'
+                  ? 'start_date'
+                  : bundle.flow.anchor_type,
+                updated_at: updatedAt,
+              },
+            }
+          : bundle
+      ));
+      const savedRecord = buildSavedFlowRecord(currentFlow.progress.slug, {
+        selectedArtifactMode: currentFlow.savedRecord?.selectedArtifactMode ?? 'calendar',
+        ...(nextAnchor ? { anchor: nextAnchor } : {}),
+      }, currentFlow.savedRecord, updatedAt);
+      const includedStepIdSet = new Set(includedStepIds);
+      const nextItemStates = { ...currentFlow.itemStates };
+      allStepIds.forEach((stepId) => {
+        const nextState = setFlowItemPersonalExclusion(
+          nextItemStates[stepId],
+          !includedStepIdSet.has(stepId),
+        );
+        if (nextState) nextItemStates[stepId] = nextState;
+        else delete nextItemStates[stepId];
+      });
+      const keyPlan = buildFlowUserDataMutationStorageKeyPlan({
+        flowSlugs: [currentFlow.progress.slug],
+      });
+      const expectedRaw = captureFlowUserDataMutationExpectedRaw(window.localStorage, keyPlan);
+      const transaction = runFlowUserDataMutationTransaction({
+        storage: window.localStorage,
+        keyPlan,
+        expectedRaw,
+        apply(storage) {
+          storage.setItem(keyPlan.bundleKey, JSON.stringify(updatedBundles));
+          storage.setItem(keyPlan.savedFlowKeysBySlug[currentFlow.progress.slug]!, JSON.stringify(savedRecord));
+          recordCanonicalFlowWrite(storage, currentFlow.progress.slug, updatedAt);
+          storage.setItem(
+            keyPlan.anchorKeysBySlug[currentFlow.progress.slug]!,
+            JSON.stringify({ mode: 'custom', anchor: nextAnchor }),
+          );
+          storage.setItem(
+            keyPlan.itemStateKeysBySlug[currentFlow.progress.slug]!,
+            JSON.stringify(nextItemStates),
+          );
+          storage.setItem(FLOW_USER_DATA_LAST_VISIT_STORAGE_KEY, updatedAt);
+        },
+      });
+      if (!transaction.ok) return undefined;
+      return {
+        validation: 'saved' as const,
+        nextAnchor,
+        updatedBundles,
+      };
+    });
+    if (!locked.ok || !locked.value) {
+      updateMyFlowPersonalCopySettingsDraft({
+        feedback: '설정을 저장할 잠금을 확보하지 못했습니다. 잠시 후 다시 시도해 주세요.',
+      });
+      return;
+    }
+    if (locked.value.validation === 'empty') {
       updateMyFlowPersonalCopySettingsDraft({ feedback: '최소 1개 할 일을 포함해 주세요.' });
       return;
     }
-
-    const nextTitle = myFlowPersonalCopySettingsDraft.title.trim() || getMyFlowDisplayFlowTitle(flow);
-    const nextAnchor = myFlowPersonalCopySettingsDraft.anchor.trim();
-    const updatedAt = new Date().toISOString();
-    persist(bundles.map((bundle) => (
-      bundle.flow.slug === flow.progress.slug
-        ? {
-            ...bundle,
-            flow: {
-              ...bundle.flow,
-              title: nextTitle,
-              anchor_type: nextAnchor && bundle.flow.anchor_type === 'none' ? 'start_date' : bundle.flow.anchor_type,
-              updated_at: updatedAt,
-            },
-          }
-        : bundle
-    )));
-
-    const savedRecord = getSavedFlowRecord(flow.progress.slug);
-    saveFlowRecord(flow.progress.slug, {
-      selectedArtifactMode: savedRecord?.selectedArtifactMode ?? 'calendar',
-      ...(nextAnchor ? { anchor: nextAnchor } : {}),
-    });
-    saveStoredAnchor(flow.progress.slug, { mode: 'custom', anchor: nextAnchor });
-    const includedStepIdSet = new Set(includedStepIds);
-    const nextItemStates = { ...getItemStates(flow.progress.slug) };
-    allStepIds.forEach((stepId) => {
-      const nextState = setFlowItemPersonalExclusion(
-        nextItemStates[stepId],
-        !includedStepIdSet.has(stepId),
-      );
-      if (nextState) nextItemStates[stepId] = nextState;
-      else delete nextItemStates[stepId];
-    });
-    saveItemStates(flow.progress.slug, nextItemStates);
-    setMyFlowSelectedDate(nextAnchor || myFlowSelectedDate);
-    if (nextAnchor) setMyFlowVisibleMonth(getMyFlowMonthStart(nextAnchor));
+    replaceBundles(locked.value.updatedBundles);
+    refreshSavedFlowState();
+    setMyFlowSelectedDate(locked.value.nextAnchor || myFlowSelectedDate);
+    if (locked.value.nextAnchor) setMyFlowVisibleMonth(getMyFlowMonthStart(locked.value.nextAnchor));
     resetMyFlowRowDetailState();
     setMyFlowPersonalCopySettingsDraft(null);
-    refreshSavedFlowState();
   };
 
-  const saveMyFlowPersonalCopySettings = (flow: MySavedFlow) => {
-    if (typeof window === 'undefined' || myFlowPersonalCopySettingsDraft?.flowSlug !== flow.progress.slug) return;
+  const saveMyFlowPersonalCopySettings = async (flow: MySavedFlow) => {
+    const settingsDraft = myFlowPersonalCopySettingsDraft;
+    if (typeof window === 'undefined' || settingsDraft?.flowSlug !== flow.progress.slug) return;
     if (isUrlFirstDraftSavedFlow(flow) && !flow.savedMap?.personalCopy) {
-      saveMyFlowDraftSettings(flow);
+      await saveMyFlowDraftSettings(flow);
       return;
     }
     if (!flow.savedMap?.personalCopy) return;
 
-    const stepRows = getMyFlowPersonalCopyStepRows(flow);
-    const allStepIds = stepRows.map((row) => baseStateId(row.id));
-    const allStepIdSet = new Set(allStepIds);
-    const includedStepIds = myFlowPersonalCopySettingsDraft.includedStepIds.filter((id) => allStepIdSet.has(id));
-    if (includedStepIds.length === 0) {
-      updateMyFlowPersonalCopySettingsDraft({ feedback: '최소 1개 할 일을 포함해 주세요.' });
-      return;
-    }
-
-    const sourceSnapshot = toSourceBackedSavedSnapshot(flow.savedMap);
-    const adjusted = buildSourceBackedFlowMapPersonalCopyAdjustment(sourceSnapshot, {
-      title: myFlowPersonalCopySettingsDraft.title,
-      anchor: myFlowPersonalCopySettingsDraft.anchor,
-      savedAt: new Date().toISOString(),
-      includedStepIdsByFlow: {
-        ...sourceSnapshot.personalCopy?.includedStepIdsByFlow,
-        [flow.progress.slug]: includedStepIds,
-      },
-      baselineRecord: savedFlowMapPersistenceById[sourceSnapshot.mapId],
-    });
-    if (!adjusted) {
-      updateMyFlowPersonalCopySettingsDraft({ feedback: '저장할 수 있는 Step을 확인해 주세요.' });
-      return;
-    }
-
-    window.localStorage.setItem(getSourceBackedFlowMapSnapshotStorageKey(adjusted.snapshot.mapId), JSON.stringify(adjusted.snapshot));
-    window.localStorage.setItem(getSourceBackedFlowMapPersistenceStorageKey(adjusted.snapshot.mapId), JSON.stringify(adjusted.persistenceRecord));
-
-    const includedStepIdSet = new Set(includedStepIds);
-    const nextItemStates = { ...getItemStates(flow.progress.slug) };
-    allStepIds.forEach((stepId) => {
-      const nextState = setFlowItemPersonalExclusion(
-        nextItemStates[stepId],
-        !includedStepIdSet.has(stepId),
+    const locked = await withFlowUserDataWriteLock(() => {
+      const currentFlow = getLockedMyFlowExecutionContext(
+        flow,
+        settingsDraft.expectedFlowFingerprint,
       );
-      if (nextState) nextItemStates[stepId] = nextState;
-      else delete nextItemStates[stepId];
+      if (!currentFlow?.savedMap || currentFlow.savedMap.mapId !== flow.savedMap?.mapId) {
+        return { ok: false as const, feedback: '저장된 계획이 바뀌었습니다. 최신 내용을 확인한 뒤 다시 시도해 주세요.' };
+      }
+      const freshFlow = { ...flow, ...currentFlow };
+      const stepRows = getMyFlowPersonalCopyStepRows(freshFlow);
+      const allStepIds = stepRows.map((row) => baseStateId(row.id));
+      const allStepIdSet = new Set(allStepIds);
+      const includedStepIds = settingsDraft.includedStepIds.filter((id) => allStepIdSet.has(id));
+      if (includedStepIds.length === 0) {
+        return { ok: false as const, feedback: '최소 1개 할 일을 포함해 주세요.' };
+      }
+      const sourceSnapshot = toSourceBackedSavedSnapshot(currentFlow.savedMap);
+      if (!sourceSnapshot.personalCopy) {
+        return { ok: false as const, feedback: '개인 사본을 다시 확인해 주세요.' };
+      }
+      const updatedAt = new Date().toISOString();
+      const adjusted = buildSourceBackedFlowMapPersonalCopyAdjustment(sourceSnapshot, {
+        title: settingsDraft.title,
+        anchor: settingsDraft.anchor,
+        savedAt: updatedAt,
+        includedStepIdsByFlow: {
+          ...sourceSnapshot.personalCopy.includedStepIdsByFlow,
+          [currentFlow.progress.slug]: includedStepIds,
+        },
+        stepOverridesByFlow: sourceSnapshot.personalCopy.stepOverridesByFlow,
+        baselineRecord: currentFlow.mapPersistence,
+      });
+      if (!adjusted) {
+        return { ok: false as const, feedback: '저장할 수 있는 Step을 확인해 주세요.' };
+      }
+      const includedStepIdSet = new Set(includedStepIds);
+      const nextItemStates = { ...currentFlow.itemStates };
+      allStepIds.forEach((stepId) => {
+        const nextState = setFlowItemPersonalExclusion(
+          nextItemStates[stepId],
+          !includedStepIdSet.has(stepId),
+        );
+        if (nextState) nextItemStates[stepId] = nextState;
+        else delete nextItemStates[stepId];
+      });
+      const savedRecord = buildSavedFlowRecord(currentFlow.progress.slug, {
+        selectedArtifactMode: currentFlow.savedRecord?.selectedArtifactMode ?? 'checklist',
+        ...(adjusted.snapshot.anchor ? { anchor: adjusted.snapshot.anchor } : {}),
+      }, currentFlow.savedRecord, updatedAt);
+      const keyPlan = buildFlowUserDataMutationStorageKeyPlan({
+        flowSlugs: [currentFlow.progress.slug],
+        mapIds: [adjusted.snapshot.mapId],
+      });
+      const expectedRaw = captureFlowUserDataMutationExpectedRaw(window.localStorage, keyPlan);
+      const transaction = runFlowUserDataMutationTransaction({
+        storage: window.localStorage,
+        keyPlan,
+        expectedRaw,
+        apply(storage) {
+          storage.setItem(keyPlan.mapSnapshotKeysById[adjusted.snapshot.mapId]!, JSON.stringify(adjusted.snapshot));
+          storage.setItem(keyPlan.mapPersistenceKeysById[adjusted.snapshot.mapId]!, JSON.stringify(adjusted.persistenceRecord));
+          storage.setItem(
+            keyPlan.itemStateKeysBySlug[currentFlow.progress.slug]!,
+            JSON.stringify(nextItemStates),
+          );
+          storage.setItem(keyPlan.savedFlowKeysBySlug[currentFlow.progress.slug]!, JSON.stringify(savedRecord));
+          recordCanonicalFlowWrite(storage, currentFlow.progress.slug, updatedAt);
+          storage.setItem(
+            keyPlan.anchorKeysBySlug[currentFlow.progress.slug]!,
+            JSON.stringify({ mode: 'custom', anchor: adjusted.snapshot.anchor ?? '' }),
+          );
+          storage.setItem(FLOW_USER_DATA_LAST_VISIT_STORAGE_KEY, updatedAt);
+        },
+      });
+      if (!transaction.ok) {
+        return { ok: false as const, feedback: '설정을 저장하지 못했습니다. 잠시 뒤 다시 시도해 주세요.' };
+      }
+      return { ok: true as const };
     });
-    saveItemStates(flow.progress.slug, nextItemStates);
-
-    const savedRecord = getSavedFlowRecord(flow.progress.slug);
-    saveFlowRecord(flow.progress.slug, {
-      selectedArtifactMode: savedRecord?.selectedArtifactMode ?? 'checklist',
-      ...(adjusted.snapshot.anchor ? { anchor: adjusted.snapshot.anchor } : {}),
-    });
-    saveStoredAnchor(flow.progress.slug, { mode: 'custom', anchor: adjusted.snapshot.anchor ?? '' });
+    if (!locked.ok) {
+      updateMyFlowPersonalCopySettingsDraft({
+        feedback: '설정을 저장할 잠금을 확보하지 못했습니다. 잠시 후 다시 시도해 주세요.',
+      });
+      return;
+    }
+    if (!locked.value.ok) {
+      refreshSavedFlowState();
+      updateMyFlowPersonalCopySettingsDraft({ feedback: locked.value.feedback });
+      return;
+    }
+    refreshSavedFlowState();
     resetMyFlowRowDetailState();
     setMyFlowPersonalCopySettingsDraft(null);
-    refreshSavedFlowState();
   };
 
   const openMyFlowDirectAnchorSettings = (flow: MySavedFlow) => {
@@ -11849,19 +13432,29 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     setMyFlowExpandedStructureSlug(flow.progress.slug);
     setMyFlowDirectAnchorSettingsDraft({
       flowSlug: flow.progress.slug,
+      expectedFlowFingerprint: getRenderedMyFlowMutationFingerprint(flow),
+      expectedMapFlowFingerprints: Object.fromEntries(
+        (flow.savedMap?.flowSlugs ?? [flow.progress.slug]).flatMap((flowSlug) => {
+          const mapFlow = savedFlows.find((candidate) => candidate.progress.slug === flowSlug);
+          return mapFlow
+            ? [[flowSlug, getRenderedMyFlowMutationFingerprint(mapFlow)] as const]
+            : [];
+        }),
+      ),
       ...(flow.savedMap ? { mapId: flow.savedMap.mapId } : {}),
       anchor: flow.anchor || flow.savedMap?.anchor || '',
     });
   };
 
-  const saveMyFlowDirectAnchorSettings = (flow: MySavedFlow) => {
+  const saveMyFlowDirectAnchorSettings = async (flow: MySavedFlow) => {
+    const directAnchorDraft = myFlowDirectAnchorSettingsDraft;
     if (
       typeof window === 'undefined' ||
       !canEditMyFlowDirectSavedMapAnchor(flow) ||
-      myFlowDirectAnchorSettingsDraft?.flowSlug !== flow.progress.slug
+      directAnchorDraft?.flowSlug !== flow.progress.slug
     ) return;
 
-    const nextAnchor = myFlowDirectAnchorSettingsDraft.anchor.trim();
+    const nextAnchor = directAnchorDraft.anchor.trim();
     if (!/^\d{4}-\d{2}-\d{2}$/.test(nextAnchor)) {
       setMyFlowDirectAnchorSettingsDraft((current) => current ? {
         ...current,
@@ -11870,149 +13463,220 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
       return;
     }
 
-    if (!flow.savedMap) {
-      const previousRows = getMyFlowRows(flow.bundle, flow.anchor);
-      const nextRows = getMyFlowRows(flow.bundle, nextAnchor);
-      const previousItems = previousRows.map((row) => ({ itemId: row.id, date: row.date }));
-      const nextItems = nextRows.map((row) => ({ itemId: row.id, date: row.date }));
-      const nextDateOverrides = rekeyMyFlowAnchorDatedRecord(myFlowDateOverrides, {
-        flowSlug: flow.progress.slug,
-        previousItems,
-        nextItems,
-      });
-      const nextItemDrafts = rekeyMyFlowAnchorDatedRecord(myFlowItemDrafts, {
-        flowSlug: flow.progress.slug,
-        previousItems,
-        nextItems,
-      });
-      const nextRowById = new Map(nextRows.map((row) => [row.id, row]));
-      const nextChecks = { ...flow.checks };
-      previousRows.forEach((previousRow) => {
-        const nextRow = nextRowById.get(previousRow.id);
-        if (!nextRow) return;
-        const previousCheckIds = getMyFlowCheckIds(flow.bundle, previousRow.id, flow.anchor);
-        const nextCheckIds = getMyFlowCheckIds(flow.bundle, nextRow.id, nextAnchor);
-        if (
-          previousCheckIds.length !== nextCheckIds.length ||
-          previousCheckIds.every((checkId, index) => checkId === nextCheckIds[index])
-        ) return;
-        const previousValues = previousCheckIds.map((checkId) => ({
-          present: Object.prototype.hasOwnProperty.call(nextChecks, checkId),
-          value: nextChecks[checkId],
-        }));
-        previousCheckIds.forEach((checkId) => delete nextChecks[checkId]);
-        nextCheckIds.forEach((checkId, index) => {
-          if (previousValues[index]?.present) nextChecks[checkId] = previousValues[index].value;
+    const locked = await withFlowUserDataWriteLock(() => {
+      const currentFlow = getLockedMyFlowExecutionContext(
+        flow,
+        directAnchorDraft.expectedFlowFingerprint,
+      );
+      if (!currentFlow) {
+        return { ok: false as const, feedback: '저장된 계획이 바뀌었습니다. 최신 내용을 확인한 뒤 다시 시도해 주세요.' };
+      }
+      if (!currentFlow.savedMap) {
+        const updatedAt = new Date().toISOString();
+        const previousAnchor = currentFlow.anchor;
+        const previousRows = getMyFlowRows(currentFlow.bundle, previousAnchor);
+        const nextRows = getMyFlowRows(currentFlow.bundle, nextAnchor);
+        const previousItems = previousRows.map((row) => ({ itemId: row.id, date: row.date }));
+        const nextItems = nextRows.map((row) => ({ itemId: row.id, date: row.date }));
+        const nextDateOverrides = rekeyMyFlowAnchorDatedRecord(
+          currentFlow.dateOverrides,
+          { flowSlug: currentFlow.progress.slug, previousItems, nextItems },
+        );
+        const nextItemDrafts = rekeyMyFlowAnchorDatedRecord(
+          currentFlow.itemDrafts,
+          { flowSlug: currentFlow.progress.slug, previousItems, nextItems },
+        );
+        const nextRowById = new Map(nextRows.map((row) => [row.id, row]));
+        const nextChecks = { ...currentFlow.checks };
+        previousRows.forEach((previousRow) => {
+          const nextRow = nextRowById.get(previousRow.id);
+          if (!nextRow) return;
+          const previousCheckIds = getMyFlowCheckIds(currentFlow.bundle, previousRow.id, previousAnchor);
+          const nextCheckIds = getMyFlowCheckIds(currentFlow.bundle, nextRow.id, nextAnchor);
+          if (
+            previousCheckIds.length !== nextCheckIds.length ||
+            previousCheckIds.every((checkId, index) => checkId === nextCheckIds[index])
+          ) return;
+          const previousValues = previousCheckIds.map((checkId) => ({
+            present: Object.prototype.hasOwnProperty.call(nextChecks, checkId),
+            value: nextChecks[checkId],
+          }));
+          previousCheckIds.forEach((checkId) => delete nextChecks[checkId]);
+          nextCheckIds.forEach((checkId, index) => {
+            if (previousValues[index]?.present) nextChecks[checkId] = previousValues[index].value;
+          });
         });
-      });
-      saveChecks(flow.progress.slug, nextChecks);
-      const savedRecord = getSavedFlowRecord(flow.progress.slug);
-      saveFlowRecord(flow.progress.slug, {
-        selectedArtifactMode: savedRecord?.selectedArtifactMode ?? 'calendar',
+        const savedRecord = buildSavedFlowRecord(currentFlow.progress.slug, {
+          selectedArtifactMode: currentFlow.savedRecord?.selectedArtifactMode ?? 'calendar',
+          anchor: nextAnchor,
+        }, currentFlow.savedRecord, updatedAt);
+        const keyPlan = buildFlowUserDataMutationStorageKeyPlan({
+          flowSlugs: [currentFlow.progress.slug],
+        });
+        const expectedRaw = captureFlowUserDataMutationExpectedRaw(window.localStorage, keyPlan);
+        const transaction = runFlowUserDataMutationTransaction({
+          storage: window.localStorage,
+          keyPlan,
+          expectedRaw,
+          apply(storage) {
+            storage.setItem(keyPlan.checkKeysBySlug[currentFlow.progress.slug]!, JSON.stringify(nextChecks));
+            storage.setItem(keyPlan.savedFlowKeysBySlug[currentFlow.progress.slug]!, JSON.stringify(savedRecord));
+            recordCanonicalFlowWrite(storage, currentFlow.progress.slug, updatedAt);
+            storage.setItem(
+              keyPlan.anchorKeysBySlug[currentFlow.progress.slug]!,
+              JSON.stringify({ mode: 'custom', anchor: nextAnchor }),
+            );
+            storage.setItem(MY_FLOW_DATE_OVERRIDES_STORAGE_KEY, JSON.stringify(nextDateOverrides));
+            storage.setItem(MY_FLOW_ITEM_DRAFTS_STORAGE_KEY, JSON.stringify(nextItemDrafts));
+            storage.setItem(FLOW_USER_DATA_LAST_VISIT_STORAGE_KEY, updatedAt);
+          },
+        });
+        if (!transaction.ok) {
+          return { ok: false as const, feedback: '기준일을 저장하지 못했습니다. 잠시 뒤 다시 시도해 주세요.' };
+        }
+        return { ok: true as const, nextDateOverrides, nextItemDrafts };
+      }
+
+      const storedMap = currentFlow.savedMap;
+      if (
+        !storedMap
+        || storedMap.mapId !== flow.savedMap?.mapId
+        || (directAnchorDraft.mapId && storedMap.mapId !== directAnchorDraft.mapId)
+      ) {
+        return { ok: false as const, feedback: '저장된 계획이 바뀌었습니다. 최신 내용을 확인한 뒤 다시 시도해 주세요.' };
+      }
+      const sourceSnapshot = toSourceBackedSavedSnapshot(storedMap);
+      const baselineRecord = currentFlow.mapPersistence;
+      if (!baselineRecord) {
+        return { ok: false as const, feedback: '저장된 일정 정보를 다시 확인해 주세요.' };
+      }
+      const updatedAt = new Date().toISOString();
+      const adjusted = buildSourceBackedFlowMapAnchorAdjustment(sourceSnapshot, {
         anchor: nextAnchor,
+        savedAt: updatedAt,
+        baselineRecord,
       });
-      saveStoredAnchor(flow.progress.slug, { mode: 'custom', anchor: nextAnchor });
-      saveStoredMyFlowDateOverrides(nextDateOverrides);
-      saveStoredMyFlowItemDrafts(nextItemDrafts);
-      setMyFlowDateOverrides(nextDateOverrides);
-      setMyFlowItemDrafts(nextItemDrafts);
-      setMyFlowSelectedDate(nextAnchor);
-      setMyFlowVisibleMonth(getMyFlowMonthStart(nextAnchor));
-      resetMyFlowRowDetailState();
-      setMyFlowDirectAnchorSettingsDraft(null);
+      if (!adjusted) {
+        return { ok: false as const, feedback: '기준일을 저장하지 못했습니다.' };
+      }
+      const mapFlows: LockedMyFlowMutationContext[] = [];
+      for (const flowSlug of sourceSnapshot.flowSlugs) {
+        const renderedMapFlow = savedFlows.find((candidate) => candidate.progress.slug === flowSlug);
+        const expectedFingerprint = directAnchorDraft.expectedMapFlowFingerprints[flowSlug];
+        if (!renderedMapFlow || !expectedFingerprint) {
+          return { ok: false as const, feedback: '함께 저장된 계획 구성이 바뀌었습니다. 최신 내용을 확인해 주세요.' };
+        }
+        const freshMapFlow = getLockedMyFlowExecutionContext(renderedMapFlow, expectedFingerprint);
+        if (!freshMapFlow || freshMapFlow.savedMap?.mapId !== sourceSnapshot.mapId) {
+          return { ok: false as const, feedback: '함께 저장된 계획 구성이 바뀌었습니다. 최신 내용을 확인해 주세요.' };
+        }
+        mapFlows.push(freshMapFlow);
+      }
+
+      let nextDateOverrides = currentFlow.dateOverrides;
+      let nextItemDrafts = currentFlow.itemDrafts;
+      const nextChecksBySlug: Record<string, Record<string, boolean>> = {};
+      const nextSavedRecordsBySlug: Record<string, SavedFlowRecord> = {};
+      mapFlows.forEach((candidate) => {
+        const previousAnchor = candidate.anchor || sourceSnapshot.anchor || '';
+        const previousRows = getMyFlowRows(candidate.bundle, previousAnchor);
+        const nextRows = getMyFlowRows(candidate.bundle, nextAnchor);
+        const previousItems = previousRows.map((row) => ({ itemId: row.id, date: row.date }));
+        const nextItems = nextRows.map((row) => ({ itemId: row.id, date: row.date }));
+        nextDateOverrides = rekeyMyFlowAnchorDatedRecord(nextDateOverrides, {
+          flowSlug: candidate.progress.slug,
+          previousItems,
+          nextItems,
+        });
+        nextItemDrafts = rekeyMyFlowAnchorDatedRecord(nextItemDrafts, {
+          flowSlug: candidate.progress.slug,
+          previousItems,
+          nextItems,
+        });
+        const nextRowById = new Map(nextRows.map((row) => [row.id, row]));
+        const nextChecks = { ...candidate.checks };
+        previousRows.forEach((previousRow) => {
+          const nextRow = nextRowById.get(previousRow.id);
+          if (!nextRow) return;
+          const previousCheckIds = getMyFlowCheckIds(
+            candidate.bundle,
+            previousRow.id,
+            previousAnchor,
+          );
+          const nextCheckIds = getMyFlowCheckIds(candidate.bundle, nextRow.id, nextAnchor);
+          if (
+            previousCheckIds.length !== nextCheckIds.length ||
+            previousCheckIds.every((checkId, index) => checkId === nextCheckIds[index])
+          ) return;
+          const previousValues = previousCheckIds.map((checkId) => ({
+            present: Object.prototype.hasOwnProperty.call(nextChecks, checkId),
+            value: nextChecks[checkId],
+          }));
+          previousCheckIds.forEach((checkId) => delete nextChecks[checkId]);
+          nextCheckIds.forEach((checkId, index) => {
+            if (previousValues[index]?.present) nextChecks[checkId] = previousValues[index].value;
+          });
+        });
+        nextChecksBySlug[candidate.progress.slug] = nextChecks;
+        nextSavedRecordsBySlug[candidate.progress.slug] = buildSavedFlowRecord(candidate.progress.slug, {
+          selectedArtifactMode: candidate.savedRecord?.selectedArtifactMode ?? 'calendar',
+          anchor: nextAnchor,
+        }, candidate.savedRecord, updatedAt);
+      });
+      const keyPlan = buildFlowUserDataMutationStorageKeyPlan({
+        flowSlugs: mapFlows.map((candidate) => candidate.progress.slug),
+        mapIds: [adjusted.snapshot.mapId],
+      });
+      const expectedRaw = captureFlowUserDataMutationExpectedRaw(window.localStorage, keyPlan);
+      const transaction = runFlowUserDataMutationTransaction({
+        storage: window.localStorage,
+        keyPlan,
+        expectedRaw,
+        apply(storage) {
+          mapFlows.forEach((candidate) => {
+            const flowSlug = candidate.progress.slug;
+            storage.setItem(keyPlan.checkKeysBySlug[flowSlug]!, JSON.stringify(nextChecksBySlug[flowSlug]));
+            storage.setItem(keyPlan.savedFlowKeysBySlug[flowSlug]!, JSON.stringify(nextSavedRecordsBySlug[flowSlug]));
+            recordCanonicalFlowWrite(storage, flowSlug, updatedAt);
+            storage.setItem(
+              keyPlan.anchorKeysBySlug[flowSlug]!,
+              JSON.stringify({ mode: 'custom', anchor: nextAnchor }),
+            );
+          });
+          storage.setItem(MY_FLOW_DATE_OVERRIDES_STORAGE_KEY, JSON.stringify(nextDateOverrides));
+          storage.setItem(MY_FLOW_ITEM_DRAFTS_STORAGE_KEY, JSON.stringify(nextItemDrafts));
+          storage.setItem(keyPlan.mapSnapshotKeysById[adjusted.snapshot.mapId]!, JSON.stringify(adjusted.snapshot));
+          storage.setItem(keyPlan.mapPersistenceKeysById[adjusted.snapshot.mapId]!, JSON.stringify(adjusted.persistenceRecord));
+          storage.setItem(FLOW_USER_DATA_LAST_VISIT_STORAGE_KEY, updatedAt);
+        },
+      });
+      if (!transaction.ok) {
+        return { ok: false as const, feedback: '기준일을 저장하지 못했습니다. 잠시 뒤 다시 시도해 주세요.' };
+      }
+      return { ok: true as const, nextDateOverrides, nextItemDrafts };
+    });
+    if (!locked.ok) {
+      setMyFlowDirectAnchorSettingsDraft((current) => current ? {
+        ...current,
+        feedback: '기준일을 저장할 잠금을 확보하지 못했습니다. 잠시 후 다시 시도해 주세요.',
+      } : current);
+      return;
+    }
+    if (!locked.value.ok) {
       refreshSavedFlowState();
-      return;
-    }
-
-    const sourceSnapshot = toSourceBackedSavedSnapshot(flow.savedMap);
-    const baselineRecord = savedFlowMapPersistenceById[sourceSnapshot.mapId];
-    if (!baselineRecord) {
       setMyFlowDirectAnchorSettingsDraft((current) => current ? {
         ...current,
-        feedback: '저장된 일정 정보를 다시 확인해 주세요.',
+        feedback: locked.value.feedback,
       } : current);
       return;
     }
-    const savedAt = new Date().toISOString();
-    const adjusted = buildSourceBackedFlowMapAnchorAdjustment(sourceSnapshot, {
-      anchor: nextAnchor,
-      savedAt,
-      baselineRecord,
-    });
-    if (!adjusted) {
-      setMyFlowDirectAnchorSettingsDraft((current) => current ? {
-        ...current,
-        feedback: '기준일을 저장하지 못했습니다.',
-      } : current);
-      return;
-    }
-
-    let nextDateOverrides = myFlowDateOverrides;
-    let nextItemDrafts = myFlowItemDrafts;
-    const mapFlows = savedFlows.filter((candidate) => candidate.savedMap?.mapId === sourceSnapshot.mapId);
-    mapFlows.forEach((candidate) => {
-      const previousRows = getMyFlowRows(candidate.bundle, candidate.anchor);
-      const nextRows = getMyFlowRows(candidate.bundle, nextAnchor);
-      const previousItems = previousRows.map((row) => ({ itemId: row.id, date: row.date }));
-      const nextItems = nextRows.map((row) => ({ itemId: row.id, date: row.date }));
-      nextDateOverrides = rekeyMyFlowAnchorDatedRecord(nextDateOverrides, {
-        flowSlug: candidate.progress.slug,
-        previousItems,
-        nextItems,
-      });
-      nextItemDrafts = rekeyMyFlowAnchorDatedRecord(nextItemDrafts, {
-        flowSlug: candidate.progress.slug,
-        previousItems,
-        nextItems,
-      });
-
-      const nextRowById = new Map(nextRows.map((row) => [row.id, row]));
-      const nextChecks = { ...candidate.checks };
-      previousRows.forEach((previousRow) => {
-        const nextRow = nextRowById.get(previousRow.id);
-        if (!nextRow) return;
-        const previousCheckIds = getMyFlowCheckIds(candidate.bundle, previousRow.id, candidate.anchor);
-        const nextCheckIds = getMyFlowCheckIds(candidate.bundle, nextRow.id, nextAnchor);
-        if (
-          previousCheckIds.length !== nextCheckIds.length ||
-          previousCheckIds.every((checkId, index) => checkId === nextCheckIds[index])
-        ) return;
-        const previousValues = previousCheckIds.map((checkId) => ({
-          present: Object.prototype.hasOwnProperty.call(nextChecks, checkId),
-          value: nextChecks[checkId],
-        }));
-        previousCheckIds.forEach((checkId) => delete nextChecks[checkId]);
-        nextCheckIds.forEach((checkId, index) => {
-          if (previousValues[index]?.present) nextChecks[checkId] = previousValues[index].value;
-        });
-      });
-      saveChecks(candidate.progress.slug, nextChecks);
-
-      const savedRecord = getSavedFlowRecord(candidate.progress.slug);
-      saveFlowRecord(candidate.progress.slug, {
-        selectedArtifactMode: savedRecord?.selectedArtifactMode ?? 'calendar',
-        anchor: nextAnchor,
-      });
-      saveStoredAnchor(candidate.progress.slug, { mode: 'custom', anchor: nextAnchor });
-    });
-
-    saveStoredMyFlowDateOverrides(nextDateOverrides);
-    saveStoredMyFlowItemDrafts(nextItemDrafts);
-    setMyFlowDateOverrides(nextDateOverrides);
-    setMyFlowItemDrafts(nextItemDrafts);
-    window.localStorage.setItem(
-      getSourceBackedFlowMapSnapshotStorageKey(adjusted.snapshot.mapId),
-      JSON.stringify(adjusted.snapshot),
-    );
-    window.localStorage.setItem(
-      getSourceBackedFlowMapPersistenceStorageKey(adjusted.snapshot.mapId),
-      JSON.stringify(adjusted.persistenceRecord),
-    );
+    refreshSavedFlowState();
+    setMyFlowDateOverrides(locked.value.nextDateOverrides);
+    setMyFlowItemDrafts(locked.value.nextItemDrafts);
     setMyFlowSelectedDate(nextAnchor);
     setMyFlowVisibleMonth(getMyFlowMonthStart(nextAnchor));
     resetMyFlowRowDetailState();
     setMyFlowDirectAnchorSettingsDraft(null);
-    refreshSavedFlowState();
   };
 
   const getPostSaveContinuationRow = (): MyFlowCalendarRow | null => {
@@ -13177,6 +14841,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
             q3CopyEnabled={myFlowQ3CopyEnabled}
             receiptStorageKey={FLOW_EXPORT_RECEIPTS_STORAGE_KEY}
             returnFocusSelector={currentItemActiveTransfer.returnFocusSelector}
+            successReturnFocusSelector={currentItemActiveTransfer.successReturnFocusSelector}
             onConfirm={() => runSavedResultTransfer(row.flow)}
             onCancel={() => setMyFlowResultTransfer(null)}
             onRetryEffect={() => runSavedResultTransfer(row.flow)}
@@ -14088,7 +15753,12 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
                   data-testid="personal-draft-occurrence-resume"
                   aria-label={`${editorDraft.title} ${getOccurrenceCommandLabels().resume}`}
                   className="min-h-9 rounded-md border border-blue-200 bg-white px-3 py-2 text-xs font-semibold text-blue-700 hover:border-blue-300"
-                  onClick={() => setPersonalDraftOccurrenceExecutionState(row.flow, row, 'reopened')}
+                  onClick={() => setPersonalDraftOccurrenceExecutionState(
+                    row.flow,
+                    row,
+                    'reopened',
+                    occurrenceExecutionState,
+                  )}
                 >
                   {getOccurrenceCommandLabels().resume}
                 </button>
@@ -14099,7 +15769,12 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
                   data-testid="personal-draft-occurrence-skip"
                   aria-label={`${editorDraft.title} ${getOccurrenceCommandLabels().skip}`}
                   className="min-h-9 rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:border-slate-300"
-                  onClick={() => setPersonalDraftOccurrenceExecutionState(row.flow, row, 'skipped')}
+                  onClick={() => setPersonalDraftOccurrenceExecutionState(
+                    row.flow,
+                    row,
+                    'skipped',
+                    occurrenceExecutionState,
+                  )}
                 >
                   {getOccurrenceCommandLabels().skip}
                 </button>
@@ -14110,7 +15785,12 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
                   data-testid="personal-draft-occurrence-hold"
                   aria-label={`${editorDraft.title} ${getOccurrenceCommandLabels().hold}`}
                   className="min-h-9 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-800 hover:border-amber-300"
-                  onClick={() => setPersonalDraftOccurrenceExecutionState(row.flow, row, 'held')}
+                  onClick={() => setPersonalDraftOccurrenceExecutionState(
+                    row.flow,
+                    row,
+                    'held',
+                    occurrenceExecutionState,
+                  )}
                 >
                   {getOccurrenceCommandLabels().hold}
                 </button>
@@ -15265,10 +16945,11 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
         <button
           data-testid="my-flow-save-undo"
           type="button"
+          aria-label="방금 저장한 계획 취소"
           className="min-h-10 rounded-lg border border-emerald-300 bg-white px-3 py-2 text-xs font-semibold text-emerald-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
           onClick={undoMyFlowSave}
         >
-          되돌리기
+          방금 저장 취소
         </button>
         <button
           data-testid="my-flow-save-banner-dismiss"
@@ -16324,6 +18005,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
             q3CopyEnabled={myFlowQ3CopyEnabled}
             receiptStorageKey={FLOW_EXPORT_RECEIPTS_STORAGE_KEY}
             returnFocusSelector={activeTransfer.returnFocusSelector}
+            successReturnFocusSelector={activeTransfer.successReturnFocusSelector}
             onConfirm={() => runSavedResultTransfer(flow)}
             onCancel={() => setMyFlowResultTransfer(null)}
             onRetryEffect={() => runSavedResultTransfer(flow)}
@@ -16381,6 +18063,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
               destination,
               plan,
               '[data-testid="my-flow-export-entry"]',
+              `[data-testid="my-flow-export-${destination}"]`,
             );
             return;
           }
@@ -17328,6 +19011,16 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
   const myFlowCompactToday = buildMyFlowCompactTodayModel(
     myFlowCrossFlowTodoProjection.rows,
   );
+  const myFlowCompactTodayOverdueCount = myFlowCrossFlowTodoProjection.rows.filter((entry) => (
+    entry.groupId === 'today'
+    && !entry.completed
+    && Boolean(entry.date)
+    && entry.date! < myFlowTodayDate
+  )).length;
+  const myFlowCompactTodayCurrentCount = Math.max(
+    0,
+    myFlowCompactToday.total - myFlowCompactTodayOverdueCount,
+  );
   const myFlowCrossFlowTodoDateGroups = buildMyFlowCrossFlowTodoDateGroups({
     today: myFlowTodayDate,
     rows: myFlowCrossFlowTodoProjection.rows,
@@ -17355,6 +19048,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
         data-today-source={myFlowCompactToday.source}
         data-write-owner={myFlowCompactToday.writeOwner}
         data-today-count={myFlowCompactToday.total}
+        data-overdue-count={myFlowCompactTodayOverdueCount}
         aria-labelledby="my-flow-compact-today-title"
         className="rounded-[var(--flowme-radius-card)] border border-[var(--flowme-border)] bg-[var(--flowme-surface)]"
       >
@@ -17367,37 +19061,43 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
               오늘 할 일
             </h2>
           </div>
-          <span className="text-xs font-semibold text-[var(--flowme-text-secondary)]">
-            {myFlowCompactToday.total}개
+          <span className="text-right text-xs font-semibold text-[var(--flowme-text-secondary)]">
+            {myFlowCompactTodayOverdueCount > 0
+              ? `지난 ${myFlowCompactTodayOverdueCount} · 오늘 ${myFlowCompactTodayCurrentCount}`
+              : `${myFlowCompactToday.total}개`}
           </span>
         </header>
         <div className="divide-y divide-[var(--flowme-border)]">
-          {myFlowCompactToday.items.map((entry) => (
-            <button
-              key={entry.key}
-              type="button"
-              data-testid="my-flow-today-item"
-              data-saved-identity={entry.flowSlug}
-              data-item-id={entry.stableItemId}
-              data-cross-flow-key={entry.key}
-              className="grid min-h-14 w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-3 py-2 text-left hover:bg-[var(--flowme-surface-subtle)] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]"
-              aria-label={`${entry.flowTitle} · ${entry.title} 열기`}
-              onClick={() => {
-                setMyFlowWorkspaceSection('execute');
-                openMyFlowLibraryPlanRoute(entry.flowSlug);
-                setSelectedSavedFlowSlug(entry.flowSlug);
-                openMyFlowRowFromFlowTab(entry.row.flow, entry.row);
-              }}
-            >
-              <span className="min-w-0">
-                <span className="block truncate text-sm font-semibold text-[var(--flowme-text)]">{entry.title}</span>
-                <span className="mt-0.5 block truncate text-[11px] font-semibold text-[var(--flowme-text-secondary)]">
-                  {entry.flowTitle}{entry.date && entry.date < myFlowTodayDate ? ` · ${formatMyFlowDisplayDate(entry.date)}부터` : ''}
+          {myFlowCompactToday.items.map((entry) => {
+            const overdue = Boolean(entry.date && entry.date < myFlowTodayDate);
+            return (
+              <button
+                key={entry.key}
+                type="button"
+                data-testid="my-flow-today-item"
+                data-saved-identity={entry.flowSlug}
+                data-item-id={entry.stableItemId}
+                data-cross-flow-key={entry.key}
+                data-time-state={overdue ? 'overdue' : 'today'}
+                className="grid min-h-14 w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-3 py-2 text-left hover:bg-[var(--flowme-surface-subtle)] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]"
+                aria-label={`${overdue ? '지난 할 일 · ' : ''}${entry.flowTitle} · ${entry.title} 열기`}
+                onClick={() => {
+                  setMyFlowWorkspaceSection('execute');
+                  openMyFlowLibraryPlanRoute(entry.flowSlug);
+                  setSelectedSavedFlowSlug(entry.flowSlug);
+                  openMyFlowRowFromFlowTab(entry.row.flow, entry.row);
+                }}
+              >
+                <span className="min-w-0">
+                  <span className="block truncate text-sm font-semibold text-[var(--flowme-text)]">{entry.title}</span>
+                  <span className="mt-0.5 block truncate text-[11px] font-semibold text-[var(--flowme-text-secondary)]">
+                    {overdue ? '지난 할 일 · ' : ''}{entry.flowTitle}{overdue ? ` · ${formatMyFlowDisplayDate(entry.date!)}부터` : ''}
+                  </span>
                 </span>
-              </span>
-              <span aria-hidden="true" className="text-base text-[var(--flowme-text-tertiary)]">›</span>
-            </button>
-          ))}
+                <span aria-hidden="true" className="text-base text-[var(--flowme-text-tertiary)]">›</span>
+              </button>
+            );
+          })}
         </div>
         {myFlowCompactToday.hiddenCount > 0 ? (
           <p className="border-t border-[var(--flowme-border)] px-3 py-2 text-xs font-semibold text-[var(--flowme-text-secondary)]">
@@ -19199,8 +20899,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
               {renderMyFlowSaveBanner()}
               {!isFocusedMyFlowWorkspace ? <header data-testid="my-flow-library-heading" className="flex items-end justify-between gap-3 border-b border-slate-200 pb-3 md:hidden">
                 <div>
-                  <p className="text-sm font-semibold text-blue-700">저장한 계획 관리</p>
-                  <h2 className="mt-1 text-xl font-semibold text-slate-950">{myFlowQ3Copy.savedLibrary.sectionTitle}</h2>
+                  <h2 className="text-xl font-semibold text-slate-950">{myFlowQ3Copy.savedLibrary.sectionTitle}</h2>
                 </div>
                 <span data-testid="my-flow-saved-count" className="shrink-0 text-xs font-semibold text-slate-500">
                   {myFlowLocalSummary.flowCount}개
@@ -19215,9 +20914,9 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
                    data-p32-marker="P32-02-FOCUSED-MY-FLOW-WORKSPACE"
                    data-p35-marker="P35-MY-LIBRARY-ONLY"
                    data-p35-r11-marker="P35-R11-WIDE-EXECUTION-INSPECTOR"
-                   className="hidden min-w-0 gap-0 border-y border-[var(--flowme-border)] bg-white md:grid md:grid-cols-[17.5rem_minmax(0,1fr)]"
+                   className={`hidden min-w-0 gap-0 border-y border-[var(--flowme-border)] bg-white md:grid ${myFlowLibrarySelectedFlow ? 'md:grid-cols-[minmax(22rem,36%)_minmax(0,1fr)]' : 'md:grid-cols-1'}`}
                 >
-                  <aside data-testid="my-flow-library-rail" className="min-w-0 border-r border-[var(--flowme-border)] bg-[var(--flowme-surface-subtle)]">
+                  <aside data-testid="my-flow-library-rail" className={`min-w-0 bg-[var(--flowme-surface-subtle)] ${myFlowLibrarySelectedFlow ? 'border-r border-[var(--flowme-border)]' : ''}`}>
                     <div className="border-b border-[var(--flowme-border)] p-3">
                       {isFocusedMyFlowWorkspace ? (
                         <button
@@ -19233,8 +20932,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
                       ) : null}
                       <div className="flex items-center justify-between gap-3">
                         <div>
-                          <p className="text-[11px] font-semibold text-[var(--flowme-text-tertiary)]">라이브러리</p>
-                          <h3 className="mt-0.5 text-base font-semibold text-[var(--flowme-text)]">{myFlowQ3Copy.savedLibrary.sectionTitle}</h3>
+                          <h3 className="text-base font-semibold text-[var(--flowme-text)]">{myFlowQ3Copy.savedLibrary.sectionTitle}</h3>
                         </div>
                         <span className="text-xs font-semibold text-[var(--flowme-text-secondary)]">{flowListVisibleFlows.length}개</span>
                       </div>
@@ -19275,12 +20973,12 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
                     <div
                       ref={myFlowLibraryRailRef}
                       data-testid="my-flow-library-scroll-container"
-                      className="max-h-[calc(100dvh-18rem)] overflow-y-auto overscroll-contain"
+                      className={`max-h-[calc(100dvh-18rem)] overflow-y-auto overscroll-contain ${myFlowLibrarySelectedFlow ? '' : 'md:grid md:grid-cols-2 xl:grid-cols-3'}`}
                     >
                       {flowListVisibleFlows.map(renderMyFlowLibraryRailRow)}
                     </div>
                   </aside>
-                  <main data-testid="my-flow-library-detail" className="min-w-0 p-4 xl:p-5">
+                  <main data-testid="my-flow-library-detail" className={myFlowLibrarySelectedFlow ? 'min-w-0 p-4 xl:p-5' : 'hidden'}>
                     {myFlowLibrarySelectedFlow
                       ? renderSavedFlowOverviewCard(myFlowLibrarySelectedFlow, { forceWholeFlowOutline: true, workspace: true })
                       : flowListVisibleFlows.length > 0
@@ -19749,6 +21447,32 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
             </div>
           </div>
         </FlowBottomSheet>
+      ) : null}
+
+      {myFlowPermanentDeleteRecoveryRequired ? (
+        <div
+          data-testid="my-flow-permanent-delete-recovery-required"
+          data-saved-plan-id={myFlowPermanentDeleteRecoveryRequired.savedPlanId}
+          data-recovery-phase={myFlowPermanentDeleteRecoveryRequired.phase ?? 'unverified'}
+          role="alert"
+          className="fixed inset-x-3 bottom-[var(--flowme-mobile-workbar-bottom)] z-[96] mx-auto max-w-lg rounded-xl border border-rose-300 bg-rose-50 px-4 py-3 text-rose-950 shadow-xl md:bottom-6"
+        >
+          <p className="text-sm font-bold">
+            {myFlowPermanentDeleteRecoveryRequired.flowTitle} 삭제 상태를 확인해 주세요.
+          </p>
+          <p className="mt-1 break-keep text-xs font-medium leading-5">
+            {myFlowPermanentDeleteRecoveryRequired.message}
+          </p>
+          <div className="mt-3 flex justify-end">
+            <button
+              type="button"
+              className={FLOW_UI_SECONDARY_ACTION_CLASS}
+              onClick={() => setMyFlowPermanentDeleteRecoveryRequired(null)}
+            >
+              닫기
+            </button>
+          </div>
+        </div>
       ) : null}
 
       {myFlowReceiptCleanupFailure ? (
@@ -21070,9 +22794,11 @@ export function PublicFlow({ slug }: { slug: string }) {
   const publicBranchHistoryActionRef = useRef<(() => void) | null>(null);
   const publicSaveDateIntentRef = useRef<ReturnType<typeof resolvePublicDateIntent> | null>(null);
   const publicSaveSubmittingRef = useRef(false);
+  const publicSaveLockPendingRef = useRef(false);
   const publicSaveRecoveryJournalRef = useRef<PublicFlowSaveRecoveryJournal | null>(null);
   const publicSaveRecoveryResumeModeRef = useRef<'retry' | 'editing'>('retry');
   const publicSavePostCommitNavigationRef = useRef(false);
+  const publicSaveExpectedOverwriteRawRef = useRef<string | null>(null);
   const publicEditorPlanCommitRef = useRef<(draft: Readonly<PublicFlowEditorPlanDraft>) => void>(
     () => undefined,
   );
@@ -21366,6 +23092,7 @@ export function PublicFlow({ slug }: { slug: string }) {
     publicSaveSubmittingRef.current = false;
     publicSaveRecoveryJournalRef.current = null;
     publicSaveRecoveryResumeModeRef.current = 'retry';
+    publicSaveExpectedOverwriteRawRef.current = null;
 
     if (publicSessionProjectionEnabled) {
       publicLegacyStorageSnapshotRef.current = null;
@@ -21393,45 +23120,55 @@ export function PublicFlow({ slug }: { slug: string }) {
         sourceFlowSlug: slug,
       });
       if (recoveryJournal) {
-        const commitStatus = inspectPublicSaveRecoveryCommit(recoveryJournal);
-        if (commitStatus === 'committed') {
-          clearPublicSaveRecoveryJournal(recoveryJournal.intent.idempotencyKey);
-          publicSaveRecoveryJournalRef.current = null;
-          window.location.replace(getMyFlowWorkspaceHref({
-            flowSlug: recoveryJournal.choice.personalCopyKey,
-          }));
-          return;
-        } else {
-          publicSaveRecoveryJournalRef.current = recoveryJournal;
-          publicSaveRecoveryResumeModeRef.current = 'editing';
-          rehydratePublicSaveSessionDraft(recoveryJournal.sessionDraft);
+        publicSaveRecoveryJournalRef.current = recoveryJournal;
+        publicSaveRecoveryResumeModeRef.current = 'editing';
+        publicSaveExpectedOverwriteRawRef.current = recoveryJournal.choice.kind === 'overwrite'
+          ? recoveryJournal.rawBackup.values[
+              `flow:saved:${recoveryJournal.choice.personalCopyKey}`
+            ] ?? null
+          : null;
+        rehydratePublicSaveSessionDraft(recoveryJournal.sessionDraft);
+        void withFlowUserDataWriteLock(() => {
+          const commitStatus = inspectPublicSaveRecoveryCommit(recoveryJournal);
           const recovery = commitStatus === 'uncommitted'
             ? restorePublicSaveRecovery(recoveryJournal)
             : null;
+          return { commitStatus, recovery };
+        }).then((locked) => {
+          const commitStatus = locked.ok ? locked.value.commitStatus : 'unreadable';
+          const recovery = locked.ok ? locked.value.recovery : null;
+          if (commitStatus === 'committed') {
+            clearPublicSaveRecoveryJournal(recoveryJournal.intent.idempotencyKey);
+            publicSaveRecoveryJournalRef.current = null;
+            window.location.replace(getMyFlowWorkspaceHref({
+              flowSlug: recoveryJournal.choice.personalCopyKey,
+            }));
+            return;
+          }
           if (recovery?.complete) {
             clearPublicSaveRecoveryJournal(recoveryJournal.intent.idempotencyKey);
             publicSaveRecoveryJournalRef.current = null;
             setPublicSaveError('중단된 저장을 취소하고 저장 전 상태로 복구했어요.');
-          } else {
-            const hasConflict = Boolean(recovery?.conflictKeys.length);
-            const error = {
-              code: 'rollback_incomplete',
-              message: commitStatus === 'unreadable'
-                ? publicQ3CopyEnabled
-                  ? '저장 성공 여부를 안전하게 확인하지 못해 자동 복구를 멈췄어요. 현재 저장값은 건드리지 않았습니다. 이 화면을 닫지 말고 다시 확인해 주세요.'
-                  : '저장 완료 여부를 안전하게 확인하지 못해 자동 복구를 멈췄어요. 현재 저장값은 건드리지 않았습니다. 이 화면을 닫지 말고 다시 확인해 주세요.'
-                : hasConflict
-                ? '저장 중단 뒤 다른 변경이 생겨 자동 복구를 멈췄어요. 현재 변경은 건드리지 않았습니다. 이 화면을 닫지 말고 저장 상태를 확인해 주세요.'
-                : '중단된 저장의 이전 상태를 아직 모두 복구하지 못했어요. 이 화면을 닫지 말고 다시 복구해 주세요.',
-            };
-            const recoveredLifecycle = reconstructPublicSaveRecoveryRequiredState(
-              recoveryJournal,
-              error,
-            );
-            if (recoveredLifecycle) setPublicSaveLifecycle(recoveredLifecycle);
-            setPublicSaveError(error.message);
+            return;
           }
-        }
+          const hasConflict = Boolean(recovery?.conflictKeys.length);
+          const error = {
+            code: 'rollback_incomplete',
+            message: commitStatus === 'unreadable'
+              ? publicQ3CopyEnabled
+                ? '저장 성공 여부를 안전하게 확인하지 못해 자동 복구를 멈췄어요. 현재 저장값은 건드리지 않았습니다. 이 화면을 닫지 말고 다시 확인해 주세요.'
+                : '저장 완료 여부를 안전하게 확인하지 못해 자동 복구를 멈췄어요. 현재 저장값은 건드리지 않았습니다. 이 화면을 닫지 말고 다시 확인해 주세요.'
+              : hasConflict
+              ? '저장 중단 뒤 다른 변경이 생겨 자동 복구를 멈췄어요. 현재 변경은 건드리지 않았습니다. 이 화면을 닫지 말고 저장 상태를 확인해 주세요.'
+              : '중단된 저장의 이전 상태를 아직 모두 복구하지 못했어요. 이 화면을 닫지 말고 다시 복구해 주세요.',
+          };
+          const recoveredLifecycle = reconstructPublicSaveRecoveryRequiredState(
+            recoveryJournal,
+            error,
+          );
+          if (recoveredLifecycle) setPublicSaveLifecycle(recoveredLifecycle);
+          setPublicSaveError(error.message);
+        });
       }
     }
   }, [publicSaveLifecycleEnabled, publicSessionProjectionEnabled, slug]);
@@ -21459,6 +23196,7 @@ export function PublicFlow({ slug }: { slug: string }) {
       publicSaveDateIntentRef.current = null;
       publicSaveRecoveryJournalRef.current = null;
       publicSaveRecoveryResumeModeRef.current = 'retry';
+      publicSaveExpectedOverwriteRawRef.current = null;
       setPublicSaveLifecycle(createPublicSaveLifecycleState(
         createDraftToken(`public-draft:${slug}`),
       ));
@@ -21500,8 +23238,18 @@ export function PublicFlow({ slug }: { slug: string }) {
     if (!snapshot || snapshot.slug !== slug || publicLegacyStorageHydratedSlug !== slug) return;
     const serialized = JSON.stringify(itemStates);
     if (snapshot.itemStates === serialized) return;
-    saveItemStates(slug, itemStates);
-    snapshot.itemStates = serialized;
+    void withFlowUserDataWriteLock(() => {
+      const activeSnapshot = publicLegacyStorageSnapshotRef.current;
+      if (!activeSnapshot || activeSnapshot.slug !== slug) return false;
+      const currentSerialized = JSON.stringify(getItemStates(slug));
+      if (currentSerialized !== activeSnapshot.itemStates) return false;
+      saveItemStates(slug, itemStates);
+      activeSnapshot.itemStates = serialized;
+      return true;
+    }).then((locked) => {
+      if (locked.ok && locked.value) return;
+      setPublicSaveError('다른 탭에서 이 계획이 바뀌어 현재 항목 변경은 저장하지 않았어요. 최신 저장본을 확인해 주세요.');
+    });
   }, [itemStates, publicLegacyStorageHydratedSlug, publicSessionProjectionEnabled, slug]);
 
   useEffect(() => {
@@ -22424,14 +24172,19 @@ export function PublicFlow({ slug }: { slug: string }) {
   const focusPublicDateInput = () => {
     document.querySelector<HTMLInputElement>('[data-testid="public-flow-anchor-input"]')?.focus();
   };
-  const focusPublicSaveFailure = () => {
+  const focusPublicSaveFailure = (attempt = 0) => {
     window.requestAnimationFrame(() => {
       const candidates = Array.from(document.querySelectorAll<HTMLElement>(
         '[data-testid="public-flow-save-error-mobile"], [data-testid="public-flow-save-error-desktop"], [data-testid="public-flow-existing-copy-dialog"] [role="alert"]',
       ));
-      candidates.find((candidate) => candidate.getClientRects().length > 0)?.focus({
-        preventScroll: false,
-      });
+      const target = candidates.find((candidate) => candidate.getClientRects().length > 0);
+      if (target) {
+        target.focus({ preventScroll: false });
+        return;
+      }
+      if (attempt < 4) {
+        window.setTimeout(() => focusPublicSaveFailure(attempt + 1), 25);
+      }
     });
   };
   const commitPublicFlowLegacy = (commitDateIntent: typeof dateIntent) => {
@@ -22520,7 +24273,7 @@ export function PublicFlow({ slug }: { slug: string }) {
     });
     return { commitSnapshot, sourceSnapshot };
   };
-  const performPublicFlowSave = (
+  const performPublicFlowSaveUnlocked = (
     savingState: PublicSaveSavingState,
   ) => {
     if (
@@ -22545,6 +24298,43 @@ export function PublicFlow({ slug }: { slug: string }) {
       }));
       setPublicSaveError(message);
       focusPublicSaveFailure();
+      return;
+    }
+
+    const lockedChoice = validatePublicFlowSaveChoiceUnderLock(saveStorage, {
+      sourceFlowKey: savingState.intent.sourceKey,
+      sourceFlowSlug: bundle.flow.slug,
+      idempotencyKey: savingState.intent.idempotencyKey,
+      choice: savingState.choice,
+      ...(savingState.choice.kind === 'overwrite'
+        ? { expectedOverwriteRaw: publicSaveExpectedOverwriteRawRef.current }
+        : {}),
+    });
+    if (!lockedChoice.ok) {
+      publicSaveSubmittingRef.current = false;
+      const message = '기존 저장본이 바뀌어 저장을 멈췄어요. 최신 저장본을 다시 확인한 뒤 저장 방식을 선택해 주세요.';
+      setPublicSaveLifecycle((current) => reducePublicSaveLifecycle(current, {
+        type: 'fail',
+        error: { code: 'stale_existing_copy', message },
+      }));
+      setPublicSaveError(message);
+      focusPublicSaveFailure();
+      return;
+    }
+    if (lockedChoice.status === 'already_committed') {
+      publicSavePostCommitNavigationRef.current = true;
+      publicSaveSubmittingRef.current = false;
+      publicSaveExpectedOverwriteRawRef.current = null;
+      setPublicSaveLifecycle((current) => reducePublicSaveLifecycle(current, { type: 'succeed' }));
+      const targetHref = getMyFlowWorkspaceHref({
+        flowSlug: lockedChoice.copy.personalCopyKey,
+      });
+      try {
+        markMyFlowFirstEntry(window.sessionStorage, lockedChoice.copy.personalCopyKey);
+      } catch {
+        // First-entry guidance is optional and must not block an idempotent save.
+      }
+      window.location.assign(targetHref);
       return;
     }
 
@@ -22678,6 +24468,7 @@ export function PublicFlow({ slug }: { slug: string }) {
         [keyPlan.itemDraftsKey]: itemDraftsRead.raw,
         [keyPlan.dateOverridesKey]: dateOverridesRead.raw,
         [keyPlan.itemStateKey]: targetItemStateRead.raw,
+        [keyPlan.savedRecordKey]: lockedChoice.expectedSavedRecordRaw,
       },
       prepareCommit: (backup) => {
         const recoveryBackup = keepWrittenBackupKeys(backup);
@@ -22809,6 +24600,25 @@ export function PublicFlow({ slug }: { slug: string }) {
     }
     window.location.assign(targetHref);
   };
+  const performPublicFlowSave = async (
+    savingState: PublicSaveSavingState,
+  ) => {
+    if (publicSaveLockPendingRef.current) return;
+    publicSaveLockPendingRef.current = true;
+    const locked = await withFlowUserDataWriteLock(
+      () => performPublicFlowSaveUnlocked(savingState),
+    );
+    publicSaveLockPendingRef.current = false;
+    if (locked.ok) return;
+    publicSaveSubmittingRef.current = false;
+    const message = '다른 저장 작업과 안전하게 순서를 맞추지 못해 저장을 멈췄어요. 수정 내용은 그대로 남아 있습니다.';
+    setPublicSaveLifecycle((current) => reducePublicSaveLifecycle(current, {
+      type: 'fail',
+      error: { code: 'storage_write_failed', message },
+    }));
+    setPublicSaveError(message);
+    focusPublicSaveFailure();
+  };
   const requestPublicFlowSave = (commitDateIntent: typeof dateIntent) => {
     if (!commitDateIntent.canSave) {
       focusPublicDateInput();
@@ -22833,6 +24643,7 @@ export function PublicFlow({ slug }: { slug: string }) {
       inspection = { kind: 'held', reason: 'storage_unavailable' };
     }
     publicSaveDateIntentRef.current = commitDateIntent;
+    publicSaveExpectedOverwriteRawRef.current = null;
     setPublicSaveError('');
 
     if (inspection.kind === 'held') {
@@ -22879,14 +24690,21 @@ export function PublicFlow({ slug }: { slug: string }) {
       return;
     }
     if (publicSaveLifecycle.status !== 'choice_required') return;
-    const next = publicSaveDecision === 'copy'
-      ? reducePublicSaveLifecycle(publicSaveLifecycle, { type: 'choose_copy' })
-      : publicSaveDecision === 'overwrite' && publicSaveOverwriteTarget
-        ? reducePublicSaveLifecycle(publicSaveLifecycle, {
-            type: 'choose_overwrite',
-            personalCopyKey: createPersonalCopyKey(publicSaveOverwriteTarget),
-          })
-        : publicSaveLifecycle;
+    let next: PublicSaveLifecycleState = publicSaveLifecycle;
+    if (publicSaveDecision === 'copy') {
+      publicSaveExpectedOverwriteRawRef.current = null;
+      next = reducePublicSaveLifecycle(publicSaveLifecycle, { type: 'choose_copy' });
+    } else if (publicSaveDecision === 'overwrite' && publicSaveOverwriteTarget) {
+      const selectedCopy = publicSaveExistingCopies.find(
+        (copy) => copy.personalCopyKey === publicSaveOverwriteTarget,
+      );
+      if (!selectedCopy) return;
+      publicSaveExpectedOverwriteRawRef.current = selectedCopy.savedRecordRaw;
+      next = reducePublicSaveLifecycle(publicSaveLifecycle, {
+        type: 'choose_overwrite',
+        personalCopyKey: createPersonalCopyKey(publicSaveOverwriteTarget),
+      });
+    }
     setPublicSaveLifecycle(next);
     if (next.status === 'saving') performPublicFlowSave(next);
   };
@@ -22900,6 +24718,7 @@ export function PublicFlow({ slug }: { slug: string }) {
     publicSaveDateIntentRef.current = null;
     publicSaveRecoveryJournalRef.current = null;
     publicSaveRecoveryResumeModeRef.current = 'retry';
+    publicSaveExpectedOverwriteRawRef.current = null;
   };
   const retryPublicFlowSave = () => {
     if (publicSaveLifecycle.status !== 'recoverable_error') return;
@@ -22907,7 +24726,7 @@ export function PublicFlow({ slug }: { slug: string }) {
     setPublicSaveLifecycle(next);
     if (next.status === 'saving') performPublicFlowSave(next);
   };
-  const retryPublicFlowRecovery = () => {
+  const retryPublicFlowRecovery = async () => {
     if (publicSaveLifecycle.status !== 'recovery_required') return;
     const journal = publicSaveRecoveryJournalRef.current;
     if (!journal) {
@@ -22923,7 +24742,16 @@ export function PublicFlow({ slug }: { slug: string }) {
       focusPublicSaveFailure();
       return;
     }
-    const commitStatus = inspectPublicSaveRecoveryCommit(journal);
+    const lockedRecovery = await withFlowUserDataWriteLock(() => {
+      const commitStatus = inspectPublicSaveRecoveryCommit(journal);
+      const recovery = commitStatus === 'uncommitted'
+        ? restorePublicSaveRecovery(journal)
+        : null;
+      return { commitStatus, recovery };
+    });
+    const commitStatus = lockedRecovery.ok
+      ? lockedRecovery.value.commitStatus
+      : 'unreadable';
     if (commitStatus === 'committed') {
       clearPublicSaveRecoveryJournal(journal.intent.idempotencyKey);
       publicSaveRecoveryJournalRef.current = null;
@@ -22947,7 +24775,7 @@ export function PublicFlow({ slug }: { slug: string }) {
       focusPublicSaveFailure();
       return;
     }
-    const recovery = restorePublicSaveRecovery(journal);
+    const recovery = lockedRecovery.ok ? lockedRecovery.value.recovery : null;
     if (!recovery?.complete) {
       const hasConflict = Boolean(recovery?.conflictKeys.length);
       const error = {
@@ -22989,9 +24817,16 @@ export function PublicFlow({ slug }: { slug: string }) {
     setPublicSaveError(error.message);
     focusPublicSaveFailure();
   };
-  const commitPublicFlow = (commitDateIntent: typeof dateIntent) => {
+  const commitPublicFlow = async (commitDateIntent: typeof dateIntent) => {
     if (!publicSaveLifecycleEnabled) {
-      commitPublicFlowLegacy(commitDateIntent);
+      const locked = await withFlowUserDataWriteLock(
+        () => commitPublicFlowLegacy(commitDateIntent),
+      );
+      if (!locked.ok) {
+        const message = '다른 저장 작업과 안전하게 순서를 맞추지 못해 저장을 멈췄어요. 수정 내용은 그대로 남아 있습니다.';
+        setPublicSaveError(message);
+        focusPublicSaveFailure();
+      }
       return;
     }
     requestPublicFlowSave(commitDateIntent);
@@ -23001,9 +24836,9 @@ export function PublicFlow({ slug }: { slug: string }) {
       focusPublicDateInput();
       return;
     }
-    commitPublicFlow(dateIntent);
+    void commitPublicFlow(dateIntent);
   };
-  const saveUndatedToMyFlow = () => commitPublicFlow(publicExplicitUndatedDateIntent);
+  const saveUndatedToMyFlow = () => void commitPublicFlow(publicExplicitUndatedDateIntent);
   const buildPublicQuickResultTransferRequest = (): ResultTransferRequest => {
     const manifest = publicQuickResultEligibility.manifest;
     if (!publicQuickResultEligibility.eligible || !manifest) {

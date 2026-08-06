@@ -12,9 +12,13 @@ import {
   readPublicFlowSaveJsonRecord,
   removeFlowScopedRecordEntries,
   runPublicFlowSaveTransaction,
+  validatePublicFlowSaveChoiceUnderLock,
   type PublicFlowSaveStorageKeyPlan,
   type PublicFlowSaveWrite,
 } from './public-flow-save-transaction';
+import {
+  createPersonalCopyKey,
+} from './public-save-lifecycle';
 
 class InstrumentedStorage {
   private readonly values: Map<string, string>;
@@ -340,6 +344,132 @@ test('inspection reaches duplicate-choice state without performing a storage wri
   });
 
   assert.equal(inspection.kind, 'choice_required');
+  assert.equal(storage.mutationCalls, 0);
+});
+
+test('two no-copy tabs serialize to one create while the later locked choice fails closed', () => {
+  const firstPlan = buildPublicFlowSaveStorageKeyPlan(personalCopyKey);
+  const secondCopyKey = 'personal-flow:moving-d30:copy-2';
+  const storage = new InstrumentedStorage();
+  const firstInspection = inspectPublicFlowSavedCopies(storage, {
+    sourceFlowKey,
+    sourceFlowSlug,
+    idempotencyKey: requestId,
+  });
+  const secondInspection = inspectPublicFlowSavedCopies(storage, {
+    sourceFlowKey,
+    sourceFlowSlug,
+    idempotencyKey: 'save-request:moving-d30:2',
+  });
+  assert.equal(firstInspection.kind, 'ready_new');
+  assert.equal(secondInspection.kind, 'ready_new');
+
+  const firstLockedChoice = validatePublicFlowSaveChoiceUnderLock(storage, {
+    sourceFlowKey,
+    sourceFlowSlug,
+    idempotencyKey: requestId,
+    choice: { kind: 'create', personalCopyKey: createPersonalCopyKey(personalCopyKey) },
+  });
+  assert.deepEqual(firstLockedChoice, {
+    ok: true,
+    status: 'proceed',
+    expectedSavedRecordRaw: null,
+  });
+  const firstCommit = runPublicFlowSaveTransaction({
+    storage,
+    keyPlan: firstPlan,
+    idempotencyKey: requestId,
+    writes: transactionWrites(firstPlan),
+    expectedRaw: { [firstPlan.savedRecordKey]: null },
+  });
+  assert.equal(firstCommit.ok, true);
+
+  const mutationsBeforeSecondLock = storage.mutationCalls;
+  const secondLockedChoice = validatePublicFlowSaveChoiceUnderLock(storage, {
+    sourceFlowKey,
+    sourceFlowSlug,
+    idempotencyKey: 'save-request:moving-d30:2',
+    choice: { kind: 'create', personalCopyKey: createPersonalCopyKey(secondCopyKey) },
+  });
+  assert.deepEqual(secondLockedChoice, {
+    ok: false,
+    status: 'stale',
+    reason: 'existing_copy_changed',
+  });
+  assert.equal(storage.getItem(`flow:saved:${secondCopyKey}`), null);
+  assert.equal(storage.mutationCalls, mutationsBeforeSecondLock);
+});
+
+test('locked overwrite choice rejects changed target bytes and the write transaction CAS closes the next gap', () => {
+  const originalRaw = savedRecordRaw({ request: 'previous-request', title: '처음 본 제목' });
+  const storage = new InstrumentedStorage({
+    [`flow:saved:${personalCopyKey}`]: originalRaw,
+  });
+  const inspection = inspectPublicFlowSavedCopies(storage, {
+    sourceFlowKey,
+    sourceFlowSlug,
+    idempotencyKey: requestId,
+  });
+  assert.equal(inspection.kind, 'choice_required');
+  if (inspection.kind !== 'choice_required') return;
+  assert.equal(inspection.copies[0]?.savedRecordRaw, originalRaw);
+
+  storage.setItem(`flow:saved:${personalCopyKey}`, savedRecordRaw({
+    request: 'newer-request',
+    savedAt: '2026-08-05T00:00:00.000Z',
+    title: '다른 탭의 제목',
+  }));
+  const staleChoice = validatePublicFlowSaveChoiceUnderLock(storage, {
+    sourceFlowKey,
+    sourceFlowSlug,
+    idempotencyKey: requestId,
+    choice: { kind: 'overwrite', personalCopyKey: createPersonalCopyKey(personalCopyKey) },
+    expectedOverwriteRaw: inspection.copies[0]?.savedRecordRaw,
+  });
+  assert.deepEqual(staleChoice, {
+    ok: false,
+    status: 'stale',
+    reason: 'overwrite_target_changed',
+  });
+
+  const latestInspection = inspectPublicFlowSavedCopies(storage, {
+    sourceFlowKey,
+    sourceFlowSlug,
+    idempotencyKey: requestId,
+  });
+  assert.equal(latestInspection.kind, 'choice_required');
+  if (latestInspection.kind !== 'choice_required') return;
+  const latestRaw = latestInspection.copies[0]?.savedRecordRaw;
+  const validChoice = validatePublicFlowSaveChoiceUnderLock(storage, {
+    sourceFlowKey,
+    sourceFlowSlug,
+    idempotencyKey: requestId,
+    choice: { kind: 'overwrite', personalCopyKey: createPersonalCopyKey(personalCopyKey) },
+    expectedOverwriteRaw: latestRaw,
+  });
+  assert.deepEqual(validChoice, {
+    ok: true,
+    status: 'proceed',
+    expectedSavedRecordRaw: latestRaw,
+  });
+
+  storage.setItem(`flow:saved:${personalCopyKey}`, savedRecordRaw({
+    request: 'race-after-validation',
+    savedAt: '2026-08-06T00:00:00.000Z',
+  }));
+  storage.resetMutations();
+  const plan = buildPublicFlowSaveStorageKeyPlan(personalCopyKey);
+  const conflicted = runPublicFlowSaveTransaction({
+    storage,
+    keyPlan: plan,
+    idempotencyKey: requestId,
+    writes: transactionWrites(plan),
+    expectedRaw: { [plan.savedRecordKey]: latestRaw ?? null },
+  });
+  assert.equal(conflicted.ok, false);
+  if (conflicted.ok) return;
+  assert.equal(conflicted.failureStage, 'conflict');
+  assert.equal(conflicted.writeCount, 0);
   assert.equal(storage.mutationCalls, 0);
 });
 

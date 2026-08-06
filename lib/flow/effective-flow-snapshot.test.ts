@@ -18,6 +18,7 @@ import {
 import { buildEffectiveFlowSnapshot } from './effective-flow-snapshot';
 import { buildFlowExportScopePlan } from './export-scope';
 import {
+  FlowMapSaveConflictError,
   buildFlowMapSaveStorageKeyPlan,
   runFlowMapSaveTransaction,
 } from './flow-map-save-transaction';
@@ -954,10 +955,10 @@ test('P0-02 Flow Map save transaction restores exact raw values after a partial 
   const failed = runFlowMapSaveTransaction({
     storage,
     keys: plan.allKeys,
-    apply: () => {
-      storage.setItem(plan.savedFlowKeysBySlug['child-a']!, '{"new":"flow-a"}');
-      storage.setItem(plan.mapSnapshotKey, '{"new":"snapshot"}');
-      storage.setItem(plan.mapPersistenceKey, '{"new":"persistence"}');
+    apply: (transactionStorage) => {
+      transactionStorage.setItem(plan.savedFlowKeysBySlug['child-a']!, '{"new":"flow-a"}');
+      transactionStorage.setItem(plan.mapSnapshotKey, '{"new":"snapshot"}');
+      transactionStorage.setItem(plan.mapPersistenceKey, '{"new":"persistence"}');
     },
   });
   assert.equal(failed.ok, false);
@@ -971,13 +972,162 @@ test('P0-02 Flow Map save transaction restores exact raw values after a partial 
   const retried = runFlowMapSaveTransaction({
     storage,
     keys: plan.allKeys,
-    apply: () => {
-      storage.setItem(plan.savedFlowKeysBySlug['child-a']!, '{"new":"flow-a"}');
-      storage.setItem(plan.mapSnapshotKey, '{"new":"snapshot"}');
-      storage.setItem(plan.mapPersistenceKey, '{"new":"persistence"}');
+    apply: (transactionStorage) => {
+      transactionStorage.setItem(plan.savedFlowKeysBySlug['child-a']!, '{"new":"flow-a"}');
+      transactionStorage.setItem(plan.mapSnapshotKey, '{"new":"snapshot"}');
+      transactionStorage.setItem(plan.mapPersistenceKey, '{"new":"persistence"}');
     },
   });
   assert.equal(retried.ok, true);
   assert.equal(storage.getItem(plan.mapSnapshotKey), '{"new":"snapshot"}');
   assert.equal(storage.getItem(plan.mapPersistenceKey), '{"new":"persistence"}');
+});
+
+test('Flow Map save transaction rejects a stale tab before any write', () => {
+  const storage = new P002MemoryStorage();
+  const plan = buildFlowMapSaveStorageKeyPlan({
+    mapId: 'middle-school-math-1',
+    flowSlugs: ['child-a'],
+  });
+  const expectedRaw = {
+    [plan.mapSnapshotKey]: storage.getItem(plan.mapSnapshotKey),
+    [plan.mapPersistenceKey]: storage.getItem(plan.mapPersistenceKey),
+  };
+
+  storage.setItem(plan.mapSnapshotKey, '{"title":"newer tab"}');
+  storage.setItem(plan.mapPersistenceKey, '{"map":{"title":"newer tab"}}');
+  let applyCalled = false;
+  const stale = runFlowMapSaveTransaction({
+    storage,
+    keys: plan.allKeys,
+    expectedRaw,
+    apply: (transactionStorage) => {
+      applyCalled = true;
+      transactionStorage.setItem(plan.mapSnapshotKey, '{"title":"stale tab"}');
+    },
+  });
+
+  assert.equal(stale.ok, false);
+  assert.equal(stale.rollbackComplete, true);
+  assert.equal(applyCalled, false);
+  assert.deepEqual(stale.conflictKeys, [plan.mapSnapshotKey, plan.mapPersistenceKey]);
+  assert.equal(stale.error instanceof FlowMapSaveConflictError, true);
+  assert.equal(storage.getItem(plan.mapSnapshotKey), '{"title":"newer tab"}');
+  assert.equal(storage.getItem(plan.mapPersistenceKey), '{"map":{"title":"newer tab"}}');
+});
+
+test('Flow Map rollback restores the original raw value when a repeated same-key write fails before mutation', () => {
+  const base = new P002MemoryStorage();
+  const plan = buildFlowMapSaveStorageKeyPlan({
+    mapId: 'middle-school-math-1',
+    flowSlugs: [],
+  });
+  base.setItem(plan.lastVisitKey, 'before');
+  let writeCount = 0;
+  const storage = {
+    getItem: (key: string) => base.getItem(key),
+    setItem(key: string, value: string) {
+      writeCount += 1;
+      if (writeCount === 2) throw new Error('second same-key write failed before mutation');
+      base.setItem(key, value);
+    },
+    removeItem: (key: string) => base.removeItem(key),
+  };
+
+  const failed = runFlowMapSaveTransaction({
+    storage,
+    keys: [plan.lastVisitKey],
+    apply: (transactionStorage) => {
+      transactionStorage.setItem(plan.lastVisitKey, 'first transaction value');
+      transactionStorage.setItem(plan.lastVisitKey, 'second transaction value');
+    },
+  });
+
+  assert.equal(failed.ok, false);
+  assert.equal(failed.rollbackComplete, true);
+  assert.equal(base.getItem(plan.lastVisitKey), 'before');
+});
+
+test('Flow Map rollback restores the original raw value when a repeated same-key write mutates then throws', () => {
+  const base = new P002MemoryStorage();
+  const plan = buildFlowMapSaveStorageKeyPlan({
+    mapId: 'middle-school-math-1',
+    flowSlugs: [],
+  });
+  base.setItem(plan.lastVisitKey, 'before');
+  let writeCount = 0;
+  const storage = {
+    getItem: (key: string) => base.getItem(key),
+    setItem(key: string, value: string) {
+      writeCount += 1;
+      base.setItem(key, value);
+      if (writeCount === 2) throw new Error('second same-key write failed after mutation');
+    },
+    removeItem: (key: string) => base.removeItem(key),
+  };
+
+  const failed = runFlowMapSaveTransaction({
+    storage,
+    keys: [plan.lastVisitKey],
+    apply: (transactionStorage) => {
+      transactionStorage.setItem(plan.lastVisitKey, 'first transaction value');
+      transactionStorage.setItem(plan.lastVisitKey, 'second transaction value');
+    },
+  });
+
+  assert.equal(failed.ok, false);
+  assert.equal(failed.rollbackComplete, true);
+  assert.equal(base.getItem(plan.lastVisitKey), 'before');
+});
+
+test('Flow Map rollback restores a removed raw value when remove mutates then throws', () => {
+  const base = new P002MemoryStorage();
+  const plan = buildFlowMapSaveStorageKeyPlan({
+    mapId: 'middle-school-math-1',
+    flowSlugs: [],
+  });
+  base.setItem(plan.mapSnapshotKey, '{"title":"before"}');
+  const storage = {
+    getItem: (key: string) => base.getItem(key),
+    setItem: (key: string, value: string) => base.setItem(key, value),
+    removeItem(key: string) {
+      base.removeItem(key);
+      throw new Error('remove failed after mutation');
+    },
+  };
+
+  const failed = runFlowMapSaveTransaction({
+    storage,
+    keys: [plan.mapSnapshotKey],
+    apply: (transactionStorage) => {
+      transactionStorage.removeItem(plan.mapSnapshotKey);
+    },
+  });
+
+  assert.equal(failed.ok, false);
+  assert.equal(failed.rollbackComplete, true);
+  assert.equal(base.getItem(plan.mapSnapshotKey), '{"title":"before"}');
+});
+
+test('Flow Map rollback never overwrites a value replaced by another writer', () => {
+  const storage = new P002MemoryStorage();
+  const plan = buildFlowMapSaveStorageKeyPlan({
+    mapId: 'middle-school-math-1',
+    flowSlugs: [],
+  });
+  storage.setItem(plan.mapSnapshotKey, '{"title":"before"}');
+
+  const failed = runFlowMapSaveTransaction({
+    storage,
+    keys: plan.allKeys,
+    apply: (transactionStorage) => {
+      transactionStorage.setItem(plan.mapSnapshotKey, '{"title":"this transaction"}');
+      storage.setItem(plan.mapSnapshotKey, '{"title":"other tab"}');
+      throw new Error('later write failed');
+    },
+  });
+
+  assert.equal(failed.ok, false);
+  assert.equal(failed.rollbackComplete, false);
+  assert.equal(storage.getItem(plan.mapSnapshotKey), '{"title":"other tab"}');
 });

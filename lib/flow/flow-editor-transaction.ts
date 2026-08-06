@@ -1,3 +1,5 @@
+import { withFlowUserDataWriteLock } from './storage-write-lock';
+
 export type FlowEditorContext = 'public-draft' | 'saved-overlay';
 
 export type FlowEditorLevel = 'plan' | 'item';
@@ -877,6 +879,7 @@ function commitRecoveryRequiredEvent<PlanDraft, ItemDraft>(
 
 async function executePreparedPlanCommit<PlanDraft, ItemDraft>(input: Readonly<{
   effect: FlowEditorPlanCommitEffect<PlanDraft>;
+  requiresStorageLock: boolean;
   prepare: (
     input: FlowEditorPlanCommitInput<PlanDraft>,
   ) => PreparedFlowEditorPlanCommit | Promise<PreparedFlowEditorPlanCommit>;
@@ -884,40 +887,54 @@ async function executePreparedPlanCommit<PlanDraft, ItemDraft>(input: Readonly<{
   FlowEditorEvent<PlanDraft, ItemDraft>,
   { type: 'commit-succeeded' | 'commit-failed' | 'commit-recovery-required' }
 >> {
-  let operation: PreparedFlowEditorPlanCommit;
-  try {
-    operation = await input.prepare({
+  const execute = async () => {
+    let operation: PreparedFlowEditorPlanCommit;
+    try {
+      operation = await input.prepare({
+        transactionId: input.effect.transactionId,
+        requestId: input.effect.requestId,
+        revision: input.effect.revision,
+        draft: cloneValue(input.effect.draft),
+      });
+    } catch (error) {
+      // Preparation is contractually read-only, so no rollback is needed.
+      return commitFailureEvent<PlanDraft, ItemDraft>(input.effect, error);
+    }
+
+    try {
+      await operation.commit();
+    } catch (error) {
+      try {
+        const restored = await operation.rollbackAndVerify();
+        if (!restored) {
+          return commitRecoveryRequiredEvent<PlanDraft, ItemDraft>(input.effect);
+        }
+      } catch {
+        return commitRecoveryRequiredEvent<PlanDraft, ItemDraft>(input.effect);
+      }
+      return commitFailureEvent<PlanDraft, ItemDraft>(input.effect, error);
+    }
+
+    return {
+      type: 'commit-succeeded' as const,
       transactionId: input.effect.transactionId,
       requestId: input.effect.requestId,
       revision: input.effect.revision,
-      draft: cloneValue(input.effect.draft),
-    });
-  } catch (error) {
-    // Preparation is contractually read-only, so no rollback is needed.
-    return commitFailureEvent(input.effect, error);
-  }
-
-  try {
-    await operation.commit();
-  } catch (error) {
-    try {
-      const restored = await operation.rollbackAndVerify();
-      if (!restored) {
-        return commitRecoveryRequiredEvent(input.effect);
-      }
-    } catch {
-      return commitRecoveryRequiredEvent(input.effect);
-    }
-    return commitFailureEvent(input.effect, error);
-  }
-
-  return {
-    type: 'commit-succeeded',
-    transactionId: input.effect.transactionId,
-    requestId: input.effect.requestId,
-    revision: input.effect.revision,
-    result: { kind: 'plan' },
+      result: { kind: 'plan' as const },
+    };
   };
+
+  if (!input.requiresStorageLock) return execute();
+
+  const locked = await withFlowUserDataWriteLock(execute);
+
+  if (!locked.ok) {
+    return commitFailureEvent<PlanDraft, ItemDraft>(
+      input.effect,
+      locked.error ?? new Error(`Flow user-data write lock ${locked.reason}`),
+    );
+  }
+  return locked.value;
 }
 
 export async function executeFlowEditorCommit<PlanDraft, ItemDraft>(
@@ -932,11 +949,13 @@ export async function executeFlowEditorCommit<PlanDraft, ItemDraft>(
       case 'apply-public-draft':
         return executePreparedPlanCommit<PlanDraft, ItemDraft>({
           effect,
+          requiresStorageLock: false,
           prepare: handlers.preparePublicDraft,
         });
       case 'save-personal-overlay':
         return executePreparedPlanCommit<PlanDraft, ItemDraft>({
           effect,
+          requiresStorageLock: true,
           prepare: handlers.preparePersonalOverlay,
         });
       case 'apply-item-to-parent-public-draft': {

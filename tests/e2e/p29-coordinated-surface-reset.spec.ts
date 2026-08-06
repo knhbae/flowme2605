@@ -297,7 +297,7 @@ test.describe('P29-04 My Flow action-first library', () => {
     await expectNoHorizontalOverflow(page);
   });
 
-  test('wide exposes a 280px library beside one explicitly selected Flow workspace', async ({ page }) => {
+  test('wide gives the unselected library the canvas and keeps a readable rail beside a selected plan', async ({ page }) => {
     await page.setViewportSize({ width: 1024, height: 768 });
     await page.goto('/my?demo=ux20&view=flows');
 
@@ -306,11 +306,14 @@ test.describe('P29-04 My Flow action-first library', () => {
     await expect(workspace).toHaveAttribute('data-p29-marker', 'P29-MY-FLOW-THREE-PANE');
     expect(await workspace.getByTestId('my-flow-library-row').count()).toBeGreaterThanOrEqual(20);
     const railWidth = await workspace.getByTestId('my-flow-library-rail').evaluate((element) => element.getBoundingClientRect().width);
-    expect(railWidth).toBeGreaterThanOrEqual(278);
-    expect(railWidth).toBeLessThanOrEqual(282);
+    expect(railWidth).toBeGreaterThanOrEqual(700);
     const detail = workspace.getByTestId('my-flow-library-detail');
+    await expect(detail).toBeHidden();
     await expect(detail.getByTestId('my-flow-overview-card')).toHaveCount(0);
     await workspace.getByTestId('my-flow-library-row').first().click();
+    await expect(detail).toBeVisible();
+    const selectedRailWidth = await workspace.getByTestId('my-flow-library-rail').evaluate((element) => element.getBoundingClientRect().width);
+    expect(selectedRailWidth).toBeGreaterThanOrEqual(350);
     await expect(detail.getByTestId('my-flow-overview-card')).toHaveAttribute(
       'data-p35-marker',
       'P35-PERSONAL-SINGLE-FOCUS',
@@ -438,7 +441,7 @@ test.describe('P29-06 artifact recommendation and export scope', () => {
     ).count()).toBeLessThanOrEqual(3);
     const primary = panel.locator('[data-recommendation-role="primary"][data-recommendation-visible="true"]');
     await expect(primary).toHaveCount(1);
-    await expect(primary).toContainText('Flow 전체');
+    await expect(primary).toContainText('계획 전체');
     const predictedCount = Number(await primary.getAttribute('data-export-count'));
     expect(predictedCount).toBeGreaterThan(0);
     await capture(page, 'p29-06-export-preflight-390.png');
@@ -485,6 +488,7 @@ test.describe('P29-06 artifact recommendation and export scope', () => {
     await expect(receipt).toHaveAttribute('data-output-count', '2');
     await expect(receipt.getByTestId('flow-transfer-success')).toBeVisible();
     await receipt.getByTestId('flow-transfer-success-close').click();
+    await expect(selectedMemo).toBeFocused();
     await exportSurface.getByTestId('my-flow-export-entry').click();
     await expect(panel).toHaveCount(0);
 

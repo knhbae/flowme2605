@@ -20,6 +20,7 @@ type FlowTransferConfirmationProps = {
   errorMessage?: string;
   receiptStorageKey?: string;
   returnFocusSelector?: string;
+  successReturnFocusSelector?: string;
   onConfirm: () => void;
   onCancel: () => void;
   onRetryEffect: () => void;
@@ -276,6 +277,7 @@ export function FlowTransferConfirmation({
   errorMessage,
   receiptStorageKey,
   returnFocusSelector,
+  successReturnFocusSelector,
   onConfirm,
   onCancel,
   onRetryEffect,
@@ -313,6 +315,11 @@ export function FlowTransferConfirmation({
   const effectRetryAvailable = outcome?.state === 'failed'
     ? outcome.failure.retryable
     : false;
+  const resolvedReturnFocusSelector = state === 'succeeded'
+    && request.route === 'saved_transfer'
+    && successReturnFocusSelector
+    ? successReturnFocusSelector
+    : returnFocusSelector;
 
   return (
     <FlowBottomSheet
@@ -329,7 +336,7 @@ export function FlowTransferConfirmation({
         effectRetryAvailable,
         receiptRetryAvailable,
       )}
-      returnFocusSelector={returnFocusSelector}
+      returnFocusSelector={resolvedReturnFocusSelector}
       className="inset-x-0 bottom-0 max-h-[92dvh] overflow-y-auto rounded-t-2xl px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4 sm:inset-x-auto sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:w-[min(32rem,calc(100vw-2rem))] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-2xl sm:p-6"
       dialogProps={{
         'aria-busy': state === 'pending' ? 'true' : undefined,
@@ -354,7 +361,7 @@ export function FlowTransferConfirmation({
         'data-transfer-omitted-count': lossCount,
         'data-transfer-one-way': request.oneWay ? 'true' : 'false',
         'data-transfer-duplicate-risk': request.duplicateRisk ? 'true' : 'false',
-        'data-transfer-return-focus-selector': returnFocusSelector,
+        'data-transfer-return-focus-selector': resolvedReturnFocusSelector,
         'data-receipt-storage-key': receiptStorageKey,
         'data-snapshot-kind': request.snapshot.kind,
         'data-snapshot-version': request.snapshot.version,
@@ -546,7 +553,9 @@ export function FlowTransferConfirmation({
             type="button"
             onClick={onAcknowledge ?? onCancel}
           >
-            {q3CopyEnabled ? Q3_USER_COPY_PROFILE.receipt.close : '확인'}
+            {request.route === 'saved_transfer'
+              ? '다른 형식 보기'
+              : q3CopyEnabled ? Q3_USER_COPY_PROFILE.receipt.close : '확인'}
           </button>
         ) : null}
 

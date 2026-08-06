@@ -11,6 +11,7 @@ import {
   type FlowMeLocalBackup,
   type FlowMeStorageLike,
 } from '@/lib/flow/local-data-backup';
+import { withFlowUserDataWriteLock } from '@/lib/flow/storage-write-lock';
 
 const RESTORED_SESSION_KEY = 'flowme:local-backup:restored';
 
@@ -62,6 +63,7 @@ export function MyFlowDataManager({ q3CopyEnabled = true }: { q3CopyEnabled?: bo
   const [open, setOpen] = useState(false);
   const [importPreview, setImportPreview] = useState<FlowMeLocalBackup | null>(null);
   const [feedback, setFeedback] = useState('');
+  const [restoring, setRestoring] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -110,14 +112,26 @@ export function MyFlowDataManager({ q3CopyEnabled = true }: { q3CopyEnabled?: bo
     }
   }
 
-  function restoreBackup(): void {
-    if (!importPreview) return;
+  async function restoreBackup(): Promise<void> {
+    if (!importPreview || restoring) return;
+    setRestoring(true);
     try {
-      restoreFlowMeLocalBackup(window.localStorage, importPreview);
+      const result = await withFlowUserDataWriteLock(() => {
+        const validatedBackup = parseFlowMeLocalBackup(serializeFlowMeLocalBackup(importPreview));
+        restoreFlowMeLocalBackup(window.localStorage, validatedBackup);
+      });
+      if (!result.ok) {
+        throw result.error ?? new FlowMeLocalBackupError(
+          'restore_failed',
+          `Could not acquire the Flow user-data write lock: ${result.reason}`,
+        );
+      }
       window.sessionStorage.setItem(RESTORED_SESSION_KEY, 'true');
       window.location.reload();
     } catch (error) {
       setFeedback(getBackupErrorMessage(error));
+    } finally {
+      setRestoring(false);
     }
   }
 
@@ -225,7 +239,8 @@ export function MyFlowDataManager({ q3CopyEnabled = true }: { q3CopyEnabled?: bo
                   type="button"
                   className="mt-3 min-h-11 w-full rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800"
                   data-testid="my-flow-backup-restore"
-                  onClick={restoreBackup}
+                  disabled={restoring}
+                  onClick={() => void restoreBackup()}
                 >
                   이 백업으로 바꾸기
                 </button>

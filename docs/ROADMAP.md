@@ -1,14 +1,16 @@
 # Roadmap
 
-**Last Updated:** 2026-08-05<br>
+**Last Updated:** 2026-08-06<br>
 **Current Version:** v0.1.0 (released product PoC)<br>
 **Current Validation Stage:** internal alpha / P35 production baseline / observed users 0<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** P0-01~P1-04 local gates are complete; freeze one immutable candidate and open blind Codex/Claude Design Pass 1
+**Next Milestone:** P′′ final local run is green; clean freeze, post-push candidate evidence, and fresh blind Codex/Claude Design Pass 1
 
 Human-facing control surface: [FlowMe current stage control board](./content-audit/2026-07-29-flowme-current-stage-control-board-ko.html).
 
 ## Active Local Program: P35 Round 2 B/B/B Bounded UX Correction
+
+**Active Gate State:** `P′ PASS2_REVISE / P′′ CANDIDATE_SOURCE_READY / FINAL_CANDIDATE_EVIDENCE_PENDING / FRESH_TWO_PASS_REVIEW_AUTHORIZED`
 
 On 2026-08-04 the owner approved `B/B/B`: allow only unmodified, eligible,
 local-only quick results before save; make general `/my` a stable saved-plan
@@ -17,13 +19,21 @@ stage `계획` language on core user-facing surfaces while retaining the FLOW
 brand, URLs, internal types, and storage keys. The active specification is
 [P35 Round 2 B/B/B bounded UX correction](./specs/2026-08-04-p35-round2-bounded-ux-correction/README.md).
 
-The program has local implementation through `P1-04`; each strict-order ticket is
-recorded as local internal PASS. Candidate commit/push and physically separated
-blind-review publication are Owner-authorized operations. The immutable SHA and
-clean proof are recorded externally after this commit, so this source document does
-not claim its own future SHA. PR, merge, Vercel Preview/Production, and observed-user
-validation are not authorized. The released P35 remains the production baseline and
-the observed-user count remains `0`; V1 is excluded from this current program.
+The program completed local implementation through `P1-04`, froze immutable P′
+`29cb03a`, and received Codex and Claude Design Pass 2 `REVISE`. P′ remains review
+history. P′′ is now `CANDIDATE_SOURCE_READY`: its source carries one shared Flow
+user-data write lock, lock-then-fresh-reread/CAS ownership, a raw rollback
+transaction for reuse, public-copy create/overwrite CAS, exact transported-byte
+identity, schema-v2 identity preservation, and exact candidate/review branch Vercel
+guards. This is not final candidate evidence. The clean post-push SHA, BUILD_ID,
+candidate epoch, final counts, and S01~S23 results are recorded only in external
+post-push provenance. The final local source run passed pretest `114/114`, P35 P0
+`415/415`, main unit/workflow `615/615`, shared-lock contract `59/59`, and full
+Playwright `533/533`; production build, audit, docs, and diff checks also passed.
+Candidate commit/push and physically separated review
+publication are Owner-authorized; PR, merge, Vercel Preview/Production, and
+observed-user validation are not. Released P35 remains production, observed users
+remain `0`, and V1 is excluded from this program.
 
 Strict sequence:
 
@@ -32,7 +42,11 @@ P0-01
 -> P0-02 -> P0-03
 -> P0-04 -> P0-05 -> P0-06 -> P0-07 -> P0-08 -> P0-09 -> P0-10
 -> P1 visual/copy/parity/accessibility slices
--> separate observed-user validation
+-> P′ two-pass review: REVISE
+-> P′′ candidate source -> clean freeze/evidence
+-> fresh blind Pass 1 -> fresh informed Pass 2
+
+V1 observed-user validation is a separate future program.
 ```
 
 ## Current Production Baseline: P35 MECE UX Reset
@@ -338,15 +352,18 @@ Detailed scope: [Save, Personalize, Execute Journey Reset](./specs/2026-07-18-sa
 ## Operating Queue
 
 There is no active external-user gate. P35 remains the canonical production
-baseline, while the Owner-approved Round 2 B/B/B correction is locally complete
-through `P1-04`. The active work is candidate freeze, same-SHA evidence capture,
-and blind internal review by Codex and Claude Design. External user observation is
-excluded from this program and is not a completion requirement.
+baseline. Round 2 P′ is immutable review history with Pass 2 `REVISE`; P′′ is a
+candidate-ready source whose final scoped run and candidate-bound evidence are still
+pending. The active work is final source verification, clean freeze, same-SHA
+post-push evidence capture, and blind internal review by Codex and Claude Design.
+External user observation is excluded and is not a completion requirement.
 
 | Lane | Owner | Work | Next checkpoint | Done when |
 | --- | --- | --- | --- | --- |
-| Active release prep | AI, then Owner/Claude Design | Round 2 immutable candidate and blind Pass 1 | Commit/push the approved scope, rebuild/capture the same SHA, publish blind-only A/B, then freeze independent results | candidate identity and evidence hashes match; both Pass 1 results are frozen |
-| Completed implementation | Development | Round 2 P0-01~P1-04 | Preserve the bounded correction, rollback contracts, one canonical result projection, and zero-write public read path | local unit/build/full E2E gates remain green |
+| Active release prep | AI, then Owner/Claude Design | P′′ final scoped run, immutable candidate, and blind Pass 1 | Verify the source, commit/push the approved scope, build/capture the same post-push SHA once, publish blind A/B/C, then freeze independent results | post-push identity/evidence hashes match; both Pass 1 results are frozen |
+| Candidate source | Development | P′′ shared lock, fresh reread/CAS, reuse/public-copy transaction, exact-byte/schema/deploy guards | Preserve source contracts without claiming candidate-bound PASS before the final run | `CANDIDATE_SOURCE_READY`; final SHA/BUILD_ID/epoch/count remain provenance-owned |
+| Completed implementation | Development | Round 2 P0-01~P1-04 and the earlier correction checkpoint | Preserve the bounded UX correction, rollback contracts, one canonical result projection, and zero-write public read path | historical local evidence remains inspectable without being presented as the final candidate run |
+| P2 follow-up candidates | AI + Owner after fresh review | URL supply queue, legacy-off, rapid batch submit, creator/text-authoring mutation ownership | Retain, drop, or promote each item separately after the current two-pass review | no item enters the active queue or P′′ candidate without explicit promotion |
 | Research shelf | AI | Text authoring, projection/event, full-corpus UI, vertical benchmark, research-to-product evidence | Keep source, inference, runtime impact, and unverified external evidence separate | Decision inputs stay reproducible without claiming runtime delivery |
 | Completed evidence | AI | P35 literal-route hardening | Preserve the two non-fixture regressions without turning evidence work into a product program | Literal `/my` and the fresh one-Flow rollback case pass `2 / 2`; runtime, storage, schema, and observed-user state are unchanged |
 | Completed | AI | P35 implementation and release | Preserve the state router, three primary destinations, stable P34 data contracts, and evidence boundary | PR #161, merge `4a51b08`, CI/Vercel green, full E2E `405 / 405`; PR #162 records production smoke `6 / 6` without a linked raw artifact; observed users `0` |
@@ -393,12 +410,15 @@ These gates cannot be closed by automated tests or simulated personas.
 
 ## Next Decision
 
-Use the [P1-04 closeout](./specs/2026-08-04-p35-round2-bounded-ux-correction/p1-04-closeout.md)
-and candidate preflight evidence as the current runtime and regression baseline.
-Finish only the authorized freeze/capture/blind-review sequence. Do not create a PR,
-merge, deploy to Vercel, promote text authoring, add an external integration, or
-begin observed-user recruitment. Informed material stays unpublished until both
-blind Pass 1 results are frozen.
+Use the [P′′ closeout](./specs/2026-08-04-p35-round2-bounded-ux-correction/pass2-cross-synthesis-and-pprime2-closeout.md)
+and the shared-write [decision](./DECISIONS.md) as the candidate-source contract.
+Treat the prior `1,095/1,095`, `530/530`, and BUILD_ID `O_FcSLodnCeJe3e2F32PC`
+only as a pre-final-hardening checkpoint. Finish the final scoped run and the
+authorized freeze/capture/blind-review sequence; bind exact SHA, BUILD_ID, epoch,
+and final counts only in post-push provenance. Do not create a PR, merge, deploy to
+Vercel, promote a P2 candidate, add an external integration, or begin observed-user
+recruitment. Informed material stays unpublished until both blind Pass 1 results
+are frozen.
 
 ## Gated Backlog
 

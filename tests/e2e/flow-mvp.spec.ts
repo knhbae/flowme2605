@@ -2320,13 +2320,20 @@ test('my flow management uses one local library while calendar stays global', as
   await expect(inlineDetail).toBeVisible();
   await expect(firstExecutionRow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
   const completion = inlineDetail.getByTestId('my-flow-task-complete-control');
-  await completion.check();
+  await completion.click();
   await expect(completion).toBeChecked();
+  await expect.poll(() => page.evaluate((flowSlug) => {
+    const checks = JSON.parse(
+      localStorage.getItem(`flow_builder_mvp_checks_${flowSlug}`) || '{}',
+    ) as Record<string, boolean>;
+    return Object.values(checks).some(Boolean);
+  }, personalCopySlug)).toBe(true);
   await expect(completion).toHaveAccessibleName(/다시 열기/);
 });
 
 test('my flow mobile derives Today from saved Flow while keeping direct saved inventory', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
+  await page.clock.install({ time: new Date('2026-08-06T09:00:00+09:00') });
   await page.addInitScript(() => {
     const savedAt = '2026-07-03T00:00:00.000Z';
     localStorage.setItem('flow:saved:moving-d30-basic', JSON.stringify({
@@ -2347,8 +2354,11 @@ test('my flow mobile derives Today from saved Flow while keeping direct saved in
   const today = page.getByTestId('my-flow-today-summary');
   await expect(today).toHaveAttribute('data-today-source', 'effective_execution');
   await expect(today).toHaveAttribute('data-write-owner', 'none');
+  await expect(today).toHaveAttribute('data-overdue-count', /[1-9]\d*/u);
   await expect(today.getByRole('heading', { name: '오늘 할 일' })).toBeVisible();
-  await expect(today.getByTestId('my-flow-today-item').first()).toHaveAttribute(
+  const overdueItem = today.locator('[data-testid="my-flow-today-item"][data-time-state="overdue"]').first();
+  await expect(overdueItem).toContainText('지난 할 일');
+  await expect(overdueItem).toHaveAttribute(
     'data-saved-identity',
     'moving-d30-basic',
   );
@@ -3878,8 +3888,14 @@ test('current source-backed routes keep source link checklist and memo in my flo
     const itemChecklist = detail.getByTestId('my-flow-item-checklist');
     await expect(itemChecklist).toBeVisible();
     const firstItemCheckbox = itemChecklist.locator('input[type="checkbox"]').first();
-    await firstItemCheckbox.check();
+    await firstItemCheckbox.click();
     await expect(firstItemCheckbox).toBeChecked();
+    await expect.poll(() => page.evaluate(() => {
+      const checks = JSON.parse(
+        localStorage.getItem('flow:my-flow:step-item-checks') || '{}',
+      ) as Record<string, Record<string, boolean>>;
+      return Object.values(checks).some((row) => Object.values(row).some(Boolean));
+    })).toBe(true);
 
     const memo = `${flowCase.mapId} rehearsal memo`;
     await enterMyFlowDetailEditMode(detail);

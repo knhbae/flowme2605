@@ -499,6 +499,59 @@ test('all four commit roles call exactly one matching adapter target', async () 
   }
 });
 
+test('session-only public plan apply does not wait behind a saved-overlay storage commit', async () => {
+  const requestedEffect = (context: FlowEditorContext, requestId: string) => {
+    const requested = reduceFlowEditorSession(editActive(createSession(context)), {
+      type: 'request-commit',
+      requestId,
+    });
+    const effect = requested.effects.find(
+      (candidate): candidate is FlowEditorCommitEffect<PlanDraft, ItemDraft> =>
+        candidate.type === 'commit',
+    );
+    assert.ok(effect);
+    return effect;
+  };
+  let releaseSavedCommit: () => void = () => undefined;
+  const savedGate = new Promise<void>((resolve) => {
+    releaseSavedCommit = resolve;
+  });
+  let savedStarted = false;
+  let publicCommitted = false;
+  const handlers: FlowEditorCommitHandlers<PlanDraft, ItemDraft> = {
+    preparePublicDraft: () => ({
+      commit: () => {
+        publicCommitted = true;
+      },
+      rollbackAndVerify: () => true,
+    }),
+    applyItemToParentPublicDraft: () => ({ draft: planBaseline, validation: { valid: true } }),
+    preparePersonalOverlay: () => ({
+      commit: async () => {
+        savedStarted = true;
+        await savedGate;
+      },
+      rollbackAndVerify: () => true,
+    }),
+    applyItemToParentPersonalDraft: () => ({ draft: planBaseline, validation: { valid: true } }),
+  };
+
+  const savedCommit = executeFlowEditorCommit(
+    requestedEffect('saved-overlay', 'saved-lock-holder'),
+    handlers,
+  );
+  while (!savedStarted) await Promise.resolve();
+  const publicCommit = executeFlowEditorCommit(
+    requestedEffect('public-draft', 'public-session-only'),
+    handlers,
+  );
+  await publicCommit;
+
+  assert.equal(publicCommitted, true);
+  releaseSavedCommit();
+  await savedCommit;
+});
+
 test('runtime/storage failure keeps baseline and draft and returns first-error focus', async () => {
   let fakePersistedState = structuredClone(planBaseline);
   const dirty = editActive(createSession('saved-overlay'));

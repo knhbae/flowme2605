@@ -678,33 +678,46 @@ export function buildSavedFlowRecord(
   previous?: SavedFlowRecord,
   savedAt = new Date().toISOString(),
 ): SavedFlowRecord {
+  const schemaVersion = value.schemaVersion ?? previous?.schemaVersion;
+  const personalCopyKey = (value.personalCopyKey ?? previous?.personalCopyKey)?.trim() || undefined;
+  const sourceFlowKey = (value.sourceFlowKey ?? previous?.sourceFlowKey)?.trim() || undefined;
+  const sourceFlowSlug = (value.sourceFlowSlug ?? previous?.sourceFlowSlug)?.trim() || undefined;
+  const sourceVersion = (value.sourceVersion ?? previous?.sourceVersion)?.trim() || undefined;
+  const lastSaveRequestId = (value.lastSaveRequestId ?? previous?.lastSaveRequestId)?.trim() || undefined;
+  const requestedSavedItemCount = value.savedItemCount ?? previous?.savedItemCount;
+  const savedItemCount = Number.isInteger(requestedSavedItemCount) && Number(requestedSavedItemCount) >= 0
+    ? Number(requestedSavedItemCount)
+    : undefined;
   const weekdays = value.weekdays ?? previous?.weekdays;
   const personalTitle = value.personalTitle?.trim().slice(0, 80) || previous?.personalTitle;
   const routineDefinition = normalizeSavedFlowRoutineDefinition(value.routineDefinition ?? previous?.routineDefinition);
   const requestedAnchor = value.anchor?.trim();
+  const legacyExampleAnchor = (value.legacyExampleAnchor ?? previous?.legacyExampleAnchor)?.trim() || undefined;
   const dateIntent: PersistedPublicDateIntentMode =
     value.dateIntent === 'undated' ? 'undated' : requestedAnchor ? 'custom' : 'undated';
   const record: SavedFlowRecord = {
-    ...(value.schemaVersion === 2 ? { schemaVersion: 2 as const } : {}),
+    ...(schemaVersion === 2 ? { schemaVersion: 2 as const } : {}),
     slug,
     savedAt,
-    ...(value.personalCopyKey?.trim() ? { personalCopyKey: value.personalCopyKey.trim() } : {}),
-    ...(value.sourceFlowKey?.trim() ? { sourceFlowKey: value.sourceFlowKey.trim() } : {}),
-    ...(value.sourceFlowSlug?.trim() ? { sourceFlowSlug: value.sourceFlowSlug.trim() } : {}),
-    ...(value.sourceVersion?.trim() ? { sourceVersion: value.sourceVersion.trim() } : {}),
-    ...(value.lastSaveRequestId?.trim() ? { lastSaveRequestId: value.lastSaveRequestId.trim() } : {}),
-    ...(Number.isInteger(value.savedItemCount) && Number(value.savedItemCount) >= 0
-      ? { savedItemCount: Number(value.savedItemCount) }
-      : {}),
+    ...(personalCopyKey ? { personalCopyKey } : {}),
+    ...(sourceFlowKey ? { sourceFlowKey } : {}),
+    ...(sourceFlowSlug ? { sourceFlowSlug } : {}),
+    ...(sourceVersion ? { sourceVersion } : {}),
+    ...(lastSaveRequestId ? { lastSaveRequestId } : {}),
+    ...(savedItemCount !== undefined ? { savedItemCount } : {}),
     ...(personalTitle ? { personalTitle } : {}),
     selectedArtifactMode: value.selectedArtifactMode,
     dateIntent,
     ...(dateIntent === 'custom' && requestedAnchor ? { anchor: requestedAnchor } : {}),
-    ...(value.legacyExampleAnchor ? { legacyExampleAnchor: value.legacyExampleAnchor } : {}),
+    ...(legacyExampleAnchor ? { legacyExampleAnchor } : {}),
     ...(weekdays?.length ? { weekdays: Array.from(new Set(weekdays)) } : {}),
     ...(routineDefinition ? { routineDefinition } : {}),
   };
-  return record;
+  const normalized = normalizeSavedFlowRecord(record);
+  if (!normalized) {
+    throw new TypeError('Saved Flow record update would produce an invalid schema-v2 identity.');
+  }
+  return normalized;
 }
 
 export function saveFlowRecord(
@@ -1618,10 +1631,17 @@ export function getFlowRunRegistry(flowSlug: string): FlowRunRegistry {
   }
 }
 
-function saveFlowRunRegistry(flowSlug: string, registry: FlowRunRegistry): FlowRunRegistry | undefined {
+function saveFlowRunRegistry(
+  flowSlug: string,
+  registry: FlowRunRegistry,
+  storage?: Pick<Storage, 'setItem'>,
+): FlowRunRegistry | undefined {
   if (!canUseStorage()) return undefined;
   const normalized = normalizeFlowRunRegistry(flowSlug, registry);
-  localStorage.setItem(`${FLOW_RUN_REGISTRY_KEY_PREFIX}${flowSlug}`, JSON.stringify(normalized));
+  (storage ?? localStorage).setItem(
+    `${FLOW_RUN_REGISTRY_KEY_PREFIX}${flowSlug}`,
+    JSON.stringify(normalized),
+  );
   return normalized;
 }
 
@@ -1666,6 +1686,7 @@ function hasLegacyFlowRunState(flowSlug: string, mapSnapshot?: SavedFlowMapSnaps
 export function ensureLegacyActiveFlowRun(
   flowSlug: string,
   options: EnsureLegacyFlowRunOptions = {},
+  storage?: Pick<Storage, 'setItem'>,
 ): FlowRunRecord | undefined {
   if (!canUseStorage() || !flowSlug.trim()) return undefined;
   const registry = getFlowRunRegistry(flowSlug);
@@ -1696,7 +1717,11 @@ export function ensureLegacyActiveFlowRun(
       : {}),
     reuseMode: 'legacy',
   };
-  const saved = saveFlowRunRegistry(flowSlug, { schemaVersion: 1, activeRunId: runId, runs: [run] });
+  const saved = saveFlowRunRegistry(
+    flowSlug,
+    { schemaVersion: 1, activeRunId: runId, runs: [run] },
+    storage,
+  );
   return saved?.runs.find((entry) => entry.runId === runId);
 }
 
@@ -1733,9 +1758,10 @@ export function captureCurrentFlowRunCompletionSnapshot(
 export function completeActiveFlowRun(
   flowSlug: string,
   options: CompleteActiveFlowRunOptions = {},
+  storage?: Pick<Storage, 'setItem'>,
 ): FlowRunRecord | undefined {
   if (!canUseStorage()) return undefined;
-  const active = getActiveFlowRun(flowSlug) ?? ensureLegacyActiveFlowRun(flowSlug, options);
+  const active = getActiveFlowRun(flowSlug) ?? ensureLegacyActiveFlowRun(flowSlug, options, storage);
   if (!active) return undefined;
   const registry = getFlowRunRegistry(flowSlug);
   const completedAt = options.completedAt?.trim() || getFlowCompletionDetectedAt(flowSlug) || new Date().toISOString();
@@ -1760,7 +1786,7 @@ export function completeActiveFlowRun(
   const saved = saveFlowRunRegistry(flowSlug, {
     schemaVersion: 1,
     runs: registry.runs.map((run) => (run.runId === active.runId ? completed : run)),
-  });
+  }, storage);
   return saved?.runs.find((run) => run.runId === active.runId && run.status === 'completed');
 }
 
@@ -1814,7 +1840,10 @@ function syncExecutionNotesToLatestCompletedFlowRun(
   return saved?.runs.find((run) => run.runId === updated.runId);
 }
 
-function resetCurrentFlowExecutionState(flowSlug: string): void {
+function resetCurrentFlowExecutionState(
+  flowSlug: string,
+  storage: Pick<Storage, 'setItem' | 'removeItem'> = localStorage,
+): void {
   [
     `${CHECKS_KEY_PREFIX}${flowSlug}`,
     `${ANCHOR_KEY_PREFIX}${flowSlug}:anchorDate`,
@@ -1825,9 +1854,9 @@ function resetCurrentFlowExecutionState(flowSlug: string): void {
     `${MY_FLOW_COMPLETION_FEEDBACK_KEY_PREFIX}${flowSlug}`,
     `${MY_FLOW_EXECUTION_NOTES_KEY_PREFIX}${flowSlug}`,
     `${FLOW_COMPLETION_DETECTED_AT_KEY_PREFIX}${flowSlug}`,
-  ].forEach((key) => localStorage.removeItem(key));
+  ].forEach((key) => storage.removeItem(key));
   const stepItemChecks = getMyFlowStepItemChecks();
-  localStorage.setItem(
+  storage.setItem(
     MY_FLOW_STEP_ITEM_CHECKS_KEY,
     JSON.stringify(
       Object.fromEntries(Object.entries(stepItemChecks).filter(([key]) => !key.startsWith(`${flowSlug}::`))),
@@ -1838,10 +1867,11 @@ function resetCurrentFlowExecutionState(flowSlug: string): void {
 function restorePersonalCopyExcludedItemStates(
   flowSlug: string,
   personalCopy?: SourceBackedFlowMapPersonalCopy,
+  storage: Pick<Storage, 'setItem'> = localStorage,
 ): void {
   const excludedStepIds = personalCopy?.excludedStepIdsByFlow[flowSlug] ?? [];
   if (excludedStepIds.length === 0) return;
-  localStorage.setItem(
+  storage.setItem(
     `${ITEM_STATE_KEY_PREFIX}${flowSlug}`,
     JSON.stringify(Object.fromEntries(excludedStepIds.map((stepId) => [
       stepId,
@@ -1859,6 +1889,7 @@ function updateSavedFlowMapProjectionForRun(
     anchor?: string;
     personalCopySnapshot?: SourceBackedFlowMapPersonalCopy;
   },
+  storage: Pick<Storage, 'getItem' | 'setItem'> = localStorage,
 ): SavedFlowMapSnapshot | undefined {
   if (!value.mapId) return undefined;
   const current = getSavedFlowMapSnapshots().find(
@@ -1876,7 +1907,7 @@ function updateSavedFlowMapProjectionForRun(
   if (!value.personalCopySnapshot) delete next.personalCopy;
   const normalized = normalizeSavedFlowMapSnapshot(next);
   if (!normalized) return undefined;
-  localStorage.setItem(`${SAVED_FLOW_MAP_KEY_PREFIX}${value.mapId}`, JSON.stringify(normalized));
+  storage.setItem(`${SAVED_FLOW_MAP_KEY_PREFIX}${value.mapId}`, JSON.stringify(normalized));
   const sourceBackedSnapshot = normalized.stepCountsByFlow
     && normalized.riskLevelsByFlow
     && normalized.sourceCheckedAtByFlow
@@ -1888,7 +1919,7 @@ function updateSavedFlowMapProjectionForRun(
         ...(normalized.anchor ? { anchor: normalized.anchor } : {}),
         ...(() => {
           try {
-            const raw = localStorage.getItem(getSourceBackedFlowMapPersistenceStorageKey(normalized.mapId));
+            const raw = storage.getItem(getSourceBackedFlowMapPersistenceStorageKey(normalized.mapId));
             const baselineRecord = raw ? JSON.parse(raw) as SourceBackedFlowMapPersistenceRecord : undefined;
             return baselineRecord?.recordType === 'saved_source_backed_flow_map' ? { baselineRecord } : {};
           } catch {
@@ -1898,7 +1929,7 @@ function updateSavedFlowMapProjectionForRun(
       })
     : undefined;
   if (persistenceRecord) {
-    localStorage.setItem(
+    storage.setItem(
       getSourceBackedFlowMapPersistenceStorageKey(normalized.mapId),
       JSON.stringify(persistenceRecord),
     );
@@ -1909,8 +1940,10 @@ function updateSavedFlowMapProjectionForRun(
 export function startFlowRunFromCompleted(
   flowSlug: string,
   options: StartFlowRunFromCompletedOptions,
+  storage?: Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>,
 ): FlowRunRecord | undefined {
   if (!canUseStorage() || !flowSlug.trim()) return undefined;
+  const writeStorage = storage ?? localStorage;
   if (options.reuseMode === 'new_anchor' && !options.anchor?.trim()) return undefined;
   const registry = getFlowRunRegistry(flowSlug);
   if (registry.activeRunId) return undefined;
@@ -1922,8 +1955,9 @@ export function startFlowRunFromCompleted(
   const runId = options.runId?.trim() || createFlowRunId(flowSlug);
   if (registry.runs.some((run) => run.runId === runId)) return undefined;
   const startedAt = options.startedAt?.trim() || new Date().toISOString();
+  const currentSavedRecord = getSavedFlowRecord(flowSlug);
   const selectedArtifactMode =
-    options.selectedArtifactMode ?? previous.selectedArtifactMode ?? getSavedFlowRecord(flowSlug)?.selectedArtifactMode ?? 'calendar';
+    options.selectedArtifactMode ?? previous.selectedArtifactMode ?? currentSavedRecord?.selectedArtifactMode ?? 'calendar';
   const hasPersonalCopyOption = Object.prototype.hasOwnProperty.call(options, 'personalCopySnapshot');
   let personalCopySnapshot = hasPersonalCopyOption
     ? normalizeSavedFlowMapPersonalCopy(options.personalCopySnapshot)
@@ -1933,7 +1967,8 @@ export function startFlowRunFromCompleted(
     ? normalizeMyFlowPersonalExecutionState(options.personalExecutionStateSnapshot)
     : previous.personalExecutionStateSnapshot ?? getFlowScopedMyFlowPersonalExecutionState(flowSlug);
   const mapId = options.mapId?.trim() || previous.mapId;
-  const sourceVersion = options.sourceVersion?.trim() || previous.sourceVersion;
+  const requestedSourceVersion = options.sourceVersion?.trim();
+  const sourceVersion = requestedSourceVersion || previous.sourceVersion;
   const anchor = options.anchor?.trim();
   if (options.reuseMode === 'new_anchor' || (options.reuseMode === 'reviewed_version' && anchor)) {
     const newAnchorPlan = prepareFlowRunNewAnchor(
@@ -1952,19 +1987,25 @@ export function startFlowRunFromCompleted(
     );
   }
 
-  resetCurrentFlowExecutionState(flowSlug);
-  restorePersonalCopyExcludedItemStates(flowSlug, personalCopySnapshot);
-  replaceFlowScopedMyFlowPersonalExecutionState(flowSlug, personalExecutionStateSnapshot);
-  const savedRecord: SavedFlowRecord = {
-    slug: flowSlug,
-    savedAt: startedAt,
+  resetCurrentFlowExecutionState(flowSlug, writeStorage);
+  restorePersonalCopyExcludedItemStates(flowSlug, personalCopySnapshot, writeStorage);
+  replaceFlowScopedMyFlowPersonalExecutionState(
+    flowSlug,
+    personalExecutionStateSnapshot,
+    writeStorage,
+  );
+  const savedRecord = buildSavedFlowRecord(flowSlug, {
     selectedArtifactMode,
     dateIntent: anchor ? 'custom' : 'undated',
     ...(anchor ? { anchor } : {}),
-  };
-  localStorage.setItem(`${SAVED_FLOW_KEY_PREFIX}${flowSlug}`, JSON.stringify(savedRecord));
+    ...(requestedSourceVersion ? { sourceVersion: requestedSourceVersion } : {}),
+  }, currentSavedRecord, startedAt);
+  writeStorage.setItem(`${SAVED_FLOW_KEY_PREFIX}${flowSlug}`, JSON.stringify(savedRecord));
   if (anchor) {
-    localStorage.setItem(`${ANCHOR_KEY_PREFIX}${flowSlug}:anchorDate`, JSON.stringify({ mode: 'custom', anchor }));
+    writeStorage.setItem(
+      `${ANCHOR_KEY_PREFIX}${flowSlug}:anchorDate`,
+      JSON.stringify({ mode: 'custom', anchor }),
+    );
   }
   updateSavedFlowMapProjectionForRun(flowSlug, {
     mapId,
@@ -1972,8 +2013,8 @@ export function startFlowRunFromCompleted(
     savedAt: startedAt,
     ...(anchor ? { anchor } : {}),
     ...(personalCopySnapshot ? { personalCopySnapshot } : {}),
-  });
-  localStorage.setItem('flow:meta:last-visit', startedAt);
+  }, writeStorage);
+  writeStorage.setItem('flow:meta:last-visit', startedAt);
 
   const active: FlowRunRecord = {
     schemaVersion: 1,
@@ -1999,6 +2040,6 @@ export function startFlowRunFromCompleted(
     schemaVersion: 1,
     activeRunId: runId,
     runs: [...registry.runs, active],
-  });
+  }, writeStorage);
   return saved?.runs.find((run) => run.runId === runId && run.status === 'active');
 }

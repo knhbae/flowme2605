@@ -185,15 +185,27 @@ export function useFlowEditorController<PlanDraft, ItemDraft>(
         }
         case 'focus-target': {
           if (typeof window === 'undefined') break;
-          window.requestAnimationFrame(() => {
-            const surface = Array.from(document.querySelectorAll<HTMLElement>(
-              '[data-flow-editor-surface="true"]',
-            )).filter((element) => element.getClientRects().length > 0).at(-1);
-            const target = surface?.matches(effect.target)
-              ? surface
-              : surface?.querySelector<HTMLElement>(effect.target);
-            target?.focus({ preventScroll: true });
-          });
+          const focusTarget = (attempt = 0) => {
+            window.requestAnimationFrame(() => {
+              const surface = Array.from(document.querySelectorAll<HTMLElement>(
+                '[data-flow-editor-surface="true"]',
+              )).filter((element) => element.getClientRects().length > 0).at(-1);
+              const target = surface?.matches(effect.target)
+                ? surface
+                : surface?.querySelector<HTMLElement>(effect.target);
+              if (target) {
+                target.focus({ preventScroll: true });
+                return;
+              }
+              // Async storage commits can resolve before React mounts the
+              // recoverable-error summary. Retry briefly so the announced
+              // error also receives keyboard focus once it exists.
+              if (attempt < 4) {
+                window.setTimeout(() => focusTarget(attempt + 1), 25);
+              }
+            });
+          };
+          focusTarget();
           break;
         }
         case 'rearm-history-boundary':

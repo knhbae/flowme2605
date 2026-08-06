@@ -560,18 +560,24 @@ test.describe('P35 P0-06 shared editor surface', () => {
       const storageBeforeFailure = await rawStorageSnapshot(page);
 
       if (failureKind === 'runtime') {
-        await page.evaluate(() => {
-          const original = Date.prototype.toISOString;
+        await page.evaluate((title) => {
+          const original = JSON.stringify;
           let shouldFail = true;
-          Date.prototype.toISOString = function patchedToISOString() {
-            if (shouldFail) {
+          JSON.stringify = function patchedStringify(value, ...args) {
+            if (
+              shouldFail
+              && value !== null
+              && typeof value === 'object'
+              && 'personalTitle' in value
+              && (value as { personalTitle?: unknown }).personalTitle === title
+            ) {
               shouldFail = false;
-              Date.prototype.toISOString = original;
+              JSON.stringify = original;
               throw new Error('P0-06 injected runtime failure');
             }
-            return original.call(this);
+            return Reflect.apply(original, JSON, [value, ...args]);
           };
-        });
+        }, retryTitle);
       } else {
         await page.evaluate((targetKey) => {
           const original = Storage.prototype.setItem;

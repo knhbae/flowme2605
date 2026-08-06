@@ -115,7 +115,7 @@ function CandidateChoice({
       onClick={() => onSelect(candidate)}
     >
       <span className="block text-[10px] font-semibold text-[var(--flowme-text-tertiary)]">
-        {candidate.role === 'primary' ? '주 결과' : '다른 결과'}
+        {selected ? '선택한 결과' : candidate.role === 'primary' ? '추천 결과' : '다른 결과'}
       </span>
       <span className="mt-0.5 block">{candidate.label} · {candidate.countLabel}</span>
     </button>
@@ -304,7 +304,7 @@ export function FlowCapabilityResultPreview({
       {viewModel.additionalAvailable.length > 0 ? (
         <details className="border-t border-[var(--flowme-border)] px-3 py-2">
           <summary className="min-h-[var(--flowme-control-height)] cursor-pointer list-none py-3 text-xs font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">
-            다른 형식 {viewModel.additionalAvailable.length}개
+            형식 {viewModel.selectable.length}개 중 {viewModel.additionalAvailable.length}개 더
           </summary>
           <div className="flex flex-wrap gap-1.5 pb-2">
             {viewModel.additionalAvailable.map((candidate) => (

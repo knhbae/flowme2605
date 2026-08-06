@@ -65,7 +65,7 @@ test.describe('P35-R3 receipt to focused workspace continuity', () => {
     const banner = page.getByTestId('my-flow-save-banner');
     await expect(banner).toBeVisible();
     await expect(banner.getByTestId('my-flow-save-banner-summary')).toHaveText('저장됨 · 24개');
-    await expect(banner.getByTestId('my-flow-save-undo')).toHaveText('되돌리기');
+    await expect(banner.getByTestId('my-flow-save-undo')).toHaveText('방금 저장 취소');
     const workspace = await openMyFlowLibraryFlow(page, copySlug, 'execute');
     await expect(workspace).toContainText('이사');
     await expect(workspace.getByTestId('my-flow-workspace-plan')).toBeVisible();
