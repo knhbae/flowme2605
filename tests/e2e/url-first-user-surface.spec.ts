@@ -1407,6 +1407,10 @@ test('personal draft structural Calendar and ICS projections share effective ite
     .getByTestId('my-flow-batch-selectable-row')
     .filter({ hasText: '교통편 앱 오프라인 저장' });
   await scheduledUserAfterFixture.getByTestId('personal-draft-move-down').click();
+  await expect.poll(async () => draftFlow
+    .getByTestId('my-flow-batch-selectable-row')
+    .evaluateAll((elements) => elements.map((element) => element.getAttribute('data-item-id'))))
+    .toEqual([scheduledSourceId, scheduledUserId, unscheduledUserId]);
 
   await page.goto('/calendar');
   await page.getByTestId('my-flow-month-picker').fill('2026-08');

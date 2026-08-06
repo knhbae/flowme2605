@@ -3409,6 +3409,7 @@ test('source-backed creator saved preview opens the requested My Flow map demo',
 });
 
 test('my flow step detail saves portable date and memo fields', async ({ page }) => {
+  await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
   await page.clock.install({ time: new Date('2026-07-01T09:00:00+09:00') });
   await page.goto('/f/moving-d30-basic');
 
