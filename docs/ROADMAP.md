@@ -6,7 +6,7 @@
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
 **Next Milestone:** review P35 in production, then choose keep, one bounded correction, or at most one next product slice
 
-Human-facing control surface: [FlowMe current stage control board](./content-audit/2026-07-29-flowme-current-stage-control-board-ko.html).
+Human-facing control surface: [FlowMe Project Control](./PROJECT_CONTROL.md).
 
 ## Current Production Baseline: P35 MECE UX Reset
 
