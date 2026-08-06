@@ -1,0 +1,1634 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>누가 Flow를 관리하는가 — FlowMe 공개 Flow 관리 전략</title>
+  <meta name="description" content="블로그·위키·GitHub와 실제 협업 플랫폼을 비교해 FlowMe 공개 Flow의 작성자, 공동관리자, 개선 제안, 관리 승계, 안전 개입 구조를 제안하는 시각 보고서" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%237158e8'/%3E%3Cpath d='M18 16h30v9H29v8h15v9H29v14H18z' fill='white'/%3E%3C/svg%3E" />
+  <style>
+    :root {
+      --ink: #111a3d;
+      --ink-2: #28345f;
+      --muted: #657092;
+      --paper: #fbfaff;
+      --white: #ffffff;
+      --line: #dfe3f3;
+      --line-strong: #b9c2e3;
+      --violet: #7158e8;
+      --violet-soft: #eeeaff;
+      --blue: #2563eb;
+      --blue-soft: #e8f0ff;
+      --mint: #1f9d7a;
+      --mint-soft: #e5f8f2;
+      --coral: #f06b55;
+      --coral-soft: #fff0ec;
+      --yellow: #e4a21b;
+      --yellow-soft: #fff7dd;
+      --danger: #cc3f51;
+      --danger-soft: #fff0f2;
+      --shadow: 0 18px 55px rgba(35, 38, 90, .10);
+      --radius: 24px;
+      --radius-sm: 14px;
+      --max: 1220px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", Inter, system-ui, sans-serif;
+      line-height: 1.58;
+      letter-spacing: -.018em;
+    }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; }
+    img { display: block; max-width: 100%; }
+    figure { margin: 0; }
+
+    .simulation-banner {
+      position: relative;
+      z-index: 30;
+      padding: 9px 18px;
+      color: #fff;
+      background: var(--ink);
+      text-align: center;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .01em;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid rgba(185, 194, 227, .72);
+      background: rgba(251, 250, 255, .9);
+      backdrop-filter: blur(18px);
+    }
+    .topbar-inner {
+      width: min(var(--max), calc(100% - 36px));
+      min-height: 62px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 22px;
+    }
+    .brand {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-weight: 950;
+      letter-spacing: -.04em;
+      text-decoration: none;
+    }
+    .brand-mark {
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--violet), var(--blue));
+      box-shadow: 0 8px 20px rgba(113, 88, 232, .28);
+      font-size: 13px;
+    }
+    .topnav {
+      min-width: 0;
+      margin-left: auto;
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .topnav::-webkit-scrollbar { display: none; }
+    .topnav a {
+      flex: 0 0 auto;
+      padding: 8px 11px;
+      color: var(--muted);
+      border-radius: 9px;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .topnav a:hover { color: var(--ink); background: var(--violet-soft); }
+
+    .wrap { width: min(var(--max), calc(100% - 44px)); margin: 0 auto; }
+    .section { padding: 96px 0; }
+    .section.compact { padding: 72px 0; }
+    .section.alt { background: #fff; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .section.dark { color: #fff; background: var(--ink); }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 17px;
+      color: var(--violet);
+      font-size: 12px;
+      font-weight: 950;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .eyebrow::before { content: ""; width: 28px; height: 3px; border-radius: 99px; background: currentColor; }
+    .section-title {
+      max-width: 900px;
+      margin: 0;
+      font-size: clamp(34px, 5vw, 62px);
+      line-height: 1.08;
+      letter-spacing: -.06em;
+      font-weight: 950;
+    }
+    .section-title.sm { font-size: clamp(30px, 4vw, 48px); }
+    .section-lead {
+      max-width: 760px;
+      margin: 20px 0 0;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.75;
+    }
+    .dark .section-lead { color: #cbd2ec; }
+    .kicker { color: var(--coral); }
+    .note {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    .evidence-tag, .demo-tag, .proposal-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--ink-2);
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .02em;
+    }
+    .evidence-tag::before { content: "✓"; color: var(--mint); }
+    .demo-tag { border-color: #efcfa0; background: var(--yellow-soft); color: #845e09; }
+    .demo-tag::before { content: "예시"; }
+    .proposal-tag { border-color: #cfc7ff; background: var(--violet-soft); color: #5140bd; }
+    .proposal-tag::before { content: "제안"; }
+
+    /* Hero */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 76px 0 46px;
+      background:
+        radial-gradient(circle at 13% 8%, rgba(113, 88, 232, .16), transparent 27%),
+        radial-gradient(circle at 87% 18%, rgba(31, 157, 122, .12), transparent 26%),
+        linear-gradient(180deg, #fff 0%, #f8f5ff 100%);
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -90px;
+      bottom: -120px;
+      width: 360px;
+      height: 360px;
+      border: 58px solid rgba(37, 99, 235, .055);
+      border-radius: 50%;
+    }
+    .hero-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1.02fr .98fr;
+      align-items: center;
+      gap: 54px;
+    }
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(42px, 6.4vw, 78px);
+      line-height: 1.02;
+      letter-spacing: -.072em;
+      font-weight: 950;
+    }
+    .hero h1 em { color: var(--violet); font-style: normal; }
+    .hero-copy > p {
+      max-width: 660px;
+      margin: 24px 0 0;
+      color: var(--ink-2);
+      font-size: 19px;
+      line-height: 1.72;
+    }
+    .verdict {
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+      margin-top: 27px;
+      padding: 13px 17px;
+      border: 1px solid #cec6ff;
+      border-radius: 14px;
+      background: rgba(255,255,255,.8);
+      box-shadow: 0 11px 30px rgba(61, 49, 142, .08);
+      font-weight: 900;
+    }
+    .verdict b { color: var(--violet); }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+    .btn {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 10px 15px;
+      border: 1px solid var(--ink);
+      border-radius: 11px;
+      color: var(--ink);
+      background: #fff;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 900;
+      transition: .18s ease;
+    }
+    .btn.primary { color: #fff; background: var(--ink); }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(17, 26, 61, .12); }
+    .hero-visual {
+      position: relative;
+      border: 1px solid rgba(185, 194, 227, .75);
+      border-radius: 32px;
+      background: #fff;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .hero-visual img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
+    .hero-caption {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 12px 16px;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+      font-size: 11px;
+    }
+
+    .fact-strip {
+      position: relative;
+      z-index: 2;
+      width: min(var(--max), calc(100% - 44px));
+      margin: 42px auto 0;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(255,255,255,.94);
+      box-shadow: 0 14px 38px rgba(17, 26, 61, .07);
+      overflow: hidden;
+    }
+    .fact {
+      min-height: 116px;
+      padding: 18px 17px;
+      border-right: 1px solid var(--line);
+    }
+    .fact:last-child { border-right: 0; }
+    .fact b { display: block; color: var(--violet); font-size: 27px; line-height: 1; letter-spacing: -.05em; }
+    .fact span { display: block; margin-top: 8px; color: var(--ink-2); font-size: 12px; font-weight: 850; line-height: 1.35; }
+    .fact a { display: inline-block; margin-top: 8px; color: var(--muted); font-size: 9px; font-weight: 800; }
+
+    /* model cards */
+    .model-grid {
+      margin-top: 44px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+    }
+    .model-card {
+      position: relative;
+      min-height: 290px;
+      padding: 27px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      overflow: hidden;
+    }
+    .model-card::after {
+      content: attr(data-mark);
+      position: absolute;
+      right: -6px;
+      bottom: -28px;
+      color: rgba(17,26,61,.045);
+      font-size: 150px;
+      line-height: 1;
+      font-weight: 950;
+    }
+    .model-card .num { color: var(--muted); font-size: 11px; font-weight: 900; }
+    .model-card h3 { margin: 34px 0 10px; font-size: 30px; letter-spacing: -.05em; }
+    .model-card p { margin: 0; color: var(--muted); font-size: 14px; }
+    .model-card strong { display: block; margin-top: 22px; color: var(--ink); font-size: 15px; }
+    .model-card.blog { box-shadow: inset 0 5px 0 var(--coral); }
+    .model-card.wiki { box-shadow: inset 0 5px 0 var(--mint); }
+    .model-card.git { box-shadow: inset 0 5px 0 var(--blue); }
+    .flowme-formula {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      gap: 23px;
+      padding: 30px;
+      color: #fff;
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, var(--ink), #30265e 65%, #48368f);
+    }
+    .formula-mark {
+      width: 94px;
+      height: 94px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,.25);
+      border-radius: 28px;
+      background: rgba(255,255,255,.09);
+      font-size: 34px;
+      font-weight: 950;
+    }
+    .flowme-formula h3 { margin: 0; font-size: 25px; letter-spacing: -.04em; }
+    .flowme-formula p { margin: 8px 0 0; color: #d7dcf5; }
+
+    /* evidence cases */
+    .case-grid {
+      margin-top: 40px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .case-card {
+      min-height: 260px;
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fff;
+      transition: .18s ease;
+    }
+    .case-card:hover { transform: translateY(-3px); box-shadow: 0 14px 34px rgba(17,26,61,.08); }
+    .case-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .case-head b { font-size: 16px; }
+    .case-type { color: var(--muted); font-size: 10px; font-weight: 900; }
+    .case-rule { margin: 18px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.62; }
+    .case-use {
+      margin-top: 17px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+      color: var(--mint);
+      font-size: 12px;
+      font-weight: 850;
+    }
+    .case-warn { display: block; margin-top: 7px; color: var(--coral); font-size: 11px; font-weight: 750; }
+    .case-card a { display: inline-block; margin-top: 13px; color: var(--blue); font-size: 10px; font-weight: 850; }
+
+    /* current screens */
+    .screen-bridge {
+      margin-top: 44px;
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 22px;
+      align-items: start;
+    }
+    .screen-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .product-shot {
+      padding: 8px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: #eef1fb;
+    }
+    .product-shot img { width: 100%; border-radius: 14px; }
+    .product-shot figcaption { padding: 10px 4px 4px; color: var(--ink-2); font-size: 11px; font-weight: 850; }
+    .missing-panel {
+      padding: 27px;
+      border: 1px solid #f1c6bd;
+      border-radius: var(--radius);
+      background: var(--coral-soft);
+    }
+    .missing-panel h3 { margin: 0 0 13px; font-size: 24px; letter-spacing: -.04em; }
+    .missing-panel ol { margin: 0; padding-left: 20px; color: #733c33; }
+    .missing-panel li { margin: 9px 0; font-size: 13px; font-weight: 750; }
+
+    /* layers and roles */
+    .layer-layout {
+      margin-top: 42px;
+      display: grid;
+      grid-template-columns: .78fr 1.22fr;
+      gap: 24px;
+    }
+    .role-controls { display: grid; gap: 9px; align-content: start; }
+    .role-button {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      align-items: center;
+      gap: 12px;
+      padding: 13px;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: #fff;
+      text-align: left;
+    }
+    .role-button i {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      background: var(--violet-soft);
+      font-style: normal;
+      font-size: 20px;
+    }
+    .role-button b { display: block; font-size: 13px; }
+    .role-button small { display: block; margin-top: 2px; color: var(--muted); font-size: 10px; }
+    .role-button.active { color: #fff; border-color: var(--ink); background: var(--ink); }
+    .role-button.active i { color: var(--ink); background: #fff; }
+    .role-button.active small { color: #d0d6ee; }
+
+    .layers { display: grid; gap: 12px; }
+    .layer {
+      position: relative;
+      min-height: 128px;
+      padding: 22px 24px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fff;
+      transition: .2s ease;
+    }
+    .layer::before { content: attr(data-layer); color: var(--muted); font-size: 10px; font-weight: 950; letter-spacing: .08em; }
+    .layer h3 { margin: 7px 0 7px; font-size: 20px; letter-spacing: -.04em; }
+    .layer p { margin: 0; color: var(--muted); font-size: 12px; }
+    .layer .role-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 13px; }
+    .role-action {
+      padding: 5px 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      background: #fafbff;
+      font-size: 9px;
+      font-weight: 850;
+      transition: .18s ease;
+    }
+    .role-action.highlight { color: #fff; border-color: var(--violet); background: var(--violet); transform: translateY(-1px); }
+    .layer.personal { box-shadow: inset 5px 0 0 var(--blue); }
+    .layer.proposal { box-shadow: inset 5px 0 0 var(--yellow); }
+    .layer.public { box-shadow: inset 5px 0 0 var(--mint); }
+
+    .key-grid {
+      margin-top: 24px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .key-card {
+      min-height: 245px;
+      padding: 23px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fff;
+    }
+    .key-icon {
+      width: 52px;
+      height: 52px;
+      display: grid;
+      place-items: center;
+      border-radius: 15px;
+      background: var(--violet-soft);
+      font-size: 23px;
+    }
+    .key-card h3 { margin: 17px 0 8px; font-size: 18px; }
+    .key-card p { margin: 0; color: var(--muted); font-size: 12px; }
+    .can, .cannot { margin-top: 13px; padding-top: 11px; border-top: 1px solid var(--line); font-size: 10px; font-weight: 800; }
+    .can { color: var(--mint); }
+    .cannot { margin-top: 6px; padding-top: 0; border: 0; color: var(--coral); }
+
+    /* story image */
+    .story-frame {
+      margin-top: 42px;
+      border: 2px solid var(--ink);
+      border-radius: 22px;
+      background: #fff;
+      box-shadow: 10px 10px 0 var(--ink);
+      overflow: hidden;
+    }
+    .story-frame img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
+    .story-caption {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      border-top: 2px solid var(--ink);
+    }
+    .story-caption div { min-height: 112px; padding: 14px 12px; border-right: 1px solid var(--line-strong); }
+    .story-caption div:last-child { border-right: 0; }
+    .story-caption b { display: block; color: var(--violet); font-size: 11px; }
+    .story-caption span { display: block; margin-top: 5px; font-size: 11px; font-weight: 800; line-height: 1.45; }
+
+    /* scenarios */
+    .scenario-shell { margin-top: 42px; }
+    .scenario-tabs {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 7px;
+    }
+    .scenario-tab {
+      min-height: 66px;
+      padding: 9px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      color: var(--muted);
+      background: #fff;
+      text-align: left;
+      font-size: 10px;
+      font-weight: 800;
+    }
+    .scenario-tab b { display: block; color: var(--ink); font-size: 12px; }
+    .scenario-tab.active { color: #dfe3f7; border-color: var(--ink); background: var(--ink); }
+    .scenario-tab.active b { color: #fff; }
+    .scenario-panel {
+      display: none;
+      margin-top: 12px;
+      padding: 26px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      box-shadow: var(--shadow);
+    }
+    .scenario-panel.active { display: block; }
+    .scenario-grid {
+      display: grid;
+      grid-template-columns: .72fr 1.3fr .72fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+    .scenario-story, .next-result {
+      padding: 19px;
+      border-radius: 16px;
+      background: #f7f6fc;
+    }
+    .scenario-story h3, .next-result h3 { margin: 0 0 12px; font-size: 18px; letter-spacing: -.04em; }
+    .scenario-story p, .next-result p { margin: 0; color: var(--muted); font-size: 12px; }
+    .person-row { display: flex; margin-top: 17px; }
+    .avatar {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      margin-right: -7px;
+      color: #fff;
+      border: 3px solid #f7f6fc;
+      border-radius: 50%;
+      background: var(--violet);
+      font-size: 10px;
+      font-weight: 950;
+    }
+    .avatar.blue { background: var(--blue); }
+    .avatar.mint { background: var(--mint); }
+    .avatar.coral { background: var(--coral); }
+
+    .ui-window { border: 1px solid var(--line-strong); border-radius: 16px; background: #fff; overflow: hidden; }
+    .window-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 14px;
+      border-bottom: 1px solid var(--line);
+      background: #f8f9fd;
+      font-size: 11px;
+      font-weight: 900;
+    }
+    .window-body { padding: 16px; }
+    .stat-line { display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+    .stat-line strong { font-size: 18px; letter-spacing: -.04em; }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 11px; }
+    .chip {
+      padding: 6px 9px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--ink-2);
+      background: #fff;
+      font-size: 10px;
+      font-weight: 800;
+    }
+    button.chip:hover, button.chip.active { color: #fff; border-color: var(--violet); background: var(--violet); }
+    .diff {
+      margin-top: 13px;
+      display: grid;
+      grid-template-columns: 1fr 30px 1fr;
+      align-items: center;
+      gap: 8px;
+    }
+    .diff-card { padding: 11px; border-radius: 11px; background: var(--coral-soft); font-size: 11px; font-weight: 850; }
+    .diff-card.after { background: var(--mint-soft); }
+    .diff-arrow { color: var(--muted); text-align: center; font-weight: 950; }
+    .decision-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 13px; }
+    .decision-btn {
+      min-height: 39px;
+      padding: 8px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      color: var(--ink);
+      background: #fff;
+      font-size: 10px;
+      font-weight: 900;
+    }
+    .decision-btn:hover, .decision-btn.active { color: #fff; border-color: var(--ink); background: var(--ink); }
+    .result-card { margin-top: 15px; padding: 13px; border: 1px solid #b9e2d5; border-radius: 12px; background: var(--mint-soft); }
+    .result-card b { display: block; font-size: 12px; }
+    .result-card span { display: block; margin-top: 5px; color: #326b5d; font-size: 10px; }
+
+    .permission-list { display: grid; gap: 7px; margin-top: 12px; }
+    .permission-row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 12px; padding: 9px 10px; border: 1px solid var(--line); border-radius: 10px; font-size: 10px; font-weight: 800; }
+    .toggle {
+      position: relative;
+      width: 38px;
+      height: 22px;
+      border: 0;
+      border-radius: 999px;
+      background: #ccd2e5;
+    }
+    .toggle::after { content: ""; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: .2s ease; }
+    .toggle.on { background: var(--mint); }
+    .toggle.on::after { left: 19px; }
+
+    .plan-preview { margin-top: 13px; }
+    .plan-step { display: flex; align-items: start; gap: 9px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 10px; font-weight: 800; }
+    .step-dot { flex: 0 0 18px; width: 18px; height: 18px; display: grid; place-items: center; color: #fff; border-radius: 50%; background: var(--blue); font-size: 8px; }
+
+    .queue-visual { margin-top: 13px; display: flex; align-items: center; gap: 6px; }
+    .queue-stack { flex: 1; height: 54px; position: relative; }
+    .queue-stack i { position: absolute; inset: 0; border: 1px solid #f2b8c0; border-radius: 9px; background: var(--danger-soft); transform: translate(calc(var(--i) * 2px), calc(var(--i) * -2px)); }
+    .queue-arrow { color: var(--muted); font-weight: 950; }
+    .queue-clean { flex: 1; padding: 10px; border: 1px solid #adddcc; border-radius: 10px; background: var(--mint-soft); text-align: center; font-size: 10px; font-weight: 900; }
+
+    /* stale */
+    .hard-case-grid { margin-top: 40px; display: grid; grid-template-columns: 1.07fr .93fr; gap: 22px; align-items: start; }
+    .hard-visual { border: 1px solid var(--line); border-radius: 22px; background: #fff; overflow: hidden; box-shadow: var(--shadow); }
+    .hard-visual img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
+    .hard-visual figcaption { padding: 12px 16px; color: var(--muted); border-top: 1px solid var(--line); font-size: 11px; }
+    .stale-simulator { padding: 24px; border: 1px solid var(--line); border-radius: 22px; background: #fff; }
+    .stale-simulator h3 { margin: 0; font-size: 22px; letter-spacing: -.04em; }
+    .range-head { display: flex; justify-content: space-between; gap: 12px; margin-top: 20px; font-size: 11px; font-weight: 850; }
+    input[type="range"] { width: 100%; margin: 13px 0; accent-color: var(--violet); }
+    .state-card { padding: 17px; border: 1px solid var(--line); border-radius: 14px; background: #f8f9fd; }
+    .state-card strong { display: block; font-size: 18px; }
+    .state-card p { margin: 7px 0 0; color: var(--muted); font-size: 11px; }
+    .state-identity { margin-top: 13px; display: grid; gap: 7px; }
+    .identity-row { display: flex; justify-content: space-between; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 10px; }
+    .identity-row:last-child { border-bottom: 0; }
+    .identity-row b { color: var(--ink); }
+    .stale-timeline {
+      margin-top: 22px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+    }
+    .state-step { min-height: 110px; padding: 13px; border: 1px solid var(--line); border-radius: 13px; background: #fff; }
+    .state-step b { display: block; font-size: 11px; }
+    .state-step span { display: block; margin-top: 6px; color: var(--muted); font-size: 9px; }
+
+    /* risk */
+    .risk-grid { margin-top: 39px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 9px; }
+    .risk-card { min-height: 220px; padding: 18px; border: 1px solid var(--line); border-radius: 16px; background: #fff; }
+    .risk-card:nth-child(1) { box-shadow: inset 0 5px 0 #7ecbb3; }
+    .risk-card:nth-child(2) { box-shadow: inset 0 5px 0 #76a4f8; }
+    .risk-card:nth-child(3) { box-shadow: inset 0 5px 0 #e8bb4d; }
+    .risk-card:nth-child(4) { box-shadow: inset 0 5px 0 #ef8d76; }
+    .risk-card:nth-child(5) { box-shadow: inset 0 5px 0 #ce5c6d; }
+    .risk-no { color: var(--muted); font-size: 10px; font-weight: 950; }
+    .risk-card h3 { margin: 18px 0 8px; font-size: 16px; }
+    .risk-card p { margin: 0; color: var(--muted); font-size: 11px; }
+    .risk-rule { display: block; margin-top: 15px; color: var(--ink); font-size: 10px; font-weight: 900; }
+
+    .safety-demo { margin-top: 22px; display: grid; grid-template-columns: 1fr auto 1fr; gap: 14px; align-items: center; }
+    .safety-card { padding: 18px; border: 1px solid #efb8c0; border-radius: 15px; background: var(--danger-soft); }
+    .safety-card.safe { border-color: #b2ddcf; background: var(--mint-soft); }
+    .safety-card b { display: block; font-size: 13px; }
+    .safety-card p { margin: 8px 0 0; color: var(--muted); font-size: 11px; }
+    .safety-arrow { font-weight: 950; }
+
+    /* trust UI */
+    .trust-layout { margin-top: 42px; display: grid; grid-template-columns: .85fr 1.15fr; gap: 24px; }
+    .phone {
+      max-width: 385px;
+      margin: 0 auto;
+      padding: 10px;
+      border: 2px solid var(--ink);
+      border-radius: 30px;
+      background: var(--ink);
+      box-shadow: 0 25px 60px rgba(17,26,61,.2);
+    }
+    .phone-screen { min-height: 600px; padding: 18px; border-radius: 22px; background: #f8f9fd; }
+    .phone-notch { width: 80px; height: 19px; margin: -18px auto 16px; border-radius: 0 0 12px 12px; background: var(--ink); }
+    .app-bar { display: flex; justify-content: space-between; color: var(--muted); font-size: 10px; font-weight: 900; }
+    .flow-cover { margin-top: 18px; padding: 18px; color: #fff; border-radius: 18px; background: linear-gradient(135deg, var(--violet), var(--blue)); }
+    .flow-cover small { opacity: .8; font-weight: 800; }
+    .flow-cover h3 { margin: 8px 0 0; font-size: 24px; line-height: 1.2; letter-spacing: -.05em; }
+    .trust-rows { margin-top: 14px; border: 1px solid var(--line); border-radius: 14px; background: #fff; overflow: hidden; }
+    .trust-row { display: grid; grid-template-columns: 90px 1fr; gap: 10px; padding: 11px 12px; border-bottom: 1px solid var(--line); font-size: 10px; }
+    .trust-row:last-child { border-bottom: 0; }
+    .trust-row span { color: var(--muted); }
+    .trust-row b { text-align: right; }
+    .fit-box { margin-top: 13px; padding: 13px; border-radius: 13px; background: var(--mint-soft); }
+    .fit-box b { display: block; font-size: 11px; }
+    .fit-box .chips { margin-top: 8px; }
+    .phone-cta { width: 100%; min-height: 45px; margin-top: 13px; color: #fff; border: 0; border-radius: 12px; background: var(--ink); font-size: 12px; font-weight: 950; }
+    .trust-explain { display: grid; gap: 11px; align-content: start; }
+    .explain-card { display: grid; grid-template-columns: 44px 1fr; gap: 13px; padding: 17px; border: 1px solid var(--line); border-radius: 15px; background: #fff; }
+    .explain-no { width: 44px; height: 44px; display: grid; place-items: center; color: #fff; border-radius: 13px; background: var(--violet); font-weight: 950; }
+    .explain-card h3 { margin: 1px 0 4px; font-size: 15px; }
+    .explain-card p { margin: 0; color: var(--muted); font-size: 11px; }
+
+    /* alternatives */
+    .alternative-grid { margin-top: 39px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 9px; }
+    .alternative { min-height: 260px; padding: 18px; border: 1px solid rgba(255,255,255,.17); border-radius: 17px; background: rgba(255,255,255,.06); }
+    .alternative.recommended { border-color: #9d8eff; background: rgba(113,88,232,.25); box-shadow: inset 0 5px 0 #a99bff; }
+    .alternative h3 { margin: 13px 0 9px; font-size: 16px; }
+    .alternative p { margin: 0; color: #cbd2ec; font-size: 11px; }
+    .alt-bars { display: grid; gap: 6px; margin-top: 17px; }
+    .alt-bar { display: grid; grid-template-columns: 65px 1fr; align-items: center; gap: 7px; color: #cbd2ec; font-size: 9px; }
+    .bar-track { height: 5px; border-radius: 99px; background: rgba(255,255,255,.12); overflow: hidden; }
+    .bar-fill { height: 100%; width: var(--w); border-radius: inherit; background: #9d8eff; }
+    .alt-verdict { margin-top: 16px; color: #fff; font-size: 10px; font-weight: 900; }
+
+    /* build next */
+    .build-grid { margin-top: 42px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 13px; }
+    .build-card { display: grid; grid-template-columns: 50px 1fr; gap: 15px; padding: 22px; border: 1px solid var(--line); border-radius: 18px; background: #fff; }
+    .build-no { width: 50px; height: 50px; display: grid; place-items: center; color: #fff; border-radius: 15px; background: var(--ink); font-weight: 950; }
+    .build-card h3 { margin: 2px 0 6px; font-size: 18px; }
+    .build-card p { margin: 0; color: var(--muted); font-size: 12px; }
+    .build-card ul { margin: 10px 0 0; padding-left: 18px; color: var(--ink-2); font-size: 10px; }
+    .boundary {
+      margin-top: 18px;
+      padding: 24px;
+      border: 1px solid #efd29a;
+      border-radius: 18px;
+      background: var(--yellow-soft);
+    }
+    .boundary h3 { margin: 0 0 8px; font-size: 17px; }
+    .boundary p { margin: 0; color: #735511; font-size: 12px; }
+
+    /* sources */
+    .sources-grid { margin-top: 35px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 13px; }
+    .source-group { padding: 21px; border: 1px solid var(--line); border-radius: 17px; background: #fff; }
+    .source-group h3 { margin: 0 0 12px; font-size: 15px; }
+    .source-group a { display: block; padding: 6px 0; color: var(--blue); border-bottom: 1px solid var(--line); font-size: 10px; font-weight: 800; text-decoration: none; }
+    .source-group a:last-child { border-bottom: 0; }
+    .source-group a:hover { text-decoration: underline; }
+    .source-ledger-link { margin-top: 18px; display: inline-flex; }
+
+    footer { padding: 36px 0; color: var(--muted); border-top: 1px solid var(--line); background: #fff; font-size: 11px; }
+    .footer-grid { display: flex; justify-content: space-between; gap: 18px; align-items: center; }
+
+    @media (max-width: 1050px) {
+      .fact-strip { grid-template-columns: repeat(3, 1fr); }
+      .fact:nth-child(3) { border-right: 0; }
+      .fact:nth-child(-n+3) { border-bottom: 1px solid var(--line); }
+      .case-grid { grid-template-columns: repeat(2, 1fr); }
+      .key-grid { grid-template-columns: repeat(2, 1fr); }
+      .story-caption { grid-template-columns: repeat(3, 1fr); }
+      .story-caption div:nth-child(3) { border-right: 0; }
+      .story-caption div:nth-child(-n+3) { border-bottom: 1px solid var(--line-strong); }
+      .scenario-grid { grid-template-columns: .72fr 1.28fr; }
+      .next-result { grid-column: 1 / -1; }
+      .risk-grid { grid-template-columns: repeat(3, 1fr); }
+      .alternative-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    @media (max-width: 820px) {
+      .section { padding: 72px 0; }
+      .hero-grid, .screen-bridge, .layer-layout, .hard-case-grid, .trust-layout { grid-template-columns: 1fr; }
+      .hero-visual { max-width: 680px; }
+      .model-grid { grid-template-columns: 1fr; }
+      .model-card { min-height: 230px; }
+      .screen-row { max-width: 650px; }
+      .scenario-tabs { grid-template-columns: repeat(3, 1fr); }
+      .stale-timeline { grid-template-columns: repeat(3, 1fr); }
+      .build-grid, .sources-grid { grid-template-columns: 1fr; }
+      .topbar-inner { width: min(100% - 22px, var(--max)); }
+      .brand span:last-child { display: none; }
+    }
+
+    @media (max-width: 590px) {
+      .simulation-banner { padding: 8px 12px; font-size: 10px; }
+      .wrap, .fact-strip { width: min(100% - 24px, var(--max)); }
+      .topbar-inner { min-height: 54px; gap: 9px; }
+      .topnav a { padding: 7px 8px; font-size: 10px; }
+      .hero { padding-top: 52px; }
+      .hero-grid { gap: 34px; }
+      .hero h1 { font-size: 44px; }
+      .hero-copy > p { font-size: 16px; }
+      .verdict { align-items: start; font-size: 12px; }
+      .hero-caption { display: block; }
+      .hero-caption span:last-child { display: block; margin-top: 4px; }
+      .fact-strip { grid-template-columns: repeat(2, 1fr); }
+      .fact { border-bottom: 1px solid var(--line); }
+      .fact:nth-child(2n) { border-right: 0; }
+      .fact:nth-last-child(-n+2) { border-bottom: 0; }
+      .section-title { font-size: 37px; }
+      .section-lead { font-size: 15px; }
+      .model-card, .flowme-formula { padding: 22px; }
+      .flowme-formula { grid-template-columns: 1fr; }
+      .formula-mark { width: 70px; height: 70px; border-radius: 20px; }
+      .case-grid, .key-grid, .screen-row, .risk-grid, .alternative-grid { grid-template-columns: 1fr; }
+      .product-shot { max-width: 320px; margin: 0 auto; }
+      .story-frame { box-shadow: 5px 5px 0 var(--ink); }
+      .story-frame img { aspect-ratio: 16/9; object-fit: cover; }
+      .story-caption { grid-template-columns: 1fr 1fr; }
+      .story-caption div, .story-caption div:nth-child(3) { border-right: 1px solid var(--line-strong); border-bottom: 1px solid var(--line-strong); }
+      .story-caption div:nth-child(2n) { border-right: 0; }
+      .story-caption div:nth-last-child(-n+2) { border-bottom: 0; }
+      .scenario-tabs { display: flex; overflow-x: auto; padding-bottom: 3px; }
+      .scenario-tab { flex: 0 0 135px; }
+      .scenario-panel { padding: 15px; }
+      .scenario-grid { grid-template-columns: 1fr; }
+      .next-result { grid-column: auto; }
+      .decision-buttons { grid-template-columns: 1fr; }
+      .stale-timeline { grid-template-columns: 1fr 1fr; }
+      .safety-demo { grid-template-columns: 1fr; }
+      .safety-arrow { transform: rotate(90deg); text-align: center; }
+      .phone-screen { min-height: 560px; }
+      .build-card { grid-template-columns: 42px 1fr; padding: 17px; }
+      .build-no { width: 42px; height: 42px; }
+      .footer-grid { display: block; }
+      .footer-grid span:last-child { display: block; margin-top: 5px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="simulation-banner">전략·화면 구조 시뮬레이션 · FlowMe 실제 사용자 성과가 아님 · 외부 서비스 수치와 FlowMe 운영 가설을 구분해 표시</div>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="#top"><span class="brand-mark">F</span><span>FlowMe Strategy</span></a>
+      <nav class="topnav" aria-label="보고서 목차">
+        <a href="#verdict">결론</a>
+        <a href="#evidence">실제 사례</a>
+        <a href="#roles">역할</a>
+        <a href="#story">시나리오</a>
+        <a href="#stale">관리 공백</a>
+        <a href="#risk">위험 정보</a>
+        <a href="#build">다음 화면</a>
+        <a href="#sources">출처</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <span class="eyebrow">Research conclusion · 2026.08.04</span>
+          <h1>누가 썼는지는 남기고,<br><em>누가 지금 돌보는지는</em><br>바뀔 수 있어야 한다.</h1>
+          <p>FlowMe의 공개 Flow는 한 사람이 영구 소유하는 글도, 모두가 바로 덮어쓰는 위키도 아닙니다. 경험자의 이름과 맥락은 보존하되, 실제 사용자 제안을 공동관리자가 검토하고 조건별 계획으로 발전시키는 <strong>저자가 있는 공동관리 실행 계획</strong>이 적합합니다.</p>
+          <div class="verdict"><span>권장 구조</span><b>저자성 보존 + 제안형 공동관리 + 위험도별 검토</b></div>
+          <div class="hero-actions">
+            <a class="btn primary" href="#story">6개 시나리오 보기 →</a>
+            <a class="btn" href="2026-08-04-flowme-governance-maintenance-source-ledger-ko.md">출처 원장 열기</a>
+          </div>
+        </div>
+        <figure class="hero-visual">
+          <img src="2026-08-04-flowme-governance-maintenance-strategy-assets/governance-ecosystem-concept.png" alt="경험 작성자, 실행 사용자, 공동관리자, 안전 담당자가 하나의 공개 Flow를 함께 관리하는 개념도" />
+          <figcaption class="hero-caption"><span>콘셉트 시각화 · 제품 화면이 아님</span><span>이미지 안 텍스트 없이 역할과 순환을 표현</span></figcaption>
+        </figure>
+      </div>
+
+      <div class="fact-strip" aria-label="공식 자료에서 확인한 숫자">
+        <div class="fact"><b>6개</b><span>WordPress 기본 역할</span><a href="https://wordpress.org/documentation/article/roles-and-capabilities/">공식 문서</a></div>
+        <div class="fact"><b>2,000</b><span>Stack Overflow 직접 편집 기준</span><a href="https://stackoverflow.com/help/privileges/edit">공식 도움말</a></div>
+        <div class="fact"><b>2표</b><span>수정 제안 승인·거절 확정</span><a href="https://stackoverflow.com/help/privileges/edit">공식 도움말</a></div>
+        <div class="fact"><b>2명+</b><span>GitHub 권장 조직 소유자</span><a href="https://docs.github.com/en/organizations/managing-peoples-access-to-your-organization-with-roles/maintaining-ownership-continuity-for-your-organization">공식 문서</a></div>
+        <div class="fact"><b>40만+</b><span>AllTrails 선별 경로</span><a href="https://support.alltrails.com/hc/en-gb/articles/360019244351-How-do-I-contribute-a-new-trail-to-AllTrails">공식 도움말</a></div>
+        <div class="fact"><b>75%</b><span>AllTrails 실행 확인 경로 겹침 기준</span><a href="https://support.alltrails.com/hc/en-us/articles/360021841811-What-is-a-Verified-Completed-badge-and-how-do-I-earn-one">공식 도움말</a></div>
+      </div>
+    </section>
+
+    <section class="section" id="verdict">
+      <div class="wrap">
+        <span class="eyebrow">01 · Position</span>
+        <h2 class="section-title">블로그·위키·GitHub의<br><span class="kicker">중간</span>이 아니라, 서로 다른 층에 배치한다.</h2>
+        <p class="section-lead">세 서비스의 화면을 섞는 것이 아닙니다. 사람의 경험, 공동 개선, 공개판 보호라는 서로 다른 문제에 각각 맞는 운영 원리를 배치합니다.</p>
+
+        <div class="model-grid">
+          <article class="model-card blog" data-mark="B">
+            <span class="num">사람과 경험</span>
+            <h3>블로그처럼</h3>
+            <p>누가 어떤 경험으로 썼는지, 어떤 사람에게 맞는지, 경험자의 말투와 책임을 남깁니다.</p>
+            <strong>가져올 것 · 최초 작성자, 경험 맥락, 공개 책임</strong>
+          </article>
+          <article class="model-card wiki" data-mark="W">
+            <span class="num">작은 기여와 이력</span>
+            <h3>위키처럼</h3>
+            <p>오탈자부터 오래된 정보까지 여러 사람이 고칠 수 있게 하되, 근거·대화·변경 이력을 남깁니다.</p>
+            <strong>가져올 것 · 기여 이력, 근거, 되돌리기, 공동관리</strong>
+          </article>
+          <article class="model-card git" data-mark="G">
+            <span class="num">공개판 보호</span>
+            <h3>GitHub처럼</h3>
+            <p>개인 수정은 자유롭게 하고, 공개 Flow에 돌아오는 변경은 차이·이유·담당자 검토를 거칩니다.</p>
+            <strong>가져올 것 · 개인 사본, 개선 제안, 담당 검토, 새 버전</strong>
+          </article>
+        </div>
+
+        <div class="flowme-formula">
+          <div class="formula-mark">F</div>
+          <div>
+            <h3>FlowMe가 더해야 할 것 · 실제 실행에서 달라진 조건</h3>
+            <p>이사 D-7과 D-21 중 하나를 투표로 고르는 것이 아니라, 아파트·주말·관리사무소 유무처럼 경험이 달라진 원인을 찾아 상황별 계획으로 나눕니다.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt" id="evidence">
+      <div class="wrap">
+        <span class="eyebrow">02 · What real platforms do</span>
+        <h2 class="section-title sm">실제 서비스는 ‘누구나 수정’보다<br>권한·검토·복구를 더 세밀하게 나눈다.</h2>
+        <p class="section-lead">아래는 공식 운영 문서에서 확인한 규칙입니다. 초록은 가져올 원리, 주황은 FlowMe에서 피할 반면교사입니다.</p>
+
+        <div class="case-grid">
+          <article class="case-card">
+            <div class="case-head"><b>WordPress</b><span class="case-type">BLOG / CMS</span></div>
+            <p class="case-rule">6개 기본 역할로 작성·편집·공개를 나누고, 저장한 변경을 비교·복원합니다.</p>
+            <div class="case-use">가져올 것 · 작성자와 공개 관리 권한 분리</div>
+            <span class="case-warn">주의 · 역할 수를 그대로 복제하지 않기</span>
+            <a href="https://wordpress.org/documentation/article/roles-and-capabilities/">공식 역할 문서 →</a>
+          </article>
+          <article class="case-card">
+            <div class="case-head"><b>Ghost</b><span class="case-type">BLOG / CMS</span></div>
+            <p class="case-rule">정지된 사용자의 작성자 표시는 유지하지만, 삭제하면 글을 소유자에게 귀속합니다.</p>
+            <div class="case-use">가져올 것 · 활동 정지와 기여 표시 분리</div>
+            <span class="case-warn">피할 것 · 탈퇴 때 최초 저자를 다른 사람으로 바꾸기</span>
+            <a href="https://ghost.org/help/managing-staff-user-profiles/">공식 권한 문서 →</a>
+          </article>
+          <article class="case-card">
+            <div class="case-head"><b>Wikipedia</b><span class="case-type">WIKI</span></div>
+            <p class="case-rule">문서는 누구의 소유도 아니며, 합의는 단순 표 수보다 근거의 질을 봅니다.</p>
+            <div class="case-use">가져올 것 · 저자와 현재 관리 책임 분리</div>
+            <span class="case-warn">피할 것 · 경험자의 목소리까지 중립화</span>
+            <a href="https://en.wikipedia.org/wiki/Wikipedia:Ownership_of_content">공식 정책 →</a>
+          </article>
+          <article class="case-card">
+            <div class="case-head"><b>GitHub</b><span class="case-type">CHANGE REVIEW</span></div>
+            <p class="case-rule">담당 영역 검토자를 자동 호출하고, 중요한 기준판은 승인과 재검토를 요구할 수 있습니다.</p>
+            <div class="case-use">가져올 것 · 담당자, 차이 비교, 재검토, 복구</div>
+            <span class="case-warn">피할 것 · 개발 용어와 무거운 절차</span>
+            <a href="https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners">공식 CODEOWNERS 문서 →</a>
+          </article>
+          <article class="case-card">
+            <div class="case-head"><b>AllTrails</b><span class="case-type">EXECUTION PLATFORM</span></div>
+            <p class="case-rule">검증 경로의 개인 수정은 별도 사본에 저장하고, 공개 경로 수정은 모더레이터 검토를 거칩니다.</p>
+            <div class="case-use">가져올 것 · 개인 수정과 공개 제안의 명확한 분리</div>
+            <span class="case-warn">주의 · 모든 검토를 직원이 떠맡으면 비용 증가</span>
+            <a href="https://support.alltrails.com/hc/en-us/articles/360018930672-How-to-update-or-change-information-about-a-trail">공식 수정 제안 안내 →</a>
+          </article>
+          <article class="case-card">
+            <div class="case-head"><b>Waze</b><span class="case-type">COMMUNITY MAP</span></div>
+            <p class="case-rule">초보 편집자의 제안은 필요한 등급의 편집자가 지역 기준으로 승인·거절하고 이유를 설명합니다.</p>
+            <div class="case-use">가져올 것 · 위험도·분야별 권한과 거절 이유</div>
+            <span class="case-warn">주의 · 편집 횟수만으로 전문성을 판단하지 않기</span>
+            <a href="https://support.google.com/waze/answer/14325044?hl=en-AU">공식 검토 안내 →</a>
+          </article>
+          <article class="case-card">
+            <div class="case-head"><b>OpenStreetMap</b><span class="case-type">OPEN DATA</span></div>
+            <p class="case-rule">관련 변경을 하나로 묶고 변경 이유·출처·공개 토론을 남기며, 명백한 공격은 빠르게 되돌립니다.</p>
+            <div class="case-use">가져올 것 · 변경 묶음, 이유, 출처, 공개 이력</div>
+            <span class="case-warn">주의 · 주소·실제 날짜 등 개인 정보 제거</span>
+            <a href="https://wiki.openstreetmap.org/wiki/Changeset">공식 운영 Wiki →</a>
+          </article>
+          <article class="case-card">
+            <div class="case-head"><b>Figma / Notion</b><span class="case-type">TEMPLATE</span></div>
+            <p class="case-rule">복제본은 자유롭게 수정하지만 원본의 이후 업데이트가 기존 사본에 자동 반영되지 않습니다.</p>
+            <div class="case-use">가져올 것 · 실행 중 개인 계획을 몰래 바꾸지 않기</div>
+            <span class="case-warn">피할 것 · 원본과 개인 사본의 계보 완전 단절</span>
+            <a href="https://help.figma.com/hc/en-us/articles/360040035974-Publish-files-to-the-Figma-Community">Figma 공식 문서 →</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section compact">
+      <div class="wrap">
+        <span class="eyebrow">Existing FlowMe + missing bridge</span>
+        <h2 class="section-title sm">현재의 ‘발견 → 조정 → 실행’ 뒤에<br>관리와 개선의 다섯 화면이 더 필요하다.</h2>
+        <div class="screen-bridge">
+          <div class="screen-row">
+            <figure class="product-shot"><img src="2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/screenshots/01-moving-result-390.png" alt="현재 FlowMe 공개 이사 Flow 결과 화면" /><figcaption>현재 화면 1 · 공개 Flow 발견</figcaption></figure>
+            <figure class="product-shot"><img src="2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/screenshots/02-moving-adjust-items-390.png" alt="현재 FlowMe 이사 계획 항목 조정 화면" /><figcaption>현재 화면 2 · 내 상황에 맞춰 조정</figcaption></figure>
+            <figure class="product-shot"><img src="2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/screenshots/09-my-flow-next-action-390.png" alt="현재 FlowMe 내 Flow 다음 할 일 화면" /><figcaption>현재 화면 3 · 내 Flow에서 실행</figcaption></figure>
+          </div>
+          <aside class="missing-panel">
+            <span class="proposal-tag">이번 연구의 추가 범위</span>
+            <h3>아직 이어져야 할 연결</h3>
+            <ol>
+              <li>처음 만든 사람·현재 관리·최근 확인일을 보여주는 신뢰 카드</li>
+              <li>개인정보를 뺀 개선 제안 미리보기</li>
+              <li>변경 전후·조건·근거를 보는 공동관리자 검토함</li>
+              <li>다시 확인 필요·관리 공백·관리 승계 화면</li>
+              <li>안전·권리·대량 공격을 일반 제안과 분리한 긴급 처리</li>
+            </ol>
+            <p class="note">위 5개는 이번 보고서의 제품 제안이며, 현재 서비스에 구현됐다는 뜻이 아닙니다.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt" id="roles">
+      <div class="wrap">
+        <span class="eyebrow">03 · Three layers, four keys</span>
+        <h2 class="section-title sm">수정 버튼 하나가 아니라<br>수정의 도착지를 먼저 나눈다.</h2>
+        <p class="section-lead">내 계획 수정, 공개 개선 제안, 상황별 분리, 위험 신고, 새 내용 반영은 서로 다른 행동입니다. 역할을 눌러 각 층에서 가능한 행동을 확인해 보세요.</p>
+
+        <div class="layer-layout">
+          <div class="role-controls" aria-label="역할 선택">
+            <button class="role-button active" data-role="author"><i>✍</i><span><b>처음 만든 사람</b><small>경험과 적용 조건을 공개</small></span></button>
+            <button class="role-button" data-role="user"><i>✓</i><span><b>실행 사용자</b><small>내 계획 수정·선택적 제안</small></span></button>
+            <button class="role-button" data-role="manager"><i>⚙</i><span><b>공동관리자</b><small>담당 부분 검토·새 내용 반영</small></span></button>
+            <button class="role-button" data-role="platform"><i>⌁</i><span><b>FlowMe 운영팀</b><small>안전·권리·악용에 제한 개입</small></span></button>
+            <button class="role-button" data-role="ai"><i>AI</i><span><b>AI 도우미</b><small>묶기·요약·개인정보 제거</small></span></button>
+          </div>
+          <div class="layers">
+            <article class="layer public" data-layer="LAYER 3 · CURRENT PUBLIC FLOW">
+              <h3>현재 공개 내용</h3>
+              <p>처음 만든 사람, 현재 관리, 최근 확인, 적용 조건, 변경 이유와 이전 내용이 보존됩니다.</p>
+              <div class="role-actions">
+                <span class="role-action" data-roles="author manager">새 내용 반영</span>
+                <span class="role-action" data-roles="manager platform">공개 제한</span>
+                <span class="role-action" data-roles="author manager">공동관리 초대</span>
+                <span class="role-action" data-roles="platform">안전 항목 임시 숨김</span>
+              </div>
+            </article>
+            <article class="layer proposal" data-layer="LAYER 2 · IMPROVEMENT PROPOSAL">
+              <h3>개선 제안과 검토</h3>
+              <p>바뀐 부분, 이유, 실행 조건, 근거를 묶고 개인 주소·실제 날짜·메모는 제외합니다.</p>
+              <div class="role-actions">
+                <span class="role-action" data-roles="user">선택한 변경 보내기</span>
+                <span class="role-action" data-roles="manager">상황별로 나누기</span>
+                <span class="role-action" data-roles="manager">추가 근거 요청</span>
+                <span class="role-action" data-roles="ai">중복 제안 묶기</span>
+                <span class="role-action" data-roles="ai">개인정보 제거</span>
+              </div>
+            </article>
+            <article class="layer personal" data-layer="LAYER 1 · MY PLAN & EXECUTION">
+              <h3>내 계획과 실행</h3>
+              <p>사용자가 가져간 계획은 자기 것이며 날짜·순서·단계·메모를 승인 없이 바꿀 수 있습니다.</p>
+              <div class="role-actions">
+                <span class="role-action" data-roles="user">날짜 바꾸기</span>
+                <span class="role-action" data-roles="user">단계 제외</span>
+                <span class="role-action" data-roles="user">개인 메모</span>
+                <span class="role-action" data-roles="ai">내 조건에 맞춘 초안</span>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <div class="key-grid">
+          <article class="key-card">
+            <div class="key-icon">🏷</div>
+            <h3>이름표 · 처음 만든 사람</h3>
+            <p>경험의 출발점, 적용 대상, 말투와 최초 공개 맥락을 남깁니다.</p>
+            <div class="can">가능 · 공동관리자 초대, 제안 검토</div>
+            <div class="cannot">불가 · 개인 메모 열람, 안전 조치 무효화</div>
+          </article>
+          <article class="key-card">
+            <div class="key-icon">🧰</div>
+            <h3>관리 도구 · 공동관리자</h3>
+            <p>담당 부분의 제안을 검토하고 조건별 계획과 새 내용을 공개합니다.</p>
+            <div class="can">가능 · 반영, 분리, 보류, 점검일 갱신</div>
+            <div class="cannot">불가 · 최초 작성자·기여 이력 삭제</div>
+          </article>
+          <article class="key-card">
+            <div class="key-icon">📝</div>
+            <h3>내 노트 · 실행 사용자</h3>
+            <p>내 계획을 자유롭게 바꾸고 다른 사람에게 보낼 변경만 선택합니다.</p>
+            <div class="can">가능 · 개인 수정, 개선 제안, 위험 신고</div>
+            <div class="cannot">불가 · 공개 Flow 직접 덮어쓰기</div>
+          </article>
+          <article class="key-card">
+            <div class="key-icon">🛡</div>
+            <h3>비상 정지 · 운영팀</h3>
+            <p>안전·권리·악용이 확인될 때 필요한 범위만 임시 제한합니다.</p>
+            <div class="can">가능 · 항목 격리, 관리 공백 처리, 이의 접수</div>
+            <div class="cannot">불가 · 경험자의 관점과 말투를 일반 편집</div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="story">
+      <div class="wrap">
+        <span class="eyebrow">04 · One Flow, six moments</span>
+        <h2 class="section-title">한 Flow가 사람을 거치며<br>좋아지고, 갈라지고, 이어지는 이야기.</h2>
+        <p class="section-lead">`첫 자취 이사 D-30` 하나를 따라가면 관리 구조가 기능표보다 쉽게 보입니다. 이미지 아래 한국어 설명과 다음 인터랙티브 UI를 함께 보세요.</p>
+
+        <figure class="story-frame">
+          <img src="2026-08-04-flowme-governance-maintenance-strategy-assets/six-scene-maintenance-storyboard.png" alt="경험 작성, 실행 중 수정, 선택적 제안, 공동 검토, 상황별 분리, 다음 사용자 시작의 여섯 장면" />
+          <figcaption class="story-caption">
+            <div><b>01 · 작성</b><span>수진이 여섯 번의 이사 경험을 계획으로 공개</span></div>
+            <div><b>02 · 현실</b><span>민호가 관리사무소에서 다른 예약 시점을 확인</span></div>
+            <div><b>03 · 선택</b><span>개인정보를 빼고 한 가지 변경만 개선 제안</span></div>
+            <div><b>04 · 검토</b><span>수진과 현우가 전후 내용과 적용 조건을 비교</span></div>
+            <div><b>05 · 분리</b><span>아파트와 빌라의 다른 경험을 상황별로 나눔</span></div>
+            <div><b>06 · 연결</b><span>지은이 기여 이력과 맞는 조건을 보고 시작</span></div>
+          </figcaption>
+        </figure>
+
+        <div class="scenario-shell">
+          <div class="scenario-tabs" role="tablist" aria-label="관리 시나리오 선택">
+            <button class="scenario-tab active" data-scene="s1"><b>1 · 반복 개선</b>활동 중인 작성자</button>
+            <button class="scenario-tab" data-scene="s2"><b>2 · 공동관리</b>담당 범위 나누기</button>
+            <button class="scenario-tab" data-scene="s3"><b>3 · 의견 충돌</b>조건별로 나누기</button>
+            <button class="scenario-tab" data-scene="s4"><b>4 · 장기 부재</b>관리 책임 승계</button>
+            <button class="scenario-tab" data-scene="s5"><b>5 · 안전 오류</b>필요한 부분만 제한</button>
+            <button class="scenario-tab" data-scene="s6"><b>6 · 대량 공격</b>정상 제안 보호</button>
+          </div>
+
+          <article class="scenario-panel active" id="s1">
+            <div class="scenario-grid">
+              <div class="scenario-story">
+                <span class="demo-tag">가상 사례</span>
+                <h3>같은 변경이 여러 번 보인다</h3>
+                <p>민호를 포함한 12명이 엘리베이터 예약을 앞당겼습니다. 작성자는 숫자만 보지 않고 어떤 상황에서 달라졌는지 봅니다.</p>
+                <div class="person-row"><span class="avatar">수진</span><span class="avatar blue">민호</span><span class="avatar mint">지은</span></div>
+              </div>
+              <div class="ui-window">
+                <div class="window-bar"><span>개선 제안 12건 묶음</span><span class="demo-tag">설명용 수치</span></div>
+                <div class="window-body">
+                  <div class="stat-line"><strong>엘리베이터 예약 시점</strong><span class="evidence-tag">실행 뒤 제안</span></div>
+                  <div class="chips"><span class="chip">아파트 9건</span><span class="chip">주말 8건</span><span class="chip">차량 없음 7건</span></div>
+                  <div class="diff"><div class="diff-card">기존 · D-7에 예약</div><div class="diff-arrow">→</div><div class="diff-card after">제안 · D-21부터 확인</div></div>
+                  <div class="decision-buttons" data-decision-group="s1">
+                    <button class="decision-btn" data-result="모든 사용자에게 D-21로 바꿉니다.">모두에게 반영</button>
+                    <button class="decision-btn active" data-result="아파트·주말 사용자에게만 D-21 확인 단계가 보입니다.">특정 상황에만 추가</button>
+                    <button class="decision-btn" data-result="현재 단계는 유지하고 실행 사용자 팁으로 표시합니다.">사용자 팁으로 표시</button>
+                    <button class="decision-btn" data-result="근거가 더 쌓일 때까지 현재 내용을 유지합니다.">현재 내용 유지</button>
+                  </div>
+                  <div class="result-card"><b>검토 결과</b><span id="s1-result">아파트·주말 사용자에게만 D-21 확인 단계가 보입니다.</span></div>
+                </div>
+              </div>
+              <div class="next-result">
+                <h3>다음 사용자에게</h3>
+                <p>`12건의 실행 수정 검토 후 수진이 반영`과 적용 조건이 보입니다. 인기보다 왜 달라졌는지를 보여줍니다.</p>
+                <div class="result-card"><b>지은에게 맞음</b><span>아파트 · 주말 · 차량 없음<br>엘리베이터 필요 여부 D-21 확인</span></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="scenario-panel" id="s2">
+            <div class="scenario-grid">
+              <div class="scenario-story">
+                <span class="demo-tag">가상 사례</span>
+                <h3>작성자가 혼자 다 보지 않는다</h3>
+                <p>수진은 이사 경험이 많은 현우에게 건물 예약과 업체 연락 부분을 맡깁니다. 권한은 범위와 위험도에 따라 나눕니다.</p>
+                <div class="person-row"><span class="avatar">수진</span><span class="avatar mint">현우</span></div>
+              </div>
+              <div class="ui-window">
+                <div class="window-bar"><span>관리 나누기 · 현우</span><span class="proposal-tag">화면 구상</span></div>
+                <div class="window-body">
+                  <div class="stat-line"><strong>담당 범위</strong><span class="chip">새 내용 반영 가능</span></div>
+                  <div class="permission-list">
+                    <div class="permission-row"><span>건물 예약·관리사무소</span><button class="toggle on" aria-label="건물 예약 담당 켜짐"></button></div>
+                    <div class="permission-row"><span>업체 견적·연락</span><button class="toggle on" aria-label="업체 연락 담당 켜짐"></button></div>
+                    <div class="permission-row"><span>신청 마감·비용 영향 정보</span><button class="toggle" aria-label="신청 마감과 비용 정보 담당 꺼짐"></button></div>
+                    <div class="permission-row"><span>안전 정보 단독 반영</span><button class="toggle" aria-label="안전 정보 단독 반영 꺼짐"></button></div>
+                  </div>
+                  <div class="result-card"><b>중요 정보는 2명 확인</b><span>공식·비용·안전 내용은 근거와 별도 확인이 필요합니다.</span></div>
+                </div>
+              </div>
+              <div class="next-result">
+                <h3>공개 카드에</h3>
+                <p>역할 명칭보다 누가 어느 부분을 언제 확인했는지를 보여줍니다.</p>
+                <div class="result-card"><b>처음 작성 · 수진</b><span>현재 관리 · 수진, 현우<br>건물 예약 · 현우가 5일 전 확인</span></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="scenario-panel" id="s3">
+            <div class="scenario-grid">
+              <div class="scenario-story">
+                <span class="demo-tag">가상 사례</span>
+                <h3>반대 의견이 둘 다 맞다</h3>
+                <p>아파트는 엘리베이터 예약이 필요했지만 빌라는 필요 없었습니다. 다수결로 하나를 지우지 않고 차이를 만든 조건을 찾습니다.</p>
+                <div class="person-row"><span class="avatar blue">민호</span><span class="avatar coral">은서</span><span class="avatar">수진</span></div>
+              </div>
+              <div class="ui-window">
+                <div class="window-bar"><span>내 상황을 선택해 보세요</span><span class="demo-tag">인터랙션</span></div>
+                <div class="window-body">
+                  <div class="chips" data-condition-group>
+                    <button class="chip active" data-home="apartment">아파트</button>
+                    <button class="chip" data-home="villa">빌라</button>
+                    <button class="chip active" data-day="weekend">주말 이사</button>
+                    <button class="chip" data-day="weekday">평일 이사</button>
+                  </div>
+                  <div class="plan-preview" id="condition-plan">
+                    <div class="plan-step"><span class="step-dot">1</span><span>D-21 · 관리사무소에 엘리베이터 예약 가능일 확인</span></div>
+                    <div class="plan-step"><span class="step-dot">2</span><span>D-14 · 확정 시간과 보호 패드 비용 확인</span></div>
+                    <div class="plan-step"><span class="step-dot">3</span><span>D-1 · 예약 시간 다시 확인</span></div>
+                  </div>
+                </div>
+              </div>
+              <div class="next-result">
+                <h3>정답을 평균내지 않는다</h3>
+                <p>시작 질문 하나가 서로 충돌하던 경험을 각 사용자에게 맞는 계획으로 바꿉니다.</p>
+                <div class="result-card"><b id="condition-label">아파트·주말용</b><span>어떤 조건 때문에 이 단계가 보이는지 함께 표시</span></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="scenario-panel" id="s4">
+            <div class="scenario-grid">
+              <div class="scenario-story">
+                <span class="demo-tag">가상 사례</span>
+                <h3>작성자가 9개월째 활동하지 않는다</h3>
+                <p>저자 표시는 수진에게 남지만 관리 책임은 현우에게 이어집니다. 관리할 사람이 없으면 새 시작을 권하지 않습니다.</p>
+                <div class="person-row"><span class="avatar">수진</span><span class="avatar mint">현우</span><span class="avatar coral">운영</span></div>
+              </div>
+              <div class="ui-window">
+                <div class="window-bar"><span>관리 공백 알림</span><span class="proposal-tag">운영 가설</span></div>
+                <div class="window-body">
+                  <div class="stat-line"><strong>최근 확인 · 270일 전</strong><span class="chip">미해결 제안 18건</span></div>
+                  <div class="permission-list">
+                    <div class="permission-row"><span>원작성자 재확인 요청</span><span class="evidence-tag">보냄</span></div>
+                    <div class="permission-row"><span>미리 지정한 후임 관리자</span><span class="chip">현우</span></div>
+                    <div class="permission-row"><span>기존 주소·이력 유지</span><span class="evidence-tag">유지</span></div>
+                  </div>
+                  <div class="result-card"><b>관리 책임만 승계</b><span>처음 만든 사람과 모든 기여 이력은 그대로 남습니다.</span></div>
+                </div>
+              </div>
+              <div class="next-result">
+                <h3>다음 사용자에게</h3>
+                <p>관리되는 경우 새 관리자를, 관리되지 않는 경우 주의와 대체 Flow를 명확히 보여줍니다.</p>
+                <div class="result-card"><b>처음 작성 · 수진</b><span>현재 관리 · 현우<br>승계 이유와 날짜 보기</span></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="scenario-panel" id="s5">
+            <div class="scenario-grid">
+              <div class="scenario-story">
+                <span class="demo-tag">가상 사례</span>
+                <h3>안전 오류는 답변을 기다리지 않는다</h3>
+                <p>도시가스 설비를 직접 분리하는 것으로 오해될 문장이 신고됐습니다. 해당 항목만 즉시 가리고 공식 근거를 확인합니다.</p>
+                <div class="person-row"><span class="avatar coral">나래</span><span class="avatar">수진</span><span class="avatar mint">안전</span></div>
+              </div>
+              <div class="ui-window">
+                <div class="window-bar"><span>이 내용 알리기</span><span class="proposal-tag">별도 긴급 큐</span></div>
+                <div class="window-body">
+                  <div class="chips"><button class="chip">일반 경험 차이</button><button class="chip">공식 정보 변경</button><button class="chip active">안전 위험</button><button class="chip">권리·도용</button></div>
+                  <div class="diff"><div class="diff-card">위험 가능 문장<br>해당 단계 임시 숨김</div><div class="diff-arrow">→</div><div class="diff-card after">공식 고객센터 신청<br>확인 날짜·출처 표시</div></div>
+                  <div class="result-card"><b>개입 범위</b><span>한 항목만 제한하고 나머지 경험과 계획은 유지합니다.</span></div>
+                </div>
+              </div>
+              <div class="next-result">
+                <h3>이미 내보낸 내용은</h3>
+                <p>FlowMe가 외부 캘린더·메모를 원격 수정할 수 없습니다. 앱 안 알림과 새 버전 안내가 필요합니다.</p>
+                <div class="result-card"><b>안전 내용이 바뀌었습니다</b><span>내 계획과 외부 내보내기 내용을 직접 확인해 주세요.</span></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="scenario-panel" id="s6">
+            <div class="scenario-grid">
+              <div class="scenario-story">
+                <span class="demo-tag">가상 사례</span>
+                <h3>800건의 복제 제안이 몰린다</h3>
+                <p>AI 사용 자체가 문제가 아니라 출처 불명·복제·조작·대량 제출 행동이 문제입니다. 공개 Flow는 자동 변경되지 않습니다.</p>
+                <div class="person-row"><span class="avatar coral">공격</span><span class="avatar blue">기여자</span><span class="avatar mint">운영</span></div>
+              </div>
+              <div class="ui-window">
+                <div class="window-bar"><span>제안함 보호</span><span class="demo-tag">설명용 수치</span></div>
+                <div class="window-body">
+                  <div class="stat-line"><strong id="queue-title">800건이 같은 패턴으로 묶였습니다</strong><button class="toggle on" id="queue-toggle" aria-label="대량 패턴 격리 켜짐"></button></div>
+                  <div class="chips"><span class="chip">같은 문장</span><span class="chip">동일 출처</span><span class="chip">짧은 시간</span><span class="chip">복제 계정</span></div>
+                  <div class="queue-visual"><div class="queue-stack"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i><i style="--i:3"></i><i style="--i:4"></i></div><div class="queue-arrow">→</div><div class="queue-clean" id="queue-clean">고유한 정상 제안 7건</div></div>
+                  <div class="result-card"><b>사람이 최종 확인</b><span>AI는 묶기와 표본 비교를 돕지만 제안을 자동 폐기하거나 공개판에 반영하지 않습니다.</span></div>
+                </div>
+              </div>
+              <div class="next-result">
+                <h3>공개 Flow는 안정</h3>
+                <p>가짜 반응 수치가 신뢰 신호에 섞이지 않고, 정상 기여자의 제안은 관리함에 도착합니다.</p>
+                <div class="result-card"><b>제안함 정상</b><span>격리 묶음 1개 · 검토할 고유 제안 7건</span></div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt" id="stale">
+      <div class="wrap">
+        <span class="eyebrow">05 · Stale, succession, intervention</span>
+        <h2 class="section-title sm">‘작성자가 없다’와<br>‘정보가 오래됐다’는 다른 문제다.</h2>
+        <p class="section-lead">작성자가 활동 중이어도 공식 정보는 낡을 수 있고, 작성자가 떠나도 공동관리자가 내용을 잘 돌볼 수 있습니다. 두 상태를 분리해서 보여줘야 합니다.</p>
+
+        <div class="hard-case-grid">
+          <figure class="hard-visual">
+            <img src="2026-08-04-flowme-governance-maintenance-strategy-assets/stale-succession-safety-storyboard.png" alt="작성자 부재, 관리권 승계, 안전 항목 제한, 대량 제안 격리의 네 장면" />
+            <figcaption>실패 상황 시각화 · 저자성 보존, 관리 책임 승계, 필요한 범위만 개입</figcaption>
+          </figure>
+          <div class="stale-simulator">
+            <span class="proposal-tag">운영 시작 가설 · 확정 정책 아님</span>
+            <h3>마지막 확인 뒤 <span id="days-value">45일</span></h3>
+            <div class="range-head"><span>0일</span><span>365일</span></div>
+            <input id="stale-range" type="range" min="0" max="365" value="45" aria-label="마지막 확인 후 경과 일수" />
+            <div class="state-card" id="stale-state">
+              <strong>최근 확인됨</strong>
+              <p>현재 관리자와 근거가 유효합니다. 일반 노출을 유지합니다.</p>
+            </div>
+            <div class="state-identity">
+              <div class="identity-row"><span>처음 만든 사람</span><b>수진 · 계속 보존</b></div>
+              <div class="identity-row"><span>현재 관리</span><b id="manager-state">수진, 현우</b></div>
+              <div class="identity-row"><span>새 사용자 안내</span><b id="user-guidance">안심하고 시작</b></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stale-timeline">
+          <div class="state-step"><b>최근 확인됨</b><span>관리자와 근거가 유효. 일반 노출.</span></div>
+          <div class="state-step"><b>확인 시점 지남</b><span>관리자에게 재확인 알림. 사용자에게 날짜 표시.</span></div>
+          <div class="state-step"><b>다시 확인 필요</b><span>상충 제안·오래된 링크를 표시. 추천 강도 낮춤.</span></div>
+          <div class="state-step"><b>복구 기간</b><span>후임·공동관리자 모집. 저자와 이력은 유지.</span></div>
+          <div class="state-step"><b>참고용 보관</b><span>새 시작 권장 중지. 대체 Flow를 안내.</span></div>
+        </div>
+        <p class="note">기간 기준은 콘텐츠 종류별로 달라야 합니다. 예: 정책·신청·가격은 짧게, 변화가 적은 취미 절차는 길게. 보고서의 90/180/365일 구간은 UI와 운영 논의를 위한 시작 가설입니다.</p>
+      </div>
+    </section>
+
+    <section class="section" id="risk">
+      <div class="wrap">
+        <span class="eyebrow">06 · Risk-tiered review</span>
+        <h2 class="section-title sm">모든 변경을 무겁게 검토하지 말고,<br>영향이 커질수록 근거와 확인자를 늘린다.</h2>
+        <p class="section-lead">오탈자와 안전 문장을 같은 줄에 세우면 공동관리는 느려집니다. 내용의 위험과 사용자 영향에 맞춰 검토 깊이를 다르게 합니다.</p>
+
+        <div class="risk-grid">
+          <article class="risk-card"><span class="risk-no">LEVEL 1</span><h3>표현·링크</h3><p>오탈자, 끊어진 링크, 뜻을 바꾸지 않는 설명 보강</p><span class="risk-rule">신뢰받는 공동관리자 1명</span></article>
+          <article class="risk-card"><span class="risk-no">LEVEL 2</span><h3>일반 실행</h3><p>순서 변경, 준비물 추가, 예상 소요시간 조정</p><span class="risk-rule">실행 조건 + 공동관리자 검토</span></article>
+          <article class="risk-card"><span class="risk-no">LEVEL 3</span><h3>시간·비용</h3><p>신청 마감, 예약 시점, 비용 또는 환불에 영향</p><span class="risk-rule">근거 링크 + 최근 확인일</span></article>
+          <article class="risk-card"><span class="risk-no">LEVEL 4</span><h3>안전·법·의료</h3><p>잘못되면 신체·재산·법적 문제를 만들 수 있는 내용</p><span class="risk-rule">즉시 경고 + 분야 확인 + 2인 검토</span></article>
+          <article class="risk-card"><span class="risk-no">LEVEL 5</span><h3>권리·개인정보·공격</h3><p>외부 유료 자료 복제, 주소 노출, 조작·대량 제출</p><span class="risk-rule">운영팀 별도 처리 + 이의 절차</span></article>
+        </div>
+
+        <div class="safety-demo">
+          <div class="safety-card"><b>신고 전 · 위험 가능 문장</b><p>도시가스 설비를 직접 분리하는 것으로 오해될 수 있는 내용</p></div>
+          <div class="safety-arrow">→</div>
+          <div class="safety-card safe"><b>확인 후 · 출처와 날짜 표시</b><p>지역 도시가스 고객센터에 신청 · 확인 2026.08.04 · 공식 안내 보기</p></div>
+        </div>
+        <p class="note">위 문장은 구조 설명용 가상 사례입니다. 실제 안전 안내로 사용하면 안 됩니다.</p>
+      </div>
+    </section>
+
+    <section class="section alt">
+      <div class="wrap">
+        <span class="eyebrow">07 · What the next user sees</span>
+        <h2 class="section-title sm">좋아요보다 ‘누가, 언제, 어떤 조건으로<br>이 내용을 확인했는가’를 보여준다.</h2>
+        <p class="section-lead">신뢰 점수 하나로 숨기지 않고 판단에 필요한 근거를 카드에 직접 보여주는 편이 FlowMe의 차별점과 맞습니다.</p>
+
+        <div class="trust-layout">
+          <div class="phone" aria-label="공개 Flow 신뢰 카드 화면 구상">
+            <div class="phone-screen">
+              <div class="phone-notch"></div>
+              <div class="app-bar"><span>Flow 찾기</span><span>공유 ···</span></div>
+              <div class="flow-cover"><small>생활 전환 · 이사</small><h3>첫 자취 이사<br>D-30</h3></div>
+              <div class="trust-rows">
+                <div class="trust-row"><span>처음 만든 사람</span><b>수진 · 이사 경험 6회</b></div>
+                <div class="trust-row"><span>현재 관리</span><b>수진 · 현우</b></div>
+                <div class="trust-row"><span>최근 확인</span><b>2026.08.02</b></div>
+                <div class="trust-row"><span>최근 달라진 내용</span><b>3건</b></div>
+                <div class="trust-row"><span>다시 확인할 내용</span><b>1건</b></div>
+              </div>
+              <div class="fit-box"><b>나와 맞는 상황</b><div class="chips"><span class="chip">아파트</span><span class="chip">주말</span><span class="chip">차량 없음</span></div></div>
+              <button class="phone-cta">내 상황에 맞춰 시작</button>
+              <p class="note">인물·횟수·날짜는 화면 설명용 가상 예시</p>
+            </div>
+          </div>
+          <div class="trust-explain">
+            <article class="explain-card"><div class="explain-no">1</div><div><h3>최초 작성과 현재 관리를 분리</h3><p>관리권이 바뀌어도 경험의 출발점과 기여 계보는 남습니다.</p></div></article>
+            <article class="explain-card"><div class="explain-no">2</div><div><h3>인기보다 적용 조건</h3><p>많이 썼다는 사실보다 나와 비슷한 사람이 어디서 바꿨는지를 보여줍니다.</p></div></article>
+            <article class="explain-card"><div class="explain-no">3</div><div><h3>최근 확인과 미해결 위험을 함께</h3><p>완벽한 점수처럼 보이게 하지 않고 현재 확인 범위와 남은 문제를 공개합니다.</p></div></article>
+            <article class="explain-card"><div class="explain-no">4</div><div><h3>실행 사실과 정확성은 별개</h3><p>`실제로 해봤다`는 강한 신호지만, 안전·공식 정보의 정확성을 자동 보증하지는 않습니다.</p></div></article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section dark">
+      <div class="wrap">
+        <span class="eyebrow" style="color:#a99bff">08 · Alternatives</span>
+        <h2 class="section-title sm">다섯 운영 모델 중<br>왜 혼합형이 필요한가.</h2>
+        <p class="section-lead">아래 막대는 외부 성과 수치가 아니라 조사 결과를 바탕으로 한 정성적 제품 판단입니다. 길수록 강합니다.</p>
+        <div class="alternative-grid">
+          <article class="alternative">
+            <span class="demo-tag">정성 비교</span><h3>작성자 단독</h3><p>블로그처럼 목소리는 선명하지만 작성자가 떠나면 쉽게 낡습니다.</p>
+            <div class="alt-bars"><div class="alt-bar"><span>저자성</span><div class="bar-track"><div class="bar-fill" style="--w:95%"></div></div></div><div class="alt-bar"><span>최신성</span><div class="bar-track"><div class="bar-fill" style="--w:25%"></div></div></div><div class="alt-bar"><span>안전</span><div class="bar-track"><div class="bar-fill" style="--w:35%"></div></div></div></div>
+            <div class="alt-verdict">반려 · 한 사람에게 영구 종속</div>
+          </article>
+          <article class="alternative">
+            <span class="demo-tag">정성 비교</span><h3>누구나 즉시 편집</h3><p>위키처럼 빨리 고치지만 경험의 조건과 목소리가 평준화될 수 있습니다.</p>
+            <div class="alt-bars"><div class="alt-bar"><span>저자성</span><div class="bar-track"><div class="bar-fill" style="--w:25%"></div></div></div><div class="alt-bar"><span>최신성</span><div class="bar-track"><div class="bar-fill" style="--w:85%"></div></div></div><div class="alt-bar"><span>안전</span><div class="bar-track"><div class="bar-fill" style="--w:30%"></div></div></div></div>
+            <div class="alt-verdict">반려 · 공개 실행 절차의 즉시 덮어쓰기</div>
+          </article>
+          <article class="alternative">
+            <span class="demo-tag">정성 비교</span><h3>GitHub 그대로</h3><p>변경 통제는 강하지만 일반 사용자에게 용어와 절차가 너무 무겁습니다.</p>
+            <div class="alt-bars"><div class="alt-bar"><span>저자성</span><div class="bar-track"><div class="bar-fill" style="--w:75%"></div></div></div><div class="alt-bar"><span>최신성</span><div class="bar-track"><div class="bar-fill" style="--w:78%"></div></div></div><div class="alt-bar"><span>쉬움</span><div class="bar-track"><div class="bar-fill" style="--w:22%"></div></div></div></div>
+            <div class="alt-verdict">반려 · 운영 원리만 차용</div>
+          </article>
+          <article class="alternative">
+            <span class="demo-tag">정성 비교</span><h3>플랫폼 전담 편집</h3><p>품질 통제는 강하지만 모든 분야를 직원이 검토하면 비용과 병목이 커집니다.</p>
+            <div class="alt-bars"><div class="alt-bar"><span>안전</span><div class="bar-track"><div class="bar-fill" style="--w:92%"></div></div></div><div class="alt-bar"><span>확장성</span><div class="bar-track"><div class="bar-fill" style="--w:22%"></div></div></div><div class="alt-bar"><span>저자성</span><div class="bar-track"><div class="bar-fill" style="--w:45%"></div></div></div></div>
+            <div class="alt-verdict">제한 사용 · 안전·권리·악용에만</div>
+          </article>
+          <article class="alternative recommended">
+            <span class="proposal-tag">권장</span><h3>저자 있는 공동관리</h3><p>저자성은 보존하고, 개인 수정은 자유롭게, 공개 반영은 조건·위험에 맞춰 검토합니다.</p>
+            <div class="alt-bars"><div class="alt-bar"><span>저자성</span><div class="bar-track"><div class="bar-fill" style="--w:95%"></div></div></div><div class="alt-bar"><span>최신성</span><div class="bar-track"><div class="bar-fill" style="--w:82%"></div></div></div><div class="alt-bar"><span>쉬움</span><div class="bar-track"><div class="bar-fill" style="--w:75%"></div></div></div></div>
+            <div class="alt-verdict">채택 · 분야·위험도에 따라 점진 적용</div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="build">
+      <div class="wrap">
+        <span class="eyebrow">09 · Product direction</span>
+        <h2 class="section-title sm">다음 UX 기획에서 먼저 구체화할<br>네 묶음.</h2>
+        <p class="section-lead">이 보고서는 정책 문서로 끝내기보다, 다음 화면과 데이터 구조를 놓치지 않게 만드는 입력물입니다.</p>
+
+        <div class="build-grid">
+          <article class="build-card"><div class="build-no">01</div><div><h3>공개 Flow 신뢰 카드</h3><p>처음 만든 사람, 현재 관리, 최근 확인, 적용 조건, 확인이 필요한 내용을 한 화면에 표시합니다.</p><ul><li>인기 수치와 실행 근거 분리</li><li>관리 승계 이력 연결</li></ul></div></article>
+          <article class="build-card"><div class="build-no">02</div><div><h3>개선 제안 보내기</h3><p>내가 바꾼 항목 중 보낼 것만 고르고, 주소·실제 날짜·개인 메모가 제외됐는지 확인합니다.</p><ul><li>`나만 사용`이 기본값</li><li>공식 오류·안전 신고는 별도</li></ul></div></article>
+          <article class="build-card"><div class="build-no">03</div><div><h3>공동관리자 검토함</h3><p>변경 전후, 이유, 조건, 같은 제안, 근거를 보고 반영·상황별 분리·추가 정보 요청·유지를 결정합니다.</p><ul><li>담당 영역과 처리 기한</li><li>검토 뒤 변경되면 재확인</li></ul></div></article>
+          <article class="build-card"><div class="build-no">04</div><div><h3>관리 공백·안전 처리</h3><p>다시 확인 필요, 후임 공동관리, 참고용 보관, 항목별 긴급 제한과 복구·이의 기록을 설계합니다.</p><ul><li>저자성과 관리 책임 분리</li><li>개입 이유와 범위 공개</li></ul></div></article>
+        </div>
+
+        <div class="boundary">
+          <h3>구현 전에 별도로 결정할 규칙</h3>
+          <p>공개 Flow와 기여 내용의 복제·수정·외부 내보내기 범위, 유료 Flow의 관리 종료와 기존 사용자 권리, 의료·법률·안전 분야의 검토 자격은 법률·운영 검토가 필요합니다. 이 보고서는 방향과 UI 가설이며 최종 이용 규칙을 확정하지 않습니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt" id="sources">
+      <div class="wrap">
+        <span class="eyebrow">10 · Sources & limits</span>
+        <h2 class="section-title sm">핵심 근거와<br>이번 자료가 말하지 않는 것.</h2>
+        <p class="section-lead">공식 서비스 문서의 운영 규칙을 비교했습니다. FlowMe 시나리오와 수치는 구조 설명용이며, 실제 사용자 검증이나 성과 측정 결과가 아닙니다.</p>
+
+        <div class="sources-grid">
+          <div class="source-group">
+            <h3>블로그·출판</h3>
+            <a href="https://wordpress.org/documentation/article/roles-and-capabilities/">WordPress · 역할과 권한</a>
+            <a href="https://wordpress.org/documentation/article/revisions/">WordPress · 버전 기록과 복원</a>
+            <a href="https://ghost.org/help/managing-staff-user-profiles/">Ghost · 직원 권한·정지·삭제</a>
+            <a href="https://help.medium.com/hc/en-us/articles/115004681607-Getting-started-with-a-Medium-publication">Medium · 출판물 역할</a>
+            <a href="https://help.medium.com/hc/en-us/articles/40133928365591-Assigning-stories-in-your-submission-queue">Medium · 제출 담당자 배정</a>
+          </div>
+          <div class="source-group">
+            <h3>위키·변경 관리</h3>
+            <a href="https://en.wikipedia.org/wiki/Wikipedia:Ownership_of_content">Wikipedia · 문서 소유권</a>
+            <a href="https://en.wikipedia.org/wiki/Wikipedia:Consensus">Wikipedia · 합의</a>
+            <a href="https://en.wikipedia.org/wiki/Wikipedia:Protection_policy">Wikipedia · 문서 보호</a>
+            <a href="https://wiki.openstreetmap.org/wiki/Changeset">OpenStreetMap · 변경 묶음</a>
+            <a href="https://wiki.openstreetmap.org/wiki/Change_rollback">OpenStreetMap · 되돌리기 원칙</a>
+          </div>
+          <div class="source-group">
+            <h3>GitHub</h3>
+            <a href="https://docs.github.com/en/pull-requests/get-started/about-pull-requests">변경 제안과 검토</a>
+            <a href="https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners">담당자 자동 검토</a>
+            <a href="https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches">보호 규칙·승인·재검토</a>
+            <a href="https://docs.github.com/en/organizations/managing-peoples-access-to-your-organization-with-roles/maintaining-ownership-continuity-for-your-organization">소유권 연속성</a>
+            <a href="https://docs.github.com/en/repositories/creating-and-managing-repositories/transferring-a-repository">저장소 이전</a>
+          </div>
+          <div class="source-group">
+            <h3>실행형 플랫폼</h3>
+            <a href="https://support.alltrails.com/hc/en-us/articles/37270266245524-How-to-customize-existing-routes">AllTrails · 개인 경로 수정</a>
+            <a href="https://support.alltrails.com/hc/en-us/articles/360018930672-How-to-update-or-change-information-about-a-trail">AllTrails · 공개 수정 제안</a>
+            <a href="https://support.alltrails.com/hc/en-us/articles/360021841811-What-is-a-Verified-Completed-badge-and-how-do-I-earn-one">AllTrails · 실행 확인 기준</a>
+            <a href="https://support.google.com/waze/answer/14325044?hl=en-AU">Waze · 수정 제안 검토</a>
+            <a href="https://stackoverflow.com/help/privileges/edit">Stack Overflow · 편집 권한과 2표 검토</a>
+          </div>
+          <div class="source-group">
+            <h3>템플릿·권리</h3>
+            <a href="https://help.figma.com/hc/en-us/articles/360040035974-Publish-files-to-the-Figma-Community">Figma Community · 공개와 업데이트</a>
+            <a href="https://www.notion.com/help/duplicate-public-pages">Notion · 공개 페이지 복제</a>
+            <a href="https://www.notion.com/help/template-gallery-guidelines-and-terms">Notion Marketplace · 제작자 권리와 지원</a>
+          </div>
+          <div class="source-group">
+            <h3>자료 범위</h3>
+            <p class="note">확인됨: 공식 문서의 역할·검토·수정·복구 규칙.<br><br>화면 구상: FlowMe 적용 제안.<br><br>가상 사례: 인물, Flow, 제안 수, 처리 수치.<br><br>확인하지 못함: 실제 사용자의 채택, 완료, 품질 개선.</p>
+          </div>
+        </div>
+        <a class="btn source-ledger-link" href="2026-08-04-flowme-governance-maintenance-source-ledger-ko.md">30개 근거와 해석을 정리한 출처 원장 →</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap footer-grid">
+      <span>FlowMe 공개 Flow 관리 전략 · 2026-08-04</span>
+      <span>내부 전략·UX 기획 자료 · 실제 사용자 관찰 0명 · Figma 미사용</span>
+    </div>
+  </footer>
+
+  <script>
+    const roleButtons = [...document.querySelectorAll('.role-button')];
+    const roleActions = [...document.querySelectorAll('.role-action')];
+    function setRole(role) {
+      roleButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.role === role));
+      roleActions.forEach(action => {
+        const roles = (action.dataset.roles || '').split(' ');
+        action.classList.toggle('highlight', roles.includes(role));
+      });
+    }
+    roleButtons.forEach(btn => btn.addEventListener('click', () => setRole(btn.dataset.role)));
+    setRole('author');
+
+    const scenarioTabs = [...document.querySelectorAll('.scenario-tab')];
+    const scenarioPanels = [...document.querySelectorAll('.scenario-panel')];
+    scenarioTabs.forEach(tab => tab.addEventListener('click', () => {
+      scenarioTabs.forEach(x => x.classList.toggle('active', x === tab));
+      scenarioPanels.forEach(panel => panel.classList.toggle('active', panel.id === tab.dataset.scene));
+    }));
+
+    document.querySelectorAll('[data-decision-group]').forEach(group => {
+      const output = document.getElementById(group.dataset.decisionGroup + '-result');
+      group.querySelectorAll('.decision-btn').forEach(btn => btn.addEventListener('click', () => {
+        group.querySelectorAll('.decision-btn').forEach(x => x.classList.toggle('active', x === btn));
+        if (output) output.textContent = btn.dataset.result;
+      }));
+    });
+
+    document.querySelectorAll('.toggle').forEach(toggle => toggle.addEventListener('click', () => toggle.classList.toggle('on')));
+
+    const conditionButtons = [...document.querySelectorAll('[data-condition-group] .chip')];
+    let home = 'apartment';
+    let day = 'weekend';
+    const conditionPlan = document.getElementById('condition-plan');
+    const conditionLabel = document.getElementById('condition-label');
+    function renderConditionPlan() {
+      const apartment = home === 'apartment';
+      const weekend = day === 'weekend';
+      const title = `${apartment ? '아파트' : '빌라'}·${weekend ? '주말' : '평일'}용`;
+      conditionLabel.textContent = title;
+      const steps = apartment
+        ? [
+          `${weekend ? 'D-21' : 'D-14'} · 관리사무소에 엘리베이터 예약 가능일 확인`,
+          `${weekend ? 'D-14' : 'D-7'} · 확정 시간과 보호 패드 비용 확인`,
+          'D-1 · 예약 시간 다시 확인'
+        ]
+        : [
+          'D-14 · 건물 관리인에게 사전 연락 필요 여부 확인',
+          'D-7 · 계단·주차 동선과 차량 진입 확인',
+          'D-1 · 이웃 안내 필요 여부 확인'
+        ];
+      conditionPlan.innerHTML = steps.map((step, index) => `<div class="plan-step"><span class="step-dot">${index + 1}</span><span>${step}</span></div>`).join('');
+    }
+    conditionButtons.forEach(btn => btn.addEventListener('click', () => {
+      if (btn.dataset.home) {
+        home = btn.dataset.home;
+        conditionButtons.filter(x => x.dataset.home).forEach(x => x.classList.toggle('active', x === btn));
+      }
+      if (btn.dataset.day) {
+        day = btn.dataset.day;
+        conditionButtons.filter(x => x.dataset.day).forEach(x => x.classList.toggle('active', x === btn));
+      }
+      renderConditionPlan();
+    }));
+
+    const range = document.getElementById('stale-range');
+    const daysValue = document.getElementById('days-value');
+    const staleState = document.getElementById('stale-state');
+    const managerState = document.getElementById('manager-state');
+    const userGuidance = document.getElementById('user-guidance');
+    const staleStages = [
+      { max: 89, title: '최근 확인됨', body: '현재 관리자와 근거가 유효합니다. 일반 노출을 유지합니다.', manager: '수진, 현우', guide: '안심하고 시작' },
+      { max: 119, title: '확인 시점 지남', body: '관리자에게 재확인을 요청하고 사용자에게 마지막 확인 날짜를 선명하게 보여줍니다.', manager: '수진, 현우 · 재확인 요청', guide: '확인 날짜 보고 시작' },
+      { max: 179, title: '다시 확인 필요', body: '상충 제안과 오래된 링크를 표시하고 추천 강도를 낮춥니다.', manager: '수진, 현우 · 확인 대기', guide: '주의 내용을 먼저 확인' },
+      { max: 269, title: '복구 기간', body: '후임 공동관리자를 찾고 관리권 승계 또는 관리 사본을 준비합니다.', manager: '현우 · 승계 검토', guide: '관리 상태 확인 후 시작' },
+      { max: 365, title: '참고용 보관', body: '관리할 사람이 없으면 새 시작을 권하지 않고 대체 Flow를 안내합니다.', manager: '관리 공백', guide: '대체 Flow 보기' }
+    ];
+    function renderStale() {
+      const value = Number(range.value);
+      const stage = staleStages.find(x => value <= x.max) || staleStages[staleStages.length - 1];
+      daysValue.textContent = `${value}일`;
+      staleState.innerHTML = `<strong>${stage.title}</strong><p>${stage.body}</p>`;
+      managerState.textContent = stage.manager;
+      userGuidance.textContent = stage.guide;
+    }
+    range.addEventListener('input', renderStale);
+    renderStale();
+
+    const queueToggle = document.getElementById('queue-toggle');
+    const queueTitle = document.getElementById('queue-title');
+    const queueClean = document.getElementById('queue-clean');
+    queueToggle.addEventListener('click', () => {
+      const on = queueToggle.classList.contains('on');
+      queueTitle.textContent = on ? '800건이 같은 패턴으로 묶였습니다' : '807건이 검토함에 그대로 보입니다';
+      queueClean.textContent = on ? '고유한 정상 제안 7건' : '정상 제안도 묻힘';
+    });
+  </script>
+</body>
+</html>
