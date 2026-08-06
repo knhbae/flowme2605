@@ -1,6 +1,6 @@
 # P35 Round 2 B/B/B 제한 UX 보정
 
-**상태:** `P′ PASS2_REVISE / P′′ CANDIDATE_SOURCE_READY / FINAL_CANDIDATE_EVIDENCE_PENDING / FRESH_TWO_PASS_REVIEW_AUTHORIZED` — P′는 불변이며 P′′는 source-ready일 뿐 candidate-bound evidence나 fresh review 완료가 아님
+**상태:** `P′ PASS2_REVISE / P′′ CANDIDATE_BOUND_EVIDENCE_VERIFIED / FRESH_P′′_TWO_PASS_NOT_RUN_OWNER_WAIVED_MVP / VERCEL_PRODUCTION_READY / OBSERVED_USERS_0` — P′의 봉인 검토 결과를 P′′ 보정에 반영했고, 새 독립 P′′ review PASS를 주장하지 않는다.
 
 **승인일:** 2026-08-04 KST
 
@@ -10,9 +10,13 @@
 
 **보정 기준 P′′:** `D:\flowme2605\flow-p35-round2-correction-pprime2` / `codex/p35-round2-correction-pprime2-20260805` / parent P′
 
+**Production source P′′ SHA:** `f97644abf379c46433847f44aa7bd4da7fadac4a`
+
+**Candidate-evidence identity:** BUILD_ID `T0QkChgscSgPog-0UdvY-` / epoch `p35-r2-4fa6af1728eb5ca5` — Vercel은 별도 원격 rebuild를 수행했고 live runtime BUILD_ID probe는 `NOT_RUN`
+
 **기획 원본 위치:** `D:\flowme2605\flow-p35-production-mobile-p0`
 
-**현재 gate:** P′′의 승인 범위 source에는 bounded correction과 final candidate-source 계약이 반영됐고, final local scoped run은 pretest `114/114`, P35 P0 `415/415`, main unit/workflow `615/615`, shared-lock contract `59/59`, full Playwright `533/533`, build/audit/docs/diff PASS다. Owner는 2026-08-06에 clean commit/push와 fresh candidate/evidence/Pass 1/Pass 2를 승인했다. 다음 단계는 candidate freeze와 blind-only publication이며, exact SHA·BUILD_ID·epoch·candidate-bound count는 이 문서가 아니라 post-push provenance에서만 확정한다.
+**현재 gate:** P′′의 bounded correction과 final candidate 계약을 production source SHA `f97644abf379c46433847f44aa7bd4da7fadac4a`로 동결했다. Candidate evidence는 S01~S23 `23/23`을 모두 장부화했으며 S01~S21은 capture, S22는 `NOT_ASSESSED`, S23은 `REVIEWER_CHOSEN_NOT_PRECAPTURED`다. Group manifest는 `3/3 PASS`·failure `0`, verifier는 `PASS`·identity `33`·evidence file `285`·raw URL `556`·failure `0`이다. Vercel deployment `dpl_EBDr9CiRuwAUyjMcJwp7g6eBLpNk`가 `READY`이고 canonical alias는 <https://flowme2605.vercel.app>이다. Owner는 MVP에서 반복 검토를 피하기 위해 새 독립 P′′ Pass 1/Pass 2를 `NOT_RUN`으로 면제했다. 따라서 MVP production gate는 닫혔지만 독립 P′′ review `PASS`로 보지 않는다. Production smoke와 live runtime BUILD_ID probe는 `NOT_RUN`, 관찰 사용자는 `0명`이다.
 
 **최신 기록:** [Pass 2 교차 종합과 P′′ 로컬 보정 closeout](./pass2-cross-synthesis-and-pprime2-closeout.md)
 **직전 완료:** [P1-04 최종 내부 gate closeout](./p1-04-closeout.md)
@@ -39,13 +43,13 @@
 
 ## 현재 gate
 
-G0 Owner 선택부터 P1-04까지의 local internal implementation gate를 닫고 P′를 동결했지만, Codex와 Claude Design Pass 2는 모두 `REVISE`를 판정했다. P′는 그대로 보존한다. 별도 P′′ source는 overlapping Flow user-data mutation의 공용 lock, lock 획득 뒤 fresh raw 재조회와 CAS, reuse의 planned-key raw rollback transaction, public copy create/overwrite 재검증, exact transported-byte SHA-256/length, schema-v2 saved identity 보존, exact candidate/review branch Vercel guard를 포함한다. 이것은 `CANDIDATE_SOURCE_READY`이며 final candidate-bound verification이나 fresh review 완료를 뜻하지 않는다. P′ 검토는 P′′에 승계할 수 없고 전체 프로그램은 아직 `COMPLETE`가 아니다. 실제 browser zoom과 performance는 `NOT_ASSESSED`이며 `720×500`은 reflow proxy일 뿐 zoom 증거가 아니다. V1은 현재 프로그램에서 제외됐고 관찰 사용자는 `0명`이다.
+G0 Owner 선택부터 P1-04까지의 local internal implementation gate를 닫은 뒤, Codex와 Claude Design이 불변 P′에 내린 Pass 2 `REVISE` finding을 별도 P′′ source에 반영했다. P′′는 overlapping Flow user-data mutation의 공용 lock, lock 획득 뒤 fresh raw 재조회와 CAS, reuse의 planned-key raw rollback transaction, public copy create/overwrite 재검증, exact transported-byte SHA-256/length, schema-v2 saved identity 보존, exact candidate/review branch Vercel guard를 포함한다. Production source identity와 candidate-bound evidence는 위 값으로 고정됐고 Vercel production은 `READY`다. P′ 검토 결과는 correction input이지 P′′ 독립 판정이 아니며, 새 독립 P′′ Pass 1/Pass 2는 Owner의 MVP 면제로 `NOT_RUN`이다. 실제 browser 200% zoom, performance, 외부 Calendar/VTODO round-trip은 `NOT_ASSESSED`; production smoke도 `NOT_RUN`이다. Text-to-flow와 P2 follow-up은 제외했고 관찰 사용자는 `0명`이다.
 
 이 문서는 특정 시점의 working-tree 청결이나 파일 소유권을 보장하지 않는다. 실행 전 session-start와 `git status`로 현재 branch·HEAD·upstream·dirty path를 다시 확인한다. 위 checkout 경로와 branch는 orientation 정보이고, candidate identity는 post-push provenance만 정본으로 사용한다.
 
 ## P2 follow-up candidates
 
-URL supply-request queue mutation ordering, legacy-off write/no-write 감사, rapid batch-submit idempotency/CAS, creator/text-authoring mutation ownership은 현재 P′′ 범위 밖이다. Fresh review가 각 항목을 유지·폐기·승격할 수 있지만, 이 문서만으로 자동 시작하거나 현재 candidate에 덧붙이지 않는다.
+URL supply-request queue mutation ordering, legacy-off write/no-write 감사, rapid batch-submit idempotency/CAS, creator/text-authoring mutation ownership은 P2 follow-up이다. Text-to-flow는 별도 미래 workstream이다. 둘 다 현재 P′′ MVP 범위 밖이며, 별도 Owner 결정 없이 자동 시작하거나 production source에 덧붙이지 않는다.
 
 ## 문서
 
@@ -72,12 +76,14 @@ URL supply-request queue mutation ordering, legacy-off write/no-write 감사, ra
 | 상태 | 값 |
 |---|---|
 | 로컬 문서 준비 | 완료 |
-| 앱 구현 | P′ Pass 2 `REVISE`; P′′ `CANDIDATE_SOURCE_READY` · final run pending |
-| P′′ commit / push | 2026-08-06 승인됨 · 아직 미실행 · exact SHA는 post-push provenance 소유 |
-| candidate-bound build / S01~S23 | `NOT_RUN` · exact BUILD_ID·epoch·최종 count는 post-push provenance 소유 |
-| fresh review publication | blind-only 우선, 두 Pass 1 동결 뒤 informed-only 게시 승인 |
-| PR / merge / Preview / Production | 승인되지 않음 · 실행 금지 |
+| 앱 구현 | P′ Pass 2 `REVISE` finding을 P′′에 반영 · production source `f97644abf379c46433847f44aa7bd4da7fadac4a` |
+| P′′ identity | production source SHA `f97644abf379c46433847f44aa7bd4da7fadac4a` · candidate-evidence BUILD_ID `T0QkChgscSgPog-0UdvY-` · epoch `p35-r2-4fa6af1728eb5ca5` |
+| candidate-bound evidence | S01~S23 `23/23` accounted · S22 `NOT_ASSESSED` · S23 reviewer-chosen · group manifest `3/3 PASS`·failure `0` · verifier `PASS` (`33` identity / `285` evidence files / `556` raw URL / failure `0`) |
+| fresh independent P′′ Pass 1 / Pass 2 | `NOT_RUN` · Owner가 MVP 반복 검토 방지를 위해 면제 · 독립 P′′ `PASS` 주장 없음 |
+| PR / merge / Preview | 안 함 |
+| Vercel Production | `READY` · `dpl_EBDr9CiRuwAUyjMcJwp7g6eBLpNk` · <https://flowme2605-n6jddq8i9-flowme.vercel.app> · canonical <https://flowme2605.vercel.app> |
+| production smoke / live runtime BUILD_ID probe | `NOT_RUN` |
 | 이전 hardening 전 로컬 checkpoint | unit/workflow 1,095/1,095; focused browser 7/7; full Playwright 530/530 · workers 4 · retries 0 · 17.6m; build 18/18 · BUILD_ID `O_FcSLodnCeJe3e2F32PC`; high+ audit 0 · historical only |
-| P2 follow-up | URL queue / legacy-off / rapid batch submit / creator·text-authoring · current queue 아님 |
-| actual zoom / performance | `NOT_ASSESSED`; `720×500`은 reflow proxy |
+| P2 follow-up / text-to-flow | 제외 · current queue 아님 |
+| actual 200% zoom / performance / external round-trip | `NOT_ASSESSED`; `720×500`은 reflow proxy |
 | 실제 사용자 관찰 | `0명`; V1 `OUT_OF_SCOPE_CURRENT_PROGRAM` |

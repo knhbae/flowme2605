@@ -2,38 +2,39 @@
 
 **Last Updated:** 2026-08-06<br>
 **Current Version:** v0.1.0 (released product PoC)<br>
-**Current Validation Stage:** internal alpha / P35 production baseline / observed users 0<br>
+**Current Validation Stage:** internal alpha / P35 Round 2 P′′ production / observed users 0<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** P′′ final local run is green; clean freeze, post-push candidate evidence, and fresh blind Codex/Claude Design Pass 1
+**Next Milestone:** P35 Round 2 MVP PoC gate is closed on P′′ production; no next product slice is active until the Owner explicitly promotes one
 
-Human-facing control surface: [FlowMe current stage control board](./content-audit/2026-07-29-flowme-current-stage-control-board-ko.html).
+Historical 2026-07-29 control surface: [FlowMe P35 stage control board](./content-audit/2026-07-29-flowme-current-stage-control-board-ko.html). Current state is maintained in this roadmap and [STATUS.md](./STATUS.md).
 
-## Active Local Program: P35 Round 2 B/B/B Bounded UX Correction
+## Closed MVP Program: P35 Round 2 B/B/B Bounded UX Correction
 
-**Active Gate State:** `P′ PASS2_REVISE / P′′ CANDIDATE_SOURCE_READY / FINAL_CANDIDATE_EVIDENCE_PENDING / FRESH_TWO_PASS_REVIEW_AUTHORIZED`
+**Gate State:** `P′ PASS2_REVISE / FINDINGS_INCORPORATED / P′′ CANDIDATE_EVIDENCE_VERIFIED / FRESH_P′′_PASS1_PASS2_NOT_RUN_WAIVED_FOR_MVP / PRODUCTION_READY / SMOKE_NOT_RUN / OBSERVED_USERS_0`
 
 On 2026-08-04 the owner approved `B/B/B`: allow only unmodified, eligible,
 local-only quick results before save; make general `/my` a stable saved-plan
 library shell with Today retained as a compact derived execution summary; and
 stage `계획` language on core user-facing surfaces while retaining the FLOW
-brand, URLs, internal types, and storage keys. The active specification is
+brand, URLs, internal types, and storage keys. The program specification is
 [P35 Round 2 B/B/B bounded UX correction](./specs/2026-08-04-p35-round2-bounded-ux-correction/README.md).
 
-The program completed local implementation through `P1-04`, froze immutable P′
-`29cb03a`, and received Codex and Claude Design Pass 2 `REVISE`. P′ remains review
-history. P′′ is now `CANDIDATE_SOURCE_READY`: its source carries one shared Flow
-user-data write lock, lock-then-fresh-reread/CAS ownership, a raw rollback
-transaction for reuse, public-copy create/overwrite CAS, exact transported-byte
-identity, schema-v2 identity preservation, and exact candidate/review branch Vercel
-guards. This is not final candidate evidence. The clean post-push SHA, BUILD_ID,
-candidate epoch, final counts, and S01~S23 results are recorded only in external
-post-push provenance. The final local source run passed pretest `114/114`, P35 P0
-`415/415`, main unit/workflow `615/615`, shared-lock contract `59/59`, and full
-Playwright `533/533`; production build, audit, docs, and diff checks also passed.
-Candidate commit/push and physically separated review
-publication are Owner-authorized; PR, merge, Vercel Preview/Production, and
-observed-user validation are not. Released P35 remains production, observed users
-remain `0`, and V1 is excluded from this program.
+The program completed implementation through `P1-04`, froze immutable P′
+`29cb03a`, and received sealed Codex and Claude Design review results ending in
+Pass 2 `REVISE`. P′ remains review history, and its findings were incorporated into
+P′′. The exact P′′ production source SHA is
+`f97644abf379c46433847f44aa7bd4da7fadac4a`; candidate-evidence BUILD_ID is
+`T0QkChgscSgPog-0UdvY-` and candidate epoch is `p35-r2-4fa6af1728eb5ca5`.
+S01~S23 are `23/23` accounted: S01~S21 are candidate-bound captures, S22 is
+`NOT_ASSESSED`, and S23 is `REVIEWER_CHOSEN_NOT_PRECAPTURED`. Three group manifests
+report `PASS` with failures `0`; the published verifier reports `PASS` across `33`
+identity checks, `285` evidence files, and `556` raw URLs with failures `0`. The Owner waived a fresh independent
+P′′ Pass 1/Pass 2 repeat for this MVP closeout, so both remain `NOT_RUN` and P′′ is
+not described as independently reviewed or passed. Vercel deployment
+`dpl_EBDr9CiRuwAUyjMcJwp7g6eBLpNk` is `READY`, and
+[the canonical alias](https://flowme2605.vercel.app) is assigned. Production smoke
+and live runtime BUILD_ID probing are `NOT_RUN`, observed users remain `0`, and V1, text-to-flow, and P2 follow-ups are
+excluded from this program.
 
 Strict sequence:
 
@@ -43,13 +44,23 @@ P0-01
 -> P0-04 -> P0-05 -> P0-06 -> P0-07 -> P0-08 -> P0-09 -> P0-10
 -> P1 visual/copy/parity/accessibility slices
 -> P′ two-pass review: REVISE
--> P′′ candidate source -> clean freeze/evidence
--> fresh blind Pass 1 -> fresh informed Pass 2
+-> P′′ bounded correction -> clean freeze/evidence: VERIFIED_WITH_DECLARED_GAPS
+-> fresh independent P′′ Pass 1/Pass 2: NOT_RUN, Owner-waived for MVP
+-> Vercel Production: READY, canonical alias assigned
 
 V1 observed-user validation is a separate future program.
 ```
 
-## Current Production Baseline: P35 MECE UX Reset
+## Current Production Baseline: P35 Round 2 P′′ Bounded UX Correction
+
+Production serves source `f97644abf379c46433847f44aa7bd4da7fadac4a` through
+deployment `dpl_EBDr9CiRuwAUyjMcJwp7g6eBLpNk`, which the Vercel CLI reports as
+`READY`; [the canonical alias](https://flowme2605.vercel.app) is assigned. This is
+an MVP PoC release backed by P′ review findings plus P′′ candidate-bound automated
+and browser evidence. It is not a fresh independent P′′ review pass, a production
+smoke result, or observed-user validation.
+
+### Inherited Baseline: P35 MECE UX Reset
 
 P35 is a bounded presentation and navigation revision over the released P34 data
 contracts. It replaces the standalone Home destination with a state-based `/`
@@ -351,19 +362,19 @@ Detailed scope: [Save, Personalize, Execute Journey Reset](./specs/2026-07-18-sa
 
 ## Operating Queue
 
-There is no active external-user gate. P35 remains the canonical production
-baseline. Round 2 P′ is immutable review history with Pass 2 `REVISE`; P′′ is a
-candidate-ready source whose final scoped run and candidate-bound evidence are still
-pending. The active work is final source verification, clean freeze, same-SHA
-post-push evidence capture, and blind internal review by Codex and Claude Design.
-External user observation is excluded and is not a completion requirement.
+There is no active external-user gate or active release-prep ticket. P35 Round 2
+P′′ is the canonical production baseline for this MVP PoC. Round 2 P′ remains
+immutable review history ending in Pass 2 `REVISE`; its findings were incorporated
+into P′′, and the candidate evidence package was verified with the declared S22/S23 gaps. Fresh independent P′′ Pass 1
+and Pass 2 were not run and were explicitly waived for the MVP, not counted as a
+pass. External user observation is excluded and is not a completion requirement.
 
 | Lane | Owner | Work | Next checkpoint | Done when |
 | --- | --- | --- | --- | --- |
-| Active release prep | AI, then Owner/Claude Design | P′′ final scoped run, immutable candidate, and blind Pass 1 | Verify the source, commit/push the approved scope, build/capture the same post-push SHA once, publish blind A/B/C, then freeze independent results | post-push identity/evidence hashes match; both Pass 1 results are frozen |
-| Candidate source | Development | P′′ shared lock, fresh reread/CAS, reuse/public-copy transaction, exact-byte/schema/deploy guards | Preserve source contracts without claiming candidate-bound PASS before the final run | `CANDIDATE_SOURCE_READY`; final SHA/BUILD_ID/epoch/count remain provenance-owned |
+| Completed MVP release | AI + Owner | P′ review incorporation, P′′ freeze/evidence, and production deployment | Preserve the exact release boundary without claiming a fresh independent P′′ review or production smoke | deployment `dpl_EBDr9CiRuwAUyjMcJwp7g6eBLpNk` is `READY`, alias assigned, smoke `NOT_RUN`, observed users `0` |
+| Completed candidate evidence | Development | P′′ shared lock, fresh reread/CAS, reuse/public-copy transaction, exact-byte/schema/deploy guards | Preserve source and published provenance for `f97644a` / `T0QkChgscSgPog-0UdvY-` / `p35-r2-4fa6af1728eb5ca5` | S01~S23 `23/23` accounted (S22 `NOT_ASSESSED`, S23 reviewer-chosen), three group manifests `PASS`, verifier `PASS`, failures `0` |
 | Completed implementation | Development | Round 2 P0-01~P1-04 and the earlier correction checkpoint | Preserve the bounded UX correction, rollback contracts, one canonical result projection, and zero-write public read path | historical local evidence remains inspectable without being presented as the final candidate run |
-| P2 follow-up candidates | AI + Owner after fresh review | URL supply queue, legacy-off, rapid batch submit, creator/text-authoring mutation ownership | Retain, drop, or promote each item separately after the current two-pass review | no item enters the active queue or P′′ candidate without explicit promotion |
+| P2 follow-up candidates | AI + Owner after explicit promotion | URL supply queue, legacy-off, rapid batch submit, creator/text-authoring mutation ownership | Retain, drop, or promote each item separately from the closed MVP release | no item enters the active queue or released P′′ scope without explicit promotion |
 | Research shelf | AI | Text authoring, projection/event, full-corpus UI, vertical benchmark, research-to-product evidence | Keep source, inference, runtime impact, and unverified external evidence separate | Decision inputs stay reproducible without claiming runtime delivery |
 | Completed evidence | AI | P35 literal-route hardening | Preserve the two non-fixture regressions without turning evidence work into a product program | Literal `/my` and the fresh one-Flow rollback case pass `2 / 2`; runtime, storage, schema, and observed-user state are unchanged |
 | Completed | AI | P35 implementation and release | Preserve the state router, three primary destinations, stable P34 data contracts, and evidence boundary | PR #161, merge `4a51b08`, CI/Vercel green, full E2E `405 / 405`; PR #162 records production smoke `6 / 6` without a linked raw artifact; observed users `0` |
@@ -410,15 +421,13 @@ These gates cannot be closed by automated tests or simulated personas.
 
 ## Next Decision
 
-Use the [P′′ closeout](./specs/2026-08-04-p35-round2-bounded-ux-correction/pass2-cross-synthesis-and-pprime2-closeout.md)
-and the shared-write [decision](./DECISIONS.md) as the candidate-source contract.
-Treat the prior `1,095/1,095`, `530/530`, and BUILD_ID `O_FcSLodnCeJe3e2F32PC`
-only as a pre-final-hardening checkpoint. Finish the final scoped run and the
-authorized freeze/capture/blind-review sequence; bind exact SHA, BUILD_ID, epoch,
-and final counts only in post-push provenance. Do not create a PR, merge, deploy to
-Vercel, promote a P2 candidate, add an external integration, or begin observed-user
-recruitment. Informed material stays unpublished until both blind Pass 1 results
-are frozen.
+No further Pass 1/Pass 2 package is required for the closed MVP PoC gate. Preserve
+the [P′′ closeout](./specs/2026-08-04-p35-round2-bounded-ux-correction/pass2-cross-synthesis-and-pprime2-closeout.md),
+the shared-write [decision](./DECISIONS.md), and exact release provenance without
+upgrading `NOT_RUN` review or smoke states into `PASS`. If production verification
+is requested, run a bounded smoke and record it separately. Text-to-flow, P2
+follow-ups, external integrations, and observed-user recruitment remain inactive
+until the Owner explicitly promotes them.
 
 ## Gated Backlog
 

@@ -1,6 +1,6 @@
 # P35 Round 2 B/B/B 전체 프로그램 단계별 개발 목표
 
-**상태:** `P′ PASS2_REVISE / P′′ CANDIDATE_SOURCE_READY / FINAL_CANDIDATE_EVIDENCE_PENDING / FRESH_TWO_PASS_REVIEW_AUTHORIZED`
+**상태:** `P′ PASS2_REVISE / P′′ CANDIDATE_BOUND_EVIDENCE_VERIFIED / FRESH_P′′_TWO_PASS_NOT_RUN_OWNER_WAIVED_MVP / VERCEL_PRODUCTION_READY / OBSERVED_USERS_0`
 
 **승인일:** 2026-08-04 KST
 
@@ -12,16 +12,16 @@
 
 **보정 P′′ checkout / branch:** `D:\flowme2605\flow-p35-round2-correction-pprime2` / `codex/p35-round2-correction-pprime2-20260805`
 
-**현재 실행 단계:** P′에 대한 양쪽 Pass 2 `REVISE` 뒤 P′′ candidate source를 준비했다. Owner가 2026-08-06에 fresh candidate/evidence/two-pass review를 승인했으며, 현재 gate는 final scoped run, clean candidate freeze, post-push provenance, blind-only publication 순서다. Source 문서는 자기 자신이 속할 미래 SHA·BUILD_ID·epoch·최종 count를 주장하지 않는다. V1은 완료 조건이 아니다.
+**현재 실행 단계:** P′에 대한 양쪽 봉인 Pass 2 `REVISE` finding을 P′′에 반영하고 production source `f97644abf379c46433847f44aa7bd4da7fadac4a`를 동결했다. Candidate evidence package는 S22/S23 gap을 명시한 채 검증됐고 published verifier는 PASS했으며 Vercel production은 `READY`다. Owner는 MVP에서 반복 검토를 피하기 위해 새 독립 P′′ Pass 1/Pass 2를 면제했다. 이 프로그램의 MVP gate는 닫혔지만 독립 P′′ review `PASS`를 주장하지 않는다. V1은 완료 조건이 아니다.
 
-**Publish 권한:** `P′′ commit/push + sequence-gated blind/informed review publication` — PR·merge·Preview·Production은 권한 없음
+**Publish 상태:** P′′ source commit/push 및 수동 Vercel Production 완료 · PR·merge·Preview 안 함
 **실제 관찰 사용자:** `0명`
 
 **현재 closeout:** [Pass 2 교차 종합과 P′′ 로컬 보정 closeout](./pass2-cross-synthesis-and-pprime2-closeout.md)
 
 ## 1. 문서 목적과 사용법
 
-이 문서는 BBB 보정 프로그램 전체를 개발팀이 **한 단계씩 목표로 삼아 실행**할 수 있게 만든 canonical 운영 문서다. 첫 개발 세션만 다루는 [P0-01 복붙 프롬프트](../../content-audit/2026-08-03-p35-fundamental-ux-round2-planning-synthesis/08-bbb-approved-developer-kickoff-prompt-ko.md)와 달리, 여기에는 `G0/G1 → P0-01~P0-10 → P1-01~P1-04 → P′ review → P′′ candidate source/freeze → fresh Pass 1/Pass 2`의 전체 목표와 단계별 종료 조건이 들어 있다. V1은 별도 미래 프로그램이다.
+이 문서는 BBB 보정 프로그램 전체를 개발팀이 **한 단계씩 목표로 삼아 실행**할 수 있게 만든 canonical 운영 문서다. 첫 개발 세션만 다루는 [P0-01 복붙 프롬프트](../../content-audit/2026-08-03-p35-fundamental-ux-round2-planning-synthesis/08-bbb-approved-developer-kickoff-prompt-ko.md)와 달리, 여기에는 `G0/G1 → P0-01~P0-10 → P1-01~P1-04 → P′ review → P′′ correction/freeze/evidence → Owner MVP review 면제 → production`의 전체 목표와 단계별 종료 조건이 들어 있다. V1은 별도 미래 프로그램이다.
 
 문서별 권위 영역은 다음과 같다.
 
@@ -86,11 +86,11 @@ flowchart TD
   P101 --> P102["P1-02 · 용어·CTA·도움/주의"]
   P102 --> P103["P1-03 · 형식별 field parity"]
   P103 --> P104["P1-04 · 극단값·접근성·legacy gate"]
-  P104 --> PP["P′ · 독립 two-pass review · REVISE"]
-  PP --> PPP["P′′ · candidate source ready"]
-  PPP --> CF["clean freeze · post-push evidence"]
-  CF --> R1["fresh blind Pass 1"]
-  R1 --> R2["fresh informed Pass 2"]
+  P104 --> PP["이전 review cycle · Pass 1 c489 → Pass 2 P′ 29cb · REVISE"]
+  PP --> PPP["P′′ · bounded correction"]
+  PPP --> CF["candidate-bound evidence · PASS"]
+  CF --> RW["fresh independent Pass 1/2 · NOT_RUN · Owner MVP 면제"]
+  RW --> PROD["Vercel Production · READY"]
   P104 -.-> V1["V1 · 별도 미래 사용자 관찰"]
 ```
 
@@ -112,13 +112,14 @@ flowchart TD
 | 13 | P1-02 | Q3-B 용어·CTA·도움/주의 | **`PASS`** |
 | 14 | P1-03 | 형식별 field parity | **`PASS`** |
 | 15 | P1-04 | 극단값·접근성·legacy 내부 gate | **`PASS`** |
-| 16 | P′ review | immutable candidate 독립 two-pass review | `PASS2_REVISE` |
-| 17 | P′′ candidate source | bounded correction + final source contracts | `CANDIDATE_SOURCE_READY` |
-| 18 | P′′ candidate freeze/evidence | clean push·single post-push build·S01~S23 | `FINAL_CANDIDATE_EVIDENCE_PENDING` |
-| 19 | fresh Pass 1 / Pass 2 | blind 결과 동결 뒤 informed review | `AUTHORIZED_NOT_RUN` |
-| 20 | V1 | 실제 참여자 제한 관찰 | `OUT_OF_SCOPE_CURRENT_PROGRAM · observed 0` |
+| 16 | 이전 독립 review cycle | Pass 1 `c489117` → Pass 2 P′ `29cb03a` | `PASS2_REVISE` |
+| 17 | P′′ bounded correction | P′ finding 반영 + final source contracts | `PASS` |
+| 18 | P′′ candidate freeze/evidence | clean push·post-push identity·S01~S23·published verifier | `CANDIDATE_BOUND_EVIDENCE_VERIFIED` |
+| 19 | fresh independent P′′ Pass 1 / Pass 2 | 별도 독립 review | `NOT_RUN_OWNER_WAIVED_MVP` |
+| 20 | Vercel Production | production source 배포와 alias 연결 | `READY` |
+| 21 | V1 | 실제 참여자 제한 관찰 | `OUT_OF_SCOPE_CURRENT_PROGRAM · observed 0` |
 
-P0-01부터 P1-04까지는 각 closeout으로 local internal PASS했고 P′는 양쪽 Pass 2 `REVISE`로 닫혔다. P′′ source에는 shared user-data lock, lock-then-fresh-reread/CAS, reuse raw transaction, public-copy CAS, exact transported-byte identity, schema-v2 identity preservation, exact candidate/review branch Vercel guard가 반영됐다. 이전 unit/workflow `1,095/1,095`, focused browser `7/7`, full Playwright `530/530`, build `18/18`과 BUILD_ID `O_FcSLodnCeJe3e2F32PC`는 final hardening 전 checkpoint이며 현재 candidate 증거가 아니다. Exact candidate SHA·BUILD_ID·epoch·최종 count와 S01~S23는 clean commit/push 뒤 provenance에 기록한다. 실제 browser zoom과 performance는 `NOT_ASSESSED`; PR·merge·Vercel Preview/Production은 승인되지 않았고 V1은 제외됐으며 observed users는 `0명`이다.
+P0-01부터 P1-04까지는 각 closeout으로 local internal PASS했고, 이전 독립 review cycle은 Pass 1 `c489117`에서 Pass 2 P′ `29cb03a`로 이어져 양쪽 `REVISE`로 닫혔다. 그 finding을 반영한 P′′에는 shared user-data lock, lock-then-fresh-reread/CAS, reuse raw transaction, public-copy CAS, exact transported-byte identity, schema-v2 identity preservation, exact candidate/review branch Vercel guard가 들어 있다. Production source SHA는 `f97644abf379c46433847f44aa7bd4da7fadac4a`; candidate-evidence BUILD_ID는 `T0QkChgscSgPog-0UdvY-`, epoch은 `p35-r2-4fa6af1728eb5ca5`다. S01~S23은 `23/23` accounted이며 S01~S21은 capture, S22는 `NOT_ASSESSED`, S23은 `REVIEWER_CHOSEN_NOT_PRECAPTURED`다. Group manifest `3/3 PASS`·failure `0`, published verifier `PASS`·identity `33`·evidence file `285`·raw URL `556`·failure `0`으로 candidate evidence package를 검증했다. 새 독립 P′′ Pass 1/Pass 2는 `NOT_RUN`이고 Owner가 MVP에서 면제했으므로 독립 review `PASS`가 아니다. Vercel production은 `READY`; production smoke와 live runtime BUILD_ID probe는 `NOT_RUN`, 실제 200% zoom·performance·외부 round-trip은 `NOT_ASSESSED`, text-to-flow/P2와 V1은 제외, observed users는 `0명`이다.
 
 ## 5. 전 단계 공통 운영 규칙
 
@@ -1067,7 +1068,7 @@ P1-04 PASS는 내부 구현 gate 완료일 뿐이다. V1은 Owner 결정으로 �
 
 ### 다음 gate
 
-Owner가 실제 evidence를 보고 `keep / bounded correction / 추가 관찰` 중 하나를 별도로 승인한다. release·배포·표본 확대를 자동 실행하지 않는다.
+미래 V1 관찰 프로그램을 별도로 실행할 경우에만 Owner가 실제 evidence를 보고 `keep / bounded correction / 추가 관찰` 중 하나를 승인한다. 이 미래 절차는 현재 완료된 MVP release를 되돌리지 않으며 새 release·배포·표본 확대를 자동 실행하지 않는다.
 
 ## 23. 단계별 증거 ledger
 
@@ -1091,13 +1092,14 @@ Owner가 실제 evidence를 보고 `keep / bounded correction / 추가 관찰` �
 | P1-02 | P1-01 | PASS | `d5f6937` 기반 local / 2026-08-05 | local closeout / 2026-08-05 | [P1-02 closeout](./p1-02-closeout.md) · independent source audit blocker 0 | P1-03 열림 |
 | P1-03 | P1-02 | PASS | `d5f6937` 기반 local / 2026-08-05 | local closeout / 2026-08-05 | [P1-03 closeout](./p1-03-closeout.md) · [format/field parity](./p1-03-format-field-parity.md) | P1-04 열림 |
 | P1-04 | P1-03 | PASS | `d5f6937` 기반 local / 2026-08-05 | local closeout / 2026-08-05 | [P1-04 closeout](./p1-04-closeout.md) | P′ freeze/review로 이동 |
-| P′ review | P1-04 | PASS2_REVISE | `29cb03a` immutable candidate | sealed Pass 2 / 2026-08-05 | Codex·Claude Design 양쪽 `REVISE` | P′ 불변·별도 P′′ correction |
-| P′′ candidate source | P′ review | CANDIDATE_SOURCE_READY | P′ parent 기반 local / 2026-08-06 | source contract only | [P′′ closeout](./pass2-cross-synthesis-and-pprime2-closeout.md) | final scoped run·clean freeze만 승인 |
-| P′′ candidate freeze/evidence | source ready | FINAL_CANDIDATE_EVIDENCE_PENDING | — | — | post-push provenance 소유 | clean commit/push 뒤 시작 |
-| fresh Pass 1 / Pass 2 | candidate-bound evidence | AUTHORIZED_NOT_RUN | — | — | blind freeze → informed review | Pass 1 두 결과 동결 전 Pass 2 금지 |
+| 이전 독립 review cycle | P1-04 | PASS2_REVISE | Pass 1 `c489117` → Pass 2 P′ `29cb03a` | sealed Pass 1/Pass 2 / 2026-08-05 | Codex·Claude Design 양쪽 `REVISE` | P′ 불변·별도 P′′ correction |
+| P′′ bounded correction | P′ review | PASS | `f97644abf379c46433847f44aa7bd4da7fadac4a` / 2026-08-06 | final source + candidate-bound evidence | [P′′ closeout](./pass2-cross-synthesis-and-pprime2-closeout.md) | P′ finding 반영; 독립 P′′ 판정 아님 |
+| P′′ candidate freeze/evidence | bounded correction | CANDIDATE_BOUND_EVIDENCE_VERIFIED | candidate BUILD_ID `T0QkChgscSgPog-0UdvY-` · epoch `p35-r2-4fa6af1728eb5ca5` | S01~S23 `23/23` accounted; S22/S23 gap declared; group manifests/verifier PASS | post-push provenance | production smoke·live runtime BUILD_ID·사용자 이해는 미증명 |
+| fresh independent P′′ Pass 1 / Pass 2 | candidate-bound evidence | NOT_RUN_OWNER_WAIVED_MVP | — | — | 새 독립 review 없음 | 독립 P′′ `PASS` 주장 금지 |
+| Vercel Production | Owner deploy 승인 | READY | deployment `dpl_EBDr9CiRuwAUyjMcJwp7g6eBLpNk` | CLI READY + canonical alias 확인 | source 배포 상태 | production smoke `NOT_RUN` |
 | V1 | 미래 별도 Owner 승인 | OUT_OF_SCOPE_CURRENT_PROGRAM | — | — | observed `0` | 현재 프로그램 완료 조건 아님 |
 
-구현 단계는 자기 행만 갱신하고 상태를 `NOT_STARTED / READY_TO_START / IN_PROGRESS / PASS / FAIL / BLOCKED` 중 하나로 기록한다. Candidate/review 행은 `PASS2_REVISE / CANDIDATE_SOURCE_READY / FINAL_CANDIDATE_EVIDENCE_PENDING / AUTHORIZED_NOT_RUN / OUT_OF_SCOPE_CURRENT_PROGRAM`을 별도로 사용한다. 어떤 상태도 commit/push나 review publication 상태와 합치지 않는다.
+구현 단계는 자기 행만 갱신하고 상태를 `NOT_STARTED / READY_TO_START / IN_PROGRESS / PASS / FAIL / BLOCKED` 중 하나로 기록한다. Candidate/review/release 행은 `PASS2_REVISE / CANDIDATE_BOUND_EVIDENCE_VERIFIED / NOT_RUN_OWNER_WAIVED_MVP / READY / OUT_OF_SCOPE_CURRENT_PROGRAM`을 별도로 사용한다. 어떤 상태도 독립 review 판정, commit/push, production smoke, observed-user evidence와 합치지 않는다.
 
 ### 23.2 Verification ledger
 
@@ -1119,11 +1121,13 @@ Owner가 실제 evidence를 보고 `keep / bounded correction / 추가 관찰` �
 | P1-02 | copy guard·a11y·viewport | PASS | local / 2026-08-05 | [P1-02 closeout](./p1-02-closeout.md): independent source audit blocker 0, focused integrated 67/67, P35 P0 345/345, full unit/workflow 1070/1070, build 18/18, Q3 default 12/12, rollback 11 PASS+1 intentional SKIP, P1 visual+Q3 17/17, affected P0 39/39, PNG 24장 | core owned Q3 routes·metadata·rollback·3 viewports | 실제 사용자 이해; Text Authoring/creator 별도 route; artifact labels는 P1-03 |
 | P1-03 | format golden·parser round-trip | PASS | local / 2026-08-05 | [P1-03 closeout](./p1-03-closeout.md) · [format/field parity](./p1-03-format-field-parity.md) | 18열 Sheet, Checklist/Memo timezone·repeat, visible omission reason, Calendar semantic equality, pre-lineage v1 read-only | 실제 사용자 이해 |
 | P1-04 | extremes·a11y·legacy·full gate | PASS | local / 2026-08-05 | [P1-04 closeout](./p1-04-closeout.md): full E2E 529/529, workers 4, retries 0, 26.0m; direct 6/6; unit 1,086/1,086; build 18/18, pre-freeze BUILD_ID `vAb8e5TudUXvxEyowetMU` | internal implementation gate; public zero-write; `720×500` reflow proxy | actual zoom·performance `NOT_ASSESSED`; 실제 사용자 이해 |
-| P′ review | sealed Codex·Claude Design two-pass | REVISE | immutable `29cb03a` / 2026-08-05 | sealed review packages | P′ 판정 | P′′ 판정으로 승계 불가 |
-| P′′ candidate source | shared lock·fresh reread/CAS·reuse raw transaction·public-copy CAS·exact bytes·schema-v2·Vercel guard | FINAL_RUN_PENDING | local source / 2026-08-06 | [P′′ closeout](./pass2-cross-synthesis-and-pprime2-closeout.md) · [decision](../../DECISIONS.md) | source contract presence and intended ownership | clean candidate SHA·BUILD_ID·epoch·final count·S01~S23·fresh review |
+| 이전 독립 review cycle | Pass 1 `c489117` → Pass 2 P′ `29cb03a` | REVISE | sealed packages / 2026-08-05 | Codex·Claude Design review packages | 이전 후보 finding | P′′ 판정으로 승계 불가 |
+| P′′ candidate-bound evidence | shared lock·fresh reread/CAS·reuse raw transaction·public-copy CAS·exact bytes·schema-v2·Vercel guard | VERIFIED | production source `f97644abf379c46433847f44aa7bd4da7fadac4a` / 2026-08-06 | candidate BUILD_ID `T0QkChgscSgPog-0UdvY-`; epoch `p35-r2-4fa6af1728eb5ca5`; S01~S23 `23/23` accounted; S22 `NOT_ASSESSED`; S23 reviewer-chosen; group manifests `3/3 PASS` failure `0`; verifier `PASS` (`33` identity / `285` evidence files / `556` raw URL / failure `0`) | production source identity와 자동·브라우저 회귀 | fresh independent P′′ review; production smoke; live runtime BUILD_ID; 실제 사용자 이해; actual 200% zoom·performance·external round-trip |
+| fresh independent P′′ Pass 1 / Pass 2 | 독립 review | NOT_RUN | Owner MVP waiver / 2026-08-06 | 반복 review를 MVP에서 면제 | 실행하지 않았다는 경계 | 독립 P′′ review verdict 없음 |
+| Vercel Production | deployment READY·alias | READY | `dpl_EBDr9CiRuwAUyjMcJwp7g6eBLpNk` / 2026-08-06 | <https://flowme2605-n6jddq8i9-flowme.vercel.app> · canonical <https://flowme2605.vercel.app> | CLI deployment 상태와 alias | production smoke `NOT_RUN` |
 | V1 | session logs·usable count·synthesis | OUT_OF_SCOPE_CURRENT_PROGRAM | — | completed `0` | — | 미래 별도 사용자 관찰 프로그램 |
 
-구현 검증 결과는 `PASS / FAIL / SKIP / NOT_RUN`으로 구분한다. Review verdict의 `REVISE`와 candidate lifecycle의 `FINAL_RUN_PENDING`은 검증 PASS가 아니며 별도 열에서만 쓴다. 과거 실행 결과를 현재 ref의 PASS로 재사용하지 않는다.
+구현 검증 결과는 `PASS / FAIL / SKIP / NOT_RUN`으로 구분한다. Review verdict의 `REVISE`, Owner waiver의 `NOT_RUN`, deployment 상태의 `READY`는 서로 다른 뜻이며 별도 열에서만 쓴다. 과거 실행 결과를 현재 ref의 PASS로 재사용하지 않는다.
 
 ### 23.3 Publish ledger
 
@@ -1145,12 +1149,13 @@ Owner가 실제 evidence를 보고 `keep / bounded correction / 추가 관찰` �
 | P1-02 | copy·disclosure·guard·tests·evidence·docs | 없음 | 안 함 | 안 함 | 미실행 | 안 함 | 안 함 | 안 함 | 2026-08-05 local PASS; publish 권한 없음·관찰 사용자 0 |
 | P1-03 | format/artifact parity·tests·docs | 없음 | 안 함 | 안 함 | 미실행 | 안 함 | 안 함 | 안 함 | 2026-08-05 local PASS; publish 권한 없음·관찰 사용자 0 |
 | P1-04 | final regression·evidence·docs | 없음 | 안 함 | 안 함 | 미실행 | 안 함 | 안 함 | 안 함 | 2026-08-05 local PASS; internal implementation gate only·관찰 사용자 0 |
-| P′ freeze / two-pass review | candidate·review evidence | `29cb03a` | 완료 | 안 함 | 미실행 | 안 함 | 안 함 | 안 함 | Codex·Claude Design Pass 2 `REVISE`; P′ 불변 |
+| 이전 review cycle / Pass 2 P′ freeze | Pass 1 `c489117` → Pass 2 P′ `29cb03a` | `29cb03a` | 완료 | 안 함 | 미실행 | 안 함 | 안 함 | 안 함 | Codex·Claude Design Pass 2 `REVISE`; P′ 불변 |
 | P′′ bounded correction checkpoint | runtime·transaction·tests·docs | 없음 | 안 함 | 안 함 | 미실행 | 안 함 | 안 함 | 안 함 | pre-final-hardening historical checkpoint: unit/workflow 1,095/1,095; full Playwright 530/530; build 18/18; BUILD_ID `O_FcSLodnCeJe3e2F32PC` |
-| P′′ candidate source | shared lock·CAS·reuse/public-copy transaction·transport/schema guard·docs | 없음 | 안 함 | 안 함 | 미실행 | 안 함 | 안 함 | 안 함 | `CANDIDATE_SOURCE_READY`; final run pending·관찰 사용자 0 |
-| P′′ candidate freeze/evidence | clean commit·push·single post-push build·S01~S23 | post-push provenance 소유 | 안 함 | 안 함 | 미실행 | 안 함 | 안 함 | 안 함 | `FINAL_CANDIDATE_EVIDENCE_PENDING`; source 문서에 미래 SHA/BUILD_ID/epoch/count 기록 금지 |
-| fresh Pass 1 | blind review publication·independent outputs | blind A/B/C 소유 | 안 함 | 안 함 | 미실행 | 안 함 | 안 함 | 안 함 | 승인됨·미실행; 두 결과를 별도 동결 |
-| fresh Pass 2 | informed review publication·independent outputs | informed publication 소유 | 안 함 | 안 함 | 미실행 | 안 함 | 안 함 | 안 함 | 승인됨·미실행; 두 Pass 1 동결 전 시작 금지 |
+| P′′ correction production source | shared lock·CAS·reuse/public-copy transaction·transport/schema guard·docs | `f97644abf379c46433847f44aa7bd4da7fadac4a` | 완료 | 안 함 | 미실행 | 안 함 | 안 함 | `READY` | deployment `dpl_EBDr9CiRuwAUyjMcJwp7g6eBLpNk`; canonical alias 연결 |
+| P′′ candidate freeze/evidence | post-push build·identity·S01~S23·manifests·verifier | `f97644abf379c46433847f44aa7bd4da7fadac4a` | 완료 | 안 함 | 미실행 | 안 함 | 안 함 | `READY` | BUILD_ID `T0QkChgscSgPog-0UdvY-`; epoch `p35-r2-4fa6af1728eb5ca5`; S01~S23 `23/23`; verifier failures `0` |
+| fresh independent P′′ Pass 1 | blind independent review | 없음 | 안 함 | 안 함 | 미실행 | 안 함 | 안 함 | 해당 없음 | `NOT_RUN`; Owner MVP 면제; 독립 P′′ PASS 주장 없음 |
+| fresh independent P′′ Pass 2 | informed independent review | 없음 | 안 함 | 안 함 | 미실행 | 안 함 | 안 함 | 해당 없음 | `NOT_RUN`; Owner MVP 면제; 독립 P′′ PASS 주장 없음 |
+| production smoke | deployed canonical alias 확인 | 없음 | 해당 없음 | 안 함 | 미실행 | 안 함 | 안 함 | `NOT_RUN` | CLI READY+alias만 확인; interaction smoke는 실행하지 않음 |
 | V1 | NOT_STARTED · Owner 승인 필요 | 없음 | 안 함 | 안 함 | 미실행 | 안 함 | 안 함 | 안 함 | observed users 0 |
 
 ### 23.4 Observed-user ledger

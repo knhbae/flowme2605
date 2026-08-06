@@ -35,6 +35,20 @@ Do not use this for:
 
 ## Decisions
 
+### 2026-08-06 - P′ review plus P′′ candidate evidence closes the MVP gate without repeating Pass 1 and Pass 2
+
+**Decision:** Close the P35 Round 2 MVP PoC gate with the sealed prior Codex/Claude Design review findings—Pass 1 candidate `c48911757fb529941d00efc2162338ffa8b7686a`, then Pass 2 P′ `29cb03a65dd1037a3b813b7f43a5a095e4669dce` ending in `REVISE`—their bounded P′′ corrections, and the exact post-push P′′ candidate evidence. The production source SHA is `f97644abf379c46433847f44aa7bd4da7fadac4a`; candidate-evidence BUILD_ID is `T0QkChgscSgPog-0UdvY-` and candidate epoch is `p35-r2-4fa6af1728eb5ca5`. Vercel performs a separate remote rebuild, so production smoke and live runtime BUILD_ID probing remain `NOT_RUN`. S01~S23 are `23/23` accounted: S01~S21 are candidate-bound captures, S22 is `NOT_ASSESSED`, and S23 is `REVIEWER_CHOSEN_NOT_PRECAPTURED`. All three group manifests report `PASS` with failures `0`, and the published verifier reports `PASS` with `33` identity checks, `285` evidence files, `556` raw URLs, and failures `0`. Fresh independent P′′ Pass 1 and Pass 2 are `NOT_RUN`: the Owner waives that repeated cycle for this MVP closeout, and no document may describe P′′ as independently reviewed or passed. Production deployment is authorized. Observed-user validation remains excluded at `0`; text-to-flow and the P2 follow-up candidates remain outside this release.
+
+**Reason:** The independent P′ reviews already identified the applicable problems, P′′ incorporated those findings, and candidate-bound regression and publication evidence verifies the bounded delta. Repeating the complete independent cycle is not required for this MVP PoC decision, but preserving `NOT_RUN` prevents the waiver from being mistaken for independent P′′ approval.
+
+**Applies to:** P35 Round 2 MVP closeout, P′ and P′′ review labels, candidate and publication provenance, production authorization, status and roadmap reporting, and future claims about review or observed-user evidence.
+
+**Supersedes:** The fresh two-pass requirement and no-deployment boundary in the 2026-08-06 candidate-source decision immediately below. It preserves immutable P′ history, the P′ `REVISE` results, candidate identity, evidence isolation, no-PR/no-merge boundaries, and the rule that internal QA is not observed-user validation.
+
+**Reopen when:** A material UI, data, persistence, or export behavior changes after `f97644a`; production smoke finds a release defect; the product moves beyond this MVP PoC gate; observed-user evidence changes the direction; or the Owner explicitly requests independent P′′ certification. P2 follow-ups and text-to-flow reopen only through separate explicit promotion.
+
+**Related docs:** [P35 Round 2 status](./specs/2026-08-04-p35-round2-bounded-ux-correction/README.md), [P′′ closeout](./specs/2026-08-04-p35-round2-bounded-ux-correction/pass2-cross-synthesis-and-pprime2-closeout.md), [project status](./STATUS.md), [roadmap](./ROADMAP.md)
+
 ### 2026-08-06 - P′ remains immutable and P′′ becomes the fresh review candidate source
 
 **Decision:** Preserve P′ `29cb03a65dd1037a3b813b7f43a5a095e4669dce` and its sealed Codex/Claude Design Pass 2 results as immutable review history. Supersede only the candidate-target portion of the 2026-08-05 freeze decision: the source for the new review candidate is `codex/p35-round2-correction-pprime2-20260805`, with automatic Vercel Git deployment disabled. The P′′ source may be committed and pushed, then bound to one clean post-push SHA, BUILD_ID, candidate epoch, and S01~S23 evidence set before fresh blind Pass 1 and informed Pass 2. The source documents must not predict their own future commit SHA, BUILD_ID, epoch, or final verification totals; those values belong to post-push candidate provenance. PR creation or update, merge, Preview, Production, and observed-user validation remain unauthorized, and observed users remain `0`.
