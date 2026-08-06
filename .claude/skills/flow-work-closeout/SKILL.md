@@ -1,6 +1,6 @@
 ---
 name: flow-work-closeout
-description: Close substantial FlowMe work with scoped ownership, risk-based verification, and explicit publish state. Use for handoff, commit/push/PR/merge/deploy actions, overall status reporting, "is it done?" checks, or mixed-worktree scope review. Skip the reporter for clear answers and tiny local changes with explicit diff and verification.
+description: Close substantial FlowMe work with scoped ownership, risk-based checks, and explicit publish state. Use for handoff, completion/status checks, or authorized publish work.
 ---
 
 # FLOW Work Closeout

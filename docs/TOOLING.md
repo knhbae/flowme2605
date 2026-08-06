@@ -105,7 +105,7 @@ Canonical skills are grouped by trigger:
 | Group | Skills | Policy |
 | --- | --- | --- |
 | FlowMe domain | `flow-content-conversion`, `flow-ux-review`, `flow-release-readiness`, `flow-direction-capture` | Keep because they encode project-specific product, source/risk, validation, or memory boundaries. Load the one relevant to the task. |
-| Conditional workflow | `flow-session-start`, `flow-request-interview`, `flow-work-closeout` | Use only for the trigger stated in each skill; they are not a mandatory lifecycle. |
+| Conditional workflow | `flow-session-start`, `flow-request-interview`, `flow-knowledge-maintenance`, `flow-work-closeout` | Use only for the trigger stated in each skill; they are not a mandatory lifecycle. |
 | Optional editorial | `flow-copy-editor`, `humanize-korean` | Use only for explicit copy/naturalness work. Do not load for normal implementation or planning. |
 
 Use these commands after changing a canonical skill:

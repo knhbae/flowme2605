@@ -1,0 +1,131 @@
+{
+  "schema_version": "flowme-harness-ab-evaluation-v1",
+  "date": "2026-08-04",
+  "status": "completed_read_only_plan_routing_ab",
+  "method": {
+    "tool": "codex-cli 0.146.0",
+    "mode": "ephemeral read-only planning",
+    "runs": 12,
+    "pairs": 6,
+    "snapshot": "Two clean, compact snapshots of the same current working copy; only entry routing and skill descriptions differed.",
+    "limits": [
+      "One run per task and variant is too small for a stable token-cost estimate.",
+      "Input totals include cached tokens; uncached input moved in the opposite direction overall.",
+      "The compact snapshots omitted large content-audit packages, so both variants treated linked raw packages as unavailable.",
+      "This measures plan routing and evidence selection, not implementation correctness or observed-user outcomes."
+    ]
+  },
+  "variants": {
+    "baseline": {
+      "agents_lines": 66,
+      "agents_words": 676,
+      "skill_count": 11,
+      "skill_description_chars": 3587,
+      "skill_descriptions_over_250_chars": 9
+    },
+    "light": {
+      "agents_lines": 47,
+      "agents_words": 398,
+      "skill_count": 11,
+      "skill_description_chars": 1842,
+      "skill_descriptions_over_250_chars": 0,
+      "skill_body_change": "none"
+    }
+  },
+  "aggregate": {
+    "baseline": {
+      "input_tokens": 1279471,
+      "cached_input_tokens": 1005568,
+      "uncached_input_tokens": 273903,
+      "output_tokens": 14008,
+      "duration_ms": 574134,
+      "tool_calls": 65
+    },
+    "light": {
+      "input_tokens": 1064757,
+      "cached_input_tokens": 770048,
+      "uncached_input_tokens": 294709,
+      "output_tokens": 11799,
+      "duration_ms": 465252,
+      "tool_calls": 39
+    },
+    "light_delta_percent": {
+      "input_tokens": -16.8,
+      "uncached_input_tokens": 7.6,
+      "output_tokens": -15.8,
+      "duration_ms": -19.0,
+      "tool_calls": -40.0
+    },
+    "interpretation": "Overall routing became faster and used fewer tool calls, but a billing or token-cost reduction is not established because uncached input increased and cache behavior varied."
+  },
+  "tasks": [
+    {
+      "task_id": "M1-doc-typo",
+      "lane": "micro",
+      "request": "Plan a one-typo correction in docs/harness/QA.md.",
+      "baseline": { "input": 82791, "uncached": 25191, "output": 1287, "duration_ms": 49815, "tool_calls": 5 },
+      "light": { "input": 91119, "uncached": 38639, "output": 1230, "duration_ms": 47795, "tool_calls": 5 },
+      "assessment": "Equivalent correct scope and docs:check. Light correctly skipped agent.md, but token use did not fall."
+    },
+    {
+      "task_id": "M2-display-fallback",
+      "lane": "micro",
+      "request": "Plan one fallback-title wording change and its owning test.",
+      "baseline": { "input": 109702, "uncached": 38790, "output": 1311, "duration_ms": 48542, "tool_calls": 3 },
+      "light": { "input": 172528, "uncached": 40688, "output": 1386, "duration_ms": 66945, "tool_calls": 8 },
+      "assessment": "Equivalent final scope and test ownership. Light over-searched with a broad rg and regressed on time and tool calls."
+    },
+    {
+      "task_id": "S1-undated-item-policy",
+      "lane": "standard",
+      "request": "Plan preservation of undated Items while excluding them from VEVENT output.",
+      "baseline": { "input": 354280, "uncached": 58600, "output": 2371, "duration_ms": 95930, "tool_calls": 9 },
+      "light": { "input": 299690, "uncached": 63914, "output": 2570, "duration_ms": 96748, "tool_calls": 6 },
+      "assessment": "Both found the canonical Item/projection rule and export ownership. Light made source versus personal overlay boundaries more explicit."
+    },
+    {
+      "task_id": "S2-calendar-review-report",
+      "lane": "standard",
+      "request": "Plan a Korean visual HTML review of same-date multi-Flow calendar identity.",
+      "baseline": { "input": 226227, "uncached": 62643, "output": 3357, "duration_ms": 109638, "tool_calls": 5 },
+      "light": { "input": 184569, "uncached": 70649, "output": 2215, "duration_ms": 75577, "tool_calls": 4 },
+      "assessment": "Both selected report, UX review, browser QA, and calendar ownership evidence. Light was shorter and faster without a material evidence gap."
+    },
+    {
+      "task_id": "F1-current-stage-next",
+      "lane": "full",
+      "request": "Determine current Stage, next priority, and the human decision needed now.",
+      "baseline": { "input": 256106, "uncached": 46954, "output": 2521, "duration_ms": 100640, "tool_calls": 7 },
+      "light": { "input": 164488, "uncached": 39816, "output": 2396, "duration_ms": 96343, "tool_calls": 8 },
+      "assessment": "Both selected session-start and release-readiness, separated production green from 0 observed-user sessions, and reached the same owner-decision gate."
+    },
+    {
+      "task_id": "F2-release-readiness",
+      "lane": "full",
+      "request": "Plan a release review separating implementation, QA, deployment, and observed users.",
+      "baseline": { "input": 250365, "uncached": 41725, "output": 3161, "duration_ms": 169569, "tool_calls": 36 },
+      "light": { "input": 152363, "uncached": 41003, "output": 2002, "duration_ms": 81844, "tool_calls": 8 },
+      "assessment": "Both preserved the four evidence lanes. Light omitted session-start as a selected skill but inspected equivalent baseline evidence and avoided extensive duplicate reads."
+    }
+  ],
+  "quality_gate": {
+    "successful_runs": "12/12",
+    "clean_read_only_runs": "12/12",
+    "manual_pair_review": "6/6 retained the material conclusion, ownership boundary, and required verification",
+    "material_quality_regression": false,
+    "minor_difference": "One full release task omitted session-start as a named skill; one micro task over-searched despite the lighter entry rule."
+  },
+  "decision": {
+    "apply_now": [
+      "Make agent.md conditional for clear low-risk local work.",
+      "Shorten nine skill discovery descriptions while preserving all skill bodies.",
+      "Keep hooks, CI, workflow scripts, canonical product documents, and specialist knowledge unchanged."
+    ],
+    "do_not_apply": [
+      "Do not delete or merge skills from this experiment.",
+      "Do not weaken verification gates.",
+      "Do not claim stable token-cost savings from one run per pair."
+    ],
+    "recheck": "Review the next 10 normal tasks, with special attention to micro-task search breadth and full release/session-start routing."
+  }
+}

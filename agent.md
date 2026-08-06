@@ -40,6 +40,8 @@ Detailed product direction and feature filters live in [PRODUCT_PRINCIPLES.md](.
 - Read the code and tests that own the requested behavior before choosing an abstraction.
 - Keep edits scoped, preserve pre-existing user changes, and never stage unrelated dirty paths by default.
 - Follow the runtime and dependency baseline in `package.json` and [TOOLING.md](./docs/TOOLING.md).
+- After the first user-facing UX draft, remove controls and explanations that do not change action, prevent error, reveal state, or enable recovery; then rewrite only the copy that remains necessary.
+- Route reports, decks, briefings, DOCX, PDF, and visual HTML through the `flow-report-artifact` skill and the environment's matching artifact skill; create and inspect the actual file.
 - Use the risk-based checks in [QA.md](./docs/harness/QA.md). Start targeted and broaden according to blast radius.
 - Inspect user-facing behavior in a real browser when routes, layout, save/export behavior, calendar behavior, or responsive presentation changes.
 - Keep local edits, commit, push, PR, merge, deployment, automated QA, and observed-user evidence as separate reported states.
@@ -50,6 +52,7 @@ Record only information that another session needs to act correctly.
 
 | Information | Canonical destination |
 | --- | --- |
+| Human-facing current stage and work-register entry | [PROJECT_CONTROL.md](./docs/PROJECT_CONTROL.md) |
 | Current focus, health, or blocker | [STATUS.md](./docs/STATUS.md) |
 | Planned milestone or backlog index | [ROADMAP.md](./docs/ROADMAP.md) |
 | Settled product, UX, technical, safety, or process rule | [DECISIONS.md](./docs/DECISIONS.md) |

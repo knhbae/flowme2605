@@ -1,6 +1,6 @@
 ---
 name: flow-request-interview
-description: Clarify a FlowMe request with a short evidence-based interview before execution. Use when the user explicitly asks to be interviewed to refine a request, or when a request is broad, ambiguous, high-impact, framed as a situation/discomfort/desired change, or has multiple plausible interpretations that would materially change product policy, UX, architecture, scope, or success evidence. Skip clear low-risk work and questions the repo can answer.
+description: Interview only when asked or unresolved ambiguity materially changes FlowMe policy, UX, architecture, risk, scope, or success evidence. Skip clear low-risk work.
 ---
 
 # FLOW Request Interview

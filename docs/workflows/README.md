@@ -23,9 +23,10 @@ Scripts may collect facts and recommend verification. They must not decide produ
 | [Session Start](./session-start.md) | Broad/resumed work, context loss, overall review, or mixed ownership | `npm run workflow:session-start` | `flow-session-start` |
 | [Request Interview](./request-interview.md) | Material ambiguity could change the requested outcome or scope | None; clarification requires judgment | `flow-request-interview` |
 | [Direction Capture](./capture-direction.md) | A durable direction or actionable deferred item must survive the task | None; classification requires judgment | `flow-direction-capture` |
+| [Knowledge Maintenance](./knowledge-maintenance.md) | Project knowledge, backlog, or control documents need an explicit audit or cleanup | None; audit and classification require judgment | `flow-knowledge-maintenance` |
 | [Work Closeout](./work-closeout.md) | Substantial completion, handoff, publish action, status report, or mixed ownership | `npm run workflow:closeout` | `flow-work-closeout` |
 
-Clear low-risk tasks may skip all four workflows. Normal implementation discipline, relevant verification, and dirty-path protection still apply.
+Clear low-risk tasks may skip all five workflows. Normal implementation discipline, relevant verification, and dirty-path protection still apply.
 
 ## Layer Ownership
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "FlowMe Report Artifact"
+  short_description: "Route reports to PPTX, DOCX, PDF, or visual HTML"
+  default_prompt: "Use $flow-report-artifact to turn this FlowMe analysis into the right visual report artifact."

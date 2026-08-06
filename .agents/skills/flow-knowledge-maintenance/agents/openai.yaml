@@ -1,0 +1,4 @@
+interface:
+  display_name: "FLOW Knowledge Maintenance"
+  short_description: "Audit and safely reconcile FlowMe project knowledge"
+  default_prompt: "Use $flow-knowledge-maintenance to audit and safely reconcile FlowMe status, backlog, decisions, ideas, specs, and control documents."

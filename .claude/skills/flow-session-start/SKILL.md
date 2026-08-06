@@ -1,6 +1,6 @@
 ---
 name: flow-session-start
-description: Establish a broad or resumed FlowMe repo baseline. Use after context loss, for overall status/release/"what next" work, or when a mixed or unclear worktree needs Stage, branch, ownership, evidence, and verification orientation. Skip clear low-risk tasks with obvious scope.
+description: Establish branch, Stage, ownership, evidence, and verification baseline for broad, resumed, status, release, or mixed-worktree tasks. Skip clear low-risk work.
 ---
 
 # FLOW Session Start

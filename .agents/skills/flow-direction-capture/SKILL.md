@@ -1,6 +1,6 @@
 ---
 name: flow-direction-capture
-description: Record FlowMe direction that must survive the current task. Use for a confirmed durable rule, actionable deferred idea with a revisit trigger, approved multi-step initiative, active blocker, route contract, or release fact. Skip passing thoughts, duplicates, and implementation details already evident from the diff.
+description: Record a confirmed durable FlowMe decision, actionable deferred idea, approved spec, blocker, route contract, or release fact. Skip passing thoughts and diff-obvious details.
 ---
 
 # FLOW Direction Capture
