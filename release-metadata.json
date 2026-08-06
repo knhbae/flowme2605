@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 2,
+  "release": "PASS1_BLIND_ONLY",
+  "state": "INDEX_CONTENT_READY_EXTERNAL_LAUNCH_ENVELOPE_PENDING",
+  "productCandidateSha": "f97644abf379c46433847f44aa7bd4da7fadac4a",
+  "productCandidateRef": "codex/p35-round2-correction-pprime2-20260805",
+  "buildId": "FCcpKvvIBhQ1MuM3V6K7p",
+  "buildCommand": "npm.cmd run build",
+  "buildExitCode": 0,
+  "buildLogSha256": "151acac7d1873ba8be03c4d8a1cbd77011097f8f2fd72bae37044630677549d1",
+  "blindEvidenceAssetSha": "398b3de86f6cccfbe22810f8818ad33bc2bb640b",
+  "blindReleaseIndexSha": "EXTERNAL_LAUNCH_ENVELOPE_REQUIRED_AFTER_INDEX_COMMIT",
+  "reviewSessionIds": "FREEZE_TIME_SESSION_IDS_RECORDED_AT_REVIEW_START",
+  "assetRawBase": "https://raw.githubusercontent.com/knhbae/flowme2605/398b3de86f6cccfbe22810f8818ad33bc2bb640b",
+  "candidateProvenanceUrl": "https://raw.githubusercontent.com/knhbae/flowme2605/398b3de86f6cccfbe22810f8818ad33bc2bb640b/evidence/candidate/candidate-provenance.json",
+  "candidateManifestUrl": "https://raw.githubusercontent.com/knhbae/flowme2605/398b3de86f6cccfbe22810f8818ad33bc2bb640b/evidence/candidate/candidate-manifest.json",
+  "evidenceRowCount": 283,
+  "claudeEvidenceRowCount": 268,
+  "globalEvidenceRowCount": 11,
+  "observedUsers": 0,
+  "performance": "NOT_ASSESSED",
+  "actualBrowserZoom200": "NOT_ASSESSED",
+  "launchGate": {
+    "indexCommit": "Create index commit B, then record its full SHA in the external launch envelope.",
+    "sessions": "Session IDs are freeze-time values created and recorded when each fresh review session starts; they are not pre-start evidence inputs.",
+    "interpretation": "These are explicit lifecycle states, not missing evidence placeholders."
+  }
+}
