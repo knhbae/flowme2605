@@ -143,8 +143,14 @@ test('personal draft structure mode separates execution from add, reorder, remov
   await moveUp.focus();
   await page.keyboard.press('Enter');
   rows = outline.getByTestId('my-flow-batch-selectable-row');
+  await expect.poll(async () => rows.evaluateAll(
+    (nodes) => nodes.map((node) => node.getAttribute('data-item-id')),
+  )).toEqual([
+    ...orderBefore.slice(0, -2),
+    addedStableId,
+    orderBefore.at(-2),
+  ]);
   const orderAfter = await rows.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-item-id')));
-  expect(orderAfter.indexOf(addedStableId)).toBe(orderBefore.indexOf(addedStableId) - 1);
   await expect(rows.first().getByTestId('personal-draft-move-up')).toBeDisabled();
   await expect(rows.last().getByTestId('personal-draft-move-down')).toBeDisabled();
 

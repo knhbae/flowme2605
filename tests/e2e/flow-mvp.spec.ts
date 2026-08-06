@@ -2843,7 +2843,9 @@ test('source-backed flow map public page saves into the real My Flow path', asyn
   await expect(detailSection).not.toContainText('Mathbang');
   const itemChecklist = detailSection.getByTestId('my-flow-item-checklist');
   await expect(itemChecklist).toContainText('거듭제곱');
-  await itemChecklist.getByLabel('거듭제곱').check();
+  const powerChecklistItem = itemChecklist.getByLabel('거듭제곱');
+  await powerChecklistItem.click();
+  await expect(powerChecklistItem).toBeChecked();
   await expect(detailSection.getByTestId('my-flow-detail-checklist-progress')).toContainText('개념 항목 1/8');
 
   await enterMyFlowDetailEditMode(detailSection.getByTestId('my-flow-item-detail'));

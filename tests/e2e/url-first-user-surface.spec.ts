@@ -638,6 +638,10 @@ test('URL-first miss draft lands in My Flow with editable anchor and item overla
     .getByTestId('my-flow-personal-copy-settings')
     .getByRole('button', { name: '저장' })
     .click();
+  await expect.poll(() => page.evaluate(() => Object.entries(window.localStorage)
+    .filter(([key]) => key.startsWith('flow:saved:url-draft-'))
+    .map(([, value]) => JSON.parse(String(value)))[0]?.anchor))
+    .toBe('2026-07-30');
   const storedAfterAnchorEdit = await page.evaluate(() => ({
     savedRecord: Object.entries(window.localStorage)
       .filter(([key]) => key.startsWith('flow:saved:url-draft-'))
