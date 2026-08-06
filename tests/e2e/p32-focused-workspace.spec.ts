@@ -166,6 +166,14 @@ test.describe('P32 focused My Flow workspace', () => {
     await expect(settings.getByTestId('my-flow-direct-anchor-input')).toHaveValue('2026-08-20');
     await settings.getByTestId('my-flow-direct-anchor-input').fill('2026-09-10');
     await settings.getByRole('button', { name: '일정 다시 맞추기' }).click();
+    await expect.poll(() => page.evaluate(() => ({
+      savedAnchor: JSON.parse(
+        window.localStorage.getItem('flow:saved:moving-d30-basic') || 'null',
+      )?.anchor,
+      activeAnchor: JSON.parse(
+        window.localStorage.getItem('flow:moving-d30-basic:anchorDate') || 'null',
+      )?.anchor,
+    }))).toEqual({ savedAnchor: '2026-09-10', activeAnchor: '2026-09-10' });
 
     const stored = await page.evaluate(() => ({
       saved: JSON.parse(window.localStorage.getItem('flow:saved:moving-d30-basic') || 'null'),

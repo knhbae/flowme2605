@@ -109,6 +109,10 @@ test.describe('P27 reversible lifecycle foundation', () => {
     await expect(flowCard).toBeVisible();
     await flowCard.getByTestId('my-flow-management-menu-trigger').click();
     await flowCard.getByTestId('my-flow-archive-toggle').click();
+    await expect(page.getByTestId('my-flow-lifecycle-snackbar')).toContainText('보관했습니다');
+    await expect.poll(() => page.evaluate((flowSlug) => JSON.parse(
+      window.localStorage.getItem('flow:my-flow:lifecycle:v1') || '{"archivedFlowSlugs":[]}',
+    ).archivedFlowSlugs.includes(flowSlug), personalCopyKey)).toBe(true);
 
     await page.reload();
     await expect.poll(() => new URL(page.url()).searchParams.get('status')).toBe('archived');

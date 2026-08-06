@@ -312,6 +312,7 @@ test.describe('P31 mobile journey reconstruction', () => {
       .getByTestId('my-flow-workspace-management-menu')
       .getByTestId('my-flow-archive-toggle')
       .click();
+    await expect(page.getByTestId('my-flow-lifecycle-snackbar')).toContainText('보관했습니다');
 
     await page.reload();
     await openArchivedInventory(page);
@@ -332,6 +333,7 @@ test.describe('P31 mobile journey reconstruction', () => {
       .getByTestId('my-flow-workspace-management-menu')
       .getByTestId('my-flow-archive-toggle')
       .click();
+    await expect(page.getByTestId('my-flow-lifecycle-snackbar')).toContainText('보관했습니다');
     await openArchivedInventory(page);
     archivedRow = page.locator(
       `[data-testid="my-flow-mobile-archived-row"][data-flow-slug="${personalCopyKey}"]`,
@@ -359,6 +361,10 @@ test.describe('P31 mobile journey reconstruction', () => {
     await archivedMenu.locator('summary').click();
     await deleteTrigger.click();
     await page.getByTestId('my-flow-permanent-delete-confirm').click();
+    await expect.poll(() => page.evaluate(
+      (copyKey) => window.localStorage.getItem(`flow:saved:${copyKey}`),
+      personalCopyKey,
+    )).toBeNull();
     await page.reload();
     await expect(
       page.locator(`[data-flow-slug="${personalCopyKey}"]`),

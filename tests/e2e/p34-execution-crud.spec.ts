@@ -161,6 +161,7 @@ test.describe('P34 execution CRUD', () => {
       .getByTestId('my-flow-workspace-management-menu')
       .getByTestId('my-flow-archive-toggle')
       .click();
+    await expect(page.getByTestId('my-flow-lifecycle-snackbar')).toContainText('보관했습니다');
     await page.reload();
     await openArchivedInventory(page);
 
@@ -177,6 +178,7 @@ test.describe('P34 execution CRUD', () => {
       .getByTestId('my-flow-workspace-management-menu')
       .getByTestId('my-flow-archive-toggle')
       .click();
+    await expect(page.getByTestId('my-flow-lifecycle-snackbar')).toContainText('보관했습니다');
     await openArchivedInventory(page);
     archivedRow = page.locator(
       `[data-testid="my-flow-mobile-archived-row"][data-flow-slug="${personalCopyKey}"]`,

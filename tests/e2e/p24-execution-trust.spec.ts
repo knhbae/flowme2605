@@ -1383,6 +1383,10 @@ test.describe('P24 execution trust regressions', () => {
     await detail.getByTestId('personal-draft-date-mode-fixed').click();
     await detail.getByTestId('my-flow-detail-date-input').fill('2026-07-21');
     await detail.getByTestId('my-flow-detail-save-changes').click();
+    await expect.poll(() => page.evaluate(() => Object.keys(window.localStorage)
+      .filter((key) => key.startsWith('flow:my-flow:structural-overlay:'))
+      .some((key) => window.localStorage.getItem(key)?.includes('"date":"2026-07-21"'))))
+      .toBe(true);
 
     if (evidenceDir) {
       fs.mkdirSync(`${evidenceDir}/screenshots`, { recursive: true });
