@@ -1,6 +1,6 @@
 # FLOW Service Structure
 
-Last updated: 2026-07-29
+Last updated: 2026-08-06
 Status: Living baseline. Keep this current with implementation PRs.
 
 This document is the canonical map of the current app surface, screen feature tree, and service architecture. It is not validation evidence by itself. Use it to keep product PoCs, research surfaces, creator tools, public routes, My Flow execution, and shared domain modules from drifting apart.
@@ -136,7 +136,10 @@ Prototype or restart routes must pass the same display gate before promotion: no
 | Layer | Location | Responsibility |
 | --- | --- | --- |
 | Route shell | `app/` | Keep Next.js route files thin. Decode params, load package data when needed, and hand off to product components. |
-| Product UI | `components/flow/AppClient.tsx` and focused `components/flow/*` files | Own visible interaction, screen state, user-facing copy, and handoff between public, creator, and My Flow surfaces. |
+| Product UI | `components/flow/AppClient.tsx` and focused `components/flow/*` files | `AppClient.tsx` remains the compatibility facade and shared My Flow runtime owner. `calendar/MyFlowCalendarRouteSurface.tsx` owns Calendar route rendering, `calendar/useMyFlowCalendarController.ts` owns only Calendar React state, refs, selected-Flow preference bridging, and route/focus/scroll orchestration, and `my-flow/MyFlowRouteSurface.tsx` owns My Flow route rendering through typed model/action contracts. None owns saved-plan persistence, completion records, source mutation, or result transfer. |
+| My Flow Calendar view-model | `lib/flow/my-flow-calendar-view-model.ts` | Purely derives date/month ranges, scope and month filters, partitions, ordering, date groups, Flow markers/counts, compact-grid state, and default focus from narrow readonly data. It imports no React, route, DOM, browser storage, or `AppClient` owner. |
+| My Flow Calendar controller | `lib/flow/my-flow-calendar-controller.ts`, `components/flow/calendar/useMyFlowCalendarController.ts` | The pure module characterizes action-specific state transitions, shared-reset profiles, focus reconciliation, scope persistence decisions, and Calendar-to-My-Flow hrefs without React or browser APIs. The hook applies those plans to Calendar-only React state and narrow browser ports while exposing typed date-sync commands to the shared My Flow runtime. |
+| My Flow saved-library controller | `lib/flow/my-flow-library-controller.ts`, `components/flow/AppClient.tsx` | The pure planner owns saved-library query/filter and list/Plan/Item route-history state and effect decisions, including dirty-discard policy, direct entry, Back, focus, and scroll requests. `AppClient` remains the narrow React/browser adapter that applies history and UI effects; it still owns no new persistence, completion, export, or receipt semantics through this boundary. |
 | Source-backed map UI | `SourceBackedFlowMapPage.tsx`, `SourceBackedFlowMapCreatorEditor.tsx`, `SourceBackedFlowMapSaveButton.tsx` | Keep source-backed public inspection, creator publish editing, and save-to-My-Flow actions separate. |
 | Artifact UI | `FlowSaveBeforeFrame.tsx`, `FlowArtifactDataPreview.tsx`, `FlowTransferConfirmation.tsx`, `FlowExportPanel.tsx`, `FlowExportReceipt.tsx`, `RoutineScheduleEditor.tsx`, `ArtifactWorkbench.tsx`, `ArtifactPreview.tsx` | Render the compact whole-Flow outline, actual-data content-native result, contextual adjustment, shared routine definition, immutable transfer confirmation, and saved persistent receipt. Keep the legacy full workbench behind a secondary disclosure and keep source evidence separate from personal editing. |
 | Domain model | `lib/flow/types.ts`, `flow-experience-projection.ts`, `whole-flow-reading.ts`, `effective-routine-projection.ts`, `calendar-flow-scope.ts`, `seed-flows.ts`, `curated-source-app-seed.ts`, `execution-model.ts`, `source-backed-my-flow.ts` | Define Flow, Flow Map, stable item roles and projection eligibility, shared whole-Flow reading order, routine definition/occurrence projection, Calendar scope predicates, source-backed seed adapters, execution assumptions, URL lookup eligibility, and manual registration readiness checks. Resource, reference, and warning rows remain visible context but do not become executable completion rows. |
@@ -151,6 +154,9 @@ Prototype or restart routes must pass the same display gate before promotion: no
 
 ## Ownership Rules
 
+- Calendar is a separate route and presentation owner but remains a derived lens over My Flow data; it must not create a second saved-plan or completion store.
+- R1 moves Calendar state, selected-Flow preference bridging, Calendar focus/scroll, and Calendar-to-My-Flow navigation behind a typed controller. R2 additionally moves saved-library query/filter and list/Plan/Item transition decisions behind a pure controller. `AppClient` still applies browser/React effects and retains persistence, recovery, completion/edit mutation commands, and result-transfer ordering.
+- New pure `lib/flow` projections must not import `AppClient`, React, route components, or browser storage. UI adapters may retain the original runtime object but must not persist projection-only DTO fields.
 - Public routes should stay user-facing and should not expose internal review language unless the user needs it to act safely.
 - Creator routes may show publish readiness, source/risk, and Step contract controls, but they should not become the user's saved execution workspace.
 - My Flow owns saved user state, edited Step details, and regenerated exports.

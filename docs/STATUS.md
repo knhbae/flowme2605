@@ -20,7 +20,7 @@ Start from [PROJECT_CONTROL.md](./PROJECT_CONTROL.md). Dated HTML boards remain 
 | Paused Text Authoring | Preserved and pushed at `a5d5338`; separate from the release and not promoted. |
 | Paused content review | Preserved and pushed at `0d27143` on `archive/flow-content-user-review-wip-20260806`; not a publication candidate. |
 | Deferred candidates | P35 P2 mutation follow-ups, Text Authoring `TA-01`, collaborative authoring, content review, and research packages remain separate shelves. Select at most one by explicit decision. |
-| First bounded refactor | Only when the next approved slice touches Calendar or My Flow, extract the route-owned pure calendar presentation/filter block from `AppClient.tsx` into `lib/flow/my-flow-calendar-view-model.ts` with existing unit and P35 E2E behavior preserved. Do not start a whole `AppClient` rewrite. If another route is selected, extract that route's pure block instead. |
+| Local architecture candidate | R0, R1, and R2 are complete locally on `codex/r0-behavior-preserving-architecture-refactor-20260806`: Calendar view-model/controller and My Flow saved-library transition decisions are separated behind pure boundaries while `AppClient` remains the compatibility adapter. Final R2 evidence is unit/contract `615/615`, build PASS, and Playwright `542/542`. This candidate is not committed, pushed, merged, deployed, production-smoked, or observed-user validated. |
 | Blocked by evidence | Observed usability, real Calendar/VTODO round-trip, cross-device recovery, real review/social data, account persistence, creator/update pilot, real AI backend, and external integrations. |
 
 ## System Health
@@ -31,6 +31,7 @@ Start from [PROJECT_CONTROL.md](./PROJECT_CONTROL.md). Dated HTML boards remain 
 | Unit tests | `npm test` | Flow contracts and product tests pass. |
 | Production build | `npm run build` | Next.js production build succeeds. |
 | Browser regression | GitHub run `31074433364` | P35 integrated baseline passed Playwright `533/533`; this is automated browser QA, not observed-user evidence. |
+| Local R0-R2 candidate | Current isolated worktree | Docs PASS, controller `15/15`, lock `59/59`, unit/contract `615/615`, build PASS, Playwright `542/542`; publication and production smoke remain `NOT_RUN`. |
 | Worktree baseline | `git worktree list` | One active worktree remains after all other streams were merged or remotely preserved. |
 
 ## Active Product Constraints
