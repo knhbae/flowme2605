@@ -191,6 +191,38 @@ test('saved-plan library route preserves query/filter/target and keeps scroll in
   assert.doesNotMatch(href, /scroll/u);
 });
 
+test('My Flow URL transformations preserve an unrelated R3A experience selector', () => {
+  const itemHref = getMyFlowLibraryHref(
+    '/my?myFlowExperience=r3a-lab&demo=ux20#library',
+    {
+      query: 'moving',
+      filter: 'open',
+      target: {
+        flowSlug: 'moving-d30-basic',
+        itemKey: 'moving::pack',
+      },
+    },
+  );
+  assert.equal(
+    new URL(itemHref, 'https://flowme.local').searchParams.get('myFlowExperience'),
+    'r3a-lab',
+  );
+
+  const listHref = getMyFlowLibraryHref(itemHref, {
+    query: '',
+    filter: 'all',
+    target: null,
+  });
+  assert.equal(
+    new URL(listHref, 'https://flowme.local').searchParams.get('myFlowExperience'),
+    'r3a-lab',
+  );
+  assert.equal(
+    getMyFlowViewHref('/my?myFlowExperience=r3a-lab#workspace', 'flow'),
+    '/my?myFlowExperience=r3a-lab&view=flows#workspace',
+  );
+});
+
 test('saved-plan library route rejects unsupported filters and clears stale item identity', () => {
   assert.deepEqual(parseMyFlowLibraryRoute('?view=flows&status=recent&item=orphan'), {
     query: '',

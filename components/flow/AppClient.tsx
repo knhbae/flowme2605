@@ -16,12 +16,14 @@ import {
 } from './calendar/MyFlowCalendarRouteSurface';
 import { useMyFlowCalendarController } from './calendar/useMyFlowCalendarController';
 import {
-  MyFlowRouteSurface,
   type MyFlowRouteActions,
   type MyFlowRouteEntry,
   type MyFlowRouteModel,
   type MyFlowRouteRenderers,
 } from './my-flow/MyFlowRouteSurface';
+import { MyFlowClassicExperienceAdapter } from './my-flow/MyFlowClassicExperienceAdapter';
+import type { MyFlowExperienceNavigationPort } from './my-flow/MyFlowExperienceContract';
+import { MyFlowExperienceHost } from './my-flow/MyFlowExperienceHost';
 import { FlowDiscoveryCard, type FlowDiscoveryCardView } from './FlowDiscoveryCard';
 import {
   FlowArtifactDataPreview,
@@ -319,6 +321,13 @@ import {
   type MyFlowLibraryControllerState,
   type MyFlowLibraryHistoryWrite,
 } from '@/lib/flow/my-flow-library-controller';
+import {
+  MY_FLOW_CLASSIC_EXPERIENCE,
+  MY_FLOW_R3A_LAB_EXPERIENCE,
+  resolveMyFlowExperienceVariant,
+  type MyFlowExperienceVariant,
+} from '@/lib/flow/my-flow-experience-variant';
+import { buildMyFlowWorkspaceSnapshot } from '@/lib/flow/my-flow-workspace-snapshot';
 import {
   isP35CapabilityResultEnabled,
   isP35EditorTransactionEnabled,
@@ -5935,6 +5944,8 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
   const [myFlowSavedTransferEnabled, setMyFlowSavedTransferEnabled] = useState<boolean | null>(null);
   const [myFlowVisualSubtractionEnabled, setMyFlowVisualSubtractionEnabled] = useState(true);
   const [myFlowQ3CopyEnabled, setMyFlowQ3CopyEnabled] = useState(true);
+  const [myFlowExperienceVariant, setMyFlowExperienceVariant] =
+    useState<MyFlowExperienceVariant>(MY_FLOW_CLASSIC_EXPERIENCE);
   const { bundles, persist, replace: replaceBundles } = useBundles({ readOnly: true });
   const baseMyFlowBundles = useMemo(() => mergeSourceBackedMyFlowBundles(bundles), [bundles]);
   const currentUser = getCurrentUser();
@@ -6202,6 +6213,9 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
       );
       setMyFlowQ3CopyEnabled(
         isP35Q3CopyEnabled(window.location.search),
+      );
+      setMyFlowExperienceVariant(
+        resolveMyFlowExperienceVariant(window.location.search),
       );
     };
     syncEditorFlag();
@@ -9091,7 +9105,9 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     returnFlowSlug: string,
   ) => {
     const remountedReturnTarget = Array.from(document.querySelectorAll<HTMLElement>(
-      '[data-testid="my-flow-library-row"], [data-testid="my-flow-mobile-structure-row"]',
+      '[data-testid="my-flow-library-row"], '
+        + '[data-testid="my-flow-mobile-structure-row"], '
+        + '[data-testid="my-flow-r3a-lab-row"]',
     )).find((element) => element.dataset.flowSlug === returnFlowSlug);
     const focusTarget = remountedReturnTarget?.matches('button')
       ? remountedReturnTarget
@@ -20316,6 +20332,96 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     progressLabel: getMyFlowFlowProgressLabel(flow),
     value: flow,
   });
+  const myFlowExperienceCandidateEligible = (
+    !isCalendarSurface
+    && myFlowSavedPlanLibraryEnabled === true
+    && myFlowQ3CopyEnabled
+    && !showPostSavePanel
+    && canonicalSavedCopyChoiceGroups.length === 0
+    && !canonicalReconciliationNotice
+    && !myFlowSaveUndoStatus
+  );
+  const shouldBuildMyFlowWorkspaceSnapshot = (
+    myFlowExperienceVariant === MY_FLOW_R3A_LAB_EXPERIENCE
+    && myFlowExperienceCandidateEligible
+  );
+  const myFlowWorkspaceSnapshotFlows = shouldBuildMyFlowWorkspaceSnapshot
+    ? Array.from(
+        [
+          ...workspaceSavedFlows,
+          ...flowListVisibleFlows,
+          ...mobileInventoryVisibleFlows,
+          ...visibleSavedFlows,
+          ...(myFlowLibrarySelectedFlow ? [myFlowLibrarySelectedFlow] : []),
+        ].reduce<Map<string, MySavedFlow>>((flows, flow) => {
+          if (!flows.has(flow.progress.slug)) flows.set(flow.progress.slug, flow);
+          return flows;
+        }, new Map()).values(),
+      )
+    : [];
+  const myFlowWorkspaceSnapshot = shouldBuildMyFlowWorkspaceSnapshot
+    ? buildMyFlowWorkspaceSnapshot({
+        flows: myFlowWorkspaceSnapshotFlows.map((flow) => ({
+          savedFlowSlug: flow.progress.slug,
+          effectiveSnapshot: flow.effectiveSnapshot,
+          done: flow.done,
+          total: flow.total,
+          archived: archivedFlowSlugSet.has(flow.progress.slug),
+          ...(flow.progress.lastVisited
+            ? { lastVisited: flow.progress.lastVisited }
+            : {}),
+          itemTargets: [...flow.rows, ...flow.excludedRows].map((row) => {
+            const routeRow = getMyFlowRowForFlowTab(flow, row);
+            return {
+              itemId: getMyFlowStableItemId(row),
+              target: {
+                itemKey: getMyFlowRowInstanceKey(routeRow),
+                ...(routeRow.structuralOccurrenceId && routeRow.date
+                  ? { itemDate: routeRow.date }
+                  : {}),
+              },
+            };
+          }),
+        })),
+        library: {
+          query: flowListQuery,
+          filter: flowListFilter,
+          selectedFlowSlug: selectedSavedFlowSlug,
+          viewport: isMyFlowMobileViewport ? 'mobile' : 'wide',
+          controls: myFlowLibraryControls,
+          eligibleFlowSlugs: workspaceSavedFlows.map((flow) => flow.progress.slug),
+          filteredFlowSlugs: flowListVisibleFlows.map((flow) => flow.progress.slug),
+          mobileFlowSlugs: mobileInventoryVisibleFlows.map((flow) => flow.progress.slug),
+          hiddenMobileCount: hiddenMobileInventoryCount,
+          mobileInventoryExpanded: myFlowLargeInventoryOpen,
+        },
+      })
+    : null;
+  const myFlowExperienceIntents: MyFlowExperienceNavigationPort = {
+    openFlow: (savedFlowSlug) => {
+      openMyFlowLibraryPlanRoute(savedFlowSlug);
+    },
+    returnToLibrary: returnToMyFlowLibrary,
+    replaceLibraryControls: ({ query, filter }) => {
+      replaceMyFlowLibraryControlRoute(query, filter);
+    },
+    showArchived: () => {
+      if (!replaceMyFlowLibraryControlRoute(flowListQuery, 'archived')) return;
+      setSavedView('flow');
+    },
+    expandMobileInventory: () => setMyFlowLargeInventoryOpen(true),
+  };
+  const renderMyFlowExperienceSelectedFlow = (savedFlowSlug: string) => {
+    const flow = myFlowWorkspaceSnapshotFlows.find(
+      (candidate) => candidate.progress.slug === savedFlowSlug,
+    );
+    return flow
+      ? renderSavedFlowOverviewCard(flow, {
+          forceWholeFlowOutline: true,
+          workspace: true,
+        })
+      : null;
+  };
   const myFlowRouteDemoLabel = !showDemoData
     ? undefined
     : myFlowDemoMode === 'ux60'
@@ -20740,10 +20846,19 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
           </div>
         </div>
       ) : (
-        <MyFlowRouteSurface
-          model={myFlowRouteModel}
-          actions={myFlowRouteActions}
-          renderers={myFlowRouteRenderers}
+        <MyFlowExperienceHost
+          variant={myFlowExperienceVariant}
+          candidateEligible={myFlowExperienceCandidateEligible}
+          snapshot={myFlowWorkspaceSnapshot}
+          intents={myFlowExperienceIntents}
+          classic={(
+            <MyFlowClassicExperienceAdapter
+              model={myFlowRouteModel}
+              actions={myFlowRouteActions}
+              renderers={myFlowRouteRenderers}
+            />
+          )}
+          renderSelectedFlow={renderMyFlowExperienceSelectedFlow}
         />
       )}
 
