@@ -7,8 +7,21 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from 'react';
 import { ArtifactWorkbench } from './ArtifactWorkbench';
 import { ArtifactPreview } from './ArtifactPreview';
-import { CalendarFlowScopePicker } from './CalendarFlowScopePicker';
-import { MyFlowCalendarSurface } from './MyFlowCalendarSurface';
+import {
+  MyFlowCalendarRouteSurface,
+  type MyFlowCalendarRouteActions,
+  type MyFlowCalendarRouteGroup,
+  type MyFlowCalendarRouteModel,
+  type MyFlowCalendarRouteScopeModel,
+} from './calendar/MyFlowCalendarRouteSurface';
+import { useMyFlowCalendarController } from './calendar/useMyFlowCalendarController';
+import {
+  MyFlowRouteSurface,
+  type MyFlowRouteActions,
+  type MyFlowRouteEntry,
+  type MyFlowRouteModel,
+  type MyFlowRouteRenderers,
+} from './my-flow/MyFlowRouteSurface';
 import { FlowDiscoveryCard, type FlowDiscoveryCardView } from './FlowDiscoveryCard';
 import {
   FlowArtifactDataPreview,
@@ -78,24 +91,42 @@ import {
   getOccurrenceCommandLabels,
   getStructuralItemCommandLabels,
 } from '@/lib/flow/flow-command-grammar';
-import {
-  getCalendarGridNavigationDate,
-  type CalendarGridNavigationKey,
-} from '@/lib/flow/calendar-keyboard-navigation';
-import { downloadCurrentFlowMeLocalBackup, MyFlowDataManager } from './MyFlowDataManager';
+import type { CalendarGridNavigationKey } from '@/lib/flow/calendar-keyboard-navigation';
+import { downloadCurrentFlowMeLocalBackup } from './MyFlowDataManager';
 import { PlatformMobileTabs, PlatformNav } from './PlatformNav';
 import { addDays, formatDate, formatKoreanShortDate, formatLocalDate, getRangeEnd } from '@/lib/flow/date';
 import { planDateMovement, type DateMovementPlan } from '@/lib/flow/date-movement';
 import {
   getCalendarFlowScopePresentation,
-  getCalendarFlowScopeForFlow,
   getCalendarFlowSlugFromScope,
-  isCalendarFlowRowInSelection,
-  isCalendarFlowRowInScope,
-  normalizeCalendarFlowSelection,
-  normalizeCalendarFlowScope,
   type CalendarFlowScope,
 } from '@/lib/flow/calendar-flow-scope';
+import type { MyFlowCalendarSharedResetProfile } from '@/lib/flow/my-flow-calendar-controller';
+import {
+  MY_FLOW_CALENDAR_GRID_COMPACT_FLOW_THRESHOLD,
+  MY_FLOW_CALENDAR_GRID_VISIBLE_FLOW_LIMIT,
+  MY_FLOW_CALENDAR_SCHEDULE_EVENT_LIMIT,
+  addMyFlowCalendarMonths as addMyFlowMonths,
+  buildMyFlowCalendarDateSignature,
+  buildMyFlowCalendarFlowFilterOptions,
+  buildMyFlowCalendarFlowMarker,
+  buildMyFlowCalendarSelectedDateGroups,
+  filterMyFlowCalendarRows,
+  filterMyFlowCalendarRowsForMonth,
+  formatMyFlowCalendarLocalDate as formatMyFlowLocalDate,
+  formatMyFlowCalendarMonthHeading as formatMyFlowMonthHeading,
+  getMyFlowCalendarMonthCells as getMyFlowMonthCells,
+  getMyFlowCalendarMonthStart as getMyFlowMonthStart,
+  getMyFlowCalendarShortTitle,
+  getMyFlowCalendarExecutionRange,
+  getMyFlowCalendarVisibleRange,
+  groupMyFlowCalendarRowsByDate,
+  groupMyFlowCalendarScheduleRowsByFlowForDate,
+  partitionMyFlowCalendarRows,
+  sortMyFlowCalendarRows,
+  sortMyFlowCalendarUnscheduledRows,
+  type MyFlowCalendarViewRow,
+} from '@/lib/flow/my-flow-calendar-view-model';
 import { inferPrimaryDestination } from '@/lib/flow/destination';
 import {
   buildRoutineSchedulePresentation,
@@ -264,7 +295,6 @@ import { buildPostSaveDecisionSummary } from '@/lib/flow/post-save-decision-hub'
 import {
   buildMyFlowCompactTodayModel,
   consumeMyFlowFirstEntry,
-  getMyFlowLibraryHref,
   getMyFlowLibraryControlVisibility,
   getMyFlowWorkspaceHref,
   getMyFlowViewHref,
@@ -274,13 +304,21 @@ import {
   selectMyFlowSavedLibraryEntries,
   markMyFlowFirstEntry,
   summarizeMyFlowLocalIa,
-  withMyFlowLibraryScrollY,
-  MY_FLOW_LIBRARY_HISTORY_STATE_KEY,
   MY_FLOW_SAVED_LIBRARY_SEARCH_THRESHOLD,
   type MyFlowLibraryFilter,
   type MyFlowWorkspaceTarget,
   type MyFlowWorkspaceView,
 } from '@/lib/flow/my-flow-local-ia';
+import {
+  buildMyFlowLibraryHistoryState,
+  parseMyFlowLibraryHistoryLevel,
+  planMyFlowLibraryTransition,
+  type MyFlowLibraryControllerAction,
+  type MyFlowLibraryControllerContext,
+  type MyFlowLibraryControllerPlan,
+  type MyFlowLibraryControllerState,
+  type MyFlowLibraryHistoryWrite,
+} from '@/lib/flow/my-flow-library-controller';
 import {
   isP35CapabilityResultEnabled,
   isP35EditorTransactionEnabled,
@@ -669,17 +707,6 @@ const categoryColors: Record<string, string> = {
   '운동/러닝': '#B91C1C',
   '다이어트/습관': '#A16207',
 };
-
-const calendarFlowMarkerColors = [
-  '#1D4ED8',
-  '#0F766E',
-  '#A16207',
-  '#BE185D',
-  '#7C3AED',
-  '#C2410C',
-  '#0369A1',
-  '#4D7C0F',
-] as const;
 
 const reactionFields: { key: keyof ReactionLog; label: string }[] = [
   { key: 'amount', label: '먹은 양' },
@@ -4385,6 +4412,21 @@ type MyFlowPermanentDeleteRecoveryRequired = {
 const MY_FLOW_WEEKDAYS = ['월', '화', '수', '목', '금', '토', '일'];
 
 type FlowListFilter = MyFlowLibraryFilter;
+type MyFlowLibraryPendingTransition = {
+  action: MyFlowLibraryControllerAction;
+  focusTarget: HTMLElement | null;
+  afterApply?: () => void;
+  phase:
+    | 'awaiting-discard'
+    | 'awaiting-back-then-replace'
+    | 'restoring-dirty-popstate';
+  deferred?: {
+    plan: MyFlowLibraryControllerPlan;
+    context: MyFlowLibraryControllerContext;
+    replace: MyFlowLibraryHistoryWrite;
+    writesAfterReplace: MyFlowLibraryHistoryWrite[];
+  };
+};
 
 function getMyFlowItemIntentText(bundle: FlowBundle, row: MyFlowRow, item?: FlowItem): string {
   const detail = row.detail ?? getItemDetail(bundle, row.id);
@@ -4540,22 +4582,6 @@ function getFlowCountLabel(bundle: FlowBundle): string {
 
 function getMyFlowCheckIds(bundle: FlowBundle, rowId: string, anchor: string): string[] {
   return getToggleCheckIds(bundle, rowId, anchor);
-}
-
-function getMyFlowMonthCells(anchor: string): (Date | null)[] {
-  const base = anchor ? new Date(anchor) : new Date();
-  const monthStart = new Date(base.getFullYear(), base.getMonth(), 1);
-  const dayCount = new Date(base.getFullYear(), base.getMonth() + 1, 0).getDate();
-  const cells: (Date | null)[] = [];
-  for (let index = 0; index < monthStart.getDay(); index += 1) cells.push(null);
-  for (let day = 1; day <= dayCount; day += 1) cells.push(new Date(base.getFullYear(), base.getMonth(), day));
-  while (cells.length % 7 !== 0) cells.push(null);
-  return cells;
-}
-
-function getMyFlowMonthLabel(anchor: string): string {
-  const base = anchor ? new Date(anchor) : new Date();
-  return `${base.getFullYear()}-${String(base.getMonth() + 1).padStart(2, '0')}`;
 }
 
 function isMyFlowRowChecked(flow: MySavedFlow, row: MyFlowRow): boolean {
@@ -5314,24 +5340,6 @@ function seedMyFlowDemoState(bundles: FlowBundle[], fixtures: MyFlowDemoFixture[
   });
 }
 
-function getMyFlowMonthStart(date: string): string {
-  return `${date.slice(0, 7)}-01`;
-}
-
-function getMyFlowMonthEnd(date: string): string {
-  const [year, month] = date.slice(0, 7).split('-').map(Number);
-  return formatMyFlowLocalDate(new Date(year, month, 0));
-}
-
-function formatMyFlowLocalDate(date: Date): string {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-}
-
-function formatMyFlowMonthHeading(date: string): string {
-  const [year, month] = date.split('-');
-  return `${year}년 ${Number(month)}월`;
-}
-
 function formatMyFlowDisplayDate(date: string, options: { includeWeekday?: boolean } = {}): string {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date);
   if (!match) return date;
@@ -5514,12 +5522,6 @@ function formatPersonalDraftRecurrenceSummary(
   return `${base}${weekdays}${end}`;
 }
 
-function addMyFlowMonths(date: string, count: number): string {
-  const current = new Date(`${getMyFlowMonthStart(date)}T00:00:00`);
-  current.setMonth(current.getMonth() + count);
-  return `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, '0')}-01`;
-}
-
 function getMyFlowDetailChecklistItems(detail?: FlowItemDetail): string[] {
   return splitExecutionDetailContent(detail).checklistItems;
 }
@@ -5654,35 +5656,8 @@ type MyFlowRoutineCalendarIcon = {
   color: string;
   iconKind: MyFlowRoutineIconKind;
 };
-type MyFlowScheduleFlowGridGroup = {
-  key: string;
-  title: string;
-  shortTitle: string;
-  color: string;
-  rows: MyFlowCalendarRow[];
-};
-
-const MY_FLOW_ROUTINE_ICON_LIMIT = 2;
-const MY_FLOW_CALENDAR_SCHEDULE_EVENT_LIMIT = 2;
-const MY_FLOW_CALENDAR_GRID_VISIBLE_FLOW_LIMIT = 2;
-const MY_FLOW_CALENDAR_GRID_COMPACT_FLOW_THRESHOLD = 3;
-const MY_FLOW_CALENDAR_SELECTED_FLOWS_KEY = 'flow:calendar:selected-flows:v1';
 const MY_FLOW_MOBILE_STRUCTURE_STEP_PREVIEW_LIMIT = 5;
 type MyFlowRoutineIconKind = 'study' | 'running' | 'workout' | 'meal' | 'maintenance' | 'routine';
-
-function loadMyFlowCalendarSelectedFlowSlugs(): string[] {
-  if (typeof window === 'undefined') return [];
-  try {
-    const parsed: unknown = JSON.parse(
-      window.localStorage.getItem(MY_FLOW_CALENDAR_SELECTED_FLOWS_KEY) || '[]',
-    );
-    return Array.isArray(parsed)
-      ? parsed.filter((value): value is string => typeof value === 'string')
-      : [];
-  } catch {
-    return [];
-  }
-}
 
 function getMyFlowCalendarRowKey(flowSlug: string, rowId: string, originalDate: string): string {
   return getMyFlowDateOverrideKey(flowSlug, rowId, originalDate);
@@ -5790,41 +5765,48 @@ function getMyFlowPersonalCopyStepDraft(row: MyFlowCalendarRow): MyFlowItemDraft
   };
 }
 
-function isMyFlowCalendarRowInScope(row: MyFlowCalendarRow, scope: MyFlowCalendarScope): boolean {
-  return isCalendarFlowRowInScope({
-    flowSlug: row.flow.progress.slug,
-    isRoutine: row.flow.bundle.flow.structure_type === 'routine',
-  }, scope);
-}
-
-function getMyFlowCalendarShortTitle(title: string): string {
-  if (title.length <= 8) return title;
-  return `${title.slice(0, 7)}...`;
-}
-
-function getStableCalendarFlowMarkerIndex(key: string): number {
-  let hash = 0;
-  for (let index = 0; index < key.length; index += 1) {
-    hash = (hash * 31 + key.charCodeAt(index)) >>> 0;
-  }
-  return hash % calendarFlowMarkerColors.length;
-}
-
 function getMyFlowCalendarFlowTitle(flow: MySavedFlow): string {
   if (flow.savedMap?.title) return toUserFacingMapTitle(flow.savedMap.title);
   return getMyFlowDisplayFlowTitle(flow);
 }
 
 function getMyFlowCalendarFlowMarker(flow: MySavedFlow): MyFlowFlowMarker {
-  const key = flow.savedMap?.mapId || flow.progress.slug;
-  const title = getMyFlowCalendarFlowTitle(flow);
-  const titleCharacters = Array.from(title.trim());
+  return buildMyFlowCalendarFlowMarker({
+    flowSlug: flow.progress.slug,
+    title: getMyFlowCalendarFlowTitle(flow),
+    ...(flow.savedMap?.mapId ? { markerKey: flow.savedMap.mapId } : {}),
+  });
+}
+
+type MyFlowCalendarViewEntry = MyFlowCalendarViewRow & {
+  row: MyFlowCalendarRow;
+};
+
+function toMyFlowCalendarViewRow(
+  row: MyFlowCalendarRow,
+  sourceOrder?: number,
+): MyFlowCalendarViewEntry {
+  const schedule = row.structuralScheduleProjection;
   return {
-    key,
-    color: calendarFlowMarkerColors[getStableCalendarFlowMarkerIndex(key)],
-    title,
-    shortTitle: getMyFlowCalendarShortTitle(title),
-    initial: titleCharacters[0] ?? 'F',
+    id: row.id,
+    ...(row.date ? { date: row.date } : {}),
+    flowSlug: row.flow.progress.slug,
+    flowTitle: getMyFlowCalendarFlowTitle(row.flow),
+    ...(row.flow.savedMap?.mapId ? { flowMarkerKey: row.flow.savedMap.mapId } : {}),
+    isRoutine: row.flow.bundle.flow.structure_type === 'routine',
+    ...(row.structuralOccurrenceExecutionState
+      ? { occurrenceState: row.structuralOccurrenceExecutionState }
+      : {}),
+    ...(schedule?.scheduleState ? { scheduleState: schedule.scheduleState } : {}),
+    ...(schedule?.startTime ? { startTime: schedule.startTime } : {}),
+    ...(schedule?.durationMinutes !== undefined
+      ? { durationMinutes: schedule.durationMinutes }
+      : {}),
+    ...(row.structuralProjectionOrderRank !== undefined
+      ? { personalOrderRank: row.structuralProjectionOrderRank }
+      : {}),
+    ...(sourceOrder !== undefined ? { sourceOrder } : {}),
+    row,
   };
 }
 
@@ -5932,24 +5914,6 @@ function renderMyFlowRoutineIcon(kind: MyFlowRoutineIconKind) {
   );
 }
 
-function findFirstMyFlowDateInMonth(rows: MyFlowCalendarRow[], monthDate: string): string {
-  const month = monthDate.slice(0, 7);
-  return rows.find((row) => row.date?.startsWith(month))?.date ?? getMyFlowMonthStart(monthDate);
-}
-
-function findMyFlowDefaultFocusDate(rows: MyFlowCalendarRow[], todayDate: string, fallbackDate: string): string {
-  const datedRows = Array.from(
-    new Set(rows
-      .map((row) => row.date)
-      .filter((date): date is string => Boolean(date))),
-  ).sort();
-  if (datedRows.length === 0) return getMyFlowMonthStart(fallbackDate);
-  if (datedRows.includes(todayDate)) return todayDate;
-  const nextDate = datedRows.find((date) => date >= todayDate);
-  if (nextDate) return nextDate;
-  return datedRows[datedRows.length - 1] ?? getMyFlowMonthStart(fallbackDate);
-}
-
 type MyFlowView = 'calendar' | 'flow';
 type MyFlowRuntimeProps = {
   surface: 'my' | 'calendar';
@@ -5979,11 +5943,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
   const [savedFlowSlugParam, setSavedFlowSlugParam] = useState('');
   const [activeProgress, setActiveProgress] = useState<ReturnType<typeof getActiveFlowProgress>>([]);
   const [savedView, setSavedView] = useState<MyFlowView>(initialView);
-  const [myFlowVisibleMonth, setMyFlowVisibleMonth] = useState(getMyFlowMonthStart(formatLocalDate(new Date())));
-  const [myFlowSelectedDate, setMyFlowSelectedDate] = useState(formatLocalDate(new Date()));
   const [selectedSavedFlowSlug, setSelectedSavedFlowSlug] = useState('all');
-  const [myFlowCalendarScope, setMyFlowCalendarScope] = useState<MyFlowCalendarScope>('all');
-  const [myFlowCalendarSelectedFlowSlugs, setMyFlowCalendarSelectedFlowSlugs] = useState<string[]>([]);
   const [flowListFilter, setFlowListFilter] = useState<FlowListFilter>('all');
   const [flowListQuery, setFlowListQuery] = useState('');
   const [checksBySlug, setChecksBySlug] = useState<Record<string, Record<string, boolean>>>({});
@@ -6031,8 +5991,6 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
   const [myFlowPermanentDeleteRecoveryRequired, setMyFlowPermanentDeleteRecoveryRequired] = useState<MyFlowPermanentDeleteRecoveryRequired | null>(null);
   const [myFlowReceiptCleanupFailure, setMyFlowReceiptCleanupFailure] = useState<MyFlowReceiptCleanupFailure | null>(null);
   const [myFlowCompletionNoticePaused, setMyFlowCompletionNoticePaused] = useState(false);
-  const [myFlowRoutineOverflowDate, setMyFlowRoutineOverflowDate] = useState('');
-  const [myFlowScheduleOverflowDate, setMyFlowScheduleOverflowDate] = useState('');
   const [myFlowLargeInventoryOpen, setMyFlowLargeInventoryOpen] = useState(false);
   const [myFlowDismissedMapUpdates, setMyFlowDismissedMapUpdates] = useState<MyFlowDismissedMapUpdates>({});
   const [myFlowExpandedMapUpdateId, setMyFlowExpandedMapUpdateId] = useState('');
@@ -6136,7 +6094,6 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
   const [myFlowBatchAdjustment, setMyFlowBatchAdjustment] = useState<MyFlowBatchAdjustmentState | null>(null);
   const [myFlowBatchAdjustmentUndo, setMyFlowBatchAdjustmentUndo] = useState<MyFlowBatchAdjustmentUndo | null>(null);
   const [isMyFlowMobileViewport, setIsMyFlowMobileViewport] = useState(false);
-  const [myFlowCalendarDaySheetOpen, setMyFlowCalendarDaySheetOpen] = useState(false);
   const [myFlowDemoMode, setMyFlowDemoMode] = useState<MyFlowDemoMode | null>(null);
   const [myFlowTodoExperimentEnabled, setMyFlowTodoExperimentEnabled] = useState(false);
   const [myFlowTodoExperimentView, setMyFlowTodoExperimentView] = useState<'todo' | 'flows'>('todo');
@@ -6148,7 +6105,6 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
         : baseMyFlowBundles,
     [baseMyFlowBundles, myFlowDemoMode],
   );
-  const [myFlowRoutineIconLimit, setMyFlowRoutineIconLimit] = useState(MY_FLOW_ROUTINE_ICON_LIMIT);
   const isMyFlowScenarioDemo =
     myFlowDemoMode === 'ux1' ||
     myFlowDemoMode === 'ux5' ||
@@ -6157,15 +6113,30 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     myFlowDemoMode === 'ux50' ||
     myFlowDemoMode === 'ux60' ||
     myFlowDemoMode === 'source-backed';
-  const myFlowCalendarCardRef = useRef<HTMLElement | null>(null);
-  const myFlowCalendarInitialFocusAppliedRef = useRef(false);
-  const myFlowSelectedDayRef = useRef<HTMLElement | null>(null);
   const myFlowInlineDetailRef = useRef<HTMLDivElement | null>(null);
   const myFlowOverviewSummaryRef = useRef<HTMLElement | null>(null);
   const myFlowWorkspaceRef = useRef<HTMLDivElement | null>(null);
   const myFlowDetailReturnFocusRef = useRef<HTMLElement | null>(null);
   const myFlowLibraryPlanReturnFocusRef = useRef<HTMLElement | null>(null);
   const myFlowLibraryPlanReturnFlowSlugRef = useRef('');
+  const myFlowLibraryPendingTransitionRef = useRef<MyFlowLibraryPendingTransition | null>(null);
+  const myFlowLibraryActiveItemTargetRef = useRef<MyFlowWorkspaceTarget | null>(null);
+  const myFlowLibraryControllerStateRef = useRef<MyFlowLibraryControllerState>({
+    query: flowListQuery,
+    filter: flowListFilter,
+    selectedFlowSlug: selectedSavedFlowSlug,
+    itemTarget: myFlowLibraryActiveItemTargetRef.current ?? myFlowWorkspaceTarget,
+  });
+  myFlowLibraryControllerStateRef.current = {
+    query: flowListQuery,
+    filter: flowListFilter,
+    selectedFlowSlug: selectedSavedFlowSlug,
+    itemTarget: myFlowLibraryActiveItemTargetRef.current ?? myFlowWorkspaceTarget,
+  };
+  const myFlowDirtyItemEditorRef = useRef(false);
+  myFlowDirtyItemEditorRef.current = Boolean(
+    myFlowEditingDetailKey && Object.keys(myFlowEditingDrafts).length > 0,
+  );
   const myFlowLibraryScrollYRef = useRef(0);
   const myFlowLibraryRailScrollTopRef = useRef(0);
   const myFlowLibraryRailRef = useRef<HTMLDivElement | null>(null);
@@ -6177,6 +6148,40 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
   const myFlowInitializedDemoModeRef = useRef<MyFlowDemoMode | null>(null);
   const showDemoData = Boolean(myFlowDemoMode);
   const myFlowCommittedItemDrafts = myFlowItemDrafts;
+  const resetMyFlowSharedStateForCalendar = (
+    profile: MyFlowCalendarSharedResetProfile,
+  ) => {
+    if (profile.activeRow === 'clear') setMyFlowActiveRowKey('');
+    if (profile.editingDrafts === 'clear') setMyFlowEditingDrafts({});
+    if (profile.expandedRoutine === 'clear') setMyFlowExpandedRoutineKey('');
+    if (profile.expandedAdvanced === 'clear') setMyFlowExpandedAdvancedKey('');
+    if (profile.expandedMemo === 'clear') setMyFlowExpandedMemoKey('');
+    if (profile.editingDetail === 'clear') setMyFlowEditingDetailKey('');
+    if (profile.detailSurface === 'clear') setMyFlowDetailSurface('');
+    if (profile.detailOpen === 'clear') setMyFlowDetailOpen(false);
+  };
+  const myFlowCalendarController = useMyFlowCalendarController({
+    initialDate: formatLocalDate(new Date()),
+    ports: {
+      hasUnsavedItemEdits: () => Boolean(
+        myFlowEditingDetailKey && Object.keys(myFlowEditingDrafts).length > 0
+      ),
+      requestDiscardConfirmation: () => setMyFlowEditorDiscardPromptOpen(true),
+      resetSharedState: resetMyFlowSharedStateForCalendar,
+    },
+  });
+  const {
+    visibleMonth: myFlowVisibleMonth,
+    selectedDate: myFlowSelectedDate,
+    scope: myFlowCalendarScope,
+    selectedFlowSlugs: myFlowCalendarSelectedFlowSlugs,
+    daySheetOpen: myFlowCalendarDaySheetOpen,
+    routineOverflowDate: myFlowRoutineOverflowDate,
+    scheduleOverflowDate: myFlowScheduleOverflowDate,
+  } = myFlowCalendarController.state;
+  const myFlowRoutineIconLimit = myFlowCalendarController.routineIconLimit;
+  const myFlowCalendarCardRef = myFlowCalendarController.calendarCardRef;
+  const myFlowSelectedDayRef = myFlowCalendarController.selectedDayRef;
 
   useEffect(() => {
     const syncEditorFlag = () => {
@@ -6495,10 +6500,17 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     setMyFlowExpandedMemoKey('');
     setMyFlowExpandedRoutineKey('');
     setMyFlowBatchAdjustment(null);
-    setMyFlowRoutineOverflowDate('');
-    setMyFlowScheduleOverflowDate('');
+    myFlowCalendarController.clearOverflow();
     setMyFlowEditorDiscardPromptOpen(false);
     setMyFlowEditorAdvancedDisclosure(null);
+  };
+  const closeMyFlowLibraryTransientDetail = () => {
+    myFlowDetailReturnFocusRef.current = null;
+    myFlowLibraryActiveItemTargetRef.current = null;
+    setMyFlowWorkspaceTarget(null);
+    setMyFlowEditingDrafts({});
+    setMyFlowExecutionNoteDraft(null);
+    closeMyFlowTransientDetail();
   };
   const selectMyFlowView = (
     id: typeof savedViewTabs[number][0],
@@ -6520,18 +6532,6 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
       const nextHref = getMyFlowViewHref(window.location.href, id as MyFlowWorkspaceView);
       window.history[historyMode === 'replace' ? 'replaceState' : 'pushState']({}, '', nextHref);
     }
-  };
-  const scrollMyFlowSelectedDayOnMobile = () => {
-    if (typeof window === 'undefined' || !window.matchMedia('(max-width: 767px)').matches) return;
-    window.setTimeout(() => {
-      const selectedDay = myFlowSelectedDayRef.current;
-      if (!selectedDay) return;
-      selectedDay.scrollIntoView({ block: 'start', behavior: 'auto' });
-      window.setTimeout(() => {
-        const top = selectedDay.getBoundingClientRect().top;
-        if (top > 120) window.scrollBy({ top: top - 104, behavior: 'auto' });
-      }, 0);
-    }, 0);
   };
   const scrollMyFlowInlineDetailIntoView = (detail = myFlowInlineDetailRef.current) => {
     if (typeof window === 'undefined' || !window.matchMedia('(max-width: 767px)').matches || !detail) return;
@@ -6608,20 +6608,13 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     if (!isCalendarSurface) {
       setMyFlowWorkspaceTarget(requestedWorkspaceTarget);
     }
-    const mediaQuery = window.matchMedia('(max-width: 640px)');
     const mobileFlowQuery = window.matchMedia('(max-width: 767px)');
-    const syncRoutineIconLimit = () => {
-      setMyFlowRoutineIconLimit(mediaQuery.matches ? 1 : MY_FLOW_ROUTINE_ICON_LIMIT);
-    };
     const syncMobileFlowViewport = () => {
       setIsMyFlowMobileViewport(mobileFlowQuery.matches);
     };
-    syncRoutineIconLimit();
     syncMobileFlowViewport();
-    mediaQuery.addEventListener('change', syncRoutineIconLimit);
     mobileFlowQuery.addEventListener('change', syncMobileFlowViewport);
     return () => {
-      mediaQuery.removeEventListener('change', syncRoutineIconLimit);
       mobileFlowQuery.removeEventListener('change', syncMobileFlowViewport);
     };
   }, []);
@@ -6797,11 +6790,8 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
       setSavedFlowMapBySlug(demoState.savedFlowMapBySlug);
       setSavedFlowMapPersistenceById({});
       setSelectedSavedFlowSlug('all');
-      setMyFlowCalendarScope('all');
-      setMyFlowCalendarSelectedFlowSlugs(loadMyFlowCalendarSelectedFlowSlugs());
+      myFlowCalendarController.initializeDemo('2026-05-28');
       setSavedView(requestedMyFlowView ?? initialView);
-      setMyFlowVisibleMonth(getMyFlowMonthStart('2026-05-28'));
-      setMyFlowSelectedDate('2026-05-28');
       setFlowListFilter('all');
       setFlowListQuery('');
       setMyFlowDateOverrides({});
@@ -6825,8 +6815,6 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
       setMyFlowDetailOpen(false);
       setMyFlowExpandedStructureSlug('');
       setMyFlowExpandedStructureStepSlug('');
-      setMyFlowRoutineOverflowDate('');
-      setMyFlowScheduleOverflowDate('');
       setMyFlowPostSaveWorkspaceOpen(Boolean(requestedMyFlowView));
       setMyFlowDismissedMapUpdates({});
       setMyFlowExpandedMapUpdateId('');
@@ -6852,7 +6840,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
       setMyFlowExpandedMapUpdateId('');
       setMyFlowReuseDraft(null);
       setMyFlowReuseNotice(null);
-      setMyFlowCalendarSelectedFlowSlugs(loadMyFlowCalendarSelectedFlowSlugs());
+      myFlowCalendarController.loadSelectedFlowPreference();
       refreshSavedFlowState();
     };
     if (demoMode === 'legacy') {
@@ -7549,18 +7537,8 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     updateMyFlowRoutineRuleDraft(flow, nextDraft);
   };
   const occurrenceProjectionTodayDate = showDemoData ? '2026-05-28' : formatLocalDate(new Date());
-  const occurrenceVisibleRange = {
-    start: getMyFlowMonthStart(myFlowVisibleMonth),
-    end: getMyFlowMonthEnd(myFlowVisibleMonth),
-  };
-  const occurrenceExecutionRange = {
-    start: formatDate(
-      addDays(new Date(`${occurrenceProjectionTodayDate}T00:00:00`), -31),
-    ),
-    end: formatDate(
-      addDays(new Date(`${occurrenceProjectionTodayDate}T00:00:00`), 7),
-    ),
-  };
+  const occurrenceVisibleRange = getMyFlowCalendarVisibleRange(myFlowVisibleMonth);
+  const occurrenceExecutionRange = getMyFlowCalendarExecutionRange(occurrenceProjectionTodayDate);
   const getMyFlowCanonicalRoutineProjectionOptions = (
     flow: MySavedFlow,
   ): Omit<EffectiveRoutineProjectionOptions<MyFlowRow>, 'range'> | undefined => {
@@ -7786,52 +7764,30 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
         flow,
       }));
   });
-  const projectedCalendarRows = [...baseCalendarRows, ...manuallyScheduledRows, ...generatedRoutineRows].sort((a, b) => {
-    const dateOrder = (a.date ?? '').localeCompare(b.date ?? '');
-    if (dateOrder !== 0) return dateOrder;
-    const scheduleStateRank = (row: MyFlowCalendarRow) =>
-      row.structuralScheduleProjection?.scheduleState === 'all_day'
-        ? 0
-        : row.structuralScheduleProjection?.scheduleState === 'timed'
-          ? 1
-          : 2;
-    const stateOrder = scheduleStateRank(a) - scheduleStateRank(b);
-    if (stateOrder !== 0) return stateOrder;
-    const timeOrder = (
-      a.structuralScheduleProjection?.startTime ?? ''
-    ).localeCompare(b.structuralScheduleProjection?.startTime ?? '');
-    if (timeOrder !== 0) return timeOrder;
-    if (
-      a.structuralProjectionOrderRank !== undefined &&
-      b.structuralProjectionOrderRank !== undefined
-    ) {
-      return (
-        a.structuralProjectionOrderRank - b.structuralProjectionOrderRank ||
-        a.id.localeCompare(b.id)
-      );
-    }
-    return 0;
+  const projectedCalendarViewRows = sortMyFlowCalendarRows(
+    [...baseCalendarRows, ...manuallyScheduledRows, ...generatedRoutineRows]
+      .map((row) => toMyFlowCalendarViewRow(row)),
+  );
+  const projectedCalendarRows = projectedCalendarViewRows.map((entry) => entry.row);
+  const {
+    heldRows: heldOccurrenceViewRows,
+    calendarRows: calendarViewRows,
+    scheduleRows: calendarScheduleViewRows,
+    routineRows: calendarRoutineViewRows,
+  } = partitionMyFlowCalendarRows(projectedCalendarViewRows);
+  const heldOccurrenceRows = heldOccurrenceViewRows.map((entry) => entry.row);
+  const calendarRows = calendarViewRows.map((entry) => entry.row);
+  const calendarScheduleRows = calendarScheduleViewRows.map((entry) => entry.row);
+  const calendarRoutineRows = calendarRoutineViewRows.map((entry) => entry.row);
+  const calendarScopedViewRows = filterMyFlowCalendarRows(calendarViewRows, {
+    scope: myFlowCalendarScope,
+    selectedFlowSlugs: myFlowCalendarSelectedFlowSlugs,
   });
-  const heldOccurrenceRows = projectedCalendarRows.filter(
-    (row) => row.structuralOccurrenceExecutionState === 'held',
-  );
-  const calendarRows = projectedCalendarRows.filter(
-    (row) => row.structuralOccurrenceExecutionState !== 'held',
-  );
-  const calendarScheduleRows = calendarRows.filter((row) => row.flow.bundle.flow.structure_type !== 'routine');
-  const calendarRoutineRows = calendarRows.filter((row) => row.flow.bundle.flow.structure_type === 'routine');
-  const isMyFlowCalendarRowVisible = (row: MyFlowCalendarRow) => (
-    myFlowCalendarSelectedFlowSlugs.length > 0
-      ? isCalendarFlowRowInSelection({
-        flowSlug: row.flow.progress.slug,
-        isRoutine: row.flow.bundle.flow.structure_type === 'routine',
-      }, myFlowCalendarSelectedFlowSlugs)
-      : isMyFlowCalendarRowInScope(row, myFlowCalendarScope)
-  );
-  const calendarScopedRows = calendarRows.filter(isMyFlowCalendarRowVisible);
-  const allCalendarUnscheduledRows: MyFlowCalendarRow[] = isMyFlowScenarioDemo ? [] : visibleExecutionFlows
-    .flatMap((flow) =>
-      flow.rows.flatMap((row) => {
+  const calendarScopedRows = calendarScopedViewRows.map((entry) => entry.row);
+  const allCalendarUnscheduledRows: MyFlowCalendarRow[] = isMyFlowScenarioDemo
+    ? []
+    : sortMyFlowCalendarUnscheduledRows(visibleExecutionFlows.flatMap((flow) =>
+      flow.rows.flatMap((row, sourceOrder) => {
         if (
           isMyFlowRecurringSeriesDefinitionRow(flow, row) ||
           isMyFlowRowChecked(flow, row)
@@ -7839,38 +7795,20 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
         const effectiveRow = getMyFlowRowForFlowTab(flow, row);
         const effectiveDate = row.structuralScheduleProjection?.calendarDate ?? effectiveRow.date;
         if (effectiveDate) return [];
-        return [{
+        return [toMyFlowCalendarViewRow({
           ...effectiveRow,
           originalDate: row.effectiveDateOriginalDate ?? 'none',
           calendarKey:
             row.effectiveDateOverrideKey ??
             getMyFlowDateOverrideKey(flow.progress.slug, row.id),
-        }];
+        }, sourceOrder)];
       }),
-    )
-    .sort((left, right) => {
-      const flowOrder = getMyFlowCalendarFlowTitle(left.flow).localeCompare(
-        getMyFlowCalendarFlowTitle(right.flow),
-        'ko',
-      );
-      if (flowOrder !== 0) return flowOrder;
-      const leftSourceOrder = left.flow.rows.findIndex((candidate) => candidate.id === left.id);
-      const rightSourceOrder = right.flow.rows.findIndex((candidate) => candidate.id === right.id);
-      const leftOrder = left.structuralProjectionOrderRank ?? (leftSourceOrder >= 0 ? leftSourceOrder : Number.MAX_SAFE_INTEGER);
-      const rightOrder = right.structuralProjectionOrderRank ?? (rightSourceOrder >= 0 ? rightSourceOrder : Number.MAX_SAFE_INTEGER);
-      return (
-        leftOrder - rightOrder ||
-        left.id.localeCompare(right.id)
-      );
-    });
-  const calendarScopedDateSignature = calendarScopedRows.map((row) => [
-    row.date ?? '',
-    row.structuralScheduleProjection?.scheduleState ?? '',
-    row.structuralScheduleProjection?.startTime ?? '',
-    row.structuralScheduleProjection?.durationMinutes ?? '',
-  ].join(':')).join('|');
-  const calendarScopedScheduleRows = calendarScopedRows.filter((row) => row.flow.bundle.flow.structure_type !== 'routine');
-  const calendarScopedRoutineRows = calendarScopedRows.filter((row) => row.flow.bundle.flow.structure_type === 'routine');
+    )).map((entry) => entry.row);
+  const calendarScopedDateSignature = buildMyFlowCalendarDateSignature(calendarScopedViewRows);
+  const calendarScopedScheduleViewRows = calendarScopedViewRows.filter((entry) => !entry.isRoutine);
+  const calendarScopedRoutineViewRows = calendarScopedViewRows.filter((entry) => entry.isRoutine);
+  const calendarScopedScheduleRows = calendarScopedScheduleViewRows.map((entry) => entry.row);
+  const calendarScopedRoutineRows = calendarScopedRoutineViewRows.map((entry) => entry.row);
   const myFlowTodayDate = occurrenceProjectionTodayDate;
   const myFlowAnytimeRows = allCalendarUnscheduledRows;
   const myFlowAnytimeVisibleLimit = isMyFlowMobileViewport ? 6 : 8;
@@ -7881,31 +7819,26 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
       ? myFlowTodayDate
       : calendarRows[0]?.date || visibleExecutionFlows[0]?.anchor || myFlowTodayDate;
   const calendarCells = getMyFlowMonthCells(myFlowVisibleMonth);
-  const monthAllCalendarRows = calendarRows.filter((row) => row.date?.startsWith(myFlowVisibleMonth.slice(0, 7)));
-  const monthCalendarRows = calendarScopedRows.filter((row) => row.date?.startsWith(myFlowVisibleMonth.slice(0, 7)));
+  const monthAllCalendarRows = filterMyFlowCalendarRowsForMonth(calendarViewRows, myFlowVisibleMonth);
+  const monthCalendarRows = filterMyFlowCalendarRowsForMonth(calendarScopedViewRows, myFlowVisibleMonth);
   const getMyFlowRowStatusLabel = (row?: { date?: string } | null) => {
     if (!row?.date) return '날짜 없음';
     if (row.date < myFlowTodayDate) return '지난 할 일';
     if (row.date === myFlowTodayDate) return '오늘 할 일';
     return '다음 할 일';
   };
-  const calendarFilterRows = calendarRows;
+  const calendarFilterRows = calendarViewRows;
   const myFlowCalendarAllScopeLabel = myFlowQ3CopyEnabled ? '모든 계획' : '모든 Flow';
-  const calendarFilterFlows = visibleExecutionFlows
-    .filter((flow) => calendarFilterRows.some((row) => row.flow.progress.slug === flow.progress.slug))
-    .map((flow) => {
-      const marker = getMyFlowCalendarFlowMarker(flow);
-      const id = getCalendarFlowScopeForFlow(flow.progress.slug);
-      return {
-        id,
-        label: marker.title,
-        count: monthAllCalendarRows.filter((row) => isMyFlowCalendarRowInScope(row, id)).length,
-        totalCount: calendarFilterRows.filter((row) => isMyFlowCalendarRowInScope(row, id)).length,
-        marker,
-      };
-    })
-    .sort((left, right) => right.count - left.count || left.label.localeCompare(right.label, 'ko'));
-  const routineTotalCount = calendarFilterRows.filter((row) => isMyFlowCalendarRowInScope(row, 'routine')).length;
+  const calendarFilterFlows = buildMyFlowCalendarFlowFilterOptions(
+    visibleExecutionFlows.map((flow) => ({
+      flowSlug: flow.progress.slug,
+      title: getMyFlowCalendarFlowTitle(flow),
+      ...(flow.savedMap?.mapId ? { markerKey: flow.savedMap.mapId } : {}),
+    })),
+    calendarFilterRows,
+    myFlowVisibleMonth,
+  );
+  const routineTotalCount = calendarFilterRows.filter((row) => row.isRoutine).length;
   const calendarFlowScopePresentation = getCalendarFlowScopePresentation(calendarFilterFlows.length);
   const myFlowCalendarScopeOptions: Array<{
     id: MyFlowCalendarScope;
@@ -7939,75 +7872,17 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
         : `${myFlowCalendarSelectedFlowSlugs.length}개 Flow`
     : myFlowCalendarScopeOptions.find((option) => option.id === myFlowCalendarScope)?.label ?? myFlowCalendarAllScopeLabel;
   const moveMyFlowCalendarMonth = (nextMonth: string) => {
-    if (myFlowEditingDetailKey && Object.keys(myFlowEditingDrafts).length > 0) {
-      setMyFlowEditorDiscardPromptOpen(true);
-      return;
-    }
-    setMyFlowVisibleMonth(nextMonth);
-    setMyFlowSelectedDate(findFirstMyFlowDateInMonth(calendarScopedRows, nextMonth));
-    setMyFlowActiveRowKey('');
-    setMyFlowRoutineOverflowDate('');
-    setMyFlowScheduleOverflowDate('');
-    setMyFlowExpandedMemoKey('');
-    setMyFlowEditingDetailKey('');
-    setMyFlowDetailSurface('');
-    setMyFlowDetailOpen(false);
-    setMyFlowCalendarDaySheetOpen(false);
+    myFlowCalendarController.moveMonth(nextMonth, calendarViewRows);
   };
   const selectMyFlowCalendarScope = (scope: MyFlowCalendarScope) => {
-    if (myFlowEditingDetailKey && Object.keys(myFlowEditingDrafts).length > 0) {
-      setMyFlowEditorDiscardPromptOpen(true);
-      return;
-    }
-    const scopedRows = calendarRows.filter((row) => isMyFlowCalendarRowInScope(row, scope));
-    setMyFlowCalendarSelectedFlowSlugs([]);
-    setMyFlowCalendarScope(scope);
-    setMyFlowSelectedDate((currentDate) => (
-      scopedRows.some((row) => row.date === currentDate)
-        ? currentDate
-        : findFirstMyFlowDateInMonth(scopedRows, myFlowVisibleMonth)
-    ));
-    setMyFlowActiveRowKey('');
-    setMyFlowRoutineOverflowDate('');
-    setMyFlowScheduleOverflowDate('');
-    setMyFlowExpandedRoutineKey('');
-    setMyFlowExpandedAdvancedKey('');
-    setMyFlowExpandedMemoKey('');
-    setMyFlowEditingDetailKey('');
-    setMyFlowDetailSurface('');
-    setMyFlowDetailOpen(false);
-    setMyFlowCalendarDaySheetOpen(false);
+    myFlowCalendarController.selectScope(scope, calendarViewRows);
   };
   const selectMyFlowCalendarFlows = (selectedFlowSlugs: string[]) => {
-    if (myFlowEditingDetailKey && Object.keys(myFlowEditingDrafts).length > 0) {
-      setMyFlowEditorDiscardPromptOpen(true);
-      return;
-    }
-    const normalizedSelection = normalizeCalendarFlowSelection(
+    myFlowCalendarController.applySelectedFlows(
       selectedFlowSlugs,
       calendarFilterFlowSlugSignature.split('|').filter(Boolean),
+      calendarViewRows,
     );
-    const scopedRows = calendarRows.filter((row) => isCalendarFlowRowInSelection({
-      flowSlug: row.flow.progress.slug,
-      isRoutine: row.flow.bundle.flow.structure_type === 'routine',
-    }, normalizedSelection));
-    setMyFlowCalendarScope('all');
-    setMyFlowCalendarSelectedFlowSlugs(normalizedSelection);
-    setMyFlowSelectedDate((currentDate) => (
-      scopedRows.some((row) => row.date === currentDate)
-        ? currentDate
-        : findFirstMyFlowDateInMonth(scopedRows, myFlowVisibleMonth)
-    ));
-    setMyFlowActiveRowKey('');
-    setMyFlowRoutineOverflowDate('');
-    setMyFlowScheduleOverflowDate('');
-    setMyFlowExpandedRoutineKey('');
-    setMyFlowExpandedAdvancedKey('');
-    setMyFlowExpandedMemoKey('');
-    setMyFlowEditingDetailKey('');
-    setMyFlowDetailSurface('');
-    setMyFlowDetailOpen(false);
-    setMyFlowCalendarDaySheetOpen(false);
   };
   const myFlowWeekEndDate = formatDate(addDays(new Date(`${myFlowTodayDate}T00:00:00`), 7));
   const todayScheduleRows = calendarScheduleRows.filter((row) => row.date === myFlowTodayDate);
@@ -8245,35 +8120,25 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
   const myFlowSelectedDateRoutineOverflowCount = Math.max(0, myFlowSelectedDateRoutineRows.length - myFlowRoutineIconLimit);
   const myFlowSelectedDateScheduleLimit = MY_FLOW_CALENDAR_SCHEDULE_EVENT_LIMIT;
   const myFlowSelectedDateScheduleOverflowCount = Math.max(0, myFlowSelectedDateRows.length - myFlowSelectedDateScheduleLimit);
-  const buildMyFlowSelectedDateGroups = (
-    rows: MyFlowCalendarRow[],
-    kind: 'routine' | 'schedule',
-  ): MyFlowSelectedDateGroup[] => {
-    const groups = new Map<string, MyFlowSelectedDateGroup>();
-    rows.forEach((row) => {
-      const savedMap = row.flow.savedMap;
-      const key = `${kind}-${savedMap?.mapId ?? row.flow.progress.slug}`;
-      const existing = groups.get(key);
-      if (existing) {
-        existing.rows.push(row);
-        return;
-      }
-      groups.set(key, {
-        key,
-        kind,
-        label: kind === 'routine' ? '반복 항목' : '날짜 항목',
-        title: savedMap ? toUserFacingMapTitle(savedMap.title) : getMyFlowDisplayFlowTitle(row.flow),
-        flowMarker: getMyFlowCalendarFlowMarker(row.flow),
-        rows: [row],
-        ...(savedMap ? { savedMap } : {}),
+  const myFlowSelectedDateGroups: MyFlowSelectedDateGroup[] =
+    buildMyFlowCalendarSelectedDateGroups(calendarScopedViewRows, myFlowSelectedDate)
+      .map((group) => {
+        const firstRow = group.rows[0]?.row;
+        const savedMap = firstRow?.flow.savedMap;
+        return {
+          key: group.key,
+          kind: group.kind,
+          label: group.kind === 'routine' ? '반복 항목' : '날짜 항목',
+          title: savedMap
+            ? toUserFacingMapTitle(savedMap.title)
+            : firstRow
+              ? getMyFlowDisplayFlowTitle(firstRow.flow)
+              : group.title,
+          flowMarker: group.marker,
+          rows: group.rows.map((entry) => entry.row),
+          ...(savedMap ? { savedMap } : {}),
+        };
       });
-    });
-    return Array.from(groups.values());
-  };
-  const myFlowSelectedDateGroups = [
-    ...buildMyFlowSelectedDateGroups(myFlowSelectedDateRows, 'schedule'),
-    ...buildMyFlowSelectedDateGroups(myFlowSelectedDateRoutineRows, 'routine'),
-  ];
   const myFlowAllRows: MyFlowCalendarRow[] = visibleExecutionFlows.flatMap((flow) =>
     flow.rows.map((row) => getMyFlowRowForFlowTab(flow, row)),
   );
@@ -8311,49 +8176,27 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     myFlowAllRows.find((row) => getMyFlowRowInstanceKey(row) === myFlowActiveRowKey) ??
     myFlowSelectedDateAllRows[0];
   const myFlowSelectedDateOpenCount = myFlowSelectedDateAllRows.filter((row) => !isMyFlowRowChecked(row.flow, row)).length;
-  const myFlowScheduleCountByDate = calendarScopedScheduleRows.reduce<Record<string, number>>((counts, row) => {
-    if (!row.date) return counts;
-    counts[row.date] = (counts[row.date] ?? 0) + 1;
-    return counts;
-  }, {});
-  const myFlowScheduleRowsByDate = calendarScopedScheduleRows.reduce<Map<string, MyFlowCalendarRow[]>>((groups, row) => {
-    if (!row.date) return groups;
-    const rows = groups.get(row.date) ?? [];
-    rows.push(row);
-    groups.set(row.date, rows);
-    return groups;
-  }, new Map<string, MyFlowCalendarRow[]>());
-  const myFlowScheduleFlowGroupIndexByDate = calendarScopedScheduleRows.reduce<Map<string, Map<string, MyFlowScheduleFlowGridGroup>>>((dateGroups, row) => {
-    if (!row.date) return dateGroups;
-    const flowMarker = getMyFlowCalendarFlowMarker(row.flow);
-    const flowGroups = dateGroups.get(row.date) ?? new Map<string, MyFlowScheduleFlowGridGroup>();
-    const existing = flowGroups.get(flowMarker.key);
-    if (existing) {
-      existing.rows.push(row);
-    } else {
-      flowGroups.set(flowMarker.key, {
-        key: flowMarker.key,
-        title: flowMarker.title,
-        shortTitle: flowMarker.shortTitle,
-        color: flowMarker.color,
-        rows: [row],
-      });
-    }
-    dateGroups.set(row.date, flowGroups);
-    return dateGroups;
-  }, new Map<string, Map<string, MyFlowScheduleFlowGridGroup>>());
+  const myFlowScheduleViewRowsByDate = groupMyFlowCalendarRowsByDate(calendarScopedScheduleViewRows);
+  const myFlowScheduleRowsByDate = new Map(
+    Array.from(myFlowScheduleViewRowsByDate.entries())
+      .map(([date, entries]) => [date, entries.map((entry) => entry.row)] as const),
+  );
+  const myFlowScheduleCountByDate = Object.fromEntries(
+    Array.from(myFlowScheduleViewRowsByDate.entries()).map(([date, rows]) => [date, rows.length]),
+  );
   const myFlowScheduleFlowGroupsByDate = new Map(
-    Array.from(myFlowScheduleFlowGroupIndexByDate.entries()).map(([date, flowGroups]) => [date, Array.from(flowGroups.values())]),
+    Array.from(groupMyFlowCalendarScheduleRowsByFlowForDate(calendarScopedScheduleViewRows).entries())
+      .map(([date, groups]) => [date, groups.map((group) => ({
+        ...group,
+        rows: group.rows.map((entry) => entry.row),
+      }))] as const),
   );
   const isMyFlowCalendarCompactGridDate = (date?: string): boolean =>
     Boolean(date && (myFlowScheduleFlowGroupsByDate.get(date)?.length ?? 0) >= MY_FLOW_CALENDAR_GRID_COMPACT_FLOW_THRESHOLD);
-  const myFlowRoutineRowsByDate = calendarScopedRoutineRows.reduce<Map<string, MyFlowCalendarRow[]>>((groups, row) => {
-    if (!row.date) return groups;
-    const rows = groups.get(row.date) ?? [];
-    rows.push(row);
-    groups.set(row.date, rows);
-    return groups;
-  }, new Map<string, MyFlowCalendarRow[]>());
+  const myFlowRoutineRowsByDate = new Map(
+    Array.from(groupMyFlowCalendarRowsByDate(calendarScopedRoutineViewRows).entries())
+      .map(([date, entries]) => [date, entries.map((entry) => entry.row)] as const),
+  );
   const getMyFlowRowDisplayDetail = (row: MyFlowCalendarRow): FlowItemDetail => {
     const draft = getMyFlowRowDraft(row);
     return {
@@ -8380,6 +8223,13 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     action: MyFlowLifecycleUndo['action'],
     recordUndo = true,
   ): Promise<boolean> => {
+    if (myFlowEditingDetailKey && Object.keys(myFlowEditingDrafts).length > 0) {
+      if (myFlowDetailSurface === 'flow' && myFlowSavedPlanLibraryEnabled === true) {
+        requestMyFlowLibraryItemHistoryBack();
+      }
+      setMyFlowEditorDiscardPromptOpen(true);
+      return false;
+    }
     const flowSlug = flow.progress.slug;
     const flowTitle = getMyFlowDisplayFlowTitle(flow);
     const shouldEnterArchivedFilter =
@@ -8416,17 +8266,19 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
       nextArchivedFlowSlugs = locked.value;
     }
     setMyFlowArchivedFlowSlugs(nextArchivedFlowSlugs);
-    if (shouldEnterArchivedFilter || shouldExitArchivedFilter) {
-      const nextFilter = shouldEnterArchivedFilter ? 'archived' : 'all';
-      setFlowListFilter(nextFilter);
-      replaceMyFlowLibraryControlRoute(flowListQuery, nextFilter);
-    }
-    if (selectedSavedFlowSlug === flowSlug && action === 'archive') {
-      setSelectedSavedFlowSlug('all');
-      replaceMyFlowLibraryControlRoute(
-        flowListQuery,
-        shouldEnterArchivedFilter ? 'archived' : flowListFilter,
-      );
+    const shouldReturnToLibrary = selectedSavedFlowSlug === flowSlug && action === 'archive';
+    if (shouldEnterArchivedFilter || shouldExitArchivedFilter || shouldReturnToLibrary) {
+      const nextFilter = shouldEnterArchivedFilter
+        ? 'archived'
+        : shouldExitArchivedFilter
+          ? 'all'
+          : flowListFilter;
+      if (myFlowSavedPlanLibraryEnabled === true) {
+        replaceMyFlowLibraryControlRoute(flowListQuery, nextFilter);
+      } else {
+        if (shouldEnterArchivedFilter || shouldExitArchivedFilter) setFlowListFilter(nextFilter);
+        if (shouldReturnToLibrary) setSelectedSavedFlowSlug('all');
+      }
     }
     if (recordUndo) setMyFlowLifecycleUndo({ flowSlug, flowTitle, action });
     return true;
@@ -8731,10 +8583,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
       });
       if (!locked.ok || !locked.value) return;
       refreshSavedFlowState();
-      if (date) {
-        setMyFlowSelectedDate(date);
-        setMyFlowVisibleMonth(getMyFlowMonthStart(date));
-      }
+      if (date) myFlowCalendarController.syncToDate(date);
       setMyFlowEditorDiscardPromptOpen(false);
       setMyFlowEditorAdvancedDisclosure(null);
       discardMyFlowEditingDraft(row);
@@ -8956,10 +8805,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
         [row.flow.progress.slug]: locked.value.nextStructuralOverlay as PersonalStructuralOverlay,
       }));
     }
-    if (date) {
-      setMyFlowSelectedDate(date);
-      setMyFlowVisibleMonth(getMyFlowMonthStart(date));
-    }
+    if (date) myFlowCalendarController.syncToDate(date);
     setMyFlowEditorDiscardPromptOpen(false);
     setMyFlowEditorAdvancedDisclosure(null);
     discardMyFlowEditingDraft(row);
@@ -9206,170 +9052,264 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     showPostSavePanel,
   });
   const showMyFlowLocalNavigation = showSavedViewTabs && !showPostSavePanel && !isFocusedMyFlowWorkspace;
-  const getMyFlowLibraryHistoryLevel = (): 'list' | 'plan' | 'item' | null => {
-    if (typeof window === 'undefined' || !window.history.state || typeof window.history.state !== 'object') {
-      return null;
-    }
-    const marker = (window.history.state as Record<string, unknown>)[MY_FLOW_LIBRARY_HISTORY_STATE_KEY];
-    if (!marker || typeof marker !== 'object') return null;
-    const level = (marker as Record<string, unknown>).level;
-    return level === 'list' || level === 'plan' || level === 'item' ? level : null;
-  };
-  const buildMyFlowLibraryHistoryState = (
-    level: 'list' | 'plan' | 'item',
-    scrollY = 0,
-    railScrollTop = 0,
-  ) => {
-    const stateWithScroll = withMyFlowLibraryScrollY(
+  const getMyFlowLibraryControllerContext = (): MyFlowLibraryControllerContext => {
+    const currentRoute = parseMyFlowLibraryRoute(
+      window.location.search,
       window.history.state,
-      scrollY,
-      railScrollTop,
     );
     return {
-      ...stateWithScroll,
-      [MY_FLOW_LIBRARY_HISTORY_STATE_KEY]: {
-        scrollY: Math.max(0, Math.floor(scrollY)),
-        railScrollTop: Math.max(0, Math.floor(railScrollTop)),
-        level,
-      },
+      currentHref: window.location.href,
+      currentRoute,
+      historyLevel: parseMyFlowLibraryHistoryLevel(window.history.state),
+      scrollY: window.scrollY,
+      railScrollTop:
+        myFlowLibraryRailRef.current?.scrollTop ?? myFlowLibraryRailScrollTopRef.current,
     };
+  };
+  const writeMyFlowLibraryHistory = (write: MyFlowLibraryHistoryWrite) => {
+    const state = write.level === null
+      ? window.history.state
+      : buildMyFlowLibraryHistoryState(
+          window.history.state,
+          write.level,
+          write.scrollY,
+          write.railScrollTop,
+        );
+    window.history[write.kind === 'push' ? 'pushState' : 'replaceState'](
+      state,
+      '',
+      write.href,
+    );
+  };
+  const getMyFlowLibraryActiveElement = (): HTMLElement | null => (
+    typeof document !== 'undefined' && document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null
+  );
+  const restoreMyFlowLibraryPlanFocus = (
+    returnTarget: HTMLElement | null,
+    returnFlowSlug: string,
+  ) => {
+    const remountedReturnTarget = Array.from(document.querySelectorAll<HTMLElement>(
+      '[data-testid="my-flow-library-row"], [data-testid="my-flow-mobile-structure-row"]',
+    )).find((element) => element.dataset.flowSlug === returnFlowSlug);
+    const focusTarget = remountedReturnTarget?.matches('button')
+      ? remountedReturnTarget
+      : remountedReturnTarget?.querySelector<HTMLElement>('button');
+    if (focusTarget) focusTarget.focus({ preventScroll: true });
+    else if (returnTarget?.isConnected) returnTarget.focus({ preventScroll: true });
+  };
+  const applyMyFlowLibraryControllerPlan = (
+    plan: MyFlowLibraryControllerPlan,
+    context: MyFlowLibraryControllerContext,
+    options: {
+      focusTarget?: HTMLElement | null;
+      itemReturnTarget?: HTMLElement | null;
+      planReturnTarget?: HTMLElement | null;
+      planReturnFlowSlug?: string;
+    } = {},
+  ) => {
+    if (plan.transient === 'close' || plan.itemClose === 'continue_local_close') {
+      closeMyFlowLibraryTransientDetail();
+    }
+    setFlowListQuery(plan.state.query);
+    setFlowListFilter(plan.state.filter);
+    setMyFlowTodoExperimentView('flows');
+    setSelectedSavedFlowSlug(plan.state.selectedFlowSlug);
+    setMyFlowWorkspaceTarget(plan.state.itemTarget);
+
+    if (plan.planReturn === 'capture') {
+      myFlowLibraryPlanReturnFocusRef.current = options.focusTarget ?? null;
+      myFlowLibraryPlanReturnFlowSlugRef.current = plan.state.selectedFlowSlug;
+    } else if (plan.planReturn === 'clear') {
+      myFlowLibraryPlanReturnFocusRef.current = null;
+      myFlowLibraryPlanReturnFlowSlugRef.current = '';
+    }
+    if (plan.workspaceSection === 'execute') {
+      setMyFlowWorkspaceSection('execute');
+      if (options.focusTarget?.closest('[data-testid="my-flow-mobile-structure-row"]')) {
+        window.requestAnimationFrame(() => {
+          window.scrollTo({ top: 0, behavior: 'auto' });
+        });
+      }
+    }
+    if (plan.scroll.kind === 'capture_library_position') {
+      myFlowLibraryScrollYRef.current = context.scrollY;
+      myFlowLibraryRailScrollTopRef.current = context.railScrollTop;
+    }
+
+    if (typeof window === 'undefined') return;
+    if (plan.focus.kind === 'preserve_control') {
+      const focusTarget = options.focusTarget;
+      window.requestAnimationFrame(() => {
+        if (focusTarget?.isConnected) focusTarget.focus({ preventScroll: true });
+      });
+    } else if (plan.focus.kind === 'restore_item_opener_after_frame') {
+      const returnTarget = options.itemReturnTarget;
+      window.requestAnimationFrame(() => {
+        if (returnTarget?.isConnected) returnTarget.focus({ preventScroll: true });
+      });
+    }
+
+    if (plan.scroll.kind === 'restore_library_position_after_frame') {
+      const { scrollY, railScrollTop } = plan.scroll;
+      window.requestAnimationFrame(() => {
+        window.scrollTo({ top: scrollY, behavior: 'auto' });
+        if (myFlowLibraryRailRef.current) {
+          myFlowLibraryRailRef.current.scrollTop = railScrollTop;
+        }
+        restoreMyFlowLibraryPlanFocus(
+          options.planReturnTarget ?? null,
+          options.planReturnFlowSlug ?? (
+            plan.focus.kind === 'restore_plan_opener_after_frame' ? plan.focus.flowSlug : ''
+          ),
+        );
+      });
+    }
+  };
+  const runMyFlowLibraryTransition = (
+    action: MyFlowLibraryControllerAction,
+    options: {
+      bypassDiscard?: boolean;
+      focusTarget?: HTMLElement | null;
+      afterApply?: () => void;
+    } = {},
+  ): boolean => {
+    if (typeof window === 'undefined' || myFlowSavedPlanLibraryEnabled !== true) return false;
+    const inFlight = myFlowLibraryPendingTransitionRef.current;
+    const focusTarget = options.focusTarget ?? getMyFlowLibraryActiveElement();
+    if (inFlight?.phase === 'awaiting-back-then-replace') {
+      if (action.kind === 'replace_controls' && inFlight.deferred) {
+        const nextPlan = planMyFlowLibraryTransition(
+          myFlowLibraryControllerStateRef.current,
+          action,
+          inFlight.deferred.context,
+        );
+        const nextDeferredIndex = nextPlan.history.findIndex(
+          (effect) => effect.kind === 'back_then_replace',
+        );
+        const nextDeferred = nextPlan.history[nextDeferredIndex];
+        if (nextDeferred?.kind !== 'back_then_replace') return false;
+        myFlowLibraryPendingTransitionRef.current = {
+          action,
+          focusTarget,
+          afterApply: inFlight.afterApply,
+          phase: 'awaiting-back-then-replace',
+          deferred: {
+            plan: nextPlan,
+            context: inFlight.deferred.context,
+            replace: nextDeferred.replace,
+            writesAfterReplace: nextPlan.history
+              .slice(nextDeferredIndex + 1)
+              .filter((effect): effect is MyFlowLibraryHistoryWrite => (
+                effect.kind === 'replace' || effect.kind === 'push'
+              )),
+          },
+        };
+        return true;
+      }
+      return false;
+    }
+    const liveContext = getMyFlowLibraryControllerContext();
+    const context = action.kind === 'return_to_list'
+      ? {
+          ...liveContext,
+          scrollY: myFlowLibraryScrollYRef.current,
+          railScrollTop: myFlowLibraryRailScrollTopRef.current,
+        }
+      : liveContext;
+    const plan = planMyFlowLibraryTransition(
+      myFlowLibraryControllerStateRef.current,
+      action,
+      context,
+    );
+    if (!plan.applied) return false;
+    const hasDirtyItemDraft = Boolean(
+      myFlowEditingDetailKey && Object.keys(myFlowEditingDrafts).length > 0,
+    );
+    if (plan.discard === 'block_if_dirty' && hasDirtyItemDraft && !options.bypassDiscard) {
+      myFlowLibraryPendingTransitionRef.current = {
+        action,
+        focusTarget,
+        afterApply: options.afterApply,
+        phase: 'awaiting-discard',
+      };
+      setMyFlowEditorDiscardPromptOpen(true);
+      return false;
+    }
+
+    const deferredIndex = plan.history.findIndex((effect) => effect.kind === 'back_then_replace');
+    const deferred = plan.history[deferredIndex];
+    if (deferred?.kind === 'back_then_replace') {
+      myFlowLibraryPendingTransitionRef.current = {
+        action,
+        focusTarget,
+        afterApply: options.afterApply,
+        phase: 'awaiting-back-then-replace',
+        deferred: {
+          plan,
+          context,
+          replace: deferred.replace,
+          writesAfterReplace: plan.history
+            .slice(deferredIndex + 1)
+            .filter((effect): effect is MyFlowLibraryHistoryWrite => (
+              effect.kind === 'replace' || effect.kind === 'push'
+            )),
+        },
+      };
+      window.history.back();
+      return true;
+    }
+
+    for (const effect of plan.history) {
+      if (effect.kind === 'replace' || effect.kind === 'push') {
+        writeMyFlowLibraryHistory(effect);
+      } else if (effect.kind === 'back') {
+        window.history.back();
+        return true;
+      }
+    }
+    myFlowLibraryPendingTransitionRef.current = null;
+    applyMyFlowLibraryControllerPlan(plan, context, { focusTarget });
+    options.afterApply?.();
+    return true;
   };
   const replaceMyFlowLibraryControlRoute = (
     query: string,
     filter: FlowListFilter,
-  ) => {
-    if (typeof window === 'undefined' || myFlowSavedPlanLibraryEnabled !== true) return;
-    const href = getMyFlowLibraryHref(window.location.href, {
-      query,
-      filter,
-      target: null,
-    });
-    window.history.replaceState(
-      buildMyFlowLibraryHistoryState(
-        'list',
-        window.scrollY,
-        myFlowLibraryRailRef.current?.scrollTop ?? myFlowLibraryRailScrollTopRef.current,
-      ),
-      '',
-      href,
-    );
-  };
-  const openMyFlowLibraryPlanRoute = (flowSlug: string) => {
-    if (typeof window === 'undefined' || myFlowSavedPlanLibraryEnabled !== true) return;
-    if (typeof document !== 'undefined' && document.activeElement instanceof HTMLElement) {
-      myFlowLibraryPlanReturnFocusRef.current = document.activeElement;
-    }
-    myFlowLibraryPlanReturnFlowSlugRef.current = flowSlug;
-    myFlowLibraryScrollYRef.current = window.scrollY;
-    myFlowLibraryRailScrollTopRef.current = myFlowLibraryRailRef.current?.scrollTop ?? 0;
-    const current = parseMyFlowLibraryRoute(window.location.search, window.history.state);
-    const listHref = getMyFlowLibraryHref(window.location.href, {
-      query: flowListQuery,
-      filter: flowListFilter,
-      target: null,
-    });
-    const planHref = getMyFlowLibraryHref(window.location.href, {
-      query: flowListQuery,
-      filter: flowListFilter,
-      target: { flowSlug },
-    });
-    const historyLevel = getMyFlowLibraryHistoryLevel();
-    if (current.target && historyLevel === null) {
-      window.history.replaceState(window.history.state, '', planHref);
-      return;
-    }
-    if (current.target || historyLevel === 'plan') {
-      window.history.replaceState(buildMyFlowLibraryHistoryState('plan'), '', planHref);
-      return;
-    }
-    window.history.replaceState(
-      buildMyFlowLibraryHistoryState(
-        'list',
-        myFlowLibraryScrollYRef.current,
-        myFlowLibraryRailScrollTopRef.current,
-      ),
-      '',
-      listHref,
-    );
-    window.history.pushState(buildMyFlowLibraryHistoryState('plan'), '', planHref);
-  };
-  const openMyFlowLibraryItemRoute = (target: MyFlowWorkspaceTarget) => {
-    if (typeof window === 'undefined' || myFlowSavedPlanLibraryEnabled !== true || !target.itemKey) return;
-    const current = parseMyFlowLibraryRoute(window.location.search, window.history.state);
-    if (current.target?.flowSlug !== target.flowSlug) {
-      openMyFlowLibraryPlanRoute(target.flowSlug);
-    }
-    const itemHref = getMyFlowLibraryHref(window.location.href, {
-      query: flowListQuery,
-      filter: flowListFilter,
-      target,
-    });
-    if (getMyFlowLibraryHistoryLevel() === 'item') {
-      window.history.replaceState(buildMyFlowLibraryHistoryState('item'), '', itemHref);
-      return;
-    }
-    window.history.pushState(buildMyFlowLibraryHistoryState('item'), '', itemHref);
-  };
+    focusTarget?: HTMLElement | null,
+  ): boolean => runMyFlowLibraryTransition(
+    { kind: 'replace_controls', query, filter },
+    { focusTarget },
+  );
+  const openMyFlowLibraryPlanRoute = (flowSlug: string): boolean => (
+    myFlowSavedPlanLibraryEnabled !== true
+      ? true
+      : runMyFlowLibraryTransition({ kind: 'open_plan', flowSlug })
+  );
+  const openMyFlowLibraryItemRoute = (
+    target: MyFlowWorkspaceTarget,
+    options: { afterApply?: () => void } = {},
+  ): boolean => (
+    Boolean(target.itemKey) && (
+      myFlowSavedPlanLibraryEnabled !== true
+        ? true
+        : runMyFlowLibraryTransition(
+            { kind: 'open_item', target },
+            { afterApply: options.afterApply },
+          )
+    )
+  );
   const returnToMyFlowLibrary = () => {
-    const returnTarget = myFlowLibraryPlanReturnFocusRef.current;
-    const returnFlowSlug = myFlowLibraryPlanReturnFlowSlugRef.current;
-    closeMyFlowTransientDetail();
-    if (typeof window !== 'undefined' && myFlowSavedPlanLibraryEnabled === true) {
-      if (getMyFlowLibraryHistoryLevel() === 'plan') {
-        window.history.back();
-        return;
-      }
-      const href = getMyFlowLibraryHref(window.location.href, {
-        query: flowListQuery,
-        filter: flowListFilter,
-        target: null,
-      });
-      window.history.replaceState(
-        buildMyFlowLibraryHistoryState(
-          'list',
-          myFlowLibraryScrollYRef.current,
-          myFlowLibraryRailScrollTopRef.current,
-        ),
-        '',
-        href,
-      );
+    if (myFlowSavedPlanLibraryEnabled === true) {
+      runMyFlowLibraryTransition({ kind: 'return_to_list' });
+      return;
     }
-    myFlowLibraryPlanReturnFocusRef.current = null;
-    myFlowLibraryPlanReturnFlowSlugRef.current = '';
+    closeMyFlowLibraryTransientDetail();
     setSelectedSavedFlowSlug('all');
-    window.requestAnimationFrame(() => {
-      window.scrollTo({ top: myFlowLibraryScrollYRef.current, behavior: 'auto' });
-      if (myFlowLibraryRailRef.current) {
-        myFlowLibraryRailRef.current.scrollTop = myFlowLibraryRailScrollTopRef.current;
-      }
-      const remountedReturnTarget = Array.from(document.querySelectorAll<HTMLElement>(
-        '[data-testid="my-flow-library-row"], [data-testid="my-flow-mobile-structure-row"]',
-      )).find((element) => element.dataset.flowSlug === returnFlowSlug);
-      const focusTarget = remountedReturnTarget?.matches('button')
-        ? remountedReturnTarget
-        : remountedReturnTarget?.querySelector<HTMLElement>('button');
-      if (focusTarget) focusTarget.focus({ preventScroll: true });
-      else if (returnTarget?.isConnected) returnTarget.focus({ preventScroll: true });
-    });
   };
   const requestMyFlowLibraryItemHistoryBack = (): boolean => {
-    if (typeof window === 'undefined' || myFlowSavedPlanLibraryEnabled !== true) {
-      return false;
-    }
-    if (getMyFlowLibraryHistoryLevel() === 'item') {
-      window.history.back();
-      return true;
-    }
-    const route = parseMyFlowLibraryRoute(window.location.search, window.history.state);
-    if (!route.target?.itemKey) return false;
-    const href = getMyFlowLibraryHref(window.location.href, {
-      query: route.query,
-      filter: route.filter,
-      target: { flowSlug: route.target.flowSlug },
-    });
-    window.history.replaceState(window.history.state, '', href);
-    setMyFlowWorkspaceTarget(null);
-    return false;
+    return runMyFlowLibraryTransition({ kind: 'request_item_back' });
   };
 
   useEffect(() => {
@@ -9378,52 +9318,73 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     }
     const syncSavedPlanRoute = () => {
       const route = parseMyFlowLibraryRoute(window.location.search, window.history.state);
-      setFlowListQuery(route.query);
-      setFlowListFilter(route.filter);
-      setMyFlowTodoExperimentView('flows');
-      if (route.target) {
-        setSelectedSavedFlowSlug(route.target.flowSlug);
-        if (route.target.itemKey) {
-          setMyFlowWorkspaceTarget(route.target);
-        } else {
-          const returnTarget = myFlowDetailReturnFocusRef.current;
-          myFlowDetailReturnFocusRef.current = null;
-          setMyFlowWorkspaceTarget(null);
-          closeMyFlowTransientDetail();
-          if (returnTarget?.isConnected) {
-            window.requestAnimationFrame(() => returnTarget.focus({ preventScroll: true }));
-          }
-        }
+      const pending = myFlowLibraryPendingTransitionRef.current;
+      if (pending?.phase === 'restoring-dirty-popstate') {
+        myFlowLibraryPendingTransitionRef.current = {
+          ...pending,
+          phase: 'awaiting-discard',
+        };
+        setMyFlowEditorDiscardPromptOpen(true);
         return;
       }
-      const returnTarget = myFlowLibraryPlanReturnFocusRef.current;
-      const returnFlowSlug = myFlowLibraryPlanReturnFlowSlugRef.current;
-      myFlowLibraryPlanReturnFocusRef.current = null;
-      myFlowLibraryPlanReturnFlowSlugRef.current = '';
-      setSelectedSavedFlowSlug('all');
-      setMyFlowWorkspaceTarget(null);
-      closeMyFlowTransientDetail();
-      myFlowLibraryScrollYRef.current = route.scrollY;
-      myFlowLibraryRailScrollTopRef.current = route.railScrollTop;
-      window.requestAnimationFrame(() => {
-        window.scrollTo({ top: route.scrollY, behavior: 'auto' });
-        if (myFlowLibraryRailRef.current) {
-          myFlowLibraryRailRef.current.scrollTop = route.railScrollTop;
-        }
-        const remountedReturnTarget = Array.from(document.querySelectorAll<HTMLElement>(
-          '[data-testid="my-flow-library-row"], [data-testid="my-flow-mobile-structure-row"]',
-        )).find((element) => element.dataset.flowSlug === returnFlowSlug);
-        const focusTarget = remountedReturnTarget?.matches('button')
-          ? remountedReturnTarget
-          : remountedReturnTarget?.querySelector<HTMLElement>('button');
-        if (focusTarget) focusTarget.focus({ preventScroll: true });
-        else if (returnTarget?.isConnected) returnTarget.focus({ preventScroll: true });
+      if (pending?.phase === 'awaiting-back-then-replace') {
+        myFlowLibraryPendingTransitionRef.current = null;
+        if (!pending.deferred) return;
+        writeMyFlowLibraryHistory(pending.deferred.replace);
+        pending.deferred.writesAfterReplace.forEach(writeMyFlowLibraryHistory);
+        applyMyFlowLibraryControllerPlan(
+          pending.deferred.plan,
+          pending.deferred.context,
+          { focusTarget: pending.focusTarget },
+        );
+        pending.afterApply?.();
+        return;
+      }
+      const context = getMyFlowLibraryControllerContext();
+      const itemReturnTarget = myFlowDetailReturnFocusRef.current;
+      const planReturnTarget = myFlowLibraryPlanReturnFocusRef.current;
+      const planReturnFlowSlug = myFlowLibraryPlanReturnFlowSlugRef.current;
+      const plan = planMyFlowLibraryTransition(myFlowLibraryControllerStateRef.current, {
+        kind: 'sync_route',
+        route,
+        returnFlowSlug: planReturnFlowSlug,
+      }, context);
+      if (plan.discard === 'block_if_dirty' && myFlowDirtyItemEditorRef.current) {
+        myFlowLibraryPendingTransitionRef.current = {
+          action: { kind: 'request_item_back' },
+          focusTarget: getMyFlowLibraryActiveElement(),
+          phase: 'restoring-dirty-popstate',
+        };
+        window.history.forward();
+        return;
+      }
+      applyMyFlowLibraryControllerPlan(plan, context, {
+        itemReturnTarget,
+        planReturnTarget,
+        planReturnFlowSlug,
       });
     };
     syncSavedPlanRoute();
     window.addEventListener('popstate', syncSavedPlanRoute);
     return () => window.removeEventListener('popstate', syncSavedPlanRoute);
   }, [isCalendarSurface, myFlowSavedPlanLibraryEnabled]);
+
+  const confirmMyFlowLibraryTransitionAfterDiscard = (row: MyFlowCalendarRow) => {
+    const pending = myFlowLibraryPendingTransitionRef.current;
+    if (!pending || pending.phase !== 'awaiting-discard') {
+      cancelMyFlowEditingDraft(row);
+      return;
+    }
+    myFlowLibraryPendingTransitionRef.current = null;
+    setMyFlowEditorDiscardPromptOpen(false);
+    setMyFlowEditorAdvancedDisclosure(null);
+    discardMyFlowEditingDraft(row);
+    runMyFlowLibraryTransition(pending.action, {
+      bypassDiscard: true,
+      focusTarget: pending.focusTarget,
+      afterApply: pending.afterApply,
+    });
+  };
 
   const handleMyFlowTabKeyDown = (
     event: ReactKeyboardEvent<HTMLButtonElement>,
@@ -9447,43 +9408,24 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
   };
 
   useEffect(() => {
-    const normalizedScope = normalizeCalendarFlowScope(
-      myFlowCalendarScope,
-      calendarFilterFlowSlugSignature.split('|').filter(Boolean),
-      routineTotalCount > 0,
-    );
-    if (normalizedScope !== myFlowCalendarScope) setMyFlowCalendarScope(normalizedScope);
+    myFlowCalendarController.synchronizeScope({
+      knownFlowSlugs: calendarFilterFlowSlugSignature.split('|').filter(Boolean),
+      hasRoutineRows: routineTotalCount > 0,
+    });
   }, [myFlowCalendarScope, calendarFilterFlowSlugSignature, routineTotalCount]);
 
   useEffect(() => {
-    if (typeof window === 'undefined' || !isCalendarSurface) return;
-    const knownFlowSlugs = calendarFilterFlowSlugSignature.split('|').filter(Boolean);
-    if (knownFlowSlugs.length === 0) return;
-    if (calendarFlowScopePresentation !== 'picker') {
-      if (myFlowCalendarSelectedFlowSlugs.length > 0) setMyFlowCalendarSelectedFlowSlugs([]);
-      window.localStorage.removeItem(MY_FLOW_CALENDAR_SELECTED_FLOWS_KEY);
-      return;
-    }
-    const normalizedSelection = normalizeCalendarFlowSelection(
-      myFlowCalendarSelectedFlowSlugs,
-      knownFlowSlugs,
-    );
-    if (normalizedSelection.join('|') !== myFlowCalendarSelectedFlowSignature) {
-      setMyFlowCalendarSelectedFlowSlugs(normalizedSelection);
-      return;
-    }
-    if (myFlowCalendarScope !== 'all') setMyFlowCalendarScope('all');
-    window.localStorage.setItem(
-      MY_FLOW_CALENDAR_SELECTED_FLOWS_KEY,
-      JSON.stringify(normalizedSelection),
-    );
+    myFlowCalendarController.synchronizeScopePersistence({
+      calendarSurface: isCalendarSurface,
+      presentation: calendarFlowScopePresentation,
+      knownFlowSlugs: calendarFilterFlowSlugSignature.split('|').filter(Boolean),
+    });
   }, [
     calendarFilterFlowSlugSignature,
     calendarFlowScopePresentation,
     isCalendarSurface,
     myFlowCalendarScope,
     myFlowCalendarSelectedFlowSignature,
-    myFlowCalendarSelectedFlowSlugs,
   ]);
 
   useEffect(() => {
@@ -9506,39 +9448,11 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
   }, [myFlowHandledSavedMapId, postSaveQueryKey, showPostSavePanel]);
 
   useEffect(() => {
-    const anchorMonthStart = getMyFlowMonthStart(calendarAnchor);
-    const visibleMonthStart = getMyFlowMonthStart(myFlowVisibleMonth);
-    const visibleMonth = visibleMonthStart.slice(0, 7);
-    const visibleMonthRows = calendarScopedRows.filter((row) => row.date?.startsWith(visibleMonth));
-    if (
-      isCalendarSurface &&
-      !myFlowCalendarInitialFocusAppliedRef.current &&
-      calendarScopedRows.length > 0
-    ) {
-      const initialDate = findMyFlowDefaultFocusDate(
-        calendarScopedRows,
-        myFlowTodayDate,
-        anchorMonthStart,
-      );
-      myFlowCalendarInitialFocusAppliedRef.current = true;
-      setMyFlowSelectedDate(initialDate);
-      setMyFlowVisibleMonth(getMyFlowMonthStart(initialDate));
-      return;
-    }
-    setMyFlowSelectedDate((currentDate) => {
-      const currentDateStillHasRows = calendarScopedRows.some((row) => row.date === currentDate);
-      const currentDateIsInVisibleMonth = currentDate.startsWith(visibleMonth);
-      if (currentDateIsInVisibleMonth) {
-        if (currentDateStillHasRows || visibleMonthRows.length === 0) return currentDate;
-        return visibleMonthRows[0]?.date ?? visibleMonthStart;
-      }
-      const nextSelectedDate = findMyFlowDefaultFocusDate(
-        calendarScopedRows,
-        myFlowTodayDate,
-        anchorMonthStart,
-      );
-      setMyFlowVisibleMonth(getMyFlowMonthStart(nextSelectedDate || anchorMonthStart));
-      return nextSelectedDate;
+    myFlowCalendarController.synchronizeFocus({
+      rows: calendarScopedViewRows,
+      calendarAnchor,
+      todayDate: myFlowTodayDate,
+      calendarSurface: isCalendarSurface,
     });
   }, [calendarAnchor, selectedSavedFlowSlug, myFlowCalendarScope, myFlowCalendarSelectedFlowSignature, calendarScopedDateSignature, myFlowTodayDate, myFlowVisibleMonth, isCalendarSurface]);
 
@@ -10090,14 +10004,23 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
   };
 
   const openMyFlowCompletionNoticeItem = (notice: MyFlowCompletionUndo) => {
-    setMyFlowCompletionUndo(null);
     if (notice.originView === 'calendar') {
+      setMyFlowCompletionUndo(null);
       focusMyFlowCompletionControl(notice.rowKey);
       return;
     }
-    const targetRow = [...calendarRows, ...myFlowAllRows]
-      .find((row) => getMyFlowRowInstanceKey(row) === notice.rowKey);
+    const targetFlow = workspaceSavedFlows
+      .find((flow) => flow.progress.slug === notice.flowSlug);
+    const targetFlowRows = targetFlow
+      ? targetFlow.rows.map((row) => getMyFlowRowForFlowTab(targetFlow, row))
+      : [];
+    const targetRow = [...calendarRows, ...targetFlowRows]
+      .find((row) => (
+        row.flow.progress.slug === notice.flowSlug
+        && getMyFlowRowInstanceKey(row) === notice.rowKey
+      ));
     if (!targetRow) {
+      setMyFlowCompletionUndo(null);
       setSelectedSavedFlowSlug(notice.flowSlug);
       selectMyFlowView('flow');
       return;
@@ -10113,13 +10036,17 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
         };
       }),
     });
-    setMyFlowWholeFlowOpenGroups((current) => ({
-      ...current,
-      [notice.flowSlug]: targetReadingModel.groups.map((group) => group.key),
-    }));
-    setMyFlowWorkspaceSection('plan');
-    setSelectedSavedFlowSlug(notice.flowSlug);
-    openMyFlowRowFromFlowTab(targetRow.flow, targetRow);
+    openMyFlowRowFromFlowTab(targetRow.flow, targetRow, {
+      onRouteApplied: () => {
+        setMyFlowCompletionUndo(null);
+        setMyFlowWholeFlowOpenGroups((current) => ({
+          ...current,
+          [notice.flowSlug]: targetReadingModel.groups.map((group) => group.key),
+        }));
+        setMyFlowWorkspaceSection('plan');
+        setSelectedSavedFlowSlug(notice.flowSlug);
+      },
+    });
   };
 
   const undoMyFlowCompletion = async (undo: MyFlowCompletionUndo) => {
@@ -12433,6 +12360,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
   };
 
   const resetMyFlowRowDetailState = () => {
+    myFlowLibraryActiveItemTargetRef.current = null;
     setMyFlowActiveRowKey('');
     setMyFlowEditingDrafts({});
     setMyFlowExpandedRoutineKey('');
@@ -12459,6 +12387,13 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     if (typeof document !== 'undefined' && document.activeElement instanceof HTMLElement) {
       myFlowDetailReturnFocusRef.current = document.activeElement;
     }
+    if (surface === 'flow') {
+      myFlowLibraryActiveItemTargetRef.current = {
+        flowSlug: row.flow.progress.slug,
+        itemKey: getMyFlowRowInstanceKey(row),
+        ...(row.structuralOccurrenceId && row.date ? { itemDate: row.date } : {}),
+      };
+    }
     setMyFlowActiveRowKey(key);
     setMyFlowDetailSurface(surface);
     setMyFlowEditingDrafts({});
@@ -12466,14 +12401,10 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     setMyFlowExpandedAdvancedKey('');
     setMyFlowExpandedMemoKey('');
     setMyFlowEditingDetailKey('');
-    setMyFlowRoutineOverflowDate('');
-    setMyFlowScheduleOverflowDate('');
+    myFlowCalendarController.clearOverflow();
     setMyFlowExecutionNoteDraft(null);
     setMyFlowDetailOpen(true);
-    if (row.date) {
-      setMyFlowSelectedDate(row.date);
-      setMyFlowVisibleMonth(getMyFlowMonthStart(row.date));
-    }
+    if (row.date) myFlowCalendarController.syncToDate(row.date);
   };
 
   const openMyFlowExecutionNote = (
@@ -13082,8 +13013,8 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
   const openMyFlowRowFromFlowTab = (
     flow: MySavedFlow,
     row: MyFlowRow,
-    options: { history?: 'push' | 'none' } = {},
-  ) => {
+    options: { history?: 'push' | 'none'; onRouteApplied?: () => void } = {},
+  ): boolean => {
     const occurrenceRow = row as MyFlowCalendarRow;
     const flowRow: MyFlowCalendarRow = row.structuralOccurrenceId
       ? {
@@ -13099,21 +13030,29 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
       : getMyFlowRowForFlowTab(flow, row);
     if (myFlowDetailOpen && myFlowActiveRowKey === getMyFlowRowInstanceKey(flowRow)) {
       closeMyFlowRowDetail();
-      return;
+      options.onRouteApplied?.();
+      return true;
     }
-    if (myFlowLibraryControls.mode === 'searchable') {
+    if (myFlowLibraryControls.mode === 'searchable' && options.history === 'none') {
       setSelectedSavedFlowSlug(flow.progress.slug);
     }
     if (options.history !== 'none') {
-      openMyFlowLibraryItemRoute({
-        flowSlug: flow.progress.slug,
-        itemKey: getMyFlowRowInstanceKey(flowRow),
-        ...(flowRow.structuralOccurrenceId && flowRow.date ? { itemDate: flowRow.date } : {}),
-      });
+      const routeApplied = openMyFlowLibraryItemRoute(
+        {
+          flowSlug: flow.progress.slug,
+          itemKey: getMyFlowRowInstanceKey(flowRow),
+          ...(flowRow.structuralOccurrenceId && flowRow.date ? { itemDate: flowRow.date } : {}),
+        },
+        { afterApply: options.onRouteApplied },
+      );
+      if (!routeApplied) return false;
+      if (myFlowSavedPlanLibraryEnabled === true) return true;
     }
     setMyFlowExpandedStructureSlug(flow.progress.slug);
     setSavedView('flow');
     openMyFlowRowDetail(flowRow, 'flow');
+    options.onRouteApplied?.();
+    return true;
   };
 
   const openMyFlowWorkspaceFromCalendar = (
@@ -13121,18 +13060,11 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     itemKey?: string,
     itemDate?: string,
   ) => {
-    if (typeof window === 'undefined') return;
-    const target = new URL(
-      getMyFlowWorkspaceHref({
-        flowSlug,
-        ...(itemKey ? { itemKey } : {}),
-        ...(itemKey && itemDate ? { itemDate } : {}),
-      }),
-      window.location.origin,
-    );
-    const demoMode = new URLSearchParams(window.location.search).get('demo');
-    if (demoMode) target.searchParams.set('demo', demoMode);
-    window.location.assign(`${target.pathname}${target.search}`);
+    myFlowCalendarController.openWorkspace({
+      flowSlug,
+      ...(itemKey ? { itemKey } : {}),
+      ...(itemKey && itemDate ? { itemDate } : {}),
+    });
   };
 
   useEffect(() => {
@@ -13157,7 +13089,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     if (myFlowWorkspaceTarget.itemDate) {
       const targetMonth = getMyFlowMonthStart(myFlowWorkspaceTarget.itemDate);
       if (targetMonth !== myFlowVisibleMonth) {
-        setMyFlowVisibleMonth(targetMonth);
+        myFlowCalendarController.syncVisibleMonth(myFlowWorkspaceTarget.itemDate);
         return;
       }
     }
@@ -13317,8 +13249,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     }
     replaceBundles(locked.value.updatedBundles);
     refreshSavedFlowState();
-    setMyFlowSelectedDate(locked.value.nextAnchor || myFlowSelectedDate);
-    if (locked.value.nextAnchor) setMyFlowVisibleMonth(getMyFlowMonthStart(locked.value.nextAnchor));
+    if (locked.value.nextAnchor) myFlowCalendarController.syncToDate(locked.value.nextAnchor);
     resetMyFlowRowDetailState();
     setMyFlowPersonalCopySettingsDraft(null);
   };
@@ -13673,8 +13604,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     refreshSavedFlowState();
     setMyFlowDateOverrides(locked.value.nextDateOverrides);
     setMyFlowItemDrafts(locked.value.nextItemDrafts);
-    setMyFlowSelectedDate(nextAnchor);
-    setMyFlowVisibleMonth(getMyFlowMonthStart(nextAnchor));
+    myFlowCalendarController.syncToDate(nextAnchor);
     resetMyFlowRowDetailState();
     setMyFlowDirectAnchorSettingsDraft(null);
   };
@@ -14146,11 +14076,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
               style={{ color: routine.color }}
               onClick={(event) => {
                 event.stopPropagation();
-                setMyFlowSelectedDate(routineDate);
-                setMyFlowRoutineOverflowDate('');
-                setMyFlowScheduleOverflowDate('');
-                setMyFlowCalendarDaySheetOpen(true);
-                scrollMyFlowSelectedDayOnMobile();
+                myFlowCalendarController.selectRoutineIcon(routineDate);
               }}
             >
               {renderMyFlowRoutineIcon(routine.iconKind)}
@@ -14164,17 +14090,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
               data-testid="my-flow-routine-overflow"
               onClick={(event) => {
                 event.stopPropagation();
-                if (info.event.startStr) {
-                  setMyFlowSelectedDate(info.event.startStr);
-                  setMyFlowRoutineOverflowDate(info.event.startStr);
-                  setMyFlowScheduleOverflowDate('');
-                  setMyFlowCalendarDaySheetOpen(true);
-                  scrollMyFlowSelectedDayOnMobile();
-                }
-                setMyFlowActiveRowKey('');
-                setMyFlowExpandedMemoKey('');
-                setMyFlowEditingDetailKey('');
-                setMyFlowDetailOpen(false);
+                myFlowCalendarController.selectRoutineOverflow(info.event.startStr || undefined);
               }}
             >
               +{hiddenCount}
@@ -14188,18 +14104,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
       const eventDate = info.event.startStr;
       const selectOverflowDate = () => {
         if (!eventDate) return;
-        setMyFlowSelectedDate(eventDate);
-        setMyFlowRoutineOverflowDate('');
-        setMyFlowScheduleOverflowDate(eventDate);
-        setMyFlowActiveRowKey('');
-        setMyFlowEditingDrafts({});
-        setMyFlowExpandedRoutineKey('');
-        setMyFlowExpandedAdvancedKey('');
-        setMyFlowExpandedMemoKey('');
-        setMyFlowEditingDetailKey('');
-        setMyFlowDetailOpen(false);
-        setMyFlowCalendarDaySheetOpen(true);
-        scrollMyFlowSelectedDayOnMobile();
+        myFlowCalendarController.selectScheduleOverflow(eventDate);
       };
       return (
         <span
@@ -14232,18 +14137,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
       const eventDate = info.event.startStr;
       const selectOverflowDate = () => {
         if (!eventDate) return;
-        setMyFlowSelectedDate(eventDate);
-        setMyFlowRoutineOverflowDate('');
-        setMyFlowScheduleOverflowDate('');
-        setMyFlowActiveRowKey('');
-        setMyFlowEditingDrafts({});
-        setMyFlowExpandedRoutineKey('');
-        setMyFlowExpandedAdvancedKey('');
-        setMyFlowExpandedMemoKey('');
-        setMyFlowEditingDetailKey('');
-        setMyFlowDetailOpen(false);
-        setMyFlowCalendarDaySheetOpen(true);
-        scrollMyFlowSelectedDayOnMobile();
+        myFlowCalendarController.selectFlowOverflow(eventDate);
       };
       return (
         <span
@@ -14316,42 +14210,16 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
         className={`rounded px-0.5 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-blue-200 ${selected ? 'bg-blue-700 text-white shadow-sm' : 'text-slate-700 hover:bg-blue-50 hover:text-blue-700'}`}
         onClick={(event) => {
           event.stopPropagation();
-          setMyFlowSelectedDate(dateStr);
-          setMyFlowActiveRowKey('');
-          setMyFlowRoutineOverflowDate('');
-          setMyFlowScheduleOverflowDate('');
-          setMyFlowExpandedRoutineKey('');
-          setMyFlowExpandedAdvancedKey('');
-          setMyFlowExpandedMemoKey('');
-          setMyFlowEditingDetailKey('');
-          setMyFlowDetailOpen(false);
-          setMyFlowCalendarDaySheetOpen(true);
+          myFlowCalendarController.selectDateButton(dateStr);
         }}
         onKeyDown={(event) => {
-          const nextDate = getCalendarGridNavigationDate(
+          const moved = myFlowCalendarController.navigateDateByKey(
             dateStr,
             event.key as CalendarGridNavigationKey,
           );
-          if (!nextDate) return;
+          if (!moved) return;
           event.preventDefault();
           event.stopPropagation();
-          setMyFlowSelectedDate(nextDate);
-          setMyFlowVisibleMonth(getMyFlowMonthStart(nextDate));
-          setMyFlowActiveRowKey('');
-          setMyFlowRoutineOverflowDate('');
-          setMyFlowScheduleOverflowDate('');
-          setMyFlowExpandedRoutineKey('');
-          setMyFlowExpandedAdvancedKey('');
-          setMyFlowExpandedMemoKey('');
-          setMyFlowEditingDetailKey('');
-          setMyFlowDetailOpen(false);
-          window.requestAnimationFrame(() => {
-            document
-              .querySelector<HTMLElement>(
-                `.fc-daygrid-day[data-date="${nextDate}"] [data-testid="my-flow-calendar-date-button"]`,
-              )
-              ?.focus({ preventScroll: true });
-          });
         }}
       >
         {info.dayNumberText}
@@ -14360,16 +14228,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
   };
 
   const handleMyFlowCalendarEventClick = (info: EventClickArg) => {
-    if (info.event.startStr) {
-      setMyFlowSelectedDate(info.event.startStr.slice(0, 10));
-    }
-    setMyFlowRoutineOverflowDate('');
-    setMyFlowScheduleOverflowDate('');
-    setMyFlowActiveRowKey('');
-    setMyFlowExpandedMemoKey('');
-    setMyFlowEditingDetailKey('');
-    setMyFlowDetailOpen(false);
-    setMyFlowCalendarDaySheetOpen(true);
+    myFlowCalendarController.selectEventDate(info.event.startStr || undefined);
   };
 
   const handleMyFlowCalendarEventMount = (info: EventMountArg) => {
@@ -14412,20 +14271,12 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
   };
 
   const handleMyFlowCalendarDateClick = (info: DateClickArg) => {
-    setMyFlowSelectedDate(info.dateStr);
-    setMyFlowActiveRowKey('');
-    setMyFlowEditingDrafts({});
-    setMyFlowExpandedRoutineKey('');
-    setMyFlowRoutineOverflowDate('');
-    setMyFlowScheduleOverflowDate('');
-    setMyFlowExpandedMemoKey('');
-    setMyFlowEditingDetailKey('');
-    setMyFlowDetailOpen(false);
-    setMyFlowCalendarDaySheetOpen(true);
+    myFlowCalendarController.selectCalendarDate(info.dateStr);
   };
 
   const closeMyFlowRowDetail = (force = false): boolean => {
     if (!force && myFlowEditingDetailKey && Object.keys(myFlowEditingDrafts).length > 0) {
+      if (myFlowDetailSurface === 'flow') requestMyFlowLibraryItemHistoryBack();
       setMyFlowEditorDiscardPromptOpen(true);
       return false;
     }
@@ -14598,6 +14449,9 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     const editorDialogTitleId = `my-flow-item-editor-${routineKey.replace(/[^a-zA-Z0-9_-]/g, '-')}`;
     const requestMyFlowEditorCancel = () => {
       if (hasEditorChanges) {
+        if (surfaceContext === 'flow' && myFlowSavedPlanLibraryEnabled === true) {
+          requestMyFlowLibraryItemHistoryBack();
+        }
         setMyFlowEditorDiscardPromptOpen(true);
         return;
       }
@@ -16262,7 +16116,12 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
                 type="button"
                 autoFocus
                 className="min-h-10 rounded-md border border-amber-200 bg-white px-3 py-2 text-xs font-semibold text-amber-900"
-                onClick={() => setMyFlowEditorDiscardPromptOpen(false)}
+                onClick={() => {
+                  if (myFlowLibraryPendingTransitionRef.current?.phase === 'awaiting-discard') {
+                    myFlowLibraryPendingTransitionRef.current = null;
+                  }
+                  setMyFlowEditorDiscardPromptOpen(false);
+                }}
               >
                 계속 수정
               </button>
@@ -16270,7 +16129,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
                 type="button"
                 data-testid="my-flow-editor-confirm-discard"
                 className="min-h-10 rounded-md bg-slate-950 px-3 py-2 text-xs font-semibold text-white"
-                onClick={() => cancelMyFlowEditingDraft(row)}
+                onClick={() => confirmMyFlowLibraryTransitionAfterDiscard(row)}
               >
                 변경 버리기
               </button>
@@ -18722,10 +18581,8 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
           aria-label={`${flowTitle} 열기`}
           className="grid min-h-16 w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-2 py-1.5 text-left transition hover:bg-[var(--flowme-surface-subtle)] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]"
           onClick={() => {
-            openMyFlowLibraryPlanRoute(flow.progress.slug);
-            closeMyFlowTransientDetail();
+            if (!openMyFlowLibraryPlanRoute(flow.progress.slug)) return;
             setMyFlowWorkspaceSection('execute');
-            setSelectedSavedFlowSlug(flow.progress.slug);
             window.requestAnimationFrame(() => {
               window.scrollTo({ top: 0, behavior: 'auto' });
             });
@@ -18797,9 +18654,8 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
         aria-label={`${getMyFlowPortableExportFlowTitle(flow)} 열기`}
         className={`w-full min-w-0 border-b border-[var(--flowme-border)] px-2 py-3 text-left transition focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)] ${selected ? 'bg-[var(--flowme-action-soft)]' : 'bg-white hover:bg-[var(--flowme-surface-subtle)]'}`}
         onClick={() => {
-          openMyFlowLibraryPlanRoute(flow.progress.slug);
+          if (!openMyFlowLibraryPlanRoute(flow.progress.slug)) return;
           setMyFlowWorkspaceSection('execute');
-          setSelectedSavedFlowSlug(flow.progress.slug);
         }}
       >
         <span data-flow-identity-slot="title" className="block truncate text-sm font-semibold text-[var(--flowme-text)]">
@@ -19083,8 +18939,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
                 aria-label={`${overdue ? '지난 할 일 · ' : ''}${entry.flowTitle} · ${entry.title} 열기`}
                 onClick={() => {
                   setMyFlowWorkspaceSection('execute');
-                  openMyFlowLibraryPlanRoute(entry.flowSlug);
-                  setSelectedSavedFlowSlug(entry.flowSlug);
+                  if (!openMyFlowLibraryPlanRoute(entry.flowSlug)) return;
                   openMyFlowRowFromFlowTab(entry.row.flow, entry.row);
                 }}
               >
@@ -20454,6 +20309,299 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     ) : null;
   };
 
+  const toMyFlowRouteEntry = (flow: MySavedFlow): MyFlowRouteEntry<MySavedFlow> => ({
+    key: flow.progress.slug,
+    slug: flow.progress.slug,
+    title: getMyFlowDisplayFlowTitle(flow),
+    progressLabel: getMyFlowFlowProgressLabel(flow),
+    value: flow,
+  });
+  const myFlowRouteDemoLabel = !showDemoData
+    ? undefined
+    : myFlowDemoMode === 'ux60'
+      ? 'UX60 데모'
+      : myFlowDemoMode === 'ux50'
+        ? 'UX50 데모'
+        : myFlowDemoMode === 'ux20'
+          ? 'UX20 데모'
+          : myFlowDemoMode === 'ux12'
+            ? 'UX12 데모'
+            : myFlowDemoMode === 'ux5'
+              ? 'UX5 데모'
+              : myFlowDemoMode === 'ux1'
+                ? 'UX1 데모'
+                : myFlowDemoMode === 'source-backed'
+                  ? '원문 기반 데모'
+                  : '데모 데이터';
+  const myFlowRouteModel: MyFlowRouteModel<MySavedFlow> = {
+    copy: {
+      q3Enabled: myFlowQ3CopyEnabled,
+      pageTitle: myFlowQ3CopyEnabled ? '내 계획' : 'My Flow',
+      listTitle: myFlowQ3Copy.savedLibrary.listTitle,
+      sectionTitle: myFlowQ3Copy.savedLibrary.sectionTitle,
+      searchPlaceholder: myFlowQ3Copy.savedLibrary.searchPlaceholder,
+      searchAccessibleName: myFlowQ3Copy.savedLibrary.searchAccessibleName,
+    },
+    header: {
+      focused: isFocusedMyFlowWorkspace,
+      ...(isFocusedMyFlowWorkspace && visibleSavedFlows[0]
+        ? { focusedTitle: getMyFlowPortableExportFlowTitle(visibleSavedFlows[0]) }
+        : {}),
+      subtitle: myFlowTodoExperimentEnabled
+        ? myFlowQ3CopyEnabled
+          ? '할 일을 실행하고 저장한 계획을 엽니다.'
+          : '할 일을 실행하고 저장한 Flow를 엽니다.'
+        : myFlowQ3CopyEnabled
+          ? '저장한 계획을 찾고 엽니다.'
+          : '저장한 Flow를 찾고 엽니다.',
+      ...(myFlowRouteDemoLabel ? { demoLabel: myFlowRouteDemoLabel } : {}),
+      ...(workspaceSavedFlows.length > 0 ? { studioHref: `/u/${currentUser.slug}` } : {}),
+    },
+    reconciliation: {
+      visible: !isFocusedMyFlowWorkspace && canonicalSavedCopyChoiceGroups.length > 0,
+      options: canonicalSavedCopyChoiceGroups.flatMap((group) =>
+        group.copies.map((copy) => ({
+          groupId: group.canonicalFlowId,
+          originSlug: copy.originSlug,
+          role: copy.role,
+          itemCount: copy.itemCount,
+          title: copy.personalTitle ?? copy.title,
+          savedDate: copy.savedAt.slice(0, 10),
+        })),
+      ),
+      ...(canonicalReconciliationNotice ? { notice: canonicalReconciliationNotice } : {}),
+    },
+    navigation: {
+      visible: showMyFlowLocalNavigation,
+      activeView: savedView as 'flow',
+      gridClass: primarySavedViewTabGridClass,
+      tabs: primarySavedViewTabs.map(([id, label]) => ({ id, label })),
+    },
+    ...(myFlowSaveUndoStatus ? { saveUndoStatus: myFlowSaveUndoStatus } : {}),
+    empty: {
+      visible: workspaceSavedFlows.length === 0 && !showPostSavePanel && !showArchivedInventory,
+      title: myFlowQ3Copy.savedLibrary.emptyTitle,
+      description: myFlowQ3CopyEnabled
+        ? '계획을 저장하면 전체 내용과 개인 수정본을 여기에서 관리합니다.'
+        : 'Flow를 저장하면 전체 계획과 개인 수정본을 여기에서 관리합니다.',
+      archivedCount: myFlowArchivedFlowSlugs.length,
+    },
+    workspace: {
+      visible: workspaceSavedFlows.length > 0 || showPostSavePanel || showArchivedInventory,
+      showPostSavePanel,
+      showWorkspace: showMyFlowWorkspace,
+      workspaceRef: myFlowWorkspaceRef,
+      showSidebar: showMyFlowSidebar,
+      showWorkspaceControls: showMyFlowWorkspaceControls,
+      showScopeControl: showMyFlowScopeControl,
+      selectedSlug: selectedSavedFlowSlug,
+      allEntries: workspaceSavedFlows.map(toMyFlowRouteEntry),
+      panel: {
+        showLegacyTodo:
+          savedView === 'flow' &&
+          myFlowSavedPlanLibraryEnabled !== true &&
+          myFlowTodoExperimentEnabled,
+        showFlowLibrary:
+          savedView === 'flow' &&
+          (
+            myFlowSavedPlanLibraryEnabled === true ||
+            !myFlowTodoExperimentEnabled ||
+            myFlowTodoExperimentView === 'flows'
+          ),
+        focused: isFocusedMyFlowWorkspace,
+        savedPlanLibraryEnabled: myFlowSavedPlanLibraryEnabled === true,
+        ...(isFocusedMyFlowWorkspace
+          ? {
+              ariaLabel: `${myFlowLibrarySelectedFlow?.progress.title ?? (myFlowQ3CopyEnabled ? '선택한 계획' : '선택한 Flow')} 작업 공간`,
+            }
+          : myFlowSavedPlanLibraryEnabled === true
+            ? {
+                ariaLabel: myFlowQ3CopyEnabled
+                  ? '저장한 계획 라이브러리'
+                  : 'My Flow 라이브러리',
+              }
+            : {}),
+        flowCount: myFlowLocalSummary.flowCount,
+        showMapUpdates: selectedSavedFlowSlug === 'all',
+      },
+      library: {
+        isMobile: isMyFlowMobileViewport,
+        showArchivedInventory,
+        controls: myFlowLibraryControls,
+        query: flowListQuery,
+        filter: flowListFilter,
+        filterOptions: flowListFilterTabs.map(([id, label]) => ({ id, label })),
+        visibleEntries: flowListVisibleFlows.map(toMyFlowRouteEntry),
+        ...(myFlowLibrarySelectedFlow
+          ? { selectedEntry: toMyFlowRouteEntry(myFlowLibrarySelectedFlow) }
+          : {}),
+        mobileEntries: mobileInventoryVisibleFlows.map(toMyFlowRouteEntry),
+        mobileWorkspaceEntries: visibleSavedFlows.map(toMyFlowRouteEntry),
+        hiddenMobileCount: hiddenMobileInventoryCount,
+        mobileInventoryExpanded: myFlowLargeInventoryOpen,
+        railRef: myFlowLibraryRailRef,
+        controlsRef: myFlowOverviewSummaryRef,
+      },
+    },
+  };
+  const myFlowRouteActions: MyFlowRouteActions = {
+    onChooseCopy: (groupId, originSlug) => {
+      const group = canonicalSavedCopyChoiceGroups.find(
+        (candidate) => candidate.canonicalFlowId === groupId,
+      );
+      if (group) chooseCanonicalSavedCopy(group, originSlug);
+    },
+    onSelectView: selectMyFlowView,
+    onViewKeyDown: handleMyFlowTabKeyDown,
+    onShowArchived: () => {
+      if (!replaceMyFlowLibraryControlRoute(flowListQuery, 'archived')) return;
+      setSavedView('flow');
+    },
+    onSelectFlow: setSelectedSavedFlowSlug,
+    onReturnToLibrary: returnToMyFlowLibrary,
+    onQueryChange: (nextQuery, source, focusTarget) => {
+      if (!replaceMyFlowLibraryControlRoute(nextQuery, flowListFilter, focusTarget)) return;
+      if (source === 'mobile') setMyFlowLargeInventoryOpen(false);
+    },
+    onFilterChange: (nextFilter, source, focusTarget) => {
+      if (!replaceMyFlowLibraryControlRoute(flowListQuery, nextFilter, focusTarget)) return;
+      if (source === 'mobile') setMyFlowLargeInventoryOpen(false);
+    },
+    onExpandMobileInventory: () => setMyFlowLargeInventoryOpen(true),
+  };
+  const myFlowRouteRenderers: MyFlowRouteRenderers<MySavedFlow> = {
+    renderPostSavePanel,
+    renderLegacyCrossFlowTodo: renderMyFlowCrossFlowTodo,
+    renderCompactToday: renderMyFlowCompactToday,
+    renderSaveBanner: renderMyFlowSaveBanner,
+    renderMapUpdateNotices: renderMyFlowMapUpdateNotices,
+    renderRailRow: renderMyFlowLibraryRailRow,
+    renderSelectedFlow: (flow) => renderSavedFlowOverviewCard(flow, {
+      forceWholeFlowOutline: true,
+      workspace: true,
+    }),
+    renderMobileLibraryRow: renderMyFlowMobileLibraryRow,
+    renderMobileWorkspace: renderMyFlowMobileWorkspace,
+  };
+
+  const myFlowCalendarRouteScope: MyFlowCalendarRouteScopeModel =
+    !showMyFlowCalendarScopeFilter
+      ? { presentation: 'hidden' }
+      : calendarFlowScopePresentation === 'picker'
+        ? {
+            presentation: 'picker',
+            label: myFlowCalendarScopeLabel,
+            options: calendarFilterFlows.map((option) => ({
+              slug: getCalendarFlowSlugFromScope(option.id) ?? '',
+              title: option.label,
+              monthCount: option.count,
+              totalCount: option.totalCount,
+              color: option.marker.color,
+              initial: option.marker.initial,
+            })).filter((option) => Boolean(option.slug)),
+            selectedSlugs: [...myFlowCalendarSelectedFlowSlugs],
+          }
+        : {
+            presentation: 'compact',
+            label: myFlowCalendarScopeLabel,
+            monthHeading: formatMyFlowMonthHeading(myFlowVisibleMonth),
+            selectedScope: myFlowCalendarScope,
+            options: visibleMyFlowCalendarScopeOptions.map((option) => {
+              const flowSlug = getCalendarFlowSlugFromScope(option.id);
+              return {
+                id: option.id,
+                ...(flowSlug ? { flowSlug } : {}),
+                label: option.label,
+                count: option.count,
+                ...(option.marker ? { marker: option.marker } : {}),
+              };
+            }),
+          };
+  const myFlowCalendarRouteGroups: MyFlowCalendarRouteGroup<MyFlowCalendarRow>[] =
+    myFlowSelectedDateGroups.map((group) => {
+      const openCount = group.rows.filter((row) => !isMyFlowRowChecked(row.flow, row)).length;
+      const hasMultipleFlows = new Set(group.rows.map((row) => row.flow.progress.slug)).size > 1;
+      const sharedMeta = getMyFlowAgendaSharedMeta(
+        group.rows,
+        group.kind,
+        myFlowQ3CopyEnabled,
+      );
+      const groupFlow = group.rows[0]?.flow;
+      return {
+        key: group.key,
+        kind: group.kind,
+        ...(groupFlow ? { flowSlug: groupFlow.progress.slug } : {}),
+        displayTitle: group.savedMap
+          ? toUserFacingMapTitle(group.title)
+          : toContentDisplayTitle(group.title),
+        ...(groupFlow
+          ? {
+              openFlowAriaLabel: `${getMyFlowDisplayFlowTitle(groupFlow)} ${myFlowQ3CopyEnabled ? '내 계획' : 'My Flow'}에서 열기`,
+            }
+          : {}),
+        openCount,
+        hasMultipleFlows,
+        marker: group.flowMarker,
+        sharedMeta,
+        rows: group.rows,
+      };
+    });
+  const myFlowCalendarRouteModel: MyFlowCalendarRouteModel<MyFlowCalendarRow> = {
+    calendarCardRef: myFlowCalendarCardRef,
+    selectedDayRef: myFlowSelectedDayRef,
+    monthScheduleCount: monthCalendarRows.filter((row) => !row.isRoutine).length,
+    monthRoutineCount: monthCalendarRows.filter((row) => row.isRoutine).length,
+    visibleMonth: myFlowVisibleMonth,
+    monthHeading: formatMyFlowMonthHeading(myFlowVisibleMonth),
+    calendarKey: `${myFlowVisibleMonth}-${myFlowSelectedDate}-${myFlowCalendarScope}-${myFlowCalendarSelectedFlowSignature}`,
+    calendarProps: {
+      events: myFlowCalendarEvents,
+      dayCellClassNames: (info) =>
+        formatMyFlowLocalDate(info.date) === myFlowSelectedDate ? ['my-flow-calendar-selected-date'] : [],
+      eventContent: renderMyFlowCalendarEvent,
+      eventClassNames: (info) =>
+        String(info.event.extendedProps.calendarKey ?? '') === myFlowActiveRowKey ? ['my-flow-calendar-active-event'] : [],
+      dayCellContent: renderMyFlowCalendarDayCell,
+      eventClick: handleMyFlowCalendarEventClick,
+      eventDidMount: handleMyFlowCalendarEventMount,
+      dateClick: handleMyFlowCalendarDateClick,
+    },
+    selectedDate: myFlowSelectedDate,
+    selectedDayTitle: formatMyFlowDisplayDate(myFlowSelectedDate, { includeWeekday: true }),
+    selectedDayReturnFocusSelector: `.fc-daygrid-day[data-date="${myFlowSelectedDate}"] [data-testid="my-flow-calendar-date-button"]`,
+    selectedDayItemCount: myFlowSelectedDateAllRows.length,
+    selectedDayOpenCount: myFlowSelectedDateOpenCount,
+    isMobileViewport: isMyFlowMobileViewport,
+    mobileDaySheetOpen: myFlowCalendarDaySheetOpen,
+    ...(myFlowRoutineOverflowDate === myFlowSelectedDate
+      ? { routineOverflowDate: myFlowRoutineOverflowDate }
+      : {}),
+    routineOverflowCount: myFlowSelectedDateRoutineOverflowCount,
+    ...(myFlowScheduleOverflowDate === myFlowSelectedDate
+      ? { scheduleOverflowDate: myFlowScheduleOverflowDate }
+      : {}),
+    scheduleOverflowCount: myFlowSelectedDateScheduleOverflowCount,
+    scope: myFlowCalendarRouteScope,
+    groups: myFlowCalendarRouteGroups,
+    q3CopyEnabled: myFlowQ3CopyEnabled,
+  };
+  const myFlowCalendarRouteActions: MyFlowCalendarRouteActions<MyFlowCalendarRow> = {
+    onCloseMobileSelectedDay: myFlowCalendarController.closeDaySheet,
+    onPreviousMonth: () => moveMyFlowCalendarMonth(addMyFlowMonths(myFlowVisibleMonth, -1)),
+    onNextMonth: () => moveMyFlowCalendarMonth(addMyFlowMonths(myFlowVisibleMonth, 1)),
+    onMonthChange: moveMyFlowCalendarMonth,
+    onToday: () => myFlowCalendarController.goToday(myFlowTodayDate),
+    onFirstSchedule: () => myFlowCalendarController.goFirstSchedule(calendarAnchor, calendarViewRows),
+    onSelectScope: selectMyFlowCalendarScope,
+    onApplySelectedFlows: selectMyFlowCalendarFlows,
+    onOpenFlow: openMyFlowWorkspaceFromCalendar,
+    onOpenRow: (row) => openMyFlowWorkspaceFromCalendar(
+      row.flow.progress.slug,
+      getMyFlowRowInstanceKey(row),
+      row.structuralOccurrenceId ? row.date : undefined,
+    ),
+  };
+
   if (!isCalendarSurface && myFlowSavedPlanLibraryEnabled === null) {
     return (
       <main
@@ -20581,762 +20729,68 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
           }}
         />
       ) : null}
-      {isFocusedMyFlowWorkspace ? (
-        <h1 className="sr-only">{getMyFlowPortableExportFlowTitle(visibleSavedFlows[0])}</h1>
-      ) : <div className={`flex flex-wrap items-end justify-between gap-4 ${isCalendarSurface ? 'mb-3 sm:mb-5' : 'mb-5 sm:mb-8'}`}>
-        <div>
-          <p className={isCalendarSurface ? 'text-xs font-semibold text-blue-700' : 'text-sm font-medium text-gray-500'}>{isCalendarSurface ? '날짜별 실행' : '내 실행 공간'}</p>
-          <div className="flex flex-wrap items-center gap-2">
-            <h1 className={`${isCalendarSurface ? 'mt-0.5 text-2xl' : 'mt-1 text-2xl sm:text-3xl'} font-semibold`}>
-              {isCalendarSurface ? '캘린더' : myFlowQ3CopyEnabled ? '내 계획' : 'My Flow'}
-            </h1>
-            {!isCalendarSurface && showDemoData ? (
-              <span data-testid="my-flow-demo-badge" className="mt-1 rounded-md bg-amber-50 px-2 py-1 text-xs font-semibold text-amber-700">
-                {myFlowDemoMode === 'ux60'
-                  ? 'UX60 데모'
-                  : myFlowDemoMode === 'ux50'
-                    ? 'UX50 데모'
-                    : myFlowDemoMode === 'ux20'
-                      ? 'UX20 데모'
-                      : myFlowDemoMode === 'ux12'
-                        ? 'UX12 데모'
-                        : myFlowDemoMode === 'ux5'
-                          ? 'UX5 데모'
-                          : myFlowDemoMode === 'ux1'
-                            ? 'UX1 데모'
-                            : myFlowDemoMode === 'source-backed'
-                              ? '원문 기반 데모'
-                              : '데모 데이터'}
-              </span>
-            ) : null}
+      {isCalendarSurface ? (
+        <div className="mb-3 flex flex-wrap items-end justify-between gap-4 sm:mb-5">
+          <div>
+            <p className="text-xs font-semibold text-blue-700">날짜별 실행</p>
+            <h1 className="mt-0.5 text-2xl font-semibold">캘린더</h1>
+            <p className="mt-1 hidden text-sm text-gray-600 sm:block">
+              언제 할지 정해진 항목을 날짜별로 확인합니다.
+            </p>
           </div>
-          <p className={`${isCalendarSurface ? 'hidden sm:block' : 'sm:mt-2 sm:text-base'} mt-1 text-sm text-gray-600`}>
-            {isCalendarSurface
-              ? '언제 할지 정해진 항목을 날짜별로 확인합니다.'
-              : myFlowTodoExperimentEnabled
-                ? myFlowQ3CopyEnabled
-                  ? '할 일을 실행하고 저장한 계획을 엽니다.'
-                  : '할 일을 실행하고 저장한 Flow를 엽니다.'
-                : myFlowQ3CopyEnabled
-                  ? '저장한 계획을 찾고 엽니다.'
-                  : '저장한 Flow를 찾고 엽니다.'}
-          </p>
         </div>
-        {!isCalendarSurface ? (
-          <details className="group relative" data-testid="my-flow-auxiliary-menu">
-            <summary
-              className="flex h-11 w-11 cursor-pointer list-none items-center justify-center rounded-md border border-gray-300 bg-white text-lg font-semibold text-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
-              aria-label={myFlowQ3CopyEnabled ? '내 계획 보조 메뉴' : 'My Flow 보조 메뉴'}
-              title="보조 메뉴"
-            >
-              <span aria-hidden="true">•••</span>
-            </summary>
-            <div className="absolute right-0 z-40 mt-2 grid min-w-44 gap-2 rounded-md border border-[var(--flowme-border)] bg-white p-2 shadow-lg">
-              {workspaceSavedFlows.length > 0 ? (
-                <Link
-                  className="inline-flex min-h-10 items-center rounded-md px-3 py-2 text-sm font-semibold text-gray-800 hover:bg-gray-50"
-                  data-testid="my-flow-studio-link"
-                  href={`/u/${currentUser.slug}`}
-                >
-                  스튜디오
-                </Link>
-              ) : null}
-              <MyFlowDataManager q3CopyEnabled={myFlowQ3CopyEnabled} />
-            </div>
-          </details>
-        ) : null}
-      </div>}
+      ) : (
+        <MyFlowRouteSurface
+          model={myFlowRouteModel}
+          actions={myFlowRouteActions}
+          renderers={myFlowRouteRenderers}
+        />
+      )}
 
-      {!isCalendarSurface && !isFocusedMyFlowWorkspace && canonicalSavedCopyChoiceGroups.length > 0 ? (
+      {isCalendarSurface && workspaceSavedFlows.length === 0 && !showPostSavePanel && !showArchivedInventory ? (
         <section
-          data-testid="canonical-saved-copy-reconciliation"
-          data-p33-marker="P33-EXPLICIT-DUPLICATE-RECONCILIATION"
-          className="mb-5 border-y border-amber-200 bg-amber-50/40 py-4"
-          aria-labelledby="canonical-saved-copy-reconciliation-title"
-        >
-          <div className="px-1">
-            <p className="text-xs font-semibold text-amber-800">
-              {myFlowQ3CopyEnabled ? '같은 원문에서 저장한 계획' : '같은 원문에서 저장한 Flow'}
-            </p>
-            <h2 id="canonical-saved-copy-reconciliation-title" className="mt-1 text-lg font-semibold text-slate-950">
-              계속 사용할 사본을 골라 주세요
-            </h2>
-            <p className="mt-1 max-w-2xl break-keep text-sm leading-6 text-slate-600">
-              완료 기록과 개인 메모가 다른 사본은 자동으로 합치지 않습니다. 선택하지 않은 사본은 보관되며 나중에 다시 복구할 수 있습니다.
-            </p>
-          </div>
-          <div className="mt-3 grid gap-2 sm:grid-cols-2">
-            {canonicalSavedCopyChoiceGroups.flatMap((group) =>
-              group.copies.map((copy) => (
-                <article
-                  key={`${group.canonicalFlowId}-${copy.originSlug}`}
-                  data-testid="canonical-saved-copy-option"
-                  data-copy-role={copy.role}
-                  data-flow-slug={copy.originSlug}
-                  className="rounded-md border border-amber-200 bg-white p-3"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="text-xs font-semibold text-amber-800">
-                        {copy.role === 'canonical' ? '전체판' : '기존 간단판'} · {copy.itemCount}개
-                      </p>
-                      <h3 className="mt-1 truncate text-sm font-semibold text-slate-950">
-                        {copy.personalTitle ?? copy.title}
-                      </h3>
-                      <p className="mt-1 text-xs text-slate-500">{copy.savedAt.slice(0, 10)} 저장</p>
-                    </div>
-                    <button
-                      type="button"
-                      data-testid="canonical-saved-copy-select"
-                      className="min-h-11 shrink-0 rounded-md border border-amber-300 bg-white px-3 py-2 text-xs font-semibold text-amber-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
-                      aria-label={`${copy.personalTitle ?? copy.title} ${copy.itemCount}개 사본 계속 사용`}
-                      onClick={() => chooseCanonicalSavedCopy(group, copy.originSlug)}
-                    >
-                      이 사본 사용
-                    </button>
-                  </div>
-                </article>
-              )),
-            )}
-          </div>
-        </section>
-      ) : null}
-      {!isCalendarSurface && canonicalReconciliationNotice ? (
-        <p
-          data-testid="canonical-saved-copy-reconciliation-notice"
-          role="status"
-          className="mb-4 rounded-md bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-800"
-        >
-          {canonicalReconciliationNotice}
-        </p>
-      ) : null}
-
-      {showMyFlowLocalNavigation ? (
-        <nav className="mb-5 border-y border-slate-200 py-2" aria-label={myFlowQ3CopyEnabled ? '내 계획 보기' : 'My Flow 보기'}>
-          <div
-            role="tablist"
-            aria-label={myFlowQ3CopyEnabled ? '내 계획 보기' : 'My Flow 보기'}
-            className={`${primarySavedViewTabGridClass} ${FLOW_UI_SEGMENTED_CLASS} grid w-full sm:inline-grid sm:w-auto`}
-          >
-            {primarySavedViewTabs.map(([id, label]) => (
-              <button
-                key={id}
-                id={`my-flow-tab-${id}`}
-                role="tab"
-                type="button"
-                aria-selected={savedView === id}
-                aria-controls={`my-flow-panel-${id}`}
-                tabIndex={savedView === id ? 0 : -1}
-                className={`min-h-11 rounded-md px-3 py-2 text-sm font-semibold ${savedView === id ? FLOW_UI_SEGMENT_ACTIVE_CLASS : FLOW_UI_SEGMENT_IDLE_CLASS}`}
-                data-testid={`my-flow-view-${id}`}
-                onClick={() => selectMyFlowView(id)}
-                onKeyDown={(event) => handleMyFlowTabKeyDown(event, id)}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        </nav>
-      ) : null}
-
-      {!isCalendarSurface && myFlowSaveUndoStatus ? (
-        <p
-          data-testid="my-flow-save-undo-status"
-          role="status"
-          className="mb-4 rounded-lg bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-800"
-        >
-          {myFlowSaveUndoStatus}
-        </p>
-      ) : null}
-
-      {workspaceSavedFlows.length === 0 && !showPostSavePanel && !showArchivedInventory ? (
-        <section
-          id={!isCalendarSurface ? `my-flow-panel-${savedView}` : undefined}
-          role={!isCalendarSurface ? 'tabpanel' : undefined}
-          aria-labelledby={!isCalendarSurface ? `my-flow-tab-${savedView}` : undefined}
           data-testid="my-flow-empty-state"
           className="border-y border-slate-200 bg-slate-50/70 px-1 py-8 sm:px-6 sm:py-10"
         >
-          <p className="text-sm font-semibold text-blue-700">
-            {isCalendarSurface ? '날짜 항목 없음' : myFlowQ3Copy.savedLibrary.listTitle}
-          </p>
-          <h2 className="mt-2 break-keep text-2xl font-semibold text-slate-950">
-            {isCalendarSurface
-              ? '날짜가 있는 콘텐츠를 먼저 고르세요'
-              : myFlowQ3Copy.savedLibrary.emptyTitle}
-          </h2>
+          <p className="text-sm font-semibold text-blue-700">날짜 항목 없음</p>
+          <h2 className="mt-2 break-keep text-2xl font-semibold text-slate-950">날짜가 있는 콘텐츠를 먼저 고르세요</h2>
           <p className="mt-2 max-w-xl break-keep text-sm leading-6 text-slate-600">
-            {isCalendarSurface
-              ? '언제 할지 정해진 항목을 날짜별로 확인합니다.'
-              : myFlowQ3CopyEnabled
-                ? '계획을 저장하면 전체 내용과 개인 수정본을 여기에서 관리합니다.'
-                : 'Flow를 저장하면 전체 계획과 개인 수정본을 여기에서 관리합니다.'}
+            언제 할지 정해진 항목을 날짜별로 확인합니다.
           </p>
           <div className="mt-5 flex flex-wrap gap-2">
             <Link
               className="inline-flex min-h-11 w-full items-center justify-center rounded-md bg-blue-700 px-4 py-2 text-sm font-semibold text-white sm:w-auto"
               href="/flows"
-              data-testid={!isCalendarSurface ? 'my-flow-empty-discovery' : undefined}
-              data-action-role={!isCalendarSurface ? 'discover-public-flow' : undefined}
             >
               콘텐츠 고르러 가기
             </Link>
-            {!isCalendarSurface && myFlowArchivedFlowSlugs.length > 0 ? (
-              <button
-                type="button"
-                data-testid="my-flow-open-archived"
-                className="inline-flex min-h-11 w-full items-center justify-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 sm:w-auto"
-                onClick={() => {
-                  setSavedView('flow');
-                  setFlowListFilter('archived');
-                  replaceMyFlowLibraryControlRoute(flowListQuery, 'archived');
-                }}
-              >
-                {myFlowQ3CopyEnabled ? '보관한 계획' : '보관된 Flow'} {myFlowArchivedFlowSlugs.length}개 보기
-              </button>
-            ) : null}
           </div>
         </section>
       ) : null}
 
-      {workspaceSavedFlows.length > 0 || showPostSavePanel || showArchivedInventory ? (
+      {isCalendarSurface && (
+        workspaceSavedFlows.length > 0 ||
+        showPostSavePanel ||
+        showArchivedInventory
+      ) ? (
         <section className="mb-6">
           {showPostSavePanel ? renderPostSavePanel() : null}
           {showMyFlowWorkspace ? (
-          <div
-            data-testid="my-flow-workspace"
-            data-surface-role={isCalendarSurface ? 'date-first' : 'task-first'}
-            ref={myFlowWorkspaceRef}
-            tabIndex={-1}
-            className={`mb-4 grid gap-4 ${showMyFlowSidebar ? 'lg:grid-cols-[210px_minmax(0,1fr)]' : ''}`}
-          >
-            {showMyFlowSidebar ? (
-              <aside data-testid="my-flow-list" className="hidden max-h-[calc(100vh-2rem)] self-start overflow-y-auto rounded-lg border border-slate-200 bg-white p-3 shadow-sm lg:sticky lg:top-4 lg:block">
-                <div className="mb-3 flex items-center justify-between gap-3">
-                  <div>
-                    <p className="text-xs font-semibold uppercase text-slate-500">실행 목록</p>
-                    <h3 className="text-base font-semibold text-slate-950">{myFlowQ3Copy.savedLibrary.listTitle}</h3>
-                  </div>
-                  <p className="rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">{workspaceSavedFlows.length}개</p>
-                </div>
-                <div className="grid gap-2">
-                  <button
-                    className={`rounded-md border px-3 py-3 text-left ${selectedSavedFlowSlug === 'all' ? 'border-blue-600 bg-blue-50 text-blue-950' : 'border-slate-200 bg-white text-slate-800 hover:border-blue-200 hover:bg-blue-50'}`}
-                    type="button"
-                    aria-pressed={selectedSavedFlowSlug === 'all'}
-                    data-testid="my-flow-filter-all"
-                    onClick={() => setSelectedSavedFlowSlug('all')}
-                  >
-                    <span className="block text-sm font-semibold">{myFlowQ3CopyEnabled ? '모든 계획' : '모든 Flow'}</span>
-                    <span className="mt-1 block text-xs font-semibold text-blue-700">{workspaceSavedFlows.length}개 저장</span>
-                  </button>
-                  {workspaceSavedFlows.map((flow) => (
-                    <button
-                      key={flow.progress.slug}
-                      className={`rounded-md border px-3 py-3 text-left ${selectedSavedFlowSlug === flow.progress.slug ? 'border-blue-600 bg-blue-50 text-blue-950' : 'border-slate-200 bg-white text-slate-800 hover:border-blue-200 hover:bg-blue-50'}`}
-                      type="button"
-                      aria-pressed={selectedSavedFlowSlug === flow.progress.slug}
-                      data-testid={`my-flow-filter-${flow.progress.slug}`}
-                      onClick={() => setSelectedSavedFlowSlug(flow.progress.slug)}
-                    >
-                      <span className="block text-sm font-semibold">{getMyFlowDisplayFlowTitle(flow)}</span>
-                      <span className="mt-1 block text-xs font-semibold text-blue-700">{getMyFlowFlowProgressLabel(flow)}</span>
-                    </button>
-                  ))}
-                </div>
-              </aside>
-            ) : null}
-            <div className="min-w-0">
-              {showMyFlowWorkspaceControls ? (
-              <div className="mb-5 border-y border-slate-200 py-3 sm:flex sm:items-end sm:justify-between sm:gap-3">
-                {showMyFlowScopeControl ? (
-                  <div className={`min-w-0 sm:w-72 ${showMyFlowSidebar ? 'lg:hidden' : ''}`}>
-                    <label className="mb-1 block text-xs font-semibold text-slate-500" htmlFor="my-flow-scope">
-                      {myFlowQ3Copy.savedLibrary.sectionTitle}
-                    </label>
-                    <select
-                      id="my-flow-scope"
-                      className="min-h-10 w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-900 outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
-                      value={selectedSavedFlowSlug}
-                      data-testid="my-flow-scope-select"
-                      onChange={(event) => setSelectedSavedFlowSlug(event.target.value)}
-                    >
-                      <option value="all">{myFlowQ3CopyEnabled ? '모든 계획' : '모든 Flow'}</option>
-                      {workspaceSavedFlows.map((flow) => (
-                        <option key={flow.progress.slug} value={flow.progress.slug}>
-                          {getMyFlowDisplayFlowTitle(flow)}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                ) : null}
-              </div>
-              ) : null}
-
-          {savedView === 'flow' && myFlowSavedPlanLibraryEnabled !== true && myFlowTodoExperimentEnabled
-            ? renderMyFlowCrossFlowTodo()
-            : null}
-
-          {savedView === 'flow' && (
-            myFlowSavedPlanLibraryEnabled === true ||
-            !myFlowTodoExperimentEnabled ||
-            myFlowTodoExperimentView === 'flows'
-          ) ? (
             <div
-              id="my-flow-panel-flow"
-              role={isFocusedMyFlowWorkspace ? 'region' : 'tabpanel'}
-              aria-labelledby={isFocusedMyFlowWorkspace || myFlowSavedPlanLibraryEnabled === true
-                ? undefined
-                : 'my-flow-tab-flow'}
-              aria-label={isFocusedMyFlowWorkspace
-                ? `${myFlowLibrarySelectedFlow?.progress.title ?? (myFlowQ3CopyEnabled ? '선택한 계획' : '선택한 Flow')} 작업 공간`
-                : myFlowSavedPlanLibraryEnabled === true
-                  ? myFlowQ3CopyEnabled ? '저장한 계획 라이브러리' : 'My Flow 라이브러리'
-                  : undefined}
-              className="grid gap-4"
+              data-testid="my-flow-workspace"
+              data-surface-role="date-first"
+              ref={myFlowWorkspaceRef}
+              tabIndex={-1}
+              className={`mb-4 grid gap-4 ${showMyFlowSidebar ? 'lg:grid-cols-[210px_minmax(0,1fr)]' : ''}`}
             >
-              {renderMyFlowCompactToday()}
-              {renderMyFlowSaveBanner()}
-              {!isFocusedMyFlowWorkspace ? <header data-testid="my-flow-library-heading" className="flex items-end justify-between gap-3 border-b border-slate-200 pb-3 md:hidden">
-                <div>
-                  <h2 className="text-xl font-semibold text-slate-950">{myFlowQ3Copy.savedLibrary.sectionTitle}</h2>
-                </div>
-                <span data-testid="my-flow-saved-count" className="shrink-0 text-xs font-semibold text-slate-500">
-                  {myFlowLocalSummary.flowCount}개
-                </span>
-              </header> : null}
-              {selectedSavedFlowSlug === 'all' ? renderMyFlowMapUpdateNotices() : null}
-              {!isMyFlowMobileViewport && (workspaceSavedFlows.length > 0 || showArchivedInventory) ? (
-                <div
-                  data-testid="my-flow-library-workspace"
-                  data-library-layout="rail-canvas-inspector"
-                   data-p29-marker="P29-MY-FLOW-THREE-PANE"
-                   data-p32-marker="P32-02-FOCUSED-MY-FLOW-WORKSPACE"
-                   data-p35-marker="P35-MY-LIBRARY-ONLY"
-                   data-p35-r11-marker="P35-R11-WIDE-EXECUTION-INSPECTOR"
-                   className={`hidden min-w-0 gap-0 border-y border-[var(--flowme-border)] bg-white md:grid ${myFlowLibrarySelectedFlow ? 'md:grid-cols-[minmax(22rem,36%)_minmax(0,1fr)]' : 'md:grid-cols-1'}`}
-                >
-                  <aside data-testid="my-flow-library-rail" className={`min-w-0 bg-[var(--flowme-surface-subtle)] ${myFlowLibrarySelectedFlow ? 'border-r border-[var(--flowme-border)]' : ''}`}>
-                    <div className="border-b border-[var(--flowme-border)] p-3">
-                      {isFocusedMyFlowWorkspace ? (
-                        <button
-                          type="button"
-                          data-testid="my-flow-library-back"
-                          className="mb-3 inline-flex min-h-10 items-center gap-1 rounded-md px-2 text-xs font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
-                          aria-label={myFlowQ3CopyEnabled ? '전체 내 계획 보기로 돌아가기' : '전체 My Flow 보기로 돌아가기'}
-                          onClick={returnToMyFlowLibrary}
-                        >
-                          <span aria-hidden="true">‹</span>
-                          전체 보기
-                        </button>
-                      ) : null}
-                      <div className="flex items-center justify-between gap-3">
-                        <div>
-                          <h3 className="text-base font-semibold text-[var(--flowme-text)]">{myFlowQ3Copy.savedLibrary.sectionTitle}</h3>
-                        </div>
-                        <span className="text-xs font-semibold text-[var(--flowme-text-secondary)]">{flowListVisibleFlows.length}개</span>
-                      </div>
-                      {myFlowLibraryControls.search ? (
-                        <input
-                          className="mt-3 min-h-10 w-full rounded-md border border-[var(--flowme-border-strong)] bg-white px-3 py-2 text-sm text-[var(--flowme-text)] outline-none focus:border-[var(--flowme-action)] focus:ring-2 focus:ring-[var(--flowme-focus)]"
-                          type="search"
-                          placeholder={myFlowQ3Copy.savedLibrary.searchPlaceholder}
-                          aria-label={myFlowQ3Copy.savedLibrary.searchAccessibleName}
-                          value={flowListQuery}
-                          data-testid="my-flow-library-rail-search"
-                          onChange={(event) => {
-                            const nextQuery = event.target.value;
-                            setFlowListQuery(nextQuery);
-                            replaceMyFlowLibraryControlRoute(nextQuery, flowListFilter);
-                          }}
-                        />
-                      ) : null}
-                      {myFlowLibraryControls.filters ? (
-                        <label className="mt-2 block text-[11px] font-semibold text-[var(--flowme-text-secondary)]">
-                          상태
-                           <select
-                             data-testid="my-flow-library-rail-filter"
-                             data-p35-r10-marker="P35-R10-LIBRARY-FILTER-ONE-AXIS"
-                            className="mt-1 min-h-10 w-full rounded-md border border-[var(--flowme-border)] bg-white px-3 text-sm font-semibold text-[var(--flowme-text)]"
-                            value={flowListFilter}
-                            onChange={(event) => {
-                              const nextFilter = event.target.value as typeof flowListFilter;
-                              setFlowListFilter(nextFilter);
-                              replaceMyFlowLibraryControlRoute(flowListQuery, nextFilter);
-                            }}
-                          >
-                            {flowListFilterTabs.map(([id, label]) => <option key={id} value={id}>{label}</option>)}
-                          </select>
-                        </label>
-                      ) : null}
-                    </div>
-                    <div
-                      ref={myFlowLibraryRailRef}
-                      data-testid="my-flow-library-scroll-container"
-                      className={`max-h-[calc(100dvh-18rem)] overflow-y-auto overscroll-contain ${myFlowLibrarySelectedFlow ? '' : 'md:grid md:grid-cols-2 xl:grid-cols-3'}`}
-                    >
-                      {flowListVisibleFlows.map(renderMyFlowLibraryRailRow)}
-                    </div>
-                  </aside>
-                  <main data-testid="my-flow-library-detail" className={myFlowLibrarySelectedFlow ? 'min-w-0 p-4 xl:p-5' : 'hidden'}>
-                    {myFlowLibrarySelectedFlow
-                      ? renderSavedFlowOverviewCard(myFlowLibrarySelectedFlow, { forceWholeFlowOutline: true, workspace: true })
-                      : flowListVisibleFlows.length > 0
-                        ? <p className="py-8 text-center text-sm font-semibold text-[var(--flowme-text-secondary)]">
-                            {myFlowQ3CopyEnabled ? '계획을 열어 전체 내용 확인' : 'Flow를 열어 전체 계획 확인'}
-                          </p>
-                        : <p className="py-8 text-center text-sm text-[var(--flowme-text-secondary)]">
-                            {myFlowQ3CopyEnabled ? '조건에 맞는 계획이 없습니다.' : '조건에 맞는 Flow가 없습니다.'}
-                          </p>}
-                  </main>
-                </div>
-              ) : null}
-              {isMyFlowMobileViewport && selectedSavedFlowSlug === 'all' && (visibleSavedFlows.length > 0 || showArchivedInventory) ? (
-                <div
-                      data-testid="my-flow-mobile-flow-hub"
-                      data-library-mode={myFlowLibraryControls.mode}
-                      data-p35-marker="P35-MY-LIBRARY-ONLY"
-                      className="grid gap-3"
-                    >
-                      {myFlowLibraryControls.search || myFlowLibraryControls.filters ? (
-                        <section
-                          ref={myFlowOverviewSummaryRef}
-                          data-testid="my-flow-library-controls"
-                          className="grid gap-2 border-y border-slate-200 py-2"
-                        >
-                          {myFlowLibraryControls.search ? (
-                            <input
-                              className="min-h-10 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-900 outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
-                              type="search"
-                              placeholder={myFlowQ3Copy.savedLibrary.searchPlaceholder}
-                              aria-label={myFlowQ3Copy.savedLibrary.searchAccessibleName}
-                              value={flowListQuery}
-                              data-testid="my-flow-search"
-                              onChange={(event) => {
-                                const nextQuery = event.target.value;
-                                setFlowListQuery(nextQuery);
-                                replaceMyFlowLibraryControlRoute(nextQuery, flowListFilter);
-                                setMyFlowLargeInventoryOpen(false);
-                              }}
-                            />
-                          ) : null}
-                          {myFlowLibraryControls.filters ? (
-                            <div
-                              className="flex flex-wrap gap-2"
-                              role="group"
-                              aria-label={myFlowQ3CopyEnabled ? '저장한 계획 상태 필터' : '저장한 Flow 상태 필터'}
-                              data-p35-r10-marker="P35-R10-LIBRARY-FILTER-ONE-AXIS"
-                            >
-                              {flowListFilterTabs.map(([id, label]) => (
-                                <button
-                                  key={id}
-                                  className={`rounded-md px-2.5 py-1.5 text-xs font-semibold ${flowListFilter === id ? 'bg-blue-700 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
-                                  type="button"
-                                  aria-pressed={flowListFilter === id}
-                                  data-testid={`my-flow-list-filter-${id}`}
-                                  onClick={() => {
-                                    setFlowListFilter(id);
-                                    replaceMyFlowLibraryControlRoute(flowListQuery, id);
-                                    setMyFlowLargeInventoryOpen(false);
-                                  }}
-                                >
-                                  {label}
-                                </button>
-                              ))}
-                            </div>
-                          ) : null}
-                        </section>
-                      ) : null}
-                      {flowListVisibleFlows.length > 0 ? (
-                        <div className="overflow-hidden rounded-md border-y border-[var(--flowme-border)]" data-p29-marker="P29-MY-FLOW-ACTION-FIRST">
-                          {mobileInventoryVisibleFlows.map((flow) => renderMyFlowMobileLibraryRow(flow))}
-                        </div>
-                      ) : (
-                        <p className="mt-3 rounded-md bg-slate-50 px-3 py-3 text-sm text-slate-600">
-                          {myFlowQ3CopyEnabled ? '조건에 맞는 계획이 없습니다.' : '조건에 맞는 Flow가 없습니다.'}
-                        </p>
-                      )}
-                      {hiddenMobileInventoryCount > 0 ? (
-                        <button
-                          type="button"
-                          data-testid="my-flow-mobile-inventory-open"
-                          className="w-full rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-left text-sm font-semibold text-blue-800"
-                          aria-expanded={myFlowLargeInventoryOpen}
-                          onClick={() => setMyFlowLargeInventoryOpen(true)}
-                        >
-                          {hiddenMobileInventoryCount}개 더 보기
-                        </button>
-                      ) : null}
-                    </div>
-              ) : isMyFlowMobileViewport ? (
-                <div className="min-w-0">
-                  {visibleSavedFlows.map((flow) => renderMyFlowMobileWorkspace(flow))}
-                </div>
-              ) : null}
+              <div className="min-w-0">
+                <MyFlowCalendarRouteSurface
+                  model={myFlowCalendarRouteModel}
+                  actions={myFlowCalendarRouteActions}
+                  renderExecutionRow={renderExecutionRow}
+                />
+              </div>
             </div>
-          ) : null}
-
-          {isCalendarSurface ? (
-            <MyFlowCalendarSurface
-              calendarCardRef={myFlowCalendarCardRef}
-              monthScheduleCount={monthCalendarRows.filter((row) => row.flow.bundle.flow.structure_type !== 'routine').length}
-              monthRoutineCount={monthCalendarRows.filter((row) => row.flow.bundle.flow.structure_type === 'routine').length}
-              scopeControl={showMyFlowCalendarScopeFilter ? (
-                  calendarFlowScopePresentation === 'picker' ? (
-                    <div
-                      data-testid="my-flow-calendar-scope-filter"
-                      data-scope-presentation="picker"
-                      data-p29-marker="P29-CALENDAR-COMPACT-SCOPE"
-                      className="mt-2 flex items-center justify-between gap-3 border-y border-[var(--flowme-border)] py-2 sm:mt-3"
-                    >
-                      <div className="min-w-0">
-                        <p className="text-[11px] font-semibold text-[var(--flowme-text-tertiary)]">보기 범위</p>
-                        <p className="truncate text-sm font-semibold text-[var(--flowme-text)]">{myFlowCalendarScopeLabel}</p>
-                      </div>
-                      <CalendarFlowScopePicker
-                        options={calendarFilterFlows.map((option) => ({
-                          slug: getCalendarFlowSlugFromScope(option.id) ?? '',
-                          title: option.label,
-                          monthCount: option.count,
-                          totalCount: option.totalCount,
-                          color: option.marker.color,
-                          initial: option.marker.initial,
-                        })).filter((option) => Boolean(option.slug))}
-                        selectedSlugs={myFlowCalendarSelectedFlowSlugs}
-                        q3CopyEnabled={myFlowQ3CopyEnabled}
-                        onApply={selectMyFlowCalendarFlows}
-                      />
-                    </div>
-                  ) : (
-                    <div
-                      data-testid="my-flow-calendar-scope-filter"
-                      data-scope-presentation="compact"
-                      data-p29-marker="P29-CALENDAR-COMPACT-SCOPE"
-                      className="mt-2 flex w-full max-w-full flex-wrap gap-1 rounded-lg bg-[var(--flowme-soft)] p-1 sm:mt-3"
-                      aria-label="캘린더 표시 범위"
-                    >
-                      {visibleMyFlowCalendarScopeOptions.map((option) => {
-                        const flowSlug = getCalendarFlowSlugFromScope(option.id);
-                        const selected = myFlowCalendarScope === option.id;
-                        return (
-                          <button
-                            key={option.id}
-                            type="button"
-                            data-testid={flowSlug
-                              ? `my-flow-calendar-scope-flow-${flowSlug}`
-                              : `my-flow-calendar-scope-${option.id}`}
-                            data-flow-slug={flowSlug}
-                            aria-label={`${option.label}, ${formatMyFlowMonthHeading(myFlowVisibleMonth)} 일정 ${option.count}개`}
-                            aria-pressed={selected}
-                            className={`flex min-h-11 min-w-0 max-w-full flex-1 basis-[7rem] items-center justify-center gap-1.5 rounded-md px-2.5 text-xs font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${selected ? FLOW_UI_SEGMENT_ACTIVE_CLASS : FLOW_UI_SEGMENT_IDLE_CLASS}`}
-                            onClick={() => selectMyFlowCalendarScope(option.id)}
-                          >
-                            {option.marker ? (
-                              <span
-                                data-testid="my-flow-calendar-filter-marker"
-                                aria-hidden="true"
-                                className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-[4px] text-[9px] font-black text-white"
-                                style={{ backgroundColor: option.marker.color }}
-                              >
-                                {option.marker.initial}
-                              </span>
-                            ) : null}
-                            <span className="truncate">{option.id === 'all' ? '전체' : option.label}</span>
-                            <span className={`shrink-0 text-[10px] font-semibold ${selected ? 'text-[var(--flowme-text-secondary)]' : 'text-slate-500'}`}>{option.count}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )
-                ) : undefined}
-              visibleMonth={myFlowVisibleMonth}
-              monthHeading={formatMyFlowMonthHeading(myFlowVisibleMonth)}
-              calendarKey={`${myFlowVisibleMonth}-${myFlowSelectedDate}-${myFlowCalendarScope}-${myFlowCalendarSelectedFlowSignature}`}
-              selectedDayTitle={formatMyFlowDisplayDate(myFlowSelectedDate, { includeWeekday: true })}
-              mobileSelectedDay={isMyFlowMobileViewport}
-              mobileSelectedDayOpen={myFlowCalendarDaySheetOpen}
-              selectedDayReturnFocusSelector={`.fc-daygrid-day[data-date="${myFlowSelectedDate}"] [data-testid="my-flow-calendar-date-button"]`}
-              onCloseMobileSelectedDay={() => setMyFlowCalendarDaySheetOpen(false)}
-              calendarProps={{
-                events: myFlowCalendarEvents,
-                dayCellClassNames: (info) =>
-                  formatMyFlowLocalDate(info.date) === myFlowSelectedDate ? ['my-flow-calendar-selected-date'] : [],
-                eventContent: renderMyFlowCalendarEvent,
-                eventClassNames: (info) =>
-                  String(info.event.extendedProps.calendarKey ?? '') === myFlowActiveRowKey ? ['my-flow-calendar-active-event'] : [],
-                dayCellContent: renderMyFlowCalendarDayCell,
-                eventClick: handleMyFlowCalendarEventClick,
-                eventDidMount: handleMyFlowCalendarEventMount,
-                dateClick: handleMyFlowCalendarDateClick,
-              }}
-              onPreviousMonth={() => moveMyFlowCalendarMonth(addMyFlowMonths(myFlowVisibleMonth, -1))}
-              onNextMonth={() => moveMyFlowCalendarMonth(addMyFlowMonths(myFlowVisibleMonth, 1))}
-              onMonthChange={moveMyFlowCalendarMonth}
-              onToday={() => {
-                setMyFlowSelectedDate(myFlowTodayDate);
-                setMyFlowVisibleMonth(getMyFlowMonthStart(myFlowTodayDate));
-                setMyFlowActiveRowKey('');
-                setMyFlowRoutineOverflowDate('');
-                setMyFlowScheduleOverflowDate('');
-                setMyFlowExpandedMemoKey('');
-                setMyFlowEditingDetailKey('');
-                setMyFlowDetailOpen(false);
-                setMyFlowCalendarDaySheetOpen(false);
-              }}
-              onFirstSchedule={() => {
-                const firstDate = findFirstMyFlowDateInMonth(calendarScopedRows, calendarAnchor);
-                setMyFlowSelectedDate(firstDate);
-                setMyFlowVisibleMonth(getMyFlowMonthStart(firstDate));
-                setMyFlowActiveRowKey('');
-                setMyFlowRoutineOverflowDate('');
-                setMyFlowScheduleOverflowDate('');
-                setMyFlowExpandedMemoKey('');
-                setMyFlowEditingDetailKey('');
-                setMyFlowDetailOpen(false);
-                setMyFlowCalendarDaySheetOpen(false);
-              }}
-              selectedDay={(
-                <section
-                ref={myFlowSelectedDayRef}
-                data-testid="my-flow-calendar-selected-day"
-                data-calendar-layout="selected-day-execution"
-                data-flow-anatomy="selected-day"
-                data-overflow-date={myFlowRoutineOverflowDate === myFlowSelectedDate ? myFlowRoutineOverflowDate : undefined}
-                data-schedule-overflow-date={myFlowScheduleOverflowDate === myFlowSelectedDate ? myFlowScheduleOverflowDate : undefined}
-                className={isMyFlowMobileViewport
-                  ? 'min-w-0'
-                  : 'order-3 border-y border-slate-200 py-3 sm:py-4 lg:sticky lg:top-4 lg:max-h-[calc(100dvh-2rem)] lg:overflow-y-auto lg:overscroll-contain lg:border-y-0 lg:border-l lg:pl-4'}
-              >
-                <div className={isMyFlowMobileViewport ? 'sr-only' : 'flex items-start gap-3'}>
-                  <div aria-live="polite" aria-atomic="true">
-                    <h3 className="mt-1 text-lg font-semibold text-slate-950">{formatMyFlowDisplayDate(myFlowSelectedDate, { includeWeekday: true })}</h3>
-                    <p data-testid="my-flow-selected-day-summary" className="mt-1 text-xs font-semibold text-slate-500">
-                      {showMyFlowCalendarScopeFilter ? `${myFlowCalendarScopeLabel} · ` : ''}{myFlowSelectedDateAllRows.length}개 항목 · {myFlowSelectedDateOpenCount}개 남음
-                    </p>
-                  </div>
-                </div>
-                {myFlowRoutineOverflowDate === myFlowSelectedDate && myFlowSelectedDateRoutineOverflowCount > 0 ? (
-                  <p data-testid="my-flow-selected-day-overflow-note" className="mt-2 rounded-md bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-700">
-                    +{myFlowSelectedDateRoutineOverflowCount} 반복 항목 포함
-                  </p>
-                ) : null}
-                {myFlowScheduleOverflowDate === myFlowSelectedDate && myFlowSelectedDateScheduleOverflowCount > 0 ? (
-                  <p data-testid="my-flow-selected-day-schedule-overflow-note" className="mt-2 rounded-md bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-700">
-                    +{myFlowSelectedDateScheduleOverflowCount} 날짜 항목 포함
-                  </p>
-                ) : null}
-                {myFlowSelectedDateAllRows.length > 0 ? (
-                  <div data-testid="my-flow-selected-date-groups" className="mt-3 grid">
-                    {myFlowSelectedDateGroups.map((group) => {
-                      const groupOpenCount = group.rows.filter((row) => !isMyFlowRowChecked(row.flow, row)).length;
-                      const groupHasMultipleFlows = new Set(group.rows.map((row) => row.flow.progress.slug)).size > 1;
-                      const sharedMeta = getMyFlowAgendaSharedMeta(
-                        group.rows,
-                        group.kind,
-                        myFlowQ3CopyEnabled,
-                      );
-                      const flowMarker = group.flowMarker;
-                      const groupFlow = group.rows[0]?.flow;
-                      return (
-                        <section
-                          key={group.key}
-                          data-testid="my-flow-selected-date-group"
-                          data-density="compact"
-                          data-flow-slug={group.rows[0]?.flow.progress.slug}
-                          data-group-kind={group.kind}
-                          data-flow-marker-key={flowMarker.key}
-                          data-flow-anatomy="calendar-flow-group"
-                          className="border-t border-[var(--flowme-border)] py-3 first:border-t-0 first:pt-0"
-                        >
-                          <div className="mb-2 flex flex-wrap items-start justify-between gap-2">
-                            <div className="flex min-w-0 items-start gap-2">
-                              <span
-                                data-testid="my-flow-selected-date-flow-marker"
-                                aria-label={flowMarker.title}
-                                title={flowMarker.title}
-                                className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md text-[10px] font-black text-white"
-                                style={{ backgroundColor: flowMarker.color }}
-                              >
-                                {flowMarker.initial}
-                              </span>
-                              <div className="min-w-0">
-                                <h4 data-flow-identity-slot="title" className="truncate text-sm font-semibold text-[var(--flowme-text)]">{group.savedMap ? toUserFacingMapTitle(group.title) : toContentDisplayTitle(group.title)}</h4>
-                              </div>
-                            </div>
-                            <div className="flex shrink-0 items-center gap-2">
-                              {group.rows.length > 1 || groupOpenCount !== group.rows.length ? (
-                                <span className="text-[11px] font-semibold text-slate-500">
-                                  {group.rows.length}개 · {groupOpenCount}개 남음
-                                </span>
-                              ) : null}
-                              {groupFlow ? (
-                                <button
-                                  type="button"
-                                  data-testid="my-flow-calendar-open-flow"
-                                  className="min-h-9 rounded-md px-2 text-[11px] font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
-                                  aria-label={`${getMyFlowDisplayFlowTitle(groupFlow)} ${myFlowQ3CopyEnabled ? '내 계획' : 'My Flow'}에서 열기`}
-                                  onClick={() => openMyFlowWorkspaceFromCalendar(groupFlow.progress.slug)}
-                                >
-                                  Flow 열기
-                                </button>
-                              ) : null}
-                            </div>
-                          </div>
-                          {sharedMeta.timing || sharedMeta.section ? (
-                            <div data-testid="my-flow-selected-date-group-meta" className="mb-2 flex flex-wrap items-center gap-1.5 text-[11px] font-semibold text-slate-500">
-                              {sharedMeta.timing ? (
-                                <span
-                                  data-testid="my-flow-group-timing-chip"
-                                  aria-label={sharedMeta.timing.accessibilityLabel}
-                                  title={sharedMeta.timing.accessibilityLabel}
-                                  className="text-slate-600"
-                                >
-                                  {sharedMeta.timing.label}
-                                </span>
-                              ) : null}
-                              {sharedMeta.section ? (
-                                <span data-testid="my-flow-group-section-label">{sharedMeta.section}</span>
-                              ) : null}
-                            </div>
-                          ) : null}
-                          <div className="grid gap-1.5">
-                            {group.rows.map((row) => renderExecutionRow(row, {
-                              kind: group.kind,
-                              compact: true,
-                              openDetail: true,
-                              inlineDetail: false,
-                              suppressDateMeta: true,
-                              hideDateMeta: true,
-                              hideTimingMeta: Boolean(sharedMeta.timing),
-                              hideSectionMeta: Boolean(sharedMeta.section),
-                              hideFlowMeta: !groupHasMultipleFlows,
-                              showOpenLabel: true,
-                              openActionLabel: myFlowQ3CopyEnabled ? '계획에서 열기' : 'Flow에서 열기',
-                              onOpen: () => openMyFlowWorkspaceFromCalendar(
-                                row.flow.progress.slug,
-                                getMyFlowRowInstanceKey(row),
-                                row.structuralOccurrenceId ? row.date : undefined,
-                              ),
-                              markerColor: flowMarker.color,
-                              routineStatusInMeta: true,
-                              hideExecutionNoteAction: true,
-                              draggable: false,
-                            }))}
-                          </div>
-                        </section>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <p className="mt-3 rounded-md bg-slate-50 px-3 py-3 text-sm text-slate-600">이 날짜에 등록된 일정이 없습니다.</p>
-                )}
-              </section>
-              )}
-            />
-          ) : null}
-
-            </div>
-          </div>
           ) : null}
         </section>
       ) : null}

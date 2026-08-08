@@ -142,6 +142,16 @@ async function firstOpenItemButton(plan: Locator): Promise<Locator> {
   return open;
 }
 
+async function enterItemEditMode(detail: Locator): Promise<void> {
+  const quickEdit = detail.getByTestId('my-flow-quick-item-edit');
+  if (await quickEdit.isVisible().catch(() => false)) {
+    await quickEdit.click();
+  } else {
+    await detail.locator('[data-my-flow-item-edit-entry="true"]').first().click();
+  }
+  await expect(detail.getByTestId('my-flow-detail-title-input')).toBeVisible();
+}
+
 test.describe('P35 P0-08 saved-plan library', () => {
   test('390: zero plans has one discovery action and no synthetic Today or controls', async ({ page }) => {
     const errors = collectBrowserErrors(page);
@@ -264,6 +274,421 @@ test.describe('P35 P0-08 saved-plan library', () => {
     await expect(statusFilter.locator('option')).toHaveCount(4);
     await expect(rail.locator('input[type="search"]')).toHaveCount(1);
     await expect(rail.locator('select')).toHaveCount(1);
+
+    await expectPageQuality(page);
+    expect(errors).toEqual([]);
+  });
+
+  test('1024: changing query or status from a selected plan keeps route and screen on the same list state', async ({ page }) => {
+    const errors = collectBrowserErrors(page);
+    await page.setViewportSize({ width: 1024, height: 768 });
+    await page.goto('/my?demo=ux20');
+
+    await expectLibraryShell(page, 20, 'searchable');
+    const workspace = page.getByTestId('my-flow-library-workspace');
+    const rail = workspace.getByTestId('my-flow-library-rail');
+    const rows = rail.getByTestId('my-flow-library-row');
+    const titles = await rows.locator('[data-flow-identity-slot="title"]').allTextContents();
+    const query = chooseBroadHangulQuery(titles);
+    expect(query).not.toBe('');
+
+    const firstSlug = await rows.first().getAttribute('data-flow-slug');
+    expect(firstSlug).toBeTruthy();
+    await rows.first().click();
+    await expect.poll(() => new URL(page.url()).searchParams.get('flow')).toBe(firstSlug);
+    await expect(workspace.getByTestId('my-flow-library-detail')).toBeVisible();
+    const historyLengthBeforeQuery = await page.evaluate(() => window.history.length);
+
+    const search = rail.getByTestId('my-flow-library-rail-search');
+    await search.fill(query);
+    await expect.poll(() => new URL(page.url()).searchParams.has('flow')).toBe(false);
+    await expect.poll(() => new URL(page.url()).searchParams.has('item')).toBe(false);
+    await expect.poll(() => new URL(page.url()).searchParams.has('date')).toBe(false);
+    await expect.poll(() => new URL(page.url()).searchParams.get('q')).toBe(query);
+    await expect(workspace.getByTestId('my-flow-library-detail')).toBeHidden();
+    await expect(search).toBeFocused();
+    expect(await page.evaluate(() => window.history.length)).toBe(historyLengthBeforeQuery);
+    expect(await page.evaluate(() => (
+      window.history.state?.flowmeMyFlowLibrary?.level
+    ))).toBe('list');
+
+    await page.reload();
+    await expect.poll(() => new URL(page.url()).searchParams.has('flow')).toBe(false);
+    await expect.poll(() => new URL(page.url()).searchParams.get('q')).toBe(query);
+    await expect(workspace.getByTestId('my-flow-library-detail')).toBeHidden();
+
+    const filteredRows = rail.getByTestId('my-flow-library-row');
+    expect(await filteredRows.count()).toBeGreaterThan(0);
+    const filteredSlug = await filteredRows.first().getAttribute('data-flow-slug');
+    expect(filteredSlug).toBeTruthy();
+    await filteredRows.first().click();
+    await expect.poll(() => new URL(page.url()).searchParams.get('flow')).toBe(filteredSlug);
+    await expect(workspace.getByTestId('my-flow-library-detail')).toBeVisible();
+    const historyLengthBeforeFilter = await page.evaluate(() => window.history.length);
+
+    const statusFilter = rail.getByTestId('my-flow-library-rail-filter');
+    await statusFilter.selectOption('open');
+    await expect.poll(() => new URL(page.url()).searchParams.has('flow')).toBe(false);
+    await expect.poll(() => new URL(page.url()).searchParams.has('item')).toBe(false);
+    await expect.poll(() => new URL(page.url()).searchParams.has('date')).toBe(false);
+    await expect.poll(() => new URL(page.url()).searchParams.get('status')).toBe('open');
+    await expect(workspace.getByTestId('my-flow-library-detail')).toBeHidden();
+    expect(await page.evaluate(() => window.history.length)).toBe(historyLengthBeforeFilter);
+    expect(await page.evaluate(() => (
+      window.history.state?.flowmeMyFlowLibrary?.level
+    ))).toBe('list');
+
+    await page.reload();
+    await expect.poll(() => new URL(page.url()).searchParams.has('flow')).toBe(false);
+    await expect.poll(() => new URL(page.url()).searchParams.get('q')).toBe(query);
+    await expect.poll(() => new URL(page.url()).searchParams.get('status')).toBe('open');
+    await expect(workspace.getByTestId('my-flow-library-detail')).toBeHidden();
+
+    await expectPageQuality(page);
+    expect(errors).toEqual([]);
+  });
+
+  test('1024: query and filter from an Item clear stale detail before the same plan is reopened', async ({ page }) => {
+    const errors = collectBrowserErrors(page);
+    await page.setViewportSize({ width: 1024, height: 768 });
+    await page.goto('/my?demo=ux20');
+
+    await expectLibraryShell(page, 20, 'searchable');
+    const workspace = page.getByTestId('my-flow-library-workspace');
+    const rail = workspace.getByTestId('my-flow-library-rail');
+    const movingRow = rail.locator(
+      `[data-testid="my-flow-library-row"][data-flow-slug="${FLOW_SLUG}"]`,
+    );
+    await expect(movingRow).toBeVisible();
+    const titles = await rail
+      .getByTestId('my-flow-library-row')
+      .locator('[data-flow-identity-slot="title"]')
+      .allTextContents();
+    const query = chooseBroadHangulQuery(titles);
+    expect(query).not.toBe('');
+
+    await movingRow.click();
+    let plan = workspace
+      .getByTestId('my-flow-library-detail')
+      .locator(`[data-testid="my-flow-overview-card"][data-flow-slug="${FLOW_SLUG}"]`);
+    await expect(plan).toBeVisible();
+    await (await firstOpenItemButton(plan)).click();
+    await expect(getOpenMyFlowItemDetail(page)).toBeVisible();
+    await expect.poll(() => new URL(page.url()).searchParams.has('item')).toBe(true);
+    const historyLengthBeforeQuery = await page.evaluate(() => window.history.length);
+
+    const search = rail.getByTestId('my-flow-library-rail-search');
+    await search.fill(query);
+    await expect.poll(() => {
+      const url = new URL(page.url());
+      return {
+        flow: url.searchParams.has('flow'),
+        item: url.searchParams.has('item'),
+        date: url.searchParams.has('date'),
+        query: url.searchParams.get('q'),
+      };
+    }).toEqual({ flow: false, item: false, date: false, query });
+    await expect(getOpenMyFlowItemDetail(page)).toHaveCount(0);
+    await expect(search).toBeFocused();
+    expect(await page.evaluate(() => window.history.length)).toBe(historyLengthBeforeQuery);
+
+    await search.fill('');
+    await expect(movingRow).toBeVisible();
+    await movingRow.click();
+    plan = workspace
+      .getByTestId('my-flow-library-detail')
+      .locator(`[data-testid="my-flow-overview-card"][data-flow-slug="${FLOW_SLUG}"]`);
+    await expect(plan).toBeVisible();
+    await expect.poll(() => new URL(page.url()).searchParams.has('item')).toBe(false);
+    await expect(getOpenMyFlowItemDetail(page)).toHaveCount(0);
+
+    await (await firstOpenItemButton(plan)).click();
+    await expect(getOpenMyFlowItemDetail(page)).toBeVisible();
+    const filter = rail.getByTestId('my-flow-library-rail-filter');
+    await filter.selectOption('open');
+    await expect.poll(() => {
+      const url = new URL(page.url());
+      return {
+        flow: url.searchParams.has('flow'),
+        item: url.searchParams.has('item'),
+        date: url.searchParams.has('date'),
+        filter: url.searchParams.get('status'),
+      };
+    }).toEqual({ flow: false, item: false, date: false, filter: 'open' });
+    await expect(getOpenMyFlowItemDetail(page)).toHaveCount(0);
+    await expect(filter).toBeFocused();
+    await expect(movingRow).toBeVisible();
+    await movingRow.click();
+    await expect(getOpenMyFlowItemDetail(page)).toHaveCount(0);
+
+    await page.reload();
+    await expect.poll(() => new URL(page.url()).searchParams.has('item')).toBe(false);
+    await expect(getOpenMyFlowItemDetail(page)).toHaveCount(0);
+    await expectPageQuality(page);
+    expect(errors).toEqual([]);
+  });
+
+  test('1024: dirty Item edit keeps route and draft until discard applies one pending query', async ({ page }) => {
+    const errors = collectBrowserErrors(page);
+    await page.setViewportSize({ width: 1024, height: 768 });
+    await page.goto('/my?demo=ux20');
+
+    await expectLibraryShell(page, 20, 'searchable');
+    const workspace = page.getByTestId('my-flow-library-workspace');
+    const rail = workspace.getByTestId('my-flow-library-rail');
+    const movingRow = rail.locator(
+      `[data-testid="my-flow-library-row"][data-flow-slug="${FLOW_SLUG}"]`,
+    );
+    const titles = await rail
+      .getByTestId('my-flow-library-row')
+      .locator('[data-flow-identity-slot="title"]')
+      .allTextContents();
+    const query = chooseBroadHangulQuery(titles);
+    expect(query).not.toBe('');
+
+    await movingRow.click();
+    const plan = workspace
+      .getByTestId('my-flow-library-detail')
+      .locator(`[data-testid="my-flow-overview-card"][data-flow-slug="${FLOW_SLUG}"]`);
+    await (await firstOpenItemButton(plan)).click();
+    const detail = getOpenMyFlowItemDetail(page);
+    await expect(detail).toBeVisible();
+    await enterItemEditMode(detail);
+    const memo = detail.getByTestId('my-flow-detail-memo');
+    const draft = '검색 전환에서 지켜야 할 미저장 메모';
+    await memo.fill(draft);
+    const itemUrl = page.url();
+    const search = rail.getByTestId('my-flow-library-rail-search');
+
+    await search.fill(query);
+    await expect(detail.getByTestId('my-flow-editor-discard-prompt')).toBeVisible();
+    await expect.poll(() => page.url()).toBe(itemUrl);
+    await expect(search).toHaveValue('');
+    await expect(memo).toHaveValue(draft);
+
+    await detail.getByRole('button', { name: '계속 수정', exact: true }).click();
+    await expect(detail.getByTestId('my-flow-editor-discard-prompt')).toHaveCount(0);
+    await expect.poll(() => page.url()).toBe(itemUrl);
+    await expect(memo).toHaveValue(draft);
+
+    await search.fill(query);
+    await expect(detail.getByTestId('my-flow-editor-discard-prompt')).toBeVisible();
+    await detail.getByTestId('my-flow-editor-confirm-discard').click();
+    await expect.poll(() => {
+      const url = new URL(page.url());
+      return {
+        flow: url.searchParams.has('flow'),
+        item: url.searchParams.has('item'),
+        date: url.searchParams.has('date'),
+        query: url.searchParams.get('q'),
+      };
+    }).toEqual({ flow: false, item: false, date: false, query });
+    await expect(getOpenMyFlowItemDetail(page)).toHaveCount(0);
+    await expect(search).toHaveValue(query);
+
+    await expectPageQuality(page);
+    expect(errors).toEqual([]);
+  });
+
+  test('1024: dirty Item browser Back restores the Item before asking to discard', async ({ page }) => {
+    const errors = collectBrowserErrors(page);
+    await page.setViewportSize({ width: 1024, height: 768 });
+    await page.goto('/my?demo=ux20');
+
+    await expectLibraryShell(page, 20, 'searchable');
+    const workspace = page.getByTestId('my-flow-library-workspace');
+    const movingRow = workspace.locator(
+      `[data-testid="my-flow-library-row"][data-flow-slug="${FLOW_SLUG}"]`,
+    );
+    await movingRow.click();
+    const plan = workspace
+      .getByTestId('my-flow-library-detail')
+      .locator(`[data-testid="my-flow-overview-card"][data-flow-slug="${FLOW_SLUG}"]`);
+    await (await firstOpenItemButton(plan)).click();
+    const detail = getOpenMyFlowItemDetail(page);
+    await expect(detail).toBeVisible();
+    await enterItemEditMode(detail);
+    const memo = detail.getByTestId('my-flow-detail-memo');
+    const draft = '브라우저 뒤로가기 전에 지켜야 할 초안';
+    await memo.fill(draft);
+    const itemUrl = page.url();
+
+    await page.evaluate(() => window.history.back());
+    await expect(detail.getByTestId('my-flow-editor-discard-prompt')).toBeVisible();
+    await expect.poll(() => page.url()).toBe(itemUrl);
+    await expect(memo).toHaveValue(draft);
+
+    await detail.getByRole('button', { name: '계속 수정', exact: true }).click();
+    await expect(detail.getByTestId('my-flow-editor-discard-prompt')).toHaveCount(0);
+    await expect.poll(() => page.url()).toBe(itemUrl);
+    await expect(memo).toHaveValue(draft);
+
+    await page.evaluate(() => window.history.back());
+    await expect(detail.getByTestId('my-flow-editor-discard-prompt')).toBeVisible();
+    await detail.getByTestId('my-flow-editor-confirm-discard').click();
+    await expect.poll(() => new URL(page.url()).searchParams.get('flow')).toBe(FLOW_SLUG);
+    await expect.poll(() => new URL(page.url()).searchParams.has('item')).toBe(false);
+    await expect(getOpenMyFlowItemDetail(page)).toHaveCount(0);
+
+    await expectPageQuality(page);
+    expect(errors).toEqual([]);
+  });
+
+  test('1024: dirty Item blocks a cross-flow completion notice until the user discards', async ({ page }) => {
+    const errors = collectBrowserErrors(page);
+    await page.setViewportSize({ width: 1024, height: 768 });
+    await page.goto('/my?demo=ux5');
+
+    await expectLibraryShell(page, 5, 'small');
+    const workspace = page.getByTestId('my-flow-library-workspace');
+    const rail = workspace.getByTestId('my-flow-library-rail');
+    const planBRow = rail.locator(
+      `[data-testid="my-flow-library-row"]:not([data-flow-slug="${FLOW_SLUG}"])`,
+    ).first();
+    const planBSlug = await planBRow.getAttribute('data-flow-slug');
+    expect(planBSlug).toBeTruthy();
+    await planBRow.click();
+
+    const planB = workspace.locator(
+      `[data-testid="my-flow-overview-card"][data-flow-slug="${planBSlug}"]`,
+    );
+    await (await firstOpenItemButton(planB)).click();
+    const planBDetail = getOpenMyFlowItemDetail(page);
+    const planBCompletion = planBDetail.getByTestId('my-flow-task-complete-control');
+    await expect(planBCompletion).toBeVisible();
+    await planBCompletion.click();
+    await planBCompletion.click();
+    const completionNotice = page.getByTestId('my-flow-completion-snackbar');
+    const completionOpen = completionNotice.getByTestId('my-flow-completion-open');
+    await expect(completionOpen).toBeFocused();
+
+    const planARow = rail.locator(
+      `[data-testid="my-flow-library-row"][data-flow-slug="${FLOW_SLUG}"]`,
+    );
+    await planARow.click();
+    const planA = workspace.locator(
+      `[data-testid="my-flow-overview-card"][data-flow-slug="${FLOW_SLUG}"]`,
+    );
+    await (await firstOpenItemButton(planA)).click();
+    const planADetail = getOpenMyFlowItemDetail(page);
+    await enterItemEditMode(planADetail);
+    const memo = planADetail.getByTestId('my-flow-detail-memo');
+    const draft = '완료 알림 전환에서 지켜야 할 미저장 메모';
+    await memo.fill(draft);
+    const planAItemUrl = page.url();
+
+    await completionOpen.click();
+    await expect(planADetail.getByTestId('my-flow-editor-discard-prompt')).toBeVisible();
+    await expect.poll(() => page.url()).toBe(planAItemUrl);
+    await expect(memo).toHaveValue(draft);
+    await expect(completionNotice).toBeVisible();
+
+    await planADetail.getByRole('button', { name: '계속 수정', exact: true }).click();
+    await expect(planADetail.getByTestId('my-flow-editor-discard-prompt')).toHaveCount(0);
+    await expect.poll(() => page.url()).toBe(planAItemUrl);
+    await expect(memo).toHaveValue(draft);
+    await expect(completionNotice).toBeVisible();
+
+    await completionOpen.click();
+    await expect(planADetail.getByTestId('my-flow-editor-discard-prompt')).toBeVisible();
+    await planADetail.getByTestId('my-flow-editor-confirm-discard').click();
+    await expect.poll(() => {
+      const url = new URL(page.url());
+      return {
+        flow: url.searchParams.get('flow'),
+        item: url.searchParams.has('item'),
+      };
+    }).toEqual({ flow: planBSlug, item: true });
+    const reopenedPlanBDetail = getOpenMyFlowItemDetail(page);
+    await expect(reopenedPlanBDetail).toBeVisible();
+    await expect(completionNotice).toHaveCount(0);
+
+    await reopenedPlanBDetail.getByRole('button', { name: '닫기', exact: true }).click();
+    await expect.poll(() => {
+      const url = new URL(page.url());
+      return {
+        flow: url.searchParams.get('flow'),
+        item: url.searchParams.has('item'),
+      };
+    }).toEqual({ flow: planBSlug, item: false });
+    await page.getByTestId('my-flow-library-back').click();
+    await expect.poll(() => new URL(page.url()).searchParams.has('flow')).toBe(false);
+
+    await expectPageQuality(page);
+    expect(errors).toEqual([]);
+  });
+
+  test('1024: Item A to rail Plan B keeps Plan B above the library in history', async ({ page }) => {
+    const errors = collectBrowserErrors(page);
+    await page.setViewportSize({ width: 1024, height: 768 });
+    await page.goto('/my?demo=ux5');
+
+    await expectLibraryShell(page, 5, 'small');
+    const workspace = page.getByTestId('my-flow-library-workspace');
+    const rail = workspace.getByTestId('my-flow-library-rail');
+    const planA = rail.locator(
+      `[data-testid="my-flow-library-row"][data-flow-slug="${FLOW_SLUG}"]`,
+    );
+    await planA.click();
+    const planADetail = workspace
+      .getByTestId('my-flow-library-detail')
+      .locator(`[data-testid="my-flow-overview-card"][data-flow-slug="${FLOW_SLUG}"]`);
+    await (await firstOpenItemButton(planADetail)).click();
+    await expect(getOpenMyFlowItemDetail(page)).toBeVisible();
+
+    const planB = rail.locator(
+      `[data-testid="my-flow-library-row"]:not([data-flow-slug="${FLOW_SLUG}"])`,
+    ).first();
+    const planBSlug = await planB.getAttribute('data-flow-slug');
+    expect(planBSlug).toBeTruthy();
+    await planB.click();
+    await expect.poll(() => new URL(page.url()).searchParams.get('flow')).toBe(planBSlug);
+    await expect.poll(() => new URL(page.url()).searchParams.has('item')).toBe(false);
+    await expect(getOpenMyFlowItemDetail(page)).toHaveCount(0);
+    await expect(workspace.locator(
+      `[data-testid="my-flow-overview-card"][data-flow-slug="${planBSlug}"]`,
+    )).toBeVisible();
+
+    await page.getByTestId('my-flow-library-back').click();
+    await expect.poll(() => new URL(page.url()).searchParams.has('flow')).toBe(false);
+    await expect(rail.getByTestId('my-flow-library-row')).toHaveCount(5);
+
+    await expectPageQuality(page);
+    expect(errors).toEqual([]);
+  });
+
+  test('1024: direct Item closes to an unmarked Plan and returns locally to the library', async ({ page }) => {
+    const errors = collectBrowserErrors(page);
+    await page.setViewportSize({ width: 1024, height: 768 });
+    await page.goto('/my?demo=ux5');
+
+    await expectLibraryShell(page, 5, 'small');
+    const movingRow = page.locator(
+      `[data-testid="my-flow-library-row"][data-flow-slug="${FLOW_SLUG}"]`,
+    );
+    await movingRow.click();
+    const plan = page.locator(
+      `[data-testid="my-flow-overview-card"][data-flow-slug="${FLOW_SLUG}"]`,
+    );
+    await (await firstOpenItemButton(plan)).click();
+    await expect(getOpenMyFlowItemDetail(page)).toBeVisible();
+    const directItemUrl = page.url();
+
+    await page.goto('/flows?source=p008-direct-item');
+    await page.goto(directItemUrl);
+    const directDetail = getOpenMyFlowItemDetail(page);
+    await expect(directDetail).toBeVisible();
+    await directDetail.getByRole('button', { name: '닫기', exact: true }).click();
+    await expect.poll(() => new URL(page.url()).searchParams.has('item')).toBe(false);
+    await expect.poll(() => page.evaluate(() => (
+      window.history.state?.flowmeMyFlowLibrary?.level ?? null
+    ))).toBe(null);
+    await expect(getOpenMyFlowItemDetail(page)).toHaveCount(0);
+
+    await page.getByTestId('my-flow-library-back').click();
+    await expect.poll(() => new URL(page.url()).pathname).toBe('/my');
+    await expect.poll(() => new URL(page.url()).searchParams.has('flow')).toBe(false);
+    await expect(page.getByTestId('my-flow-library-row')).toHaveCount(5);
 
     await expectPageQuality(page);
     expect(errors).toEqual([]);
