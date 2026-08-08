@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-09
 
-**Status:** Local implementation and verification complete; publication, merge, and production deployment authorized and in progress
+**Status:** Published in Draft PR #169; CI, merge, and production deployment in progress
 
 **Baseline:** `efa4d90a78a06134180701bed74874579ac94154`
 

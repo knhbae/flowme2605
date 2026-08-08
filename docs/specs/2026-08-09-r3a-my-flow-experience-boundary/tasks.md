@@ -34,7 +34,7 @@
 
 ## Publication
 
-- [ ] Commit (authorized 2026-08-09; pending).
-- [ ] Push (authorized 2026-08-09; pending).
-- [ ] Open pull request (authorized 2026-08-09; pending).
+- [x] Commit `eeac99213b58eeafb8f39b2cc71c723e6fa32712`.
+- [x] Push `codex/r3a-my-flow-experience-boundary-20260809`.
+- [x] Open [Draft PR #169](https://github.com/knhbae/flowme2605/pull/169).
 - [ ] Merge, Vercel production deploy, and production smoke (authorized 2026-08-09; pending).
