@@ -31,3 +31,10 @@
 - [x] Run production build and selected saved-plan/Calendar E2E.
 - [x] Run full Playwright and 390/1024/1440 browser quality inspection.
 - [x] Inspect the scoped diff, publish state, and residual risk separately.
+
+## Publication
+
+- [x] Commit the R0-R2 implementation and QA blockers in separate reviewable commits.
+- [x] Push `codex/r0-behavior-preserving-architecture-refactor-20260806`.
+- [x] Open [Draft PR #168](https://github.com/knhbae/flowme2605/pull/168).
+- [ ] Merge, production deployment, production smoke, and observed-user validation.

@@ -103,7 +103,8 @@ callback으로 되돌린다. 저장 형식은 바꾸지 않으므로 데이터 �
 | 대표 화면 | PASS — 390×844, 1024×768, 1440×1000에서 문서·body 가로 넘침 0 |
 | 브라우저 오류 | PASS — console error/warning 0, 확인한 요청 200 |
 | 독립 scoped diff 감사 | PASS — P1/P2/P3 0; 발견한 날짜 없는 routine-overflow 차이를 수정 후 재감사 |
-| Git 발행·배포·프로덕션 smoke | NOT_RUN — R1 범위 밖 |
+| Git 발행 | COMPLETE — R0/R2와 함께 [Draft PR #168](https://github.com/knhbae/flowme2605/pull/168)에 발행 |
+| 병합·프로덕션 배포·프로덕션 smoke | NOT_RUN — 별도 승인 필요 |
 | 사용자 관찰 | NOT_RUN — R1 범위 밖이며 자동 QA에 포함하지 않음 |
 
 전체 E2E의 첫 두 시도는 테스트 실패가 아니라 실행 래퍼 제한으로 중단되어

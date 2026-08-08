@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-06
 
-**Status:** Locally Complete
+**Status:** Published in Draft PR #168; merge and production deployment not run
 
 **Owner:** Codex
 
@@ -43,7 +43,8 @@ Out:
 - UI, copy, DOM structure, test IDs, or interaction redesign.
 - Item editing, completion, memo, archive, deletion, undo, or recovery semantics.
 - localStorage keys, JSON formats, migrations, source-backed ownership, export, or receipts.
-- Calendar, Text-to-Flow, new features, commit, push, PR, deployment, or user observation.
+- Calendar, Text-to-Flow, new product features, deployment, or user observation. Git publication
+  remained outside implementation scope and was later separately authorized for Draft PR #168.
 
 ## Transition Contract
 

@@ -43,9 +43,8 @@ are recorded in [qa.md](./qa.md).
 
 ## Owner Decision After Local Completion
 
-- [ ] Review the scoped R0 diff and verification summary.
-- [ ] Separately authorize commit/push/PR if the local result should be
-  published to GitHub.
+- [x] Review the scoped R0 diff and verification summary.
+- [x] Separately authorize and complete commit/push/Draft PR publication as
+  [PR #168](https://github.com/knhbae/flowme2605/pull/168).
 - [ ] Separately authorize preview or production deployment if needed.
-- [ ] Decide whether to stop at R0 for the MVP or promote one new bounded
-  refactor slice.
+- [x] Promote R1 and then R2 as separately approved bounded slices; do not infer R3.

@@ -39,6 +39,8 @@
 - Local implementation and automated QA are not commit, push, PR, deployment, production smoke,
   or observed-user validation.
 - Only checks executed against the final scoped worktree may be marked PASS.
-- Commit, push, PR, deployment, and production smoke are `NOT_RUN`; observed-user sessions remain `0`.
+- Commit and push are complete and [Draft PR #168](https://github.com/knhbae/flowme2605/pull/168)
+  is open. Merge, production deployment, and production smoke are `NOT_RUN`; observed-user
+  sessions remain `0`.
 - Standalone `npx tsc --noEmit` still reports pre-existing test typing diagnostics and is not the
   repository's production-build gate; the configured Next.js production type check passes.

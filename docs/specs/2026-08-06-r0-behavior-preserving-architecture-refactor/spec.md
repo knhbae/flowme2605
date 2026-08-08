@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-06
 
-**Status:** Implemented locally; publication and production deployment not requested
+**Status:** Published in Draft PR #168; merge and production deployment not requested
 
 **Baseline:** `6612c4a344a8dbd24d087d50883d480b5be45397`
 

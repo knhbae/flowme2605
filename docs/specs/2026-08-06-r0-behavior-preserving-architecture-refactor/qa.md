@@ -59,11 +59,11 @@ temporary test file was then removed; inspected screenshots remain under
 | State | Result |
 | --- | --- |
 | Local implementation | COMPLETE — all final local gates passed |
-| Commit | NOT_RUN — not authorized |
-| Push | NOT_RUN — not authorized |
-| Pull request | NOT_RUN — not authorized |
+| Commit | COMPLETE — implementation `1bc0868`; QA blockers `b03779f`; publication record follows separately |
+| Push | COMPLETE — `origin/codex/r0-behavior-preserving-architecture-refactor-20260806` |
+| Pull request | DRAFT — [#168](https://github.com/knhbae/flowme2605/pull/168) |
 | Merge | NOT_RUN — not authorized |
-| Vercel preview | NOT_RUN — not requested |
+| Vercel preview | PR-integrated preview check only; no production alias change |
 | Production deployment | NOT_RUN — not authorized |
 | Production smoke | NOT_RUN |
 | Observed-user validation | NOT_RUN; sessions `0` |
