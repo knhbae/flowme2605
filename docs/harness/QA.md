@@ -14,7 +14,7 @@ Use the smallest sufficient verification set, then broaden based on risk.
 | App/runtime behavior | `npm test`, `npm run build` |
 | Runtime, dependency, or CI tooling | Confirm supported Node version; run `npm run security:audit`, `npm run docs:check`, `npm test`, and `npm run build`; inspect workflow syntax and residual audit findings |
 | User-facing flow | `npm test`, `npm run build`, `npm run test:e2e` |
-| Visual layout | Browser inspection and screenshot, plus relevant automated checks |
+| Visual layout | Browser inspection and screenshot, plus relevant automated checks; when fidelity is disputed, compare computed typography, spacing, color, border, and element bounds before the final pixel review |
 | Sensitive content | Source/risk label review and wording review |
 
 ## Standard Commands
