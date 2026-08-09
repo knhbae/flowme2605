@@ -1,6 +1,7 @@
 # FlowMe Project Control
 
-**Last Updated:** 2026-08-06  
+**Last Updated:** 2026-08-09
+
 **Purpose:** Stable entry point for the current FlowMe stage, evidence boundary, and next owner decision.
 
 This file is an index, not a second source of product truth. Update its links after a meaningful stage or release change. Keep dated reports as immutable evidence snapshots.
@@ -11,12 +12,15 @@ This file is an index, not a second source of product truth. Update its links af
 - [Current roadmap and inactive shelves](./ROADMAP.md)
 - [Completed workspace and backlog stabilization](./specs/2026-08-06-workspace-backlog-stabilization/spec.md)
 - [Final worktree and preservation inventory](./specs/2026-08-06-workspace-backlog-stabilization/inventory.md)
+- [R3A My Flow experience boundary release](./pr-history/2026-08-09-r3a-my-flow-experience-boundary.md)
 - [P35 Round 2 MVP production closeout](./pr-history/2026-08-06-p35-round2-mvp-closeout-production.md)
 
-P35 Round 2 source is durable on `main` through PR #166. The existing Vercel
-deployment remains the production release; production smoke, fresh independent
-P′′ review, and observed-user validation remain `NOT_RUN`. No next product slice
-is active until the owner promotes one.
+R3A is durable on `main` through PR #169 as product-source commit
+`95a69257c73633077df2305232299f58cca03f73`. Vercel deployment
+`dpl_5jhJz4EBiHMm5HptH9nFCqfyeFek` reached `READY`, and production smoke passed
+for the unchanged classic default and exact-query internal `r3a-lab` route.
+Observed-user validation remains `0`. No next product slice is active until the
+owner promotes one.
 
 ## Canonical Project Truth
 

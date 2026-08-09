@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-09
 
-**Status:** Published in Draft PR #169; CI, merge, and production deployment in progress
+**Status:** Merged through PR #169, deployed to Vercel Production, and production smoke passed; observed users 0
 
 **Baseline:** `efa4d90a78a06134180701bed74874579ac94154`
 
@@ -84,8 +84,8 @@ Out:
   semantics.
 - Changes to artifact membership, counts, order, hashes, or success-before-
   receipt ordering.
-- Text-to-Flow integration, deployment, production smoke, or observed-user
-  validation.
+- Text-to-Flow integration or observed-user validation. Deployment and smoke
+  remain publication gates rather than product implementation scope.
 
 ## Contracts
 
@@ -158,4 +158,5 @@ Out:
 - Stop and open a separate R3B scope if a new candidate needs dedicated edit,
   completion, lifecycle, or result-transfer command ports.
 - Commit, push, PR, merge, and production deployment were separately
-  authorized on 2026-08-09; verify and report each state independently.
+  authorized on 2026-08-09 and completed with each state independently
+  verified in [qa.md](./qa.md).

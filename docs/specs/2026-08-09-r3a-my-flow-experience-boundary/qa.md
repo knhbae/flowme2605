@@ -7,11 +7,15 @@
 | Worktree | `D:\\flowme2605\\flow-r3a` |
 | Branch | `codex/r3a-my-flow-experience-boundary-20260809` |
 | Baseline | `efa4d90a78a06134180701bed74874579ac94154` |
-| Commit | `eeac99213b58eeafb8f39b2cc71c723e6fa32712` |
-| Pull request | [Draft PR #169](https://github.com/knhbae/flowme2605/pull/169) |
+| Implementation commit | `eeac99213b58eeafb8f39b2cc71c723e6fa32712` |
+| Publication commit | `950fd55f4176bf74d4739647040874a601faffcc` |
+| Merge commit | `95a69257c73633077df2305232299f58cca03f73` |
+| Pull request | [PR #169](https://github.com/knhbae/flowme2605/pull/169), merged 2026-08-09 KST |
+| GitHub run | [`31285007308`](https://github.com/knhbae/flowme2605/actions/runs/31285007308) |
 | Product default | `classic` |
 | Storage/schema migration | None |
-| Deployment | Vercel production deployment authorized 2026-08-09; pending |
+| Deployment | Vercel `dpl_5jhJz4EBiHMm5HptH9nFCqfyeFek`; exact merge source verified; `READY` |
+| Deployment URLs | [Direct](https://flowme2605-a0aasd9ic-flowme.vercel.app) / [canonical](https://flowme2605.vercel.app) |
 | Observed-user sessions | `0` |
 
 ## Required Evidence
@@ -27,6 +31,9 @@
 | R3A candidate E2E | Selector, intents, fallback, zero writes | PASS `4/4`; exact/invalid/ineligible selector, List -> Plan -> Item -> Back, focus, raw local/session bytes, mutation calls `0`, search/filter/archive transitions, and mobile inventory expansion |
 | Responsive browser | 390/1024/1440; overflow/errors/unnamed controls zero | PASS at all three widths; automated diagnostics zero and screenshots visually inspected |
 | Full Playwright | No runtime regression | PASS `545/545` with four workers in `21.8m`; the later coverage-only R3A addition passed separately as `4/4` |
+| GitHub CI | PR-head checks, tree-identical to merge | PASS; head `950fd55f4176bf74d4739647040874a601faffcc` and merge `95a69257c73633077df2305232299f58cca03f73` have the same tree; Docs, Unit, Build, and Playwright `546/546` passed in run `31285007308` |
+| Production deployment | Exact merge-source deployment | PASS; GitHub deployment source `95a69257c73633077df2305232299f58cca03f73`, Vercel `dpl_5jhJz4EBiHMm5HptH9nFCqfyeFek`, `READY`, canonical alias assigned |
+| Production smoke | Classic default and exact-query lab | PASS; `/my?demo=ux20` rendered classic with lab absent, exact `r3a-lab` rendered the candidate with 20 rows on desktop, search narrowed to 1 row, 390px inventory expanded from 8 to 20, horizontal overflow `0`, console error messages `0`, and recorded failed requests `0` |
 | Scoped diff | No storage/export/receipt implementation changes | PASS; independent audit P0/P1 `0`, incidental P35 screenshot rewrites restored |
 
 ## Run Notes
@@ -42,10 +49,14 @@
 - A later full-suite shell attempt reached its outer 15-minute command limit
   without a Playwright failure summary. The final run used a sufficient outer
   limit and completed `545/545` successfully.
+- Repository protection did not require the Playwright job, so the requested
+  auto-merge completed while that job was still running. Final closeout waited
+  for the PR-head run to finish `546/546` successfully and verified that its
+  tree matched the merge commit before the deployment and smoke were accepted.
 
 ## Evidence Boundary
 
-Passing internal checks can establish a structurally coherent, contract-safe
-internal candidate. It does not establish production deployment, external
-calendar/todo interoperability, user comprehension, preference, or observed
-usability.
+Passing internal checks, GitHub CI, exact-source deployment verification, and
+production smoke establishes a structurally coherent, contract-safe deployed
+candidate. It does not establish external calendar/todo interoperability, user
+comprehension, preference, or observed usability.

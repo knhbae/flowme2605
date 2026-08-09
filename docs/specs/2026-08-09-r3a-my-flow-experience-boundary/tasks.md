@@ -36,5 +36,5 @@
 
 - [x] Commit `eeac99213b58eeafb8f39b2cc71c723e6fa32712`.
 - [x] Push `codex/r3a-my-flow-experience-boundary-20260809`.
-- [x] Open [Draft PR #169](https://github.com/knhbae/flowme2605/pull/169).
-- [ ] Merge, Vercel production deploy, and production smoke (authorized 2026-08-09; pending).
+- [x] Open [PR #169](https://github.com/knhbae/flowme2605/pull/169).
+- [x] Merge as `95a69257c73633077df2305232299f58cca03f73`, deploy product source as Vercel `dpl_5jhJz4EBiHMm5HptH9nFCqfyeFek`, and complete production smoke.
