@@ -2,6 +2,13 @@
 
 No tagged releases yet.
 
+## 2026-08-09 - R3A My Flow Experience Boundary
+
+- Merged [PR #169](https://github.com/knhbae/flowme2605/pull/169) as product-source commit `95a69257c73633077df2305232299f58cca03f73`; the exact-query, fail-closed `r3a-lab` boundary was added while `classic` remained the default My Flow experience.
+- GitHub run [`31285007308`](https://github.com/knhbae/flowme2605/actions/runs/31285007308) passed Docs, Unit, Build, and Playwright `546/546`.
+- Vercel deployed the exact merge source as `dpl_5jhJz4EBiHMm5HptH9nFCqfyeFek`, reported `READY` at <https://flowme2605-a0aasd9ic-flowme.vercel.app> and <https://flowme2605.vercel.app>.
+- Production smoke passed for the unchanged classic default and exact-query `r3a-lab`: desktop inventory/search, 390px `8 -> 20` expansion, horizontal overflow `0`, console error messages `0`, and recorded failed requests `0`. This is automated production QA, not observed-user validation; observed-user sessions remain `0`. No semantic version tag was created.
+
 ## 2026-08-06 - P35 Round 2 B/B/B MVP Production Closeout
 
 - Deployed P′′ production source `f97644abf379c46433847f44aa7bd4da7fadac4a` with Vercel deployment `dpl_EBDr9CiRuwAUyjMcJwp7g6eBLpNk`; the deployment is `READY` at <https://flowme2605-n6jddq8i9-flowme.vercel.app> and the canonical alias is <https://flowme2605.vercel.app>.

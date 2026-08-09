@@ -1,10 +1,10 @@
 # Roadmap
 
-**Last Updated:** 2026-08-06<br>
+**Last Updated:** 2026-08-09<br>
 **Current Version:** v0.1.0 (released product PoC)<br>
-**Current Validation Stage:** internal alpha / P35 Round 2 P′′ production / observed users 0<br>
+**Current Validation Stage:** internal alpha / R3A production smoke PASS / observed users 0<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** P35 Round 2 MVP PoC gate is closed on P′′ production; no next product slice is active until the Owner explicitly promotes one
+**Next Milestone:** R3A release is closed with the classic default preserved; no next product slice is active until the Owner explicitly promotes one
 
 Human-facing control surface: [FlowMe Project Control](./PROJECT_CONTROL.md).
 The [2026-07-29 P35 stage board](./content-audit/2026-07-29-flowme-current-stage-control-board-ko.html)
@@ -53,20 +53,22 @@ P0-01
 V1 observed-user validation is a separate future program.
 ```
 
-## Current Production Baseline: P35 Round 2 P′′ Bounded UX Correction
+## Current Production Baseline: R3A My Flow Experience Boundary
 
-Production serves source `f97644abf379c46433847f44aa7bd4da7fadac4a` through
-deployment `dpl_EBDr9CiRuwAUyjMcJwp7g6eBLpNk`, which the Vercel CLI reports as
-`READY`; [the canonical alias](https://flowme2605.vercel.app) is assigned. This is
-an MVP PoC release backed by P′ review findings plus P′′ candidate-bound automated
-and browser evidence. It is not a fresh independent P′′ review pass, a production
-smoke result, or observed-user validation.
+[PR #169](https://github.com/knhbae/flowme2605/pull/169) merged R3A as
+product-source commit `95a69257c73633077df2305232299f58cca03f73`. Vercel
+deployment `dpl_5jhJz4EBiHMm5HptH9nFCqfyeFek` served that exact merge source,
+reported `READY`, and assigned [the canonical alias](https://flowme2605.vercel.app).
+The default My Flow experience remains `classic`; only exact query-only
+`myFlowExperience=r3a-lab` requests the internal candidate, and unsafe or unknown
+states fail closed to classic.
 
-The same P35 Round 2 source is now durable on `main` through
-[PR #166](https://github.com/knhbae/flowme2605/pull/166) and merge
-`2af4c92407925cb0643e20c2c22c6e8c5b8b0f64`. That Git integration did not create
-a new production deployment or production-smoke result; the deployment boundary
-above remains the current release truth.
+GitHub run [`31285007308`](https://github.com/knhbae/flowme2605/actions/runs/31285007308)
+passed Docs, Unit, Build, and Playwright `546/546`. Production smoke passed for
+the classic default and `r3a-lab`, including desktop inventory/search, 390px
+inventory expansion, horizontal overflow `0`, console error messages `0`, and
+recorded failed requests `0`. This is automated production QA, not observed-user
+validation; observed users remain `0`.
 
 ### Inherited Baseline: P35 MECE UX Reset
 
@@ -370,16 +372,16 @@ Detailed scope: [Save, Personalize, Execute Journey Reset](./specs/2026-07-18-sa
 
 ## Operating Queue
 
-There is no active external-user gate or active release-prep ticket. P35 Round 2
-P′′ is the canonical production baseline for this MVP PoC. Round 2 P′ remains
-immutable review history ending in Pass 2 `REVISE`; its findings were incorporated
-into P′′, and the candidate evidence package was verified with the declared S22/S23 gaps. Fresh independent P′′ Pass 1
-and Pass 2 were not run and were explicitly waived for the MVP, not counted as a
-pass. External user observation is excluded and is not a completion requirement.
+There is no active external-user gate or active release-prep ticket. R3A is the
+canonical production product baseline for this MVP PoC, with `classic` still the
+default and `r3a-lab` retained only as an exact-query internal candidate. P35
+Round 2 P′ and P′′ remain immutable review and release history. External user
+observation is excluded and is not a completion requirement.
 
 | Lane | Owner | Work | Next checkpoint | Done when |
 | --- | --- | --- | --- | --- |
-| Completed MVP release | AI + Owner | P′ review incorporation, P′′ freeze/evidence, and production deployment | Preserve the exact release boundary without claiming a fresh independent P′′ review or production smoke | deployment `dpl_EBDr9CiRuwAUyjMcJwp7g6eBLpNk` is `READY`, alias assigned, smoke `NOT_RUN`, observed users `0` |
+| Completed R3A release | AI + Owner | My Flow workspace snapshot, exact-query experience boundary, PR #169 merge, production deploy, and smoke | Preserve classic as default and keep lab promotion/removal as a separate decision | merge `95a69257`, GitHub Playwright `546/546`, deployment `dpl_5jhJz4EBiHMm5HptH9nFCqfyeFek` `READY`, production smoke PASS, observed users `0` |
+| Completed P35 Round 2 release | AI + Owner | P′ review incorporation, P′′ freeze/evidence, and production deployment | Preserve the historical release boundary without claiming a fresh independent P′′ review or production smoke | deployment `dpl_EBDr9CiRuwAUyjMcJwp7g6eBLpNk` was `READY`, smoke `NOT_RUN`, observed users `0` |
 | Completed candidate evidence | Development | P′′ shared lock, fresh reread/CAS, reuse/public-copy transaction, exact-byte/schema/deploy guards | Preserve source and published provenance for `f97644a` / `T0QkChgscSgPog-0UdvY-` / `p35-r2-4fa6af1728eb5ca5` | S01~S23 `23/23` accounted (S22 `NOT_ASSESSED`, S23 reviewer-chosen), three group manifests `PASS`, verifier `PASS`, failures `0` |
 | Completed implementation | Development | Round 2 P0-01~P1-04 and the earlier correction checkpoint | Preserve the bounded UX correction, rollback contracts, one canonical result projection, and zero-write public read path | historical local evidence remains inspectable without being presented as the final candidate run |
 | P2 follow-up candidates | AI + Owner after explicit promotion | URL supply queue, legacy-off, rapid batch submit, creator/text-authoring mutation ownership | Retain, drop, or promote each item separately from the closed MVP release | no item enters the active queue or released P′′ scope without explicit promotion |
