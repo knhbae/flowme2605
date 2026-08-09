@@ -1,6 +1,6 @@
 # FLOW Tooling Policy
 
-Last updated: 2026-07-19
+Last updated: 2026-08-09
 
 Status: P0 tooling and supported-runtime refresh applied; adaptive lean harness and selective Notion projection active.
 
@@ -128,6 +128,31 @@ Use the current [OpenAI Plugins repository](https://github.com/openai/plugins) a
 
 Intentionally not installed by default: Expo/native mobile, Linear planning, office/calendar connectors, Sentry, PostHog, Promptfoo, and source extraction MCPs. Their triggers are listed above.
 
+## Community Skill Adoption Gate
+
+Use this gate before adding a skill, plugin, MCP, hook bundle, or design harness
+found through a community post or registry:
+
+1. Count independent usage reports separately from author launch posts,
+   cross-posts, generated catalog entries, cumulative stars, and self-scored
+   demos.
+2. Compare the candidate with built-in and already installed capabilities. A
+   new package must close a concrete gap, not duplicate a familiar name.
+3. Read `SKILL.md`, executable scripts, hooks, network calls, install targets,
+   auto-update behavior, and home-directory writes before running an installer.
+   Do not pipe a remote installer directly to a shell without reviewing the
+   downloaded source.
+4. Trial one candidate at a time in a disposable branch or worktree. Start with
+   a read-only critique or manual check, keep automatic hooks off, and compare
+   the same bounded task against the current baseline.
+5. Promote the candidate only when the trial improves a recorded outcome enough
+   to justify context, maintenance, security, and workflow cost. Remove it when
+   the result is neutral or conflicts with project rules.
+
+Dynamic registries such as UI skill catalogs are discovery tools, not trusted
+runtime dependencies. Inspect and pin or copy the exact reviewed skill before
+using it in a sensitive repository.
+
 ## Supported Runtime
 
 - Node.js: `24.x` through `package.json` and `.node-version`.
@@ -139,6 +164,7 @@ Intentionally not installed by default: Expo/native mobile, Linear planning, off
 
 - [Tooling/plugin review](./content-audit/2026-07-02-tooling-plugin-review-ko.html)
 - [2026-07-10 tooling, skills, and settings refresh](./content-audit/2026-07-10-tooling-skills-settings-refresh-ko.html)
+- [2026-08-09 community planning, UX, UI, and design skill research](./content-audit/2026-08-09-community-planning-ux-ui-skill-settings-research-ko.html)
 - [Backlog HTML workboard](./content-audit/2026-07-02-backlog-workboard-ko.html)
 - [Service structure](./SERVICE_STRUCTURE.md)
 - [Decision log](./DECISIONS.md)

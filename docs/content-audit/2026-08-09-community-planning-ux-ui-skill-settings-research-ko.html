@@ -1,0 +1,755 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>최근 30일 AI 기획·UX·UI 스킬·세팅 커뮤니티 동향</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --surface: #f7f8fa;
+      --surface-strong: #eef1f4;
+      --ink: #17191c;
+      --muted: #60666d;
+      --line: #d9dde2;
+      --line-strong: #b9c0c8;
+      --teal: #087f72;
+      --teal-soft: #e6f5f2;
+      --coral: #c83b35;
+      --coral-soft: #fcecea;
+      --mustard: #8a6500;
+      --mustard-soft: #fff4cf;
+      --blue: #175ec9;
+      --blue-soft: #eaf1fc;
+      --max: 1240px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      font-size: 15px;
+      line-height: 1.58;
+      letter-spacing: 0;
+    }
+    a { color: var(--blue); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+    a:hover { text-decoration-thickness: 2px; }
+    button { font: inherit; letter-spacing: 0; }
+    code {
+      font-family: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+      font-size: .92em;
+      background: var(--surface-strong);
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(255,255,255,.96);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(10px);
+    }
+    .topbar-inner {
+      max-width: var(--max);
+      min-height: 52px;
+      margin: 0 auto;
+      padding: 8px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+    .brandline { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .mark {
+      width: 24px;
+      height: 24px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      align-items: end;
+      gap: 2px;
+      flex: 0 0 auto;
+    }
+    .mark span { display: block; background: var(--ink); }
+    .mark span:nth-child(1) { height: 8px; }
+    .mark span:nth-child(2) { height: 20px; }
+    .mark span:nth-child(3) { height: 13px; }
+    .mark span:nth-child(4) { height: 17px; }
+    .brandline strong { font-size: 14px; white-space: nowrap; }
+    .topmeta { display: flex; align-items: center; gap: 14px; color: var(--muted); font-size: 12px; }
+    .topmeta span { white-space: nowrap; }
+
+    main { max-width: var(--max); margin: 0 auto; padding: 34px 24px 72px; }
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(280px, .55fr);
+      gap: 42px;
+      align-items: end;
+      padding: 18px 0 34px;
+      border-bottom: 2px solid var(--ink);
+    }
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    h1, h2, h3 { margin: 0; letter-spacing: 0; }
+    h1 { max-width: 850px; font-size: clamp(30px, 4vw, 52px); line-height: 1.13; font-weight: 780; }
+    .hero-copy { margin: 18px 0 0; max-width: 820px; color: #3c4147; font-size: 17px; }
+    .verdict-box { border-left: 4px solid var(--teal); padding: 4px 0 4px 18px; }
+    .verdict-box strong { display: block; margin-bottom: 7px; font-size: 18px; }
+    .verdict-box p { margin: 0; color: var(--muted); }
+
+    .section { padding: 40px 0; border-bottom: 1px solid var(--line); }
+    .section:last-child { border-bottom: 0; }
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 20px;
+    }
+    .section-head h2 { font-size: 24px; line-height: 1.25; }
+    .section-head p { margin: 0; max-width: 580px; color: var(--muted); font-size: 13px; text-align: right; }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      border: 1px solid var(--line);
+    }
+    .metric { min-height: 132px; padding: 20px; border-right: 1px solid var(--line); }
+    .metric:last-child { border-right: 0; }
+    .metric-label { color: var(--muted); font-size: 12px; font-weight: 700; }
+    .metric-value { display: block; margin: 10px 0 5px; font-size: 36px; line-height: 1; font-weight: 780; }
+    .metric-note { color: var(--muted); font-size: 12px; }
+
+    .signal-band {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: 1.25fr repeat(3, minmax(0, 1fr));
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+    .signal-intro, .signal-item { padding: 18px 18px 16px; }
+    .signal-intro { padding-left: 0; }
+    .signal-item { border-left: 1px solid var(--line); }
+    .signal-item strong { display: block; font-size: 14px; }
+    .signal-item p, .signal-intro p { margin: 7px 0 0; color: var(--muted); font-size: 12px; }
+    .signal-item.good { box-shadow: inset 0 3px var(--teal); }
+    .signal-item.watch { box-shadow: inset 0 3px #d39b00; }
+    .signal-item.stop { box-shadow: inset 0 3px var(--coral); }
+
+    .consensus {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 0;
+      border: 1px solid var(--line);
+    }
+    .step { position: relative; min-height: 160px; padding: 20px 18px; border-right: 1px solid var(--line); }
+    .step:last-child { border-right: 0; }
+    .step-number { display: block; color: var(--teal); font-size: 12px; font-weight: 800; }
+    .step strong { display: block; margin-top: 10px; font-size: 15px; line-height: 1.35; }
+    .step p { margin: 8px 0 0; color: var(--muted); font-size: 12px; }
+    .step:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      top: 50%;
+      right: -11px;
+      z-index: 2;
+      width: 21px;
+      height: 21px;
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      background: var(--bg);
+      font-size: 16px;
+    }
+
+    .table-wrap { border: 1px solid var(--line); }
+    table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    th, td { padding: 13px 12px; border-bottom: 1px solid var(--line); vertical-align: top; text-align: left; overflow-wrap: anywhere; }
+    th { background: var(--surface); color: #34393e; font-size: 11px; font-weight: 760; }
+    tbody tr:last-child td { border-bottom: 0; }
+    tbody tr:hover { background: #fbfcfd; }
+    .candidate { display: flex; align-items: flex-start; gap: 9px; }
+    .rank { width: 22px; color: var(--muted); font-variant-numeric: tabular-nums; flex: 0 0 auto; }
+    .candidate strong { display: block; line-height: 1.35; }
+    .candidate small { display: block; margin-top: 3px; color: var(--muted); }
+    .evidence-level { display: flex; align-items: center; gap: 7px; }
+    .segments { display: grid; grid-template-columns: repeat(4, 12px); gap: 3px; }
+    .segments i { height: 6px; background: var(--line); }
+    .segments.high i:nth-child(-n+4) { background: var(--teal); }
+    .segments.medium i:nth-child(-n+2) { background: #d39b00; }
+    .segments.low i:nth-child(1) { background: var(--coral); }
+    .status {
+      display: inline-block;
+      padding: 3px 7px;
+      border: 1px solid currentColor;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 760;
+      line-height: 1.3;
+    }
+    .status.keep { color: var(--teal); background: var(--teal-soft); }
+    .status.pilot { color: var(--blue); background: var(--blue-soft); }
+    .status.hold { color: var(--mustard); background: var(--mustard-soft); }
+    .status.no { color: var(--coral); background: var(--coral-soft); }
+    .cell-note { display: block; margin-top: 6px; color: var(--muted); font-size: 11px; }
+    .footnote { margin: 11px 0 0; color: var(--muted); font-size: 11px; }
+
+    .insight-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border: 1px solid var(--line); }
+    .insight { min-height: 190px; padding: 22px; border-bottom: 1px solid var(--line); }
+    .insight:nth-child(odd) { border-right: 1px solid var(--line); }
+    .insight:nth-last-child(-n+2) { border-bottom: 0; }
+    .insight-kicker { color: var(--muted); font-size: 11px; font-weight: 750; }
+    .insight h3 { margin-top: 8px; font-size: 18px; }
+    .insight p { margin: 10px 0 0; color: #41464b; }
+    .insight .source-link { display: inline-block; margin-top: 13px; font-size: 12px; }
+
+    .decision-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--line); }
+    .decision { min-height: 285px; padding: 22px; border-right: 1px solid var(--line); }
+    .decision:last-child { border-right: 0; }
+    .decision h3 { font-size: 18px; }
+    .decision.do h3 { color: var(--teal); }
+    .decision.pilot h3 { color: var(--blue); }
+    .decision.hold h3 { color: var(--mustard); }
+    .decision ul { margin: 16px 0 0; padding-left: 18px; }
+    .decision li { margin: 0 0 10px; }
+    .decision li::marker { color: var(--line-strong); }
+    .decision small { color: var(--muted); }
+
+    .lane-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+    .lane { border-top: 4px solid var(--ink); padding: 18px 0 0; }
+    .lane h3 { font-size: 18px; }
+    .lane p { margin: 9px 0 0; color: var(--muted); }
+    .lane dl { margin: 18px 0 0; display: grid; grid-template-columns: 92px 1fr; gap: 9px 14px; }
+    .lane dt { color: var(--muted); font-size: 12px; font-weight: 700; }
+    .lane dd { margin: 0; }
+
+    .security {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 24px;
+      align-items: start;
+      padding: 24px;
+      background: var(--coral-soft);
+      border-left: 4px solid var(--coral);
+    }
+    .security h3 { font-size: 20px; }
+    .security p { margin: 10px 0 0; }
+    .security ul { margin: 0; padding-left: 18px; }
+    .security li { margin-bottom: 8px; }
+
+    .filters { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 14px; }
+    .filter {
+      border: 1px solid var(--line-strong);
+      border-radius: 4px;
+      background: var(--bg);
+      color: var(--ink);
+      padding: 7px 10px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .filter[aria-pressed="true"] { border-color: var(--ink); background: var(--ink); color: #fff; }
+    .source-list { border-top: 1px solid var(--line-strong); }
+    .source-row {
+      display: grid;
+      grid-template-columns: 92px 82px minmax(0, 1fr) 145px;
+      gap: 14px;
+      align-items: start;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .source-row[hidden] { display: none; }
+    .source-platform { font-weight: 760; }
+    .source-date, .source-signal { color: var(--muted); font-size: 12px; }
+    .source-title a { color: var(--ink); font-weight: 650; text-decoration-color: var(--line-strong); }
+    .source-title small { display: block; margin-top: 4px; color: var(--muted); }
+
+    details { border-top: 1px solid var(--line); padding: 16px 0; }
+    summary { cursor: pointer; font-weight: 700; }
+    .method { margin-top: 13px; color: var(--muted); }
+    .method ol { padding-left: 20px; }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      padding-top: 28px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; gap: 22px; }
+      .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .metric:nth-child(2) { border-right: 0; }
+      .metric:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+      .signal-band { grid-template-columns: 1fr; }
+      .signal-intro { padding-left: 18px; }
+      .signal-item { border-left: 0; border-top: 1px solid var(--line); }
+      .consensus { grid-template-columns: 1fr; }
+      .step { min-height: 0; border-right: 0; border-bottom: 1px solid var(--line); }
+      .step:last-child { border-bottom: 0; }
+      .step:not(:last-child)::after { content: "↓"; top: auto; right: 20px; bottom: -11px; }
+      .decision-grid { grid-template-columns: 1fr; }
+      .decision { min-height: 0; border-right: 0; border-bottom: 1px solid var(--line); }
+      .decision:last-child { border-bottom: 0; }
+      .source-row { grid-template-columns: 82px 72px minmax(0, 1fr); }
+      .source-signal { grid-column: 3; }
+    }
+
+    @media (max-width: 680px) {
+      body { font-size: 14px; }
+      .topbar-inner { padding: 8px 16px; }
+      .topmeta span:first-child { display: none; }
+      main { padding: 24px 16px 54px; }
+      h1 { font-size: 32px; }
+      .hero-copy { font-size: 15px; }
+      .section { padding: 32px 0; }
+      .section-head { display: block; }
+      .section-head p { margin-top: 8px; text-align: left; }
+      .metrics { grid-template-columns: 1fr; }
+      .metric { min-height: 0; border-right: 0; border-bottom: 1px solid var(--line); }
+      .metric:last-child { border-bottom: 0; }
+      .metric-value { font-size: 31px; }
+      .insight-grid { grid-template-columns: 1fr; }
+      .insight, .insight:nth-child(odd) { min-height: 0; border-right: 0; border-bottom: 1px solid var(--line); }
+      .insight:last-child { border-bottom: 0; }
+      .lane-grid { grid-template-columns: 1fr; }
+      .security { grid-template-columns: 1fr; padding: 20px; }
+      .table-wrap { border: 0; }
+      table, tbody, tr, td { display: block; width: 100%; }
+      thead { display: none; }
+      tbody tr { margin-bottom: 12px; border: 1px solid var(--line); }
+      td { display: grid; grid-template-columns: minmax(92px, .42fr) minmax(0, 1fr); gap: 10px; border-bottom: 1px solid var(--line); }
+      td::before { content: attr(data-label); color: var(--muted); font-size: 11px; font-weight: 700; }
+      tbody tr td:last-child { border-bottom: 0; }
+      .source-row { grid-template-columns: 76px minmax(0, 1fr); gap: 7px 10px; }
+      .source-date { grid-column: 1; grid-row: 2; }
+      .source-title { grid-column: 2; grid-row: 1 / span 2; }
+      .source-signal { grid-column: 2; }
+      .footer { display: block; }
+      .footer span { display: block; margin-top: 6px; }
+    }
+
+    @media print {
+      .topbar { position: static; }
+      .filters { display: none; }
+      main { max-width: none; padding: 20px; }
+      a { color: var(--ink); text-decoration: none; }
+      .section { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brandline">
+        <span class="mark" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+        <strong>FlowMe 커뮤니티 리서치</strong>
+      </div>
+      <div class="topmeta">
+        <span>조사 범위: 2026.07.09–08.09</span>
+        <span>업데이트: 2026.08.09 KST</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Community-first / planning · UX · UI · design</p>
+        <h1>최근 30일 AI 기획·UX·UI 스킬·세팅 동향</h1>
+        <p class="hero-copy">FlowMe 내부 작업을 출발점으로 삼지 않고 Reddit, Hacker News, GitHub와 최근 연구에서 실제로 반복된 이름과 반응을 다시 조사했다. 제작자 홍보와 독립 사용 후기를 분리하고, 설치 수보다 작업 방식의 공통점을 우선해 읽었다.</p>
+      </div>
+      <div class="verdict-box">
+        <strong>결론: 새 도구를 더 쌓는 흐름이 아니다.</strong>
+        <p>프로젝트 고유 디자인 근거를 먼저 잠그고, 좁은 스킬 하나만 시험한 뒤 브라우저 수치와 사람이 함께 검토하는 방식이 가장 일관되게 지지됐다.</p>
+      </div>
+    </section>
+
+    <section class="section" id="summary">
+      <div class="section-head">
+        <h2>조사 범위와 핵심 신호</h2>
+        <p>반응 수는 조사 당시 스냅샷이다. Reddit 점수와 GitHub 별은 품질 점수가 아니며, 후보 간 직접 비교에만 보조적으로 사용했다.</p>
+      </div>
+      <div class="metrics" aria-label="조사 근거 수">
+        <div class="metric">
+          <span class="metric-label">Reddit 토론</span>
+          <strong class="metric-value">12</strong>
+          <span class="metric-note">중복 교차 게시물은 한 신호로 처리</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Hacker News</span>
+          <strong class="metric-value">5</strong>
+          <span class="metric-note">최근 Show HN과 토론 반응 확인</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">GitHub 저장소</span>
+          <strong class="metric-value">11</strong>
+          <span class="metric-note">최근 커밋·릴리스·이슈·설치 방식 검토</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">보안 연구</span>
+          <strong class="metric-value">1</strong>
+          <span class="metric-note">2026.08 제출 프리프린트, 적용 범위 분리</span>
+        </div>
+      </div>
+
+      <div class="signal-band">
+        <div class="signal-intro">
+          <strong>커뮤니티 신호를 세 층으로 분리</strong>
+          <p>같은 제작자가 여러 커뮤니티에 올린 글은 반복 언급으로 세지 않았다.</p>
+        </div>
+        <div class="signal-item good">
+          <strong>독립 사용 경험</strong>
+          <p>구체적인 화면, 실패, 비교 결과가 있는 사용자 반응을 가장 높게 봤다.</p>
+        </div>
+        <div class="signal-item watch">
+          <strong>출시·저장소 신호</strong>
+          <p>활발한 유지보수는 확인하되, 제작자 데모를 사용자 검증으로 바꾸지 않았다.</p>
+        </div>
+        <div class="signal-item stop">
+          <strong>홍보·자동 재게시</strong>
+          <p>복제된 소개 글, 반응 없는 카탈로그 글, 자기 평가만 있는 비교는 낮게 반영했다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="workflow">
+      <div class="section-head">
+        <h2>도구 이름보다 강하게 반복된 작업 방식</h2>
+        <p>최근 토론에서 서로 다른 사용자들이 독립적으로 수렴한 순서다. 한 번에 여러 스킬을 읽히는 방식은 오히려 혼선과 컨텍스트 비용을 키운다는 반응이 많았다.</p>
+      </div>
+      <div class="consensus">
+        <div class="step">
+          <span class="step-number">01</span>
+          <strong>제품과 사용자를 구체화</strong>
+          <p>“예쁜 화면”이 아니라 누구의 어떤 일을 해결하는 화면인지 먼저 고정한다.</p>
+        </div>
+        <div class="step">
+          <span class="step-number">02</span>
+          <strong>프로젝트 디자인 근거 고정</strong>
+          <p>토큰, 컴포넌트, 레퍼런스, 금지 패턴을 <code>DESIGN.md</code> 또는 기존 문서에 둔다.</p>
+        </div>
+        <div class="step">
+          <span class="step-number">03</span>
+          <strong>좁은 스킬 하나만 시험</strong>
+          <p>처음에는 읽기 전용 비평으로 적용하고 같은 화면의 전후 차이를 비교한다.</p>
+        </div>
+        <div class="step">
+          <span class="step-number">04</span>
+          <strong>브라우저에서 수치 검증</strong>
+          <p>스크린샷과 함께 글꼴, 간격, 색, 경계 상자의 계산값을 비교한다.</p>
+        </div>
+        <div class="step">
+          <span class="step-number">05</span>
+          <strong>사람이 방향과 맥락 승인</strong>
+          <p>검사 통과를 좋은 디자인으로 간주하지 않고 제품 적합성과 판단 품질을 검토한다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="candidates">
+      <div class="section-head">
+        <h2>최근 거론된 후보 비교</h2>
+        <p>“독립 신호”는 제작자가 아닌 사용자의 최근 토론을 보수적으로 묶은 값이다. 저장소 활동은 2026.07.09 이후 커밋 최대 100건을 조회했다.</p>
+      </div>
+      <div class="table-wrap">
+        <table aria-label="최근 디자인 스킬 후보 비교">
+          <colgroup>
+            <col style="width:18%">
+            <col style="width:14%">
+            <col style="width:25%">
+            <col style="width:16%">
+            <col style="width:14%">
+            <col style="width:13%">
+          </colgroup>
+          <thead>
+            <tr>
+              <th>후보</th>
+              <th>최근 커뮤니티 신호</th>
+              <th>구체적 반응</th>
+              <th>GitHub 스냅샷</th>
+              <th>부작용·한계</th>
+              <th>현재 판단</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-label="후보"><div class="candidate"><span class="rank">1</span><div><strong>Impeccable</strong><small>기존 화면 비평·다듬기·탐지</small></div></div></td>
+              <td data-label="최근 신호"><div class="evidence-level"><span class="segments high"><i></i><i></i><i></i><i></i></span><strong>높음</strong></div><span class="cell-note">6개 이상 토론에서 반복</span></td>
+              <td data-label="구체적 반응">기존 사이트 개선과 비전문가의 첫 비평에 유용하다는 후기가 반복됐다. 동시에 “기능이 너무 많다”, 토큰·훅 부담이 있다는 우려도 있다.</td>
+              <td data-label="GitHub">57,213★ · 100+ commits<br>Apache-2.0 · 07.30 release</td>
+              <td data-label="한계">스킬 폴더 약 3MB, 153파일. 설치 시 프로젝트 훅과 여러 설정을 다룰 수 있다.</td>
+              <td data-label="판단"><span class="status pilot">제한 시험만</span><span class="cell-note">훅 OFF, critique·manual detect부터</span></td>
+            </tr>
+            <tr>
+              <td data-label="후보"><div class="candidate"><span class="rank">2</span><div><strong>Anthropic frontend-design</strong><small>창의 방향과 시각적 차별화</small></div></div></td>
+              <td data-label="최근 신호"><div class="evidence-level"><span class="segments high"><i></i><i></i><i></i><i></i></span><strong>높음</strong></div><span class="cell-note">Codex 이식 글 포함 5개 이상</span></td>
+              <td data-label="구체적 반응">출력 다양성을 높인다는 의견과 여전히 비슷한 AI 결과라는 반응이 공존했다. 6회 비교 글도 재실험 후 초기 주장을 축소했다.</td>
+              <td data-label="GitHub">공식 Claude Code 저장소<br>08.08 갱신</td>
+              <td data-label="한계">브랜드·토큰이 잠긴 제품 UI에서는 창의적 변형이 기존 시스템과 충돌할 수 있다.</td>
+              <td data-label="판단"><span class="status keep">참고 유지</span><span class="cell-note">현재 보유 빌더와 역할 중복, 추가 설치 없음</span></td>
+            </tr>
+            <tr>
+              <td data-label="후보"><div class="candidate"><span class="rank">3</span><div><strong>UI Skills</strong><small>작은 스킬을 찾는 동적 레지스트리</small></div></div></td>
+              <td data-label="최근 신호"><div class="evidence-level"><span class="segments medium"><i></i><i></i><i></i><i></i></span><strong>중간</strong></div><span class="cell-note">2개 최근 토론 + 활발한 저장소</span></td>
+              <td data-label="구체적 반응">특정 스타일 파일을 고르는 대안으로 추천됐다. 자체 지침도 가장 작은 관련 스킬 하나만 불러오도록 한다.</td>
+              <td data-label="GitHub">7,093★ · 41 commits<br>MIT · v0.2.4</td>
+              <td data-label="한계"><code>npx ui-skills</code>가 원격 레지스트리와 스킬 본문을 실행 시점에 읽는다. 버전 고정 없이 사용하면 내용이 바뀔 수 있다.</td>
+              <td data-label="판단"><span class="status pilot">발견용만</span><span class="cell-note">후보를 읽고 고정 복사한 뒤 검토</span></td>
+            </tr>
+            <tr>
+              <td data-label="후보"><div class="candidate"><span class="rank">4</span><div><strong>UI/UX Pro Max</strong><small>규칙·팔레트·스택별 참고</small></div></div></td>
+              <td data-label="최근 신호"><div class="evidence-level"><span class="segments medium"><i></i><i></i><i></i><i></i></span><strong>중간</strong></div><span class="cell-note">2–3개 토론에서 보조 역할</span></td>
+              <td data-label="구체적 반응">창의 스킬과 달리 접근성·대비·규칙 참고에 쓰인다는 평가가 있었다. 동시에 많은 파일과 선택지 때문에 혼란스럽다는 이슈가 있다.</td>
+              <td data-label="GitHub">114,878★ · 23 commits<br>MIT · 08.06 release</td>
+              <td data-label="한계">핵심 스킬만 약 1.7MB. 범용 카탈로그가 프로젝트 고유 판단을 대신하지 못한다.</td>
+              <td data-label="판단"><span class="status keep">기존 것 유지</span><span class="cell-note">이미 설치됨, 중복 추가 금지</span></td>
+            </tr>
+            <tr>
+              <td data-label="후보"><div class="candidate"><span class="rank">5</span><div><strong>Emil Kowalski skills</strong><small>모션·디자인 엔지니어링</small></div></div></td>
+              <td data-label="최근 신호"><div class="evidence-level"><span class="segments medium"><i></i><i></i><i></i><i></i></span><strong>중하</strong></div><span class="cell-note">최근 언급 1개, 저장소 관심 높음</span></td>
+              <td data-label="구체적 반응">모션과 세부 구현의 전문성 출처로 이름이 등장했다. 최근 한 달 독립 사용 후기는 충분하지 않았다.</td>
+              <td data-label="GitHub">27,518★ · 27 commits<br>MIT · 9개 좁은 스킬</td>
+              <td data-label="한계">FlowMe의 현재 핵심 병목인 제품 구조·실행성보다 모션과 디테일에 더 가깝다.</td>
+              <td data-label="판단"><span class="status hold">필요 시 검토</span><span class="cell-note">모션 과제가 생길 때 한 스킬만</span></td>
+            </tr>
+            <tr>
+              <td data-label="후보"><div class="candidate"><span class="rank">6</span><div><strong>Hallmark</strong><small>반복 AI 미감 방지</small></div></div></td>
+              <td data-label="최근 신호"><div class="evidence-level"><span class="segments low"><i></i><i></i><i></i><i></i></span><strong>약함·부정 혼합</strong></div><span class="cell-note">HN 7점·9댓글</span></td>
+              <td data-label="구체적 반응">다양성이 필요하다는 긍정 의견도 있었지만, 다수 댓글은 예시가 여전히 AI처럼 보인다고 비판했다.</td>
+              <td data-label="GitHub">22,872★ · 5 commits<br>MIT · open bloat/a11y issues</td>
+              <td data-label="한계">약 674KB·107파일. 1MB에 가깝다는 컨텍스트 비용 이슈와 데모 접근성 문제가 열려 있다.</td>
+              <td data-label="판단"><span class="status hold">관찰</span><span class="cell-note">문제 해결·독립 사례 전까지 보류</span></td>
+            </tr>
+            <tr>
+              <td data-label="후보"><div class="candidate"><span class="rank">7</span><div><strong>UI Craft</strong><small>규칙·점수·MCP 게이트 묶음</small></div></div></td>
+              <td data-label="최근 신호"><div class="evidence-level"><span class="segments low"><i></i><i></i><i></i><i></i></span><strong>저장소 중심</strong></div><span class="cell-note">독립 커뮤니티 사용 신호 미확인</span></td>
+              <td data-label="구체적 반응">유지보수와 자기 검증은 활발하지만, 제작자 자료를 제외한 최근 사용 경험을 찾지 못했다.</td>
+              <td data-label="GitHub">252★ · 100+ commits<br>MIT · 08.07 release</td>
+              <td data-label="한계">Windows 롤백이 기존 파일을 삭제하던 버그가 08.07 수정됐다. 설치 스크립트가 여러 하네스 설정을 쓴다.</td>
+              <td data-label="판단"><span class="status no">설치 금지</span><span class="cell-note">추가 안정 기간과 외부 사례 필요</span></td>
+            </tr>
+            <tr>
+              <td data-label="후보"><div class="candidate"><span class="rank">8</span><div><strong>Tastemaker</strong><small>디자인 시스템 선고정</small></div></div></td>
+              <td data-label="최근 신호"><div class="evidence-level"><span class="segments low"><i></i><i></i><i></i><i></i></span><strong>홍보 중심</strong></div><span class="cell-note">동일 제작자 다중 게시</span></td>
+              <td data-label="구체적 반응">데모가 자체 안티패턴 체크를 어기며 새 단일 미감만 만든다는 비판이 구체적으로 제기됐다.</td>
+              <td data-label="GitHub">77★ · 77 commits<br>MIT · 07.09 생성</td>
+              <td data-label="한계">독립 검증이 거의 없고, 고정 프리셋이 또 다른 획일화를 만들 수 있다.</td>
+              <td data-label="판단"><span class="status no">도입 제외</span><span class="cell-note">현재 증거로는 이득 불충분</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="footnote">GitHub 별은 누적치이며 최근 한 달 실제 사용량을 뜻하지 않는다. Anthropic 공식 스킬은 모노레포 안에 있어 후보 자체 별 수를 분리하지 않았다.</p>
+    </section>
+
+    <section class="section" id="insights">
+      <div class="section-head">
+        <h2>커뮤니티가 실제로 겪은 문제</h2>
+        <p>도구 홍보 문구 대신, 사용자들이 반복해서 설명한 실패와 수정 방식을 요약했다.</p>
+      </div>
+      <div class="insight-grid">
+        <article class="insight">
+          <span class="insight-kicker">설정 과잉</span>
+          <h3>많이 설치할수록 좋아진다는 증거가 없다</h3>
+          <p>기존 앱에 플러그인을 넣을 때는 하나씩 추가해 같은 과제로 시험하고, 유지할지 버릴지 결정하라는 조언이 가장 구체적이었다. 범용 하네스가 이미 있는 기능을 더 무겁게 복제한다는 반론도 반복됐다.</p>
+          <a class="source-link" href="https://www.reddit.com/r/ClaudeCode/comments/1uxh2ck/built_an_entire_app_with_vanilla_claude_code_is/" target="_blank" rel="noreferrer">관련 토론 열기</a>
+        </article>
+        <article class="insight">
+          <span class="insight-kicker">시각적 획일화</span>
+          <h3>범용 스킬은 방향을 주지만 브랜드를 만들지 못한다</h3>
+          <p>공식 frontend-design도 결과의 반복을 줄일 수는 있지만 보장하지 못했다. 구체적인 대상, 실제 레퍼런스와 프로젝트 고유 토큰이 없으면 다른 스타일의 평균값으로 이동할 뿐이라는 반응이 우세했다.</p>
+          <a class="source-link" href="https://www.reddit.com/r/ClaudeDesign/comments/1v8hli6/i_ran_the_same_ui_brief_6_times_with_and_without/" target="_blank" rel="noreferrer">재실험 내용 열기</a>
+        </article>
+        <article class="insight">
+          <span class="insight-kicker">시각 QA 한계</span>
+          <h3>스크린샷 반복만으로 작은 오차를 못 잡는다</h3>
+          <p>폰트 크기, 행간, 여백, 테두리, 색, 요소 크기는 이미지 비교만으로 손실이 크다. 브라우저의 계산된 스타일과 경계 상자를 먼저 수치 비교하고, 마지막에 픽셀 회귀를 쓰는 흐름이 제안됐다.</p>
+          <a class="source-link" href="https://www.reddit.com/r/ClaudeCode/comments/1vgxzij/frontend_skills/" target="_blank" rel="noreferrer">QA 토론 열기</a>
+        </article>
+        <article class="insight">
+          <span class="insight-kicker">디자인 도구 역할</span>
+          <h3>Claude Design은 Figma 대체보다 탐색·프로토타입 역할</h3>
+          <p>8월의 큰 토론에서는 빠른 아이디어와 코드 연결은 긍정적으로 봤지만, 토큰·컴포넌트·버전 이력·정밀 편집 때문에 Figma를 최종 기준으로 남기는 의견이 많았다. 코드에서 Figma로 되돌릴 때 수동 정리도 여전히 필요했다.</p>
+          <a class="source-link" href="https://www.reddit.com/r/ClaudeDesign/comments/1vemcte/is_anyone_100_replacing_figma_with_claude_design/" target="_blank" rel="noreferrer">Figma 대체 토론 열기</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="decision">
+      <div class="section-head">
+        <h2>FlowMe 적용 판단</h2>
+        <p>프로젝트 내부 현황은 마지막 판단 단계에서만 사용했다. 현재 보유한 Figma·프론트엔드 빌더·UI/UX Pro Max·Playwright 역량과 중복되는 도구는 추가하지 않는다.</p>
+      </div>
+      <div class="decision-grid">
+        <article class="decision do">
+          <h3>지금 반영</h3>
+          <ul>
+            <li>새 범용 디자인 스킬은 설치하지 않는다.</li>
+            <li>한 번에 한 후보만, 읽기 전용 비평부터 시험한다.</li>
+            <li>설치 전 <code>SKILL.md</code>, 스크립트, 훅, 네트워크·파일 쓰기 범위를 검토한다.</li>
+            <li>시각 오차는 스크린샷과 계산 스타일·경계 상자를 함께 확인한다.</li>
+          </ul>
+        </article>
+        <article class="decision pilot">
+          <h3>문제가 생길 때만 시험</h3>
+          <ul>
+            <li>기존 화면의 미감만 다듬어야 할 때 Impeccable <code>critique</code>를 임시 작업 트리에서 비교한다.</li>
+            <li>자동 훅은 끄고 수동 탐지부터 사용한다.</li>
+            <li>UI Skills는 후보 발견에만 사용하고, 원격 본문을 그대로 상시 로드하지 않는다.</li>
+            <li>모션 품질이 실제 병목일 때 Emil의 좁은 스킬 하나를 검토한다.</li>
+          </ul>
+        </article>
+        <article class="decision hold">
+          <h3>보류</h3>
+          <ul>
+            <li>Hallmark: 최근 HN 반응과 열린 용량·접근성 이슈가 해소될 때까지 관찰한다.</li>
+            <li>UI Craft: Windows 데이터 손실 수정 직후라 안정 기간과 외부 사용 사례가 필요하다.</li>
+            <li>Tastemaker·Frontend Design Pro: 독립 검증이 부족하다.</li>
+            <li>gstack 전체 설치: 현재 얇은 하네스와 중복되고 자동 갱신·명령 범위가 너무 넓다.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="planning-figma">
+      <div class="section-head">
+        <h2>기획과 Figma 쪽에서 확인된 별도 흐름</h2>
+        <p>디자인 생성 스킬과 같은 순위표에 섞지 않고, 작업 방식으로 분리했다.</p>
+      </div>
+      <div class="lane-grid">
+        <article class="lane">
+          <h3>기획: 한 시간짜리 만능 인터뷰보다 단계별 구체화</h3>
+          <p>최근 “grill me” 토론에서는 전체 제품을 한 번에 완벽히 묻기보다, 먼저 현재 코드와 근거를 읽고 다음 단계에 필요한 판단만 질문하라는 의견이 가장 구체적이었다.</p>
+          <dl>
+            <dt>강한 신호</dt><dd>질문 전 현재 구현과 문서를 읽기</dd>
+            <dt>실행 단위</dt><dd>프로젝트 전체가 아니라 다음 단계</dd>
+            <dt>완료 기준</dt><dd>검증 가능한 수용 조건 3–7개</dd>
+            <dt>도구 판단</dt><dd>Wayfinder·Cadence 언급은 있었지만 최근 독립 검증이 부족해 설치 보류</dd>
+          </dl>
+        </article>
+        <article class="lane">
+          <h3>Figma: 양방향 자동 동기화보다 역할 분담</h3>
+          <p>코드에서 기존 Figma 변수와 컴포넌트로 정확히 돌아가는 흐름은 아직 신뢰하기 어렵다는 반응이 반복됐다. 현재는 탐색과 구현 속도는 AI, 최종 시스템과 정밀 편집은 Figma에 두는 조합이 현실적이다.</p>
+          <dl>
+            <dt>AI 역할</dt><dd>아이디어, 프로토타입, 동작 탐색, 코드 초안</dd>
+            <dt>Figma 역할</dt><dd>토큰, 컴포넌트, 최종 편집, 팀 검토와 이력</dd>
+            <dt>전달 방식</dt><dd>전체 파일보다 대상 프레임·컴포넌트·자산을 좁혀 제공</dd>
+            <dt>주의</dt><dd>역방향 가져오기는 변수·컴포넌트 수동 정리 비용을 예상</dd>
+          </dl>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="security">
+      <div class="security">
+        <div>
+          <h3>커뮤니티 스킬은 문서가 아니라 실행 가능한 공급망이다</h3>
+          <p>2026년 8월 제출된 프리프린트는 자연어 지시 안에 악성 셸 명령을 숨길 수 있음을 실험했다. 단, 연구 대상은 Gemini CLI와 Qwen Code이므로 논문의 공격 성공률을 Codex나 Claude Code에 그대로 적용하면 안 된다. 여기서 채택할 수 있는 결론은 스킬 인터페이스 자체를 검토 대상으로 봐야 한다는 점이다.</p>
+          <p><a href="https://arxiv.org/abs/2608.05223" target="_blank" rel="noreferrer">연구 초록과 적용 범위 확인</a></p>
+        </div>
+        <ul>
+          <li><code>curl | bash</code>, <code>irm | iex</code> 설치는 소스를 먼저 내려받아 검토한다.</li>
+          <li>자동 훅, 셸 실행, 네트워크 요청, 홈 디렉터리 쓰기를 별도로 확인한다.</li>
+          <li>가능하면 검토한 커밋 또는 복사본을 고정하고 자동 갱신을 끈다.</li>
+          <li>민감한 저장소에서는 처음부터 쓰기 권한을 주지 않고 비평 결과만 받는다.</li>
+          <li>별 수, 제작자 데모, 자체 점수는 보안·품질 검증으로 간주하지 않는다.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section" id="sources">
+      <div class="section-head">
+        <h2>근거 원문</h2>
+        <p>날짜, 반응, 출처 유형을 함께 남겼다. 링크에서 원문과 최신 상태를 직접 확인할 수 있다.</p>
+      </div>
+      <div class="filters" role="group" aria-label="근거 출처 필터">
+        <button class="filter" type="button" data-filter="all" aria-pressed="true">전체 29</button>
+        <button class="filter" type="button" data-filter="reddit" aria-pressed="false">Reddit 12</button>
+        <button class="filter" type="button" data-filter="hn" aria-pressed="false">Hacker News 5</button>
+        <button class="filter" type="button" data-filter="github" aria-pressed="false">GitHub 11</button>
+        <button class="filter" type="button" data-filter="research" aria-pressed="false">연구 1</button>
+      </div>
+
+      <div class="source-list">
+        <div class="source-row" data-platform="reddit"><div class="source-platform">Reddit</div><div class="source-date">07.10</div><div class="source-title"><a href="https://www.reddit.com/r/ClaudeCode/comments/1usa6fz/im_overwhelmed_by_design_options_skills_plugins/" target="_blank" rel="noreferrer">디자인 스킬 선택 과잉과 기존 사이트 개선</a><small>Impeccable, UI/UX Pro Max, frontend-design, Emil, gstack가 한 번에 비교된 실제 고민</small></div><div class="source-signal">+5 · 독립 질문</div></div>
+        <div class="source-row" data-platform="reddit"><div class="source-platform">Reddit</div><div class="source-date">07.13</div><div class="source-title"><a href="https://www.reddit.com/r/codex/comments/1uuvt8x/everyone_should_try_this/" target="_blank" rel="noreferrer">Anthropic frontend-design의 Codex 이식</a><small>이식성과 인기를 보여주지만 단순 프롬프트로 충분하다는 반론도 공존</small></div><div class="source-signal">+44 · 혼합 반응</div></div>
+        <div class="source-row" data-platform="reddit"><div class="source-platform">Reddit</div><div class="source-date">07.15</div><div class="source-title"><a href="https://www.reddit.com/r/ClaudeCode/comments/1uxh2ck/built_an_entire_app_with_vanilla_claude_code_is/" target="_blank" rel="noreferrer">기존 앱에 스킬을 늦게 추가해도 되는가</a><small>하나씩 시험, 읽기 전용부터, 프로젝트 문서 우선이라는 구체적 조언</small></div><div class="source-signal">독립 질문·다수 댓글</div></div>
+        <div class="source-row" data-platform="reddit"><div class="source-platform">Reddit</div><div class="source-date">07.20</div><div class="source-title"><a href="https://www.reddit.com/r/claudeskills/comments/1v1v9qq/searching_for_better_frontenddesign_skills/" target="_blank" rel="noreferrer">더 나은 frontend-design 스킬 탐색</a><small>Skills UI, 프로젝트 전용 DESIGN.md, 실제 디자인 시스템을 추천</small></div><div class="source-signal">+18 · 교차 게시 중 하나</div></div>
+        <div class="source-row" data-platform="reddit"><div class="source-platform">Reddit</div><div class="source-date">07.20</div><div class="source-title"><a href="https://www.reddit.com/r/ClaudeAI/comments/1v1v713/any_good_claude_frontenddesign_skills/" target="_blank" rel="noreferrer">범용 디자인 스킬의 반복 결과 문제</a><small>유명한 스킬일수록 개성이 사라질 수 있어 자체 스타일 가이드가 필요하다는 반응</small></div><div class="source-signal">+20 · 교차 게시, 중복 감산</div></div>
+        <div class="source-row" data-platform="reddit"><div class="source-platform">Reddit</div><div class="source-date">07.21</div><div class="source-title"><a href="https://www.reddit.com/r/codex/comments/1v2lf1u/i_made_a_frontend_design_skill_because/" target="_blank" rel="noreferrer">Frontend Design Pro 출시 글</a><small>실제 사용자는 차이가 크지 않았다고 보고, 예시와 토큰 비용 부족을 지적</small></div><div class="source-signal">+4 · 제작자 출시</div></div>
+        <div class="source-row" data-platform="reddit"><div class="source-platform">Reddit</div><div class="source-date">07.26</div><div class="source-title"><a href="https://www.reddit.com/r/ClaudeCode/comments/1v7iv86/whats_the_most_advanced_grill_me_skill_available/" target="_blank" rel="noreferrer">고급 요구사항 인터뷰 스킬 탐색</a><small>한 번의 만능 인터뷰보다 코드 근거를 읽고 단계별로 질문하라는 의견</small></div><div class="source-signal">0점 · 답변 내용은 구체적</div></div>
+        <div class="source-row" data-platform="reddit"><div class="source-platform">Reddit</div><div class="source-date">07.27</div><div class="source-title"><a href="https://www.reddit.com/r/ClaudeDesign/comments/1v8hli6/i_ran_the_same_ui_brief_6_times_with_and_without/" target="_blank" rel="noreferrer">같은 UI 브리프를 플러그인 유무로 6회씩 비교</a><small>재실험 후 초기 주장 두 개를 철회. “경향을 밀지만 보장하지 않는다”는 사례</small></div><div class="source-signal">+32 · 자체 평가, 재검증</div></div>
+        <div class="source-row" data-platform="reddit"><div class="source-platform">Reddit</div><div class="source-date">08.03</div><div class="source-title"><a href="https://www.reddit.com/r/ClaudeDesign/comments/1vemcte/is_anyone_100_replacing_figma_with_claude_design/" target="_blank" rel="noreferrer">Claude Design으로 Figma를 완전히 대체하는가</a><small>프로토타입에는 긍정적이나 최종 시스템과 정밀 편집은 Figma를 유지하는 의견이 다수</small></div><div class="source-signal">+80 · 큰 독립 토론</div></div>
+        <div class="source-row" data-platform="reddit"><div class="source-platform">Reddit</div><div class="source-date">08.04</div><div class="source-title"><a href="https://www.reddit.com/r/ClaudeDesign/comments/1vf9u4n/whats_the_best_codetofigma_workflow_for/" target="_blank" rel="noreferrer">코드에서 Figma 토큰·컴포넌트 보존</a><small>자동 역변환은 수동 정리가 남고 Figma를 기준으로 두는 경험</small></div><div class="source-signal">+13 · 실무 질문</div></div>
+        <div class="source-row" data-platform="reddit"><div class="source-platform">Reddit</div><div class="source-date">08.06</div><div class="source-title"><a href="https://www.reddit.com/r/ClaudeCode/comments/1vgxzij/frontend_skills/" target="_blank" rel="noreferrer">스크린샷 반복이 70%에서 멈추는 문제</a><small>computed style, bounding box, 숫자 차이 후 픽셀 회귀를 제안</small></div><div class="source-signal">+1 · 기술적으로 구체적</div></div>
+        <div class="source-row" data-platform="reddit"><div class="source-platform">Reddit</div><div class="source-date">08.07</div><div class="source-title"><a href="https://www.reddit.com/r/claudeskills/comments/1vhz1ol/web_uiux_design_with_ai_what_skills_prompts_or/" target="_blank" rel="noreferrer">AI UI/UX의 반복 미감과 스킬 혼잡</a><small>Impeccable, 레퍼런스, DESIGN.md, Figma 조합이 반복 추천됨</small></div><div class="source-signal">+37 · 최근 높은 반응</div></div>
+
+        <div class="source-row" data-platform="hn"><div class="source-platform">HN</div><div class="source-date">07.18</div><div class="source-title"><a href="https://news.ycombinator.com/item?id=48961120" target="_blank" rel="noreferrer">Peek-CLI: frontend iteration</a><small>브라우저 피드백 루프 도구, 반응은 아직 작음</small></div><div class="source-signal">6점 · 1댓글</div></div>
+        <div class="source-row" data-platform="hn"><div class="source-platform">HN</div><div class="source-date">07.25</div><div class="source-title"><a href="https://news.ycombinator.com/item?id=49050042" target="_blank" rel="noreferrer">Claude와 Codex 디자인 블라인드 취향 테스트</a><small>흥미로운 평가 형식이나 커뮤니티 검증은 거의 없음</small></div><div class="source-signal">4점 · 0댓글</div></div>
+        <div class="source-row" data-platform="hn"><div class="source-platform">HN</div><div class="source-date">07.26</div><div class="source-title"><a href="https://news.ycombinator.com/item?id=49058547" target="_blank" rel="noreferrer">Hallmark anti-AI-slop skill</a><small>예시가 여전히 비슷해 보인다는 비판 댓글이 다수</small></div><div class="source-signal">7점 · 9댓글</div></div>
+        <div class="source-row" data-platform="hn"><div class="source-platform">HN</div><div class="source-date">07.26</div><div class="source-title"><a href="https://news.ycombinator.com/item?id=49058217" target="_blank" rel="noreferrer">Design.md for Claude Code</a><small>프로젝트 디자인 문서 흐름을 보여주지만 토론 규모는 작음</small></div><div class="source-signal">3점 · 0댓글</div></div>
+        <div class="source-row" data-platform="hn"><div class="source-platform">HN</div><div class="source-date">08.04</div><div class="source-title"><a href="https://news.ycombinator.com/item?id=49170377" target="_blank" rel="noreferrer">Capshelf: 스킬 공유와 프로젝트별 lockfile</a><small>버전 고정 문제를 겨냥했으나 현재 채택 신호는 매우 작음</small></div><div class="source-signal">4점 · 0댓글</div></div>
+
+        <div class="source-row" data-platform="github"><div class="source-platform">GitHub</div><div class="source-date">08.08</div><div class="source-title"><a href="https://github.com/anthropics/claude-code/tree/main/plugins/frontend-design" target="_blank" rel="noreferrer">anthropics/claude-code frontend-design</a><small>공식 스킬 본문과 설치 구조</small></div><div class="source-signal">공식 · 최근 갱신</div></div>
+        <div class="source-row" data-platform="github"><div class="source-platform">GitHub</div><div class="source-date">08.09</div><div class="source-title"><a href="https://github.com/pbakaus/impeccable" target="_blank" rel="noreferrer">pbakaus/impeccable</a><small>최근 릴리스, 59개 탐지 규칙, 프로젝트 훅과 설치 범위 확인</small></div><div class="source-signal">57,213★ · active</div></div>
+        <div class="source-row" data-platform="github"><div class="source-platform">GitHub</div><div class="source-date">08.06</div><div class="source-title"><a href="https://github.com/nextlevelbuilder/ui-ux-pro-max-skill" target="_blank" rel="noreferrer">nextlevelbuilder/ui-ux-pro-max-skill</a><small>활발한 유지보수와 큰 파일 수 관련 이슈 확인</small></div><div class="source-signal">114,878★ · active</div></div>
+        <div class="source-row" data-platform="github"><div class="source-platform">GitHub</div><div class="source-date">08.05</div><div class="source-title"><a href="https://github.com/emilkowalski/skill" target="_blank" rel="noreferrer">emilkowalski/skill</a><small>모션과 디자인 엔지니어링 중심의 좁은 스킬 묶음</small></div><div class="source-signal">27,518★ · active</div></div>
+        <div class="source-row" data-platform="github"><div class="source-platform">GitHub</div><div class="source-date">08.09</div><div class="source-title"><a href="https://github.com/ibelick/ui-skills" target="_blank" rel="noreferrer">ibelick/ui-skills</a><small>작은 스킬 라우팅 원칙과 원격 레지스트리 동작 확인</small></div><div class="source-signal">7,093★ · active</div></div>
+        <div class="source-row" data-platform="github"><div class="source-platform">GitHub</div><div class="source-date">08.06</div><div class="source-title"><a href="https://github.com/Nutlope/hallmark" target="_blank" rel="noreferrer">Nutlope/hallmark</a><small>열린 컨텍스트 용량·접근성 이슈와 낮은 최근 커밋 수</small></div><div class="source-signal">22,872★ · mixed</div></div>
+        <div class="source-row" data-platform="github"><div class="source-platform">GitHub</div><div class="source-date">08.08</div><div class="source-title"><a href="https://github.com/garrytan/gstack" target="_blank" rel="noreferrer">garrytan/gstack</a><small>디자인을 포함한 23개 전문 역할, 자동 갱신과 넓은 설치 범위</small></div><div class="source-signal">127,076★ · broad harness</div></div>
+        <div class="source-row" data-platform="github"><div class="source-platform">GitHub</div><div class="source-date">08.09</div><div class="source-title"><a href="https://github.com/educlopez/ui-craft" target="_blank" rel="noreferrer">educlopez/ui-craft</a><small>Windows 롤백 데이터 손실 수정과 자체 창의성 한계 조사 이슈 확인</small></div><div class="source-signal">252★ · new/active</div></div>
+        <div class="source-row" data-platform="github"><div class="source-platform">GitHub</div><div class="source-date">08.05</div><div class="source-title"><a href="https://github.com/codeswithroh/tastemaker" target="_blank" rel="noreferrer">codeswithroh/tastemaker</a><small>자체 데모 안티패턴과 프리셋 획일화 비판 이슈</small></div><div class="source-signal">77★ · self-launch</div></div>
+        <div class="source-row" data-platform="github"><div class="source-platform">GitHub</div><div class="source-date">08.01</div><div class="source-title"><a href="https://github.com/PGraeff/frontend-design-pro-agent-skill" target="_blank" rel="noreferrer">PGraeff/frontend-design-pro-agent-skill</a><small>최근 Reddit 출시 후보, 독립 반응과 저장소 채택은 매우 작음</small></div><div class="source-signal">3★ · early</div></div>
+        <div class="source-row" data-platform="github"><div class="source-platform">GitHub</div><div class="source-date">07.06</div><div class="source-title"><a href="https://github.com/julianoczkowski/designer-skills" target="_blank" rel="noreferrer">julianoczkowski/designer-skills</a><small>grill-me부터 design-review까지의 흐름, 조사 창 내 커밋은 없음</small></div><div class="source-signal">497★ · outside-window update</div></div>
+
+        <div class="source-row" data-platform="research"><div class="source-platform">연구</div><div class="source-date">08.05</div><div class="source-title"><a href="https://arxiv.org/abs/2608.05223" target="_blank" rel="noreferrer">Towards a Risk Assessment of Malicious Skill Files in Coding Agents</a><small>악성 명령을 자연어 스킬로 위장한 연구. Gemini CLI·Qwen Code 대상 프리프린트</small></div><div class="source-signal">범위 제한 필수</div></div>
+      </div>
+
+      <details>
+        <summary>조사 방법과 한계</summary>
+        <div class="method">
+          <ol>
+            <li>게시일이 2026.07.09–08.09인 Reddit·HN 글을 우선 수집했다. 창 밖에서 시작된 글의 최신 댓글은 배경 근거로만 사용했다.</li>
+            <li>동일 제작자의 다중 커뮤니티 홍보와 자동 생성 워크플로 재게시물은 독립 언급으로 세지 않았다.</li>
+            <li>후보 저장소의 생성일, 최근 push, 라이선스, 릴리스, 최근 커밋, 열린 이슈와 설치·훅 경로를 확인했다.</li>
+            <li>Reddit은 사용자 경험의 방향 신호이지 통제된 성능 실험이 아니다. 자체 점수·데모는 그대로 검증 결과로 취급하지 않았다.</li>
+            <li>GitHub 별은 누적 인지도이며 최근 한 달 사용량이나 보안을 증명하지 않는다.</li>
+            <li>FlowMe 적합성은 커뮤니티 결론을 먼저 낸 다음, 현재 설치 역량과 중복·부작용을 판단하는 마지막 단계에서만 사용했다.</li>
+          </ol>
+        </div>
+      </details>
+    </section>
+
+    <footer class="footer">
+      <strong>판단 요약: 설치 0 · 운영 규칙 보강 2 · 조건부 파일럿 2</strong>
+      <span>내부 QA와 커뮤니티 리서치는 실제 FlowMe 사용자 검증이 아니다.</span>
+    </footer>
+  </main>
+
+  <script>
+    const filterButtons = Array.from(document.querySelectorAll('.filter'));
+    const sourceRows = Array.from(document.querySelectorAll('.source-row'));
+
+    filterButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const target = button.dataset.filter;
+        filterButtons.forEach((item) => item.setAttribute('aria-pressed', String(item === button)));
+        sourceRows.forEach((row) => {
+          row.hidden = target !== 'all' && row.dataset.platform !== target;
+        });
+      });
+    });
+  </script>
+</body>
+</html>
