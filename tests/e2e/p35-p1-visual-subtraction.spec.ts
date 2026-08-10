@@ -43,11 +43,15 @@ async function relativeDate(page: Page, dayOffset: number): Promise<string> {
 
 async function getPublicCalendarAnchorInput(page: Page): Promise<Locator> {
   const input = page.getByTestId('public-flow-anchor-input');
+  const legacyCalendarTab = page
+    .getByTestId('public-flow-capability-result')
+    .locator('[data-public-format-tab="true"][data-capability-destination="calendar"]');
+  await expect.poll(async () => (
+    await input.isVisible().catch(() => false)
+      || await legacyCalendarTab.isVisible().catch(() => false)
+  )).toBe(true);
   if (!(await input.isVisible().catch(() => false))) {
-    await page
-      .getByTestId('public-flow-capability-result')
-      .locator('[data-public-format-tab="true"][data-capability-destination="calendar"]')
-      .click();
+    await legacyCalendarTab.click();
   }
   await expect(input).toBeVisible();
   return input;

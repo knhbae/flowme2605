@@ -2842,7 +2842,7 @@ test('source-backed flow map public page saves into the real My Flow path', asyn
   await gotoLegacySavedPlanLibraryRoute(page, '/flow-maps/middle-school-math-1');
 
   await page.getByRole('button', { name: '내 계획에 저장' }).click();
-  await expect(page).toHaveURL('/my?savedMap=middle-school-math-1');
+  await expect(page).toHaveURL('/my?savedMap=middle-school-math-1&savedPlanLibrary=off');
   await expect(page.getByTestId('flow-map-creator')).toHaveCount(0);
   await expect(page.locator('body')).not.toContainText(/제작자 편집|초안 저장|새 공개 버전/i);
   await expect(page.getByTestId('my-flow-demo-badge')).toHaveCount(0);
@@ -2901,7 +2901,7 @@ test('source-backed flow map public page saves into the real My Flow path', asyn
 test('my flow separates ready source-backed content from review-needed saved flows', async ({ page }) => {
   await page.goto('/flow-maps/middle-school-math-1');
   await page.getByRole('button', { name: '내 계획에 저장' }).click();
-  await expect(page).toHaveURL('/my?savedMap=middle-school-math-1');
+  await expect(page).toHaveURL('/my?savedMap=middle-school-math-1&sort=next');
 
   await page.evaluate(() => {
     localStorage.setItem(
@@ -2930,7 +2930,7 @@ test('source-backed single progress map opens item detail in the mobile focused 
   await installLegacySavedPlanLibraryNavigation(page);
   await gotoLegacySavedPlanLibraryRoute(page, '/flow-maps/middle-school-math-1');
   await page.getByTestId('flow-map-save-all-mobile').click();
-  await expect(page).toHaveURL('/my?savedMap=middle-school-math-1');
+  await expect(page).toHaveURL('/my?savedMap=middle-school-math-1&savedPlanLibrary=off');
   await expect(page.getByTestId('my-flow-post-save-panel')).toBeVisible();
   await page.getByTestId('my-flow-post-save-view-flow').click();
 
@@ -3433,7 +3433,7 @@ test('source-backed creator saved preview opens the requested My Flow map demo',
   await page.goto('/flow-maps/baby-health-schedule/creator');
 
   await page.getByRole('link', { name: '저장 후 화면 보기' }).click();
-  await expect(page).toHaveURL('/my?demo=source-backed&savedMap=baby-health-schedule');
+  await expect(page).toHaveURL('/my?demo=source-backed&savedMap=baby-health-schedule&sort=next');
 
   const postSavePanel = page.getByTestId('my-flow-post-save-panel');
   await expect(postSavePanel).toContainText('영유아 검진·접종 일정');

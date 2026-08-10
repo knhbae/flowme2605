@@ -121,6 +121,11 @@ async function openVehicleWorkspace(
     '[data-testid="my-flow-mobile-workspace"]:visible, '
       + '[data-testid="my-flow-library-detail"] [data-testid="my-flow-overview-card"]:visible',
   ).first();
+  const compactOpen = page.getByTestId('my-flow-mobile-structure-open').first();
+  await expect.poll(async () => (
+    await routedWorkspace.isVisible().catch(() => false)
+      || await compactOpen.isVisible().catch(() => false)
+  )).toBe(true);
   if (await routedWorkspace.isVisible().catch(() => false)) return routedWorkspace;
 
   if ((page.viewportSize()?.width ?? 0) >= 900) {
@@ -131,7 +136,7 @@ async function openVehicleWorkspace(
     return card;
   }
 
-  await page.getByTestId('my-flow-mobile-structure-open').first().click();
+  await compactOpen.click();
   const workspace = page.locator('[data-testid="my-flow-mobile-workspace"]:visible').first();
   await expect(workspace).toBeVisible();
   return workspace;

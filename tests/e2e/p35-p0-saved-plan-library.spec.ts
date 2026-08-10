@@ -140,9 +140,13 @@ function chooseBroadHangulQuery(titles: string[]): string {
 
 async function firstOpenItemButton(plan: Locator): Promise<Locator> {
   const approvedDetailLink = plan.getByTestId('my-plan-todo-detail-link').first();
+  const firstEntry = plan.getByTestId('my-flow-execution-row-shell').first();
+  await expect.poll(async () => (
+    await approvedDetailLink.isVisible().catch(() => false)
+      || await firstEntry.isVisible().catch(() => false)
+  )).toBe(true);
   if (await approvedDetailLink.isVisible().catch(() => false)) return approvedDetailLink;
 
-  const firstEntry = plan.getByTestId('my-flow-execution-row-shell').first();
   await expect(firstEntry).toBeVisible();
   const open = firstEntry.getByRole('button', { name: /열기/u }).first();
   await expect(open).toBeVisible();

@@ -27,7 +27,7 @@ const CLOSED_REVIEW_FLOW_ROUTES = [
   '/f/real-fitvely-video-body-fat-6kg-method',
 ];
 
-const PUBLIC_PRIMARY_ACTION_PATTERN = /내 계획에 저장|(?:이사일|시작일) 정하기/;
+const PUBLIC_PRIMARY_ACTION_PATTERN = /내 계획에 저장|(?:이사일|시작일|검사일) 정하기/;
 
 async function collectVisibleMobileStickyPrimaryEntries(page: Page) {
   return page.evaluate<StickyPrimaryEntry[]>(() => {

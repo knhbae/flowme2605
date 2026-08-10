@@ -234,17 +234,26 @@ async function openSavedTransferPanel(
 }
 
 async function openArchivedInventory(page: Page): Promise<void> {
+  const archivedRow = page.getByTestId('my-flow-mobile-archived-row').first();
   const directEntry = page.getByTestId('my-flow-open-archived');
+  const visibleFilter = page.getByTestId('my-flow-list-filter-archived').filter({ visible: true });
+  const inventoryOpen = page.getByTestId('my-flow-mobile-inventory-open');
+  await expect.poll(async () => (
+    await archivedRow.isVisible().catch(() => false)
+      || await directEntry.isVisible().catch(() => false)
+      || await visibleFilter.isVisible().catch(() => false)
+      || await inventoryOpen.isVisible().catch(() => false)
+  )).toBe(true);
+  if (await archivedRow.isVisible().catch(() => false)) return;
   if (await directEntry.isVisible().catch(() => false)) {
     await directEntry.click();
     return;
   }
-  const visibleFilter = page.getByTestId('my-flow-list-filter-archived').filter({ visible: true });
   if (await visibleFilter.isVisible().catch(() => false)) {
     await visibleFilter.click();
     return;
   }
-  await page.getByTestId('my-flow-mobile-inventory-open').click();
+  await inventoryOpen.click();
   await page
     .getByTestId('my-flow-inventory-sheet')
     .getByTestId('my-flow-list-filter-archived')

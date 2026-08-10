@@ -287,7 +287,7 @@ test.describe('P35 P0 Flow Map action contract', () => {
     await expect(stalePage.getByTestId('flow-map-anchor-input')).toBeVisible();
 
     await saveTrigger(page, true).click();
-    await expect(page).toHaveURL(`/my?savedMap=${datedMapId}`);
+    await expect(page).toHaveURL(`/my?savedMap=${datedMapId}&sort=next`);
     const newerRaw = await readDatedRawStorage(page);
 
     await saveTrigger(stalePage, true).click();

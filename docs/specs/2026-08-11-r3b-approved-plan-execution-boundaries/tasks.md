@@ -12,9 +12,8 @@
   My Plan, Calendar, responsive help/warning, duplicate display, and export.
 - [x] Reuse shared sort, date-group, raw-memo, responsive, and export-scope
   mappings without adding a content-specific persistence owner.
-- [ ] Prove the product delta through the pending full Playwright, GitHub CI,
-  exact-source deployment, canonical smoke, and remaining release gates in
-  R3B-04.
+- [ ] Complete product proof through exact-head GitHub CI, exact-source
+  deployment, canonical smoke, and the remaining release gates in R3B-04.
 
 ## R3B-01
 
@@ -46,7 +45,7 @@
 - [x] Add the draft PR history with unreached publication states as `NOT_RUN`.
 - [x] Run `npm.cmd run verify`; docs `16/4492`, full `npm test`, and the
   production build `18/18` pass with BUILD_ID
-  `OLhvDcxZwIjvVgL9bhJ7n`.
+  `DkOxul9Wh4wGGYuxbYwy_`.
 - [x] Re-run docs check and diff check after documentation reconciliation.
 - [x] Run the canonical browser gates: URL-first `20/20` plus approved
   plan-execution `23/23`, total `43/43`.
@@ -56,10 +55,13 @@
   Calendar `2/2`.
 - [x] Complete the full repository Playwright suite: `569/569`, failures `0`,
   skips `0`, flaky `0`, workers `2`, exact BUILD_ID
-  `OLhvDcxZwIjvVgL9bhJ7n`.
+  `DkOxul9Wh4wGGYuxbYwy_`.
 - [x] Run diff/ownership/rollback audit and closeout; evidence PNGs were
   restored to `HEAD`, generated `test-results-*` paths are excluded from
   publication, and no product P0/P1 remains.
-- [ ] Commit, push, open PR, wait for required CI, and merge.
+- [x] Commit and push the candidate, and open
+  [PR #172](https://github.com/knhbae/flowme2605/pull/172).
+- [ ] Publish the test-only CI stabilization follow-up, require successful
+  exact-head GitHub and Vercel preview checks, and merge.
 - [ ] Verify Vercel Production source SHA and canonical-alias smoke.
 - [ ] Record release evidence; keep observed-user validation separate.

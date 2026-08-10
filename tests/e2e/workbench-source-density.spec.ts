@@ -26,7 +26,7 @@ async function expectClosedSourceRoute(page: import('@playwright/test').Page) {
   await expect(page.getByTestId('public-flow-detail-workspace')).toHaveCount(0);
   await expect(page.getByLabel('Flow artifact workbench')).toHaveCount(0);
   await expect(page.getByRole('checkbox')).toHaveCount(0);
-  await expect(page.getByRole('button', { name: /내 계획에 저장|(?:이사일|시작일) 정하기/ })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /내 계획에 저장|(?:이사일|시작일|검사일) 정하기/ })).toHaveCount(0);
 }
 
 test.describe('field checklist workbench source density', () => {

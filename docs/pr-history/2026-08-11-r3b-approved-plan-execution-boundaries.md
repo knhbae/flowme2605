@@ -1,9 +1,9 @@
 # R3B Approved Plan Execution Boundaries
 
-- **PR:** `NOT_OPEN`
+- **PR:** [#172](https://github.com/knhbae/flowme2605/pull/172)
 - **Date:** 2026-08-11 KST
 - **Branch:** `codex/approved-plan-execution-ux-20260810`
-- **Status:** Draft / not merged / not deployed
+- **Status:** Open / CI stabilization pending / not merged / not deployed
 - **Base:** `origin/main` at `14014bf3872c5587ee9ebbc8d8936aee2d754ec4`
 - **Current production:** R3A source `95a69257c73633077df2305232299f58cca03f73`
 
@@ -78,18 +78,18 @@ This PR records its exact paths and SHA-256 values in the [R3B spec](../specs/20
 | Documentation | `PASS` — 16 required files / 4,492 local links after reconciliation |
 | Security audit | `PASS` — configured findings `0` |
 | Repository diff check | `PASS` — `git diff --check` exited `0` |
-| Production build | `PASS` — `18/18`, BUILD_ID `OLhvDcxZwIjvVgL9bhJ7n` |
+| Production build | `PASS` — `18/18`, BUILD_ID `DkOxul9Wh4wGGYuxbYwy_` |
 | Canonical browser gates | `PASS` — URL-first `20/20` plus approved E2E `23/23`, total `43/43` |
 | Scoped migration evidence | `PASS` — overlapping targeted lanes include Group B `33/33`, P26 `40/40`, D1 `68/68`, P28-P31 `37/37`, P35 saved library `18/18`, Q3 `12/12` plus off-lane `7/7`, 50-Item `1/1`, legacy transfer `26/26`, and Calendar `2/2` |
-| Full Playwright | `PASS` — `569/569`, failures `0`, skips `0`, flaky `0`, workers `2`, exact BUILD_ID `OLhvDcxZwIjvVgL9bhJ7n` |
+| Full Playwright | `PASS` — `569/569`, failures `0`, skips `0`, flaky `0`, workers `2`, exact BUILD_ID `DkOxul9Wh4wGGYuxbYwy_` |
 | Diff/ownership/rollback closeout | `PASS` — evidence PNGs restored to `HEAD`, generated `test-results-*` excluded, intended tracked/new-file closure confirmed, product P0/P1 `0` |
 
 ## Publication Evidence
 
 | Evidence | State |
 | --- | --- |
-| PR URL and exact head | `NOT_RUN` |
-| GitHub required CI | `NOT_RUN` |
+| PR URL and exact head | [PR #172](https://github.com/knhbae/flowme2605/pull/172), initial head `5bb445132004cf7b8a1879e924a106b836d3fb84`; test-only follow-up not yet pushed |
+| GitHub required CI | Initial run [`31431479477`](https://github.com/knhbae/flowme2605/actions/runs/31431479477) `FAIL`: Docs, Unit, Build `PASS`; Playwright `564` passed, `3` failed, `2` flaky. Exact-head rerun is required before merge. |
 | Merge SHA | `NOT_RUN` |
 | Vercel Production deployment ID, URL, and source SHA | `NOT_RUN` |
 | Canonical-alias smoke | `NOT_RUN` |
@@ -104,8 +104,8 @@ canonical smoke passes.
 - The approved product source documents are hash-pinned local provenance, not
   independently reviewable files in this PR, because their dirty ownership was
   not transferred.
-- Browser and release risk remains open until full Playwright, GitHub CI,
-  deployment, and smoke gates pass.
+- Release risk remains open until exact-head GitHub CI, deployment, and smoke
+  gates pass.
 - No migration is required for rollback. Revert the bounded product PR and keep
   the existing `savedPlanLibrary=off` compatibility lane and R3A production
   deployment available until replacement is verified.

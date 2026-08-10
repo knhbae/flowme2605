@@ -37,11 +37,11 @@ npm.cmd run workflow:closeout
 | Documentation | `PASS` — post-reconciliation check found 16 required files and 4,492 local links |
 | Repository diff check | `PASS` — `git diff --check` exited `0` |
 | Security | `PASS` — configured audit findings `0` |
-| Production build | `PASS` — Next production build generated `18/18` pages; BUILD_ID `OLhvDcxZwIjvVgL9bhJ7n` |
+| Production build | `PASS` — Next production build generated `18/18` pages; BUILD_ID `DkOxul9Wh4wGGYuxbYwy_` |
 | Canonical browser gates | `PASS` — URL-first `20/20` plus approved plan-execution `23/23`, total `43/43` |
 | Scoped browser migrations | `PASS` — overlapping targeted evidence: Group B `33/33`, P26 `40/40`, D1 `68/68`, P28-P31 `37/37`, P35 saved library `18/18`, Q3 `12/12` plus off-lane `7/7`, 50-Item `1/1`, legacy transfer `26/26`, and Calendar `2/2`; these counts are not a repository-wide denominator |
-| Full Playwright | `PASS` — `569/569`, failures `0`, skips `0`, flaky `0`, workers `2`, exact BUILD_ID `OLhvDcxZwIjvVgL9bhJ7n` |
-| GitHub required CI | `NOT_RUN` |
+| Full Playwright | `PASS` — `569/569`, failures `0`, skips `0`, flaky `0`, workers `2`, exact BUILD_ID `DkOxul9Wh4wGGYuxbYwy_` |
+| GitHub required CI | `FAIL` on initial PR head `5bb445132004cf7b8a1879e924a106b836d3fb84`, run [`31431479477`](https://github.com/knhbae/flowme2605/actions/runs/31431479477): Docs, Unit, Build `PASS`; Playwright reported `564` passed, `3` failed, and `2` flaky. The local test-only follow-up passes `569/569`; exact-head CI must pass before merge. |
 | Merge | `NOT_RUN` |
 | Vercel Production deployment | `NOT_RUN` |
 | Canonical-alias smoke | `NOT_RUN` |
