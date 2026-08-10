@@ -8,15 +8,22 @@ import {
 import {
   buildFlowExportScopePlan,
   type FlowExportDestination,
+  type FlowExportArtifactProfile,
   type FlowExportResultReceipt,
   type FlowExportScope,
   type FlowExportScopeItem,
   type FlowExportScopePlan,
 } from '@/lib/flow/export-scope';
+import {
+  SAVED_PLAN_TRANSFER_DESTINATIONS,
+  SAVED_PLAN_TRANSFER_FORMAT_BY_DESTINATION,
+  type SavedPlanTransferPreview,
+} from '@/lib/flow/saved-plan-transfer-codec';
 import type { EffectiveFlowProjectionManifest } from '@/lib/flow/effective-flow-contract';
 import { FlowItemMultiSelect } from './FlowItemMultiSelect';
 import { FlowExportReceipt } from './FlowExportReceipt';
 import { FlowExportPlan } from './FlowExecutionPrimitives';
+import { FlowContextDisclosure } from './FlowContextDisclosure';
 import { FLOW_EXECUTION_ACTIONS } from '@/lib/flow/execution-ui-contract';
 import { getExportScopeActionLabel } from '@/lib/flow/flow-command-grammar';
 import {
@@ -65,6 +72,8 @@ type FlowExportPanelProps = {
   savedTransferSurface?: 'confirmation' | 'legacy';
   entryActionRole?: string;
   q3CopyEnabled?: boolean;
+  approvedSavedTransfer?: boolean;
+  savedTransferPreviews?: Partial<Record<FlowExportDestination, SavedPlanTransferPreview>>;
   onOpenChange: (open: boolean) => void;
   onScopeChange: (scope: Exclude<FlowExportScope, 'item'>) => void;
   onSelectedKeysChange: (keys: string[]) => void;
@@ -81,6 +90,28 @@ const destinationCopy: Record<FlowExportDestination, { label: string; result: st
   memo: { label: '메모로 복사', result: '선택 범위' },
 };
 
+const approvedSavedTransferCopy: Record<FlowExportDestination, { label: string; result: string }> = {
+  memo: { label: '텍스트', result: 'TXT 원문' },
+  checklist: { label: '할 일', result: 'VTODO 파일' },
+  calendar: { label: '캘린더', result: 'VEVENT 파일' },
+  sheet: { label: 'Excel', result: 'XLSX 표' },
+};
+
+const approvedSavedTransferCta: Record<FlowExportDestination, string> = {
+  memo: '텍스트 복사',
+  checklist: '할 일 파일 받기',
+  calendar: '캘린더 파일 받기',
+  sheet: 'Excel 파일 받기',
+};
+
+function exportResultKind(
+  destination: FlowExportDestination,
+  approvedSavedTransfer: boolean,
+): 'copy' | 'download' {
+  if (approvedSavedTransfer) return destination === 'memo' ? 'copy' : 'download';
+  return destination === 'calendar' ? 'download' : 'copy';
+}
+
 export function FlowExportPanel({
   flowTitle,
   items,
@@ -95,7 +126,7 @@ export function FlowExportPanel({
   showEntry = true,
   fixedScope = false,
   showClose = true,
-  destinations = ['calendar', 'checklist', 'sheet', 'memo'],
+  destinations: requestedDestinations,
   preferredDestination,
   sourceLabel,
   destinationCopyOverride,
@@ -108,35 +139,49 @@ export function FlowExportPanel({
   savedTransferSurface,
   entryActionRole,
   q3CopyEnabled = true,
+  approvedSavedTransfer = false,
+  savedTransferPreviews,
   onOpenChange,
   onScopeChange,
   onSelectedKeysChange,
   onExport,
 }: FlowExportPanelProps) {
+  const destinations: FlowExportDestination[] = requestedDestinations
+    ? [...requestedDestinations]
+    : approvedSavedTransfer
+      ? [...SAVED_PLAN_TRANSFER_DESTINATIONS]
+      : ['calendar', 'checklist', 'sheet', 'memo'];
+  const artifactProfile: FlowExportArtifactProfile = approvedSavedTransfer
+    ? 'approved_saved_transfer'
+    : 'legacy';
   const [receipt, setReceipt] = useState<FlowExportResultReceipt | null>(null);
   const [pendingDestination, setPendingDestination] = useState<FlowExportDestination | null>(null);
   const [previewDestination, setPreviewDestination] = useState<FlowExportDestination | undefined>(
-    preferredDestination,
+    preferredDestination ?? (approvedSavedTransfer ? SAVED_PLAN_TRANSFER_DESTINATIONS[0] : undefined),
   );
   const receiptContainerRef = useRef<HTMLDivElement>(null);
   const recommendationContainerRef = useRef<HTMLDivElement>(null);
   const entryButtonRef = useRef<HTMLButtonElement>(null);
+  const approvedPreviewBodyRef = useRef<HTMLElement>(null);
   const flowPlan = buildFlowExportScopePlan({
     scope: 'flow',
     items,
     flowTitle,
+    artifactProfile,
   });
   const selectedPlan = buildFlowExportScopePlan({
     scope: 'selected',
     items,
     selectedKeys,
     flowTitle,
+    artifactProfile,
   });
   const currentItemPlan = buildFlowExportScopePlan({
     scope: 'item',
     items,
     currentItemKey,
     flowTitle,
+    artifactProfile,
   });
   const plan = scope === 'flow'
     ? flowPlan
@@ -191,12 +236,24 @@ export function FlowExportPanel({
         onSelectDestination: setPreviewDestination,
       })
     : capabilityPreview;
+  const selectedSavedTransferPreview = previewDestination
+    ? savedTransferPreviews?.[previewDestination]
+    : undefined;
+  const selectedSavedTransferManifest = previewDestination
+    ? projectionManifests?.[previewDestination]
+    : undefined;
+  const selectedSavedTransferUnavailable = !selectedSavedTransferPreview
+    || selectedSavedTransferPreview.outputCount === 0
+    || selectedSavedTransferManifest?.availability === 'held'
+    || selectedSavedTransferManifest?.availability === 'unavailable';
 
   useEffect(() => {
     setReceipt(null);
     setPendingDestination(null);
-    setPreviewDestination(preferredDestination);
-  }, [flowTitle, preferredDestination, scope, selectedKeys.join('|')]);
+    setPreviewDestination(
+      preferredDestination ?? (approvedSavedTransfer ? SAVED_PLAN_TRANSFER_DESTINATIONS[0] : undefined),
+    );
+  }, [approvedSavedTransfer, flowTitle, preferredDestination, scope, selectedKeys.join('|')]);
 
   useEffect(() => {
     if (!visibleReceipt) return;
@@ -222,12 +279,36 @@ export function FlowExportPanel({
     return () => window.cancelAnimationFrame(frame);
   }, [open, scope, selectedKeys.join('|')]);
 
+  const runExport = async (destination: FlowExportDestination) => {
+    if (pendingDestination) return;
+    setPendingDestination(destination);
+    setReceipt(null);
+    try {
+      const nextReceipt = await onExport(destination, plan);
+      if (nextReceipt) setReceipt(nextReceipt);
+    } catch {
+      setReceipt({
+        scope: plan.scope,
+        destination,
+        resultKind: exportResultKind(destination, approvedSavedTransfer),
+        status: 'error',
+        outputCount: 0,
+        omittedCount: plan.includedCount,
+        message: '가져오지 못했습니다',
+      });
+    } finally {
+      setPendingDestination(null);
+    }
+  };
+
   const renderDestinationButton = (
     destination: FlowExportDestination,
     candidate?: ArtifactExportRecommendation,
     hidden = false,
   ) => {
-    const copy = destinationCopyOverride?.[destination] ?? destinationCopy[destination];
+    const copy = approvedSavedTransfer
+      ? approvedSavedTransferCopy[destination]
+      : destinationCopyOverride?.[destination] ?? destinationCopy[destination];
     const manifest = projectionManifests?.[destination];
     const count = manifest?.counts.output ?? plan.countByDestination[destination];
     const disabled = count === 0
@@ -276,6 +357,9 @@ export function FlowExportPanel({
         title={disabled ? disabledReason : undefined}
         data-export-count={count}
         data-export-destination={destination}
+        data-export-format={approvedSavedTransfer
+          ? SAVED_PLAN_TRANSFER_FORMAT_BY_DESTINATION[destination]
+          : undefined}
         data-export-state={pending ? 'pending' : disabled ? 'disabled' : 'ready'}
         data-export-preview-selected={previewDestination === destination ? 'true' : 'false'}
         data-export-manifest-availability={manifest?.availability}
@@ -293,24 +377,8 @@ export function FlowExportPanel({
         onClick={async () => {
           if (pendingDestination) return;
           setPreviewDestination(destination);
-          setPendingDestination(destination);
           setReceipt(null);
-          try {
-            const nextReceipt = await onExport(destination, plan);
-            if (nextReceipt) setReceipt(nextReceipt);
-          } catch {
-            setReceipt({
-              scope: plan.scope,
-              destination,
-              resultKind: destination === 'calendar' ? 'download' : 'copy',
-              status: 'error',
-              outputCount: 0,
-              omittedCount: plan.includedCount,
-              message: '가져오지 못했습니다',
-            });
-          } finally {
-            setPendingDestination(null);
-          }
+          if (!approvedSavedTransfer) await runExport(destination);
         }}
       >
         <span className="block text-sm font-bold">{pending ? '준비 중...' : scopedActionLabel}</span>
@@ -318,6 +386,44 @@ export function FlowExportPanel({
           {disabled
             ? disabledReason
             : `${candidate?.reason ?? copy.result}${candidate?.lossSummary ? ` · ${candidate.lossSummary}` : omitted > 0 ? ` · ${omitted}개 제외` : ''}`}
+        </span>
+      </button>
+    );
+  };
+
+  const renderApprovedTransferFormatTab = (destination: FlowExportDestination) => {
+    const preview = savedTransferPreviews?.[destination];
+    const manifest = projectionManifests?.[destination];
+    const disabled = !preview
+      || preview.outputCount === 0
+      || manifest?.availability === 'held'
+      || manifest?.availability === 'unavailable';
+    const selected = previewDestination === destination;
+    return (
+      <button
+        key={destination}
+        id={`my-flow-transfer-tab-${destination}`}
+        type="button"
+        role="tab"
+        aria-selected={selected}
+        aria-controls="my-flow-export-destination-preview"
+        disabled={disabled}
+        data-testid={`my-flow-transfer-tab-${destination}`}
+        data-export-destination={destination}
+        data-export-format={SAVED_PLAN_TRANSFER_FORMAT_BY_DESTINATION[destination]}
+        className={`min-h-12 border-r border-[var(--flowme-border)] px-2 py-2 text-sm font-semibold last:border-r-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:text-[var(--flowme-text-tertiary)] ${
+          selected
+            ? 'bg-[var(--flowme-action-soft)] text-[var(--flowme-action)]'
+            : 'bg-[var(--flowme-surface)] text-[var(--flowme-text-secondary)] hover:bg-[var(--flowme-surface-subtle)]'
+        }`}
+        onClick={() => {
+          setPreviewDestination(destination);
+          setReceipt(null);
+        }}
+      >
+        <span className="block">{approvedSavedTransferCopy[destination].label}</span>
+        <span className="mt-0.5 block text-[10px] font-medium">
+          {preview ? `${preview.outputCount}개` : '준비 중'}
         </span>
       </button>
     );
@@ -338,7 +444,7 @@ export function FlowExportPanel({
           data-action-role={entryActionRole}
           aria-expanded={open}
           aria-label={`${flowTitle} ${entryLabel}`}
-          className={FLOW_UI_SECONDARY_ACTION_CLASS}
+          className={`${FLOW_UI_SECONDARY_ACTION_CLASS}${approvedSavedTransfer ? ' !min-h-12' : ''}`}
           onClick={() => onOpenChange(!open)}
         >
           {entryLabel}
@@ -357,7 +463,8 @@ export function FlowExportPanel({
           data-p35-marker="P35-EXPORT-SCOPE-FIRST"
           data-p35-count-marker="P35-EXPORT-COUNT-PARITY"
           data-saved-transfer-surface={savedTransferSurface}
-          className={showEntry ? 'mt-3 border-t border-[var(--flowme-border)] pt-3' : ''}
+          data-saved-transfer-profile={artifactProfile}
+          className={`${showEntry ? 'mt-3 border-t border-[var(--flowme-border)] pt-3' : ''}${approvedSavedTransfer ? ' [&_button]:min-h-12 [&_input]:min-h-12 [&_select]:min-h-12' : ''}`}
         >
           <div className="flex items-center justify-between gap-3">
             <div>
@@ -366,15 +473,15 @@ export function FlowExportPanel({
             {showClose ? (
               <button
                 type="button"
-                aria-label={`${flowTitle} 옮기기 닫기`}
-                title="닫기"
-                className={FLOW_UI_ICON_ACTION_CLASS}
+                aria-label={approvedSavedTransfer ? '이전' : `${flowTitle} 옮기기 닫기`}
+                title={approvedSavedTransfer ? '이전' : '닫기'}
+                className={approvedSavedTransfer ? `${FLOW_UI_SECONDARY_ACTION_CLASS} !min-h-12` : FLOW_UI_ICON_ACTION_CLASS}
                 onClick={() => {
                   onOpenChange(false);
                   window.requestAnimationFrame(() => entryButtonRef.current?.focus({ preventScroll: true }));
                 }}
               >
-                <span aria-hidden="true">×</span>
+                {approvedSavedTransfer ? '이전' : <span aria-hidden="true">×</span>}
               </button>
             ) : null}
           </div>
@@ -490,13 +597,30 @@ export function FlowExportPanel({
             aria-labelledby="my-flow-export-format-heading"
             className="mt-3"
           >
-            <div className="flex items-end justify-between gap-3">
-              <p
-                id="my-flow-export-format-heading"
-                className="text-xs font-semibold text-[var(--flowme-text-secondary)]"
-              >
-                2 · 형식
-              </p>
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-1">
+                <p
+                  id="my-flow-export-format-heading"
+                  className="text-xs font-semibold text-[var(--flowme-text-secondary)]"
+                >
+                  2 · 형식
+                </p>
+                {approvedSavedTransfer ? (
+                  <FlowContextDisclosure
+                    kind="help"
+                    label="옮기기 형식 도움"
+                    title="어떤 형식을 고를까요?"
+                    testId="my-flow-transfer-format-help"
+                  >
+                    <div className="space-y-2 text-sm leading-6">
+                      <p><strong>텍스트</strong>는 계획 전체를 읽을 수 있는 TXT로 복사합니다.</p>
+                      <p><strong>할 일</strong>은 Item마다 VTODO 하나를 만듭니다.</p>
+                      <p><strong>캘린더</strong>는 날짜가 있는 Item마다 VEVENT 하나를 만듭니다.</p>
+                      <p><strong>Excel</strong>은 Item 하나를 표의 한 행으로 저장합니다.</p>
+                    </div>
+                  </FlowContextDisclosure>
+                ) : null}
+              </div>
               <p className="text-[11px] font-medium text-[var(--flowme-text-tertiary)]">
                 이 범위에서 만들 수 있는 결과
               </p>
@@ -517,7 +641,15 @@ export function FlowExportPanel({
               data-p29-marker="P29-ARTIFACT-EXPORT-PREFLIGHT"
               className="mt-2"
             >
-            {exportRecommendation.visible.length > 0 ? (
+            {approvedSavedTransfer ? (
+              <div
+                role="tablist"
+                aria-label="내 도구로 옮길 형식"
+                className="grid grid-cols-4 overflow-hidden border-y border-[var(--flowme-border)]"
+              >
+                {destinations.map(renderApprovedTransferFormatTab)}
+              </div>
+            ) : exportRecommendation.visible.length > 0 ? (
               <div className={`grid overflow-hidden border-y border-[var(--flowme-border)] ${exportRecommendation.visible.length > 1 ? 'grid-cols-[repeat(auto-fit,minmax(14rem,1fr))]' : 'grid-cols-1'}`}>
                 {exportRecommendation.visible.map((candidate) => (
                   renderDestinationButton(candidate.destination, candidate)
@@ -529,7 +661,7 @@ export function FlowExportPanel({
               </p>
             )}
 
-            {exportRecommendation.additional.length > 0 ? (
+            {!approvedSavedTransfer && exportRecommendation.additional.length > 0 ? (
               <details data-testid="my-flow-export-more-formats" className="border-b border-[var(--flowme-border)]">
                 <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 px-2 text-xs font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]">
                   <span>형식 {exportRecommendation.visible.length + exportRecommendation.additional.length}개 중 {exportRecommendation.additional.length}개 더</span>
@@ -541,6 +673,134 @@ export function FlowExportPanel({
                   ))}
                 </div>
               </details>
+            ) : null}
+            {approvedSavedTransfer && previewDestination ? (
+              <section
+                id="my-flow-export-destination-preview"
+                data-testid="my-flow-export-destination-preview"
+                data-export-preview-destination={previewDestination}
+                data-export-preview-format={SAVED_PLAN_TRANSFER_FORMAT_BY_DESTINATION[previewDestination]}
+                className="mt-3 rounded-[var(--flowme-radius-control)] border border-[var(--flowme-border)] bg-[var(--flowme-surface)] p-3"
+                aria-labelledby="my-flow-export-destination-preview-heading"
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <h5
+                    id="my-flow-export-destination-preview-heading"
+                    className="text-sm font-semibold text-[var(--flowme-text)]"
+                  >
+                    {approvedSavedTransferCopy[previewDestination].label} 미리보기
+                  </h5>
+                  {selectedSavedTransferPreview ? (
+                    <span className="text-xs font-medium text-[var(--flowme-text-secondary)]">
+                      {selectedSavedTransferPreview.outputCount}개
+                    </span>
+                  ) : null}
+                </div>
+                {previewDestination === 'memo'
+                  && selectedSavedTransferPreview?.body.kind === 'text'
+                  && (selectedSavedTransferPreview.body.previewItemCount ?? 0) < selectedSavedTransferPreview.itemCount ? (
+                    <p
+                      data-testid="my-flow-export-text-preview-scope"
+                      className="mt-2 text-xs font-medium leading-5 text-[var(--flowme-text-secondary)]"
+                    >
+                      전체 {selectedSavedTransferPreview.itemCount}개 중 {selectedSavedTransferPreview.body.previewItemCount}개 미리보기 · 복사할 때는 전체 {selectedSavedTransferPreview.itemCount}개가 포함됩니다.
+                    </p>
+                  ) : null}
+                {selectedSavedTransferPreview?.body.kind === 'text' ? (
+                  <pre
+                    ref={(node) => { approvedPreviewBodyRef.current = node; }}
+                    tabIndex={-1}
+                    data-testid="my-flow-export-text-preview"
+                    className="mt-2 max-h-72 overflow-auto whitespace-pre-wrap break-words rounded-lg bg-[var(--flowme-surface-subtle)] p-3 text-xs leading-5 text-[var(--flowme-text-secondary)]"
+                  >
+                    {selectedSavedTransferPreview.body.previewContent
+                      ?? selectedSavedTransferPreview.body.content}
+                  </pre>
+                ) : selectedSavedTransferPreview?.body.kind === 'table' ? (
+                  <div
+                    ref={(node) => { approvedPreviewBodyRef.current = node; }}
+                    tabIndex={-1}
+                    className="mt-2 max-w-full overflow-x-auto rounded-lg border border-[var(--flowme-border)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                  >
+                    <table data-testid="my-flow-export-xlsx-preview" className="min-w-max border-collapse text-left text-xs">
+                      <caption className="sr-only">저장된 계획 Excel 미리보기</caption>
+                      <thead>
+                        <tr>
+                          {selectedSavedTransferPreview.body.columns.map((column) => (
+                            <th key={column} scope="col" className="border-b border-r border-[var(--flowme-border)] bg-[var(--flowme-surface-subtle)] px-2 py-2 font-semibold last:border-r-0">
+                              {column}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {selectedSavedTransferPreview.body.rows.map((row, rowIndex) => (
+                          <tr key={`${rowIndex}:${String(row[0] ?? '')}`}>
+                            {row.map((cell, columnIndex) => (
+                              <td key={`${columnIndex}:${String(cell)}`} className="max-w-64 whitespace-pre-wrap border-b border-r border-[var(--flowme-border)] px-2 py-2 align-top last:border-r-0">
+                                {cell}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <p data-testid="my-flow-export-preview-missing" className="mt-2 text-xs leading-5 text-[var(--flowme-text-secondary)]">
+                    이 형식의 실제 미리보기를 준비하고 있어요.
+                  </p>
+                )}
+                {selectedSavedTransferPreview?.lossNote ? (
+                  <div className="mt-2 flex items-start gap-2">
+                    <p data-testid="my-flow-export-preview-loss-note" className="min-w-0 flex-1 text-xs leading-5 text-[var(--flowme-warning-strong)]">
+                      {selectedSavedTransferPreview.lossNote}
+                    </p>
+                    {previewDestination === 'sheet' ? (
+                      <FlowContextDisclosure
+                        kind="caution"
+                        label="Excel로 옮기기 전 주의사항"
+                        title="Excel 파일은 자동 동기화되지 않아요"
+                        testId="my-flow-transfer-excel-warning"
+                      >
+                        <div className="space-y-2 text-sm leading-6">
+                          <p>Excel에서 바꾼 완료·날짜·메모는 FlowMe에 돌아오지 않습니다.</p>
+                          <p>확인 항목은 새 행이나 Excel checkbox가 아니라 메모 셀의 Markdown 텍스트로 보존됩니다.</p>
+                        </div>
+                      </FlowContextDisclosure>
+                    ) : null}
+                  </div>
+                ) : null}
+                <div className={`mt-3 grid gap-2 ${previewDestination === 'calendar' ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                  {previewDestination === 'calendar' ? (
+                    <button
+                      type="button"
+                      data-testid="my-flow-export-calendar-review"
+                      className="min-h-12 rounded-[var(--flowme-radius-control)] border border-[var(--flowme-border-strong)] bg-white px-3 text-sm font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                      onClick={() => {
+                        approvedPreviewBodyRef.current?.focus({ preventScroll: true });
+                        approvedPreviewBodyRef.current?.scrollIntoView({ block: 'nearest' });
+                      }}
+                    >
+                      내용 확인
+                    </button>
+                  ) : null}
+                  <button
+                    type="button"
+                    data-testid="my-flow-export-approved-cta"
+                    data-export-destination={previewDestination}
+                    data-export-format={SAVED_PLAN_TRANSFER_FORMAT_BY_DESTINATION[previewDestination]}
+                    disabled={selectedSavedTransferUnavailable || pendingDestination !== null}
+                    aria-busy={pendingDestination === previewDestination || undefined}
+                    className="min-h-12 w-full rounded-[var(--flowme-radius-control)] bg-[var(--flowme-action)] px-3 text-sm font-semibold text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:opacity-50"
+                    onClick={() => runExport(previewDestination)}
+                  >
+                    {pendingDestination === previewDestination
+                      ? '준비 중...'
+                      : approvedSavedTransferCta[previewDestination]}
+                  </button>
+                </div>
+              </section>
             ) : null}
             {destinations.flatMap((destination) => {
               const notice = destinationNotices?.[destination]?.trim();

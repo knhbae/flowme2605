@@ -3,6 +3,8 @@ import path from 'node:path';
 
 import { expect, test, type Page } from '@playwright/test';
 import {
+  gotoLegacySavedPlanLibraryRoute,
+  installLegacySavedPlanLibraryNavigation,
   openMyFlowCalendarSelectedDay,
   openMyFlowLibraryFlow,
 } from './helpers/my-flow-library';
@@ -31,10 +33,12 @@ async function capture(page: Page, filename: string) {
 }
 
 test('undated public Flow supports reversible My Flow batch scheduling and ICS parity', async ({ page }) => {
+  test.setTimeout(240_000);
+  await installLegacySavedPlanLibraryNavigation(page);
   const browserErrors = collectBrowserErrors(page);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.clock.install({ time: new Date('2026-07-20T10:00:00+09:00') });
-  await page.goto('/f/vehicle-inspection-prep');
+  await gotoLegacySavedPlanLibraryRoute(page, '/f/vehicle-inspection-prep');
   await page.evaluate(() => localStorage.clear());
   await page.reload();
 
@@ -55,7 +59,7 @@ test('undated public Flow supports reversible My Flow batch scheduling and ICS p
   const personalCopyKey = new URL(page.url()).searchParams.get('flow') ?? '';
   expect(personalCopyKey).not.toBe('');
 
-  await page.goto('/my?view=flows');
+  await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows');
   let savedFlow = await openMyFlowLibraryFlow(page, 'vehicle-inspection-prep', 'plan');
   const exportBefore = savedFlow.getByTestId('my-flow-export-surface');
   await exportBefore.getByTestId('my-flow-export-entry').click();
@@ -86,6 +90,7 @@ test('undated public Flow supports reversible My Flow batch scheduling and ICS p
     itemDrafts: window.localStorage.getItem('flow:my-flow:item-drafts'),
   }))).toEqual(storageBeforeEditor);
 
+  savedFlow = await openMyFlowLibraryFlow(page, 'vehicle-inspection-prep', 'plan');
   await savedFlow.getByTestId('my-flow-batch-mode-toggle').first().click();
   planEditor = page.getByTestId('saved-flow-editor-plan');
   await expect(planEditor).toBeVisible();
@@ -112,7 +117,7 @@ test('undated public Flow supports reversible My Flow batch scheduling and ICS p
   }, personalCopyKey);
   expect(committedItemDates).toHaveLength(3);
 
-  await page.goto('/calendar');
+  await gotoLegacySavedPlanLibraryRoute(page, '/calendar');
   await page.getByTestId('my-flow-month-picker').fill('2026-07');
   await expect(page.getByTestId('my-flow-calendar-unscheduled-tray')).toHaveCount(0);
   await expect(
@@ -124,7 +129,7 @@ test('undated public Flow supports reversible My Flow batch scheduling and ICS p
   ).toHaveCount(3);
   await capture(page, '02-calendar-three-dated-items-mobile.png');
 
-  await page.goto('/my?view=flows');
+  await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows');
   savedFlow = await openMyFlowLibraryFlow(page, 'vehicle-inspection-prep', 'record');
   const exportSurface = savedFlow.getByTestId('my-flow-export-surface');
   await exportSurface.getByTestId('my-flow-export-entry').click();

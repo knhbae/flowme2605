@@ -77,6 +77,8 @@ export function promotePublicItemPersonalizations(options: {
   personalizations: Record<string, PublicItemPersonalization>;
   itemDrafts: Record<string, StoredMyFlowItemDraft>;
   dateOverrides: Record<string, string>;
+  /** Preserve the approved raw TXT memo as an explicit value, including empty text. */
+  preserveExplicitDetail?: boolean;
 }): PublicItemPersonalizationPromotion {
   const itemDrafts = structuredClone(options.itemDrafts);
   const dateOverrides = { ...options.dateOverrides };
@@ -117,7 +119,12 @@ export function promotePublicItemPersonalizations(options: {
     }
 
     if (hasDetail) {
-      if (detail && detail !== sourceDetail) {
+      if (options.preserveExplicitDetail) {
+        if (currentDraft.memo !== detail || !Object.prototype.hasOwnProperty.call(currentDraft, 'memo')) {
+          currentDraft.memo = detail;
+          changed = true;
+        }
+      } else if (detail && detail !== sourceDetail) {
         currentDraft.memo = detail;
         changed = true;
       } else if (Object.prototype.hasOwnProperty.call(currentDraft, 'memo')) {

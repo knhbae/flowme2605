@@ -1,6 +1,8 @@
 import { expect, test, type Page } from '@playwright/test';
 import {
+  gotoLegacySavedPlanLibraryRoute,
   getOpenMyFlowItemDetail,
+  installLegacySavedPlanLibraryNavigation,
   openMyFlowLibraryFlow,
 } from './helpers/my-flow-library';
 import { openSavedPublicFlow, savePublicFlow } from './helpers/public-flow-save';
@@ -25,7 +27,7 @@ const CLOSED_REVIEW_FLOW_ROUTES = [
   '/f/real-fitvely-video-body-fat-6kg-method',
 ];
 
-const PUBLIC_PRIMARY_ACTION_PATTERN = /내 계획에 저장|(?:이사일|시작일) 정하기/;
+const PUBLIC_PRIMARY_ACTION_PATTERN = /내 계획에 저장|(?:이사일|시작일|검사일) 정하기/;
 
 async function collectVisibleMobileStickyPrimaryEntries(page: Page) {
   return page.evaluate<StickyPrimaryEntry[]>(() => {
@@ -165,7 +167,7 @@ test.describe('public share shell secondary browse order', () => {
   for (const route of APPROVED_PUBLIC_SHARE_ROUTES) {
     test(`${route} exposes one save-oriented primary before scrolling`, async ({ page }) => {
       await page.setViewportSize({ width: 390, height: 844 });
-      await page.goto(route);
+      await gotoLegacySavedPlanLibraryRoute(page, route);
 
       const visiblePrimaryActions = await collectVisibleMobileStickyPrimaryEntries(page);
       expect(visiblePrimaryActions).toHaveLength(1);
@@ -176,7 +178,7 @@ test.describe('public share shell secondary browse order', () => {
   for (const route of APPROVED_PUBLIC_SHARE_ROUTES) {
     test(`${route} keeps Flow finding reachable in the public header`, async ({ page }) => {
       await page.setViewportSize({ width: 390, height: 844 });
-      await page.goto(route);
+      await gotoLegacySavedPlanLibraryRoute(page, route);
 
       const shell = page.getByTestId('flow-public-shell');
       const browseLink = shell.getByRole('link', { name: /계획 찾기$/ });
@@ -191,7 +193,7 @@ test.describe('public share shell secondary browse order', () => {
 
     test(`${route} keeps the mobile sticky primary action save-oriented`, async ({ page }) => {
       await page.setViewportSize({ width: 390, height: 844 });
-      await page.goto(route);
+      await gotoLegacySavedPlanLibraryRoute(page, route);
       await page.evaluate(() => window.scrollTo(0, 720));
       await page.waitForTimeout(250);
 
@@ -208,7 +210,7 @@ test.describe('public share shell secondary browse order', () => {
   for (const route of APPROVED_PUBLIC_SHARE_ROUTES) {
     test(`${route} keeps quick local transfer contextual to the capability result`, async ({ page }) => {
       await page.setViewportSize({ width: 390, height: 844 });
-      await page.goto(route);
+      await gotoLegacySavedPlanLibraryRoute(page, route);
       await expect(page.getByTestId('public-flow-detail-workspace')).toHaveCount(0);
       await expect(page.getByTestId('public-flow-export-secondary-entry')).toHaveCount(0);
       const capability = page.getByTestId('public-flow-capability-result');
@@ -267,7 +269,7 @@ test.describe('public share shell secondary browse order', () => {
   for (const route of APPROVED_PUBLIC_SHARE_ROUTES) {
     test(`${route} keeps save-before items read-only and reserves completion for My Flow`, async ({ page }) => {
       await page.setViewportSize({ width: 390, height: 844 });
-      await page.goto(route);
+      await gotoLegacySavedPlanLibraryRoute(page, route);
 
       const hierarchy = await collectPublicFlowUnitHierarchy(page);
       expect(hierarchy.preSaveCheckboxCompletionLikeLabelCount).toBe(0);
@@ -287,7 +289,7 @@ test.describe('public share shell secondary browse order', () => {
   for (const route of CLOSED_REVIEW_FLOW_ROUTES) {
     test(`${route} stays out of the public share shell until source-fit review is complete`, async ({ page }) => {
       await page.setViewportSize({ width: 390, height: 844 });
-      const response = await page.goto(route);
+      const response = await gotoLegacySavedPlanLibraryRoute(page, route);
 
       expect(response?.status()).toBe(404);
       await expect(page.getByTestId('public-flow-share-shell')).toHaveCount(0);
@@ -302,7 +304,8 @@ test.describe('public share shell secondary browse order', () => {
 
   test('input-free workbench save path remains keyboard reachable and leads to My Flow', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/f/new-car-delivery-check');
+    await installLegacySavedPlanLibraryNavigation(page);
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/new-car-delivery-check');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
 

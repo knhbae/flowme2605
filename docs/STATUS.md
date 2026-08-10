@@ -1,9 +1,9 @@
 # Project Status
 
-**Last Updated:** 2026-08-09 (R3A merged, deployed, and production-smoked)
-**Status:** v0.1.0 RELEASED / R3A MERGED / PRODUCTION READY / PRODUCTION SMOKE PASS / OBSERVED USERS 0
+**Last Updated:** 2026-08-11 (R3B approved plan-execution boundaries active)
+**Status:** v0.1.0 RELEASED / R3A PRODUCTION BASELINE / R3B IMPLEMENTATION ACTIVE / OBSERVED USERS 0
 **Current Version:** v0.1.0  
-**Primary Focus:** No product slice is active. Preserve `classic` as the default My Flow experience and keep `r3a-lab` limited to its exact query-only internal route until a later slice is explicitly promoted.
+**Primary Focus:** Implement the Owner-approved 2026-08-10 plan-execution UX on the R3A base, then publish its bounded [R3B execution boundaries](./specs/2026-08-11-r3b-approved-plan-execution-boundaries/spec.md) without additional UX, storage, identity, export-byte, receipt-order, or rollback drift.
 
 ## Current Control Panel
 
@@ -11,12 +11,12 @@ Start from [PROJECT_CONTROL.md](./PROJECT_CONTROL.md). Dated HTML boards remain 
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | None. The R3A release is closed; a new product slice requires explicit owner promotion. |
+| Active product gate | One ordered R3B gate: implement the hashed approved plan-execution product contract, then preserve that candidate while extracting the selected-Plan surface and saved-transfer request/revalidation planning; restore full CI meaning before publish, merge, deploy, and production smoke. |
 | Durable source baseline | [PR #169](https://github.com/knhbae/flowme2605/pull/169) merged R3A into `main` as `95a69257c73633077df2305232299f58cca03f73`. GitHub run [`31285007308`](https://github.com/knhbae/flowme2605/actions/runs/31285007308) passed Docs, Unit, Build, and Playwright `546/546`. |
 | Existing production release | R3A product source `95a69257c73633077df2305232299f58cca03f73` was deployed as Vercel `dpl_5jhJz4EBiHMm5HptH9nFCqfyeFek`, reported `READY` at the [direct deployment](https://flowme2605-a0aasd9ic-flowme.vercel.app) and [canonical alias](https://flowme2605.vercel.app). |
-| Evidence boundary | Internal and GitHub automated QA, exact-source deployment verification, and production smoke are `PASS`. This does not establish user comprehension, preference, or observed usability; observed users remain `0`. |
-| User action now | None. Review the internal `r3a-lab` route only if deciding whether to promote, revise, or remove that candidate in a later product slice. |
-| AI action now | Preserve the released classic default and R3A boundary. Do not start R3B, UI redesign, data migration, or Text-to-Flow integration without a separately promoted goal. Preserve the unowned dirty `flow-mvp` worktree. |
+| Evidence boundary | For the existing R3A production baseline only, GitHub automated QA, exact-source deployment verification, and production smoke are `PASS`. R3B `verify` passes docs `16/4492`, full `npm test`, and production build `18/18` at BUILD_ID `DkOxul9Wh4wGGYuxbYwy_`; canonical browser gates pass `43/43` and full repository Playwright passes `569/569` with failures, skips, and flaky tests all `0`. [PR #172](https://github.com/knhbae/flowme2605/pull/172) is open: its initial head passed Docs, Unit, Build and Vercel Preview but failed Playwright with `564` passed, `3` failed, and `2` flaky; exact-head CI must pass before merge. Merge, Production deployment, and smoke remain `NOT_RUN`. Observed users remain `0`. |
+| User action now | None. The Owner explicitly authorized the R3B implementation and its commit, push, PR, merge, and Vercel deployment. |
+| AI action now | Complete R3B in the isolated `flow-approved-plan-execution-ux` worktree, keep the unowned dirty `flow-mvp` worktree untouched, require full CI before merge, and record exact deployment/smoke evidence without implying observed-user validation. |
 | Paused Text Authoring | Preserved and pushed at `a5d5338`; separate from the release and not promoted. |
 | Paused content review | Preserved and pushed at `0d27143` on `archive/flow-content-user-review-wip-20260806`; not a publication candidate. |
 | Deferred candidates | P35 P2 mutation follow-ups, Text Authoring `TA-01`, collaborative authoring, content review, and research packages remain separate shelves. Select at most one by explicit decision. |
@@ -34,7 +34,8 @@ Start from [PROJECT_CONTROL.md](./PROJECT_CONTROL.md). Dated HTML boards remain 
 | Browser regression | GitHub run [`31285007308`](https://github.com/knhbae/flowme2605/actions/runs/31285007308) | R3A PR head `950fd55f4176bf74d4739647040874a601faffcc`, whose tree is identical to merge commit `95a69257c73633077df2305232299f58cca03f73`, passed Playwright `546/546`; this is automated browser QA, not observed-user evidence. |
 | Merged R0-R2 baseline | [PR #168](https://github.com/knhbae/flowme2605/pull/168) / `efa4d90a78a06134180701bed74874579ac94154` | Before merge: local docs PASS, controller `15/15`, lock `59/59`, unit/contract `615/615`, build PASS, selected E2E `20/20`, and final Playwright `542/542`. Production deployment and smoke remain `NOT_RUN`. |
 | R3A release | [PR #169](https://github.com/knhbae/flowme2605/pull/169) / [R3A QA](./specs/2026-08-09-r3a-my-flow-experience-boundary/qa.md) | Focused boundary `72/72`, pretest `164/164`, P35 P0 `420/420`, lock `59/59`, main unit/contract `615/615`, build `18/18`, local R3A E2E `4/4`, local full runtime regression `545/545`, GitHub Playwright `546/546`, production deployment `READY`, and classic/lab production smoke PASS. Observed-user validation remains `0`. |
-| Worktree baseline | `git worktree list` | Three intentional worktrees: `flow-mvp` on local `main` remains preserved with unowned documentation changes; `flow-r0-refactor` preserves the published R0-R2 branch; `flow-r3a` carries the isolated R3A release-closeout branch. |
+| R3B PR candidate | [R3B QA](./specs/2026-08-11-r3b-approved-plan-execution-boundaries/qa.md) | `verify` passes docs `16/4492`, full `npm test`, and production build `18/18` at BUILD_ID `DkOxul9Wh4wGGYuxbYwy_`; canonical browser gates pass `43/43`, scoped migration lanes pass, and full Playwright passes `569/569` with failures, skips, and flaky tests all `0`. PR #172 is open; its initial Playwright CI failed and the exact-head correction rerun is required. Merge, Production deployment, and smoke remain `NOT_RUN`. |
+| Worktree baseline | `git worktree list` | `flow-approved-plan-execution-ux` is the active clean-base R3B worktree. The dirty `flow-mvp` checkout remains user-owned and untouched; other preserved worktrees are not publication candidates for this gate. Reconfirm exact inventory at closeout. |
 
 ## Active Product Constraints
 

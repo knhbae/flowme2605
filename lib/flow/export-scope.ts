@@ -9,6 +9,8 @@ export type FlowExportDestination = (typeof FLOW_EXPORT_DESTINATIONS)[number];
 
 export type FlowExportScope = 'flow' | 'selected' | 'item';
 
+export type FlowExportArtifactProfile = 'legacy' | 'approved_saved_transfer';
+
 export type FlowExportScopeItemStatus =
   | 'pending'
   | 'done'
@@ -90,6 +92,33 @@ const DESTINATION_SUFFIXES: Record<FlowExportDestination, string> = {
   memo: 'memo',
 };
 
+const APPROVED_SAVED_TRANSFER_EXTENSIONS: Record<FlowExportDestination, string> = {
+  memo: 'txt',
+  checklist: 'ics',
+  calendar: 'ics',
+  sheet: 'xlsx',
+};
+
+const APPROVED_SAVED_TRANSFER_SUFFIXES: Record<FlowExportDestination, string> = {
+  memo: '',
+  checklist: 'todo',
+  calendar: 'calendar',
+  sheet: '',
+};
+
+function buildApprovedSavedTransferFilename(options: {
+  destination: FlowExportDestination;
+  fileBase: string;
+  scope: FlowExportScope;
+  scopeSuffix: string;
+}): string {
+  const scopeSuffix = options.scope === 'flow' ? '' : `-${options.scopeSuffix}`;
+  const destinationSuffix = APPROVED_SAVED_TRANSFER_SUFFIXES[options.destination]
+    ? `-${APPROVED_SAVED_TRANSFER_SUFFIXES[options.destination]}`
+    : '';
+  return `${options.fileBase}${scopeSuffix}${destinationSuffix}.${APPROVED_SAVED_TRANSFER_EXTENSIONS[options.destination]}`;
+}
+
 function cleanKey(value: string): string {
   return value.trim();
 }
@@ -147,6 +176,7 @@ export function buildFlowExportScopePlan(options: {
   selectedKeys?: string[];
   currentItemKey?: string;
   flowTitle: string;
+  artifactProfile?: FlowExportArtifactProfile;
 }): FlowExportScopePlan {
   const normalized = normalizeItems(options.items);
   const requestedItems = getRequestedItems({
@@ -177,7 +207,14 @@ export function buildFlowExportScopePlan(options: {
   const filenameByDestination = Object.fromEntries(
     FLOW_EXPORT_DESTINATIONS.map((destination) => [
       destination,
-      `${fileBase}-${scopeSuffix}-${DESTINATION_SUFFIXES[destination]}.${DESTINATION_EXTENSIONS[destination]}`,
+      options.artifactProfile === 'approved_saved_transfer'
+        ? buildApprovedSavedTransferFilename({
+            destination,
+            fileBase,
+            scope: options.scope,
+            scopeSuffix,
+          })
+        : `${fileBase}-${scopeSuffix}-${DESTINATION_SUFFIXES[destination]}.${DESTINATION_EXTENSIONS[destination]}`,
     ]),
   ) as Record<FlowExportDestination, string>;
   const recurringSeriesItems = calendarItems.filter((item) => item.recurrenceSeriesId);
@@ -238,6 +275,13 @@ const DESTINATION_RESULT_LABELS: Record<FlowExportDestination, string> = {
   memo: '메모 항목',
 };
 
+const APPROVED_SAVED_TRANSFER_RESULT_LABELS: Record<FlowExportDestination, string> = {
+  memo: '텍스트 항목',
+  checklist: '할 일',
+  calendar: '캘린더 일정',
+  sheet: 'Excel 행',
+};
+
 export function buildFlowExportResultReceipt(options: {
   plan: FlowExportScopePlan;
   destination: FlowExportDestination;
@@ -245,11 +289,14 @@ export function buildFlowExportResultReceipt(options: {
   outputCount: number;
   status?: 'success' | 'error';
   filename?: string;
+  artifactProfile?: FlowExportArtifactProfile;
 }): FlowExportResultReceipt {
   const status = options.status ?? 'success';
   const outputCount = Math.max(0, Math.trunc(options.outputCount));
   const omittedCount = options.plan.metrics.omittedCountByDestination[options.destination];
-  const resultLabel = DESTINATION_RESULT_LABELS[options.destination];
+  const resultLabel = options.artifactProfile === 'approved_saved_transfer'
+    ? APPROVED_SAVED_TRANSFER_RESULT_LABELS[options.destination]
+    : DESTINATION_RESULT_LABELS[options.destination];
   const targetLabel = options.resultKind === 'download' ? '파일로 만들었어요' : '복사했어요';
   const message = status === 'success'
     ? `${resultLabel} ${outputCount}개를 ${targetLabel}`

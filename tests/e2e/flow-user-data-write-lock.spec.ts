@@ -25,7 +25,7 @@ test('P22 composite setup and reset wait for the shared Flow user-data write loc
   expect(await page.evaluate((key) => window.localStorage.getItem(key), P22_MAP_SNAPSHOT_KEY)).toBeNull();
 
   await releaseFlowUserDataWriteLock(page);
-  await expect(page).toHaveURL('/my');
+  await expect(page).toHaveURL('/my?sort=next');
   expect(await page.evaluate((key) => window.localStorage.getItem(key), P22_MAP_SNAPSHOT_KEY)).not.toBeNull();
 
   await page.goto('/flow-lab/p22-observation');

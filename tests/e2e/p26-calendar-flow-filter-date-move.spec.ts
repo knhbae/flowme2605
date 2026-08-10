@@ -75,16 +75,15 @@ test('Calendar keeps Flow scope, selected-day execution, and My Flow date owners
 
   const execution = filteredSelectedDay.getByTestId('my-flow-execution-row-shell').first();
   await expect(execution).toBeVisible();
-  await expect(execution.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+  await expect(execution.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
   await capture(page, '01-mobile-scope-and-selected-day.png');
   await execution.getByRole('button', { name: /계획에서 열기/ }).click();
-  await expect(page).toHaveURL(/\/my\?view=flows&flow=/);
-  await expect(page.locator('main[data-p32-workspace-state="focused"]')).toBeVisible();
+  await expect(page).toHaveURL('/calendar?demo=ux20');
   const detail = getOpenMyFlowItemDetail(page);
   await expect(detail).toBeVisible();
   const completion = detail.getByTestId('my-flow-task-complete-control');
   await expect(completion).toHaveCount(1);
-  await expect(page.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
+  await expect(page.getByTestId('my-flow-task-complete-control')).toHaveCount(2);
   const initiallyChecked = await completion.isChecked();
   if (initiallyChecked) {
     await completion.click();
@@ -143,14 +142,25 @@ test('Calendar distinguishes routine occurrences from ordinary tasks without inl
   const occurrence = selectedDay
     .locator('[data-testid="my-flow-execution-row-shell"][data-calendar-item-kind="occurrence"]')
     .first();
-  await expect(occurrence.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+  const occurrenceCompletion = occurrence.getByTestId('my-flow-task-complete-control');
+  await expect(occurrenceCompletion).toHaveCount(1);
+  await expect(occurrenceCompletion).not.toBeChecked();
+  await occurrenceCompletion.click();
+  const occurrenceSnackbar = page.getByTestId('my-flow-completion-snackbar');
+  await expect(occurrenceSnackbar).toHaveAttribute('data-completion-result', 'completed');
+  const occurrenceUndo = occurrenceSnackbar.getByTestId('my-flow-completion-undo');
+  await expect(occurrenceUndo).toBeFocused();
+  await occurrenceUndo.click();
+  await expect(occurrenceSnackbar).toHaveCount(0);
+  await expect(occurrenceCompletion).not.toBeChecked();
+  await expect(occurrenceCompletion).toBeFocused();
   await expect(occurrence.getByRole('button', { name: /계획에서 열기/ })).toBeVisible();
   await capture(page, '03-mobile-routine-occurrence-filter.png');
   await occurrence.getByRole('button', { name: /계획에서 열기/ }).click();
-  await expect(page).toHaveURL(/\/my\?view=flows&flow=curated-allblanc-morning-workout/);
+  await expect(page).toHaveURL('/calendar?demo=ux12');
   const detail = getOpenMyFlowItemDetail(page);
   await expect(detail).toBeVisible();
   await expect(detail.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
-  await expect(page.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
+  await expect(page.getByTestId('my-flow-task-complete-control')).toHaveCount(2);
   expect(browserErrors).toEqual([]);
 });

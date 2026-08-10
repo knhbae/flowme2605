@@ -2,7 +2,11 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 import path from 'node:path';
 
-import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
+import {
+  gotoLegacySavedPlanLibraryRoute,
+  installLegacySavedPlanLibraryNavigation,
+  openMyFlowLibraryFlow,
+} from './helpers/my-flow-library';
 
 const SOURCE_FLOW_SLUG = 'moving-d30-basic';
 const SOURCE_ROUTE = `/f/${SOURCE_FLOW_SLUG}`;
@@ -41,7 +45,8 @@ async function resetAndOpenSource(
   viewport: Readonly<{ width: number; height: number }> = MOBILE_VIEWPORT,
 ): Promise<void> {
   await page.setViewportSize({ width: viewport.width, height: viewport.height });
-  await page.goto(SOURCE_ROUTE);
+  await installLegacySavedPlanLibraryNavigation(page);
+  await gotoLegacySavedPlanLibraryRoute(page, SOURCE_ROUTE);
   await page.evaluate(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
@@ -409,7 +414,7 @@ test.describe('P35 P0-06 shared editor surface', () => {
 
   test('editorTransaction=off keeps a stale recovery journal untouched and renders the legacy public adapter', async ({ page }) => {
     await page.setViewportSize(MOBILE_VIEWPORT);
-    await page.goto('/my?editorTransaction=off');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?editorTransaction=off');
     await page.evaluate(() => {
       window.localStorage.clear();
       window.sessionStorage.clear();
@@ -440,7 +445,7 @@ test.describe('P35 P0-06 shared editor surface', () => {
     });
     await expect(page.getByTestId('saved-flow-editor-recovery-notice')).toHaveCount(0);
 
-    await page.goto(`${SOURCE_ROUTE}?editorTransaction=off`);
+    await gotoLegacySavedPlanLibraryRoute(page, `${SOURCE_ROUTE}?editorTransaction=off`);
     await page.getByTestId('public-flow-adjust-entry-mobile').click();
     const legacyEditor = page.getByTestId('public-flow-personal-adjustment');
     await expect(legacyEditor).toHaveAttribute('data-editor-adapter', 'legacy');

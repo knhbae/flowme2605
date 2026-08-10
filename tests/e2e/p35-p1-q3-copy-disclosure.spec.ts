@@ -2,7 +2,9 @@ import path from 'node:path';
 
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
-import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
+import {
+  openMyFlowLibraryFlow,
+} from './helpers/my-flow-library';
 
 const viewports = [
   { name: '390', width: 390, height: 844 },
@@ -18,20 +20,10 @@ const evidenceDirectory = path.resolve(
 );
 
 function routeForPhase(route: string): string {
-  if (phase !== 'before') return route;
-  return `${route}${route.includes('?') ? '&' : '?'}q3Copy=off`;
-}
-
-async function relativeDate(page: Page, dayOffset: number): Promise<string> {
-  return page.evaluate((offset) => {
-    const value = new Date();
-    value.setDate(value.getDate() + offset);
-    return [
-      value.getFullYear(),
-      String(value.getMonth() + 1).padStart(2, '0'),
-      String(value.getDate()).padStart(2, '0'),
-    ].join('-');
-  }, dayOffset);
+  const phaseRoute = phase !== 'before'
+    ? route
+    : `${route}${route.includes('?') ? '&' : '?'}q3Copy=off`;
+  return phaseRoute;
 }
 
 async function lookupOwnedCopy(
@@ -139,29 +131,16 @@ async function expectNoLegacyOwnedCopy(surface: Locator): Promise<void> {
   expect(ownedCopy.join('\n')).not.toMatch(legacyOwnedCopyPattern);
 }
 
-async function expectCapabilityHeader(
-  capability: Locator,
-  lifecycle: 'public' | 'saved',
-  q3CopyEnabled: boolean,
-): Promise<void> {
+async function expectApprovedPublicCapability(capability: Locator): Promise<void> {
   await expect(capability).toBeVisible();
-  const header = capability.locator(':scope > header');
-  const state = header.locator(':scope > p').first();
-  const scope = header.locator(':scope > h2');
-  if (q3CopyEnabled) {
-    await expect(state).toHaveText(lifecycle === 'public' ? '결과 미리보기' : '옮기기 전 미리보기');
-    await expect(scope).toHaveText(
-      lifecycle === 'public' ? /^현재 계획 · \d+개$/u : /^저장한 계획 · \d+개$/u,
-    );
-    await expect(header.locator(':scope > p, :scope > h2')).toHaveCount(2);
-    await expect(capability).toHaveAttribute('data-capability-receipt', '');
-    return;
-  }
-  await expect(state).toHaveText(lifecycle === 'public' ? '저장 전 미리보기' : '저장한 Flow 결과');
-  await expect(scope).toHaveText(
-    lifecycle === 'public' ? /^현재 공개 초안 · \d+개$/u : /^저장한 전체 Flow · \d+개$/u,
-  );
-  await expect(header.locator(':scope > p, :scope > h2')).toHaveCount(3);
+  await expect(capability).toHaveAttribute('data-public-format-mode', 'approved');
+  await expect(capability.getByRole('heading', { name: '결과 형식' })).toBeVisible();
+  const formatTabs = capability.locator('[data-public-format-tab="true"]');
+  await expect(formatTabs).toHaveCount(3);
+  await expect(formatTabs).toHaveText(['Text', 'Todo', 'Calendar']);
+  const help = capability.getByTestId('public-result-format-help-trigger');
+  await expect(help).toContainText('?');
+  await expect(help).toHaveAccessibleName('결과 형식 도움말');
 }
 
 async function rawStorageSnapshot(page: Page) {
@@ -221,22 +200,17 @@ async function seedArchivedSavedPlan(page: Page, flowSlug: string): Promise<void
   }, flowSlug);
 }
 
-async function openChecklistTransfer(page: Page, q3CopyEnabled = true): Promise<Locator> {
+async function openApprovedTransferPanel(page: Page, q3CopyEnabled = true): Promise<Locator> {
   const suffix = q3CopyEnabled ? '' : '&q3Copy=off';
-  await page.goto(`/my?flow=moving-d30-basic${suffix}`);
+  await page.goto(`/my?view=flows&flow=moving-d30-basic${suffix}`);
   const workspace = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'record');
-  await workspace.getByTestId('my-flow-export-entry').click();
-  const panel = workspace.getByTestId('my-flow-export-panel');
+  const approvedPlan = workspace.getByTestId('approved-my-plan-workspace');
+  await expect(approvedPlan).toBeVisible();
+  await approvedPlan.getByTestId('my-flow-export-entry').click();
+  const panel = page.getByTestId('my-flow-export-panel');
   await expect(panel).toBeVisible();
-  const checklist = panel.getByTestId('my-flow-export-checklist');
-  if (!await checklist.isVisible().catch(() => false)) {
-    const more = panel.getByTestId('my-flow-export-more-formats');
-    if ((await more.getAttribute('open')) === null) await more.locator(':scope > summary').click();
-  }
-  await checklist.click();
-  const confirmation = panel.getByTestId('my-flow-transfer-confirmation');
-  await expect(confirmation).toBeVisible();
-  return confirmation;
+  await expect(panel).toHaveAttribute('data-saved-transfer-profile', 'approved_saved_transfer');
+  return panel;
 }
 
 test.describe('P1-02 Q3 copy and contextual disclosure', () => {
@@ -340,19 +314,17 @@ test.describe('P1-02 Q3 copy and contextual disclosure', () => {
       const root = page.locator('main[data-p35-q3-copy]');
       await expect(root).toHaveAttribute('data-p35-q3-copy', phase === 'before' ? 'off' : 'on');
       await expectSurfaceHealth(page, root);
-      await page.getByTestId('public-flow-anchor-input').fill(await relativeDate(page, 365));
       const edit = page.locator('[data-testid="public-flow-adjust-entry"]:visible, [data-testid="public-flow-adjust-entry-mobile"]:visible');
       const save = page.locator('[data-testid="public-flow-save-primary"]:visible, [data-testid="public-flow-save-primary-mobile"]:visible');
       if (phase === 'before') {
         await expect(root.getByText('Flow 미리보기', { exact: true })).toBeVisible();
-        await expect(save).toHaveText(/개로 시작/u);
       } else {
         await expect(root.getByText('계획 미리보기', { exact: true })).toBeVisible();
-        await expect(edit).toHaveText('계획 수정');
-        await expect(save).toHaveText('내 계획에 저장');
-        await expectCapabilityHeader(root.getByTestId('public-flow-capability-result'), 'public', true);
         await expectNoLegacyOwnedCopy(root);
       }
+      await expect(edit).toHaveText('수정');
+      await expect(save).toHaveText('내 계획으로 저장');
+      await expectApprovedPublicCapability(root.getByTestId('public-flow-capability-result'));
       console.log(`P1-02 PUBLIC ${phase} ${viewport.name} aria=${(await root.ariaSnapshot()).split('\n').length}`);
       await capture(page, `public-${viewport.name}`);
     }
@@ -394,7 +366,7 @@ test.describe('P1-02 Q3 copy and contextual disclosure', () => {
     });
     if (phase === 'after') await expectNoLegacyOwnedCopy(editor);
 
-    await editor.getByRole('button', { name: '닫기', exact: true }).click();
+    await editor.getByTestId('public-flow-adjustment-cancel').click();
     await expect(editor).toHaveCount(0);
     expect(await rawStorageSnapshot(page)).toEqual(storageBefore);
     expect(errors).toEqual([]);
@@ -404,7 +376,7 @@ test.describe('P1-02 Q3 copy and contextual disclosure', () => {
     const errors = collectBrowserErrors(page);
     for (const viewport of viewports) {
       await page.setViewportSize(viewport);
-      await page.goto(routeForPhase('/my?demo=ux20'));
+      await page.goto(routeForPhase('/my?demo=ux20&view=flows'));
       const root = page.locator('main[data-p35-q3-copy]');
       await expect(root).toHaveAttribute('data-p35-q3-copy', phase === 'before' ? 'off' : 'on');
       await expectSurfaceHealth(page, root);
@@ -432,33 +404,27 @@ test.describe('P1-02 Q3 copy and contextual disclosure', () => {
     );
     await expect(selectedPlan).toBeVisible();
     const storageBefore = await rawStorageSnapshot(page);
-    const managementTrigger = selectedPlan.getByTestId('my-flow-management-menu-trigger');
-
-    if (phase === 'before') {
-      await expect(managementTrigger).toHaveText('Flow 관리');
-      await expect(managementTrigger).toHaveAccessibleName(/ Flow 관리$/u);
-    } else {
-      await expect(managementTrigger).toHaveText('계획 관리');
-      await expect(managementTrigger).toHaveAccessibleName(/ 계획 관리$/u);
-    }
-    await managementTrigger.click();
-    const managementMenu = selectedPlan.getByTestId('my-flow-management-menu').getByRole('menu');
-    await expect(managementMenu).toHaveAccessibleName(
-      phase === 'before' ? / Flow 관리$/u : / 계획 관리$/u,
+    const approvedPlan = selectedPlan.getByTestId('approved-my-plan-workspace');
+    await expect(approvedPlan).toBeVisible();
+    await expect(approvedPlan.getByTestId('my-plan-edit')).toHaveText('수정');
+    const transferEntry = approvedPlan.getByTestId('my-flow-export-entry');
+    await expect(transferEntry).toHaveText(/내 도구로 옮기기 · \d+개/u);
+    await transferEntry.click();
+    const transferPanel = page.getByTestId('my-flow-export-panel');
+    await expect(transferPanel).toHaveAttribute(
+      'data-saved-transfer-profile',
+      'approved_saved_transfer',
     );
-    await expect(selectedPlan.getByTestId('my-flow-management-adjust')).toHaveText(
-      phase === 'before' ? 'Flow 편집' : '계획 수정',
-    );
-    if (phase === 'after') await expectNoLegacyOwnedCopy(managementMenu);
-    await page.keyboard.press('Escape');
-    await expect(managementTrigger).toBeFocused();
-
-    await selectedPlan.getByTestId('my-flow-export-entry').click();
-    await expectCapabilityHeader(
-      selectedPlan.getByTestId('my-flow-capability-result'),
-      'saved',
-      phase === 'after',
-    );
+    await expect(transferPanel.locator('[role="tab"][data-export-format]')).toContainText([
+      '텍스트',
+      '할 일',
+      '캘린더',
+      'Excel',
+    ]);
+    const formatHelp = transferPanel.getByTestId('my-flow-transfer-format-help-trigger');
+    await expect(formatHelp).toContainText('?');
+    await expect(formatHelp).toHaveAccessibleName('옮기기 형식 도움');
+    if (phase === 'after') await expectNoLegacyOwnedCopy(approvedPlan);
     expect(await rawStorageSnapshot(page)).toEqual(storageBefore);
     expect(errors).toEqual([]);
   });
@@ -479,7 +445,7 @@ test.describe('P1-02 Q3 copy and contextual disclosure', () => {
     );
     if (phase === 'after') await expectNoLegacyOwnedCopy(empty);
 
-    await page.goto(routeForPhase('/my?demo=ux20'));
+    await page.goto(routeForPhase('/my?demo=ux20&view=flows'));
     const search = page.getByTestId('my-flow-library-rail-search');
     await expect(search).toHaveAttribute(
       'placeholder',
@@ -489,17 +455,10 @@ test.describe('P1-02 Q3 copy and contextual disclosure', () => {
       phase === 'before' ? '저장한 Flow 검색' : '저장한 계획 검색',
     );
     await search.fill('존재하지-않는-Q3-계획');
-    await expect(page.getByTestId('my-flow-library-detail')).toContainText(
-      phase === 'before' ? '조건에 맞는 Flow가 없습니다.' : '조건에 맞는 계획이 없습니다.',
-    );
+    await expect(page.getByTestId('my-flow-library-row')).toHaveCount(0);
 
     await seedArchivedSavedPlan(page, 'used-car-buying-check');
-    await page.goto(routeForPhase('/my'));
-    const archivedEntry = page.getByTestId('my-flow-open-archived');
-    await expect(archivedEntry).toHaveText(
-      phase === 'before' ? '보관된 Flow 1개 보기' : '보관한 계획 1개 보기',
-    );
-    await archivedEntry.click();
+    await page.goto(routeForPhase('/my?view=flows&status=archived'));
     const archivedRow = page.locator(
       '[data-testid="my-flow-library-archived-row"][data-flow-slug="used-car-buying-check"]',
     );
@@ -566,35 +525,53 @@ test.describe('P1-02 Q3 copy and contextual disclosure', () => {
     test.skip(phase === 'before', 'Q3 rollback intentionally removes the new optional disclosure icons.');
     const errors = collectBrowserErrors(page);
     await page.setViewportSize(viewports[0]);
-    await page.goto('/flow-maps/curated-wedding-checklist-family');
-    const help = page.getByTestId('flow-map-choice-help-trigger');
-    await expect(help).toHaveAccessibleName('계획 선택 도움말');
+    await page.goto('/f/moving-d30-basic');
+    const help = page.getByTestId('public-result-format-help-trigger');
+    await expect(help).toHaveAccessibleName('결과 형식 도움말');
     await expect(help).toHaveAttribute('aria-haspopup', 'dialog');
     await expect(help).toHaveAttribute('aria-expanded', 'false');
     await help.focus();
     await page.keyboard.press('Enter');
     await expect(help).toHaveAttribute('aria-expanded', 'true');
-    await expect(page.getByTestId('flow-map-choice-help-sheet')).toBeVisible();
+    await expect(page.getByTestId('public-result-format-help-sheet')).toBeVisible();
     await page.keyboard.press('Escape');
-    await expect(page.getByTestId('flow-map-choice-help-sheet')).toHaveCount(0);
+    await expect(page.getByTestId('public-result-format-help-sheet')).toHaveCount(0);
     await expect(help).toBeFocused();
     await page.keyboard.press('Space');
-    await expect(page.getByTestId('flow-map-choice-help-sheet')).toBeVisible();
+    await expect(page.getByTestId('public-result-format-help-sheet')).toBeVisible();
     await page.keyboard.press('Escape');
     await expect(help).toBeFocused();
 
     await seedSavedMovingPlan(page);
-    await page.setViewportSize(viewports[1]);
-    const confirmation = await openChecklistTransfer(page);
-    await expect(confirmation.getByTestId('flow-transfer-one-way-warning')).toContainText('일방향 결과예요');
-    const caution = confirmation.getByTestId('flow-transfer-one-way-help-trigger');
-    await expect(caution).toHaveAccessibleName('일방향 결과 상세 보기');
+    await page.setViewportSize(viewports[2]);
+    const transferPanel = await openApprovedTransferPanel(page);
+    const transferHelp = transferPanel.getByTestId('my-flow-transfer-format-help-trigger');
+    await expect(transferHelp).toContainText('?');
+    await expect(transferHelp).toHaveAccessibleName('옮기기 형식 도움');
+    await transferHelp.focus();
+    await page.keyboard.press('Enter');
+    const transferHelpPopover = page.getByTestId('my-flow-transfer-format-help-popover');
+    await expect(transferHelpPopover).toBeVisible();
+    await expect(transferHelpPopover).toHaveAttribute(
+      'data-flow-context-presentation',
+      'desktop-popover',
+    );
+    await page.keyboard.press('Escape');
+    await expect(transferHelpPopover).toHaveCount(0);
+    await expect(transferHelp).toBeFocused();
+
+    await transferPanel.getByTestId('my-flow-transfer-tab-sheet').click();
+    const caution = transferPanel.getByTestId('my-flow-transfer-excel-warning-trigger');
+    await expect(caution).toContainText('!');
+    await expect(caution).toHaveAccessibleName('Excel로 옮기기 전 주의사항');
     await caution.focus();
     await page.keyboard.press('Enter');
-    await expect(page.getByTestId('flow-transfer-one-way-help-sheet')).toBeVisible();
+    const warningDialog = page.getByTestId('my-flow-transfer-excel-warning-dialog');
+    await expect(warningDialog).toBeVisible();
+    await expect(warningDialog).toContainText('자동 동기화되지 않아요');
     await page.keyboard.press('Escape');
+    await expect(warningDialog).toHaveCount(0);
     await expect(caution).toBeFocused();
-    await expect(confirmation.getByTestId('flow-transfer-one-way-warning')).toBeVisible();
     expect(errors).toEqual([]);
   });
 
@@ -625,7 +602,7 @@ test.describe('P1-02 Q3 copy and contextual disclosure', () => {
     const publicEditor = page.getByTestId('public-flow-personal-adjustment');
     await expect(publicEditor.getByRole('heading', { name: 'Flow 편집' })).toBeVisible();
     await expect(publicEditor.getByLabel('내 Flow 이름')).toBeVisible();
-    await publicEditor.getByRole('button', { name: '닫기', exact: true }).click();
+    await publicEditor.getByTestId('public-flow-adjustment-cancel').click();
     expect(await rawStorageSnapshot(page)).toEqual(publicStorageBefore);
 
     await seedSavedMovingPlan(page);
@@ -633,10 +610,12 @@ test.describe('P1-02 Q3 copy and contextual disclosure', () => {
     await page.goto('/my?view=flows&flow=moving-d30-basic&q3Copy=off');
     const selectedPlan = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'record');
     const savedStorageBefore = await rawStorageSnapshot(page);
-    const managementTrigger = selectedPlan.getByTestId('my-flow-management-menu-trigger');
-    await expect(managementTrigger).toHaveText('Flow 관리');
-    await managementTrigger.click();
-    await expect(selectedPlan.getByTestId('my-flow-management-adjust')).toHaveText('Flow 편집');
+    const approvedPlan = selectedPlan.getByTestId('approved-my-plan-workspace');
+    await expect(page.locator('main[data-p35-q3-copy="off"]')).toBeVisible();
+    await expect(page.getByRole('link', { name: '내 Flow', exact: true })).toBeVisible();
+    await expect(page.getByRole('heading', { name: '저장한 Flow', exact: true })).toBeVisible();
+    await expect(approvedPlan.getByTestId('my-plan-edit')).toHaveText('수정');
+    await expect(approvedPlan.getByTestId('my-flow-export-entry')).toContainText('내 도구로 옮기기');
     expect(await rawStorageSnapshot(page)).toEqual(savedStorageBefore);
     expect(errors).toEqual([]);
   });

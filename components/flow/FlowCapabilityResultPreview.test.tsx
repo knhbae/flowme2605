@@ -10,6 +10,7 @@ import {
 } from '@/lib/flow/effective-flow-contract.fixtures';
 import { buildEffectiveFlowSnapshot } from '@/lib/flow/effective-flow-snapshot';
 import { resolvePublicDateIntent } from '@/lib/flow/public-date-intent';
+import { FlowArtifactDataPreview } from './FlowArtifactDataPreview';
 import { FlowCapabilityResultPreview } from './FlowCapabilityResultPreview';
 
 // The repository keeps JSX preserved for Next.js. The standalone tsx static-render
@@ -167,4 +168,93 @@ test('Q3 capability headers use two state lines while rollback restores the prio
   assert.match(rollbackHeader, /저장한 전체 Flow · 3개/u);
   assert.match(rollbackHeader, /생성 후 별도로/u);
   assert.equal((rollbackHeader.match(/<(?:p|h2)\b/gu) ?? []).length, 3);
+});
+
+test('approved public mode exposes only Text, Todo, and Calendar and keeps every Todo row as a detail link', () => {
+  const viewModel = buildFlowCapabilityResultViewModel({
+    snapshot: buildSnapshot(),
+    lifecycle: 'public_preview',
+  });
+  const markup = renderToStaticMarkup(
+    <FlowCapabilityResultPreview
+      viewModel={viewModel}
+      selectedDestination="checklist"
+      onRowOpen={() => undefined}
+      publicApprovedMode
+    />,
+  );
+  const choices = tagsByTestId(markup, 'flow-capability-result-choice');
+
+  assert.equal(choices.length, 3);
+  assert.ok(choices.every((tag) => tag.includes('min-h-12')));
+  assert.deepEqual(
+    choices.map((tag) => tag.match(/data-capability-destination="([^"]+)"/u)?.[1]),
+    ['memo', 'checklist', 'calendar'],
+  );
+  assert.match(markup, />Text<\/span>/u);
+  assert.match(markup, />Todo<\/span>/u);
+  assert.match(markup, />Calendar<\/span>/u);
+  assert.match(markup, /data-testid="public-result-format-help-trigger"/u);
+  assert.match(markup, /data-public-format-mode="approved"/u);
+  assert.match(markup, /<h2[^>]*>Todo · 3개<\/h2>/u);
+  assert.equal(tagsByTestId(markup, 'flow-capability-artifact-preview-todo-detail-link').length, 3);
+  assert.equal(tagsByTestId(markup, 'flow-capability-artifact-preview-todo-checkbox').length, 3);
+  assert.doesNotMatch(markup, /data-capability-destination="sheet"/u);
+  assert.doesNotMatch(markup, /data-artifact-shape="sheet"|>시트 ·|>Sheet ·|>Excel ·/u);
+});
+
+test('approved public artifact choices filter a sheet-capable projection without changing default behavior', () => {
+  const projection = buildSnapshot().committed.projection;
+  const approvedMarkup = renderToStaticMarkup(
+    <FlowArtifactDataPreview
+      projection={projection}
+      selectedShape="checklist"
+      publicApprovedMode
+    />,
+  );
+  const defaultMarkup = renderToStaticMarkup(
+    <FlowArtifactDataPreview projection={projection} />,
+  );
+  const approvedChoices = tagsByTestId(approvedMarkup, 'flow-artifact-shape-choice');
+
+  assert.deepEqual(
+    approvedChoices.map((tag) => tag.match(/data-artifact-shape="([^"]+)"/u)?.[1]),
+    ['memo', 'checklist', 'calendar'],
+  );
+  assert.match(approvedMarkup, />Text<\/button>/u);
+  assert.match(approvedMarkup, />Todo<\/button>/u);
+  assert.match(approvedMarkup, />Calendar<\/button>/u);
+  assert.doesNotMatch(approvedMarkup, /data-artifact-shape="sheet"|>시트 |\bExcel\b/u);
+  assert.match(defaultMarkup, /data-public-format-mode="default"/u);
+  assert.match(defaultMarkup, />캘린더 일정 3개</u);
+  assert.match(defaultMarkup, />체크리스트 3개</u);
+  assert.match(defaultMarkup, />메모 3개</u);
+});
+
+test('approved public mode keeps Calendar as one of three format tabs before a date is set', () => {
+  const viewModel = buildFlowCapabilityResultViewModel({
+    snapshot: buildSnapshot('undated'),
+    lifecycle: 'public_preview',
+  });
+  const markup = renderToStaticMarkup(
+    <FlowCapabilityResultPreview
+      viewModel={viewModel}
+      selectedDestination="calendar"
+      calendarEmptyAction={<button type="button">이사일 설정</button>}
+      publicApprovedMode
+    />,
+  );
+  const choices = tagsByTestId(markup, 'flow-capability-result-choice');
+
+  assert.equal(choices.length, 3);
+  assert.ok(choices.some((tag) => (
+    tag.includes('data-capability-destination="calendar"')
+    && tag.includes('data-capability-candidate-state="conditional"')
+  )));
+  assert.match(markup, /data-capability-selected-destination="calendar"/u);
+  assert.match(markup, /data-testid="flow-capability-artifact-preview"/u);
+  assert.match(markup, /data-testid="flow-artifact-empty-action"/u);
+  assert.match(markup, />이사일 설정<\/button>/u);
+  assert.match(markup, /기준일이나 항목 날짜를 정하면 일정이 여기에 나타납니다/u);
+  assert.doesNotMatch(markup, /data-testid="flow-capability-conditional-result"/u);
 });

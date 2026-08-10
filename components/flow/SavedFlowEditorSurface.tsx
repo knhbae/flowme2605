@@ -3,6 +3,7 @@
 import React from 'react';
 
 import { FlowEditorSurface } from './FlowEditorSurface';
+import { FlowContextDisclosure } from './FlowContextDisclosure';
 import { RoutineScheduleEditor } from './RoutineScheduleEditor';
 import {
   FLOW_UI_COMPACT_ACTION_CLASS,
@@ -101,6 +102,7 @@ export function SavedFlowPlanEditorSurface({
   onMoveItem,
   onOpenItem,
   q3CopyEnabled = true,
+  approvedPlanExecution = false,
 }: {
   draft: SavedFlowPlanEditorViewDraft;
   transaction: SavedEditorTransactionView;
@@ -115,6 +117,7 @@ export function SavedFlowPlanEditorSurface({
   onMoveItem: (itemId: string, direction: 'up' | 'down') => void;
   onOpenItem: (itemId: string, returnFocusSelector: string) => void;
   q3CopyEnabled?: boolean;
+  approvedPlanExecution?: boolean;
 }) {
   const includedCount = Object.values(draft.items).filter((item) => item.included).length;
   const contract = getFlowEditorSurfaceContract({
@@ -171,6 +174,8 @@ export function SavedFlowPlanEditorSurface({
         testId: 'flow-editor-retry',
         onAction: actions.onCommit,
       } : undefined}
+      cancelPlacement={approvedPlanExecution ? 'header' : 'footer'}
+      enforce48pxTargets={approvedPlanExecution}
     >
       <form
         data-testid="my-flow-personal-copy-settings"
@@ -321,6 +326,7 @@ export function SavedFlowItemEditorSurface({
   onPatch,
   visualSubtractionEnabled = true,
   q3CopyEnabled = true,
+  approvedPlanExecution = false,
 }: {
   draft: SavedFlowItemEditorViewDraft;
   transaction: SavedEditorTransactionView;
@@ -328,6 +334,7 @@ export function SavedFlowItemEditorSurface({
   onPatch: (patch: Partial<Pick<SavedFlowItemEditorViewDraft, 'title' | 'detail' | 'date'>>) => void;
   visualSubtractionEnabled?: boolean;
   q3CopyEnabled?: boolean;
+  approvedPlanExecution?: boolean;
 }) {
   const contract = getFlowEditorSurfaceContract({
     context: 'saved-overlay',
@@ -336,7 +343,7 @@ export function SavedFlowItemEditorSurface({
       title: true,
       detail: true,
       date: true,
-      completionCriterion: Boolean(draft.completionCriterion),
+      completionCriterion: !approvedPlanExecution && Boolean(draft.completionCriterion),
       sourceOrSafety: Boolean(draft.sourceUrl || draft.warning),
     },
   });
@@ -381,6 +388,8 @@ export function SavedFlowItemEditorSurface({
         testId: 'flow-editor-retry',
         onAction: actions.onCommit,
       } : undefined}
+      cancelPlacement={approvedPlanExecution ? 'header' : 'footer'}
+      enforce48pxTargets={approvedPlanExecution}
     >
       <form
         className="space-y-4"
@@ -402,7 +411,7 @@ export function SavedFlowItemEditorSurface({
           />
         </label>
         <label className="block text-sm font-semibold text-[var(--flowme-text)]">
-          상세 내용·메모
+          {approvedPlanExecution ? '메모' : '상세 내용·메모'}
           <textarea
             data-testid="saved-flow-editor-item-detail-input"
             data-editor-field="item-detail"
@@ -423,13 +432,24 @@ export function SavedFlowItemEditorSurface({
             onChange={(event) => onPatch({ date: event.target.value })}
           />
         </label>
-        {draft.completionCriterion ? (
+        {!approvedPlanExecution && draft.completionCriterion ? (
           <section data-editor-field="item-completion-criterion" className="border-l-2 border-[var(--flowme-border-strong)] px-3 py-2">
             <h3 className="text-xs font-semibold text-[var(--flowme-text-secondary)]">완료 기준</h3>
             <p className="mt-1 whitespace-pre-wrap text-sm font-medium text-[var(--flowme-text)]">{draft.completionCriterion}</p>
           </section>
         ) : null}
-        {draft.warning ? (
+        {draft.warning && approvedPlanExecution ? (
+          <div data-editor-field="source-and-safety">
+            <FlowContextDisclosure
+              kind="caution"
+              label="이 항목의 주의사항"
+              title="확인하고 진행해 주세요"
+              testId="saved-flow-editor-item-warning"
+            >
+              <p className="whitespace-pre-wrap text-sm leading-6">{draft.warning}</p>
+            </FlowContextDisclosure>
+          </div>
+        ) : draft.warning ? (
           <section data-editor-field="source-and-safety" className="border-l-2 border-[var(--flowme-warning)] bg-[var(--flowme-warning-soft)] px-3 py-2">
             <h3 className="text-xs font-semibold text-[var(--flowme-warning-strong)]">주의</h3>
             <p className="mt-1 whitespace-pre-wrap text-sm font-medium text-[var(--flowme-warning-strong)]">{draft.warning}</p>

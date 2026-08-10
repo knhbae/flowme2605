@@ -5,7 +5,9 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 
 import {
   closeOpenMyFlowItemDetail,
+  gotoLegacySavedPlanLibraryRoute,
   getOpenMyFlowItemDetail,
+  installLegacySavedPlanLibraryNavigation,
   openMyFlowLibraryFlow,
 } from './helpers/my-flow-library';
 import { savePublicFlow } from './helpers/public-flow-save';
@@ -157,9 +159,11 @@ async function seedSavedFlow(page: Page, slug: string, selectedArtifactMode: str
 
 test.describe('P35-R0 temporal first group', () => {
   test('mixed past and future dates stay truthful from pre-save through My Flow and Calendar', async ({ page }) => {
+    test.setTimeout(60_000);
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/f/moving-d30-basic');
+    await installLegacySavedPlanLibraryNavigation(page);
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
 
@@ -167,11 +171,16 @@ test.describe('P35-R0 temporal first group', () => {
     const warning = page.getByTestId('public-flow-past-date-warning');
     await expect(warning).toHaveAttribute('data-p35-marker', 'P35-R0-PAST-DATE-WARNING');
     await expect(warning).toHaveAttribute('data-past-count', '9');
-    await expect(warning).toContainText(
+    const warningTrigger = warning.getByTestId('public-flow-past-date-warning-disclosure-trigger');
+    await warningTrigger.click();
+    const warningDetail = page.getByTestId('public-flow-past-date-warning-disclosure-detail');
+    await expect(warningDetail).toContainText(
       `${formatCompactPlainDate(pastStartDate)}~${formatCompactPlainDate(pastEndDate)}`,
     );
-    await expect(warning).toContainText('함께 저장돼요');
+    await expect(page.getByRole('heading', { name: '지난 할 일도 함께 저장돼요' })).toBeVisible();
     await capture(page, 'p35-r0-past-date-warning-390.png', warning);
+    await page.keyboard.press('Escape');
+    await expect(warningTrigger).toBeFocused();
 
     const saveBanner = await savePublicFlow(page, page.getByTestId('public-flow-save-primary-mobile'));
     await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toHaveText('저장됨 · 24개');
@@ -255,7 +264,7 @@ test.describe('P35-R0 temporal first group', () => {
     group = workspace.getByTestId('my-flow-temporal-next-group');
     await expect(group.getByTestId('my-flow-execution-row-shell')).toHaveCount(3);
 
-    await page.goto('/calendar');
+    await gotoLegacySavedPlanLibraryRoute(page, '/calendar');
     await page.getByTestId('my-flow-month-picker').fill(nextGroupDate.slice(0, 7));
     await page.locator(`.fc-daygrid-day[data-date="${nextGroupDate}"]`)
       .getByTestId('my-flow-calendar-date-button')
@@ -282,14 +291,14 @@ test.describe('P35-R0 temporal first group', () => {
     );
     await closeOpenMyFlowItemDetail(page);
 
-    await page.goto('/calendar');
+    await gotoLegacySavedPlanLibraryRoute(page, '/calendar');
     await page.getByTestId('my-flow-month-picker').fill(nextGroupDate.slice(0, 7));
     await page.locator(`.fc-daygrid-day[data-date="${nextGroupDate}"]`)
       .getByTestId('my-flow-calendar-date-button')
       .click();
     await expect(page.getByTestId('my-flow-selected-day-summary')).toContainText('4개 남음');
 
-    await page.goto('/my?view=flows');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows');
     workspace = await openSavedWorkspace(page);
     group = workspace.getByTestId('my-flow-temporal-next-group');
     await expect(group.getByTestId('my-flow-execution-row-shell')).toHaveCount(3);
@@ -301,10 +310,10 @@ test.describe('P35-R0 temporal first group', () => {
   test('wide workspace matches the mobile group and falls back to the nearest past date', async ({ page }) => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 1024, height: 768 });
-    await page.goto('/flows');
+    await gotoLegacySavedPlanLibraryRoute(page, '/flows');
     await seedSavedFlow(page, 'moving-d30-basic', 'calendar', mixedAnchor);
 
-    await page.goto('/my?view=flows');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows');
     let workspace = await openMyFlowLibraryFlow(page, 'moving-d30-basic');
     let group = workspace.getByTestId('my-flow-temporal-next-group');
     await expect(group).toHaveAttribute('data-temporal-kind', 'future');
@@ -328,7 +337,7 @@ test.describe('P35-R0 temporal first group', () => {
     await expectPageQuality(page);
 
     await seedSavedFlow(page, 'moving-d30-basic', 'calendar', allPastAnchor);
-    await page.goto('/my?view=flows');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows');
     workspace = await openMyFlowLibraryFlow(page, 'moving-d30-basic');
     group = workspace.getByTestId('my-flow-temporal-next-group');
     await expect(group).toHaveAttribute('data-temporal-kind', 'past');
@@ -344,10 +353,10 @@ test.describe('P35-R0 temporal first group', () => {
   test('undated checklist and routine use their shape-aware execution projections', async ({ page }) => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/flows');
+    await gotoLegacySavedPlanLibraryRoute(page, '/flows');
 
     await seedSavedFlow(page, 'vehicle-inspection-prep', 'checklist');
-    await page.goto('/my?view=flows');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows');
     let workspace = await openMyFlowLibraryFlow(page, 'vehicle-inspection-prep', 'execute');
     await expect(workspace.getByTestId('my-flow-temporal-next-group')).toHaveCount(0);
     await expect(
@@ -356,14 +365,21 @@ test.describe('P35-R0 temporal first group', () => {
         .getByTestId('my-flow-execution-row-shell'),
     ).toHaveCount(3);
 
-    await page.goto('/f/curated-allblanc-morning-workout');
+    await installLegacySavedPlanLibraryNavigation(page);
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-allblanc-morning-workout');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
     await page.getByTestId('public-flow-anchor-input').fill(today);
     await savePublicFlow(page, page.getByTestId('public-flow-save-primary-mobile'));
+    const routineCopyKey = new URL(page.url()).searchParams.get('flow') ?? '';
+    expect(routineCopyKey).toMatch(/^personal-copy:/u);
+    await gotoLegacySavedPlanLibraryRoute(
+      page,
+      `/my?view=flows&flow=${encodeURIComponent(routineCopyKey)}`,
+    );
     workspace = await openMyFlowLibraryFlow(
       page,
-      'curated-allblanc-morning-workout',
+      routineCopyKey,
       'execute',
     );
     await expect(workspace.getByTestId('my-flow-temporal-next-group')).toHaveCount(0);

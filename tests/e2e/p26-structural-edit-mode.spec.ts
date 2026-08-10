@@ -3,6 +3,8 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 import {
   getFirstSavedPersonalDraftSlug,
   getPersonalDraftEffectiveItems,
+  gotoLegacySavedPlanLibraryRoute,
+  installLegacySavedPlanLibraryNavigation,
   openMyFlowLibraryFlow,
   openPersonalDraftListExport,
 } from './helpers/my-flow-library';
@@ -30,9 +32,14 @@ async function getDraftFlow(page: Page) {
       + `[data-testid="my-flow-mobile-workspace"][data-flow-slug="${slug}"]:visible, `
       + `[data-testid="my-flow-overview-card"][data-flow-slug="${slug}"]:visible`,
   ).first();
-  if (await visibleDraft.isVisible().catch(() => false)) return visibleDraft;
+  if (await visibleDraft.isVisible().catch(() => false)) {
+    if ((await visibleDraft.getAttribute('data-testid')) !== 'my-flow-mobile-structure-row') {
+      return visibleDraft;
+    }
+    return openMyFlowLibraryFlow(page, slug, 'plan');
+  }
 
-  await page.goto('/my?view=flows');
+  await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows');
   return openMyFlowLibraryFlow(page, slug);
 }
 
@@ -79,6 +86,7 @@ test.use({ timezoneId: 'Asia/Seoul' });
 
 test('personal draft structure mode separates execution from add, reorder, remove, restore, and export order', async ({ page }) => {
   test.setTimeout(180_000);
+  await installLegacySavedPlanLibraryNavigation(page);
   const evidenceDir = process.env.FLOWME_P26_11_EVIDENCE_DIR;
   if (evidenceDir) fs.mkdirSync(`${evidenceDir}/screenshots`, { recursive: true });
   const runtimeErrors: string[] = [];
@@ -88,9 +96,9 @@ test('personal draft structure mode separates execution from add, reorder, remov
   page.on('pageerror', (error) => runtimeErrors.push(error.message));
   await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/flows');
+  await gotoLegacySavedPlanLibraryRoute(page, '/flows');
   await page.evaluate(() => localStorage.clear());
-  await page.reload();
+  await gotoLegacySavedPlanLibraryRoute(page, page.url());
 
   const lookup = page.getByTestId('flow-url-lookup-entry');
   await lookup.getByLabel('URL 또는 메모').fill(
@@ -103,6 +111,7 @@ test('personal draft structure mode separates execution from add, reorder, remov
   await editor.getByTestId('flow-memo-draft-save').click();
 
   await expect(page).toHaveURL(/\/my/);
+  await gotoLegacySavedPlanLibraryRoute(page, page.url());
   await openFlowView(page);
   let flow = await getDraftFlow(page);
   await openDraftFlow(flow);
@@ -183,7 +192,7 @@ test('personal draft structure mode separates execution from add, reorder, remov
     await page.screenshot({ path: `${evidenceDir}/screenshots/01-mobile-structure-edit.png` });
   }
 
-  await page.reload();
+  await gotoLegacySavedPlanLibraryRoute(page, page.url());
   await openFlowView(page);
   flow = await getDraftFlow(page);
   await openDraftFlow(flow);
@@ -231,7 +240,7 @@ test('personal draft structure mode separates execution from add, reorder, remov
   expect(exportTitleOffsets).toEqual(exportTitleOffsets.slice().sort((left, right) => left - right));
 
   await page.setViewportSize({ width: 1024, height: 768 });
-  await page.reload();
+  await gotoLegacySavedPlanLibraryRoute(page, page.url());
   await openFlowView(page);
   flow = await getDraftFlow(page);
   await setStructureMode(flow, true);

@@ -3,7 +3,10 @@ import path from 'node:path';
 
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
-import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
+import {
+  gotoLegacySavedPlanLibraryRoute,
+  openMyFlowLibraryFlow,
+} from './helpers/my-flow-library';
 
 const evidenceRoot = process.env.FLOWME_P35_R11_EVIDENCE_DIR;
 
@@ -22,7 +25,7 @@ async function seedSavedFlow(
     routine?: boolean;
   },
 ) {
-  await page.goto('/flows');
+  await gotoLegacySavedPlanLibraryRoute(page, '/flows');
   await page.evaluate((fixture) => {
     const anchor = fixture.routine ? fixture.today : fixture.anchor;
     window.localStorage.clear();
@@ -70,7 +73,7 @@ test.describe('P35-R11 wide execution workspace and routine hierarchy', () => {
       slug: 'moving-d30-basic',
       anchor: '2030-09-01',
     });
-    await page.goto('/my?view=flows&flow=moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows&flow=moving-d30-basic');
     const workspace = await openMyFlowLibraryFlow(page, 'moving-d30-basic');
     const library = page.getByTestId('my-flow-library-rail');
     const canvas = workspace.getByTestId('my-flow-wide-execution-canvas');
@@ -119,7 +122,7 @@ test.describe('P35-R11 wide execution workspace and routine hierarchy', () => {
       slug: 'curated-allblanc-morning-workout',
       routine: true,
     });
-    await page.goto('/my?view=flows&flow=curated-allblanc-morning-workout');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows&flow=curated-allblanc-morning-workout');
     const workspace = await openMyFlowLibraryFlow(page, 'curated-allblanc-morning-workout');
 
     await expect(workspace).toHaveAttribute(
@@ -154,7 +157,7 @@ test.describe('P35-R11 wide execution workspace and routine hierarchy', () => {
       slug: 'moving-d30-basic',
       anchor: '2030-09-01',
     });
-    await page.goto('/my?view=flows&flow=moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows&flow=moving-d30-basic');
     const workspace = await openMyFlowLibraryFlow(page, 'moving-d30-basic');
     const execution = workspace.getByTestId('my-flow-shape-aware-execution');
     const wholePlan = workspace.getByTestId('my-flow-whole-flow-outline');

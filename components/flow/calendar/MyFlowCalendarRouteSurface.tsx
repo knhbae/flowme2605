@@ -90,9 +90,11 @@ export type MyFlowCalendarRouteModel<TRow> = {
   routineOverflowCount: number;
   scheduleOverflowDate?: string;
   scheduleOverflowCount: number;
+  itemInspector?: ReactNode;
   scope: MyFlowCalendarRouteScopeModel;
   groups: readonly MyFlowCalendarRouteGroup<TRow>[];
   q3CopyEnabled: boolean;
+  approvedPlanExecution: boolean;
 };
 
 export type MyFlowCalendarExecutionRowOptions = {
@@ -111,6 +113,7 @@ export type MyFlowCalendarExecutionRowOptions = {
   markerColor: string;
   routineStatusInMeta: true;
   hideExecutionNoteAction: true;
+  hideCompletionControl: boolean;
   draggable: false;
 };
 
@@ -227,6 +230,7 @@ export function MyFlowCalendarRouteSurface<TRow>({
       onMonthChange={actions.onMonthChange}
       onToday={actions.onToday}
       onFirstSchedule={actions.onFirstSchedule}
+      itemInspector={model.itemInspector}
       selectedDay={(
         <section
           ref={model.selectedDayRef}
@@ -237,7 +241,7 @@ export function MyFlowCalendarRouteSurface<TRow>({
           data-schedule-overflow-date={model.scheduleOverflowDate}
           className={model.isMobileViewport
             ? 'min-w-0'
-            : 'order-3 border-y border-slate-200 py-3 sm:py-4 lg:sticky lg:top-4 lg:max-h-[calc(100dvh-2rem)] lg:overflow-y-auto lg:overscroll-contain lg:border-y-0 lg:border-l lg:pl-4'}
+            : 'min-w-0 border-t border-slate-200 py-3 sm:py-4'}
         >
           <div className={model.isMobileViewport ? 'sr-only' : 'flex items-start gap-3'}>
             <div aria-live="polite" aria-atomic="true">
@@ -338,6 +342,7 @@ export function MyFlowCalendarRouteSurface<TRow>({
                       markerColor: group.marker.color,
                       routineStatusInMeta: true,
                       hideExecutionNoteAction: true,
+                      hideCompletionControl: !model.approvedPlanExecution,
                       draggable: false,
                     }))}
                   </div>

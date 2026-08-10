@@ -2,13 +2,19 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { expect, test, type Page } from '@playwright/test';
-import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
+import {
+  gotoLegacySavedPlanLibraryRoute,
+  installLegacySavedPlanLibraryNavigation,
+  openMyFlowLibraryFlow,
+  withLegacySavedPlanLibraryRoute,
+} from './helpers/my-flow-library';
 import { savePublicFlow } from './helpers/public-flow-save';
 
 const evidenceRoot = process.env.FLOWME_P28_EVIDENCE_DIR;
 const runtimeErrorsByPage = new WeakMap<Page, string[]>();
 
 test.beforeEach(async ({ page }) => {
+  await installLegacySavedPlanLibraryNavigation(page);
   const runtimeErrors: string[] = [];
   runtimeErrorsByPage.set(page, runtimeErrors);
   page.on('console', (message) => {
@@ -41,7 +47,7 @@ async function expectNoHorizontalOverflow(page: Page) {
 test.describe('P28 shared save-before experience', () => {
   test('public Flow exposes one actual-data shape and single-kind pre-save adjustment', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
     await clearLocalState(page);
 
     const hero = page.getByTestId('public-flow-hero');
@@ -106,7 +112,7 @@ test.describe('P28 shared save-before experience', () => {
 
   test('URL hit routes one prepared Flow into the shared adjustment workspace', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/flows');
+    await gotoLegacySavedPlanLibraryRoute(page, '/flows');
     await clearLocalState(page);
     await page.getByTestId('flow-url-lookup-input').fill(
       'https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363',
@@ -118,14 +124,14 @@ test.describe('P28 shared save-before experience', () => {
     await expect(sharedWorkspaceLink).toHaveAttribute('href', '/f/moving-d30-basic');
     await expect(result.getByTestId('flow-url-quick-start')).not.toHaveAttribute('open', '');
     await sharedWorkspaceLink.click();
-    await expect(page).toHaveURL('/f/moving-d30-basic');
+    await expect(page).toHaveURL(withLegacySavedPlanLibraryRoute('/f/moving-d30-basic'));
     await expect(page.getByTestId('public-flow-hero')).toHaveAttribute('data-experience-architecture', 'p35-result-first');
     await expectNoHorizontalOverflow(page);
   });
 
   test('wide save-before keeps the capability result without duplicate export or detail workspaces', async ({ page }) => {
     await page.setViewportSize({ width: 1024, height: 768 });
-    await page.goto('/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
     await clearLocalState(page);
 
     const capability = page.getByTestId('public-flow-capability-result');
@@ -144,7 +150,7 @@ test.describe('P28 shared save-before experience', () => {
 
   test('routine setup uses the shared cadence contract and keeps resources out of completion', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/f/curated-allblanc-morning-workout');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-allblanc-morning-workout');
     await clearLocalState(page);
 
     await page.getByTestId('public-flow-anchor-input').fill('2026-07-27');
@@ -200,7 +206,7 @@ test.describe('P28 shared save-before experience', () => {
 
   test('My Flow uses mobile drill-in and a wide library rail with explicit selection', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/my?demo=ux20&view=flows');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=ux20&view=flows');
     await expect(page.getByTestId('my-flow-mobile-flow-hub')).toBeVisible();
     await expect(page.getByTestId('my-flow-mobile-structure-row')).toHaveCount(8);
     const firstMobileButton = page.getByTestId('my-flow-mobile-structure-open').first();
@@ -238,7 +244,7 @@ test.describe('P28 shared save-before experience', () => {
 
   test('Calendar replaces a long Flow strip with a searchable persistent multi-select picker', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/calendar?demo=ux12');
+    await gotoLegacySavedPlanLibraryRoute(page, '/calendar?demo=ux12');
     await clearLocalState(page);
 
     const scope = page.getByTestId('my-flow-calendar-scope-filter');
@@ -294,7 +300,7 @@ test.describe('P28 shared save-before experience', () => {
     ];
 
     for (const candidate of cases) {
-      await page.goto(`/f/${candidate.slug}`);
+      await gotoLegacySavedPlanLibraryRoute(page, `/f/${candidate.slug}`);
       const capability = page.getByTestId('public-flow-capability-result');
       const selectedPreview = capability.getByTestId('flow-capability-selected-preview');
       const preview = selectedPreview.getByTestId('flow-capability-artifact-preview');
@@ -309,7 +315,7 @@ test.describe('P28 shared save-before experience', () => {
     }
 
     await page.setViewportSize({ width: 1024, height: 768 });
-    await page.goto('/f/source-backed-middle-school-math-1');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/source-backed-middle-school-math-1');
     await expect(page.getByTestId('flow-artifact-sheet-preview').first()).toBeVisible();
     await capture(page, '11-wide-shape-sheet.png');
     await expectNoHorizontalOverflow(page);

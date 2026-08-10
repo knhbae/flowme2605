@@ -3,11 +3,15 @@ import test from 'node:test';
 import {
   buildPersonalStructuralPortableScheduleFields,
   buildMyFlowStepChecklistText,
+  buildMyFlowItemDescriptionText,
   buildMyFlowStepIcs,
   buildMyFlowMultiStepIcs,
+  buildMyFlowMultiStepVtodo,
   buildMyFlowStepPortableText,
   buildMyFlowStepSheetTsv,
+  buildMyFlowStepVtodo,
   canBuildMyFlowStepIcs,
+  canBuildMyFlowStepVtodo,
   type MyFlowPortableStepExportInput,
 } from './my-flow-step-export';
 import {
@@ -56,6 +60,23 @@ const baseInput: MyFlowPortableStepExportInput = {
   completionCriteria: '이사 방식과 견적 후보가 정해졌다.',
   caution: '계약 전 포함 범위를 다시 확인한다.',
 };
+
+function unfoldIcs(value: string): string {
+  return value.replaceAll('\r\n ', '');
+}
+
+function unescapeIcsTextForTest(value: string): string {
+  return value
+    .replace(/\\[nN]/gu, '\n')
+    .replace(/\\([\\,;])/gu, '$1');
+}
+
+function getUnfoldedIcsProperty(value: string, property: string): string | undefined {
+  const line = unfoldIcs(value)
+    .split('\r\n')
+    .find((candidate) => candidate.startsWith(`${property}:`));
+  return line?.slice(property.length + 1);
+}
 
 test('portable Step text carries edited schedule fields and checked items', () => {
   const text = buildMyFlowStepPortableText(baseInput);
@@ -223,6 +244,157 @@ test('Step ICS uses edited date time repeat location memo and source URL', () =>
   for (const line of rawIcs.split('\r\n')) {
     assert.ok(Buffer.byteLength(line, 'utf8') <= 75, `ICS line exceeds 75 UTF-8 bytes: ${line}`);
   }
+});
+
+test('approved Item DESCRIPTION keeps one raw TXT memo and does not duplicate its checklist rows', () => {
+  const input: MyFlowPortableStepExportInput = {
+    ...baseInput,
+    rawMemoText: [
+      '대표 설명, 준비 범위를 먼저 정한다.',
+      '',
+      '- [ ] 포장 범위를 확인한다',
+      '- [x] 견적 후보를 저장한다',
+    ].join('\r\n'),
+    items: ['포장 범위를 확인한다', '견적 후보를 저장한다'],
+    completionCriteria: '후보 2곳의 포함 범위를 비교했다.',
+  };
+
+  const description = buildMyFlowItemDescriptionText(input);
+  assert.equal(description, [
+    '대표 설명, 준비 범위를 먼저 정한다.',
+    '',
+    '- [ ] 포장 범위를 확인한다',
+    '- [x] 견적 후보를 저장한다',
+    '',
+    '완료 기준: 후보 2곳의 포함 범위를 비교했다.',
+  ].join('\n'));
+  assert.equal(description.match(/포장 범위를 확인한다/gu)?.length, 1);
+  assert.equal(description.match(/견적 후보를 저장한다/gu)?.length, 1);
+});
+
+test('approved raw Item memo is the exact VEVENT DESCRIPTION payload', () => {
+  const generatedAt = '2026-08-10T00:00:00.000Z';
+  const input: MyFlowPortableStepExportInput = {
+    ...baseInput,
+    stableEventIdentitySeed: 'saved-plan:item-01',
+    generatedAt,
+    rawMemoText: [
+      '대표 설명; 쉼표, 역슬래시 \\',
+      '',
+      '- [ ] 확인 1',
+      '- [x] 확인 2',
+    ].join('\n'),
+    completionCriteria: '결과를 저장했다.',
+  };
+  const rawIcs = buildMyFlowStepIcs(input);
+  const description = getUnfoldedIcsProperty(rawIcs, 'DESCRIPTION');
+
+  assert.ok(description);
+  assert.equal(unescapeIcsTextForTest(description), buildMyFlowItemDescriptionText(input));
+  assert.equal((unfoldIcs(rawIcs).match(/BEGIN:VEVENT/gu) ?? []).length, 1);
+  assert.doesNotMatch(unescapeIcsTextForTest(description), /계획:|일정:|체크:|원문:/u);
+  assert.match(unfoldIcs(rawIcs), /UID:saved-plan:item-01@flowme\.local/u);
+  assert.equal(rawIcs.replaceAll('\r\n', '').includes('\n'), false);
+  for (const line of rawIcs.split('\r\n')) {
+    assert.ok(Buffer.byteLength(line, 'utf8') <= 75, `ICS line exceeds 75 UTF-8 bytes: ${line}`);
+  }
+});
+
+test('VTODO keeps one Item as one component and preserves raw memo checklist text', () => {
+  const input: MyFlowPortableStepExportInput = {
+    ...baseInput,
+    stableEventIdentitySeed: 'saved-plan:item-01',
+    generatedAt: '2026-08-10T00:00:00.000Z',
+    timeZone: 'Asia/Seoul',
+    rawMemoText: [
+      `대표 설명 ${'가'.repeat(60)}; 쉼표, 역슬래시 \\`,
+      '',
+      '- [ ] 확인 항목 1',
+      '- [x] 확인 항목 2',
+    ].join('\n'),
+    completionCriteria: '결과를 저장했다.',
+  };
+  const rawVtodo = buildMyFlowStepVtodo(input);
+  const unfolded = unfoldIcs(rawVtodo);
+  const description = getUnfoldedIcsProperty(rawVtodo, 'DESCRIPTION');
+
+  assert.equal(canBuildMyFlowStepVtodo(input), true);
+  assert.ok(description);
+  assert.equal(unescapeIcsTextForTest(description), buildMyFlowItemDescriptionText(input));
+  assert.equal((unfolded.match(/BEGIN:VTODO/gu) ?? []).length, 1);
+  assert.equal((unfolded.match(/END:VTODO/gu) ?? []).length, 1);
+  assert.match(unfolded, /UID:saved-plan:item-01@flowme\.local/u);
+  assert.match(unfolded, /DTSTAMP:20260810T000000Z/u);
+  assert.match(unfolded, /DUE;TZID=Asia\/Seoul:20260624T093000/u);
+  assert.match(unfolded, /SUMMARY:이사 방식과 견적 후보 정하기/u);
+  assert.match(unfolded, /STATUS:NEEDS-ACTION/u);
+  assert.match(unfolded, /PERCENT-COMPLETE:0/u);
+  assert.equal(rawVtodo.replaceAll('\r\n', '').includes('\n'), false);
+  for (const line of rawVtodo.split('\r\n')) {
+    assert.ok(Buffer.byteLength(line, 'utf8') <= 75, `VTODO line exceeds 75 UTF-8 bytes: ${line}`);
+  }
+});
+
+test('VTODO stable UID survives title and date edits, and completion maps to standard status', () => {
+  const input: MyFlowPortableStepExportInput = {
+    ...baseInput,
+    stableEventIdentitySeed: 'saved-plan:item-stable',
+    generatedAt: '2026-08-10T00:00:00.000Z',
+    time: '',
+    rawMemoText: '메모',
+  };
+  const first = buildMyFlowStepVtodo(input);
+  const edited = buildMyFlowStepVtodo({
+    ...input,
+    stepTitle: '수정된 할 일',
+    date: '2026-08-25',
+    executionStatus: 'done',
+  });
+
+  assert.equal(getUnfoldedIcsProperty(first, 'UID'), getUnfoldedIcsProperty(edited, 'UID'));
+  assert.match(unfoldIcs(edited), /DUE;VALUE=DATE:20260825/u);
+  assert.match(unfoldIcs(edited), /STATUS:COMPLETED/u);
+  assert.match(unfoldIcs(edited), /PERCENT-COMPLETE:100/u);
+});
+
+test('multi Item VTODO includes undated Items and never promotes checklist rows to components', () => {
+  const generatedAt = '2026-08-10T00:00:00.000Z';
+  const rawVtodo = buildMyFlowMultiStepVtodo([
+    {
+      ...baseInput,
+      stableEventIdentitySeed: 'saved-plan:item-a',
+      generatedAt,
+      rawMemoText: '첫 메모\n\n- [ ] 첫 확인\n- [x] 둘째 확인',
+    },
+    {
+      ...baseInput,
+      stepId: 'undated-item',
+      stableEventIdentitySeed: 'saved-plan:item-b',
+      stepTitle: '날짜 없는 할 일',
+      date: '',
+      time: '',
+      generatedAt,
+      rawMemoText: '날짜 없는 메모',
+    },
+    {
+      ...baseInput,
+      stepId: 'duplicate-item',
+      stableEventIdentitySeed: 'saved-plan:item-a',
+      stepTitle: '중복 identity',
+      generatedAt,
+    },
+  ]);
+  const unfolded = unfoldIcs(rawVtodo);
+
+  assert.equal((unfolded.match(/BEGIN:VTODO/gu) ?? []).length, 2);
+  assert.equal((unfolded.match(/UID:saved-plan:item-a@flowme\.local/gu) ?? []).length, 1);
+  assert.match(unfolded, /SUMMARY:날짜 없는 할 일/u);
+  assert.equal(unfolded.match(/^DUE/gmu)?.length, 1);
+  assert.doesNotMatch(unfolded, /SUMMARY:첫 확인|SUMMARY:둘째 확인|중복 identity/u);
+  assert.throws(
+    () => buildMyFlowStepVtodo({ ...baseInput, stepId: '', stableEventIdentitySeed: '' }),
+    /stable Step identity/u,
+  );
 });
 
 test('Step ICS binds DTSTAMP and execution status to the immutable transfer request', () => {

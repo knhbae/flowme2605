@@ -2,6 +2,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { expect, test, type Locator, type Page } from '@playwright/test';
+import {
+  gotoLegacySavedPlanLibraryRoute,
+  withLegacySavedPlanLibraryRoute,
+} from './helpers/my-flow-library';
 import { openPublicDetailWorkspaceForDeepInspection } from './helpers/open-public-detail-workspace';
 
 test.beforeEach(async ({ page }) => {
@@ -50,21 +54,25 @@ async function assertDiscoveryCard(card: Locator) {
 }
 
 test('entry router removes the duplicate Home surface and opens the catalog', async ({ page }) => {
+  test.setTimeout(90_000);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
 
   await expect(page).toHaveURL('/flows');
-  await expect(page.getByRole('heading', { name: 'URL·메모로 계획 찾기' })).toBeVisible();
+  await expect(page.getByRole('heading', {
+    level: 1,
+    name: /URL.*메모.*계획 찾기/u,
+  })).toBeVisible();
   await expect(page.locator('[data-home-recommendation-card="true"]')).toHaveCount(0);
   await expect(page.getByTestId('home-usage-example')).toHaveCount(0);
+  const catalogCards = page.getByTestId('flow-map-catalog-card');
+  await expect(catalogCards).toHaveCount(8, { timeout: 30_000 });
   await expect(page.getByTestId('platform-mobile-tabs')).toHaveAttribute(
     'data-p35-marker',
     'P35-ENTRY-ROUTER-3TAB',
   );
   await capture(page, '01-entry-router-catalog-mobile.png');
 
-  const catalogCards = page.getByTestId('flow-map-catalog-card');
-  await expect(catalogCards).toHaveCount(8);
   await assertDiscoveryCard(catalogCards.first());
   const canonicalMovingCard = page
     .getByTestId('single-flow-catalog-card')
@@ -90,7 +98,7 @@ test('entry router removes the duplicate Home surface and opens the catalog', as
 
 test('public save-before shows the whole Flow before one start decision', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/f/vehicle-inspection-prep');
+  await gotoLegacySavedPlanLibraryRoute(page, '/f/vehicle-inspection-prep');
 
   const hero = page.getByTestId('public-flow-hero');
   const preview = hero.getByTestId('public-flow-capability-result');
@@ -118,9 +126,11 @@ test('public save-before shows the whole Flow before one start decision', async 
 
 test('source-backed map and public Flow use the same artifact-first decision grammar', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/flow-maps/moving-d30');
+  await gotoLegacySavedPlanLibraryRoute(page, '/flow-maps/moving-d30');
 
   await expect(page).toHaveURL('/f/moving-d30-basic');
+  await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
+  await expect(page).toHaveURL(withLegacySavedPlanLibraryRoute('/f/moving-d30-basic'));
   const canonicalHero = page.getByTestId('public-flow-hero');
   await expect(canonicalHero).toHaveAttribute('data-visual-structure', 'artifact-first');
   await expect(canonicalHero.getByText('원문', { exact: true })).toBeVisible();
@@ -133,7 +143,7 @@ test('source-backed map and public Flow use the same artifact-first decision gra
   await expect(page.getByTestId('public-flow-adjust-entry-mobile')).toHaveAccessibleName('계획 수정');
   await capture(page, '04-source-backed-save-before-mobile.png');
 
-  await page.goto('/flow-maps/curated-wedding-checklist-family');
+  await gotoLegacySavedPlanLibraryRoute(page, '/flow-maps/curated-wedding-checklist-family');
   const choices = page.getByTestId('flow-map-choose-child');
   await expect(choices.getByRole('link')).toHaveCount(2);
   await expect(choices.locator('a[href="/f/curated-wedding-naver-timeline"]')).toBeVisible();
@@ -143,7 +153,7 @@ test('source-backed map and public Flow use the same artifact-first decision gra
 
 test('wide save-before keeps the result and decision parallel without a duplicate outline', async ({ page }) => {
   await page.setViewportSize({ width: 1024, height: 768 });
-  await page.goto('/f/vehicle-inspection-prep');
+  await gotoLegacySavedPlanLibraryRoute(page, '/f/vehicle-inspection-prep');
 
   const preview = page.getByTestId('flow-save-before-primary-result');
   const decision = page.getByTestId('flow-save-before-decision');

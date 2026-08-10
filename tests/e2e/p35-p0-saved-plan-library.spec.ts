@@ -125,7 +125,11 @@ async function localStorageMutationLog(page: Page) {
 function chooseBroadHangulQuery(titles: string[]): string {
   const frequencies = new Map<string, number>();
   titles.forEach((title) => {
-    const unique = new Set(Array.from(title).filter((character) => /[\uAC00-\uD7A3]/u.test(character)));
+    // The approved library displays a computed `사본 n ·` prefix, but search
+    // intentionally indexes the original title. Do not accidentally choose a
+    // character that exists only in that display-only prefix.
+    const originalTitle = title.replace(/^\s*사본\s+\d+\s*·\s*/u, '');
+    const unique = new Set(Array.from(originalTitle).filter((character) => /[\uAC00-\uD7A3]/u.test(character)));
     unique.forEach((character) => {
       frequencies.set(character, (frequencies.get(character) ?? 0) + 1);
     });
@@ -135,21 +139,36 @@ function chooseBroadHangulQuery(titles: string[]): string {
 }
 
 async function firstOpenItemButton(plan: Locator): Promise<Locator> {
+  const approvedDetailLink = plan.getByTestId('my-plan-todo-detail-link').first();
   const firstEntry = plan.getByTestId('my-flow-execution-row-shell').first();
+  await expect.poll(async () => (
+    await approvedDetailLink.isVisible().catch(() => false)
+      || await firstEntry.isVisible().catch(() => false)
+  )).toBe(true);
+  if (await approvedDetailLink.isVisible().catch(() => false)) return approvedDetailLink;
+
   await expect(firstEntry).toBeVisible();
   const open = firstEntry.getByRole('button', { name: /열기/u }).first();
   await expect(open).toBeVisible();
   return open;
 }
 
-async function enterItemEditMode(detail: Locator): Promise<void> {
+async function enterItemEditMode(detail: Locator): Promise<Locator> {
+  const page = detail.page();
+  const itemId = await detail.getAttribute('data-item-id');
+  expect(itemId).toBeTruthy();
   const quickEdit = detail.getByTestId('my-flow-quick-item-edit');
   if (await quickEdit.isVisible().catch(() => false)) {
     await quickEdit.click();
   } else {
     await detail.locator('[data-my-flow-item-edit-entry="true"]').first().click();
   }
-  await expect(detail.getByTestId('my-flow-detail-title-input')).toBeVisible();
+  const editor = page.locator(
+    `[data-testid="my-flow-item-detail"][data-item-id="${itemId}"][data-detail-mode="edit"]:visible`,
+  );
+  await expect(editor).toHaveCount(1);
+  await expect(editor.getByTestId('my-flow-detail-title-input')).toBeVisible();
+  return editor;
 }
 
 test.describe('P35 P0-08 saved-plan library', () => {
@@ -451,9 +470,9 @@ test.describe('P35 P0-08 saved-plan library', () => {
       .getByTestId('my-flow-library-detail')
       .locator(`[data-testid="my-flow-overview-card"][data-flow-slug="${FLOW_SLUG}"]`);
     await (await firstOpenItemButton(plan)).click();
-    const detail = getOpenMyFlowItemDetail(page);
+    let detail = getOpenMyFlowItemDetail(page);
     await expect(detail).toBeVisible();
-    await enterItemEditMode(detail);
+    detail = await enterItemEditMode(detail);
     const memo = detail.getByTestId('my-flow-detail-memo');
     const draft = '검색 전환에서 지켜야 할 미저장 메모';
     await memo.fill(draft);
@@ -505,9 +524,9 @@ test.describe('P35 P0-08 saved-plan library', () => {
       .getByTestId('my-flow-library-detail')
       .locator(`[data-testid="my-flow-overview-card"][data-flow-slug="${FLOW_SLUG}"]`);
     await (await firstOpenItemButton(plan)).click();
-    const detail = getOpenMyFlowItemDetail(page);
+    let detail = getOpenMyFlowItemDetail(page);
     await expect(detail).toBeVisible();
-    await enterItemEditMode(detail);
+    detail = await enterItemEditMode(detail);
     const memo = detail.getByTestId('my-flow-detail-memo');
     const draft = '브라우저 뒤로가기 전에 지켜야 할 초안';
     await memo.fill(draft);
@@ -556,9 +575,11 @@ test.describe('P35 P0-08 saved-plan library', () => {
     const planBDetail = getOpenMyFlowItemDetail(page);
     const planBCompletion = planBDetail.getByTestId('my-flow-task-complete-control');
     await expect(planBCompletion).toBeVisible();
+    await expect(planBCompletion).toBeChecked();
     await planBCompletion.click();
-    await planBCompletion.click();
+    await expect(planBCompletion).not.toBeChecked();
     const completionNotice = page.getByTestId('my-flow-completion-snackbar');
+    await expect(completionNotice).toHaveAttribute('data-completion-result', 'reopened');
     const completionOpen = completionNotice.getByTestId('my-flow-completion-open');
     await expect(completionOpen).toBeFocused();
 
@@ -570,8 +591,8 @@ test.describe('P35 P0-08 saved-plan library', () => {
       `[data-testid="my-flow-overview-card"][data-flow-slug="${FLOW_SLUG}"]`,
     );
     await (await firstOpenItemButton(planA)).click();
-    const planADetail = getOpenMyFlowItemDetail(page);
-    await enterItemEditMode(planADetail);
+    let planADetail = getOpenMyFlowItemDetail(page);
+    planADetail = await enterItemEditMode(planADetail);
     const memo = planADetail.getByTestId('my-flow-detail-memo');
     const draft = '완료 알림 전환에서 지켜야 할 미저장 메모';
     await memo.fill(draft);
@@ -804,19 +825,15 @@ test.describe('P35 P0-08 saved-plan library', () => {
     await page.goto(`/my?view=flows&flow=${flowSlug}`);
 
     await expectLibraryShell(page, 1, 'single');
-    const selectedPlan = page.locator(
+    let selectedPlan = page.locator(
       `[data-testid="my-flow-overview-card"][data-flow-slug="${flowSlug}"]`,
     );
-    await expect(selectedPlan).toBeVisible();
-    const outline = selectedPlan.getByTestId('my-flow-whole-flow-outline');
-    await expect(outline).toBeVisible();
-    await outline.getByTestId('my-flow-whole-flow-toggle-all-groups').click();
-    const outlineRows = outline.locator('article[data-row-key]');
-    await expect(outlineRows).toHaveCount(15);
-    const executableIds = await outlineRows.evaluateAll((rows) => (
-      Array.from(new Set(rows
-        .map((row) => row.getAttribute('data-item-id'))
-        .filter((itemId): itemId is string => Boolean(itemId))))
+    await expect(selectedPlan.getByTestId('approved-my-plan-workspace')).toBeVisible();
+    const todoRows = selectedPlan.getByTestId('my-plan-todo-row');
+    await expect(todoRows).toHaveCount(15);
+    const executableIds = await todoRows.evaluateAll((rows) => (
+      rows.map((row) => row.getAttribute('data-todo-item-id')?.split('::')[1] ?? '')
+        .filter(Boolean)
     ));
     expect(executableIds.length).toBeGreaterThan(1);
     await page.evaluate(({ slug, completedIds }) => {
@@ -827,17 +844,17 @@ test.describe('P35 P0-08 saved-plan library', () => {
     }, { slug: flowSlug, completedIds: executableIds.slice(0, -1) });
 
     await page.goto(`/my?view=flows&status=open&flow=${flowSlug}`);
-    const filteredSelectedPlan = page.locator(
+    selectedPlan = page.locator(
       `[data-testid="my-flow-overview-card"][data-flow-slug="${flowSlug}"]`,
     );
-    await expect(filteredSelectedPlan).toBeVisible();
-    await expect(filteredSelectedPlan.getByTestId('my-flow-workspace-progress-summary'))
-      .toContainText('14/15');
-    const openRows = filteredSelectedPlan
-      .getByTestId('my-flow-shape-aware-execution')
-      .getByTestId('my-flow-execution-row-shell');
-    await expect(openRows).toHaveCount(1);
-    await (await firstOpenItemButton(filteredSelectedPlan)).click();
+    const approvedPlan = selectedPlan.getByTestId('approved-my-plan-workspace');
+    await expect(approvedPlan).toBeVisible();
+    await expect(approvedPlan.getByText('전체 14/15 완료', { exact: true })).toBeVisible();
+    const onlyOpenRow = approvedPlan.locator(
+      '[data-testid="my-plan-todo-row"]:has([data-testid="my-plan-todo-checkbox"][aria-checked="false"])',
+    );
+    await expect(onlyOpenRow).toHaveCount(1);
+    await onlyOpenRow.getByTestId('my-plan-todo-detail-link').click();
     const itemDetail = getOpenMyFlowItemDetail(page);
     await expect(itemDetail).toBeVisible();
     const completion = itemDetail.getByTestId('my-flow-task-complete-control');
@@ -854,22 +871,24 @@ test.describe('P35 P0-08 saved-plan library', () => {
         status: url.searchParams.get('status'),
       };
     }).toEqual({ flow: flowSlug, item: false, status: 'open' });
-    await expect(filteredSelectedPlan).toBeVisible();
-    await expect(filteredSelectedPlan.getByTestId('my-flow-workspace-progress-summary'))
-      .toContainText('15/15');
+    await expect(approvedPlan).toBeVisible();
+    await expect(approvedPlan.getByText('전체 15/15 완료', { exact: true })).toBeVisible();
 
     await expectPageQuality(page);
     expect(errors).toEqual([]);
   });
 
-  test('1024: archiving the last active plan clears selection and persists its archived lens identity', async ({ page }) => {
+  test('1024 rollback: archiving the last active plan persists its legacy lifecycle identity across reload', async ({ page }) => {
     const errors = collectBrowserErrors(page);
     const flowSlug = 'used-car-buying-check';
     await page.setViewportSize({ width: 1024, height: 768 });
     await seedUndatedSavedPlan(page, flowSlug);
-    await page.goto(`/my?view=flows&flow=${flowSlug}`);
+    // Archive management is intentionally retained by the explicit legacy
+    // rollback surface; the approved My Plan execution surface omits that
+    // management menu.
+    await page.goto(`/my?view=flows&flow=${flowSlug}&savedPlanLibrary=off`);
 
-    await expectLibraryShell(page, 1, 'single');
+    await expect(page.locator('main').first()).toHaveAttribute('data-saved-library-flag', 'off');
     const selectedPlan = page.locator(
       `[data-testid="my-flow-overview-card"][data-flow-slug="${flowSlug}"]`,
     );
@@ -877,23 +896,27 @@ test.describe('P35 P0-08 saved-plan library', () => {
     await selectedPlan.getByTestId('my-flow-management-menu-trigger').click();
     await selectedPlan.getByTestId('my-flow-archive-toggle').click();
 
-    await expect.poll(() => {
-      const url = new URL(page.url());
-      return {
-        flow: url.searchParams.get('flow'),
-        status: url.searchParams.get('status'),
-      };
-    }).toEqual({ flow: null, status: 'archived' });
     const archivedRow = page.locator(
       `[data-testid="my-flow-library-archived-row"][data-flow-slug="${flowSlug}"]`,
     );
     await expect(archivedRow).toBeVisible();
+    await expect(page.getByTestId('my-flow-lifecycle-snackbar')).toContainText('보관했습니다');
+    await expect.poll(() => page.evaluate((slug) => {
+      const raw = window.localStorage.getItem('flow:my-flow:lifecycle:v1');
+      if (!raw) return false;
+      const record = JSON.parse(raw) as { archivedFlowSlugs?: string[] };
+      return record.archivedFlowSlugs?.includes(slug) ?? false;
+    }, flowSlug)).toBe(true);
 
     await page.reload();
-    await expect.poll(() => new URL(page.url()).searchParams.get('status')).toBe('archived');
-    await expect(page.locator(
-      `[data-testid="my-flow-library-archived-row"][data-flow-slug="${flowSlug}"]`,
-    )).toBeVisible();
+    const openArchived = page.getByTestId('my-flow-open-archived');
+    await expect(openArchived).toContainText('보관한 계획 1개 보기');
+    await expect.poll(() => page.evaluate((slug) => {
+      const raw = window.localStorage.getItem('flow:my-flow:lifecycle:v1');
+      if (!raw) return false;
+      const record = JSON.parse(raw) as { archivedFlowSlugs?: string[] };
+      return record.archivedFlowSlugs?.includes(slug) ?? false;
+    }, flowSlug)).toBe(true);
 
     await expectPageQuality(page);
     expect(errors).toEqual([]);
@@ -989,7 +1012,16 @@ test.describe('P35 P0-08 saved-plan library', () => {
     await page.goto(`/f/${FLOW_SLUG}`);
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
-    await page.getByTestId('public-flow-anchor-input').fill('2031-01-10');
+    const preview = page.getByTestId('public-flow-capability-result');
+    await preview.locator(
+      '[data-public-format-tab="true"][data-capability-destination="calendar"]',
+    ).click();
+    await page.getByTestId('public-flow-calendar-set-anchor').click();
+    const editor = page.getByTestId('public-flow-personal-adjustment');
+    await editor.getByTestId('public-flow-adjustment-anchor-input').fill('2031-01-10');
+    await editor.getByTestId('public-flow-adjustment-apply').click();
+    await expect(editor).toHaveCount(0);
+    await expect(page.getByTestId('public-flow-save-primary-mobile')).toBeEnabled();
     await page.getByTestId('public-flow-save-primary-mobile').click();
 
     await expect.poll(() => {
@@ -1005,23 +1037,27 @@ test.describe('P35 P0-08 saved-plan library', () => {
       receipt: false,
     });
     const personalCopyKey = new URL(page.url()).searchParams.get('flow') ?? '';
-    const shell = page.getByTestId('my-flow-saved-library-shell');
-    await expect(shell).toHaveAttribute('data-saved-library-flag', 'on');
-    const banner = shell.getByTestId('my-flow-save-banner');
+    const workspace = page.getByTestId('approved-my-plan-workspace');
+    await expect(workspace).toBeVisible();
+    const banner = page.getByTestId('my-flow-save-banner');
     await expect(banner).toBeVisible();
     await expect(banner).toHaveAttribute('data-personal-copy-key', personalCopyKey);
     await expect(banner).toHaveAttribute('data-item-count', '24');
     await expect(banner.getByTestId('my-flow-save-banner-summary')).toContainText('24');
     await expect(banner.getByTestId('my-flow-save-undo')).toBeVisible();
-    await expect(
-      shell.locator(`[data-testid="my-flow-mobile-workspace"][data-flow-slug="${personalCopyKey}"]`),
-    ).toBeVisible();
+    const selectedPlan = page.locator(
+      [
+        `[data-testid="my-flow-mobile-workspace"][data-flow-slug="${personalCopyKey}"]:visible`,
+        `[data-testid="my-flow-overview-card"][data-flow-slug="${personalCopyKey}"]:visible`,
+      ].join(', '),
+    ).first();
+    await expect(selectedPlan).toBeVisible();
+    await expect(selectedPlan.getByTestId('approved-my-plan-workspace')).toBeVisible();
 
     await page.reload();
     await expect(page.getByTestId('my-flow-save-banner')).toHaveCount(0);
-    await expect(
-      page.locator(`[data-testid="my-flow-mobile-workspace"][data-flow-slug="${personalCopyKey}"]`),
-    ).toBeVisible();
+    await expect(selectedPlan).toBeVisible();
+    await expect(selectedPlan.getByTestId('approved-my-plan-workspace')).toBeVisible();
 
     await expectPageQuality(page);
     expect(errors).toEqual([]);

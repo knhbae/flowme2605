@@ -4,7 +4,9 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 
 import {
   closeOpenMyFlowItemDetail,
+  gotoLegacySavedPlanLibraryRoute,
   getOpenMyFlowItemDetail,
+  installLegacySavedPlanLibraryNavigation,
   openMyFlowLibraryFlow,
 } from './helpers/my-flow-library';
 
@@ -195,7 +197,8 @@ async function clipboardState(page: Page) {
 
 async function resetAndOpenPublic(page: Page, search = ''): Promise<void> {
   await page.setViewportSize(MOBILE_VIEWPORT);
-  await page.goto(`${SOURCE_ROUTE}${search ? `?${search}` : ''}`);
+  await installLegacySavedPlanLibraryNavigation(page);
+  await gotoLegacySavedPlanLibraryRoute(page, `${SOURCE_ROUTE}${search ? `?${search}` : ''}`);
   await page.evaluate(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
@@ -575,7 +578,7 @@ test.describe('P35 P0-10 no-new-feature integration gate', () => {
         route: `${SOURCE_ROUTE}?quickLocalResult=OFF`,
         assertSurface: async () => {
           await expect(page.locator('main[data-p35-q1-quick-local="on"]')).toBeVisible();
-          await expect(page.getByTestId('public-flow-quick-result-entry')).toBeVisible();
+          await expect(page.getByTestId('public-flow-capability-result')).toBeVisible();
         },
       },
       {

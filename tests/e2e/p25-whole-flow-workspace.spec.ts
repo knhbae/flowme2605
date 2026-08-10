@@ -6,6 +6,8 @@ import {
   closeOpenMyFlowItemDetail,
   expandMyFlowWholePlan,
   getOpenMyFlowItemDetail,
+  gotoLegacySavedPlanLibraryRoute,
+  installLegacySavedPlanLibraryNavigation,
   openMyFlowLibraryFlow,
 } from './helpers/my-flow-library';
 
@@ -43,12 +45,27 @@ async function expectDirectSavedPlan(page: import('@playwright/test').Page) {
   await expect(page.getByTestId('public-flow-saved-receipt')).toHaveCount(0);
 }
 
+async function setApprovedPublicCalendarAnchor(
+  page: import('@playwright/test').Page,
+  anchor: string,
+) {
+  const preview = page.getByTestId('public-flow-capability-result');
+  await preview.locator(
+    '[data-public-format-tab="true"][data-capability-destination="calendar"]',
+  ).click();
+  await page.getByTestId('public-flow-calendar-set-anchor').click();
+  const editor = page.getByTestId('public-flow-personal-adjustment');
+  await editor.getByTestId('public-flow-adjustment-anchor-input').fill(anchor);
+  await editor.getByTestId('public-flow-adjustment-apply').click();
+  await expect(editor).toHaveCount(0);
+}
+
 async function saveMovingFlow(page: import('@playwright/test').Page) {
   await page.goto('/flow-maps/moving-d30');
   await page.evaluate(() => window.localStorage.clear());
   await page.reload();
   await expect(page).toHaveURL('/f/moving-d30-basic');
-  await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
+  await setApprovedPublicCalendarAnchor(page, '2030-08-15');
   const wideSave = page.getByTestId('public-flow-save-primary');
   if (await wideSave.isVisible()) {
     await wideSave.click();
@@ -56,6 +73,8 @@ async function saveMovingFlow(page: import('@playwright/test').Page) {
     await page.getByTestId('public-flow-save-primary-mobile').click();
   }
   await expectDirectSavedPlan(page);
+  await installLegacySavedPlanLibraryNavigation(page);
+  await gotoLegacySavedPlanLibraryRoute(page, page.url());
 }
 
 test.describe('P25 whole Flow workspace', () => {
@@ -152,9 +171,11 @@ test.describe('P25 whole Flow workspace', () => {
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
     await expect(page).toHaveURL('/f/moving-d30-basic');
-    await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
+    await setApprovedPublicCalendarAnchor(page, '2030-08-15');
     await page.getByTestId('public-flow-save-primary').click();
     await expectDirectSavedPlan(page);
+    await installLegacySavedPlanLibraryNavigation(page);
+    await gotoLegacySavedPlanLibraryRoute(page, page.url());
 
     await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
     const selectedFlow = await openMyFlowLibraryFlow(page, 'moving-d30-basic');
@@ -199,15 +220,20 @@ test.describe('P25 whole Flow workspace', () => {
     await page.setViewportSize({ width: 1024, height: 768 });
     await saveMovingFlow(page);
 
-    await page.goto('/flow-maps/middle-school-math-1');
+    await gotoLegacySavedPlanLibraryRoute(page, '/flow-maps/middle-school-math-1');
     await page.getByTestId('flow-map-save-all').click();
-    await expect(page).toHaveURL('/my?savedMap=middle-school-math-1');
+    await expect.poll(() => new URL(page.url()).searchParams.get('savedMap'))
+      .toBe('middle-school-math-1');
     await page.getByTestId('my-flow-post-save-view-flow').click();
+    await gotoLegacySavedPlanLibraryRoute(page, page.url());
 
     const library = page.getByTestId('my-flow-library-workspace');
     const rail = library.getByTestId('my-flow-library-rail');
     const libraryDetail = library.getByTestId('my-flow-library-detail');
-    const selectedFlow = libraryDetail.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-middle-school-math-1"]');
+    const selectedFlow = await openMyFlowLibraryFlow(
+      page,
+      'source-backed-middle-school-math-1',
+    );
     const outlinePane = selectedFlow.getByTestId('my-flow-workspace-outline-pane');
     const detailPane = selectedFlow.getByTestId('my-flow-workspace-detail-pane');
     await expect(library).toHaveAttribute('data-library-layout', 'rail-canvas-inspector');

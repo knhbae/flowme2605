@@ -4,12 +4,18 @@ import path from 'node:path';
 import { expect, test, type Page } from '@playwright/test';
 import {
   getOpenMyFlowItemDetail,
+  gotoLegacySavedPlanLibraryRoute,
+  installLegacySavedPlanLibraryNavigation,
   openMyFlowCalendarSelectedDay,
   openMyFlowLibraryFlow,
 } from './helpers/my-flow-library';
 import { savePublicFlow } from './helpers/public-flow-save';
 
 const evidenceRoot = process.env.FLOWME_P29_EVIDENCE_DIR;
+
+test.beforeEach(async ({ page }) => {
+  await installLegacySavedPlanLibraryNavigation(page);
+});
 
 async function clearLocalState(page: Page) {
   await page.evaluate(() => window.localStorage.clear());
@@ -119,7 +125,7 @@ async function seedP29CalendarFlows(page: Page) {
 test.describe('P29-01 moving capability result and selected-plan handoff', () => {
   test('mobile reads the capability result before adjustment and lands on the selected personal copy', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
     await clearLocalState(page);
 
     const hero = page.getByTestId('public-flow-hero');
@@ -190,7 +196,7 @@ test.describe('P29-01 moving capability result and selected-plan handoff', () =>
 
   test('wide uses a result canvas and context inspector without repeated row edits', async ({ page }) => {
     await page.setViewportSize({ width: 1024, height: 768 });
-    await page.goto('/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
     await clearLocalState(page);
 
     const result = page.getByTestId('flow-save-before-primary-result');
@@ -218,7 +224,7 @@ test.describe('P29-01 moving capability result and selected-plan handoff', () =>
 
     await page.setViewportSize({ width: 1440, height: 900 });
     await capture(page, 'p29-01-moving-selected-plan-1440.png');
-    await page.goto('/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
     await clearLocalState(page);
     await expect(page.getByTestId('public-flow-hero')).toBeVisible();
     await capture(page, 'p29-01-moving-save-before-1440.png');
@@ -227,7 +233,7 @@ test.describe('P29-01 moving capability result and selected-plan handoff', () =>
 
   test('public source-backed flows use the shared artifact-first frame after rollout', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/f/vehicle-inspection-prep');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/vehicle-inspection-prep');
     await clearLocalState(page);
     await expect(page.getByTestId('public-flow-hero')).toHaveAttribute('data-experience-architecture', 'p35-result-first');
     await expect(page.getByTestId('public-flow-saved-receipt')).toHaveCount(0);
@@ -243,7 +249,7 @@ test.describe('P29-01 moving capability result and selected-plan handoff', () =>
 
   test('routine keeps advanced inputs behind one summary and previews the next three occurrences', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/f/curated-allblanc-morning-workout');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-allblanc-morning-workout');
     await clearLocalState(page);
     await page.getByTestId('public-flow-anchor-input').fill('2026-07-27');
 
@@ -275,7 +281,7 @@ test.describe('P29-01 moving capability result and selected-plan handoff', () =>
 test.describe('P29-04 My Flow action-first library', () => {
   test('mobile keeps one open command per compact Flow row and drills into one plan', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/my?demo=ux20&view=flows');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=ux20&view=flows');
 
     const rows = page.getByTestId('my-flow-mobile-structure-row');
     await expect(rows).toHaveCount(8);
@@ -299,7 +305,7 @@ test.describe('P29-04 My Flow action-first library', () => {
 
   test('wide gives the unselected library the canvas and keeps a readable rail beside a selected plan', async ({ page }) => {
     await page.setViewportSize({ width: 1024, height: 768 });
-    await page.goto('/my?demo=ux20&view=flows');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=ux20&view=flows');
 
     const workspace = page.getByTestId('my-flow-library-workspace');
     await expect(workspace).toHaveAttribute('data-library-layout', 'rail-canvas-inspector');
@@ -332,7 +338,7 @@ test.describe('P29-05 Calendar scope and placement workspace', () => {
   test('mobile Calendar delegates undated placement to the focused Flow workspace', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await seedP29CalendarFlows(page);
-    await page.goto('/calendar');
+    await gotoLegacySavedPlanLibraryRoute(page, '/calendar');
 
     await expect(page.getByTestId('my-flow-calendar-unscheduled-tray')).toHaveCount(0);
     await expect(page.getByTestId('my-flow-calendar-date-move-entry')).toHaveCount(0);
@@ -350,9 +356,9 @@ test.describe('P29-05 Calendar scope and placement workspace', () => {
     await expectNoHorizontalOverflow(page);
   });
 
-  test('large Flow scope stays compact and wide Calendar uses rail, canvas, inspector', async ({ page }) => {
+  test('large Flow scope stays compact and wide Calendar uses rail, month canvas, and selected day', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/calendar?demo=ux20');
+    await gotoLegacySavedPlanLibraryRoute(page, '/calendar?demo=ux20');
 
     const trigger = page.getByTestId('calendar-flow-scope-picker-trigger');
     await expect(trigger).toHaveAttribute('data-p29-marker', 'P29-CALENDAR-COMPACT-SCOPE');
@@ -376,12 +382,23 @@ test.describe('P29-05 Calendar scope and placement workspace', () => {
     await page.setViewportSize({ width: 1024, height: 768 });
     const workspace = page.getByTestId('my-flow-calendar-workspace');
     await expect(workspace).toHaveAttribute('data-p29-marker', 'P29-CALENDAR-IDENTITY-COMPLETION');
-    const widths = await workspace.locator(':scope > *').evaluateAll((elements) => (
-      elements.map((element) => Math.round(element.getBoundingClientRect().width))
-    ));
-    expect(widths).toHaveLength(2);
-    expect(widths[0]).toBeGreaterThan(500);
-    expect(widths.at(-1)).toBe(320);
+    await expect(workspace).toHaveAttribute('data-compact-layout', 'filter-main-two-column');
+    await expect(workspace).toHaveAttribute('data-calendar-composition', 'filter-month-day');
+    const filterRail = workspace.getByTestId('my-flow-calendar-filter-rail');
+    const calendarCanvas = workspace.getByTestId('my-flow-calendar-card');
+    const selectedDay = workspace.getByTestId('my-flow-calendar-selected-day-region');
+    await expect(filterRail).toBeVisible();
+    await expect(calendarCanvas).toBeVisible();
+    await expect(selectedDay).toBeVisible();
+    await expect(workspace.getByTestId('my-flow-calendar-item-inspector-region')).toHaveCount(0);
+    const [filterBox, calendarBox, selectedDayBox] = await Promise.all([
+      filterRail.boundingBox(),
+      calendarCanvas.boundingBox(),
+      selectedDay.boundingBox(),
+    ]);
+    expect(filterBox?.x ?? 0).toBeLessThan(calendarBox?.x ?? 0);
+    expect(selectedDayBox?.x).toBe(calendarBox?.x);
+    expect(Math.round(selectedDayBox?.width ?? 0)).toBe(Math.round(calendarBox?.width ?? 0));
     await capture(page, 'p29-05-calendar-workspace-1024.png');
     await expectNoHorizontalOverflow(page);
 
@@ -394,7 +411,7 @@ test.describe('P29-05 Calendar scope and placement workspace', () => {
 test.describe('P29-06 artifact recommendation and export scope', () => {
   test('public capability result hands off one identity to saved transfer and receipt', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
     await clearLocalState(page);
     await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
 
@@ -466,7 +483,7 @@ test.describe('P29-06 artifact recommendation and export scope', () => {
   test('selected and current item exports name their scope before the format', async ({ page }) => {
     await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/my?demo=source-backed&view=flows');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=source-backed&view=flows');
     let flow = await openMyFlowLibraryFlow(page, 'source-backed-moving-d30', 'record');
 
     const exportSurface = flow.getByTestId('my-flow-export-surface');
@@ -536,7 +553,7 @@ test.describe('P29-07 shared visual and accessibility contract', () => {
     for (const viewport of viewports) {
       await page.setViewportSize(viewport);
       for (const route of routes) {
-        await page.goto(route);
+        await gotoLegacySavedPlanLibraryRoute(page, route);
         await expectNoHorizontalOverflow(page);
         const audit = await inspectVisibleInteractionContract(page);
         expect(audit.visibleCount).toBeGreaterThan(0);
@@ -549,7 +566,7 @@ test.describe('P29-07 shared visual and accessibility contract', () => {
 
   test('public, My Flow, Calendar, and receipts expose one consistent Flow identity anatomy', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
     await clearLocalState(page);
     const hero = page.getByTestId('public-flow-hero');
     await expect(hero).toHaveAttribute('data-flow-anatomy', 'save-before');
@@ -566,7 +583,7 @@ test.describe('P29-07 shared visual and accessibility contract', () => {
     await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toHaveText('저장됨 · 24개');
     await expect(page.getByTestId('public-flow-saved-receipt')).toHaveCount(0);
 
-    await page.goto('/my?demo=ux20&view=flows');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=ux20&view=flows');
     const libraryRow = page.getByTestId('my-flow-mobile-structure-row').first();
     await expect(libraryRow).toHaveAttribute('data-flow-anatomy', 'flow-library-row');
     await expect(libraryRow.locator('[data-flow-identity-slot="title"]')).toHaveCount(1);
@@ -577,7 +594,7 @@ test.describe('P29-07 shared visual and accessibility contract', () => {
       'flow-detail',
     );
 
-    await page.goto('/calendar?demo=ux20');
+    await gotoLegacySavedPlanLibraryRoute(page, '/calendar?demo=ux20');
     await expect(page.getByTestId('my-flow-calendar-workspace')).toHaveAttribute('data-flow-anatomy', 'calendar-workspace');
     const selectedDay = await openMyFlowCalendarSelectedDay(page);
     await expect(selectedDay).toHaveAttribute('data-flow-anatomy', 'selected-day');
@@ -585,7 +602,7 @@ test.describe('P29-07 shared visual and accessibility contract', () => {
 
   test('mobile public controls keep 44px targets and keyboard focus remains visible', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
     await clearLocalState(page);
     const hero = page.getByTestId('public-flow-hero');
     const controls = hero.locator('button:visible, summary:visible');
@@ -608,7 +625,7 @@ test.describe('P29-07 shared visual and accessibility contract', () => {
     expect(focusStyle.named).toBe(true);
     expect(focusStyle.visible).toBe(true);
 
-    await page.goto('/my?demo=ux20&view=flows');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=ux20&view=flows');
     const mainBeforeTabs = await page.evaluate(() => {
       const main = document.querySelector('main');
       const tabs = document.querySelector('[data-testid="platform-mobile-tabs"]');

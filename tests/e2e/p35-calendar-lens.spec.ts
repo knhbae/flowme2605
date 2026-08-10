@@ -3,6 +3,8 @@ import path from 'node:path';
 
 import { expect, test, type Page } from '@playwright/test';
 
+import { gotoLegacySavedPlanLibraryRoute } from './helpers/my-flow-library';
+
 const evidenceRoot = process.env.FLOWME_P35_06_EVIDENCE_DIR;
 
 function collectBrowserErrors(page: Page) {
@@ -61,7 +63,7 @@ test.describe('P35-06 Calendar lens and shared completion primitive', () => {
   test('mobile Calendar keeps month and selected-day execution without editing ownership', async ({ page }) => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/calendar?demo=ux20');
+    await gotoLegacySavedPlanLibraryRoute(page, '/calendar?demo=ux20');
 
     const calendar = page.getByTestId('my-flow-calendar-workspace');
     await expect(calendar).toHaveAttribute(

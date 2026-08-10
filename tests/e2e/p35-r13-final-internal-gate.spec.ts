@@ -5,7 +5,9 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 
 import {
   closeOpenMyFlowItemDetail,
+  gotoLegacySavedPlanLibraryRoute,
   getOpenMyFlowItemDetail,
+  installLegacySavedPlanLibraryNavigation,
   openMyFlowLibraryFlow,
 } from './helpers/my-flow-library';
 
@@ -53,7 +55,8 @@ async function expectPageQuality(page: Page) {
 }
 
 async function saveMovingFlow(page: Page) {
-  await page.goto('/f/moving-d30-basic');
+  await installLegacySavedPlanLibraryNavigation(page);
+  await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
   await page.evaluate(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
@@ -136,6 +139,15 @@ test.describe('P35-R13 final internal gate', () => {
 
     await expect.poll(() => new URL(page.url()).searchParams.get('flow')).toMatch(/^personal-copy:/u);
     const personalCopyKey = new URL(page.url()).searchParams.get('flow') ?? '';
+
+    // This is an explicit historical P35 workspace characterization. Public
+    // save intentionally lands on the approved My Plan surface now, so reopen
+    // the saved identity through the rollback lane before asserting the old
+    // collapsed-plan composition.
+    await gotoLegacySavedPlanLibraryRoute(
+      page,
+      `/my?view=flows&flow=${encodeURIComponent(personalCopyKey)}`,
+    );
 
     let workspace = page.locator(
       `[data-testid="my-flow-mobile-workspace"][data-flow-slug="${personalCopyKey}"]:visible`,

@@ -182,7 +182,8 @@ async function resetAndOpenPublic(
   search = 'quickLocalResult=on',
 ): Promise<Locator> {
   await page.setViewportSize(MOBILE_VIEWPORT);
-  await page.goto(`${SOURCE_ROUTE}${search ? `?${search}` : ''}`);
+  const legacySearch = [search, 'savedPlanLibrary=off'].filter(Boolean).join('&');
+  await page.goto(`${SOURCE_ROUTE}?${legacySearch}`);
   await page.evaluate(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
@@ -222,7 +223,7 @@ async function openSavedTransferPanel(
   const viewport = options.viewport ?? MOBILE_VIEWPORT;
   const search = options.search ?? 'savedTransfer=on';
   await page.setViewportSize(viewport);
-  await page.goto(`/my?flow=${SOURCE_FLOW_SLUG}${search ? `&${search}` : ''}`);
+  await page.goto(`/my?flow=${SOURCE_FLOW_SLUG}&savedPlanLibrary=off${search ? `&${search}` : ''}`);
   const workspace = await openMyFlowLibraryFlow(page, SOURCE_FLOW_SLUG, 'record');
   const entry = workspace.getByTestId('my-flow-export-entry');
   await expect(entry).toBeVisible();
@@ -233,17 +234,26 @@ async function openSavedTransferPanel(
 }
 
 async function openArchivedInventory(page: Page): Promise<void> {
+  const archivedRow = page.getByTestId('my-flow-mobile-archived-row').first();
   const directEntry = page.getByTestId('my-flow-open-archived');
+  const visibleFilter = page.getByTestId('my-flow-list-filter-archived').filter({ visible: true });
+  const inventoryOpen = page.getByTestId('my-flow-mobile-inventory-open');
+  await expect.poll(async () => (
+    await archivedRow.isVisible().catch(() => false)
+      || await directEntry.isVisible().catch(() => false)
+      || await visibleFilter.isVisible().catch(() => false)
+      || await inventoryOpen.isVisible().catch(() => false)
+  )).toBe(true);
+  if (await archivedRow.isVisible().catch(() => false)) return;
   if (await directEntry.isVisible().catch(() => false)) {
     await directEntry.click();
     return;
   }
-  const visibleFilter = page.getByTestId('my-flow-list-filter-archived').filter({ visible: true });
   if (await visibleFilter.isVisible().catch(() => false)) {
     await visibleFilter.click();
     return;
   }
-  await page.getByTestId('my-flow-mobile-inventory-open').click();
+  await inventoryOpen.click();
   await page
     .getByTestId('my-flow-inventory-sheet')
     .getByTestId('my-flow-list-filter-archived')
@@ -1061,12 +1071,12 @@ test.describe('P35 P0-09 quick local result and saved transfer', () => {
 
     await seedSavedMovingFlow(page);
     await page.setViewportSize(TABLET_VIEWPORT);
-    await page.goto(`/my?flow=${SOURCE_FLOW_SLUG}&quickLocalResult=off`);
+    await page.goto(`/my?flow=${SOURCE_FLOW_SLUG}&savedPlanLibrary=off&quickLocalResult=off`);
     await expect(page.locator('main[data-p35-q1-saved-transfer="on"]')).toBeVisible();
     let workspace = await openMyFlowLibraryFlow(page, SOURCE_FLOW_SLUG, 'record');
     await expect(workspace.getByTestId('my-flow-export-entry')).toBeVisible();
 
-    await page.goto(`/my?flow=${SOURCE_FLOW_SLUG}&savedTransfer=off&quickLocalResult=on`);
+    await page.goto(`/my?flow=${SOURCE_FLOW_SLUG}&savedPlanLibrary=off&savedTransfer=off&quickLocalResult=on`);
     await expect(page.locator('main[data-p35-q1-saved-transfer="off"]')).toBeVisible();
     workspace = await openMyFlowLibraryFlow(page, SOURCE_FLOW_SLUG, 'record');
     await workspace.getByTestId('my-flow-export-entry').click();
@@ -1076,7 +1086,7 @@ test.describe('P35 P0-09 quick local result and saved transfer', () => {
     );
     await expect(workspace.getByTestId('my-flow-transfer-confirmation')).toHaveCount(0);
 
-    await page.goto(`/my?flow=${SOURCE_FLOW_SLUG}&savedTransfer=OFF`);
+    await page.goto(`/my?flow=${SOURCE_FLOW_SLUG}&savedPlanLibrary=off&savedTransfer=OFF`);
     await expect(page.locator('main[data-p35-q1-saved-transfer="on"]')).toBeVisible();
   });
 

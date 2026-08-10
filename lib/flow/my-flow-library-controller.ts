@@ -3,6 +3,7 @@ import {
   getMyFlowLibraryHref,
   type MyFlowLibraryFilter,
   type MyFlowLibraryRouteState,
+  type MyFlowLibrarySort,
   type MyFlowWorkspaceTarget,
 } from './my-flow-local-ia';
 
@@ -11,12 +12,14 @@ export type MyFlowLibraryHistoryLevel = 'list' | 'plan' | 'item';
 export type MyFlowLibraryControllerState = Readonly<{
   query: string;
   filter: MyFlowLibraryFilter;
+  sort: MyFlowLibrarySort;
   selectedFlowSlug: string;
   itemTarget: MyFlowWorkspaceTarget | null;
 }>;
 
 export type MyFlowLibraryControllerAction =
   | Readonly<{ kind: 'replace_controls'; query: string; filter: MyFlowLibraryFilter }>
+  | Readonly<{ kind: 'replace_sort'; sort: MyFlowLibrarySort }>
   | Readonly<{ kind: 'open_plan'; flowSlug: string }>
   | Readonly<{ kind: 'open_item'; target: MyFlowWorkspaceTarget }>
   | Readonly<{ kind: 'return_to_list' }>
@@ -149,10 +152,35 @@ export function planMyFlowLibraryTransition(
   action: MyFlowLibraryControllerAction,
   context: MyFlowLibraryControllerContext,
 ): MyFlowLibraryControllerPlan {
+  if (action.kind === 'replace_sort') {
+    const target = current.itemTarget ?? (
+      current.selectedFlowSlug === 'all'
+        ? null
+        : { flowSlug: current.selectedFlowSlug }
+    );
+    const href = getMyFlowLibraryHref(context.currentHref, {
+      query: current.query,
+      filter: current.filter,
+      sort: action.sort,
+      target,
+    });
+    return basePlan({ ...current, sort: action.sort }, {
+      history: [historyWrite(
+        'replace',
+        href,
+        context.historyLevel,
+        context.scrollY,
+        context.railScrollTop,
+      )],
+      focus: { kind: 'preserve_control' },
+    });
+  }
+
   if (action.kind === 'replace_controls') {
     const href = getMyFlowLibraryHref(context.currentHref, {
       query: action.query,
       filter: action.filter,
+      sort: current.sort,
       target: null,
     });
     const replace = historyWrite(
@@ -165,6 +193,7 @@ export function planMyFlowLibraryTransition(
     return basePlan({
       query: action.query,
       filter: action.filter,
+      sort: current.sort,
       selectedFlowSlug: 'all',
       itemTarget: null,
     }, {
@@ -184,11 +213,13 @@ export function planMyFlowLibraryTransition(
     const listHref = getMyFlowLibraryHref(context.currentHref, {
       query: current.query,
       filter: current.filter,
+      sort: current.sort,
       target: null,
     });
     const planHref = getMyFlowLibraryHref(context.currentHref, {
       query: current.query,
       filter: current.filter,
+      sort: current.sort,
       target: { flowSlug },
     });
     const history: MyFlowLibraryHistoryEffect[] = [];
@@ -241,11 +272,13 @@ export function planMyFlowLibraryTransition(
       const listHref = getMyFlowLibraryHref(context.currentHref, {
         query: current.query,
         filter: current.filter,
+        sort: current.sort,
         target: null,
       });
       const planHref = getMyFlowLibraryHref(context.currentHref, {
         query: current.query,
         filter: current.filter,
+        sort: current.sort,
         target: { flowSlug },
       });
       if (!context.currentRoute.target) {
@@ -273,6 +306,7 @@ export function planMyFlowLibraryTransition(
     const itemHref = getMyFlowLibraryHref(context.currentHref, {
       query: current.query,
       filter: current.filter,
+      sort: current.sort,
       target,
     });
     history.push(historyWrite(
@@ -308,6 +342,7 @@ export function planMyFlowLibraryTransition(
     const href = getMyFlowLibraryHref(context.currentHref, {
       query: current.query,
       filter: current.filter,
+      sort: current.sort,
       target: null,
     });
     return basePlan({
@@ -350,6 +385,7 @@ export function planMyFlowLibraryTransition(
     const href = getMyFlowLibraryHref(context.currentHref, {
       query: context.currentRoute.query,
       filter: context.currentRoute.filter,
+      sort: context.currentRoute.sort,
       target,
     });
     return basePlan({
@@ -375,6 +411,7 @@ export function planMyFlowLibraryTransition(
     return basePlan({
       query: route.query,
       filter: route.filter,
+      sort: route.sort,
       selectedFlowSlug: route.target.flowSlug,
       itemTarget: route.target,
     }, {
@@ -385,6 +422,7 @@ export function planMyFlowLibraryTransition(
     return basePlan({
       query: route.query,
       filter: route.filter,
+      sort: route.sort,
       selectedFlowSlug: route.target.flowSlug,
       itemTarget: null,
     }, {
@@ -396,6 +434,7 @@ export function planMyFlowLibraryTransition(
   return basePlan({
     query: route.query,
     filter: route.filter,
+    sort: route.sort,
     selectedFlowSlug: 'all',
     itemTarget: null,
   }, {

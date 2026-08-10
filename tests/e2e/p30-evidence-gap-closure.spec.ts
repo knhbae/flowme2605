@@ -2,9 +2,18 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { expect, test, type Locator, type Page } from '@playwright/test';
-import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
+import {
+  gotoLegacySavedPlanLibraryRoute,
+  installLegacySavedPlanLibraryNavigation,
+  openMyFlowLibraryFlow,
+  withLegacySavedPlanLibraryRoute,
+} from './helpers/my-flow-library';
 
 const evidenceRoot = process.env.FLOWME_P30_EVIDENCE_DIR;
+
+test.beforeEach(async ({ page }) => {
+  await installLegacySavedPlanLibraryNavigation(page);
+});
 
 type Rect = {
   top: number;
@@ -122,7 +131,7 @@ function expectWorkspaceBeforePersistentTabs(trace: FocusStep[], workspaceTestId
 test.describe('P30-01 mobile export fixed-layer correctness', () => {
   test('public quick-result confirmation occludes the fixed save command and keeps its primary action operable', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
     await clearLocalState(page);
 
     await expect(page.getByTestId('public-flow-detail-workspace')).toHaveCount(0);
@@ -196,7 +205,7 @@ test.describe('P30-01 mobile export fixed-layer correctness', () => {
 
   test('My Flow export scrolls its primary action above the persistent tabs and restores entry focus', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/my?demo=ux20&view=flows');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=ux20&view=flows');
     const firstRow = page.getByTestId('my-flow-mobile-structure-row').first();
     await expect(firstRow).toBeVisible();
     const flowSlug = await firstRow.getAttribute('data-flow-slug');
@@ -235,7 +244,7 @@ test.describe('P30-01 mobile export fixed-layer correctness', () => {
 test.describe('P30-02 mobile workspace focus order', () => {
   test('My Flow reaches workspace controls before persistent navigation', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/my?demo=ux20&view=flows');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=ux20&view=flows');
     await expect(page.getByTestId('my-flow-mobile-structure-open').first()).toBeVisible();
 
     const trace = await traceMobileFocusOrder(page);
@@ -253,7 +262,7 @@ test.describe('P30-02 mobile workspace focus order', () => {
 
   test('Calendar reaches scope controls before persistent navigation', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/calendar?demo=ux20');
+    await gotoLegacySavedPlanLibraryRoute(page, '/calendar?demo=ux20');
     await expect(page.getByTestId('calendar-flow-scope-picker-trigger')).toBeVisible();
 
     const trace = await traceMobileFocusOrder(page);
@@ -269,7 +278,7 @@ test.describe('P30-02 mobile workspace focus order', () => {
 test.describe('P30-03 save-before decision and contextual adjustment', () => {
   test('long Flow keeps the full selection list inside one atomic full-height editor', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
     await clearLocalState(page);
     await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
 
@@ -307,7 +316,7 @@ test.describe('P30-03 save-before decision and contextual adjustment', () => {
 test.describe('P30-04 My Flow command hierarchy', () => {
   test('detail keeps one next action and moves source/archive into a focus-returning menu', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/my?demo=ux20&view=flows');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=ux20&view=flows');
 
     const row = page.getByTestId('my-flow-mobile-structure-row').nth(2);
     const flowSlug = await row.getAttribute('data-flow-slug');
@@ -359,7 +368,7 @@ test.describe('P30-05 Calendar evidence, scale, and compact identity', () => {
   test('Calendar delegates undated placement while preserving one compact execution lens', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await seedP30CalendarFlows(page);
-    await page.goto('/calendar');
+    await gotoLegacySavedPlanLibraryRoute(page, '/calendar');
 
     await expect(page.getByTestId('my-flow-calendar-unscheduled-tray')).toHaveCount(0);
     await expect(page.getByTestId('my-flow-calendar-date-move-entry')).toHaveCount(0);
@@ -378,7 +387,7 @@ test.describe('P30-05 Calendar evidence, scale, and compact identity', () => {
 
   test('50+ Flow scope collapses inactive options and exposes search matches within five actions', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/calendar?demo=ux50');
+    await gotoLegacySavedPlanLibraryRoute(page, '/calendar?demo=ux50');
 
     const trigger = page.getByTestId('calendar-flow-scope-picker-trigger');
     await expect(trigger).toHaveAttribute('data-p30-marker', 'P30-CALENDAR-SCOPE-SCALE');
@@ -418,7 +427,7 @@ test.describe('P30-05 Calendar evidence, scale, and compact identity', () => {
 
   test('wide month cells keep compact labels while preserving full accessible identity', async ({ page }) => {
     await page.setViewportSize({ width: 1024, height: 768 });
-    await page.goto('/calendar?demo=ux50');
+    await gotoLegacySavedPlanLibraryRoute(page, '/calendar?demo=ux50');
     await page.getByTestId('my-flow-month-picker').fill('2026-06');
 
     const content = page.getByTestId('my-flow-calendar-schedule-content');
@@ -475,7 +484,7 @@ test.describe('P30-06 routine advanced setting density', () => {
     page.on('pageerror', (error) => consoleErrors.push(error.message));
 
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/f/curated-allblanc-morning-workout');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-allblanc-morning-workout');
     await clearLocalState(page);
     await page.getByTestId('public-flow-anchor-input').fill('2026-07-27');
 
@@ -552,7 +561,7 @@ test.describe('P30-07 legacy composition consumer gate', () => {
     page.on('pageerror', (error) => consoleErrors.push(error.message));
 
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
     await clearLocalState(page);
     const publicFrame = page.getByTestId('public-flow-hero');
     await expect(publicFrame).toHaveAttribute('data-experience-architecture', 'p35-result-first');
@@ -566,8 +575,8 @@ test.describe('P30-07 legacy composition consumer gate', () => {
     });
 
     await page.setViewportSize({ width: 1024, height: 768 });
-    await page.goto('/flow-maps/moving-d30');
-    await expect(page).toHaveURL('/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/flow-maps/moving-d30');
+    await expect(page).toHaveURL(withLegacySavedPlanLibraryRoute('/f/moving-d30-basic'));
     const canonicalAliasFrame = page.getByTestId('public-flow-hero');
     await expect(canonicalAliasFrame).toHaveAttribute('data-experience-architecture', 'p35-result-first');
     await expect(page.getByTestId('flow-map-hero')).toHaveCount(0);
@@ -600,7 +609,7 @@ test.describe('P30-08 desktop production matrix', () => {
     ];
 
     for (const surface of routes) {
-      await page.goto(surface.route);
+      await gotoLegacySavedPlanLibraryRoute(page, surface.route);
       const health = await page.evaluate(() => {
         const focusables = Array.from(document.querySelectorAll<HTMLElement>(
           'a[href], button, input, select, textarea, summary, [tabindex]:not([tabindex="-1"])',

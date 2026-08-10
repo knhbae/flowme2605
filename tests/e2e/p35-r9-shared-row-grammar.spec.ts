@@ -4,6 +4,7 @@ import path from 'node:path';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
 import {
+  gotoLegacySavedPlanLibraryRoute,
   getOpenMyFlowItemDetail,
   openMyFlowLibraryFlow,
 } from './helpers/my-flow-library';
@@ -66,7 +67,7 @@ function formatLocalDate(date: Date): string {
 }
 
 async function seedSavedFlow(page: Page, scenario: RowScenario) {
-  await page.goto('/flows');
+  await gotoLegacySavedPlanLibraryRoute(page, '/flows');
   await page.evaluate((input) => {
     const anchor = input.id === 'routine' ? input.today : input.anchor;
     window.localStorage.clear();
@@ -105,7 +106,7 @@ test.describe('P35-R9 shared execution row grammar', () => {
   for (const scenario of scenarios) {
     test(`${scenario.id} uses preview-neutral and saved-row contracts`, async ({ page }) => {
       await page.setViewportSize({ width: 390, height: 844 });
-      await page.goto(`/f/${scenario.slug}`);
+      await gotoLegacySavedPlanLibraryRoute(page, `/f/${scenario.slug}`);
       await page.evaluate(() => window.localStorage.clear());
       await page.reload();
 
@@ -148,7 +149,7 @@ test.describe('P35-R9 shared execution row grammar', () => {
         .toBeLessThanOrEqual(2);
 
       await seedSavedFlow(page, scenario);
-      await page.goto(`/my?view=flows&flow=${scenario.slug}`);
+      await gotoLegacySavedPlanLibraryRoute(page, `/my?view=flows&flow=${scenario.slug}`);
       const workspace = await openMyFlowLibraryFlow(page, scenario.slug);
       const execution = workspace.getByTestId('my-flow-shape-aware-execution');
 
@@ -191,7 +192,7 @@ test.describe('P35-R9 shared execution row grammar', () => {
     const scenario = scenarios[0];
     await page.setViewportSize({ width: 1024, height: 768 });
     await seedSavedFlow(page, scenario);
-    await page.goto(`/my?view=flows&flow=${scenario.slug}`);
+    await gotoLegacySavedPlanLibraryRoute(page, `/my?view=flows&flow=${scenario.slug}`);
     const workspace = await openMyFlowLibraryFlow(page, scenario.slug);
     const row = workspace
       .getByTestId('my-flow-shape-aware-execution')

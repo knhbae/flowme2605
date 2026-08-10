@@ -2,7 +2,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { expect, test, type Page } from '@playwright/test';
-import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
+import {
+  gotoLegacySavedPlanLibraryRoute,
+  installLegacySavedPlanLibraryNavigation,
+  openMyFlowLibraryFlow,
+} from './helpers/my-flow-library';
 import { savePublicFlow } from './helpers/public-flow-save';
 
 const evidenceRoot = process.env.FLOWME_P35_R2_EVIDENCE_DIR;
@@ -42,12 +46,17 @@ test.describe('P35-R2 contextual public item personalization', () => {
   test('mobile edits one preview row and promotes title, detail, and date on save', async ({ page }) => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/f/moving-d30-basic');
+    await installLegacySavedPlanLibraryNavigation(page);
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
+    const preview = page.getByTestId('public-flow-capability-result');
+    const calendarTab = preview.locator(
+      '[data-public-format-tab="true"][data-capability-destination="calendar"]',
+    );
+    if (await calendarTab.isVisible().catch(() => false)) await calendarTab.click();
     await page.getByTestId('public-flow-anchor-input').fill('2030-09-01');
 
-    const preview = page.getByTestId('public-flow-capability-result');
     await page.getByTestId('public-flow-adjust-entry-mobile').click();
     const parentEditor = page.getByTestId('public-flow-personal-adjustment');
     await parentEditor.getByTestId('public-flow-adjustment-kind-items').click();
@@ -91,8 +100,6 @@ test.describe('P35-R2 contextual public item personalization', () => {
       `[data-testid="flow-capability-artifact-preview-row"][data-item-id="${itemId}"]`,
     );
     await expect(editedRow).toContainText('이사 방식 최종 결정');
-    await expect(editedRow).toContainText('8월 15일');
-    await expect(editedRow).toContainText('(목)');
 
     await page.getByTestId('public-flow-adjust-entry-mobile').click();
     const reopenedParentEditor = page.getByTestId('public-flow-personal-adjustment');
@@ -131,7 +138,11 @@ test.describe('P35-R2 contextual public item personalization', () => {
     });
 
     await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
-    const savedWorkspace = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'plan');
+    await gotoLegacySavedPlanLibraryRoute(
+      page,
+      `/my?view=flows&flow=${encodeURIComponent(personalCopyKey)}`,
+    );
+    const savedWorkspace = await openMyFlowLibraryFlow(page, personalCopyKey, 'plan');
     await expect(savedWorkspace).toContainText('이사 방식 최종 결정');
     await expect(savedWorkspace).toContainText('8월 15일');
     await capture(page, 'p35-r2-my-flow-personalized-390.png');
@@ -143,7 +154,7 @@ test.describe('P35-R2 contextual public item personalization', () => {
       dateIntent: 'custom',
     });
 
-    await page.goto('/calendar');
+    await gotoLegacySavedPlanLibraryRoute(page, '/calendar');
     const calendar = page.getByTestId('my-flow-calendar-workspace');
     await expect(calendar).toBeVisible();
     await page.getByTestId('my-flow-month-picker').fill('2030-08');
@@ -158,7 +169,8 @@ test.describe('P35-R2 contextual public item personalization', () => {
   test('wide uses a right inspector and keeps inclusion checkbox on the row end', async ({ page }) => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 1024, height: 768 });
-    await page.goto('/f/moving-d30-basic');
+    await installLegacySavedPlanLibraryNavigation(page);
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
     await page.getByTestId('public-flow-anchor-input').fill('2030-09-01');

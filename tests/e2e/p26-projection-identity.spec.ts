@@ -5,6 +5,8 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 import {
   closeOpenMyFlowItemDetail,
   getOpenMyFlowItemDetail,
+  gotoLegacySavedPlanLibraryRoute,
+  installLegacySavedPlanLibraryNavigation,
   openMyFlowLibraryFlow,
   openPersonalDraftListExport,
 } from './helpers/my-flow-library';
@@ -52,6 +54,7 @@ async function completeSavedClipboardTransfer(
 }
 
 test('legacy personal draft values remain read-only while one identity reaches My Flow Calendar and export', async ({ page }) => {
+  await installLegacySavedPlanLibraryNavigation(page);
   test.setTimeout(120_000);
   const browserErrors: string[] = [];
   page.on('console', (message) => {
@@ -60,7 +63,7 @@ test('legacy personal draft values remain read-only while one identity reaches M
   page.on('pageerror', (error) => browserErrors.push(error.message));
   await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/flows');
+  await gotoLegacySavedPlanLibraryRoute(page, '/flows');
   await page.evaluate(() => localStorage.clear());
   await page.reload();
 
@@ -71,6 +74,7 @@ test('legacy personal draft values remain read-only while one identity reaches M
   await editor.getByLabel('메모 초안 제목').fill('여행 준비 identity 확인');
   await editor.getByTestId('flow-memo-draft-save').click();
   await expect(page).toHaveURL(/\/my\?savedFlow=url-draft-/);
+  await gotoLegacySavedPlanLibraryRoute(page, page.url());
 
   const legacy = await page.evaluate(() => {
     const bundles = JSON.parse(localStorage.getItem('flow_builder_mvp_bundles_v11') || '[]') as Array<{
@@ -167,7 +171,7 @@ test('legacy personal draft values remain read-only while one identity reaches M
   expect(memo).toContain('2030-08-03');
 
   await page.setViewportSize({ width: 1024, height: 768 });
-  await page.goto('/calendar');
+  await gotoLegacySavedPlanLibraryRoute(page, '/calendar');
   await page.getByTestId('my-flow-month-picker').fill('2030-08');
   await page
     .locator('.fc-daygrid-day[data-date="2030-08-03"]')

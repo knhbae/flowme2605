@@ -2,7 +2,6 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { expect, test, type Page } from '@playwright/test';
-import { getOpenMyFlowItemDetail } from './helpers/my-flow-library';
 
 const evidenceRoot = process.env.FLOWME_P26_08_EVIDENCE_DIR;
 
@@ -80,24 +79,18 @@ test.describe('P26-08 My Flow local IA', () => {
     await expect(page.getByTestId('my-flow-mobile-structure-row')).toHaveCount(1);
     await page.getByTestId('my-flow-mobile-structure-open').click();
     const workspace = page.getByTestId('my-flow-mobile-workspace');
-    await expect(workspace).toHaveAttribute('data-p35-marker', 'P35-PERSONAL-SINGLE-FOCUS');
-    const execution = workspace.getByTestId('my-flow-shape-aware-execution');
-    const firstEntry = execution.getByTestId('my-flow-temporal-next-group');
-    await expect(firstEntry.getByTestId('my-flow-execution-row-shell')).toHaveCount(3);
-    await expect(execution.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
-    const row = firstEntry.getByTestId('my-flow-execution-row-shell').first();
-    await row.getByRole('button', { name: /열기/ }).click();
-    const detail = getOpenMyFlowItemDetail(page);
-    await expect(detail).toBeVisible();
-    const completion = detail.getByTestId('my-flow-task-complete-control');
-    await expect(completion).toHaveCount(1);
-    await expect(page.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
-    await completion.click();
-    const snackbar = page.getByTestId('my-flow-completion-snackbar');
-    await expect(snackbar).toHaveAttribute('data-completion-result', 'completed');
-    await snackbar.getByTestId('my-flow-completion-undo').press('Enter');
+    const plan = page.getByTestId('approved-my-plan-workspace');
+    await expect(plan).toBeVisible();
+    await expect(workspace).toHaveAttribute('data-flow-slug', 'moving-d30-basic');
+    const todo = plan.getByTestId('my-plan-date-grouped-todos');
+    await expect(todo).toHaveAttribute('data-todo-row-count', '24');
+    const completion = todo.getByTestId('my-plan-todo-checkbox').first();
     await expect(completion).not.toBeChecked();
-    await expect(completion).toBeFocused();
+    await completion.click();
+    await expect(completion).toBeChecked();
+    await completion.click();
+    await expect(completion).not.toBeChecked();
+    await expect(plan).toBeVisible();
 
     await capture(page, '02-mobile-one-flow-roles.png');
     expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);

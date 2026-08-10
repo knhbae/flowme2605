@@ -135,4 +135,11 @@ test('completion undo is offered only when the completed row leaves the visible 
     recurringOccurrence: false,
     remainsVisibleInFocusedPlan: false,
   }), false);
+  assert.equal(shouldOfferMyFlowCompletionUndo({
+    completed: true,
+    calendarSurface: true,
+    approvedCalendarExecution: true,
+    recurringOccurrence: true,
+    remainsVisibleInFocusedPlan: true,
+  }), true);
 });

@@ -5,8 +5,6 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 import { seedBundles } from '../../lib/flow/seed-flows';
 import type { FlowBundle } from '../../lib/flow/types';
 
-import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
-
 const SOURCE_FLOW_SLUG = 'moving-d30-basic';
 const SOURCE_ROUTE = `/f/${SOURCE_FLOW_SLUG}`;
 const LEGACY_ITEM_STORAGE_KEY = `flow_builder_mvp_item_state_${SOURCE_FLOW_SLUG}`;
@@ -48,8 +46,6 @@ const EVIDENCE_DIR = path.join(
 fs.mkdirSync(EVIDENCE_DIR, { recursive: true });
 
 type P104TestWindow = Window & {
-  __p104ClipboardText?: string;
-  __p104ClipboardWrites?: number;
   __p104StorageWrites?: Array<{
     operation: 'setItem' | 'removeItem' | 'clear';
     area: 'localStorage' | 'sessionStorage' | 'unknown';
@@ -191,13 +187,13 @@ async function resetStorageWrites(page: Page): Promise<void> {
 
 async function seedFiftyItemSavedPlan(page: Page): Promise<void> {
   const bundle = buildFiftyItemBundle();
-  await page.goto('/my');
+  await page.goto('/my?view=flows&sort=next');
   await page.evaluate(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
   });
   await page.reload();
-  await expect(page.getByTestId('my-flow-saved-library-shell')).toBeVisible();
+  await expect(page.locator('main').first()).toBeVisible();
   await page.evaluate(({ bundlesStorageKey, customBundle, flowSlug, sourceFlowSlug }) => {
     const bundles = JSON.parse(window.localStorage.getItem(bundlesStorageKey) || '[]') as FlowBundle[];
     window.localStorage.setItem(
@@ -223,40 +219,9 @@ async function seedFiftyItemSavedPlan(page: Page): Promise<void> {
     flowSlug: FIFTY_ITEM_FLOW_SLUG,
     sourceFlowSlug: SOURCE_FLOW_SLUG,
   });
-  await page.goto(`/my?flow=${FIFTY_ITEM_FLOW_SLUG}`);
-}
-
-async function installClipboardCapture(page: Page): Promise<void> {
-  await page.evaluate(() => {
-    const target = window as P104TestWindow;
-    target.__p104ClipboardText = '';
-    target.__p104ClipboardWrites = 0;
-    Object.defineProperty(window.navigator, 'clipboard', {
-      configurable: true,
-      value: {
-        writeText: async (value: string) => {
-          target.__p104ClipboardWrites = (target.__p104ClipboardWrites ?? 0) + 1;
-          target.__p104ClipboardText = value;
-        },
-        readText: async () => target.__p104ClipboardText ?? '',
-      },
-    });
-  });
-}
-
-async function openSavedChecklistTransfer(page: Page, workspace: Locator): Promise<Locator> {
-  await workspace.getByTestId('my-flow-export-entry').click();
-  const panel = workspace.getByTestId('my-flow-export-panel');
-  await expect(panel).toBeVisible();
-  const checklist = panel.getByTestId('my-flow-export-checklist');
-  if (!(await checklist.isVisible().catch(() => false))) {
-    const more = panel.getByTestId('my-flow-export-more-formats');
-    if ((await more.getAttribute('open')) === null) await more.locator(':scope > summary').click();
-  }
-  await checklist.click();
-  const confirmation = panel.getByTestId('my-flow-transfer-confirmation');
-  await expect(confirmation).toBeVisible();
-  return confirmation;
+  await page.goto(
+    `/my?view=flows&sort=next&flow=${encodeURIComponent(FIFTY_ITEM_FLOW_SLUG)}`,
+  );
 }
 
 function collectBrowserErrors(page: Page): string[] {
@@ -510,9 +475,27 @@ test.describe('P35 P1-04 final internal extremes and accessibility gate', () => 
     await page.setViewportSize(MOBILE_VIEWPORT);
     await seedFiftyItemSavedPlan(page);
 
-    let workspace = await openMyFlowLibraryFlow(page, FIFTY_ITEM_FLOW_SLUG, 'plan');
-    await expect(workspace).toHaveAttribute('data-effective-result-count', '50');
-    const planOpener = workspace.locator('[data-testid="my-flow-batch-mode-toggle"]:visible').first();
+    let workspace = page.locator(
+      `[data-testid="my-flow-overview-card"][data-flow-slug="${FIFTY_ITEM_FLOW_SLUG}"]`,
+    );
+    await expect(workspace).toBeVisible();
+    await expect(workspace).toHaveAttribute(
+      'data-workspace-composition',
+      'shared-model-separate-surfaces',
+    );
+    let approvedPlan = workspace.getByTestId('approved-my-plan-workspace');
+    await expect(approvedPlan).toBeVisible();
+    let approvedTodoList = approvedPlan.getByTestId('my-plan-date-grouped-todos');
+    await expect(approvedTodoList).toHaveAttribute('data-todo-row-count', '50');
+    let approvedRows = approvedTodoList.getByTestId('my-plan-todo-row');
+    await expect(approvedRows).toHaveCount(50);
+    const initialApprovedIds = await approvedRows.evaluateAll((rows) => rows.map((row) => (
+      row.getAttribute('data-todo-item-id') ?? ''
+    )));
+    expect(initialApprovedIds).toHaveLength(50);
+    expect(new Set(initialApprovedIds).size).toBe(50);
+
+    const planOpener = approvedPlan.getByTestId('my-plan-edit');
     await expect(planOpener).toBeVisible();
     await planOpener.click();
 
@@ -582,13 +565,12 @@ test.describe('P35 P1-04 final internal extremes and accessibility gate', () => 
     await itemEditor.getByTestId('saved-flow-editor-item-detail-input').fill(LONG_ITEM_MEMO);
     await expect(itemEditor.getByTestId('saved-flow-editor-item-title-input')).toHaveValue(LONG_ITEM_TITLE);
     await expect(itemEditor.getByTestId('saved-flow-editor-item-detail-input')).toHaveValue(LONG_ITEM_MEMO);
-    const criterion = itemEditor.locator('[data-editor-field="item-completion-criterion"]');
-    await expect(criterion).toContainText(LONG_COMPLETION_CRITERION);
-    await criterion.scrollIntoViewIfNeeded();
+    const memoField = itemEditor.getByTestId('saved-flow-editor-item-detail-input');
+    await memoField.scrollIntoViewIfNeeded();
     const itemGeometry = await page.evaluate(() => {
       const editor = document.querySelector<HTMLElement>('[data-testid="saved-flow-editor-item"]');
-      const completion = document.querySelector<HTMLElement>(
-        '[data-testid="saved-flow-editor-item"] [data-editor-field="item-completion-criterion"]',
+      const memo = document.querySelector<HTMLElement>(
+        '[data-testid="saved-flow-editor-item"] [data-testid="saved-flow-editor-item-detail-input"]',
       );
       const footer = document.querySelector<HTMLElement>(
         '[data-testid="saved-flow-editor-item"] [data-editor-actions-sticky="true"]',
@@ -596,17 +578,17 @@ test.describe('P35 P1-04 final internal extremes and accessibility gate', () => 
       const body = footer?.previousElementSibling instanceof HTMLElement
         ? footer.previousElementSibling
         : null;
-      if (!editor || !body || !completion || !footer) return null;
+      if (!editor || !body || !memo || !footer) return null;
       const editorRect = editor.getBoundingClientRect();
       const bodyRect = body.getBoundingClientRect();
-      const completionRect = completion.getBoundingClientRect();
+      const memoRect = memo.getBoundingClientRect();
       const footerRect = footer.getBoundingClientRect();
       return {
         editorTop: editorRect.top,
         bodyTop: bodyRect.top,
         bodyBottom: bodyRect.bottom,
-        completionTop: completionRect.top,
-        completionBottom: completionRect.bottom,
+        memoTop: memoRect.top,
+        memoBottom: memoRect.bottom,
         footerTop: footerRect.top,
         footerBottom: footerRect.bottom,
         viewportHeight: window.innerHeight,
@@ -617,8 +599,8 @@ test.describe('P35 P1-04 final internal extremes and accessibility gate', () => 
     expect(itemGeometry!.bodyOverflowY).toBe('auto');
     expect(itemGeometry!.bodyTop).toBeGreaterThanOrEqual(itemGeometry!.editorTop);
     expect(itemGeometry!.bodyBottom).toBeLessThanOrEqual(itemGeometry!.footerTop + 1);
-    expect(itemGeometry!.completionTop).toBeGreaterThanOrEqual(itemGeometry!.bodyTop - 1);
-    expect(itemGeometry!.completionBottom).toBeLessThanOrEqual(
+    expect(itemGeometry!.memoTop).toBeGreaterThanOrEqual(itemGeometry!.bodyTop - 1);
+    expect(itemGeometry!.memoBottom).toBeLessThanOrEqual(
       Math.min(itemGeometry!.bodyBottom, itemGeometry!.footerTop) + 1,
     );
     expect(itemGeometry!.footerBottom).toBeLessThanOrEqual(itemGeometry!.viewportHeight + 1);
@@ -631,9 +613,20 @@ test.describe('P35 P1-04 final internal extremes and accessibility gate', () => 
     await expect(planEditor).toHaveCount(0);
 
     await page.reload();
-    workspace = await openMyFlowLibraryFlow(page, FIFTY_ITEM_FLOW_SLUG, 'plan');
-    await expect(workspace).toHaveAttribute('data-effective-result-count', '50');
-    await workspace.locator('[data-testid="my-flow-batch-mode-toggle"]:visible').first().click();
+    workspace = page.locator(
+      `[data-testid="my-flow-overview-card"][data-flow-slug="${FIFTY_ITEM_FLOW_SLUG}"]`,
+    );
+    await expect(workspace).toBeVisible();
+    approvedPlan = workspace.getByTestId('approved-my-plan-workspace');
+    approvedTodoList = approvedPlan.getByTestId('my-plan-date-grouped-todos');
+    await expect(approvedTodoList).toHaveAttribute('data-todo-row-count', '50');
+    approvedRows = approvedTodoList.getByTestId('my-plan-todo-row');
+    await expect(approvedRows).toHaveCount(50);
+    const reloadedApprovedIds = await approvedRows.evaluateAll((rows) => rows.map((row) => (
+      row.getAttribute('data-todo-item-id') ?? ''
+    )));
+    expect(reloadedApprovedIds).toEqual(initialApprovedIds);
+    await approvedPlan.getByTestId('my-plan-edit').click();
     planEditor = page.getByTestId('saved-flow-editor-plan');
     const reloadedRows = planEditor.getByTestId('saved-flow-editor-item-row');
     await expect(reloadedRows).toHaveCount(50);
@@ -645,33 +638,51 @@ test.describe('P35 P1-04 final internal extremes and accessibility gate', () => 
     itemEditor = page.getByTestId('saved-flow-editor-item');
     await expect(itemEditor.getByTestId('saved-flow-editor-item-title-input')).toHaveValue(LONG_ITEM_TITLE);
     await expect(itemEditor.getByTestId('saved-flow-editor-item-detail-input')).toHaveValue(LONG_ITEM_MEMO);
-    await expect(itemEditor.locator('[data-editor-field="item-completion-criterion"]')).toContainText(
-      LONG_COMPLETION_CRITERION,
-    );
-    await itemEditor.getByRole('button', { name: '닫기', exact: true }).click();
-    await planEditor.getByRole('button', { name: '닫기', exact: true }).click();
+    await itemEditor.getByTestId('saved-flow-editor-item-cancel').click();
+    await planEditor.getByTestId('saved-flow-editor-cancel').click();
 
-    workspace = await openMyFlowLibraryFlow(page, FIFTY_ITEM_FLOW_SLUG, 'record');
-    await installClipboardCapture(page);
-    const confirmation = await openSavedChecklistTransfer(page, workspace);
-    await expect(confirmation).toHaveAttribute('data-transfer-item-count', '50');
-    await expect(confirmation).toHaveAttribute('data-transfer-projection-output-count', '50');
-    await expect(confirmation).toHaveAttribute('data-transfer-output-count', '50');
-    const artifactIds = (await confirmation.getAttribute('data-item-ids'))?.split(',').filter(Boolean) ?? [];
-    expect(artifactIds).toEqual(initialIds);
+    approvedPlan = workspace.getByTestId('approved-my-plan-workspace');
+    await approvedPlan.getByTestId('my-flow-export-entry').click();
+    const transferSheet = workspace.getByTestId('my-plan-transfer-sheet');
+    await expect(transferSheet).toBeVisible();
+    const panel = transferSheet.getByTestId('my-flow-export-panel');
+    await expect(panel).toHaveAttribute('data-saved-transfer-surface', 'confirmation');
+    await panel.getByTestId('my-flow-transfer-tab-checklist').click();
+    const preview = panel.getByTestId('my-flow-export-destination-preview');
+    await expect(preview).toHaveAttribute('data-export-preview-format', 'vtodo');
+    await expect(preview).toContainText('50');
+    const transferCta = panel.getByTestId('my-flow-export-approved-cta');
+    await expect(transferCta).toHaveAttribute('data-export-destination', 'checklist');
+    await expect(transferCta).toHaveAttribute('data-export-format', 'vtodo');
     await expectCleanVisiblePage(page);
     await capture(page, '06-real-fifty-item-transfer-390x844.png');
-    await confirmation.getByTestId('my-flow-transfer-confirm').click();
-    const clipboard = await page.evaluate(() => ({
-      text: (window as P104TestWindow).__p104ClipboardText ?? '',
-      writes: (window as P104TestWindow).__p104ClipboardWrites ?? 0,
-    }));
-    expect(clipboard.writes).toBe(1);
-    expect(clipboard.text.match(/^- \[[ x]\]/gmu) ?? []).toHaveLength(50);
-    expect(clipboard.text).toContain(LONG_ITEM_TITLE);
-    expect(clipboard.text).toContain('첫째 줄: 계약서의 "특약"과 사진 #1을 확인합니다. 😀');
-    expect(clipboard.text).toContain('둘째 줄:\t탭 뒤의 값');
-    expect(clipboard.text).toContain('둘째 줄: [필수] #1 & #2, 탭\t유지, 따옴표 "완료", emoji 😀');
+    const downloadPromise = page.waitForEvent('download');
+    await transferCta.click();
+    const download = await downloadPromise;
+    expect(download.suggestedFilename()).toMatch(/\.ics$/u);
+    const downloadPath = await download.path();
+    expect(downloadPath).toBeTruthy();
+    const vtodoBytes = fs.readFileSync(downloadPath!);
+    const vtodo = vtodoBytes.toString('utf8');
+    expect(vtodoBytes.length).toBeGreaterThan(1000);
+    expect(vtodo.match(/BEGIN:VTODO/gu)).toHaveLength(50);
+    expect(vtodo).not.toContain('BEGIN:VEVENT');
+    const unfoldedVtodo = vtodo
+      .replaceAll(/\r\n[ \t]/gu, '')
+      .replaceAll('\\n', '\n');
+    expect(unfoldedVtodo).toContain(LONG_ITEM_TITLE);
+    expect(unfoldedVtodo).toContain(LONG_ITEM_MEMO.split('\n')[0]!);
+    expect(unfoldedVtodo).toContain(LONG_COMPLETION_CRITERION.split('\n')[0]!);
+    const receipt = page.getByTestId('my-flow-transfer-receipt');
+    await expect(receipt).toHaveAttribute('data-transfer-format', 'checklist');
+    await expect(receipt).toHaveAttribute('data-transfer-item-count', '50');
+    await expect(receipt).toHaveAttribute('data-transfer-projection-output-count', '50');
+    await expect(receipt).toHaveAttribute('data-transfer-output-count', '50');
+    await expect(receipt).toHaveAttribute('data-outcome', 'success');
+    const artifactIds = (await receipt.getAttribute('data-transfer-item-ids'))
+      ?.split(',')
+      .filter(Boolean) ?? [];
+    expect(artifactIds).toEqual(initialIds);
     await expectCleanVisiblePage(page);
     expect(errors).toEqual([]);
   });
@@ -765,6 +776,7 @@ test.describe('P35 P1-04 final internal extremes and accessibility gate', () => 
       'quickLocalResult=off',
       'visualSubtraction=off',
       'q3Copy=off',
+      'savedPlanLibrary=off',
     ].join('&');
     await page.goto(`${SOURCE_ROUTE}?${publicExactOff}`);
     const publicOff = page.locator('main').first();

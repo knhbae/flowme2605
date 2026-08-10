@@ -4,6 +4,7 @@ import path from 'node:path';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
 import {
+  gotoLegacySavedPlanLibraryRoute,
   openMyFlowLibraryFlow,
 } from './helpers/my-flow-library';
 
@@ -96,7 +97,7 @@ test.describe('P35-07 export scope first and count parity', () => {
     const errors = collectBrowserErrors(page);
     await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/my?demo=source-backed&view=flows');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=source-backed&view=flows');
 
     const flow = await openMyFlowLibraryFlow(page, 'source-backed-moving-d30', 'record');
     const surface = flow.getByTestId('my-flow-export-surface');
@@ -187,7 +188,7 @@ test.describe('P35-07 export scope first and count parity', () => {
     const errors = collectBrowserErrors(page);
     await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
     await page.setViewportSize({ width: 1024, height: 768 });
-    await page.goto('/my?demo=source-backed&view=flows');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=source-backed&view=flows');
 
     const flow = await openMyFlowLibraryFlow(
       page,

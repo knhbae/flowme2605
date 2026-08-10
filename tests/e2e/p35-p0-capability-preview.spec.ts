@@ -1,6 +1,9 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
-import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
+import {
+  gotoLegacySavedPlanLibraryRoute,
+  openMyFlowLibraryFlow,
+} from './helpers/my-flow-library';
 
 const SOURCE_FLOW_SLUG = 'moving-d30-basic';
 const SOURCE_ROUTE = `/f/${SOURCE_FLOW_SLUG}`;
@@ -22,7 +25,7 @@ async function resetAndOpenPublicPreview(
   route = SOURCE_ROUTE,
 ): Promise<Locator> {
   await page.setViewportSize(MOBILE_VIEWPORT);
-  await page.goto(route);
+  await gotoLegacySavedPlanLibraryRoute(page, route);
   await page.evaluate(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
@@ -233,7 +236,7 @@ test.describe('P35 P0-07 capability result preview', () => {
 
     await page.setViewportSize(MOBILE_VIEWPORT);
     await seedSavedMovingFlow(page);
-    await page.goto(`/my?view=flows&flow=${SOURCE_FLOW_SLUG}`);
+    await gotoLegacySavedPlanLibraryRoute(page, `/my?view=flows&flow=${SOURCE_FLOW_SLUG}`);
     const workspace = await openMyFlowLibraryFlow(page, SOURCE_FLOW_SLUG);
     const transferEntry = workspace.getByTestId('my-flow-export-entry');
     await expect(transferEntry).toBeVisible();

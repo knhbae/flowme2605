@@ -5,6 +5,7 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 
 import {
   closeOpenMyFlowItemDetail,
+  gotoLegacySavedPlanLibraryRoute,
   getOpenMyFlowItemDetail,
   openMyFlowLibraryFlow,
 } from './helpers/my-flow-library';
@@ -119,7 +120,7 @@ test.describe('P35-05 My Flow library and focused workspace', () => {
   test('mobile twenty-Flow library progressively reveals controls and drills into one Flow', async ({ page }) => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/my?demo=ux20&view=flows');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=ux20&view=flows');
 
     await expect(page.getByTestId('my-flow-saved-count')).toHaveText('20개');
     await expect(page.getByTestId('my-flow-search')).toBeVisible();
@@ -135,11 +136,7 @@ test.describe('P35-05 My Flow library and focused workspace', () => {
       .first();
     const flowSlug = await firstRow.getAttribute('data-flow-slug');
     expect(flowSlug).toBeTruthy();
-    await firstRow.getByTestId('my-flow-mobile-structure-open').click();
-
-    const workspace = page.locator(
-      `[data-testid="my-flow-mobile-workspace"][data-flow-slug="${flowSlug}"]`,
-    );
+    const workspace = await openMyFlowLibraryFlow(page, flowSlug!, 'execute');
     await expect(workspace).toHaveAttribute('data-p35-marker', 'P35-PERSONAL-SINGLE-FOCUS');
     await expect(workspace.getByTestId('my-flow-workspace-execute')).toBeVisible();
     await expect(workspace.getByTestId('my-flow-workspace-plan')).toHaveAttribute(
@@ -175,7 +172,7 @@ test.describe('P35-05 My Flow library and focused workspace', () => {
         anchor: '2026-06-26',
       }));
     });
-    await page.goto('/my?view=flows');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows');
 
     const workspace = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'execute');
     const executionShell = workspace
@@ -259,8 +256,8 @@ test.describe('P35-05 My Flow library and focused workspace', () => {
 
   test('wide workspace separates the library rail from one selected Flow canvas', async ({ page }) => {
     const errors = collectBrowserErrors(page);
-    await page.setViewportSize({ width: 1024, height: 768 });
-    await page.goto('/my?demo=ux20&view=flows');
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=ux20&view=flows');
 
     const workspace = page.getByTestId('my-flow-library-workspace');
     await expect(workspace).toHaveAttribute('data-p35-marker', 'P35-MY-LIBRARY-ONLY');
@@ -268,9 +265,10 @@ test.describe('P35-05 My Flow library and focused workspace', () => {
     const detail = workspace.getByTestId('my-flow-library-detail');
     await expect(rail.getByTestId('my-flow-library-row')).toHaveCount(20);
     await expect(detail.getByTestId('my-flow-overview-card')).toHaveCount(0);
-    await rail.getByTestId('my-flow-library-row').first().click();
-    await expect(detail.getByTestId('my-flow-overview-card')).toHaveCount(1);
-    await expect(detail.getByTestId('my-flow-overview-card')).toHaveAttribute(
+    const firstSlug = await rail.getByTestId('my-flow-library-row').first().getAttribute('data-flow-slug');
+    expect(firstSlug).toBeTruthy();
+    const selected = await openMyFlowLibraryFlow(page, firstSlug!, 'plan');
+    await expect(selected).toHaveAttribute(
       'data-p35-marker',
       'P35-PERSONAL-SINGLE-FOCUS',
     );

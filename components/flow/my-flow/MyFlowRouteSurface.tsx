@@ -7,9 +7,13 @@ import type {
   Ref,
 } from 'react';
 
-import type { MyFlowLibraryFilter } from '@/lib/flow/my-flow-local-ia';
+import type {
+  MyFlowLibraryFilter,
+  MyFlowLibrarySort,
+} from '@/lib/flow/my-flow-local-ia';
 
 import { MyFlowDataManager } from '../MyFlowDataManager';
+import { MyFlowSortMenu } from './MyFlowSortMenu';
 import {
   FLOW_UI_SEGMENT_ACTIVE_CLASS,
   FLOW_UI_SEGMENTED_CLASS,
@@ -108,6 +112,8 @@ export type MyFlowRouteModel<TFlow> = {
       };
       query: string;
       filter: MyFlowLibraryFilter;
+      sort: MyFlowLibrarySort;
+      sortPlanCount: number;
       filterOptions: readonly MyFlowRouteFilterOption[];
       visibleEntries: readonly MyFlowRouteEntry<TFlow>[];
       selectedEntry?: MyFlowRouteEntry<TFlow>;
@@ -141,6 +147,7 @@ export type MyFlowRouteActions = {
     source: 'rail' | 'mobile',
     focusTarget: HTMLElement,
   ) => void;
+  onSortChange: (sort: MyFlowLibrarySort, focusTarget: HTMLElement) => void;
   onExpandMobileInventory: () => void;
 };
 
@@ -190,7 +197,7 @@ export function MyFlowRouteSurface<TFlow>({
           </div>
           <details className="group relative" data-testid="my-flow-auxiliary-menu">
             <summary
-              className="flex h-11 w-11 cursor-pointer list-none items-center justify-center rounded-md border border-gray-300 bg-white text-lg font-semibold text-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+              className="flex h-12 w-12 cursor-pointer list-none items-center justify-center rounded-md border border-gray-300 bg-white text-lg font-semibold text-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
               aria-label={copy.q3Enabled ? '내 계획 보조 메뉴' : 'My Flow 보조 메뉴'}
               title="보조 메뉴"
             >
@@ -250,7 +257,7 @@ export function MyFlowRouteSurface<TFlow>({
                   <button
                     type="button"
                     data-testid="canonical-saved-copy-select"
-                    className="min-h-11 shrink-0 rounded-md border border-amber-300 bg-white px-3 py-2 text-xs font-semibold text-amber-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                    className="min-h-12 shrink-0 rounded-md border border-amber-300 bg-white px-3 py-2 text-xs font-semibold text-amber-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                     aria-label={`${option.title} ${option.itemCount}개 사본 계속 사용`}
                     onClick={() => actions.onChooseCopy(option.groupId, option.originSlug)}
                   >
@@ -289,7 +296,7 @@ export function MyFlowRouteSurface<TFlow>({
                 aria-selected={navigation.activeView === tab.id}
                 aria-controls={`my-flow-panel-${tab.id}`}
                 tabIndex={navigation.activeView === tab.id ? 0 : -1}
-                className={`min-h-11 rounded-md px-3 py-2 text-sm font-semibold ${navigation.activeView === tab.id ? FLOW_UI_SEGMENT_ACTIVE_CLASS : FLOW_UI_SEGMENT_IDLE_CLASS}`}
+                className={`min-h-12 rounded-md px-3 py-2 text-sm font-semibold ${navigation.activeView === tab.id ? FLOW_UI_SEGMENT_ACTIVE_CLASS : FLOW_UI_SEGMENT_IDLE_CLASS}`}
                 data-testid={`my-flow-view-${tab.id}`}
                 onClick={() => actions.onSelectView(tab.id)}
                 onKeyDown={(event) => actions.onViewKeyDown(event, tab.id)}
@@ -324,7 +331,7 @@ export function MyFlowRouteSurface<TFlow>({
           <p className="mt-2 max-w-xl break-keep text-sm leading-6 text-slate-600">{empty.description}</p>
           <div className="mt-5 flex flex-wrap gap-2">
             <Link
-              className="inline-flex min-h-11 w-full items-center justify-center rounded-md bg-blue-700 px-4 py-2 text-sm font-semibold text-white sm:w-auto"
+              className="inline-flex min-h-12 w-full items-center justify-center rounded-md bg-blue-700 px-4 py-2 text-sm font-semibold text-white sm:w-auto"
               href="/flows"
               data-testid="my-flow-empty-discovery"
               data-action-role="discover-public-flow"
@@ -335,7 +342,7 @@ export function MyFlowRouteSurface<TFlow>({
               <button
                 type="button"
                 data-testid="my-flow-open-archived"
-                className="inline-flex min-h-11 w-full items-center justify-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 sm:w-auto"
+                className="inline-flex min-h-12 w-full items-center justify-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 sm:w-auto"
                 onClick={actions.onShowArchived}
               >
                 {copy.q3Enabled ? '보관한 계획' : '보관된 Flow'} {empty.archivedCount}개 보기
@@ -367,7 +374,7 @@ export function MyFlowRouteSurface<TFlow>({
                   </div>
                   <div className="grid gap-2">
                     <button
-                      className={`rounded-md border px-3 py-3 text-left ${workspace.selectedSlug === 'all' ? 'border-blue-600 bg-blue-50 text-blue-950' : 'border-slate-200 bg-white text-slate-800 hover:border-blue-200 hover:bg-blue-50'}`}
+                      className={`min-h-12 rounded-md border px-3 py-3 text-left ${workspace.selectedSlug === 'all' ? 'border-blue-600 bg-blue-50 text-blue-950' : 'border-slate-200 bg-white text-slate-800 hover:border-blue-200 hover:bg-blue-50'}`}
                       type="button"
                       aria-pressed={workspace.selectedSlug === 'all'}
                       data-testid="my-flow-filter-all"
@@ -379,7 +386,7 @@ export function MyFlowRouteSurface<TFlow>({
                     {workspace.allEntries.map((entry) => (
                       <button
                         key={entry.key}
-                        className={`rounded-md border px-3 py-3 text-left ${workspace.selectedSlug === entry.slug ? 'border-blue-600 bg-blue-50 text-blue-950' : 'border-slate-200 bg-white text-slate-800 hover:border-blue-200 hover:bg-blue-50'}`}
+                        className={`min-h-12 rounded-md border px-3 py-3 text-left ${workspace.selectedSlug === entry.slug ? 'border-blue-600 bg-blue-50 text-blue-950' : 'border-slate-200 bg-white text-slate-800 hover:border-blue-200 hover:bg-blue-50'}`}
                         type="button"
                         aria-pressed={workspace.selectedSlug === entry.slug}
                         data-testid={`my-flow-filter-${entry.slug}`}
@@ -402,7 +409,7 @@ export function MyFlowRouteSurface<TFlow>({
                         </label>
                         <select
                           id="my-flow-scope"
-                          className="min-h-10 w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-900 outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                          className="min-h-12 w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-900 outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
                           value={workspace.selectedSlug}
                           data-testid="my-flow-scope-select"
                           onChange={(event) => actions.onSelectFlow(event.target.value)}
@@ -432,13 +439,22 @@ export function MyFlowRouteSurface<TFlow>({
                     {renderers.renderCompactToday()}
                     {renderers.renderSaveBanner()}
                     {!panel.focused ? (
-                      <header data-testid="my-flow-library-heading" className="flex items-end justify-between gap-3 border-b border-slate-200 pb-3 md:hidden">
+                      <header data-testid="my-flow-library-heading" className="flex items-center justify-between gap-3 border-b border-slate-200 pb-3 md:hidden">
                         <div>
                           <h2 className="text-xl font-semibold text-slate-950">{copy.sectionTitle}</h2>
                         </div>
-                        <span data-testid="my-flow-saved-count" className="shrink-0 text-xs font-semibold text-slate-500">
-                          {panel.flowCount}개
-                        </span>
+                        <div className="flex shrink-0 items-center gap-2">
+                          <span data-testid="my-flow-saved-count" className="text-xs font-semibold text-slate-500">
+                            {panel.flowCount}개
+                          </span>
+                          <MyFlowSortMenu
+                            sort={library.sort}
+                            planCount={library.sortPlanCount}
+                            visible={panel.savedPlanLibraryEnabled && library.sortPlanCount >= 2}
+                            placement="mobile"
+                            onChange={actions.onSortChange}
+                          />
+                        </div>
                       </header>
                     ) : null}
                     {panel.showMapUpdates ? renderers.renderMapUpdateNotices() : null}
@@ -450,15 +466,29 @@ export function MyFlowRouteSurface<TFlow>({
                         data-p32-marker="P32-02-FOCUSED-MY-FLOW-WORKSPACE"
                         data-p35-marker="P35-MY-LIBRARY-ONLY"
                         data-p35-r11-marker="P35-R11-WIDE-EXECUTION-INSPECTOR"
-                        className={`hidden min-w-0 gap-0 border-y border-[var(--flowme-border)] bg-white md:grid ${library.selectedEntry ? 'md:grid-cols-[minmax(22rem,36%)_minmax(0,1fr)]' : 'md:grid-cols-1'}`}
+                        data-workspace-composition={panel.savedPlanLibraryEnabled ? 'responsive-wide-surface' : undefined}
+                        data-workspace-breakpoints={panel.savedPlanLibraryEnabled ? 'mobile:0-767;stacked:768-1023;desktop-compact:1024-1279;desktop-full:1280+' : undefined}
+                        data-compact-inspector-layout={panel.savedPlanLibraryEnabled ? 'stacked-in-main' : undefined}
+                        data-full-inspector-layout={panel.savedPlanLibraryEnabled ? 'third-column' : undefined}
+                        className={`hidden min-w-0 gap-0 border-y border-[var(--flowme-border)] bg-white md:grid ${panel.savedPlanLibraryEnabled
+                          ? library.selectedEntry
+                            ? 'md:grid-cols-1 lg:grid-cols-[minmax(16rem,28%)_minmax(0,1fr)] xl:grid-cols-[minmax(14rem,20%)_minmax(0,1fr)] lg:[&_[data-workspace-layout=library-execution-inspector]]:!grid-cols-1 xl:[&_[data-workspace-layout=library-execution-inspector]]:!grid-cols-[minmax(0,1fr)_minmax(18rem,20rem)]'
+                            : 'md:grid-cols-1'
+                          : library.selectedEntry
+                            ? 'md:grid-cols-[minmax(22rem,36%)_minmax(0,1fr)]'
+                            : 'md:grid-cols-1'}`}
                       >
-                        <aside data-testid="my-flow-library-rail" className={`min-w-0 bg-[var(--flowme-surface-subtle)] ${library.selectedEntry ? 'border-r border-[var(--flowme-border)]' : ''}`}>
+                        <aside data-testid="my-flow-library-rail" className={`min-w-0 bg-[var(--flowme-surface-subtle)] ${library.selectedEntry
+                          ? panel.savedPlanLibraryEnabled
+                            ? 'border-b border-[var(--flowme-border)] lg:border-b-0 lg:border-r'
+                            : 'border-r border-[var(--flowme-border)]'
+                          : ''}`}>
                           <div className="border-b border-[var(--flowme-border)] p-3">
                             {panel.focused ? (
                               <button
                                 type="button"
                                 data-testid="my-flow-library-back"
-                                className="mb-3 inline-flex min-h-10 items-center gap-1 rounded-md px-2 text-xs font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                                className="mb-3 inline-flex min-h-12 items-center gap-1 rounded-md px-2 text-xs font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                                 aria-label={copy.q3Enabled ? '전체 내 계획 보기로 돌아가기' : '전체 My Flow 보기로 돌아가기'}
                                 onClick={actions.onReturnToLibrary}
                               >
@@ -470,11 +500,20 @@ export function MyFlowRouteSurface<TFlow>({
                               <div>
                                 <h3 className="text-base font-semibold text-[var(--flowme-text)]">{copy.sectionTitle}</h3>
                               </div>
-                              <span className="text-xs font-semibold text-[var(--flowme-text-secondary)]">{library.visibleEntries.length}개</span>
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs font-semibold text-[var(--flowme-text-secondary)]">{library.visibleEntries.length}개</span>
+                                <MyFlowSortMenu
+                                  sort={library.sort}
+                                  planCount={library.sortPlanCount}
+                                  visible={panel.savedPlanLibraryEnabled && library.sortPlanCount >= 2}
+                                  placement="rail"
+                                  onChange={actions.onSortChange}
+                                />
+                              </div>
                             </div>
                             {library.controls.search ? (
                               <input
-                                className="mt-3 min-h-10 w-full rounded-md border border-[var(--flowme-border-strong)] bg-white px-3 py-2 text-sm text-[var(--flowme-text)] outline-none focus:border-[var(--flowme-action)] focus:ring-2 focus:ring-[var(--flowme-focus)]"
+                                className="mt-3 min-h-12 w-full rounded-md border border-[var(--flowme-border-strong)] bg-white px-3 py-2 text-sm text-[var(--flowme-text)] outline-none focus:border-[var(--flowme-action)] focus:ring-2 focus:ring-[var(--flowme-focus)]"
                                 type="search"
                                 placeholder={copy.searchPlaceholder}
                                 aria-label={copy.searchAccessibleName}
@@ -493,7 +532,7 @@ export function MyFlowRouteSurface<TFlow>({
                                 <select
                                   data-testid="my-flow-library-rail-filter"
                                   data-p35-r10-marker="P35-R10-LIBRARY-FILTER-ONE-AXIS"
-                                  className="mt-1 min-h-10 w-full rounded-md border border-[var(--flowme-border)] bg-white px-3 text-sm font-semibold text-[var(--flowme-text)]"
+                                  className="mt-1 min-h-12 w-full rounded-md border border-[var(--flowme-border)] bg-white px-3 text-sm font-semibold text-[var(--flowme-text)]"
                                   value={library.filter}
                                   onChange={(event) => actions.onFilterChange(
                                     event.target.value as MyFlowLibraryFilter,
@@ -537,6 +576,7 @@ export function MyFlowRouteSurface<TFlow>({
                       <div
                         data-testid="my-flow-mobile-flow-hub"
                         data-library-mode={library.controls.mode}
+                        data-workspace-composition={panel.savedPlanLibraryEnabled ? 'mobile-drill-in' : undefined}
                         data-p35-marker="P35-MY-LIBRARY-ONLY"
                         className="grid gap-3"
                       >
@@ -548,7 +588,7 @@ export function MyFlowRouteSurface<TFlow>({
                           >
                             {library.controls.search ? (
                               <input
-                                className="min-h-10 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-900 outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                                className="min-h-12 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-900 outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
                                 type="search"
                                 placeholder={copy.searchPlaceholder}
                                 aria-label={copy.searchAccessibleName}
@@ -571,7 +611,7 @@ export function MyFlowRouteSurface<TFlow>({
                                 {library.filterOptions.map((option) => (
                                   <button
                                     key={option.id}
-                                    className={`rounded-md px-2.5 py-1.5 text-xs font-semibold ${library.filter === option.id ? 'bg-blue-700 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
+                                    className={`min-h-12 rounded-md px-2.5 py-1.5 text-xs font-semibold ${library.filter === option.id ? 'bg-blue-700 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
                                     type="button"
                                     aria-pressed={library.filter === option.id}
                                     data-testid={`my-flow-list-filter-${option.id}`}
@@ -601,7 +641,7 @@ export function MyFlowRouteSurface<TFlow>({
                           <button
                             type="button"
                             data-testid="my-flow-mobile-inventory-open"
-                            className="w-full rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-left text-sm font-semibold text-blue-800"
+                            className="min-h-12 w-full rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-left text-sm font-semibold text-blue-800"
                             aria-expanded={library.mobileInventoryExpanded}
                             onClick={actions.onExpandMobileInventory}
                           >
@@ -610,7 +650,7 @@ export function MyFlowRouteSurface<TFlow>({
                         ) : null}
                       </div>
                     ) : library.isMobile ? (
-                      <div className="min-w-0">
+                      <div className="min-w-0" data-workspace-composition={panel.savedPlanLibraryEnabled ? 'mobile-drill-in' : undefined}>
                         {library.mobileWorkspaceEntries.map((entry) => renderers.renderMobileWorkspace(entry.value))}
                       </div>
                     ) : null}

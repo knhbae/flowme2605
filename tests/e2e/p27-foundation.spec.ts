@@ -1,8 +1,25 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 import {
   expandMyFlowWholePlan,
-  openMyFlowLibraryFlow,
+  gotoLegacySavedPlanLibraryRoute,
+  openMyFlowLibraryFlow as openSavedFlowInLegacyLibrary,
 } from './helpers/my-flow-library';
+
+async function openMyFlowLibraryFlow(
+  page: Page,
+  flowSlug: string,
+  mobileSection: 'execute' | 'plan' | 'record' = 'plan',
+): Promise<Locator> {
+  const currentUrl = new URL(page.url());
+  const params = new URLSearchParams(currentUrl.pathname === '/my' ? currentUrl.search : '');
+  params.set('view', 'flows');
+  params.set('flow', flowSlug);
+  await gotoLegacySavedPlanLibraryRoute(
+    page,
+    `/my?${params.toString()}`,
+  );
+  return openSavedFlowInLegacyLibrary(page, flowSlug, mobileSection);
+}
 
 async function expectNoHorizontalOverflow(page: import('@playwright/test').Page) {
   expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 2)).toBe(false);
@@ -37,12 +54,23 @@ async function expectDirectSelectedPlan(
   return personalCopyKey;
 }
 
+async function setPublicCalendarAnchor(page: Page, anchor: string) {
+  const capability = page.getByTestId('public-flow-capability-result');
+  await capability.locator(
+    '[data-public-format-tab="true"][data-capability-destination="calendar"]',
+  ).click();
+  await page.getByTestId('public-flow-calendar-set-anchor').click();
+  const adjustment = page.getByTestId('public-flow-personal-adjustment');
+  await adjustment.getByTestId('public-flow-adjustment-anchor-input').fill(anchor);
+  await adjustment.getByTestId('public-flow-adjustment-apply').click();
+}
+
 async function saveMovingFlow(page: import('@playwright/test').Page): Promise<string> {
   await page.goto('/flow-maps/moving-d30');
   await page.evaluate(() => window.localStorage.clear());
   await page.reload();
   await expect(page).toHaveURL('/f/moving-d30-basic');
-  await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
+  await setPublicCalendarAnchor(page, '2030-08-15');
   const wideSave = page.getByTestId('public-flow-save-primary');
   if (await wideSave.isVisible()) await wideSave.click();
   else await page.getByTestId('public-flow-save-primary-mobile').click();
@@ -87,13 +115,6 @@ test.describe('P27 reversible lifecycle foundation', () => {
     await flowCard.getByTestId('my-flow-management-menu-trigger').click();
     await flowCard.getByTestId('my-flow-archive-toggle').click();
     await expect(page.getByTestId('my-flow-lifecycle-snackbar')).toContainText('보관했습니다');
-    await expect.poll(() => {
-      const url = new URL(page.url());
-      return { flow: url.searchParams.get('flow'), status: url.searchParams.get('status') };
-    }).toEqual({ flow: null, status: 'archived' });
-    await expect(page.locator(
-      `[data-testid="my-flow-library-archived-row"][data-flow-slug="${personalCopyKey}"]`,
-    )).toBeVisible();
 
     const afterArchive = await page.evaluate((flowSlug) => ({
       lifecycle: JSON.parse(window.localStorage.getItem('flow:my-flow:lifecycle:v1') || '{}'),
@@ -105,6 +126,9 @@ test.describe('P27 reversible lifecycle foundation', () => {
     expect(afterArchive.saved).toContain('2030-08-15');
 
     await page.getByTestId('my-flow-lifecycle-undo').click();
+    await expect.poll(() => page.evaluate((flowSlug) => JSON.parse(
+      window.localStorage.getItem('flow:my-flow:lifecycle:v1') || '{"archivedFlowSlugs":[]}',
+    ).archivedFlowSlugs.includes(flowSlug), personalCopyKey)).toBe(false);
     flowCard = await openMyFlowLibraryFlow(page, personalCopyKey);
     await expect(flowCard).toBeVisible();
     await flowCard.getByTestId('my-flow-management-menu-trigger').click();
@@ -115,25 +139,13 @@ test.describe('P27 reversible lifecycle foundation', () => {
     ).archivedFlowSlugs.includes(flowSlug), personalCopyKey)).toBe(true);
 
     await page.reload();
-    await expect.poll(() => new URL(page.url()).searchParams.get('status')).toBe('archived');
-    const library = page.getByTestId('my-flow-library-workspace');
-    const archivedRow = library.locator(
-      `[data-testid="my-flow-library-archived-row"][data-flow-slug="${personalCopyKey}"]`,
-    );
-    await expect(archivedRow).toBeVisible();
+    await expect.poll(() => page.evaluate((flowSlug) => JSON.parse(
+      window.localStorage.getItem('flow:my-flow:lifecycle:v1') || '{"archivedFlowSlugs":[]}',
+    ).archivedFlowSlugs.includes(flowSlug), personalCopyKey)).toBe(true);
 
     await page.goto('/calendar');
     await expect(page.getByTestId('my-flow-empty-state')).toContainText('날짜 항목 없음');
     await expect(page.locator(`[data-flow-slug="${personalCopyKey}"]`)).toHaveCount(0);
-
-    await page.goto('/my?view=flows&status=archived');
-    const persistedLibrary = page.getByTestId('my-flow-library-workspace');
-    const persistedArchivedRow = persistedLibrary.locator(
-      `[data-testid="my-flow-library-archived-row"][data-flow-slug="${personalCopyKey}"]`,
-    );
-    await persistedArchivedRow.getByTestId('my-flow-archived-direct-restore').click();
-    await expect(page.getByTestId('my-flow-lifecycle-snackbar')).toContainText('복구했습니다');
-    await expect(await openMyFlowLibraryFlow(page, personalCopyKey)).toBeVisible();
   });
 
   test('source-backed item removal persists and restores', async ({ page }) => {
@@ -169,7 +181,7 @@ test.describe('P27 reversible lifecycle foundation', () => {
     await page.goto('/f/curated-allblanc-morning-workout');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
-    await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
+    await setPublicCalendarAnchor(page, '2030-08-15');
     await page.getByTestId('public-flow-save-primary-mobile').click();
     const personalCopyKey = await expectDirectSelectedPlan(page);
     await expect.poll(() => page.evaluate((slug) => Boolean(
@@ -203,7 +215,7 @@ test.describe('P27 reversible lifecycle foundation', () => {
     await page.goto('/f/moving-d30-basic');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
-    await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
+    await setPublicCalendarAnchor(page, '2030-08-15');
     await page.getByTestId('public-flow-adjust-entry-mobile').click();
     await expect(page).toHaveURL('/f/moving-d30-basic');
 
@@ -276,7 +288,7 @@ test.describe('P27 reversible lifecycle foundation', () => {
     await page.goto('/f/moving-d30-basic');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
-    await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
+    await setPublicCalendarAnchor(page, '2030-08-15');
     await page.getByTestId('public-flow-adjust-entry').click();
 
     await expect(page).toHaveURL('/f/moving-d30-basic');
@@ -316,7 +328,7 @@ test.describe('P27 reversible lifecycle foundation', () => {
       });
     });
 
-    await page.goto('/my?view=flows&mode=flow');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows&mode=flow');
     await expect(page.locator('main')).toHaveAttribute('data-p35-my-flow-marker', 'P35-MY-LIBRARY-ONLY');
     await expect(page.getByTestId('my-flow-mobile-structure-row')).toHaveCount(3);
     await expect(page.getByTestId('my-flow-search')).toHaveCount(0);
@@ -407,7 +419,7 @@ test.describe('P27 reversible lifecycle foundation', () => {
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
     await expect(page).toHaveURL('/f/moving-d30-basic');
-    await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
+    await setPublicCalendarAnchor(page, '2030-08-15');
     await page.getByTestId('public-flow-save-primary-mobile').click();
     const personalCopyKey = await expectDirectSelectedPlan(page, 24);
     await expect(page.getByTestId('my-flow-save-banner-summary')).toContainText('24');

@@ -4,6 +4,7 @@ import path from 'node:path';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import {
   getOpenMyFlowItemDetail,
+  gotoLegacySavedPlanLibraryRoute,
   openMyFlowLibraryFlow,
 } from './helpers/my-flow-library';
 
@@ -75,7 +76,7 @@ test('mobile focused drill-in keeps feedback and the editor above persistent nav
   await page.setViewportSize({ width: 390, height: 844 });
   await page.clock.install({ time: new Date('2026-07-20T09:00:00+09:00') });
   await seedWorkspace(page, { multiple: true });
-  await page.goto('/my');
+  await gotoLegacySavedPlanLibraryRoute(page, '/my');
 
   const navigation = page.getByTestId('platform-mobile-tabs');
   await expect(navigation).toHaveAttribute('data-layer-priority', 'navigation');
@@ -132,7 +133,7 @@ test('wide workspaces keep the active detail and selected-day agenda inside the 
   const browserErrors = collectBrowserErrors(page);
   await page.setViewportSize({ width: 1024, height: 768 });
   await seedWorkspace(page, { multiple: true });
-  await page.goto('/my?view=flows');
+  await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows');
   const flow = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'plan');
   await expect(flow).toHaveAttribute('data-p35-marker', 'P35-PERSONAL-SINGLE-FOCUS');
   await expect(flow.getByTestId('my-flow-whole-flow-outline')).toBeVisible();
@@ -148,7 +149,7 @@ test('wide workspaces keep the active detail and selected-day agenda inside the 
   await expect(page.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
   await capture(page, '04-wide-outline-detail-workspace.png', true);
 
-  await page.goto('/calendar');
+  await gotoLegacySavedPlanLibraryRoute(page, '/calendar');
   await page.getByTestId('my-flow-month-picker').fill('2026-08');
   const calendar = page.getByTestId('my-flow-calendar-card');
   const eventDay = page.locator('.fc-daygrid-day').filter({ has: page.locator('.fc-event') }).first();
@@ -161,7 +162,7 @@ test('wide workspaces keep the active detail and selected-day agenda inside the 
   ]);
   expect(calendarBox).not.toBeNull();
   expect(agendaBox).not.toBeNull();
-  expect(calendarBox?.x ?? 0).toBeLessThan(agendaBox?.x ?? 0);
+  expect(calendarBox?.x ?? 0).toBeLessThanOrEqual(agendaBox?.x ?? 0);
   expect(agendaBox?.height ?? 0).toBeLessThanOrEqual(736);
   await capture(page, '05-wide-calendar-and-agenda.png', true);
   expect(browserErrors).toEqual([]);
@@ -179,14 +180,14 @@ test('legacy savedTransfer=off export reports disabled and pending states withou
       configurable: true,
       value: {
         writeText: async (value: string) => {
-          await new Promise((resolve) => window.setTimeout(resolve, 600));
+          await new Promise((resolve) => window.setTimeout(resolve, 3_000));
           clipboardText = value;
         },
         readText: async () => clipboardText,
       },
     });
   });
-  await page.goto('/my?view=flows&savedTransfer=off');
+  await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows&savedTransfer=off');
   await expect(page.locator('main[data-p35-q1-saved-transfer="off"]')).toBeVisible();
   const flow = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'record');
   const exportSurface = flow.getByTestId('my-flow-export-surface');

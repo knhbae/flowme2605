@@ -5,7 +5,10 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 import {
   closeOpenMyFlowItemDetail,
   getOpenMyFlowItemDetail,
+  gotoLegacySavedPlanLibraryRoute,
+  installLegacySavedPlanLibraryNavigation,
   openMyFlowLibraryFlow,
+  withLegacySavedPlanLibraryRoute,
 } from './helpers/my-flow-library';
 
 const evidenceRoot = process.env.FLOWME_P26_10_EVIDENCE_DIR;
@@ -43,10 +46,11 @@ async function seedMovingFlow(page: Page) {
 }
 
 async function saveMovingPersonalCopy(page: Page): Promise<string> {
-  await page.goto('/flow-maps/moving-d30');
+  await gotoLegacySavedPlanLibraryRoute(page, '/flow-maps/moving-d30');
+  await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
   await page.evaluate(() => window.localStorage.clear());
   await page.reload();
-  await expect(page).toHaveURL('/f/moving-d30-basic');
+  await expect(page).toHaveURL(withLegacySavedPlanLibraryRoute('/f/moving-d30-basic'));
   await page.getByLabel('이사일').fill('2026-08-15');
   await page.getByTestId('public-flow-save-primary-mobile').click();
   await expect.poll(() => {
@@ -65,19 +69,24 @@ async function saveMovingPersonalCopy(page: Page): Promise<string> {
 }
 
 async function enterEditMode(detail: Locator) {
+  const itemId = await detail.getAttribute('data-item-id');
   const quickEdit = detail.getByTestId('my-flow-quick-item-edit');
   if (await quickEdit.isVisible().catch(() => false)) {
     await quickEdit.click();
-    await expect(detail).toHaveAttribute('data-detail-mode', 'edit');
-    return;
+  } else {
+    const readSummary = detail.getByTestId('my-flow-detail-read-summary');
+    await expect(readSummary).toBeVisible();
+    if ((await readSummary.getAttribute('open')) === null) {
+      await readSummary.locator('summary').click();
+    }
+    await readSummary.getByTestId('my-flow-detail-edit-toggle').click();
   }
-  const readSummary = detail.getByTestId('my-flow-detail-read-summary');
-  await expect(readSummary).toBeVisible();
-  if ((await readSummary.getAttribute('open')) === null) {
-    await readSummary.locator('summary').click();
-  }
-  await readSummary.getByTestId('my-flow-detail-edit-toggle').click();
-  await expect(detail).toHaveAttribute('data-detail-mode', 'edit');
+  const selector = itemId
+    ? `[data-testid="my-flow-item-detail"][data-item-id=${JSON.stringify(itemId)}][data-detail-mode="edit"]:visible`
+    : '[data-testid="my-flow-item-detail"][data-detail-mode="edit"]:visible';
+  const editor = detail.page().locator(selector);
+  await expect(editor).toHaveCount(1);
+  return editor;
 }
 
 async function openMobileFirstRow(page: Page, flowSlug = 'moving-d30-basic') {
@@ -105,6 +114,8 @@ async function openSharedSavedItemEditor(page: Page, flowSlug: string) {
 
 test.describe('P26-10 quick and advanced editor separation', () => {
   test('mobile canonical personal copy stages Saved Item changes in the parent Plan before the final Save', async ({ page }) => {
+    test.setTimeout(180_000);
+    await installLegacySavedPlanLibraryNavigation(page);
     const browserErrors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
     const personalCopyKey = await saveMovingPersonalCopy(page);
@@ -196,7 +207,7 @@ test.describe('P26-10 quick and advanced editor separation', () => {
     const browserErrors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 1024, height: 768 });
     await seedMovingFlow(page);
-    await page.goto('/my?view=flows');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows');
 
     const flow = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'plan');
     const outline = flow.getByTestId('my-flow-whole-flow-outline');
@@ -204,9 +215,7 @@ test.describe('P26-10 quick and advanced editor separation', () => {
     await firstRow.locator('button').first().click();
     const pane = flow.getByTestId('my-flow-workspace-detail-pane');
     const detail = pane.getByTestId('my-flow-item-detail');
-    await enterEditMode(detail);
-
-    const editor = pane.getByRole('dialog', { name: '수정' });
+    const editor = await enterEditMode(detail);
     await expect(editor).toHaveAttribute('data-editor-layout', 'wide-detail-pane');
     await expect(editor).not.toHaveAttribute('aria-modal', 'true');
     await expect(editor.getByTestId('my-flow-detail-edit-actions')).toHaveAttribute('data-editor-actions-sticky', 'true');
@@ -223,9 +232,10 @@ test.describe('P26-10 quick and advanced editor separation', () => {
   });
 
   test('Calendar agenda delegates to the contained My Flow quick editor', async ({ page }) => {
+    await installLegacySavedPlanLibraryNavigation(page);
     const browserErrors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/calendar?demo=ux12');
+    await gotoLegacySavedPlanLibraryRoute(page, '/calendar?demo=ux12');
     await page.getByTestId('my-flow-month-picker').fill('2026-05');
     await page.locator('.fc-daygrid-day[data-date="2026-05-28"]')
       .getByTestId('my-flow-calendar-date-button')
@@ -242,8 +252,7 @@ test.describe('P26-10 quick and advanced editor separation', () => {
     const detailSheet = page.getByTestId('my-flow-item-detail-sheet');
     await expect(detailSheet).toBeVisible();
     const detail = detailSheet.getByTestId('my-flow-item-detail');
-    await enterEditMode(detail);
-    const editor = page.getByRole('dialog', { name: '수정' });
+    const editor = await enterEditMode(detail);
     await expect(editor).toHaveAttribute('data-editor-layout', 'mobile-full-screen');
     await expect(editor.getByTestId('my-flow-detail-title-input')).toBeVisible();
     await expect(editor.getByTestId('my-flow-detail-date-input')).toBeVisible();

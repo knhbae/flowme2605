@@ -1,7 +1,9 @@
 import { expect, test, type Page } from '@playwright/test';
 
+import { gotoLegacySavedPlanLibraryRoute } from './helpers/my-flow-library';
+
 async function saveRealMovingFlow(page: Page): Promise<string> {
-  await page.goto('/f/moving-d30-basic');
+  await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
   await page.evaluate(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
@@ -31,14 +33,17 @@ async function readFlowLocalStorageSnapshot(page: Page): Promise<string> {
 }
 
 test.describe('P35 release hardening literal routes', () => {
-  test('literal /my defaults a real saved Flow to the saved-plan library', async ({ page }) => {
+  test('literal /my canonicalizes a real saved Flow into the approved next-sorted library', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     const personalCopyKey = await saveRealMovingFlow(page);
 
     await page.goto('/my');
-    await expect(page).toHaveURL(/\/my$/);
+    await expect(page).toHaveURL('/my?sort=next');
 
-    await expect(page.getByTestId('my-flow-saved-library-shell')).toBeVisible();
+    await expect(page.getByTestId('my-flow-saved-library-shell')).toHaveAttribute(
+      'data-library-count',
+      '1',
+    );
     await expect(page.getByTestId('my-flow-cross-flow-todo-experiment')).toHaveCount(0);
     await expect(page.getByTestId('my-flow-mobile-flow-hub')).toBeVisible();
     await expect(

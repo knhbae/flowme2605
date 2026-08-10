@@ -26,6 +26,7 @@ type FlowSaveBeforeFrameProps = {
   itemCount: number;
   previewRows: FlowSaveBeforePreviewRow[];
   artifactPreview?: ReactNode;
+  desktopCatalog?: ReactNode;
   onAdjustRow?: (rowId: string) => void;
   setup?: ReactNode;
   actions?: ReactNode;
@@ -48,6 +49,7 @@ export function FlowSaveBeforeFrame({
   itemCount,
   previewRows,
   artifactPreview,
+  desktopCatalog,
   onAdjustRow,
   setup,
   actions,
@@ -62,6 +64,7 @@ export function FlowSaveBeforeFrame({
   const hasDecisionPane = composition === 'artifact-first'
     ? Boolean(setup || actions)
     : Boolean(artifactPreview || setup || actions);
+  const hasDesktopCatalog = Boolean(desktopCatalog);
 
   if (composition === 'artifact-first') {
     return (
@@ -83,11 +86,24 @@ export function FlowSaveBeforeFrame({
           sourceHref={sourceHref}
         />
 
-        <div className={`mt-4 grid gap-4 ${hasDecisionPane ? 'lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.42fr)] lg:items-start lg:gap-7' : ''}`}>
+        <div
+          data-approved-desktop-composition={hasDesktopCatalog ? 'catalog-result-context' : undefined}
+          data-workspace-breakpoints={hasDesktopCatalog
+            ? 'mobile:0-767;stacked:768-1023;desktop-compact:1024-1279;desktop-full:1280+'
+            : undefined}
+          data-mobile-order={hasDesktopCatalog ? 'result-context' : undefined}
+          className={hasDesktopCatalog
+            ? `mt-4 grid gap-4 md:grid-cols-1 md:items-start ${hasDecisionPane
+              ? 'lg:grid-cols-[minmax(14rem,0.32fr)_minmax(0,1fr)] lg:gap-7 xl:grid-cols-[minmax(14rem,0.32fr)_minmax(0,1fr)_minmax(18rem,0.42fr)]'
+              : 'lg:grid-cols-[minmax(14rem,0.32fr)_minmax(0,1fr)] lg:gap-7'}`
+            : `mt-4 grid gap-4 ${hasDecisionPane ? 'lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.42fr)] lg:items-start lg:gap-7' : ''}`}
+        >
           <div
             data-testid="flow-save-before-primary-result"
             data-flow-identity-slot="primary-result"
-            className="min-w-0"
+            className={hasDesktopCatalog
+              ? 'min-w-0 lg:col-start-2 lg:row-start-1'
+              : 'min-w-0'}
           >
             {artifactPreview}
           </div>
@@ -95,10 +111,22 @@ export function FlowSaveBeforeFrame({
             <aside
               data-testid="flow-save-before-decision"
               aria-label="저장 조건과 행동"
-              className="grid min-w-0 gap-3 border-t border-[var(--flowme-border)] pt-4 lg:border-l lg:border-t-0 lg:pl-7 lg:pt-0"
+              className={hasDesktopCatalog
+                ? 'grid min-w-0 gap-3 border-t border-[var(--flowme-border)] pt-4 lg:col-start-2 lg:row-start-2 lg:border-l-0 lg:pl-0 xl:col-start-3 xl:row-start-1 xl:border-l xl:border-t-0 xl:pl-7 xl:pt-0'
+                : 'grid min-w-0 gap-3 border-t border-[var(--flowme-border)] pt-4 lg:border-l lg:border-t-0 lg:pl-7 lg:pt-0'}
             >
               {setup}
               {actions}
+            </aside>
+          ) : null}
+          {hasDesktopCatalog ? (
+            <aside
+              data-testid="flow-save-before-desktop-catalog"
+              data-catalog-visibility="stacked:visible;compact:visible;full:visible"
+              aria-label="계획 카탈로그"
+              className="hidden md:order-first md:block md:border-b md:border-[var(--flowme-border)] md:pb-4 lg:order-none lg:col-start-1 lg:row-start-1 lg:row-span-2 lg:border-b-0 lg:border-r lg:pb-0 lg:pr-5 xl:row-span-1"
+            >
+              {desktopCatalog}
             </aside>
           ) : null}
         </div>

@@ -1,6 +1,9 @@
 import { expect, test, type Page } from '@playwright/test';
 
-import { openMyFlowCalendarSelectedDay } from './helpers/my-flow-library';
+import {
+  getOpenMyFlowItemDetail,
+  openMyFlowCalendarSelectedDay,
+} from './helpers/my-flow-library';
 
 function collectBrowserErrors(page: Page): string[] {
   const errors: string[] = [];
@@ -17,7 +20,7 @@ function currentPath(page: Page): string {
 }
 
 test.describe('R1 Calendar controller boundary characterization', () => {
-  test('Calendar opens the exact My Flow item href with demo preserved and Back returns to Calendar', async ({ page }) => {
+  test('Calendar keeps its demo route while opening and closing the exact Item inspector', async ({ page }) => {
     const browserErrors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 1024, height: 768 });
     await page.addInitScript(() => window.localStorage.clear());
@@ -32,26 +35,24 @@ test.describe('R1 Calendar controller boundary characterization', () => {
 
     const flowSlug = await scheduleGroup.getAttribute('data-flow-slug');
     const executionRow = scheduleGroup.locator('article[data-row-key]').first();
-    const itemKey = await executionRow.getAttribute('data-row-key');
+    const itemId = await executionRow.getAttribute('data-item-id');
     const occurrenceId = await executionRow.getAttribute('data-occurrence-id');
     expect(flowSlug).toBeTruthy();
-    expect(itemKey).toBeTruthy();
+    expect(itemId).toBeTruthy();
 
-    const expectedParams = new URLSearchParams({
-      view: 'flows',
-      flow: flowSlug ?? '',
-      item: itemKey ?? '',
-    });
-    if (occurrenceId) expectedParams.set('date', '2026-05-28');
-    expectedParams.set('demo', 'ux12');
-    const expectedMyFlowHref = `/my?${expectedParams.toString()}`;
-
-    await scheduleGroup.locator('button[data-flow-row-slot="open"]').first().click();
-    await expect(page).toHaveURL(expectedMyFlowHref);
-    expect(currentPath(page)).toBe(expectedMyFlowHref);
-    await expect(page.locator('main[data-p32-workspace-state="focused"]')).toBeVisible();
-
-    await page.goBack();
+    const origin = currentPath(page);
+    const opener = scheduleGroup.locator('button[data-flow-row-slot="open"]').first();
+    await opener.click();
+    expect(currentPath(page)).toBe(origin);
+    const detail = getOpenMyFlowItemDetail(page);
+    await expect(detail).toBeVisible();
+    await expect(detail).toHaveAttribute('data-item-id', itemId ?? '');
+    if (occurrenceId) {
+      await expect(detail).toContainText('5월 28일');
+    }
+    await detail.getByRole('button', { name: '닫기', exact: true }).click();
+    await expect(detail).toHaveCount(0);
+    await expect(opener).toBeFocused();
     await expect(page).toHaveURL('/calendar?demo=ux12');
     expect(currentPath(page)).toBe('/calendar?demo=ux12');
     await expect(page.getByTestId('my-flow-calendar-workspace')).toBeVisible();

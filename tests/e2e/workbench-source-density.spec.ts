@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test';
 
+import { gotoLegacySavedPlanLibraryRoute } from './helpers/my-flow-library';
+
 async function openArtifactFirstOutline(page: import('@playwright/test').Page) {
   const hero = page.getByTestId('public-flow-hero');
   await expect(hero).toHaveAttribute('data-experience-architecture', 'p35-result-first');
@@ -24,14 +26,14 @@ async function expectClosedSourceRoute(page: import('@playwright/test').Page) {
   await expect(page.getByTestId('public-flow-detail-workspace')).toHaveCount(0);
   await expect(page.getByLabel('Flow artifact workbench')).toHaveCount(0);
   await expect(page.getByRole('checkbox')).toHaveCount(0);
-  await expect(page.getByRole('button', { name: /내 계획에 저장|(?:이사일|시작일) 정하기/ })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /내 계획에 저장|(?:이사일|시작일|검사일) 정하기/ })).toHaveCount(0);
 }
 
 test.describe('field checklist workbench source density', () => {
   for (const route of ['/f/new-car-delivery-check', '/f/used-car-buying-check']) {
     test(`${route} keeps source access out of repeated checklist row details`, async ({ page }) => {
       await page.setViewportSize({ width: 390, height: 844 });
-      await page.goto(route);
+      await gotoLegacySavedPlanLibraryRoute(page, route);
 
       const { hero, outline } = await openArtifactFirstOutline(page);
 
@@ -47,7 +49,7 @@ test.describe('field checklist workbench source density', () => {
 
   test('/f/new-car-delivery-check keeps repeated caution copy as one common note', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/f/new-car-delivery-check');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/new-car-delivery-check');
 
     const { outline } = await openArtifactFirstOutline(page);
     await expect(page.getByTestId('public-flow-reference-details')).toHaveCount(0);
@@ -58,7 +60,7 @@ test.describe('field checklist workbench source density', () => {
 
   test('/f/fridge-cleanout-weekly-plan keeps export at the flow level on mobile', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/f/fridge-cleanout-weekly-plan');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/fridge-cleanout-weekly-plan');
 
     await expect(page.getByTestId('public-flow-detail-workspace')).toHaveCount(0);
     const capability = page.getByTestId('public-flow-capability-result');
@@ -87,7 +89,7 @@ test.describe('field checklist workbench source density', () => {
 
   test('/f/curated-new-car-basic keeps internal source trace out of expanded user details', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/f/curated-new-car-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-new-car-basic');
 
     await openArtifactFirstOutline(page);
     await expect(page.locator('body')).not.toContainText('sourceTrace');
@@ -97,7 +99,7 @@ test.describe('field checklist workbench source density', () => {
 
   test('/f/birth-registration-prep separates birth filing from benefit bundle application', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    const response = await page.goto('/f/birth-registration-prep');
+    const response = await gotoLegacySavedPlanLibraryRoute(page, '/f/birth-registration-prep');
 
     expect(response?.status()).toBe(404);
     await expectClosedSourceRoute(page);
@@ -108,7 +110,7 @@ test.describe('field checklist workbench source density', () => {
 
   test('/f/payday-finance-routine does not turn a mismatched source ratio into a recommendation', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    const response = await page.goto('/f/payday-finance-routine');
+    const response = await gotoLegacySavedPlanLibraryRoute(page, '/f/payday-finance-routine');
 
     expect(response?.status()).toBe(404);
     await expectClosedSourceRoute(page);
@@ -118,7 +120,7 @@ test.describe('field checklist workbench source density', () => {
 
   test('/f/safe-inheritance-onestop keeps the official source reachable without unsupported urgency', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/f/safe-inheritance-onestop');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/safe-inheritance-onestop');
 
     await expect(page.getByTestId('public-flow-review-only-gate')).toHaveCount(0);
     await expect(getPublicIdentitySource(page).locator('a[href]')).toHaveAttribute(
@@ -138,7 +140,7 @@ test.describe('field checklist workbench source density', () => {
 
     await page.setViewportSize({ width: 390, height: 844 });
     for (const route of routes) {
-      const response = await page.goto(route);
+      const response = await gotoLegacySavedPlanLibraryRoute(page, route);
       expect(response?.status()).toBe(404);
       await expectClosedSourceRoute(page);
     }
@@ -166,7 +168,7 @@ test.describe('field checklist workbench source density', () => {
 
     await page.setViewportSize({ width: 390, height: 844 });
     for (const route of routes) {
-      await page.goto(route.route);
+      await gotoLegacySavedPlanLibraryRoute(page, route.route);
       await expect(page.getByTestId('public-flow-review-only-gate')).toHaveCount(0);
       await expect(getPublicIdentitySource(page).locator('a[href]')).toHaveAttribute(
         'href',
@@ -178,7 +180,7 @@ test.describe('field checklist workbench source density', () => {
 
   test('/f/passport-renewal-docs uses the current foreign ministry source', async ({ page }) => {
     await page.setViewportSize({ width: 1024, height: 900 });
-    await page.goto('/f/passport-renewal-docs');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/passport-renewal-docs');
 
     await expect(getPublicIdentitySource(page)).toContainText('외교부 여권안내');
     await expect(getPublicIdentitySource(page).locator('a[href]')).toHaveAttribute(

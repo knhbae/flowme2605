@@ -1,5 +1,10 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
+import {
+  gotoLegacySavedPlanLibraryRoute,
+  installLegacySavedPlanLibraryNavigation,
+} from './helpers/my-flow-library';
+
 const SOURCE_FLOW_SLUG = 'moving-d30-basic';
 const SOURCE_ROUTE = `/f/${SOURCE_FLOW_SLUG}`;
 const SAVED_RECORD_PREFIX = 'flow:saved:';
@@ -56,7 +61,8 @@ type BrowserRecoveryJournal = {
 
 async function resetAndOpenSource(page: Page): Promise<void> {
   await page.setViewportSize(MOBILE_VIEWPORT);
-  await page.goto(SOURCE_ROUTE);
+  await installLegacySavedPlanLibraryNavigation(page);
+  await gotoLegacySavedPlanLibraryRoute(page, SOURCE_ROUTE);
   await page.evaluate(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
@@ -205,7 +211,7 @@ async function openExistingCopyDialog(
   page: Page,
   anchor = '2031-02-10',
 ): Promise<Locator> {
-  await page.goto(SOURCE_ROUTE);
+  await gotoLegacySavedPlanLibraryRoute(page, SOURCE_ROUTE);
   await page.getByTestId('public-flow-anchor-input').fill(anchor);
   await page.getByTestId('public-flow-save-primary-mobile').click();
   const dialog = page.getByTestId('public-flow-existing-copy-dialog');
@@ -306,7 +312,7 @@ test.describe('P35 P0 public save lifecycle', () => {
 
   test('existing-copy dialog and both cancellation paths write nothing and preserve the public draft', async ({ page }) => {
     await createFirstPersonalCopy(page);
-    await page.goto(SOURCE_ROUTE);
+    await gotoLegacySavedPlanLibraryRoute(page, SOURCE_ROUTE);
     const draftAnchor = '2031-03-15';
     const anchorInput = page.getByTestId('public-flow-anchor-input');
     await anchorInput.fill(draftAnchor);
@@ -1004,7 +1010,7 @@ test.describe('P35 P0 public save lifecycle', () => {
     await expect.poll(() => {
       const url = new URL(page.url());
       return `${url.pathname}${url.search}`;
-    }).toBe('/my?view=flows');
+    }).toBe('/my?view=flows&savedPlanLibrary=off');
     await expect(page.getByTestId('my-flow-save-banner')).toHaveCount(0);
     await expect(page.getByTestId('my-flow-save-undo-status')).toBeVisible();
     expect(await rawStorageValue(page, newRecordKey)).toBeNull();
@@ -1020,7 +1026,7 @@ test.describe('P35 P0 public save lifecycle', () => {
       originalCopyKey,
     ]);
 
-    await page.goto(SOURCE_ROUTE);
+    await gotoLegacySavedPlanLibraryRoute(page, SOURCE_ROUTE);
     await expect(
       page.locator('main[data-p35-p004-save-lifecycle="on"]'),
     ).toBeVisible();

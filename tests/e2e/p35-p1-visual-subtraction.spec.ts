@@ -3,8 +3,10 @@ import path from 'node:path';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
 import {
+  gotoLegacySavedPlanLibraryRoute,
   getOpenMyFlowItemDetail,
   openMyFlowLibraryFlow,
+  withLegacySavedPlanLibraryRoute,
 } from './helpers/my-flow-library';
 
 const viewports = [
@@ -21,8 +23,10 @@ const evidenceDirectory = path.resolve(
 );
 
 function routeForPhase(route: string): string {
-  if (phase !== 'before') return route;
-  return `${route}${route.includes('?') ? '&' : '?'}visualSubtraction=off`;
+  const phaseRoute = phase !== 'before'
+    ? route
+    : `${route}${route.includes('?') ? '&' : '?'}visualSubtraction=off`;
+  return withLegacySavedPlanLibraryRoute(phaseRoute);
 }
 
 async function relativeDate(page: Page, dayOffset: number): Promise<string> {
@@ -35,6 +39,22 @@ async function relativeDate(page: Page, dayOffset: number): Promise<string> {
       String(value.getDate()).padStart(2, '0'),
     ].join('-');
   }, dayOffset);
+}
+
+async function getPublicCalendarAnchorInput(page: Page): Promise<Locator> {
+  const input = page.getByTestId('public-flow-anchor-input');
+  const legacyCalendarTab = page
+    .getByTestId('public-flow-capability-result')
+    .locator('[data-public-format-tab="true"][data-capability-destination="calendar"]');
+  await expect.poll(async () => (
+    await input.isVisible().catch(() => false)
+      || await legacyCalendarTab.isVisible().catch(() => false)
+  )).toBe(true);
+  if (!(await input.isVisible().catch(() => false))) {
+    await legacyCalendarTab.click();
+  }
+  await expect(input).toBeVisible();
+  return input;
 }
 
 function collectBrowserErrors(page: Page): string[] {
@@ -191,7 +211,7 @@ test.describe('P1-01 bounded visual subtraction', () => {
       await page.setViewportSize(viewport);
       await page.goto(routeForPhase('/f/moving-d30-basic'));
       const hero = page.getByTestId('public-flow-hero');
-      const input = page.getByTestId('public-flow-anchor-input');
+      const input = await getPublicCalendarAnchorInput(page);
       await expectSurfaceHealth(page, hero);
       await input.fill(await relativeDate(page, 365));
       const successEcho = hero.locator('.border-emerald-200.bg-emerald-50');
@@ -217,7 +237,7 @@ test.describe('P1-01 bounded visual subtraction', () => {
     if (phase === 'after') {
       await page.setViewportSize(viewports[0]);
       await page.goto('/f/moving-d30-basic');
-      const input = page.getByTestId('public-flow-anchor-input');
+      const input = await getPublicCalendarAnchorInput(page);
       await input.fill(await relativeDate(page, -365));
       await expect(page.getByText(/이미 지났어요/u)).toBeVisible();
       const closeDate = await relativeDate(page, 5);
@@ -247,7 +267,7 @@ test.describe('P1-01 bounded visual subtraction', () => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize(viewports[0]);
 
-    await page.goto('/my?demo=ux12&visualSubtraction=off');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=ux12&visualSubtraction=off');
     const flow = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'execute');
     const row = flow.locator('[data-testid="my-flow-execution-row-shell"]:visible').first();
     await row.locator('button').first().click();
@@ -262,14 +282,14 @@ test.describe('P1-01 bounded visual subtraction', () => {
     await expect(map.locator('[data-flow-ui="schedule-intent"]')).toHaveCount(1);
     await expect(map.getByTestId('flow-map-selection-summary')).toHaveCount(0);
 
-    await page.goto('/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
     await expect(page.getByTestId('public-flow-hero')).toBeVisible();
     const storageBeforeRollback = await page.evaluate(() => ({
       local: Object.entries(window.localStorage).sort(([left], [right]) => left.localeCompare(right)),
       session: Object.entries(window.sessionStorage).sort(([left], [right]) => left.localeCompare(right)),
     }));
-    await page.goto('/f/moving-d30-basic?visualSubtraction=off');
-    await page.getByTestId('public-flow-anchor-input').fill(await relativeDate(page, 365));
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic?visualSubtraction=off');
+    await (await getPublicCalendarAnchorInput(page)).fill(await relativeDate(page, 365));
     await expect(page.getByTestId('public-flow-hero').locator('.border-emerald-200.bg-emerald-50')).toHaveCount(1);
     const storageAfterRollback = await page.evaluate(() => ({
       local: Object.entries(window.localStorage).sort(([left], [right]) => left.localeCompare(right)),

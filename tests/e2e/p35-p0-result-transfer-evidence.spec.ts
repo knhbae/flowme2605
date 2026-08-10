@@ -97,7 +97,7 @@ async function seedSavedFlow(page: Page): Promise<void> {
 }
 
 async function openPublic(page: Page): Promise<void> {
-  await page.goto(`${PUBLIC_ROUTE}?quickLocalResult=on`);
+  await page.goto(`${PUBLIC_ROUTE}?quickLocalResult=on&savedPlanLibrary=off`);
   await page.evaluate(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
@@ -107,7 +107,7 @@ async function openPublic(page: Page): Promise<void> {
 }
 
 async function openSavedTransferPanel(page: Page): Promise<Locator> {
-  await page.goto(`/my?flow=${FLOW_SLUG}&savedTransfer=on`);
+  await page.goto(`/my?flow=${FLOW_SLUG}&savedPlanLibrary=off&savedTransfer=on`);
   const workspace = await openMyFlowLibraryFlow(page, FLOW_SLUG, 'record');
   await workspace.getByTestId('my-flow-export-entry').click();
   const panel = workspace.getByTestId('my-flow-export-panel');

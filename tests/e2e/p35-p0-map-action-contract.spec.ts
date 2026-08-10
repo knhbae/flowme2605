@@ -171,7 +171,7 @@ test.describe('P35 P0 Flow Map action contract', () => {
 
     await page.evaluate(() => (window as unknown as { restoreFlowMapSetItem: () => void }).restoreFlowMapSetItem());
     await saveTrigger(page, true).click();
-    await expect(page).toHaveURL(`/my?savedMap=${MAP_ID}`);
+    await expect(page).toHaveURL(`/my?savedMap=${MAP_ID}&sort=next`);
     await assertStoredParity(page, expectedIds);
     const rawBeforeReload = await readRelevantRawStorage(page);
     await page.reload();
@@ -186,7 +186,7 @@ test.describe('P35 P0 Flow Map action contract', () => {
     await assertAppliedParity(page, expectedIds, false);
     await captureEvidence(page, 'p0-02-map-after-1440x1000.png');
     await saveTrigger(page, false).click();
-    await expect(page).toHaveURL(`/my?savedMap=${MAP_ID}`);
+    await expect(page).toHaveURL(`/my?savedMap=${MAP_ID}&sort=next`);
     await assertStoredParity(page, expectedIds);
     const rawBeforeReload = await readRelevantRawStorage(page);
     await page.reload();
@@ -219,7 +219,7 @@ test.describe('P35 P0 Flow Map action contract', () => {
     );
 
     await saveTrigger(page, true).click();
-    await expect(page).toHaveURL(`/my?savedMap=${MAP_ID}`);
+    await expect(page).toHaveURL(`/my?savedMap=${MAP_ID}&sort=next`);
     const newerRaw = await readRelevantRawStorage(page);
 
     await saveTrigger(stalePage, true).click();
@@ -287,7 +287,7 @@ test.describe('P35 P0 Flow Map action contract', () => {
     await expect(stalePage.getByTestId('flow-map-anchor-input')).toBeVisible();
 
     await saveTrigger(page, true).click();
-    await expect(page).toHaveURL(`/my?savedMap=${datedMapId}`);
+    await expect(page).toHaveURL(`/my?savedMap=${datedMapId}&sort=next`);
     const newerRaw = await readDatedRawStorage(page);
 
     await saveTrigger(stalePage, true).click();
