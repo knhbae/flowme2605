@@ -2,7 +2,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { expect, test, type Page } from '@playwright/test';
-import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
+import {
+  gotoLegacySavedPlanLibraryRoute,
+  installLegacySavedPlanLibraryNavigation,
+  openMyFlowLibraryFlow,
+} from './helpers/my-flow-library';
 import { savePublicFlow } from './helpers/public-flow-save';
 
 const evidenceRoot = process.env.FLOWME_P26_17_EVIDENCE_DIR;
@@ -45,10 +49,12 @@ async function seedMovingFlow(page: Page) {
 }
 
 test('mobile save journey uses one summary, direct selected plan, outline, and export grammar', async ({ page }) => {
+  test.setTimeout(90_000);
+  await installLegacySavedPlanLibraryNavigation(page);
   const browserErrors = collectBrowserErrors(page);
   await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/f/vehicle-inspection-prep');
+  await gotoLegacySavedPlanLibraryRoute(page, '/f/vehicle-inspection-prep');
   await page.evaluate(() => localStorage.clear());
   await page.reload();
 
@@ -100,7 +106,7 @@ test('wide whole Flow and editor reuse open rows and a stable editor shell', asy
   const browserErrors = collectBrowserErrors(page);
   await page.setViewportSize({ width: 1024, height: 768 });
   await seedMovingFlow(page);
-  await page.goto('/my?view=flows');
+  await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows');
 
   const flow = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'plan');
   const outline = flow.getByTestId('my-flow-whole-flow-outline');

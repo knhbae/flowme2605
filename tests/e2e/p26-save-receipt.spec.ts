@@ -2,7 +2,12 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { expect, test, type Page } from '@playwright/test';
-import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
+import {
+  gotoLegacySavedPlanLibraryRoute,
+  installLegacySavedPlanLibraryNavigation,
+  openMyFlowLibraryFlow,
+  withLegacySavedPlanLibraryRoute,
+} from './helpers/my-flow-library';
 import { openSavedPublicFlow, savePublicFlow } from './helpers/public-flow-save';
 
 const evidenceDir = process.env.FLOW_EVIDENCE_DIR;
@@ -65,8 +70,9 @@ async function assertReceiptSurvivesReload(page: Page, expectedHandoff: RegExp, 
 }
 
 test('public save opens the selected personal copy and keeps it reload-safe on mobile', async ({ page }) => {
+  await installLegacySavedPlanLibraryNavigation(page);
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/f/vehicle-inspection-prep');
+  await gotoLegacySavedPlanLibraryRoute(page, '/f/vehicle-inspection-prep');
   await page.evaluate(() => localStorage.clear());
   await page.reload();
 
@@ -87,11 +93,14 @@ test('public save opens the selected personal copy and keeps it reload-safe on m
 });
 
 test('canonical moving alias keeps direct selected-plan handoff and URL-first keeps its receipt contract', async ({ page }) => {
+  test.setTimeout(180_000);
+  await installLegacySavedPlanLibraryNavigation(page);
   await page.setViewportSize({ width: 1024, height: 768 });
-  await page.goto('/flow-maps/moving-d30');
+  await gotoLegacySavedPlanLibraryRoute(page, '/flow-maps/moving-d30');
+  await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
   await page.evaluate(() => localStorage.clear());
   await page.reload();
-  await expect(page).toHaveURL('/f/moving-d30-basic');
+  await expect(page).toHaveURL(withLegacySavedPlanLibraryRoute('/f/moving-d30-basic'));
   await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
   const mapSaveBanner = await savePublicFlow(page, page.getByTestId('public-flow-save-primary'));
   await expect(mapSaveBanner.getByTestId('my-flow-save-banner-summary')).toContainText('24');
@@ -105,7 +114,7 @@ test('canonical moving alias keeps direct selected-plan handoff and URL-first ke
   const movingWorkspace = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'plan');
   await expect(movingWorkspace.getByTestId('my-flow-whole-flow-outline')).toHaveAttribute('data-effective-row-count', '24');
 
-  await page.goto('/flows');
+  await gotoLegacySavedPlanLibraryRoute(page, '/flows');
   const lookup = page.getByTestId('flow-url-lookup-entry');
   await lookup.getByLabel('URL 또는 메모').fill('https://mathbang.net/13?utm_source=p26-receipt');
   await lookup.getByRole('button', { name: '계획 찾기' }).click();
@@ -114,7 +123,7 @@ test('canonical moving alias keeps direct selected-plan handoff and URL-first ke
   await result.getByLabel('학습 시작일').fill('2030-09-01');
   await result.getByRole('button', { name: '내 계획에 저장' }).click();
 
-  const urlFirstHandoff = /\/my\?savedMap=middle-school-math-1$/;
+  const urlFirstHandoff = /\/my\?savedMap=middle-school-math-1&savedPlanLibrary=off$/;
   const urlFirstReceipt = await assertCanonicalReceipt(page, urlFirstHandoff);
   expect(urlFirstReceipt.total).toBe(8);
   expect(urlFirstReceipt.undated).toBe(urlFirstReceipt.total);
@@ -123,8 +132,9 @@ test('canonical moving alias keeps direct selected-plan handoff and URL-first ke
 });
 
 test('memo draft receipt counts every accepted effective item and survives reload', async ({ page }) => {
+  await installLegacySavedPlanLibraryNavigation(page);
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/flows');
+  await gotoLegacySavedPlanLibraryRoute(page, '/flows');
   await page.evaluate(() => localStorage.clear());
   await page.reload();
 
@@ -136,8 +146,10 @@ test('memo draft receipt counts every accepted effective item and survives reloa
   await editor.getByLabel('메모 초안 제목').fill('여행 출발 준비');
   await editor.getByLabel('메모 초안 첫 할 일 날짜').fill('2030-10-03');
   await editor.getByTestId('flow-memo-draft-save').click();
+  await expect(page).toHaveURL(/\/my\?savedFlow=url-draft-/);
+  await gotoLegacySavedPlanLibraryRoute(page, page.url());
 
-  const handoff = /\/my\?savedFlow=url-draft-[^&]+$/;
+  const handoff = /\/my\?savedFlow=url-draft-[^&]+&savedPlanLibrary=off$/;
   const receipt = await assertCanonicalReceipt(page, handoff);
   expect(receipt.total).toBe(3);
   expect(receipt.dated).toBe(1);

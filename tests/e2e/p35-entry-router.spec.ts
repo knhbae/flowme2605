@@ -103,7 +103,7 @@ test.describe('P35-01 entry router and three primary destinations', () => {
 
     await page.goto('/');
 
-    await expect(page).toHaveURL('/my');
+    await expect(page).toHaveURL('/my?sort=next');
     await expectThreePrimaryDestinations(page, true);
     await expect(page.getByTestId('platform-mobile-tabs').getByRole('link', { name: '내 계획' }))
       .toHaveAttribute('aria-current', 'page');

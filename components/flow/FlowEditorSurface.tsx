@@ -85,6 +85,8 @@ export type FlowEditorSurfaceProps = Readonly<{
   cancelAction: FlowEditorSurfaceAction;
   primaryAction: FlowEditorSurfaceAction;
   retryAction?: FlowEditorSurfaceAction;
+  cancelPlacement?: 'footer' | 'header';
+  enforce48pxTargets?: boolean;
   dialogProps?: Omit<
     ComponentPropsWithoutRef<'section'>,
     'children' | 'className' | 'role' | 'aria-modal' | 'aria-labelledby'
@@ -144,6 +146,8 @@ export function FlowEditorSurface({
   cancelAction,
   primaryAction,
   retryAction,
+  cancelPlacement = 'footer',
+  enforce48pxTargets = false,
   dialogProps,
   className = '',
   bodyClassName = '',
@@ -225,6 +229,9 @@ export function FlowEditorSurface({
       p35Marker={p35Marker}
       eyebrow={eyebrow}
       title={title}
+      closeLabel={cancelPlacement === 'header' ? cancelAction.label : '닫기'}
+      closeTestId={cancelPlacement === 'header' ? cancelAction.testId : undefined}
+      closeButtonClassName={enforce48pxTargets ? '!min-h-12' : undefined}
       onClose={() => onRequestClose('x')}
       onRequestClose={onRequestClose}
       dismissible={dismissible && !discardOpen}
@@ -247,7 +254,7 @@ export function FlowEditorSurface({
         'data-flow-editor-surface': 'true',
         'data-editor-transaction': level === 'plan' ? 'atomic' : 'atomic-child',
       }}
-      className={`${EDITOR_LAYOUT_CLASS[layout]} ${className}`}
+      className={`${EDITOR_LAYOUT_CLASS[layout]} ${enforce48pxTargets ? '[&_button]:min-h-12 [&_input]:min-h-12 [&_select]:min-h-12 [&_a]:inline-flex [&_a]:min-h-12 [&_a]:items-center' : ''} ${className}`}
     >
       {skipToActionsLabel ? (
         <button
@@ -255,9 +262,14 @@ export function FlowEditorSurface({
           data-testid={`${testId}-skip-to-actions`}
           className="sr-only z-30 rounded-md bg-[var(--flowme-action)] px-3 py-2 text-sm font-semibold text-white shadow-lg focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
           onClick={() => {
+            const headerCancelAction = cancelPlacement === 'header'
+              ? document.querySelector<HTMLElement>(
+                  `[data-testid="${cancelAction.testId ?? `${testId}-cancel`}"]`,
+                )
+              : null;
             const action = primaryActionRef.current && !primaryActionRef.current.disabled
               ? primaryActionRef.current
-              : cancelActionRef.current;
+              : headerCancelAction ?? cancelActionRef.current;
             action?.focus({ preventScroll: true });
           }}
         >
@@ -304,18 +316,20 @@ export function FlowEditorSurface({
         className="shrink-0 border-t border-[var(--flowme-border)] bg-[var(--flowme-surface)] pt-3"
       >
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <button
-            ref={cancelActionRef}
-            type="button"
-            data-testid={cancelAction.testId ?? `${testId}-cancel`}
-            data-editor-action-role="cancel"
-            aria-label={cancelAction.ariaLabel}
-            className={FLOW_UI_SECONDARY_ACTION_CLASS}
-            disabled={discardOpen || cancelAction.disabled}
-            onClick={cancelAction.onAction}
-          >
-            {cancelAction.label}
-          </button>
+          {cancelPlacement === 'footer' ? (
+            <button
+              ref={cancelActionRef}
+              type="button"
+              data-testid={cancelAction.testId ?? `${testId}-cancel`}
+              data-editor-action-role="cancel"
+              aria-label={cancelAction.ariaLabel}
+              className={`${FLOW_UI_SECONDARY_ACTION_CLASS}${enforce48pxTargets ? ' !min-h-12' : ''}`}
+              disabled={discardOpen || cancelAction.disabled}
+              onClick={cancelAction.onAction}
+            >
+              {cancelAction.label}
+            </button>
+          ) : <span />}
           <div className="flex flex-wrap justify-end gap-2">
             {retryAction ? (
               <button
@@ -323,7 +337,7 @@ export function FlowEditorSurface({
                 data-testid={retryAction.testId ?? `${testId}-retry`}
                 data-editor-action-role="retry"
                 aria-label={retryAction.ariaLabel}
-                className={FLOW_UI_SECONDARY_ACTION_CLASS}
+                className={`${FLOW_UI_SECONDARY_ACTION_CLASS}${enforce48pxTargets ? ' !min-h-12' : ''}`}
                 disabled={retryBlocked || retryAction.disabled}
                 onClick={retryAction.onAction}
               >
@@ -337,7 +351,7 @@ export function FlowEditorSurface({
               data-editor-action-role="commit"
               data-editor-commit-role={commitRole}
               aria-label={primaryAction.ariaLabel}
-              className={FLOW_UI_PRIMARY_ACTION_CLASS}
+              className={`${FLOW_UI_PRIMARY_ACTION_CLASS}${enforce48pxTargets ? ' !min-h-12' : ''}`}
               disabled={commitBlocked || primaryAction.disabled}
               onClick={primaryAction.onAction}
             >
@@ -375,7 +389,7 @@ export function FlowEditorSurface({
                 type="button"
                 data-testid={`${testId}-continue-editing`}
                 data-editor-discard-action="continue-editing"
-                className={FLOW_UI_SECONDARY_ACTION_CLASS}
+                className={`${FLOW_UI_SECONDARY_ACTION_CLASS}${enforce48pxTargets ? ' !min-h-12' : ''}`}
                 onClick={continueEditing}
               >
                 {discardConfirmation.continueLabel ?? '계속 수정'}
@@ -385,7 +399,7 @@ export function FlowEditorSurface({
                 type="button"
                 data-testid={`${testId}-discard-changes`}
                 data-editor-discard-action="discard-changes"
-                className={FLOW_UI_DANGER_ACTION_CLASS}
+                className={`${FLOW_UI_DANGER_ACTION_CLASS}${enforce48pxTargets ? ' !min-h-12' : ''}`}
                 onClick={discardConfirmation.onDiscardChanges}
               >
                 {discardConfirmation.discardLabel ?? '변경 버리기'}

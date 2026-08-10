@@ -14,13 +14,16 @@ export type ResultTransferRoute = 'saved_transfer' | 'public_quick';
 export type ResultTransferPersistence = 'persistent_receipt' | 'session';
 export type ResultTransferArtifactTarget = 'clipboard' | 'local_file';
 export type ResultTransferNewlinePolicy = 'preserve';
+export type ResultTransferPayloadEncoding = 'utf-8' | 'octets';
 
 export type ResultTransferTransportIdentity = Readonly<{
   payloadHashAlgorithm: 'sha256';
   payloadHash: string;
   payloadByteLength: number;
-  textEncoding: 'utf-8';
-  newlinePolicy: ResultTransferNewlinePolicy;
+  /** Omitted on legacy/text identities. `octets` means the hash owns raw bytes. */
+  payloadEncoding?: 'octets';
+  textEncoding?: 'utf-8';
+  newlinePolicy?: ResultTransferNewlinePolicy;
 }>;
 
 export type ResultTransferCountUnits = Readonly<{
@@ -35,14 +38,62 @@ const RESULT_TRANSFER_COUNT_UNITS: ResultTransferCountUnits = Object.freeze({
   outputCount: 'artifact_output',
 });
 
-export type ResultTransferArtifactPayload = Readonly<{
+type ResultTransferArtifactPayloadBase = Readonly<{
   target: ResultTransferArtifactTarget;
   mediaType: string;
-  payload: string;
   filename?: string;
   itemIds: readonly string[];
   outputCount: number;
 }>;
+
+export type ResultTransferTextArtifactPayload = ResultTransferArtifactPayloadBase & Readonly<{
+  payload: string;
+  /** Optional so every existing UTF-8 caller remains source-compatible. */
+  payloadEncoding?: 'utf-8';
+}>;
+
+export type ResultTransferBinaryArtifactPayload = Omit<
+  ResultTransferArtifactPayloadBase,
+  'target'
+> & Readonly<{
+  target: 'local_file';
+  payload: ArrayBuffer | Uint8Array;
+  payloadEncoding: 'octets';
+}>;
+
+export type ResultTransferArtifactPayload =
+  | ResultTransferTextArtifactPayload
+  | ResultTransferBinaryArtifactPayload;
+
+type ResultTransferRequestArtifactBase = Readonly<{
+  target: ResultTransferArtifactTarget;
+  mediaType: string;
+  filename?: string;
+  payloadHash: string;
+  payloadByteLength: number;
+  itemIds: readonly string[];
+  itemCount: number;
+  outputCount: number;
+}>;
+
+export type ResultTransferTextRequestArtifact = ResultTransferRequestArtifactBase & Readonly<{
+  payload: string;
+  payloadEncoding?: undefined;
+}>;
+
+export type ResultTransferBinaryRequestArtifact = Omit<
+  ResultTransferRequestArtifactBase,
+  'target'
+> & Readonly<{
+  target: 'local_file';
+  /** Binary input is cloned into this deeply frozen byte array. */
+  payload: readonly number[];
+  payloadEncoding: 'octets';
+}>;
+
+export type ResultTransferRequestArtifact =
+  | ResultTransferTextRequestArtifact
+  | ResultTransferBinaryRequestArtifact;
 
 export type ResultTransferOmitted = Readonly<{
   heldItemIds: readonly string[];
@@ -59,7 +110,7 @@ export type ResultTransferSnapshotIdentity = Readonly<{
   executionVersion: string;
 }>;
 
-export type ResultTransferRequest = Readonly<{
+type ResultTransferRequestBase<TArtifact extends ResultTransferRequestArtifact> = Readonly<{
   schemaVersion: typeof RESULT_TRANSFER_SCHEMA_VERSION;
   requestId: string;
   route: ResultTransferRoute;
@@ -83,18 +134,17 @@ export type ResultTransferRequest = Readonly<{
   omitted: ResultTransferOmitted;
   oneWay: true;
   duplicateRisk: true;
-  artifact: Readonly<{
-    target: ResultTransferArtifactTarget;
-    mediaType: string;
-    filename?: string;
-    payload: string;
-    payloadHash: string;
-    payloadByteLength: number;
-    itemIds: readonly string[];
-    itemCount: number;
-    outputCount: number;
-  }>;
+  artifact: TArtifact;
 }>;
+
+/** Existing UTF-8 request contract retained as the default public type. */
+export type ResultTransferRequest = ResultTransferRequestBase<ResultTransferTextRequestArtifact>;
+
+export type ResultTransferBinaryRequest = ResultTransferRequestBase<
+  ResultTransferBinaryRequestArtifact
+>;
+
+export type AnyResultTransferRequest = ResultTransferRequest | ResultTransferBinaryRequest;
 
 export type ResultTransferArtifactEffectResult = Readonly<{
   target: ResultTransferArtifactTarget;
@@ -132,8 +182,9 @@ export type ResultTransferSessionConfirmation = Readonly<{
     payloadHash: string;
     payloadByteLength: number;
     payloadHashAlgorithm: 'sha256';
-    textEncoding: 'utf-8';
-    newlinePolicy: ResultTransferNewlinePolicy;
+    payloadEncoding?: 'octets';
+    textEncoding?: 'utf-8';
+    newlinePolicy?: ResultTransferNewlinePolicy;
     canonicalPayloadHash: string;
     canonicalPayloadByteLength: number;
     itemIds: readonly string[];
@@ -173,13 +224,15 @@ export type ResultTransferPersistentReceipt = Readonly<{
     payloadByteLength: number;
     /** Present on transport-verifiable v1 receipts; absent on legacy v1 receipts. */
     payloadHashAlgorithm?: 'sha256';
+    /** `octets` identifies binary payload receipts; absent means legacy UTF-8 text. */
+    payloadEncoding?: 'octets';
     /** Present on transport-verifiable v1 receipts; absent on legacy v1 receipts. */
     textEncoding?: 'utf-8';
     /** Present on transport-verifiable v1 receipts; absent on legacy v1 receipts. */
     newlinePolicy?: ResultTransferNewlinePolicy;
     /** The canonical request fingerprint, distinct from the transported-byte SHA-256. */
     canonicalPayloadHash?: string;
-    /** The canonical request UTF-8 byte length before any transport normalization. */
+    /** The canonical request byte length before any transport normalization. */
     canonicalPayloadByteLength?: number;
     /** Added to v1 receipts for complete request-to-artifact lineage. */
     itemIds?: readonly string[];
@@ -221,9 +274,11 @@ export type ResultTransferReceiptWriteResult =
       rollbackComplete?: boolean;
     }>;
 
-export type ResultTransferSucceededOutcome = Readonly<{
+export type ResultTransferSucceededOutcomeFor<
+  TRequest extends AnyResultTransferRequest,
+> = Readonly<{
   state: 'succeeded';
-  request: ResultTransferRequest;
+  request: TRequest;
   artifact: ResultTransferArtifactEffectResult;
   confirmation: ResultTransferSessionConfirmation | ResultTransferPersistentReceipt;
   receipt?: ResultTransferPersistentReceipt;
@@ -231,34 +286,47 @@ export type ResultTransferSucceededOutcome = Readonly<{
   receiptRetryAvailable: false;
 }>;
 
-export type ResultTransferFailedOutcome = Readonly<{
+export type ResultTransferFailedOutcomeFor<
+  TRequest extends AnyResultTransferRequest,
+> = Readonly<{
   state: 'failed';
-  request: ResultTransferRequest;
+  request: TRequest;
   failure: ResultTransferFailure;
   receiptRetryAvailable: false;
 }>;
 
-export type ResultTransferPartialLocalOutcome = Readonly<{
+export type ResultTransferPartialLocalOutcomeFor<
+  TRequest extends AnyResultTransferRequest,
+> = Readonly<{
   state: 'partial_local';
-  request: ResultTransferRequest;
+  request: TRequest;
   artifact: ResultTransferArtifactEffectResult;
   failure: ResultTransferFailure;
   pendingReceipt?: ResultTransferPersistentReceipt;
   receiptRetryAvailable: boolean;
 }>;
 
-export type ResultTransferCancelledOutcome = Readonly<{
+export type ResultTransferCancelledOutcomeFor<
+  TRequest extends AnyResultTransferRequest,
+> = Readonly<{
   state: 'cancelled';
-  request: ResultTransferRequest;
+  request: TRequest;
   failure: ResultTransferFailure;
   receiptRetryAvailable: false;
 }>;
 
-export type ResultTransferRunOutcome =
-  | ResultTransferSucceededOutcome
-  | ResultTransferFailedOutcome
-  | ResultTransferPartialLocalOutcome
-  | ResultTransferCancelledOutcome;
+export type ResultTransferRunOutcomeFor<TRequest extends AnyResultTransferRequest> =
+  | ResultTransferSucceededOutcomeFor<TRequest>
+  | ResultTransferFailedOutcomeFor<TRequest>
+  | ResultTransferPartialLocalOutcomeFor<TRequest>
+  | ResultTransferCancelledOutcomeFor<TRequest>;
+
+export type ResultTransferSucceededOutcome = ResultTransferSucceededOutcomeFor<ResultTransferRequest>;
+export type ResultTransferFailedOutcome = ResultTransferFailedOutcomeFor<ResultTransferRequest>;
+export type ResultTransferPartialLocalOutcome = ResultTransferPartialLocalOutcomeFor<ResultTransferRequest>;
+export type ResultTransferCancelledOutcome = ResultTransferCancelledOutcomeFor<ResultTransferRequest>;
+export type ResultTransferRunOutcome = ResultTransferRunOutcomeFor<ResultTransferRequest>;
+export type ResultTransferBinaryRunOutcome = ResultTransferRunOutcomeFor<ResultTransferBinaryRequest>;
 
 export type ResultTransferRevalidation = Readonly<{
   allowed: boolean;
@@ -300,11 +368,54 @@ function deepFreeze<T>(value: T): T {
   return Object.freeze(value);
 }
 
+type ResultTransferFingerprintPayload = string | ArrayBuffer | Uint8Array | readonly number[];
+
+function validatedByteArray(value: readonly number[], field: string): number[] {
+  if (!value.every((byte) => Number.isInteger(byte) && byte >= 0 && byte <= 255)) {
+    throw new ResultTransferContractError(`${field} must contain only byte values.`);
+  }
+  return [...value];
+}
+
+function cloneBinaryPayload(value: ArrayBuffer | Uint8Array): number[] {
+  if (value instanceof ArrayBuffer) return Array.from(new Uint8Array(value.slice(0)));
+  return Array.from(Uint8Array.from(value));
+}
+
+/** Returns an owned copy of the exact bytes represented by an immutable request. */
+export function getResultTransferArtifactPayloadBytes(
+  artifact: Pick<ResultTransferRequestArtifact, 'payload' | 'payloadEncoding'>,
+): Uint8Array {
+  if (artifact.payloadEncoding === 'octets') {
+    if (!Array.isArray(artifact.payload)) {
+      throw new ResultTransferContractError('Binary request payload must be a byte array.');
+    }
+    return Uint8Array.from(validatedByteArray(artifact.payload, 'artifact.payload'));
+  }
+  if (typeof artifact.payload !== 'string') {
+    throw new ResultTransferContractError('UTF-8 request payload must be text.');
+  }
+  return new TextEncoder().encode(artifact.payload);
+}
+
 /** Stable v1 canonical-request fingerprint used only for confirmation and immediate revalidation. */
-export function fingerprintResultTransferPayload(value: string): string {
+export function fingerprintResultTransferPayload(value: ResultTransferFingerprintPayload): string {
   let hash = 2166136261;
-  for (let index = 0; index < value.length; index += 1) {
-    hash ^= value.charCodeAt(index);
+  if (typeof value === 'string') {
+    // Preserve the original v1 UTF-16 code-unit fingerprint byte-for-byte.
+    for (let index = 0; index < value.length; index += 1) {
+      hash ^= value.charCodeAt(index);
+      hash = Math.imul(hash, 16777619);
+    }
+    return (hash >>> 0).toString(16).padStart(8, '0');
+  }
+  const bytes = value instanceof ArrayBuffer
+    ? new Uint8Array(value)
+    : value instanceof Uint8Array
+      ? value
+      : Uint8Array.from(validatedByteArray(value, 'payload'));
+  for (const byte of bytes) {
+    hash ^= byte;
     hash = Math.imul(hash, 16777619);
   }
   return (hash >>> 0).toString(16).padStart(8, '0');
@@ -384,14 +495,24 @@ function cloneOmitted(manifest: EffectiveFlowProjectionManifest): ResultTransfer
   };
 }
 
-export function buildResultTransferRequest(options: Readonly<{
+type ResultTransferRequestOptions<TArtifact extends ResultTransferArtifactPayload> = Readonly<{
   requestId: string;
   route: ResultTransferRoute;
   savedPlanId?: string;
   createdAt: string;
   manifest: EffectiveFlowProjectionManifest;
-  artifact: ResultTransferArtifactPayload;
-}>): ResultTransferRequest {
+  artifact: TArtifact;
+}>;
+
+export function buildResultTransferRequest(
+  options: ResultTransferRequestOptions<ResultTransferTextArtifactPayload>,
+): ResultTransferRequest;
+export function buildResultTransferRequest(
+  options: ResultTransferRequestOptions<ResultTransferBinaryArtifactPayload>,
+): ResultTransferBinaryRequest;
+export function buildResultTransferRequest(
+  options: ResultTransferRequestOptions<ResultTransferArtifactPayload>,
+): AnyResultTransferRequest {
   const requestId = nonEmpty(options.requestId, 'requestId');
   const createdAt = nonEmpty(options.createdAt, 'createdAt');
   const mediaType = nonEmpty(options.artifact.mediaType, 'artifact.mediaType');
@@ -405,6 +526,22 @@ export function buildResultTransferRequest(options: Readonly<{
   const persistence: ResultTransferPersistence = options.route === 'saved_transfer'
     ? 'persistent_receipt'
     : 'session';
+  const binaryPayload = options.artifact.payloadEncoding === 'octets';
+  if (binaryPayload && typeof options.artifact.payload === 'string') {
+    throw new ResultTransferContractError('Octet payloads require ArrayBuffer or Uint8Array bytes.');
+  }
+  if (!binaryPayload && typeof options.artifact.payload !== 'string') {
+    throw new ResultTransferContractError('Binary payloads require payloadEncoding octets.');
+  }
+  if (binaryPayload && options.artifact.target !== 'local_file') {
+    throw new ResultTransferContractError('Binary payloads can only target a local file.');
+  }
+  const ownedPayload = binaryPayload
+    ? cloneBinaryPayload(options.artifact.payload as ArrayBuffer | Uint8Array)
+    : options.artifact.payload as string;
+  const payloadByteLength = binaryPayload
+    ? ownedPayload.length
+    : new TextEncoder().encode(ownedPayload as string).byteLength;
 
   if (!sameStrings(itemIds, artifactItemIds)) {
     throw new ResultTransferContractError(
@@ -448,8 +585,30 @@ export function buildResultTransferRequest(options: Readonly<{
     throw new ResultTransferContractError('Local file results require a filename.');
   }
 
-  const payload = options.artifact.payload;
-  const request: ResultTransferRequest = {
+  const artifactCommon = {
+    target: options.artifact.target,
+    mediaType,
+    ...(options.artifact.filename?.trim()
+      ? { filename: options.artifact.filename.trim() }
+      : {}),
+    payloadHash: fingerprintResultTransferPayload(ownedPayload),
+    payloadByteLength,
+    itemIds: [...artifactItemIds],
+    itemCount: artifactItemIds.length,
+    outputCount,
+  };
+  const requestArtifact: ResultTransferRequestArtifact = binaryPayload
+    ? {
+        ...artifactCommon,
+        target: 'local_file',
+        payload: ownedPayload as number[],
+        payloadEncoding: 'octets',
+      }
+    : {
+        ...artifactCommon,
+        payload: ownedPayload as string,
+      };
+  const requestBase = {
     schemaVersion: RESULT_TRANSFER_SCHEMA_VERSION,
     requestId,
     route: options.route,
@@ -471,32 +630,28 @@ export function buildResultTransferRequest(options: Readonly<{
     outputCount,
     countUnits: { ...RESULT_TRANSFER_COUNT_UNITS },
     omitted: cloneOmitted(options.manifest),
-    oneWay: true,
-    duplicateRisk: true,
-    artifact: {
-      target: options.artifact.target,
-      mediaType,
-      ...(options.artifact.filename?.trim()
-        ? { filename: options.artifact.filename.trim() }
-        : {}),
-      payload,
-      payloadHash: fingerprintResultTransferPayload(payload),
-      payloadByteLength: new TextEncoder().encode(payload).byteLength,
-      itemIds: [...artifactItemIds],
-      itemCount: artifactItemIds.length,
-      outputCount,
-    },
+    oneWay: true as const,
+    duplicateRisk: true as const,
   };
+  const request: AnyResultTransferRequest = binaryPayload
+    ? {
+        ...requestBase,
+        artifact: requestArtifact as ResultTransferBinaryRequestArtifact,
+      }
+    : {
+        ...requestBase,
+        artifact: requestArtifact as ResultTransferTextRequestArtifact,
+      };
   return deepFreeze(request);
 }
 
 export function buildResultTransferArtifactSuccess(
-  request: ResultTransferRequest,
+  request: AnyResultTransferRequest,
   completedAt: string,
   transport: ResultTransferTransportIdentity,
 ): ResultTransferArtifactEffectResult {
   if (!isResultTransferTransportIdentity(transport)) {
-    throw new ResultTransferContractError('Transport identity must describe the final UTF-8 bytes.');
+    throw new ResultTransferContractError('Transport identity must describe the final artifact bytes.');
   }
   return deepFreeze({
     target: request.artifact.target,
@@ -513,7 +668,7 @@ export function buildResultTransferArtifactSuccess(
 
 export async function buildResultTransferTransportIdentity(
   bytes: Uint8Array,
-  newlinePolicy: ResultTransferNewlinePolicy,
+  policy: ResultTransferNewlinePolicy | Readonly<{ payloadEncoding: 'octets' }>,
 ): Promise<ResultTransferTransportIdentity> {
   if (!globalThis.crypto?.subtle) {
     throw new ResultTransferContractError('SHA-256 is unavailable in this runtime.');
@@ -522,17 +677,40 @@ export async function buildResultTransferTransportIdentity(
   const digest = await globalThis.crypto.subtle.digest('SHA-256', ownedBytes);
   const payloadHash = Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0'))
     .join('');
-  return deepFreeze({
+  const common = {
     payloadHashAlgorithm: 'sha256',
     payloadHash,
     payloadByteLength: ownedBytes.byteLength,
-    textEncoding: 'utf-8',
-    newlinePolicy,
-  });
+  } as const;
+  return policy === 'preserve'
+    ? deepFreeze({
+        ...common,
+        textEncoding: 'utf-8' as const,
+        newlinePolicy: policy,
+      })
+    : deepFreeze({
+        ...common,
+        payloadEncoding: 'octets' as const,
+      });
+}
+
+function resultTransferTransportMetadata(
+  transport: ResultTransferTransportIdentity,
+): Readonly<{
+  payloadEncoding?: 'octets';
+  textEncoding?: 'utf-8';
+  newlinePolicy?: ResultTransferNewlinePolicy;
+}> {
+  return transport.payloadEncoding === 'octets'
+    ? { payloadEncoding: 'octets' }
+    : {
+        textEncoding: transport.textEncoding,
+        newlinePolicy: transport.newlinePolicy,
+      };
 }
 
 function buildSessionConfirmation(
-  request: ResultTransferRequest,
+  request: AnyResultTransferRequest,
   artifact: ResultTransferArtifactEffectResult,
 ): ResultTransferSessionConfirmation {
   return deepFreeze({
@@ -558,8 +736,7 @@ function buildSessionConfirmation(
       payloadHash: artifact.transport.payloadHash,
       payloadByteLength: artifact.transport.payloadByteLength,
       payloadHashAlgorithm: artifact.transport.payloadHashAlgorithm,
-      textEncoding: artifact.transport.textEncoding,
-      newlinePolicy: artifact.transport.newlinePolicy,
+      ...resultTransferTransportMetadata(artifact.transport),
       canonicalPayloadHash: artifact.canonicalPayloadHash,
       canonicalPayloadByteLength: artifact.canonicalPayloadByteLength,
       itemIds: [...request.artifact.itemIds],
@@ -570,12 +747,13 @@ function buildSessionConfirmation(
 }
 
 function buildPersistentReceipt(
-  request: ResultTransferRequest,
+  request: AnyResultTransferRequest,
   artifact: ResultTransferArtifactEffectResult,
 ): ResultTransferPersistentReceipt {
   if (request.route !== 'saved_transfer') {
     throw new ResultTransferContractError('Only saved transfers can create persistent receipts.');
   }
+  const binaryPayload = request.artifact.payloadEncoding === 'octets';
   return deepFreeze({
     schemaVersion: RESULT_TRANSFER_RECEIPT_SCHEMA_VERSION,
     kind: 'persistent_receipt',
@@ -612,11 +790,12 @@ function buildPersistentReceipt(
       ...(request.artifact.filename ? { filename: request.artifact.filename } : {}),
       payloadHash: artifact.transport.payloadHash,
       payloadByteLength: artifact.transport.payloadByteLength,
-      payloadHashAlgorithm: artifact.transport.payloadHashAlgorithm,
-      textEncoding: artifact.transport.textEncoding,
-      newlinePolicy: artifact.transport.newlinePolicy,
-      canonicalPayloadHash: artifact.canonicalPayloadHash,
-      canonicalPayloadByteLength: artifact.canonicalPayloadByteLength,
+      ...(binaryPayload ? {} : {
+        payloadHashAlgorithm: artifact.transport.payloadHashAlgorithm,
+        ...resultTransferTransportMetadata(artifact.transport),
+        canonicalPayloadHash: artifact.canonicalPayloadHash,
+        canonicalPayloadByteLength: artifact.canonicalPayloadByteLength,
+      }),
       itemIds: [...request.artifact.itemIds],
       itemCount: request.artifact.itemCount,
       outputCount: request.artifact.outputCount,
@@ -651,7 +830,7 @@ function classifyArtifactError(error: unknown): ResultTransferFailure {
 }
 
 async function artifactMatchesRequest(
-  request: ResultTransferRequest,
+  request: AnyResultTransferRequest,
   artifact: ResultTransferArtifactEffectResult,
 ): Promise<boolean> {
   const structuralMatch = artifact.target === request.artifact.target
@@ -665,26 +844,32 @@ async function artifactMatchesRequest(
   if (!structuralMatch) return false;
 
   try {
+    const payloadEncoding = request.artifact.payloadEncoding === 'octets'
+      ? 'octets'
+      : 'utf-8';
     const expectedTransport = await buildResultTransferTransportIdentity(
-      new TextEncoder().encode(request.artifact.payload),
-      'preserve',
+      getResultTransferArtifactPayloadBytes(request.artifact),
+      payloadEncoding === 'octets' ? { payloadEncoding: 'octets' } : 'preserve',
     );
     return artifact.transport.payloadHash === expectedTransport.payloadHash
-      && artifact.transport.payloadByteLength === expectedTransport.payloadByteLength;
+      && artifact.transport.payloadByteLength === expectedTransport.payloadByteLength
+      && (artifact.transport.payloadEncoding ?? 'utf-8') === payloadEncoding;
   } catch {
     return false;
   }
 }
 
-export type ResultTransferRunDependencies = Readonly<{
+export type ResultTransferRunDependencies<
+  TRequest extends AnyResultTransferRequest = ResultTransferRequest,
+> = Readonly<{
   performArtifact: (
-    request: ResultTransferRequest,
+    request: TRequest,
   ) => ResultTransferArtifactEffectResult | Promise<ResultTransferArtifactEffectResult>;
   persistReceipt?: (
     receipt: ResultTransferPersistentReceipt,
   ) => ResultTransferReceiptWriteResult | Promise<ResultTransferReceiptWriteResult>;
   revalidate?: (
-    request: ResultTransferRequest,
+    request: TRequest,
   ) => ResultTransferRevalidation | Promise<ResultTransferRevalidation>;
   signal?: AbortSignal;
 }>;
@@ -697,19 +882,22 @@ export type ResultTransferReceiptRetryDependencies = Readonly<{
 
 export type ResultTransferRunner = Readonly<{
   isPending(requestId: string): boolean;
-  run(
-    request: ResultTransferRequest,
-    dependencies: ResultTransferRunDependencies,
-  ): Promise<ResultTransferRunOutcome>;
-  retryReceipt(
-    partial: ResultTransferPartialLocalOutcome,
+  run<TRequest extends AnyResultTransferRequest>(
+    request: TRequest,
+    dependencies: ResultTransferRunDependencies<TRequest>,
+  ): Promise<ResultTransferRunOutcomeFor<TRequest>>;
+  retryReceipt<TRequest extends AnyResultTransferRequest>(
+    partial: ResultTransferPartialLocalOutcomeFor<TRequest>,
     dependencies: ResultTransferReceiptRetryDependencies,
-  ): Promise<ResultTransferRunOutcome>;
+  ): Promise<ResultTransferRunOutcomeFor<TRequest>>;
 }>;
 
 async function writeReceipt(
   receipt: ResultTransferPersistentReceipt,
-  persistReceipt: ResultTransferRunDependencies['persistReceipt'],
+  persistReceipt: (
+    (receipt: ResultTransferPersistentReceipt) =>
+      ResultTransferReceiptWriteResult | Promise<ResultTransferReceiptWriteResult>
+  ) | undefined,
 ): Promise<
   | Readonly<{ ok: true; status: 'stored' | 'duplicate' }>
   | Readonly<{ ok: false; failure: ResultTransferFailure }>
@@ -1037,34 +1225,52 @@ function hasValidOptionalArtifactItemLineage(
 function isResultTransferTransportIdentity(
   value: unknown,
 ): value is ResultTransferTransportIdentity {
-  return isRecord(value)
-    && value.payloadHashAlgorithm === 'sha256'
-    && typeof value.payloadHash === 'string'
-    && /^[0-9a-f]{64}$/u.test(value.payloadHash)
-    && Number.isInteger(value.payloadByteLength)
-    && Number(value.payloadByteLength) >= 0
+  if (!isRecord(value)
+    || value.payloadHashAlgorithm !== 'sha256'
+    || typeof value.payloadHash !== 'string'
+    || !/^[0-9a-f]{64}$/u.test(value.payloadHash)
+    || !Number.isInteger(value.payloadByteLength)
+    || Number(value.payloadByteLength) < 0
+  ) {
+    return false;
+  }
+  if (value.payloadEncoding === 'octets') {
+    return value.textEncoding === undefined && value.newlinePolicy === undefined;
+  }
+  return value.payloadEncoding === undefined
     && value.textEncoding === 'utf-8'
     && value.newlinePolicy === 'preserve';
 }
 
 function hasValidOptionalTransportLineage(artifact: Record<string, unknown>): boolean {
-  const fields = [
+  const commonFields = [
     'payloadHashAlgorithm',
-    'textEncoding',
-    'newlinePolicy',
     'canonicalPayloadHash',
     'canonicalPayloadByteLength',
   ] as const;
-  const presentCount = fields.filter((field) => artifact[field] !== undefined).length;
-  if (presentCount === 0) return true;
-  return presentCount === fields.length
-    && isResultTransferTransportIdentity({
-      payloadHashAlgorithm: artifact.payloadHashAlgorithm,
-      payloadHash: artifact.payloadHash,
-      payloadByteLength: artifact.payloadByteLength,
-      textEncoding: artifact.textEncoding,
-      newlinePolicy: artifact.newlinePolicy,
-    })
+  const metadataFields = ['payloadEncoding', 'textEncoding', 'newlinePolicy'] as const;
+  const commonPresentCount = commonFields
+    .filter((field) => artifact[field] !== undefined).length;
+  const metadataPresentCount = metadataFields
+    .filter((field) => artifact[field] !== undefined).length;
+  if (commonPresentCount === 0 && metadataPresentCount === 0) return true;
+  if (commonPresentCount !== commonFields.length) return false;
+
+  const transportIdentity = {
+    payloadHashAlgorithm: artifact.payloadHashAlgorithm,
+    payloadHash: artifact.payloadHash,
+    payloadByteLength: artifact.payloadByteLength,
+    ...(artifact.payloadEncoding !== undefined
+      ? { payloadEncoding: artifact.payloadEncoding }
+      : {}),
+    ...(artifact.textEncoding !== undefined
+      ? { textEncoding: artifact.textEncoding }
+      : {}),
+    ...(artifact.newlinePolicy !== undefined
+      ? { newlinePolicy: artifact.newlinePolicy }
+      : {}),
+  };
+  return isResultTransferTransportIdentity(transportIdentity)
     && typeof artifact.canonicalPayloadHash === 'string'
     && /^[0-9a-f]{8}$/u.test(artifact.canonicalPayloadHash)
     && Number.isInteger(artifact.canonicalPayloadByteLength)

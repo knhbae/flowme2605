@@ -5,8 +5,9 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 
 import {
   closeOpenMyFlowItemDetail,
-  expandMyFlowWholePlan,
+  gotoLegacySavedPlanLibraryRoute,
   getOpenMyFlowItemDetail,
+  installLegacySavedPlanLibraryNavigation,
   openMyFlowLibraryFlow,
 } from './helpers/my-flow-library';
 
@@ -49,7 +50,7 @@ async function expectNoOverflow(page: Page) {
 }
 
 async function seedSavedFlow(page: Page, slug: string, anchor: string) {
-  await page.goto('/flows');
+  await gotoLegacySavedPlanLibraryRoute(page, '/flows');
   await page.evaluate(({ flowSlug, flowAnchor }) => {
     window.localStorage.clear();
     window.localStorage.setItem(`flow:saved:${flowSlug}`, JSON.stringify({
@@ -70,7 +71,8 @@ test.describe('P35-R8 semantic and execution continuity', () => {
   test('overseas safety stays checklist-primary from public preview through saved execution', async ({ page }) => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/f/overseas-safety-register');
+    await installLegacySavedPlanLibraryNavigation(page);
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/overseas-safety-register');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
 
@@ -130,9 +132,9 @@ test.describe('P35-R8 semantic and execution continuity', () => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
     await seedSavedFlow(page, 'moving-d30-basic', '2030-09-01');
-    await page.goto('/my?view=flows&flow=moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows&flow=moving-d30-basic');
 
-    const workspace = await openMyFlowLibraryFlow(page, 'moving-d30-basic');
+    const workspace = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'plan');
     const execution = workspace.getByTestId('my-flow-shape-aware-execution');
     const outline = workspace.getByTestId('my-flow-whole-flow-outline');
     const currentPosition = outline.getByTestId('my-flow-whole-flow-current-position');
@@ -162,11 +164,8 @@ test.describe('P35-R8 semantic and execution continuity', () => {
     );
     await expect(page.getByTestId('my-flow-completion-undo')).toHaveCount(0);
     const planToggle = workspace.getByTestId('my-flow-workspace-plan-toggle');
-    await expect(planToggle).toHaveAttribute('aria-expanded', 'false');
-    await expect(outline).toHaveCount(0);
-    await planToggle.click();
     await expect(planToggle).toHaveAttribute('aria-expanded', 'true');
-    const expandedOutline = await expandMyFlowWholePlan(workspace);
+    const expandedOutline = outline;
     await expect(expandedOutline.getByTestId('my-flow-whole-flow-reading-summary'))
       .toContainText('1/24 완료');
     const completedContextRow = expandedOutline.locator(`article[data-row-key="${rowKey}"]`);

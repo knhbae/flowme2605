@@ -10,6 +10,7 @@ import {
   buildResultTransferTransportIdentity,
   createResultTransferRunner,
   fingerprintResultTransferPayload,
+  getResultTransferArtifactPayloadBytes,
   isResultTransferPersistentReceipt,
   type ResultTransferRequest,
 } from './result-transfer';
@@ -19,8 +20,10 @@ async function buildObservedArtifactSuccess(
   completedAt: string,
 ) {
   const transport = await buildResultTransferTransportIdentity(
-    new TextEncoder().encode(request.artifact.payload),
-    'preserve',
+    getResultTransferArtifactPayloadBytes(request.artifact),
+    request.artifact.payloadEncoding === 'octets'
+      ? { payloadEncoding: 'octets' }
+      : 'preserve',
   );
   return buildResultTransferArtifactSuccess(request, completedAt, transport);
 }
@@ -126,6 +129,19 @@ function buildPublicRequest(): ResultTransferRequest {
       outputCount: manifest.counts.output,
     },
   });
+}
+
+async function buildValidXlsxBytes(): Promise<Uint8Array> {
+  const ExcelJSModule = await import('exceljs');
+  const ExcelJS = (
+    (ExcelJSModule as unknown as { default?: typeof ExcelJSModule }).default ?? ExcelJSModule
+  );
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('계획');
+  worksheet.addRow(['순서', '할 일']);
+  worksheet.addRow([1, '하자 점검하기']);
+  const output = await workbook.xlsx.writeBuffer();
+  return Uint8Array.from(output as unknown as Uint8Array);
 }
 
 test('immutable request freezes identity, projection/artifact counts, omissions, and payload metadata', () => {
@@ -289,6 +305,205 @@ test('transport identity hashes the exact final bytes with an explicit newline p
     newlinePolicy: 'preserve',
   });
   assert.equal(Object.isFrozen(identity), true);
+});
+
+test('binary XLSX request owns Uint8Array bytes and persists a receipt only after exact downloaded-byte parity', async () => {
+  const xlsxBytes = await buildValidXlsxBytes();
+  const padded = new Uint8Array(xlsxBytes.byteLength + 4);
+  padded.set(xlsxBytes, 2);
+  const view = padded.subarray(2, 2 + xlsxBytes.byteLength);
+  const manifest = buildManifest({ destination: 'sheet', outputCount: 2 });
+  const request = buildResultTransferRequest({
+    requestId: 'binary-xlsx-request',
+    route: 'saved_transfer',
+    savedPlanId: 'saved-plan-xlsx',
+    createdAt: '2026-08-10T00:00:00.000Z',
+    manifest,
+    artifact: {
+      target: 'local_file',
+      mediaType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      filename: '사본-1-이사-D-30-준비.xlsx',
+      payload: view,
+      payloadEncoding: 'octets',
+      itemIds: [...manifest.eligibleItemIds],
+      outputCount: manifest.counts.output,
+    },
+  });
+
+  padded.fill(0);
+  const requestBytes = getResultTransferArtifactPayloadBytes(request.artifact);
+  assert.equal(new TextDecoder().decode(requestBytes.subarray(0, 2)), 'PK');
+  assert.equal(request.artifact.payloadEncoding, 'octets');
+  assert.equal(request.artifact.payloadByteLength, xlsxBytes.byteLength);
+  assert.equal(request.artifact.payloadHash, fingerprintResultTransferPayload(xlsxBytes));
+  assert.equal(Array.isArray(request.artifact.payload), true);
+  assert.equal(Object.isFrozen(request.artifact.payload), true);
+  assert.throws(() => {
+    (request.artifact.payload as number[])[0] = 0;
+  }, TypeError);
+
+  const order: string[] = [];
+  let downloadedBytes = new Uint8Array();
+  let persistedReceipt: unknown;
+  const outcome = await createResultTransferRunner().run(request, {
+    async performArtifact(current) {
+      order.push('artifact');
+      const blob = new Blob([getResultTransferArtifactPayloadBytes(current.artifact)], {
+        type: current.artifact.mediaType,
+      });
+      downloadedBytes = new Uint8Array(await blob.arrayBuffer());
+      const transport = await buildResultTransferTransportIdentity(
+        downloadedBytes,
+        { payloadEncoding: 'octets' },
+      );
+      return buildResultTransferArtifactSuccess(
+        current,
+        '2026-08-10T00:00:01.000Z',
+        transport,
+      );
+    },
+    persistReceipt(receipt) {
+      order.push('receipt');
+      persistedReceipt = receipt;
+      return { status: 'stored' };
+    },
+  });
+
+  assert.deepEqual(order, ['artifact', 'receipt']);
+  assert.equal(outcome.state, 'succeeded');
+  if (outcome.state !== 'succeeded' || !outcome.receipt) return;
+  assert.deepEqual(downloadedBytes, requestBytes);
+  const expectedTransport = await buildResultTransferTransportIdentity(
+    downloadedBytes,
+    { payloadEncoding: 'octets' },
+  );
+  assert.equal(outcome.receipt.schemaVersion, 1);
+  assert.equal(outcome.receipt.artifact.payloadEncoding, undefined);
+  assert.equal(outcome.receipt.artifact.payloadHashAlgorithm, undefined);
+  assert.equal(outcome.receipt.artifact.textEncoding, undefined);
+  assert.equal(outcome.receipt.artifact.newlinePolicy, undefined);
+  assert.equal(outcome.receipt.artifact.canonicalPayloadHash, undefined);
+  assert.equal(outcome.receipt.artifact.canonicalPayloadByteLength, undefined);
+  assert.equal(outcome.receipt.artifact.payloadHash, expectedTransport.payloadHash);
+  assert.equal(outcome.receipt.artifact.payloadByteLength, downloadedBytes.byteLength);
+  assert.equal(isResultTransferPersistentReceipt(outcome.receipt), true);
+  assert.equal(persistedReceipt, outcome.receipt);
+
+  const ExcelJSModule = await import('exceljs');
+  const ExcelJS = (
+    (ExcelJSModule as unknown as { default?: typeof ExcelJSModule }).default ?? ExcelJSModule
+  );
+  const reopened = new ExcelJS.Workbook();
+  await reopened.xlsx.load(
+    Buffer.from(downloadedBytes) as unknown as Parameters<typeof reopened.xlsx.load>[0],
+  );
+  assert.equal(reopened.getWorksheet('계획')?.getCell('B2').value, '하자 점검하기');
+});
+
+test('binary request also accepts ArrayBuffer and rejects binary clipboard or missing octet discrimination', async () => {
+  const bytes = await buildValidXlsxBytes();
+  const arrayBuffer = bytes.buffer.slice(
+    bytes.byteOffset,
+    bytes.byteOffset + bytes.byteLength,
+  ) as ArrayBuffer;
+  const manifest = buildManifest({ destination: 'sheet', outputCount: 2 });
+  const request = buildResultTransferRequest({
+    requestId: 'binary-array-buffer-request',
+    route: 'saved_transfer',
+    savedPlanId: 'saved-plan-xlsx',
+    createdAt: '2026-08-10T00:00:00.000Z',
+    manifest,
+    artifact: {
+      target: 'local_file',
+      mediaType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      filename: '계획.xlsx',
+      payload: arrayBuffer,
+      payloadEncoding: 'octets',
+      itemIds: [...manifest.eligibleItemIds],
+      outputCount: manifest.counts.output,
+    },
+  });
+  assert.deepEqual(getResultTransferArtifactPayloadBytes(request.artifact), bytes);
+
+  assert.throws(() => buildResultTransferRequest({
+    requestId: 'binary-clipboard',
+    route: 'saved_transfer',
+    savedPlanId: 'saved-plan-xlsx',
+    createdAt: '2026-08-10T00:00:00.000Z',
+    manifest,
+    artifact: {
+      target: 'clipboard',
+      mediaType: 'application/octet-stream',
+      payload: bytes,
+      payloadEncoding: 'octets',
+      itemIds: [...manifest.eligibleItemIds],
+      outputCount: manifest.counts.output,
+    } as never,
+  }), /local file/u);
+
+  assert.throws(() => buildResultTransferRequest({
+    requestId: 'binary-without-discriminator',
+    route: 'saved_transfer',
+    savedPlanId: 'saved-plan-xlsx',
+    createdAt: '2026-08-10T00:00:00.000Z',
+    manifest,
+    artifact: {
+      target: 'local_file',
+      mediaType: 'application/octet-stream',
+      filename: '계획.xlsx',
+      payload: bytes,
+      itemIds: [...manifest.eligibleItemIds],
+      outputCount: manifest.counts.output,
+    } as never,
+  }), /payloadEncoding octets/u);
+});
+
+test('binary runner refuses a receipt when the downloaded bytes differ from the confirmed XLSX bytes', async () => {
+  const manifest = buildManifest({ destination: 'sheet', outputCount: 2 });
+  const request = buildResultTransferRequest({
+    requestId: 'binary-byte-drift',
+    route: 'saved_transfer',
+    savedPlanId: 'saved-plan-xlsx',
+    createdAt: '2026-08-10T00:00:00.000Z',
+    manifest,
+    artifact: {
+      target: 'local_file',
+      mediaType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      filename: '계획.xlsx',
+      payload: Uint8Array.from([0x50, 0x4b, 0x03, 0x04, 0x01]),
+      payloadEncoding: 'octets',
+      itemIds: [...manifest.eligibleItemIds],
+      outputCount: manifest.counts.output,
+    },
+  });
+  let receiptCalls = 0;
+  const outcome = await createResultTransferRunner().run(request, {
+    async performArtifact(current) {
+      const drifted = getResultTransferArtifactPayloadBytes(current.artifact);
+      drifted[drifted.length - 1] ^= 0xff;
+      const transport = await buildResultTransferTransportIdentity(
+        drifted,
+        { payloadEncoding: 'octets' },
+      );
+      return buildResultTransferArtifactSuccess(
+        current,
+        '2026-08-10T00:00:01.000Z',
+        transport,
+      );
+    },
+    persistReceipt() {
+      receiptCalls += 1;
+      return { status: 'stored' };
+    },
+  });
+
+  assert.equal(outcome.state, 'partial_local');
+  assert.equal(
+    outcome.state === 'partial_local' && outcome.failure.code,
+    'artifact_result_mismatch',
+  );
+  assert.equal(outcome.state === 'partial_local' && outcome.pendingReceipt, undefined);
+  assert.equal(receiptCalls, 0);
 });
 
 test('saved runner performs the artifact before writing one persistent receipt', async () => {

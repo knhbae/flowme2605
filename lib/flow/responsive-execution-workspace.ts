@@ -1,9 +1,15 @@
 export const FLOW_WORKSPACE_BREAKPOINTS = {
   mobileMax: 767,
+  stackedMin: 768,
+  stackedMax: 1023,
   wideMin: 1024,
+  desktopCompactMin: 1024,
+  desktopCompactMax: 1279,
+  desktopFullMin: 1280,
 } as const;
 
 export const FLOW_WORKSPACE_MIN_TARGET_PX = 44;
+export const PLAN_EXECUTION_WORKSPACE_MIN_TARGET_PX = 48;
 
 export const FLOW_MOBILE_LAYER_ORDER = {
   navigation: 40,
@@ -19,6 +25,25 @@ export type FlowWorkspaceComposition =
   | 'rail_outline_detail'
   | 'calendar_grid_agenda'
   | 'calendar_tray_grid_agenda';
+
+export type PlanExecutionWorkspaceComposition =
+  | 'mobile'
+  | 'stacked'
+  | 'desktop_compact'
+  | 'desktop_full';
+
+/**
+ * Resolves the approved plan-execution surface without changing the older
+ * workspace resolver used by existing My Flow and Calendar callers.
+ */
+export function resolvePlanExecutionWorkspaceComposition(
+  viewportWidth: number,
+): PlanExecutionWorkspaceComposition {
+  if (viewportWidth <= FLOW_WORKSPACE_BREAKPOINTS.mobileMax) return 'mobile';
+  if (viewportWidth <= FLOW_WORKSPACE_BREAKPOINTS.stackedMax) return 'stacked';
+  if (viewportWidth <= FLOW_WORKSPACE_BREAKPOINTS.desktopCompactMax) return 'desktop_compact';
+  return 'desktop_full';
+}
 
 export function resolveFlowWorkspaceComposition(input: {
   surface: FlowWorkspaceSurface;

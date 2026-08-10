@@ -1,15 +1,17 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 
 import { formatKoreanShortDate } from '@/lib/flow/date';
 import { buildArtifactRecommendationVM } from '@/lib/flow/artifact-recommendation';
+import { buildDateGroupedTodoListViewModel } from '@/lib/flow/date-grouped-todo-list';
 import type {
   FlowExperienceProjection,
   FlowExperienceProjectionRow,
   FlowExperienceShape,
 } from '@/lib/flow/flow-experience-projection';
 import { FlowDateRailGroup } from './FlowExecutionPrimitives';
+import { DateGroupedTodoList } from './DateGroupedTodoList';
 
 const EMPTY_MESSAGE: Record<FlowExperienceShape, string> = {
   flow_execution: '저장할 실행 항목이 없습니다.',
@@ -18,6 +20,20 @@ const EMPTY_MESSAGE: Record<FlowExperienceShape, string> = {
   sheet: '표로 옮길 항목이 없습니다.',
   memo: '메모로 가져갈 내용이 없습니다.',
 };
+
+const APPROVED_PUBLIC_SHAPES = ['memo', 'checklist', 'calendar'] as const satisfies readonly FlowExperienceShape[];
+
+const APPROVED_PUBLIC_SHAPE_LABELS: Record<(typeof APPROVED_PUBLIC_SHAPES)[number], string> = {
+  memo: 'Text',
+  checklist: 'Todo',
+  calendar: 'Calendar',
+};
+
+function getApprovedPublicShapeLabel(shape: FlowExperienceShape): string | undefined {
+  return APPROVED_PUBLIC_SHAPES.includes(shape as (typeof APPROVED_PUBLIC_SHAPES)[number])
+    ? APPROVED_PUBLIC_SHAPE_LABELS[shape as (typeof APPROVED_PUBLIC_SHAPES)[number]]
+    : undefined;
+}
 
 function getDateLabel(row: FlowExperienceProjectionRow): string {
   if (!row.schedule.date) return '날짜 없음';
@@ -276,6 +292,7 @@ function ShapeRows({
   rowTestId,
   expandTestId,
   onRowEdit,
+  emptyAction,
 }: {
   shape: FlowExperienceShape;
   rows: FlowExperienceProjectionRow[];
@@ -283,8 +300,21 @@ function ShapeRows({
   rowTestId?: string;
   expandTestId?: string;
   onRowEdit?: ShapeRowProps['onRowEdit'];
+  emptyAction?: ReactNode;
 }) {
   if (rows.length === 0) {
+    if (emptyAction) {
+      return (
+        <div className="border-t border-[var(--flowme-border)] px-3 py-5">
+          <p data-testid="flow-artifact-empty" className="text-sm leading-6 text-[var(--flowme-text-secondary)]">
+            {EMPTY_MESSAGE[shape]}
+          </p>
+          <div data-testid="flow-artifact-empty-action" className="mt-3">
+            {emptyAction}
+          </div>
+        </div>
+      );
+    }
     return (
       <p data-testid="flow-artifact-empty" className="border-t border-[var(--flowme-border)] px-3 py-5 text-sm leading-6 text-[var(--flowme-text-secondary)]">
         {EMPTY_MESSAGE[shape]}
@@ -342,6 +372,10 @@ export function FlowArtifactDataPreview({
   expandTestId,
   resultSummary,
   onRowEdit,
+  onRowOpen,
+  anchorDate,
+  publicApprovedMode = false,
+  emptyAction,
 }: {
   projection: FlowExperienceProjection;
   selectedShape?: FlowExperienceShape;
@@ -354,14 +388,25 @@ export function FlowArtifactDataPreview({
   expandTestId?: string;
   resultSummary?: string;
   onRowEdit?: (row: FlowExperienceProjectionRow, returnFocusSelector: string) => void;
+  onRowOpen?: (row: FlowExperienceProjectionRow, returnFocusSelector: string) => void;
+  anchorDate?: string;
+  /** Restricts a public result preview to the approved Text/Todo/Calendar views. */
+  publicApprovedMode?: boolean;
+  emptyAction?: ReactNode;
 }) {
   const recommendation = buildArtifactRecommendationVM(projection);
-  const availableShapes = recommendation.visible.map((candidate) => candidate.shape);
-  const initialShape = recommendation.primary?.shape ?? projection.primaryShape;
+  const availableShapes = publicApprovedMode
+    ? [...APPROVED_PUBLIC_SHAPES]
+    : recommendation.visible.map((candidate) => candidate.shape);
+  const initialShape = publicApprovedMode
+    ? availableShapes[0] ?? 'memo'
+    : recommendation.primary?.shape ?? projection.primaryShape;
   const [internalSelectedShape, setInternalSelectedShape] = useState<FlowExperienceShape>(initialShape);
   const selectedShape = controlledSelectedShape && availableShapes.includes(controlledSelectedShape)
     ? controlledSelectedShape
-    : internalSelectedShape;
+    : publicApprovedMode && !availableShapes.includes(internalSelectedShape)
+      ? initialShape
+      : internalSelectedShape;
 
   useEffect(() => {
     setInternalSelectedShape(initialShape);
@@ -376,12 +421,28 @@ export function FlowArtifactDataPreview({
 
   const selected = projection.shapes[selectedShape];
   const selectedRecommendation = recommendation.visible.find((candidate) => candidate.shape === selectedShape);
+  const groupedTodoViewModel = buildDateGroupedTodoListViewModel({
+    anchorDate,
+    items: selected.rows.map((row, sourceOrder) => ({
+      id: row.id,
+      title: row.title,
+      date: row.schedule.date,
+      completed: false,
+      sourceOrder,
+      meta: [
+        row.memo || row.description ? '메모' : '',
+        row.completionCriterion ? '완료 기준' : '',
+      ].filter(Boolean),
+      data: row,
+    })),
+  });
 
   return (
     <section
       data-testid={testId}
       data-primary-shape={projection.primaryShape}
       data-selected-shape={selectedShape}
+      data-public-format-mode={publicApprovedMode ? 'approved' : 'default'}
       data-p29-marker="P29-ARTIFACT-RECOMMENDATION"
       data-p35-marker="P35-PUBLIC-RESULT-FIRST"
       data-flow-anatomy="artifact-result"
@@ -392,7 +453,7 @@ export function FlowArtifactDataPreview({
         <div className="min-w-0">
           <p className="text-[10px] font-semibold text-[var(--flowme-text-tertiary)]">먼저 확인할 결과</p>
           <h2 id="flow-artifact-data-preview-title" className="mt-0.5 text-sm font-semibold text-[var(--flowme-text)]">
-            {selected.label} · {selected.count}개
+            {(publicApprovedMode ? getApprovedPublicShapeLabel(selectedShape) : undefined) ?? selected.label} · {selected.count}개
           </h2>
           <p
             data-testid="flow-artifact-result-summary"
@@ -407,7 +468,13 @@ export function FlowArtifactDataPreview({
           ) : null}
         </div>
         {showShapeChoices && availableShapes.length > 1 ? (
-          <div role="group" aria-label="결과 형태" className="flex max-w-full flex-wrap gap-1">
+          <div
+            role="group"
+            aria-label="결과 형태"
+            className={publicApprovedMode
+              ? 'grid w-full grid-cols-3 gap-1'
+              : 'flex max-w-full flex-wrap gap-1'}
+          >
             {availableShapes.map((shape) => {
               const candidate = projection.shapes[shape];
               const candidateRecommendation = recommendation.visible.find((item) => item.shape === shape);
@@ -431,21 +498,43 @@ export function FlowArtifactDataPreview({
                     onSelectedShapeChange?.(shape);
                   }}
                 >
-                  {candidate.label} {candidateRecommendation?.countLabel ?? candidate.count}
+                  {publicApprovedMode
+                    ? getApprovedPublicShapeLabel(shape)
+                    : `${candidate.label} ${candidateRecommendation?.countLabel ?? candidate.count}`}
                 </button>
               );
             })}
           </div>
         ) : null}
       </header>
-      <ShapeRows
-        shape={selectedShape}
-        rows={selected.rows}
-        previewRowLimit={previewRowLimit}
-        rowTestId={rowTestId}
-        expandTestId={expandTestId}
-        onRowEdit={onRowEdit}
-      />
+      {selectedShape === 'checklist' && publicApprovedMode ? (
+        <DateGroupedTodoList
+          mode="public"
+          viewModel={groupedTodoViewModel}
+          getItemHref={(row) => `#public-item-${encodeURIComponent(row.id)}`}
+          onOpenItem={onRowOpen
+            ? (row) => onRowOpen(
+                row.data!,
+                `[data-todo-detail-link="${CSS.escape(row.id)}"]`,
+              )
+            : undefined}
+          testId={`${testId}-todo`}
+          rowTestId={rowTestId}
+          checkboxTestId={`${testId}-todo-checkbox`}
+          detailLinkTestId={`${testId}-todo-detail-link`}
+          className="border-t border-[var(--flowme-border)] px-2 py-3"
+        />
+      ) : (
+        <ShapeRows
+          shape={selectedShape}
+          rows={selected.rows}
+          previewRowLimit={previewRowLimit}
+          rowTestId={rowTestId}
+          expandTestId={expandTestId}
+          onRowEdit={onRowEdit}
+          emptyAction={emptyAction}
+        />
+      )}
     </section>
   );
 }

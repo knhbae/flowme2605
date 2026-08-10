@@ -1,5 +1,44 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 
+export function withLegacySavedPlanLibraryRoute(route: string): string {
+  const absoluteRoute = /^[a-z][a-z\d+.-]*:/iu.test(route);
+  const url = new URL(route, 'http://flowme.test');
+  if (!url.searchParams.has('savedPlanLibrary')) {
+    url.searchParams.set('savedPlanLibrary', 'off');
+  }
+  return absoluteRoute ? url.toString() : `${url.pathname}${url.search}${url.hash}`;
+}
+
+export function gotoLegacySavedPlanLibraryRoute(
+  page: Page,
+  route: string,
+  options?: Parameters<Page['goto']>[1],
+) {
+  return page.goto(withLegacySavedPlanLibraryRoute(route), options);
+}
+
+export async function installLegacySavedPlanLibraryNavigation(page: Page): Promise<void> {
+  await page.addInitScript(() => {
+    const preserveLegacyLane = (value?: string | URL | null) => {
+      if (value === undefined || value === null) return value;
+      const url = new URL(String(value), window.location.href);
+      if (url.origin !== window.location.origin) return value;
+      if (!url.searchParams.has('savedPlanLibrary')) {
+        url.searchParams.set('savedPlanLibrary', 'off');
+      }
+      return `${url.pathname}${url.search}${url.hash}`;
+    };
+    const originalPushState = window.history.pushState.bind(window.history);
+    const originalReplaceState = window.history.replaceState.bind(window.history);
+    window.history.pushState = ((state, unused, url) => (
+      originalPushState(state, unused, preserveLegacyLane(url))
+    )) as History['pushState'];
+    window.history.replaceState = ((state, unused, url) => (
+      originalReplaceState(state, unused, preserveLegacyLane(url))
+    )) as History['replaceState'];
+  });
+}
+
 async function resolveSavedFlowSlug(page: Page, requestedSlug: string): Promise<string> {
   return page.evaluate((sourceSlug) => {
     const currentFlow = new URL(window.location.href).searchParams.get('flow');
@@ -41,6 +80,15 @@ export async function openMyFlowLibraryFlow(
   mobileSection: 'execute' | 'plan' | 'record' = 'plan',
 ): Promise<Locator> {
   const resolvedFlowSlug = await resolveSavedFlowSlug(page, flowSlug);
+  const currentUrl = new URL(page.url());
+  const legacySavedPlanLibrary = currentUrl.searchParams.get('savedPlanLibrary') === 'off';
+  if (legacySavedPlanLibrary && currentUrl.searchParams.get('flow') !== resolvedFlowSlug) {
+    const params = new URLSearchParams(currentUrl.pathname === '/my' ? currentUrl.search : '');
+    params.set('view', 'flows');
+    params.set('flow', resolvedFlowSlug);
+    params.set('savedPlanLibrary', 'off');
+    await page.goto(`/my?${params.toString()}`);
+  }
   const flowView = page.getByTestId('my-flow-todo-experiment-view-flows');
   if (
     await flowView.isVisible().catch(() => false) &&
@@ -129,7 +177,9 @@ export async function openMyFlowLibraryFlow(
 export function getOpenMyFlowItemDetail(page: Page): Locator {
   return page.locator(
     '[data-testid="my-flow-item-detail-sheet"] [data-testid="my-flow-item-detail"]:visible, '
-      + '[data-testid="my-flow-workspace-detail-pane"] [data-testid="my-flow-item-detail"]:visible',
+      + '[data-testid="my-flow-workspace-detail-pane"] [data-testid="my-flow-item-detail"]:visible, '
+      + '[data-testid="my-flow-calendar-item-inspector-region"] [data-testid="my-flow-item-detail"]:visible, '
+      + '[data-testid="my-flow-item-detail"]:visible',
   ).last();
 }
 

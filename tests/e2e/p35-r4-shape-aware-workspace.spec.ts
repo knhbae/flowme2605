@@ -5,7 +5,9 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 
 import {
   closeOpenMyFlowItemDetail,
+  gotoLegacySavedPlanLibraryRoute,
   getOpenMyFlowItemDetail,
+  installLegacySavedPlanLibraryNavigation,
   openMyFlowLibraryFlow,
 } from './helpers/my-flow-library';
 import { savePublicFlow } from './helpers/public-flow-save';
@@ -63,7 +65,7 @@ async function seedSavedFlow(
     routineEndMode?: 'count' | 'none';
   },
 ) {
-  await page.goto('/flows');
+  await gotoLegacySavedPlanLibraryRoute(page, '/flows');
   await page.evaluate((input) => {
     window.localStorage.clear();
     window.localStorage.setItem(`flow:saved:${input.slug}`, JSON.stringify({
@@ -132,7 +134,7 @@ test.describe('P35-R4 shape-aware My Flow workspace', () => {
       mode: 'calendar',
       anchor: '2030-09-01',
     });
-    await page.goto('/my?view=flows&flow=moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows&flow=moving-d30-basic');
 
     const workspace = await openMyFlowLibraryFlow(page, 'moving-d30-basic');
     const execution = workspace.getByTestId('my-flow-shape-aware-execution');
@@ -170,7 +172,7 @@ test.describe('P35-R4 shape-aware My Flow workspace', () => {
       anchor: formatLocalDate(new Date()),
       weekdays: ['월', '수', '금'],
     });
-    await page.goto('/my?view=flows&flow=curated-allblanc-morning-workout');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows&flow=curated-allblanc-morning-workout');
 
     const workspace = await openMyFlowLibraryFlow(
       page,
@@ -204,7 +206,7 @@ test.describe('P35-R4 shape-aware My Flow workspace', () => {
       ],
       routineEndMode: 'none',
     });
-    await page.goto('/my?view=flows&flow=curated-allblanc-morning-workout');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows&flow=curated-allblanc-morning-workout');
 
     const workspace = await openMyFlowLibraryFlow(
       page,
@@ -250,7 +252,8 @@ test.describe('P35-R4 shape-aware My Flow workspace', () => {
   test('open routine selected plan and export distinguish one series from rendered occurrences', async ({ page }) => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/f/curated-allblanc-morning-workout');
+    await installLegacySavedPlanLibraryNavigation(page);
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-allblanc-morning-workout');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
     await page.getByTestId('public-flow-anchor-input').fill(formatLocalDate(addLocalDays(new Date(), 6)));
@@ -290,7 +293,7 @@ test.describe('P35-R4 shape-aware My Flow workspace', () => {
       slug: 'new-car-delivery-check',
       mode: 'sheet',
     });
-    await page.goto('/my?view=flows&flow=new-car-delivery-check');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows&flow=new-car-delivery-check');
 
     const workspace = await openMyFlowLibraryFlow(page, 'new-car-delivery-check');
     const execution = workspace.getByTestId('my-flow-shape-aware-execution');
@@ -310,7 +313,7 @@ test.describe('P35-R4 shape-aware My Flow workspace', () => {
       slug: 'passport-renewal-docs',
       mode: 'checklist',
     });
-    await page.goto('/my?view=flows&flow=passport-renewal-docs');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows&flow=passport-renewal-docs');
 
     const workspace = await openMyFlowLibraryFlow(page, 'passport-renewal-docs');
     await expect(workspace).toHaveAttribute('data-p32-flow-shape', '메모');

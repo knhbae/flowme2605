@@ -39,6 +39,12 @@ export type MyFlowPortableStepExportInput = {
   repeatPreset?: MyFlowStepRepeatPreset | string;
   location?: string;
   description?: string;
+  /**
+   * Canonical Item memo text. It may contain Markdown checklist rows such as
+   * `- [ ]` and `- [x]`. When supplied, Calendar/Todo DESCRIPTION uses this
+   * raw text instead of the legacy, presentation-oriented portable summary.
+   */
+  rawMemoText?: string;
   memo?: string;
   executionMemo?: string;
   executionStatus?: MyFlowPortableExecutionStatus;
@@ -97,6 +103,13 @@ const repeatRules: Record<string, string> = {
 
 function clean(value?: string): string {
   return (value ?? '').trim();
+}
+
+function normalizeRawMemoText(value?: string): string {
+  return (value ?? '')
+    .replaceAll('\r\n', '\n')
+    .replaceAll('\r', '\n')
+    .trim();
 }
 
 function appendCompletionCriterion(lines: string[], value?: string): void {
@@ -214,6 +227,42 @@ function formatChecklistItems(input: MyFlowPortableStepExportInput): string[] {
     return [`- [${input.executionStatus === 'done' ? 'x' : ' '}] ${clean(input.stepTitle) || '할 일'}`];
   }
   return items.map((item, index) => `- [${input.checkedItems?.[String(index)] ? 'x' : ' '}] ${item}`);
+}
+
+function formatChildChecklistItems(input: MyFlowPortableStepExportInput): string[] {
+  return (input.items ?? [])
+    .map(clean)
+    .filter(Boolean)
+    .map((item, index) => `- [${input.checkedItems?.[String(index)] ? 'x' : ' '}] ${item}`);
+}
+
+function hasMarkdownChecklistRow(value: string): boolean {
+  return value.split('\n').some((line) => /^\s*-\s*\[[ xX]\]\s+\S/u.test(line));
+}
+
+/**
+ * Builds the canonical DESCRIPTION body shared by VEVENT and VTODO.
+ *
+ * The memo remains one raw TXT value. If that value already contains
+ * Markdown checklist rows, the legacy `items` projection is deliberately not
+ * appended, preventing one checklist entry from becoming a second calendar
+ * or Todo component (or a duplicated DESCRIPTION row).
+ */
+export function buildMyFlowItemDescriptionText(
+  input: MyFlowPortableStepExportInput,
+): string {
+  const rawMemo = normalizeRawMemoText(input.rawMemoText ?? input.memo);
+  const sections: string[] = [];
+  if (rawMemo) sections.push(rawMemo);
+
+  if (!hasMarkdownChecklistRow(rawMemo)) {
+    const checklist = formatChildChecklistItems(input);
+    if (checklist.length > 0) sections.push(checklist.join('\n'));
+  }
+
+  const criterion = normalizeCompletionCriterion(input.completionCriteria);
+  if (criterion) sections.push(`완료 기준: ${criterion}`);
+  return sections.join('\n\n');
 }
 
 function escapeTsvCell(value?: string): string {
@@ -349,7 +398,9 @@ export function buildMyFlowStepIcs(input: MyFlowPortableStepExportInput): string
         'personal-flow',
       itemId: clean(input.stableEventIdentitySeed) || clean(input.stepId) || 'personal-item',
       title: clean(input.stepTitle) || '할 일',
-      description: buildMyFlowStepPortableText(input),
+      description: input.rawMemoText !== undefined
+        ? buildMyFlowItemDescriptionText(input)
+        : buildMyFlowStepPortableText(input),
       date,
       ...(time ? { time } : {}),
       ...(time && input.durationMinutes !== undefined
@@ -400,7 +451,9 @@ export function buildMyFlowStepIcs(input: MyFlowPortableStepExportInput): string
 
   lines.push(
     `SUMMARY:${escapeIcsText(clean(input.stepTitle) || '할 일')}`,
-    `DESCRIPTION:${escapeIcsText(buildMyFlowStepPortableText(input))}`,
+    `DESCRIPTION:${escapeIcsText(input.rawMemoText !== undefined
+      ? buildMyFlowItemDescriptionText(input)
+      : buildMyFlowStepPortableText(input))}`,
     `STATUS:${input.executionStatus === 'done'
       ? 'CONFIRMED'
       : input.executionStatus === 'skipped' || input.executionStatus === 'held'
@@ -453,6 +506,112 @@ export function buildMyFlowMultiStepIcs(inputs: MyFlowPortableStepExportInput[])
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
     ...eventComponents.flat(),
+    'END:VCALENDAR',
+  ].join('\r\n')}\r\n`;
+}
+
+export function canBuildMyFlowStepVtodo(input: MyFlowPortableStepExportInput): boolean {
+  return Boolean(clean(input.stableEventIdentitySeed) || clean(input.stepId));
+}
+
+function getMyFlowPortableIdentity(input: MyFlowPortableStepExportInput): string {
+  return clean(input.stableEventIdentitySeed) || clean(input.stepId);
+}
+
+function getMyFlowPortableGeneratedStamp(input: MyFlowPortableStepExportInput): string {
+  const generatedDate = input.generatedAt && Number.isFinite(Date.parse(input.generatedAt))
+    ? new Date(input.generatedAt)
+    : new Date();
+  return generatedDate.toISOString()
+    .replaceAll('-', '')
+    .replaceAll(':', '')
+    .replace(/\.\d{3}Z$/, 'Z');
+}
+
+/**
+ * Creates one RFC 5545 VTODO for one canonical Item. Checklist rows remain
+ * ordinary DESCRIPTION text and therefore never become sibling VTODOs.
+ */
+export function buildMyFlowStepVtodo(input: MyFlowPortableStepExportInput): string {
+  if (!canBuildMyFlowStepVtodo(input)) {
+    throw new Error('A stable Step identity is required to build a VTODO export.');
+  }
+
+  const identity = getMyFlowPortableIdentity(input);
+  const date = clean(input.date);
+  const time = clean(input.time);
+  const lines = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//FLOW MVP//My Flow Todo Export//KO',
+    'CALSCALE:GREGORIAN',
+    'BEGIN:VTODO',
+    `UID:${escapeIcsText(`${identity}@flowme.local`)}`,
+    `DTSTAMP:${getMyFlowPortableGeneratedStamp(input)}`,
+  ];
+
+  if (/^\d{4}-\d{2}-\d{2}$/u.test(date)) {
+    if (/^\d{2}:\d{2}$/u.test(time)) {
+      const timeZone = isPersonalStructuralIanaTimeZone(input.timeZone)
+        ? input.timeZone.trim()
+        : '';
+      const parameter = timeZone ? `;TZID=${timeZone}` : '';
+      lines.push(`DUE${parameter}:${formatTimedIcsDate(date, time)}`);
+    } else {
+      lines.push(`DUE;VALUE=DATE:${compactDate(date)}`);
+    }
+  }
+
+  lines.push(`SUMMARY:${escapeIcsText(clean(input.stepTitle) || '할 일')}`);
+  const description = buildMyFlowItemDescriptionText(input);
+  if (description) lines.push(`DESCRIPTION:${escapeIcsText(description)}`);
+  lines.push(
+    `STATUS:${input.executionStatus === 'done' ? 'COMPLETED' : 'NEEDS-ACTION'}`,
+    `PERCENT-COMPLETE:${input.executionStatus === 'done' ? '100' : '0'}`,
+  );
+
+  if (repeatRules[clean(input.repeatPreset)]) {
+    lines.push(`RRULE:${repeatRules[clean(input.repeatPreset)]}`);
+  }
+  if (clean(input.sourceUrl)) lines.push(`URL:${clean(input.sourceUrl)}`);
+  lines.push('END:VTODO', 'END:VCALENDAR');
+  return `${lines.map(foldIcsContentLine).join('\r\n')}\r\n`;
+}
+
+function extractIcsTodoComponents(ics: string): string[][] {
+  const components: string[][] = [];
+  let current: string[] | undefined;
+  ics.split(/\r?\n/u).forEach((line) => {
+    if (line === 'BEGIN:VTODO') {
+      current = [line];
+      return;
+    }
+    if (!current) return;
+    current.push(line);
+    if (line === 'END:VTODO') {
+      components.push(current);
+      current = undefined;
+    }
+  });
+  return components;
+}
+
+export function buildMyFlowMultiStepVtodo(inputs: MyFlowPortableStepExportInput[]): string {
+  const seenInputs = new Set<string>();
+  const todoComponents = inputs.flatMap((input) => {
+    if (!canBuildMyFlowStepVtodo(input)) return [];
+    const identity = getMyFlowPortableIdentity(input);
+    if (seenInputs.has(identity)) return [];
+    seenInputs.add(identity);
+    return extractIcsTodoComponents(buildMyFlowStepVtodo(input));
+  });
+
+  return `${[
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//FlowMe//Scoped Todo Export//KO',
+    'CALSCALE:GREGORIAN',
+    ...todoComponents.flat(),
     'END:VCALENDAR',
   ].join('\r\n')}\r\n`;
 }

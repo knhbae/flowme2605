@@ -40,7 +40,7 @@ Only **Active Gate** is the current execution backlog. Unchecked boxes inside ga
 
 ### Active Gate
 
-- None. R3A is released, and no next product implementation ticket is promoted.
+- [2026-08-11 R3B Approved Plan Execution Boundaries](./2026-08-11-r3b-approved-plan-execution-boundaries/spec.md) is Owner-approved for implementation, publication, merge, and production deployment. One ordered gate first implements the hashed approved plan-execution product contract from the R3A base, then preserves that candidate while extracting the selected-Plan surface and saved-transfer request/revalidation planning from `AppClient`. Local `verify` passes docs `16/4492`, full `npm test`, and production build `18/18` at BUILD_ID `OLhvDcxZwIjvVgL9bhJ7n`; canonical browser gates pass `43/43` and full repository Playwright passes `569/569` with failures, skips, and flaky tests all `0`. GitHub CI, merge, deployment, and smoke remain `NOT_RUN`. R3A remains the production baseline, and automated QA and production smoke remain separate from observed-user validation.
 
 ### Recently Completed
 

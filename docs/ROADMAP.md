@@ -1,14 +1,29 @@
 # Roadmap
 
-**Last Updated:** 2026-08-09<br>
+**Last Updated:** 2026-08-11<br>
 **Current Version:** v0.1.0 (released product PoC)<br>
 **Current Validation Stage:** internal alpha / R3A production smoke PASS / observed users 0<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** R3A release is closed with the classic default preserved; no next product slice is active until the Owner explicitly promotes one
+**Next Milestone:** Complete the Owner-approved R3B approved plan-execution boundaries, merge them with full CI, and production-deploy the exact merge SHA
 
 Human-facing control surface: [FlowMe Project Control](./PROJECT_CONTROL.md).
 The [2026-07-29 P35 stage board](./content-audit/2026-07-29-flowme-current-stage-control-board-ko.html)
 is retained as a dated evidence snapshot rather than the current backlog.
+
+## Active: R3B Approved Plan Execution Boundaries
+
+The Owner promoted [R3B](./specs/2026-08-11-r3b-approved-plan-execution-boundaries/spec.md)
+on 2026-08-11. It first implements the hashed approved plan-execution product
+contract from the R3A base, then preserves that candidate while moving the
+selected-Plan surface and saved-transfer request/revalidation planning behind
+typed boundaries. The approved product delta may change composition, copy, and
+DOM only as fixed by that contract; the architecture delta may not add further
+drift. Storage/schema, identity, artifact bytes, receipt ordering, rollback,
+Text-to-Flow, and broad legacy deletion are outside this gate. Completion
+requires full local and GitHub CI, merge, Vercel Production source-SHA
+verification, canonical smoke, and an explicit observed-user count that remains
+separate from automation. R3A remains the current production baseline until
+those release checks are complete.
 
 ## Closed MVP Program: P35 Round 2 B/B/B Bounded UX Correction
 
@@ -372,14 +387,16 @@ Detailed scope: [Save, Personalize, Execute Journey Reset](./specs/2026-07-18-sa
 
 ## Operating Queue
 
-There is no active external-user gate or active release-prep ticket. R3A is the
-canonical production product baseline for this MVP PoC, with `classic` still the
-default and `r3a-lab` retained only as an exact-query internal candidate. P35
-Round 2 P′ and P′′ remain immutable review and release history. External user
-observation is excluded and is not a completion requirement.
+R3B is the only active implementation and release-preparation gate. There is no
+active external-user gate. R3A remains the canonical production product
+baseline, with `classic` still the default and `r3a-lab` retained only as an
+exact-query internal candidate, until the exact R3B merge is deployed and
+smoked. P35 Round 2 P′ and P′′ remain immutable review and release history.
+External user observation is excluded and is not a completion requirement.
 
 | Lane | Owner | Work | Next checkpoint | Done when |
 | --- | --- | --- | --- | --- |
+| Active R3B gate | AI + Owner authorization | Approved plan-execution UX, bounded selected-Plan and transfer boundaries, local/GitHub CI, PR, merge, deployment, and smoke | Complete local closeout, open the PR, and require exact-head GitHub and Vercel preview checks before merge | exact merge SHA is the Production source, canonical smoke passes, and observed users remain explicitly `0` |
 | Completed R3A release | AI + Owner | My Flow workspace snapshot, exact-query experience boundary, PR #169 merge, production deploy, and smoke | Preserve classic as default and keep lab promotion/removal as a separate decision | merge `95a69257`, GitHub Playwright `546/546`, deployment `dpl_5jhJz4EBiHMm5HptH9nFCqfyeFek` `READY`, production smoke PASS, observed users `0` |
 | Completed P35 Round 2 release | AI + Owner | P′ review incorporation, P′′ freeze/evidence, and production deployment | Preserve the historical release boundary without claiming a fresh independent P′′ review or production smoke | deployment `dpl_EBDr9CiRuwAUyjMcJwp7g6eBLpNk` was `READY`, smoke `NOT_RUN`, observed users `0` |
 | Completed candidate evidence | Development | P′′ shared lock, fresh reread/CAS, reuse/public-copy transaction, exact-byte/schema/deploy guards | Preserve source and published provenance for `f97644a` / `T0QkChgscSgPog-0UdvY-` / `p35-r2-4fa6af1728eb5ca5` | S01~S23 `23/23` accounted (S22 `NOT_ASSESSED`, S23 reviewer-chosen), three group manifests `PASS`, verifier `PASS`, failures `0` |
@@ -431,11 +448,12 @@ These gates cannot be closed by automated tests or simulated personas.
 
 ## Next Decision
 
-No further Pass 1/Pass 2 package is required for the closed MVP PoC gate. Preserve
+For the closed P35 Round 2 MVP gate, no further Pass 1/Pass 2 package is
+required. Preserve
 the [P′′ closeout](./specs/2026-08-04-p35-round2-bounded-ux-correction/pass2-cross-synthesis-and-pprime2-closeout.md),
 the shared-write [decision](./DECISIONS.md), and exact release provenance without
-upgrading `NOT_RUN` review or smoke states into `PASS`. If production verification
-is requested, run a bounded smoke and record it separately. Text-to-flow, P2
+upgrading `NOT_RUN` review or smoke states into `PASS`. The separately promoted
+R3B gate owns its own required production verification. Text-to-flow, P2
 follow-ups, external integrations, and observed-user recruitment remain inactive
 until the Owner explicitly promotes them.
 

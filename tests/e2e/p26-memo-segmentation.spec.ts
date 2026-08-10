@@ -3,6 +3,7 @@ import path from 'node:path';
 
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import {
+  gotoLegacySavedPlanLibraryRoute,
   openMyFlowLibraryFlow,
   openPersonalDraftListExport,
 } from './helpers/my-flow-library';
@@ -57,7 +58,7 @@ test('memo intake preserves source fragments through review, save, reload, and w
   await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
 
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/flows');
+  await gotoLegacySavedPlanLibraryRoute(page, '/flows');
   await page.evaluate(() => localStorage.clear());
   await page.reload();
 
@@ -153,7 +154,7 @@ test('memo intake preserves source fragments through review, save, reload, and w
   await expect(page.getByTestId('my-flow-post-save-panel')).toHaveAttribute('data-receipt-total-count', '4');
   await page.getByTestId('my-flow-post-save-view-flow').click();
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/my?view=flows');
+  await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows');
   const savedFlow = await openMyFlowLibraryFlow(page, savedSlug!, 'record');
   await expect(savedFlow).toContainText('제주 출발 준비');
   const exportSurface = await openPersonalDraftListExport(savedFlow);

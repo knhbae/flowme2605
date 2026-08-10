@@ -3,7 +3,11 @@ import path from 'node:path';
 
 import { expect, test, type Page } from '@playwright/test';
 import { AJD_MOVING_CANONICAL_FLOW_ID } from '../../lib/flow/canonical-flow-registry';
-import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
+import {
+  gotoLegacySavedPlanLibraryRoute,
+  installLegacySavedPlanLibraryNavigation,
+  openMyFlowLibraryFlow,
+} from './helpers/my-flow-library';
 import { savePublicFlow } from './helpers/public-flow-save';
 
 const evidenceRoot = process.env.FLOWME_P33_EVIDENCE_DIR;
@@ -90,7 +94,7 @@ test.describe('P33 cross-entry canonical alignment', () => {
       { slug: 'moving-d30-basic', expectedCount: 24, initialShape: 'checklist', savedShape: 'calendar' },
       { slug: 'vehicle-inspection-prep', expectedCount: 10, initialShape: 'checklist', savedShape: 'checklist' },
     ]) {
-      await page.goto(`/f/${candidate.slug}`);
+      await gotoLegacySavedPlanLibraryRoute(page, `/f/${candidate.slug}`);
       await clearLocalState(page);
       const preview = page.getByTestId('public-flow-capability-result');
       await expect(preview).toHaveAttribute(
@@ -157,7 +161,7 @@ test.describe('P33 cross-entry canonical alignment', () => {
         JSON.stringify({ 'source-backed-moving-d30-step-1': true }),
       );
     });
-    await page.goto('/my?view=flows');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows');
 
     const reconciliation = page.getByTestId('canonical-saved-copy-reconciliation');
     await expect(reconciliation).toBeVisible();
@@ -212,22 +216,23 @@ test.describe('P33 cross-entry canonical alignment', () => {
         }),
       );
     });
-    await page.goto('/my?view=flows');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows');
 
-    const row = page.locator(
-      '[data-testid="my-flow-library-row"][data-flow-slug="source-backed-aircon-filter-cleaning"]',
+    const flow = await openMyFlowLibraryFlow(
+      page,
+      'source-backed-aircon-filter-cleaning',
+      'plan',
     );
-    await expect(row).toBeVisible();
-    await row.click();
     await expect(page.locator('body')).not.toContainText('FREQ=');
-    await expect(page.getByTestId('my-flow-library-detail')).toContainText('2주마다');
+    await expect(flow).toContainText('2주마다');
     await capture(page, 'p33-06-readable-recurrence-1024.png');
     await expectNoHorizontalOverflow(page);
   });
 
   test('direct save handoff, My Flow, Calendar, and export keep the canonical 24-item identity', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto('/f/moving-d30-basic');
+    await installLegacySavedPlanLibraryNavigation(page);
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
     await clearLocalState(page);
     await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
     const saveBanner = await savePublicFlow(page, page.getByTestId('public-flow-save-primary'));
@@ -263,7 +268,7 @@ test.describe('P33 cross-entry canonical alignment', () => {
     await capture(page, 'p33-06-canonical-my-flow-export-1440.png');
     await expectNoHorizontalOverflow(page);
 
-    await page.goto('/calendar');
+    await gotoLegacySavedPlanLibraryRoute(page, '/calendar');
     const dateCounts = [
       ['2030-07', '2030-07-16', 4],
       ['2030-08', '2030-08-05', 5],

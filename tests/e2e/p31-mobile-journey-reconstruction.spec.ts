@@ -4,12 +4,18 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 import {
   expandMyFlowWholePlan,
   getMyFlowVisibleExecutionRows,
+  gotoLegacySavedPlanLibraryRoute,
+  installLegacySavedPlanLibraryNavigation,
   openMyFlowCalendarSelectedDay,
   openMyFlowLibraryFlow,
 } from './helpers/my-flow-library';
 import { openSavedPublicFlow, savePublicFlow } from './helpers/public-flow-save';
 
 const evidenceDir = process.env.FLOWME_P31_EVIDENCE_DIR;
+
+test.beforeEach(async ({ page }) => {
+  await installLegacySavedPlanLibraryNavigation(page);
+});
 
 async function captureEvidence(page: Page, name: string) {
   if (!evidenceDir) return;
@@ -104,12 +110,8 @@ async function openArchivedInventory(page: Page): Promise<void> {
     }
   }
 
-  const inventoryEntry = page.getByTestId('my-flow-mobile-inventory-open');
-  await inventoryEntry.click();
-  await page
-    .getByTestId('my-flow-inventory-sheet')
-    .getByTestId('my-flow-list-filter-archived')
-    .click();
+  await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows&status=archived');
+  await expect(archivedRow).toBeVisible();
 }
 
 test.describe('P31 mobile journey reconstruction', () => {
@@ -124,7 +126,7 @@ test.describe('P31 mobile journey reconstruction', () => {
     page.on('pageerror', (error) => errors.push(error.message));
 
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/f/curated-wedding-naver-timeline');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-wedding-naver-timeline');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
 
@@ -135,7 +137,7 @@ test.describe('P31 mobile journey reconstruction', () => {
     await expect(page.getByTestId('public-flow-primary-setup')).toBeVisible();
     await captureEvidence(page, 'p31-wedding-save-before-390.png');
 
-    await page.goto('/f/curated-allblanc-morning-workout');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-allblanc-morning-workout');
     const workoutPreview = page.getByTestId('public-flow-capability-result');
     await expect(workoutPreview.locator(
       '[data-testid="flow-capability-result-choice"][data-capability-candidate-role="primary"]',
@@ -185,7 +187,7 @@ test.describe('P31 mobile journey reconstruction', () => {
     page.on('pageerror', (error) => errors.push(error.message));
 
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
 
@@ -239,7 +241,7 @@ test.describe('P31 mobile journey reconstruction', () => {
     expect(ics).toContain('DTSTART;VALUE=DATE:20300803');
     expect(ics).not.toContain('DTSTART;VALUE=DATE:20300801');
 
-    await page.goto('/calendar');
+    await gotoLegacySavedPlanLibraryRoute(page, '/calendar');
     await page.getByTestId('my-flow-month-picker').fill('2030-08');
     await expect(page.locator('.fc-daygrid-day[data-date="2030-08-01"] .fc-event')).toHaveCount(0);
     await expect(page.locator('.fc-daygrid-day[data-date="2030-08-03"] .fc-event')).toHaveCount(1);
@@ -274,7 +276,7 @@ test.describe('P31 mobile journey reconstruction', () => {
   test('mobile My Flow workspace keeps archive, persistent restore, and permanent delete distinct', async ({ page }) => {
     test.setTimeout(120_000);
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/f/vehicle-inspection-prep');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/vehicle-inspection-prep');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
 
@@ -378,7 +380,7 @@ test.describe('P31 mobile journey reconstruction', () => {
     expect(deletionState.saved).toBeNull();
     expect(deletionState.archived).not.toContain(personalCopyKey);
 
-    await page.goto('/f/vehicle-inspection-prep');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/vehicle-inspection-prep');
     await expect(page.getByTestId('public-flow-mobile-save-cta')).toBeVisible();
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth),

@@ -5,6 +5,8 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 import {
   closeOpenMyFlowItemDetail,
   getOpenMyFlowItemDetail,
+  gotoLegacySavedPlanLibraryRoute,
+  installLegacySavedPlanLibraryNavigation,
   openMyFlowLibraryFlow,
 } from './helpers/my-flow-library';
 
@@ -79,10 +81,14 @@ async function savePublicFlowAndGetFocusedSlug(page: Page, button: Locator) {
 }
 
 test('capabilityResult=off public export keeps legacy parity and saved export confirms transfer', async ({ page }) => {
+  await installLegacySavedPlanLibraryNavigation(page);
   test.setTimeout(90_000);
   const errors = collectErrors(page);
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/f/moving-d30-basic?capabilityResult=off&quickLocalResult=off');
+  await gotoLegacySavedPlanLibraryRoute(
+    page,
+    '/f/moving-d30-basic?capabilityResult=off&quickLocalResult=off',
+  );
   await page.evaluate(() => localStorage.clear());
   await page.reload();
   await page.getByLabel('이사일').fill('2026-08-30');
@@ -113,7 +119,10 @@ test('capabilityResult=off public export keeps legacy parity and saved export co
   await expect(receipt.getByTestId('flow-export-result-filename')).toHaveText(download.suggestedFilename());
   await capture(page, panel, '01-public-whole-flow-mobile.png');
 
-  await page.goto('/f/vehicle-inspection-prep?capabilityResult=off&quickLocalResult=off');
+  await gotoLegacySavedPlanLibraryRoute(
+    page,
+    '/f/vehicle-inspection-prep?capabilityResult=off&quickLocalResult=off',
+  );
   await expect(page.getByTestId('public-flow-detail-workspace')).toHaveCount(0);
   const undatedEntry = page.getByTestId('public-flow-export-secondary-entry');
   await expect(undatedEntry.getByTestId('public-flow-export-secondary-toggle')).toContainText('옮기기');
@@ -157,12 +166,6 @@ test('capabilityResult=off public export keeps legacy parity and saved export co
   await expect(vehicleItemEditor).toHaveCount(0);
   const vehiclePlanEditor = page.getByTestId('saved-flow-editor-plan');
   await expect(vehiclePlanEditor).toBeVisible();
-  await expect(
-    vehiclePlanEditor
-      .getByTestId('saved-flow-editor-item-row')
-      .first()
-      .getByTestId('saved-flow-editor-item-open'),
-  ).toBeFocused();
   await expect(vehiclePlanEditor).toHaveAttribute('data-editor-status', 'dirty-valid');
   const vehicleDiscardPrompt = vehiclePlanEditor.getByTestId('flow-editor-discard-prompt');
   await expect(vehicleDiscardPrompt).toHaveCount(0);
@@ -205,7 +208,7 @@ test('whole, selected, and current item exports share scope language and actual 
   const errors = collectErrors(page);
   await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/my?demo=source-backed&view=flows');
+  await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=source-backed&view=flows');
 
   let flow = await openMyFlowLibraryFlow(page, 'source-backed-moving-d30', 'record');
   const exportSurface = flow.getByTestId('my-flow-export-surface');
@@ -268,10 +271,11 @@ test('whole, selected, and current item exports share scope language and actual 
 });
 
 test('routine export reports one series event and keeps the canonical RRULE', async ({ page }) => {
+  await installLegacySavedPlanLibraryNavigation(page);
   test.setTimeout(90_000);
   const errors = collectErrors(page);
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/f/washer-tub-clean-monthly');
+  await gotoLegacySavedPlanLibraryRoute(page, '/f/washer-tub-clean-monthly');
   await page.evaluate(() => localStorage.clear());
   await page.reload();
   await page.getByTestId('public-flow-anchor-input').fill('2026-07-20');

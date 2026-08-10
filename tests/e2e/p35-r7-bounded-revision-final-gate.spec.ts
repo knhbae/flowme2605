@@ -5,6 +5,7 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 
 import {
   closeOpenMyFlowItemDetail,
+  gotoLegacySavedPlanLibraryRoute,
   getOpenMyFlowItemDetail,
   openMyFlowLibraryFlow,
 } from './helpers/my-flow-library';
@@ -239,7 +240,7 @@ test.describe('P35-R7 bounded revision final gate', () => {
 
       // Session 1: inspect the actual result before personalizing or saving.
       await page.setViewportSize({ width: 390, height: 844 });
-      await page.goto(`/f/${scenario.slug}`);
+      await gotoLegacySavedPlanLibraryRoute(page, `/f/${scenario.slug}`);
       await page.evaluate(() => window.localStorage.clear());
       await page.reload();
       const capability = page.getByTestId('public-flow-capability-result');
@@ -339,7 +340,7 @@ test.describe('P35-R7 bounded revision final gate', () => {
       // Session 3: consume the same source shape inside one personal workspace.
       await seedSavedFlow(page, scenario);
       await page.setViewportSize({ width: 390, height: 844 });
-      await page.goto(`/my?view=flows&flow=${scenario.slug}`);
+      await gotoLegacySavedPlanLibraryRoute(page, `/my?view=flows&flow=${scenario.slug}`);
       const workspace = await openMyFlowLibraryFlow(page, scenario.slug);
       await expect(workspace).toHaveAttribute('data-p35-marker', 'P35-PERSONAL-SINGLE-FOCUS');
       const outline = workspace.getByTestId('my-flow-whole-flow-outline');
@@ -505,7 +506,7 @@ test.describe('P35-R7 bounded revision final gate', () => {
   test('selected desktop library keeps the same focused object contract', async ({ page }) => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto('/my?demo=ux60&view=flows');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=ux60&view=flows');
 
     const library = page.getByTestId('my-flow-library-workspace');
     await expect(library.getByTestId('my-flow-library-row')).toHaveCount(60);

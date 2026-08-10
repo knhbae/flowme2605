@@ -6,6 +6,7 @@ import {
   expandMyFlowWholePlan,
   getMyFlowVisibleExecutionRows,
   getOpenMyFlowItemDetail,
+  gotoLegacySavedPlanLibraryRoute,
   openMyFlowLibraryFlow,
 } from './helpers/my-flow-library';
 
@@ -57,7 +58,7 @@ test.describe('P26-09 adaptive whole Flow reading', () => {
     const browserErrors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
     await seedSavedFlow(page, 'washer-tub-clean-monthly', '2026-08-01');
-    await page.goto('/my?view=flows');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows');
 
     const flow = await openMyFlowLibraryFlow(page, 'washer-tub-clean-monthly');
     const outline = flow.getByTestId('my-flow-whole-flow-outline');
@@ -74,7 +75,7 @@ test.describe('P26-09 adaptive whole Flow reading', () => {
     const browserErrors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
     await seedSavedFlow(page, 'vehicle-inspection-prep');
-    await page.goto('/my?view=flows');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows');
 
     const flow = await openMyFlowLibraryFlow(page, 'vehicle-inspection-prep');
     const outline = flow.getByTestId('my-flow-whole-flow-outline');
@@ -92,7 +93,7 @@ test.describe('P26-09 adaptive whole Flow reading', () => {
     const browserErrors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
     await seedSavedFlow(page, 'moving-d30-basic', '2026-08-15');
-    await page.goto('/my?view=flows');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows');
 
     const flow = await openMyFlowLibraryFlow(page, 'moving-d30-basic');
     const outline = flow.getByTestId('my-flow-whole-flow-outline');
@@ -147,7 +148,7 @@ test.describe('P26-09 adaptive whole Flow reading', () => {
     const browserErrors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 1024, height: 768 });
     await seedSavedFlow(page, 'moving-d30-basic', '2026-08-15');
-    await page.goto('/my?view=flows');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows');
 
     const workspace = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'plan');
     await expandMyFlowWholePlan(workspace);

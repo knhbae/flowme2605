@@ -275,7 +275,14 @@ test.describe('P35 P0-08 saved-plan library visual evidence', () => {
     await page.goto(`/f/${FLOW_SLUG}`);
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
-    await page.getByTestId('public-flow-anchor-input').fill('2031-01-10');
+    const capability = page.getByTestId('public-flow-capability-result');
+    await capability.locator(
+      '[data-public-format-tab="true"][data-capability-destination="calendar"]',
+    ).click();
+    await page.getByTestId('public-flow-calendar-set-anchor').click();
+    const adjustment = page.getByTestId('public-flow-personal-adjustment');
+    await adjustment.getByTestId('public-flow-adjustment-anchor-input').fill('2031-01-10');
+    await adjustment.getByTestId('public-flow-adjustment-apply').click();
     await page.getByTestId('public-flow-save-primary-mobile').click();
 
     await expect.poll(() => new URL(page.url()).pathname).toBe('/my');

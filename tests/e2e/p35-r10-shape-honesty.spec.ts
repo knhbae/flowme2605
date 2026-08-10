@@ -3,7 +3,10 @@ import path from 'node:path';
 
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
-import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
+import {
+  gotoLegacySavedPlanLibraryRoute,
+  openMyFlowLibraryFlow,
+} from './helpers/my-flow-library';
 
 const evidenceRoot = process.env.FLOWME_P35_R10_EVIDENCE_DIR;
 
@@ -23,7 +26,7 @@ async function seedSavedFlow(
     routine?: boolean;
   },
 ) {
-  await page.goto('/flows');
+  await gotoLegacySavedPlanLibraryRoute(page, '/flows');
   await page.evaluate((fixture) => {
     const anchor = fixture.routine ? fixture.today : fixture.anchor;
     window.localStorage.clear();
@@ -65,7 +68,7 @@ test.describe('P35-R10 shape honesty and export simplification', () => {
       slug: 'pet-health-observation',
       selectedArtifactMode: 'memo',
     });
-    await page.goto('/my?view=flows&flow=pet-health-observation');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows&flow=pet-health-observation');
     const workspace = await openMyFlowLibraryFlow(page, 'pet-health-observation');
 
     await expect(workspace).toHaveAttribute('data-p35-r10-marker', 'P35-R10-SHAPE-HONESTY');
@@ -86,7 +89,7 @@ test.describe('P35-R10 shape honesty and export simplification', () => {
       selectedArtifactMode: 'calendar',
       routine: true,
     });
-    await page.goto('/my?view=flows&flow=curated-allblanc-morning-workout');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows&flow=curated-allblanc-morning-workout');
     const workspace = await openMyFlowLibraryFlow(page, 'curated-allblanc-morning-workout');
 
     await expect(workspace.getByTestId('my-flow-routine-series-summary')).toContainText('반복 계획');
@@ -103,7 +106,7 @@ test.describe('P35-R10 shape honesty and export simplification', () => {
       selectedArtifactMode: 'calendar',
       anchor: '2030-09-01',
     });
-    await page.goto('/my?view=flows&flow=moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows&flow=moving-d30-basic');
     const workspace = await openMyFlowLibraryFlow(page, 'moving-d30-basic');
     const transferEntry = workspace.getByTestId('my-flow-export-entry');
     await expect(transferEntry).toHaveAttribute('data-action-role', 'transfer-to-own-tool');
@@ -141,7 +144,7 @@ test.describe('P35-R10 shape honesty and export simplification', () => {
       selectedArtifactMode: 'calendar',
       anchor: '2030-09-01',
     });
-    await page.goto('/my?view=flows&flow=vehicle-inspection-prep');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows&flow=vehicle-inspection-prep');
     const workspace = await openMyFlowLibraryFlow(page, 'vehicle-inspection-prep');
     const dateGroup = workspace.getByTestId('my-flow-whole-flow-date-group').first();
     await expect(dateGroup).toBeVisible();
@@ -151,7 +154,7 @@ test.describe('P35-R10 shape honesty and export simplification', () => {
 
   test('large library filters only by lifecycle state', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/my?demo=ux20&view=flows');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=ux20&view=flows');
     const filter = page.getByRole('group', { name: '저장한 계획 상태 필터' });
     await expect(filter).toHaveAttribute(
       'data-p35-r10-marker',

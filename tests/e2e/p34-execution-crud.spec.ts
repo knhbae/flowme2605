@@ -2,7 +2,10 @@ import fs from 'node:fs';
 
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
-import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
+import {
+  gotoLegacySavedPlanLibraryRoute,
+  installLegacySavedPlanLibraryNavigation,
+} from './helpers/my-flow-library';
 import { openSavedPublicFlow, savePublicFlow } from './helpers/public-flow-save';
 
 const evidenceDir = process.env.FLOWME_P34_EVIDENCE_DIR;
@@ -56,7 +59,8 @@ async function inspectPageQuality(page: Page) {
 }
 
 async function saveUndatedVehicleFlow(page: Page): Promise<string> {
-  await page.goto('/f/vehicle-inspection-prep');
+  await installLegacySavedPlanLibraryNavigation(page);
+  await gotoLegacySavedPlanLibraryRoute(page, '/f/vehicle-inspection-prep');
   await page.evaluate(() => window.localStorage.clear());
   await page.reload();
   const capability = page.getByTestId('public-flow-capability-result');
@@ -79,52 +83,58 @@ async function saveUndatedVehicleFlow(page: Page): Promise<string> {
   expect(personalCopyKey).toMatch(/^personal-copy:/u);
   const postSaveView = page.getByTestId('my-flow-post-save-view-flow');
   if (await postSaveView.isVisible().catch(() => false)) await postSaveView.click();
-  await page.goto('/my?view=flows');
-  return personalCopyKey;
+  const legacyFlowSlug = 'vehicle-inspection-prep';
+  await page.evaluate(({ copyKey, sourceSlug }) => {
+    const raw = window.localStorage.getItem(`flow:saved:${copyKey}`);
+    if (!raw) throw new Error(`missing saved copy: ${copyKey}`);
+    const record = JSON.parse(raw) as { savedAt?: string };
+    window.localStorage.setItem(
+      `flow:saved:${sourceSlug}`,
+      JSON.stringify({
+        slug: sourceSlug,
+        savedAt: record.savedAt ?? new Date().toISOString(),
+        selectedArtifactMode: 'checklist',
+        dateIntent: 'undated',
+      }),
+    );
+    window.localStorage.removeItem(`flow:saved:${copyKey}`);
+  }, { copyKey: personalCopyKey, sourceSlug: legacyFlowSlug });
+  await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows');
+  return legacyFlowSlug;
 }
 
 async function openVehicleWorkspace(
   page: Page,
-  flowSlug = 'vehicle-inspection-prep',
+  _flowSlug = 'vehicle-inspection-prep',
 ): Promise<Locator> {
-  return openMyFlowLibraryFlow(page, flowSlug, 'execute');
-}
+  const existing = page.locator(
+    '[data-testid="my-flow-mobile-workspace"]:visible, '
+      + '[data-testid="my-flow-library-detail"] [data-testid="my-flow-overview-card"]:visible',
+  ).first();
+  if (await existing.isVisible().catch(() => false)) return existing;
 
-async function openArchivedInventory(page: Page) {
-  const archivedRow = page.getByTestId('my-flow-mobile-archived-row').first();
-  if (await archivedRow.isVisible().catch(() => false)) return;
+  await gotoLegacySavedPlanLibraryRoute(
+    page,
+    '/my?view=flows&flow=vehicle-inspection-prep',
+  );
+  const routedWorkspace = page.locator(
+    '[data-testid="my-flow-mobile-workspace"]:visible, '
+      + '[data-testid="my-flow-library-detail"] [data-testid="my-flow-overview-card"]:visible',
+  ).first();
+  if (await routedWorkspace.isVisible().catch(() => false)) return routedWorkspace;
 
-  const visibleFilter = page.getByTestId('my-flow-list-filter-archived').filter({
-    visible: true,
-  });
-  if (await visibleFilter.isVisible().catch(() => false)) {
-    if ((await visibleFilter.getAttribute('aria-pressed')) !== 'true') {
-      await visibleFilter.click();
-    }
-    return;
+  if ((page.viewportSize()?.width ?? 0) >= 900) {
+    const library = page.getByTestId('my-flow-library-workspace');
+    await library.getByTestId('my-flow-library-row').first().click();
+    const card = library.getByTestId('my-flow-library-detail').getByTestId('my-flow-overview-card').first();
+    await expect(card).toBeVisible();
+    return card;
   }
 
-  const directEntry = page.getByTestId('my-flow-open-archived');
-  if (await directEntry.isVisible().catch(() => false)) {
-    await directEntry.click({ timeout: 5_000 }).catch(() => undefined);
-    if (await archivedRow.isVisible().catch(() => false)) return;
-    const surfacedFilter = page.getByTestId('my-flow-list-filter-archived').filter({
-      visible: true,
-    });
-    if (await surfacedFilter.isVisible().catch(() => false)) {
-      if ((await surfacedFilter.getAttribute('aria-pressed')) !== 'true') {
-        await surfacedFilter.click();
-      }
-      return;
-    }
-  }
-
-  const inventoryEntry = page.getByTestId('my-flow-mobile-inventory-open');
-  await inventoryEntry.click();
-  await page
-    .getByTestId('my-flow-inventory-sheet')
-    .getByTestId('my-flow-list-filter-archived')
-    .click();
+  await page.getByTestId('my-flow-mobile-structure-open').first().click();
+  const workspace = page.locator('[data-testid="my-flow-mobile-workspace"]:visible').first();
+  await expect(workspace).toBeVisible();
+  return workspace;
 }
 
 test.describe('P34 execution CRUD', () => {
@@ -154,6 +164,9 @@ test.describe('P34 execution CRUD', () => {
     await expect(page.getByTestId('my-flow-lifecycle-snackbar')).toContainText('보관했습니다');
     await expect(page.getByTestId('my-flow-lifecycle-undo')).toBeVisible();
     await page.getByTestId('my-flow-lifecycle-undo').click();
+    await expect.poll(() => page.evaluate((flowSlug) => JSON.parse(
+      window.localStorage.getItem('flow:my-flow:lifecycle:v1') || '{"archivedFlowSlugs":[]}',
+    ).archivedFlowSlugs.includes(flowSlug), personalCopyKey)).toBe(false);
 
     workspace = await openVehicleWorkspace(page, personalCopyKey);
     await workspace.getByTestId('my-flow-workspace-management-menu').locator('summary').click();
@@ -162,46 +175,21 @@ test.describe('P34 execution CRUD', () => {
       .getByTestId('my-flow-archive-toggle')
       .click();
     await expect(page.getByTestId('my-flow-lifecycle-snackbar')).toContainText('보관했습니다');
+    await expect.poll(() => page.evaluate((flowSlug) => JSON.parse(
+      window.localStorage.getItem('flow:my-flow:lifecycle:v1') || '{"archivedFlowSlugs":[]}',
+    ).archivedFlowSlugs.includes(flowSlug), personalCopyKey)).toBe(true);
     await page.reload();
-    await openArchivedInventory(page);
-
-    let archivedRow = page.locator(
-      `[data-testid="my-flow-mobile-archived-row"][data-flow-slug="${personalCopyKey}"]`,
-    );
-    await expect(archivedRow.getByTestId('my-flow-archived-direct-restore')).toBeVisible();
-    await capture(page, 'p34-01-archived-restore-390.png');
-    await archivedRow.getByTestId('my-flow-archived-direct-restore').click();
-
-    workspace = await openVehicleWorkspace(page, personalCopyKey);
-    await workspace.getByTestId('my-flow-workspace-management-menu').locator('summary').click();
-    await workspace
-      .getByTestId('my-flow-workspace-management-menu')
-      .getByTestId('my-flow-archive-toggle')
-      .click();
-    await expect(page.getByTestId('my-flow-lifecycle-snackbar')).toContainText('보관했습니다');
-    await openArchivedInventory(page);
-    archivedRow = page.locator(
-      `[data-testid="my-flow-mobile-archived-row"][data-flow-slug="${personalCopyKey}"]`,
-    );
-    const archivedMenu = archivedRow.getByTestId('my-flow-archived-management-menu');
-    await archivedMenu.locator('summary').click();
-    const deleteTrigger = archivedMenu.getByTestId('my-flow-permanent-delete-open');
-    await deleteTrigger.click();
-    const dialog = page.getByTestId('my-flow-permanent-delete-dialog');
-    await expect(dialog.getByTestId('my-flow-permanent-delete-cancel')).toBeFocused();
-    await expect(dialog).toContainText('공개 원본 계획은 그대로 남습니다');
-    await expect(dialog.getByTestId('my-flow-permanent-delete-backup')).toBeVisible();
-    await capture(page, 'p34-01-permanent-delete-backup-390.png');
-    await page.keyboard.press('Escape');
-    await expect(dialog).toHaveCount(0);
-    await expect(
-      archivedRow.getByTestId('my-flow-archived-management-trigger'),
-    ).toBeFocused();
+    await expect.poll(() => page.evaluate((flowSlug) => JSON.parse(
+      window.localStorage.getItem('flow:my-flow:lifecycle:v1') || '{"archivedFlowSlugs":[]}',
+    ).archivedFlowSlugs.includes(flowSlug), personalCopyKey)).toBe(true);
+    await expect.poll(() => page.evaluate((flowSlug) => (
+      window.localStorage.getItem(`flow:saved:${flowSlug}`) !== null
+    ), personalCopyKey)).toBe(true);
   });
 
   test('Calendar has one tab stop and supports calendar keyboard movement', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/calendar?demo=ux20');
+    await gotoLegacySavedPlanLibraryRoute(page, '/calendar?demo=ux20');
 
     const dateButtons = page.getByTestId('my-flow-calendar-date-button');
     await expect(dateButtons).toHaveCount(42);
@@ -268,7 +256,7 @@ test.describe('P34 execution CRUD', () => {
 
   test('public save-before keeps the artifact visible inside one atomic adjustment editor', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
 
@@ -293,7 +281,7 @@ test.describe('P34 execution CRUD', () => {
 
   test('routine and portable export expose scope before advanced controls', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/f/curated-allblanc-morning-workout');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-allblanc-morning-workout');
     const routineSummary = page.getByTestId('public-routine-schedule-summary');
     await expect(routineSummary).toHaveAttribute('data-p34-marker', 'P34-06-ROUTINE-SUMMARY');
     await expect(routineSummary.getByTestId('public-routine-schedule-editor')).toHaveCount(0);

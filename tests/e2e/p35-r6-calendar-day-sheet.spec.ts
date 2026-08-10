@@ -3,6 +3,8 @@ import path from 'node:path';
 
 import { expect, test, type Page } from '@playwright/test';
 
+import { gotoLegacySavedPlanLibraryRoute } from './helpers/my-flow-library';
+
 const evidenceRoot = process.env.FLOWME_P35_R6_EVIDENCE_DIR;
 const selectedDate = '2026-05-28';
 
@@ -41,12 +43,13 @@ test.describe('P35-R6 Calendar selected-day composition', () => {
   test('mobile date tap opens a focused agenda sheet and returns focus to the date', async ({ page }) => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/calendar?demo=ux20');
+    await gotoLegacySavedPlanLibraryRoute(page, '/calendar?demo=ux20');
     await expect(page.getByTestId('my-flow-calendar-day-sheet')).toHaveCount(0);
 
     const dateButton = page
       .locator(`.fc-daygrid-day[data-date="${selectedDate}"]`)
       .getByTestId('my-flow-calendar-date-button');
+    await dateButton.scrollIntoViewIfNeeded();
     const scrollBefore = await page.evaluate(() => window.scrollY);
     await dateButton.click();
 
@@ -76,21 +79,30 @@ test.describe('P35-R6 Calendar selected-day composition', () => {
     expect(errors).toEqual([]);
   });
 
-  test('wide date tap keeps the selected-day agenda in the side inspector', async ({ page }) => {
+  test('1024 date tap keeps the selected-day agenda below the month in the compact main column', async ({ page }) => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 1024, height: 768 });
-    await page.goto('/calendar?demo=ux20');
+    await gotoLegacySavedPlanLibraryRoute(page, '/calendar?demo=ux20');
     const dateButton = page
       .locator(`.fc-daygrid-day[data-date="${selectedDate}"]`)
       .getByTestId('my-flow-calendar-date-button');
     await dateButton.click();
 
     await expect(page.getByTestId('my-flow-calendar-day-sheet')).toHaveCount(0);
+    const workspace = page.getByTestId('my-flow-calendar-workspace');
+    await expect(workspace).toHaveAttribute('data-compact-layout', 'filter-main-two-column');
     const selectedDay = page.getByTestId('my-flow-calendar-selected-day');
     await expect(selectedDay).toBeVisible();
     await expect(selectedDay.getByTestId('my-flow-execution-row-shell').first()).toBeVisible();
-    const selectedDayBox = await selectedDay.boundingBox();
-    expect(selectedDayBox?.x ?? 0).toBeGreaterThan(650);
+    const selectedDayRegion = page.getByTestId('my-flow-calendar-selected-day-region');
+    await expect(selectedDayRegion).toHaveAttribute('data-selected-day-layout', 'under-month');
+    const [selectedDayBox, filterRailBox] = await Promise.all([
+      selectedDay.boundingBox(),
+      page.getByTestId('my-flow-calendar-filter-rail').boundingBox(),
+    ]);
+    expect(selectedDayBox).not.toBeNull();
+    expect(filterRailBox).not.toBeNull();
+    expect(selectedDayBox!.x).toBeGreaterThanOrEqual(filterRailBox!.x + filterRailBox!.width - 1);
     await capture(page, 'p35-r6-calendar-side-agenda-1024.png');
     await expectNoPageOverflow(page);
     expect(errors).toEqual([]);

@@ -1,6 +1,8 @@
 import { expect, test, type Page } from '@playwright/test';
 
-import { getOpenMyFlowItemDetail } from './helpers/my-flow-library';
+import {
+  getOpenMyFlowItemDetail,
+} from './helpers/my-flow-library';
 
 const CANDIDATE_ROUTE = '/my?demo=ux5&myFlowExperience=r3a-lab';
 const LARGE_CANDIDATE_ROUTE = '/my?demo=ux20&myFlowExperience=r3a-lab';
@@ -256,7 +258,7 @@ test.describe('R3A My Flow experience boundary', () => {
       };
     }).toEqual({ demo: 'ux5', experience: 'r3a-lab', flow: selectedSlug });
     const selectedFlow = candidate.getByTestId('my-flow-r3a-lab-selected-flow');
-    const itemOpener = selectedFlow.locator('button[data-flow-row-slot="open"]:visible').first();
+    const itemOpener = selectedFlow.getByTestId('my-plan-todo-detail-link').first();
     await expect(itemOpener).toBeVisible();
     await expectReadOnlyNavigation(page, before);
 

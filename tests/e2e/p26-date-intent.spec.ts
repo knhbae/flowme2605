@@ -1,6 +1,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { expect, test, type Page } from '@playwright/test';
+import {
+  gotoLegacySavedPlanLibraryRoute,
+  installLegacySavedPlanLibraryNavigation,
+} from './helpers/my-flow-library';
 import { openSavedPublicFlow, savePublicFlow } from './helpers/public-flow-save';
 
 const evidenceDir = process.env.FLOW_EVIDENCE_DIR;
@@ -28,8 +32,9 @@ async function capture(page: Page, filename: string) {
 }
 
 test('an example moving schedule stays provisional until the person chooses a real date or explicit undated save', async ({ page }) => {
+  await installLegacySavedPlanLibraryNavigation(page);
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/f/moving-d30-basic');
+  await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
 
   const capability = page.getByTestId('public-flow-capability-result');
   await expect(capability).toHaveAttribute('data-capability-primary-destination', 'checklist');
@@ -82,7 +87,7 @@ test('an example moving schedule stays provisional until the person chooses a re
 
 test('a natural undated checklist saves without a competing date mode', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/f/vehicle-inspection-prep');
+  await gotoLegacySavedPlanLibraryRoute(page, '/f/vehicle-inspection-prep');
 
   await expect(page.getByTestId('public-flow-date-intent')).toHaveCount(0);
   await expect(page.getByTestId('public-flow-primary-setup')).toHaveCount(0);
@@ -129,7 +134,7 @@ test('a natural undated checklist saves without a competing date mode', async ({
 
 test('a date-anchored public Flow persists its one required date and enables ICS', async ({ page }) => {
   await page.setViewportSize({ width: 1024, height: 768 });
-  await page.goto('/f/moving-d30-basic');
+  await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
 
   await page.getByTestId('public-flow-anchor-input').fill('2026-07-28');
   await expect(page.getByTestId('public-flow-date-intent')).toHaveCount(0);
@@ -175,7 +180,7 @@ test('a date-anchored public Flow persists its one required date and enables ICS
 
 test('a natural undated result survives reload without exposing date-mode controls', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/f/vehicle-inspection-prep');
+  await gotoLegacySavedPlanLibraryRoute(page, '/f/vehicle-inspection-prep');
 
   await expect(page.getByTestId('public-flow-date-intent')).toHaveCount(0);
   await page.reload();

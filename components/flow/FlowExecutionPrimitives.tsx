@@ -337,6 +337,9 @@ export function FlowBottomSheet({
   p35Marker,
   eyebrow,
   title,
+  closeLabel = '닫기',
+  closeTestId,
+  closeButtonClassName = '',
   onClose,
   onRequestClose,
   dismissible = true,
@@ -353,6 +356,9 @@ export function FlowBottomSheet({
   p35Marker?: string;
   eyebrow?: string;
   title: string;
+  closeLabel?: string;
+  closeTestId?: string;
+  closeButtonClassName?: string;
   onClose: () => void;
   onRequestClose?: (cause: FlowBottomSheetCloseCause) => void;
   dismissible?: boolean;
@@ -504,12 +510,12 @@ export function FlowBottomSheet({
           <button
             ref={closeButtonRef}
             type="button"
-            data-testid={`${testId}-close`}
-            className={`${FLOW_UI_SECONDARY_ACTION_CLASS} shrink-0`}
+            data-testid={closeTestId ?? `${testId}-close`}
+            className={`${FLOW_UI_SECONDARY_ACTION_CLASS} shrink-0 ${closeButtonClassName}`}
             disabled={!dismissible}
             onClick={() => requestClose('x')}
           >
-            닫기
+            {closeLabel}
           </button>
         </header>
         {children}

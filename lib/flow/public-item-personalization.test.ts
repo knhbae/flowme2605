@@ -129,6 +129,36 @@ test('a title-only edit never promotes the source description as a personal memo
   });
 });
 
+test('approved raw memo promotion preserves an explicit source-equal or empty memo', () => {
+  const flowSlug = 'moving-d30-basic';
+  const sourceDetail = '원문 설명';
+  const sourceEqualId = 'source-equal';
+  const emptyId = 'empty-after-edit';
+  const promotion = promotePublicItemPersonalizations({
+    flowSlug,
+    sources: [
+      { itemId: sourceEqualId, title: '같은 메모', detail: sourceDetail },
+      { itemId: emptyId, title: '메모 지우기', detail: sourceDetail },
+    ],
+    personalizations: {
+      [sourceEqualId]: { detail: sourceDetail },
+      [emptyId]: { detail: '' },
+    },
+    itemDrafts: {},
+    dateOverrides: {},
+    preserveExplicitDetail: true,
+  });
+
+  assert.deepEqual(
+    promotion.itemDrafts[getPersonalDraftProjectionValueKey(flowSlug, sourceEqualId)],
+    { memo: sourceDetail },
+  );
+  assert.deepEqual(
+    promotion.itemDrafts[getPersonalDraftProjectionValueKey(flowSlug, emptyId)],
+    { memo: '' },
+  );
+});
+
 test('saved public personalization restores from canonical My Flow stores without merging source detail', () => {
   const flowSlug = 'moving-d30-basic';
   const firstId = 'move-contract';

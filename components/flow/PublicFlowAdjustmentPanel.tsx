@@ -10,6 +10,7 @@ import {
 } from './flow-ui';
 import { FlowBottomSheet } from './FlowExecutionPrimitives';
 import { FlowEditorSurface } from './FlowEditorSurface';
+import { FlowContextDisclosure } from './FlowContextDisclosure';
 import type {
   FlowEditorCloseEvent,
   FlowEditorFailure,
@@ -97,6 +98,7 @@ type PublicFlowAdjustmentPanelProps = {
   transaction?: PublicSharedEditorTransaction;
   sharedEditorEnabled?: boolean;
   q3CopyEnabled?: boolean;
+  approvedPlanExecution?: boolean;
 };
 
 function PublicEditorFrame({
@@ -116,6 +118,8 @@ function PublicEditorFrame({
   commitLabel,
   commitTestId,
   cancelTestId,
+  headerCancel = false,
+  enforce48pxTargets = false,
   commitDisabled,
   onCommit,
   onCancel,
@@ -137,6 +141,8 @@ function PublicEditorFrame({
   commitLabel: string;
   commitTestId: string;
   cancelTestId: string;
+  headerCancel?: boolean;
+  enforce48pxTargets?: boolean;
   commitDisabled?: boolean;
   onCommit: () => void;
   onCancel: () => void;
@@ -154,6 +160,9 @@ function PublicEditorFrame({
         headingId={headingId}
         eyebrow={eyebrow}
         title={title}
+        closeLabel={headerCancel ? '취소' : '닫기'}
+        closeTestId={headerCancel ? cancelTestId : undefined}
+        closeButtonClassName={enforce48pxTargets ? '!min-h-12' : undefined}
         onClose={onCancel}
         initialFocusSelector={initialFocusSelector}
         returnFocusSelector={returnFocusSelector}
@@ -163,7 +172,7 @@ function PublicEditorFrame({
           'data-editor-transaction': level === 'plan' ? 'atomic' : 'atomic-child',
           'data-editor-adapter': 'legacy',
         }}
-        className={className}
+        className={`${className} ${enforce48pxTargets ? '[&_button]:min-h-12 [&_input]:min-h-12 [&_select]:min-h-12 [&_a]:inline-flex [&_a]:min-h-12 [&_a]:items-center' : ''}`}
       >
         {children}
       </FlowBottomSheet>
@@ -229,6 +238,8 @@ function PublicEditorFrame({
         testId: 'flow-editor-retry',
         onAction: transaction.onRetry,
       } : undefined}
+      cancelPlacement={headerCancel ? 'header' : 'footer'}
+      enforce48pxTargets={enforce48pxTargets}
       className={className}
     >
       {children}
@@ -290,6 +301,7 @@ export function PublicFlowAdjustmentPanel({
   transaction,
   sharedEditorEnabled = false,
   q3CopyEnabled = true,
+  approvedPlanExecution = false,
 }: PublicFlowAdjustmentPanelProps) {
   const panelTitle = kindOptions.find((option) => option.kind === kind)?.label
     ?? (q3CopyEnabled ? Q3_USER_COPY_PROFILE.publicPreview.editPlan : 'Flow 편집');
@@ -323,10 +335,14 @@ export function PublicFlowAdjustmentPanel({
       commitLabel={q3CopyEnabled ? Q3_USER_COPY_PROFILE.publicPreview.applyChanges : '이 내용으로 적용'}
       commitTestId="public-flow-adjustment-apply"
       cancelTestId="public-flow-adjustment-cancel"
+      headerCancel={approvedPlanExecution}
+      enforce48pxTargets={approvedPlanExecution}
       commitDisabled={applyDisabled}
       onCommit={onApply}
       onCancel={onCancel}
-      className="inset-0 max-h-none rounded-none px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-[calc(1rem+env(safe-area-inset-top))] sm:inset-y-0 sm:left-auto sm:right-0 sm:w-[min(34rem,96vw)] sm:max-h-none sm:rounded-none sm:px-6 sm:pb-6 sm:pt-5"
+      className={approvedPlanExecution
+        ? 'inset-0 max-h-none rounded-none px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-[calc(1rem+env(safe-area-inset-top))] md:inset-y-0 md:left-auto md:right-0 md:w-[min(34rem,96vw)] md:max-h-none md:rounded-none md:px-6 md:pb-6 md:pt-5'
+        : 'inset-0 max-h-none rounded-none px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-[calc(1rem+env(safe-area-inset-top))] sm:inset-y-0 sm:left-auto sm:right-0 sm:w-[min(34rem,96vw)] sm:max-h-none sm:rounded-none sm:px-6 sm:pb-6 sm:pt-5'}
     >
 
       <div
@@ -491,7 +507,18 @@ export function PublicFlowAdjustmentPanel({
         ) : null}
       </section>
 
-      {sharedEditorEnabled && warning ? (
+      {approvedPlanExecution && sharedEditorEnabled && warning ? (
+        <div data-editor-field="source-and-safety" className="mt-4">
+          <FlowContextDisclosure
+            kind="caution"
+            label="이 계획의 주의사항"
+            title="확인하고 진행해 주세요"
+            testId="public-flow-plan-editor-warning"
+          >
+            <p className="whitespace-pre-wrap text-sm leading-6">{warning}</p>
+          </FlowContextDisclosure>
+        </div>
+      ) : sharedEditorEnabled && warning ? (
         <section data-editor-field="source-and-safety" className="mt-4 border-l-2 border-[var(--flowme-warning)] bg-[var(--flowme-warning-soft)] px-3 py-2">
           <h3 className="text-xs font-semibold text-[var(--flowme-warning-strong)]">주의</h3>
           <p className="mt-1 whitespace-pre-wrap text-sm font-medium text-[var(--flowme-warning-strong)]">{warning}</p>
@@ -508,14 +535,14 @@ export function PublicFlowAdjustmentPanel({
       ) : null}
 
       {!transaction ? <div className="sticky bottom-0 z-30 mt-5 flex justify-end gap-2 border-t border-[var(--flowme-border)] bg-white/95 py-3 backdrop-blur">
-        <button
+        {!approvedPlanExecution ? <button
           type="button"
           data-testid="public-flow-adjustment-cancel"
           className={FLOW_UI_SECONDARY_ACTION_CLASS}
           onClick={onCancel}
         >
           취소
-        </button>
+        </button> : null}
         <button
           type="button"
           data-testid="public-flow-adjustment-apply"
@@ -541,6 +568,7 @@ export function PublicFlowItemEditor({
   sharedEditorEnabled = false,
   visualSubtractionEnabled = true,
   q3CopyEnabled = true,
+  approvedPlanExecution = false,
 }: {
   draft: PublicFlowItemEditorDraft;
   returnFocusSelector?: string;
@@ -551,6 +579,7 @@ export function PublicFlowItemEditor({
   sharedEditorEnabled?: boolean;
   visualSubtractionEnabled?: boolean;
   q3CopyEnabled?: boolean;
+  approvedPlanExecution?: boolean;
 }) {
   const normalizedTitle = draft.title.trim();
   const adapter = selectFlowEditorAdapter({
@@ -575,12 +604,14 @@ export function PublicFlowItemEditor({
         title: true,
         detail: true,
         date: true,
-        completionCriterion: Boolean(draft.completionCriterion),
+        completionCriterion: !approvedPlanExecution && Boolean(draft.completionCriterion),
         sourceOrSafety: Boolean(draft.sourceUrl || draft.warning),
       }}
       commitLabel={q3CopyEnabled ? Q3_USER_COPY_PROFILE.publicPreview.applyChanges : '이 항목 저장'}
       commitTestId="public-flow-item-editor-save"
       cancelTestId="public-flow-item-editor-cancel"
+      headerCancel={approvedPlanExecution}
+      enforce48pxTargets={approvedPlanExecution}
       commitDisabled={!normalizedTitle}
       onCommit={() => {
         if (sharedEditorEnabled || normalizedTitle) {
@@ -588,7 +619,9 @@ export function PublicFlowItemEditor({
         }
       }}
       onCancel={onClose}
-      className="inset-0 max-h-none rounded-none px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-[calc(1rem+env(safe-area-inset-top))] sm:inset-y-0 sm:left-auto sm:right-0 sm:w-[min(28rem,92vw)] sm:max-h-none sm:rounded-none sm:px-6 sm:pb-6 sm:pt-5"
+      className={approvedPlanExecution
+        ? 'inset-0 max-h-none rounded-none px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-[calc(1rem+env(safe-area-inset-top))] md:inset-y-0 md:left-auto md:right-0 md:w-[min(28rem,92vw)] md:max-h-none md:rounded-none md:px-6 md:pb-6 md:pt-5'
+        : 'inset-0 max-h-none rounded-none px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-[calc(1rem+env(safe-area-inset-top))] sm:inset-y-0 sm:left-auto sm:right-0 sm:w-[min(28rem,92vw)] sm:max-h-none sm:rounded-none sm:px-6 sm:pb-6 sm:pt-5'}
     >
       <form
         data-p35-marker="P35-R2-CONTEXTUAL-ITEM-EDIT-390 P35-R2-ITEM-INSPECTOR-1024"
@@ -612,7 +645,7 @@ export function PublicFlowItemEditor({
           />
         </label>
         <label className="block text-sm font-semibold text-[var(--flowme-text)]">
-          상세 내용
+          {approvedPlanExecution ? '메모' : '상세 내용'}
           <textarea
             data-testid="public-flow-item-editor-detail-input"
             data-editor-field="item-detail"
@@ -646,7 +679,7 @@ export function PublicFlowItemEditor({
             </button>
           ) : null}
         </div>
-        {sharedEditorEnabled && draft.completionCriterion ? (
+        {!approvedPlanExecution && sharedEditorEnabled && draft.completionCriterion ? (
           <section data-editor-field="item-completion-criterion" className="border-l-2 border-[var(--flowme-border-strong)] px-3 py-2">
             <h3 className="text-xs font-semibold text-[var(--flowme-text-secondary)]">완료 기준</h3>
             <p className="mt-1 whitespace-pre-wrap text-sm font-medium text-[var(--flowme-text)]">
@@ -654,7 +687,18 @@ export function PublicFlowItemEditor({
             </p>
           </section>
         ) : null}
-        {sharedEditorEnabled && draft.warning ? (
+        {approvedPlanExecution && sharedEditorEnabled && draft.warning ? (
+          <div data-editor-field="source-and-safety">
+            <FlowContextDisclosure
+              kind="caution"
+              label="이 항목의 주의사항"
+              title="확인하고 진행해 주세요"
+              testId="public-flow-item-editor-warning"
+            >
+              <p className="whitespace-pre-wrap text-sm leading-6">{draft.warning}</p>
+            </FlowContextDisclosure>
+          </div>
+        ) : sharedEditorEnabled && draft.warning ? (
           <section data-editor-field="source-and-safety" className="border-l-2 border-[var(--flowme-warning)] bg-[var(--flowme-warning-soft)] px-3 py-2">
             <h3 className="text-xs font-semibold text-[var(--flowme-warning-strong)]">주의</h3>
             <p className="mt-1 whitespace-pre-wrap text-sm font-medium text-[var(--flowme-warning-strong)]">
@@ -672,14 +716,14 @@ export function PublicFlowItemEditor({
           >원문 보기</a>
         ) : null}
         {!transaction ? <div className="flex justify-end gap-2 border-t border-[var(--flowme-border)] pt-4">
-          <button
+          {!approvedPlanExecution ? <button
             type="button"
             data-testid="public-flow-item-editor-cancel"
             className={FLOW_UI_SECONDARY_ACTION_CLASS}
             onClick={onClose}
           >
             취소
-          </button>
+          </button> : null}
           <button
             type="submit"
             data-testid="public-flow-item-editor-save"

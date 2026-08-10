@@ -50,7 +50,8 @@ test.describe('P35-04 My Flow safe split and dead-view removal', () => {
     await capture(page, 'p35-04-my-390.png');
     await page.getByTestId('my-flow-mobile-structure-open').first().click();
     await expect(page.locator('main[data-p32-workspace-state="focused"]')).toBeVisible();
-    await expect(page.getByRole('button', { name: '저장한 계획 목록으로 돌아가기' })).toBeVisible();
+    await expect(page.getByTestId('approved-my-plan-workspace')).toBeVisible();
+    await expect(page).toHaveURL(/\/my\?[^#]*\bflow=/u);
     expect(await page.evaluate(() => Object.keys(localStorage).filter((key) => key.startsWith('flow:saved:'))))
       .toEqual([]);
 
@@ -79,7 +80,8 @@ test.describe('P35-04 My Flow safe split and dead-view removal', () => {
     const executionRow = row.locator('article[data-row-key]').first();
     const rowIdentity = await executionRow.getAttribute('data-row-key');
     expect(rowIdentity).toBeTruthy();
-    await expect(row.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+    const rowCompletion = row.getByTestId('my-flow-task-complete-control');
+    await expect(rowCompletion).toHaveCount(1);
     await row.getByRole('button', { name: /계획에서 열기/ }).click();
     const detail = page.locator('[data-testid="my-flow-item-detail"]:visible').last();
     await expect(detail).toBeVisible();
@@ -87,21 +89,23 @@ test.describe('P35-04 My Flow safe split and dead-view removal', () => {
     expect(itemIdentity).toBeTruthy();
     const completion = detail.getByTestId('my-flow-task-complete-control');
     await expect(completion).toHaveCount(1);
-    await expect(page.locator('[data-testid="my-flow-task-complete-control"]:visible')).toHaveCount(1);
     const initialLabel = await completion.getAttribute('aria-label');
+    const initiallyChecked = await rowCompletion.isChecked();
     expect(initialLabel).toBeTruthy();
     await completion.click();
+    await expect.poll(() => rowCompletion.isChecked()).toBe(!initiallyChecked);
     await expect(completion).not.toHaveAttribute(
       'aria-label',
       initialLabel ?? '',
     );
     await completion.click();
+    await expect.poll(() => rowCompletion.isChecked()).toBe(initiallyChecked);
     await expect(completion).toHaveAttribute(
       'aria-label',
       initialLabel ?? '',
     );
     await expect(detail).toHaveAttribute('data-item-id', itemIdentity ?? '');
-    await expect(page).toHaveURL(/\/my\?view=flows&flow=.*&item=.*/u);
+    await expect.poll(() => new URL(page.url()).pathname).toBe('/calendar');
     expect(await page.evaluate(() => Object.keys(localStorage).filter((key) => key.startsWith('flow:saved:'))))
       .toEqual([]);
 

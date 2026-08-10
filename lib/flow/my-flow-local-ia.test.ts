@@ -2,9 +2,11 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
+  buildMyFlowCopyOrdinalMap,
   buildMyFlowCompactTodayModel,
   consumeMyFlowFirstEntry,
   consumeMyFlowFirstEntryPlan,
+  getCanonicalMyFlowLibrarySortHref,
   getMyFlowLibraryControlVisibility,
   getMyFlowLibraryHref,
   getMyFlowWorkspaceHref,
@@ -12,13 +14,23 @@ import {
   markMyFlowFirstEntry,
   markMyFlowFirstEntryPlan,
   MY_FLOW_SAVED_LIBRARY_SEARCH_THRESHOLD,
+  normalizeMyFlowLibrarySort,
   parseMyFlowLibraryRoute,
   parseMyFlowWorkspaceTarget,
   parseMyFlowViewQuery,
+  resolveLatestMyFlowSavedAt,
   selectMyFlowSavedLibraryEntries,
   summarizeMyFlowLocalIa,
   withMyFlowLibraryScrollY,
+  type MyFlowLibrarySort,
+  type MyFlowSavedLibraryEntry,
 } from './my-flow-local-ia';
+import {
+  APPROVED_MY_PLAN_CLOCK,
+  APPROVED_MY_PLAN_SORT_EXPECTED,
+  APPROVED_MY_PLAN_SORT_FIXTURE,
+  APPROVED_MY_PLAN_TIME_ZONE,
+} from './my-flow-local-ia.test-fixtures';
 
 function createSessionStorageFixture() {
   const values = new Map<string, string>();
@@ -28,6 +40,148 @@ function createSessionStorageFixture() {
     removeItem: (key: string) => values.delete(key),
   };
 }
+
+function createApprovedMyPlanEntries(): Array<MyFlowSavedLibraryEntry<{ planId: string }>> {
+  return APPROVED_MY_PLAN_SORT_FIXTURE.map((plan) => ({
+    stableId: plan.planId,
+    title: plan.title,
+    copyOrdinal: plan.copy,
+    savedAt: plan.savedAt,
+    nextIncompleteAt: plan.nextIncompleteAt,
+    done: plan.done,
+    total: plan.total,
+    archived: false,
+    value: { planId: plan.planId },
+  }));
+}
+
+test('approved fixed clock fixture produces the exact next, saved, and original-name order', () => {
+  const entries = createApprovedMyPlanEntries();
+  for (const sort of ['next', 'saved', 'name'] satisfies MyFlowLibrarySort[]) {
+    const sorted = selectMyFlowSavedLibraryEntries(entries, {
+      sort,
+      now: APPROVED_MY_PLAN_CLOCK,
+      timeZone: APPROVED_MY_PLAN_TIME_ZONE,
+    });
+    assert.deepEqual(
+      sorted.map((entry) => entry.stableId),
+      APPROVED_MY_PLAN_SORT_EXPECTED[sort],
+      sort,
+    );
+  }
+});
+
+test('sort normalization and route use next for absent or invalid values', () => {
+  assert.equal(normalizeMyFlowLibrarySort(null), 'next');
+  assert.equal(normalizeMyFlowLibrarySort('invalid'), 'next');
+  assert.equal(normalizeMyFlowLibrarySort('saved'), 'saved');
+  assert.equal(normalizeMyFlowLibrarySort('name'), 'name');
+  assert.equal(parseMyFlowLibraryRoute('?view=flows').sort, 'next');
+  assert.equal(parseMyFlowLibraryRoute('?view=flows&sort=invalid').sort, 'next');
+  assert.equal(parseMyFlowLibraryRoute('?view=flows&sort=saved').sort, 'saved');
+  assert.equal(
+    getMyFlowLibraryHref('/my?view=flows&sort=saved', {
+      query: '',
+      filter: 'all',
+      sort: 'name',
+      target: null,
+    }),
+    '/my?view=flows&sort=name',
+  );
+  assert.equal(
+    getMyFlowLibraryHref('/my?view=flows&sort=name', {
+      query: '',
+      filter: 'all',
+      sort: 'next',
+      target: null,
+    }),
+    '/my?view=flows&sort=next',
+  );
+  assert.equal(
+    getCanonicalMyFlowLibrarySortHref('/my?demo=ux5&view=flows&sort=not-a-sort#library'),
+    '/my?demo=ux5&view=flows&sort=next#library',
+  );
+  assert.equal(
+    getCanonicalMyFlowLibrarySortHref('/my?view=flows&sort=next&q=%EC%9D%B4%EC%82%AC'),
+    '/my?view=flows&sort=next&q=%EC%9D%B4%EC%82%AC',
+  );
+  assert.equal(
+    getCanonicalMyFlowLibrarySortHref('/my?view=flows&sort=saved'),
+    '/my?view=flows&sort=saved',
+  );
+});
+
+test('recent saved order uses savedAt only and sends invalid dates to the end', () => {
+  const entries: Array<MyFlowSavedLibraryEntry<string>> = [
+    {
+      stableId: 'older-save-newer-visit',
+      title: 'A',
+      savedAt: '2026-08-09T08:00:00+09:00',
+      lastVisited: '2099-01-01T00:00:00Z',
+      done: 0,
+      total: 1,
+      archived: false,
+      value: 'older',
+    },
+    {
+      stableId: 'newer-save-older-visit',
+      title: 'B',
+      savedAt: '2026-08-10T08:00:00+09:00',
+      lastVisited: '2000-01-01T00:00:00Z',
+      done: 0,
+      total: 1,
+      archived: false,
+      value: 'newer',
+    },
+    {
+      stableId: 'z-invalid',
+      title: 'C',
+      savedAt: 'not-a-date',
+      done: 0,
+      total: 1,
+      archived: false,
+      value: 'invalid-z',
+    },
+    {
+      stableId: 'a-missing',
+      title: 'D',
+      done: 0,
+      total: 1,
+      archived: false,
+      value: 'invalid-a',
+    },
+  ];
+
+  assert.deepEqual(
+    selectMyFlowSavedLibraryEntries(entries, { sort: 'saved' }).map((entry) => entry.stableId),
+    ['newer-save-older-visit', 'older-save-newer-visit', 'a-missing', 'z-invalid'],
+  );
+});
+
+test('savedAt input chooses only the latest valid saved record or map timestamp', () => {
+  assert.equal(resolveLatestMyFlowSavedAt([
+    'invalid',
+    '2026-08-09T08:00:00+09:00',
+    '2026-08-10T08:00:00+09:00',
+  ]), '2026-08-10T08:00:00+09:00');
+  assert.equal(resolveLatestMyFlowSavedAt([undefined, '', 'invalid']), undefined);
+});
+
+test('copy ordinals are derived per source by savedAt then planId and are not identity', () => {
+  const ordinals = buildMyFlowCopyOrdinalMap([
+    { planId: 'moving-b', sourceId: 'moving', savedAt: '2026-08-10T08:20:00+09:00' },
+    { planId: 'reading', sourceId: 'reading', savedAt: 'invalid' },
+    { planId: 'moving-a', sourceId: 'moving', savedAt: '2026-08-10T08:10:00+09:00' },
+    { planId: 'moving-c', sourceId: 'moving', savedAt: '2026-08-10T08:20:00+09:00' },
+  ]);
+
+  assert.deepEqual(Object.fromEntries(ordinals), {
+    'moving-a': 1,
+    'moving-b': 2,
+    'moving-c': 3,
+    reading: 1,
+  });
+});
 
 test('legacy My Flow views resolve to the library without deleting saved state', () => {
   assert.equal(parseMyFlowViewQuery('?view=now'), 'flow');
@@ -174,11 +328,12 @@ test('saved-plan library route preserves query/filter/target and keeps scroll in
 
   assert.equal(
     href,
-    '/my?demo=ux20&view=flows&q=%EC%9D%B4%EC%82%AC&status=open&flow=moving-d30-basic&item=moving%3A%3Apack&date=2030-09-05#library',
+    '/my?demo=ux20&view=flows&q=%EC%9D%B4%EC%82%AC&status=open&sort=next&flow=moving-d30-basic&item=moving%3A%3Apack&date=2030-09-05#library',
   );
   assert.deepEqual(parseMyFlowLibraryRoute(new URL(href, 'https://flowme.local').search, historyState), {
     query: '이사',
     filter: 'open',
+    sort: 'next',
     target: {
       flowSlug: 'moving-d30-basic',
       itemKey: 'moving::pack',
@@ -227,6 +382,7 @@ test('saved-plan library route rejects unsupported filters and clears stale item
   assert.deepEqual(parseMyFlowLibraryRoute('?view=flows&status=recent&item=orphan'), {
     query: '',
     filter: 'all',
+    sort: 'next',
     target: null,
     scrollY: 0,
     railScrollTop: 0,
@@ -237,7 +393,7 @@ test('saved-plan library route rejects unsupported filters and clears stale item
       filter: 'all',
       target: null,
     }),
-    '/my?view=flows',
+    '/my?view=flows&sort=next',
   );
 });
 

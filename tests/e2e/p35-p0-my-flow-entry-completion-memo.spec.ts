@@ -3,7 +3,9 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 import {
   closeOpenMyFlowItemDetail,
   expandMyFlowWholePlan,
+  gotoLegacySavedPlanLibraryRoute,
   getOpenMyFlowItemDetail,
+  installLegacySavedPlanLibraryNavigation,
 } from './helpers/my-flow-library';
 import { savePublicFlow } from './helpers/public-flow-save';
 
@@ -137,7 +139,8 @@ test.describe('P35 P0 My Flow first entry, completion, and memo facade', () => {
   test('mobile first entry stays compact and Item detail is the only completion and memo mutation point', async ({ page }) => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto(`/f/${FLOW_SLUG}`);
+    await installLegacySavedPlanLibraryNavigation(page);
+    await gotoLegacySavedPlanLibraryRoute(page, `/f/${FLOW_SLUG}`);
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
 

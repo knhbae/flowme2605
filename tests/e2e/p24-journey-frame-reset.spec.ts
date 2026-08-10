@@ -31,28 +31,30 @@ test.describe('P24 save-personalize-execute journey frame', () => {
 
     await expect(page).toHaveURL('/f/moving-d30-basic');
     const movingCapability = page.getByTestId('public-flow-capability-result');
-    await expect(movingCapability.locator(
-      '[data-testid="flow-capability-result-choice"]'
-        + '[data-capability-candidate-role="primary"]'
-        + '[data-capability-destination="checklist"]',
-    )).toHaveAttribute('data-capability-output-count', '24');
+    const publicFormats = movingCapability.locator('[data-public-format-tab="true"]');
+    await expect(publicFormats).toHaveCount(3);
     await expect(page.getByTestId('public-flow-hero')).toContainText('이사 D-30 준비');
-    await expect(movingCapability).toHaveAttribute('data-capability-primary-destination', 'checklist');
+    await expect(movingCapability).toHaveAttribute('data-capability-selected-destination', 'memo');
+    await movingCapability.locator(
+      '[data-public-format-tab="true"][data-capability-destination="calendar"]',
+    ).click();
     await expect(movingCapability.getByTestId('flow-capability-selected-preview')).toHaveAttribute(
       'data-capability-destination',
-      'checklist',
+      'calendar',
     );
     await expect(page.locator('body')).not.toContainText('이사일 1개를 넣으면 원문 체크리스트');
     await expect(page.getByTestId('public-flow-reference-details')).toHaveCount(0);
     await expect(page.getByTestId('public-flow-save-primary-mobile')).toHaveAccessibleName(
-      '이사일 정하기',
+      '이사일 설정 후 저장',
     );
     await captureEvidence(page, '01-moving-artifact-first-mobile.png');
 
-    await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
-    await page.getByTestId('public-flow-adjust-entry-mobile').click();
+    await page.getByTestId('public-flow-calendar-set-anchor').click();
     const adjustPanel = page.getByTestId('public-flow-personal-adjustment');
     await expect(adjustPanel).toBeVisible();
+    await adjustPanel.getByTestId('public-flow-adjustment-anchor-input').fill('2030-08-15');
+    await adjustPanel.getByTestId('public-flow-adjustment-apply').click();
+    await page.getByTestId('public-flow-adjust-entry-mobile').click();
     await captureEvidence(page, '02-moving-light-adjustment-mobile.png');
     await adjustPanel.getByTestId('public-flow-adjustment-name-input').fill('내 이사 준비');
     await adjustPanel.getByTestId('public-flow-adjustment-apply').click();
@@ -71,8 +73,9 @@ test.describe('P24 save-personalize-execute journey frame', () => {
     expect(personalCopyKey).toMatch(/^personal-copy:/u);
     const workspace = await openMyFlowLibraryFlow(page, 'moving-d30-basic');
     await expect(workspace).toContainText('내 이사 준비');
-    await expect(workspace.getByTestId('my-flow-whole-flow-outline')).toHaveAttribute(
-      'data-effective-row-count',
+    const approvedPlan = workspace.getByTestId('approved-my-plan-workspace');
+    await expect(approvedPlan.getByTestId('my-plan-date-grouped-todos')).toHaveAttribute(
+      'data-todo-row-count',
       '23',
     );
     await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
@@ -93,7 +96,7 @@ test.describe('P24 save-personalize-execute journey frame', () => {
     expect(stored.itemStates[excludedItemId as string].note).toBeUndefined();
     expect(stored.legacySourceRecord).toBeNull();
 
-    await expect(page.getByTestId('my-flow-workspace')).toBeVisible();
+    await expect(approvedPlan).toBeVisible();
     await captureEvidence(page, '04-moving-returning-workspace-mobile.png');
   });
 
@@ -103,7 +106,6 @@ test.describe('P24 save-personalize-execute journey frame', () => {
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
     await expect(page).toHaveURL('/f/moving-d30-basic');
-    await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
     await page.getByTestId('public-flow-adjust-entry-mobile').click();
 
     const adjustPanel = page.getByTestId('public-flow-personal-adjustment');
@@ -149,7 +151,7 @@ test.describe('P24 save-personalize-execute journey frame', () => {
     await expect(page.getByTestId('public-flow-description')).toHaveCount(0);
     await expect(page.getByTestId('public-flow-adjust-entry-mobile')).toBeVisible();
     await expect(page.getByTestId('public-flow-save-primary-mobile')).toHaveText(
-      '내 계획에 저장',
+      '내 계획으로 저장',
     );
     await expect(page.getByTestId('public-flow-reference-details')).toHaveCount(0);
     await captureEvidence(page, '05-vehicle-public-compact-mobile.png');
@@ -161,11 +163,10 @@ test.describe('P24 save-personalize-execute journey frame', () => {
     await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toContainText('10');
     await openSavedPublicFlow(page, saveBanner);
     const workspace = await openMyFlowLibraryFlow(page, 'vehicle-inspection-prep');
-    await expect(
-      workspace.getByRole('heading', { level: 2, name: '자동차검사 D-14 준비' }),
-    ).toBeVisible();
-    await expect(workspace.getByTestId('my-flow-whole-flow-outline')).toHaveAttribute(
-      'data-effective-row-count',
+    const approvedPlan = workspace.getByTestId('approved-my-plan-workspace');
+    await expect(approvedPlan).toBeVisible();
+    await expect(approvedPlan.getByTestId('my-plan-date-grouped-todos')).toHaveAttribute(
+      'data-todo-row-count',
       '10',
     );
     await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
@@ -178,17 +179,16 @@ test.describe('P24 save-personalize-execute journey frame', () => {
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
     const capability = page.getByTestId('public-flow-capability-result');
-    await expect(capability).toHaveAttribute('data-capability-primary-destination', 'checklist');
-    await expect(capability.locator(
-      '[data-testid="flow-capability-result-choice"]'
-        + '[data-capability-candidate-role="primary"]'
-        + '[data-capability-destination="checklist"]',
-    )).toHaveAttribute('data-capability-output-count', '10');
+    await expect(capability).toHaveAttribute('data-capability-selected-destination', 'memo');
+    await expect(capability.getByTestId('flow-capability-selected-preview')).toHaveAttribute(
+      'data-capability-output-count',
+      '10',
+    );
     await page.getByTestId('public-flow-save-primary-mobile').click();
 
     await page.goto('/flow-maps/middle-school-math-1');
     await page.getByTestId('flow-map-save-all-mobile').click();
-    await expect(page).toHaveURL('/my?savedMap=middle-school-math-1');
+    await expect(page).toHaveURL(/\/my\?savedMap=middle-school-math-1&sort=next$/u);
 
     await page.goto('/calendar');
     await expect(page.getByTestId('my-flow-calendar-unscheduled-tray')).toHaveCount(0);
@@ -243,7 +243,6 @@ test.describe('P24 save-personalize-execute journey frame', () => {
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
     await expect(page).toHaveURL('/f/moving-d30-basic');
-    await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
     await savePublicFlow(page, page.getByTestId('public-flow-save-primary'));
 
     await page.goto('/f/vehicle-inspection-prep');

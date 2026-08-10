@@ -3,7 +3,10 @@ import path from 'node:path';
 
 import { expect, test, type Page } from '@playwright/test';
 
-import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
+import {
+  gotoLegacySavedPlanLibraryRoute,
+  openMyFlowLibraryFlow,
+} from './helpers/my-flow-library';
 
 const evidenceRoot = process.env.FLOWME_P35_08_EVIDENCE_DIR;
 
@@ -156,7 +159,7 @@ test.describe('P35-08 final MECE gate', () => {
     ] as const;
 
     for (const candidate of cases) {
-      await page.goto(`/f/${candidate.slug}`);
+      await gotoLegacySavedPlanLibraryRoute(page, `/f/${candidate.slug}`);
       const capability = page.getByTestId('public-flow-capability-result');
       await expect(capability).toHaveAttribute('data-capability-lifecycle', 'public_preview');
       await expect(capability).toHaveAttribute(
@@ -205,7 +208,7 @@ test.describe('P35-08 final MECE gate', () => {
     const errors = collectBrowserErrors(page);
 
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/my?demo=ux20&view=flows');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=ux20&view=flows');
     await expect(page.locator('main').first()).toHaveAttribute(
       'data-p35-my-flow-marker',
       'P35-MY-LIBRARY-ONLY',
@@ -230,7 +233,7 @@ test.describe('P35-08 final MECE gate', () => {
     await expectQuality(page);
 
     await page.setViewportSize({ width: 1024, height: 768 });
-    await page.goto('/calendar?demo=ux20');
+    await gotoLegacySavedPlanLibraryRoute(page, '/calendar?demo=ux20');
     const calendar = page.getByTestId('my-flow-calendar-workspace');
     await expect(calendar).toHaveAttribute(
       'data-p35-calendar-marker',
@@ -257,7 +260,7 @@ test.describe('P35-08 final MECE gate', () => {
       .toHaveCount(0);
     await library.getByTestId('my-flow-library-row').first().click();
     await expect(library.getByTestId('my-flow-library-detail').getByTestId('my-flow-overview-card'))
-      .toHaveAttribute('data-p35-marker', 'P35-PERSONAL-SINGLE-FOCUS');
+      .toHaveAttribute('data-workspace-composition', 'shared-model-separate-surfaces');
     await capture(page, 'p35-08-my-flow-library-60-1440.png');
     await expectQuality(page);
 

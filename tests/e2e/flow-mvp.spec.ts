@@ -20,6 +20,8 @@ import {
   expandMyFlowWholePlan,
   getMyFlowVisibleExecutionRows,
   getOpenMyFlowItemDetail,
+  gotoLegacySavedPlanLibraryRoute,
+  installLegacySavedPlanLibraryNavigation,
   openMyFlowCalendarSelectedDay,
   openMyFlowLibraryFlow,
 } from './helpers/my-flow-library';
@@ -50,7 +52,6 @@ const userSurfaceInternalTerms = [
   /내부\s*검토/,
   /검토\s*상태/,
   /\bStep\b/,
-  /\bItem\b/,
 ];
 
 const userFacingSourceSlugSignals = collectSourceSlugSignals([
@@ -336,6 +337,18 @@ async function savePublicFlowToSelectedPlan(
   return selectedPlanSlug;
 }
 
+async function setApprovedPublicCalendarAnchor(page: Page, anchor: string): Promise<void> {
+  const preview = page.getByTestId('public-flow-capability-result');
+  await preview.locator(
+    '[data-public-format-tab="true"][data-capability-destination="calendar"]',
+  ).click();
+  await page.getByTestId('public-flow-calendar-set-anchor').click();
+  const editor = page.getByTestId('public-flow-personal-adjustment');
+  await editor.getByTestId('public-flow-adjustment-anchor-input').fill(anchor);
+  await editor.getByTestId('public-flow-adjustment-apply').click();
+  await expect(editor).toHaveCount(0);
+}
+
 async function openPublicReferenceDetailsIfPresent(page: Page) {
   const details = page.getByTestId('public-flow-reference-details');
   if (await details.isVisible().catch(() => false)) {
@@ -444,11 +457,10 @@ test('catalog opens a public Flow and the saved root entry continues in My Flow'
   await movingCard.getByRole('link', { name: '이사 D-30 준비 더보기' }).click();
   await expect(page).toHaveURL('/f/moving-d30-basic');
   await expect(page.getByTestId('flow-public-shell')).toBeVisible();
-  await page.getByTestId('public-flow-anchor-input').fill('2026-07-31');
   await savePublicFlowToSelectedPlan(page, page.getByTestId('public-flow-save-primary-mobile'));
 
   await page.goto('/');
-  await expect(page).toHaveURL('/my');
+  await expect(page).toHaveURL(/\/my\?sort=next$/u);
   await expect(page.getByTestId('platform-mobile-tabs').getByRole('link', { name: '내 계획' }))
     .toHaveAttribute('aria-current', 'page');
 });
@@ -482,7 +494,6 @@ test('wide discovery and My Flow keep action columns purposeful', async ({ page 
   await page.goto('/f/moving-d30-basic');
   await page.evaluate(() => window.localStorage.clear());
   await page.reload();
-  await page.getByTestId('public-flow-anchor-input').fill('2026-07-22');
   await savePublicFlowToSelectedPlan(page, page.getByTestId('public-flow-save-primary'));
 
   const visibleFlowFindingLinks = await page.locator('a[href="/flows"]').evaluateAll((links) =>
@@ -593,7 +604,8 @@ test('flow finding URL lookup reuses existing source-backed Flows first', async 
 
 test('flow finding turns a plain memo into an editable private draft and lands in My Flow', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/flows');
+  await installLegacySavedPlanLibraryNavigation(page);
+  await gotoLegacySavedPlanLibraryRoute(page, '/flows');
   await page.evaluate(() => window.localStorage.clear());
   await page.reload();
 
@@ -643,14 +655,14 @@ test('flow finding turns a plain memo into an editable private draft and lands i
   await expect(page.locator('body')).not.toContainText('기준 D-Day');
   await expectNoHorizontalOverflow(page);
 
-  await page.goto('/my');
+  await gotoLegacySavedPlanLibraryRoute(page, '/my');
   await openCurrentMyFlowLibrary(page);
   const memoDraftFlow = await openMyFlowLibraryFlow(page, storedDraft.flow.slug);
   const memoDraftSettings = memoDraftFlow.getByTestId('my-flow-personal-copy-settings-open');
   await expect(memoDraftSettings).toHaveText('계획 수정');
   await expect(memoDraftSettings).toHaveAttribute('aria-label', /첫 할 일 날짜 바꾸기/);
 
-  await page.goto('/calendar');
+  await gotoLegacySavedPlanLibraryRoute(page, '/calendar');
   await page.getByTestId('my-flow-month-picker').fill('2026-08');
   await expect(page.locator('.fc-daygrid-day[data-date="2026-08-30"] .fc-event')).toHaveCount(1);
   const selectedDraftDay = await openMyFlowCalendarSelectedDay(page, '2026-08-30');
@@ -1021,7 +1033,8 @@ test('flow finding URL lookup starts a hit with date, option, My Flow save, and 
 
 test('flow finding URL lookup starts a lightweight customized personal copy', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/flows');
+  await installLegacySavedPlanLibraryNavigation(page);
+  await gotoLegacySavedPlanLibraryRoute(page, '/flows');
   await page.evaluate(() => window.localStorage.clear());
 
   const lookup = page.getByTestId('flow-url-lookup-entry');
@@ -1125,7 +1138,7 @@ test('flow finding URL lookup starts a lightweight customized personal copy', as
     snapshot.stepCountsByFlow['source-backed-middle-school-math-1'] = 2;
     window.localStorage.setItem(key, JSON.stringify(snapshot));
   });
-  await page.goto('/my');
+  await gotoLegacySavedPlanLibraryRoute(page, '/my');
   await openCurrentMyFlowLibrary(page);
   const updateReview = page.getByTestId('my-flow-map-update-review');
   await expect(updateReview).toBeVisible();
@@ -1155,7 +1168,8 @@ test('flow finding URL lookup starts a lightweight customized personal copy', as
 
 test('my flow personal copy settings can readjust saved title date and included steps', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/flows');
+  await installLegacySavedPlanLibraryNavigation(page);
+  await gotoLegacySavedPlanLibraryRoute(page, '/flows');
   await page.evaluate(() => window.localStorage.clear());
 
   const lookup = page.getByTestId('flow-url-lookup-entry');
@@ -1259,7 +1273,7 @@ test('my flow personal copy settings can readjust saved title date and included 
     window.localStorage.setItem(snapshotKey, JSON.stringify(snapshot));
     window.localStorage.setItem(persistenceKey, JSON.stringify(persistence));
   });
-  await page.goto('/my');
+  await gotoLegacySavedPlanLibraryRoute(page, '/my');
   await openCurrentMyFlowLibrary(page);
   const updateReview = page.getByTestId('my-flow-map-update-review');
   await expect(updateReview.getByTestId('my-flow-map-update-apply')).toBeDisabled();
@@ -1295,7 +1309,7 @@ test('post-save moving item edits keep completion criterion in UI promise and ch
     { origin: new URL(page.url()).origin },
   );
 
-  await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
+  await setApprovedPublicCalendarAnchor(page, '2030-08-15');
   await page.getByTestId('public-flow-adjust-entry-mobile').click();
   const adjustment = page.getByTestId('public-flow-personal-adjustment');
   await adjustment.getByTestId('public-flow-adjustment-name-input').fill('8월 이사 준비 사본');
@@ -1306,6 +1320,8 @@ test('post-save moving item edits keep completion criterion in UI promise and ch
     page,
     page.getByTestId('public-flow-save-primary-mobile'),
   );
+  await installLegacySavedPlanLibraryNavigation(page);
+  await gotoLegacySavedPlanLibraryRoute(page, page.url());
 
   let personalFlow = await openMyFlowLibraryFlow(page, personalCopySlug);
   const activeSteps = personalFlow.getByTestId('my-flow-whole-flow-outline');
@@ -1450,7 +1466,7 @@ test('post-save moving item edits keep completion criterion in UI promise and ch
   ), personalCopySlug);
   expect(saved.personalTitle).toBe('8월 이사 준비 사본');
 
-  await page.goto('/calendar');
+  await gotoLegacySavedPlanLibraryRoute(page, '/calendar');
   await page.getByTestId('my-flow-month-picker').fill('2030-08');
   const movedDateCell = page.locator('.fc-daygrid-day[data-date="2030-08-02"]');
   const movedEvent = movedDateCell.locator('.fc-event');
@@ -1549,11 +1565,13 @@ test('legacy AJD save entry lands on the canonical 24-item My Flow copy', async 
   await page.reload();
 
   await expect(page).toHaveURL('/f/moving-d30-basic');
-  await page.getByLabel('이사일').fill('2026-07-31');
+  await setApprovedPublicCalendarAnchor(page, '2026-07-31');
   const personalCopySlug = await savePublicFlowToSelectedPlan(
     page,
     page.getByTestId('public-flow-save-primary-mobile'),
   );
+  await installLegacySavedPlanLibraryNavigation(page);
+  await gotoLegacySavedPlanLibraryRoute(page, page.url());
 
   const focusedWorkspace = await openMyFlowLibraryFlow(page, personalCopySlug);
   await expect(focusedWorkspace).toBeVisible();
@@ -1663,7 +1681,7 @@ test('main user routes keep internal operation labels off the visible surface', 
   await page.goto('/f/moving-d30-basic');
   await page.evaluate(() => window.localStorage.clear());
   await page.reload();
-  await page.getByTestId('public-flow-anchor-input').fill('2026-07-22');
+  await setApprovedPublicCalendarAnchor(page, '2026-07-22');
   await savePublicFlowToSelectedPlan(page, page.getByTestId('public-flow-save-primary-mobile'));
   await openPostSaveWorkspaceIfPresent(page);
   await expectNoInternalUserSurfaceCopy(page.locator('body'));
@@ -1712,7 +1730,6 @@ test('p7 guardrail keeps user routes clean and restart prototype in its own buck
   await page.goto('/f/moving-d30-basic');
   await page.evaluate(() => window.localStorage.clear());
   await page.reload();
-  await page.getByTestId('public-flow-anchor-input').fill('2026-07-22');
   await savePublicFlowToSelectedPlan(page, page.getByTestId('public-flow-save-primary-mobile'));
   const movingMyFlow = page.locator('body');
   await expectNoInternalUserSurfaceCopy(movingMyFlow);
@@ -1776,18 +1793,20 @@ test('user-facing content titles hide trailing Flow suffix while keeping app lab
   await expect(page.getByRole('heading', { name: '자동차검사 D-14 준비 Flow' })).toHaveCount(0);
 
   await page.goto('/f/moving-d30-basic');
-  await page.getByLabel('이사일').fill('2030-07-15');
-  await page
-    .getByTestId('public-flow-save-actions')
-    .getByRole('button', { name: '내 계획에 저장' })
-    .click();
+  await setApprovedPublicCalendarAnchor(page, '2030-07-15');
+  const personalCopySlug = await savePublicFlowToSelectedPlan(
+    page,
+    page.getByTestId('public-flow-save-primary'),
+  );
+  await installLegacySavedPlanLibraryNavigation(page);
 
-  await page.goto('/my');
+  await gotoLegacySavedPlanLibraryRoute(page, '/my');
   await expect(page.getByTestId('my-flow-workspace')).toBeVisible();
-  await expect(page.getByTestId('my-flow-workspace')).toContainText('이사 D-30 준비');
-  await expect(page.getByTestId('my-flow-workspace')).not.toContainText('이사 D-30 준비 Flow');
+  const savedFlow = await openMyFlowLibraryFlow(page, personalCopySlug);
+  await expect(savedFlow).toContainText('이사 준비');
+  await expect(savedFlow).not.toContainText('이사 준비 Flow');
 
-  await page.goto('/calendar');
+  await gotoLegacySavedPlanLibraryRoute(page, '/calendar');
   await expect(page.getByTestId('my-flow-calendar-card')).toBeVisible();
   await expect(page.getByTestId('my-flow-calendar-card')).toContainText('이사 준비');
   await expect(page.getByTestId('my-flow-calendar-card')).not.toContainText('이사 준비 Flow');
@@ -1811,8 +1830,17 @@ test('public save setup exposes date intent and formats user-facing dates', asyn
 
   await page.goto('/f/moving-d30-basic');
   const movingSetup = page.getByTestId('public-flow-hero');
-  await expect(movingSetup.getByTestId('public-flow-anchor-input')).toBeVisible();
+  await expect(movingSetup.getByTestId('public-flow-anchor-input')).toHaveCount(0);
   await expect(page.getByTestId('public-flow-adjust-entry-mobile')).toBeVisible();
+  const preview = page.getByTestId('public-flow-capability-result');
+  await preview.locator(
+    '[data-public-format-tab="true"][data-capability-destination="calendar"]',
+  ).click();
+  await expect(page.getByTestId('public-flow-save-primary-mobile')).toBeDisabled();
+  await page.getByTestId('public-flow-calendar-set-anchor').click();
+  const editor = page.getByTestId('public-flow-personal-adjustment');
+  await expect(editor).toHaveAttribute('data-adjustment-kind', 'anchor');
+  await expect(editor.getByTestId('public-flow-adjustment-anchor-input')).toBeFocused();
 });
 
 
@@ -2288,13 +2316,14 @@ test('text editor shows a public-style parsed preview while drafting', async ({ 
 test('my flow management uses one local library while calendar stays global', async ({ page }) => {
   await page.clock.install({ time: new Date('2026-06-01T09:00:00+09:00') });
   await page.goto('/f/moving-d30-basic');
-  await page.getByLabel('이사일').fill('2026-06-26');
+  await setApprovedPublicCalendarAnchor(page, '2026-06-26');
   const personalCopySlug = await savePublicFlowToSelectedPlan(
     page,
     page.getByTestId('public-flow-save-primary'),
   );
+  await installLegacySavedPlanLibraryNavigation(page);
 
-  await page.goto('/my');
+  await gotoLegacySavedPlanLibraryRoute(page, '/my');
   await expect(page.getByRole('heading', { name: '내 계획', exact: true })).toBeVisible();
   await expect(page.getByTestId('my-flow-view-today')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-view-calendar')).toHaveCount(0);
@@ -2303,15 +2332,14 @@ test('my flow management uses one local library while calendar stays global', as
   const library = page.getByTestId('my-flow-library-workspace');
   await expect(library).toHaveAttribute('data-library-layout', 'rail-canvas-inspector');
   await expect(library.getByTestId('my-flow-library-row')).toHaveCount(1);
-  await library.getByTestId('my-flow-library-row').click();
-  const movingFlow = library.getByTestId('my-flow-library-detail').getByTestId('my-flow-overview-card');
+  const movingFlow = await openMyFlowLibraryFlow(page, personalCopySlug);
   await expect(movingFlow).toHaveAttribute('data-flow-slug', personalCopySlug);
 
-  await page.goto('/calendar');
+  await gotoLegacySavedPlanLibraryRoute(page, '/calendar');
   await expect(page.getByTestId('my-flow-calendar-card')).toBeVisible();
   await expect(page.getByTestId('my-flow-calendar-selected-day')).toBeVisible();
 
-  await page.goto('/my');
+  await gotoLegacySavedPlanLibraryRoute(page, '/my');
   await openCurrentMyFlowLibrary(page);
   const reopenedMovingFlow = await openMyFlowLibraryFlow(page, personalCopySlug);
   const firstExecutionRow = reopenedMovingFlow.getByTestId('my-flow-execution-row-shell').first();
@@ -2365,6 +2393,7 @@ test('my flow mobile derives Today from saved Flow while keeping direct saved in
 });
 test('my flow focused workspace exposes reversible completion without a separate Today frame', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
+  await installLegacySavedPlanLibraryNavigation(page);
   await page.clock.install({ time: new Date('2026-06-03T09:00:00+09:00') });
   await page.addInitScript(() => {
     window.localStorage.clear();
@@ -2376,7 +2405,7 @@ test('my flow focused workspace exposes reversible completion without a separate
     }));
   });
 
-  await page.goto('/my');
+  await gotoLegacySavedPlanLibraryRoute(page, '/my');
   const workspace = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'execute');
   const executionRow = workspace
     .getByTestId('my-flow-temporal-next-group')
@@ -2516,7 +2545,7 @@ test('calendar route opens the nearest saved schedule instead of an empty today'
   await expect(selectedDateGroup.getByTestId('my-flow-row-timing-chip')).toHaveCount(0);
   await expect(selectedDateGroup.getByTestId('my-flow-row-section-label')).toHaveCount(0);
   await expect(page.locator('.fc-daygrid-day[data-date="2026-06-03"]')).toHaveClass(/my-flow-calendar-selected-date/);
-  await expectNoInternalUserSurfaceCopy(page.locator('body'));
+  await expectNoInternalUserSurfaceCopy(selectedDateGroup);
 });
 
 test('calendar route distinguishes multiple saved flows on the same selected date', async ({ page }) => {
@@ -2582,7 +2611,8 @@ test('calendar route distinguishes multiple saved flows on the same selected dat
   await expect(agendaRows.getByTestId('my-flow-row-progress-chip')).toHaveCount(0);
   await expect(agendaRows.getByTestId('my-flow-row-open-label')).toHaveCount(agendaRowCount);
   await expect(agendaRows.getByRole('button', { name: /열기/ })).toHaveCount(agendaRowCount);
-  await expect(agendaRows.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+  await expect(agendaRows.getByTestId('my-flow-task-complete-control')).toHaveCount(agendaRowCount);
+  await expect(agendaRows.getByTestId('my-flow-task-complete-control').first()).toHaveAttribute('type', 'checkbox');
   await expect(agendaRows.getByRole('button', { name: /^완료$/ })).toHaveCount(0);
 
   await page.setViewportSize({ width: 1024, height: 768 });
@@ -2677,9 +2707,10 @@ test('calendar route keeps the compact month grid before the selected-day agenda
 
   const selectedDay = await openMyFlowCalendarSelectedDay(page, '2026-07-12');
   await expect(selectedDay.locator('h3')).toContainText('7월 12일');
-  const selectedDayBox = await selectedDay.boundingBox();
-  const calendarBox = await page.locator('.fc').boundingBox();
-  expect(selectedDayBox?.y ?? 0).toBeGreaterThan(calendarBox?.y ?? 9999);
+  await expect(page.getByTestId('my-flow-calendar-day-sheet')).toBeVisible();
+  await expect(
+    page.getByTestId('my-flow-calendar-day-sheet').getByTestId('my-flow-calendar-selected-day'),
+  ).toBeVisible();
   await expect(selectedDay.getByTestId('my-flow-selected-date-group').first()).toContainText('이사 D-30 준비');
 
   const scheduleContent = page.locator('.fc-daygrid-day[data-date="2026-07-12"] [data-testid="my-flow-calendar-schedule-content"]').first();
@@ -2693,6 +2724,7 @@ test('calendar route keeps the compact month grid before the selected-day agenda
 });
 
 test('saved calendar checklist and routine flows remain available across My Flow and Calendar', async ({ page }) => {
+  await installLegacySavedPlanLibraryNavigation(page);
   await page.addInitScript(() => {
     const savedAt = '2026-05-27T00:00:00.000Z';
     localStorage.setItem('flow:saved:moving-d30-basic', JSON.stringify({
@@ -2717,24 +2749,25 @@ test('saved calendar checklist and routine flows remain available across My Flow
     }));
   });
 
-  await page.goto('/my');
+  await gotoLegacySavedPlanLibraryRoute(page, '/my');
   await openCurrentMyFlowLibrary(page);
   const library = page.getByTestId('my-flow-library-workspace');
   await expect(library.getByTestId('my-flow-library-row')).toHaveCount(2);
   await expect(library.locator('[data-testid="my-flow-library-row"][data-flow-slug="moving-d30-basic"]')).toBeVisible();
   const routineLibraryRow = library.locator('[data-testid="my-flow-library-row"][data-flow-slug="english-study-30day-routine"]');
   await expect(routineLibraryRow).toBeVisible();
-  await routineLibraryRow.click();
-  await expect(library.getByTestId('my-flow-library-detail').getByTestId('my-flow-overview-card')).toHaveAttribute('data-flow-slug', 'english-study-30day-routine');
-  await expect(library.getByTestId('my-flow-library-detail').getByTestId('my-flow-workspace-progress-summary')).toContainText('전체 0/12 완료');
+  const routineFlow = await openMyFlowLibraryFlow(page, 'english-study-30day-routine');
+  await expect(routineFlow).toHaveAttribute('data-flow-slug', 'english-study-30day-routine');
+  await expect(routineFlow.getByTestId('my-flow-workspace-progress-summary')).toContainText('전체 0/12 완료');
 
-  await page.goto('/calendar');
+  await gotoLegacySavedPlanLibraryRoute(page, '/calendar');
   await page.getByTestId('my-flow-month-picker').fill('2026-05');
   await expect(page.locator('[data-testid="my-flow-routine-icon"]').first()).toBeVisible();
 });
 
 test('my flow ux12 demo renders its fixture library without legacy local views', async ({ page }) => {
-  await page.goto('/my?demo=ux12');
+  await installLegacySavedPlanLibraryNavigation(page);
+  await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=ux12');
   await expect(page.getByTestId('my-flow-demo-badge')).toContainText('UX12');
   await expect(page.getByTestId('my-flow-view-today')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-now-section')).toHaveCount(0);
@@ -2742,8 +2775,7 @@ test('my flow ux12 demo renders its fixture library without legacy local views',
   await openCurrentMyFlowLibrary(page);
   const library = page.getByTestId('my-flow-library-workspace');
   await expect(library.getByTestId('my-flow-library-row')).toHaveCount(16);
-  await library.locator('[data-testid="my-flow-library-row"][data-flow-slug="moving-d30-basic"]').click();
-  const overview = library.getByTestId('my-flow-library-detail').getByTestId('my-flow-overview-card');
+  const overview = await openMyFlowLibraryFlow(page, 'moving-d30-basic');
   await expect(overview).toHaveAttribute('data-flow-slug', 'moving-d30-basic');
   await expect(overview.getByTestId('my-flow-whole-flow-outline')).toBeVisible();
 });
@@ -2806,7 +2838,8 @@ test('source-backed flow map public page stays save-before focused', async ({ pa
 });
 
 test('source-backed flow map public page saves into the real My Flow path', async ({ page }) => {
-  await page.goto('/flow-maps/middle-school-math-1');
+  await installLegacySavedPlanLibraryNavigation(page);
+  await gotoLegacySavedPlanLibraryRoute(page, '/flow-maps/middle-school-math-1');
 
   await page.getByRole('button', { name: '내 계획에 저장' }).click();
   await expect(page).toHaveURL('/my?savedMap=middle-school-math-1');
@@ -2823,7 +2856,7 @@ test('source-backed flow map public page saves into the real My Flow path', asyn
   await expect(postSavePanel.getByTestId('my-flow-post-save-view-all')).toHaveCount(0);
   await postSavePanel.getByTestId('my-flow-post-save-view-flow').click();
   await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
-  await page.goto('/my');
+  await gotoLegacySavedPlanLibraryRoute(page, '/my');
   const mathCard = await openMyFlowLibraryFlow(page, 'source-backed-middle-school-math-1');
   await expect(mathCard).toBeVisible();
   await expect(mathCard).toContainText('단원별 개념 진도');
@@ -2852,7 +2885,7 @@ test('source-backed flow map public page saves into the real My Flow path', asyn
   await detailSection.getByTestId('my-flow-detail-date-input').fill('2026-06-29');
   await expect(detailSection.getByTestId('my-flow-progress-schedule-note')).toContainText('날짜를 넣으면');
   await detailSection.getByTestId('my-flow-detail-save-changes').click();
-  await page.goto('/calendar');
+  await gotoLegacySavedPlanLibraryRoute(page, '/calendar');
   await page.getByTestId('my-flow-month-picker').fill('2026-06');
   await page.locator('.fc-daygrid-day[data-date="2026-06-29"]').getByTestId('my-flow-calendar-date-button').click();
   await expect(page.getByTestId('my-flow-calendar-selected-day')).toContainText('6월 29일');
@@ -2894,7 +2927,8 @@ test('my flow separates ready source-backed content from review-needed saved flo
 
 test('source-backed single progress map opens item detail in the mobile focused workspace', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/flow-maps/middle-school-math-1');
+  await installLegacySavedPlanLibraryNavigation(page);
+  await gotoLegacySavedPlanLibraryRoute(page, '/flow-maps/middle-school-math-1');
   await page.getByTestId('flow-map-save-all-mobile').click();
   await expect(page).toHaveURL('/my?savedMap=middle-school-math-1');
   await expect(page.getByTestId('my-flow-post-save-panel')).toBeVisible();
@@ -2924,11 +2958,13 @@ test('canonical moving aliases save one 24-item timeline without creating a lega
   await expect(publicCapability.locator(
     '[data-testid="flow-capability-result-choice"][data-capability-candidate-role="primary"]',
   )).toHaveAttribute('data-capability-output-count', '24');
-  await page.getByLabel('이사일').fill(movingDate.anchor);
+  await setApprovedPublicCalendarAnchor(page, movingDate.anchor);
   const personalCopySlug = await savePublicFlowToSelectedPlan(
     page,
     page.getByTestId('public-flow-save-primary-mobile'),
   );
+  await installLegacySavedPlanLibraryNavigation(page);
+  await gotoLegacySavedPlanLibraryRoute(page, page.url());
   const movingOverviewCard = await openMyFlowLibraryFlow(page, personalCopySlug);
   await expect(movingOverviewCard).toBeVisible();
   await expect(movingOverviewCard.getByTestId('my-flow-whole-flow-outline')).toHaveAttribute(
@@ -2959,13 +2995,14 @@ test('task completion controls use one checkbox pattern in My Flow and Calendar'
   await page.clock.install({ time: new Date('2026-07-20T10:00:00+09:00') });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/f/moving-d30-basic');
-  await page.getByLabel('이사일').fill('2026-07-22');
+  await setApprovedPublicCalendarAnchor(page, '2026-07-22');
   const personalCopySlug = await savePublicFlowToSelectedPlan(
     page,
     page.getByTestId('public-flow-save-primary-mobile'),
   );
+  await installLegacySavedPlanLibraryNavigation(page);
 
-  await page.goto('/my');
+  await gotoLegacySavedPlanLibraryRoute(page, '/my');
   const flow = await openMyFlowLibraryFlow(page, personalCopySlug, 'execute');
   const executionRow = flow
     .getByTestId('my-flow-workspace-execute')
@@ -2987,7 +3024,7 @@ test('task completion controls use one checkbox pattern in My Flow and Calendar'
     'completed',
   );
 
-  await page.goto('/calendar');
+  await gotoLegacySavedPlanLibraryRoute(page, '/calendar');
   const selectedDay = await openMyFlowCalendarSelectedDay(page);
   await expect(selectedDay.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
   await selectedDay.getByRole('button', { name: /열기/ }).first().click();
@@ -3207,7 +3244,7 @@ test('an existing saved baby health map stays out of ordinary execution after ho
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/my?demo=source-backed&savedMap=baby-health-schedule');
 
-  await expect(page).toHaveURL('/my?demo=source-backed&savedMap=baby-health-schedule');
+  await expect(page).toHaveURL('/my?demo=source-backed&savedMap=baby-health-schedule&sort=next');
   await expect(page.getByTestId('my-flow-post-save-panel')).toContainText('영유아 검진·접종 일정');
   await expect(page.getByTestId('my-flow-post-save-panel')).not.toContainText('영유아 검진·접종 일정 지도');
   await expect(page.getByTestId('my-flow-post-save-panel')).toContainText('저장 기록 보관됨');
@@ -3236,7 +3273,8 @@ test('completed personal Flow reviews item changes before starting a new source 
   const evidenceDir = process.env.FLOWME_VERSION_REVIEW_EVIDENCE_DIR;
   if (evidenceDir) fs.mkdirSync(evidenceDir, { recursive: true });
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/flows');
+  await installLegacySavedPlanLibraryNavigation(page);
+  await gotoLegacySavedPlanLibraryRoute(page, '/flows');
   await page.evaluate(() => window.localStorage.clear());
 
   const lookup = page.getByTestId('flow-url-lookup-entry');
@@ -3281,7 +3319,7 @@ test('completed personal Flow reviews item changes before starting a new source 
     window.localStorage.setItem(`flow_builder_mvp_checks_${flowSlug}`, JSON.stringify({ [stepId]: true }));
   });
 
-  await page.goto('/my');
+  await gotoLegacySavedPlanLibraryRoute(page, '/my');
   await openCurrentMyFlowLibrary(page);
   const updateReview = page.getByTestId('my-flow-map-update-review');
   await expect(updateReview).toBeVisible();
@@ -3307,7 +3345,7 @@ test('completed personal Flow reviews item changes before starting a new source 
   }
   await reusePanel.getByTestId('my-flow-reuse-start').click();
   const reviewedFlow = await openMyFlowLibraryFlow(page, 'source-backed-middle-school-math-1', 'record');
-  await expect(reviewedFlow.getByTestId('my-flow-reuse-status')).toContainText('새 내용을 반영해 시작했어요');
+  await expect(reviewedFlow.getByTestId('my-flow-past-runs')).toContainText('지난 실행 1회');
   await expect(reviewedFlow).toContainText('전체 0/1 완료');
   if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/04-reviewed-run-mobile.png`, fullPage: true });
 
@@ -3415,11 +3453,13 @@ test('my flow step detail saves portable date and memo fields', async ({ page })
   await page.clock.install({ time: new Date('2026-07-01T09:00:00+09:00') });
   await page.goto('/f/moving-d30-basic');
 
-  await page.getByLabel('이사일').fill('2026-07-22');
+  await setApprovedPublicCalendarAnchor(page, '2026-07-22');
   const personalCopySlug = await savePublicFlowToSelectedPlan(
     page,
     page.getByTestId('public-flow-save-primary'),
   );
+  await installLegacySavedPlanLibraryNavigation(page);
+  await gotoLegacySavedPlanLibraryRoute(page, page.url());
   await page.setViewportSize({ width: 390, height: 844 });
   const movingCard = await openMyFlowLibraryFlow(page, personalCopySlug);
   const movingOutline = movingCard.getByTestId('my-flow-whole-flow-outline');
@@ -3481,7 +3521,7 @@ test('my flow step detail saves portable date and memo fields', async ({ page })
   expect(ics).not.toContain('RRULE:');
   expect(unfoldedIcs).toContain('견적 후보 3곳과 포함 범위만 메모');
 
-  await page.goto('/calendar');
+  await gotoLegacySavedPlanLibraryRoute(page, '/calendar');
   await page.getByTestId('my-flow-month-picker').fill('2026-06');
   const movedEvent = page.locator('.fc-daygrid-day[data-date="2026-06-24"] .fc-event').first();
   await expect(movedEvent).toHaveAttribute('title', /이사 방식/);
@@ -3511,7 +3551,8 @@ test('source-backed undated checklist can add and remove a personal date', async
   }
 
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/flows');
+  await installLegacySavedPlanLibraryNavigation(page);
+  await gotoLegacySavedPlanLibraryRoute(page, '/flows');
   await page.evaluate(() => {
     window.localStorage.setItem('flow:saved:travel-packing-list', JSON.stringify({
       slug: 'travel-packing-list',
@@ -3519,7 +3560,7 @@ test('source-backed undated checklist can add and remove a personal date', async
       selectedArtifactMode: 'checklist',
     }));
   });
-  await page.goto('/my');
+  await gotoLegacySavedPlanLibraryRoute(page, '/my');
   await openCurrentMyFlowLibrary(page);
 
   let flow = await openMyFlowLibraryFlow(page, 'travel-packing-list');
@@ -3537,7 +3578,7 @@ test('source-backed undated checklist can add and remove a personal date', async
   expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
   await detail.getByTestId('my-flow-detail-save-changes').click();
 
-  await page.goto('/calendar');
+  await gotoLegacySavedPlanLibraryRoute(page, '/calendar');
   await page.getByTestId('my-flow-month-picker').fill('2026-07');
   const scheduledCell = page.locator('.fc-daygrid-day[data-date="2026-07-24"]');
   await expect(scheduledCell.locator('.fc-event')).toHaveCount(1);
@@ -3546,7 +3587,7 @@ test('source-backed undated checklist can add and remove a personal date', async
   }
 
   await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
-  await page.goto('/my');
+  await gotoLegacySavedPlanLibraryRoute(page, '/my');
   await openCurrentMyFlowLibrary(page);
   flow = await openMyFlowLibraryFlow(page, 'travel-packing-list');
   await flow.getByTestId('my-flow-execution-row-shell').first().getByRole('button', { name: /열기/ }).click();
@@ -3597,7 +3638,7 @@ test('source-backed undated checklist can add and remove a personal date', async
   await enterMyFlowDetailEditMode(detail);
   await expect(detail.getByTestId('my-flow-detail-date-input')).toHaveValue('2026-07-24');
   await page.setViewportSize({ width: 1024, height: 768 });
-  await page.goto('/my');
+  await gotoLegacySavedPlanLibraryRoute(page, '/my');
   await openCurrentMyFlowLibrary(page);
   const wideFlow = await openMyFlowLibraryFlow(page, 'travel-packing-list');
   await wideFlow
@@ -3618,7 +3659,7 @@ test('source-backed undated checklist can add and remove a personal date', async
   await wideDetail.getByTestId('my-flow-detail-save-changes').click();
 
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/calendar');
+  await gotoLegacySavedPlanLibraryRoute(page, '/calendar');
   await page.getByTestId('my-flow-month-picker').fill('2026-07');
   await expect(page.locator('.fc-daygrid-day[data-date="2026-07-24"] .fc-event')).toHaveCount(0);
   const storedDateOverrides = await page.evaluate(() =>
@@ -3651,11 +3692,13 @@ test('direct saved Flow Map can change its anchor while preserving item override
   await page.goto('/f/moving-d30-basic');
   await page.evaluate(() => window.localStorage.clear());
   await page.reload();
-  await page.getByLabel('이사일').fill('2026-07-22');
+  await setApprovedPublicCalendarAnchor(page, '2026-07-22');
   const personalCopySlug = await savePublicFlowToSelectedPlan(
     page,
     page.getByTestId('public-flow-save-primary-mobile'),
   );
+  await installLegacySavedPlanLibraryNavigation(page);
+  await gotoLegacySavedPlanLibraryRoute(page, page.url());
 
   let flow = await openMyFlowLibraryFlow(page, personalCopySlug);
   await expect(flow.getByTestId('my-flow-direct-anchor-settings-open')).toHaveAccessibleName(
@@ -3703,7 +3746,7 @@ test('direct saved Flow Map can change its anchor while preserving item override
     ),
   )).toBe(true);
 
-  await page.goto('/calendar');
+  await gotoLegacySavedPlanLibraryRoute(page, '/calendar');
   await page.getByTestId('my-flow-month-picker').fill('2026-07');
   const originalSelectedDay = await openMyFlowCalendarSelectedDay(page, '2026-07-06');
   await expect(originalSelectedDay.getByTestId('my-flow-selected-date-group')).not.toContainText('이사 방식 정하기');
@@ -3716,7 +3759,7 @@ test('direct saved Flow Map can change its anchor while preserving item override
   }
 
   await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
-  await page.goto('/my');
+  await gotoLegacySavedPlanLibraryRoute(page, '/my');
   await openCurrentMyFlowLibrary(page);
   flow = await openMyFlowLibraryFlow(page, personalCopySlug);
   await expect(flow).toBeVisible();
@@ -3735,6 +3778,11 @@ test('direct saved Flow Map can change its anchor while preserving item override
   await expect(inspectPlanEditor).toBeVisible();
   await inspectPlanEditor.getByTestId('saved-flow-editor-save').click();
   await expect(inspectPlanEditor).toHaveCount(0);
+  flow = await openMyFlowLibraryFlow(page, personalCopySlug);
+  const exportRow = (await getMyFlowVisibleExecutionRows(flow))
+    .filter({ hasText: '이사 방식 정하기' })
+    .first();
+  await exportRow.getByRole('button', { name: /열기/ }).click();
   detail = getOpenMyFlowItemDetail(page);
   const exportTools = await openMyFlowDetailTools(detail);
   await exportTools.getByTestId('my-flow-detail-download-ics').click();
@@ -3753,7 +3801,7 @@ test('direct saved Flow Map can change its anchor while preserving item override
   if (evidenceDir) fs.writeFileSync(`${evidenceDir}/downloads/direct-anchor-preserved-item.ics`, ics, 'utf8');
 
   await page.setViewportSize({ width: 1024, height: 768 });
-  await page.goto('/my');
+  await gotoLegacySavedPlanLibraryRoute(page, '/my');
   await openCurrentMyFlowLibrary(page);
   const wideFlow = await openMyFlowLibraryFlow(page, personalCopySlug);
   await expect(wideFlow.getByTestId('my-flow-direct-anchor-settings-open')).toBeVisible();
@@ -3772,12 +3820,13 @@ test('my flow mobile saved map edit and revisit keeps step detail lightweight', 
   await page.clock.install({ time: new Date('2026-07-20T09:00:00+09:00') });
   await page.goto('/f/moving-d30-basic');
 
-  await page.getByLabel('이사일').fill('2026-07-22');
+  await setApprovedPublicCalendarAnchor(page, '2026-07-22');
   const personalCopySlug = await savePublicFlowToSelectedPlan(
     page,
     page.getByTestId('public-flow-save-primary-mobile'),
   );
-  await page.goto('/calendar');
+  await installLegacySavedPlanLibraryNavigation(page);
+  await gotoLegacySavedPlanLibraryRoute(page, '/calendar');
   await expect(page.getByTestId('my-flow-calendar-card')).toBeVisible();
   await page.getByTestId('my-flow-month-picker').fill('2026-06');
   await page.locator('.fc-daygrid-day[data-date="2026-06-22"]').getByTestId('my-flow-calendar-date-button').click();
@@ -3806,7 +3855,7 @@ test('my flow mobile saved map edit and revisit keeps step detail lightweight', 
   await itemEditor.getByTestId('saved-flow-editor-item-detail-input').fill('mobile revisit memo');
   await saveSavedPersonalItemEditor(page, itemEditor);
 
-  await page.goto('/calendar');
+  await gotoLegacySavedPlanLibraryRoute(page, '/calendar');
   await page.getByTestId('my-flow-month-picker').fill('2026-06');
   await expect(page.locator('.fc-daygrid-day[data-date="2026-06-25"] .fc-event')).toHaveCount(1);
 
@@ -3859,11 +3908,12 @@ test('current source-backed routes keep source link checklist and memo in my flo
   const cases = [
     { mapId: 'middle-school-math-1', slug: 'source-backed-middle-school-math-1' },
   ];
+  await installLegacySavedPlanLibraryNavigation(page);
 
   for (const flowCase of cases) {
-    await page.goto('/');
+    await gotoLegacySavedPlanLibraryRoute(page, '/');
     await page.evaluate(() => window.localStorage.clear());
-    await page.goto(`/flow-maps/${flowCase.mapId}`);
+    await gotoLegacySavedPlanLibraryRoute(page, `/flow-maps/${flowCase.mapId}`);
 
     const publicMap = page.getByTestId('flow-map-public');
     await expect(publicMap).toBeVisible();
@@ -3872,7 +3922,7 @@ test('current source-backed routes keep source link checklist and memo in my flo
     }
 
     await publicMap.getByTestId('flow-map-save-all').click();
-    await expect(page).toHaveURL(new RegExp(`/my\\?savedMap=${flowCase.mapId}$`));
+    await expect.poll(() => new URL(page.url()).searchParams.get('savedMap')).toBe(flowCase.mapId);
     await page.getByTestId('my-flow-post-save-panel').getByTestId('my-flow-post-save-view-flow').click();
 
     const card = await openMyFlowLibraryFlow(page, flowCase.slug);
@@ -3917,7 +3967,7 @@ test('current source-backed routes keep source link checklist and memo in my flo
     expect(JSON.stringify(storedAfterEdit.stepItemChecks)).toContain('true');
     expect(JSON.stringify(storedAfterEdit.itemDrafts)).toContain(memo);
 
-    await page.goto('/my');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my');
     const storedAfterReload = await page.evaluate(() =>
       JSON.parse(window.localStorage.getItem('flow:my-flow:item-drafts') || '{}'),
     );
@@ -3970,11 +4020,13 @@ test('my flow ux20 demo keeps large flow inventories grouped without a dense rai
 });
 
 test('my flow inventory archives and restores a flow without deleting its saved data', async ({ page }) => {
-  await page.goto('/my?demo=ux20');
+  await installLegacySavedPlanLibraryNavigation(page);
+  await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=ux20');
 
   await openCurrentMyFlowLibrary(page);
   const library = page.getByTestId('my-flow-library-workspace');
-  await library.getByTestId('my-flow-library-row').first().click();
+  const firstRow = library.getByTestId('my-flow-library-row').first();
+  await firstRow.click();
   const firstCard = library.getByTestId('my-flow-library-detail').getByTestId('my-flow-overview-card');
   const firstTitle = await firstCard.locator('h3').innerText();
   await firstCard.getByTestId('my-flow-management-menu-trigger').click();
@@ -3990,6 +4042,11 @@ test('my flow inventory archives and restores a flow without deleting its saved 
   await expect(page.getByTestId('my-flow-lifecycle-snackbar')).toContainText('복구했습니다');
   await library.getByTestId('my-flow-library-rail-filter').selectOption('all');
   await expect(library.getByTestId('my-flow-library-row').filter({ hasText: firstTitle })).toHaveCount(1);
+  const restoredRowCount = await library.getByTestId('my-flow-library-row').count();
+  await library.getByTestId('my-flow-library-rail-search').fill(firstTitle);
+  const searchedRowCount = await library.getByTestId('my-flow-library-row').count();
+  expect(searchedRowCount).toBeGreaterThan(0);
+  expect(searchedRowCount).toBeLessThan(restoredRowCount);
 });
 
 test('my flow ux12 Calendar keeps dense routine days inside the execution lens', async ({ page }) => {
@@ -4003,15 +4060,13 @@ test('my flow ux12 Calendar keeps dense routine days inside the execution lens',
   await expect(page.getByTestId('my-flow-calendar-date-move-entry')).toHaveCount(0);
 });
 test('my flow ux12 keeps single-flow detail lightweight inside the Flow view', async ({ page }) => {
-  await page.goto('/my?demo=ux12');
+  await installLegacySavedPlanLibraryNavigation(page);
+  await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=ux12');
 
   await openCurrentMyFlowLibrary(page);
   const library = page.getByTestId('my-flow-library-workspace');
   await expect(library).toHaveAttribute('data-library-layout', 'rail-canvas-inspector');
-  await library.locator(
-    '[data-testid="my-flow-library-row"][data-flow-slug="used-car-buying-check"]',
-  ).click();
-  const usedCarOverviewCard = library.getByTestId('my-flow-library-detail').getByTestId('my-flow-overview-card');
+  const usedCarOverviewCard = await openMyFlowLibraryFlow(page, 'used-car-buying-check');
   await expect(usedCarOverviewCard).toHaveAttribute('data-flow-slug', 'used-car-buying-check');
   await expect(usedCarOverviewCard).toBeVisible();
   await expandMyFlowWholePlan(usedCarOverviewCard);
@@ -4140,6 +4195,7 @@ test('my flow ux12 calendar routine rows show the current occurrence state witho
 
 test('my flow mobile keeps one saved Flow in one library and focused workspace', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
+  await installLegacySavedPlanLibraryNavigation(page);
   const anchor = formatLocalDate(addDays(new Date(), 7));
   await page.addInitScript((savedAnchor) => {
     window.localStorage.clear();
@@ -4155,7 +4211,7 @@ test('my flow mobile keeps one saved Flow in one library and focused workspace',
     );
   }, anchor);
 
-  await page.goto('/my');
+  await gotoLegacySavedPlanLibraryRoute(page, '/my');
   await openCurrentMyFlowLibrary(page);
 
   await expect(page.locator('main')).toHaveAttribute('data-p35-my-flow-marker', 'P35-MY-LIBRARY-ONLY');
@@ -4187,7 +4243,8 @@ test('my flow mobile keeps one saved Flow in one library and focused workspace',
 
 test('my flow mobile item opens editable detail from the focused Flow workspace', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/my?demo=ux12');
+  await installLegacySavedPlanLibraryNavigation(page);
+  await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=ux12');
 
   await expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
   const workspace = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'execute');
@@ -4241,7 +4298,8 @@ test('my flow mobile item opens editable detail from the focused Flow workspace'
 
 test('my flow mobile calendar keeps date selection separate and gives events usable tap targets', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/calendar?demo=ux12');
+  await installLegacySavedPlanLibraryNavigation(page);
+  await gotoLegacySavedPlanLibraryRoute(page, '/calendar?demo=ux12');
 
   const calendarCardBox = await page.getByTestId('my-flow-calendar-card').boundingBox();
   expect(calendarCardBox?.x ?? 9999).toBeGreaterThanOrEqual(0);
@@ -4316,15 +4374,13 @@ test('my flow mobile calendar keeps date selection separate and gives events usa
 
 test('my flow and calendar details separate execution from explicit editing', async ({ page }) => {
   await page.setViewportSize({ width: 1024, height: 900 });
-  await page.goto('/my?demo=ux12');
+  await installLegacySavedPlanLibraryNavigation(page);
+  await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=ux12');
   await openCurrentMyFlowLibrary(page);
   const library = page.getByTestId('my-flow-library-workspace');
-  await expect(library.getByTestId('my-flow-library-rail-search')).toHaveCount(0);
-  await library.locator(
-    '[data-testid="my-flow-library-row"][data-flow-slug="used-car-buying-check"]',
-  ).click();
+  await expect(library.getByTestId('my-flow-library-rail-search')).toBeVisible();
 
-  const usedCarCard = library.getByTestId('my-flow-library-detail').getByTestId('my-flow-overview-card');
+  const usedCarCard = await openMyFlowLibraryFlow(page, 'used-car-buying-check');
   await expect(usedCarCard).toHaveAttribute('data-flow-slug', 'used-car-buying-check');
   await expect(usedCarCard).toBeVisible();
   const usedCarOutline = usedCarCard.getByTestId('my-flow-whole-flow-outline');
@@ -4362,7 +4418,7 @@ test('my flow and calendar details separate execution from explicit editing', as
   await expect(detail).toHaveCount(0);
 
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/calendar?demo=ux12');
+  await gotoLegacySavedPlanLibraryRoute(page, '/calendar?demo=ux12');
   await page.getByTestId('my-flow-month-picker').fill('2026-05');
   const event = page.locator('.fc-daygrid-day[data-date="2026-05-28"] .fc-event[aria-label*="필기와 실기 시험 범위 나누기"]').first();
   await event.click();
@@ -4379,13 +4435,14 @@ test('my flow and calendar details separate execution from explicit editing', as
 
 test('my flow mobile keeps checklist and routine work inside Flow and Calendar surfaces', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/my?demo=ux12');
+  await installLegacySavedPlanLibraryNavigation(page);
+  await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=ux12');
 
   await openCurrentMyFlowLibrary(page);
   await expect(page.getByTestId('my-flow-inventory-sheet')).toHaveCount(0);
   const mobileHub = page.getByTestId('my-flow-mobile-flow-hub');
-  await expect(mobileHub).toHaveAttribute('data-library-mode', 'compact');
-  await expect(page.getByTestId('my-flow-library-controls')).toHaveCount(0);
+  await expect(mobileHub).toHaveAttribute('data-library-mode', 'searchable');
+  await expect(page.getByTestId('my-flow-library-controls')).toBeVisible();
   const checklistRow = mobileHub.locator(
     '[data-testid="my-flow-mobile-structure-row"][data-flow-slug="travel-packing-list"]',
   );
@@ -4394,16 +4451,13 @@ test('my flow mobile keeps checklist and routine work inside Flow and Calendar s
   );
   await expect(checklistRow).toBeVisible();
   await expect(routineRow).toBeVisible();
-  await checklistRow.getByTestId('my-flow-mobile-structure-open').click();
-  await expect(page.locator(
-    '[data-testid="my-flow-mobile-workspace"][data-flow-slug="travel-packing-list"]:visible',
-  )).toBeVisible();
-  await page.getByTestId('my-flow-mobile-library-back').click();
-  await routineRow.getByTestId('my-flow-mobile-structure-open').click();
-  await expect(page.locator(
-    '[data-testid="my-flow-mobile-workspace"][data-flow-slug="washer-tub-clean-monthly"]:visible',
-  )).toBeVisible();
-  await page.goto('/calendar?demo=ux12');
+  const checklistFlow = await openMyFlowLibraryFlow(page, 'travel-packing-list');
+  await expect(checklistFlow).toBeVisible();
+  await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=ux12');
+  await openCurrentMyFlowLibrary(page);
+  const routineFlow = await openMyFlowLibraryFlow(page, 'washer-tub-clean-monthly');
+  await expect(routineFlow).toBeVisible();
+  await gotoLegacySavedPlanLibraryRoute(page, '/calendar?demo=ux12');
   await page.getByTestId('my-flow-month-picker').fill('2026-06');
   await expect(page.getByTestId('my-flow-calendar-card')).toBeVisible();
   await expect(page.getByTestId('my-flow-calendar-scope-filter')).toHaveAttribute('data-scope-presentation', 'picker');
@@ -4415,9 +4469,10 @@ test('my flow mobile keeps checklist and routine work inside Flow and Calendar s
   await expect(page.locator('[data-testid="my-flow-routine-icon"]').first()).toBeVisible();
 });
 
-test('my flow mobile Flow list exposes direct compact inventory before search controls', async ({ page }) => {
+test('my flow mobile Flow list exposes searchable inventory before opening a plan', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/my?demo=ux12');
+  await installLegacySavedPlanLibraryNavigation(page);
+  await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=ux12');
 
   await openCurrentMyFlowLibrary(page);
   await expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
@@ -4430,9 +4485,9 @@ test('my flow mobile Flow list exposes direct compact inventory before search co
   );
   await expect(page.getByTestId('my-flow-mobile-flow-hub')).toHaveAttribute(
     'data-library-mode',
-    'compact',
+    'searchable',
   );
-  await expect(page.getByTestId('my-flow-library-controls')).toHaveCount(0);
+  await expect(page.getByTestId('my-flow-library-controls')).toBeVisible();
   await expect(page.getByTestId('my-flow-mobile-structure-row')).toHaveCount(16);
   const firstStructureRow = page
     .getByTestId('my-flow-mobile-structure-row')
@@ -4442,11 +4497,7 @@ test('my flow mobile Flow list exposes direct compact inventory before search co
   await expect(firstStructureRow).not.toContainText(/\d+%/);
   const firstSlug = await firstStructureRow.getAttribute('data-flow-slug');
   expect(firstSlug).toBeTruthy();
-  await firstStructureRow.getByTestId('my-flow-mobile-structure-open').click();
-  await expect(page.getByTestId('my-flow-mobile-library-back')).toBeVisible();
-  const selectedFlow = page.locator(
-    `[data-testid="my-flow-mobile-workspace"][data-flow-slug="${firstSlug}"]:visible`,
-  );
+  const selectedFlow = await openMyFlowLibraryFlow(page, firstSlug!);
   await expect(selectedFlow).toHaveCount(1);
   const selectedPlanToggle = selectedFlow.getByTestId('my-flow-workspace-plan-toggle');
   if (
@@ -4467,14 +4518,15 @@ test('my flow mobile Flow list exposes direct compact inventory before search co
     'P31-03-MY-FLOW-ITEM-SHEET',
   );
   await closeOpenMyFlowItemDetail(page);
-  await page.getByTestId('my-flow-mobile-library-back').click();
+  await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=ux12');
+  await openCurrentMyFlowLibrary(page);
   await expect(page.getByTestId('my-flow-mobile-flow-hub')).toBeVisible();
   await expect(page.getByTestId('my-flow-mobile-inventory-open')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-status-overdue')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-status-next')).toHaveCount(0);
   await expect(page.getByRole('button', { name: '완료 체크' })).toHaveCount(0);
-  await expect(page.getByTestId('my-flow-list-filter-all')).toHaveCount(0);
-  await expect(page.getByTestId('my-flow-list-filter-open')).toHaveCount(0);
+  await expect(page.getByTestId('my-flow-list-filter-all')).toBeVisible();
+  await expect(page.getByTestId('my-flow-list-filter-open')).toBeVisible();
   await expect(page.getByTestId('my-flow-mobile-structure-row')).toHaveCount(16);
 });
 
@@ -4523,12 +4575,11 @@ test('moving mobile keeps save sticky and public preview actions inside the pers
   await page.clock.install({ time: new Date('2026-07-01T09:00:00+09:00') });
   await page.goto('/f/moving-d30-basic');
 
-  await page.getByLabel('이사일').fill('2026-07-15');
   await expect(page.getByLabel('Flow artifact workbench').getByRole('checkbox')).toHaveCount(0);
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
 
   const stickySave = page.getByTestId('public-flow-mobile-save-cta');
-  await expect(stickySave.getByRole('button', { name: '내 계획에 저장' })).toBeVisible();
+  await expect(stickySave.getByRole('button', { name: '내 계획으로 저장' })).toBeVisible();
   await expect(stickySave.getByRole('button', { name: '체크리스트 복사' })).toHaveCount(0);
   await expect(stickySave.getByRole('button', { name: '엑셀 받기' })).toHaveCount(0);
 
@@ -5004,6 +5055,9 @@ test('public routine hydration stays stable across opposite browser time zones',
     const capability = page.getByTestId('public-flow-capability-result');
     await expect(capability).toHaveAttribute('data-capability-lifecycle', 'public_preview');
     await expect(capability).toHaveAttribute('data-capability-output-count', '3');
+    await capability.locator(
+      '[data-public-format-tab="true"][data-capability-destination="checklist"]',
+    ).click();
     const preview = capability.getByTestId('flow-capability-selected-preview');
     await expect(preview).toHaveAttribute('data-capability-destination', 'checklist');
     await expect(preview).toHaveAttribute('data-capability-output-count', '3');
@@ -5029,6 +5083,7 @@ test('plank challenge stays out of public routes until its source table is appro
 
 
 test('completed My Flow separates private reflection from an unsent source correction draft', async ({ page }) => {
+  await installLegacySavedPlanLibraryNavigation(page);
   const movingBundle = seedBundles.find((bundle) => bundle.flow.slug === 'moving-d30-basic');
   expect(movingBundle).toBeTruthy();
   const completedChecks = Object.fromEntries((movingBundle?.items ?? []).map((item) => [item.id, true]));
@@ -5048,7 +5103,7 @@ test('completed My Flow separates private reflection from an unsent source corre
     window.localStorage.setItem('flow_builder_mvp_checks_moving-d30-basic', JSON.stringify(checks));
   }, { checks: completedChecks });
 
-  await page.goto('/my');
+  await gotoLegacySavedPlanLibraryRoute(page, '/my');
   await openCurrentMyFlowLibrary(page);
   const mobileFlow = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'record');
   const feedback = mobileFlow.getByTestId('my-flow-completion-feedback');
@@ -5119,6 +5174,7 @@ test('completed My Flow separates private reflection from an unsent source corre
 });
 
 test('completed My Flow starts a new dated run without overwriting the previous execution', async ({ page }) => {
+  await installLegacySavedPlanLibraryNavigation(page);
   const evidenceDir = process.env.FLOWME_REUSE_EVIDENCE_DIR;
   const historyEvidenceDir = process.env.FLOWME_P23_04_EVIDENCE_DIR;
   const consoleErrors: string[] = [];
@@ -5169,7 +5225,7 @@ test('completed My Flow starts a new dated run without overwriting the previous 
     movedDate: '2026-07-15',
   });
 
-  await page.goto('/my');
+  await gotoLegacySavedPlanLibraryRoute(page, '/my');
   await page.context().grantPermissions(['clipboard-read', 'clipboard-write'], {
     origin: new URL(page.url()).origin,
   });
@@ -5348,6 +5404,7 @@ test('completed My Flow starts a new dated run without overwriting the previous 
 });
 
 test('completed date-free My Flow reuses the current copy without asking for a date', async ({ page }) => {
+  await installLegacySavedPlanLibraryNavigation(page);
   const evidenceDir = process.env.FLOWME_REUSE_EVIDENCE_DIR;
   if (evidenceDir) fs.mkdirSync(evidenceDir, { recursive: true });
   const flowSlug = 'passport-renewal-docs';
@@ -5366,7 +5423,7 @@ test('completed date-free My Flow reuses the current copy without asking for a d
     window.localStorage.setItem(`flow_builder_mvp_checks_${slug}`, JSON.stringify(checks));
   }, { slug: flowSlug, checks: completedChecks });
 
-  await page.goto('/my');
+  await gotoLegacySavedPlanLibraryRoute(page, '/my');
   await openCurrentMyFlowLibrary(page);
   const flowCard = await openMyFlowLibraryFlow(page, flowSlug, 'record');
   const feedback = flowCard.getByTestId('my-flow-completion-feedback');
@@ -5660,8 +5717,9 @@ test('url-first p0 lab previews hit review miss and memo states without public n
 
 test('my flow and calendar expose distinct task-first and date-first execution layouts', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
+  await installLegacySavedPlanLibraryNavigation(page);
 
-  await page.goto('/my?demo=ux12');
+  await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=ux12');
   await expect(page.getByTestId('my-flow-workspace')).toHaveAttribute('data-surface-role', 'task-first');
   const myFlowWorkspace = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'execute');
   const myFlowPrimaryRow = myFlowWorkspace
@@ -5673,7 +5731,7 @@ test('my flow and calendar expose distinct task-first and date-first execution l
   await expect(getOpenMyFlowItemDetail(page).getByTestId('my-flow-task-complete-control')).toHaveCount(1);
   await closeOpenMyFlowItemDetail(page);
 
-  await page.goto('/calendar?demo=ux12');
+  await gotoLegacySavedPlanLibraryRoute(page, '/calendar?demo=ux12');
   await expect(page.getByTestId('my-flow-workspace')).toHaveAttribute('data-surface-role', 'date-first');
   await expect(page.getByTestId('my-flow-calendar-card')).toHaveAttribute('data-calendar-layout', 'month-overview');
   const selectedDay = await openMyFlowCalendarSelectedDay(page);

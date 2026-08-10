@@ -3,6 +3,8 @@ import path from 'node:path';
 
 import { expect, test, type Page } from '@playwright/test';
 
+import { gotoLegacySavedPlanLibraryRoute } from './helpers/my-flow-library';
+
 const evidenceRoot = process.env.FLOWME_P35_R1_EVIDENCE_DIR;
 
 function collectBrowserErrors(page: Page) {
@@ -76,7 +78,7 @@ test.describe('P35-R1 public capability-result parity', () => {
   test('moving Calendar preview keeps one 24-item manifest before save', async ({ page }) => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
     await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
 
     const result = await openCapabilityResult(page);
@@ -135,7 +137,7 @@ test.describe('P35-R1 public capability-result parity', () => {
     ] as const;
 
     for (const candidate of cases) {
-      await page.goto(`/f/${candidate.slug}`);
+      await gotoLegacySavedPlanLibraryRoute(page, `/f/${candidate.slug}`);
       const result = await openCapabilityResult(page);
       await expect(result).toHaveAttribute('data-capability-primary-destination', candidate.destination);
       const primary = result.locator(
@@ -177,7 +179,7 @@ test.describe('P35-R1 public capability-result parity', () => {
   test('routine separates one source item from provisional and committed occurrences', async ({ page }) => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 1024, height: 768 });
-    await page.goto('/f/curated-allblanc-morning-workout');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-allblanc-morning-workout');
 
     let result = await openCapabilityResult(page);
     await expect(result).toHaveAttribute('data-capability-primary-destination', 'checklist');

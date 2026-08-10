@@ -72,10 +72,12 @@ export function buildMyFlowSingleCompletionOwnerPlan(options: {
 export function shouldOfferMyFlowCompletionUndo(options: {
   completed: boolean;
   calendarSurface: boolean;
+  approvedCalendarExecution?: boolean;
   recurringOccurrence: boolean;
   remainsVisibleInFocusedPlan: boolean;
 }): boolean {
-  if (!options.completed || options.calendarSurface) return false;
+  if (!options.completed) return false;
+  if (options.calendarSurface) return options.approvedCalendarExecution === true;
   if (options.recurringOccurrence) return true;
   return !options.remainsVisibleInFocusedPlan;
 }

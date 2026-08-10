@@ -3,6 +3,11 @@ import path from 'node:path';
 
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
+import {
+  gotoLegacySavedPlanLibraryRoute,
+  installLegacySavedPlanLibraryNavigation,
+} from './helpers/my-flow-library';
+
 const evidenceRoot = process.env.FLOWME_P35_02_EVIDENCE_DIR;
 
 type Scenario = {
@@ -220,7 +225,7 @@ test.describe('P35-02 public result-first frame', () => {
       const errors = collectBrowserErrors(page);
       await page.setViewportSize(scenario.viewport);
       await page.addInitScript(() => window.localStorage.clear());
-      await page.goto(scenario.route);
+      await gotoLegacySavedPlanLibraryRoute(page, scenario.route);
       await expectResultFirstFrame(page, scenario);
       expect(errors).toEqual([]);
       await capture(page, scenario.screenshot);
@@ -230,7 +235,8 @@ test.describe('P35-02 public result-first frame', () => {
   test('save-before controls hand off directly to the selected saved detail', async ({ page }) => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/f/moving-d30-basic');
+    await installLegacySavedPlanLibraryNavigation(page);
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
     await page.evaluate(() => {
       window.localStorage.clear();
       window.sessionStorage.clear();
@@ -277,7 +283,7 @@ test.describe('P35-02 public result-first frame', () => {
   test('review-held source content stays honest and cannot enter the save frame', async ({ page }) => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/flow-maps/curated-funmom-learning-park');
+    await gotoLegacySavedPlanLibraryRoute(page, '/flow-maps/curated-funmom-learning-park');
 
     await expect(page.getByTestId('flow-map-review-hold')).toBeVisible();
     await expect(page.getByTestId('public-flow-hero')).toHaveCount(0);

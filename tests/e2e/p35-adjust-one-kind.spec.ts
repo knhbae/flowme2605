@@ -3,6 +3,8 @@ import path from 'node:path';
 
 import { expect, test, type Page } from '@playwright/test';
 
+import { gotoLegacySavedPlanLibraryRoute } from './helpers/my-flow-library';
+
 const evidenceRoot = process.env.FLOWME_P35_03_EVIDENCE_DIR;
 
 function collectBrowserErrors(page: Page) {
@@ -47,7 +49,7 @@ test.describe('P35-03 one adjustment kind at a time', () => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
     await page.addInitScript(() => window.localStorage.clear());
-    await page.goto('/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
 
     const { panel } = await openAdjustment(page, true);
     await expect(panel).toHaveAttribute('data-adjustment-kind', 'name');
@@ -94,7 +96,7 @@ test.describe('P35-03 one adjustment kind at a time', () => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
     await page.addInitScript(() => window.localStorage.clear());
-    await page.goto('/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
     await page.getByTestId('public-flow-anchor-input').fill('2030-09-01');
     const oldSummary = await page.getByTestId('flow-artifact-result-summary').textContent();
 
@@ -137,7 +139,7 @@ test.describe('P35-03 one adjustment kind at a time', () => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
     await page.addInitScript(() => window.localStorage.clear());
-    await page.goto('/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
 
     const publicEditEntry = page.getByTestId('public-flow-adjust-entry-mobile');
     await publicEditEntry.click();
@@ -182,7 +184,7 @@ test.describe('P35-03 one adjustment kind at a time', () => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 1024, height: 768 });
     await page.addInitScript(() => window.localStorage.clear());
-    await page.goto('/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
     await page.getByTestId('public-flow-anchor-input').fill('2030-09-01');
 
     const { panel } = await openAdjustment(page, false);
@@ -232,7 +234,7 @@ test.describe('P35-03 one adjustment kind at a time', () => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.addInitScript(() => window.localStorage.clear());
-    await page.goto('/f/curated-allblanc-morning-workout');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-allblanc-morning-workout');
     await page.getByTestId('public-flow-anchor-input').fill('2030-09-02');
 
     const { panel } = await openAdjustment(page, false);

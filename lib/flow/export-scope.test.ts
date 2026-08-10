@@ -183,3 +183,59 @@ test('failed copy receipt never claims rows were exported', () => {
   assert.equal(receipt.outputCount, 0);
   assert.match(receipt.message, /만들지 못했어요/);
 });
+
+test('approved saved transfer profile changes only artifact filenames and keeps scope membership', () => {
+  const legacy = buildFlowExportScopePlan({
+    scope: 'flow',
+    items,
+    flowTitle: '사본 1 · 이사 D-30 준비',
+  });
+  const approved = buildFlowExportScopePlan({
+    scope: 'flow',
+    items,
+    flowTitle: '사본 1 · 이사 D-30 준비',
+    artifactProfile: 'approved_saved_transfer',
+  });
+
+  assert.deepEqual(approved.items, legacy.items);
+  assert.deepEqual(approved.countByDestination, legacy.countByDestination);
+  assert.deepEqual(approved.filenameByDestination, {
+    memo: '사본-1-이사-D-30-준비.txt',
+    checklist: '사본-1-이사-D-30-준비-todo.ics',
+    calendar: '사본-1-이사-D-30-준비-calendar.ics',
+    sheet: '사본-1-이사-D-30-준비.xlsx',
+  });
+  assert.equal(legacy.filenameByDestination.checklist, '사본-1-이사-D-30-준비-all-checklist.txt');
+  assert.equal(legacy.filenameByDestination.sheet, '사본-1-이사-D-30-준비-all-sheet.tsv');
+});
+
+test('approved saved transfer receipt describes actual download output without changing receipt schema', () => {
+  const plan = buildFlowExportScopePlan({
+    scope: 'flow',
+    items,
+    flowTitle: '사본 1 · 이사 D-30 준비',
+    artifactProfile: 'approved_saved_transfer',
+  });
+  const receipt = buildFlowExportResultReceipt({
+    plan,
+    destination: 'sheet',
+    resultKind: 'download',
+    outputCount: 3,
+    filename: plan.filenameByDestination.sheet,
+    artifactProfile: 'approved_saved_transfer',
+  });
+
+  assert.deepEqual(Object.keys(receipt).sort(), [
+    'destination',
+    'filename',
+    'message',
+    'omittedCount',
+    'outputCount',
+    'resultKind',
+    'scope',
+    'status',
+  ]);
+  assert.equal(receipt.resultKind, 'download');
+  assert.equal(receipt.filename, '사본-1-이사-D-30-준비.xlsx');
+  assert.match(receipt.message, /Excel 행 3개를 파일로 만들었어요/u);
+});

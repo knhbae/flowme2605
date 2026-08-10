@@ -1,8 +1,17 @@
 import fs from 'node:fs';
 
 import { expect, test, type Page } from '@playwright/test';
+import {
+  gotoLegacySavedPlanLibraryRoute,
+  installLegacySavedPlanLibraryNavigation,
+  withLegacySavedPlanLibraryRoute,
+} from './helpers/my-flow-library';
 
 const evidenceDir = process.env.FLOWME_P31_EVIDENCE_DIR;
+
+test.beforeEach(async ({ page }) => {
+  await installLegacySavedPlanLibraryNavigation(page);
+});
 
 async function capture(page: Page, name: string) {
   if (!evidenceDir) return;
@@ -29,10 +38,10 @@ test.describe('P31 final evidence surfaces', () => {
     page.on('pageerror', (error) => errors.push(error.message));
     await page.setViewportSize({ width: 390, height: 844 });
 
-    await page.goto('/');
+    await gotoLegacySavedPlanLibraryRoute(page, '/');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
-    await expect(page).toHaveURL('/flows');
+    await expect(page).toHaveURL(withLegacySavedPlanLibraryRoute('/flows'));
     await expect(page.getByTestId('flow-map-catalog-section')).toBeVisible({ timeout: 15_000 });
     await expect(
       page.getByTestId('platform-mobile-tabs'),
@@ -46,13 +55,13 @@ test.describe('P31 final evidence surfaces', () => {
     await expectViewportStable(page);
     await capture(page, 'p35-entry-find-first-390.png');
 
-    await page.goto('/flows');
+    await gotoLegacySavedPlanLibraryRoute(page, '/flows');
     await expect(page.getByTestId('flow-map-catalog-section')).toBeVisible();
     await expect(page.getByTestId('flow-map-catalog-card').first()).toBeVisible();
     await expectViewportStable(page);
     await capture(page, 'p31-find-catalog-390.png');
 
-    await page.goto('/my?demo=ux12&view=flows&mode=flow');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=ux12&view=flows&mode=flow');
     const library = page.getByTestId('my-flow-mobile-flow-hub');
     await expect(library).toBeVisible();
     await capture(page, 'p31-my-flow-library-390.png');
@@ -68,7 +77,7 @@ test.describe('P31 final evidence surfaces', () => {
     await expectViewportStable(page);
     await capture(page, 'p31-my-flow-workspace-demo-390.png');
 
-    await page.goto('/calendar?demo=ux12');
+    await gotoLegacySavedPlanLibraryRoute(page, '/calendar?demo=ux12');
     await page.getByTestId('my-flow-month-picker').fill('2026-05');
     await expect(page.getByTestId('my-flow-calendar-card')).toBeVisible();
     await expectViewportStable(page);
@@ -94,9 +103,9 @@ test.describe('P31 final evidence surfaces', () => {
         }),
       );
     });
-    await page.goto('/calendar');
+    await gotoLegacySavedPlanLibraryRoute(page, '/calendar');
     await expect(page.getByTestId('my-flow-calendar-unscheduled-tray')).toHaveCount(0);
-    await page.goto('/my?view=flows&mode=flow');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows&mode=flow');
     await expect(
       page.locator(
         '[data-testid="my-flow-mobile-structure-row"][data-flow-slug="vehicle-inspection-prep"]',
@@ -116,17 +125,17 @@ test.describe('P31 final evidence surfaces', () => {
     page.on('pageerror', (error) => errors.push(error.message));
     await page.setViewportSize({ width: 1024, height: 768 });
 
-    await page.goto('/');
-    await expect(page).toHaveURL('/flows');
+    await gotoLegacySavedPlanLibraryRoute(page, '/');
+    await expect(page).toHaveURL(withLegacySavedPlanLibraryRoute('/flows'));
     await expectViewportStable(page);
     await capture(page, 'p35-entry-find-1024.png');
 
-    await page.goto('/flows');
+    await gotoLegacySavedPlanLibraryRoute(page, '/flows');
     await expect(page.getByTestId('flow-map-catalog-section')).toBeVisible();
     await expectViewportStable(page);
     await capture(page, 'p31-find-1024.png');
 
-    await page.goto('/my?demo=ux20&view=flows&mode=flow');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=ux20&view=flows&mode=flow');
     await expect(page.getByTestId('my-flow-library-workspace')).toHaveAttribute(
       'data-library-layout',
       'rail-canvas-inspector',
@@ -138,7 +147,7 @@ test.describe('P31 final evidence surfaces', () => {
     await expectViewportStable(page);
     await capture(page, 'p31-my-flow-1024.png');
 
-    await page.goto('/calendar?demo=ux12');
+    await gotoLegacySavedPlanLibraryRoute(page, '/calendar?demo=ux12');
     await page.getByTestId('my-flow-month-picker').fill('2026-05');
     await expect(page.getByTestId('my-flow-calendar-card')).toBeVisible();
     await expectViewportStable(page);

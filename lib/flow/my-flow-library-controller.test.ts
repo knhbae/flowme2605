@@ -13,6 +13,7 @@ import {
 const current: MyFlowLibraryControllerState = {
   query: '이사',
   filter: 'open',
+  sort: 'next',
   selectedFlowSlug: 'moving',
   itemTarget: { flowSlug: 'moving', itemKey: 'moving::pack' },
 };
@@ -25,6 +26,7 @@ function context(
     currentRoute: {
       query: '이사',
       filter: 'open',
+      sort: 'next',
       target: { flowSlug: 'moving', itemKey: 'moving::pack' },
       scrollY: 418,
       railScrollTop: 231,
@@ -82,6 +84,7 @@ test('control replacement from an internal Item defers list replacement until It
   assert.deepEqual(plan.state, {
     query: '여권',
     filter: 'done',
+    sort: 'next',
     selectedFlowSlug: 'all',
     itemTarget: null,
   });
@@ -91,7 +94,7 @@ test('control replacement from an internal Item defers list replacement until It
   assert.equal(plan.focus.kind, 'preserve_control');
   assert.equal(plan.history[0]?.kind, 'back_then_replace');
   const effect = plan.history[0];
-  assert.equal(effect?.kind === 'back_then_replace' ? effect.replace.href : '', '/my?demo=ux20&view=flows&q=%EC%97%AC%EA%B6%8C&status=done#library');
+  assert.equal(effect?.kind === 'back_then_replace' ? effect.replace.href : '', '/my?demo=ux20&view=flows&q=%EC%97%AC%EA%B6%8C&status=done&sort=next#library');
 });
 
 test('control replacement from a direct Item replaces locally without external Back', () => {
@@ -102,7 +105,55 @@ test('control replacement from a direct Item replaces locally without external B
   );
   assert.equal(plan.history[0]?.kind, 'replace');
   assert.equal(plan.history[0]?.kind === 'replace' ? plan.history[0].level : '', 'list');
-  assert.equal(plan.history[0]?.kind === 'replace' ? plan.history[0].href : '', '/my?demo=ux20&view=flows#library');
+  assert.equal(plan.history[0]?.kind === 'replace' ? plan.history[0].href : '', '/my?demo=ux20&view=flows&sort=next#library');
+});
+
+test('sort replacement uses only replace, preserves the current target, and never grows history', () => {
+  const plan = planMyFlowLibraryTransition(
+    current,
+    { kind: 'replace_sort', sort: 'name' },
+    context({
+      currentHref: '/my?view=flows&sort=saved&flow=moving&item=moving%3A%3Apack',
+      currentRoute: {
+        ...context().currentRoute,
+        sort: 'saved',
+      },
+    }),
+  );
+
+  assert.equal(plan.state.sort, 'name');
+  assert.equal(plan.state.selectedFlowSlug, 'moving');
+  assert.equal(plan.state.itemTarget?.itemKey, 'moving::pack');
+  assert.deepEqual(plan.history.map((effect) => effect.kind), ['replace']);
+  assert.equal(
+    plan.history[0]?.kind === 'replace'
+      ? new URL(plan.history[0].href, 'https://flowme.local').searchParams.get('sort')
+      : '',
+    'name',
+  );
+  assert.equal(plan.transient, 'preserve');
+  assert.equal(plan.focus.kind, 'preserve_control');
+});
+
+test('plan and Item hrefs preserve the selected sort', () => {
+  const sorted = { ...current, sort: 'saved' as const };
+  const plan = planMyFlowLibraryTransition(
+    sorted,
+    { kind: 'open_plan', flowSlug: 'passport' },
+    context({
+      currentHref: '/my?view=flows&sort=saved',
+      currentRoute: { ...context().currentRoute, sort: 'saved', target: null },
+      historyLevel: null,
+    }),
+  );
+  assert.equal(
+    plan.history.every((effect) => (
+      effect.kind === 'replace' || effect.kind === 'push'
+        ? new URL(effect.href, 'https://flowme.local').searchParams.get('sort') === 'saved'
+        : true
+    )),
+    true,
+  );
 });
 
 test('list to Plan writes the list position before pushing the Plan', () => {
@@ -112,7 +163,7 @@ test('list to Plan writes the list position before pushing the Plan', () => {
     { kind: 'open_plan', flowSlug: 'passport' },
     context({
       currentHref: '/my?demo=ux20&view=flows&q=%EC%9D%B4%EC%82%AC&status=open#library',
-      currentRoute: { query: '이사', filter: 'open', target: null, scrollY: 418, railScrollTop: 231 },
+      currentRoute: { query: '이사', filter: 'open', sort: 'next', target: null, scrollY: 418, railScrollTop: 231 },
       historyLevel: null,
     }),
   );
@@ -215,6 +266,7 @@ test('list to Item preserves list, owning Plan, then Item history levels', () =>
       currentRoute: {
         query: '이사',
         filter: 'open',
+        sort: 'next',
         target: null,
         scrollY: 418,
         railScrollTop: 231,
@@ -251,7 +303,7 @@ test('Item Back uses history when available and otherwise removes only Item iden
   assert.equal(direct.history[0]?.kind, 'replace');
   assert.equal(direct.discard, 'block_if_dirty');
   assert.equal(direct.history[0]?.kind === 'replace' ? direct.history[0].level : '', null);
-  assert.equal(direct.history[0]?.kind === 'replace' ? direct.history[0].href : '', '/my?demo=ux20&view=flows&q=%EC%9D%B4%EC%82%AC&status=open&flow=moving#library');
+  assert.equal(direct.history[0]?.kind === 'replace' ? direct.history[0].href : '', '/my?demo=ux20&view=flows&q=%EC%9D%B4%EC%82%AC&status=open&flow=moving&sort=next#library');
   assert.equal(direct.itemClose, 'continue_local_close');
 });
 
@@ -266,7 +318,7 @@ test('route sync keeps Item targets but closes transient detail for Plan and lis
 
   const plan = planMyFlowLibraryTransition(current, {
     kind: 'sync_route',
-    route: { query: '이사', filter: 'open', target: { flowSlug: 'moving' }, scrollY: 0, railScrollTop: 0 },
+    route: { query: '이사', filter: 'open', sort: 'next', target: { flowSlug: 'moving' }, scrollY: 0, railScrollTop: 0 },
   }, context());
   assert.equal(plan.transient, 'close');
   assert.equal(plan.discard, 'block_if_dirty');
@@ -274,12 +326,13 @@ test('route sync keeps Item targets but closes transient detail for Plan and lis
 
   const list = planMyFlowLibraryTransition(current, {
     kind: 'sync_route',
-    route: { query: '여권', filter: 'done', target: null, scrollY: 90, railScrollTop: 40 },
+    route: { query: '여권', filter: 'done', sort: 'name', target: null, scrollY: 90, railScrollTop: 40 },
     returnFlowSlug: 'moving',
   }, context());
   assert.deepEqual(list.state, {
     query: '여권',
     filter: 'done',
+    sort: 'name',
     selectedFlowSlug: 'all',
     itemTarget: null,
   });

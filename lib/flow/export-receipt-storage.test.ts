@@ -142,6 +142,68 @@ test('pre-lineage v1 receipts remain readable without migration or storage write
   assert.deepEqual(storage.counts(), { writeCount: 0, removeCount: 0 });
 });
 
+test('rollback-safe XLSX v1 receipt round-trips without new persistent transport fields', () => {
+  const legacyReceipt = buildReceipt({ receiptId: 'legacy-text-receipt' });
+  const binaryReceipt: ResultTransferPersistentReceipt = {
+    ...buildReceipt({ receiptId: 'binary-xlsx-receipt' }),
+    format: 'sheet',
+    artifactKind: 'tabular_sheet',
+    projectionOutputCount: 2,
+    outputCount: 2,
+    countUnits: {
+      itemCount: 'item',
+      projectionOutputCount: 'projection_output',
+      outputCount: 'artifact_output',
+    },
+    artifact: {
+      target: 'local_file',
+      mediaType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      filename: '사본-1-이사-D-30-준비.xlsx',
+      payloadHash: 'a'.repeat(64),
+      payloadByteLength: 4096,
+      itemIds: ['item-a', 'item-b'],
+      itemCount: 2,
+      outputCount: 2,
+    },
+  };
+  const legacyRaw = JSON.stringify({
+    schemaVersion: FLOW_EXPORT_RECEIPTS_SCHEMA_VERSION,
+    receipts: [legacyReceipt],
+  });
+  const storage = memoryStorage({ [FLOW_EXPORT_RECEIPTS_STORAGE_KEY]: legacyRaw });
+
+  assert.equal(readFlowExportReceiptRegistry(storage).status, 'valid');
+  assert.equal(storage.getItem(FLOW_EXPORT_RECEIPTS_STORAGE_KEY), legacyRaw);
+  assert.deepEqual(storage.counts(), { writeCount: 0, removeCount: 0 });
+  assert.equal(appendFlowExportReceipt(storage, binaryReceipt).status, 'stored');
+
+  const rawAfterAppend = storage.getItem(FLOW_EXPORT_RECEIPTS_STORAGE_KEY);
+  const read = readFlowExportReceiptRegistry(storage);
+  assert.equal(read.status, 'valid');
+  if (read.status !== 'valid') return;
+  assert.equal(read.raw, rawAfterAppend);
+  assert.equal(read.registry.schemaVersion, 1);
+  assert.deepEqual(read.registry.receipts, [legacyReceipt, binaryReceipt]);
+  assert.equal(read.registry.receipts[0]?.artifact.payloadEncoding, undefined);
+  assert.equal(read.registry.receipts[1]?.artifact.payloadEncoding, undefined);
+  assert.equal(read.registry.receipts[1]?.artifact.textEncoding, undefined);
+  assert.deepEqual(storage.counts(), { writeCount: 1, removeCount: 0 });
+
+  const invalidMixedEncoding = {
+    ...binaryReceipt,
+    receiptId: 'binary-invalid-mixed-encoding',
+    requestId: 'binary-invalid-mixed-encoding',
+    artifact: {
+      ...binaryReceipt.artifact,
+      textEncoding: 'utf-8',
+    },
+  };
+  const blocked = appendFlowExportReceipt(storage, invalidMixedEncoding as never);
+  assert.equal(blocked.status, 'blocked');
+  assert.equal(blocked.reason, 'invalid_receipt');
+  assert.equal(storage.getItem(FLOW_EXPORT_RECEIPTS_STORAGE_KEY), rawAfterAppend);
+});
+
 test('append is durable, deeply frozen on read, and indexed by saved plan identity', () => {
   const storage = memoryStorage();
   const first = buildReceipt();

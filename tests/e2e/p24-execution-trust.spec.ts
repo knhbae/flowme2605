@@ -7,11 +7,28 @@ import {
   getFirstSavedPersonalDraftSlug,
   getMyFlowVisibleExecutionRows,
   getOpenMyFlowItemDetail,
+  gotoLegacySavedPlanLibraryRoute,
   openMyFlowCalendarSelectedDay,
-  openMyFlowLibraryFlow,
+  openMyFlowLibraryFlow as openSavedFlowInLegacyLibrary,
   openPersonalDraftListExport,
 } from './helpers/my-flow-library';
 import { openSavedPublicFlow, savePublicFlow } from './helpers/public-flow-save';
+
+async function openMyFlowLibraryFlow(
+  page: Page,
+  flowSlug: string,
+  mobileSection: 'execute' | 'plan' | 'record' = 'plan',
+): Promise<Locator> {
+  const currentUrl = new URL(page.url());
+  const params = new URLSearchParams(currentUrl.pathname === '/my' ? currentUrl.search : '');
+  params.set('view', 'flows');
+  params.set('flow', flowSlug);
+  await gotoLegacySavedPlanLibraryRoute(
+    page,
+    `/my?${params.toString()}`,
+  );
+  return openSavedFlowInLegacyLibrary(page, flowSlug, mobileSection);
+}
 
 async function enterMyFlowDetailEditMode(detail: Locator) {
   const quickEdit = detail.getByTestId('my-flow-quick-item-edit');
@@ -352,10 +369,10 @@ test.describe('P24 execution trust regressions', () => {
     }
     await reusePanel.getByTestId('my-flow-reuse-start').click();
 
-    flow = await openMyFlowLibraryFlow(page, flowSlug, 'record');
     await expect(flow.getByTestId('my-flow-reuse-status')).toContainText(
       '새 이사일 10월 20일로 시작했어요',
     );
+    flow = await openMyFlowLibraryFlow(page, flowSlug, 'record');
     const state = await page.evaluate(({ slug }) => ({
       dateOverrides: JSON.parse(localStorage.getItem('flow:my-flow:date-overrides') || '{}'),
       registry: JSON.parse(localStorage.getItem(`flow:run-registry:${slug}`) || 'null'),
@@ -996,7 +1013,7 @@ test.describe('P24 execution trust regressions', () => {
       const saveArea = page.getByTestId('public-flow-mobile-save-cta');
       const primarySave = saveArea.locator('button[data-action-priority="primary"]');
       await expect(primarySave).toBeVisible();
-      await expect(primarySave).toHaveAccessibleName('내 계획에 저장');
+      await expect(primarySave).toHaveAccessibleName('내 계획으로 저장');
       const saveBanner = await savePublicFlow(page, primarySave);
       const personalCopyKey = new URL(page.url()).searchParams.get('flow') ?? '';
       expect(personalCopyKey).toMatch(/^personal-copy:/u);
@@ -1040,7 +1057,14 @@ test.describe('P24 execution trust regressions', () => {
     await page.evaluate(() => localStorage.clear());
     await page.reload();
     await expect(page).toHaveURL('/f/moving-d30-basic');
-    await page.getByLabel('이사일').fill('2026-07-22');
+    const capability = page.getByTestId('public-flow-capability-result');
+    await capability.locator(
+      '[data-public-format-tab="true"][data-capability-destination="calendar"]',
+    ).click();
+    await page.getByTestId('public-flow-calendar-set-anchor').click();
+    const adjustment = page.getByTestId('public-flow-personal-adjustment');
+    await adjustment.getByTestId('public-flow-adjustment-anchor-input').fill('2026-07-22');
+    await adjustment.getByTestId('public-flow-adjustment-apply').click();
     await savePublicFlow(page, page.getByTestId('public-flow-save-primary-mobile'));
     const personalCopyKey = new URL(page.url()).searchParams.get('flow') ?? '';
     expect(personalCopyKey).toMatch(/^personal-copy:/u);
@@ -1429,7 +1453,7 @@ test.describe('P24 execution trust regressions', () => {
       .getByTestId('my-flow-execution-row-shell')
       .filter({ hasText: '충전기 챙기기' });
     await scheduledRow.getByRole('button', { name: /계획에서 열기/ }).click();
-    await expect(page).toHaveURL(/\/my\?view=flows&flow=/);
+    await expect(page).toHaveURL('/calendar');
     detail = getOpenMyFlowItemDetail(page);
     await expect(detail).toBeVisible();
     await enterMyFlowDetailEditMode(detail);

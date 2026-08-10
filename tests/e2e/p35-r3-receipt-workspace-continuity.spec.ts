@@ -3,7 +3,11 @@ import path from 'node:path';
 
 import { expect, test, type Page } from '@playwright/test';
 
-import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
+import {
+  gotoLegacySavedPlanLibraryRoute,
+  installLegacySavedPlanLibraryNavigation,
+  openMyFlowLibraryFlow,
+} from './helpers/my-flow-library';
 
 const evidenceRoot = process.env.FLOWME_P35_R3_EVIDENCE_DIR;
 
@@ -41,7 +45,11 @@ async function expectPageQuality(page: Page) {
 }
 
 async function saveMovingFlow(page: Page, legacy = false) {
-  await page.goto(`/f/moving-d30-basic${legacy ? '?saveLifecycle=off' : ''}`);
+  await installLegacySavedPlanLibraryNavigation(page);
+  await gotoLegacySavedPlanLibraryRoute(
+    page,
+    `/f/moving-d30-basic${legacy ? '?saveLifecycle=off' : ''}`,
+  );
   await page.evaluate(() => window.localStorage.clear());
   await page.reload();
   await page.getByTestId('public-flow-anchor-input').fill('2030-09-01');
@@ -175,7 +183,7 @@ test.describe('P35-R3 receipt to focused workspace continuity', () => {
 
   test('legacy savedFlow handoff is reduced to one primary action', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/flows');
+    await gotoLegacySavedPlanLibraryRoute(page, '/flows');
     await page.evaluate(() => {
       window.localStorage.clear();
       window.localStorage.setItem('flow:saved:moving-d30-basic', JSON.stringify({
@@ -186,7 +194,7 @@ test.describe('P35-R3 receipt to focused workspace continuity', () => {
         anchor: '2030-09-01',
       }));
     });
-    await page.goto('/my?savedFlow=moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?savedFlow=moving-d30-basic');
 
     const legacyReceipt = page.getByTestId('my-flow-post-save-panel');
     await expect(legacyReceipt).toBeVisible();

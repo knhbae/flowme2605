@@ -151,7 +151,7 @@ async function installOneDownloadStartFailure(page: Page): Promise<void> {
 
 async function openSavedTransferPanel(page: Page, slug: string) {
   await page.setViewportSize(TABLET_VIEWPORT);
-  await page.goto(`/my?flow=${slug}`);
+  await page.goto(`/my?flow=${slug}&savedPlanLibrary=off`);
   await expect(page.locator('main[data-p35-q1-saved-transfer="on"]')).toBeVisible();
   const workspace = await openMyFlowLibraryFlow(page, slug, 'record');
   const entry = workspace.getByTestId('my-flow-export-entry');
@@ -361,7 +361,7 @@ test.describe('P35 P0-09 saved transfer format effects', () => {
     const errors = collectBrowserErrors(page);
     await seedSavedFlow(page, MOVING_SLUG, '2031-09-01');
     await page.setViewportSize(TABLET_VIEWPORT);
-    await page.goto(`/my?flow=${MOVING_SLUG}`);
+    await page.goto(`/my?flow=${MOVING_SLUG}&savedPlanLibrary=off`);
     await expect(page.locator('main[data-p35-q1-saved-transfer="on"]')).toBeVisible();
     const workspace = await openMyFlowLibraryFlow(page, MOVING_SLUG, 'plan');
     const selectedRow = workspace.getByTestId('my-flow-execution-row-shell').first();

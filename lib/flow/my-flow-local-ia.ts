@@ -4,9 +4,12 @@ export type MyFlowWorkspaceView = 'flow';
 
 export type MyFlowLibraryFilter = 'all' | 'open' | 'done' | 'archived';
 
+export type MyFlowLibrarySort = 'next' | 'saved' | 'name';
+
 export type MyFlowLibraryRouteState = {
   query: string;
   filter: MyFlowLibraryFilter;
+  sort: MyFlowLibrarySort;
   target: MyFlowWorkspaceTarget | null;
   scrollY: number;
   railScrollTop: number;
@@ -68,11 +71,27 @@ export type MyFlowSavedLibraryEntry<TValue> = {
   stableId: string;
   title: string;
   searchText?: string;
+  copyOrdinal?: number;
+  savedAt?: string;
+  nextIncompleteAt?: string;
+  /** @deprecated Visit time is presentation history, never a library sort key. */
   lastVisited?: string;
   done: number;
   total: number;
   archived: boolean;
   value: TValue;
+};
+
+export type MyFlowCopyOrdinalInput = {
+  planId: string;
+  sourceId: string;
+  savedAt?: string;
+};
+
+export type MyFlowLibrarySortContext = {
+  sort: MyFlowLibrarySort;
+  now: string | number | Date;
+  timeZone: string;
 };
 
 // P0-07 rollback keeps the established five-plan threshold. The Q2 saved-plan
@@ -95,6 +114,158 @@ function normalizeMyFlowLibraryFilter(value: string | null): MyFlowLibraryFilter
   return value === 'open' || value === 'done' || value === 'archived'
     ? value
     : 'all';
+}
+
+export function normalizeMyFlowLibrarySort(value: unknown): MyFlowLibrarySort {
+  return value === 'saved' || value === 'name' ? value : 'next';
+}
+
+export function getCanonicalMyFlowLibrarySortHref(currentHref: string): string {
+  const url = new URL(currentHref, 'https://flowme.local');
+  const sort = normalizeMyFlowLibrarySort(url.searchParams.get('sort'));
+  url.searchParams.set('sort', sort);
+  return `${url.pathname}${url.search}${url.hash}`;
+}
+
+const MY_FLOW_TITLE_COLLATOR = new Intl.Collator('ko-KR', {
+  usage: 'sort',
+  numeric: true,
+  sensitivity: 'base',
+});
+
+function parseValidTimestamp(value: string | undefined): number | null {
+  if (!value?.trim()) return null;
+  const timestamp = Date.parse(value);
+  return Number.isFinite(timestamp) ? timestamp : null;
+}
+
+export function resolveLatestMyFlowSavedAt(
+  values: readonly (string | null | undefined)[],
+): string | undefined {
+  let latest: { value: string; timestamp: number } | undefined;
+  values.forEach((value) => {
+    const normalized = value?.trim();
+    const timestamp = parseValidTimestamp(normalized);
+    if (!normalized || timestamp === null) return;
+    if (!latest || timestamp > latest.timestamp) latest = { value: normalized, timestamp };
+  });
+  return latest?.value;
+}
+
+function normalizeDateKey(value: string | undefined): string | null {
+  if (!value || !/^\d{4}-\d{2}-\d{2}$/u.test(value)) return null;
+  const [year, month, day] = value.split('-').map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  return date.getUTCFullYear() === year
+    && date.getUTCMonth() === month - 1
+    && date.getUTCDate() === day
+    ? value
+    : null;
+}
+
+function getDateKeyAtTimeZone(
+  value: string | number | Date,
+  timeZone: string,
+): string {
+  const date = value instanceof Date ? new Date(value.getTime()) : new Date(value);
+  if (!Number.isFinite(date.getTime())) return '1970-01-01';
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(date);
+  const byType = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  return `${byType.year}-${byType.month}-${byType.day}`;
+}
+
+function compareSavedAtDescending(
+  left: string | undefined,
+  right: string | undefined,
+): number {
+  const leftTimestamp = parseValidTimestamp(left);
+  const rightTimestamp = parseValidTimestamp(right);
+  if (leftTimestamp === null && rightTimestamp === null) return 0;
+  if (leftTimestamp === null) return 1;
+  if (rightTimestamp === null) return -1;
+  return rightTimestamp - leftTimestamp;
+}
+
+function getCopyOrdinal(value: number | undefined): number {
+  return typeof value === 'number' && Number.isFinite(value) && value > 0
+    ? Math.floor(value)
+    : 1;
+}
+
+function compareTitleAndStableTies<TValue>(
+  left: MyFlowSavedLibraryEntry<TValue>,
+  right: MyFlowSavedLibraryEntry<TValue>,
+): number {
+  return MY_FLOW_TITLE_COLLATOR.compare(left.title, right.title)
+    || getCopyOrdinal(left.copyOrdinal) - getCopyOrdinal(right.copyOrdinal)
+    || compareSavedAtDescending(left.savedAt, right.savedAt)
+    || left.stableId.localeCompare(right.stableId);
+}
+
+function getNextSortBucket<TValue>(
+  entry: MyFlowSavedLibraryEntry<TValue>,
+  today: string,
+): { bucket: 0 | 1 | 2 | 3 | 4; date: string | null } {
+  const allCompleted = entry.total > 0 && entry.done >= entry.total;
+  if (allCompleted) return { bucket: 4, date: null };
+  const date = normalizeDateKey(entry.nextIncompleteAt);
+  if (!date) return { bucket: 3, date: null };
+  if (date < today) return { bucket: 0, date };
+  if (date === today) return { bucket: 1, date };
+  return { bucket: 2, date };
+}
+
+export function compareMyFlowSavedLibraryEntries<TValue>(
+  left: MyFlowSavedLibraryEntry<TValue>,
+  right: MyFlowSavedLibraryEntry<TValue>,
+  context: MyFlowLibrarySortContext,
+): number {
+  if (context.sort === 'saved') {
+    return compareSavedAtDescending(left.savedAt, right.savedAt)
+      || left.stableId.localeCompare(right.stableId);
+  }
+  if (context.sort === 'name') return compareTitleAndStableTies(left, right);
+
+  const today = getDateKeyAtTimeZone(context.now, context.timeZone);
+  const leftNext = getNextSortBucket(left, today);
+  const rightNext = getNextSortBucket(right, today);
+  return leftNext.bucket - rightNext.bucket
+    || (leftNext.date ?? '').localeCompare(rightNext.date ?? '')
+    || compareTitleAndStableTies(left, right);
+}
+
+export function buildMyFlowCopyOrdinalMap(
+  entries: readonly MyFlowCopyOrdinalInput[],
+): Map<string, number> {
+  const groups = new Map<string, MyFlowCopyOrdinalInput[]>();
+  entries.forEach((entry) => {
+    const sourceId = entry.sourceId.trim() || entry.planId;
+    const group = groups.get(sourceId) ?? [];
+    group.push(entry);
+    groups.set(sourceId, group);
+  });
+  const ordinals = new Map<string, number>();
+  groups.forEach((group) => {
+    group
+      .slice()
+      .sort((left, right) => {
+        const leftTimestamp = parseValidTimestamp(left.savedAt);
+        const rightTimestamp = parseValidTimestamp(right.savedAt);
+        if (leftTimestamp === null && rightTimestamp !== null) return 1;
+        if (leftTimestamp !== null && rightTimestamp === null) return -1;
+        if (leftTimestamp !== null && rightTimestamp !== null && leftTimestamp !== rightTimestamp) {
+          return leftTimestamp - rightTimestamp;
+        }
+        return left.planId.localeCompare(right.planId);
+      })
+      .forEach((entry, index) => ordinals.set(entry.planId, index + 1));
+  });
+  return ordinals;
 }
 
 function normalizeScrollY(value: unknown): number {
@@ -143,6 +314,7 @@ export function parseMyFlowLibraryRoute(
   return {
     query: params.get('q')?.trim() ?? '',
     filter: normalizeMyFlowLibraryFilter(params.get('status')),
+    sort: normalizeMyFlowLibrarySort(params.get('sort')),
     target: parseMyFlowWorkspaceTarget(search),
     scrollY: readMyFlowLibraryScrollY(historyState),
     railScrollTop: readMyFlowLibraryRailScrollTop(historyState),
@@ -154,6 +326,7 @@ export function getMyFlowLibraryHref(
   input: {
     query?: string;
     filter?: MyFlowLibraryFilter;
+    sort?: MyFlowLibrarySort;
     target?: MyFlowWorkspaceTarget | null;
   },
 ): string {
@@ -167,6 +340,13 @@ export function getMyFlowLibraryHref(
   else url.searchParams.delete('q');
   if (filter === 'all') url.searchParams.delete('status');
   else url.searchParams.set('status', filter);
+  if (input.sort !== undefined) {
+    const sort = normalizeMyFlowLibrarySort(input.sort);
+    url.searchParams.set('sort', sort);
+  } else {
+    const currentSort = normalizeMyFlowLibrarySort(url.searchParams.get('sort'));
+    url.searchParams.set('sort', currentSort);
+  }
   if (target?.flowSlug.trim()) url.searchParams.set('flow', target.flowSlug.trim());
   else url.searchParams.delete('flow');
   if (target?.itemKey?.trim()) {
@@ -207,11 +387,17 @@ export function buildMyFlowCompactTodayModel<
 
 export function selectMyFlowSavedLibraryEntries<TValue>(
   entries: Array<MyFlowSavedLibraryEntry<TValue>>,
-  input: { query?: string; filter?: MyFlowLibraryFilter } = {},
+  input: {
+    query?: string;
+    filter?: MyFlowLibraryFilter;
+    sort?: MyFlowLibrarySort;
+    now?: string | number | Date;
+    timeZone?: string;
+  } = {},
 ): Array<MyFlowSavedLibraryEntry<TValue>> {
   const query = input.query?.trim().toLowerCase() ?? '';
   const filter = input.filter ?? 'all';
-  return entries
+  const filtered = entries
     .filter((entry) => {
       if (filter === 'archived') return entry.archived;
       if (entry.archived) return false;
@@ -222,12 +408,20 @@ export function selectMyFlowSavedLibraryEntries<TValue>(
     .filter((entry) => (
       !query || `${entry.title} ${entry.searchText ?? ''}`.toLowerCase().includes(query)
     ))
-    .slice()
-    .sort((left, right) =>
-      (right.lastVisited ?? '').localeCompare(left.lastVisited ?? '') ||
-      left.title.localeCompare(right.title) ||
-      left.stableId.localeCompare(right.stableId),
+    .slice();
+  if (input.sort === undefined) {
+    return filtered.sort((left, right) =>
+      (right.lastVisited ?? '').localeCompare(left.lastVisited ?? '')
+      || left.title.localeCompare(right.title)
+      || left.stableId.localeCompare(right.stableId),
     );
+  }
+  const context: MyFlowLibrarySortContext = {
+    sort: normalizeMyFlowLibrarySort(input.sort),
+    now: input.now ?? new Date(),
+    timeZone: input.timeZone ?? 'Asia/Seoul',
+  };
+  return filtered.sort((left, right) => compareMyFlowSavedLibraryEntries(left, right, context));
 }
 
 export function parseMyFlowViewQuery(search: string): MyFlowWorkspaceView | null {

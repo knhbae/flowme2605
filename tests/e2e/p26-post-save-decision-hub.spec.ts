@@ -2,7 +2,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { expect, test, type Page } from '@playwright/test';
-import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
+import {
+  gotoLegacySavedPlanLibraryRoute,
+  installLegacySavedPlanLibraryNavigation,
+  openMyFlowLibraryFlow,
+} from './helpers/my-flow-library';
 import { openSavedPublicFlow, savePublicFlow } from './helpers/public-flow-save';
 
 const evidenceDir = process.env.FLOW_EVIDENCE_DIR;
@@ -39,14 +43,17 @@ async function savedFlowRecords(page: Page) {
 }
 
 test('mobile public save opens one selected plan before Flow-level export', async ({ page }) => {
+  await installLegacySavedPlanLibraryNavigation(page);
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/f/vehicle-inspection-prep');
+  await gotoLegacySavedPlanLibraryRoute(page, '/f/vehicle-inspection-prep');
   await page.evaluate(() => localStorage.clear());
   await page.reload();
-  const saveBanner = await savePublicFlow(
-    page,
-    page.getByTestId('public-flow-save-primary-mobile'),
-  );
+  await page.getByTestId('public-flow-save-primary-mobile').click();
+  const saveBanner = page.getByTestId('my-flow-save-banner');
+  await expect(saveBanner).toBeVisible({ timeout: 20_000 });
+  await expect.poll(() => new URL(page.url()).searchParams.has('saveReceipt'), {
+    timeout: 20_000,
+  }).toBe(false);
   await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toContainText('10');
   await expect(page.getByTestId('public-flow-saved-receipt')).toHaveCount(0);
   await openSavedPublicFlow(page, saveBanner);
@@ -69,11 +76,13 @@ test('mobile public save opens one selected plan before Flow-level export', asyn
 });
 
 test('wide dated public save opens the selected plan with schedule, outline, and actions', async ({ page }) => {
+  await installLegacySavedPlanLibraryNavigation(page);
   await page.setViewportSize({ width: 1024, height: 768 });
-  await page.goto('/flow-maps/moving-d30');
+  await gotoLegacySavedPlanLibraryRoute(page, '/flow-maps/moving-d30');
+  await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
   await page.evaluate(() => localStorage.clear());
   await page.reload();
-  await expect(page).toHaveURL('/f/moving-d30-basic');
+  await expect(page).toHaveURL(/\/f\/moving-d30-basic\?savedPlanLibrary=off$/u);
   await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
   const saveBanner = await savePublicFlow(page, page.getByTestId('public-flow-save-primary'));
   await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toContainText('24');
@@ -87,12 +96,15 @@ test('wide dated public save opens the selected plan with schedule, outline, and
 });
 
 test('multi-Flow receipt chooses an honest Flow scope before opening export', async ({ page }) => {
+  await installLegacySavedPlanLibraryNavigation(page);
   await page.setViewportSize({ width: 1024, height: 768 });
-  await page.goto('/flow-maps/curated-opic-mock-course');
+  await gotoLegacySavedPlanLibraryRoute(page, '/flow-maps/curated-opic-mock-course');
   await page.evaluate(() => localStorage.clear());
   await page.reload();
   await page.getByTestId('flow-map-anchor-input').fill('2030-09-01');
   await page.getByTestId('flow-map-save-all').click();
+  await expect(page).toHaveURL(/\/my\?savedMap=curated-opic-mock-course/u);
+  await gotoLegacySavedPlanLibraryRoute(page, page.url());
 
   const hub = page.getByTestId('my-flow-post-save-panel');
   await expect(hub).toHaveAttribute('data-receipt-flow-count', '2');
