@@ -10,25 +10,27 @@ This file is an index, not a second source of product truth. Update its links af
 
 - [Current status and owner action](./STATUS.md)
 - [Current roadmap and inactive shelves](./ROADMAP.md)
-- [Active R3B production Escape hotfix and approved boundaries](./specs/2026-08-11-r3b-approved-plan-execution-boundaries/spec.md)
-- [R3B production Escape hotfix PR history](./pr-history/2026-08-11-r3b-production-escape-hotfix.md)
-- [R3B approved plan-execution PR history](./pr-history/2026-08-11-r3b-approved-plan-execution-boundaries.md)
+- [Released R3B approved plan-execution boundaries](./specs/2026-08-11-r3b-approved-plan-execution-boundaries/spec.md)
+- [R3B production Escape hotfix release history](./pr-history/2026-08-11-r3b-production-escape-hotfix.md)
+- [R3B approved plan-execution release history](./pr-history/2026-08-11-r3b-approved-plan-execution-boundaries.md)
 - [Completed workspace and backlog stabilization](./specs/2026-08-06-workspace-backlog-stabilization/spec.md)
 - [Final worktree and preservation inventory](./specs/2026-08-06-workspace-backlog-stabilization/inventory.md)
 - [R3A My Flow experience boundary release](./pr-history/2026-08-09-r3a-my-flow-experience-boundary.md)
 - [P35 Round 2 MVP production closeout](./pr-history/2026-08-06-p35-round2-mvp-closeout-production.md)
 
-[PR #172](https://github.com/knhbae/flowme2605/pull/172) final head
-`b1106b6a319eb2ff5671be99ab446d68d6597f0b` merged R3B into `main` as
-`a599370496ee95a52d14cddd27c94b0c8190a863`. Exact-head and post-merge CI
-passed, and the exact source reached a successful Production deployment. The
-canonical initial smoke passed `21/23`; both failures repeated and isolate
-Escape ownership in a nested bottom sheet and the 767px fallback Item editor.
-The bounded hotfix is locally verified through unit `182/182`, build `18/18`
-at BUILD_ID `wjpnPhhhMBaWzGTXuxK7U`, P26 `1/1`, targeted browser `3/3`, approved
-browser `23/23`, and full Playwright `569/569`. Hotfix PR, CI, merge,
-deployment, and canonical re-smoke remain `NOT_RUN`. Observed-user validation
-remains `0`.
+[PR #172](https://github.com/knhbae/flowme2605/pull/172) delivered the approved
+plan-execution UX. [PR #173](https://github.com/knhbae/flowme2605/pull/173)
+final head `210b7c3ae027782fd91a003e88624b38d0243e74` merged the bounded Escape
+correction as `2b937ce811b518950f495341d05736ebd102887a` at
+`2026-08-11T01:31:11Z`. PR CI run `31448713920` and post-merge main CI run
+`31449546812` passed. Production deployment record `5842830294`, status
+`16645165737`, identifies that exact source and its direct deployment URL; an
+anonymous request to the direct URL redirects to Vercel login. The canonical
+alias served the app and canonical approved-spec smoke passed `23/23` with
+workers `1`, retries `0`, in `62.9s` (displayed `1.0m`), output
+`r3b-production-hotfix-2b937ce`. R3B is the current production baseline, its
+durable release documentation is complete, and no product gate is active.
+Observed-user validation is still `0`.
 
 ## Canonical Project Truth
 
