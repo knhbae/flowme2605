@@ -153,7 +153,10 @@ const escapedJavascript = javascriptOutput.text
   // One bundled dependency starts a template literal with a literal tab.
   // Escaping that tab preserves the runtime string and keeps the generated
   // review artifact free of trailing-whitespace diffs.
-  .replace(/=`\t(?=\r?\n)/gu, '=`\\t');
+  .replace(/=`\t(?=\r?\n)/gu, '=`\\t')
+  // Minified dependency license blocks can contain whitespace-only lines.
+  // Keep the generated review artifact clean for git diff --check.
+  .replace(/^[ \t]+$/gmu, '');
 const escapedCss = cssResult.css.replaceAll('</style>', '<\\/style>');
 
 const html = `<!doctype html>

@@ -1,5 +1,8 @@
 # State Model
 
+> 이 문서의 초기 상태 설계보다 [현재 문법·처리 로직](./authoring-grammar-logic.md)과
+> [Text Authoring contract v2](./text-authoring-contract-v2.json)의 issue·source-sync 계약을 우선한다.
+
 ## 공통 상태 필드
 
 각 상태는 다음을 갖는다.

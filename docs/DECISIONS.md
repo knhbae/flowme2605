@@ -47,6 +47,18 @@ Do not use this for:
 
 **Related docs:** [Public Plan/Item Edit Surface Unification](./specs/2026-08-12-public-plan-edit-surface-unification/spec.md), [Korean UI capture review](./content-audit/2026-08-12-public-plan-edit-surface-unification-ui-review-ko.html), [service structure](./SERVICE_STRUCTURE.md)
 
+### 2026-08-11 - Text Authoring v5는 원문 기반 제작 작업대와 네 결과 projection을 main 통합 후보로 둔다
+
+**Decision:** `/flows/new`의 기본 진입은 원문을 직접 편집하는 Text Authoring 제작 작업대다. `?legacy=1` 또는 `FLOWME_TEXT_AUTHORING_ENABLED=0`은 기존 `NewFlow`를 유지하는 명시적 fallback이다. root `- [ ]`만 canonical Item을 만들고 한 단계 `  - [ ]`는 Todo 하위 체크로 보존한다. 지원 반복은 canonical Item 하나에서 bounded occurrence를 계산해 Calendar·Todo·Sheet·TXT가 같은 회차를 보여 주며, Calendar는 월간 grid와 선택일 상세를 사용한다. 좌측 작업 원문과 우측 수정은 source lineage와 최초 snapshot을 보존하는 atomic revision으로 동기화하고, 날짜순 원문 정렬은 사용자가 명시적으로 실행할 때만 같은 Step의 Item 블록을 이동한다. 처리 방침이 결정된 invalid date·relative date·URL-only 사례는 runtime repair/block 상태를 유지한 채 `예외 처리`로 분류하며, 같은 날 Calendar와 ICS는 `날짜 → 종일 → 시간 → source order`로 정렬한다. 제품 대표 예시는 5개, QA catalog는 기본 문법 1개와 validated 30개다.
+
+**Reason:** 제작자는 원문과 결과를 한 화면에서 비교하고 수정 결과를 다시 원문에 반영할 수 있어야 한다. Calendar와 Todo를 같은 카드로 보이거나 반복 Item을 결과마다 다르게 펼치면 저장 결과를 신뢰하기 어렵다. canonical source와 derived occurrence, creator draft와 P35 execution을 분리하면 원문을 발명하지 않고도 익숙한 결과를 검토할 수 있다.
+
+**Applies to:** `/flows/new`, `components/flow/text-authoring/*`, `lib/flow/text-authoring/*`, standalone HTML, grammar catalog, local draft/source-sync, Calendar·Todo·Sheet·TXT preview/export와 당시 Draft PR [#175](https://github.com/knhbae/flowme2605/pull/175). PR #175는 최신 main 충돌 때문에 닫혔으며 이후 통합은 최신 main 기반의 새 stacked Draft PR에서 다시 검증한다. P35 adapter, 외부 서비스 쓰기, AI 생성, merge와 deployment는 포함하지 않는다.
+
+**Reopen when:** 관찰 사용자 행동이 900px 경계·월간 Calendar·30회/4주 반복 window를 실제로 방해한다고 보여 주거나, external destination/P35 계약이 stable identity와 source loss를 보존하는 adapter를 승인하거나, 사실행과 실행행이 섞인 표를 발명 없이 구분하는 새 계약이 승인될 때다.
+
+**Related docs:** [현재 문법·처리 로직](./specs/2026-07-28-flowme-text-authoring-ux-v1/authoring-grammar-logic.md), [v5 목표](./specs/2026-08-11-flowme-text-authoring-exception-coverage-v5/00-development-goal-ko.md), [v5 검증 결과](./content-audit/2026-08-11-flowme-text-authoring-exception-coverage-v5-results/README.md)
+
 ### 2026-08-06 - P′ review plus P′′ candidate evidence closes the MVP gate without repeating Pass 1 and Pass 2
 
 **Decision:** Close the P35 Round 2 MVP PoC gate with the sealed prior Codex/Claude Design review findings—Pass 1 candidate `c48911757fb529941d00efc2162338ffa8b7686a`, then Pass 2 P′ `29cb03a65dd1037a3b813b7f43a5a095e4669dce` ending in `REVISE`—their bounded P′′ corrections, and the exact post-push P′′ candidate evidence. The production source SHA is `f97644abf379c46433847f44aa7bd4da7fadac4a`; candidate-evidence BUILD_ID is `T0QkChgscSgPog-0UdvY-` and candidate epoch is `p35-r2-4fa6af1728eb5ca5`. Vercel performs a separate remote rebuild, so production smoke and live runtime BUILD_ID probing remain `NOT_RUN`. S01~S23 are `23/23` accounted: S01~S21 are candidate-bound captures, S22 is `NOT_ASSESSED`, and S23 is `REVIEWER_CHOSEN_NOT_PRECAPTURED`. All three group manifests report `PASS` with failures `0`, and the published verifier reports `PASS` with `33` identity checks, `285` evidence files, `556` raw URLs, and failures `0`. Fresh independent P′′ Pass 1 and Pass 2 are `NOT_RUN`: the Owner waives that repeated cycle for this MVP closeout, and no document may describe P′′ as independently reviewed or passed. Production deployment is authorized. Observed-user validation remains excluded at `0`; text-to-flow and the P2 follow-up candidates remain outside this release.

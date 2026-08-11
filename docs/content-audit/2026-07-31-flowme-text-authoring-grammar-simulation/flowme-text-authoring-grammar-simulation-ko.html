@@ -1,0 +1,4834 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe 문법 적용 시뮬레이션 · 2026-07-31</title>
+  <style>
+    :root {
+      --ink: #18231d;
+      --muted: #66736b;
+      --line: #dbe3dd;
+      --paper: #ffffff;
+      --canvas: #f4f7f3;
+      --green: #28624a;
+      --green-soft: #e6f1ea;
+      --mint: #cfe4d7;
+      --amber: #9a5d17;
+      --amber-soft: #fff1d8;
+      --red: #a63c35;
+      --red-soft: #feeceb;
+      --blue: #325b7c;
+      --blue-soft: #e8f0f6;
+      --shadow: 0 12px 34px rgba(25, 55, 39, .08);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--canvas);
+      font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+      line-height: 1.55;
+    }
+    a { color: inherit; }
+    button, input { font: inherit; }
+    .page { width: min(1220px, calc(100% - 40px)); margin: 0 auto; }
+    .hero {
+      padding: 58px 0 32px;
+      border-bottom: 1px solid var(--line);
+      background: var(--paper);
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(260px, .5fr);
+      gap: 40px;
+      align-items: end;
+    }
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 18px;
+      color: var(--green);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .04em;
+    }
+    .kicker::before {
+      content: "";
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--green);
+    }
+    h1 {
+      margin: 0;
+      max-width: 820px;
+      font-size: clamp(34px, 5vw, 62px);
+      line-height: 1.08;
+      letter-spacing: -.045em;
+    }
+    .hero-lead {
+      max-width: 760px;
+      margin: 22px 0 0;
+      color: #4e5d54;
+      font-size: 18px;
+    }
+    .scope-note {
+      padding: 20px;
+      border: 1px solid #b9d1c1;
+      border-radius: 18px;
+      background: var(--green-soft);
+      font-size: 14px;
+    }
+    .scope-note strong { display: block; margin-bottom: 8px; color: var(--green); }
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      padding: 24px 0;
+    }
+    .summary-card {
+      min-height: 132px;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+    .summary-card span { color: var(--muted); font-size: 13px; }
+    .summary-card strong {
+      display: block;
+      margin: 6px 0 2px;
+      font-size: 32px;
+      letter-spacing: -.04em;
+    }
+    .summary-card small { color: var(--green); font-weight: 700; }
+    main { padding: 16px 0 72px; }
+    section { margin-top: 56px; scroll-margin-top: 20px; }
+    .section-heading {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      align-items: end;
+      margin-bottom: 18px;
+    }
+    .section-heading h2 { margin: 0; font-size: 28px; letter-spacing: -.025em; }
+    .section-heading p { max-width: 610px; margin: 0; color: var(--muted); }
+    .conclusion-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .finding {
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--paper);
+    }
+    .finding.decision { border-color: #e5c898; background: #fffaf0; }
+    .finding .tag {
+      display: inline-block;
+      margin-bottom: 10px;
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .finding.decision .tag { color: var(--amber); }
+    .finding h3 { margin: 0 0 8px; font-size: 18px; }
+    .finding p { margin: 0; color: var(--muted); font-size: 14px; }
+    .comparison-stack { display: grid; gap: 14px; }
+    .comparison-card {
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--paper);
+      overflow: hidden;
+    }
+    .comparison-label {
+      margin-bottom: 14px;
+      color: var(--green);
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .comparison-track {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: thin;
+    }
+    .comparison-state {
+      min-width: 210px;
+      flex: 1;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fafcf9;
+    }
+    .comparison-state span, .comparison-state small { display: block; }
+    .comparison-state span { color: var(--muted); font-size: 12px; }
+    .comparison-state strong { display: block; margin: 7px 0; font-size: 15px; }
+    .comparison-state small { color: #59665e; }
+    .table-shell {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--paper);
+    }
+    table { width: 100%; border-collapse: collapse; min-width: 760px; }
+    th, td { padding: 14px 16px; border-bottom: 1px solid var(--line); text-align: left; }
+    th {
+      color: var(--muted);
+      background: #f8faf7;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .03em;
+    }
+    td { font-size: 14px; vertical-align: top; }
+    tr:last-child td { border-bottom: 0; }
+    td small { display: block; margin-top: 3px; color: var(--muted); }
+    .mini-pass, .mini-fail {
+      display: inline-flex;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .mini-pass { color: var(--green); background: var(--green-soft); }
+    .mini-fail { color: var(--red); background: var(--red-soft); }
+    .evidence-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .evidence-meta span {
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--paper);
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .evidence-meta b { color: var(--ink); }
+    .empty-evidence, .evidence-note {
+      padding: 18px;
+      border: 1px dashed #b9c6bd;
+      border-radius: 16px;
+      color: var(--muted);
+      background: #fafcf9;
+    }
+    .screenshot-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .screenshot-link {
+      display: flex;
+      min-width: 190px;
+      flex-direction: column;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--paper);
+      text-decoration: none;
+    }
+    .screenshot-link:hover { border-color: var(--green); }
+    .screenshot-link small { color: var(--muted); }
+    .controls {
+      position: sticky;
+      top: 10px;
+      z-index: 5;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 16px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, .96);
+      box-shadow: var(--shadow);
+    }
+    .filter-row { display: flex; gap: 6px; overflow-x: auto; }
+    .filter-button {
+      flex: 0 0 auto;
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      background: var(--paper);
+      cursor: pointer;
+    }
+    .filter-button[aria-pressed="true"] {
+      color: #fff;
+      border-color: var(--green);
+      background: var(--green);
+    }
+    .search {
+      min-width: 220px;
+      margin-left: auto;
+      padding: 9px 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      color: var(--ink);
+      background: #fafcf9;
+    }
+    .scenario-list { display: grid; gap: 14px; }
+    .scenario-card {
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-left: 5px solid var(--green);
+      border-radius: 18px;
+      background: var(--paper);
+      box-shadow: 0 8px 24px rgba(25, 55, 39, .05);
+    }
+    .scenario-card.is-fail { border-left-color: var(--red); }
+    .scenario-card[hidden] { display: none; }
+    .scenario-heading {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: start;
+    }
+    .scenario-heading h3 { margin: 8px 0 4px; font-size: 21px; }
+    .scenario-heading p { margin: 0; color: var(--muted); }
+    .eyebrow-row { display: flex; align-items: center; gap: 8px; }
+    .eyebrow-row code { color: #748078; font-size: 11px; }
+    .group-pill, .result-pill {
+      display: inline-flex;
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .group-existing-content { color: var(--green); background: var(--green-soft); }
+    .group-condition-change { color: var(--blue); background: var(--blue-soft); }
+    .group-compatibility { color: #6d4f86; background: #f1eafa; }
+    .group-error-boundary { color: var(--amber); background: var(--amber-soft); }
+    .result-pill.pass { color: var(--green); background: var(--green-soft); }
+    .result-pill.fail { color: var(--red); background: var(--red-soft); }
+    .scenario-metrics {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 18px 0;
+    }
+    .scenario-metrics span {
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      color: var(--muted);
+      background: #fafcf9;
+      font-size: 12px;
+    }
+    .scenario-metrics b { color: var(--ink); font-size: 14px; }
+    .scenario-facts {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1px;
+      overflow: hidden;
+      margin: 0;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--line);
+    }
+    .scenario-facts div { padding: 12px; background: var(--paper); }
+    .scenario-facts dt { color: var(--muted); font-size: 11px; }
+    .scenario-facts dd { margin: 4px 0 0; font-size: 13px; font-weight: 700; }
+    .boundary {
+      display: flex;
+      gap: 12px;
+      margin-top: 14px;
+      padding: 13px 14px;
+      border-radius: 12px;
+      background: #f5f8f4;
+      color: #4e5d54;
+      font-size: 13px;
+    }
+    .boundary b { flex: 0 0 auto; color: var(--green); }
+    details { margin-top: 14px; border-top: 1px solid var(--line); }
+    summary { padding: 14px 0 0; color: var(--green); font-weight: 800; cursor: pointer; }
+    .details-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(280px, .8fr);
+      gap: 16px;
+      margin-top: 12px;
+    }
+    .details-grid h4 { margin: 0 0 8px; }
+    pre {
+      max-height: 420px;
+      overflow: auto;
+      margin: 0;
+      padding: 16px;
+      border-radius: 12px;
+      color: #dce8df;
+      background: #1c2821;
+      font: 12px/1.6 Consolas, "SFMono-Regular", monospace;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+    .check-list { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+    .check-list li {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr);
+      gap: 8px;
+      align-items: center;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: #f7f9f6;
+      font-size: 12px;
+    }
+    .check-list li span { color: var(--green); font-weight: 800; }
+    .check-list li.check-fail span { color: var(--red); }
+    .check-list code { grid-column: 1 / -1; overflow-wrap: anywhere; }
+    .method {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .method article {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--paper);
+    }
+    .method h3 { margin: 0 0 7px; font-size: 16px; }
+    .method p { margin: 0; color: var(--muted); font-size: 13px; }
+    .artifact-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+    .artifact-link {
+      display: inline-flex;
+      padding: 10px 14px;
+      border-radius: 10px;
+      color: #fff;
+      background: var(--green);
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 13px;
+    }
+    .artifact-link.secondary { color: var(--green); background: var(--green-soft); }
+    footer {
+      padding: 28px 0 44px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+    }
+    @media (max-width: 900px) {
+      .hero-grid, .details-grid { grid-template-columns: 1fr; }
+      .summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .scenario-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .method { grid-template-columns: 1fr; }
+      .controls { align-items: stretch; flex-direction: column; }
+      .search { width: 100%; min-width: 0; margin: 0; }
+    }
+    @media (max-width: 620px) {
+      .page { width: min(100% - 24px, 1220px); }
+      .hero { padding-top: 36px; }
+      h1 { font-size: 36px; }
+      .hero-lead { font-size: 16px; }
+      .summary-grid, .conclusion-grid { grid-template-columns: 1fr; }
+      .summary-card { min-height: 0; }
+      .section-heading, .scenario-heading { align-items: start; flex-direction: column; }
+      .scenario-card { padding: 18px 15px; }
+      .scenario-facts { grid-template-columns: 1fr; }
+      .result-pill { align-self: flex-start; }
+      .boundary { flex-direction: column; gap: 4px; }
+      section { margin-top: 42px; }
+    }
+    @media print {
+      body { background: #fff; }
+      .controls { display: none; }
+      .scenario-card { break-inside: avoid; box-shadow: none; }
+      details { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="page hero-grid">
+      <div>
+        <div class="kicker">TA-GRAMMAR-SIM-01 · 2026-07-31</div>
+        <h1>Flow 문법, 실제 콘텐츠에 얼마나 버티는가</h1>
+        <p class="hero-lead">
+          기존 FLOW 콘텐츠 8종과 한 조건씩 바꾼 문법 사례를 같은 작성기와
+          Calendar·Todo·Sheet·Memo 산출물에 통과시켰습니다.
+        </p>
+      </div>
+      <aside class="scope-note">
+        <strong>검증 범위</strong>
+        자동화된 내부 시뮬레이션과 브라우저 QA입니다.
+        사용자 관찰 검증, 공개 준비 완료, AI 자동 생성 성능은 포함하지 않습니다.
+      </aside>
+    </div>
+  </header>
+
+  <div class="page summary-grid" aria-label="시뮬레이션 요약">
+    <article class="summary-card"><span>전체 시나리오</span><strong>30</strong><small>30/30 의미 검사 통과</small></article>
+    <article class="summary-card"><span>기존 콘텐츠</span><strong>8</strong><small>최대 38행까지 보존</small></article>
+    <article class="summary-card"><span>조건·호환·예외</span><strong>22</strong><small>검토 완료 정책과 입력 제한 분리</small></article>
+    <article class="summary-card"><span>브라우저 UI</span><strong>—</strong><small>증거 파일 대기</small></article>
+  </div>
+
+  <main class="page">
+    <section id="conclusion">
+      <div class="section-heading">
+        <div><h2>한눈에 본 결론</h2></div>
+        <p>현재 문법이 잘하는 일과 아직 제품 결정이 필요한 일을 분리했습니다.</p>
+      </div>
+      <div class="conclusion-grid">
+
+          <article class="finding ">
+            <span class="tag">확인됨</span>
+            <h3>상대 날짜는 실제 기준일이 있어야 Calendar가 된다</h3>
+            <p>기준 대상 이름만 있을 때 Todo 2 / Calendar 0이며, 2026-08-10을 주면 2026-08-07과 2026-08-10 두 날짜가 생긴다.</p>
+          </article>
+          <article class="finding ">
+            <span class="tag">확인됨</span>
+            <h3>지원하는 반복은 회차로 펼치고 조건은 표시만 한다</h3>
+            <p>매주·매월 반복은 4주 또는 명시 횟수까지 회차로 펼치며, 실행 조건은 회차 수에 영향을 주지 않고 RRULE도 만들지 않는다.</p>
+          </article>
+          <article class="finding ">
+            <span class="tag">확인됨</span>
+            <h3>Flow Markdown과 긴 목록은 source row를 축약하지 않는다</h3>
+            <p>K-MOOC 14개와 LibriVox 38개는 root Item과 들여쓴 속성으로, 신차 14개와 이사 27개는 기존 Item 순서로 유지했다.</p>
+          </article>
+          <article class="finding ">
+            <span class="tag">확인됨</span>
+            <h3>검토가 끝난 예외도 필요한 입력 제한은 유지한다</h3>
+            <p>담당자 속성과 표식 없는 설명문은 설명·TXT로 보존한다. 8월 3일·내일·URL-only도 처리 방침은 확정했지만 원문 수정이나 본문 입력 전까지 결과 제한을 유지한다.</p>
+          </article>
+          <article class="finding ">
+            <span class="tag">확인됨</span>
+            <h3>일일 종료일과 같은 날 시간순 일정을 보강했다</h3>
+            <p>매일 반복은 명시 종료일까지 네 결과에 같은 회차를 만들고, Calendar는 같은 날짜에서 종일 일정을 먼저 둔 뒤 시간을 오름차순으로 표시한다.</p>
+          </article>
+          <article class="finding decision">
+            <span class="tag">결정 필요</span>
+            <h3>Anchor 변경 시 preflight identity 정책은 별도 결정이 필요하다</h3>
+            <p>현재 날짜와 ICS 내용은 바뀌지만 preflightId 입력에는 anchor/date가 포함되지 않는다. 저장·영수증 동일성 정책을 정한 뒤 수정 여부를 결정해야 한다.</p>
+          </article>
+          <article class="finding decision">
+            <span class="tag">결정 필요</span>
+            <h3>원문 이슈와 외부 산출물의 표시 수준을 정해야 한다</h3>
+            <p>invalid/unknown 값은 raw source와 이슈에는 남지만 지원 Markdown·artifact에는 빠지거나 설명으로 평탄화된다. “내보내기 전 확인” 노출 정책이 필요하다.</p>
+          </article>
+      </div>
+    </section>
+
+    <section id="changes">
+      <div class="section-heading">
+        <div><h2>한 조건씩 바꾸면</h2></div>
+        <p>기준일, 날짜 표현, 반복, 조건, 표 형식만 바꾸고 Item 수와 원문 의미가 흔들리지 않는지 비교했습니다.</p>
+      </div>
+      <div class="comparison-stack">
+    <article class="comparison-card">
+      <div class="comparison-label">기준일과 날짜 표현</div>
+      <div class="comparison-track">
+
+            <div class="comparison-state">
+              <span>기준일 날짜 미입력</span>
+              <strong>Todo · 0 Calendar</strong>
+              <small>날짜 없음</small>
+
+
+            </div>
+            <div class="comparison-state">
+              <span>기준일 2026-08-10</span>
+              <strong>Calendar · 2 Calendar</strong>
+              <small>2026-08-07<br>→ 2026-08-10</small>
+
+
+            </div>
+            <div class="comparison-state">
+              <span>기준일 2026-09-10</span>
+              <strong>Calendar · 2 Calendar</strong>
+              <small>2026-09-07<br>→ 2026-09-10</small>
+
+
+            </div>
+            <div class="comparison-state">
+              <span>절대 날짜로 확정</span>
+              <strong>Calendar · 2 Calendar</strong>
+              <small>2026-08-07<br>→ 2026-08-10</small>
+
+
+            </div>
+      </div>
+    </article>
+    <article class="comparison-card">
+      <div class="comparison-label">날짜 커버리지</div>
+      <div class="comparison-track">
+
+            <div class="comparison-state">
+              <span>두 번째 Item 날짜 제거</span>
+              <strong>Todo · 1 Calendar</strong>
+              <small>2026-08-03<br>→ 2026-08-03</small>
+
+
+            </div>
+      </div>
+    </article>
+    <article class="comparison-card">
+      <div class="comparison-label">시간 상세</div>
+      <div class="comparison-track">
+
+            <div class="comparison-state">
+              <span>09:00 · Asia/Seoul · 30분</span>
+              <strong>Calendar · 1 Calendar</strong>
+              <small>2026-08-03<br>→ 2026-08-03</small>
+
+
+            </div>
+      </div>
+    </article>
+    <article class="comparison-card">
+      <div class="comparison-label">repeat-end</div>
+      <div class="comparison-track">
+
+            <div class="comparison-state">
+              <span>매일 · 2026-08-15 종료</span>
+              <strong>Calendar · 5 Calendar</strong>
+              <small>2026-08-11<br>→ 2026-08-15</small>
+              <small>반복: 매일</small>
+
+            </div>
+      </div>
+    </article>
+    <article class="comparison-card">
+      <div class="comparison-label">same-day-order</div>
+      <div class="comparison-track">
+
+            <div class="comparison-state">
+              <span>종일 먼저 · 09:00 · 10:00 · 16:30</span>
+              <strong>Calendar · 4 Calendar</strong>
+              <small>2026-08-20<br>→ 2026-08-20</small>
+
+
+            </div>
+      </div>
+    </article>
+    <article class="comparison-card">
+      <div class="comparison-label">반복과 조건</div>
+      <div class="comparison-track">
+
+            <div class="comparison-state">
+              <span>매주 월요일 · 사용 중</span>
+              <strong>Calendar · 4 Calendar</strong>
+              <small>2026-08-03<br>→ 2026-08-24</small>
+              <small>반복: 매주 월요일</small>
+              <small>조건: 사용 중인 경우</small>
+            </div>
+            <div class="comparison-state">
+              <span>매월 15일 · 경고등 꺼짐</span>
+              <strong>Calendar · 1 Calendar</strong>
+              <small>2026-08-15<br>→ 2026-08-15</small>
+              <small>반복: 매월 15일</small>
+              <small>조건: 경고등이 꺼져 있는 경우</small>
+            </div>
+      </div>
+    </article>
+    <article class="comparison-card">
+      <div class="comparison-label">latest-grammar</div>
+      <div class="comparison-track">
+
+            <div class="comparison-state">
+              <span>유한 3회 · 하위 체크 · 링크 · 추가 메모</span>
+              <strong>Calendar · 3 Calendar</strong>
+              <small>2026-08-03<br>→ 2026-08-17</small>
+              <small>반복: 매주 월요일</small>
+              <small>조건: 자료가 공개된 경우</small>
+            </div>
+      </div>
+    </article>
+    <article class="comparison-card">
+      <div class="comparison-label">표 형식</div>
+      <div class="comparison-track">
+
+            <div class="comparison-state">
+              <span>탭</span>
+              <strong>Sheet · 0 Calendar</strong>
+              <small>날짜 없음</small>
+
+
+            </div>
+            <div class="comparison-state">
+              <span>CSV</span>
+              <strong>Sheet · 0 Calendar</strong>
+              <small>날짜 없음</small>
+
+
+            </div>
+            <div class="comparison-state">
+              <span>Markdown 표</span>
+              <strong>Sheet · 0 Calendar</strong>
+              <small>날짜 없음</small>
+
+
+            </div>
+      </div>
+    </article></div>
+    </section>
+
+    <section id="content">
+      <div class="section-heading">
+        <div><h2>기존 FLOW 콘텐츠 8종</h2></div>
+        <p>자연스러운 목적지를 먼저 정하고, 원문 수량과 순서를 그대로 대조했습니다.</p>
+      </div>
+      <div class="table-shell">
+        <table>
+          <thead><tr><th>콘텐츠</th><th>Step / Item</th><th>목적지</th><th>Calendar</th><th>Todo</th><th>Sheet</th><th>Issue</th><th>결과</th></tr></thead>
+          <tbody>
+      <tr>
+        <td><strong>이사 D-30 체크리스트</strong><small>D-day 준비 타임라인 · 6 Step · 27 Item</small></td>
+        <td>6 / 27</td>
+        <td>Calendar</td>
+        <td>27</td>
+        <td>27</td>
+        <td>27</td>
+        <td>0</td>
+        <td><span class="mini-pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td><strong>자동차검사 D-14 준비</strong><small>공식 점검 체크리스트 · 3 Step · 10 Item</small></td>
+        <td>3 / 10</td>
+        <td>Calendar</td>
+        <td>10</td>
+        <td>10</td>
+        <td>10</td>
+        <td>0</td>
+        <td><span class="mini-pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td><strong>Allblanc 7일 영상 챌린지</strong><small>영상 시퀀스 · 7 Step · 7 Item</small></td>
+        <td>7 / 7</td>
+        <td>Calendar</td>
+        <td>7</td>
+        <td>7</td>
+        <td>7</td>
+        <td>0</td>
+        <td><span class="mini-pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td><strong>K-MOOC 14주 학습 목록</strong><small>14개 주차 Item · 주차·주차 활동 속성</small></td>
+        <td>1 / 14</td>
+        <td>Todo</td>
+        <td>0</td>
+        <td>14</td>
+        <td>14</td>
+        <td>0</td>
+        <td><span class="mini-pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td><strong>LibriVox 38장 듣기 목록</strong><small>38개 장 Item · 순서·재생시간 속성</small></td>
+        <td>1 / 38</td>
+        <td>Todo</td>
+        <td>0</td>
+        <td>38</td>
+        <td>38</td>
+        <td>0</td>
+        <td><span class="mini-pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td><strong>신차 구매 8단계</strong><small>구매·비교 절차 · 8 Step · 14 Item</small></td>
+        <td>8 / 14</td>
+        <td>Todo</td>
+        <td>0</td>
+        <td>14</td>
+        <td>14</td>
+        <td>0</td>
+        <td><span class="mini-pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td><strong>해외여행 안전정보·영사조력</strong><small>공식 안전 안내 · 2 Step · 4 Item</small></td>
+        <td>2 / 4</td>
+        <td>Todo</td>
+        <td>0</td>
+        <td>4</td>
+        <td>4</td>
+        <td>0</td>
+        <td><span class="mini-pass">PASS</span></td>
+      </tr>
+      <tr>
+        <td><strong>제주 여행 개인 메모</strong><small>v2 Markdown · 1 Step · 5 Item</small></td>
+        <td>1 / 5</td>
+        <td>Todo</td>
+        <td>0</td>
+        <td>5</td>
+        <td>0</td>
+        <td>0</td>
+        <td><span class="mini-pass">PASS</span></td>
+      </tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="ui">
+      <div class="section-heading">
+        <div><h2>현재 UI 적용 결과</h2></div>
+        <p>실시간 반영, 예시 전환, 결과 탭, 오류 수정, 작은 화면 스크롤을 route와 standalone에서 확인합니다.</p>
+      </div>
+
+      <div class="empty-evidence">
+        이 보고서는 문법 의미 시뮬레이션만 소유합니다. 현재 UI 증거는
+        <code>2026-08-11-flowme-text-authoring-exception-coverage-v5-results/browser-qa.json</code>에서 확인하세요.
+      </div>
+    </section>
+
+    <section id="scenarios">
+      <div class="section-heading">
+        <div><h2>30개 시나리오 자세히 보기</h2></div>
+        <p>필터나 검색으로 사례를 좁히고, 입력 문법과 각 검사의 실제 관찰값을 펼쳐볼 수 있습니다.</p>
+      </div>
+      <div class="controls">
+        <div class="filter-row" role="group" aria-label="시나리오 필터">
+          <button class="filter-button" type="button" data-filter="all" aria-pressed="true">전체 30</button>
+          <button class="filter-button" type="button" data-filter="existing_content" aria-pressed="false">기존 콘텐츠 8</button>
+          <button class="filter-button" type="button" data-filter="condition_change" aria-pressed="false">조건 변경 11</button>
+          <button class="filter-button" type="button" data-filter="compatibility" aria-pressed="false">호환 6</button>
+          <button class="filter-button" type="button" data-filter="exception_handling" aria-pressed="false">예외 처리 5</button>
+
+        </div>
+        <input class="search" type="search" placeholder="예: 반복, K-MOOC, 날짜" aria-label="시나리오 검색">
+      </div>
+      <div class="scenario-list">
+
+    <article class="scenario-card is-pass"
+      data-group="existing_content"
+      data-search="content-moving-d30 이사 d-30 체크리스트 6개 시기와 27개 원문 item을 목표일 기준 캘린더로 변환한다. d-day 준비 타임라인 · 6 step · 27 item 기준일이 없으면 상대 날짜를 실제 날짜로 추정하지 않는다.">
+      <div class="scenario-heading">
+        <div>
+          <div class="eyebrow-row">
+            <span class="group-pill group-existing-content">기존 콘텐츠</span>
+            <code>content-moving-d30</code>
+          </div>
+          <h3>이사 D-30 체크리스트</h3>
+          <p>6개 시기와 27개 원문 Item을 목표일 기준 캘린더로 변환한다.</p>
+        </div>
+        <span class="result-pill pass">
+          PASS · 14/14
+        </span>
+      </div>
+      <div class="scenario-metrics">
+        <span><b>6</b> Step</span>
+        <span><b>27</b> Item</span>
+        <span><b>27</b> Calendar</span>
+        <span><b>27</b> Todo</span>
+        <span><b>27</b> Sheet</span>
+        <span><b>27</b> Memo</span>
+      </div>
+      <dl class="scenario-facts">
+        <div><dt>원문 형태</dt><dd>D-day 준비 타임라인 · 6 Step · 27 Item</dd></div>
+        <div><dt>자연스러운 결과</dt><dd>Calendar</dd></div>
+        <div><dt>실제 주 결과</dt><dd>Calendar</dd></div>
+        <div><dt>날짜 범위</dt><dd>2026-08-01 → 2026-08-31</dd></div>
+        <div><dt>해석 이슈</dt><dd>없음</dd></div>
+        <div><dt>ICS</dt><dd>27 VEVENT · RRULE 없음</dd></div>
+      </dl>
+      <div class="boundary"><b>의미 경계</b>기준일이 없으면 상대 날짜를 실제 날짜로 추정하지 않는다.</div>
+
+      <details>
+        <summary>입력 문법과 전체 검사 보기</summary>
+        <div class="details-grid">
+          <div>
+            <h4>입력</h4>
+            <pre># 이사 D-30 체크리스트
+- 기준일: 2026-08-31
+## D-30 · 큰 결정과 예약
+- [ ] 이사 방식과 이사업체 정하기
+  - 설명: 포장이사·반포장이사·일반이사 중 방식 선택 · 이사업체 견적 비교와 예약 · 입주청소 업체 견적 비교와 예약
+  - 상대 날짜: D-30
+- [ ] 새집 상태 확인하고 필요한 수리 잡기
+  - 설명: 새집 현장 점검 · 도배·장판·수리 필요 항목 확인과 일정 잡기
+  - 상대 날짜: D-30
+- [ ] 가져가지 않을 물건 처분 시작하기
+  - 설명: 대형폐기물·중고판매·기부 등 처분 대상 정리
+  - 상대 날짜: D-30
+- [ ] 학교 전학과 돌봄 계획 세우기
+  - 설명: 자녀 학교 전학 절차 확인 · 이사 당일 아이·어르신·반려동물 돌봄 계획
+  - 상대 날짜: D-30
+## D-10 · 주소·서비스·짐 줄이기
+- [ ] 우편·배송·전출 주소 변경하기
+  - 설명: 우편물 주소 이전 신청 · 정기배송 주소 변경 또는 중지 · 관리사무소에 퇴거 일정 알리기
+  - 상대 날짜: D-10
+- [ ] 엘리베이터·사다리차·주차 예약하기
+  - 설명: 출발지와 도착지 엘리베이터 예약 · 사다리차 사용 여부와 주차 공간 확인
+  - 상대 날짜: D-10
+- [ ] 폐기물과 남은 짐 처리하기
+  - 설명: 종량제 봉투와 폐기물 스티커 준비 · 대형폐기물 수거 신청 · 열쇠·리모컨·설명서 한곳에 모으기
+  - 상대 날짜: D-10
+- [ ] 냉장고 비우고 새집 물품 배치 정하기
+  - 설명: 냉장고 식재료 소진 시작 · 새집에 필요한 물품 주문 · 가구·가전 배치도 정리
+  - 상대 날짜: D-10
+- [ ] 인터넷·정수기 등 이전 신청하기
+  - 설명: 인터넷·TV 이전 설치 신청 · 정수기 등 렌탈 기기 이전 신청
+  - 상대 날짜: D-10
+## D-3 · 해지와 당일 준비
+- [ ] 도시가스 철거·설치 예약하기
+  - 설명: 출발지 도시가스 철거 예약 · 도착지 도시가스 설치 예약
+  - 상대 날짜: D-3
+- [ ] 기존 집 자동이체 해지하기
+  - 설명: 전기·수도·가스·관리비 자동이체 해지 또는 변경
+  - 상대 날짜: D-3
+- [ ] 세탁기 배수하고 운반 상태 만들기
+  - 설명: 세탁기 물 빼기와 운반 준비
+  - 상대 날짜: D-3
+- [ ] 임대차 권리 서류 확인하기
+  - 설명: 필요한 경우 임차권·보증금 관련 서류 확인
+  - 상대 날짜: D-3
+- [ ] 당일 바로 쓸 짐을 따로 싸기
+  - 설명: 신분증·충전기·세면도구·약·옷 등 당일 물품 분리
+  - 상대 날짜: D-3
+## D-1 · 돈·귀중품·인계 확인
+- [ ] 당일 일정·송금 한도·잔금 확인하기
+  - 설명: 이사업체와 최종 시간 확인 · 은행 이체 한도 확인 · 보증금·잔금 지급 계획 확인
+  - 상대 날짜: D-1
+- [ ] 출발지·도착지 주차 다시 확인하기
+  - 설명: 이삿짐 차량 주차 위치 최종 확인
+  - 상대 날짜: D-1
+- [ ] 귀중품과 중요서류 직접 보관하기
+  - 설명: 현금·귀중품·중요서류 별도 보관
+  - 상대 날짜: D-1
+- [ ] 열쇠·리모컨·비밀번호 인계 준비하기
+  - 설명: 출발지 열쇠·리모컨 모으기 · 도착지 공동현관·도어락 정보 확인
+  - 상대 날짜: D-1
+- [ ] 가전·가구 상태 사진 남기기
+  - 설명: 운반 전 가전·가구 외관 사진 촬영 · 어항이 있으면 이동 준비
+  - 상대 날짜: D-1
+## 이사 당일 · 출발지 마감
+- [ ] 전기·수도·가스·관리비 정산하기
+  - 설명: 출발지 전기·수도·가스 사용량 확인과 정산 · 관리비 정산
+  - 상대 날짜: D-Day
+- [ ] 장기수선충당금 환급 확인하기
+  - 설명: 세입자인 경우 장기수선충당금 반환 요청
+  - 상대 날짜: D-Day
+- [ ] 남은 물건 확인하고 열쇠 반납하기
+  - 설명: 방·수납장·계량기 주변 남은 물건 확인 · 집주인 또는 관리실에 열쇠 반납
+  - 상대 날짜: D-Day
+## 이사 당일 · 도착지 시작
+- [ ] 분실·파손 확인하고 이사업체 정산하기
+  - 설명: 짐 분실·파손 여부 확인 · 이사업체 잔금 정산
+  - 상대 날짜: D-Day
+- [ ] 인터넷·TV와 도어락 확인하기
+  - 설명: 인터넷·TV 연결 확인 · 도어락 비밀번호 변경
+  - 상대 날짜: D-Day
+- [ ] 잔금·관리비·열쇠 인수 마치기
+  - 설명: 주택 잔금 또는 보증금 정산 · 관리비 확인 · 열쇠·리모컨 인수
+  - 상대 날짜: D-Day
+- [ ] 전기·수도 명의와 가스 개통하기
+  - 설명: 전기·수도 명의 변경 · 도착지 도시가스 개통
+  - 상대 날짜: D-Day
+- [ ] 전입신고와 확정일자 처리하기
+  - 설명: 전입신고 · 필요한 경우 확정일자 받기
+  - 상대 날짜: D-Day</pre>
+          </div>
+          <div>
+            <h4>검사</h4>
+            <ul class="check-list">
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>원문 불변</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>문서 검증</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Flow 제목</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Item 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Step 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>주 산출물</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>calendar 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>todo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>sheet 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>memo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>해석 이슈 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>캘린더 날짜 범위</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS VEVENT 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS RRULE 생성</strong>
+
+    </li></ul>
+          </div>
+        </div>
+      </details>
+    </article>
+    <article class="scenario-card is-pass"
+      data-group="existing_content"
+      data-search="content-vehicle-inspection 자동차검사 d-14 준비 공식 일정의 d-14·d-10·d-3·d-day 10개 항목을 그대로 유지한다. 공식 점검 체크리스트 · 3 step · 10 item 점검 절차나 안전 판단을 새 item으로 발명하지 않는다.">
+      <div class="scenario-heading">
+        <div>
+          <div class="eyebrow-row">
+            <span class="group-pill group-existing-content">기존 콘텐츠</span>
+            <code>content-vehicle-inspection</code>
+          </div>
+          <h3>자동차검사 D-14 준비</h3>
+          <p>공식 일정의 D-14·D-10·D-3·D-Day 10개 항목을 그대로 유지한다.</p>
+        </div>
+        <span class="result-pill pass">
+          PASS · 13/13
+        </span>
+      </div>
+      <div class="scenario-metrics">
+        <span><b>3</b> Step</span>
+        <span><b>10</b> Item</span>
+        <span><b>10</b> Calendar</span>
+        <span><b>10</b> Todo</span>
+        <span><b>10</b> Sheet</span>
+        <span><b>10</b> Memo</span>
+      </div>
+      <dl class="scenario-facts">
+        <div><dt>원문 형태</dt><dd>공식 점검 체크리스트 · 3 Step · 10 Item</dd></div>
+        <div><dt>자연스러운 결과</dt><dd>Calendar</dd></div>
+        <div><dt>실제 주 결과</dt><dd>Calendar</dd></div>
+        <div><dt>날짜 범위</dt><dd>2026-08-01 → 2026-08-15</dd></div>
+        <div><dt>해석 이슈</dt><dd>없음</dd></div>
+        <div><dt>ICS</dt><dd>10 VEVENT · RRULE 없음</dd></div>
+      </dl>
+      <div class="boundary"><b>의미 경계</b>점검 절차나 안전 판단을 새 Item으로 발명하지 않는다.</div>
+
+      <details>
+        <summary>입력 문법과 전체 검사 보기</summary>
+        <div class="details-grid">
+          <div>
+            <h4>입력</h4>
+            <pre># 자동차검사 D-14 준비 Flow
+- 기준일: 2026-08-15
+## D-14 검사 기간 확인
+- [ ] 자동차검사 기간과 예약 가능일 확인하기
+  - 상대 날짜: D-14
+- [ ] 차량번호와 예약 정보 확인하기
+  - 상대 날짜: D-14
+- [ ] 가까운 검사소와 수수료 확인하기
+  - 상대 날짜: D-10
+
+## D-3 차량 상태 점검
+- [ ] 번호판과 차대번호 식별 상태 확인하기
+  - 상대 날짜: D-3
+- [ ] 등화장치와 경음기 작동 확인하기
+  - 상대 날짜: D-3
+- [ ] 타이어 마모와 공기압 확인하기
+  - 상대 날짜: D-3
+- [ ] 오일 누유와 경고등 여부 기록하기
+  - 상대 날짜: D-3
+
+## D-Day 검사 당일
+- [ ] 예약 시간보다 여유 있게 검사소 도착하기
+  - 상대 날짜: D-Day
+- [ ] 접수와 수수료 결제 진행하기
+  - 상대 날짜: D-Day
+- [ ] 검사 결과와 재검사 필요 항목 기록하기
+  - 상대 날짜: D-Day</pre>
+          </div>
+          <div>
+            <h4>검사</h4>
+            <ul class="check-list">
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>원문 불변</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>문서 검증</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Item 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Step 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>주 산출물</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>calendar 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>todo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>sheet 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>memo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>해석 이슈 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>캘린더 날짜 범위</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS VEVENT 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS RRULE 생성</strong>
+
+    </li></ul>
+          </div>
+        </div>
+      </details>
+    </article>
+    <article class="scenario-card is-pass"
+      data-group="existing_content"
+      data-search="content-allblanc-7day allblanc 7일 영상 챌린지 7개 영상 제목·url·순서를 d+0~d+6 일정으로 유지한다. 영상 시퀀스 · 7 step · 7 item 영상에 없는 동작·세트·반복 횟수는 만들지 않는다.">
+      <div class="scenario-heading">
+        <div>
+          <div class="eyebrow-row">
+            <span class="group-pill group-existing-content">기존 콘텐츠</span>
+            <code>content-allblanc-7day</code>
+          </div>
+          <h3>Allblanc 7일 영상 챌린지</h3>
+          <p>7개 영상 제목·URL·순서를 D+0~D+6 일정으로 유지한다.</p>
+        </div>
+        <span class="result-pill pass">
+          PASS · 14/14
+        </span>
+      </div>
+      <div class="scenario-metrics">
+        <span><b>7</b> Step</span>
+        <span><b>7</b> Item</span>
+        <span><b>7</b> Calendar</span>
+        <span><b>7</b> Todo</span>
+        <span><b>7</b> Sheet</span>
+        <span><b>7</b> Memo</span>
+      </div>
+      <dl class="scenario-facts">
+        <div><dt>원문 형태</dt><dd>영상 시퀀스 · 7 Step · 7 Item</dd></div>
+        <div><dt>자연스러운 결과</dt><dd>Calendar</dd></div>
+        <div><dt>실제 주 결과</dt><dd>Calendar</dd></div>
+        <div><dt>날짜 범위</dt><dd>2026-08-03 → 2026-08-09</dd></div>
+        <div><dt>해석 이슈</dt><dd>없음</dd></div>
+        <div><dt>ICS</dt><dd>7 VEVENT · RRULE 없음</dd></div>
+      </dl>
+      <div class="boundary"><b>의미 경계</b>영상에 없는 동작·세트·반복 횟수는 만들지 않는다.</div>
+
+      <details>
+        <summary>입력 문법과 전체 검사 보기</summary>
+        <div class="details-grid">
+          <div>
+            <h4>입력</h4>
+            <pre># Allblanc 7일 복근 챌린지
+- 기준일: 2026-08-03
+## 영상 따라 하기
+- [ ] 코어 + 복근 한방에! 20분 복근 운동
+  - 설명: 영상 길이 21:25 · 확인 조회수 150,000
+  - 상대 날짜: D+0
+  - 자료: [코어 + 복근 한방에! 20분 복근 운동](https://www.youtube.com/watch?v=XwUKn-52ykk)
+## 영상 따라 하기
+- [ ] 허리 통증 없이 20분 복근 운동
+  - 설명: 영상 길이 20:41 · 확인 조회수 78,000
+  - 상대 날짜: D+1
+  - 자료: [허리 통증 없이 20분 복근 운동](https://www.youtube.com/watch?v=KzH8TcfyKFA)
+## 영상 따라 하기
+- [ ] 아랫 뱃살 집중 타격 20분 운동
+  - 설명: 영상 길이 21:01 · 확인 조회수 73,000
+  - 상대 날짜: D+2
+  - 자료: [아랫 뱃살 집중 타격 20분 운동](https://www.youtube.com/watch?v=Ft5gNO-2Je4)
+## 영상 따라 하기
+- [ ] 서서하는 20분 복근 운동
+  - 설명: 영상 길이 20:49 · 확인 조회수 88,000
+  - 상대 날짜: D+3
+  - 자료: [서서하는 20분 복근 운동](https://www.youtube.com/watch?v=8RzHWcq6eq0)
+## 영상 따라 하기
+- [ ] 집에서 옆구리살 빼기 20분 운동
+  - 설명: 영상 길이 20:40 · 확인 조회수 45,000
+  - 상대 날짜: D+4
+  - 자료: [집에서 옆구리살 빼기 20분 운동](https://www.youtube.com/watch?v=peQuipmDIuc)
+## 영상 따라 하기
+- [ ] 허리 군살 제거 20분 복근 홈트
+  - 설명: 영상 길이 20:36 · 확인 조회수 42,000
+  - 상대 날짜: D+5
+  - 자료: [허리 군살 제거 20분 복근 홈트](https://www.youtube.com/watch?v=K3yO9oHgaIs)
+## 영상 따라 하기
+- [ ] 헤어질 결심: 복부지방 20분 운동
+  - 설명: 영상 길이 20:49 · 확인 조회수 63,000
+  - 상대 날짜: D+6
+  - 자료: [헤어질 결심: 복부지방 20분 운동](https://www.youtube.com/watch?v=W2fS4TqeWCc)</pre>
+          </div>
+          <div>
+            <h4>검사</h4>
+            <ul class="check-list">
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>원문 불변</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>문서 검증</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Item 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Step 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>주 산출물</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>calendar 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>todo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>sheet 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>memo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>해석 이슈 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>캘린더 날짜 범위</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>자료·출처 URL</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS VEVENT 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS RRULE 생성</strong>
+
+    </li></ul>
+          </div>
+        </div>
+      </details>
+    </article>
+    <article class="scenario-card is-pass"
+      data-group="existing_content"
+      data-search="content-kmooc-14 k-mooc 14주 학습 목록 검증된 강의계획 14개 주차를 날짜 없는 flow item으로 보존한다. 14개 주차 item · 주차·주차 활동 속성 주차 번호만 보고 실제 날짜를 추정하지 않는다.">
+      <div class="scenario-heading">
+        <div>
+          <div class="eyebrow-row">
+            <span class="group-pill group-existing-content">기존 콘텐츠</span>
+            <code>content-kmooc-14</code>
+          </div>
+          <h3>K-MOOC 14주 학습 목록</h3>
+          <p>검증된 강의계획 14개 주차를 날짜 없는 Flow Item으로 보존한다.</p>
+        </div>
+        <span class="result-pill pass">
+          PASS · 13/13
+        </span>
+      </div>
+      <div class="scenario-metrics">
+        <span><b>1</b> Step</span>
+        <span><b>14</b> Item</span>
+        <span><b>0</b> Calendar</span>
+        <span><b>14</b> Todo</span>
+        <span><b>14</b> Sheet</span>
+        <span><b>14</b> Memo</span>
+      </div>
+      <dl class="scenario-facts">
+        <div><dt>원문 형태</dt><dd>14개 주차 Item · 주차·주차 활동 속성</dd></div>
+        <div><dt>자연스러운 결과</dt><dd>Todo</dd></div>
+        <div><dt>실제 주 결과</dt><dd>Todo</dd></div>
+        <div><dt>날짜 범위</dt><dd>계산된 날짜 없음</dd></div>
+        <div><dt>해석 이슈</dt><dd>없음</dd></div>
+        <div><dt>ICS</dt><dd>0 VEVENT · RRULE 없음</dd></div>
+      </dl>
+      <div class="boundary"><b>의미 경계</b>주차 번호만 보고 실제 날짜를 추정하지 않는다.</div>
+
+      <details>
+        <summary>입력 문법과 전체 검사 보기</summary>
+        <div class="details-grid">
+          <div>
+            <h4>입력</h4>
+            <pre># Introduction to Data Analysis
+## 14주 강의계획
+- [ ] 데이터 리터러시
+  - 주차: 1주차
+  - 주차 활동: 퀴즈
+- [ ] 생성형 AI 활용 데이터 분석
+  - 주차: 2주차
+  - 주차 활동: 과제
+- [ ] 데이터 분석
+  - 주차: 3주차
+  - 주차 활동: 토론
+- [ ] 데이터 수집
+  - 주차: 4주차
+  - 주차 활동: 퀴즈
+- [ ] 파일 다루기
+  - 주차: 5주차
+  - 주차 활동: 퀴즈
+- [ ] 탐색적 데이터 분석
+  - 주차: 6주차
+  - 주차 활동: 토론
+- [ ] 수치 데이터 분석을 위한 NumPy
+  - 주차: 7주차
+  - 주차 활동: 과제
+- [ ] Pandas 활용 데이터 분석
+  - 주차: 8주차
+  - 주차 활동: 퀴즈
+- [ ] 데이터 시각화
+  - 주차: 9주차
+  - 주차 활동: 토론
+- [ ] 통계분석
+  - 주차: 10주차
+  - 주차 활동: 토론
+- [ ] 데이터 기반 문제 해결 전략
+  - 주차: 11주차
+  - 주차 활동: 토론
+- [ ] 텍스트 데이터 분석
+  - 주차: 12주차
+  - 주차 활동: 토론
+- [ ] 감성 분석
+  - 주차: 13주차
+  - 주차 활동: 토론
+- [ ] 데이터 분석 보고서 작성법
+  - 주차: 14주차
+  - 주차 활동: 없음</pre>
+          </div>
+          <div>
+            <h4>검사</h4>
+            <ul class="check-list">
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>원문 불변</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>문서 검증</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Item 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Step 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>주 산출물</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>calendar 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>todo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>sheet 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>memo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>해석 이슈 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>캘린더 날짜 범위</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS VEVENT 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS RRULE 생성</strong>
+
+    </li></ul>
+          </div>
+        </div>
+      </details>
+    </article>
+    <article class="scenario-card is-pass"
+      data-group="existing_content"
+      data-search="content-librivox-38 librivox 38장 듣기 목록 검증된 38개 장 제목과 재생시간을 날짜 없는 flow item으로 보존한다. 38개 장 item · 순서·재생시간 속성 목록 순서를 임의의 일일 일정으로 바꾸지 않는다.">
+      <div class="scenario-heading">
+        <div>
+          <div class="eyebrow-row">
+            <span class="group-pill group-existing-content">기존 콘텐츠</span>
+            <code>content-librivox-38</code>
+          </div>
+          <h3>LibriVox 38장 듣기 목록</h3>
+          <p>검증된 38개 장 제목과 재생시간을 날짜 없는 Flow Item으로 보존한다.</p>
+        </div>
+        <span class="result-pill pass">
+          PASS · 15/15
+        </span>
+      </div>
+      <div class="scenario-metrics">
+        <span><b>1</b> Step</span>
+        <span><b>38</b> Item</span>
+        <span><b>0</b> Calendar</span>
+        <span><b>38</b> Todo</span>
+        <span><b>38</b> Sheet</span>
+        <span><b>38</b> Memo</span>
+      </div>
+      <dl class="scenario-facts">
+        <div><dt>원문 형태</dt><dd>38개 장 Item · 순서·재생시간 속성</dd></div>
+        <div><dt>자연스러운 결과</dt><dd>Todo</dd></div>
+        <div><dt>실제 주 결과</dt><dd>Todo</dd></div>
+        <div><dt>날짜 범위</dt><dd>계산된 날짜 없음</dd></div>
+        <div><dt>해석 이슈</dt><dd>없음</dd></div>
+        <div><dt>ICS</dt><dd>0 VEVENT · RRULE 없음</dd></div>
+      </dl>
+      <div class="boundary"><b>의미 경계</b>목록 순서를 임의의 일일 일정으로 바꾸지 않는다.</div>
+
+      <details>
+        <summary>입력 문법과 전체 검사 보기</summary>
+        <div class="details-grid">
+          <div>
+            <h4>입력</h4>
+            <pre># Anne of Green Gables, Version 5
+## 장 목록
+- [ ] Mrs. Rachel Lynde Is Surprised
+  - 순서: 1
+  - 재생시간: 00:14:35
+- [ ] Matthew Cuthbert Is Surprised
+  - 순서: 2
+  - 재생시간: 00:26:09
+- [ ] Marilla Cuthbert Is Surprised
+  - 순서: 3
+  - 재생시간: 00:12:47
+- [ ] Morning at Green Gables
+  - 순서: 4
+  - 재생시간: 00:12:03
+- [ ] Anne&#039;s History
+  - 순서: 5
+  - 재생시간: 00:11:23
+- [ ] Marilla Makes Up Her Mind
+  - 순서: 6
+  - 재생시간: 00:10:18
+- [ ] Anne Says Her Prayers
+  - 순서: 7
+  - 재생시간: 00:06:54
+- [ ] Anne&#039;s Bringing-Up Is Begun
+  - 순서: 8
+  - 재생시간: 00:23:23
+- [ ] Mrs. Rachel Lynde Is Properly Horrified
+  - 순서: 9
+  - 재생시간: 00:13:01
+- [ ] Anne&#039;s Apology
+  - 순서: 10
+  - 재생시간: 00:19:34
+- [ ] Anne&#039;s Impressions of Sunday School
+  - 순서: 11
+  - 재생시간: 00:09:16
+- [ ] A Solemn Vow and Promise
+  - 순서: 12
+  - 재생시간: 00:11:08
+- [ ] The Delights of Anticipation
+  - 순서: 13
+  - 재생시간: 00:08:57
+- [ ] Anne&#039;s Confession
+  - 순서: 14
+  - 재생시간: 00:16:07
+- [ ] A Tempest in the School Teapot
+  - 순서: 15
+  - 재생시간: 00:26:34
+- [ ] Diana Is Invited to Tea with Tragic Results
+  - 순서: 16
+  - 재생시간: 00:21:11
+- [ ] A New Interest in Life
+  - 순서: 17
+  - 재생시간: 00:10:39
+- [ ] Anne to the Rescue
+  - 순서: 18
+  - 재생시간: 00:16:59
+- [ ] A Concert a Catastrophe and a Confession
+  - 순서: 19
+  - 재생시간: 00:19:47
+- [ ] A Good Imagination Gone Wrong
+  - 순서: 20
+  - 재생시간: 00:11:50
+- [ ] A New Departure in Flavorings
+  - 순서: 21
+  - 재생시간: 00:18:14
+- [ ] Anne Is Invited Out to Tea
+  - 순서: 22
+  - 재생시간: 00:07:55
+- [ ] Anne Comes to Grief in an Affair of Honor
+  - 순서: 23
+  - 재생시간: 00:11:46
+- [ ] Miss Stacy and Her Pupils Get Up a Concert
+  - 순서: 24
+  - 재생시간: 00:10:34
+- [ ] Matthew Insists on Puffed Sleeves
+  - 순서: 25
+  - 재생시간: 00:23:29
+- [ ] The Story Club Is Formed
+  - 순서: 26
+  - 재생시간: 00:18:47
+- [ ] Vanity and Vexation of Spirit
+  - 순서: 27
+  - 재생시간: 00:17:46
+- [ ] An Unfortunate Lily Maid
+  - 순서: 28
+  - 재생시간: 00:15:19
+- [ ] An Epoch in Anne&#039;s Life
+  - 순서: 29
+  - 재생시간: 00:15:38
+- [ ] The Queens Class Is Organized
+  - 순서: 30
+  - 재생시간: 00:21:04
+- [ ] Where the Brook and River Meet
+  - 순서: 31
+  - 재생시간: 00:11:24
+- [ ] The Pass List Is Out
+  - 순서: 32
+  - 재생시간: 00:16:08
+- [ ] The Hotel Concert
+  - 순서: 33
+  - 재생시간: 00:18:13
+- [ ] A Queen&#039;s Girl
+  - 순서: 34
+  - 재생시간: 00:13:36
+- [ ] The Winter at Queen&#039;s
+  - 순서: 35
+  - 재생시간: 00:10:14
+- [ ] The Glory and the Dream
+  - 순서: 36
+  - 재생시간: 00:11:29
+- [ ] The Reaper Whose Name Is Death
+  - 순서: 37
+  - 재생시간: 00:12:23
+- [ ] The Bend in the Road
+  - 순서: 38
+  - 재생시간: 00:15:02</pre>
+          </div>
+          <div>
+            <h4>검사</h4>
+            <ul class="check-list">
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>원문 불변</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>문서 검증</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Item 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Step 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>주 산출물</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>calendar 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>todo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>sheet 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>memo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>해석 이슈 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>캘린더 날짜 범위</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>첫 Item</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>마지막 Item</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS VEVENT 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS RRULE 생성</strong>
+
+    </li></ul>
+          </div>
+        </div>
+      </details>
+    </article>
+    <article class="scenario-card is-pass"
+      data-group="existing_content"
+      data-search="content-new-car-14 신차 구매 8단계 8개 step의 14개 결정·확인 행동을 todo로 유지한다. 구매·비교 절차 · 8 step · 14 item 기록 맥락을 별도의 15번째 행동으로 부풀리지 않는다.">
+      <div class="scenario-heading">
+        <div>
+          <div class="eyebrow-row">
+            <span class="group-pill group-existing-content">기존 콘텐츠</span>
+            <code>content-new-car-14</code>
+          </div>
+          <h3>신차 구매 8단계</h3>
+          <p>8개 Step의 14개 결정·확인 행동을 Todo로 유지한다.</p>
+        </div>
+        <span class="result-pill pass">
+          PASS · 13/13
+        </span>
+      </div>
+      <div class="scenario-metrics">
+        <span><b>8</b> Step</span>
+        <span><b>14</b> Item</span>
+        <span><b>0</b> Calendar</span>
+        <span><b>14</b> Todo</span>
+        <span><b>14</b> Sheet</span>
+        <span><b>14</b> Memo</span>
+      </div>
+      <dl class="scenario-facts">
+        <div><dt>원문 형태</dt><dd>구매·비교 절차 · 8 Step · 14 Item</dd></div>
+        <div><dt>자연스러운 결과</dt><dd>Todo</dd></div>
+        <div><dt>실제 주 결과</dt><dd>Todo</dd></div>
+        <div><dt>날짜 범위</dt><dd>계산된 날짜 없음</dd></div>
+        <div><dt>해석 이슈</dt><dd>없음</dd></div>
+        <div><dt>ICS</dt><dd>0 VEVENT · RRULE 없음</dd></div>
+      </dl>
+      <div class="boundary"><b>의미 경계</b>기록 맥락을 별도의 15번째 행동으로 부풀리지 않는다.</div>
+
+      <details>
+        <summary>입력 문법과 전체 검사 보기</summary>
+        <div class="details-grid">
+          <div>
+            <h4>입력</h4>
+            <pre># 신차 구매 8단계
+## 1. 예산과 차량 선택
+- [ ] 총예산과 월 납입 가능액 정하기
+  - 설명: 차량 가격 외 취등록세·보험·유지비를 포함한 총예산 확인 · 현금·할부 시 월 납입 가능액 확인
+- [ ] 차종·트림·옵션 후보 좁히기
+  - 설명: 용도와 탑승 인원에 맞는 차종 선택 · 트림과 필수 옵션 후보 정리
+## 2. 구매 방식 선택
+- [ ] 현금·할부·리스·장기렌트 비교하기
+  - 설명: 소유권·월 납입액·세금·만기 조건 비교 · 본인 상황에 맞는 구매 방식 선택
+## 3. 견적과 할인 협상
+- [ ] 여러 판매처 견적 비교하기
+  - 설명: 동일 트림·옵션 기준으로 견적 받기 · 차량 가격·탁송료·등록비·서비스 품목 비교
+- [ ] 할인과 서비스 조건 확정하기
+  - 설명: 제조사 할인과 딜러 할인 확인 · 현금 지원·용품 등 서비스 조건 기록
+## 4. 계약
+- [ ] 계약서 차량 사양과 금액 확인하기
+  - 설명: 차종·트림·색상·옵션 확인 · 총액과 계약금 확인 · 출고 예정일과 취소·환불 조건 확인
+- [ ] 계약금 납부하고 서류 보관하기
+  - 설명: 계약금 납부 · 계약서와 영수증 보관
+## 5. 출고와 검수
+- [ ] 차대번호와 출고 정보 확인하기
+  - 설명: 차대번호·생산연월·출고 일정 확인
+- [ ] 외관·내장·기능 검수하기
+  - 설명: 도장·유리·타이어·휠 외관 확인 · 시트·내장재 확인 · 등화·전자장비·옵션 작동 확인
+## 6. 등록
+- [ ] 등록 서류와 비용 확인하기
+  - 설명: 신분증·계약서·보험가입증명 등 필요 서류 확인 · 취득세·공채·번호판 등 등록 비용 확인
+- [ ] 차량 등록과 번호판 발급 마치기
+  - 설명: 직접 등록 또는 등록 대행 선택 · 자동차등록증과 번호판 수령
+## 7. 보험
+- [ ] 자동차보험 조건 비교하고 가입하기
+  - 설명: 운전자 범위·보장 한도·자기부담금 비교 · 차량 인수 전에 보험 효력 시작 확인
+## 8. 출고 후 관리
+- [ ] 차량 문서와 보증 조건 보관하기
+  - 설명: 등록증·보험증권·보증서 보관 · 보증 기간과 정기점검 조건 확인
+- [ ] 초기 점검과 소모품 일정 확인하기
+  - 설명: 제조사 초기 점검 안내 확인 · 소모품 교환 주기 확인</pre>
+          </div>
+          <div>
+            <h4>검사</h4>
+            <ul class="check-list">
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>원문 불변</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>문서 검증</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Item 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Step 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>주 산출물</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>calendar 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>todo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>sheet 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>memo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>해석 이슈 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>캘린더 날짜 범위</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS VEVENT 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS RRULE 생성</strong>
+
+    </li></ul>
+          </div>
+        </div>
+      </details>
+    </article>
+    <article class="scenario-card is-pass"
+      data-group="existing_content"
+      data-search="content-official-safety-4 해외여행 안전정보·영사조력 공식 출처, 실행 설명, 완료 기준, 주의를 서로 다른 의미로 보존한다. 공식 안전 안내 · 2 step · 4 item 공식 사실과 주의 문구를 체크 가능한 행동으로 오인하지 않는다.">
+      <div class="scenario-heading">
+        <div>
+          <div class="eyebrow-row">
+            <span class="group-pill group-existing-content">기존 콘텐츠</span>
+            <code>content-official-safety-4</code>
+          </div>
+          <h3>해외여행 안전정보·영사조력</h3>
+          <p>공식 출처, 실행 설명, 완료 기준, 주의를 서로 다른 의미로 보존한다.</p>
+        </div>
+        <span class="result-pill pass">
+          PASS · 13/13
+        </span>
+      </div>
+      <div class="scenario-metrics">
+        <span><b>2</b> Step</span>
+        <span><b>4</b> Item</span>
+        <span><b>0</b> Calendar</span>
+        <span><b>4</b> Todo</span>
+        <span><b>4</b> Sheet</span>
+        <span><b>4</b> Memo</span>
+      </div>
+      <dl class="scenario-facts">
+        <div><dt>원문 형태</dt><dd>공식 안전 안내 · 2 Step · 4 Item</dd></div>
+        <div><dt>자연스러운 결과</dt><dd>Todo</dd></div>
+        <div><dt>실제 주 결과</dt><dd>Todo</dd></div>
+        <div><dt>날짜 범위</dt><dd>계산된 날짜 없음</dd></div>
+        <div><dt>해석 이슈</dt><dd>없음</dd></div>
+        <div><dt>ICS</dt><dd>0 VEVENT · RRULE 없음</dd></div>
+      </dl>
+      <div class="boundary"><b>의미 경계</b>공식 사실과 주의 문구를 체크 가능한 행동으로 오인하지 않는다.</div>
+
+      <details>
+        <summary>입력 문법과 전체 검사 보기</summary>
+        <div class="details-grid">
+          <div>
+            <h4>입력</h4>
+            <pre># 해외여행 안전정보·영사조력 준비 Flow
+## 1. 위험 정보
+- [ ] 방문국 여행경보 단계 확인하기
+  - 설명: 경보 단계(여행유의·여행자제·여행제한·여행금지 4단계)에 따라 여행 자제·철수 권고가 달라집니다.
+  - 설명: 외교부 해외안전여행(0404.go.kr)에서 국가별 여행경보와 안전공지를 봅니다.
+  - 완료 기준: 방문국 경보 단계와 주의사항을 메모했다.
+  - 자료: [외교부 해외안전여행 여행경보](https://0404.go.kr/app/main/mainPage)
+
+## 2. 비상 대비
+- [ ] 현지 대사관·영사관 연락처와 영사콜센터(02-3210-0404, 24시간) 저장하기
+- [ ] 동행등록(해외여행자 인터넷등록제) 신청 검토하기
+  - 설명: 0404.go.kr에서 여행 정보를 등록하면 외교부·공관이 안전정보를 이메일로 제공합니다.
+- [ ] 여권 사본·비상연락·보험증서 따로 보관하기
+  - 완료 기준: 비상 정보 메모를 만들었다.
+  - 주의: 영사콜센터는 연중무휴 24시간 운영되며 해외 사건·사고 접수, 신속해외송금 지원 등을 돕습니다. 다만 영사조력 범위에는 한계가 있으니 여행자보험을 함께 준비하세요.</pre>
+          </div>
+          <div>
+            <h4>검사</h4>
+            <ul class="check-list">
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>원문 불변</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>문서 검증</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Item 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Step 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>주 산출물</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>calendar 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>todo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>sheet 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>memo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>해석 이슈 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>자료·출처 URL</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS VEVENT 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS RRULE 생성</strong>
+
+    </li></ul>
+          </div>
+        </div>
+      </details>
+    </article>
+    <article class="scenario-card is-pass"
+      data-group="existing_content"
+      data-search="content-jeju-memo-5 제주 여행 개인 메모 개인 메모에서 확정한 5개 행동을 v2 checklist로 작성한다. v2 markdown · 1 step · 5 item “8월”만 보고 연도나 날짜를 만들지 않는다.">
+      <div class="scenario-heading">
+        <div>
+          <div class="eyebrow-row">
+            <span class="group-pill group-existing-content">기존 콘텐츠</span>
+            <code>content-jeju-memo-5</code>
+          </div>
+          <h3>제주 여행 개인 메모</h3>
+          <p>개인 메모에서 확정한 5개 행동을 v2 checklist로 작성한다.</p>
+        </div>
+        <span class="result-pill pass">
+          PASS · 16/16
+        </span>
+      </div>
+      <div class="scenario-metrics">
+        <span><b>1</b> Step</span>
+        <span><b>5</b> Item</span>
+        <span><b>0</b> Calendar</span>
+        <span><b>5</b> Todo</span>
+        <span><b>0</b> Sheet</span>
+        <span><b>5</b> Memo</span>
+      </div>
+      <dl class="scenario-facts">
+        <div><dt>원문 형태</dt><dd>v2 Markdown · 1 Step · 5 Item</dd></div>
+        <div><dt>자연스러운 결과</dt><dd>Todo</dd></div>
+        <div><dt>실제 주 결과</dt><dd>Todo</dd></div>
+        <div><dt>날짜 범위</dt><dd>계산된 날짜 없음</dd></div>
+        <div><dt>해석 이슈</dt><dd>없음</dd></div>
+        <div><dt>ICS</dt><dd>0 VEVENT · RRULE 없음</dd></div>
+      </dl>
+      <div class="boundary"><b>의미 경계</b>“8월”만 보고 연도나 날짜를 만들지 않는다.</div>
+
+      <details>
+        <summary>입력 문법과 전체 검사 보기</summary>
+        <div class="details-grid">
+          <div>
+            <h4>입력</h4>
+            <pre># 제주 여행 준비
+## 할 일
+- [ ] 항공권 확인
+- [ ] 숙소 예약번호 정리
+- [ ] 렌터카 예약
+- [ ] 준비물 체크
+- [ ] 출발 전날 온라인 체크인</pre>
+          </div>
+          <div>
+            <h4>검사</h4>
+            <ul class="check-list">
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>원문 불변</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>문서 검증</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Flow 제목</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>입력 형식</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Item 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Step 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>주 산출물</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>calendar 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>todo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>sheet 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>memo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>해석 이슈 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>첫 Item</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>마지막 Item</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS VEVENT 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS RRULE 생성</strong>
+
+    </li></ul>
+          </div>
+        </div>
+      </details>
+    </article>
+    <article class="scenario-card is-pass"
+      data-group="condition_change"
+      data-search="change-relative-no-anchor 상대 날짜 · 실제 기준일 없음 문법상 기준 대상은 있지만 실제 날짜 입력이 없는 상태를 확인한다. d-3·d-day 2개 “행사일”이라는 이름만으로 날짜를 계산하지 않는다.">
+      <div class="scenario-heading">
+        <div>
+          <div class="eyebrow-row">
+            <span class="group-pill group-condition-change">조건 변경</span>
+            <code>change-relative-no-anchor</code>
+          </div>
+          <h3>상대 날짜 · 실제 기준일 없음</h3>
+          <p>문법상 기준 대상은 있지만 실제 날짜 입력이 없는 상태를 확인한다.</p>
+        </div>
+        <span class="result-pill pass">
+          PASS · 13/13
+        </span>
+      </div>
+      <div class="scenario-metrics">
+        <span><b>1</b> Step</span>
+        <span><b>2</b> Item</span>
+        <span><b>0</b> Calendar</span>
+        <span><b>2</b> Todo</span>
+        <span><b>0</b> Sheet</span>
+        <span><b>2</b> Memo</span>
+      </div>
+      <dl class="scenario-facts">
+        <div><dt>원문 형태</dt><dd>D-3·D-Day 2개</dd></div>
+        <div><dt>자연스러운 결과</dt><dd>Todo</dd></div>
+        <div><dt>실제 주 결과</dt><dd>Todo</dd></div>
+        <div><dt>날짜 범위</dt><dd>계산된 날짜 없음</dd></div>
+        <div><dt>해석 이슈</dt><dd>없음</dd></div>
+        <div><dt>ICS</dt><dd>0 VEVENT · RRULE 없음</dd></div>
+      </dl>
+      <div class="boundary"><b>의미 경계</b>“행사일”이라는 이름만으로 날짜를 계산하지 않는다.</div>
+
+      <details>
+        <summary>입력 문법과 전체 검사 보기</summary>
+        <div class="details-grid">
+          <div>
+            <h4>입력</h4>
+            <pre># 행사 준비
+## 준비
+- [ ] 장소 확인
+  - 상대 날짜: D-3
+- [ ] 최종 확인
+  - 상대 날짜: D-Day</pre>
+          </div>
+          <div>
+            <h4>검사</h4>
+            <ul class="check-list">
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>원문 불변</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>문서 검증</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Item 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Step 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>주 산출물</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>calendar 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>todo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>sheet 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>memo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>해석 이슈 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>캘린더 날짜 범위</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS VEVENT 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS RRULE 생성</strong>
+
+    </li></ul>
+          </div>
+        </div>
+      </details>
+    </article>
+    <article class="scenario-card is-pass"
+      data-group="condition_change"
+      data-search="change-relative-anchor-aug 상대 날짜 · 8월 기준일 적용 동일 원문에 2026-08-10 기준일만 적용한다. d-3·d-day 2개 원문 item과 상대 오프셋은 그대로 두고 projection 날짜만 계산한다.">
+      <div class="scenario-heading">
+        <div>
+          <div class="eyebrow-row">
+            <span class="group-pill group-condition-change">조건 변경</span>
+            <code>change-relative-anchor-aug</code>
+          </div>
+          <h3>상대 날짜 · 8월 기준일 적용</h3>
+          <p>동일 원문에 2026-08-10 기준일만 적용한다.</p>
+        </div>
+        <span class="result-pill pass">
+          PASS · 13/13
+        </span>
+      </div>
+      <div class="scenario-metrics">
+        <span><b>1</b> Step</span>
+        <span><b>2</b> Item</span>
+        <span><b>2</b> Calendar</span>
+        <span><b>2</b> Todo</span>
+        <span><b>2</b> Sheet</span>
+        <span><b>2</b> Memo</span>
+      </div>
+      <dl class="scenario-facts">
+        <div><dt>원문 형태</dt><dd>D-3·D-Day 2개</dd></div>
+        <div><dt>자연스러운 결과</dt><dd>Calendar</dd></div>
+        <div><dt>실제 주 결과</dt><dd>Calendar</dd></div>
+        <div><dt>날짜 범위</dt><dd>2026-08-07 → 2026-08-10</dd></div>
+        <div><dt>해석 이슈</dt><dd>없음</dd></div>
+        <div><dt>ICS</dt><dd>2 VEVENT · RRULE 없음</dd></div>
+      </dl>
+      <div class="boundary"><b>의미 경계</b>원문 Item과 상대 오프셋은 그대로 두고 projection 날짜만 계산한다.</div>
+
+      <details>
+        <summary>입력 문법과 전체 검사 보기</summary>
+        <div class="details-grid">
+          <div>
+            <h4>입력</h4>
+            <pre># 행사 준비
+- 기준일: 2026-08-10
+## 준비
+- [ ] 장소 확인
+  - 상대 날짜: D-3
+- [ ] 최종 확인
+  - 상대 날짜: D-Day</pre>
+          </div>
+          <div>
+            <h4>검사</h4>
+            <ul class="check-list">
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>원문 불변</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>문서 검증</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Item 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Step 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>주 산출물</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>calendar 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>todo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>sheet 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>memo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>해석 이슈 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>캘린더 날짜 범위</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS VEVENT 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS RRULE 생성</strong>
+
+    </li></ul>
+          </div>
+        </div>
+      </details>
+    </article>
+    <article class="scenario-card is-pass"
+      data-group="condition_change"
+      data-search="change-relative-anchor-sep 상대 날짜 · 9월 기준일로 변경 원문은 그대로 두고 기준일만 2026-09-10으로 옮긴다. d-3·d-day 2개 기준일 변경으로 제목·item 수·원문을 바꾸지 않는다.">
+      <div class="scenario-heading">
+        <div>
+          <div class="eyebrow-row">
+            <span class="group-pill group-condition-change">조건 변경</span>
+            <code>change-relative-anchor-sep</code>
+          </div>
+          <h3>상대 날짜 · 9월 기준일로 변경</h3>
+          <p>원문은 그대로 두고 기준일만 2026-09-10으로 옮긴다.</p>
+        </div>
+        <span class="result-pill pass">
+          PASS · 13/13
+        </span>
+      </div>
+      <div class="scenario-metrics">
+        <span><b>1</b> Step</span>
+        <span><b>2</b> Item</span>
+        <span><b>2</b> Calendar</span>
+        <span><b>2</b> Todo</span>
+        <span><b>2</b> Sheet</span>
+        <span><b>2</b> Memo</span>
+      </div>
+      <dl class="scenario-facts">
+        <div><dt>원문 형태</dt><dd>D-3·D-Day 2개</dd></div>
+        <div><dt>자연스러운 결과</dt><dd>Calendar</dd></div>
+        <div><dt>실제 주 결과</dt><dd>Calendar</dd></div>
+        <div><dt>날짜 범위</dt><dd>2026-09-07 → 2026-09-10</dd></div>
+        <div><dt>해석 이슈</dt><dd>없음</dd></div>
+        <div><dt>ICS</dt><dd>2 VEVENT · RRULE 없음</dd></div>
+      </dl>
+      <div class="boundary"><b>의미 경계</b>기준일 변경으로 제목·Item 수·원문을 바꾸지 않는다.</div>
+
+      <details>
+        <summary>입력 문법과 전체 검사 보기</summary>
+        <div class="details-grid">
+          <div>
+            <h4>입력</h4>
+            <pre># 행사 준비
+- 기준일: 2026-09-10
+## 준비
+- [ ] 장소 확인
+  - 상대 날짜: D-3
+- [ ] 최종 확인
+  - 상대 날짜: D-Day</pre>
+          </div>
+          <div>
+            <h4>검사</h4>
+            <ul class="check-list">
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>원문 불변</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>문서 검증</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Item 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Step 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>주 산출물</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>calendar 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>todo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>sheet 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>memo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>해석 이슈 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>캘린더 날짜 범위</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS VEVENT 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS RRULE 생성</strong>
+
+    </li></ul>
+          </div>
+        </div>
+      </details>
+    </article>
+    <article class="scenario-card is-pass"
+      data-group="condition_change"
+      data-search="change-relative-to-absolute 상대 날짜를 절대 날짜로 명시 두 오프셋을 작성자가 확정한 iso 날짜로 바꾼다. 절대 날짜 2개 iso 날짜가 명시된 경우에만 기준일 없이 캘린더를 만든다.">
+      <div class="scenario-heading">
+        <div>
+          <div class="eyebrow-row">
+            <span class="group-pill group-condition-change">조건 변경</span>
+            <code>change-relative-to-absolute</code>
+          </div>
+          <h3>상대 날짜를 절대 날짜로 명시</h3>
+          <p>두 오프셋을 작성자가 확정한 ISO 날짜로 바꾼다.</p>
+        </div>
+        <span class="result-pill pass">
+          PASS · 13/13
+        </span>
+      </div>
+      <div class="scenario-metrics">
+        <span><b>1</b> Step</span>
+        <span><b>2</b> Item</span>
+        <span><b>2</b> Calendar</span>
+        <span><b>2</b> Todo</span>
+        <span><b>2</b> Sheet</span>
+        <span><b>2</b> Memo</span>
+      </div>
+      <dl class="scenario-facts">
+        <div><dt>원문 형태</dt><dd>절대 날짜 2개</dd></div>
+        <div><dt>자연스러운 결과</dt><dd>Calendar</dd></div>
+        <div><dt>실제 주 결과</dt><dd>Calendar</dd></div>
+        <div><dt>날짜 범위</dt><dd>2026-08-07 → 2026-08-10</dd></div>
+        <div><dt>해석 이슈</dt><dd>없음</dd></div>
+        <div><dt>ICS</dt><dd>2 VEVENT · RRULE 없음</dd></div>
+      </dl>
+      <div class="boundary"><b>의미 경계</b>ISO 날짜가 명시된 경우에만 기준일 없이 캘린더를 만든다.</div>
+
+      <details>
+        <summary>입력 문법과 전체 검사 보기</summary>
+        <div class="details-grid">
+          <div>
+            <h4>입력</h4>
+            <pre># 행사 준비
+## 준비
+- [ ] 장소 확인
+  - 날짜: 2026-08-07
+- [ ] 최종 확인
+  - 날짜: 2026-08-10</pre>
+          </div>
+          <div>
+            <h4>검사</h4>
+            <ul class="check-list">
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>원문 불변</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>문서 검증</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Item 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Step 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>주 산출물</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>calendar 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>todo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>sheet 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>memo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>해석 이슈 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>캘린더 날짜 범위</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS VEVENT 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS RRULE 생성</strong>
+
+    </li></ul>
+          </div>
+        </div>
+      </details>
+    </article>
+    <article class="scenario-card is-pass"
+      data-group="condition_change"
+      data-search="change-mixed-dated-undated 날짜 있음 + 날짜 없음 혼합 한 item만 날짜가 있을 때 todo를 주 결과로 유지한다. 날짜 1개 · 미정 1개 날짜 없는 item을 vevent로 만들지 않는다.">
+      <div class="scenario-heading">
+        <div>
+          <div class="eyebrow-row">
+            <span class="group-pill group-condition-change">조건 변경</span>
+            <code>change-mixed-dated-undated</code>
+          </div>
+          <h3>날짜 있음 + 날짜 없음 혼합</h3>
+          <p>한 Item만 날짜가 있을 때 Todo를 주 결과로 유지한다.</p>
+        </div>
+        <span class="result-pill pass">
+          PASS · 13/13
+        </span>
+      </div>
+      <div class="scenario-metrics">
+        <span><b>1</b> Step</span>
+        <span><b>2</b> Item</span>
+        <span><b>1</b> Calendar</span>
+        <span><b>2</b> Todo</span>
+        <span><b>0</b> Sheet</span>
+        <span><b>2</b> Memo</span>
+      </div>
+      <dl class="scenario-facts">
+        <div><dt>원문 형태</dt><dd>날짜 1개 · 미정 1개</dd></div>
+        <div><dt>자연스러운 결과</dt><dd>Todo</dd></div>
+        <div><dt>실제 주 결과</dt><dd>Todo</dd></div>
+        <div><dt>날짜 범위</dt><dd>2026-08-03 → 2026-08-03</dd></div>
+        <div><dt>해석 이슈</dt><dd>없음</dd></div>
+        <div><dt>ICS</dt><dd>1 VEVENT · RRULE 없음</dd></div>
+      </dl>
+      <div class="boundary"><b>의미 경계</b>날짜 없는 Item을 VEVENT로 만들지 않는다.</div>
+
+      <details>
+        <summary>입력 문법과 전체 검사 보기</summary>
+        <div class="details-grid">
+          <div>
+            <h4>입력</h4>
+            <pre># 혼합 일정
+## 실행
+- [ ] 예약 확인
+  - 날짜: 2026-08-03
+- [ ] 메모 정리</pre>
+          </div>
+          <div>
+            <h4>검사</h4>
+            <ul class="check-list">
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>원문 불변</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>문서 검증</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Item 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Step 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>주 산출물</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>calendar 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>todo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>sheet 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>memo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>해석 이슈 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>캘린더 날짜 범위</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS VEVENT 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS RRULE 생성</strong>
+
+    </li></ul>
+          </div>
+        </div>
+      </details>
+    </article>
+    <article class="scenario-card is-pass"
+      data-group="condition_change"
+      data-search="change-time-timezone-duration 시간·시간대·소요 시간 추가 날짜 item에 실행 시각과 지속시간을 한 필드씩 더한다. 시간 지정 일정 1개 시간과 지속시간은 날짜가 있는 item에만 실행 일정으로 적용한다.">
+      <div class="scenario-heading">
+        <div>
+          <div class="eyebrow-row">
+            <span class="group-pill group-condition-change">조건 변경</span>
+            <code>change-time-timezone-duration</code>
+          </div>
+          <h3>시간·시간대·소요 시간 추가</h3>
+          <p>날짜 Item에 실행 시각과 지속시간을 한 필드씩 더한다.</p>
+        </div>
+        <span class="result-pill pass">
+          PASS · 13/13
+        </span>
+      </div>
+      <div class="scenario-metrics">
+        <span><b>1</b> Step</span>
+        <span><b>1</b> Item</span>
+        <span><b>1</b> Calendar</span>
+        <span><b>1</b> Todo</span>
+        <span><b>0</b> Sheet</span>
+        <span><b>1</b> Memo</span>
+      </div>
+      <dl class="scenario-facts">
+        <div><dt>원문 형태</dt><dd>시간 지정 일정 1개</dd></div>
+        <div><dt>자연스러운 결과</dt><dd>Calendar</dd></div>
+        <div><dt>실제 주 결과</dt><dd>Calendar</dd></div>
+        <div><dt>날짜 범위</dt><dd>2026-08-03 → 2026-08-03</dd></div>
+        <div><dt>해석 이슈</dt><dd>없음</dd></div>
+        <div><dt>ICS</dt><dd>1 VEVENT · RRULE 없음</dd></div>
+      </dl>
+      <div class="boundary"><b>의미 경계</b>시간과 지속시간은 날짜가 있는 Item에만 실행 일정으로 적용한다.</div>
+
+      <details>
+        <summary>입력 문법과 전체 검사 보기</summary>
+        <div class="details-grid">
+          <div>
+            <h4>입력</h4>
+            <pre># 시간 지정
+## 실행
+- [ ] 인터뷰 진행
+  - 날짜: 2026-08-03
+  - 시간: 09:00
+  - 시간대: Asia/Seoul
+  - 소요 시간: 30분</pre>
+          </div>
+          <div>
+            <h4>검사</h4>
+            <ul class="check-list">
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>원문 불변</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>문서 검증</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Item 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Step 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>주 산출물</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>calendar 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>todo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>sheet 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>memo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>해석 이슈 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>캘린더 날짜 범위</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS VEVENT 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS RRULE 생성</strong>
+
+    </li></ul>
+          </div>
+        </div>
+      </details>
+    </article>
+    <article class="scenario-card is-pass"
+      data-group="condition_change"
+      data-search="change-daily-repeat-until-date 매일 반복 + 종료일 매일 반복을 명시한 종료일까지 계산해 네 결과에 같은 5회차를 만든다. 일일 루틴 item 1개 · 종료일 포함 원본 item은 하나로 유지하고 종료일을 포함한 5개 회차만 파생한다.">
+      <div class="scenario-heading">
+        <div>
+          <div class="eyebrow-row">
+            <span class="group-pill group-condition-change">조건 변경</span>
+            <code>change-daily-repeat-until-date</code>
+          </div>
+          <h3>매일 반복 + 종료일</h3>
+          <p>매일 반복을 명시한 종료일까지 계산해 네 결과에 같은 5회차를 만든다.</p>
+        </div>
+        <span class="result-pill pass">
+          PASS · 15/15
+        </span>
+      </div>
+      <div class="scenario-metrics">
+        <span><b>1</b> Step</span>
+        <span><b>1</b> Item</span>
+        <span><b>5</b> Calendar</span>
+        <span><b>5</b> Todo</span>
+        <span><b>5</b> Sheet</span>
+        <span><b>5</b> Memo</span>
+      </div>
+      <dl class="scenario-facts">
+        <div><dt>원문 형태</dt><dd>일일 루틴 Item 1개 · 종료일 포함</dd></div>
+        <div><dt>자연스러운 결과</dt><dd>Calendar</dd></div>
+        <div><dt>실제 주 결과</dt><dd>Calendar</dd></div>
+        <div><dt>날짜 범위</dt><dd>2026-08-11 → 2026-08-15</dd></div>
+        <div><dt>해석 이슈</dt><dd>없음</dd></div>
+        <div><dt>ICS</dt><dd>5 VEVENT · RRULE 없음</dd></div>
+      </dl>
+      <div class="boundary"><b>의미 경계</b>원본 Item은 하나로 유지하고 종료일을 포함한 5개 회차만 파생한다.</div>
+
+      <details>
+        <summary>입력 문법과 전체 검사 보기</summary>
+        <div class="details-grid">
+          <div>
+            <h4>입력</h4>
+            <pre># 5일 아침 스트레칭
+## 실행
+- [ ] 스트레칭 영상 따라하기
+  - 날짜: 2026-08-11
+  - 시간: 07:30
+  - 반복: 매일
+  - 반복 종료: 2026-08-15
+  - 자료: [스트레칭 영상](https://example.com/stretch)
+  - 완료 기준: 영상을 끝까지 한 번 따라했습니다.</pre>
+          </div>
+          <div>
+            <h4>검사</h4>
+            <ul class="check-list">
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>원문 불변</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>문서 검증</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Item 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Step 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>주 산출물</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>calendar 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>todo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>sheet 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>memo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>해석 이슈 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>캘린더 날짜 범위</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>반복 문구</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>자료·출처 URL</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS VEVENT 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS RRULE 생성</strong>
+
+    </li></ul>
+          </div>
+        </div>
+      </details>
+    </article>
+    <article class="scenario-card is-pass"
+      data-group="condition_change"
+      data-search="change-same-day-timed-agenda 같은 날 여러 일정 · 시간순 원문 시간이 뒤섞여 있어도 calendar는 종일 일정 다음에 시각 오름차순으로 보여 준다. 하루 일정 4개 · 종일 1개 + 시간 지정 3개 calendar만 종일·시간순으로 표시하고 todo·sheet·txt와 원문은 작성 순서를 유지한다.">
+      <div class="scenario-heading">
+        <div>
+          <div class="eyebrow-row">
+            <span class="group-pill group-condition-change">조건 변경</span>
+            <code>change-same-day-timed-agenda</code>
+          </div>
+          <h3>같은 날 여러 일정 · 시간순</h3>
+          <p>원문 시간이 뒤섞여 있어도 Calendar는 종일 일정 다음에 시각 오름차순으로 보여 준다.</p>
+        </div>
+        <span class="result-pill pass">
+          PASS · 13/13
+        </span>
+      </div>
+      <div class="scenario-metrics">
+        <span><b>1</b> Step</span>
+        <span><b>4</b> Item</span>
+        <span><b>4</b> Calendar</span>
+        <span><b>4</b> Todo</span>
+        <span><b>4</b> Sheet</span>
+        <span><b>4</b> Memo</span>
+      </div>
+      <dl class="scenario-facts">
+        <div><dt>원문 형태</dt><dd>하루 일정 4개 · 종일 1개 + 시간 지정 3개</dd></div>
+        <div><dt>자연스러운 결과</dt><dd>Calendar</dd></div>
+        <div><dt>실제 주 결과</dt><dd>Calendar</dd></div>
+        <div><dt>날짜 범위</dt><dd>2026-08-20 → 2026-08-20</dd></div>
+        <div><dt>해석 이슈</dt><dd>없음</dd></div>
+        <div><dt>ICS</dt><dd>4 VEVENT · RRULE 없음</dd></div>
+      </dl>
+      <div class="boundary"><b>의미 경계</b>Calendar만 종일·시간순으로 표시하고 Todo·Sheet·TXT와 원문은 작성 순서를 유지한다.</div>
+
+      <details>
+        <summary>입력 문법과 전체 검사 보기</summary>
+        <div class="details-grid">
+          <div>
+            <h4>입력</h4>
+            <pre># 세미나 하루 일정
+## 실행
+- [ ] 네트워킹 메모 정리
+  - 날짜: 2026-08-20
+  - 시간: 16:30
+  - 소요 시간: 30분
+  - 장소: 라운지
+- [ ] 참가 등록
+  - 날짜: 2026-08-20
+  - 시간: 09:00
+  - 소요 시간: 30분
+  - 장소: 등록 데스크
+- [ ] 행사 안내 확인
+  - 날짜: 2026-08-20
+- [ ] 발표 세션 참여
+  - 날짜: 2026-08-20
+  - 시간: 10:00
+  - 소요 시간: 60분
+  - 장소: 세미나실</pre>
+          </div>
+          <div>
+            <h4>검사</h4>
+            <ul class="check-list">
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>원문 불변</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>문서 검증</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Item 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Step 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>주 산출물</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>calendar 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>todo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>sheet 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>memo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>해석 이슈 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>캘린더 날짜 범위</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS VEVENT 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS RRULE 생성</strong>
+
+    </li></ul>
+          </div>
+        </div>
+      </details>
+    </article>
+    <article class="scenario-card is-pass"
+      data-group="condition_change"
+      data-search="change-repeat-condition-weekly 매주 반복 + 실행 조건 매주 반복 회차를 4주 범위로 계산하고 실행 조건은 표시만 한다. 반복 문구가 있는 일정 1개 원본 item은 하나로 유지하고 보이는 회차만 파생하며 rrule은 만들지 않는다.">
+      <div class="scenario-heading">
+        <div>
+          <div class="eyebrow-row">
+            <span class="group-pill group-condition-change">조건 변경</span>
+            <code>change-repeat-condition-weekly</code>
+          </div>
+          <h3>매주 반복 + 실행 조건</h3>
+          <p>매주 반복 회차를 4주 범위로 계산하고 실행 조건은 표시만 한다.</p>
+        </div>
+        <span class="result-pill pass">
+          PASS · 14/14
+        </span>
+      </div>
+      <div class="scenario-metrics">
+        <span><b>1</b> Step</span>
+        <span><b>1</b> Item</span>
+        <span><b>4</b> Calendar</span>
+        <span><b>4</b> Todo</span>
+        <span><b>4</b> Sheet</span>
+        <span><b>4</b> Memo</span>
+      </div>
+      <dl class="scenario-facts">
+        <div><dt>원문 형태</dt><dd>반복 문구가 있는 일정 1개</dd></div>
+        <div><dt>자연스러운 결과</dt><dd>Calendar</dd></div>
+        <div><dt>실제 주 결과</dt><dd>Calendar</dd></div>
+        <div><dt>날짜 범위</dt><dd>2026-08-03 → 2026-08-24</dd></div>
+        <div><dt>해석 이슈</dt><dd>없음</dd></div>
+        <div><dt>ICS</dt><dd>4 VEVENT · RRULE 없음</dd></div>
+      </dl>
+      <div class="boundary"><b>의미 경계</b>원본 Item은 하나로 유지하고 보이는 회차만 파생하며 RRULE은 만들지 않는다.</div>
+
+      <details>
+        <summary>입력 문법과 전체 검사 보기</summary>
+        <div class="details-grid">
+          <div>
+            <h4>입력</h4>
+            <pre># 정기 점검
+## 실행
+- [ ] 필터 확인
+  - 날짜: 2026-08-03
+  - 반복: 매주 월요일
+  - 실행 조건: 사용 중인 경우</pre>
+          </div>
+          <div>
+            <h4>검사</h4>
+            <ul class="check-list">
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>원문 불변</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>문서 검증</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Item 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Step 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>주 산출물</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>calendar 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>todo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>sheet 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>memo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>해석 이슈 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>반복 문구</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>조건 문구</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS VEVENT 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS RRULE 생성</strong>
+
+    </li></ul>
+          </div>
+        </div>
+      </details>
+    </article>
+    <article class="scenario-card is-pass"
+      data-group="condition_change"
+      data-search="change-latest-grammar-showcase 최신 문법 한눈에 · 3회 반복 날짜·유한 반복·하위 체크·링크·추가 메모의 최신 처리 결과를 한 번에 확인한다. 유한 반복 item 1개 · 하위 체크 2개 · 링크 2개 추가 메모는 설명에 보존하고 날짜·반복·링크를 설명에 다시 넣지 않는다.">
+      <div class="scenario-heading">
+        <div>
+          <div class="eyebrow-row">
+            <span class="group-pill group-condition-change">조건 변경</span>
+            <code>change-latest-grammar-showcase</code>
+          </div>
+          <h3>최신 문법 한눈에 · 3회 반복</h3>
+          <p>날짜·유한 반복·하위 체크·링크·추가 메모의 최신 처리 결과를 한 번에 확인한다.</p>
+        </div>
+        <span class="result-pill pass">
+          PASS · 17/17
+        </span>
+      </div>
+      <div class="scenario-metrics">
+        <span><b>1</b> Step</span>
+        <span><b>1</b> Item</span>
+        <span><b>3</b> Calendar</span>
+        <span><b>3</b> Todo</span>
+        <span><b>3</b> Sheet</span>
+        <span><b>3</b> Memo</span>
+      </div>
+      <dl class="scenario-facts">
+        <div><dt>원문 형태</dt><dd>유한 반복 Item 1개 · 하위 체크 2개 · 링크 2개</dd></div>
+        <div><dt>자연스러운 결과</dt><dd>Calendar</dd></div>
+        <div><dt>실제 주 결과</dt><dd>Calendar</dd></div>
+        <div><dt>날짜 범위</dt><dd>2026-08-03 → 2026-08-17</dd></div>
+        <div><dt>해석 이슈</dt><dd>없음</dd></div>
+        <div><dt>ICS</dt><dd>3 VEVENT · RRULE 없음</dd></div>
+      </dl>
+      <div class="boundary"><b>의미 경계</b>추가 메모는 설명에 보존하고 날짜·반복·링크를 설명에 다시 넣지 않는다.</div>
+
+      <details>
+        <summary>입력 문법과 전체 검사 보기</summary>
+        <div class="details-grid">
+          <div>
+            <h4>입력</h4>
+            <pre># 최신 문법 한눈에
+## 실행
+- [ ] 정기 자료 확인
+  - 설명: 세 번의 실행에서 같은 자료를 확인합니다.
+  - 날짜: 2026-08-03
+  - 반복: 매주 월요일
+  - 반복 종료: 3회
+  - 실행 조건: 자료가 공개된 경우
+  - [ ] 참고 자료 열기
+  - [ ] 확인 메모 남기기
+  - 자료: [참고 자료](https://example.com/resource)
+  - 출처: [원문](https://example.com/source)
+  - 담당 메모: 담당자와 확인 범위를 적습니다.</pre>
+          </div>
+          <div>
+            <h4>검사</h4>
+            <ul class="check-list">
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>원문 불변</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>문서 검증</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Flow 제목</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Item 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Step 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>주 산출물</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>calendar 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>todo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>sheet 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>memo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>해석 이슈 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>캘린더 날짜 범위</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>반복 문구</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>조건 문구</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>자료·출처 URL</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS VEVENT 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS RRULE 생성</strong>
+
+    </li></ul>
+          </div>
+        </div>
+      </details>
+    </article>
+    <article class="scenario-card is-pass"
+      data-group="condition_change"
+      data-search="change-repeat-condition-monthly 매월 반복 + 변경된 조건 지원하는 월간 반복을 계산하고 조건 문구는 회차 수에 영향을 주지 않는다. 반복 문구가 있는 일정 1개 조건은 필터나 자동 분기 규칙으로 해석하지 않는다.">
+      <div class="scenario-heading">
+        <div>
+          <div class="eyebrow-row">
+            <span class="group-pill group-condition-change">조건 변경</span>
+            <code>change-repeat-condition-monthly</code>
+          </div>
+          <h3>매월 반복 + 변경된 조건</h3>
+          <p>지원하는 월간 반복을 계산하고 조건 문구는 회차 수에 영향을 주지 않는다.</p>
+        </div>
+        <span class="result-pill pass">
+          PASS · 14/14
+        </span>
+      </div>
+      <div class="scenario-metrics">
+        <span><b>1</b> Step</span>
+        <span><b>1</b> Item</span>
+        <span><b>1</b> Calendar</span>
+        <span><b>1</b> Todo</span>
+        <span><b>1</b> Sheet</span>
+        <span><b>1</b> Memo</span>
+      </div>
+      <dl class="scenario-facts">
+        <div><dt>원문 형태</dt><dd>반복 문구가 있는 일정 1개</dd></div>
+        <div><dt>자연스러운 결과</dt><dd>Calendar</dd></div>
+        <div><dt>실제 주 결과</dt><dd>Calendar</dd></div>
+        <div><dt>날짜 범위</dt><dd>2026-08-15 → 2026-08-15</dd></div>
+        <div><dt>해석 이슈</dt><dd>없음</dd></div>
+        <div><dt>ICS</dt><dd>1 VEVENT · RRULE 없음</dd></div>
+      </dl>
+      <div class="boundary"><b>의미 경계</b>조건은 필터나 자동 분기 규칙으로 해석하지 않는다.</div>
+
+      <details>
+        <summary>입력 문법과 전체 검사 보기</summary>
+        <div class="details-grid">
+          <div>
+            <h4>입력</h4>
+            <pre># 정기 점검
+## 실행
+- [ ] 필터 확인
+  - 날짜: 2026-08-15
+  - 반복: 매월 15일
+  - 실행 조건: 경고등이 꺼져 있는 경우</pre>
+          </div>
+          <div>
+            <h4>검사</h4>
+            <ul class="check-list">
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>원문 불변</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>문서 검증</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Item 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Step 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>주 산출물</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>calendar 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>todo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>sheet 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>memo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>해석 이슈 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>반복 문구</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>조건 문구</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS VEVENT 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS RRULE 생성</strong>
+
+    </li></ul>
+          </div>
+        </div>
+      </details>
+    </article>
+    <article class="scenario-card is-pass"
+      data-group="compatibility"
+      data-search="compat-legacy-aliases 이전 초안 별칭 읽기 자세히·예상 시간·link 같은 이전 표기를 읽기 호환으로만 허용한다. legacy markdown 1 item 새로 내보낼 때는 공식 표기 설명·소요 시간·자료를 사용한다.">
+      <div class="scenario-heading">
+        <div>
+          <div class="eyebrow-row">
+            <span class="group-pill group-compatibility">호환 문법</span>
+            <code>compat-legacy-aliases</code>
+          </div>
+          <h3>이전 초안 별칭 읽기</h3>
+          <p>자세히·예상 시간·link 같은 이전 표기를 읽기 호환으로만 허용한다.</p>
+        </div>
+        <span class="result-pill pass">
+          PASS · 13/13
+        </span>
+      </div>
+      <div class="scenario-metrics">
+        <span><b>1</b> Step</span>
+        <span><b>1</b> Item</span>
+        <span><b>1</b> Calendar</span>
+        <span><b>1</b> Todo</span>
+        <span><b>0</b> Sheet</span>
+        <span><b>1</b> Memo</span>
+      </div>
+      <dl class="scenario-facts">
+        <div><dt>원문 형태</dt><dd>Legacy Markdown 1 Item</dd></div>
+        <div><dt>자연스러운 결과</dt><dd>Calendar</dd></div>
+        <div><dt>실제 주 결과</dt><dd>Calendar</dd></div>
+        <div><dt>날짜 범위</dt><dd>2026-08-03 → 2026-08-03</dd></div>
+        <div><dt>해석 이슈</dt><dd>없음</dd></div>
+        <div><dt>ICS</dt><dd>1 VEVENT · RRULE 없음</dd></div>
+      </dl>
+      <div class="boundary"><b>의미 경계</b>새로 내보낼 때는 공식 표기 설명·소요 시간·자료를 사용한다.</div>
+
+      <details>
+        <summary>입력 문법과 전체 검사 보기</summary>
+        <div class="details-grid">
+          <div>
+            <h4>입력</h4>
+            <pre># 이전 초안
+## 실행
+- [ ] 첫 번째 항목
+  자세히: 이전 설명입니다.
+  날짜: 2026-08-03
+  예상 시간: 45분
+  link: 이전 자료 | https://example.com/legacy</pre>
+          </div>
+          <div>
+            <h4>검사</h4>
+            <ul class="check-list">
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>원문 불변</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>문서 검증</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Item 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Step 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>주 산출물</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>calendar 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>todo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>sheet 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>memo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>해석 이슈 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>자료·출처 URL</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS VEVENT 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS RRULE 생성</strong>
+
+    </li></ul>
+          </div>
+        </div>
+      </details>
+    </article>
+    <article class="scenario-card is-pass"
+      data-group="compatibility"
+      data-search="compat-title-h1-wins h1과 저장 제목 충돌 붙여 넣은 markdown h1을 화면·canonical 제목의 기준으로 삼는다. h1 + 1 item 두 제목을 별도 flow로 만들거나 조용히 섞지 않는다.">
+      <div class="scenario-heading">
+        <div>
+          <div class="eyebrow-row">
+            <span class="group-pill group-compatibility">호환 문법</span>
+            <code>compat-title-h1-wins</code>
+          </div>
+          <h3>H1과 저장 제목 충돌</h3>
+          <p>붙여 넣은 Markdown H1을 화면·canonical 제목의 기준으로 삼는다.</p>
+        </div>
+        <span class="result-pill pass">
+          PASS · 13/13
+        </span>
+      </div>
+      <div class="scenario-metrics">
+        <span><b>1</b> Step</span>
+        <span><b>1</b> Item</span>
+        <span><b>0</b> Calendar</span>
+        <span><b>1</b> Todo</span>
+        <span><b>0</b> Sheet</span>
+        <span><b>1</b> Memo</span>
+      </div>
+      <dl class="scenario-facts">
+        <div><dt>원문 형태</dt><dd>H1 + 1 Item</dd></div>
+        <div><dt>자연스러운 결과</dt><dd>Todo</dd></div>
+        <div><dt>실제 주 결과</dt><dd>Todo</dd></div>
+        <div><dt>날짜 범위</dt><dd>계산된 날짜 없음</dd></div>
+        <div><dt>해석 이슈</dt><dd>없음</dd></div>
+        <div><dt>ICS</dt><dd>0 VEVENT · RRULE 없음</dd></div>
+      </dl>
+      <div class="boundary"><b>의미 경계</b>두 제목을 별도 Flow로 만들거나 조용히 섞지 않는다.</div>
+
+      <details>
+        <summary>입력 문법과 전체 검사 보기</summary>
+        <div class="details-grid">
+          <div>
+            <h4>입력</h4>
+            <pre># 원문에 적힌 제목
+## 단계
+- [ ] 제목 확인</pre>
+          </div>
+          <div>
+            <h4>검사</h4>
+            <ul class="check-list">
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>원문 불변</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>문서 검증</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Flow 제목</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Item 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Step 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>주 산출물</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>calendar 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>todo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>sheet 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>memo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>해석 이슈 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS VEVENT 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS RRULE 생성</strong>
+
+    </li></ul>
+          </div>
+        </div>
+      </details>
+    </article>
+    <article class="scenario-card is-pass"
+      data-group="compatibility"
+      data-search="compat-resource-links 공식 링크 + 이전 구분자 markdown 링크와 “이름 | url”을 모두 읽되 url을 그대로 보존한다. 링크 표현 2종 · 2 item 링크 이름을 행동 제목으로 승격하지 않는다.">
+      <div class="scenario-heading">
+        <div>
+          <div class="eyebrow-row">
+            <span class="group-pill group-compatibility">호환 문법</span>
+            <code>compat-resource-links</code>
+          </div>
+          <h3>공식 링크 + 이전 구분자</h3>
+          <p>Markdown 링크와 “이름 | URL”을 모두 읽되 URL을 그대로 보존한다.</p>
+        </div>
+        <span class="result-pill pass">
+          PASS · 13/13
+        </span>
+      </div>
+      <div class="scenario-metrics">
+        <span><b>1</b> Step</span>
+        <span><b>2</b> Item</span>
+        <span><b>0</b> Calendar</span>
+        <span><b>2</b> Todo</span>
+        <span><b>0</b> Sheet</span>
+        <span><b>2</b> Memo</span>
+      </div>
+      <dl class="scenario-facts">
+        <div><dt>원문 형태</dt><dd>링크 표현 2종 · 2 Item</dd></div>
+        <div><dt>자연스러운 결과</dt><dd>Todo</dd></div>
+        <div><dt>실제 주 결과</dt><dd>Todo</dd></div>
+        <div><dt>날짜 범위</dt><dd>계산된 날짜 없음</dd></div>
+        <div><dt>해석 이슈</dt><dd>없음</dd></div>
+        <div><dt>ICS</dt><dd>0 VEVENT · RRULE 없음</dd></div>
+      </dl>
+      <div class="boundary"><b>의미 경계</b>링크 이름을 행동 제목으로 승격하지 않는다.</div>
+
+      <details>
+        <summary>입력 문법과 전체 검사 보기</summary>
+        <div class="details-grid">
+          <div>
+            <h4>입력</h4>
+            <pre># 링크 형식
+## 실행
+- [ ] 공식 형식 확인
+  자료: [참고 자료](https://example.com/resource)
+  출처: [원문](https://example.com/source)
+- [ ] 이전 형식 확인
+  자료: 이전 자료 | https://example.com/legacy</pre>
+          </div>
+          <div>
+            <h4>검사</h4>
+            <ul class="check-list">
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>원문 불변</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>문서 검증</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Item 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Step 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>주 산출물</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>calendar 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>todo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>sheet 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>memo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>해석 이슈 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>자료·출처 URL</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS VEVENT 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS RRULE 생성</strong>
+
+    </li></ul>
+          </div>
+        </div>
+      </details>
+    </article>
+    <article class="scenario-card is-pass"
+      data-group="exception_handling"
+      data-search="error-unknown-property 정의되지 않은 속성 · 설명 보존 item 바로 아래의 미정 속성을 이름과 값 그대로 설명에 보존한다. 알 수 없는 속성 1개 구조 필드로 승격하거나 값을 버리지 않고 원문 설명으로만 보존한다.">
+      <div class="scenario-heading">
+        <div>
+          <div class="eyebrow-row">
+            <span class="group-pill group-exception-handling">예외 처리</span>
+            <code>error-unknown-property</code>
+          </div>
+          <h3>정의되지 않은 속성 · 설명 보존</h3>
+          <p>Item 바로 아래의 미정 속성을 이름과 값 그대로 설명에 보존한다.</p>
+        </div>
+        <span class="result-pill pass">
+          PASS · 12/12
+        </span>
+      </div>
+      <div class="scenario-metrics">
+        <span><b>1</b> Step</span>
+        <span><b>1</b> Item</span>
+        <span><b>0</b> Calendar</span>
+        <span><b>1</b> Todo</span>
+        <span><b>0</b> Sheet</span>
+        <span><b>1</b> Memo</span>
+      </div>
+      <dl class="scenario-facts">
+        <div><dt>원문 형태</dt><dd>알 수 없는 속성 1개</dd></div>
+        <div><dt>자연스러운 결과</dt><dd>Todo</dd></div>
+        <div><dt>실제 주 결과</dt><dd>Todo</dd></div>
+        <div><dt>날짜 범위</dt><dd>계산된 날짜 없음</dd></div>
+        <div><dt>해석 이슈</dt><dd>없음</dd></div>
+        <div><dt>ICS</dt><dd>0 VEVENT · RRULE 없음</dd></div>
+      </dl>
+      <div class="boundary"><b>의미 경계</b>구조 필드로 승격하거나 값을 버리지 않고 원문 설명으로만 보존한다.</div>
+
+      <details>
+        <summary>입력 문법과 전체 검사 보기</summary>
+        <div class="details-grid">
+          <div>
+            <h4>입력</h4>
+            <pre># 속성 오류
+## 실행
+- [ ] 항목 확인
+  - 담당자: 홍길동</pre>
+          </div>
+          <div>
+            <h4>검사</h4>
+            <ul class="check-list">
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>원문 불변</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>문서 검증</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Item 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Step 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>주 산출물</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>calendar 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>todo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>sheet 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>memo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>해석 이슈 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS VEVENT 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS RRULE 생성</strong>
+
+    </li></ul>
+          </div>
+        </div>
+      </details>
+    </article>
+    <article class="scenario-card is-pass"
+      data-group="exception_handling"
+      data-search="error-ambiguous-date 연도 없는 날짜 8월 3일을 현재 연도나 다음 날짜로 추정하지 않는다. 모호한 날짜 1개 예외 처리 방침은 확정됐지만 yyyy-mm-dd로 고칠 때까지 calendar는 만들지 않는다.">
+      <div class="scenario-heading">
+        <div>
+          <div class="eyebrow-row">
+            <span class="group-pill group-exception-handling">예외 처리</span>
+            <code>error-ambiguous-date</code>
+          </div>
+          <h3>연도 없는 날짜</h3>
+          <p>8월 3일을 현재 연도나 다음 날짜로 추정하지 않는다.</p>
+        </div>
+        <span class="result-pill pass">
+          PASS · 15/15
+        </span>
+      </div>
+      <div class="scenario-metrics">
+        <span><b>1</b> Step</span>
+        <span><b>1</b> Item</span>
+        <span><b>0</b> Calendar</span>
+        <span><b>1</b> Todo</span>
+        <span><b>0</b> Sheet</span>
+        <span><b>1</b> Memo</span>
+      </div>
+      <dl class="scenario-facts">
+        <div><dt>원문 형태</dt><dd>모호한 날짜 1개</dd></div>
+        <div><dt>자연스러운 결과</dt><dd>원문 수정 필요</dd></div>
+        <div><dt>실제 주 결과</dt><dd>Todo</dd></div>
+        <div><dt>날짜 범위</dt><dd>계산된 날짜 없음</dd></div>
+        <div><dt>해석 이슈</dt><dd>1개 · invalid_date</dd></div>
+        <div><dt>ICS</dt><dd>0 VEVENT · RRULE 없음</dd></div>
+      </dl>
+      <div class="boundary"><b>의미 경계</b>예외 처리 방침은 확정됐지만 YYYY-MM-DD로 고칠 때까지 Calendar는 만들지 않는다.</div>
+
+      <details>
+        <summary>입력 문법과 전체 검사 보기</summary>
+        <div class="details-grid">
+          <div>
+            <h4>입력</h4>
+            <pre># 날짜 오류
+## 실행
+- [ ] 항공권 확인
+  - 날짜: 8월 3일</pre>
+          </div>
+          <div>
+            <h4>검사</h4>
+            <ul class="check-list">
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>원문 불변</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>문서 검증</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Item 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Step 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>주 산출물</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>calendar 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>todo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>sheet 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>memo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>해석 이슈 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>이슈 유형</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>이슈 메시지</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>캘린더 날짜 범위</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS VEVENT 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS RRULE 생성</strong>
+
+    </li></ul>
+          </div>
+        </div>
+      </details>
+    </article>
+    <article class="scenario-card is-pass"
+      data-group="exception_handling"
+      data-search="error-invalid-relative-date 지원하지 않는 상대 날짜 “내일”을 d+1로 자동 치환하지 않는다. 모호한 상대 날짜 1개 예외 처리 방침은 확정됐지만 d-숫자·d-day·d+숫자로 고칠 때까지 날짜를 계산하지 않는다.">
+      <div class="scenario-heading">
+        <div>
+          <div class="eyebrow-row">
+            <span class="group-pill group-exception-handling">예외 처리</span>
+            <code>error-invalid-relative-date</code>
+          </div>
+          <h3>지원하지 않는 상대 날짜</h3>
+          <p>“내일”을 D+1로 자동 치환하지 않는다.</p>
+        </div>
+        <span class="result-pill pass">
+          PASS · 14/14
+        </span>
+      </div>
+      <div class="scenario-metrics">
+        <span><b>1</b> Step</span>
+        <span><b>1</b> Item</span>
+        <span><b>0</b> Calendar</span>
+        <span><b>1</b> Todo</span>
+        <span><b>0</b> Sheet</span>
+        <span><b>1</b> Memo</span>
+      </div>
+      <dl class="scenario-facts">
+        <div><dt>원문 형태</dt><dd>모호한 상대 날짜 1개</dd></div>
+        <div><dt>자연스러운 결과</dt><dd>원문 수정 필요</dd></div>
+        <div><dt>실제 주 결과</dt><dd>Todo</dd></div>
+        <div><dt>날짜 범위</dt><dd>계산된 날짜 없음</dd></div>
+        <div><dt>해석 이슈</dt><dd>1개 · invalid_date</dd></div>
+        <div><dt>ICS</dt><dd>0 VEVENT · RRULE 없음</dd></div>
+      </dl>
+      <div class="boundary"><b>의미 경계</b>예외 처리 방침은 확정됐지만 D-숫자·D-Day·D+숫자로 고칠 때까지 날짜를 계산하지 않는다.</div>
+
+      <details>
+        <summary>입력 문법과 전체 검사 보기</summary>
+        <div class="details-grid">
+          <div>
+            <h4>입력</h4>
+            <pre># 상대 날짜 오류
+## 실행
+- [ ] 장소 확인
+  - 상대 날짜: 내일</pre>
+          </div>
+          <div>
+            <h4>검사</h4>
+            <ul class="check-list">
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>원문 불변</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>문서 검증</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Item 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Step 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>주 산출물</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>calendar 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>todo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>sheet 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>memo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>해석 이슈 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>이슈 유형</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>이슈 메시지</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS VEVENT 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS RRULE 생성</strong>
+
+    </li></ul>
+          </div>
+        </div>
+      </details>
+    </article>
+    <article class="scenario-card is-pass"
+      data-group="exception_handling"
+      data-search="error-url-only url만 붙여 넣음 ai import가 없는 현재 단계에서는 url 내용을 추정하지 않는다. url 1개 예외 처리 방침은 확정됐지만 원문 본문을 직접 넣기 전에는 url 내용을 발명하지 않는다.">
+      <div class="scenario-heading">
+        <div>
+          <div class="eyebrow-row">
+            <span class="group-pill group-exception-handling">예외 처리</span>
+            <code>error-url-only</code>
+          </div>
+          <h3>URL만 붙여 넣음</h3>
+          <p>AI import가 없는 현재 단계에서는 URL 내용을 추정하지 않는다.</p>
+        </div>
+        <span class="result-pill pass">
+          PASS · 15/15
+        </span>
+      </div>
+      <div class="scenario-metrics">
+        <span><b>0</b> Step</span>
+        <span><b>0</b> Item</span>
+        <span><b>0</b> Calendar</span>
+        <span><b>0</b> Todo</span>
+        <span><b>0</b> Sheet</span>
+        <span><b>0</b> Memo</span>
+      </div>
+      <dl class="scenario-facts">
+        <div><dt>원문 형태</dt><dd>URL 1개</dd></div>
+        <div><dt>자연스러운 결과</dt><dd>원문 수정 필요</dd></div>
+        <div><dt>실제 주 결과</dt><dd>Memo</dd></div>
+        <div><dt>날짜 범위</dt><dd>계산된 날짜 없음</dd></div>
+        <div><dt>해석 이슈</dt><dd>1개 · source_import_required</dd></div>
+        <div><dt>ICS</dt><dd>0 VEVENT · RRULE 없음</dd></div>
+      </dl>
+      <div class="boundary"><b>의미 경계</b>예외 처리 방침은 확정됐지만 원문 본문을 직접 넣기 전에는 URL 내용을 발명하지 않는다.</div>
+
+      <details>
+        <summary>입력 문법과 전체 검사 보기</summary>
+        <div class="details-grid">
+          <div>
+            <h4>입력</h4>
+            <pre>https://example.com/source</pre>
+          </div>
+          <div>
+            <h4>검사</h4>
+            <ul class="check-list">
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>원문 불변</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>문서 검증</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>입력 형식</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Item 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Step 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>주 산출물</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>calendar 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>todo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>sheet 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>memo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>해석 이슈 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>이슈 유형</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>이슈 메시지</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS VEVENT 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS RRULE 생성</strong>
+
+    </li></ul>
+          </div>
+        </div>
+      </details>
+    </article>
+    <article class="scenario-card is-pass"
+      data-group="exception_handling"
+      data-search="error-explanatory-prose 표식 없는 설명문 · txt 보존 완료 가능한 행동이 아닌 문장을 item으로 만들지 않고 원문 메모로 보존한다. 설명 문장 1개 표식 없는 문장은 item으로 추론하지 않고 txt 원문 메모로 자동 보존하며 검토 경고를 만들지 않는다.">
+      <div class="scenario-heading">
+        <div>
+          <div class="eyebrow-row">
+            <span class="group-pill group-exception-handling">예외 처리</span>
+            <code>error-explanatory-prose</code>
+          </div>
+          <h3>표식 없는 설명문 · TXT 보존</h3>
+          <p>완료 가능한 행동이 아닌 문장을 Item으로 만들지 않고 원문 메모로 보존한다.</p>
+        </div>
+        <span class="result-pill pass">
+          PASS · 15/15
+        </span>
+      </div>
+      <div class="scenario-metrics">
+        <span><b>0</b> Step</span>
+        <span><b>0</b> Item</span>
+        <span><b>0</b> Calendar</span>
+        <span><b>0</b> Todo</span>
+        <span><b>0</b> Sheet</span>
+        <span><b>0</b> Memo</span>
+      </div>
+      <dl class="scenario-facts">
+        <div><dt>원문 형태</dt><dd>설명 문장 1개</dd></div>
+        <div><dt>자연스러운 결과</dt><dd>Memo</dd></div>
+        <div><dt>실제 주 결과</dt><dd>Memo</dd></div>
+        <div><dt>날짜 범위</dt><dd>계산된 날짜 없음</dd></div>
+        <div><dt>해석 이슈</dt><dd>1개 · ambiguous_role</dd></div>
+        <div><dt>ICS</dt><dd>0 VEVENT · RRULE 없음</dd></div>
+      </dl>
+      <div class="boundary"><b>의미 경계</b>표식 없는 문장은 Item으로 추론하지 않고 TXT 원문 메모로 자동 보존하며 검토 경고를 만들지 않는다.</div>
+
+      <details>
+        <summary>입력 문법과 전체 검사 보기</summary>
+        <div class="details-grid">
+          <div>
+            <h4>입력</h4>
+            <pre>제주 여행은 여름에 사람이 많습니다.</pre>
+          </div>
+          <div>
+            <h4>검사</h4>
+            <ul class="check-list">
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>원문 불변</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>문서 검증</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>입력 형식</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Item 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Step 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>주 산출물</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>calendar 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>todo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>sheet 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>memo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>해석 이슈 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>이슈 유형</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>이슈 메시지</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS VEVENT 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS RRULE 생성</strong>
+
+    </li></ul>
+          </div>
+        </div>
+      </details>
+    </article>
+    <article class="scenario-card is-pass"
+      data-group="compatibility"
+      data-search="compat-tab-table 탭 표 표의 행을 1:1 item으로 유지한다. tsv · 3 sourcerow 표 행 수를 카드 수에 맞춰 합치거나 나누지 않는다.">
+      <div class="scenario-heading">
+        <div>
+          <div class="eyebrow-row">
+            <span class="group-pill group-compatibility">호환 문법</span>
+            <code>compat-tab-table</code>
+          </div>
+          <h3>탭 표</h3>
+          <p>표의 행을 1:1 Item으로 유지한다.</p>
+        </div>
+        <span class="result-pill pass">
+          PASS · 13/13
+        </span>
+      </div>
+      <div class="scenario-metrics">
+        <span><b>1</b> Step</span>
+        <span><b>3</b> Item</span>
+        <span><b>0</b> Calendar</span>
+        <span><b>3</b> Todo</span>
+        <span><b>3</b> Sheet</span>
+        <span><b>3</b> Memo</span>
+      </div>
+      <dl class="scenario-facts">
+        <div><dt>원문 형태</dt><dd>TSV · 3 SourceRow</dd></div>
+        <div><dt>자연스러운 결과</dt><dd>Sheet</dd></div>
+        <div><dt>실제 주 결과</dt><dd>Sheet</dd></div>
+        <div><dt>날짜 범위</dt><dd>계산된 날짜 없음</dd></div>
+        <div><dt>해석 이슈</dt><dd>없음</dd></div>
+        <div><dt>ICS</dt><dd>0 VEVENT · RRULE 없음</dd></div>
+      </dl>
+      <div class="boundary"><b>의미 경계</b>표 행 수를 카드 수에 맞춰 합치거나 나누지 않는다.</div>
+
+      <details>
+        <summary>입력 문법과 전체 검사 보기</summary>
+        <div class="details-grid">
+          <div>
+            <h4>입력</h4>
+            <pre>순서	주제	활동
+1	첫 번째	강의 듣기
+2	두 번째	실습하기
+3	세 번째	복습하기</pre>
+          </div>
+          <div>
+            <h4>검사</h4>
+            <ul class="check-list">
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>원문 불변</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>문서 검증</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>입력 형식</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Item 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Step 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>주 산출물</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>calendar 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>todo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>sheet 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>memo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>해석 이슈 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS VEVENT 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS RRULE 생성</strong>
+
+    </li></ul>
+          </div>
+        </div>
+      </details>
+    </article>
+    <article class="scenario-card is-pass"
+      data-group="compatibility"
+      data-search="compat-csv-table csv 표 쉼표가 포함된 인용 셀도 한 행으로 유지한다. csv · 2 sourcerow 쉼표 한 개만으로 일반 한 줄 메모를 표로 오인하지 않는다.">
+      <div class="scenario-heading">
+        <div>
+          <div class="eyebrow-row">
+            <span class="group-pill group-compatibility">호환 문법</span>
+            <code>compat-csv-table</code>
+          </div>
+          <h3>CSV 표</h3>
+          <p>쉼표가 포함된 인용 셀도 한 행으로 유지한다.</p>
+        </div>
+        <span class="result-pill pass">
+          PASS · 15/15
+        </span>
+      </div>
+      <div class="scenario-metrics">
+        <span><b>1</b> Step</span>
+        <span><b>2</b> Item</span>
+        <span><b>0</b> Calendar</span>
+        <span><b>2</b> Todo</span>
+        <span><b>2</b> Sheet</span>
+        <span><b>2</b> Memo</span>
+      </div>
+      <dl class="scenario-facts">
+        <div><dt>원문 형태</dt><dd>CSV · 2 SourceRow</dd></div>
+        <div><dt>자연스러운 결과</dt><dd>Sheet</dd></div>
+        <div><dt>실제 주 결과</dt><dd>Sheet</dd></div>
+        <div><dt>날짜 범위</dt><dd>계산된 날짜 없음</dd></div>
+        <div><dt>해석 이슈</dt><dd>없음</dd></div>
+        <div><dt>ICS</dt><dd>0 VEVENT · RRULE 없음</dd></div>
+      </dl>
+      <div class="boundary"><b>의미 경계</b>쉼표 한 개만으로 일반 한 줄 메모를 표로 오인하지 않는다.</div>
+
+      <details>
+        <summary>입력 문법과 전체 검사 보기</summary>
+        <div class="details-grid">
+          <div>
+            <h4>입력</h4>
+            <pre>순서,작품,자료
+1,&quot;어린 왕자, 낭독본&quot;,https://example.com/1
+2,오만과 편견,https://example.com/2</pre>
+          </div>
+          <div>
+            <h4>검사</h4>
+            <ul class="check-list">
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>원문 불변</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>문서 검증</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>입력 형식</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Item 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Step 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>주 산출물</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>calendar 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>todo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>sheet 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>memo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>해석 이슈 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>첫 Item</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>마지막 Item</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS VEVENT 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS RRULE 생성</strong>
+
+    </li></ul>
+          </div>
+        </div>
+      </details>
+    </article>
+    <article class="scenario-card is-pass"
+      data-group="compatibility"
+      data-search="compat-markdown-table markdown 표 익숙한 markdown 표도 sheet 행으로 읽는다. markdown table · 2 sourcerow 표 안의 설명 셀을 별도 item으로 확장하지 않는다.">
+      <div class="scenario-heading">
+        <div>
+          <div class="eyebrow-row">
+            <span class="group-pill group-compatibility">호환 문법</span>
+            <code>compat-markdown-table</code>
+          </div>
+          <h3>Markdown 표</h3>
+          <p>익숙한 Markdown 표도 Sheet 행으로 읽는다.</p>
+        </div>
+        <span class="result-pill pass">
+          PASS · 13/13
+        </span>
+      </div>
+      <div class="scenario-metrics">
+        <span><b>1</b> Step</span>
+        <span><b>2</b> Item</span>
+        <span><b>0</b> Calendar</span>
+        <span><b>2</b> Todo</span>
+        <span><b>2</b> Sheet</span>
+        <span><b>2</b> Memo</span>
+      </div>
+      <dl class="scenario-facts">
+        <div><dt>원문 형태</dt><dd>Markdown table · 2 SourceRow</dd></div>
+        <div><dt>자연스러운 결과</dt><dd>Sheet</dd></div>
+        <div><dt>실제 주 결과</dt><dd>Sheet</dd></div>
+        <div><dt>날짜 범위</dt><dd>계산된 날짜 없음</dd></div>
+        <div><dt>해석 이슈</dt><dd>없음</dd></div>
+        <div><dt>ICS</dt><dd>0 VEVENT · RRULE 없음</dd></div>
+      </dl>
+      <div class="boundary"><b>의미 경계</b>표 안의 설명 셀을 별도 Item으로 확장하지 않는다.</div>
+
+      <details>
+        <summary>입력 문법과 전체 검사 보기</summary>
+        <div class="details-grid">
+          <div>
+            <h4>입력</h4>
+            <pre>| 순서 | 주제 | 활동 |
+| --- | --- | --- |
+| 1 | 첫 번째 | 강의 듣기 |
+| 2 | 두 번째 | 실습하기 |</pre>
+          </div>
+          <div>
+            <h4>검사</h4>
+            <ul class="check-list">
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>원문 불변</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>문서 검증</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>입력 형식</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Item 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>Step 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>주 산출물</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>calendar 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>todo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>sheet 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>memo 행 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>해석 이슈 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS VEVENT 수</strong>
+
+    </li>
+    <li class="check-pass">
+      <span>통과</span>
+      <strong>ICS RRULE 생성</strong>
+
+    </li></ul>
+          </div>
+        </div>
+      </details>
+    </article>
+      </div>
+    </section>
+
+    <section id="method">
+      <div class="section-heading">
+        <div><h2>검증 방법과 산출물</h2></div>
+        <p>같은 입력을 parser, canonical 구조, projection, preflight, Markdown, ICS 순으로 확인했습니다.</p>
+      </div>
+      <div class="method">
+        <article><h3>1. 원문 보존</h3><p>SourceRow → Item → Step → Flow 계보를 유지하고 원문에 없는 날짜·행동·주기를 만들지 않습니다.</p></article>
+        <article><h3>2. 자연스러운 목적지</h3><p>날짜는 Calendar, 명시 행동은 Todo, 원문 표는 Sheet, 설명·주의는 Memo로 projection합니다.</p></article>
+        <article><h3>3. 실패 경계</h3><p>모호한 값은 자동 보정하지 않고 원문과 이슈로 남깁니다. 사용자 검증으로 표현하지 않습니다.</p></article>
+      </div>
+      <div class="artifact-links">
+        <a class="artifact-link" href="../2026-08-04-flowme-text-authoring-grammar-ux-improvement-results/flowme-text-authoring-v2-test.html">Standalone 작성기 열기</a>
+        <a class="artifact-link secondary" href="grammar-simulation-results.json">전체 JSON 결과</a>
+        <a class="artifact-link secondary" href="README.md">실행 명령 보기</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="page">
+      Branch codex/text-authoring-v5-integration-20260811 · Commit 0758bb482393 ·
+      Dirty paths 27 · Generated 2026-08-11T06:49:52.481Z
+       · Standalone SHA-256 2919f47dc4edc074…
+    </div>
+  </footer>
+
+  <script>
+    (() => {
+      const buttons = [...document.querySelectorAll('[data-filter]')];
+      const cards = [...document.querySelectorAll('.scenario-card')];
+      const search = document.querySelector('.search');
+      let activeFilter = 'all';
+      const apply = () => {
+        const query = (search.value || '').trim().toLocaleLowerCase();
+        cards.forEach((card) => {
+          const groupMatches = activeFilter === 'all' || card.dataset.group === activeFilter;
+          const searchMatches = !query || (card.dataset.search || '').includes(query);
+          card.hidden = !(groupMatches && searchMatches);
+        });
+      };
+      buttons.forEach((button) => {
+        button.addEventListener('click', () => {
+          activeFilter = button.dataset.filter;
+          buttons.forEach((candidate) => candidate.setAttribute(
+            'aria-pressed',
+            String(candidate === button),
+          ));
+          apply();
+        });
+      });
+      search.addEventListener('input', apply);
+    })();
+  </script>
+</body>
+</html>
