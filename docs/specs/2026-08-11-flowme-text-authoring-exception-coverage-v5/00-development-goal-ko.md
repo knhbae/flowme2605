@@ -6,7 +6,7 @@
 - 상태: `INTEGRATION_QA_PASS / DRAFT_PR_OPEN`
 - 선행 기준: [현재 문법·처리 로직](../2026-07-28-flowme-text-authoring-ux-v1/authoring-grammar-logic.md)
 - 적용 화면: `/flows/new?authoringQa=1`, standalone Text Authoring 검토 HTML
-- 비범위: AI 작성, 외부 Calendar/Todo/Excel 전송, P35 통합, 배포, 관찰 사용자 검증
+- 비범위: AI 작성, 외부 Calendar/Todo/Excel 전송, P35 통합, production 배포, 관찰 사용자 검증
 - 결과 기록: [v5 구현·검증 결과](../../content-audit/2026-08-11-flowme-text-authoring-exception-coverage-v5-results/README.md)
 
 ## 1. 한 문장 목표
@@ -153,7 +153,7 @@ Todo·Sheet·TXT는 이 표시 순서를 원문에 역적용하지 않고 source
 - 원문의 자동 시간순 재작성
 - n번째 요일, 공휴일, 예외일, timezone 변환 정책 확장
 - 외부 Calendar/Todo/Excel 실제 쓰기
-- P35 adapter 변경, merge, Preview/production deploy
+- P35 adapter 변경, merge, production deploy. Draft PR의 자동 Vercel Preview는 검토용 CI 결과로만 취급한다.
 - 관찰 사용자 검증
 
 자동 테스트, 시뮬레이션, screenshot과 내부 browser QA는 구현 증거이며 관찰 사용자 검증이 아니다.

@@ -5,7 +5,7 @@
 - 기능 기준점: integration commit `f5928d8`
 - 상태: `INTEGRATION_QA_PASS / DRAFT_PR_OPEN`
 - 관찰 사용자 세션: `0`
-- 배포 상태: feature commit `f5928d8` push · Draft PR [#175](https://github.com/knhbae/flowme2605/pull/175) open · merge, Preview, production deploy, P35 integration 미수행
+- 게시 상태: v5 evidence commit `082eb92` push · Draft PR [#175](https://github.com/knhbae/flowme2605/pull/175) open · GitHub CI와 자동 Vercel PR Preview check PASS · merge, production deploy, P35 integration 미수행
 
 ## 1. 현재 구현 결과
 
@@ -136,7 +136,7 @@ grammar simulation은 `30 / 30`으로 재생성했다. 기존 UI evidence는 cat
 ## 9. 남은 gate
 
 1. owner가 regenerated standalone에서 분류 문구, daily 5회, same-day 정렬과 mobile 도달성을 검토한다.
-2. 이번 승인 범위는 commit, push, Draft PR까지다. merge, Preview/production deploy와 P35 integration은 별도 승인 전까지 수행하지 않는다.
+2. 이번 승인 범위는 commit, push, Draft PR까지다. Vercel PR Preview는 PR 생성으로 자동 실행된 검토용 check이며 production release가 아니다. merge, production deploy와 P35 integration은 별도 승인 전까지 수행하지 않는다.
 3. 자동 테스트, simulation, screenshot과 내부 browser QA를 관찰 사용자 검증이라고 부르지 않는다.
 
-현재 상태는 `INTEGRATION_QA_PASS / DRAFT_PR_OPEN`이며 release가 아니다. Draft PR [#175](https://github.com/knhbae/flowme2605/pull/175)는 검토 중이고, 관찰 사용자 세션은 `0`이며 merge, deploy, P35 integration은 수행하지 않았다.
+현재 상태는 `INTEGRATION_QA_PASS / DRAFT_PR_OPEN`이며 release가 아니다. Draft PR [#175](https://github.com/knhbae/flowme2605/pull/175)는 GitHub run [`31466654229`](https://github.com/knhbae/flowme2605/actions/runs/31466654229)의 두 job과 자동 Vercel PR Preview check가 통과한 검토 상태다. 관찰 사용자 세션은 `0`이며 merge, production deploy, P35 integration은 수행하지 않았다.

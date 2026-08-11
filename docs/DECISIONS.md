@@ -53,7 +53,7 @@ Do not use this for:
 
 **Reason:** 제작자는 원문과 결과를 한 화면에서 비교하고 수정 결과를 다시 원문에 반영할 수 있어야 한다. Calendar와 Todo를 같은 카드로 보이거나 반복 Item을 결과마다 다르게 펼치면 저장 결과를 신뢰하기 어렵다. canonical source와 derived occurrence, creator draft와 P35 execution을 분리하면 원문을 발명하지 않고도 익숙한 결과를 검토할 수 있다.
 
-**Applies to:** `/flows/new`, `components/flow/text-authoring/*`, `lib/flow/text-authoring/*`, standalone HTML, grammar catalog, local draft/source-sync, Calendar·Todo·Sheet·TXT preview/export와 당시 Draft PR [#175](https://github.com/knhbae/flowme2605/pull/175). PR #175는 최신 main 충돌 때문에 닫혔으며 이후 통합은 최신 main 기반의 새 stacked Draft PR에서 다시 검증한다. P35 adapter, 외부 서비스 쓰기, AI 생성, merge와 deployment는 포함하지 않는다.
+**Applies to:** `/flows/new`, `components/flow/text-authoring/*`, `lib/flow/text-authoring/*`, standalone HTML, grammar catalog, local draft/source-sync, Calendar·Todo·Sheet·TXT preview/export와 당시 Draft PR [#175](https://github.com/knhbae/flowme2605/pull/175). PR #175는 최신 main 충돌 때문에 닫혔으며 이후 통합은 최신 main 기반의 새 stacked Draft PR에서 다시 검증한다. P35 adapter, 외부 서비스 쓰기, AI 생성, merge와 production deployment는 포함하지 않는다. PR에서 자동 생성되는 Vercel Preview는 검토용 CI 결과이며 production release가 아니다.
 
 **Reopen when:** 관찰 사용자 행동이 900px 경계·월간 Calendar·30회/4주 반복 window를 실제로 방해한다고 보여 주거나, external destination/P35 계약이 stable identity와 source loss를 보존하는 adapter를 승인하거나, 사실행과 실행행이 섞인 표를 발명 없이 구분하는 새 계약이 승인될 때다.
 
