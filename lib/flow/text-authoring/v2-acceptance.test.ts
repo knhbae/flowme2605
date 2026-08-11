@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, relative } from 'node:path';
 import test from 'node:test';
+import { fileURLToPath } from 'node:url';
 
 import {
   buildV2AcceptanceMatrixResults,
@@ -237,7 +238,10 @@ test('optional UI evidence merges U01-U08 and updates the combined summary', (co
       pass: false,
       status: 'failed',
       evidence: [{
-        source: evidencePath.replaceAll('\\', '/'),
+        source: relative(
+          fileURLToPath(new URL('../../../', import.meta.url)),
+          evidencePath,
+        ).replaceAll('\\', '/'),
         checkId: 'U04',
         passed: false,
         actual: {
