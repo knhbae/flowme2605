@@ -2,6 +2,13 @@
 
 No tagged releases yet.
 
+## 2026-08-11 - R3B Approved Plan Execution UX
+
+- Merged the approved plan-execution implementation through [PR #172](https://github.com/knhbae/flowme2605/pull/172), then merged the production Escape correction through [PR #173](https://github.com/knhbae/flowme2605/pull/173) at `2026-08-11T01:31:11Z`; the final production source is `2b937ce811b518950f495341d05736ebd102887a`.
+- PR #173 final head `210b7c3ae027782fd91a003e88624b38d0243e74` passed required CI run [`31448713920`](https://github.com/knhbae/flowme2605/actions/runs/31448713920) and Vercel Preview. Post-merge `main` CI run [`31449546812`](https://github.com/knhbae/flowme2605/actions/runs/31449546812) also passed its Docs and Playwright jobs.
+- Vercel Production deployment record `5842830294`, status `16645165737`, identifies the exact merge source and <https://flowme2605-itg4dhbbt-flowme.vercel.app> as its direct deployment URL; an anonymous direct-URL request redirects to Vercel login. The canonical alias <https://flowme2605.vercel.app> served the app and passed the canonical `23/23` smoke; the [Vercel deployment record](https://vercel.com/flowme/flowme2605/DdeVFrodzmA587Rg8NEguB667Fgf) reports success.
+- Canonical production approved-spec smoke passed `23/23` with workers `1`, retries `0`, in `62.9s` (displayed `1.0m`), output `r3b-production-hotfix-2b937ce`. The earlier `21/23` run exposed two Escape-layer defects that PR #173 corrected. This is automated production QA, not observed-user validation; observed-user sessions remain `0`. No semantic version tag was created.
+
 ## 2026-08-09 - R3A My Flow Experience Boundary
 
 - Merged [PR #169](https://github.com/knhbae/flowme2605/pull/169) as product-source commit `95a69257c73633077df2305232299f58cca03f73`; the exact-query, fail-closed `r3a-lab` boundary was added while `classic` remained the default My Flow experience.

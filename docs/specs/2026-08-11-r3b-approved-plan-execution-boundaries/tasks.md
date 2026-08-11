@@ -14,7 +14,7 @@
   mappings without adding a content-specific persistence owner.
 - [x] Complete product proof through exact-head GitHub CI and exact-source
   deployment.
-- [ ] Close canonical production proof through the bounded Escape hotfix and
+- [x] Close canonical production proof through the bounded Escape hotfix and
   successful re-smoke in R3B-04.
 
 ## R3B-01
@@ -73,8 +73,15 @@
   build `18/18` at BUILD_ID `wjpnPhhhMBaWzGTXuxK7U`, P26 `1/1`, targeted
   browser `3/3`, approved browser `23/23`, and full Playwright `569/569` with
   failures, skips, and flaky tests all `0` using workers `2`.
-- [ ] Open the hotfix PR, require exact-head CI, merge, and deploy its exact
-  merge source.
-- [ ] Re-run the canonical `23`-check production smoke and require `23/23`.
-- [ ] Record final release evidence; keep observed-user validation separate at
-  `0` unless actual human evidence is supplied.
+- [x] Open [hotfix PR #173](https://github.com/knhbae/flowme2605/pull/173),
+  require exact-head CI run `31448713920`, merge as
+  `2b937ce811b518950f495341d05736ebd102887a`, pass main CI run
+  `31449546812`, and deploy that exact source through Production record
+  `5842830294` / status `16645165737`.
+- [x] Re-run the canonical `23`-check production smoke: `23/23`, workers `1`,
+  retries `0`, `62.9s` (displayed `1.0m`), output
+  `r3b-production-hotfix-2b937ce`.
+- [x] Record final release evidence while keeping observed-user validation
+  separate at `0`.
+- [x] Complete durable release documentation for the final observed evidence;
+  no product gate remains active.
