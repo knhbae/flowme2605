@@ -31,6 +31,8 @@ import {
   getFlowArtifactResultSummary,
 } from './FlowArtifactDataPreview';
 import { FlowCapabilityResultPreview } from './FlowCapabilityResultPreview';
+import { PublicPlanResultPreview } from './PublicPlanResultPreview';
+import { PublicPlanShareShell } from './PublicPlanShareShell';
 import { PublicFlowItemPreview } from './PublicFlowItemPreview';
 import { FlowContextDisclosure } from './FlowContextDisclosure';
 import {
@@ -25877,9 +25879,9 @@ export function PublicFlow({ slug }: { slug: string }) {
       className={`min-h-screen bg-[#F5F7F6] px-4 text-slate-950 md:px-8 ${publicMobileClearanceClass}`}
     >
       <div className="mx-auto max-w-[1240px]">
-        <PublicFlowShareShell
-          savedFlowAt={savedFlowAt}
-          flowSlug={bundle.flow.slug}
+        <PublicPlanShareShell
+          savedAt={savedFlowAt}
+          planId={bundle.flow.slug}
           showSavedLink={false}
           q3CopyEnabled={publicQ3CopyEnabled}
         />
@@ -25958,12 +25960,12 @@ export function PublicFlow({ slug }: { slug: string }) {
                   </p>
                 ) : null}
                 {publicCapabilityResultEnabled ? (
-                  <FlowCapabilityResultPreview
+                  <PublicPlanResultPreview
                     viewModel={publicCapabilityResultViewModel}
+                    approved={publicApprovedPlanExecutionEnabled}
                     selectedDestination={publicEffectiveDestination}
                     previewRowLimit={3}
                     testId="public-flow-capability-result"
-                    publicApprovedMode={publicApprovedPlanExecutionEnabled}
                     anchorDate={displayAnchor}
                     calendarEmptyAction={publicCalendarEmptyAction}
                     onRowOpen={publicApprovedPlanExecutionEnabled
@@ -26233,39 +26235,6 @@ export function PublicFlow({ slug }: { slug: string }) {
         ) : null}
       </div>
     </main>
-  );
-}
-
-function PublicFlowShareShell({
-  savedFlowAt,
-  flowSlug,
-  showSavedLink = true,
-  q3CopyEnabled = true,
-}: {
-  savedFlowAt?: string;
-  flowSlug: string;
-  showSavedLink?: boolean;
-  q3CopyEnabled?: boolean;
-}) {
-  const q3Copy = getQ3UserCopyProfile(q3CopyEnabled);
-  return (
-    <nav
-      aria-label="공유 콘텐츠"
-      data-testid="flow-public-shell"
-      className="mb-5 flex min-h-14 items-center justify-between gap-3 border-b border-[#DDE4E0] py-3 md:mb-7"
-    >
-      <Link className="inline-flex min-h-9 items-center gap-2 text-lg font-semibold text-[#1B1A17]" href="/flows">
-        <span>FLOW</span>
-        <span className="text-xs font-semibold text-[#59625E]">{q3Copy.navigation.findPlans}</span>
-      </Link>
-      {savedFlowAt && showSavedLink ? (
-        <Link className="inline-flex min-h-9 items-center rounded-md border border-[#DDE4E0] bg-white px-3 text-sm font-semibold text-[#59625E] hover:border-[#3654FF]/40 hover:text-[#3654FF]" href={buildPostSaveHref({ kind: 'flow', id: flowSlug })}>
-          {q3CopyEnabled ? '내 계획에서 보기' : '내 Flow에서 보기'}
-        </Link>
-      ) : (
-        <span className="text-xs font-semibold text-[#8A857B]">공유 화면</span>
-      )}
-    </nav>
   );
 }
 

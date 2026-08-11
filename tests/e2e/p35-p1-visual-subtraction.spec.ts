@@ -253,6 +253,9 @@ test.describe('P1-01 bounded visual subtraction', () => {
     // The released moving-d30 alias redirects to its canonical /f route, so
     // exercise the same setupInput branch on a directly accessible dated Map.
     await page.goto(routeForPhase('/flow-maps/curated-opic-mock-course'));
+    if (phase === 'after') {
+      await page.getByTestId('public-flow-capability-result').getByRole('button', { name: 'Calendar' }).click();
+    }
     await page.getByTestId('flow-map-anchor-input').fill('');
     const sticky = page.getByTestId('flow-map-mobile-sticky-save');
     await expect(sticky).toBeVisible();

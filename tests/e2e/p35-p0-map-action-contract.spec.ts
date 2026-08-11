@@ -63,7 +63,7 @@ async function assertAppliedParity(
   page: Page,
   expectedIds: string[],
   mobile: boolean,
-  expectedSaveLabel = '내 계획에 저장',
+  expectedSaveLabel = '내 계획으로 저장',
 ) {
   const map = page.getByTestId('flow-map-public');
   const effective = map.getByTestId('flow-map-effective-snapshot');
@@ -75,19 +75,24 @@ async function assertAppliedParity(
   await expect(map.locator('[data-testid="flow-map-selection-summary"]:visible')).toHaveText('선택 7 / 전체 8');
   await expect(saveTrigger(page, mobile)).toHaveText(expectedSaveLabel);
 
-  const previewRows = map.getByTestId('flow-map-hero').locator('[data-flow-outline-row="true"]');
-  const outlineRows = map.getByTestId('flow-map-execution-outline').getByTestId('flow-map-execution-step-row');
-  await expect(previewRows).toHaveCount(7);
-  await expect(outlineRows).toHaveCount(7);
-  expect(await getItemIds(previewRows)).toEqual(expectedIds);
-  expect(await getItemIds(outlineRows)).toEqual(expectedIds);
+  const result = map.getByTestId('public-flow-capability-result');
+  await expect(result).toHaveAttribute('data-public-format-mode', 'approved');
+  await expect(result.getByTestId('flow-capability-result-choice')).toHaveCount(3);
+  expect((await result.getAttribute('data-capability-manifest-item-ids'))?.split(',')).toEqual(expectedIds);
+  await expect(map.getByTestId('flow-map-execution-outline')).toHaveCount(0);
+  await expect(map.getByTestId('flow-map-artifact-preview')).toHaveCount(0);
+  await expect(map).not.toContainText('저장될 전체 계획');
 }
 
 async function readRelevantRawStorage(page: Page) {
   return page.evaluate((keys) => Object.fromEntries(keys.map((key) => [key, window.localStorage.getItem(key)])), [...MAP_STORAGE_KEYS]);
 }
 
-async function assertStoredParity(page: Page, expectedIds: string[]) {
+async function assertStoredParity(
+  page: Page,
+  expectedIds: string[],
+  selectedArtifactMode: 'memo' | 'checklist' | 'calendar' = 'checklist',
+) {
   const saved = await page.evaluate(({ mapId, flowSlug }) => ({
     snapshot: JSON.parse(window.localStorage.getItem(`flow:map:saved:${mapId}`) || 'null'),
     persistence: JSON.parse(window.localStorage.getItem(`flow:map:persistence:${mapId}`) || 'null'),
@@ -103,7 +108,7 @@ async function assertStoredParity(page: Page, expectedIds: string[]) {
   expect(saved.persistence.map.title).toBe('시험 전 핵심 단원');
   expect(snapshotIds).toEqual(expectedIds);
   expect(persistenceIds).toEqual(expectedIds);
-  expect(saved.record.selectedArtifactMode).toBe('sheet');
+  expect(saved.record.selectedArtifactMode).toBe(selectedArtifactMode);
 }
 
 test.describe('P35 P0 Flow Map action contract', () => {
@@ -147,6 +152,7 @@ test.describe('P35 P0 Flow Map action contract', () => {
     expect(await page.evaluate(() => Object.keys(window.localStorage).filter((key) => key.startsWith('flow:map:')))).toEqual([]);
 
     await captureEvidence(page, 'p0-02-map-after-390x844.png');
+    await map.getByTestId('public-flow-capability-result').getByRole('button', { name: 'Todo' }).click();
     const beforeFailure = await readRelevantRawStorage(page);
     await page.evaluate((failureKey) => {
       const original = Storage.prototype.setItem;
@@ -185,6 +191,7 @@ test.describe('P35 P0 Flow Map action contract', () => {
     const expectedIds = await applySevenItemSnapshot(page, false);
     await assertAppliedParity(page, expectedIds, false);
     await captureEvidence(page, 'p0-02-map-after-1440x1000.png');
+    await page.getByTestId('public-flow-capability-result').getByRole('button', { name: 'Todo' }).click();
     await saveTrigger(page, false).click();
     await expect(page).toHaveURL(`/my?savedMap=${MAP_ID}&sort=next`);
     await assertStoredParity(page, expectedIds);
@@ -279,11 +286,13 @@ test.describe('P35 P0 Flow Map action contract', () => {
     );
 
     await page.goto(datedMapUrl);
+    await page.getByTestId('public-flow-capability-result').getByRole('button', { name: 'Calendar' }).click();
     await expect(page.getByTestId('flow-map-anchor-input')).toBeVisible();
 
     const stalePage = await context.newPage();
     await stalePage.setViewportSize({ width: 390, height: 844 });
     await stalePage.goto(datedMapUrl);
+    await stalePage.getByTestId('public-flow-capability-result').getByRole('button', { name: 'Calendar' }).click();
     await expect(stalePage.getByTestId('flow-map-anchor-input')).toBeVisible();
 
     await saveTrigger(page, true).click();
@@ -313,7 +322,10 @@ test.describe('P35 P0 Flow Map action contract', () => {
     await expect(map.getByTestId('flow-map-adjust-save')).toHaveCount(0);
     await expect(map.getByTestId('flow-map-save-all-mobile')).toHaveCount(0);
     await expect(map.getByTestId('flow-map-save-all')).toHaveCount(0);
-    await expect(map.getByTestId('flow-map-choose-child').getByRole('link')).toHaveCount(2);
+    await expect(map.getByTestId('flow-map-child-choice')).toHaveCount(2);
+    await expect(map.getByTestId('flow-map-open-selected-child')).toHaveCount(1);
+    await expect(map.getByTestId('public-flow-capability-result')).toHaveAttribute('data-public-format-mode', 'approved');
+    await expect(map.getByTestId('flow-map-execution-outline')).toHaveCount(0);
   });
 
   test('review hold keeps direct sources and action-adjacent sensitive caution without execution actions', async ({ page }) => {

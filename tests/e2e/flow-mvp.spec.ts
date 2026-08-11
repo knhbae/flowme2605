@@ -94,6 +94,49 @@ async function expectNoUserFacingDisplayLeakage(locator: Locator) {
   expect(result.structuralDisplayHits).toEqual([]);
 }
 
+async function expectApprovedPublicMapResult(
+  publicMap: Locator,
+  options: {
+    mapId: string;
+    outputCount: number;
+    firstItemId: string;
+    firstItemTitle: string;
+  },
+) {
+  await expect(publicMap.getByTestId('flow-public-shell')).toHaveAttribute('data-public-plan-kind', 'map');
+  const snapshot = publicMap.getByTestId('flow-map-effective-snapshot');
+  await expect(snapshot).toHaveAttribute('data-public-result-owner', 'flow_map');
+  await expect(snapshot).toHaveAttribute('data-public-result-owner-id', options.mapId);
+  await expect(snapshot).toHaveAttribute('data-public-result-owner-hash', /\S+/u);
+
+  const result = publicMap.getByTestId('public-flow-capability-result');
+  await expect(result).toHaveAttribute('data-public-format-mode', 'approved');
+  await expect(result).toHaveAttribute('data-capability-selected-destination', 'memo');
+  await expect(result).toHaveAttribute('data-capability-output-count', String(options.outputCount));
+  await expect(result.getByTestId('flow-capability-result-choice')).toHaveCount(3);
+  await expect(result.getByRole('button', { name: 'Text', exact: true })).toBeVisible();
+  await expect(result.getByRole('button', { name: 'Todo', exact: true })).toBeVisible();
+  await expect(result.getByRole('button', { name: 'Calendar', exact: true })).toBeVisible();
+
+  const firstRow = result.getByTestId('flow-capability-artifact-preview-row').first();
+  await expect(firstRow).toHaveAttribute('data-item-id', options.firstItemId);
+  await expect(firstRow).toContainText(options.firstItemTitle);
+
+  await expect(publicMap.locator('[data-p30-marker="P30-LEGACY-COMPOSITION-ACTIVE"]')).toHaveCount(0);
+  await expect(publicMap.getByTestId('flow-map-artifact-preview')).toHaveCount(0);
+  await expect(publicMap.getByTestId('flow-map-execution-outline')).toHaveCount(0);
+  await expect(publicMap.getByTestId('flow-map-public-step-items')).toHaveCount(0);
+  await expect(publicMap).not.toContainText('저장될 전체 계획');
+}
+
+async function expectNoExecutablePublicMapResult(publicMap: Locator) {
+  await expect(publicMap.getByTestId('public-flow-capability-result')).toHaveCount(0);
+  await expect(publicMap.locator('[data-p30-marker="P30-LEGACY-COMPOSITION-ACTIVE"]')).toHaveCount(0);
+  await expect(publicMap.getByTestId('flow-map-artifact-preview')).toHaveCount(0);
+  await expect(publicMap.getByTestId('flow-map-execution-outline')).toHaveCount(0);
+  await expect(publicMap.getByTestId('flow-map-public-step-items')).toHaveCount(0);
+}
+
 async function enterMyFlowDetailEditMode(detail: Locator) {
   const quickEdit = detail.getByTestId('my-flow-quick-item-edit');
   if (await quickEdit.isVisible().catch(() => false)) {
@@ -1484,7 +1527,7 @@ test('post-save moving item edits keep completion criterion in UI promise and ch
 
 
 
-test('curated source cards are integrated into Flow finding and open the recommended Flow', async ({ page }) => {
+test('curated source cards are integrated into Flow finding and open the approved Map result', async ({ page }) => {
   await page.goto('/flows');
 
   const catalog = page.getByTestId('flow-map-catalog-section');
@@ -1510,9 +1553,14 @@ test('curated source cards are integrated into Flow finding and open the recomme
     page.waitForURL('**/flow-maps/curated-opic-mock-course', { timeout: 15_000 }),
     opicCard.click(),
   ]);
-  await expect(page.getByTestId('flow-map-public')).toBeVisible();
-  await page.getByTestId('flow-map-execution-outline').locator('summary').first().click();
-  await expect(page.getByRole('link', { name: '바로 시작' }).first()).toHaveAttribute('href', '/f/curated-opic-single-mock-review');
+  const publicMap = page.getByTestId('flow-map-public');
+  await expect(publicMap).toBeVisible();
+  await expectApprovedPublicMapResult(publicMap, {
+    mapId: 'curated-opic-mock-course',
+    outputCount: 19,
+    firstItemId: 'curated-opic-single-mock-review::opic-2w-d01',
+    firstItemTitle: '1일차: 1회차 연습',
+  });
 
   const staleMapResponse = await page.goto('/flow-maps/moving-map');
   expect(staleMapResponse?.status()).toBe(404);
@@ -2814,7 +2862,7 @@ test('my flow source-backed demo stays lightweight in the mobile library', async
   await expect(rows.getByTestId('my-flow-mobile-structure-open')).toHaveCount(2);
   await expectNoHorizontalOverflow(page);
 });
-test('source-backed flow map public page stays save-before focused', async ({ page }) => {
+test('source-backed flow map public page uses the approved result contract without a legacy outline', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/flow-maps/middle-school-math-1');
 
@@ -2823,21 +2871,27 @@ test('source-backed flow map public page stays save-before focused', async ({ pa
   await expect(publicMap.getByRole('heading', { name: '중1 수학 목차 진도표' })).toBeVisible();
   await expect(publicMap.getByTestId('flow-map-hero')).toHaveAttribute('data-visual-structure', 'artifact-first');
   await expect(publicMap.getByText('원문', { exact: true })).toBeVisible();
-  await expect(publicMap.getByTestId('flow-map-artifact-preview')).toContainText('소인수분해');
-  await expect(publicMap.getByTestId('flow-map-hero')).toContainText('저장될 전체 계획');
-  await expect(publicMap.getByTestId('flow-map-hero')).not.toContainText('저장 전 보기');
-  await expect(publicMap).not.toContainText('저장되는 결과물');
-  const firstActionTop = await publicMap.getByTestId('flow-map-artifact-preview').evaluate((element) => element.getBoundingClientRect().top);
+  await expectApprovedPublicMapResult(publicMap, {
+    mapId: 'middle-school-math-1',
+    outputCount: 8,
+    firstItemId: 'source-backed-middle-school-math-1::math-prime-factorization',
+    firstItemTitle: '1. 소인수분해',
+  });
+  const result = publicMap.getByTestId('public-flow-capability-result');
+  const firstActionTop = await result.evaluate((element) => element.getBoundingClientRect().top);
   expect(firstActionTop).toBeLessThan(720);
   await expect(publicMap).toContainText('중1 수학 목차');
   await expect(publicMap.getByTestId('flow-map-hero')).not.toContainText('이사일 1개를 넣으면');
-  await publicMap.getByTestId('flow-map-execution-outline').locator('summary').first().click();
-  await expect(publicMap).toContainText('소인수분해');
-  await expect(publicMap).toContainText('정수와 유리수');
-  await expect(publicMap).toContainText('거듭제곱');
-  await expect(publicMap.getByTestId('flow-map-public-step-items').first()).toContainText(/체크 \d+개/);
-  await expect(publicMap.getByText('메모 · 원문').first()).toBeVisible();
-  await expect(publicMap.getByRole('button', { name: '내 계획에 저장' })).toBeVisible();
+  await result.getByRole('button', { name: 'Todo', exact: true }).click();
+  await expect(result).toHaveAttribute('data-capability-selected-destination', 'checklist');
+  const todoRows = result.getByTestId('flow-capability-artifact-preview-row');
+  await expect(todoRows).toHaveCount(8);
+  await expect(todoRows.first()).toHaveAttribute(
+    'data-todo-item-id',
+    'source-backed-middle-school-math-1::math-prime-factorization',
+  );
+  await expect(todoRows.nth(1)).toContainText('2. 정수와 유리수');
+  await expect(publicMap.getByRole('button', { name: '내 계획으로 저장' })).toBeVisible();
   await expect(publicMap).not.toContainText(/source fit|PoC|개발자|평가 점수/i);
   await expect(publicMap).not.toContainText(/제작자 편집|초안 저장|새 공개 버전/i);
 });
@@ -2846,7 +2900,8 @@ test('source-backed flow map public page saves into the real My Flow path', asyn
   await installLegacySavedPlanLibraryNavigation(page);
   await gotoLegacySavedPlanLibraryRoute(page, '/flow-maps/middle-school-math-1');
 
-  await page.getByRole('button', { name: '내 계획에 저장' }).click();
+  await page.getByTestId('public-flow-capability-result').getByRole('button', { name: 'Todo' }).click();
+  await page.getByRole('button', { name: '내 계획으로 저장' }).click();
   await expect(page).toHaveURL('/my?savedMap=middle-school-math-1&savedPlanLibrary=off');
   await expect(page.getByTestId('flow-map-creator')).toHaveCount(0);
   await expect(page.locator('body')).not.toContainText(/제작자 편집|초안 저장|새 공개 버전/i);
@@ -2905,7 +2960,8 @@ test('source-backed flow map public page saves into the real My Flow path', asyn
 
 test('my flow separates ready source-backed content from review-needed saved flows', async ({ page }) => {
   await page.goto('/flow-maps/middle-school-math-1');
-  await page.getByRole('button', { name: '내 계획에 저장' }).click();
+  await page.getByTestId('public-flow-capability-result').getByRole('button', { name: 'Todo' }).click();
+  await page.getByRole('button', { name: '내 계획으로 저장' }).click();
   await expect(page).toHaveURL('/my?savedMap=middle-school-math-1&sort=next');
 
   await page.evaluate(() => {
@@ -3072,7 +3128,7 @@ test('review-hold Flow Maps keep current official source access without new save
     if (flowCase.sourceHref) await expect(sourceLink).toHaveAttribute('href', flowCase.sourceHref);
     await expect(page.getByTestId('flow-map-save-all')).toHaveCount(0);
     await expect(page.getByTestId('flow-map-save-all-mobile')).toHaveCount(0);
-    await expect(page.getByTestId('flow-map-public-step-items')).toHaveCount(0);
+    await expectNoExecutablePublicMapResult(publicMap);
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
     if (evidenceDir && flowCase.mapId === 'year-end-tax-submit') {
       await page.screenshot({ path: `${evidenceDir}/03-tax-review-hold-mobile.png`, fullPage: true });
@@ -3096,7 +3152,7 @@ test('broad Funmom category collection stays visible as a source-row hold withou
   await expect(hold.getByRole('link', { name: '원문 자료 둘러보기' })).toHaveAttribute('href', 'https://funmom.tistory.com/');
   await expect(page.getByTestId('flow-map-save-all')).toHaveCount(0);
   await expect(page.getByTestId('flow-map-save-all-mobile')).toHaveCount(0);
-  await expect(page.getByTestId('flow-map-public-step-items')).toHaveCount(0);
+  await expectNoExecutablePublicMapResult(page.getByTestId('flow-map-public'));
   await expect(page.getByText('월: 색칠공부 한 장 출력')).toHaveCount(0);
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
   if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/01-funmom-review-hold-mobile.png`, fullPage: true });
@@ -3142,7 +3198,7 @@ test('creator infant-feeding schedule is held for current guidance review withou
     'https://blog.naver.com/01695258757/222768860919',
   );
   await expect(page.getByTestId('flow-map-save-all')).toHaveCount(0);
-  await expect(page.getByTestId('flow-map-public-step-items')).toHaveCount(0);
+  await expectNoExecutablePublicMapResult(page.getByTestId('flow-map-public'));
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
   if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/01-baby-food-review-hold-mobile.png`, fullPage: true });
 
@@ -3173,22 +3229,34 @@ test('current Samsung 1way aircon routine keeps its verified cadence and puts mo
 
   const publicMap = page.getByTestId('flow-map-public');
   await expect(publicMap.getByRole('heading', { name: '천장형 에어컨 1way 필터 청소 루틴', level: 1 })).toBeVisible();
-  await expect(publicMap.getByTestId('flow-map-hero')).toContainText('저장될 전체 계획');
-  await expect(publicMap.getByTestId('flow-map-artifact-preview')).toContainText('필터 청소하고 리셋하기');
-  await publicMap.getByTestId('flow-map-execution-outline').locator('summary').first().click();
-  await expect(publicMap.getByTestId('flow-map-source-link')).toHaveAttribute('href', 'https://www.samsungsvc.co.kr/solution/28524');
+  await expectApprovedPublicMapResult(publicMap, {
+    mapId: 'aircon-filter-cleaning',
+    outputCount: 1,
+    firstItemId: 'source-backed-aircon-filter-cleaning::aircon-clean-repeat',
+    firstItemTitle: '필터 청소하고 리셋하기',
+  });
+  await expect(publicMap.locator('a[href="https://www.samsungsvc.co.kr/solution/28524"]').first())
+    .toHaveAttribute('target', '_blank');
   await expect(page.getByTestId('flow-map-save-all-mobile')).toBeVisible();
   await expect(publicMap).not.toContainText('sourceTrace');
   if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/05-aircon-direct-mobile.png`, fullPage: true });
 
-  const detailItems = publicMap.getByTestId('flow-map-public-step-items');
-  await detailItems.getByText('체크 7개 열기').click();
-  await expect(detailItems).toContainText('제품이 천장형 1way인지 모델명과 사용설명서 확인');
-  await expect(detailItems).toContainText('운전을 정지하고 보조전원스위치 끄기');
-  await expect(detailItems).toContainText('필터 리셋 또는 알림 해제 실행');
+  const result = publicMap.getByTestId('public-flow-capability-result');
+  await result.getByRole('button', { name: 'Todo', exact: true }).click();
+  await result.getByTestId('flow-capability-artifact-preview-todo-detail-link').click();
+  const itemPreview = page.getByTestId('public-flow-item-preview');
+  await expect(itemPreview).toHaveAttribute(
+    'data-item-id',
+    'source-backed-aircon-filter-cleaning::aircon-clean-repeat',
+  );
+  const rawMemo = itemPreview.getByTestId('public-flow-item-preview-raw-memo');
+  await expect(rawMemo).toContainText('제품이 천장형 1way인지 모델명과 사용설명서 확인');
+  await expect(rawMemo).toContainText('운전을 정지하고 보조전원스위치 끄기');
+  await expect(rawMemo).toContainText('필터 리셋 또는 알림 해제 실행');
   await expect(publicMap).not.toContainText('sourceTrace');
-  await page.evaluate(() => window.scrollTo(0, 0));
   if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/06-aircon-details-mobile.png`, fullPage: true });
+  await itemPreview.getByTestId('public-flow-item-preview-close').click();
+  await page.evaluate(() => window.scrollTo(0, 0));
 
   await page.setViewportSize({ width: 1024, height: 900 });
   await expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2)).toBe(true);
@@ -3204,8 +3272,12 @@ test('postal address transfer keeps only the official next-day check and defers 
 
   const publicMap = page.getByTestId('flow-map-public');
   await expect(publicMap.getByRole('heading', { name: '주거이전 우편물 전송 확인', level: 1 })).toBeVisible();
-  await expect(publicMap).toContainText('1개 할 일');
-  await expect(publicMap).toContainText('주거이전서비스 신청·결제 상태 확인');
+  await expectApprovedPublicMapResult(publicMap, {
+    mapId: 'postal-address-transfer',
+    outputCount: 1,
+    firstItemId: 'source-backed-postal-address-transfer::postal-next-day-check',
+    firstItemTitle: '주거이전서비스 신청·결제 상태 확인',
+  });
   await expect(publicMap).not.toContainText('D+3');
   await expect(publicMap).not.toContainText('D+7');
   await expect(publicMap).not.toContainText('서비스 시작일과 종료일 메모');
@@ -3216,12 +3288,22 @@ test('postal address transfer keeps only the official next-day check and defers 
   if (evidenceDir) {
     await page.screenshot({ path: `${evidenceDir}/01-postal-minimal-mobile.png` });
   }
-  await publicMap.getByTestId('flow-map-execution-outline').locator('summary').first().click();
-  const detailItems = publicMap.getByTestId('flow-map-public-step-items');
-  await detailItems.getByText('체크 4개 열기').click();
+  const result = publicMap.getByTestId('public-flow-capability-result');
+  await result.getByRole('button', { name: 'Todo', exact: true }).click();
+  await result.getByTestId('flow-capability-artifact-preview-todo-detail-link').click();
+  const itemPreview = page.getByTestId('public-flow-item-preview');
+  await expect(itemPreview).toHaveAttribute(
+    'data-item-id',
+    'source-backed-postal-address-transfer::postal-next-day-check',
+  );
+  await expect(itemPreview.getByTestId('public-flow-item-preview-raw-memo'))
+    .toContainText('인터넷우체국에서 무료·유료 신청 상태 조회');
   if (evidenceDir) {
-    await detailItems.scrollIntoViewIfNeeded();
+    await itemPreview.scrollIntoViewIfNeeded();
     await page.screenshot({ path: `${evidenceDir}/07-postal-details-mobile.png` });
+  }
+  await itemPreview.getByTestId('public-flow-item-preview-close').click();
+  if (evidenceDir) {
     await page.setViewportSize({ width: 1024, height: 900 });
     await expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2)).toBe(true);
     await expect(page.getByTestId('flow-map-save-all')).toBeVisible();
@@ -3926,6 +4008,7 @@ test('current source-backed routes keep source link checklist and memo in my flo
       await publicMap.getByTestId('flow-map-anchor-input').fill(flowCase.anchor);
     }
 
+    await publicMap.getByTestId('public-flow-capability-result').getByRole('button', { name: 'Todo' }).click();
     await publicMap.getByTestId('flow-map-save-all').click();
     await expect.poll(() => new URL(page.url()).searchParams.get('savedMap')).toBe(flowCase.mapId);
     await page.getByTestId('my-flow-post-save-panel').getByTestId('my-flow-post-save-view-flow').click();
@@ -3965,6 +4048,9 @@ test('current source-backed routes keep source link checklist and memo in my flo
     await expect(titleInput).toHaveValue(originalTitle);
     await detail.getByTestId('my-flow-detail-save-changes').click();
 
+    await expect.poll(() => page.evaluate(() => (
+      window.localStorage.getItem('flow:my-flow:item-drafts') || '{}'
+    ))).toContain(memo);
     const storedAfterEdit = await page.evaluate(() => ({
       stepItemChecks: JSON.parse(window.localStorage.getItem('flow:my-flow:step-item-checks') || '{}'),
       itemDrafts: JSON.parse(window.localStorage.getItem('flow:my-flow:item-drafts') || '{}'),
@@ -5763,14 +5849,26 @@ test('url lookup keeps the result focused and makes the catalog secondary', asyn
   await expect(page.getByTestId('flow-catalog-browse-results')).toBeVisible();
 });
 
-test('source-backed flow map uses one artifact-first promise and a flat execution outline', async ({ page }) => {
+test('source-backed flow map uses one approved result surface with canonical Todo rows', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/flow-maps/middle-school-math-1');
 
-  await expect(page.getByTestId('flow-map-hero')).toHaveAttribute('data-visual-structure', 'artifact-first');
-  const outline = page.getByTestId('flow-map-execution-outline');
-  await expect(outline).toBeVisible();
-  await expect(outline.getByTestId('flow-map-execution-step-row')).toHaveCount(8);
+  const publicMap = page.getByTestId('flow-map-public');
+  await expect(publicMap.getByTestId('flow-map-hero')).toHaveAttribute('data-visual-structure', 'artifact-first');
+  await expectApprovedPublicMapResult(publicMap, {
+    mapId: 'middle-school-math-1',
+    outputCount: 8,
+    firstItemId: 'source-backed-middle-school-math-1::math-prime-factorization',
+    firstItemTitle: '1. 소인수분해',
+  });
+  const result = publicMap.getByTestId('public-flow-capability-result');
+  await result.getByRole('button', { name: 'Todo', exact: true }).click();
+  const rows = result.getByTestId('flow-capability-artifact-preview-row');
+  await expect(rows).toHaveCount(8);
+  await expect(rows.last()).toHaveAttribute(
+    'data-todo-item-id',
+    'source-backed-middle-school-math-1::math-data-analysis',
+  );
   await expect(page.getByTestId('flow-map-mobile-sticky-save')).toBeVisible();
   await expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
 });

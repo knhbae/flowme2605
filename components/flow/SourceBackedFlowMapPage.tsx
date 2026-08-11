@@ -11,6 +11,8 @@ import {
 import { PlatformNav } from './PlatformNav';
 import { FlowContextDisclosure } from './FlowContextDisclosure';
 import { FlowSaveBeforeFrame } from './FlowSaveBeforeFrame';
+import { PublicPlanShareShell } from './PublicPlanShareShell';
+import { SourceBackedFlowMapChooseChildExperience } from './SourceBackedFlowMapChooseChildExperience';
 import { SourceBackedFlowMapExecutionOutline } from './SourceBackedFlowMapExecutionOutline';
 import { SourceBackedFlowMapSaveExperience } from './SourceBackedFlowMapSaveExperience';
 
@@ -172,7 +174,6 @@ export function SourceBackedFlowMapPublicPage({
   q3CopyEnabled = true,
   visualSubtractionEnabled = true,
 }: SourceBackedFlowMapProps) {
-  const copy = getQ3UserCopyProfile(q3CopyEnabled);
   const publishPackage = buildSourceBackedFlowMapPublishPackage(mapId);
   if (!publishPackage) return <NotFoundMap q3CopyEnabled={q3CopyEnabled} />;
   if (!isSourceBackedFlowMapExecutable(publishPackage.map)) {
@@ -183,27 +184,6 @@ export function SourceBackedFlowMapPublicPage({
   const displayTitle = toUserFacingMapTitle(publicSurface.title);
   const chooseChildBeforeSave = publicSurface.saveMode === 'choose_child';
   const riskLevels = getMapRiskLevels(publishPackage);
-  const choiceCopy = publicSurface.choiceCopy ?? {
-    resultPromise: '준비표 하나를 고른 뒤 필요한 설정을 확인해 저장합니다.',
-    heading: '먼저 준비표 하나를 고르세요.',
-    body: q3CopyEnabled
-      ? '각 준비표 화면에서 필요한 설정을 확인한 뒤 내 계획에 저장합니다.'
-      : '각 준비표 화면에서 필요한 설정을 확인한 뒤 내 Flow에 저장합니다.',
-    inputLabel: q3CopyEnabled ? '계획별 설정' : '준비표별 설정',
-    childCtaLabel: '설정하고 시작',
-  };
-  const previewSteps = publicSurface.childFlows.flatMap((flow) => flow.steps.map((step) => ({
-    ...step,
-    itemKey: `${flow.slug}::${step.id}`,
-    flowSlug: flow.slug,
-    flowTitle: flow.title,
-  })));
-  const previewRows = previewSteps.map((step) => ({
-    id: step.itemKey,
-    timing: step.stepTitle ? toUserFacingSourceTitle(step.stepTitle) : undefined,
-    title: step.title,
-    summary: step.detailItems[0],
-  }));
   const actionContract = buildFlowMapActionContract({
     mapId: map.id,
     title: displayTitle,
@@ -216,66 +196,89 @@ export function SourceBackedFlowMapPublicPage({
     exportable: false,
     selection: chooseChildBeforeSave
       ? undefined
-      : { selectedCount: previewSteps.length, totalCount: previewSteps.length },
+      : {
+          selectedCount: publicSurface.childFlows.reduce((total, flow) => total + flow.steps.length, 0),
+          totalCount: publicSurface.childFlows.reduce((total, flow) => total + flow.steps.length, 0),
+        },
     riskLevels,
   });
-  const decisionActions = (
-    <div
-      data-testid="flow-map-choose-child"
-      data-map-action-intent={actionContract.actions.primary?.intent}
-      className="grid gap-2"
-    >
-      <div className="flex items-center justify-between gap-3">
-        <p className="text-xs font-semibold text-[#6E6B64]">
-          {q3CopyEnabled
-            ? copy.map.selectPlans
-            : actionContract.actions.primary?.label ?? '사용할 Flow를 고르세요'}
-        </p>
-        {q3CopyEnabled ? (
-          <FlowContextDisclosure
-            kind="help"
-            label="계획 선택 도움말"
-            eyebrow="선택 도움말"
-            title="사용할 계획을 고르세요"
-            testId="flow-map-choice-help"
+
+  if (chooseChildBeforeSave && !visualSubtractionEnabled) {
+    const copy = getQ3UserCopyProfile(q3CopyEnabled);
+    const choiceCopy = publicSurface.choiceCopy ?? {
+      resultPromise: '준비표 하나를 고른 뒤 필요한 설정을 확인해 저장합니다.',
+      heading: '먼저 준비표 하나를 고르세요.',
+      body: q3CopyEnabled
+        ? '각 준비표 화면에서 필요한 설정을 확인한 뒤 내 계획에 저장합니다.'
+        : '각 준비표 화면에서 필요한 설정을 확인한 뒤 내 Flow에 저장합니다.',
+      inputLabel: q3CopyEnabled ? '계획별 설정' : '준비표별 설정',
+      childCtaLabel: '설정하고 시작',
+    };
+    const previewSteps = publicSurface.childFlows.flatMap((flow) => flow.steps.map((step) => ({
+      ...step,
+      itemKey: `${flow.slug}::${step.id}`,
+    })));
+    const previewRows = previewSteps.map((step) => ({
+      id: step.itemKey,
+      timing: step.stepTitle ? toUserFacingSourceTitle(step.stepTitle) : undefined,
+      title: step.title,
+      summary: step.detailItems[0],
+    }));
+    const decisionActions = (
+      <div
+        data-testid="flow-map-choose-child"
+        data-map-action-intent={actionContract.actions.primary?.intent}
+        className="grid gap-2"
+      >
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-xs font-semibold text-[#6E6B64]">
+            {q3CopyEnabled
+              ? copy.map.selectPlans
+              : actionContract.actions.primary?.label ?? '사용할 Flow를 고르세요'}
+          </p>
+          {q3CopyEnabled ? (
+            <FlowContextDisclosure
+              kind="help"
+              label="계획 선택 도움말"
+              eyebrow="선택 도움말"
+              title="사용할 계획을 고르세요"
+              testId="flow-map-choice-help"
+            >
+              <p>목적에 맞는 계획 하나를 열어 내용을 확인하세요. 이 단계에서는 아직 내 계획에 저장되지 않습니다.</p>
+            </FlowContextDisclosure>
+          ) : null}
+        </div>
+        {publicSurface.childFlows.map((flow) => (
+          <Link
+            key={flow.slug}
+            className="flex min-h-11 items-center justify-between gap-3 rounded-lg border border-[#D9D6CF] bg-white px-3 py-2.5 text-sm font-semibold text-[#1B1A17] hover:border-[#3654FF]/40 hover:text-[#3654FF]"
+            href={`/f/${flow.slug}`}
           >
-            <p>목적에 맞는 계획 하나를 열어 내용을 확인하세요. 이 단계에서는 아직 내 계획에 저장되지 않습니다.</p>
-          </FlowContextDisclosure>
+            <span className="min-w-0 break-keep">{toContentDisplayTitle(flow.title)}</span>
+            <span className="shrink-0 text-xs text-[#3654FF]">열기 →</span>
+          </Link>
+        ))}
+        {actionContract.risk.caution ? (
+          <p
+            data-testid="flow-map-risk-caution"
+            data-adjacent-to-action={actionContract.risk.caution.adjacentToActionId}
+            className="border-l-2 border-amber-500 bg-amber-50 px-3 py-2 text-xs font-semibold leading-5 text-amber-950"
+          >
+            {actionContract.risk.caution.text}
+          </p>
         ) : null}
       </div>
-      {publicSurface.childFlows.map((flow) => (
-        <Link
-          key={flow.slug}
-          className="flex min-h-11 items-center justify-between gap-3 rounded-lg border border-[#D9D6CF] bg-white px-3 py-2.5 text-sm font-semibold text-[#1B1A17] hover:border-[#3654FF]/40 hover:text-[#3654FF]"
-          href={`/f/${flow.slug}`}
-        >
-          <span className="min-w-0 break-keep">{toContentDisplayTitle(flow.title)}</span>
-          <span className="shrink-0 text-xs text-[#3654FF]">열기 →</span>
-        </Link>
-      ))}
-      {actionContract.risk.caution ? (
-        <p
-          data-testid="flow-map-risk-caution"
-          data-adjacent-to-action={actionContract.risk.caution.adjacentToActionId}
-          className="border-l-2 border-amber-500 bg-amber-50 px-3 py-2 text-xs font-semibold leading-5 text-amber-950"
-        >
-          {actionContract.risk.caution.text}
-        </p>
-      ) : null}
-    </div>
-  );
+    );
 
-  return (
-    <main
-      data-testid="flow-map-public"
-      data-map-save-mode={actionContract.controller.saveMode}
-      data-map-execution-state={actionContract.controller.executionState}
-      className={`${chooseChildBeforeSave ? '' : 'flowme-mobile-map-save-clearance'} min-h-screen bg-[#FAFAF8] px-4 py-5 pb-28 sm:px-5 sm:py-8 sm:pb-16`}
-    >
-      <div className="mx-auto max-w-5xl">
-      <PlatformNav />
-      {chooseChildBeforeSave ? (
-        <>
+    return (
+      <main
+        data-testid="flow-map-public"
+        data-map-save-mode={actionContract.controller.saveMode}
+        data-map-execution-state={actionContract.controller.executionState}
+        className="min-h-screen bg-[#FAFAF8] px-4 py-5 pb-28 sm:px-5 sm:py-8 sm:pb-16"
+      >
+        <div className="mx-auto max-w-5xl">
+          <PlatformNav />
           <FlowSaveBeforeFrame
             rootTestId="flow-map-hero"
             previewTestId="flow-map-artifact-preview"
@@ -291,7 +294,7 @@ export function SourceBackedFlowMapPublicPage({
             previewRows={previewRows}
             actions={decisionActions}
             composition="legacy"
-            showScheduleIntent={!visualSubtractionEnabled}
+            showScheduleIntent
             q3CopyEnabled={q3CopyEnabled}
           />
           <SourceBackedFlowMapExecutionOutline
@@ -312,7 +315,54 @@ export function SourceBackedFlowMapPublicPage({
               })),
             }))}
           />
-        </>
+        </div>
+      </main>
+    );
+  }
+
+  if (!visualSubtractionEnabled) {
+    return (
+      <main
+        data-testid="flow-map-public"
+        data-map-save-mode={actionContract.controller.saveMode}
+        data-map-execution-state={actionContract.controller.executionState}
+        className="flowme-mobile-map-save-clearance min-h-screen bg-[#FAFAF8] px-4 py-5 pb-28 sm:px-5 sm:py-8 sm:pb-16"
+      >
+        <div className="mx-auto max-w-5xl">
+          <PlatformNav />
+          <SourceBackedFlowMapSaveExperience
+            publishPackage={publishPackage}
+            displayTitle={displayTitle}
+            sourceLabel={actionContract.identity.source.label}
+            q3CopyEnabled={q3CopyEnabled}
+            visualSubtractionEnabled={false}
+          />
+        </div>
+      </main>
+    );
+  }
+
+  return (
+    <main
+      data-testid="flow-map-public"
+      data-map-save-mode={actionContract.controller.saveMode}
+      data-map-execution-state={actionContract.controller.executionState}
+      className={`${chooseChildBeforeSave ? 'pb-10 md:pb-12' : 'flowme-mobile-save-clearance'} min-h-screen bg-[#F5F7F6] px-4 text-slate-950 md:px-8`}
+    >
+      <div className="mx-auto max-w-[1240px]">
+      <PublicPlanShareShell
+        planId={map.id}
+        planKind="map"
+        showSavedLink={false}
+        q3CopyEnabled={q3CopyEnabled}
+      />
+      {chooseChildBeforeSave ? (
+        <SourceBackedFlowMapChooseChildExperience
+          publishPackage={publishPackage}
+          displayTitle={displayTitle}
+          sourceLabel={actionContract.identity.source.label}
+          q3CopyEnabled={q3CopyEnabled}
+        />
       ) : (
         <SourceBackedFlowMapSaveExperience
           publishPackage={publishPackage}

@@ -36,11 +36,11 @@ Keep the short topic stable. If the work is rescoped, update the files inside th
 
 ## Spec Lifecycle
 
-Only **Active Gate** is the current execution backlog. Unchecked boxes inside gated or historical specs do not become current priorities unless [ROADMAP.md](../ROADMAP.md) promotes them.
+Only **Active Gate** carries the current execution backlog or Owner checkpoint. Unchecked boxes inside gated or historical specs do not become current priorities unless [ROADMAP.md](../ROADMAP.md) promotes them.
 
 ### Active Gate
 
-- None. R3B is released and no product gate is active.
+- [2026-08-12 Public Plan Surface Unification](./2026-08-12-public-plan-surface-unification/spec.md) has completed local implementation and authorized automated QA in the isolated worktree, and the Owner has authorized publication. Base `origin/main` is `8f72ad6922ffa20a765a45cb9b5312ecfa8ca46f`; candidate commit and PR head remain `PENDING`; final BUILD_ID is `bzdhR-nY_afpTfx_xDZ7e`; new E2E is `9/9`; Map rollback/copy contracts are `24/24`; and current-source full Playwright is `578/578` across `74` files with `0` unexpected/skipped/flaky. The active checkpoint is scoped commit and PR preparation. Commit, push, PR, CI, merge, deployment, and production smoke remain `PENDING` until verified; observed users remain `0`.
 
 ### Recently Completed
 
