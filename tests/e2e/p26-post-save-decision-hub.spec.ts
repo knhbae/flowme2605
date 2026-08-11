@@ -101,6 +101,10 @@ test('multi-Flow receipt chooses an honest Flow scope before opening export', as
   await gotoLegacySavedPlanLibraryRoute(page, '/flow-maps/curated-opic-mock-course');
   await page.evaluate(() => localStorage.clear());
   await page.reload();
+  await page.getByTestId('public-flow-capability-result').getByRole('button', {
+    name: 'Calendar',
+    exact: true,
+  }).click();
   await page.getByTestId('flow-map-anchor-input').fill('2030-09-01');
   await page.getByTestId('flow-map-save-all').click();
   await expect(page).toHaveURL(/\/my\?savedMap=curated-opic-mock-course/u);

@@ -145,9 +145,19 @@ test('source-backed map and public Flow use the same artifact-first decision gra
 
   await gotoLegacySavedPlanLibraryRoute(page, '/flow-maps/curated-wedding-checklist-family');
   const choices = page.getByTestId('flow-map-choose-child');
-  await expect(choices.getByRole('link')).toHaveCount(2);
-  await expect(choices.locator('a[href="/f/curated-wedding-naver-timeline"]')).toBeVisible();
-  await expect(choices.locator('a[href="/f/curated-wedding-gongysd-atoz"]')).toBeVisible();
+  await expect(choices.getByRole('radio')).toHaveCount(2);
+  await expect(choices.locator(
+    '[data-flow-slug="curated-wedding-naver-timeline"] input[type="radio"]',
+  )).toBeChecked();
+  const alternateChoice = choices.locator(
+    '[data-flow-slug="curated-wedding-gongysd-atoz"]',
+  );
+  await alternateChoice.click();
+  await expect(alternateChoice.locator('input[type="radio"]')).toBeChecked();
+  await expect(page.getByTestId('flow-map-open-selected-child')).toHaveAttribute(
+    'href',
+    '/f/curated-wedding-gongysd-atoz',
+  );
   await capture(page, '05-wedding-independent-choice-fallback-mobile.png');
 });
 

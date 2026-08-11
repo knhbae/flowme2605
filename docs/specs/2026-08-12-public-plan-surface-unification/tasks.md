@@ -1,0 +1,21 @@
+# Tasks
+
+- [x] 최신 main에서 `/f`와 `/flow-maps` 이중 renderer 원인을 확정한다.
+- [x] 실행 가능/redirect/review-hold Flow Map inventory를 확정한다.
+- [x] 저장 identity와 presentation subtraction 수용 기준을 확정한다.
+- [x] 공통 `PublicPlanShareShell`과 `PublicPlanResultPreview`를 추가한다.
+- [x] Flow Map 공개 결과 adapter와 focused unit tests를 추가한다.
+- [x] `save_all`을 artifact-first 공통 결과와 controlled anchor/format에 연결한다.
+- [x] `choose_child`를 선택 child 공통 preview로 교체한다.
+- [x] 실행 가능한 Map에서 Platform nav, legacy outline, legacy save-before 문법을 제거한다.
+- [x] 저장/수정/충돌/rollback/redirect/review-hold 회귀를 통과한다.
+- [x] 390/768/1024/1440 품질과 전체 unit/build/Playwright를 통과한다.
+- [x] Default executable Maps의 unified presentation, exact `visualSubtraction=off`가 `save_all`과 `choose_child` 모두에서 복원하는 exact legacy Map shell/presentation/action/anchor behavior, exact `savedPlanLibrary=off` prior/default result mode rollback을 검증한다.
+- [x] 문서와 최종 scope/evidence audit를 완료한다.
+- [x] Initial implementation commit `1cf1fc4dc85773bed3ac4e880920369e1aba1e3a`를 만들고 exact SHA를 기록했다.
+- [x] Branch를 push하고 [PR #176](https://github.com/knhbae/flowme2605/pull/176)을 opening head `1cf1fc4dc85773bed3ac4e880920369e1aba1e3a`로 열었다.
+- [ ] 실제 PR CI가 통과했는지 확인하고 run을 기록한다 — `PENDING`.
+- [ ] CI 통과 뒤 merge하고 실제 merge SHA를 기록한다 — `PENDING`.
+- [ ] Production이 exact merged source를 제공하는지 확인한다 — `PENDING`.
+- [ ] Canonical production smoke를 실행하고 결과를 기록한다 — `PENDING`.
+- [ ] observed-user validation — 자동 QA와 분리하며 현재 `0`.

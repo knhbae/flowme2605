@@ -484,19 +484,15 @@ test.describe('P1-02 Q3 copy and contextual disclosure', () => {
         await expect(root.getByRole('button', { name: '전체 저장하고 시작' }).filter({ visible: true })).toBeVisible();
       } else {
         await expect(root.getByText('계획 미리보기', { exact: true })).toBeVisible();
-        await expect(root.getByRole('button', { name: '내 계획에 저장' }).filter({ visible: true })).toBeVisible();
-        await expect(root.getByRole('button', { name: '계획 수정' }).filter({ visible: true })).toBeVisible();
-        const savePreview = root.getByTestId('flow-map-artifact-preview');
-        await expect(savePreview).toHaveAccessibleName('저장될 계획 요약');
-        await expect(savePreview).toContainText('저장될 전체 계획');
-        await expect(savePreview).not.toContainText('저장될 Flow');
+        await expect(root.getByRole('button', { name: '내 계획으로 저장' }).filter({ visible: true })).toBeVisible();
+        await expect(root.getByRole('button', { name: '수정', exact: true }).filter({ visible: true })).toBeVisible();
         await expectNoLegacyOwnedCopy(root);
       }
-      if (phase === 'before') {
-        const savePreview = root.getByTestId('flow-map-artifact-preview');
-        await expect(savePreview).toHaveAccessibleName('저장될 Flow 요약');
-        await expect(savePreview).toContainText('저장될 전체 Flow');
-      }
+      const result = root.getByTestId('public-flow-capability-result');
+      await expect(result).toHaveAttribute('data-public-format-mode', 'approved');
+      await expect(result.getByTestId('flow-capability-result-choice')).toHaveCount(3);
+      await expect(root.getByTestId('flow-map-artifact-preview')).toHaveCount(0);
+      await expect(root.getByTestId('flow-map-execution-outline')).toHaveCount(0);
       console.log(`P1-02 MAP ${phase} ${viewport.name} aria=${(await root.ariaSnapshot()).split('\n').length}`);
       await capture(page, `map-${viewport.name}`);
     }

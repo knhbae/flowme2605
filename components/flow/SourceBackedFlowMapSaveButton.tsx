@@ -53,6 +53,11 @@ export type SourceBackedFlowMapSavedFlow = {
 type SourceBackedFlowMapSaveButtonProps = {
   effectiveSnapshot: EffectiveFlowMapSnapshot;
   defaultTitle: string;
+  anchor: string;
+  onAnchorChange: (anchor: string) => void;
+  selectedArtifactMode?: Extract<SavedFlowArtifactMode, 'memo' | 'checklist' | 'calendar'>;
+  selectedResultReady?: boolean;
+  selectedResultMessage?: string;
   q3CopyEnabled?: boolean;
   visualSubtractionEnabled?: boolean;
   onEffectiveSnapshotChange: (snapshot: EffectiveFlowMapSnapshot) => void;
@@ -109,6 +114,11 @@ function readStoredItemStates(
 export function SourceBackedFlowMapSaveButton({
   effectiveSnapshot,
   defaultTitle,
+  anchor,
+  onAnchorChange,
+  selectedArtifactMode,
+  selectedResultReady = true,
+  selectedResultMessage,
   q3CopyEnabled = true,
   visualSubtractionEnabled = true,
   onEffectiveSnapshotChange,
@@ -116,7 +126,6 @@ export function SourceBackedFlowMapSaveButton({
   setupInput,
 }: SourceBackedFlowMapSaveButtonProps) {
   const copy = getQ3UserCopyProfile(q3CopyEnabled);
-  const [anchor, setAnchor] = useState(setupInput?.defaultValue ?? '');
   const [showRequired, setShowRequired] = useState(false);
   const [adjusting, setAdjusting] = useState(false);
   const [titleDraft, setTitleDraft] = useState(effectiveSnapshot.effectiveTitle);
@@ -131,7 +140,12 @@ export function SourceBackedFlowMapSaveButton({
   const editorHistoryMarkerRef = useRef<string | null>(null);
   const saveBaselineRawRef = useRef<Record<string, string | null> | undefined>(undefined);
   const conflictRecoveryRef = useRef<HTMLAnchorElement>(null);
-  const needsAnchor = Boolean(setupInput);
+  const unifiedPublicResult = selectedArtifactMode !== undefined;
+  const showsAnchorInput = Boolean(setupInput)
+    && (!unifiedPublicResult || selectedArtifactMode === 'calendar');
+  const needsAnchor = showsAnchorInput && !anchor;
+  const shouldPromptForAnchor = unifiedPublicResult && needsAnchor;
+  const committedAnchor = !unifiedPublicResult || selectedArtifactMode === 'calendar' ? anchor : '';
   const selectedCount = effectiveSnapshot.counts.effective;
   const selectedItemIdSet = new Set<string>(effectiveSnapshot.itemIds.effective);
   const selectedItemIdDraftSet = new Set(selectedItemIdsDraft);
@@ -144,15 +158,18 @@ export function SourceBackedFlowMapSaveButton({
   const primaryAction = actionContract.actions.primary;
   const editAction = actionContract.actions.edit;
   const baseSaveButtonLabel = q3CopyEnabled
-    ? copy.map.saveToMyPlans
+    ? unifiedPublicResult ? '내 계획으로 저장' : copy.map.saveToMyPlans
     : primaryAction?.label ?? '전체 저장하고 시작';
   const saveButtonLabel = saveFailure?.kind === 'conflict'
     ? '최신 저장본 확인 필요'
     : saveFailure
       ? '다시 저장'
       : baseSaveButtonLabel;
-  const mobileSaveButtonLabel = needsAnchor && !anchor
+  const mobileSaveButtonLabel = shouldPromptForAnchor
     ? `${setupInput?.label ?? '날짜'} 정하기`
+    : saveButtonLabel;
+  const desktopSaveButtonLabel = shouldPromptForAnchor && q3CopyEnabled
+    ? `${setupInput?.label ?? '날짜'} 설정 후 저장`
     : saveButtonLabel;
   const setupInputHint = setupInput
     ? `${setupInput.label}에 맞춰 할 일 날짜가 정해집니다.`
@@ -253,12 +270,13 @@ export function SourceBackedFlowMapSaveButton({
 
   const saveMap = async () => {
     if (saving) return;
-    if (needsAnchor && !anchor) {
+    if (needsAnchor) {
       setShowRequired(true);
       anchorInputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       window.setTimeout(() => anchorInputRef.current?.focus(), 120);
       return;
     }
+    if (!selectedResultReady) return;
     if (selectedCount === 0) return;
     const expectedRaw = saveBaselineRawRef.current;
     if (saveBaselineState !== 'ready' || !expectedRaw) {
@@ -278,11 +296,11 @@ export function SourceBackedFlowMapSaveButton({
     const savedAt = new Date().toISOString();
     const baseSnapshot = buildSourceBackedFlowMapSavedSnapshot(effectiveSnapshot.identity.mapId, {
       savedAt,
-      ...(needsAnchor ? { anchor } : {}),
+      ...(committedAnchor ? { anchor: committedAnchor } : {}),
     });
     const basePersistenceRecord = buildSourceBackedFlowMapPersistenceRecord(effectiveSnapshot.identity.mapId, {
       savedAt,
-      ...(needsAnchor ? { anchor } : {}),
+      ...(committedAnchor ? { anchor: committedAnchor } : {}),
     });
     if (!baseSnapshot || !basePersistenceRecord) {
       failSave(true);
@@ -293,7 +311,7 @@ export function SourceBackedFlowMapSaveButton({
       ? buildSourceBackedFlowMapReviewedVersion(
           { ...baseSnapshot, title: persistenceSelection.title },
           persistenceSelection.personalCopy,
-          { savedAt, ...(needsAnchor ? { anchor } : {}) },
+          { savedAt, ...(committedAnchor ? { anchor: committedAnchor } : {}) },
         )
       : undefined;
     if (persistenceSelection.personalized && !adjusted) {
@@ -326,8 +344,8 @@ export function SourceBackedFlowMapSaveButton({
             previousRecord = undefined;
           }
           const record = buildSavedFlowRecord(flow.slug, {
-            selectedArtifactMode: flow.artifactMode,
-            ...(needsAnchor ? { anchor } : {}),
+            selectedArtifactMode: selectedArtifactMode ?? flow.artifactMode,
+            ...(committedAnchor ? { anchor: committedAnchor } : {}),
           }, previousRecord);
           transactionStorage.setItem(savedFlowKey, JSON.stringify(record));
           recordCanonicalFlowWrite(transactionStorage, flow.slug, record.savedAt);
@@ -389,6 +407,34 @@ export function SourceBackedFlowMapSaveButton({
     window.location.href = buildPostSaveHref({ kind: 'map', id: effectiveSnapshot.identity.mapId });
   };
 
+  const desktopEditButton = editAction ? (
+    <button
+      className={`${visualSubtractionEnabled ? 'min-h-12' : 'min-h-11'} rounded-lg border border-[#D9D6CF] bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:border-[#3654FF]/40 hover:text-[#3654FF] disabled:text-slate-400`}
+      data-testid="flow-map-adjust-save"
+      data-map-action-intent={editAction.intent}
+      type="button"
+      aria-expanded={adjusting}
+      disabled={saving}
+      onClick={() => openAdjustment('[data-testid="flow-map-adjust-save"]')}
+    >
+      {q3CopyEnabled
+        ? unifiedPublicResult ? '수정' : copy.map.editPlan
+        : editAction.label}
+    </button>
+  ) : null;
+  const desktopSaveButton = (
+    <button
+      className={`${visualSubtractionEnabled ? 'min-h-12' : 'min-h-11'} items-center justify-center rounded-lg bg-[#3654FF] px-4 py-2 text-sm font-semibold text-white hover:bg-[#2945E8] disabled:bg-slate-300`}
+      data-testid="flow-map-save-all"
+      data-map-action-intent={primaryAction?.intent}
+      type="button"
+      disabled={saving || (!selectedResultReady && !shouldPromptForAnchor) || saveBaselineState !== 'ready' || saveFailure?.kind === 'conflict' || !primaryAction || primaryAction.disabled}
+      onClick={saveMap}
+    >
+      {desktopSaveButtonLabel}
+    </button>
+  );
+
   return (
     <div
       className="grid w-full gap-3 sm:w-auto"
@@ -399,7 +445,7 @@ export function SourceBackedFlowMapSaveButton({
       data-save-status={saving ? 'saving' : saveFailure?.kind === 'conflict' ? 'conflict' : saveFailure ? 'failed' : 'idle'}
       aria-busy={saving}
     >
-      {setupInput ? (
+      {setupInput && showsAnchorInput ? (
         <label className="grid gap-1 text-sm font-semibold text-slate-800">
           {setupInput.label}
           <input
@@ -410,7 +456,7 @@ export function SourceBackedFlowMapSaveButton({
             type="date"
             value={anchor}
             onChange={(event) => {
-              setAnchor(event.target.value);
+              onAnchorChange(event.target.value);
               setShowRequired(false);
               setSaveFailure((current) => current?.kind === 'conflict' ? current : undefined);
             }}
@@ -462,42 +508,33 @@ export function SourceBackedFlowMapSaveButton({
           {actionContract.risk.caution.text}
         </p>
       ) : null}
-      <div className={`hidden gap-2 sm:grid ${editAction ? 'sm:grid-cols-2' : 'sm:grid-cols-1'}`}>
-        <button
-          className="min-h-11 items-center justify-center rounded-lg bg-[#3654FF] px-4 py-2 text-sm font-semibold text-white hover:bg-[#2945E8] disabled:bg-slate-300"
-          data-testid="flow-map-save-all"
-          data-map-action-intent={primaryAction?.intent}
-          type="button"
-          disabled={saving || saveBaselineState !== 'ready' || saveFailure?.kind === 'conflict' || !primaryAction || primaryAction.disabled}
-          onClick={saveMap}
+      {!selectedResultReady && selectedResultMessage ? (
+        <p
+          data-testid="flow-map-selected-result-unavailable"
+          role="status"
+          className="border-l-2 border-amber-500 bg-amber-50 px-3 py-2 text-xs font-semibold leading-5 text-amber-950"
         >
-          {saveButtonLabel}
-        </button>
-        {editAction ? (
-          <button
-            className="min-h-11 rounded-lg border border-[#D9D6CF] bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:border-[#3654FF]/40 hover:text-[#3654FF] disabled:text-slate-400"
-            data-testid="flow-map-adjust-save"
-            data-map-action-intent={editAction.intent}
-            type="button"
-            aria-expanded={adjusting}
-            disabled={saving}
-            onClick={() => openAdjustment('[data-testid="flow-map-adjust-save"]')}
-          >
-            {q3CopyEnabled ? copy.map.editPlan : editAction.label}
-          </button>
-        ) : null}
+          {selectedResultMessage}
+        </p>
+      ) : null}
+      <div className={`hidden gap-2 sm:grid ${editAction ? 'sm:grid-cols-2' : 'sm:grid-cols-1'}`}>
+        {visualSubtractionEnabled ? (
+          <>{desktopEditButton}{desktopSaveButton}</>
+        ) : (
+          <>{desktopSaveButton}{desktopEditButton}</>
+        )}
       </div>
-      <div className="fixed inset-x-0 bottom-[calc(4.625rem+env(safe-area-inset-bottom))] z-30 border-y border-[#E7E4DD] bg-white/95 px-4 py-2 shadow-[0_-8px_20px_rgba(27,26,23,0.06)] backdrop-blur sm:hidden" data-testid="flow-map-mobile-sticky-save">
+      <div className={`${visualSubtractionEnabled ? 'bottom-0 px-4 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2' : 'bottom-[calc(4.625rem+env(safe-area-inset-bottom))] px-4 py-2'} fixed inset-x-0 z-30 border-y border-[#E7E4DD] bg-white/95 shadow-[0_-8px_20px_rgba(27,26,23,0.06)] backdrop-blur sm:hidden`} data-testid="flow-map-mobile-sticky-save">
         <div className="mx-auto flex max-w-xl items-center gap-2">
           <p className="min-w-0 flex-1 px-1 text-[11px] font-semibold leading-4 text-slate-600">
             <span data-testid={visualSubtractionEnabled ? 'flow-map-selection-summary' : 'flow-map-mobile-selection-summary'}>
               선택 {selectedCount} / 전체 {effectiveSnapshot.counts.canonical}
             </span>
-            {needsAnchor && !anchor ? ` · ${setupInput?.label} 필요` : null}
+            {needsAnchor ? ` · ${setupInput?.label} 필요` : null}
           </p>
           {editAction ? (
             <button
-              className="inline-flex min-h-10 shrink-0 items-center justify-center rounded-lg border border-[#D9D6CF] bg-white px-3 py-2 text-sm font-semibold text-slate-700 disabled:text-slate-400"
+              className={`inline-flex ${visualSubtractionEnabled ? 'min-h-12' : 'min-h-10'} shrink-0 items-center justify-center rounded-lg border border-[#D9D6CF] bg-white px-3 py-2 text-sm font-semibold text-slate-700 disabled:text-slate-400`}
               data-testid="flow-map-adjust-save-mobile"
               data-map-action-intent={editAction.intent}
               type="button"
@@ -505,10 +542,12 @@ export function SourceBackedFlowMapSaveButton({
               disabled={saving}
               onClick={() => openAdjustment('[data-testid="flow-map-adjust-save-mobile"]')}
             >
-              {q3CopyEnabled ? copy.map.editPlan : '조정'}
+              {q3CopyEnabled
+                ? unifiedPublicResult ? '수정' : copy.map.editPlan
+                : '조정'}
             </button>
           ) : null}
-          <button className="inline-flex min-h-10 shrink-0 items-center justify-center rounded-lg bg-[#3654FF] px-3 py-2 text-sm font-semibold text-white disabled:bg-slate-300" data-testid="flow-map-save-all-mobile" data-map-action-intent={primaryAction?.intent} type="button" disabled={saving || saveBaselineState !== 'ready' || saveFailure?.kind === 'conflict' || !primaryAction || primaryAction.disabled} onClick={saveMap}>
+          <button className={`inline-flex ${visualSubtractionEnabled ? 'min-h-12' : 'min-h-10'} shrink-0 items-center justify-center rounded-lg bg-[#3654FF] px-3 py-2 text-sm font-semibold text-white disabled:bg-slate-300`} data-testid="flow-map-save-all-mobile" data-map-action-intent={primaryAction?.intent} type="button" disabled={saving || (!selectedResultReady && !shouldPromptForAnchor) || saveBaselineState !== 'ready' || saveFailure?.kind === 'conflict' || !primaryAction || primaryAction.disabled} onClick={saveMap}>
             {mobileSaveButtonLabel}
           </button>
         </div>
