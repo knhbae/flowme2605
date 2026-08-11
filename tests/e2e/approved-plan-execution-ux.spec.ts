@@ -926,6 +926,13 @@ test.describe('approved plan execution UX', () => {
     let editor = page.locator(
       '[data-testid="my-flow-item-detail"][data-detail-mode="edit"]',
     );
+    await page.keyboard.press('Escape');
+    await expect(editor).toHaveCount(0);
+    await expect(page.getByTestId('my-flow-editor-discard-prompt')).toHaveCount(0);
+    await expect(sheet).not.toHaveAttribute('aria-hidden', 'true');
+    await expect(sheet.getByTestId('my-flow-quick-item-edit')).toBeFocused();
+
+    await sheet.getByTestId('my-flow-quick-item-edit').click();
     await expect(editor).toHaveCount(1);
     await expect(editor).toHaveAttribute('data-editor-layout', 'mobile-full-screen');
     await expect(editor).toHaveAttribute('role', 'dialog');
@@ -939,15 +946,6 @@ test.describe('approved plan execution UX', () => {
     expect(editorBox?.width ?? 0).toBeGreaterThanOrEqual(766);
     expect(editorBox?.height ?? 0).toBeGreaterThanOrEqual(843);
 
-    await page.keyboard.press('Escape');
-    await expect(editor).toHaveCount(0);
-    await expect(page.getByTestId('my-flow-editor-discard-prompt')).toHaveCount(0);
-    await expect(sheet).not.toHaveAttribute('aria-hidden', 'true');
-    await expect(sheet.getByTestId('my-flow-quick-item-edit')).toBeFocused();
-
-    await sheet.getByTestId('my-flow-quick-item-edit').click();
-    editor = page.locator('[data-testid="my-flow-item-detail"][data-detail-mode="edit"]');
-    await expect(editor).toHaveCount(1);
     await editor.getByTestId('my-flow-editor-cancel').click();
     await expect(editor).toHaveCount(0);
     await expect(page.getByTestId('my-flow-editor-discard-prompt')).toHaveCount(0);
@@ -1098,6 +1096,8 @@ test.describe('approved plan execution UX', () => {
       await expect(helpSheet).toHaveAttribute('data-flow-context-presentation', 'mobile-sheet');
       await page.keyboard.press('Escape');
       await expect(helpSheet).toHaveCount(0);
+      await expect(transferSheet).toBeVisible();
+      await expect(panel).toBeVisible();
       await expect(helpTrigger).toBeFocused();
       await expect(panel.getByTestId('my-flow-export-destination-preview')).toHaveAttribute(
         'data-export-preview-format',
@@ -1186,6 +1186,8 @@ test.describe('approved plan execution UX', () => {
     await expect(warningSheet).toContainText('자동 동기화되지 않아요');
     await page.keyboard.press('Escape');
     await expect(warningSheet).toHaveCount(0);
+    await expect(transferSheet).toBeVisible();
+    await expect(panel).toBeVisible();
     await expect(warningTrigger).toBeFocused();
 
     await expect(panel.getByTestId('my-flow-transfer-receipt')).toHaveAttribute(
@@ -1361,6 +1363,37 @@ test.describe('approved plan execution UX', () => {
     await expect(inspector.getByTestId('my-flow-quick-item-edit')).toBeFocused();
     await expect.poll(() => new URL(page.url()).pathname).toBe('/calendar');
     await expect(selectedDay).toBeVisible();
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/calendar?demo=ux20');
+    const mobileDateButton = page.locator(`.fc-daygrid-day[data-date="${selectedDate}"]`)
+      .getByTestId('my-flow-calendar-date-button');
+    await mobileDateButton.click();
+
+    const daySheet = page.getByTestId('my-flow-calendar-day-sheet');
+    const mobileScheduleRow = daySheet.locator(
+      '[data-testid="my-flow-execution-row-shell"][data-calendar-item-kind="task"]',
+    ).first();
+    await expect(mobileScheduleRow).toBeVisible();
+    await mobileScheduleRow.getByRole('button', { name: /계획에서 열기/u }).click();
+    await expect(daySheet).toHaveCount(0);
+
+    const detailSheet = page.getByTestId('my-flow-item-detail-sheet');
+    await expect(detailSheet).toBeVisible();
+    const mobileEdit = detailSheet.getByTestId('my-flow-quick-item-edit');
+    await mobileEdit.click();
+    const mobileEditor = page.locator(
+      '[data-testid="my-flow-item-detail"][data-detail-mode="edit"]',
+    );
+    await page.keyboard.press('Escape');
+    await expect(mobileEditor).toHaveCount(0);
+    await expect(detailSheet).toBeVisible();
+    await expect(detailSheet).not.toHaveAttribute('aria-hidden', 'true');
+    await expect(detailSheet.getByTestId('my-flow-quick-item-edit')).toBeFocused();
+    await expect.poll(() => new URL(page.url()).pathname).toBe('/calendar');
+    await expect(page.locator(
+      `.fc-daygrid-day[data-date="${selectedDate}"].my-flow-calendar-selected-date`,
+    )).toBeVisible();
   });
 
   test('savedPlanLibrary=off returns to the legacy lane without rewriting saved-plan storage', async ({ page }) => {

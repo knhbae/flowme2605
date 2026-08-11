@@ -1,9 +1,9 @@
 # Project Status
 
-**Last Updated:** 2026-08-11 (R3B approved plan-execution boundaries active)
-**Status:** v0.1.0 RELEASED / R3A PRODUCTION BASELINE / R3B IMPLEMENTATION ACTIVE / OBSERVED USERS 0
+**Last Updated:** 2026-08-11 (R3B deployed; production Escape hotfix active)
+**Status:** v0.1.0 RELEASED / R3B DEPLOYED / ESCAPE HOTFIX LOCAL VERIFIED / CANONICAL RE-SMOKE PENDING / OBSERVED USERS 0
 **Current Version:** v0.1.0  
-**Primary Focus:** Implement the Owner-approved 2026-08-10 plan-execution UX on the R3A base, then publish its bounded [R3B execution boundaries](./specs/2026-08-11-r3b-approved-plan-execution-boundaries/spec.md) without additional UX, storage, identity, export-byte, receipt-order, or rollback drift.
+**Primary Focus:** Publish the bounded R3B production Escape hotfix and re-smoke its exact merge source without additional UX, route, storage, identity, export-byte, receipt-order, or rollback drift.
 
 ## Current Control Panel
 
@@ -11,12 +11,12 @@ Start from [PROJECT_CONTROL.md](./PROJECT_CONTROL.md). Dated HTML boards remain 
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | One ordered R3B gate: implement the hashed approved plan-execution product contract, then preserve that candidate while extracting the selected-Plan surface and saved-transfer request/revalidation planning; restore full CI meaning before publish, merge, deploy, and production smoke. |
-| Durable source baseline | [PR #169](https://github.com/knhbae/flowme2605/pull/169) merged R3A into `main` as `95a69257c73633077df2305232299f58cca03f73`. GitHub run [`31285007308`](https://github.com/knhbae/flowme2605/actions/runs/31285007308) passed Docs, Unit, Build, and Playwright `546/546`. |
-| Existing production release | R3A product source `95a69257c73633077df2305232299f58cca03f73` was deployed as Vercel `dpl_5jhJz4EBiHMm5HptH9nFCqfyeFek`, reported `READY` at the [direct deployment](https://flowme2605-a0aasd9ic-flowme.vercel.app) and [canonical alias](https://flowme2605.vercel.app). |
-| Evidence boundary | For the existing R3A production baseline only, GitHub automated QA, exact-source deployment verification, and production smoke are `PASS`. R3B `verify` passes docs `16/4492`, full `npm test`, and production build `18/18` at BUILD_ID `DkOxul9Wh4wGGYuxbYwy_`; canonical browser gates pass `43/43` and full repository Playwright passes `569/569` with failures, skips, and flaky tests all `0`. [PR #172](https://github.com/knhbae/flowme2605/pull/172) is open: its initial head passed Docs, Unit, Build and Vercel Preview but failed Playwright with `564` passed, `3` failed, and `2` flaky; exact-head CI must pass before merge. Merge, Production deployment, and smoke remain `NOT_RUN`. Observed users remain `0`. |
+| Active product gate | Production hotfix: only the topmost visible bottom sheet may own Escape, and the 0-767 approved fallback Item editor must handle Escape before focus transfer while yielding to an alertdialog or another modal. |
+| Durable source baseline | [PR #172](https://github.com/knhbae/flowme2605/pull/172) final head `b1106b6a319eb2ff5671be99ab446d68d6597f0b` merged R3B into `main` as `a599370496ee95a52d14cddd27c94b0c8190a863`. Exact-head required checks and post-merge CI run [`31441290450`](https://github.com/knhbae/flowme2605/actions/runs/31441290450) passed. |
+| Existing deployed source | GitHub Production deployment record `5841506853` reports `success` for source `a599370496ee95a52d14cddd27c94b0c8190a863` at the [direct deployment](https://flowme2605-24g7918o1-flowme.vercel.app); the [Vercel deployment record](https://vercel.com/flowme/flowme2605/HBW56gHNcW6BSKp26SRs1KNveWa5) also reports success. Canonical release verification remains open because the initial production smoke passed `21/23`. |
+| Evidence boundary | R3B is merged and deployed. The canonical initial smoke passed `21/23`; both failures repeated in targeted checks and require the Escape hotfix. The local hotfix passes unit `182/182`, production build `18/18` at BUILD_ID `wjpnPhhhMBaWzGTXuxK7U`, P26 `1/1`, targeted browser `3/3`, approved browser `23/23`, and full Playwright `569/569` with failures, skips, and flaky tests all `0` using workers `2`. Hotfix PR, CI, merge, deployment, and canonical re-smoke remain `NOT_RUN`. Observed users remain `0`. |
 | User action now | None. The Owner explicitly authorized the R3B implementation and its commit, push, PR, merge, and Vercel deployment. |
-| AI action now | Complete R3B in the isolated `flow-approved-plan-execution-ux` worktree, keep the unowned dirty `flow-mvp` worktree untouched, require full CI before merge, and record exact deployment/smoke evidence without implying observed-user validation. |
+| AI action now | Publish the isolated hotfix through its own PR, require exact-head CI, deploy the exact merge source, and repeat the canonical `23`-check smoke without implying observed-user validation. Keep the unowned dirty `flow-mvp` worktree untouched. |
 | Paused Text Authoring | Preserved and pushed at `a5d5338`; separate from the release and not promoted. |
 | Paused content review | Preserved and pushed at `0d27143` on `archive/flow-content-user-review-wip-20260806`; not a publication candidate. |
 | Deferred candidates | P35 P2 mutation follow-ups, Text Authoring `TA-01`, collaborative authoring, content review, and research packages remain separate shelves. Select at most one by explicit decision. |
@@ -31,11 +31,11 @@ Start from [PROJECT_CONTROL.md](./PROJECT_CONTROL.md). Dated HTML boards remain 
 | Documentation harness | `npm run docs:check` | Required agent docs, skill synchronization, and local Markdown links pass. |
 | Unit tests | `npm test` | Flow contracts and product tests pass. |
 | Production build | `npm run build` | Next.js production build succeeds. |
-| Browser regression | GitHub run [`31285007308`](https://github.com/knhbae/flowme2605/actions/runs/31285007308) | R3A PR head `950fd55f4176bf74d4739647040874a601faffcc`, whose tree is identical to merge commit `95a69257c73633077df2305232299f58cca03f73`, passed Playwright `546/546`; this is automated browser QA, not observed-user evidence. |
+| Browser regression | Local hotfix exact build `wjpnPhhhMBaWzGTXuxK7U` | P26 `1/1`, targeted `3/3`, approved `23/23`, and full Playwright `569/569` pass with failures, skips, and flaky tests all `0` using workers `2`; this is automated browser QA, not observed-user evidence. |
 | Merged R0-R2 baseline | [PR #168](https://github.com/knhbae/flowme2605/pull/168) / `efa4d90a78a06134180701bed74874579ac94154` | Before merge: local docs PASS, controller `15/15`, lock `59/59`, unit/contract `615/615`, build PASS, selected E2E `20/20`, and final Playwright `542/542`. Production deployment and smoke remain `NOT_RUN`. |
 | R3A release | [PR #169](https://github.com/knhbae/flowme2605/pull/169) / [R3A QA](./specs/2026-08-09-r3a-my-flow-experience-boundary/qa.md) | Focused boundary `72/72`, pretest `164/164`, P35 P0 `420/420`, lock `59/59`, main unit/contract `615/615`, build `18/18`, local R3A E2E `4/4`, local full runtime regression `545/545`, GitHub Playwright `546/546`, production deployment `READY`, and classic/lab production smoke PASS. Observed-user validation remains `0`. |
-| R3B PR candidate | [R3B QA](./specs/2026-08-11-r3b-approved-plan-execution-boundaries/qa.md) | `verify` passes docs `16/4492`, full `npm test`, and production build `18/18` at BUILD_ID `DkOxul9Wh4wGGYuxbYwy_`; canonical browser gates pass `43/43`, scoped migration lanes pass, and full Playwright passes `569/569` with failures, skips, and flaky tests all `0`. PR #172 is open; its initial Playwright CI failed and the exact-head correction rerun is required. Merge, Production deployment, and smoke remain `NOT_RUN`. |
-| Worktree baseline | `git worktree list` | `flow-approved-plan-execution-ux` is the active clean-base R3B worktree. The dirty `flow-mvp` checkout remains user-owned and untouched; other preserved worktrees are not publication candidates for this gate. Reconfirm exact inventory at closeout. |
+| R3B deployment and hotfix | [R3B QA](./specs/2026-08-11-r3b-approved-plan-execution-boundaries/qa.md) | PR #172 merged as `a599370496ee95a52d14cddd27c94b0c8190a863`, exact-source Production deployment succeeded, and canonical initial smoke is `21/23`. The bounded Escape hotfix is locally green on unit `182/182`, build `18/18`, approved browser `23/23`, and full Playwright `569/569`; its publication and canonical re-smoke remain `NOT_RUN`. |
+| Worktree baseline | `git worktree list` | `flow-approved-plan-execution-ux` is the active named hotfix worktree from `origin/main` at `a599370496ee95a52d14cddd27c94b0c8190a863`. Generated `test-results-*` paths remain excluded from publication. The dirty `flow-mvp` checkout remains user-owned and untouched. Reconfirm exact inventory at closeout. |
 
 ## Active Product Constraints
 

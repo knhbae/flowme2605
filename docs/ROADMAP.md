@@ -2,28 +2,31 @@
 
 **Last Updated:** 2026-08-11<br>
 **Current Version:** v0.1.0 (released product PoC)<br>
-**Current Validation Stage:** internal alpha / R3A production smoke PASS / observed users 0<br>
+**Current Validation Stage:** internal alpha / R3B deployed / initial production smoke 21/23 / Escape hotfix locally verified / observed users 0<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** Complete the Owner-approved R3B approved plan-execution boundaries, merge them with full CI, and production-deploy the exact merge SHA
+**Next Milestone:** Publish the bounded R3B Escape hotfix, deploy its exact merge SHA, and pass the canonical 23-check re-smoke
 
 Human-facing control surface: [FlowMe Project Control](./PROJECT_CONTROL.md).
 The [2026-07-29 P35 stage board](./content-audit/2026-07-29-flowme-current-stage-control-board-ko.html)
 is retained as a dated evidence snapshot rather than the current backlog.
 
-## Active: R3B Approved Plan Execution Boundaries
+## Active: R3B Production Escape Hotfix
 
 The Owner promoted [R3B](./specs/2026-08-11-r3b-approved-plan-execution-boundaries/spec.md)
-on 2026-08-11. It first implements the hashed approved plan-execution product
-contract from the R3A base, then preserves that candidate while moving the
-selected-Plan surface and saved-transfer request/revalidation planning behind
-typed boundaries. The approved product delta may change composition, copy, and
-DOM only as fixed by that contract; the architecture delta may not add further
-drift. Storage/schema, identity, artifact bytes, receipt ordering, rollback,
-Text-to-Flow, and broad legacy deletion are outside this gate. Completion
-requires full local and GitHub CI, merge, Vercel Production source-SHA
-verification, canonical smoke, and an explicit observed-user count that remains
-separate from automation. R3A remains the current production baseline until
-those release checks are complete.
+on 2026-08-11. [PR #172](https://github.com/knhbae/flowme2605/pull/172)
+implemented the approved product and bounded architecture deltas and merged as
+`a599370496ee95a52d14cddd27c94b0c8190a863`. Its exact-source Production
+deployment succeeded, but the canonical initial smoke passed `21/23`: one
+nested help/warning sheet and the 767px fallback Item editor failed Escape layer
+ownership. Both failures repeated in targeted checks. The only active gate is
+the bounded hotfix; storage/schema, routes, identity, artifact bytes, receipt
+ordering, rollback, Text-to-Flow, and broad legacy deletion remain outside it.
+Local hotfix evidence passes unit `182/182`, build `18/18` at BUILD_ID
+`wjpnPhhhMBaWzGTXuxK7U`, P26 `1/1`, targeted browser `3/3`, approved browser
+`23/23`, and full Playwright `569/569` with failures, skips, and flaky tests all
+`0` using workers `2`. Completion still requires the hotfix PR, exact-head CI,
+merge, exact-source Production deployment, canonical re-smoke, and an explicit
+observed-user count separate from automation.
 
 ## Closed MVP Program: P35 Round 2 B/B/B Bounded UX Correction
 
@@ -68,13 +71,15 @@ P0-01
 V1 observed-user validation is a separate future program.
 ```
 
-## Current Production Baseline: R3A My Flow Experience Boundary
+## Previous Fully Smoked Baseline: R3A My Flow Experience Boundary
 
 [PR #169](https://github.com/knhbae/flowme2605/pull/169) merged R3A as
 product-source commit `95a69257c73633077df2305232299f58cca03f73`. Vercel
 deployment `dpl_5jhJz4EBiHMm5HptH9nFCqfyeFek` served that exact merge source,
 reported `READY`, and assigned [the canonical alias](https://flowme2605.vercel.app).
-The default My Flow experience remains `classic`; only exact query-only
+R3A remains the last fully smoke-passed rollback baseline; R3B source is now
+deployed with its Escape hotfix gate still open. In the R3A release, the default
+My Flow experience remained `classic`; only exact query-only
 `myFlowExperience=r3a-lab` requests the internal candidate, and unsafe or unknown
 states fail closed to classic.
 
@@ -387,16 +392,18 @@ Detailed scope: [Save, Personalize, Execute Journey Reset](./specs/2026-07-18-sa
 
 ## Operating Queue
 
-R3B is the only active implementation and release-preparation gate. There is no
-active external-user gate. R3A remains the canonical production product
-baseline, with `classic` still the default and `r3a-lab` retained only as an
-exact-query internal candidate, until the exact R3B merge is deployed and
-smoked. P35 Round 2 P′ and P′′ remain immutable review and release history.
+The R3B production Escape hotfix is the only active implementation and
+release-preparation gate. There is no active external-user gate. R3B merge
+`a599370496ee95a52d14cddd27c94b0c8190a863` is deployed, but canonical release
+verification remains open after the initial `21/23` smoke. R3A remains the last
+fully smoke-passed rollback baseline. P35 Round 2 P′ and P′′ remain immutable
+review and release history.
 External user observation is excluded and is not a completion requirement.
 
 | Lane | Owner | Work | Next checkpoint | Done when |
 | --- | --- | --- | --- | --- |
-| Active R3B gate | AI + Owner authorization | Approved plan-execution UX, bounded selected-Plan and transfer boundaries, local/GitHub CI, PR, merge, deployment, and smoke | Publish the test-only CI stabilization to PR #172 and require exact-head GitHub and Vercel preview checks before merge | exact merge SHA is the Production source, canonical smoke passes, and observed users remain explicitly `0` |
+| Active R3B hotfix gate | AI + Owner authorization | Correct only nested bottom-sheet and immediate fallback-editor Escape ownership; preserve UI, route, storage, export, receipt, and rollback contracts | Open the hotfix PR from the locally verified `wjpnPhhhMBaWzGTXuxK7U` build and require exact-head CI | exact hotfix merge SHA is the Production source, canonical re-smoke passes `23/23`, and observed users remain explicitly `0` |
+| Deployed R3B source | AI + Owner | Approved plan-execution UX and bounded selected-Plan/transfer boundaries through PR #172 | Preserve merge `a599370496ee95a52d14cddd27c94b0c8190a863` as the hotfix base and do not claim smoke PASS | exact-head and post-merge CI passed, Production deployment succeeded, initial smoke `21/23`, observed users `0` |
 | Completed R3A release | AI + Owner | My Flow workspace snapshot, exact-query experience boundary, PR #169 merge, production deploy, and smoke | Preserve classic as default and keep lab promotion/removal as a separate decision | merge `95a69257`, GitHub Playwright `546/546`, deployment `dpl_5jhJz4EBiHMm5HptH9nFCqfyeFek` `READY`, production smoke PASS, observed users `0` |
 | Completed P35 Round 2 release | AI + Owner | P′ review incorporation, P′′ freeze/evidence, and production deployment | Preserve the historical release boundary without claiming a fresh independent P′′ review or production smoke | deployment `dpl_EBDr9CiRuwAUyjMcJwp7g6eBLpNk` was `READY`, smoke `NOT_RUN`, observed users `0` |
 | Completed candidate evidence | Development | P′′ shared lock, fresh reread/CAS, reuse/public-copy transaction, exact-byte/schema/deploy guards | Preserve source and published provenance for `f97644a` / `T0QkChgscSgPog-0UdvY-` / `p35-r2-4fa6af1728eb5ca5` | S01~S23 `23/23` accounted (S22 `NOT_ASSESSED`, S23 reviewer-chosen), three group manifests `PASS`, verifier `PASS`, failures `0` |
@@ -452,8 +459,8 @@ For the closed P35 Round 2 MVP gate, no further Pass 1/Pass 2 package is
 required. Preserve
 the [P′′ closeout](./specs/2026-08-04-p35-round2-bounded-ux-correction/pass2-cross-synthesis-and-pprime2-closeout.md),
 the shared-write [decision](./DECISIONS.md), and exact release provenance without
-upgrading `NOT_RUN` review or smoke states into `PASS`. The separately promoted
-R3B gate owns its own required production verification. Text-to-flow, P2
+upgrading `NOT_RUN` review or smoke states into `PASS`. The active R3B Escape
+hotfix owns the remaining exact-source production verification. Text-to-flow, P2
 follow-ups, external integrations, and observed-user recruitment remain inactive
 until the Owner explicitly promotes them.
 

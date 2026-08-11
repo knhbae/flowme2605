@@ -12,8 +12,10 @@
   My Plan, Calendar, responsive help/warning, duplicate display, and export.
 - [x] Reuse shared sort, date-group, raw-memo, responsive, and export-scope
   mappings without adding a content-specific persistence owner.
-- [ ] Complete product proof through exact-head GitHub CI, exact-source
-  deployment, canonical smoke, and the remaining release gates in R3B-04.
+- [x] Complete product proof through exact-head GitHub CI and exact-source
+  deployment.
+- [ ] Close canonical production proof through the bounded Escape hotfix and
+  successful re-smoke in R3B-04.
 
 ## R3B-01
 
@@ -61,7 +63,18 @@
   publication, and no product P0/P1 remains.
 - [x] Commit and push the candidate, and open
   [PR #172](https://github.com/knhbae/flowme2605/pull/172).
-- [ ] Publish the test-only CI stabilization follow-up, require successful
-  exact-head GitHub and Vercel preview checks, and merge.
-- [ ] Verify Vercel Production source SHA and canonical-alias smoke.
-- [ ] Record release evidence; keep observed-user validation separate.
+- [x] Publish the test-only CI stabilization follow-up, pass exact-head checks,
+  and merge [PR #172](https://github.com/knhbae/flowme2605/pull/172) as
+  `a599370496ee95a52d14cddd27c94b0c8190a863`.
+- [x] Verify the exact R3B merge source in Production deployment record
+  `5841506853`; initial canonical smoke passed `21/23`, and both failures
+  repeated in targeted checks.
+- [x] Implement and locally verify the bounded Escape hotfix: unit `182/182`,
+  build `18/18` at BUILD_ID `wjpnPhhhMBaWzGTXuxK7U`, P26 `1/1`, targeted
+  browser `3/3`, approved browser `23/23`, and full Playwright `569/569` with
+  failures, skips, and flaky tests all `0` using workers `2`.
+- [ ] Open the hotfix PR, require exact-head CI, merge, and deploy its exact
+  merge source.
+- [ ] Re-run the canonical `23`-check production smoke and require `23/23`.
+- [ ] Record final release evidence; keep observed-user validation separate at
+  `0` unless actual human evidence is supplied.

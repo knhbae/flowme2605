@@ -330,6 +330,49 @@ export function FlowEditorShell({
 
 export type FlowBottomSheetCloseCause = 'x' | 'backdrop' | 'escape';
 
+function getFlowBottomSheetLayerZIndex(sheet: HTMLElement): number {
+  const layer = sheet.closest<HTMLElement>('[data-flow-ui="bottom-sheet-layer"]');
+  if (!layer) return 0;
+  const zIndex = Number(window.getComputedStyle(layer).zIndex);
+  return Number.isFinite(zIndex) ? zIndex : 0;
+}
+
+export function isTopmostVisibleFlowBottomSheet(
+  sheet: HTMLElement | null,
+  visibleSheets: readonly HTMLElement[],
+  getLayerZIndex: (candidate: HTMLElement) => number = getFlowBottomSheetLayerZIndex,
+): boolean {
+  if (!sheet) return false;
+  const layerZIndexes = new Map(visibleSheets.map((candidate) => {
+    const zIndex = getLayerZIndex(candidate);
+    return [candidate, Number.isFinite(zIndex) ? zIndex : 0] as const;
+  }));
+  const getVisibleSheetPath = (candidate: HTMLElement) => visibleSheets.filter(
+    (possibleAncestor) => possibleAncestor === candidate || possibleAncestor.contains(candidate),
+  );
+  const sheetDomIndexes = new Map(visibleSheets.map((candidate, index) => [candidate, index]));
+  const compareStackingPaths = (left: HTMLElement, right: HTMLElement) => {
+    const leftPath = getVisibleSheetPath(left);
+    const rightPath = getVisibleSheetPath(right);
+    const sharedDepth = Math.min(leftPath.length, rightPath.length);
+    for (let index = 0; index < sharedDepth; index += 1) {
+      const leftLayer = leftPath[index];
+      const rightLayer = rightPath[index];
+      if (leftLayer === rightLayer) continue;
+      const zIndexDifference = (layerZIndexes.get(leftLayer) ?? 0)
+        - (layerZIndexes.get(rightLayer) ?? 0);
+      if (zIndexDifference !== 0) return zIndexDifference;
+      return (sheetDomIndexes.get(leftLayer) ?? -1) - (sheetDomIndexes.get(rightLayer) ?? -1);
+    }
+    return leftPath.length - rightPath.length;
+  };
+  const topmostSheet = visibleSheets.reduce<HTMLElement | null>((topmost, candidate) => {
+    if (!topmost) return candidate;
+    return compareStackingPaths(candidate, topmost) >= 0 ? candidate : topmost;
+  }, null);
+  return topmostSheet === sheet;
+}
+
 export function FlowBottomSheet({
   testId,
   headingId,
@@ -407,16 +450,7 @@ export function FlowBottomSheet({
       const visibleSheets = Array.from(document.querySelectorAll<HTMLElement>(
         '[role="dialog"][data-flow-ui="bottom-sheet"]',
       )).filter((element) => element.getClientRects().length > 0);
-      const activeSheet = document.activeElement instanceof HTMLElement
-        ? document.activeElement.closest<HTMLElement>(
-            '[role="dialog"][data-flow-ui="bottom-sheet"]',
-          )
-        : null;
-      if (activeSheet) {
-        if (activeSheet !== dialogRef.current) return;
-      } else if (visibleSheets.at(-1) !== dialogRef.current) {
-        return;
-      }
+      if (!isTopmostVisibleFlowBottomSheet(dialogRef.current, visibleSheets)) return;
       event.preventDefault();
       event.stopImmediatePropagation();
       if (onRequestCloseRef.current) {

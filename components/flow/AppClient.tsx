@@ -6169,6 +6169,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
   const myFlowLibraryPlanReturnFlowSlugRef = useRef('');
   const myFlowLibraryPendingTransitionRef = useRef<MyFlowLibraryPendingTransition | null>(null);
   const myFlowLibraryActiveItemTargetRef = useRef<MyFlowWorkspaceTarget | null>(null);
+  const myFlowApprovedMobileFallbackEscapeActionRef = useRef<(() => void) | null>(null);
   const myFlowLibraryControllerStateRef = useRef<MyFlowLibraryControllerState>({
     query: flowListQuery,
     filter: flowListFilter,
@@ -6479,6 +6480,33 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     window.addEventListener('popstate', handleSavedEditorPopState, true);
     return () => window.removeEventListener('popstate', handleSavedEditorPopState, true);
   }, [myFlowEditorTransactionEnabled]);
+
+  useEffect(() => {
+    const handleApprovedMobileFallbackEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape' || event.defaultPrevented) return;
+      const action = myFlowApprovedMobileFallbackEscapeActionRef.current;
+      if (!action) return;
+      const visibleFallbackEditor = Array.from(document.querySelectorAll<HTMLElement>(
+        '[data-testid="my-flow-item-detail"][data-detail-mode="edit"]',
+      )).find((element) => element.getClientRects().length > 0);
+      if (!visibleFallbackEditor) return;
+      const blockingModal = Array.from(document.querySelectorAll<HTMLElement>(
+        '[role="alertdialog"][aria-modal="true"], [role="dialog"][aria-modal="true"]',
+      )).find((element) => (
+        element !== visibleFallbackEditor
+        && element.getAttribute('aria-hidden') !== 'true'
+        && element.getClientRects().length > 0
+      ));
+      if (blockingModal) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      action();
+    };
+    document.addEventListener('keydown', handleApprovedMobileFallbackEscape, true);
+    return () => {
+      document.removeEventListener('keydown', handleApprovedMobileFallbackEscape, true);
+    };
+  }, []);
 
   useEffect(() => {
     if (!myFlowCompletionUndo) return;
@@ -9474,6 +9502,19 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
   const requestMyFlowLibraryItemHistoryBack = (): boolean => {
     return runMyFlowLibraryTransition({ kind: 'request_item_back' });
   };
+  myFlowApprovedMobileFallbackEscapeActionRef.current =
+    myFlowApprovedMobileFallbackEditorOpen && myFlowActiveRow && !myFlowEditorDiscardPromptOpen
+      ? () => {
+          if (hasMyFlowEditingDraft(myFlowActiveRow)) {
+            if (myFlowDetailSurface === 'flow') {
+              requestMyFlowLibraryItemHistoryBack();
+            }
+            setMyFlowEditorDiscardPromptOpen(true);
+            return;
+          }
+          cancelMyFlowEditingDraft(myFlowActiveRow);
+        }
+      : null;
 
   useEffect(() => {
     if (isCalendarSurface || myFlowSavedPlanLibraryEnabled !== true || typeof window === 'undefined') {
