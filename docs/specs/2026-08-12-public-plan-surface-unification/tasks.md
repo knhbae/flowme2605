@@ -12,8 +12,8 @@
 - [x] 390/768/1024/1440 품질과 전체 unit/build/Playwright를 통과한다.
 - [x] Default executable Maps의 unified presentation, exact `visualSubtraction=off`가 `save_all`과 `choose_child` 모두에서 복원하는 exact legacy Map shell/presentation/action/anchor behavior, exact `savedPlanLibrary=off` prior/default result mode rollback을 검증한다.
 - [x] 문서와 최종 scope/evidence audit를 완료한다.
-- [ ] Scoped candidate commit을 만들고 exact SHA를 기록한다 — `PENDING`.
-- [ ] Branch를 push하고 PR을 연 뒤 실제 URL과 PR head를 기록한다 — `PENDING`.
+- [x] Initial implementation commit `1cf1fc4dc85773bed3ac4e880920369e1aba1e3a`를 만들고 exact SHA를 기록했다.
+- [x] Branch를 push하고 [PR #176](https://github.com/knhbae/flowme2605/pull/176)을 opening head `1cf1fc4dc85773bed3ac4e880920369e1aba1e3a`로 열었다.
 - [ ] 실제 PR CI가 통과했는지 확인하고 run을 기록한다 — `PENDING`.
 - [ ] CI 통과 뒤 merge하고 실제 merge SHA를 기록한다 — `PENDING`.
 - [ ] Production이 exact merged source를 제공하는지 확인한다 — `PENDING`.

@@ -40,7 +40,7 @@ Only **Active Gate** carries the current execution backlog or Owner checkpoint. 
 
 ### Active Gate
 
-- [2026-08-12 Public Plan Surface Unification](./2026-08-12-public-plan-surface-unification/spec.md) has completed local implementation and authorized automated QA in the isolated worktree, and the Owner has authorized publication. Base `origin/main` is `8f72ad6922ffa20a765a45cb9b5312ecfa8ca46f`; candidate commit and PR head remain `PENDING`; final BUILD_ID is `bzdhR-nY_afpTfx_xDZ7e`; new E2E is `9/9`; Map rollback/copy contracts are `24/24`; and current-source full Playwright is `578/578` across `74` files with `0` unexpected/skipped/flaky. The active checkpoint is scoped commit and PR preparation. Commit, push, PR, CI, merge, deployment, and production smoke remain `PENDING` until verified; observed users remain `0`.
+- [2026-08-12 Public Plan Surface Unification](./2026-08-12-public-plan-surface-unification/spec.md) has completed local implementation and authorized automated QA in the isolated worktree, and [PR #176](https://github.com/knhbae/flowme2605/pull/176) is open from initial implementation commit `1cf1fc4dc85773bed3ac4e880920369e1aba1e3a`. Base `origin/main` is `8f72ad6922ffa20a765a45cb9b5312ecfa8ca46f`; final BUILD_ID is `bzdhR-nY_afpTfx_xDZ7e`; new E2E is `9/9`; Map rollback/copy contracts are `24/24`; and current-source full Playwright is `578/578` across `74` files with `0` unexpected/skipped/flaky. The active checkpoint is exact-head PR CI. Merge, deployment, and production smoke remain `PENDING` until verified; observed users remain `0`.
 
 ### Recently Completed
 

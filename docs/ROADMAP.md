@@ -2,9 +2,9 @@
 
 **Last Updated:** 2026-08-12<br>
 **Current Version:** v0.1.0 (released product PoC)<br>
-**Current Validation Stage:** internal alpha / public plan surface local QA PASS / publication authorized / PR preparation / R3B remains production / observed users 0<br>
+**Current Validation Stage:** internal alpha / public plan surface local QA PASS / PR #176 open / CI pending / R3B remains production / observed users 0<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** Scoped candidate commit and pull request opening
+**Next Milestone:** PR #176 exact-head CI verification
 
 Human-facing control surface: [FlowMe Project Control](./PROJECT_CONTROL.md).
 The [2026-07-29 P35 stage board](./content-audit/2026-07-29-flowme-current-stage-control-board-ko.html)
@@ -14,9 +14,10 @@ is retained as a dated evidence snapshot rather than the current backlog.
 
 [Public Plan Surface Unification](./specs/2026-08-12-public-plan-surface-unification/spec.md)
 has completed local implementation and authorized automated QA in the isolated
-worktree. The Owner has authorized publication. Base `origin/main` is
-`8f72ad6922ffa20a765a45cb9b5312ecfa8ca46f`; candidate commit and PR head remain
-`PENDING`. The final verified worktree build
+worktree. The Owner authorized publication, and
+[PR #176](https://github.com/knhbae/flowme2605/pull/176) is open. Base
+`origin/main` is `8f72ad6922ffa20a765a45cb9b5312ecfa8ca46f`; initial implementation commit and
+opening PR head are `1cf1fc4dc85773bed3ac4e880920369e1aba1e3a`. The final verified worktree build
 reports BUILD_ID `bzdhR-nY_afpTfx_xDZ7e` and build `18/18`. `npm test` passed;
 new public-surface E2E passed `9/9` with workers `1`, retries `0`, in `54.3s`;
 Map rollback/copy contracts passed `24/24` with workers `1`, retries `0`, in
@@ -28,7 +29,7 @@ Default executable Maps now use the unified public presentation. Exact
 `visualSubtraction=off` restores the exact legacy Map shell, presentation,
 action, and anchor behavior for both `save_all` and `choose_child`; exact
 `savedPlanLibrary=off` restores the prior/default result mode. The local work is
-not yet a release: commit, push, PR, CI, merge, deployment, and production smoke
+not yet a release: exact-head PR CI, merge, deployment, and production smoke
 remain `PENDING` until verified. R3B remains the current
 production baseline, and observed users remain `0`.
 
@@ -415,16 +416,17 @@ Detailed scope: [Save, Personalize, Execute Journey Reset](./specs/2026-07-18-sa
 ## Operating Queue
 
 The public plan surface implementation and its authorized local QA are complete,
-and the Owner has authorized the publication workflow. The active checkpoint is
-a scoped candidate commit and pull request; commit, push, PR, CI, merge,
-deployment, and production smoke remain `PENDING` until verified. R3B merge
+and the Owner has authorized the publication workflow. PR #176 is open from
+initial implementation commit `1cf1fc4dc85773bed3ac4e880920369e1aba1e3a`;
+exact-head PR CI, merge, deployment, and production smoke remain `PENDING` until
+verified. R3B merge
 `2b937ce811b518950f495341d05736ebd102887a` remains the exact deployed source and
 canonical release verification passed `23/23`. External user observation is
 excluded from this local completion and remains `0`.
 
 | Lane | Owner | Work | Next checkpoint | Done when |
 | --- | --- | --- | --- | --- |
-| Public plan surface publication checkpoint | AI + Owner | Locally verified unified executable `/f` and `/flow-maps` result presentation from base `8f72ad6922ffa20a765a45cb9b5312ecfa8ca46f`; final BUILD_ID `bzdhR-nY_afpTfx_xDZ7e`; candidate commit and PR head `PENDING` | Create scoped commit, push branch, open PR, and verify PR CI | Local completion stays distinct from release; merge, exact-source deployment, and production smoke must be recorded only after each succeeds |
+| Public plan surface publication checkpoint | AI + Owner | [PR #176](https://github.com/knhbae/flowme2605/pull/176) open from initial implementation commit `1cf1fc4dc85773bed3ac4e880920369e1aba1e3a`; final BUILD_ID `bzdhR-nY_afpTfx_xDZ7e` | Verify exact-head PR CI | Local completion and open PR stay distinct from release; merge, exact-source deployment, and production smoke must be recorded only after each succeeds |
 | Completed R3B release | AI + Owner | Approved plan-execution UX, bounded selected-Plan/transfer boundaries, Escape correction, CI, deployment, and smoke | Preserve R3B as production while the local public-plan candidate receives a separate publication decision | PR #172 plus PR #173, merge `2b937ce811b518950f495341d05736ebd102887a`, CI PASS, exact-source deployment PASS, canonical smoke `23/23`, observed users `0` |
 | Completed R3A release | AI + Owner | My Flow workspace snapshot, exact-query experience boundary, PR #169 merge, production deploy, and smoke | Preserve its historical then-default `classic` behavior and exact-query rollback comparison boundary; keep lab promotion/removal separate | merge `95a69257`, GitHub Playwright `546/546`, deployment `dpl_5jhJz4EBiHMm5HptH9nFCqfyeFek` `READY`, production smoke PASS, observed users `0` |
 | Completed P35 Round 2 release | AI + Owner | P′ review incorporation, P′′ freeze/evidence, and production deployment | Preserve the historical release boundary without claiming a fresh independent P′′ review or production smoke | deployment `dpl_EBDr9CiRuwAUyjMcJwp7g6eBLpNk` was `READY`, smoke `NOT_RUN`, observed users `0` |
@@ -478,10 +480,10 @@ These gates cannot be closed by automated tests or simulated personas.
 ## Next Publication Checkpoint
 
 Publication is authorized for the locally verified
-[Public Plan Surface Unification](./specs/2026-08-12-public-plan-surface-unification/spec.md).
-Create the scoped candidate commit from base
-`8f72ad6922ffa20a765a45cb9b5312ecfa8ca46f`, push the branch, open the PR, and
-record the real candidate head, PR URL, and CI state. Preserve final BUILD_ID
+[Public Plan Surface Unification](./specs/2026-08-12-public-plan-surface-unification/spec.md),
+and [PR #176](https://github.com/knhbae/flowme2605/pull/176) is open from initial
+implementation commit `1cf1fc4dc85773bed3ac4e880920369e1aba1e3a`. Verify
+the real exact-head PR CI state before merge. Preserve final BUILD_ID
 `bzdhR-nY_afpTfx_xDZ7e` and [local QA evidence](./specs/2026-08-12-public-plan-surface-unification/qa.md)
 without describing the candidate as released. Merge, deployment, and production
 smoke remain `PENDING`; R3B remains production and observed users remain `0`.

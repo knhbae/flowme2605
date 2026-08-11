@@ -1,15 +1,15 @@
 # FLOW Service Structure
 
 Last updated: 2026-08-12
-Status: Living worktree baseline. Public plan surface publication is authorized and in PR preparation; R3B remains production.
+Status: Living worktree baseline. Public plan surface PR #176 is open with CI pending; R3B remains production.
 
 This document is the canonical map of the current app surface, screen feature tree, and service architecture. It is not validation evidence by itself. Use it to keep product PoCs, research surfaces, creator tools, public routes, My Flow execution, and shared domain modules from drifting apart.
 
 The public plan surface candidate below is implemented and locally verified in
 the isolated worktree from base `8f72ad6922ffa20a765a45cb9b5312ecfa8ca46f`
-with final BUILD_ID `bzdhR-nY_afpTfx_xDZ7e`. Publication is authorized;
-candidate commit, PR, CI, merge, deployment, and production smoke remain
-`PENDING` until verified. R3B merge
+with final BUILD_ID `bzdhR-nY_afpTfx_xDZ7e`. Initial implementation commit
+`1cf1fc4dc85773bed3ac4e880920369e1aba1e3a` is open as PR #176; exact-head CI,
+merge, deployment, and production smoke remain `PENDING` until verified. R3B merge
 `2b937ce811b518950f495341d05736ebd102887a` remains the production source.
 
 ## Update Policy
@@ -107,9 +107,8 @@ Desktop can use a top nav with the same priority order. It should not expose mor
   `savedPlanLibrary=off` restores the prior/default result mode. These flags do
   not rename keys, migrate schema, or move data ownership into the shared UI.
 - This is the current local worktree structure, not a production claim. R3B
-  remains deployed; publication is authorized while candidate commit, PR, CI,
-  merge, deployment, and production smoke remain `PENDING`, and observed users
-  remain `0`.
+  remains deployed; PR #176 is open while exact-head CI, merge, deployment, and
+  production smoke remain `PENDING`, and observed users remain `0`.
 
 ### Current R3B Production Baseline And Inherited P35/Round 2 Contracts
 

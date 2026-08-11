@@ -1,6 +1,6 @@
 # Implementation Plan
 
-**Status:** LOCAL IMPLEMENTATION AND AUTHORIZED QA COMPLETE / PUBLICATION AUTHORIZED / PR PREPARATION
+**Status:** LOCAL IMPLEMENTATION AND AUTHORIZED QA COMPLETE / PR #176 OPEN / CI PENDING
 
 ## 1. Characterize and preserve — complete
 
@@ -35,13 +35,13 @@
 - 구형 Map UI를 정답으로 고정한 positive assertion을 공통 결과 계약으로 교정하면서 rollback, redirect, review-hold 고유 계약을 유지했다.
 - Direct executable inventory, save/adjust/reload, choose-child, hold, 390/768/1024/1440 반응형 품질을 검증했다.
 - Unit/contract, build, focused E2E, legacy Map contracts, full Playwright, documentation, and diff checks를 최종 evidence에 기록했다.
-- Local implementation closeout remains distinct from publication. The publication sequence is authorized, while every external state remains `PENDING` until verified; observed users remain `0`.
+- Local implementation closeout remains distinct from publication. PR #176 is open; exact-head CI, merge, deployment, and production smoke remain `PENDING` until verified, and observed users remain `0`.
 
-## 6. Publication sequence — authorized, pending execution
+## 6. Publication sequence — PR open, CI pending
 
-- Create an intentional scoped candidate commit from base `8f72ad6922ffa20a765a45cb9b5312ecfa8ca46f`.
-- Push `codex/public-surface-unification-20260812`, open the PR, and record the real PR URL and head.
-- Wait for and verify the actual PR CI result before merge.
+- Created initial implementation commit `1cf1fc4dc85773bed3ac4e880920369e1aba1e3a` from base `8f72ad6922ffa20a765a45cb9b5312ecfa8ca46f`.
+- Pushed `codex/public-surface-unification-20260812` and opened [PR #176](https://github.com/knhbae/flowme2605/pull/176) with that opening head.
+- Wait for and verify the actual exact-head PR CI result before merge.
 - Record the real merge SHA only after merge succeeds.
 - Verify that Production serves the exact merged source, then run canonical production smoke.
 - Keep R3B as the production baseline until exact-source deployment and smoke pass; keep observed users at `0` unless real session evidence exists.

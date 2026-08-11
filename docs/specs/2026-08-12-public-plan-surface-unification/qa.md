@@ -1,19 +1,21 @@
 # QA Evidence
 
-**Status:** LOCAL IMPLEMENTATION QA PASS / PUBLICATION AUTHORIZED / PR NOT OPEN
+**Status:** LOCAL IMPLEMENTATION QA PASS / PR #176 OPEN / CI PENDING
 
 **Base:** `8f72ad6922ffa20a765a45cb9b5312ecfa8ca46f`
 
-**Candidate commit / PR head:** `PENDING`
+**Initial implementation commit / opening PR head:** `1cf1fc4dc85773bed3ac4e880920369e1aba1e3a`
+
+**PR:** [#176](https://github.com/knhbae/flowme2605/pull/176)
 
 **Final verified BUILD_ID:** `bzdhR-nY_afpTfx_xDZ7e`
 
 **Observed users:** `0`
 
-The verified implementation is a worktree candidate built from the recorded
-base, and publication is authorized. This evidence proves local behavior only;
-candidate commit, PR, CI, merge, deployment, and production smoke remain
-`PENDING` and no published or production-deployed source is claimed.
+The verified implementation was committed as
+`1cf1fc4dc85773bed3ac4e880920369e1aba1e3a` and is open as PR #176. This evidence
+proves local behavior only; exact-head PR CI, merge, deployment, and production
+smoke remain `PENDING` and no production-deployed source is claimed.
 
 | Gate | State | Evidence |
 | --- | --- | --- |
@@ -25,10 +27,10 @@ candidate commit, PR, CI, merge, deployment, and production smoke remain
 | Map rollback/copy contracts | PASS | `24/24`, workers `1`, retries `0`, duration `1.5m`; preserves Map save, review-hold, redirect, copy, and exact rollback-specific contracts. Output: `output/playwright/public-plan-surface-unification-final/map-rollback-contracts-final3`. |
 | Flow MVP display regression | PASS AFTER BOUNDED FIX | First run `127/129` exposed two product-display failures; the bounded product display correction then passed the targeted cases `2/2`. |
 | Current-source full Playwright | PASS | `578/578` across `74` files, workers `2`, retries `0`, duration `1,375,459.685ms` (`~22.9m`), unexpected/skipped/flaky `0`, failure artifacts `0`, server stderr `0`. JSON: `output/playwright/public-plan-surface-unification-final/full-578-final3-results.json`. |
-| Documentation check | PASS | Product QA handoff initially recorded docs as `NOT_RUN`; publication preparation `npm run docs:check` passed: skill sync PASS, `16` required files, `4,510` local links. |
-| Diff check | PASS | Full tracked-worktree `git diff --check` passed; the five tracked authorized docs passed their scoped check, and no-index checks passed `4/4` untracked active-spec files. |
-| Candidate commit | PENDING | Authorized; exact commit SHA does not exist yet. |
-| Push / PR | PENDING | Authorized; PR is not open and URL/head do not exist yet. |
+| Documentation check | PASS | `npm.cmd run docs:check` -> skill sync PASS, 16 required files, 4510 local links. |
+| Diff check | PASS | `git diff --check` -> exit 0 for the current 10-document worktree diff. |
+| Candidate commit | PASS | Initial implementation commit `1cf1fc4dc85773bed3ac4e880920369e1aba1e3a`. |
+| Push / PR | OPEN | [PR #176](https://github.com/knhbae/flowme2605/pull/176), opening head `1cf1fc4dc85773bed3ac4e880920369e1aba1e3a`. |
 | PR CI | PENDING | No PR run exists yet. |
 | Merge | PENDING | No merge SHA exists yet. |
 | Production deployment | PENDING | R3B remains the exact deployed production source. |
@@ -52,8 +54,9 @@ candidate commit, PR, CI, merge, deployment, and production smoke remain
 
 ## Evidence boundary
 
-Local implementation and authorized automated QA are complete, and publication
-is authorized. Candidate commit, PR, CI, merge, deployment, and production smoke
-remain `PENDING`, and observed-user validation remains `0`. No release claim may
-be made until the publication workflow identifies and verifies the exact
-committed, merged, deployed, and production-smoked source.
+Local implementation and authorized automated QA are complete, initial commit
+`1cf1fc4dc85773bed3ac4e880920369e1aba1e3a` exists, and PR #176 is open.
+Exact-head PR CI, merge, deployment, and production smoke remain `PENDING`, and
+observed-user validation remains `0`. No release claim may be made until the
+publication workflow verifies the exact merged, deployed, and
+production-smoked source.

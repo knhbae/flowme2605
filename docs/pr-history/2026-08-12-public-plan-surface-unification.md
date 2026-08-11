@@ -1,11 +1,12 @@
 # Public Plan Surface Unification
 
-- **PR:** Pending
+- **PR:** [#176](https://github.com/knhbae/flowme2605/pull/176)
 - **Date:** 2026-08-12 KST
 - **Branch:** `codex/public-surface-unification-20260812`
-- **Status:** Draft
+- **Status:** Open
 - **Base:** `origin/main` at `8f72ad6922ffa20a765a45cb9b5312ecfa8ca46f`
-- **Candidate commit / PR head:** Pending
+- **Initial implementation commit / opening PR head:** `1cf1fc4dc85773bed3ac4e880920369e1aba1e3a`
+- **Final PR head:** Pending
 - **Deployment:** Pending
 
 ## Why
@@ -37,8 +38,9 @@ both routes belonged to the same plan-discovery journey.
 
 - No storage key, schema, migration, API route, dependency, lockfile, account,
   cloud-sync, creator-review, or review-hold policy change.
-- No commit, push, PR, CI, merge, Production deployment, or canonical smoke is
-  claimed at this pre-open checkpoint.
+- PR #176 is open from initial implementation commit
+  `1cf1fc4dc85773bed3ac4e880920369e1aba1e3a`. No completed PR CI, merge,
+  Production deployment, or canonical smoke is claimed.
 - No observed-user session was run; the count remains `0`.
 
 ## Decisions
@@ -80,8 +82,8 @@ both routes belonged to the same plan-discovery journey.
 
 | Evidence | State |
 | --- | --- |
-| Candidate commit | `PENDING` |
-| Push / PR | `PENDING` |
+| Initial implementation commit | `PASS` — `1cf1fc4dc85773bed3ac4e880920369e1aba1e3a` |
+| Push / PR | `OPEN` — [PR #176](https://github.com/knhbae/flowme2605/pull/176), opening head `1cf1fc4dc85773bed3ac4e880920369e1aba1e3a` |
 | Exact-head PR CI | `PENDING` |
 | Merge SHA | `PENDING` |
 | Post-merge main CI | `PENDING` |
@@ -100,14 +102,14 @@ both routes belonged to the same plan-discovery journey.
 
 ## Follow-ups
 
-- Open the PR, verify exact-head CI, merge only when required checks are green,
-  then bind the exact merge SHA to the Production deployment and run canonical
-  smoke.
+- Verify PR #176 exact-head CI, merge only when required checks are green, then
+  bind the exact merge SHA to the Production deployment and run canonical smoke.
 - Keep external integrations and observed-user study work separate from this
   release.
 
 ## Links
 
+- [PR #176](https://github.com/knhbae/flowme2605/pull/176)
 - [Specification](../specs/2026-08-12-public-plan-surface-unification/spec.md)
 - [QA evidence](../specs/2026-08-12-public-plan-surface-unification/qa.md)
 - [Current status](../STATUS.md)

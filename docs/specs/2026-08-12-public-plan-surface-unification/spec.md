@@ -1,6 +1,6 @@
 # Public Plan Surface Unification
 
-**Status:** LOCAL IMPLEMENTATION COMPLETE / LOCAL QA PASS / PUBLICATION AUTHORIZED / PR NOT OPEN
+**Status:** LOCAL IMPLEMENTATION COMPLETE / LOCAL QA PASS / PR #176 OPEN / CI PENDING
 
 **Owner decision:** 2026-08-12
 
@@ -8,14 +8,17 @@
 
 **Base:** `origin/main` at `8f72ad6922ffa20a765a45cb9b5312ecfa8ca46f`
 
-**Candidate commit / PR:** `PENDING`
+**Initial implementation commit:** `1cf1fc4dc85773bed3ac4e880920369e1aba1e3a`
+
+**PR:** [#176](https://github.com/knhbae/flowme2605/pull/176)
 
 **Final verified BUILD_ID:** `bzdhR-nY_afpTfx_xDZ7e`
 
-The implementation is a locally verified worktree candidate and publication is
-authorized. It is not yet a published release. Commit, push, PR, CI, merge,
-deployment, and production smoke remain `PENDING` until each real external state
-is verified; observed users remain `0`.
+The implementation is locally verified and open as PR #176 from initial
+implementation commit `1cf1fc4dc85773bed3ac4e880920369e1aba1e3a`. It is not
+yet a published release. Exact-head PR CI, merge, deployment, and production
+smoke remain `PENDING` until each real external state is verified; observed users
+remain `0`.
 
 ## Goal
 
@@ -79,8 +82,9 @@ is verified; observed users remain `0`.
 ## Publication phase
 
 The Owner authorized scoped commit, push, PR, merge, deployment, and production
-smoke on 2026-08-12. At this pre-open checkpoint the candidate commit, PR URL and
-head, PR CI, merge SHA, deployment, and canonical production smoke are all
+smoke on 2026-08-12. Initial implementation commit
+`1cf1fc4dc85773bed3ac4e880920369e1aba1e3a` is open as PR #176. Exact-head PR
+CI, final PR head, merge SHA, deployment, and canonical production smoke remain
 `PENDING`. R3B remains the production source until exact-source deployment and
 smoke are verified. No publication step changes the observed-user count of `0`.
 
