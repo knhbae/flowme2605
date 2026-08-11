@@ -279,22 +279,27 @@ async function openPostSaveWorkspaceIfPresent(page: Page) {
 
 async function openCurrentMyFlowLibrary(page: Page) {
   const currentFlowView = page.getByTestId('my-flow-todo-experiment-view-flows');
+  const legacyFlowView = page.getByTestId('my-flow-view-flow');
+  const librarySurface = page.locator(
+    '[data-testid="my-flow-mobile-flow-hub"]:visible, '
+      + '[data-testid="my-flow-library-workspace"]:visible, '
+      + '[data-testid="my-flow-mobile-workspace"]:visible, '
+      + 'main[data-p32-workspace-state="focused"]:visible',
+  ).first();
+  const requiresLibraryTab = new URL(page.url()).searchParams.get('savedPlanLibrary') === 'off';
+  await expect.poll(async () => (
+    await currentFlowView.isVisible().catch(() => false)
+      || await legacyFlowView.isVisible().catch(() => false)
+      || (!requiresLibraryTab && await librarySurface.isVisible().catch(() => false))
+  )).toBe(true);
   if (
     await currentFlowView.isVisible().catch(() => false) &&
     (await currentFlowView.getAttribute('aria-selected')) !== 'true'
   ) {
     await currentFlowView.click();
   }
-  const legacyFlowView = page.getByTestId('my-flow-view-flow');
   if (await legacyFlowView.isVisible().catch(() => false)) await legacyFlowView.click();
-  await expect(
-    page.locator(
-      '[data-testid="my-flow-mobile-flow-hub"]:visible, '
-        + '[data-testid="my-flow-library-workspace"]:visible, '
-        + '[data-testid="my-flow-mobile-workspace"]:visible, '
-        + 'main[data-p32-workspace-state="focused"]:visible',
-    ).first(),
-  ).toBeVisible();
+  await expect(librarySurface).toBeVisible();
 }
 
 async function savePublicFlowToSelectedPlan(

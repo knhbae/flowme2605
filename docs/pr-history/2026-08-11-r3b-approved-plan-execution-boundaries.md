@@ -3,9 +3,10 @@
 - **PR:** [#172](https://github.com/knhbae/flowme2605/pull/172)
 - **Date:** 2026-08-11 KST
 - **Branch:** `codex/approved-plan-execution-ux-20260810`
-- **Status:** Open / CI stabilization pending / not merged / not deployed
+- **Status:** Merged / deployed / canonical smoke requires Escape hotfix
 - **Base:** `origin/main` at `14014bf3872c5587ee9ebbc8d8936aee2d754ec4`
-- **Current production:** R3A source `95a69257c73633077df2305232299f58cca03f73`
+- **Merge:** `a599370496ee95a52d14cddd27c94b0c8190a863`
+- **Current deployed source:** `a599370496ee95a52d14cddd27c94b0c8190a863`
 
 ## Why
 
@@ -38,8 +39,8 @@ This PR records its exact paths and SHA-256 values in the [R3B spec](../specs/20
   flag, Text-to-Flow integration, broad legacy deletion, or external account
   integration.
 - The separate read-only Item detail extraction candidate is not promoted.
-- Full repository Playwright, GitHub CI, merge, deployment, and canonical smoke
-  are not complete.
+- Canonical release verification is not complete: the initial production smoke
+  passed `21/23`, and both Escape failures require the bounded hotfix.
 - No observed-user session was run; the count remains `0`.
 
 ## Decisions
@@ -48,8 +49,9 @@ This PR records its exact paths and SHA-256 values in the [R3B spec](../specs/20
   architecture delta against that candidate as two ordered contracts.
 - Keep public result controls non-mutating and keep personal completion,
   persistence, artifact effects, and receipts with their existing runtime owners.
-- Keep R3A as the production baseline until the exact R3B merge source is
-  deployed and canonical smoke passes.
+- Treat R3B merge `a599370496ee95a52d14cddd27c94b0c8190a863` as the current
+  deployed source, but do not claim canonical smoke PASS until the exact hotfix
+  merge source passes the complete `23/23` re-smoke.
 - Do not claim GitHub, merge, deployment, smoke, or observed-user evidence before
   it is actually observed.
 
@@ -83,37 +85,42 @@ This PR records its exact paths and SHA-256 values in the [R3B spec](../specs/20
 | Scoped migration evidence | `PASS` — overlapping targeted lanes include Group B `33/33`, P26 `40/40`, D1 `68/68`, P28-P31 `37/37`, P35 saved library `18/18`, Q3 `12/12` plus off-lane `7/7`, 50-Item `1/1`, legacy transfer `26/26`, and Calendar `2/2` |
 | Full Playwright | `PASS` — `569/569`, failures `0`, skips `0`, flaky `0`, workers `2`, exact BUILD_ID `DkOxul9Wh4wGGYuxbYwy_` |
 | Diff/ownership/rollback closeout | `PASS` — evidence PNGs restored to `HEAD`, generated `test-results-*` excluded, intended tracked/new-file closure confirmed, product P0/P1 `0` |
+| Hotfix local verification | `PASS` — unit `182/182`, build `18/18` at BUILD_ID `wjpnPhhhMBaWzGTXuxK7U`, P26 `1/1`, targeted browser `3/3`, approved browser `23/23`, and full Playwright `569/569` with failures, skips, and flaky tests all `0` using workers `2` |
 
 ## Publication Evidence
 
 | Evidence | State |
 | --- | --- |
-| PR URL and exact head | [PR #172](https://github.com/knhbae/flowme2605/pull/172), initial head `5bb445132004cf7b8a1879e924a106b836d3fb84`; test-only follow-up not yet pushed |
-| GitHub required CI | Initial run [`31431479477`](https://github.com/knhbae/flowme2605/actions/runs/31431479477) `FAIL`: Docs, Unit, Build `PASS`; Playwright `564` passed, `3` failed, `2` flaky. Exact-head rerun is required before merge. |
-| Merge SHA | `NOT_RUN` |
-| Vercel Production deployment ID, URL, and source SHA | `NOT_RUN` |
-| Canonical-alias smoke | `NOT_RUN` |
+| PR URL and exact head | [PR #172](https://github.com/knhbae/flowme2605/pull/172), final head `b1106b6a319eb2ff5671be99ab446d68d6597f0b` |
+| GitHub required CI | `PASS` — final PR head passed exact-head required checks; post-merge run [`31441290450`](https://github.com/knhbae/flowme2605/actions/runs/31441290450) also passed Docs, Unit, Build, and Playwright |
+| Merge SHA | `a599370496ee95a52d14cddd27c94b0c8190a863` |
+| Production deployment | `PASS` — GitHub deployment record `5841506853`, source `a599370496ee95a52d14cddd27c94b0c8190a863`, [direct URL](https://flowme2605-24g7918o1-flowme.vercel.app), and [Vercel record](https://vercel.com/flowme/flowme2605/HBW56gHNcW6BSKp26SRs1KNveWa5) report success |
+| Canonical initial smoke | `FAIL` — `21/23`; nested child-sheet Escape and immediate 767px fallback-editor Escape both failed and repeated in targeted checks |
+| Escape hotfix publication | `NOT_RUN` — PR, exact-head CI, merge, Production deployment, and canonical re-smoke |
 | Observed-user validation | `0` |
 
-Populate these fields only from observed post-publication evidence. Add the
-release to `docs/HISTORY.md` only after the exact merge source is deployed and
-canonical smoke passes.
+The [R3B production Escape hotfix](./2026-08-11-r3b-production-escape-hotfix.md)
+owns the remaining publication evidence. Add the release to `docs/HISTORY.md`
+only after the exact hotfix merge source is deployed and canonical re-smoke
+passes.
 
 ## Risks And Rollback
 
 - The approved product source documents are hash-pinned local provenance, not
   independently reviewable files in this PR, because their dirty ownership was
   not transferred.
-- Release risk remains open until exact-head GitHub CI, deployment, and smoke
-  gates pass.
+- Release risk is narrowed to Escape layer ownership. It remains open until the
+  hotfix exact-head GitHub CI, deployment, and canonical `23/23` re-smoke pass.
 - No migration is required for rollback. Revert the bounded product PR and keep
-  the existing `savedPlanLibrary=off` compatibility lane and R3A production
-  deployment available until replacement is verified.
+  the existing `savedPlanLibrary=off` compatibility lane and R3A deployment
+  available as the last fully smoke-passed rollback baseline.
 
 ## Follow-ups
 
 - Reassess a narrow read-only Item detail boundary only in a separately promoted
   PR with its own characterization and rollback evidence.
+- Complete the bounded [production Escape hotfix](./2026-08-11-r3b-production-escape-hotfix.md)
+  before closing the R3B release gate.
 - Keep Text-to-Flow and observed-user work outside this gate unless explicitly
   promoted.
 
