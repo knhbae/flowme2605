@@ -1,0 +1,561 @@
+{
+  "schemaVersion": "flowme-text-authoring-simulation-matrix-v2-candidate",
+  "createdAt": "2026-08-04",
+  "status": "acceptance_input_not_executed",
+  "claimBoundary": "구현 후 실행할 내부 자동 및 수동 QA 시나리오이며 사용자 검증이 아니다.",
+  "summary": {
+    "scenarioCount": 35,
+    "groups": {
+      "grammar_roundtrip": 10,
+      "date_anchor_order": 9,
+      "result_shape": 8,
+      "responsive_ux": 8
+    }
+  },
+  "scenarios": [
+    {
+      "id": "G01",
+      "group": "grammar_roundtrip",
+      "priority": "blocker",
+      "title": "기본 속성 bullet",
+      "input": "# 제목\n## 단계\n- [ ] 항목\n  - 설명: 설명입니다.",
+      "expected": [
+        "Item 1",
+        "detail 1",
+        "ghost Item 0",
+        "Todo 제목에 설명: 없음"
+      ],
+      "feedback": [
+        1
+      ]
+    },
+    {
+      "id": "G02",
+      "group": "grammar_roundtrip",
+      "priority": "blocker",
+      "title": "두 Item의 속성 소유권",
+      "input": "Item 두 개와 각기 다른 설명, 날짜, 자료",
+      "expected": [
+        "각 속성은 바로 위 Item에만 귀속",
+        "Item 2",
+        "속성 교차 오염 0"
+      ],
+      "feedback": [
+        1,
+        7
+      ]
+    },
+    {
+      "id": "G03",
+      "group": "grammar_roundtrip",
+      "priority": "blocker",
+      "title": "공식 속성 전체 세트",
+      "input": "설명, 날짜, 상대 날짜, 시간, 시간대, 소요 시간, 장소, 완료 기준, 반복, 조건, 자료",
+      "expected": [
+        "Item 수 불변",
+        "지원 필드와 링크 보존",
+        "속성명이 결과 제목으로 나오지 않음"
+      ],
+      "feedback": [
+        1,
+        7
+      ]
+    },
+    {
+      "id": "G04",
+      "group": "grammar_roundtrip",
+      "priority": "high",
+      "title": "속성 작성 순서 독립",
+      "input": "시간, 반복, 날짜, 설명 순으로 뒤섞인 속성",
+      "expected": [
+        "하나의 schedule과 하나의 Item",
+        "writer는 사용자 속성 순서를 보존하거나 공식 순서로 정규화한 사실을 표시"
+      ],
+      "feedback": [
+        1
+      ]
+    },
+    {
+      "id": "G05",
+      "group": "grammar_roundtrip",
+      "priority": "blocker",
+      "title": "미정 속성",
+      "input": "  - 담당자: 홍길동",
+      "expected": [
+        "unknown_property issue 1",
+        "새 Item 0",
+        "원문 보존"
+      ],
+      "feedback": [
+        1
+      ]
+    },
+    {
+      "id": "G06",
+      "group": "grammar_roundtrip",
+      "priority": "high",
+      "title": "중첩 체크박스 경계",
+      "input": "  - [ ] 하위 작업",
+      "expected": [
+        "unsupported_nested_item issue",
+        "자동 평탄화 0",
+        "부모 속성 오인 0"
+      ],
+      "feedback": [
+        1,
+        10
+      ]
+    },
+    {
+      "id": "G07",
+      "group": "grammar_roundtrip",
+      "priority": "high",
+      "title": "모호한 colon bullet",
+      "input": "  - 책: 읽기",
+      "expected": [
+        "unknown_property issue",
+        "임의 Item·설명 변환 0",
+        "원문 보존"
+      ],
+      "feedback": [
+        1
+      ]
+    },
+    {
+      "id": "G08",
+      "group": "grammar_roundtrip",
+      "priority": "blocker",
+      "title": "v1 입력 호환과 v2 정규화",
+      "input": "기존 대시 없는 들여쓴 설명: 및 날짜:",
+      "expected": [
+        "v1 읽기 성공",
+        "writer는 v2 - 설명: 및 - 날짜: 출력",
+        "필드 손실 0",
+        "Item 수 불변"
+      ],
+      "feedback": [
+        1
+      ]
+    },
+    {
+      "id": "G09",
+      "group": "grammar_roundtrip",
+      "priority": "blocker",
+      "title": "표식 없는 문장 보존",
+      "input": "정말 설명입니다. 다음 내용을 참고하세요.",
+      "expected": [
+        "canonical Item 0",
+        "원문 텍스트 보존",
+        "가져오기 제안이 있더라도 명시적 승인 전 Item 0"
+      ],
+      "feedback": [
+        1,
+        6
+      ]
+    },
+    {
+      "id": "G10",
+      "group": "grammar_roundtrip",
+      "priority": "blocker",
+      "title": "v2 export와 reparse 동등성",
+      "input": "Step 2개, Item 4개, 공식 속성 전체, Markdown 링크",
+      "expected": [
+        "export 후 reparse에서 Step, Item, field, link, schedule 동일",
+        "nesting loss 0",
+        "속성 중복 0"
+      ],
+      "feedback": [
+        1,
+        7
+      ]
+    },
+    {
+      "id": "D01",
+      "group": "date_anchor_order",
+      "priority": "blocker",
+      "title": "절대 날짜 역순 입력",
+      "input": "8월 10일 Item 뒤에 8월 3일 Item",
+      "expected": [
+        "canonical과 체크/할 일은 8/10 -> 8/3",
+        "Calendar는 8/3 -> 8/10",
+        "원문 자동 변경 0",
+        "입력도 이 순서로 맞추기 표시"
+      ],
+      "feedback": [
+        2
+      ]
+    },
+    {
+      "id": "D02",
+      "group": "date_anchor_order",
+      "priority": "blocker",
+      "title": "원문 정렬 적용",
+      "action": "D01에서 입력도 이 순서로 맞추기 클릭",
+      "expected": [
+        "같은 Step 안 Item 블록이 8/3 -> 8/10으로 이동",
+        "소유 속성이 Item과 함께 이동",
+        "구조와 모든 결과 즉시 갱신",
+        "되돌리기 가능"
+      ],
+      "feedback": [
+        2
+      ]
+    },
+    {
+      "id": "D03",
+      "group": "date_anchor_order",
+      "priority": "high",
+      "title": "같은 날짜 안정 정렬",
+      "input": "같은 날짜 Item 2개",
+      "expected": [
+        "Calendar 동률은 작성 순서",
+        "정렬 적용 후에도 두 Item 상대 순서 유지"
+      ],
+      "feedback": [
+        2,
+        9
+      ]
+    },
+    {
+      "id": "D04",
+      "group": "date_anchor_order",
+      "priority": "blocker",
+      "title": "D-Day 기준일 없음",
+      "input": "D-3, D-Day Item과 기준일 없음",
+      "expected": [
+        "체크/할 일 활성",
+        "Calendar 비활성",
+        "relative_anchor_required 표시",
+        "실제 날짜 추정 0"
+      ],
+      "feedback": [
+        4,
+        5
+      ]
+    },
+    {
+      "id": "D05",
+      "group": "date_anchor_order",
+      "priority": "blocker",
+      "title": "원문에 기준일 명시",
+      "input": "# 제목 다음 - 기준일: 2026-08-10, D-3, D-Day",
+      "expected": [
+        "Calendar 활성",
+        "8/7 -> 8/10 정렬",
+        "기준일과 계산 근거를 화면에서 확인"
+      ],
+      "feedback": [
+        4
+      ]
+    },
+    {
+      "id": "D06",
+      "group": "date_anchor_order",
+      "priority": "blocker",
+      "title": "UI 기준일 입력의 원문 반영",
+      "action": "기준일이 없는 D-Day 문서에서 UI 날짜 선택",
+      "expected": [
+        "원문에 - 기준일: YYYY-MM-DD 줄 추가",
+        "Calendar 즉시 활성",
+        "새로고침 후 동일 결과",
+        "숨은 UI-only anchor 0"
+      ],
+      "feedback": [
+        4
+      ]
+    },
+    {
+      "id": "D07",
+      "group": "date_anchor_order",
+      "priority": "high",
+      "title": "절대·상대·미정 날짜 혼합",
+      "input": "절대 날짜, D-3, 날짜 없는 Item과 명시적 기준일",
+      "expected": [
+        "계산 가능한 행만 Calendar",
+        "모든 Item은 체크/할 일",
+        "날짜 없는 Item은 원문 정렬 적용 시 마지막이면서 작성 순서 유지"
+      ],
+      "feedback": [
+        2,
+        4
+      ]
+    },
+    {
+      "id": "D08",
+      "group": "date_anchor_order",
+      "priority": "high",
+      "title": "모호한 날짜",
+      "input": "8월 3일, 내일",
+      "expected": [
+        "invalid_date issue",
+        "Calendar 일정 0",
+        "연도와 날짜 추정 0",
+        "원문 보존"
+      ],
+      "feedback": [
+        4
+      ]
+    },
+    {
+      "id": "D09",
+      "group": "date_anchor_order",
+      "priority": "high",
+      "title": "Step 경계 안 정렬",
+      "input": "Step 2개에 날짜 역순 Item",
+      "action": "입력도 이 순서로 맞추기",
+      "expected": [
+        "각 Step 내부만 정렬",
+        "Item이 다른 Step으로 이동하지 않음",
+        "stable ID와 source lineage 유지"
+      ],
+      "feedback": [
+        2,
+        10
+      ]
+    },
+    {
+      "id": "A01",
+      "group": "result_shape",
+      "priority": "blocker",
+      "title": "고정 결과 형태 슬롯",
+      "input": "날짜 없음, 날짜 있음, 표 입력을 차례로 전환",
+      "expected": [
+        "캘린더, 체크/할 일, 표/엑셀, 텍스트 위치와 폭 불변",
+        "가능 여부만 enabled/disabled로 변경",
+        "focus 순서 불변"
+      ],
+      "feedback": [
+        5
+      ]
+    },
+    {
+      "id": "A02",
+      "group": "result_shape",
+      "priority": "high",
+      "title": "일반 목록의 표/엑셀 비활성",
+      "input": "제목만 있는 Item 3개",
+      "expected": [
+        "체크/할 일과 텍스트 활성",
+        "표/엑셀 비활성",
+        "비활성 이유 표시"
+      ],
+      "feedback": [
+        3,
+        5
+      ]
+    },
+    {
+      "id": "A03",
+      "group": "result_shape",
+      "priority": "high",
+      "title": "원본 표의 표/엑셀 활성",
+      "input": "Markdown table 또는 CSV에 의미 있는 열 3개와 URL",
+      "expected": [
+        "표/엑셀 활성 및 우선 추천",
+        "원본 열 이름 유지",
+        "URL 셀 클릭 가능",
+        "행 수 1:1"
+      ],
+      "feedback": [
+        3,
+        7,
+        8
+      ]
+    },
+    {
+      "id": "A04",
+      "group": "result_shape",
+      "priority": "high",
+      "title": "반복 필드 목록의 표/엑셀 활성",
+      "input": "Item 3개 모두 날짜, 장소, 완료 기준 보유",
+      "expected": [
+        "표/엑셀 활성",
+        "항목, 날짜, 장소, 완료 기준 열 표시",
+        "단순 순서 열만으로 활성화하지 않음"
+      ],
+      "feedback": [
+        3
+      ]
+    },
+    {
+      "id": "A05",
+      "group": "result_shape",
+      "priority": "blocker",
+      "title": "원문과 정리 텍스트 구분",
+      "input": "일반 문장, Item, 속성이 섞인 문서",
+      "expected": [
+        "원문 그대로 복사 결과는 byte-equivalent",
+        "정리된 TXT/Markdown은 변환됨을 명시",
+        "정리 메모라는 모호한 이름 없음"
+      ],
+      "feedback": [
+        6,
+        8
+      ]
+    },
+    {
+      "id": "A06",
+      "group": "result_shape",
+      "priority": "blocker",
+      "title": "링크와 상세의 결과별 시각화",
+      "input": "설명, 완료 기준, 날짜, 시간, 장소, Markdown 링크가 있는 Item",
+      "expected": [
+        "Calendar 상세에서 모든 필드 확인",
+        "체크/할 일 하위 정보와 링크 확인",
+        "표 URL 열 확인",
+        "텍스트 Markdown 링크 확인"
+      ],
+      "feedback": [
+        7
+      ]
+    },
+    {
+      "id": "A07",
+      "group": "result_shape",
+      "priority": "medium",
+      "title": "내보내기 형식의 맥락화",
+      "input": "일반 Item 문서",
+      "expected": [
+        "첫 화면 문법 도움말에 CSV, TSV, Markdown table 나열 없음",
+        "형식은 표 가져오기 또는 결과 내보내기 메뉴에서만 표시"
+      ],
+      "feedback": [
+        8
+      ]
+    },
+    {
+      "id": "A08",
+      "group": "result_shape",
+      "priority": "medium",
+      "title": "수동 번호 불필요",
+      "input": "번호 없는 Item 3개와 1., 2) 가져오기 예시",
+      "expected": [
+        "UI가 작성 순서로 1, 2, 3 자동 표시",
+        "사용자에게 순서 번호 입력을 요구하지 않음",
+        "번호 목록 import 후 writer는 - [ ]로 정규화"
+      ],
+      "feedback": [
+        9
+      ]
+    },
+    {
+      "id": "U01",
+      "group": "responsive_ux",
+      "priority": "high",
+      "title": "항목 구조의 기본 단순화",
+      "viewport": "1440x900",
+      "expected": [
+        "패널 제목은 항목 구조",
+        "기본은 Step/Item 읽기 요약",
+        "분리, 병합, 이동, 역할 변경은 구조 수정 뒤에 표시"
+      ],
+      "feedback": [
+        10
+      ]
+    },
+    {
+      "id": "U02",
+      "group": "responsive_ux",
+      "priority": "high",
+      "title": "도움말 점진 노출",
+      "viewport": "1440x900 and 390x844",
+      "expected": [
+        "긴 설명은 기본 숨김",
+        "? 버튼으로 키보드와 터치에서 열고 닫음",
+        "popover가 주요 입력과 결과를 가리지 않음"
+      ],
+      "feedback": [
+        8,
+        10
+      ]
+    },
+    {
+      "id": "U03",
+      "group": "responsive_ux",
+      "priority": "blocker",
+      "title": "390x844 세로 스크롤",
+      "viewport": "390x844",
+      "expected": [
+        "입력, 구조, 결과 각 탭의 마지막 요소 도달",
+        "고정 탭과 하단 행동이 내용 가리지 않음",
+        "가로 overflow 0"
+      ],
+      "feedback": []
+    },
+    {
+      "id": "U04",
+      "group": "responsive_ux",
+      "priority": "blocker",
+      "title": "짧은 화면 스크롤",
+      "viewport": "390x600 and 360x640",
+      "expected": [
+        "각 탭의 끝까지 스크롤",
+        "결과 형태 4개 접근",
+        "복사 또는 저장 행동 접근",
+        "구조 수정 도구를 열어도 Item 영역을 한 줄 높이로 압축하지 않음",
+        "빠른 예시와 저장 버튼 문구 잘림 0",
+        "scroll trap 0"
+      ],
+      "feedback": []
+    },
+    {
+      "id": "U05",
+      "group": "responsive_ux",
+      "priority": "high",
+      "title": "가로 모바일",
+      "viewport": "844x390",
+      "expected": [
+        "탭과 본문이 겹치지 않음",
+        "세로 스크롤로 마지막 요소 도달",
+        "가로 overflow 0"
+      ],
+      "feedback": []
+    },
+    {
+      "id": "U06",
+      "group": "responsive_ux",
+      "priority": "high",
+      "title": "실시간 입력 반영",
+      "viewport": "1440x900 and 390x844",
+      "action": "제목, Item, 날짜, 링크를 순서대로 수정",
+      "expected": [
+        "저장 버튼 없이 구조와 결과 즉시 반영",
+        "입력 중 focus와 cursor 유지",
+        "결과 형태 슬롯 이동 0"
+      ],
+      "feedback": [
+        5,
+        7
+      ]
+    },
+    {
+      "id": "U07",
+      "group": "responsive_ux",
+      "priority": "medium",
+      "title": "예제 선택기의 제품/QA 경계",
+      "viewport": "1440x900 and 390x844",
+      "expected": [
+        "제품 기본 화면은 단일 예시 선택기 또는 대표 3~5개",
+        "27개 전체 카탈로그는 데모 모드에서만",
+        "선택 후 입력, 구조, 결과가 같은 예제로 갱신"
+      ],
+      "feedback": []
+    },
+    {
+      "id": "U08",
+      "group": "responsive_ux",
+      "priority": "blocker",
+      "title": "접근성·오류·네트워크 기본선",
+      "viewport": "all",
+      "expected": [
+        "키보드로 탭, 도움말, 결과 형태, 주요 행동 조작",
+        "명확한 focus-visible",
+        "console error 0",
+        "page error 0",
+        "failed request 0",
+        "replacement character 0"
+      ],
+      "feedback": []
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+export { TextAuthoringWorkspace } from './TextAuthoringWorkspace';
