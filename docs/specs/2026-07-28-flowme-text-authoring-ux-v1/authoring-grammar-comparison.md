@@ -1,5 +1,9 @@
 # Authoring Grammar Comparison
 
+> 이 문서는 초기 문법 후보 비교를 보존하는 역사 문서다. 현재 사용자 문법과
+> 파싱·검증·투영 규칙은 [현재 문법·처리 로직](./authoring-grammar-logic.md),
+> 기계 계약은 [Text Authoring contract v2](./text-authoring-contract-v2.json)를 따른다.
+
 ## 1. 비교 결론
 
 FlowMe 전용 문법을 새로 가르치지 않는다. 기본은 일반 텍스트와 익숙한 Markdown을

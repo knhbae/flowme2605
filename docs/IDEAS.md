@@ -39,6 +39,16 @@ Capture the idea during the same session when it could influence future product 
 
 ## Ideas
 
+### 2026-08-11 - 혼합 원문의 사실행과 실행행을 projection 전에 구분한다
+
+**Idea:** 팟캐스트·자료 큐처럼 날짜 없는 실행 목록은 Todo·Sheet·TXT의 source-backed 사례로 확장할 수 있다. 반면 `재료 표 + 조리 단계`, `상품 사양 표 + 구매 행동`, `참고 자료 표 + 학습 행동`처럼 사실행과 실행행이 섞인 원문은 행 역할을 먼저 구분해 사실행이 Todo로 승격되지 않게 한다.
+
+**Why not now:** 현재 parser는 표의 data row와 root Item을 모두 canonical Item으로 만들 수 있다. 혼합 레시피를 성공 사례로 바로 고정하면 재료명 같은 사실행까지 할 일로 보이는 의미 오류를 정상 동작으로 만들 수 있다.
+
+**Revisit when:** 실제 팟캐스트/자료 큐나 혼합 레시피·비교표를 다음 corpus로 선정하거나, 사용자가 `fact / action / guidance / decision` 역할을 최소 문법으로 표시하는 계약을 승인할 때다.
+
+**Source context:** Text Authoring v5의 30개 서비스·콘텐츠 사례 coverage 감사. 현재 지원 경계는 [문법·처리 로직](./specs/2026-07-28-flowme-text-authoring-ux-v1/authoring-grammar-logic.md)에 기록한다.
+
 ### 2026-07-30 - 작성부터 제안·새 버전까지 하나로 이어지는 canonical 경로
 
 **Idea:** 다음 UX 기획·개발이 `/flows/new`, 공개 Flow/Flow Map, My Flow, 원본 내용 알릴 점, 제작자 검토, 발행, 버전 업데이트 중 하나라도 건드리면 범위를 정하기 전에 이 항목을 반드시 다시 꺼낸다. 새 기능을 각각 만들기보다 안정적인 ID와 버전을 공유하는 `TextAuthoringDocument -> 발행 후보 -> 변경 불가능한 PublishedVersion -> UserFlowCopy -> ExecutionRun/내보내기 -> 범위가 제한된 ChangeProposal(J4) -> maintainer 검토와 새 PublishedVersion(J4.5) -> 기존 사용자 버전 검토(J5)` 경로로 연결한다. 현재 J5의 추가·변경·삭제 비교, 개인 수정 충돌 처리, 완료 이력 보존 UX는 재사용하고, 현재 J4의 전송 전 메모에는 근거 URL·확인 시각, 변경점 미리보기, 개인정보 제거, 실제 제출 상태, 검토 결과와 알림을 보완한다. 사용자 화면에서는 GitHub 용어를 그대로 노출하지 않는다.
