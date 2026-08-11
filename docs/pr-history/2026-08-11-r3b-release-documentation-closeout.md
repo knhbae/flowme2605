@@ -3,8 +3,8 @@
 - **Date:** 2026-08-11
 - **Branch:** `codex/r3b-release-closeout-20260811`
 - **Base:** `2b937ce811b518950f495341d05736ebd102887a`
-- **PR:** Pending at authoring; the linked GitHub PR will be the authoritative final state.
-- **Status:** Draft at authoring
+- **PR:** [#174](https://github.com/knhbae/flowme2605/pull/174)
+- **Status:** Open at authoring; the linked GitHub PR is the authoritative final state after merge.
 
 ## Why
 
@@ -77,6 +77,7 @@ and successful canonical re-smoke facts after the runtime release completed.
 
 ## Links
 
+- [Documentation closeout PR #174](https://github.com/knhbae/flowme2605/pull/174)
 - [Approved UX PR #172](https://github.com/knhbae/flowme2605/pull/172)
 - [Escape hotfix PR #173](https://github.com/knhbae/flowme2605/pull/173)
 - [Hotfix post-merge CI](https://github.com/knhbae/flowme2605/actions/runs/31449546812)
