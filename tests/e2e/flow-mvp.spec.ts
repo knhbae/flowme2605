@@ -2277,7 +2277,7 @@ test('generated preview creator flow route is not public', async ({ page }) => {
 });
 
 test('new flow creation starts from pasted content and a human pattern choice', async ({ page }) => {
-  await page.goto('/flows/new');
+  await page.goto('/flows/new?legacy=1');
 
   await expect(page.getByRole('heading', { name: 'Flow 만들기' })).toBeVisible();
   await expect(page.getByText('콘텐츠 넣기')).toBeVisible();
@@ -4605,7 +4605,7 @@ test('public source-backed Flow detail hides internal operation labels', async (
 });
 
 test('new flow creation keeps advanced settings secondary', async ({ page }) => {
-  await page.goto('/flows/new');
+  await page.goto('/flows/new?legacy=1');
 
   await expect(page.getByText('고급 설정')).toBeVisible();
   await expect(page.getByText('목표일 기준으로 준비하기')).toBeVisible();

@@ -1,0 +1,306 @@
+{
+  "schemaVersion": "flowme-text-authoring-contract-v2",
+  "status": "canonical_local_implementation_contract",
+  "effectiveDate": "2026-08-11",
+  "logicRevision": "text-authoring-integration-v5-2026-08-11",
+  "humanReference": "authoring-grammar-logic.md",
+  "claimBoundary": "내부 설계와 deterministic parser, writer, 자동 시뮬레이션의 계약이다. 관찰 사용자 검증, production release, 배포 근거가 아니다.",
+  "supersedesForWrite": "text-authoring-contract-v1.json",
+  "readCompatibilityContract": "text-authoring-contract-v1.json",
+  "versions": {
+    "documentSchema": "flowme-text-authoring-v2",
+    "parser": "flowme-text-authoring-parser-v2",
+    "authoringGrammar": "flowme-authoring-markdown-v2",
+    "supportedMarkdownDialect": "flowme-supported-markdown-v2",
+    "readableLegacyVersions": [
+      "flowme-text-authoring-v1",
+      "flowme-text-authoring-parser-v1",
+      "flowme-authoring-markdown-v1",
+      "flowme-supported-markdown-v1"
+    ]
+  },
+  "invariants": [
+    "원문은 항상 보존한다.",
+    "명시적 구조 표식이 없는 직접 작성 문장은 canonical Item으로 자동 생성하지 않는다.",
+    "속성 bullet과 한 단계 하위 체크 수는 canonical Item 수를 늘리지 않는다.",
+    "지원 반복의 occurrence 수와 무관하게 canonical Item은 하나다.",
+    "Calendar, Todo, Sheet, TXT는 같은 bounded occurrence 날짜와 identity를 사용한다.",
+    "Calendar 표시 정렬은 원문을 자동 재작성하지 않는다.",
+    "기준일이 없는 상대 날짜를 실제 날짜로 추정하지 않는다.",
+    "결과 형태 슬롯의 위치와 순서는 입력 내용에 따라 바뀌지 않는다."
+  ],
+  "canonicalSyntax": {
+    "flowTitle": {
+      "pattern": "# {title}",
+      "cardinality": "one_per_document"
+    },
+    "flowAnchor": {
+      "pattern": "- 기준일: YYYY-MM-DD",
+      "scope": "flow",
+      "position": "after_flow_title_before_first_step",
+      "requiredFor": ["relative_date_calendar_projection"],
+      "sourceOfTruth": "source_text_only"
+    },
+    "step": {
+      "pattern": "## {step title}",
+      "scope": "flow"
+    },
+    "item": {
+      "pattern": "- [ ] {item title}",
+      "scope": "step",
+      "order": "source_order"
+    },
+    "itemProperty": {
+      "pattern": "  - {official key}: {value}",
+      "minimumIndentSpaces": 2,
+      "requiresCurrentItem": true,
+      "forbidsCheckbox": true,
+      "officialKeys": [
+        "설명",
+        "완료 기준",
+        "날짜",
+        "상대 날짜",
+        "시간",
+        "시간대",
+        "소요 시간",
+        "반복",
+        "반복 종료",
+        "장소",
+        "실행 조건",
+        "자료",
+        "안내",
+        "주의",
+        "출처"
+      ]
+    },
+    "plainText": {
+      "definition": "heading, flow field, item, item property 표식에 해당하지 않는 줄",
+      "directAuthoringBehavior": "원문 텍스트로 보존하고 Item을 만들지 않는다.",
+      "importAssistBehavior": "명시적으로 importAssist를 켜거나 v1 fixture를 읽을 때만 기존 문장 분해 규칙을 적용할 수 있다."
+    },
+    "subcheck": {
+      "pattern": "  - [ ] {child title}",
+      "behavior": "바로 위 root Item의 한 단계 Todo subcheck로 보존",
+      "mustNot": ["별도 canonical Item 생성", "부모 Item 자동 완료"],
+      "unsupported": ["부모 없는 하위 체크", "두 단계 이상 중첩"]
+    },
+    "unknownProperty": {
+      "pattern": "  - {unknown key}: {value}",
+      "behavior": "정확히 현재 Item 바로 아래면 label과 value를 source detail로 보존",
+      "mustNot": ["새 Item 생성", "알려진 구조 필드로 승격"],
+      "issueWhen": ["부모 Item이 없음", "들여쓰기 범위가 맞지 않음"]
+    }
+  },
+  "titleOwnership": {
+    "sourceOfTruthWhenH1Present": "source_text_h1",
+    "fallbackWhenH1Missing": "document_title_field",
+    "uiSynchronization": "원문에 # 제목이 있으면 원문 편집은 제목 필드를 갱신하고 제목 필드 편집은 같은 H1 줄을 갱신한다.",
+    "mustNot": [
+      "H1과 제목 필드가 서로 다른 값으로 저장됨",
+      "H1이 있는데 제목 필드 값을 우선함"
+    ]
+  },
+  "parsePrecedence": [
+    "metadata_blank_and_fence_boundary",
+    "unsupported_blockquote_code_html",
+    "heading",
+    "table_csv_tsv_markdown_table",
+    "flow_level_official_field",
+    "one_level_subcheck",
+    "indented_official_property_bullet",
+    "indented_unknown_property_as_detail",
+    "item_list",
+    "v1_property_compatibility",
+    "bare_url",
+    "plain_text_preservation"
+  ],
+  "issuePolicy": {
+    "sourceLinkedTypes": [
+      "unknown_property",
+      "unsupported_nested_item",
+      "invalid_date",
+      "invalid_url",
+      "invalid_recurrence"
+    ],
+    "silentDrop": false,
+    "retainRawText": true,
+    "catalogReviewStatus": {
+      "source": "validated example scenario group and result labels",
+      "purpose": "예시 탐색과 기대 결과 설명",
+      "mustNotDrive": "runtime outstanding count",
+      "note": "같은 exception_handling 그룹에도 runtime outstanding 0인 처리 완료 예시와 1 이상인 원문 수정 필요 예시가 함께 있을 수 있다."
+    },
+    "runtimeOutstanding": {
+      "source": "source-linked issue state",
+      "countedStates": ["open", "held"],
+      "excludedStates": ["resolved"],
+      "autoMemoException": "decision 없는 non-blocking ambiguous_plain_sentence를 TXT 원문 메모로 자동 보존하면 outstanding에서 제외",
+      "blockingRule": "issue가 blocking이고 runtime outstanding일 때만 구조 결과를 막는다."
+    },
+    "plainTextAutoMemo": "ambiguous_plain_sentence lineage를 남길 수 있지만 source memo로 처리된 경우 outstanding count는 0이다.",
+    "unknownItemProperty": "정확히 한 단계 Item property bullet이면 source detail로 처리하며 issue를 만들지 않는다.",
+    "allowedDecisions": ["keep_source_only", "convert_to_item", "hold"],
+    "heldCountsAsOutstanding": true
+  },
+  "compatibility": {
+    "read": [
+      "v1 대시 없는 들여쓴 속성",
+      "일반 - 항목 bullet 목록 가져오기",
+      "1. 또는 2) 번호 목록 가져오기",
+      "legacy 속성 별칭",
+      "CSV, TSV, Markdown table"
+    ],
+    "write": [
+      "v2 item property bullet",
+      "- [ ] item marker",
+      "official property labels only",
+      "strict ISO source anchor only"
+    ],
+    "plainBulletReadCompatibility": "root - 항목은 Item으로 읽을 수 있지만 새 작성 문법으로 안내하지 않으며 writer는 - [ ] Item으로 정규화한다.",
+    "numberedListReadCompatibility": "1. 또는 2) 항목은 Item으로 읽을 수 있지만 writer는 번호를 보존 문법으로 쓰지 않고 - [ ] Item으로 정규화한다.",
+    "migration": "v1, 일반 bullet, 번호 목록은 읽되 writer 저장 시 v2로 정규화한다. 기존 문서는 삭제하거나 같은 자리에서 파괴적으로 재작성하지 않는다."
+  },
+  "roundTripAcceptance": {
+    "gate": "semantic_equivalence",
+    "requiredEqual": [
+      "flow.title",
+      "flow.anchor",
+      "step.title_and_order",
+      "item.title_and_order",
+      "item.detail",
+      "item.completion",
+      "item.schedule",
+      "item.recurrence",
+      "item.subchecks",
+      "item.properties",
+      "item.resources",
+      "item.sources",
+      "item.guides",
+      "item.cautions"
+    ],
+    "transformedMarkdownByteIdentityRequired": false,
+    "identityRule": "Markdown 주석 metadata와 receipt로 stable identity를 별도 확인한다. 실제 parser 재입력의 raw Markdown byte equality를 semantic gate로 사용하지 않는다.",
+    "exactSourceCopyRule": "원문 그대로 복사는 document rawText의 byte-equivalent 결과로 별도 검증한다."
+  },
+  "ordering": {
+    "canonical": "source_order",
+    "todo": "source_order",
+    "sheet": "source_order_unless_user_sorts_view",
+    "text": "source_order",
+    "calendar": {
+      "view": "resolved_date_ascending",
+      "tieBreak": "all_day_first_then_HH:mm_ascending_then_source_order",
+      "undated": "not_projected_to_calendar",
+      "relativeWithoutAnchor": "not_projected_to_calendar"
+    },
+    "sourceRewriteAction": {
+      "operation": "align_source_order",
+      "label": "입력도 이 순서로 맞추기",
+      "visibility": "현재 결과 순서와 원문 Item 순서가 다를 때만",
+      "scope": "within_each_step",
+      "effect": "Item 블록과 소유 속성을 함께 이동하고 원문, 구조, 결과를 한 transaction으로 갱신",
+      "requirements": [
+        "preview_before_apply",
+        "undo",
+        "stable_identity",
+        "same_date_stability",
+        "undated_items_last"
+      ]
+    }
+  },
+  "relativeDate": {
+    "accepted": ["D-{integer}", "D-Day", "D+{integer}"],
+    "anchorSourceOfTruth": "- 기준일: YYYY-MM-DD in source text",
+    "uiAnchorEdit": "UI에서 기준일을 입력하면 원문 flowAnchor 줄을 즉시 추가 또는 수정",
+    "withoutAnchor": {
+      "calendarEnabled": false,
+      "todoEnabled": true,
+      "lossReason": "relative_anchor_required",
+      "noDateInference": true
+    }
+  },
+  "recurrence": {
+    "startDateRequired": true,
+    "firstOccurrence": "resolved source date is always occurrence 1",
+    "accepted": [
+      "매일",
+      "N일마다",
+      "매주 요일",
+      "N주마다 요일",
+      "매월 N일",
+      "N개월마다 N일"
+    ],
+    "end": ["N회", "YYYY-MM-DD inclusive"],
+    "finiteWindow": 30,
+    "openEndedWindowWeeks": 4,
+    "canonicalItemCount": 1,
+    "projectionParity": ["calendar", "todo", "sheet", "text"],
+    "executionCondition": "display_only",
+    "ics": "bounded VEVENT per occurrence without RRULE",
+    "representativeExample": {
+      "id": "daily_until_date",
+      "sourceProperties": {
+        "날짜": "2026-08-11",
+        "시간": "07:30",
+        "반복": "매일",
+        "반복 종료": "2026-08-15"
+      },
+      "expectedOccurrenceDates": [
+        "2026-08-11",
+        "2026-08-12",
+        "2026-08-13",
+        "2026-08-14",
+        "2026-08-15"
+      ],
+      "expectedProjectionCountEach": 5,
+      "canonicalItemCount": 1,
+      "ics": "5 VEVENT without RRULE"
+    }
+  },
+  "resultShapes": {
+    "fixedOrder": ["calendar", "todo", "sheet", "text"],
+    "ineligible": "disabled 상태와 짧은 이유를 도움말로 제공",
+    "formatVisibility": "CSV, TSV, Markdown 같은 기술 형식은 결과 형태가 아니라 해당 결과의 내보내기 메뉴에만 노출"
+  },
+  "sheetIdentity": {
+    "eligibleWhenAny": [
+      "원본 입력이 table, CSV, TSV, Markdown table이다.",
+      "Item 또는 occurrence 행 2개 이상에 반복되는 의미 있는 필드가 2열 이상 존재한다.",
+      "행 2개 이상에 공통 필드 1개 이상과 모든 행의 날짜 또는 설명이 존재한다.",
+      "반복 Item 한 개가 회차로 확장되고 의미 있는 공통 필드가 2개 이상이다."
+    ],
+    "notEligibleWhen": [
+      "반복이 없는 제목-only 일반 목록",
+      "안정된 공통 열을 만들 수 없는 경우"
+    ],
+    "minimumMeaningfulColumns": 2
+  },
+  "correctionOperations": {
+    "addedInV2": ["align_source_order"],
+    "retainedFromV1": [
+      "merge",
+      "split",
+      "indent",
+      "outdent",
+      "reorder",
+      "rename",
+      "change_role",
+      "include",
+      "exclude",
+      "classify_issue",
+      "restore",
+      "set_property",
+      "undo"
+    ]
+  },
+  "nonGoals": [
+    "AI 자동 생성 또는 AI 문장 해석",
+    "관찰 사용자 검증",
+    "무승인 GitHub push, PR, 배포",
+    "반복 문구를 RRULE로 자동 변환",
+    "모호한 날짜 또는 URL 콘텐츠 추정",
+    "다중 기준일 또는 두 단계 이상 중첩 Item 실행",
+    "반복 조건 자동 판정",
+    "P35 adapter 또는 외부 Calendar/Todo/Excel 쓰기"
+  ]
+}
