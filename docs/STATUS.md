@@ -1,9 +1,9 @@
 # Project Status
 
 **Last Updated:** 2026-08-11 (Text Authoring Draft PR #175 opened)
-**Status:** v0.1.0 RELEASED / R3B PRODUCTION BASELINE / TEXT AUTHORING DRAFT PR #175 / LOCAL QA PASS / NOT MERGED OR DEPLOYED / OBSERVED USERS 0
+**Status:** v0.1.0 RELEASED / R3B PRODUCTION BASELINE / TEXT AUTHORING DRAFT PR #175 / CI AND PR PREVIEW PASS / NOT MERGED OR PRODUCTION-DEPLOYED / OBSERVED USERS 0
 **Current Version:** v0.1.0  
-**Primary Focus:** Review Draft PR [#175](https://github.com/knhbae/flowme2605/pull/175). Do not merge, deploy, or connect Text Authoring to P35 without a separate Owner decision.
+**Primary Focus:** Review Draft PR [#175](https://github.com/knhbae/flowme2605/pull/175). Do not merge, production-deploy, or connect Text Authoring to P35 without a separate Owner decision.
 
 ## Current Control Panel
 
@@ -17,7 +17,7 @@ Start from [PROJECT_CONTROL.md](./PROJECT_CONTROL.md). Dated HTML boards remain 
 | Evidence boundary | Canonical production approved-spec smoke passed `23/23` with workers `1`, retries `0`, in `62.9s` (displayed `1.0m`), output `r3b-production-hotfix-2b937ce`. This is automated production QA, not observed-user validation; observed users remain `0`. |
 | User action now | Review the creator journey, source fidelity, Calendar/Todo distinction, repeated occurrence parity, mobile reachability, and whether the v5 boundary is ready to merge. |
 | AI action now | Monitor Draft PR checks and address review feedback only when requested. Keep the dirty `flow-mvp` worktree and preserved review source untouched. |
-| Active Text Authoring | Clean integration branch `codex/text-authoring-v5-integration-20260811`, feature commit `f5928d8`, Draft PR [#175](https://github.com/knhbae/flowme2605/pull/175). Local automated QA passes; merge, deployment, P35 adapter integration, and observed-user validation are not done. |
+| Active Text Authoring | Clean integration branch `codex/text-authoring-v5-integration-20260811`, feature commit `f5928d8`, v5 evidence commit `082eb92`, Draft PR [#175](https://github.com/knhbae/flowme2605/pull/175). Local QA, GitHub `Docs, Unit, Build`, full Playwright E2E, and the automatic Vercel PR Preview check pass. Merge, production deployment, P35 adapter integration, and observed-user validation are not done. |
 | Paused content review | Preserved and pushed at `0d27143` on `archive/flow-content-user-review-wip-20260806`; not a publication candidate. |
 | Deferred candidates | P35 P2 mutation follow-ups, collaborative authoring, content review, mixed fact/action table semantics, and research packages remain separate shelves. Select at most one by explicit decision. |
 | Merged architecture baseline | R0, R1, and R2 were merged through [PR #168](https://github.com/knhbae/flowme2605/pull/168) on 2026-08-08 as `efa4d90a78a06134180701bed74874579ac94154`. Calendar view-model/controller and My Flow saved-library transitions are separated while `AppClient` remains the compatibility adapter. This merge did not create a production deployment, production smoke, or observed-user validation. |
@@ -35,7 +35,7 @@ Start from [PROJECT_CONTROL.md](./PROJECT_CONTROL.md). Dated HTML boards remain 
 | Merged R0-R2 baseline | [PR #168](https://github.com/knhbae/flowme2605/pull/168) / `efa4d90a78a06134180701bed74874579ac94154` | Before merge: local docs PASS, controller `15/15`, lock `59/59`, unit/contract `615/615`, build PASS, selected E2E `20/20`, and final Playwright `542/542`. Production deployment and smoke remain `NOT_RUN`. |
 | R3A release | [PR #169](https://github.com/knhbae/flowme2605/pull/169) / [R3A QA](./specs/2026-08-09-r3a-my-flow-experience-boundary/qa.md) | Focused boundary `72/72`, pretest `164/164`, P35 P0 `420/420`, lock `59/59`, main unit/contract `615/615`, build `18/18`, local R3A E2E `4/4`, local full runtime regression `545/545`, GitHub Playwright `546/546`, production deployment `READY`, and classic/lab production smoke PASS. Observed-user validation remains `0`. |
 | R3B production release | [R3B QA](./specs/2026-08-11-r3b-approved-plan-execution-boundaries/qa.md) | PR #172 delivered the approved UX; hotfix PR #173 merged as `2b937ce811b518950f495341d05736ebd102887a`. Exact-head and post-merge CI passed, the exact source reached Production, and canonical approved-spec smoke passed `23/23`. Observed-user validation remains `0`. |
-| Text Authoring Draft PR | [v5 result ledger](./content-audit/2026-08-11-flowme-text-authoring-exception-coverage-v5-results/README.md) | Text Authoring `203/203`, main unit lanes `173/173 + 622/622 + 182/182`, focused E2E `37/37`, legacy fallback `2/2`, production build 18 routes, grammar `30/30`, standalone five-viewport browser QA PASS. Acceptance API rows are `27/27`; obsolete pre-v5 browser rows 8 are pending and excluded from current UI claims. |
+| Text Authoring Draft PR | [v5 result ledger](./content-audit/2026-08-11-flowme-text-authoring-exception-coverage-v5-results/README.md) | Text Authoring `203/203`, main unit lanes `173/173 + 622/622 + 182/182`, focused E2E `37/37`, legacy fallback `2/2`, production build 18 routes, grammar `30/30`, standalone five-viewport browser QA PASS. GitHub run [`31466654229`](https://github.com/knhbae/flowme2605/actions/runs/31466654229) passed both jobs and the automatic Vercel PR Preview check passed. Acceptance API rows are `27/27`; obsolete pre-v5 browser rows 8 are pending and excluded from current UI claims. |
 | Worktree baseline | `git worktree list` | `flow-approved-plan-execution-ux` is on `codex/r3b-release-closeout-20260811` from `origin/main` at `2b937ce811b518950f495341d05736ebd102887a`. Generated `test-results-*` paths remain excluded from publication. The dirty `flow-mvp` checkout remains user-owned and untouched. |
 
 ## Active Product Constraints
