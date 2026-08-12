@@ -2,9 +2,9 @@
 
 **Last Updated:** 2026-08-12<br>
 **Current Version:** v0.1.0 (released product PoC)<br>
-**Current Validation Stage:** internal alpha / public plan surface Production / canonical smoke 11/11 / no active product gate / docs closeout pending / observed users 0<br>
+**Current Validation Stage:** internal alpha / public plan surface Production / canonical smoke 11/11 / no active product gate / docs closeout PR #177 open / observed users 0<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** Documentation-only release closeout publication; product scope unchanged
+**Next Milestone:** Documentation-only PR #177 exact-head CI; product scope unchanged
 
 Human-facing control surface: [FlowMe Project Control](./PROJECT_CONTROL.md).
 The [2026-07-29 P35 stage board](./content-audit/2026-07-29-flowme-current-stage-control-board-ko.html)
@@ -429,12 +429,12 @@ Public plan surface implementation, CI, merge, exact-source Production
 deployment, and canonical smoke are complete. Merge
 `47c54803c6bb7544aad757ce62c4ce58decbfe53` is the current deployed source and
 canonical release verification passed `11/11`. No product gate is active. The
-only current publication lane is a documentation-only closeout; external user
+only current publication lane is documentation-only [PR #177](https://github.com/knhbae/flowme2605/pull/177); external user
 observation remains separate and the count stays `0`.
 
 | Lane | Owner | Work | Next checkpoint | Done when |
 | --- | --- | --- | --- | --- |
-| Documentation-only closeout | AI | Publish the exact PR #176, CI, merge, deployment, `11/11` smoke, and observed-user boundary without changing product code | Open and verify the docs-only closeout PR from exact released base `47c54803c6bb7544aad757ce62c4ce58decbfe53` | Canonical docs agree, docs checks pass, and the closeout PR state is recorded separately from the product release |
+| Documentation-only closeout | AI | Publish the exact PR #176, CI, merge, deployment, `11/11` smoke, and observed-user boundary without changing product code | Verify [PR #177](https://github.com/knhbae/flowme2605/pull/177) at its exact final head | Canonical docs agree, docs checks pass, and the closeout PR state is recorded separately from the product release |
 | Completed public plan surface release | AI + Owner | One public Flow/Map result grammar with existing save identity, rollback, CI, deployment, and smoke boundaries | Preserve merge `47c54803c6bb7544aad757ce62c4ce58decbfe53` as the current Production source until a later explicit product release | PR #176, exact-head and post-merge CI PASS, exact-source Production PASS, canonical smoke `11/11`, observed users `0` |
 | Completed R3B release | AI + Owner | Approved plan-execution UX, bounded selected-Plan/transfer boundaries, Escape correction, CI, deployment, and smoke | Preserve R3B as the inherited My Flow execution contract | PR #172 plus PR #173, merge `2b937ce811b518950f495341d05736ebd102887a`, CI PASS, exact-source deployment PASS, canonical smoke `23/23`, observed users `0` |
 | Completed R3A release | AI + Owner | My Flow workspace snapshot, exact-query experience boundary, PR #169 merge, production deploy, and smoke | Preserve its historical then-default `classic` behavior and exact-query rollback comparison boundary; keep lab promotion/removal separate | merge `95a69257`, GitHub Playwright `546/546`, deployment `dpl_5jhJz4EBiHMm5HptH9nFCqfyeFek` `READY`, production smoke PASS, observed users `0` |

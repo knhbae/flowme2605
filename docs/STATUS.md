@@ -1,9 +1,9 @@
 # Project Status
 
 **Last Updated:** 2026-08-12 (public plan surface production release complete)
-**Status:** v0.1.0 RELEASED / PUBLIC PLAN SURFACE PRODUCTION / CANONICAL SMOKE PASS / NO ACTIVE PRODUCT GATE / DOCS CLOSEOUT PENDING / OBSERVED USERS 0
+**Status:** v0.1.0 RELEASED / PUBLIC PLAN SURFACE PRODUCTION / CANONICAL SMOKE PASS / NO ACTIVE PRODUCT GATE / DOCS CLOSEOUT PR #177 OPEN / OBSERVED USERS 0
 **Current Version:** v0.1.0  
-**Primary Focus:** Publish the documentation-only release closeout. The product release is complete and no product gate is active.
+**Primary Focus:** Verify documentation-only [PR #177](https://github.com/knhbae/flowme2605/pull/177). The product release is complete and no product gate is active.
 
 ## Current Control Panel
 
@@ -15,9 +15,9 @@ Start from [PROJECT_CONTROL.md](./PROJECT_CONTROL.md). Dated HTML boards remain 
 | Current release identity | [PR #176](https://github.com/knhbae/flowme2605/pull/176) final head `3555cd1db9f426dcbc30c81652be01dd38b1ce5e` merged at `2026-08-11T20:59:16Z` as `47c54803c6bb7544aad757ce62c4ce58decbfe53`. Exact-head PR CI run [`31534309714`](https://github.com/knhbae/flowme2605/actions/runs/31534309714) and post-merge `main` CI run [`31535691210`](https://github.com/knhbae/flowme2605/actions/runs/31535691210) passed. |
 | Current deployed source | GitHub Production deployment record `5858571759`, status `16686799631`, identifies exact source `47c54803c6bb7544aad757ce62c4ce58decbfe53`. Its [protected direct URL](https://flowme2605-la2tqpw8e-flowme.vercel.app) is a deployment-record link, not anonymous app proof. The [canonical alias](https://flowme2605.vercel.app) served HTTP `200` and passed canonical smoke `11/11`; the [Vercel deployment record](https://vercel.com/flowme/flowme2605/BYkEtNVJkGitQcCZfWvfZpyicebp) reports success. |
 | Evidence boundary | Canonical production smoke passed `11/11` in sequential isolated contexts in `19.023s`; runtime, network, same-origin 4xx/5xx, overflow, clipped, unnamed, pass-gated fixed-overlap, and pass-gated short-target violations were all `0`. The harness separately observed `4` sticky/control intersections (`2` current save-all, `1` Flow rollback, `1` choose-child rollback) and `10` short targets (`4` review-hold plus `6` across three rollback scenarios). These are observational usability signals, not closed evidence. Automated production QA is not observed-user validation; observed users remain `0`. |
-| Documentation publication | [Release closeout history](./pr-history/2026-08-12-public-plan-surface-release-closeout.md) is being prepared from base `47c54803c6bb7544aad757ce62c4ce58decbfe53` on `codex/public-surface-release-closeout-20260812`. It changes documentation only and does not reopen the released product. |
+| Documentation publication | [Release closeout history](./pr-history/2026-08-12-public-plan-surface-release-closeout.md) is open as [PR #177](https://github.com/knhbae/flowme2605/pull/177) from initial commit `094ce996c71a4005496c9726003a223e29c2fc3e`. It changes documentation only and does not reopen the released product. |
 | User action now | None. Await an explicit Owner promotion before starting the next product gate or observed-user workstream. |
-| AI action now | Publish only the documentation closeout, verify its exact external state, and leave all product shelves inactive. |
+| AI action now | Verify PR #177 exact-head CI, merge only when required checks pass, and leave all product shelves inactive. |
 | Paused Text Authoring | Preserved and pushed at `a5d5338`; separate from the release and not promoted. |
 | Paused content review | Preserved and pushed at `0d27143` on `archive/flow-content-user-review-wip-20260806`; not a publication candidate. |
 | Deferred candidates | P35 P2 mutation follow-ups, Text Authoring `TA-01`, collaborative authoring, content review, and research packages remain separate shelves. Select at most one by explicit decision. |

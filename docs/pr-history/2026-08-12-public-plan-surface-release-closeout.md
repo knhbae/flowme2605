@@ -3,9 +3,9 @@
 - **Date:** 2026-08-12 KST
 - **Branch:** `codex/public-surface-release-closeout-20260812`
 - **Base:** `47c54803c6bb7544aad757ce62c4ce58decbfe53`
-- **Candidate commit:** Pending
-- **PR:** Not opened
-- **Status:** Draft; documentation-only closeout publication pending
+- **Initial closeout commit / opening PR head:** `094ce996c71a4005496c9726003a223e29c2fc3e`
+- **PR:** [#177](https://github.com/knhbae/flowme2605/pull/177)
+- **Status:** Open; exact-head CI pending
 - **Runtime release:** [PR #176](https://github.com/knhbae/flowme2605/pull/176), merge/deployed source `47c54803c6bb7544aad757ce62c4ce58decbfe53`
 
 ## Why
@@ -39,8 +39,8 @@ already deployed product.
 - No product, refactor, Text-to-Flow, integration, or observed-user workstream
   was opened.
 - The local ignored smoke JSON is not added as a repository artifact.
-- This draft does not claim a closeout commit, push, PR, CI result, merge, or
-  deployment before each external state exists.
+- This record does not claim closeout PR CI, merge, or deployment before each
+  external state exists.
 
 ## Runtime Release Evidence
 
@@ -61,8 +61,9 @@ already deployed product.
 | Scoped docs diff | `PASS` — `12` documentation paths only; no runtime, test, or package path |
 | `npm.cmd run docs:check` | `PASS` — skill sync, `16` required files, `4,518` local links |
 | `git diff --check` | `PASS` — exit `0` |
-| Closeout commit | `PENDING` |
-| Push / PR | `PENDING` |
+| Closeout commit | `PASS` — `094ce996c71a4005496c9726003a223e29c2fc3e` |
+| Push / PR | `OPEN` — [PR #177](https://github.com/knhbae/flowme2605/pull/177), opening head `094ce996c71a4005496c9726003a223e29c2fc3e` |
+| Exact-head PR CI | `PENDING` |
 
 ## Risks And Rollback
 
@@ -75,8 +76,8 @@ already deployed product.
 
 ## Follow-Up
 
-- Preserve the passing docs-only checks, create an intentional closeout commit,
-  open the dedicated PR, and record its real publication state after it exists.
+- Verify [PR #177](https://github.com/knhbae/flowme2605/pull/177) at its exact
+  final head and merge only after required checks pass.
 - After the closeout is published, await explicit Owner promotion of the next
   product gate.
 

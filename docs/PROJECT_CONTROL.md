@@ -12,7 +12,7 @@ This file is an index, not a second source of product truth. Update its links af
 - [Current roadmap and inactive shelves](./ROADMAP.md)
 - [Released public plan surface unification](./specs/2026-08-12-public-plan-surface-unification/spec.md)
 - [Merged PR #176 public plan surface release history](./pr-history/2026-08-12-public-plan-surface-unification.md)
-- [Draft documentation-only release closeout history](./pr-history/2026-08-12-public-plan-surface-release-closeout.md)
+- [Open documentation-only release closeout PR #177](./pr-history/2026-08-12-public-plan-surface-release-closeout.md)
 - [Inherited R3B approved plan-execution boundaries](./specs/2026-08-11-r3b-approved-plan-execution-boundaries/spec.md)
 - [R3B production Escape hotfix release history](./pr-history/2026-08-11-r3b-production-escape-hotfix.md)
 - [R3B approved plan-execution release history](./pr-history/2026-08-11-r3b-approved-plan-execution-boundaries.md)
@@ -41,9 +41,9 @@ violations were `0`. The harness also observed `4` sticky/control intersections
 and `10` short targets on rollback, review-hold, and current save transitions;
 they are observational usability evidence, not closed user validation. Observed
 users remain `0`. No product gate is active. The only current publication task
-is the documentation-only closeout on
-`codex/public-surface-release-closeout-20260812` from base
-`47c54803c6bb7544aad757ce62c4ce58decbfe53`.
+is [documentation-only PR #177](https://github.com/knhbae/flowme2605/pull/177)
+from initial closeout commit `094ce996c71a4005496c9726003a223e29c2fc3e`
+and released base `47c54803c6bb7544aad757ce62c4ce58decbfe53`.
 
 ## Canonical Project Truth
 
