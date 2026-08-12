@@ -1366,6 +1366,7 @@ test.describe('approved My Plan final persistence boundaries', () => {
       openedAnchor = '2031-10-01';
       await anchorInput.fill(openedAnchor);
       await planEditor.getByTestId('saved-flow-editor-save').click();
+      await expect(planEditor).toHaveCount(0);
       await page.reload();
       flow = await openApprovedPlan(page, origin.slug);
       await flow.getByTestId('my-plan-edit').click();
