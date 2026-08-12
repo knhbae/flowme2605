@@ -1,6 +1,6 @@
 # QA Evidence
 
-**Status:** LOCAL IMPLEMENTATION QA PASS / PR #176 OPEN / CI PENDING
+**Status:** LOCAL QA PASS / PR #176 MERGED / PRODUCTION PASS / CANONICAL SMOKE 11/11
 
 **Base:** `8f72ad6922ffa20a765a45cb9b5312ecfa8ca46f`
 
@@ -8,14 +8,20 @@
 
 **PR:** [#176](https://github.com/knhbae/flowme2605/pull/176)
 
+**Final PR head:** `3555cd1db9f426dcbc30c81652be01dd38b1ce5e`
+
+**Merge / deployed source:** `47c54803c6bb7544aad757ce62c4ce58decbfe53`
+
 **Final verified BUILD_ID:** `bzdhR-nY_afpTfx_xDZ7e`
 
 **Observed users:** `0`
 
 The verified implementation was committed as
-`1cf1fc4dc85773bed3ac4e880920369e1aba1e3a` and is open as PR #176. This evidence
-proves local behavior only; exact-head PR CI, merge, deployment, and production
-smoke remain `PENDING` and no production-deployed source is claimed.
+`1cf1fc4dc85773bed3ac4e880920369e1aba1e3a`, finalized at PR head
+`3555cd1db9f426dcbc30c81652be01dd38b1ce5e`, and released as exact
+merge/deployed source `47c54803c6bb7544aad757ce62c4ce58decbfe53`.
+Local, CI, deployment, production smoke, and observed-user states are recorded
+separately below.
 
 | Gate | State | Evidence |
 | --- | --- | --- |
@@ -27,14 +33,16 @@ smoke remain `PENDING` and no production-deployed source is claimed.
 | Map rollback/copy contracts | PASS | `24/24`, workers `1`, retries `0`, duration `1.5m`; preserves Map save, review-hold, redirect, copy, and exact rollback-specific contracts. Output: `output/playwright/public-plan-surface-unification-final/map-rollback-contracts-final3`. |
 | Flow MVP display regression | PASS AFTER BOUNDED FIX | First run `127/129` exposed two product-display failures; the bounded product display correction then passed the targeted cases `2/2`. |
 | Current-source full Playwright | PASS | `578/578` across `74` files, workers `2`, retries `0`, duration `1,375,459.685ms` (`~22.9m`), unexpected/skipped/flaky `0`, failure artifacts `0`, server stderr `0`. JSON: `output/playwright/public-plan-surface-unification-final/full-578-final3-results.json`. |
-| Documentation check | PASS | `npm.cmd run docs:check` -> skill sync PASS, 16 required files, 4510 local links. |
-| Diff check | PASS | `git diff --check` -> exit 0 for the current 10-document worktree diff. |
+| Implementation documentation check | PASS | `npm.cmd run docs:check` -> skill sync PASS, 16 required files, 4510 local links. |
+| Release closeout documentation check | PASS | `npm.cmd run docs:check` -> skill sync PASS, 16 required files, 4518 local links. |
+| Release closeout diff check | PASS | `git diff --check` -> exit `0` for the scoped docs-only worktree diff. |
 | Candidate commit | PASS | Initial implementation commit `1cf1fc4dc85773bed3ac4e880920369e1aba1e3a`. |
-| Push / PR | OPEN | [PR #176](https://github.com/knhbae/flowme2605/pull/176), opening head `1cf1fc4dc85773bed3ac4e880920369e1aba1e3a`. |
-| PR CI | PENDING | No PR run exists yet. |
-| Merge | PENDING | No merge SHA exists yet. |
-| Production deployment | PENDING | R3B remains the exact deployed production source. |
-| Canonical production smoke | PENDING | Run only after exact-source deployment is verified. |
+| Push / PR | MERGED | [PR #176](https://github.com/knhbae/flowme2605/pull/176), opening head `1cf1fc4dc85773bed3ac4e880920369e1aba1e3a`, final head `3555cd1db9f426dcbc30c81652be01dd38b1ce5e`. |
+| PR CI | PASS | Run [`31534309714`](https://github.com/knhbae/flowme2605/actions/runs/31534309714): [Docs `93921714110`](https://github.com/knhbae/flowme2605/actions/runs/31534309714/job/93921714110), [Playwright `93921714060`](https://github.com/knhbae/flowme2605/actions/runs/31534309714/job/93921714060). |
+| Merge | PASS | `47c54803c6bb7544aad757ce62c4ce58decbfe53` at `2026-08-11T20:59:16Z`. |
+| Post-merge `main` CI | PASS | Run [`31535691210`](https://github.com/knhbae/flowme2605/actions/runs/31535691210): [Docs `93926137070`](https://github.com/knhbae/flowme2605/actions/runs/31535691210/job/93926137070), [Playwright `93926137063`](https://github.com/knhbae/flowme2605/actions/runs/31535691210/job/93926137063). |
+| Production deployment | PASS | GitHub Production record `5858571759`, status `16686799631`, identifies exact source `47c54803c6bb7544aad757ce62c4ce58decbfe53`. The [direct URL](https://flowme2605-la2tqpw8e-flowme.vercel.app) is retained as a protected deployment-record link, not anonymous app proof; the [canonical app](https://flowme2605.vercel.app) returned HTTP `200`, and the [Vercel record](https://vercel.com/flowme/flowme2605/BYkEtNVJkGitQcCZfWvfZpyicebp) reports success. |
+| Canonical production smoke | PASS | Authoritative final `11/11` in sequential isolated contexts in `19.023s`; runtime, network, same-origin 4xx/5xx, overflow, clipped, unnamed, pass-gated fixed-overlap, and pass-gated short-target violations `0`. Observed sticky/control intersections `4` and short targets `10` remain non-gating usability observations. Earlier `7/11` and `9/11` were harness false negatives and are non-authoritative. Local ignored JSON: sibling worktree `output/playwright/public-plan-surface-production-smoke/runs/2026-08-12T01-15-58-368Z/results.json`. |
 | Observed users | `0` | Automated QA and internal browser runs are not observed-user validation. |
 
 ## Verified public result contract
@@ -54,9 +62,10 @@ smoke remain `PENDING` and no production-deployed source is claimed.
 
 ## Evidence boundary
 
-Local implementation and authorized automated QA are complete, initial commit
-`1cf1fc4dc85773bed3ac4e880920369e1aba1e3a` exists, and PR #176 is open.
-Exact-head PR CI, merge, deployment, and production smoke remain `PENDING`, and
-observed-user validation remains `0`. No release claim may be made until the
-publication workflow verifies the exact merged, deployed, and
-production-smoked source.
+Local implementation and authorized automated QA are complete. PR #176 final
+head `3555cd1db9f426dcbc30c81652be01dd38b1ce5e`, exact merge/deployed
+source `47c54803c6bb7544aad757ce62c4ce58decbfe53`, required PR and
+post-merge CI, GitHub Production record, canonical HTTP `200`, and authoritative
+production smoke `11/11` are verified. The smoke is automated release QA. It
+does not close the `4` observed sticky/control intersections, `10` observed
+short targets, or any observed-user gate; observed-user validation remains `0`.

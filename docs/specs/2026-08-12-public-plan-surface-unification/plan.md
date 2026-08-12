@@ -1,6 +1,6 @@
 # Implementation Plan
 
-**Status:** LOCAL IMPLEMENTATION AND AUTHORIZED QA COMPLETE / PR #176 OPEN / CI PENDING
+**Status:** IMPLEMENTATION, PUBLICATION, PRODUCTION DEPLOYMENT, AND CANONICAL SMOKE COMPLETE
 
 ## 1. Characterize and preserve — complete
 
@@ -35,13 +35,14 @@
 - 구형 Map UI를 정답으로 고정한 positive assertion을 공통 결과 계약으로 교정하면서 rollback, redirect, review-hold 고유 계약을 유지했다.
 - Direct executable inventory, save/adjust/reload, choose-child, hold, 390/768/1024/1440 반응형 품질을 검증했다.
 - Unit/contract, build, focused E2E, legacy Map contracts, full Playwright, documentation, and diff checks를 최종 evidence에 기록했다.
-- Local implementation closeout remains distinct from publication. PR #176 is open; exact-head CI, merge, deployment, and production smoke remain `PENDING` until verified, and observed users remain `0`.
+- Local implementation closeout remained distinct from publication. PR #176 exact-head CI, merge, post-merge CI, exact-source deployment, and canonical production smoke are now separately verified; observed users remain `0`.
 
-## 6. Publication sequence — PR open, CI pending
+## 6. Publication sequence — complete
 
 - Created initial implementation commit `1cf1fc4dc85773bed3ac4e880920369e1aba1e3a` from base `8f72ad6922ffa20a765a45cb9b5312ecfa8ca46f`.
 - Pushed `codex/public-surface-unification-20260812` and opened [PR #176](https://github.com/knhbae/flowme2605/pull/176) with that opening head.
-- Wait for and verify the actual exact-head PR CI result before merge.
-- Record the real merge SHA only after merge succeeds.
-- Verify that Production serves the exact merged source, then run canonical production smoke.
-- Keep R3B as the production baseline until exact-source deployment and smoke pass; keep observed users at `0` unless real session evidence exists.
+- Froze final PR head `3555cd1db9f426dcbc30c81652be01dd38b1ce5e`; exact-head CI run [`31534309714`](https://github.com/knhbae/flowme2605/actions/runs/31534309714) passed.
+- Merged at `2026-08-11T20:59:16Z` as `47c54803c6bb7544aad757ce62c4ce58decbfe53`; post-merge `main` CI run [`31535691210`](https://github.com/knhbae/flowme2605/actions/runs/31535691210) passed.
+- Verified GitHub Production deployment record `5858571759`, status `16686799631`, for the exact merged source. The canonical alias returned HTTP `200`.
+- Ran the authoritative canonical production smoke: `11/11` in sequential isolated contexts in `19.023s`, with pass-gated runtime/network/layout violations `0`. Observational sticky/control intersections were `4` and short targets were `10`; they are not closed usability evidence.
+- Promoted the public plan surface release to the current Production baseline. Keep observed users at `0` unless real session evidence exists; no product gate is active after release.
