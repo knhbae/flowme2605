@@ -1,6 +1,6 @@
 # Public Plan/Item Edit Surface Unification
 
-**Status:** OWNER APPROVED / LOCAL IMPLEMENTATION AND AUTOMATED QA COMPLETE / COMMIT-PUSH-DRAFT PR-PREVIEW AUTHORIZED / MERGE-PRODUCTION NOT AUTHORIZED / OBSERVED USERS 0
+**Status:** RELEASED THROUGH PR #178 / PRODUCTION SMOKE 38/38 / OBSERVED USERS 0
 
 **Owner decision:** 2026-08-12
 
@@ -100,8 +100,9 @@ focus 복귀에서 다르게 동작한다. 현재 콘텐츠에서 이 차이는 
 - creator/source publish package 수정, version merge, account/cloud persistence
 - `choose_child`를 하나의 Map Plan으로 합치거나 `review_hold`를 실행 가능하게 변경
 - My Flow의 저장 후 편집 lifecycle 재설계
-- commit, push, PR, merge, deployment, production smoke. 별도 Owner 승인 전에는
-  로컬 미게시 상태다.
+- commit, push, PR, merge, deployment, and production smoke were outside the
+  implementation scope and were executed later through the separately
+  authorized release recorded below.
 - observed-user validation. 자동화, 스크린샷, 시뮬레이션, 내부 QA는 실제 관찰
   사용자 수를 늘리지 않으며 현재 값은 `0`이다.
 
@@ -137,6 +138,20 @@ focus 복귀에서 다르게 동작한다. 현재 콘텐츠에서 이 차이는 
 - 실제 관찰 사용자가 `choose_child` 선택기 또는 평탄화된 Flow의 출처 관계를
   반복해서 이해하지 못함
 - source publisher의 version 정책이 child Flow identity를 바꿈
+
+## Release outcome
+
+This implementation shipped with the My Plan editor/lifecycle foundation
+through [PR #178](https://github.com/knhbae/flowme2605/pull/178). Final head
+`3cac3cde5bbcf6297b93b8299bfe28693700aebf` passed exact-head CI run
+[`31596540934`](https://github.com/knhbae/flowme2605/actions/runs/31596540934)
+and merged as `908ee849beb15cb10331b72d7894167a61458b18` at
+`2026-08-12T12:42:45Z`. Production deployment record `5869458520`, status
+`16715443863`, succeeded and canonical smoke passed `38/38`. Post-merge `main`
+run [`31597763288`](https://github.com/knhbae/flowme2605/actions/runs/31597763288)
+passed core job `94117373437` and Playwright job `94117373461`. See the
+[release record](../../pr-history/2026-08-12-plan-edit-lifecycle-unification.md).
+Observed users remain `0`.
 
 ## Related docs
 

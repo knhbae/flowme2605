@@ -1,6 +1,6 @@
 # QA Evidence
 
-**Status:** LOCAL IMPLEMENTATION AND VERIFICATION COMPLETE / DRAFT PR-PREVIEW AUTHORIZED / MERGE-PRODUCTION NOT AUTHORIZED
+**Status:** RELEASED / EXACT-HEAD PR CI PASS / PRODUCTION SMOKE 38/38
 
 **Base:** `2f93f00d6539aa8125faccb7ad944eaf3397e7bc`
 
@@ -37,7 +37,8 @@ and sticky footer conformance.
 | Existing affected regression | PASS | `80/80` in isolated `51/51` and `29/29` runs |
 | Full `npm test` | PASS | Full command completed with failures `0` |
 | Independent Blocking/High review | PASS | Remaining Blocking/High findings `0` |
-| Publication | DRAFT PR / PREVIEW AUTHORIZED | Owner authorized commit, push, Draft PR, and Preview on 2026-08-12; merge and Production remain separate gates |
+| Publication | PASS | [PR #178](https://github.com/knhbae/flowme2605/pull/178) final head `3cac3cde5bbcf6297b93b8299bfe28693700aebf` passed run `31596540934` and merged as `908ee849beb15cb10331b72d7894167a61458b18` |
+| Production smoke | PASS | Canonical `38/38`, workers `1`, retries `0`, `99.6s`, unexpected/flaky/skipped `0`; post-merge `main` run `31597763288` core and Playwright jobs passed |
 | Observed users | `0` | Automation and visual inspection are not observed use |
 
 ## Byte and identity boundaries

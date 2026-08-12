@@ -1,6 +1,6 @@
 # Implementation Plan
 
-**Status:** LOCAL IMPLEMENTATION AND AUTOMATED QA COMPLETE
+**Status:** RELEASED THROUGH PR #178 / PRODUCTION SMOKE PASS
 
 ## Phase 0 — Contract and boundaries
 
@@ -44,6 +44,8 @@
 
 ## Publication boundary
 
-- Commit/push/Draft PR/Preview: `AUTHORIZED 2026-08-12`
-- Merge/Production: `NOT AUTHORIZED`
+- Commit/push/Draft PR/Preview: `COMPLETE`
+- Merge/Production: `PASS` — merge `908ee849beb15cb10331b72d7894167a61458b18`, deployment `5869458520` / status `16715443863`
+- Canonical Production smoke: `PASS 38/38`, workers `1`, retries `0`, unexpected/flaky/skipped `0`
+- Post-merge `main` run: `31597763288 PASS` — core job `94117373437`, Playwright job `94117373461`
 - Observed-user validation: `0`

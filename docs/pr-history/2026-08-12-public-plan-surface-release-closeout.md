@@ -4,8 +4,10 @@
 - **Branch:** `codex/public-surface-release-closeout-20260812`
 - **Base:** `47c54803c6bb7544aad757ce62c4ce58decbfe53`
 - **Initial closeout commit / opening PR head:** `094ce996c71a4005496c9726003a223e29c2fc3e`
+- **Final PR head:** `0246128f466df7ff73505ed42862c269ecdcb129`
 - **PR:** [#177](https://github.com/knhbae/flowme2605/pull/177)
-- **Status:** Open; exact-head CI pending
+- **Status:** Merged; exact-head CI passed; documentation-only closeout complete
+- **Merge:** `2f93f00d6539aa8125faccb7ad944eaf3397e7bc` at `2026-08-12T01:49:13Z`
 - **Runtime release:** [PR #176](https://github.com/knhbae/flowme2605/pull/176), merge/deployed source `47c54803c6bb7544aad757ce62c4ce58decbfe53`
 
 ## Why
@@ -27,8 +29,8 @@ already deployed product.
 - Preserved the distinction between pass-gated smoke failures and observational
   quality signals: violations were `0`, while `4` sticky/control intersections
   and `10` short targets remain non-gating usability observations.
-- Closed the active product gate after release. Only this docs-only publication
-  is pending; no next initiative is promoted.
+- Closed the active product gate after release. The documentation-only
+  publication is complete, and no next initiative was promoted.
 - Kept automated QA, deployment, and observed-user evidence separate. Observed
   users remain `0`.
 
@@ -39,8 +41,8 @@ already deployed product.
 - No product, refactor, Text-to-Flow, integration, or observed-user workstream
   was opened.
 - The local ignored smoke JSON is not added as a repository artifact.
-- This record does not claim closeout PR CI, merge, or deployment before each
-  external state exists.
+- This record includes closeout PR CI and merge only after those external
+  states were verified.
 
 ## Runtime Release Evidence
 
@@ -62,8 +64,9 @@ already deployed product.
 | `npm.cmd run docs:check` | `PASS` — skill sync, `16` required files, `4,518` local links |
 | `git diff --check` | `PASS` — exit `0` |
 | Closeout commit | `PASS` — `094ce996c71a4005496c9726003a223e29c2fc3e` |
-| Push / PR | `OPEN` — [PR #177](https://github.com/knhbae/flowme2605/pull/177), opening head `094ce996c71a4005496c9726003a223e29c2fc3e` |
-| Exact-head PR CI | `PENDING` |
+| Push / PR | `PASS` — [PR #177](https://github.com/knhbae/flowme2605/pull/177), final head `0246128f466df7ff73505ed42862c269ecdcb129` |
+| Exact-head PR CI | `PASS` — run [`31554079252`](https://github.com/knhbae/flowme2605/actions/runs/31554079252), [Docs `93982789547`](https://github.com/knhbae/flowme2605/actions/runs/31554079252/job/93982789547), [Playwright `93982789483`](https://github.com/knhbae/flowme2605/actions/runs/31554079252/job/93982789483) |
+| Merge | `PASS` — `2f93f00d6539aa8125faccb7ad944eaf3397e7bc` at `2026-08-12T01:49:13Z` |
 
 ## Risks And Rollback
 
@@ -76,10 +79,9 @@ already deployed product.
 
 ## Follow-Up
 
-- Verify [PR #177](https://github.com/knhbae/flowme2605/pull/177) at its exact
-  final head and merge only after required checks pass.
-- After the closeout is published, await explicit Owner promotion of the next
-  product gate.
+- Preserve this historical documentation-only release record. It has no
+  runtime or user-data effect.
+- Await explicit Owner promotion of the next product gate.
 
 ## Links
 

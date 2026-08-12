@@ -18,6 +18,7 @@
 
 ## Publication boundary
 
-- [x] Commit, push, Draft PR, and Preview publication — `AUTHORIZED 2026-08-12`
-- [ ] Merge and Production — `NOT AUTHORIZED`
+- [x] Commit, push, Draft PR, and Preview publication — `COMPLETE`
+- [x] Merge and Production — [PR #178](https://github.com/knhbae/flowme2605/pull/178) merge `908ee849beb15cb10331b72d7894167a61458b18`; deployment `5869458520` / status `16715443863`; canonical smoke `38/38`
+- [x] Post-merge `main` CI — run `31597763288`, core job `94117373437`, Playwright job `94117373461` PASS
 - [ ] Observed-user validation — `0`
