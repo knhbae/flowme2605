@@ -108,6 +108,43 @@ test('control replacement from a direct Item replaces locally without external B
   assert.equal(plan.history[0]?.kind === 'replace' ? plan.history[0].href : '', '/my?demo=ux20&view=flows&sort=next#library');
 });
 
+test('control replacement from an internal Plan consumes the Plan entry and restores the list position', () => {
+  const plan = planMyFlowLibraryTransition(
+    { ...current, itemTarget: null },
+    { kind: 'replace_controls', query: '', filter: 'archived', consumePlanEntry: true },
+    context({
+      historyLevel: 'plan',
+      scrollY: 420,
+      railScrollTop: 80,
+      currentRoute: {
+        ...context().currentRoute,
+        target: { flowSlug: 'moving' },
+      },
+    }),
+  );
+  assert.equal(plan.history[0]?.kind, 'back_then_replace');
+  assert.deepEqual(plan.focus, {
+    kind: 'restore_plan_opener_after_frame',
+    flowSlug: 'moving',
+  });
+  assert.deepEqual(plan.scroll, {
+    kind: 'restore_library_position_after_frame',
+    scrollY: 420,
+    railScrollTop: 80,
+  });
+});
+
+test('ordinary control replacement from a Plan preserves the active control', () => {
+  const plan = planMyFlowLibraryTransition(
+    { ...current, itemTarget: null },
+    { kind: 'replace_controls', query: '비', filter: 'all' },
+    context({ historyLevel: 'plan' }),
+  );
+  assert.deepEqual(plan.history.map((effect) => effect.kind), ['replace']);
+  assert.deepEqual(plan.focus, { kind: 'preserve_control' });
+  assert.deepEqual(plan.scroll, { kind: 'none' });
+});
+
 test('sort replacement uses only replace, preserves the current target, and never grows history', () => {
   const plan = planMyFlowLibraryTransition(
     current,

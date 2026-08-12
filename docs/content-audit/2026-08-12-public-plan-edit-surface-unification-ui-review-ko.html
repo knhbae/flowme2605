@@ -1,0 +1,997 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <link rel="icon" href="data:,">
+  <title>공개 계획 수정 UX 통합 · UI 캡처 리뷰</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #0b1736;
+      --text: #26324d;
+      --muted: #68738c;
+      --line: #dbe3f2;
+      --line-strong: #b9c8e6;
+      --paper: #ffffff;
+      --canvas: #f7f9fd;
+      --soft: #eef4ff;
+      --soft-2: #f2f6ff;
+      --blue: #1155cc;
+      --blue-deep: #0a3d91;
+      --green: #087a56;
+      --green-soft: #eaf7f1;
+      --amber: #8a5100;
+      --amber-soft: #fff4dc;
+      --red: #b42318;
+      --red-soft: #fff0ee;
+      --radius-lg: 24px;
+      --radius: 16px;
+      --shadow: 0 18px 50px rgba(19, 45, 91, .08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--text);
+      background: var(--canvas);
+      font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", Inter, system-ui, sans-serif;
+      line-height: 1.62;
+      word-break: keep-all;
+    }
+    img { display: block; max-width: 100%; }
+    a { color: var(--blue-deep); text-underline-offset: 3px; }
+    h1, h2, h3, p, figure, blockquote { margin-top: 0; }
+    h1, h2, h3 { color: var(--ink); }
+    code {
+      padding: 2px 5px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      background: #f7f9fc;
+      color: #324264;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: .88em;
+      word-break: break-all;
+    }
+
+    .page {
+      width: min(1240px, calc(100% - 36px));
+      margin: 0 auto;
+      padding: 24px 0 90px;
+    }
+    .hero,
+    .panel,
+    .decision-card,
+    .mode-card,
+    .evidence-card,
+    .capture-card,
+    .ledger-wrap {
+      border: 1px solid var(--line);
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+    .hero {
+      position: relative;
+      overflow: hidden;
+      min-height: 470px;
+      padding: clamp(30px, 6vw, 76px);
+      border-radius: 30px;
+    }
+    .hero::before {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 9px;
+      background: var(--blue);
+      content: "";
+    }
+    .hero-kicker,
+    .eyebrow {
+      margin-bottom: 10px;
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    h1 {
+      max-width: 990px;
+      margin-bottom: 18px;
+      font-size: clamp(42px, 7vw, 82px);
+      line-height: 1.03;
+      letter-spacing: -.055em;
+    }
+    .lead {
+      max-width: 900px;
+      margin-bottom: 26px;
+      color: #34415c;
+      font-size: clamp(18px, 2.4vw, 24px);
+      line-height: 1.55;
+    }
+    .scope-row,
+    .nav-row,
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .scope,
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      padding: 5px 11px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fbfcff;
+      color: #44516b;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .scope.strong,
+    .tag.strong { border-color: #a9bfea; background: var(--soft); color: var(--blue-deep); }
+    .scope.warn,
+    .tag.warn { border-color: #ebcc91; background: var(--amber-soft); color: var(--amber); }
+    .scope.stop { border-color: #efcaca; background: var(--red-soft); color: var(--red); }
+    .nav-row { margin-top: 28px; }
+    .nav-row a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 42px;
+      padding: 8px 13px;
+      border: 1px solid var(--ink);
+      border-radius: 10px;
+      background: var(--ink);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 850;
+      text-decoration: none;
+    }
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 34px;
+    }
+    .status-card {
+      min-height: 116px;
+      padding: 17px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--soft-2);
+    }
+    .status-card b {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--blue-deep);
+      font-size: 13px;
+      letter-spacing: .04em;
+    }
+    .status-card span { color: var(--muted); font-size: 13px; }
+    .status-card.blocked { border-color: #efcaca; background: var(--red-soft); }
+    .status-card.blocked b { color: var(--red); }
+
+    section {
+      margin-top: 70px;
+      scroll-margin-top: 20px;
+    }
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(280px, .75fr);
+      align-items: end;
+      gap: 30px;
+      margin-bottom: 22px;
+    }
+    h2 {
+      margin-bottom: 8px;
+      font-size: clamp(30px, 4.4vw, 52px);
+      line-height: 1.12;
+      letter-spacing: -.04em;
+    }
+    .section-head p { margin-bottom: 0; color: var(--muted); }
+    .rule-note {
+      padding: 17px 19px;
+      border-left: 4px solid var(--blue);
+      background: var(--soft);
+      color: #35435f;
+      font-size: 14px;
+    }
+
+    .feedback-layout {
+      display: grid;
+      grid-template-columns: 270px minmax(0, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+    .feedback-rail {
+      position: sticky;
+      top: 18px;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+    }
+    .feedback-rail h3 { margin-bottom: 18px; font-size: 18px; }
+    .feedback-list { display: grid; gap: 17px; }
+    .feedback-item {
+      display: grid;
+      grid-template-columns: 30px minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+    }
+    .number {
+      display: inline-grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--blue);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .feedback-item b { display: block; color: var(--ink); font-size: 14px; }
+    .feedback-item span { color: var(--muted); font-size: 12px; }
+    .feedback-body { display: grid; gap: 16px; }
+    .quote-card {
+      padding: 22px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: var(--soft-2);
+    }
+    blockquote {
+      margin-bottom: 8px;
+      color: var(--ink);
+      font-size: clamp(18px, 2.4vw, 25px);
+      font-weight: 800;
+      line-height: 1.45;
+    }
+    .quote-card cite { color: var(--muted); font-size: 12px; font-style: normal; }
+    .feedback-photo-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .feedback-photo {
+      margin: 0;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--paper);
+    }
+    .feedback-photo img {
+      width: min(100%, 285px);
+      max-height: 520px;
+      margin: 0 auto;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      object-fit: contain;
+    }
+    .feedback-photo figcaption {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+    .feedback-photo b { color: var(--ink); }
+    .feedback-result {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .feedback-result div {
+      padding: 17px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--paper);
+    }
+    .feedback-result b { display: block; margin-bottom: 5px; color: var(--ink); }
+    .feedback-result p { margin-bottom: 0; color: var(--muted); font-size: 13px; }
+
+    .decision-card {
+      overflow: hidden;
+      border-radius: var(--radius-lg);
+    }
+    .decision-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(300px, .85fr);
+      gap: 24px;
+      padding: 26px;
+      border-bottom: 1px solid var(--line);
+    }
+    .decision-head h3 { margin-bottom: 8px; font-size: 28px; }
+    .decision-head p { margin-bottom: 0; color: var(--muted); }
+    .decision-result {
+      padding: 18px;
+      border-left: 4px solid var(--green);
+      background: var(--green-soft);
+      color: #285344;
+      font-size: 14px;
+    }
+    .route-map {
+      display: grid;
+      grid-template-columns: minmax(170px, .8fr) 52px minmax(190px, 1fr) 52px minmax(210px, 1.1fr);
+      gap: 10px;
+      align-items: stretch;
+      padding: 24px;
+      background: #f8faff;
+    }
+    .route-node {
+      min-height: 150px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--paper);
+    }
+    .route-node strong { display: block; margin: 8px 0 6px; color: var(--ink); font-size: 18px; }
+    .route-node p { margin-bottom: 0; color: var(--muted); font-size: 13px; }
+    .route-node.primary { border-color: #a9bfea; background: var(--soft); }
+    .route-arrow { display: grid; place-items: center; color: var(--blue); font-size: 26px; font-weight: 900; }
+    .internal-bar {
+      display: grid;
+      grid-template-columns: 170px minmax(0, 1fr);
+      gap: 18px;
+      align-items: center;
+      padding: 18px 24px;
+      border-top: 1px solid var(--line);
+      background: var(--ink);
+      color: #fff;
+    }
+    .internal-bar b { font-size: 14px; }
+    .internal-bar span { color: #cbd6eb; font-size: 13px; }
+
+    .mode-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .mode-card { overflow: hidden; border-radius: var(--radius-lg); }
+    .mode-card header { padding: 21px; border-bottom: 1px solid var(--line); }
+    .mode-card h3 { margin: 7px 0 6px; font-size: 23px; }
+    .mode-card header p { margin-bottom: 0; color: var(--muted); font-size: 14px; }
+    .mode-card dl { margin: 0; }
+    .mode-card dl > div {
+      display: grid;
+      grid-template-columns: 92px minmax(0, 1fr);
+      gap: 10px;
+      padding: 12px 20px;
+      border-top: 1px solid var(--line);
+      font-size: 12px;
+    }
+    .mode-card dt { color: var(--muted); font-weight: 800; }
+    .mode-card dd { margin: 0; color: var(--ink); }
+    .mode-card.save { border-top: 5px solid var(--green); }
+    .mode-card.choose { border-top: 5px solid var(--blue); }
+    .mode-card.hold { border-top: 5px solid var(--amber); }
+
+    .capture-pair,
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .capture-card {
+      overflow: hidden;
+      border-radius: var(--radius-lg);
+    }
+    .capture-copy { padding: 20px; border-bottom: 1px solid var(--line); }
+    .capture-copy h3 { margin: 7px 0 7px; font-size: 22px; }
+    .capture-copy p { margin-bottom: 0; color: var(--muted); font-size: 13px; }
+    .shot-frame {
+      position: relative;
+      display: grid;
+      place-items: center;
+      min-height: 500px;
+      padding: 16px;
+      border-bottom: 1px solid var(--line);
+      background: #edf1f7;
+      overflow: hidden;
+    }
+    .shot-frame::before {
+      position: absolute;
+      inset: 20px;
+      display: grid;
+      place-items: center;
+      border: 1px dashed #aebbd2;
+      border-radius: 12px;
+      color: #7a879f;
+      content: "fresh local UI capture";
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .shot-frame img {
+      position: relative;
+      z-index: 1;
+      width: auto;
+      max-height: 760px;
+      border-radius: 11px;
+      box-shadow: 0 12px 30px rgba(10, 26, 58, .16);
+    }
+    .shot-frame.wide { min-height: 380px; }
+    .shot-frame.wide img { width: 100%; max-height: none; }
+    .capture-proof {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .capture-proof div { padding: 13px 16px; font-size: 12px; }
+    .capture-proof div + div { border-left: 1px solid var(--line); }
+    .capture-proof b { display: block; color: var(--ink); }
+    .capture-proof span { color: var(--muted); }
+    .capture-wide { margin-top: 16px; }
+
+    .transaction-line {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 9px;
+      margin-bottom: 16px;
+    }
+    .transaction-step {
+      position: relative;
+      min-height: 116px;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--paper);
+    }
+    .transaction-step::after {
+      position: absolute;
+      top: 50%;
+      right: -9px;
+      z-index: 2;
+      width: 9px;
+      height: 2px;
+      background: var(--blue);
+      content: "";
+    }
+    .transaction-step:last-child::after { display: none; }
+    .transaction-step b { display: block; margin: 7px 0 4px; color: var(--ink); font-size: 14px; }
+    .transaction-step span:last-child { color: var(--muted); font-size: 12px; }
+    .panel { padding: 22px; border-radius: var(--radius-lg); }
+    .panel h3 { margin-bottom: 8px; font-size: 23px; }
+    .panel > p { color: var(--muted); }
+    .kept-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .kept-grid div {
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: var(--soft-2);
+    }
+    .kept-grid b { display: block; margin-bottom: 5px; color: var(--ink); font-size: 13px; }
+    .kept-grid span { color: var(--muted); font-size: 12px; }
+
+    .evidence-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .evidence-card { padding: 18px; border-radius: 14px; }
+    .evidence-card b { display: block; margin-bottom: 6px; color: var(--blue-deep); font-size: 14px; }
+    .evidence-card span { color: var(--muted); font-size: 12px; }
+    .evidence-card.stop { border-color: #efcaca; background: var(--red-soft); }
+    .evidence-card.stop b { color: var(--red); }
+    .boundary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 16px;
+    }
+    .boundary {
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+    }
+    .boundary h3 { margin-bottom: 8px; font-size: 19px; }
+    .boundary ul { margin: 0; padding-left: 20px; }
+    .boundary li + li { margin-top: 6px; }
+    .boundary.auto { border-top: 5px solid var(--green); }
+    .boundary.human { border-top: 5px solid var(--amber); }
+
+    .ledger-wrap { overflow: hidden; border-radius: var(--radius-lg); }
+    .ledger-wrap table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .ledger-wrap th,
+    .ledger-wrap td { padding: 14px 16px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    .ledger-wrap th { background: var(--soft-2); color: var(--ink); font-size: 12px; }
+    .ledger-wrap tr:last-child td { border-bottom: 0; }
+    .ledger-wrap td:first-child { width: 135px; color: var(--blue-deep); font-weight: 800; }
+    .checklist-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+    .checklist {
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+    }
+    .checklist h3 { margin-bottom: 10px; font-size: 19px; }
+    .checklist ul { margin: 0; padding: 0; list-style: none; }
+    .checklist li { position: relative; padding-left: 27px; font-size: 13px; }
+    .checklist li::before {
+      position: absolute;
+      top: 2px;
+      left: 0;
+      display: grid;
+      place-items: center;
+      width: 18px;
+      height: 18px;
+      border: 1px solid var(--line-strong);
+      border-radius: 4px;
+      color: var(--muted);
+      content: "";
+    }
+    .checklist li + li { margin-top: 10px; }
+    .checklist.p0 { border-top: 5px solid var(--red); }
+    .checklist.p1 { border-top: 5px solid var(--amber); }
+    .checklist.p2 { border-top: 5px solid var(--blue); }
+    .status-line {
+      margin-top: 18px;
+      padding: 18px;
+      border: 1px solid #efcaca;
+      border-radius: var(--radius);
+      background: var(--red-soft);
+      color: #71231d;
+      font-weight: 800;
+    }
+    footer {
+      margin-top: 70px;
+      padding: 26px 4px 0;
+      border-top: 1px solid var(--line-strong);
+      color: var(--muted);
+      font-size: 12px;
+    }
+    footer p { margin-bottom: 8px; }
+
+    @media (max-width: 980px) {
+      .status-grid,
+      .evidence-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .section-head,
+      .decision-head { grid-template-columns: 1fr; }
+      .feedback-layout { grid-template-columns: 220px minmax(0, 1fr); }
+      .route-map { grid-template-columns: 1fr; }
+      .route-arrow { transform: rotate(90deg); min-height: 34px; }
+      .mode-grid { grid-template-columns: 1fr 1fr; }
+      .transaction-line { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .transaction-step::after { display: none; }
+      .kept-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .checklist-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 720px) {
+      .page { width: min(100% - 18px, 1240px); padding-top: 9px; }
+      .hero { min-height: 0; padding: 28px 20px; border-radius: 20px; }
+      h1 { font-size: 44px; }
+      .lead { font-size: 17px; }
+      .status-grid,
+      .feedback-result,
+      .feedback-photo-grid,
+      .capture-pair,
+      .detail-grid,
+      .boundary-grid,
+      .mode-grid,
+      .kept-grid { grid-template-columns: 1fr; }
+      .status-card { min-height: 88px; }
+      section { margin-top: 50px; }
+      .feedback-layout { grid-template-columns: 1fr; }
+      .feedback-rail { position: static; }
+      .internal-bar { grid-template-columns: 1fr; gap: 4px; }
+      .shot-frame { min-height: 0; padding: 10px; }
+      .shot-frame img { width: 100%; max-height: none; }
+      .capture-proof { grid-template-columns: 1fr; }
+      .capture-proof div + div { border-left: 0; border-top: 1px solid var(--line); }
+      .transaction-line { grid-template-columns: 1fr; }
+      .transaction-step { min-height: 0; }
+      .evidence-grid { grid-template-columns: 1fr 1fr; }
+      .ledger-wrap { overflow-x: auto; }
+      .ledger-wrap table { min-width: 700px; }
+    }
+
+    @media print {
+      body { background: #fff; }
+      .page { width: 100%; padding: 0; }
+      .hero, .panel, .decision-card, .mode-card, .evidence-card, .capture-card, .ledger-wrap { box-shadow: none; }
+      .nav-row { display: none; }
+      .feedback-rail { position: static; }
+      figure, .mode-card, .boundary, .checklist { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <p class="hero-kicker">FlowMe · public editor follow-up · 2026-08-12</p>
+      <h1>Flow Map은 안 보이게,<br>계획 수정은 하나로</h1>
+      <p class="lead">
+        공개 일반 Flow와 실행 가능한 단일 계획형 Flow Map이 서로 다른 수정 화면을 열던 문제를 바로잡았습니다.
+        사용자는 이제 <strong>하나의 Plan / Item 편집 문법</strong>만 배우고, Map·version·child·source 식별자는
+        저장 안전성을 위해 내부에 그대로 남습니다.
+      </p>
+      <div class="scope-row" aria-label="보고서 상태">
+        <span class="scope strong">LOCAL IMPLEMENTATION</span>
+        <span class="scope">AUTOMATED QA</span>
+        <span class="scope warn">OBSERVED USERS 0</span>
+        <span class="scope stop">MERGE / PRODUCTION NOT AUTHORIZED</span>
+      </div>
+      <div class="status-grid" aria-label="검증 경계">
+        <div class="status-card"><b>LOCAL IMPLEMENTATION</b><span>현재 worktree의 미게시 후보입니다. Production 변경을 뜻하지 않습니다.</span></div>
+        <div class="status-card"><b>AUTOMATED QA</b><span>스크린샷·테스트·빌드 결과는 내부 QA이며 실제 사용자 관찰과 분리합니다.</span></div>
+        <div class="status-card"><b>OBSERVED USERS 0</b><span>이번 변경을 실제 사용자가 수행한 관찰 세션은 아직 없습니다.</span></div>
+        <div class="status-card blocked"><b>DRAFT PR / PREVIEW AUTHORIZED</b><span>커밋·Push·Draft PR·Preview는 승인됐습니다. Merge와 Production은 별도 승인 전까지 진행하지 않습니다.</span></div>
+      </div>
+      <nav class="nav-row" aria-label="문서 목차">
+        <a href="#feedback">기존 피드백</a>
+        <a href="#decision">제품 결론</a>
+        <a href="#modes">모드 경계</a>
+        <a href="#captures">UI 캡처</a>
+        <a href="#transaction">저장 규칙</a>
+        <a href="#evidence">증거·사람 검토</a>
+      </nav>
+    </header>
+
+    <section id="feedback">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">01 · Feedback chain</p>
+          <h2>두 번의 불일치 지적이<br>하나의 원인을 가리켰습니다</h2>
+        </div>
+        <p>공개 화면과 저장 후 화면에서 따로 보였던 문제는 모두 “콘텐츠 출처가 편집 UX를 결정한다”는 같은 구조에서 나왔습니다.</p>
+      </div>
+
+      <div class="feedback-layout">
+        <aside class="feedback-rail" aria-label="피드백 진행 순서">
+          <h3>피드백 → 결정</h3>
+          <div class="feedback-list">
+            <div class="feedback-item"><span class="number">1</span><div><b>공개 화면 세대 차이</b><span><code>/f</code>와 <code>/flow-maps</code>의 결과·수정 UI가 달랐습니다.</span></div></div>
+            <div class="feedback-item"><span class="number">2</span><div><b>저장 후에도 불일치</b><span><code>/my</code> 상세 편집 역시 저장 출처별로 달랐습니다.</span></div></div>
+            <div class="feedback-item"><span class="number">3</span><div><b>Flow Map 의미 재검토</b><span>현재 콘텐츠에서 별도 제품 개념으로 보일 이유가 있는지 물었습니다.</span></div></div>
+            <div class="feedback-item"><span class="number">4</span><div><b>사용자-facing 평탄화</b><span>표면은 Flow 하나, 내부 identity는 보존하는 방향을 확정했습니다.</span></div></div>
+          </div>
+        </aside>
+
+        <div class="feedback-body">
+          <div class="quote-card">
+            <blockquote>“계획 수정 부분이 아직 Flow마다 다른데, 이게 맞아?”</blockquote>
+            <cite>공개 <code>/f</code>와 <code>/flow-maps</code> 비교에서 나온 직접 피드백</cite>
+          </div>
+          <div class="quote-card">
+            <blockquote>“현재 콘텐츠에선 Flow Map이 사실 의미 없지 않아?”</blockquote>
+            <cite>이번 제품 경계 변경을 결정한 후속 질문</cite>
+          </div>
+          <div class="feedback-photo-grid" aria-label="원래 사용자 피드백 화면 비교">
+            <figure class="feedback-photo">
+              <img src="./2026-08-12-public-plan-edit-surface-unification-ui-review-assets/feedback-ordinary-public.jpg" alt="사용자가 직접 첨부한 일반 공개 Flow 모바일 화면. Text, Todo, Calendar 결과와 수정 행동이 보입니다.">
+              <figcaption><b>직접 피드백 캡처 · 일반 Flow</b><br><code>/f</code>는 새 결과·수정 문법을 사용하고 있었습니다.</figcaption>
+            </figure>
+            <figure class="feedback-photo">
+              <img src="./2026-08-12-public-plan-edit-surface-unification-ui-review-assets/feedback-map-legacy.jpg" alt="사용자가 직접 첨부한 중1 수학 Flow Map 모바일 화면. 번호 목록과 별도 계획 수정 행동이 보입니다.">
+              <figcaption><b>직접 피드백 캡처 · Flow Map</b><br>같은 계획 수정인데 별도 번호 목록과 Map 전용 문법이 남아 있었습니다.</figcaption>
+            </figure>
+          </div>
+          <div class="feedback-result" aria-label="피드백에 따른 조치">
+            <div><b>화면 원인 제거</b><p>Map 전용 계획 수정 sheet와 별도 안내를 사용자-facing 제품 문법에서 제거했습니다.</p></div>
+            <div><b>선택의 의미 보존</b><p>서로 대안인 여러 child는 합치지 않고, 하나를 고르는 gateway로 남겼습니다.</p></div>
+            <div><b>저장 안전성 보존</b><p>Map/version/child/Item identity와 기존 persistence transaction은 바꾸지 않습니다.</p></div>
+          </div>
+          <p class="rule-note">
+            <strong>연결 범위:</strong> 앞선 내 계획 편집 통합은 저장 후 <code>/my</code> lifecycle을 다뤘고,
+            이번 후속은 저장 전 공개 <code>/f</code>와 <code>/flow-maps</code>의 Plan / Item 수정 surface를 다룹니다.
+            두 작업은 같은 편집 문법을 공유하지만 저장 주체와 검증 범위는 구분합니다.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="decision">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">02 · Product decision</p>
+          <h2>사용자는 Flow 하나를 보고,<br>시스템은 출처를 잃지 않습니다</h2>
+        </div>
+        <p>시각적 평탄화는 데이터 병합이 아닙니다. 같은 편집기를 쓰되 최종 저장은 원래 origin의 transaction으로 돌아갑니다.</p>
+      </div>
+
+      <article class="decision-card">
+        <div class="decision-head">
+          <div>
+            <div class="tag-row"><span class="tag strong">One public Plan</span><span class="tag">One Item editor</span><span class="tag">Origin adapter</span></div>
+            <h3>URL과 콘텐츠 제목을 가리면 같은 수정 작업</h3>
+            <p>계획 이름, 지원되는 기준 입력, 포함·순서, Item 진입, 적용·취소, Escape, browser Back, focus 복귀가 같은 shell과 controller를 사용합니다.</p>
+          </div>
+          <div class="decision-result"><strong>제품 결론</strong><br>Flow Map은 사용자가 배워야 할 계획 종류가 아닙니다. 여러 source/child를 묶고 저장 identity를 지키는 내부 aggregate로만 남깁니다.</div>
+        </div>
+        <div class="route-map" aria-label="공개 계획 수정 경로">
+          <div class="route-node">
+            <span class="tag">입구</span>
+            <strong>공개 콘텐츠</strong>
+            <p>일반 <code>/f</code> 또는 호환 <code>/flow-maps</code> URL에서 시작합니다.</p>
+          </div>
+          <div class="route-arrow" aria-hidden="true">→</div>
+          <div class="route-node primary">
+            <span class="tag strong">사용자-facing</span>
+            <strong>Flow 하나</strong>
+            <p>단일 실행 계획은 출처와 관계없이 같은 결과·수정 shell을 보여 줍니다.</p>
+          </div>
+          <div class="route-arrow" aria-hidden="true">→</div>
+          <div class="route-node">
+            <span class="tag">행동</span>
+            <strong>공통 Plan / Item 편집기</strong>
+            <p>Item은 Plan draft에 반영하고, Plan은 공개 session draft에 적용합니다.</p>
+          </div>
+        </div>
+        <div class="internal-bar">
+          <b>내부에 남는 것</b>
+          <span>Map ID · Map version · child Flow ID · canonical Item ID · effective snapshot · persistence / bridge record · 기존 storage key</span>
+        </div>
+      </article>
+    </section>
+
+    <section id="modes">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">03 · Mode boundary</p>
+          <h2>모든 Map을 억지로<br>하나의 계획으로 합치지 않습니다</h2>
+        </div>
+        <p>현재 콘텐츠는 세 가지 역할로 나눕니다. 편집기는 실제로 실행할 계획이 하나일 때만 열립니다.</p>
+      </div>
+
+      <div class="mode-grid">
+        <article class="mode-card save">
+          <header>
+            <div class="tag-row"><span class="tag strong"><code>save_all</code></span><span class="tag">시각적 Flow</span></div>
+            <h3>단일 계획형</h3>
+            <p>중1 수학처럼 실행할 child가 하나인 Map은 일반 Flow와 같은 화면으로 평탄화합니다.</p>
+          </header>
+          <dl>
+            <div><dt>사용자 화면</dt><dd>일반 Flow 결과 + 공통 Plan / Item 편집</dd></div>
+            <div><dt>대표 경로</dt><dd><code>/flow-maps/middle-school-math-1</code></dd></div>
+            <div><dt>내부 보존</dt><dd>Map/version/child/Item identity와 기존 저장 transaction</dd></div>
+          </dl>
+        </article>
+
+        <article class="mode-card choose">
+          <header>
+            <div class="tag-row"><span class="tag strong"><code>choose_child</code></span><span class="tag">선택 gateway</span></div>
+            <h3>대안 선택형</h3>
+            <p>OPIc, 결혼 준비, Allblanc는 서로 다른 계획을 합치지 않고 하나를 고르게 합니다.</p>
+          </header>
+          <dl>
+            <div><dt>사용자 화면</dt><dd>child 선택만 제공하고 Map 편집기는 열지 않음</dd></div>
+            <div><dt>선택 다음</dt><dd>canonical child <code>/f/[slug]</code>로 이동</dd></div>
+            <div><dt>조정 위치</dt><dd>선택한 <code>/f</code>의 공통 Plan / Item 편집기</dd></div>
+          </dl>
+        </article>
+
+        <article class="mode-card hold">
+          <header>
+            <div class="tag-row"><span class="tag warn"><code>review_hold</code></span><span class="tag">읽기 전용</span></div>
+            <h3>검토 보류형</h3>
+            <p>출처·안전·행 정의가 충분하지 않으면 실행 가능한 것처럼 보이게 만들지 않습니다.</p>
+          </header>
+          <dl>
+            <div><dt>사용자 화면</dt><dd>보류 이유와 허용된 읽기 행동만 표시</dd></div>
+            <div><dt>노출하지 않음</dt><dd>수정기, 조정 CTA, 저장 가능한 듯한 control</dd></div>
+            <div><dt>재개 조건</dt><dd>원문 행·위험·사용 권한 등 필요한 검토 완료</dd></div>
+          </dl>
+        </article>
+      </div>
+    </section>
+
+    <section id="captures">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">04 · Fresh UI captures</p>
+          <h2>같은 편집기인지<br>실제 화면으로 나란히 봅니다</h2>
+        </div>
+        <p>모든 이미지는 현재 worktree의 fresh local UI 캡처입니다. 정적 목업이나 observed-user evidence가 아닙니다.</p>
+      </div>
+
+      <div class="capture-pair">
+        <article class="capture-card">
+          <div class="capture-copy">
+            <div class="tag-row"><span class="tag">390 × 844</span><span class="tag"><code>/f</code></span><span class="tag strong">기준</span></div>
+            <h3>일반 Flow · Plan 수정</h3>
+            <p>계획 이름, 지원되는 기준 입력, 포함·순서, Item 진입과 하단 적용 행동을 확인합니다.</p>
+          </div>
+          <div class="shot-frame"><img src="./2026-08-12-public-plan-edit-surface-unification-ui-review-assets/screenshots/ordinary-mobile-plan.png" alt="390px 일반 공개 Flow에서 공통 Plan 수정 화면이 열린 로컬 UI 캡처."></div>
+          <div class="capture-proof"><div><b>보여 주는 것</b><span>공통 Plan shell의 모바일 기준</span></div><div><b>증명하지 않는 것</b><span>실제 사용자 이해·완료율</span></div></div>
+        </article>
+
+        <article class="capture-card">
+          <div class="capture-copy">
+            <div class="tag-row"><span class="tag">390 × 844</span><span class="tag"><code>save_all</code></span><span class="tag strong">평탄화</span></div>
+            <h3>중1 수학 · 같은 Plan 수정</h3>
+            <p>Map 전용 sheet 대신 일반 Flow와 같은 필드 계층·CTA·닫기 위치를 사용합니다.</p>
+          </div>
+          <div class="shot-frame"><img src="./2026-08-12-public-plan-edit-surface-unification-ui-review-assets/screenshots/map-mobile-plan.png" alt="390px 중1 수학 공개 경로에서 일반 Flow와 같은 공통 Plan 수정 화면이 열린 로컬 UI 캡처."></div>
+          <div class="capture-proof"><div><b>보여 주는 것</b><span>단일 계획형 Map의 시각적 Flow 평탄화</span></div><div><b>증명하지 않는 것</b><span>내부 identity와 reload 지속성</span></div></div>
+        </article>
+      </div>
+
+      <div class="detail-grid" style="margin-top:16px">
+        <article class="capture-card">
+          <div class="capture-copy">
+            <div class="tag-row"><span class="tag">390 × 844</span><span class="tag">Item</span></div>
+            <h3>Map 출처도 같은 Item 편집</h3>
+            <p>제목과 개인 메모를 Plan draft에 반영합니다. 이 출처가 지원하지 않는 날짜 입력은 노출하지 않습니다.</p>
+          </div>
+          <div class="shot-frame"><img src="./2026-08-12-public-plan-edit-surface-unification-ui-review-assets/screenshots/map-mobile-item.png" alt="390px 중1 수학 항목에서 제목과 개인 메모를 수정하고 계획에 반영할 수 있는 공통 Item 편집 화면."></div>
+          <div class="capture-proof"><div><b>CTA 의미</b><span>Item 적용 = 부모 Plan draft 갱신</span></div><div><b>저장 쓰기</b><span>이 단계의 persistent write는 0</span></div></div>
+        </article>
+
+        <article class="capture-card">
+          <div class="capture-copy">
+            <div class="tag-row"><span class="tag">390 × 844</span><span class="tag">dirty Back</span></div>
+            <h3>취소·Escape·Back의 한 규칙</h3>
+            <p>변경이 있으면 같은 discard 확인을 거치고, 계속 수정하면 draft와 focus를 유지합니다.</p>
+          </div>
+          <div class="shot-frame"><img src="./2026-08-12-public-plan-edit-surface-unification-ui-review-assets/screenshots/map-mobile-dirty.png" alt="390px 공통 Plan 편집 중 브라우저 Back으로 저장하지 않은 변경 버리기 확인이 열린 화면."></div>
+          <div class="capture-proof"><div><b>계속 수정</b><span>draft·focus·editor history 유지</span></div><div><b>변경 버리기</b><span>정확한 opener·scroll로 복귀</span></div></div>
+        </article>
+      </div>
+
+      <div class="detail-grid" style="margin-top:16px">
+        <article class="capture-card">
+          <div class="capture-copy">
+            <div class="tag-row"><span class="tag">390 × 844</span><span class="tag"><code>choose_child</code></span><span class="tag strong">OPIc</span></div>
+            <h3>2주와 1달은 합치지 않습니다</h3>
+            <p>OPIc는 두 계획을 함께 저장하는 Map이 아니라, 필요한 학습 기간 하나를 고르는 gateway입니다.</p>
+          </div>
+          <div class="shot-frame"><img src="./2026-08-12-public-plan-edit-surface-unification-ui-review-assets/screenshots/opic-mobile-chooser.png" alt="390px OPIc 공개 경로에서 2주 집중 계획과 1달 반복 계획 중 하나를 선택하는 화면."></div>
+          <div class="capture-proof"><div><b>선택</b><span>2주 또는 1달 canonical child 하나</span></div><div><b>다음 단계</b><span>선택 child의 <code>/f</code>에서 공통 편집</span></div></div>
+        </article>
+
+        <article class="capture-card">
+          <div class="capture-copy">
+            <div class="tag-row"><span class="tag">1440 × 1000</span><span class="tag"><code>save_all</code></span></div>
+            <h3>데스크톱도 같은 작업 계층</h3>
+            <p>큰 화면에서는 공개 결과 맥락을 남긴 채 오른쪽 workspace로 열리지만 필드와 transaction 의미는 모바일과 같습니다.</p>
+          </div>
+          <div class="shot-frame wide"><img src="./2026-08-12-public-plan-edit-surface-unification-ui-review-assets/screenshots/map-desktop-plan.png" alt="1440px 중1 수학 공개 결과 위 오른쪽에 공통 Plan 수정 workspace가 열린 로컬 UI 캡처."></div>
+          <div class="capture-proof"><div><b>반응형 차이</b><span>전체 sheet와 우측 workspace의 composition</span></div><div><b>같아야 할 것</b><span>필드·CTA·dirty·focus contract</span></div></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="transaction">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">05 · Edit and save contract</p>
+          <h2>수정 중에는 초안만,<br>최종 저장에서만 기록합니다</h2>
+        </div>
+        <p>같은 화면을 쓰는 것만으로는 충분하지 않습니다. 적용 시점·Back·focus·저장 소유자까지 하나의 규칙으로 맞춥니다.</p>
+      </div>
+
+      <div class="transaction-line" aria-label="공개 편집 transaction">
+        <div class="transaction-step"><span class="number">1</span><b>계획 수정 열기</b><span>origin snapshot으로 session draft 생성</span></div>
+        <div class="transaction-step"><span class="number">2</span><b>Item 수정</b><span>제목·개인 메모를 부모 draft에만 반영</span></div>
+        <div class="transaction-step"><span class="number">3</span><b>Plan 변경 적용</b><span>공개 session의 effective draft 갱신</span></div>
+        <div class="transaction-step"><span class="number">4</span><b>공개 결과 확인</b><span>persistent storage bytes는 그대로</span></div>
+        <div class="transaction-step"><span class="number">5</span><b>내 계획으로 저장</b><span>기존 origin transaction에서 한 번 확정</span></div>
+      </div>
+
+      <div class="panel">
+        <h3>화면에서는 덜 보이고, 저장에서는 그대로 지키는 것</h3>
+        <p>Flow Map 전용 설명·도움말·지원하지 않는 필드는 덜어냈지만 복구와 정합성에 필요한 경계는 제거하지 않았습니다.</p>
+        <div class="kept-grid">
+          <div><b>같은 close 문법</b><span>Cancel, X, backdrop, Escape, browser Back이 clean/dirty 규칙을 공유합니다.</span></div>
+          <div><b>정확한 focus 복귀</b><span>Item은 진입한 row로, Plan은 공개 화면의 수정 opener로 돌아갑니다.</span></div>
+          <div><b>제외 항목의 개인값</b><span>잠시 제외한 Item의 private override도 원래 canonical ID에 남습니다.</span></div>
+          <div><b>Map 내부 identity</b><span>Map/version/child/Item과 persistence bridge는 기존 owner가 계속 관리합니다.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="evidence">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">06 · Evidence and human review</p>
+          <h2>자동 QA가 말할 수 있는 것과<br>사람에게 물어야 할 것을 나눕니다</h2>
+        </div>
+        <p>화면 캡처는 시각 상태, 테스트는 규칙과 저장 경계를 확인합니다. 둘 다 실제 사용자가 이해하고 성공했다는 증거는 아닙니다.</p>
+      </div>
+
+      <div class="evidence-grid" aria-label="증거 상태">
+        <div class="evidence-card"><b>LOCAL IMPLEMENTATION</b><span>현재 branch/worktree 안의 미게시 변경과 fresh local UI</span></div>
+        <div class="evidence-card"><b>AUTOMATED QA</b><span>focused unit/component/E2E, persistence 회귀, responsive, build, docs gate</span></div>
+        <div class="evidence-card"><b>OBSERVED USERS 0</b><span>실제 사용자 수행·이해·완료·재사용 관찰은 아직 없음</span></div>
+        <div class="evidence-card stop"><b>MERGE / PRODUCTION GATED</b><span>Draft PR과 Preview까지만 게시하며 Merge·Production·Production smoke는 수행하지 않음</span></div>
+      </div>
+
+      <div class="boundary-grid">
+        <article class="boundary auto">
+          <h3>AUTOMATED QA가 확인할 것</h3>
+          <ul>
+            <li><code>/f</code>와 단일 계획형 Map의 같은 Plan / Item shell·CTA·history 규칙</li>
+            <li>Item 반영·Plan 적용·discard 전 persistent write <code>0</code></li>
+            <li>최종 저장과 reload 뒤 제목·포함·순서·개인 메모 복원</li>
+            <li>Map/version/child/Item ID, storage key와 transaction owner 보존</li>
+            <li>390 / 1024 / 1440에서 가로 overflow·clipping 없이 action 도달 가능</li>
+          </ul>
+          <p style="margin:14px 0 0"><a href="../specs/2026-08-12-public-plan-edit-surface-unification/qa.md">QA 원장 보기</a></p>
+        </article>
+        <article class="boundary human">
+          <h3>사람에게 직접 물어야 할 것</h3>
+          <ul>
+            <li>Flow와 단일 계획형 Map을 같은 방식으로 수정한다고 자연스럽게 느끼는가?</li>
+            <li>OPIc 2주/1달, 결혼 준비 2종, Allblanc 영상 선택이 “대안 하나 고르기”로 이해되는가?</li>
+            <li>지원하지 않는 날짜 입력이 없는 것을 오류나 기능 누락으로 오해하지 않는가?</li>
+            <li>취소와 Back 뒤 예상한 위치·항목으로 돌아왔다고 느끼는가?</li>
+          </ul>
+          <p style="margin:14px 0 0">현재 observed-user session은 <strong>0</strong>입니다.</p>
+        </article>
+      </div>
+
+      <div class="section-head" style="margin-top:42px">
+        <div>
+          <p class="eyebrow">Source / evidence ledger</p>
+          <h2 style="font-size:clamp(27px,3.4vw,42px)">무엇을 근거로 썼는지 남깁니다</h2>
+        </div>
+        <p>현재 repo, 직접 피드백, 이전 산출물, 구현 코드와 자동화 증거를 섞지 않고 출처별로 표시합니다.</p>
+      </div>
+      <div class="ledger-wrap">
+        <table>
+          <thead><tr><th>구분</th><th>근거</th><th>이 보고서에서 사용한 판단</th><th>경계</th></tr></thead>
+          <tbody>
+            <tr><td>직접 피드백</td><td>세션 <code>019fac1b-1679-78f2-8280-7ba63f6ebee9</code>와 이번 후속 대화</td><td>공개 편집 UX가 Flow마다 다르고, 현재 콘텐츠에 별도 Flow Map 개념의 사용자 가치가 약하다는 문제 정의</td><td>사용자 방향·문제 증거이며 구현 완료 증거는 아님</td></tr>
+            <tr><td>이전 산출물</td><td><a href="./2026-08-12-my-plan-edit-lifecycle-ui-capture-review-ko.html">내 계획 편집 UX 통합 UI 캡처 리뷰</a></td><td>저장 후 <code>/my</code>에서도 origin별 편집 불일치가 있었다는 연결 맥락</td><td>이번 공개 편집 후속과 범위를 분리해 해석</td></tr>
+            <tr><td>제품 계약</td><td><a href="../specs/2026-08-12-public-plan-edit-surface-unification/spec.md">Public Plan/Item Edit Surface Unification spec</a></td><td>시각적 평탄화, 세 모드, session draft, Back/focus, identity 보존 계약</td><td>Owner-approved 로컬 구현 spec, publication 권한 아님</td></tr>
+            <tr><td>공통 UI</td><td><a href="../../components/flow/PublicFlowAdjustmentPanel.tsx">PublicFlowAdjustmentPanel</a> · <a href="../../components/flow/SourceBackedFlowMapSaveButton.tsx">SourceBackedFlowMapSaveButton</a></td><td>일반 Flow와 Map adapter가 공유하는 Plan / Item surface와 transaction 경계</td><td>코드 존재는 사용성 검증이 아님</td></tr>
+            <tr><td>콘텐츠 모드</td><td><a href="../../lib/flow/source-backed-curated-260630.ts">source-backed curated definitions</a></td><td>OPIc·결혼 준비·Allblanc의 <code>choose_child</code> 경계와 child identity</td><td>콘텐츠 정의 시점의 현재 repo 근거</td></tr>
+            <tr><td>자동 QA</td><td><a href="../../tests/e2e/public-plan-edit-surface-unification.spec.ts">전용 E2E</a> · <a href="../../lib/flow/effective-flow-map-snapshot.test.ts">snapshot/persistence tests</a></td><td>공통 shell, dirty Back/focus, responsive, session-only write, save/reload/identity 회귀</td><td>AUTOMATED QA이며 OBSERVED USERS를 늘리지 않음</td></tr>
+            <tr><td>캡처 원장</td><td><a href="./2026-08-12-public-plan-edit-surface-unification-ui-review-assets/capture-manifest.json">capture manifest</a></td><td>각 이미지의 route, viewport, 상태와 증명 범위</td><td>fresh local UI 캡처, Production 증거 아님</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="checklist-grid" aria-label="사람 검토 체크리스트">
+        <article class="checklist p0">
+          <h3>P0 · 지금 막아야 할 것</h3>
+          <ul>
+            <li>URL·제목을 가렸을 때 일반 Flow와 단일 계획형 Map의 Plan / Item 편집 문법이 달라 보이지 않는가?</li>
+            <li>dirty Cancel·Escape·Back에서 확인 없이 변경이 사라지거나 route가 이탈하지 않는가?</li>
+            <li>OPIc의 2주와 1달이 함께 저장되는 하나의 과정처럼 오해되지 않는가?</li>
+            <li><code>review_hold</code>에 수정·저장 가능한 듯한 control이 남아 있지 않은가?</li>
+          </ul>
+        </article>
+        <article class="checklist p1">
+          <h3>P1 · 다음 사용성 확인</h3>
+          <ul>
+            <li>390px 긴 Item 목록에서 포함·순서 조정과 하단 action에 무리 없이 도달하는가?</li>
+            <li>Map Item의 날짜 입력 미지원이 기능 누락이 아니라 capability 차이로 받아들여지는가?</li>
+            <li>Item 적용 뒤 원래 row, Plan 닫기 뒤 수정 opener로 돌아온 초점이 자연스러운가?</li>
+            <li>1024px와 1440px workspace가 원문·결과 맥락을 충분히 남기는가?</li>
+          </ul>
+        </article>
+        <article class="checklist p2">
+          <h3>P2 · 관찰 후 다듬기</h3>
+          <ul>
+            <li>“Flow Map”이라는 내부 용어가 설명·label·toast에 불필요하게 남지 않았는가?</li>
+            <li>결혼 준비와 Allblanc도 대안 선택 gateway로 즉시 이해되는가?</li>
+            <li>출처 link와 주의 문구가 실행 흐름을 방해하지 않으면서 필요한 순간에 발견되는가?</li>
+            <li>실제 세션에서 선택→수정→저장→reload까지 망설임과 되돌림 이유를 기록했는가?</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="status-line">
+        현재 상태: LOCAL IMPLEMENTATION · AUTOMATED QA는 내부 증거 · OBSERVED USERS 0 · DRAFT PR/PREVIEW AUTHORIZED · MERGE/PRODUCTION GATED
+      </div>
+    </section>
+
+    <footer>
+      <p><strong>캡처 범위:</strong> 일반 Flow 모바일 Plan, 단일 계획형 Map 모바일 Plan/Item/dirty Back, OPIc 모바일 child 선택, 단일 계획형 Map 데스크톱 Plan의 fresh local UI 6장.</p>
+      <p><strong>캡처 메타데이터:</strong> route, viewport, 상태, 생성 시점과 파일 해시는 <a href="./2026-08-12-public-plan-edit-surface-unification-ui-review-assets/capture-manifest.json">capture manifest</a>에 기록합니다.</p>
+      <p><strong>정확성 경계:</strong> 이 문서는 로컬 미게시 검토 산출물입니다. 스크린샷·자동 테스트·빌드는 Production 배포나 observed-user validation을 뜻하지 않습니다.</p>
+    </footer>
+  </main>
+</body>
+</html>

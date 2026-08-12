@@ -7,6 +7,7 @@ import {
   buildFlowMapActionContractFromSnapshot,
   buildFlowMapCanonicalItemId,
   reviseEffectiveFlowMapSnapshot,
+  type EffectiveFlowMapItemPersonalization,
   type EffectiveFlowMapSnapshot,
 } from '@/lib/flow/effective-flow-map-snapshot';
 import {
@@ -29,11 +30,23 @@ import type { FlowItemState } from '@/lib/flow/types';
 import { buildPostSaveHref } from '@/lib/flow/post-save-receipt';
 import { setFlowItemPersonalExclusion } from '@/lib/flow/flow-item-state';
 import { recordCanonicalFlowWrite } from '@/lib/flow/canonical-flow-storage';
+import { formatKoreanShortDate } from '@/lib/flow/date';
+import type { FlowExperienceProjectionRow } from '@/lib/flow/flow-experience-projection';
 import {
   getFlowMapSaveWriteLockName,
   withStorageWriteLock,
 } from '@/lib/flow/storage-write-lock';
 import { FlowBottomSheet } from './FlowExecutionPrimitives';
+import {
+  PublicFlowAdjustmentPanel,
+  PublicFlowItemEditor,
+  type PublicFlowAdjustmentKind,
+  type PublicFlowItemEditorDraft,
+} from './PublicFlowAdjustmentPanel';
+import {
+  captureFlowEditorReturnPoint,
+  useFlowEditorController,
+} from './useFlowEditorController';
 import {
   FLOW_UI_INPUT_CLASS,
   FLOW_UI_PRIMARY_ACTION_CLASS,
@@ -61,12 +74,26 @@ type SourceBackedFlowMapSaveButtonProps = {
   q3CopyEnabled?: boolean;
   visualSubtractionEnabled?: boolean;
   onEffectiveSnapshotChange: (snapshot: EffectiveFlowMapSnapshot) => void;
+  editorRows: FlowExperienceProjectionRow[];
   savedFlows: SourceBackedFlowMapSavedFlow[];
   setupInput?: {
     label: string;
     hint: string;
     defaultValue?: string;
   };
+};
+
+type PublicFlowMapEditorPlanDraft = {
+  title: string;
+  anchor: string;
+  items: Record<string, { included: boolean }>;
+  order: string[];
+  itemPersonalizations: Record<string, EffectiveFlowMapItemPersonalization>;
+};
+
+type FlowMapPublicEditorHistoryState = {
+  mapId: string;
+  level: 'plan' | 'item';
 };
 
 type SaveFailure = {
@@ -122,6 +149,7 @@ export function SourceBackedFlowMapSaveButton({
   q3CopyEnabled = true,
   visualSubtractionEnabled = true,
   onEffectiveSnapshotChange,
+  editorRows,
   savedFlows,
   setupInput,
 }: SourceBackedFlowMapSaveButtonProps) {
@@ -133,13 +161,71 @@ export function SourceBackedFlowMapSaveButton({
     () => [...effectiveSnapshot.itemIds.effective],
   );
   const [adjustmentReturnFocusSelector, setAdjustmentReturnFocusSelector] = useState<string | undefined>();
+  const [mapAdjustmentKind, setMapAdjustmentKind] = useState<PublicFlowAdjustmentKind>('name');
+  const [itemEditorReturnFocusSelector, setItemEditorReturnFocusSelector] = useState<string | undefined>();
   const [saving, setSaving] = useState(false);
   const [saveFailure, setSaveFailure] = useState<SaveFailure | undefined>();
   const [saveBaselineState, setSaveBaselineState] = useState<FlowMapSaveBaselineState>('loading');
   const anchorInputRef = useRef<HTMLInputElement>(null);
   const editorHistoryMarkerRef = useRef<string | null>(null);
+  const sharedEditorHistoryActionRef = useRef<(() => void) | null>(null);
+  const sharedEditorPlanCommitRef = useRef<(draft: Readonly<PublicFlowMapEditorPlanDraft>) => void>(
+    () => undefined,
+  );
+  const sharedEditorClosedRef = useRef<(level: 'plan' | 'item') => void>(() => undefined);
+  const sharedEditorHistoryRearmRef = useRef<(level: 'plan' | 'item') => void>(() => undefined);
+  const sharedEditorActiveLevelRef = useRef<'plan' | 'item' | undefined>(undefined);
   const saveBaselineRawRef = useRef<Record<string, string | null> | undefined>(undefined);
   const conflictRecoveryRef = useRef<HTMLAnchorElement>(null);
+  const sharedEditor = useFlowEditorController<
+    PublicFlowMapEditorPlanDraft,
+    PublicFlowItemEditorDraft
+  >({
+    handlers: {
+      preparePublicDraft: ({ draft }) => ({
+        commit: () => sharedEditorPlanCommitRef.current(draft),
+        rollbackAndVerify: () => true,
+      }),
+      applyItemToParentPublicDraft: ({ parentDraft, itemDraft }) => {
+        const currentPersonalization = parentDraft.itemPersonalizations[itemDraft.itemId];
+        const canonicalRow = effectiveSnapshot.canonicalRows.find(
+          (row) => row.itemId === itemDraft.itemId,
+        );
+        const nextPersonalization: EffectiveFlowMapItemPersonalization = {
+          ...(itemDraft.title.trim() && itemDraft.title.trim() !== canonicalRow?.title
+            ? { title: itemDraft.title.trim() }
+            : {}),
+          ...(itemDraft.detail.trim() ? { detail: itemDraft.detail.trim() } : {}),
+          // Public Flow Map Item dates are not yet an editable capability.
+          // Preserve an existing private override without materializing the
+          // source-derived date that is shown read-only in the Plan list.
+          ...(currentPersonalization?.date ? { date: currentPersonalization.date } : {}),
+        };
+        const itemPersonalizations = { ...parentDraft.itemPersonalizations };
+        if (Object.keys(nextPersonalization).length > 0) {
+          itemPersonalizations[itemDraft.itemId] = nextPersonalization;
+        } else {
+          delete itemPersonalizations[itemDraft.itemId];
+        }
+        return {
+          draft: { ...parentDraft, itemPersonalizations },
+          validation: { valid: true },
+        };
+      },
+      preparePersonalOverlay: () => {
+        throw new Error('Public Flow Map editor cannot commit a saved personal overlay.');
+      },
+      applyItemToParentPersonalDraft: () => {
+        throw new Error('Public Flow Map editor cannot mutate a saved personal draft.');
+      },
+    },
+    onTransactionClosed: (level) => sharedEditorClosedRef.current(level),
+    onRearmHistoryBoundary: () => {
+      const level = sharedEditorActiveLevelRef.current;
+      if (level) sharedEditorHistoryRearmRef.current(level);
+    },
+  });
+  sharedEditorActiveLevelRef.current = sharedEditor.active?.level;
   const unifiedPublicResult = selectedArtifactMode !== undefined;
   const showsAnchorInput = Boolean(setupInput)
     && (!unifiedPublicResult || selectedArtifactMode === 'calendar');
@@ -232,6 +318,167 @@ export function SourceBackedFlowMapSaveButton({
     return () => window.removeEventListener('popstate', closeOnBrowserBack);
   }, [adjusting, effectiveSnapshot.snapshotHash]);
 
+  const validateSharedPlanDraft = (draft: Readonly<PublicFlowMapEditorPlanDraft>) => {
+    if (!draft.title.trim()) {
+      return {
+        valid: false as const,
+        firstErrorFocus: '[data-testid="public-flow-adjustment-name-input"]',
+      };
+    }
+    if (!draft.order.some((itemId) => draft.items[itemId]?.included)) {
+      return {
+        valid: false as const,
+        firstErrorFocus: '[data-testid="public-flow-adjustment-item-list"]',
+      };
+    }
+    return { valid: true as const };
+  };
+
+  const buildSharedPlanDraft = (): PublicFlowMapEditorPlanDraft => ({
+    title: effectiveSnapshot.effectiveTitle,
+    anchor,
+    items: Object.fromEntries(effectiveSnapshot.itemIds.canonical.map((itemId) => [
+      itemId,
+      { included: effectiveSnapshot.itemIds.effective.includes(itemId) },
+    ])),
+    order: editorRows.length > 0
+      ? editorRows.map((row) => row.id)
+      : [...effectiveSnapshot.itemIds.effective, ...effectiveSnapshot.itemIds.excluded],
+    itemPersonalizations: structuredClone(effectiveSnapshot.itemPersonalizations),
+  });
+
+  const pushSharedEditorHistory = (level: FlowMapPublicEditorHistoryState['level']) => {
+    const currentState = window.history.state;
+    const baseState = currentState && typeof currentState === 'object'
+      ? currentState as Record<string, unknown>
+      : {};
+    window.history.pushState({
+      ...baseState,
+      flowMapPublicEditor: {
+        mapId: effectiveSnapshot.identity.mapId,
+        level,
+      } satisfies FlowMapPublicEditorHistoryState,
+    }, '', window.location.href);
+  };
+
+  const closeSharedEditorHistory = (
+    level: FlowMapPublicEditorHistoryState['level'],
+    action: () => void,
+  ) => {
+    const marker = window.history.state?.flowMapPublicEditor as Partial<
+      FlowMapPublicEditorHistoryState
+    > | undefined;
+    if (marker?.mapId === effectiveSnapshot.identity.mapId && marker.level === level) {
+      sharedEditorHistoryActionRef.current = action;
+      window.history.back();
+      return;
+    }
+    action();
+  };
+
+  sharedEditorHistoryRearmRef.current = pushSharedEditorHistory;
+  sharedEditorClosedRef.current = (level) => {
+    closeSharedEditorHistory(level, () => {
+      if (level === 'item') {
+        setItemEditorReturnFocusSelector(undefined);
+        return;
+      }
+      setItemEditorReturnFocusSelector(undefined);
+      setAdjustmentReturnFocusSelector(undefined);
+    });
+  };
+  sharedEditorPlanCommitRef.current = (draft) => {
+    const selectedItemIds = draft.order.filter((itemId) => draft.items[itemId]?.included);
+    const itemPersonalizations = Object.fromEntries(
+      effectiveSnapshot.itemIds.canonical.map((itemId) => [
+        itemId,
+        draft.itemPersonalizations[itemId] ?? null,
+      ]),
+    );
+    const nextSnapshot = reviseEffectiveFlowMapSnapshot(effectiveSnapshot, {
+      effectiveTitle: draft.title.trim() || defaultTitle,
+      selectedItemIds,
+      itemPersonalizations,
+    });
+    onEffectiveSnapshotChange(nextSnapshot);
+    onAnchorChange(draft.anchor);
+    setSaveFailure((current) => current?.kind === 'conflict' ? current : undefined);
+  };
+
+  useEffect(() => {
+    if (!visualSubtractionEnabled) return;
+    const handleSharedEditorPopState = () => {
+      const scheduledAction = sharedEditorHistoryActionRef.current;
+      if (scheduledAction) {
+        sharedEditorHistoryActionRef.current = null;
+        scheduledAction();
+        return;
+      }
+      if (sharedEditor.active) sharedEditor.requestClose('browser-back');
+    };
+    window.addEventListener('popstate', handleSharedEditorPopState);
+    return () => window.removeEventListener('popstate', handleSharedEditorPopState);
+  }, [sharedEditor.active, sharedEditor.requestClose, visualSubtractionEnabled]);
+
+  const openSharedAdjustment = (returnFocusSelector: string) => {
+    const draft = buildSharedPlanDraft();
+    setAdjustmentReturnFocusSelector(returnFocusSelector);
+    setItemEditorReturnFocusSelector(undefined);
+    setMapAdjustmentKind('name');
+    setSaveFailure((current) => current?.kind === 'conflict' ? current : undefined);
+    sharedEditor.openPlan({
+      id: `public-map-plan:${effectiveSnapshot.identity.mapId}:${Date.now()}`,
+      context: 'public-draft',
+      draft,
+      returnPoint: captureFlowEditorReturnPoint({
+        targetKey: `public-map-plan-opener:${effectiveSnapshot.identity.mapId}`,
+        fallbackSelector: returnFocusSelector,
+      }),
+    });
+    pushSharedEditorHistory('plan');
+  };
+
+  const openSharedItemEditor = (
+    item: {
+      id: string;
+      title: string;
+      detail?: string;
+      date?: string;
+      completionCriterion?: string;
+      sourceUrl?: string;
+      warning?: string;
+    },
+    returnFocusSelector: string,
+  ) => {
+    const parentDraft = sharedEditor.session?.plan?.draft;
+    if (!parentDraft) return;
+    const personalization = parentDraft.itemPersonalizations[item.id];
+    setItemEditorReturnFocusSelector(returnFocusSelector);
+    pushSharedEditorHistory('item');
+    sharedEditor.openItem({
+      id: `public-map-item:${effectiveSnapshot.identity.mapId}:${item.id}:${Date.now()}`,
+      draft: {
+        itemId: item.id,
+        title: item.title,
+        // Map source prose remains read-only. Only the private memo layer is
+        // copied into the editable field.
+        detail: personalization?.detail ?? '',
+        date: personalization?.date ?? item.date ?? '',
+        completionCriterion: item.completionCriterion,
+        sourceUrl: item.sourceUrl,
+        warning: item.warning,
+      },
+      returnPoint: captureFlowEditorReturnPoint({
+        targetKey: `public-map-item-opener:${item.id}`,
+        fallbackSelector: returnFocusSelector,
+        scrollTargets: [{
+          targetKey: 'public-plan-items',
+          selector: '[data-testid="public-flow-adjustment-item-list"]',
+        }],
+      }),
+    });
+  };
+
   const toggleDraftStep = (itemId: string) => {
     setSelectedItemIdsDraft((current) => current.includes(itemId)
       ? current.filter((id) => id !== itemId)
@@ -239,6 +486,10 @@ export function SourceBackedFlowMapSaveButton({
   };
 
   const openAdjustment = (returnFocusSelector: string) => {
+    if (visualSubtractionEnabled) {
+      openSharedAdjustment(returnFocusSelector);
+      return;
+    }
     resetDraftFromApplied();
     setAdjustmentReturnFocusSelector(returnFocusSelector);
     setSaveFailure((current) => current?.kind === 'conflict' ? current : undefined);
@@ -371,9 +622,11 @@ export function SourceBackedFlowMapSaveButton({
         const storedSnapshot = parseStoredJson(transactionStorage, keyPlan.mapSnapshotKey) as {
           title?: unknown;
           stepCountsByFlow?: unknown;
+          personalCopy?: { stepOverridesByFlow?: unknown };
         };
         const storedPersistence = parseStoredJson(transactionStorage, keyPlan.mapPersistenceKey) as {
           map?: { title?: unknown };
+          personalCopy?: { stepOverridesByFlow?: unknown };
         };
         const storedCount = storedSnapshot.stepCountsByFlow
           && typeof storedSnapshot.stepCountsByFlow === 'object'
@@ -386,6 +639,10 @@ export function SourceBackedFlowMapSaveButton({
           || storedPersistence.map?.title !== persistenceSelection.title
           || storedCount !== persistenceSelection.selectedItemIds.length
           || JSON.stringify(storedItemIds) !== JSON.stringify(persistenceSelection.selectedItemIds)
+          || JSON.stringify(storedSnapshot.personalCopy?.stepOverridesByFlow ?? {})
+            !== JSON.stringify(persistenceSelection.stepOverridesByFlow)
+          || JSON.stringify(storedPersistence.personalCopy?.stepOverridesByFlow ?? {})
+            !== JSON.stringify(persistenceSelection.stepOverridesByFlow)
         ) {
           throw new Error('Stored Flow Map does not match the applied effective snapshot');
         }
@@ -407,13 +664,82 @@ export function SourceBackedFlowMapSaveButton({
     window.location.href = buildPostSaveHref({ kind: 'map', id: effectiveSnapshot.identity.mapId });
   };
 
+  const sharedPlanDraft = visualSubtractionEnabled
+    ? sharedEditor.session?.plan?.draft
+    : undefined;
+  const sharedItemDraft = visualSubtractionEnabled
+    ? sharedEditor.session?.item?.draft
+    : undefined;
+  const sharedIncludedCount = sharedPlanDraft
+    ? sharedPlanDraft.order.filter((itemId) => sharedPlanDraft.items[itemId]?.included).length
+    : 0;
+  const sharedResultSummary = selectedArtifactMode === 'calendar'
+    ? '캘린더 결과'
+    : selectedArtifactMode === 'checklist'
+      ? 'Todo 결과'
+      : 'Text 결과';
+  const sharedKindOptions = [
+    { kind: 'name' as const, label: '계획 이름', summary: '저장할 이름 바꾸기' },
+    ...(showsAnchorInput
+      ? [{ kind: 'anchor' as const, label: setupInput?.label ?? '시작 기준', summary: '날짜 기준 바꾸기' }]
+      : []),
+    { kind: 'items' as const, label: '할 일', summary: '내용·포함·순서 조정' },
+  ];
+  const sharedItemReorderEnabled = new Set(
+    effectiveSnapshot.canonicalRows.map((row) => row.flowSlug),
+  ).size <= 1;
+  const sharedEditorRowById = new Map(editorRows.map((row) => [row.id, row] as const));
+  const sharedAdjustmentItems = sharedPlanDraft
+    ? sharedPlanDraft.order.flatMap((itemId, index) => {
+        const row = sharedEditorRowById.get(itemId);
+        if (!row) return [];
+        const personalization = sharedPlanDraft.itemPersonalizations[itemId];
+        const title = personalization?.title ?? row.title;
+        const sourceUrl = row.resources.find((resource) => /^https?:\/\//u.test(resource.url))?.url
+          ?? effectiveSnapshot.identity.sourceUrl;
+        return [{
+          id: itemId,
+          title,
+          detail: personalization?.detail,
+          date: row.schedule.date,
+          dateLabel: row.schedule.date
+            ? formatKoreanShortDate(row.schedule.date, { includeWeekday: false })
+            : '날짜 없음',
+          included: sharedPlanDraft.items[itemId]?.included === true,
+          canMoveUp: index > 0,
+          canMoveDown: index < sharedPlanDraft.order.length - 1,
+          completionCriterion: row.completionCriterion,
+          sourceUrl,
+          warning: row.caution,
+        }];
+      })
+    : [];
+  const sharedPlanTransaction = sharedEditor.session?.plan ? {
+    status: sharedEditor.session.plan.status,
+    failure: sharedEditor.session.plan.failure,
+    pendingClose: Boolean(sharedEditor.session.plan.pendingClose),
+    onRequestClose: sharedEditor.requestClose,
+    onContinueEditing: sharedEditor.continueEditing,
+    onDiscardChanges: sharedEditor.discardChanges,
+    onRetry: sharedEditor.requestCommit,
+  } : undefined;
+  const sharedItemTransaction = sharedEditor.session?.item ? {
+    status: sharedEditor.session.item.status,
+    failure: sharedEditor.session.item.failure,
+    pendingClose: Boolean(sharedEditor.session.item.pendingClose),
+    onRequestClose: sharedEditor.requestClose,
+    onContinueEditing: sharedEditor.continueEditing,
+    onDiscardChanges: sharedEditor.discardChanges,
+    onRetry: sharedEditor.requestCommit,
+  } : undefined;
+
   const desktopEditButton = editAction ? (
     <button
       className={`${visualSubtractionEnabled ? 'min-h-12' : 'min-h-11'} rounded-lg border border-[#D9D6CF] bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:border-[#3654FF]/40 hover:text-[#3654FF] disabled:text-slate-400`}
       data-testid="flow-map-adjust-save"
       data-map-action-intent={editAction.intent}
       type="button"
-      aria-expanded={adjusting}
+      aria-expanded={visualSubtractionEnabled ? Boolean(sharedPlanDraft) : adjusting}
       disabled={saving}
       onClick={() => openAdjustment('[data-testid="flow-map-adjust-save"]')}
     >
@@ -538,7 +864,7 @@ export function SourceBackedFlowMapSaveButton({
               data-testid="flow-map-adjust-save-mobile"
               data-map-action-intent={editAction.intent}
               type="button"
-              aria-expanded={adjusting}
+              aria-expanded={visualSubtractionEnabled ? Boolean(sharedPlanDraft) : adjusting}
               disabled={saving}
               onClick={() => openAdjustment('[data-testid="flow-map-adjust-save-mobile"]')}
             >
@@ -552,7 +878,100 @@ export function SourceBackedFlowMapSaveButton({
           </button>
         </div>
       </div>
-      {adjusting && editAction ? (
+      {visualSubtractionEnabled && sharedPlanDraft && editAction ? (
+        <PublicFlowAdjustmentPanel
+          sharedEditorEnabled
+          q3CopyEnabled={q3CopyEnabled}
+          approvedPlanExecution
+          transaction={sharedPlanTransaction}
+          kind={mapAdjustmentKind}
+          kindOptions={sharedKindOptions}
+          currentResult={{
+            title: effectiveSnapshot.effectiveTitle,
+            itemCount: effectiveSnapshot.counts.effective,
+            resultSummary: sharedResultSummary,
+          }}
+          adjustedResult={{
+            title: sharedPlanDraft.title.trim() || defaultTitle,
+            itemCount: sharedIncludedCount,
+            resultSummary: sharedResultSummary,
+          }}
+          titleDraft={sharedPlanDraft.title}
+          anchorLabel={showsAnchorInput ? setupInput?.label : undefined}
+          anchorDraft={sharedPlanDraft.anchor}
+          items={sharedAdjustmentItems}
+          sourceUrl={effectiveSnapshot.identity.sourceUrl}
+          warning={actionContract.risk.caution?.text}
+          capabilities={{ itemEdit: true, itemReorder: sharedItemReorderEnabled }}
+          applyDisabled={!sharedPlanDraft.title.trim() || sharedIncludedCount === 0}
+          onKindChange={setMapAdjustmentKind}
+          onTitleChange={(value) => sharedEditor.updatePlanDraft(
+            (current) => ({ ...current, title: value }),
+            validateSharedPlanDraft,
+          )}
+          onAnchorChange={showsAnchorInput ? (value) => sharedEditor.updatePlanDraft(
+            (current) => ({ ...current, anchor: value }),
+            validateSharedPlanDraft,
+          ) : undefined}
+          onItemIncludedChange={(itemId, included) => sharedEditor.updatePlanDraft(
+            (current) => ({
+              ...current,
+              items: { ...current.items, [itemId]: { included } },
+            }),
+            validateSharedPlanDraft,
+          )}
+          onItemMove={(itemId, direction) => sharedEditor.updatePlanDraft(
+            (current) => {
+              const currentIndex = current.order.indexOf(itemId);
+              const nextIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+              if (currentIndex < 0 || nextIndex < 0 || nextIndex >= current.order.length) {
+                return { ...current, order: [...current.order] };
+              }
+              const order = [...current.order];
+              [order[currentIndex], order[nextIndex]] = [order[nextIndex], order[currentIndex]];
+              return { ...current, order };
+            },
+            validateSharedPlanDraft,
+          )}
+          onItemEdit={openSharedItemEditor}
+          onApply={sharedEditor.requestCommit}
+          onCancel={() => sharedEditor.requestClose('cancel')}
+        />
+      ) : null}
+      {visualSubtractionEnabled && sharedItemDraft ? (
+        <PublicFlowItemEditor
+          draft={sharedItemDraft}
+          returnFocusSelector={itemEditorReturnFocusSelector}
+          sharedEditorEnabled
+          q3CopyEnabled={q3CopyEnabled}
+          approvedPlanExecution
+          fieldCapabilities={{ title: true, detail: true, date: false }}
+          transaction={sharedItemTransaction}
+          onChange={(draft) => sharedEditor.replaceItemDraft(
+            draft,
+            draft.title.trim()
+              ? { valid: true }
+              : {
+                  valid: false,
+                  firstErrorFocus: '[data-testid="public-flow-item-editor-title-input"]',
+                },
+          )}
+          onSave={(draft) => {
+            sharedEditor.replaceItemDraft(
+              { ...draft, title: draft.title.trim() },
+              draft.title.trim()
+                ? { valid: true }
+                : {
+                    valid: false,
+                    firstErrorFocus: '[data-testid="public-flow-item-editor-title-input"]',
+                  },
+            );
+            sharedEditor.requestCommit();
+          }}
+          onClose={() => sharedEditor.requestClose('cancel')}
+        />
+      ) : null}
+      {!visualSubtractionEnabled && adjusting && editAction ? (
         <FlowBottomSheet
           testId="flow-map-adjust-panel"
           headingId="flow-map-adjust-panel-title"

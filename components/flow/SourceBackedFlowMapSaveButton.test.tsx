@@ -6,6 +6,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import {
   buildEffectiveFlowMapSnapshot,
 } from '@/lib/flow/effective-flow-map-snapshot';
+import { buildEffectiveFlowMapResult } from '@/lib/flow/effective-flow-map-result';
 import {
   buildSourceBackedFlowMapPublishPackage,
 } from '@/lib/flow/source-backed-my-flow';
@@ -37,6 +38,11 @@ function renderMapActions(
         : 'checklist' as const,
     steps: flow.steps.map((step) => ({ id: step.id, title: step.title })),
   }));
+  const editorRows = buildEffectiveFlowMapResult({
+    publishPackage,
+    mapSnapshot: effectiveSnapshot,
+    q3CopyEnabled,
+  }).editorRows;
 
   return renderToStaticMarkup(
     <SourceBackedFlowMapSaveButton
@@ -49,6 +55,7 @@ function renderMapActions(
       q3CopyEnabled={q3CopyEnabled}
       visualSubtractionEnabled={visualSubtractionEnabled}
       onEffectiveSnapshotChange={() => undefined}
+      editorRows={editorRows}
       savedFlows={savedFlows}
       setupInput={{ label: '시작일', hint: '시작일을 정합니다.' }}
     />,

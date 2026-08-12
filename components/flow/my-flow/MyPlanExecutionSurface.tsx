@@ -21,18 +21,21 @@ export type MyPlanExecutionSurfaceModel<Data = unknown> = Readonly<{
   transferOpen: boolean;
   transferItemCount: number;
   activeItemOpen: boolean;
+  editAvailable?: boolean;
 }>;
 
 export type MyPlanExecutionSurfaceActions<Data = unknown> = Readonly<{
   getItemHref: (todo: DateGroupedTodoRow<Data>) => string;
   onOpenItem: (todo: DateGroupedTodoRow<Data>) => void;
   onToggleItem: (todo: DateGroupedTodoRow<Data>) => void;
+  onBackToLibrary?: () => void;
   onEditPlan: () => void;
   onToggleTransfer: () => void;
   onCloseTransfer: () => void;
 }>;
 
 export type MyPlanExecutionSurfaceRenderers = Readonly<{
+  renderManagementMenu?: () => ReactNode;
   renderTransferPanel: (options: Readonly<{ showClose: boolean }>) => ReactNode;
   renderItemDetail: () => ReactNode;
 }>;
@@ -58,6 +61,7 @@ export function MyPlanExecutionSurface<Data = unknown>({
     transferOpen,
     transferItemCount,
     activeItemOpen,
+    editAvailable = true,
   } = model;
 
   return (
@@ -79,14 +83,28 @@ export function MyPlanExecutionSurface<Data = unknown>({
       >
       <div className="min-w-0">
         <header className="flex flex-wrap items-start justify-between gap-3 border-b border-[var(--flowme-border)] pb-4">
-          <div className="min-w-0">
-            <h3 className="break-words text-xl font-semibold text-[var(--flowme-text)]">
-              {flowTitle}
-            </h3>
-            <p className="mt-1 text-sm font-semibold text-[var(--flowme-text-secondary)]">
-              {progressLabel}
-            </p>
+          <div className="flex min-w-0 flex-1 items-start gap-2">
+            {actions.onBackToLibrary ? (
+              <button
+                type="button"
+                data-testid="my-plan-library-back"
+                aria-label="저장한 계획 목록으로 돌아가기"
+                className="inline-flex min-h-12 min-w-12 shrink-0 items-center justify-center rounded-md text-xl font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                onClick={actions.onBackToLibrary}
+              >
+                <span aria-hidden="true">‹</span>
+              </button>
+            ) : null}
+            <div className="min-w-0">
+              <h3 className="break-words text-xl font-semibold text-[var(--flowme-text)]">
+                {flowTitle}
+              </h3>
+              <p className="mt-1 text-sm font-semibold text-[var(--flowme-text-secondary)]">
+                {progressLabel}
+              </p>
+            </div>
           </div>
+          {renderers.renderManagementMenu?.()}
         </header>
 
         <DateGroupedTodoList
@@ -104,15 +122,22 @@ export function MyPlanExecutionSurface<Data = unknown>({
           onToggleItem={(todo) => actions.onToggleItem(todo)}
         />
 
-        <div className="grid gap-2 border-t border-[var(--flowme-border)] pt-4 sm:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
-          <button
-            type="button"
-            data-testid="my-plan-edit"
-            className="inline-flex min-h-12 items-center justify-center rounded-md border border-[var(--flowme-border-strong)] bg-white px-4 text-sm font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
-            onClick={actions.onEditPlan}
-          >
-            수정
-          </button>
+        <div
+          data-testid="my-plan-actions"
+          className={`grid gap-2 border-t border-[var(--flowme-border)] pt-4 ${editAvailable
+            ? 'sm:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]'
+            : 'grid-cols-1'}`}
+        >
+          {editAvailable ? (
+            <button
+              type="button"
+              data-testid="my-plan-edit"
+              className="inline-flex min-h-12 items-center justify-center rounded-md border border-[var(--flowme-border-strong)] bg-white px-4 text-sm font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+              onClick={actions.onEditPlan}
+            >
+              수정
+            </button>
+          ) : null}
           <button
             type="button"
             data-testid="my-flow-export-entry"

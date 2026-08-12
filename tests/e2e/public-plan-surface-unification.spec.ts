@@ -23,7 +23,7 @@ const PUBLIC_SURFACE_CASES: readonly PublicSurfaceCase[] = [
     label: 'OPIc mock course',
     route: '/flow-maps/curated-opic-mock-course',
     planKind: 'map',
-    saveMode: 'save_all',
+    saveMode: 'choose_child',
   },
   {
     label: 'reading routine',
@@ -336,7 +336,7 @@ test.describe('public plan surface unification', () => {
 
   test('Calendar without its required anchor keeps the date action enabled and focuses the shared input', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/flow-maps/curated-opic-mock-course');
+    await page.goto('/flow-maps/postal-address-transfer');
 
     const result = page.getByTestId('public-flow-capability-result');
     await result.locator(
@@ -349,13 +349,13 @@ test.describe('public plan surface unification', () => {
     const storageBefore = await readRawStorage(page);
     const action = page.getByTestId('flow-map-save-all-mobile');
     await expect(action).toBeEnabled();
-    await expect(action).toHaveText('시작일 정하기');
+    await expect(action).toHaveText('전입신고일 정하기');
     await action.click();
     await expect(anchor).toBeFocused();
     expect(await readRawStorage(page)).toEqual(storageBefore);
   });
 
-  test('explicit rollback flags preserve the prior Flow and choose-child Map presentation', async ({ page }) => {
+  test('explicit rollback flags preserve the prior Flow, dated Map, and choose-child Map presentations', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
 
     await page.goto('/f/curated-allblanc-no-jump-cardio?savedPlanLibrary=off');
@@ -364,7 +364,7 @@ test.describe('public plan surface unification', () => {
       'default',
     );
 
-    await page.goto('/flow-maps/curated-opic-mock-course?visualSubtraction=off');
+    await page.goto('/flow-maps/postal-address-transfer?visualSubtraction=off');
     await expect(page.getByTestId('platform-nav')).toBeVisible();
     await expect(page.getByTestId('platform-mobile-tabs')).toBeVisible();
     await expect(page.getByTestId('flow-public-shell')).toHaveCount(0);

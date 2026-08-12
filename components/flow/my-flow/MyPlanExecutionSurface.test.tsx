@@ -87,7 +87,54 @@ test('desktop full keeps the approved plan DOM contract and empty inspector', ()
   assert.match(markup, /Todo 본문을 열면 메모를 여기에서 확인할 수 있습니다\./u);
   assert.match(markup, /내 도구로 옮기기 · 2개/u);
   assert.match(markup, /aria-expanded="false"/u);
+  assert.doesNotMatch(markup, /계획 관리/u);
+  assert.doesNotMatch(markup, /data-testid="my-plan-library-back"/u);
   assert.doesNotMatch(markup, /data-testid="my-plan-transfer-sheet"/u);
+});
+
+test('header renders one optional accessible 48px Back target', () => {
+  const markup = renderToStaticMarkup(
+    <MyPlanExecutionSurface
+      model={buildModel({ composition: 'mobile' })}
+      actions={{ ...actions, onBackToLibrary: () => undefined }}
+      renderers={renderers}
+    />,
+  );
+
+  assert.equal(markup.match(/data-testid="my-plan-library-back"/gu)?.length, 1);
+  assert.match(markup, /aria-label="저장한 계획 목록으로 돌아가기"/u);
+  assert.match(
+    markup,
+    /data-testid="my-plan-library-back"[^>]*class="[^"]*min-h-12[^"]*min-w-12/u,
+  );
+  assert.match(markup, /<span aria-hidden="true">‹<\/span>/u);
+});
+
+test('header renders one optional management slot without duplicating the existing actions', () => {
+  let renderManagementMenuCount = 0;
+  const markup = renderToStaticMarkup(
+    <MyPlanExecutionSurface
+      model={buildModel()}
+      actions={actions}
+      renderers={{
+        ...renderers,
+        renderManagementMenu: () => {
+          renderManagementMenuCount += 1;
+          return (
+            <button type="button" data-testid="plan-management-menu">
+              계획 관리
+            </button>
+          );
+        },
+      }}
+    />,
+  );
+
+  assert.equal(renderManagementMenuCount, 1);
+  assert.equal(markup.match(/data-testid="plan-management-menu"/gu)?.length, 1);
+  assert.equal(markup.match(/>수정<\/button>/gu)?.length, 1);
+  assert.equal(markup.match(/내 도구로 옮기기 · 2개/gu)?.length, 1);
+  assert.equal(markup.match(/>계획 관리<\/button>/gu)?.length, 1);
 });
 
 test('stacked composition places the active item detail below the todo list', () => {
@@ -103,6 +150,24 @@ test('stacked composition places the active item detail below the todo list', ()
   assert.match(markup, /data-testid="item-detail"/u);
   assert.doesNotMatch(markup, /data-testid="my-plan-item-inspector"/u);
   assert.doesNotMatch(markup, /data-testid="my-plan-transfer-sheet"/u);
+});
+
+test('export uses the full one-column action row when editing is unavailable', () => {
+  const markup = renderToStaticMarkup(
+    <MyPlanExecutionSurface
+      model={buildModel({ editAvailable: false })}
+      actions={actions}
+      renderers={renderers}
+    />,
+  );
+  const actionRowClass = markup.match(
+    /data-testid="my-plan-actions" class="([^"]+)"/u,
+  )?.[1] ?? '';
+
+  assert.doesNotMatch(markup, /data-testid="my-plan-edit"/u);
+  assert.equal(markup.match(/data-testid="my-flow-export-entry"/gu)?.length, 1);
+  assert.match(actionRowClass, /\bgrid-cols-1\b/u);
+  assert.doesNotMatch(actionRowClass, /sm:grid-cols/u);
 });
 
 test('mobile transfer keeps the bottom sheet, back action, and hidden inner close control', () => {

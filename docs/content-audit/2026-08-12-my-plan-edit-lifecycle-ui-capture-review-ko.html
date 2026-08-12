@@ -1,0 +1,795 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <link rel="icon" href="data:,">
+  <title>내 계획 편집 UX 통합 · UI 캡처 리뷰</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #0b1736;
+      --text: #26324d;
+      --muted: #68738c;
+      --line: #dbe3f2;
+      --line-strong: #b9c8e6;
+      --paper: #ffffff;
+      --canvas: #f7f9fd;
+      --soft: #eef4ff;
+      --soft-2: #f2f6ff;
+      --blue: #1155cc;
+      --blue-deep: #0a3d91;
+      --green: #087a56;
+      --green-soft: #eaf7f1;
+      --amber: #8a5100;
+      --amber-soft: #fff4dc;
+      --red: #b42318;
+      --red-soft: #fff0ee;
+      --radius-lg: 24px;
+      --radius: 16px;
+      --shadow: 0 18px 50px rgba(19, 45, 91, .08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--text);
+      background: var(--canvas);
+      font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", Inter, system-ui, sans-serif;
+      line-height: 1.62;
+      word-break: keep-all;
+    }
+    img { display: block; max-width: 100%; }
+    a { color: var(--blue-deep); text-underline-offset: 3px; }
+    h1, h2, h3, p, figure, blockquote { margin-top: 0; }
+    h1, h2, h3 { color: var(--ink); }
+
+    .page {
+      width: min(1240px, calc(100% - 36px));
+      margin: 0 auto;
+      padding: 24px 0 90px;
+    }
+    .hero,
+    .panel,
+    .compare-card,
+    .origin-card,
+    .evidence-card {
+      border: 1px solid var(--line);
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+    .hero {
+      position: relative;
+      overflow: hidden;
+      min-height: 460px;
+      padding: clamp(30px, 6vw, 76px);
+      border-radius: 30px;
+    }
+    .hero::before {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 9px;
+      height: 100%;
+      background: var(--blue);
+      content: "";
+    }
+    .hero-kicker,
+    .eyebrow {
+      margin-bottom: 10px;
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    h1 {
+      max-width: 920px;
+      margin-bottom: 18px;
+      font-size: clamp(42px, 7vw, 84px);
+      line-height: 1.02;
+      letter-spacing: -.055em;
+    }
+    .lead {
+      max-width: 870px;
+      margin-bottom: 26px;
+      color: #34415c;
+      font-size: clamp(18px, 2.4vw, 24px);
+      line-height: 1.55;
+    }
+    .scope-row,
+    .nav-row,
+    .tag-row,
+    .metric-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .scope,
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      padding: 5px 11px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fbfcff;
+      color: #44516b;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .scope.strong { border-color: #a9bfea; background: var(--soft); color: var(--blue-deep); }
+    .scope.warn { border-color: #ebcc91; background: var(--amber-soft); color: var(--amber); }
+    .nav-row { margin-top: 28px; }
+    .nav-row a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 42px;
+      padding: 8px 13px;
+      border: 1px solid var(--ink);
+      border-radius: 10px;
+      background: var(--ink);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 850;
+      text-decoration: none;
+    }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 34px;
+    }
+    .metric {
+      min-height: 112px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--soft-2);
+    }
+    .metric b {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--blue-deep);
+      font-size: 34px;
+      line-height: 1;
+    }
+    .metric span { color: var(--muted); font-size: 13px; }
+
+    section {
+      margin-top: 70px;
+      scroll-margin-top: 20px;
+    }
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(280px, .7fr);
+      align-items: end;
+      gap: 30px;
+      margin-bottom: 22px;
+    }
+    h2 {
+      margin-bottom: 8px;
+      font-size: clamp(30px, 4.4vw, 52px);
+      line-height: 1.12;
+      letter-spacing: -.04em;
+    }
+    .section-head p { margin-bottom: 0; color: var(--muted); }
+    .rule-note {
+      padding: 17px 19px;
+      border-left: 4px solid var(--blue);
+      background: var(--soft);
+      color: #35435f;
+      font-size: 14px;
+    }
+
+    .feedback-layout {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+    .feedback-rail {
+      position: sticky;
+      top: 18px;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+    }
+    .feedback-rail h3 { margin-bottom: 18px; font-size: 18px; }
+    .feedback-list { display: grid; gap: 16px; }
+    .feedback-item {
+      display: grid;
+      grid-template-columns: 30px minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+    }
+    .number {
+      display: inline-grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--blue);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .feedback-item b { display: block; color: var(--ink); font-size: 14px; }
+    .feedback-item span { color: var(--muted); font-size: 12px; }
+    .feedback-body { display: grid; gap: 18px; }
+    .quote-card {
+      padding: 22px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: var(--soft-2);
+    }
+    blockquote {
+      margin-bottom: 8px;
+      color: var(--ink);
+      font-size: clamp(18px, 2.5vw, 26px);
+      font-weight: 800;
+      line-height: 1.45;
+    }
+    .quote-card cite { color: var(--muted); font-size: 12px; font-style: normal; }
+    .photo-grid,
+    .compare-grid,
+    .lifecycle-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    figure { margin-bottom: 0; }
+    .shot-frame {
+      display: grid;
+      place-items: center;
+      min-height: 280px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #edf1f7;
+      overflow: hidden;
+    }
+    .shot-frame img {
+      width: auto;
+      max-height: 720px;
+      border-radius: 11px;
+      box-shadow: 0 12px 30px rgba(10, 26, 58, .16);
+    }
+    .shot-frame.wide img { width: 100%; max-height: none; }
+    figcaption {
+      padding: 10px 4px 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    figcaption b { color: var(--ink); }
+    .audit-summary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .audit-point {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--paper);
+    }
+    .audit-point b { display: block; margin-bottom: 6px; color: var(--ink); }
+    .audit-point p { margin-bottom: 0; color: var(--muted); font-size: 13px; }
+
+    .compare-card {
+      overflow: hidden;
+      border-radius: var(--radius-lg);
+    }
+    .compare-copy {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(300px, .7fr);
+      gap: 22px;
+      padding: 24px;
+      border-bottom: 1px solid var(--line);
+    }
+    .compare-copy h3 { margin-bottom: 8px; font-size: 24px; }
+    .compare-copy p { margin-bottom: 0; color: var(--muted); }
+    .result-box {
+      padding: 16px;
+      border-left: 4px solid var(--green);
+      background: var(--green-soft);
+      color: #285344;
+      font-size: 14px;
+    }
+    .compare-grid { padding: 18px; background: #f7f9fc; }
+    .shot-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 900;
+    }
+    .shot-label .before { color: var(--red); }
+    .shot-label .after { color: var(--green); }
+
+    .origin-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .origin-card {
+      overflow: hidden;
+      border-radius: var(--radius-lg);
+    }
+    .origin-copy { padding: 20px 20px 16px; }
+    .origin-copy h3 { margin: 6px 0 8px; font-size: 22px; }
+    .origin-copy p { margin-bottom: 0; color: var(--muted); font-size: 14px; }
+    .origin-card .shot-frame { margin: 0 16px 16px; }
+    .origin-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-top: 1px solid var(--line);
+    }
+    .origin-meta div { padding: 13px 16px; font-size: 12px; }
+    .origin-meta div + div { border-left: 1px solid var(--line); }
+    .origin-meta b { display: block; color: var(--ink); }
+    .origin-meta span { color: var(--muted); }
+    .tag.current { border-color: #a9bfea; background: var(--soft); color: var(--blue-deep); }
+    .tag.compat { border-color: #e1c68c; background: var(--amber-soft); color: var(--amber); }
+
+    .flow-line {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 9px;
+      margin-bottom: 16px;
+    }
+    .flow-step {
+      position: relative;
+      min-height: 104px;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--paper);
+    }
+    .flow-step::after {
+      position: absolute;
+      top: 50%;
+      right: -9px;
+      z-index: 2;
+      width: 9px;
+      height: 2px;
+      background: var(--blue);
+      content: "";
+    }
+    .flow-step:last-child::after { display: none; }
+    .flow-step b { display: block; margin: 7px 0 4px; color: var(--ink); font-size: 14px; }
+    .flow-step span { color: var(--muted); font-size: 12px; }
+    .panel { padding: 22px; border-radius: var(--radius-lg); }
+    .panel h3 { margin-bottom: 8px; font-size: 24px; }
+    .panel > p { color: var(--muted); }
+    .change-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .change {
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: var(--soft-2);
+    }
+    .change b { display: block; margin-bottom: 5px; color: var(--ink); font-size: 13px; }
+    .change span { color: var(--muted); font-size: 12px; }
+
+    .wide-card {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+    .wide-copy { padding: 22px; border-bottom: 1px solid var(--line); }
+    .wide-copy h3 { margin-bottom: 7px; font-size: 24px; }
+    .wide-copy p { margin-bottom: 0; color: var(--muted); }
+    .wide-card .shot-frame { border: 0; border-radius: 0; }
+
+    .evidence-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .evidence-card { padding: 18px; border-radius: 14px; }
+    .evidence-card b { display: block; margin-bottom: 6px; color: var(--blue-deep); font-size: 28px; }
+    .evidence-card span { color: var(--muted); font-size: 12px; }
+    .evidence-boundary {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 16px;
+    }
+    .boundary {
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+    }
+    .boundary h3 { margin-bottom: 8px; font-size: 19px; }
+    .boundary ul { margin: 0; padding-left: 20px; }
+    .boundary li + li { margin-top: 6px; }
+    .boundary.auto { border-top: 5px solid var(--green); }
+    .boundary.human { border-top: 5px solid var(--amber); }
+    .status-line {
+      margin-top: 16px;
+      padding: 18px;
+      border: 1px solid #efcaca;
+      border-radius: var(--radius);
+      background: var(--red-soft);
+      color: #71231d;
+      font-weight: 800;
+    }
+
+    footer {
+      margin-top: 70px;
+      padding: 26px 4px 0;
+      border-top: 1px solid var(--line-strong);
+      color: var(--muted);
+      font-size: 12px;
+    }
+    footer p { margin-bottom: 8px; }
+
+    @media (max-width: 980px) {
+      .metrics,
+      .evidence-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .section-head,
+      .compare-copy { grid-template-columns: 1fr; }
+      .feedback-layout { grid-template-columns: 220px minmax(0, 1fr); }
+      .flow-line,
+      .change-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .flow-step::after { display: none; }
+    }
+
+    @media (max-width: 720px) {
+      .page { width: min(100% - 18px, 1240px); padding-top: 9px; }
+      .hero { min-height: 0; padding: 28px 20px; border-radius: 20px; }
+      h1 { font-size: 45px; }
+      .lead { font-size: 17px; }
+      .metrics,
+      .photo-grid,
+      .compare-grid,
+      .lifecycle-grid,
+      .origin-grid,
+      .audit-summary,
+      .evidence-boundary { grid-template-columns: 1fr; }
+      .metric { min-height: 84px; }
+      section { margin-top: 50px; }
+      .feedback-layout { grid-template-columns: 1fr; }
+      .feedback-rail { position: static; }
+      .shot-frame { min-height: 0; padding: 10px; }
+      .shot-frame img { max-height: none; width: 100%; }
+      .origin-card .shot-frame img { width: auto; max-height: 720px; }
+      .origin-meta { grid-template-columns: 1fr; }
+      .origin-meta div + div { border-left: 0; border-top: 1px solid var(--line); }
+      .flow-line,
+      .change-grid { grid-template-columns: 1fr; }
+      .flow-step { min-height: 0; }
+      .evidence-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media print {
+      body { background: #fff; }
+      .page { width: 100%; padding: 0; }
+      .hero, .panel, .compare-card, .origin-card, .evidence-card, .wide-card { box-shadow: none; }
+      .nav-row { display: none; }
+      .feedback-rail { position: static; }
+      figure, .origin-card, .boundary { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <p class="hero-kicker">FlowMe · UI capture review · 2026-08-12</p>
+      <h1>내 계획 편집 UX 통합</h1>
+      <p class="lead">
+        계획 찾기 공개 화면을 먼저 하나로 맞춘 뒤, 이번에는 저장한 내 계획의
+        <strong>편집·저장·취소·뒤로가기·보관·복구</strong>까지 같은 문법으로 이어 붙였습니다.
+        저장 출처는 달라도 사용자가 마주하는 작업 흐름은 하나입니다.
+      </p>
+      <div class="scope-row" aria-label="보고서 범위">
+        <span class="scope strong">4개 저장 출처</span>
+        <span class="scope">390px 실제 로컬 UI</span>
+        <span class="scope">1440px 확인</span>
+        <span class="scope warn">로컬 후보 · 미게시</span>
+        <span class="scope warn">관찰 사용자 0</span>
+      </div>
+      <div class="metrics" aria-label="핵심 요약">
+        <div class="metric"><b>4</b><span>일반 Flow · Flow Map · 메모 초안 · 이전 저장본</span></div>
+        <div class="metric"><b>1</b><span>공통 Plan / Item 편집 문법</span></div>
+        <div class="metric"><b>23/23</b><span>전용 브라우저 자동 검증</span></div>
+        <div class="metric"><b>0</b><span>실제 관찰 사용자 세션</span></div>
+      </div>
+      <nav class="nav-row" aria-label="문서 목차">
+        <a href="#feedback">기존 피드백</a>
+        <a href="#before-after">대표 Before / After</a>
+        <a href="#origins">네 출처 비교</a>
+        <a href="#transaction">저장·Back 규칙</a>
+        <a href="#lifecycle">보관·복구</a>
+        <a href="#evidence">증거와 경계</a>
+      </nav>
+    </header>
+
+    <section id="feedback">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">01 · Existing feedback</p>
+          <h2>새 취향이 아니라,<br>기존 피드백의 마지막 연결입니다</h2>
+        </div>
+        <p>
+          처음에는 공개 화면의 세대 차이가 보였습니다. 이어서 내 계획을 감사하자 같은 문제는
+          편집기와 저장 수명주기 뒤편에도 남아 있었습니다.
+        </p>
+      </div>
+
+      <div class="feedback-layout">
+        <aside class="feedback-rail" aria-label="기존 피드백 핵심">
+          <h3>기존 피드백</h3>
+          <div class="feedback-list">
+            <div class="feedback-item"><span class="number">1</span><div><b>같은 수정, 다른 결과</b><span>일반 Flow만 열리고 일부 출처는 무반응</span></div></div>
+            <div class="feedback-item"><span class="number">2</span><div><b>저장 시점이 불명확</b><span>항목 반영과 최종 저장의 의미가 경로별로 다름</span></div></div>
+            <div class="feedback-item"><span class="number">3</span><div><b>뒤로가기·복구 불일치</b><span>복귀 위치, 초점, 보관·복구 진입이 제각각</span></div></div>
+          </div>
+        </aside>
+
+        <div class="feedback-body">
+          <div class="quote-card">
+            <blockquote>“계획 찾기 보면 일부 Flow만 개선되고 일부는 그대로인데, 데이터랑 UI가 분리 안 되어 있는 건가?”</blockquote>
+            <cite>직접 사용자 피드백 · 공개 화면 비교 사진과 함께</cite>
+          </div>
+          <div class="photo-grid">
+            <figure>
+              <div class="shot-frame"><img src="./2026-08-12-my-plan-edit-lifecycle-ui-capture-review-assets/screenshots/feedback-01-user-photo-public-flow.jpg" alt="사용자가 제공한 일반 공개 Flow 모바일 화면. Text, Todo, Calendar 결과 형식과 수정, 내 계획으로 저장 버튼이 보인다."></div>
+              <figcaption><b>사용자 제공 사진 A</b> · 일반 공개 Flow의 신형 결과 화면</figcaption>
+            </figure>
+            <figure>
+              <div class="shot-frame"><img src="./2026-08-12-my-plan-edit-lifecycle-ui-capture-review-assets/screenshots/feedback-02-user-photo-flow-map.jpg" alt="사용자가 제공한 중1 수학 Flow Map 모바일 화면. 번호 목록과 계획 수정, 내 계획에 저장 버튼이 보인다."></div>
+              <figcaption><b>사용자 제공 사진 B</b> · 같은 계획 찾기 안의 별도 Flow Map 화면</figcaption>
+            </figure>
+          </div>
+          <div class="quote-card">
+            <blockquote>“내 계획 탭에서 계획 상세의 수정 UX가 콘텐츠마다 다른데 맞아? 다른 부분도 일관성 확인 부탁.”</blockquote>
+            <cite>이번 작업의 직접 트리거 · 목록 → 상세 → 항목 → 수정 → 완료/복귀 → 옮기기 전체 감사</cite>
+          </div>
+          <div class="audit-summary" aria-label="감사 결과">
+            <div class="audit-point"><b>편집</b><p>일반 Flow 사본은 새 편집기가 열렸지만 Flow Map과 개인 메모는 수정 버튼이 사실상 반응하지 않았습니다.</p></div>
+            <div class="audit-point"><b>이동</b><p>취소와 browser Back이 서로 다른 단계·위치·초점으로 돌아갔습니다.</p></div>
+            <div class="audit-point"><b>수명주기</b><p>보관과 복구가 이전 화면 또는 일부 목록에 흩어져 있었습니다.</p></div>
+          </div>
+          <p class="rule-note">
+            <strong>정확성 경계:</strong> Production에서 직접 비교한 출처는 일반 Flow, Flow Map, 개인 메모 3종입니다.
+            “이전 저장본”은 사용자가 직접 지목한 화면이 아니라 호환성 회귀 범위로 추가했습니다.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="before-after">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">02 · Representative change</p>
+          <h2>같은 “수정” 버튼이<br>같은 편집 작업을 엽니다</h2>
+        </div>
+        <p>Flow Map을 대표 사례로 변경 전과 로컬 변경 후를 같은 390 × 844 화면에서 비교했습니다.</p>
+      </div>
+
+      <article class="compare-card">
+        <div class="compare-copy">
+          <div>
+            <div class="tag-row"><span class="tag">Flow Map</span><span class="tag">390px</span><span class="tag current">실제 로컬 UI</span></div>
+            <h3>Before: 눌러도 제자리 · After: 공통 Plan 편집기</h3>
+            <p>변경 전에는 수정 버튼을 눌러도 상세 화면이 그대로였습니다. 변경 후에는 저장 이름, 기준일 capability, 포함 항목과 최종 저장을 가진 공통 편집기가 열립니다.</p>
+          </div>
+          <div class="result-box"><strong>결과</strong><br>저장 출처가 UI 세대를 결정하지 않습니다. 지원하지 않는 기준일은 무반응이 아니라 잠금 상태와 이유를 보여줍니다.</div>
+        </div>
+        <div class="compare-grid">
+          <figure>
+            <div class="shot-label"><span class="before">BEFORE</span><span>수정 클릭 후에도 상세 그대로</span></div>
+            <div class="shot-frame"><img src="./2026-08-12-my-plan-edit-lifecycle-ui-capture-review-assets/screenshots/01-before-map-edit-no-response-390.png" alt="변경 전 Flow Map 내 계획 상세. 수정 버튼이 선택되어 있지만 편집 화면이 열리지 않은 상태."></div>
+            <figcaption>origin/main과 동일한 tree의 기준 화면 · 클릭 직후 캡처</figcaption>
+          </figure>
+          <figure>
+            <div class="shot-label"><span class="after">AFTER</span><span>공통 계획 수정 화면</span></div>
+            <div class="shot-frame"><img src="./2026-08-12-my-plan-edit-lifecycle-ui-capture-review-assets/screenshots/03-after-map-plan-editor-390.png" alt="변경 후 Flow Map 공통 계획 편집기. 저장 이름, 잠긴 기준일 설명, 8개 포함 항목, 저장 버튼이 보인다."></div>
+            <figcaption>로컬 미게시 후보 · 공통 Plan editor</figcaption>
+          </figure>
+        </div>
+      </article>
+    </section>
+
+    <section id="origins">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">03 · Four origins</p>
+          <h2>네 출처, 하나의 편집 문법</h2>
+        </div>
+        <p>화면은 공유하고 저장은 각 출처의 원래 소유자에게 돌려보냅니다. 차이는 출처 이름이 아니라 실제 capability로만 남깁니다.</p>
+      </div>
+
+      <div class="origin-grid">
+        <article class="origin-card">
+          <div class="origin-copy">
+            <div class="tag-row"><span class="tag current">현재 저장 형식</span><span class="tag">Plan</span></div>
+            <h3>일반 Flow 사본</h3>
+            <p>기존 신형 편집기를 기준으로 유지했습니다. 저장 이름, 기준일, 포함·순서, Item 편집이 같은 shell 안에 있습니다.</p>
+          </div>
+          <div class="shot-frame"><img src="./2026-08-12-my-plan-edit-lifecycle-ui-capture-review-assets/screenshots/02-after-canonical-plan-editor-390.png" alt="일반 Flow 개인 사본의 공통 계획 편집기 모바일 화면."></div>
+          <div class="origin-meta"><div><b>화면</b><span>공통 Plan / Item</span></div><div><b>저장</b><span>기존 개인 사본 identity 유지</span></div></div>
+        </article>
+
+        <article class="origin-card">
+          <div class="origin-copy">
+            <div class="tag-row"><span class="tag current">현재 저장 형식</span><span class="tag">Flow Map</span></div>
+            <h3>Flow Map</h3>
+            <p>무반응 버튼을 제거했습니다. Map 고유 구조는 보존하고 포함·순서·날짜·메모 변경을 reload 뒤에도 유지합니다.</p>
+          </div>
+          <div class="shot-frame"><img src="./2026-08-12-my-plan-edit-lifecycle-ui-capture-review-assets/screenshots/03-after-map-plan-editor-390.png" alt="Flow Map 저장본의 공통 계획 편집기 모바일 화면."></div>
+          <div class="origin-meta"><div><b>화면</b><span>공통 Plan / Item</span></div><div><b>저장</b><span>Map·child identity 유지</span></div></div>
+        </article>
+
+        <article class="origin-card">
+          <div class="origin-copy">
+            <div class="tag-row"><span class="tag current">현재 저장 형식</span><span class="tag">메모·URL 초안</span></div>
+            <h3>개인 메모 초안</h3>
+            <p>메모에서 만든 계획도 같은 Item 화면을 씁니다. 항목 수정은 먼저 계획 초안에 반영되고, Plan 저장에서 한 번 확정됩니다.</p>
+          </div>
+          <div class="shot-frame"><img src="./2026-08-12-my-plan-edit-lifecycle-ui-capture-review-assets/screenshots/04-after-personal-memo-item-editor-390.png" alt="개인 메모 초안에서 만든 항공권 확인하기 항목의 공통 Item 편집기."></div>
+          <div class="origin-meta"><div><b>화면</b><span>공통 Item · 계획에 반영</span></div><div><b>저장</b><span>원문·항목 ID·초안 구조 유지</span></div></div>
+        </article>
+
+        <article class="origin-card">
+          <div class="origin-copy">
+            <div class="tag-row"><span class="tag compat">호환성 범위</span><span class="tag">이전 저장본</span></div>
+            <h3>이전 저장본</h3>
+            <p>구형 레코드도 신형 UI로 편집하지만 저장 형식을 몰래 승격하지 않습니다. browser Back도 변경 버리기 확인을 통과합니다.</p>
+          </div>
+          <div class="shot-frame"><img src="./2026-08-12-my-plan-edit-lifecycle-ui-capture-review-assets/screenshots/05-after-legacy-dirty-back-prompt-390.png" alt="이전 저장본 Item을 수정한 뒤 browser Back을 눌러 저장하지 않은 변경 버리기 확인이 열린 화면."></div>
+          <div class="origin-meta"><div><b>화면</b><span>공통 Item + dirty guard</span></div><div><b>저장</b><span>기존 schema 그대로, 자동 승격 없음</span></div></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="transaction">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">04 · Save, cancel, back</p>
+          <h2>항목은 계획에 반영하고,<br>계획 저장에서 한 번 확정합니다</h2>
+        </div>
+        <p>어느 출처에서 들어와도 같은 단계, 같은 취소 규칙, 같은 복귀점을 사용합니다.</p>
+      </div>
+
+      <div class="flow-line" aria-label="편집 흐름">
+        <div class="flow-step"><span class="number">1</span><b>계획 수정</b><span>상세의 수정 버튼에서 시작</span></div>
+        <div class="flow-step"><span class="number">2</span><b>항목 수정</b><span>제목·메모·날짜 편집</span></div>
+        <div class="flow-step"><span class="number">3</span><b>계획에 반영</b><span>부모 Plan 초안만 갱신</span></div>
+        <div class="flow-step"><span class="number">4</span><b>저장 또는 취소</b><span>Plan에서 최종 결정</span></div>
+        <div class="flow-step"><span class="number">5</span><b>열었던 곳으로</b><span>위치·초점을 함께 복귀</span></div>
+      </div>
+
+      <div class="lifecycle-grid">
+        <figure>
+          <div class="shot-frame"><img src="./2026-08-12-my-plan-edit-lifecycle-ui-capture-review-assets/screenshots/06-after-canonical-item-editor-390.png" alt="공통 Item 편집기. 할 일, 메모, 날짜, 계획에 반영 버튼이 보인다."></div>
+          <figcaption><b>Item 편집</b> · 실제 CTA는 “계획에 반영”. 이 단계에서는 부모 초안만 바뀝니다.</figcaption>
+        </figure>
+        <figure>
+          <div class="shot-frame"><img src="./2026-08-12-my-plan-edit-lifecycle-ui-capture-review-assets/screenshots/07-after-dirty-discard-prompt-390.png" alt="저장하지 않은 계획 변경을 버릴지 확인하는 공통 취소 dialog."></div>
+          <figcaption><b>dirty 취소·Back</b> · 계속 수정하거나 변경을 버리는 선택을 같은 dialog로 제공합니다.</figcaption>
+        </figure>
+      </div>
+
+      <div class="panel" style="margin-top:16px">
+        <h3>추가 검토에서 닫은 변경 사항</h3>
+        <p>초기 연결 이후 정밀 리뷰에서 조합 저장과 복구 경계를 더 확인했습니다.</p>
+        <div class="change-grid">
+          <div class="change"><b>Map 포함·순서</b><span>제외 항목 재포함과 순서 변경이 reload 뒤에도 유지됩니다.</span></div>
+          <div class="change"><b>기준일 + 항목 변경</b><span>한 번의 저장에서 날짜·메모와 기준일을 함께 바꿔도 서로 덮지 않습니다.</span></div>
+          <div class="change"><b>날짜 재설정</b><span>고정 날짜 → 날짜 없음 → 원본 날짜 흐름이 이전 값으로 되돌아가지 않습니다.</span></div>
+          <div class="change"><b>무변경 저장</b><span>아무것도 바꾸지 않은 저장이 오류나 불필요한 구조 생성으로 이어지지 않습니다.</span></div>
+          <div class="change"><b>원본 보존</b><span>이전 저장본과 초안의 알 수 없는 필드·identity를 그대로 보존합니다.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="lifecycle">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">05 · Lifecycle</p>
+          <h2>보관하고, 되돌리고,<br>보관함에서 직접 복구합니다</h2>
+        </div>
+        <p>상세의 “계획 관리”를 단일 진입점으로 삼고, archive 이후 history와 focus까지 끊기지 않게 맞췄습니다.</p>
+      </div>
+      <div class="lifecycle-grid">
+        <figure>
+          <div class="shot-frame"><img src="./2026-08-12-my-plan-edit-lifecycle-ui-capture-review-assets/screenshots/08-after-management-menu-390.png" alt="활성 계획 상세에서 계획 관리 메뉴가 열려 원문 보기와 보관이 보이는 화면."></div>
+          <figcaption><b>활성 계획</b> · 수정은 하단의 명확한 1차 행동으로 두고, 관리 메뉴에는 원문 보기와 보관만 둡니다.</figcaption>
+        </figure>
+        <figure>
+          <div class="shot-frame"><img src="./2026-08-12-my-plan-edit-lifecycle-ui-capture-review-assets/screenshots/09-after-archive-undo-390.png" alt="보관한 계획 목록에서 직접 복구 버튼과 계획 관리, 하단 되돌리기 알림이 보이는 화면."></div>
+          <figcaption><b>보관 직후</b> · snackbar “되돌리기”와 목록의 직접 “복구”를 모두 제공하되 중복 menu action은 제거했습니다.</figcaption>
+        </figure>
+      </div>
+      <p class="rule-note" style="margin-top:16px">
+        모바일 목록 Back, archive가 상세 history를 소비하는지, Undo 뒤 활성 목록과 초점으로 돌아오는지,
+        직접 복구와 48px 터치 영역까지 전용 브라우저 시나리오로 검증했습니다.
+      </p>
+    </section>
+
+    <section id="wide">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">06 · Wide confirmation</p>
+          <h2>큰 화면에서는<br>맥락을 남긴 채 오른쪽에서 편집합니다</h2>
+        </div>
+        <p>1440px에서는 선택한 계획 상세를 뒤에 유지하고, 편집 workspace를 오른쪽에 고정합니다.</p>
+      </div>
+      <article class="wide-card">
+        <div class="wide-copy">
+          <div class="tag-row"><span class="tag">1440 × 1000</span><span class="tag">Flow Map</span><span class="tag current">실제 로컬 UI</span></div>
+          <h3>같은 shell, 화면 크기에 맞는 composition</h3>
+          <p>모바일의 전체 화면 작업과 데스크톱의 우측 workspace가 기능과 CTA 의미를 공유합니다.</p>
+        </div>
+        <div class="shot-frame wide"><img src="./2026-08-12-my-plan-edit-lifecycle-ui-capture-review-assets/screenshots/10-after-map-plan-editor-1440.png" alt="1440px 내 계획 상세 위에 오른쪽 계획 수정 workspace가 열린 Flow Map 화면."></div>
+      </article>
+    </section>
+
+    <section id="evidence">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">07 · Evidence boundary</p>
+          <h2>보이는 변화와<br>보이지 않는 안전성을 분리했습니다</h2>
+        </div>
+        <p>스크린샷은 화면 상태를 증명합니다. 저장 원자성, identity, reload, export는 자동 QA가 증명합니다.</p>
+      </div>
+
+      <div class="evidence-grid" aria-label="자동 검증 요약">
+        <div class="evidence-card"><b>172/172</b><span>출처·저장·source·storage pure tests</span></div>
+        <div class="evidence-card"><b>23/23</b><span>네 출처 + lifecycle 전용 E2E</span></div>
+        <div class="evidence-card"><b>80/80</b><span>영향받는 기존 브라우저 회귀</span></div>
+        <div class="evidence-card"><b>18</b><span>Production build routes</span></div>
+      </div>
+
+      <div class="evidence-boundary">
+        <article class="boundary auto">
+          <h3>자동 QA로 확인한 것</h3>
+          <ul>
+            <li>네 출처 390 / 1024 / 1440 공통 editor와 단일 dialog</li>
+            <li>Item 반영 전 storage 불변, Plan 저장 후 reload 지속</li>
+            <li>schema·key·Map child·source·execution·export identity 보존</li>
+            <li>dirty Back, focus 복귀, archive history, Undo·직접 복구</li>
+          </ul>
+          <p style="margin:14px 0 0"><a href="../specs/2026-08-12-my-plan-edit-lifecycle-unification/qa.md">QA 원문 보기</a> · <a href="../../tests/e2e/my-plan-edit-lifecycle.spec.ts">전용 E2E 보기</a></p>
+        </article>
+        <article class="boundary human">
+          <h3>아직 사람에게 물어야 하는 것</h3>
+          <ul>
+            <li>잠긴 기준일 설명이 충분히 이해되는가?</li>
+            <li>긴 계획에서 순서 조정이 여전히 과하지 않은가?</li>
+            <li>“계획 관리”가 보관·복구의 진입점으로 발견되는가?</li>
+            <li>취소와 Back이 실제 사용 중에도 예상대로 느껴지는가?</li>
+          </ul>
+          <p style="margin:14px 0 0"><a href="../specs/2026-08-12-my-plan-edit-lifecycle-unification/spec.md">제품 계약 보기</a> · 관찰 사용자 세션은 아직 0입니다.</p>
+        </article>
+      </div>
+
+      <div class="status-line">
+        현재 상태: 로컬 구현 및 자동 검증 완료 · 커밋/Push/Draft PR/Preview 승인 · Merge/Production 미승인 · 관찰 사용자 0
+      </div>
+    </section>
+
+    <footer>
+      <p><strong>캡처 출처:</strong> 사용자 제공 모바일 사진 2장 + 2026-08-12 로컬 before/after 실제 브라우저 캡처. 세부 route, viewport, SHA-256은 <a href="./2026-08-12-my-plan-edit-lifecycle-ui-capture-review-assets/capture-manifest.json">capture manifest</a>에 기록했습니다.</p>
+      <p><strong>시각 구성:</strong> 단일 생성 이미지로 레이아웃 방향을 탐색한 뒤, 제품 증거는 모두 실제 캡처로 교체했습니다. <a href="./2026-08-12-my-plan-edit-lifecycle-ui-capture-review-assets/report-layout-concept.png">레이아웃 콘셉트</a>는 제품 화면 증거가 아닙니다.</p>
+      <p><strong>기준:</strong> before는 origin/main과 같은 tree, after는 같은 base 위의 uncommitted local candidate입니다. 이 보고서 자체도 로컬 미게시 산출물입니다.</p>
+    </footer>
+  </main>
+</body>
+</html>

@@ -439,7 +439,7 @@ export function MyFlowRouteSurface<TFlow>({
                     {renderers.renderCompactToday()}
                     {renderers.renderSaveBanner()}
                     {!panel.focused ? (
-                      <header data-testid="my-flow-library-heading" className="flex items-center justify-between gap-3 border-b border-slate-200 pb-3 md:hidden">
+                      <header data-testid="my-flow-library-heading" tabIndex={-1} className="flex items-center justify-between gap-3 border-b border-slate-200 pb-3 md:hidden">
                         <div>
                           <h2 className="text-xl font-semibold text-slate-950">{copy.sectionTitle}</h2>
                         </div>
@@ -496,7 +496,7 @@ export function MyFlowRouteSurface<TFlow>({
                                 전체 보기
                               </button>
                             ) : null}
-                            <div className="flex items-center justify-between gap-3">
+                            <div data-testid="my-flow-library-heading" tabIndex={-1} className="flex items-center justify-between gap-3">
                               <div>
                                 <h3 className="text-base font-semibold text-[var(--flowme-text)]">{copy.sectionTitle}</h3>
                               </div>

@@ -252,7 +252,7 @@ test.describe('P1-01 bounded visual subtraction', () => {
     await page.setViewportSize(viewports[0]);
     // The released moving-d30 alias redirects to its canonical /f route, so
     // exercise the same setupInput branch on a directly accessible dated Map.
-    await page.goto(routeForPhase('/flow-maps/curated-opic-mock-course'));
+    await page.goto(routeForPhase('/flow-maps/postal-address-transfer'));
     if (phase === 'after') {
       await page.getByTestId('public-flow-capability-result').getByRole('button', { name: 'Calendar' }).click();
     }
@@ -262,7 +262,7 @@ test.describe('P1-01 bounded visual subtraction', () => {
     await expect(sticky.locator(
       '[data-testid="flow-map-selection-summary"], [data-testid="flow-map-mobile-selection-summary"]',
     )).toHaveText(/선택 \d+ \/ 전체 \d+/u);
-    await expect(sticky).toContainText(/(?:이사일|시작일) 필요/u);
+    await expect(sticky).toContainText(/(?:이사일|전입신고일|시작일) 필요/u);
     expect(errors).toEqual([]);
   });
 

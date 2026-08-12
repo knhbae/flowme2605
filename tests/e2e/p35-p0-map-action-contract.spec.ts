@@ -41,20 +41,37 @@ function saveTrigger(page: Page, mobile: boolean) {
 
 async function openEditor(page: Page, mobile: boolean) {
   await adjustmentTrigger(page, mobile).click();
-  const editor = page.getByTestId('flow-map-adjust-panel');
+  const editor = page.getByTestId('public-flow-personal-adjustment');
   await expect(editor).toBeVisible();
   await expect(editor).toHaveAttribute('data-editor-transaction', 'atomic');
+  await expect(editor).toHaveAttribute('data-editor-adapter', 'shared');
+  await expect(editor.getByTestId('public-flow-adjustment-kind-name')).toBeFocused();
   return editor;
+}
+
+async function openItemsKind(editor: Locator) {
+  await editor.getByTestId('public-flow-adjustment-kind-items').click();
+  const rows = editor.getByTestId('public-flow-adjustment-item-row');
+  const checkboxes = rows.getByRole('checkbox', { name: /계획에 포함$/ });
+  const checkedCheckboxes = rows.getByRole('checkbox', { name: /계획에 포함$/, checked: true });
+  return { rows, checkboxes, checkedCheckboxes };
+}
+
+async function discardDirtyEditor(editor: Locator) {
+  const discardPrompt = editor.getByTestId('flow-editor-discard-prompt');
+  await expect(discardPrompt).toBeVisible();
+  await discardPrompt.getByRole('button', { name: '변경 버리기' }).click();
 }
 
 async function applySevenItemSnapshot(page: Page, mobile: boolean) {
   const editor = await openEditor(page, mobile);
-  const checkboxes = editor.locator('input[type="checkbox"]');
+  await editor.getByTestId('public-flow-adjustment-name-input').fill('시험 전 핵심 단원');
+  const { rows, checkboxes } = await openItemsKind(editor);
+  await expect(rows).toHaveCount(8);
   await expect(checkboxes).toHaveCount(8);
-  const canonicalIds = await getItemIds(checkboxes, 'data-map-item-id');
-  await editor.getByTestId('flow-map-custom-title').fill('시험 전 핵심 단원');
+  const canonicalIds = await getItemIds(rows, 'data-item-id');
   await checkboxes.last().uncheck();
-  await editor.getByTestId('flow-map-adjust-apply').click();
+  await editor.getByTestId('public-flow-adjustment-apply').click();
   await expect(editor).toHaveCount(0);
   return canonicalIds.slice(0, 7);
 }
@@ -126,10 +143,12 @@ test.describe('P35 P0 Flow Map action contract', () => {
     await expect(map.getByTestId('flow-map-risk-caution')).toHaveCount(0);
 
     const cancelledEditor = await openEditor(page, true);
-    await cancelledEditor.getByTestId('flow-map-custom-title').fill('버릴 제목');
-    await cancelledEditor.locator('input[type="checkbox"]').last().uncheck();
-    await cancelledEditor.getByTestId('flow-map-adjust-cancel').click();
-    await expect(page.getByTestId('flow-map-adjust-panel')).toHaveCount(0);
+    await cancelledEditor.getByTestId('public-flow-adjustment-name-input').fill('버릴 제목');
+    const cancelledItems = await openItemsKind(cancelledEditor);
+    await cancelledItems.checkboxes.last().uncheck();
+    await cancelledEditor.getByTestId('public-flow-adjustment-cancel').click();
+    await discardDirtyEditor(cancelledEditor);
+    await expect(page.getByTestId('public-flow-personal-adjustment')).toHaveCount(0);
     await expect(map.getByTestId('flow-map-applied-adjustment-summary')).toHaveCount(0);
 
     const expectedIds = await applySevenItemSnapshot(page, true);
@@ -137,15 +156,17 @@ test.describe('P35 P0 Flow Map action contract', () => {
 
     for (const closeMode of ['cancel', 'escape', 'back'] as const) {
       const editor = await openEditor(page, true);
-      await expect(editor.getByTestId('flow-map-custom-title')).toHaveValue('시험 전 핵심 단원');
-      await expect(editor.locator('input[type="checkbox"]:checked')).toHaveCount(7);
-      await editor.getByTestId('flow-map-custom-title').fill(`버릴 ${closeMode} 제목`);
-      await editor.locator('input[type="checkbox"]:checked').last().uncheck();
-      if (closeMode === 'cancel') await editor.getByTestId('flow-map-adjust-cancel').click();
+      await expect(editor.getByTestId('public-flow-adjustment-name-input')).toHaveValue('시험 전 핵심 단원');
+      await editor.getByTestId('public-flow-adjustment-name-input').fill(`버릴 ${closeMode} 제목`);
+      const { checkedCheckboxes } = await openItemsKind(editor);
+      await expect(checkedCheckboxes).toHaveCount(7);
+      await checkedCheckboxes.last().uncheck();
+      if (closeMode === 'cancel') await editor.getByTestId('public-flow-adjustment-cancel').click();
       if (closeMode === 'escape') await page.keyboard.press('Escape');
       if (closeMode === 'back') await page.goBack();
+      await discardDirtyEditor(editor);
       await expect(page).toHaveURL(MAP_URL);
-      await expect(page.getByTestId('flow-map-adjust-panel')).toHaveCount(0);
+      await expect(page.getByTestId('public-flow-personal-adjustment')).toHaveCount(0);
       await expect(adjustmentTrigger(page, true)).toBeFocused();
       await assertAppliedParity(page, expectedIds, true);
     }
@@ -213,9 +234,10 @@ test.describe('P35 P0 Flow Map action contract', () => {
     await expect(saveTrigger(stalePage, true)).toBeEnabled();
 
     const staleEditor = await openEditor(stalePage, true);
-    await staleEditor.getByTestId('flow-map-custom-title').fill('이 탭에서 고친 계획');
-    await staleEditor.locator('input[type="checkbox"]').last().uncheck();
-    await staleEditor.getByTestId('flow-map-adjust-apply').click();
+    await staleEditor.getByTestId('public-flow-adjustment-name-input').fill('이 탭에서 고친 계획');
+    const staleItems = await openItemsKind(staleEditor);
+    await staleItems.checkboxes.last().uncheck();
+    await staleEditor.getByTestId('public-flow-adjustment-apply').click();
     await expect(stalePage.getByTestId('flow-map-effective-snapshot')).toHaveAttribute(
       'data-flow-map-title',
       '이 탭에서 고친 계획',
@@ -254,8 +276,8 @@ test.describe('P35 P0 Flow Map action contract', () => {
     expect(await readRelevantRawStorage(stalePage)).toEqual(newerRaw);
 
     const reopenedEditor = await openEditor(stalePage, true);
-    await reopenedEditor.getByTestId('flow-map-custom-title').fill('충돌 뒤에도 남는 내 초안');
-    await reopenedEditor.getByTestId('flow-map-adjust-apply').click();
+    await reopenedEditor.getByTestId('public-flow-adjustment-name-input').fill('충돌 뒤에도 남는 내 초안');
+    await reopenedEditor.getByTestId('public-flow-adjustment-apply').click();
     await expect(conflict).toBeVisible();
     await expect(saveTrigger(stalePage, true)).toBeDisabled();
     await expect(stalePage.getByTestId('flow-map-effective-snapshot')).toHaveAttribute(
@@ -267,8 +289,8 @@ test.describe('P35 P0 Flow Map action contract', () => {
 
   test('changing an anchor keeps stale-save recovery visible until the map is refreshed', async ({ context, page }) => {
     test.setTimeout(60_000);
-    const datedMapId = 'curated-opic-mock-course';
-    const datedFlowSlugs = ['curated-opic-single-mock-review', 'curated-opic-course-row-import'];
+    const datedMapId = 'postal-address-transfer';
+    const datedFlowSlugs = ['source-backed-postal-address-transfer'];
     const datedMapUrl = `/flow-maps/${datedMapId}`;
     const datedStorageKeys = [
       ...datedFlowSlugs.flatMap((slug) => [

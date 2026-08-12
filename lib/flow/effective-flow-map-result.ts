@@ -26,6 +26,11 @@ export type EffectiveFlowMapResult = {
    * persistence or transfer identity.
    */
   previewRows: FlowExperienceProjectionRow[];
+  /**
+   * Presentation-only rows for the public editor. Included rows follow the
+   * requested effective order; excluded rows follow canonical source order.
+   */
+  editorRows: FlowExperienceProjectionRow[];
   viewModel: FlowCapabilityResultViewModel;
 };
 
@@ -120,8 +125,30 @@ function buildCompositeRows(options: {
   const multipleChildren = options.childBundles.length > 1;
   const included: FlowExperienceProjectionRow[] = [];
   const excluded: FlowExperienceProjectionRow[] = [];
+  const materializedRowById = new Map([
+    ...options.mapSnapshot.rows,
+    ...options.mapSnapshot.heldRows,
+    ...options.mapSnapshot.excludedRows,
+  ].map((mapRow) => [mapRow.itemId, mapRow] as const));
+  const includedMapRows = options.mapSnapshot.itemIds.effective.map((itemId) => {
+    const mapRow = materializedRowById.get(itemId);
+    if (!mapRow) {
+      throw new Error(
+        `Flow Map ${options.publishPackage.map.id} Item ${itemId} has no materialized effective row.`,
+      );
+    }
+    return mapRow;
+  });
+  const excludedMapRows = options.mapSnapshot.canonicalRows
+    .filter((mapRow) => !effectiveIds.has(mapRow.itemId))
+    .map((canonicalRow) => materializedRowById.get(canonicalRow.itemId) ?? canonicalRow);
 
-  options.mapSnapshot.canonicalRows.forEach((mapRow, orderRank) => {
+  const orderedMapRows = [
+    ...includedMapRows.map((mapRow) => ({ mapRow, included: true })),
+    ...excludedMapRows.map((mapRow) => ({ mapRow, included: false })),
+  ];
+
+  orderedMapRows.forEach(({ mapRow, included: isIncluded }, orderRank) => {
     const childSnapshot = childSnapshotBySlug.get(mapRow.flowSlug);
     const childRow = childSnapshot
       ? [...childSnapshot.committed.rows, ...childSnapshot.committed.excludedRows]
@@ -132,7 +159,11 @@ function buildCompositeRows(options: {
         `Flow Map ${options.publishPackage.map.id} Item ${mapRow.itemId} has no canonical child projection.`,
       );
     }
-    const isIncluded = effectiveIds.has(mapRow.itemId);
+    if (isIncluded !== effectiveIds.has(mapRow.itemId)) {
+      throw new Error(
+        `Flow Map ${options.publishPackage.map.id} Item ${mapRow.itemId} has an inconsistent effective selection.`,
+      );
+    }
     const sectionParts = (multipleChildren
       ? [mapRow.flowTitle, childRow.section]
       : [childRow.section])
@@ -144,6 +175,13 @@ function buildCompositeRows(options: {
     const resources = sourceUrl && !childRow.resources.some((resource) => resource.url === sourceUrl)
       ? [...childRow.resources, { label: '원문 보기', url: sourceUrl, type: 'source' }]
       : childRow.resources;
+    const schedule = mapRow.date
+      ? { state: 'dated' as const, date: mapRow.date }
+      : { ...childRow.schedule };
+    const eligibleShapes = mapRow.date
+      && !['record', 'resource', 'reference', 'warning'].includes(childRow.role)
+      ? Array.from(new Set([...childRow.eligibleShapes, 'calendar' as const]))
+      : [...childRow.eligibleShapes];
     const row: FlowExperienceProjectionRow = {
       ...childRow,
       id: mapRow.itemId,
@@ -154,13 +192,24 @@ function buildCompositeRows(options: {
       ...(section ? { section } : {}),
       ...(memo ? { memo } : {}),
       resources: resources.map((resource) => ({ ...resource })),
-      schedule: { ...childRow.schedule },
-      eligibleShapes: [...childRow.eligibleShapes],
+      schedule,
+      eligibleShapes,
     };
     (isIncluded ? included : excluded).push(row);
   });
 
   return { included, excluded };
+}
+
+function cloneProjectionRow(
+  row: FlowExperienceProjectionRow,
+): FlowExperienceProjectionRow {
+  return {
+    ...row,
+    resources: row.resources.map((resource) => ({ ...resource })),
+    schedule: { ...row.schedule },
+    eligibleShapes: [...row.eligibleShapes],
+  };
 }
 
 export function buildEffectiveFlowMapResult(options: {
@@ -217,12 +266,11 @@ export function buildEffectiveFlowMapResult(options: {
       snapshotHash: options.mapSnapshot.snapshotHash,
       childFlowSlugs: options.publishPackage.public.childFlows.map((child) => child.slug),
     },
-    previewRows: snapshot.committed.rows.map((row) => ({
-      ...row,
-      resources: row.resources.map((resource) => ({ ...resource })),
-      schedule: { ...row.schedule },
-      eligibleShapes: [...row.eligibleShapes],
-    })),
+    previewRows: snapshot.committed.rows.map(cloneProjectionRow),
+    editorRows: [
+      ...snapshot.committed.rows,
+      ...snapshot.committed.excludedRows,
+    ].map(cloneProjectionRow),
     viewModel,
   };
 }

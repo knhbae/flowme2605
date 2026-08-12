@@ -242,6 +242,28 @@ test('anchor change rekeys dated personal values without touching stable or unre
   assert.deepEqual(nextItems, [{ itemId: 'moving-method-quotes', date: '2026-07-06' }]);
 });
 
+test('anchor change rekeys undated aliases in both directions', () => {
+  const flowSlug = 'legacy-anchor-flow';
+  const itemId = 'first-item';
+  const dated = rekeyMyFlowAnchorDatedRecord({
+    [`${flowSlug}::${itemId}::none`]: { memo: 'keep' },
+  }, {
+    flowSlug,
+    previousItems: [{ itemId }],
+    nextItems: [{ itemId, date: '2026-08-20' }],
+  });
+  assert.deepEqual(dated[`${flowSlug}::${itemId}::2026-08-20`], { memo: 'keep' });
+  assert.equal(dated[`${flowSlug}::${itemId}::none`], undefined);
+
+  const undated = rekeyMyFlowAnchorDatedRecord(dated, {
+    flowSlug,
+    previousItems: [{ itemId, date: '2026-08-20' }],
+    nextItems: [{ itemId }],
+  });
+  assert.deepEqual(undated[`${flowSlug}::${itemId}::none`], { memo: 'keep' });
+  assert.equal(undated[`${flowSlug}::${itemId}::2026-08-20`], undefined);
+});
+
 test('effective My Flow dates use one priority across source, personal copy, and execution state', () => {
   const flowSlug = 'source-backed-moving-d30';
   const itemId = 'moving-method-quotes';

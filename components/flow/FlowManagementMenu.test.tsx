@@ -8,7 +8,10 @@ import { FlowManagementMenu } from './FlowManagementMenu';
 
 (globalThis as typeof globalThis & { React: typeof React }).React = React;
 
-function renderManagementMenu(q3CopyEnabled: boolean): string {
+function renderManagementMenu(
+  q3CopyEnabled: boolean,
+  enforce48pxActions = false,
+): string {
   const actions = buildFlowManagementCommandModel({
     archived: false,
     canAdjust: true,
@@ -28,6 +31,7 @@ function renderManagementMenu(q3CopyEnabled: boolean): string {
       testId="management-menu"
       triggerTestId="management-trigger"
       q3CopyEnabled={q3CopyEnabled}
+      enforce48pxActions={enforce48pxActions}
     />,
   );
 }
@@ -49,4 +53,20 @@ test('q3Copy off restores the prior accessible management copy and action label'
   assert.match(markup, />Flow 관리<\/summary>/u);
   assert.match(markup, /data-testid="management-adjust"[^>]*>[\s\S]*?<span>Flow 편집<\/span>/u);
   assert.doesNotMatch(markup, />계획 관리<\/summary>|<span>계획 수정<\/span>/u);
+});
+
+test('48px menu actions are opt-in while legacy actions remain 44px', () => {
+  const legacyMarkup = renderManagementMenu(true);
+  const approvedMarkup = renderManagementMenu(true, true);
+  const legacyActions = legacyMarkup.match(
+    /role="menuitem"[^>]*class="[^"]*min-h-11[^"]*"/gu,
+  ) ?? [];
+  const approvedActions = approvedMarkup.match(
+    /role="menuitem"[^>]*class="[^"]*min-h-12[^"]*"/gu,
+  ) ?? [];
+
+  assert.equal(legacyActions.length, 2);
+  assert.equal(approvedActions.length, 2);
+  assert.doesNotMatch(legacyMarkup, /role="menuitem"[^>]*class="[^"]*min-h-12/u);
+  assert.doesNotMatch(approvedMarkup, /role="menuitem"[^>]*class="[^"]*min-h-11/u);
 });

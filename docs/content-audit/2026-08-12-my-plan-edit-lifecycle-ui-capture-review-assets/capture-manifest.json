@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-12T16:05:45.1640328+09:00",
+  "report": "../2026-08-12-my-plan-edit-lifecycle-ui-capture-review-ko.html",
+  "evidenceKind": "local_browser_capture_and_user_supplied_feedback",
+  "publicationState": "draft_pr_preview_authorized_merge_production_gated",
+  "observedUserCount": 0,
+  "bases": {
+    "before": {
+      "worktree": "D:/flowme2605/flow-public-surface-release-closeout-20260812",
+      "commit": "0246128f466df7ff73505ed42862c269ecdcb129",
+      "tree": "e7fc7e5aef90a6c42c304e3c95832253421bf56d",
+      "treeMatchesOriginMain": true,
+      "baseUrl": "http://localhost:3188"
+    },
+    "after": {
+      "worktree": "D:/flowme2605/flow-my-plan-edit-lifecycle-20260812",
+      "baseCommit": "2f93f00d6539aa8125faccb7ad944eaf3397e7bc",
+      "baseTree": "e7fc7e5aef90a6c42c304e3c95832253421bf56d",
+      "state": "uncommitted_local_implementation",
+      "baseUrl": "http://localhost:3189"
+    }
+  },
+  "captures": [
+    {
+      "file": "screenshots/feedback-01-user-photo-public-flow.jpg",
+      "label": "사용자 제공 사진 - 일반 공개 Flow",
+      "evidenceKind": "user_supplied_mobile_photo",
+      "viewport": "591x1280",
+      "sha256": "d524387aa8956922490517d89af98a09a1ddbe59803351b1f1ee80eeec3abe40"
+    },
+    {
+      "file": "screenshots/feedback-02-user-photo-flow-map.jpg",
+      "label": "사용자 제공 사진 - Flow Map",
+      "evidenceKind": "user_supplied_mobile_photo",
+      "viewport": "591x1280",
+      "sha256": "97b5bac8cccfd5bc131e445d4881c29dca5539eb3a30d4b260b97eec6f1cbb3a"
+    },
+    {
+      "file": "screenshots/01-before-map-edit-no-response-390.png",
+      "label": "변경 전 Flow Map 수정 클릭 후",
+      "route": "/my?view=flows&flow=source-backed-middle-school-math-1",
+      "state": "edit_button_clicked_without_editor",
+      "evidenceKind": "local_before_browser_capture",
+      "viewport": "390x844",
+      "sha256": "524f051b37ac0fe5bbb93fa66b9dd90fda585ce5ce6be5db0bee579d0a429423"
+    },
+    {
+      "file": "screenshots/02-after-canonical-plan-editor-390.png",
+      "label": "일반 Flow 사본 Plan 편집기",
+      "route": "/my?view=flows&flow=personal-copy:*",
+      "state": "shared_plan_editor_open",
+      "origin": "canonical_personal_copy",
+      "evidenceKind": "local_after_browser_capture",
+      "viewport": "390x844",
+      "sha256": "bef02486024626e20a63f2df993aeb09132dc06fc46eaaed3ab32154ed177bd4"
+    },
+    {
+      "file": "screenshots/03-after-map-plan-editor-390.png",
+      "label": "Flow Map Plan 편집기",
+      "route": "/my?view=flows&flow=source-backed-middle-school-math-1",
+      "state": "shared_plan_editor_open",
+      "origin": "source_backed_map",
+      "evidenceKind": "local_after_browser_capture",
+      "viewport": "390x844",
+      "sha256": "1f573d63d29a9194bcc2342fb38eca78202e4340e656c8943515da3a591f7ef8"
+    },
+    {
+      "file": "screenshots/04-after-personal-memo-item-editor-390.png",
+      "label": "개인 메모 초안 Item 편집기",
+      "route": "/my?view=flows&flow=url-draft-*",
+      "state": "shared_item_editor_open",
+      "origin": "personal_memo_draft",
+      "evidenceKind": "local_after_browser_capture",
+      "viewport": "390x844",
+      "sha256": "8d49cdef0eea41ec3c5d1acbc6c4ede2264a3be5b427dfb7fe944e9e3313d3eb"
+    },
+    {
+      "file": "screenshots/05-after-legacy-dirty-back-prompt-390.png",
+      "label": "이전 저장본 dirty browser Back 확인",
+      "route": "/my?view=flows&flow=vehicle-inspection-prep",
+      "state": "dirty_item_editor_back_guard",
+      "origin": "legacy_saved_plan",
+      "evidenceKind": "local_after_browser_capture",
+      "viewport": "390x844",
+      "sha256": "809af7379b17a75ff758d219ec6bf21bd1bb1555cd05f9896bd4d34f4dbf2586"
+    },
+    {
+      "file": "screenshots/06-after-canonical-item-editor-390.png",
+      "label": "일반 Flow 사본 Item 편집기",
+      "state": "item_editor_before_apply_to_plan",
+      "evidenceKind": "local_after_browser_capture",
+      "viewport": "390x844",
+      "sha256": "a96e32c61503e9f5fd5cc36ff7ea6d744d48f4f6a8edd19ab220855ebc461cdb"
+    },
+    {
+      "file": "screenshots/07-after-dirty-discard-prompt-390.png",
+      "label": "dirty 취소 확인",
+      "state": "dirty_plan_editor_discard_guard",
+      "evidenceKind": "local_after_browser_capture",
+      "viewport": "390x844",
+      "sha256": "e10b669c2b40db5d414f727fb812280feed51ef68b16a9a9a44246f59bb6e3d3"
+    },
+    {
+      "file": "screenshots/08-after-management-menu-390.png",
+      "label": "활성 계획 관리 메뉴",
+      "state": "active_plan_management_open",
+      "evidenceKind": "local_after_browser_capture",
+      "viewport": "390x844",
+      "sha256": "29d8c2aafee0dad2d52c48663b99d1f645e8d824969f7687c3a95f004eb3bd7a"
+    },
+    {
+      "file": "screenshots/09-after-archive-undo-390.png",
+      "label": "보관함, 직접 복구, 되돌리기",
+      "state": "archived_lens_with_undo",
+      "evidenceKind": "local_after_browser_capture",
+      "viewport": "390x844",
+      "sha256": "9e9608de1b541f1f8ea8f70013d5fa894f92f5cf438aea9d608ea59f7261f726"
+    },
+    {
+      "file": "screenshots/10-after-map-plan-editor-1440.png",
+      "label": "1440px Flow Map 우측 편집 workspace",
+      "route": "/my?view=flows&flow=source-backed-middle-school-math-1",
+      "state": "shared_plan_editor_open_wide",
+      "origin": "source_backed_map",
+      "evidenceKind": "local_after_browser_capture",
+      "viewport": "1440x1000",
+      "sha256": "1001a09993416b40caeda9fa9c092914eab9eaf5e3249c9a40523bb1fa4ca770"
+    }
+  ],
+  "boundaries": [
+    "Screenshots prove visible UI state only, not storage byte identity or transaction atomicity.",
+    "Persistence, reload, identity, export, focus, and history claims are backed by the linked automated QA.",
+    "Legacy saved plan is a compatibility regression origin, not a directly observed user complaint.",
+    "The Owner authorized commit, push, Draft PR, and Preview on 2026-08-12; merge and Production remain unauthorized."
+  ]
+}

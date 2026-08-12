@@ -1010,6 +1010,7 @@ test('legacy opic duplicate map can stay published while the curated representat
 test('curated OPIC sourceTrace repair moves the Mansour URL representative to QA-pass ready', () => {
   const report = assessSourceBackedManualRegistrationReadiness();
   const publishPackage = buildSourceBackedFlowMapPublishPackage('curated-opic-mock-course');
+  const decision = getSourceBackedFlowMapQualityDecision('curated-opic-mock-course');
   const lookupableIds = getUrlFirstLookupableSourceBackedFlowMaps().map((map) => map.id);
 
   assert.ok(!report.blockedMapIds.includes('curated-opic-mock-course'));
@@ -1021,7 +1022,19 @@ test('curated OPIC sourceTrace repair moves the Mansour URL representative to QA
 
   assert.ok(publishPackage);
   assert.equal(publishPackage.map.id, 'curated-opic-mock-course');
-  assert.equal(getSourceBackedFlowMapQualityDecision('curated-opic-mock-course').directRouteEnabled, true);
+  assert.equal(publishPackage.map.version, '2026-06-30.3');
+  assert.match(publishPackage.map.sourceUrl, /mansour\.tistory\.com/u);
+  assert.equal(publishPackage.public.saveMode, 'choose_child');
+  assert.deepEqual(publishPackage.public.choiceCopy, {
+    resultPromise: '2주 또는 1달 계획 중 하나를 고른 뒤 시작일에 맞게 저장합니다.',
+    heading: '학습 기간에 맞는 계획 하나를 고르세요.',
+    body: '2주 집중 계획과 1달 반복 계획은 대안입니다. 함께 저장하지 않고 필요한 기간의 계획만 시작합니다.',
+    inputLabel: '계획별 시작일',
+    childCtaLabel: '계획 보고 시작',
+  });
+  assert.equal(decision.directRouteEnabled, true);
+  assert.match(decision.reason, /two alternative schedules/u);
+  assert.match(decision.nextAction, /either the 2-week or 1-month Flow/u);
   assert.equal(getSourceBackedFlowMapQualityDecision('opic-plan-map').directRouteEnabled, false);
   assert.ok(lookupableIds.includes('curated-opic-mock-course'));
   assert.ok(!lookupableIds.includes('opic-plan-map'));
@@ -1896,7 +1909,7 @@ test('source-backed Flow Map personal copy adjustment updates title anchor and s
     anchor: '2026-08-01',
     savedAt: '2026-07-05T01:00:00.000Z',
     includedStepIdsByFlow: {
-      'source-backed-middle-school-math-1': ['math-prime-factorization', 'math-integers-rationals'],
+      'source-backed-middle-school-math-1': ['math-integers-rationals', 'math-prime-factorization'],
     },
     stepOverridesByFlow: {
       'source-backed-middle-school-math-1': {
@@ -1919,8 +1932,8 @@ test('source-backed Flow Map personal copy adjustment updates title anchor and s
   assert.equal(adjusted.snapshot.anchor, '2026-08-01');
   assert.equal(adjusted.snapshot.stepCountsByFlow['source-backed-middle-school-math-1'], 2);
   assert.deepEqual(adjusted.snapshot.personalCopy?.includedStepIdsByFlow['source-backed-middle-school-math-1'], [
-    'math-prime-factorization',
     'math-integers-rationals',
+    'math-prime-factorization',
   ]);
   assert.deepEqual(adjusted.snapshot.personalCopy?.excludedStepIdsByFlow['source-backed-middle-school-math-1'], [
     'math-letter-expression',
@@ -1943,8 +1956,8 @@ test('source-backed Flow Map personal copy adjustment updates title anchor and s
   });
   assert.equal(adjusted.persistenceRecord.map.title, 'Chapter 1 and 2 review');
   assert.deepEqual(adjusted.persistenceRecord.childFlows[0]?.steps.map((step) => step.stepId), [
-    'math-prime-factorization',
     'math-integers-rationals',
+    'math-prime-factorization',
   ]);
   assert.deepEqual(adjusted.persistenceRecord.personalCopy?.stepOverridesByFlow?.['source-backed-middle-school-math-1'], {
     'math-prime-factorization': {
@@ -1974,8 +1987,8 @@ test('source-backed Flow Map personal copy adjustment updates title anchor and s
   assert.equal(adjustedAfterSourceUpdate.title, 'Chapter 1 and 2 review');
   assert.equal(adjustedAfterSourceUpdate.anchor, '2026-08-01');
   assert.deepEqual(adjustedAfterSourceUpdate.personalCopy?.includedStepIdsByFlow['source-backed-middle-school-math-1'], [
-    'math-prime-factorization',
     'math-integers-rationals',
+    'math-prime-factorization',
   ]);
   assert.deepEqual(adjustedAfterSourceUpdate.personalCopy?.stepOverridesByFlow?.['source-backed-middle-school-math-1'], {
     'math-prime-factorization': {
@@ -1988,6 +2001,69 @@ test('source-backed Flow Map personal copy adjustment updates title anchor and s
       schedule: { mode: 'fixed_date', date: '2026-08-04' },
     },
   });
+});
+
+test('reviewed version preserves excluded canonical Step overrides and prunes unknown IDs', () => {
+  const snapshot = buildSourceBackedFlowMapSavedSnapshot('middle-school-math-1', {
+    savedAt: '2026-07-05T03:00:00.000Z',
+  });
+  const record = buildSourceBackedFlowMapPersistenceRecord('middle-school-math-1', {
+    savedAt: '2026-07-05T03:00:00.000Z',
+  });
+  assert.ok(snapshot);
+  assert.ok(record);
+
+  const flow = record.childFlows[0];
+  const retainedStepId = 'retained-personal-step';
+  const retainedStep = {
+    ...structuredClone(flow.steps[0]),
+    stepId: retainedStepId,
+    title: '이전 버전에서 유지한 할 일',
+  };
+  const includedStepIds = [...flow.stepIds.slice(0, -1), retainedStepId];
+  const excludedStepId = flow.stepIds.at(-1)!;
+  const reviewed = buildSourceBackedFlowMapReviewedVersion(snapshot, {
+    source: 'personal_edit',
+    includedStepIdsByFlow: { [flow.slug]: includedStepIds },
+    excludedStepIdsByFlow: { [flow.slug]: [excludedStepId] },
+    stepOverridesByFlow: {
+      [flow.slug]: {
+        [includedStepIds[0]!]: { userMemo: '포함한 할 일의 내 메모' },
+        [excludedStepId]: {
+          title: '나중에 다시 볼 단원',
+          userMemo: '보충 학습 뒤 다시 포함',
+        },
+        [retainedStepId]: { userMemo: '유지한 할 일의 별도 메모' },
+        'unknown-step': { userMemo: '현재 원본에 없는 값' },
+      },
+    },
+    retainedStepsByFlow: {
+      [flow.slug]: { [retainedStepId]: retainedStep },
+    },
+  }, {
+    savedAt: '2026-07-05T04:00:00.000Z',
+  });
+
+  assert.ok(reviewed);
+  for (const personalCopy of [
+    reviewed.snapshot.personalCopy,
+    reviewed.persistenceRecord.personalCopy,
+  ]) {
+    assert.deepEqual(personalCopy?.stepOverridesByFlow?.[flow.slug]?.[excludedStepId], {
+      title: '나중에 다시 볼 단원',
+      userMemo: '보충 학습 뒤 다시 포함',
+    });
+    assert.deepEqual(personalCopy?.stepOverridesByFlow?.[flow.slug]?.[retainedStepId], {
+      userMemo: '유지한 할 일의 별도 메모',
+    });
+    assert.equal(personalCopy?.stepOverridesByFlow?.[flow.slug]?.['unknown-step'], undefined);
+    assert.equal(
+      personalCopy?.retainedStepsByFlow?.[flow.slug]?.[retainedStepId]?.title,
+      '이전 버전에서 유지한 할 일',
+    );
+  }
+  assert.ok(!reviewed.persistenceRecord.childFlows[0].stepIds.includes(excludedStepId));
+  assert.ok(reviewed.persistenceRecord.childFlows[0].stepIds.includes(retainedStepId));
 });
 
 test('source-backed saved Flow promotes to a personal edit copy without mutating its source snapshot', () => {

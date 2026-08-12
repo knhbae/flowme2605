@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-08-12T16:19:04.5748677+09:00",
+  "url": "http://127.0.0.1:4173/docs/content-audit/2026-08-12-my-plan-edit-lifecycle-ui-capture-review-ko.html",
+  "http": {
+    "status": 200,
+    "contentType": "text/html",
+    "linkedLocalResourceCount": 17,
+    "failedLocalResourceCount": 0
+  },
+  "browser": {
+    "engine": "Chromium via Playwright CLI",
+    "consoleErrorCount": 0,
+    "pageErrorCount": 0,
+    "viewports": [
+      {
+        "width": 390,
+        "height": 844,
+        "horizontalOverflow": 0,
+        "imageCount": 13,
+        "brokenImageCount": 0,
+        "missingAltCount": 0,
+        "unnamedInteractiveCount": 0,
+        "replacementCharacter": false
+      },
+      {
+        "width": 1024,
+        "height": 900,
+        "horizontalOverflow": 0,
+        "brokenImageCount": 0,
+        "replacementCharacter": false
+      },
+      {
+        "width": 1440,
+        "height": 1100,
+        "horizontalOverflow": 0,
+        "imageCount": 13,
+        "brokenImageCount": 0,
+        "missingAltCount": 0,
+        "unnamedInteractiveCount": 0,
+        "replacementCharacter": false
+      }
+    ]
+  },
+  "renderArtifacts": [
+    {
+      "file": "report-qa/report-desktop-1440.png",
+      "viewport": "1440x1100",
+      "sha256": "e2eacf2818ca62a30567ca7183c80373aa95b72f797fe671240f37ea40dd900d"
+    },
+    {
+      "file": "report-qa/report-desktop-full.png",
+      "viewport": "1440x10551 full page",
+      "sha256": "bd7c87ac27a1996179644d7250677299d7beb26937d9d4277f62ebf9ef4df485"
+    },
+    {
+      "file": "report-qa/report-mobile-390.png",
+      "viewport": "390x844",
+      "sha256": "c60a48b06256b518fb210f524974d6b16ee54465188e00ebd2acb7d471566180"
+    },
+    {
+      "file": "report-qa/report-mobile-full.png",
+      "viewport": "390x17588 full page",
+      "sha256": "63b92212c780d008465a55234e1a8e83e6849872616da1bad935957e041708f7"
+    }
+  ],
+  "visualInspection": {
+    "desktop": "PASS",
+    "mobile": "PASS",
+    "conceptComparison": "PASS - true-white editorial composition, navy/blue hierarchy, feedback rail, before/after comparison, four-origin matrix, lifecycle sequence, and automation/user-evidence boundary were retained; generated placeholders were replaced by actual product captures.",
+    "remainingFixableMismatch": "none found"
+  }
+}

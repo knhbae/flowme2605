@@ -8,6 +8,7 @@ import {
 } from './flow-map-action-contract';
 import type {
   SourceBackedFlowMapPersonalCopy,
+  SourceBackedFlowMapPersonalCopyStepOverride,
   SourceBackedFlowMapPublishPackage,
 } from './source-backed-my-flow';
 import type { PrimaryDestination, RiskLevel } from './types';
@@ -26,12 +27,27 @@ export type EffectiveFlowMapRow = {
   destination: PrimaryDestination;
   stepTitle?: string;
   memo?: string;
+  /** A session-only concrete date override. Source scheduling stays in canonicalRows. */
+  date?: string;
   sourceUrl?: string;
   sourceTrace?: string;
   riskLevel?: RiskLevel;
   detailItemCount: number;
   detailItems: string[];
 };
+
+export type EffectiveFlowMapItemPersonalization = {
+  title?: string;
+  /** Public editor detail text; persisted as the private userMemo layer. */
+  detail?: string;
+  /** A concrete YYYY-MM-DD override; source-relative scheduling is not rewritten. */
+  date?: string;
+};
+
+export type EffectiveFlowMapItemPersonalizationPatch = Readonly<Record<
+  string,
+  EffectiveFlowMapItemPersonalization | null | undefined
+>>;
 
 export type EffectiveFlowMapRecoveryInput = {
   canonicalCopyStatus?: CanonicalSavedCopyGroup['status'];
@@ -54,7 +70,10 @@ export type EffectiveFlowMapSnapshot = {
   };
   recovery: EffectiveFlowMapRecoveryInput;
   effectiveTitle: string;
+  /** Immutable source baseline. Personal edits are materialized only in the effective row arrays. */
   canonicalRows: EffectiveFlowMapRow[];
+  /** Session-only deltas keyed by canonical Flow Map Item ID. */
+  itemPersonalizations: Record<FlowMapCanonicalItemId, EffectiveFlowMapItemPersonalization>;
   rows: EffectiveFlowMapRow[];
   excludedRows: EffectiveFlowMapRow[];
   heldRows: EffectiveFlowMapRow[];
@@ -78,6 +97,7 @@ export type BuildEffectiveFlowMapSnapshotInput = {
   publishPackage: SourceBackedFlowMapPublishPackage;
   effectiveTitle?: string;
   selectedItemIds?: readonly string[];
+  itemPersonalizations?: Readonly<Record<string, EffectiveFlowMapItemPersonalization>>;
   executionState: FlowMapExecutionState;
   sourceLabel?: string;
   recovery?: {
@@ -89,6 +109,8 @@ export type BuildEffectiveFlowMapSnapshotInput = {
 export type ReviseEffectiveFlowMapSnapshotInput = {
   effectiveTitle?: string;
   selectedItemIds?: readonly string[];
+  /** Merges into the current session draft. null removes one Item personalization. */
+  itemPersonalizations?: EffectiveFlowMapItemPersonalizationPatch;
 };
 
 export type BuildFlowMapActionContractFromSnapshotOptions = {
@@ -107,6 +129,7 @@ export type EffectiveFlowMapPersistenceSelection = {
   selectedItemIds: FlowMapCanonicalItemId[];
   includedStepIdsByFlow: Record<string, string[]>;
   excludedStepIdsByFlow: Record<string, string[]>;
+  stepOverridesByFlow: Record<string, Record<string, SourceBackedFlowMapPersonalCopyStepOverride>>;
   personalCopy: SourceBackedFlowMapPersonalCopy;
 };
 
@@ -159,6 +182,68 @@ function cloneRow(row: EffectiveFlowMapRow): EffectiveFlowMapRow {
     ...row,
     detailItems: [...row.detailItems],
   };
+}
+
+function cloneItemPersonalization(
+  personalization: EffectiveFlowMapItemPersonalization,
+): EffectiveFlowMapItemPersonalization {
+  return { ...personalization };
+}
+
+function isPlainDate(value: string): boolean {
+  const match = value.match(/^(\d{4})-(\d{2})-(\d{2})$/u);
+  if (!match) return false;
+  const date = new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3])));
+  return date.getUTCFullYear() === Number(match[1])
+    && date.getUTCMonth() === Number(match[2]) - 1
+    && date.getUTCDate() === Number(match[3]);
+}
+
+function normalizeItemPersonalizations(
+  canonicalRows: readonly EffectiveFlowMapRow[],
+  personalizations?: Readonly<Record<string, EffectiveFlowMapItemPersonalization | null | undefined>>,
+): Record<FlowMapCanonicalItemId, EffectiveFlowMapItemPersonalization> {
+  if (!personalizations) return {};
+  const canonicalRowById = new Map(canonicalRows.map((row) => [row.itemId, row] as const));
+  const normalized = {} as Record<FlowMapCanonicalItemId, EffectiveFlowMapItemPersonalization>;
+
+  Object.entries(personalizations).forEach(([itemId, personalization]) => {
+    const canonicalRow = canonicalRowById.get(itemId as FlowMapCanonicalItemId);
+    if (!canonicalRow) throw new RangeError(`Unknown Flow Map item ID: ${itemId}`);
+    if (personalization === null || personalization === undefined) return;
+    if (typeof personalization !== 'object' || Array.isArray(personalization)) {
+      throw new TypeError(`Item personalization for ${itemId} must be an object`);
+    }
+
+    const title = personalization.title?.replace(/\s+/gu, ' ').trim();
+    const detail = personalization.detail?.trim();
+    const date = personalization.date?.trim();
+    if (date && !isPlainDate(date)) {
+      throw new RangeError(`Item personalization date for ${itemId} must be YYYY-MM-DD`);
+    }
+    const next: EffectiveFlowMapItemPersonalization = {
+      ...(title && title !== canonicalRow.title ? { title } : {}),
+      ...(detail ? { detail } : {}),
+      ...(date ? { date } : {}),
+    };
+    if (Object.keys(next).length > 0) {
+      normalized[canonicalRow.itemId] = next;
+    }
+  });
+
+  return normalized;
+}
+
+function materializeRow(
+  canonicalRow: EffectiveFlowMapRow,
+  personalization?: EffectiveFlowMapItemPersonalization,
+): EffectiveFlowMapRow {
+  const row = cloneRow(canonicalRow);
+  if (!personalization) return row;
+  if (personalization.title) row.title = personalization.title;
+  if (personalization.detail) row.memo = personalization.detail;
+  if (personalization.date) row.date = personalization.date;
+  return row;
 }
 
 function uniqueRiskLevels(levels: readonly (RiskLevel | undefined)[]): RiskLevel[] {
@@ -226,6 +311,7 @@ function normalizeRequestedItemIds(
   if (selectedItemIds === undefined) return canonicalIds;
 
   const canonicalSet = new Set<string>(canonicalIds);
+  const requested: FlowMapCanonicalItemId[] = [];
   const requestedSet = new Set<string>();
   selectedItemIds.forEach((itemId, index) => {
     if (typeof itemId !== 'string' || !itemId) {
@@ -234,9 +320,12 @@ function normalizeRequestedItemIds(
     if (!canonicalSet.has(itemId)) {
       throw new RangeError(`Unknown Flow Map item ID: ${itemId}`);
     }
-    requestedSet.add(itemId);
+    if (!requestedSet.has(itemId)) {
+      requestedSet.add(itemId);
+      requested.push(itemId as FlowMapCanonicalItemId);
+    }
   });
-  return canonicalIds.filter((itemId) => requestedSet.has(itemId));
+  return requested;
 }
 
 function materializeEffectiveFlowMapSnapshot(options: {
@@ -246,14 +335,25 @@ function materializeEffectiveFlowMapSnapshot(options: {
   effectiveTitle: string;
   canonicalRows: readonly EffectiveFlowMapRow[];
   selectedItemIds?: readonly string[];
+  itemPersonalizations?: Readonly<Record<string, EffectiveFlowMapItemPersonalization | null | undefined>>;
   riskLevels: readonly RiskLevel[];
 }): EffectiveFlowMapSnapshot {
   const canonicalRows = options.canonicalRows.map(cloneRow);
   const effectiveTitle = options.effectiveTitle.trim() || options.identity.sourceTitle;
   const requestedItemIds = normalizeRequestedItemIds(canonicalRows, options.selectedItemIds);
   const requestedSet = new Set<string>(requestedItemIds);
-  const requestedRows = canonicalRows.filter((row) => requestedSet.has(row.itemId));
-  const excludedRows = canonicalRows.filter((row) => !requestedSet.has(row.itemId));
+  const canonicalRowById = new Map(canonicalRows.map((row) => [row.itemId, row] as const));
+  const itemPersonalizations = normalizeItemPersonalizations(
+    canonicalRows,
+    options.itemPersonalizations,
+  );
+  const requestedRows = requestedItemIds.map((itemId) => materializeRow(
+    canonicalRowById.get(itemId)!,
+    itemPersonalizations[itemId],
+  ));
+  const excludedRows = canonicalRows
+    .filter((row) => !requestedSet.has(row.itemId))
+    .map((row) => materializeRow(row, itemPersonalizations[row.itemId]));
   const reviewHold = options.controller.executionState === 'review_hold';
   const rows = reviewHold ? [] : requestedRows;
   const heldRows = reviewHold ? requestedRows : [];
@@ -272,6 +372,7 @@ function materializeEffectiveFlowMapSnapshot(options: {
     recovery: options.recovery,
     effectiveTitle,
     canonicalRows,
+    ...(Object.keys(itemPersonalizations).length > 0 ? { itemPersonalizations } : {}),
     itemIds,
     riskLevels,
   });
@@ -284,6 +385,12 @@ function materializeEffectiveFlowMapSnapshot(options: {
     recovery: { ...options.recovery },
     effectiveTitle,
     canonicalRows,
+    itemPersonalizations: Object.fromEntries(
+      Object.entries(itemPersonalizations).map(([itemId, personalization]) => [
+        itemId,
+        cloneItemPersonalization(personalization),
+      ]),
+    ) as Record<FlowMapCanonicalItemId, EffectiveFlowMapItemPersonalization>,
     rows,
     excludedRows,
     heldRows,
@@ -320,6 +427,7 @@ export function buildEffectiveFlowMapSnapshot(
     effectiveTitle: input.effectiveTitle ?? publishPackage.public.title,
     canonicalRows,
     selectedItemIds: input.selectedItemIds,
+    itemPersonalizations: input.itemPersonalizations,
     riskLevels: uniqueRiskLevels(
       publishPackage.creator.sourceRows.map((row) => row.riskLevel),
     ),
@@ -330,6 +438,12 @@ export function reviseEffectiveFlowMapSnapshot(
   snapshot: EffectiveFlowMapSnapshot,
   revision: ReviseEffectiveFlowMapSnapshotInput,
 ): EffectiveFlowMapSnapshot {
+  const itemPersonalizations = revision.itemPersonalizations === undefined
+    ? snapshot.itemPersonalizations
+    : {
+        ...snapshot.itemPersonalizations,
+        ...revision.itemPersonalizations,
+      };
   return materializeEffectiveFlowMapSnapshot({
     identity: snapshot.identity,
     controller: snapshot.controller,
@@ -337,6 +451,7 @@ export function reviseEffectiveFlowMapSnapshot(
     effectiveTitle: revision.effectiveTitle ?? snapshot.effectiveTitle,
     canonicalRows: snapshot.canonicalRows,
     selectedItemIds: revision.selectedItemIds ?? snapshot.itemIds.requested,
+    itemPersonalizations,
     riskLevels: snapshot.riskLevels,
   });
 }
@@ -390,18 +505,48 @@ export function buildEffectiveFlowMapPersistenceSelection(
   const effectiveIds = new Set<string>(snapshot.itemIds.effective);
   const includedStepIdsByFlow: Record<string, string[]> = {};
   const excludedStepIdsByFlow: Record<string, string[]> = {};
+  snapshot.rows.forEach((row) => {
+    (includedStepIdsByFlow[row.flowSlug] ??= []).push(row.stepId);
+  });
   snapshot.canonicalRows.forEach((row) => {
-    const target = effectiveIds.has(row.itemId)
-      ? includedStepIdsByFlow
-      : excludedStepIdsByFlow;
-    (target[row.flowSlug] ??= []).push(row.stepId);
+    if (!effectiveIds.has(row.itemId)) {
+      (excludedStepIdsByFlow[row.flowSlug] ??= []).push(row.stepId);
+    }
+  });
+  const stepOverridesByFlow: Record<
+    string,
+    Record<string, SourceBackedFlowMapPersonalCopyStepOverride>
+  > = {};
+  // Keep private Item edits even when the Item is excluded from this saved
+  // selection. The inclusion owner and the Item-value owner are independent;
+  // dropping the override here would make a later re-include lose the user's
+  // title or memo.
+  snapshot.canonicalRows.forEach((row) => {
+    const personalization = snapshot.itemPersonalizations[row.itemId];
+    if (!personalization) return;
+    const override: SourceBackedFlowMapPersonalCopyStepOverride = {
+      ...(personalization.title ? { title: personalization.title } : {}),
+      ...(personalization.detail ? { userMemo: personalization.detail } : {}),
+      ...(personalization.date
+        ? { schedule: { mode: 'fixed_date', date: personalization.date } }
+        : {}),
+    };
+    if (Object.keys(override).length > 0) {
+      (stepOverridesByFlow[row.flowSlug] ??= {})[row.stepId] = override;
+    }
   });
   const personalCopy: SourceBackedFlowMapPersonalCopy = {
     source: 'url_first_custom_start',
     originalTitle: snapshot.identity.sourceTitle,
     includedStepIdsByFlow,
     excludedStepIdsByFlow,
+    ...(Object.keys(stepOverridesByFlow).length > 0 ? { stepOverridesByFlow } : {}),
   };
+
+  const canonicalOrder = snapshot.itemIds.canonical;
+  const hasSelectionOrOrderChange = canonicalOrder.length !== snapshot.itemIds.effective.length
+    || canonicalOrder.some((itemId, index) => snapshot.itemIds.effective[index] !== itemId);
+  const hasItemOverrides = Object.keys(stepOverridesByFlow).length > 0;
 
   return {
     mapId: snapshot.identity.mapId,
@@ -409,10 +554,12 @@ export function buildEffectiveFlowMapPersistenceSelection(
     title: snapshot.effectiveTitle,
     personalized:
       snapshot.effectiveTitle !== snapshot.identity.sourceTitle
-      || snapshot.counts.effective !== snapshot.counts.canonical,
+      || hasSelectionOrOrderChange
+      || hasItemOverrides,
     selectedItemIds: [...snapshot.itemIds.effective],
     includedStepIdsByFlow,
     excludedStepIdsByFlow,
+    stepOverridesByFlow,
     personalCopy,
   };
 }

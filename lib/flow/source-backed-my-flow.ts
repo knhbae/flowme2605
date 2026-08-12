@@ -1404,12 +1404,12 @@ function pickSourceBackedRecordValues<T>(record: Record<string, T>, keys: string
 
 function pickSourceBackedPersonalCopyStepOverrides(
   personalCopy: SourceBackedFlowMapPersonalCopy,
-  includedStepIdsByFlow: Record<string, string[]>,
+  availableStepIdsByFlow: Record<string, string[]>,
 ): Record<string, Record<string, SourceBackedFlowMapPersonalCopyStepOverride>> | undefined {
   const sourceOverrides = personalCopy.stepOverridesByFlow;
   if (!sourceOverrides) return undefined;
 
-  const entries = Object.entries(includedStepIdsByFlow).flatMap(([flowSlug, stepIds]) => {
+  const entries = Object.entries(availableStepIdsByFlow).flatMap(([flowSlug, stepIds]) => {
     const overrides = sourceOverrides[flowSlug];
     if (!overrides) return [];
     const picked = Object.fromEntries(
@@ -1466,14 +1466,25 @@ function projectSourceBackedSnapshotForPersonalCopy(
   const stepCountsByFlow: Record<string, number> = {};
   const includedStepIdsByFlow: Record<string, string[]> = {};
   const excludedStepIdsByFlow: Record<string, string[]> = {};
+  const availableStepIdsByFlow: Record<string, string[]> = {};
 
   publishPackage.public.childFlows.forEach((flow) => {
+    const canonicalStepIds = flow.steps.map((step) => step.id);
     const retainedStepIds = Object.keys(personalCopy.retainedStepsByFlow?.[flow.slug] ?? {});
-    const currentStepIds = Array.from(new Set([...flow.steps.map((step) => step.id), ...retainedStepIds]));
+    const currentStepIds = Array.from(new Set([...canonicalStepIds, ...retainedStepIds]));
     const currentStepIdSet = new Set(currentStepIds);
     const includedStepIds = (personalCopy.includedStepIdsByFlow[flow.slug] ?? [])
       .filter((stepId) => currentStepIdSet.has(stepId));
     const excludedStepIds = currentStepIds.filter((stepId) => !includedStepIds.includes(stepId));
+    // Item-value ownership is independent from inclusion for canonical
+    // Steps. Retained Steps keep the prior contract: an override survives
+    // only while that explicit retained binding is included. The allow-list
+    // therefore preserves included and excluded canonical overrides without
+    // promoting unknown IDs into retained content.
+    availableStepIdsByFlow[flow.slug] = [
+      ...canonicalStepIds,
+      ...retainedStepIds.filter((stepId) => includedStepIds.includes(stepId)),
+    ];
 
     if (includedStepIds.length === 0) return;
     selectedFlowSlugs.push(flow.slug);
@@ -1481,7 +1492,7 @@ function projectSourceBackedSnapshotForPersonalCopy(
     includedStepIdsByFlow[flow.slug] = includedStepIds;
     excludedStepIdsByFlow[flow.slug] = excludedStepIds;
   });
-  const stepOverridesByFlow = pickSourceBackedPersonalCopyStepOverrides(personalCopy, includedStepIdsByFlow);
+  const stepOverridesByFlow = pickSourceBackedPersonalCopyStepOverrides(personalCopy, availableStepIdsByFlow);
   const retainedStepsByFlow = pickSourceBackedPersonalCopyRetainedSteps(personalCopy, includedStepIdsByFlow);
 
   return {
@@ -1521,17 +1532,16 @@ function projectSourceBackedPersistenceRecordForPersonalCopy(
 
   const childFlows = record.childFlows
     .map((child) => {
-      const includedStepIds = new Set(personalCopy.includedStepIdsByFlow[child.slug] ?? []);
+      const includedStepIds = personalCopy.includedStepIdsByFlow[child.slug] ?? [];
       const retainedSteps = personalCopy.retainedStepsByFlow?.[child.slug] ?? {};
-      const currentStepIds = new Set(child.steps.map((step) => step.stepId));
-      const steps = [
-        ...child.steps
-          .filter((step) => includedStepIds.has(step.stepId))
-          .map((step) => retainedSteps[step.stepId] ?? step),
-        ...Object.values(retainedSteps).filter(
-          (step) => includedStepIds.has(step.stepId) && !currentStepIds.has(step.stepId),
-        ),
-      ];
+      const availableStepsById = new Map([
+        ...child.steps.map((step) => [step.stepId, step] as const),
+        ...Object.values(retainedSteps).map((step) => [step.stepId, step] as const),
+      ]);
+      const steps = Array.from(new Set(includedStepIds)).flatMap((stepId) => {
+        const step = retainedSteps[stepId] ?? availableStepsById.get(stepId);
+        return step ? [step] : [];
+      });
       return {
         ...child,
         stepCount: steps.length,
@@ -1794,8 +1804,10 @@ export function buildSourceBackedFlowMapPersonalCopyAdjustment(
   const includedStepIdsByFlow = Object.fromEntries(
     baselineRecord.childFlows.flatMap((flow) => {
       const availableStepIds = getAvailableStepIds(flow);
-      const requestedIds = new Set(options.includedStepIdsByFlow[flow.slug] ?? []);
-      const includedIds = availableStepIds.filter((stepId) => requestedIds.has(stepId));
+      const availableStepIdSet = new Set(availableStepIds);
+      const includedIds = Array.from(new Set(
+        options.includedStepIdsByFlow[flow.slug] ?? [],
+      )).filter((stepId) => availableStepIdSet.has(stepId));
       return includedIds.length > 0 ? [[flow.slug, includedIds] as const] : [];
     }),
   );

@@ -22,6 +22,7 @@ export function FlowManagementMenu({
   align = 'right',
   triggerClassName = '',
   q3CopyEnabled = true,
+  enforce48pxActions = false,
 }: {
   flowTitle: string;
   actions: FlowManagementMenuAction[];
@@ -31,6 +32,7 @@ export function FlowManagementMenu({
   align?: 'left' | 'right';
   triggerClassName?: string;
   q3CopyEnabled?: boolean;
+  enforce48pxActions?: boolean;
 }) {
   const detailsRef = useRef<HTMLDetailsElement | null>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
@@ -75,7 +77,7 @@ export function FlowManagementMenu({
         }`}
       >
         {actions.map((action) => {
-          const className = `grid min-h-11 w-full items-center rounded-md px-3 py-2 text-left text-sm font-semibold focus:outline-none focus-visible:ring-2 ${
+          const className = `grid ${enforce48pxActions ? 'min-h-12' : 'min-h-11'} w-full items-center rounded-md px-3 py-2 text-left text-sm font-semibold focus:outline-none focus-visible:ring-2 ${
             action.role === 'destructive'
               ? 'text-rose-700 hover:bg-rose-50 focus-visible:ring-[var(--flowme-danger-focus)]'
               : action.role === 'recovery'
