@@ -1,6 +1,6 @@
 # Tasks
 
-**Status:** LOCAL IMPLEMENTATION AND AUTOMATED QA COMPLETE
+**Status:** RELEASED THROUGH PR #178 / PRODUCTION SMOKE PASS
 
 ## Active
 
@@ -28,6 +28,7 @@
 
 ## Publication boundary
 
-- [x] Commit, push, Draft PR, and Preview are Owner-authorized on 2026-08-12.
-- [ ] Merge and Production remain `NOT AUTHORIZED`.
-- [x] Observed-user validation remains `0` until real sessions are recorded.
+- [x] Commit, push, Draft PR, and Preview are complete.
+- [x] Merge and Production are complete through PR #178 merge `908ee849beb15cb10331b72d7894167a61458b18`; canonical smoke passed `38/38`.
+- [x] Post-merge `main` run `31597763288` core and Playwright jobs passed.
+- [ ] Observed-user validation remains `0` until real sessions are recorded.

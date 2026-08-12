@@ -1,12 +1,12 @@
 # QA Evidence
 
-**Status:** LOCAL IMPLEMENTATION AND AUTOMATED QA COMPLETE / DRAFT PR-PREVIEW AUTHORIZED / MERGE-PRODUCTION NOT AUTHORIZED
+**Status:** RELEASED / EXACT-HEAD PR CI PASS / PRODUCTION SMOKE 38/38
 
 **Base:** `2f93f00d6539aa8125faccb7ad944eaf3397e7bc`
 
 **Observed users:** `0`
 
-스크린샷, 자동화, 내부 리뷰, 로컬 빌드는 observed-user validation으로 계산하지 않는다. 이 문서는 현재 worktree의 구현·회귀 근거이며 Production 배포 근거가 아니다.
+스크린샷, 자동화, 내부 리뷰, 로컬 빌드는 observed-user validation으로 계산하지 않는다. 아래 로컬 표와 캡처는 구현·회귀 근거로 유지하고, 별도 Publication boundary만 실제 병합·Production·smoke 상태를 기록한다.
 
 ## Product result
 
@@ -76,7 +76,8 @@ npm.cmd run test:e2e -- tests/e2e/public-plan-edit-surface-unification.spec.ts -
 
 ## Publication boundary
 
-- Commit/push/Draft PR/Preview: `AUTHORIZED 2026-08-12`.
-- Merge/Production: `NOT AUTHORIZED`.
-- Production smoke: `NOT RUN` for this candidate.
+- Commit/push/Draft PR/Preview: `COMPLETE`.
+- Merge/Production: `PASS` — [PR #178](https://github.com/knhbae/flowme2605/pull/178) merge `908ee849beb15cb10331b72d7894167a61458b18`; deployment `5869458520` / status `16715443863`.
+- Production smoke: `PASS 38/38` — workers `1`, retries `0`, `99.6s`, unexpected/flaky/skipped `0`.
+- Post-merge `main` CI: `PASS` — run `31597763288`, core job `94117373437`, Playwright job `94117373461`.
 - Observed-user validation: `0`.

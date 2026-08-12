@@ -1,6 +1,6 @@
 # My Plan Edit And Lifecycle Unification
 
-**Status:** OWNER APPROVED / LOCAL IMPLEMENTATION AND VERIFICATION COMPLETE / COMMIT-PUSH-DRAFT PR-PREVIEW AUTHORIZED / MERGE-PRODUCTION NOT AUTHORIZED / OBSERVED USERS 0
+**Status:** RELEASED THROUGH PR #178 / PRODUCTION SMOKE 38/38 / OBSERVED USERS 0
 
 **Owner decision:** 2026-08-12
 
@@ -55,7 +55,7 @@
 - 새로운 export destination/format 또는 receipt owner
 - Text Authoring `TA-01~TA-06`, Structured Checklist option B, creator/publish work
 - `savedPlanLibrary=off`의 구형 UI 재설계
-- commit, push, PR, merge, deployment, production smoke. 별도 Owner 승인 전에는 로컬 미게시 상태다.
+- commit, push, PR, merge, deployment, production smoke were outside the implementation scope and were executed later through the separately authorized release recorded below.
 - observed-user validation. 자동 QA와 내부 화면 검토와 별개이며 현재 관찰 사용자 수는 `0`이다.
 
 ## Acceptance criteria
@@ -70,6 +70,20 @@
 8. 390/1024/1440에서 네 출처의 공통 편집 shell, plan -> Item -> Back focus, clean cancel focus, overflow/clipping/sticky action을 검증한다.
 9. focused unit/E2E, docs check, production build, 저장·export·lifecycle 관련 회귀가 현재 소스에서 통과한다.
 10. 게시 상태와 observed-user evidence를 구현·자동 QA와 분리해 기록한다.
+
+## Release outcome
+
+This implementation shipped with the public Plan/Item editor through
+[PR #178](https://github.com/knhbae/flowme2605/pull/178). Final head
+`3cac3cde5bbcf6297b93b8299bfe28693700aebf` passed exact-head CI run
+[`31596540934`](https://github.com/knhbae/flowme2605/actions/runs/31596540934)
+and merged as `908ee849beb15cb10331b72d7894167a61458b18` at
+`2026-08-12T12:42:45Z`. Production deployment record `5869458520`, status
+`16715443863`, succeeded and canonical smoke passed `38/38`. Post-merge `main`
+run [`31597763288`](https://github.com/knhbae/flowme2605/actions/runs/31597763288)
+passed core job `94117373437` and Playwright job `94117373461`. See the
+[release record](../../pr-history/2026-08-12-plan-edit-lifecycle-unification.md).
+Observed users remain `0`.
 
 ## Superseded UI boundary
 

@@ -1,6 +1,15 @@
 # Release History
 
-No tagged releases yet.
+The repository's current semantic-version tag is `v0.1.0` at
+`d18f4218de48e23f894c7615945e37339a4a0153` (`2026-06-11`). Later entries
+below are deployment milestones unless they explicitly name another tag.
+
+## 2026-08-12 - Plan Edit And Lifecycle Unification
+
+- Released one Plan/Item editing grammar across saved `/my`, ordinary public `/f`, and executable single-plan Map routes. Canonical personal copies, source-backed Maps, personal memo/URL drafts, and legacy saved plans now share close, Back, focus, final-save, and lifecycle behavior while keeping their existing identity and persistence owners.
+- [PR #178](https://github.com/knhbae/flowme2605/pull/178) final head `3cac3cde5bbcf6297b93b8299bfe28693700aebf` passed exact-head CI run [`31596540934`](https://github.com/knhbae/flowme2605/actions/runs/31596540934) and merged at `2026-08-12T12:42:45Z` as `908ee849beb15cb10331b72d7894167a61458b18`.
+- GitHub Production deployment record `5869458520`, status `16715443863`, succeeded with [protected direct deployment-record URL](https://flowme2605-ej020et9m-flowme.vercel.app); the [Vercel record](https://vercel.com/flowme/flowme2605/AF53jatbYV9EuNyjbUeMY3Z6gUWZ) reports success. Canonical Production smoke passed `38/38` with workers `1`, retries `0`, in `99.6s`; unexpected, flaky, and skipped results were `0`.
+- Post-merge `main` run [`31597763288`](https://github.com/knhbae/flowme2605/actions/runs/31597763288) passed both [core job `94117373437`](https://github.com/knhbae/flowme2605/actions/runs/31597763288/job/94117373437) and [Playwright job `94117373461`](https://github.com/knhbae/flowme2605/actions/runs/31597763288/job/94117373461). This release evidence is automated QA, not observed-user validation; observed-user sessions remain `0`. No semantic version tag was created. See the [release record](./pr-history/2026-08-12-plan-edit-lifecycle-unification.md).
 
 ## 2026-08-12 - Public Plan Surface Unification
 
