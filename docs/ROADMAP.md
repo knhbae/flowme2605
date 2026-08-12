@@ -78,9 +78,10 @@ run `31449546812` passed. Production deployment record `5842830294`, status
 to Vercel login. The canonical alias served the app, and approved-spec smoke passed
 `23/23` with workers `1`, retries `0`, in `62.9s` (displayed `1.0m`), output
 `r3b-production-hotfix-2b937ce`. R3B remains the inherited plan-execution
-contract after the later PR #176 and PR #178 releases. PR #178 source
-`908ee849beb15cb10331b72d7894167a61458b18` is now the current Production
-release without reopening that contract. Observed-user validation remains `0`.
+contract after the later PR #176 and PR #178 releases. PR #178 merge
+`908ee849beb15cb10331b72d7894167a61458b18` is the latest runtime-bearing
+product release without reopening that contract. Observed-user validation
+remains `0`.
 
 ## Closed MVP Program: P35 Round 2 B/B/B Bounded UX Correction
 
@@ -448,15 +449,15 @@ Detailed scope: [Save, Personalize, Execute Journey Reset](./specs/2026-07-18-sa
 
 Plan edit and lifecycle unification implementation, exact-head CI, merge,
 Production deployment, and canonical smoke are complete. Merge
-`908ee849beb15cb10331b72d7894167a61458b18` is the current deployed source and
-canonical verification passed `38/38`. Post-merge `main` run `31597763288`
+`908ee849beb15cb10331b72d7894167a61458b18` is the latest runtime-bearing
+product merge and canonical verification passed `38/38`. Post-merge `main` run `31597763288`
 passed both core and Playwright jobs. No product gate is active. External user
 observation stays separate and the count stays `0`.
 
 | Lane | Owner | Work | Next checkpoint | Done when |
 | --- | --- | --- | --- | --- |
-| Completed Plan edit/lifecycle release | AI + Owner | Preserve one Plan/Item editor and lifecycle contract across saved, public Flow, and executable Map origins without moving persistence ownership | Preserve [PR #178](https://github.com/knhbae/flowme2605/pull/178) merge `908ee849` as the current Production source until a later explicit release | Exact-head CI PASS, Production PASS, canonical smoke `38/38`, post-merge `main` run truth explicit, observed users `0` |
-| Completed documentation-only closeout | AI | Publish the exact PR #176, CI, merge, deployment, `11/11` smoke, and observed-user boundary without changing product code | Preserve [PR #177](https://github.com/knhbae/flowme2605/pull/177) merge `2f93f00d` as release documentation history | Canonical docs agree, docs checks passed, and the closeout state remains separate from the product release |
+| Completed Plan edit/lifecycle release | AI + Owner | Preserve one Plan/Item editor and lifecycle contract across saved, public Flow, and executable Map origins without moving persistence ownership | Preserve [PR #178](https://github.com/knhbae/flowme2605/pull/178) merge `908ee849` as the runtime product baseline until a later explicit product release | Exact-head CI PASS, Production PASS, canonical smoke `38/38`, post-merge `main` run truth explicit, observed users `0` |
+| Completed documentation-only closeouts | AI | Publish the exact PR #176 and PR #178 release facts and observed-user boundary without changing product code | Preserve [PR #177](https://github.com/knhbae/flowme2605/pull/177) and [PR #179](https://github.com/knhbae/flowme2605/pull/179) as documentation history, separate from the runtime-bearing product release | Canonical docs agree, docs checks passed, and documentation-only deployments are not mistaken for a new product baseline |
 | Completed public plan surface release | AI + Owner | One public Flow/Map result grammar with existing save identity, rollback, CI, deployment, and smoke boundaries | Preserve merge `47c54803c6bb7544aad757ce62c4ce58decbfe53` as the historical predecessor to PR #178 | PR #176, exact-head and post-merge CI PASS, exact-source Production PASS, canonical smoke `11/11`, observed users `0` |
 | Completed R3B release | AI + Owner | Approved plan-execution UX, bounded selected-Plan/transfer boundaries, Escape correction, CI, deployment, and smoke | Preserve R3B as the inherited My Flow execution contract | PR #172 plus PR #173, merge `2b937ce811b518950f495341d05736ebd102887a`, CI PASS, exact-source deployment PASS, canonical smoke `23/23`, observed users `0` |
 | Completed R3A release | AI + Owner | My Flow workspace snapshot, exact-query experience boundary, PR #169 merge, production deploy, and smoke | Preserve its historical then-default `classic` behavior and exact-query rollback comparison boundary; keep lab promotion/removal separate | merge `95a69257`, GitHub Playwright `546/546`, deployment `dpl_5jhJz4EBiHMm5HptH9nFCqfyeFek` `READY`, production smoke PASS, observed users `0` |
@@ -508,12 +509,12 @@ These gates cannot be closed by automated tests or simulated personas.
 | Cross-device recovery | Automated/local evidence only | One real browser or device transfer |
 | Persistence decision | Undecided | Decide from observed continuity expectations |
 
-## Next Publication Checkpoint
+## Release Evidence Boundary
 
 [Plan Edit And Lifecycle Unification](./pr-history/2026-08-12-plan-edit-lifecycle-unification.md)
-is released through PR #178 and exact Production source
-`908ee849beb15cb10331b72d7894167a61458b18`. This documentation-only closeout
-must not change runtime, reopen a product gate, or turn automated smoke into
+is released through PR #178 and runtime-bearing release source
+`908ee849beb15cb10331b72d7894167a61458b18`. Documentation-only closeouts do
+not change runtime, reopen a product gate, or turn automated smoke into
 observed-user evidence. Text-to-Flow, P2 follow-ups, external integrations, and
 observed-user recruitment remain inactive until the Owner explicitly promotes
 one of them.

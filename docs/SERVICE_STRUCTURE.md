@@ -107,7 +107,7 @@ Desktop can use a top nav with the same priority order. It should not expose mor
   action, and anchor behavior for both `save_all` and `choose_child`; exact
   `savedPlanLibrary=off` restores the prior/default result mode. These flags do
   not rename keys, migrate schema, or move data ownership into the shared UI.
-- This is the current Production structure from merge
+- This Production behavior was introduced by runtime-bearing merge
   `908ee849beb15cb10331b72d7894167a61458b18`. Exact-head and post-merge CI,
   exact-source Production deployment, and canonical smoke `38/38` passed;
   observed users remain `0`.
@@ -134,7 +134,8 @@ Desktop can use a top nav with the same priority order. It should not expose mor
 ### Current Production Baseline And Inherited R3B/P35/Round 2 Contracts
 
 - Plan edit and lifecycle merge `908ee849beb15cb10331b72d7894167a61458b18`
-  is the current Production source. It preserves the R3B selected-Plan,
+  is the latest runtime-bearing product merge and current product-behavior
+  baseline. It preserves the R3B selected-Plan,
   transfer, and Escape contracts from merge
   `2b937ce811b518950f495341d05736ebd102887a`. Exact
   `myFlowExperience=r3a-lab` remains an internal query-only surface. Automated
