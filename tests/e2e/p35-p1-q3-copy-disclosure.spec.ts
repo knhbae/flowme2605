@@ -398,11 +398,9 @@ test.describe('P1-02 Q3 copy and contextual disclosure', () => {
   test('saved plan management and capability preview use plan-owned accessible copy', async ({ page }) => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize(viewports[1]);
-    await page.goto(routeForPhase('/my?demo=ux5&view=flows&flow=moving-d30-basic'));
-    const selectedPlan = page.locator(
-      '[data-testid="my-flow-overview-card"][data-flow-slug="moving-d30-basic"]',
-    );
-    await expect(selectedPlan).toBeVisible();
+    await seedSavedMovingPlan(page);
+    await page.goto(routeForPhase('/my?view=flows&flow=moving-d30-basic'));
+    const selectedPlan = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'record');
     const storageBefore = await rawStorageSnapshot(page);
     const approvedPlan = selectedPlan.getByTestId('approved-my-plan-workspace');
     await expect(approvedPlan).toBeVisible();
