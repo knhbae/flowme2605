@@ -203,6 +203,81 @@ test('production adapters expose the shared schema and commit-role contracts in 
   assert.equal((markup.match(/data-testid="my-flow-detail-save-changes"[^>]*>\s*저장/g) ?? []).length, 1);
 });
 
+test('public Plan item capabilities can hide reorder controls while preserving title editing and inclusion', () => {
+  const renderPanel = (handlers: boolean, hideReorder = false) => renderToStaticMarkup(
+    <PublicFlowAdjustmentPanel
+      kind="items"
+      kindOptions={[{ kind: 'items', label: '항목', summary: '항목 조정' }]}
+      currentResult={{ title: '현재', itemCount: 1, resultSummary: '1개' }}
+      adjustedResult={{ title: '조정', itemCount: 1, resultSummary: '1개' }}
+      titleDraft="공개 계획"
+      items={[{
+        id: 'item-1',
+        title: '준비물 확인',
+        dateLabel: '날짜 없음',
+        included: true,
+        canMoveUp: true,
+        canMoveDown: true,
+      }]}
+      capabilities={hideReorder ? { itemEdit: true, itemReorder: false } : undefined}
+      onKindChange={() => undefined}
+      onTitleChange={() => undefined}
+      onItemIncludedChange={() => undefined}
+      onItemMove={handlers ? () => undefined : undefined}
+      onItemEdit={handlers ? () => undefined : undefined}
+      onApply={() => undefined}
+      onCancel={() => undefined}
+    />,
+  );
+  const markup = renderPanel(true, true);
+  const defaultMarkup = renderPanel(true);
+  const markupWithoutHandlers = renderPanel(false);
+
+  assert.match(markup, /data-testid="public-flow-adjustment-item-edit"/u);
+  assert.match(markup, />준비물 확인</u);
+  assert.match(markup, /aria-label="준비물 확인 계획에 포함"/u);
+  assert.doesNotMatch(markup, /public-flow-adjustment-item-move-(?:up|down)/u);
+  assert.doesNotMatch(markup, /aria-label="준비물 확인 순서"/u);
+  assert.match(defaultMarkup, /public-flow-adjustment-item-move-up/u);
+  assert.match(defaultMarkup, /public-flow-adjustment-item-move-down/u);
+  assert.match(markupWithoutHandlers, /data-testid="public-flow-adjustment-item-summary"/u);
+  assert.match(markupWithoutHandlers, /aria-label="준비물 확인 계획에 포함"/u);
+  assert.doesNotMatch(markupWithoutHandlers, /public-flow-adjustment-item-(?:edit|move-up|move-down)/u);
+});
+
+test('public Item field capabilities keep schema metadata aligned with rendered fields', () => {
+  const transaction = {
+    status: 'clean' as const,
+    pendingClose: false,
+    onRequestClose: () => undefined,
+    onContinueEditing: () => undefined,
+    onDiscardChanges: () => undefined,
+    onRetry: () => undefined,
+  };
+  const markup = renderToStaticMarkup(
+    <PublicFlowItemEditor
+      draft={{
+        itemId: 'item-1',
+        title: '준비물 확인',
+        detail: '기존 상세 내용',
+        date: '2031-08-15',
+      }}
+      fieldCapabilities={{ title: true, detail: false, date: false }}
+      onChange={() => undefined}
+      onSave={() => undefined}
+      onClose={() => undefined}
+      transaction={transaction}
+      sharedEditorEnabled
+    />,
+  );
+
+  assert.match(markup, /data-editor-schema-fields="item-title"/u);
+  assert.match(markup, /data-testid="public-flow-item-editor-title-input"/u);
+  assert.doesNotMatch(markup, /public-flow-item-editor-detail-input/u);
+  assert.doesNotMatch(markup, /public-flow-item-editor-date-(?:input|clear)/u);
+  assert.doesNotMatch(markup, /data-editor-field="item-(?:detail|date)"/u);
+});
+
 test('approved Item editors expose only title date and one raw memo while warnings stay behind !', () => {
   const transaction = {
     status: 'clean' as const,
@@ -258,6 +333,7 @@ test('approved Item editors expose only title date and one raw memo while warnin
   assert.doesNotMatch(markup, /별도 기준|공개 주의|저장 주의/u);
   assert.match(markup, /aria-label="이 항목의 주의사항"/u);
   assert.equal((markup.match(/data-flow-context-kind="caution"/gu) ?? []).length, 2);
+  assert.match(markup, /계획에 반영/u);
 });
 
 test('approved Plan and Item editors use one header cancel and one footer commit at the 768 boundary', () => {

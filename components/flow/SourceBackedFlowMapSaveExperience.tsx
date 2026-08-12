@@ -177,6 +177,7 @@ export function SourceBackedFlowMapSaveExperience({
             q3CopyEnabled={q3CopyEnabled}
             visualSubtractionEnabled={visualSubtractionEnabled}
             onEffectiveSnapshotChange={setSnapshot}
+            editorRows={publicResult.editorRows}
             savedFlows={savedFlows}
             setupInput={publicSurface.setupInput}
           />

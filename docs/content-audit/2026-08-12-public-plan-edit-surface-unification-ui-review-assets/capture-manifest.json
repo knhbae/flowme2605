@@ -1,0 +1,178 @@
+{
+  "artifact": "docs/content-audit/2026-08-12-public-plan-edit-surface-unification-ui-review-ko.html",
+  "status": "captured_and_report_verified",
+  "capturedAt": "2026-08-12T10:05:26.948Z",
+  "baseUrl": "http://127.0.0.1:3202",
+  "evidenceBoundary": {
+    "environment": "local implementation",
+    "automatedQa": "internal QA only",
+    "observedUsers": 0,
+    "publication": "draft PR and Preview authorized; merge and Production not authorized"
+  },
+  "feedbackSources": [
+    {
+      "file": "feedback-ordinary-public.jpg",
+      "evidence": "user-provided ordinary public Flow screenshot",
+      "sha256": "d524387aa8956922490517d89af98a09a1ddbe59803351b1f1ee80eeec3abe40",
+      "bytes": 50589
+    },
+    {
+      "file": "feedback-map-legacy.jpg",
+      "evidence": "user-provided Flow Map screenshot",
+      "sha256": "97b5bac8cccfd5bc131e445d4881c29dca5539eb3a30d4b260b97eec6f1cbb3a",
+      "bytes": 50352
+    }
+  ],
+  "captures": [
+    {
+      "file": "screenshots/ordinary-mobile-plan.png",
+      "route": "/f/curated-allblanc-no-jump-cardio",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": "public shared Plan editor open",
+      "status": "captured",
+      "httpStatus": 200,
+      "sha256": "ef9f6756c46fac90bbdb8755e4a3b9583afc07156ff501ea938e38f5065d30fc",
+      "bytes": 23648,
+      "dimensions": {
+        "width": 390,
+        "height": 844,
+        "horizontalOverflow": 0,
+        "replacementCharacters": 0
+      },
+      "pageErrors": [],
+      "consoleErrors": [],
+      "failedRequests": []
+    },
+    {
+      "file": "screenshots/map-mobile-plan.png",
+      "route": "/flow-maps/middle-school-math-1",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": "flattened save_all shared Plan editor open",
+      "status": "captured",
+      "httpStatus": 200,
+      "sha256": "25d26b22c218cbbf16b29f7230507f6851b0748f3ec75069a18f6c859b1ef4c0",
+      "bytes": 17861,
+      "dimensions": {
+        "width": 390,
+        "height": 844,
+        "horizontalOverflow": 0,
+        "replacementCharacters": 0
+      },
+      "pageErrors": [],
+      "consoleErrors": [],
+      "failedRequests": []
+    },
+    {
+      "file": "screenshots/map-mobile-item.png",
+      "route": "/flow-maps/middle-school-math-1",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": "flattened save_all shared Item editor open",
+      "status": "captured",
+      "httpStatus": 200,
+      "sha256": "ed45ef68821654dc5783c130e9fd3ace4ec815fb2426a00e0b1b8be03dbca60d",
+      "bytes": 11955,
+      "dimensions": {
+        "width": 390,
+        "height": 844,
+        "horizontalOverflow": 0,
+        "replacementCharacters": 0
+      },
+      "pageErrors": [],
+      "consoleErrors": [],
+      "failedRequests": []
+    },
+    {
+      "file": "screenshots/map-mobile-dirty.png",
+      "route": "/flow-maps/middle-school-math-1",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": "dirty browser Back discard confirmation open",
+      "status": "captured",
+      "httpStatus": 200,
+      "sha256": "540a977c51936c50f0c3ce2771739ebf915cc7b2f0996c44deafa688281ee26b",
+      "bytes": 22083,
+      "dimensions": {
+        "width": 390,
+        "height": 844,
+        "horizontalOverflow": 0,
+        "replacementCharacters": 0
+      },
+      "pageErrors": [],
+      "consoleErrors": [],
+      "failedRequests": []
+    },
+    {
+      "file": "screenshots/opic-mobile-chooser.png",
+      "route": "/flow-maps/curated-opic-mock-course",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": "choose_child gateway visible",
+      "status": "captured",
+      "httpStatus": 200,
+      "sha256": "b733bafa38d8d2c75e85d2afa501cc86ee8482c1e73e0d354f37521d53993526",
+      "bytes": 39401,
+      "dimensions": {
+        "width": 390,
+        "height": 844,
+        "horizontalOverflow": 0,
+        "replacementCharacters": 0
+      },
+      "pageErrors": [],
+      "consoleErrors": [],
+      "failedRequests": []
+    },
+    {
+      "file": "screenshots/map-desktop-plan.png",
+      "route": "/flow-maps/middle-school-math-1",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "state": "flattened save_all shared Plan workspace open",
+      "status": "captured",
+      "httpStatus": 200,
+      "sha256": "0c8bb869efe34c8316f4f62ccd2bee2cd9872fd0e64ef762a84adefc186f4fe0",
+      "bytes": 82454,
+      "dimensions": {
+        "width": 1440,
+        "height": 1000,
+        "horizontalOverflow": 0,
+        "replacementCharacters": 0
+      },
+      "pageErrors": [],
+      "consoleErrors": [],
+      "failedRequests": []
+    }
+  ],
+  "reportRenderCheck": {
+    "file": "render-check.json",
+    "status": "PASS",
+    "viewports": [
+      {
+        "width": 390,
+        "height": 844
+      },
+      {
+        "width": 1024,
+        "height": 900
+      },
+      {
+        "width": 1440,
+        "height": 1000
+      }
+    ]
+  }
+}

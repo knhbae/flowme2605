@@ -1,0 +1,216 @@
+{
+  "artifact": "./docs/content-audit/2026-08-12-public-plan-edit-surface-unification-ui-review-ko.html",
+  "checkedAt": "2026-08-12T11:31:09.150Z",
+  "baseUrl": "http://127.0.0.1:4202",
+  "status": "PASS",
+  "failures": [],
+  "results": [
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "httpStatus": 200,
+      "title": "공개 계획 수정 UX 통합 · UI 캡처 리뷰",
+      "h1": "Flow Map은 안 보이게,계획 수정은 하나로",
+      "imageCount": 8,
+      "brokenImages": [],
+      "missingAltImages": [],
+      "duplicateIds": [],
+      "replacementCharacters": 0,
+      "horizontalOverflow": 0,
+      "documentHeight": 18868,
+      "localLinks": [
+        "http://127.0.0.1:4202/docs/specs/2026-08-12-public-plan-edit-surface-unification/qa.md",
+        "http://127.0.0.1:4202/docs/content-audit/2026-08-12-my-plan-edit-lifecycle-ui-capture-review-ko.html",
+        "http://127.0.0.1:4202/docs/specs/2026-08-12-public-plan-edit-surface-unification/spec.md",
+        "http://127.0.0.1:4202/components/flow/PublicFlowAdjustmentPanel.tsx",
+        "http://127.0.0.1:4202/components/flow/SourceBackedFlowMapSaveButton.tsx",
+        "http://127.0.0.1:4202/lib/flow/source-backed-curated-260630.ts",
+        "http://127.0.0.1:4202/tests/e2e/public-plan-edit-surface-unification.spec.ts",
+        "http://127.0.0.1:4202/lib/flow/effective-flow-map-snapshot.test.ts",
+        "http://127.0.0.1:4202/docs/content-audit/2026-08-12-public-plan-edit-surface-unification-ui-review-assets/capture-manifest.json",
+        "http://127.0.0.1:4202/docs/content-audit/2026-08-12-public-plan-edit-surface-unification-ui-review-assets/capture-manifest.json"
+      ],
+      "localLinkStatuses": [
+        {
+          "href": "http://127.0.0.1:4202/docs/specs/2026-08-12-public-plan-edit-surface-unification/qa.md",
+          "status": 200
+        },
+        {
+          "href": "http://127.0.0.1:4202/docs/content-audit/2026-08-12-my-plan-edit-lifecycle-ui-capture-review-ko.html",
+          "status": 200
+        },
+        {
+          "href": "http://127.0.0.1:4202/docs/specs/2026-08-12-public-plan-edit-surface-unification/spec.md",
+          "status": 200
+        },
+        {
+          "href": "http://127.0.0.1:4202/components/flow/PublicFlowAdjustmentPanel.tsx",
+          "status": 200
+        },
+        {
+          "href": "http://127.0.0.1:4202/components/flow/SourceBackedFlowMapSaveButton.tsx",
+          "status": 200
+        },
+        {
+          "href": "http://127.0.0.1:4202/lib/flow/source-backed-curated-260630.ts",
+          "status": 200
+        },
+        {
+          "href": "http://127.0.0.1:4202/tests/e2e/public-plan-edit-surface-unification.spec.ts",
+          "status": 200
+        },
+        {
+          "href": "http://127.0.0.1:4202/lib/flow/effective-flow-map-snapshot.test.ts",
+          "status": 200
+        },
+        {
+          "href": "http://127.0.0.1:4202/docs/content-audit/2026-08-12-public-plan-edit-surface-unification-ui-review-assets/capture-manifest.json",
+          "status": 200
+        }
+      ],
+      "pageErrors": [],
+      "consoleErrors": [],
+      "failedRequests": []
+    },
+    {
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "httpStatus": 200,
+      "title": "공개 계획 수정 UX 통합 · UI 캡처 리뷰",
+      "h1": "Flow Map은 안 보이게,계획 수정은 하나로",
+      "imageCount": 8,
+      "brokenImages": [],
+      "missingAltImages": [],
+      "duplicateIds": [],
+      "replacementCharacters": 0,
+      "horizontalOverflow": 0,
+      "documentHeight": 9636,
+      "localLinks": [
+        "http://127.0.0.1:4202/docs/specs/2026-08-12-public-plan-edit-surface-unification/qa.md",
+        "http://127.0.0.1:4202/docs/content-audit/2026-08-12-my-plan-edit-lifecycle-ui-capture-review-ko.html",
+        "http://127.0.0.1:4202/docs/specs/2026-08-12-public-plan-edit-surface-unification/spec.md",
+        "http://127.0.0.1:4202/components/flow/PublicFlowAdjustmentPanel.tsx",
+        "http://127.0.0.1:4202/components/flow/SourceBackedFlowMapSaveButton.tsx",
+        "http://127.0.0.1:4202/lib/flow/source-backed-curated-260630.ts",
+        "http://127.0.0.1:4202/tests/e2e/public-plan-edit-surface-unification.spec.ts",
+        "http://127.0.0.1:4202/lib/flow/effective-flow-map-snapshot.test.ts",
+        "http://127.0.0.1:4202/docs/content-audit/2026-08-12-public-plan-edit-surface-unification-ui-review-assets/capture-manifest.json",
+        "http://127.0.0.1:4202/docs/content-audit/2026-08-12-public-plan-edit-surface-unification-ui-review-assets/capture-manifest.json"
+      ],
+      "localLinkStatuses": [
+        {
+          "href": "http://127.0.0.1:4202/docs/specs/2026-08-12-public-plan-edit-surface-unification/qa.md",
+          "status": 200
+        },
+        {
+          "href": "http://127.0.0.1:4202/docs/content-audit/2026-08-12-my-plan-edit-lifecycle-ui-capture-review-ko.html",
+          "status": 200
+        },
+        {
+          "href": "http://127.0.0.1:4202/docs/specs/2026-08-12-public-plan-edit-surface-unification/spec.md",
+          "status": 200
+        },
+        {
+          "href": "http://127.0.0.1:4202/components/flow/PublicFlowAdjustmentPanel.tsx",
+          "status": 200
+        },
+        {
+          "href": "http://127.0.0.1:4202/components/flow/SourceBackedFlowMapSaveButton.tsx",
+          "status": 200
+        },
+        {
+          "href": "http://127.0.0.1:4202/lib/flow/source-backed-curated-260630.ts",
+          "status": 200
+        },
+        {
+          "href": "http://127.0.0.1:4202/tests/e2e/public-plan-edit-surface-unification.spec.ts",
+          "status": 200
+        },
+        {
+          "href": "http://127.0.0.1:4202/lib/flow/effective-flow-map-snapshot.test.ts",
+          "status": 200
+        },
+        {
+          "href": "http://127.0.0.1:4202/docs/content-audit/2026-08-12-public-plan-edit-surface-unification-ui-review-assets/capture-manifest.json",
+          "status": 200
+        }
+      ],
+      "pageErrors": [],
+      "consoleErrors": [],
+      "failedRequests": []
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "httpStatus": 200,
+      "title": "공개 계획 수정 UX 통합 · UI 캡처 리뷰",
+      "h1": "Flow Map은 안 보이게,계획 수정은 하나로",
+      "imageCount": 8,
+      "brokenImages": [],
+      "missingAltImages": [],
+      "duplicateIds": [],
+      "replacementCharacters": 0,
+      "horizontalOverflow": 0,
+      "documentHeight": 9330,
+      "localLinks": [
+        "http://127.0.0.1:4202/docs/specs/2026-08-12-public-plan-edit-surface-unification/qa.md",
+        "http://127.0.0.1:4202/docs/content-audit/2026-08-12-my-plan-edit-lifecycle-ui-capture-review-ko.html",
+        "http://127.0.0.1:4202/docs/specs/2026-08-12-public-plan-edit-surface-unification/spec.md",
+        "http://127.0.0.1:4202/components/flow/PublicFlowAdjustmentPanel.tsx",
+        "http://127.0.0.1:4202/components/flow/SourceBackedFlowMapSaveButton.tsx",
+        "http://127.0.0.1:4202/lib/flow/source-backed-curated-260630.ts",
+        "http://127.0.0.1:4202/tests/e2e/public-plan-edit-surface-unification.spec.ts",
+        "http://127.0.0.1:4202/lib/flow/effective-flow-map-snapshot.test.ts",
+        "http://127.0.0.1:4202/docs/content-audit/2026-08-12-public-plan-edit-surface-unification-ui-review-assets/capture-manifest.json",
+        "http://127.0.0.1:4202/docs/content-audit/2026-08-12-public-plan-edit-surface-unification-ui-review-assets/capture-manifest.json"
+      ],
+      "localLinkStatuses": [
+        {
+          "href": "http://127.0.0.1:4202/docs/specs/2026-08-12-public-plan-edit-surface-unification/qa.md",
+          "status": 200
+        },
+        {
+          "href": "http://127.0.0.1:4202/docs/content-audit/2026-08-12-my-plan-edit-lifecycle-ui-capture-review-ko.html",
+          "status": 200
+        },
+        {
+          "href": "http://127.0.0.1:4202/docs/specs/2026-08-12-public-plan-edit-surface-unification/spec.md",
+          "status": 200
+        },
+        {
+          "href": "http://127.0.0.1:4202/components/flow/PublicFlowAdjustmentPanel.tsx",
+          "status": 200
+        },
+        {
+          "href": "http://127.0.0.1:4202/components/flow/SourceBackedFlowMapSaveButton.tsx",
+          "status": 200
+        },
+        {
+          "href": "http://127.0.0.1:4202/lib/flow/source-backed-curated-260630.ts",
+          "status": 200
+        },
+        {
+          "href": "http://127.0.0.1:4202/tests/e2e/public-plan-edit-surface-unification.spec.ts",
+          "status": 200
+        },
+        {
+          "href": "http://127.0.0.1:4202/lib/flow/effective-flow-map-snapshot.test.ts",
+          "status": 200
+        },
+        {
+          "href": "http://127.0.0.1:4202/docs/content-audit/2026-08-12-public-plan-edit-surface-unification-ui-review-assets/capture-manifest.json",
+          "status": 200
+        }
+      ],
+      "pageErrors": [],
+      "consoleErrors": [],
+      "failedRequests": []
+    }
+  ]
+}

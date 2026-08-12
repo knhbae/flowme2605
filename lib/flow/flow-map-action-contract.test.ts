@@ -297,9 +297,10 @@ test('P0-02 Map effective snapshot makes applied, preview, action, and persisten
     recovery: { canonicalCopyStatus: 'needs_choice', personalConflictCount: 2 },
   });
   const expectedIds = [...P0_FLOW_MAP_CONTRACT_FIXTURES.sevenOfEight.expectedPreviewItemIds];
+  const requestedIds = [...expectedIds].reverse();
   const applied = reviseEffectiveFlowMapSnapshot(initial, {
     effectiveTitle: '시험 전 핵심 단원',
-    selectedItemIds: [...expectedIds].reverse(),
+    selectedItemIds: requestedIds,
   });
   const action = buildFlowMapActionContractFromSnapshot(applied, {
     surface: 'saved_workspace',
@@ -309,12 +310,12 @@ test('P0-02 Map effective snapshot makes applied, preview, action, and persisten
   });
   const persistence = buildEffectiveFlowMapPersistenceSelection(applied);
 
-  assert.deepEqual(applied.itemIds.effective, expectedIds);
-  assert.deepEqual(applied.rows.map((row) => row.itemId), expectedIds);
+  assert.deepEqual(applied.itemIds.effective, requestedIds);
+  assert.deepEqual(applied.rows.map((row) => row.itemId), requestedIds);
   assert.equal(applied.effectiveTitle, '시험 전 핵심 단원');
   assert.equal(applied.counts.canonical, 8);
   assert.equal(applied.counts.effective, 7);
-  assert.deepEqual(action.controller.selection?.itemIds, expectedIds);
+  assert.deepEqual(action.controller.selection?.itemIds, requestedIds);
   assert.equal(action.controller.selection?.selectedCount, 7);
   assert.deepEqual(action.recovery.reasons, [
     'canonical_copy_needs_choice',
@@ -322,10 +323,10 @@ test('P0-02 Map effective snapshot makes applied, preview, action, and persisten
   ]);
   assert.equal(action.identity.source.href, publishPackage.public.sourceUrl);
   assert.equal(persistence.title, applied.effectiveTitle);
-  assert.deepEqual(persistence.selectedItemIds, expectedIds);
+  assert.deepEqual(persistence.selectedItemIds, requestedIds);
   assert.deepEqual(
     persistence.includedStepIdsByFlow['source-backed-middle-school-math-1'],
-    publishPackage.public.childFlows[0]?.steps.slice(0, 7).map((step) => step.id),
+    publishPackage.public.childFlows[0]?.steps.slice(0, 7).map((step) => step.id).reverse(),
   );
   assert.deepEqual(
     persistence.excludedStepIdsByFlow['source-backed-middle-school-math-1'],

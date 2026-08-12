@@ -158,16 +158,14 @@ export function rekeyMyFlowAnchorDatedRecord<T>(
 ): Record<string, T> {
   const next = { ...record };
   const nextDateByItemId = new Map(
-    options.nextItems
-      .filter((item): item is MyFlowAnchorDatedItem & { date: string } => Boolean(item.date))
-      .map((item) => [item.itemId, item.date]),
+    options.nextItems.map((item) => [item.itemId, item.date?.trim() || 'none']),
   );
 
   options.previousItems.forEach((item) => {
-    if (!item.date) return;
+    const previousDate = item.date?.trim() || 'none';
     const nextDate = nextDateByItemId.get(item.itemId);
-    if (!nextDate || nextDate === item.date) return;
-    const previousKey = `${options.flowSlug}::${item.itemId}::${item.date}`;
+    if (!nextDate || nextDate === previousDate) return;
+    const previousKey = `${options.flowSlug}::${item.itemId}::${previousDate}`;
     if (!Object.prototype.hasOwnProperty.call(next, previousKey)) return;
     const nextKey = `${options.flowSlug}::${item.itemId}::${nextDate}`;
     next[nextKey] = next[previousKey];

@@ -23,7 +23,7 @@ import {
 } from '@/lib/flow/flow-editor-schema';
 import { Q3_USER_COPY_PROFILE } from '@/lib/flow/q3-user-copy';
 
-type PublicSharedEditorTransaction = {
+export type PublicSharedEditorTransaction = {
   status: FlowEditorStatus;
   failure?: FlowEditorFailure;
   pendingClose: boolean;
@@ -72,7 +72,12 @@ export type PublicFlowItemEditorDraft = {
   warning?: string;
 };
 
-type PublicFlowAdjustmentPanelProps = {
+export type PublicFlowAdjustmentCapabilities = Readonly<{
+  itemEdit?: boolean;
+  itemReorder?: boolean;
+}>;
+
+export type PublicFlowAdjustmentPanelProps = {
   kind: PublicFlowAdjustmentKind;
   kindOptions: PublicFlowAdjustmentKindOption[];
   currentResult: PublicFlowAdjustmentResultSummary;
@@ -87,12 +92,13 @@ type PublicFlowAdjustmentPanelProps = {
   warning?: string;
   initialFocusSelector?: string;
   applyDisabled?: boolean;
+  capabilities?: PublicFlowAdjustmentCapabilities;
   onKindChange: (kind: PublicFlowAdjustmentKind) => void;
   onTitleChange: (value: string) => void;
   onAnchorChange?: (value: string) => void;
   onItemIncludedChange: (itemId: string, included: boolean) => void;
-  onItemMove: (itemId: string, direction: 'up' | 'down') => void;
-  onItemEdit: (item: PublicFlowAdjustmentItem, returnFocusSelector: string) => void;
+  onItemMove?: (itemId: string, direction: 'up' | 'down') => void;
+  onItemEdit?: (item: PublicFlowAdjustmentItem, returnFocusSelector: string) => void;
   onApply: () => void;
   onCancel: () => void;
   transaction?: PublicSharedEditorTransaction;
@@ -290,6 +296,7 @@ export function PublicFlowAdjustmentPanel({
   warning,
   initialFocusSelector,
   applyDisabled = false,
+  capabilities,
   onKindChange,
   onTitleChange,
   onAnchorChange,
@@ -310,6 +317,8 @@ export function PublicFlowAdjustmentPanel({
     shared: 'shared' as const,
     legacy: 'legacy' as const,
   });
+  const itemEditEnabled = capabilities?.itemEdit !== false && Boolean(onItemEdit);
+  const itemReorderEnabled = capabilities?.itemReorder !== false && Boolean(onItemMove);
 
   return (
     <PublicEditorFrame
@@ -443,48 +452,65 @@ export function PublicFlowAdjustmentPanel({
                 key={item.id}
                 data-testid="public-flow-adjustment-item-row"
                 data-item-id={item.id}
-                className="grid min-h-14 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 border-b border-[var(--flowme-border)] px-2 py-2.5 last:border-b-0"
+                className={`grid min-h-14 items-center gap-2 border-b border-[var(--flowme-border)] px-2 py-2.5 last:border-b-0 ${
+                  itemReorderEnabled
+                    ? 'grid-cols-[auto_minmax(0,1fr)_auto]'
+                    : 'grid-cols-[minmax(0,1fr)_auto]'
+                }`}
               >
-                <span className="grid grid-cols-2 gap-0.5" role="group" aria-label={`${item.title} 순서`}>
+                {itemReorderEnabled && onItemMove ? (
+                  <span className="grid grid-cols-2 gap-0.5" role="group" aria-label={`${item.title} 순서`}>
+                    <button
+                      type="button"
+                      data-testid="public-flow-adjustment-item-move-up"
+                      className={FLOW_UI_COMPACT_ACTION_CLASS}
+                      aria-label={`${item.title} 위로 이동`}
+                      disabled={!item.canMoveUp}
+                      onClick={() => onItemMove(item.id, 'up')}
+                    >
+                      ↑
+                    </button>
+                    <button
+                      type="button"
+                      data-testid="public-flow-adjustment-item-move-down"
+                      className={FLOW_UI_COMPACT_ACTION_CLASS}
+                      aria-label={`${item.title} 아래로 이동`}
+                      disabled={!item.canMoveDown}
+                      onClick={() => onItemMove(item.id, 'down')}
+                    >
+                      ↓
+                    </button>
+                  </span>
+                ) : null}
+                {itemEditEnabled && onItemEdit ? (
                   <button
                     type="button"
-                    data-testid="public-flow-adjustment-item-move-up"
-                    className={FLOW_UI_COMPACT_ACTION_CLASS}
-                    aria-label={`${item.title} 위로 이동`}
-                    disabled={!item.canMoveUp}
-                    onClick={() => onItemMove(item.id, 'up')}
+                    data-testid="public-flow-adjustment-item-edit"
+                    data-item-id={item.id}
+                    className="min-w-0 rounded-md px-1 py-1 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                    aria-label={`${item.title} 수정`}
+                    onClick={(event) => onItemEdit(
+                      item,
+                      `[data-testid="public-flow-adjustment-item-edit"][data-item-id="${CSS.escape(item.id)}"]`,
+                    )}
                   >
-                    ↑
+                    <span className="block break-keep text-sm font-semibold leading-5 text-[var(--flowme-text)]">
+                      {item.title}
+                    </span>
+                    <span className="mt-0.5 block text-[11px] font-medium text-[var(--flowme-text-secondary)]">
+                      {item.dateLabel}
+                    </span>
                   </button>
-                  <button
-                    type="button"
-                    data-testid="public-flow-adjustment-item-move-down"
-                    className={FLOW_UI_COMPACT_ACTION_CLASS}
-                    aria-label={`${item.title} 아래로 이동`}
-                    disabled={!item.canMoveDown}
-                    onClick={() => onItemMove(item.id, 'down')}
-                  >
-                    ↓
-                  </button>
-                </span>
-                <button
-                  type="button"
-                  data-testid="public-flow-adjustment-item-edit"
-                  data-item-id={item.id}
-                  className="min-w-0 rounded-md px-1 py-1 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
-                  aria-label={`${item.title} 내용과 날짜 수정`}
-                  onClick={(event) => onItemEdit(
-                    item,
-                    `[data-testid="public-flow-adjustment-item-edit"][data-item-id="${CSS.escape(item.id)}"]`,
-                  )}
-                >
-                  <span className="block break-keep text-sm font-semibold leading-5 text-[var(--flowme-text)]">
-                    {item.title}
-                  </span>
-                  <span className="mt-0.5 block text-[11px] font-medium text-[var(--flowme-text-secondary)]">
-                    {item.dateLabel}
-                  </span>
-                </button>
+                ) : (
+                  <div data-testid="public-flow-adjustment-item-summary" className="min-w-0 px-1 py-1">
+                    <span className="block break-keep text-sm font-semibold leading-5 text-[var(--flowme-text)]">
+                      {item.title}
+                    </span>
+                    <span className="mt-0.5 block text-[11px] font-medium text-[var(--flowme-text-secondary)]">
+                      {item.dateLabel}
+                    </span>
+                  </div>
+                )}
                 <label className="flex min-h-10 items-center gap-1.5 text-xs font-semibold text-[var(--flowme-text-secondary)]">
                   <span>포함</span>
                   <input
@@ -569,6 +595,7 @@ export function PublicFlowItemEditor({
   visualSubtractionEnabled = true,
   q3CopyEnabled = true,
   approvedPlanExecution = false,
+  fieldCapabilities,
 }: {
   draft: PublicFlowItemEditorDraft;
   returnFocusSelector?: string;
@@ -580,8 +607,25 @@ export function PublicFlowItemEditor({
   visualSubtractionEnabled?: boolean;
   q3CopyEnabled?: boolean;
   approvedPlanExecution?: boolean;
+  fieldCapabilities?: Readonly<{
+    title?: boolean;
+    detail?: boolean;
+    date?: boolean;
+  }>;
 }) {
   const normalizedTitle = draft.title.trim();
+  const resolvedFieldCapabilities = {
+    title: fieldCapabilities?.title ?? true,
+    detail: fieldCapabilities?.detail ?? true,
+    date: fieldCapabilities?.date ?? true,
+  };
+  const initialFocusSelector = resolvedFieldCapabilities.title
+    ? '[data-testid="public-flow-item-editor-title-input"]'
+    : resolvedFieldCapabilities.detail
+      ? '[data-testid="public-flow-item-editor-detail-input"]'
+      : resolvedFieldCapabilities.date
+        ? '[data-testid="public-flow-item-editor-date-input"]'
+        : undefined;
   const adapter = selectFlowEditorAdapter({
     enabled: sharedEditorEnabled,
     shared: 'shared' as const,
@@ -597,13 +641,13 @@ export function PublicFlowItemEditor({
       headingId="public-flow-item-editor-title"
       eyebrow="할 일 조정"
       title={normalizedTitle || (visualSubtractionEnabled ? '수정' : '할 일 수정')}
-      initialFocusSelector='[data-testid="public-flow-item-editor-title-input"]'
+      initialFocusSelector={initialFocusSelector}
       returnFocusSelector={returnFocusSelector}
       p35Marker="P35-ATOMIC-FULL-HEIGHT-ITEM-EDITOR"
       schemaCapabilities={{
-        title: true,
-        detail: true,
-        date: true,
+        title: resolvedFieldCapabilities.title,
+        detail: resolvedFieldCapabilities.detail,
+        date: resolvedFieldCapabilities.date,
         completionCriterion: !approvedPlanExecution && Boolean(draft.completionCriterion),
         sourceOrSafety: Boolean(draft.sourceUrl || draft.warning),
       }}
@@ -632,53 +676,59 @@ export function PublicFlowItemEditor({
           else if (normalizedTitle) onSave({ ...draft, title: normalizedTitle });
         }}
       >
-        <label className="block text-sm font-semibold text-[var(--flowme-text)]">
-          할 일
-          <input
-            data-testid="public-flow-item-editor-title-input"
-            data-editor-field="item-title"
-            className={`mt-1 w-full ${FLOW_UI_INPUT_CLASS}`}
-            value={draft.title}
-            maxLength={120}
-            required
-            onChange={(event) => onChange({ ...draft, title: event.target.value })}
-          />
-        </label>
-        <label className="block text-sm font-semibold text-[var(--flowme-text)]">
-          {approvedPlanExecution ? '메모' : '상세 내용'}
-          <textarea
-            data-testid="public-flow-item-editor-detail-input"
-            data-editor-field="item-detail"
-            className={`mt-1 min-h-28 w-full resize-y ${FLOW_UI_INPUT_CLASS}`}
-            value={draft.detail}
-            maxLength={1000}
-            placeholder="내가 실행할 때 필요한 내용을 적어두세요"
-            onChange={(event) => onChange({ ...draft, detail: event.target.value })}
-          />
-        </label>
-        <div>
+        {resolvedFieldCapabilities.title ? (
           <label className="block text-sm font-semibold text-[var(--flowme-text)]">
-            날짜
+            할 일
             <input
-              data-testid="public-flow-item-editor-date-input"
-              data-editor-field="item-date"
+              data-testid="public-flow-item-editor-title-input"
+              data-editor-field="item-title"
               className={`mt-1 w-full ${FLOW_UI_INPUT_CLASS}`}
-              type="date"
-              value={draft.date}
-              onChange={(event) => onChange({ ...draft, date: event.target.value })}
+              value={draft.title}
+              maxLength={120}
+              required
+              onChange={(event) => onChange({ ...draft, title: event.target.value })}
             />
           </label>
-          {draft.date ? (
-            <button
-              type="button"
-              data-testid="public-flow-item-editor-date-clear"
-              className={`mt-1 ${FLOW_UI_COMPACT_ACTION_CLASS}`}
-              onClick={() => onChange({ ...draft, date: '' })}
-            >
-              날짜 없애기
-            </button>
-          ) : null}
-        </div>
+        ) : null}
+        {resolvedFieldCapabilities.detail ? (
+          <label className="block text-sm font-semibold text-[var(--flowme-text)]">
+            {approvedPlanExecution ? '메모' : '상세 내용'}
+            <textarea
+              data-testid="public-flow-item-editor-detail-input"
+              data-editor-field="item-detail"
+              className={`mt-1 min-h-28 w-full resize-y ${FLOW_UI_INPUT_CLASS}`}
+              value={draft.detail}
+              maxLength={1000}
+              placeholder="내가 실행할 때 필요한 내용을 적어두세요"
+              onChange={(event) => onChange({ ...draft, detail: event.target.value })}
+            />
+          </label>
+        ) : null}
+        {resolvedFieldCapabilities.date ? (
+          <div>
+            <label className="block text-sm font-semibold text-[var(--flowme-text)]">
+              날짜
+              <input
+                data-testid="public-flow-item-editor-date-input"
+                data-editor-field="item-date"
+                className={`mt-1 w-full ${FLOW_UI_INPUT_CLASS}`}
+                type="date"
+                value={draft.date}
+                onChange={(event) => onChange({ ...draft, date: event.target.value })}
+              />
+            </label>
+            {draft.date ? (
+              <button
+                type="button"
+                data-testid="public-flow-item-editor-date-clear"
+                className={`mt-1 ${FLOW_UI_COMPACT_ACTION_CLASS}`}
+                onClick={() => onChange({ ...draft, date: '' })}
+              >
+                날짜 없애기
+              </button>
+            ) : null}
+          </div>
+        ) : null}
         {!approvedPlanExecution && sharedEditorEnabled && draft.completionCriterion ? (
           <section data-editor-field="item-completion-criterion" className="border-l-2 border-[var(--flowme-border-strong)] px-3 py-2">
             <h3 className="text-xs font-semibold text-[var(--flowme-text-secondary)]">완료 기준</h3>

@@ -1,0 +1,49 @@
+# Implementation Plan
+
+**Status:** LOCAL IMPLEMENTATION AND AUTOMATED QA COMPLETE
+
+## Phase 0 — Contract and boundaries
+
+- [x] Owner-approved public editor unification goal을 기록한다.
+- [x] `save_all`, `choose_child`, `review_hold`의 사용자-facing 역할을 구분한다.
+- [x] 기존 Map ID/version/storage/transaction과 no-migration 경계를 고정한다.
+- [x] `/f`와 `/flow-maps` editor view-model, history, persistence owner의 차이를 구현 파일 단위로 확정한다.
+
+## Phase 1 — Shared public editor
+
+- [x] 일반 `/f`의 shared Public Plan/Item surface를 재사용 가능한 입력 계약으로 정리한다.
+- [x] 실행 가능한 Map snapshot을 lossless Public Plan draft로 변환하는 adapter를 연결한다.
+- [x] Map 전용 title/include editor를 shared Plan/Item surface로 대체한다.
+- [x] Plan 이름, 포함·순서, nested Item 편집과 출처·주의 capability를 origin-safe하게 연결한다.
+- [x] Item 적용은 부모 draft, Plan 적용은 session effective draft만 갱신하게 한다.
+
+## Phase 2 — Map flattening and navigation
+
+- [x] 단일 계획 `save_all`의 사용자-facing 표현을 일반 Flow shell로 평탄화한다.
+- [x] 실제 대안인 OPIc/wedding/Allblanc는 `choose_child` 후 canonical `/f/[slug]`로 이동하게 한다.
+- [x] `review_hold`에는 editor와 조정·저장 CTA가 없음을 보장한다.
+- [x] Cancel/X/backdrop/Escape/browser Back을 shared dirty-discard controller에 연결한다.
+- [x] Plan -> Item -> Plan과 editor -> opener의 focus·scroll 복귀를 연결한다.
+- [x] Map schema가 lossless하게 지원하지 않는 날짜와 cross-child 순서 제어는 숨긴다.
+
+## Phase 3 — Persistence and regression
+
+- [x] 일반 Flow와 Flow Map의 final-save adapter가 기존 key와 transaction만 쓰는지 단위·통합 테스트로 고정한다.
+- [x] cancel, discard, Item apply, Plan apply 전후 persistent bytes가 같은지 검증한다.
+- [x] Map/version/child/Item identity와 snapshot/persistence/bridge 회귀를 검증한다.
+- [x] excluded Item 개인 값과 raw unknown fields가 final save/reload 뒤 유지되는지 검증한다.
+- [x] OPIc의 mode만 선택형으로 바꾸고 Map/version/source/child identity는 유지한다.
+
+## Phase 4 — Responsive QA and closeout
+
+- [x] shared Map Plan/Item을 390/1024/1440에서 검증하고 `/f`와 1024px 계약 parity를 비교한다.
+- [x] dirty close, Escape, browser Back, nested Item focus와 keyboard 경로를 브라우저에서 검증한다.
+- [x] `choose_child`와 `review_hold` mode 경계를 브라우저에서 검증한다.
+- [x] fresh runtime capture 6장과 feedback evidence 2장을 한국어 HTML 보고서로 검증한다.
+- [x] affected five-spec browser rerun과 최종 owned closeout을 통과시킨다.
+
+## Publication boundary
+
+- Commit/push/Draft PR/Preview: `AUTHORIZED 2026-08-12`
+- Merge/Production: `NOT AUTHORIZED`
+- Observed-user validation: `0`

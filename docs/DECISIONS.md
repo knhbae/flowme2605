@@ -35,6 +35,18 @@ Do not use this for:
 
 ## Decisions
 
+### 2026-08-12 - Flow Map stays an internal source boundary, not a separate public plan type
+
+**Decision:** User-facing public plan editing uses one Plan/Item grammar regardless of whether the content is backed by a single Flow or a Flow Map. Executable single-plan `save_all` Maps render and edit like an ordinary Flow while retaining their Map ID, version, child Flow and Item identities, snapshot, bridge, and atomic save transaction internally. Content that represents mutually exclusive alternatives uses `choose_child` and enters the selected canonical `/f/[slug]` before editing; OPIc 2-week versus 1-month joins wedding and Allblanc in this selector model. `review_hold` content exposes no edit or save affordance. Do not add a generic rich Map editor merely because internal persistence uses a Map.
+
+**Reason:** Current executable Map content mostly contains one user-executable plan, so a separate Map editor creates a second product vocabulary without adding user value. The few real multi-plan cases are choices, not plans that should be merged. A shared editor fixes the inconsistent title, Item, apply, cancel, browser Back, focus, and scroll behavior while preserving source and update lineage.
+
+**Applies to:** `/f/[slug]`, executable `/flow-maps/[map]`, public Plan/Item editing, `save_all`, `choose_child`, `review_hold`, catalog cards, source-backed Map snapshots and persistence, responsive QA, and future public content conversion decisions.
+
+**Reopen when:** A real content set requires users to edit and execute multiple child Flows together as one cross-child plan, the existing Map transaction cannot preserve requested composition without a new schema, or observed users demonstrate that the internal Map distinction helps them make or resume a plan.
+
+**Related docs:** [Public Plan/Item Edit Surface Unification](./specs/2026-08-12-public-plan-edit-surface-unification/spec.md), [Korean UI capture review](./content-audit/2026-08-12-public-plan-edit-surface-unification-ui-review-ko.html), [service structure](./SERVICE_STRUCTURE.md)
+
 ### 2026-08-06 - P′ review plus P′′ candidate evidence closes the MVP gate without repeating Pass 1 and Pass 2
 
 **Decision:** Close the P35 Round 2 MVP PoC gate with the sealed prior Codex/Claude Design review findings—Pass 1 candidate `c48911757fb529941d00efc2162338ffa8b7686a`, then Pass 2 P′ `29cb03a65dd1037a3b813b7f43a5a095e4669dce` ending in `REVISE`—their bounded P′′ corrections, and the exact post-push P′′ candidate evidence. The production source SHA is `f97644abf379c46433847f44aa7bd4da7fadac4a`; candidate-evidence BUILD_ID is `T0QkChgscSgPog-0UdvY-` and candidate epoch is `p35-r2-4fa6af1728eb5ca5`. Vercel performs a separate remote rebuild, so production smoke and live runtime BUILD_ID probing remain `NOT_RUN`. S01~S23 are `23/23` accounted: S01~S21 are candidate-bound captures, S22 is `NOT_ASSESSED`, and S23 is `REVIEWER_CHOSEN_NOT_PRECAPTURED`. All three group manifests report `PASS` with failures `0`, and the published verifier reports `PASS` with `33` identity checks, `285` evidence files, `556` raw URLs, and failures `0`. Fresh independent P′′ Pass 1 and Pass 2 are `NOT_RUN`: the Owner waives that repeated cycle for this MVP closeout, and no document may describe P′′ as independently reviewed or passed. Production deployment is authorized. Observed-user validation remains excluded at `0`; text-to-flow and the P2 follow-up candidates remain outside this release.
@@ -617,6 +629,8 @@ Every pinned review item must provide a directly openable primary artifact link.
 **Reopen when:** account-backed version history, row-level merge conflicts, or a full personal Flow editor exists and can show explicit overwrite/merge choices.
 
 **Related docs:** [URL lookup production slice spec](./specs/2026-07-05-url-lookup-production-slice/spec.md), [URL lookup production slice QA](./specs/2026-07-05-url-lookup-production-slice/qa.md), [SERVICE_STRUCTURE.md](./SERVICE_STRUCTURE.md)
+
+**UI boundary update (2026-08-12):** [My Plan Edit And Lifecycle Unification](./specs/2026-08-12-my-plan-edit-lifecycle-unification/spec.md) supersedes only the `quiet settings entry` limitation by giving all personal plans one bounded edit surface. The original source-protection, private-overlay, export, update-preservation, no-source-edit, and no-version-management decisions remain in force.
 
 ### 2026-07-04 - Verification hooks stay repo-level and tool-agnostic
 

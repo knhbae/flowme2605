@@ -14,7 +14,6 @@ import type { EffectiveFlowExportDestination } from '@/lib/flow/effective-flow-s
 import type { FlowExperienceProjectionRow } from '@/lib/flow/flow-experience-projection';
 import { getQ3UserCopyProfile } from '@/lib/flow/q3-user-copy';
 import type { SourceBackedFlowMapPublishPackage } from '@/lib/flow/source-backed-my-flow';
-import { FlowContextDisclosure } from './FlowContextDisclosure';
 import { FlowSaveBeforeFrame } from './FlowSaveBeforeFrame';
 import { PublicFlowItemPreview } from './PublicFlowItemPreview';
 import { PublicPlanResultPreview } from './PublicPlanResultPreview';
@@ -149,22 +148,9 @@ export function SourceBackedFlowMapChooseChildExperience({
             data-map-action-intent={actionContract.actions.primary?.intent}
             className="grid gap-3"
           >
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-sm font-semibold text-[var(--flowme-text)]">{choiceCopy.heading}</p>
-                <p className="mt-1 text-xs leading-5 text-[var(--flowme-text-secondary)]">{choiceCopy.body}</p>
-              </div>
-              {q3CopyEnabled ? (
-                <FlowContextDisclosure
-                  kind="help"
-                  label="계획 선택 도움말"
-                  eyebrow="선택 도움말"
-                  title="사용할 계획을 고르세요"
-                  testId="flow-map-choice-help"
-                >
-                  <p>계획을 바꾸면 왼쪽 결과도 함께 바뀝니다. 이 단계에서는 아직 내 계획에 저장되지 않습니다.</p>
-                </FlowContextDisclosure>
-              ) : null}
+            <div>
+              <p className="text-sm font-semibold text-[var(--flowme-text)]">{choiceCopy.heading}</p>
+              <p className="mt-1 text-xs leading-5 text-[var(--flowme-text-secondary)]">{choiceCopy.body}</p>
             </div>
             <fieldset className="grid gap-2">
               <legend className="sr-only">

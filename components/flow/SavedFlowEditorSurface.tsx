@@ -29,6 +29,7 @@ export type SavedFlowPlanEditorViewDraft = Readonly<{
   title: string;
   anchor: string;
   anchorEditable: boolean;
+  anchorRequired?: boolean;
   anchorLockReason?: string;
   weekdays?: readonly string[];
   routine?: SavedFlowRoutineDefinition;
@@ -206,6 +207,7 @@ export function SavedFlowPlanEditorSurface({
             type="date"
             value={draft.anchor}
             disabled={!draft.anchorEditable}
+            required={draft.anchorRequired === true}
             aria-describedby={draft.anchorLockReason ? 'saved-flow-editor-anchor-lock-reason' : undefined}
             onChange={(event) => onPatch({ anchor: event.target.value })}
           />
@@ -379,7 +381,11 @@ export function SavedFlowItemEditorSurface({
         onAction: () => actions.onRequestClose('cancel'),
       }}
       primaryAction={{
-        label: q3CopyEnabled ? Q3_USER_COPY_PROFILE.savedDetail.saveChanges : contract.commitLabel,
+        label: approvedPlanExecution && q3CopyEnabled
+          ? '계획에 반영'
+          : q3CopyEnabled
+            ? Q3_USER_COPY_PROFILE.savedDetail.saveChanges
+            : contract.commitLabel,
         testId: 'my-flow-detail-save-changes',
         onAction: actions.onCommit,
       }}

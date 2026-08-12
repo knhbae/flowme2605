@@ -18,7 +18,12 @@ export type MyFlowLibraryControllerState = Readonly<{
 }>;
 
 export type MyFlowLibraryControllerAction =
-  | Readonly<{ kind: 'replace_controls'; query: string; filter: MyFlowLibraryFilter }>
+  | Readonly<{
+      kind: 'replace_controls';
+      query: string;
+      filter: MyFlowLibraryFilter;
+      consumePlanEntry?: boolean;
+    }>
   | Readonly<{ kind: 'replace_sort'; sort: MyFlowLibrarySort }>
   | Readonly<{ kind: 'open_plan'; flowSlug: string }>
   | Readonly<{ kind: 'open_item'; target: MyFlowWorkspaceTarget }>
@@ -177,6 +182,8 @@ export function planMyFlowLibraryTransition(
   }
 
   if (action.kind === 'replace_controls') {
+    const consumePlanEntry = action.consumePlanEntry === true
+      && context.historyLevel === 'plan';
     const href = getMyFlowLibraryHref(context.currentHref, {
       query: action.query,
       filter: action.filter,
@@ -197,13 +204,25 @@ export function planMyFlowLibraryTransition(
       selectedFlowSlug: 'all',
       itemTarget: null,
     }, {
-      history: context.historyLevel === 'item'
+      history: context.historyLevel === 'item' || consumePlanEntry
         ? [{ kind: 'back_then_replace', replace }]
         : [replace],
       discard: 'block_if_dirty',
       transient: 'close',
       planReturn: 'clear',
-      focus: { kind: 'preserve_control' },
+      focus: consumePlanEntry
+        ? {
+            kind: 'restore_plan_opener_after_frame',
+            flowSlug: context.currentRoute.target?.flowSlug ?? '',
+          }
+        : { kind: 'preserve_control' },
+      scroll: consumePlanEntry
+        ? {
+            kind: 'restore_library_position_after_frame',
+            scrollY: context.scrollY,
+            railScrollTop: context.railScrollTop,
+          }
+        : { kind: 'none' },
     });
   }
 

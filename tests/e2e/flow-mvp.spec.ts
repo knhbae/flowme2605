@@ -521,7 +521,7 @@ test('wide discovery and My Flow keep action columns purposeful', async ({ page 
   await page.reload();
   await expect(page).toHaveURL('/flows');
   await expect(page.getByTestId('platform-primary-tabs').getByRole('link')).toHaveCount(3);
-  await expect(page.getByTestId('flow-map-catalog-card')).toHaveCount(8);
+  await expect(page.getByTestId('flow-map-catalog-card')).toHaveCount(9);
   await expectNoHorizontalOverflow(page);
 
   await page.goto('/f/vehicle-inspection-prep');
@@ -565,8 +565,8 @@ test('flow list exposes the seed and online-sourced flows', async ({ page }) => 
   const flowMapCatalog = page.getByTestId('flow-map-catalog-section');
   await expect(flowMapCatalog).toBeVisible();
   await expect(flowMapCatalog.getByRole('heading', { name: '내 상황에 맞는 콘텐츠 고르기' })).toHaveCount(0);
-  await expect(flowMapCatalog.getByTestId('flow-map-catalog-card')).toHaveCount(8);
-  await expect(flowMapCatalog.locator('[data-testid="flow-map-catalog-card"][data-source-kind="curated-source"]')).toHaveCount(7);
+  await expect(flowMapCatalog.getByTestId('flow-map-catalog-card')).toHaveCount(9);
+  await expect(flowMapCatalog.locator('[data-testid="flow-map-catalog-card"][data-source-kind="curated-source"]')).toHaveCount(8);
   await expect(flowMapCatalog.getByTestId('single-flow-catalog-card')).toHaveCount(2);
   const firstCatalogCard = flowMapCatalog.getByTestId('flow-map-catalog-card').first();
   const firstCatalogCardTop = await firstCatalogCard.evaluate((element) => element.getBoundingClientRect().top);
@@ -581,6 +581,8 @@ test('flow list exposes the seed and online-sourced flows', async ({ page }) => 
   await expect(flowMapCatalog.locator('a[href="/f/curated-wedding-gongysd-atoz"]')).toBeVisible();
   await expect(flowMapCatalog.locator('a[href="/f/curated-allblanc-morning-workout"]')).toBeVisible();
   await expect(flowMapCatalog.locator('a[href="/f/curated-allblanc-no-jump-cardio"]')).toBeVisible();
+  await expect(flowMapCatalog.locator('a[href="/f/curated-opic-single-mock-review"]')).toBeVisible();
+  await expect(flowMapCatalog.locator('a[href="/f/curated-opic-course-row-import"]')).toBeVisible();
   await expect(flowMapCatalog.locator('a[href="/flow-maps/curated-wedding-checklist-family"]')).toHaveCount(0);
   await expect(flowMapCatalog.locator('a[href="/flow-maps/curated-allblanc-workout-park"]')).toHaveCount(0);
   await expect(flowMapCatalog.locator('a[href="/flow-maps/curated-ajd-moving-d30"]')).toHaveCount(0);
@@ -591,7 +593,7 @@ test('flow list exposes the seed and online-sourced flows', async ({ page }) => 
   await expect(page.getByTestId('curated-source-catalog-section')).toHaveCount(0);
   await expect(page.getByTestId('single-flow-catalog-section')).toHaveCount(0);
   const catalogCount = flowMapCatalog.getByTestId('flow-catalog-count');
-  await expect(catalogCount).toContainText('계획 10개');
+  await expect(catalogCount).toContainText('계획 11개');
   await expect(catalogCount).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
   await expect(page.getByText('필터 조정')).toHaveCount(0);
   await expect(page.getByRole('heading', { name: '이사 D-30 준비 Flow' })).toHaveCount(0);
@@ -1527,40 +1529,59 @@ test('post-save moving item edits keep completion criterion in UI promise and ch
 
 
 
-test('curated source cards are integrated into Flow finding and open the approved Map result', async ({ page }) => {
+test('curated source cards are integrated into Flow finding and open the OPIc child selector', async ({ page }) => {
   await page.goto('/flows');
 
   const catalog = page.getByTestId('flow-map-catalog-section');
   const curatedCards = catalog.locator('[data-testid="flow-map-catalog-card"][data-source-kind="curated-source"]');
   await expect(page.getByTestId('curated-source-catalog-section')).toHaveCount(0);
-  await expect(curatedCards).toHaveCount(7);
-  await expect(catalog).toContainText('오픽 모의고사 2주/1달 계획표');
+  await expect(curatedCards).toHaveCount(8);
+  await expect(catalog).toContainText('오픽 모의고사 2주 계획표');
+  await expect(catalog).toContainText('오픽 모의고사 1달 반복 계획');
   await expect(catalog).not.toContainText('펀맘 공부 루틴');
   await expect(catalog).not.toContainText('확인하며 사용');
   await expect(catalog).not.toContainText('자료 보강 후 시작');
   await expect(curatedCards.first().getByRole('list', { name: '대표 할 일' })).toBeVisible();
 
-  const opicCard = curatedCards.filter({ hasText: '오픽 모의고사 2주/1달 계획표' });
-  await expect(opicCard.getByRole('link', { name: '오픽 모의고사 2주/1달 계획표 더보기' }))
-    .toHaveAttribute('href', '/flow-maps/curated-opic-mock-course');
-  await expect(opicCard.getByTestId('flow-card-primary-action')).toHaveText('더보기');
-  await expectCompactCatalogAction(opicCard, opicCard.getByTestId('flow-map-detail-link'));
-  await expect(opicCard.getByTestId('flow-map-recommended-flow-link')).toHaveCount(0);
-  await expect(opicCard.getByTestId('flow-card-source-link')).toHaveCount(1);
+  const opicTwoWeekCard = curatedCards.filter({ hasText: '오픽 모의고사 2주 계획표' });
+  const opicOneMonthCard = curatedCards.filter({ hasText: '오픽 모의고사 1달 반복 계획' });
+  await expect(opicTwoWeekCard.getByRole('link', { name: '오픽 모의고사 2주 계획표 더보기' }))
+    .toHaveAttribute('href', '/f/curated-opic-single-mock-review');
+  await expect(opicOneMonthCard.getByRole('link', { name: '오픽 모의고사 1달 반복 계획 더보기' }))
+    .toHaveAttribute('href', '/f/curated-opic-course-row-import');
+  await expect(opicTwoWeekCard.getByTestId('flow-card-primary-action')).toHaveText('더보기');
+  await expectCompactCatalogAction(
+    opicTwoWeekCard,
+    opicTwoWeekCard.getByTestId('flow-map-detail-link'),
+  );
+  await expect(opicTwoWeekCard.getByTestId('flow-map-recommended-flow-link')).toHaveCount(0);
+  await expect(opicTwoWeekCard.getByTestId('flow-card-source-link')).toHaveCount(1);
 
-  await opicCard.getByTestId('flow-map-detail-link').scrollIntoViewIfNeeded();
-  await Promise.all([
-    page.waitForURL('**/flow-maps/curated-opic-mock-course', { timeout: 15_000 }),
-    opicCard.click(),
-  ]);
+  await page.goto('/flow-maps/curated-opic-mock-course');
   const publicMap = page.getByTestId('flow-map-public');
   await expect(publicMap).toBeVisible();
+  await expect(publicMap).toHaveAttribute('data-map-save-mode', 'choose_child');
+  const choices = publicMap.getByTestId('flow-map-child-choice');
+  await expect(choices).toHaveCount(2);
+  await expect(choices.nth(0)).toHaveAttribute('data-flow-slug', 'curated-opic-single-mock-review');
+  await expect(choices.nth(1)).toHaveAttribute('data-flow-slug', 'curated-opic-course-row-import');
+  await expect(choices.nth(0).getByRole('radio')).toBeChecked();
+  await expect(publicMap.getByTestId('flow-map-open-selected-child')).toHaveAttribute(
+    'href',
+    '/f/curated-opic-single-mock-review',
+  );
   await expectApprovedPublicMapResult(publicMap, {
     mapId: 'curated-opic-mock-course',
-    outputCount: 19,
+    outputCount: 14,
     firstItemId: 'curated-opic-single-mock-review::opic-2w-d01',
     firstItemTitle: '1일차: 1회차 연습',
   });
+  await choices.nth(1).click();
+  await expect(choices.nth(1).getByRole('radio')).toBeChecked();
+  await expect(publicMap.getByTestId('flow-map-open-selected-child')).toHaveAttribute(
+    'href',
+    '/f/curated-opic-course-row-import',
+  );
 
   const staleMapResponse = await page.goto('/flow-maps/moving-map');
   expect(staleMapResponse?.status()).toBe(404);
@@ -1577,7 +1598,8 @@ test('flow finding search and intent chips narrow commercial catalog cards', asy
   await page.getByTestId('flow-catalog-search').fill('');
   await catalog.getByRole('button', { name: '공부' }).click();
   await expect(catalog).toContainText('중1 수학 목차 진도');
-  await expect(catalog).toContainText('오픽 모의고사 2주/1달 계획표');
+  await expect(catalog).toContainText('오픽 모의고사 2주 계획표');
+  await expect(catalog).toContainText('오픽 모의고사 1달 반복 계획');
   await expect(catalog).not.toContainText('신차 구매');
 });
 

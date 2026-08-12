@@ -95,20 +95,13 @@ test('wide dated public save opens the selected plan with schedule, outline, and
   await expect(flow.getByTestId('my-flow-whole-flow-outline')).toHaveAttribute('data-effective-row-count', '24');
 });
 
-test('multi-Flow receipt chooses an honest Flow scope before opening export', async ({ page }) => {
+test('legacy seeded multi-Flow receipt chooses an honest Flow scope before opening export', async ({ page }) => {
   await installLegacySavedPlanLibraryNavigation(page);
   await page.setViewportSize({ width: 1024, height: 768 });
-  await gotoLegacySavedPlanLibraryRoute(page, '/flow-maps/curated-opic-mock-course');
-  await page.evaluate(() => localStorage.clear());
-  await page.reload();
-  await page.getByTestId('public-flow-capability-result').getByRole('button', {
-    name: 'Calendar',
-    exact: true,
-  }).click();
-  await page.getByTestId('flow-map-anchor-input').fill('2030-09-01');
-  await page.getByTestId('flow-map-save-all').click();
-  await expect(page).toHaveURL(/\/my\?savedMap=curated-opic-mock-course/u);
-  await gotoLegacySavedPlanLibraryRoute(page, page.url());
+  await gotoLegacySavedPlanLibraryRoute(
+    page,
+    '/my?demo=source-backed&savedMap=curated-opic-mock-course',
+  );
 
   const hub = page.getByTestId('my-flow-post-save-panel');
   await expect(hub).toHaveAttribute('data-receipt-flow-count', '2');

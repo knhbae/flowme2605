@@ -10,9 +10,12 @@ This file is an index, not a second source of product truth. Update its links af
 
 - [Current status and owner action](./STATUS.md)
 - [Current roadmap and inactive shelves](./ROADMAP.md)
+- [Public Plan/Item edit locally verified candidate; publication decision pending](./specs/2026-08-12-public-plan-edit-surface-unification/spec.md)
+- [Public Plan/Item edit Korean UI capture review](./content-audit/2026-08-12-public-plan-edit-surface-unification-ui-review-ko.html)
+- [My Plan edit and lifecycle locally verified candidate; publication decision pending](./specs/2026-08-12-my-plan-edit-lifecycle-unification/spec.md)
 - [Released public plan surface unification](./specs/2026-08-12-public-plan-surface-unification/spec.md)
 - [Merged PR #176 public plan surface release history](./pr-history/2026-08-12-public-plan-surface-unification.md)
-- [Open documentation-only release closeout PR #177](./pr-history/2026-08-12-public-plan-surface-release-closeout.md)
+- [Merged documentation-only release closeout PR #177](./pr-history/2026-08-12-public-plan-surface-release-closeout.md)
 - [Inherited R3B approved plan-execution boundaries](./specs/2026-08-11-r3b-approved-plan-execution-boundaries/spec.md)
 - [R3B production Escape hotfix release history](./pr-history/2026-08-11-r3b-production-escape-hotfix.md)
 - [R3B approved plan-execution release history](./pr-history/2026-08-11-r3b-approved-plan-execution-boundaries.md)
@@ -40,10 +43,27 @@ clipped, unnamed, pass-gated fixed-overlap, and pass-gated short-target
 violations were `0`. The harness also observed `4` sticky/control intersections
 and `10` short targets on rollback, review-hold, and current save transitions;
 they are observational usability evidence, not closed user validation. Observed
-users remain `0`. No product gate is active. The only current publication task
-is [documentation-only PR #177](https://github.com/knhbae/flowme2605/pull/177)
-from initial closeout commit `094ce996c71a4005496c9726003a223e29c2fc3e`
-and released base `47c54803c6bb7544aad757ce62c4ce58decbfe53`.
+users remain `0`. Documentation-only [PR #177](https://github.com/knhbae/flowme2605/pull/177)
+merged as `2f93f00d6539aa8125faccb7ad944eaf3397e7bc`. The Owner has since promoted
+[My Plan Edit And Lifecycle Unification](./specs/2026-08-12-my-plan-edit-lifecycle-unification/spec.md)
+as the one active local product gate. The four-origin editor, save boundary,
+Back/focus contract, and lifecycle integration are locally implemented and
+verified. Confirmed evidence is origin/persistence/source/storage `172/172`,
+saved-library controller `19/19`, approved execution `187/187`, lock `59/59`,
+build `18` routes, dedicated E2E `23/23`, affected browser regression `80/80`,
+full `npm test` PASS, docs `16` required files / `4525` local links, and
+independent Blocking/High findings `0`. The Owner then promoted
+[Public Plan/Item Edit Surface Unification](./specs/2026-08-12-public-plan-edit-surface-unification/spec.md)
+as the one active local product gate. The implementation removes the separate
+Map editor from the default path: single-plan `save_all` content uses the
+ordinary public Plan/Item editor, OPIc/wedding/Allblanc use `choose_child`, and
+`review_hold` remains editor-free while every Map/version/child/storage identity
+stays with its existing owner. Local focused `105/105`, full `npm test`, P35 P0
+`446/446`, build `18` routes, dedicated browser `8/8`, Map action `7/7`,
+affected browser `154/154`, docs `16` required files / `4539` local links,
+capture, and three-width report-verification gates are green. The Owner
+authorized commit, push, Draft PR, and Preview on 2026-08-12; merge and
+Production remain unauthorized, and observed users remain `0`.
 
 ## Canonical Project Truth
 

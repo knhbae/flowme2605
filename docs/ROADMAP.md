@@ -2,13 +2,40 @@
 
 **Last Updated:** 2026-08-12<br>
 **Current Version:** v0.1.0 (released product PoC)<br>
-**Current Validation Stage:** internal alpha / public plan surface Production / canonical smoke 11/11 / no active product gate / docs closeout PR #177 open / observed users 0<br>
+**Current Validation Stage:** internal alpha / Public Plan-Item edit locally verified / Draft PR and Preview authorized / merge and Production gated / observed users 0<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** Documentation-only PR #177 exact-head CI; product scope unchanged
+**Next Milestone:** Draft PR and Preview review, followed by a separate merge/Production decision
 
 Human-facing control surface: [FlowMe Project Control](./PROJECT_CONTROL.md).
 The [2026-07-29 P35 stage board](./content-audit/2026-07-29-flowme-current-stage-control-board-ko.html)
 is retained as a dated evidence snapshot rather than the current backlog.
+
+## Active: Public Plan/Item Edit Surface Unification
+
+[Public Plan/Item Edit Surface Unification](./specs/2026-08-12-public-plan-edit-surface-unification/spec.md)
+was promoted by the Owner on 2026-08-12 after confirming that the public plan
+editor still changed by content route and that current user-facing Flow Maps add
+little value as a separate product type. The local implementation reuses one
+public Plan/Item editor, provisional apply, dirty-close, browser Back,
+focus/scroll, and final-save handoff for ordinary `/f` and executable
+single-plan `save_all` routes. OPIc now joins wedding and Allblanc as a
+`choose_child` gateway; `review_hold` remains editor-free. Map ID/version,
+child Flow/Item identity, snapshots, bridge records, storage keys, and atomic
+transactions stay with their existing owners. Focused `105/105`, full
+`npm test`, P35 P0 `446/446`, build `18` routes, dedicated E2E `8/8`, Map
+action `7/7`, affected browser `154/154`, docs `16` required files / `4539`
+local links, and the six-capture three-width report verifier are green.
+Commit, push, Draft PR, and Preview are Owner-authorized. Merge and Production
+remain gated; observed users remain `0`.
+
+## Locally Verified Foundation: My Plan Edit And Lifecycle Unification
+
+[My Plan Edit And Lifecycle Unification](./specs/2026-08-12-my-plan-edit-lifecycle-unification/spec.md)
+remains the completed post-save foundation in this worktree. It unifies the
+default `/my` editor, save/cancel/Back/focus rules, and lifecycle entry across
+canonical personal copies, source-backed Flow Maps, personal memo/URL drafts,
+and legacy saved plans without changing storage, schema, source, execution, or
+export identity. Publication remains unauthorized and observed users remain `0`.
 
 ## Released: Public Plan Surface Unification
 
@@ -40,7 +67,7 @@ Default executable Maps now use the unified public presentation. Exact
 action, and anchor behavior for both `save_all` and `choose_child`; exact
 `savedPlanLibrary=off` restores the prior/default result mode. The release adds
 no storage key, schema, migration, or new persistence owner. Observed users
-remain `0`; no next product gate is active.
+remain `0`; the later My Plan edit/lifecycle gate does not change that release evidence.
 
 ## Released: R3B Approved Plan Execution UX
 
@@ -428,13 +455,17 @@ Detailed scope: [Save, Personalize, Execute Journey Reset](./specs/2026-07-18-sa
 Public plan surface implementation, CI, merge, exact-source Production
 deployment, and canonical smoke are complete. Merge
 `47c54803c6bb7544aad757ce62c4ce58decbfe53` is the current deployed source and
-canonical release verification passed `11/11`. No product gate is active. The
-only current publication lane is documentation-only [PR #177](https://github.com/knhbae/flowme2605/pull/177); external user
-observation remains separate and the count stays `0`.
+canonical release verification passed `11/11`. Documentation-only
+[PR #177](https://github.com/knhbae/flowme2605/pull/177) merged as `2f93f00d`.
+The one active Owner checkpoint is the locally implemented, verified, and
+unpublished Public Plan/Item edit unification. External user observation stays
+separate and the count stays `0`.
 
 | Lane | Owner | Work | Next checkpoint | Done when |
 | --- | --- | --- | --- | --- |
-| Documentation-only closeout | AI | Publish the exact PR #176, CI, merge, deployment, `11/11` smoke, and observed-user boundary without changing product code | Verify [PR #177](https://github.com/knhbae/flowme2605/pull/177) at its exact final head | Canonical docs agree, docs checks pass, and the closeout PR state is recorded separately from the product release |
+| Verified Public Plan/Item edit candidate | AI + Owner | Present single-plan Maps as ordinary Flows, route real alternatives through child selection, and share one Plan/Item edit and close/focus contract without moving persistence ownership | Publish one scoped branch, Draft PR, and Preview; then review before any merge or Production action | Local gates stay green, merge/Production remain explicit, and observed-user evidence remains separate |
+| Verified My Plan edit/lifecycle candidate | Owner | Preserve the completed four-origin editor, close/focus contract, and lifecycle integration without identity or schema changes | Decide whether to retain it locally or authorize a separate publication workflow | Publication remains explicit and observed-user evidence remains separate |
+| Completed documentation-only closeout | AI | Publish the exact PR #176, CI, merge, deployment, `11/11` smoke, and observed-user boundary without changing product code | Preserve [PR #177](https://github.com/knhbae/flowme2605/pull/177) merge `2f93f00d` as release documentation history | Canonical docs agree, docs checks passed, and the closeout state remains separate from the product release |
 | Completed public plan surface release | AI + Owner | One public Flow/Map result grammar with existing save identity, rollback, CI, deployment, and smoke boundaries | Preserve merge `47c54803c6bb7544aad757ce62c4ce58decbfe53` as the current Production source until a later explicit product release | PR #176, exact-head and post-merge CI PASS, exact-source Production PASS, canonical smoke `11/11`, observed users `0` |
 | Completed R3B release | AI + Owner | Approved plan-execution UX, bounded selected-Plan/transfer boundaries, Escape correction, CI, deployment, and smoke | Preserve R3B as the inherited My Flow execution contract | PR #172 plus PR #173, merge `2b937ce811b518950f495341d05736ebd102887a`, CI PASS, exact-source deployment PASS, canonical smoke `23/23`, observed users `0` |
 | Completed R3A release | AI + Owner | My Flow workspace snapshot, exact-query experience boundary, PR #169 merge, production deploy, and smoke | Preserve its historical then-default `classic` behavior and exact-query rollback comparison boundary; keep lab promotion/removal separate | merge `95a69257`, GitHub Playwright `546/546`, deployment `dpl_5jhJz4EBiHMm5HptH9nFCqfyeFek` `READY`, production smoke PASS, observed users `0` |
