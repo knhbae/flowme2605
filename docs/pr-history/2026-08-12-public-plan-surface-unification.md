@@ -3,11 +3,12 @@
 - **PR:** [#176](https://github.com/knhbae/flowme2605/pull/176)
 - **Date:** 2026-08-12 KST
 - **Branch:** `codex/public-surface-unification-20260812`
-- **Status:** Open
+- **Status:** Merged / deployed / canonical smoke PASS
 - **Base:** `origin/main` at `8f72ad6922ffa20a765a45cb9b5312ecfa8ca46f`
 - **Initial implementation commit / opening PR head:** `1cf1fc4dc85773bed3ac4e880920369e1aba1e3a`
-- **Final PR head:** Pending
-- **Deployment:** Pending
+- **Final PR head:** `3555cd1db9f426dcbc30c81652be01dd38b1ce5e`
+- **Merge:** `47c54803c6bb7544aad757ce62c4ce58decbfe53` at `2026-08-11T20:59:16Z`
+- **Deployment:** GitHub Production record `5858571759`, status `16686799631`, exact source `47c54803c6bb7544aad757ce62c4ce58decbfe53`
 
 ## Why
 
@@ -38,9 +39,10 @@ both routes belonged to the same plan-discovery journey.
 
 - No storage key, schema, migration, API route, dependency, lockfile, account,
   cloud-sync, creator-review, or review-hold policy change.
-- PR #176 is open from initial implementation commit
-  `1cf1fc4dc85773bed3ac4e880920369e1aba1e3a`. No completed PR CI, merge,
-  Production deployment, or canonical smoke is claimed.
+- No runtime, UI, storage, schema, migration, route, or dependency follow-up was
+  added after final PR head `3555cd1db9f426dcbc30c81652be01dd38b1ce5e`.
+- The protected direct deployment URL is retained as a deployment-record link,
+  not as anonymous app proof; canonical app HTTP `200` is recorded separately.
 - No observed-user session was run; the count remains `0`.
 
 ## Decisions
@@ -83,12 +85,12 @@ both routes belonged to the same plan-discovery journey.
 | Evidence | State |
 | --- | --- |
 | Initial implementation commit | `PASS` — `1cf1fc4dc85773bed3ac4e880920369e1aba1e3a` |
-| Push / PR | `OPEN` — [PR #176](https://github.com/knhbae/flowme2605/pull/176), opening head `1cf1fc4dc85773bed3ac4e880920369e1aba1e3a` |
-| Exact-head PR CI | `PENDING` |
-| Merge SHA | `PENDING` |
-| Post-merge main CI | `PENDING` |
-| Vercel Production deployment | `PENDING` |
-| Canonical production smoke | `PENDING` |
+| Push / PR | `MERGED` — [PR #176](https://github.com/knhbae/flowme2605/pull/176), opening head `1cf1fc4dc85773bed3ac4e880920369e1aba1e3a`, final head `3555cd1db9f426dcbc30c81652be01dd38b1ce5e` |
+| Exact-head PR CI | `PASS` — run [`31534309714`](https://github.com/knhbae/flowme2605/actions/runs/31534309714), [Docs `93921714110`](https://github.com/knhbae/flowme2605/actions/runs/31534309714/job/93921714110), [Playwright `93921714060`](https://github.com/knhbae/flowme2605/actions/runs/31534309714/job/93921714060) |
+| Merge SHA | `PASS` — `47c54803c6bb7544aad757ce62c4ce58decbfe53` at `2026-08-11T20:59:16Z` |
+| Post-merge main CI | `PASS` — run [`31535691210`](https://github.com/knhbae/flowme2605/actions/runs/31535691210), [Docs `93926137070`](https://github.com/knhbae/flowme2605/actions/runs/31535691210/job/93926137070), [Playwright `93926137063`](https://github.com/knhbae/flowme2605/actions/runs/31535691210/job/93926137063) |
+| Vercel Production deployment | `PASS` — GitHub record `5858571759`, status `16686799631`, exact source `47c54803c6bb7544aad757ce62c4ce58decbfe53`; [protected direct record URL](https://flowme2605-la2tqpw8e-flowme.vercel.app), [canonical app](https://flowme2605.vercel.app) HTTP `200`, [Vercel record](https://vercel.com/flowme/flowme2605/BYkEtNVJkGitQcCZfWvfZpyicebp) success |
+| Canonical production smoke | `PASS` — authoritative final `11/11`, sequential isolated contexts, `19.023s`; runtime/network/same-origin 4xx/5xx/overflow/clipped/unnamed/pass-gated fixed-overlap/pass-gated short-target violations `0`; observed sticky/control intersections `4` and short targets `10` remain non-gating usability observations. Earlier `7/11` and `9/11` were harness false negatives. |
 | Observed-user validation | `0` |
 
 ## Risks And Rollback
@@ -102,10 +104,10 @@ both routes belonged to the same plan-discovery journey.
 
 ## Follow-ups
 
-- Verify PR #176 exact-head CI, merge only when required checks are green, then
-  bind the exact merge SHA to the Production deployment and run canonical smoke.
-- Keep external integrations and observed-user study work separate from this
-  release.
+- No product gate is active. Keep external integrations and observed-user study
+  work separate until explicit Owner promotion.
+- Publish the documentation-only release closeout from exact released base
+  `47c54803c6bb7544aad757ce62c4ce58decbfe53`; it must not alter runtime.
 
 ## Links
 

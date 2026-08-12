@@ -2,6 +2,13 @@
 
 No tagged releases yet.
 
+## 2026-08-12 - Public Plan Surface Unification
+
+- Released one public share shell and approved Text/Todo/Calendar result grammar across executable `/f/[slug]` and default `/flow-maps/[map]` routes while preserving Flow and Map identity, existing save transactions, review-hold boundaries, and exact query-only rollback behavior.
+- [PR #176](https://github.com/knhbae/flowme2605/pull/176) final head `3555cd1db9f426dcbc30c81652be01dd38b1ce5e` passed required CI run [`31534309714`](https://github.com/knhbae/flowme2605/actions/runs/31534309714) and merged at `2026-08-11T20:59:16Z` as `47c54803c6bb7544aad757ce62c4ce58decbfe53`. Post-merge `main` CI run [`31535691210`](https://github.com/knhbae/flowme2605/actions/runs/31535691210) also passed.
+- GitHub Production deployment record `5858571759`, status `16686799631`, identifies the exact merge source and <https://flowme2605-la2tqpw8e-flowme.vercel.app> as a protected direct deployment-record URL. The canonical app <https://flowme2605.vercel.app> returned HTTP `200`; the [Vercel deployment record](https://vercel.com/flowme/flowme2605/BYkEtNVJkGitQcCZfWvfZpyicebp) reports success.
+- The authoritative canonical production smoke passed `11/11` in sequential isolated contexts in `19.023s`, with runtime, network, same-origin 4xx/5xx, overflow, clipped, unnamed, pass-gated fixed-overlap, and pass-gated short-target violations `0`. The harness separately observed `4` sticky/control intersections and `10` short targets on rollback, review-hold, and current save transitions; they are not closed usability evidence. Earlier `7/11` and `9/11` runs were harness false negatives. This is automated production QA, not observed-user validation; observed-user sessions remain `0`. No semantic version tag was created.
+
 ## 2026-08-11 - R3B Approved Plan Execution UX
 
 - Merged the approved plan-execution implementation through [PR #172](https://github.com/knhbae/flowme2605/pull/172), then merged the production Escape correction through [PR #173](https://github.com/knhbae/flowme2605/pull/173) at `2026-08-11T01:31:11Z`; the final production source is `2b937ce811b518950f495341d05736ebd102887a`.

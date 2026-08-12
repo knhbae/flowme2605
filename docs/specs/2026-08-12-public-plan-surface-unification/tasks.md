@@ -14,8 +14,8 @@
 - [x] 문서와 최종 scope/evidence audit를 완료한다.
 - [x] Initial implementation commit `1cf1fc4dc85773bed3ac4e880920369e1aba1e3a`를 만들고 exact SHA를 기록했다.
 - [x] Branch를 push하고 [PR #176](https://github.com/knhbae/flowme2605/pull/176)을 opening head `1cf1fc4dc85773bed3ac4e880920369e1aba1e3a`로 열었다.
-- [ ] 실제 PR CI가 통과했는지 확인하고 run을 기록한다 — `PENDING`.
-- [ ] CI 통과 뒤 merge하고 실제 merge SHA를 기록한다 — `PENDING`.
-- [ ] Production이 exact merged source를 제공하는지 확인한다 — `PENDING`.
-- [ ] Canonical production smoke를 실행하고 결과를 기록한다 — `PENDING`.
-- [ ] observed-user validation — 자동 QA와 분리하며 현재 `0`.
+- [x] 최종 PR head `3555cd1db9f426dcbc30c81652be01dd38b1ce5e`의 CI run `31534309714` 통과를 기록했다.
+- [x] PR #176을 `2026-08-11T20:59:16Z`에 merge하고 실제 merge SHA `47c54803c6bb7544aad757ce62c4ce58decbfe53`를 기록했다.
+- [x] Production record `5858571759` / status `16686799631`가 exact merged source를 가리키고 canonical app이 HTTP `200`을 제공하는지 확인했다.
+- [x] Canonical production smoke의 authoritative final run `11/11`, sequential isolated contexts, `19.023s`를 기록했다. Pass-gated 위반은 `0`이고, 관찰된 sticky/control intersection `4`와 short target `10`은 사용성 검증 완료로 취급하지 않는다.
+- [ ] observed-user validation — 자동 QA와 분리하며 현재 `0`; 이 릴리스 뒤 활성 product gate가 아니다.

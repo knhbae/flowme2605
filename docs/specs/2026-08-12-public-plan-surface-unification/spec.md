@@ -1,6 +1,6 @@
 # Public Plan Surface Unification
 
-**Status:** LOCAL IMPLEMENTATION COMPLETE / LOCAL QA PASS / PR #176 OPEN / CI PENDING
+**Status:** RELEASED / PR #176 MERGED / PRODUCTION PASS / CANONICAL SMOKE 11/11 / OBSERVED USERS 0
 
 **Owner decision:** 2026-08-12
 
@@ -12,13 +12,16 @@
 
 **PR:** [#176](https://github.com/knhbae/flowme2605/pull/176)
 
+**Final PR head:** `3555cd1db9f426dcbc30c81652be01dd38b1ce5e`
+
+**Merge / deployed source:** `47c54803c6bb7544aad757ce62c4ce58decbfe53`
+
 **Final verified BUILD_ID:** `bzdhR-nY_afpTfx_xDZ7e`
 
-The implementation is locally verified and open as PR #176 from initial
-implementation commit `1cf1fc4dc85773bed3ac4e880920369e1aba1e3a`. It is not
-yet a published release. Exact-head PR CI, merge, deployment, and production
-smoke remain `PENDING` until each real external state is verified; observed users
-remain `0`.
+The implementation is released through PR #176. Exact-head PR CI, merge,
+post-merge `main` CI, exact-source Production deployment, canonical HTTP `200`,
+and production smoke `11/11` are verified. Automated release evidence remains
+separate from observed-user validation; observed users remain `0`.
 
 ## Goal
 
@@ -82,11 +85,15 @@ remain `0`.
 ## Publication phase
 
 The Owner authorized scoped commit, push, PR, merge, deployment, and production
-smoke on 2026-08-12. Initial implementation commit
-`1cf1fc4dc85773bed3ac4e880920369e1aba1e3a` is open as PR #176. Exact-head PR
-CI, final PR head, merge SHA, deployment, and canonical production smoke remain
-`PENDING`. R3B remains the production source until exact-source deployment and
-smoke are verified. No publication step changes the observed-user count of `0`.
+smoke on 2026-08-12. PR #176 final head
+`3555cd1db9f426dcbc30c81652be01dd38b1ce5e` passed exact-head CI run
+[`31534309714`](https://github.com/knhbae/flowme2605/actions/runs/31534309714)
+and merged at `2026-08-11T20:59:16Z` as
+`47c54803c6bb7544aad757ce62c4ce58decbfe53`. Post-merge `main` CI run
+[`31535691210`](https://github.com/knhbae/flowme2605/actions/runs/31535691210),
+Production deployment record `5858571759` / status `16686799631`, canonical HTTP
+`200`, and production smoke `11/11` passed. No publication step changes the
+observed-user count of `0`.
 
 ## Acceptance criteria
 
@@ -112,3 +119,15 @@ Map rollback/copy contracts passed `24/24`; and current-source full Playwright
 passed `578/578` across `74` files with workers `2`, retries `0`, and `0`
 unexpected/skipped/flaky. The exact run paths, duration, and evidence boundary are recorded in
 [qa.md](./qa.md).
+
+## Release result
+
+Final PR head `3555cd1db9f426dcbc30c81652be01dd38b1ce5e` and exact merge/deployed
+source `47c54803c6bb7544aad757ce62c4ce58decbfe53` passed required PR and
+post-merge CI. The canonical Production app returned HTTP `200`, and the final
+authoritative production smoke passed `11/11` in sequential isolated contexts
+in `19.023s`. Runtime, network, same-origin 4xx/5xx, overflow, clipped, unnamed,
+pass-gated fixed-overlap, and pass-gated short-target violations were `0`. The
+harness separately observed `4` sticky/control intersections and `10` short
+targets on rollback, review-hold, and current save transitions. Those values are
+not closed usability evidence, and observed-user validation remains `0`.
