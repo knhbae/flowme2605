@@ -6,6 +6,7 @@ test.describe.configure({ timeout: 120_000 });
 
 const STORAGE_KEY = "flow:text-authoring:drafts:v1";
 const STRUCTURED_BUDGET_BYTES = 1024 * 1024;
+const ROUTE_TRANSITION_TIMEOUT_MS = 15_000;
 
 async function captureClipboardWrites(page: Page): Promise<void> {
   await page.evaluate(() => {
@@ -190,6 +191,15 @@ async function enterSource(page: Page, title: string, rawText: string) {
     .toBe("true");
 }
 
+async function continueSavedDraftAndReload(page: Page, receipt: Locator) {
+  await expect(page).toHaveURL(/\/flows\/authoring\/[^/]+$/u, {
+    timeout: ROUTE_TRANSITION_TIMEOUT_MS,
+  });
+  await receipt.getByRole("button", { name: "계속 편집" }).click();
+  await expect(receipt).toHaveCount(0);
+  await page.reload();
+}
+
 async function openNavigator(page: Page) {
   const trigger = page.getByTestId("ta-authoring-document-navigator-open");
   await expect(trigger).toBeVisible();
@@ -343,8 +353,7 @@ test("P1C-H01 · mixed raw blocks keep exact bytes, locator, and save re-entry",
   await page.getByTestId("ta-authoring-save-desktop").click();
   const receipt = page.getByTestId("ta-authoring-receipt");
   await expect(receipt).toContainText("초안을 저장했어요");
-  await receipt.getByRole("button", { name: "계속 편집" }).click();
-  await page.reload();
+  await continueSavedDraftAndReload(page, receipt);
   await expect(source).toHaveValue(MIXED_LONG_SOURCE);
 
   const reopened = await openNavigator(page);
@@ -558,8 +567,7 @@ test("P1C-F02 · structured budget fails closed without truncating raw source", 
     return Object.values(state.drafts ?? {})[0]?.document?.rawText ?? "";
   }, STORAGE_KEY);
   expect(storedRawText).toBe(oversizedSource);
-  await receipt.getByRole("button", { name: "계속 편집" }).click();
-  await page.reload();
+  await continueSavedDraftAndReload(page, receipt);
   await expect(page.getByTestId("ta-authoring-source")).toHaveValue(
     oversizedSource,
   );
