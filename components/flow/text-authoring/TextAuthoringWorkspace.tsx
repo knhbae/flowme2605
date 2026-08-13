@@ -20,6 +20,8 @@ import {
   serializeAuthoringIcs,
   serializeAuthoringPlainText,
 } from "@/lib/flow/text-authoring/file-export";
+import { locateAuthoringSource } from "@/lib/flow/text-authoring/long-document-table";
+import { isTextAuthoringP1LongDocumentTableEnabled } from "@/lib/flow/text-authoring/text-authoring-feature-flags";
 import {
   extractMarkdownFlowTitle,
   replaceMarkdownFlowTitle,
@@ -29,7 +31,10 @@ import {
   exportTextAuthoringMarkdown,
 } from "@/lib/flow/text-authoring/markdown-roundtrip";
 import { applyAuthoringOperation } from "@/lib/flow/text-authoring/operations";
-import { createTextAuthoringDocument } from "@/lib/flow/text-authoring/parser";
+import {
+  buildTextAuthoringLongDocumentRuntimeView,
+  createTextAuthoringDocument,
+} from "@/lib/flow/text-authoring/parser";
 import {
   deriveAuthoringLifecycleStatus,
   evaluateAuthoringWritePolicy,
@@ -85,12 +90,15 @@ import {
 import { DraftLibrary, type AuthoringLibraryFilter } from "./DraftLibrary";
 import { InputPane } from "./InputPane";
 import { ItemInspector } from "./ItemInspector";
+import { LongDocumentNavigator } from "./LongDocumentNavigator";
 import { ResultPane } from "./ResultPane";
 import { SourceUpdateDialog } from "./SourceUpdateDialog";
 import { StructurePane } from "./StructurePane";
 import type {
   AuthoringItemPatch,
+  AuthoringLongDocumentFocusView,
   AuthoringReceiptView,
+  AuthoringSourceLocatorView,
   PersistedAuthoringStage,
   AuthoringRole,
   AuthoringStage,
@@ -103,8 +111,17 @@ import {
 } from "./examples";
 import {
   buildAuthoringOutlineView,
+  composeRawPreservedTextResult,
+  buildAuthoringLongDocumentLossLocatorViews,
+  buildAuthoringSourceLocatorViews,
+  buildAuthoringTableRowLocatorViews,
+  buildAuthoringTableLossView,
   formatKoreanDateTime,
   normalizeArtifactKind,
+  parseAuthoringLongDocumentFocus,
+  resolveAuthoringSourceLocatorView,
+  serializeAuthoringLongDocumentFocus,
+  shouldUseRawPreservedTextResult,
   toDraftView,
   toSaveReceiptView,
 } from "./view-model";
@@ -212,12 +229,16 @@ function withUiState(
   selectedItemId: string | null,
   title: string,
   ownership: TextAuthoringOwnership,
+  focusTargetOverride?: string,
 ): TextAuthoringDocument {
   const effectiveTitle =
     extractMarkdownFlowTitle(document.rawText) ||
     title.trim() ||
     document.title ||
     document.parseResult.canonical.flow.title;
+  const longDocumentFocus = parseAuthoringLongDocumentFocus(
+    focusTargetOverride ?? document.uiState?.focusTarget,
+  );
   return {
     ...document,
     title: effectiveTitle,
@@ -235,7 +256,11 @@ function withUiState(
     uiState: {
       stage,
       ...(selectedItemId ? { selectedItemId } : {}),
-      focusTarget: selectedItemId ? `item:${selectedItemId}` : "source",
+      focusTarget: longDocumentFocus
+        ? serializeAuthoringLongDocumentFocus(longDocumentFocus)
+        : selectedItemId
+          ? `item:${selectedItemId}`
+          : "source",
     },
   };
 }
@@ -351,8 +376,22 @@ function getBrowserNavigation(): BrowserNavigation | null {
 type SourceCorrectionReturnTarget = {
   artifact: AuthoringArtifactKind;
   itemId?: string;
+  focusTestId?: string;
+  focusLocatorId?: string;
+  locatorId?: string;
+  sourceScrollTop?: number;
   sourceTextBeforeEdit: string;
 };
+
+function resultSourceTargetSelector(
+  focusTestId: string | undefined,
+  focusLocatorId: string | undefined,
+): string | null {
+  if (!focusTestId) return null;
+  return `[data-testid="${CSS.escape(focusTestId)}"]${
+    focusLocatorId ? `[data-locator-id="${CSS.escape(focusLocatorId)}"]` : ""
+  }`;
+}
 
 function splitBoundaries(value: string): SplitBoundary[] {
   const positions = new Set<number>();
@@ -494,12 +533,52 @@ function normalizeVisibleAuthoringStage(
   return stage === "input" ? "input" : "result";
 }
 
+export function resolveTextAuthoringP1LongDocumentTableProductGate({
+  productMode,
+  override,
+  environmentValue,
+}: {
+  productMode: boolean;
+  override?: boolean;
+  environmentValue?: string;
+}): boolean {
+  const normalizedEnvironment = environmentValue?.trim().toLowerCase();
+  const environmentEnabled = !["0", "false", "off"].includes(
+    normalizedEnvironment ?? "",
+  );
+  return isTextAuthoringP1LongDocumentTableEnabled({
+    enabled: productMode && (override ?? environmentEnabled),
+  });
+}
+
+export function resolveTextAuthoringLongDocumentRuntimeDocument(
+  document: TextAuthoringDocument | null,
+  {
+    productMode,
+    enabled,
+  }: {
+    productMode: boolean;
+    enabled: boolean;
+  },
+): TextAuthoringDocument | null {
+  if (
+    !document ||
+    !productMode ||
+    enabled ||
+    document.features?.longDocumentTable !== true
+  ) {
+    return document;
+  }
+  return buildTextAuthoringLongDocumentRuntimeView(document, false);
+}
+
 export type TextAuthoringWorkspaceProps = {
   showQaCatalog?: boolean;
   productMode?: boolean;
   initialView?: "library" | "editor";
   initialDraftId?: string;
   initialSaveReceipt?: AuthoringReceiptView | null;
+  p1LongDocumentTableEnabled?: boolean;
   onNavigateDraft?: (
     draftId: string | null,
     options?: {
@@ -517,9 +596,17 @@ export function TextAuthoringWorkspace({
   initialView = "editor",
   initialDraftId,
   initialSaveReceipt,
+  p1LongDocumentTableEnabled,
   onNavigateDraft,
   onNavigateNew,
 }: TextAuthoringWorkspaceProps = {}) {
+  const longDocumentTableGateEnabled =
+    resolveTextAuthoringP1LongDocumentTableProductGate({
+      productMode,
+      override: p1LongDocumentTableEnabled,
+      environmentValue:
+        process.env.NEXT_PUBLIC_FLOWME_TEXT_AUTHORING_P1_LONG_DOCUMENT_TABLE,
+    });
   const [repository, setRepository] =
     useState<TextAuthoringDraftRepository | null>(null);
   const [activeDraftId, setActiveDraftId] = useState<string | null>(null);
@@ -598,6 +685,7 @@ export function TextAuthoringWorkspace({
   const [historyDraftId, setHistoryDraftId] = useState<string | null>(null);
   const [history, setHistory] = useState<TextAuthoringDraftHistoryEntry[]>([]);
   const [sourceComparisonOpen, setSourceComparisonOpen] = useState(false);
+  const [documentNavigatorOpen, setDocumentNavigatorOpen] = useState(false);
   const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
   const [pendingExample, setPendingExample] =
     useState<TextAuthoringExample | null>(null);
@@ -607,11 +695,17 @@ export function TextAuthoringWorkspace({
     useState<PendingCorrection | null>(null);
   const [sourceCorrectionReturnTarget, setSourceCorrectionReturnTarget] =
     useState<SourceCorrectionReturnTarget | null>(null);
+  const [pendingResultFocusTarget, setPendingResultFocusTarget] =
+    useState<SourceCorrectionReturnTarget | null>(null);
+  const [selectedSourceLocatorId, setSelectedSourceLocatorId] = useState<
+    string | null
+  >(null);
   const inspectorReturnFocusRef = useRef<HTMLElement | null>(null);
   const workspaceGridRef = useRef<HTMLDivElement | null>(null);
   const inputPaneScrollRef = useRef<HTMLDivElement | null>(null);
   const sourceTextAreaRef = useRef<HTMLTextAreaElement | null>(null);
   const initialDraftOpenedRef = useRef<string | null>(null);
+  const restoredSourceFocusRef = useRef<string | null>(null);
   const allowBrowserExitRef = useRef(false);
 
   useEffect(() => {
@@ -637,6 +731,7 @@ export function TextAuthoringWorkspace({
 
   useEffect(() => {
     if (!window.matchMedia("(max-width: 899px)").matches) return;
+    if (stage === "input" && selectedSourceLocatorId) return;
 
     const frame = window.requestAnimationFrame(() => {
       const grid = workspaceGridRef.current;
@@ -653,7 +748,7 @@ export function TextAuthoringWorkspace({
     });
 
     return () => window.cancelAnimationFrame(frame);
-  }, [stage]);
+  }, [selectedSourceLocatorId, stage]);
 
   useEffect(() => {
     if (!liveApplyReceipt) return;
@@ -753,9 +848,57 @@ export function TextAuthoringWorkspace({
     }
   }, [activeDraftId, dirty, refreshDrafts, repository]);
 
+  const effectiveDocument = useMemo(() => {
+    return resolveTextAuthoringLongDocumentRuntimeDocument(document, {
+      productMode,
+      enabled: longDocumentTableGateEnabled,
+    });
+  }, [document, longDocumentTableGateEnabled, productMode]);
   const outline = useMemo(
-    () => buildAuthoringOutlineView(document),
-    [document],
+    () => buildAuthoringOutlineView(effectiveDocument),
+    [effectiveDocument],
+  );
+  const sourceLocatorViews = useMemo(
+    () => buildAuthoringSourceLocatorViews(effectiveDocument, outline.issues),
+    [effectiveDocument, outline.issues],
+  );
+  const longDocumentAnalysis = effectiveDocument?.parseResult.longDocument;
+  const sourceFocusLocatorViews = useMemo(
+    () => [
+      ...sourceLocatorViews,
+      ...buildAuthoringTableRowLocatorViews(longDocumentAnalysis),
+      ...buildAuthoringLongDocumentLossLocatorViews(longDocumentAnalysis),
+    ],
+    [longDocumentAnalysis, sourceLocatorViews],
+  );
+  const runtimeRawFallbackActive = Boolean(
+    productMode &&
+    document?.features?.longDocumentTable === true &&
+    !longDocumentTableGateEnabled &&
+    (longDocumentAnalysis?.fallbackActive ||
+      longDocumentAnalysis?.status === "txt-only"),
+  );
+  const rawPreservedTextResult = Boolean(
+    productMode &&
+    shouldUseRawPreservedTextResult(effectiveDocument, {
+      runtimeFallbackActive: runtimeRawFallbackActive,
+    }),
+  );
+  const tableLossView = useMemo(
+    () =>
+      longDocumentTableGateEnabled
+        ? buildAuthoringTableLossView(longDocumentAnalysis)
+        : null,
+    [longDocumentAnalysis, longDocumentTableGateEnabled],
+  );
+  const showDocumentNavigator = Boolean(
+    rawPreservedTextResult &&
+    longDocumentTableGateEnabled &&
+    sourceLocatorViews.length > 1 &&
+    ((longDocumentAnalysis?.budget.lineCount ?? 0) >= 20 ||
+      (longDocumentAnalysis?.blocks.length ?? 0) >= 3 ||
+      (longDocumentAnalysis?.tables.length ?? 0) > 0 ||
+      outline.issues.length > 0),
   );
   const firstSourceError = productMode ? outline.issues[0] : undefined;
   const sourceError = firstSourceError
@@ -857,12 +1000,14 @@ export function TextAuthoringWorkspace({
   ).length;
   const selectedItem =
     outline.items.find((item) => item.itemId === selectedItemId) ?? null;
-  const selectedCanonicalItem = document?.parseResult.canonical.items.find(
-    (item) => item.itemId === selectedItemId,
-  );
-  const selectedCanonicalStep = document?.parseResult.canonical.steps.find(
-    (step) => step.stepId === selectedCanonicalItem?.stepId,
-  );
+  const selectedCanonicalItem =
+    effectiveDocument?.parseResult.canonical.items.find(
+      (item) => item.itemId === selectedItemId,
+    );
+  const selectedCanonicalStep =
+    effectiveDocument?.parseResult.canonical.steps.find(
+      (step) => step.stepId === selectedCanonicalItem?.stepId,
+    );
   const selectedStepItemIndex =
     selectedCanonicalStep?.itemIds.findIndex(
       (itemId) => itemId === selectedItemId,
@@ -872,12 +1017,12 @@ export function TextAuthoringWorkspace({
   );
 
   const projectionState = useMemo(() => {
-    if (!document) {
+    if (!effectiveDocument) {
       return { value: null, error: "" };
     }
     try {
       return {
-        value: buildAuthoringArtifactProjection(document, {
+        value: buildAuthoringArtifactProjection(effectiveDocument, {
           ...(anchor ? { anchor } : {}),
           finiteOccurrenceLimit,
           openEndedOccurrenceWeeks,
@@ -891,16 +1036,21 @@ export function TextAuthoringWorkspace({
           "원문은 보존되어 있지만 결과를 계산하지 못했습니다. 구조를 다시 확인해 주세요.",
       };
     }
-  }, [anchor, document, finiteOccurrenceLimit, openEndedOccurrenceWeeks]);
+  }, [
+    anchor,
+    effectiveDocument,
+    finiteOccurrenceLimit,
+    openEndedOccurrenceWeeks,
+  ]);
   const projection = projectionState.value;
   const sourceOnlyTextRows = useMemo(() => {
-    if (!document) return [] as string[];
+    if (!effectiveDocument) return [] as string[];
     const sourceOnlyRowIds = new Set(
-      document.parseResult.issues
+      effectiveDocument.parseResult.issues
         .filter((issue) => issue.decision?.outcome !== "convert_to_item")
         .flatMap((issue) => issue.sourceRowIds),
     );
-    return document.parseResult.canonical.sourceRows
+    return effectiveDocument.parseResult.canonical.sourceRows
       .filter(
         (row) =>
           row.state !== "tombstone" && sourceOnlyRowIds.has(row.sourceRowId),
@@ -910,26 +1060,36 @@ export function TextAuthoringWorkspace({
         (value, index, values) =>
           Boolean(value) && values.indexOf(value) === index,
       );
-  }, [document]);
+  }, [effectiveDocument]);
   const textResultValues = useMemo(() => {
-    if (!document || !projection) return undefined;
+    if (!effectiveDocument || !projection) return undefined;
     return {
       raw: rawText,
-      structured_plain_text: serializeAuthoringPlainText(
-        projection.title,
-        projection.artifacts.memo.rows,
-        sourceOnlyTextRows,
-      ),
-      structured_markdown: exportTextAuthoringMarkdown(document),
+      structured_plain_text: rawPreservedTextResult
+        ? composeRawPreservedTextResult(rawText, projection.artifacts.memo.rows)
+        : serializeAuthoringPlainText(
+            projection.title,
+            projection.artifacts.memo.rows,
+            sourceOnlyTextRows,
+          ),
+      structured_markdown: exportTextAuthoringMarkdown(effectiveDocument),
     };
-  }, [document, projection, rawText, sourceOnlyTextRows]);
+  }, [
+    effectiveDocument,
+    projection,
+    rawPreservedTextResult,
+    rawText,
+    sourceOnlyTextRows,
+  ]);
 
-  const activeArtifact = projection?.artifacts[selectedArtifact]?.eligible
-    ? selectedArtifact
-    : (projection?.primaryArtifact ?? selectedArtifact);
+  const activeArtifact =
+    projection?.artifacts[selectedArtifact]?.eligible ||
+    (productMode && selectedArtifact === "sheet" && tableLossView)
+      ? selectedArtifact
+      : (projection?.primaryArtifact ?? selectedArtifact);
 
   const calendarSourceAlignment = useMemo(() => {
-    if (!document || !projection?.artifacts.calendar.eligible) {
+    if (!effectiveDocument || !projection?.artifacts.calendar.eligible) {
       return {
         differs: false,
         orderedItemIds: [] as string[],
@@ -944,12 +1104,15 @@ export function TextAuthoringWorkspace({
       }
     });
     const itemById = new Map(
-      document.parseResult.canonical.items.map((item) => [item.itemId, item]),
+      effectiveDocument.parseResult.canonical.items.map((item) => [
+        item.itemId,
+        item,
+      ]),
     );
     let differs = false;
     const beforeTitles: string[] = [];
     const afterTitles: string[] = [];
-    const orderedItemIds = document.parseResult.canonical.steps
+    const orderedItemIds = effectiveDocument.parseResult.canonical.steps
       .slice()
       .sort((left, right) => left.order - right.order)
       .flatMap((step) => {
@@ -981,7 +1144,7 @@ export function TextAuthoringWorkspace({
         return desiredIds;
       });
     return { differs, orderedItemIds, beforeTitles, afterTitles };
-  }, [document, projection]);
+  }, [effectiveDocument, projection]);
 
   const preflightState = useMemo(() => {
     if (!projection) return { value: null, error: "" };
@@ -1043,6 +1206,13 @@ export function TextAuthoringWorkspace({
           source,
           rawText,
         ),
+        ...(productMode
+          ? {
+              longDocumentTable: {
+                enabled: longDocumentTableGateEnabled,
+              },
+            }
+          : {}),
         ...(trimmedSource && isWebUrl(trimmedSource)
           ? { sourceUrl: trimmedSource }
           : trimmedSource
@@ -1050,7 +1220,14 @@ export function TextAuthoringWorkspace({
             : {}),
       });
     },
-    [ownership, rawText, source, title],
+    [
+      longDocumentTableGateEnabled,
+      ownership,
+      productMode,
+      rawText,
+      source,
+      title,
+    ],
   );
 
   useEffect(() => {
@@ -1059,7 +1236,14 @@ export function TextAuthoringWorkspace({
       const recoveryDocument =
         document && !parsePending
           ? withUiState(document, stage, selectedItemId, title, ownership)
-          : createFromCurrentInput(document?.documentId);
+          : withUiState(
+              createFromCurrentInput(document?.documentId),
+              stage,
+              selectedItemId,
+              title,
+              ownership,
+              document?.uiState?.focusTarget,
+            );
       const recoveryDocumentWithSnapshot =
         document?.sourceState?.active &&
         recoveryDocument.sourceState &&
@@ -1245,7 +1429,14 @@ export function TextAuthoringWorkspace({
         : (next.parseResult.canonical.items[0]?.itemId ?? null);
       const nextStage = mode === "live" ? stage : "result";
       setDocument(
-        withUiState(next, nextStage, nextSelectedItemId, title, ownership),
+        withUiState(
+          next,
+          nextStage,
+          nextSelectedItemId,
+          title,
+          ownership,
+          document?.uiState?.focusTarget,
+        ),
       );
       if (mode === "manual") setOwnershipLocked(true);
       setSelectedItemId(nextSelectedItemId);
@@ -1614,28 +1805,23 @@ export function TextAuthoringWorkspace({
         )
         .filter((row): row is NonNullable<typeof row> => Boolean(row));
       if (rows.length === 0) return;
-      const startLine = rows?.length
-        ? Math.min(...rows.map((row) => row.sourceRange.startLine))
-        : 1;
-      const endLine = rows?.length
-        ? Math.max(...rows.map((row) => row.sourceRange.endLine))
-        : startLine;
-      const lines = rawText.split(/\r?\n/u);
-      const lineOffset = (line: number) =>
-        lines
-          .slice(0, Math.max(0, line - 1))
-          .reduce(
-            (offset, value) =>
-              offset + value.length + (rawText.includes("\r\n") ? 2 : 1),
-            0,
-          );
-      const selectionStart = lineOffset(startLine);
-      const selectionEnd =
-        lineOffset(endLine) + (lines[endLine - 1]?.length ?? 0);
+      const startLine = Math.min(
+        ...rows.map((row) => row.sourceRange.startLine),
+      );
+      const endLine = Math.max(...rows.map((row) => row.sourceRange.endLine));
+      const selectionStart = Math.min(
+        ...rows.map((row) => row.sourceRange.startOffset),
+      );
+      const selectionEnd = Math.max(
+        ...rows.map((row) => row.sourceRange.endOffset),
+      );
 
       setSourceCorrectionReturnTarget({
         artifact: activeArtifact,
         ...(itemId ? { itemId } : {}),
+        focusTestId: itemId
+          ? "ta-authoring-preview-source-edit"
+          : "ta-authoring-product-issue-source",
         sourceTextBeforeEdit: rawText,
       });
       setInspectorOpen(false);
@@ -1656,6 +1842,270 @@ export function TextAuthoringWorkspace({
     },
     [activeArtifact, document, rawText],
   );
+
+  const focusSourceLocator = useCallback(
+    (
+      locator: AuthoringSourceLocatorView,
+      options: { returnToResult?: boolean; focusTestId?: string } = {},
+    ) => {
+      const sourceLocator = longDocumentAnalysis
+        ? [
+            ...longDocumentAnalysis.blocks.map((block) => block.locator),
+            ...longDocumentAnalysis.tables.flatMap((table) => [
+              table.locator,
+              ...table.sourceRows.flatMap((row) => [
+                row.locator,
+                ...row.cells.map((cell) => cell.locator),
+              ]),
+            ]),
+            ...longDocumentAnalysis.lossManifest.flatMap((loss) =>
+              loss.locator ? [loss.locator] : [],
+            ),
+          ].find(
+            (candidate) =>
+              candidate.startOffset === locator.startOffset &&
+              candidate.endOffset === locator.endOffset,
+          )
+        : undefined;
+      const exactSource = sourceLocator
+        ? locateAuthoringSource(rawText, sourceLocator)
+        : null;
+      const invalidLocator =
+        locator.startOffset < 0 ||
+        locator.endOffset < locator.startOffset ||
+        locator.endOffset > rawText.length ||
+        Boolean(exactSource && !exactSource.valid);
+      const resolvedFallback = invalidLocator
+        ? resolveAuthoringSourceLocatorView(sourceFocusLocatorViews, locator)
+        : null;
+      if (invalidLocator && !resolvedFallback) {
+        setStatusMessage(
+          "원문 위치가 바뀌어 가까운 범위를 찾지 못했습니다. 문서 찾기에서 다시 선택해 주세요.",
+        );
+        setDocumentNavigatorOpen(true);
+        return;
+      }
+      const effectiveLocator = resolvedFallback?.entry ?? locator;
+      const sourceScrollTop = Math.max(
+        0,
+        (effectiveLocator.startLine - 3) * 24,
+      );
+      const persistedFocus: AuthoringLongDocumentFocusView = {
+        locatorId: effectiveLocator.locatorId,
+        startOffset: effectiveLocator.startOffset,
+        startLine: effectiveLocator.startLine,
+        sourceScrollTop,
+        ...(options.returnToResult
+          ? {
+              returnArtifact: activeArtifact,
+              ...(options.focusTestId
+                ? { focusTestId: options.focusTestId }
+                : {}),
+              focusLocatorId: effectiveLocator.locatorId,
+            }
+          : {}),
+      };
+      if (options.returnToResult) {
+        setSourceCorrectionReturnTarget({
+          artifact: activeArtifact,
+          ...(options.focusTestId ? { focusTestId: options.focusTestId } : {}),
+          focusLocatorId: effectiveLocator.locatorId,
+          locatorId: effectiveLocator.locatorId,
+          sourceScrollTop,
+          sourceTextBeforeEdit: rawText,
+        });
+      } else {
+        setSourceCorrectionReturnTarget(null);
+      }
+      setSelectedSourceLocatorId(effectiveLocator.locatorId);
+      restoredSourceFocusRef.current =
+        serializeAuthoringLongDocumentFocus(persistedFocus);
+      setDocument((current) =>
+        current
+          ? {
+              ...current,
+              uiState: {
+                stage: "input",
+                ...(current.uiState?.selectedItemId
+                  ? { selectedItemId: current.uiState.selectedItemId }
+                  : {}),
+                focusTarget:
+                  serializeAuthoringLongDocumentFocus(persistedFocus),
+              },
+            }
+          : current,
+      );
+      setDocumentNavigatorOpen(false);
+      setInspectorOpen(false);
+      setItemReviewOpen(false);
+      setStage("input");
+      setStatusMessage(
+        resolvedFallback
+          ? `원문 위치가 바뀌어 가까운 ${effectiveLocator.startLine === effectiveLocator.endLine ? `${effectiveLocator.startLine}행` : `${effectiveLocator.startLine}~${effectiveLocator.endLine}행`}을 선택했습니다.`
+          : `${effectiveLocator.startLine === effectiveLocator.endLine ? `${effectiveLocator.startLine}행` : `${effectiveLocator.startLine}~${effectiveLocator.endLine}행`}을 선택했습니다.`,
+      );
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => {
+          const textarea = sourceTextAreaRef.current;
+          textarea?.focus();
+          textarea?.setSelectionRange(
+            effectiveLocator.startOffset,
+            effectiveLocator.endOffset,
+          );
+          if (textarea) {
+            textarea.scrollTop = sourceScrollTop;
+          }
+        });
+      });
+    },
+    [activeArtifact, longDocumentAnalysis, rawText, sourceFocusLocatorViews],
+  );
+
+  useEffect(() => {
+    if (!document || stage !== "input" || parsePending) return;
+    const persistedFocus = parseAuthoringLongDocumentFocus(
+      document.uiState?.focusTarget,
+    );
+    if (!persistedFocus || sourceLocatorViews.length === 0) return;
+
+    const resolved = resolveAuthoringSourceLocatorView(
+      sourceFocusLocatorViews,
+      persistedFocus,
+    );
+    if (!resolved) return;
+    const nearestEntry = resolved.entry;
+    const restoredFocus: AuthoringLongDocumentFocusView = {
+      ...persistedFocus,
+      locatorId: nearestEntry.locatorId,
+      startOffset: nearestEntry.startOffset,
+      startLine: nearestEntry.startLine,
+      sourceScrollTop: !resolved.stale
+        ? persistedFocus.sourceScrollTop
+        : Math.max(0, (nearestEntry.startLine - 3) * 24),
+      ...(persistedFocus.focusLocatorId
+        ? { focusLocatorId: nearestEntry.locatorId }
+        : {}),
+    };
+    const restoredKey = serializeAuthoringLongDocumentFocus(restoredFocus);
+    if (restoredSourceFocusRef.current === restoredKey) return;
+    restoredSourceFocusRef.current = restoredKey;
+    setSelectedSourceLocatorId(nearestEntry.locatorId);
+
+    if (resolved.stale) {
+      setDocument((current) =>
+        current
+          ? {
+              ...current,
+              uiState: {
+                stage: "input",
+                ...(current.uiState?.selectedItemId
+                  ? { selectedItemId: current.uiState.selectedItemId }
+                  : {}),
+                focusTarget: restoredKey,
+              },
+            }
+          : current,
+      );
+      setSourceCorrectionReturnTarget((current) =>
+        current
+          ? {
+              ...current,
+              locatorId: nearestEntry.locatorId,
+              ...(current.focusLocatorId
+                ? { focusLocatorId: nearestEntry.locatorId }
+                : {}),
+              sourceScrollTop: restoredFocus.sourceScrollTop,
+            }
+          : current,
+      );
+      setStatusMessage(
+        `저장한 원문 위치가 바뀌어 가까운 ${nearestEntry.startLine}행으로 이동했습니다.`,
+      );
+    }
+
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        const textarea = sourceTextAreaRef.current;
+        if (!textarea) return;
+        textarea.focus();
+        textarea.setSelectionRange(
+          nearestEntry.startOffset,
+          nearestEntry.endOffset,
+        );
+        textarea.scrollTop = restoredFocus.sourceScrollTop;
+      });
+    });
+  }, [document, parsePending, sourceFocusLocatorViews, stage]);
+
+  const returnFromSourceLocation = useCallback(() => {
+    const target = sourceCorrectionReturnTarget;
+    if (!target) return;
+    setSelectedArtifact(target.artifact);
+    setPendingResultFocusTarget(target);
+    setSourceCorrectionReturnTarget(null);
+    setDocument((current) => {
+      if (!current) return current;
+      const focus = parseAuthoringLongDocumentFocus(
+        current.uiState?.focusTarget,
+      );
+      if (!focus) {
+        return withUiState(current, "result", selectedItemId, title, ownership);
+      }
+      const persistentSelection: AuthoringLongDocumentFocusView = {
+        locatorId: focus.locatorId,
+        startOffset: focus.startOffset,
+        startLine: focus.startLine,
+        sourceScrollTop: focus.sourceScrollTop,
+      };
+      return withUiState(
+        current,
+        "result",
+        selectedItemId,
+        title,
+        ownership,
+        serializeAuthoringLongDocumentFocus(persistentSelection),
+      );
+    });
+    setStage("result");
+    setStatusMessage("보던 결과로 돌아왔습니다.");
+  }, [ownership, selectedItemId, sourceCorrectionReturnTarget, title]);
+
+  useEffect(() => {
+    if (stage !== "result" || !pendingResultFocusTarget) return;
+    let secondFrame = 0;
+    const firstFrame = window.requestAnimationFrame(() => {
+      secondFrame = window.requestAnimationFrame(() => {
+        const selector = resultSourceTargetSelector(
+          pendingResultFocusTarget.focusTestId,
+          pendingResultFocusTarget.focusLocatorId,
+        );
+        const exactTarget = selector
+          ? window.document.querySelector<HTMLElement>(selector)
+          : null;
+        const itemTarget = pendingResultFocusTarget.itemId
+          ? window.document.querySelector<HTMLElement>(
+              `[data-testid="ta-authoring-preview-source-edit"][data-item-id="${CSS.escape(pendingResultFocusTarget.itemId)}"]`,
+            )
+          : null;
+        const fallbackArtifact =
+          pendingResultFocusTarget.focusTestId ===
+          "ta-authoring-result-slot-source"
+            ? "sheet"
+            : pendingResultFocusTarget.artifact;
+        const artifactTarget = window.document.querySelector<HTMLElement>(
+          `[data-testid="ta-authoring-result-slot-${fallbackArtifact}"]`,
+        );
+        (itemTarget ?? exactTarget ?? artifactTarget)?.focus({
+          preventScroll: true,
+        });
+        setPendingResultFocusTarget(null);
+      });
+    });
+    return () => {
+      window.cancelAnimationFrame(firstFrame);
+      if (secondFrame) window.cancelAnimationFrame(secondFrame);
+    };
+  }, [pendingResultFocusTarget, stage]);
 
   const focusItemInSource = useCallback(
     (itemId: string) => {
@@ -1707,24 +2157,50 @@ export function TextAuthoringWorkspace({
     setSelectedArtifact(target.artifact);
     if (itemStillExists && target.itemId) setSelectedItemId(target.itemId);
     setSourceCorrectionReturnTarget(null);
+    setPendingResultFocusTarget(target);
+    setDocument((current) => {
+      if (!current) return current;
+      const focus = parseAuthoringLongDocumentFocus(
+        current.uiState?.focusTarget,
+      );
+      if (!focus) {
+        return withUiState(
+          current,
+          "result",
+          itemStillExists && target.itemId ? target.itemId : selectedItemId,
+          title,
+          ownership,
+        );
+      }
+      const persistentSelection: AuthoringLongDocumentFocusView = {
+        locatorId: focus.locatorId,
+        startOffset: focus.startOffset,
+        startLine: focus.startLine,
+        sourceScrollTop: focus.sourceScrollTop,
+      };
+      return withUiState(
+        current,
+        "result",
+        itemStillExists && target.itemId ? target.itemId : selectedItemId,
+        title,
+        ownership,
+        serializeAuthoringLongDocumentFocus(persistentSelection),
+      );
+    });
     setStage("result");
     setStatusMessage(
       "원문 수정이 결과에 반영되었습니다. 보던 결과로 돌아왔습니다.",
     );
-    window.requestAnimationFrame(() => {
-      window.requestAnimationFrame(() => {
-        const itemTarget = target.itemId
-          ? window.document.querySelector<HTMLElement>(
-              `[data-testid="ta-authoring-preview-source-edit"][data-item-id="${CSS.escape(target.itemId)}"]`,
-            )
-          : null;
-        const artifactTarget = window.document.querySelector<HTMLElement>(
-          `[data-testid="ta-authoring-result-slot-${target.artifact}"]`,
-        );
-        (itemTarget ?? artifactTarget)?.focus();
-      });
-    });
-  }, [document, parsePending, rawText, sourceCorrectionReturnTarget, stage]);
+  }, [
+    document,
+    ownership,
+    parsePending,
+    rawText,
+    selectedItemId,
+    sourceCorrectionReturnTarget,
+    stage,
+    title,
+  ]);
 
   const goToResult = useCallback(() => {
     if (!document) return;
@@ -1974,11 +2450,15 @@ export function TextAuthoringWorkspace({
       setItemReviewOpen(false);
       setSourceUpdateOpen(false);
       setSourceComparisonOpen(false);
+      setDocumentNavigatorOpen(false);
       setResetConfirmOpen(false);
       setPendingExample(null);
       setPendingWorkspaceExit(null);
       setPendingCorrection(null);
       setSourceCorrectionReturnTarget(null);
+      setPendingResultFocusTarget(null);
+      setSelectedSourceLocatorId(null);
+      restoredSourceFocusRef.current = null;
       setStatusMessage(
         productMode ? "새 콘텐츠 작성을 시작합니다." : "새 Flow를 시작합니다.",
       );
@@ -2030,15 +2510,40 @@ export function TextAuthoringWorkspace({
         nextDocument.uiState?.selectedItemId ??
         nextDocument.parseResult.canonical.items[0]?.itemId ??
         null;
+      const persistedLongDocumentFocus = parseAuthoringLongDocumentFocus(
+        nextDocument.uiState?.focusTarget,
+      );
       const normalizedDocument = withUiState(
         nextDocument,
         resolvedStage,
         resolvedSelectedItemId,
         resolvedTitle,
         nextDocument.ownership,
+        nextDocument.uiState?.focusTarget,
       );
 
-      setSourceCorrectionReturnTarget(null);
+      setSelectedSourceLocatorId(persistedLongDocumentFocus?.locatorId ?? null);
+      restoredSourceFocusRef.current = null;
+      setSourceCorrectionReturnTarget(
+        persistedLongDocumentFocus?.returnArtifact
+          ? {
+              artifact: persistedLongDocumentFocus.returnArtifact,
+              ...(persistedLongDocumentFocus.focusTestId
+                ? { focusTestId: persistedLongDocumentFocus.focusTestId }
+                : {}),
+              ...(persistedLongDocumentFocus.focusLocatorId
+                ? {
+                    focusLocatorId: persistedLongDocumentFocus.focusLocatorId,
+                  }
+                : {}),
+              locatorId: persistedLongDocumentFocus.locatorId,
+              sourceScrollTop: persistedLongDocumentFocus.sourceScrollTop,
+              sourceTextBeforeEdit: nextDocument.rawText,
+            }
+          : null,
+      );
+      setPendingResultFocusTarget(null);
+      setDocumentNavigatorOpen(false);
       setActiveDraftId(options.draftId ?? nextDocument.documentId);
       setDocument(normalizedDocument);
       setTitle(resolvedTitle);
@@ -2539,11 +3044,12 @@ export function TextAuthoringWorkspace({
         kind === "raw"
           ? rawText
           : kind === "plain_text"
-            ? serializeAuthoringPlainText(
+            ? (textResultValues?.structured_plain_text ??
+              serializeAuthoringPlainText(
                 projection.title,
                 projection.artifacts.memo.rows,
                 sourceOnlyTextRows,
-              )
+              ))
             : exportTextAuthoringMarkdown(document);
       try {
         await navigator.clipboard.writeText(content);
@@ -2551,7 +3057,9 @@ export function TextAuthoringWorkspace({
           kind === "raw"
             ? "원문을 바꾸지 않고 그대로 복사했습니다."
             : kind === "plain_text"
-              ? "항목과 상세를 정리한 TXT를 복사했습니다."
+              ? rawPreservedTextResult
+                ? "원문을 보존한 TXT를 복사했습니다."
+                : "항목과 상세를 정리한 TXT를 복사했습니다."
               : "v2 문법으로 정리한 Markdown을 복사했습니다.",
         );
       } catch {
@@ -2559,7 +3067,14 @@ export function TextAuthoringWorkspace({
         throw new Error("clipboard_write_failed");
       }
     },
-    [document, projection, rawText, sourceOnlyTextRows],
+    [
+      document,
+      projection,
+      rawPreservedTextResult,
+      rawText,
+      sourceOnlyTextRows,
+      textResultValues?.structured_plain_text,
+    ],
   );
 
   const copySourceSnapshot = useCallback(async () => {
@@ -2933,7 +3448,17 @@ export function TextAuthoringWorkspace({
                     sourceError={sourceError}
                     scrollContainerRef={inputPaneScrollRef}
                     sourceTextAreaRef={sourceTextAreaRef}
+                    showDocumentNavigator={showDocumentNavigator}
+                    sourceLocationReturnLabel={
+                      sourceCorrectionReturnTarget
+                        ? "보던 결과로 돌아가기"
+                        : undefined
+                    }
                     productMode={productMode}
+                    onOpenDocumentNavigator={() =>
+                      setDocumentNavigatorOpen(true)
+                    }
+                    onReturnToSourceLocation={returnFromSourceLocation}
                     onTitleChange={(value) => {
                       ensureActiveDraft();
                       if (productMode) {
@@ -3028,6 +3553,7 @@ export function TextAuthoringWorkspace({
                     sourceSnapshotText={document?.sourceState?.active.rawText}
                     onOpenSourceComparison={() => setSourceComparisonOpen(true)}
                     textResultValues={textResultValues}
+                    rawPreservedTextResult={rawPreservedTextResult}
                     canAlignSourceOrder={calendarSourceAlignment.differs}
                     hasUndo={Boolean(
                       document?.revision.operations.some(
@@ -3048,6 +3574,35 @@ export function TextAuthoringWorkspace({
                     onCopySourceSnapshot={copySourceSnapshot}
                     onCopyStructuredText={() => copyTextResult("plain_text")}
                     onCopyStructuredMarkdown={() => copyTextResult("markdown")}
+                    tableLoss={tableLossView}
+                    onLocateTableLoss={(locator, origin) =>
+                      focusSourceLocator(locator, {
+                        returnToResult: true,
+                        focusTestId:
+                          origin === "slot"
+                            ? "ta-authoring-result-slot-source"
+                            : "ta-authoring-table-loss-source",
+                      })
+                    }
+                    onLocateLongDocumentSource={(locator, origin) =>
+                      focusSourceLocator(locator, {
+                        returnToResult: true,
+                        focusTestId:
+                          origin === "row"
+                            ? "ta-authoring-long-table-row-source"
+                            : "ta-authoring-long-table-source",
+                      })
+                    }
+                    onDownloadRawText={() => {
+                      downloadFile(
+                        `${safeFileName(draftName || title)}-원문.txt`,
+                        rawText,
+                        "text/plain;charset=utf-8",
+                      );
+                      setStatusMessage(
+                        "원문을 바꾸지 않고 TXT 파일로 만들었습니다.",
+                      );
+                    }}
                     onUndo={() =>
                       performOperation(
                         { type: "undo" },
@@ -3251,6 +3806,24 @@ export function TextAuthoringWorkspace({
           }
           productMode={productMode}
         />
+      </AuthoringDialog>
+
+      <AuthoringDialog
+        open={documentNavigatorOpen}
+        testId="ta-authoring-document-navigator-dialog"
+        title="문서 찾기"
+        description="제목·표·그대로 보존한 내용을 한곳에서 찾아 원문의 정확한 위치로 이동합니다."
+        variant="drawer"
+        initialFocusSelector='[data-testid="ta-authoring-document-search"]'
+        onClose={() => setDocumentNavigatorOpen(false)}
+      >
+        <div className="max-h-[calc(88dvh-8rem)] overflow-y-auto">
+          <LongDocumentNavigator
+            entries={sourceLocatorViews}
+            initialLocatorId={selectedSourceLocatorId ?? undefined}
+            onLocate={(locator) => focusSourceLocator(locator)}
+          />
+        </div>
       </AuthoringDialog>
 
       <AuthoringDialog

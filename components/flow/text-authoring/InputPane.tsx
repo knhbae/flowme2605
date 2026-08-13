@@ -154,10 +154,14 @@ export function InputPane({
   sourceError,
   scrollContainerRef,
   sourceTextAreaRef,
+  showDocumentNavigator = false,
+  sourceLocationReturnLabel,
   onTitleChange,
   onSourceChange,
   onRawTextChange,
   onOwnershipChange,
+  onOpenDocumentNavigator,
+  onReturnToSourceLocation,
   productMode = false,
 }: {
   title: string;
@@ -172,10 +176,14 @@ export function InputPane({
   sourceError?: { id: string; message: string } | null;
   scrollContainerRef: Ref<HTMLDivElement>;
   sourceTextAreaRef: Ref<HTMLTextAreaElement>;
+  showDocumentNavigator?: boolean;
+  sourceLocationReturnLabel?: string;
   onTitleChange: (value: string) => void;
   onSourceChange: (value: string) => void;
   onRawTextChange: (value: string) => void;
   onOwnershipChange: (value: AuthoringOwnership) => void;
+  onOpenDocumentNavigator?: () => void;
+  onReturnToSourceLocation?: () => void;
   productMode?: boolean;
 }) {
   return (
@@ -227,6 +235,16 @@ export function InputPane({
             >
               <SyntaxGuideContent />
             </InlineHelp>
+            {showDocumentNavigator && onOpenDocumentNavigator ? (
+              <button
+                type="button"
+                data-testid="ta-authoring-document-navigator-open"
+                className="inline-flex min-h-11 items-center rounded-[var(--flowme-radius-control)] px-2.5 py-1.5 text-xs font-semibold text-[var(--flowme-action)] transition hover:bg-[var(--flowme-action-soft)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                onClick={onOpenDocumentNavigator}
+              >
+                문서 찾기
+              </button>
+            ) : null}
             {parsePending || liveAppliedItemCount !== null ? (
               <span
                 aria-live="polite"
@@ -282,6 +300,16 @@ export function InputPane({
               저장했거나 직접 고친 결과는 자동으로 덮어쓰지 않습니다. 아래
               버튼에서 원문 변경을 확인해 주세요.
             </span>
+          ) : null}
+          {sourceLocationReturnLabel && onReturnToSourceLocation ? (
+            <button
+              type="button"
+              data-testid="ta-authoring-source-location-return"
+              className="mt-2 inline-flex min-h-11 items-center rounded-[var(--flowme-radius-control)] px-2.5 py-1.5 text-xs font-semibold text-[var(--flowme-action)] transition hover:bg-[var(--flowme-action-soft)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+              onClick={onReturnToSourceLocation}
+            >
+              {sourceLocationReturnLabel}
+            </button>
           ) : null}
         </div>
 

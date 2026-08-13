@@ -28,6 +28,10 @@ import {
 import { TEXT_AUTHORING_CANONICAL_LABELS } from "./authoring-grammar";
 import { deriveAuthoringLifecycleStatus } from "./review-policy";
 import {
+  analyzeAuthoringLongDocument,
+  withAuthoringLongDocumentTrace,
+} from "./long-document-table";
+import {
   applyAuthoringSourceUpdate,
   rejectAuthoringSourceUpdate,
   resolveAuthoringSourceUpdateChange,
@@ -88,6 +92,15 @@ function sharesSourceRows(
   );
 }
 
+function longDocumentTableOption(document: TextAuthoringDocument) {
+  if (document.parseResult.longDocument?.fallbackActive) {
+    return { longDocumentTable: { enabled: false as const } };
+  }
+  return document.features?.longDocumentTable !== undefined
+    ? { longDocumentTable: { enabled: document.features.longDocumentTable } }
+    : {};
+}
+
 function restoreItemToParsedSource(
   document: TextAuthoringDocument,
   itemId: string,
@@ -97,6 +110,7 @@ function restoreItemToParsedSource(
   if (!selected || selected.sourceRowIds.length === 0) return false;
 
   const baseline = createTextAuthoringDocument(document.rawText, {
+    ...longDocumentTableOption(document),
     documentId: document.documentId,
     fixtureVersion: document.parseResult.fixtureVersion,
     ownership: document.ownership,
@@ -1607,6 +1621,7 @@ function syncWorkingTextFromInput(
   }
 
   const candidate = createTextAuthoringDocument(operation.rawText, {
+    ...longDocumentTableOption(document),
     documentId: document.documentId,
     fixtureVersion: document.parseResult.fixtureVersion,
     ownership: document.ownership,
@@ -1958,6 +1973,7 @@ function syncItemToWorkingText(
   if (nextRawText === document.rawText) return false;
 
   const candidate = createTextAuthoringDocument(nextRawText, {
+    ...longDocumentTableOption(document),
     documentId: document.documentId,
     fixtureVersion: document.parseResult.fixtureVersion,
     ownership: document.ownership,
@@ -2830,6 +2846,18 @@ function finishRevision(
   document: TextAuthoringDocument,
   revision: DraftRevision,
 ): TextAuthoringDocument {
+  if (
+    document.parseResult.longDocument?.featureEnabled ||
+    document.parseResult.longDocument?.fallbackActive
+  ) {
+    document.parseResult.longDocument = withAuthoringLongDocumentTrace(
+      document.parseResult.longDocument,
+      {
+        documentId: document.documentId,
+        workingRevisionId: revision.revisionId,
+      },
+    );
+  }
   document.parseResult.artifactEligibility = deriveAuthoringArtifactEligibility(
     document.parseResult.canonical,
   );
@@ -2935,6 +2963,21 @@ export function applyAuthoringOperation(
     revisionActor === "system" ? document.ownership : revisionActor;
   const decidedAt = options.now ?? new Date().toISOString();
   if (!applyMutation(document, operation, actorLane, decidedAt)) return source;
+  if (document.features?.longDocumentTable !== undefined) {
+    document.parseResult.longDocument = analyzeAuthoringLongDocument(
+      document.rawText,
+      {
+        enabled: document.parseResult.longDocument?.fallbackActive
+          ? false
+          : document.features.longDocumentTable,
+        safeFallbackWhenDisabled:
+          document.parseResult.longDocument?.fallbackActive === true ||
+          !document.features.longDocumentTable,
+        documentId: document.documentId,
+        workingRevisionId: document.revision.revisionId,
+      },
+    );
+  }
   const revision = newRevision(document, operation, before, {
     ...options,
     actorLane: revisionActor,

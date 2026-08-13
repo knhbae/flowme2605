@@ -40,7 +40,7 @@ Only **Active Gate** carries the current execution backlog or Owner checkpoint. 
 
 ### Active Gate
 
-- [2026-08-11 Text Authoring exception coverage v5](./2026-08-11-flowme-text-authoring-exception-coverage-v5/00-development-goal-ko.md) is being refreshed on latest `origin/main` as the foundation of an approved stacked Draft PR series. Closed PR [#175](https://github.com/knhbae/flowme2605/pull/175), GitHub run [`31466654229`](https://github.com/knhbae/flowme2605/actions/runs/31466654229), and its Vercel Preview remain historical evidence; the refreshed branches require fresh checks. Merge, production deployment, P35 integration, and observed-user validation remain outside this gate.
+- [2026-08-13 Text Authoring P1-C 장문·표 보존](./2026-08-13-flowme-text-authoring-p1-c-longform/00-development-goal-ko.md) — owner 승인 `TA-P1-C-LONGFORM-20260813-01`로 완료한 local commit `0e02a83664b5c8fb22b6d8619ab7fb2366784d0b`를 최신 `origin/main` 기반 Draft PR [#184](https://github.com/knhbae/flowme2605/pull/184) 위 stacked branch에 재적용하고 fresh checks를 수행한다. Raw block·CSV/TSV/Markdown 표의 byte/shape 보존, 결과별 fail-close, source locator, TXT fallback만 포함하며 P1의 다른 track, P2, merge, production deploy, P35와 관찰 사용자 검증은 이 gate 밖이다.
 
 ### Approved Local Promotion (Unpublished)
 

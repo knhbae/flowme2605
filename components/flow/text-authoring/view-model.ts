@@ -1,6 +1,7 @@
 import type {
   AuthoringArtifactKind,
   AuthoringArtifactPreflight,
+  AuthoringArtifactRow,
 } from "@/lib/flow/text-authoring/artifact-projection";
 import type { TextAuthoringSaveReceipt } from "@/lib/flow/text-authoring/receipt";
 import type { TextAuthoringDraftRecord } from "@/lib/flow/text-authoring/storage";
@@ -11,6 +12,13 @@ import type {
   CanonicalAuthoringItem,
   TextAuthoringDocument,
   UnresolvedAuthoringIssue,
+} from "@/lib/flow/text-authoring/types";
+import type {
+  AuthoringLongDocumentAnalysis,
+  AuthoringLongDocumentBlock,
+  AuthoringLongDocumentLoss,
+  AuthoringLongDocumentTable,
+  AuthoringSourceLocator,
 } from "@/lib/flow/text-authoring/types";
 import {
   allowedAuthoringIssueOutcomes,
@@ -23,12 +31,454 @@ import type {
   AuthoringDraftStatus,
   AuthoringDraftView,
   AuthoringIssueView,
+  AuthoringLongDocumentFocusView,
   AuthoringItemView,
   AuthoringPreflightView,
   AuthoringReceiptView,
   AuthoringRole,
+  AuthoringSourceLocatorView,
   AuthoringStepView,
+  AuthoringTableLossView,
 } from "./authoring-ui-types";
+
+const LONG_DOCUMENT_FOCUS_PREFIX = "p1c-source-locator:";
+
+const EXACT_RAW_BLOCK_KINDS = new Set<AuthoringLongDocumentBlock["kind"]>([
+  "blockquote",
+  "code_fence",
+  "html",
+  "comment",
+]);
+
+/**
+ * Keep the established structured TXT serializer for ordinary Flow items.
+ * Exact source bytes are reserved for P1-C shapes whose layout or table
+ * boundaries would otherwise be lost.
+ */
+export function shouldUseRawPreservedTextResult(
+  document: TextAuthoringDocument | null | undefined,
+  { runtimeFallbackActive = false }: { runtimeFallbackActive?: boolean } = {},
+): boolean {
+  const analysis = document?.parseResult.longDocument;
+  if (!analysis) return false;
+
+  if (
+    runtimeFallbackActive ||
+    analysis.fallbackActive ||
+    analysis.status === "txt-only" ||
+    analysis.budget.exceeded.length > 0
+  ) {
+    return true;
+  }
+
+  if (
+    analysis.status === "partially-structured" ||
+    analysis.status === "result-specific-blocked" ||
+    analysis.tables.length > 0 ||
+    analysis.tableLossManifest.detectedFormats.length > 0 ||
+    analysis.lossManifest.some((loss) =>
+      ["table-loss-risk", "table-invalid", "too-large"].includes(loss.reason),
+    )
+  ) {
+    return true;
+  }
+
+  const hasExactRawBlock = analysis.blocks.some((block) =>
+    EXACT_RAW_BLOCK_KINDS.has(block.kind),
+  );
+  const hasIndentedRawLine = analysis.blocks.some((block) =>
+    block.rawText
+      .split(/\r?\n/u)
+      .some((line) => /^(?:\t| {2,})(?!-\s)/u.test(line)),
+  );
+  const hasUnstructuredSource = document.parseResult.canonical.sourceRows.some(
+    (row) => row.rowType === "unsupported",
+  );
+  const hasLongOrMixedRawSource =
+    hasUnstructuredSource &&
+    (analysis.budget.lineCount >= 20 ||
+      analysis.blocks.length >= 3 ||
+      document.parseResult.canonical.items.length > 0);
+
+  return hasExactRawBlock || hasIndentedRawLine || hasLongOrMixedRawSource;
+}
+
+/**
+ * Preserve the source as an exact prefix, then expose only derived recurrence
+ * occurrences that are not otherwise visible in the authored bytes. Ordinary
+ * non-recurring rows are intentionally excluded from the appendix.
+ */
+export function composeRawPreservedTextResult(
+  rawText: string,
+  memoRows: AuthoringArtifactRow[],
+): string {
+  const seenOccurrenceIds = new Set<string>();
+  const occurrenceRows = memoRows.filter((row) => {
+    if (!row.occurrenceId || seenOccurrenceIds.has(row.occurrenceId)) {
+      return false;
+    }
+    seenOccurrenceIds.add(row.occurrenceId);
+    return true;
+  });
+  if (occurrenceRows.length === 0) return rawText;
+
+  const newline = rawText.includes("\r\n") ? "\r\n" : "\n";
+  const appendixLines = occurrenceRows.map((row, index) => {
+    const occurrenceIndex = row.occurrenceIndex ?? index + 1;
+    const schedule = [row.date, row.time].filter(Boolean).join(" ");
+    return `- ${row.title} · ${occurrenceIndex}회차${
+      schedule ? ` · ${schedule}` : ""
+    }`;
+  });
+  const separator = rawText.endsWith(newline)
+    ? newline
+    : `${newline}${newline}`;
+  return `${rawText}${separator}[반복 회차]${newline}${appendixLines.join(
+    newline,
+  )}${newline}`;
+}
+
+export function serializeAuthoringLongDocumentFocus(
+  focus: AuthoringLongDocumentFocusView,
+): string {
+  return `${LONG_DOCUMENT_FOCUS_PREFIX}${encodeURIComponent(JSON.stringify(focus))}`;
+}
+
+export function parseAuthoringLongDocumentFocus(
+  value: string | null | undefined,
+): AuthoringLongDocumentFocusView | null {
+  if (!value?.startsWith(LONG_DOCUMENT_FOCUS_PREFIX)) return null;
+  try {
+    const parsed = JSON.parse(
+      decodeURIComponent(value.slice(LONG_DOCUMENT_FOCUS_PREFIX.length)),
+    ) as Partial<AuthoringLongDocumentFocusView>;
+    if (
+      typeof parsed.locatorId !== "string" ||
+      !parsed.locatorId ||
+      !Number.isInteger(parsed.startOffset) ||
+      (parsed.startOffset ?? -1) < 0 ||
+      !Number.isInteger(parsed.startLine) ||
+      (parsed.startLine ?? 0) < 1 ||
+      typeof parsed.sourceScrollTop !== "number" ||
+      !Number.isFinite(parsed.sourceScrollTop) ||
+      parsed.sourceScrollTop < 0
+    ) {
+      return null;
+    }
+    const returnArtifact = parsed.returnArtifact;
+    if (
+      returnArtifact !== undefined &&
+      !["calendar", "todo", "sheet", "memo"].includes(returnArtifact)
+    ) {
+      return null;
+    }
+    return {
+      locatorId: parsed.locatorId,
+      startOffset: parsed.startOffset!,
+      startLine: parsed.startLine!,
+      sourceScrollTop: parsed.sourceScrollTop,
+      ...(returnArtifact ? { returnArtifact } : {}),
+      ...(typeof parsed.focusTestId === "string" && parsed.focusTestId
+        ? { focusTestId: parsed.focusTestId }
+        : {}),
+      ...(typeof parsed.focusLocatorId === "string" && parsed.focusLocatorId
+        ? { focusLocatorId: parsed.focusLocatorId }
+        : {}),
+    };
+  } catch {
+    return null;
+  }
+}
+
+export function resolveAuthoringSourceLocatorView(
+  entries: AuthoringSourceLocatorView[],
+  focus: Pick<
+    AuthoringLongDocumentFocusView,
+    "locatorId" | "startLine" | "startOffset"
+  >,
+): { entry: AuthoringSourceLocatorView; stale: boolean } | null {
+  if (entries.length === 0) return null;
+  const exact = entries.find((entry) => entry.locatorId === focus.locatorId);
+  if (exact) return { entry: exact, stale: false };
+  const entry = entries.reduce((nearest, candidate) => {
+    const nearestLineDistance = Math.abs(nearest.startLine - focus.startLine);
+    const candidateLineDistance = Math.abs(
+      candidate.startLine - focus.startLine,
+    );
+    if (candidateLineDistance !== nearestLineDistance) {
+      return candidateLineDistance < nearestLineDistance ? candidate : nearest;
+    }
+    return Math.abs(candidate.startOffset - focus.startOffset) <
+      Math.abs(nearest.startOffset - focus.startOffset)
+      ? candidate
+      : nearest;
+  });
+  return { entry, stale: true };
+}
+
+export function buildAuthoringTableRowLocatorViews(
+  analysis: AuthoringLongDocumentAnalysis | null | undefined,
+): AuthoringSourceLocatorView[] {
+  if (!analysis?.featureEnabled) return [];
+  return analysis.tables.flatMap((table) =>
+    table.sourceRows
+      .filter((row) => row.kind === "body")
+      .map((row, index) => ({
+        locatorId: `table-row:${row.rowId}:${row.locator.startOffset}:${row.locator.endOffset}`,
+        kind: "table" as const,
+        label: `표 ${index + 1}행`,
+        detail: row.values.filter(Boolean).slice(0, 3).join(" · "),
+        status:
+          table.state === "table-safe"
+            ? ("safe" as const)
+            : ("possible-loss" as const),
+        startOffset: row.locator.startOffset,
+        endOffset: row.locator.endOffset,
+        startLine: row.locator.startLine,
+        endLine: row.locator.endLine,
+      })),
+  );
+}
+
+export function buildAuthoringLongDocumentLossLocatorViews(
+  analysis: AuthoringLongDocumentAnalysis | null | undefined,
+): AuthoringSourceLocatorView[] {
+  if (!analysis?.featureEnabled) return [];
+  return analysis.lossManifest.flatMap((loss) => {
+    if (!loss.locator) return [];
+    return [
+      {
+        locatorId: locatorId(loss.lossId, loss.locator),
+        kind: "table" as const,
+        label: "확인할 표",
+        detail: loss.message,
+        status: loss.blocked
+          ? ("blocked" as const)
+          : ("possible-loss" as const),
+        startOffset: loss.locator.startOffset,
+        endOffset: loss.locator.endOffset,
+        startLine: loss.locator.startLine,
+        endLine: loss.locator.endLine,
+      },
+    ];
+  });
+}
+
+const LONG_DOCUMENT_BLOCK_LABEL: Record<
+  AuthoringLongDocumentBlock["kind"],
+  string
+> = {
+  blank: "빈 줄",
+  prose: "원문 문장",
+  blockquote: "인용문",
+  code_fence: "코드 원문",
+  html: "HTML 원문",
+  comment: "주석",
+  table: "원문 표",
+};
+
+function locatorId(prefix: string, locator: AuthoringSourceLocator): string {
+  return `${prefix}:${locator.startOffset}:${locator.endOffset}:${locator.rawHash}`;
+}
+
+function lineDetail(locator: AuthoringSourceLocator): string {
+  return locator.startLine === locator.endLine
+    ? `${locator.startLine}행`
+    : `${locator.startLine}~${locator.endLine}행`;
+}
+
+function sourceLocatorView(
+  block: AuthoringLongDocumentBlock,
+): AuthoringSourceLocatorView {
+  const trimmed = block.rawText.trim();
+  const headingMatch = /^(#{1,6})\s+(.+)$/u.exec(trimmed);
+  return {
+    locatorId: locatorId(block.blockId, block.locator),
+    kind: headingMatch
+      ? "heading"
+      : block.kind === "code_fence"
+        ? "code"
+        : block.kind === "blank"
+          ? "prose"
+          : block.kind,
+    label: headingMatch?.[2] ?? LONG_DOCUMENT_BLOCK_LABEL[block.kind],
+    detail:
+      block.kind === "blank"
+        ? "문단 사이 간격을 보존했습니다."
+        : headingMatch
+          ? "문서 제목"
+          : trimmed.replace(/\s+/gu, " ").slice(0, 88),
+    status:
+      block.kind === "table"
+        ? "safe"
+        : block.kind === "prose"
+          ? "safe"
+          : "preserved",
+    startOffset: block.locator.startOffset,
+    endOffset: block.locator.endOffset,
+    startLine: block.locator.startLine,
+    endLine: block.locator.endLine,
+  };
+}
+
+function tableLocatorView(
+  table: AuthoringLongDocumentTable,
+): AuthoringSourceLocatorView {
+  const state =
+    table.state === "table-safe"
+      ? "safe"
+      : table.state === "table-loss-risk"
+        ? "possible-loss"
+        : "blocked";
+  return {
+    locatorId: locatorId(table.tableId, table.locator),
+    kind: "table",
+    label: table.headers.filter(Boolean).slice(0, 3).join(" · ") || "원문 표",
+    detail: `${lineDetail(table.locator)} · ${table.rows.length}개 행`,
+    status: state,
+    startOffset: table.locator.startOffset,
+    endOffset: table.locator.endOffset,
+    startLine: table.locator.startLine,
+    endLine: table.locator.endLine,
+  };
+}
+
+function issueLocatorView(
+  issue: AuthoringIssueView,
+  index: number,
+  document: TextAuthoringDocument,
+): AuthoringSourceLocatorView | null {
+  const sourceRows = document.parseResult.canonical.sourceRows.filter((row) =>
+    issue.sourceRowIds.includes(row.sourceRowId),
+  );
+  if (sourceRows.length === 0) return null;
+  const startOffset = Math.min(
+    ...sourceRows.map((row) => row.sourceRange.startOffset),
+  );
+  const endOffset = Math.max(
+    ...sourceRows.map((row) => row.sourceRange.endOffset),
+  );
+  const startLine = Math.min(
+    ...sourceRows.map((row) => row.sourceRange.startLine),
+  );
+  const endLine = Math.max(...sourceRows.map((row) => row.sourceRange.endLine));
+  return {
+    locatorId: `issue:${issue.issueId}:${startOffset}:${endOffset}:${index}`,
+    kind: "issue",
+    label: "확인할 원문",
+    detail: issue.reason,
+    status: issue.blocking ? "blocked" : "possible-loss",
+    startOffset,
+    endOffset,
+    startLine,
+    endLine,
+  };
+}
+
+export function buildAuthoringSourceLocatorViews(
+  document: TextAuthoringDocument | null,
+  issues: AuthoringIssueView[],
+): AuthoringSourceLocatorView[] {
+  if (!document) return [];
+  const analysis = document.parseResult.longDocument;
+  if (!analysis) {
+    return issues
+      .map((issue, index) => issueLocatorView(issue, index, document))
+      .filter((entry): entry is AuthoringSourceLocatorView => Boolean(entry));
+  }
+  const entries = analysis.blocks
+    .filter((block) => block.kind !== "blank")
+    .map(sourceLocatorView);
+  for (const table of analysis.tables) {
+    const replacement = tableLocatorView(table);
+    const blockIndex = entries.findIndex(
+      (entry) =>
+        entry.kind === "table" &&
+        entry.startOffset === replacement.startOffset &&
+        entry.endOffset === replacement.endOffset,
+    );
+    if (blockIndex >= 0) entries[blockIndex] = replacement;
+    else entries.push(replacement);
+  }
+  entries.push(
+    ...issues
+      .map((issue, index) => issueLocatorView(issue, index, document))
+      .filter((entry): entry is AuthoringSourceLocatorView => Boolean(entry)),
+  );
+  return entries.sort(
+    (left, right) =>
+      left.startOffset - right.startOffset || (left.kind === "issue" ? 1 : -1),
+  );
+}
+
+function tableLosses(analysis: AuthoringLongDocumentAnalysis) {
+  return analysis.lossManifest.filter((loss) => loss.result === "sheet");
+}
+
+export function buildAuthoringTableLossView(
+  analysis: AuthoringLongDocumentAnalysis | null | undefined,
+): AuthoringTableLossView | null {
+  if (!analysis) return null;
+  const losses = tableLosses(analysis);
+  const unsafeTables = analysis.tables.filter(
+    (table) => table.state !== "table-safe",
+  );
+  const budgetBlocked = analysis.budget.exceeded.length > 0;
+  if (losses.length === 0 && unsafeTables.length === 0 && !budgetBlocked)
+    return null;
+  const safeTables = analysis.tables.filter(
+    (table) => table.state === "table-safe",
+  );
+  const firstLoss: AuthoringLongDocumentLoss | undefined = losses[0];
+  const firstUnsafe = unsafeTables[0];
+  const firstLocator = firstLoss?.locator
+    ? {
+        locatorId: locatorId(firstLoss.lossId, firstLoss.locator),
+        kind: "table" as const,
+        label: "확인할 표",
+        detail: firstLoss.message,
+        status: firstLoss.blocked
+          ? ("blocked" as const)
+          : ("possible-loss" as const),
+        startOffset: firstLoss.locator.startOffset,
+        endOffset: firstLoss.locator.endOffset,
+        startLine: firstLoss.locator.startLine,
+        endLine: firstLoss.locator.endLine,
+      }
+    : firstUnsafe
+      ? tableLocatorView(firstUnsafe)
+      : undefined;
+  const sourceRowCount = analysis.tables.reduce(
+    (count, table) => count + table.rows.length,
+    0,
+  );
+  const structuredRowCount = safeTables.reduce(
+    (count, table) => count + table.rows.length,
+    0,
+  );
+  const structuredCellCount = safeTables.reduce(
+    (count, table) => count + table.logicalCellCount,
+    0,
+  );
+  const blocked = budgetBlocked || losses.some((loss) => loss.blocked);
+  return {
+    state: budgetBlocked ? "txt-only" : blocked ? "blocked" : "partial",
+    summary: budgetBlocked
+      ? "문서가 안전하게 처리할 범위를 넘어 결과를 만들지 않았습니다. 원문과 TXT는 그대로 남아 있습니다."
+      : blocked
+        ? "표 구조를 안전하게 확인하지 못해 표·Excel을 만들지 않았습니다. 원문과 TXT는 그대로 남아 있습니다."
+        : "표 일부는 원문 그대로 보존했습니다. 안전하게 읽은 행만 표시합니다.",
+    detail:
+      firstLoss?.message ??
+      firstUnsafe?.issues[0] ??
+      "원문을 줄이거나 표 구조를 확인한 뒤 다시 시도해 주세요.",
+    sourceRowCount,
+    structuredRowCount,
+    sourceCellCount: analysis.budget.logicalCellCount,
+    structuredCellCount,
+    ...(firstLocator ? { firstLocator } : {}),
+  };
+}
 
 const INPUT_KIND_LABEL: Record<AuthoringInputKind, string> = {
   plain_text: "일반 메모",

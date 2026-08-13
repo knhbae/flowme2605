@@ -34,6 +34,7 @@ import {
   resolveAuthoringScheduleDate,
 } from './recurrence';
 import {
+  cloneAuthoringValue,
   normalizeAuthoringText,
   stableAuthoringId,
 } from './identity';
@@ -46,6 +47,11 @@ import {
   deriveAuthoringLifecycleStatus,
 } from './review-policy';
 import { ensureAuthoringSourceState } from './source-update';
+import {
+  analyzeAuthoringLongDocument,
+  withAuthoringLongDocumentTrace,
+} from './long-document-table';
+import { resolveTextAuthoringP1LongDocumentTableGate } from './text-authoring-feature-flags';
 
 type SourceRowType = AuthoringSourceRow['rowType'];
 
@@ -1499,6 +1505,31 @@ function addUnsupportedLine(
   );
 }
 
+function preserveRawTableLine(
+  state: MutableParseState,
+  line: ParsedLine,
+): void {
+  const unit = sourceUnit(
+    state,
+    line.raw,
+    rangeForLine(line),
+    'table_row',
+    'flow',
+    'high',
+    0,
+    state.currentItemBlockId ?? state.currentStepBlockId,
+  );
+  addMemo(
+    state,
+    { type: 'flow', id: state.canonical.flow.flowId },
+    'source_detail',
+    line.raw,
+    [unit.row.sourceRowId],
+  );
+  state.canonical.flow.sourceRowIds.push(unit.row.sourceRowId);
+  addMapping(state, unit, 'flow', state.canonical.flow.flowId);
+}
+
 function addAuthoringSubcheck(
   state: MutableParseState,
   line: ParsedLine,
@@ -2047,8 +2078,69 @@ export function parseTextAuthoringDocument(
     canonical,
     explicitFlowTitle: false,
   };
-  const lines = splitSourceLines(rawText);
+  const longDocumentGate = resolveTextAuthoringP1LongDocumentTableGate({
+    enabled: options.longDocumentTable?.enabled,
+  });
+  const longDocument = analyzeAuthoringLongDocument(rawText, {
+    enabled: longDocumentGate.enabled,
+    safeFallbackWhenDisabled:
+      longDocumentGate.configured && !longDocumentGate.enabled,
+    limits: options.longDocumentTable?.limits,
+    documentId,
+  });
+  const safeDisabledFallbackRequested =
+    longDocumentGate.configured && !longDocumentGate.enabled;
+  if (
+    longDocument.status === 'txt-only' &&
+    (longDocument.featureEnabled ||
+      (safeDisabledFallbackRequested &&
+        longDocument.budget.exceeded.length > 0))
+  ) {
+    if (safeDisabledFallbackRequested) longDocument.fallbackActive = true;
+    const artifactEligibility = deriveAuthoringArtifactEligibility(canonical);
+    return {
+      parseResultId: stableAuthoringId(
+        'parse-result',
+        documentId,
+        fixtureVersion,
+        TEXT_AUTHORING_PARSER_VERSION,
+        normalized,
+      ),
+      parserVersion: TEXT_AUTHORING_PARSER_VERSION,
+      fixtureVersion,
+      blocks: [],
+      mappings: [],
+      issues: [],
+      canonical,
+      artifactEligibility,
+      longDocument,
+    };
+  }
   const inputKinds = detectInputKinds(rawText);
+  const safeDisabledTableFallback =
+    safeDisabledFallbackRequested && inputKinds.includes('table');
+  if (safeDisabledTableFallback) {
+    longDocument.fallbackActive = true;
+    const artifactEligibility = deriveAuthoringArtifactEligibility(canonical);
+    return {
+      parseResultId: stableAuthoringId(
+        'parse-result',
+        documentId,
+        fixtureVersion,
+        TEXT_AUTHORING_PARSER_VERSION,
+        normalized,
+      ),
+      parserVersion: TEXT_AUTHORING_PARSER_VERSION,
+      fixtureVersion,
+      blocks: [],
+      mappings: [],
+      issues: [],
+      canonical,
+      artifactEligibility,
+      longDocument,
+    };
+  }
+  const lines = splitSourceLines(rawText);
   const structuredInput = (
     inputKinds.includes('markdown') || inputKinds.includes('table')
   );
@@ -2059,6 +2151,17 @@ export function parseTextAuthoringDocument(
     const line = lines[index];
     const trimmed = line.raw.trim();
     if (!trimmed) continue;
+
+    const preservedTable = longDocument.featureEnabled
+      ? longDocument.tables.find((table) => (
+          line.startOffset >= table.locator.startOffset &&
+          line.startOffset < table.locator.endOffset
+        ))
+      : undefined;
+    if (preservedTable) {
+      preserveRawTableLine(state, line);
+      continue;
+    }
 
     if (/^<!--\s*flowme:[\s\S]*-->\s*$/u.test(trimmed)) {
       addFlowmeMetadataLine(state, line);
@@ -2297,6 +2400,7 @@ export function parseTextAuthoringDocument(
     issues: state.issues,
     canonical,
     artifactEligibility,
+    longDocument,
   };
 }
 
@@ -2330,6 +2434,15 @@ export function createTextAuthoringDocument(
     actorLane: options.ownership ?? 'personal',
     timestamp: now,
   };
+  if (
+    parseResult.longDocument?.featureEnabled ||
+    parseResult.longDocument?.fallbackActive
+  ) {
+    parseResult.longDocument = withAuthoringLongDocumentTrace(
+      parseResult.longDocument,
+      { documentId, workingRevisionId: revision.revisionId },
+    );
+  }
   const inputKinds = detectInputKinds(rawText);
   const document: TextAuthoringDocument = {
     schemaVersion: TEXT_AUTHORING_SCHEMA_VERSION,
@@ -2348,6 +2461,11 @@ export function createTextAuthoringDocument(
     revision,
     revisionHistory: [revision],
     lifecycleStatus: 'draft',
+    ...(options.longDocumentTable?.enabled !== undefined
+      ? { features: { longDocumentTable: options.longDocumentTable.enabled } }
+      : parseResult.longDocument?.featureEnabled
+        ? { features: { longDocumentTable: true } }
+        : {}),
     createdAt: now,
     updatedAt: now,
     uiState: {
@@ -2364,4 +2482,36 @@ export function createTextAuthoringDocument(
   );
   document.lifecycleStatus = deriveAuthoringLifecycleStatus(document, 'draft');
   return document;
+}
+
+/**
+ * Derives a runtime-only view for a persisted P1-C document. A disabled gate
+ * removes structured table projections without mutating the stored document,
+ * raw bytes, feature record, or revision history.
+ */
+export function buildTextAuthoringLongDocumentRuntimeView(
+  document: TextAuthoringDocument,
+  enabled: boolean,
+): TextAuthoringDocument {
+  const runtime = createTextAuthoringDocument(document.rawText, {
+    documentId: document.documentId,
+    fixtureVersion: document.parseResult.fixtureVersion,
+    ownership: document.ownership,
+    title: document.title,
+    ...(document.sourceTitle ? { sourceTitle: document.sourceTitle } : {}),
+    ...(document.sourceUrl ? { sourceUrl: document.sourceUrl } : {}),
+    longDocumentTable: { enabled },
+    now: document.createdAt,
+  });
+  if (!enabled && runtime.parseResult.longDocument) {
+    runtime.parseResult.longDocument.fallbackActive = true;
+  }
+  runtime.revision = cloneAuthoringValue(document.revision);
+  runtime.revisionHistory = cloneAuthoringValue(document.revisionHistory);
+  runtime.createdAt = document.createdAt;
+  runtime.updatedAt = document.updatedAt;
+  runtime.lifecycleStatus = document.lifecycleStatus;
+  runtime.features = cloneAuthoringValue(document.features);
+  runtime.uiState = cloneAuthoringValue(document.uiState);
+  return runtime;
 }

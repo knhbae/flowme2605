@@ -17,6 +17,7 @@ import type {
 } from "@/lib/flow/text-authoring/artifact-projection";
 import type {
   AuthoringReviewGate,
+  AuthoringLongDocumentTable,
   AuthoringSourceState,
 } from "@/lib/flow/text-authoring/types";
 
@@ -29,7 +30,11 @@ import {
   type AuthoringCalendarMonth,
 } from "./calendar-preview-model";
 import { InlineHelp } from "./InlineHelp";
-import type { AuthoringIssueView } from "./authoring-ui-types";
+import type {
+  AuthoringIssueView,
+  AuthoringSourceLocatorView,
+  AuthoringTableLossView,
+} from "./authoring-ui-types";
 
 const ARTIFACT_LABEL: Record<AuthoringArtifactKind, string> = {
   calendar: "캘린더",
@@ -81,6 +86,9 @@ const BLOCKING_LOSS_REASONS = new Set<AuthoringArtifactLossReason>([
   "invalid_url",
   "invalid_recurrence",
   "compatibility_loss",
+  "long_document_table_loss_risk",
+  "long_document_table_invalid",
+  "long_document_too_large",
 ]);
 
 export type AuthoringResultSlotState =
@@ -167,7 +175,10 @@ function unavailableReason(
   projection: AuthoringArtifactProjection,
 ): string {
   const view = projection.artifacts[artifact];
-  const firstLoss = view.losses.find((loss) => loss.message.trim());
+  const firstLoss =
+    view.losses.find(
+      (loss) => BLOCKING_LOSS_REASONS.has(loss.reason) && loss.message.trim(),
+    ) ?? view.losses.find((loss) => loss.message.trim());
   if (firstLoss) return firstLoss.message;
   if (artifact === "calendar") {
     return "날짜가 있는 할 일이 없습니다.";
@@ -850,6 +861,168 @@ function SheetCellValue({ value }: { value: string }) {
   );
 }
 
+function longTableLocatorView(
+  table: AuthoringLongDocumentTable,
+): AuthoringSourceLocatorView {
+  return {
+    locatorId: `table:${table.tableId}:${table.locator.startOffset}:${table.locator.endOffset}`,
+    kind: "table",
+    label: table.headers.filter(Boolean).slice(0, 3).join(" · ") || "원문 표",
+    detail: `${table.rows.length}개 행`,
+    status:
+      table.state === "table-safe"
+        ? "safe"
+        : table.state === "table-loss-risk"
+          ? "possible-loss"
+          : "blocked",
+    startOffset: table.locator.startOffset,
+    endOffset: table.locator.endOffset,
+    startLine: table.locator.startLine,
+    endLine: table.locator.endLine,
+  };
+}
+
+function longTableRowLocatorView(
+  table: AuthoringLongDocumentTable,
+  bodyRowIndex: number,
+): AuthoringSourceLocatorView | null {
+  const row = table.sourceRows.filter((sourceRow) => sourceRow.kind === "body")[
+    bodyRowIndex
+  ];
+  if (!row) return null;
+  return {
+    locatorId: `table-row:${row.rowId}:${row.locator.startOffset}:${row.locator.endOffset}`,
+    kind: "table",
+    label: `표 ${bodyRowIndex + 1}행`,
+    detail: row.values.filter(Boolean).slice(0, 3).join(" · "),
+    status: table.state === "table-safe" ? "safe" : "possible-loss",
+    startOffset: row.locator.startOffset,
+    endOffset: row.locator.endOffset,
+    startLine: row.locator.startLine,
+    endLine: row.locator.endLine,
+  };
+}
+
+function LongDocumentTablePreview({
+  table,
+  onLocateSource,
+}: {
+  table: AuthoringLongDocumentTable;
+  onLocateSource?: (
+    locator: AuthoringSourceLocatorView,
+    origin?: "table" | "row",
+  ) => void;
+}) {
+  const bodySourceRows = table.sourceRows.filter(
+    (sourceRow) => sourceRow.kind === "body",
+  );
+  return (
+    <section
+      data-testid="ta-authoring-long-table"
+      data-table-id={table.tableId}
+      data-table-state={table.state}
+      className="border-t border-[var(--flowme-border)]"
+    >
+      <header className="flex flex-wrap items-center justify-between gap-2 px-3 py-3">
+        <div>
+          <h3 className="text-sm font-semibold text-[var(--flowme-text)]">
+            원문 표
+          </h3>
+        </div>
+        {onLocateSource ? (
+          <button
+            type="button"
+            data-testid="ta-authoring-long-table-source"
+            data-locator-id={longTableLocatorView(table).locatorId}
+            className={FLOW_UI_SECONDARY_ACTION_CLASS}
+            onClick={() => onLocateSource(longTableLocatorView(table), "table")}
+          >
+            원문에서 보기
+          </button>
+        ) : null}
+      </header>
+      <div
+        className="max-w-full overflow-x-auto border-t border-[var(--flowme-border)]"
+        tabIndex={0}
+        aria-label={`원문 표, ${table.rows.length}개 행, ${table.headers.length}개 열`}
+      >
+        <table className="w-full min-w-[640px] table-auto border-collapse text-left text-xs">
+          <thead className="bg-[var(--flowme-surface-subtle)] text-[var(--flowme-text-tertiary)]">
+            <tr>
+              <th scope="col" className="w-10 px-2 py-2 font-semibold">
+                행
+              </th>
+              {table.headers.map((header, columnIndex) => (
+                <th
+                  key={`${table.tableId}-header-${columnIndex}`}
+                  scope="col"
+                  className="min-w-32 border-l border-[var(--flowme-border)] px-3 py-2 font-semibold"
+                >
+                  {header || `열 ${columnIndex + 1}`}
+                </th>
+              ))}
+              <th scope="col" className="w-20 px-2 py-2">
+                <span className="sr-only">원문 위치</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {table.rows.map((row, rowIndex) => {
+              const sourceLocator = longTableRowLocatorView(table, rowIndex);
+              return (
+                <tr
+                  key={`${table.tableId}-row-${rowIndex}`}
+                  className="border-t border-[var(--flowme-border)] align-top"
+                >
+                  <th
+                    scope="row"
+                    className="px-2 py-3 font-semibold text-[var(--flowme-text-tertiary)]"
+                  >
+                    {rowIndex + 1}
+                  </th>
+                  {table.headers.map((_, columnIndex) => {
+                    const sourceCell =
+                      bodySourceRows[rowIndex]?.cells[columnIndex];
+                    return (
+                      <td
+                        key={`${table.tableId}-cell-${rowIndex}-${columnIndex}`}
+                        data-testid="ta-authoring-long-table-cell"
+                        data-row-index={rowIndex + 1}
+                        data-column-index={columnIndex + 1}
+                        data-source-start-offset={
+                          sourceCell?.locator.startOffset
+                        }
+                        data-source-end-offset={sourceCell?.locator.endOffset}
+                        className="max-w-72 border-l border-[var(--flowme-border)] px-3 py-3 text-[var(--flowme-text-secondary)]"
+                      >
+                        <SheetCellValue value={row[columnIndex] ?? ""} />
+                      </td>
+                    );
+                  })}
+                  <td className="px-2 py-2">
+                    {sourceLocator && onLocateSource ? (
+                      <button
+                        type="button"
+                        data-testid="ta-authoring-long-table-row-source"
+                        data-locator-id={sourceLocator.locatorId}
+                        data-row-index={rowIndex + 1}
+                        className={FLOW_UI_SECONDARY_ACTION_CLASS}
+                        onClick={() => onLocateSource(sourceLocator, "row")}
+                      >
+                        {rowIndex + 1}행 원문
+                      </button>
+                    ) : null}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+}
+
 function SheetPreview({
   view,
   rows,
@@ -857,6 +1030,7 @@ function SheetPreview({
   onEditItem,
   onEditSourceItem,
   productMode,
+  onLocateLongDocumentSource,
 }: {
   view: AuthoringArtifactView;
   rows: AuthoringArtifactRow[];
@@ -864,7 +1038,12 @@ function SheetPreview({
   onEditItem: (itemId: string) => void;
   onEditSourceItem: (itemId: string) => void;
   productMode: boolean;
+  onLocateLongDocumentSource?: (
+    locator: AuthoringSourceLocatorView,
+    origin?: "table" | "row",
+  ) => void;
 }) {
+  const longDocumentTables = view.longDocumentTables ?? [];
   const columns = view.sheetColumns ?? [];
   const groups = groupAuthoringRowsByItem(rows);
   const canonicalRows = productMode
@@ -962,22 +1141,31 @@ function SheetPreview({
       data-testid={PREVIEW_TEST_ID.sheet}
       className="border-t border-[var(--flowme-border)]"
     >
-      {productMode ? (
+      {productMode && longDocumentTables.length === 0 ? (
         <p className="px-3 py-3 text-xs leading-5 text-[var(--flowme-text-secondary)]">
           원문 항목의 공통 정보를 비교하는 표입니다. 셀은 원문에서 수정합니다.
         </p>
       ) : null}
-      <div
-        className="max-w-full overflow-x-auto border-t border-[var(--flowme-border)]"
-        tabIndex={0}
-        aria-label={`${productMode ? "항목 구조 표" : "표 미리보기"}, ${columns.length}개 열`}
-      >
-        <table className="w-full min-w-[640px] table-auto border-collapse text-left text-xs">
-          {tableHead}
-          {renderRows(canonicalRows)}
-        </table>
-      </div>
-      {occurrenceRows.length > 0 ? (
+      {longDocumentTables.map((table) => (
+        <LongDocumentTablePreview
+          key={table.tableId}
+          table={table}
+          onLocateSource={onLocateLongDocumentSource}
+        />
+      ))}
+      {longDocumentTables.length === 0 ? (
+        <div
+          className="max-w-full overflow-x-auto border-t border-[var(--flowme-border)]"
+          tabIndex={0}
+          aria-label={`${productMode ? "항목 구조 표" : "표 미리보기"}, ${columns.length}개 열`}
+        >
+          <table className="w-full min-w-[640px] table-auto border-collapse text-left text-xs">
+            {tableHead}
+            {renderRows(canonicalRows)}
+          </table>
+        </div>
+      ) : null}
+      {longDocumentTables.length === 0 && occurrenceRows.length > 0 ? (
         <details className="border-t border-[var(--flowme-border)]">
           <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 px-3 text-xs font-semibold text-[var(--flowme-text-secondary)] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]">
             <span>반복 회차 보기</span>
@@ -1006,6 +1194,7 @@ function AuthoringProjectionPreview({
   onEditItem,
   onEditSourceItem,
   productMode,
+  onLocateLongDocumentSource,
 }: {
   artifact: AuthoringArtifactKind;
   view: AuthoringArtifactView;
@@ -1013,6 +1202,10 @@ function AuthoringProjectionPreview({
   onEditItem: (itemId: string) => void;
   onEditSourceItem: (itemId: string) => void;
   productMode: boolean;
+  onLocateLongDocumentSource?: (
+    locator: AuthoringSourceLocatorView,
+    origin?: "table" | "row",
+  ) => void;
 }) {
   const recurrenceRowsAreAlreadyBounded = view.recurrenceSummaries.length > 0;
   const previewRowLimit = recurrenceRowsAreAlreadyBounded
@@ -1041,6 +1234,7 @@ function AuthoringProjectionPreview({
         onEditItem={onEditItem}
         onEditSourceItem={onEditSourceItem}
         productMode={productMode}
+        onLocateLongDocumentSource={onLocateLongDocumentSource}
       />
     ) : artifact === "todo" && productMode ? (
       <TodoPreview
@@ -1141,6 +1335,11 @@ export function ResultPane({
   onCopySourceSnapshot,
   onCopyStructuredText,
   onCopyStructuredMarkdown,
+  tableLoss,
+  onLocateTableLoss,
+  onDownloadRawText,
+  onLocateLongDocumentSource,
+  rawPreservedTextResult = false,
   canAlignSourceOrder = false,
   onAlignSourceOrder,
   hasUndo = false,
@@ -1185,6 +1384,17 @@ export function ResultPane({
   onCopySourceSnapshot?: () => void | Promise<void>;
   onCopyStructuredText?: () => void | Promise<void>;
   onCopyStructuredMarkdown?: () => void | Promise<void>;
+  tableLoss?: AuthoringTableLossView | null;
+  onLocateTableLoss?: (
+    locator: AuthoringSourceLocatorView,
+    origin?: "summary" | "slot",
+  ) => void;
+  onDownloadRawText?: () => void;
+  onLocateLongDocumentSource?: (
+    locator: AuthoringSourceLocatorView,
+    origin?: "table" | "row",
+  ) => void;
+  rawPreservedTextResult?: boolean;
   canAlignSourceOrder?: boolean;
   onAlignSourceOrder?: () => void;
   hasUndo?: boolean;
@@ -1278,6 +1488,10 @@ export function ResultPane({
   );
   const needsAnchor = projection.artifacts.calendar.losses.some(
     (loss) => loss.reason === "relative_anchor_required",
+  );
+  const showRawFallback = Boolean(
+    tableLoss &&
+    (tableLoss.state === "blocked" || tableLoss.state === "txt-only"),
   );
   const outstandingReviewCount = reviewGates.filter(
     (gate) => gate.status === "required",
@@ -1572,7 +1786,6 @@ export function ResultPane({
                           : "cursor-not-allowed border-[var(--flowme-border)] bg-[var(--flowme-surface-subtle)] text-[var(--flowme-text-tertiary)]"
                   }`}
                   onFocus={() => setFocusedArtifact(artifact)}
-                  onBlur={() => setFocusedArtifact(null)}
                   onClick={() => {
                     if (
                       slot.state === "active" ||
@@ -1620,6 +1833,22 @@ export function ResultPane({
             >
               {describedSlot.reason ?? ARTIFACT_PURPOSE[describedArtifact]}
             </p>
+          ) : null}
+          {productMode &&
+          describedArtifact === "sheet" &&
+          selectedArtifact !== "sheet" &&
+          tableLoss?.firstLocator &&
+          onLocateTableLoss ? (
+            <button
+              type="button"
+              data-testid="ta-authoring-result-slot-source"
+              data-artifact="sheet"
+              data-locator-id={tableLoss.firstLocator.locatorId}
+              className={`${FLOW_UI_SECONDARY_ACTION_CLASS} mt-2`}
+              onClick={() => onLocateTableLoss(tableLoss.firstLocator!, "slot")}
+            >
+              원문 위치에서 확인
+            </button>
           ) : null}
           {productMode &&
           sourceSnapshotText &&
@@ -1715,6 +1944,71 @@ export function ResultPane({
           </p>
         ) : null}
 
+        {selectedArtifact === "sheet" && tableLoss ? (
+          <section
+            data-testid="ta-authoring-table-loss-summary"
+            className="mx-4 mt-4 rounded-[var(--flowme-radius-surface)] border border-[var(--flowme-warning)] bg-[var(--flowme-warning-soft)] p-3"
+            aria-labelledby="ta-authoring-table-loss-heading"
+          >
+            <h3
+              id="ta-authoring-table-loss-heading"
+              className="text-sm font-semibold text-[var(--flowme-warning-strong)]"
+            >
+              {tableLoss.state === "partial"
+                ? "표·Excel 일부 확인 필요"
+                : "표·Excel 결과를 만들지 않았습니다"}
+            </h3>
+            <p className="mt-1 text-xs leading-5 text-[var(--flowme-text-secondary)]">
+              {tableLoss.summary}
+            </p>
+            <details
+              data-testid="ta-authoring-table-loss-details"
+              className="mt-3 rounded-[var(--flowme-radius-control)] border border-[var(--flowme-warning)] bg-[var(--flowme-surface)]"
+            >
+              <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 px-3 py-2 text-xs font-semibold text-[var(--flowme-text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]">
+                <span>보존한 범위 확인</span>
+                <span aria-hidden="true">⌄</span>
+              </summary>
+              <div className="border-t border-[var(--flowme-warning)] px-3 py-3 text-xs leading-5 text-[var(--flowme-text-secondary)]">
+                <p>{tableLoss.detail}</p>
+                <dl className="mt-2 grid gap-1 sm:grid-cols-2">
+                  <div>
+                    <dt className="font-semibold text-[var(--flowme-text)]">
+                      원문 표
+                    </dt>
+                    <dd>
+                      {tableLoss.sourceRowCount}개 행 ·{" "}
+                      {tableLoss.sourceCellCount}개 셀
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="font-semibold text-[var(--flowme-text)]">
+                      안전하게 읽은 범위
+                    </dt>
+                    <dd>
+                      {tableLoss.structuredRowCount}개 행 ·{" "}
+                      {tableLoss.structuredCellCount}개 셀
+                    </dd>
+                  </div>
+                </dl>
+                {tableLoss.firstLocator && onLocateTableLoss ? (
+                  <button
+                    type="button"
+                    data-testid="ta-authoring-table-loss-source"
+                    data-locator-id={tableLoss.firstLocator.locatorId}
+                    className={`${FLOW_UI_SECONDARY_ACTION_CLASS} mt-3`}
+                    onClick={() =>
+                      onLocateTableLoss(tableLoss.firstLocator!, "summary")
+                    }
+                  >
+                    원문 위치에서 확인
+                  </button>
+                ) : null}
+              </div>
+            </details>
+          </section>
+        ) : null}
+
         {hasWorkingTextSyncUndo ? (
           <section
             data-testid="ta-authoring-working-text-sync-undo"
@@ -1804,11 +2098,18 @@ export function ResultPane({
                 {productMode ? (
                   <pre
                     data-testid="ta-authoring-structured-text-preview"
-                    aria-label="계층형 TXT 전체 내용"
+                    aria-label={
+                      rawPreservedTextResult
+                        ? "원문 보존 TXT 전체 내용"
+                        : "계층형 TXT 전체 내용"
+                    }
                     tabIndex={0}
                     className="mt-3 max-h-96 min-h-52 w-full overflow-auto whitespace-pre-wrap break-words rounded-[var(--flowme-radius-control)] border border-[var(--flowme-border)] bg-[var(--flowme-surface-subtle)] p-3 font-mono text-xs leading-6 text-[var(--flowme-text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                   >
-                    {textResultValues?.structured_plain_text || rawText || ""}
+                    {textResultValues?.structured_plain_text ||
+                      textResultValues?.raw ||
+                      rawText ||
+                      ""}
                   </pre>
                 ) : (
                   <textarea
@@ -1820,41 +2121,49 @@ export function ResultPane({
                     onFocus={(event) => event.currentTarget.select()}
                   />
                 )}
-                <div
-                  className={`mt-3 grid gap-2 ${
-                    productMode ? "" : "sm:grid-cols-2"
-                  }`}
-                >
-                  <button
-                    type="button"
-                    data-testid="ta-authoring-copy-structured-text"
-                    className={`${FLOW_UI_PRIMARY_ACTION_CLASS} w-full`}
-                    disabled={
-                      !textResultValues?.structured_plain_text &&
-                      !rawText &&
-                      !onCopyStructuredText
-                    }
-                    onClick={() =>
-                      copyTextResult({
-                        copy: onCopyStructuredText,
-                        value:
-                          textResultValues?.structured_plain_text ?? rawText,
-                        successMessage: "TXT 전체를 복사했습니다.",
-                      })
-                    }
+                {!productMode || !showRawFallback ? (
+                  <div
+                    className={`mt-3 grid gap-2 ${
+                      productMode ? "" : "sm:grid-cols-2"
+                    }`}
                   >
-                    {productMode ? "TXT 복사" : "TXT 전체 복사"}
-                  </button>
-                  {!productMode ? (
                     <button
                       type="button"
-                      className={FLOW_UI_SECONDARY_ACTION_CLASS}
-                      onClick={onOpenExport}
+                      data-testid="ta-authoring-copy-structured-text"
+                      className={`${FLOW_UI_PRIMARY_ACTION_CLASS} w-full`}
+                      disabled={
+                        !textResultValues?.structured_plain_text &&
+                        !rawText &&
+                        !onCopyStructuredText
+                      }
+                      onClick={() =>
+                        copyTextResult({
+                          copy: onCopyStructuredText,
+                          value:
+                            textResultValues?.structured_plain_text ?? rawText,
+                          successMessage: rawPreservedTextResult
+                            ? "원문을 보존한 TXT를 복사했습니다."
+                            : "TXT 전체를 복사했습니다.",
+                        })
+                      }
                     >
-                      TXT 파일 만들기
+                      {productMode
+                        ? rawPreservedTextResult
+                          ? "원문 보존 TXT 복사"
+                          : "TXT 복사"
+                        : "TXT 전체 복사"}
                     </button>
-                  ) : null}
-                </div>
+                    {!productMode ? (
+                      <button
+                        type="button"
+                        className={FLOW_UI_SECONDARY_ACTION_CLASS}
+                        onClick={onOpenExport}
+                      >
+                        TXT 파일 만들기
+                      </button>
+                    ) : null}
+                  </div>
+                ) : null}
               </article>
               {!productMode ? (
                 <details className="rounded-[var(--flowme-radius-control)] border border-[var(--flowme-border)]">
@@ -1929,6 +2238,42 @@ export function ResultPane({
                   {textCopyStatus}
                 </p>
               ) : null}
+              {showRawFallback ? (
+                <section
+                  className="rounded-[var(--flowme-radius-control)] border border-[var(--flowme-border)] bg-[var(--flowme-surface-subtle)] p-3"
+                  aria-label="원문 보존 파일"
+                >
+                  <p className="text-xs leading-5 text-[var(--flowme-text-secondary)]">
+                    표·Excel 결과가 제한되어도 현재 작업 원문은 바꾸거나 줄이지
+                    않았습니다.
+                  </p>
+                  <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                    <button
+                      type="button"
+                      data-testid="ta-authoring-raw-source-copy"
+                      className={FLOW_UI_SECONDARY_ACTION_CLASS}
+                      onClick={() =>
+                        copyTextResult({
+                          copy: onCopyRawText,
+                          value: textResultValues?.raw ?? rawText,
+                          successMessage: "원문을 그대로 복사했습니다.",
+                        })
+                      }
+                    >
+                      원문 그대로 복사
+                    </button>
+                    <button
+                      type="button"
+                      data-testid="ta-authoring-raw-source-download"
+                      className={FLOW_UI_SECONDARY_ACTION_CLASS}
+                      disabled={!onDownloadRawText}
+                      onClick={onDownloadRawText}
+                    >
+                      원문 TXT 받기
+                    </button>
+                  </div>
+                </section>
+              ) : null}
             </section>
           ) : null}
           {selectedArtifact === "memo" ? null : (
@@ -1939,6 +2284,7 @@ export function ResultPane({
               onEditItem={onEditItem}
               onEditSourceItem={onEditSourceItem}
               productMode={productMode}
+              onLocateLongDocumentSource={onLocateLongDocumentSource}
             />
           )}
         </div>
