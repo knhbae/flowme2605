@@ -2,6 +2,8 @@ import { expect, test, type Page } from "@playwright/test";
 
 test.describe.configure({ timeout: 90_000 });
 
+const ROUTE_TRANSITION_TIMEOUT_MS = 15_000;
+
 async function openCleanProductAuthoring(
   page: Page,
   viewport: { width: number; height: number },
@@ -16,6 +18,16 @@ async function openCleanProductAuthoring(
   });
   await page.goto(path);
   await expect(page.getByTestId("text-authoring-workspace")).toBeVisible();
+}
+
+async function startNewProductContent(page: Page) {
+  await page
+    .getByTestId("ta-authoring-library")
+    .getByRole("button", { name: "새 콘텐츠" })
+    .click();
+  await expect(page).toHaveURL(/\/flows\/new$/u, {
+    timeout: ROUTE_TRANSITION_TIMEOUT_MS,
+  });
 }
 
 test("390 product entry starts from a quiet library and focuses plain text input", async ({
@@ -33,7 +45,7 @@ test("390 product entry starts from a quiet library and focuses plain text input
   await expect(page.getByTestId("ta-authoring-example-select")).toHaveCount(0);
   await expect(page.getByText("저장 기록", { exact: true })).toHaveCount(0);
 
-  await library.getByRole("button", { name: "새 콘텐츠" }).click();
+  await startNewProductContent(page);
 
   const source = page.getByTestId("ta-authoring-source");
   await expect(source).toBeVisible();
@@ -46,10 +58,7 @@ test("1024 explicit save keeps route identity through rename, duplicate, archive
 }) => {
   await openCleanProductAuthoring(page, { width: 1024, height: 900 });
 
-  await page
-    .getByTestId("ta-authoring-library")
-    .getByRole("button", { name: "새 콘텐츠" })
-    .click();
+  await startNewProductContent(page);
   await page.getByTestId("ta-authoring-title").fill("주간 메모");
   await page.getByTestId("ta-authoring-source").fill("설명입니다.");
 

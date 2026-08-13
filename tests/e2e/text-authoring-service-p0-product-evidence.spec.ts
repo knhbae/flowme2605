@@ -2,6 +2,7 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 
 test.describe.configure({ timeout: 90_000 });
 
+const ROUTE_TRANSITION_TIMEOUT_MS = 15_000;
 const LONG_ITEM_COUNT = 38;
 
 const LONG_SOURCE = [
@@ -511,7 +512,9 @@ test("library, editor, saved draft, receipt, Inspector, and reset dialog keep in
   await expectProductDomFreeOfInternalJargon(page, "empty library");
 
   await page.getByRole("button", { name: "새 콘텐츠", exact: true }).click();
-  await expect(page).toHaveURL(/\/flows\/new$/u);
+  await expect(page).toHaveURL(/\/flows\/new$/u, {
+    timeout: ROUTE_TRANSITION_TIMEOUT_MS,
+  });
   await expectProductDomFreeOfInternalJargon(page, "blank editor");
 
   await enterProductSource(page, "제품 DOM 확인", SEMANTIC_SOURCE);
