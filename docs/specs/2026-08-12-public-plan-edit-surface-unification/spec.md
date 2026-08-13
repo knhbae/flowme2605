@@ -1,6 +1,6 @@
 # Public Plan/Item Edit Surface Unification
 
-**Status:** RELEASED THROUGH PR #178 / PRODUCTION SMOKE 38/38 / OBSERVED USERS 0
+**Status:** RELEASED THROUGH PR #178 / 2026-08-13 ITEM DATE PARITY VERIFIED / PUBLICATION AUTHORIZED / OBSERVED USERS 0
 
 **Owner decision:** 2026-08-12
 
@@ -35,6 +35,10 @@ focus 복귀에서 다르게 동작한다. 현재 콘텐츠에서 이 차이는 
 - Plan 편집의 필드 순서와 계층은 `계획 이름 -> 기준일/시작 기준 -> 항목
   포함·순서 -> Item 상세 -> 출처·주의`를 기본으로 한다. 출처가 실제로
   지원하지 않는 capability만 조건부로 숨기거나 read-only로 표시한다.
+- 실행 가능한 단일 계획 Map의 Item도 일반 Flow와 같은 `할 일 -> 메모 -> 날짜
+  -> 원문` 필드 순서를 사용한다. 개인 날짜는 기존 `fixed_date` override만 쓰고,
+  reset은 새 무날짜 schema를 만들지 않고 현재 anchor의 source projection으로
+  돌아간다. 원래 무날짜인 Item은 `날짜 없음`으로 돌아간다.
 - Plan과 Item의 surface, 필드 순서, 적용 위치, 취소 위치는 출처 이름 때문에
   달라지지 않는다. Map 전용 제목·항목 선택 sheet를 별도 제품 문법으로 남기지
   않는다.
@@ -99,6 +103,9 @@ focus 복귀에서 다르게 동작한다. 현재 콘텐츠에서 이 차이는 
 - Map ID·version·record schema·storage key migration 또는 Map 데이터 삭제
 - creator/source publish package 수정, version merge, account/cloud persistence
 - `choose_child`를 하나의 Map Plan으로 합치거나 `review_hold`를 실행 가능하게 변경
+- 원래 날짜가 있는 Map Item에 별도 unscheduled tombstone/schema를 추가하는 기능.
+  이 좁은 후속 범위에서 `날짜 없애기`는 원래 무날짜 Item에만 쓰고, 원래 날짜가
+  있는 Item은 `원래 날짜로` reset한다.
 - My Flow의 저장 후 편집 lifecycle 재설계
 - commit, push, PR, merge, deployment, and production smoke were outside the
   implementation scope and were executed later through the separately
@@ -123,7 +130,10 @@ focus 복귀에서 다르게 동작한다. 현재 콘텐츠에서 이 차이는 
 7. Flow Map의 Map/version/child/Item identity, snapshot/persistence/bridge,
    storage keys와 transaction owner가 변경되지 않으며 schema migration은 없다.
 8. 일반 Flow와 Flow Map 모두 최종 저장 후 reload에서 같은 identity로 적용된
-   제목·기준·포함·순서·Item 편집 결과를 복원한다.
+   제목·기준·포함·순서·Item 제목·메모·날짜 편집 결과를 복원한다. Map 날짜
+   reset은 source-undated/source-dated 기준값을 같은 Plan session에서 즉시 보여 준다.
+   아직 Plan에 반영하지 않은 새 기준일도 Item 행·편집·reset에 즉시 반영되며,
+   source date와 같은 기존 fixed-date pin은 무변경 시 보존하고 명시 reset 시 제거한다.
 9. 390/1024/1440에서 한 editor dialog, 도달 가능한 sticky actions, 48px touch
    targets, focus trap, 가로 overflow·clipping `0`을 검증한다.
 10. focused unit/component/E2E, persistence regression, production build와

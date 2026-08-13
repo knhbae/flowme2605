@@ -74,6 +74,20 @@ export function SourceBackedFlowMapSaveExperience({
     anchor: previewAnchor,
     q3CopyEnabled,
   });
+  const buildEditorProjection = (editorAnchor: string) => {
+    const editorResult = editorAnchor === previewAnchor
+      ? publicResult
+      : buildEffectiveFlowMapResult({
+          publishPackage,
+          mapSnapshot: snapshot,
+          anchor: editorAnchor,
+          q3CopyEnabled,
+        });
+    return {
+      editorRows: editorResult.editorRows,
+      sourceDateByItemId: editorResult.sourceDateByItemId,
+    };
+  };
   const selectedCandidate = publicResult.viewModel.all.find(
     (candidate) => candidate.destination === selectedDestination,
   );
@@ -177,7 +191,7 @@ export function SourceBackedFlowMapSaveExperience({
             q3CopyEnabled={q3CopyEnabled}
             visualSubtractionEnabled={visualSubtractionEnabled}
             onEffectiveSnapshotChange={setSnapshot}
-            editorRows={publicResult.editorRows}
+            buildEditorProjection={buildEditorProjection}
             savedFlows={savedFlows}
             setupInput={publicSurface.setupInput}
           />

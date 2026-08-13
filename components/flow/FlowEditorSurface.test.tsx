@@ -10,11 +10,26 @@ import {
 import {
   PublicFlowAdjustmentPanel,
   PublicFlowItemEditor,
+  type PublicFlowItemEditorDraft,
 } from './PublicFlowAdjustmentPanel';
 import {
   SavedFlowItemEditorSurface,
   SavedFlowPlanEditorSurface,
 } from './SavedFlowEditorSurface';
+
+function findElementByTestId(
+  node: React.ReactNode,
+  testId: string,
+): React.ReactElement<Record<string, unknown>> | undefined {
+  if (!React.isValidElement<Record<string, unknown>>(node)) return undefined;
+  if (node.props['data-testid'] === testId) return node;
+
+  for (const child of React.Children.toArray(node.props.children as React.ReactNode)) {
+    const match = findElementByTestId(child, testId);
+    if (match) return match;
+  }
+  return undefined;
+}
 
 test('editor commit labels reject completion wording reserved for execution state', () => {
   assert.equal(assertFlowEditorCommitLabel('\uC800\uC7A5'), '\uC800\uC7A5');
@@ -276,6 +291,103 @@ test('public Item field capabilities keep schema metadata aligned with rendered 
   assert.doesNotMatch(markup, /public-flow-item-editor-detail-input/u);
   assert.doesNotMatch(markup, /public-flow-item-editor-date-(?:input|clear)/u);
   assert.doesNotMatch(markup, /data-editor-field="item-(?:detail|date)"/u);
+});
+
+test('public Item date action keeps ordinary clear copy and exposes Map reset for a changed value or an existing pin', () => {
+  const baseProps = {
+    onChange: () => undefined,
+    onSave: () => undefined,
+    onClose: () => undefined,
+  };
+  const ordinaryMarkup = renderToStaticMarkup(
+    <PublicFlowItemEditor
+      {...baseProps}
+      draft={{ itemId: 'ordinary', title: '일반 할 일', detail: '', date: '2031-08-15' }}
+    />,
+  );
+  const unchangedMapMarkup = renderToStaticMarkup(
+    <PublicFlowItemEditor
+      {...baseProps}
+      draft={{ itemId: 'map-unchanged', title: 'Map 할 일', detail: '', date: '2031-08-15' }}
+      dateResetValue="2031-08-15"
+      dateResetLabel="원래 날짜로 되돌리기"
+    />,
+  );
+  const changedMapMarkup = renderToStaticMarkup(
+    <PublicFlowItemEditor
+      {...baseProps}
+      draft={{ itemId: 'map-changed', title: 'Map 할 일', detail: '', date: '2031-08-20' }}
+      dateResetValue="2031-08-15"
+      dateResetLabel="원래 날짜로 되돌리기"
+    />,
+  );
+  const sourceEqualPinnedMapMarkup = renderToStaticMarkup(
+    <PublicFlowItemEditor
+      {...baseProps}
+      draft={{ itemId: 'map-pinned', title: 'Map pinned Item', detail: '', date: '2031-08-15' }}
+      dateResetValue="2031-08-15"
+      dateResetLabel="원래 날짜로 되돌리기"
+      dateResetAvailable
+    />,
+  );
+  const unchangedUndatedMapMarkup = renderToStaticMarkup(
+    <PublicFlowItemEditor
+      {...baseProps}
+      draft={{ itemId: 'map-undated', title: 'Map 날짜 없음', detail: '', date: '' }}
+      dateResetValue=""
+      dateResetLabel="원래대로 되돌리기"
+    />,
+  );
+
+  assert.match(ordinaryMarkup, />날짜 없애기</u);
+  assert.doesNotMatch(unchangedMapMarkup, /public-flow-item-editor-date-clear/u);
+  assert.match(changedMapMarkup, />원래 날짜로 되돌리기</u);
+  assert.match(sourceEqualPinnedMapMarkup, />원래 날짜로 되돌리기</u);
+  assert.doesNotMatch(unchangedUndatedMapMarkup, /public-flow-item-editor-date-clear/u);
+});
+
+test('public Item date input records an explicit Map reset intent while ordinary input still clears', () => {
+  let ordinaryDate: string | undefined;
+  const ordinaryEditor = PublicFlowItemEditor({
+    draft: { itemId: 'ordinary', title: '일반 할 일', detail: '', date: '2031-08-20' },
+    onChange: (nextDraft) => { ordinaryDate = nextDraft.date; },
+    onSave: () => undefined,
+    onClose: () => undefined,
+  });
+  const ordinaryInput = findElementByTestId(
+    ordinaryEditor,
+    'public-flow-item-editor-date-input',
+  );
+  assert.ok(ordinaryInput);
+  (ordinaryInput.props.onChange as (event: { target: { value: string } }) => void)({
+    target: { value: '' },
+  });
+  assert.equal(ordinaryDate, '');
+
+  let mapDraft: PublicFlowItemEditorDraft | undefined;
+  const mapEditor = PublicFlowItemEditor({
+    draft: { itemId: 'map', title: 'Map 할 일', detail: '', date: '2031-08-20' },
+    dateResetValue: '2031-08-15',
+    dateResetLabel: '원래 날짜로 되돌리기',
+    onChange: (nextDraft) => { mapDraft = nextDraft; },
+    onSave: () => undefined,
+    onClose: () => undefined,
+  });
+  const mapInput = findElementByTestId(mapEditor, 'public-flow-item-editor-date-input');
+  const mapReset = findElementByTestId(mapEditor, 'public-flow-item-editor-date-clear');
+  assert.ok(mapInput);
+  assert.ok(mapReset);
+
+  (mapInput.props.onChange as (event: { target: { value: string } }) => void)({
+    target: { value: '' },
+  });
+  assert.equal(mapDraft?.date, '2031-08-15');
+  assert.equal(mapDraft?.dateResetRequested, true);
+
+  mapDraft = undefined;
+  (mapReset.props.onClick as () => void)();
+  assert.equal(mapDraft?.date, '2031-08-15');
+  assert.equal(mapDraft?.dateResetRequested, true);
 });
 
 test('approved Item editors expose only title date and one raw memo while warnings stay behind !', () => {

@@ -1,6 +1,6 @@
 # Tasks
 
-**Status:** RELEASED THROUGH PR #178 / PRODUCTION SMOKE PASS
+**Status:** RELEASED THROUGH PR #178 / 2026-08-13 ITEM DATE PARITY VERIFIED / PUBLICATION AUTHORIZED
 
 ## Active
 
@@ -14,6 +14,10 @@
 - [x] `PP-08` Add unit/component coverage for shared surface, mode gates, no-op apply, and origin-safe persistence.
 - [x] `PP-09` Add save/reload, excluded-value, unknown-field, byte, and identity regression coverage.
 - [x] `PP-10` Pass final affected browser, docs, and owned closeout gates.
+- [x] `PP-11` Reuse the shared Item date field for executable single-plan Maps,
+  preserve source/fixed-date intent, and verify reset/save/reload parity without migration.
+- [x] `PP-12` Reproject Item dates from the in-session Plan anchor and distinguish
+  a semantic no-op from an explicit reset of a source-equal fixed-date pin.
 
 ## Required invariants
 
@@ -23,7 +27,8 @@
 - [x] No editor or adjustment CTA for `review_hold`.
 - [x] No Map editor on `choose_child`; edit begins only after entering child `/f`.
 - [x] One dirty-discard and focus-return contract across both editable origins.
-- [x] No unsupported Map date or cross-child reorder control.
+- [x] Map exposes only the existing lossless fixed-date and reset-to-source contract;
+  no synthetic unscheduled schema or cross-child reorder control is introduced.
 - [x] Excluded Item private values and raw unknown fields survive final save/reload.
 
 ## Publication boundary
@@ -32,3 +37,6 @@
 - [x] Merge and Production are complete through PR #178 merge `908ee849beb15cb10331b72d7894167a61458b18`; canonical smoke passed `38/38`.
 - [x] Post-merge `main` run `31597763288` core and Playwright jobs passed.
 - [ ] Observed-user validation remains `0` until real sessions are recorded.
+- [x] Publication of the 2026-08-13 Item date parity follow-up is authorized;
+  commit, PR, merge, deployment, and Production smoke remain independently
+  verifiable external states rather than consequences of this checkbox.

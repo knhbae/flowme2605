@@ -31,7 +31,7 @@ import { buildPostSaveHref } from '@/lib/flow/post-save-receipt';
 import { setFlowItemPersonalExclusion } from '@/lib/flow/flow-item-state';
 import { recordCanonicalFlowWrite } from '@/lib/flow/canonical-flow-storage';
 import { formatKoreanShortDate } from '@/lib/flow/date';
-import type { FlowExperienceProjectionRow } from '@/lib/flow/flow-experience-projection';
+import type { EffectiveFlowMapResult } from '@/lib/flow/effective-flow-map-result';
 import {
   getFlowMapSaveWriteLockName,
   withStorageWriteLock,
@@ -74,7 +74,10 @@ type SourceBackedFlowMapSaveButtonProps = {
   q3CopyEnabled?: boolean;
   visualSubtractionEnabled?: boolean;
   onEffectiveSnapshotChange: (snapshot: EffectiveFlowMapSnapshot) => void;
-  editorRows: FlowExperienceProjectionRow[];
+  buildEditorProjection: (anchor: string) => Pick<
+    EffectiveFlowMapResult,
+    'editorRows' | 'sourceDateByItemId'
+  >;
   savedFlows: SourceBackedFlowMapSavedFlow[];
   setupInput?: {
     label: string;
@@ -102,6 +105,31 @@ type SaveFailure = {
 };
 
 type FlowMapSaveBaselineState = 'loading' | 'ready' | 'failed';
+
+export function buildPublicFlowMapItemPersonalization(options: {
+  canonicalTitle?: string;
+  currentPersonalization?: EffectiveFlowMapItemPersonalization;
+  itemDraft: PublicFlowItemEditorDraft;
+  sourceDate: string;
+}): EffectiveFlowMapItemPersonalization {
+  const title = options.itemDraft.title.trim();
+  const detail = options.itemDraft.detail.trim();
+  const requestedDate = options.itemDraft.date.trim();
+  const currentDate = options.currentPersonalization?.date?.trim();
+  const date = options.itemDraft.dateResetRequested
+    ? undefined
+    : requestedDate && requestedDate === currentDate
+    ? currentDate
+    : requestedDate && requestedDate !== options.sourceDate
+      ? requestedDate
+      : undefined;
+
+  return {
+    ...(title && title !== options.canonicalTitle ? { title } : {}),
+    ...(detail ? { detail } : {}),
+    ...(date ? { date } : {}),
+  };
+}
 
 function getStoredPersistenceItemIds(value: unknown): string[] {
   if (!value || typeof value !== 'object') return [];
@@ -149,7 +177,7 @@ export function SourceBackedFlowMapSaveButton({
   q3CopyEnabled = true,
   visualSubtractionEnabled = true,
   onEffectiveSnapshotChange,
-  editorRows,
+  buildEditorProjection,
   savedFlows,
   setupInput,
 }: SourceBackedFlowMapSaveButtonProps) {
@@ -191,16 +219,14 @@ export function SourceBackedFlowMapSaveButton({
         const canonicalRow = effectiveSnapshot.canonicalRows.find(
           (row) => row.itemId === itemDraft.itemId,
         );
-        const nextPersonalization: EffectiveFlowMapItemPersonalization = {
-          ...(itemDraft.title.trim() && itemDraft.title.trim() !== canonicalRow?.title
-            ? { title: itemDraft.title.trim() }
-            : {}),
-          ...(itemDraft.detail.trim() ? { detail: itemDraft.detail.trim() } : {}),
-          // Public Flow Map Item dates are not yet an editable capability.
-          // Preserve an existing private override without materializing the
-          // source-derived date that is shown read-only in the Plan list.
-          ...(currentPersonalization?.date ? { date: currentPersonalization.date } : {}),
-        };
+        const sourceDate = buildEditorProjection(parentDraft.anchor)
+          .sourceDateByItemId[itemDraft.itemId] ?? '';
+        const nextPersonalization = buildPublicFlowMapItemPersonalization({
+          canonicalTitle: canonicalRow?.title,
+          currentPersonalization,
+          itemDraft,
+          sourceDate,
+        });
         const itemPersonalizations = { ...parentDraft.itemPersonalizations };
         if (Object.keys(nextPersonalization).length > 0) {
           itemPersonalizations[itemDraft.itemId] = nextPersonalization;
@@ -334,18 +360,21 @@ export function SourceBackedFlowMapSaveButton({
     return { valid: true as const };
   };
 
-  const buildSharedPlanDraft = (): PublicFlowMapEditorPlanDraft => ({
-    title: effectiveSnapshot.effectiveTitle,
-    anchor,
-    items: Object.fromEntries(effectiveSnapshot.itemIds.canonical.map((itemId) => [
-      itemId,
-      { included: effectiveSnapshot.itemIds.effective.includes(itemId) },
-    ])),
-    order: editorRows.length > 0
-      ? editorRows.map((row) => row.id)
-      : [...effectiveSnapshot.itemIds.effective, ...effectiveSnapshot.itemIds.excluded],
-    itemPersonalizations: structuredClone(effectiveSnapshot.itemPersonalizations),
-  });
+  const buildSharedPlanDraft = (): PublicFlowMapEditorPlanDraft => {
+    const projection = buildEditorProjection(anchor);
+    return {
+      title: effectiveSnapshot.effectiveTitle,
+      anchor,
+      items: Object.fromEntries(effectiveSnapshot.itemIds.canonical.map((itemId) => [
+        itemId,
+        { included: effectiveSnapshot.itemIds.effective.includes(itemId) },
+      ])),
+      order: projection.editorRows.length > 0
+        ? projection.editorRows.map((row) => row.id)
+        : [...effectiveSnapshot.itemIds.effective, ...effectiveSnapshot.itemIds.excluded],
+      itemPersonalizations: structuredClone(effectiveSnapshot.itemPersonalizations),
+    };
+  };
 
   const pushSharedEditorHistory = (level: FlowMapPublicEditorHistoryState['level']) => {
     const currentState = window.history.state;
@@ -670,6 +699,15 @@ export function SourceBackedFlowMapSaveButton({
   const sharedItemDraft = visualSubtractionEnabled
     ? sharedEditor.session?.item?.draft
     : undefined;
+  const sharedEditorProjection = sharedPlanDraft
+    ? buildEditorProjection(sharedPlanDraft.anchor)
+    : { editorRows: [], sourceDateByItemId: {} };
+  const sharedItemSourceDate = sharedItemDraft
+    ? sharedEditorProjection.sourceDateByItemId[sharedItemDraft.itemId] ?? ''
+    : '';
+  const sharedItemHasDateOverride = sharedItemDraft
+    ? Boolean(sharedPlanDraft?.itemPersonalizations[sharedItemDraft.itemId]?.date)
+    : false;
   const sharedIncludedCount = sharedPlanDraft
     ? sharedPlanDraft.order.filter((itemId) => sharedPlanDraft.items[itemId]?.included).length
     : 0;
@@ -688,22 +726,27 @@ export function SourceBackedFlowMapSaveButton({
   const sharedItemReorderEnabled = new Set(
     effectiveSnapshot.canonicalRows.map((row) => row.flowSlug),
   ).size <= 1;
-  const sharedEditorRowById = new Map(editorRows.map((row) => [row.id, row] as const));
+  const sharedEditorRowById = new Map(
+    sharedEditorProjection.editorRows.map((row) => [row.id, row] as const),
+  );
   const sharedAdjustmentItems = sharedPlanDraft
     ? sharedPlanDraft.order.flatMap((itemId, index) => {
         const row = sharedEditorRowById.get(itemId);
         if (!row) return [];
         const personalization = sharedPlanDraft.itemPersonalizations[itemId];
         const title = personalization?.title ?? row.title;
+        const date = personalization?.date
+          ?? sharedEditorProjection.sourceDateByItemId[itemId]
+          ?? '';
         const sourceUrl = row.resources.find((resource) => /^https?:\/\//u.test(resource.url))?.url
           ?? effectiveSnapshot.identity.sourceUrl;
         return [{
           id: itemId,
           title,
           detail: personalization?.detail,
-          date: row.schedule.date,
-          dateLabel: row.schedule.date
-            ? formatKoreanShortDate(row.schedule.date, { includeWeekday: false })
+          date,
+          dateLabel: date
+            ? formatKoreanShortDate(date, { includeWeekday: false })
             : '날짜 없음',
           included: sharedPlanDraft.items[itemId]?.included === true,
           canMoveUp: index > 0,
@@ -945,7 +988,10 @@ export function SourceBackedFlowMapSaveButton({
           sharedEditorEnabled
           q3CopyEnabled={q3CopyEnabled}
           approvedPlanExecution
-          fieldCapabilities={{ title: true, detail: true, date: false }}
+          fieldCapabilities={{ title: true, detail: true, date: true }}
+          dateResetValue={sharedItemSourceDate}
+          dateResetLabel={sharedItemSourceDate ? '원래 날짜로' : '날짜 없애기'}
+          dateResetAvailable={sharedItemHasDateOverride}
           transaction={sharedItemTransaction}
           onChange={(draft) => sharedEditor.replaceItemDraft(
             draft,

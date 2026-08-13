@@ -21,6 +21,12 @@ export type EffectiveFlowMapResultOwner = {
 export type EffectiveFlowMapResult = {
   owner: EffectiveFlowMapResultOwner;
   /**
+   * Source-projected dates by stable Map Item ID before any Map
+   * personalization is applied. A missing entry means that the source does
+   * not project a date for the current anchor.
+   */
+  sourceDateByItemId: Record<string, string>;
+  /**
    * Presentation-only rows. The synthetic Flow snapshot used to build the
    * shared capability preview stays private so it cannot be reused as a Map
    * persistence or transfer identity.
@@ -110,7 +116,11 @@ function buildCompositeRows(options: {
   mapSnapshot: EffectiveFlowMapSnapshot;
   childBundles: FlowBundle[];
   anchor: string;
-}): { included: FlowExperienceProjectionRow[]; excluded: FlowExperienceProjectionRow[] } {
+}): {
+  included: FlowExperienceProjectionRow[];
+  excluded: FlowExperienceProjectionRow[];
+  sourceDateByItemId: Record<string, string>;
+} {
   const childSnapshotBySlug = new Map(options.childBundles.map((bundle) => {
     const dateIntent = resolveChildDateIntent(bundle, options.anchor);
     return [bundle.flow.slug, buildEffectiveFlowSnapshot({
@@ -125,6 +135,7 @@ function buildCompositeRows(options: {
   const multipleChildren = options.childBundles.length > 1;
   const included: FlowExperienceProjectionRow[] = [];
   const excluded: FlowExperienceProjectionRow[] = [];
+  const sourceDateByItemId: Record<string, string> = {};
   const materializedRowById = new Map([
     ...options.mapSnapshot.rows,
     ...options.mapSnapshot.heldRows,
@@ -164,6 +175,9 @@ function buildCompositeRows(options: {
         `Flow Map ${options.publishPackage.map.id} Item ${mapRow.itemId} has an inconsistent effective selection.`,
       );
     }
+    if (childRow.schedule.date) {
+      sourceDateByItemId[mapRow.itemId] = childRow.schedule.date;
+    }
     const sectionParts = (multipleChildren
       ? [mapRow.flowTitle, childRow.section]
       : [childRow.section])
@@ -198,7 +212,7 @@ function buildCompositeRows(options: {
     (isIncluded ? included : excluded).push(row);
   });
 
-  return { included, excluded };
+  return { included, excluded, sourceDateByItemId };
 }
 
 function cloneProjectionRow(
@@ -266,6 +280,7 @@ export function buildEffectiveFlowMapResult(options: {
       snapshotHash: options.mapSnapshot.snapshotHash,
       childFlowSlugs: options.publishPackage.public.childFlows.map((child) => child.slug),
     },
+    sourceDateByItemId: { ...rows.sourceDateByItemId },
     previewRows: snapshot.committed.rows.map(cloneProjectionRow),
     editorRows: [
       ...snapshot.committed.rows,

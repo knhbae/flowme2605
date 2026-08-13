@@ -3,6 +3,7 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 const FLOW_ROUTE = '/f/curated-allblanc-no-jump-cardio';
 const MAP_ID = 'middle-school-math-1';
 const MAP_ROUTE = `/flow-maps/${MAP_ID}`;
+const DATED_MAP_ROUTE = '/flow-maps/postal-address-transfer';
 const MAP_FLOW_SLUG = 'source-backed-middle-school-math-1';
 
 const VIEWPORTS = [
@@ -233,12 +234,11 @@ test.describe('public Plan edit surface unification', () => {
     expect(mapItemContract.schemaFields).toEqual([
       'item-title',
       'item-detail',
+      'item-date',
       'source-and-safety',
     ]);
-    expect(flowItemContract.schemaFields).toEqual(expect.arrayContaining(
-      mapItemContract.schemaFields,
-    ));
-    await expect(mapItem.getByTestId('public-flow-item-editor-date-input')).toHaveCount(0);
+    expect(mapItemContract.schemaFields).toEqual(flowItemContract.schemaFields);
+    await expect(mapItem.getByTestId('public-flow-item-editor-date-input')).toBeVisible();
   });
 
   test('Map Item apply without a semantic change keeps the parent Plan clean', async ({ page }) => {
@@ -262,7 +262,152 @@ test.describe('public Plan edit surface unification', () => {
     expect(await readRawBrowserStorage(page)).toEqual(storageBefore);
   });
 
-  test('Map Item edits stay session-only until Plan apply and final save preserves order, memo, and identity', async ({ page }) => {
+  test('removing an existing Map date immediately restores the source baseline inside the same Plan session', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(MAP_ROUTE);
+
+    const storageBefore = await readRawBrowserStorage(page);
+    const { trigger, editor: firstPlan } = await openMapPlanEditor(page, 390);
+    await firstPlan.getByTestId('public-flow-adjustment-kind-items').click();
+    const firstRow = firstPlan.getByTestId('public-flow-adjustment-item-row').first();
+    const itemId = await firstRow.getAttribute('data-item-id');
+    expect(itemId).toBeTruthy();
+    await firstRow.getByTestId('public-flow-adjustment-item-edit').click();
+
+    const itemEditor = page.getByTestId('public-flow-item-editor');
+    const dateInput = itemEditor.getByTestId('public-flow-item-editor-date-input');
+    await dateInput.fill('2026-08-24');
+    await itemEditor.getByTestId('public-flow-item-editor-save').click();
+    await firstPlan.getByTestId('public-flow-adjustment-apply').click();
+    await expect(firstPlan).toHaveCount(0);
+    await expect(trigger).toBeFocused();
+    expect(await readRawBrowserStorage(page)).toEqual(storageBefore);
+
+    await trigger.click();
+    const secondPlan = page.getByTestId('public-flow-personal-adjustment');
+    await secondPlan.getByTestId('public-flow-adjustment-kind-items').click();
+    const resetRow = secondPlan.locator(
+      `[data-testid="public-flow-adjustment-item-row"][data-item-id="${itemId!}"]`,
+    );
+    await expect(resetRow).toContainText('8월 24일');
+    await resetRow.getByTestId('public-flow-adjustment-item-edit').click();
+    await expect(dateInput).toHaveValue('2026-08-24');
+    await itemEditor.getByTestId('public-flow-item-editor-date-clear').click();
+    await expect(dateInput).toHaveValue('');
+    await itemEditor.getByTestId('public-flow-item-editor-save').click();
+
+    await expect(itemEditor).toHaveCount(0);
+    await expect(resetRow).toContainText('날짜 없음');
+    await resetRow.getByTestId('public-flow-adjustment-item-edit').click();
+    await expect(dateInput).toHaveValue('');
+    expect(await readRawBrowserStorage(page)).toEqual(storageBefore);
+  });
+
+  test('a source-dated Map uses the same date field and resets a private date to its actual source date', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(DATED_MAP_ROUTE);
+
+    const storageBefore = await readRawBrowserStorage(page);
+    const { trigger, editor: firstPlan } = await openMapPlanEditor(page, 390);
+    await firstPlan.getByTestId('public-flow-adjustment-kind-items').click();
+    const row = firstPlan.getByTestId('public-flow-adjustment-item-row').first();
+    await expect(row).toContainText('7월 2일');
+    await row.getByTestId('public-flow-adjustment-item-edit').click();
+
+    const itemEditor = page.getByTestId('public-flow-item-editor');
+    const dateInput = itemEditor.getByTestId('public-flow-item-editor-date-input');
+    await expect(dateInput).toHaveValue('2026-07-02');
+    await expect(itemEditor.getByTestId('public-flow-item-editor-date-clear')).toHaveCount(0);
+    await dateInput.fill('2026-07-10');
+    await itemEditor.getByTestId('public-flow-item-editor-save').click();
+    await firstPlan.getByTestId('public-flow-adjustment-apply').click();
+    await expect(firstPlan).toHaveCount(0);
+    await expect(trigger).toBeFocused();
+    expect(await readRawBrowserStorage(page)).toEqual(storageBefore);
+
+    await trigger.click();
+    const secondPlan = page.getByTestId('public-flow-personal-adjustment');
+    await secondPlan.getByTestId('public-flow-adjustment-kind-items').click();
+    const resetRow = secondPlan.getByTestId('public-flow-adjustment-item-row').first();
+    await expect(resetRow).toContainText('7월 10일');
+    await resetRow.getByTestId('public-flow-adjustment-item-edit').click();
+    await expect(dateInput).toHaveValue('2026-07-10');
+    const resetDate = itemEditor.getByTestId('public-flow-item-editor-date-clear');
+    await expect(resetDate).toHaveText('원래 날짜로');
+    await resetDate.click();
+    await expect(dateInput).toHaveValue('2026-07-02');
+    await itemEditor.getByTestId('public-flow-item-editor-save').click();
+
+    await expect(itemEditor).toHaveCount(0);
+    await expect(resetRow).toContainText('7월 2일');
+    await resetRow.getByTestId('public-flow-adjustment-item-edit').click();
+    await expect(dateInput).toHaveValue('2026-07-02');
+    expect(await readRawBrowserStorage(page)).toEqual(storageBefore);
+  });
+
+  test('Map Item dates follow the uncommitted Plan anchor and a source-equal fixed pin can be explicitly reset', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(DATED_MAP_ROUTE);
+    await page
+      .getByTestId('public-flow-capability-result')
+      .getByRole('button', { name: 'Calendar' })
+      .click();
+
+    const storageBefore = await readRawBrowserStorage(page);
+    const { editor: firstPlan } = await openMapPlanEditor(page, 390);
+    await firstPlan.getByTestId('public-flow-adjustment-kind-anchor').click();
+    await firstPlan.getByTestId('public-flow-adjustment-anchor-input').fill('2026-07-08');
+    await firstPlan.getByTestId('public-flow-adjustment-kind-items').click();
+    const firstRow = firstPlan.getByTestId('public-flow-adjustment-item-row').first();
+    await expect(firstRow).toContainText('7월 9일');
+    await firstRow.getByTestId('public-flow-adjustment-item-edit').click();
+
+    const itemEditor = page.getByTestId('public-flow-item-editor');
+    const dateInput = itemEditor.getByTestId('public-flow-item-editor-date-input');
+    await expect(dateInput).toHaveValue('2026-07-09');
+    await expect(itemEditor.getByTestId('public-flow-item-editor-date-clear')).toHaveCount(0);
+    await dateInput.fill('2026-07-02');
+    await itemEditor.getByTestId('public-flow-item-editor-save').click();
+    await firstPlan.getByTestId('public-flow-adjustment-apply').click();
+    expect(await readRawBrowserStorage(page)).toEqual(storageBefore);
+
+    const { editor: secondPlan } = await openMapPlanEditor(page, 390);
+    await secondPlan.getByTestId('public-flow-adjustment-kind-anchor').click();
+    await secondPlan.getByTestId('public-flow-adjustment-anchor-input').fill('2026-07-01');
+    await secondPlan.getByTestId('public-flow-adjustment-kind-items').click();
+    const resetRow = secondPlan.getByTestId('public-flow-adjustment-item-row').first();
+    await expect(resetRow).toContainText('7월 2일');
+    await resetRow.getByTestId('public-flow-adjustment-item-edit').click();
+    await expect(dateInput).toHaveValue('2026-07-02');
+    const resetDate = itemEditor.getByTestId('public-flow-item-editor-date-clear');
+    await expect(resetDate).toHaveText('원래 날짜로');
+    await resetDate.click();
+    await expect(dateInput).toHaveValue('2026-07-02');
+    await itemEditor.getByTestId('public-flow-item-editor-save').click();
+    await expect(resetRow).toContainText('7월 2일');
+    await secondPlan.getByTestId('public-flow-adjustment-apply').click();
+    expect(await readRawBrowserStorage(page)).toEqual(storageBefore);
+
+    await page.getByTestId('flow-map-save-all-mobile').click();
+    await expect(page).toHaveURL('/my?savedMap=postal-address-transfer&sort=next');
+    const storedOverride = await page.evaluate(() => {
+      const snapshot = JSON.parse(
+        window.localStorage.getItem('flow:map:saved:postal-address-transfer') ?? 'null',
+      );
+      const persistence = JSON.parse(
+        window.localStorage.getItem('flow:map:persistence:postal-address-transfer') ?? 'null',
+      );
+      const flowSlug = 'source-backed-postal-address-transfer';
+      const stepId = 'postal-next-day-check';
+      return {
+        snapshot: snapshot?.personalCopy?.stepOverridesByFlow?.[flowSlug]?.[stepId],
+        persistence: persistence?.personalCopy?.stepOverridesByFlow?.[flowSlug]?.[stepId],
+      };
+    });
+    expect(storedOverride).toEqual({ snapshot: undefined, persistence: undefined });
+  });
+
+  test('Map Item edits stay session-only until Plan apply and final save preserves order, memo, date, and identity', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(MAP_ROUTE);
 
@@ -298,11 +443,15 @@ test.describe('public Plan edit surface unification', () => {
 
     const itemEditor = page.getByTestId('public-flow-item-editor');
     await expectSharedItemEditor(itemEditor);
-    await expect(itemEditor.getByTestId('public-flow-item-editor-date-input')).toHaveCount(0);
     const editedTitle = '시험 전에 오답 유형 다시 정리하기';
     const editedMemo = '틀린 이유와 다시 풀 순서를 내 메모로 남긴다.';
+    const editedDate = '2026-08-24';
+    const dateInput = itemEditor.getByTestId('public-flow-item-editor-date-input');
+    await expect(dateInput).toBeVisible();
+    await expect(dateInput).toHaveValue('');
     await itemEditor.getByTestId('public-flow-item-editor-title-input').fill(editedTitle);
     await itemEditor.getByTestId('public-flow-item-editor-detail-input').fill(editedMemo);
+    await dateInput.fill(editedDate);
     expect(await readRawBrowserStorage(page)).toEqual(storageBefore);
     await itemEditor.getByTestId('public-flow-item-editor-save').click();
 
@@ -312,7 +461,27 @@ test.describe('public Plan edit surface unification', () => {
       `[data-testid="public-flow-adjustment-item-row"][data-item-id="${editedItemId!}"]`,
     );
     await expect(returnedRow).toContainText(editedTitle);
+    await expect(returnedRow).toContainText('8월 24일');
     await expect(returnedRow.getByTestId('public-flow-adjustment-item-edit')).toBeFocused();
+    expect(await readRawBrowserStorage(page)).toEqual(storageBefore);
+
+    await returnedRow.getByTestId('public-flow-adjustment-item-edit').click();
+    await expect(dateInput).toHaveValue(editedDate);
+    const dateClear = itemEditor.getByTestId('public-flow-item-editor-date-clear');
+    await expect(dateClear).toHaveText('날짜 없애기');
+    await dateClear.click();
+    await expect(dateInput).toHaveValue('');
+    await itemEditor.getByTestId('public-flow-item-editor-save').click();
+    await expect(itemEditor).toHaveCount(0);
+    await expect(returnedRow).toContainText('날짜 없음');
+    expect(await readRawBrowserStorage(page)).toEqual(storageBefore);
+
+    await returnedRow.getByTestId('public-flow-adjustment-item-edit').click();
+    await expect(dateInput).toHaveValue('');
+    await dateInput.fill(editedDate);
+    await itemEditor.getByTestId('public-flow-item-editor-save').click();
+    await expect(itemEditor).toHaveCount(0);
+    await expect(returnedRow).toContainText('8월 24일');
     expect(await readRawBrowserStorage(page)).toEqual(storageBefore);
 
     rows = plan.getByTestId('public-flow-adjustment-item-row');
@@ -341,11 +510,13 @@ test.describe('public Plan edit surface unification', () => {
     expect(JSON.parse(await effective.getAttribute('data-flow-map-item-ids') ?? '[]')).toEqual(
       requestedItemIds,
     );
-    await expect(
-      page.getByTestId('public-flow-capability-result').getByTestId(
-        'flow-capability-selected-preview',
-      ),
-    ).toContainText(editedTitle);
+    const previewRow = page
+      .getByTestId('public-flow-capability-result')
+      .locator(
+        `[data-testid="flow-capability-artifact-preview-row"][data-item-id="${editedItemId!}"]`,
+      );
+    await expect(previewRow).toContainText(editedTitle);
+    await expect(previewRow).toContainText('8월 24일');
 
     await page.getByTestId('flow-map-save-all-mobile').click();
     await expect(page).toHaveURL(`/my?savedMap=${MAP_ID}&sort=next`);
@@ -378,10 +549,18 @@ test.describe('public Plan edit surface unification', () => {
     const editedStepId = editedItemId!.split('::')[1];
     expect(
       stored.snapshot.personalCopy.stepOverridesByFlow[MAP_FLOW_SLUG][editedStepId],
-    ).toEqual({ title: editedTitle, userMemo: editedMemo });
+    ).toEqual({
+      title: editedTitle,
+      userMemo: editedMemo,
+      schedule: { mode: 'fixed_date', date: editedDate },
+    });
     expect(
       stored.persistence.personalCopy.stepOverridesByFlow[MAP_FLOW_SLUG][editedStepId],
-    ).toEqual({ title: editedTitle, userMemo: editedMemo });
+    ).toEqual({
+      title: editedTitle,
+      userMemo: editedMemo,
+      schedule: { mode: 'fixed_date', date: editedDate },
+    });
     expect(JSON.stringify(stored.persistence.personalCopy)).toBe(
       JSON.stringify(stored.snapshot.personalCopy),
     );
@@ -397,6 +576,14 @@ test.describe('public Plan edit surface unification', () => {
       snapshot: afterReload.snapshotRaw,
       persistence: afterReload.persistenceRaw,
     }).toEqual(mapBytesBeforeReload);
+    expect(
+      afterReload.snapshot.personalCopy.stepOverridesByFlow[MAP_FLOW_SLUG][editedStepId]
+        .schedule,
+    ).toEqual({ mode: 'fixed_date', date: editedDate });
+    expect(
+      afterReload.persistence.personalCopy.stepOverridesByFlow[MAP_FLOW_SLUG][editedStepId]
+        .schedule,
+    ).toEqual({ mode: 'fixed_date', date: editedDate });
   });
 
   test('dirty cancel, Escape, and browser Back all protect drafts and restore Plan/Item openers', async ({ page }) => {
