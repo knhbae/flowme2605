@@ -1,5 +1,9 @@
 # FlowMe Text Authoring UX v1
 
+> 이 문서는 최초 UX 설계를 보존한다. 현재 구현의 문법·처리 정본은
+> [현재 문법·처리 로직](./authoring-grammar-logic.md)과
+> [Text Authoring contract v2](./text-authoring-contract-v2.json)다.
+
 - 작성일: 2026-07-28
 - 문서 상태: design decision
 - 구현 상태: 미구현

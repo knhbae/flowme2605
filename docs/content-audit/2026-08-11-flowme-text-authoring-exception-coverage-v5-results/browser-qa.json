@@ -1,0 +1,254 @@
+{
+  "status": "PASS",
+  "kind": "internal_browser_qa",
+  "observedUserSessions": 0,
+  "url": "http://127.0.0.1:4191/flowme-text-authoring-v2-test.html",
+  "checkedAt": "2026-08-11T06:49:19.381Z",
+  "results": [
+    {
+      "viewport": {
+        "id": "1440x1000",
+        "width": 1440,
+        "height": 1000
+      },
+      "httpStatus": 200,
+      "exampleCount": 31,
+      "groupCounts": {
+        "existingContent": 8,
+        "change": 11,
+        "inputFormat": 6,
+        "handledException": 5,
+        "reviewNeeded": 0
+      },
+      "overflow": {
+        "body": 0,
+        "document": 0
+      },
+      "inputScroll": {
+        "clientHeight": 811,
+        "scrollHeight": 811,
+        "scrollTop": 0,
+        "reachedEnd": true
+      },
+      "resultScroll": {
+        "clientHeight": 803,
+        "scrollHeight": 1139,
+        "scrollTop": 336,
+        "reachedEnd": true
+      },
+      "sourceSyncUndoChecked": true,
+      "leftToRightSyncChecked": true,
+      "sourceOnlyTextChecked": true,
+      "copyFallbackChecked": true,
+      "recurrenceAndChecklistChecked": true,
+      "calendarUiChecked": true,
+      "occurrenceParityChecked": true,
+      "broaderCoverageChecked": true,
+      "sourceFaithfulExampleChecked": true,
+      "invalidUrlRepairChecked": true,
+      "calendarScreenshot": "browser-calendar-1440x1000.png",
+      "mobileFlowSourceChecked": false,
+      "lastOperationReachable": false,
+      "screenshot": "browser-1440x1000.png",
+      "mobileCalendarScreenshot": null,
+      "mobileCalendarDetailScreenshot": null
+    },
+    {
+      "viewport": {
+        "id": "900x700",
+        "width": 900,
+        "height": 700
+      },
+      "httpStatus": 200,
+      "exampleCount": 31,
+      "groupCounts": {
+        "existingContent": 8,
+        "change": 11,
+        "inputFormat": 6,
+        "handledException": 5,
+        "reviewNeeded": 0
+      },
+      "overflow": {
+        "body": 0,
+        "document": 0
+      },
+      "inputScroll": {
+        "clientHeight": 419,
+        "scrollHeight": 640,
+        "scrollTop": 221,
+        "reachedEnd": true
+      },
+      "resultScroll": {
+        "clientHeight": 411,
+        "scrollHeight": 2522,
+        "scrollTop": 2111,
+        "reachedEnd": true
+      },
+      "sourceSyncUndoChecked": false,
+      "leftToRightSyncChecked": false,
+      "sourceOnlyTextChecked": false,
+      "copyFallbackChecked": false,
+      "recurrenceAndChecklistChecked": false,
+      "calendarUiChecked": false,
+      "occurrenceParityChecked": false,
+      "broaderCoverageChecked": false,
+      "sourceFaithfulExampleChecked": false,
+      "invalidUrlRepairChecked": false,
+      "calendarScreenshot": null,
+      "mobileFlowSourceChecked": false,
+      "lastOperationReachable": false,
+      "screenshot": "browser-900x700.png",
+      "mobileCalendarScreenshot": null,
+      "mobileCalendarDetailScreenshot": null
+    },
+    {
+      "viewport": {
+        "id": "899x700",
+        "width": 899,
+        "height": 700
+      },
+      "httpStatus": 200,
+      "exampleCount": 31,
+      "groupCounts": {
+        "existingContent": 8,
+        "change": 11,
+        "inputFormat": 6,
+        "handledException": 5,
+        "reviewNeeded": 0
+      },
+      "overflow": {
+        "body": 0,
+        "document": 0
+      },
+      "inputScroll": {
+        "clientHeight": 397,
+        "scrollHeight": 640,
+        "scrollTop": 243,
+        "reachedEnd": true
+      },
+      "resultScroll": {
+        "clientHeight": 365,
+        "scrollHeight": 1297,
+        "scrollTop": 932,
+        "reachedEnd": true
+      },
+      "sourceSyncUndoChecked": false,
+      "leftToRightSyncChecked": false,
+      "sourceOnlyTextChecked": false,
+      "copyFallbackChecked": false,
+      "recurrenceAndChecklistChecked": false,
+      "calendarUiChecked": false,
+      "occurrenceParityChecked": false,
+      "broaderCoverageChecked": false,
+      "sourceFaithfulExampleChecked": false,
+      "invalidUrlRepairChecked": false,
+      "calendarScreenshot": null,
+      "mobileFlowSourceChecked": true,
+      "lastOperationReachable": true,
+      "screenshot": "browser-899x700.png",
+      "mobileCalendarScreenshot": null,
+      "mobileCalendarDetailScreenshot": null
+    },
+    {
+      "viewport": {
+        "id": "390x600",
+        "width": 390,
+        "height": 600
+      },
+      "httpStatus": 200,
+      "exampleCount": 31,
+      "groupCounts": {
+        "existingContent": 8,
+        "change": 11,
+        "inputFormat": 6,
+        "handledException": 5,
+        "reviewNeeded": 0
+      },
+      "overflow": {
+        "body": 0,
+        "document": 0
+      },
+      "inputScroll": {
+        "clientHeight": 313,
+        "scrollHeight": 520,
+        "scrollTop": 207,
+        "reachedEnd": true
+      },
+      "resultScroll": {
+        "clientHeight": 273,
+        "scrollHeight": 1297,
+        "scrollTop": 1024,
+        "reachedEnd": true
+      },
+      "sourceSyncUndoChecked": false,
+      "leftToRightSyncChecked": false,
+      "sourceOnlyTextChecked": false,
+      "copyFallbackChecked": false,
+      "recurrenceAndChecklistChecked": false,
+      "calendarUiChecked": false,
+      "occurrenceParityChecked": false,
+      "broaderCoverageChecked": false,
+      "sourceFaithfulExampleChecked": false,
+      "invalidUrlRepairChecked": false,
+      "calendarScreenshot": null,
+      "mobileFlowSourceChecked": true,
+      "lastOperationReachable": true,
+      "screenshot": "browser-390x600.png",
+      "mobileCalendarScreenshot": null,
+      "mobileCalendarDetailScreenshot": null
+    },
+    {
+      "viewport": {
+        "id": "390x844",
+        "width": 390,
+        "height": 844
+      },
+      "httpStatus": 200,
+      "exampleCount": 31,
+      "groupCounts": {
+        "existingContent": 8,
+        "change": 11,
+        "inputFormat": 6,
+        "handledException": 5,
+        "reviewNeeded": 0
+      },
+      "overflow": {
+        "body": 0,
+        "document": 0
+      },
+      "inputScroll": {
+        "clientHeight": 533,
+        "scrollHeight": 533,
+        "scrollTop": 0,
+        "reachedEnd": true
+      },
+      "resultScroll": {
+        "clientHeight": 489,
+        "scrollHeight": 1297,
+        "scrollTop": 808,
+        "reachedEnd": true
+      },
+      "sourceSyncUndoChecked": false,
+      "leftToRightSyncChecked": false,
+      "sourceOnlyTextChecked": false,
+      "copyFallbackChecked": false,
+      "recurrenceAndChecklistChecked": false,
+      "calendarUiChecked": false,
+      "occurrenceParityChecked": false,
+      "broaderCoverageChecked": false,
+      "sourceFaithfulExampleChecked": false,
+      "invalidUrlRepairChecked": false,
+      "calendarScreenshot": null,
+      "mobileFlowSourceChecked": true,
+      "lastOperationReachable": true,
+      "screenshot": "browser-390x844.png",
+      "mobileCalendarScreenshot": "browser-calendar-390x844.png",
+      "mobileCalendarDetailScreenshot": "browser-calendar-detail-390x844.png"
+    }
+  ],
+  "productEscape": {
+    "productCount": 5,
+    "validatedCount": 0
+  },
+  "errors": []
+}
