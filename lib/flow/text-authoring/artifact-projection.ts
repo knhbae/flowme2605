@@ -9,6 +9,8 @@ import {
   resolveAuthoringScheduleDate,
 } from "./recurrence";
 import type {
+  AuthoringLongDocumentAnalysis,
+  AuthoringLongDocumentTable,
   AuthoringRecurrenceRule,
   AuthoringSchedule,
   TextAuthoringDocument,
@@ -29,6 +31,10 @@ export type AuthoringArtifactLossReason =
   | "non_completable_role"
   | "non_row_role"
   | "insufficient_tabular_structure"
+  | "long_document_non_executable_table"
+  | "long_document_table_loss_risk"
+  | "long_document_table_invalid"
+  | "long_document_too_large"
   | "compatibility_loss";
 
 export type AuthoringArtifactLoss = {
@@ -137,6 +143,8 @@ export type AuthoringArtifactView = {
   /** Dates paired with `orderedOccurrenceIds` in the same canonical order. */
   resolvedOccurrenceDates: string[];
   sheetColumns?: AuthoringSheetColumn[];
+  /** Exact, non-executable P1-C source tables rendered only by Sheet. */
+  longDocumentTables?: AuthoringLongDocumentTable[];
   losses: AuthoringArtifactLoss[];
   recurrenceSummaries: AuthoringRecurrencePreviewSummary[];
   hasMoreOccurrences: boolean;
@@ -174,6 +182,7 @@ export type AuthoringArtifactProjection = {
     adapter: AuthoringAdapterLossManifest;
   };
   flowExperienceProjection: FlowExperienceProjection;
+  longDocument?: AuthoringLongDocumentAnalysis;
   sourceMutationCount: 0;
 };
 
@@ -896,6 +905,25 @@ function plainSourceTextBlocks(
   document: TextAuthoringDocument,
 ): AuthoringArtifactTextBlock[] {
   if (
+    (document.parseResult.longDocument?.featureEnabled ||
+      document.parseResult.longDocument?.fallbackActive) &&
+    document.rawText
+  ) {
+    const sourceRowIds = document.parseResult.canonical.sourceRows
+      .filter((row) => row.state !== "tombstone")
+      .map((row) => row.sourceRowId);
+    return [
+      {
+        blockId: `source-text-${stableHash(
+          [document.documentId, document.rawText].join("|"),
+        )}`,
+        rawText: document.rawText,
+        sourceRowIds,
+        sourcePreserved: true,
+      },
+    ];
+  }
+  if (
     document.primaryInputKind !== "plain_text" ||
     document.parseResult.canonical.items.length > 0
   ) {
@@ -1324,6 +1352,24 @@ export function buildAuthoringArtifactProjection(
     }),
   );
   const sourceTextBlocks = plainSourceTextBlocks(document);
+  const longDocument = document.parseResult.longDocument;
+  const longDocumentStructuredControl = Boolean(
+    longDocument?.featureEnabled || longDocument?.fallbackActive,
+  );
+  const longDocumentBudgetBlocked = Boolean(
+    longDocumentStructuredControl && longDocument?.budget.exceeded.length,
+  );
+  const hasUnsafeLongDocumentTable = Boolean(
+    longDocument?.tables.some((table) => table.state !== "table-safe"),
+  );
+  const hasMultipleLongDocumentTables = (longDocument?.tables.length ?? 0) > 1;
+  const safeLongDocumentTables =
+    longDocumentBudgetBlocked ||
+    hasUnsafeLongDocumentTable ||
+    hasMultipleLongDocumentTables
+      ? []
+      : (longDocument?.tables.filter((table) => table.state === "table-safe") ??
+        []);
 
   const shapeRows: Record<
     AuthoringArtifactKind,
@@ -1343,7 +1389,27 @@ export function buildAuthoringArtifactProjection(
     let rows = shapeRows[artifact].map((row) =>
       makeArtifactRow(document, row, itemById.get(row.sourceItemId), stepById),
     );
+    if (
+      longDocumentStructuredControl &&
+      (artifact === "calendar" || artifact === "todo")
+    ) {
+      const tableItemIds = new Set(
+        document.parseResult.canonical.items
+          .filter((item) =>
+            item.sourceRowIds.some((sourceRowId) =>
+              document.parseResult.canonical.sourceRows.some(
+                (sourceRow) =>
+                  sourceRow.sourceRowId === sourceRowId &&
+                  sourceRow.rowType === "table_row",
+              ),
+            ),
+          )
+          .map((item) => item.itemId),
+      );
+      rows = rows.filter((row) => !tableItemIds.has(row.itemId));
+    }
     const blockedByFactTable =
+      !longDocumentStructuredControl &&
       document.primaryInputKind === "table" &&
       (artifact === "todo" || artifact === "calendar");
     const blockedByInvalidUrl =
@@ -1359,7 +1425,7 @@ export function buildAuthoringArtifactProjection(
     rows = recurrenceProjection.rows;
     if (artifact === "calendar") rows = [...rows].sort(calendarRowOrder);
     const sheetContract =
-      artifact === "sheet"
+      artifact === "sheet" && safeLongDocumentTables.length === 0
         ? buildSheetContract(document, rows, itemById)
         : undefined;
     if (sheetContract) {
@@ -1373,7 +1439,7 @@ export function buildAuthoringArtifactProjection(
         : [];
     }
     const visibleItemIds = new Set(rows.map((row) => row.itemId));
-    const losses =
+    const losses: AuthoringArtifactLoss[] =
       artifact === "memo"
         ? []
         : blockedByFactTable
@@ -1432,13 +1498,53 @@ export function buildAuthoringArtifactProjection(
                     lossForMissingArtifactRow(artifact, itemId, item, anchor),
                   ];
                 });
+    if (longDocumentStructuredControl && longDocument) {
+      for (const entry of longDocument.lossManifest.filter(
+        (candidate) => candidate.result === artifact,
+      )) {
+        const reason: AuthoringArtifactLossReason =
+          entry.reason === "too-large"
+            ? "long_document_too_large"
+            : entry.reason === "table-invalid"
+              ? "long_document_table_invalid"
+              : entry.reason === "table-loss-risk"
+                ? "long_document_table_loss_risk"
+                : "long_document_non_executable_table";
+        losses.push({
+          lossId: entry.lossId,
+          artifact,
+          reason,
+          message: entry.message,
+          sourcePreserved: true,
+        });
+      }
+    }
+    const longDocumentTables =
+      artifact === "sheet" && !longDocumentBudgetBlocked
+        ? safeLongDocumentTables
+        : [];
+    const blockedByLongDocument =
+      longDocumentStructuredControl &&
+      artifact !== "memo" &&
+      (longDocumentBudgetBlocked ||
+        longDocument?.fallbackActive ||
+        (artifact === "sheet" &&
+          (hasUnsafeLongDocumentTable || hasMultipleLongDocumentTables)));
+    if (blockedByLongDocument) rows = [];
     const textBlocks = artifact === "memo" ? sourceTextBlocks : [];
     allLosses.push(...losses);
     artifacts[artifact] = {
       artifact,
       label: ARTIFACT_LABELS[artifact],
-      eligible: rows.length > 0 || textBlocks.length > 0,
-      count: rows.length + textBlocks.length,
+      eligible:
+        !blockedByLongDocument &&
+        (rows.length > 0 ||
+          textBlocks.length > 0 ||
+          longDocumentTables.length > 0),
+      count:
+        rows.length +
+        textBlocks.length +
+        longDocumentTables.reduce((sum, table) => sum + table.rows.length, 0),
       rows,
       textBlocks,
       ...(recurrenceProjection.occurrenceWindowId
@@ -1447,6 +1553,7 @@ export function buildAuthoringArtifactProjection(
       orderedOccurrenceIds: recurrenceProjection.orderedOccurrenceIds,
       resolvedOccurrenceDates: recurrenceProjection.resolvedOccurrenceDates,
       ...(sheetContract ? { sheetColumns: sheetContract.columns } : {}),
+      ...(longDocumentTables.length > 0 ? { longDocumentTables } : {}),
       losses,
       recurrenceSummaries: recurrenceProjection.summaries,
       hasMoreOccurrences: recurrenceProjection.summaries.some(
@@ -1553,6 +1660,7 @@ export function buildAuthoringArtifactProjection(
       adapter: adapter.lossManifest,
     },
     flowExperienceProjection: experience,
+    ...(longDocument ? { longDocument } : {}),
     sourceMutationCount: 0,
   };
 }

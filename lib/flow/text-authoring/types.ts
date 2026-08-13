@@ -74,6 +74,217 @@ export type AuthoringSourceRange = {
   endLine: number;
 };
 
+/** Exact locator for a byte-preserved source slice. Offsets use JS string units. */
+export type AuthoringSourceLocator = AuthoringSourceRange & {
+  rawHash: string;
+  byteExact: true;
+};
+
+export type AuthoringInputBudgetLimits = {
+  utf8Bytes: number;
+  lines: number;
+  logicalCells: number;
+};
+
+export type AuthoringInputBudgetAssessment = {
+  utf8Bytes: number;
+  lineCount: number;
+  logicalCellCount: number;
+  limits: AuthoringInputBudgetLimits;
+  exceeded: Array<"bytes" | "lines" | "cells">;
+};
+
+export type AuthoringLongDocumentBlockKind =
+  | "blank"
+  | "prose"
+  | "blockquote"
+  | "code_fence"
+  | "html"
+  | "comment"
+  | "table";
+
+export type AuthoringLongDocumentBlock = {
+  blockId: string;
+  kind: AuthoringLongDocumentBlockKind;
+  rawText: string;
+  locator: AuthoringSourceLocator;
+  sourcePreserved: true;
+};
+
+export type AuthoringLongDocumentTableState =
+  "table-safe" | "table-loss-risk" | "table-invalid";
+
+export type AuthoringLongDocumentTableCell = {
+  cellId: string;
+  rowIndex: number;
+  columnIndex: number;
+  value: string;
+  rawText: string;
+  locator: AuthoringSourceLocator;
+  sourcePreserved: true;
+};
+
+export type AuthoringLongDocumentTableRow = {
+  rowId: string;
+  rowIndex: number;
+  kind: "header" | "separator" | "body";
+  values: string[];
+  rawText: string;
+  locator: AuthoringSourceLocator;
+  cells: AuthoringLongDocumentTableCell[];
+  sourcePreserved: true;
+};
+
+export type AuthoringLongDocumentTable = {
+  tableId: string;
+  format: "csv" | "tsv" | "markdown";
+  state: AuthoringLongDocumentTableState;
+  headers: string[];
+  rows: string[][];
+  sourceRows: AuthoringLongDocumentTableRow[];
+  logicalCellCount: number;
+  rawText: string;
+  locator: AuthoringSourceLocator;
+  sourcePreserved: true;
+  issues: string[];
+};
+
+export type AuthoringLongDocumentLossReason =
+  | "non-executable-table"
+  | "table-loss-risk"
+  | "table-invalid"
+  | "too-large"
+  | "feature-gate-off";
+
+export type AuthoringLongDocumentLoss = {
+  lossId: string;
+  contractVersion: "p1-c-long-document-v1";
+  result: "calendar" | "todo" | "sheet";
+  reason: AuthoringLongDocumentLossReason;
+  message: string;
+  locator?: AuthoringSourceLocator;
+  documentId?: string;
+  workingRevisionId?: string;
+  tableId?: string;
+  tableFormat?: AuthoringLongDocumentTable["format"];
+  delimiter?: "," | "\t" | "|";
+  rowCount?: number;
+  cellCount?: number;
+  fallback: "txt-raw-preserved";
+  blocked: boolean;
+  sourcePreserved: true;
+};
+
+export type AuthoringTableLossRisk = "none" | "possible" | "confirmed";
+
+export type AuthoringTableLossCount = {
+  rows: number;
+  cells: number;
+  rowAccuracy: "exact" | "lower-bound";
+  cellAccuracy: "exact" | "lower-bound";
+};
+
+export type AuthoringTableLossPreservedShape =
+  | "raw-source"
+  | "line-endings"
+  | "blank-lines"
+  | "prose"
+  | "blockquote"
+  | "code-fence"
+  | "html"
+  | "comment"
+  | "table-raw"
+  | "table-row-boundaries"
+  | "table-cell-boundaries";
+
+export type AuthoringTableLossUnsupportedShape =
+  | "calendar-from-factual-table"
+  | "todo-from-factual-table"
+  | "unsafe-sheet-shape"
+  | "multiple-table-sheet"
+  | "structured-results-over-budget"
+  | "structured-results-gate-off";
+
+export type AuthoringTableLossFallback =
+  "raw-txt" | "source-download" | "source-edit";
+
+export type AuthoringTableBlockLossManifest = {
+  blockManifestId: string;
+  documentId?: string;
+  workingRevisionId?: string;
+  tableId: string;
+  tableState: AuthoringLongDocumentTableState | "budget-blocked";
+  format: AuthoringLongDocumentTable["format"];
+  delimiter: "," | "\t" | "|";
+  encoding: "utf-8";
+  sourceRange: AuthoringSourceLocator;
+  counts: {
+    source: AuthoringTableLossCount;
+    parsed: AuthoringTableLossCount;
+    preserved: AuthoringTableLossCount;
+  };
+  preservedShapes: AuthoringTableLossPreservedShape[];
+  unsupportedShapes: AuthoringTableLossUnsupportedShape[];
+  risk: AuthoringTableLossRisk;
+  affectedArtifacts: Array<"calendar" | "todo" | "sheet">;
+  fallbacks: AuthoringTableLossFallback[];
+  generatedAt: null;
+  generatedAtPolicy: "deterministic-analysis-no-timestamp";
+  sourcePreserved: true;
+};
+
+/**
+ * Deterministic, authoritative P1-C loss account. It deliberately has no
+ * generated timestamp: the same source and options must produce the same
+ * analysis, while lifecycle time remains owned by the surrounding revision.
+ */
+export type AuthoringTableLossManifest = {
+  manifestId: string;
+  contractVersion: "p1-c-table-loss-v1";
+  scope: "document";
+  encoding: "utf-8";
+  documentId?: string;
+  workingRevisionId?: string;
+  tableIds: string[];
+  sourceRange: AuthoringSourceLocator;
+  detectedFormats: AuthoringLongDocumentTable["format"][];
+  delimiters: Array<"," | "\t" | "|">;
+  counts: {
+    source: AuthoringTableLossCount;
+    parsed: AuthoringTableLossCount;
+    preserved: AuthoringTableLossCount;
+  };
+  preservedShapes: AuthoringTableLossPreservedShape[];
+  unsupportedShapes: AuthoringTableLossUnsupportedShape[];
+  risk: AuthoringTableLossRisk;
+  affectedArtifacts: Array<"calendar" | "todo" | "sheet">;
+  fallbacks: AuthoringTableLossFallback[];
+  generatedAt: null;
+  generatedAtPolicy: "deterministic-analysis-no-timestamp";
+  tableBlocks: AuthoringTableBlockLossManifest[];
+  entries: AuthoringLongDocumentLoss[];
+  sourcePreserved: true;
+};
+
+export type AuthoringLongDocumentStatus =
+  | "raw-preserved"
+  | "partially-structured"
+  | "result-specific-blocked"
+  | "txt-only";
+
+export type AuthoringLongDocumentAnalysis = {
+  status: AuthoringLongDocumentStatus;
+  featureEnabled: boolean;
+  fallbackActive: boolean;
+  sourceHash: string;
+  budget: AuthoringInputBudgetAssessment;
+  blocks: AuthoringLongDocumentBlock[];
+  tables: AuthoringLongDocumentTable[];
+  lossManifest: AuthoringLongDocumentLoss[];
+  tableLossManifest: AuthoringTableLossManifest;
+  sourcePreserved: true;
+};
+
 /**
  * Immutable captured source unit. Creator corrections never overwrite this row.
  */
@@ -454,6 +665,8 @@ export type AuthoringParseResult = {
   issues: UnresolvedAuthoringIssue[];
   canonical: AuthoringCanonicalContent;
   artifactEligibility: AuthoringArtifactEligibility;
+  /** Optional for stored P0/v1 records; new parser results always emit it. */
+  longDocument?: AuthoringLongDocumentAnalysis;
 };
 
 export type AuthoringSourceSnapshotRef = {
@@ -723,6 +936,9 @@ export type TextAuthoringDocument = {
     revisionId: string;
   };
   lifecycleStatus: "draft" | "needs_review" | "previewed" | "archived";
+  features?: {
+    longDocumentTable?: boolean;
+  };
   createdAt: string;
   updatedAt: string;
   uiState?: {
@@ -746,6 +962,11 @@ export type CreateTextAuthoringDocumentOptions = {
   importAssist?: boolean;
   reviewRequirements?: AuthoringReviewRequirement[];
   sourceExternalVersion?: string;
+  /** P1-C bounded table analysis. Disabled unless explicitly or fixture-enabled. */
+  longDocumentTable?: {
+    enabled?: boolean;
+    limits?: Partial<AuthoringInputBudgetLimits>;
+  };
   now?: string;
 };
 

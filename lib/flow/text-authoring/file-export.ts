@@ -44,6 +44,19 @@ export function buildAuthoringSheetExportTable(
     return { columns: [], rows: [] };
   }
   const columns = view.sheetColumns ?? [];
+  const longDocumentTables = view.longDocumentTables ?? [];
+  if (longDocumentTables.length > 0) {
+    if (longDocumentTables.length !== 1) {
+      // Multiple independent source tables do not share one safe spreadsheet
+      // shape, so callers must choose a table instead of silently flattening.
+      return { columns: [], rows: [] };
+    }
+    const [table] = longDocumentTables;
+    return {
+      columns: [...table.headers],
+      rows: table.rows.map((row) => [...row]),
+    };
+  }
   const rows = view.rows
     .filter((row) => !includedItemIds || includedItemIds.has(row.itemId))
     .map((row) => columns.map((column) => row.sheetCells?.[column.key] ?? ""));

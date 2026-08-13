@@ -7,6 +7,8 @@ import type {
 } from './types';
 import { isAuthoringIssueOutstanding } from './issue-state';
 import { createAuthoringSourceSnapshotRef } from './source-update';
+import { locateAuthoringSource } from './long-document-table';
+import { stableAuthoringHash } from './identity';
 
 type EntityType = 'flow' | 'step' | 'item' | 'field' | 'memo';
 
@@ -100,6 +102,52 @@ export function validateTextAuthoringDocument(
   };
   const parseResult = document.parseResult;
   const canonical = parseResult.canonical;
+  const longDocument = parseResult.longDocument;
+  if (longDocument?.featureEnabled || longDocument?.fallbackActive) {
+    if (longDocument.sourceHash !== stableAuthoringHash(document.rawText)) {
+      add('missing_lineage', 'parseResult.longDocument.sourceHash', 'Long-document source identity changed unexpectedly.');
+    }
+    for (const [blockIndex, block] of longDocument.blocks.entries()) {
+      const located = locateAuthoringSource(document.rawText, block.locator);
+      if (!located.valid || located.rawText !== block.rawText) {
+        add(
+          'missing_lineage',
+          `parseResult.longDocument.blocks[${blockIndex}].locator`,
+          'Raw-preserved block no longer matches its exact source locator.',
+        );
+      }
+    }
+    for (const [tableIndex, table] of longDocument.tables.entries()) {
+      const located = locateAuthoringSource(document.rawText, table.locator);
+      if (!located.valid || located.rawText !== table.rawText) {
+        add(
+          'missing_lineage',
+          `parseResult.longDocument.tables[${tableIndex}].locator`,
+          'Table no longer matches its exact source locator.',
+        );
+      }
+      for (const [rowIndex, row] of table.sourceRows.entries()) {
+        const rowLocated = locateAuthoringSource(document.rawText, row.locator);
+        if (!rowLocated.valid || rowLocated.rawText !== row.rawText) {
+          add(
+            'missing_lineage',
+            `parseResult.longDocument.tables[${tableIndex}].sourceRows[${rowIndex}].locator`,
+            'Table row no longer matches its exact source locator.',
+          );
+        }
+        for (const [cellIndex, cell] of row.cells.entries()) {
+          const cellLocated = locateAuthoringSource(document.rawText, cell.locator);
+          if (!cellLocated.valid || cellLocated.rawText !== cell.rawText) {
+            add(
+              'missing_lineage',
+              `parseResult.longDocument.tables[${tableIndex}].sourceRows[${rowIndex}].cells[${cellIndex}].locator`,
+              'Table cell no longer matches its exact source locator.',
+            );
+          }
+        }
+      }
+    }
+  }
   const ids = new Map<string, string>();
   const register = (id: string, path: string): void => {
     const previous = ids.get(id);

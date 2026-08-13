@@ -5,6 +5,8 @@ export * from "./issue-state";
 export * from "./review-policy";
 export * from "./source-update";
 export * from "./parser";
+export * from "./long-document-table";
+export * from "./text-authoring-feature-flags";
 export * from "./operations";
 export * from "./validation";
 export * from "./flow-bundle-adapter";

@@ -96,6 +96,47 @@ export type AuthoringIssueView = {
   availableOutcomes: AuthoringIssueOutcome[];
 };
 
+export type AuthoringSourceLocatorView = {
+  locatorId: string;
+  kind:
+    | "heading"
+    | "prose"
+    | "blockquote"
+    | "code"
+    | "html"
+    | "comment"
+    | "table"
+    | "issue";
+  label: string;
+  detail: string;
+  status: "safe" | "preserved" | "possible-loss" | "blocked";
+  startOffset: number;
+  endOffset: number;
+  startLine: number;
+  endLine: number;
+};
+
+export type AuthoringTableLossView = {
+  state: "partial" | "blocked" | "txt-only";
+  summary: string;
+  detail: string;
+  sourceRowCount: number;
+  structuredRowCount: number;
+  sourceCellCount: number;
+  structuredCellCount: number;
+  firstLocator?: AuthoringSourceLocatorView;
+};
+
+export type AuthoringLongDocumentFocusView = {
+  locatorId: string;
+  startOffset: number;
+  startLine: number;
+  sourceScrollTop: number;
+  returnArtifact?: "calendar" | "todo" | "sheet" | "memo";
+  focusTestId?: string;
+  focusLocatorId?: string;
+};
+
 export type AuthoringDraftStatus =
   "작성 중" | "확인 필요" | "결과 확인 완료" | "준비 완료" | "보관됨";
 

@@ -1817,3 +1817,58 @@ test("align_source_order fails closed after split duplicates one source Item blo
   assert.deepEqual(rejected, before);
   assert.equal(validateTextAuthoringDocument(rejected).valid, true);
 });
+
+test("P1-C source edit and one undo restore exact raw bytes and projection results", () => {
+  const initialRaw = ["이름,설명,빈칸", '첫째,"두 줄의', '설명",'].join("\r\n");
+  const editedRaw = ["이름,설명,빈칸", '첫째,"두 줄의', '수정된 설명",'].join(
+    "\r\n",
+  );
+  const initial = createTextAuthoringDocument(initialRaw, {
+    documentId: "p1-c-operation-undo",
+    longDocumentTable: { enabled: true },
+    now: "2026-08-13T00:00:00.000Z",
+  });
+  const initialProjection = buildAuthoringArtifactProjection(initial);
+
+  const edited = applyAuthoringOperation(
+    initial,
+    { type: "sync_working_text_from_input", rawText: editedRaw },
+    { now: "2026-08-13T00:01:00.000Z" },
+  );
+  const editedProjection = buildAuthoringArtifactProjection(edited);
+  assert.equal(edited.rawText, editedRaw);
+  assert.equal(edited.parseResult.longDocument?.tables[0].rawText, editedRaw);
+  assert.equal(
+    edited.parseResult.longDocument?.tableLossManifest.workingRevisionId,
+    edited.revision.revisionId,
+  );
+  assert.deepEqual(
+    editedProjection.artifacts.sheet.longDocumentTables?.[0].rows,
+    [["첫째", "두 줄의\r\n수정된 설명", ""]],
+  );
+  assert.equal(
+    editedProjection.artifacts.memo.textBlocks[0].rawText,
+    editedRaw,
+  );
+  assert.equal(validateTextAuthoringDocument(edited).valid, true);
+
+  const undone = applyAuthoringOperation(
+    edited,
+    { type: "undo" },
+    { now: "2026-08-13T00:02:00.000Z" },
+  );
+  const undoneProjection = buildAuthoringArtifactProjection(undone);
+  assert.equal(undone.rawText, initialRaw);
+  assert.equal(undone.parseResult.longDocument?.tables[0].rawText, initialRaw);
+  assert.deepEqual(undoneProjection.artifacts, initialProjection.artifacts);
+  assert.deepEqual(
+    undoneProjection.lossManifest,
+    initialProjection.lossManifest,
+  );
+  assert.deepEqual(undoneProjection.counts, initialProjection.counts);
+  assert.equal(
+    undone.parseResult.longDocument?.tableLossManifest.workingRevisionId,
+    undone.revision.revisionId,
+  );
+  assert.equal(validateTextAuthoringDocument(undone).valid, true);
+});
