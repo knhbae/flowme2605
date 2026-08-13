@@ -1,6 +1,6 @@
 # Public Plan/Item Edit Surface Unification
 
-**Status:** RELEASED THROUGH PR #178 / 2026-08-13 ITEM DATE PARITY VERIFIED / PUBLICATION AUTHORIZED / OBSERVED USERS 0
+**Status:** RELEASED THROUGH PR #178 AND DATE PARITY PR #182 / CI-PRODUCTION-SMOKE PASS / OBSERVED USERS 0
 
 **Owner decision:** 2026-08-12
 
@@ -162,6 +162,20 @@ run [`31597763288`](https://github.com/knhbae/flowme2605/actions/runs/3159776328
 passed core job `94117373437` and Playwright job `94117373461`. See the
 [release record](../../pr-history/2026-08-12-plan-edit-lifecycle-unification.md).
 Observed users remain `0`.
+
+The 2026-08-13 Item date-parity follow-up shipped through
+[PR #182](https://github.com/knhbae/flowme2605/pull/182). Final head
+`0aca76687ac582ff4cf11b19a0f46db5593c768e` passed exact-head CI run
+[`31655643163`](https://github.com/knhbae/flowme2605/actions/runs/31655643163)
+and merged as `f6f796c035d5762eea07ec35abb7f1af1577a5a5` at
+`2026-08-13T01:05:33Z`. Production deployment record `5880059975`, status
+`16743295490`, succeeded and canonical smoke passed `41/41` with workers `1`,
+retries `0`, in `264804.24ms`; unexpected, flaky, and skipped results were `0`.
+Post-merge `main` run
+[`31656595092`](https://github.com/knhbae/flowme2605/actions/runs/31656595092)
+passed core job `94312307779` and Playwright job `94312307849`. See
+the [date-parity release record](../../pr-history/2026-08-13-flow-map-item-date-parity.md).
+This is automated release evidence; observed users remain `0`.
 
 ## Related docs
 

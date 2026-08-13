@@ -1,6 +1,6 @@
 # Tasks
 
-**Status:** RELEASED THROUGH PR #178 / 2026-08-13 ITEM DATE PARITY VERIFIED / PUBLICATION AUTHORIZED
+**Status:** RELEASED THROUGH PR #178 AND DATE PARITY PR #182 / CI-PRODUCTION-SMOKE PASS
 
 ## Active
 
@@ -37,6 +37,9 @@
 - [x] Merge and Production are complete through PR #178 merge `908ee849beb15cb10331b72d7894167a61458b18`; canonical smoke passed `38/38`.
 - [x] Post-merge `main` run `31597763288` core and Playwright jobs passed.
 - [ ] Observed-user validation remains `0` until real sessions are recorded.
-- [x] Publication of the 2026-08-13 Item date parity follow-up is authorized;
-  commit, PR, merge, deployment, and Production smoke remain independently
-  verifiable external states rather than consequences of this checkbox.
+- [x] The 2026-08-13 Item date parity follow-up shipped through PR #182 head
+  `0aca76687ac582ff4cf11b19a0f46db5593c768e` and runtime-bearing merge
+  `f6f796c035d5762eea07ec35abb7f1af1577a5a5`; deployment `5880059975` / status
+  `16743295490` and canonical smoke `41/41` passed.
+- [x] Post-merge `main` run `31656595092` core job `94312307779` and Playwright
+  job `94312307849` passed.

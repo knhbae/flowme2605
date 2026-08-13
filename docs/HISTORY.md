@@ -4,6 +4,13 @@ The repository's current semantic-version tag is `v0.1.0` at
 `d18f4218de48e23f894c7615945e37339a4a0153` (`2026-06-11`). Later entries
 below are deployment milestones unless they explicitly name another tag.
 
+## 2026-08-13 - Flow Map Item Date Parity
+
+- Released the existing shared Item title, memo, and date editor for executable single-plan Flow Maps. Source-undated Items can return to no date, source-dated Items reset to their projected source date, and an in-session Plan anchor immediately reprojects Item rows and reset baselines without adding a schema or storage-key migration.
+- [PR #182](https://github.com/knhbae/flowme2605/pull/182) final head `0aca76687ac582ff4cf11b19a0f46db5593c768e` passed exact-head CI run [`31655643163`](https://github.com/knhbae/flowme2605/actions/runs/31655643163) and merged at `2026-08-13T01:05:33Z` as `f6f796c035d5762eea07ec35abb7f1af1577a5a5`.
+- GitHub Production deployment record `5880059975`, status `16743295490`, succeeded for the exact merge source with [protected direct deployment-record URL](https://flowme2605-hph3l1si0-flowme.vercel.app). Canonical Production smoke against [flowme2605.vercel.app](https://flowme2605.vercel.app) passed `41/41` with workers `1`, retries `0`, in `264804.24ms`; unexpected, flaky, and skipped results were `0`.
+- Post-merge `main` run [`31656595092`](https://github.com/knhbae/flowme2605/actions/runs/31656595092) passed both [core job `94312307779`](https://github.com/knhbae/flowme2605/actions/runs/31656595092/job/94312307779) and [Playwright job `94312307849`](https://github.com/knhbae/flowme2605/actions/runs/31656595092/job/94312307849). This release evidence is automated QA, not observed-user validation; observed-user sessions remain `0`. No semantic version tag was created. See the [release record](./pr-history/2026-08-13-flow-map-item-date-parity.md).
+
 ## 2026-08-12 - Plan Edit And Lifecycle Unification
 
 - Released one Plan/Item editing grammar across saved `/my`, ordinary public `/f`, and executable single-plan Map routes. Canonical personal copies, source-backed Maps, personal memo/URL drafts, and legacy saved plans now share close, Back, focus, final-save, and lifecycle behavior while keeping their existing identity and persistence owners.

@@ -1,6 +1,6 @@
 # FlowMe Project Control
 
-**Last Updated:** 2026-08-12
+**Last Updated:** 2026-08-13
 
 **Purpose:** Stable entry point for the current FlowMe stage, evidence boundary, and next owner decision.
 
@@ -10,6 +10,7 @@ This file is an index, not a second source of product truth. Update its links af
 
 - [Current status and owner action](./STATUS.md)
 - [Current roadmap and inactive shelves](./ROADMAP.md)
+- [Released Flow Map Item date parity](./pr-history/2026-08-13-flow-map-item-date-parity.md)
 - [Released Plan edit and lifecycle unification](./pr-history/2026-08-12-plan-edit-lifecycle-unification.md)
 - [Released Public Plan/Item edit contract](./specs/2026-08-12-public-plan-edit-surface-unification/spec.md)
 - [Released My Plan edit and lifecycle contract](./specs/2026-08-12-my-plan-edit-lifecycle-unification/spec.md)
@@ -25,26 +26,24 @@ This file is an index, not a second source of product truth. Update its links af
 - [R3A My Flow experience boundary release](./pr-history/2026-08-09-r3a-my-flow-experience-boundary.md)
 - [P35 Round 2 MVP production closeout](./pr-history/2026-08-06-p35-round2-mvp-closeout-production.md)
 
-[PR #178](https://github.com/knhbae/flowme2605/pull/178) final head
-`3cac3cde5bbcf6297b93b8299bfe28693700aebf` passed exact-head CI run
-[`31596540934`](https://github.com/knhbae/flowme2605/actions/runs/31596540934)
-and merged at `2026-08-12T12:42:45Z` as
-`908ee849beb15cb10331b72d7894167a61458b18`. GitHub Production deployment
-record `5869458520`, status `16715443863`, and the
-[Vercel record](https://vercel.com/flowme/flowme2605/AF53jatbYV9EuNyjbUeMY3Z6gUWZ)
-report success. The protected direct deployment-record URL is retained as
-deployment evidence; canonical Production smoke against
-[flowme2605.vercel.app](https://flowme2605.vercel.app) passed `38/38` with
-workers `1`, retries `0`, in `99.6s`, with unexpected, flaky, and skipped
+[PR #182](https://github.com/knhbae/flowme2605/pull/182) final head
+`0aca76687ac582ff4cf11b19a0f46db5593c768e` passed exact-head CI run
+[`31655643163`](https://github.com/knhbae/flowme2605/actions/runs/31655643163)
+and merged at `2026-08-13T01:05:33Z` as
+`f6f796c035d5762eea07ec35abb7f1af1577a5a5`. GitHub Production deployment
+record `5880059975`, status `16743295490`, reports success for that exact
+runtime-bearing merge; its
+[protected direct deployment-record URL](https://flowme2605-hph3l1si0-flowme.vercel.app)
+is deployment evidence. Canonical Production smoke against
+[flowme2605.vercel.app](https://flowme2605.vercel.app) passed `41/41` with
+workers `1`, retries `0`, in `264804.24ms`, with unexpected, flaky, and skipped
 results `0`.
 
-The release combines the four-origin My Plan editor/lifecycle foundation and
-the shared public Plan/Item editor. Single-plan `save_all` content now appears
-as an ordinary Flow, OPIc/wedding/Allblanc use `choose_child`, and
-`review_hold` stays editor-free while Map/version/child/storage identity remains
-unchanged. Post-merge `main` run
-[`31597763288`](https://github.com/knhbae/flowme2605/actions/runs/31597763288)
-passed core job `94117373437` and Playwright job `94117373461`.
+The release gives executable single-plan Maps the same shared Item title, memo,
+and date editor as ordinary Flows while preserving Map/version/child/storage
+identity and the PR #178 Plan edit/lifecycle foundation. Post-merge `main` run
+[`31656595092`](https://github.com/knhbae/flowme2605/actions/runs/31656595092)
+passed core job `94312307779` and Playwright job `94312307849`.
 Automated QA, deployment, smoke, and local capture reports remain separate from
 observed-user validation; observed users remain `0`. No product gate is active.
 
