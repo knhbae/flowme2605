@@ -1,9 +1,9 @@
 # Text Authoring P1-E Guarded Source Candidate Updates
 
-- **PR:** Draft creation pending
+- **PR:** [#186](https://github.com/knhbae/flowme2605/pull/186)
 - **Date:** 2026-08-13 KST
 - **Branch:** `agent/text-authoring-p1-e-source-update-20260813`
-- **Status:** Draft preparation / local QA PASS / unpublished
+- **Status:** Draft / local QA PASS / GitHub and Preview checks pending / unpublished
 - **Base branch:** `agent/text-authoring-p1-c-longform-20260813`
 - **Base commit:** `936f33780f56a0b304ece36d5a228b81b9b99e2a`
 - **Parent PR:** [#185](https://github.com/knhbae/flowme2605/pull/185)
