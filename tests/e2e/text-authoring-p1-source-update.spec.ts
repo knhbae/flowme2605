@@ -3,6 +3,8 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 test.describe.configure({ timeout: 120_000 });
 
 const DRAFTS_STORAGE_KEY = "flow:text-authoring:drafts:v1";
+const SAVE_RECEIPT_HANDOFF_KEY = "flow:text-authoring:save-receipt-handoff:v1";
+const ROUTE_TRANSITION_TIMEOUT_MS = 15_000;
 const CANDIDATE_SESSION_KEY_PREFIX =
   "flowme:text-authoring:source-candidate-session:v1";
 const SOURCE_CANDIDATE_EVENT = "flowme:text-authoring-source-candidate";
@@ -89,9 +91,19 @@ async function enterAndSaveBase(page: Page): Promise<void> {
   await saveDraftButton(page).click();
   const receipt = page.getByTestId("ta-authoring-receipt");
   await expect(receipt).toContainText("초안을 저장했어요");
+  await expect(page).toHaveURL(/\/flows\/authoring\/[^/]+$/u, {
+    timeout: ROUTE_TRANSITION_TIMEOUT_MS,
+  });
+  await expect
+    .poll(() =>
+      page.evaluate(
+        (key) => sessionStorage.getItem(key),
+        SAVE_RECEIPT_HANDOFF_KEY,
+      ),
+    )
+    .toBeNull();
   await receipt.getByRole("button", { name: "계속 편집" }).click();
   await expect(receipt).toHaveCount(0);
-  await expect(page).toHaveURL(/\/flows\/authoring\/[^/]+$/u);
   await expect(page.getByTestId("ta-authoring-source")).toHaveValue(
     BASE_SOURCE,
   );
