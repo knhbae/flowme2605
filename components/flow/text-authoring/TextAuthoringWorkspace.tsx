@@ -21,7 +21,28 @@ import {
   serializeAuthoringPlainText,
 } from "@/lib/flow/text-authoring/file-export";
 import { locateAuthoringSource } from "@/lib/flow/text-authoring/long-document-table";
-import { isTextAuthoringP1LongDocumentTableEnabled } from "@/lib/flow/text-authoring/text-authoring-feature-flags";
+import {
+  isTextAuthoringP1LongDocumentTableEnabled,
+  isTextAuthoringP1SourceCandidateEnabled,
+} from "@/lib/flow/text-authoring/text-authoring-feature-flags";
+import {
+  TEXT_AUTHORING_SOURCE_CANDIDATE_EVENT,
+  applyTextAuthoringSourceCandidate,
+  authorizeTextAuthoringSourceCandidateSession,
+  createCandidateFromLocalSyntheticEnvelope,
+  createLocalSyntheticHostEnvelope,
+  deferTextAuthoringSourceCandidate,
+  hydrateTextAuthoringSourceUpdateSession,
+  rejectTextAuthoringSourceCandidate,
+  resolveTextAuthoringSourceCandidateChange,
+  serializeTextAuthoringSourceUpdateSession,
+  stageTextAuthoringSourceCandidate,
+  undoTextAuthoringSourceCandidate,
+  updateTextAuthoringSourceCandidateFocus,
+  type TextAuthoringLocalSyntheticHostEventDetail,
+  type TextAuthoringSourceCandidateDecision,
+  type TextAuthoringSourceUpdateSession,
+} from "@/lib/flow/text-authoring/source-update-service";
 import {
   extractMarkdownFlowTitle,
   replaceMarkdownFlowTitle,
@@ -47,7 +68,10 @@ import {
 } from "@/lib/flow/text-authoring/receipt";
 import { createAuthoringSourceUpdateCandidate } from "@/lib/flow/text-authoring/source-update";
 import { compareTextAuthoringSources } from "@/lib/flow/text-authoring/source-comparison";
-import { createTextAuthoringServiceStateFromDocument } from "@/lib/flow/text-authoring/service-state";
+import {
+  createTextAuthoringServiceStateFromDocument,
+  type TextAuthoringServiceState,
+} from "@/lib/flow/text-authoring/service-state";
 import {
   TextAuthoringStorageReadError,
   TextAuthoringStorageWriteError,
@@ -63,6 +87,7 @@ import type {
   AuthoringIssueOutcome,
   AuthoringReviewGateStatus,
   AuthoringReviewRequirement,
+  AuthoringSourceUpdateChange,
   AuthoringSourceUpdateResolution,
   CanonicalAuthoringItem,
   TextAuthoringDocument,
@@ -91,8 +116,11 @@ import { DraftLibrary, type AuthoringLibraryFilter } from "./DraftLibrary";
 import { InputPane } from "./InputPane";
 import { ItemInspector } from "./ItemInspector";
 import { LongDocumentNavigator } from "./LongDocumentNavigator";
-import { ResultPane } from "./ResultPane";
-import { SourceUpdateDialog } from "./SourceUpdateDialog";
+import { ResultPane, type SourceUpdateResultNotice } from "./ResultPane";
+import {
+  SourceUpdateDialog,
+  type SourceUpdateDialogView,
+} from "./SourceUpdateDialog";
 import { StructurePane } from "./StructurePane";
 import type {
   AuthoringItemPatch,
@@ -143,6 +171,168 @@ const ROLE_VALUES: CanonicalAuthoringItem["role"][] = [
 
 const DEFAULT_FINITE_OCCURRENCE_LIMIT = 30;
 const DEFAULT_OPEN_ENDED_OCCURRENCE_WEEKS = 4;
+export const TEXT_AUTHORING_SOURCE_CANDIDATE_SESSION_KEY =
+  "flowme:text-authoring:source-candidate-session:v1";
+
+export function textAuthoringSourceCandidateSessionKey(
+  documentId: string,
+): string {
+  return `${TEXT_AUTHORING_SOURCE_CANDIDATE_SESSION_KEY}:${documentId}`;
+}
+
+function preserveStoredSourceAuthority(
+  state: TextAuthoringServiceState,
+  stored: TextAuthoringDraftRecord | undefined,
+): TextAuthoringServiceState {
+  if (stored?.sourceSnapshot) {
+    state.sourceSnapshot = { ...stored.sourceSnapshot };
+    state.workingSource.sourceSnapshotId = stored.sourceSnapshot.snapshotId;
+  }
+  if (stored?.explicitSaveReceipt) {
+    state.lastExplicitSave = {
+      ...stored.explicitSaveReceipt,
+      revisionPair: { ...stored.explicitSaveReceipt.revisionPair },
+    };
+  }
+  return state;
+}
+
+function sourceCandidateDecision(
+  change: AuthoringSourceUpdateChange,
+): TextAuthoringSourceCandidateDecision | undefined {
+  if (!change.resolution) return undefined;
+  if (
+    change.resolution === "keep_user" ||
+    change.resolution === "exclude_added" ||
+    change.resolution === "keep_previous"
+  ) {
+    return "keep_working";
+  }
+  return "use_incoming";
+}
+
+function sourceCandidateChangeLabel(
+  change: AuthoringSourceUpdateChange,
+): string {
+  if (change.kind === "added") return "새 원문에 항목이 추가됐습니다";
+  if (change.kind === "removed") return "새 원문에서 항목이 빠졌습니다";
+  const labels: Record<string, string> = {
+    title: "제목",
+    detail: "설명",
+    completion: "완료 기준",
+    schedule: "날짜·반복",
+    resources: "자료 링크",
+    sources: "출처 링크",
+    guides: "안내",
+    cautions: "주의",
+    role: "항목 역할",
+    included: "포함 여부",
+    nesting: "들여쓰기",
+    order: "항목 순서",
+    step_mapping: "단계 연결",
+  };
+  return `${labels[change.field] ?? change.field}가 달라졌습니다`;
+}
+
+function sourceCandidateChanges(
+  session: TextAuthoringSourceUpdateSession,
+): AuthoringSourceUpdateChange[] {
+  const state = session.stagedDocument.sourceState;
+  return state && state.status !== "current" ? state.changes : [];
+}
+
+export function buildSourceUpdateDialogView(
+  session: TextAuthoringSourceUpdateSession,
+  userCorrectionCount: number,
+): SourceUpdateDialogView {
+  const stale =
+    session.status === "stale-candidate" ||
+    (session.errorMessage?.toLowerCase().includes("stale") ?? false);
+  const status: SourceUpdateDialogView["status"] = stale
+    ? "stale-candidate"
+    : session.status === "apply-failed"
+      ? "apply-failed"
+      : session.status === "deferred"
+        ? "deferred"
+        : session.status === "conflict"
+          ? "conflict"
+          : session.status === "update-detected"
+            ? "update-detected"
+            : "comparing";
+  const userErrorMessage = session.errorMessage
+    ? stale
+      ? "비교를 시작한 뒤 내 작업이 달라졌습니다. 현재 작업 기준으로 새 원문을 다시 받아 주세요."
+      : "변경을 적용하지 못했습니다. 내 작업과 선택은 그대로 남아 있습니다."
+    : undefined;
+  return {
+    status,
+    selectedChangeId: session.selectedChangeId,
+    creatorCanApply: session.creatorCanApply,
+    userCorrectionCount,
+    ...(userErrorMessage ? { errorMessage: userErrorMessage } : {}),
+    changes: sourceCandidateChanges(session).map((change) => ({
+      changeId: change.changeId,
+      label: sourceCandidateChangeLabel(change),
+      baseValue: change.kind === "added" ? undefined : change.oldSourceValue,
+      workingValue:
+        change.kind === "changed"
+          ? (change.userValue ?? change.oldSourceValue)
+          : change.kind === "removed"
+            ? change.oldSourceValue
+            : undefined,
+      incomingValue:
+        change.kind === "removed" ? undefined : change.incomingSourceValue,
+      decision: sourceCandidateDecision(change),
+    })),
+  };
+}
+
+export function buildSourceUpdateResultNotice(
+  session: TextAuthoringSourceUpdateSession | null,
+): SourceUpdateResultNotice | null {
+  if (!session || session.status === "rejected") return null;
+  const changes = sourceCandidateChanges(session);
+  const changeCount = changes.length;
+  const unresolvedCount = changes.filter(
+    (change) => change.state !== "resolved",
+  ).length;
+  if (session.status === "undo-available") {
+    return { status: "undo-available", changeCount };
+  }
+  if (session.status === "reverted") {
+    return {
+      status: "reverted",
+      changeCount,
+      message: "새 원문을 적용하기 전 작업으로 돌아왔습니다.",
+    };
+  }
+  if (
+    session.status === "apply-failed" ||
+    session.status === "stale-candidate"
+  ) {
+    const stale =
+      session.status === "stale-candidate" ||
+      (session.errorMessage?.toLowerCase().includes("stale") ?? false);
+    return {
+      status: stale ? "stale" : "failed",
+      changeCount,
+      unresolvedCount,
+      message: stale
+        ? "내 작업은 바뀌지 않았습니다. 현재 작업 기준으로 새 원문을 다시 받아 주세요."
+        : "내 작업과 선택은 그대로 남아 있습니다. 다시 적용할 수 있습니다.",
+    };
+  }
+  return {
+    status: session.status === "deferred" ? "deferred" : "pending",
+    changeCount,
+    unresolvedCount,
+    ...(session.creatorCanApply
+      ? {}
+      : {
+          message: "이 초안을 수정할 권한이 없어 새 원문을 적용할 수 없습니다.",
+        }),
+  };
+}
 
 let fallbackDraftSequence = 0;
 
@@ -551,6 +741,24 @@ export function resolveTextAuthoringP1LongDocumentTableProductGate({
   });
 }
 
+export function resolveTextAuthoringP1SourceCandidateProductGate({
+  productMode,
+  override,
+  environmentValue,
+}: {
+  productMode: boolean;
+  override?: boolean;
+  environmentValue?: string;
+}): boolean {
+  const normalizedEnvironment = environmentValue?.trim().toLowerCase();
+  const environmentEnabled = ["1", "true", "on"].includes(
+    normalizedEnvironment ?? "",
+  );
+  return isTextAuthoringP1SourceCandidateEnabled({
+    enabled: productMode && (override ?? environmentEnabled),
+  });
+}
+
 export function resolveTextAuthoringLongDocumentRuntimeDocument(
   document: TextAuthoringDocument | null,
   {
@@ -579,6 +787,7 @@ export type TextAuthoringWorkspaceProps = {
   initialDraftId?: string;
   initialSaveReceipt?: AuthoringReceiptView | null;
   p1LongDocumentTableEnabled?: boolean;
+  p1SourceCandidateEnabled?: boolean;
   onNavigateDraft?: (
     draftId: string | null,
     options?: {
@@ -597,6 +806,7 @@ export function TextAuthoringWorkspace({
   initialDraftId,
   initialSaveReceipt,
   p1LongDocumentTableEnabled,
+  p1SourceCandidateEnabled,
   onNavigateDraft,
   onNavigateNew,
 }: TextAuthoringWorkspaceProps = {}) {
@@ -606,6 +816,13 @@ export function TextAuthoringWorkspace({
       override: p1LongDocumentTableEnabled,
       environmentValue:
         process.env.NEXT_PUBLIC_FLOWME_TEXT_AUTHORING_P1_LONG_DOCUMENT_TABLE,
+    });
+  const sourceCandidateGateEnabled =
+    resolveTextAuthoringP1SourceCandidateProductGate({
+      productMode,
+      override: p1SourceCandidateEnabled,
+      environmentValue:
+        process.env.NEXT_PUBLIC_FLOWME_TEXT_AUTHORING_P1_SOURCE_CANDIDATE,
     });
   const [repository, setRepository] =
     useState<TextAuthoringDraftRepository | null>(null);
@@ -682,6 +899,10 @@ export function TextAuthoringWorkspace({
   const [reviewOpen, setReviewOpen] = useState(false);
   const [itemReviewOpen, setItemReviewOpen] = useState(false);
   const [sourceUpdateOpen, setSourceUpdateOpen] = useState(false);
+  const [sourceCandidateSession, setSourceCandidateSession] =
+    useState<TextAuthoringSourceUpdateSession | null>(null);
+  const [sourceCandidateInjectFailure, setSourceCandidateInjectFailure] =
+    useState<"before-domain-apply" | "before-commit" | undefined>(undefined);
   const [historyDraftId, setHistoryDraftId] = useState<string | null>(null);
   const [history, setHistory] = useState<TextAuthoringDraftHistoryEntry[]>([]);
   const [sourceComparisonOpen, setSourceComparisonOpen] = useState(false);
@@ -706,6 +927,7 @@ export function TextAuthoringWorkspace({
   const sourceTextAreaRef = useRef<HTMLTextAreaElement | null>(null);
   const initialDraftOpenedRef = useRef<string | null>(null);
   const restoredSourceFocusRef = useRef<string | null>(null);
+  const restoredSourceCandidateRef = useRef<string | null>(null);
   const allowBrowserExitRef = useRef(false);
 
   useEffect(() => {
@@ -924,6 +1146,202 @@ export function TextAuthoringWorkspace({
     document?.sourceState?.status === "conflict_source_vs_user"
       ? document.sourceState
       : null;
+  const sourceCandidateNotice = useMemo(
+    () =>
+      sourceCandidateGateEnabled
+        ? buildSourceUpdateResultNotice(sourceCandidateSession)
+        : null,
+    [sourceCandidateGateEnabled, sourceCandidateSession],
+  );
+  const createCurrentSourceCandidateServiceState = useCallback(() => {
+    if (!document) return null;
+    const state = createTextAuthoringServiceStateFromDocument(document, {
+      draftId: activeDraftId ?? document.documentId,
+      projectionOptions: {
+        ...(anchor ? { anchor } : {}),
+        finiteOccurrenceLimit,
+        openEndedOccurrenceWeeks,
+      },
+    });
+    if (repository && activeDraftId) {
+      try {
+        preserveStoredSourceAuthority(state, repository.load(activeDraftId));
+      } catch {
+        // Candidate validation still fails closed against the derived current
+        // state; a storage read never permits an external or partial write.
+      }
+    }
+    return state;
+  }, [
+    activeDraftId,
+    anchor,
+    document,
+    finiteOccurrenceLimit,
+    openEndedOccurrenceWeeks,
+    repository,
+  ]);
+
+  useEffect(() => {
+    if (!sourceCandidateGateEnabled || !document) return;
+    if (restoredSourceCandidateRef.current === document.documentId) return;
+    restoredSourceCandidateRef.current = document.documentId;
+    try {
+      const serialized = window.localStorage.getItem(
+        textAuthoringSourceCandidateSessionKey(document.documentId),
+      );
+      if (!serialized) return;
+      const restored = hydrateTextAuthoringSourceUpdateSession(serialized);
+      if (restored.stagedDocument.documentId !== document.documentId) return;
+      const currentState = createCurrentSourceCandidateServiceState();
+      setSourceCandidateSession(
+        currentState
+          ? authorizeTextAuthoringSourceCandidateSession(
+              restored,
+              currentState,
+              {
+                actor: "creator",
+                permission: document.ownership === "creator",
+              },
+            )
+          : restored,
+      );
+    } catch {
+      setStatusMessage(
+        "보관된 새 원문 비교를 열지 못했습니다. 현재 작업은 그대로 유지됩니다.",
+      );
+    }
+  }, [
+    createCurrentSourceCandidateServiceState,
+    document,
+    sourceCandidateGateEnabled,
+  ]);
+
+  useEffect(() => {
+    if (!sourceCandidateGateEnabled || !sourceCandidateSession) return;
+    try {
+      window.localStorage.setItem(
+        textAuthoringSourceCandidateSessionKey(
+          sourceCandidateSession.stagedDocument.documentId,
+        ),
+        serializeTextAuthoringSourceUpdateSession(sourceCandidateSession),
+      );
+    } catch {
+      setStatusMessage(
+        "새 원문 비교 상태를 이 기기에 보관하지 못했습니다. 현재 작업은 그대로 유지됩니다.",
+      );
+    }
+  }, [sourceCandidateGateEnabled, sourceCandidateSession]);
+
+  useEffect(() => {
+    if (
+      !sourceCandidateGateEnabled ||
+      !sourceUpdateOpen ||
+      !sourceCandidateSession
+    ) {
+      return;
+    }
+    const frame = window.requestAnimationFrame(() => {
+      const scroller = window.document.querySelector<HTMLElement>(
+        '[data-testid="ta-authoring-source-candidate-dialog"] [data-authoring-dialog-scroll]',
+      );
+      if (scroller) scroller.scrollTop = sourceCandidateSession.scrollTop;
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [
+    sourceCandidateGateEnabled,
+    sourceCandidateSession?.sessionId,
+    sourceUpdateOpen,
+  ]);
+
+  useEffect(() => {
+    if (!sourceCandidateGateEnabled) return;
+    const handleSourceCandidate = (nativeEvent: Event) => {
+      const currentState = createCurrentSourceCandidateServiceState();
+      if (!currentState || !document || parsePending) {
+        setStatusMessage(
+          "현재 원문 계산이 끝난 뒤 새 원문을 다시 받아 주세요.",
+        );
+        return;
+      }
+      const detail = (
+        nativeEvent as CustomEvent<TextAuthoringLocalSyntheticHostEventDetail>
+      ).detail;
+      if (!detail || (!detail.envelope && !detail.localSynthetic)) {
+        setStatusMessage(
+          "새 원문 정보가 완전하지 않아 비교를 시작하지 않았습니다.",
+        );
+        return;
+      }
+      try {
+        const envelope =
+          detail.envelope ??
+          createLocalSyntheticHostEnvelope(
+            currentState,
+            detail.localSynthetic.rawText,
+            detail.localSynthetic,
+          );
+        const incomingDocument = createTextAuthoringDocument(envelope.rawText, {
+          documentId: document.documentId,
+          ownership: document.ownership,
+          title: document.title,
+          ...(document.sourceTitle
+            ? { sourceTitle: document.sourceTitle }
+            : {}),
+          ...(document.sourceUrl ? { sourceUrl: document.sourceUrl } : {}),
+          sourceExternalVersion: envelope.externalVersion,
+          ...(document.features?.longDocumentTable !== undefined
+            ? {
+                longDocumentTable: {
+                  enabled: document.features.longDocumentTable,
+                },
+              }
+            : {}),
+          now: envelope.collectedAt,
+        });
+        const candidate = createCandidateFromLocalSyntheticEnvelope(
+          currentState,
+          envelope,
+          incomingDocument,
+          detail.matches,
+        );
+        const session = stageTextAuthoringSourceCandidate(
+          currentState,
+          envelope,
+          candidate,
+          {
+            actor: "creator",
+            permission: detail.creatorPermission !== false,
+            selectedChangeId: detail.selectedChangeId,
+            scrollTop: detail.scrollTop,
+          },
+        );
+        setSourceCandidateInjectFailure(detail.injectFailure);
+        setSourceCandidateSession(session);
+        setSourceUpdateOpen(true);
+        setStatusMessage(
+          "새 원문을 받았습니다. 적용하기 전까지 현재 작업은 바뀌지 않습니다.",
+        );
+      } catch {
+        setStatusMessage(
+          "새 원문 정보가 현재 작업과 맞지 않아 비교를 시작하지 않았습니다.",
+        );
+      }
+    };
+    window.addEventListener(
+      TEXT_AUTHORING_SOURCE_CANDIDATE_EVENT,
+      handleSourceCandidate,
+    );
+    return () =>
+      window.removeEventListener(
+        TEXT_AUTHORING_SOURCE_CANDIDATE_EVENT,
+        handleSourceCandidate,
+      );
+  }, [
+    createCurrentSourceCandidateServiceState,
+    document,
+    parsePending,
+    sourceCandidateGateEnabled,
+  ]);
   const matchesCurrentExample = (example: TextAuthoringExample) =>
     example.title === title &&
     example.source === source &&
@@ -998,6 +1416,16 @@ export function TextAuthoringWorkspace({
   const userCorrectionCount = outline.items.filter(
     (item) => item.userCorrected,
   ).length;
+  const sourceCandidateDialogView = useMemo(
+    () =>
+      sourceCandidateGateEnabled && sourceCandidateSession
+        ? buildSourceUpdateDialogView(
+            sourceCandidateSession,
+            userCorrectionCount,
+          )
+        : null,
+    [sourceCandidateGateEnabled, sourceCandidateSession, userCorrectionCount],
+  );
   const selectedItem =
     outline.items.find((item) => item.itemId === selectedItemId) ?? null;
   const selectedCanonicalItem =
@@ -2282,6 +2710,12 @@ export function TextAuthoringWorkspace({
           },
         },
       );
+      if (activeDraftId) {
+        preserveStoredSourceAuthority(
+          serviceState,
+          repository.load(activeDraftId),
+        );
+      }
       record = repository.saveCoherentDraft(serviceState, {
         draftId: activeDraftId ?? savedDocument.documentId,
         title:
@@ -2449,6 +2883,9 @@ export function TextAuthoringWorkspace({
       setReviewOpen(false);
       setItemReviewOpen(false);
       setSourceUpdateOpen(false);
+      setSourceCandidateSession(null);
+      setSourceCandidateInjectFailure(undefined);
+      restoredSourceCandidateRef.current = null;
       setSourceComparisonOpen(false);
       setDocumentNavigatorOpen(false);
       setResetConfirmOpen(false);
@@ -2567,6 +3004,9 @@ export function TextAuthoringWorkspace({
       setReviewOpen(false);
       setItemReviewOpen(persistedStage === "structure");
       setSourceUpdateOpen(false);
+      setSourceCandidateSession(null);
+      setSourceCandidateInjectFailure(undefined);
+      restoredSourceCandidateRef.current = null;
       setSourceComparisonOpen(false);
     },
     [],
@@ -2782,6 +3222,219 @@ export function TextAuthoringWorkspace({
     [document, ownership, selectedItemId, title],
   );
 
+  const sourceCandidateScrollTop = useCallback(() => {
+    return (
+      window.document.querySelector<HTMLElement>(
+        '[data-testid="ta-authoring-source-candidate-dialog"] [data-authoring-dialog-scroll]',
+      )?.scrollTop ??
+      sourceCandidateSession?.scrollTop ??
+      0
+    );
+  }, [sourceCandidateSession?.scrollTop]);
+
+  const handleSelectSourceCandidateChange = useCallback(
+    (changeId: string) => {
+      if (!sourceCandidateSession) return;
+      try {
+        setSourceCandidateSession(
+          updateTextAuthoringSourceCandidateFocus(sourceCandidateSession, {
+            selectedChangeId: changeId,
+            scrollTop: sourceCandidateScrollTop(),
+          }),
+        );
+      } catch {
+        setStatusMessage(
+          "선택한 변경을 찾지 못했습니다. 현재 작업은 그대로 유지됩니다.",
+        );
+      }
+    },
+    [sourceCandidateScrollTop, sourceCandidateSession],
+  );
+
+  const handleResolveSourceCandidate = useCallback(
+    (changeId: string, decision: TextAuthoringSourceCandidateDecision) => {
+      if (!sourceCandidateSession) return;
+      try {
+        setSourceCandidateSession(
+          resolveTextAuthoringSourceCandidateChange(
+            sourceCandidateSession,
+            changeId,
+            decision,
+            {
+              actor: "creator",
+              permission: sourceCandidateSession.creatorCanApply,
+            },
+          ),
+        );
+        setStatusMessage(
+          decision === "later"
+            ? "이 변경은 나중에 결정할 수 있도록 남겨 뒀습니다."
+            : "이 변경에 사용할 내용을 선택했습니다.",
+        );
+      } catch {
+        setStatusMessage(
+          "이 초안을 수정할 권한이 없어 선택을 바꾸지 않았습니다.",
+        );
+      }
+    },
+    [sourceCandidateSession],
+  );
+
+  const handleApplySourceCandidate = useCallback(() => {
+    if (!sourceCandidateSession) return;
+    const currentState = createCurrentSourceCandidateServiceState();
+    if (!currentState) return;
+    const injectFailure = sourceCandidateInjectFailure;
+    setSourceCandidateInjectFailure(undefined);
+    const result = applyTextAuthoringSourceCandidate(
+      currentState,
+      sourceCandidateSession,
+      {
+        actor: "creator",
+        permission: sourceCandidateSession.creatorCanApply,
+        projectionOptions: {
+          ...(anchor ? { anchor } : {}),
+          finiteOccurrenceLimit,
+          openEndedOccurrenceWeeks,
+        },
+        injectFailure,
+      },
+    );
+    setSourceCandidateSession(result.session);
+    if (!result.applied) {
+      setStatusMessage(
+        result.session.errorMessage?.toLowerCase().includes("stale")
+          ? "비교를 시작한 뒤 내 작업이 달라져 적용하지 않았습니다."
+          : "새 원문을 적용하지 못했습니다. 내 작업과 선택은 그대로 남아 있습니다.",
+      );
+      return;
+    }
+    const next = result.state.canonicalDraft.document;
+    const selectedStillExists = next.parseResult.canonical.items.some(
+      (item) => item.itemId === selectedItemId,
+    );
+    const nextSelectedItemId = selectedStillExists
+      ? selectedItemId
+      : (next.parseResult.canonical.items.find((item) => item.included)
+          ?.itemId ??
+        next.parseResult.canonical.items[0]?.itemId ??
+        null);
+    setDocument(
+      withUiState(next, "result", nextSelectedItemId, title, ownership),
+    );
+    setRawText(next.rawText);
+    setSource(next.sourceUrl || next.sourceTitle || "");
+    setSelectedItemId(nextSelectedItemId);
+    setSelectedArtifact(
+      normalizeArtifactKind(next.parseResult.canonical.flow.primaryArtifact),
+    );
+    setParsePending(false);
+    setDirty(true);
+    setSourceUpdateOpen(false);
+    setStatusMessage(
+      result.replayed
+        ? "이미 적용한 새 원문입니다. 중복으로 바꾸지 않았습니다."
+        : "결정한 새 원문 변경을 적용했습니다. 저장하려면 초안 저장을 눌러 주세요.",
+    );
+  }, [
+    createCurrentSourceCandidateServiceState,
+    anchor,
+    finiteOccurrenceLimit,
+    openEndedOccurrenceWeeks,
+    ownership,
+    selectedItemId,
+    sourceCandidateInjectFailure,
+    sourceCandidateSession,
+    title,
+  ]);
+
+  const handleDeferSourceCandidate = useCallback(() => {
+    if (!sourceCandidateSession) return;
+    if (!sourceCandidateSession.creatorCanApply) {
+      setSourceUpdateOpen(false);
+      setStatusMessage(
+        "이 초안을 수정할 권한이 없어 비교 상태를 바꾸지 않았습니다.",
+      );
+      return;
+    }
+    const focused = updateTextAuthoringSourceCandidateFocus(
+      sourceCandidateSession,
+      { scrollTop: sourceCandidateScrollTop() },
+    );
+    setSourceCandidateSession(
+      deferTextAuthoringSourceCandidate(focused, {
+        actor: "creator",
+        permission: true,
+      }),
+    );
+    setSourceUpdateOpen(false);
+    setStatusMessage(
+      "새 원문 확인을 미뤘습니다. 현재 작업과 선택은 그대로 남아 있습니다.",
+    );
+  }, [sourceCandidateScrollTop, sourceCandidateSession]);
+
+  const handleRejectSourceCandidate = useCallback(() => {
+    if (!sourceCandidateSession) return;
+    if (!sourceCandidateSession.creatorCanApply) {
+      setStatusMessage(
+        "이 초안을 수정할 권한이 없어 새 원문 상태를 바꾸지 않았습니다.",
+      );
+      return;
+    }
+    setSourceCandidateSession(
+      rejectTextAuthoringSourceCandidate(sourceCandidateSession, {
+        actor: "creator",
+        permission: true,
+      }),
+    );
+    setSourceUpdateOpen(false);
+    setStatusMessage(
+      "이 새 원문을 사용하지 않았습니다. 현재 작업은 바뀌지 않았습니다.",
+    );
+  }, [sourceCandidateSession]);
+
+  const handleUndoSourceCandidate = useCallback(() => {
+    if (!sourceCandidateSession) return;
+    const currentState = createCurrentSourceCandidateServiceState();
+    if (!currentState) return;
+    try {
+      const result = undoTextAuthoringSourceCandidate(
+        currentState,
+        sourceCandidateSession,
+        { actor: "creator", permission: true },
+      );
+      const next = result.state.canonicalDraft.document;
+      const nextSelectedItemId = next.parseResult.canonical.items.some(
+        (item) => item.itemId === selectedItemId,
+      )
+        ? selectedItemId
+        : (next.parseResult.canonical.items[0]?.itemId ?? null);
+      setSourceCandidateSession(result.session);
+      setDocument(
+        withUiState(next, "result", nextSelectedItemId, title, ownership),
+      );
+      setRawText(next.rawText);
+      setSource(next.sourceUrl || next.sourceTitle || "");
+      setSelectedItemId(nextSelectedItemId);
+      setSelectedArtifact(
+        normalizeArtifactKind(next.parseResult.canonical.flow.primaryArtifact),
+      );
+      setParsePending(false);
+      setDirty(true);
+      setStatusMessage("새 원문을 적용하기 전 작업으로 되돌렸습니다.");
+    } catch {
+      setStatusMessage(
+        "적용 뒤 작업이 달라져 자동으로 되돌리지 않았습니다. 현재 작업은 그대로 유지됩니다.",
+      );
+    }
+  }, [
+    createCurrentSourceCandidateServiceState,
+    ownership,
+    selectedItemId,
+    sourceCandidateSession,
+    title,
+  ]);
+
   const handleApplySourceUpdate = useCallback(() => {
     if (!document || !pendingSourceState) return;
     try {
@@ -2846,6 +3499,18 @@ export function TextAuthoringWorkspace({
 
   const requestOpenExport = useCallback(() => {
     if (!document || !exportPolicy) return;
+    if (
+      sourceCandidateNotice &&
+      sourceCandidateNotice.status !== "applied" &&
+      sourceCandidateNotice.status !== "undo-available" &&
+      sourceCandidateNotice.status !== "reverted"
+    ) {
+      setSourceUpdateOpen(true);
+      setStatusMessage(
+        "아직 파일을 만들지 않았습니다. 새 원문 변경을 먼저 확인해 주세요.",
+      );
+      return;
+    }
     const sourceBlocker = exportPolicy.blockers.some(
       (blocker) => blocker.kind === "source_update",
     );
@@ -2885,7 +3550,7 @@ export function TextAuthoringWorkspace({
     }
     setExportReceipt(null);
     setExportOpen(true);
-  }, [document, exportPolicy]);
+  }, [document, exportPolicy, sourceCandidateNotice]);
 
   const handleExportConfirm = useCallback(async () => {
     if (!document || !projection || !scopedPreflight) return;
@@ -3152,6 +3817,10 @@ export function TextAuthoringWorkspace({
       setRoundTripOpen(false);
       setRoundTrip(null);
       setSourceComparisonOpen(false);
+      setSourceUpdateOpen(false);
+      setSourceCandidateSession(null);
+      setSourceCandidateInjectFailure(undefined);
+      restoredSourceCandidateRef.current = null;
       setResetConfirmOpen(false);
       setPendingExample(null);
       resetInputScroll();
@@ -3543,6 +4212,7 @@ export function TextAuthoringWorkspace({
                     unavailableMessage={resultUnavailableMessage}
                     reviewGates={reviewGates}
                     sourceState={document?.sourceState}
+                    sourceCandidate={sourceCandidateNotice}
                     userCorrectionCount={userCorrectionCount}
                     itemCount={outline.counts.included}
                     itemReviewCount={outline.issues.length}
@@ -3623,7 +4293,12 @@ export function TextAuthoringWorkspace({
                     onOpenExport={requestOpenExport}
                     onOpenReview={() => setReviewOpen(true)}
                     onOpenSourceUpdate={() => setSourceUpdateOpen(true)}
-                    onDeferSourceUpdate={handleDeferSourceUpdate}
+                    onDeferSourceUpdate={
+                      sourceCandidateNotice
+                        ? handleDeferSourceCandidate
+                        : handleDeferSourceUpdate
+                    }
+                    onUndoSourceUpdate={handleUndoSourceCandidate}
                     onOpenRoundTrip={showRoundTrip}
                     onOpenItemReview={() => setItemReviewOpen(true)}
                     onReturnToInput={() => setStage("input")}
@@ -3962,15 +4637,27 @@ export function TextAuthoringWorkspace({
         onClose={() => setReviewOpen(false)}
       />
 
-      <SourceUpdateDialog
-        open={sourceUpdateOpen && Boolean(pendingSourceState)}
-        state={pendingSourceState}
-        userCorrectionCount={userCorrectionCount}
-        onResolve={handleResolveSourceUpdate}
-        onApply={handleApplySourceUpdate}
-        onReject={handleRejectSourceUpdate}
-        onLater={handleDeferSourceUpdate}
-      />
+      {sourceCandidateGateEnabled && sourceCandidateSession ? (
+        <SourceUpdateDialog
+          open={sourceUpdateOpen}
+          view={sourceCandidateDialogView}
+          onSelectChange={handleSelectSourceCandidateChange}
+          onResolve={handleResolveSourceCandidate}
+          onApply={handleApplySourceCandidate}
+          onReject={handleRejectSourceCandidate}
+          onLater={handleDeferSourceCandidate}
+        />
+      ) : (
+        <SourceUpdateDialog
+          open={sourceUpdateOpen && Boolean(pendingSourceState)}
+          state={pendingSourceState}
+          userCorrectionCount={userCorrectionCount}
+          onResolve={handleResolveSourceUpdate}
+          onApply={handleApplySourceUpdate}
+          onReject={handleRejectSourceUpdate}
+          onLater={handleDeferSourceUpdate}
+        />
+      )}
 
       <SourceComparisonDialog
         open={sourceComparisonOpen}
