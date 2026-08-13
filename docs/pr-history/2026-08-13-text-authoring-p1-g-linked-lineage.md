@@ -1,9 +1,9 @@
 # Text Authoring P1-G Bounded Linked Flow Lineage Contract
 
-- **PR:** Draft creation pending
+- **PR:** [#187](https://github.com/knhbae/flowme2605/pull/187)
 - **Date:** 2026-08-13 KST
 - **Branch:** `agent/text-authoring-p1-g-linked-lineage-20260813`
-- **Status:** Draft preparation / local QA PASS / unpublished
+- **Status:** Draft / local QA PASS / GitHub and Preview checks pending / unpublished
 - **Base branch:** `agent/text-authoring-p1-e-source-update-20260813`
 - **Base commit:** `332d0b55ccc05e76bcabc056f2f9cb77ea753d8d`
 - **Parent PR:** [#186](https://github.com/knhbae/flowme2605/pull/186)
