@@ -1,6 +1,7 @@
 import { foldIcsContentLine } from "../ics";
 import type {
   AuthoringArtifactRow,
+  AuthoringArtifactTextBlock,
   AuthoringArtifactView,
 } from "./artifact-projection";
 import { TEXT_AUTHORING_CANONICAL_LABELS } from "./authoring-grammar";
@@ -250,7 +251,7 @@ export function buildAuthoringTableRows(
 export function serializeAuthoringPlainText(
   title: string,
   rows: AuthoringArtifactRow[],
-  sourceOnlyText: string[] = [],
+  sourceOnlyText: Array<string | AuthoringArtifactTextBlock> = [],
 ): string {
   const safeTitle = title.trim() || "제목 없는 Flow";
   const lines = [safeTitle, "=".repeat(Math.max(3, [...safeTitle].length)), ""];
@@ -312,15 +313,16 @@ export function serializeAuthoringPlainText(
     lines.push("");
   });
 
-  const sourceLines = sourceOnlyText.flatMap((value) =>
-    value.trim()
+  const sourceLines = sourceOnlyText.flatMap((entry) => {
+    const value = typeof entry === "string" ? entry : entry.rawText;
+    return value.trim()
       ? value
           .trim()
           .split(/\r?\n/u)
           .map((line) => line.trim())
           .filter(Boolean)
-      : [],
-  );
+      : [];
+  });
   if (sourceLines.length > 0) {
     if (lines.at(-1) !== "") lines.push("");
     lines.push("[원문 메모]");

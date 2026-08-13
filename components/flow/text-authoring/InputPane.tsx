@@ -11,18 +11,9 @@ const OWNERSHIP_OPTIONS: Array<{
   value: AuthoringOwnership;
   label: string;
 }> = [
-  {
-    value: "creator",
-    label: "제작자 초안",
-  },
-  {
-    value: "personal",
-    label: "개인 초안",
-  },
-  {
-    value: "suggestion",
-    label: "수정 제안",
-  },
+  { value: "creator", label: "제작자 초안" },
+  { value: "personal", label: "개인 초안" },
+  { value: "suggestion", label: "수정 제안" },
 ];
 
 function ownershipLabel(ownership: AuthoringOwnership): string {
@@ -98,8 +89,8 @@ function SyntaxGuideContent() {
           }
         </pre>
         <p className="mt-2 text-[var(--flowme-text-secondary)]">
-          날짜가 있는 반복 항목은 캘린더·할 일·표·Excel·TXT 결과에 같은 회차로
-          보여 줍니다. 종료가 없으면 처음 4주를 보여 주고, 더 볼 수 있습니다.
+          날짜가 있는 반복 항목은 캘린더·할 일·표·TXT 결과에 같은 회차로 보여
+          줍니다. 종료가 없으면 처음 4주를 보여 주고, 더 볼 수 있습니다.
         </p>
       </section>
 
@@ -160,12 +151,14 @@ export function InputPane({
   liveUpdateBlocked,
   parseStatusLabel,
   liveAppliedItemCount,
+  sourceError,
   scrollContainerRef,
   sourceTextAreaRef,
   onTitleChange,
   onSourceChange,
   onRawTextChange,
   onOwnershipChange,
+  productMode = false,
 }: {
   title: string;
   source: string;
@@ -176,12 +169,14 @@ export function InputPane({
   liveUpdateBlocked: boolean;
   parseStatusLabel: string | null;
   liveAppliedItemCount: number | null;
+  sourceError?: { id: string; message: string } | null;
   scrollContainerRef: Ref<HTMLDivElement>;
   sourceTextAreaRef: Ref<HTMLTextAreaElement>;
   onTitleChange: (value: string) => void;
   onSourceChange: (value: string) => void;
   onRawTextChange: (value: string) => void;
   onOwnershipChange: (value: AuthoringOwnership) => void;
+  productMode?: boolean;
 }) {
   return (
     <section
@@ -193,8 +188,13 @@ export function InputPane({
           id="text-authoring-input-heading"
           className="text-lg font-semibold tracking-[-0.02em]"
         >
-          무엇을 Flow로 만들까요?
+          {productMode ? "작업 원문" : "무엇을 Flow로 만들까요?"}
         </h2>
+        {productMode ? (
+          <p className="mt-1 text-xs text-[var(--flowme-text-secondary)]">
+            일반 문장을 그대로 붙여 넣어도 됩니다.
+          </p>
+        ) : null}
       </header>
 
       <div
@@ -205,7 +205,7 @@ export function InputPane({
       >
         <label className="block">
           <span className="text-xs font-semibold text-[var(--flowme-text-secondary)]">
-            Flow 제목
+            {productMode ? "제목" : "Flow 제목"}
           </span>
           <input
             data-testid="ta-authoring-title"
@@ -242,7 +242,9 @@ export function InputPane({
                     data-testid="ta-authoring-live-status"
                     className="text-[10px] font-semibold text-[var(--flowme-positive-strong)]"
                   >
-                    {liveAppliedItemCount}개 항목 반영됨
+                    {productMode
+                      ? "결과 반영 완료"
+                      : `${liveAppliedItemCount}개 항목 반영됨`}
                   </span>
                 ) : null}
               </span>
@@ -250,21 +252,31 @@ export function InputPane({
           </div>
           <textarea
             id="text-authoring-source"
+            autoFocus={productMode}
             ref={sourceTextAreaRef}
             data-testid="ta-authoring-source"
             aria-label="작업 원문"
             aria-describedby="text-authoring-source-hint"
+            aria-invalid={sourceError ? true : undefined}
+            aria-errormessage={sourceError?.id}
             className={`${FLOW_UI_INPUT_CLASS} mt-1 min-h-[300px] w-full resize-y font-mono text-[13px] font-normal leading-6 md:min-h-[420px]`}
             value={rawText}
             spellCheck={false}
             placeholder={
-              "일반 메모 또는 항목 목록을 붙여 넣으세요.\n\n## 예약\n- [ ] 항공권 확인\n  - 날짜: 2026-08-03\n  - 완료 기준: 예약번호를 남김"
+              productMode
+                ? "제목입니다.\n설명입니다.\n\n- [ ] 첫 번째 항목입니다.\n  - 날짜: 2026-08-03"
+                : "일반 메모 또는 항목 목록을 붙여 넣으세요.\n\n## 예약\n- [ ] 항공권 확인\n  - 날짜: 2026-08-03\n  - 완료 기준: 예약번호를 남김"
             }
             onChange={(event) => onRawTextChange(event.target.value)}
           />
           <span id="text-authoring-source-hint" className="sr-only">
             작성 문법은 작업 원문 옆 물음표 버튼에서 확인할 수 있습니다.
           </span>
+          {sourceError ? (
+            <span id={sourceError.id} className="sr-only">
+              {sourceError.message}
+            </span>
+          ) : null}
           {parsePending && liveUpdateBlocked ? (
             <span className="mt-1 block text-[11px] leading-4 text-[var(--flowme-warning-strong)]">
               저장했거나 직접 고친 결과는 자동으로 덮어쓰지 않습니다. 아래
@@ -278,14 +290,14 @@ export function InputPane({
           className="rounded-[var(--flowme-radius-control)] border border-[var(--flowme-border)] bg-[var(--flowme-surface)]"
         >
           <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 px-3 py-2 text-sm font-semibold text-[var(--flowme-text)] outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)] [&::-webkit-details-marker]:hidden">
-            <span>출처·저장 설정</span>
+            <span>{productMode ? "원문 정보" : "출처·저장 설정"}</span>
             <span className="text-xs font-normal text-[var(--flowme-text-tertiary)]">
-              {ownershipLabel(ownership)}
+              {productMode ? "+" : ownershipLabel(ownership)}
             </span>
           </summary>
 
           <div className="space-y-4 border-t border-[var(--flowme-border)] px-3 py-3">
-            <div className="block">
+            <div>
               <label
                 htmlFor="text-authoring-source-meta"
                 className="text-xs font-semibold text-[var(--flowme-text-secondary)]"
@@ -308,54 +320,55 @@ export function InputPane({
                 URL 본문은 가져오지 않고, 직접 붙여 넣은 내용만 해석합니다.
               </p>
             </div>
-
-            <div className="space-y-2">
-              <p className="text-xs font-semibold text-[var(--flowme-text-secondary)]">
-                저장 성격
-              </p>
-              <fieldset
-                data-testid="ta-authoring-ownership"
-                disabled={ownershipLocked}
-              >
-                <legend className="sr-only">저장 성격</legend>
-                <div className="grid grid-cols-3 gap-2">
-                  {OWNERSHIP_OPTIONS.map((option) => {
-                    const selected = option.value === ownership;
-                    return (
-                      <label
-                        key={option.value}
-                        className={`flex min-h-11 items-center justify-center rounded-[var(--flowme-radius-control)] border px-2 py-2 text-center transition focus-within:outline-none focus-within:ring-2 focus-within:ring-[var(--flowme-focus)] ${
-                          ownershipLocked
-                            ? "cursor-not-allowed opacity-65"
-                            : "cursor-pointer"
-                        } ${
-                          selected
-                            ? "border-[var(--flowme-positive)] bg-[var(--flowme-positive-soft)]"
-                            : "border-[var(--flowme-border)] bg-[var(--flowme-surface)] hover:border-[var(--flowme-border-strong)]"
-                        }`}
-                      >
-                        <input
-                          className="sr-only"
-                          type="radio"
-                          name="text-authoring-ownership"
-                          value={option.value}
-                          checked={selected}
-                          onChange={() => onOwnershipChange(option.value)}
-                        />
-                        <span className="text-xs font-semibold sm:text-sm">
-                          {option.label}
-                        </span>
-                      </label>
-                    );
-                  })}
-                </div>
-              </fieldset>
-              <p className="text-[11px] leading-5 text-[var(--flowme-text-tertiary)]">
-                {ownershipLocked
-                  ? "항목을 만든 뒤에는 저장 성격을 바꾸지 않습니다. 다른 성격은 새 Flow에서 선택하세요."
-                  : "제작자 초안과 수정 제안은 파일로 가져가기 전에 권리·안전을 확인합니다."}
-              </p>
-            </div>
+            {!productMode ? (
+              <div className="space-y-2">
+                <p className="text-xs font-semibold text-[var(--flowme-text-secondary)]">
+                  저장 성격
+                </p>
+                <fieldset
+                  data-testid="ta-authoring-ownership"
+                  disabled={ownershipLocked}
+                >
+                  <legend className="sr-only">저장 성격</legend>
+                  <div className="grid grid-cols-3 gap-2">
+                    {OWNERSHIP_OPTIONS.map((option) => {
+                      const selected = option.value === ownership;
+                      return (
+                        <label
+                          key={option.value}
+                          className={`flex min-h-11 items-center justify-center rounded-[var(--flowme-radius-control)] border px-2 py-2 text-center transition focus-within:outline-none focus-within:ring-2 focus-within:ring-[var(--flowme-focus)] ${
+                            ownershipLocked
+                              ? "cursor-not-allowed opacity-65"
+                              : "cursor-pointer"
+                          } ${
+                            selected
+                              ? "border-[var(--flowme-positive)] bg-[var(--flowme-positive-soft)]"
+                              : "border-[var(--flowme-border)] bg-[var(--flowme-surface)] hover:border-[var(--flowme-border-strong)]"
+                          }`}
+                        >
+                          <input
+                            className="sr-only"
+                            type="radio"
+                            name="text-authoring-ownership"
+                            value={option.value}
+                            checked={selected}
+                            onChange={() => onOwnershipChange(option.value)}
+                          />
+                          <span className="text-xs font-semibold sm:text-sm">
+                            {option.label}
+                          </span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </fieldset>
+                <p className="text-[11px] leading-5 text-[var(--flowme-text-tertiary)]">
+                  {ownershipLocked
+                    ? "항목을 만든 뒤에는 저장 성격을 바꾸지 않습니다. 다른 성격은 새 Flow에서 선택하세요."
+                    : "제작자 초안과 수정 제안은 파일로 가져가기 전에 권리·안전을 확인합니다."}
+                </p>
+              </div>
+            ) : null}
           </div>
         </details>
       </div>

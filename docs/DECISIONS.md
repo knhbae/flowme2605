@@ -47,6 +47,18 @@ Do not use this for:
 
 **Related docs:** [Public Plan/Item Edit Surface Unification](./specs/2026-08-12-public-plan-edit-surface-unification/spec.md), [Korean UI capture review](./content-audit/2026-08-12-public-plan-edit-surface-unification-ui-review-ko.html), [service structure](./SERVICE_STRUCTURE.md)
 
+### 2026-08-11 - Text Authoring P0는 개인 제작자의 로컬 초안 서비스로 운영한다
+
+**Decision:** Text Authoring의 제품 여정은 `/flows/authoring` 콘텐츠 목록, `/flows/new` 새 콘텐츠, `/flows/authoring/[draftId]` 저장 초안으로 나눈다. 제품 목록은 열기·이름 변경·복제·보관·복구만 제공하고 검색·필터·영구 삭제·버전 이력은 P0에서 제외한다. 최초 `SourceSnapshot`은 불변으로 보존하고, 사용자가 편집하는 `WorkingSource`와 parser·canonical draft·Calendar/Todo/Sheet/TXT projection은 한 current revision pair를 사용한다. 자동 저장은 crash recovery일 뿐 `저장됨`으로 표시하지 않으며, `초안 저장`만 durable explicit save다. `준비 완료`는 마지막 explicit saved revision에 대한 로컬 status receipt만 만들고 publish·network·P35 side effect는 만들지 않는다. 평문은 canonical Item을 발명하지 않고 TXT 원문 메모로 저장하며, 사실 표는 명시 행동이 없는 한 Sheet와 TXT에만 투영한다. 제품 route에는 QA fixture·scenario count·parser/revision 내부 용어를 노출하지 않는다.
+
+**Reason:** 반복 제작자는 문법을 배우기 전에 평문으로 시작하고, 원문 손실 없이 저장·재진입·복구할 수 있어야 한다. recovery와 explicit save, 최초 원문과 작업본, canonical 계산과 결과 projection의 소유권을 분리해야 최신 원문과 오래된 결과를 섞어 저장하거나 내부 QA 화면을 제품으로 오인하는 일을 막을 수 있다.
+
+**Applies to:** `/flows/authoring`, `/flows/new`, `/flows/authoring/[draftId]`, `components/flow/text-authoring/*`, `lib/flow/text-authoring/*`, 로컬 Text Authoring 저장소와 제품 E2E. 기존 `?authoringQa=1` 검토 harness와 `?legacy=1` fallback은 별도 진입으로 유지한다. 외부 게시·계정 동기화·협업·AI 생성·P35 반영은 포함하지 않는다.
+
+**Reopen when:** 관찰 사용자 행동에서 목록/새 콘텐츠/저장 초안 route 분리가 반복적으로 막히거나, 계정 기반 원격 저장·협업·게시 계약이 승인되거나, SourceSnapshot과 WorkingSource의 소유권을 바꿔야 하는 데이터 마이그레이션이 승인될 때다. 자동 테스트와 내부 브라우저 QA만으로 재개하지 않는다.
+
+**Related docs:** [P0 개발 목표](./specs/2026-08-11-flowme-text-authoring-service-p0/00-development-goal-ko.md), [P0 구현 결과](./content-audit/2026-08-11-flowme-text-authoring-service-p0-results/README.md), [현재 문법·처리 로직](./specs/2026-07-28-flowme-text-authoring-ux-v1/authoring-grammar-logic.md)
+
 ### 2026-08-11 - Text Authoring v5는 원문 기반 제작 작업대와 네 결과 projection을 main 통합 후보로 둔다
 
 **Decision:** `/flows/new`의 기본 진입은 원문을 직접 편집하는 Text Authoring 제작 작업대다. `?legacy=1` 또는 `FLOWME_TEXT_AUTHORING_ENABLED=0`은 기존 `NewFlow`를 유지하는 명시적 fallback이다. root `- [ ]`만 canonical Item을 만들고 한 단계 `  - [ ]`는 Todo 하위 체크로 보존한다. 지원 반복은 canonical Item 하나에서 bounded occurrence를 계산해 Calendar·Todo·Sheet·TXT가 같은 회차를 보여 주며, Calendar는 월간 grid와 선택일 상세를 사용한다. 좌측 작업 원문과 우측 수정은 source lineage와 최초 snapshot을 보존하는 atomic revision으로 동기화하고, 날짜순 원문 정렬은 사용자가 명시적으로 실행할 때만 같은 Step의 Item 블록을 이동한다. 처리 방침이 결정된 invalid date·relative date·URL-only 사례는 runtime repair/block 상태를 유지한 채 `예외 처리`로 분류하며, 같은 날 Calendar와 ICS는 `날짜 → 종일 → 시간 → source order`로 정렬한다. 제품 대표 예시는 5개, QA catalog는 기본 문법 1개와 validated 30개다.

@@ -28,11 +28,13 @@ const STAGES: Array<{
 export function AuthoringWorkspaceHeader({
   libraryOpen,
   libraryToggleTestId = "ta-authoring-library-toggle",
+  productMode = false,
   onToggleLibrary,
   onReset,
 }: {
   libraryOpen: boolean;
   libraryToggleTestId?: string | null;
+  productMode?: boolean;
   onToggleLibrary: () => void;
   onReset: () => void;
 }) {
@@ -48,7 +50,13 @@ export function AuthoringWorkspaceHeader({
             aria-hidden="true"
           />
           <p className="min-w-0 truncate text-base font-semibold tracking-[-0.025em] text-[var(--flowme-text)] sm:text-lg">
-            {libraryOpen ? "저장한 Flow" : "Flow 만들기"}
+            {productMode
+              ? libraryOpen
+                ? "내 콘텐츠"
+                : "콘텐츠 제작"
+              : libraryOpen
+                ? "저장한 Flow"
+                : "Flow 만들기"}
           </p>
         </div>
         <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
@@ -57,22 +65,34 @@ export function AuthoringWorkspaceHeader({
             data-testid={libraryToggleTestId ?? undefined}
             aria-pressed={libraryOpen}
             aria-label={
-              libraryOpen ? "Flow 만들기로 돌아가기" : "저장한 Flow 보기"
+              productMode
+                ? libraryOpen
+                  ? "콘텐츠 제작으로 돌아가기"
+                  : "내 콘텐츠 보기"
+                : libraryOpen
+                  ? "Flow 만들기로 돌아가기"
+                  : "저장한 Flow 보기"
             }
             className={FLOW_UI_SECONDARY_ACTION_CLASS}
             onClick={onToggleLibrary}
           >
-            {libraryOpen ? "Flow 만들기" : "저장한 Flow"}
+            {productMode
+              ? libraryOpen
+                ? "콘텐츠 만들기"
+                : "내 콘텐츠"
+              : libraryOpen
+                ? "Flow 만들기"
+                : "저장한 Flow"}
           </button>
           {!libraryOpen ? (
             <button
               type="button"
               className={FLOW_UI_SECONDARY_ACTION_CLASS}
-              aria-label="새 Flow 시작"
-              title="새 Flow 시작"
+              aria-label={productMode ? "새 콘텐츠 시작" : "새 Flow 시작"}
+              title={productMode ? "새 콘텐츠 시작" : "새 Flow 시작"}
               onClick={onReset}
             >
-              새 Flow
+              {productMode ? "새 콘텐츠" : "새 Flow"}
             </button>
           ) : null}
         </div>
@@ -136,6 +156,7 @@ export function AuthoringExampleSwitcher({
   activeScenarioId,
   onSelect,
   showQaCatalog = false,
+  productMode = false,
   productExampleLimit = 5,
 }: {
   examples: TextAuthoringExample[];
@@ -144,21 +165,27 @@ export function AuthoringExampleSwitcher({
   activeScenarioId: string | null;
   onSelect: (example: TextAuthoringExample) => void;
   showQaCatalog?: boolean;
+  productMode?: boolean;
   productExampleLimit?: number;
 }) {
   const productExamples = examples.slice(0, Math.max(1, productExampleLimit));
   const visibleProductExamples = showQaCatalog
     ? productExamples.filter((example) => example.id === "simple")
     : productExamples;
+  const selectedProductExampleIndex = visibleProductExamples.findIndex(
+    (example) => example.id === activeExampleId,
+  );
   const selectedValue = showQaCatalog
     ? activeExampleId === "simple"
       ? "product:simple"
       : activeScenarioId
         ? `qa:${activeScenarioId}`
         : ""
-    : activeExampleId
-      ? `product:${activeExampleId}`
-      : "";
+    : productMode && selectedProductExampleIndex >= 0
+      ? `example:${selectedProductExampleIndex}`
+      : activeExampleId
+        ? `product:${activeExampleId}`
+        : "";
   const visibleExampleCount =
     visibleProductExamples.length +
     (showQaCatalog ? validatedExamples.length : 0);
@@ -178,38 +205,52 @@ export function AuthoringExampleSwitcher({
           <select
             data-testid="ta-authoring-example-select"
             aria-describedby="ta-authoring-example-select-help"
-            className="min-h-11 w-full appearance-auto rounded-[var(--flowme-radius-control)] border border-[var(--flowme-border-strong)] bg-[var(--flowme-surface)] px-2.5 pr-7 text-base font-semibold text-[var(--flowme-text)] outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] sm:min-h-9 sm:text-xs"
+            className="min-h-11 w-full appearance-auto rounded-[var(--flowme-radius-control)] border border-[var(--flowme-border-strong)] bg-[var(--flowme-surface)] px-2.5 pr-7 text-base font-semibold text-[var(--flowme-text)] outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] sm:text-xs"
             value={selectedValue}
             onChange={(event) => {
               const [mode, id] = event.target.value.split(":", 2);
               const selectedExample =
-                mode === "product"
-                  ? visibleProductExamples.find((example) => example.id === id)
-                  : mode === "qa" && showQaCatalog
-                    ? validatedExamples.find(
-                        (example) => example.scenarioId === id,
+                mode === "example" && productMode
+                  ? visibleProductExamples[Number(id)]
+                  : mode === "product"
+                    ? visibleProductExamples.find(
+                        (example) => example.id === id,
                       )
-                    : undefined;
+                    : mode === "qa" && showQaCatalog
+                      ? validatedExamples.find(
+                          (example) => example.scenarioId === id,
+                        )
+                      : undefined;
               if (selectedExample) onSelect(selectedExample);
             }}
           >
             <option value="">
-              {showQaCatalog ? "전체 검토 예시 선택" : "대표 예시 선택"}
+              {showQaCatalog
+                ? "전체 검토 예시 선택"
+                : productMode
+                  ? "예시를 선택하세요"
+                  : "대표 예시 선택"}
             </option>
             <optgroup
               label={
                 showQaCatalog
                   ? `작성 문법 · ${visibleProductExamples.length}개`
-                  : `대표 예시 · ${visibleProductExamples.length}개`
+                  : productMode
+                    ? "예시"
+                    : `대표 예시 · ${visibleProductExamples.length}개`
               }
             >
-              {visibleProductExamples.map((example) => (
+              {visibleProductExamples.map((example, index) => (
                 <option
                   key={example.id}
-                  value={`product:${example.id}`}
-                  data-example-id={example.id}
+                  value={
+                    productMode ? `example:${index}` : `product:${example.id}`
+                  }
+                  data-example-id={productMode ? undefined : example.id}
                 >
-                  {example.label} · {example.resultLabel}
+                  {productMode
+                    ? example.label
+                    : `${example.label} · ${example.resultLabel}`}
                 </option>
               ))}
             </optgroup>
@@ -243,11 +284,13 @@ export function AuthoringExampleSwitcher({
           <span id="ta-authoring-example-select-help" className="sr-only">
             선택하면 입력과 결과가 함께 바뀝니다.
           </span>
-          <span data-testid="ta-authoring-example-count" className="sr-only">
-            {showQaCatalog
-              ? `전체 예시 ${visibleExampleCount}개`
-              : `대표 ${visibleProductExamples.length}개`}
-          </span>
+          {!productMode ? (
+            <span data-testid="ta-authoring-example-count" className="sr-only">
+              {showQaCatalog
+                ? `전체 예시 ${visibleExampleCount}개`
+                : `대표 ${visibleProductExamples.length}개`}
+            </span>
+          ) : null}
         </label>
         {showQaCatalog ? (
           <div className="flex shrink-0 items-center gap-1.5">
@@ -261,14 +304,14 @@ export function AuthoringExampleSwitcher({
               대표 5개 비교
             </a>
           </div>
-        ) : (
+        ) : !productMode ? (
           <a
             href="?authoringQa=1"
             className="shrink-0 rounded border border-[var(--flowme-border)] bg-[var(--flowme-surface)] px-2 py-1 text-[10px] font-bold text-[var(--flowme-text-secondary)] underline-offset-2 hover:underline"
           >
             전체 예시 보기
           </a>
-        )}
+        ) : null}
       </div>
     </nav>
   );
@@ -276,11 +319,13 @@ export function AuthoringExampleSwitcher({
 
 export function RecoveryBanner({
   title,
+  description,
   onRecover,
   onDismiss,
   onDiscard,
 }: {
   title: string;
+  description?: string;
   onRecover: () => void;
   onDismiss: () => void;
   onDiscard: () => void;
@@ -299,7 +344,7 @@ export function RecoveryBanner({
             작성 중이던 초안이 있습니다
           </h2>
           <p className="mt-0.5 truncate text-xs text-[var(--flowme-text-secondary)]">
-            {title} · 아직 저장하지 않았습니다.
+            {description ?? `${title} · 아직 저장하지 않았습니다.`}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">

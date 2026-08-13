@@ -52,6 +52,7 @@ const DRAFT_STATUS_LABEL: Record<
   draft: "작성 중",
   needs_review: "확인 필요",
   previewed: "결과 확인 완료",
+  ready: "준비 완료",
   archived: "보관됨",
 };
 
@@ -98,6 +99,25 @@ function rawTextForIssue(
     .filter((row) => issue.sourceRowIds.includes(row.sourceRowId))
     .sort((left, right) => left.order - right.order)
     .map((row) => row.rawText)
+    .join("\n");
+}
+
+function itemPropertySourceValue(
+  document: TextAuthoringDocument,
+  item: CanonicalAuthoringItem,
+  labels: string[],
+): string {
+  return document.parseResult.canonical.sourceRows
+    .filter(
+      (row) =>
+        item.sourceRowIds.includes(row.sourceRowId) &&
+        row.state !== "tombstone",
+    )
+    .sort((left, right) => left.order - right.order)
+    .flatMap((row) => {
+      const match = /^ {2}- ([^:：]+)[:：]\s*(.*)$/u.exec(row.rawText);
+      return match && labels.includes(match[1].trim()) ? [match[2].trim()] : [];
+    })
     .join("\n");
 }
 
@@ -166,6 +186,42 @@ function issueReason(issue: UnresolvedAuthoringIssue): string {
   return reasons[issue.type] ?? "이 문장을 자동으로 분류하지 못했어요.";
 }
 
+function issueExpectedInput(issue: UnresolvedAuthoringIssue): string {
+  if (issue.expectedFormat) return issue.expectedFormat;
+  const expected: Partial<Record<UnresolvedAuthoringIssue["type"], string>> = {
+    ambiguous_role: "일반 문장은 TXT로 두고, 할 일이면 - [ ] 제목으로 시작",
+    unsupported_syntax: "할 일은 - [ ] 제목, 속성은 두 칸 들여쓴 - 속성: 값",
+    unknown_property: "정의된 속성명을 쓰거나 일반 설명 문장으로 입력",
+    unsupported_nested_item:
+      "하위 확인은 부모 할 일 바로 아래에 두 칸 들여쓴 - [ ] 제목",
+    missing_parent: "먼저 - [ ] 부모 할 일을 입력한 뒤 하위 확인을 추가",
+    invalid_date: "YYYY-MM-DD",
+    invalid_url: "https://로 시작하는 링크 1개",
+    invalid_recurrence: "예: 매주 월요일 + 반복 종료: 3회",
+    source_import_required: "URL과 함께 확인할 원문을 입력",
+    rights_review_required: "공개 전 출처와 사용 범위를 확인",
+    safety_review_required: "공개 전 주의 근거와 중단 조건을 확인",
+  };
+  return expected[issue.type] ?? "원문 형식을 다시 확인";
+}
+
+function issueBlockedResult(issue: UnresolvedAuthoringIssue): string {
+  const impact: Partial<Record<UnresolvedAuthoringIssue["type"], string>> = {
+    ambiguous_role: "할 일·캘린더·표 포함 여부를 정할 수 없음",
+    unsupported_syntax: "할 일·캘린더·표 결과를 만들 수 없음",
+    unknown_property: "해당 속성을 결과에 표시할 수 없음",
+    unsupported_nested_item: "하위 확인 항목을 할 일에 연결할 수 없음",
+    missing_parent: "하위 확인 항목을 할 일에 연결할 수 없음",
+    invalid_date: "해당 항목을 캘린더에 표시할 수 없음",
+    invalid_url: "해당 링크를 결과에서 열 수 없음",
+    invalid_recurrence: "반복 회차를 만들 수 없음",
+    source_import_required: "URL 원문을 결과로 만들 수 없음",
+    rights_review_required: "공개 준비를 완료할 수 없음",
+    safety_review_required: "공개 준비를 완료할 수 없음",
+  };
+  return impact[issue.type] ?? "해당 내용을 결과에 반영할 수 없음";
+}
+
 function issueSortRank(
   state: "open" | "held",
   outcomes: AuthoringIssueOutcome[],
@@ -222,16 +278,21 @@ export function toAuthoringItemView(
     repeatEnd: propertyValue(item.properties, "repeat_end"),
     condition: propertyValue(item.properties, "condition"),
     resource:
+      itemPropertySourceValue(document, item, ["자료"]) ||
       propertyValue(item.properties, "resource") ||
       item.resources
         .map((resource) => resource.url || resource.label)
         .join(", "),
     source:
+      itemPropertySourceValue(document, item, ["출처"]) ||
       propertyValue(item.properties, "source") ||
-      item.sources.map((source) => source.url || source.label).join(", ") ||
-      document.sourceUrl ||
-      document.sourceTitle ||
-      "",
+      item.sources.map((source) => source.url || source.label).join(", "),
+    guide:
+      itemPropertySourceValue(document, item, ["안내", "가이드"]) ||
+      item.guides.join("\n"),
+    caution:
+      itemPropertySourceValue(document, item, ["주의", "경고"]) ||
+      item.cautions.join("\n"),
     userCorrected:
       Boolean(
         item.creatorTitle ||
@@ -311,6 +372,10 @@ export function buildAuthoringOutlineView(
         sourceLineLabel: sourceLineLabel(document, issue.sourceRowIds),
         rawText: rawTextForIssue(document, issue),
         reason: issueReason(issue),
+        expectedInput: issueExpectedInput(issue),
+        blockedResult: issueBlockedResult(issue),
+        sourceRowIds: [...issue.sourceRowIds],
+        ...(issue.itemId ? { itemId: issue.itemId } : {}),
         state: state === "held" ? "held" : "open",
         blocking: issue.blocking,
         availableOutcomes,
@@ -403,6 +468,7 @@ export function toDraftView(
     ).length,
     revisionLabel: summary.revisionId,
     updatedAtLabel: formatKoreanDateTime(summary.updatedAt),
+    lastSavedAtLabel: formatKoreanDateTime(summary.lastSavedAt),
     archived: summary.status === "archived",
     status: DRAFT_STATUS_LABEL[summary.status],
   };

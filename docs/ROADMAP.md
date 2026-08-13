@@ -4,7 +4,7 @@
 **Current Version:** v0.1.0 (released product PoC)<br>
 **Current Validation Stage:** internal alpha / Flow Map Item date parity released and Production-smoked / observed users 0<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** Owner promotion of one next product gate or a real-user validation checkpoint
+**Next Milestone:** Reapply the approved Text Authoring V5/P0/P1-C/P1-E/P1-G stack on latest `origin/main`, complete fresh QA, and publish track-sized Draft PRs; merge and production deployment remain separate gates
 
 Human-facing control surface: [FlowMe Project Control](./PROJECT_CONTROL.md).
 The [2026-07-29 P35 stage board](./content-audit/2026-07-29-flowme-current-stage-control-board-ko.html)
@@ -200,12 +200,15 @@ representative state; pre-existing workspace normalization remains outside its
 scope. It changes no runtime, storage, or schema behavior, did not independently
 rerun the PR #162 smoke record, and creates no additional product gate.
 
-The text-authoring UX, projection/event corpus, full-corpus UI lab, vertical
-service benchmark, and research-to-product playbook are decision inputs. They
-do not create five parallel implementation programs. Text authoring remains a
-design-complete, implementation-unstarted candidate whose first possible slice
-is `TA-01`; it requires explicit owner promotion and is not automatically the
-next active gate.
+The projection/event corpus, full-corpus UI lab, vertical service benchmark,
+and research-to-product playbook remain decision inputs rather than parallel
+implementation programs. Approval `TA-P0-PROMOTE-20260813-01` moved the exact
+manifest-bound Text Authoring P0 set from the preserved source checkout into
+the clean integration target. Fresh docs, Text Authoring, full test, and build
+checks pass, including final E2E `58/58`, eight widths, 200% reflow, reduced
+motion, 44px, source-error relation, keyboard/focus, and overflow. Scoped
+closeout is complete and the result is included in one local commit. It is still unpublished,
+unconnected to P35, and unobserved by users.
 
 ## Released Baseline
 
@@ -486,12 +489,13 @@ External user observation stays separate and the count stays `0`.
 | Completed documentation-only closeouts | AI | Publish the exact PR #176 and PR #178 release facts and observed-user boundary without changing product code | Preserve [PR #177](https://github.com/knhbae/flowme2605/pull/177) and [PR #179](https://github.com/knhbae/flowme2605/pull/179) as documentation history, separate from the runtime-bearing product release | Canonical docs agree, docs checks passed, and documentation-only deployments are not mistaken for a new product baseline |
 | Completed public plan surface release | AI + Owner | One public Flow/Map result grammar with existing save identity, rollback, CI, deployment, and smoke boundaries | Preserve merge `47c54803c6bb7544aad757ce62c4ce58decbfe53` as the historical predecessor to PR #178 | PR #176, exact-head and post-merge CI PASS, exact-source Production PASS, canonical smoke `11/11`, observed users `0` |
 | Completed R3B release | AI + Owner | Approved plan-execution UX, bounded selected-Plan/transfer boundaries, Escape correction, CI, deployment, and smoke | Preserve R3B as the inherited My Flow execution contract | PR #172 plus PR #173, merge `2b937ce811b518950f495341d05736ebd102887a`, CI PASS, exact-source deployment PASS, canonical smoke `23/23`, observed users `0` |
+| Text Authoring stacked Draft PR integration | AI + Owner | Refresh V5/P0 on latest main, then layer P1-C, P1-E, and spec-only P1-G with track-specific QA and review boundaries | Fresh local QA, pushed branches, Draft PR CI, and Vercel Preview evidence for each stack layer | Four Draft PRs exist with explicit predecessor bases; merge, Production, P35/external effects, and observed users stay `0` |
 | Completed R3A release | AI + Owner | My Flow workspace snapshot, exact-query experience boundary, PR #169 merge, production deploy, and smoke | Preserve its historical then-default `classic` behavior and exact-query rollback comparison boundary; keep lab promotion/removal separate | merge `95a69257`, GitHub Playwright `546/546`, deployment `dpl_5jhJz4EBiHMm5HptH9nFCqfyeFek` `READY`, production smoke PASS, observed users `0` |
 | Completed P35 Round 2 release | AI + Owner | P′ review incorporation, P′′ freeze/evidence, and production deployment | Preserve the historical release boundary without claiming a fresh independent P′′ review or production smoke | deployment `dpl_EBDr9CiRuwAUyjMcJwp7g6eBLpNk` was `READY`, smoke `NOT_RUN`, observed users `0` |
 | Completed candidate evidence | Development | P′′ shared lock, fresh reread/CAS, reuse/public-copy transaction, exact-byte/schema/deploy guards | Preserve source and published provenance for `f97644a` / `T0QkChgscSgPog-0UdvY-` / `p35-r2-4fa6af1728eb5ca5` | S01~S23 `23/23` accounted (S22 `NOT_ASSESSED`, S23 reviewer-chosen), three group manifests `PASS`, verifier `PASS`, failures `0` |
 | Completed implementation | Development | Round 2 P0-01~P1-04 and the earlier correction checkpoint | Preserve the bounded UX correction, rollback contracts, one canonical result projection, and zero-write public read path | historical local evidence remains inspectable without being presented as the final candidate run |
-| P2 follow-up candidates | AI + Owner after explicit promotion | URL supply queue, legacy-off, rapid batch submit, creator/text-authoring mutation ownership | Retain, drop, or promote each item separately from the closed MVP release | no item enters the active queue or released P′′ scope without explicit promotion |
-| Research shelf | AI | Text authoring, projection/event, full-corpus UI, vertical benchmark, research-to-product evidence | Keep source, inference, runtime impact, and unverified external evidence separate | Decision inputs stay reproducible without claiming runtime delivery |
+| P2 follow-up candidates | AI + Owner after explicit promotion | URL supply queue, legacy-off, rapid batch submit, collaborative authoring, and mixed fact/action semantics | Retain, drop, or promote each item separately from the closed MVP release and completed local Text Authoring P0 | no item enters the active queue or released scope without explicit promotion |
+| Research shelf | AI | Projection/event, full-corpus UI, vertical benchmark, and research-to-product evidence | Keep source, inference, runtime impact, and unverified external evidence separate | Decision inputs stay reproducible without claiming runtime delivery |
 | Completed evidence | AI | P35 literal-route hardening | Preserve the two non-fixture regressions without turning evidence work into a product program | Literal `/my` and the fresh one-Flow rollback case pass `2 / 2`; runtime, storage, schema, and observed-user state are unchanged |
 | Completed | AI | P35 implementation and release | Preserve the state router, three primary destinations, stable P34 data contracts, and evidence boundary | PR #161, merge `4a51b08`, CI/Vercel green, full E2E `405 / 405`; PR #162 records production smoke `6 / 6` without a linked raw artifact; observed users `0` |
 | Completed | AI | P34-00~08 implementation and release | Preserve P33 identities, storage, 24/5 no-auto-merge, and rollback boundary | PR #157, merge `98ede0f`, CI/Vercel green, audit `0`, full E2E `326 / 326`, production smoke green |
@@ -546,6 +550,12 @@ closeouts do not change runtime, reopen a product gate, or turn automated smoke
 into observed-user evidence. Text-to-Flow, P2 follow-ups, external integrations,
 and observed-user recruitment remain inactive until the Owner explicitly
 promotes one of them.
+
+The original Text Authoring P0 promotion remains a dated local QA baseline. Its
+approved V5/P0/P1-C/P1-E/P1-G descendants are now being refreshed as stacked
+Draft PRs on latest main. GitHub Actions and Vercel Preview are authorized review
+effects only; they do not merge, production-deploy, connect P35, or create
+observed-user evidence.
 
 ## Gated Backlog
 

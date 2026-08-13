@@ -3,7 +3,7 @@
 **Last Updated:** 2026-08-13 (Flow Map Item date parity merged, deployed, and production-smoked)
 **Status:** v0.1.0 RELEASED / FLOW MAP ITEM DATE PARITY CI-PRODUCTION-SMOKE PASS / OBSERVED USERS 0
 **Current Version:** v0.1.0  
-**Primary Focus:** Preserve the released Plan/Item editing contract and its evidence boundary; no next product gate is active until the Owner promotes one.
+**Primary Focus:** Preserve the released Plan/Item contract while the approved Text Authoring stack is refreshed on latest main as track-sized Draft PRs; merge and Production remain separate gates.
 
 ## Current Control Panel
 
@@ -20,6 +20,7 @@ Start from [PROJECT_CONTROL.md](./PROJECT_CONTROL.md). Dated HTML boards remain 
 | AI action now | Preserve the released baseline and its evidence boundary until a new gate is explicitly opened. No product implementation task is pending. |
 | Paused Text Authoring | Preserved and pushed at `a5d5338`; separate from the release and not promoted. |
 | Text Authoring integration candidate | The v5 implementation and local P0/P1 follow-ups are being refreshed on latest `origin/main` as stacked Draft PRs. Closed Draft PR [#175](https://github.com/knhbae/flowme2605/pull/175) remains historical evidence only; merge, production deployment, P35 integration, and observed-user validation remain 0. |
+| Historical P0 promotion | Approval `TA-P0-PROMOTE-20260813-01` applied row-set SHA-256 `687E943319C86D9A60F947753453295AACCC7C68594DD480DE03BB5138281D45` to local commit `5ef186d4`. Its `259/259`, full-test exit `0`, build `19` routes, and E2E `58/58` remain dated local evidence rather than fresh proof for the current refresh. |
 | Paused content review | Preserved and pushed at `0d27143` on `archive/flow-content-user-review-wip-20260806`; not a publication candidate. |
 | Deferred candidates | P35 P2 mutation follow-ups, collaborative authoring, content review, mixed fact/action table semantics, and research packages remain separate shelves. Select at most one by explicit decision. |
 | Merged architecture baseline | R0, R1, and R2 were merged through [PR #168](https://github.com/knhbae/flowme2605/pull/168) on 2026-08-08 as `efa4d90a78a06134180701bed74874579ac94154`. Calendar view-model/controller and My Flow saved-library transitions are separated while `AppClient` remains the compatibility adapter. This merge did not create a production deployment, production smoke, or observed-user validation. |
@@ -42,6 +43,7 @@ Start from [PROJECT_CONTROL.md](./PROJECT_CONTROL.md). Dated HTML boards remain 
 | Previous public plan surface release | [QA evidence](./specs/2026-08-12-public-plan-surface-unification/qa.md) | PR #176 merge `47c54803c6bb7544aad757ce62c4ce58decbfe53` and PR #178 merge `908ee849beb15cb10331b72d7894167a61458b18` remain historical foundations; PR #182 merge `f6f796c035d5762eea07ec35abb7f1af1577a5a5` is the current product-behavior baseline. |
 | Worktree boundary | `git worktree list` | Release and documentation follow-ups use dedicated worktrees; user-owned and unrelated worktrees remain untouched. |
 | Historical Text Authoring v5 QA | [v5 result ledger](./content-audit/2026-08-11-flowme-text-authoring-exception-coverage-v5-results/README.md) | Closed PR #175 carried Text Authoring `203/203`, main unit lanes `173/173 + 622/622 + 182/182`, focused E2E `37/37`, legacy fallback `2/2`, build 18 routes, grammar `30/30`, and standalone five-viewport browser QA. GitHub run [`31466654229`](https://github.com/knhbae/flowme2605/actions/runs/31466654229) and its Vercel Preview passed, but these remain historical pre-refresh results rather than fresh evidence for the new stacked PRs. |
+| Text Authoring P0 local promotion | [P0 goal](./specs/2026-08-11-flowme-text-authoring-service-p0/00-development-goal-ko.md) / [source result](./content-audit/2026-08-11-flowme-text-authoring-service-p0-results/README.md) / [promotion result](./content-audit/2026-08-13-flowme-text-authoring-p0-promotion-results/README.md) | Approval-bound `51` files plus the promotion ledger were included in local commit `5ef186d4`; the current latest-main branch replays that exact approved boundary and requires fresh QA before its Draft PR is treated as green. |
 
 ## Active Product Constraints
 

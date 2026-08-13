@@ -1,72 +1,79 @@
-import assert from 'node:assert/strict';
-import test from 'node:test';
-import { toAuthoringItemView } from '../../../components/flow/text-authoring/view-model';
-import { buildAuthoringArtifactProjection } from './artifact-projection';
-import { stableAuthoringId } from './identity';
+import assert from "node:assert/strict";
+import test from "node:test";
+import { toAuthoringItemView } from "../../../components/flow/text-authoring/view-model";
+import { buildAuthoringArtifactProjection } from "./artifact-projection";
+import { stableAuthoringId } from "./identity";
 import {
   allowedAuthoringIssueOutcomes,
   authoringIssueBlocksDraft,
   authoringIssueState,
   isAuthoringIssueOutstanding,
-} from './issue-state';
-import { applyAuthoringOperation } from './operations';
-import { createTextAuthoringDocument } from './parser';
-import { validateTextAuthoringDocument } from './validation';
+} from "./issue-state";
+import { applyAuthoringOperation } from "./operations";
+import { createTextAuthoringDocument } from "./parser";
+import { validateTextAuthoringDocument } from "./validation";
 
-const NOW = '2026-07-29T00:00:00.000Z';
-const RAW =
-  '제주 여행 준비. 항공권 확인, 숙소 예약번호 정리, 렌터카 예약';
+const NOW = "2026-07-29T00:00:00.000Z";
+const RAW = "제주 여행 준비. 항공권 확인, 숙소 예약번호 정리, 렌터카 예약";
 
-test('rename, nesting, role, visibility, reorder, and restore are revision-only edits', () => {
+test("rename, nesting, role, visibility, reorder, and restore are revision-only edits", () => {
   const initial = createTextAuthoringDocument(RAW, {
-    fixtureVersion: 'operations-legacy-v1',
+    fixtureVersion: "operations-legacy-v1",
     now: NOW,
   });
   const initialRows = structuredClone(initial.parseResult.canonical.sourceRows);
   const [first, second] = initial.parseResult.canonical.items;
   let document = applyAuthoringOperation(
     initial,
-    { type: 'rename', itemId: first.itemId, title: '항공권 일정 확인' },
-    { now: '2026-07-29T00:01:00.000Z' },
+    { type: "rename", itemId: first.itemId, title: "항공권 일정 확인" },
+    { now: "2026-07-29T00:01:00.000Z" },
   );
-  assert.equal(document.parseResult.canonical.items[0].title, '항공권 일정 확인');
-  assert.equal(document.parseResult.canonical.items[0].sourceTitle, '항공권 확인');
-  assert.equal(initial.parseResult.canonical.items[0].title, '항공권 확인');
+  assert.equal(
+    document.parseResult.canonical.items[0].title,
+    "항공권 일정 확인",
+  );
+  assert.equal(
+    document.parseResult.canonical.items[0].sourceTitle,
+    "항공권 확인",
+  );
+  assert.equal(initial.parseResult.canonical.items[0].title, "항공권 확인");
 
   document = applyAuthoringOperation(document, {
-    type: 'indent',
+    type: "indent",
     itemId: first.itemId,
   });
   assert.equal(document.parseResult.canonical.items[0].nestingLevel, 1);
   document = applyAuthoringOperation(document, {
-    type: 'outdent',
+    type: "outdent",
     itemId: first.itemId,
   });
   assert.equal(document.parseResult.canonical.items[0].nestingLevel, 0);
   document = applyAuthoringOperation(document, {
-    type: 'change_role',
+    type: "change_role",
     itemId: first.itemId,
-    role: 'guide',
+    role: "guide",
   });
-  assert.equal(document.parseResult.canonical.items[0].role, 'guide');
+  assert.equal(document.parseResult.canonical.items[0].role, "guide");
   document = applyAuthoringOperation(document, {
-    type: 'exclude',
+    type: "exclude",
     itemId: first.itemId,
   });
   assert.equal(document.parseResult.canonical.items[0].included, false);
   document = applyAuthoringOperation(document, {
-    type: 'include',
+    type: "include",
     itemId: first.itemId,
   });
   assert.equal(document.parseResult.canonical.items[0].included, true);
   document = applyAuthoringOperation(document, {
-    type: 'exclude',
+    type: "exclude",
     itemId: first.itemId,
   });
-  document = applyAuthoringOperation(document, { type: 'restore' });
-  assert.ok(document.parseResult.canonical.items.every((item) => item.included));
+  document = applyAuthoringOperation(document, { type: "restore" });
+  assert.ok(
+    document.parseResult.canonical.items.every((item) => item.included),
+  );
   document = applyAuthoringOperation(document, {
-    type: 'reorder',
+    type: "reorder",
     itemId: second.itemId,
     toIndex: 0,
   });
@@ -76,41 +83,41 @@ test('rename, nesting, role, visibility, reorder, and restore are revision-only 
   assert.equal(validateTextAuthoringDocument(document).valid, true);
 });
 
-test('item restore returns one corrected Item to its parser mapping and is itself undoable', () => {
+test("item restore returns one corrected Item to its parser mapping and is itself undoable", () => {
   const initial = createTextAuthoringDocument(RAW, {
-    fixtureVersion: 'operations-legacy-v1',
+    fixtureVersion: "operations-legacy-v1",
     now: NOW,
   });
   const sourceRows = structuredClone(initial.parseResult.canonical.sourceRows);
   const [first, second] = initial.parseResult.canonical.items;
   let document = applyAuthoringOperation(initial, {
-    type: 'rename',
+    type: "rename",
     itemId: first.itemId,
-    title: '항공권 최종 확인하기',
+    title: "항공권 최종 확인하기",
   });
   document = applyAuthoringOperation(document, {
-    type: 'change_role',
+    type: "change_role",
     itemId: first.itemId,
-    role: 'guide',
+    role: "guide",
   });
   document = applyAuthoringOperation(document, {
-    type: 'exclude',
+    type: "exclude",
     itemId: first.itemId,
   });
   document = applyAuthoringOperation(document, {
-    type: 'reorder',
+    type: "reorder",
     itemId: first.itemId,
     toIndex: 2,
   });
   document = applyAuthoringOperation(document, {
-    type: 'rename',
+    type: "rename",
     itemId: second.itemId,
-    title: '숙소 번호 다시 정리',
+    title: "숙소 번호 다시 정리",
   });
   const beforeRestore = structuredClone(document.parseResult);
 
   const restored = applyAuthoringOperation(document, {
-    type: 'restore',
+    type: "restore",
     itemId: first.itemId,
   });
   const restoredFirst = restored.parseResult.canonical.items.find(
@@ -120,16 +127,16 @@ test('item restore returns one corrected Item to its parser mapping and is itsel
     (item) => item.itemId === second.itemId,
   );
   assert.equal(restored.parseResult.canonical.items[0].itemId, first.itemId);
-  assert.equal(restoredFirst?.title, '항공권 확인');
-  assert.equal(restoredFirst?.role, 'item');
+  assert.equal(restoredFirst?.title, "항공권 확인");
+  assert.equal(restoredFirst?.role, "item");
   assert.equal(restoredFirst?.included, true);
   assert.equal(restoredFirst?.nestingLevel, 0);
   assert.deepEqual(restoredFirst?.titleOverrides, undefined);
-  assert.equal(untouchedSecond?.title, '숙소 번호 다시 정리');
+  assert.equal(untouchedSecond?.title, "숙소 번호 다시 정리");
   assert.deepEqual(restored.parseResult.canonical.sourceRows, sourceRows);
   assert.equal(validateTextAuthoringDocument(restored).valid, true);
 
-  const undone = applyAuthoringOperation(restored, { type: 'undo' });
+  const undone = applyAuthoringOperation(restored, { type: "undo" });
   assert.deepEqual(undone.parseResult.canonical, beforeRestore.canonical);
   assert.deepEqual(undone.parseResult.mappings, beforeRestore.mappings);
   assert.deepEqual(undone.parseResult.issues, beforeRestore.issues);
@@ -137,10 +144,10 @@ test('item restore returns one corrected Item to its parser mapping and is itsel
   assert.equal(validateTextAuthoringDocument(undone).valid, true);
 });
 
-test('classify_issue keeps source-only without creating canonical content', () => {
+test("classify_issue keeps source-only without creating canonical content", () => {
   const initial = createTextAuthoringDocument(
-    '제주 여행은 여름에 사람이 많습니다.',
-    { now: NOW, ownership: 'creator' },
+    "제주 여행은 여름에 사람이 많습니다.",
+    { now: NOW, ownership: "creator" },
   );
   const issue = initial.parseResult.issues[0];
   const mapping = initial.parseResult.mappings[0];
@@ -150,37 +157,37 @@ test('classify_issue keeps source-only without creating canonical content', () =
   const eligibility = structuredClone(initial.parseResult.artifactEligibility);
 
   assert.deepEqual(allowedAuthoringIssueOutcomes(issue), [
-    'keep_source_only',
-    'convert_to_item',
-    'hold',
+    "keep_source_only",
+    "convert_to_item",
+    "hold",
   ]);
   const kept = applyAuthoringOperation(
     initial,
     {
-      type: 'classify_issue',
+      type: "classify_issue",
       issueId: issue.issueId,
-      outcome: 'keep_source_only',
+      outcome: "keep_source_only",
     },
     {
-      actorLane: 'suggestion',
-      now: '2026-07-29T01:00:00.000Z',
+      actorLane: "suggestion",
+      now: "2026-07-29T01:00:00.000Z",
     },
   );
   const keptIssue = kept.parseResult.issues[0];
   const keptMapping = kept.parseResult.mappings[0];
 
   assert.deepEqual(keptIssue.decision, {
-    outcome: 'keep_source_only',
-    state: 'resolved',
-    targetKind: 'source',
-    actorLane: 'suggestion',
-    decidedAt: '2026-07-29T01:00:00.000Z',
+    outcome: "keep_source_only",
+    state: "resolved",
+    targetKind: "source",
+    actorLane: "suggestion",
+    decidedAt: "2026-07-29T01:00:00.000Z",
   });
-  assert.equal(authoringIssueState(keptIssue), 'resolved');
+  assert.equal(authoringIssueState(keptIssue), "resolved");
   assert.equal(isAuthoringIssueOutstanding(keptIssue), false);
   assert.equal(authoringIssueBlocksDraft(keptIssue), false);
   assert.equal(keptMapping.mappingId, mapping.mappingId);
-  assert.equal(keptMapping.targetKind, 'unresolved');
+  assert.equal(keptMapping.targetKind, "unresolved");
   assert.equal(keptMapping.targetDraftId, issue.issueId);
   assert.equal(keptMapping.userCorrected, true);
   assert.equal(kept.rawText, initial.rawText);
@@ -188,95 +195,95 @@ test('classify_issue keeps source-only without creating canonical content', () =
   assert.deepEqual(kept.parseResult.canonical.sourceRows, sourceRows);
   assert.deepEqual(kept.parseResult.canonical, canonical);
   assert.deepEqual(kept.parseResult.artifactEligibility, eligibility);
-  assert.equal(kept.revision.actorLane, 'suggestion');
+  assert.equal(kept.revision.actorLane, "suggestion");
 
   const repeated = applyAuthoringOperation(kept, {
-    type: 'classify_issue',
+    type: "classify_issue",
     issueId: issue.issueId,
-    outcome: 'keep_source_only',
+    outcome: "keep_source_only",
   });
   assert.equal(repeated, kept);
   const reclassified = applyAuthoringOperation(kept, {
-    type: 'classify_issue',
+    type: "classify_issue",
     issueId: issue.issueId,
-    outcome: 'convert_to_item',
+    outcome: "convert_to_item",
   });
   assert.equal(reclassified, kept);
 
   const undone = applyAuthoringOperation(
     kept,
-    { type: 'undo' },
-    { now: '2026-07-29T01:01:00.000Z' },
+    { type: "undo" },
+    { now: "2026-07-29T01:01:00.000Z" },
   );
   assert.equal(undone.parseResult.issues[0].decision, undefined);
   assert.equal(undone.parseResult.mappings[0].userCorrected, false);
   assert.deepEqual(undone.parseResult.canonical, canonical);
 });
 
-test('classify_issue keeps held blocking issues outstanding', () => {
-  const initial = createTextAuthoringDocument(
-    'https://example.com/source',
-    { now: NOW, ownership: 'creator' },
-  );
+test("classify_issue keeps held blocking issues outstanding", () => {
+  const initial = createTextAuthoringDocument("https://example.com/source", {
+    now: NOW,
+    ownership: "creator",
+  });
   const issue = initial.parseResult.issues[0];
   const canonical = structuredClone(initial.parseResult.canonical);
   const blocks = structuredClone(initial.parseResult.blocks);
   const sourceRows = structuredClone(initial.parseResult.canonical.sourceRows);
 
-  assert.equal(issue.type, 'source_import_required');
-  assert.deepEqual(allowedAuthoringIssueOutcomes(issue), ['hold']);
+  assert.equal(issue.type, "source_import_required");
+  assert.deepEqual(allowedAuthoringIssueOutcomes(issue), ["hold"]);
   const held = applyAuthoringOperation(
     initial,
     {
-      type: 'classify_issue',
+      type: "classify_issue",
       issueId: issue.issueId,
-      outcome: 'hold',
+      outcome: "hold",
     },
-    { now: '2026-07-29T02:00:00.000Z' },
+    { now: "2026-07-29T02:00:00.000Z" },
   );
   const heldIssue = held.parseResult.issues[0];
 
   assert.deepEqual(heldIssue.decision, {
-    outcome: 'hold',
-    state: 'held',
-    targetKind: 'unresolved',
-    actorLane: 'creator',
-    decidedAt: '2026-07-29T02:00:00.000Z',
+    outcome: "hold",
+    state: "held",
+    targetKind: "unresolved",
+    actorLane: "creator",
+    decidedAt: "2026-07-29T02:00:00.000Z",
   });
-  assert.equal(authoringIssueState(heldIssue), 'held');
+  assert.equal(authoringIssueState(heldIssue), "held");
   assert.equal(isAuthoringIssueOutstanding(heldIssue), true);
   assert.equal(authoringIssueBlocksDraft(heldIssue), true);
-  assert.equal(held.lifecycleStatus, 'needs_review');
+  assert.equal(held.lifecycleStatus, "needs_review");
   assert.deepEqual(held.parseResult.canonical, canonical);
   assert.deepEqual(held.parseResult.blocks, blocks);
   assert.deepEqual(held.parseResult.canonical.sourceRows, sourceRows);
   assert.equal(
     applyAuthoringOperation(held, {
-      type: 'classify_issue',
+      type: "classify_issue",
       issueId: issue.issueId,
-      outcome: 'hold',
+      outcome: "hold",
     }),
     held,
   );
 
   const legacy = structuredClone(issue);
   legacy.resolution = {
-    targetKind: 'source',
-    resolvedAt: '2026-07-28T00:00:00.000Z',
+    targetKind: "source",
+    resolvedAt: "2026-07-28T00:00:00.000Z",
   };
-  assert.equal(authoringIssueState(legacy), 'resolved');
+  assert.equal(authoringIssueState(legacy), "resolved");
   assert.equal(isAuthoringIssueOutstanding(legacy), false);
 });
 
-test('classify_issue converts source lineage into one stable undated Item', () => {
-  const raw = '제주 여행은 여름에 사람이 많습니다.';
+test("classify_issue converts source lineage into one stable undated Item", () => {
+  const raw = "제주 여행은 여름에 사람이 많습니다.";
   const initial = createTextAuthoringDocument(raw, { now: NOW });
   const issue = initial.parseResult.issues[0];
   const mapping = structuredClone(initial.parseResult.mappings[0]);
   const sourceRows = structuredClone(initial.parseResult.canonical.sourceRows);
   const blocks = structuredClone(initial.parseResult.blocks);
   const expectedItemId = stableAuthoringId(
-    'item',
+    "item",
     initial.documentId,
     ...issue.sourceRowIds,
   );
@@ -284,14 +291,14 @@ test('classify_issue converts source lineage into one stable undated Item', () =
   const converted = applyAuthoringOperation(
     initial,
     {
-      type: 'classify_issue',
+      type: "classify_issue",
       issueId: issue.issueId,
-      outcome: 'convert_to_item',
-      titleOverride: '여름 혼잡 확인',
+      outcome: "convert_to_item",
+      titleOverride: "여름 혼잡 확인",
     },
     {
-      actorLane: 'personal',
-      now: '2026-07-29T03:00:00.000Z',
+      actorLane: "personal",
+      now: "2026-07-29T03:00:00.000Z",
     },
   );
   const item = converted.parseResult.canonical.items[0];
@@ -300,8 +307,8 @@ test('classify_issue converts source lineage into one stable undated Item', () =
 
   assert.equal(item.itemId, expectedItemId);
   assert.equal(item.sourceTitle, raw);
-  assert.equal(item.title, '여름 혼잡 확인');
-  assert.deepEqual(item.titleOverrides, { personal: '여름 혼잡 확인' });
+  assert.equal(item.title, "여름 혼잡 확인");
+  assert.deepEqual(item.titleOverrides, { personal: "여름 혼잡 확인" });
   assert.deepEqual(item.sourceRowIds, issue.sourceRowIds);
   assert.equal(item.schedule, undefined);
   assert.equal(item.completion, undefined);
@@ -309,30 +316,32 @@ test('classify_issue converts source lineage into one stable undated Item', () =
   assert.deepEqual(item.resources, []);
   assert.equal(converted.parseResult.canonical.steps.length, 1);
   assert.equal(converted.parseResult.canonical.steps[0].generated, true);
-  assert.deepEqual(
-    converted.parseResult.canonical.steps[0].itemIds,
-    [expectedItemId],
-  );
+  assert.deepEqual(converted.parseResult.canonical.steps[0].itemIds, [
+    expectedItemId,
+  ]);
   assert.deepEqual(convertedIssue.decision, {
-    outcome: 'convert_to_item',
-    state: 'resolved',
-    targetKind: 'item',
+    outcome: "convert_to_item",
+    state: "resolved",
+    targetKind: "item",
     targetDraftId: expectedItemId,
-    actorLane: 'personal',
-    decidedAt: '2026-07-29T03:00:00.000Z',
+    actorLane: "personal",
+    decidedAt: "2026-07-29T03:00:00.000Z",
   });
   assert.equal(convertedMapping.mappingId, mapping.mappingId);
-  assert.equal(convertedMapping.targetKind, 'item');
+  assert.equal(convertedMapping.targetKind, "item");
   assert.equal(convertedMapping.targetDraftId, expectedItemId);
   assert.deepEqual(convertedMapping.sourceLineage, mapping.sourceLineage);
   assert.equal(convertedMapping.userCorrected, true);
-  assert.ok(converted.parseResult.canonical.sourceRefs.some((sourceRef) => (
-    sourceRef.entityType === 'item'
-    && sourceRef.entityId === expectedItemId
-    && sourceRef.supportLevel === 'direct'
-    && sourceRef.relation === 'derived_from'
-    && sourceRef.sourceRowIds.join('|') === issue.sourceRowIds.join('|')
-  )));
+  assert.ok(
+    converted.parseResult.canonical.sourceRefs.some(
+      (sourceRef) =>
+        sourceRef.entityType === "item" &&
+        sourceRef.entityId === expectedItemId &&
+        sourceRef.supportLevel === "direct" &&
+        sourceRef.relation === "derived_from" &&
+        sourceRef.sourceRowIds.join("|") === issue.sourceRowIds.join("|"),
+    ),
+  );
   assert.equal(converted.parseResult.artifactEligibility.counts.calendar, 0);
   assert.equal(converted.parseResult.artifactEligibility.counts.todo, 1);
   assert.equal(converted.rawText, initial.rawText);
@@ -341,52 +350,55 @@ test('classify_issue converts source lineage into one stable undated Item', () =
   assert.equal(validateTextAuthoringDocument(converted).valid, true);
 
   const repeated = applyAuthoringOperation(converted, {
-    type: 'classify_issue',
+    type: "classify_issue",
     issueId: issue.issueId,
-    outcome: 'convert_to_item',
+    outcome: "convert_to_item",
   });
   assert.equal(repeated, converted);
   const undone = applyAuthoringOperation(
     converted,
-    { type: 'undo' },
-    { now: '2026-07-29T03:01:00.000Z' },
+    { type: "undo" },
+    { now: "2026-07-29T03:01:00.000Z" },
   );
   assert.equal(undone.parseResult.canonical.items.length, 0);
   assert.equal(undone.parseResult.canonical.steps.length, 0);
   assert.equal(undone.parseResult.canonical.sourceRefs.length, 0);
   assert.equal(undone.parseResult.issues[0].decision, undefined);
   assert.equal(undone.parseResult.mappings[0].mappingId, mapping.mappingId);
-  assert.equal(undone.parseResult.mappings[0].targetKind, 'unresolved');
+  assert.equal(undone.parseResult.mappings[0].targetKind, "unresolved");
   assert.equal(undone.parseResult.mappings[0].targetDraftId, issue.issueId);
   const convertedAgain = applyAuthoringOperation(undone, {
-    type: 'classify_issue',
+    type: "classify_issue",
     issueId: issue.issueId,
-    outcome: 'convert_to_item',
+    outcome: "convert_to_item",
   });
-  assert.equal(convertedAgain.parseResult.canonical.items[0].itemId, expectedItemId);
+  assert.equal(
+    convertedAgain.parseResult.canonical.items[0].itemId,
+    expectedItemId,
+  );
 });
 
-test('classify_issue uses source context for Step and preserves existing order', () => {
+test("classify_issue uses source context for Step and preserves existing order", () => {
   const raw = [
-    '# 여행',
-    '## 준비',
-    '- [ ] 항공권 확인',
-    '<aside>메모</aside>',
-  ].join('\n');
+    "# 여행",
+    "## 준비",
+    "- [ ] 항공권 확인",
+    "<aside>메모</aside>",
+  ].join("\n");
   const initial = createTextAuthoringDocument(raw, { now: NOW });
   const issue = initial.parseResult.issues[0];
   const step = initial.parseResult.canonical.steps[0];
   const existingItemId = initial.parseResult.canonical.items[0].itemId;
   const converted = applyAuthoringOperation(initial, {
-    type: 'classify_issue',
+    type: "classify_issue",
     issueId: issue.issueId,
-    outcome: 'convert_to_item',
-    titleOverride: '메모 확인',
+    outcome: "convert_to_item",
+    titleOverride: "메모 확인",
   });
   const createdItem = converted.parseResult.canonical.items[1];
 
   assert.equal(createdItem.stepId, step.stepId);
-  assert.equal(createdItem.sourceTitle, '<aside>메모</aside>');
+  assert.equal(createdItem.sourceTitle, "<aside>메모</aside>");
   assert.deepEqual(converted.parseResult.canonical.steps[0].itemIds, [
     existingItemId,
     createdItem.itemId,
@@ -397,44 +409,44 @@ test('classify_issue uses source context for Step and preserves existing order',
   );
 
   const invalidStep = applyAuthoringOperation(initial, {
-    type: 'classify_issue',
+    type: "classify_issue",
     issueId: issue.issueId,
-    outcome: 'convert_to_item',
-    targetStepId: 'missing-step',
+    outcome: "convert_to_item",
+    targetStepId: "missing-step",
   });
   assert.equal(invalidStep, initial);
   const invalidTitle = applyAuthoringOperation(initial, {
-    type: 'classify_issue',
+    type: "classify_issue",
     issueId: issue.issueId,
-    outcome: 'convert_to_item',
-    titleOverride: '   ',
+    outcome: "convert_to_item",
+    titleOverride: "   ",
   });
   assert.equal(invalidTitle, initial);
   const missingIssue = applyAuthoringOperation(initial, {
-    type: 'classify_issue',
-    issueId: 'missing-issue',
-    outcome: 'hold',
+    type: "classify_issue",
+    issueId: "missing-issue",
+    outcome: "hold",
   });
   assert.equal(missingIssue, initial);
 });
 
-test('classify_issue rejects unsupported outcomes and broken lineage', () => {
+test("classify_issue rejects unsupported outcomes and broken lineage", () => {
   const urlDocument = createTextAuthoringDocument(
-    'https://example.com/source',
+    "https://example.com/source",
     { now: NOW },
   );
   const urlIssue = urlDocument.parseResult.issues[0];
   assert.equal(
     applyAuthoringOperation(urlDocument, {
-      type: 'classify_issue',
+      type: "classify_issue",
       issueId: urlIssue.issueId,
-      outcome: 'convert_to_item',
+      outcome: "convert_to_item",
     }),
     urlDocument,
   );
 
   const broken = createTextAuthoringDocument(
-    '제주 여행은 여름에 사람이 많습니다.',
+    "제주 여행은 여름에 사람이 많습니다.",
     { now: NOW },
   );
   const brokenIssue = broken.parseResult.issues[0];
@@ -442,9 +454,9 @@ test('classify_issue rejects unsupported outcomes and broken lineage', () => {
   const revisionCount = broken.revisionHistory.length;
   assert.equal(
     applyAuthoringOperation(broken, {
-      type: 'classify_issue',
+      type: "classify_issue",
       issueId: brokenIssue.issueId,
-      outcome: 'convert_to_item',
+      outcome: "convert_to_item",
     }),
     broken,
   );
@@ -452,73 +464,73 @@ test('classify_issue rejects unsupported outcomes and broken lineage', () => {
   assert.equal(broken.revisionHistory.length, revisionCount);
 });
 
-test('set_property creates creator overrides without rewriting source values', () => {
+test("set_property creates creator overrides without rewriting source values", () => {
   const initial = createTextAuthoringDocument(
-    ['# 준비', '- [ ] 항공권 확인', '  자세히: 원문 상세'].join('\n'),
-    { now: NOW, ownership: 'creator' },
+    ["# 준비", "- [ ] 항공권 확인", "  자세히: 원문 상세"].join("\n"),
+    { now: NOW, ownership: "creator" },
   );
   const itemId = initial.parseResult.canonical.items[0].itemId;
   let document = initial;
   const operations = [
-    ['title', '항공권 시간 확인'],
-    ['detail', '내가 덧붙인 상세'],
-    ['completion', '시간을 메모했다'],
-    ['date', '2026-08-03'],
-    ['time', '09:30'],
-    ['timezone', 'Asia/Seoul'],
-    ['place', '제주공항'],
-    ['duration', '90분'],
-    ['repeat', '반복 없음'],
-    ['condition', '출발 전'],
-    ['resource', '항공사 https://example.com/tool'],
-    ['source', '원문 https://example.com/source'],
+    ["title", "항공권 시간 확인"],
+    ["detail", "내가 덧붙인 상세"],
+    ["completion", "시간을 메모했다"],
+    ["date", "2026-08-03"],
+    ["time", "09:30"],
+    ["timezone", "Asia/Seoul"],
+    ["place", "제주공항"],
+    ["duration", "90분"],
+    ["repeat", "반복 없음"],
+    ["condition", "출발 전"],
+    ["resource", "항공사 https://example.com/tool"],
+    ["source", "원문 https://example.com/source"],
   ] as const;
   operations.forEach(([key, value], index) => {
     document = applyAuthoringOperation(
       document,
-      { type: 'set_property', itemId, key, value },
-      { now: `2026-07-29T00:${String(index + 1).padStart(2, '0')}:00.000Z` },
+      { type: "set_property", itemId, key, value },
+      { now: `2026-07-29T00:${String(index + 1).padStart(2, "0")}:00.000Z` },
     );
   });
   const item = document.parseResult.canonical.items[0];
 
-  assert.equal(item.sourceTitle, '항공권 확인');
-  assert.equal(item.sourceDetail, '원문 상세');
-  assert.equal(item.creatorTitle, '항공권 시간 확인');
-  assert.equal(item.creatorDetail, '내가 덧붙인 상세');
-  assert.equal(item.titleOverrides?.creator, '항공권 시간 확인');
-  assert.equal(item.detailOverrides?.creator, '내가 덧붙인 상세');
-  assert.equal(item.completion?.owner, 'creator');
+  assert.equal(item.sourceTitle, "항공권 확인");
+  assert.equal(item.sourceDetail, "원문 상세");
+  assert.equal(item.creatorTitle, "항공권 시간 확인");
+  assert.equal(item.creatorDetail, "내가 덧붙인 상세");
+  assert.equal(item.titleOverrides?.creator, "항공권 시간 확인");
+  assert.equal(item.detailOverrides?.creator, "내가 덧붙인 상세");
+  assert.equal(item.completion?.owner, "creator");
   assert.deepEqual(item.schedule, {
-    kind: 'absolute',
-    raw: '2026-08-03',
-    date: '2026-08-03',
-    time: '09:30',
-    timezone: 'Asia/Seoul',
+    kind: "absolute",
+    raw: "2026-08-03",
+    date: "2026-08-03",
+    time: "09:30",
+    timezone: "Asia/Seoul",
     durationMinutes: 90,
-    repeat: '반복 없음',
+    repeat: "반복 없음",
   });
   document = applyAuthoringOperation(
     document,
     {
-      type: 'set_property',
+      type: "set_property",
       itemId,
-      key: 'date',
-      value: '2026-08-04',
+      key: "date",
+      value: "2026-08-04",
     },
-    { now: '2026-07-29T00:20:00.000Z' },
+    { now: "2026-07-29T00:20:00.000Z" },
   );
   assert.deepEqual(document.parseResult.canonical.items[0].schedule, {
-    kind: 'absolute',
-    raw: '2026-08-04',
-    date: '2026-08-04',
-    time: '09:30',
-    timezone: 'Asia/Seoul',
+    kind: "absolute",
+    raw: "2026-08-04",
+    date: "2026-08-04",
+    time: "09:30",
+    timezone: "Asia/Seoul",
     durationMinutes: 90,
-    repeat: '반복 없음',
+    repeat: "반복 없음",
   });
-  const calendarRow = buildAuthoringArtifactProjection(document)
-    .artifacts.calendar.rows[0];
+  const calendarRow =
+    buildAuthoringArtifactProjection(document).artifacts.calendar.rows[0];
   assert.deepEqual(
     {
       date: calendarRow?.date,
@@ -527,19 +539,22 @@ test('set_property creates creator overrides without rewriting source values', (
       durationMinutes: calendarRow?.durationMinutes,
     },
     {
-      date: '2026-08-04',
-      time: '09:30',
-      timezone: 'Asia/Seoul',
+      date: "2026-08-04",
+      time: "09:30",
+      timezone: "Asia/Seoul",
       durationMinutes: 90,
     },
   );
-  assert.ok(item.properties.some((property) => (
-    property.owner === 'creator'
-    && property.key === 'place'
-    && property.value === '제주공항'
-  )));
-  assert.equal(item.resources.at(-1)?.url, 'https://example.com/tool');
-  assert.equal(item.sources.at(-1)?.url, 'https://example.com/source');
+  assert.ok(
+    item.properties.some(
+      (property) =>
+        property.owner === "creator" &&
+        property.key === "place" &&
+        property.value === "제주공항",
+    ),
+  );
+  assert.equal(item.resources.at(-1)?.url, "https://example.com/tool");
+  assert.equal(item.sources.at(-1)?.url, "https://example.com/source");
   assert.deepEqual(
     document.parseResult.canonical.sourceRows,
     initial.parseResult.canonical.sourceRows,
@@ -547,67 +562,69 @@ test('set_property creates creator overrides without rewriting source values', (
   assert.equal(validateTextAuthoringDocument(document).valid, true);
 });
 
-test('personal, creator, and suggestion edits keep separate owners and one effective view', () => {
+test("personal, creator, and suggestion edits keep separate owners and one effective view", () => {
   const initial = createTextAuthoringDocument(
     [
-      '# 준비',
-      '- [ ] 항공권 확인',
-      '  자세히: 원문 상세',
-      '  완료 기준: 예약번호를 확인한다',
-      '  날짜: 2026-08-01',
-    ].join('\n'),
-    { now: NOW, ownership: 'personal' },
+      "# 준비",
+      "- [ ] 항공권 확인",
+      "  자세히: 원문 상세",
+      "  완료 기준: 예약번호를 확인한다",
+      "  날짜: 2026-08-01",
+    ].join("\n"),
+    { now: NOW, ownership: "personal" },
   );
-  const initialSourceRows = structuredClone(initial.parseResult.canonical.sourceRows);
+  const initialSourceRows = structuredClone(
+    initial.parseResult.canonical.sourceRows,
+  );
   const initialItem = structuredClone(initial.parseResult.canonical.items[0]);
   const itemId = initialItem.itemId;
   let document = initial;
   const laneValues = [
     {
-      lane: 'personal',
-      title: '내 항공권 확인',
-      detail: '내 예약번호까지 확인',
-      completion: '내 예약번호를 기록한다',
-      date: '2026-08-02',
-      place: '제주공항',
-      resource: '예약 도구 https://example.com/booking',
+      lane: "personal",
+      title: "내 항공권 확인",
+      detail: "내 예약번호까지 확인",
+      completion: "내 예약번호를 기록한다",
+      date: "2026-08-02",
+      place: "제주공항",
+      resource: "예약 도구 https://example.com/booking",
     },
     {
-      lane: 'creator',
-      title: '제작자 항공권 확인',
-      detail: '제작자 검수 상세',
-      completion: '제작자가 검수한다',
-      date: '2026-08-03',
-      place: '김포공항',
-      resource: '예약 도구 https://example.com/booking',
+      lane: "creator",
+      title: "제작자 항공권 확인",
+      detail: "제작자 검수 상세",
+      completion: "제작자가 검수한다",
+      date: "2026-08-03",
+      place: "김포공항",
+      resource: "예약 도구 https://example.com/booking",
     },
     {
-      lane: 'suggestion',
-      title: '제안 항공권 확인',
-      detail: '검토할 수정 제안',
-      completion: '제안을 검토한다',
-      date: '2026-08-04',
-      place: '인천공항',
-      resource: '예약 도구 https://example.com/booking',
+      lane: "suggestion",
+      title: "제안 항공권 확인",
+      detail: "검토할 수정 제안",
+      completion: "제안을 검토한다",
+      date: "2026-08-04",
+      place: "인천공항",
+      resource: "예약 도구 https://example.com/booking",
     },
   ] as const;
 
   laneValues.forEach((entry, laneIndex) => {
     const values = [
-      ['title', entry.title],
-      ['detail', entry.detail],
-      ['completion', entry.completion],
-      ['date', entry.date],
-      ['place', entry.place],
-      ['resource', entry.resource],
+      ["title", entry.title],
+      ["detail", entry.detail],
+      ["completion", entry.completion],
+      ["date", entry.date],
+      ["place", entry.place],
+      ["resource", entry.resource],
     ] as const;
     values.forEach(([key, value], valueIndex) => {
       document = applyAuthoringOperation(
         document,
-        { type: 'set_property', itemId, key, value },
+        { type: "set_property", itemId, key, value },
         {
           actorLane: entry.lane,
-          now: `2026-07-29T0${laneIndex + 1}:${String(valueIndex).padStart(2, '0')}:00.000Z`,
+          now: `2026-07-29T0${laneIndex + 1}:${String(valueIndex).padStart(2, "0")}:00.000Z`,
         },
       );
     });
@@ -624,95 +641,99 @@ test('personal, creator, and suggestion edits keep separate owners and one effec
   );
 
   assert.deepEqual(item.titleOverrides, {
-    personal: '내 항공권 확인',
-    creator: '제작자 항공권 확인',
-    suggestion: '제안 항공권 확인',
+    personal: "내 항공권 확인",
+    creator: "제작자 항공권 확인",
+    suggestion: "제안 항공권 확인",
   });
   assert.deepEqual(item.detailOverrides, {
-    personal: '내 예약번호까지 확인',
-    creator: '제작자 검수 상세',
-    suggestion: '검토할 수정 제안',
+    personal: "내 예약번호까지 확인",
+    creator: "제작자 검수 상세",
+    suggestion: "검토할 수정 제안",
   });
-  assert.equal(item.creatorTitle, '제작자 항공권 확인');
-  assert.equal(item.creatorDetail, '제작자 검수 상세');
+  assert.equal(item.creatorTitle, "제작자 항공권 확인");
+  assert.equal(item.creatorDetail, "제작자 검수 상세");
   const personalCompletion = item.completionOverrides?.personal;
   const creatorCompletion = item.completionOverrides?.creator;
   const suggestionCompletion = item.completionOverrides?.suggestion;
   assert.ok(personalCompletion);
   assert.ok(creatorCompletion);
   assert.ok(suggestionCompletion);
-  assert.equal(personalCompletion.owner, 'personal');
-  assert.equal(creatorCompletion.owner, 'creator');
-  assert.equal(suggestionCompletion.owner, 'suggestion');
+  assert.equal(personalCompletion.owner, "personal");
+  assert.equal(creatorCompletion.owner, "creator");
+  assert.equal(suggestionCompletion.owner, "suggestion");
   const personalSchedule = item.scheduleOverrides?.personal;
   const creatorSchedule = item.scheduleOverrides?.creator;
   const suggestionSchedule = item.scheduleOverrides?.suggestion;
   assert.equal(
-    personalSchedule?.kind === 'absolute' ? personalSchedule.date : undefined,
-    '2026-08-02',
+    personalSchedule?.kind === "absolute" ? personalSchedule.date : undefined,
+    "2026-08-02",
   );
   assert.equal(
-    creatorSchedule?.kind === 'absolute' ? creatorSchedule.date : undefined,
-    '2026-08-03',
+    creatorSchedule?.kind === "absolute" ? creatorSchedule.date : undefined,
+    "2026-08-03",
   );
   assert.equal(
-    suggestionSchedule?.kind === 'absolute' ? suggestionSchedule.date : undefined,
-    '2026-08-04',
+    suggestionSchedule?.kind === "absolute"
+      ? suggestionSchedule.date
+      : undefined,
+    "2026-08-04",
   );
   assert.deepEqual(
     item.properties
-      .filter((property) => property.key === 'place')
+      .filter((property) => property.key === "place")
       .map((property) => [property.owner, property.value]),
     [
-      ['personal', '제주공항'],
-      ['creator', '김포공항'],
-      ['suggestion', '인천공항'],
+      ["personal", "제주공항"],
+      ["creator", "김포공항"],
+      ["suggestion", "인천공항"],
     ],
   );
   assert.deepEqual(
     item.resources
-      .filter((resource) => resource.url === 'https://example.com/booking')
+      .filter((resource) => resource.url === "https://example.com/booking")
       .map((resource) => resource.owner),
-    ['personal', 'creator', 'suggestion'],
+    ["personal", "creator", "suggestion"],
   );
 
-  assert.equal(item.title, '제안 항공권 확인');
-  assert.equal(item.detail, '검토할 수정 제안');
-  assert.equal(item.completion?.doneWhen, '제안을 검토한다');
-  assert.equal(item.completion?.owner, 'suggestion');
-  assert.equal(item.schedule?.kind, 'absolute');
+  assert.equal(item.title, "제안 항공권 확인");
+  assert.equal(item.detail, "검토할 수정 제안");
+  assert.equal(item.completion?.doneWhen, "제안을 검토한다");
+  assert.equal(item.completion?.owner, "suggestion");
+  assert.equal(item.schedule?.kind, "absolute");
   assert.equal(
-    item.schedule?.kind === 'absolute' ? item.schedule.date : undefined,
-    '2026-08-04',
+    item.schedule?.kind === "absolute" ? item.schedule.date : undefined,
+    "2026-08-04",
   );
   const view = toAuthoringItemView(document, item);
-  assert.equal(view.title, '제안 항공권 확인');
-  assert.equal(view.detail, '검토할 수정 제안');
-  assert.equal(view.completion, '제안을 검토한다');
-  assert.equal(view.date, '2026-08-04');
-  assert.equal(view.place, '인천공항');
+  assert.equal(view.title, "제안 항공권 확인");
+  assert.equal(view.detail, "검토할 수정 제안");
+  assert.equal(view.completion, "제안을 검토한다");
+  assert.equal(view.date, "2026-08-04");
+  assert.equal(view.place, "인천공항");
   assert.equal(view.userCorrected, true);
-  assert.equal(document.revision.actorLane, 'suggestion');
+  assert.equal(document.revision.actorLane, "suggestion");
   assert.equal(validateTextAuthoringDocument(document).valid, true);
 });
 
-test('split preserves source lineage and undo restores the exact prior parse result', () => {
+test("split preserves source lineage and undo restores the exact prior parse result", () => {
   const initial = createTextAuthoringDocument(RAW, {
-    fixtureVersion: 'operations-legacy-v1',
+    fixtureVersion: "operations-legacy-v1",
     now: NOW,
   });
   const originalParseResult = structuredClone(initial.parseResult);
   const item = initial.parseResult.canonical.items[0];
   const split = applyAuthoringOperation(
     initial,
-    { type: 'split', itemId: item.itemId, at: 3 },
-    { now: '2026-07-29T00:01:00.000Z' },
+    { type: "split", itemId: item.itemId, at: 3 },
+    { now: "2026-07-29T00:01:00.000Z" },
   );
 
   assert.equal(split.parseResult.canonical.items.length, 4);
   assert.deepEqual(
-    split.parseResult.canonical.items.slice(0, 2).map((entry) => entry.sourceTitle),
-    ['항공권 확인', '항공권 확인'],
+    split.parseResult.canonical.items
+      .slice(0, 2)
+      .map((entry) => entry.sourceTitle),
+    ["항공권 확인", "항공권 확인"],
   );
   assert.deepEqual(
     split.parseResult.canonical.items[0].sourceRowIds,
@@ -722,23 +743,23 @@ test('split preserves source lineage and undo restores the exact prior parse res
 
   const undone = applyAuthoringOperation(
     split,
-    { type: 'undo' },
-    { now: '2026-07-29T00:02:00.000Z' },
+    { type: "undo" },
+    { now: "2026-07-29T00:02:00.000Z" },
   );
   assert.deepEqual(undone.parseResult.canonical, originalParseResult.canonical);
   assert.deepEqual(undone.parseResult.blocks, originalParseResult.blocks);
   assert.equal(validateTextAuthoringDocument(undone).valid, true);
 });
 
-test('merge keeps the first stable Item ID and unions every source lineage', () => {
+test("merge keeps the first stable Item ID and unions every source lineage", () => {
   const initial = createTextAuthoringDocument(RAW, {
-    fixtureVersion: 'operations-legacy-v1',
+    fixtureVersion: "operations-legacy-v1",
     now: NOW,
   });
   const [first, second] = initial.parseResult.canonical.items;
   const expectedRows = new Set([...first.sourceRowIds, ...second.sourceRowIds]);
   const merged = applyAuthoringOperation(initial, {
-    type: 'merge',
+    type: "merge",
     itemIds: [first.itemId, second.itemId],
   });
   const result = merged.parseResult.canonical.items[0];
@@ -755,23 +776,26 @@ test('merge keeps the first stable Item ID and unions every source lineage', () 
   assert.equal(validateTextAuthoringDocument(merged).valid, true);
 });
 
-test('merge rejects cross-Step A2 and B1 without changing the document or revision', () => {
-  const initial = createTextAuthoringDocument([
-    '# Plan',
-    '## Step A',
-    '- [ ] A1',
-    '- [ ] A2',
-    '- [ ] A3',
-    '## Step B',
-    '- [ ] B1',
-    '- [ ] B2',
-  ].join('\n'), { now: NOW });
+test("merge rejects cross-Step A2 and B1 without changing the document or revision", () => {
+  const initial = createTextAuthoringDocument(
+    [
+      "# Plan",
+      "## Step A",
+      "- [ ] A1",
+      "- [ ] A2",
+      "- [ ] A3",
+      "## Step B",
+      "- [ ] B1",
+      "- [ ] B2",
+    ].join("\n"),
+    { now: NOW },
+  );
   const before = structuredClone(initial);
   const [stepA, stepB] = initial.parseResult.canonical.steps;
 
   assert.equal(validateTextAuthoringDocument(initial).valid, true);
   const rejected = applyAuthoringOperation(initial, {
-    type: 'merge',
+    type: "merge",
     itemIds: [stepA.itemIds[1], stepB.itemIds[0]],
   });
 
@@ -782,20 +806,17 @@ test('merge rejects cross-Step A2 and B1 without changing the document or revisi
   assert.equal(validateTextAuthoringDocument(rejected).valid, true);
 });
 
-test('merge rejects non-adjacent Items in one Step without changing the revision', () => {
-  const initial = createTextAuthoringDocument([
-    '# Plan',
-    '## Step A',
-    '- [ ] A1',
-    '- [ ] A2',
-    '- [ ] A3',
-  ].join('\n'), { now: NOW });
+test("merge rejects non-adjacent Items in one Step without changing the revision", () => {
+  const initial = createTextAuthoringDocument(
+    ["# Plan", "## Step A", "- [ ] A1", "- [ ] A2", "- [ ] A3"].join("\n"),
+    { now: NOW },
+  );
   const before = structuredClone(initial);
   const [step] = initial.parseResult.canonical.steps;
 
   assert.equal(validateTextAuthoringDocument(initial).valid, true);
   const rejected = applyAuthoringOperation(initial, {
-    type: 'merge',
+    type: "merge",
     itemIds: [step.itemIds[0], step.itemIds[2]],
   });
 
@@ -806,17 +827,17 @@ test('merge rejects non-adjacent Items in one Step without changing the revision
   assert.equal(validateTextAuthoringDocument(rejected).valid, true);
 });
 
-test('merge rejects a missing Item without changing the document or revision', () => {
+test("merge rejects a missing Item without changing the document or revision", () => {
   const initial = createTextAuthoringDocument(RAW, {
-    fixtureVersion: 'operations-legacy-v1',
+    fixtureVersion: "operations-legacy-v1",
     now: NOW,
   });
   const before = structuredClone(initial);
   const [first, second] = initial.parseResult.canonical.items;
 
   const rejected = applyAuthoringOperation(initial, {
-    type: 'merge',
-    itemIds: [first.itemId, second.itemId, 'missing-item'],
+    type: "merge",
+    itemIds: [first.itemId, second.itemId, "missing-item"],
   });
 
   assert.equal(rejected, initial);
@@ -826,73 +847,84 @@ test('merge rejects a missing Item without changing the document or revision', (
   assert.equal(validateTextAuthoringDocument(rejected).valid, true);
 });
 
-test('repeated undo walks back effective correction revisions', () => {
+test("repeated undo walks back effective correction revisions", () => {
   const initial = createTextAuthoringDocument(RAW, {
-    fixtureVersion: 'operations-legacy-v1',
+    fixtureVersion: "operations-legacy-v1",
     now: NOW,
   });
   const itemId = initial.parseResult.canonical.items[0].itemId;
   const renamed = applyAuthoringOperation(initial, {
-    type: 'rename',
+    type: "rename",
     itemId,
-    title: '첫 번째 이름',
+    title: "첫 번째 이름",
   });
   const renamedAgain = applyAuthoringOperation(renamed, {
-    type: 'rename',
+    type: "rename",
     itemId,
-    title: '두 번째 이름',
+    title: "두 번째 이름",
   });
-  const once = applyAuthoringOperation(renamedAgain, { type: 'undo' });
-  const twice = applyAuthoringOperation(once, { type: 'undo' });
+  const once = applyAuthoringOperation(renamedAgain, { type: "undo" });
+  const twice = applyAuthoringOperation(once, { type: "undo" });
 
-  assert.equal(once.parseResult.canonical.items[0].title, '첫 번째 이름');
-  assert.equal(twice.parseResult.canonical.items[0].title, '항공권 확인');
+  assert.equal(once.parseResult.canonical.items[0].title, "첫 번째 이름");
+  assert.equal(twice.parseResult.canonical.items[0].title, "항공권 확인");
 });
 
-test('align_source_order moves complete Item blocks inside each Step and undo restores raw source', () => {
+test("align_source_order moves complete Item blocks inside each Step and undo restores raw source", () => {
   const raw = [
-    '# 역순 일정',
-    '## 첫 단계',
-    '- [ ] 늦은 일',
-    '  - 설명: 늦은 일 설명',
-    '  - 날짜: 2026-08-10',
-    '- [ ] 이른 일',
-    '  - 설명: 이른 일 설명',
-    '  - 날짜: 2026-08-03',
-    '## 둘째 단계',
-    '- [ ] 둘째 단계 늦은 일',
-    '  - 날짜: 2026-08-20',
-    '- [ ] 둘째 단계 이른 일',
-    '  - 날짜: 2026-08-12',
-  ].join('\n');
+    "# 역순 일정",
+    "## 첫 단계",
+    "- [ ] 늦은 일",
+    "  - 설명: 늦은 일 설명",
+    "  - 날짜: 2026-08-10",
+    "- [ ] 이른 일",
+    "  - 설명: 이른 일 설명",
+    "  - 날짜: 2026-08-03",
+    "## 둘째 단계",
+    "- [ ] 둘째 단계 늦은 일",
+    "  - 날짜: 2026-08-20",
+    "- [ ] 둘째 단계 이른 일",
+    "  - 날짜: 2026-08-12",
+  ].join("\n");
   const initial = createTextAuthoringDocument(raw, { now: NOW });
   assert.equal(initial.sourceState?.active.rawText, raw);
-  const initialIds = initial.parseResult.canonical.items.map((item) => item.itemId);
-  const initialLineage = new Map(initial.parseResult.canonical.items.map((item) => (
-    [item.itemId, [...item.sourceRowIds]]
-  )));
-  const byTitle = new Map(initial.parseResult.canonical.items.map((item) => (
-    [item.title, item.itemId]
-  )));
+  const initialIds = initial.parseResult.canonical.items.map(
+    (item) => item.itemId,
+  );
+  const initialLineage = new Map(
+    initial.parseResult.canonical.items.map((item) => [
+      item.itemId,
+      [...item.sourceRowIds],
+    ]),
+  );
+  const byTitle = new Map(
+    initial.parseResult.canonical.items.map((item) => [
+      item.title,
+      item.itemId,
+    ]),
+  );
 
   const aligned = applyAuthoringOperation(initial, {
-    type: 'align_source_order',
+    type: "align_source_order",
     orderedItemIds: [
-      byTitle.get('이른 일') as string,
-      byTitle.get('늦은 일') as string,
-      byTitle.get('둘째 단계 이른 일') as string,
-      byTitle.get('둘째 단계 늦은 일') as string,
+      byTitle.get("이른 일") as string,
+      byTitle.get("늦은 일") as string,
+      byTitle.get("둘째 단계 이른 일") as string,
+      byTitle.get("둘째 단계 늦은 일") as string,
     ],
   });
 
-  assert.ok(aligned.rawText.indexOf('- [ ] 이른 일') < aligned.rawText.indexOf('- [ ] 늦은 일'));
   assert.ok(
-    aligned.rawText.indexOf('  - 설명: 이른 일 설명')
-      < aligned.rawText.indexOf('- [ ] 늦은 일'),
+    aligned.rawText.indexOf("- [ ] 이른 일") <
+      aligned.rawText.indexOf("- [ ] 늦은 일"),
   );
   assert.ok(
-    aligned.rawText.indexOf('## 둘째 단계')
-      < aligned.rawText.indexOf('- [ ] 둘째 단계 이른 일'),
+    aligned.rawText.indexOf("  - 설명: 이른 일 설명") <
+      aligned.rawText.indexOf("- [ ] 늦은 일"),
+  );
+  assert.ok(
+    aligned.rawText.indexOf("## 둘째 단계") <
+      aligned.rawText.indexOf("- [ ] 둘째 단계 이른 일"),
   );
   assert.deepEqual(
     new Set(aligned.parseResult.canonical.items.map((item) => item.itemId)),
@@ -901,12 +933,12 @@ test('align_source_order moves complete Item blocks inside each Step and undo re
   aligned.parseResult.canonical.items.forEach((item) => {
     assert.deepEqual(item.sourceRowIds, initialLineage.get(item.itemId));
   });
-  assert.equal(aligned.revision.operations[0].type, 'align_source_order');
+  assert.equal(aligned.revision.operations[0].type, "align_source_order");
   assert.equal(aligned.sourceState?.active.rawText, raw);
   assert.equal(validateTextAuthoringDocument(aligned).valid, true);
   const reparsed = createTextAuthoringDocument(aligned.rawText, {
     documentId: aligned.documentId,
-    now: '2026-07-29T00:03:00.000Z',
+    now: "2026-07-29T00:03:00.000Z",
   });
   assert.deepEqual(
     reparsed.parseResult.canonical.items.map((item) => ({
@@ -921,7 +953,7 @@ test('align_source_order moves complete Item blocks inside each Step and undo re
     })),
   );
 
-  const undone = applyAuthoringOperation(aligned, { type: 'undo' });
+  const undone = applyAuthoringOperation(aligned, { type: "undo" });
   assert.equal(undone.rawText, raw);
   assert.deepEqual(undone.parseResult.canonical, initial.parseResult.canonical);
   assert.deepEqual(undone.parseResult.blocks, initial.parseResult.blocks);
@@ -931,59 +963,73 @@ test('align_source_order moves complete Item blocks inside each Step and undo re
   assert.equal(validateTextAuthoringDocument(undone).valid, true);
 });
 
-test('sync_item_to_working_text rewrites one canonical Item atomically and preserves stable surrounding lineage', () => {
+test("sync_item_to_working_text rewrites one canonical Item atomically and preserves stable surrounding lineage", () => {
   const raw = [
-    '# 여행 준비',
-    '## 예약',
-    '- [ ] 항공권 확인',
-    '  - 설명: 이전 설명',
-    '  - 날짜: 2026-08-10',
-    '  - 조건: 출발 가능할 때',
-    '  - 자료: [이전 자료](https://example.com/old)',
-    '  - 안내: 예약 규정을 먼저 확인합니다.',
-    '  - [ ] 여권 확인',
-    '  - [x] 결제 확인',
-    '',
-    '- [ ] 숙소 확인',
-    '  - 설명: 두 번째 항목은 그대로 둡니다.',
-  ].join('\n');
+    "# 여행 준비",
+    "## 예약",
+    "- [ ] 항공권 확인",
+    "  - 설명: 이전 설명",
+    "  - 날짜: 2026-08-10",
+    "  - 조건: 출발 가능할 때",
+    "  - 자료: [이전 자료](https://example.com/old)",
+    "  - 안내: 예약 규정을 먼저 확인합니다.",
+    "  - [ ] 여권 확인",
+    "  - [x] 결제 확인",
+    "",
+    "- [ ] 숙소 확인",
+    "  - 설명: 두 번째 항목은 그대로 둡니다.",
+  ].join("\n");
   const initial = createTextAuthoringDocument(raw, {
     now: NOW,
-    ownership: 'creator',
+    ownership: "creator",
   });
   const initialSnapshot = structuredClone(initial.sourceState?.active);
-  const initialStepIds = initial.parseResult.canonical.steps.map((step) => step.stepId);
+  const initialStepIds = initial.parseResult.canonical.steps.map(
+    (step) => step.stepId,
+  );
   const target = initial.parseResult.canonical.items[0];
-  const initialSubcheckIds = target.subchecks?.map((subcheck) => subcheck.subcheckId);
+  const initialSubcheckIds = target.subchecks?.map(
+    (subcheck) => subcheck.subcheckId,
+  );
   const unaffected = initial.parseResult.canonical.items[1];
   const unaffectedLineage = [...unaffected.sourceRowIds];
 
-  const synced = applyAuthoringOperation(initial, {
-    type: 'sync_item_to_working_text',
-    itemId: target.itemId,
-    patch: {
-      title: '항공권 최종 확인',
-      detail: '예약 번호와 출발 시간을 확인합니다.',
-      completion: '예약 번호를 메모하면 완료',
-      date: '2026-08-03',
-      relativeDate: '',
-      time: '09:30',
-      timezone: 'Asia/Seoul',
-      place: '김포공항',
-      duration: '90분',
-      repeat: '매주 월요일',
-      repeatEnd: '12회',
-      condition: '출발 전',
-      resource: '[예약 안내](https://example.com/new)',
+  const synced = applyAuthoringOperation(
+    initial,
+    {
+      type: "sync_item_to_working_text",
+      itemId: target.itemId,
+      patch: {
+        title: "항공권 최종 확인",
+        detail: "예약 번호와 출발 시간을 확인합니다.",
+        completion: "예약 번호를 메모하면 완료",
+        date: "2026-08-03",
+        relativeDate: "",
+        time: "09:30",
+        timezone: "Asia/Seoul",
+        place: "김포공항",
+        duration: "90분",
+        repeat: "매주 월요일",
+        repeatEnd: "12회",
+        condition: "출발 전",
+        resource: "[예약 안내](https://example.com/new)",
+        source: "",
+        guide: "예약 규정을 먼저 확인합니다.",
+        caution: "",
+      },
     },
-  }, {
-    now: '2026-07-29T01:00:00.000Z',
-  });
+    {
+      now: "2026-07-29T01:00:00.000Z",
+    },
+  );
 
   assert.notEqual(synced, initial);
   assert.equal(synced.revision.operations.length, 1);
-  assert.equal(synced.revision.operations[0].type, 'sync_item_to_working_text');
-  assert.equal(synced.revisionHistory.length, initial.revisionHistory.length + 1);
+  assert.equal(synced.revision.operations[0].type, "sync_item_to_working_text");
+  assert.equal(
+    synced.revisionHistory.length,
+    initial.revisionHistory.length + 1,
+  );
   assert.equal(synced.sourceState?.active.rawText, raw);
   assert.deepEqual(synced.sourceState?.active, initialSnapshot);
   assert.deepEqual(
@@ -997,14 +1043,20 @@ test('sync_item_to_working_text rewrites one canonical Item atomically and prese
     unaffectedLineage,
   );
   assert.match(synced.rawText, /- \[ \] 항공권 최종 확인/u);
-  assert.match(synced.rawText, /  - 설명: 예약 번호와 출발 시간을 확인합니다\./u);
+  assert.match(
+    synced.rawText,
+    /  - 설명: 예약 번호와 출발 시간을 확인합니다\./u,
+  );
   assert.match(synced.rawText, /  - 완료 기준: 예약 번호를 메모하면 완료/u);
   assert.match(synced.rawText, /  - 날짜: 2026-08-03/u);
   assert.match(synced.rawText, /  - 반복: 매주 월요일/u);
   assert.match(synced.rawText, /  - 반복 종료: 12회/u);
   assert.match(synced.rawText, /  - 실행 조건: 출발 전/u);
   assert.doesNotMatch(synced.rawText, /  - 조건:/u);
-  assert.match(synced.rawText, /  - 자료: \[예약 안내\]\(https:\/\/example\.com\/new\)/u);
+  assert.match(
+    synced.rawText,
+    /  - 자료: \[예약 안내\]\(https:\/\/example\.com\/new\)/u,
+  );
   assert.match(synced.rawText, /  - 안내: 예약 규정을 먼저 확인합니다\./u);
   assert.match(synced.rawText, /  - \[ \] 여권 확인/u);
   assert.match(synced.rawText, /  - \[x\] 결제 확인/u);
@@ -1020,23 +1072,33 @@ test('sync_item_to_working_text rewrites one canonical Item atomically and prese
     documentId: synced.documentId,
     fixtureVersion: synced.parseResult.fixtureVersion,
     ownership: synced.ownership,
-    now: '2026-07-29T01:01:00.000Z',
+    now: "2026-07-29T01:01:00.000Z",
   });
-  const semantic = (document: typeof synced) => document.parseResult.canonical.items.map((item) => ({
-    title: item.sourceTitle,
-    detail: item.sourceDetail,
-    completion: item.completion?.doneWhen,
-    schedule: item.schedule,
-    place: item.properties.find((property) => property.key === 'place')?.value,
-    repeatEnd: item.properties.find((property) => property.key === 'repeat_end')?.value,
-    condition: item.properties.find((property) => property.key === 'condition')?.value,
-    resources: item.resources.map((resource) => resource.url),
-  }));
+  const semantic = (document: typeof synced) =>
+    document.parseResult.canonical.items.map((item) => ({
+      title: item.sourceTitle,
+      detail: item.sourceDetail,
+      completion: item.completion?.doneWhen,
+      schedule: item.schedule,
+      place: item.properties.find((property) => property.key === "place")
+        ?.value,
+      repeatEnd: item.properties.find(
+        (property) => property.key === "repeat_end",
+      )?.value,
+      condition: item.properties.find(
+        (property) => property.key === "condition",
+      )?.value,
+      resources: item.resources.map((resource) => resource.url),
+    }));
   assert.deepEqual(semantic(synced), semantic(reparsed));
 
-  const undone = applyAuthoringOperation(synced, { type: 'undo' }, {
-    now: '2026-07-29T01:02:00.000Z',
-  });
+  const undone = applyAuthoringOperation(
+    synced,
+    { type: "undo" },
+    {
+      now: "2026-07-29T01:02:00.000Z",
+    },
+  );
   assert.equal(undone.rawText, raw);
   assert.deepEqual(undone.parseResult.canonical, initial.parseResult.canonical);
   assert.deepEqual(undone.parseResult.blocks, initial.parseResult.blocks);
@@ -1046,236 +1108,558 @@ test('sync_item_to_working_text rewrites one canonical Item atomically and prese
   assert.equal(validateTextAuthoringDocument(undone).valid, true);
 });
 
-test('sync_working_text_from_input adopts a later left edit after right-side sync and keeps snapshot, identity, and undo', () => {
-  const raw = [
-    '# 준비',
-    '## 실행',
-    '- [ ] 원래 제목',
-    '  - 설명: 원래 설명',
-    '  - 날짜: 2026-08-01',
-    '- [ ] 그대로 둘 항목',
-    '  - 설명: 그대로 둘 설명',
-  ].join('\n');
-  const initial = createTextAuthoringDocument(raw, { now: NOW });
-  const initialSnapshot = structuredClone(initial.sourceState?.active);
-  const target = initial.parseResult.canonical.items[0];
-  const unaffected = initial.parseResult.canonical.items[1];
-  const rightSynced = applyAuthoringOperation(initial, {
-    type: 'sync_item_to_working_text',
-    itemId: target.itemId,
-    patch: {
-      title: '우측 제목',
-      detail: '우측 설명',
-      completion: '',
-      date: '2026-08-02',
-      relativeDate: '',
-      time: '',
-      timezone: '',
-      place: '',
-      duration: '',
-      repeat: '',
-      repeatEnd: '',
-      condition: '',
-      resource: '',
-    },
-  }, { now: '2026-07-29T01:00:00.000Z' });
-  const leftEditedRaw = rightSynced.rawText
-    .replace('우측 제목', '좌측 제목')
-    .replace('우측 설명', '좌측 설명')
-    .replace('2026-08-02', '2026-08-03');
-
-  const leftSynced = applyAuthoringOperation(rightSynced, {
-    type: 'sync_working_text_from_input',
-    rawText: leftEditedRaw,
-    title: '준비',
-  }, { now: '2026-07-29T01:01:00.000Z' });
-
-  assert.notEqual(leftSynced, rightSynced);
-  assert.equal(leftSynced.revision.operations[0].type, 'sync_working_text_from_input');
-  assert.equal(leftSynced.rawText, leftEditedRaw);
-  assert.equal(leftSynced.parseResult.canonical.items[0].title, '좌측 제목');
-  assert.equal(leftSynced.parseResult.canonical.items[0].detail, '좌측 설명');
-  assert.equal(leftSynced.parseResult.canonical.items[0].schedule?.kind, 'absolute');
-  assert.equal(leftSynced.parseResult.canonical.items[0].schedule?.date, '2026-08-03');
-  assert.equal(leftSynced.parseResult.canonical.items[0].itemId, target.itemId);
-  assert.equal(leftSynced.parseResult.canonical.items[1].itemId, unaffected.itemId);
-  assert.deepEqual(leftSynced.sourceState?.active, initialSnapshot);
-  assert.equal(validateTextAuthoringDocument(leftSynced).valid, true);
-
-  const undone = applyAuthoringOperation(leftSynced, { type: 'undo' }, {
-    now: '2026-07-29T01:02:00.000Z',
+test("sync_item_to_working_text atomically edits one root Item in the generated default Step and one undo restores it", () => {
+  const raw = ["# 수정 확인", "- [ ] 원래 제목", "  - 설명: 원래 설명"].join(
+    "\n",
+  );
+  const initial = createTextAuthoringDocument(raw, {
+    now: NOW,
+    ownership: "creator",
   });
-  assert.equal(undone.rawText, rightSynced.rawText);
-  assert.deepEqual(undone.parseResult.canonical, rightSynced.parseResult.canonical);
+  const initialCanonical = structuredClone(initial.parseResult.canonical);
+  const initialProjection = buildAuthoringArtifactProjection(initial);
+  const initialSnapshot = structuredClone(initial.sourceState?.active);
+  const initialStep = initial.parseResult.canonical.steps[0];
+  const target = initial.parseResult.canonical.items[0];
+
+  assert.equal(initialStep.generated, true);
+  assert.equal(initial.parseResult.canonical.items.length, 1);
+
+  const synced = applyAuthoringOperation(
+    initial,
+    {
+      type: "sync_item_to_working_text",
+      itemId: target.itemId,
+      patch: {
+        title: "바뀐 제목",
+        detail: "바뀐 설명",
+        completion: "",
+        date: "",
+        relativeDate: "",
+        time: "",
+        timezone: "",
+        place: "",
+        duration: "",
+        repeat: "",
+        repeatEnd: "",
+        condition: "",
+        resource: "",
+        source: "",
+        guide: "",
+        caution: "",
+      },
+    },
+    { now: "2026-07-29T01:10:00.000Z" },
+  );
+
+  assert.notEqual(synced, initial);
+  assert.equal(synced.revision.operations.length, 1);
+  assert.equal(synced.revision.operations[0].type, "sync_item_to_working_text");
+  assert.equal(
+    synced.revisionHistory.length,
+    initial.revisionHistory.length + 1,
+  );
+  assert.equal(
+    synced.rawText,
+    ["# 수정 확인", "- [ ] 바뀐 제목", "  - 설명: 바뀐 설명"].join("\n"),
+  );
+  assert.equal(
+    synced.parseResult.canonical.steps[0].stepId,
+    initialStep.stepId,
+  );
+  assert.equal(synced.parseResult.canonical.steps[0].generated, true);
+  assert.equal(synced.parseResult.canonical.items[0].itemId, target.itemId);
+  assert.equal(synced.parseResult.canonical.items[0].title, "바뀐 제목");
+  assert.equal(synced.parseResult.canonical.items[0].detail, "바뀐 설명");
+  assert.deepEqual(synced.sourceState?.active, initialSnapshot);
+
+  const syncedProjection = buildAuthoringArtifactProjection(synced);
+  for (const artifact of ["todo", "memo"] as const) {
+    assert.equal(syncedProjection.artifacts[artifact].rows.length, 1);
+    assert.equal(
+      syncedProjection.artifacts[artifact].rows[0].title,
+      "바뀐 제목",
+    );
+    assert.equal(
+      syncedProjection.artifacts[artifact].rows[0].description,
+      "바뀐 설명",
+    );
+  }
+  assert.equal(validateTextAuthoringDocument(synced).valid, true);
+
+  const undone = applyAuthoringOperation(
+    synced,
+    { type: "undo" },
+    { now: "2026-07-29T01:11:00.000Z" },
+  );
+  assert.equal(undone.rawText, raw);
+  assert.deepEqual(undone.parseResult.canonical, initialCanonical);
+  assert.deepEqual(buildAuthoringArtifactProjection(undone), initialProjection);
   assert.deepEqual(undone.sourceState?.active, initialSnapshot);
   assert.equal(validateTextAuthoringDocument(undone).valid, true);
 });
 
-test('sync_working_text_from_input clears stale projections when the left editor is emptied', () => {
-  const raw = '# 비우기\n- [ ] 남아 있던 항목\n  - 설명: 남아 있던 설명';
+test("sync_working_text_from_input adopts a later left edit after right-side sync and keeps snapshot, identity, and undo", () => {
+  const raw = [
+    "# 준비",
+    "## 실행",
+    "- [ ] 원래 제목",
+    "  - 설명: 원래 설명",
+    "  - 날짜: 2026-08-01",
+    "- [ ] 그대로 둘 항목",
+    "  - 설명: 그대로 둘 설명",
+  ].join("\n");
+  const initial = createTextAuthoringDocument(raw, { now: NOW });
+  const initialSnapshot = structuredClone(initial.sourceState?.active);
+  const target = initial.parseResult.canonical.items[0];
+  const unaffected = initial.parseResult.canonical.items[1];
+  const rightSynced = applyAuthoringOperation(
+    initial,
+    {
+      type: "sync_item_to_working_text",
+      itemId: target.itemId,
+      patch: {
+        title: "우측 제목",
+        detail: "우측 설명",
+        completion: "",
+        date: "2026-08-02",
+        relativeDate: "",
+        time: "",
+        timezone: "",
+        place: "",
+        duration: "",
+        repeat: "",
+        repeatEnd: "",
+        condition: "",
+        resource: "",
+        source: "",
+        guide: "",
+        caution: "",
+      },
+    },
+    { now: "2026-07-29T01:00:00.000Z" },
+  );
+  const leftEditedRaw = rightSynced.rawText
+    .replace("우측 제목", "좌측 제목")
+    .replace("우측 설명", "좌측 설명")
+    .replace("2026-08-02", "2026-08-03");
+
+  const leftSynced = applyAuthoringOperation(
+    rightSynced,
+    {
+      type: "sync_working_text_from_input",
+      rawText: leftEditedRaw,
+      title: "준비",
+    },
+    { now: "2026-07-29T01:01:00.000Z" },
+  );
+
+  assert.notEqual(leftSynced, rightSynced);
+  assert.equal(
+    leftSynced.revision.operations[0].type,
+    "sync_working_text_from_input",
+  );
+  assert.equal(leftSynced.rawText, leftEditedRaw);
+  assert.equal(leftSynced.parseResult.canonical.items[0].title, "좌측 제목");
+  assert.equal(leftSynced.parseResult.canonical.items[0].detail, "좌측 설명");
+  assert.equal(
+    leftSynced.parseResult.canonical.items[0].schedule?.kind,
+    "absolute",
+  );
+  assert.equal(
+    leftSynced.parseResult.canonical.items[0].schedule?.date,
+    "2026-08-03",
+  );
+  assert.equal(leftSynced.parseResult.canonical.items[0].itemId, target.itemId);
+  assert.equal(
+    leftSynced.parseResult.canonical.items[1].itemId,
+    unaffected.itemId,
+  );
+  assert.deepEqual(leftSynced.sourceState?.active, initialSnapshot);
+  assert.equal(validateTextAuthoringDocument(leftSynced).valid, true);
+
+  const undone = applyAuthoringOperation(
+    leftSynced,
+    { type: "undo" },
+    {
+      now: "2026-07-29T01:02:00.000Z",
+    },
+  );
+  assert.equal(undone.rawText, rightSynced.rawText);
+  assert.deepEqual(
+    undone.parseResult.canonical,
+    rightSynced.parseResult.canonical,
+  );
+  assert.deepEqual(undone.sourceState?.active, initialSnapshot);
+  assert.equal(validateTextAuthoringDocument(undone).valid, true);
+});
+
+test("sync_working_text_from_input clears stale projections when the left editor is emptied", () => {
+  const raw = "# 비우기\n- [ ] 남아 있던 항목\n  - 설명: 남아 있던 설명";
   const initial = createTextAuthoringDocument(raw, { now: NOW });
   const initialSnapshot = structuredClone(initial.sourceState?.active);
 
-  const cleared = applyAuthoringOperation(initial, {
-    type: 'sync_working_text_from_input',
-    rawText: '',
-    title: '비우기',
-  }, { now: '2026-07-29T01:00:00.000Z' });
+  const cleared = applyAuthoringOperation(
+    initial,
+    {
+      type: "sync_working_text_from_input",
+      rawText: "",
+      title: "비우기",
+    },
+    { now: "2026-07-29T01:00:00.000Z" },
+  );
 
-  assert.equal(cleared.rawText, '');
+  assert.equal(cleared.rawText, "");
   assert.equal(cleared.parseResult.canonical.items.length, 0);
   assert.deepEqual(cleared.sourceState?.active, initialSnapshot);
   assert.equal(validateTextAuthoringDocument(cleared).valid, true);
 
-  const undone = applyAuthoringOperation(cleared, { type: 'undo' });
+  const undone = applyAuthoringOperation(cleared, { type: "undo" });
   assert.equal(undone.rawText, raw);
   assert.equal(undone.parseResult.canonical.items.length, 1);
 });
 
-test('sync_item_to_working_text supports one relative date and removes the prior absolute row without losing review lineage', () => {
+test("sync_item_to_working_text supports one relative date and removes the prior absolute row without losing review lineage", () => {
   const raw = [
-    '# 마감 준비',
-    '- 기준일: 2026-08-10',
-    '## 제출',
-    '- [ ] 서류 확인',
-    '  - 날짜: 2026-08-09',
-  ].join('\n');
+    "# 마감 준비",
+    "- 기준일: 2026-08-10",
+    "## 제출",
+    "- [ ] 서류 확인",
+    "  - 날짜: 2026-08-09",
+  ].join("\n");
   const initial = createTextAuthoringDocument(raw, {
     now: NOW,
-    ownership: 'creator',
-    reviewRequirements: [{ kind: 'rights', reasonKey: 'test.rights' }],
+    ownership: "creator",
+    reviewRequirements: [{ kind: "rights", reasonKey: "test.rights" }],
   });
   const item = initial.parseResult.canonical.items[0];
   const removedDateRowId = item.sourceRowIds
-    .map((sourceRowId) => initial.parseResult.canonical.sourceRows.find(
-      (row) => row.sourceRowId === sourceRowId,
-    ))
-    .find((row) => row?.rawText.includes('날짜:'))?.sourceRowId;
+    .map((sourceRowId) =>
+      initial.parseResult.canonical.sourceRows.find(
+        (row) => row.sourceRowId === sourceRowId,
+      ),
+    )
+    .find((row) => row?.rawText.includes("날짜:"))?.sourceRowId;
   assert.ok(removedDateRowId);
 
   const synced = applyAuthoringOperation(initial, {
-    type: 'sync_item_to_working_text',
+    type: "sync_item_to_working_text",
     itemId: item.itemId,
     patch: {
-      title: '서류 확인',
-      detail: '',
-      completion: '',
-      date: '',
-      relativeDate: 'D-3',
-      time: '',
-      timezone: '',
-      place: '',
-      duration: '',
-      repeat: '',
-      repeatEnd: '',
-      condition: '',
-      resource: '',
+      title: "서류 확인",
+      detail: "",
+      completion: "",
+      date: "",
+      relativeDate: "D-3",
+      time: "",
+      timezone: "",
+      place: "",
+      duration: "",
+      repeat: "",
+      repeatEnd: "",
+      condition: "",
+      resource: "",
+      source: "",
+      guide: "",
+      caution: "",
     },
   });
   const syncedItem = synced.parseResult.canonical.items[0];
 
   assert.equal(syncedItem.itemId, item.itemId);
-  assert.equal(syncedItem.schedule?.kind, 'relative');
-  assert.equal(syncedItem.schedule?.raw, 'D-3');
+  assert.equal(syncedItem.schedule?.kind, "relative");
+  assert.equal(syncedItem.schedule?.raw, "D-3");
   assert.match(synced.rawText, /  - 상대 날짜: D-3/u);
   assert.doesNotMatch(synced.rawText, /  - 날짜:/u);
-  assert.ok(synced.parseResult.canonical.sourceRows.some((row) => (
-    row.sourceRowId === removedDateRowId
-    && row.state === 'tombstone'
-    && row.sourceSnapshotId === initial.sourceState?.active.snapshotId
-  )));
+  assert.ok(
+    synced.parseResult.canonical.sourceRows.some(
+      (row) =>
+        row.sourceRowId === removedDateRowId &&
+        row.state === "tombstone" &&
+        row.sourceSnapshotId === initial.sourceState?.active.snapshotId,
+    ),
+  );
   assert.ok(synced.reviewGates?.[0].sourceRowIds.includes(removedDateRowId));
   assert.equal(validateTextAuthoringDocument(synced).valid, true);
 });
 
-test('sync_item_to_working_text preserves CRLF, the final newline, and unrelated source bytes', () => {
+test("sync_item_to_working_text preserves CRLF, the final newline, and unrelated source bytes", () => {
   const raw = [
-    '# CRLF 확인',
-    '배경 설명은 그대로 둡니다.',
-    '## 준비',
-    '- [ ] 첫 항목',
-    '  - 설명: 지울 설명',
-    '- [ ] 다른 항목',
-    '  - 설명: 이 줄도 그대로 둡니다.',
-    '',
-  ].join('\r\n');
+    "# CRLF 확인",
+    "배경 설명은 그대로 둡니다.",
+    "## 준비",
+    "- [ ] 첫 항목",
+    "  - 설명: 지울 설명",
+    "- [ ] 다른 항목",
+    "  - 설명: 이 줄도 그대로 둡니다.",
+    "",
+  ].join("\r\n");
   const initial = createTextAuthoringDocument(raw, { now: NOW });
   const target = initial.parseResult.canonical.items[0];
 
   const synced = applyAuthoringOperation(initial, {
-    type: 'sync_item_to_working_text',
+    type: "sync_item_to_working_text",
     itemId: target.itemId,
     patch: {
-      title: '첫 항목 수정',
-      detail: '',
-      completion: '',
-      date: '2026-08-20',
-      relativeDate: '',
-      time: '',
-      timezone: '',
-      place: '',
-      duration: '',
-      repeat: '',
-      repeatEnd: '',
-      condition: '',
-      resource: '',
+      title: "첫 항목 수정",
+      detail: "",
+      completion: "",
+      date: "2026-08-20",
+      relativeDate: "",
+      time: "",
+      timezone: "",
+      place: "",
+      duration: "",
+      repeat: "",
+      repeatEnd: "",
+      condition: "",
+      resource: "",
+      source: "",
+      guide: "",
+      caution: "",
     },
   });
 
   assert.notEqual(synced, initial);
-  assert.equal(synced.rawText.endsWith('\r\n'), true);
+  assert.equal(synced.rawText.endsWith("\r\n"), true);
   assert.equal(/(^|[^\r])\n/u.test(synced.rawText), false);
   assert.match(synced.rawText, /배경 설명은 그대로 둡니다\.\r\n/u);
-  assert.match(synced.rawText, /- \[ \] 다른 항목\r\n  - 설명: 이 줄도 그대로 둡니다\.\r\n/u);
+  assert.match(
+    synced.rawText,
+    /- \[ \] 다른 항목\r\n  - 설명: 이 줄도 그대로 둡니다\.\r\n/u,
+  );
   assert.doesNotMatch(synced.rawText, /지울 설명/u);
   assert.match(synced.rawText, /  - 날짜: 2026-08-20\r\n/u);
   assert.equal(validateTextAuthoringDocument(synced).valid, true);
 
-  const undone = applyAuthoringOperation(synced, { type: 'undo' });
+  const undone = applyAuthoringOperation(synced, { type: "undo" });
   assert.equal(undone.rawText, raw);
 });
 
-test('sync_item_to_working_text fails closed for ambiguous or unsupported source shapes', () => {
+test("Inspector sync updates one 자료·출처·안내·주의 block atomically across source, canonical, projection, and one undo", () => {
+  const raw = [
+    "# 여행",
+    "## 예약",
+    "- [ ] 예약 확인",
+    "  - 자료: [예약 도구](https://example.com/tool-old)",
+    "  - 출처: [공식 안내](https://example.com/source-old)",
+    "  - 안내: 예약 번호를 준비합니다.",
+    "  - 주의: 취소 규정을 확인합니다.",
+  ].join("\n");
+  const initial = createTextAuthoringDocument(raw, { now: NOW });
+  const item = initial.parseResult.canonical.items[0];
+  const initialCanonical = structuredClone(initial.parseResult.canonical);
+
+  const synced = applyAuthoringOperation(
+    initial,
+    {
+      type: "sync_item_to_working_text",
+      itemId: item.itemId,
+      patch: {
+        title: "예약 최종 확인",
+        detail: "",
+        completion: "",
+        date: "",
+        relativeDate: "",
+        time: "",
+        timezone: "",
+        place: "",
+        duration: "",
+        repeat: "",
+        repeatEnd: "",
+        condition: "",
+        resource: "[예약 도구](https://example.com/tool-new)",
+        source: "[공식 안내](https://example.com/source-new)",
+        guide: "예약 번호와 결제 내역을 준비합니다.",
+        caution: "환불 가능 시간을 먼저 확인합니다.",
+      },
+    },
+    { now: "2026-07-29T01:00:00.000Z" },
+  );
+
+  assert.notEqual(synced, initial);
+  assert.equal(synced.revision.operations.length, 1);
+  assert.equal(synced.revision.operations[0].type, "sync_item_to_working_text");
+  assert.match(
+    synced.rawText,
+    /  - 자료: \[예약 도구\]\(https:\/\/example\.com\/tool-new\)/u,
+  );
+  assert.match(
+    synced.rawText,
+    /  - 출처: \[공식 안내\]\(https:\/\/example\.com\/source-new\)/u,
+  );
+  assert.match(
+    synced.rawText,
+    /  - 안내: 예약 번호와 결제 내역을 준비합니다\./u,
+  );
+  assert.match(synced.rawText, /  - 주의: 환불 가능 시간을 먼저 확인합니다\./u);
+  const syncedItem = synced.parseResult.canonical.items[0];
+  assert.equal(syncedItem.itemId, item.itemId);
+  assert.deepEqual(
+    syncedItem.resources.map((link) => link.url),
+    ["https://example.com/tool-new"],
+  );
+  assert.deepEqual(
+    syncedItem.sources.map((link) => link.url),
+    ["https://example.com/source-new"],
+  );
+  assert.deepEqual(syncedItem.guides, ["예약 번호와 결제 내역을 준비합니다."]);
+  assert.deepEqual(syncedItem.cautions, ["환불 가능 시간을 먼저 확인합니다."]);
+  const projection = buildAuthoringArtifactProjection(synced);
+  const todoRow = projection.artifacts.todo.rows.find(
+    (row) => row.itemId === item.itemId,
+  );
+  assert.ok(todoRow);
+  assert.ok(
+    todoRow.resources.some(
+      (link) => link.url === "https://example.com/tool-new",
+    ),
+  );
+  assert.ok(
+    (todoRow.sources ?? []).some(
+      (link) => link.url === "https://example.com/source-new",
+    ),
+  );
+  assert.match(
+    todoRow.experienceRow.caution ?? "",
+    /환불 가능 시간을 먼저 확인/u,
+  );
+  assert.equal(validateTextAuthoringDocument(synced).valid, true);
+
+  const undone = applyAuthoringOperation(synced, { type: "undo" });
+  assert.equal(undone.rawText, raw);
+  assert.deepEqual(undone.parseResult.canonical, initialCanonical);
+});
+
+test("Inspector sync makes zero partial writes when 출처·안내·주의 targets are missing or ambiguous", () => {
+  const cases = [
+    {
+      label: "missing source row",
+      raw: [
+        "# 누락",
+        "- [ ] 항목",
+        "  - 안내: 기존 안내",
+        "  - 주의: 기존 주의",
+      ].join("\n"),
+      patch: {
+        source: "https://example.com/source",
+        guide: "기존 안내",
+        caution: "기존 주의",
+      },
+    },
+    {
+      label: "duplicate guide rows",
+      raw: [
+        "# 중복",
+        "- [ ] 항목",
+        "  - 안내: 첫 안내",
+        "  - 안내: 둘 안내",
+        "  - 주의: 기존 주의",
+      ].join("\n"),
+      patch: { source: "", guide: "바꾼 안내", caution: "기존 주의" },
+    },
+    {
+      label: "multiple source links",
+      raw: [
+        "# 복수",
+        "- [ ] 항목",
+        "  - 출처: https://example.com/one",
+        "  - 출처: https://example.com/two",
+        "  - 안내: 기존 안내",
+        "  - 주의: 기존 주의",
+      ].join("\n"),
+      patch: {
+        source: "https://example.com/new",
+        guide: "기존 안내",
+        caution: "기존 주의",
+      },
+    },
+  ];
+
+  cases.forEach(({ label, raw: sourceText, patch }) => {
+    const initial = createTextAuthoringDocument(sourceText, { now: NOW });
+    const item = initial.parseResult.canonical.items[0];
+    const before = structuredClone(initial);
+    const rejected = applyAuthoringOperation(initial, {
+      type: "sync_item_to_working_text",
+      itemId: item.itemId,
+      patch: {
+        title: item.title,
+        detail: item.detail ?? "",
+        completion: item.completion?.doneWhen ?? "",
+        date: "",
+        relativeDate: "",
+        time: "",
+        timezone: "",
+        place: "",
+        duration: "",
+        repeat: "",
+        repeatEnd: "",
+        condition: "",
+        resource: "",
+        ...patch,
+      },
+    });
+    assert.equal(rejected, initial, label);
+    assert.deepEqual(rejected, before, label);
+  });
+});
+
+test("sync_item_to_working_text fails closed for ambiguous or unsupported source shapes", () => {
   const canonicalPatch = {
-    title: '수정 제목',
-    detail: '수정 설명',
-    completion: '',
-    date: '',
-    relativeDate: '',
-    time: '',
-    timezone: '',
-    place: '',
-    duration: '',
-    repeat: '',
-    repeatEnd: '',
-    condition: '',
-    resource: '',
+    title: "수정 제목",
+    detail: "수정 설명",
+    completion: "",
+    date: "",
+    relativeDate: "",
+    time: "",
+    timezone: "",
+    place: "",
+    duration: "",
+    repeat: "",
+    repeatEnd: "",
+    condition: "",
+    resource: "",
+    source: "",
+    guide: "",
+    caution: "",
   };
   const cases = [
     {
-      label: 'markdown table row',
-      raw: ['| 할 일 | 날짜 |', '| --- | --- |', '| 표 항목 | 2026-08-03 |'].join('\n'),
-    },
-    {
-      label: 'csv row',
-      raw: ['할 일,날짜', '표 항목,2026-08-03'].join('\n'),
-    },
-    {
-      label: 'duplicate editable property',
-      raw: ['# 중복', '- [ ] 항목', '  - 설명: 하나', '  - 설명: 둘'].join('\n'),
-    },
-    {
-      label: 'shared Step schedule',
-      raw: ['# 공용 일정', '## 2026-08-03 준비', '- [ ] 첫째', '- [ ] 둘째'].join('\n'),
-    },
-    {
-      label: 'multiple resources',
+      label: "markdown table row",
       raw: [
-        '# 자료',
-        '- [ ] 항목',
-        '  - 자료: [하나](https://example.com/one)',
-        '  - 자료: [둘](https://example.com/two)',
-      ].join('\n'),
+        "| 할 일 | 날짜 |",
+        "| --- | --- |",
+        "| 표 항목 | 2026-08-03 |",
+      ].join("\n"),
+    },
+    {
+      label: "csv row",
+      raw: ["할 일,날짜", "표 항목,2026-08-03"].join("\n"),
+    },
+    {
+      label: "duplicate editable property",
+      raw: ["# 중복", "- [ ] 항목", "  - 설명: 하나", "  - 설명: 둘"].join(
+        "\n",
+      ),
+    },
+    {
+      label: "shared Step schedule",
+      raw: [
+        "# 공용 일정",
+        "## 2026-08-03 준비",
+        "- [ ] 첫째",
+        "- [ ] 둘째",
+      ].join("\n"),
+    },
+    {
+      label: "multiple resources",
+      raw: [
+        "# 자료",
+        "- [ ] 항목",
+        "  - 자료: [하나](https://example.com/one)",
+        "  - 자료: [둘](https://example.com/two)",
+      ].join("\n"),
     },
   ];
 
@@ -1284,7 +1668,7 @@ test('sync_item_to_working_text fails closed for ambiguous or unsupported source
     const item = initial.parseResult.canonical.items[0];
     assert.ok(item, label);
     const result = applyAuthoringOperation(initial, {
-      type: 'sync_item_to_working_text',
+      type: "sync_item_to_working_text",
       itemId: item.itemId,
       patch: canonicalPatch,
     });
@@ -1293,17 +1677,17 @@ test('sync_item_to_working_text fails closed for ambiguous or unsupported source
   });
 
   const dated = createTextAuthoringDocument(
-    ['# 날짜', '- [ ] 항목', '  - 날짜: 2026-08-03'].join('\n'),
+    ["# 날짜", "- [ ] 항목", "  - 날짜: 2026-08-03"].join("\n"),
     { now: NOW },
   );
   const datedItem = dated.parseResult.canonical.items[0];
   const conflictingDate = applyAuthoringOperation(dated, {
-    type: 'sync_item_to_working_text',
+    type: "sync_item_to_working_text",
     itemId: datedItem.itemId,
     patch: {
       ...canonicalPatch,
-      date: '2026-08-03',
-      relativeDate: 'D-3',
+      date: "2026-08-03",
+      relativeDate: "D-3",
     },
   });
   assert.equal(conflictingDate, dated);
@@ -1311,7 +1695,7 @@ test('sync_item_to_working_text fails closed for ambiguous or unsupported source
   const corrupted = structuredClone(dated);
   corrupted.parseResult.canonical.sourceRows[0].sourceRange.endOffset += 1;
   const corruptResult = applyAuthoringOperation(corrupted, {
-    type: 'sync_item_to_working_text',
+    type: "sync_item_to_working_text",
     itemId: datedItem.itemId,
     patch: canonicalPatch,
   });
@@ -1319,34 +1703,37 @@ test('sync_item_to_working_text fails closed for ambiguous or unsupported source
   assert.equal(corruptResult.rawText, dated.rawText);
 });
 
-test('merge fails closed when completion, schedule, checkbox, or property values conflict', () => {
+test("merge fails closed when completion, schedule, checkbox, or property values conflict", () => {
   const cases = [
     {
-      label: 'completion',
-      properties: ['  - 완료 기준: 첫 완료', '  - 완료 기준: 둘 완료'],
+      label: "completion",
+      properties: ["  - 완료 기준: 첫 완료", "  - 완료 기준: 둘 완료"],
     },
     {
-      label: 'schedule',
-      properties: ['  - 날짜: 2026-08-01', '  - 날짜: 2026-08-02'],
+      label: "schedule",
+      properties: ["  - 날짜: 2026-08-01", "  - 날짜: 2026-08-02"],
     },
     {
-      label: 'property',
-      properties: ['  - 장소: 서울', '  - 장소: 부산'],
+      label: "property",
+      properties: ["  - 장소: 서울", "  - 장소: 부산"],
     },
   ];
 
   cases.forEach(({ label, properties }) => {
-    const document = createTextAuthoringDocument([
-      `# ${label}`,
-      '## 실행',
-      '- [ ] 첫째',
-      properties[0],
-      '- [ ] 둘째',
-      properties[1],
-    ].join('\n'), { now: NOW });
+    const document = createTextAuthoringDocument(
+      [
+        `# ${label}`,
+        "## 실행",
+        "- [ ] 첫째",
+        properties[0],
+        "- [ ] 둘째",
+        properties[1],
+      ].join("\n"),
+      { now: NOW },
+    );
     const before = structuredClone(document);
     const rejected = applyAuthoringOperation(document, {
-      type: 'merge',
+      type: "merge",
       itemIds: document.parseResult.canonical.items.map((item) => item.itemId),
     });
 
@@ -1354,69 +1741,73 @@ test('merge fails closed when completion, schedule, checkbox, or property values
     assert.deepEqual(rejected, before, label);
   });
 
-  const checked = createTextAuthoringDocument([
-    '# checkbox',
-    '## 실행',
-    '- [x] 첫째',
-    '- [ ] 둘째',
-  ].join('\n'), { now: NOW });
+  const checked = createTextAuthoringDocument(
+    ["# checkbox", "## 실행", "- [x] 첫째", "- [ ] 둘째"].join("\n"),
+    { now: NOW },
+  );
   const checkedBefore = structuredClone(checked);
   const checkedRejected = applyAuthoringOperation(checked, {
-    type: 'merge',
+    type: "merge",
     itemIds: checked.parseResult.canonical.items.map((item) => item.itemId),
   });
   assert.equal(checkedRejected, checked);
   assert.deepEqual(checkedRejected, checkedBefore);
 });
 
-test('merge adopts a single non-conflicting completion and schedule without losing lineage', () => {
-  const document = createTextAuthoringDocument([
-    '# 병합',
-    '## 실행',
-    '- [ ] 첫째',
-    '- [ ] 둘째',
-    '  - 완료 기준: 둘을 확인함',
-    '  - 날짜: 2026-08-02',
-    '  - 장소: 부산',
-  ].join('\n'), { now: NOW });
+test("merge adopts a single non-conflicting completion and schedule without losing lineage", () => {
+  const document = createTextAuthoringDocument(
+    [
+      "# 병합",
+      "## 실행",
+      "- [ ] 첫째",
+      "- [ ] 둘째",
+      "  - 완료 기준: 둘을 확인함",
+      "  - 날짜: 2026-08-02",
+      "  - 장소: 부산",
+    ].join("\n"),
+    { now: NOW },
+  );
   const second = document.parseResult.canonical.items[1];
   const merged = applyAuthoringOperation(document, {
-    type: 'merge',
+    type: "merge",
     itemIds: document.parseResult.canonical.items.map((item) => item.itemId),
   });
   const item = merged.parseResult.canonical.items[0];
 
-  assert.equal(item.completion?.doneWhen, '둘을 확인함');
+  assert.equal(item.completion?.doneWhen, "둘을 확인함");
   assert.equal(
-    item.schedule?.kind === 'absolute' ? item.schedule.date : undefined,
-    '2026-08-02',
+    item.schedule?.kind === "absolute" ? item.schedule.date : undefined,
+    "2026-08-02",
   );
   assert.ok(
-    second.completion?.sourceRowIds.every((sourceRowId) => (
-      item.completion?.sourceRowIds.includes(sourceRowId)
-    )),
+    second.completion?.sourceRowIds.every((sourceRowId) =>
+      item.completion?.sourceRowIds.includes(sourceRowId),
+    ),
   );
   assert.equal(validateTextAuthoringDocument(merged).valid, true);
 });
 
-test('align_source_order fails closed after split duplicates one source Item block', () => {
-  const document = createTextAuthoringDocument([
-    '# 분리 후 정렬',
-    '## 실행',
-    '- [ ] 늦은 일과 이른 일',
-    '  - 날짜: 2026-08-10',
-    '- [ ] 중간 일',
-    '  - 날짜: 2026-08-05',
-  ].join('\n'), { now: NOW });
+test("align_source_order fails closed after split duplicates one source Item block", () => {
+  const document = createTextAuthoringDocument(
+    [
+      "# 분리 후 정렬",
+      "## 실행",
+      "- [ ] 늦은 일과 이른 일",
+      "  - 날짜: 2026-08-10",
+      "- [ ] 중간 일",
+      "  - 날짜: 2026-08-05",
+    ].join("\n"),
+    { now: NOW },
+  );
   const firstId = document.parseResult.canonical.items[0].itemId;
   const split = applyAuthoringOperation(document, {
-    type: 'split',
+    type: "split",
     itemId: firstId,
     at: 5,
   });
   const before = structuredClone(split);
   const rejected = applyAuthoringOperation(split, {
-    type: 'align_source_order',
+    type: "align_source_order",
     orderedItemIds: split.parseResult.canonical.items
       .map((item) => item.itemId)
       .reverse(),

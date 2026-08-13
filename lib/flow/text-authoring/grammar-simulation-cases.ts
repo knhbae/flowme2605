@@ -1084,7 +1084,7 @@ function compatibilityAndErrorScenarios(): GrammarSimulationScenario[] {
         itemCount: 0,
         stepCount: 0,
         primaryArtifact: "memo",
-        artifactCounts: { calendar: 0, todo: 0, sheet: 0, memo: 0 },
+        artifactCounts: { calendar: 0, todo: 0, sheet: 0, memo: 1 },
         issueCount: 1,
         issueTypes: ["ambiguous_role"],
         issueMessageKeys: ["authoring.ambiguous_plain_sentence"],
@@ -1098,7 +1098,8 @@ function compatibilityAndErrorScenarios(): GrammarSimulationScenario[] {
       id: "compat-tab-table",
       group: "compatibility",
       title: "탭 표",
-      summary: "표의 행을 1:1 Item으로 유지한다.",
+      summary:
+        "표의 행을 1:1 Sheet/TXT 행으로 유지하고 행동을 발명하지 않는다.",
       sourceShape: "TSV · 3 SourceRow",
       naturalDestination: "sheet",
       rawText: [
@@ -1114,12 +1115,13 @@ function compatibilityAndErrorScenarios(): GrammarSimulationScenario[] {
         itemCount: 3,
         stepCount: 1,
         primaryArtifact: "sheet",
-        artifactCounts: { calendar: 0, todo: 3, sheet: 3, memo: 3 },
+        artifactCounts: { calendar: 0, todo: 0, sheet: 3, memo: 3 },
         issueCount: 0,
         icsEventCount: 0,
         icsHasRrule: false,
       },
-      boundary: "표 행 수를 카드 수에 맞춰 합치거나 나누지 않는다.",
+      boundary:
+        "표 행 수를 합치거나 나누지 않으며 명시 행동 표식이 없으면 Todo로 만들지 않는다.",
     },
     {
       id: "compat-csv-table",
@@ -1140,14 +1142,15 @@ function compatibilityAndErrorScenarios(): GrammarSimulationScenario[] {
         itemCount: 2,
         stepCount: 1,
         primaryArtifact: "sheet",
-        artifactCounts: { calendar: 0, todo: 2, sheet: 2, memo: 2 },
+        artifactCounts: { calendar: 0, todo: 0, sheet: 2, memo: 2 },
         issueCount: 0,
         firstItemTitle: "어린 왕자, 낭독본",
         lastItemTitle: "오만과 편견",
         icsEventCount: 0,
         icsHasRrule: false,
       },
-      boundary: "쉼표 한 개만으로 일반 한 줄 메모를 표로 오인하지 않는다.",
+      boundary:
+        "쉼표 한 개만으로 일반 메모를 표로 오인하지 않고 표의 사실 행을 Todo로 만들지 않는다.",
     },
     {
       id: "compat-markdown-table",
@@ -1169,12 +1172,13 @@ function compatibilityAndErrorScenarios(): GrammarSimulationScenario[] {
         itemCount: 2,
         stepCount: 1,
         primaryArtifact: "sheet",
-        artifactCounts: { calendar: 0, todo: 2, sheet: 2, memo: 2 },
+        artifactCounts: { calendar: 0, todo: 0, sheet: 2, memo: 2 },
         issueCount: 0,
         icsEventCount: 0,
         icsHasRrule: false,
       },
-      boundary: "표 안의 설명 셀을 별도 Item으로 확장하지 않는다.",
+      boundary:
+        "표 안의 설명 셀을 별도 Item으로 확장하거나 사실 행을 Todo로 만들지 않는다.",
     },
   ];
 }

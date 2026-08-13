@@ -19,6 +19,9 @@ This file is an index, not a second source of product truth. Update its links af
 - [Merged PR #176 public plan surface release history](./pr-history/2026-08-12-public-plan-surface-unification.md)
 - [Merged documentation-only release closeout PR #177](./pr-history/2026-08-12-public-plan-surface-release-closeout.md)
 - [Inherited R3B approved plan-execution boundaries](./specs/2026-08-11-r3b-approved-plan-execution-boundaries/spec.md)
+- [Text Authoring service P0 goal](./specs/2026-08-11-flowme-text-authoring-service-p0/00-development-goal-ko.md)
+- [Text Authoring service P0 source result](./content-audit/2026-08-11-flowme-text-authoring-service-p0-results/README.md)
+- [Text Authoring P0 approved promotion result](./content-audit/2026-08-13-flowme-text-authoring-p0-promotion-results/README.md)
 - [R3B production Escape hotfix release history](./pr-history/2026-08-11-r3b-production-escape-hotfix.md)
 - [R3B approved plan-execution release history](./pr-history/2026-08-11-r3b-approved-plan-execution-boundaries.md)
 - [Completed workspace and backlog stabilization](./specs/2026-08-06-workspace-backlog-stabilization/spec.md)
@@ -46,6 +49,23 @@ identity and the PR #178 Plan edit/lifecycle foundation. Post-merge `main` run
 passed core job `94312307779` and Playwright job `94312307849`.
 Automated QA, deployment, smoke, and local capture reports remain separate from
 observed-user validation; observed users remain `0`. No product gate is active.
+
+Owner approval `TA-P0-PROMOTE-20260813-01` promoted the manifest-bound P0 set
+(`51` files; row-set SHA-256
+`687E943319C86D9A60F947753453295AACCC7C68594DD480DE03BB5138281D45`) from
+`flow-text-authoring-service-p0-20260811` into the clean integration target
+`flow-text-authoring-integration-20260811`, both based on
+`a5f2127eff75f8fdf91bbedd9e60526f47209049`. Fresh target checks currently pass
+for docs `16/4555`, Text Authoring `259/259`, full `npm.cmd test` exit `0`, and
+the production build exit `0` with `19` generated routes. The final approved
+E2E run passes `58/58` with 4 workers in `3.9m`; the same run covers normal and
+200% reflow at 320/360/390/899/900/1024/1280/1440, reduced motion, 44px,
+source-error relation, keyboard/focus, and overflow. The approved tree is
+included in one local promotion commit. Those numbers are the dated local
+promotion baseline, not fresh evidence for the current latest-main integration.
+The approved V5/P0 refresh is now the first branch in a stacked Draft PR series;
+merge, production deployment, P35/external effects, and observed-user sessions
+remain `0`.
 
 ## Canonical Project Truth
 

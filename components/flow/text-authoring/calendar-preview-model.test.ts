@@ -7,6 +7,7 @@ import {
   addAuthoringCalendarMonths,
   authoringCalendarMonthKey,
   buildAuthoringCalendarMonthCells,
+  compareAuthoringCalendarRows,
   parseAuthoringCalendarDate,
   validAuthoringCalendarRows,
 } from "./calendar-preview-model";
@@ -99,6 +100,32 @@ test("calendar preview orders all-day rows before same-day timed rows", () => {
   assert.deepEqual(
     rows.map((entry) => entry.rowId),
     ["all-day", "early", "late", "next-day"],
+  );
+});
+
+test("calendar display ties keep source order and occurrence identity stable", () => {
+  const second = {
+    ...row("occurrence-2", "2026-08-03", "routine", "09:00", 4),
+    occurrenceIndex: 2,
+  };
+  const first = {
+    ...row("occurrence-1", "2026-08-03", "routine", "09:00", 4),
+    occurrenceIndex: 1,
+  };
+  const earlierSource = row(
+    "source-first",
+    "2026-08-03",
+    "source-first",
+    "09:00",
+    2,
+  );
+
+  assert.ok(compareAuthoringCalendarRows(earlierSource, first) < 0);
+  assert.deepEqual(
+    validAuthoringCalendarRows([second, first, earlierSource]).map(
+      (entry) => entry.rowId,
+    ),
+    ["source-first", "occurrence-1", "occurrence-2"],
   );
 });
 

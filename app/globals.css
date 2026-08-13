@@ -42,10 +42,17 @@
   --flowme-mobile-tabs-offset: calc(0.75rem + env(safe-area-inset-bottom));
   --flowme-mobile-tabs-height: 3.625rem;
   --flowme-mobile-layer-gap: 0.5rem;
-  --flowme-mobile-workbar-bottom: calc(var(--flowme-mobile-tabs-offset) + var(--flowme-mobile-tabs-height) + var(--flowme-mobile-layer-gap));
-  --flowme-mobile-tab-clearance: calc(var(--flowme-mobile-workbar-bottom) + 1.5rem);
+  --flowme-mobile-workbar-bottom: calc(
+    var(--flowme-mobile-tabs-offset) + var(--flowme-mobile-tabs-height) +
+      var(--flowme-mobile-layer-gap)
+  );
+  --flowme-mobile-tab-clearance: calc(
+    var(--flowme-mobile-workbar-bottom) + 1.5rem
+  );
   --flowme-mobile-save-clearance: calc(8.5rem + env(safe-area-inset-bottom));
-  --flowme-mobile-map-save-clearance: calc(9.25rem + env(safe-area-inset-bottom));
+  --flowme-mobile-map-save-clearance: calc(
+    9.25rem + env(safe-area-inset-bottom)
+  );
   --flowme-mobile-export-clearance: calc(16rem + env(safe-area-inset-bottom));
 }
 
@@ -62,7 +69,10 @@
 
 .flowme-authoring-shell
   [data-source-stale="true"]
-  :is([data-testid="ta-authoring-item"], [data-testid="ta-authoring-excluded-item"]) {
+  :is(
+    [data-testid="ta-authoring-item"],
+    [data-testid="ta-authoring-excluded-item"]
+  ) {
   opacity: 0.5;
 }
 
@@ -74,6 +84,11 @@
   width: min(32rem, calc(100vw - 2rem));
   max-height: min(80dvh, 40rem);
   transform: translate(-50%, -50%);
+}
+
+.ta-inline-help-panel > div:first-child > button {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
 }
 
 @media (max-width: 899px) {
@@ -139,9 +154,7 @@
     flex: 0 0 auto;
   }
 
-  .flowme-authoring-shell[data-library-open="false"]
-    .ta-primary-action
-    > span {
+  .flowme-authoring-shell[data-library-open="false"] .ta-primary-action > span {
     overflow: visible;
     white-space: normal;
     text-overflow: clip;
@@ -169,8 +182,7 @@
     scroll-padding-bottom: max(1rem, env(safe-area-inset-bottom));
   }
 
-  .flowme-authoring-shell[data-library-open="false"]
-    .ta-workspace-footer {
+  .flowme-authoring-shell[data-library-open="false"] .ta-workspace-footer {
     padding-top: 0.375rem;
     padding-bottom: calc(0.375rem + env(safe-area-inset-bottom));
   }
@@ -206,6 +218,31 @@
   }
 }
 
+/* On narrow mobile widths (including 200% text reflow), fixed app chrome can
+   consume the entire viewport. Let the document scroll and reserve a usable
+   staged pane instead of covering result controls with header/footer chrome. */
+@media (max-width: 479px) {
+  .flowme-authoring-shell[data-library-open="false"] {
+    height: auto;
+    min-height: 100dvh;
+    overflow-y: auto;
+  }
+
+  .flowme-authoring-shell[data-library-open="false"]
+    > [data-testid="text-authoring-root"] {
+    height: auto;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+
+  .flowme-authoring-shell[data-library-open="false"]
+    > [data-testid="text-authoring-root"]
+    > div:has(> [data-testid="ta-osr-1024-two-pane"]) {
+    flex: 0 0 max(480px, 70dvh);
+    height: max(480px, 70dvh);
+  }
+}
+
 @media (max-width: 639px) {
   .ta-inline-help-panel {
     top: auto;
@@ -226,7 +263,15 @@ body {
   letter-spacing: 0;
 }
 
-:where(a[href], button, input, select, textarea, summary, [tabindex]:not([tabindex='-1'])):focus-visible {
+:where(
+  a[href],
+  button,
+  input,
+  select,
+  textarea,
+  summary,
+  [tabindex]:not([tabindex="-1"])
+):focus-visible {
   outline: var(--flowme-focus-outline);
   outline-offset: 2px;
 }
@@ -235,9 +280,9 @@ body {
   min-width: 0;
 }
 
-[data-flow-identity-slot='title'],
-[data-flow-identity-slot='next-action'],
-[data-flow-identity-slot='context'] {
+[data-flow-identity-slot="title"],
+[data-flow-identity-slot="next-action"],
+[data-flow-identity-slot="context"] {
   min-width: 0;
   overflow-wrap: anywhere;
 }
@@ -254,7 +299,15 @@ body {
 }
 
 @media (forced-colors: active) {
-  :where(a[href], button, input, select, textarea, summary, [tabindex]:not([tabindex='-1'])):focus-visible {
+  :where(
+    a[href],
+    button,
+    input,
+    select,
+    textarea,
+    summary,
+    [tabindex]:not([tabindex="-1"])
+  ):focus-visible {
     outline-color: Highlight;
   }
 }
@@ -345,7 +398,10 @@ body {
   border-radius: 5px;
   padding: 1px;
   cursor: pointer;
-  transition: box-shadow 120ms ease, transform 120ms ease, border-color 120ms ease;
+  transition:
+    box-shadow 120ms ease,
+    transform 120ms ease,
+    border-color 120ms ease;
 }
 
 .fc .fc-daygrid-event.my-flow-routine-rail-event {
@@ -407,7 +463,9 @@ body {
     padding: 1px 0;
   }
 
-  .fc .my-flow-routine-rail[data-has-overflow="true"] [data-routine-extra="true"] {
+  .fc
+    .my-flow-routine-rail[data-has-overflow="true"]
+    [data-routine-extra="true"] {
     display: none;
   }
 

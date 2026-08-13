@@ -1,7 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { buildAuthoringArtifactProjection } from "./artifact-projection";
+import {
+  buildArtifactPreflight,
+  buildAuthoringArtifactProjection,
+} from "./artifact-projection";
+import { isAuthoringIssueOutstanding } from "./issue-state";
 import { applyAuthoringOperation } from "./operations";
 import { createTextAuthoringDocument } from "./parser";
 import { projectAuthoringRecurrenceDates } from "./recurrence";
@@ -11,6 +15,39 @@ const NOW = "2026-08-04T00:00:00.000Z";
 function authoringDocument(rawText: string) {
   return createTextAuthoringDocument(rawText, { now: NOW });
 }
+
+test("plain prose stays source-only while TXT remains eligible for explicit save", () => {
+  const rawText = [
+    "정말 제목입니다.",
+    "설명입니다.",
+    "첫 번째 항목입니다.",
+  ].join("\n");
+  const document = authoringDocument(rawText);
+  const projection = buildAuthoringArtifactProjection(document);
+  const preflight = buildArtifactPreflight(projection, {
+    artifact: "memo",
+  });
+
+  assert.equal(document.parseResult.canonical.items.length, 0);
+  assert.equal(
+    document.parseResult.issues.filter(isAuthoringIssueOutstanding).length,
+    0,
+  );
+  assert.equal(projection.primaryArtifact, "memo");
+  assert.equal(projection.artifacts.memo.eligible, true);
+  assert.equal(projection.artifacts.memo.count, 1);
+  assert.equal(projection.artifacts.memo.rows.length, 0);
+  assert.equal(projection.artifacts.memo.textBlocks.length, 1);
+  assert.equal(projection.artifacts.memo.textBlocks[0].rawText, rawText);
+  assert.deepEqual(projection.artifacts.todo.textBlocks, []);
+  assert.deepEqual(projection.artifacts.sheet.textBlocks, []);
+  assert.deepEqual(projection.artifacts.calendar.textBlocks, []);
+  assert.equal(preflight.eligible, true);
+  assert.equal(preflight.count, 1);
+  assert.equal(preflight.sourceItemCount, 0);
+  assert.deepEqual(preflight.itemIds, []);
+  assert.equal(preflight.lossCount, 0);
+});
 
 test("Calendar sorts dates, all-day rows, and times while other projections keep source order", () => {
   const document = authoringDocument(
@@ -188,6 +225,32 @@ test("an original table keeps its real columns and cells even when it has only o
     담당: "민지",
     자료: "https://example.com/booking",
   });
+});
+
+test("fact table rows stay in Sheet and TXT unless an explicit action contract exists", () => {
+  const table = authoringDocument(
+    [
+      "제품\t가격\t자료",
+      "기본형\t10000\thttps://example.com/basic",
+      "고급형\t20000\thttps://example.com/pro",
+    ].join("\n"),
+  );
+  const projection = buildAuthoringArtifactProjection(table);
+
+  assert.equal(table.primaryInputKind, "table");
+  assert.equal(projection.artifacts.sheet.count, 2);
+  assert.equal(projection.artifacts.memo.count, 2);
+  assert.equal(projection.artifacts.todo.count, 0);
+  assert.equal(projection.artifacts.todo.eligible, false);
+  assert.equal(projection.artifacts.calendar.count, 0);
+  assert.equal(projection.artifacts.calendar.eligible, false);
+  assert.equal(
+    projection.artifacts.todo.losses[0]?.reason,
+    "non_completable_role",
+  );
+  assert.equal(projection.artifacts.todo.losses[0]?.sourcePreserved, true);
+  assert.equal(projection.sourceMutationCount, 0);
+  assert.equal(table.rawText.includes("기본형\t10000"), true);
 });
 
 test("projection rows expose execution detail, schedule context, and links without changing source order", () => {
@@ -409,7 +472,27 @@ test("finite recurrence expands the same bounded occurrence rows across Calendar
       firstPage.artifacts[artifact].rows.map((row) => row.rowId),
       helperPage.occurrences.map((occurrence) => occurrence.occurrenceId),
     );
+    assert.deepEqual(
+      firstPage.artifacts[artifact].orderedOccurrenceIds,
+      helperPage.occurrences.map((occurrence) => occurrence.occurrenceId),
+    );
+    assert.deepEqual(
+      firstPage.artifacts[artifact].resolvedOccurrenceDates,
+      helperPage.occurrences.map((occurrence) => occurrence.date),
+    );
   }
+  assert.equal(
+    new Set(
+      (["calendar", "todo", "sheet", "memo"] as const).map(
+        (artifact) => firstPage.artifacts[artifact].occurrenceWindowId,
+      ),
+    ).size,
+    1,
+  );
+  assert.match(
+    firstPage.artifacts.todo.occurrenceWindowId ?? "",
+    /^occurrence-window-/,
+  );
 });
 
 test("count three keeps one canonical Item but projects exactly three rows in all four results", () => {

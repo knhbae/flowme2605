@@ -13,32 +13,26 @@ import type {
   TextAuthoringDocument,
   TextAuthoringOwnership,
   UnresolvedAuthoringIssue,
-} from './types';
+} from "./types";
 import {
   cloneAuthoringValue,
   stableAuthoringId,
   stableAuthoringJson,
-} from './identity';
-import {
-  allowedAuthoringIssueOutcomes,
-} from './issue-state';
+} from "./identity";
+import { allowedAuthoringIssueOutcomes } from "./issue-state";
 import {
   createTextAuthoringDocument,
   deriveAuthoringArtifactEligibility,
   parseExplicitAuthoringSchedule,
-} from './parser';
-import {
-  TEXT_AUTHORING_CANONICAL_LABELS,
-} from './authoring-grammar';
-import {
-  deriveAuthoringLifecycleStatus,
-} from './review-policy';
+} from "./parser";
+import { TEXT_AUTHORING_CANONICAL_LABELS } from "./authoring-grammar";
+import { deriveAuthoringLifecycleStatus } from "./review-policy";
 import {
   applyAuthoringSourceUpdate,
   rejectAuthoringSourceUpdate,
   resolveAuthoringSourceUpdateChange,
   stageAuthoringSourceUpdate,
-} from './source-update';
+} from "./source-update";
 
 export type ApplyAuthoringOperationOptions = {
   actorLane?: AuthoringRevisionActor;
@@ -46,22 +40,22 @@ export type ApplyAuthoringOperationOptions = {
 };
 
 const PROPERTY_LABELS: Record<
-  Extract<AuthoringCorrectionOperation, { type: 'set_property' }>['key'],
+  Extract<AuthoringCorrectionOperation, { type: "set_property" }>["key"],
   string
 > = {
-  title: '제목',
-  detail: '설명',
-  completion: '완료 기준',
-  date: '날짜',
-  relative_date: '상대 날짜',
-  time: '시간',
-  timezone: '시간대',
-  place: '장소',
-  duration: '소요 시간',
-  repeat: '반복',
-  condition: '조건',
-  resource: '자료',
-  source: '출처',
+  title: "제목",
+  detail: "설명",
+  completion: "완료 기준",
+  date: "날짜",
+  relative_date: "상대 날짜",
+  time: "시간",
+  timezone: "시간대",
+  place: "장소",
+  duration: "소요 시간",
+  repeat: "반복",
+  condition: "조건",
+  resource: "자료",
+  source: "출처",
 };
 
 function unique<T>(values: T[]): T[] {
@@ -71,7 +65,7 @@ function unique<T>(values: T[]): T[] {
 function uniqueLinks(links: AuthoringLink[]): AuthoringLink[] {
   const seen = new Set<string>();
   return links.filter((link) => {
-    const identity = `${link.owner ?? ''}|${link.type ?? ''}|${link.url}|${link.label}`;
+    const identity = `${link.owner ?? ""}|${link.type ?? ""}|${link.url}|${link.label}`;
     if (seen.has(identity)) return false;
     seen.add(identity);
     return true;
@@ -89,7 +83,9 @@ function sharesSourceRows(
   sourceRowIds: string[],
   targetSourceRowIds: Set<string>,
 ): boolean {
-  return sourceRowIds.some((sourceRowId) => targetSourceRowIds.has(sourceRowId));
+  return sourceRowIds.some((sourceRowId) =>
+    targetSourceRowIds.has(sourceRowId),
+  );
 }
 
 function restoreItemToParsedSource(
@@ -110,9 +106,9 @@ function restoreItemToParsedSource(
     now: document.createdAt,
   });
   const targetSourceRowIds = new Set(selected.sourceRowIds);
-  const baselineItems = baseline.parseResult.canonical.items.filter((item) => (
-    sharesSourceRows(item.sourceRowIds, targetSourceRowIds)
-  ));
+  const baselineItems = baseline.parseResult.canonical.items.filter((item) =>
+    sharesSourceRows(item.sourceRowIds, targetSourceRowIds),
+  );
   const currentAffectedItemIds = new Set(
     parseResult.canonical.items
       .filter((item) => sharesSourceRows(item.sourceRowIds, targetSourceRowIds))
@@ -129,7 +125,9 @@ function restoreItemToParsedSource(
     (item) => item.itemId,
   );
   const baselineTargetIds = new Set(baselineItems.map((item) => item.itemId));
-  const firstTargetIndex = baselineOrder.findIndex((id) => baselineTargetIds.has(id));
+  const firstTargetIndex = baselineOrder.findIndex((id) =>
+    baselineTargetIds.has(id),
+  );
   const previousBaselineId = baselineOrder
     .slice(0, Math.max(0, firstTargetIndex))
     .reverse()
@@ -140,7 +138,8 @@ function restoreItemToParsedSource(
   let insertionIndex = remainingItems.length;
   if (previousBaselineId) {
     insertionIndex =
-      remainingItems.findIndex((item) => item.itemId === previousBaselineId) + 1;
+      remainingItems.findIndex((item) => item.itemId === previousBaselineId) +
+      1;
   } else if (nextBaselineId) {
     insertionIndex = remainingItems.findIndex(
       (item) => item.itemId === nextBaselineId,
@@ -185,9 +184,9 @@ function restoreItemToParsedSource(
       (mapping) => !sharesSourceRows(mapping.sourceLineage, targetSourceRowIds),
     ),
     ...baseline.parseResult.mappings
-      .filter((mapping) => (
-        sharesSourceRows(mapping.sourceLineage, targetSourceRowIds)
-      ))
+      .filter((mapping) =>
+        sharesSourceRows(mapping.sourceLineage, targetSourceRowIds),
+      )
       .map(cloneAuthoringValue),
   ];
   parseResult.issues = [
@@ -195,7 +194,9 @@ function restoreItemToParsedSource(
       (issue) => !sharesSourceRows(issue.sourceRowIds, targetSourceRowIds),
     ),
     ...baseline.parseResult.issues
-      .filter((issue) => sharesSourceRows(issue.sourceRowIds, targetSourceRowIds))
+      .filter((issue) =>
+        sharesSourceRows(issue.sourceRowIds, targetSourceRowIds),
+      )
       .map(cloneAuthoringValue),
   ];
   canonical.fields = [
@@ -203,7 +204,9 @@ function restoreItemToParsedSource(
       (field) => !sharesSourceRows(field.sourceRowIds, targetSourceRowIds),
     ),
     ...baselineCanonical.fields
-      .filter((field) => sharesSourceRows(field.sourceRowIds, targetSourceRowIds))
+      .filter((field) =>
+        sharesSourceRows(field.sourceRowIds, targetSourceRowIds),
+      )
       .map(cloneAuthoringValue),
   ];
   canonical.memos = [
@@ -216,14 +219,13 @@ function restoreItemToParsedSource(
   ];
   canonical.sourceRefs = [
     ...canonical.sourceRefs.filter(
-      (sourceRef) => (
-        !sharesSourceRows(sourceRef.sourceRowIds, targetSourceRowIds)
-      ),
+      (sourceRef) =>
+        !sharesSourceRows(sourceRef.sourceRowIds, targetSourceRowIds),
     ),
     ...baselineCanonical.sourceRefs
-      .filter((sourceRef) => (
-        sharesSourceRows(sourceRef.sourceRowIds, targetSourceRowIds)
-      ))
+      .filter((sourceRef) =>
+        sharesSourceRows(sourceRef.sourceRowIds, targetSourceRowIds),
+      )
       .map(cloneAuthoringValue),
   ];
   return true;
@@ -245,7 +247,7 @@ function setOwnedTitle(
   overrides[actorLane] = title;
   item.titleOverrides = overrides;
   item.title = title;
-  if (actorLane === 'creator') item.creatorTitle = title;
+  if (actorLane === "creator") item.creatorTitle = title;
 }
 
 function setOwnedDetail(
@@ -256,30 +258,31 @@ function setOwnedDetail(
   const overrides = { ...(item.detailOverrides ?? {}) };
   delete overrides[actorLane];
   if (detail) overrides[actorLane] = detail;
-  item.detailOverrides = Object.keys(overrides).length > 0 ? overrides : undefined;
+  item.detailOverrides =
+    Object.keys(overrides).length > 0 ? overrides : undefined;
   item.detail = detail ?? latestOwnedValue(overrides) ?? item.sourceDetail;
-  if (actorLane === 'creator') item.creatorDetail = detail;
+  if (actorLane === "creator") item.creatorDetail = detail;
 }
 
 function setOwnedCompletion(
   item: CanonicalAuthoringItem,
   actorLane: TextAuthoringOwnership,
-  completion: CanonicalAuthoringItem['completion'],
+  completion: CanonicalAuthoringItem["completion"],
 ): void {
   if (
-    !item.sourceCompletion
-    && !item.completionOverrides
-    && item.completion?.owner === 'source'
+    !item.sourceCompletion &&
+    !item.completionOverrides &&
+    item.completion?.owner === "source"
   ) {
     item.sourceCompletion = cloneAuthoringValue(item.completion);
   }
   const overrides = { ...(item.completionOverrides ?? {}) };
   delete overrides[actorLane];
   if (completion) overrides[actorLane] = completion;
-  item.completionOverrides = Object.keys(overrides).length > 0
-    ? overrides
-    : undefined;
-  item.completion = completion ?? latestOwnedValue(overrides) ?? item.sourceCompletion;
+  item.completionOverrides =
+    Object.keys(overrides).length > 0 ? overrides : undefined;
+  item.completion =
+    completion ?? latestOwnedValue(overrides) ?? item.sourceCompletion;
 }
 
 function setOwnedSchedule(
@@ -293,8 +296,10 @@ function setOwnedSchedule(
   const overrides = { ...(item.scheduleOverrides ?? {}) };
   delete overrides[actorLane];
   if (schedule) overrides[actorLane] = schedule;
-  item.scheduleOverrides = Object.keys(overrides).length > 0 ? overrides : undefined;
-  item.schedule = schedule ?? latestOwnedValue(overrides) ?? item.sourceSchedule;
+  item.scheduleOverrides =
+    Object.keys(overrides).length > 0 ? overrides : undefined;
+  item.schedule =
+    schedule ?? latestOwnedValue(overrides) ?? item.sourceSchedule;
 }
 
 function normalizeCanonicalOrder(parseResult: AuthoringParseResult): void {
@@ -305,9 +310,10 @@ function normalizeCanonicalOrder(parseResult: AuthoringParseResult): void {
     .sort((left, right) => left.order - right.order)
     .forEach((step, stepIndex) => {
       step.order = stepIndex;
-      step.itemIds = step.itemIds.filter((itemId, index, values) => (
-        byId.has(itemId) && values.indexOf(itemId) === index
-      ));
+      step.itemIds = step.itemIds.filter(
+        (itemId, index, values) =>
+          byId.has(itemId) && values.indexOf(itemId) === index,
+      );
       step.itemIds.forEach((itemId) => {
         if (!orderedIds.includes(itemId)) orderedIds.push(itemId);
       });
@@ -339,24 +345,24 @@ function remapOwnedEntities(
   targetId: string,
 ): void {
   parseResult.canonical.fields.forEach((field) => {
-    if (field.owner.type === 'item' && removedIds.has(field.owner.id)) {
-      field.owner = { type: 'item', id: targetId };
+    if (field.owner.type === "item" && removedIds.has(field.owner.id)) {
+      field.owner = { type: "item", id: targetId };
     }
   });
   parseResult.canonical.memos.forEach((memo) => {
-    if (memo.scope.type === 'item' && removedIds.has(memo.scope.id)) {
-      memo.scope = { type: 'item', id: targetId };
+    if (memo.scope.type === "item" && removedIds.has(memo.scope.id)) {
+      memo.scope = { type: "item", id: targetId };
     }
   });
   parseResult.canonical.sourceRefs.forEach((sourceRef) => {
-    if (sourceRef.entityType === 'item' && removedIds.has(sourceRef.entityId)) {
+    if (sourceRef.entityType === "item" && removedIds.has(sourceRef.entityId)) {
       sourceRef.entityId = targetId;
     }
   });
 }
 
 function completionIdentity(
-  value: NonNullable<CanonicalAuthoringItem['completion']>,
+  value: NonNullable<CanonicalAuthoringItem["completion"]>,
 ): string {
   return stableAuthoringJson({ mode: value.mode, doneWhen: value.doneWhen });
 }
@@ -369,18 +375,19 @@ function hasConflictingValues<T>(
   values: Array<T | undefined>,
   identity: (value: T) => string,
 ): boolean {
-  return new Set(
-    values.flatMap((value) => (value === undefined ? [] : [identity(value)])),
-  ).size > 1;
+  return (
+    new Set(
+      values.flatMap((value) => (value === undefined ? [] : [identity(value)])),
+    ).size > 1
+  );
 }
 
 function mergedCompletion(
-  values: Array<CanonicalAuthoringItem['completion']>,
-): CanonicalAuthoringItem['completion'] {
+  values: Array<CanonicalAuthoringItem["completion"]>,
+): CanonicalAuthoringItem["completion"] {
   const present = values.filter(
-    (value): value is NonNullable<CanonicalAuthoringItem['completion']> => (
-      Boolean(value)
-    ),
+    (value): value is NonNullable<CanonicalAuthoringItem["completion"]> =>
+      Boolean(value),
   );
   if (present.length === 0) return undefined;
   return {
@@ -398,7 +405,9 @@ function mergedSchedule(
   return present ? cloneAuthoringValue(present) : undefined;
 }
 
-function effectivePropertyValues(item: CanonicalAuthoringItem): Map<string, string> {
+function effectivePropertyValues(
+  item: CanonicalAuthoringItem,
+): Map<string, string> {
   const values = new Map<string, string>();
   item.properties.forEach((property) => {
     values.set(property.key, property.value);
@@ -406,7 +415,9 @@ function effectivePropertyValues(item: CanonicalAuthoringItem): Map<string, stri
   return values;
 }
 
-function hasConflictingMergeProperties(items: CanonicalAuthoringItem[]): boolean {
+function hasConflictingMergeProperties(
+  items: CanonicalAuthoringItem[],
+): boolean {
   const valuesByKey = new Map<string, Set<string>>();
   items.forEach((item) => {
     effectivePropertyValues(item).forEach((value, key) => {
@@ -420,22 +431,25 @@ function hasConflictingMergeProperties(items: CanonicalAuthoringItem[]): boolean
 
 function sourceCompletionValue(
   item: CanonicalAuthoringItem,
-): CanonicalAuthoringItem['completion'] {
-  return item.sourceCompletion
-    ?? (item.completion?.owner === 'source' ? item.completion : undefined);
+): CanonicalAuthoringItem["completion"] {
+  return (
+    item.sourceCompletion ??
+    (item.completion?.owner === "source" ? item.completion : undefined)
+  );
 }
 
 function sourceScheduleValue(
   item: CanonicalAuthoringItem,
 ): AuthoringSchedule | undefined {
-  return item.sourceSchedule
-    ?? (!item.scheduleOverrides ? item.schedule : undefined);
+  return (
+    item.sourceSchedule ?? (!item.scheduleOverrides ? item.schedule : undefined)
+  );
 }
 
 const MERGE_OWNER_LANES: TextAuthoringOwnership[] = [
-  'personal',
-  'creator',
-  'suggestion',
+  "personal",
+  "creator",
+  "suggestion",
 ];
 
 function mergeItems(
@@ -445,9 +459,9 @@ function mergeItems(
 ): boolean {
   const requested = new Set(requestedIds);
   if (requested.size < 2) return false;
-  const selected = parseResult.canonical.items.filter((item) => (
-    requested.has(item.itemId)
-  ));
+  const selected = parseResult.canonical.items.filter((item) =>
+    requested.has(item.itemId),
+  );
   if (selected.length !== requested.size) return false;
   const stepId = selected[0].stepId;
   if (selected.some((item) => item.stepId !== stepId)) return false;
@@ -459,51 +473,51 @@ function mergeItems(
     .map((item) => step.itemIds.indexOf(item.itemId))
     .sort((left, right) => left - right);
   if (selectedPositions.some((position) => position < 0)) return false;
-  if (selectedPositions.some((
-    position,
-    index,
-  ) => index > 0 && position !== selectedPositions[index - 1] + 1)) {
+  if (
+    selectedPositions.some(
+      (position, index) =>
+        index > 0 && position !== selectedPositions[index - 1] + 1,
+    )
+  ) {
     return false;
   }
   if (
     hasConflictingValues(
       selected.map((item) => item.sourceChecked),
       (value) => String(value),
-    )
-    || hasConflictingValues(
+    ) ||
+    hasConflictingValues(
       selected.map((item) => item.completion),
       completionIdentity,
-    )
-    || hasConflictingValues(
+    ) ||
+    hasConflictingValues(
       selected.map(sourceCompletionValue),
       completionIdentity,
-    )
-    || hasConflictingValues(
+    ) ||
+    hasConflictingValues(
       selected.map((item) => item.schedule),
       scheduleIdentity,
-    )
-    || hasConflictingValues(
-      selected.map(sourceScheduleValue),
-      scheduleIdentity,
-    )
-    || MERGE_OWNER_LANES.some((lane) => (
-      hasConflictingValues(
-        selected.map((item) => item.completionOverrides?.[lane]),
-        completionIdentity,
-      )
-      || hasConflictingValues(
-        selected.map((item) => item.scheduleOverrides?.[lane]),
-        scheduleIdentity,
-      )
-    ))
-    || hasConflictingMergeProperties(selected)
+    ) ||
+    hasConflictingValues(selected.map(sourceScheduleValue), scheduleIdentity) ||
+    MERGE_OWNER_LANES.some(
+      (lane) =>
+        hasConflictingValues(
+          selected.map((item) => item.completionOverrides?.[lane]),
+          completionIdentity,
+        ) ||
+        hasConflictingValues(
+          selected.map((item) => item.scheduleOverrides?.[lane]),
+          scheduleIdentity,
+        ),
+    ) ||
+    hasConflictingMergeProperties(selected)
   ) {
     return false;
   }
   const base = selected[0];
   const removed = selected.slice(1);
   const removedIds = new Set(removed.map((item) => item.itemId));
-  const mergedTitle = selected.map((item) => item.title).join(' · ');
+  const mergedTitle = selected.map((item) => item.title).join(" · ");
   const mergedDetails = unique(
     selected
       .map((item) => item.detail)
@@ -512,7 +526,7 @@ function mergeItems(
 
   setOwnedTitle(base, actorLane, mergedTitle);
   if (mergedDetails.length > 0) {
-    setOwnedDetail(base, actorLane, mergedDetails.join('\n'));
+    setOwnedDetail(base, actorLane, mergedDetails.join("\n"));
   }
   const mergedSourceChecked = selected
     .map((item) => item.sourceChecked)
@@ -528,10 +542,11 @@ function mergeItems(
       );
       return completion ? [[lane, completion]] : [];
     }),
-  ) as NonNullable<CanonicalAuthoringItem['completionOverrides']>;
-  base.completionOverrides = Object.keys(completionOverrides).length > 0
-    ? completionOverrides
-    : undefined;
+  ) as NonNullable<CanonicalAuthoringItem["completionOverrides"]>;
+  base.completionOverrides =
+    Object.keys(completionOverrides).length > 0
+      ? completionOverrides
+      : undefined;
   base.schedule = mergedSchedule(selected.map((item) => item.schedule));
   base.sourceSchedule = mergedSchedule(selected.map(sourceScheduleValue));
   const scheduleOverrides = Object.fromEntries(
@@ -541,10 +556,9 @@ function mergeItems(
       );
       return schedule ? [[lane, schedule]] : [];
     }),
-  ) as NonNullable<CanonicalAuthoringItem['scheduleOverrides']>;
-  base.scheduleOverrides = Object.keys(scheduleOverrides).length > 0
-    ? scheduleOverrides
-    : undefined;
+  ) as NonNullable<CanonicalAuthoringItem["scheduleOverrides"]>;
+  base.scheduleOverrides =
+    Object.keys(scheduleOverrides).length > 0 ? scheduleOverrides : undefined;
   base.sourceRowIds = unique(selected.flatMap((item) => item.sourceRowIds));
   base.properties = selected.flatMap((item) => item.properties);
   base.resources = uniqueLinks(selected.flatMap((item) => item.resources));
@@ -561,9 +575,9 @@ function mergeItems(
     const hadRemoved = step.itemIds.some((itemId) => removedIds.has(itemId));
     step.itemIds = step.itemIds.filter((itemId) => !removedIds.has(itemId));
     if (
-      hadRemoved
-      && step.stepId === base.stepId
-      && !step.itemIds.includes(base.itemId)
+      hadRemoved &&
+      step.stepId === base.stepId &&
+      !step.itemIds.includes(base.itemId)
     ) {
       step.itemIds.push(base.itemId);
     }
@@ -591,10 +605,10 @@ function duplicateMappingsForSplit(
     .map((mapping): BlockToCanonicalMapping => ({
       ...cloneAuthoringValue(mapping),
       mappingId: stableAuthoringId(
-        'mapping',
+        "mapping",
         documentId,
         mapping.mappingId,
-        'split',
+        "split",
         newItemId,
       ),
       targetDraftId: newItemId,
@@ -614,46 +628,53 @@ function duplicateOwnedEntitiesForSplit(
   const canonical = document.parseResult.canonical;
   canonical.fields.push(
     ...canonical.fields
-      .filter((field) => field.owner.type === 'item' && field.owner.id === sourceItemId)
+      .filter(
+        (field) =>
+          field.owner.type === "item" && field.owner.id === sourceItemId,
+      )
       .map((field) => ({
         ...cloneAuthoringValue(field),
         fieldId: stableAuthoringId(
-          'field',
+          "field",
           document.documentId,
           field.fieldId,
-          'split',
+          "split",
           newItemId,
         ),
-        owner: { type: 'item' as const, id: newItemId },
+        owner: { type: "item" as const, id: newItemId },
       })),
   );
   canonical.memos.push(
     ...canonical.memos
-      .filter((memo) => memo.scope.type === 'item' && memo.scope.id === sourceItemId)
+      .filter(
+        (memo) => memo.scope.type === "item" && memo.scope.id === sourceItemId,
+      )
       .map((memo) => ({
         ...cloneAuthoringValue(memo),
         memoId: stableAuthoringId(
-          'memo',
+          "memo",
           document.documentId,
           memo.memoId,
-          'split',
+          "split",
           newItemId,
         ),
-        scope: { type: 'item' as const, id: newItemId },
+        scope: { type: "item" as const, id: newItemId },
       })),
   );
   canonical.sourceRefs.push(
     ...canonical.sourceRefs
-      .filter((sourceRef) => (
-        sourceRef.entityType === 'item' && sourceRef.entityId === sourceItemId
-      ))
+      .filter(
+        (sourceRef) =>
+          sourceRef.entityType === "item" &&
+          sourceRef.entityId === sourceItemId,
+      )
       .map((sourceRef) => ({
         ...cloneAuthoringValue(sourceRef),
         sourceRefId: stableAuthoringId(
-          'source-ref',
+          "source-ref",
           document.documentId,
           sourceRef.sourceRefId,
-          'split',
+          "split",
           newItemId,
         ),
         entityId: newItemId,
@@ -678,10 +699,10 @@ function splitItem(
   );
   let discriminator = 0;
   let newItemId = stableAuthoringId(
-    'item',
+    "item",
     document.documentId,
     item.itemId,
-    'split',
+    "split",
     at,
     right,
     discriminator,
@@ -689,10 +710,10 @@ function splitItem(
   while (existingIds.has(newItemId)) {
     discriminator += 1;
     newItemId = stableAuthoringId(
-      'item',
+      "item",
       document.documentId,
       item.itemId,
-      'split',
+      "split",
       at,
       right,
       discriminator,
@@ -704,10 +725,10 @@ function splitItem(
     properties: item.properties.map((property) => ({
       ...cloneAuthoringValue(property),
       propertyId: stableAuthoringId(
-        'property',
+        "property",
         document.documentId,
         property.propertyId,
-        'split',
+        "split",
         newItemId,
       ),
     })),
@@ -748,7 +769,9 @@ function reorderItem(
   );
   if (!step) return false;
   const globalItems = [...parseResult.canonical.items];
-  const fromIndex = globalItems.findIndex((candidate) => candidate.itemId === itemId);
+  const fromIndex = globalItems.findIndex(
+    (candidate) => candidate.itemId === itemId,
+  );
   if (fromIndex < 0) return false;
   const boundedIndex = Math.max(0, Math.min(globalItems.length - 1, toIndex));
   if (boundedIndex === fromIndex) return false;
@@ -757,7 +780,7 @@ function reorderItem(
   const nextStepItemIds = globalItems
     .filter((candidate) => candidate.stepId === step.stepId)
     .map((candidate) => candidate.itemId);
-  if (nextStepItemIds.join('|') === step.itemIds.join('|')) return false;
+  if (nextStepItemIds.join("|") === step.itemIds.join("|")) return false;
   step.itemIds = nextStepItemIds;
   markMappingsCorrected(parseResult.mappings, [itemId]);
   normalizeCanonicalOrder(parseResult);
@@ -777,7 +800,7 @@ function splitSourceLinesWithEndings(rawText: string): SourceLine[] {
   let match: RegExpExecArray | null;
   let originalLine = 1;
   while ((match = matcher.exec(rawText)) !== null) {
-    if (match[0] === '') break;
+    if (match[0] === "") break;
     lines.push({
       content: match[1],
       eol: match[2],
@@ -785,10 +808,10 @@ function splitSourceLinesWithEndings(rawText: string): SourceLine[] {
       startOffset: match.index,
     });
     originalLine += 1;
-    if (match[2] === '') break;
+    if (match[2] === "") break;
   }
   if (lines.length === 0) {
-    lines.push({ content: '', eol: '', originalLine: 1, startOffset: 0 });
+    lines.push({ content: "", eol: "", originalLine: 1, startOffset: 0 });
   }
   return lines;
 }
@@ -797,9 +820,10 @@ function itemSourceStartLine(
   parseResult: AuthoringParseResult,
   itemId: string,
 ): number | undefined {
-  const mapping = parseResult.mappings.find((candidate) => (
-    candidate.targetKind === 'item' && candidate.targetDraftId === itemId
-  ));
+  const mapping = parseResult.mappings.find(
+    (candidate) =>
+      candidate.targetKind === "item" && candidate.targetDraftId === itemId,
+  );
   const blockIds = new Set(mapping?.blockIds ?? []);
   const line = parseResult.blocks
     .filter((block) => blockIds.has(block.blockId))
@@ -814,10 +838,10 @@ function hasDuplicateItemSourceBlock(
   return parseResult.canonical.steps.some((step) => {
     const seen = new Set<string>();
     return step.itemIds.some((itemId) => {
-      const mapping = parseResult.mappings.find((candidate) => (
-        candidate.targetKind === 'item'
-        && candidate.targetDraftId === itemId
-      ));
+      const mapping = parseResult.mappings.find(
+        (candidate) =>
+          candidate.targetKind === "item" && candidate.targetDraftId === itemId,
+      );
       const blockId = mapping?.blockIds[0];
       if (!blockId) return false;
       if (seen.has(blockId)) return true;
@@ -832,7 +856,9 @@ function rewriteSourceRanges(
   oldLines: SourceLine[],
   nextLines: SourceLine[],
 ): void {
-  const oldByNumber = new Map(oldLines.map((line) => [line.originalLine, line]));
+  const oldByNumber = new Map(
+    oldLines.map((line) => [line.originalLine, line]),
+  );
   const nextIndexByOriginal = new Map<number, number>();
   const nextStartOffsets: number[] = [];
   let cursor = 0;
@@ -852,12 +878,8 @@ function rewriteSourceRanges(
     const oldEnd = oldByNumber.get(range.endLine);
     const nextStartIndex = nextIndexByOriginal.get(range.startLine);
     const nextEndIndex = nextIndexByOriginal.get(range.endLine);
-    if (
-      !oldStart
-      || !oldEnd
-      || nextStartIndex == null
-      || nextEndIndex == null
-    ) return;
+    if (!oldStart || !oldEnd || nextStartIndex == null || nextEndIndex == null)
+      return;
     const startColumn = Math.max(0, range.startOffset - oldStart.startOffset);
     const endColumn = Math.max(0, range.endOffset - oldEnd.startOffset);
     range.startLine = nextStartIndex + 1;
@@ -869,15 +891,17 @@ function rewriteSourceRanges(
   parseResult.canonical.sourceRows.forEach((row) => rewrite(row.sourceRange));
   parseResult.blocks.forEach((block) => rewrite(block.sourceRange));
   parseResult.issues.forEach((issue) => rewrite(issue.sourceRange));
-  parseResult.canonical.sourceRows.sort((left, right) => (
-    left.sourceRange.startOffset - right.sourceRange.startOffset
-  ));
+  parseResult.canonical.sourceRows.sort(
+    (left, right) =>
+      left.sourceRange.startOffset - right.sourceRange.startOffset,
+  );
   parseResult.canonical.sourceRows.forEach((row, index) => {
     row.order = index;
   });
-  parseResult.blocks.sort((left, right) => (
-    left.sourceRange.startOffset - right.sourceRange.startOffset
-  ));
+  parseResult.blocks.sort(
+    (left, right) =>
+      left.sourceRange.startOffset - right.sourceRange.startOffset,
+  );
   parseResult.blocks.forEach((block, index) => {
     block.order = index;
   });
@@ -902,52 +926,67 @@ function alignSourceOrder(
   let nextLines = [...oldLines];
   let changed = false;
 
-  const orderedSteps = [...parseResult.canonical.steps]
-    .sort((left, right) => right.order - left.order);
+  const orderedSteps = [...parseResult.canonical.steps].sort(
+    (left, right) => right.order - left.order,
+  );
   for (const step of orderedSteps) {
     const sourceItems = step.itemIds
       .map((itemId) => ({
         itemId,
         startLine: itemSourceStartLine(parseResult, itemId),
       }))
-      .filter((entry): entry is { itemId: string; startLine: number } => (
-        entry.startLine != null
-      ))
+      .filter(
+        (entry): entry is { itemId: string; startLine: number } =>
+          entry.startLine != null,
+      )
       .sort((left, right) => left.startLine - right.startLine);
     if (sourceItems.length < 2) continue;
 
     const desired = [...sourceItems].sort((left, right) => {
       const leftRank = requestedRank.get(left.itemId);
       const rightRank = requestedRank.get(right.itemId);
-      if (leftRank == null && rightRank == null) return left.startLine - right.startLine;
+      if (leftRank == null && rightRank == null)
+        return left.startLine - right.startLine;
       if (leftRank == null) return 1;
       if (rightRank == null) return -1;
       return leftRank - rightRank;
     });
-    if (desired.every((entry, index) => entry.itemId === sourceItems[index].itemId)) {
+    if (
+      desired.every(
+        (entry, index) => entry.itemId === sourceItems[index].itemId,
+      )
+    ) {
       continue;
     }
 
     const nextStepStart = parseResult.canonical.steps
       .filter((candidate) => candidate.order > step.order)
       .flatMap((candidate) => candidate.sourceRowIds)
-      .map((sourceRowId) => parseResult.canonical.sourceRows.find(
-        (row) => row.sourceRowId === sourceRowId,
-      )?.sourceRange.startLine)
+      .map(
+        (sourceRowId) =>
+          parseResult.canonical.sourceRows.find(
+            (row) => row.sourceRowId === sourceRowId,
+          )?.sourceRange.startLine,
+      )
       .filter((line): line is number => line != null)
       .sort((left, right) => left - right)[0];
     const spanStart = sourceItems[0].startLine;
-    const spanEndExclusive = nextStepStart ?? (oldLines.length + 1);
+    const spanEndExclusive = nextStepStart ?? oldLines.length + 1;
     const blocks = sourceItems.map((entry, index) => {
       const start = entry.startLine;
-      const endExclusive = sourceItems[index + 1]?.startLine ?? spanEndExclusive;
+      const endExclusive =
+        sourceItems[index + 1]?.startLine ?? spanEndExclusive;
       return {
         itemId: entry.itemId,
         lines: oldLines.slice(start - 1, endExclusive - 1),
       };
     });
-    const blockById = new Map(blocks.map((block) => [block.itemId, block.lines]));
-    const replacement = desired.flatMap((entry) => blockById.get(entry.itemId) ?? []);
+    const blockById = new Map(
+      blocks.map((block) => [block.itemId, block.lines]),
+    );
+    const replacement = desired.flatMap(
+      (entry) => blockById.get(entry.itemId) ?? [],
+    );
     nextLines.splice(
       spanStart - 1,
       spanEndExclusive - spanStart,
@@ -960,17 +999,20 @@ function alignSourceOrder(
   }
   if (!changed) return false;
 
-  const newline = document.rawText.includes('\r\n') ? '\r\n' : '\n';
+  const newline = document.rawText.includes("\r\n") ? "\r\n" : "\n";
   const sourceEndsWithNewline = /(?:\r\n|\r|\n)$/u.test(document.rawText);
   nextLines = nextLines.map((line, index) => ({
     ...line,
-    eol: index < nextLines.length - 1
-      ? (line.eol || newline)
-      : sourceEndsWithNewline
-        ? (line.eol || newline)
-        : '',
+    eol:
+      index < nextLines.length - 1
+        ? line.eol || newline
+        : sourceEndsWithNewline
+          ? line.eol || newline
+          : "",
   }));
-  document.rawText = nextLines.map((line) => `${line.content}${line.eol}`).join('');
+  document.rawText = nextLines
+    .map((line) => `${line.content}${line.eol}`)
+    .join("");
   rewriteSourceRanges(parseResult, oldLines, nextLines);
   normalizeCanonicalOrder(parseResult);
   return true;
@@ -978,38 +1020,37 @@ function alignSourceOrder(
 
 type WorkingTextSyncOperation = Extract<
   AuthoringCorrectionOperation,
-  { type: 'sync_item_to_working_text' }
+  { type: "sync_item_to_working_text" }
 >;
 
-type WorkingTextPatchKey = keyof WorkingTextSyncOperation['patch'];
+type WorkingTextPatchKey = keyof WorkingTextSyncOperation["patch"];
 
 const WORKING_TEXT_PROPERTY_LINES: Array<{
-  key: Exclude<WorkingTextPatchKey, 'title'>;
+  key: Exclude<WorkingTextPatchKey, "title">;
   label: string;
 }> = [
-  { key: 'detail', label: TEXT_AUTHORING_CANONICAL_LABELS.detail },
-  { key: 'completion', label: TEXT_AUTHORING_CANONICAL_LABELS.completion },
-  { key: 'date', label: TEXT_AUTHORING_CANONICAL_LABELS.date },
-  { key: 'relativeDate', label: TEXT_AUTHORING_CANONICAL_LABELS.relativeDate },
-  { key: 'time', label: TEXT_AUTHORING_CANONICAL_LABELS.time },
-  { key: 'timezone', label: TEXT_AUTHORING_CANONICAL_LABELS.timezone },
-  { key: 'place', label: TEXT_AUTHORING_CANONICAL_LABELS.place },
-  { key: 'duration', label: TEXT_AUTHORING_CANONICAL_LABELS.duration },
-  { key: 'repeat', label: TEXT_AUTHORING_CANONICAL_LABELS.repeat },
-  { key: 'repeatEnd', label: TEXT_AUTHORING_CANONICAL_LABELS.repeatEnd },
-  { key: 'condition', label: TEXT_AUTHORING_CANONICAL_LABELS.condition },
-  { key: 'resource', label: TEXT_AUTHORING_CANONICAL_LABELS.resource },
+  { key: "detail", label: TEXT_AUTHORING_CANONICAL_LABELS.detail },
+  { key: "completion", label: TEXT_AUTHORING_CANONICAL_LABELS.completion },
+  { key: "date", label: TEXT_AUTHORING_CANONICAL_LABELS.date },
+  { key: "relativeDate", label: TEXT_AUTHORING_CANONICAL_LABELS.relativeDate },
+  { key: "time", label: TEXT_AUTHORING_CANONICAL_LABELS.time },
+  { key: "timezone", label: TEXT_AUTHORING_CANONICAL_LABELS.timezone },
+  { key: "place", label: TEXT_AUTHORING_CANONICAL_LABELS.place },
+  { key: "duration", label: TEXT_AUTHORING_CANONICAL_LABELS.duration },
+  { key: "repeat", label: TEXT_AUTHORING_CANONICAL_LABELS.repeat },
+  { key: "repeatEnd", label: TEXT_AUTHORING_CANONICAL_LABELS.repeatEnd },
+  { key: "condition", label: TEXT_AUTHORING_CANONICAL_LABELS.condition },
+  { key: "resource", label: TEXT_AUTHORING_CANONICAL_LABELS.resource },
+  { key: "source", label: TEXT_AUTHORING_CANONICAL_LABELS.source },
+  { key: "guide", label: TEXT_AUTHORING_CANONICAL_LABELS.guide },
+  { key: "caution", label: TEXT_AUTHORING_CANONICAL_LABELS.caution },
 ];
 
 const WORKING_TEXT_EDITABLE_LABELS = new Set(
   WORKING_TEXT_PROPERTY_LINES.map((entry) => entry.label),
 );
 
-const WORKING_TEXT_PRESERVED_LABELS = new Set<string>([
-  TEXT_AUTHORING_CANONICAL_LABELS.guide,
-  TEXT_AUTHORING_CANONICAL_LABELS.caution,
-  TEXT_AUTHORING_CANONICAL_LABELS.source,
-]);
+const WORKING_TEXT_PRESERVED_LABELS = new Set<string>();
 
 type CanonicalPropertyLine = {
   label: string;
@@ -1017,17 +1058,19 @@ type CanonicalPropertyLine = {
 };
 
 const WORKING_TEXT_PROPERTY_LABEL_ALIASES = new Map<string, string>([
-  ['조건', TEXT_AUTHORING_CANONICAL_LABELS.condition],
+  ["조건", TEXT_AUTHORING_CANONICAL_LABELS.condition],
 ]);
 
-function canonicalPropertyLine(value: string): CanonicalPropertyLine | undefined {
+function canonicalPropertyLine(
+  value: string,
+): CanonicalPropertyLine | undefined {
   const match = /^ {2}- ([^:：]+):\s*(.*)$/u.exec(value);
   if (!match) return undefined;
   const rawLabel = match[1].trim();
   const label = WORKING_TEXT_PROPERTY_LABEL_ALIASES.get(rawLabel) ?? rawLabel;
   if (
-    !WORKING_TEXT_EDITABLE_LABELS.has(label)
-    && !WORKING_TEXT_PRESERVED_LABELS.has(label)
+    !WORKING_TEXT_EDITABLE_LABELS.has(label) &&
+    !WORKING_TEXT_PRESERVED_LABELS.has(label)
   ) {
     return undefined;
   }
@@ -1039,24 +1082,24 @@ type CanonicalSubcheckLine = {
   title: string;
 };
 
-function canonicalSubcheckLine(value: string): CanonicalSubcheckLine | undefined {
+function canonicalSubcheckLine(
+  value: string,
+): CanonicalSubcheckLine | undefined {
   const match = /^ {2}- \[([ xX])\]\s+(.+)$/u.exec(value);
   if (!match) return undefined;
   return {
-    sourceChecked: match[1].toLocaleLowerCase() === 'x',
+    sourceChecked: match[1].toLocaleLowerCase() === "x",
     title: match[2].trim(),
   };
 }
 
 function oneLineWorkingText(value: string): string {
-  return value
-    .trim()
-    .replace(/\s*(?:\r\n|\r|\n)+\s*/gu, ' / ');
+  return value.trim().replace(/\s*(?:\r\n|\r|\n)+\s*/gu, " / ");
 }
 
 function normalizedWorkingTextPatch(
-  patch: WorkingTextSyncOperation['patch'],
-): WorkingTextSyncOperation['patch'] {
+  patch: WorkingTextSyncOperation["patch"],
+): WorkingTextSyncOperation["patch"] {
   return {
     title: oneLineWorkingText(patch.title),
     detail: oneLineWorkingText(patch.detail),
@@ -1071,49 +1114,54 @@ function normalizedWorkingTextPatch(
     repeatEnd: oneLineWorkingText(patch.repeatEnd),
     condition: oneLineWorkingText(patch.condition),
     resource: oneLineWorkingText(patch.resource),
+    source: oneLineWorkingText(patch.source),
+    guide: oneLineWorkingText(patch.guide),
+    caution: oneLineWorkingText(patch.caution),
   };
 }
 
 function explicitUrls(value: string): string[] {
-  return [...value.matchAll(/https?:\/\/[^\s<>()\]]+/giu)].map((match) => (
-    match[0].replace(/[.,;:!?]+$/u, '')
-  ));
+  return [...value.matchAll(/https?:\/\/[^\s<>()\]]+/giu)].map((match) =>
+    match[0].replace(/[.,;:!?]+$/u, ""),
+  );
 }
 
 function workingSourceRangesMatch(document: TextAuthoringDocument): boolean {
   const rangeMatches = (
     range: { startOffset: number; endOffset: number },
     rawText: string,
-  ) => (
-    Number.isInteger(range.startOffset)
-    && Number.isInteger(range.endOffset)
-    && range.startOffset >= 0
-    && range.endOffset >= range.startOffset
-    && range.endOffset <= document.rawText.length
-    && document.rawText.slice(range.startOffset, range.endOffset) === rawText
-  );
+  ) =>
+    Number.isInteger(range.startOffset) &&
+    Number.isInteger(range.endOffset) &&
+    range.startOffset >= 0 &&
+    range.endOffset >= range.startOffset &&
+    range.endOffset <= document.rawText.length &&
+    document.rawText.slice(range.startOffset, range.endOffset) === rawText;
   return (
-    document.parseResult.canonical.sourceRows.every((row) => (
-      row.state === 'tombstone' || rangeMatches(row.sourceRange, row.rawText)
-    ))
-    && document.parseResult.blocks.every((block) => (
-      block.state === 'tombstone' || rangeMatches(block.sourceRange, block.rawText)
-    ))
+    document.parseResult.canonical.sourceRows.every(
+      (row) =>
+        row.state === "tombstone" || rangeMatches(row.sourceRange, row.rawText),
+    ) &&
+    document.parseResult.blocks.every(
+      (block) =>
+        block.state === "tombstone" ||
+        rangeMatches(block.sourceRange, block.rawText),
+    )
   );
 }
 
 function hasOwnedWorkingTextState(item: CanonicalAuthoringItem): boolean {
   return Boolean(
-    Object.keys(item.titleOverrides ?? {}).length
-    || Object.keys(item.detailOverrides ?? {}).length
-    || Object.keys(item.completionOverrides ?? {}).length
-    || Object.keys(item.scheduleOverrides ?? {}).length
-    || item.creatorTitle
-    || item.creatorDetail
-    || item.properties.some((property) => property.owner !== 'source')
-    || [...item.resources, ...item.sources].some((link) => (
-      link.owner != null && link.owner !== 'source'
-    )),
+    Object.keys(item.titleOverrides ?? {}).length ||
+    Object.keys(item.detailOverrides ?? {}).length ||
+    Object.keys(item.completionOverrides ?? {}).length ||
+    Object.keys(item.scheduleOverrides ?? {}).length ||
+    item.creatorTitle ||
+    item.creatorDetail ||
+    item.properties.some((property) => property.owner !== "source") ||
+    [...item.resources, ...item.sources].some(
+      (link) => link.owner != null && link.owner !== "source",
+    ),
   );
 }
 
@@ -1121,45 +1169,54 @@ function sourcePropertyValue(
   item: CanonicalAuthoringItem,
   key: string,
 ): string {
-  return item.properties
-    .filter((property) => property.owner === 'source' && property.key === key)
-    .at(-1)?.value ?? '';
+  return (
+    item.properties
+      .filter((property) => property.owner === "source" && property.key === key)
+      .at(-1)?.value ?? ""
+  );
 }
 
 function candidateMatchesWorkingTextPatch(
   item: CanonicalAuthoringItem,
-  patch: WorkingTextSyncOperation['patch'],
+  patch: WorkingTextSyncOperation["patch"],
 ): boolean {
   if (
-    item.sourceTitle !== patch.title
-    || (item.sourceDetail ?? '') !== patch.detail
-    || (item.completion?.doneWhen ?? '') !== patch.completion
+    item.sourceTitle !== patch.title ||
+    (item.sourceDetail ?? "") !== patch.detail ||
+    (item.completion?.doneWhen ?? "") !== patch.completion
   ) {
     return false;
   }
   const propertyPairs: Array<[string, string]> = [
-    ['date', patch.date],
-    ['relative_date', patch.relativeDate],
-    ['time', patch.time],
-    ['timezone', patch.timezone],
-    ['place', patch.place],
-    ['duration', patch.duration],
-    ['repeat', patch.repeat],
-    ['repeat_end', patch.repeatEnd],
-    ['condition', patch.condition],
+    ["date", patch.date],
+    ["relative_date", patch.relativeDate],
+    ["time", patch.time],
+    ["timezone", patch.timezone],
+    ["place", patch.place],
+    ["duration", patch.duration],
+    ["repeat", patch.repeat],
+    ["repeat_end", patch.repeatEnd],
+    ["condition", patch.condition],
   ];
-  if (propertyPairs.some(([key, value]) => sourcePropertyValue(item, key) !== value)) {
+  if (
+    propertyPairs.some(
+      ([key, value]) => sourcePropertyValue(item, key) !== value,
+    )
+  ) {
     return false;
   }
   if (patch.date) {
-    if (item.schedule?.kind !== 'absolute' || item.schedule.date !== patch.date) {
+    if (
+      item.schedule?.kind !== "absolute" ||
+      item.schedule.date !== patch.date
+    ) {
       return false;
     }
   } else if (patch.relativeDate) {
     if (
-      item.schedule?.kind !== 'relative'
-      || item.schedule.raw.replace(/\s+/gu, '').toLocaleUpperCase()
-        !== patch.relativeDate.replace(/\s+/gu, '').toLocaleUpperCase()
+      item.schedule?.kind !== "relative" ||
+      item.schedule.raw.replace(/\s+/gu, "").toLocaleUpperCase() !==
+        patch.relativeDate.replace(/\s+/gu, "").toLocaleUpperCase()
     ) {
       return false;
     }
@@ -1167,10 +1224,29 @@ function candidateMatchesWorkingTextPatch(
     return false;
   }
   const expectedUrls = explicitUrls(patch.resource);
-  if (expectedUrls.length === 0) return item.resources.length === 0;
+  if (
+    expectedUrls.length === 0
+      ? item.resources.length !== 0
+      : item.resources.length !== 1 || item.resources[0].url !== expectedUrls[0]
+  ) {
+    return false;
+  }
+  const expectedSourceUrls = explicitUrls(patch.source);
+  if (
+    expectedSourceUrls.length === 0
+      ? item.sources.length !== 0
+      : item.sources.length !== 1 ||
+        item.sources[0].url !== expectedSourceUrls[0]
+  ) {
+    return false;
+  }
   return (
-    item.resources.length === 1
-    && item.resources[0].url === expectedUrls[0]
+    (patch.guide
+      ? item.guides.length === 1 && item.guides[0] === patch.guide
+      : item.guides.length === 0) &&
+    (patch.caution
+      ? item.cautions.length === 1 && item.cautions[0] === patch.caution
+      : item.cautions.length === 0)
   );
 }
 
@@ -1191,39 +1267,60 @@ function remapWorkingTextStableIds(
 ): boolean {
   const oldParse = source.parseResult;
   const nextParse = candidate.parseResult;
-  const oldSteps = [...oldParse.canonical.steps].sort((left, right) => left.order - right.order);
-  const nextSteps = [...nextParse.canonical.steps].sort((left, right) => left.order - right.order);
-  const oldItems = [...oldParse.canonical.items].sort((left, right) => left.order - right.order);
-  const nextItems = [...nextParse.canonical.items].sort((left, right) => left.order - right.order);
+  const oldSteps = [...oldParse.canonical.steps].sort(
+    (left, right) => left.order - right.order,
+  );
+  const nextSteps = [...nextParse.canonical.steps].sort(
+    (left, right) => left.order - right.order,
+  );
+  const oldItems = [...oldParse.canonical.items].sort(
+    (left, right) => left.order - right.order,
+  );
+  const nextItems = [...nextParse.canonical.items].sort(
+    (left, right) => left.order - right.order,
+  );
   if (
-    oldSteps.length !== nextSteps.length
-    || oldItems.length !== nextItems.length
-    || !nextItems[targetItemIndex]
+    oldSteps.length !== nextSteps.length ||
+    oldItems.length !== nextItems.length ||
+    !nextItems[targetItemIndex]
   ) {
     return false;
   }
-  if (oldSteps.some((step, index) => (
-    step.title !== nextSteps[index].title
-    || step.generated !== nextSteps[index].generated
-    || step.itemIds.length !== nextSteps[index].itemIds.length
-  ))) {
+  if (
+    oldSteps.some(
+      (step, index) =>
+        step.title !== nextSteps[index].title ||
+        step.generated !== nextSteps[index].generated ||
+        step.itemIds.length !== nextSteps[index].itemIds.length,
+    )
+  ) {
     return false;
   }
 
   const oldTarget = oldItems[targetItemIndex];
   const nextTarget = nextItems[targetItemIndex];
   const oldTargetRows = oldTarget.sourceRowIds
-    .map((sourceRowId) => oldParse.canonical.sourceRows.find(
-      (row) => row.sourceRowId === sourceRowId,
-    ))
+    .map((sourceRowId) =>
+      oldParse.canonical.sourceRows.find(
+        (row) => row.sourceRowId === sourceRowId,
+      ),
+    )
     .filter((row): row is NonNullable<typeof row> => Boolean(row))
-    .sort((left, right) => left.sourceRange.startOffset - right.sourceRange.startOffset);
+    .sort(
+      (left, right) =>
+        left.sourceRange.startOffset - right.sourceRange.startOffset,
+    );
   const nextTargetRows = nextTarget.sourceRowIds
-    .map((sourceRowId) => nextParse.canonical.sourceRows.find(
-      (row) => row.sourceRowId === sourceRowId,
-    ))
+    .map((sourceRowId) =>
+      nextParse.canonical.sourceRows.find(
+        (row) => row.sourceRowId === sourceRowId,
+      ),
+    )
     .filter((row): row is NonNullable<typeof row> => Boolean(row))
-    .sort((left, right) => left.sourceRange.startOffset - right.sourceRange.startOffset);
+    .sort(
+      (left, right) =>
+        left.sourceRange.startOffset - right.sourceRange.startOffset,
+    );
 
   const keyedTargetRows = (
     rows: typeof oldTargetRows,
@@ -1234,7 +1331,7 @@ function remapWorkingTextStableIds(
     for (const row of rows) {
       let key: string;
       if (/^- \[[ xX]\]\s+.+$/u.test(row.rawText)) {
-        key = 'item-root';
+        key = "item-root";
       } else if (canonicalSubcheckLine(row.rawText)) {
         subcheckCount += 1;
         key = `subcheck:${subcheckCount}`;
@@ -1259,12 +1356,12 @@ function remapWorkingTextStableIds(
     const oldRow = oldTargetByKey.get(key);
     if (oldRow) rowIdMap.set(nextRow.sourceRowId, oldRow.sourceRowId);
   });
-  if (!rowIdMap.has(nextTargetRows[0]?.sourceRowId ?? '')) return false;
+  if (!rowIdMap.has(nextTargetRows[0]?.sourceRowId ?? "")) return false;
 
   const lineDelta = newBlockLineCount - oldReplacedLineCount;
   const oldRowsByLine = new Map<number, typeof oldTargetRows>();
   oldParse.canonical.sourceRows
-    .filter((row) => row.state !== 'tombstone')
+    .filter((row) => row.state !== "tombstone")
     .forEach((row) => {
       const values = oldRowsByLine.get(row.sourceRange.startLine) ?? [];
       values.push(row);
@@ -1275,56 +1372,75 @@ function remapWorkingTextStableIds(
     let oldLine: number | undefined;
     if (nextRow.sourceRange.startLine < oldStartLine) {
       oldLine = nextRow.sourceRange.startLine;
-    } else if (nextRow.sourceRange.startLine >= oldStartLine + newBlockLineCount) {
+    } else if (
+      nextRow.sourceRange.startLine >=
+      oldStartLine + newBlockLineCount
+    ) {
       oldLine = nextRow.sourceRange.startLine - lineDelta;
     }
     if (oldLine == null) continue;
-    const matches = (oldRowsByLine.get(oldLine) ?? []).filter((oldRow) => (
-      oldRow.rowType === nextRow.rowType
-      && oldRow.rawText === nextRow.rawText
-      && oldRow.sourceRange.endLine - oldRow.sourceRange.startLine
-        === nextRow.sourceRange.endLine - nextRow.sourceRange.startLine
-    ));
+    const matches = (oldRowsByLine.get(oldLine) ?? []).filter(
+      (oldRow) =>
+        oldRow.rowType === nextRow.rowType &&
+        oldRow.rawText === nextRow.rawText &&
+        oldRow.sourceRange.endLine - oldRow.sourceRange.startLine ===
+          nextRow.sourceRange.endLine - nextRow.sourceRange.startLine,
+    );
     if (matches.length !== 1) return false;
     rowIdMap.set(nextRow.sourceRowId, matches[0].sourceRowId);
   }
 
   const mappedOldRowIds = new Set(rowIdMap.values());
   const oldActiveRows = oldParse.canonical.sourceRows.filter(
-    (row) => row.state !== 'tombstone',
+    (row) => row.state !== "tombstone",
   );
   const removedTargetRows = oldTargetRows.filter(
     (row) => !mappedOldRowIds.has(row.sourceRowId),
   );
-  if (oldActiveRows.some((row) => (
-    !oldTarget.sourceRowIds.includes(row.sourceRowId)
-    && !mappedOldRowIds.has(row.sourceRowId)
-  ))) {
+  if (
+    oldActiveRows.some(
+      (row) =>
+        !oldTarget.sourceRowIds.includes(row.sourceRowId) &&
+        !mappedOldRowIds.has(row.sourceRowId),
+    )
+  ) {
     return false;
   }
 
   const blockIdMap = new Map<string, string>();
   for (const [nextRowId, oldRowId] of rowIdMap) {
-    const nextRow = nextParse.canonical.sourceRows.find((row) => row.sourceRowId === nextRowId);
-    const oldRow = oldParse.canonical.sourceRows.find((row) => row.sourceRowId === oldRowId);
+    const nextRow = nextParse.canonical.sourceRows.find(
+      (row) => row.sourceRowId === nextRowId,
+    );
+    const oldRow = oldParse.canonical.sourceRows.find(
+      (row) => row.sourceRowId === oldRowId,
+    );
     if (!nextRow || !oldRow) return false;
-    const nextBlocks = nextParse.blocks.filter((block) => (
-      block.rawText === nextRow.rawText
-      && block.sourceRange.startOffset === nextRow.sourceRange.startOffset
-      && block.sourceRange.endOffset === nextRow.sourceRange.endOffset
-    ));
-    const oldBlocks = oldParse.blocks.filter((block) => (
-      block.rawText === oldRow.rawText
-      && block.sourceRange.startOffset === oldRow.sourceRange.startOffset
-      && block.sourceRange.endOffset === oldRow.sourceRange.endOffset
-    ));
+    const nextBlocks = nextParse.blocks.filter(
+      (block) =>
+        block.rawText === nextRow.rawText &&
+        block.sourceRange.startOffset === nextRow.sourceRange.startOffset &&
+        block.sourceRange.endOffset === nextRow.sourceRange.endOffset,
+    );
+    const oldBlocks = oldParse.blocks.filter(
+      (block) =>
+        block.rawText === oldRow.rawText &&
+        block.sourceRange.startOffset === oldRow.sourceRange.startOffset &&
+        block.sourceRange.endOffset === oldRow.sourceRange.endOffset,
+    );
     if (nextBlocks.length !== 1 || oldBlocks.length !== 1) return false;
     blockIdMap.set(nextBlocks[0].blockId, oldBlocks[0].blockId);
   }
 
-  const flowIdMap = new Map([[nextParse.canonical.flow.flowId, oldParse.canonical.flow.flowId]]);
-  const stepIdMap = new Map(nextSteps.map((step, index) => [step.stepId, oldSteps[index].stepId]));
-  const itemIdMap = new Map(nextItems.map((item, index) => [item.itemId, oldItems[index].itemId]));
+  const flowIdMap = new Map([
+    [nextParse.canonical.flow.flowId, oldParse.canonical.flow.flowId],
+  ]);
+  const stepIdMap = new Map(
+    nextSteps.map((step, index) => [step.stepId, oldSteps[index].stepId]),
+  );
+  const itemIdMap = new Map(
+    nextItems.map((item, index) => [item.itemId, oldItems[index].itemId]),
+  );
   const entityIdMap = new Map<string, string>([
     ...flowIdMap,
     ...stepIdMap,
@@ -1338,17 +1454,20 @@ function remapWorkingTextStableIds(
   nextParse.blocks.forEach((block) => {
     block.blockId = blockIdMap.get(block.blockId) ?? block.blockId;
     if (block.parentBlockId) {
-      block.parentBlockId = blockIdMap.get(block.parentBlockId) ?? block.parentBlockId;
+      block.parentBlockId =
+        blockIdMap.get(block.parentBlockId) ?? block.parentBlockId;
     }
   });
   nextParse.mappings.forEach((mapping) => {
-    mapping.blockIds = mapping.blockIds.map((blockId) => blockIdMap.get(blockId) ?? blockId);
+    mapping.blockIds = mapping.blockIds.map(
+      (blockId) => blockIdMap.get(blockId) ?? blockId,
+    );
     mapping.sourceLineage = remapRowIds(mapping.sourceLineage, rowIdMap);
     mapping.targetDraftId = remapEntity(mapping.targetDraftId);
   });
   nextParse.issues.forEach((issue) => {
     issue.sourceRowIds = remapRowIds(issue.sourceRowIds, rowIdMap);
-    if (issue.decision?.outcome === 'convert_to_item') {
+    if (issue.decision?.outcome === "convert_to_item") {
       issue.decision.targetDraftId = remapEntity(issue.decision.targetDraftId);
     }
   });
@@ -1356,7 +1475,10 @@ function remapWorkingTextStableIds(
   const canonical = nextParse.canonical;
   canonical.flow.flowId = remapEntity(canonical.flow.flowId);
   canonical.flow.stepIds = canonical.flow.stepIds.map(remapEntity);
-  canonical.flow.sourceRowIds = remapRowIds(canonical.flow.sourceRowIds, rowIdMap);
+  canonical.flow.sourceRowIds = remapRowIds(
+    canonical.flow.sourceRowIds,
+    rowIdMap,
+  );
   canonical.steps.forEach((step, index) => {
     step.stepId = remapEntity(step.stepId);
     step.flowId = remapEntity(step.flowId);
@@ -1375,17 +1497,20 @@ function remapWorkingTextStableIds(
     item.subchecks?.forEach((subcheck) => {
       subcheck.sourceRowIds = remapRowIds(subcheck.sourceRowIds, rowIdMap);
       subcheck.subcheckId = stableAuthoringId(
-        'authoring-subcheck',
+        "authoring-subcheck",
         source.documentId,
         item.itemId,
-        subcheck.sourceRowIds[0] ?? '',
+        subcheck.sourceRowIds[0] ?? "",
       );
     });
     [...item.resources, ...item.sources].forEach((link) => {
       link.sourceRowIds = remapRowIds(link.sourceRowIds, rowIdMap);
     });
     if (item.completion) {
-      item.completion.sourceRowIds = remapRowIds(item.completion.sourceRowIds, rowIdMap);
+      item.completion.sourceRowIds = remapRowIds(
+        item.completion.sourceRowIds,
+        rowIdMap,
+      );
     }
     if (item.sourceCompletion) {
       item.sourceCompletion.sourceRowIds = remapRowIds(
@@ -1409,26 +1534,27 @@ function remapWorkingTextStableIds(
     memo.scope.id = remapEntity(memo.scope.id);
     memo.sourceRowIds = remapRowIds(memo.sourceRowIds, rowIdMap);
     memo.memoId = stableAuthoringId(
-      'memo',
+      "memo",
       source.documentId,
       memo.scope.type,
       memo.scope.id,
       memo.kind,
-      memo.sourceRowIds.join(','),
+      memo.sourceRowIds.join(","),
     );
     memoIdMap.set(previousMemoId, memo.memoId);
   });
   canonical.sourceRefs.forEach((sourceRef) => {
-    sourceRef.entityId = sourceRef.entityType === 'memo'
-      ? memoIdMap.get(sourceRef.entityId) ?? sourceRef.entityId
-      : remapEntity(sourceRef.entityId);
+    sourceRef.entityId =
+      sourceRef.entityType === "memo"
+        ? (memoIdMap.get(sourceRef.entityId) ?? sourceRef.entityId)
+        : remapEntity(sourceRef.entityId);
     sourceRef.sourceRowIds = remapRowIds(sourceRef.sourceRowIds, rowIdMap);
     sourceRef.sourceRefId = stableAuthoringId(
-      'source-ref',
+      "source-ref",
       source.documentId,
       sourceRef.entityType,
       sourceRef.entityId,
-      sourceRef.sourceRowIds.join(','),
+      sourceRef.sourceRowIds.join(","),
       sourceRef.relation,
     );
   });
@@ -1441,7 +1567,7 @@ function remapWorkingTextStableIds(
   removedTargetRows.forEach((row) => {
     canonical.sourceRows.push({
       ...cloneAuthoringValue(row),
-      state: 'tombstone',
+      state: "tombstone",
       sourceSnapshotId: tombstoneSnapshotId,
       order: canonical.sourceRows.length,
     });
@@ -1451,7 +1577,7 @@ function remapWorkingTextStableIds(
 
 type WorkingTextInputSyncOperation = Extract<
   AuthoringCorrectionOperation,
-  { type: 'sync_working_text_from_input' }
+  { type: "sync_working_text_from_input" }
 >;
 
 /**
@@ -1464,7 +1590,7 @@ function syncWorkingTextFromInput(
   document: TextAuthoringDocument,
   operation: WorkingTextInputSyncOperation,
 ): boolean {
-  if (document.sourceState && document.sourceState.status !== 'current') {
+  if (document.sourceState && document.sourceState.status !== "current") {
     return false;
   }
 
@@ -1472,10 +1598,10 @@ function syncWorkingTextFromInput(
   const sourceTitle = operation.sourceTitle?.trim();
   const sourceUrl = operation.sourceUrl?.trim();
   if (
-    operation.rawText === document.rawText
-    && (title || document.title) === document.title
-    && (sourceTitle || undefined) === document.sourceTitle
-    && (sourceUrl || undefined) === document.sourceUrl
+    operation.rawText === document.rawText &&
+    (title || document.title) === document.title &&
+    (sourceTitle || undefined) === document.sourceTitle &&
+    (sourceUrl || undefined) === document.sourceUrl
   ) {
     return false;
   }
@@ -1502,39 +1628,42 @@ function syncWorkingTextFromInput(
   );
   let sharedPrefix = 0;
   while (
-    sharedPrefix < oldLines.length
-    && sharedPrefix < nextLines.length
-    && oldLines[sharedPrefix] === nextLines[sharedPrefix]
+    sharedPrefix < oldLines.length &&
+    sharedPrefix < nextLines.length &&
+    oldLines[sharedPrefix] === nextLines[sharedPrefix]
   ) {
     sharedPrefix += 1;
   }
   let sharedSuffix = 0;
   while (
-    sharedSuffix < oldLines.length - sharedPrefix
-    && sharedSuffix < nextLines.length - sharedPrefix
-    && oldLines[oldLines.length - 1 - sharedSuffix]
-      === nextLines[nextLines.length - 1 - sharedSuffix]
+    sharedSuffix < oldLines.length - sharedPrefix &&
+    sharedSuffix < nextLines.length - sharedPrefix &&
+    oldLines[oldLines.length - 1 - sharedSuffix] ===
+      nextLines[nextLines.length - 1 - sharedSuffix]
   ) {
     sharedSuffix += 1;
   }
   const oldChangedLineCount = oldLines.length - sharedPrefix - sharedSuffix;
   const newChangedLineCount = nextLines.length - sharedPrefix - sharedSuffix;
   const changedStartLine = sharedPrefix + 1;
-  const changedEndLine = changedStartLine + Math.max(oldChangedLineCount, 1) - 1;
-  const oldItems = [...document.parseResult.canonical.items]
-    .sort((left, right) => left.order - right.order);
+  const changedEndLine =
+    changedStartLine + Math.max(oldChangedLineCount, 1) - 1;
+  const oldItems = [...document.parseResult.canonical.items].sort(
+    (left, right) => left.order - right.order,
+  );
   const affectedItems = oldItems.filter((item) => {
     const rows = item.sourceRowIds.flatMap((sourceRowId) => {
       const row = document.parseResult.canonical.sourceRows.find(
-        (candidateRow) => (
-          candidateRow.sourceRowId === sourceRowId
-          && candidateRow.state !== 'tombstone'
-        ),
+        (candidateRow) =>
+          candidateRow.sourceRowId === sourceRowId &&
+          candidateRow.state !== "tombstone",
       );
       return row ? [row] : [];
     });
     if (rows.length === 0) return false;
-    const itemStartLine = Math.min(...rows.map((row) => row.sourceRange.startLine));
+    const itemStartLine = Math.min(
+      ...rows.map((row) => row.sourceRange.startLine),
+    );
     const itemEndLine = Math.max(...rows.map((row) => row.sourceRange.endLine));
     return oldChangedLineCount === 0
       ? changedStartLine >= itemStartLine && changedStartLine <= itemEndLine + 1
@@ -1568,7 +1697,7 @@ function syncWorkingTextFromInput(
   if (candidate.sourceUrl) document.sourceUrl = candidate.sourceUrl;
   else delete document.sourceUrl;
   document.sourceState = {
-    status: 'current',
+    status: "current",
     active: activeSnapshot,
   };
   document.reviewGates = (candidate.reviewGates ?? []).map((gate) => ({
@@ -1589,62 +1718,72 @@ function syncItemToWorkingText(
   operation: WorkingTextSyncOperation,
 ): boolean {
   if (
-    document.sourceState?.status !== 'current'
-    || !workingSourceRangesMatch(document)
-    || document.parseResult.canonical.sourceRows.some((row) => row.state === 'tombstone')
-    || document.parseResult.blocks.some((block) => block.state === 'tombstone')
-    || document.parseResult.issues.some((issue) => Boolean(issue.decision))
-    || document.parseResult.canonical.items.some(hasOwnedWorkingTextState)
+    document.sourceState?.status !== "current" ||
+    !workingSourceRangesMatch(document) ||
+    document.parseResult.canonical.sourceRows.some(
+      (row) => row.state === "tombstone",
+    ) ||
+    document.parseResult.blocks.some((block) => block.state === "tombstone") ||
+    document.parseResult.issues.some((issue) => Boolean(issue.decision)) ||
+    document.parseResult.canonical.items.some(hasOwnedWorkingTextState)
   ) {
     return false;
   }
-  const items = [...document.parseResult.canonical.items]
-    .sort((left, right) => left.order - right.order);
-  const targetItemIndex = items.findIndex((item) => item.itemId === operation.itemId);
+  const items = [...document.parseResult.canonical.items].sort(
+    (left, right) => left.order - right.order,
+  );
+  const targetItemIndex = items.findIndex(
+    (item) => item.itemId === operation.itemId,
+  );
   const item = items[targetItemIndex];
   if (
-    !item
-    || item.role !== 'item'
-    || item.nestingLevel !== 0
-    || item.sourceDisposition === 'previous_source'
-    || item.resources.length > 1
+    !item ||
+    item.role !== "item" ||
+    item.nestingLevel !== 0 ||
+    item.sourceDisposition === "previous_source" ||
+    item.resources.length > 1 ||
+    item.sources.length > 1 ||
+    item.guides.length > 1 ||
+    item.cautions.length > 1
   ) {
     return false;
   }
   const patch = normalizedWorkingTextPatch(operation.patch);
   if (
-    !patch.title
-    || (patch.date && patch.relativeDate)
-    || (patch.repeatEnd && !patch.repeat)
-  ) return false;
+    !patch.title ||
+    (patch.date && patch.relativeDate) ||
+    (patch.repeatEnd && !patch.repeat)
+  )
+    return false;
   const absoluteSchedule = patch.date
     ? parseExplicitAuthoringSchedule(patch.date)
     : undefined;
   if (
-    patch.date
-    && (
-      absoluteSchedule?.kind !== 'absolute'
-      || absoluteSchedule.date !== patch.date
-    )
+    patch.date &&
+    (absoluteSchedule?.kind !== "absolute" ||
+      absoluteSchedule.date !== patch.date)
   ) {
     return false;
   }
   if (
-    patch.relativeDate
-    && parseExplicitAuthoringSchedule(patch.relativeDate)?.kind !== 'relative'
+    patch.relativeDate &&
+    parseExplicitAuthoringSchedule(patch.relativeDate)?.kind !== "relative"
   ) {
     return false;
   }
   const resourceUrls = explicitUrls(patch.resource);
   if (patch.resource && resourceUrls.length !== 1) return false;
+  const sourceUrls = explicitUrls(patch.source);
+  if (patch.source && sourceUrls.length !== 1) return false;
 
-  const itemMapping = document.parseResult.mappings.filter((mapping) => (
-    mapping.targetKind === 'item' && mapping.targetDraftId === item.itemId
-  ));
+  const itemMapping = document.parseResult.mappings.filter(
+    (mapping) =>
+      mapping.targetKind === "item" && mapping.targetDraftId === item.itemId,
+  );
   if (
-    itemMapping.length !== 1
-    || itemMapping[0].blockIds.length !== 1
-    || itemMapping[0].sourceLineage.length !== 1
+    itemMapping.length !== 1 ||
+    itemMapping[0].blockIds.length !== 1 ||
+    itemMapping[0].sourceLineage.length !== 1
   ) {
     return false;
   }
@@ -1655,37 +1794,47 @@ function syncItemToWorkingText(
     ? /^- \[([ xX])\]\s+(.+)$/u.exec(rootRow.rawText)
     : null;
   if (
-    !rootRow
-    || rootRow.rowType !== 'check'
-    || rootRow.sourceRange.startLine !== rootRow.sourceRange.endLine
-    || !rootMatch
+    !rootRow ||
+    rootRow.rowType !== "check" ||
+    rootRow.sourceRange.startLine !== rootRow.sourceRange.endLine ||
+    !rootMatch
   ) {
     return false;
   }
-  const itemSourceRows = item.sourceRowIds.map((sourceRowId) => (
-    document.parseResult.canonical.sourceRows.find((row) => row.sourceRowId === sourceRowId)
-  ));
+  const itemSourceRows = item.sourceRowIds.map((sourceRowId) =>
+    document.parseResult.canonical.sourceRows.find(
+      (row) => row.sourceRowId === sourceRowId,
+    ),
+  );
   if (
-    itemSourceRows.some((row) => !row || row.state === 'tombstone')
-    || item.sourceRowIds.some((sourceRowId) => (
-      document.parseResult.canonical.items.some((candidate) => (
-        candidate.itemId !== item.itemId
-        && candidate.sourceRowIds.includes(sourceRowId)
-      ))
-    ))
+    itemSourceRows.some((row) => !row || row.state === "tombstone") ||
+    item.sourceRowIds.some((sourceRowId) =>
+      document.parseResult.canonical.items.some(
+        (candidate) =>
+          candidate.itemId !== item.itemId &&
+          candidate.sourceRowIds.includes(sourceRowId),
+      ),
+    )
   ) {
     return false;
   }
   const resourceRowIds = new Set(
     itemSourceRows
       .filter((row): row is NonNullable<typeof row> => Boolean(row))
-      .filter((row) => canonicalPropertyLine(row.rawText)?.label === TEXT_AUTHORING_CANONICAL_LABELS.resource)
+      .filter(
+        (row) =>
+          canonicalPropertyLine(row.rawText)?.label ===
+          TEXT_AUTHORING_CANONICAL_LABELS.resource,
+      )
       .map((row) => row.sourceRowId),
   );
   if (
-    item.resources.some((resource) => (
-      !resource.sourceRowIds.every((sourceRowId) => resourceRowIds.has(sourceRowId))
-    ))
+    item.resources.some(
+      (resource) =>
+        !resource.sourceRowIds.every((sourceRowId) =>
+          resourceRowIds.has(sourceRowId),
+        ),
+    )
   ) {
     return false;
   }
@@ -1701,19 +1850,23 @@ function syncItemToWorkingText(
   }
   let contentEnd = boundary;
   while (
-    contentEnd > rootLineIndex + 1
-    && !oldLines[contentEnd - 1].content.trim()
+    contentEnd > rootLineIndex + 1 &&
+    !oldLines[contentEnd - 1].content.trim()
   ) {
     contentEnd -= 1;
   }
-  const existingProperties: Array<CanonicalPropertyLine & {
-    rawText: string;
-    line: number;
-  }> = [];
-  const existingSubchecks: Array<CanonicalSubcheckLine & {
-    rawText: string;
-    line: number;
-  }> = [];
+  const existingProperties: Array<
+    CanonicalPropertyLine & {
+      rawText: string;
+      line: number;
+    }
+  > = [];
+  const existingSubchecks: Array<
+    CanonicalSubcheckLine & {
+      rawText: string;
+      line: number;
+    }
+  > = [];
   for (let index = rootLineIndex + 1; index < contentEnd; index += 1) {
     const rawText = oldLines[index].content;
     if (!rawText.trim()) continue;
@@ -1736,46 +1889,72 @@ function syncItemToWorkingText(
   });
   if ([...editableCounts.values()].some((count) => count > 1)) return false;
 
-  const sourceRowLines = new Set(itemSourceRows.flatMap((row) => (
-    row ? [row.sourceRange.startLine] : []
-  )));
+  for (const { key, label } of WORKING_TEXT_PROPERTY_LINES.filter(
+    ({ key }) =>
+      key === "resource" ||
+      key === "source" ||
+      key === "guide" ||
+      key === "caution",
+  )) {
+    const matching = existingProperties.filter(
+      (property) => property.label === label,
+    );
+    const currentValue = matching.length === 1 ? matching[0].value : "";
+    if (patch[key] === currentValue) continue;
+    if (matching.length !== 1) return false;
+    if (
+      (key === "resource" || key === "source") &&
+      explicitUrls(patch[key]).length !== 1
+    ) {
+      return false;
+    }
+  }
+
+  const sourceRowLines = new Set(
+    itemSourceRows.flatMap((row) => (row ? [row.sourceRange.startLine] : [])),
+  );
   if (
-    !sourceRowLines.has(rootLineIndex + 1)
-    || existingProperties.some((property) => !sourceRowLines.has(property.line))
-    || existingSubchecks.some((subcheck) => !sourceRowLines.has(subcheck.line))
+    !sourceRowLines.has(rootLineIndex + 1) ||
+    existingProperties.some((property) => !sourceRowLines.has(property.line)) ||
+    existingSubchecks.some((subcheck) => !sourceRowLines.has(subcheck.line))
   ) {
     return false;
   }
 
   const nextBlockLines = [
-    `- [${rootMatch[1].toLocaleLowerCase() === 'x' ? 'x' : ' '}] ${patch.title}`,
-    ...WORKING_TEXT_PROPERTY_LINES.flatMap(({ key, label }) => (
-      patch[key] ? [`  - ${label}: ${patch[key]}`] : []
-    )),
+    `- [${rootMatch[1].toLocaleLowerCase() === "x" ? "x" : " "}] ${patch.title}`,
+    ...WORKING_TEXT_PROPERTY_LINES.flatMap(({ key, label }) =>
+      patch[key] ? [`  - ${label}: ${patch[key]}`] : [],
+    ),
     ...existingProperties
       .filter((property) => WORKING_TEXT_PRESERVED_LABELS.has(property.label))
       .map((property) => property.rawText),
     ...existingSubchecks.map((subcheck) => subcheck.rawText),
   ];
   const oldReplacedLineCount = contentEnd - rootLineIndex;
-  const newline = document.rawText.includes('\r\n') ? '\r\n' : '\n';
+  const newline = document.rawText.includes("\r\n") ? "\r\n" : "\n";
   const sourceEndsWithNewline = /(?:\r\n|\r|\n)$/u.test(document.rawText);
-  const replacementLines: SourceLine[] = nextBlockLines.map((content, index) => ({
-    content,
-    eol: index < nextBlockLines.length - 1
-      || contentEnd < oldLines.length
-      || sourceEndsWithNewline
-      ? newline
-      : '',
-    originalLine: rootLineIndex + index + 1,
-    startOffset: 0,
-  }));
+  const replacementLines: SourceLine[] = nextBlockLines.map(
+    (content, index) => ({
+      content,
+      eol:
+        index < nextBlockLines.length - 1 ||
+        contentEnd < oldLines.length ||
+        sourceEndsWithNewline
+          ? newline
+          : "",
+      originalLine: rootLineIndex + index + 1,
+      startOffset: 0,
+    }),
+  );
   const nextLines = [
     ...oldLines.slice(0, rootLineIndex),
     ...replacementLines,
     ...oldLines.slice(contentEnd),
   ];
-  const nextRawText = nextLines.map((line) => `${line.content}${line.eol}`).join('');
+  const nextRawText = nextLines
+    .map((line) => `${line.content}${line.eol}`)
+    .join("");
   if (nextRawText === document.rawText) return false;
 
   const candidate = createTextAuthoringDocument(nextRawText, {
@@ -1787,12 +1966,13 @@ function syncItemToWorkingText(
     ...(document.sourceUrl ? { sourceUrl: document.sourceUrl } : {}),
     now: document.createdAt,
   });
-  const candidateItems = [...candidate.parseResult.canonical.items]
-    .sort((left, right) => left.order - right.order);
+  const candidateItems = [...candidate.parseResult.canonical.items].sort(
+    (left, right) => left.order - right.order,
+  );
   if (
-    !candidateItems[targetItemIndex]
-    || !candidateMatchesWorkingTextPatch(candidateItems[targetItemIndex], patch)
-    || !remapWorkingTextStableIds(
+    !candidateItems[targetItemIndex] ||
+    !candidateMatchesWorkingTextPatch(candidateItems[targetItemIndex], patch) ||
+    !remapWorkingTextStableIds(
       document,
       candidate,
       targetItemIndex,
@@ -1818,18 +1998,20 @@ function ownedProperty(
   value: string,
   actorLane: TextAuthoringOwnership,
 ): AuthoringProperty {
-  const existing = item.properties.find((property) => (
-    property.key === key && property.owner === actorLane
-  ));
+  const existing = item.properties.find(
+    (property) => property.key === key && property.owner === actorLane,
+  );
   if (existing) {
     existing.value = value;
-    item.properties = item.properties.filter((property) => property !== existing);
+    item.properties = item.properties.filter(
+      (property) => property !== existing,
+    );
     item.properties.push(existing);
     return existing;
   }
   const property: AuthoringProperty = {
     propertyId: stableAuthoringId(
-      'property',
+      "property",
       document.documentId,
       item.itemId,
       key,
@@ -1850,44 +2032,42 @@ function applyTimeProperty(
   key: string,
   value: string,
 ): AuthoringSchedule {
-  if (key === 'time') {
+  if (key === "time") {
     const match = /\b([01]\d|2[0-3]):([0-5]\d)\b/u.exec(value);
     return match ? { ...schedule, time: match[0] } : schedule;
   }
-  if (key === 'timezone') return { ...schedule, timezone: value };
-  if (key === 'repeat') return { ...schedule, repeat: value };
-  if (key === 'duration') {
+  if (key === "timezone") return { ...schedule, timezone: value };
+  if (key === "repeat") return { ...schedule, repeat: value };
+  if (key === "duration") {
     const match = /(\d+)\s*(분|시간|minutes?|hours?)/iu.exec(value);
     if (!match) return schedule;
     const amount = Number(match[1]);
     return {
       ...schedule,
-      durationMinutes: /시간|hours?/iu.test(match[2])
-        ? amount * 60
-        : amount,
+      durationMinutes: /시간|hours?/iu.test(match[2]) ? amount * 60 : amount,
     };
   }
   return schedule;
 }
 
 const SCHEDULE_DETAIL_KEYS = [
-  'time',
-  'timezone',
-  'duration',
-  'repeat',
+  "time",
+  "timezone",
+  "duration",
+  "repeat",
 ] as const;
 
-type ScheduleDetailKey = typeof SCHEDULE_DETAIL_KEYS[number];
+type ScheduleDetailKey = (typeof SCHEDULE_DETAIL_KEYS)[number];
 
 function removeScheduleDetail(
   schedule: AuthoringSchedule,
   key: ScheduleDetailKey,
 ): AuthoringSchedule {
   const nextSchedule: AuthoringSchedule = { ...schedule };
-  if (key === 'time') delete nextSchedule.time;
-  if (key === 'timezone') delete nextSchedule.timezone;
-  if (key === 'duration') delete nextSchedule.durationMinutes;
-  if (key === 'repeat') delete nextSchedule.repeat;
+  if (key === "time") delete nextSchedule.time;
+  if (key === "timezone") delete nextSchedule.timezone;
+  if (key === "duration") delete nextSchedule.durationMinutes;
+  if (key === "repeat") delete nextSchedule.repeat;
   return nextSchedule;
 }
 
@@ -1896,7 +2076,7 @@ function hasScheduleDetail(
   key: ScheduleDetailKey,
 ): boolean {
   if (!schedule) return false;
-  if (key === 'duration') return schedule.durationMinutes != null;
+  if (key === "duration") return schedule.durationMinutes != null;
   return Boolean(schedule[key]);
 }
 
@@ -1908,23 +2088,24 @@ function preserveScheduleDetails(
 ): AuthoringSchedule {
   let nextSchedule: AuthoringSchedule = { ...schedule };
   if (existingSchedule?.time) nextSchedule.time = existingSchedule.time;
-  if (existingSchedule?.timezone) nextSchedule.timezone = existingSchedule.timezone;
+  if (existingSchedule?.timezone)
+    nextSchedule.timezone = existingSchedule.timezone;
   if (existingSchedule?.durationMinutes != null) {
     nextSchedule.durationMinutes = existingSchedule.durationMinutes;
   }
   if (existingSchedule?.repeat) nextSchedule.repeat = existingSchedule.repeat;
   if (
-    nextSchedule.kind === 'relative'
-    && existingSchedule?.kind === 'relative'
-    && existingSchedule.anchorLabel
+    nextSchedule.kind === "relative" &&
+    existingSchedule?.kind === "relative" &&
+    existingSchedule.anchorLabel
   ) {
     nextSchedule.anchorLabel = existingSchedule.anchorLabel;
   }
 
   SCHEDULE_DETAIL_KEYS.forEach((key) => {
-    const actorProperty = [...item.properties].reverse().find((property) => (
-      property.key === key && property.owner === actorLane
-    ));
+    const actorProperty = [...item.properties]
+      .reverse()
+      .find((property) => property.key === key && property.owner === actorLane);
     const fallbackProperty = hasScheduleDetail(existingSchedule, key)
       ? undefined
       : [...item.properties].reverse().find((property) => property.key === key);
@@ -1942,16 +2123,19 @@ function preserveScheduleDetails(
 function linkFromOwnedValue(
   value: string,
   item: CanonicalAuthoringItem,
-  type: AuthoringLink['type'],
+  type: AuthoringLink["type"],
   fallbackLabel: string,
   actorLane: TextAuthoringOwnership,
 ): AuthoringLink | undefined {
   const match = /https?:\/\/[^\s<>()\]]+/iu.exec(value);
   if (!match) return undefined;
-  const label = value.slice(0, match.index).replace(/[|·-]+$/u, '').trim();
+  const label = value
+    .slice(0, match.index)
+    .replace(/[|·-]+$/u, "")
+    .trim();
   return {
     label: label || fallbackLabel,
-    url: match[0].replace(/[.,;:!?]+$/u, ''),
+    url: match[0].replace(/[.,;:!?]+$/u, ""),
     type,
     owner: actorLane,
     sourceRowIds: [...item.sourceRowIds],
@@ -1960,39 +2144,37 @@ function linkFromOwnedValue(
 
 function setItemProperty(
   document: TextAuthoringDocument,
-  operation: Extract<AuthoringCorrectionOperation, { type: 'set_property' }>,
+  operation: Extract<AuthoringCorrectionOperation, { type: "set_property" }>,
   actorLane: TextAuthoringOwnership,
 ): boolean {
   const item = itemById(document.parseResult, operation.itemId);
   if (!item) return false;
   const value = operation.value.trim();
-  if (operation.key === 'title') {
+  if (operation.key === "title") {
     if (
-      !value
-      || (
-        item.title === value
-        && item.titleOverrides?.[actorLane] === value
-      )
+      !value ||
+      (item.title === value && item.titleOverrides?.[actorLane] === value)
     ) {
       return false;
     }
     setOwnedTitle(item, actorLane, value);
-  } else if (operation.key === 'detail') {
+  } else if (operation.key === "detail") {
     if (
-      item.detail === (value || undefined)
-      && item.detailOverrides?.[actorLane] === (value || undefined)
+      item.detail === (value || undefined) &&
+      item.detailOverrides?.[actorLane] === (value || undefined)
     ) {
       return false;
     }
     setOwnedDetail(item, actorLane, value || undefined);
-  } else if (operation.key === 'completion') {
-    const completion: CanonicalAuthoringItem['completion'] = value
+  } else if (operation.key === "completion") {
+    const completion: CanonicalAuthoringItem["completion"] = value
       ? {
-          mode: item.intent === 'decide'
-            ? 'decision'
-            : item.intent === 'record'
-              ? 'record'
-              : 'check',
+          mode:
+            item.intent === "decide"
+              ? "decision"
+              : item.intent === "record"
+                ? "record"
+                : "check",
           doneWhen: value,
           sourceRowIds: [...item.sourceRowIds],
           owner: actorLane,
@@ -2001,33 +2183,36 @@ function setItemProperty(
     setOwnedCompletion(item, actorLane, completion);
   } else {
     ownedProperty(document, item, operation.key, value, actorLane);
-    if (operation.key === 'date') {
+    if (operation.key === "date") {
       const schedule = parseExplicitAuthoringSchedule(value);
-      const existingSchedule = item.scheduleOverrides?.[actorLane] ?? item.schedule;
+      const existingSchedule =
+        item.scheduleOverrides?.[actorLane] ?? item.schedule;
       setOwnedSchedule(
         item,
         actorLane,
-        schedule?.kind === 'absolute'
+        schedule?.kind === "absolute"
           ? preserveScheduleDetails(item, actorLane, schedule, existingSchedule)
           : undefined,
       );
-    } else if (operation.key === 'relative_date') {
+    } else if (operation.key === "relative_date") {
       const schedule = parseExplicitAuthoringSchedule(value);
-      const existingSchedule = item.scheduleOverrides?.[actorLane] ?? item.schedule;
+      const existingSchedule =
+        item.scheduleOverrides?.[actorLane] ?? item.schedule;
       setOwnedSchedule(
         item,
         actorLane,
-        schedule?.kind === 'relative'
+        schedule?.kind === "relative"
           ? preserveScheduleDetails(item, actorLane, schedule, existingSchedule)
           : undefined,
       );
     } else if (
-      operation.key === 'time'
-      || operation.key === 'timezone'
-      || operation.key === 'duration'
-      || operation.key === 'repeat'
+      operation.key === "time" ||
+      operation.key === "timezone" ||
+      operation.key === "duration" ||
+      operation.key === "repeat"
     ) {
-      const ownedSchedule = item.scheduleOverrides?.[actorLane] ?? item.schedule;
+      const ownedSchedule =
+        item.scheduleOverrides?.[actorLane] ?? item.schedule;
       if (ownedSchedule) {
         if (!value) {
           setOwnedSchedule(
@@ -2043,19 +2228,31 @@ function setItemProperty(
           );
         }
       }
-    } else if (operation.key === 'resource') {
-      item.resources = item.resources.filter((link) => !(
-        link.type === 'creator'
-        && (link.owner ?? 'creator') === actorLane
-      ));
-      const link = linkFromOwnedValue(value, item, 'creator', '자료', actorLane);
+    } else if (operation.key === "resource") {
+      item.resources = item.resources.filter(
+        (link) =>
+          !(link.type === "creator" && (link.owner ?? "creator") === actorLane),
+      );
+      const link = linkFromOwnedValue(
+        value,
+        item,
+        "creator",
+        "자료",
+        actorLane,
+      );
       if (link) item.resources = uniqueLinks([...item.resources, link]);
-    } else if (operation.key === 'source') {
-      item.sources = item.sources.filter((link) => !(
-        link.type === 'creator'
-        && (link.owner ?? 'creator') === actorLane
-      ));
-      const link = linkFromOwnedValue(value, item, 'creator', '출처', actorLane);
+    } else if (operation.key === "source") {
+      item.sources = item.sources.filter(
+        (link) =>
+          !(link.type === "creator" && (link.owner ?? "creator") === actorLane),
+      );
+      const link = linkFromOwnedValue(
+        value,
+        item,
+        "creator",
+        "출처",
+        actorLane,
+      );
       if (link) item.sources = uniqueLinks([...item.sources, link]);
     }
   }
@@ -2065,7 +2262,7 @@ function setItemProperty(
 
 type ClassifyIssueOperation = Extract<
   AuthoringCorrectionOperation,
-  { type: 'classify_issue' }
+  { type: "classify_issue" }
 >;
 
 type IssueStepPlan = {
@@ -2075,9 +2272,9 @@ type IssueStepPlan = {
 
 function sameIds(left: string[], right: string[]): boolean {
   return (
-    left.length === right.length
-    && left.every((id) => right.includes(id))
-    && right.every((id) => left.includes(id))
+    left.length === right.length &&
+    left.every((id) => right.includes(id)) &&
+    right.every((id) => left.includes(id))
   );
 }
 
@@ -2085,18 +2282,20 @@ function issueMapping(
   parseResult: AuthoringParseResult,
   issue: UnresolvedAuthoringIssue,
 ): BlockToCanonicalMapping | undefined {
-  const mappings = parseResult.mappings.filter((mapping) => (
-    mapping.targetKind === 'unresolved'
-    && mapping.targetDraftId === issue.issueId
-  ));
+  const mappings = parseResult.mappings.filter(
+    (mapping) =>
+      mapping.targetKind === "unresolved" &&
+      mapping.targetDraftId === issue.issueId,
+  );
   if (mappings.length !== 1) return undefined;
   const [mapping] = mappings;
   if (
-    mapping.blockIds.length === 0
-    || !sameIds(mapping.sourceLineage, issue.sourceRowIds)
-    || mapping.blockIds.some((blockId) => (
-      !parseResult.blocks.some((block) => block.blockId === blockId)
-    ))
+    mapping.blockIds.length === 0 ||
+    !sameIds(mapping.sourceLineage, issue.sourceRowIds) ||
+    mapping.blockIds.some(
+      (blockId) =>
+        !parseResult.blocks.some((block) => block.blockId === blockId),
+    )
   ) {
     return undefined;
   }
@@ -2108,7 +2307,9 @@ function mappingBlockOrder(
   mapping: BlockToCanonicalMapping,
 ): number | undefined {
   const orders = mapping.blockIds.flatMap((blockId) => {
-    const block = parseResult.blocks.find((candidate) => candidate.blockId === blockId);
+    const block = parseResult.blocks.find(
+      (candidate) => candidate.blockId === blockId,
+    );
     return block ? [block.order] : [];
   });
   return orders.length > 0 ? Math.min(...orders) : undefined;
@@ -2135,22 +2336,27 @@ function resolveIssueStepPlan(
   const parseResult = document.parseResult;
   const steps = parseResult.canonical.steps;
   if (requestedStepId !== undefined) {
-    const step = steps.find((candidate) => candidate.stepId === requestedStepId);
+    const step = steps.find(
+      (candidate) => candidate.stepId === requestedStepId,
+    );
     return step ? { stepId: step.stepId, createGenerated: false } : undefined;
   }
 
   const issueBlocks = mapping.blockIds.flatMap((blockId) => {
-    const block = parseResult.blocks.find((candidate) => candidate.blockId === blockId);
+    const block = parseResult.blocks.find(
+      (candidate) => candidate.blockId === blockId,
+    );
     return block ? [block] : [];
   });
   const parentBlockIds = new Set(
-    issueBlocks.flatMap((block) => (
-      block.parentBlockId ? [block.parentBlockId] : []
-    )),
+    issueBlocks.flatMap((block) =>
+      block.parentBlockId ? [block.parentBlockId] : [],
+    ),
   );
   const parentStepIds = unique(
     parseResult.mappings.flatMap((candidate) => {
-      if (!candidate.blockIds.some((blockId) => parentBlockIds.has(blockId))) return [];
+      if (!candidate.blockIds.some((blockId) => parentBlockIds.has(blockId)))
+        return [];
       const stepId = stepIdForMapping(parseResult, candidate);
       return stepId ? [stepId] : [];
     }),
@@ -2188,7 +2394,7 @@ function resolveIssueStepPlan(
   }
   if (steps.length > 1) return undefined;
   return {
-    stepId: stableAuthoringId('step', document.documentId, 'generated-default'),
+    stepId: stableAuthoringId("step", document.documentId, "generated-default"),
     createGenerated: true,
   };
 }
@@ -2203,7 +2409,7 @@ function ensureIssueStep(
   const step: CanonicalAuthoringStep = {
     stepId: plan.stepId,
     flowId: canonical.flow.flowId,
-    title: '할 일',
+    title: "할 일",
     order: canonical.steps.length,
     itemIds: [],
     sourceRowIds: [],
@@ -2216,13 +2422,11 @@ function ensureIssueStep(
   return step;
 }
 
-function classifiedItemIntent(
-  title: string,
-): CanonicalAuthoringItem['intent'] {
-  if (/(결정|선택|비교|고르)/u.test(title)) return 'decide';
-  if (/(확인|점검|검토|살펴|체크)/u.test(title)) return 'inspect';
-  if (/https?:\/\//iu.test(title)) return 'use_resource';
-  return 'act';
+function classifiedItemIntent(title: string): CanonicalAuthoringItem["intent"] {
+  if (/(결정|선택|비교|고르)/u.test(title)) return "decide";
+  if (/(확인|점검|검토|살펴|체크)/u.test(title)) return "inspect";
+  if (/https?:\/\//iu.test(title)) return "use_resource";
+  return "act";
 }
 
 function itemMappingOrder(
@@ -2278,20 +2482,20 @@ function classifyIssue(
     (candidate) => candidate.issueId === operation.issueId,
   );
   if (
-    !issue
-    || !allowedAuthoringIssueOutcomes(issue).includes(operation.outcome)
+    !issue ||
+    !allowedAuthoringIssueOutcomes(issue).includes(operation.outcome)
   ) {
     return false;
   }
 
-  if (operation.outcome === 'hold') {
+  if (operation.outcome === "hold") {
     parseResult.mappings.forEach((mapping) => {
       if (mapping.targetDraftId === issue.issueId) mapping.userCorrected = true;
     });
     issue.decision = {
-      outcome: 'hold',
-      state: 'held',
-      targetKind: 'unresolved',
+      outcome: "hold",
+      state: "held",
+      targetKind: "unresolved",
       actorLane,
       decidedAt,
     };
@@ -2300,12 +2504,12 @@ function classifyIssue(
 
   const mapping = issueMapping(parseResult, issue);
   if (!mapping) return false;
-  if (operation.outcome === 'keep_source_only') {
+  if (operation.outcome === "keep_source_only") {
     mapping.userCorrected = true;
     issue.decision = {
-      outcome: 'keep_source_only',
-      state: 'resolved',
-      targetKind: 'source',
+      outcome: "keep_source_only",
+      state: "resolved",
+      targetKind: "source",
       actorLane,
       decidedAt,
     };
@@ -2314,8 +2518,8 @@ function classifyIssue(
 
   const sourceRowIds = [...issue.sourceRowIds];
   if (
-    sourceRowIds.length === 0
-    || unique(sourceRowIds).length !== sourceRowIds.length
+    sourceRowIds.length === 0 ||
+    unique(sourceRowIds).length !== sourceRowIds.length
   ) {
     return false;
   }
@@ -2330,9 +2534,12 @@ function classifyIssue(
   const sourceTitle = sourceRows
     .map((row) => row.rawText.trim())
     .filter(Boolean)
-    .join(' ');
+    .join(" ");
   const titleOverride = operation.titleOverride?.trim();
-  if (!sourceTitle || (operation.titleOverride !== undefined && !titleOverride)) {
+  if (
+    !sourceTitle ||
+    (operation.titleOverride !== undefined && !titleOverride)
+  ) {
     return false;
   }
 
@@ -2343,7 +2550,7 @@ function classifyIssue(
   );
   if (!stepPlan) return false;
   const itemId = stableAuthoringId(
-    'item',
+    "item",
     document.documentId,
     ...sourceRowIds,
   );
@@ -2351,12 +2558,12 @@ function classifyIssue(
     return false;
   }
   const sourceRefId = stableAuthoringId(
-    'source-ref',
+    "source-ref",
     document.documentId,
-    'item',
+    "item",
     itemId,
-    sourceRowIds.join(','),
-    'derived_from',
+    sourceRowIds.join(","),
+    "derived_from",
   );
   if (
     parseResult.canonical.sourceRefs.some(
@@ -2367,7 +2574,9 @@ function classifyIssue(
   }
 
   const issueBlocks = mapping.blockIds.flatMap((blockId) => {
-    const block = parseResult.blocks.find((candidate) => candidate.blockId === blockId);
+    const block = parseResult.blocks.find(
+      (candidate) => candidate.blockId === blockId,
+    );
     return block ? [block] : [];
   });
   const item: CanonicalAuthoringItem = {
@@ -2376,11 +2585,12 @@ function classifyIssue(
     title: sourceTitle,
     sourceTitle,
     intent: classifiedItemIntent(sourceTitle),
-    role: 'item',
+    role: "item",
     order: parseResult.canonical.items.length,
-    nestingLevel: issueBlocks.length > 0
-      ? Math.min(...issueBlocks.map((block) => block.depth))
-      : 0,
+    nestingLevel:
+      issueBlocks.length > 0
+        ? Math.min(...issueBlocks.map((block) => block.depth))
+        : 0,
     included: true,
     properties: [],
     resources: [],
@@ -2395,19 +2605,19 @@ function classifyIssue(
   insertClassifiedItem(parseResult, step, item, mapping);
   parseResult.canonical.sourceRefs.push({
     sourceRefId,
-    entityType: 'item',
+    entityType: "item",
     entityId: itemId,
     sourceRowIds,
-    relation: 'derived_from',
-    supportLevel: 'direct',
+    relation: "derived_from",
+    supportLevel: "direct",
   });
-  mapping.targetKind = 'item';
+  mapping.targetKind = "item";
   mapping.targetDraftId = itemId;
   mapping.userCorrected = true;
   issue.decision = {
-    outcome: 'convert_to_item',
-    state: 'resolved',
-    targetKind: 'item',
+    outcome: "convert_to_item",
+    state: "resolved",
+    targetKind: "item",
     targetDraftId: itemId,
     actorLane,
     decidedAt,
@@ -2417,24 +2627,24 @@ function classifyIssue(
 
 function applyMutation(
   document: TextAuthoringDocument,
-  operation: Exclude<AuthoringCorrectionOperation, { type: 'undo' }>,
+  operation: Exclude<AuthoringCorrectionOperation, { type: "undo" }>,
   actorLane: TextAuthoringOwnership,
   decidedAt: string,
 ): boolean {
   const parseResult = document.parseResult;
-  if (operation.type === 'record_review_decision') {
+  if (operation.type === "record_review_decision") {
     const gate = (document.reviewGates ?? []).find(
       (candidate) => candidate.gateId === operation.gateId,
     );
     if (!gate) throw new Error(`Review gate not found: ${operation.gateId}`);
     const evidenceNote = operation.evidenceNote?.trim();
-    if (operation.status === 'evidence_recorded' && !evidenceNote) {
-      throw new Error('Review evidence requires a non-empty note.');
+    if (operation.status === "evidence_recorded" && !evidenceNote) {
+      throw new Error("Review evidence requires a non-empty note.");
     }
     if (
-      gate.status === operation.status
-      && gate.evidenceNote === evidenceNote
-      && gate.actorLane === actorLane
+      gate.status === operation.status &&
+      gate.evidenceNote === evidenceNote &&
+      gate.actorLane === actorLane
     ) {
       return false;
     }
@@ -2445,28 +2655,24 @@ function applyMutation(
     gate.decidedAt = decidedAt;
     return true;
   }
-  if (operation.type === 'reopen_review') {
+  if (operation.type === "reopen_review") {
     const gate = (document.reviewGates ?? []).find(
       (candidate) => candidate.gateId === operation.gateId,
     );
     if (!gate) throw new Error(`Review gate not found: ${operation.gateId}`);
-    if (gate.status === 'required' && !gate.evidenceNote && !gate.decidedAt) {
+    if (gate.status === "required" && !gate.evidenceNote && !gate.decidedAt) {
       return false;
     }
-    gate.status = 'required';
+    gate.status = "required";
     delete gate.evidenceNote;
     delete gate.actorLane;
     delete gate.decidedAt;
     return true;
   }
-  if (operation.type === 'stage_source_update') {
-    return stageAuthoringSourceUpdate(
-      document,
-      operation.candidate,
-      decidedAt,
-    );
+  if (operation.type === "stage_source_update") {
+    return stageAuthoringSourceUpdate(document, operation.candidate, decidedAt);
   }
-  if (operation.type === 'resolve_source_conflict') {
+  if (operation.type === "resolve_source_conflict") {
     return resolveAuthoringSourceUpdateChange(
       document,
       operation.changeId,
@@ -2475,44 +2681,46 @@ function applyMutation(
       decidedAt,
     );
   }
-  if (operation.type === 'apply_source_update') {
+  if (operation.type === "apply_source_update") {
     applyAuthoringSourceUpdate(document, decidedAt);
     return true;
   }
-  if (operation.type === 'reject_source_update') {
+  if (operation.type === "reject_source_update") {
     rejectAuthoringSourceUpdate(document);
     return true;
   }
-  if (operation.type === 'classify_issue') {
+  if (operation.type === "classify_issue") {
     return classifyIssue(document, operation, actorLane, decidedAt);
   }
-  if (operation.type === 'merge') {
+  if (operation.type === "merge") {
     return mergeItems(parseResult, operation.itemIds, actorLane);
   }
-  if (operation.type === 'split') {
+  if (operation.type === "split") {
     return splitItem(document, operation.itemId, operation.at, actorLane);
   }
-  if (operation.type === 'reorder') {
+  if (operation.type === "reorder") {
     return reorderItem(parseResult, operation.itemId, operation.toIndex);
   }
-  if (operation.type === 'align_source_order') {
+  if (operation.type === "align_source_order") {
     return alignSourceOrder(document, operation.orderedItemIds);
   }
-  if (operation.type === 'sync_item_to_working_text') {
+  if (operation.type === "sync_item_to_working_text") {
     return syncItemToWorkingText(document, operation);
   }
-  if (operation.type === 'sync_working_text_from_input') {
+  if (operation.type === "sync_working_text_from_input") {
     return syncWorkingTextFromInput(document, operation);
   }
-  if (operation.type === 'set_property') {
+  if (operation.type === "set_property") {
     return setItemProperty(document, operation, actorLane);
   }
-  if (operation.type === 'restore') {
+  if (operation.type === "restore") {
     if (operation.itemId) {
       return restoreItemToParsedSource(document, operation.itemId);
     }
     const targets = operation.itemId
-      ? parseResult.canonical.items.filter((item) => item.itemId === operation.itemId)
+      ? parseResult.canonical.items.filter(
+          (item) => item.itemId === operation.itemId,
+        )
       : parseResult.canonical.items.filter((item) => !item.included);
     let changed = false;
     targets.forEach((item) => {
@@ -2521,39 +2729,37 @@ function applyMutation(
         changed = true;
       }
     });
-    if (changed) markMappingsCorrected(
-      parseResult.mappings,
-      targets.map((item) => item.itemId),
-    );
+    if (changed)
+      markMappingsCorrected(
+        parseResult.mappings,
+        targets.map((item) => item.itemId),
+      );
     return changed;
   }
 
   const item = itemById(parseResult, operation.itemId);
   if (!item) return false;
-  if (operation.type === 'indent') {
+  if (operation.type === "indent") {
     item.nestingLevel += 1;
-  } else if (operation.type === 'outdent') {
+  } else if (operation.type === "outdent") {
     if (item.nestingLevel === 0) return false;
     item.nestingLevel -= 1;
-  } else if (operation.type === 'rename') {
+  } else if (operation.type === "rename") {
     const title = operation.title.trim();
     if (
-      !title
-      || (
-        title === item.title
-        && item.titleOverrides?.[actorLane] === title
-      )
+      !title ||
+      (title === item.title && item.titleOverrides?.[actorLane] === title)
     ) {
       return false;
     }
     setOwnedTitle(item, actorLane, title);
-  } else if (operation.type === 'change_role') {
+  } else if (operation.type === "change_role") {
     if (item.role === operation.role) return false;
     item.role = operation.role;
-  } else if (operation.type === 'include') {
+  } else if (operation.type === "include") {
     if (item.included) return false;
     item.included = true;
-  } else if (operation.type === 'exclude') {
+  } else if (operation.type === "exclude") {
     if (!item.included) return false;
     item.included = false;
   } else {
@@ -2563,13 +2769,11 @@ function applyMutation(
   return true;
 }
 
-function effectiveUndoStack(
-  revisions: DraftRevision[],
-): DraftRevision[] {
+function effectiveUndoStack(revisions: DraftRevision[]): DraftRevision[] {
   const stack: DraftRevision[] = [];
   revisions.forEach((revision) => {
     revision.operations.forEach((operation) => {
-      if (operation.type === 'undo') {
+      if (operation.type === "undo") {
         stack.pop();
       } else if (revision.before) {
         stack.push(revision);
@@ -2589,7 +2793,7 @@ function newRevision(
   const timestamp = options.now ?? new Date().toISOString();
   return {
     revisionId: stableAuthoringId(
-      'revision',
+      "revision",
       document.documentId,
       document.revision.revisionId,
       stableAuthoringJson(operation),
@@ -2597,7 +2801,7 @@ function newRevision(
       suffix,
     ),
     parentRevisionId: document.revision.revisionId,
-    kind: 'edit',
+    kind: "edit",
     operations: [cloneAuthoringValue(operation)],
     actorLane: options.actorLane ?? document.ownership,
     timestamp,
@@ -2630,7 +2834,7 @@ function finishRevision(
     document.parseResult.canonical,
   );
   document.parseResult.parseResultId = stableAuthoringId(
-    'parse-result',
+    "parse-result",
     document.documentId,
     document.parseResult.parserVersion,
     document.parseResult.fixtureVersion,
@@ -2640,7 +2844,7 @@ function finishRevision(
   document.revision = revision;
   document.revisionHistory.push(revision);
   document.updatedAt = revision.timestamp;
-  document.lifecycleStatus = deriveAuthoringLifecycleStatus(document, 'draft');
+  document.lifecycleStatus = deriveAuthoringLifecycleStatus(document, "draft");
   return document;
 }
 
@@ -2653,39 +2857,39 @@ function applyUndo(
   const document = cloneAuthoringValue(source);
   const before = revisionSnapshot(document);
   document.parseResult = cloneAuthoringValue(target.before.parseResult);
-  if (Object.prototype.hasOwnProperty.call(target.before, 'title')) {
+  if (Object.prototype.hasOwnProperty.call(target.before, "title")) {
     document.title = target.before.title ?? document.title;
   }
-  if (Object.prototype.hasOwnProperty.call(target.before, 'rawText')) {
-    document.rawText = target.before.rawText ?? '';
+  if (Object.prototype.hasOwnProperty.call(target.before, "rawText")) {
+    document.rawText = target.before.rawText ?? "";
   }
   if (
-    Object.prototype.hasOwnProperty.call(target.before, 'inputKinds')
-    && target.before.inputKinds
+    Object.prototype.hasOwnProperty.call(target.before, "inputKinds") &&
+    target.before.inputKinds
   ) {
     document.inputKinds = cloneAuthoringValue(target.before.inputKinds);
   }
   if (
-    Object.prototype.hasOwnProperty.call(target.before, 'primaryInputKind')
-    && target.before.primaryInputKind
+    Object.prototype.hasOwnProperty.call(target.before, "primaryInputKind") &&
+    target.before.primaryInputKind
   ) {
     document.primaryInputKind = target.before.primaryInputKind;
   }
-  if (Object.prototype.hasOwnProperty.call(target.before, 'sourceTitle')) {
+  if (Object.prototype.hasOwnProperty.call(target.before, "sourceTitle")) {
     if (target.before.sourceTitle) {
       document.sourceTitle = target.before.sourceTitle;
     } else {
       delete document.sourceTitle;
     }
   }
-  if (Object.prototype.hasOwnProperty.call(target.before, 'sourceUrl')) {
+  if (Object.prototype.hasOwnProperty.call(target.before, "sourceUrl")) {
     if (target.before.sourceUrl) document.sourceUrl = target.before.sourceUrl;
     else delete document.sourceUrl;
   }
-  if (Object.prototype.hasOwnProperty.call(target.before, 'reviewGates')) {
+  if (Object.prototype.hasOwnProperty.call(target.before, "reviewGates")) {
     document.reviewGates = cloneAuthoringValue(target.before.reviewGates ?? []);
   }
-  if (Object.prototype.hasOwnProperty.call(target.before, 'sourceState')) {
+  if (Object.prototype.hasOwnProperty.call(target.before, "sourceState")) {
     if (target.before.sourceState) {
       document.sourceState = cloneAuthoringValue(target.before.sourceState);
     } else {
@@ -2693,14 +2897,14 @@ function applyUndo(
     }
   }
   if (
-    Object.prototype.hasOwnProperty.call(target.before, 'lifecycleStatus')
-    && target.before.lifecycleStatus
+    Object.prototype.hasOwnProperty.call(target.before, "lifecycleStatus") &&
+    target.before.lifecycleStatus
   ) {
     document.lifecycleStatus = target.before.lifecycleStatus;
   }
   const revision = newRevision(
     document,
-    { type: 'undo' },
+    { type: "undo" },
     before,
     options,
     target.revisionId,
@@ -2721,22 +2925,20 @@ export function applyAuthoringOperation(
   operation: AuthoringCorrectionOperation,
   options: ApplyAuthoringOperationOptions = {},
 ): TextAuthoringDocument {
-  if (operation.type === 'undo') return applyUndo(source, options);
+  if (operation.type === "undo") return applyUndo(source, options);
   const document = cloneAuthoringValue(source);
   const before = revisionSnapshot(document);
-  const revisionActor = options.actorLane ?? (
-    operation.type === 'stage_source_update' ? 'system' : document.ownership
-  );
-  const actorLane = revisionActor === 'system'
-    ? document.ownership
-    : revisionActor;
+  const revisionActor =
+    options.actorLane ??
+    (operation.type === "stage_source_update" ? "system" : document.ownership);
+  const actorLane =
+    revisionActor === "system" ? document.ownership : revisionActor;
   const decidedAt = options.now ?? new Date().toISOString();
   if (!applyMutation(document, operation, actorLane, decidedAt)) return source;
-  const revision = newRevision(
-    document,
-    operation,
-    before,
-    { ...options, actorLane: revisionActor, now: decidedAt },
-  );
+  const revision = newRevision(document, operation, before, {
+    ...options,
+    actorLane: revisionActor,
+    now: decidedAt,
+  });
   return finishRevision(document, revision);
 }

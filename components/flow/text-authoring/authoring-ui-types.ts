@@ -1,24 +1,24 @@
 import type {
   AuthoringIssueOutcome,
   UnresolvedAuthoringIssue,
-} from '@/lib/flow/text-authoring/types';
+} from "@/lib/flow/text-authoring/types";
 
-export type AuthoringStage = 'input' | 'result';
+export type AuthoringStage = "input" | "result";
 
 // Stored drafts from the three-stage prototype can still contain `structure`.
 // The workspace normalizes that legacy value to the visible result stage.
-export type PersistedAuthoringStage = AuthoringStage | 'structure';
+export type PersistedAuthoringStage = AuthoringStage | "structure";
 
-export type AuthoringOwnership = 'personal' | 'creator' | 'suggestion';
+export type AuthoringOwnership = "personal" | "creator" | "suggestion";
 
 export type AuthoringRole =
-  | 'item'
-  | 'resource'
-  | 'guide'
-  | 'caution'
-  | 'detail'
-  | 'completion'
-  | 'unresolved';
+  | "item"
+  | "resource"
+  | "guide"
+  | "caution"
+  | "detail"
+  | "completion"
+  | "unresolved";
 
 export type AuthoringItemView = {
   itemId: string;
@@ -42,24 +42,29 @@ export type AuthoringItemView = {
   condition: string;
   resource: string;
   source: string;
+  guide: string;
+  caution: string;
   userCorrected: boolean;
 };
 
 export type AuthoringItemPatch = Pick<
   AuthoringItemView,
-  | 'title'
-  | 'detail'
-  | 'completion'
-  | 'date'
-  | 'relativeDate'
-  | 'time'
-  | 'timezone'
-  | 'place'
-  | 'duration'
-  | 'repeat'
-  | 'repeatEnd'
-  | 'condition'
-  | 'resource'
+  | "title"
+  | "detail"
+  | "completion"
+  | "date"
+  | "relativeDate"
+  | "time"
+  | "timezone"
+  | "place"
+  | "duration"
+  | "repeat"
+  | "repeatEnd"
+  | "condition"
+  | "resource"
+  | "source"
+  | "guide"
+  | "caution"
 >;
 
 export type AuthoringStepView = {
@@ -78,20 +83,21 @@ export type AuthoringCounts = {
 
 export type AuthoringIssueView = {
   issueId: string;
-  type: UnresolvedAuthoringIssue['type'];
+  type: UnresolvedAuthoringIssue["type"];
   sourceLineLabel: string;
   rawText: string;
   reason: string;
-  state: 'open' | 'held';
+  expectedInput: string;
+  blockedResult: string;
+  sourceRowIds: string[];
+  itemId?: string;
+  state: "open" | "held";
   blocking: boolean;
   availableOutcomes: AuthoringIssueOutcome[];
 };
 
 export type AuthoringDraftStatus =
-  | '작성 중'
-  | '확인 필요'
-  | '결과 확인 완료'
-  | '보관됨';
+  "작성 중" | "확인 필요" | "결과 확인 완료" | "준비 완료" | "보관됨";
 
 export type AuthoringDraftView = {
   draftId: string;
@@ -104,6 +110,7 @@ export type AuthoringDraftView = {
   issueCount: number;
   revisionLabel: string;
   updatedAtLabel: string;
+  lastSavedAtLabel: string;
   archived: boolean;
   status: AuthoringDraftStatus;
 };
@@ -131,10 +138,7 @@ export type AuthoringReceiptView = {
   reviewEvidenceCount: number;
   reviewPersonalOnlyCount: number;
   sourceState:
-    | 'current'
-    | 'source_updated'
-    | 'conflict_source_vs_user'
-    | 'unknown';
+    "current" | "source_updated" | "conflict_source_vs_user" | "unknown";
   sourceOpenChangeCount: number;
   savedAtLabel: string;
 };

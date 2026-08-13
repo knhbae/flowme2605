@@ -41,7 +41,10 @@ import {
   createSaveReceipt,
 } from "@/lib/flow/text-authoring/receipt";
 import { createAuthoringSourceUpdateCandidate } from "@/lib/flow/text-authoring/source-update";
+import { compareTextAuthoringSources } from "@/lib/flow/text-authoring/source-comparison";
+import { createTextAuthoringServiceStateFromDocument } from "@/lib/flow/text-authoring/service-state";
 import {
+  TextAuthoringStorageReadError,
   TextAuthoringStorageWriteError,
   createTextAuthoringDraftRepository,
   getDefaultTextAuthoringStorage,
@@ -75,6 +78,7 @@ import {
   ResetAuthoringDialog,
   RoundTripDialog,
   SaveReceiptDialog,
+  SourceComparisonDialog,
   type AuthoringExportReceiptView,
   type AuthoringRoundTripView,
 } from "./AuthoringOverlays";
@@ -86,6 +90,7 @@ import { SourceUpdateDialog } from "./SourceUpdateDialog";
 import { StructurePane } from "./StructurePane";
 import type {
   AuthoringItemPatch,
+  AuthoringReceiptView,
   PersistedAuthoringStage,
   AuthoringRole,
   AuthoringStage,
@@ -314,6 +319,41 @@ type PendingCorrection =
       afterTitles: string[];
     };
 
+type PendingWorkspaceExit =
+  | { type: "library" }
+  | { type: "draft"; draftId: string }
+  | { type: "history"; href: string; navigationKey: string };
+
+type BrowserNavigationEvent = Event & {
+  navigationType: string;
+  destination: {
+    key: string;
+    url: string;
+  };
+};
+
+type BrowserNavigation = EventTarget & {
+  traverseTo: (key: string) => {
+    finished: Promise<unknown>;
+  };
+};
+
+function getBrowserNavigation(): BrowserNavigation | null {
+  return (
+    (
+      window as typeof window & {
+        navigation?: BrowserNavigation;
+      }
+    ).navigation ?? null
+  );
+}
+
+type SourceCorrectionReturnTarget = {
+  artifact: AuthoringArtifactKind;
+  itemId?: string;
+  sourceTextBeforeEdit: string;
+};
+
 function splitBoundaries(value: string): SplitBoundary[] {
   const positions = new Set<number>();
   for (const match of value.matchAll(/\s+/gu)) {
@@ -376,6 +416,15 @@ function savedDraftStatus(
 }
 
 function storageWriteFailureMessage(action: string, error: unknown): string {
+  if (error instanceof TextAuthoringStorageReadError) {
+    const reason =
+      error.code === "schema_mismatch"
+        ? "저장 데이터의 버전이 현재 화면과 다릅니다."
+        : error.code === "corrupted"
+          ? "저장 데이터가 손상되어 안전하게 열 수 없습니다."
+          : "브라우저 저장 데이터를 읽지 못했습니다.";
+    return `${action}하지 못했습니다. ${reason} 기존 저장 데이터와 현재 화면은 그대로 유지합니다.`;
+  }
   const detail =
     error instanceof Error ? `${error.name} ${error.message}` : String(error);
   const reason = /quota|exceed|storage.*full/iu.test(detail)
@@ -445,36 +494,68 @@ function normalizeVisibleAuthoringStage(
   return stage === "input" ? "input" : "result";
 }
 
+export type TextAuthoringWorkspaceProps = {
+  showQaCatalog?: boolean;
+  productMode?: boolean;
+  initialView?: "library" | "editor";
+  initialDraftId?: string;
+  initialSaveReceipt?: AuthoringReceiptView | null;
+  onNavigateDraft?: (
+    draftId: string | null,
+    options?: {
+      replace?: boolean;
+      preserveWorkspace?: boolean;
+      saveReceipt?: AuthoringReceiptView;
+    },
+  ) => void;
+  onNavigateNew?: () => void;
+};
+
 export function TextAuthoringWorkspace({
   showQaCatalog = false,
-}: {
-  showQaCatalog?: boolean;
-} = {}) {
+  productMode = false,
+  initialView = "editor",
+  initialDraftId,
+  initialSaveReceipt,
+  onNavigateDraft,
+  onNavigateNew,
+}: TextAuthoringWorkspaceProps = {}) {
   const [repository, setRepository] =
     useState<TextAuthoringDraftRepository | null>(null);
   const [activeDraftId, setActiveDraftId] = useState<string | null>(null);
   const [draftRecords, setDraftRecords] = useState<TextAuthoringDraftRecord[]>(
     [],
   );
-  const [document, setDocument] = useState<TextAuthoringDocument | null>(
-    DEFAULT_EXAMPLE_DOCUMENT,
+  const [document, setDocument] = useState<TextAuthoringDocument | null>(() =>
+    productMode ? null : DEFAULT_EXAMPLE_DOCUMENT,
   );
-  const [title, setTitle] = useState(SIMPLE_TEXT_AUTHORING_EXAMPLE.title);
-  const [source, setSource] = useState(SIMPLE_TEXT_AUTHORING_EXAMPLE.source);
-  const [rawText, setRawText] = useState(SIMPLE_TEXT_AUTHORING_EXAMPLE.rawText);
+  const [title, setTitle] = useState(() =>
+    productMode ? "" : SIMPLE_TEXT_AUTHORING_EXAMPLE.title,
+  );
+  const [draftName, setDraftName] = useState(() =>
+    productMode ? "" : SIMPLE_TEXT_AUTHORING_EXAMPLE.title,
+  );
+  const [source, setSource] = useState(() =>
+    productMode ? "" : SIMPLE_TEXT_AUTHORING_EXAMPLE.source,
+  );
+  const [rawText, setRawText] = useState(() =>
+    productMode ? "" : SIMPLE_TEXT_AUTHORING_EXAMPLE.rawText,
+  );
   const anchor = useMemo(() => sourceAnchorDate(rawText), [rawText]);
   const [ownership, setOwnership] =
     useState<TextAuthoringOwnership>("personal");
   const [ownershipLocked, setOwnershipLocked] = useState(false);
   const [stage, setStage] = useState<AuthoringStage>("input");
   const [selectedItemId, setSelectedItemId] = useState<string | null>(
-    DEFAULT_EXAMPLE_ITEM_ID,
+    productMode ? null : DEFAULT_EXAMPLE_ITEM_ID,
   );
   const [selectedArtifact, setSelectedArtifact] =
     useState<AuthoringArtifactKind>(
-      normalizeArtifactKind(
-        DEFAULT_EXAMPLE_DOCUMENT.parseResult.canonical.flow.primaryArtifact,
-      ),
+      productMode
+        ? "memo"
+        : normalizeArtifactKind(
+            DEFAULT_EXAMPLE_DOCUMENT.parseResult.canonical.flow.primaryArtifact,
+          ),
     );
   const [finiteOccurrenceLimit, setFiniteOccurrenceLimit] = useState(
     DEFAULT_FINITE_OCCURRENCE_LIMIT,
@@ -487,7 +568,9 @@ export function TextAuthoringWorkspace({
     itemCount: number;
   } | null>(null);
   const [dirty, setDirty] = useState(false);
-  const [libraryOpen, setLibraryOpen] = useState(false);
+  const [libraryOpen, setLibraryOpen] = useState(
+    productMode && initialView === "library",
+  );
   const [libraryQuery, setLibraryQuery] = useState("");
   const [libraryFilter, setLibraryFilter] =
     useState<AuthoringLibraryFilter>("all");
@@ -514,15 +597,22 @@ export function TextAuthoringWorkspace({
   const [sourceUpdateOpen, setSourceUpdateOpen] = useState(false);
   const [historyDraftId, setHistoryDraftId] = useState<string | null>(null);
   const [history, setHistory] = useState<TextAuthoringDraftHistoryEntry[]>([]);
+  const [sourceComparisonOpen, setSourceComparisonOpen] = useState(false);
   const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
   const [pendingExample, setPendingExample] =
     useState<TextAuthoringExample | null>(null);
+  const [pendingWorkspaceExit, setPendingWorkspaceExit] =
+    useState<PendingWorkspaceExit | null>(null);
   const [pendingCorrection, setPendingCorrection] =
     useState<PendingCorrection | null>(null);
+  const [sourceCorrectionReturnTarget, setSourceCorrectionReturnTarget] =
+    useState<SourceCorrectionReturnTarget | null>(null);
   const inspectorReturnFocusRef = useRef<HTMLElement | null>(null);
   const workspaceGridRef = useRef<HTMLDivElement | null>(null);
   const inputPaneScrollRef = useRef<HTMLDivElement | null>(null);
   const sourceTextAreaRef = useRef<HTMLTextAreaElement | null>(null);
+  const initialDraftOpenedRef = useRef<string | null>(null);
+  const allowBrowserExitRef = useRef(false);
 
   useEffect(() => {
     setFiniteOccurrenceLimit(DEFAULT_FINITE_OCCURRENCE_LIMIT);
@@ -574,7 +664,11 @@ export function TextAuthoringWorkspace({
   const refreshDrafts = useCallback(
     (nextRepository: TextAuthoringDraftRepository | null = repository) => {
       if (!nextRepository) return;
-      setDraftRecords(nextRepository.listRecords({ includeArchived: true }));
+      try {
+        setDraftRecords(nextRepository.listRecords({ includeArchived: true }));
+      } catch (error) {
+        setStatusMessage(storageWriteFailureMessage("저장 목록 확인", error));
+      }
     },
     [repository],
   );
@@ -584,14 +678,97 @@ export function TextAuthoringWorkspace({
     if (!storage) return;
     const nextRepository = createTextAuthoringDraftRepository(storage);
     setRepository(nextRepository);
-    setDraftRecords(nextRepository.listRecords({ includeArchived: true }));
-    setRecovery(nextRepository.loadRecovery() ?? null);
-  }, []);
+    try {
+      setDraftRecords(nextRepository.listRecords({ includeArchived: true }));
+      // A saved product draft selects only its own newer recovery when opened.
+      // The blank /flows/new shell still exposes the latest orphan recovery so
+      // a crash before the first explicit save does not strand the working text.
+      setRecovery(
+        productMode
+          ? initialView === "editor" && !initialDraftId
+            ? (nextRepository.loadRecovery() ?? null)
+            : null
+          : (nextRepository.loadRecovery() ?? null),
+      );
+    } catch (error) {
+      setStatusMessage(storageWriteFailureMessage("저장 목록 확인", error));
+    }
+  }, [initialDraftId, initialView, productMode]);
+
+  useEffect(() => {
+    if (!dirty) return;
+    const preventUnsavedExit = (event: BeforeUnloadEvent) => {
+      if (allowBrowserExitRef.current) return;
+      event.preventDefault();
+      event.returnValue = "";
+    };
+    window.addEventListener("beforeunload", preventUnsavedExit);
+    return () => window.removeEventListener("beforeunload", preventUnsavedExit);
+  }, [dirty]);
+
+  useEffect(() => {
+    if (!productMode || !dirty) return;
+    const browserNavigation = getBrowserNavigation();
+    if (!browserNavigation) return;
+
+    const preventSpaHistoryExit = (nativeEvent: Event) => {
+      if (allowBrowserExitRef.current) return;
+      const event = nativeEvent as BrowserNavigationEvent;
+      if (event.navigationType !== "traverse" || !event.cancelable) return;
+      if (!event.destination?.key || !event.destination.url) return;
+
+      const destination = new URL(event.destination.url, window.location.href);
+      if (destination.origin !== window.location.origin) return;
+
+      event.preventDefault();
+      if (!event.defaultPrevented) return;
+      setPendingExample(null);
+      setPendingWorkspaceExit({
+        type: "history",
+        href: destination.href,
+        navigationKey: event.destination.key,
+      });
+      setResetConfirmOpen(true);
+      setStatusMessage(
+        "저장하지 않은 변경이 있어 이동을 멈췄습니다. 계속 작성하거나 변경을 버릴 수 있습니다.",
+      );
+    };
+    browserNavigation.addEventListener("navigate", preventSpaHistoryExit);
+    return () =>
+      browserNavigation.removeEventListener("navigate", preventSpaHistoryExit);
+  }, [dirty, productMode]);
+
+  useEffect(() => {
+    if (!dirty || !repository || !activeDraftId) return;
+    const record = repository.load(activeDraftId);
+    if (!record?.readyReceipt && record?.status !== "ready") return;
+    try {
+      repository.invalidateReady(activeDraftId);
+      refreshDrafts(repository);
+      setStatusMessage(
+        "내용이 바뀌어 준비 완료 표시를 해제했습니다. 다시 저장한 뒤 표시할 수 있습니다.",
+      );
+    } catch (error) {
+      setStatusMessage(storageWriteFailureMessage("준비 상태 갱신", error));
+    }
+  }, [activeDraftId, dirty, refreshDrafts, repository]);
 
   const outline = useMemo(
     () => buildAuthoringOutlineView(document),
     [document],
   );
+  const firstSourceError = productMode ? outline.issues[0] : undefined;
+  const sourceError = firstSourceError
+    ? {
+        id: "text-authoring-source-error",
+        message: `${firstSourceError.sourceLineLabel}. ${firstSourceError.reason} ${firstSourceError.blockedResult}`,
+      }
+    : null;
+  const sourceComparison = useMemo(() => {
+    const firstSource = document?.sourceState?.active.rawText;
+    if (firstSource === undefined) return null;
+    return compareTextAuthoringSources(firstSource, rawText);
+  }, [document?.sourceState?.active.rawText, rawText]);
   const reviewGates = document?.reviewGates ?? [];
   const outstandingReviewCount = reviewGates.filter(
     (gate) => gate.status !== "evidence_recorded",
@@ -619,6 +796,35 @@ export function TextAuthoringWorkspace({
   const hasPersistedActiveDraft = Boolean(
     activeDraftId &&
     draftRecords.some((record) => record.draftId === activeDraftId),
+  );
+  const activeDraftRecord = activeDraftId
+    ? (draftRecords.find((record) => record.draftId === activeDraftId) ?? null)
+    : null;
+  const activeDraftReady = activeDraftRecord?.status === "ready";
+  const hasBlockingReadyIssue = Boolean(
+    document?.parseResult.issues.some(
+      (issue) => issue.blocking && !issue.decision && !issue.resolution,
+    ),
+  );
+  const readyBlockedReason = activeDraftReady
+    ? "현재 저장본을 준비 완료로 표시했습니다."
+    : !activeDraftRecord?.coherentRevisionPair ||
+        !activeDraftRecord.explicitSaveReceipt
+      ? "먼저 현재 결과를 초안으로 저장해 주세요."
+      : dirty
+        ? "저장되지 않은 변경을 먼저 초안으로 저장해 주세요."
+        : parsePending
+          ? "결과 계산이 끝난 뒤 준비 완료로 표시할 수 있습니다."
+          : hasBlockingReadyIssue
+            ? "차단된 입력을 수정한 뒤 다시 저장해 주세요."
+            : "저장된 현재 결과를 준비 완료로 표시할 수 있습니다.";
+  const canMarkReady = Boolean(
+    activeDraftRecord?.coherentRevisionPair &&
+    activeDraftRecord.explicitSaveReceipt &&
+    !activeDraftReady &&
+    !dirty &&
+    !parsePending &&
+    !hasBlockingReadyIssue,
   );
   const currentSourceMetadata =
     document?.sourceUrl || document?.sourceTitle || "";
@@ -854,8 +1060,32 @@ export function TextAuthoringWorkspace({
         document && !parsePending
           ? withUiState(document, stage, selectedItemId, title, ownership)
           : createFromCurrentInput(document?.documentId);
+      const recoveryDocumentWithSnapshot =
+        document?.sourceState?.active &&
+        recoveryDocument.sourceState &&
+        parsePending
+          ? {
+              ...recoveryDocument,
+              sourceState: {
+                status: "current" as const,
+                active: document.sourceState.active,
+              },
+            }
+          : recoveryDocument;
       try {
-        repository.autosave(recoveryDocument, {
+        const recoveryServiceState =
+          createTextAuthoringServiceStateFromDocument(
+            recoveryDocumentWithSnapshot,
+            {
+              draftId: activeDraftId,
+              projectionOptions: {
+                ...(anchor ? { anchor } : {}),
+                finiteOccurrenceLimit,
+                openEndedOccurrenceWeeks,
+              },
+            },
+          );
+        repository.saveCoherentRecovery(recoveryServiceState, {
           draftId: activeDraftId,
           activeStage: stage,
           ...(selectedItemId ? { selectedItemId } : {}),
@@ -869,9 +1099,12 @@ export function TextAuthoringWorkspace({
   }, [
     activeArtifact,
     activeDraftId,
+    anchor,
     createFromCurrentInput,
     dirty,
     document,
+    finiteOccurrenceLimit,
+    openEndedOccurrenceWeeks,
     ownership,
     parsePending,
     rawText,
@@ -1370,19 +1603,17 @@ export function TextAuthoringWorkspace({
     [closeInspector, document, performOperation, selectedItem],
   );
 
-  const focusItemInSource = useCallback(
-    (itemId: string) => {
-      if (!document) return;
-      const item = document.parseResult.canonical.items.find(
-        (candidate) => candidate.itemId === itemId,
-      );
-      const rows = item?.sourceRowIds
+  const focusSourceRows = useCallback(
+    (sourceRowIds: string[], itemId?: string) => {
+      if (!document || sourceRowIds.length === 0) return;
+      const rows = sourceRowIds
         .map((sourceRowId) =>
           document.parseResult.canonical.sourceRows.find(
             (row) => row.sourceRowId === sourceRowId,
           ),
         )
         .filter((row): row is NonNullable<typeof row> => Boolean(row));
+      if (rows.length === 0) return;
       const startLine = rows?.length
         ? Math.min(...rows.map((row) => row.sourceRange.startLine))
         : 1;
@@ -1402,9 +1633,17 @@ export function TextAuthoringWorkspace({
       const selectionEnd =
         lineOffset(endLine) + (lines[endLine - 1]?.length ?? 0);
 
+      setSourceCorrectionReturnTarget({
+        artifact: activeArtifact,
+        ...(itemId ? { itemId } : {}),
+        sourceTextBeforeEdit: rawText,
+      });
       setInspectorOpen(false);
+      setItemReviewOpen(false);
       setStage("input");
-      setStatusMessage("왼쪽 작업 원문에서 해당 항목을 선택했습니다.");
+      setStatusMessage(
+        `${startLine === endLine ? `${startLine}행` : `${startLine}~${endLine}행`}을 선택했습니다. 수정하면 보던 결과로 돌아갑니다.`,
+      );
       window.requestAnimationFrame(() => {
         window.requestAnimationFrame(() => {
           sourceTextAreaRef.current?.focus();
@@ -1415,13 +1654,77 @@ export function TextAuthoringWorkspace({
         });
       });
     },
-    [document, rawText],
+    [activeArtifact, document, rawText],
+  );
+
+  const focusItemInSource = useCallback(
+    (itemId: string) => {
+      if (!document) return;
+      const item = document.parseResult.canonical.items.find(
+        (candidate) => candidate.itemId === itemId,
+      );
+      if (!item) return;
+      focusSourceRows(item.sourceRowIds, itemId);
+    },
+    [document, focusSourceRows],
+  );
+
+  const focusIssueInSource = useCallback(
+    (issueId: string) => {
+      const issue = document?.parseResult.issues.find(
+        (candidate) => candidate.issueId === issueId,
+      );
+      if (!issue) return;
+      focusSourceRows(issue.sourceRowIds, issue.itemId);
+    },
+    [document, focusSourceRows],
   );
 
   const editSelectedItemInSource = useCallback(() => {
     if (!selectedItemId) return;
     focusItemInSource(selectedItemId);
   }, [focusItemInSource, selectedItemId]);
+
+  useEffect(() => {
+    const target = sourceCorrectionReturnTarget;
+    if (
+      !target ||
+      stage !== "input" ||
+      parsePending ||
+      rawText === target.sourceTextBeforeEdit ||
+      !document ||
+      document.rawText !== rawText
+    ) {
+      return;
+    }
+
+    const itemStillExists = Boolean(
+      target.itemId &&
+      document.parseResult.canonical.items.some(
+        (item) => item.itemId === target.itemId,
+      ),
+    );
+    setSelectedArtifact(target.artifact);
+    if (itemStillExists && target.itemId) setSelectedItemId(target.itemId);
+    setSourceCorrectionReturnTarget(null);
+    setStage("result");
+    setStatusMessage(
+      "원문 수정이 결과에 반영되었습니다. 보던 결과로 돌아왔습니다.",
+    );
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        const itemTarget = target.itemId
+          ? window.document.querySelector<HTMLElement>(
+              `[data-testid="ta-authoring-preview-source-edit"][data-item-id="${CSS.escape(target.itemId)}"]`,
+            )
+          : null;
+        const artifactTarget = window.document.querySelector<HTMLElement>(
+          `[data-testid="ta-authoring-result-slot-${target.artifact}"]`,
+        );
+        (itemTarget ?? artifactTarget)?.focus();
+      });
+    });
+  }, [document, parsePending, rawText, sourceCorrectionReturnTarget, stage]);
 
   const goToResult = useCallback(() => {
     if (!document) return;
@@ -1452,7 +1755,24 @@ export function TextAuthoringWorkspace({
     );
     setStage("result");
     setStatusMessage("실제 결과 수량과 빠지는 정보를 확인해 주세요.");
-  }, [document, ownership, parsePending, selectedItemId, title]);
+    const targetArtifact = selectedArtifact;
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        window.document
+          .querySelector<HTMLElement>(
+            `[data-testid="ta-authoring-result-slot-${targetArtifact}"]`,
+          )
+          ?.focus();
+      });
+    });
+  }, [
+    document,
+    ownership,
+    parsePending,
+    selectedArtifact,
+    selectedItemId,
+    title,
+  ]);
 
   const handleSave = useCallback(() => {
     if (parsePending) {
@@ -1475,9 +1795,21 @@ export function TextAuthoringWorkspace({
     );
     let record: TextAuthoringDraftRecord;
     try {
-      record = repository.save(savedDocument, {
+      const serviceState = createTextAuthoringServiceStateFromDocument(
+        savedDocument,
+        {
+          draftId: activeDraftId ?? savedDocument.documentId,
+          projectionOptions: {
+            ...(anchor ? { anchor } : {}),
+            finiteOccurrenceLimit,
+            openEndedOccurrenceWeeks,
+          },
+        },
+      );
+      record = repository.saveCoherentDraft(serviceState, {
         draftId: activeDraftId ?? savedDocument.documentId,
-        title: title.trim() || projection.title,
+        title:
+          (productMode ? draftName.trim() : title.trim()) || projection.title,
         status:
           savedDocument.lifecycleStatus === "needs_review"
             ? "needs_review"
@@ -1495,13 +1827,21 @@ export function TextAuthoringWorkspace({
     const receipt = createSaveReceipt(persistedDocument, projection, {
       draftId: record.draftId,
     });
+    const receiptView = toSaveReceiptView(receipt);
     setActiveDraftId(record.draftId);
     setDocument(persistedDocument);
     setOwnershipLocked(true);
-    setSaveReceipt(toSaveReceiptView(receipt));
+    setSaveReceipt(receiptView);
     setDirty(false);
     setRecovery(null);
     refreshDrafts(repository);
+    if (productMode && initialDraftId !== record.draftId) {
+      onNavigateDraft?.(record.draftId, {
+        replace: true,
+        preserveWorkspace: true,
+        saveReceipt: receiptView,
+      });
+    }
     setStatusMessage(
       savedDraftStatus(
         ownership,
@@ -1513,14 +1853,44 @@ export function TextAuthoringWorkspace({
   }, [
     activeArtifact,
     activeDraftId,
+    anchor,
     document,
+    draftName,
+    finiteOccurrenceLimit,
+    initialDraftId,
+    onNavigateDraft,
+    openEndedOccurrenceWeeks,
     ownership,
     parsePending,
     projection,
+    productMode,
     refreshDrafts,
     repository,
     selectedItemId,
     title,
+  ]);
+
+  const handleMarkReady = useCallback(() => {
+    if (!repository || !activeDraftId || !canMarkReady) {
+      setStatusMessage(readyBlockedReason);
+      return;
+    }
+    try {
+      repository.markReady(activeDraftId);
+    } catch (error) {
+      setStatusMessage(storageWriteFailureMessage("준비 완료 표시", error));
+      return;
+    }
+    refreshDrafts(repository);
+    setStatusMessage(
+      "현재 저장본을 준비 완료로 표시했습니다. 공개하거나 전송하지는 않았습니다.",
+    );
+  }, [
+    activeDraftId,
+    canMarkReady,
+    readyBlockedReason,
+    refreshDrafts,
+    repository,
   ]);
 
   const runPrimaryAction = useCallback(() => {
@@ -1543,6 +1913,7 @@ export function TextAuthoringWorkspace({
     reviewOpen ||
     itemReviewOpen ||
     sourceUpdateOpen ||
+    sourceComparisonOpen ||
     Boolean(historyDraftId) ||
     resetConfirmOpen;
 
@@ -1573,47 +1944,69 @@ export function TextAuthoringWorkspace({
     return () => window.removeEventListener("keydown", handleShortcut);
   }, [anyOverlayOpen, handleMove, runPrimaryAction, selectedItemId]);
 
-  const resetWorkspace = useCallback(() => {
-    if (repository && activeDraftId) {
-      try {
-        repository.clearRecovery(activeDraftId);
-      } catch (error) {
-        setStatusMessage(storageWriteFailureMessage("복구본 정리", error));
-        return;
+  const resetWorkspace = useCallback(
+    (options: { navigate?: "new" | "library" | "none" } = {}) => {
+      if (repository && activeDraftId) {
+        try {
+          repository.clearRecovery(activeDraftId);
+        } catch (error) {
+          setStatusMessage(storageWriteFailureMessage("복구본 정리", error));
+          return false;
+        }
       }
-    }
-    setActiveDraftId(null);
-    setDocument(null);
-    setTitle("");
-    setSource("");
-    setRawText("");
-    setOwnership("personal");
-    setOwnershipLocked(false);
-    setStage("input");
-    setSelectedItemId(null);
-    setSelectedArtifact("todo");
-    setParsePending(false);
-    setDirty(false);
-    setRecovery(null);
-    setLibraryOpen(false);
-    setSaveReceipt(null);
-    setReviewOpen(false);
-    setItemReviewOpen(false);
-    setSourceUpdateOpen(false);
-    setResetConfirmOpen(false);
-    setPendingExample(null);
-    setPendingCorrection(null);
-    setStatusMessage("새 Flow를 시작합니다.");
-  }, [activeDraftId, repository]);
+      setActiveDraftId(null);
+      setDocument(null);
+      setTitle("");
+      setDraftName("");
+      setSource("");
+      setRawText("");
+      setOwnership("personal");
+      setOwnershipLocked(false);
+      setStage("input");
+      setSelectedItemId(null);
+      setSelectedArtifact(productMode ? "memo" : "todo");
+      setParsePending(false);
+      setDirty(false);
+      setRecovery(null);
+      setLibraryOpen(false);
+      setSaveReceipt(null);
+      setReviewOpen(false);
+      setItemReviewOpen(false);
+      setSourceUpdateOpen(false);
+      setSourceComparisonOpen(false);
+      setResetConfirmOpen(false);
+      setPendingExample(null);
+      setPendingWorkspaceExit(null);
+      setPendingCorrection(null);
+      setSourceCorrectionReturnTarget(null);
+      setStatusMessage(
+        productMode ? "새 콘텐츠 작성을 시작합니다." : "새 Flow를 시작합니다.",
+      );
+      const navigate = options.navigate ?? "new";
+      if (navigate === "new") {
+        if (onNavigateNew) onNavigateNew();
+        else onNavigateDraft?.(null);
+      } else if (navigate === "library") {
+        onNavigateDraft?.(null);
+      }
+      return true;
+    },
+    [activeDraftId, onNavigateDraft, onNavigateNew, productMode, repository],
+  );
 
   const requestResetWorkspace = useCallback(() => {
     setPendingExample(null);
+    setPendingWorkspaceExit(null);
     if (dirty) {
       setResetConfirmOpen(true);
       return;
     }
+    if (productMode && libraryOpen && onNavigateNew) {
+      onNavigateNew();
+      return;
+    }
     resetWorkspace();
-  }, [dirty, resetWorkspace]);
+  }, [dirty, libraryOpen, onNavigateNew, productMode, resetWorkspace]);
 
   const loadDocument = useCallback(
     (
@@ -1623,6 +2016,7 @@ export function TextAuthoringWorkspace({
         selectedItemId?: string;
         primaryArtifact?: string;
         draftId?: string;
+        draftTitle?: string;
       } = {},
     ) => {
       const resolvedTitle =
@@ -1644,9 +2038,11 @@ export function TextAuthoringWorkspace({
         nextDocument.ownership,
       );
 
+      setSourceCorrectionReturnTarget(null);
       setActiveDraftId(options.draftId ?? nextDocument.documentId);
       setDocument(normalizedDocument);
       setTitle(resolvedTitle);
+      setDraftName(options.draftTitle ?? resolvedTitle);
       setSource(nextDocument.sourceUrl || nextDocument.sourceTitle || "");
       setRawText(nextDocument.rawText);
       setOwnership(nextDocument.ownership);
@@ -1666,24 +2062,98 @@ export function TextAuthoringWorkspace({
       setReviewOpen(false);
       setItemReviewOpen(persistedStage === "structure");
       setSourceUpdateOpen(false);
+      setSourceComparisonOpen(false);
     },
     [],
   );
 
   const openDraft = useCallback(
-    (draftId: string) => {
-      const record = repository?.load(draftId);
-      if (!record) return;
+    (draftId: string, options: { navigate?: boolean } = {}) => {
+      let record: TextAuthoringDraftRecord | undefined;
+      try {
+        record = repository?.load(draftId);
+      } catch (error) {
+        setStatusMessage(storageWriteFailureMessage("초안 열기", error));
+        return null;
+      }
+      if (!record) return false;
       loadDocument(record.document, {
         draftId: record.draftId,
         stage: record.activeStage,
         selectedItemId: record.selectedItemId,
         primaryArtifact: record.primaryArtifact,
+        draftTitle: record.title,
       });
+      try {
+        setRecovery(repository?.loadNewerRecovery(record.draftId) ?? null);
+      } catch (error) {
+        setRecovery(null);
+        setStatusMessage(storageWriteFailureMessage("복구본 확인", error));
+        return null;
+      }
       setStatusMessage(`${record.title} 초안을 열었습니다.`);
+      if (options.navigate !== false) onNavigateDraft?.(record.draftId);
+      return true;
     },
-    [loadDocument, repository],
+    [loadDocument, onNavigateDraft, repository],
   );
+
+  const requestOpenDraft = useCallback(
+    (draftId: string) => {
+      if (dirty && draftId !== activeDraftId) {
+        setPendingExample(null);
+        setPendingWorkspaceExit({ type: "draft", draftId });
+        setResetConfirmOpen(true);
+        return false;
+      }
+      return openDraft(draftId);
+    },
+    [activeDraftId, dirty, openDraft],
+  );
+
+  const requestToggleLibrary = useCallback(() => {
+    setSaveReceipt(null);
+    if (!libraryOpen && dirty) {
+      setPendingExample(null);
+      setPendingWorkspaceExit({ type: "library" });
+      setResetConfirmOpen(true);
+      return;
+    }
+    setLibraryOpen((current) => {
+      const next = !current;
+      onNavigateDraft?.(next ? null : activeDraftId);
+      return next;
+    });
+    refreshDrafts();
+  }, [activeDraftId, dirty, libraryOpen, onNavigateDraft, refreshDrafts]);
+
+  useEffect(() => {
+    if (!initialDraftId) {
+      initialDraftOpenedRef.current = null;
+      return;
+    }
+    if (!repository || initialDraftOpenedRef.current === initialDraftId) {
+      return;
+    }
+    initialDraftOpenedRef.current = initialDraftId;
+    const opened = openDraft(initialDraftId, { navigate: false });
+    if (opened === false) {
+      setLibraryOpen(true);
+      onNavigateDraft?.(null, { replace: true });
+      setStatusMessage(
+        "요청한 콘텐츠를 찾지 못했습니다. 내 콘텐츠에서 다시 선택해 주세요.",
+      );
+    }
+  }, [initialDraftId, onNavigateDraft, openDraft, repository]);
+
+  useEffect(() => {
+    if (!initialSaveReceipt) return;
+    setSaveReceipt((current) =>
+      current?.receiptId === initialSaveReceipt.receiptId
+        ? current
+        : initialSaveReceipt,
+    );
+  }, [initialSaveReceipt]);
 
   const filteredDrafts = useMemo(() => {
     const query = libraryQuery.trim().toLocaleLowerCase("ko-KR");
@@ -2114,12 +2584,14 @@ export function TextAuthoringWorkspace({
   const closeResetDialog = useCallback(() => {
     setResetConfirmOpen(false);
     setPendingExample(null);
+    setPendingWorkspaceExit(null);
   }, []);
   const openLibraryFromReceipt = useCallback(() => {
     setSaveReceipt(null);
     setLibraryOpen(true);
+    onNavigateDraft?.(null);
     refreshDrafts();
-  }, [refreshDrafts]);
+  }, [onNavigateDraft, refreshDrafts]);
 
   const ensureActiveDraft = useCallback(() => {
     setActiveDraftId((current) => current ?? createLocalDraftId());
@@ -2142,6 +2614,7 @@ export function TextAuthoringWorkspace({
       const firstItemId = next.parseResult.canonical.items[0]?.itemId ?? null;
       setDocument(next);
       setTitle(example.title);
+      setDraftName(example.title);
       setSource(example.source);
       setRawText(
         example.previewAnchor
@@ -2163,6 +2636,7 @@ export function TextAuthoringWorkspace({
       setExportReceipt(null);
       setRoundTripOpen(false);
       setRoundTrip(null);
+      setSourceComparisonOpen(false);
       setResetConfirmOpen(false);
       setPendingExample(null);
       resetInputScroll();
@@ -2176,6 +2650,7 @@ export function TextAuthoringWorkspace({
   const handleExampleSelect = useCallback(
     (example: TextAuthoringExample) => {
       if (dirty) {
+        setPendingWorkspaceExit(null);
         setPendingExample(example);
         setResetConfirmOpen(true);
         return;
@@ -2216,8 +2691,9 @@ export function TextAuthoringWorkspace({
       : pendingCorrection?.type === "merge"
         ? "완료 기준·날짜·같은 속성의 값이 충돌하면 합치지 않습니다. 원문은 그대로 남습니다."
         : "선택한 경계를 확인한 뒤 적용합니다. 상세·날짜·자료는 두 항목에 함께 이어집니다.";
-  const desktopSaveLabel =
-    ownership === "personal"
+  const desktopSaveLabel = productMode
+    ? "초안 저장"
+    : ownership === "personal"
       ? "개인 초안 저장"
       : ownership === "suggestion"
         ? "수정 제안 저장"
@@ -2236,26 +2712,39 @@ export function TextAuthoringWorkspace({
       >
         <AuthoringWorkspaceHeader
           libraryOpen={libraryOpen}
+          productMode={productMode}
           libraryToggleTestId={
             saveReceipt ? null : "ta-authoring-library-toggle"
           }
-          onToggleLibrary={() => {
-            setSaveReceipt(null);
-            setLibraryOpen((current) => !current);
-            refreshDrafts();
-          }}
+          onToggleLibrary={requestToggleLibrary}
           onReset={requestResetWorkspace}
         />
 
         {libraryOpen ? (
           <DraftLibrary
             drafts={filteredDrafts}
+            productMode={productMode}
             query={libraryQuery}
             filter={libraryFilter}
             onQueryChange={setLibraryQuery}
             onFilterChange={setLibraryFilter}
             onCreate={requestResetWorkspace}
-            onOpen={openDraft}
+            onOpen={requestOpenDraft}
+            onRename={(draftId, nextTitle) => {
+              if (!repository) return;
+              try {
+                repository.rename(draftId, nextTitle);
+              } catch (error) {
+                setStatusMessage(
+                  storageWriteFailureMessage("이름 변경", error),
+                );
+                return false;
+              }
+              if (draftId === activeDraftId) setDraftName(nextTitle);
+              refreshDrafts(repository);
+              setStatusMessage("콘텐츠 이름을 변경했습니다.");
+              return true;
+            }}
             onDuplicate={(draftId) => {
               if (!repository) return;
               try {
@@ -2277,10 +2766,11 @@ export function TextAuthoringWorkspace({
                 setStatusMessage(
                   storageWriteFailureMessage("초안 보관", error),
                 );
-                return;
+                return false;
               }
               refreshDrafts(repository);
               setStatusMessage("초안을 보관했습니다. 삭제하지 않았습니다.");
+              return true;
             }}
             onRestore={(draftId) => {
               if (!repository) return;
@@ -2290,10 +2780,11 @@ export function TextAuthoringWorkspace({
                 setStatusMessage(
                   storageWriteFailureMessage("초안 복원", error),
                 );
-                return;
+                return false;
               }
               refreshDrafts(repository);
               setStatusMessage("보관한 초안을 복원했습니다.");
+              return true;
             }}
             onHistory={(draftId) => {
               if (!repository) return;
@@ -2332,6 +2823,11 @@ export function TextAuthoringWorkspace({
                   recovery.document.title ||
                   recovery.document.parseResult.canonical.flow.title
                 }
+                description={
+                  activeDraftRecord
+                    ? `${activeDraftRecord.title} · 마지막 저장 이후의 임시 작업입니다.`
+                    : `${recovery.document.title || recovery.document.parseResult.canonical.flow.title} · 첫 저장 전 임시 작업입니다.`
+                }
                 onRecover={() => {
                   loadDocument(recovery.document, {
                     draftId: recovery.draftId,
@@ -2369,8 +2865,42 @@ export function TextAuthoringWorkspace({
               activeExampleId={activeExampleId}
               activeScenarioId={dirty ? null : activeScenarioId}
               onSelect={handleExampleSelect}
-              showQaCatalog={showQaCatalog}
+              productMode={productMode}
+              showQaCatalog={showQaCatalog && !productMode}
             />
+
+            {productMode &&
+            document &&
+            stage === "result" &&
+            (activeDraftReady || canMarkReady) ? (
+              <section
+                data-testid="ta-authoring-ready-status"
+                className="flex flex-col gap-3 border-b border-[var(--flowme-border)] bg-[var(--flowme-surface)] px-3 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5"
+                aria-label="준비 상태"
+              >
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-[var(--flowme-text)]">
+                    {activeDraftReady
+                      ? "이 저장본은 준비 완료 상태예요."
+                      : "결과를 확인한 뒤 준비 완료로 표시할 수 있어요."}
+                  </p>
+                  <p className="mt-1 text-xs leading-5 text-[var(--flowme-text-secondary)]">
+                    {readyBlockedReason} 공개하거나 다른 서비스로 전송하지는
+                    않습니다.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  data-testid="ta-authoring-mark-ready"
+                  className={`${FLOW_UI_SECONDARY_ACTION_CLASS} min-h-11 shrink-0`}
+                  disabled={!canMarkReady}
+                  title={readyBlockedReason}
+                  onClick={handleMarkReady}
+                >
+                  {activeDraftReady ? "준비 완료" : "준비 완료로 표시"}
+                </button>
+              </section>
+            ) : null}
 
             <div className="relative overflow-hidden">
               <span
@@ -2391,7 +2921,7 @@ export function TextAuthoringWorkspace({
                   className={inputPaneClass}
                 >
                   <InputPane
-                    title={title}
+                    title={productMode ? draftName : title}
                     source={source}
                     rawText={rawText}
                     ownership={ownership}
@@ -2400,10 +2930,17 @@ export function TextAuthoringWorkspace({
                     liveUpdateBlocked={liveUpdateBlocked}
                     parseStatusLabel={parseStatusLabel}
                     liveAppliedItemCount={liveApplyReceipt?.itemCount ?? null}
+                    sourceError={sourceError}
                     scrollContainerRef={inputPaneScrollRef}
                     sourceTextAreaRef={sourceTextAreaRef}
+                    productMode={productMode}
                     onTitleChange={(value) => {
                       ensureActiveDraft();
+                      if (productMode) {
+                        setDraftName(value);
+                        setDirty(true);
+                        return;
+                      }
                       const nextRawText = replaceMarkdownFlowTitle(
                         rawText,
                         value,
@@ -2484,10 +3021,12 @@ export function TextAuthoringWorkspace({
                     userCorrectionCount={userCorrectionCount}
                     itemCount={outline.counts.included}
                     itemReviewCount={outline.issues.length}
+                    issues={outline.issues}
                     selectedArtifact={activeArtifact}
                     anchor={anchor}
                     rawText={rawText}
                     sourceSnapshotText={document?.sourceState?.active.rawText}
+                    onOpenSourceComparison={() => setSourceComparisonOpen(true)}
                     textResultValues={textResultValues}
                     canAlignSourceOrder={calendarSourceAlignment.differs}
                     hasUndo={Boolean(
@@ -2525,6 +3064,7 @@ export function TextAuthoringWorkspace({
                     onExpandOpenEndedOccurrences={setOpenEndedOccurrenceWeeks}
                     onEditItem={openInspector}
                     onEditSourceItem={focusItemInSource}
+                    onEditIssueSource={focusIssueInSource}
                     onOpenExport={requestOpenExport}
                     onOpenReview={() => setReviewOpen(true)}
                     onOpenSourceUpdate={() => setSourceUpdateOpen(true)}
@@ -2535,14 +3075,15 @@ export function TextAuthoringWorkspace({
                     onSaveDraft={handleSave}
                     saveLabel={desktopSaveLabel}
                     saveDisabled={parsePending || !preflight?.eligible}
+                    productMode={productMode}
                   />
                 </div>
               </div>
             </div>
 
-            <footer className="ta-workspace-footer sticky bottom-0 z-30 border-t border-[var(--flowme-border)] bg-[var(--flowme-surface)] px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 min-[900px]:hidden">
-              <div className="mx-auto flex max-w-[1440px] flex-wrap items-center gap-2">
-                {stage === "result" ? (
+            <footer className="ta-workspace-footer border-t border-[var(--flowme-border)] bg-[var(--flowme-surface)] px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 min-[900px]:hidden">
+              <div className="mx-auto flex max-w-[1440px] flex-wrap items-center gap-2 max-[359px]:grid max-[359px]:grid-cols-1">
+                {stage === "result" && !productMode ? (
                   <p className="basis-full text-center text-[10px] leading-4 text-[var(--flowme-text-tertiary)]">
                     이 기기에만 저장 · 공개되지 않음
                   </p>
@@ -2550,7 +3091,7 @@ export function TextAuthoringWorkspace({
                 {stage !== "input" ? (
                   <button
                     type="button"
-                    className={FLOW_UI_SECONDARY_ACTION_CLASS}
+                    className={`${FLOW_UI_SECONDARY_ACTION_CLASS} max-[359px]:w-full`}
                     onClick={() => setStage("input")}
                   >
                     입력 수정
@@ -2563,7 +3104,7 @@ export function TextAuthoringWorkspace({
                       ? "ta-authoring-parse"
                       : "ta-authoring-save"
                   }
-                  className={`${FLOW_UI_PRIMARY_ACTION_CLASS} ta-primary-action min-w-0 flex-1 justify-start text-left sm:ml-auto sm:max-w-xl`}
+                  className={`${FLOW_UI_PRIMARY_ACTION_CLASS} ta-primary-action min-w-0 flex-1 justify-start text-left max-[359px]:w-full max-[359px]:flex-none sm:ml-auto sm:max-w-xl`}
                   disabled={
                     parsePending
                       ? !rawText.trim()
@@ -2605,17 +3146,24 @@ export function TextAuthoringWorkspace({
         onApply={applyItemPatch}
         onEditSource={editSelectedItemInSource}
         onClose={closeInspector}
+        productMode={productMode}
       />
 
       <AuthoringDialog
         open={itemReviewOpen && Boolean(document)}
         testId="ta-authoring-item-review"
         title={
-          outline.issues.length > 0
-            ? `항목 검토 · 확인 ${outline.issues.length}개`
-            : "항목 검토"
+          productMode
+            ? `원문 문제 ${outline.issues.length}건`
+            : outline.issues.length > 0
+              ? `항목 검토 · 확인 ${outline.issues.length}개`
+              : "항목 검토"
         }
-        description={`${outline.counts.included}개 항목으로 해석했습니다. 필요할 때만 순서·묶음·역할을 고치세요.`}
+        description={
+          productMode
+            ? "문제가 있는 원문 위치와 결과 영향을 확인하고 원문을 수정하세요."
+            : `${outline.counts.included}개 항목으로 해석했습니다. 필요할 때만 순서·묶음·역할을 고치세요.`
+        }
         initialFocusSelector={
           outline.issues.length > 0
             ? '[data-testid="ta-authoring-issue-card"][data-issue-state="open"] button:not([disabled])'
@@ -2694,12 +3242,14 @@ export function TextAuthoringWorkspace({
             );
           }}
           onResolveIssue={handleClassifyIssue}
+          onEditIssueSource={focusIssueInSource}
           onUndo={() =>
             performOperation(
               { type: "undo" },
               "바로 이전 구조 변경을 되돌렸습니다.",
             )
           }
+          productMode={productMode}
         />
       </AuthoringDialog>
 
@@ -2849,9 +3399,16 @@ export function TextAuthoringWorkspace({
         onLater={handleDeferSourceUpdate}
       />
 
+      <SourceComparisonDialog
+        open={sourceComparisonOpen}
+        comparison={sourceComparison}
+        onClose={() => setSourceComparisonOpen(false)}
+      />
+
       <SaveReceiptDialog
         open={Boolean(saveReceipt)}
         receipt={saveReceipt}
+        productMode={productMode}
         onClose={closeSaveReceipt}
         onContinue={closeSaveReceipt}
         onOpenLibrary={openLibraryFromReceipt}
@@ -2916,6 +3473,50 @@ export function TextAuthoringWorkspace({
             applyExample(pendingExample, true);
             return;
           }
+          if (pendingWorkspaceExit) {
+            const nextExit = pendingWorkspaceExit;
+            if (nextExit.type === "history") {
+              allowBrowserExitRef.current = true;
+              if (!resetWorkspace({ navigate: "none" })) {
+                allowBrowserExitRef.current = false;
+                return;
+              }
+              const browserNavigation = getBrowserNavigation();
+              if (!browserNavigation) {
+                window.location.assign(nextExit.href);
+                return;
+              }
+              try {
+                browserNavigation
+                  .traverseTo(nextExit.navigationKey)
+                  .finished.catch(() => {
+                    window.location.assign(nextExit.href);
+                  })
+                  .finally(() => {
+                    allowBrowserExitRef.current = false;
+                  });
+              } catch {
+                window.location.assign(nextExit.href);
+              }
+              return;
+            }
+            if (
+              !resetWorkspace({
+                navigate: nextExit.type === "library" ? "library" : "none",
+              })
+            )
+              return;
+            if (nextExit.type === "library") {
+              setLibraryOpen(true);
+              refreshDrafts();
+              setStatusMessage(
+                "저장하지 않은 변경을 버리고 내 콘텐츠로 이동했습니다.",
+              );
+              return;
+            }
+            openDraft(nextExit.draftId);
+            return;
+          }
           resetWorkspace();
         }}
         {...(pendingExample
@@ -2927,7 +3528,26 @@ export function TextAuthoringWorkspace({
               notice:
                 "선택한 예시는 둘러보기 상태로 열립니다. 예시를 직접 수정하기 전에는 임시 초안을 만들지 않습니다.",
             }
-          : {})}
+          : pendingWorkspaceExit
+            ? {
+                title:
+                  pendingWorkspaceExit.type === "library"
+                    ? "저장하지 않은 변경을 버리고 내 콘텐츠로 이동할까요?"
+                    : pendingWorkspaceExit.type === "draft"
+                      ? "저장하지 않은 변경을 버리고 다른 콘텐츠를 열까요?"
+                      : "저장하지 않은 변경을 버리고 이전 화면으로 이동할까요?",
+                description:
+                  "계속 작성을 누르면 현재 화면에 머뭅니다. 이동하면 명시 저장하지 않은 원문·결과와 이 기기의 임시 복구본을 버립니다.",
+                confirmLabel:
+                  pendingWorkspaceExit.type === "library"
+                    ? "저장하지 않고 내 콘텐츠로 이동"
+                    : pendingWorkspaceExit.type === "draft"
+                      ? "저장하지 않고 다른 콘텐츠 열기"
+                      : "저장하지 않고 이동",
+                notice:
+                  "이미 명시 저장한 초안은 그대로 보존됩니다. 지금 변경도 남기려면 계속 작성을 누른 뒤 먼저 초안 저장을 해주세요.",
+              }
+            : {})}
       />
     </main>
   );

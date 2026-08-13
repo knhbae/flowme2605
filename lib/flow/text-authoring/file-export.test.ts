@@ -84,6 +84,29 @@ test("plain-text export keeps unmarked source prose as a neutral source memo", (
   assert.doesNotMatch(output, /^항목 \d+:/mu);
 });
 
+test("plain-text export accepts the source-only TXT projection without duplicating or inventing content", () => {
+  const rawText = [
+    "정말 제목입니다.",
+    "설명입니다.",
+    "첫 번째 항목입니다.",
+  ].join("\n");
+  const document = createTextAuthoringDocument(rawText, {
+    now: "2026-08-11T00:00:00.000Z",
+  });
+  const projection = buildAuthoringArtifactProjection(document);
+  const output = serializeAuthoringPlainText(
+    projection.title,
+    projection.artifacts.memo.rows,
+    projection.artifacts.memo.textBlocks,
+  );
+
+  for (const line of rawText.split("\n")) {
+    assert.equal(output.split(line).length - 1, 1, line);
+  }
+  assert.doesNotMatch(output, /☐|☑/u);
+  assert.doesNotMatch(output, /날짜:|완료 기준:|자료:|출처:/u);
+});
+
 test("Markdown export preserves detail, completion, schedule, resources, and caution", () => {
   const output = serializeAuthoringMarkdown("제주 여행 준비", [ROW]);
 

@@ -104,6 +104,17 @@ export type AuthoringArtifactRow = {
   experienceRow: FlowExperienceProjectionRow;
 };
 
+/**
+ * Source prose that is intentionally kept as text instead of being promoted to
+ * a canonical Item. A text block is a memo projection, never an executable row.
+ */
+export type AuthoringArtifactTextBlock = {
+  blockId: string;
+  rawText: string;
+  sourceRowIds: string[];
+  sourcePreserved: true;
+};
+
 export type AuthoringSheetColumn = {
   key: string;
   label: string;
@@ -115,6 +126,16 @@ export type AuthoringArtifactView = {
   eligible: boolean;
   count: number;
   rows: AuthoringArtifactRow[];
+  textBlocks: AuthoringArtifactTextBlock[];
+  /**
+   * Stable identity for the bounded recurrence slice used by every result
+   * surface. It is omitted when the view contains no projected occurrence.
+   */
+  occurrenceWindowId?: string;
+  /** Canonical occurrence order, independent from a surface's display sort. */
+  orderedOccurrenceIds: string[];
+  /** Dates paired with `orderedOccurrenceIds` in the same canonical order. */
+  resolvedOccurrenceDates: string[];
   sheetColumns?: AuthoringSheetColumn[];
   losses: AuthoringArtifactLoss[];
   recurrenceSummaries: AuthoringRecurrencePreviewSummary[];
@@ -710,6 +731,9 @@ function projectRecurrenceRows(
 ): {
   rows: AuthoringArtifactRow[];
   summaries: AuthoringRecurrencePreviewSummary[];
+  occurrenceWindowId?: string;
+  orderedOccurrenceIds: string[];
+  resolvedOccurrenceDates: string[];
 } {
   const finiteLimit = Math.min(
     Math.max(options.finiteOccurrenceLimit ?? options.occurrenceLimit ?? 30, 1),
@@ -759,7 +783,32 @@ function projectRecurrenceRows(
       ),
     );
   });
-  return { rows: projected, summaries };
+  const occurrenceRows = projected.filter(
+    (
+      row,
+    ): row is AuthoringArtifactRow & {
+      occurrenceId: string;
+      date: string;
+    } => Boolean(row.occurrenceId && row.date),
+  );
+  const orderedOccurrenceIds = occurrenceRows.map((row) => row.occurrenceId);
+  const resolvedOccurrenceDates = occurrenceRows.map((row) => row.date);
+  return {
+    rows: projected,
+    summaries,
+    orderedOccurrenceIds,
+    resolvedOccurrenceDates,
+    ...(orderedOccurrenceIds.length > 0
+      ? {
+          occurrenceWindowId: `occurrence-window-${stableHash(
+            JSON.stringify({
+              ids: orderedOccurrenceIds,
+              dates: resolvedOccurrenceDates,
+            }),
+          )}`,
+        }
+      : {}),
+  };
 }
 
 function canonicalLinkGroup(
@@ -841,6 +890,46 @@ function stableHash(value: string): string {
     hash = Math.imul(hash, 0x01000193);
   }
   return (hash >>> 0).toString(36);
+}
+
+function plainSourceTextBlocks(
+  document: TextAuthoringDocument,
+): AuthoringArtifactTextBlock[] {
+  if (
+    document.primaryInputKind !== "plain_text" ||
+    document.parseResult.canonical.items.length > 0
+  ) {
+    return [];
+  }
+
+  const sourceRowIds = new Set(
+    document.parseResult.issues.flatMap((issue) =>
+      issue.type === "ambiguous_role" &&
+      issue.messageKey === "authoring.ambiguous_plain_sentence" &&
+      issue.blocking === false &&
+      issue.decision?.outcome !== "convert_to_item"
+        ? issue.sourceRowIds
+        : [],
+    ),
+  );
+  const activeSourceRowIds = document.parseResult.canonical.sourceRows
+    .filter(
+      (row) => row.state !== "tombstone" && sourceRowIds.has(row.sourceRowId),
+    )
+    .map((row) => row.sourceRowId);
+  const rawText = document.rawText.trim();
+  if (!rawText || activeSourceRowIds.length === 0) return [];
+
+  return [
+    {
+      blockId: `source-text-${stableHash(
+        [document.documentId, ...activeSourceRowIds, rawText].join("|"),
+      )}`,
+      rawText,
+      sourceRowIds: activeSourceRowIds,
+      sourcePreserved: true,
+    },
+  ];
 }
 
 function getCanonicalItemMaps(document: TextAuthoringDocument) {
@@ -1234,6 +1323,7 @@ export function buildAuthoringArtifactProjection(
       return recurrenceIsInvalid(document, item) ? [itemId] : [];
     }),
   );
+  const sourceTextBlocks = plainSourceTextBlocks(document);
 
   const shapeRows: Record<
     AuthoringArtifactKind,
@@ -1253,9 +1343,12 @@ export function buildAuthoringArtifactProjection(
     let rows = shapeRows[artifact].map((row) =>
       makeArtifactRow(document, row, itemById.get(row.sourceItemId), stepById),
     );
+    const blockedByFactTable =
+      document.primaryInputKind === "table" &&
+      (artifact === "todo" || artifact === "calendar");
     const blockedByInvalidUrl =
       artifact !== "memo" && invalidUrlItemIds.size > 0;
-    if (blockedByInvalidUrl) rows = [];
+    if (blockedByFactTable || blockedByInvalidUrl) rows = [];
     const recurrenceProjection = projectRecurrenceRows(
       document,
       artifact,
@@ -1283,58 +1376,76 @@ export function buildAuthoringArtifactProjection(
     const losses =
       artifact === "memo"
         ? []
-        : blockedByInvalidUrl
-          ? [...invalidUrlItemIds].map((itemId) => ({
-              lossId: `${artifact}-invalid-url-${itemId}`,
-              artifact,
-              reason: "invalid_url" as const,
-              message:
-                "자료·출처 URL을 확인하기 전에는 이 구조 결과와 내보내기를 사용할 수 없습니다.",
-              itemId,
-              sourcePreserved: true as const,
-            }))
-          : artifact === "sheet" && sheetContract && !sheetContract.eligible
-            ? [
-                {
-                  lossId: "sheet-insufficient-tabular-structure",
-                  artifact,
-                  reason: "insufficient_tabular_structure" as const,
-                  message:
-                    "원본 표이거나 여러 항목이 날짜·설명을 일관되게 가지거나 의미 있는 필드 두 개 이상을 공유할 때만 표·Excel을 사용할 수 있습니다.",
-                  sourcePreserved: true as const,
-                },
-              ]
-            : [...includedItemIds].flatMap((itemId) => {
-                if (visibleItemIds.has(itemId)) return [];
-                const item = itemById.get(itemId);
-                if (!item) return [];
-                if (
-                  artifact === "calendar" &&
-                  invalidRecurrenceItemIds.has(itemId)
-                ) {
+        : blockedByFactTable
+          ? [
+              {
+                lossId: `${artifact}-fact-table-requires-explicit-action`,
+                artifact,
+                reason: "non_completable_role" as const,
+                message:
+                  "표의 사실 행은 명시적인 행동 표식이 없으면 할 일이나 캘린더 일정으로 만들지 않습니다.",
+                sourcePreserved: true as const,
+              },
+            ]
+          : blockedByInvalidUrl
+            ? [...invalidUrlItemIds].map((itemId) => ({
+                lossId: `${artifact}-invalid-url-${itemId}`,
+                artifact,
+                reason: "invalid_url" as const,
+                message:
+                  "자료·출처 URL을 확인하기 전에는 이 구조 결과와 내보내기를 사용할 수 없습니다.",
+                itemId,
+                sourcePreserved: true as const,
+              }))
+            : artifact === "sheet" && sheetContract && !sheetContract.eligible
+              ? [
+                  {
+                    lossId: "sheet-insufficient-tabular-structure",
+                    artifact,
+                    reason: "insufficient_tabular_structure" as const,
+                    message:
+                      "원본 표이거나 여러 항목이 날짜·설명을 일관되게 가지거나 의미 있는 필드 두 개 이상을 공유할 때만 표·Excel을 사용할 수 있습니다.",
+                    sourcePreserved: true as const,
+                  },
+                ]
+              : [...includedItemIds].flatMap((itemId) => {
+                  if (visibleItemIds.has(itemId)) return [];
+                  const item = itemById.get(itemId);
+                  if (!item) return [];
+                  if (
+                    artifact === "calendar" &&
+                    invalidRecurrenceItemIds.has(itemId)
+                  ) {
+                    return [
+                      {
+                        lossId: `calendar-invalid-recurrence-${itemId}`,
+                        artifact,
+                        reason: "invalid_recurrence" as const,
+                        message:
+                          "반복 규칙, 시작 날짜, 종료 기준을 확인하기 전에는 회차를 계산하지 않습니다.",
+                        itemId,
+                        sourcePreserved: true as const,
+                      },
+                    ];
+                  }
                   return [
-                    {
-                      lossId: `calendar-invalid-recurrence-${itemId}`,
-                      artifact,
-                      reason: "invalid_recurrence" as const,
-                      message:
-                        "반복 규칙, 시작 날짜, 종료 기준을 확인하기 전에는 회차를 계산하지 않습니다.",
-                      itemId,
-                      sourcePreserved: true as const,
-                    },
+                    lossForMissingArtifactRow(artifact, itemId, item, anchor),
                   ];
-                }
-                return [
-                  lossForMissingArtifactRow(artifact, itemId, item, anchor),
-                ];
-              });
+                });
+    const textBlocks = artifact === "memo" ? sourceTextBlocks : [];
     allLosses.push(...losses);
     artifacts[artifact] = {
       artifact,
       label: ARTIFACT_LABELS[artifact],
-      eligible: rows.length > 0,
-      count: rows.length,
+      eligible: rows.length > 0 || textBlocks.length > 0,
+      count: rows.length + textBlocks.length,
       rows,
+      textBlocks,
+      ...(recurrenceProjection.occurrenceWindowId
+        ? { occurrenceWindowId: recurrenceProjection.occurrenceWindowId }
+        : {}),
+      orderedOccurrenceIds: recurrenceProjection.orderedOccurrenceIds,
+      resolvedOccurrenceDates: recurrenceProjection.resolvedOccurrenceDates,
       ...(sheetContract ? { sheetColumns: sheetContract.columns } : {}),
       losses,
       recurrenceSummaries: recurrenceProjection.summaries,
@@ -1452,6 +1563,7 @@ function scopedRows(
 ): {
   sourceItemIds: Set<string>;
   rows: AuthoringArtifactRow[];
+  textBlocks: AuthoringArtifactTextBlock[];
 } {
   const scope = options.scope ?? "whole";
   const includedRows = projection.flowExperienceProjection.outlineRows;
@@ -1473,6 +1585,10 @@ function scopedRows(
     rows: projection.artifacts[options.artifact].rows.filter((row) =>
       sourceItemIds.has(row.itemId),
     ),
+    textBlocks:
+      scope === "whole"
+        ? projection.artifacts[options.artifact].textBlocks
+        : [],
   };
 }
 
@@ -1481,7 +1597,7 @@ export function buildArtifactPreflight(
   options: BuildArtifactPreflightOptions,
 ): AuthoringArtifactPreflight {
   const scope = options.scope ?? "whole";
-  const { sourceItemIds, rows } = scopedRows(projection, options);
+  const { sourceItemIds, rows, textBlocks } = scopedRows(projection, options);
   const itemIds = rows.map((row) => row.itemId);
   const losses = projection.artifacts[options.artifact].losses.filter(
     (loss) => !loss.itemId || sourceItemIds.has(loss.itemId),
@@ -1493,6 +1609,7 @@ export function buildArtifactPreflight(
     scope,
     [...sourceItemIds].sort().join(","),
     itemIds.join(","),
+    textBlocks.map((block) => block.blockId).join(","),
   ].join("|");
   const formats = AUTHORING_ARTIFACT_FORMATS[options.artifact].filter(
     (format) =>
@@ -1507,10 +1624,10 @@ export function buildArtifactPreflight(
     documentId: projection.documentId,
     artifact: options.artifact,
     scope,
-    eligible: rows.length > 0,
+    eligible: rows.length > 0 || textBlocks.length > 0,
     formats,
     sourceItemCount: sourceItemIds.size,
-    count: rows.length,
+    count: rows.length + textBlocks.length,
     omittedCount: Math.max(0, sourceItemIds.size - rows.length),
     itemIds,
     firstItems: rows.slice(0, 3).map((row) => row.title),

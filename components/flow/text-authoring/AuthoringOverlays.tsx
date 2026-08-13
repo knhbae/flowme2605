@@ -1,60 +1,59 @@
-'use client';
+"use client";
 
 import {
   FLOW_UI_INPUT_CLASS,
   FLOW_UI_PRIMARY_ACTION_CLASS,
   FLOW_UI_SECONDARY_ACTION_CLASS,
-} from '@/components/flow/flow-ui';
+} from "@/components/flow/flow-ui";
 import type {
   AuthoringArtifactKind,
   AuthoringArtifactPreflight,
   AuthoringArtifactScope,
-} from '@/lib/flow/text-authoring/artifact-projection';
-import type {
-  TextAuthoringDraftHistoryEntry,
-} from '@/lib/flow/text-authoring/storage';
+} from "@/lib/flow/text-authoring/artifact-projection";
+import type { TextAuthoringDraftHistoryEntry } from "@/lib/flow/text-authoring/storage";
+import type { TextAuthoringSourceComparison } from "@/lib/flow/text-authoring/source-comparison";
 
 import type {
   AuthoringOwnership,
   AuthoringReceiptView,
-} from './authoring-ui-types';
-import { AuthoringDialog } from './AuthoringDialog';
+} from "./authoring-ui-types";
+import { AuthoringDialog } from "./AuthoringDialog";
 
 const ARTIFACT_LABEL: Record<AuthoringArtifactKind, string> = {
-  calendar: '캘린더',
-  todo: '할 일',
-  sheet: '표·Excel',
-  memo: 'TXT',
+  calendar: "캘린더",
+  todo: "할 일",
+  sheet: "표·Excel",
+  memo: "TXT",
 };
 
 function formatLabel(artifact: AuthoringArtifactKind, format: string): string {
-  if (artifact === 'calendar' && format === 'ics') return '캘린더 파일(ICS)';
-  if (artifact === 'todo' && format === 'plain_text') return 'TXT';
-  if (artifact === 'todo' && format === 'markdown') return 'Markdown';
-  if (artifact === 'sheet' && format === 'xlsx') return 'Excel(XLSX)';
-  if (artifact === 'sheet') return format.toUpperCase();
+  if (artifact === "calendar" && format === "ics") return "캘린더 파일(ICS)";
+  if (artifact === "todo" && format === "plain_text") return "TXT";
+  if (artifact === "todo" && format === "markdown") return "Markdown";
+  if (artifact === "sheet" && format === "xlsx") return "Excel(XLSX)";
+  if (artifact === "sheet") return format.toUpperCase();
   if (
-    artifact === 'memo' &&
-    ['raw_source', 'raw', 'raw_text', 'source_text'].includes(format)
+    artifact === "memo" &&
+    ["raw_source", "raw", "raw_text", "source_text"].includes(format)
   ) {
-    return '현재 작업 원문 (.txt)';
+    return "현재 작업 원문 (.txt)";
   }
-  if (artifact === 'memo' && format === 'plain_text') return '항목별 TXT';
-  if (artifact === 'memo' && format === 'markdown') return '정리된 Markdown';
+  if (artifact === "memo" && format === "plain_text") return "항목별 TXT";
+  if (artifact === "memo" && format === "markdown") return "정리된 Markdown";
   return format.toUpperCase();
 }
 
 const SCOPE_LABEL: Record<AuthoringArtifactScope, string> = {
-  whole: '전체',
-  selected: '선택 항목',
-  current_step: '현재 단계',
+  whole: "전체",
+  selected: "선택 항목",
+  current_step: "현재 단계",
 };
 
 const HISTORY_KIND_LABEL: Record<string, string> = {
-  saved: '저장',
-  duplicated: '복제',
-  archived: '보관',
-  restored: '복원',
+  saved: "저장",
+  duplicated: "복제",
+  archived: "보관",
+  restored: "복원",
 };
 
 const SAVE_RECEIPT_COPY: Record<
@@ -62,16 +61,19 @@ const SAVE_RECEIPT_COPY: Record<
   { title: string; description: string }
 > = {
   creator: {
-    title: '제작자 초안을 저장했습니다',
-    description: '이 기기의 제작자 초안에 저장했습니다. 공개 Flow는 바뀌지 않았습니다.',
+    title: "제작자 초안을 저장했습니다",
+    description:
+      "이 기기의 제작자 초안에 저장했습니다. 공개 Flow는 바뀌지 않았습니다.",
   },
   personal: {
-    title: '개인 초안을 저장했습니다',
-    description: '이 기기의 개인 초안에 저장했습니다. 공개 Flow는 바뀌지 않았습니다.',
+    title: "개인 초안을 저장했습니다",
+    description:
+      "이 기기의 개인 초안에 저장했습니다. 공개 Flow는 바뀌지 않았습니다.",
   },
   suggestion: {
-    title: '수정 제안 초안을 저장했습니다',
-    description: '이 기기의 수정 제안 초안에 저장했습니다. 아직 전송되지 않았습니다.',
+    title: "수정 제안 초안을 저장했습니다",
+    description:
+      "이 기기의 수정 제안 초안에 저장했습니다. 아직 전송되지 않았습니다.",
   },
 };
 
@@ -83,7 +85,8 @@ export type AuthoringExportReceiptView = {
   count: number;
   omittedCount: number;
   reviewEvidenceCount: number;
-  sourceState: 'current' | 'source_updated' | 'conflict_source_vs_user' | 'unknown';
+  sourceState:
+    "current" | "source_updated" | "conflict_source_vs_user" | "unknown";
   createdAtLabel: string;
 };
 
@@ -95,14 +98,101 @@ export type AuthoringRoundTripView = {
   lossFields: string[];
 };
 
+export function SourceComparisonDialog({
+  open,
+  comparison,
+  onClose,
+}: {
+  open: boolean;
+  comparison: TextAuthoringSourceComparison | null;
+  onClose: () => void;
+}) {
+  return (
+    <AuthoringDialog
+      open={open}
+      testId="ta-authoring-source-comparison"
+      size="wide"
+      title="처음 원문과 비교"
+      description="처음 붙여넣은 내용은 보존한 채, 현재 작업본에서 달라진 줄만 보여 줍니다. 이 화면에서는 원문을 바꾸지 않습니다."
+      onClose={onClose}
+      footer={
+        <button
+          type="button"
+          className={FLOW_UI_PRIMARY_ACTION_CLASS}
+          onClick={onClose}
+        >
+          확인 완료
+        </button>
+      }
+    >
+      {comparison?.differs ? (
+        <div className="space-y-4">
+          <p
+            data-testid="ta-authoring-source-comparison-summary"
+            className="rounded-[var(--flowme-radius-control)] bg-[var(--flowme-surface-subtle)] px-3 py-2 text-sm leading-6 text-[var(--flowme-text-secondary)]"
+          >
+            변경 묶음 {comparison.blocks.length}개 · 빠진 줄{" "}
+            {comparison.removedLineCount}개 · 추가된 줄{" "}
+            {comparison.addedLineCount}개
+          </p>
+          {comparison.blocks.map((block, index) => (
+            <section
+              key={block.blockId}
+              data-testid="ta-authoring-source-comparison-block"
+              data-change-kind={block.kind}
+              className="overflow-hidden rounded-[var(--flowme-radius-control)] border border-[var(--flowme-border)]"
+            >
+              <h3 className="border-b border-[var(--flowme-border)] bg-[var(--flowme-surface-subtle)] px-3 py-2 text-sm font-semibold">
+                변경 {index + 1}
+              </h3>
+              <div className="grid grid-cols-1 min-[900px]:grid-cols-2">
+                <div className="min-w-0 border-b border-[var(--flowme-border)] p-3 min-[900px]:border-b-0 min-[900px]:border-r">
+                  <p className="text-xs font-semibold text-[var(--flowme-text-secondary)]">
+                    처음 붙여넣은 원문
+                    {block.beforeStartLine
+                      ? ` · ${block.beforeStartLine}행부터`
+                      : " · 해당 없음"}
+                  </p>
+                  <pre className="mt-2 min-h-12 whitespace-pre-wrap break-words rounded bg-[var(--flowme-danger-soft)] px-3 py-2 text-xs leading-5">
+                    {block.beforeLines.length > 0
+                      ? block.beforeLines.join("\n")
+                      : "추가된 내용입니다."}
+                  </pre>
+                </div>
+                <div className="min-w-0 p-3">
+                  <p className="text-xs font-semibold text-[var(--flowme-text-secondary)]">
+                    현재 작업본 · 제작자
+                    {block.afterStartLine
+                      ? ` · ${block.afterStartLine}행부터`
+                      : " · 해당 없음"}
+                  </p>
+                  <pre className="mt-2 min-h-12 whitespace-pre-wrap break-words rounded bg-[var(--flowme-positive-soft)] px-3 py-2 text-xs leading-5">
+                    {block.afterLines.length > 0
+                      ? block.afterLines.join("\n")
+                      : "삭제된 내용입니다."}
+                  </pre>
+                </div>
+              </div>
+            </section>
+          ))}
+        </div>
+      ) : (
+        <p className="rounded-[var(--flowme-radius-control)] bg-[var(--flowme-surface-subtle)] px-3 py-3 text-sm text-[var(--flowme-text-secondary)]">
+          처음 붙여넣은 원문과 현재 작업본이 같습니다.
+        </p>
+      )}
+    </AuthoringDialog>
+  );
+}
+
 export function ResetAuthoringDialog({
   open,
   onClose,
   onDiscard,
-  title = '작성 중인 변경사항을 버릴까요?',
-  description = '명시 저장하지 않은 원문·구조 수정과 이 기기의 임시 복구본이 사라집니다. 이미 저장한 초안은 초안 목록에 남습니다.',
-  confirmLabel = '변경사항 버리고 새로 시작',
-  notice = '이 동작은 현재 작성 화면만 초기화합니다. 공개 Flow나 저장된 초안은 삭제하지 않습니다.',
+  title = "작성 중인 변경사항을 버릴까요?",
+  description = "명시 저장하지 않은 원문·구조 수정과 이 기기의 임시 복구본이 사라집니다. 이미 저장한 초안은 초안 목록에 남습니다.",
+  confirmLabel = "변경사항 버리고 새로 시작",
+  notice = "이 동작은 현재 작성 화면만 초기화합니다. 공개 Flow나 저장된 초안은 삭제하지 않습니다.",
 }: {
   open: boolean;
   onClose: () => void;
@@ -119,7 +209,7 @@ export function ResetAuthoringDialog({
       title={title}
       description={description}
       onClose={onClose}
-      footer={(
+      footer={
         <>
           <button
             type="button"
@@ -136,7 +226,7 @@ export function ResetAuthoringDialog({
             {confirmLabel}
           </button>
         </>
-      )}
+      }
     >
       <p className="rounded-[var(--flowme-radius-control)] bg-[var(--flowme-warning-soft)] px-3 py-3 text-sm leading-6 text-[var(--flowme-warning-strong)]">
         {notice}
@@ -148,23 +238,31 @@ export function ResetAuthoringDialog({
 export function SaveReceiptDialog({
   open,
   receipt,
+  productMode = false,
   onClose,
   onOpenLibrary,
   onContinue,
 }: {
   open: boolean;
   receipt: AuthoringReceiptView | null;
+  productMode?: boolean;
   onClose: () => void;
   onOpenLibrary: () => void;
   onContinue: () => void;
 }) {
   if (!receipt) return null;
-  const copy = SAVE_RECEIPT_COPY[receipt.ownership];
+  const copy = productMode
+    ? {
+        title: "초안을 저장했어요",
+        description:
+          "이 기기에 다시 열 수 있는 초안으로 저장했습니다. 아직 공개되거나 다른 서비스로 전송되지 않았습니다.",
+      }
+    : SAVE_RECEIPT_COPY[receipt.ownership];
   const needsFollowUp =
     receipt.reviewRequiredCount > 0 ||
     receipt.reviewPersonalOnlyCount > 0 ||
-    receipt.sourceState === 'source_updated' ||
-    receipt.sourceState === 'conflict_source_vs_user';
+    receipt.sourceState === "source_updated" ||
+    receipt.sourceState === "conflict_source_vs_user";
   return (
     <AuthoringDialog
       open={open}
@@ -172,9 +270,13 @@ export function SaveReceiptDialog({
       title={copy.title}
       description={copy.description}
       onClose={onClose}
-      footer={(
+      footer={
         <>
-          <button type="button" className={FLOW_UI_SECONDARY_ACTION_CLASS} onClick={onContinue}>
+          <button
+            type="button"
+            className={FLOW_UI_SECONDARY_ACTION_CLASS}
+            onClick={onContinue}
+          >
             계속 편집
           </button>
           <button
@@ -183,73 +285,85 @@ export function SaveReceiptDialog({
             className={FLOW_UI_PRIMARY_ACTION_CLASS}
             onClick={onOpenLibrary}
           >
-            초안 목록으로
+            {productMode ? "내 콘텐츠" : "초안 목록으로"}
           </button>
         </>
-      )}
+      }
     >
       <h3 className="text-xl font-semibold">{receipt.title}</h3>
       <dl className="mt-4 grid grid-cols-2 gap-px overflow-hidden border border-[var(--flowme-border)] bg-[var(--flowme-border)]">
         {[
-          ['포함 항목', `${receipt.itemCount}개`],
-          ['기본 결과', receipt.artifact],
+          ["포함 항목", `${receipt.itemCount}개`],
+          ["기본 결과", receipt.artifact],
         ].map(([label, value]) => (
           <div key={label} className="bg-[var(--flowme-surface)] px-3 py-3">
-            <dt className="text-[10px] text-[var(--flowme-text-tertiary)]">{label}</dt>
+            <dt className="text-[10px] text-[var(--flowme-text-tertiary)]">
+              {label}
+            </dt>
             <dd className="mt-1 break-words text-sm font-semibold">{value}</dd>
           </div>
         ))}
       </dl>
-      {needsFollowUp ? (
+      {!productMode && needsFollowUp ? (
         <p className="mt-4 rounded-[var(--flowme-radius-control)] bg-[var(--flowme-warning-soft)] px-3 py-2 text-xs leading-5 text-[var(--flowme-warning-strong)]">
           외부 파일은 만들지 않았습니다. 권리·안전 확인이나 원문 변경 결정을
           마치기 전에는 파일로 가져갈 수 없습니다.
         </p>
       ) : null}
-      <details
-        data-testid="ta-authoring-receipt-details"
-        className="mt-4 rounded-[var(--flowme-radius-control)] border border-[var(--flowme-border)]"
-      >
-        <summary className="cursor-pointer px-3 py-3 text-sm font-semibold">
-          저장 정보
-        </summary>
-        <div className="border-t border-[var(--flowme-border)] px-3 py-3">
-          <dl className="space-y-2 text-xs">
-            {[
-              ['저장 시각', receipt.savedAtLabel],
-              ['원문 연결', receipt.sourcePreserved ? '보존' : '확인 필요'],
-              [
-                '검토 기록',
-                receipt.reviewRequiredCount > 0
-                  ? `확인 전 ${receipt.reviewRequiredCount}개`
-                  : receipt.reviewPersonalOnlyCount > 0
-                    ? `개인용 제한 ${receipt.reviewPersonalOnlyCount}개`
-                    : receipt.reviewEvidenceCount > 0
-                      ? `사용자가 근거 기록 ${receipt.reviewEvidenceCount}개`
-                      : '해당 없음',
-              ],
-              [
-                '원문 버전',
-                receipt.sourceState === 'current'
-                  ? '현재 원문'
-                  : receipt.sourceState === 'conflict_source_vs_user'
-                    ? `내 값 충돌 · ${receipt.sourceOpenChangeCount}개`
-                    : receipt.sourceState === 'source_updated'
-                      ? `새 버전 대기 · ${receipt.sourceOpenChangeCount}개`
-                      : '기록 없음',
-              ],
-            ].map(([label, value]) => (
-              <div
-                key={label}
-                className="flex justify-between gap-4 border-b border-[var(--flowme-border)] pb-2 last:border-b-0 last:pb-0"
-              >
-                <dt className="text-[var(--flowme-text-secondary)]">{label}</dt>
-                <dd className="break-words text-right font-semibold">{value}</dd>
-              </div>
-            ))}
-          </dl>
-        </div>
-      </details>
+      {!productMode ? (
+        <details
+          data-testid="ta-authoring-receipt-details"
+          className="mt-4 rounded-[var(--flowme-radius-control)] border border-[var(--flowme-border)]"
+        >
+          <summary className="cursor-pointer px-3 py-3 text-sm font-semibold">
+            저장 정보
+          </summary>
+          <div className="border-t border-[var(--flowme-border)] px-3 py-3">
+            <dl className="space-y-2 text-xs">
+              {[
+                ["저장 시각", receipt.savedAtLabel],
+                ["원문 연결", receipt.sourcePreserved ? "보존" : "확인 필요"],
+                [
+                  "검토 기록",
+                  receipt.reviewRequiredCount > 0
+                    ? `확인 전 ${receipt.reviewRequiredCount}개`
+                    : receipt.reviewPersonalOnlyCount > 0
+                      ? `개인용 제한 ${receipt.reviewPersonalOnlyCount}개`
+                      : receipt.reviewEvidenceCount > 0
+                        ? `사용자가 근거 기록 ${receipt.reviewEvidenceCount}개`
+                        : "해당 없음",
+                ],
+                [
+                  "원문 버전",
+                  receipt.sourceState === "current"
+                    ? "현재 원문"
+                    : receipt.sourceState === "conflict_source_vs_user"
+                      ? `내 값 충돌 · ${receipt.sourceOpenChangeCount}개`
+                      : receipt.sourceState === "source_updated"
+                        ? `새 버전 대기 · ${receipt.sourceOpenChangeCount}개`
+                        : "기록 없음",
+                ],
+              ].map(([label, value]) => (
+                <div
+                  key={label}
+                  className="flex justify-between gap-4 border-b border-[var(--flowme-border)] pb-2 last:border-b-0 last:pb-0"
+                >
+                  <dt className="text-[var(--flowme-text-secondary)]">
+                    {label}
+                  </dt>
+                  <dd className="break-words text-right font-semibold">
+                    {value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </details>
+      ) : (
+        <p className="mt-4 text-xs text-[var(--flowme-text-secondary)]">
+          저장 시각 {receipt.savedAtLabel}
+        </p>
+      )}
     </AuthoringDialog>
   );
 }
@@ -279,13 +393,17 @@ export function ExportPreflightDialog({
     <AuthoringDialog
       open={open}
       testId="ta-authoring-export-dialog"
-      title={receipt ? '가져가기 기록' : '가져가기 전 확인'}
+      title={receipt ? "가져가기 기록" : "가져가기 전 확인"}
       description="형식보다 범위와 실제 포함 수를 먼저 확인합니다."
       onClose={onClose}
-      footer={(
+      footer={
         <>
-          <button type="button" className={FLOW_UI_SECONDARY_ACTION_CLASS} onClick={onClose}>
-            {receipt ? '닫기' : '취소'}
+          <button
+            type="button"
+            className={FLOW_UI_SECONDARY_ACTION_CLASS}
+            onClick={onClose}
+          >
+            {receipt ? "닫기" : "취소"}
           </button>
           {!receipt ? (
             <button
@@ -298,12 +416,12 @@ export function ExportPreflightDialog({
             </button>
           ) : null}
         </>
-      )}
+      }
     >
       {receipt ? (
         <>
           <div className="rounded-[var(--flowme-radius-control)] bg-[var(--flowme-positive-soft)] px-3 py-3 text-sm font-semibold text-[var(--flowme-positive-strong)]">
-            {ARTIFACT_LABEL[receipt.artifact]} · {receipt.count}개 ·{' '}
+            {ARTIFACT_LABEL[receipt.artifact]} · {receipt.count}개 ·{" "}
             {formatLabel(receipt.artifact, receipt.format)}
           </div>
           <dl className="mt-4 space-y-2 text-sm">
@@ -324,13 +442,13 @@ export function ExportPreflightDialog({
               <dd className="font-semibold">
                 {receipt.reviewEvidenceCount > 0
                   ? `사용자가 근거 기록 ${receipt.reviewEvidenceCount}개`
-                  : '검토 항목 없음'}
+                  : "검토 항목 없음"}
               </dd>
             </div>
             <div className="flex justify-between gap-4 border-b border-[var(--flowme-border)] pb-2">
               <dt className="text-[var(--flowme-text-secondary)]">원문 버전</dt>
               <dd className="font-semibold">
-                {receipt.sourceState === 'current' ? '현재 원문' : '확인 필요'}
+                {receipt.sourceState === "current" ? "현재 원문" : "확인 필요"}
               </dd>
             </div>
           </dl>
@@ -377,14 +495,19 @@ export function ExportPreflightDialog({
           </div>
           <dl className="mt-4 grid grid-cols-2 gap-px overflow-hidden border border-[var(--flowme-border)] bg-[var(--flowme-border)] sm:grid-cols-4">
             {[
-              ['대상', preflight.sourceItemCount],
-              ['포함', preflight.count],
-              ['제외', preflight.omittedCount],
-              ['손실 안내', preflight.lossCount],
+              ["대상", preflight.sourceItemCount],
+              ["포함", preflight.count],
+              ["제외", preflight.omittedCount],
+              ["손실 안내", preflight.lossCount],
             ].map(([label, value]) => (
-              <div key={String(label)} className="bg-[var(--flowme-surface)] px-3 py-3">
+              <div
+                key={String(label)}
+                className="bg-[var(--flowme-surface)] px-3 py-3"
+              >
                 <dd className="text-lg font-semibold">{value}</dd>
-                <dt className="text-[10px] text-[var(--flowme-text-tertiary)]">{label}</dt>
+                <dt className="text-[10px] text-[var(--flowme-text-tertiary)]">
+                  {label}
+                </dt>
               </div>
             ))}
           </dl>
@@ -397,7 +520,9 @@ export function ExportPreflightDialog({
                     key={`${index}-${title}`}
                     className="flex gap-3 border-b border-[var(--flowme-border)] py-2 text-xs"
                   >
-                    <span className="text-[var(--flowme-text-tertiary)]">{index + 1}</span>
+                    <span className="text-[var(--flowme-text-tertiary)]">
+                      {index + 1}
+                    </span>
                     <span className="font-semibold">{title}</span>
                   </li>
                 ))}
@@ -440,23 +565,32 @@ export function RoundTripDialog({
       title="Markdown 비교"
       description="지원하는 Markdown 범위로 내보낸 뒤 다시 읽었을 때 유지되는 내용을 확인합니다."
       onClose={onClose}
-      footer={(
-        <button type="button" className={FLOW_UI_PRIMARY_ACTION_CLASS} onClick={onClose}>
+      footer={
+        <button
+          type="button"
+          className={FLOW_UI_PRIMARY_ACTION_CLASS}
+          onClick={onClose}
+        >
           확인 완료
         </button>
-      )}
+      }
     >
       {value ? (
         <>
           <dl className="grid grid-cols-3 gap-px overflow-hidden border border-[var(--flowme-border)] bg-[var(--flowme-border)]">
             {[
-              ['일치', value.matchedCount],
-              ['변경', value.changedCount],
-              ['확인 필요', value.unresolvedCount],
+              ["일치", value.matchedCount],
+              ["변경", value.changedCount],
+              ["확인 필요", value.unresolvedCount],
             ].map(([label, count]) => (
-              <div key={String(label)} className="bg-[var(--flowme-surface)] px-3 py-3">
+              <div
+                key={String(label)}
+                className="bg-[var(--flowme-surface)] px-3 py-3"
+              >
                 <dd className="text-lg font-semibold">{count}</dd>
-                <dt className="text-[10px] text-[var(--flowme-text-tertiary)]">{label}</dt>
+                <dt className="text-[10px] text-[var(--flowme-text-tertiary)]">
+                  {label}
+                </dt>
               </div>
             ))}
           </dl>
@@ -464,12 +598,12 @@ export function RoundTripDialog({
             {value.markdown}
           </pre>
           <p className="mt-3 text-xs leading-5 text-[var(--flowme-text-secondary)]">
-            유지되지 않는 실행 상태: 완료, 재실행, 회차별 기록. 저작 원문에는 영향을
-            주지 않습니다.
+            유지되지 않는 실행 상태: 완료, 재실행, 회차별 기록. 저작 원문에는
+            영향을 주지 않습니다.
           </p>
           {value.lossFields.length > 0 ? (
             <p className="mt-2 text-xs text-[var(--flowme-warning-strong)]">
-              확인할 필드: {value.lossFields.join(', ')}
+              확인할 필드: {value.lossFields.join(", ")}
             </p>
           ) : null}
         </>
@@ -498,11 +632,15 @@ export function HistoryDialog({
       title={`${title} 저장 기록`}
       description="저장·복제·보관·복원 기록입니다."
       onClose={onClose}
-      footer={(
-        <button type="button" className={FLOW_UI_PRIMARY_ACTION_CLASS} onClick={onClose}>
+      footer={
+        <button
+          type="button"
+          className={FLOW_UI_PRIMARY_ACTION_CLASS}
+          onClick={onClose}
+        >
           닫기
         </button>
-      )}
+      }
     >
       {history.length > 0 ? (
         <ol className="border-t border-[var(--flowme-border)]">
@@ -513,14 +651,16 @@ export function HistoryDialog({
             >
               <div>
                 <p className="text-sm font-semibold">
-                  {index === 0 ? '현재 저장본' : `이전 저장본 ${history.length - index}`}
+                  {index === 0
+                    ? "현재 저장본"
+                    : `이전 저장본 ${history.length - index}`}
                 </p>
                 <p className="mt-1 text-xs text-[var(--flowme-text-secondary)]">
-                  {new Intl.DateTimeFormat('ko-KR', {
-                    dateStyle: 'medium',
-                    timeStyle: 'short',
+                  {new Intl.DateTimeFormat("ko-KR", {
+                    dateStyle: "medium",
+                    timeStyle: "short",
                   }).format(new Date(entry.savedAt))}
-                  {' · '}
+                  {" · "}
                   {HISTORY_KIND_LABEL[entry.kind] ?? entry.kind}
                 </p>
               </div>
@@ -536,7 +676,9 @@ export function HistoryDialog({
           ))}
         </ol>
       ) : (
-        <p className="text-sm text-[var(--flowme-text-secondary)]">저장 기록이 없습니다.</p>
+        <p className="text-sm text-[var(--flowme-text-secondary)]">
+          저장 기록이 없습니다.
+        </p>
       )}
     </AuthoringDialog>
   );

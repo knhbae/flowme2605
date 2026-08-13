@@ -11,6 +11,7 @@ import {
   TEXT_AUTHORING_DRAFTS_STORAGE_KEY,
   TEXT_AUTHORING_MAX_PERSISTED_REVISIONS,
   TEXT_AUTHORING_MAX_SAVED_HISTORY,
+  TextAuthoringStorageReadError,
   TextAuthoringStorageWriteError,
   createMemoryTextAuthoringStorage,
   createTextAuthoringDraftRepository,
@@ -32,6 +33,7 @@ import {
   parseSupportedTextAuthoringMarkdown,
 } from "./markdown-roundtrip";
 import { createTextAuthoringDocument } from "./parser";
+import { createTextAuthoringServiceStateFromDocument } from "./service-state";
 
 type DocumentFixtureOptions = {
   count?: number;
@@ -412,12 +414,26 @@ test("duplicate gets separate draft, document, and revision IDs without source m
   const sourceSnapshot = structuredClone(
     document.parseResult.canonical.sourceRows,
   );
+  const sourceSnapshotId = document.sourceState?.active.snapshotId;
   repository.save(document);
   const duplicated = repository.duplicate(document.documentId);
 
   assert.notEqual(duplicated.draftId, document.documentId);
   assert.notEqual(duplicated.document.documentId, document.documentId);
   assert.notEqual(duplicated.revisionId, document.revision.revisionId);
+  assert.notEqual(
+    duplicated.document.sourceState?.active.snapshotId,
+    sourceSnapshotId,
+  );
+  assert.ok(duplicated.document.sourceState?.active.snapshotId);
+  assert.equal(
+    duplicated.document.parseResult.canonical.sourceRows.every(
+      (row) =>
+        row.sourceSnapshotId ===
+        duplicated.document.sourceState?.active.snapshotId,
+    ),
+    true,
+  );
   assert.equal(duplicated.history.length, 1);
   assert.deepEqual(
     duplicated.document.parseResult.canonical.sourceRows.map(
@@ -426,6 +442,96 @@ test("duplicate gets separate draft, document, and revision IDs without source m
     sourceSnapshot.map((row) => row.rawText),
   );
   assert.deepEqual(document.parseResult.canonical.sourceRows, sourceSnapshot);
+  assert.equal(document.sourceState?.active.snapshotId, sourceSnapshotId);
+});
+
+test("duplicate is a new dirty draft with new source ownership but no false save receipt", () => {
+  let currentTime = "2026-08-11T01:00:00.000Z";
+  let sequence = 0;
+  const repository = createTextAuthoringDraftRepository(
+    createMemoryTextAuthoringStorage(),
+    {
+      now: () => currentTime,
+      idFactory: (prefix) => `${prefix}-${++sequence}`,
+    },
+  );
+  const document = documentFixture({ count: 3, title: "원본 콘텐츠" });
+  const serviceState = createTextAuthoringServiceStateFromDocument(document, {
+    draftId: document.documentId,
+    now: currentTime,
+  });
+  const saved = repository.saveCoherentDraft(serviceState);
+
+  currentTime = "2026-08-11T02:00:00.000Z";
+  const duplicated = repository.duplicate(saved.draftId);
+
+  assert.equal(duplicated.status, "draft");
+  assert.equal(duplicated.lastSavedAt, saved.lastSavedAt);
+  assert.equal(duplicated.updatedAt, currentTime);
+  assert.ok(duplicated.sourceSnapshot);
+  assert.ok(duplicated.workingSource);
+  assert.notEqual(
+    duplicated.sourceSnapshot?.snapshotId,
+    saved.sourceSnapshot?.snapshotId,
+  );
+  assert.equal(
+    duplicated.workingSource?.sourceSnapshotId,
+    duplicated.sourceSnapshot?.snapshotId,
+  );
+  assert.equal(duplicated.workingSource?.rawText, document.rawText);
+  assert.equal(duplicated.coherentRevisionPair, undefined);
+  assert.equal(duplicated.explicitSaveReceipt, undefined);
+  assert.equal(duplicated.readyReceipt, undefined);
+});
+
+test("duplicate assigns the smallest collision-safe copy number across active and archived drafts", () => {
+  let sequence = 0;
+  const repository = createTextAuthoringDraftRepository(
+    createMemoryTextAuthoringStorage(),
+    {
+      now: () => "2026-07-29T10:00:00.000Z",
+      idFactory: (prefix) => `${prefix}-${++sequence}`,
+    },
+  );
+  const source = documentFixture({ count: 2, title: "여권 준비" });
+  repository.save(source, { title: "여권 준비" });
+
+  const first = repository.duplicate(source.documentId);
+  const third = repository.duplicate(source.documentId, {
+    title: "사본 3 · 여권 준비",
+  });
+  const second = repository.duplicate(source.documentId);
+  const fourth = repository.duplicate(first.draftId);
+  repository.archive(second.draftId);
+  const fifth = repository.duplicate(source.documentId);
+
+  assert.equal(first.title, "사본 1 · 여권 준비");
+  assert.equal(second.title, "사본 2 · 여권 준비");
+  assert.equal(third.title, "사본 3 · 여권 준비");
+  assert.equal(fourth.title, "사본 4 · 여권 준비");
+  assert.equal(fifth.title, "사본 5 · 여권 준비");
+  assert.equal(
+    new Set([
+      source.documentId,
+      first.document.documentId,
+      second.document.documentId,
+      third.document.documentId,
+      fourth.document.documentId,
+      fifth.document.documentId,
+    ]).size,
+    6,
+  );
+  assert.equal(
+    new Set([
+      source.sourceState?.active.snapshotId,
+      first.document.sourceState?.active.snapshotId,
+      second.document.sourceState?.active.snapshotId,
+      third.document.sourceState?.active.snapshotId,
+      fourth.document.sourceState?.active.snapshotId,
+      fifth.document.sourceState?.active.snapshotId,
+    ]).size,
+    6,
+  );
 });
 
 test("autosave recovery stays separate from the explicit saved revision", () => {
@@ -452,6 +558,41 @@ test("autosave recovery stays separate from the explicit saved revision", () => 
   assert.equal(repository.list()[0].hasRecovery, true);
   repository.clearRecovery(savedDocument.documentId);
   assert.equal(repository.loadRecovery(savedDocument.documentId), undefined);
+});
+
+test("recovery selection is draft-scoped and only exposes a newer recovery", () => {
+  let currentTime = "2026-08-11T01:00:00.000Z";
+  const storage = createMemoryTextAuthoringStorage();
+  const repository = createTextAuthoringDraftRepository(storage, {
+    now: () => currentTime,
+  });
+  const first = documentFixture({ title: "첫 초안" });
+  const second = documentFixture({ count: 6, title: "둘째 초안" });
+  repository.save(first);
+  repository.save(second);
+
+  currentTime = "2026-08-11T02:00:00.000Z";
+  repository.autosave(revision(first, 2, "첫 초안의 새 복구본"), {
+    draftId: first.documentId,
+  });
+
+  assert.equal(
+    repository.loadNewerRecovery(first.documentId)?.document.title,
+    "첫 초안의 새 복구본",
+  );
+  assert.equal(repository.loadNewerRecovery(second.documentId), undefined);
+
+  const raw = storage.getItem(TEXT_AUTHORING_DRAFTS_STORAGE_KEY);
+  assert.ok(raw);
+  const persisted = JSON.parse(raw) as {
+    recoveries: Record<string, { recoveredAt: string; savedAt: string }>;
+  };
+  persisted.recoveries[first.documentId].recoveredAt =
+    "2026-08-11T00:00:00.000Z";
+  persisted.recoveries[first.documentId].savedAt = "2026-08-11T00:00:00.000Z";
+  storage.setItem(TEXT_AUTHORING_DRAFTS_STORAGE_KEY, JSON.stringify(persisted));
+
+  assert.equal(repository.loadNewerRecovery(first.documentId), undefined);
 });
 
 test("explicit saves keep version history and can restore an earlier revision", () => {
@@ -599,6 +740,61 @@ test("a quota write failure is typed and restores the previous saved value", () 
   assert.equal(
     repository.load(first.documentId)?.document.title,
     "보존할 저장본",
+  );
+});
+
+test("corrupted persisted data fails closed and is never replaced by a save", () => {
+  const corruptedRaw = "";
+  const storage = createMemoryTextAuthoringStorage({
+    [TEXT_AUTHORING_DRAFTS_STORAGE_KEY]: corruptedRaw,
+  });
+  const repository = createTextAuthoringDraftRepository(storage);
+
+  assert.throws(
+    () => repository.listRecords({ includeArchived: true }),
+    (error: unknown) => {
+      assert.ok(error instanceof TextAuthoringStorageReadError);
+      assert.equal(error.code, "corrupted");
+      assert.equal(error.existingValuePreserved, true);
+      return true;
+    },
+  );
+  assert.throws(
+    () => repository.save(documentFixture({ title: "덮어쓰면 안 됨" })),
+    TextAuthoringStorageReadError,
+  );
+  assert.equal(
+    storage.getItem(TEXT_AUTHORING_DRAFTS_STORAGE_KEY),
+    corruptedRaw,
+  );
+});
+
+test("unknown storage schema fails closed and preserves the exact existing value", () => {
+  const unknownSchemaRaw = JSON.stringify({
+    schemaVersion: 99,
+    drafts: {},
+    recoveries: {},
+  });
+  const storage = createMemoryTextAuthoringStorage({
+    [TEXT_AUTHORING_DRAFTS_STORAGE_KEY]: unknownSchemaRaw,
+  });
+  const repository = createTextAuthoringDraftRepository(storage);
+
+  assert.throws(
+    () => repository.load("missing"),
+    (error: unknown) => {
+      assert.ok(error instanceof TextAuthoringStorageReadError);
+      assert.equal(error.code, "schema_mismatch");
+      return true;
+    },
+  );
+  assert.throws(
+    () => repository.autosave(documentFixture({ title: "복구도 쓰면 안 됨" })),
+    TextAuthoringStorageReadError,
+  );
+  assert.equal(
+    storage.getItem(TEXT_AUTHORING_DRAFTS_STORAGE_KEY),
+    unknownSchemaRaw,
   );
 });
 

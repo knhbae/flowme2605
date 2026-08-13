@@ -72,17 +72,28 @@ export function validAuthoringCalendarRows(
 ): AuthoringArtifactRow[] {
   return rows
     .filter((row) => Boolean(parseAuthoringCalendarDate(row.date)))
-    .sort((left, right) => {
-      const leftTime = left.time?.trim() ?? "";
-      const rightTime = right.time?.trim() ?? "";
-      return (
-        (left.date ?? "").localeCompare(right.date ?? "") ||
-        Number(Boolean(leftTime)) - Number(Boolean(rightTime)) ||
-        leftTime.localeCompare(rightTime) ||
-        left.order - right.order ||
-        left.itemId.localeCompare(right.itemId)
-      );
-    });
+    .sort(compareAuthoringCalendarRows);
+}
+
+/**
+ * Calendar is a display projection. This comparator must never be reused to
+ * rewrite the authored source. The final occurrence/row keys only make an
+ * otherwise equal display order deterministic.
+ */
+export function compareAuthoringCalendarRows(
+  left: AuthoringArtifactRow,
+  right: AuthoringArtifactRow,
+): number {
+  const leftTime = left.time?.trim() ?? "";
+  const rightTime = right.time?.trim() ?? "";
+  return (
+    (left.date ?? "").localeCompare(right.date ?? "") ||
+    Number(Boolean(leftTime)) - Number(Boolean(rightTime)) ||
+    leftTime.localeCompare(rightTime) ||
+    left.order - right.order ||
+    (left.occurrenceIndex ?? 0) - (right.occurrenceIndex ?? 0) ||
+    left.rowId.localeCompare(right.rowId)
+  );
 }
 
 export function buildAuthoringCalendarMonthCells(

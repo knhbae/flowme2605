@@ -65,7 +65,7 @@ async function openAuthoring(
   page: Page,
   width: number,
   height: number,
-  path = "/flows/new",
+  path = "/flows/new?authoringQa=0",
 ) {
   await page.setViewportSize({ width, height });
   await page.goto("/icon.svg");
@@ -204,6 +204,7 @@ async function scrollToEnd(locator: Locator) {
 }
 
 async function expectReachableAboveFooter(page: Page, target: Locator) {
+  await target.scrollIntoViewIfNeeded();
   await expect(target).toBeInViewport();
   const metrics = await target.evaluate((element) => {
     const footer = document.querySelector(".ta-workspace-footer");
@@ -222,9 +223,27 @@ async function expectReachableAboveFooter(page: Page, target: Locator) {
   });
 
   expect(metrics.targetTop).toBeGreaterThanOrEqual(-1);
-  expect(metrics.targetBottom).toBeLessThanOrEqual(metrics.footerTop + 1);
-  expect(metrics.footerTop).toBeLessThan(metrics.viewportHeight);
-  expect(metrics.footerBottom).toBeLessThanOrEqual(metrics.viewportHeight + 1);
+  if (metrics.footerTop < metrics.viewportHeight && metrics.footerBottom > 0) {
+    expect(metrics.targetBottom).toBeLessThanOrEqual(metrics.footerTop + 1);
+  }
+
+  // Narrow-screen reflow intentionally lets the document scroll. The final
+  // action may follow the last pane control instead of sharing one viewport,
+  // but it must still be fully reachable without covering that control.
+  const footer = page.locator(".ta-workspace-footer");
+  await footer.scrollIntoViewIfNeeded();
+  const visibleFooter = await footer.evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    return {
+      top: rect.top,
+      bottom: rect.bottom,
+      viewportHeight: window.innerHeight,
+    };
+  });
+  expect(visibleFooter.top).toBeGreaterThanOrEqual(-1);
+  expect(visibleFooter.bottom).toBeLessThanOrEqual(
+    visibleFooter.viewportHeight + 1,
+  );
 }
 
 test("TA keeps every supported syntax available on demand, switches top examples, and reflects edits without a parse click", async ({
@@ -267,7 +286,7 @@ test("TA keeps every supported syntax available on demand, switches top examples
   await expect(syntaxPanel).toContainText("날짜: 2026-08-03");
   await expect(syntaxPanel).toContainText("상대 날짜: D-3");
   await expect(syntaxPanel).toContainText(
-    "날짜가 있는 반복 항목은 캘린더·할 일·표·Excel·TXT 결과에 같은 회차로 보여 줍니다",
+    "날짜가 있는 반복 항목은 캘린더·할 일·표·TXT 결과에 같은 회차로 보여 줍니다",
   );
   await expect(syntaxPanel).toContainText(
     "자료: [참고 자료](https://example.com)",
@@ -317,10 +336,12 @@ test("TA keeps every supported syntax available on demand, switches top examples
   await expect(page.getByTestId("ta-authoring-preflight")).toContainText(
     "가져갈 내용 5개",
   );
-  await expect(page.getByRole("button", { name: "캘린더 4" })).toBeVisible();
+  await expect(
+    page.getByTestId("ta-authoring-result-slot-calendar"),
+  ).toContainText("4개");
   await expect(
     page.getByTestId("ta-authoring-recurrence-preview-summary"),
-  ).toContainText("첫 번째 항목입니다. · 매주 월요일 · 3/3회");
+  ).toContainText("첫 번째 항목입니다. · 매주 월요일 · 3회 · 3/3회");
   await expect(page.getByTestId("ta-authoring-stage-input")).toHaveAttribute(
     "aria-current",
     "step",
@@ -469,7 +490,9 @@ test("TA top examples expose the real input and converted result for moving, K-M
     /상대 날짜: D-30/u,
   );
   await expect(page.getByTestId("ta-authoring-item")).toHaveCount(27);
-  await expect(page.getByRole("button", { name: "캘린더 27" })).toBeVisible();
+  await expect(
+    page.getByTestId("ta-authoring-result-slot-calendar"),
+  ).toContainText("27개");
   await expect(page.getByTestId("ta-authoring-preflight")).toHaveAttribute(
     "data-count",
     "27",
@@ -491,7 +514,9 @@ test("TA top examples expose the real input and converted result for moving, K-M
   expect(courseSource.match(/^- \[ \] /gmu)).toHaveLength(14);
   expect(courseSource).toMatch(/^  - 주차: /mu);
   expect(courseSource).toMatch(/^  - 주차 활동: /mu);
-  await expect(page.getByRole("button", { name: "표·Excel 14" })).toBeVisible();
+  await expect(
+    page.getByTestId("ta-authoring-result-slot-sheet"),
+  ).toContainText("14개");
   await expect(page.getByTestId("ta-authoring-preflight")).toHaveAttribute(
     "data-count",
     "14",
@@ -505,7 +530,9 @@ test("TA top examples expose the real input and converted result for moving, K-M
     /https:\/\/www\.youtube\.com\/watch\?v=W2fS4TqeWCc/u,
   );
   await expect(page.getByTestId("ta-authoring-item")).toHaveCount(7);
-  await expect(page.getByRole("button", { name: "캘린더 7" })).toBeVisible();
+  await expect(
+    page.getByTestId("ta-authoring-result-slot-calendar"),
+  ).toContainText("7개");
   await expect(page.getByTestId("ta-authoring-preflight")).toHaveAttribute(
     "data-count",
     "7",
@@ -523,7 +550,7 @@ test("TA top examples expose the real input and converted result for moving, K-M
   await expectNoHorizontalOverflow(page);
 });
 
-test("TA product selector exposes five representative examples and four fixed result slots", async ({
+test("TA representative comparison exposes five examples and four fixed result slots", async ({
   page,
 }) => {
   await openAuthoring(page, 1440, 900);
@@ -647,7 +674,9 @@ test("TA review dropdown exposes one basic syntax example plus every validated e
     "2026-08-10",
   );
   await expect(page.getByTestId("ta-authoring-item")).toHaveCount(2);
-  await expect(page.getByRole("button", { name: "캘린더 2" })).toBeVisible();
+  await expect(
+    page.getByTestId("ta-authoring-result-slot-calendar"),
+  ).toContainText("2개");
 
   await exampleSelect.selectOption("qa:change-relative-anchor-sep");
   await expect(exampleSelect).toHaveValue("qa:change-relative-anchor-sep");
@@ -655,7 +684,9 @@ test("TA review dropdown exposes one basic syntax example plus every validated e
     "2026-09-10",
   );
   await expect(page.getByTestId("ta-authoring-item")).toHaveCount(2);
-  await expect(page.getByRole("button", { name: "캘린더 2" })).toBeVisible();
+  await expect(
+    page.getByTestId("ta-authoring-result-slot-calendar"),
+  ).toContainText("2개");
 
   await exampleSelect.selectOption("qa:content-librivox-38");
   await expect(exampleSelect).toHaveValue("qa:content-librivox-38");
@@ -669,7 +700,9 @@ test("TA review dropdown exposes one basic syntax example plus every validated e
   expect(librivoxSource.match(/^- \[ \] /gmu)).toHaveLength(38);
   expect(librivoxSource).toMatch(/^  - 순서: /mu);
   expect(librivoxSource).toMatch(/^  - 재생시간: /mu);
-  await expect(page.getByRole("button", { name: "표·Excel 38" })).toBeVisible();
+  await expect(
+    page.getByTestId("ta-authoring-result-slot-sheet"),
+  ).toContainText("38개");
   await expect(page.getByTestId("ta-authoring-preflight")).toHaveAttribute(
     "data-count",
     "38",
@@ -680,7 +713,7 @@ test("TA review dropdown exposes one basic syntax example plus every validated e
   await expect(page.getByTestId("ta-authoring-issue-card")).toHaveCount(1);
   const calendarSlot = page.getByTestId("ta-authoring-result-slot-calendar");
   await expect(calendarSlot).toBeDisabled();
-  await expect(calendarSlot).toHaveAttribute("title", /날짜|캘린더/u);
+  await expect(calendarSlot).toHaveAccessibleName(/날짜|캘린더/u);
   const source = page.getByTestId("ta-authoring-source");
   await source.fill(
     (await source.inputValue()).replace("8월 3일", "2026-08-03"),
@@ -976,7 +1009,7 @@ test("TA makes portable structured TXT primary and keeps working source and Mark
   const textBoundary = page.getByTestId("ta-authoring-text-result-boundary");
   await expect(textBoundary).toBeVisible();
   await expect(
-    textBoundary.getByText("복사할 TXT", { exact: true }),
+    textBoundary.getByRole("heading", { name: "TXT 결과" }),
   ).toBeVisible();
 
   const portableText = page.getByTestId("ta-authoring-structured-text-preview");
@@ -1890,7 +1923,7 @@ test("TA keeps personal ownership in the receipt and downloads real XLSX and pla
   expect(Object.values(stored.drafts)[0].ownership).toBe("personal");
   await saveReceipt.getByRole("button", { name: "계속 편집" }).click();
 
-  await page.getByRole("button", { name: /^표·Excel 5$/u }).click();
+  await page.getByTestId("ta-authoring-result-slot-sheet").click();
   await page.getByTestId("ta-authoring-export-open").click();
   const exportDialog = page.getByTestId("ta-authoring-export-dialog");
   await exportDialog.getByLabel("형식").selectOption("xlsx");
@@ -1906,7 +1939,7 @@ test("TA keeps personal ownership in the receipt and downloads real XLSX and pla
   await expect(exportDialog).toContainText("표·Excel · 5개 · Excel(XLSX)");
   await exportDialog.getByText("닫기", { exact: true }).click();
 
-  await page.getByRole("button", { name: /^할 일 5$/u }).click();
+  await page.getByTestId("ta-authoring-result-slot-todo").click();
   await page.getByTestId("ta-authoring-export-open").click();
   await exportDialog.getByLabel("형식").selectOption("plain_text");
   const [textDownload] = await Promise.all([
