@@ -1,6 +1,6 @@
 # Implementation Plan
 
-**Status:** RELEASED THROUGH PR #178 / PRODUCTION SMOKE PASS
+**Status:** RELEASED THROUGH PR #178 / 2026-08-13 ITEM DATE PARITY VERIFIED / PUBLICATION AUTHORIZED
 
 ## Phase 0 — Contract and boundaries
 
@@ -24,7 +24,9 @@
 - [x] `review_hold`에는 editor와 조정·저장 CTA가 없음을 보장한다.
 - [x] Cancel/X/backdrop/Escape/browser Back을 shared dirty-discard controller에 연결한다.
 - [x] Plan -> Item -> Plan과 editor -> opener의 focus·scroll 복귀를 연결한다.
-- [x] Map schema가 lossless하게 지원하지 않는 날짜와 cross-child 순서 제어는 숨긴다.
+- [x] Map의 기존 `fixed_date` owner가 lossless하게 지원하는 날짜 입력은 공통 Item
+  editor에 연결하고, source-dated reset은 원래 날짜로, source-undated reset은
+  `날짜 없음`으로 돌린다. 별도 unscheduled schema와 cross-child 순서 제어는 숨긴다.
 
 ## Phase 3 — Persistence and regression
 
@@ -42,6 +44,16 @@
 - [x] fresh runtime capture 6장과 feedback evidence 2장을 한국어 HTML 보고서로 검증한다.
 - [x] affected five-spec browser rerun과 최종 owned closeout을 통과시킨다.
 
+## Phase 5 — 2026-08-13 narrow Item date parity follow-up
+
+- [x] Map Item에 기존 공통 날짜 필드와 reset action을 연결한다.
+- [x] preview 결과 탭과 무관하게 실제 anchor의 source date를 reset baseline으로 쓴다.
+- [x] source date와 같은 기존 fixed-date pin은 무변경 Item apply에서 보존한다.
+- [x] Plan에서 아직 반영하지 않은 새 anchor도 Item 행·편집·reset baseline에 즉시
+  반영하고, source date와 같은 fixed-date pin은 명시 reset intent로 제거한다.
+- [x] Item/Plan provisional apply 전 storage 불변, final save/reload fixed-date round trip,
+  source-undated/source-dated reset, 390/1024/1440을 단위·브라우저로 검증한다.
+
 ## Publication boundary
 
 - Commit/push/Draft PR/Preview: `COMPLETE`
@@ -49,3 +61,6 @@
 - Canonical Production smoke: `PASS 38/38`, workers `1`, retries `0`, unexpected/flaky/skipped `0`
 - Post-merge `main` run: `31597763288 PASS` — core job `94117373437`, Playwright job `94117373461`
 - Observed-user validation: `0`
+- 2026-08-13 Item date parity follow-up: publication is authorized. This plan's
+  local QA record does not imply commit, PR, merge, deployment, or Production
+  smoke; each external state must be verified independently.

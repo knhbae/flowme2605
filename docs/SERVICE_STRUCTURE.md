@@ -1,7 +1,7 @@
 # FLOW Service Structure
 
-Last updated: 2026-08-12
-Status: Living Production baseline with Plan edit and lifecycle unification released through PR #178; exact-head and post-merge CI, Production deployment, and canonical smoke passed. Observed users remain `0`.
+Last updated: 2026-08-13
+Status: Living Production baseline with Plan edit and lifecycle unification released through PR #178; publication of the 2026-08-13 Map Item date-parity follow-up is authorized, while exact GitHub/Vercel release state must be verified externally. Observed users remain `0`.
 
 This document is the canonical map of the current app surface, screen feature tree, and service architecture. It is not validation evidence by itself. Use it to keep product PoCs, research surfaces, creator tools, public routes, My Flow execution, and shared domain modules from drifting apart.
 
@@ -131,6 +131,26 @@ Desktop can use a top nav with the same priority order. It should not expose mor
 - This contract was released through PR #178. Automated QA and screenshots are
   not observed-user validation; observed users remain `0`.
 
+### 2026-08-13 Map Item Date Parity Follow-Up
+
+- The local follow-up exposes the existing shared Item date control for
+  executable single-plan Maps; it does not introduce a separate Map editor.
+- A private fixed date is adapted to the existing snapshot/persistence owner.
+  Reset removes only that private override and immediately restores the actual
+  source projection for the current anchor; source-undated Items return to
+  `날짜 없음`.
+- Item rows and reset baselines are projected from the in-session Plan anchor,
+  including before Plan apply. A source-equal fixed-date pin is preserved on a
+  semantic no-op and removed only by the explicit reset action.
+- Map ID/version, child Flow/Item identity, bridge key, unknown fields, and the
+  final atomic save/rollback transaction remain unchanged. No storage key or
+  schema migration is introduced.
+- The local implementation and automated-QA checkpoint preceded publication.
+  Publication was subsequently authorized; commit, PR, merge, deployment, and
+  Production-smoke state must be verified from their external records and are
+  not implied by this architecture document. Observed-user validation remains
+  separate.
+
 ### Current Production Baseline And Inherited R3B/P35/Round 2 Contracts
 
 - Plan edit and lifecycle merge `908ee849beb15cb10331b72d7894167a61458b18`
@@ -203,7 +223,7 @@ Prototype or restart routes must pass the same display gate before promotion: no
 | Modal Escape ownership | `components/flow/FlowExecutionPrimitives.tsx`, `components/flow/AppClient.tsx` | Only the visually topmost visible `FlowBottomSheet` consumes Escape, resolving nested ancestry, effective z-index, and DOM paint order. The approved 0-767 fallback Item editor owns immediate Escape before focus transfer but yields to a visible alertdialog or another modal. Clean cancel and dirty discard reuse existing runtime commands; this boundary creates no route or storage mutation. |
 | My Flow experience boundary | `lib/flow/my-flow-workspace-snapshot.ts`, `lib/flow/my-flow-experience-variant.ts`, `components/flow/my-flow/MyFlowExperienceContract.ts`, `components/flow/my-flow/MyFlowExperienceHost.tsx`, `components/flow/my-flow/MyFlowClassicExperienceAdapter.tsx`, `components/flow/my-flow/experiences/MyFlowR3aLabSurface.tsx` | Builds a versioned JSON-safe read-only snapshot only for an eligible exact `r3a-lab` request, keeps personal saved-route and source identities separate, and selects the unchanged classic surface or an internal saved-library candidate through semantic navigation intents. Repeated Items retain all occurrence route hints. Selected-Plan rendering uses the approved execution boundary, while `AppClient` remains its runtime data and command adapter. This layer owns no storage key, migration, mutation, artifact effect, or receipt. |
 | Shared public plan presentation | `components/flow/PublicPlanShareShell.tsx`, `components/flow/PublicPlanResultPreview.tsx`, `components/flow/FlowSaveBeforeFrame.tsx` | Render one share-entry shell and approved Text/Todo/Calendar grammar for single Flows and executable Maps. This layer receives view models and callbacks; it owns no source identity, storage key, save transaction, receipt, or schema. |
-| Shared public Plan/Item editor | `components/flow/PublicFlowAdjustmentPanel.tsx`, `components/flow/SourceBackedFlowMapSaveButton.tsx`, `components/flow/SourceBackedFlowMapSaveExperience.tsx` | `PublicFlowAdjustmentPanel`, `PublicFlowItemEditor`, and the shared editor controller own one responsive edit, nested Item, provisional apply, dirty-close, Back, focus, and scroll grammar. Ordinary Flow and Map adapters supply only supported capabilities; the shared UI owns no persistent write. |
+| Shared public Plan/Item editor | `components/flow/PublicFlowAdjustmentPanel.tsx`, `components/flow/SourceBackedFlowMapSaveButton.tsx`, `components/flow/SourceBackedFlowMapSaveExperience.tsx` | `PublicFlowAdjustmentPanel`, `PublicFlowItemEditor`, and the shared editor controller own one responsive edit, nested Item, provisional apply, dirty-close, Back, focus, and scroll grammar. The 2026-08-13 follow-up gives ordinary Flow and executable single-plan Map adapters the same Item title, memo, and date fields. The Map adapter keeps the source-projected date separate from a private fixed-date override so reset-to-source and no-op apply remain lossless; the shared UI owns no persistent write. |
 | Source-backed map UI | `components/flow/SourceBackedFlowMapPage.tsx`, `components/flow/SourceBackedFlowMapSaveExperience.tsx`, `components/flow/SourceBackedFlowMapChooseChildExperience.tsx`, `components/flow/SourceBackedFlowMapSaveButton.tsx`, `components/flow/SourceBackedFlowMapCreatorEditor.tsx` | Present single-plan `save_all` as an ordinary Flow edit journey, real alternatives as `choose_child` selectors that continue at `/f`, and `review_hold` as editor-free. Creator and legacy rollback surfaces remain separate. The runtime retains the existing final save-to-My-Flow transaction; exact `visualSubtraction=off` restores the legacy compatibility shell. |
 | Flow Map result and edit adapter | `lib/flow/effective-flow-map-result.ts`, `lib/flow/effective-flow-map-snapshot.ts`, `lib/flow/source-backed-my-flow.ts` | Materialize editable rows from canonical child projections and the effective Map snapshot, keep requested within-plan order and included/excluded personal values, and project the session draft without mutating canonical source rows. Preserve Map owner metadata, child boundaries, canonical IDs, unknown fields, destination, and anchor; final persistence remains the existing snapshot/bridge transaction rather than a synthetic Flow. |
 | Artifact UI | `FlowSaveBeforeFrame.tsx`, `FlowArtifactDataPreview.tsx`, `FlowTransferConfirmation.tsx`, `FlowExportPanel.tsx`, `FlowExportReceipt.tsx`, `RoutineScheduleEditor.tsx`, `ArtifactWorkbench.tsx`, `ArtifactPreview.tsx` | Render the compact whole-Flow outline, actual-data content-native result, contextual adjustment, shared routine definition, immutable transfer confirmation, and saved persistent receipt. Keep the legacy full workbench behind a secondary disclosure and keep source evidence separate from personal editing. |

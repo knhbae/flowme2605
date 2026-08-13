@@ -1,6 +1,6 @@
 # QA Evidence
 
-**Status:** RELEASED / EXACT-HEAD PR CI PASS / PRODUCTION SMOKE 38/38
+**Status:** RELEASED / PR #178 PRODUCTION SMOKE 38/38 / 2026-08-13 ITEM DATE PARITY QA PASS / PUBLICATION AUTHORIZED
 
 **Base:** `2f93f00d6539aa8125faccb7ad944eaf3397e7bc`
 
@@ -12,7 +12,9 @@
 
 - 일반 `/f/[slug]`와 실행 가능한 단일 계획 `save_all` Map은 같은 `PublicFlowAdjustmentPanel`, `PublicFlowItemEditor`, editor controller, dirty-close, Back, focus, scroll 문법을 사용한다.
 - Item `계획에 반영`은 부모 Plan draft만, Plan `변경 반영`은 현재 공개 session의 effective draft만 바꾼다. 기존 최종 저장 action 전에는 persistent storage를 쓰지 않는다.
-- Map Item은 제목과 개인 메모를 편집한다. Map schema가 lossless하게 지원하지 않는 날짜 편집은 숨기며, 순서는 현재 단일-child plan 안에서만 저장한다.
+- Map Item은 일반 Flow와 같은 제목·개인 메모·날짜 필드를 편집한다. 기존
+  `fixed_date` override만 저장하며, reset은 실제 anchor의 source date 또는 원래
+  `날짜 없음`으로 돌아간다. 순서는 현재 단일-child plan 안에서만 저장한다.
 - `save_all`은 사용자에게 일반 Flow처럼 보인다. OPIc 2주/1달, wedding 두 버전, Allblanc 두 영상은 `choose_child`로 하나를 고른 뒤 canonical `/f`에서 편집한다. `review_hold`는 editor와 저장 action을 노출하지 않는다.
 - Map ID/version, child Flow/Item ID, source, snapshot, persistence/bridge, storage key, unknown fields, atomic save/rollback owner는 유지된다.
 
@@ -23,7 +25,8 @@
 | Ordinary `/f` vs Map shared Plan/Item contract | 1024px에서 동일 dialog/sheet test IDs, field order, Plan/Item CTA와 schema 비교 | PASS |
 | Flow Map Plan/Item responsive | 390 / 1024 / 1440, sticky footer, right drawer/full-width geometry, horizontal overflow `0` | PASS |
 | Flow Map no-op Item apply | 390px, parent Plan remains clean and closes without discard prompt | PASS |
-| Flow Map provisional apply and final save | 390px, Item/Plan apply storage bytes unchanged; final save/reload restores order/title/memo | PASS |
+| Flow Map provisional apply and final save | 390px, Item/Plan apply storage bytes unchanged; final save/reload restores order/title/memo/fixed date | PASS |
+| Flow Map date reset | source-undated는 `날짜 없음`, source-dated는 미반영 Plan anchor의 실제 원래 날짜로 즉시 복귀; source-equal fixed pin의 명시 reset과 최종 owner 제거 | PASS |
 | Dirty Cancel / Escape / browser Back | 390px, one discard confirmation, continue keeps draft/focus, discard restores opener and scroll | PASS |
 | `choose_child` | OPIc/wedding/Allblanc selector only; no Map/shared editor before entering child `/f` | PASS |
 | `review_hold` | editor, adjustment, save affordance absent | PASS |
@@ -32,7 +35,7 @@ Dedicated browser command:
 
 ```text
 npm.cmd run test:e2e -- tests/e2e/public-plan-edit-surface-unification.spec.ts --workers=1
-8 passed
+11 passed (2026-08-13 local follow-up)
 ```
 
 ## Transaction and identity matrix
@@ -44,14 +47,22 @@ npm.cmd run test:e2e -- tests/e2e/public-plan-edit-surface-unification.spec.ts -
 | Plan `변경 반영` | session effective result only; persistent bytes unchanged |
 | Clean/dirty discard | pre-open bytes restored exactly |
 | Map final save | existing snapshot/persistence/bridge transaction only |
-| Reload | requested inclusion/order and private title/memo restored |
+| Reload | requested inclusion/order and private title/memo/fixed date restored |
 | Map identity | Map ID/version, child Flow/Item IDs and bridge key unchanged |
-| Excluded Item values | private title/memo preserved while Item remains excluded |
+| Excluded Item values | private title/memo/fixed date preserved while Item remains excluded |
 | Unknown fields | snapshot/persistence top-level and nested sentinels preserved |
 | Invalid or unknown IDs | rejected or pruned without source mutation |
 | OPIc boundary | Map ID/version/source and 2 child identities preserved; public mode changes from merged `save_all` to `choose_child` |
 
+The focused helper contract separately verifies that a source-equal fixed-date
+pin survives a semantic no-op and is removed only when reset intent is explicit.
+
 ## Automated gates
+
+PR #178 release evidence below remains historical. Before publication, the
+2026-08-13 follow-up added these local checks: focused contracts `33/33`, `npm.cmd test` PASS,
+Production build PASS with `18` routes, dedicated browser `11/11`, 390px Playwright
+CLI visual inspection PASS, and console errors/warnings `0`.
 
 | Gate | Result |
 | --- | --- |
@@ -72,7 +83,7 @@ npm.cmd run test:e2e -- tests/e2e/public-plan-edit-surface-unification.spec.ts -
 - Feedback evidence: two user-provided mobile screenshots are kept separately from the six fresh local runtime captures.
 - Capture manifest: six routes HTTP `200`; horizontal overflow, replacement characters, page errors, console errors, and failed requests are all `0`.
 - Report verifier: 390 / 1024 / 1440 PASS; 8 images, broken images `0`, missing alt `0`, duplicate IDs `0`, replacement characters `0`, horizontal overflow `0`, browser/network errors `0`; 9 unique local links returned HTTP `200`.
-- UX subtraction review removed the separate default Map editor, duplicated selector help, Map-specific product explanation, and unsupported date input. Source links, materially distinct choice copy, dirty recovery, and internal source identity remain.
+- UX subtraction review removed the separate default Map editor, duplicated selector help, and Map-specific product explanation. The dated report is retained as immutable PR #178 evidence and predates the 2026-08-13 local date-parity follow-up. Source links, materially distinct choice copy, dirty recovery, and internal source identity remain.
 
 ## Publication boundary
 
@@ -81,3 +92,6 @@ npm.cmd run test:e2e -- tests/e2e/public-plan-edit-surface-unification.spec.ts -
 - Production smoke: `PASS 38/38` — workers `1`, retries `0`, `99.6s`, unexpected/flaky/skipped `0`.
 - Post-merge `main` CI: `PASS` — run `31597763288`, core job `94117373437`, Playwright job `94117373461`.
 - Observed-user validation: `0`.
+- 2026-08-13 Item date parity follow-up: publication is authorized. The local QA
+  checkpoint does not itself prove commit, PR, merge, deployment, or Production
+  smoke; each external state must be verified independently.

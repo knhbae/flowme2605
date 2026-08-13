@@ -49,6 +49,73 @@ test('middle-school save_all uses one approved result model without changing Map
   assert.equal(JSON.stringify(mapSnapshot), before);
 });
 
+test('undated source rows expose no source date entries', () => {
+  const publishPackage = getPackage('middle-school-math-1');
+  const mapSnapshot = buildEffectiveFlowMapSnapshot({
+    publishPackage,
+    executionState: 'executable',
+  });
+  const result = buildEffectiveFlowMapResult({ publishPackage, mapSnapshot });
+
+  assert.deepEqual(result.sourceDateByItemId, {});
+  assert.ok(result.editorRows.every((row) => row.schedule.state === 'unscheduled'));
+});
+
+test('dated source rows expose their projected dates by stable Map Item ID', () => {
+  const publishPackage = getPackage('moving-d30');
+  const mapSnapshot = buildEffectiveFlowMapSnapshot({
+    publishPackage,
+    executionState: 'executable',
+  });
+  const anchor = publishPackage.public.setupInput?.defaultValue;
+  assert.ok(anchor);
+  const result = buildEffectiveFlowMapResult({ publishPackage, mapSnapshot, anchor });
+
+  assert.deepEqual(result.sourceDateByItemId, {
+    [mapSnapshot.itemIds.canonical[0]!]: '2026-06-22',
+    [mapSnapshot.itemIds.canonical[1]!]: '2026-07-08',
+    [mapSnapshot.itemIds.canonical[2]!]: '2026-07-15',
+    [mapSnapshot.itemIds.canonical[3]!]: '2026-07-21',
+    [mapSnapshot.itemIds.canonical[4]!]: '2026-07-22',
+  });
+});
+
+test('a fixed Map date override does not replace the projected source date entry', () => {
+  const publishPackage = getPackage('moving-d30');
+  const baseSnapshot = buildEffectiveFlowMapSnapshot({
+    publishPackage,
+    executionState: 'executable',
+  });
+  const itemId = baseSnapshot.itemIds.canonical[0]!;
+  const mapSnapshot = reviseEffectiveFlowMapSnapshot(baseSnapshot, {
+    itemPersonalizations: {
+      [itemId]: { date: '2026-08-24' },
+    },
+  });
+  const anchor = publishPackage.public.setupInput?.defaultValue;
+  assert.ok(anchor);
+  const before = JSON.stringify(mapSnapshot);
+  const result = buildEffectiveFlowMapResult({ publishPackage, mapSnapshot, anchor });
+  const shiftedResult = buildEffectiveFlowMapResult({
+    publishPackage,
+    mapSnapshot,
+    anchor: '2026-08-05',
+  });
+
+  assert.equal(result.sourceDateByItemId[itemId], '2026-06-22');
+  assert.deepEqual(
+    result.editorRows.find((row) => row.id === itemId)?.schedule,
+    { state: 'dated', date: '2026-08-24' },
+  );
+  assert.equal(shiftedResult.sourceDateByItemId[itemId], '2026-07-06');
+  assert.deepEqual(
+    shiftedResult.editorRows.find((row) => row.id === itemId)?.schedule,
+    { state: 'dated', date: '2026-08-24' },
+  );
+  assert.equal(mapSnapshot.canonicalRows.find((row) => row.itemId === itemId)?.date, undefined);
+  assert.equal(JSON.stringify(mapSnapshot), before);
+});
+
 test('OPIc choose_child projects one alternative while preserving Map and child identity', () => {
   const publishPackage = getPackage('curated-opic-mock-course');
   const baseSnapshot = buildEffectiveFlowMapSnapshot({

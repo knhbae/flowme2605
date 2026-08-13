@@ -67,6 +67,8 @@ export type PublicFlowItemEditorDraft = {
   title: string;
   detail: string;
   date: string;
+  /** Session-only intent used when a source-backed date reset has no value diff. */
+  dateResetRequested?: boolean;
   completionCriterion?: string;
   sourceUrl?: string;
   warning?: string;
@@ -596,6 +598,9 @@ export function PublicFlowItemEditor({
   q3CopyEnabled = true,
   approvedPlanExecution = false,
   fieldCapabilities,
+  dateResetValue,
+  dateResetLabel,
+  dateResetAvailable,
 }: {
   draft: PublicFlowItemEditorDraft;
   returnFocusSelector?: string;
@@ -612,6 +617,9 @@ export function PublicFlowItemEditor({
     detail?: boolean;
     date?: boolean;
   }>;
+  dateResetValue?: string;
+  dateResetLabel?: string;
+  dateResetAvailable?: boolean;
 }) {
   const normalizedTitle = draft.title.trim();
   const resolvedFieldCapabilities = {
@@ -619,6 +627,15 @@ export function PublicFlowItemEditor({
     detail: fieldCapabilities?.detail ?? true,
     date: fieldCapabilities?.date ?? true,
   };
+  const hasDateResetValue = dateResetValue !== undefined;
+  const resolvedDateResetValue = hasDateResetValue ? dateResetValue : '';
+  const resolvedDateResetLabel = hasDateResetValue
+    ? dateResetLabel ?? (resolvedDateResetValue ? '원래 날짜로 되돌리기' : '날짜 없애기')
+    : '날짜 없애기';
+  const showDateReset = hasDateResetValue
+    ? !draft.dateResetRequested
+      && (dateResetAvailable === true || draft.date !== resolvedDateResetValue)
+    : Boolean(draft.date);
   const initialFocusSelector = resolvedFieldCapabilities.title
     ? '[data-testid="public-flow-item-editor-title-input"]'
     : resolvedFieldCapabilities.detail
@@ -714,17 +731,27 @@ export function PublicFlowItemEditor({
                 className={`mt-1 w-full ${FLOW_UI_INPUT_CLASS}`}
                 type="date"
                 value={draft.date}
-                onChange={(event) => onChange({ ...draft, date: event.target.value })}
+                onChange={(event) => onChange(hasDateResetValue
+                  ? {
+                      ...draft,
+                      date: event.target.value === ''
+                        ? resolvedDateResetValue
+                        : event.target.value,
+                      dateResetRequested: event.target.value === '',
+                    }
+                  : { ...draft, date: event.target.value })}
               />
             </label>
-            {draft.date ? (
+            {showDateReset ? (
               <button
                 type="button"
                 data-testid="public-flow-item-editor-date-clear"
                 className={`mt-1 ${FLOW_UI_COMPACT_ACTION_CLASS}`}
-                onClick={() => onChange({ ...draft, date: '' })}
+                onClick={() => onChange(hasDateResetValue
+                  ? { ...draft, date: resolvedDateResetValue, dateResetRequested: true }
+                  : { ...draft, date: '' })}
               >
-                날짜 없애기
+                {resolvedDateResetLabel}
               </button>
             ) : null}
           </div>

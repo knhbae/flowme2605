@@ -10,7 +10,10 @@ import { buildEffectiveFlowMapResult } from '@/lib/flow/effective-flow-map-resul
 import {
   buildSourceBackedFlowMapPublishPackage,
 } from '@/lib/flow/source-backed-my-flow';
-import { SourceBackedFlowMapSaveButton } from './SourceBackedFlowMapSaveButton';
+import {
+  buildPublicFlowMapItemPersonalization,
+  SourceBackedFlowMapSaveButton,
+} from './SourceBackedFlowMapSaveButton';
 
 (globalThis as typeof globalThis & { React: typeof React }).React = React;
 
@@ -38,11 +41,18 @@ function renderMapActions(
         : 'checklist' as const,
     steps: flow.steps.map((step) => ({ id: step.id, title: step.title })),
   }));
-  const editorRows = buildEffectiveFlowMapResult({
-    publishPackage,
-    mapSnapshot: effectiveSnapshot,
-    q3CopyEnabled,
-  }).editorRows;
+  const buildEditorProjection = (anchor: string) => {
+    const effectiveResult = buildEffectiveFlowMapResult({
+      publishPackage,
+      mapSnapshot: effectiveSnapshot,
+      anchor,
+      q3CopyEnabled,
+    });
+    return {
+      editorRows: effectiveResult.editorRows,
+      sourceDateByItemId: effectiveResult.sourceDateByItemId,
+    };
+  };
 
   return renderToStaticMarkup(
     <SourceBackedFlowMapSaveButton
@@ -55,7 +65,7 @@ function renderMapActions(
       q3CopyEnabled={q3CopyEnabled}
       visualSubtractionEnabled={visualSubtractionEnabled}
       onEffectiveSnapshotChange={() => undefined}
-      editorRows={editorRows}
+      buildEditorProjection={buildEditorProjection}
       savedFlows={savedFlows}
       setupInput={{ label: '시작일', hint: '시작일을 정합니다.' }}
     />,
@@ -102,6 +112,42 @@ test('Text and Todo stay undated while Calendar alone exposes the required ancho
     );
     assert.match(calendarMarkup, />시작일 정하기<\/button>/u);
   }
+});
+
+test('Map Item personalization preserves an unchanged fixed-date pin and only removes it on explicit source reset', () => {
+  const baseDraft = {
+    itemId: 'flow::item',
+    title: '원래 제목',
+    detail: '',
+    date: '2026-07-02',
+  };
+
+  assert.deepEqual(buildPublicFlowMapItemPersonalization({
+    canonicalTitle: '원래 제목',
+    currentPersonalization: { date: '2026-07-02' },
+    itemDraft: baseDraft,
+    sourceDate: '2026-07-02',
+  }), { date: '2026-07-02' });
+
+  assert.deepEqual(buildPublicFlowMapItemPersonalization({
+    canonicalTitle: '원래 제목',
+    currentPersonalization: { date: '2026-07-02' },
+    itemDraft: { ...baseDraft, dateResetRequested: true },
+    sourceDate: '2026-07-02',
+  }), {});
+
+  assert.deepEqual(buildPublicFlowMapItemPersonalization({
+    canonicalTitle: '원래 제목',
+    currentPersonalization: { date: '2026-07-10' },
+    itemDraft: baseDraft,
+    sourceDate: '2026-07-02',
+  }), {});
+
+  assert.deepEqual(buildPublicFlowMapItemPersonalization({
+    canonicalTitle: '원래 제목',
+    itemDraft: { ...baseDraft, date: '2026-07-10' },
+    sourceDate: '2026-07-02',
+  }), { date: '2026-07-10' });
 });
 
 test('explicit visual rollback can retain legacy Map action and anchor semantics', () => {
