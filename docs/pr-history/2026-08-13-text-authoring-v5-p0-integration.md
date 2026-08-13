@@ -1,9 +1,9 @@
 # Text Authoring V5 And Service P0 Integration
 
-- **PR:** Draft creation pending
+- **PR:** [#184](https://github.com/knhbae/flowme2605/pull/184)
 - **Date:** 2026-08-13 KST
 - **Branch:** `agent/text-authoring-p0-refresh-20260813`
-- **Status:** Draft preparation / local QA PASS / unpublished
+- **Status:** Draft / local QA PASS / GitHub and Preview checks pending / unpublished
 - **Base:** `origin/main` at `a179eb8dbbdcf9ddd6ae3ce7f8fd2bf1bb04714a`
 - **Approval:** `TA-TEXT-AUTHORING-STACK-INTEGRATION-20260813-01`
 
