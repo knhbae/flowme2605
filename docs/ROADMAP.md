@@ -1,14 +1,37 @@
 # Roadmap
 
-**Last Updated:** 2026-08-12<br>
+**Last Updated:** 2026-08-13<br>
 **Current Version:** v0.1.0 (released product PoC)<br>
-**Current Validation Stage:** internal alpha / Plan edit-lifecycle unification released and Production-smoked / observed users 0<br>
+**Current Validation Stage:** internal alpha / Flow Map Item date parity released and Production-smoked / observed users 0<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
 **Next Milestone:** Owner promotion of one next product gate or a real-user validation checkpoint
 
 Human-facing control surface: [FlowMe Project Control](./PROJECT_CONTROL.md).
 The [2026-07-29 P35 stage board](./content-audit/2026-07-29-flowme-current-stage-control-board-ko.html)
 is retained as a dated evidence snapshot rather than the current backlog.
+
+## Released: Flow Map Item Date Parity
+
+The narrow date-parity follow-up to
+[Public Plan/Item Edit Surface Unification](./specs/2026-08-12-public-plan-edit-surface-unification/spec.md)
+shipped through [PR #182](https://github.com/knhbae/flowme2605/pull/182).
+Final head `0aca76687ac582ff4cf11b19a0f46db5593c768e` passed exact-head CI run
+[`31655643163`](https://github.com/knhbae/flowme2605/actions/runs/31655643163)
+and merged as `f6f796c035d5762eea07ec35abb7f1af1577a5a5` at
+`2026-08-13T01:05:33Z`. Production deployment record `5880059975`, status
+`16743295490`, succeeded, and canonical smoke passed `41/41` with workers `1`,
+retries `0`, in `264804.24ms`; unexpected, flaky, and skipped results were `0`.
+Post-merge `main` run
+[`31656595092`](https://github.com/knhbae/flowme2605/actions/runs/31656595092)
+passed core job `94312307779` and Playwright job `94312307849`.
+
+Executable single-plan Maps now use the ordinary Flow Item editor for title,
+memo, and date. Date reset returns to the current source projection, including
+an in-session Plan anchor, while a source-equal fixed-date pin survives a
+semantic no-op and is removed only by explicit reset. Map/version/child/storage
+identity, schema, and atomic save ownership remain unchanged. See the
+[release record](./pr-history/2026-08-13-flow-map-item-date-parity.md). No next
+product gate is active, and observed users remain `0`.
 
 ## Released: Plan Edit And Lifecycle Unification
 
@@ -61,8 +84,9 @@ Default executable Maps now use the unified public presentation. Exact
 action, and anchor behavior for both `save_all` and `choose_child`; exact
 `savedPlanLibrary=off` restores the prior/default result mode. The release adds
 no storage key, schema, migration, or new persistence owner. Observed users
-remain `0`. PR #178 now supersedes this source in Production while preserving
-its historical release evidence.
+remain `0`. PR #182 merge `f6f796c035d5762eea07ec35abb7f1af1577a5a5`
+now supersedes this source in Production while preserving PR #176 and PR #178
+as historical public-surface and Plan-edit foundations.
 
 ## Released: R3B Approved Plan Execution UX
 
@@ -78,10 +102,11 @@ run `31449546812` passed. Production deployment record `5842830294`, status
 to Vercel login. The canonical alias served the app, and approved-spec smoke passed
 `23/23` with workers `1`, retries `0`, in `62.9s` (displayed `1.0m`), output
 `r3b-production-hotfix-2b937ce`. R3B remains the inherited plan-execution
-contract after the later PR #176 and PR #178 releases. PR #178 merge
-`908ee849beb15cb10331b72d7894167a61458b18` is the latest runtime-bearing
-product release without reopening that contract. Observed-user validation
-remains `0`.
+contract after the later PR #176, PR #178, and PR #182 releases. PR #178 merge
+`908ee849beb15cb10331b72d7894167a61458b18` is the historical Plan-edit
+foundation; PR #182 merge `f6f796c035d5762eea07ec35abb7f1af1577a5a5`
+is the latest runtime-bearing product release without reopening that contract.
+Observed-user validation remains `0`.
 
 ## Closed MVP Program: P35 Round 2 B/B/B Bounded UX Correction
 
@@ -447,16 +472,17 @@ Detailed scope: [Save, Personalize, Execute Journey Reset](./specs/2026-07-18-sa
 
 ## Operating Queue
 
-Plan edit and lifecycle unification implementation, exact-head CI, merge,
-Production deployment, and canonical smoke are complete. Merge
-`908ee849beb15cb10331b72d7894167a61458b18` is the latest runtime-bearing
-product merge and canonical verification passed `38/38`. Post-merge `main` run `31597763288`
-passed both core and Playwright jobs. No product gate is active. External user
-observation stays separate and the count stays `0`.
+Flow Map Item date parity implementation, exact-head CI, merge, Production
+deployment, and canonical smoke are complete. Merge
+`f6f796c035d5762eea07ec35abb7f1af1577a5a5` is the latest runtime-bearing
+product merge and canonical verification passed `41/41`. Post-merge `main` run
+`31656595092` passed both core and Playwright. No product gate is active.
+External user observation stays separate and the count stays `0`.
 
 | Lane | Owner | Work | Next checkpoint | Done when |
 | --- | --- | --- | --- | --- |
-| Completed Plan edit/lifecycle release | AI + Owner | Preserve one Plan/Item editor and lifecycle contract across saved, public Flow, and executable Map origins without moving persistence ownership | Preserve [PR #178](https://github.com/knhbae/flowme2605/pull/178) merge `908ee849` as the runtime product baseline until a later explicit product release | Exact-head CI PASS, Production PASS, canonical smoke `38/38`, post-merge `main` run truth explicit, observed users `0` |
+| Completed Flow Map Item date-parity release | AI + Owner | Preserve ordinary Flow and executable single-plan Map Item title/memo/date parity without moving persistence ownership | Preserve [PR #182](https://github.com/knhbae/flowme2605/pull/182) merge `f6f796c0` as the runtime product baseline until a later explicit product release | Exact-head CI PASS, Production PASS, canonical smoke `41/41`, post-merge `main` run truth explicit, observed users `0` |
+| Completed Plan edit/lifecycle release | AI + Owner | Preserve one Plan/Item editor and lifecycle contract across saved, public Flow, and executable Map origins without moving persistence ownership | Preserve [PR #178](https://github.com/knhbae/flowme2605/pull/178) merge `908ee849` as the broader lifecycle foundation inherited by PR #182 | Exact-head CI PASS, Production PASS, canonical smoke `38/38`, post-merge `main` run truth explicit, observed users `0` |
 | Completed documentation-only closeouts | AI | Publish the exact PR #176 and PR #178 release facts and observed-user boundary without changing product code | Preserve [PR #177](https://github.com/knhbae/flowme2605/pull/177) and [PR #179](https://github.com/knhbae/flowme2605/pull/179) as documentation history, separate from the runtime-bearing product release | Canonical docs agree, docs checks passed, and documentation-only deployments are not mistaken for a new product baseline |
 | Completed public plan surface release | AI + Owner | One public Flow/Map result grammar with existing save identity, rollback, CI, deployment, and smoke boundaries | Preserve merge `47c54803c6bb7544aad757ce62c4ce58decbfe53` as the historical predecessor to PR #178 | PR #176, exact-head and post-merge CI PASS, exact-source Production PASS, canonical smoke `11/11`, observed users `0` |
 | Completed R3B release | AI + Owner | Approved plan-execution UX, bounded selected-Plan/transfer boundaries, Escape correction, CI, deployment, and smoke | Preserve R3B as the inherited My Flow execution contract | PR #172 plus PR #173, merge `2b937ce811b518950f495341d05736ebd102887a`, CI PASS, exact-source deployment PASS, canonical smoke `23/23`, observed users `0` |
@@ -511,13 +537,15 @@ These gates cannot be closed by automated tests or simulated personas.
 
 ## Release Evidence Boundary
 
+[Flow Map Item Date Parity](./pr-history/2026-08-13-flow-map-item-date-parity.md)
+is released through PR #182 and runtime-bearing release source
+`f6f796c035d5762eea07ec35abb7f1af1577a5a5`. The broader
 [Plan Edit And Lifecycle Unification](./pr-history/2026-08-12-plan-edit-lifecycle-unification.md)
-is released through PR #178 and runtime-bearing release source
-`908ee849beb15cb10331b72d7894167a61458b18`. Documentation-only closeouts do
-not change runtime, reopen a product gate, or turn automated smoke into
-observed-user evidence. Text-to-Flow, P2 follow-ups, external integrations, and
-observed-user recruitment remain inactive until the Owner explicitly promotes
-one of them.
+foundation remains historical release evidence from PR #178. Documentation-only
+closeouts do not change runtime, reopen a product gate, or turn automated smoke
+into observed-user evidence. Text-to-Flow, P2 follow-ups, external integrations,
+and observed-user recruitment remain inactive until the Owner explicitly
+promotes one of them.
 
 ## Gated Backlog
 

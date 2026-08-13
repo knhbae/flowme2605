@@ -1,6 +1,6 @@
 # QA Evidence
 
-**Status:** RELEASED / PR #178 PRODUCTION SMOKE 38/38 / 2026-08-13 ITEM DATE PARITY QA PASS / PUBLICATION AUTHORIZED
+**Status:** RELEASED / PR #182 CI-PRODUCTION-SMOKE PASS 41/41 / OBSERVED USERS 0
 
 **Base:** `2f93f00d6539aa8125faccb7ad944eaf3397e7bc`
 
@@ -59,8 +59,8 @@ pin survives a semantic no-op and is removed only when reset intent is explicit.
 
 ## Automated gates
 
-PR #178 release evidence below remains historical. Before publication, the
-2026-08-13 follow-up added these local checks: focused contracts `33/33`, `npm.cmd test` PASS,
+PR #178 release evidence below remains historical. Before PR #182 publication,
+the 2026-08-13 follow-up had added these local checks: focused contracts `33/33`, `npm.cmd test` PASS,
 Production build PASS with `18` routes, dedicated browser `11/11`, 390px Playwright
 CLI visual inspection PASS, and console errors/warnings `0`.
 
@@ -92,6 +92,13 @@ CLI visual inspection PASS, and console errors/warnings `0`.
 - Production smoke: `PASS 38/38` — workers `1`, retries `0`, `99.6s`, unexpected/flaky/skipped `0`.
 - Post-merge `main` CI: `PASS` — run `31597763288`, core job `94117373437`, Playwright job `94117373461`.
 - Observed-user validation: `0`.
-- 2026-08-13 Item date parity follow-up: publication is authorized. The local QA
-  checkpoint does not itself prove commit, PR, merge, deployment, or Production
-  smoke; each external state must be verified independently.
+- 2026-08-13 Item date parity follow-up: [PR #182](https://github.com/knhbae/flowme2605/pull/182)
+  final head `0aca76687ac582ff4cf11b19a0f46db5593c768e` passed exact-head CI run
+  [`31655643163`](https://github.com/knhbae/flowme2605/actions/runs/31655643163)
+  and merged as runtime-bearing `f6f796c035d5762eea07ec35abb7f1af1577a5a5`
+  at `2026-08-13T01:05:33Z`.
+- Item date parity Production: `PASS` — deployment `5880059975` / status
+  `16743295490`; canonical smoke `41/41`, workers `1`, retries `0`,
+  `264804.24ms`, unexpected/flaky/skipped `0`.
+- Item date parity post-merge `main`: run `31656595092` core job `94312307779`
+  and Playwright job `94312307849` passed.

@@ -1,6 +1,6 @@
 # Implementation Plan
 
-**Status:** RELEASED THROUGH PR #178 / 2026-08-13 ITEM DATE PARITY VERIFIED / PUBLICATION AUTHORIZED
+**Status:** RELEASED THROUGH PR #178 AND DATE PARITY PR #182 / CI-PRODUCTION-SMOKE PASS
 
 ## Phase 0 — Contract and boundaries
 
@@ -61,6 +61,8 @@
 - Canonical Production smoke: `PASS 38/38`, workers `1`, retries `0`, unexpected/flaky/skipped `0`
 - Post-merge `main` run: `31597763288 PASS` — core job `94117373437`, Playwright job `94117373461`
 - Observed-user validation: `0`
-- 2026-08-13 Item date parity follow-up: publication is authorized. This plan's
-  local QA record does not imply commit, PR, merge, deployment, or Production
-  smoke; each external state must be verified independently.
+- 2026-08-13 Item date parity follow-up: [PR #182](https://github.com/knhbae/flowme2605/pull/182)
+  head `0aca76687ac582ff4cf11b19a0f46db5593c768e` passed exact-head CI and merged
+  as runtime-bearing `f6f796c035d5762eea07ec35abb7f1af1577a5a5`. Production
+  deployment `5880059975` / status `16743295490` and canonical smoke `41/41`
+  passed. Post-merge `main` run `31656595092` core and Playwright jobs passed.

@@ -1,16 +1,17 @@
 # FLOW Service Structure
 
 Last updated: 2026-08-13
-Status: Living Production baseline with Plan edit and lifecycle unification released through PR #178; publication of the 2026-08-13 Map Item date-parity follow-up is authorized, while exact GitHub/Vercel release state must be verified externally. Observed users remain `0`.
+Status: Living Production baseline with Flow Map Item date parity released through PR #182; observed users remain `0`.
 
 This document is the canonical map of the current app surface, screen feature tree, and service architecture. It is not validation evidence by itself. Use it to keep product PoCs, research surfaces, creator tools, public routes, My Flow execution, and shared domain modules from drifting apart.
 
-The plan surfaces below are the current Production behavior. [PR #178](https://github.com/knhbae/flowme2605/pull/178)
-final head `3cac3cde5bbcf6297b93b8299bfe28693700aebf` merged as
-`908ee849beb15cb10331b72d7894167a61458b18`; exact-head PR CI run
-`31596540934`, post-merge `main` run `31597763288`, Production deployment, and
-canonical smoke `38/38` passed. The shared editors change no Flow or Map
-persistence identity, storage key, schema, or transaction owner. Automated
+The plan surfaces below are the current Production behavior. [PR #182](https://github.com/knhbae/flowme2605/pull/182)
+final head `0aca76687ac582ff4cf11b19a0f46db5593c768e` merged as
+`f6f796c035d5762eea07ec35abb7f1af1577a5a5`; exact-head PR CI run
+`31655643163`, Production deployment record `5880059975` / status `16743295490`,
+and canonical smoke `41/41` passed. Post-merge `main` run `31656595092` passed
+both core and Playwright. The shared editors change no Flow or
+Map persistence identity, storage key, schema, or transaction owner. Automated
 production QA is not observed-user validation; observed users remain `0`.
 
 ## Update Policy
@@ -107,10 +108,12 @@ Desktop can use a top nav with the same priority order. It should not expose mor
   action, and anchor behavior for both `save_all` and `choose_child`; exact
   `savedPlanLibrary=off` restores the prior/default result mode. These flags do
   not rename keys, migrate schema, or move data ownership into the shared UI.
-- This Production behavior was introduced by runtime-bearing merge
-  `908ee849beb15cb10331b72d7894167a61458b18`. Exact-head and post-merge CI,
-  exact-source Production deployment, and canonical smoke `38/38` passed;
-  observed users remain `0`.
+- This public presentation foundation was introduced by PR #178 merge
+  `908ee849beb15cb10331b72d7894167a61458b18`. PR #182 merge
+  `f6f796c035d5762eea07ec35abb7f1af1577a5a5` is the latest runtime-bearing
+  source and extends it with Item date parity. Exact-head PR CI, exact-source
+  Production deployment, and canonical smoke `41/41` passed; observed users
+  remain `0`.
 
 ### Current Production Plan/Item Edit Contract
 
@@ -120,20 +123,22 @@ Desktop can use a top nav with the same priority order. It should not expose mor
 - Item `계획에 반영` changes only the parent draft and Plan `변경 반영` changes
   only the in-session effective result. Persistent storage remains byte-stable
   until the existing final save action.
-- Map title, inclusion/order, and private Item title/memo values are adapted to
-  the existing snapshot/persistence owners. Map ID/version, child Flow/Item
-  identity, bridge key, unknown fields, and atomic save/rollback behavior are
-  preserved. Unsupported Map date editing is omitted instead of simulated.
+- Map title, inclusion/order, and private Item title/memo/date values are
+  adapted to the existing snapshot/persistence owners. Date reset returns to
+  the source projection for the current in-session Plan anchor; source-undated
+  Items return to no date. Map ID/version, child Flow/Item identity, bridge key,
+  unknown fields, and atomic save/rollback behavior are preserved.
 - User-facing Map modes are subtractive: single-plan `save_all` looks like a
   Flow, real alternatives use `choose_child` then `/f`, and `review_hold` has no
   editor. OPIc was changed from a merged 19-Item plan to a 2-week/1-month
   choice without changing its Map/version/source/child identities.
-- This contract was released through PR #178. Automated QA and screenshots are
-  not observed-user validation; observed users remain `0`.
+- The shared contract was released through PR #178 and its Map Item date parity
+  through PR #182. Automated QA and screenshots are not observed-user
+  validation; observed users remain `0`.
 
 ### 2026-08-13 Map Item Date Parity Follow-Up
 
-- The local follow-up exposes the existing shared Item date control for
+- The released follow-up exposes the existing shared Item date control for
   executable single-plan Maps; it does not introduce a separate Map editor.
 - A private fixed date is adapted to the existing snapshot/persistence owner.
   Reset removes only that private override and immediately restores the actual
@@ -145,17 +150,18 @@ Desktop can use a top nav with the same priority order. It should not expose mor
 - Map ID/version, child Flow/Item identity, bridge key, unknown fields, and the
   final atomic save/rollback transaction remain unchanged. No storage key or
   schema migration is introduced.
-- The local implementation and automated-QA checkpoint preceded publication.
-  Publication was subsequently authorized; commit, PR, merge, deployment, and
-  Production-smoke state must be verified from their external records and are
-  not implied by this architecture document. Observed-user validation remains
-  separate.
+- [PR #182](https://github.com/knhbae/flowme2605/pull/182) final head
+  `0aca76687ac582ff4cf11b19a0f46db5593c768e` passed exact-head CI run
+  `31655643163` and merged as
+  `f6f796c035d5762eea07ec35abb7f1af1577a5a5`. Production deployment record
+  `5880059975` / status `16743295490` succeeded and canonical smoke passed
+  `41/41`; observed-user validation remains separate and the count remains `0`.
 
 ### Current Production Baseline And Inherited R3B/P35/Round 2 Contracts
 
-- Plan edit and lifecycle merge `908ee849beb15cb10331b72d7894167a61458b18`
+- Flow Map Item date-parity merge `f6f796c035d5762eea07ec35abb7f1af1577a5a5`
   is the latest runtime-bearing product merge and current product-behavior
-  baseline. It preserves the R3B selected-Plan,
+  baseline. It preserves the PR #178 Plan edit/lifecycle foundation and the R3B selected-Plan,
   transfer, and Escape contracts from merge
   `2b937ce811b518950f495341d05736ebd102887a`. Exact
   `myFlowExperience=r3a-lab` remains an internal query-only surface. Automated
