@@ -1,0 +1,525 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://flowme.local/schemas/p1-g-linked-flow-lineage-contract-v1.json",
+  "title": "FlowMe P1-G bounded linked Flow lineage fixture package",
+  "description": "Spec-and-fixture-only contract. It is not a Text Authoring runtime schema.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "contractVersion",
+    "fixtureId",
+    "fixtureVersion",
+    "trackId",
+    "scope",
+    "evidenceTrace",
+    "rightsBoundary",
+    "syntheticSource",
+    "catalog",
+    "relationTemplate",
+    "cases"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "const": "https://flowme.local/schemas/p1-g-linked-flow-lineage-contract-v1.json"
+    },
+    "contractVersion": {
+      "type": "string",
+      "const": "p1-g-linked-flow-lineage-v1"
+    },
+    "fixtureId": {
+      "type": "string",
+      "const": "fixture:p1g:kcs-moving-goods-vehicle:v1"
+    },
+    "fixtureVersion": { "type": "string", "const": "1" },
+    "trackId": { "type": "string", "const": "P1-G-LINKED-LINEAGE" },
+    "scope": { "type": "string", "const": "spec_fixture_only" },
+    "evidenceTrace": { "$ref": "#/$defs/evidenceTrace" },
+    "rightsBoundary": { "$ref": "#/$defs/rightsBoundary" },
+    "syntheticSource": { "$ref": "#/$defs/syntheticSource" },
+    "catalog": { "$ref": "#/$defs/catalog" },
+    "relationTemplate": { "$ref": "#/$defs/relationTemplate" },
+    "cases": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "items": { "$ref": "#/$defs/case" }
+    }
+  },
+  "$defs": {
+    "stableId": {
+      "type": "string",
+      "minLength": 3,
+      "pattern": "^[a-z0-9][a-z0-9:._-]+$"
+    },
+    "sha256": { "type": "string", "pattern": "^[A-F0-9]{64}$" },
+    "evidenceTrace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceId",
+        "provider",
+        "url",
+        "checkedAt",
+        "rightsStatus",
+        "rawBodyIncluded",
+        "executionRecheckRequired",
+        "evidenceIds"
+      ],
+      "properties": {
+        "sourceId": { "$ref": "#/$defs/stableId" },
+        "provider": { "type": "string", "const": "관세청" },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://www\\.customs\\.go\\.kr/"
+        },
+        "checkedAt": { "type": "string", "const": "2026-08-11" },
+        "rightsStatus": { "type": "string", "const": "UNKNOWN_LINK_ONLY" },
+        "rawBodyIncluded": { "type": "boolean", "const": false },
+        "executionRecheckRequired": { "type": "boolean", "const": true },
+        "evidenceIds": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": { "type": "string", "enum": ["S15", "M5"] },
+          "allOf": [
+            { "contains": { "const": "S15" } },
+            { "contains": { "const": "M5" } }
+          ]
+        }
+      }
+    },
+    "rightsBoundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rawMaterialMode",
+        "privateValuesIncluded",
+        "legalOutcomeInvented",
+        "taxAmountInvented",
+        "externalWrites",
+        "forbiddenInferences"
+      ],
+      "properties": {
+        "rawMaterialMode": {
+          "type": "string",
+          "const": "synthetic_paraphrase"
+        },
+        "privateValuesIncluded": { "type": "boolean", "const": false },
+        "legalOutcomeInvented": { "type": "boolean", "const": false },
+        "taxAmountInvented": { "type": "boolean", "const": false },
+        "externalWrites": { "type": "integer", "const": 0 },
+        "forbiddenInferences": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "legal_result",
+              "tax_amount",
+              "deadline",
+              "completion",
+              "personal_document",
+              "contact",
+              "address"
+            ]
+          }
+        }
+      }
+    },
+    "sourceRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rowId",
+        "line",
+        "text",
+        "startOffset",
+        "endOffsetExclusive",
+        "sha256"
+      ],
+      "properties": {
+        "rowId": { "$ref": "#/$defs/stableId" },
+        "line": { "type": "integer", "minimum": 1 },
+        "text": { "type": "string", "minLength": 1 },
+        "startOffset": { "type": "integer", "minimum": 0 },
+        "endOffsetExclusive": { "type": "integer", "minimum": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "syntheticSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceId",
+        "snapshotId",
+        "sourceVersion",
+        "encoding",
+        "lineEnding",
+        "finalNewline",
+        "rawText",
+        "contentSha256",
+        "rows"
+      ],
+      "properties": {
+        "sourceId": { "$ref": "#/$defs/stableId" },
+        "snapshotId": { "$ref": "#/$defs/stableId" },
+        "sourceVersion": { "type": "string", "const": "synthetic-v1" },
+        "encoding": { "type": "string", "const": "UTF-8" },
+        "lineEnding": { "type": "string", "const": "LF" },
+        "finalNewline": { "type": "boolean", "const": true },
+        "rawText": { "type": "string", "minLength": 1 },
+        "contentSha256": { "$ref": "#/$defs/sha256" },
+        "rows": {
+          "type": "array",
+          "minItems": 8,
+          "maxItems": 8,
+          "items": { "$ref": "#/$defs/sourceRow" }
+        }
+      }
+    },
+    "flow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "flowId",
+        "versionId",
+        "rootFlowId",
+        "title",
+        "primarySourceId",
+        "sourceSnapshotId",
+        "completionOwnerId",
+        "itemIds"
+      ],
+      "properties": {
+        "flowId": { "$ref": "#/$defs/stableId" },
+        "versionId": { "$ref": "#/$defs/stableId" },
+        "rootFlowId": { "$ref": "#/$defs/stableId" },
+        "title": { "type": "string", "minLength": 1 },
+        "primarySourceId": { "$ref": "#/$defs/stableId" },
+        "sourceSnapshotId": { "$ref": "#/$defs/stableId" },
+        "completionOwnerId": { "$ref": "#/$defs/stableId" },
+        "itemIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/stableId" }
+        }
+      }
+    },
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["itemId", "flowId", "title", "sourceRowIds"],
+      "properties": {
+        "itemId": { "$ref": "#/$defs/stableId" },
+        "flowId": { "$ref": "#/$defs/stableId" },
+        "title": { "type": "string", "minLength": 1 },
+        "sourceRowIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/stableId" }
+        }
+      }
+    },
+    "completionOwner": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ownerId", "ownerKind", "flowId"],
+      "properties": {
+        "ownerId": { "$ref": "#/$defs/stableId" },
+        "ownerKind": { "type": "string", "const": "flow_execution" },
+        "flowId": { "$ref": "#/$defs/stableId" }
+      }
+    },
+    "catalog": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["flows", "items", "completionOwners"],
+      "properties": {
+        "flows": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": { "$ref": "#/$defs/flow" }
+        },
+        "items": {
+          "type": "array",
+          "minItems": 2,
+          "items": { "$ref": "#/$defs/item" }
+        },
+        "completionOwners": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": { "$ref": "#/$defs/completionOwner" }
+        }
+      }
+    },
+    "sourceLineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceId",
+        "snapshotId",
+        "sourceVersion",
+        "commonSourceRowIds",
+        "conditionSourceRowIds",
+        "childSourceRowIds"
+      ],
+      "properties": {
+        "sourceId": { "$ref": "#/$defs/stableId" },
+        "snapshotId": { "$ref": "#/$defs/stableId" },
+        "sourceVersion": { "type": "string", "const": "synthetic-v1" },
+        "commonSourceRowIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/stableId" }
+        },
+        "conditionSourceRowIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/stableId" }
+        },
+        "childSourceRowIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/stableId" }
+        }
+      }
+    },
+    "flowPointer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["flowId", "versionId", "completionOwnerId", "itemId"],
+      "properties": {
+        "flowId": { "$ref": "#/$defs/stableId" },
+        "versionId": { "$ref": "#/$defs/stableId" },
+        "completionOwnerId": { "$ref": "#/$defs/stableId" },
+        "itemId": { "$ref": "#/$defs/stableId" }
+      }
+    },
+    "relationTemplate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "relationId",
+        "relationKind",
+        "status",
+        "rootFlowId",
+        "parent",
+        "child",
+        "sourceLineage",
+        "predicate",
+        "completion",
+        "navigation",
+        "bounds",
+        "rights"
+      ],
+      "properties": {
+        "relationId": { "$ref": "#/$defs/stableId" },
+        "relationKind": {
+          "type": "string",
+          "const": "bounded_conditional_child"
+        },
+        "status": { "type": "string", "const": "spec_fixture_only" },
+        "rootFlowId": { "$ref": "#/$defs/stableId" },
+        "parent": { "$ref": "#/$defs/flowPointer" },
+        "child": { "$ref": "#/$defs/flowPointer" },
+        "sourceLineage": { "$ref": "#/$defs/sourceLineage" },
+        "predicate": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "predicateId",
+            "kind",
+            "fieldId",
+            "operator",
+            "expectedValue",
+            "onFalse",
+            "onMissing"
+          ],
+          "properties": {
+            "predicateId": { "$ref": "#/$defs/stableId" },
+            "kind": { "type": "string", "const": "boolean_field_equals" },
+            "fieldId": { "type": "string", "const": "vehicleIncluded" },
+            "operator": { "type": "string", "const": "equals" },
+            "expectedValue": { "type": "boolean", "const": true },
+            "onFalse": { "type": "string", "const": "omit_child" },
+            "onMissing": { "type": "string", "const": "block" }
+          }
+        },
+        "completion": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "independent",
+            "parentCannotCompleteChild",
+            "childCannotCompleteParent"
+          ],
+          "properties": {
+            "independent": { "type": "boolean", "const": true },
+            "parentCannotCompleteChild": { "type": "boolean", "const": true },
+            "childCannotCompleteParent": { "type": "boolean", "const": true }
+          }
+        },
+        "navigation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["nextAction", "returnTo"],
+          "properties": {
+            "nextAction": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["when", "target"],
+              "properties": {
+                "when": {
+                  "type": "string",
+                  "const": "predicate_true_and_child_incomplete"
+                },
+                "target": { "$ref": "#/$defs/flowPointer" }
+              }
+            },
+            "returnTo": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["when", "target"],
+              "properties": {
+                "when": { "type": "string", "const": "child_complete_or_exit" },
+                "target": { "$ref": "#/$defs/flowPointer" }
+              }
+            }
+          }
+        },
+        "bounds": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "maxChildren",
+            "maxDepth",
+            "acyclic",
+            "genericDependencyGraph"
+          ],
+          "properties": {
+            "maxChildren": { "type": "integer", "const": 1 },
+            "maxDepth": { "type": "integer", "const": 1 },
+            "acyclic": { "type": "boolean", "const": true },
+            "genericDependencyGraph": { "type": "boolean", "const": false }
+          }
+        },
+        "rights": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "rawSourceIncluded", "executionRecheckRequired"],
+          "properties": {
+            "mode": { "type": "string", "const": "LINK_ONLY" },
+            "rawSourceIncluded": { "type": "boolean", "const": false },
+            "executionRecheckRequired": { "type": "boolean", "const": true }
+          }
+        }
+      }
+    },
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "caseId",
+        "purpose",
+        "input",
+        "completionByOwnerId",
+        "interaction",
+        "expected"
+      ],
+      "properties": {
+        "caseId": { "$ref": "#/$defs/stableId" },
+        "purpose": { "type": "string", "minLength": 1 },
+        "input": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "vehicleIncluded",
+            "inspectionRequired",
+            "taxationRequired"
+          ],
+          "properties": {
+            "vehicleIncluded": { "type": "boolean" },
+            "inspectionRequired": { "type": "boolean" },
+            "taxationRequired": { "type": "boolean" }
+          }
+        },
+        "completionByOwnerId": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["owner:p1g:customs-common", "owner:p1g:vehicle-child"],
+          "properties": {
+            "owner:p1g:customs-common": {
+              "type": "string",
+              "enum": ["pending", "completed"]
+            },
+            "owner:p1g:vehicle-child": {
+              "type": "string",
+              "enum": ["pending", "completed"]
+            }
+          }
+        },
+        "interaction": { "type": "string", "enum": ["evaluate", "exit_child"] },
+        "expected": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "emittedRelationCount",
+            "childFlowCount",
+            "runtimeWrites",
+            "parentBranches",
+            "activeTarget"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": ["omitted", "linked", "return_to_parent"]
+            },
+            "emittedRelationCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "childFlowCount": { "type": "integer", "minimum": 0, "maximum": 1 },
+            "runtimeWrites": { "type": "integer", "const": 0 },
+            "parentBranches": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": { "type": "string", "enum": ["inspection", "taxation"] }
+            },
+            "activeTarget": {
+              "type": ["object", "null"],
+              "additionalProperties": false,
+              "required": ["flowId", "itemId"],
+              "properties": {
+                "flowId": { "$ref": "#/$defs/stableId" },
+                "itemId": { "$ref": "#/$defs/stableId" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "x-flowme-invariants": [
+    "The package is spec-and-fixture-only and MUST NOT be imported by a production runtime index.",
+    "All synthetic source row locators MUST resolve to exact UTF-8 byte ranges and SHA-256 values in syntheticSource.rawText.",
+    "Parent and child MUST share source identity, source snapshot, root identity, and source version while keeping distinct flow, version, and completion-owner identities.",
+    "Only vehicleIncluded === true emits exactly one depth-one child; false emits none and missing, unknown, or non-boolean input blocks with zero writes.",
+    "Inspection and taxation remain branches of the parent customs case and MUST NOT create child Flows.",
+    "Completion is owned independently; parent bulk completion cannot mutate child state and child completion cannot mutate parent state.",
+    "Next-action and return pointers MUST resolve inside the fixed catalog and MUST NOT mutate completion state.",
+    "Self-links, cycles, duplicate relation IDs, more than one child, source mismatch, locator mismatch, reused owner identity, unresolved pointers, or forbidden collaboration fields fail closed with relation null, childFlowIds empty, and writes zero.",
+    "The official evidence is link-only. The fixture contains no copied official body, personal document values, tax amounts, legal outcomes, or invented deadlines/completion."
+  ]
+}
