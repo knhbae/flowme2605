@@ -40,9 +40,11 @@ Only **Active Gate** carries the current execution backlog or Owner checkpoint. 
 
 ### Active Gate
 
-- [2026-08-13 Text Authoring P1-E 원문 후보 갱신](./2026-08-13-flowme-text-authoring-p1-e-source-update/00-development-goal-ko.md) — owner 승인 `TA-P1-E-SOURCE-UPDATE-20260813-01`로 완료한 local commit `a5597e9fe89b1facddba801212af5e05791d06af`를 P1-C Draft PR [#185](https://github.com/knhbae/flowme2605/pull/185) 위 stacked branch에 재적용하고 fresh checks를 수행한다. `LOCAL_SYNTHETIC_HOST_ADAPTER`의 완전한 후보 envelope, 명시 비교·선택, 원자 apply/undo만 포함하며 fetch/provider, P1-A/B/D/F/G, P2, merge, production deploy, P35와 관찰 사용자 검증은 이 gate 밖이다.
+- [2026-08-13 Text Authoring P1-G bounded linked lineage](./2026-08-13-flowme-text-authoring-p1-g-linked-lineage/00-development-goal-ko.md) — owner 승인 `TA-P1-G-LINKED-LINEAGE-20260813-01`로 완료한 spec/fixture-only commit `a7fcd77d`를 P1-E Draft PR [#186](https://github.com/knhbae/flowme2605/pull/186) 위 stacked branch에 재적용하고 fresh checks를 수행한다. Canonical relation spec, 권리 안전 synthetic fixture 6종과 executable acceptance만 포함하며 runtime/app/store/schema/feature flag, P1-A/B/D/F, P2, merge, production deploy, P35와 관찰 사용자 검증은 이 gate 밖이다.
 
 ### Approved Local Promotion (Unpublished)
+
+- [2026-08-13 Text Authoring P1-G bounded linked lineage](./2026-08-13-flowme-text-authoring-p1-g-linked-lineage/00-development-goal-ko.md)는 승인 `TA-P1-G-LINKED-LINEAGE-20260813-01`에 따라 baseline `a5597e9fe89b1facddba801212af5e05791d06af`에서 spec·fixture-only 계약을 완료했다. Formal JSON Schema, 권리 안전 synthetic fixture 6종과 executable acceptance `10/10`이 child `0/1`, 독립 완료권한, source lineage, next/return과 fail-close를 검증한다. Runtime·app·store·schema·feature flag와 P1-A/B/D/F·P2 diff, push·PR·merge·deploy·P35·외부 side effect·관찰 사용자 검증은 모두 `0` 또는 untouched다.
 
 - [2026-08-13 Text Authoring P1-E 원문 후보 갱신](./2026-08-13-flowme-text-authoring-p1-e-source-update/00-development-goal-ko.md) completed the owner-approved local vertical slice from baseline `0e02a83664b5c8fb22b6d8619ab7fb2366784d0b` as `LOCAL_INTERNAL_QA_PASS / LOCAL_COMMIT_INCLUDED(authorized)`. A complete versioned candidate can be compared and atomically applied or undone through `LOCAL_SYNTHETIC_HOST_ADAPTER`; final browser regression passed `75/75`. P1-A/B/D/F/G, P2, fetch/provider work, push, PR, merge, deployment, P35/external side effects, and observed-user sessions remain `0` or untouched.
 

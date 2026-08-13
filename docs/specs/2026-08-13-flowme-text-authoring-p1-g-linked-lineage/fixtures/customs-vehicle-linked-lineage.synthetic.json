@@ -1,0 +1,392 @@
+{
+  "$schema": "https://flowme.local/schemas/p1-g-linked-flow-lineage-contract-v1.json",
+  "contractVersion": "p1-g-linked-flow-lineage-v1",
+  "fixtureId": "fixture:p1g:kcs-moving-goods-vehicle:v1",
+  "fixtureVersion": "1",
+  "trackId": "P1-G-LINKED-LINEAGE",
+  "scope": "spec_fixture_only",
+  "evidenceTrace": {
+    "sourceId": "src:kcs:moving-goods-customs",
+    "provider": "관세청",
+    "url": "https://www.customs.go.kr/kcs/ad/cntnts/cntntsView.do?cntntsId=8454&mi=8454",
+    "checkedAt": "2026-08-11",
+    "rightsStatus": "UNKNOWN_LINK_ONLY",
+    "rawBodyIncluded": false,
+    "executionRecheckRequired": true,
+    "evidenceIds": ["S15", "M5"]
+  },
+  "rightsBoundary": {
+    "rawMaterialMode": "synthetic_paraphrase",
+    "privateValuesIncluded": false,
+    "legalOutcomeInvented": false,
+    "taxAmountInvented": false,
+    "externalWrites": 0,
+    "forbiddenInferences": [
+      "legal_result",
+      "tax_amount",
+      "deadline",
+      "completion",
+      "personal_document",
+      "contact",
+      "address"
+    ]
+  },
+  "syntheticSource": {
+    "sourceId": "synthetic:p1g:customs-vehicle",
+    "snapshotId": "snapshot:p1g:customs-vehicle:v1",
+    "sourceVersion": "synthetic-v1",
+    "encoding": "UTF-8",
+    "lineEnding": "LF",
+    "finalNewline": true,
+    "rawText": "공통 준비: 신고에 필요한 기본 정보를 정리한다.\n공통 진행: 제출 뒤 심사 또는 검사 안내를 확인한다.\n공통 마무리: 처리 결과와 반출 가능 상태를 확인한다.\n조건: 이사 물품에 차량이 포함되었는지 직접 선택한다.\n차량 준비: 차량 등록과 보험 관련 증빙을 별도 흐름에서 확인한다.\n차량 다음 행동: 차량 증빙 목록의 첫 항목을 확인한다.\n복귀: 차량 흐름을 마치거나 나가면 공통 절차의 다음 항목으로 돌아온다.\n분기: 검사와 과세·납부는 같은 통관 건 안에서 처리한다.\n",
+    "contentSha256": "1DF947721B76A21DA89543A1C6141991AE243542299D34E55BF1496ACBF666F6",
+    "rows": [
+      {
+        "rowId": "row:p1g:common-prepare",
+        "line": 1,
+        "text": "공통 준비: 신고에 필요한 기본 정보를 정리한다.",
+        "startOffset": 0,
+        "endOffsetExclusive": 65,
+        "sha256": "7862EDEEE94DCFE5557880FC11C74F30DAB05C632C11D393023E83A9D680E73E"
+      },
+      {
+        "rowId": "row:p1g:common-review",
+        "line": 2,
+        "text": "공통 진행: 제출 뒤 심사 또는 검사 안내를 확인한다.",
+        "startOffset": 66,
+        "endOffsetExclusive": 136,
+        "sha256": "B0DC3053707D93ED9657851CFA7B19D40071CEE6AB8FB1F499C9D174528B3C23"
+      },
+      {
+        "rowId": "row:p1g:common-release",
+        "line": 3,
+        "text": "공통 마무리: 처리 결과와 반출 가능 상태를 확인한다.",
+        "startOffset": 137,
+        "endOffsetExclusive": 209,
+        "sha256": "E646C6E4F9C844F582707FE0EBC57E557CC64261E21406A62B1AEE10288159B4"
+      },
+      {
+        "rowId": "row:p1g:vehicle-condition",
+        "line": 4,
+        "text": "조건: 이사 물품에 차량이 포함되었는지 직접 선택한다.",
+        "startOffset": 210,
+        "endOffsetExclusive": 284,
+        "sha256": "FF9E0A77352BABC141BB150AE8651421E233557F3E9DA1B4547AD4ED08CD30F8"
+      },
+      {
+        "rowId": "row:p1g:vehicle-evidence",
+        "line": 5,
+        "text": "차량 준비: 차량 등록과 보험 관련 증빙을 별도 흐름에서 확인한다.",
+        "startOffset": 285,
+        "endOffsetExclusive": 374,
+        "sha256": "7770B0B7049490BC9D94E62D061661D7AE18709C441813596F559414BC977B40"
+      },
+      {
+        "rowId": "row:p1g:vehicle-next",
+        "line": 6,
+        "text": "차량 다음 행동: 차량 증빙 목록의 첫 항목을 확인한다.",
+        "startOffset": 375,
+        "endOffsetExclusive": 448,
+        "sha256": "DD68E503534A58D2F0331E6344930677702BE0A466A286E7597CA01BDCB7156B"
+      },
+      {
+        "rowId": "row:p1g:return-parent",
+        "line": 7,
+        "text": "복귀: 차량 흐름을 마치거나 나가면 공통 절차의 다음 항목으로 돌아온다.",
+        "startOffset": 449,
+        "endOffsetExclusive": 547,
+        "sha256": "BC53B75D0C6589E58A508C4F3FE42D377E1E8A3A25580B091C486AA69FE1A20E"
+      },
+      {
+        "rowId": "row:p1g:parent-branches",
+        "line": 8,
+        "text": "분기: 검사와 과세·납부는 같은 통관 건 안에서 처리한다.",
+        "startOffset": 548,
+        "endOffsetExclusive": 625,
+        "sha256": "26A4F90E8307D13BA8D4E38841E591F0068DCF3D34DBD2078A1FE2AA3A600A87"
+      }
+    ]
+  },
+  "catalog": {
+    "flows": [
+      {
+        "flowId": "flow:p1g:customs-common",
+        "versionId": "flow-version:p1g:customs-common:v1",
+        "rootFlowId": "flow:p1g:customs-common",
+        "title": "합성 통관 공통 절차",
+        "primarySourceId": "synthetic:p1g:customs-vehicle",
+        "sourceSnapshotId": "snapshot:p1g:customs-vehicle:v1",
+        "completionOwnerId": "owner:p1g:customs-common",
+        "itemIds": ["item:p1g:common-prepare", "item:p1g:common-next"]
+      },
+      {
+        "flowId": "flow:p1g:vehicle-child",
+        "versionId": "flow-version:p1g:vehicle-child:v1",
+        "rootFlowId": "flow:p1g:customs-common",
+        "title": "합성 차량 증빙 절차",
+        "primarySourceId": "synthetic:p1g:customs-vehicle",
+        "sourceSnapshotId": "snapshot:p1g:customs-vehicle:v1",
+        "completionOwnerId": "owner:p1g:vehicle-child",
+        "itemIds": ["item:p1g:vehicle-entry"]
+      }
+    ],
+    "items": [
+      {
+        "itemId": "item:p1g:common-prepare",
+        "flowId": "flow:p1g:customs-common",
+        "title": "공통 준비 확인",
+        "sourceRowIds": ["row:p1g:common-prepare"]
+      },
+      {
+        "itemId": "item:p1g:common-next",
+        "flowId": "flow:p1g:customs-common",
+        "title": "공통 절차 다음 항목",
+        "sourceRowIds": ["row:p1g:common-release", "row:p1g:return-parent"]
+      },
+      {
+        "itemId": "item:p1g:vehicle-entry",
+        "flowId": "flow:p1g:vehicle-child",
+        "title": "차량 증빙 목록 확인",
+        "sourceRowIds": ["row:p1g:vehicle-evidence", "row:p1g:vehicle-next"]
+      }
+    ],
+    "completionOwners": [
+      {
+        "ownerId": "owner:p1g:customs-common",
+        "ownerKind": "flow_execution",
+        "flowId": "flow:p1g:customs-common"
+      },
+      {
+        "ownerId": "owner:p1g:vehicle-child",
+        "ownerKind": "flow_execution",
+        "flowId": "flow:p1g:vehicle-child"
+      }
+    ]
+  },
+  "relationTemplate": {
+    "relationId": "relation:p1g:customs-to-vehicle:v1",
+    "relationKind": "bounded_conditional_child",
+    "status": "spec_fixture_only",
+    "rootFlowId": "flow:p1g:customs-common",
+    "parent": {
+      "flowId": "flow:p1g:customs-common",
+      "versionId": "flow-version:p1g:customs-common:v1",
+      "completionOwnerId": "owner:p1g:customs-common",
+      "itemId": "item:p1g:common-next"
+    },
+    "child": {
+      "flowId": "flow:p1g:vehicle-child",
+      "versionId": "flow-version:p1g:vehicle-child:v1",
+      "completionOwnerId": "owner:p1g:vehicle-child",
+      "itemId": "item:p1g:vehicle-entry"
+    },
+    "sourceLineage": {
+      "sourceId": "synthetic:p1g:customs-vehicle",
+      "snapshotId": "snapshot:p1g:customs-vehicle:v1",
+      "sourceVersion": "synthetic-v1",
+      "commonSourceRowIds": [
+        "row:p1g:common-prepare",
+        "row:p1g:common-review",
+        "row:p1g:common-release",
+        "row:p1g:parent-branches"
+      ],
+      "conditionSourceRowIds": ["row:p1g:vehicle-condition"],
+      "childSourceRowIds": [
+        "row:p1g:vehicle-evidence",
+        "row:p1g:vehicle-next",
+        "row:p1g:return-parent"
+      ]
+    },
+    "predicate": {
+      "predicateId": "predicate:p1g:vehicle-included",
+      "kind": "boolean_field_equals",
+      "fieldId": "vehicleIncluded",
+      "operator": "equals",
+      "expectedValue": true,
+      "onFalse": "omit_child",
+      "onMissing": "block"
+    },
+    "completion": {
+      "independent": true,
+      "parentCannotCompleteChild": true,
+      "childCannotCompleteParent": true
+    },
+    "navigation": {
+      "nextAction": {
+        "when": "predicate_true_and_child_incomplete",
+        "target": {
+          "flowId": "flow:p1g:vehicle-child",
+          "versionId": "flow-version:p1g:vehicle-child:v1",
+          "completionOwnerId": "owner:p1g:vehicle-child",
+          "itemId": "item:p1g:vehicle-entry"
+        }
+      },
+      "returnTo": {
+        "when": "child_complete_or_exit",
+        "target": {
+          "flowId": "flow:p1g:customs-common",
+          "versionId": "flow-version:p1g:customs-common:v1",
+          "completionOwnerId": "owner:p1g:customs-common",
+          "itemId": "item:p1g:common-next"
+        }
+      }
+    },
+    "bounds": {
+      "maxChildren": 1,
+      "maxDepth": 1,
+      "acyclic": true,
+      "genericDependencyGraph": false
+    },
+    "rights": {
+      "mode": "LINK_ONLY",
+      "rawSourceIncluded": false,
+      "executionRecheckRequired": true
+    }
+  },
+  "cases": [
+    {
+      "caseId": "p1g-s15-no-vehicle",
+      "purpose": "차량 조건이 거짓이면 child Flow를 만들지 않는다.",
+      "input": {
+        "vehicleIncluded": false,
+        "inspectionRequired": false,
+        "taxationRequired": false
+      },
+      "completionByOwnerId": {
+        "owner:p1g:customs-common": "pending",
+        "owner:p1g:vehicle-child": "pending"
+      },
+      "interaction": "evaluate",
+      "expected": {
+        "status": "omitted",
+        "emittedRelationCount": 0,
+        "childFlowCount": 0,
+        "runtimeWrites": 0,
+        "parentBranches": [],
+        "activeTarget": null
+      }
+    },
+    {
+      "caseId": "p1g-s15-with-vehicle",
+      "purpose": "차량 조건이 참이면 bounded child Flow 하나만 연결한다.",
+      "input": {
+        "vehicleIncluded": true,
+        "inspectionRequired": false,
+        "taxationRequired": false
+      },
+      "completionByOwnerId": {
+        "owner:p1g:customs-common": "pending",
+        "owner:p1g:vehicle-child": "pending"
+      },
+      "interaction": "evaluate",
+      "expected": {
+        "status": "linked",
+        "emittedRelationCount": 1,
+        "childFlowCount": 1,
+        "runtimeWrites": 0,
+        "parentBranches": [],
+        "activeTarget": {
+          "flowId": "flow:p1g:vehicle-child",
+          "itemId": "item:p1g:vehicle-entry"
+        }
+      }
+    },
+    {
+      "caseId": "p1g-s15-parent-done-child-pending",
+      "purpose": "부모 완료가 child 완료 상태를 바꾸지 않는다.",
+      "input": {
+        "vehicleIncluded": true,
+        "inspectionRequired": false,
+        "taxationRequired": false
+      },
+      "completionByOwnerId": {
+        "owner:p1g:customs-common": "completed",
+        "owner:p1g:vehicle-child": "pending"
+      },
+      "interaction": "evaluate",
+      "expected": {
+        "status": "linked",
+        "emittedRelationCount": 1,
+        "childFlowCount": 1,
+        "runtimeWrites": 0,
+        "parentBranches": [],
+        "activeTarget": {
+          "flowId": "flow:p1g:vehicle-child",
+          "itemId": "item:p1g:vehicle-entry"
+        }
+      }
+    },
+    {
+      "caseId": "p1g-s15-child-done-parent-pending",
+      "purpose": "child 완료가 부모 완료 상태를 바꾸지 않고 부모로 돌아간다.",
+      "input": {
+        "vehicleIncluded": true,
+        "inspectionRequired": false,
+        "taxationRequired": false
+      },
+      "completionByOwnerId": {
+        "owner:p1g:customs-common": "pending",
+        "owner:p1g:vehicle-child": "completed"
+      },
+      "interaction": "evaluate",
+      "expected": {
+        "status": "return_to_parent",
+        "emittedRelationCount": 1,
+        "childFlowCount": 1,
+        "runtimeWrites": 0,
+        "parentBranches": [],
+        "activeTarget": {
+          "flowId": "flow:p1g:customs-common",
+          "itemId": "item:p1g:common-next"
+        }
+      }
+    },
+    {
+      "caseId": "p1g-s15-inspection-tax-branch",
+      "purpose": "검사와 과세·납부는 부모 통관 건의 분기로 남는다.",
+      "input": {
+        "vehicleIncluded": false,
+        "inspectionRequired": true,
+        "taxationRequired": true
+      },
+      "completionByOwnerId": {
+        "owner:p1g:customs-common": "pending",
+        "owner:p1g:vehicle-child": "pending"
+      },
+      "interaction": "evaluate",
+      "expected": {
+        "status": "omitted",
+        "emittedRelationCount": 0,
+        "childFlowCount": 0,
+        "runtimeWrites": 0,
+        "parentBranches": ["inspection", "taxation"],
+        "activeTarget": null
+      }
+    },
+    {
+      "caseId": "p1g-s15-return-contract",
+      "purpose": "child를 나가면 stable parent next action으로 명시적으로 복귀한다.",
+      "input": {
+        "vehicleIncluded": true,
+        "inspectionRequired": false,
+        "taxationRequired": false
+      },
+      "completionByOwnerId": {
+        "owner:p1g:customs-common": "pending",
+        "owner:p1g:vehicle-child": "pending"
+      },
+      "interaction": "exit_child",
+      "expected": {
+        "status": "return_to_parent",
+        "emittedRelationCount": 1,
+        "childFlowCount": 1,
+        "runtimeWrites": 0,
+        "parentBranches": [],
+        "activeTarget": {
+          "flowId": "flow:p1g:customs-common",
+          "itemId": "item:p1g:common-next"
+        }
+      }
+    }
+  ]
+}
