@@ -80,6 +80,21 @@ const PREVIEW_TEST_ID: Record<AuthoringArtifactKind, string> = {
 
 const CALENDAR_WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
+export type SourceUpdateResultNotice = {
+  status:
+    | "pending"
+    | "deferred"
+    | "stale"
+    | "failed"
+    | "applied"
+    | "undo-available"
+    | "reverted";
+  changeCount: number;
+  unresolvedCount?: number;
+  userCorrectionCount?: number;
+  message?: string;
+};
+
 const BLOCKING_LOSS_REASONS = new Set<AuthoringArtifactLossReason>([
   "relative_anchor_required",
   "invalid_schedule",
@@ -1306,6 +1321,7 @@ export function ResultPane({
   unavailableMessage,
   reviewGates,
   sourceState,
+  sourceCandidate,
   userCorrectionCount,
   itemCount,
   itemReviewCount,
@@ -1321,6 +1337,7 @@ export function ResultPane({
   onOpenReview,
   onOpenSourceUpdate,
   onDeferSourceUpdate,
+  onUndoSourceUpdate,
   onOpenRoundTrip,
   onOpenItemReview,
   onReturnToInput,
@@ -1355,6 +1372,7 @@ export function ResultPane({
   unavailableMessage?: string;
   reviewGates: AuthoringReviewGate[];
   sourceState?: AuthoringSourceState;
+  sourceCandidate?: SourceUpdateResultNotice | null;
   userCorrectionCount: number;
   itemCount: number;
   itemReviewCount: number;
@@ -1370,6 +1388,7 @@ export function ResultPane({
   onOpenReview: () => void;
   onOpenSourceUpdate: () => void;
   onDeferSourceUpdate: () => void;
+  onUndoSourceUpdate?: () => void;
   onOpenRoundTrip: () => void;
   onOpenItemReview: () => void;
   onReturnToInput: () => void;
@@ -1507,6 +1526,12 @@ export function ResultPane({
     sourceState?.status === "conflict_source_vs_user"
       ? sourceState
       : null;
+  const sourceCandidateBlocksExport = Boolean(
+    sourceCandidate &&
+    sourceCandidate.status !== "applied" &&
+    sourceCandidate.status !== "undo-available" &&
+    sourceCandidate.status !== "reverted",
+  );
   const copyTextResult = async ({
     copy,
     value,
@@ -1679,7 +1704,93 @@ export function ResultPane({
           </section>
         ) : null}
 
-        {pendingSourceState ? (
+        {sourceCandidate ? (
+          <section
+            role={
+              sourceCandidate.status === "failed" ||
+              sourceCandidate.status === "stale"
+                ? "alert"
+                : "status"
+            }
+            data-testid="ta-authoring-source-candidate-banner"
+            data-source-candidate-state={sourceCandidate.status}
+            className={`m-4 rounded-[var(--flowme-radius-surface)] border p-3 ${
+              sourceCandidate.status === "applied" ||
+              sourceCandidate.status === "undo-available" ||
+              sourceCandidate.status === "reverted"
+                ? "border-[var(--flowme-positive)] bg-[var(--flowme-positive-soft)]"
+                : sourceCandidate.status === "failed" ||
+                    sourceCandidate.status === "stale"
+                  ? "border-[var(--flowme-danger)] bg-[var(--flowme-danger-soft)]"
+                  : "border-[var(--flowme-warning)] bg-[var(--flowme-warning-soft)]"
+            }`}
+          >
+            <p className="text-sm font-semibold">
+              {sourceCandidate.status === "applied" ||
+              sourceCandidate.status === "undo-available"
+                ? "새 원문 변경을 적용했습니다."
+                : sourceCandidate.status === "reverted"
+                  ? "이전 작업으로 돌아왔습니다."
+                  : sourceCandidate.status === "stale"
+                    ? "현재 작업 기준으로 다시 비교해야 합니다."
+                    : sourceCandidate.status === "failed"
+                      ? "새 원문을 적용하지 못했습니다."
+                      : sourceCandidate.status === "deferred"
+                        ? "새 원문 확인을 미뤘습니다."
+                        : "확인할 새 원문이 있습니다."}
+            </p>
+            <p className="mt-1 text-xs leading-5 text-[var(--flowme-text-secondary)]">
+              {sourceCandidate.message ??
+                (sourceCandidate.status === "applied" ||
+                sourceCandidate.status === "undo-available"
+                  ? "저장하기 전까지 이전 작업으로 되돌릴 수 있습니다."
+                  : sourceCandidate.status === "stale"
+                    ? "내 작업은 바뀌지 않았습니다. 새 원문을 다시 받아 주세요."
+                    : sourceCandidate.status === "failed"
+                      ? "내 작업과 선택은 그대로 남아 있습니다."
+                      : `달라진 ${sourceCandidate.changeCount}곳을 자동으로 합치지 않았습니다.`)}
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {sourceCandidate.status === "applied" ||
+              sourceCandidate.status === "undo-available" ? (
+                onUndoSourceUpdate ? (
+                  <button
+                    type="button"
+                    data-testid="ta-authoring-source-candidate-undo"
+                    className={FLOW_UI_SECONDARY_ACTION_CLASS}
+                    onClick={onUndoSourceUpdate}
+                  >
+                    이전 작업으로 되돌리기
+                  </button>
+                ) : null
+              ) : sourceCandidate.status === "reverted" ? null : (
+                <>
+                  <button
+                    type="button"
+                    data-testid="ta-authoring-source-candidate-open"
+                    className={FLOW_UI_PRIMARY_ACTION_CLASS}
+                    onClick={onOpenSourceUpdate}
+                  >
+                    {sourceCandidate.status === "stale"
+                      ? "현재 작업 확인"
+                      : `달라진 ${sourceCandidate.changeCount}곳 비교`}
+                  </button>
+                  {sourceCandidate.status !== "stale" &&
+                  sourceCandidate.status !== "deferred" ? (
+                    <button
+                      type="button"
+                      data-testid="ta-authoring-source-candidate-defer"
+                      className={FLOW_UI_SECONDARY_ACTION_CLASS}
+                      onClick={onDeferSourceUpdate}
+                    >
+                      나중에
+                    </button>
+                  ) : null}
+                </>
+              )}
+            </div>
+          </section>
+        ) : pendingSourceState ? (
           <section
             data-testid="ta-authoring-source-update-banner"
             data-source-state={pendingSourceState.status}
@@ -2443,20 +2554,24 @@ export function ResultPane({
             <button
               type="button"
               data-testid={
-                reviewBlockingCount > 0 || pendingSourceState
+                reviewBlockingCount > 0 ||
+                pendingSourceState ||
+                sourceCandidateBlocksExport
                   ? "ta-authoring-export-review-required"
                   : "ta-authoring-export-open"
               }
               className={`${FLOW_UI_SECONDARY_ACTION_CLASS} w-full`}
               onClick={onOpenExport}
             >
-              {pendingSourceState
-                ? `파일로 가져가기 전 변경 ${pendingSourceState.changes.length}곳 확인`
-                : outstandingReviewCount > 0
-                  ? `파일로 가져가기 전 ${outstandingReviewCount}개 확인`
-                  : personalOnlyReviewCount > 0
-                    ? "개인용 제한 확인"
-                    : "파일로 가져가기"}
+              {sourceCandidateBlocksExport
+                ? `파일로 가져가기 전 새 원문 변경 ${sourceCandidate?.changeCount ?? 0}곳 확인`
+                : pendingSourceState
+                  ? `파일로 가져가기 전 변경 ${pendingSourceState.changes.length}곳 확인`
+                  : outstandingReviewCount > 0
+                    ? `파일로 가져가기 전 ${outstandingReviewCount}개 확인`
+                    : personalOnlyReviewCount > 0
+                      ? "개인용 제한 확인"
+                      : "파일로 가져가기"}
             </button>
             <details
               data-testid="ta-authoring-result-more"

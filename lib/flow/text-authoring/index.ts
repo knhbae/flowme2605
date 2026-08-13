@@ -4,6 +4,8 @@ export * from "./identity";
 export * from "./issue-state";
 export * from "./review-policy";
 export * from "./source-update";
+export * from "./source-comparison";
+export * from "./source-update-service";
 export * from "./parser";
 export * from "./long-document-table";
 export * from "./text-authoring-feature-flags";

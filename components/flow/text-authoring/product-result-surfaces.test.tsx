@@ -21,6 +21,7 @@ import {
   ResultPane,
   authoringResultSlotState,
   groupAuthoringRowsByItem,
+  type SourceUpdateResultNotice,
 } from "./ResultPane";
 import { StructurePane } from "./StructurePane";
 import type {
@@ -33,6 +34,7 @@ import type {
 import {
   resolveTextAuthoringLongDocumentRuntimeDocument,
   resolveTextAuthoringP1LongDocumentTableProductGate,
+  resolveTextAuthoringP1SourceCandidateProductGate,
 } from "./TextAuthoringWorkspace";
 import {
   buildAuthoringLongDocumentLossLocatorViews,
@@ -229,12 +231,14 @@ function renderResult(
   structuredValue = rawPreservedTextResult
     ? rawValue
     : "설명입니다.\n\n[ ] 첫 번째 항목입니다.\n    날짜: 2026-08-03",
+  sourceCandidate: SourceUpdateResultNotice | null = null,
 ): string {
   return renderToStaticMarkup(
     <ResultPane
       projection={resultProjection}
       preflight={{ ...preflight, artifact: selectedArtifact }}
       reviewGates={[]}
+      sourceCandidate={sourceCandidate}
       userCorrectionCount={0}
       itemCount={1}
       itemReviewCount={issues.length}
@@ -250,6 +254,7 @@ function renderResult(
       onOpenReview={noOp}
       onOpenSourceUpdate={noOp}
       onDeferSourceUpdate={noOp}
+      onUndoSourceUpdate={noOp}
       onOpenRoundTrip={noOp}
       onOpenItemReview={noOp}
       onReturnToInput={noOp}
@@ -367,6 +372,51 @@ test("QA result surface remains the default when product mode is omitted", () =>
   assert.match(markup, /복사할 TXT 전체 내용/u);
 });
 
+test("P1-E pending source candidate has one clear comparison action and blocks transfer", () => {
+  const markup = renderResult(
+    false,
+    "memo",
+    projection(),
+    [],
+    null,
+    false,
+    "설명입니다.\n- [ ] 첫 번째 항목입니다.",
+    undefined,
+    {
+      status: "pending",
+      changeCount: 2,
+      unresolvedCount: 2,
+      userCorrectionCount: 1,
+    },
+  );
+
+  assert.match(markup, /ta-authoring-source-candidate-banner/u);
+  assert.match(markup, /달라진 2곳 비교/u);
+  assert.match(markup, /파일로 가져가기 전 새 원문 변경 2곳 확인/u);
+  assert.doesNotMatch(markup, /canonical|parser|hash|receipt|revision/iu);
+});
+
+test("P1-E applied source candidate exposes one local undo without a publish claim", () => {
+  const markup = renderResult(
+    true,
+    "memo",
+    projection(),
+    [],
+    null,
+    false,
+    "설명입니다.\n- [ ] 첫 번째 항목입니다.",
+    undefined,
+    {
+      status: "undo-available",
+      changeCount: 2,
+    },
+  );
+
+  assert.match(markup, /새 원문 변경을 적용했습니다/u);
+  assert.match(markup, /이전 작업으로 되돌리기/u);
+  assert.doesNotMatch(markup, /공개|배포|발행/u);
+});
+
 test("product Todo keeps one parent, one-level checks, and bounded occurrences", () => {
   const markup = renderResult(true, "todo", recurringProjection());
   assert.match(markup, /할 일 · 1개/u);
@@ -474,6 +524,27 @@ test("P1-C product gate has an explicit default-on rollback seam", () => {
   );
   assert.equal(
     resolveTextAuthoringP1LongDocumentTableProductGate({ productMode: false }),
+    false,
+  );
+});
+
+test("P1-E source candidate gate stays off until explicitly enabled", () => {
+  assert.equal(
+    resolveTextAuthoringP1SourceCandidateProductGate({ productMode: true }),
+    false,
+  );
+  assert.equal(
+    resolveTextAuthoringP1SourceCandidateProductGate({
+      productMode: true,
+      environmentValue: "true",
+    }),
+    true,
+  );
+  assert.equal(
+    resolveTextAuthoringP1SourceCandidateProductGate({
+      productMode: false,
+      override: true,
+    }),
     false,
   );
 });
