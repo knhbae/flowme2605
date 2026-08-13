@@ -1,9 +1,9 @@
 # Text Authoring P1-C Long Document And Table Preservation
 
-- **PR:** Draft creation pending
+- **PR:** [#185](https://github.com/knhbae/flowme2605/pull/185)
 - **Date:** 2026-08-13 KST
 - **Branch:** `agent/text-authoring-p1-c-longform-20260813`
-- **Status:** Draft preparation / local QA PASS / unpublished
+- **Status:** Draft / local QA PASS / GitHub and Preview checks pending / unpublished
 - **Base branch:** `agent/text-authoring-p0-refresh-20260813`
 - **Base commit:** `45780135858a9d4afbd8067139f95cce20e5038e`
 - **Parent PR:** [#184](https://github.com/knhbae/flowme2605/pull/184)
