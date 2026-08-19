@@ -2,9 +2,9 @@
 
 **Last Updated:** 2026-08-20<br>
 **Current Version:** v0.1.0 (released product PoC)<br>
-**Current Validation Stage:** internal alpha / Flow entry and preview clarity implemented with automated QA locally over the visual-refresh review baseline / full-suite source-review gate open / stacked Draft PR and Vercel Preview publication pending / merge and Production not authorized / observed users 0<br>
+**Current Validation Stage:** internal alpha / Flow entry and preview clarity stacked Draft PR and exact code-head Vercel Preview published over the visual-refresh review baseline / Playwright CI 629/629 pass / core CI non-green only at the known source-review freshness gate / Owner review pending / merge and Production not authorized / observed users 0<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** Publish and review the stacked Vercel Preview; resolve the separate source-review freshness gate before any merge or Production decision
+**Next Milestone:** Owner reviews the published exact code-head stacked Preview; resolve the separate source-review freshness gate before any merge or Production decision
 
 Human-facing control surface: [FlowMe Project Control](./PROJECT_CONTROL.md).
 The [2026-07-29 P35 stage board](./content-audit/2026-07-29-flowme-current-stage-control-board-ko.html)
@@ -21,9 +21,16 @@ and copy numbering only when sibling copies need disambiguation. Routes, source
 and personal ownership, persistence, edit, completion, export, receipt, and
 lifecycle contracts remain unchanged. Local implementation and automated QA are
 complete; full `npm test` remains non-green only because `30` source records are
-past their review date. The Owner authorized a stacked Draft PR and Vercel Preview
-for review. Merge, Production deployment, and observed-user validation remain
-unapproved.
+past their review date. [Draft PR #195](https://github.com/knhbae/flowme2605/pull/195)
+and its [stable Vercel Preview](https://flowme2605-git-agent-flow-entry-preview-clarity-flowme.vercel.app)
+are published for Owner review. Initial run `32309777212` ended core `624/625` at
+the known freshness failure and Playwright `623/629` with six failures.
+Remediation code head `597a6f84d593f0788e2c1f5a4fcd20d762d7bf28`
+passes build `18`, focused unit `13/13`, and the same six E2E cases `6/6` locally;
+exact code-head run `32312436980` has Playwright `629/629` PASS, while core remains
+non-green only at the same `30`-record source-review gate. Exact code-head Vercel
+deployment `dpl_2kkCE8tKVBxDfDb9gmxGNKG2UPhU` is READY/SUCCESS. Merge, Production
+deployment, and observed-user validation remain unapproved.
 
 The visual-only refresh remains this stack's presentation baseline. Its scoped
 visual QA is complete, but it has not been merged or promoted to Production.
@@ -498,13 +505,16 @@ deployment, and canonical smoke are complete. Merge
 product merge and canonical verification passed `41/41`. Post-merge `main` run
 `31656595092` passed both core and Playwright. Flow Entry And Preview Clarity is
 the active stacked Preview gate; its local implementation and automated QA are
-complete, while Draft PR and Vercel Preview publication are pending. Merge and
-Production remain unapproved. External user observation stays separate and the
-count stays `0`.
+complete, and Draft PR #195 plus its exact code-head Vercel Preview are published
+for Owner review. Initial CI ended core `624/625` at the known `30`-record
+freshness gate and Playwright `623/629`; remediation run `32312436980` has
+Playwright `629/629` PASS and core non-green only at that same freshness gate.
+Exact code-head Vercel is READY/SUCCESS. Merge and Production remain unapproved.
+External user observation stays separate and the count stays `0`.
 
 | Lane | Owner | Work | Next checkpoint | Done when |
 | --- | --- | --- | --- | --- |
-| Active Flow entry and preview clarity | AI + Owner | One discovery entry, source-faithful complete Text, full approved Todo/Calendar, and copy ordinals only for siblings | Publish and review the stacked Draft PR and Vercel Preview; keep the source-review freshness failure explicit | Exact-head Preview publication is verified; merge and Production remain separate Owner decisions; observed users `0` |
+| Active Flow entry and preview clarity | AI + Owner | One discovery entry, source-faithful complete Text, full approved Todo/Calendar, and copy ordinals only for siblings | Owner reviews [Draft PR #195](https://github.com/knhbae/flowme2605/pull/195) and the [exact code-head stacked Vercel Preview](https://flowme2605-git-agent-flow-entry-preview-clarity-flowme.vercel.app); keep the known source-review freshness failure explicit | Owner decides merge and Production separately; observed users `0` |
 | Completed Flow Map Item date-parity release | AI + Owner | Preserve ordinary Flow and executable single-plan Map Item title/memo/date parity without moving persistence ownership | Preserve [PR #182](https://github.com/knhbae/flowme2605/pull/182) merge `f6f796c0` as the runtime product baseline until a later explicit product release | Exact-head CI PASS, Production PASS, canonical smoke `41/41`, post-merge `main` run truth explicit, observed users `0` |
 | Completed Plan edit/lifecycle release | AI + Owner | Preserve one Plan/Item editor and lifecycle contract across saved, public Flow, and executable Map origins without moving persistence ownership | Preserve [PR #178](https://github.com/knhbae/flowme2605/pull/178) merge `908ee849` as the broader lifecycle foundation inherited by PR #182 | Exact-head CI PASS, Production PASS, canonical smoke `38/38`, post-merge `main` run truth explicit, observed users `0` |
 | Completed documentation-only closeouts | AI | Publish the exact PR #176 and PR #178 release facts and observed-user boundary without changing product code | Preserve [PR #177](https://github.com/knhbae/flowme2605/pull/177) and [PR #179](https://github.com/knhbae/flowme2605/pull/179) as documentation history, separate from the runtime-bearing product release | Canonical docs agree, docs checks passed, and documentation-only deployments are not mistaken for a new product baseline |

@@ -48,15 +48,26 @@ identity and the PR #178 Plan edit/lifecycle foundation. Post-merge `main` run
 [`31656595092`](https://github.com/knhbae/flowme2605/actions/runs/31656595092)
 passed core job `94312307779` and Playwright job `94312307849`.
 Automated QA, deployment, smoke, and local capture reports remain separate from
-observed-user validation; observed users remain `0`. The active local gate is
+observed-user validation; observed users remain `0`. The active review gate is
 [Flow Entry And Preview Clarity](./specs/2026-08-20-flow-entry-preview-clarity/spec.md),
 stacked on the unmerged [Production Visual-Only Refresh](./specs/2026-08-20-production-visual-only-refresh/spec.md)
 review baseline. The follow-up implements one discovery entry, source-faithful
 complete Text, full approved Todo/Calendar, and meaningful copy titles. Local
 implementation and automated QA are complete; full `npm test` retains the same
-separate source-review-due failure. The Owner authorized only a stacked Draft PR
-and Vercel Preview. Merge and Production remain unapproved; observed users remain
-`0`.
+separate source-review-due failure. [Draft PR #195](https://github.com/knhbae/flowme2605/pull/195)
+at initial runtime head `1d14c19c387b8f2cd3d61f04698aa097af2ddf2d`
+and its [stable Vercel Preview](https://flowme2605-git-agent-flow-entry-preview-clarity-flowme.vercel.app)
+are published for Owner review. Initial Actions run `32309777212` ended core
+`624/625` at the known `30`-record freshness gate and Playwright `623/629` with
+six failures. Remediation code head `597a6f84d593f0788e2c1f5a4fcd20d762d7bf28`
+passes current-source build `18`, focused unit `13/13`, and the same six E2E cases
+`6/6` locally. Exact code-head Actions run `32312436980` has Playwright `629/629`
+PASS; core docs `16/4575`, pretest `176/176`, and P35 `455/455` pass before the
+sole main failure at `lib/flow/seed-flows.test.ts:1290` leaves main `624/625` for
+`30` records past `review_due:2026-05-21`. CI build was skipped after that failure,
+while the local `18`-page build remains PASS. Vercel deployment
+`dpl_2kkCE8tKVBxDfDb9gmxGNKG2UPhU` is READY/SUCCESS at the stable Preview. Merge
+and Production remain unapproved; observed users remain `0`.
 
 ## Canonical Project Truth
 

@@ -1,8 +1,9 @@
 # Flow Entry And Preview Clarity QA
 
-**Current state:** LOCAL IMPLEMENTATION AND AUTOMATED QA COMPLETE / STACKED PR
-AND VERCEL PREVIEW PUBLICATION PENDING / MERGE AND PRODUCTION NOT AUTHORIZED /
-OBSERVED USERS `0`.
+**Current state:** STACKED DRAFT PR AND EXACT CODE-HEAD VERCEL PREVIEW PUBLISHED /
+PLAYWRIGHT CI PASS / CORE CI NON-GREEN ONLY AT THE KNOWN SOURCE-REVIEW FRESHNESS
+GATE / OWNER REVIEW PENDING / MERGE AND PRODUCTION NOT AUTHORIZED / OBSERVED
+USERS `0`.
 
 ## Required Checks
 
@@ -19,7 +20,7 @@ OBSERVED USERS `0`.
 | Real-browser 390/1024/1440 | PASS | Exact current BUILD_ID `tJuAWDPrmaKm2NaI9C3GZ`; `/flows`, public Flow, `/my`, and `/calendar` matrix `12/12`; overflow at most `1px`, visible focus passed, console/page errors `0`. Evidence: `output/playwright/flow-entry-preview-clarity-final-exact`. |
 | Independent UX/accessibility review | PASS | Final changed-diff audit: Blocker `0`, High `0`, Medium `0` after selector order, child title/section, Calendar landmark, and duplicate-date announcement corrections. |
 | Independent React review | PASS | Current-source review and focused rerun `89/89`: state ownership, derived resets, Map selection, full-row rendering, keys, and legacy boundaries have Blocker `0`, High `0`, Medium `0`. |
-| Exact-head PR and Vercel Preview | Pending | Record only after publication; do not promote to merge/Production evidence. |
+| Stacked Draft PR and Vercel Preview | EXACT CODE-HEAD PREVIEW READY / OWNER REVIEW PENDING | [Draft PR #195](https://github.com/knhbae/flowme2605/pull/195) initial runtime head `1d14c19c387b8f2cd3d61f04698aa097af2ddf2d` produced a successful initial Preview, but [Actions run `32309777212`](https://github.com/knhbae/flowme2605/actions/runs/32309777212) ended core `624/625` at the known `30`-record `review_due` freshness failure and Playwright `623/629` with `6` failures. Remediation code head `597a6f84d593f0788e2c1f5a4fcd20d762d7bf28` passed current-source build `18` pages, focused unit `13/13`, and those six E2E cases `6/6` locally. Its [Actions run `32312436980`](https://github.com/knhbae/flowme2605/actions/runs/32312436980) finished with [Playwright job `96257986506`](https://github.com/knhbae/flowme2605/actions/runs/32312436980/job/96257986506) `629/629` PASS in `14.4m` and successful report artifact `9387286188` upload. [Core job `96257986748`](https://github.com/knhbae/flowme2605/actions/runs/32312436980/job/96257986748) remains non-green only at the known freshness gate: docs `16` files / `4575` links, pretest `176/176`, and P35 `455/455` passed; main was `624/625`, with the sole failure at `lib/flow/seed-flows.test.ts:1290` for `30` records past `review_due:2026-05-21`. CI build was skipped after that test failure; the current-source local build remains PASS with `18` pages. Exact code-head Vercel deployment `dpl_2kkCE8tKVBxDfDb9gmxGNKG2UPhU`, GitHub deployment `5992733602`, status `17042464212`, is READY/SUCCESS: [stable branch Preview](https://flowme2605-git-agent-flow-entry-preview-clarity-flowme.vercel.app), [immutable Preview](https://flowme2605-5ijw2y49m-flowme.vercel.app), and [deployment dashboard](https://vercel.com/flowme/flowme2605/2kkCE8tKVBxDfDb9gmxGNKG2UPhU). This is Preview evidence only, not merge or Production evidence. |
 
 ## Required Scenarios
 

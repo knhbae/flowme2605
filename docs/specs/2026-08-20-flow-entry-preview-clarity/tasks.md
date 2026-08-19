@@ -15,5 +15,5 @@
 - [x] FPC-08 Pass production build and real-browser QA at 390, 1024, and 1440;
   resolve independent UX/accessibility and React review findings.
 - [x] FPC-09 Record final local QA evidence.
-- [ ] FPC-10 Publish a stacked review PR and Vercel Preview only.
+- [x] FPC-10 Publish a stacked review PR and Vercel Preview only.
 - [ ] FPC-11 Owner reviews Preview and separately decides merge and Production.
