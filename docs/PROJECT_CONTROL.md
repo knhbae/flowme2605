@@ -10,7 +10,8 @@ This file is an index, not a second source of product truth. Update its links af
 
 - [Current status and owner action](./STATUS.md)
 - [Current roadmap and inactive shelves](./ROADMAP.md)
-- [Active Production visual-only refresh](./specs/2026-08-20-production-visual-only-refresh/spec.md)
+- [Active Flow Entry And Preview Clarity](./specs/2026-08-20-flow-entry-preview-clarity/spec.md)
+- [Stacked visual-refresh review baseline](./specs/2026-08-20-production-visual-only-refresh/spec.md)
 - [Approved visual-only Production review](./content-audit/2026-08-19-flowme-production-ux-visual-only-refresh-ko.html)
 - [Released Flow Map Item date parity](./pr-history/2026-08-13-flow-map-item-date-parity.md)
 - [Released Plan edit and lifecycle unification](./pr-history/2026-08-12-plan-edit-lifecycle-unification.md)
@@ -47,11 +48,15 @@ identity and the PR #178 Plan edit/lifecycle foundation. Post-merge `main` run
 [`31656595092`](https://github.com/knhbae/flowme2605/actions/runs/31656595092)
 passed core job `94312307779` and Playwright job `94312307849`.
 Automated QA, deployment, smoke, and local capture reports remain separate from
-observed-user validation; observed users remain `0`. The active local gate is the
-[Production Visual-Only Refresh](./specs/2026-08-20-production-visual-only-refresh/spec.md):
-implementation and scoped QA are complete, full `npm test` retains one separate
-source-review-due failure, and the Owner authorized a scoped PR plus Vercel
-Preview. Merge and Production remain unapproved; observed users remain `0`.
+observed-user validation; observed users remain `0`. The active local gate is
+[Flow Entry And Preview Clarity](./specs/2026-08-20-flow-entry-preview-clarity/spec.md),
+stacked on the unmerged [Production Visual-Only Refresh](./specs/2026-08-20-production-visual-only-refresh/spec.md)
+review baseline. The follow-up implements one discovery entry, source-faithful
+complete Text, full approved Todo/Calendar, and meaningful copy titles. Local
+implementation and automated QA are complete; full `npm test` retains the same
+separate source-review-due failure. The Owner authorized only a stacked Draft PR
+and Vercel Preview. Merge and Production remain unapproved; observed users remain
+`0`.
 
 ## Canonical Project Truth
 

@@ -223,10 +223,10 @@ test.describe('P1-02 Q3 copy and contextual disclosure', () => {
       await expect(root).toHaveAttribute('data-p35-q3-copy', phase === 'before' ? 'off' : 'on');
       await expectSurfaceHealth(page, root);
       if (phase === 'before') {
-        await expect(page.getByRole('heading', { name: 'URL·메모로 Flow 찾기' })).toBeVisible();
+        await expect(page.getByRole('heading', { name: '필요한 Flow 찾기' })).toBeVisible();
         await expect(root.getByText('내 Flow', { exact: true }).filter({ visible: true }).first()).toBeVisible();
       } else {
-        await expect(page.getByRole('heading', { name: 'URL·메모로 계획 찾기' })).toBeVisible();
+        await expect(page.getByRole('heading', { name: '필요한 계획 찾기' })).toBeVisible();
         await expect(root.getByText('내 계획', { exact: true }).filter({ visible: true }).first()).toBeVisible();
         await expectNoLegacyOwnedCopy(root);
       }
@@ -579,12 +579,12 @@ test.describe('P1-02 Q3 copy and contextual disclosure', () => {
     await page.goto('/flows?q3Copy=off');
     await expect(page.locator('main[data-p35-q3-copy="off"]')).toBeVisible();
     await expect(page).toHaveURL(/q3Copy=off/u);
-    await expect(page.getByRole('heading', { name: 'URL·메모로 Flow 찾기' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: '필요한 Flow 찾기' })).toBeVisible();
     expect(await rawStorageSnapshot(page)).toEqual(before);
 
     await page.goto('/flows?q3Copy=OFF');
     await expect(page.locator('main[data-p35-q3-copy="on"]')).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'URL·메모로 계획 찾기' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: '필요한 계획 찾기' })).toBeVisible();
     expect(await rawStorageSnapshot(page)).toEqual(before);
 
     await page.goto('/flow-maps/curated-wedding-checklist-family?q3Copy=off');

@@ -83,7 +83,7 @@ test.describe('P27 server document foundation', () => {
     expect(response.ok()).toBe(true);
 
     const html = await response.text();
-    expect(html).toContain('URL이나 메모로 계획 찾기');
+    expect(html).toContain('필요한 계획 찾기');
     expect(html).toContain('원룸 이사 D-30');
     expect(html).toContain('차량 점검 준비');
     expect(html).toContain('세탁조 청소');

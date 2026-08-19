@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState, type RefObject } from 'react';
 
 import {
   buildEffectiveFlowMapPersistenceSelection,
@@ -84,7 +84,54 @@ type SourceBackedFlowMapSaveButtonProps = {
     hint: string;
     defaultValue?: string;
   };
+  anchorInputRef?: RefObject<HTMLInputElement | null>;
+  showAnchorInputInActions?: boolean;
+  anchorRequired?: boolean;
+  onAnchorRequiredChange?: (required: boolean) => void;
 };
+
+export function SourceBackedFlowMapAnchorInput({
+  setupInput,
+  anchor,
+  onAnchorChange,
+  required = false,
+  inputRef,
+}: {
+  setupInput: NonNullable<SourceBackedFlowMapSaveButtonProps['setupInput']>;
+  anchor: string;
+  onAnchorChange: (anchor: string) => void;
+  required?: boolean;
+  inputRef?: RefObject<HTMLInputElement | null>;
+}) {
+  const descriptionId = useId();
+  const errorId = useId();
+
+  return (
+    <label className="grid gap-1 text-sm font-semibold text-slate-800">
+      {setupInput.label}
+      <input
+        aria-label={setupInput.label}
+        aria-describedby={`${descriptionId}${required ? ` ${errorId}` : ''}`}
+        aria-errormessage={required ? errorId : undefined}
+        aria-invalid={required || undefined}
+        className={`min-h-11 rounded-lg border bg-[#FAFAF8] px-3 py-2 text-base font-semibold text-slate-950 outline-none focus:bg-white focus:ring-2 ${required ? 'border-red-500 ring-2 ring-red-100 focus:border-red-500 focus:ring-red-100' : 'border-[#E7E4DD] focus:border-[#3654FF] focus:ring-[#3654FF]/10'}`}
+        data-testid="flow-map-anchor-input"
+        ref={inputRef}
+        type="date"
+        value={anchor}
+        onChange={(event) => onAnchorChange(event.target.value)}
+      />
+      <span id={descriptionId} className="text-xs font-medium leading-5 text-slate-500">
+        {setupInput.label}에 맞춰 할 일 날짜가 정해집니다.
+      </span>
+      {required ? (
+        <span id={errorId} role="alert" className="text-xs font-semibold text-red-700">
+          저장하려면 날짜를 입력해 주세요.
+        </span>
+      ) : null}
+    </label>
+  );
+}
 
 type PublicFlowMapEditorPlanDraft = {
   title: string;
@@ -180,9 +227,13 @@ export function SourceBackedFlowMapSaveButton({
   buildEditorProjection,
   savedFlows,
   setupInput,
+  anchorInputRef,
+  showAnchorInputInActions = true,
+  anchorRequired,
+  onAnchorRequiredChange,
 }: SourceBackedFlowMapSaveButtonProps) {
   const copy = getQ3UserCopyProfile(q3CopyEnabled);
-  const [showRequired, setShowRequired] = useState(false);
+  const [internalAnchorRequired, setInternalAnchorRequired] = useState(false);
   const [adjusting, setAdjusting] = useState(false);
   const [titleDraft, setTitleDraft] = useState(effectiveSnapshot.effectiveTitle);
   const [selectedItemIdsDraft, setSelectedItemIdsDraft] = useState<string[]>(
@@ -194,7 +245,7 @@ export function SourceBackedFlowMapSaveButton({
   const [saving, setSaving] = useState(false);
   const [saveFailure, setSaveFailure] = useState<SaveFailure | undefined>();
   const [saveBaselineState, setSaveBaselineState] = useState<FlowMapSaveBaselineState>('loading');
-  const anchorInputRef = useRef<HTMLInputElement>(null);
+  const internalAnchorInputRef = useRef<HTMLInputElement>(null);
   const editorHistoryMarkerRef = useRef<string | null>(null);
   const sharedEditorHistoryActionRef = useRef<(() => void) | null>(null);
   const sharedEditorPlanCommitRef = useRef<(draft: Readonly<PublicFlowMapEditorPlanDraft>) => void>(
@@ -283,9 +334,12 @@ export function SourceBackedFlowMapSaveButton({
   const desktopSaveButtonLabel = shouldPromptForAnchor && q3CopyEnabled
     ? `${setupInput?.label ?? '날짜'} 설정 후 저장`
     : saveButtonLabel;
-  const setupInputHint = setupInput
-    ? `${setupInput.label}에 맞춰 할 일 날짜가 정해집니다.`
-    : '';
+  const showRequired = anchorRequired ?? internalAnchorRequired;
+  const resolvedAnchorInputRef = anchorInputRef ?? internalAnchorInputRef;
+  const setShowRequired = (required: boolean) => {
+    if (anchorRequired === undefined) setInternalAnchorRequired(required);
+    onAnchorRequiredChange?.(required);
+  };
 
   useEffect(() => {
     const baselineKeyPlan = buildFlowMapSaveStorageKeyPlan({
@@ -552,8 +606,8 @@ export function SourceBackedFlowMapSaveButton({
     if (saving) return;
     if (needsAnchor) {
       setShowRequired(true);
-      anchorInputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      window.setTimeout(() => anchorInputRef.current?.focus(), 120);
+      resolvedAnchorInputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      window.setTimeout(() => resolvedAnchorInputRef.current?.focus(), 120);
       return;
     }
     if (!selectedResultReady) return;
@@ -814,25 +868,18 @@ export function SourceBackedFlowMapSaveButton({
       data-save-status={saving ? 'saving' : saveFailure?.kind === 'conflict' ? 'conflict' : saveFailure ? 'failed' : 'idle'}
       aria-busy={saving}
     >
-      {setupInput && showsAnchorInput ? (
-        <label className="grid gap-1 text-sm font-semibold text-slate-800">
-          {setupInput.label}
-          <input
-            aria-label={setupInput.label}
-            className={`min-h-11 rounded-lg border bg-[#FAFAF8] px-3 py-2 text-base font-semibold text-slate-950 outline-none focus:bg-white focus:ring-2 ${showRequired ? 'border-red-500 ring-2 ring-red-100 focus:border-red-500 focus:ring-red-100' : 'border-[#E7E4DD] focus:border-[#3654FF] focus:ring-[#3654FF]/10'}`}
-            data-testid="flow-map-anchor-input"
-            ref={anchorInputRef}
-            type="date"
-            value={anchor}
-            onChange={(event) => {
-              onAnchorChange(event.target.value);
-              setShowRequired(false);
-              setSaveFailure((current) => current?.kind === 'conflict' ? current : undefined);
-            }}
-          />
-          <span className="text-xs font-medium leading-5 text-slate-500">{setupInputHint}</span>
-          {showRequired ? <span className="text-xs font-semibold text-red-700">저장하려면 날짜를 입력해 주세요.</span> : null}
-        </label>
+      {setupInput && showsAnchorInput && showAnchorInputInActions ? (
+        <SourceBackedFlowMapAnchorInput
+          setupInput={setupInput}
+          anchor={anchor}
+          required={showRequired}
+          inputRef={resolvedAnchorInputRef}
+          onAnchorChange={(value) => {
+            onAnchorChange(value);
+            setShowRequired(false);
+            setSaveFailure((current) => current?.kind === 'conflict' ? current : undefined);
+          }}
+        />
       ) : null}
       {visualSubtractionEnabled ? (
         <p data-testid="flow-map-selection-summary" className="hidden text-xs font-semibold text-slate-600 sm:block">

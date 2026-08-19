@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 
+import { formatKoreanShortDate } from '@/lib/flow/date';
 import { toContentDisplayTitle, toUserFacingSourceTitle } from '@/lib/flow/display-title';
 import {
   buildEffectiveFlowMapSnapshot,
@@ -61,6 +62,7 @@ export function SourceBackedFlowMapChooseChildExperience({
     .filter((row) => row.flowSlug === selectedChild.slug)
     .map((row) => row.itemId);
   const selectedSnapshot = reviseEffectiveFlowMapSnapshot(baseSnapshot, {
+    effectiveTitle: selectedChild.title,
     selectedItemIds,
   });
   const previewAnchor = selectedDestination === 'calendar'
@@ -91,6 +93,63 @@ export function SourceBackedFlowMapChooseChildExperience({
     title: row.title,
     summary: row.memo ?? row.description,
   }));
+  const selectedChildTitle = toContentDisplayTitle(selectedChild.title);
+  const childSelector = (
+    <section
+      data-testid="flow-map-choose-child"
+      data-map-action-intent={actionContract.actions.primary?.intent}
+      aria-labelledby="flow-map-choose-child-heading"
+      className="rounded-[var(--flowme-radius-card)] border border-[var(--flowme-border)] bg-[var(--flowme-surface-subtle)] px-3 py-3"
+    >
+      <h2
+        id="flow-map-choose-child-heading"
+        className="text-sm font-semibold text-[var(--flowme-text)]"
+      >
+        확인할 계획
+      </h2>
+      <p
+        data-testid="flow-map-selected-child-copy"
+        className="mt-1 text-xs font-semibold leading-5 text-[var(--flowme-action-strong)]"
+      >
+        현재 {selectedChildTitle} 선택됨
+      </p>
+      <p className="mt-1 text-xs leading-5 text-[var(--flowme-text-secondary)]">
+        {choiceCopy.body}
+      </p>
+      <fieldset className="mt-3 grid gap-2">
+        <legend className="sr-only">
+          {q3CopyEnabled ? copy.map.selectPlans : '사용할 Flow 선택'}
+        </legend>
+        {publishPackage.public.childFlows.map((child) => {
+          const selected = child.slug === selectedChild.slug;
+          return (
+            <label
+              key={child.slug}
+              data-testid="flow-map-child-choice"
+              data-flow-slug={child.slug}
+              className={`flex min-h-12 cursor-pointer items-center rounded-md border px-3 py-2.5 text-left text-sm font-semibold focus-within:ring-2 focus-within:ring-[var(--flowme-focus)] ${selected
+                ? 'border-[var(--flowme-action)] bg-[var(--flowme-action-soft)] text-[var(--flowme-action)]'
+                : 'border-[var(--flowme-border)] bg-white text-[var(--flowme-text)]'}`}
+            >
+              <input
+                className="sr-only"
+                type="radio"
+                name={`flow-map-child-${publishPackage.map.id}`}
+                value={child.slug}
+                checked={selected}
+                onChange={() => {
+                  setSelectedChildSlug(child.slug);
+                  setSelectedDestination('memo');
+                  setPreviewItem(undefined);
+                }}
+              />
+              <span>{toContentDisplayTitle(child.title)}</span>
+            </label>
+          );
+        })}
+      </fieldset>
+    </section>
+  );
 
   return (
     <div
@@ -119,67 +178,47 @@ export function SourceBackedFlowMapChooseChildExperience({
         itemCount={selectedSnapshot.counts.effective}
         previewRows={previewRows}
         artifactPreview={(
-          <PublicPlanResultPreview
-            viewModel={publicResult.viewModel}
-            selectedDestination={selectedDestination}
-            previewRowLimit={6}
-            testId="public-flow-capability-result"
-            anchorDate={previewAnchor}
-            calendarEmptyAction={(
-              <p data-testid="flow-map-calendar-empty-action" className="px-3 py-4 text-sm text-[var(--flowme-text-secondary)]">
-                이 계획에는 아직 날짜가 있는 Todo가 없어요. 계획을 연 뒤 날짜를 정해 주세요.
-              </p>
-            )}
-            onRowOpen={(row, returnFocusSelector) => {
-              setPreviewItem({ row, returnFocusSelector });
-            }}
-            onSelect={(candidate) => {
-              if (candidate.destination === 'memo'
-                || candidate.destination === 'checklist'
-                || candidate.destination === 'calendar') {
-                setSelectedDestination(candidate.destination);
-              }
-            }}
-          />
+          <div className="grid gap-3">
+            {childSelector}
+            <PublicPlanResultPreview
+              viewModel={publicResult.viewModel}
+              selectedDestination={selectedDestination}
+              textSyntaxModel={publicResult.textSyntaxModel}
+              previewRowLimit={6}
+              testId="public-flow-capability-result"
+              anchorDate={previewAnchor}
+              calendarPreamble={publishPackage.public.setupInput ? (
+                <div data-testid="flow-map-calendar-context" className="grid gap-1">
+                  <p className="text-sm font-semibold text-[var(--flowme-text)]">
+                    {publishPackage.public.setupInput.label}
+                  </p>
+                  <p className="text-xs leading-5 text-[var(--flowme-text-secondary)]">
+                    {previewAnchor
+                      ? `${formatKoreanShortDate(previewAnchor, { includeWeekday: true })} 기준 일정입니다. 계획을 열면 날짜를 바꿀 수 있어요.`
+                      : '계획을 연 뒤 날짜를 정하면 Calendar 일정이 만들어집니다.'}
+                  </p>
+                </div>
+              ) : undefined}
+              calendarEmptyAction={(
+                <p data-testid="flow-map-calendar-empty-action" className="px-3 py-4 text-sm text-[var(--flowme-text-secondary)]">
+                  이 계획에는 아직 날짜가 있는 Todo가 없어요. 계획을 연 뒤 날짜를 정해 주세요.
+                </p>
+              )}
+              onRowOpen={(row, returnFocusSelector) => {
+                setPreviewItem({ row, returnFocusSelector });
+              }}
+              onSelect={(candidate) => {
+                if (candidate.destination === 'memo'
+                  || candidate.destination === 'checklist'
+                  || candidate.destination === 'calendar') {
+                  setSelectedDestination(candidate.destination);
+                }
+              }}
+            />
+          </div>
         )}
         actions={(
-          <div
-            data-testid="flow-map-choose-child"
-            data-map-action-intent={actionContract.actions.primary?.intent}
-            className="grid gap-3"
-          >
-            <div>
-              <p className="text-sm font-semibold text-[var(--flowme-text)]">{choiceCopy.heading}</p>
-              <p className="mt-1 text-xs leading-5 text-[var(--flowme-text-secondary)]">{choiceCopy.body}</p>
-            </div>
-            <fieldset className="grid gap-2">
-              <legend className="sr-only">
-                {q3CopyEnabled ? copy.map.selectPlans : '사용할 Flow 선택'}
-              </legend>
-              {publishPackage.public.childFlows.map((child) => {
-                const selected = child.slug === selectedChild.slug;
-                return (
-                  <label
-                    key={child.slug}
-                    data-testid="flow-map-child-choice"
-                    data-flow-slug={child.slug}
-                    className={`flex min-h-12 cursor-pointer items-center rounded-md border px-3 py-2.5 text-left text-sm font-semibold focus-within:ring-2 focus-within:ring-[var(--flowme-focus)] ${selected
-                      ? 'border-[var(--flowme-action)] bg-[var(--flowme-action-soft)] text-[var(--flowme-action)]'
-                      : 'border-[var(--flowme-border)] bg-white text-[var(--flowme-text)]'}`}
-                  >
-                    <input
-                      className="sr-only"
-                      type="radio"
-                      name={`flow-map-child-${publishPackage.map.id}`}
-                      value={child.slug}
-                      checked={selected}
-                      onChange={() => setSelectedChildSlug(child.slug)}
-                    />
-                    <span>{toContentDisplayTitle(child.title)}</span>
-                  </label>
-                );
-              })}
-            </fieldset>
+          <div className="grid gap-3">
             {actionContract.risk.caution ? (
               <p
                 data-testid="flow-map-risk-caution"

@@ -12,6 +12,7 @@ import {
 } from '@/lib/flow/source-backed-my-flow';
 import {
   buildPublicFlowMapItemPersonalization,
+  SourceBackedFlowMapAnchorInput,
   SourceBackedFlowMapSaveButton,
 } from './SourceBackedFlowMapSaveButton';
 
@@ -21,6 +22,7 @@ function renderMapActions(
   q3CopyEnabled: boolean,
   selectedArtifactMode: 'memo' | 'checklist' | 'calendar' | null = 'memo',
   visualSubtractionEnabled = true,
+  showAnchorInputInActions = true,
 ) {
   const publishPackage = buildSourceBackedFlowMapPublishPackage('middle-school-math-1');
   assert.ok(publishPackage);
@@ -68,6 +70,7 @@ function renderMapActions(
       buildEditorProjection={buildEditorProjection}
       savedFlows={savedFlows}
       setupInput={{ label: '시작일', hint: '시작일을 정합니다.' }}
+      showAnchorInputInActions={showAnchorInputInActions}
     />,
   );
 }
@@ -112,6 +115,27 @@ test('Text and Todo stay undated while Calendar alone exposes the required ancho
     );
     assert.match(calendarMarkup, />시작일 정하기<\/button>/u);
   }
+});
+
+test('Calendar can place one controlled anchor input before result rows without duplicating it in actions', () => {
+  const actionsMarkup = renderMapActions(true, 'calendar', true, false);
+  const preambleMarkup = renderToStaticMarkup(
+    <SourceBackedFlowMapAnchorInput
+      setupInput={{ label: '시작일', hint: '시작일을 정합니다.' }}
+      anchor=""
+      required
+      onAnchorChange={() => undefined}
+    />,
+  );
+
+  assert.doesNotMatch(actionsMarkup, /data-testid="flow-map-anchor-input"/u);
+  assert.match(actionsMarkup, />시작일 정하기<\/button>/u);
+  assert.match(preambleMarkup, /data-testid="flow-map-anchor-input"/u);
+  assert.match(preambleMarkup, /aria-invalid="true"/u);
+  assert.match(preambleMarkup, /aria-describedby="[^"]+ [^"]+"/u);
+  assert.match(preambleMarkup, /aria-errormessage="[^"]+"/u);
+  assert.match(preambleMarkup, /role="alert"/u);
+  assert.match(preambleMarkup, /저장하려면 날짜를 입력해 주세요/u);
 });
 
 test('Map Item personalization preserves an unchanged fixed-date pin and only removes it on explicit source reset', () => {

@@ -486,7 +486,7 @@ test('root entry routes an empty user to the three-destination Flow catalog', as
   await expect(navigation.getByRole('link')).toHaveCount(3);
   await expect(navigation.getByRole('link', { name: '계획 찾기' })).toHaveAttribute('aria-current', 'page');
   await expect(navigation.getByRole('link', { name: '홈' })).toHaveCount(0);
-  await expect(page.getByRole('heading', { name: 'URL·메모로 계획 찾기' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '필요한 계획 찾기' })).toBeVisible();
   await expect(page.locator('[data-home-recommendation-card="true"]')).toHaveCount(0);
   await expect(page.getByTestId('home-usage-example')).toHaveCount(0);
   await expectNoInternalUserSurfaceCopy(page.locator('body'));
@@ -560,10 +560,13 @@ test('flow list exposes the seed and online-sourced flows', async ({ page }) => 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/flows');
 
-  await expect(page.getByRole('heading', { name: 'URL·메모로 계획 찾기' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '필요한 계획 찾기' })).toBeVisible();
   await expect(page.getByRole('heading', { name: '저장할 실행 콘텐츠' })).toHaveCount(0);
   const flowMapCatalog = page.getByTestId('flow-map-catalog-section');
   await expect(flowMapCatalog).toBeVisible();
+  await expect(flowMapCatalog.getByRole('textbox')).toHaveCount(1);
+  await expect(flowMapCatalog.getByTestId('flow-url-lookup-input')).toBeVisible();
+  await expect(flowMapCatalog.getByTestId('flow-catalog-search')).toHaveCount(0);
   await expect(flowMapCatalog.getByRole('heading', { name: '내 상황에 맞는 콘텐츠 고르기' })).toHaveCount(0);
   await expect(flowMapCatalog.getByTestId('flow-map-catalog-card')).toHaveCount(9);
   await expect(flowMapCatalog.locator('[data-testid="flow-map-catalog-card"][data-source-kind="curated-source"]')).toHaveCount(8);
@@ -1591,16 +1594,102 @@ test('flow finding search and intent chips narrow commercial catalog cards', asy
   await page.goto('/flows');
 
   const catalog = page.getByTestId('flow-map-catalog-section');
-  await page.getByTestId('flow-catalog-search').fill('예방접종');
+  const sharedInput = page.getByTestId('flow-url-lookup-input');
+  await expect(catalog.getByRole('textbox')).toHaveCount(1);
+  await expect(page.getByTestId('flow-catalog-search')).toHaveCount(0);
+
+  await sharedInput.fill('이사 D-30');
+  await expect(catalog.getByTestId('single-flow-catalog-card').filter({ hasText: '이사 D-30 준비' })).toBeVisible();
+  await expect(catalog).not.toContainText('오픽 모의고사 2주 계획표');
+  const memoAlternative = page.getByTestId('flow-discovery-memo-alternative');
+  await expect(memoAlternative).toContainText('준비된 계획이 검색됐어요');
+  await expect(memoAlternative.getByTestId('flow-discovery-use-as-memo')).toBeVisible();
+  await catalog.getByRole('button', { name: '계획 찾기' }).click();
+  await expect(page.getByTestId('flow-url-lookup-result')).toHaveCount(0);
+
+  await memoAlternative.getByTestId('flow-discovery-use-as-memo').click();
+  await expect(page.getByTestId('flow-url-lookup-result')).toContainText('내 메모');
+  await expect(page.getByTestId('flow-memo-draft-editor')).toBeVisible();
+
+  await sharedInput.fill('예방접종');
   await expect(catalog).toContainText('맞는 콘텐츠가 없습니다');
   await expect(catalog.getByTestId('flow-map-catalog-card')).toHaveCount(0);
 
-  await page.getByTestId('flow-catalog-search').fill('');
+  await sharedInput.fill('');
   await catalog.getByRole('button', { name: '공부' }).click();
   await expect(catalog).toContainText('중1 수학 목차 진도');
   await expect(catalog).toContainText('오픽 모의고사 2주 계획표');
   await expect(catalog).toContainText('오픽 모의고사 1달 반복 계획');
   await expect(catalog).not.toContainText('신차 구매');
+});
+
+test('prepared discovery queries clear stale hidden filters instead of becoming memo drafts', async ({ page }) => {
+  await page.goto('/flows?category=%EC%88%A8%EC%9D%80%20%EC%B9%B4%ED%85%8C%EA%B3%A0%EB%A6%AC&tag=%EC%88%A8%EC%9D%80%20%ED%83%9C%EA%B7%B8');
+
+  const catalog = page.getByTestId('flow-map-catalog-section');
+  await catalog.getByRole('button', { name: '공부' }).click();
+  const sharedInput = page.getByTestId('flow-url-lookup-input');
+  await sharedInput.fill('자동차검사 D-14 준비');
+  await expect(page.getByTestId('flow-discovery-memo-alternative')).toBeVisible();
+
+  await catalog.getByRole('button', { name: '계획 찾기' }).click();
+  await expect(page.getByTestId('flow-url-lookup-result')).toHaveCount(0);
+  await expect(catalog.getByRole('button', { name: '전체' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(catalog.getByTestId('single-flow-catalog-card').filter({
+    hasText: '자동차검사 D-14 준비',
+  })).toBeVisible();
+});
+
+test('flow finding lookup can reveal the full catalog and editing the shared input clears the result', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/flows');
+
+  const catalog = page.getByTestId('flow-map-catalog-section');
+  const sharedInput = page.getByTestId('flow-url-lookup-input');
+  await catalog.getByRole('button', { name: '공부' }).click();
+  await expect(catalog.getByRole('button', { name: '공부' })).toHaveAttribute('aria-pressed', 'true');
+  await sharedInput.fill('https://mathbang.net/13?utm_source=shared-input-review');
+  await catalog.getByRole('button', { name: '계획 찾기' }).click();
+
+  const lookupResult = page.getByTestId('flow-url-lookup-result');
+  const browseResults = page.getByTestId('flow-catalog-browse-results');
+  const browseToggle = page.getByTestId('flow-catalog-after-lookup-toggle');
+  await expect(lookupResult).toContainText('이미 만들어진 계획이 있어요');
+  await expect(page.getByTestId('flow-url-lookup-announcement')).toContainText('기존 콘텐츠: 이미 만들어진 계획이 있어요');
+  await expect(browseResults).toBeHidden();
+  await expect(browseToggle).toHaveAccessibleName('다른 계획 둘러보기');
+
+  await browseToggle.click();
+  await expect(browseToggle).toHaveAttribute('aria-expanded', 'true');
+  await expect(browseResults).toBeVisible();
+  await expect(catalog.getByRole('button', { name: '전체' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(catalog.getByRole('button', { name: '공부' })).toHaveAttribute('aria-pressed', 'false');
+  await expect(browseResults.locator(
+    '[data-testid="flow-map-catalog-card"], [data-testid="single-flow-catalog-card"]',
+  )).toHaveCount(11);
+  await expect(catalog.getByTestId('flow-catalog-count')).toContainText('계획 11개');
+
+  await sharedInput.fill('오픽');
+  await expect(lookupResult).toHaveCount(0);
+  await expect(browseToggle).toHaveCount(0);
+  await expect(browseResults).toBeVisible();
+  await expect(browseResults).toContainText('오픽 모의고사 2주 계획표');
+  await expect(browseResults).not.toContainText('이사 D-30 준비');
+
+  await sharedInput.fill('여권을 확인한다. 보험 서류를 챙긴다. 숙소 주소를 적는다.');
+  await catalog.getByRole('button', { name: '계획 찾기' }).click();
+  await expect(lookupResult).toContainText('내 메모');
+  await expect(lookupResult).toContainText('메모를 실행할 초안으로 정리했어요');
+
+  await sharedInput.fill('todo: 보고서 작성');
+  await catalog.getByRole('button', { name: '계획 찾기' }).click();
+  await expect(lookupResult).toContainText('내 메모');
+  await expect(lookupResult).toContainText('메모를 실행할 초안으로 정리했어요');
+  await expect(lookupResult).not.toContainText('준비된 계획이 없어요');
+
+  await sharedInput.fill('오픽');
+  await expect(lookupResult).toHaveCount(0);
+  await expect(browseResults).toContainText('오픽 모의고사 2주 계획표');
 });
 
 test('legacy AJD Flow Map alias opens the canonical 24-item detail with its source', async ({ page }) => {
@@ -1615,9 +1704,26 @@ test('legacy AJD Flow Map alias opens the canonical 24-item detail with its sour
     'data-capability-output-count',
     '24',
   );
-  await expect(page.getByTestId('flow-capability-artifact-preview-expand')).toContainText('나머지 21개 보기');
-  await page.getByTestId('flow-capability-artifact-preview-expand').click();
-  await expect(page.getByTestId('flow-capability-artifact-preview-row')).toHaveCount(24);
+  await expect(capability).toHaveAttribute('data-capability-selected-destination', 'memo');
+  await expect(capability.getByTestId('flow-artifact-text-syntax-preview')).toBeVisible();
+  await expect(capability.getByTestId('flow-capability-artifact-preview-expand')).toHaveCount(0);
+  await expect(capability.locator('[data-testid="flow-capability-artifact-preview-row"]:visible')).toHaveCount(24);
+
+  await capability.getByRole('button', { name: 'Todo', exact: true }).click();
+  await expect(capability).toHaveAttribute('data-capability-selected-destination', 'checklist');
+  await expect(capability.getByTestId('flow-capability-artifact-preview-expand')).toHaveCount(0);
+  await expect(capability.locator('[data-testid="flow-capability-artifact-preview-row"]:visible')).toHaveCount(24);
+
+  await capability.getByRole('button', { name: 'Calendar', exact: true }).click();
+  await expect(capability).toHaveAttribute('data-capability-selected-destination', 'calendar');
+  await expect(capability.getByTestId('flow-capability-artifact-preview-expand')).toHaveCount(0);
+  const calendarPreamble = capability.getByTestId('flow-artifact-calendar-preamble');
+  await expect(calendarPreamble).toBeVisible();
+  await calendarPreamble.getByTestId('public-flow-anchor-input').fill('2030-08-15');
+  await expect(capability.locator('[data-testid="flow-capability-artifact-preview-row"]:visible')).toHaveCount(24);
+  expect(await calendarPreamble.evaluate((preamble, firstRow) => Boolean(
+    preamble.compareDocumentPosition(firstRow as Node) & Node.DOCUMENT_POSITION_FOLLOWING,
+  ), await capability.getByTestId('flow-capability-artifact-preview-row').first().elementHandle())).toBe(true);
   await expect(publicFlow).toContainText('이사 방식 정하기');
   await expect(page.locator('body')).not.toContainText('sourceTrace');
   await expect(page.getByRole('link', { name: '이사 체크리스트 참고' }).first()).toHaveAttribute(
@@ -1851,8 +1957,60 @@ test('flow catalog title opens the current public Flow Map page', async ({ page 
   await expect(page.getByRole('heading', { name: '이사 D-30 준비' })).toBeVisible();
   const capability = page.getByTestId('public-flow-capability-result');
   await expect(capability).toHaveAttribute('data-capability-output-count', '24');
-  await page.getByTestId('flow-capability-artifact-preview-expand').click();
-  await expect(page.getByTestId('flow-capability-artifact-preview-row')).toHaveCount(24);
+  await expect(capability).toHaveAttribute('data-capability-selected-destination', 'memo');
+  await expect(capability.getByTestId('flow-artifact-text-syntax-preview')).toBeVisible();
+  await expect(capability.getByTestId('flow-capability-artifact-preview-expand')).toHaveCount(0);
+  await expect(capability.locator('[data-testid="flow-capability-artifact-preview-row"]:visible')).toHaveCount(24);
+});
+
+test('client navigation to a different public Flow resets the first result to Text', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/f/moving-d30-basic');
+
+  const movingCapability = page.getByTestId('public-flow-capability-result');
+  await expect(movingCapability).toHaveAttribute('data-public-format-mode', 'approved');
+  await expect(movingCapability).toHaveAttribute('data-capability-selected-destination', 'memo');
+  await expect(movingCapability.getByTestId('flow-artifact-text-syntax-preview')).toBeVisible();
+  await movingCapability.getByRole('button', { name: 'Todo', exact: true }).click();
+  await expect(movingCapability).toHaveAttribute('data-capability-selected-destination', 'checklist');
+
+  await page.getByTestId('flow-public-shell').locator('a[href="/flows"]').click();
+  await expect(page).toHaveURL('/flows');
+  await page
+    .getByTestId('flow-map-catalog-section')
+    .locator('a[href="/f/vehicle-inspection-prep"]')
+    .first()
+    .click();
+
+  await expect(page).toHaveURL('/f/vehicle-inspection-prep');
+  const vehicleCapability = page.getByTestId('public-flow-capability-result');
+  await expect(vehicleCapability).toHaveAttribute('data-public-format-mode', 'approved');
+  await expect(vehicleCapability).toHaveAttribute('data-capability-selected-destination', 'memo');
+  const textSyntax = vehicleCapability.getByTestId('flow-artifact-text-syntax-preview');
+  await expect(textSyntax).toBeVisible();
+  await expect(textSyntax).toContainText('# 자동차검사 D-14 준비');
+  await expect(vehicleCapability.getByTestId('flow-capability-artifact-preview-expand')).toHaveCount(0);
+  await expect(vehicleCapability.locator('[data-testid="flow-capability-artifact-preview-row"]:visible')).toHaveCount(10);
+
+  await vehicleCapability.getByRole('button', { name: 'Todo', exact: true }).click();
+  await expect(vehicleCapability).toHaveAttribute('data-capability-selected-destination', 'checklist');
+  await page.getByTestId('flow-public-shell').locator('a[href="/flows"]').click();
+  await expect(page).toHaveURL('/flows');
+  await page
+    .getByTestId('flow-map-catalog-section')
+    .locator('a[href="/f/moving-d30-basic"]')
+    .first()
+    .click();
+
+  await expect(page).toHaveURL('/f/moving-d30-basic');
+  const movingAgainCapability = page.getByTestId('public-flow-capability-result');
+  await expect(movingAgainCapability).toHaveAttribute('data-capability-selected-destination', 'memo');
+  await expect(movingAgainCapability.getByTestId('flow-artifact-text-syntax-preview')).toContainText(
+    '# 이사 D-30 준비',
+  );
+  await expect(movingAgainCapability.locator(
+    '[data-testid="flow-capability-artifact-preview-row"]:visible',
+  )).toHaveCount(24);
 });
 
 test('user-facing content titles hide trailing Flow suffix while keeping app labels', async ({ page }) => {
@@ -2056,7 +2214,7 @@ test('moving restart mobile uses one export entry and friendly date text', async
 test('flow discovery keeps legacy tag queries out of the representative catalog surface', async ({ page }) => {
   await page.goto('/flows?tag=돈이%20걸린%20결정');
 
-  await expect(page.getByRole('heading', { name: 'URL·메모로 계획 찾기' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '필요한 계획 찾기' })).toBeVisible();
   await expect(page.getByTestId('flow-map-catalog-section').getByTestId('single-flow-catalog-card')).toHaveCount(2);
   await expect(page.getByText('필터 조정')).toHaveCount(0);
   await expect(page.getByLabel('태그')).toHaveCount(0);

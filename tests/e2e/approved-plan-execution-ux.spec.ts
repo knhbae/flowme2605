@@ -866,11 +866,12 @@ test.describe('approved plan execution UX', () => {
     await page.goto('/my?view=flows');
 
     const opener = page.getByTestId('my-flow-mobile-structure-open');
-    await expect(opener).toContainText('사본 1 ·');
+    await expect(opener).toContainText('이사 D-30 준비');
+    await expect(opener).not.toContainText('사본 1 ·');
     await opener.click();
     const plan = page.getByTestId('approved-my-plan-workspace');
     await expect(plan).toBeVisible();
-    await expect(plan.getByRole('heading', { name: /사본 1 ·/u })).toBeVisible();
+    await expect(plan.getByRole('heading', { name: '이사 D-30 준비' })).toBeVisible();
     const todo = plan.getByTestId('my-plan-date-grouped-todos');
     await expect(todo).toHaveAttribute('data-todo-row-count', '24');
     const rows = todo.getByTestId('my-plan-todo-row');

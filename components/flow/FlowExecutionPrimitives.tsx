@@ -105,6 +105,7 @@ type FlowDateRailGroupProps = Omit<ComponentPropsWithoutRef<'section'>, 'childre
   undatedLabel?: string;
   showMonth?: boolean;
   dateContextLabel?: string;
+  dateRailAriaHidden?: boolean;
   children: ReactNode;
 };
 
@@ -113,6 +114,7 @@ export function FlowDateRailGroup({
   undatedLabel = '날짜 없음',
   showMonth = false,
   dateContextLabel,
+  dateRailAriaHidden = false,
   className = '',
   children,
   ...sectionProps
@@ -131,6 +133,7 @@ export function FlowDateRailGroup({
     >
       <div
         data-testid="flow-date-rail"
+        aria-hidden={dateRailAriaHidden || undefined}
         className="bg-[var(--flowme-action-soft)] px-2 py-3 text-center"
       >
         <span className="block text-lg font-semibold text-[var(--flowme-action-strong)]">

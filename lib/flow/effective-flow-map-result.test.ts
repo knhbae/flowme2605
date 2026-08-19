@@ -6,7 +6,10 @@ import {
   reviseEffectiveFlowMapSnapshot,
 } from './effective-flow-map-snapshot';
 import { buildEffectiveFlowMapResult } from './effective-flow-map-result';
-import { buildSourceBackedFlowMapPublishPackage } from './source-backed-my-flow';
+import {
+  buildSourceBackedFlowMapPublishPackage,
+  sourceBackedMyFlowBundles,
+} from './source-backed-my-flow';
 
 function getPackage(mapId: string) {
   const publishPackage = buildSourceBackedFlowMapPublishPackage(mapId);
@@ -141,7 +144,7 @@ test('OPIc choose_child projects one alternative while preserving Map and child 
     'curated-opic-single-mock-review',
     'curated-opic-course-row-import',
   ]);
-  assert.ok(result.previewRows.every((row) => row.section?.includes('오픽')));
+  assert.ok(result.previewRows.every((row) => row.section === '2주 계획표'));
   assert.equal(result.viewModel.all.find((candidate) => candidate.destination === 'calendar')?.outputCount, 14);
 });
 
@@ -300,4 +303,148 @@ test('every directly rendered executable Map has a complete approved result proj
       ['memo', 'checklist', 'calendar'],
     );
   });
+});
+
+test('Map Text syntax keeps effective order while restoring canonical source grammar', () => {
+  const publishPackage = getPackage('middle-school-math-1');
+  const baseSnapshot = buildEffectiveFlowMapSnapshot({
+    publishPackage,
+    executionState: 'executable',
+  });
+  const selectedItemIds = [
+    baseSnapshot.itemIds.canonical[2]!,
+    baseSnapshot.itemIds.canonical[0]!,
+  ];
+  const mapSnapshot = reviseEffectiveFlowMapSnapshot(baseSnapshot, {
+    effectiveTitle: '내 중1 수학 순서',
+    selectedItemIds,
+  });
+  const result = buildEffectiveFlowMapResult({ publishPackage, mapSnapshot });
+  const syntaxRows = result.textSyntaxModel.groups.flatMap((group) => group.rows);
+
+  assert.equal(result.textSyntaxModel.title, '내 중1 수학 순서');
+  assert.deepEqual(syntaxRows.map((row) => row.id), selectedItemIds);
+  assert.equal(syntaxRows[0]?.scheduleMode, 'unscheduled');
+  assert.match(syntaxRows[0]?.why ?? '', /원문 목차/u);
+  assert.match(syntaxRows[0]?.how ?? '', /^-/u);
+  assert.match(syntaxRows[0]?.done ?? '', /메모했습니다/u);
+  assert.ok(syntaxRows[0]?.resources.some((resource) => resource.type === 'reference'));
+  assert.equal(syntaxRows[0]?.personalDetail, undefined);
+});
+
+test('Map Text syntax preserves source D-offsets and labels only real Map overrides as personal', () => {
+  const publishPackage = getPackage('moving-d30');
+  const baseSnapshot = buildEffectiveFlowMapSnapshot({
+    publishPackage,
+    executionState: 'executable',
+  });
+  const itemId = baseSnapshot.itemIds.canonical[0]!;
+  const mapSnapshot = reviseEffectiveFlowMapSnapshot(baseSnapshot, {
+    itemPersonalizations: {
+      [itemId]: {
+        title: '내 이사 방식 확인',
+        detail: '가족과 비교한 견적 화면을 함께 확인한다.',
+        date: '2026-08-24',
+      },
+    },
+  });
+  const result = buildEffectiveFlowMapResult({
+    publishPackage,
+    mapSnapshot,
+    anchor: '2030-01-10',
+  });
+  const syntaxRows = result.textSyntaxModel.groups.flatMap((group) => group.rows);
+  const personalized = syntaxRows.find((row) => row.id === itemId);
+
+  assert.equal(personalized?.title, '내 이사 방식 확인');
+  assert.equal(personalized?.scheduleMode, 'fixed_override');
+  assert.equal(personalized?.fixedDate, '2026-08-24');
+  assert.equal(personalized?.timing, undefined);
+  assert.equal(personalized?.personalDetail, '가족과 비교한 견적 화면을 함께 확인한다.');
+  assert.match(personalized?.why ?? '', /견적 비교/u);
+
+  const sourceOnly = syntaxRows.find((row) => row.id !== itemId && row.timing);
+  assert.ok(sourceOnly);
+  assert.equal(sourceOnly.scheduleMode, 'source_relative');
+  assert.match(sourceOnly.timing ?? '', /^D/u);
+  assert.equal(sourceOnly.personalDetail, undefined);
+});
+
+test('choose-child Map Text syntax contains only the selected child source rows', () => {
+  const publishPackage = getPackage('curated-opic-mock-course');
+  const baseSnapshot = buildEffectiveFlowMapSnapshot({
+    publishPackage,
+    executionState: 'executable',
+  });
+  const selectedSlug = publishPackage.public.childFlows[1]!.slug;
+  const selectedItemIds = baseSnapshot.canonicalRows
+    .filter((row) => row.flowSlug === selectedSlug)
+    .map((row) => row.itemId);
+  const mapSnapshot = reviseEffectiveFlowMapSnapshot(baseSnapshot, { selectedItemIds });
+  const result = buildEffectiveFlowMapResult({ publishPackage, mapSnapshot });
+  const syntaxRows = result.textSyntaxModel.groups.flatMap((group) => group.rows);
+
+  assert.equal(result.textSyntaxModel.title, publishPackage.map.title);
+  assert.deepEqual(syntaxRows.map((row) => row.id), selectedItemIds);
+  assert.ok(syntaxRows.every((row) => row.sourceItemId.startsWith(`${selectedSlug}::`)));
+  assert.ok(result.textSyntaxModel.groups.every((group) => group.section === '1달 반복 계획'));
+
+  const combinedResult = buildEffectiveFlowMapResult({
+    publishPackage,
+    mapSnapshot: baseSnapshot,
+  });
+  assert.ok(combinedResult.previewRows.some(
+    (row) => row.section === '오픽 모의고사 2주 계획표 · 2주 계획표',
+  ));
+  assert.ok(combinedResult.previewRows.some(
+    (row) => row.section === '오픽 모의고사 1달 반복 계획 · 1달 반복 계획',
+  ));
+});
+
+test('choose-child switch isolates Text warnings to the effective child source', () => {
+  const publishPackage = getPackage('curated-opic-mock-course');
+  const [firstChild, secondChild] = publishPackage.public.childFlows;
+  assert.ok(firstChild && secondChild);
+  const firstBundle = sourceBackedMyFlowBundles.find((bundle) => bundle.flow.slug === firstChild.slug);
+  const secondBundle = sourceBackedMyFlowBundles.find((bundle) => bundle.flow.slug === secondChild.slug);
+  assert.ok(firstBundle && secondBundle);
+  const firstWarnings = firstBundle.warnings;
+  const secondWarnings = secondBundle.warnings;
+
+  try {
+    firstBundle.warnings = ['선택한 2주 계획 경고'];
+    secondBundle.warnings = ['선택하지 않은 1달 계획 경고'];
+    const baseSnapshot = buildEffectiveFlowMapSnapshot({
+      publishPackage,
+      executionState: 'executable',
+    });
+    const selectChild = (slug: string) => reviseEffectiveFlowMapSnapshot(baseSnapshot, {
+      selectedItemIds: baseSnapshot.canonicalRows
+        .filter((row) => row.flowSlug === slug)
+        .map((row) => row.itemId),
+    });
+
+    const firstResult = buildEffectiveFlowMapResult({
+      publishPackage,
+      mapSnapshot: reviseEffectiveFlowMapSnapshot(selectChild(firstChild.slug), {
+        effectiveTitle: firstChild.title,
+      }),
+    });
+    assert.equal(firstResult.textSyntaxModel.title, firstChild.title);
+    assert.ok(firstResult.textSyntaxModel.warnings.includes('선택한 2주 계획 경고'));
+    assert.ok(!firstResult.textSyntaxModel.warnings.includes('선택하지 않은 1달 계획 경고'));
+
+    const secondResult = buildEffectiveFlowMapResult({
+      publishPackage,
+      mapSnapshot: reviseEffectiveFlowMapSnapshot(selectChild(secondChild.slug), {
+        effectiveTitle: secondChild.title,
+      }),
+    });
+    assert.equal(secondResult.textSyntaxModel.title, secondChild.title);
+    assert.ok(secondResult.textSyntaxModel.warnings.includes('선택하지 않은 1달 계획 경고'));
+    assert.ok(!secondResult.textSyntaxModel.warnings.includes('선택한 2주 계획 경고'));
+  } finally {
+    firstBundle.warnings = firstWarnings;
+    secondBundle.warnings = secondWarnings;
+  }
 });

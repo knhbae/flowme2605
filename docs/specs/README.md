@@ -40,7 +40,9 @@ Only **Active Gate** carries the current execution backlog or Owner checkpoint. 
 
 ### Active Gate
 
-- [2026-08-20 Production Visual-Only Refresh](./2026-08-20-production-visual-only-refresh/spec.md) is the active Owner-promoted gate. It changes presentation only across the main app; product behavior, copy, routes, data, persistence, and lifecycle semantics remain frozen. Local implementation and scoped automated QA are complete; full `npm test` remains non-green because `30` source records are review-due. A scoped PR and Vercel Preview are authorized for review; merge and Production are not authorized, and observed users remain `0`.
+- [2026-08-20 Flow Entry And Preview Clarity](./2026-08-20-flow-entry-preview-clarity/spec.md) is the active Owner-promoted behavior follow-up stacked on the [Production Visual-Only Refresh](./2026-08-20-production-visual-only-refresh/spec.md). It unifies `/flows` query/URL/memo intake, removes a meaningless single-copy ordinal, opens each ordinary or executable Map Flow on source-faithful complete read-only Flow syntax, and shows all approved Todo/Calendar rows with meaningful grouping. Local implementation and automated QA are complete; stacked Draft PR and Vercel Preview publication remain pending. Merge and Production are not authorized, and observed users remain `0`.
+
+- The Production Visual-Only Refresh remains the presentation baseline for this stack. Its local implementation and scoped automated QA are complete; full `npm test` remains non-green because `30` source records are review-due. Its separate merge and Production decisions also remain unapproved.
 
 ### Recently Completed
 

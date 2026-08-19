@@ -6,6 +6,10 @@ import { formatKoreanShortDate } from '@/lib/flow/date';
 import { buildArtifactRecommendationVM } from '@/lib/flow/artifact-recommendation';
 import { buildDateGroupedTodoListViewModel } from '@/lib/flow/date-grouped-todo-list';
 import type {
+  PublicFlowTextSyntaxGroup,
+  PublicFlowTextSyntaxModel,
+} from '@/lib/flow/public-flow-text-syntax';
+import type {
   FlowExperienceProjection,
   FlowExperienceProjectionRow,
   FlowExperienceShape,
@@ -38,6 +42,12 @@ function getApprovedPublicShapeLabel(shape: FlowExperienceShape): string | undef
 function getDateLabel(row: FlowExperienceProjectionRow): string {
   if (!row.schedule.date) return '날짜 없음';
   return formatKoreanShortDate(row.schedule.date, { includeWeekday: true });
+}
+
+function getCalendarGroupAriaLabel(date: string, row: FlowExperienceProjectionRow): string {
+  if (date === '날짜 없음') return date;
+  const year = date.match(/^(\d{4})-/u)?.[1];
+  return year ? `${Number(year)}년 ${getDateLabel(row)}` : getDateLabel(row);
 }
 
 function getRowMeta(row: FlowExperienceProjectionRow): string[] {
@@ -135,7 +145,11 @@ function CalendarRows({ rows, remainder = false, rowTestId, onRowEdit }: ShapeRo
     const date = row.schedule.date ?? '날짜 없음';
     groups.set(date, [...(groups.get(date) ?? []), row]);
     return groups;
-  }, new Map<string, FlowExperienceProjectionRow[]>()));
+  }, new Map<string, FlowExperienceProjectionRow[]>())).sort(([left], [right]) => {
+    if (left === '날짜 없음') return right === '날짜 없음' ? 0 : 1;
+    if (right === '날짜 없음') return -1;
+    return left.localeCompare(right);
+  });
   return (
     <div data-testid="flow-artifact-calendar-preview" className="border-t border-[var(--flowme-border)]">
       {dateGroups.map(([date, groupRows]) => (
@@ -143,7 +157,10 @@ function CalendarRows({ rows, remainder = false, rowTestId, onRowEdit }: ShapeRo
           key={date}
           date={date === '날짜 없음' ? undefined : date}
           undatedLabel="날짜 없음"
+          showMonth
+          dateRailAriaHidden
         >
+          <h3 className="sr-only">{getCalendarGroupAriaLabel(date, groupRows[0])}</h3>
           <ol className="min-w-0">
             {groupRows.map((row) => (
               <li
@@ -271,6 +288,159 @@ function MemoRows({ rows, remainder = false, rowTestId, onRowEdit }: ShapeRowPro
   );
 }
 
+function normalizeSyntaxValue(value?: string): string {
+  return value?.replace(/\s+/gu, ' ').trim() ?? '';
+}
+
+function buildFallbackPublicTextSyntaxModel(
+  title: string,
+  rows: FlowExperienceProjectionRow[],
+): PublicFlowTextSyntaxModel {
+  const groups = rows.reduce<PublicFlowTextSyntaxGroup[]>((result, row) => {
+    const section = normalizeSyntaxValue(row.section) || '기본';
+    const repeatRule = normalizeSyntaxValue(row.schedule.repeatRule) || undefined;
+    const current = result.at(-1);
+    const syntaxRow = {
+      id: row.id,
+      sourceItemId: row.sourceItemId,
+      title: row.title,
+      scheduleMode: 'unscheduled' as const,
+      ...(row.description ? { description: row.description } : {}),
+      ...(row.completionCriterion ? { done: row.completionCriterion } : {}),
+      ...(row.caution ? { caution: row.caution } : {}),
+      resources: row.resources.map((resource) => ({ ...resource })),
+    };
+    if (current && current.section === section && current.repeatRule === repeatRule) {
+      current.rows.push(syntaxRow);
+      return result;
+    }
+    result.push({ section, ...(repeatRule ? { repeatRule } : {}), rows: [syntaxRow] });
+    return result;
+  }, []);
+  return { title, warnings: [], groups };
+}
+
+function formatFixedDate(value: string): string {
+  const match = value.match(/^(\d{4})-(\d{2})-(\d{2})$/u);
+  if (!match) return value;
+  return `${Number(match[1])}년 ${Number(match[2])}월 ${Number(match[3])}일`;
+}
+
+function PublicTextSyntax({
+  title,
+  rows,
+  model,
+  rowTestId,
+  onRowEdit,
+}: {
+  title: string;
+  rows: FlowExperienceProjectionRow[];
+  model?: PublicFlowTextSyntaxModel;
+  rowTestId?: string;
+  onRowEdit?: ShapeRowProps['onRowEdit'];
+}) {
+  const syntax = model ?? buildFallbackPublicTextSyntaxModel(title, rows);
+  const effectiveRowById = new Map(rows.map((row) => [row.id, row]));
+  if (syntax.groups.length === 0) {
+    return (
+      <p data-testid="flow-artifact-empty" className="border-t border-[var(--flowme-border)] px-3 py-5 text-sm leading-6 text-[var(--flowme-text-secondary)]">
+        {EMPTY_MESSAGE.memo}
+      </p>
+    );
+  }
+  return (
+    <div
+      data-testid="flow-artifact-text-syntax-preview"
+      role="region"
+      aria-label="Flow 문법 전체"
+      className="border-t border-[var(--flowme-border)] bg-[var(--flowme-surface-subtle)] px-3 py-4 font-mono text-xs leading-6 text-[var(--flowme-text)]"
+    >
+      <p className="mb-4 whitespace-pre-wrap break-words font-semibold text-[var(--flowme-text)]">
+        # {normalizeSyntaxValue(syntax.title)}
+      </p>
+      {syntax.warnings.length > 0 ? (
+        <div className="mb-4 text-[var(--flowme-danger-strong)]">
+          {syntax.warnings.map((warning, warningIndex) => (
+            <p key={`${warning}:${warningIndex}`} className="whitespace-pre-wrap break-words">
+              ! {normalizeSyntaxValue(warning)}
+            </p>
+          ))}
+        </div>
+      ) : null}
+      {syntax.groups.map((group, groupIndex) => (
+        <div
+          key={`${group.section}:${group.repeatRule ?? ''}:${groupIndex}`}
+          className={groupIndex > 0 ? 'mt-5' : undefined}
+        >
+          <p className="whitespace-pre-wrap break-words font-semibold text-[var(--flowme-action-strong)]">
+            ## {group.section}
+          </p>
+          {group.repeatRule ? (
+            <p className="whitespace-pre-wrap break-words text-[var(--flowme-text-secondary)]">
+              @{group.repeatRule}
+            </p>
+          ) : null}
+          {group.rows.map((row) => {
+            const title = normalizeSyntaxValue(row.title);
+            const why = normalizeSyntaxValue(row.why);
+            const how = normalizeSyntaxValue(row.how);
+            const done = normalizeSyntaxValue(row.done);
+            const caution = normalizeSyntaxValue(row.caution);
+            const description = normalizeSyntaxValue(row.description);
+            const personalDetail = normalizeSyntaxValue(row.personalDetail);
+            const effectiveRow = effectiveRowById.get(row.id);
+            return (
+              <div
+                key={row.id}
+                data-testid={getRowTestId(false, rowTestId)}
+                data-item-id={row.id}
+                data-flow-row-mode="preview"
+                data-completion-control="false"
+                className="mt-1 flex min-w-0 items-start justify-between gap-2"
+              >
+                <div className="min-w-0 flex-1 whitespace-pre-wrap break-words">
+                  <p>- {title}{row.timing ? ` ${row.timing}` : ''}</p>
+                  {why ? <p className="text-[var(--flowme-text-secondary)]">{'  '}why: {why}</p> : null}
+                  {how ? <p className="text-[var(--flowme-text-secondary)]">{'  '}how: {how}</p> : null}
+                  {done ? <p className="text-[var(--flowme-text-secondary)]">{'  '}done: {done}</p> : null}
+                  {caution ? <p className="text-[var(--flowme-danger-strong)]">{'  '}caution: {caution}</p> : null}
+                  {row.resources.map((resource, resourceIndex) => (
+                    <p key={`${row.id}:${resource.label}:${resource.url}:${resourceIndex}`} className="text-[var(--flowme-text-secondary)]">
+                      {'  '}link: {normalizeSyntaxValue(resource.label)} | {normalizeSyntaxValue(resource.url)} | {normalizeSyntaxValue(resource.type)}
+                    </p>
+                  ))}
+                  {row.scheduleMode === 'fixed_override' && row.fixedDate ? (
+                    <p data-text-schedule-mode="fixed_override" className="mt-1 font-sans text-[11px] text-[var(--flowme-text-tertiary)]">
+                      고정 날짜 · {formatFixedDate(row.fixedDate)}{row.durationDays && row.durationDays > 1
+                        ? ` · ${row.durationDays}일간`
+                        : ''}
+                    </p>
+                  ) : row.scheduleMode === 'explicit_undated' ? (
+                    <p data-text-schedule-mode="explicit_undated" className="mt-1 font-sans text-[11px] text-[var(--flowme-text-tertiary)]">
+                      날짜 없음 · 사용자가 날짜를 비웠어요
+                    </p>
+                  ) : null}
+                  {description ? (
+                    <p data-text-context="source-description" className="mt-1 font-sans text-[11px] text-[var(--flowme-text-tertiary)]">
+                      설명 · {description}
+                    </p>
+                  ) : null}
+                  {personalDetail ? (
+                    <p data-text-context="personal-detail" className="mt-1 font-sans text-[11px] text-[var(--flowme-text-secondary)]">
+                      내 메모 · {personalDetail}
+                    </p>
+                  ) : null}
+                </div>
+                {effectiveRow ? <RowEditButton row={effectiveRow} onRowEdit={onRowEdit} /> : null}
+              </div>
+            );
+          })}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function renderShapeRows(
   shape: FlowExperienceShape,
   rows: FlowExperienceProjectionRow[],
@@ -375,6 +545,8 @@ export function FlowArtifactDataPreview({
   onRowOpen,
   anchorDate,
   publicApprovedMode = false,
+  textSyntaxModel,
+  calendarPreamble,
   emptyAction,
 }: {
   projection: FlowExperienceProjection;
@@ -392,6 +564,8 @@ export function FlowArtifactDataPreview({
   anchorDate?: string;
   /** Restricts a public result preview to the approved Text/Todo/Calendar views. */
   publicApprovedMode?: boolean;
+  textSyntaxModel?: PublicFlowTextSyntaxModel;
+  calendarPreamble?: ReactNode;
   emptyAction?: ReactNode;
 }) {
   const recommendation = buildArtifactRecommendationVM(projection);
@@ -507,7 +681,15 @@ export function FlowArtifactDataPreview({
           </div>
         ) : null}
       </header>
-      {selectedShape === 'checklist' && publicApprovedMode ? (
+      {selectedShape === 'memo' && publicApprovedMode ? (
+        <PublicTextSyntax
+          title={projection.title}
+          rows={selected.rows}
+          model={textSyntaxModel}
+          rowTestId={rowTestId}
+          onRowEdit={onRowEdit}
+        />
+      ) : selectedShape === 'checklist' && publicApprovedMode ? (
         <DateGroupedTodoList
           mode="public"
           viewModel={groupedTodoViewModel}
@@ -525,15 +707,27 @@ export function FlowArtifactDataPreview({
           className="border-t border-[var(--flowme-border)] px-2 py-3"
         />
       ) : (
-        <ShapeRows
-          shape={selectedShape}
-          rows={selected.rows}
-          previewRowLimit={previewRowLimit}
-          rowTestId={rowTestId}
-          expandTestId={expandTestId}
-          onRowEdit={onRowEdit}
-          emptyAction={emptyAction}
-        />
+        <>
+          {publicApprovedMode && selectedShape === 'calendar' && calendarPreamble ? (
+            <div
+              data-testid="flow-artifact-calendar-preamble"
+              className="border-t border-[var(--flowme-border)] px-3 py-4"
+            >
+              {calendarPreamble}
+            </div>
+          ) : null}
+          <ShapeRows
+            shape={selectedShape}
+            rows={selected.rows}
+            previewRowLimit={publicApprovedMode && selectedShape === 'calendar'
+              ? selected.rows.length
+              : previewRowLimit}
+            rowTestId={rowTestId}
+            expandTestId={expandTestId}
+            onRowEdit={onRowEdit}
+            emptyAction={emptyAction}
+          />
+        </>
       )}
     </section>
   );

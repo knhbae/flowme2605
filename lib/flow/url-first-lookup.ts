@@ -427,6 +427,9 @@ function decodePathname(pathname: string): string {
 export function canonicalizeFlowSourceUrl(input: string): string {
   const trimmed = input.trim();
   const parsed = new URL(trimmed);
+  if ((parsed.protocol !== 'http:' && parsed.protocol !== 'https:') || !parsed.hostname) {
+    throw new TypeError('Flow source URL must use HTTP or HTTPS and include a hostname.');
+  }
   const host = canonicalHost(parsed.hostname);
   const decodedPathname = decodePathname(parsed.pathname).replace(/\/+$/, '') || '/';
   const retainedParams = [...parsed.searchParams.entries()]

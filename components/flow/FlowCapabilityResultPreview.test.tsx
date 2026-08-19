@@ -10,6 +10,7 @@ import {
 } from '@/lib/flow/effective-flow-contract.fixtures';
 import { buildEffectiveFlowSnapshot } from '@/lib/flow/effective-flow-snapshot';
 import { resolvePublicDateIntent } from '@/lib/flow/public-date-intent';
+import { buildPublicFlowTextSyntaxModel } from '@/lib/flow/public-flow-text-syntax';
 import { FlowArtifactDataPreview } from './FlowArtifactDataPreview';
 import { FlowCapabilityResultPreview } from './FlowCapabilityResultPreview';
 
@@ -201,6 +202,165 @@ test('approved public mode exposes only Text, Todo, and Calendar and keeps every
   assert.equal(tagsByTestId(markup, 'flow-capability-artifact-preview-todo-checkbox').length, 3);
   assert.doesNotMatch(markup, /data-capability-destination="sheet"/u);
   assert.doesNotMatch(markup, /data-artifact-shape="sheet"|>시트 ·|>Sheet ·|>Excel ·/u);
+});
+
+test('approved public mode starts with full Text authoring syntax from the effective rows', () => {
+  const snapshot = buildSnapshot();
+  const viewModel = buildFlowCapabilityResultViewModel({
+    snapshot,
+    lifecycle: 'public_preview',
+  });
+  const textSyntaxModel = buildPublicFlowTextSyntaxModel({
+    bundle: P0_CONTRACT_FLOW_BUNDLE,
+    projection: snapshot.committed.projection,
+    itemPersonalizations: {
+      'p0-contract-item-a': { detail: '개인 메모는 원본과 별도로 유지합니다.' },
+    },
+  });
+  const markup = renderToStaticMarkup(
+    <FlowCapabilityResultPreview
+      viewModel={viewModel}
+      anchorDate="2030-09-01"
+      previewRowLimit={1}
+      publicApprovedMode
+      textSyntaxModel={textSyntaxModel}
+    />,
+  );
+
+  assert.match(markup, /data-capability-selected-destination="memo"/u);
+  assert.match(markup, /data-testid="flow-artifact-text-syntax-preview"/u);
+  assert.match(markup, /# P0 결과 계약 계획/u);
+  assert.match(markup, /## 실행 순서/u);
+  assert.match(markup, /- 계약 항목 A D-Day/u);
+  assert.match(markup, /- 계약 항목 B D\+2/u);
+  assert.match(markup, /why: 결과 계약의 풍부한 필드가 한 항목에 모여 있는지 확인합니다\./u);
+  assert.match(markup, /how: 완료 기준, 메모, 주의, 리소스와 출처를 각각 비교합니다\./u);
+  assert.match(markup, /설명 · 계약 설명 A/u);
+  assert.match(markup, /내 메모 · 개인 메모는 원본과 별도로 유지합니다\./u);
+  assert.doesNotMatch(markup, /how: 계약 설명 A/u);
+  assert.doesNotMatch(markup, /how: 개인 메모는 원본과 별도로 유지합니다\./u);
+  assert.match(markup, /done: 확인 결과를 저장하고 담당자에게 공유했습니다\./u);
+  assert.match(markup, /caution: 결과 생성 전 날짜와 대상 범위를 다시 확인하세요\./u);
+  assert.match(markup, /link: 공식 확인 링크 \| https:\/\/example\.com\/p0-contract-source\/item-a \| official/u);
+  assert.equal(tagsByTestId(markup, 'flow-capability-artifact-preview-row').length, 3);
+  assert.doesNotMatch(markup, /data-testid="flow-capability-artifact-preview-expand"/u);
+});
+
+test('approved public Calendar shows every grouped row while default previews keep the row limit', () => {
+  const baseProjection = buildSnapshot().committed.projection;
+  const projection = {
+    ...baseProjection,
+    shapes: {
+      ...baseProjection.shapes,
+      calendar: {
+        ...baseProjection.shapes.calendar,
+        rows: [...baseProjection.shapes.calendar.rows].reverse().map((row) => (
+          row.id === 'p0-contract-item-c'
+            ? { ...row, schedule: { state: 'unscheduled' as const } }
+            : row
+        )),
+      },
+    },
+  };
+  const approvedMarkup = renderToStaticMarkup(
+    <FlowArtifactDataPreview
+      projection={projection}
+      selectedShape="calendar"
+      previewRowLimit={1}
+      rowTestId="calendar-row"
+      expandTestId="calendar-expand"
+      publicApprovedMode
+      calendarPreamble={<div data-testid="calendar-setup">기준일 입력</div>}
+    />,
+  );
+  const defaultMarkup = renderToStaticMarkup(
+    <FlowArtifactDataPreview
+      projection={projection}
+      selectedShape="calendar"
+      previewRowLimit={1}
+      rowTestId="calendar-row"
+      expandTestId="calendar-expand"
+    />,
+  );
+
+  assert.equal(tagsByTestId(approvedMarkup, 'calendar-row').length, 3);
+  assert.doesNotMatch(approvedMarkup, /data-testid="calendar-expand"/u);
+  assert.equal(tagsByTestId(approvedMarkup, 'flow-date-rail').length, 3);
+  assert.equal(
+    tagsByTestId(approvedMarkup, 'flow-date-rail').every((tag) => tag.includes('aria-hidden="true"')),
+    true,
+  );
+  assert.match(approvedMarkup, /<h3[^>]*>2030년 9월 1일 \(일\)<\/h3>/u);
+  assert.match(approvedMarkup, />9월 · \(일\)</u);
+  assert.ok(approvedMarkup.indexOf('>2030년 9월 1일') < approvedMarkup.indexOf('>2030년 9월 3일'));
+  assert.ok(approvedMarkup.indexOf('>2030년 9월 3일') < approvedMarkup.indexOf('>날짜 없음</h3>'));
+  assert.ok(approvedMarkup.indexOf('data-testid="calendar-setup"') < approvedMarkup.indexOf('data-testid="calendar-row"'));
+  assert.equal(tagsByTestId(defaultMarkup, 'calendar-row').length, 3);
+  assert.match(defaultMarkup, /data-testid="calendar-expand"/u);
+  assert.match(defaultMarkup, /나머지 2개 보기/u);
+});
+
+test('approved Text distinguishes fixed and removed dates without serializing invented D offsets', () => {
+  const snapshot = buildSnapshot();
+  const fixedDurationBundle = {
+    ...P0_CONTRACT_FLOW_BUNDLE,
+    items: P0_CONTRACT_FLOW_BUNDLE.items.map((item) => (
+      item.id === 'p0-contract-item-a' ? { ...item, duration_days: 2 } : item
+    )),
+  };
+  const textSyntaxModel = buildPublicFlowTextSyntaxModel({
+    bundle: fixedDurationBundle,
+    projection: snapshot.committed.projection,
+    itemPersonalizations: {
+      'p0-contract-item-a': { date: '2031-01-02' },
+      'p0-contract-item-b': { date: null },
+    },
+  });
+  const markup = renderToStaticMarkup(
+    <FlowArtifactDataPreview
+      projection={snapshot.committed.projection}
+      selectedShape="memo"
+      publicApprovedMode
+      textSyntaxModel={textSyntaxModel}
+    />,
+  );
+
+  assert.match(markup, /data-text-schedule-mode="fixed_override"/u);
+  assert.match(markup, /고정 날짜 · 2031년 1월 2일 · 2일간/u);
+  assert.match(markup, /data-text-schedule-mode="explicit_undated"/u);
+  assert.match(markup, /날짜 없음 · 사용자가 날짜를 비웠어요/u);
+  assert.doesNotMatch(markup, /계약 항목 A D-Day/u);
+  assert.doesNotMatch(markup, /계약 항목 B D\+2/u);
+});
+
+test('Calendar gives an explicit accessible name to an undated rail', () => {
+  const projection = buildSnapshot().committed.projection;
+  const undatedRow = {
+    ...projection.outlineRows[0],
+    schedule: { state: 'unscheduled' as const },
+  };
+  const undatedProjection = {
+    ...projection,
+    shapes: {
+      ...projection.shapes,
+      calendar: {
+        ...projection.shapes.calendar,
+        rows: [undatedRow],
+        count: 1,
+      },
+    },
+  };
+  const markup = renderToStaticMarkup(
+    <FlowArtifactDataPreview
+      projection={undatedProjection}
+      selectedShape="calendar"
+      publicApprovedMode
+    />,
+  );
+
+  assert.match(markup, /<section[^>]*data-flow-ui="date-rail-group"[^>]*>.*?<h3[^>]*>날짜 없음<\/h3>/u);
+  assert.match(markup, /data-testid="flow-date-rail"[^>]*aria-hidden="true"/u);
+  assert.doesNotMatch(markup, /<section[^>]*aria-label=/u);
 });
 
 test('approved public artifact choices filter a sheet-capable projection without changing default behavior', () => {
