@@ -33,7 +33,7 @@ const bundle: FlowBundle = {
       flow_id: 'text-syntax-flow',
       section_id: 'section-a',
       title: '상대 일정',
-      description: '원본 설명은 how가 아닙니다.',
+      description: '원본 설명은 how가 아닙니다.\nsourceTrace: internal description row',
       type: 'calendar',
       day_offset: -30,
       order: 0,
@@ -78,17 +78,21 @@ const bundle: FlowBundle = {
   ],
   itemDetails: [{
     item_id: 'relative',
-    why: '이유 원문',
-    how: '실행 방법 원문',
-    completion_criteria: '실행 결과를 남겼다.',
-    caution: '조건을 다시 확인한다.',
+    why: '이유 원문\nsourceTrace: internal why row',
+    how: '실행 방법 원문\n원문 근거: internal how handoff',
+    completion_criteria: '실행 결과를 남겼다.\nsource trace: internal done row',
+    caution: '조건을 다시 확인한다.\nsourceTrace: internal caution row',
     links: [{
-      label: '공식 자료',
+      label: 'Mathbang 공식 자료',
       url: 'https://example.com/official',
       type: 'official',
     }],
   }],
-  warnings: ['진행 전 조건을 확인하세요.', '개인 상황에 맞게 조정하세요.'],
+  warnings: [
+    '진행 전 조건을 확인하세요.',
+    '개인 상황에 맞게 조정하세요.',
+    'sourceTrace: internal warning row',
+  ],
 };
 
 test('builds full effective Text syntax without deriving D offsets from projected dates', () => {
@@ -133,6 +137,7 @@ test('builds full effective Text syntax without deriving D offsets from projecte
     url: 'https://example.com/official',
     type: 'official',
   }]);
+  assert.doesNotMatch(JSON.stringify(model), /sourceTrace|source trace|원문 근거/iu);
   assert.equal(rows[2].timing, 'D+2~D+4');
   assert.equal(rows[3].scheduleMode, 'explicit_undated');
   assert.equal(rows[3].timing, undefined);

@@ -1705,7 +1705,13 @@ test('legacy AJD Flow Map alias opens the canonical 24-item detail with its sour
     '24',
   );
   await expect(capability).toHaveAttribute('data-capability-selected-destination', 'memo');
-  await expect(capability.getByTestId('flow-artifact-text-syntax-preview')).toBeVisible();
+  const textSyntax = capability.getByTestId('flow-artifact-text-syntax-preview');
+  await expect(textSyntax).toBeVisible();
+  await expect(textSyntax).not.toContainText('sourceTrace');
+  await expect(textSyntax).toContainText('why: 입주 후 발견한 하자는 책임 소재가 애매해질 수 있어 이사 전 기록이 중요합니다.');
+  await expect(textSyntax).toContainText('how: 현관, 욕실, 주방, 창문, 콘센트, 보일러 주변을 사진과 짧은 메모로 남깁니다.');
+  await expect(textSyntax).toContainText('done: 주요 공간 사진과 하자 목록을 집주인 또는 중개인에게 공유했다.');
+  await expect(textSyntax).toContainText('link: 정부24 전입신고');
   await expect(capability.getByTestId('flow-capability-artifact-preview-expand')).toHaveCount(0);
   await expect(capability.locator('[data-testid="flow-capability-artifact-preview-row"]:visible')).toHaveCount(24);
 

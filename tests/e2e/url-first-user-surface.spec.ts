@@ -2673,6 +2673,7 @@ test('personal draft recurrence rules persist without changing item date or time
 
 test('personal draft recurrence expands into Calendar occurrences with reversible completion and series ICS', async ({ page }) => {
   useLegacySavedPlanLibrary(page);
+  await page.clock.install({ time: new Date('2026-07-13T09:00:00+09:00') });
   test.setTimeout(300_000);
   page.setDefaultTimeout(15_000);
   const consoleErrors: string[] = [];

@@ -15680,7 +15680,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
             <button
               type="button"
               aria-label={`${info.event.startStr} 루틴 ${hiddenCount}개 더 보기`}
-              className="inline-flex h-7 min-w-4 shrink-0 items-center justify-center rounded-[var(--flowme-radius-compact)] bg-[var(--flowme-surface-subtle)] px-0 text-xs font-black text-[var(--flowme-text-secondary)] ring-1 ring-[var(--flowme-border)] hover:ring-[var(--flowme-action)] focus:outline-none focus:ring-2 focus:ring-[var(--flowme-focus)] sm:min-w-7 sm:px-0.5"
+              className="inline-flex h-7 min-w-[11px] shrink-0 items-center justify-center rounded-[var(--flowme-radius-compact)] bg-[var(--flowme-surface-subtle)] px-0 text-[8px] font-black text-[var(--flowme-text-secondary)] ring-1 ring-[var(--flowme-border)] hover:ring-[var(--flowme-action)] focus:outline-none focus:ring-2 focus:ring-[var(--flowme-focus)] sm:min-w-7 sm:px-0.5 sm:text-[10px]"
               data-testid="my-flow-routine-overflow"
               onClick={(event) => {
                 event.stopPropagation();

@@ -1,7 +1,9 @@
 import type { FlowExperienceProjection } from './flow-experience-projection';
+import { toUserFacingSourceTitle } from './display-title';
 import { timingLabel } from './parser';
 import type { PublicItemPersonalization } from './public-item-personalization';
 import type { FlowBundle } from './types';
+import { stripUserFacingInternalLines } from './user-surface-guardrails';
 
 export type PublicFlowTextScheduleMode =
   | 'source_relative'
@@ -54,6 +56,10 @@ function nonBlank(value?: string): string | undefined {
   return normalized || undefined;
 }
 
+function publicSyntaxDetail(value?: string): string | undefined {
+  return nonBlank(stripUserFacingInternalLines(value));
+}
+
 /**
  * Builds the approved public Text view outside the effective snapshot contract.
  *
@@ -102,23 +108,31 @@ export function buildPublicFlowTextSyntaxModel(options: {
     const timing = scheduleMode === 'source_relative'
       ? timingLabel(sourceTiming?.dayOffset, sourceTiming?.durationDays)
       : '';
+    const description = publicSyntaxDetail(row.description);
+    const why = publicSyntaxDetail(detail?.why);
+    const how = publicSyntaxDetail(detail?.how);
+    const done = publicSyntaxDetail(row.completionCriterion);
+    const caution = publicSyntaxDetail(row.caution);
     const syntaxRow: PublicFlowTextSyntaxRow = {
       id: row.id,
       sourceItemId: row.sourceItemId,
       title: row.title,
       scheduleMode,
-      resources: row.resources.map((resource) => ({ ...resource })),
+      resources: row.resources.map((resource) => ({
+        ...resource,
+        label: toUserFacingSourceTitle(resource.label),
+      })),
       ...(timing ? { timing } : {}),
       ...(fixedDate ? { fixedDate } : {}),
       ...(scheduleMode === 'fixed_override' && sourceTiming?.durationDays !== undefined
         ? { durationDays: sourceTiming.durationDays }
         : {}),
-      ...(nonBlank(row.description) ? { description: nonBlank(row.description) } : {}),
+      ...(description ? { description } : {}),
       ...(nonBlank(row.memo) ? { personalDetail: nonBlank(row.memo) } : {}),
-      ...(nonBlank(detail?.why) ? { why: nonBlank(detail?.why) } : {}),
-      ...(nonBlank(detail?.how) ? { how: nonBlank(detail?.how) } : {}),
-      ...(nonBlank(row.completionCriterion) ? { done: nonBlank(row.completionCriterion) } : {}),
-      ...(nonBlank(row.caution) ? { caution: nonBlank(row.caution) } : {}),
+      ...(why ? { why } : {}),
+      ...(how ? { how } : {}),
+      ...(done ? { done } : {}),
+      ...(caution ? { caution } : {}),
     };
     const section = nonBlank(row.section) ?? '기본';
     const repeatRule = nonBlank(row.schedule.repeatRule);
@@ -142,7 +156,7 @@ export function buildPublicFlowTextSyntaxModel(options: {
       options.bundle.flow.warning,
       ...(options.bundle.warnings ?? []),
     ].flatMap((warning) => {
-      const normalized = nonBlank(warning);
+      const normalized = publicSyntaxDetail(warning);
       return normalized ? [normalized] : [];
     }))),
     groups,

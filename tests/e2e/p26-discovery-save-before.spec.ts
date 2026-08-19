@@ -59,10 +59,11 @@ test('entry router removes the duplicate Home surface and opens the catalog', as
   await page.goto('/');
 
   await expect(page).toHaveURL('/flows');
-  await expect(page.getByRole('heading', {
-    level: 1,
-    name: /URL.*메모.*계획 찾기/u,
-  })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: '필요한 계획 찾기' })).toBeVisible();
+  const discovery = page.getByTestId('flow-map-catalog-section');
+  await expect(discovery.getByRole('textbox')).toHaveCount(1);
+  await expect(discovery.getByTestId('flow-url-lookup-input')).toBeVisible();
+  await expect(discovery.getByTestId('flow-catalog-search')).toHaveCount(0);
   await expect(page.locator('[data-home-recommendation-card="true"]')).toHaveCount(0);
   await expect(page.getByTestId('home-usage-example')).toHaveCount(0);
   const catalogCards = page.getByTestId('flow-map-catalog-card');

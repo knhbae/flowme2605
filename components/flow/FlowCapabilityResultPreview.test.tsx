@@ -205,13 +205,36 @@ test('approved public mode exposes only Text, Todo, and Calendar and keeps every
 });
 
 test('approved public mode starts with full Text authoring syntax from the effective rows', () => {
-  const snapshot = buildSnapshot();
+  const bundleWithInternalTrace = {
+    ...P0_CONTRACT_FLOW_BUNDLE,
+    itemDetails: P0_CONTRACT_FLOW_BUNDLE.itemDetails?.map((detail) => (
+      detail.item_id === 'p0-contract-item-a'
+        ? {
+            ...detail,
+            why: `${detail.why}\nsourceTrace: internal source row`,
+          }
+        : detail
+    )),
+  };
+  const snapshot = buildEffectiveFlowSnapshot({
+    bundle: bundleWithInternalTrace,
+    effectiveTitle: bundleWithInternalTrace.flow.title,
+    dateIntent: resolvePublicDateIntent({
+      anchorType: bundleWithInternalTrace.flow.anchor_type,
+      mode: 'custom',
+      customAnchor: '2030-09-01',
+      exampleAnchor: '',
+    }),
+    publicItemPersonalizations: {
+      'p0-contract-item-a': { detail: '개인 메모는 원본과 별도로 유지합니다.' },
+    },
+  });
   const viewModel = buildFlowCapabilityResultViewModel({
     snapshot,
     lifecycle: 'public_preview',
   });
   const textSyntaxModel = buildPublicFlowTextSyntaxModel({
-    bundle: P0_CONTRACT_FLOW_BUNDLE,
+    bundle: bundleWithInternalTrace,
     projection: snapshot.committed.projection,
     itemPersonalizations: {
       'p0-contract-item-a': { detail: '개인 메모는 원본과 별도로 유지합니다.' },
@@ -242,6 +265,7 @@ test('approved public mode starts with full Text authoring syntax from the effec
   assert.match(markup, /done: 확인 결과를 저장하고 담당자에게 공유했습니다\./u);
   assert.match(markup, /caution: 결과 생성 전 날짜와 대상 범위를 다시 확인하세요\./u);
   assert.match(markup, /link: 공식 확인 링크 \| https:\/\/example\.com\/p0-contract-source\/item-a \| official/u);
+  assert.doesNotMatch(markup, /sourceTrace|internal source row/u);
   assert.equal(tagsByTestId(markup, 'flow-capability-artifact-preview-row').length, 3);
   assert.doesNotMatch(markup, /data-testid="flow-capability-artifact-preview-expand"/u);
 });
