@@ -7,7 +7,7 @@ import FullCalendar from '@fullcalendar/react';
 import type { ComponentProps, ReactNode, Ref } from 'react';
 
 import { FlowBottomSheet } from './FlowExecutionPrimitives';
-import { FLOW_UI_COMPACT_ACTION_CLASS } from './flow-ui';
+import { FLOW_UI_COMPACT_ACTION_CLASS, FLOW_UI_INPUT_CLASS } from './flow-ui';
 
 type FullCalendarProps = ComponentProps<typeof FullCalendar>;
 
@@ -107,12 +107,12 @@ export function MyFlowCalendarSurface({
         className={`order-2 min-w-0 py-2 sm:py-3 lg:row-start-1 lg:px-4 ${hasFilterRail ? 'lg:col-start-2 xl:col-start-2' : 'lg:col-start-1 xl:col-start-1'}`}
       >
         <div className="hidden items-start justify-between gap-3 sm:flex">
-          <h3 className="text-lg font-semibold text-slate-950">월간 날짜 보기</h3>
-          <p className="text-xs font-semibold text-[#6E6B64]">
+          <h3 className="text-lg font-semibold text-[var(--flowme-text)]">월간 날짜 보기</h3>
+          <p className="text-xs font-semibold text-[var(--flowme-text-secondary)]">
             날짜 {monthScheduleCount} · 반복 {monthRoutineCount}
           </p>
         </div>
-        <div className="mt-2 flex min-h-12 items-center justify-between gap-2 border-y border-[#E7E4DD] py-2 sm:mt-4">
+        <div className="mt-2 flex min-h-12 items-center justify-between gap-2 border-y border-[var(--flowme-border)] py-2 sm:mt-4">
           <button
             type="button"
             aria-label="이전 달"
@@ -122,13 +122,13 @@ export function MyFlowCalendarSurface({
             이전
           </button>
           <div className="text-center">
-            <h4 className="text-base font-black text-slate-950">{monthHeading}</h4>
+            <h4 className="text-base font-black text-[var(--flowme-text)]">{monthHeading}</h4>
             <label className="sr-only" htmlFor="my-flow-month-picker">월 선택</label>
             <input
               id="my-flow-month-picker"
               data-testid="my-flow-month-picker"
               aria-label="월 선택"
-              className="mt-0.5 min-h-12 rounded-md border border-slate-200 bg-white px-2 text-base font-bold text-slate-700 outline-none focus:border-blue-500 focus:ring-2 focus:ring-[var(--flowme-focus)] sm:mt-1 sm:text-sm"
+              className={`${FLOW_UI_INPUT_CLASS} mt-0.5 px-2 text-center font-bold sm:mt-1`}
               type="month"
               value={visibleMonth.slice(0, 7)}
               onChange={(event) => {
@@ -140,7 +140,7 @@ export function MyFlowCalendarSurface({
               <button
                 type="button"
                 aria-label="오늘로 이동"
-                className="min-h-12 min-w-12 rounded-md bg-white px-2 py-1 text-[11px] font-bold text-slate-600"
+                className={`${FLOW_UI_COMPACT_ACTION_CLASS} min-w-12`}
                 onClick={onToday}
               >
                 오늘
@@ -148,7 +148,7 @@ export function MyFlowCalendarSurface({
               <button
                 type="button"
                 aria-label="첫 일정으로 이동"
-                className="min-h-12 min-w-12 rounded-md bg-white px-2 py-1 text-[11px] font-bold text-slate-600"
+                className={`${FLOW_UI_COMPACT_ACTION_CLASS} min-w-12`}
                 onClick={onFirstSchedule}
               >
                 첫 일정
@@ -165,7 +165,7 @@ export function MyFlowCalendarSurface({
           </button>
         </div>
 
-        <div className="mt-3 overflow-hidden rounded-lg border border-slate-200 bg-white p-0.5 sm:p-2">
+        <div className="mt-3 overflow-hidden rounded-[var(--flowme-radius-card)] border border-[var(--flowme-border)] bg-[var(--flowme-surface)] p-0.5 sm:p-2">
           <FullCalendar
             {...calendarProps}
             key={calendarKey}

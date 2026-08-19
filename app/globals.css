@@ -2,43 +2,51 @@
 @tailwind components;
 @tailwind utilities;
 :root {
-  --flowme-bg: #fafaf8;
+  --flowme-bg: #f5f3ec;
   --flowme-surface: #ffffff;
-  --flowme-surface-subtle: #fafaf8;
-  --flowme-surface-selected: #f5f7ff;
-  --flowme-text: #1b1a17;
-  --flowme-text-secondary: #5c5952;
-  --flowme-text-tertiary: #8a857b;
-  --flowme-muted: #6e6b64;
-  --flowme-border: #e7e4dd;
-  --flowme-border-strong: #d8d5cd;
-  --flowme-soft: #f3f1ec;
-  --flowme-action: #3654ff;
-  --flowme-action-hover: #2945e8;
-  --flowme-action-strong: #242d68;
-  --flowme-action-soft: #eef1ff;
-  --flowme-focus: rgba(54, 84, 255, 0.24);
-  --flowme-trust: #1f8a5b;
-  --flowme-positive: #1f8a5b;
-  --flowme-positive-strong: #175c40;
-  --flowme-positive-soft: #eff8f3;
-  --flowme-warning: #a16207;
-  --flowme-warning-strong: #713f12;
-  --flowme-warning-soft: #fff7e8;
-  --flowme-danger: #dc2626;
-  --flowme-danger-strong: #991b1b;
-  --flowme-danger-soft: #fff1f2;
-  --flowme-danger-border: #fecdd3;
-  --flowme-danger-focus: rgba(220, 38, 38, 0.2);
-  --flowme-disabled: #d8d5cd;
-  --flowme-radius-compact: 4px;
-  --flowme-radius-control: 6px;
-  --flowme-radius-surface: 8px;
+  --flowme-surface-subtle: #f8f9fc;
+  --flowme-surface-selected: #edf1ff;
+  --flowme-text: #171813;
+  --flowme-text-secondary: #64685f;
+  --flowme-text-tertiary: #686d64;
+  --flowme-muted: #64685f;
+  --flowme-border: #dfe2da;
+  --flowme-border-strong: #b9beb3;
+  --flowme-control-border: #888e84;
+  --flowme-soft: #eef0eb;
+  --flowme-action: #315ee7;
+  --flowme-action-hover: #2145ba;
+  --flowme-action-strong: #2145ba;
+  --flowme-action-soft: #edf1ff;
+  --flowme-action-border: #c8d2fa;
+  --flowme-focus: #2145ba;
+  --flowme-trust: #237a4b;
+  --flowme-positive: #237a4b;
+  --flowme-positive-strong: #165f39;
+  --flowme-positive-soft: #eaf7ef;
+  --flowme-warning: #986209;
+  --flowme-warning-strong: #72500f;
+  --flowme-warning-soft: #fff5d8;
+  --flowme-danger: #b42318;
+  --flowme-danger-strong: #8b1f17;
+  --flowme-danger-soft: #fff0ee;
+  --flowme-danger-border: #e4aaa5;
+  --flowme-danger-focus: #8b1f17;
+  --flowme-disabled: #dfe2da;
+  --flowme-overlay: rgba(23, 24, 19, 0.48);
+  --flowme-radius-compact: 8px;
+  --flowme-radius-control: 8px;
+  --flowme-radius-surface: 12px;
+  --flowme-radius-card: 12px;
+  --flowme-radius-sheet: 20px;
+  --flowme-shadow-quiet: 0 1px 0 rgba(23, 24, 19, 0.03);
+  --flowme-shadow-raised: 0 9px 28px rgba(23, 24, 19, 0.07);
+  --flowme-shadow-overlay: 0 -18px 48px rgba(23, 24, 19, 0.18);
   --flowme-control-height: 2.75rem;
   --flowme-row-height: 3.5rem;
   --flowme-motion-fast: 140ms;
   --flowme-motion-standard: 200ms;
-  --flowme-focus-outline: 2px solid var(--flowme-action);
+  --flowme-focus-outline: 3px solid var(--flowme-focus);
   --flowme-mobile-tabs-offset: calc(0.75rem + env(safe-area-inset-bottom));
   --flowme-mobile-tabs-height: 3.625rem;
   --flowme-mobile-layer-gap: 0.5rem;
@@ -52,12 +60,29 @@
 body {
   background: var(--flowme-bg);
   color: var(--flowme-text);
+  font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  line-height: 1.5;
   letter-spacing: 0;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+:where(a[href], button, input, select, textarea, summary, [role='button']) {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(49, 94, 231, 0.14);
 }
 
 :where(a[href], button, input, select, textarea, summary, [tabindex]:not([tabindex='-1'])):focus-visible {
-  outline: var(--flowme-focus-outline);
-  outline-offset: 2px;
+  outline: var(--flowme-focus-outline) !important;
+  outline-offset: 3px !important;
+  scroll-margin-block: 5rem;
 }
 
 [data-flow-anatomy] {
@@ -84,7 +109,7 @@ body {
 
 @media (forced-colors: active) {
   :where(a[href], button, input, select, textarea, summary, [tabindex]:not([tabindex='-1'])):focus-visible {
-    outline-color: Highlight;
+    outline-color: Highlight !important;
   }
 }
 
@@ -120,7 +145,7 @@ body {
   --fc-border-color: var(--flowme-border);
   --fc-page-bg-color: var(--flowme-surface);
   --fc-neutral-bg-color: var(--flowme-bg);
-  --fc-today-bg-color: #eef1ff;
+  --fc-today-bg-color: var(--flowme-action-soft);
   color: var(--flowme-text);
   font-size: 12px;
 }
@@ -133,7 +158,7 @@ body {
 .fc .fc-col-header-cell-cushion {
   padding: 6px 0;
   color: var(--flowme-muted);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
 }
 
@@ -149,12 +174,12 @@ body {
 .fc .fc-daygrid-day-number {
   padding: 3px 3px 1px;
   color: var(--flowme-text);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
 }
 
 .fc .my-flow-calendar-selected-date .fc-daygrid-day-frame {
-  background: #eef1ff;
+  background: var(--flowme-action-soft);
   box-shadow: inset 0 0 0 2px var(--flowme-action);
 }
 
@@ -197,18 +222,18 @@ body {
 
 .fc .fc-daygrid-event:hover,
 .fc .fc-daygrid-event:focus-visible {
-  box-shadow: 0 0 0 2px rgba(54, 84, 255, 0.18);
+  box-shadow: 0 0 0 2px var(--flowme-action-border);
   transform: translateY(-1px);
 }
 
 .fc .fc-daygrid-event.my-flow-calendar-active-event {
   border-color: var(--flowme-action) !important;
-  box-shadow: 0 0 0 2px rgba(54, 84, 255, 0.24);
+  box-shadow: 0 0 0 2px var(--flowme-action-border);
 }
 
 @media (max-width: 640px) {
   .fc {
-    font-size: 11px;
+    font-size: 12px;
   }
 
   .fc .fc-daygrid-day-frame {
@@ -218,12 +243,12 @@ body {
 
   .fc .fc-col-header-cell-cushion {
     padding: 3px 0;
-    font-size: 10px;
+    font-size: 12px;
   }
 
   .fc .fc-daygrid-day-number {
     padding: 2px 3px 0;
-    font-size: 10px;
+    font-size: 12px;
   }
 
   .fc .fc-daygrid-event {

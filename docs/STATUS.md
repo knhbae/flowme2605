@@ -1,9 +1,9 @@
 # Project Status
 
-**Last Updated:** 2026-08-13 (Flow Map Item date parity merged, deployed, and production-smoked)
-**Status:** v0.1.0 RELEASED / FLOW MAP ITEM DATE PARITY CI-PRODUCTION-SMOKE PASS / OBSERVED USERS 0
+**Last Updated:** 2026-08-20 (Production visual-only refresh approved for PR and Vercel Preview)
+**Status:** v0.1.0 RELEASED / VISUAL-ONLY REFRESH LOCAL IMPLEMENTATION AND SCOPED QA COMPLETE / FULL SUITE SOURCE-REVIEW GATE OPEN / PR AND VERCEL PREVIEW AUTHORIZED / MERGE AND PRODUCTION NOT AUTHORIZED / OBSERVED USERS 0
 **Current Version:** v0.1.0  
-**Primary Focus:** Preserve the released Plan/Item editing contract and its evidence boundary; no next product gate is active until the Owner promotes one.
+**Primary Focus:** Improve the main app's visual system while preserving the released product, route, copy, data, persistence, and lifecycle contracts.
 
 ## Current Control Panel
 
@@ -11,13 +11,13 @@ Start from [PROJECT_CONTROL.md](./PROJECT_CONTROL.md). Dated HTML boards remain 
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | None. [Flow Map Item Date Parity](./pr-history/2026-08-13-flow-map-item-date-parity.md) is released; research shelves and human validation gates do not become implementation work without explicit Owner promotion. |
+| Active product gate | [Production Visual-Only Refresh](./specs/2026-08-20-production-visual-only-refresh/spec.md). Local implementation and scoped automated QA are complete. Full `npm test` remains non-green only because `30` source records are past their `2026-05-21` review date. The Owner authorized a scoped branch, PR, and Vercel Preview; merge and Production remain unapproved, and observed users remain `0`. |
 | Current product release identity | [PR #182](https://github.com/knhbae/flowme2605/pull/182) final head `0aca76687ac582ff4cf11b19a0f46db5593c768e` passed exact-head PR CI run [`31655643163`](https://github.com/knhbae/flowme2605/actions/runs/31655643163) and merged at `2026-08-13T01:05:33Z` as `f6f796c035d5762eea07ec35abb7f1af1577a5a5`. Post-merge `main` run [`31656595092`](https://github.com/knhbae/flowme2605/actions/runs/31656595092) passed core job `94312307779` and Playwright job `94312307849`. |
 | Last runtime-bearing product deployment | GitHub Production deployment record `5880059975`, status `16743295490`, succeeded for PR #182 merge `f6f796c035d5762eea07ec35abb7f1af1577a5a5`, the latest merge that changed runtime behavior. Its [protected direct URL](https://flowme2605-hph3l1si0-flowme.vercel.app) is deployment-record evidence, not anonymous app proof. The [canonical alias](https://flowme2605.vercel.app) passed smoke `41/41`. |
 | Evidence boundary | Canonical Production smoke passed `41/41` with workers `1`, retries `0`, in `264804.24ms`; unexpected, flaky, and skipped results were `0`. Exact-head PR CI, exact-source deployment, and post-merge `main` CI are successful. A later documentation-only `main` deployment may be the literal latest Production commit without changing runtime-bearing product baseline `f6f796c035d5762eea07ec35abb7f1af1577a5a5`; query GitHub/Vercel when the exact live deployment identity is required. Automated QA, deployment, screenshots, and local capture reports are not observed-user validation; observed users remain `0`. |
-| Documentation publication | [PR #177](https://github.com/knhbae/flowme2605/pull/177) and [PR #179](https://github.com/knhbae/flowme2605/pull/179) remain historical documentation-only closeouts. The current bounded release-closeout documentation change also changes no product runtime. |
-| User action now | Promote one next product gate or open a real-user validation checkpoint when ready. |
-| AI action now | Preserve the released baseline and its evidence boundary until a new gate is explicitly opened. No product implementation task is pending. |
+| Publication boundary | [PR #177](https://github.com/knhbae/flowme2605/pull/177) and [PR #179](https://github.com/knhbae/flowme2605/pull/179) remain historical documentation-only closeouts. The current visual refresh may be published only as a review PR and Vercel Preview; it is not a merged or Production release. |
+| User action now | Review the Vercel Preview and its responsive evidence, then decide merge and Production separately. |
+| AI action now | Publish only the scoped branch, PR, and Vercel Preview. Keep the unrelated source-review freshness gate explicit and do not merge or deploy to Production. |
 | Paused Text Authoring | Preserved and pushed at `a5d5338`; separate from the release and not promoted. |
 | Paused content review | Preserved and pushed at `0d27143` on `archive/flow-content-user-review-wip-20260806`; not a publication candidate. |
 | Deferred candidates | P35 P2 mutation follow-ups, Text Authoring `TA-01`, collaborative authoring, content review, and research packages remain separate shelves. Select at most one by explicit decision. |
@@ -30,8 +30,9 @@ Start from [PROJECT_CONTROL.md](./PROJECT_CONTROL.md). Dated HTML boards remain 
 | Area | Command or evidence | Current expectation |
 | --- | --- | --- |
 | Documentation harness | `npm run docs:check` | Required agent docs, skill synchronization, and local Markdown links pass. |
-| Unit tests | `npm test` | Flow contracts and product tests pass. |
+| Unit tests | `npm test` | Visual-scope contracts pass, but the full command is currently non-green because `30` source records are review-due; see the active visual QA record. |
 | Production build | `npm run build` | Next.js production build succeeds. |
+| Production visual-only refresh | [QA evidence](./specs/2026-08-20-production-visual-only-refresh/qa.md) | Focused components `53/53`, P35 P0 `449/449`, approved execution `191/191`, public surface `14/14`, build `18/18`, visual matrix `12/12`, affected E2E `52/52`, and final discovery/My Plan subset `9/9` pass. Full `npm test` remains accurately non-green at `623/624` because of the separate source-review freshness gate. |
 | Public Plan/Item edit release | [QA evidence](./specs/2026-08-12-public-plan-edit-surface-unification/qa.md) / [local UI capture review](./content-audit/2026-08-12-public-plan-edit-surface-unification-ui-review-ko.html) | The PR #178 foundation retains focused `105/105`, P35 P0 `446/446`, dedicated E2E `8/8`, Map action `7/7`, and affected browser `154/154`. The date-parity follow-up passed focused `33/33`, full `npm test`, build `18` routes, and dedicated E2E `11/11`; PR #182 exact-head CI and Production passed, with canonical smoke `41/41`. The capture review remains local evidence. |
 | My Plan edit/lifecycle release | [QA evidence](./specs/2026-08-12-my-plan-edit-lifecycle-unification/qa.md) | Local checks remain origin/persistence/source/storage `172/172`, saved-library controller `19/19`, approved execution `187/187`, lock `59/59`, build `18` routes, dedicated E2E `23/23`, affected browser `80/80`, and full `npm test` PASS. The same PR #178 merge and Production smoke released this foundation. |
 | Browser regression | Canonical smoke source, runtime-bearing PR #182 merge `f6f796c035d5762eea07ec35abb7f1af1577a5a5` | Smoke `41/41` passed with workers `1`, retries `0`, in `264804.24ms`; unexpected, flaky, and skipped results were `0`. This is automated production evidence, not observed use. |

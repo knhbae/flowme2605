@@ -65,30 +65,30 @@ export function FlowManagementMenu({
         data-testid={triggerTestId}
         aria-haspopup="menu"
         aria-label={`${flowTitle} ${q3CopyEnabled ? '계획 관리' : 'Flow 관리'}`}
-        className={`inline-flex min-h-11 cursor-pointer list-none items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:border-blue-300 hover:text-slate-950 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] [&::-webkit-details-marker]:hidden ${triggerClassName}`}
+        className={`inline-flex min-h-11 cursor-pointer list-none items-center justify-center rounded-[var(--flowme-radius-control)] border border-[var(--flowme-control-border)] bg-[var(--flowme-surface)] px-3 py-2 text-sm font-semibold text-[var(--flowme-text-secondary)] hover:border-[var(--flowme-action)] hover:bg-[var(--flowme-action-soft)] hover:text-[var(--flowme-text)] [&::-webkit-details-marker]:hidden ${triggerClassName}`}
       >
         {q3CopyEnabled ? '계획 관리' : 'Flow 관리'}
       </summary>
       <div
         role="menu"
         aria-label={`${flowTitle} ${q3CopyEnabled ? '계획 관리' : 'Flow 관리'}`}
-        className={`absolute top-full z-50 mt-1 grid min-w-60 gap-1 rounded-md border border-slate-200 bg-white p-1.5 shadow-[0_14px_36px_rgba(15,23,42,0.16)] ${
+        className={`absolute top-full z-50 mt-2 grid min-w-60 gap-1 rounded-[var(--flowme-radius-surface)] border border-[var(--flowme-border-strong)] bg-[var(--flowme-surface)] p-1.5 [box-shadow:var(--flowme-shadow-raised)] ${
           align === 'right' ? 'right-0' : 'left-0'
         }`}
       >
         {actions.map((action) => {
-          const className = `grid ${enforce48pxActions ? 'min-h-12' : 'min-h-11'} w-full items-center rounded-md px-3 py-2 text-left text-sm font-semibold focus:outline-none focus-visible:ring-2 ${
+          const className = `grid ${enforce48pxActions ? 'min-h-12' : 'min-h-11'} w-full items-center rounded-[var(--flowme-radius-control)] px-3 py-2 text-left text-sm font-semibold ${
             action.role === 'destructive'
-              ? 'text-rose-700 hover:bg-rose-50 focus-visible:ring-[var(--flowme-danger-focus)]'
+              ? 'text-[var(--flowme-danger-strong)] hover:bg-[var(--flowme-danger-soft)]'
               : action.role === 'recovery'
-                ? 'text-blue-700 hover:bg-blue-50 focus-visible:ring-[var(--flowme-focus)]'
-                : 'text-slate-700 hover:bg-slate-50 focus-visible:ring-[var(--flowme-focus)]'
+                ? 'text-[var(--flowme-action)] hover:bg-[var(--flowme-action-soft)]'
+                : 'text-[var(--flowme-text-secondary)] hover:bg-[var(--flowme-surface-subtle)] hover:text-[var(--flowme-text)]'
           }`;
           const content = (
             <>
               <span>{action.label}</span>
               {action.description ? (
-                <span className="mt-0.5 text-[11px] font-medium leading-4 text-slate-500">
+                <span className="mt-0.5 text-xs font-medium leading-4 text-[var(--flowme-text-secondary)]">
                   {action.description}
                 </span>
               ) : null}

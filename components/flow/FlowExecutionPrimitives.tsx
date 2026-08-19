@@ -39,7 +39,7 @@ export function FlowArtifactSummary({
         <span className="text-[var(--flowme-action)]">{eyebrow}</span>
         {categoryLabel ? <span>{categoryLabel}</span> : null}
       </p>
-      <h1 data-flow-identity-slot="title" className="mt-2 max-w-4xl break-keep text-2xl font-semibold text-[var(--flowme-text)] sm:text-3xl">
+      <h1 data-flow-identity-slot="title" className="mt-2 max-w-4xl break-keep text-[1.75rem] font-semibold leading-9 tracking-[-0.02em] text-[var(--flowme-text)] sm:text-3xl">
         {title}
       </h1>
       {sourceLabel ? (
@@ -81,14 +81,14 @@ export function FlowScheduleIntent({
     <dl
       data-flow-ui="schedule-intent"
       data-flow-anatomy="flow-context"
-      className={`mt-4 grid border-y border-[var(--flowme-border)] bg-[var(--flowme-surface)] ${entries.length === 3 ? 'grid-cols-3' : 'grid-cols-2'}`}
+      className={`mt-4 grid overflow-hidden rounded-[var(--flowme-radius-card)] border border-[var(--flowme-border)] bg-[var(--flowme-surface)] ${entries.length === 3 ? 'grid-cols-3' : 'grid-cols-2'}`}
     >
       {entries.map((entry, index) => (
         <div
           key={entry.label}
           className={`min-w-0 px-2.5 py-2.5 sm:px-3 ${index > 0 ? 'border-l border-[var(--flowme-border)]' : ''}`}
         >
-          <dt className="text-[10px] font-semibold text-[var(--flowme-text-tertiary)] sm:text-[11px]">
+          <dt className="text-xs font-semibold leading-4 text-[var(--flowme-text-tertiary)]">
             {entry.label}
           </dt>
           <dd className="mt-0.5 break-keep text-xs font-semibold text-[var(--flowme-text)] sm:text-sm">
@@ -127,16 +127,16 @@ export function FlowDateRailGroup({
     <section
       {...sectionProps}
       data-flow-ui="date-rail-group"
-      className={`grid grid-cols-[4.25rem_minmax(0,1fr)] border-b border-[var(--flowme-border)] last:border-b-0 ${className}`}
+      className={`mb-3 grid grid-cols-[4.25rem_minmax(0,1fr)] overflow-hidden rounded-[var(--flowme-radius-card)] border border-[var(--flowme-action-border)] bg-[var(--flowme-surface)] last:mb-0 ${className}`}
     >
       <div
         data-testid="flow-date-rail"
-        className="bg-[var(--flowme-surface-subtle)] px-2 py-3 text-center"
+        className="bg-[var(--flowme-action-soft)] px-2 py-3 text-center"
       >
-        <span className="block text-lg font-semibold text-[var(--flowme-text)]">
+        <span className="block text-lg font-semibold text-[var(--flowme-action-strong)]">
           {hasDate ? date?.slice(8) : '-'}
         </span>
-        <span className="mt-0.5 block text-[10px] font-semibold text-[var(--flowme-text-tertiary)]">
+        <span className="mt-0.5 block text-xs font-semibold leading-4 text-[var(--flowme-action-strong)]">
           {hasDate && showMonth
             ? [monthLabel, dateContextLabel ?? weekdayLabel].filter(Boolean).join(' · ')
             : dateContextLabel ?? weekdayLabel}
@@ -285,7 +285,7 @@ export function FlowReceipt({
       {...divProps}
       data-flow-ui="receipt"
       data-flow-anatomy="result-receipt"
-      className={`border-l-2 ${compact ? 'px-3 py-2' : 'px-4 py-3 sm:px-5 sm:py-4'} ${receiptToneClass[tone]} ${className}`}
+      className={`overflow-hidden rounded-[var(--flowme-radius-card)] border border-l-[3px] ${compact ? 'px-3 py-2' : 'px-4 py-3 sm:px-5 sm:py-4'} ${receiptToneClass[tone]} ${className}`}
     >
       <p className="text-xs font-semibold">{label}</p>
       <p className={`${compact ? 'mt-0.5 text-sm' : 'mt-1 text-xl sm:text-2xl'} break-keep font-semibold text-[var(--flowme-text)]`}>{title}</p>
@@ -315,10 +315,10 @@ export function FlowEditorShell({
     ? 'fixed inset-0 z-[80] overflow-y-auto bg-[var(--flowme-bg)] px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-[calc(1rem+env(safe-area-inset-top))]'
     : mode === 'inline'
       ? neutralInline
-        ? 'mt-2 border-l-2 border-[var(--flowme-border-strong)] bg-[var(--flowme-surface-subtle)] p-3'
-        : 'mt-2 border-l-2 border-[var(--flowme-action)] bg-[var(--flowme-action-soft)] p-3'
+        ? 'mt-2 rounded-r-[var(--flowme-radius-control)] border-l-2 border-[var(--flowme-border-strong)] bg-[var(--flowme-surface-subtle)] p-3'
+        : 'mt-2 rounded-r-[var(--flowme-radius-control)] border-l-2 border-[var(--flowme-action)] bg-[var(--flowme-action-soft)] p-3'
       : mode === 'panel'
-        ? 'border border-[var(--flowme-border)] bg-[var(--flowme-surface)] p-3'
+        ? 'rounded-[var(--flowme-radius-card)] border border-[var(--flowme-border)] bg-[var(--flowme-surface)] p-3'
         : 'space-y-3';
 
   return (
@@ -510,7 +510,7 @@ export function FlowBottomSheet({
   };
 
   return (
-    <div className={`fixed inset-0 ${layerClassName} bg-slate-950/40`} data-flow-ui="bottom-sheet-layer">
+    <div className={`fixed inset-0 ${layerClassName} bg-[var(--flowme-overlay)]`} data-flow-ui="bottom-sheet-layer">
       <button
         className="absolute inset-0 h-full w-full cursor-default"
         type="button"
@@ -535,7 +535,7 @@ export function FlowBottomSheet({
         className={`${FLOW_UI_SHEET_CLASS} ${className}`}
         onKeyDown={handleKeyDown}
       >
-        <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-slate-300" aria-hidden="true" />
+        <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-[var(--flowme-border-strong)]" aria-hidden="true" />
         <header className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             {eyebrow ? <p className="text-sm font-semibold text-[var(--flowme-action)]">{eyebrow}</p> : null}
@@ -577,7 +577,7 @@ export function FlowExportPlan({
 export function FlowPlanStep({ index, label }: { index: number; label: string }) {
   return (
     <div className="mt-3 flex items-center gap-2 text-xs font-semibold text-[var(--flowme-text-secondary)]">
-      <span className="flex h-5 w-5 items-center justify-center rounded-md bg-[var(--flowme-soft)] text-[10px] text-[var(--flowme-text)]" aria-hidden="true">
+      <span className="flex h-5 w-5 items-center justify-center rounded-[var(--flowme-radius-compact)] bg-[var(--flowme-soft)] text-[10px] text-[var(--flowme-text)]" aria-hidden="true">
         {index}
       </span>
       <span>{label}</span>

@@ -40,7 +40,7 @@ Only **Active Gate** carries the current execution backlog or Owner checkpoint. 
 
 ### Active Gate
 
-- None. Flow Map Item date parity is released through PR #182; a research shelf, unchecked historical task, or human-validation gate does not become active implementation work without explicit Owner promotion.
+- [2026-08-20 Production Visual-Only Refresh](./2026-08-20-production-visual-only-refresh/spec.md) is the active Owner-promoted gate. It changes presentation only across the main app; product behavior, copy, routes, data, persistence, and lifecycle semantics remain frozen. Local implementation and scoped automated QA are complete; full `npm test` remains non-green because `30` source records are review-due. A scoped PR and Vercel Preview are authorized for review; merge and Production are not authorized, and observed users remain `0`.
 
 ### Recently Completed
 

@@ -24,21 +24,21 @@ export function PublicPlanShareShell({
       aria-label="공유 콘텐츠"
       data-testid="flow-public-shell"
       data-public-plan-kind={planKind}
-      className="mb-5 flex min-h-14 items-center justify-between gap-3 border-b border-[#DDE4E0] py-3 md:mb-7"
+      className="mb-5 flex min-h-14 items-center justify-between gap-3 border-b border-[var(--flowme-border)] py-3 md:mb-7"
     >
-      <Link className="inline-flex min-h-9 items-center gap-2 text-lg font-semibold text-[#1B1A17]" href="/flows">
+      <Link className="inline-flex min-h-11 items-center gap-2 rounded-[var(--flowme-radius-control)] text-lg font-semibold tracking-[-0.02em] text-[var(--flowme-text)]" href="/flows">
         <span>FLOW</span>
-        <span className="text-xs font-semibold text-[#59625E]">{copy.navigation.findPlans}</span>
+        <span className="text-xs font-semibold tracking-normal text-[var(--flowme-text-secondary)]">{copy.navigation.findPlans}</span>
       </Link>
       {savedAt && showSavedLink ? (
         <Link
-          className="inline-flex min-h-9 items-center rounded-md border border-[#DDE4E0] bg-white px-3 text-sm font-semibold text-[#59625E] hover:border-[#3654FF]/40 hover:text-[#3654FF]"
+          className="inline-flex min-h-11 items-center rounded-[var(--flowme-radius-control)] border border-[var(--flowme-control-border)] bg-[var(--flowme-surface)] px-3 text-sm font-semibold text-[var(--flowme-text-secondary)] transition hover:border-[var(--flowme-action)] hover:text-[var(--flowme-action)]"
           href={buildPostSaveHref({ kind: planKind, id: planId })}
         >
           {q3CopyEnabled ? '내 계획에서 보기' : '내 Flow에서 보기'}
         </Link>
       ) : (
-        <span className="text-xs font-semibold text-[#8A857B]">공유 화면</span>
+        <span className="text-xs font-semibold text-[var(--flowme-text-secondary)]">공유 화면</span>
       )}
     </nav>
   );

@@ -1,14 +1,26 @@
 # Roadmap
 
-**Last Updated:** 2026-08-13<br>
+**Last Updated:** 2026-08-20<br>
 **Current Version:** v0.1.0 (released product PoC)<br>
-**Current Validation Stage:** internal alpha / Flow Map Item date parity released and Production-smoked / observed users 0<br>
+**Current Validation Stage:** internal alpha / Production visual-only refresh implemented with scoped QA locally / full-suite source-review gate open / PR and Vercel Preview authorized / merge and Production not authorized / observed users 0<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** Owner promotion of one next product gate or a real-user validation checkpoint
+**Next Milestone:** Owner review of the Vercel Preview; resolve the separate source-review freshness gate before any merge or Production decision
 
 Human-facing control surface: [FlowMe Project Control](./PROJECT_CONTROL.md).
 The [2026-07-29 P35 stage board](./content-audit/2026-07-29-flowme-current-stage-control-board-ko.html)
 is retained as a dated evidence snapshot rather than the current backlog.
+
+## Active: Production Visual-Only Refresh
+
+The Owner promoted [Production Visual-Only Refresh](./specs/2026-08-20-production-visual-only-refresh/spec.md)
+on 2026-08-20. The bounded goal is one coherent visual system across the current
+main-app journey while routes, copy, data, dates, result behavior, persistence,
+and lifecycle semantics stay unchanged. Local implementation and scoped automated
+QA are complete. Focused/component/contract/browser checks and the production
+build pass; full `npm test` remains non-green only because `30` source records are
+past their review date. The Owner authorized a scoped commit, branch push, PR, and
+Vercel Preview for review. Merge, Production deployment, and observed-user
+validation remain unapproved.
 
 ## Released: Flow Map Item Date Parity
 

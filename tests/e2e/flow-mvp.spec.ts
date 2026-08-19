@@ -4813,7 +4813,7 @@ test('public share shell keeps the Flow finding escape reachable', async ({ page
 
     const saveButton = page.getByRole('button', { name: /내 계획에 저장|정하기/ }).first();
     if ((await saveButton.count()) > 0 && (await saveButton.isVisible())) {
-      await expect(saveButton).toHaveCSS('background-color', 'rgb(27, 26, 23)');
+      await expect(saveButton).toHaveCSS('background-color', 'rgb(49, 94, 231)');
     }
   }
 });
