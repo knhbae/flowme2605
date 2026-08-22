@@ -40,7 +40,7 @@ Only **Active Gate** carries the current execution backlog or Owner checkpoint. 
 
 ### Active Gate
 
-- None. Flow Map Item date parity is released through PR #182; a research shelf, unchecked historical task, or human-validation gate does not become active implementation work without explicit Owner promotion.
+- [2026-08-20 Production Visual-Only Refresh](./2026-08-20-production-visual-only-refresh/spec.md) is the active Owner-promoted gate. It changes presentation only across the main app; product behavior, copy, routes, data, persistence, and lifecycle semantics remain frozen. Implementation and scoped automated QA are complete. [PR #196](https://github.com/knhbae/flowme2605/pull/196) resolved the source-review prerequisite and merged as `8c0bfd8de9fb8877c4045b2c3f725b60ca236843`; the Owner authorized the sequential PR #194 then PR #195 merge and Production path. Exact-head CI and Production verification remain mandatory, and observed users remain `0`.
 
 ### Recently Completed
 

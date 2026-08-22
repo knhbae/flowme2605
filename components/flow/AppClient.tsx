@@ -2331,29 +2331,29 @@ function FlowMemoDraftPanel({
         />
         <p
           data-testid="flow-memo-draft-preflight"
-          className="text-xs font-semibold text-[#6E6B64]"
+          className="text-xs font-semibold text-[var(--flowme-text-secondary)]"
         >
           {proposalPreflight.summary}
         </p>
 
         <div className="grid gap-2 sm:grid-cols-2" data-testid="flow-memo-draft-quick-values">
-          <label className="grid gap-1 text-xs font-semibold text-[#176D5D]">
+          <label className="grid gap-1 text-xs font-semibold text-[var(--flowme-text-secondary)]">
             {q3CopyEnabled ? '계획 이름' : 'Flow 이름'}
             <input
               data-testid="flow-memo-draft-flow-title"
               aria-label="메모 초안 제목"
-              className="min-h-10 rounded-lg border border-[#C9DBC4] bg-[#FAFAF8] px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10"
+              className={FLOW_UI_INPUT_CLASS}
               value={draftTitle}
               maxLength={80}
               onChange={(event) => setDraftTitle(event.target.value)}
             />
           </label>
-          <label className="grid gap-1 text-xs font-semibold text-[#176D5D]">
-            첫 할 일 날짜 <span className="font-medium text-[#8A857B]">선택</span>
+          <label className="grid gap-1 text-xs font-semibold text-[var(--flowme-text-secondary)]">
+            첫 할 일 날짜 <span className="font-medium text-[var(--flowme-text-tertiary)]">선택</span>
             <input
               data-testid="flow-memo-draft-anchor-date"
               aria-label="메모 초안 첫 할 일 날짜"
-              className="min-h-10 rounded-lg border border-[#C9DBC4] bg-[#FAFAF8] px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10"
+              className={FLOW_UI_INPUT_CLASS}
               type="date"
               value={draftAnchorDate}
               disabled={!firstIncludedItem}
@@ -2366,12 +2366,12 @@ function FlowMemoDraftPanel({
 
         <details
           data-testid="flow-memo-draft-structure-disclosure"
-          className="overflow-hidden rounded-md border border-[#DDE6D8] bg-white"
+          className="overflow-hidden rounded-[var(--flowme-radius-card)] border border-[var(--flowme-border)] bg-[var(--flowme-surface)]"
         >
-          <summary className="cursor-pointer px-3 py-3 text-sm font-semibold text-[#1B1A17]">
+          <summary className="min-h-11 cursor-pointer content-center px-3 py-3 text-sm font-semibold text-[var(--flowme-text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]">
             항목 포함·순서 조정
           </summary>
-          <div className="border-t border-[#DDE6D8] p-2">
+          <div className="border-t border-[var(--flowme-border)] p-2">
             <DraftItemAcceptanceList
               items={draftItems}
               onChange={setDraftItems}
@@ -2389,13 +2389,13 @@ function FlowMemoDraftPanel({
             type="submit"
             data-testid="flow-memo-draft-save"
             disabled={acceptedItems.length === 0 || hasBlankSelectedTitle}
-            className="min-h-10 rounded-lg bg-[#176D5D] px-3 py-2 text-sm font-semibold text-white hover:bg-[#115246] disabled:cursor-not-allowed disabled:bg-[#A5B7AF]"
+            className={FLOW_UI_PRIMARY_ACTION_CLASS}
           >
             {q3CopyEnabled ? '내 계획에' : '내 Flow에'} {acceptedItems.length}개 저장
           </button>
-          <span className="text-xs font-semibold text-[#6E6B64]">공개되지 않는 개인 초안</span>
+          <span className="text-xs font-semibold text-[var(--flowme-text-secondary)]">공개되지 않는 개인 초안</span>
         </div>
-        {feedback ? <p role="status" className="text-xs font-semibold text-[#3654FF]">{feedback}</p> : null}
+        {feedback ? <p role="status" className="text-xs font-semibold text-[var(--flowme-text-secondary)]">{feedback}</p> : null}
       </form>
 
       {itemEditorDraft ? (
@@ -2683,76 +2683,76 @@ function FlowUrlLookupResult({
   return (
     <section
       data-testid="flow-url-lookup-result"
-      className="mt-3 border-t border-[#DDE6D8] pt-3 text-sm text-[#1B1A17]"
+      className="mt-4 border-t border-[var(--flowme-border)] pt-4 text-sm text-[var(--flowme-text)]"
     >
       <div className="flex flex-wrap items-center gap-2">
-        <span className="rounded-full border border-[#BFD9B8] bg-white px-2.5 py-1 text-xs font-semibold text-[#176D5D]">
+        <span className="rounded-full border border-[var(--flowme-border)] bg-[var(--flowme-surface-subtle)] px-2.5 py-1 text-xs font-semibold text-[var(--flowme-text-secondary)]">
           {getUrlLookupStatusLabel(result, q3CopyEnabled)}
         </span>
         {result.status === 'hit' || result.status === 'needs_review' ? (
-          <span className="text-xs font-semibold text-[#6E6B64]">이미 만든 준비가 있는지 먼저 찾아봤어요</span>
+          <span className="text-xs font-semibold text-[var(--flowme-text-secondary)]">이미 만든 준비가 있는지 먼저 찾아봤어요</span>
         ) : null}
       </div>
-      <h2 className="mt-2 break-keep text-lg font-semibold leading-snug text-[#1B1A17]">{result.title}</h2>
+      <h2 className="mt-2 break-keep text-lg font-semibold leading-snug text-[var(--flowme-text)]">{result.title}</h2>
       {result.status !== 'memo_draft' ? (
-        <p className="mt-1 break-keep leading-6 text-[#5F6A5A]">{result.summary}</p>
+        <p className="mt-1 break-keep leading-6 text-[var(--flowme-text-secondary)]">{result.summary}</p>
       ) : null}
 
       {result.status === 'memo_draft' ? <FlowMemoDraftPanel memo={result.input} onSaveDraftFlow={onSaveMemoDraftFlow} q3CopyEnabled={q3CopyEnabled} /> : null}
 
       {result.status !== 'miss' && result.status !== 'memo_draft' ? <div className="mt-3 grid gap-2 sm:grid-cols-[1fr_auto] sm:items-end">
         <div className="min-w-0">
-          <p className="text-xs font-semibold text-[#6E6B64]">
+          <p className="text-xs font-semibold text-[var(--flowme-text-secondary)]">
             {result.saveMode === 'blocked' ? '현재 확인할 수 있는 것' : '옮길 수 있는 형태'}
           </p>
           <div className="mt-1 flex flex-wrap gap-1.5">
             {result.saveMode === 'blocked' ? (
-              <span className="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-[#8A6B18]">{needsSourceRows ? '원문 자료' : needsMedicalSourceFit ? '참고 원문' : '공식 원문'}</span>
+              <span className="rounded-full bg-[var(--flowme-warning-soft)] px-2.5 py-1 text-xs font-semibold text-[var(--flowme-warning-strong)]">{needsSourceRows ? '원문 자료' : needsMedicalSourceFit ? '참고 원문' : '공식 원문'}</span>
             ) : exportModes.length > 0 ? (
               exportModes.map((label) => (
-                <span key={label} className="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-[#3654FF]">
+                <span key={label} className="rounded-full bg-[var(--flowme-action-soft)] px-2.5 py-1 text-xs font-semibold text-[var(--flowme-action-strong)]">
                   {label}
                 </span>
               ))
             ) : (
-              <span className="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-[#8A6B18]">확인 후 열기</span>
+              <span className="rounded-full bg-[var(--flowme-warning-soft)] px-2.5 py-1 text-xs font-semibold text-[var(--flowme-warning-strong)]">확인 후 열기</span>
             )}
             {result.canSaveToMyFlow ? (
-              <span className="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-[#176D5D]">
+              <span className="rounded-full bg-[var(--flowme-positive-soft)] px-2.5 py-1 text-xs font-semibold text-[var(--flowme-positive-strong)]">
                 {q3CopyEnabled ? '내 계획' : '내 Flow'}
               </span>
             ) : result.saveMode === 'blocked' ? (
-              <span className="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-[#8A6B18]">새 저장 중지</span>
+              <span className="rounded-full bg-[var(--flowme-warning-soft)] px-2.5 py-1 text-xs font-semibold text-[var(--flowme-warning-strong)]">새 저장 중지</span>
             ) : (
-              <span className="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-[#8A6B18]">저장 대기</span>
+              <span className="rounded-full bg-[var(--flowme-warning-soft)] px-2.5 py-1 text-xs font-semibold text-[var(--flowme-warning-strong)]">저장 대기</span>
             )}
           </div>
-          <p className="mt-2 line-clamp-1 text-xs font-semibold text-[#6E6B64]">
+          <p className="mt-2 line-clamp-1 text-xs font-semibold text-[var(--flowme-text-secondary)]">
             {result.preview.myFlow[0] ?? '저장 후 이어서 실행할 수 있습니다.'}
           </p>
         </div>
         {unifiedAdjustmentHref ? (
           <Link
-            className="inline-flex min-h-10 items-center justify-center rounded-xl bg-[#1B1A17] px-4 py-2 text-sm font-semibold text-white hover:bg-[#2F2D29]"
+            className={FLOW_UI_PRIMARY_ACTION_CLASS}
             href={unifiedAdjustmentHref}
           >
             {canStart ? '미리보기에서 편집' : primaryActionLabel}
           </Link>
         ) : (
-          <span className="inline-flex min-h-10 items-center justify-center rounded-xl border border-[#E7E4DD] bg-white px-4 py-2 text-sm font-semibold text-[#6E6B64]">
+          <span className="inline-flex min-h-11 items-center justify-center rounded-[var(--flowme-radius-control)] border border-[var(--flowme-border-strong)] bg-[var(--flowme-surface)] px-4 py-2 text-sm font-semibold text-[var(--flowme-text-secondary)]">
             {primaryActionLabel}
           </span>
         )}
       </div> : null}
 
       {canStart ? (
-        <details data-testid="flow-url-quick-start" className="mt-3 border-y border-[#DDE6D8] bg-white">
-          <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 px-2 text-sm font-semibold text-[#176D5D] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#176D5D]">
+        <details data-testid="flow-url-quick-start" className="mt-3 border-y border-[var(--flowme-border)] bg-[var(--flowme-surface)]">
+          <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 px-2 text-sm font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]">
             <span>바로 저장</span>
-            <span className="text-xs font-medium text-[#6E6B64]">시작일과 결과 형식 선택</span>
+            <span className="text-xs font-medium text-[var(--flowme-text-secondary)]">시작일과 결과 형식 선택</span>
           </summary>
-          <div data-testid="flow-url-start-panel" className="grid gap-3 border-t border-[#DDE6D8] p-3 sm:grid-cols-[minmax(0,0.9fr)_minmax(0,0.8fr)_auto] sm:items-end">
-          <div className="grid grid-cols-2 gap-1 rounded-lg bg-[#F7FBF4] p-1 sm:col-span-3" aria-label="시작 방식">
+          <div data-testid="flow-url-start-panel" className="grid gap-3 border-t border-[var(--flowme-border)] p-3 sm:grid-cols-[minmax(0,0.9fr)_minmax(0,0.8fr)_auto] sm:items-end">
+          <div className="grid grid-cols-2 gap-1 rounded-[var(--flowme-radius-control)] bg-[var(--flowme-soft)] p-1 sm:col-span-3" aria-label="시작 방식">
             {[
               { mode: 'direct' as const, label: '원문 내용 그대로' },
               { mode: 'custom' as const, label: '저장 전 편집' },
@@ -2762,8 +2762,8 @@ function FlowUrlLookupResult({
                 type="button"
                 data-testid={`flow-url-start-mode-${item.mode}`}
                 aria-pressed={startMode === item.mode}
-                className={`min-h-9 rounded-md px-2 py-1.5 text-xs font-semibold transition ${
-                  startMode === item.mode ? 'bg-[#176D5D] text-white shadow-sm' : 'text-[#176D5D] hover:bg-white'
+                className={`min-h-11 rounded-[var(--flowme-radius-control)] px-2 py-1.5 text-xs font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${
+                  startMode === item.mode ? 'bg-[var(--flowme-text)] text-white' : 'text-[var(--flowme-text-secondary)] hover:bg-[var(--flowme-surface)]'
                 }`}
                 onClick={() => {
                   setStartMode(item.mode);
@@ -2775,12 +2775,12 @@ function FlowUrlLookupResult({
             ))}
           </div>
           {startMode === 'custom' ? (
-            <div data-testid="flow-url-custom-start-panel" className="grid gap-3 rounded-lg border border-[#E7E4DD] bg-[#FAFAF8] p-3 sm:col-span-3">
-              <label className="grid gap-1 text-xs font-semibold text-[#176D5D]">
+            <div data-testid="flow-url-custom-start-panel" className="grid gap-3 rounded-[var(--flowme-radius-card)] border border-[var(--flowme-border)] bg-[var(--flowme-surface-subtle)] p-3 sm:col-span-3">
+              <label className="grid gap-1 text-xs font-semibold text-[var(--flowme-text-secondary)]">
                 저장 이름
                 <input
                   aria-label="저장 이름"
-                  className="min-h-10 rounded-lg border border-[#C9DBC4] bg-white px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10"
+                  className={`${FLOW_UI_INPUT_CLASS} w-full`}
                   value={customTitle}
                   maxLength={80}
                   onChange={(event) => {
@@ -2791,12 +2791,12 @@ function FlowUrlLookupResult({
               </label>
               {stepOptions.length > 0 ? (
                 <fieldset className="grid gap-2">
-                  <legend className="text-xs font-semibold text-[#176D5D]">포함할 항목</legend>
+                  <legend className="text-xs font-semibold text-[var(--flowme-text-secondary)]">포함할 항목</legend>
                   <div className="grid max-h-56 gap-1.5 overflow-auto pr-1 sm:grid-cols-2">
                     {stepOptions.map((step) => {
                       const checked = includedStepIds.includes(step.id);
                       return (
-                        <label key={step.id} className="flex min-h-10 items-start gap-2 rounded-md bg-white px-2.5 py-2 text-xs font-semibold leading-5 text-[#1B1A17]">
+                        <label key={step.id} className="flex min-h-11 items-start gap-2 rounded-[var(--flowme-radius-control)] bg-[var(--flowme-surface)] px-2.5 py-2 text-xs font-semibold leading-5 text-[var(--flowme-text)]">
                           <input
                             className="mt-0.5 h-4 w-4 shrink-0"
                             type="checkbox"
@@ -2820,12 +2820,12 @@ function FlowUrlLookupResult({
               ) : null}
             </div>
           ) : null}
-          <label className="grid gap-1 text-xs font-semibold text-[#176D5D]">
+          <label className="grid gap-1 text-xs font-semibold text-[var(--flowme-text-secondary)]">
             {dateAnchorCopy.label}
             <input
               data-testid="url-first-start-date-input"
               aria-label={dateAnchorCopy.label}
-              className="min-h-10 rounded-lg border border-[#C9DBC4] bg-[#FAFAF8] px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10"
+              className={FLOW_UI_INPUT_CLASS}
               type="date"
               value={startDate}
               onChange={(event) => {
@@ -2833,16 +2833,16 @@ function FlowUrlLookupResult({
                 setStartFeedback('');
               }}
             />
-            <span data-testid="url-first-date-anchor-help" className="break-keep text-[11px] font-semibold leading-5 text-[#6E6B64]">
+            <span data-testid="url-first-date-anchor-help" className="break-keep text-xs font-medium leading-5 text-[var(--flowme-text-secondary)]">
               {sourceBackedStartPackage?.public.setupInput?.hint ?? dateAnchorCopy.help}
             </span>
           </label>
-          <label className="grid gap-1 text-xs font-semibold text-[#176D5D]">
+          <label className="grid gap-1 text-xs font-semibold text-[var(--flowme-text-secondary)]">
             결과 형식
             <select
               data-testid="url-first-export-mode-select"
               aria-label="결과 형식"
-              className="min-h-10 rounded-lg border border-[#C9DBC4] bg-[#FAFAF8] px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10"
+              className={FLOW_UI_INPUT_CLASS}
               value={selectedExportMode}
               onChange={(event) => {
                 setSelectedExportMode(event.target.value as UrlFirstExportMode);
@@ -2858,39 +2858,39 @@ function FlowUrlLookupResult({
             <button
               type="button"
               data-testid="url-first-memo-document-download"
-              className="min-h-10 rounded-lg border border-[#DDE6D8] bg-[#F7FBF4] px-3 py-2 text-sm font-semibold text-[#176D5D] hover:border-[#176D5D]/40"
+              className={FLOW_UI_SECONDARY_ACTION_CLASS}
               onClick={downloadMarkdownExport}
             >
               {urlFirstExportModeLabels.markdown} 받기
             </button>
             <button
               type="button"
-              className="min-h-10 rounded-lg bg-[#176D5D] px-3 py-2 text-sm font-semibold text-white hover:bg-[#115246]"
+              className={FLOW_UI_PRIMARY_ACTION_CLASS}
               onClick={startFlowFromLookup}
             >
               {q3CopyEnabled ? '내 계획에 저장' : '내 Flow에 저장'}
             </button>
           </div>
           {startFeedback ? (
-            <p className="text-xs font-semibold text-[#3654FF] sm:col-span-3">{startFeedback}</p>
+            <p className="text-xs font-semibold text-[var(--flowme-text-secondary)] sm:col-span-3">{startFeedback}</p>
           ) : null}
           </div>
         </details>
       ) : null}
 
       {canRequestSupplyCandidate ? (
-        <section data-testid="flow-url-supply-request" className="mt-3 rounded-xl border border-[#E7E4DD] bg-white p-3">
+        <section data-testid="flow-url-supply-request" className="mt-3 rounded-[var(--flowme-radius-card)] border border-[var(--flowme-border)] bg-[var(--flowme-surface)] p-3">
           <div data-testid="flow-url-miss-draft-gate">
-            <p className="text-sm font-semibold text-[#1B1A17]">직접 손볼 초안 준비하기</p>
-            <p className="mt-1 break-keep text-xs font-semibold leading-5 text-[#6E6B64]">
+            <p className="text-sm font-semibold text-[var(--flowme-text)]">직접 손볼 초안 준비하기</p>
+            <p className="mt-1 break-keep text-xs font-medium leading-5 text-[var(--flowme-text-secondary)]">
               원하는 결과를 여러 할 일로 나눈 뒤 저장 전 살펴볼 수 있어요.
             </p>
           </div>
           {existingSupplyCandidate ? (
-            <div data-testid="flow-url-supply-existing" className="mt-3 rounded-lg bg-[#F7FBF4] px-3 py-2 text-xs leading-5 text-[#5F6A5A]">
-              <p className="font-semibold text-[#176D5D]">저장한 초안이 있어요</p>
-              <p className="mt-1 font-semibold text-[#1B1A17]">{existingSupplyCandidate.title}</p>
-              <a className="mt-2 inline-flex min-h-9 items-center rounded-lg bg-[#176D5D] px-3 py-1.5 font-semibold text-white" href="#flow-url-supply-candidate-list">
+            <div data-testid="flow-url-supply-existing" className="mt-3 rounded-[var(--flowme-radius-control)] bg-[var(--flowme-positive-soft)] px-3 py-2 text-xs leading-5 text-[var(--flowme-positive-strong)]">
+              <p className="font-semibold">저장한 초안이 있어요</p>
+              <p className="mt-1 font-semibold text-[var(--flowme-text)]">{existingSupplyCandidate.title}</p>
+              <a className={`${FLOW_UI_PRIMARY_ACTION_CLASS} mt-2`} href="#flow-url-supply-candidate-list">
                 초안 열기
               </a>
             </div>
@@ -2903,22 +2903,22 @@ function FlowUrlLookupResult({
                 saveSupplyCandidate();
               }}
             >
-              <label className="grid gap-1 text-xs font-semibold text-[#176D5D]">
+              <label className="grid gap-1 text-xs font-semibold text-[var(--flowme-text-secondary)]">
                 {q3CopyEnabled ? '계획 이름' : 'Flow 이름'}
                 <input
                   aria-label={q3CopyEnabled ? '계획 이름' : 'Flow 이름'}
-                  className="min-h-10 rounded-lg border border-[#C9DBC4] bg-[#FAFAF8] px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10"
+                  className={FLOW_UI_INPUT_CLASS}
                   value={candidateTitle}
                   maxLength={80}
                   placeholder="어떤 콘텐츠로 보고 싶나요?"
                   onChange={(event) => setCandidateTitle(event.target.value)}
                 />
               </label>
-              <label className="grid gap-1 text-xs font-semibold text-[#176D5D]">
+              <label className="grid gap-1 text-xs font-semibold text-[var(--flowme-text-secondary)]">
                 원하는 결과
                 <textarea
                   aria-label="원하는 결과"
-                  className="min-h-16 rounded-lg border border-[#C9DBC4] bg-[#FAFAF8] px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10"
+                  className={`${FLOW_UI_INPUT_CLASS} min-h-20`}
                   value={candidateMemo}
                   maxLength={240}
                   placeholder="원문에서 따라 하고 싶은 순서나 필요한 결과를 적어두세요."
@@ -2929,20 +2929,20 @@ function FlowUrlLookupResult({
                 <button
                   type="submit"
                   data-testid="flow-url-miss-primary-action"
-                  className="min-h-10 rounded-lg bg-[#176D5D] px-3 py-2 text-sm font-semibold text-white hover:bg-[#115246]"
+                  className={FLOW_UI_PRIMARY_ACTION_CLASS}
                 >
                   초안 준비하기
                 </button>
-                <span className="text-xs font-semibold text-[#6E6B64]">이 기기에 임시 저장돼요</span>
+                <span className="text-xs font-semibold text-[var(--flowme-text-secondary)]">이 기기에 임시 저장돼요</span>
               </div>
             </form>
           )}
-          {candidateFeedback ? <p className="mt-2 text-xs font-semibold text-[#3654FF]" role="status">{candidateFeedback}</p> : null}
+          {candidateFeedback ? <p className="mt-2 text-xs font-semibold text-[var(--flowme-text-secondary)]" role="status">{candidateFeedback}</p> : null}
         </section>
       ) : null}
 
       {result.gate && !canRequestSupplyCandidate ? (
-        <p className="mt-3 rounded-xl bg-white px-3 py-2 text-xs font-semibold leading-5 text-[#8A6B18]">
+        <p className="mt-3 rounded-[var(--flowme-radius-control)] bg-[var(--flowme-warning-soft)] px-3 py-2 text-xs font-semibold leading-5 text-[var(--flowme-warning-strong)]">
           {result.gate.reason}
         </p>
       ) : null}
@@ -2972,14 +2972,14 @@ function FlowUrlLookupEntry({
   return (
     <section
       data-testid="flow-url-lookup-entry"
-      className="mb-4 rounded-lg border border-[#DDE6D8] bg-[#F7FBF4] p-3.5 shadow-[0_8px_20px_rgba(27,26,23,0.04)]"
+      className="mb-3 rounded-[var(--flowme-radius-card)] border border-[var(--flowme-border)] bg-[var(--flowme-surface)] p-3 sm:mb-5 sm:p-4"
     >
       <form className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-2" onSubmit={onSubmit}>
         <label className="min-w-0">
-          <span className="text-xs font-semibold text-[#176D5D]">URL 또는 메모</span>
+          <span className="text-xs font-semibold text-[var(--flowme-text-secondary)]">URL 또는 메모</span>
           <input
             data-testid="flow-url-lookup-input"
-            className="mt-1 min-h-11 w-full rounded-lg border border-[#C9DBC4] bg-white px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none placeholder:text-[#A09B91] focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10"
+            className={`mt-1 w-full ${FLOW_UI_INPUT_CLASS}`}
             value={input}
             onChange={(event) => onInputChange(event.target.value)}
             placeholder="링크를 붙여넣거나, 하려는 일을 메모로 적어보세요"
@@ -2989,7 +2989,7 @@ function FlowUrlLookupEntry({
         </label>
         <button
           type="submit"
-          className="min-h-11 rounded-lg bg-[#176D5D] px-4 py-2 text-sm font-semibold text-white hover:bg-[#115246]"
+          className={FLOW_UI_PRIMARY_ACTION_CLASS}
         >
           {getQ3UserCopyProfile(q3CopyEnabled).navigation.findPlans}
         </button>
@@ -3126,35 +3126,35 @@ function FlowUrlSupplyCandidateCard({
   };
 
   return (
-    <article className="rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-2">
+    <article className="rounded-[var(--flowme-radius-card)] border border-[var(--flowme-border)] bg-[var(--flowme-surface-subtle)] px-3 py-3">
       <div className="flex flex-wrap items-center gap-1.5">
-        <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${executable ? 'bg-[#E7F6EC] text-[#176D5D]' : 'bg-white text-[#176D5D]'}`}>
+        <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${executable ? 'bg-[var(--flowme-positive-soft)] text-[var(--flowme-positive-strong)]' : 'border border-[var(--flowme-border)] bg-[var(--flowme-surface-subtle)] text-[var(--flowme-text-secondary)]'}`}>
           {executable ? q3CopyEnabled ? '계획 준비됨' : 'Flow 준비됨' : getUrlSupplyCandidateStatusLabel(candidate)}
         </span>
-        <span className="text-[11px] font-semibold text-[#8A857B]">{formatKoreanShortDate(candidate.savedAt)}</span>
+        <span className="text-xs font-semibold text-[var(--flowme-text-secondary)]">{formatKoreanShortDate(candidate.savedAt)}</span>
       </div>
-      <p className="mt-1 break-keep text-sm font-semibold text-[#1B1A17]">{displayTitle}</p>
-      {displayMemo ? <p className="mt-1 line-clamp-2 text-xs font-semibold leading-5 text-[#6E6B64]">{displayMemo}</p> : null}
-      <p className={`mt-1 text-[11px] font-semibold ${executable ? 'text-[#176D5D]' : 'text-[#6E6B64]'}`}>
+      <p className="mt-1 break-keep text-sm font-semibold text-[var(--flowme-text)]">{displayTitle}</p>
+      {displayMemo ? <p className="mt-1 line-clamp-2 text-xs font-medium leading-5 text-[var(--flowme-text-secondary)]">{displayMemo}</p> : null}
+      <p className={`mt-1 text-xs font-semibold ${executable ? 'text-[var(--flowme-positive-strong)]' : 'text-[var(--flowme-text-secondary)]'}`}>
         {executable
           ? q3CopyEnabled ? '바로 시작할 수 있는 계획이 준비됐어요.' : '바로 시작할 수 있는 Flow가 준비됐어요.'
           : '직접 손볼 초안으로 이어갈 수 있어요.'}
       </p>
 
       {!executable ? (
-        <section data-testid="flow-url-miss-draft-entry" className="mt-3 rounded-lg border border-[#DDE6D8] bg-white p-3">
+        <section data-testid="flow-url-miss-draft-entry" className="mt-3 rounded-[var(--flowme-radius-card)] border border-[var(--flowme-border)] bg-[var(--flowme-surface)] p-3">
           <div className="flex flex-wrap items-start justify-between gap-2">
             <div className="min-w-0">
-              <p className="text-xs font-semibold text-[#176D5D]">앱 안에서 이어가기</p>
-              <h3 className="mt-1 break-keep text-sm font-semibold text-[#1B1A17]">직접 손볼 초안으로 시작</h3>
-              <p className="mt-1 break-keep text-xs font-semibold leading-5 text-[#6E6B64]">
+              <p className="text-xs font-semibold text-[var(--flowme-action)]">앱 안에서 이어가기</p>
+              <h3 className="mt-1 break-keep text-sm font-semibold text-[var(--flowme-text)]">직접 손볼 초안으로 시작</h3>
+              <p className="mt-1 break-keep text-xs font-medium leading-5 text-[var(--flowme-text-secondary)]">
                 내가 쓴 내용에서 나눈 할 일을 확인한 뒤 저장합니다.
               </p>
             </div>
             <button
               type="button"
               data-testid="flow-url-miss-draft-open"
-              className="min-h-9 rounded-lg bg-[#176D5D] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#115246]"
+              className={FLOW_UI_PRIMARY_ACTION_CLASS}
               onClick={() => {
                 setShowDraftEditor((current) => !current);
                 setFeedback('');
@@ -3166,34 +3166,34 @@ function FlowUrlSupplyCandidateCard({
           {showDraftEditor ? (
             <form
               data-testid="flow-url-miss-draft-editor"
-              className="mt-3 grid gap-2 rounded-lg border border-[#E7E4DD] bg-[#FAFAF8] p-3"
+              className="mt-3 grid gap-2 rounded-[var(--flowme-radius-card)] border border-[var(--flowme-border)] bg-[var(--flowme-surface-subtle)] p-3"
               onSubmit={(event) => {
                 event.preventDefault();
                 saveDraftFlow();
               }}
             >
-              <label className="grid gap-1 text-xs font-semibold text-[#176D5D]">
+              <label className="grid gap-1 text-xs font-semibold text-[var(--flowme-text-secondary)]">
                 초안 제목
                 <input
                   data-testid="flow-url-miss-draft-flow-title"
                   aria-label="초안 제목"
-                  className="min-h-10 rounded-lg border border-[#C9DBC4] bg-white px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10"
+                  className={FLOW_UI_INPUT_CLASS}
                   value={draftTitle}
                   maxLength={80}
                   onChange={(event) => setDraftTitle(event.target.value)}
                 />
               </label>
-              <label className="grid gap-1 text-xs font-semibold text-[#176D5D]">
+              <label className="grid gap-1 text-xs font-semibold text-[var(--flowme-text-secondary)]">
                 기준일
                 <input
                   data-testid="flow-url-miss-draft-anchor-date"
                   aria-label="초안 기준일"
-                  className="min-h-10 rounded-lg border border-[#C9DBC4] bg-white px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10"
+                  className={FLOW_UI_INPUT_CLASS}
                   type="date"
                   value={draftAnchorDate}
                   onChange={(event) => setDraftAnchorDate(event.target.value)}
                 />
-                <span className="break-keep text-[11px] font-semibold leading-5 text-[#6E6B64]">
+                <span className="break-keep text-xs font-medium leading-5 text-[var(--flowme-text-secondary)]">
                   {q3CopyEnabled
                     ? '날짜를 넣으면 캘린더에 첫 할 일이 표시됩니다. 저장 후 내 계획에서 다시 바꿀 수 있습니다.'
                     : '날짜를 넣으면 캘린더에 첫 할 일이 표시됩니다. 저장 후 My Flow에서 다시 바꿀 수 있습니다.'}
@@ -3213,11 +3213,11 @@ function FlowUrlSupplyCandidateCard({
                   type="submit"
                   data-testid="flow-url-miss-draft-save"
                   disabled={acceptedDraftItems.length === 0 || hasBlankSelectedDraftTitle}
-                  className="min-h-10 rounded-lg bg-[#176D5D] px-3 py-2 text-sm font-semibold text-white hover:bg-[#115246] disabled:cursor-not-allowed disabled:bg-[#A5B7AF]"
+                  className={FLOW_UI_PRIMARY_ACTION_CLASS}
                 >
                   {q3CopyEnabled ? '내 계획에 초안 저장' : '내 Flow에 초안 저장'}
                 </button>
-                <span className="text-xs font-semibold text-[#6E6B64]">선택한 항목만 저장됩니다</span>
+                <span className="text-xs font-semibold text-[var(--flowme-text-secondary)]">선택한 항목만 저장됩니다</span>
               </div>
             </form>
           ) : null}
@@ -3226,39 +3226,39 @@ function FlowUrlSupplyCandidateCard({
 
       {isEditing ? (
         <form
-          className="mt-3 grid gap-2 rounded-lg border border-[#E7E4DD] bg-white p-2"
+          className="mt-3 grid gap-2 rounded-[var(--flowme-radius-card)] border border-[var(--flowme-border)] bg-[var(--flowme-surface)] p-3"
           onSubmit={(event) => {
             event.preventDefault();
             saveEdits();
           }}
         >
-          <label className="grid gap-1 text-xs font-semibold text-[#176D5D]">
+          <label className="grid gap-1 text-xs font-semibold text-[var(--flowme-text-secondary)]">
             요청 제목 수정
             <input
               aria-label="요청 제목 수정"
-              className="min-h-10 rounded-lg border border-[#C9DBC4] bg-[#FAFAF8] px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10"
+              className={FLOW_UI_INPUT_CLASS}
               value={editTitle}
               maxLength={80}
               onChange={(event) => setEditTitle(event.target.value)}
             />
           </label>
-          <label className="grid gap-1 text-xs font-semibold text-[#176D5D]">
+          <label className="grid gap-1 text-xs font-semibold text-[var(--flowme-text-secondary)]">
             요청 메모 수정
             <textarea
               aria-label="요청 메모 수정"
-              className="min-h-20 rounded-lg border border-[#C9DBC4] bg-[#FAFAF8] px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10"
+              className={`${FLOW_UI_INPUT_CLASS} min-h-20`}
               value={editMemo}
               maxLength={240}
               onChange={(event) => setEditMemo(event.target.value)}
             />
           </label>
           <div className="flex flex-wrap gap-2">
-            <button type="submit" className="min-h-9 rounded-lg bg-[#176D5D] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#115246]">
+            <button type="submit" className={FLOW_UI_PRIMARY_ACTION_CLASS}>
               수정 저장
             </button>
             <button
               type="button"
-              className="min-h-9 rounded-lg border border-[#E7E4DD] bg-white px-3 py-1.5 text-xs font-semibold text-[#6E6B64]"
+              className={FLOW_UI_SECONDARY_ACTION_CLASS}
               onClick={() => {
                 setEditTitle(candidate.title);
                 setEditMemo(candidate.memo);
@@ -3275,7 +3275,7 @@ function FlowUrlSupplyCandidateCard({
           {executable ? (
             <button
               type="button"
-              className="min-h-9 rounded-lg bg-[#176D5D] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#115246]"
+              className={FLOW_UI_PRIMARY_ACTION_CLASS}
               onClick={() => onRequeryCandidate(candidate)}
             >
               {q3CopyEnabled ? '계획으로 이동' : 'Flow 결과로 이동'}
@@ -3283,7 +3283,7 @@ function FlowUrlSupplyCandidateCard({
           ) : null}
           <button
             type="button"
-            className="min-h-9 rounded-lg border border-[#DDE6D8] bg-white px-3 py-1.5 text-xs font-semibold text-[#176D5D]"
+            className={FLOW_UI_SECONDARY_ACTION_CLASS}
             onClick={() => {
               setShowProductionInfo((current) => !current);
               setFeedback('');
@@ -3294,31 +3294,31 @@ function FlowUrlSupplyCandidateCard({
         </div>
       )}
       {showProductionInfo ? (
-        <div data-testid="flow-url-supply-production-handoff" className="mt-3 rounded-lg border border-[#DDE6D8] bg-white p-3">
+        <div data-testid="flow-url-supply-production-handoff" className="mt-3 rounded-[var(--flowme-radius-card)] border border-[var(--flowme-border)] bg-[var(--flowme-surface)] p-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <h3 className="text-xs font-semibold text-[#1B1A17]">요청 내용</h3>
-            <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${executable ? 'bg-[#E7F6EC] text-[#176D5D]' : 'bg-[#FFF7E0] text-[#8A6B18]'}`}>
+            <h3 className="text-xs font-semibold text-[var(--flowme-text)]">요청 내용</h3>
+            <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${executable ? 'bg-[var(--flowme-positive-soft)] text-[var(--flowme-positive-strong)]' : 'bg-[var(--flowme-warning-soft)] text-[var(--flowme-warning-strong)]'}`}>
               {getUrlSupplyCandidateAvailabilityLabel(candidate)}
             </span>
           </div>
-          <dl className="mt-2 grid gap-1.5 text-[11px] leading-5 text-[#6E6B64]">
+          <dl className="mt-2 grid gap-1.5 text-xs leading-5 text-[var(--flowme-text-secondary)]">
             <div>
-              <dt className="font-semibold text-[#1B1A17]">원 URL</dt>
+              <dt className="font-semibold text-[var(--flowme-text)]">원 URL</dt>
               <dd>원문 링크 저장됨</dd>
             </div>
             <div>
-              <dt className="font-semibold text-[#1B1A17]">내가 쓴 제목·메모</dt>
+              <dt className="font-semibold text-[var(--flowme-text)]">내가 쓴 제목·메모</dt>
               <dd>{displayTitle}{displayMemo ? ` · ${displayMemo}` : ''}</dd>
             </div>
             <div>
-              <dt className="font-semibold text-[#1B1A17]">마지막 확인</dt>
+              <dt className="font-semibold text-[var(--flowme-text)]">마지막 확인</dt>
               <dd>{getUrlSupplyCandidateLastLookupLabel(candidate, q3CopyEnabled)}</dd>
             </div>
           </dl>
-          <p className="mt-2 rounded-lg bg-[#FAFAF8] px-2.5 py-2 text-[11px] font-semibold leading-5 text-[#6E6B64]">{productionStatusNote}</p>
+          <p className="mt-2 rounded-[var(--flowme-radius-control)] bg-[var(--flowme-surface-subtle)] px-2.5 py-2 text-xs font-medium leading-5 text-[var(--flowme-text-secondary)]">{productionStatusNote}</p>
           <div className="mt-3 flex flex-wrap gap-2">
             <a
-              className="inline-flex min-h-9 items-center rounded-lg border border-[#DDE6D8] bg-white px-3 py-1.5 text-xs font-semibold text-[#176D5D]"
+              className={FLOW_UI_SECONDARY_ACTION_CLASS}
               href={candidate.originalUrl}
               target="_blank"
               rel="noreferrer"
@@ -3328,7 +3328,7 @@ function FlowUrlSupplyCandidateCard({
             {!executable ? (
               <button
                 type="button"
-                className="min-h-9 rounded-lg border border-[#DDE6D8] bg-white px-3 py-1.5 text-xs font-semibold text-[#176D5D]"
+                className={FLOW_UI_SECONDARY_ACTION_CLASS}
                 onClick={() => onRequeryCandidate(candidate)}
               >
                 다시 조회
@@ -3336,7 +3336,7 @@ function FlowUrlSupplyCandidateCard({
             ) : null}
             <button
               type="button"
-              className="min-h-9 rounded-lg border border-[#E7E4DD] bg-white px-3 py-1.5 text-xs font-semibold text-[#6E6B64]"
+              className={FLOW_UI_SECONDARY_ACTION_CLASS}
               onClick={() => {
                 setIsEditing(true);
                 setFeedback('');
@@ -3346,14 +3346,14 @@ function FlowUrlSupplyCandidateCard({
             </button>
             <button
               type="button"
-              className="min-h-9 rounded-lg border border-[#F0D1C6] bg-white px-3 py-1.5 text-xs font-semibold text-[#A64224]"
+              className={FLOW_UI_DANGER_ACTION_CLASS}
               onClick={removeCandidate}
             >
               삭제
             </button>
             <button
               type="button"
-              className="min-h-9 rounded-lg bg-[#176D5D] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#115246]"
+              className={FLOW_UI_SECONDARY_ACTION_CLASS}
               data-testid="flow-url-supply-user-summary-copy"
               onClick={copyUserSummaryMarkdown}
             >
@@ -3367,7 +3367,7 @@ function FlowUrlSupplyCandidateCard({
           data-testid="flow-url-miss-draft-feedback"
           role="status"
           aria-live="polite"
-          className="mt-2 flex flex-wrap items-center gap-2 text-xs font-semibold text-[#3654FF]"
+          className="mt-2 flex flex-wrap items-center gap-2 text-xs font-semibold text-[var(--flowme-text-secondary)]"
         >
           <span>{feedback}</span>
           {draftSaveTargetHref ? (
@@ -3607,23 +3607,23 @@ export function FlowList() {
   }
 
   return (
-    <main data-p35-q3-copy={q3CopyEnabled ? 'on' : 'off'} className="min-h-screen bg-[#FAFAF8] px-5 py-6 pb-28 md:py-8 md:pb-8">
+    <main data-p35-q3-copy={q3CopyEnabled ? 'on' : 'off'} className="min-h-screen bg-[var(--flowme-bg)] px-5 py-6 pb-28 md:py-8 md:pb-8">
       <div className="mx-auto max-w-6xl">
       <PlatformNav />
       <section data-testid="flow-map-catalog-section" className="mb-8">
         <div data-testid="flow-catalog-hero" className="mb-3">
-          <p className="text-sm font-semibold text-[#6E6B64]">{q3Copy.navigation.findPlans}</p>
+          <p className="text-sm font-semibold text-[var(--flowme-text-secondary)]">{q3Copy.navigation.findPlans}</p>
           <div className="mt-1 flex flex-wrap items-center justify-between gap-2">
-            <h1 className="break-keep text-2xl font-semibold text-[#1B1A17] sm:text-3xl">
+            <h1 className="break-keep text-[1.75rem] font-semibold leading-9 tracking-[-0.02em] text-[var(--flowme-text)] sm:text-3xl">
               {q3CopyEnabled ? 'URL·메모로 계획 찾기' : 'URL·메모로 Flow 찾기'}
             </h1>
-            <span data-testid="flow-catalog-count" className="text-sm font-semibold text-[#8A857B]">
+            <span data-testid="flow-catalog-count" className="text-sm font-semibold text-[var(--flowme-text-secondary)]">
               {hasCatalogFilter
                 ? `${q3CopyEnabled ? '계획' : 'Flow'} ${visibleCatalogCount}/${totalCatalogCount}개`
                 : `${q3CopyEnabled ? '계획' : 'Flow'} ${totalCatalogCount}개`}
             </span>
           </div>
-          <p className="mt-1 break-keep text-sm leading-6 text-[#6E6B64]">
+          <p className="mt-1 break-keep text-sm leading-6 text-[var(--flowme-text-secondary)]">
             {q3CopyEnabled
               ? '링크나 메모로 찾고, 준비된 계획을 비교하세요.'
               : '링크나 메모로 찾고, 준비된 Flow를 비교하세요.'}
@@ -3648,11 +3648,11 @@ export function FlowList() {
           onSaveDraftFlow={handleSaveDraftFlowFromCandidate}
         />
         {urlLookupResult ? (
-          <div className="mb-4 border-y border-[#E7E4DD] py-3">
+          <div className="mb-4 border-y border-[var(--flowme-border)] py-3">
             <button
               type="button"
               data-testid="flow-catalog-after-lookup-toggle"
-              className="flex min-h-10 w-full items-center justify-between gap-3 text-left text-sm font-semibold text-[#3654FF]"
+              className="flex min-h-11 w-full items-center justify-between gap-3 rounded-[var(--flowme-radius-control)] text-left text-sm font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
               aria-expanded={catalogBrowseOpenAfterLookup}
               onClick={() => setCatalogBrowseOpenAfterLookup((open) => !open)}
             >
@@ -3670,19 +3670,19 @@ export function FlowList() {
             <span className="sr-only">검색</span>
             <input
               data-testid="flow-catalog-search"
-              className="min-h-11 w-full rounded-xl border border-[#E7E4DD] bg-white px-3 py-2 text-sm font-semibold text-[#1B1A17] outline-none placeholder:text-[#A09B91] focus:border-[#3654FF] focus:ring-2 focus:ring-[#3654FF]/10"
+              className={`w-full ${FLOW_UI_INPUT_CLASS}`}
               value={catalogQuery}
               onChange={(event) => setCatalogQuery(event.target.value)}
               placeholder="이사, 공부, 식단, 체크리스트"
             />
           </label>
-          <div className="flex flex-wrap gap-2" aria-label="상황별 콘텐츠 필터">
+          <div className="flex flex-nowrap gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible sm:pb-0" aria-label="상황별 콘텐츠 필터">
             {catalogIntentFilters.map((item) => (
               <button
                 key={item.id}
                 type="button"
-                className={`rounded-full border px-3 py-1.5 text-sm font-semibold ${
-                  catalogIntent === item.id ? 'border-[#1B1A17] bg-[#1B1A17] text-white' : 'border-[#E7E4DD] bg-white text-[#6E6B64]'
+                className={`min-h-11 shrink-0 rounded-full border px-3 py-1.5 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${
+                  catalogIntent === item.id ? 'border-[var(--flowme-text)] bg-[var(--flowme-text)] text-white' : 'border-[var(--flowme-border-strong)] bg-[var(--flowme-surface)] text-[var(--flowme-text-secondary)] hover:bg-[var(--flowme-surface-subtle)]'
                 }`}
                 aria-pressed={catalogIntent === item.id}
                 onClick={() => setCatalogIntent(item.id)}
@@ -3693,29 +3693,29 @@ export function FlowList() {
           </div>
         </div>
         {showCatalogFilters && !catalogBrowseHiddenAfterLookup ? (
-          <div className="mb-4 rounded-2xl border border-[#E7E4DD] bg-white p-4">
-            <details className="rounded-xl border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-2">
-              <summary className="cursor-pointer text-sm font-semibold text-[#1B1A17]">필터 열기</summary>
+          <div className="mb-4 rounded-[var(--flowme-radius-card)] border border-[var(--flowme-border)] bg-[var(--flowme-surface)] p-4">
+            <details className="rounded-[var(--flowme-radius-control)] border border-[var(--flowme-border)] bg-[var(--flowme-surface-subtle)] px-3 py-2">
+              <summary className="min-h-11 cursor-pointer content-center text-sm font-semibold text-[var(--flowme-text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">필터 열기</summary>
               <div className="mt-4 grid gap-4 md:grid-cols-3">
                 <label className="space-y-2">
-                  <span className="text-sm font-semibold text-[#6E6B64]">태그</span>
-                  <select className="w-full rounded-xl border border-[#E7E4DD] bg-white px-3 py-2" value={tag} onChange={(event) => setTag(event.target.value)}>
+                  <span className="text-sm font-semibold text-[var(--flowme-text-secondary)]">태그</span>
+                  <select className={`w-full ${FLOW_UI_INPUT_CLASS}`} value={tag} onChange={(event) => setTag(event.target.value)}>
                     {tags.map((item) => (
                       <option key={item} value={item}>{item}</option>
                     ))}
                   </select>
                 </label>
                 <label className="space-y-2">
-                  <span className="text-sm font-semibold text-[#6E6B64]">카테고리</span>
-                  <select className="w-full rounded-xl border border-[#E7E4DD] bg-white px-3 py-2" value={category} onChange={(event) => setCategory(event.target.value)}>
+                  <span className="text-sm font-semibold text-[var(--flowme-text-secondary)]">카테고리</span>
+                  <select className={`w-full ${FLOW_UI_INPUT_CLASS}`} value={category} onChange={(event) => setCategory(event.target.value)}>
                     {categories.map((item) => (
                       <option key={item} value={item}>{item}</option>
                     ))}
                   </select>
                 </label>
                 <label className="space-y-2">
-                  <span className="text-sm font-semibold text-[#6E6B64]">진행 방식</span>
-                  <select className="w-full rounded-xl border border-[#E7E4DD] bg-white px-3 py-2" value={structure} onChange={(event) => setStructure(event.target.value)}>
+                  <span className="text-sm font-semibold text-[var(--flowme-text-secondary)]">진행 방식</span>
+                  <select className={`w-full ${FLOW_UI_INPUT_CLASS}`} value={structure} onChange={(event) => setStructure(event.target.value)}>
                     {structures.map((item) => (
                       <option key={item} value={item}>{item}</option>
                     ))}
@@ -3723,10 +3723,10 @@ export function FlowList() {
                 </label>
               </div>
             </details>
-            <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-[#6E6B64]">
+            <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-[var(--flowme-text-secondary)]">
               <span>{visibleDirectoryBundles.length}/{filtered.length}개 한 개만 저장</span>
-              {tag !== '전체' ? <span className="rounded-full bg-[#EEF1FF] px-2 py-1 font-medium text-[#3654FF]">#{tag}</span> : null}
-              {category !== '전체' ? <span className="rounded-full bg-[#FAFAF8] px-2 py-1 font-medium text-[#1B1A17]">{category}</span> : null}
+              {tag !== '전체' ? <span className="rounded-full bg-[var(--flowme-action-soft)] px-2 py-1 font-medium text-[var(--flowme-action-strong)]">#{tag}</span> : null}
+              {category !== '전체' ? <span className="rounded-full bg-[var(--flowme-surface-subtle)] px-2 py-1 font-medium text-[var(--flowme-text)]">{category}</span> : null}
             </div>
           </div>
         ) : null}
@@ -3739,8 +3739,8 @@ export function FlowList() {
           ))}
         </div>
         {visibleCatalogCount === 0 && !catalogBrowseHiddenAfterLookup ? (
-          <div className="mt-4 rounded-2xl border border-[#E7E4DD] bg-white p-5 text-sm text-[#6E6B64]">
-            <p className="font-semibold text-[#1B1A17]">맞는 콘텐츠가 없습니다.</p>
+          <div className="mt-4 rounded-[var(--flowme-radius-card)] border border-[var(--flowme-border)] bg-[var(--flowme-surface)] p-5 text-sm text-[var(--flowme-text-secondary)]">
+            <p className="font-semibold text-[var(--flowme-text)]">맞는 콘텐츠가 없습니다.</p>
             <p className="mt-1">검색어나 상황 필터를 줄이면 다시 볼 수 있습니다.</p>
           </div>
         ) : null}
@@ -15374,33 +15374,33 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
             {!isTimelinePresentation ? <span className={rowDotClassName} style={{ backgroundColor: color }} /> : null}
               <span className="min-w-0 flex-1" data-flow-row-slot="content">
                 <span className="flex min-w-0 items-center gap-2">
-                <span data-testid="my-flow-row-title" data-flow-row-slot="title" className={`min-w-0 flex-1 break-words font-semibold ${checked ? 'text-slate-400 line-through' : 'text-slate-950'}`}>
+                <span data-testid="my-flow-row-title" data-flow-row-slot="title" className={`min-w-0 flex-1 break-words font-semibold ${checked ? 'text-[var(--flowme-text-tertiary)] line-through' : 'text-[var(--flowme-text)]'}`}>
                   {displayTitle}
                 </span>
                 {options.showOpenLabel && !isTimelinePresentation ? (
-                  <span data-testid="my-flow-row-open-label" className="shrink-0 text-[11px] font-semibold text-[#3654FF]">
+                  <span data-testid="my-flow-row-open-label" className="shrink-0 text-xs font-semibold text-[var(--flowme-action)]">
                     {openActionLabel}
                   </span>
                 ) : null}
               </span>
               {hasRowMeta ? (
-                <span data-flow-row-slot="meta" className="mt-1 flex flex-wrap items-center gap-1 text-xs font-semibold text-slate-500 sm:gap-1.5">
+                <span data-flow-row-slot="meta" className="mt-1 flex flex-wrap items-center gap-1 text-xs font-semibold text-[var(--flowme-text-secondary)] sm:gap-1.5">
                 {showDateMeta ? <span data-testid="my-flow-row-date-meta" className={options.hideDateMeta ? 'hidden sm:inline' : undefined}>{rowDateMeta}</span> : null}
                 {displayTimedSchedule ? <span data-testid="personal-draft-timed-meta">{displayTimedSchedule}</span> : null}
-                {displayTiming ? <span data-testid="my-flow-row-timing-chip" aria-label={timingAccessibilityLabel} title={timingAccessibilityLabel} className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-600">{displayTiming}</span> : null}
+                {displayTiming ? <span data-testid="my-flow-row-timing-chip" aria-label={timingAccessibilityLabel} title={timingAccessibilityLabel} className="rounded-[var(--flowme-radius-compact)] bg-[var(--flowme-surface-subtle)] px-1.5 py-0.5 text-xs text-[var(--flowme-text-secondary)]">{displayTiming}</span> : null}
                 {showSectionMeta ? <span data-testid="my-flow-row-section-label">{displaySection}</span> : null}
-                {showFlowChip ? <span data-testid="my-flow-row-flow-chip" className="max-w-full truncate rounded bg-[#F3F1EC] px-1.5 py-0.5 text-[10px] text-[#5C5952]">{flowChipLabel}</span> : null}
-                {showProgressMeta ? <span data-testid="my-flow-row-progress-chip" className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-600">{flowProgressLabel}</span> : null}
+                {showFlowChip ? <span data-testid="my-flow-row-flow-chip" className="max-w-full truncate rounded-[var(--flowme-radius-compact)] bg-[var(--flowme-surface-subtle)] px-1.5 py-0.5 text-xs text-[var(--flowme-text-secondary)]">{flowChipLabel}</span> : null}
+                {showProgressMeta ? <span data-testid="my-flow-row-progress-chip" className="rounded-[var(--flowme-radius-compact)] bg-[var(--flowme-surface-subtle)] px-1.5 py-0.5 text-xs text-[var(--flowme-text-secondary)]">{flowProgressLabel}</span> : null}
                 {occurrenceStatusLabel ? (
                   <span
                     data-testid="personal-draft-occurrence-row-status"
-                    className={`rounded px-1.5 py-0.5 text-[10px] ${occurrenceExecutionState === 'held' ? 'bg-amber-50 text-amber-800' : 'bg-slate-100 text-slate-600'}`}
+                    className={`rounded-[var(--flowme-radius-compact)] px-1.5 py-0.5 text-xs ${occurrenceExecutionState === 'held' ? 'bg-[var(--flowme-warning-soft)] text-[var(--flowme-warning-strong)]' : 'bg-[var(--flowme-surface-subtle)] text-[var(--flowme-text-secondary)]'}`}
                   >
                     {occurrenceStatusLabel}
                   </span>
                 ) : null}
                 {options.routineStatusInMeta && isRoutineExecution ? (
-                  <span data-testid="my-flow-routine-progress-pill" className="rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-black text-emerald-700">
+                  <span data-testid="my-flow-routine-progress-pill" className="rounded-[var(--flowme-radius-compact)] bg-[var(--flowme-positive-soft)] px-1.5 py-0.5 text-xs font-black text-[var(--flowme-positive-strong)]">
                     {routineProgressLabel}
                   </span>
                 ) : null}
@@ -15410,7 +15410,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
           </button>
           {options.hideExecutionNoteAction === false ? renderMyFlowExecutionNoteButton(row) : null}
           {isRoutineExecution && !options.routineStatusInMeta ? (
-            <span data-testid="my-flow-routine-progress-pill" className="shrink-0 rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-black text-emerald-700">
+            <span data-testid="my-flow-routine-progress-pill" className="shrink-0 rounded-[var(--flowme-radius-compact)] bg-[var(--flowme-positive-soft)] px-1.5 py-0.5 text-xs font-black text-[var(--flowme-positive-strong)]">
               {routineProgressLabel}
             </span>
           ) : null}
@@ -15472,44 +15472,44 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
           {!isTimelinePresentation ? <span className={rowDotClassName} style={{ backgroundColor: color }} /> : null}
           <span className="min-w-0 flex-1" data-flow-row-slot="content">
             <span className="flex min-w-0 items-center gap-2">
-              <span data-testid="my-flow-row-title" data-flow-row-slot="title" className={`min-w-0 flex-1 break-words font-semibold ${checked ? 'text-slate-400 line-through' : 'text-slate-950'}`}>
+              <span data-testid="my-flow-row-title" data-flow-row-slot="title" className={`min-w-0 flex-1 break-words font-semibold ${checked ? 'text-[var(--flowme-text-tertiary)] line-through' : 'text-[var(--flowme-text)]'}`}>
                 {displayTitle}
               </span>
               {options.showOpenLabel && !isTimelinePresentation ? (
-                <span data-testid="my-flow-row-open-label" className="shrink-0 text-[11px] font-semibold text-[#3654FF]">
+                <span data-testid="my-flow-row-open-label" className="shrink-0 text-xs font-semibold text-[var(--flowme-action)]">
                   {openActionLabel}
                 </span>
               ) : null}
             </span>
             {hasRowMeta ? (
-              <span data-flow-row-slot="meta" className="mt-1 flex flex-wrap items-center gap-1 text-xs font-semibold text-slate-500 sm:gap-1.5">
+              <span data-flow-row-slot="meta" className="mt-1 flex flex-wrap items-center gap-1 text-xs font-semibold text-[var(--flowme-text-secondary)] sm:gap-1.5">
                 {showDateMeta ? <span data-testid="my-flow-row-date-meta" className={options.hideDateMeta ? 'hidden sm:inline' : undefined}>{rowDateMeta}</span> : null}
                 {displayTimedSchedule ? <span data-testid="personal-draft-timed-meta">{displayTimedSchedule}</span> : null}
-                {displayTiming ? <span data-testid="my-flow-row-timing-chip" aria-label={timingAccessibilityLabel} title={timingAccessibilityLabel} className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-600">{displayTiming}</span> : null}
+                {displayTiming ? <span data-testid="my-flow-row-timing-chip" aria-label={timingAccessibilityLabel} title={timingAccessibilityLabel} className="rounded-[var(--flowme-radius-compact)] bg-[var(--flowme-surface-subtle)] px-1.5 py-0.5 text-xs text-[var(--flowme-text-secondary)]">{displayTiming}</span> : null}
                 {showSectionMeta ? <span data-testid="my-flow-row-section-label">{displaySection}</span> : null}
-              {showFlowChip ? <span data-testid="my-flow-row-flow-chip" className="max-w-full truncate rounded bg-[#F3F1EC] px-1.5 py-0.5 text-[10px] text-[#5C5952]">{flowChipLabel}</span> : null}
-              {showProgressMeta ? <span data-testid="my-flow-row-progress-chip" className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-600">{flowProgressLabel}</span> : null}
+              {showFlowChip ? <span data-testid="my-flow-row-flow-chip" className="max-w-full truncate rounded-[var(--flowme-radius-compact)] bg-[var(--flowme-surface-subtle)] px-1.5 py-0.5 text-xs text-[var(--flowme-text-secondary)]">{flowChipLabel}</span> : null}
+              {showProgressMeta ? <span data-testid="my-flow-row-progress-chip" className="rounded-[var(--flowme-radius-compact)] bg-[var(--flowme-surface-subtle)] px-1.5 py-0.5 text-xs text-[var(--flowme-text-secondary)]">{flowProgressLabel}</span> : null}
               {occurrenceStatusLabel ? (
                 <span
                   data-testid="personal-draft-occurrence-row-status"
-                  className={`rounded px-1.5 py-0.5 text-[10px] ${occurrenceExecutionState === 'held' ? 'bg-amber-50 text-amber-800' : 'bg-slate-100 text-slate-600'}`}
+                  className={`rounded-[var(--flowme-radius-compact)] px-1.5 py-0.5 text-xs ${occurrenceExecutionState === 'held' ? 'bg-[var(--flowme-warning-soft)] text-[var(--flowme-warning-strong)]' : 'bg-[var(--flowme-surface-subtle)] text-[var(--flowme-text-secondary)]'}`}
                 >
                   {occurrenceStatusLabel}
                 </span>
               ) : null}
               {options.routineStatusInMeta && isRoutineExecution ? (
-                <span data-testid="my-flow-routine-progress-pill" className="rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-black text-emerald-700">
+                <span data-testid="my-flow-routine-progress-pill" className="rounded-[var(--flowme-radius-compact)] bg-[var(--flowme-positive-soft)] px-1.5 py-0.5 text-xs font-black text-[var(--flowme-positive-strong)]">
                   {routineProgressLabel}
                 </span>
               ) : null}
               </span>
             ) : null}
-            {!options.compact && !options.hideTimingMeta && row.timing ? <span className="mt-1 block text-xs text-slate-500">{formatMyFlowTimingChip(row.timing)}</span> : null}
+            {!options.compact && !options.hideTimingMeta && row.timing ? <span className="mt-1 block text-xs text-[var(--flowme-text-secondary)]">{formatMyFlowTimingChip(row.timing)}</span> : null}
           </span>
         </button>
         {options.hideExecutionNoteAction === false ? renderMyFlowExecutionNoteButton(row) : null}
         {isRoutineExecution && !options.routineStatusInMeta ? (
-          <span data-testid="my-flow-routine-progress-pill" className="shrink-0 rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-black text-emerald-700">
+          <span data-testid="my-flow-routine-progress-pill" className="shrink-0 rounded-[var(--flowme-radius-compact)] bg-[var(--flowme-positive-soft)] px-1.5 py-0.5 text-xs font-black text-[var(--flowme-positive-strong)]">
             {routineProgressLabel}
           </span>
         ) : null}
@@ -15576,7 +15576,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
               data-testid="my-flow-routine-icon"
               data-routine-icon-kind={routine.iconKind}
               data-routine-extra={routineIndex > 0 ? 'true' : undefined}
-              className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-transparent leading-none shadow-none ring-0 hover:bg-slate-50 hover:ring-1 hover:ring-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-300 ${routine.key === myFlowActiveRowKey ? 'my-flow-calendar-active-routine bg-blue-50 shadow-sm ring-2 ring-blue-500' : ''}`}
+              className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-transparent leading-none shadow-none ring-0 hover:bg-[var(--flowme-surface-subtle)] hover:ring-1 hover:ring-[var(--flowme-border)] focus:outline-none focus:ring-2 focus:ring-[var(--flowme-focus)] ${routine.key === myFlowActiveRowKey ? 'my-flow-calendar-active-routine bg-[var(--flowme-action-soft)] ring-2 ring-[var(--flowme-action)]' : ''}`}
               style={{ color: routine.color }}
               onClick={(event) => {
                 event.stopPropagation();
@@ -15590,7 +15590,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
             <button
               type="button"
               aria-label={`${info.event.startStr} 루틴 ${hiddenCount}개 더 보기`}
-              className="inline-flex h-7 min-w-[11px] shrink-0 items-center justify-center rounded-md bg-slate-100 px-0 text-[8px] font-black text-slate-600 ring-1 ring-slate-200 hover:ring-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-300 sm:min-w-7 sm:px-0.5 sm:text-[10px]"
+              className="inline-flex h-7 w-3.5 min-w-0 shrink-0 items-center justify-center overflow-hidden rounded-[var(--flowme-radius-compact)] bg-[var(--flowme-surface-subtle)] px-0 text-xs font-black leading-none tracking-[-0.08em] text-[var(--flowme-text-secondary)] ring-1 ring-[var(--flowme-border)] hover:ring-[var(--flowme-action)] focus:outline-none focus:ring-2 focus:ring-[var(--flowme-focus)] sm:w-auto sm:min-w-7 sm:px-0.5 sm:tracking-normal"
               data-testid="my-flow-routine-overflow"
               onClick={(event) => {
                 event.stopPropagation();
@@ -15616,7 +15616,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
           role="button"
           tabIndex={0}
           aria-label={`${eventDate} 일정 ${hiddenCount}개 더 보기`}
-          className="block rounded-md bg-slate-100 px-0.5 py-0.5 text-[10px] font-black text-slate-600 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300"
+          className="block rounded-[var(--flowme-radius-compact)] bg-[var(--flowme-surface-subtle)] px-0.5 py-0.5 text-xs font-black text-[var(--flowme-text-secondary)] hover:bg-[var(--flowme-action-soft)] hover:text-[var(--flowme-action-strong)] focus:outline-none focus:ring-2 focus:ring-[var(--flowme-focus)]"
           onClick={(event) => {
             event.stopPropagation();
             selectOverflowDate();
@@ -15649,7 +15649,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
           role="button"
           tabIndex={0}
           aria-label={`${eventDate} Flow ${totalFlowCount}개 중 ${hiddenCount}개 더 보기${hiddenFlowTitles ? `: ${hiddenFlowTitles}` : ''}`}
-          className="block rounded-md bg-slate-100 px-0.5 py-0.5 text-[10px] font-black text-slate-600 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300"
+          className="block rounded-[var(--flowme-radius-compact)] bg-[var(--flowme-surface-subtle)] px-0.5 py-0.5 text-xs font-black text-[var(--flowme-text-secondary)] hover:bg-[var(--flowme-action-soft)] hover:text-[var(--flowme-action-strong)] focus:outline-none focus:ring-2 focus:ring-[var(--flowme-focus)]"
           onClick={(event) => {
             event.stopPropagation();
             selectOverflowDate();
@@ -15684,15 +15684,15 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
           data-testid="my-flow-calendar-schedule-rail"
           data-flow-marker-initial={flowMarkerInitial || 'F'}
           aria-hidden="true"
-          className="flex h-3 w-3 shrink-0 items-center justify-center rounded-[3px] text-[8px] font-black leading-none text-white"
-          style={{ backgroundColor: checked ? '#94A3B8' : color }}
+          className="flex h-4 w-4 shrink-0 items-center justify-center rounded-[3px] text-xs font-black leading-none text-white"
+          style={{ backgroundColor: checked ? 'var(--flowme-text-tertiary)' : color }}
         >
           {flowMarkerInitial || 'F'}
         </span>
         <span
           data-testid="my-flow-calendar-flow-label"
           title={flowMarkerTitle || scheduleLabel}
-          className={`truncate text-[10px] font-black leading-none ${checked ? 'text-slate-400 line-through' : 'text-slate-700'}`}
+          className={`truncate text-xs font-black leading-none ${checked ? 'text-[var(--flowme-text-tertiary)] line-through' : 'text-[var(--flowme-text)]'}`}
         >
           {scheduleLabel}
         </span>
@@ -15711,7 +15711,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
         tabIndex={selected ? 0 : -1}
         aria-pressed={selected}
         aria-label={`${formatMyFlowDisplayDate(dateStr, { includeWeekday: true })} 선택`}
-        className={`rounded px-0.5 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-blue-200 ${selected ? 'bg-blue-700 text-white shadow-sm' : 'text-slate-700 hover:bg-blue-50 hover:text-blue-700'}`}
+        className={`rounded px-0.5 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-[var(--flowme-focus)] ${selected ? 'bg-[var(--flowme-action)] text-white' : 'text-[var(--flowme-text)] hover:bg-[var(--flowme-action-soft)] hover:text-[var(--flowme-action-strong)]'}`}
         onClick={(event) => {
           event.stopPropagation();
           myFlowCalendarController.selectDateButton(dateStr);
@@ -22650,9 +22650,9 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
       {isCalendarSurface ? (
         <div className="mb-3 flex flex-wrap items-end justify-between gap-4 sm:mb-5">
           <div>
-            <p className="text-xs font-semibold text-blue-700">날짜별 실행</p>
-            <h1 className="mt-0.5 text-2xl font-semibold">캘린더</h1>
-            <p className="mt-1 hidden text-sm text-gray-600 sm:block">
+            <p className="text-xs font-semibold text-[var(--flowme-action)]">날짜별 실행</p>
+            <h1 className="mt-0.5 text-[1.75rem] font-semibold leading-9 tracking-[-0.02em] text-[var(--flowme-text)] sm:text-3xl">캘린더</h1>
+            <p className="mt-1 hidden text-sm text-[var(--flowme-text-secondary)] sm:block">
               언제 할지 정해진 항목을 날짜별로 확인합니다.
             </p>
           </div>
@@ -22677,16 +22677,16 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
       {isCalendarSurface && workspaceSavedFlows.length === 0 && !showPostSavePanel && !showArchivedInventory ? (
         <section
           data-testid="my-flow-empty-state"
-          className="border-y border-slate-200 bg-slate-50/70 px-1 py-8 sm:px-6 sm:py-10"
+          className="rounded-[var(--flowme-radius-surface)] border border-[var(--flowme-border)] bg-[var(--flowme-surface)] px-4 py-8 sm:px-6 sm:py-10"
         >
-          <p className="text-sm font-semibold text-blue-700">날짜 항목 없음</p>
-          <h2 className="mt-2 break-keep text-2xl font-semibold text-slate-950">날짜가 있는 콘텐츠를 먼저 고르세요</h2>
-          <p className="mt-2 max-w-xl break-keep text-sm leading-6 text-slate-600">
+          <p className="text-sm font-semibold text-[var(--flowme-action)]">날짜 항목 없음</p>
+          <h2 className="mt-2 break-keep text-2xl font-semibold text-[var(--flowme-text)]">날짜가 있는 콘텐츠를 먼저 고르세요</h2>
+          <p className="mt-2 max-w-xl break-keep text-sm leading-6 text-[var(--flowme-text-secondary)]">
             언제 할지 정해진 항목을 날짜별로 확인합니다.
           </p>
           <div className="mt-5 flex flex-wrap gap-2">
             <Link
-              className="inline-flex min-h-11 w-full items-center justify-center rounded-md bg-blue-700 px-4 py-2 text-sm font-semibold text-white sm:w-auto"
+              className={`${FLOW_UI_PRIMARY_ACTION_CLASS} w-full sm:w-auto`}
               href="/flows"
             >
               콘텐츠 고르러 가기
@@ -26949,10 +26949,10 @@ export function PublicFlow({ slug }: { slug: string }) {
         className={compactJeonsePage ? 'my-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm md:p-4' : 'my-6 rounded-lg border border-slate-200 bg-white p-4 shadow-sm md:p-5'}
       >
         <div className={compactJeonsePage ? 'grid gap-3' : 'grid gap-4'}>
-          <div className={compactJeonsePage ? '' : 'rounded-lg border border-slate-200 bg-slate-50 p-4'}>
-            <p className="text-sm font-semibold text-blue-700">{getSetupStepTitle(bundle)}</p>
-            {!compactJeonsePage ? <p className="mt-1 text-sm text-slate-600">{getSetupStepDescription(bundle)}</p> : null}
-            <p className={compactJeonsePage ? 'mt-1 text-sm text-slate-600' : 'mt-1 text-sm text-slate-500'}>{getSetupStepHelp(bundle, publicQ3CopyEnabled)}</p>
+          <div className={compactJeonsePage ? '' : 'rounded-[var(--flowme-radius-card)] border border-[var(--flowme-border)] bg-[var(--flowme-surface-subtle)] p-4'}>
+            <p className="text-sm font-semibold text-[var(--flowme-action)]">{getSetupStepTitle(bundle)}</p>
+            {!compactJeonsePage ? <p className="mt-1 text-sm text-[var(--flowme-text-secondary)]">{getSetupStepDescription(bundle)}</p> : null}
+            <p className="mt-1 text-sm text-[var(--flowme-text-secondary)]">{getSetupStepHelp(bundle, publicQ3CopyEnabled)}</p>
             <div className={compactJeonsePage ? 'mt-4 max-w-3xl' : 'mt-4'}>
               <AnchorInput bundle={bundle} anchor={anchor} displayAnchor={displayAnchor} mode={anchorMode} onModeChange={changeAnchorMode} onChange={setAnchor} weekdays={weekdaySelection} onWeekdaysChange={setWeekdaySelection} routineDefinition={routineDefinition} onRoutineDefinitionChange={setRoutineDefinition} visualSubtractionEnabled={publicVisualSubtractionEnabled} q3CopyEnabled={publicQ3CopyEnabled} />
             </div>
@@ -26975,7 +26975,7 @@ export function PublicFlow({ slug }: { slug: string }) {
       data-p35-r8-resource-marker={bundle.flow.slug === 'overseas-safety-register'
         ? 'P35-R8B-RESOURCE-NOT-EXECUTION'
         : undefined}
-      className={`min-h-screen bg-[#F5F7F6] px-4 text-slate-950 md:px-8 ${publicMobileClearanceClass}`}
+      className={`min-h-screen bg-[var(--flowme-bg)] px-4 text-[var(--flowme-text)] md:px-8 ${publicMobileClearanceClass}`}
     >
       <div className="mx-auto max-w-[1240px]">
         <PublicPlanShareShell

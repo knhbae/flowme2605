@@ -75,7 +75,7 @@ export function DateGroupedTodoList<Data = unknown>(
           aria-label={group.accessibleLabel}
           data-testid={`${testId}-group`}
           data-date-group={group.id}
-          className="grid grid-cols-[72px_minmax(0,1fr)] overflow-hidden rounded-2xl border border-[var(--flowme-border)] bg-[var(--flowme-surface)]"
+          className="grid grid-cols-[72px_minmax(0,1fr)] overflow-hidden rounded-[var(--flowme-radius-card)] border border-[var(--flowme-border)] bg-[var(--flowme-surface)]"
         >
           <div
             data-testid={`${testId}-date-rail`}
@@ -122,7 +122,7 @@ export function DateGroupedTodoList<Data = unknown>(
                       }
                       data-testid={checkboxTestId ?? `${testId}-checkbox`}
                       data-todo-checkbox="mutable"
-                      className="inline-flex h-12 w-12 min-h-12 min-w-12 items-center justify-center self-center rounded-xl text-xl font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] focus-visible:ring-inset"
+                      className="inline-flex h-12 w-12 min-h-12 min-w-12 items-center justify-center self-center rounded-[var(--flowme-radius-control)] text-xl font-semibold text-[var(--flowme-action)] hover:bg-[var(--flowme-action-soft)] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-action)]"
                       onClick={() => props.onToggleItem(row, !row.completed)}
                     >
                       <span aria-hidden="true">{row.completed ? '☑' : '□'}</span>
@@ -146,7 +146,7 @@ export function DateGroupedTodoList<Data = unknown>(
                     aria-label={`${row.title} 상세 보기`}
                     data-testid={detailLinkTestId ?? `${testId}-detail-link`}
                     data-todo-detail-link={row.id}
-                    className="flex min-h-16 min-w-0 items-center gap-2 rounded-xl px-2 py-2 text-left text-[var(--flowme-text)] no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] focus-visible:ring-inset"
+                    className="flex min-h-16 min-w-0 items-center gap-2 rounded-[var(--flowme-radius-control)] px-2 py-2 text-left text-[var(--flowme-text)] no-underline hover:bg-[var(--flowme-surface-subtle)] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-action)]"
                     onClick={(event) => openItem(event, row)}
                   >
                     <span className="min-w-0 flex-1">

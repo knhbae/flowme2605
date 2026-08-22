@@ -184,29 +184,29 @@ export function MyFlowRouteSurface<TFlow>({
       ) : (
         <div className="mb-5 flex flex-wrap items-end justify-between gap-4 sm:mb-8">
           <div>
-            <p className="text-sm font-medium text-gray-500">내 실행 공간</p>
+            <p className="text-sm font-medium text-[var(--flowme-text-secondary)]">내 실행 공간</p>
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="mt-1 text-2xl font-semibold sm:text-3xl">{copy.pageTitle}</h1>
+              <h1 className="mt-1 text-[1.75rem] font-semibold leading-9 tracking-[-0.02em] text-[var(--flowme-text)] sm:text-3xl">{copy.pageTitle}</h1>
               {header.demoLabel ? (
-                <span data-testid="my-flow-demo-badge" className="mt-1 rounded-md bg-amber-50 px-2 py-1 text-xs font-semibold text-amber-700">
+                <span data-testid="my-flow-demo-badge" className="mt-1 rounded-[var(--flowme-radius-compact)] bg-[var(--flowme-warning-soft)] px-2 py-1 text-xs font-semibold text-[var(--flowme-warning-strong)]">
                   {header.demoLabel}
                 </span>
               ) : null}
             </div>
-            <p className="mt-1 text-sm text-gray-600 sm:mt-2 sm:text-base">{header.subtitle}</p>
+            <p className="mt-1 text-sm text-[var(--flowme-text-secondary)] sm:mt-2 sm:text-base">{header.subtitle}</p>
           </div>
           <details className="group relative" data-testid="my-flow-auxiliary-menu">
             <summary
-              className="flex h-12 w-12 cursor-pointer list-none items-center justify-center rounded-md border border-gray-300 bg-white text-lg font-semibold text-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+              className="flex h-12 w-12 cursor-pointer list-none items-center justify-center rounded-[var(--flowme-radius-control)] border border-[var(--flowme-control-border)] bg-[var(--flowme-surface)] text-lg font-semibold text-[var(--flowme-text-secondary)] hover:border-[var(--flowme-action)] hover:bg-[var(--flowme-action-soft)] hover:text-[var(--flowme-text)]"
               aria-label={copy.q3Enabled ? '내 계획 보조 메뉴' : 'My Flow 보조 메뉴'}
               title="보조 메뉴"
             >
               <span aria-hidden="true">•••</span>
             </summary>
-            <div className="absolute right-0 z-40 mt-2 grid min-w-44 gap-2 rounded-md border border-[var(--flowme-border)] bg-white p-2 shadow-lg">
+            <div className="absolute right-0 z-40 mt-2 grid min-w-44 gap-1 rounded-[var(--flowme-radius-surface)] border border-[var(--flowme-border-strong)] bg-[var(--flowme-surface)] p-2 [box-shadow:var(--flowme-shadow-raised)]">
               {header.studioHref ? (
                 <Link
-                  className="inline-flex min-h-10 items-center rounded-md px-3 py-2 text-sm font-semibold text-gray-800 hover:bg-gray-50"
+                  className="inline-flex min-h-11 items-center rounded-[var(--flowme-radius-control)] px-3 py-2 text-sm font-semibold text-[var(--flowme-text)] hover:bg-[var(--flowme-surface-subtle)]"
                   data-testid="my-flow-studio-link"
                   href={header.studioHref}
                 >
@@ -223,17 +223,17 @@ export function MyFlowRouteSurface<TFlow>({
         <section
           data-testid="canonical-saved-copy-reconciliation"
           data-p33-marker="P33-EXPLICIT-DUPLICATE-RECONCILIATION"
-          className="mb-5 border-y border-amber-200 bg-amber-50/40 py-4"
+          className="mb-5 rounded-[var(--flowme-radius-surface)] border border-[var(--flowme-border-strong)] bg-[var(--flowme-warning-soft)] p-4"
           aria-labelledby="canonical-saved-copy-reconciliation-title"
         >
-          <div className="px-1">
-            <p className="text-xs font-semibold text-amber-800">
+          <div>
+            <p className="text-xs font-semibold text-[var(--flowme-warning-strong)]">
               {copy.q3Enabled ? '같은 원문에서 저장한 계획' : '같은 원문에서 저장한 Flow'}
             </p>
-            <h2 id="canonical-saved-copy-reconciliation-title" className="mt-1 text-lg font-semibold text-slate-950">
+            <h2 id="canonical-saved-copy-reconciliation-title" className="mt-1 text-lg font-semibold text-[var(--flowme-text)]">
               계속 사용할 사본을 골라 주세요
             </h2>
-            <p className="mt-1 max-w-2xl break-keep text-sm leading-6 text-slate-600">
+            <p className="mt-1 max-w-2xl break-keep text-sm leading-6 text-[var(--flowme-text-secondary)]">
               완료 기록과 개인 메모가 다른 사본은 자동으로 합치지 않습니다. 선택하지 않은 사본은 보관되며 나중에 다시 복구할 수 있습니다.
             </p>
           </div>
@@ -244,20 +244,20 @@ export function MyFlowRouteSurface<TFlow>({
                 data-testid="canonical-saved-copy-option"
                 data-copy-role={option.role}
                 data-flow-slug={option.originSlug}
-                className="rounded-md border border-amber-200 bg-white p-3"
+                className="rounded-[var(--flowme-radius-control)] border border-[var(--flowme-border-strong)] bg-[var(--flowme-surface)] p-3"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="text-xs font-semibold text-amber-800">
+                    <p className="text-xs font-semibold text-[var(--flowme-warning-strong)]">
                       {option.role === 'canonical' ? '전체판' : '기존 간단판'} · {option.itemCount}개
                     </p>
-                    <h3 className="mt-1 truncate text-sm font-semibold text-slate-950">{option.title}</h3>
-                    <p className="mt-1 text-xs text-slate-500">{option.savedDate} 저장</p>
+                    <h3 className="mt-1 truncate text-sm font-semibold text-[var(--flowme-text)]">{option.title}</h3>
+                    <p className="mt-1 text-xs text-[var(--flowme-text-secondary)]">{option.savedDate} 저장</p>
                   </div>
                   <button
                     type="button"
                     data-testid="canonical-saved-copy-select"
-                    className="min-h-12 shrink-0 rounded-md border border-amber-300 bg-white px-3 py-2 text-xs font-semibold text-amber-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                    className="min-h-12 shrink-0 rounded-[var(--flowme-radius-control)] border border-[var(--flowme-control-border)] bg-[var(--flowme-surface)] px-3 py-2 text-xs font-semibold text-[var(--flowme-warning-strong)] hover:border-[var(--flowme-warning)] hover:bg-[var(--flowme-warning-soft)]"
                     aria-label={`${option.title} ${option.itemCount}개 사본 계속 사용`}
                     onClick={() => actions.onChooseCopy(option.groupId, option.originSlug)}
                   >
@@ -274,14 +274,14 @@ export function MyFlowRouteSurface<TFlow>({
         <p
           data-testid="canonical-saved-copy-reconciliation-notice"
           role="status"
-          className="mb-4 rounded-md bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-800"
+          className="mb-4 rounded-[var(--flowme-radius-control)] border border-[var(--flowme-border)] bg-[var(--flowme-positive-soft)] px-3 py-2 text-sm font-semibold text-[var(--flowme-positive-strong)]"
         >
           {reconciliation.notice}
         </p>
       ) : null}
 
       {navigation.visible ? (
-        <nav className="mb-5 border-y border-slate-200 py-2" aria-label={copy.q3Enabled ? '내 계획 보기' : 'My Flow 보기'}>
+        <nav className="mb-5 border-y border-[var(--flowme-border)] py-2" aria-label={copy.q3Enabled ? '내 계획 보기' : 'My Flow 보기'}>
           <div
             role="tablist"
             aria-label={copy.q3Enabled ? '내 계획 보기' : 'My Flow 보기'}
@@ -296,7 +296,7 @@ export function MyFlowRouteSurface<TFlow>({
                 aria-selected={navigation.activeView === tab.id}
                 aria-controls={`my-flow-panel-${tab.id}`}
                 tabIndex={navigation.activeView === tab.id ? 0 : -1}
-                className={`min-h-12 rounded-md px-3 py-2 text-sm font-semibold ${navigation.activeView === tab.id ? FLOW_UI_SEGMENT_ACTIVE_CLASS : FLOW_UI_SEGMENT_IDLE_CLASS}`}
+                className={`min-h-12 rounded-[var(--flowme-radius-control)] px-3 py-2 text-sm font-semibold ${navigation.activeView === tab.id ? FLOW_UI_SEGMENT_ACTIVE_CLASS : FLOW_UI_SEGMENT_IDLE_CLASS}`}
                 data-testid={`my-flow-view-${tab.id}`}
                 onClick={() => actions.onSelectView(tab.id)}
                 onKeyDown={(event) => actions.onViewKeyDown(event, tab.id)}
@@ -312,7 +312,7 @@ export function MyFlowRouteSurface<TFlow>({
         <p
           data-testid="my-flow-save-undo-status"
           role="status"
-          className="mb-4 rounded-lg bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-800"
+          className="mb-4 rounded-[var(--flowme-radius-control)] border border-[var(--flowme-border)] bg-[var(--flowme-surface-subtle)] px-3 py-2 text-sm font-semibold text-[var(--flowme-text)]"
         >
           {model.saveUndoStatus}
         </p>
@@ -324,14 +324,14 @@ export function MyFlowRouteSurface<TFlow>({
           role="tabpanel"
           aria-labelledby={`my-flow-tab-${navigation.activeView}`}
           data-testid="my-flow-empty-state"
-          className="border-y border-slate-200 bg-slate-50/70 px-1 py-8 sm:px-6 sm:py-10"
+          className="rounded-[var(--flowme-radius-surface)] border border-[var(--flowme-border)] bg-[var(--flowme-surface)] px-4 py-8 sm:px-6 sm:py-10"
         >
-          <p className="text-sm font-semibold text-blue-700">{copy.listTitle}</p>
-          <h2 className="mt-2 break-keep text-2xl font-semibold text-slate-950">{empty.title}</h2>
-          <p className="mt-2 max-w-xl break-keep text-sm leading-6 text-slate-600">{empty.description}</p>
+          <p className="text-sm font-semibold text-[var(--flowme-action)]">{copy.listTitle}</p>
+          <h2 className="mt-2 break-keep text-2xl font-semibold text-[var(--flowme-text)]">{empty.title}</h2>
+          <p className="mt-2 max-w-xl break-keep text-sm leading-6 text-[var(--flowme-text-secondary)]">{empty.description}</p>
           <div className="mt-5 flex flex-wrap gap-2">
             <Link
-              className="inline-flex min-h-12 w-full items-center justify-center rounded-md bg-blue-700 px-4 py-2 text-sm font-semibold text-white sm:w-auto"
+              className="inline-flex min-h-12 w-full items-center justify-center rounded-[var(--flowme-radius-control)] bg-[var(--flowme-action)] px-4 py-2 text-sm font-semibold text-white hover:bg-[var(--flowme-action-hover)] sm:w-auto"
               href="/flows"
               data-testid="my-flow-empty-discovery"
               data-action-role="discover-public-flow"
@@ -342,7 +342,7 @@ export function MyFlowRouteSurface<TFlow>({
               <button
                 type="button"
                 data-testid="my-flow-open-archived"
-                className="inline-flex min-h-12 w-full items-center justify-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 sm:w-auto"
+                className="inline-flex min-h-12 w-full items-center justify-center rounded-[var(--flowme-radius-control)] border border-[var(--flowme-control-border)] bg-[var(--flowme-surface)] px-4 py-2 text-sm font-semibold text-[var(--flowme-text)] hover:bg-[var(--flowme-surface-subtle)] sm:w-auto"
                 onClick={actions.onShowArchived}
               >
                 {copy.q3Enabled ? '보관한 계획' : '보관된 Flow'} {empty.archivedCount}개 보기
@@ -364,36 +364,36 @@ export function MyFlowRouteSurface<TFlow>({
               className={`mb-4 grid gap-4 ${workspace.showSidebar ? 'lg:grid-cols-[210px_minmax(0,1fr)]' : ''}`}
             >
               {workspace.showSidebar ? (
-                <aside data-testid="my-flow-list" className="hidden max-h-[calc(100vh-2rem)] self-start overflow-y-auto rounded-lg border border-slate-200 bg-white p-3 shadow-sm lg:sticky lg:top-4 lg:block">
+                <aside data-testid="my-flow-list" className="hidden max-h-[calc(100vh-2rem)] self-start overflow-y-auto rounded-[var(--flowme-radius-surface)] border border-[var(--flowme-border)] bg-[var(--flowme-surface)] p-3 lg:sticky lg:top-4 lg:block">
                   <div className="mb-3 flex items-center justify-between gap-3">
                     <div>
-                      <p className="text-xs font-semibold uppercase text-slate-500">실행 목록</p>
-                      <h3 className="text-base font-semibold text-slate-950">{copy.listTitle}</h3>
+                      <p className="text-xs font-semibold uppercase text-[var(--flowme-text-secondary)]">실행 목록</p>
+                      <h3 className="text-base font-semibold text-[var(--flowme-text)]">{copy.listTitle}</h3>
                     </div>
-                    <p className="rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">{workspace.allEntries.length}개</p>
+                    <p className="rounded-[var(--flowme-radius-compact)] bg-[var(--flowme-surface-subtle)] px-2 py-1 text-xs font-semibold text-[var(--flowme-text-secondary)]">{workspace.allEntries.length}개</p>
                   </div>
                   <div className="grid gap-2">
                     <button
-                      className={`min-h-12 rounded-md border px-3 py-3 text-left ${workspace.selectedSlug === 'all' ? 'border-blue-600 bg-blue-50 text-blue-950' : 'border-slate-200 bg-white text-slate-800 hover:border-blue-200 hover:bg-blue-50'}`}
+                      className={`min-h-12 rounded-[var(--flowme-radius-control)] border px-3 py-3 text-left ${workspace.selectedSlug === 'all' ? 'border-[var(--flowme-text)] bg-[var(--flowme-text)] text-white' : 'border-[var(--flowme-border)] bg-[var(--flowme-surface)] text-[var(--flowme-text)] hover:border-[var(--flowme-action)] hover:bg-[var(--flowme-action-soft)]'}`}
                       type="button"
                       aria-pressed={workspace.selectedSlug === 'all'}
                       data-testid="my-flow-filter-all"
                       onClick={() => actions.onSelectFlow('all')}
                     >
                       <span className="block text-sm font-semibold">{copy.q3Enabled ? '모든 계획' : '모든 Flow'}</span>
-                      <span className="mt-1 block text-xs font-semibold text-blue-700">{workspace.allEntries.length}개 저장</span>
+                      <span className={`mt-1 block text-xs font-semibold ${workspace.selectedSlug === 'all' ? 'text-white/80' : 'text-[var(--flowme-action)]'}`}>{workspace.allEntries.length}개 저장</span>
                     </button>
                     {workspace.allEntries.map((entry) => (
                       <button
                         key={entry.key}
-                        className={`min-h-12 rounded-md border px-3 py-3 text-left ${workspace.selectedSlug === entry.slug ? 'border-blue-600 bg-blue-50 text-blue-950' : 'border-slate-200 bg-white text-slate-800 hover:border-blue-200 hover:bg-blue-50'}`}
+                        className={`min-h-12 rounded-[var(--flowme-radius-control)] border px-3 py-3 text-left ${workspace.selectedSlug === entry.slug ? 'border-[var(--flowme-text)] bg-[var(--flowme-text)] text-white' : 'border-[var(--flowme-border)] bg-[var(--flowme-surface)] text-[var(--flowme-text)] hover:border-[var(--flowme-action)] hover:bg-[var(--flowme-action-soft)]'}`}
                         type="button"
                         aria-pressed={workspace.selectedSlug === entry.slug}
                         data-testid={`my-flow-filter-${entry.slug}`}
                         onClick={() => actions.onSelectFlow(entry.slug)}
                       >
                         <span className="block text-sm font-semibold">{entry.title}</span>
-                        <span className="mt-1 block text-xs font-semibold text-blue-700">{entry.progressLabel}</span>
+                        <span className={`mt-1 block text-xs font-semibold ${workspace.selectedSlug === entry.slug ? 'text-white/80' : 'text-[var(--flowme-action)]'}`}>{entry.progressLabel}</span>
                       </button>
                     ))}
                   </div>
@@ -401,15 +401,15 @@ export function MyFlowRouteSurface<TFlow>({
               ) : null}
               <div className="min-w-0">
                 {workspace.showWorkspaceControls ? (
-                  <div className="mb-5 border-y border-slate-200 py-3 sm:flex sm:items-end sm:justify-between sm:gap-3">
+                  <div className="mb-5 border-y border-[var(--flowme-border)] py-3 sm:flex sm:items-end sm:justify-between sm:gap-3">
                     {workspace.showScopeControl ? (
                       <div className={`min-w-0 sm:w-72 ${workspace.showSidebar ? 'lg:hidden' : ''}`}>
-                        <label className="mb-1 block text-xs font-semibold text-slate-500" htmlFor="my-flow-scope">
+                        <label className="mb-1 block text-xs font-semibold text-[var(--flowme-text-secondary)]" htmlFor="my-flow-scope">
                           {copy.sectionTitle}
                         </label>
                         <select
                           id="my-flow-scope"
-                          className="min-h-12 w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-900 outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                          className="min-h-12 w-full rounded-[var(--flowme-radius-control)] border border-[var(--flowme-control-border)] bg-[var(--flowme-surface)] px-3 py-2 text-sm font-semibold text-[var(--flowme-text)]"
                           value={workspace.selectedSlug}
                           data-testid="my-flow-scope-select"
                           onChange={(event) => actions.onSelectFlow(event.target.value)}
@@ -439,12 +439,12 @@ export function MyFlowRouteSurface<TFlow>({
                     {renderers.renderCompactToday()}
                     {renderers.renderSaveBanner()}
                     {!panel.focused ? (
-                      <header data-testid="my-flow-library-heading" tabIndex={-1} className="flex items-center justify-between gap-3 border-b border-slate-200 pb-3 md:hidden">
+                      <header data-testid="my-flow-library-heading" tabIndex={-1} className="flex items-center justify-between gap-3 border-b border-[var(--flowme-border)] pb-3 md:hidden">
                         <div>
-                          <h2 className="text-xl font-semibold text-slate-950">{copy.sectionTitle}</h2>
+                          <h2 className="text-xl font-semibold text-[var(--flowme-text)]">{copy.sectionTitle}</h2>
                         </div>
                         <div className="flex shrink-0 items-center gap-2">
-                          <span data-testid="my-flow-saved-count" className="text-xs font-semibold text-slate-500">
+                          <span data-testid="my-flow-saved-count" className="text-xs font-semibold text-[var(--flowme-text-secondary)]">
                             {panel.flowCount}개
                           </span>
                           <MyFlowSortMenu
@@ -470,7 +470,7 @@ export function MyFlowRouteSurface<TFlow>({
                         data-workspace-breakpoints={panel.savedPlanLibraryEnabled ? 'mobile:0-767;stacked:768-1023;desktop-compact:1024-1279;desktop-full:1280+' : undefined}
                         data-compact-inspector-layout={panel.savedPlanLibraryEnabled ? 'stacked-in-main' : undefined}
                         data-full-inspector-layout={panel.savedPlanLibraryEnabled ? 'third-column' : undefined}
-                        className={`hidden min-w-0 gap-0 border-y border-[var(--flowme-border)] bg-white md:grid ${panel.savedPlanLibraryEnabled
+                        className={`hidden min-w-0 gap-0 overflow-hidden rounded-[var(--flowme-radius-surface)] border border-[var(--flowme-border)] bg-[var(--flowme-surface)] md:grid ${panel.savedPlanLibraryEnabled
                           ? library.selectedEntry
                             ? 'md:grid-cols-1 lg:grid-cols-[minmax(16rem,28%)_minmax(0,1fr)] xl:grid-cols-[minmax(14rem,20%)_minmax(0,1fr)] lg:[&_[data-workspace-layout=library-execution-inspector]]:!grid-cols-1 xl:[&_[data-workspace-layout=library-execution-inspector]]:!grid-cols-[minmax(0,1fr)_minmax(18rem,20rem)]'
                             : 'md:grid-cols-1'
@@ -488,7 +488,7 @@ export function MyFlowRouteSurface<TFlow>({
                               <button
                                 type="button"
                                 data-testid="my-flow-library-back"
-                                className="mb-3 inline-flex min-h-12 items-center gap-1 rounded-md px-2 text-xs font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                                className="mb-3 inline-flex min-h-12 items-center gap-1 rounded-[var(--flowme-radius-control)] px-2 text-xs font-semibold text-[var(--flowme-action)] hover:bg-[var(--flowme-action-soft)]"
                                 aria-label={copy.q3Enabled ? '전체 내 계획 보기로 돌아가기' : '전체 My Flow 보기로 돌아가기'}
                                 onClick={actions.onReturnToLibrary}
                               >
@@ -513,7 +513,7 @@ export function MyFlowRouteSurface<TFlow>({
                             </div>
                             {library.controls.search ? (
                               <input
-                                className="mt-3 min-h-12 w-full rounded-md border border-[var(--flowme-border-strong)] bg-white px-3 py-2 text-sm text-[var(--flowme-text)] outline-none focus:border-[var(--flowme-action)] focus:ring-2 focus:ring-[var(--flowme-focus)]"
+                                className="mt-3 min-h-12 w-full rounded-[var(--flowme-radius-control)] border border-[var(--flowme-control-border)] bg-[var(--flowme-surface)] px-3 py-2 text-sm text-[var(--flowme-text)]"
                                 type="search"
                                 placeholder={copy.searchPlaceholder}
                                 aria-label={copy.searchAccessibleName}
@@ -527,12 +527,12 @@ export function MyFlowRouteSurface<TFlow>({
                               />
                             ) : null}
                             {library.controls.filters ? (
-                              <label className="mt-2 block text-[11px] font-semibold text-[var(--flowme-text-secondary)]">
+                              <label className="mt-2 block text-xs font-semibold text-[var(--flowme-text-secondary)]">
                                 상태
                                 <select
                                   data-testid="my-flow-library-rail-filter"
                                   data-p35-r10-marker="P35-R10-LIBRARY-FILTER-ONE-AXIS"
-                                  className="mt-1 min-h-12 w-full rounded-md border border-[var(--flowme-border)] bg-white px-3 text-sm font-semibold text-[var(--flowme-text)]"
+                                  className="mt-1 min-h-12 w-full rounded-[var(--flowme-radius-control)] border border-[var(--flowme-control-border)] bg-[var(--flowme-surface)] px-3 text-sm font-semibold text-[var(--flowme-text)]"
                                   value={library.filter}
                                   onChange={(event) => actions.onFilterChange(
                                     event.target.value as MyFlowLibraryFilter,
@@ -584,11 +584,11 @@ export function MyFlowRouteSurface<TFlow>({
                           <section
                             ref={library.controlsRef}
                             data-testid="my-flow-library-controls"
-                            className="grid gap-2 border-y border-slate-200 py-2"
+                            className="grid gap-2 border-y border-[var(--flowme-border)] py-2"
                           >
                             {library.controls.search ? (
                               <input
-                                className="min-h-12 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-900 outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                                className="min-h-12 rounded-[var(--flowme-radius-control)] border border-[var(--flowme-control-border)] bg-[var(--flowme-surface)] px-3 py-2 text-sm font-semibold text-[var(--flowme-text)]"
                                 type="search"
                                 placeholder={copy.searchPlaceholder}
                                 aria-label={copy.searchAccessibleName}
@@ -611,7 +611,7 @@ export function MyFlowRouteSurface<TFlow>({
                                 {library.filterOptions.map((option) => (
                                   <button
                                     key={option.id}
-                                    className={`min-h-12 rounded-md px-2.5 py-1.5 text-xs font-semibold ${library.filter === option.id ? 'bg-blue-700 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
+                                    className={`min-h-12 rounded-[var(--flowme-radius-control)] px-2.5 py-1.5 text-xs font-semibold ${library.filter === option.id ? 'bg-[var(--flowme-text)] text-white' : 'bg-[var(--flowme-surface-subtle)] text-[var(--flowme-text-secondary)] hover:bg-[var(--flowme-action-soft)] hover:text-[var(--flowme-text)]'}`}
                                     type="button"
                                     aria-pressed={library.filter === option.id}
                                     data-testid={`my-flow-list-filter-${option.id}`}
@@ -629,11 +629,11 @@ export function MyFlowRouteSurface<TFlow>({
                           </section>
                         ) : null}
                         {library.visibleEntries.length > 0 ? (
-                          <div className="overflow-hidden rounded-md border-y border-[var(--flowme-border)]" data-p29-marker="P29-MY-FLOW-ACTION-FIRST">
+                          <div className="overflow-hidden rounded-[var(--flowme-radius-surface)] border border-[var(--flowme-border)]" data-p29-marker="P29-MY-FLOW-ACTION-FIRST">
                             {library.mobileEntries.map((entry) => renderers.renderMobileLibraryRow(entry.value))}
                           </div>
                         ) : (
-                          <p className="mt-3 rounded-md bg-slate-50 px-3 py-3 text-sm text-slate-600">
+                          <p className="mt-3 rounded-[var(--flowme-radius-control)] border border-[var(--flowme-border)] bg-[var(--flowme-surface-subtle)] px-3 py-3 text-sm text-[var(--flowme-text-secondary)]">
                             {copy.q3Enabled ? '조건에 맞는 계획이 없습니다.' : '조건에 맞는 Flow가 없습니다.'}
                           </p>
                         )}
@@ -641,7 +641,7 @@ export function MyFlowRouteSurface<TFlow>({
                           <button
                             type="button"
                             data-testid="my-flow-mobile-inventory-open"
-                            className="min-h-12 w-full rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-left text-sm font-semibold text-blue-800"
+                            className="min-h-12 w-full rounded-[var(--flowme-radius-control)] border border-[var(--flowme-action)] bg-[var(--flowme-action-soft)] px-4 py-3 text-left text-sm font-semibold text-[var(--flowme-action)] hover:bg-[var(--flowme-surface-selected)]"
                             aria-expanded={library.mobileInventoryExpanded}
                             onClick={actions.onExpandMobileInventory}
                           >

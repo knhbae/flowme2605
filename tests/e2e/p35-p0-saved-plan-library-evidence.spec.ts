@@ -132,7 +132,7 @@ async function expectMobileNavPainted(page: Page) {
     href: '/my',
     active: true,
     color: 'rgb(255, 255, 255)',
-    backgroundColor: 'rgb(27, 26, 23)',
+    backgroundColor: 'rgb(23, 24, 19)',
   });
 }
 

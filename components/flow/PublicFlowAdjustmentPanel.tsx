@@ -267,9 +267,9 @@ function ResultSummary({
   return (
     <div
       data-testid={adjusted ? 'public-flow-adjustment-result-after' : 'public-flow-adjustment-result-before'}
-      className={adjusted ? 'min-w-0 bg-[var(--flowme-action-soft)] px-3 py-3' : 'min-w-0 px-3 py-3'}
+      className={adjusted ? 'min-w-0 bg-[var(--flowme-action-soft)] px-3 py-3.5' : 'min-w-0 px-3 py-3.5'}
     >
-      <p className="text-[10px] font-semibold text-[var(--flowme-text-tertiary)]">{label}</p>
+      <p className="text-xs font-semibold text-[var(--flowme-text-secondary)]">{label}</p>
       <p className="mt-1 break-keep text-sm font-semibold text-[var(--flowme-text)]">{value.title}</p>
       <p className="mt-1 text-xs font-semibold text-[var(--flowme-text-secondary)]">
         {value.itemCount}개 · {value.resultSummary}
@@ -369,15 +369,15 @@ export function PublicFlowAdjustmentPanel({
             data-testid={`public-flow-adjustment-kind-${option.kind}`}
             aria-pressed={kind === option.kind}
             aria-controls="public-flow-adjustment-active-panel"
-            className={`min-h-14 rounded-md border px-3 py-2 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${
+            className={`min-h-14 rounded-[var(--flowme-radius-control)] border px-3 py-2 text-left transition ${
               kind === option.kind
                 ? 'border-[var(--flowme-action)] bg-[var(--flowme-action-soft)] text-[var(--flowme-action)]'
-                : 'border-[var(--flowme-border)] bg-white text-[var(--flowme-text)] hover:border-[var(--flowme-border-strong)]'
+                : 'border-[var(--flowme-control-border)] bg-[var(--flowme-surface)] text-[var(--flowme-text)] hover:border-[var(--flowme-action)] hover:bg-[var(--flowme-surface-subtle)]'
             }`}
             onClick={() => onKindChange(option.kind)}
           >
             <span className="block text-xs font-bold">{option.label}</span>
-            <span className="mt-0.5 block text-[11px] font-medium text-[var(--flowme-text-secondary)]">
+            <span className="mt-0.5 block text-xs font-medium text-[var(--flowme-text-secondary)]">
               {option.summary}
             </span>
           </button>
@@ -386,7 +386,7 @@ export function PublicFlowAdjustmentPanel({
 
       <div
         data-testid="public-flow-adjustment-comparison"
-        className="mt-4 grid grid-cols-2 divide-x divide-[var(--flowme-border)] border-y border-[var(--flowme-border)] bg-white"
+        className="mt-4 grid grid-cols-2 overflow-hidden rounded-[var(--flowme-radius-card)] border border-[var(--flowme-border)] bg-[var(--flowme-surface)] divide-x divide-[var(--flowme-border)]"
       >
         <ResultSummary label="현재" value={currentResult} />
         <ResultSummary label="조정 후" value={adjustedResult} adjusted />
@@ -447,7 +447,7 @@ export function PublicFlowAdjustmentPanel({
               data-editor-field="plan-items"
               data-flow-editor-scroll-key="public-plan-items"
               tabIndex={-1}
-              className="max-h-[min(58vh,32rem)] overflow-y-auto border-y border-[var(--flowme-border)] bg-white"
+              className="max-h-[min(58vh,32rem)] overflow-y-auto rounded-[var(--flowme-radius-card)] border border-[var(--flowme-border)] bg-[var(--flowme-surface)]"
             >
               {items.map((item) => (
               <div
@@ -489,7 +489,7 @@ export function PublicFlowAdjustmentPanel({
                     type="button"
                     data-testid="public-flow-adjustment-item-edit"
                     data-item-id={item.id}
-                    className="min-w-0 rounded-md px-1 py-1 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                    className="min-h-11 min-w-0 rounded-[var(--flowme-radius-control)] px-1 py-1 text-left transition hover:bg-[var(--flowme-surface-subtle)]"
                     aria-label={`${item.title} 수정`}
                     onClick={(event) => onItemEdit(
                       item,
@@ -499,7 +499,7 @@ export function PublicFlowAdjustmentPanel({
                     <span className="block break-keep text-sm font-semibold leading-5 text-[var(--flowme-text)]">
                       {item.title}
                     </span>
-                    <span className="mt-0.5 block text-[11px] font-medium text-[var(--flowme-text-secondary)]">
+                    <span className="mt-0.5 block text-xs font-medium text-[var(--flowme-text-secondary)]">
                       {item.dateLabel}
                     </span>
                   </button>
@@ -508,12 +508,12 @@ export function PublicFlowAdjustmentPanel({
                     <span className="block break-keep text-sm font-semibold leading-5 text-[var(--flowme-text)]">
                       {item.title}
                     </span>
-                    <span className="mt-0.5 block text-[11px] font-medium text-[var(--flowme-text-secondary)]">
+                    <span className="mt-0.5 block text-xs font-medium text-[var(--flowme-text-secondary)]">
                       {item.dateLabel}
                     </span>
                   </div>
                 )}
-                <label className="flex min-h-10 items-center gap-1.5 text-xs font-semibold text-[var(--flowme-text-secondary)]">
+                <label className="flex min-h-11 items-center gap-1.5 text-xs font-semibold text-[var(--flowme-text-secondary)]">
                   <span>포함</span>
                   <input
                     type="checkbox"
@@ -562,7 +562,7 @@ export function PublicFlowAdjustmentPanel({
         >원문 보기</a>
       ) : null}
 
-      {!transaction ? <div className="sticky bottom-0 z-30 mt-5 flex justify-end gap-2 border-t border-[var(--flowme-border)] bg-white/95 py-3 backdrop-blur">
+      {!transaction ? <div className="sticky bottom-0 z-30 mt-5 flex justify-end gap-2 border-t border-[var(--flowme-border)] bg-[var(--flowme-surface)] py-3">
         {!approvedPlanExecution ? <button
           type="button"
           data-testid="public-flow-adjustment-cancel"

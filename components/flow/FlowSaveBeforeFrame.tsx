@@ -76,7 +76,7 @@ export function FlowSaveBeforeFrame({
       data-p30-marker="P30-SAVE-BEFORE-SINGLE-DECISION"
       data-p35-marker="P35-PUBLIC-RESULT-FIRST"
       data-flow-anatomy="save-before"
-        className="min-h-[calc(100dvh-5rem)] border-y border-[var(--flowme-border-strong)] py-5 sm:min-h-0 sm:py-7"
+        className="min-h-[calc(100dvh-5rem)] rounded-[var(--flowme-radius-card)] border border-[var(--flowme-border)] bg-[var(--flowme-surface)] px-4 py-5 sm:min-h-0 sm:px-5 sm:py-7"
       >
         <FlowArtifactSummary
           eyebrow={displayEyebrow}
@@ -140,7 +140,7 @@ export function FlowSaveBeforeFrame({
       data-visual-structure="artifact-first"
       data-experience-architecture="hybrid"
       data-p30-marker="P30-LEGACY-COMPOSITION-ACTIVE"
-      className="border-y border-[var(--flowme-border-strong)] py-5 sm:py-7"
+      className="rounded-[var(--flowme-radius-card)] border border-[var(--flowme-border)] bg-[var(--flowme-surface)] px-4 py-5 sm:px-5 sm:py-7"
     >
       <FlowArtifactSummary
         eyebrow={displayEyebrow}
@@ -161,7 +161,7 @@ export function FlowSaveBeforeFrame({
         <section
           data-testid={previewTestId}
           aria-label={q3CopyEnabled ? '저장될 계획 요약' : '저장될 Flow 요약'}
-          className="min-w-0 border-y border-[var(--flowme-border)] bg-[var(--flowme-surface)]"
+          className="min-w-0 rounded-[var(--flowme-radius-card)] border border-[var(--flowme-border)] bg-[var(--flowme-surface)]"
         >
           <div className="flex items-center justify-between gap-3 px-1 py-2.5">
             <p className="text-xs font-semibold text-[var(--flowme-text-secondary)]">
@@ -178,18 +178,18 @@ export function FlowSaveBeforeFrame({
                 data-flow-item-id={row.id}
                 className={`grid min-w-0 gap-2.5 border-t border-[var(--flowme-border)] px-1 py-2.5 ${onAdjustRow ? 'grid-cols-[2rem_minmax(0,1fr)_auto]' : 'grid-cols-[2rem_minmax(0,1fr)]'}`}
               >
-                <span className="flex h-7 w-7 items-center justify-center rounded-md bg-[var(--flowme-action-soft)] text-[11px] font-semibold text-[var(--flowme-action)]" aria-hidden="true">
+                <span className="flex h-7 w-7 items-center justify-center rounded-[var(--flowme-radius-control)] bg-[var(--flowme-action-soft)] text-xs font-semibold text-[var(--flowme-action)]" aria-hidden="true">
                   {index + 1}
                 </span>
                 <span className="min-w-0">
-                  {row.timing ? <span className="block text-[11px] font-semibold text-[var(--flowme-text-secondary)]">{row.timing}</span> : null}
+                  {row.timing ? <span className="block text-xs font-semibold text-[var(--flowme-text-secondary)]">{row.timing}</span> : null}
                   <span className="block break-keep text-sm font-semibold leading-5 text-[var(--flowme-text)]">{row.title}</span>
                   {row.summary ? <span className="mt-0.5 line-clamp-1 block text-xs leading-5 text-[var(--flowme-text-secondary)]">{row.summary}</span> : null}
                 </span>
                 {onAdjustRow ? (
                   <button
                     type="button"
-                    className="min-h-9 self-center rounded-md border border-[var(--flowme-border)] bg-white px-2.5 text-xs font-semibold text-[var(--flowme-text-secondary)] hover:border-[var(--flowme-action)] hover:text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                    className="min-h-11 self-center rounded-[var(--flowme-radius-control)] border border-[var(--flowme-control-border)] bg-[var(--flowme-surface)] px-2.5 text-xs font-semibold text-[var(--flowme-text-secondary)] transition hover:border-[var(--flowme-action)] hover:text-[var(--flowme-action)]"
                     aria-label={`${row.title} 제목·날짜·메모 수정`}
                     onClick={() => onAdjustRow(row.id)}
                   >
@@ -203,7 +203,7 @@ export function FlowSaveBeforeFrame({
             <details data-testid={`${previewTestId}-full-outline`} className="border-t border-[var(--flowme-border)]">
               <summary
                 data-testid={`${previewTestId}-expand`}
-                className="flex min-h-10 cursor-pointer list-none items-center justify-between gap-3 px-1 text-xs font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]"
+                className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 px-2 text-xs font-semibold text-[var(--flowme-action)] transition hover:bg-[var(--flowme-action-soft)]"
               >
                 <span>외 {remainingCount}개 전체 보기</span>
                 <span aria-hidden="true">⌄</span>
@@ -217,18 +217,18 @@ export function FlowSaveBeforeFrame({
                     data-flow-item-id={row.id}
                     className={`grid min-w-0 gap-2.5 border-t border-[var(--flowme-border)] px-1 py-2.5 ${onAdjustRow ? 'grid-cols-[2rem_minmax(0,1fr)_auto]' : 'grid-cols-[2rem_minmax(0,1fr)]'}`}
                   >
-                    <span className="flex h-7 w-7 items-center justify-center rounded-md bg-[var(--flowme-action-soft)] text-[11px] font-semibold text-[var(--flowme-action)]" aria-hidden="true">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-[var(--flowme-radius-control)] bg-[var(--flowme-action-soft)] text-xs font-semibold text-[var(--flowme-action)]" aria-hidden="true">
                       {rows.length + index + 1}
                     </span>
                     <span className="min-w-0">
-                      {row.timing ? <span className="block text-[11px] font-semibold text-[var(--flowme-text-secondary)]">{row.timing}</span> : null}
+                      {row.timing ? <span className="block text-xs font-semibold text-[var(--flowme-text-secondary)]">{row.timing}</span> : null}
                       <span className="block break-keep text-sm font-semibold leading-5 text-[var(--flowme-text)]">{row.title}</span>
                       {row.summary ? <span className="mt-0.5 line-clamp-1 block text-xs leading-5 text-[var(--flowme-text-secondary)]">{row.summary}</span> : null}
                     </span>
                     {onAdjustRow ? (
                       <button
                         type="button"
-                        className="min-h-9 self-center rounded-md border border-[var(--flowme-border)] bg-white px-2.5 text-xs font-semibold text-[var(--flowme-text-secondary)] hover:border-[var(--flowme-action)] hover:text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                        className="min-h-11 self-center rounded-[var(--flowme-radius-control)] border border-[var(--flowme-control-border)] bg-[var(--flowme-surface)] px-2.5 text-xs font-semibold text-[var(--flowme-text-secondary)] transition hover:border-[var(--flowme-action)] hover:text-[var(--flowme-action)]"
                         aria-label={`${row.title} 제목·날짜·메모 수정`}
                         onClick={() => onAdjustRow(row.id)}
                       >

@@ -156,7 +156,7 @@ export function MyFlowCalendarRouteSurface<TRow>({
             className="mt-2 flex items-center justify-between gap-3 border-y border-[var(--flowme-border)] py-2 sm:mt-3"
           >
             <div className="min-w-0">
-              <p className="text-[11px] font-semibold text-[var(--flowme-text-tertiary)]">보기 범위</p>
+              <p className="text-xs font-semibold text-[var(--flowme-text-secondary)]">보기 범위</p>
               <p className="truncate text-sm font-semibold text-[var(--flowme-text)]">{scope.label}</p>
             </div>
             <CalendarFlowScopePicker
@@ -172,7 +172,7 @@ export function MyFlowCalendarRouteSurface<TRow>({
             data-testid="my-flow-calendar-scope-filter"
             data-scope-presentation="compact"
             data-p29-marker="P29-CALENDAR-COMPACT-SCOPE"
-            className="mt-2 flex w-full max-w-full flex-wrap gap-1 rounded-lg bg-[var(--flowme-soft)] p-1 sm:mt-3"
+            className="mt-2 flex w-full max-w-full flex-wrap gap-1 rounded-[var(--flowme-radius-surface)] border border-[var(--flowme-border)] bg-[var(--flowme-surface-subtle)] p-1 sm:mt-3"
             aria-label="캘린더 표시 범위"
           >
             {scope.options.map((option) => {
@@ -187,7 +187,7 @@ export function MyFlowCalendarRouteSurface<TRow>({
                   data-flow-slug={option.flowSlug}
                   aria-label={`${option.label}, ${scope.monthHeading} 일정 ${option.count}개`}
                   aria-pressed={selected}
-                  className={`flex min-h-11 min-w-0 max-w-full flex-1 basis-[7rem] items-center justify-center gap-1.5 rounded-md px-2.5 text-xs font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${selected ? FLOW_UI_SEGMENT_ACTIVE_CLASS : FLOW_UI_SEGMENT_IDLE_CLASS}`}
+                  className={`flex min-h-11 min-w-0 max-w-full flex-1 basis-[7rem] items-center justify-center gap-1.5 rounded-[var(--flowme-radius-control)] px-2.5 text-xs font-semibold ${selected ? FLOW_UI_SEGMENT_ACTIVE_CLASS : FLOW_UI_SEGMENT_IDLE_CLASS}`}
                   onClick={() => actions.onSelectScope(option.id)}
                 >
                   {option.marker ? (
@@ -201,7 +201,7 @@ export function MyFlowCalendarRouteSurface<TRow>({
                     </span>
                   ) : null}
                   <span className="truncate">{option.id === 'all' ? '전체' : option.label}</span>
-                  <span className={`shrink-0 text-[10px] font-semibold ${selected ? 'text-[var(--flowme-text-secondary)]' : 'text-slate-500'}`}>{option.count}</span>
+                  <span className="shrink-0 text-xs font-semibold text-[var(--flowme-text-secondary)]">{option.count}</span>
                 </button>
               );
             })}
@@ -241,23 +241,23 @@ export function MyFlowCalendarRouteSurface<TRow>({
           data-schedule-overflow-date={model.scheduleOverflowDate}
           className={model.isMobileViewport
             ? 'min-w-0'
-            : 'min-w-0 border-t border-slate-200 py-3 sm:py-4'}
+            : 'min-w-0 border-t border-[var(--flowme-border)] py-3 sm:py-4'}
         >
           <div className={model.isMobileViewport ? 'sr-only' : 'flex items-start gap-3'}>
             <div aria-live="polite" aria-atomic="true">
-              <h3 className="mt-1 text-lg font-semibold text-slate-950">{model.selectedDayTitle}</h3>
-              <p data-testid="my-flow-selected-day-summary" className="mt-1 text-xs font-semibold text-slate-500">
+              <h3 className="mt-1 text-lg font-semibold text-[var(--flowme-text)]">{model.selectedDayTitle}</h3>
+              <p data-testid="my-flow-selected-day-summary" className="mt-1 text-xs font-semibold text-[var(--flowme-text-secondary)]">
                 {scope.presentation === 'hidden' ? '' : `${scopeLabel} · `}{model.selectedDayItemCount}개 항목 · {model.selectedDayOpenCount}개 남음
               </p>
             </div>
           </div>
           {model.routineOverflowDate && model.routineOverflowCount > 0 ? (
-            <p data-testid="my-flow-selected-day-overflow-note" className="mt-2 rounded-md bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-700">
+            <p data-testid="my-flow-selected-day-overflow-note" className="mt-2 rounded-[var(--flowme-radius-control)] bg-[var(--flowme-positive-soft)] px-2.5 py-1.5 text-xs font-semibold text-[var(--flowme-positive-strong)]">
               +{model.routineOverflowCount} 반복 항목 포함
             </p>
           ) : null}
           {model.scheduleOverflowDate && model.scheduleOverflowCount > 0 ? (
-            <p data-testid="my-flow-selected-day-schedule-overflow-note" className="mt-2 rounded-md bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-700">
+            <p data-testid="my-flow-selected-day-schedule-overflow-note" className="mt-2 rounded-[var(--flowme-radius-control)] bg-[var(--flowme-action-soft)] px-2.5 py-1.5 text-xs font-semibold text-[var(--flowme-action)]">
               +{model.scheduleOverflowCount} 날짜 항목 포함
             </p>
           ) : null}
@@ -291,7 +291,7 @@ export function MyFlowCalendarRouteSurface<TRow>({
                     </div>
                     <div className="flex shrink-0 items-center gap-2">
                       {group.rows.length > 1 || group.openCount !== group.rows.length ? (
-                        <span className="text-[11px] font-semibold text-slate-500">
+                        <span className="text-xs font-semibold text-[var(--flowme-text-secondary)]">
                           {group.rows.length}개 · {group.openCount}개 남음
                         </span>
                       ) : null}
@@ -299,7 +299,7 @@ export function MyFlowCalendarRouteSurface<TRow>({
                         <button
                           type="button"
                           data-testid="my-flow-calendar-open-flow"
-                          className="min-h-9 rounded-md px-2 text-[11px] font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                          className="min-h-11 rounded-[var(--flowme-radius-control)] px-2 text-xs font-semibold text-[var(--flowme-action)] hover:bg-[var(--flowme-action-soft)]"
                           aria-label={group.openFlowAriaLabel}
                           onClick={() => actions.onOpenFlow(group.flowSlug!)}
                         >
@@ -309,13 +309,13 @@ export function MyFlowCalendarRouteSurface<TRow>({
                     </div>
                   </div>
                   {group.sharedMeta.timing || group.sharedMeta.section ? (
-                    <div data-testid="my-flow-selected-date-group-meta" className="mb-2 flex flex-wrap items-center gap-1.5 text-[11px] font-semibold text-slate-500">
+                    <div data-testid="my-flow-selected-date-group-meta" className="mb-2 flex flex-wrap items-center gap-1.5 text-xs font-semibold text-[var(--flowme-text-secondary)]">
                       {group.sharedMeta.timing ? (
                         <span
                           data-testid="my-flow-group-timing-chip"
                           aria-label={group.sharedMeta.timing.accessibilityLabel}
                           title={group.sharedMeta.timing.accessibilityLabel}
-                          className="text-slate-600"
+                          className="text-[var(--flowme-text-secondary)]"
                         >
                           {group.sharedMeta.timing.label}
                         </span>
@@ -350,7 +350,7 @@ export function MyFlowCalendarRouteSurface<TRow>({
               ))}
             </div>
           ) : (
-            <p className="mt-3 rounded-md bg-slate-50 px-3 py-3 text-sm text-slate-600">이 날짜에 등록된 일정이 없습니다.</p>
+            <p className="mt-3 rounded-[var(--flowme-radius-control)] border border-[var(--flowme-border)] bg-[var(--flowme-surface-subtle)] px-3 py-3 text-sm text-[var(--flowme-text-secondary)]">이 날짜에 등록된 일정이 없습니다.</p>
           )}
         </section>
       )}

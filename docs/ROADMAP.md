@@ -1,14 +1,29 @@
 # Roadmap
 
-**Last Updated:** 2026-08-13<br>
+**Last Updated:** 2026-08-23<br>
 **Current Version:** v0.1.0 (released product PoC)<br>
-**Current Validation Stage:** internal alpha / Flow Map Item date parity released and Production-smoked / observed users 0<br>
+**Current Validation Stage:** internal alpha / Production visual-only refresh implemented / shared source-review gate resolved / sequential exact-head CI, merge, and Production verification authorized / observed users 0<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** Owner promotion of one next product gate or a real-user validation checkpoint
+**Next Milestone:** release PR #194, then rebase and release PR #195, with exact-head CI and Production verification at each step
 
 Human-facing control surface: [FlowMe Project Control](./PROJECT_CONTROL.md).
 The [2026-07-29 P35 stage board](./content-audit/2026-07-29-flowme-current-stage-control-board-ko.html)
 is retained as a dated evidence snapshot rather than the current backlog.
+
+## Active: Production Visual-Only Refresh
+
+The Owner promoted [Production Visual-Only Refresh](./specs/2026-08-20-production-visual-only-refresh/spec.md)
+on 2026-08-20. The bounded goal is one coherent visual system across the current
+main-app journey while routes, copy, data, dates, result behavior, persistence,
+and lifecycle semantics stay unchanged. Local implementation and scoped automated
+QA are complete. Focused/component/contract/browser checks and the production
+build pass. [PR #196](https://github.com/knhbae/flowme2605/pull/196) reviewed and
+refreshed the source contracts, leaving `135` normal-user routes current with
+overdue and missing counts `0`; full `npm test` and Playwright passed before its
+merge as `8c0bfd8de9fb8877c4045b2c3f725b60ca236843`. The Owner authorized the
+sequential PR #194 then PR #195 merge and Production path. Each exact head must
+still pass CI and its resulting Production deployment must be verified.
+Observed-user validation remains `0`.
 
 ## Released: Flow Map Item Date Parity
 
