@@ -48,9 +48,16 @@ const decisionToHandling = {
 } as const;
 
 const decisionTableOverrideSlugs = new Set(['driver-license-renewal-check']);
-const checklistOverrideSlugs = new Set(['new-car-delivery-check', 'used-car-buying-check', 'passport-renewal-docs']);
+const checklistOverrideSlugs = new Set([
+  'new-car-delivery-check',
+  'used-car-buying-check',
+  'passport-renewal-docs',
+  'qnet-exam-application-prep',
+  'real-qnet-application-examday-check',
+  'real-mofa-overseas-travel-prep',
+]);
 const undatedChecklistTimelineSlugs = new Set(['vehicle-inspection-prep']);
-const compactTimelineSlugs = new Set(['moving-d30-basic', 'vehicle-inspection-prep', 'real-mofa-overseas-travel-prep']);
+const compactTimelineSlugs = new Set(['moving-d30-basic', 'vehicle-inspection-prep']);
 const timelinePrimaryOverrideSlugs = new Set(['wedding-d180-basic']);
 const checkOnlyRoutineSlugs = new Set(['diet-habit-2week', 'real-thankyou-bubu-home-workout-starter', 'real-fitvely-diet-record-routine']);
 const mealCalendarOnlySlugs = new Set(['baby-food-menu-recipe']);
@@ -72,6 +79,18 @@ const memoCardOverrideSlugs = new Set([
 ]);
 const spreadsheetOverrideSlugs = new Set(['diet-meal-exercise-log', 'diet-reset-2week', 'water-purifier-filter-cycle', 'fridge-cleanout-weekly-plan']);
 const checklistWithMemoSlugs = new Set(['overseas-safety-register']);
+const qnetChecklistSlugs = new Set(['qnet-exam-application-prep', 'real-qnet-application-examday-check']);
+const sourceObservationSlugs = new Set([
+  'real-fitvely-video-body-fat-6kg-method',
+  'real-fitvely-video-three-week-check',
+]);
+const singleApplicationDietSlugs = new Set([
+  'real-fitvely-video-carb-reason',
+  'real-fitvely-video-post-workout-nutrition',
+  'real-fitvely-video-carb-amount-shorts',
+  'real-fitvely-video-after-work-nutrition',
+  'real-fitvely-video-weight-class-method',
+]);
 
 // 2026-06-01 크리에이터·블로그 배치: 카테고리별로 알맞은 아티팩트 표면을 새로 배정한다.
 // 순차 단계(요리 준비→조리→평가, 정리 비우기→분류→정리, 창작 콘셉트→세팅→발행 등)는
@@ -133,6 +152,30 @@ function surface(kind: ArtifactSurfaceKind, title: string, description: string):
 }
 
 function getSurfaces(bundle: FlowBundle, primary: PrimaryArtifactSurface): ArtifactSurface[] {
+  if (sourceObservationSlugs.has(bundle.flow.slug)) {
+    return [
+      surface('spreadsheet_preview', '출처 확인표', '원본에서 직접 확인한 문장과 근거, 적용 또는 보류 결정을 한 행에 남깁니다.'),
+      surface('memo_card', '추가 확인 메모', '내 상황에 적용하기 전에 더 확인할 질문과 개인 메모를 따로 보관합니다.'),
+    ];
+  }
+  if (singleApplicationDietSlugs.has(bundle.flow.slug)) {
+    return [
+      surface('spreadsheet_preview', '적용 전후 관찰표', '원본에서 고른 기준 하나를 오늘 한 번 적용하고 전후 상태와 유지 또는 중단 결정을 남깁니다.'),
+      surface('memo_card', '유지·중단 메모', '한 번 적용한 뒤 계속 쓸지 중단할지와 그 이유를 기록합니다.'),
+    ];
+  }
+  if (qnetChecklistSlugs.has(bundle.flow.slug)) {
+    return [
+      surface('execution_list', '원서접수·응시 체크리스트', '실제 시험 공고와 접수 내역을 보며 필요한 항목만 확인합니다.'),
+      surface('memo_card', '접수 정보 메모', '접수번호, 시험장, 입실 시간과 추가 확인 사항을 보관합니다.'),
+    ];
+  }
+  if (bundle.flow.slug === 'real-mofa-overseas-travel-prep') {
+    return [
+      surface('execution_list', '베트남 안전 확인표', '외교부 원문에서 여행경보, 안전공지와 주의 지역을 확인합니다.'),
+      surface('memo_card', '비상 연락처 메모', '공관, 영사콜센터와 현지 긴급 신고 번호를 오프라인에서도 보관합니다.'),
+    ];
+  }
   if (checklistWithMemoSlugs.has(bundle.flow.slug)) {
     return [
       surface('execution_list', '출국 전 체크리스트', '위험 정보와 비상 대비를 하나씩 확인합니다.'),

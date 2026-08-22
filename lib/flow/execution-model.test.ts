@@ -89,3 +89,22 @@ test('preview and exact-video flows do not pollute representative landing set', 
   assert.equal(model.exposureStatus, 'source_review');
   assert.deepEqual(model.views, ['list', 'export_preview']);
 });
+
+test('exact-video source observations remain undated checklists with no calendar export', () => {
+  for (const slug of [
+    'real-fitvely-video-body-fat-6kg-method',
+    'real-fitvely-video-carb-reason',
+    'real-fitvely-video-three-week-check',
+    'real-fitvely-video-post-workout-nutrition',
+    'real-fitvely-video-carb-amount-shorts',
+    'real-fitvely-video-after-work-nutrition',
+    'real-fitvely-video-weight-class-method',
+  ]) {
+    const model = normalizeExecutionModel(bySlug(slug));
+
+    assert.equal(model.uxType, 'checklist', slug);
+    assert.deepEqual(model.views, ['list', 'export_preview'], slug);
+    assert.deepEqual(model.exportTargets, ['memo', 'sheet', 'todo'], slug);
+    assert.ok(!model.exportTargets.includes('calendar'), slug);
+  }
+});

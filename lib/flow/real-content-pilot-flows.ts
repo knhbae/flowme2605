@@ -52,6 +52,7 @@ export const realContentPilotSources: PilotSource[] = [
     sourceUrl: 'https://q-net.or.kr/rcv001.do?gSite=Q&id=rcv00103&rcvPFlag=Y',
     sourceType: 'official',
     riskLevel: 'medium',
+    sourceCheckedAt: '2026-08-22',
   },
   {
     slug: 'computer-skills-d30-study',
@@ -66,7 +67,7 @@ export const realContentPilotSources: PilotSource[] = [
   {
     slug: 'diet-meal-exercise-log',
     category: '다이어트/기록',
-    sourceTitle: '질병관리청 건강하게 체중 감량하기 안내',
+    sourceTitle: '질병관리청 성장기 비만, 건강하게 체중 관리하기!',
     sourceUrl:
       'https://health.kdca.go.kr/healthinfo/biz/health/ntcnInfo/healthSourc/thtimtCntnts/thtimtCntntsView.do?thtimt_cntnts_sn=82',
     sourceType: 'official',
@@ -75,7 +76,7 @@ export const realContentPilotSources: PilotSource[] = [
   {
     slug: 'diet-reset-2week',
     category: '다이어트/기록',
-    sourceTitle: '질병관리청 건강하게 체중 감량하기 안내',
+    sourceTitle: '질병관리청 성장기 비만, 건강하게 체중 관리하기!',
     sourceUrl:
       'https://health.kdca.go.kr/healthinfo/biz/health/ntcnInfo/healthSourc/thtimtCntnts/thtimtCntntsView.do?thtimt_cntnts_sn=82',
     sourceType: 'official',
@@ -172,20 +173,20 @@ const vehicleInspectionText = `## D-14 검사 기간 확인
 - 접수와 수수료 결제 진행하기 D-Day
 - 검사 결과와 재검사 필요 항목 기록하기 D-Day`;
 
-const qnetExamText = `## D-30 응시 조건 확인
-- 응시 자격과 제출 서류 필요 여부 확인하기 D-30
-- Q-Net 회원 정보와 사진 등록 상태 확인하기 D-30
-- 원서접수 시작일, 마감 시각, 결제 수단 기록하기 D-21
+const qnetExamText = `## 접수 전 확인
+- 응시 자격과 제출 서류 필요 여부 확인하기
+- Q-Net 회원 정보 확인하기
+- 실제 시험 공고에서 원서접수 시작일과 마감 시각 기록하기
 
-## D-14 접수 후 확인
-- 접수 내역, 결제 완료, 접수번호 저장하기 D-14
-- 환불과 변경 마감일을 별도 deadline으로 기록하기 D-14
-- 수험표 출력 가능 시점과 PDF 보관 위치 확인하기 D-7
+## 원서접수 진행
+- 시험장과 시험 일시 선택하기
+- 결제 완료와 접수 내역 저장하기
+- 환불과 변경 기준 확인하기
 
-## D-Day 시험 당일
-- 신분증과 수험표 챙기기 D-Day
-- 허용 필기구, 계산기 기준, 입실 시간 확인하기 D-Day
-- 시험장 이동 시간과 합격자 발표일 기록하기 D-Day`;
+## 접수 후 개인 준비
+- 수험표 출력 가능 여부 확인하기
+- 시험 공고에서 준비물과 입실 시간 확인하기
+- 인정 신분증 기준 확인하고 준비하기`;
 
 const computerSkillsText = `## D-30 범위 쪼개기
 - 필기와 실기 시험 범위 나누기 D-30
@@ -409,15 +410,16 @@ export const realContentPilotBundles: FlowBundle[] = [
         id: 'flow-qnet-exam-application-prep',
         slug: qnetExamSource.slug,
         title: 'Q-Net 원서접수 준비 Flow',
-        description: '응시 조건, 회원 정보, 원서접수 일정, 수험표와 시험 당일 준비물을 D-Day 기준으로 확인합니다.',
+        description: '응시 조건과 실제 시험 공고를 확인하고 원서접수·결제·접수 내역과 인정 신분증을 준비합니다.',
         category: qnetExamSource.category,
-        structure_type: 'timeline',
+        structure_type: 'checklist',
         content_type: 'default',
-        anchor_type: 'end_date',
+        anchor_type: 'none',
         status: 'published',
         risk_level: qnetExamSource.riskLevel,
         source_title: qnetExamSource.sourceTitle,
         source_url: qnetExamSource.sourceUrl,
+        source_checked_at: qnetExamSource.sourceCheckedAt,
         warning: '시험별 접수 기간, 환불, 변경, 준비물 기준은 다를 수 있으므로 Q-Net 공지를 기준으로 확인하세요.',
       },
       qnetExamText,
@@ -433,7 +435,7 @@ export const realContentPilotBundles: FlowBundle[] = [
         source_type: qnetExamSource.sourceType,
         risk_level: qnetExamSource.riskLevel,
       },
-      '접수 내역, 결제 완료, 접수번호 저장하기': {
+      '결제 완료와 접수 내역 저장하기': {
         description: '접수 완료 후 결제 상태, 접수번호, 시험장, 일시, 과목 정보를 다시 확인합니다.',
         why: '접수만 완료하고 결제나 접수번호 저장을 놓치면 이후 수험표와 변경 확인이 흔들릴 수 있습니다.',
         how: 'Q-Net 접수 내역에서 결제 완료 여부, 접수번호, 시험장 주소, 입실 시간, 변경 가능 여부를 확인합니다.',
@@ -442,11 +444,18 @@ export const realContentPilotBundles: FlowBundle[] = [
         source_type: qnetExamSource.sourceType,
         risk_level: qnetExamSource.riskLevel,
       },
-      '신분증과 수험표 챙기기': {
-        description: '시험 당일 필요한 신분증과 수험표를 별도 위치에 준비합니다.',
-        why: '신분 확인 자료가 없으면 응시가 제한될 수 있습니다.',
-        how: '시험별 신분증 인정 기준과 수험표 출력 가능 시점을 확인하고 전날 가방에 넣습니다.',
-        completion_criteria: '신분증과 수험표를 준비했다.',
+      '인정 신분증 기준 확인하고 준비하기': {
+        description: 'Q-Net의 시험 당일 인정 신분증 범위를 확인하고 본인에게 맞는 신분증을 준비합니다.',
+        why: '인정되지 않는 신분증을 가져가면 응시가 제한될 수 있습니다.',
+        how: 'Q-Net 신분증 인정범위 안내에서 본인 연령과 상황에 맞는 신분증을 확인합니다.',
+        completion_criteria: '인정 신분증 기준을 확인하고 사용할 신분증을 정했다.',
+        links: [
+          {
+            label: 'Q-Net 시험 당일 인정 신분증',
+            url: 'https://www.q-net.or.kr/rcv002.do?gSite=L&id=rcv002_identi',
+            type: 'official',
+          },
+        ],
         source_type: qnetExamSource.sourceType,
         risk_level: qnetExamSource.riskLevel,
       },

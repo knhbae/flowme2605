@@ -13,6 +13,52 @@ import {
 import { previewCreatorChannels } from './creator-channel-preview';
 
 const checkedAt = '2026-05-21';
+const sourceFreshnessReviewDate = '2026-08-22';
+const sourceFreshnessReviewedSlugs = new Set([
+  'real-thankyou-bubu-video-full-body-no-jump',
+  'real-thankyou-bubu-video-daily-stretch-9min',
+  'real-thankyou-bubu-video-belly-side-all-in-one',
+  'real-thankyou-bubu-video-no-knee-cardio-strength',
+  'real-thankyou-bubu-video-arm-back-shoulder',
+  'real-thankyou-bubu-video-waist-8cm',
+  'real-thankyou-bubu-video-8min-cardio',
+  'real-thankyou-bubu-video-3min-arm',
+  'real-thankyou-bubu-video-3min-abs',
+  'real-thankyou-bubu-video-lower-belly-8min',
+  'real-thankyou-bubu-home-workout-starter',
+  'real-thankyou-bubu-20min-routine',
+  'real-fitvely-video-body-fat-6kg-method',
+  'real-fitvely-video-carb-reason',
+  'real-fitvely-video-three-week-check',
+  'real-fitvely-video-post-workout-nutrition',
+  'real-fitvely-video-carb-amount-shorts',
+  'real-fitvely-video-after-work-nutrition',
+  'real-fitvely-video-weight-class-method',
+  'real-fitvely-video-bulk-up-method',
+  'real-fitvely-video-workout-order',
+  'real-fitvely-video-workout-split-science',
+  'real-fitvely-diet-record-routine',
+  'real-qnet-application-examday-check',
+  'real-gov24-resident-register-copy',
+  'real-childcare-vaccination-visit-prep',
+  'real-childcare-support-application-check',
+  'real-ohouse-moving-d30-prep',
+  'real-ohouse-movein-cleaning-check',
+  'real-mofa-overseas-travel-prep',
+]);
+const sourceFreshnessCorrectedSlugs = new Set([
+  'real-thankyou-bubu-20min-routine',
+  'real-fitvely-video-body-fat-6kg-method',
+  'real-fitvely-video-carb-reason',
+  'real-fitvely-video-three-week-check',
+  'real-fitvely-video-post-workout-nutrition',
+  'real-fitvely-video-carb-amount-shorts',
+  'real-fitvely-video-after-work-nutrition',
+  'real-fitvely-video-weight-class-method',
+  'real-qnet-application-examday-check',
+  'real-childcare-vaccination-visit-prep',
+  'real-mofa-overseas-travel-prep',
+]);
 const now = '2026-05-21T00:00:00.000Z';
 
 type RealSourceAction = {
@@ -29,6 +75,7 @@ type RealSourceSpec = {
   channelSlug: string;
   slug: string;
   title: string;
+  description?: string;
   category: string;
   structure_type: StructureType;
   anchor_type: AnchorType;
@@ -40,6 +87,9 @@ type RealSourceSpec = {
   source_modified_at?: string;
   source_checked_at?: string;
   primary_destination?: PrimaryDestination;
+  creator_name?: string;
+  creator_role?: string;
+  creator_note?: string;
   risk_level: RiskLevel;
   conversion_note: string;
   warning?: string;
@@ -126,7 +176,7 @@ function buildBundle(spec: RealSourceSpec): FlowBundle {
       id: flowId,
       slug: spec.slug,
       title: spec.title,
-      description: `${channel.name} 채널의 실제 출처를 실행 가능한 FLOW로 전환한 항목입니다.`,
+      description: spec.description ?? `${channel.name} 채널의 실제 출처를 실행 가능한 FLOW로 전환한 항목입니다.`,
       category: spec.category,
       structure_type: spec.structure_type,
       content_type: 'default',
@@ -139,19 +189,25 @@ function buildBundle(spec: RealSourceSpec): FlowBundle {
       source_url: spec.source_url,
       source_published_at: spec.source_published_at,
       source_modified_at: spec.source_modified_at,
-      source_checked_at: spec.source_checked_at ?? checkedAt,
+      source_checked_at:
+        spec.source_checked_at ??
+        (sourceFreshnessReviewedSlugs.has(spec.slug) ? sourceFreshnessReviewDate : checkedAt),
       conversion_note: spec.conversion_note,
       risk_level: spec.risk_level,
       warning: spec.warning,
       owner_user_id: channel.id,
-      creator_name: channel.name,
-      creator_role: channel.role,
-      creator_note: channel.bio,
+      creator_name: spec.creator_name ?? channel.name,
+      creator_role: spec.creator_role ?? channel.role,
+      creator_note: spec.creator_note ?? channel.bio,
       usage_count: 0,
       copy_count: 0,
       tags: spec.tags,
       created_at: now,
-      updated_at: spec.source_checked_at ? `${spec.source_checked_at}T00:00:00.000Z` : now,
+      updated_at: sourceFreshnessCorrectedSlugs.has(spec.slug)
+        ? `${sourceFreshnessReviewDate}T00:00:00.000Z`
+        : spec.source_checked_at
+          ? `${spec.source_checked_at}T00:00:00.000Z`
+          : now,
     },
     sections,
     items,
@@ -168,7 +224,7 @@ type CreatorVideoSpec = {
   videoId: string;
   category: string;
   focus: string;
-  mode: 'workout' | 'diet' | 'workout-plan';
+  mode: 'workout' | 'diet' | 'workout-plan' | 'source-observation';
   actionTitle?: string;
   applicationTarget?: string;
   tags: string[];
@@ -306,10 +362,9 @@ const fitvelyExactVideos: CreatorVideoSpec[] = [
     flowTitle: 'FITVELY 체지방 6kg 감량 비법 Flow',
     videoId: 'EQcoKqDO8Ds',
     category: '다이어트/기록',
-    focus: '체지방 감량 원칙을 이번 주 기준으로 바꾸기',
-    mode: 'diet',
-    actionTitle: '다음 식사 한 끼에 감량 기준 적용',
-    applicationTarget: '다음 식사 한 끼',
+    focus: '체지방 감량 영상에서 직접 확인한 기준 1개 기록하기',
+    mode: 'source-observation',
+    actionTitle: '원본 영상에서 확인한 기준 1개 기록',
     tags: ['다이어트', '체지방', '기록', 'exact-video'],
   },
   {
@@ -334,10 +389,9 @@ const fitvelyExactVideos: CreatorVideoSpec[] = [
     flowTitle: 'FITVELY 3주 감량 점검 Flow',
     videoId: 'nfdIpPXfIc8',
     category: '다이어트/기록',
-    focus: '단기 감량 사례를 현실적인 점검표로 바꾸기',
-    mode: 'diet',
-    actionTitle: '단기 감량 사례를 내 점검표로 바꾸기',
-    applicationTarget: '오늘 식사, 운동, 수면 중 하나의 점검 기준',
+    focus: '단기 감량 사례 영상에서 직접 확인한 주장 1개 기록하기',
+    mode: 'source-observation',
+    actionTitle: '원본 클립에서 확인한 주장 1개 기록',
     tags: ['다이어트', '점검', '습관', 'exact-video'],
   },
   {
@@ -440,13 +494,14 @@ const fitvelyExactVideos: CreatorVideoSpec[] = [
 function makeCreatorVideoSpec(video: CreatorVideoSpec): RealSourceSpec {
   const sourceUrl = `https://www.youtube.com/watch?v=${video.videoId}`;
   const sourceTitle = `${video.title} - ${video.channelSlug === 'thankyou-bubu' ? 'ThankyouBUBU' : '핏블리 FITVELY'}`;
+  const isSingleApplication = video.mode === 'diet' || video.mode === 'source-observation';
   const common = {
     channelSlug: video.channelSlug,
     slug: `${video.slugPrefix}-${video.slug}`,
     title: video.flowTitle,
     category: video.category,
-    structure_type: 'routine' as StructureType,
-    anchor_type: 'start_date' as AnchorType,
+    structure_type: (isSingleApplication ? 'checklist' : 'routine') as StructureType,
+    anchor_type: (isSingleApplication ? 'none' : 'start_date') as AnchorType,
     source_title: sourceTitle,
     source_url: sourceUrl,
     source_type: 'creator_experience' as SourceType,
@@ -493,6 +548,26 @@ function makeCreatorVideoSpec(video: CreatorVideoSpec): RealSourceSpec {
           completion_criteria: '이번 주 운동표에 적용할 기준 1개를 적고, 오늘 운동 후 수행 여부와 다음 회차 수정 여부를 기록했습니다.',
           caution:
             '통증, 과한 피로, 호흡 곤란, 회복 부족, 기존 질환 악화가 있으면 중단하고 전문가 상담을 우선하세요. FLOW는 원본 영상의 운동 기준을 주간 계획 메모로 옮기는 도구이며 운동 처방이 아닙니다.',
+        },
+      ],
+    };
+  }
+
+  if (video.mode === 'source-observation') {
+    return {
+      ...common,
+      structure_type: 'checklist',
+      anchor_type: 'none',
+      conversion_note: `영상 "${video.title}"에서 직접 확인할 수 있는 기준 1개를 출처 문장과 적용/보류 결정으로 기록하도록 전환했습니다.`,
+      sections: ['출처 확인 기록'],
+      actions: [
+        {
+          title: video.actionTitle ?? '원본 영상에서 확인한 기준 1개 기록',
+          why: `${video.focus}가 먼저이며, 영상 제목만으로 식사·운동·수면 행동을 새로 처방해서는 안 됩니다.`,
+          how: '요약: 영상에서 직접 확인할 수 있는 기준이나 주장 1개만 출처 확인표에 남깁니다. 준비: 원본 영상 링크를 열고 제목이 아니라 실제 영상에서 확인할 문장을 정합니다. 첫 행동: 원본에서 확인한 문장 1개를 그대로 옮기지 말고 짧게 요약합니다. 기준 후보: 영상에서 명시적으로 설명된 행동이나 판단 기준만 후보로 적고, 영상에 없는 식사·운동·수면 축이나 기간·횟수·수치를 만들지 않습니다. 적용 기준: 내 상황에 적용할지는 아직 실행으로 확정하지 않고 적용/보류로 결정합니다. 적용 전 기록: 출처에서 확인한 문장, 확인 시점, 개인 상황과 맞지 않을 수 있는 점을 적습니다. 적용 후 기록: 즉시 행동한 결과가 아니라 적용/보류 결정과 추가로 확인할 질문을 적습니다. 관찰표: 확인일, 출처 문장 요약, 영상 근거, 적용/보류, 개인 메모를 한 행에 기록합니다. 원본 영상: 정확한 맥락과 예외는 YouTube 링크를 열어 확인합니다. 기록: 출처 문장과 적용/보류 결정을 저장합니다. 중단 조건: 극단적 감량, 무리한 제한, 어지러움, 통증, 기존 질환 우려가 있으면 실행하지 말고 전문가 상담을 우선합니다. 마무리: 근거가 충분할 때만 별도의 개인 행동으로 옮기고, 부족하면 보류합니다.',
+          completion_criteria: '원본 영상에서 직접 확인한 문장 1개와 적용/보류 결정, 추가 확인할 질문을 관찰표 한 행에 기록했습니다.',
+          caution:
+            '극단적 감량, 무리한 식사 제한, 어지러움, 통증, 기존 질환 우려가 있으면 실행하지 말고 전문가 상담을 우선하세요. FLOW는 출처 확인 기록을 돕는 도구이며 감량 효과를 보장하지 않습니다.',
         },
       ],
     };
@@ -668,10 +743,10 @@ const realSourceSpecs: RealSourceSpec[] = [
     sections: ['오늘 운동'],
     actions: [
       {
-        title: '20분 전신 운동 영상 주 3회 일정에 넣고 실행',
+        title: '20분 전신 운동 영상 일정에 넣고 실행',
         why: '이 영상은 사용자가 별도 운동표를 설계하기보다 원본 follow-along 영상을 정한 요일에 반복 실행하고, 회차별 난이도를 기록할 때 가장 자연스럽습니다.',
-        how: '캘린더 알림: 이 문장은 반복 일정마다 함께 들어가며, 알림만 보고 준비-실행-기록을 시작할 수 있어야 합니다. 요약: ThankyouBUBU의 고강도 전신 운동 영상을 주 3회 반복 일정에 넣고 한 회차씩 실행합니다. 상세히 보기: 준비: 운동 전후 여유 시간을 포함해 요일과 시간을 정하고, 매트, 물, 수건을 준비한 뒤 원본 영상을 엽니다. 실행: FLOW는 동작 순서를 새로 만들지 않고, 영상의 자세와 박자를 기준으로 따라 하되 호흡이 과하게 가쁘거나 자세가 무너지면 반복 수와 강도를 낮추도록 안내합니다. 원본 영상: 정확한 동작 설명, 속도, 쉬는 타이밍은 YouTube 링크를 열어 확인합니다. 운동 후 기록: 완료/절반 완료/중단, 체감 난이도 1-5, 통증이나 어지러움, 다음 회차 강도 조정 메모를 남깁니다. 마무리: 3회 중 2회 이상 무리 없이 끝냈으면 유지하고, 아니면 다음 주 강도를 낮춥니다.',
-        completion_criteria: '주 3회 운동 일정을 넣고, 원본 영상을 실행한 회차마다 완료 상태와 다음 강도 조정 메모를 남겼습니다.',
+        how: '캘린더 알림: 이 문장은 반복 일정마다 함께 들어가며, 알림만 보고 준비-실행-기록을 시작할 수 있어야 합니다. 요약: ThankyouBUBU의 고강도 전신 운동 영상을 사용자가 고른 요일과 시간의 반복 일정에 넣고 한 회차씩 실행합니다. 상세히 보기: 준비: 운동 전후 여유 시간과 회복 상태를 보고 반복할 요일과 시간을 직접 정하고, 매트, 물, 수건을 준비한 뒤 원본 영상을 엽니다. 실행: FLOW는 동작 순서나 주간 횟수를 새로 만들지 않고, 영상의 자세와 박자를 기준으로 따라 하되 호흡이 과하게 가쁘거나 자세가 무너지면 반복 수와 강도를 낮추도록 안내합니다. 원본 영상: 정확한 동작 설명, 속도, 쉬는 타이밍은 YouTube 링크를 열어 확인합니다. 운동 후 기록: 완료/절반 완료/중단, 체감 난이도 1-5, 통증이나 어지러움, 다음 회차 강도 조정 메모를 남깁니다. 마무리: 회차별 몸 상태를 보고 같은 영상을 다음 일정에 반복할지, 쉬거나 강도를 낮출지 정합니다.',
+        completion_criteria: '사용자가 고른 요일에 운동 일정을 넣고, 원본 영상을 실행한 회차마다 완료 상태와 다음 강도 조정 메모를 남겼습니다.',
         caution:
           '통증, 어지러움, 호흡 곤란, 과한 피로, 기존 질환 악화가 있으면 즉시 중단하고 전문가 상담을 우선하세요. FLOW는 원본 영상 실행과 기록을 돕는 도구이며 운동 처방이 아닙니다.',
       },
@@ -807,18 +882,19 @@ const realSourceSpecs: RealSourceSpec[] = [
   {
     channelSlug: 'sinagong',
     slug: 'real-qnet-application-examday-check',
-    title: 'Q-Net 원서접수와 시험당일 Flow',
+    title: 'Q-Net 원서접수·응시 준비 Flow',
     category: '자격증 시험',
-    structure_type: 'timeline',
-    anchor_type: 'end_date',
-    source_title: 'Q-Net 원서접수시 유의사항',
-    source_url: 'https://www.q-net.or.kr/rcv002.do?gSite=L&id=rcv002_identi',
+    structure_type: 'checklist',
+    anchor_type: 'none',
+    source_title: 'Q-Net 원서접수안내',
+    source_url: 'https://www.q-net.or.kr/rcv001.do?gSite=Q&id=rcv00103',
     source_type: 'official',
     source_precision: 'exact',
+    primary_destination: 'memo',
     risk_level: 'medium',
-    conversion_note: 'Q-Net 원서접수 유의사항을 접수 전, 접수 완료, 시험당일 체크로 전환했습니다.',
+    conversion_note: 'Q-Net 원서접수안내를 날짜를 확정하지 않는 접수·응시 준비 체크로 전환하고 인정 신분증 안내를 해당 항목의 보조 링크로 연결했습니다.',
     tags: ['자격증', '공식출처', 'Q-Net'],
-    sections: ['접수 전 확인', '시험 당일'],
+    sections: ['접수 전 확인', '접수 후 확인'],
     actions: [
       {
         title: '응시 자격과 접수 기간 확인',
@@ -843,12 +919,8 @@ const realSourceSpecs: RealSourceSpec[] = [
         why: '시험장에서는 인정되는 신분증과 준비물이 없으면 응시가 제한될 수 있습니다.',
         how: 'Q-Net 안내의 신분증 기준과 종목별 준비물을 전날 가방에 넣습니다.',
         completion_criteria: '신분증과 종목별 준비물을 체크했습니다.',
-      },
-      {
-        title: '입실 시간과 시험장 위치 확인',
-        why: '시험 당일 지각이나 장소 착오는 복구하기 어렵습니다.',
-        how: '지도 앱으로 이동 시간을 확인하고 입실 마감보다 여유 있게 출발 시간을 정합니다.',
-        completion_criteria: '시험장 주소, 입실 시간, 출발 시간을 기록했습니다.',
+        link_label: 'Q-Net 인정 신분증 범위',
+        link_url: 'https://www.q-net.or.kr/rcv002.do?gSite=Q&id=rcv002_identi',
       },
     ],
   },
@@ -951,49 +1023,38 @@ const realSourceSpecs: RealSourceSpec[] = [
   {
     channelSlug: 'childcare-portal',
     slug: 'real-childcare-vaccination-visit-prep',
-    title: '아이사랑 영유아 검진/접종 방문 준비 Flow',
+    title: '아이사랑 4~6개월 검진·접종 확인 Flow',
     category: '육아/돌봄',
-    structure_type: 'timeline',
-    anchor_type: 'end_date',
-    source_title: '아이사랑 월령별 성장 및 돌보기',
+    structure_type: 'checklist',
+    anchor_type: 'none',
+    source_title: '아이사랑 월령별 성장 및 돌보기 (4~6개월)',
     source_url: 'https://www.childcare.go.kr/?menuno=439',
     source_type: 'official',
     source_precision: 'exact',
+    primary_destination: 'memo',
     risk_level: 'medical_sensitive',
-    conversion_note: '월령별 성장 정보와 방문 준비 항목을 병원 방문 전후 체크로 전환했습니다.',
+    conversion_note: '4~6개월 건강검진과 생후 4개월 예방접종 안내를 공식 정보 확인과 최근 상태·질문 메모로 좁혀 전환했습니다.',
     warning: '검진, 접종, 치료 판단은 의료진 안내를 우선하세요.',
     tags: ['육아', '검진', '공식출처'],
-    sections: ['방문 전', '방문 후'],
+    sections: ['공식 안내 확인', '보호자 메모'],
     actions: [
       {
-        title: '아이 월령과 필요한 검진/접종 확인',
-        why: '월령에 따라 확인할 성장 항목과 접종 일정이 달라집니다.',
-        how: '아이 생년월일을 기준으로 아이사랑 또는 병원 안내에서 해당 월령 정보를 확인합니다.',
-        completion_criteria: '이번 방문에서 확인할 검진 또는 접종 항목을 적었습니다.',
+        title: '4~6개월 건강검진 안내 확인',
+        why: '이 출처가 다루는 검진 범위는 4~6개월이므로 아이의 현재 월령과 공식 안내 범위를 먼저 맞춰야 합니다.',
+        how: '아이사랑 4~6개월 페이지에서 건강검진 안내를 확인하고, 실제 검진 시기와 항목은 의료기관 안내를 다시 확인합니다.',
+        completion_criteria: '아이의 현재 월령과 4~6개월 건강검진 안내를 확인했습니다.',
       },
       {
-        title: '병원 예약과 문진표 준비',
-        why: '문진표를 미리 준비하면 방문 당일 대기와 누락 질문을 줄일 수 있습니다.',
-        how: '병원 예약 시간을 잡고 필요한 문진표, 앱 입력, 보호자 정보를 확인합니다.',
-        completion_criteria: '예약 시간과 문진표 준비 상태를 확인했습니다.',
+        title: '생후 4개월 예방접종 안내 확인',
+        why: '출처는 생후 4개월 예방접종을 안내하지만 실제 접종 가능 여부와 일정은 의료진 판단이 우선입니다.',
+        how: '아이사랑 페이지의 생후 4개월 예방접종 안내를 확인하고, 접종명과 일정은 의료기관에서 다시 확인합니다.',
+        completion_criteria: '생후 4개월 예방접종 안내와 의료기관에 추가 확인할 내용을 기록했습니다.',
       },
       {
-        title: '아기수첩과 최근 증상 기록 준비',
-        why: '의료진은 이전 접종, 성장 기록, 최근 증상을 함께 보고 판단합니다.',
-        how: '아기수첩, 체온 변화, 수유, 수면, 최근 증상을 한 줄씩 적습니다.',
-        completion_criteria: '방문 때 보여줄 기록과 수첩을 챙겼습니다.',
-      },
-      {
-        title: '방문 당일 체온과 컨디션 확인',
-        why: '접종이나 검진 진행 여부는 당일 컨디션에 따라 달라질 수 있습니다.',
-        how: '출발 전 체온, 발열, 설사, 기침, 처방약 복용 여부를 확인합니다.',
-        completion_criteria: '당일 컨디션 기록을 병원에 전달할 수 있습니다.',
-      },
-      {
-        title: '접종 후 관찰 사항과 다음 일정 기록',
-        why: '방문 후 반응과 다음 예약을 기록해야 이후 상담에서 혼동이 줄어듭니다.',
-        how: '접종명, 관찰 안내, 이상 반응 여부, 다음 방문 날짜를 기록합니다.',
-        completion_criteria: '방문 결과와 다음 일정을 보호자 기록에 남겼습니다.',
+        title: '최근 상태와 보호자 질문 메모',
+        why: '검진이나 접종 판단을 대신하지 않으면서도 최근 상태와 궁금한 점을 정리하면 의료진에게 정확히 전달하기 쉽습니다.',
+        how: '최근 체온, 수유, 수면, 평소와 다른 증상과 보호자 질문을 짧게 적고, 판단이나 처방은 의료진에게 확인합니다.',
+        completion_criteria: '최근 상태와 의료진에게 확인할 질문을 메모했습니다.',
       },
     ],
   },
@@ -1241,48 +1302,53 @@ const realSourceSpecs: RealSourceSpec[] = [
   {
     channelSlug: 'travelholic',
     slug: 'real-mofa-overseas-travel-prep',
-    title: '외교부 해외여행 안전 준비 Flow',
+    title: '외교부 베트남 여행 안전 준비 Flow',
+    description: '외교부 해외안전여행의 베트남 국가·지역별 정보를 안전 확인표와 비상 연락처 메모로 정리한 Flow입니다.',
     category: '여행',
-    structure_type: 'timeline',
-    anchor_type: 'end_date',
+    structure_type: 'checklist',
+    anchor_type: 'none',
     source_title: '외교부 해외안전여행 베트남 국가/지역별 정보',
     source_url: 'https://www.0404.go.kr/ntnSafetyInfo/86/detail',
     source_type: 'official',
     source_precision: 'exact',
+    primary_destination: 'memo',
+    creator_name: 'FLOW 큐레이션팀',
+    creator_role: '공식자료 큐레이터',
+    creator_note: '외교부 베트남 안전정보를 날짜를 만들지 않는 확인표로 정리합니다.',
     risk_level: 'medium',
     conversion_note: '외교부 베트남 국가/지역별 정보를 출국 전 안전 확인과 현지 비상 대비 순서로 전환했습니다.',
-    tags: ['여행', '안전', '공식출처'],
+    tags: ['여행', '베트남', '안전', '공식출처'],
     sections: ['출국 전', '현지 대비'],
     actions: [
       {
-        title: '방문 국가 여행경보 확인',
-        why: '국가별 위험 수준은 일정과 보험, 취소 판단에 직접 영향을 줍니다.',
-        how: '외교부 해외안전여행에서 방문 국가와 도시의 최신 여행경보를 확인합니다.',
-        completion_criteria: '방문 국가의 여행경보 단계와 확인일을 기록했습니다.',
+        title: '베트남 여행경보와 안전공지 확인',
+        why: '베트남의 위험 수준과 최신 안전공지는 일정과 이동 계획 판단에 직접 영향을 줍니다.',
+        how: '외교부 베트남 국가/지역별 정보에서 최신 여행경보와 안전공지를 확인합니다.',
+        completion_criteria: '베트남 여행경보 단계, 안전공지, 확인일을 기록했습니다.',
       },
       {
-        title: '여권과 비자 조건 확인',
-        why: '여권 만료일이나 비자 조건을 놓치면 출국이나 입국이 제한될 수 있습니다.',
-        how: '여권 만료일, 입국 가능 기간, 비자 또는 전자허가 필요 여부를 확인합니다.',
-        completion_criteria: '여권 유효기간과 입국 조건을 확인했습니다.',
+        title: '베트남 현지 주의 지역과 행동 확인',
+        why: '같은 국가 안에서도 최근 공지와 지역에 따라 주의할 상황이 달라질 수 있습니다.',
+        how: '베트남 국가/지역별 정보의 안전공지와 여행경보 조정 내역에서 일정에 해당하는 지역과 주의 행동을 확인합니다.',
+        completion_criteria: '베트남 일정에서 주의할 지역이나 행동을 기록했습니다.',
       },
       {
-        title: '긴급 연락처와 영사콜센터 저장',
+        title: '주베트남 공관과 긴급 신고 번호 저장',
         why: '현지에서 인터넷이 안 되거나 분실 상황이 생기면 오프라인 연락처가 필요합니다.',
-        how: '영사콜센터, 현지 공관, 여행 동행자, 보험사 연락처를 휴대폰과 종이에 저장합니다.',
-        completion_criteria: '비상 연락처가 휴대폰과 오프라인 메모에 모두 있습니다.',
+        how: '외교부 페이지에서 영사콜센터, 주베트남대사관 또는 관할 총영사관, 현지 긴급 신고 번호를 확인해 저장합니다.',
+        completion_criteria: '베트남 비상 연락처를 휴대폰과 오프라인 메모에 모두 저장했습니다.',
       },
       {
-        title: '보험과 현지 이동 계획 점검',
-        why: '사고, 지연, 의료 상황에 대비하려면 보험 범위와 이동 동선이 명확해야 합니다.',
-        how: '여행자보험 보장 범위와 공항-숙소 이동, 야간 이동 계획을 확인합니다.',
-        completion_criteria: '보험 증서와 주요 이동 경로를 저장했습니다.',
+        title: '베트남 비상 연락 카드 오프라인 보관',
+        why: '휴대폰 분실이나 통신 장애 때도 공관과 현지 신고 번호를 확인할 수 있어야 합니다.',
+        how: '저장한 공관, 영사콜센터, 현지 신고 번호와 숙소 정보를 한 장 메모로 만들어 종이나 오프라인 파일로 보관합니다.',
+        completion_criteria: '베트남 여행용 비상 연락 카드를 오프라인에서 열 수 있습니다.',
       },
       {
-        title: '가족에게 일정과 비상 연락 방법 공유',
+        title: '베트남 일정과 비상 연락 방법 공유',
         why: '비상 상황에서는 주변 사람이 일정과 연락 방식을 알고 있어야 대응이 빠릅니다.',
-        how: '항공편, 숙소, 이동 일정, 연락 불가 시 대체 연락처를 가족에게 보냅니다.',
-        completion_criteria: '가족 또는 지인에게 최신 여행 일정과 비상 연락법을 공유했습니다.',
+        how: '베트남 항공편, 숙소, 주요 이동 일정, 연락 불가 시 사용할 공관 연락처를 가족이나 지인에게 보냅니다.',
+        completion_criteria: '가족 또는 지인에게 베트남 일정과 비상 연락법을 공유했습니다.',
       },
     ],
   },

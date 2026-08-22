@@ -383,18 +383,42 @@ test('study calendar export keeps each dated item executable', () => {
   assert.match(ics, /FLOW가 시험일 기준으로 변환/);
 });
 
-test('diet log text export starts with record table guidance', () => {
+test('source-observation text export starts with evidence guidance and no invented routine copy', () => {
   const diet = seedBundles.find((entry) => entry.flow.slug === 'real-fitvely-video-body-fat-6kg-method');
   assert.ok(diet);
 
-  const text = buildText(diet, {}, undefined, {}, undefined);
+  const text = buildText(diet, {}, undefined, {}, undefined, {
+    occurrences: {},
+    logRows: {},
+    memoCards: {},
+    weeklyReview: '개인 상황에 맞는 예외를 추가로 확인',
+  });
 
-  assert.match(text, /## 기록표/);
-  assert.match(text, /식단, 운동, 측정, 컨디션/);
+  assert.match(text, /## 출처 확인표/);
+  assert.match(text, /원본에서 직접 확인한 문장.*적용 또는 보류.*추가 질문/);
+  assert.match(text, /추가 확인 메모: 개인 상황에 맞는 예외를 추가로 확인/);
+  assert.doesNotMatch(text, /날짜별 식단, 운동, 측정, 컨디션|주간 리뷰/);
+});
+
+test('single-application diet export stays one-time and omits weekly planning copy', () => {
+  const diet = seedBundles.find((entry) => entry.flow.slug === 'real-fitvely-video-carb-reason');
+  assert.ok(diet);
+
+  const text = buildText(diet, {}, undefined, {}, undefined, {
+    occurrences: {},
+    logRows: {},
+    memoCards: {},
+    weeklyReview: '한 번 적용 후 속이 불편해 중단',
+  });
+
+  assert.match(text, /## 적용 전후 관찰표/);
+  assert.match(text, /오늘 한 번 적용/);
+  assert.match(text, /유지·중단 메모: 한 번 적용 후 속이 불편해 중단/);
+  assert.doesNotMatch(text, /주간 리뷰|반복 리마인더|다음 주/);
 });
 
 test('workbench records are included in text and workbook exports', () => {
-  const diet = seedBundles.find((entry) => entry.flow.slug === 'real-fitvely-video-body-fat-6kg-method');
+  const diet = seedBundles.find((entry) => entry.flow.slug === 'real-fitvely-video-carb-reason');
   assert.ok(diet);
 
   const workbenchState = {
@@ -419,7 +443,7 @@ test('workbench records are included in text and workbook exports', () => {
   assert.match(text, /2026-05-22 식단: 현미밥, 닭가슴살, 샐러드/);
   assert.match(text, /1회차: 완료 - 컨디션 좋아서 강도 유지/);
   assert.match(text, /2회차: 완료 - 듣기 20분, 단어 30개/);
-  assert.match(text, /주간 리뷰: 저녁 탄수화물을 절반으로 줄여보기/);
+  assert.match(text, /유지·중단 메모: 저녁 탄수화물을 절반으로 줄여보기/);
 
   const sheets = buildWorkbookSheets(diet, {}, '2026-05-22', { workbenchState });
   const workbench = sheets.find((sheet) => sheet.name === '실행판 기록');

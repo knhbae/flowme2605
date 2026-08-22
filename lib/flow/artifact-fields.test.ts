@@ -186,9 +186,7 @@ test('FITVELY diet record route removes sheet-style log tables', () => {
 
 test('FITVELY nutrition exact-video routes expose apply-before-after observation rows', () => {
   const slugs = [
-    'real-fitvely-video-body-fat-6kg-method',
     'real-fitvely-video-carb-reason',
-    'real-fitvely-video-three-week-check',
     'real-fitvely-video-post-workout-nutrition',
     'real-fitvely-video-carb-amount-shorts',
     'real-fitvely-video-after-work-nutrition',
@@ -209,6 +207,25 @@ test('FITVELY nutrition exact-video routes expose apply-before-after observation
       ['fitvely-nutrition-before', 'fitvely-nutrition-after'],
       slug,
     );
+  }
+});
+
+test('FITVELY source-observation routes record evidence and apply-or-hold without prescribing action', () => {
+  const slugs = [
+    'real-fitvely-video-body-fat-6kg-method',
+    'real-fitvely-video-three-week-check',
+  ];
+
+  for (const slug of slugs) {
+    const tables = getLogTables(bundle(slug));
+
+    assert.deepEqual(tables.map((table) => table.id), ['fitvely-source-observation-log'], slug);
+    assert.deepEqual(
+      tables[0]?.columns.map((column) => column.id),
+      ['checkedAt', 'sourceStatement', 'sourceEvidence', 'applyOrHold', 'openQuestion', 'personalMemo'],
+      slug,
+    );
+    assert.doesNotMatch(JSON.stringify(tables), /적용 전 컨디션|적용 후 반응|유지\/중단/);
   }
 });
 
@@ -244,5 +261,6 @@ test('qnet route exposes application deadline and exam-day log tables', () => {
 
   assert.deepEqual(tables.map((table) => table.title), ['접수·결제 마감 기록', '수험표·시험장 준비 기록']);
   assert.deepEqual(tables[0]?.rows.map((row) => row.label), ['원서접수 마감', '결제 완료', '환불·변경 마감']);
-  assert.deepEqual(tables[1]?.rows.map((row) => row.label), ['수험표 출력', '시험장·입실 시간', '합격자 발표일']);
+  assert.deepEqual(tables[1]?.rows.map((row) => row.label), ['수험표 출력', '시험장·입실 시간']);
+  assert.ok(tables.flatMap((table) => table.rows).every((row) => row.id !== 'qnet-result-date'));
 });
