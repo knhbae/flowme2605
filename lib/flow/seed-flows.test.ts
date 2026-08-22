@@ -1014,7 +1014,6 @@ test('validation fix routes expose route-specific setup anchors and safety metad
     ['real-thankyou-bubu-home-workout-starter', '운동 시작일'],
     ['real-fitvely-diet-record-routine', '기록 시작일'],
     ['vehicle-inspection-prep', '검사일'],
-    ['real-mofa-overseas-travel-prep', '출국일'],
   ];
 
   for (const [slug, label] of expectedAnchors) {
@@ -1177,8 +1176,8 @@ test('existing pilot flows use upgraded source metadata and matching detail link
     {
       slug: 'driver-license-renewal-check',
       category: '자동차/검사',
-      source_title: '한국도로교통공단 안전운전 통합민원 면허갱신 안내',
-      source_url: 'https://www.safedriving.or.kr/diGuide/selectDiGuide02.do',
+      source_title: '한국도로교통공단 적성검사·면허갱신 안내',
+      source_url: 'https://www.safedriving.or.kr/diGuide/selectDiGuide01.do',
     },
     {
       slug: 'home-workout-20min',
@@ -1195,7 +1194,7 @@ test('existing pilot flows use upgraded source metadata and matching detail link
     {
       slug: 'diet-habit-2week',
       category: '생활/수면',
-      source_title: '질병관리청 건강하게 체중 감량하기 안내',
+      source_title: '질병관리청 성장기 비만, 건강하게 체중 관리하기!',
       source_url:
         'https://health.kdca.go.kr/healthinfo/biz/health/ntcnInfo/healthSourc/thtimtCntnts/thtimtCntntsView.do?thtimt_cntnts_sn=82',
     },
@@ -1289,6 +1288,86 @@ test('normal user routes fail the standard suite when source review is due', () 
   assert.equal(summary.missingMetadataCount, 0, attention);
   assert.equal(summary.reviewDueCount, 0, attention);
   assert.equal(summary.staleCount, 0, attention);
+});
+
+test('reviewed source mismatches stay in preview while corrected routes use current evidence', () => {
+  const bySlug = new Map(seedBundles.map((bundle) => [bundle.flow.slug, bundle]));
+  const asOf = new Date('2026-08-22T12:00:00+09:00');
+  const heldSlugs = [
+    'job-change-risk-check',
+    'national-health-checkup-d7',
+    'diet-habit-2week',
+    'diet-meal-exercise-log',
+    'diet-reset-2week',
+  ];
+
+  for (const slug of heldSlugs) {
+    const bundle = bySlug.get(slug);
+    assert.ok(bundle, slug);
+    assert.equal(getSourceFitAudit(slug)?.checkedAt, '2026-08-22', slug);
+    assert.equal(getSourceFitAudit(slug)?.decision, 'catalog_preview_only', slug);
+    assert.equal(classifyFlowSourceFreshness(bundle, asOf).bucket, 'preview_or_hidden', slug);
+  }
+
+  const qnet = bySlug.get('qnet-exam-application-prep');
+  const business = bySlug.get('business-registration-basic');
+  const license = bySlug.get('driver-license-renewal-check');
+  const family = bySlug.get('family-certificate-issue');
+  assert.ok(qnet && business && license && family);
+  assert.equal(qnet.flow.structure_type, 'checklist');
+  assert.equal(qnet.flow.anchor_type, 'none');
+  assert.equal(qnet.flow.primary_destination, 'memo');
+  assert.doesNotMatch(qnet.flow.raw_text ?? '', /D-30|D-14|합격자 발표일/);
+  assert.match(business.flow.source_url ?? '', /s\.nts\.go\.kr/);
+  assert.match(license.flow.source_url ?? '', /selectDiGuide01/);
+  assert.equal(license.flow.primary_destination, 'sheet');
+  assert.match(family.flow.source_url ?? '', /efamily\.scourt\.go\.kr/);
+
+  const unreviewedRealSourceSlugs = [
+    'real-gov24-moving-report-check',
+    'real-fitvely-weekly-body-check',
+    'real-pet-health-visit-routine',
+  ];
+  for (const slug of unreviewedRealSourceSlugs) {
+    assert.equal(bySlug.get(slug)?.flow.source_checked_at, '2026-05-21', slug);
+  }
+
+  const reviewedArchivedSlugs = [
+    'real-thankyou-bubu-video-full-body-no-jump',
+    'real-gov24-resident-register-copy',
+  ];
+  for (const slug of reviewedArchivedSlugs) {
+    assert.equal(bySlug.get(slug)?.flow.source_checked_at, '2026-08-22', slug);
+    assert.equal(getSourceFitAudit(slug)?.checkedAt, '2026-08-22', slug);
+  }
+
+  const currentContentVersionSlugs = [
+    'year-end-tax-docs',
+    'business-registration-basic',
+    'driver-license-renewal-check',
+    'happy-birth-service-check',
+    'vaccination-certificate-issue',
+    'family-certificate-issue',
+    'qnet-exam-application-prep',
+    'real-thankyou-bubu-20min-routine',
+    'real-fitvely-video-body-fat-6kg-method',
+    'real-fitvely-video-carb-reason',
+    'real-fitvely-video-three-week-check',
+    'real-fitvely-video-post-workout-nutrition',
+    'real-fitvely-video-carb-amount-shorts',
+    'real-fitvely-video-after-work-nutrition',
+    'real-fitvely-video-weight-class-method',
+    'real-qnet-application-examday-check',
+    'real-childcare-vaccination-visit-prep',
+    'real-mofa-overseas-travel-prep',
+  ];
+  for (const slug of currentContentVersionSlugs) {
+    assert.equal(bySlug.get(slug)?.flow.updated_at, '2026-08-22T00:00:00.000Z', slug);
+  }
+  assert.equal(
+    bySlug.get('real-thankyou-bubu-video-daily-stretch-9min')?.flow.updated_at,
+    '2026-05-21T00:00:00.000Z',
+  );
 });
 
 test('standard source freshness gate rejects future and malformed review metadata', () => {
@@ -1509,8 +1588,8 @@ test('published user routes record source freshness while preview library stays 
     return exposure === 'catalog_preview' || exposure === 'hidden';
   });
 
-  assert.ok(userRoutes.length >= 128);
-  assert.ok(previewOrHidden.length >= 20);
+  assert.ok(userRoutes.length >= 123);
+  assert.ok(previewOrHidden.length >= 25);
 
   const demotedPreviewSlugs = [
     'digital-detox-weekly',
@@ -1519,6 +1598,11 @@ test('published user routes record source freshness while preview library stays 
     'new-apartment-precheck',
     'new-hobby-30day',
     'picture-book-reading-routine',
+    'job-change-risk-check',
+    'national-health-checkup-d7',
+    'diet-habit-2week',
+    'diet-meal-exercise-log',
+    'diet-reset-2week',
   ];
   for (const slug of demotedPreviewSlugs) {
     const bundle = published.find((entry) => entry.flow.slug === slug);
@@ -1635,6 +1719,8 @@ test('real source-backed flows include precision and tailored executable details
   assert.ok(real.length >= 20);
   const customRealSourceItemCounts = new Map<string, number>([
     ['real-fitvely-diet-record-routine', 3],
+    ['real-childcare-vaccination-visit-prep', 3],
+    ['real-qnet-application-examday-check', 4],
   ]);
 
   for (const bundle of real) {
@@ -1685,6 +1771,15 @@ test('fitness creator deep dive converts exact videos into executable flows', ()
     { creator: 'ThankyouBUBU', slugPrefix: 'real-thankyou-bubu-video-', minimum: 10 },
     { creator: 'FITVELY', slugPrefix: 'real-fitvely-video-', minimum: 10 },
   ];
+  const undatedDietSlugs = new Set([
+    'real-fitvely-video-body-fat-6kg-method',
+    'real-fitvely-video-carb-reason',
+    'real-fitvely-video-three-week-check',
+    'real-fitvely-video-post-workout-nutrition',
+    'real-fitvely-video-carb-amount-shorts',
+    'real-fitvely-video-after-work-nutrition',
+    'real-fitvely-video-weight-class-method',
+  ]);
 
   for (const { creator, slugPrefix, minimum } of expected) {
     const exactVideoFlows = seedBundles.filter(
@@ -1700,7 +1795,13 @@ test('fitness creator deep dive converts exact videos into executable flows', ()
       assert.match(bundle.flow.source_url ?? '', /^https:\/\/www\.youtube\.com\/watch\?v=/, bundle.flow.slug);
       assert.equal(bundle.items.length, 1, `${bundle.flow.slug} should keep creator video execution to one checklist item`);
       assert.equal(bundle.itemDetails?.length, 1, `${bundle.flow.slug} should keep creator video detail in one panel`);
-      assert.ok(bundle.items.every((item) => item.repeat_rule === 'weekly'), bundle.flow.slug);
+      if (undatedDietSlugs.has(bundle.flow.slug)) {
+        assert.equal(bundle.flow.structure_type, 'checklist', bundle.flow.slug);
+        assert.equal(bundle.flow.anchor_type, 'none', bundle.flow.slug);
+        assert.ok(bundle.items.every((item) => item.repeat_rule === undefined), bundle.flow.slug);
+      } else {
+        assert.ok(bundle.items.every((item) => item.repeat_rule === 'weekly'), bundle.flow.slug);
+      }
       assert.ok(bundle.items.every((item) => item.source_type === 'creator_experience'), bundle.flow.slug);
       assert.ok(
         bundle.itemDetails?.every((detail) =>
@@ -1728,8 +1829,8 @@ test('fitness exact video flows keep one action with clear execution detail', ()
 
   assert.equal(workout.items[0].title, '운동 스케줄 등록하고 영상 실행');
   assert.match(workout.itemDetails?.[0]?.how ?? '', /준비:.*실행:.*마무리:/);
-  assert.equal(diet.items[0].title, '다음 식사 한 끼에 감량 기준 적용');
-  assert.match(diet.itemDetails?.[0]?.how ?? '', /준비:.*실행:.*마무리:/);
+  assert.equal(diet.items[0].title, '원본 영상에서 확인한 기준 1개 기록');
+  assert.match(diet.itemDetails?.[0]?.how ?? '', /준비:.*적용 기준:.*마무리:/);
   assert.equal(workoutPlan.items[0].title, '이번 주 분할·세트·휴식 기준 정하기');
   assert.match(workoutPlan.itemDetails?.[0]?.how ?? '', /운동표|분할|세트|휴식/);
   assert.doesNotMatch(workoutPlan.itemDetails?.[0]?.how ?? '', /식사 한 끼/);
@@ -1841,6 +1942,10 @@ test('diet exact video details stay limited to one application and record', () =
     'real-fitvely-video-after-work-nutrition',
     'real-fitvely-video-weight-class-method',
   ];
+  const sourceObservationSlugs = new Set([
+    'real-fitvely-video-body-fat-6kg-method',
+    'real-fitvely-video-three-week-check',
+  ]);
 
   for (const slug of slugs) {
     const bundle = seedBundles.find((entry) => entry.flow.slug === slug);
@@ -1848,6 +1953,9 @@ test('diet exact video details stay limited to one application and record', () =
     assert.ok(bundle, slug);
     assert.equal(bundle.items.length, 1, `${slug} should keep one diet application action`);
     assert.equal(inferPrimaryDestination(bundle), 'sheet', `${slug} should be observation-sheet first`);
+    assert.equal(bundle.flow.structure_type, 'checklist', slug);
+    assert.equal(bundle.flow.anchor_type, 'none', slug);
+    assert.ok(bundle.items.every((item) => item.day_offset === undefined && item.repeat_rule === undefined), slug);
 
     const detail = bundle.itemDetails?.[0];
     assert.ok(detail, `${slug} missing detail`);
@@ -1862,12 +1970,24 @@ test('diet exact video details stay limited to one application and record', () =
     assert.match(detail.how ?? '', /첫 행동:/, `${slug} should start with a concrete first action`);
     assert.match(detail.how ?? '', /적용 전 기록:/, `${slug} should say what to capture before applying the rule`);
     assert.match(detail.how ?? '', /적용 후 기록:/, `${slug} should say what to capture after applying the rule`);
-    assert.match(detail.how ?? '', /유지\/중단 결정/, `${slug} should make the keep-or-stop decision portable`);
-    assert.match(
-      detail.completion_criteria ?? '',
-      /적용 전.*적용 후.*유지\/중단/s,
-      `${slug} completion criteria should be usable from an exported reminder or sheet row`,
-    );
+    if (sourceObservationSlugs.has(slug)) {
+      assert.equal(bundle.flow.structure_type, 'checklist', slug);
+      assert.equal(bundle.flow.anchor_type, 'none', slug);
+      assert.ok(bundle.items.every((item) => item.day_offset === undefined && item.repeat_rule === undefined), slug);
+      assert.match(detail.how ?? '', /적용\/보류 결정/, `${slug} should keep unsupported application optional`);
+      assert.match(
+        detail.completion_criteria ?? '',
+        /원본 영상.*적용\/보류.*추가 확인/s,
+        `${slug} completion criteria should preserve the source-review boundary`,
+      );
+    } else {
+      assert.match(detail.how ?? '', /유지\/중단 결정/, `${slug} should make the keep-or-stop decision portable`);
+      assert.match(
+        detail.completion_criteria ?? '',
+        /적용 전.*적용 후.*유지\/중단/s,
+        `${slug} completion criteria should be usable from an exported reminder or sheet row`,
+      );
+    }
     assert.match(detail.caution ?? '', /제한|폭식|어지러움|중단|전문가/, `${slug} needs diet-sensitive caution`);
   }
 });
@@ -1929,7 +2049,7 @@ test('source-backed flows expose primary destination for portable UX', () => {
   assert.equal(inferPrimaryDestination(workout), 'calendar');
   assert.equal(inferPrimaryDestination(diet), 'sheet');
   assert.equal(inferPrimaryDestination(workoutPlan), 'hybrid');
-  assert.equal(inferPrimaryDestination(qnet), 'hybrid');
+  assert.equal(inferPrimaryDestination(qnet), 'memo');
 });
 
 test('ThankyouBUBU former broad workout routes use exact video sources', () => {
@@ -1998,6 +2118,10 @@ test('MOFA travel prep route uses an exact country safety source without promoti
 
   assert.ok(travel);
   assert.equal(travel.flow.source_precision, 'exact');
+  assert.equal(travel.flow.structure_type, 'checklist');
+  assert.equal(travel.flow.anchor_type, 'none');
+  assert.ok(travel.items.every((item) => item.day_offset === undefined));
+  assert.equal((travel.flow as typeof travel.flow & { setup_anchor_label?: string }).setup_anchor_label, undefined);
   assert.equal(travel.flow.source_url, 'https://www.0404.go.kr/ntnSafetyInfo/86/detail');
   assert.ok(travel.flow.source_title?.includes('베트남'));
   assert.match(travel.flow.description, /외교부 해외안전여행/);
@@ -2008,9 +2132,50 @@ test('MOFA travel prep route uses an exact country safety source without promoti
   const detailText = travel.itemDetails
     .map((detail) => `${detail.why} ${detail.how} ${detail.completion_criteria} ${detail.caution ?? ''}`)
     .join('\n');
-  assert.match(detailText, /여행경보 단계, 확인일/);
+  assert.match(detailText, /여행경보 단계, 안전공지, 확인일/);
   assert.match(detailText, /영사콜센터/);
   assert.doesNotMatch(detailText, /여행에미치다/);
+  assert.doesNotMatch(JSON.stringify(travel), /출국일 기준|입국 조건|비자|보험/);
+});
+
+test('year-end tax refresh separates official checks from company-specific reference steps', () => {
+  const bundle = seedBundles.find((entry) => entry.flow.slug === 'year-end-tax-docs');
+  assert.ok(bundle);
+
+  const companyReferenceTitles = new Set([
+    '회사별 제출 일정과 제출 방식은 회사 안내에서 따로 기록하기',
+    'PDF 다운로드 또는 회사 제출 방식에 맞게 파일 저장하기',
+    '회사 안내에 따라 제출하고 완료 상태를 개인 메모에 남기기',
+  ]);
+  const detailByItem = new Map(bundle.itemDetails?.map((detail) => [detail.item_id, detail]));
+
+  assert.ok(bundle.items.every((item) => item.source_type !== 'creator_experience'));
+  for (const item of bundle.items) {
+    if (companyReferenceTitles.has(item.title)) {
+      assert.equal(item.source_type, 'reference', item.title);
+      continue;
+    }
+    if (item.source_type === 'official') {
+      assert.ok(detailByItem.get(item.id)?.links?.some((link) => link.type === 'official'), item.title);
+    }
+  }
+  assert.doesNotMatch(JSON.stringify(bundle.itemDetails), /회사 제출 기준를/);
+});
+
+test('corrected official real-source routes do not invent D-day schedules', () => {
+  const correctedSlugs = [
+    'real-qnet-application-examday-check',
+    'real-childcare-vaccination-visit-prep',
+    'real-mofa-overseas-travel-prep',
+  ];
+
+  for (const slug of correctedSlugs) {
+    const bundle = seedBundles.find((entry) => entry.flow.slug === slug);
+    assert.ok(bundle, slug);
+    assert.equal(bundle.flow.structure_type, 'checklist', slug);
+    assert.equal(bundle.flow.anchor_type, 'none', slug);
+    assert.ok(bundle.items.every((item) => item.day_offset === undefined), slug);
+  }
 });
 
 test('fitness exact video flow titles preserve the original content premise', () => {

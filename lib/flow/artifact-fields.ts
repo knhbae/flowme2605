@@ -61,10 +61,12 @@ const workoutProgrammingSlugs = new Set([
   'real-fitvely-video-workout-order',
   'real-fitvely-video-workout-split-science',
 ]);
-const fitvelyNutritionExactVideoSlugs = new Set([
+const fitvelySourceObservationSlugs = new Set([
   'real-fitvely-video-body-fat-6kg-method',
-  'real-fitvely-video-carb-reason',
   'real-fitvely-video-three-week-check',
+]);
+const fitvelyNutritionExactVideoSlugs = new Set([
+  'real-fitvely-video-carb-reason',
   'real-fitvely-video-post-workout-nutrition',
   'real-fitvely-video-carb-amount-shorts',
   'real-fitvely-video-after-work-nutrition',
@@ -264,11 +266,10 @@ const qnetLogTables: ArtifactLogTable[] = [
     id: 'qnet-exam-day-records',
     eyebrow: '시험 당일',
     title: '수험표·시험장 준비 기록',
-    description: '수험표 출력, 시험장 위치, 입실 시간, 합격자 발표일을 당일 준비 메모로 묶습니다.',
+    description: '수험표 출력, 시험장 위치, 입실 시간을 실제 시험 공고와 접수 내역에서 확인해 준비 메모로 묶습니다.',
     rows: [
       { id: 'qnet-admission-ticket', label: '수험표 출력' },
       { id: 'qnet-exam-site', label: '시험장·입실 시간' },
-      { id: 'qnet-result-date', label: '합격자 발표일' },
     ],
     columns: [
       { id: 'due', label: '마감/시점', placeholder: '예: 2026-07-15 09:00' },
@@ -737,6 +738,25 @@ const fitvelyNutritionActionObservationLogTables: ArtifactLogTable[] = [
   },
 ];
 
+const fitvelySourceObservationLogTables: ArtifactLogTable[] = [
+  {
+    id: 'fitvely-source-observation-log',
+    eyebrow: '출처 확인표',
+    title: '원본 영상 주장 확인 기록',
+    description:
+      '원본 영상에서 직접 확인한 주장 1개와 근거, 적용/보류 결정, 추가 확인 질문을 기록합니다. 즉시 실행을 권하지 않습니다.',
+    rows: [{ id: 'fitvely-source-observation', label: '출처 확인 기록' }],
+    columns: [
+      { id: 'checkedAt', label: '확인일', placeholder: '예: 2026-08-22' },
+      { id: 'sourceStatement', label: '출처 문장 요약', placeholder: '예: 영상에서 직접 확인한 주장 1개' },
+      { id: 'sourceEvidence', label: '영상 근거', placeholder: '예: 확인한 구간과 맥락' },
+      { id: 'applyOrHold', label: '적용/보류', placeholder: '예: 보류' },
+      { id: 'openQuestion', label: '추가 확인 질문', placeholder: '예: 전체 영상에서도 같은 기준인가' },
+      { id: 'personalMemo', label: '개인 메모', placeholder: '예: 내 상황에는 바로 적용하지 않음' },
+    ],
+  },
+];
+
 const waterPurifierFilterLogTables: ArtifactLogTable[] = [
   {
     id: 'water-purifier-filter-cycle-log',
@@ -956,6 +976,7 @@ export function getLogTables(bundle: FlowBundle): ArtifactLogTable[] {
   if (qnetExamSlugs.has(bundle.flow.slug)) return qnetLogTables;
   if (waterPurifierFilterSlugs.has(bundle.flow.slug)) return waterPurifierFilterLogTables;
   if (fitvelyDietRecordSlugs.has(bundle.flow.slug)) return [];
+  if (fitvelySourceObservationSlugs.has(bundle.flow.slug)) return fitvelySourceObservationLogTables;
   if (fitvelyNutritionExactVideoSlugs.has(bundle.flow.slug)) return fitvelyNutritionActionObservationLogTables;
   if (bundle.flow.slug === 'computer-skills-d30-study') return [];
   if (studySlugs.has(bundle.flow.slug)) return studyLogTables;

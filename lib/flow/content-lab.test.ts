@@ -129,8 +129,8 @@ test('content lab exposes source-fit audit summary for representative cleanup', 
   assert.equal(summary.sourceFitAuditedCount, 141);
   assert.ok(summary.sourceFitAverageScore >= 70);
   assert.equal(summary.sourceFitDecisionCounts.keep_representative, 52);
-  assert.equal(summary.sourceFitDecisionCounts.reshape_before_featured, 74);
-  assert.equal(summary.sourceFitDecisionCounts.catalog_preview_only, 14);
+  assert.equal(summary.sourceFitDecisionCounts.reshape_before_featured, 69);
+  assert.equal(summary.sourceFitDecisionCounts.catalog_preview_only, 19);
   assert.equal(summary.sourceFitDecisionCounts.hide_from_public_catalog, 1);
 });
 
