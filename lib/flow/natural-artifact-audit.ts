@@ -40,6 +40,55 @@ const emptyDecisionCounts: DecisionCounts = {
   replace_or_hide_source: 0,
 };
 
+function makeFitvelySingleApplicationAudit({
+  slug,
+  sourceTitle,
+  sourceUrl,
+  focus,
+}: {
+  slug: string;
+  sourceTitle: string;
+  sourceUrl: string;
+  focus: string;
+}): RealSourceNaturalArtifactAudit {
+  return {
+    slug,
+    checkedAt: '2026-08-22',
+    sourceTitle,
+    sourceUrl,
+    sourceEvidence: [
+      `공식 YouTube watch page와 oEmbed 메타에서 "${sourceTitle}" 제목과 FITVELY 작성자를 확인했다.`,
+      `공개 메타만으로 ${focus}의 구체 수치나 반복 주기를 확정하지 않고, 사용자가 원본에서 직접 확인한 기준 하나를 오늘 한 번 적용하도록 제한했다.`,
+    ],
+    userScenario: `사용자는 원본 영상을 열어 ${focus} 기준 하나를 직접 확인한 뒤 오늘 한 번만 적용하고 전후 상태와 유지 또는 중단 결정을 기록한다.`,
+    naturalArtifacts: [
+      {
+        kind: 'spreadsheet',
+        artifactTitle: `${focus} 1회 적용 전후 관찰표`,
+        simulatedInputs: ['확인일=2026-08-22', '출처에서 확인한 기준=1개', '적용=오늘 한 번', '결정=유지 또는 중단'],
+        expectedOutput: ['확인일', '출처에서 확인한 기준', '적용 전 상태', '적용 후 반응', '유지/중단 결정', '원본 링크'],
+        currentFlowMatch: '현재 한 개 action이 원본에서 고른 기준 하나를 오늘 한 번 적용하고 전후 상태를 한 행에 기록하도록 제한한다.',
+        currentUxSupport: '적용 전후 관찰표와 유지·중단 메모를 제공하며 반복 일정은 만들지 않는다.',
+        gap: '사용자가 고른 출처 기준과 개인 반응을 계속 분리해 보여줘야 한다.',
+      },
+      {
+        kind: 'memo',
+        artifactTitle: '유지·중단 이유 메모',
+        simulatedInputs: ['결정=중단', '이유=내 상황과 맞지 않음', '추가확인=원본의 예외 조건'],
+        expectedOutput: ['유지/중단 결정', '결정 이유', '추가 확인할 예외', '개인 메모'],
+        currentFlowMatch: '한 번 적용한 결과를 유지 또는 중단 결정과 함께 남길 수 있다.',
+        currentUxSupport: '주간 조정이 아닌 1회 적용 판단 메모로 표시한다.',
+        gap: '효과 보장이나 장기 계획으로 오해되지 않도록 1회 적용 범위를 유지해야 한다.',
+      },
+    ],
+    currentContentGap: `원본을 열기 전에는 ${focus}의 구체 방법, 수치, 예외를 확정할 수 없다.`,
+    currentUxGap: '출처에서 확인한 기준과 개인 적용 결과를 분리하고 반복 일정이 아님을 계속 보여줘야 한다.',
+    nextContentAction: '원본에서 직접 확인한 기준 하나를 오늘 한 번 적용하는 범위를 유지하고 기간·횟수를 추가하지 않는다.',
+    nextUxAction: '적용 전후 관찰표와 유지·중단 메모를 제공하되 Calendar export는 제공하지 않는다.',
+    decision: 'reshape_content_or_ux',
+  };
+}
+
 export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] = [
   {
     slug: 'real-samsung-aircon-seasonal-care',
@@ -121,23 +170,23 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
   },
   {
     slug: 'real-qnet-application-examday-check',
-    checkedAt: '2026-05-22',
-    sourceTitle: 'Q-Net 원서접수시 유의사항',
-    sourceUrl: 'https://www.q-net.or.kr/rcv002.do?gSite=L&id=rcv002_identi',
+    checkedAt: '2026-08-22',
+    sourceTitle: 'Q-Net 원서접수안내',
+    sourceUrl: 'https://www.q-net.or.kr/rcv001.do?gSite=Q&id=rcv00103',
     sourceEvidence: [
-      '공식 페이지가 인정 신분증 요건, 원본/사진/주민등록번호/성명/발급자 기준, 인정되지 않는 예시를 안내한다.',
-      '시험 접수와 시험 당일 준비는 마감과 준비물 누락 리스크가 있어 일정+체크리스트 산출물이 자연스럽다.',
+      'Q-Net 원서접수안내가 원서접수 절차, 결제, 접수 상태, 환불과 수험표 확인 경로를 제공한다.',
+      '인정 신분증 상세는 별도 Q-Net 공식 페이지를 해당 준비물 항목의 보조 링크로 연결한다.',
     ],
     userScenario: '사용자는 자격증 원서접수 후 시험 전날 신분증과 준비물을 빠뜨리지 않으려 한다.',
     naturalArtifacts: [
       {
-        kind: 'monthly_calendar',
-        artifactTitle: 'Q-Net 접수부터 시험당일 일정표',
-        simulatedInputs: ['시험일=2026-07-12', '접수마감=2026-06-10 18:00', '종목=정보처리기사', '시험장=서울동부'],
-        expectedOutput: ['6/9 접수 마감 전 확인', '6/10 결제/접수 상태 저장', '7/11 신분증/수험표 준비', '7/12 입실 시간 맞춰 출발'],
-        currentFlowMatch: '접수 전, 접수 완료, 시험 당일 흐름은 맞다.',
-        currentUxSupport: '시험일 anchor는 맞지만 접수 마감 같은 별도 deadline 입력은 부족하다.',
-        gap: '시험일 외 접수 마감/수험표 출력일 같은 보조 날짜를 입력할 수 있어야 한다.',
+        kind: 'checklist',
+        artifactTitle: 'Q-Net 원서접수·응시 준비 확인표',
+        simulatedInputs: ['종목=정보처리기사', '접수일정=해당 시험 공고에서 확인', '시험장=접수 내역에서 확인'],
+        expectedOutput: ['응시 자격과 실제 접수 일정 확인', '접수 입력 정보 준비', '결제/접수 상태와 수험표 확인', '인정 신분증과 종목별 준비물 확인'],
+        currentFlowMatch: '현재 Flow는 일반 안내가 확정하지 않는 D-day 없이 접수 전후 확인 순서를 제공한다.',
+        currentUxSupport: '날짜 없는 체크리스트와 항목 메모로 실제 공고에서 확인한 일정을 기록할 수 있다.',
+        gap: '시험별 일정과 준비물은 해당 공고를 사용자가 직접 확인해 기록해야 한다.',
       },
       {
         kind: 'spreadsheet',
@@ -149,15 +198,15 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
         gap: '공식 기준/내 준비물 비교형 export가 필요하다.',
       },
     ],
-    currentContentGap: '접수 마감, 수험표, 신분증 기준처럼 시험 전 단계별 deadline이 더 구조화되어야 한다.',
-    currentUxGap: '시험일 하나만으로는 접수/출력/준비물 날짜가 충분히 표현되지 않는다.',
-    nextContentAction: 'Q-Net Flow를 시험일+접수마감 다중 deadline Flow로 보강한다.',
-    nextUxAction: 'timeline Flow에 보조 deadline 입력과 공식 기준 대비표 export를 추가한다.',
+    currentContentGap: '시험별 일정과 준비물은 일반 안내에서 확정할 수 없어 사용자가 실제 공고를 계속 확인해야 한다.',
+    currentUxGap: '시험별 공고에서 확인한 일정과 준비물을 한눈에 기록하는 전용 필드는 부족하다.',
+    nextContentAction: '일반 원서접수 안내를 정본으로 유지하고 인정 신분증은 해당 항목의 공식 보조 링크로만 제공한다.',
+    nextUxAction: 'checklist에 사용자가 확인한 일정 메모와 공식 기준 대비표 export를 추가한다.',
     decision: 'reshape_content_or_ux',
   },
   {
     slug: 'real-gov24-moving-report-check',
-    checkedAt: '2026-05-22',
+    checkedAt: '2026-08-22',
     sourceTitle: '정부24 전입신고 민원안내',
     sourceUrl: 'https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000016&tp_seq=01',
     sourceEvidence: [
@@ -193,8 +242,8 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
   },
   {
     slug: 'real-childcare-vaccination-visit-prep',
-    checkedAt: '2026-05-22',
-    sourceTitle: '아이사랑 월령별 성장 및 돌보기',
+    checkedAt: '2026-08-22',
+    sourceTitle: '아이사랑 월령별 성장 및 돌보기 (4~6개월)',
     sourceUrl: 'https://www.childcare.go.kr/?menuno=439',
     sourceEvidence: [
       '아이사랑 페이지는 4~6개월 건강검진, 생후 4개월 예방접종, 증상/외출 준비 등 월령별 돌봄 정보를 제공한다.',
@@ -203,13 +252,13 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
     userScenario: '보호자는 4개월 접종/검진 예약 전 최근 증상과 준비물을 정리해 병원에서 빠뜨리지 않으려 한다.',
     naturalArtifacts: [
       {
-        kind: 'monthly_calendar',
-        artifactTitle: '4개월 접종/검진 방문 준비 달력',
-        simulatedInputs: ['방문일=2026-06-12', '아기월령=4개월', '방문유형=예방접종+검진', '보호자=엄마'],
-        expectedOutput: ['6/9 문진표/예약 확인', '6/11 체온/수유/수면 기록 준비', '6/12 아기수첩 지참', '6/13 접종 후 반응 관찰'],
-        currentFlowMatch: '방문 전후 흐름은 맞지만 방문 후 관찰이 더 중요하게 보여야 한다.',
-        currentUxSupport: 'timeline은 맞지만 의료 주의와 기록 입력이 일반 메모에 묻힌다.',
-        gap: '방문 후 반응 기록과 의료진 상담 우선 문구가 별도 산출물이어야 한다.',
+        kind: 'checklist',
+        artifactTitle: '4~6개월 검진·접종 안내 확인표',
+        simulatedInputs: ['아기월령=4개월', '확인범위=예방접종+검진', '추가확인=의료기관 일정'],
+        expectedOutput: ['4~6개월 건강검진 안내 확인', '생후 4개월 예방접종 안내 확인', '최근 상태와 보호자 질문 메모'],
+        currentFlowMatch: '현재 Flow는 4~6개월 원문 범위 안에서 공식 안내 확인과 보호자 질문 메모만 제공한다.',
+        currentUxSupport: '날짜를 만들지 않는 checklist로 공식 안내와 의료기관 재확인을 분리한다.',
+        gap: '의료 주의와 보호자 질문 기록이 일반 메모에 묻히지 않아야 한다.',
       },
       {
         kind: 'memo',
@@ -221,9 +270,9 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
         gap: '민감 의료 방문형 Flow에는 질문/답변/다음 방문일 메모가 필요하다.',
       },
     ],
-    currentContentGap: '방문 후 관찰과 의료진 답변 기록이 현재 항목에서 덜 강조된다.',
+    currentContentGap: '실제 검진·접종 가능 여부와 일정은 의료기관 안내를 사용자가 다시 확인해야 한다.',
     currentUxGap: '의료 민감 기록은 일반 메모보다 구조화된 방문 기록으로 보여야 한다.',
-    nextContentAction: '검진/접종 Flow에 방문 후 관찰과 의료진 답변 항목을 보강한다.',
+    nextContentAction: '4~6개월 공식 안내 확인과 최근 상태·질문 메모 범위를 유지하고 의료 판단을 추가하지 않는다.',
     nextUxAction: '의료/육아 Flow에 방문 기록 메모 템플릿과 주의 배너를 추가한다.',
     decision: 'reshape_content_or_ux',
   },
@@ -265,7 +314,7 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
   },
   {
     slug: 'real-ohouse-moving-d30-prep',
-    checkedAt: '2026-05-22',
+    checkedAt: '2026-08-22',
     sourceTitle: '오늘의집 원룸 이사 준비 순서 가이드',
     sourceUrl: 'https://ohou.se/advices/12199',
     sourceEvidence: [
@@ -337,7 +386,7 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
   },
   {
     slug: 'real-thankyou-bubu-video-full-body-no-jump',
-    checkedAt: '2026-05-22',
+    checkedAt: '2026-08-22',
     sourceTitle: 'ThankyouBUBU 전신 다이어트 최고의 운동',
     sourceUrl: 'https://www.youtube.com/watch?v=pcyrlkHXAdE',
     sourceEvidence: [
@@ -377,7 +426,7 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
   },
   {
     slug: 'real-thankyou-bubu-video-daily-stretch-9min',
-    checkedAt: '2026-05-22',
+    checkedAt: '2026-08-22',
     sourceTitle: 'ThankyouBUBU 하루 9분 전신 스트레칭 BEST',
     sourceUrl: 'https://www.youtube.com/watch?v=aob4Lh1Vebk',
     sourceEvidence: [
@@ -417,7 +466,7 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
   },
   {
     slug: 'real-thankyou-bubu-video-belly-side-all-in-one',
-    checkedAt: '2026-05-22',
+    checkedAt: '2026-08-22',
     sourceTitle: 'ThankyouBUBU NO관절부담 뱃살 옆구리살 빼는 운동',
     sourceUrl: 'https://www.youtube.com/watch?v=toAUho9bEw0',
     sourceEvidence: [
@@ -458,7 +507,7 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
   },
   {
     slug: 'real-thankyou-bubu-video-no-knee-cardio-strength',
-    checkedAt: '2026-05-22',
+    checkedAt: '2026-08-22',
     sourceTitle: 'ThankyouBUBU NO무릎부담 전신유산소 근력 다이어트',
     sourceUrl: 'https://www.youtube.com/watch?v=hesjApxDlj0',
     sourceEvidence: [
@@ -499,7 +548,7 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
   },
   {
     slug: 'real-thankyou-bubu-video-arm-back-shoulder',
-    checkedAt: '2026-05-22',
+    checkedAt: '2026-08-22',
     sourceTitle: 'ThankyouBUBU 팔뚝살 등살 가슴 어깨 운동',
     sourceUrl: 'https://www.youtube.com/watch?v=73IrtWDDby0',
     sourceEvidence: [
@@ -540,7 +589,7 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
   },
   {
     slug: 'real-thankyou-bubu-video-waist-8cm',
-    checkedAt: '2026-05-22',
+    checkedAt: '2026-08-22',
     sourceTitle: 'ThankyouBUBU 허리둘레 줄어드는 운동',
     sourceUrl: 'https://www.youtube.com/watch?v=k3MznPQvUEk',
     sourceEvidence: [
@@ -581,7 +630,7 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
   },
   {
     slug: 'real-thankyou-bubu-video-8min-cardio',
-    checkedAt: '2026-05-22',
+    checkedAt: '2026-08-22',
     sourceTitle: 'ThankyouBUBU 8분 전신유산소 다이어트',
     sourceUrl: 'https://www.youtube.com/watch?v=O87gkL1cKSc',
     sourceEvidence: [
@@ -622,7 +671,7 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
   },
   {
     slug: 'real-thankyou-bubu-video-3min-arm',
-    checkedAt: '2026-05-22',
+    checkedAt: '2026-08-22',
     sourceTitle: 'ThankyouBUBU 3분 최고의 팔뚝살빼는운동',
     sourceUrl: 'https://www.youtube.com/watch?v=Kl9Dmx86Z0Q',
     sourceEvidence: [
@@ -663,7 +712,7 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
   },
   {
     slug: 'real-thankyou-bubu-video-3min-abs',
-    checkedAt: '2026-05-22',
+    checkedAt: '2026-08-22',
     sourceTitle: 'ThankyouBUBU 3분 최고의 복근운동',
     sourceUrl: 'https://www.youtube.com/watch?v=6IUL8-nGetA',
     sourceEvidence: [
@@ -704,7 +753,7 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
   },
   {
     slug: 'real-thankyou-bubu-video-lower-belly-8min',
-    checkedAt: '2026-05-22',
+    checkedAt: '2026-08-22',
     sourceTitle: 'ThankyouBUBU 8분 아랫뱃살 똥배 운동',
     sourceUrl: 'https://www.youtube.com/watch?v=9xxCFu21CLM',
     sourceEvidence: [
@@ -745,296 +794,115 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
   },
   {
     slug: 'real-fitvely-video-body-fat-6kg-method',
-    checkedAt: '2026-05-22',
+    checkedAt: '2026-08-22',
     sourceTitle: 'FITVELY 체지방 6kg 감량 비법',
     sourceUrl: 'https://www.youtube.com/watch?v=EQcoKqDO8Ds',
     sourceEvidence: [
-      '체지방 감량 방법 콘텐츠는 단일 체크리스트보다 식단, 운동, 체중/체지방 기록이 반복되는 추적형 산출물과 잘 맞는다.',
-      '사용자는 영상의 원칙을 자기 식사와 운동 루틴에 적용하며 매일 기록하고 주간으로 조정할 가능성이 높다.',
+      '공식 oEmbed와 공개 페이지에서 영상 ID, 제목, FITVELY 작성자와 재생 가능 상태를 다시 확인했다.',
+      '공개 메타만으로 특정 식사·운동 적용법을 확정할 수 없어 원본에서 직접 확인한 기준 1개를 기록하는 범위로 제한했다.',
     ],
-    userScenario: '사용자는 4주간 체지방을 줄이기 위해 식단 원칙과 운동 여부를 기록하고, 매주 체중과 허리둘레 변화를 확인하려 한다.',
+    userScenario: '사용자는 감량 제목을 그대로 약속으로 받아들이지 않고 원본에서 실제로 확인한 기준 한 가지가 자기 상황에 맞는지 기록하려 한다.',
     naturalArtifacts: [
       {
         kind: 'spreadsheet',
-        artifactTitle: '4주 체지방 감량 기록표',
-        simulatedInputs: ['시작일=2026-06-01', '목표=체지방 -2kg', '측정=월요일 아침', '운동=주4회', '식단=단백질 우선'],
+        artifactTitle: '원본 기준 확인표',
+        simulatedInputs: ['확인일=2026-08-22', '출처문장=영상에서 직접 확인', '결정=적용 보류'],
         expectedOutput: [
-          '날짜, 체중, 허리둘레, 운동 여부, 식단 준수, 수면, 메모 컬럼',
-          '주간 평균과 지난주 대비 변화량',
-          '2주 연속 정체 시 식단/운동 조정 메모',
+          '확인일, 출처 문장 요약, 영상 근거, 적용/보류, 개인 메모 컬럼',
+          '영상에 없는 기간·횟수·수치를 만들지 않았다는 확인',
         ],
-        currentFlowMatch: '현재 routine 구조는 반복 체크는 가능하지만 체중/둘레/식단 같은 수치 기록이 약하다.',
-        currentUxSupport: '체크리스트 UI는 있으나 표 형태 기록과 주간 요약 preview가 부족하다.',
-        gap: '다이어트 콘텐츠는 체크보다 로그와 주간 리포트가 핵심 산출물이다.',
-      },
-      {
-        kind: 'routine_calendar',
-        artifactTitle: '운동+식단 반복 실행 캘린더',
-        simulatedInputs: ['반복=월/화/목/토 운동', '식단체크=매일 저녁', '리셋=매주 일요일'],
-        expectedOutput: ['운동일 일정', '매일 식단 체크 알림', '일요일 주간 측정/리뷰 일정'],
-        currentFlowMatch: '운동/식단 항목이 있으나 서로 다른 반복 주기를 한 Flow 안에서 조합하는 모델이 부족하다.',
-        currentUxSupport: '한 Flow 안에 여러 반복 패턴을 캘린더로 미리보기 어렵다.',
-        gap: '다이어트 Flow는 여러 루틴이 같은 달력에 겹쳐 보여야 한다.',
-      },
-    ],
-    currentContentGap: '체지방 감량 콘텐츠는 원칙 적용과 기록이 핵심인데 현재 항목은 실행 체크 중심이다.',
-    currentUxGap: '식단/운동/측정처럼 서로 다른 반복 주기를 한 달력에서 조합하지 못한다.',
-    nextContentAction: '다이어트 Flow를 로그형 spreadsheet와 루틴형 calendar를 함께 가진 구조로 바꾼다.',
-    nextUxAction: 'routine Flow에 복수 반복 규칙과 주간 기록표 preview를 추가한다.',
-    decision: 'reshape_content_or_ux',
-  },
-  {
-    slug: 'real-fitvely-video-carb-reason',
-    checkedAt: '2026-05-22',
-    sourceTitle: 'FITVELY 다이어트할 때 탄수화물을 먹어야 하는 이유',
-    sourceUrl: 'https://www.youtube.com/watch?v=_h3u30M9ECc',
-    sourceEvidence: [
-      '검색 결과와 요약 글이 FITVELY 탄수화물 섭취 필요성 영상을 다이어트 중 탄수화물을 지나치게 줄이지 않는 영양 가이드 맥락으로 설명한다.',
-      '탄수화물 가이드형 영상은 할 일 체크보다 매끼 탄수화물 선택과 운동일 섭취 타이밍을 기록하는 식단표가 자연 산출물이다.',
-    ],
-    userScenario: '사용자는 다이어트 중 탄수화물을 무조건 끊지 않고, 운동일과 비운동일에 어떤 탄수화물을 얼마나 먹었는지 기록하려 한다.',
-    naturalArtifacts: [
-      {
-        kind: 'spreadsheet',
-        artifactTitle: '탄수화물 섭취 선택/기록표',
-        simulatedInputs: ['목표=감량 유지', '운동일=월/수/금', '탄수화물원=현미밥/고구마/과일', '기록기간=2주'],
-        expectedOutput: [
-          '날짜, 운동 여부, 아침/점심/저녁 탄수화물원',
-          '운동 전후 섭취 여부',
-          '허기/컨디션 메모',
-          '탄수화물 과소/과다 조절 메모',
-        ],
-        currentFlowMatch: '현재 exact-video Flow는 적용 행동 1개로 좁히지만 식단 기록표로 이어지지 않는다.',
-        currentUxSupport: '메모/복사는 가능하지만 매끼 식단 spreadsheet preview가 없다.',
-        gap: '영양 가이드 Flow는 체크리스트보다 식단 기록표와 조절 메모가 핵심이다.',
+        currentFlowMatch: '현재 한 개 action이 출처 문장과 적용/보류 결정을 관찰표 한 행에 기록하도록 제한한다.',
+        currentUxSupport: 'spreadsheet preview는 가능하지만 출처 확인과 개인 행동을 더 선명하게 구분할 필요가 있다.',
+        gap: '출처 확인표가 감량 실행 계획으로 오해되지 않도록 적용/보류 상태를 강조해야 한다.',
       },
       {
         kind: 'memo',
-        artifactTitle: '이번 주 탄수화물 기준 메모',
-        simulatedInputs: ['평일기준=점심 현미밥 반공기', '운동전=바나나 1개', '운동후=고구마/단백질', '주의=무탄수 금지'],
-        expectedOutput: ['평일 기준, 운동 전 기준, 운동 후 기준, 피해야 할 극단 기준, 다음 주 조정'],
-        currentFlowMatch: '항목 메모로 기록은 가능하지만 사용자가 다시 붙여 쓸 기준 카드로 보이지 않는다.',
-        currentUxSupport: '메모가 export에서 영양 기준 카드로 분리되지 않는다.',
-        gap: '반복 적용할 식단 기준은 한 장짜리 memo card로 복사되어야 한다.',
+        artifactTitle: '추가 확인 질문 메모',
+        simulatedInputs: ['확인질문=내 상황에 적용 가능한가', '개인상황=기존 질환 여부 별도 확인', '결정=실행 보류'],
+        expectedOutput: ['아직 확인하지 못한 주장', '개인 상황 질문', '원본 재확인 필요 여부', '적용/보류 결정'],
+        currentFlowMatch: '추가 확인이 필요한 질문과 적용/보류 결정을 한 action의 기록으로 남길 수 있다.',
+        currentUxSupport: '일반 메모는 가능하지만 미확인 주장과 개인 판단을 구분하는 필드가 약하다.',
+        gap: '후속 확인 질문은 날짜나 반복 처방 없이 미확인 상태로 남아야 한다.',
       },
     ],
-    currentContentGap: '탄수화물 섭취 원칙이 사용자의 매끼 기준과 운동일 타이밍으로 재구성되지 않는다.',
-    currentUxGap: '식단 로그와 기준 메모가 부족해 사용자가 별도 앱/시트에 다시 정리해야 한다.',
-    nextContentAction: '탄수화물 Flow를 식단 기준 카드와 2주 기록표로 재구성한다.',
-    nextUxAction: 'diet routine에 meal spreadsheet preview와 weekly adjustment memo를 추가한다.',
+    currentContentGap: '공개 메타만으로 구체 행동을 확정할 수 없어 원본 확인 전에는 적용을 보류해야 한다.',
+    currentUxGap: '출처 확인 기록과 개인 행동 계획의 차이를 한 화면에서 더 분명히 보여줄 필요가 있다.',
+    nextContentAction: '원본에서 직접 확인한 기준 1개와 적용/보류 결정만 기록하는 범위를 유지한다.',
+    nextUxAction: '관찰표에 출처 확인 상태와 적용/보류를 분리해 표시한다.',
     decision: 'reshape_content_or_ux',
   },
+  makeFitvelySingleApplicationAudit({
+    slug: 'real-fitvely-video-carb-reason',
+    sourceTitle: 'FITVELY 다이어트할 때 탄수화물을 먹어야 하는 이유',
+    sourceUrl: 'https://www.youtube.com/watch?v=_h3u30M9ECc',
+    focus: '탄수화물 섭취 기준',
+  }),
   {
     slug: 'real-fitvely-video-three-week-check',
-    checkedAt: '2026-05-22',
+    checkedAt: '2026-08-22',
     sourceTitle: 'FITVELY 3주 감량 점검',
     sourceUrl: 'https://www.youtube.com/watch?v=nfdIpPXfIc8',
     sourceEvidence: [
-      '검색 결과가 3주 만에 큰 폭의 감량 사례와 FITVELY 다이어트 맥락을 연결해 보여준다.',
-      '큰 수치의 감량 제목은 그대로 약속하면 위험하므로 사용자의 실제 산출물은 3주 실행/측정/컨디션 점검표여야 한다.',
+      '공식 oEmbed와 공개 페이지에서 영상 ID, 제목, FITVELY 작성자와 재생 가능 상태를 다시 확인했다.',
+      '짧은 excerpt의 공개 메타만으로 식사·운동·수면 세 축을 확인할 수 없어 원본 클립에서 직접 확인한 주장 1개 기록으로 제한했다.',
     ],
-    userScenario: '사용자는 3주 동안 무리한 감량을 따라 하기보다 체중, 허리둘레, 운동, 식단, 컨디션을 매주 점검하려 한다.',
+    userScenario: '사용자는 3주 감량 제목을 결과 약속으로 받아들이지 않고 짧은 원본 클립에서 실제 확인되는 주장 한 가지를 기록하려 한다.',
     naturalArtifacts: [
       {
         kind: 'spreadsheet',
-        artifactTitle: '3주 감량 실행 점검표',
-        simulatedInputs: ['시작체중=68kg', '목표=3주 습관 점검', '측정=매주 월요일', '운동=주4회', '식단=야식 줄이기'],
+        artifactTitle: '짧은 클립 출처 확인표',
+        simulatedInputs: ['확인일=2026-08-22', '확인범위=클립에서 직접 확인', '결정=보류'],
         expectedOutput: [
-          '주차, 체중, 허리둘레, 운동 횟수, 식단 준수일',
-          '수면/컨디션 메모',
-          '무리한 제한 여부',
-          '다음 주 유지/완화 결정',
+          '확인일, 출처 문장 요약, 클립 근거, 적용/보류, 추가 확인 질문',
+          '클립에서 확인되지 않은 식사·운동·수면 축을 추가하지 않았다는 확인',
         ],
-        currentFlowMatch: '현재 Flow는 영상 적용 action만 있어 3주 점검표로 충분히 변환되지 않는다.',
-        currentUxSupport: '일반 반복 캘린더는 가능하지만 주차별 측정표와 안전 점검이 없다.',
-        gap: '감량 사례 영상은 결과 약속이 아니라 3주 점검표로 바뀌어야 한다.',
+        currentFlowMatch: '현재 Flow는 클립에서 직접 확인한 주장 1개와 적용/보류 결정을 한 행에 기록한다.',
+        currentUxSupport: '출처 확인표는 가능하지만 원본 클립과 개인 행동 사이 경계를 더 강조해야 한다.',
+        gap: '짧은 클립의 범위를 넘는 계획으로 확장되지 않도록 보류 상태가 눈에 띄어야 한다.',
       },
       {
         kind: 'memo',
-        artifactTitle: '무리한 감량 방지 체크 메모',
-        simulatedInputs: ['어지러움=없음', '폭식유발=가끔', '수면=6시간', '조정=운동 유지/식사 제한 완화'],
-        expectedOutput: ['어지러움, 폭식 유발, 수면, 생리/컨디션 변화, 다음 주 제한 완화 여부'],
-        currentFlowMatch: '건강 민감 warning은 있지만 구체적인 자기점검 메모가 없다.',
-        currentUxSupport: '메모가 주차별 점검표와 연결되지 않는다.',
-        gap: '민감한 감량 Flow는 안전 self-check가 실행 로그와 함께 있어야 한다.',
+        artifactTitle: '추가 확인 질문 메모',
+        simulatedInputs: ['확인질문=전체 영상에 같은 기준이 있는가', '개인상황=기존 질환 여부 별도 확인', '결정=실행 보류'],
+        expectedOutput: ['아직 확인하지 못한 주장, 전체 영상 확인 필요 여부, 개인 상황 질문, 적용/보류 결정'],
+        currentFlowMatch: '건강 민감 warning과 추가 확인 질문을 한 action의 기록으로 남길 수 있다.',
+        currentUxSupport: '일반 메모는 가능하지만 미확인 주장과 개인 판단을 구분하는 필드가 약하다.',
+        gap: '짧은 클립 밖 정보는 미확인 상태로 남아야 한다.',
       },
     ],
-    currentContentGap: '극적인 감량 사례를 안전한 3주 자기점검 계획으로 재구성하는 장치가 부족하다.',
-    currentUxGap: '주차별 측정/컨디션 로그와 캘린더가 분리되어 있다.',
-    nextContentAction: '3주 감량 Flow를 결과 약속이 아닌 안전 점검표와 주차별 리뷰로 재작성한다.',
-    nextUxAction: 'diet Flow에 3주 측정표와 health-sensitive self-check memo를 추가한다.',
+    currentContentGap: '짧은 excerpt만으로 식사·운동·수면 계획을 구성할 근거가 부족하다.',
+    currentUxGap: '출처에서 확인한 주장과 아직 확인하지 못한 적용 질문을 나눠 보여줘야 한다.',
+    nextContentAction: '원본 클립에서 직접 확인한 주장 1개만 기록하고 나머지 적용은 보류한다.',
+    nextUxAction: '출처 확인표에 적용/보류와 추가 확인 질문을 고정한다.',
     decision: 'reshape_content_or_ux',
   },
-  {
+  makeFitvelySingleApplicationAudit({
     slug: 'real-fitvely-video-post-workout-nutrition',
-    checkedAt: '2026-05-22',
     sourceTitle: 'FITVELY 운동 직후 섭취 가이드',
     sourceUrl: 'https://www.youtube.com/watch?v=J8YmqzhPS2Q',
-    sourceEvidence: [
-      'seed metadata가 이 exact video를 운동 직후 섭취가 중요하다는 FITVELY 영양 콘텐츠로 분류한다.',
-      '운동 직후 섭취형 콘텐츠는 운동일에만 반복되는 식사 타이밍 메모와 준비물 체크가 자연 산출물이다.',
-    ],
-    userScenario: '사용자는 저녁 운동 후 무엇을 언제 먹을지 정해두고, 운동일마다 섭취 여부와 속 불편 여부를 기록하려 한다.',
-    naturalArtifacts: [
-      {
-        kind: 'routine_calendar',
-        artifactTitle: '운동일 직후 섭취 리마인더',
-        simulatedInputs: ['운동일=월/수/금 20:00', '섭취시점=운동 후 30분', '준비=바나나/요거트', '기간=4주'],
-        expectedOutput: [
-          '월/수/금 운동 후 30분 섭취 리마인더',
-          '운동 전 준비물 체크',
-          '섭취 완료 여부',
-          '속 불편/허기 메모',
-        ],
-        currentFlowMatch: 'routine 구조는 맞지만 운동일 후속 섭취 같은 종속 리마인더 모델이 약하다.',
-        currentUxSupport: '반복 캘린더에 운동 후 상대시간 이벤트를 붙이기 어렵다.',
-        gap: '영양 루틴은 운동 이벤트에 연결된 후속 이벤트로 보여야 한다.',
-      },
-      {
-        kind: 'memo',
-        artifactTitle: '운동 직후 섭취 기준 카드',
-        simulatedInputs: ['운동종류=웨이트 60분', '운동후식사=바나나+요거트', '저녁시간=21:00', '불편=없음'],
-        expectedOutput: ['운동 종류, 운동 후 먹을 것, 섭취 시간, 불편 여부, 다음 운동일 준비물'],
-        currentFlowMatch: '항목 메모로 기록은 가능하지만 기준 카드로 재사용하기 어렵다.',
-        currentUxSupport: '메모 export에서 운동 후 섭취 기준이 독립적으로 보이지 않는다.',
-        gap: '운동 후 영양 Flow는 반복 카드와 캘린더 후속 이벤트가 함께 필요하다.',
-      },
-    ],
-    currentContentGap: '운동 후 섭취 기준이 사용자의 운동요일, 준비물, 속 불편 기록으로 변환되지 않았다.',
-    currentUxGap: '캘린더가 상대시간 후속 리마인더와 섭취 메모를 지원하지 않는다.',
-    nextContentAction: '운동직후 섭취 Flow를 운동일 후속 리마인더와 섭취 기준 카드로 재구성한다.',
-    nextUxAction: 'routine Flow에 parent event 이후 N분 후속 리마인더를 추가한다.',
-    decision: 'reshape_content_or_ux',
-  },
-  {
+    focus: '운동 직후 섭취 기준',
+  }),
+  makeFitvelySingleApplicationAudit({
     slug: 'real-fitvely-video-carb-amount-shorts',
-    checkedAt: '2026-05-22',
     sourceTitle: 'FITVELY 탄수화물 얼마나 섭취해야 할까',
     sourceUrl: 'https://www.youtube.com/watch?v=t630vnDGIWw',
-    sourceEvidence: [
-      'seed metadata가 이 exact video를 오늘 탄수화물 양을 기록하고 조정하는 shorts 기반 식단 콘텐츠로 분류한다.',
-      '짧은 영양 영상은 긴 학습 플랜보다 오늘 먹은 탄수화물 양과 다음 끼 조정 메모를 빠르게 남기는 로그와 맞다.',
-    ],
-    userScenario: '사용자는 오늘 먹은 탄수화물 양을 대략 기록하고, 저녁이나 다음날 식사에서 줄일지 유지할지 결정하려 한다.',
-    naturalArtifacts: [
-      {
-        kind: 'spreadsheet',
-        artifactTitle: '오늘 탄수화물 간단 기록표',
-        simulatedInputs: ['날짜=2026-06-05', '아침=식빵 1장', '점심=밥 반공기', '저녁계획=고구마 1개', '운동=없음'],
-        expectedOutput: [
-          '끼니별 탄수화물 음식',
-          '대략 양',
-          '운동 여부',
-          '저녁/다음날 조정',
-          '과도한 제한 여부 메모',
-        ],
-        currentFlowMatch: '현재 Flow는 오늘 적용 행동은 만들 수 있으나 끼니별 기록표는 없다.',
-        currentUxSupport: '메모에 적을 수 있지만 빠른 식단 로그 UI가 없다.',
-        gap: 'shorts형 식단 콘텐츠는 one-tap daily log로 전환되어야 한다.',
-      },
-      {
-        kind: 'memo',
-        artifactTitle: '다음 끼 조정 메모',
-        simulatedInputs: ['현재상태=허기 있음', '저녁조정=밥 줄이지 않음', '내일=운동 전 바나나', '주의=무탄수 금지'],
-        expectedOutput: ['허기, 운동 예정, 다음 끼 탄수화물 유지/감소, 무리한 제한 방지 메모'],
-        currentFlowMatch: '일반 메모는 가능하지만 다음 끼 조정으로 드러나지 않는다.',
-        currentUxSupport: '일별 로그와 다음 끼 메모가 연결되지 않는다.',
-        gap: '일일 식단 Flow는 기록 후 바로 다음 행동을 제안해야 한다.',
-      },
-    ],
-    currentContentGap: 'shorts 콘텐츠의 핵심인 오늘 기록과 다음 끼 조정이 Flow item으로 구조화되어 있지 않다.',
-    currentUxGap: '빠른 식단 로그와 다음 끼 조정 메모 UI가 없다.',
-    nextContentAction: '탄수화물 shorts Flow를 일일 기록표와 다음 끼 조정 카드로 전환한다.',
-    nextUxAction: 'diet Flow에 daily quick-log와 next-meal memo를 추가한다.',
-    decision: 'reshape_content_or_ux',
-  },
-  {
+    focus: '탄수화물 섭취량 기준',
+  }),
+  makeFitvelySingleApplicationAudit({
     slug: 'real-fitvely-video-after-work-nutrition',
-    checkedAt: '2026-05-22',
     sourceTitle: 'FITVELY 퇴근 후 운동 영양 섭취',
     sourceUrl: 'https://www.youtube.com/watch?v=zipquv7TErU',
-    sourceEvidence: [
-      'seed metadata가 이 exact video를 퇴근 후 운동하는 사람을 위한 영양 섭취 방법과 잘못된 경우 Top3로 분류한다.',
-      '퇴근 후 운동 콘텐츠는 퇴근 시간, 운동 시간, 운동 전후 식사 타이밍을 캘린더와 기준 메모로 바꾸는 것이 자연스럽다.',
-    ],
-    userScenario: '사용자는 퇴근 시간이 늦어 운동 전 저녁을 먹을지 운동 후에 먹을지 헷갈려서, 운동일별 식사 타이밍 기준을 정하려 한다.',
-    naturalArtifacts: [
-      {
-        kind: 'routine_calendar',
-        artifactTitle: '퇴근 후 운동 전후 식사 캘린더',
-        simulatedInputs: ['퇴근=19:00', '운동=20:30', '운동일=화/목/토', '식사전략=운동 전 간식/운동 후 저녁'],
-        expectedOutput: [
-          '화/목/토 퇴근 후 운동 일정',
-          '운동 60분 전 간식 리마인더',
-          '운동 후 저녁 식사 메모',
-          '속 불편/허기 여부 기록',
-        ],
-        currentFlowMatch: '현재 Flow는 오늘 적용 기준을 정할 수 있지만 퇴근-운동-식사의 시간 관계를 구조화하지 않는다.',
-        currentUxSupport: '캘린더는 단일 반복에 강하지만 운동 전후 상대시간 이벤트가 약하다.',
-        gap: '퇴근 후 운동 Flow는 시간대별 후속 리마인더와 식사 기준이 필요하다.',
-      },
-      {
-        kind: 'memo',
-        artifactTitle: '퇴근 후 운동 식사 기준 카드',
-        simulatedInputs: ['간식=바나나+우유', '운동후=밥 반공기+단백질', '피해야함=공복 고강도', '다음조정=속불편시 양 줄이기'],
-        expectedOutput: ['운동 전 간식 기준, 운동 후 식사 기준, 피해야 할 경우, 속 불편 시 조정, 다음 운동일 준비'],
-        currentFlowMatch: '메모는 가능하지만 반복해서 참고할 기준 카드로 분리되지 않는다.',
-        currentUxSupport: '식사 기준 카드가 복사/엑셀 export에 독립 섹션으로 나오지 않는다.',
-        gap: '영양 타이밍 콘텐츠는 루틴 캘린더와 기준 memo card를 함께 가져야 한다.',
-      },
-    ],
-    currentContentGap: '퇴근 후 운동의 시간 제약과 식사 타이밍이 Flow item에 반영되어 있지 않다.',
-    currentUxGap: '캘린더 상대시간 이벤트와 식사 기준 로그가 부족하다.',
-    nextContentAction: '퇴근 후 운동 영양 Flow를 시간대 입력, 운동 전 간식, 운동 후 식사 기준으로 재구성한다.',
-    nextUxAction: 'routine Flow에 event-relative reminders와 nutrition memo export를 추가한다.',
-    decision: 'reshape_content_or_ux',
-  },
-  {
+    focus: '퇴근 후 운동 영양 기준',
+  }),
+  makeFitvelySingleApplicationAudit({
     slug: 'real-fitvely-video-weight-class-method',
-    checkedAt: '2026-05-22',
     sourceTitle: 'FITVELY 체중별 다이어트 방법 정리',
     sourceUrl: 'https://www.youtube.com/watch?v=qADmhOJemTs',
-    sourceEvidence: [
-      'seed metadata가 이 exact video를 현재 체중 구간에 맞는 실행 기준을 고르는 다이어트 콘텐츠로 분류한다.',
-      '체중별 방법 콘텐츠는 사용자가 자신의 체중/목표/활동량을 넣고 어느 기준을 적용할지 고르는 comparison artifact가 자연스럽다.',
-    ],
-    userScenario: '사용자는 현재 체중과 목표 감량폭을 기준으로 식단, 운동, 측정 주기를 어느 정도로 잡을지 선택하려 한다.',
-    naturalArtifacts: [
-      {
-        kind: 'comparison_table',
-        artifactTitle: '체중 구간별 다이어트 기준 선택표',
-        simulatedInputs: ['현재체중=82kg', '목표=12주 -5kg', '활동량=사무직', '운동가능=주3회'],
-        expectedOutput: [
-          '체중 구간',
-          '권장 운동 빈도',
-          '식단 조절 강도',
-          '측정 주기',
-          '무리한 제한 여부',
-          '선택 기준',
-        ],
-        currentFlowMatch: '현재 routine Flow는 하나의 행동을 적용하는 형태라 체중 구간별 선택을 충분히 지원하지 않는다.',
-        currentUxSupport: '조건 입력 후 항목이 바뀌는 분기형 UX가 없다.',
-        gap: '체중별 콘텐츠는 먼저 사용자 구간을 선택하고 그에 맞는 계획을 생성해야 한다.',
-      },
-      {
-        kind: 'spreadsheet',
-        artifactTitle: '12주 체중구간 적용 기록표',
-        simulatedInputs: ['측정=매주 월요일', '운동=주3회', '식단=야식 줄이기', '검토=4주마다'],
-        expectedOutput: ['주차, 체중, 운동 횟수, 식단 준수, 컨디션, 기준 유지/변경'],
-        currentFlowMatch: '체중별 기준을 적용한 뒤 장기 기록표로 이어지지 않는다.',
-        currentUxSupport: '반복 체크는 가능하지만 기준 유지/변경 판단이 없다.',
-        gap: '체중 구간 Flow는 선택표와 장기 기록표가 연결되어야 한다.',
-      },
-    ],
-    currentContentGap: '사용자 체중 구간을 입력받고 그에 따라 실행 기준을 좁히는 콘텐츠 구조가 없다.',
-    currentUxGap: '조건 분기와 장기 기록 로그가 부족하다.',
-    nextContentAction: '체중별 다이어트 Flow를 체중/목표/활동량 입력 기반 선택표로 재구성한다.',
-    nextUxAction: 'diet Flow에 condition-based comparison and generated tracking table을 추가한다.',
-    decision: 'reshape_content_or_ux',
-  },
+    focus: '체중 구간별 다이어트 기준',
+  }),
   {
     slug: 'real-fitvely-video-bulk-up-method',
-    checkedAt: '2026-05-22',
+    checkedAt: '2026-08-22',
     sourceTitle: 'FITVELY 벌크업 운동 방법',
     sourceUrl: 'https://www.youtube.com/watch?v=JurCSqpjl5I',
     sourceEvidence: [
@@ -1075,7 +943,7 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
   },
   {
     slug: 'real-fitvely-video-workout-order',
-    checkedAt: '2026-05-22',
+    checkedAt: '2026-08-22',
     sourceTitle: 'FITVELY 운동 순서 결정',
     sourceUrl: 'https://www.youtube.com/watch?v=oPBA8E_WtXY',
     sourceEvidence: [
@@ -1119,7 +987,7 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
   },
   {
     slug: 'real-fitvely-video-workout-split-science',
-    checkedAt: '2026-05-22',
+    checkedAt: '2026-08-22',
     sourceTitle: 'FITVELY 과학적으로 운동루틴 짜는법',
     sourceUrl: 'https://www.youtube.com/watch?v=-GJMwcES45A',
     sourceEvidence: [
@@ -1205,43 +1073,43 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
   },
   {
     slug: 'real-mofa-overseas-travel-prep',
-    checkedAt: '2026-05-25',
+    checkedAt: '2026-08-22',
     sourceTitle: '외교부 해외안전여행 베트남 국가/지역별 정보',
     sourceUrl: 'https://www.0404.go.kr/ntnSafetyInfo/86/detail',
     sourceEvidence: [
       '외교부 베트남 국가/지역별 정보 page는 베트남의 여행경보, 안전공지, 여행경보 조정 내역, 현지 대사관/총영사관 연락처, 현지 신고 번호를 한 페이지에서 제공한다.',
-      '현재 audit scenario가 베트남 여행을 기준으로 하므로 broad portal보다 이 exact country page가 안전 확인 달력과 비상 연락처 memo를 더 직접 지원한다.',
+      '현재 audit scenario가 베트남 여행을 기준으로 하므로 broad portal보다 이 exact country page가 안전 확인표와 비상 연락처 memo를 더 직접 지원한다.',
     ],
-    userScenario: '사용자는 베트남 여행 전 여행경보, 여권/비자, 영사콜센터, 가족 공유 정보를 정리하고 출국 전날까지 확인하려 한다.',
+    userScenario: '사용자는 베트남 여행 전 여행경보, 현지 주의 지역, 공관·긴급 신고 번호와 가족 공유 정보를 정리하려 한다.',
     naturalArtifacts: [
       {
-        kind: 'monthly_calendar',
-        artifactTitle: '출국 D-14 해외안전 준비 달력',
-        simulatedInputs: ['출국일=2026-07-20', '방문국=베트남', '동행=부모님', '공유대상=가족 단톡방'],
+        kind: 'checklist',
+        artifactTitle: '베트남 여행 안전 확인표',
+        simulatedInputs: ['방문국=베트남', '동행=부모님', '확인일=사용자 기록', '공유대상=가족 단톡방'],
         expectedOutput: [
-          'D-14 여행경보와 안전공지 확인',
-          'D-10 여권/비자/입국 조건 확인',
-          'D-7 영사콜센터와 현지 공관 연락처 저장',
-          'D-1 가족에게 일정과 숙소 공유',
+          '베트남 여행경보와 안전공지 확인',
+          '일정에 해당하는 주의 지역과 행동 확인',
+          '영사콜센터와 현지 공관 연락처 저장',
+          '가족에게 일정과 숙소 공유',
         ],
-        currentFlowMatch: '여행 안전 준비 항목은 대체로 있으나 공식 확인 결과를 저장하는 구조가 약하다.',
-        currentUxSupport: 'timeline UI는 맞지만 국가명과 확인일을 입력해 재확인하는 인터랙션이 없다.',
+        currentFlowMatch: '현재 Flow는 원문이 정하지 않은 D-day 없이 베트남 안전 확인과 연락처 저장 순서를 제공한다.',
+        currentUxSupport: 'checklist는 맞지만 확인일을 입력해 재확인하는 인터랙션이 없다.',
         gap: '여행 안전 Flow는 국가별 확인 결과와 재확인일이 핵심 필드여야 한다.',
       },
       {
         kind: 'memo',
         artifactTitle: '비상 연락처 오프라인 메모',
-        simulatedInputs: ['영사콜센터=+82-2-3210-0404', '현지공관=주베트남대사관', '보험=OO손보', '가족=배우자'],
-        expectedOutput: ['영사콜센터, 현지 공관, 보험사, 숙소, 가족 연락처, 여권 사본 위치'],
+        simulatedInputs: ['영사콜센터=+82-2-3210-0404', '현지공관=주베트남대사관', '숙소=하노이', '가족=배우자'],
+        expectedOutput: ['영사콜센터, 주베트남 공관, 현지 긴급 신고 번호, 숙소, 가족 연락처'],
         currentFlowMatch: '긴급 연락처 저장 항목은 있으나 실제 오프라인 메모 출력 형태가 약하다.',
         currentUxSupport: '메모는 item에 묶여 있어 한 장짜리 비상 카드로 복사하기 어렵다.',
         gap: '여행 Flow는 체크리스트 외에 비상 카드 export가 필요하다.',
       },
     ],
-    currentContentGap: '공식 사이트의 여행경보/동행/영사콜센터 기능이 Flow 안에서 별도 산출물로 분리되지 않는다.',
+    currentContentGap: '베트남 국가별 정보에서 확인한 날짜와 일정상 주의 지역을 사용자가 직접 갱신해야 한다.',
     currentUxGap: '국가별 공식 확인 결과와 비상 연락처 카드를 만들기 어렵다.',
-    nextContentAction: '해외안전 Flow를 국가별 확인표와 비상 연락처 카드 중심으로 보강한다.',
-    nextUxAction: 'travel timeline에 국가 입력, 확인일, 비상 카드 복사 preview를 추가한다.',
+    nextContentAction: '베트남 여행경보 확인표와 비상 연락처 카드 범위를 유지하고 다른 국가·비자·보험 판단으로 확장하지 않는다.',
+    nextUxAction: 'travel checklist에 국가, 확인일, 비상 카드 복사 preview를 추가한다.',
     decision: 'reshape_content_or_ux',
   },
   {
@@ -1329,11 +1197,11 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
   },
   {
     slug: 'real-gov24-resident-register-copy',
-    checkedAt: '2026-05-22',
+    checkedAt: '2026-08-22',
     sourceTitle: '정부24 주민등록표 등본 발급 민원안내',
     sourceUrl: 'https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000015&HighCtgCD=A1004',
     sourceEvidence: [
-      '정부24 민원 안내 원문은 직접 본문 접근이 제한되어 검색 인덱스와 공공 민원 안내를 보조 확인했으며, 인터넷/방문/FAX/우편/무인발급기 신청과 즉시 처리, 인터넷 무료 발급이 핵심 정보다.',
+      '정부24 민원 안내 원문에서 인터넷·방문·무인발급 신청, 본인·대리인 신청 범위, 즉시 처리와 인터넷 무료 발급 안내를 확인했다.',
       '주민등록등본은 발급 자체보다 제출처 요구, 주민번호 공개 범위, PDF/출력 방식, 제출 증빙 보관이 사용자의 실제 관리 산출물이다.',
     ],
     userScenario: '사용자는 은행 대출 서류로 주민등록등본을 제출해야 해서 공개 범위와 PDF 저장본, 제출 완료 여부를 체크리스트로 관리하려 한다.',
@@ -1371,7 +1239,7 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
   },
   {
     slug: 'real-childcare-support-application-check',
-    checkedAt: '2026-05-22',
+    checkedAt: '2026-08-22',
     sourceTitle: '아이사랑 시간제 보육 이용안내',
     sourceUrl: 'https://www.childcare.go.kr/?menuno=202',
     sourceEvidence: [
@@ -1413,7 +1281,7 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
   },
   {
     slug: 'real-pet-health-visit-routine',
-    checkedAt: '2026-05-25',
+    checkedAt: '2026-08-22',
     sourceTitle: '서울시 우리동네 동물병원',
     sourceUrl: 'https://news.seoul.go.kr/env/archives/567583/',
     sourceEvidence: [
@@ -1448,7 +1316,7 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
         gap: '건강 Flow는 복수 리마인더와 방문 메모가 함께 필요하다.',
       },
     ],
-    currentContentGap: '현재 원본은 동물등록 FAQ라 건강 방문 루틴의 근거로는 broad/reference 수준이다.',
+    currentContentGap: '현재 원본은 서울시 취약계층 지원사업이라 일반 병원 방문 기록 루틴의 대상과 행동을 직접 뒷받침하지 않는다.',
     currentUxGap: '증상 기록, 질문 목록, 복약/재진/접종의 서로 다른 리마인더를 한 화면에서 만들기 어렵다.',
     nextContentAction: '반려동물 건강 방문 Flow는 더 직접적인 병원 방문/예방접종 안내 원본을 찾은 뒤 재감사한다.',
     nextUxAction: 'routine Flow에 복수 리마인더와 방문 전 질문 메모 export를 추가한다.',
@@ -1456,7 +1324,7 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
   },
   {
     slug: 'real-ohouse-movein-cleaning-check',
-    checkedAt: '2026-05-22',
+    checkedAt: '2026-08-22',
     sourceTitle: '오늘의집 원룸 입주청소 가격표',
     sourceUrl: 'https://ohou.se/advices/12375',
     sourceEvidence: [
@@ -1499,7 +1367,7 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
   },
   {
     slug: 'real-thankyou-bubu-home-workout-starter',
-    checkedAt: '2026-05-25',
+    checkedAt: '2026-08-22',
     sourceTitle: '전신 다이어트 최고의 운동 [점프 없음, 눕는동작 없음, 반복 없음, 토크 없음] - ThankyouBUBU',
     sourceUrl: 'https://www.youtube.com/watch?v=pcyrlkHXAdE',
     sourceEvidence: [
@@ -1535,20 +1403,20 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
   },
   {
     slug: 'real-thankyou-bubu-20min-routine',
-    checkedAt: '2026-05-25',
+    checkedAt: '2026-08-22',
     sourceTitle: '전신 다이어트 최고의 운동 [칼소폭 찐 핵핵핵 매운맛] - ThankyouBUBU',
     sourceUrl: 'https://www.youtube.com/watch?v=gSz5n4sLENI',
     sourceEvidence: [
       'YouTube oEmbed confirms video id gSz5n4sLENI is titled "전신 다이어트 최고의 운동 [칼소폭 찐 핵핵핵 매운맛]" by Thankyou BUBU.',
       'This replaces the former channel-level source with one exact workout video source for the recurring routine.',
     ],
-    userScenario: '사용자는 매일은 부담스럽지만 주 4회 20분 홈트를 반복하려고 운동일과 휴식일을 정하고 월간 캘린더에 박아두려 한다.',
+    userScenario: '사용자는 19분가량의 원본 운동 영상을 자기 회복 상태에 맞는 요일에 반복하려고 일정과 회차별 몸 상태를 기록하려 한다.',
     naturalArtifacts: [
       {
         kind: 'routine_calendar',
         artifactTitle: '20분 홈트 월간 반복 캘린더',
-        simulatedInputs: ['시작일=2026-06-02', '반복=화/목/토/일', '회차시간=20분', '휴식=월/수/금'],
-        expectedOutput: ['화/목/토/일 20분 운동 일정', '월/수/금 휴식 표시', '주간 완료 횟수', '피로도/무릎 부담 메모'],
+        simulatedInputs: ['시작일=2026-06-02', '반복=사용자 선택', '회차시간=19분가량', '휴식=회복 상태에 따라 선택'],
+        expectedOutput: ['사용자가 고른 요일의 운동 일정', '회차별 완료/중단 상태', '피로도와 다음 회차 강도 메모'],
         currentFlowMatch: '반복 루틴이 exact 영상 링크와 연결되어 사용자가 어떤 영상을 반복할지 알 수 있다.',
         currentUxSupport: 'routine recurrence는 보이지만 쉬는 날과 주간 완료 요약이 충분히 강조되지 않는다.',
         gap: 'near-20-minute routine은 월간 캘린더에 운동일/휴식일/회차수를 한눈에 보여줘야 한다.',
@@ -1565,13 +1433,13 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
     ],
     currentContentGap: '2026-05-25 first reshape 이후 강도 높은 전신 운동도 한 개 exact-video 실행 action으로 축소됐다. 남은 과제는 반복 일정, 완료 상태, 다음 강도 조정 메모가 실제 export 후 이해되는지 확인하는 것이다.',
     currentUxGap: '요약, 원본 영상, 운동 후 기록, 중단 조건은 한 detail panel에 모였지만 휴식일 표시와 주간 완료 요약은 아직 별도 고급 UX 과제다.',
-    nextContentAction: 'exact-video 실제 사용자 또는 시뮬레이션 세션에서 주 3회 일정, 원본 영상 실행, 회차별 난이도 기록이 자연스러운지 확인한다.',
+    nextContentAction: 'exact-video 실제 사용자 또는 시뮬레이션 세션에서 사용자 선택 일정, 원본 영상 실행, 회차별 난이도 기록이 자연스러운지 확인한다.',
     nextUxAction: '반복 캘린더에서 운동일/휴식일/주간 완료 요약을 더 보여줄 필요가 있는지 이후 후보로 평가한다.',
     decision: 'reshape_content_or_ux',
   },
   {
     slug: 'real-fitvely-diet-record-routine',
-    checkedAt: '2026-05-25',
+    checkedAt: '2026-08-22',
     sourceTitle: '【영양학】 다이어트 식단, 이 영상으로 g단위 완벽정리 해드림 - FITVELY',
     sourceUrl: 'https://www.youtube.com/watch?v=qcTxaFMWzKs',
     sourceEvidence: [
@@ -1607,13 +1475,13 @@ export const realSourceNaturalArtifactAudits: RealSourceNaturalArtifactAudit[] =
   },
   {
     slug: 'real-fitvely-weekly-body-check',
-    checkedAt: '2026-05-25',
+    checkedAt: '2026-08-22',
     sourceTitle: 'FITVELY 공식 사이트',
     sourceUrl: 'https://www.fitvely.com/',
     sourceEvidence: [
       'seed metadata uses the broad FITVELY official site as the source for weekly body-check behavior.',
       'search results support FITVELY as a fitness/diet creator brand, but not a specific weekly check-in guide for measurements, photos, or review decisions.',
-      '2026-05-25 exact-source search did not confirm a matching FITVELY weekly body-check/check-in source, so FLOW must not invent the measurement method from the broad site.',
+      '2026-08-22 저장 URL은 404/ConnectYourDomain 오류였고 exact-source search에서도 matching FITVELY weekly body-check/check-in source를 확인하지 못해 FLOW가 측정 방법을 발명할 수 없다.',
     ],
     userScenario: '사용자는 매주 같은 조건으로 체중, 사진, 둘레, 운동 수행률을 기록하고 다음 주 식단/운동을 조정하려 한다.',
     naturalArtifacts: [

@@ -187,6 +187,16 @@ export async function openMyFlowCalendarSelectedDay(
   page: Page,
   date?: string,
 ): Promise<Locator> {
+  const ensureDateMonth = async () => {
+    if (!date) return;
+    const monthPicker = page.getByTestId('my-flow-month-picker');
+    if (!(await monthPicker.count())) return;
+    const targetMonth = date.slice(0, 7);
+    if ((await monthPicker.inputValue()) !== targetMonth) {
+      await monthPicker.fill(targetMonth);
+      await expect(monthPicker).toHaveValue(targetMonth);
+    }
+  };
   const mobileViewport = (page.viewportSize()?.width ?? 0) < 768;
   if (mobileViewport) {
     const openSheet = page.getByTestId('my-flow-calendar-day-sheet');
@@ -194,6 +204,7 @@ export async function openMyFlowCalendarSelectedDay(
       if (!date) return openSheet.getByTestId('my-flow-calendar-selected-day');
       await page.getByTestId('my-flow-calendar-day-sheet-close').click();
     }
+    await ensureDateMonth();
     const dateCell = date
       ? page.locator(`.fc-daygrid-day[data-date="${date}"]`)
       : page.locator('.fc-daygrid-day.my-flow-calendar-selected-date');
@@ -206,6 +217,7 @@ export async function openMyFlowCalendarSelectedDay(
   }
 
   if (date) {
+    await ensureDateMonth();
     const dateButton = page
       .locator(`.fc-daygrid-day[data-date="${date}"]`)
       .getByTestId('my-flow-calendar-date-button');

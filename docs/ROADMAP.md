@@ -1,10 +1,10 @@
 # Roadmap
 
-**Last Updated:** 2026-08-20<br>
+**Last Updated:** 2026-08-23<br>
 **Current Version:** v0.1.0 (released product PoC)<br>
-**Current Validation Stage:** internal alpha / Flow entry and preview clarity stacked Draft PR and exact code-head Vercel Preview published over the visual-refresh review baseline / Playwright CI 629/629 pass / core CI non-green only at the known source-review freshness gate / Owner review pending / merge and Production not authorized / observed users 0<br>
+**Current Validation Stage:** internal alpha / PR #194 visual refresh released and Production verified / PR #195 release authorized / reconciled exact-head CI and post-merge Production verification pending / observed users 0<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** Owner reviews the published exact code-head stacked Preview; resolve the separate source-review freshness gate before any merge or Production decision
+**Next Milestone:** pass PR #195 exact-head CI, merge it, and verify the resulting Production deployment
 
 Human-facing control surface: [FlowMe Project Control](./PROJECT_CONTROL.md).
 The [2026-07-29 P35 stage board](./content-audit/2026-07-29-flowme-current-stage-control-board-ko.html)
@@ -13,27 +13,24 @@ is retained as a dated evidence snapshot rather than the current backlog.
 ## Active: Flow Entry And Preview Clarity
 
 The Owner promoted [Flow Entry And Preview Clarity](./specs/2026-08-20-flow-entry-preview-clarity/spec.md)
-on 2026-08-20 as a behavior follow-up stacked on the unmerged
+on 2026-08-20 as a behavior follow-up to the
 [Production Visual-Only Refresh](./specs/2026-08-20-production-visual-only-refresh/spec.md)
-review baseline. The bounded goal is one `/flows` query/HTTP(S) URL/memo entry,
+baseline. The bounded goal is one `/flows` query/HTTP(S) URL/memo entry,
 source-faithful complete Text first, full approved Todo/chronological Calendar,
 and copy numbering only when sibling copies need disambiguation. Routes, source
 and personal ownership, persistence, edit, completion, export, receipt, and
 lifecycle contracts remain unchanged. Local implementation and automated QA are
-complete; full `npm test` remains non-green only because `30` source records are
-past their review date. [Draft PR #195](https://github.com/knhbae/flowme2605/pull/195)
-and its [stable Vercel Preview](https://flowme2605-git-agent-flow-entry-preview-clarity-flowme.vercel.app)
-are published for Owner review. Initial run `32309777212` ended core `624/625` at
-the known freshness failure and Playwright `623/629` with six failures.
-Remediation code head `597a6f84d593f0788e2c1f5a4fcd20d762d7bf28`
-passes build `18`, focused unit `13/13`, and the same six E2E cases `6/6` locally;
-exact code-head run `32312436980` has Playwright `629/629` PASS, while core remains
-non-green only at the same `30`-record source-review gate. Exact code-head Vercel
-deployment `dpl_2kkCE8tKVBxDfDb9gmxGNKG2UPhU` is READY/SUCCESS. Merge, Production
-deployment, and observed-user validation remain unapproved.
-
-The visual-only refresh remains this stack's presentation baseline. Its scoped
-visual QA is complete, but it has not been merged or promoted to Production.
+complete. [PR #196](https://github.com/knhbae/flowme2605/pull/196) resolved the
+source-review prerequisite with `135` normal-user routes current and overdue or
+missing counts `0`, then merged as `8c0bfd8de9fb8877c4045b2c3f725b60ca236843`.
+[PR #194](https://github.com/knhbae/flowme2605/pull/194) merged as
+`c8a57ba37c4087b84b526bc778c3604f68299faa` and its Production deployment was
+verified. The Owner completed FPC-11 and authorized
+[PR #195](https://github.com/knhbae/flowme2605/pull/195) for release. Its
+reconciled exact head must still pass CI before merge, and the resulting
+Production deployment must be verified. The earlier `624/625`, `623/629`, and
+`629/629` runs remain dated QA history, not the current gate. Observed-user
+validation remains `0`.
 
 ## Released: Flow Map Item Date Parity
 
@@ -57,7 +54,7 @@ semantic no-op and is removed only by explicit reset. Map/version/child/storage
 identity, schema, and atomic save ownership remain unchanged. See the
 [release record](./pr-history/2026-08-13-flow-map-item-date-parity.md). At that
 release closeout no next product gate was active, and observed users were `0`;
-the current stacked Preview gate is recorded above.
+the current active release gate is recorded above.
 
 ## Released: Plan Edit And Lifecycle Unification
 
@@ -79,7 +76,7 @@ unifying saved and public Plan/Item editing. Single-plan Maps appear as ordinary
 Flows, real alternatives use `choose_child`, and `review_hold` stays
 editor-free. See the [release record](./pr-history/2026-08-12-plan-edit-lifecycle-unification.md).
 At that release closeout no next product gate was active, and observed users
-were `0`; the current stacked Preview gate is recorded above.
+were `0`; the current active release gate is recorded above.
 
 ## Released: Public Plan Surface Unification
 
@@ -499,22 +496,20 @@ Detailed scope: [Save, Personalize, Execute Journey Reset](./specs/2026-07-18-sa
 
 ## Operating Queue
 
-Flow Map Item date parity implementation, exact-head CI, merge, Production
-deployment, and canonical smoke are complete. Merge
-`f6f796c035d5762eea07ec35abb7f1af1577a5a5` is the latest runtime-bearing
-product merge and canonical verification passed `41/41`. Post-merge `main` run
-`31656595092` passed both core and Playwright. Flow Entry And Preview Clarity is
-the active stacked Preview gate; its local implementation and automated QA are
-complete, and Draft PR #195 plus its exact code-head Vercel Preview are published
-for Owner review. Initial CI ended core `624/625` at the known `30`-record
-freshness gate and Playwright `623/629`; remediation run `32312436980` has
-Playwright `629/629` PASS and core non-green only at that same freshness gate.
-Exact code-head Vercel is READY/SUCCESS. Merge and Production remain unapproved.
-External user observation stays separate and the count stays `0`.
+The source-review prerequisite is complete through PR #196 merge
+`8c0bfd8de9fb8877c4045b2c3f725b60ca236843`: `135` normal-user routes are current
+and overdue or missing counts are `0`. PR #194 is also complete through merge
+`c8a57ba37c4087b84b526bc778c3604f68299faa`, with its resulting Production
+deployment verified. Flow Entry And Preview Clarity is the one active gate. The
+Owner completed FPC-11 and authorized PR #195 for release; reconciled exact-head
+CI, merge, and post-merge Production verification remain. Older `624/625`,
+`623/629`, and `629/629` results are dated QA history rather than a present
+blocker. External user observation stays separate and the count stays `0`.
 
 | Lane | Owner | Work | Next checkpoint | Done when |
 | --- | --- | --- | --- | --- |
-| Active Flow entry and preview clarity | AI + Owner | One discovery entry, source-faithful complete Text, full approved Todo/Calendar, and copy ordinals only for siblings | Owner reviews [Draft PR #195](https://github.com/knhbae/flowme2605/pull/195) and the [exact code-head stacked Vercel Preview](https://flowme2605-git-agent-flow-entry-preview-clarity-flowme.vercel.app); keep the known source-review freshness failure explicit | Owner decides merge and Production separately; observed users `0` |
+| Active Flow entry and preview clarity | AI | One discovery entry, source-faithful complete Text, full approved Todo/Calendar, and copy ordinals only for siblings | Pass [PR #195](https://github.com/knhbae/flowme2605/pull/195) reconciled exact-head CI, merge, then verify the resulting Production deployment | Exact-head CI PASS, merge and Production verification recorded, observed users `0` |
+| Completed Production visual-only refresh | AI + Owner | Preserve the visual-only scope and released behavior contracts | Preserve [PR #194](https://github.com/knhbae/flowme2605/pull/194) merge `c8a57ba3` as the current Production baseline while #195 is pending | Exact-head release gate and Production verification complete; observed users `0` |
 | Completed Flow Map Item date-parity release | AI + Owner | Preserve ordinary Flow and executable single-plan Map Item title/memo/date parity without moving persistence ownership | Preserve [PR #182](https://github.com/knhbae/flowme2605/pull/182) merge `f6f796c0` as the runtime product baseline until a later explicit product release | Exact-head CI PASS, Production PASS, canonical smoke `41/41`, post-merge `main` run truth explicit, observed users `0` |
 | Completed Plan edit/lifecycle release | AI + Owner | Preserve one Plan/Item editor and lifecycle contract across saved, public Flow, and executable Map origins without moving persistence ownership | Preserve [PR #178](https://github.com/knhbae/flowme2605/pull/178) merge `908ee849` as the broader lifecycle foundation inherited by PR #182 | Exact-head CI PASS, Production PASS, canonical smoke `38/38`, post-merge `main` run truth explicit, observed users `0` |
 | Completed documentation-only closeouts | AI | Publish the exact PR #176 and PR #178 release facts and observed-user boundary without changing product code | Preserve [PR #177](https://github.com/knhbae/flowme2605/pull/177) and [PR #179](https://github.com/knhbae/flowme2605/pull/179) as documentation history, separate from the runtime-bearing product release | Canonical docs agree, docs checks passed, and documentation-only deployments are not mistaken for a new product baseline |

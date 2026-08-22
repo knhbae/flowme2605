@@ -1,7 +1,8 @@
 # Flow Entry And Preview Clarity
 
-**Status:** ACTIVE / LOCAL IMPLEMENTATION AND AUTOMATED QA COMPLETE / STACKED PR
-AND VERCEL PREVIEW PUBLICATION PENDING / MERGE AND PRODUCTION NOT AUTHORIZED
+**Status:** ACTIVE / LOCAL IMPLEMENTATION AND PRIOR-HEAD AUTOMATED QA COMPLETE /
+OWNER RELEASE DECISION COMPLETE / RECONCILED EXACT-HEAD CI, MERGE, AND
+POST-MERGE PRODUCTION VERIFICATION PENDING
 
 **Owner approval:** 2026-08-20
 
@@ -95,8 +96,8 @@ save or personalize it.
 - Replacing semantic grouping with virtualization or pagination in this slice.
   If a genuinely large approved Flow creates a performance problem, reopen with
   measured evidence rather than restoring an arbitrary three-row cap.
-- Merging the stacked PR or deploying it to Production. Those require a separate
-  Owner decision after Preview review.
+- Bypassing exact-head CI or post-merge Production verification. Owner release
+  authorization does not replace either technical gate.
 
 ## FlowMe Gates
 
@@ -130,13 +131,17 @@ save or personalize it.
 8. Existing routes, storage bytes, source/personal ownership, completion, edit,
    save, export, receipt, and lifecycle semantics do not change.
 9. Focused automated checks, production build, and responsive browser checks pass
-   before the stacked PR and Vercel Preview are handed off.
-10. Preview publication is not described as merge, Production deployment, or
-    observed-user validation; observed users remain `0`.
+   on the reconciled exact head before merge.
+10. Preview publication, merge, and Production verification remain distinct
+    evidence states and none is described as observed-user validation; observed
+    users remain `0`.
 
 ## Publication Boundary
 
-The Owner authorized a branch, stacked review PR, and Vercel Preview for this
-behavioral follow-up. The stack keeps the Production visual-only refresh as its
-review baseline. Merge and Production deployment remain unapproved, and the
-Preview must be reviewed before either decision is requested.
+The Owner reviewed the Preview and completed FPC-11 by authorizing this bounded
+release after the visual-refresh baseline. [PR #196](https://github.com/knhbae/flowme2605/pull/196)
+resolved the source-review prerequisite, and [PR #194](https://github.com/knhbae/flowme2605/pull/194)
+merged as `c8a57ba37c4087b84b526bc778c3604f68299faa` with its Production
+deployment verified. [PR #195](https://github.com/knhbae/flowme2605/pull/195)
+must still pass reconciled exact-head CI before merge, followed by separate
+Production verification. Observed users remain `0`.

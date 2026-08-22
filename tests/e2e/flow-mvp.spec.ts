@@ -4383,6 +4383,7 @@ test('my flow ux12 mobile routine rail keeps overflow horizontal without overlap
   await expect(routineIcons).toHaveCount(1);
   await expect(routineIcons.nth(0)).toBeVisible();
   await expect(routineOverflow).toContainText('+3');
+  await expect(routineOverflow).toHaveAttribute('data-hidden-count', '3');
 
   const railBox = await routineRail.boundingBox();
   const firstIconBox = await routineIcons.nth(0).boundingBox();
@@ -4402,6 +4403,11 @@ test('my flow ux12 mobile routine rail keeps overflow horizontal without overlap
   expect(railBox).not.toBeNull();
   expect(firstIconBox?.width ?? 0).toBeGreaterThanOrEqual(28);
   expect(firstIconBox?.height ?? 0).toBeGreaterThanOrEqual(28);
+  const overflowTextMetrics = await routineOverflow.evaluate((node) => ({
+    clientWidth: node.clientWidth,
+    scrollWidth: node.scrollWidth,
+  }));
+  expect(overflowTextMetrics.scrollWidth).toBeLessThanOrEqual(overflowTextMetrics.clientWidth);
   const firstIconVisualStyle = await routineIcons.nth(0).evaluate((node) => {
     const style = window.getComputedStyle(node);
     const hasVisibleShadow = /0px [1-9]\d*px [1-9]\d*px/.test(style.boxShadow);
@@ -5934,7 +5940,7 @@ test('flow lab shows converted pilot and scale validation boards', async ({ page
   await expect(artifactAudit.getByText('감사 완료')).toBeVisible();
   await expect(artifactAudit.getByText('83', { exact: true }).first()).toBeVisible();
   await expect(sourceFitAudit.getByText('감사 완료')).toBeVisible();
-  await expect(sourceFitAudit.getByText('카탈로그 미리보기 14')).toBeVisible();
+  await expect(sourceFitAudit.getByText('카탈로그 미리보기 19')).toBeVisible();
   await expect(page.getByRole('link', { name: '시험 D-30 공부 계획 Flow', exact: true })).toBeVisible();
   await expect(page.getByText('B 파일럿 실제 Flow 변환')).toBeVisible();
   await expect(page.getByText('200+ 제작자 채널 Flow 검증')).toBeVisible();

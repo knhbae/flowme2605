@@ -169,7 +169,7 @@ const realSourceManualSourceFitAudits: SourceFitAudit[] = realSourceNaturalArtif
   const decision = realSourceDecisionMap[audit.decision];
   return defineAudit({
     slug: audit.slug,
-    checkedAt: '2026-05-23',
+    checkedAt: audit.checkedAt,
     sourceTitle: audit.sourceTitle,
     sourceUrl: audit.sourceUrl,
     sourcePrecision: inferRealSourcePrecision(audit.sourceTitle, audit.sourceUrl),
@@ -1160,12 +1160,12 @@ export const sourceFitAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'driver-license-renewal-check',
-    checkedAt: '2026-05-23',
-    sourceTitle: '한국도로교통공단 안전운전 통합민원 면허갱신 안내',
-    sourceUrl: 'https://www.safedriving.or.kr/diGuide/selectDiGuide02.do',
+    checkedAt: '2026-08-22',
+    sourceTitle: '한국도로교통공단 적성검사·면허갱신 안내',
+    sourceUrl: 'https://www.safedriving.or.kr/diGuide/selectDiGuide01.do',
     sourcePrecision: 'exact',
-    sourceUsefulness: '공식 안내가 적성검사/갱신, 준비물, 사진, 수수료, 방문 장소를 제공해 실행 체크리스트 가치가 높다.',
-    idealReconstruction: '면허 유형과 갱신 마감일을 입력받아 준비물과 신청 경로를 필터링하고 마감 일정표로 재구성한다.',
+    sourceUsefulness: '일반 적성검사·면허갱신 안내가 대상, 개인별 기간 확인, 준비물, 수수료와 방문 장소를 제공해 실행 체크리스트 가치가 높다.',
+    idealReconstruction: '면허 유형을 확인하고 안전운전 통합민원에서 조회한 개인별 갱신기간을 사용자가 기록한 뒤 준비물과 신청 경로를 정리한다.',
     naturalArtifacts: [
       {
         kind: 'comparison_table',
@@ -1242,11 +1242,11 @@ export const sourceFitAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'family-certificate-issue',
-    checkedAt: '2026-05-23',
-    sourceTitle: '정부24 가족관계등록부 증명서 안내',
-    sourceUrl: 'https://m.gov.kr/mw/AA020InfoCappView.do?CappBizCD=97400000004&HighCtgCD=A01008&tp_seq=01',
+    checkedAt: '2026-08-22',
+    sourceTitle: '대한민국 법원 전자가족관계등록시스템',
+    sourceUrl: 'https://efamily.scourt.go.kr/index.jsp',
     sourcePrecision: 'exact',
-    sourceUsefulness: '가족관계증명서는 제출처 요구 범위와 공개 범위 선택이 중요해 발급 전 의사결정 체크리스트 가치가 있다.',
+    sourceUsefulness: '대한민국 법원 전자가족관계등록시스템이 가족관계증명서 발급의 공식 진입점이며 제출처 요구 범위는 사용자가 별도로 확인해야 한다.',
     idealReconstruction: '제출처, 증명서 종류, 일반/상세/특정 범위, 주민등록번호 공개 범위를 먼저 정리한 뒤 발급 메모로 재구성한다.',
     naturalArtifacts: [
       {
@@ -1262,7 +1262,7 @@ export const sourceFitAudits: SourceFitAudit[] = [
     userJourney: [
       '제출처에서 필요한 증명서 조건을 확인한다.',
       'FLOW에서 증명서 종류와 공개 범위를 정한다.',
-      '정부24 또는 전자가족관계등록시스템에서 발급한다.',
+      '대한민국 법원 전자가족관계등록시스템에서 발급한다.',
       '제출 전 표시 항목과 파일 위치를 확인한다.',
     ],
     currentGap: '제출처 요구사항과 공개 범위 선택이 항목 텍스트에만 있어 실수 방지 효과가 약하다.',
@@ -1281,7 +1281,7 @@ export const sourceFitAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'resident-register-copy-issue',
-    checkedAt: '2026-05-23',
+    checkedAt: '2026-08-22',
     sourceTitle: '정부24 주민등록표 등본·초본 발급 안내',
     sourceUrl: 'https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000015&HighCtgCD=A1004',
     sourcePrecision: 'exact',
@@ -1320,32 +1320,32 @@ export const sourceFitAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'qnet-exam-application-prep',
-    checkedAt: '2026-05-23',
+    checkedAt: '2026-08-22',
     sourceTitle: 'Q-Net 원서접수 안내',
     sourceUrl: 'https://q-net.or.kr/rcv001.do?gSite=Q&id=rcv00103&rcvPFlag=Y',
     sourcePrecision: 'exact',
-    sourceUsefulness: 'Q-Net 원서접수는 접수 기간, 결제, 수험표, 신분증, 시험일 준비가 연결되어 일정+체크리스트 가치가 높다.',
-    idealReconstruction: '시험일과 접수 마감일을 받아 접수, 결제, 수험표, 신분증, 시험장 준비를 다중 deadline Flow로 재구성한다.',
+    sourceUsefulness: 'Q-Net 원서접수 안내가 접수 절차, 결제, 접수 상태, 환불과 수험표 확인 경로를 제공하며 인정 신분증은 공식 보조 안내로 확인할 수 있다.',
+    idealReconstruction: '고정 D-day를 만들지 않고 사용자가 실제 시험 공고의 접수 일정과 준비물 기준을 옮겨 적는 원서접수 체크리스트로 재구성한다.',
     naturalArtifacts: [
       {
-        kind: 'monthly_calendar',
-        artifactTitle: 'Q-Net 접수부터 시험당일 일정표',
-        simulatedInputs: ['시험일=2026-07-12', '접수마감=2026-06-10 18:00', '종목=정보처리기사', '시험장=서울동부'],
-        expectedOutput: ['접수 마감 전 확인', '결제/접수 상태 저장', '수험표 출력', '신분증/준비물 확인', '시험장 도착 시간 확인'],
-        currentFlowMatch: '시험일 기준 준비 항목은 맞지만 접수마감 같은 보조 deadline이 없다.',
-        currentUxSupport: '단일 날짜 anchor로는 접수/결제/수험표 같은 여러 마감을 표현하기 어렵다.',
-        gap: '시험 Flow에는 시험일 외 접수 마감과 수험표 출력일을 입력할 수 있어야 한다.',
+        kind: 'checklist',
+        artifactTitle: 'Q-Net 원서접수 확인표',
+        simulatedInputs: ['종목=정보처리기사', '접수일정=시험 공고에서 확인', '시험장=서울동부'],
+        expectedOutput: ['응시 조건 확인', '실제 접수 일정 기록', '결제/접수 상태 저장', '수험표 확인', '인정 신분증 확인'],
+        currentFlowMatch: '공식 안내 범위 안에서 원서접수와 접수 후 확인 항목을 순서대로 제공한다.',
+        currentUxSupport: '사용자가 시험 공고에서 확인한 날짜와 준비물을 메모할 수 있지만 자동 일정 확정은 하지 않는다.',
+        gap: '시험별 일정과 준비물은 현재 공고를 사용자가 직접 확인해야 한다.',
       },
     ],
     userJourney: [
       'Q-Net 접수 안내에서 접수 기간과 시험일을 확인한다.',
-      'FLOW에 시험일과 접수 마감일을 입력한다.',
-      '접수, 결제, 수험표, 신분증을 날짜별로 체크한다.',
-      '시험 전날 준비물과 시험장 이동 계획을 확인한다.',
+      'FLOW에 실제 공고에서 확인한 접수 일정과 종목을 기록한다.',
+      '접수, 결제, 수험표와 인정 신분증을 체크한다.',
+      '시험별 준비물과 입실 시간은 해당 공고에서 다시 확인한다.',
     ],
-    currentGap: 'source는 좋지만 시험일 하나만으로는 접수 마감과 수험표 출력 같은 보조 일정이 부족하다.',
-    contentAction: '접수마감, 결제완료, 수험표 출력, 시험당일 준비를 별도 deadline으로 보강한다.',
-    uxAction: 'timeline Flow에 다중 deadline 입력과 공식 기준 대비표 export를 추가한다.',
+    currentGap: '시험별 접수 일정과 준비물은 일반 안내에서 확정할 수 없어 현재 공고 확인이 계속 필요하다.',
+    contentAction: '고정 상대일과 결과일을 제거하고 원서접수 일반 안내 및 인정 신분증 공식 안내 범위만 유지한다.',
+    uxAction: 'checklist에 사용자가 공고에서 확인한 일정과 준비물을 적는 메모를 제공한다.',
     decision: 'reshape_before_featured',
     scores: {
       actionDensity: 13,
@@ -1524,12 +1524,12 @@ export const sourceFitAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'diet-habit-2week',
-    checkedAt: '2026-05-23',
-    sourceTitle: '질병관리청 건강하게 체중 감량하기 안내',
+    checkedAt: '2026-08-22',
+    sourceTitle: '질병관리청 성장기 비만, 건강하게 체중 관리하기!',
     sourceUrl:
       'https://health.kdca.go.kr/healthinfo/biz/health/ntcnInfo/healthSourc/thtimtCntnts/thtimtCntntsView.do?thtimt_cntnts_sn=82',
     sourcePrecision: 'exact',
-    sourceUsefulness: '급격한 감량보다 점진적 목표와 충분한 수면 같은 생활습관 원칙을 강조해, 한 가지 규칙만 좁혀 체크하는 안전 경계로 적합하다.',
+    sourceUsefulness: '공식 안내는 성장기 아동·청소년의 체중 관리와 수면을 다루므로 일반 성인용 2주 수면 루틴의 직접 근거로 쓸 수 없다.',
     idealReconstruction: '체크 시작일을 받아 14일 동안 8시간 이상 자기만 매일 확인하는 수면 체크 캘린더와 짧은 메모로 만든다.',
     naturalArtifacts: [
       {
@@ -1543,10 +1543,10 @@ export const sourceFitAudits: SourceFitAudit[] = [
       },
     ],
     userJourney: ['공식 체중관리 주의사항 중 수면 원칙을 확인한다.', 'FLOW에 체크 시작일을 입력한다.', '14일 동안 8시간 이상 잤는지만 매일 체크한다.', '수면 문제나 어지러움이 반복되면 체크보다 상담을 우선한다.'],
-    currentGap: '현재 Flow가 여러 습관 관찰이나 체중감량 조언처럼 읽히지 않도록 범위를 더 좁혀야 한다.',
-    contentAction: '공식 안내 중 충분한 수면 원칙 하나만 남기고, 감량 처방이나 치료가 아니라는 경계를 item detail에 분리한다.',
+    currentGap: '현재 Flow는 일반 성인용 2주 수면 체크인데 원문 대상은 성장기 아동·청소년이라 사용자 범위가 맞지 않는다.',
+    contentAction: '청소년·보호자용으로 다시 설계하거나 일반 성인 수면의 공식 근거로 교체하기 전에는 실행 경로를 열지 않는다.',
     uxAction: 'diet routine은 14일 routine calendar와 warning card를 checklist보다 앞에 둔다.',
-    decision: 'reshape_before_featured',
+    decision: 'catalog_preview_only',
     scores: {
       actionDensity: 12,
       temporalStructure: 14,
@@ -1595,11 +1595,11 @@ export const sourceFitAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'year-end-tax-docs',
-    checkedAt: '2026-05-23',
+    checkedAt: '2026-08-22',
     sourceTitle: '국세청 연말정산 간소화 서비스 개통 안내',
     sourceUrl: 'https://www.nts.go.kr/nts/na/ntt/selectNttInfo.do?mi=&nttSn=1347979',
     sourcePrecision: 'exact',
-    sourceUsefulness: '간소화 자료 개통, 최종 확정자료 제공, 공제대상 여부를 근로자가 판단해야 한다는 주의가 있어 회사 제출 전 서류표에 적합하다.',
+    sourceUsefulness: '2025년 귀속 자료의 2026년 간소화 서비스 개통, 최종자료 제공, 공제대상 여부를 근로자가 확인해야 한다는 주의를 제공해 자료 확인표에 적합하다.',
     idealReconstruction: '회사 제출 마감일, 부양가족 여부, 추가 증빙 후보를 받아 간소화 PDF, 누락 자료, 회사 제출 상태를 분리한 sheet로 만든다.',
     naturalArtifacts: [
       {
@@ -1630,12 +1630,12 @@ export const sourceFitAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'diet-meal-exercise-log',
-    checkedAt: '2026-05-23',
-    sourceTitle: '질병관리청 건강하게 체중 감량하기 안내',
+    checkedAt: '2026-08-22',
+    sourceTitle: '질병관리청 성장기 비만, 건강하게 체중 관리하기!',
     sourceUrl:
       'https://health.kdca.go.kr/healthinfo/biz/health/ntcnInfo/healthSourc/thtimtCntnts/thtimtCntntsView.do?thtimt_cntnts_sn=82',
     sourcePrecision: 'exact',
-    sourceUsefulness: '건강한 식습관, 운동, 생활습관 개선을 병행하라는 공식 안내가 식사·운동 기록표의 안전한 원본으로 적합하다.',
+    sourceUsefulness: '공식 안내는 성장기 아동·청소년 대상이며 현재 일반 성인용 식사·운동·컨디션 기록 항목 전체를 직접 뒷받침하지 않는다.',
     idealReconstruction: '시작일과 기록 항목을 받아 매일 식사, 운동, 수면, 컨디션을 관찰하는 sheet를 만들고 감량 처방은 하지 않는다.',
     naturalArtifacts: [
       {
@@ -1649,10 +1649,10 @@ export const sourceFitAudits: SourceFitAudit[] = [
       },
     ],
     userJourney: ['공식 체중관리 원칙을 확인한다.', 'FLOW에서 기록 기간과 운동 가능 시간을 정한다.', '매일 식사·운동·컨디션을 sheet에 적는다.', '통증이나 어지러움이 있으면 기록하고 전문가에게 확인한다.'],
-    currentGap: '현재 Flow는 기록 목적은 맞지만 source가 약해 건강 조언처럼 오해될 수 있다.',
-    contentAction: 'source를 질병관리청 공식 안내로 교체하고 식사/운동/생활습관 병행, 무리한 제한 금지를 분리한다.',
+    currentGap: '현재 Flow의 대상과 상세 기록 설계가 성장기 비만 원문의 대상·범위를 넘어선다.',
+    contentAction: '대상에 맞는 공식 기록 근거를 새로 연결하거나 청소년·보호자용으로 재설계하기 전에는 실행 경로를 열지 않는다.',
     uxAction: 'sheet export 첫 줄에 warning과 기록 목적을 고정한다.',
-    decision: 'reshape_before_featured',
+    decision: 'catalog_preview_only',
     scores: {
       actionDensity: 12,
       temporalStructure: 14,
@@ -1666,12 +1666,12 @@ export const sourceFitAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'diet-reset-2week',
-    checkedAt: '2026-05-23',
-    sourceTitle: '질병관리청 건강하게 체중 감량하기 안내',
+    checkedAt: '2026-08-22',
+    sourceTitle: '질병관리청 성장기 비만, 건강하게 체중 관리하기!',
     sourceUrl:
       'https://health.kdca.go.kr/healthinfo/biz/health/ntcnInfo/healthSourc/thtimtCntnts/thtimtCntntsView.do?thtimt_cntnts_sn=82',
     sourcePrecision: 'exact',
-    sourceUsefulness: '점진적 목표와 건강한 생활습관 병행을 강조해 2주 리셋을 단기 감량 처방이 아닌 관찰·조정 루틴으로 제한할 수 있다.',
+    sourceUsefulness: '공식 안내는 성장기 대상의 장기적 체중 관리를 다루며 일반 성인용 2주 리셋 기간과 유지 규칙을 직접 제시하지 않는다.',
     idealReconstruction: '시작일, 가장 자주 무너지는 패턴, 유지할 규칙 후보를 받아 2주 관찰표와 다음 2주 유지 규칙 memo를 만든다.',
     naturalArtifacts: [
       {
@@ -1685,10 +1685,10 @@ export const sourceFitAudits: SourceFitAudit[] = [
       },
     ],
     userJourney: ['체중 숫자보다 무너지는 생활 패턴을 고른다.', 'FLOW에 시작일과 관찰할 패턴을 입력한다.', '2주 동안 제한 대신 대체 행동과 컨디션을 기록한다.', '마지막 날 다음 2주에 유지할 규칙 세 개만 남긴다.'],
-    currentGap: '현재 Flow는 2주 루틴으로 유용하지만 감량 약속처럼 읽히지 않도록 더 보강해야 한다.',
-    contentAction: '건강 안내 기반으로 식사 거르기/과도 제한 금지와 유지 규칙 중심 설명을 추가한다.',
+    currentGap: '현재 Flow의 대상, 2주 기간, 대체 행동과 유지 규칙이 원문 범위를 넘어선다.',
+    contentAction: '기간과 대상이 맞는 공식 근거를 새로 연결해 재설계하기 전에는 실행 경로를 열지 않는다.',
     uxAction: 'routine 완료 화면에 다음 2주 유지 규칙 memo preview를 추가한다.',
-    decision: 'reshape_before_featured',
+    decision: 'catalog_preview_only',
     scores: {
       actionDensity: 12,
       temporalStructure: 14,
@@ -1702,9 +1702,9 @@ export const sourceFitAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'business-registration-basic',
-    checkedAt: '2026-05-23',
-    sourceTitle: '홈택스 사업자등록 제출서류 안내',
-    sourceUrl: 'https://mob.tbht.hometax.go.kr/jsonAction.do?actionId=UTBABAAB92F001',
+    checkedAt: '2026-08-22',
+    sourceTitle: '국세청 사업자등록 신청 안내',
+    sourceUrl: 'https://s.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7777&mi=2444',
     sourcePrecision: 'exact',
     sourceUsefulness: '업종, 사업장, 인허가, 제출서류가 개인 상황에 따라 달라지는 행정·세무 준비 Flow로 적합하지만 세무 판단 경계를 분명히 해야 한다.',
     idealReconstruction: '업종, 사업장 유형, 임대차 여부, 인허가 후보를 받아 홈택스 신청 전 서류 memo와 세무서 확인 질문 목록을 만든다.',
@@ -1737,8 +1737,8 @@ export const sourceFitAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'happy-birth-service-check',
-    checkedAt: '2026-05-23',
-    sourceTitle: '정부24 행복출산 민원 안내',
+    checkedAt: '2026-08-22',
+    sourceTitle: '출산 관련 서비스 통합처리 신청(행복출산)',
     sourceUrl: 'https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=17410000001&HighCtgCD=A01004&tp_seq=01',
     sourcePrecision: 'exact',
     sourceUsefulness: '출생신고 후 여러 출산·양육 서비스를 한 번에 신청하는 공식 절차라 가족 정보와 지원 조건 확인 memo로 적합하다.',
@@ -1772,7 +1772,7 @@ export const sourceFitAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'industrial-accident-claim-docs',
-    checkedAt: '2026-05-23',
+    checkedAt: '2026-08-22',
     sourceTitle: '정부24 산재보험 요양비청구 민원 안내',
     sourceUrl: 'https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=14900000263&HighCtgCD=A05007&tp_seq=',
     sourcePrecision: 'exact',
@@ -1807,11 +1807,11 @@ export const sourceFitAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'national-health-checkup-d7',
-    checkedAt: '2026-07-11',
+    checkedAt: '2026-08-22',
     sourceTitle: '국민건강보험 일반건강검진 안내',
     sourceUrl: 'https://www.nhis.or.kr/nhis/healthin/wbhaca04500m01.do',
     sourcePrecision: 'exact',
-    sourceUsefulness: '검진 전 예약, 금식, 문진표, 수면내시경 이동 주의가 명확해 D-7 준비 달력으로 적합하지만 의료 판단은 분리해야 한다.',
+    sourceUsefulness: '국민건강보험 원문은 일반건강검진 대상·기관·문진·금식·결과 통보를 다루지만 수면내시경과 동행·운전 제한은 다루지 않는다.',
     idealReconstruction: '검진일, 예약기관, 내시경 여부, 복용약 여부, 이동방법을 받아 준비 달력과 의료진 확인 질문 memo를 만든다.',
     naturalArtifacts: [
       {
@@ -1825,10 +1825,10 @@ export const sourceFitAudits: SourceFitAudit[] = [
       },
     ],
     userJourney: ['NHIS 안내와 검진기관 예약 문자를 확인한다.', 'FLOW에 검진일, 내시경 여부, 복용약 여부를 입력한다.', 'D-7 준비 달력을 만들고 금식/이동/신분증을 체크한다.', '약 복용과 검사별 주의는 검진기관 또는 의료진에게 확인한다.'],
-    currentGap: '현재 Flow는 검진 준비에 맞지만 의료 지시처럼 읽히지 않도록 질문 memo가 필요하다.',
-    contentAction: '금식, 복용약, 수면내시경 이동은 공식/기관 확인 항목으로 분리한다.',
+    currentGap: '현재 Flow가 일반건강검진과 기관별 내시경 준비를 한 일정에 섞어 원문 범위를 넘어선다.',
+    contentAction: '일반건강검진과 내시경 준비를 분리하고 검사별 공식 안내를 연결하기 전에는 실행 경로를 열지 않는다.',
     uxAction: 'medical_sensitive timeline에 의료진 확인 질문 memo와 warning card를 고정한다.',
-    decision: 'reshape_before_featured',
+    decision: 'catalog_preview_only',
     scores: {
       actionDensity: 13,
       temporalStructure: 14,
@@ -1842,12 +1842,12 @@ export const sourceFitAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'vaccination-certificate-issue',
-    checkedAt: '2026-05-23',
+    checkedAt: '2026-08-22',
     sourceTitle: '정부24 예방접종증명 민원 안내',
     sourceUrl: 'https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=14600000398&HighCtgCD=A05004',
     sourcePrecision: 'exact',
-    sourceUsefulness: '예방접종증명 발급은 본인/자녀, 국문/영문, 제출처 요구 형식 확인이 중요해 발급 memo Flow로 적합하다.',
-    idealReconstruction: '제출처, 대상자, 언어, 필요한 접종 항목, 누락 의심 여부를 받아 발급 전 확인 memo와 제출 파일명 기록을 만든다.',
+    sourceUsefulness: '정부24 안내가 인터넷·방문 발급, 본인 또는 미성년자 보호자 신청과 기본 준비를 제공해 발급 체크리스트에 적합하다.',
+    idealReconstruction: '대상자와 발급 경로를 정리하고 언어·표시 항목·제출 기한은 제출처에서 확인한 개인 메모로 분리한다.',
     naturalArtifacts: [
       {
         kind: 'memo',
@@ -1859,9 +1859,9 @@ export const sourceFitAudits: SourceFitAudit[] = [
         gap: '의료 증명 Flow는 접종 이력 판단이 아니라 제출 요구사항 정리여야 한다.',
       },
     ],
-    userJourney: ['제출처에서 요구하는 증명 언어와 항목을 확인한다.', 'FLOW에 대상자와 제출처 요구사항을 입력한다.', '정부24에서 증명서를 발급하고 파일명을 memo에 남긴다.', '누락 기록은 공식 시스템에서 확인한다.'],
-    currentGap: '현재 Flow는 발급 순서는 맞지만 의료기록 누락 판단 경계가 약하다.',
-    contentAction: '접종 이력 누락/수정은 공식 기관 확인으로 분리하고 FLOW는 발급 준비 memo로 제한한다.',
+    userJourney: ['FLOW에서 대상자와 발급 경로를 확인한다.', '정부24에서 증명서를 발급한다.', '제출처가 요구하는 언어와 표시 항목은 제출처 안내에서 확인한다.', '발급일과 보관 위치를 개인 memo에 남긴다.'],
+    currentGap: '제출처별 언어·표시 항목·유효기간을 정부24의 공통 사실처럼 읽지 않도록 분리해야 한다.',
+    contentAction: '정부24 범위는 발급 경로와 신청 준비로 제한하고 제출처 요구사항은 개인 확인 메모로 분리한다.',
     uxAction: 'certificate Flow에 대상자, 언어, 제출처 요구사항 입력 카드를 추가한다.',
     decision: 'reshape_before_featured',
     scores: {
@@ -1877,8 +1877,8 @@ export const sourceFitAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'job-change-risk-check',
-    checkedAt: '2026-05-23',
-    sourceTitle: '이직 준비 체크리스트 참고 및 고용보험·퇴직급여 공식 확인',
+    checkedAt: '2026-08-22',
+    sourceTitle: '성공적인 이직을 위한 사전 준비 체크리스트',
     sourceUrl: 'https://luckysuni-diary.tistory.com/102',
     sourcePrecision: 'exact',
     sourceUsefulness: '이직 전 리스크는 경험형 checklist가 유용하지만 퇴직급여, 고용보험, 공백 기간 처리는 공식 확인과 분리해야 한다.',
@@ -1895,10 +1895,10 @@ export const sourceFitAudits: SourceFitAudit[] = [
       },
     ],
     userJourney: ['이직 경험 checklist를 보고 놓칠 항목을 파악한다.', 'FLOW에 퇴사/입사 예정일과 공백 기간을 입력한다.', '회사 확인 질문과 개인 재정 memo를 분리해 작성한다.', '퇴직급여, 고용보험, 법적 쟁점은 공식기관/전문가에게 확인한다.'],
-    currentGap: '현재 Flow는 실행 체크에는 맞지만 재정·노무 조언처럼 읽힐 여지가 있다.',
-    contentAction: '회사 내 절차, 고용보험, 퇴직급여, 생활비 memo를 분리하고 확정 판단을 피한다.',
+    currentGap: '현재 Flow의 IRP, 보험·연금 공백, 고용보험 항목이 경험형 원문 범위를 넘어선다.',
+    contentAction: '경험형 이직 체크와 노무·보험·연금 절차를 분리하고 각 행정 항목에 공식 근거를 연결하기 전에는 실행 경로를 열지 않는다.',
     uxAction: 'career financial Flow에 official-confirmation questions와 personal-risk memo를 별도 섹션으로 둔다.',
-    decision: 'reshape_before_featured',
+    decision: 'catalog_preview_only',
     scores: {
       actionDensity: 12,
       temporalStructure: 6,

@@ -258,6 +258,7 @@ textarea {
 
   .fc .fc-daygrid-event.my-flow-routine-rail-event {
     min-height: 28px;
+    margin-inline: 1px;
     padding: 1px 0;
   }
 

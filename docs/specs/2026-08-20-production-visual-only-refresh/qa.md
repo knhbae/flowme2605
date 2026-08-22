@@ -1,9 +1,9 @@
 # QA
 
-**Current state:** LOCAL IMPLEMENTATION AND SCOPED AUTOMATED QA COMPLETE / FULL
-`npm test` NOT GREEN BECAUSE OF ONE PRE-EXISTING SOURCE-REVIEW-DUE GATE /
-PR AND VERCEL PREVIEW AUTHORIZED / MERGE AND PRODUCTION NOT AUTHORIZED /
-OBSERVED USERS `0`.
+**Current state:** RELEASED / SOURCE-REVIEW PREREQUISITE RESOLVED BY PR #196 /
+PR #194 EXACT-HEAD CI PASSED / MERGED AS
+`c8a57ba37c4087b84b526bc778c3604f68299faa` / PRODUCTION VERIFIED / OBSERVED
+USERS `0`.
 
 ## Fresh Local Evidence — 2026-08-20
 
@@ -26,15 +26,33 @@ OBSERVED USERS `0`.
 - Independent UX/accessibility and React diff reviews: changed-diff Blocker `0`,
   High `0`, Medium `0` after fixes.
 
-## Full-Suite Boundary
+## Historical Full-Suite Boundary And Resolution
 
-`npm.cmd test` is not recorded as PASS. Its pretest passed `175/175`, and the
-main suite reached `623/624`; the single failure is
+The original 2026-08-20 run was not recorded as PASS. Its pretest passed
+`175/175`, and the main suite reached `623/624`; the single failure was
 `lib/flow/seed-flows.test.ts` (`normal user routes fail the standard suite when
 source review is due`). A focused rerun passed `68/69` and reported `30`
 source-backed entries with review date `2026-05-21`, expected `0`. No content
 dates, source decisions, or runtime behavior were changed in this visual-only
-scope. This freshness gate must be resolved separately before merge or Production.
+scope.
+
+[PR #196](https://github.com/knhbae/flowme2605/pull/196) resolved that prerequisite
+separately: `135` normal-user routes are current, with overdue and missing counts
+`0`. Its exact head `97c537ff8357b2989541facaac94711634594e4c` passed full
+`npm.cmd test`, build, docs, dependency audit, and Playwright `612/612`, then
+merged as `8c0bfd8de9fb8877c4045b2c3f725b60ca236843`; the resulting Vercel status
+succeeded and the canonical Production URL returned HTTP `200`. The historical
+`623/624` result remains evidence of the original boundary, not a current blocker.
+
+## Release Evidence — 2026-08-23
+
+- PR #194 final head `9dd05c3ffe9df495d6d5f59a7942bc7cd72cfaf7`
+  passed Docs, Unit, Build and full Playwright `624/624` in GitHub Actions run
+  [`32583981208`](https://github.com/knhbae/flowme2605/actions/runs/32583981208);
+  Vercel Preview also passed.
+- PR #194 merged as `c8a57ba37c4087b84b526bc778c3604f68299faa`.
+- The resulting Vercel status succeeded and the
+  [canonical Production URL](https://flowme2605.vercel.app) returned HTTP `200`.
 
 ## Known Layout Exception
 
@@ -60,5 +78,6 @@ universal 44px controls. Ordinary primary and secondary actions meet their
 ## Evidence Boundary
 
 Screenshots and automation are implementation evidence, not observed-user
-validation. The Owner authorized a scoped PR and Vercel Preview for review;
-merge, Production deployment, and observed-user testing remain unapproved.
+validation. PR #194 completed its authorized merge and Production verification;
+PR #195 retains a separate exact-head CI, merge, and Production verification
+gate. Observed-user testing remains unperformed and observed users remain `0`.

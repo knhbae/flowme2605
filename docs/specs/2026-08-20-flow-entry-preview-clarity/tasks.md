@@ -16,4 +16,7 @@
   resolve independent UX/accessibility and React review findings.
 - [x] FPC-09 Record final local QA evidence.
 - [x] FPC-10 Publish a stacked review PR and Vercel Preview only.
-- [ ] FPC-11 Owner reviews Preview and separately decides merge and Production.
+- [x] FPC-11 Owner reviewed the Preview and authorized the bounded #195 release
+  after #194.
+- [ ] FPC-12 Pass reconciled exact-head CI, merge #195, and verify the resulting
+  Production deployment.

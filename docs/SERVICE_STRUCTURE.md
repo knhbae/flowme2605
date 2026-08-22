@@ -1,23 +1,24 @@
 # FLOW Service Structure
 
-Last updated: 2026-08-20
-Status: Living PR #182 Production baseline plus an unmerged stacked Preview delta; observed users remain `0`.
+Last updated: 2026-08-23
+Status: Living PR #194 Production baseline plus the authorized, unmerged PR #195 delta; observed users remain `0`.
 
 This document is the canonical map of the current app surface, screen feature tree, and service architecture. It is not validation evidence by itself. Use it to keep product PoCs, research surfaces, creator tools, public routes, My Flow execution, and shared domain modules from drifting apart.
 
-The plan surfaces below are the current Production behavior. [PR #182](https://github.com/knhbae/flowme2605/pull/182)
-final head `0aca76687ac582ff4cf11b19a0f46db5593c768e` merged as
-`f6f796c035d5762eea07ec35abb7f1af1577a5a5`; exact-head PR CI run
-`31655643163`, Production deployment record `5880059975` / status `16743295490`,
-and canonical smoke `41/41` passed. Post-merge `main` run `31656595092` passed
-both core and Playwright. The shared editors change no Flow or
-Map persistence identity, storage key, schema, or transaction owner. Automated
+The plan surfaces below use [PR #194](https://github.com/knhbae/flowme2605/pull/194)
+merge `c8a57ba37c4087b84b526bc778c3604f68299faa` as the current Production
+baseline. Its exact-head release gate passed and its resulting Production
+deployment was verified at the canonical service. [PR #196](https://github.com/knhbae/flowme2605/pull/196)
+previously resolved the source-review prerequisite with `135` normal-user routes
+current and overdue/missing counts `0`. The shared editors change no Flow or Map
+persistence identity, storage key, schema, or transaction owner. Automated
 production QA is not observed-user validation; observed users remain `0`.
 
-The Flow entry and preview clarity rows below also describe an **unmerged stacked
-Preview delta** over the visual-refresh review baseline. That delta is authorized
-only for a Draft PR and Vercel Preview. It is not current Production behavior,
-has not been merged, and has observed users `0`.
+The Flow entry and preview clarity rows below also describe the **authorized,
+unmerged PR #195 delta** over that released visual-refresh baseline. The Owner
+completed FPC-11, but the reconciled exact head must still pass CI before merge
+and its resulting Production deployment must be verified afterward. Until then,
+the delta is not current Production behavior; observed users remain `0`.
 
 ## Update Policy
 
@@ -114,11 +115,11 @@ Desktop can use a top nav with the same priority order. It should not expose mor
   `savedPlanLibrary=off` restores the prior/default result mode. These flags do
   not rename keys, migrate schema, or move data ownership into the shared UI.
 - This public presentation foundation was introduced by PR #178 merge
-  `908ee849beb15cb10331b72d7894167a61458b18`. PR #182 merge
-  `f6f796c035d5762eea07ec35abb7f1af1577a5a5` is the latest runtime-bearing
-  source and extends it with Item date parity. Exact-head PR CI, exact-source
-  Production deployment, and canonical smoke `41/41` passed; observed users
-  remain `0`.
+  `908ee849beb15cb10331b72d7894167a61458b18`, then extended with Item date
+  parity by PR #182 merge `f6f796c035d5762eea07ec35abb7f1af1577a5a5`.
+  Current PR #194 merge `c8a57ba37c4087b84b526bc778c3604f68299faa`
+  carries those contracts forward; its exact-head release gate and resulting
+  Production verification passed. Observed users remain `0`.
 
 ### Current Production Plan/Item Edit Contract
 
@@ -164,9 +165,9 @@ Desktop can use a top nav with the same priority order. It should not expose mor
 
 ### Current Production Baseline And Inherited R3B/P35/Round 2 Contracts
 
-- Flow Map Item date-parity merge `f6f796c035d5762eea07ec35abb7f1af1577a5a5`
+- PR #194 merge `c8a57ba37c4087b84b526bc778c3604f68299faa`
   is the latest runtime-bearing product merge and current product-behavior
-  baseline. It preserves the PR #178 Plan edit/lifecycle foundation and the R3B selected-Plan,
+  baseline. It preserves PR #182 Item date parity, the PR #178 Plan edit/lifecycle foundation, and the R3B selected-Plan,
   transfer, and Escape contracts from merge
   `2b937ce811b518950f495341d05736ebd102887a`. Exact
   `myFlowExperience=r3a-lab` remains an internal query-only surface. Automated

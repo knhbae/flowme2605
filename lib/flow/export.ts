@@ -39,6 +39,17 @@ const riskLabels: Record<string, string> = {
   financial_sensitive: '재정 주의',
 };
 
+const sourceObservationLogTableId = 'fitvely-source-observation-log';
+const singleApplicationDietLogTableId = 'fitvely-nutrition-action-observation-log';
+
+function isSourceObservationBundle(bundle: FlowBundle): boolean {
+  return getLogTables(bundle).some((table) => table.id === sourceObservationLogTableId);
+}
+
+function isSingleApplicationDietBundle(bundle: FlowBundle): boolean {
+  return getLogTables(bundle).some((table) => table.id === singleApplicationDietLogTableId);
+}
+
 const categoryAccentColors: Record<string, string> = {
   이사: '1264F0',
   '육아/이유식': 'A16207',
@@ -705,7 +716,14 @@ function buildWorkbenchRows(bundle: FlowBundle, state?: FlowWorkbenchState): Wor
   }
 
   if (state.weeklyReview?.trim()) {
-    rows.push(['리뷰', '', '주간 리뷰', state.weeklyReview.trim()]);
+    const sourceObservation = isSourceObservationBundle(bundle);
+    const singleApplicationDiet = isSingleApplicationDietBundle(bundle);
+    rows.push([
+      sourceObservation || singleApplicationDiet ? '메모' : '리뷰',
+      '',
+      sourceObservation ? '추가 확인 메모' : singleApplicationDiet ? '유지·중단 메모' : '주간 리뷰',
+      state.weeklyReview.trim(),
+    ]);
   }
 
   return rows;
@@ -812,8 +830,16 @@ export function buildText(
   }
 
   if (artifactPlan.primarySurface === 'spreadsheet_log') {
-    lines.push('', '## 기록표');
-    lines.push('날짜별 식단, 운동, 측정, 컨디션을 기록하세요.');
+    if (isSourceObservationBundle(bundle)) {
+      lines.push('', '## 출처 확인표');
+      lines.push('원본에서 직접 확인한 문장과 근거, 적용 또는 보류 결정, 추가 질문을 기록하세요.');
+    } else if (isSingleApplicationDietBundle(bundle)) {
+      lines.push('', '## 적용 전후 관찰표');
+      lines.push('원본에서 고른 기준 하나를 오늘 한 번 적용하고 전후 상태와 유지 또는 중단 결정을 기록하세요.');
+    } else {
+      lines.push('', '## 기록표');
+      lines.push('날짜별 식단, 운동, 측정, 컨디션을 기록하세요.');
+    }
   }
 
   if (artifactPlan.primarySurface === 'decision_table') {
@@ -1514,7 +1540,11 @@ export function buildWorkbookSheets(
       columns: workbenchColumns,
       rows: workbenchRows,
       accentColor,
-      note: '첫 화면 실행판에서 입력한 회차 완료, 회차 메모, 기록표 값, 주간 리뷰를 백업합니다.',
+      note: isSourceObservationBundle(bundle)
+        ? '첫 화면 출처 확인표에서 입력한 출처 문장, 근거, 적용 또는 보류 결정과 추가 확인 메모를 백업합니다.'
+        : isSingleApplicationDietBundle(bundle)
+          ? '첫 화면 적용 전후 관찰표에서 입력한 기준, 전후 상태와 유지 또는 중단 메모를 백업합니다.'
+        : '첫 화면 실행판에서 입력한 회차 완료, 회차 메모, 기록표 값, 주간 리뷰를 백업합니다.',
     });
   }
 

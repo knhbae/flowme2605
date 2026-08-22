@@ -1,26 +1,42 @@
 # Flow Entry And Preview Clarity QA
 
-**Current state:** STACKED DRAFT PR AND EXACT CODE-HEAD VERCEL PREVIEW PUBLISHED /
-PLAYWRIGHT CI PASS / CORE CI NON-GREEN ONLY AT THE KNOWN SOURCE-REVIEW FRESHNESS
-GATE / OWNER REVIEW PENDING / MERGE AND PRODUCTION NOT AUTHORIZED / OBSERVED
-USERS `0`.
+**Current state:** OWNER RELEASE DECISION COMPLETE / SOURCE-REVIEW PREREQUISITE
+RESOLVED / PR #194 MERGED AND PRODUCTION VERIFIED / PR #195 RECONCILED EXACT-HEAD
+CI, MERGE, AND POST-MERGE PRODUCTION VERIFICATION PENDING / OBSERVED USERS `0`.
 
 ## Required Checks
 
 | Check | Result | Evidence |
 | --- | --- | --- |
-| `npm.cmd run docs:check` | PASS | 2026-08-20: skill sync passed; `16` required files and `4575` local links passed. |
+| `npm.cmd run docs:check` | PASS | 2026-08-23 reconciliation: skill sync passed; `16` required files and `4577` local links passed. |
 | `npm.cmd run security:audit` | PASS | `npm audit --audit-level=high`: `0` vulnerabilities. |
 | Focused discovery, syntax, copy, Map, and result contracts | PASS | Core focused command `82/82`; final Calendar a11y/primitives `17/17`; choose-child selector/title/section focused checks `20/20`. |
 | Approved/public/lock suites | PASS | `test:approved-plan-execution` `198/198`; `test:public-plan-surface` `19/19`; `test:p35-appclient-lock` `59/59`. |
-| Full `npm.cmd test` | EXPECTED NON-GREEN | Pretest `176/176`, P35 P0 `455/455`, and main `624/625`. The only failure is the separate source-review freshness gate: `30` records are past `review_due:2026-05-21`. No entry/preview regression failed. |
+| Full `npm.cmd test` | HISTORICAL FAILURE RESOLVED / EXACT-HEAD RERUN PENDING | The 2026-08-20 review head reached pretest `176/176`, P35 P0 `455/455`, and main `624/625`; its only failure was the then-separate source-review freshness gate for `30` records. PR #196 resolved that prerequisite with `135` normal-user routes current and overdue/missing counts `0`, then merged as `8c0bfd8de9fb8877c4045b2c3f725b60ca236843`. PR #195 must still pass again on its reconciled exact head. |
 | Focused Flow/copy E2E regression | PASS | Current build: `/flows`, public Flow, per-Flow Text reset, full Todo/Calendar, legacy disclosure, and single/sibling copy title `10/10`. |
 | Executable Flow Map parity E2E | PASS | `2/2`: setup/selector precedes full result, selected child owns Text title/section/warnings, A-to-B resets to Text and closes detail, Map identity stays unchanged. |
 | `npm.cmd run build` | PASS | Next.js `15.5.21`; type check and `18/18` static pages passed, including `/flows`, `/f/[slug]`, and `/flow-maps/[map]`. |
 | Real-browser 390/1024/1440 | PASS | Exact current BUILD_ID `tJuAWDPrmaKm2NaI9C3GZ`; `/flows`, public Flow, `/my`, and `/calendar` matrix `12/12`; overflow at most `1px`, visible focus passed, console/page errors `0`. Evidence: `output/playwright/flow-entry-preview-clarity-final-exact`. |
 | Independent UX/accessibility review | PASS | Final changed-diff audit: Blocker `0`, High `0`, Medium `0` after selector order, child title/section, Calendar landmark, and duplicate-date announcement corrections. |
 | Independent React review | PASS | Current-source review and focused rerun `89/89`: state ownership, derived resets, Map selection, full-row rendering, keys, and legacy boundaries have Blocker `0`, High `0`, Medium `0`. |
-| Stacked Draft PR and Vercel Preview | EXACT CODE-HEAD PREVIEW READY / OWNER REVIEW PENDING | [Draft PR #195](https://github.com/knhbae/flowme2605/pull/195) initial runtime head `1d14c19c387b8f2cd3d61f04698aa097af2ddf2d` produced a successful initial Preview, but [Actions run `32309777212`](https://github.com/knhbae/flowme2605/actions/runs/32309777212) ended core `624/625` at the known `30`-record `review_due` freshness failure and Playwright `623/629` with `6` failures. Remediation code head `597a6f84d593f0788e2c1f5a4fcd20d762d7bf28` passed current-source build `18` pages, focused unit `13/13`, and those six E2E cases `6/6` locally. Its [Actions run `32312436980`](https://github.com/knhbae/flowme2605/actions/runs/32312436980) finished with [Playwright job `96257986506`](https://github.com/knhbae/flowme2605/actions/runs/32312436980/job/96257986506) `629/629` PASS in `14.4m` and successful report artifact `9387286188` upload. [Core job `96257986748`](https://github.com/knhbae/flowme2605/actions/runs/32312436980/job/96257986748) remains non-green only at the known freshness gate: docs `16` files / `4575` links, pretest `176/176`, and P35 `455/455` passed; main was `624/625`, with the sole failure at `lib/flow/seed-flows.test.ts:1290` for `30` records past `review_due:2026-05-21`. CI build was skipped after that test failure; the current-source local build remains PASS with `18` pages. Exact code-head Vercel deployment `dpl_2kkCE8tKVBxDfDb9gmxGNKG2UPhU`, GitHub deployment `5992733602`, status `17042464212`, is READY/SUCCESS: [stable branch Preview](https://flowme2605-git-agent-flow-entry-preview-clarity-flowme.vercel.app), [immutable Preview](https://flowme2605-5ijw2y49m-flowme.vercel.app), and [deployment dashboard](https://vercel.com/flowme/flowme2605/2kkCE8tKVBxDfDb9gmxGNKG2UPhU). This is Preview evidence only, not merge or Production evidence. |
+| Prior stacked PR and Vercel Preview | HISTORICAL REVIEW EVIDENCE | [PR #195](https://github.com/knhbae/flowme2605/pull/195) initial runtime head `1d14c19c387b8f2cd3d61f04698aa097af2ddf2d` produced a successful initial Preview, while [Actions run `32309777212`](https://github.com/knhbae/flowme2605/actions/runs/32309777212) ended core `624/625` and Playwright `623/629`. Remediation head `597a6f84d593f0788e2c1f5a4fcd20d762d7bf28` passed build `18`, focused unit `13/13`, the six affected E2E cases `6/6` locally, and [Actions run `32312436980`](https://github.com/knhbae/flowme2605/actions/runs/32312436980) Playwright `629/629`; its core result remained `624/625` only because of the now-resolved source-review prerequisite. Preview deployment `dpl_2kkCE8tKVBxDfDb9gmxGNKG2UPhU` was READY/SUCCESS. These counts remain dated review evidence and do not prove the reconciled release head. |
+| Release gate | OWNER AUTHORIZED / EXACT-HEAD CI AND PRODUCTION PENDING | The Owner completed FPC-11. PR #194 merged as `c8a57ba37c4087b84b526bc778c3604f68299faa` and its resulting Production deployment was verified. PR #195 must pass its reconciled exact-head CI before merge, then its own resulting Production deployment must be verified. |
+
+## Reconciled Release Candidate — 2026-08-23
+
+- `npm.cmd test`, `npm.cmd run build` (`18/18` pages), and
+  `npm.cmd run docs:check` (`16` files, `4577` links) passed locally.
+- The combined Flow discovery and preview checks passed `10/10`; the routine
+  schedule presentation checks passed `7/7`.
+- The four-worker full Playwright run passed `627/629`. Its two failures were
+  concurrent-save URL wait timeouts; both exact scenarios then passed `2/2`
+  sequentially without a runtime change.
+- After the compact `9+` overflow-label correction, a fresh-build targeted run
+  covering mobile overflow, mobile Calendar layout, and both concurrent-save
+  scenarios passed `4/4`.
+- The final changed-diff audit found P1 `0` and P2 `0`. GitHub's exact-head core,
+  full Playwright, and Vercel checks remain the release gate; this local evidence
+  is not a substitute for them or for observed-user validation.
 
 ## Required Scenarios
 

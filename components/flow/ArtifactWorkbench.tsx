@@ -2220,6 +2220,8 @@ function SpreadsheetWorkbench({
   exportActions?: ArtifactExportActions;
 }) {
   const routeSpecificLogTables = getLogTables(bundle);
+  const isSourceObservation = routeSpecificLogTables.some((table) => table.id === 'fitvely-source-observation-log');
+  const isSingleApplicationDiet = routeSpecificLogTables.some((table) => table.id === 'fitvely-nutrition-action-observation-log');
   const start = anchor || formatLocalDate(new Date());
   const rows = Array.from({ length: 7 }, (_, index) => formatDate(addDays(new Date(start), index)));
   const showRiskBoundary = bundle.flow.risk_level === 'medical_sensitive' && Boolean(bundle.flow.warning);
@@ -2239,13 +2241,21 @@ function SpreadsheetWorkbench({
         ? '냉장고 지도에서 고른 재료, 메뉴 후보, 장보기 보류 상태만 기록합니다. 절약액이나 영양 균형은 계산하지 않습니다.'
         : '날짜별로 남길 기록 값을 먼저 정리합니다.';
   const routeSpecificMemoTitle =
-    bundle.flow.slug === 'water-purifier-filter-cycle'
+    isSourceObservation
+      ? '추가 확인 메모'
+      : isSingleApplicationDiet
+        ? '유지·중단 메모'
+      : bundle.flow.slug === 'water-purifier-filter-cycle'
       ? '관리 메모'
       : bundle.flow.slug === 'fridge-cleanout-weekly-plan'
         ? '장보기 전 메모'
         : '주간 조정 메모';
   const routeSpecificMemoPlaceholder =
-    bundle.flow.slug === 'water-purifier-filter-cycle'
+    isSourceObservation
+      ? '내 상황에 적용하기 전에 더 확인할 질문, 예외, 개인 메모를 적어두세요.'
+      : isSingleApplicationDiet
+        ? '오늘 한 번 적용한 뒤 유지하거나 중단할지와 그 이유를 적어두세요.'
+      : bundle.flow.slug === 'water-purifier-filter-cycle'
       ? '이번에 확인한 필터 상태, 모델별 교체 기준, 원문/제조사 링크를 적어두세요.'
       : bundle.flow.slug === 'fridge-cleanout-weekly-plan'
         ? '남은 재료, 폐기/확인할 재료, 다음 장보기에서 보류할 항목만 적어두세요.'

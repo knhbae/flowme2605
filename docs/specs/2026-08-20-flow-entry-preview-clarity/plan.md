@@ -18,7 +18,7 @@
 
 ## Sequence
 
-1. Freeze the four approved outcomes and the stacked publication boundary.
+1. Freeze the four approved outcomes and the release evidence boundary.
 2. Replace the two `/flows` text entries with one intent-aware field while keeping
    existing URL and memo destinations intact.
 3. Add cardinality-aware copy-title display logic without changing stored data.
@@ -30,8 +30,10 @@
    regression coverage.
 7. Run docs, focused tests, build, and 390/1024/1440 real-browser checks; resolve
    independent UX/accessibility and React review findings.
-8. Publish only the scoped stacked PR and Vercel Preview, then wait for Owner
-   review before merge or Production.
+8. Publish the scoped stacked PR and Vercel Preview, then obtain the Owner's
+   separate release decision. Complete.
+9. Reconcile PR #195 onto the released PR #194 baseline, pass exact-head CI,
+   merge only that head, and verify the resulting Production deployment.
 
 ## Risk Controls
 

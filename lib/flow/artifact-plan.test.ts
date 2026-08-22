@@ -116,12 +116,34 @@ test('artifact plan maps exact workout video to routine calendar and condition m
   assert.ok(plan.surfaces.some((surface) => surface.kind === 'memo_card'));
 });
 
-test('artifact plan maps diet tracking to spreadsheet-first log', () => {
-  const plan = getArtifactPlan(bundle('real-fitvely-video-body-fat-6kg-method'));
+test('artifact plan maps source-observation videos to a source table without invented repetition', () => {
+  for (const slug of ['real-fitvely-video-body-fat-6kg-method', 'real-fitvely-video-three-week-check']) {
+    const plan = getArtifactPlan(bundle(slug));
 
-  assert.equal(plan.primarySurface, 'spreadsheet_log');
-  assert.equal(plan.surfaces[0].kind, 'spreadsheet_preview');
-  assert.ok(plan.surfaces.some((surface) => surface.kind === 'routine_month'));
+    assert.equal(plan.primarySurface, 'spreadsheet_log', slug);
+    assert.deepEqual(plan.surfaces.map((surface) => surface.kind), ['spreadsheet_preview', 'memo_card'], slug);
+    assert.equal(plan.surfaces[0]?.title, '출처 확인표', slug);
+    assert.ok(!plan.surfaces.some((surface) => surface.kind === 'routine_month'), slug);
+    assert.ok(!plan.surfaces.some((surface) => /측정|운동|다음 주/.test(surface.description)), slug);
+  }
+});
+
+test('artifact plan maps one-time nutrition applications without weekly surfaces', () => {
+  const slugs = [
+    'real-fitvely-video-carb-reason',
+    'real-fitvely-video-post-workout-nutrition',
+    'real-fitvely-video-carb-amount-shorts',
+    'real-fitvely-video-after-work-nutrition',
+    'real-fitvely-video-weight-class-method',
+  ];
+
+  for (const slug of slugs) {
+    const plan = getArtifactPlan(bundle(slug));
+    assert.equal(plan.primarySurface, 'spreadsheet_log', slug);
+    assert.deepEqual(plan.surfaces.map((surface) => surface.kind), ['spreadsheet_preview', 'memo_card'], slug);
+    assert.equal(plan.surfaces[0]?.title, '적용 전후 관찰표', slug);
+    assert.ok(!plan.surfaces.some((surface) => /주간|반복|다음 주/.test(`${surface.title} ${surface.description}`)), slug);
+  }
 });
 
 test('artifact plan maps workout programming videos to decision table before workout calendar', () => {
@@ -218,12 +240,24 @@ test('artifact plan maps official document issue routes to memo cards first exce
   assert.ok(resident.exportTargets.includes('memo'));
 });
 
-test('artifact plan maps MOFA travel safety to checklist without memo card', () => {
+test('artifact plan maps MOFA travel safety to an undated checklist and emergency memo', () => {
   const plan = getArtifactPlan(bundle('real-mofa-overseas-travel-prep'));
 
-  assert.equal(plan.primarySurface, 'timeline_calendar');
-  assert.deepEqual(plan.surfaces.map((surface) => surface.kind), ['execution_list', 'month_calendar']);
+  assert.equal(plan.primarySurface, 'checklist');
+  assert.deepEqual(plan.surfaces.map((surface) => surface.kind), ['execution_list', 'memo_card']);
+  assert.ok(!plan.surfaces.some((surface) => surface.kind === 'month_calendar'));
   assert.equal(plan.sourceHandling, 'reshape_before_featured');
+});
+
+test('artifact plan keeps corrected Q-Net routes on undated checklist surfaces', () => {
+  for (const slug of ['qnet-exam-application-prep', 'real-qnet-application-examday-check']) {
+    const plan = getArtifactPlan(bundle(slug));
+
+    assert.equal(plan.primarySurface, 'checklist', slug);
+    assert.deepEqual(plan.surfaces.map((surface) => surface.kind), ['execution_list', 'memo_card'], slug);
+    assert.equal(plan.surfaces[0]?.title, '원서접수·응시 체크리스트', slug);
+    assert.ok(!plan.surfaces.some((surface) => /반복|측정|운동|다음 주/.test(`${surface.title} ${surface.description}`)), slug);
+  }
 });
 
 test('artifact plan maps driver renewal reshaping to condition comparison first', () => {
