@@ -29,6 +29,15 @@ test('canonical URL lookup resolves the AJD moving source to the shared 24-item 
   assert.equal('usageCount' in result, false);
 });
 
+test('scheme-like memo text and non-web protocols remain memo drafts instead of URL misses', () => {
+  for (const input of ['todo: 공부', 'mailto:test@example.com']) {
+    assert.throws(() => canonicalizeFlowSourceUrl(input), /HTTP or HTTPS/u);
+    const result = lookupUrlOrMemoP0Input(input);
+    assert.equal(result.status, 'memo_draft');
+    assert.equal(result.inputKind, 'memo');
+  }
+});
+
 test('source-backed canary URLs resolve to existing Flow Map hits', () => {
   const canaries = [
     {

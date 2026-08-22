@@ -4,6 +4,12 @@ The repository's current semantic-version tag is `v0.1.0` at
 `d18f4218de48e23f894c7615945e37339a4a0153` (`2026-06-11`). Later entries
 below are deployment milestones unless they explicitly name another tag.
 
+## 2026-08-23 - Production Visual Refresh
+
+- Released the approved warm-paper, ink, cobalt, and semantic-state visual system across discovery, public preview, Plan/Item sheets, My Plan, export/management, and Calendar surfaces while preserving routes, copy, ordering, data ownership, persistence, save/export, and lifecycle behavior.
+- [PR #194](https://github.com/knhbae/flowme2605/pull/194) final head `9dd05c3ffe9df495d6d5f59a7942bc7cd72cfaf7` passed exact-head CI run [`32583981208`](https://github.com/knhbae/flowme2605/actions/runs/32583981208), including full Playwright `624/624`, and merged as `c8a57ba37c4087b84b526bc778c3604f68299faa`.
+- The resulting Vercel status succeeded and the [canonical Production URL](https://flowme2605.vercel.app) returned HTTP `200`. This is automated QA and deployment evidence, not observed-user validation; observed users remain `0`. No semantic version tag was created.
+
 ## 2026-08-13 - Flow Map Item Date Parity
 
 - Released the existing shared Item title, memo, and date editor for executable single-plan Flow Maps. Source-undated Items can return to no date, source-dated Items reset to their projected source date, and an in-session Plan anchor immediately reprojects Item rows and reset baselines without adding a schema or storage-key migration.

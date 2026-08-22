@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import { toContentDisplayTitle, toUserFacingSourceTitle } from '@/lib/flow/display-title';
 import {
@@ -17,7 +17,10 @@ import { FlowSaveBeforeFrame } from './FlowSaveBeforeFrame';
 import { PublicFlowItemPreview } from './PublicFlowItemPreview';
 import { PublicPlanResultPreview } from './PublicPlanResultPreview';
 import { SourceBackedFlowMapExecutionOutline } from './SourceBackedFlowMapExecutionOutline';
-import { SourceBackedFlowMapSaveButton } from './SourceBackedFlowMapSaveButton';
+import {
+  SourceBackedFlowMapAnchorInput,
+  SourceBackedFlowMapSaveButton,
+} from './SourceBackedFlowMapSaveButton';
 
 type SourceBackedFlowMapSaveExperienceProps = {
   publishPackage: SourceBackedFlowMapPublishPackage;
@@ -61,6 +64,8 @@ export function SourceBackedFlowMapSaveExperience({
     sourceLabel,
   }));
   const [anchor, setAnchor] = useState(publishPackage.public.setupInput?.defaultValue ?? '');
+  const [anchorRequired, setAnchorRequired] = useState(false);
+  const anchorInputRef = useRef<HTMLInputElement>(null);
   const [selectedDestination, setSelectedDestination] = useState<ApprovedPublicDestination>('memo');
   const [previewItem, setPreviewItem] = useState<{
     row: FlowExperienceProjectionRow;
@@ -159,9 +164,22 @@ export function SourceBackedFlowMapSaveExperience({
           <PublicPlanResultPreview
             viewModel={publicResult.viewModel}
             selectedDestination={selectedDestination}
+            textSyntaxModel={publicResult.textSyntaxModel}
             previewRowLimit={6}
             testId="public-flow-capability-result"
             anchorDate={previewAnchor}
+            calendarPreamble={publicSurface.setupInput ? (
+              <SourceBackedFlowMapAnchorInput
+                setupInput={publicSurface.setupInput}
+                anchor={anchor}
+                required={anchorRequired}
+                inputRef={anchorInputRef}
+                onAnchorChange={(value) => {
+                  setAnchor(value);
+                  setAnchorRequired(false);
+                }}
+              />
+            ) : undefined}
             calendarEmptyAction={(
               <p data-testid="flow-map-calendar-empty-action" className="px-3 py-4 text-sm text-[var(--flowme-text-secondary)]">
                 날짜가 있는 Todo가 없어요. Text 또는 Todo 결과를 확인해 주세요.
@@ -194,6 +212,10 @@ export function SourceBackedFlowMapSaveExperience({
             buildEditorProjection={buildEditorProjection}
             savedFlows={savedFlows}
             setupInput={publicSurface.setupInput}
+            anchorInputRef={anchorInputRef}
+            showAnchorInputInActions={!visualSubtractionEnabled}
+            anchorRequired={anchorRequired}
+            onAnchorRequiredChange={setAnchorRequired}
           />
         )}
         composition={visualSubtractionEnabled ? 'artifact-first' : 'legacy'}

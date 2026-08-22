@@ -1,8 +1,15 @@
 import { buildFlowCapabilityResultViewModel, type FlowCapabilityResultViewModel } from './capability-result-view-model';
 import { toUserFacingSourceTitle } from './display-title';
-import type { EffectiveFlowMapSnapshot } from './effective-flow-map-snapshot';
+import {
+  buildFlowMapCanonicalItemId,
+  type EffectiveFlowMapSnapshot,
+} from './effective-flow-map-snapshot';
 import { buildEffectiveFlowSnapshot } from './effective-flow-snapshot';
 import type { FlowExperienceProjectionRow } from './flow-experience-projection';
+import {
+  buildPublicFlowTextSyntaxModel,
+  type PublicFlowTextSyntaxModel,
+} from './public-flow-text-syntax';
 import { resolvePublicDateIntent } from './public-date-intent';
 import {
   sourceBackedMyFlowBundles,
@@ -38,6 +45,12 @@ export type EffectiveFlowMapResult = {
    */
   editorRows: FlowExperienceProjectionRow[];
   viewModel: FlowCapabilityResultViewModel;
+  /**
+   * Display-only authoring grammar built from the effective Map projection
+   * and the canonical child Flow sources. This never becomes Map identity or
+   * persistence input.
+   */
+  textSyntaxModel: PublicFlowTextSyntaxModel;
 };
 
 function getChildBundles(
@@ -100,6 +113,60 @@ function buildCompositeBundle(
   };
 }
 
+function buildFlowMapTextSyntaxBundle(
+  compositeBundle: FlowBundle,
+  childBundles: FlowBundle[],
+): FlowBundle {
+  const warnings = Array.from(new Set(childBundles.flatMap((bundle) => [
+    bundle.flow.warning,
+    ...(bundle.warnings ?? []),
+  ]).flatMap((warning) => warning?.trim() ? [warning.trim()] : [])));
+
+  return {
+    ...compositeBundle,
+    // Keep every source warning in one explicit list. The composite Flow is a
+    // display adapter, so inheriting only the first child's warning would
+    // silently drop warnings from later children.
+    flow: { ...compositeBundle.flow, warning: undefined },
+    items: childBundles.flatMap((bundle) => bundle.items.map((item) => ({
+      ...item,
+      id: buildFlowMapCanonicalItemId(bundle.flow.slug, item.id),
+      flow_id: compositeBundle.flow.id,
+    }))),
+    itemDetails: childBundles.flatMap((bundle) => (bundle.itemDetails ?? []).map((detail) => ({
+      ...detail,
+      item_id: buildFlowMapCanonicalItemId(bundle.flow.slug, detail.item_id),
+    }))),
+    mealSlots: childBundles.flatMap((bundle) => (bundle.mealSlots ?? []).map((slot) => ({
+      ...slot,
+      id: buildFlowMapCanonicalItemId(bundle.flow.slug, slot.id),
+      flow_id: compositeBundle.flow.id,
+    }))),
+    warnings,
+  };
+}
+
+function buildFlowMapTextSyntaxProjection(
+  projection: ReturnType<typeof buildEffectiveFlowSnapshot>['committed']['projection'],
+  mapSnapshot: EffectiveFlowMapSnapshot,
+) {
+  return {
+    ...projection,
+    title: mapSnapshot.effectiveTitle,
+    outlineRows: projection.outlineRows.map((row) => {
+      // `buildCompositeRows` merges public Map memo/detail text for general
+      // previews. Text authoring syntax must reserve `내 메모` for the private
+      // personalization layer, so remove that merged value here and restore
+      // only an actual personal detail override.
+      const { memo: _mergedMemo, ...sourceRow } = row;
+      const personalDetail = mapSnapshot.itemPersonalizations[
+        row.id as keyof typeof mapSnapshot.itemPersonalizations
+      ]?.detail?.trim();
+      return personalDetail ? { ...sourceRow, memo: personalDetail } : sourceRow;
+    }),
+  };
+}
+
 function mergeMemo(
   row: FlowExperienceProjectionRow,
   mapRow: EffectiveFlowMapSnapshot['canonicalRows'][number],
@@ -132,7 +199,9 @@ function buildCompositeRows(options: {
     })] as const;
   }));
   const effectiveIds = new Set<string>(options.mapSnapshot.itemIds.effective);
-  const multipleChildren = options.childBundles.length > 1;
+  const multipleChildren = new Set(
+    options.mapSnapshot.rows.map((row) => row.flowSlug),
+  ).size > 1;
   const included: FlowExperienceProjectionRow[] = [];
   const excluded: FlowExperienceProjectionRow[] = [];
   const sourceDateByItemId: Record<string, string> = {};
@@ -266,6 +335,15 @@ export function buildEffectiveFlowMapResult(options: {
       },
     },
   });
+  const effectiveFlowSlugs = new Set(options.mapSnapshot.rows.map((row) => row.flowSlug));
+  const textSourceBundles = childBundles.filter((bundle) => (
+    effectiveFlowSlugs.has(bundle.flow.slug)
+  ));
+  const textSyntaxModel = buildPublicFlowTextSyntaxModel({
+    bundle: buildFlowMapTextSyntaxBundle(compositeBundle, textSourceBundles),
+    projection: buildFlowMapTextSyntaxProjection(snapshot.committed.projection, options.mapSnapshot),
+    itemPersonalizations: options.mapSnapshot.itemPersonalizations,
+  });
   const viewModel = buildFlowCapabilityResultViewModel({
     snapshot,
     lifecycle: 'public_preview',
@@ -287,5 +365,6 @@ export function buildEffectiveFlowMapResult(options: {
       ...snapshot.committed.excludedRows,
     ].map(cloneProjectionRow),
     viewModel,
+    textSyntaxModel,
   };
 }

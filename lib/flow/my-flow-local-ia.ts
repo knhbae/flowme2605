@@ -268,6 +268,37 @@ export function buildMyFlowCopyOrdinalMap(
   return ordinals;
 }
 
+/**
+ * Copy ordinals are presentation-only disambiguators. A plan whose source has
+ * no sibling copy keeps its own title; numbering starts only when a second
+ * saved copy from the same source exists.
+ */
+export function buildMyFlowCopyDisambiguationMap(
+  entries: readonly MyFlowCopyOrdinalInput[],
+): Map<string, number> {
+  const ordinals = buildMyFlowCopyOrdinalMap(entries);
+  const sourceCounts = new Map<string, number>();
+  entries.forEach((entry) => {
+    const sourceId = entry.sourceId.trim() || entry.planId;
+    sourceCounts.set(sourceId, (sourceCounts.get(sourceId) ?? 0) + 1);
+  });
+
+  return new Map(entries.flatMap((entry) => {
+    const sourceId = entry.sourceId.trim() || entry.planId;
+    const ordinal = ordinals.get(entry.planId);
+    return (sourceCounts.get(sourceId) ?? 0) > 1 && ordinal !== undefined
+      ? [[entry.planId, ordinal] as const]
+      : [];
+  }));
+}
+
+export function formatMyFlowCopyDisplayTitle(
+  title: string,
+  copyOrdinal?: number,
+): string {
+  return copyOrdinal === undefined ? title : `사본 ${copyOrdinal} · ${title}`;
+}
+
 function normalizeScrollY(value: unknown): number {
   return typeof value === 'number' && Number.isFinite(value)
     ? Math.max(0, Math.floor(value))

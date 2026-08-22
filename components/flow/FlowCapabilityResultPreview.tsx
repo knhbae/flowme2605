@@ -12,6 +12,7 @@ import type {
   FlowExperienceProjection,
   FlowExperienceShape,
 } from '@/lib/flow/flow-experience-projection';
+import type { PublicFlowTextSyntaxModel } from '@/lib/flow/public-flow-text-syntax';
 import { FlowArtifactDataPreview } from './FlowArtifactDataPreview';
 import { FlowContextDisclosure } from './FlowContextDisclosure';
 
@@ -40,6 +41,8 @@ export type FlowCapabilityResultPreviewProps = {
   onRowOpen?: (row: FlowExperienceProjection['outlineRows'][number], returnFocusSelector: string) => void;
   anchorDate?: string;
   calendarEmptyAction?: React.ReactNode;
+  calendarPreamble?: React.ReactNode;
+  textSyntaxModel?: PublicFlowTextSyntaxModel;
   onAction?: (action: FlowResultSemanticAction) => void;
   actionLabels?: Partial<Record<FlowResultSemanticAction, string>>;
   previewRowLimit?: number;
@@ -257,6 +260,8 @@ export function FlowCapabilityResultPreview({
   onRowOpen,
   anchorDate,
   calendarEmptyAction,
+  calendarPreamble,
+  textSyntaxModel,
   onAction,
   actionLabels,
   previewRowLimit = 6,
@@ -372,7 +377,7 @@ export function FlowCapabilityResultPreview({
             testId="public-result-format-help"
           >
             <ul className="grid gap-2">
-              <li><strong>Text</strong> · 원문에 가까운 전체 계획</li>
+              <li><strong>Text</strong> · Flow 문법으로 보는 전체 계획</li>
               <li><strong>Todo</strong> · 날짜별로 실행할 항목</li>
               <li><strong>Calendar</strong> · 날짜가 있는 Todo의 일정</li>
             </ul>
@@ -442,6 +447,12 @@ export function FlowCapabilityResultPreview({
             onRowOpen={onRowOpen}
             anchorDate={anchorDate}
             publicApprovedMode={publicApprovedMode}
+            textSyntaxModel={selectedCandidate.destination === 'memo'
+              ? textSyntaxModel
+              : undefined}
+            calendarPreamble={selectedCandidate.destination === 'calendar'
+              ? calendarPreamble
+              : undefined}
             emptyAction={selectedCandidate.destination === 'calendar'
               ? calendarEmptyAction
               : undefined}

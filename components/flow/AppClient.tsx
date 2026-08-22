@@ -137,6 +137,7 @@ import {
 import { inferPrimaryDestination } from '@/lib/flow/destination';
 import {
   buildRoutineSchedulePresentation,
+  formatRoutineOverflowLabel,
   formatRoutineRepeatRuleLabel,
 } from '@/lib/flow/routine-schedule-presentation';
 import {
@@ -196,6 +197,7 @@ import {
   restorePublicItemPersonalizations,
   type PublicItemPersonalization,
 } from '@/lib/flow/public-item-personalization';
+import { buildPublicFlowTextSyntaxModel } from '@/lib/flow/public-flow-text-syntax';
 import { splitExecutionDetailContent } from '@/lib/flow/execution-detail-content';
 import {
   addPersonalDetailResource,
@@ -321,6 +323,7 @@ import {
 import { buildPostSaveDecisionSummary } from '@/lib/flow/post-save-decision-hub';
 import { buildDateGroupedTodoListViewModel } from '@/lib/flow/date-grouped-todo-list';
 import {
+  buildMyFlowCopyDisambiguationMap,
   buildMyFlowCopyOrdinalMap,
   buildMyFlowCompactTodayModel,
   consumeMyFlowFirstEntry,
@@ -334,6 +337,7 @@ import {
   parseMyFlowViewQuery,
   resolveLatestMyFlowSavedAt,
   selectMyFlowSavedLibraryEntries,
+  formatMyFlowCopyDisplayTitle,
   markMyFlowFirstEntry,
   summarizeMyFlowLocalIa,
   MY_FLOW_SAVED_LIBRARY_SEARCH_THRESHOLD,
@@ -2955,8 +2959,10 @@ function FlowUrlLookupEntry({
   result,
   supplyCandidates,
   q3CopyEnabled,
+  showMemoDraftAlternative,
   onInputChange,
   onSubmit,
+  onUseAsMemoDraft,
   onSaveSupplyCandidate,
   onSaveMemoDraftFlow,
 }: {
@@ -2964,8 +2970,10 @@ function FlowUrlLookupEntry({
   result: UrlFirstLookupResult | null;
   supplyCandidates: UrlFirstSupplyCandidate[];
   q3CopyEnabled: boolean;
+  showMemoDraftAlternative: boolean;
   onInputChange: (value: string) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  onUseAsMemoDraft: () => void;
   onSaveSupplyCandidate: (candidate: UrlFirstSupplyCandidate) => UrlFirstSupplyCandidateUpsertResult;
   onSaveMemoDraftFlow: (memo: string, input: UrlFirstDraftFlowInput) => Promise<UrlFirstDraftFlowSaveResult>;
 }) {
@@ -2976,13 +2984,15 @@ function FlowUrlLookupEntry({
     >
       <form className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-2" onSubmit={onSubmit}>
         <label className="min-w-0">
-          <span className="text-xs font-semibold text-[var(--flowme-text-secondary)]">URL 또는 메모</span>
+          <span className="text-xs font-semibold text-[var(--flowme-text-secondary)]">계획 검색어, URL 또는 메모</span>
           <input
             data-testid="flow-url-lookup-input"
             className={`mt-1 w-full ${FLOW_UI_INPUT_CLASS}`}
             value={input}
             onChange={(event) => onInputChange(event.target.value)}
-            placeholder="링크를 붙여넣거나, 하려는 일을 메모로 적어보세요"
+            name="flowDiscovery"
+            autoComplete="off"
+            placeholder="이사, 공부 또는 링크·메모 붙여넣기…"
             type="text"
             required
           />
@@ -2994,6 +3004,31 @@ function FlowUrlLookupEntry({
           {getQ3UserCopyProfile(q3CopyEnabled).navigation.findPlans}
         </button>
       </form>
+      <p
+        data-testid="flow-url-lookup-announcement"
+        className="sr-only"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        {result ? `${getUrlLookupStatusLabel(result, q3CopyEnabled)}: ${result.title}` : ''}
+      </p>
+      {showMemoDraftAlternative ? (
+        <div
+          data-testid="flow-discovery-memo-alternative"
+          className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-medium leading-5 text-[var(--flowme-text-secondary)]"
+        >
+          <span>{q3CopyEnabled ? '준비된 계획이 검색됐어요.' : '준비된 Flow가 검색됐어요.'}</span>
+          <button
+            type="button"
+            data-testid="flow-discovery-use-as-memo"
+            className="min-h-11 rounded-[var(--flowme-radius-control)] font-semibold text-[var(--flowme-action)] underline underline-offset-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+            onClick={onUseAsMemoDraft}
+          >
+            검색 대신 이 내용으로 메모 초안 만들기
+          </button>
+        </div>
+      ) : null}
       {result ? (
         <FlowUrlLookupResult
           result={result}
@@ -3433,7 +3468,6 @@ export function FlowList() {
   const [category, setCategory] = useState(initialCategory);
   const [tag, setTag] = useState(initialTag);
   const [structure, setStructure] = useState('전체');
-  const [catalogQuery, setCatalogQuery] = useState('');
   const [catalogIntent, setCatalogIntent] = useState<CatalogIntent>('all');
   const [urlLookupInput, setUrlLookupInput] = useState('');
   const [urlLookupResult, setUrlLookupResult] = useState<UrlFirstLookupResult | null>(null);
@@ -3455,23 +3489,83 @@ export function FlowList() {
       return categoryMatched && tagMatched && structureMatched;
     })
     .sort((a, b) => new Date(b.flow.updated_at).getTime() - new Date(a.flow.updated_at).getTime());
-  const visibleFlowMapCatalogLinks = flowMapCatalogLinks.filter((item) => {
+  const catalogQuery = urlLookupResult ? '' : urlLookupInput;
+  const queryMatchedFlowMapCatalogLinks = flowMapCatalogLinks.filter((item) => {
     const searchText = getFlowMapCatalogSearchText(item);
-    return matchesCatalogQuery(searchText, catalogQuery) && matchesCatalogIntent(searchText, catalogIntent);
+    return matchesCatalogQuery(searchText, catalogQuery);
   });
-  const visibleDirectoryBundles = filtered.filter((bundle) => {
+  // Discovery intent is resolved against every eligible public bundle. Fine-grained
+  // browse filters may hide a card, but they must not turn an existing plan into a memo.
+  const globallyQueryMatchedDirectoryBundles = directoryBundles.filter((bundle) => {
     const searchText = getBundleCatalogSearchText(bundle);
-    return matchesCatalogQuery(searchText, catalogQuery) && matchesCatalogIntent(searchText, catalogIntent);
+    return matchesCatalogQuery(searchText, catalogQuery);
   });
+  const queryMatchedDirectoryBundles = filtered.filter((bundle) => {
+    const searchText = getBundleCatalogSearchText(bundle);
+    return matchesCatalogQuery(searchText, catalogQuery);
+  });
+  const visibleFlowMapCatalogLinks = queryMatchedFlowMapCatalogLinks.filter((item) => (
+    matchesCatalogIntent(getFlowMapCatalogSearchText(item), catalogIntent)
+  ));
+  const visibleDirectoryBundles = queryMatchedDirectoryBundles.filter((bundle) => (
+    matchesCatalogIntent(getBundleCatalogSearchText(bundle), catalogIntent)
+  ));
   const visibleCatalogCount = visibleFlowMapCatalogLinks.length + visibleDirectoryBundles.length;
+  const queryMatchedCatalogCount = queryMatchedFlowMapCatalogLinks.length + globallyQueryMatchedDirectoryBundles.length;
   const totalCatalogCount = flowMapCatalogLinks.length + filtered.length;
   const hasCatalogFilter = catalogQuery.trim().length > 0 || catalogIntent !== 'all';
   const catalogBrowseHiddenAfterLookup = Boolean(urlLookupResult) && !catalogBrowseOpenAfterLookup;
+  const normalizedDiscoveryInput = urlLookupInput.trim();
+  let discoveryInputIsCanonicalUrl = false;
+  try {
+    canonicalizeFlowSourceUrl(normalizedDiscoveryInput);
+    discoveryInputIsCanonicalUrl = true;
+  } catch {
+    discoveryInputIsCanonicalUrl = false;
+  }
+  const showMemoDraftAlternative = Boolean(
+    normalizedDiscoveryInput
+      && !urlLookupResult
+      && !discoveryInputIsCanonicalUrl
+      && queryMatchedCatalogCount > 0,
+  );
 
   function handleUrlLookupSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!discoveryInputIsCanonicalUrl && queryMatchedCatalogCount > 0) {
+      setCategory('전체');
+      setTag('전체');
+      setStructure('전체');
+      setCatalogIntent('all');
+      setUrlLookupResult(null);
+      setCatalogBrowseOpenAfterLookup(false);
+      return;
+    }
     setUrlLookupResult(lookupUrlOrMemoP0Input(urlLookupInput, q3CopyEnabled));
     setCatalogBrowseOpenAfterLookup(false);
+  }
+
+  function handleUnifiedDiscoveryInputChange(value: string) {
+    setUrlLookupInput(value);
+    setUrlLookupResult(null);
+    setCatalogBrowseOpenAfterLookup(false);
+  }
+
+  function handleUseDiscoveryInputAsMemoDraft() {
+    if (!normalizedDiscoveryInput || discoveryInputIsCanonicalUrl) return;
+    setUrlLookupResult(lookupUrlOrMemoP0Input(normalizedDiscoveryInput, q3CopyEnabled));
+    setCatalogBrowseOpenAfterLookup(false);
+  }
+
+  function handleCatalogBrowseAfterLookupToggle() {
+    const nextOpen = !catalogBrowseOpenAfterLookup;
+    if (nextOpen) {
+      setCategory('전체');
+      setTag('전체');
+      setStructure('전체');
+      setCatalogIntent('all');
+    }
+    setCatalogBrowseOpenAfterLookup(nextOpen);
   }
 
   async function handleSaveMemoDraftFlow(memo: string, input: UrlFirstDraftFlowInput): Promise<UrlFirstDraftFlowSaveResult> {
@@ -3615,9 +3709,9 @@ export function FlowList() {
           <p className="text-sm font-semibold text-[var(--flowme-text-secondary)]">{q3Copy.navigation.findPlans}</p>
           <div className="mt-1 flex flex-wrap items-center justify-between gap-2">
             <h1 className="break-keep text-[1.75rem] font-semibold leading-9 tracking-[-0.02em] text-[var(--flowme-text)] sm:text-3xl">
-              {q3CopyEnabled ? 'URL·메모로 계획 찾기' : 'URL·메모로 Flow 찾기'}
+              {q3CopyEnabled ? '필요한 계획 찾기' : '필요한 Flow 찾기'}
             </h1>
-            <span data-testid="flow-catalog-count" className="text-sm font-semibold text-[var(--flowme-text-secondary)]">
+            <span data-testid="flow-catalog-count" aria-live="polite" className="text-sm font-semibold text-[var(--flowme-text-secondary)]">
               {hasCatalogFilter
                 ? `${q3CopyEnabled ? '계획' : 'Flow'} ${visibleCatalogCount}/${totalCatalogCount}개`
                 : `${q3CopyEnabled ? '계획' : 'Flow'} ${totalCatalogCount}개`}
@@ -3625,8 +3719,8 @@ export function FlowList() {
           </div>
           <p className="mt-1 break-keep text-sm leading-6 text-[var(--flowme-text-secondary)]">
             {q3CopyEnabled
-              ? '링크나 메모로 찾고, 준비된 계획을 비교하세요.'
-              : '링크나 메모로 찾고, 준비된 Flow를 비교하세요.'}
+              ? '검색어로 준비된 계획을 찾거나, 링크·메모를 붙여넣으세요.'
+              : '검색어로 준비된 Flow를 찾거나, 링크·메모를 붙여넣으세요.'}
           </p>
         </div>
         <FlowUrlLookupEntry
@@ -3634,8 +3728,10 @@ export function FlowList() {
           result={urlLookupResult}
           supplyCandidates={urlSupplyCandidates}
           q3CopyEnabled={q3CopyEnabled}
-          onInputChange={setUrlLookupInput}
+          showMemoDraftAlternative={showMemoDraftAlternative}
+          onInputChange={handleUnifiedDiscoveryInputChange}
           onSubmit={handleUrlLookupSubmit}
+          onUseAsMemoDraft={handleUseDiscoveryInputAsMemoDraft}
           onSaveSupplyCandidate={handleSaveSupplyCandidate}
           onSaveMemoDraftFlow={handleSaveMemoDraftFlow}
         />
@@ -3654,7 +3750,7 @@ export function FlowList() {
               data-testid="flow-catalog-after-lookup-toggle"
               className="flex min-h-11 w-full items-center justify-between gap-3 rounded-[var(--flowme-radius-control)] text-left text-sm font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
               aria-expanded={catalogBrowseOpenAfterLookup}
-              onClick={() => setCatalogBrowseOpenAfterLookup((open) => !open)}
+              onClick={handleCatalogBrowseAfterLookupToggle}
             >
               <span>
                 {catalogBrowseOpenAfterLookup
@@ -3666,16 +3762,6 @@ export function FlowList() {
           </div>
         ) : null}
         <div data-testid="flow-catalog-browse-controls" className={`${catalogBrowseHiddenAfterLookup ? 'hidden' : 'grid'} mb-3 gap-2`}>
-          <label>
-            <span className="sr-only">검색</span>
-            <input
-              data-testid="flow-catalog-search"
-              className={`w-full ${FLOW_UI_INPUT_CLASS}`}
-              value={catalogQuery}
-              onChange={(event) => setCatalogQuery(event.target.value)}
-              placeholder="이사, 공부, 식단, 체크리스트"
-            />
-          </label>
           <div className="flex flex-nowrap gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible sm:pb-0" aria-label="상황별 콘텐츠 필터">
             {catalogIntentFilters.map((item) => (
               <button
@@ -9261,15 +9347,20 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     ?? flow.progress.sourceSlug
     ?? flow.bundle.flow.id
   );
-  const myFlowCopyOrdinalBySlug = buildMyFlowCopyOrdinalMap(savedFlows.map((flow) => ({
+  const myFlowCopyEntries = savedFlows.map((flow) => ({
     planId: flow.progress.slug,
     sourceId: getMyFlowCopySourceId(flow),
     savedAt: getMyFlowSavedAt(flow),
-  })));
+  }));
+  const myFlowCopyOrdinalBySlug = buildMyFlowCopyOrdinalMap(myFlowCopyEntries);
+  const myFlowCopyDisambiguationBySlug = buildMyFlowCopyDisambiguationMap(myFlowCopyEntries);
   const getMyFlowLibraryDisplayTitle = (flow: MySavedFlow) => {
     const title = getMyFlowPortableExportFlowTitle(flow);
     return myFlowSavedPlanLibraryEnabled === true
-      ? `사본 ${myFlowCopyOrdinalBySlug.get(flow.progress.slug) ?? 1} · ${title}`
+      ? formatMyFlowCopyDisplayTitle(
+          title,
+          myFlowCopyDisambiguationBySlug.get(flow.progress.slug),
+        )
       : getMyFlowDisplayFlowTitle(flow);
   };
   const flowListVisibleFlows = selectMyFlowSavedLibraryEntries(
@@ -15590,14 +15681,15 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
             <button
               type="button"
               aria-label={`${info.event.startStr} 루틴 ${hiddenCount}개 더 보기`}
-              className="inline-flex h-7 w-3.5 min-w-0 shrink-0 items-center justify-center overflow-hidden rounded-[var(--flowme-radius-compact)] bg-[var(--flowme-surface-subtle)] px-0 text-xs font-black leading-none tracking-[-0.08em] text-[var(--flowme-text-secondary)] ring-1 ring-[var(--flowme-border)] hover:ring-[var(--flowme-action)] focus:outline-none focus:ring-2 focus:ring-[var(--flowme-focus)] sm:w-auto sm:min-w-7 sm:px-0.5 sm:tracking-normal"
+              className="inline-flex h-7 w-4 min-w-0 shrink-0 items-center justify-center overflow-hidden rounded-[var(--flowme-radius-compact)] bg-[var(--flowme-surface-subtle)] px-0 text-xs font-black leading-none tracking-[-0.08em] text-[var(--flowme-text-secondary)] ring-1 ring-[var(--flowme-border)] hover:ring-[var(--flowme-action)] focus:outline-none focus:ring-2 focus:ring-[var(--flowme-focus)] sm:w-auto sm:min-w-7 sm:px-0.5 sm:tracking-normal"
               data-testid="my-flow-routine-overflow"
+              data-hidden-count={hiddenCount}
               onClick={(event) => {
                 event.stopPropagation();
                 myFlowCalendarController.selectRoutineOverflow(info.event.startStr || undefined);
               }}
             >
-              +{hiddenCount}
+              {formatRoutineOverflowLabel(hiddenCount)}
             </button>
           ) : null}
         </span>
@@ -24178,7 +24270,19 @@ export function PublicFlow({ slug }: { slug: string }) {
   const [publicSaveError, setPublicSaveError] = useState('');
   const [publicPreviewToday, setPublicPreviewToday] = useState('');
   const [publicResultTransfer, setPublicResultTransfer] = useState<ResultTransferUiState | null>(null);
-  const [publicCapabilitySelectedDestination, setPublicCapabilitySelectedDestination] = useState<FlowExportDestination>();
+  const [publicCapabilitySelection, setPublicCapabilitySelection] = useState<{
+    flowSlug: string;
+    destination?: FlowExportDestination;
+  }>(() => ({ flowSlug: slug }));
+  const publicCapabilitySelectedDestination = publicCapabilitySelection.flowSlug === slug
+    ? publicCapabilitySelection.destination
+    : undefined;
+  const selectPublicCapabilityDestination = (destination: FlowExportDestination) => {
+    setPublicCapabilitySelection({ flowSlug: slug, destination });
+  };
+  useEffect(() => {
+    setPublicCapabilitySelection({ flowSlug: slug });
+  }, [slug]);
   const [publicResultTransferRunner] = useState(createResultTransferRunner);
   const publicResultTransferPendingRef = useRef('');
   // The rollback UI may persist an explicit edit, but merely hydrating its
@@ -24945,6 +25049,11 @@ export function PublicFlow({ slug }: { slug: string }) {
     && dateIntent.calendarEligible
     && publicCommittedResult.exportPlan.formats.calendar.supported;
   const publicExperienceProjection = publicPreviewResult.projection;
+  const publicTextSyntaxModel = buildPublicFlowTextSyntaxModel({
+    bundle,
+    projection: publicExperienceProjection,
+    itemPersonalizations: publicEffectiveItemPersonalizations,
+  });
   const publicArtifactRecommendation = buildArtifactRecommendationVM(publicExperienceProjection);
   const publicEffectiveArtifactShape: FlowExperienceShape = publicApprovedPlanExecutionEnabled
     ? publicEffectiveDestination === 'calendar'
@@ -27063,9 +27172,16 @@ export function PublicFlow({ slug }: { slug: string }) {
                     viewModel={publicCapabilityResultViewModel}
                     approved={publicApprovedPlanExecutionEnabled}
                     selectedDestination={publicEffectiveDestination}
+                    textSyntaxModel={publicTextSyntaxModel}
                     previewRowLimit={3}
                     testId="public-flow-capability-result"
                     anchorDate={displayAnchor}
+                    calendarPreamble={publicApprovedPlanExecutionEnabled
+                      && publicEffectiveDestination === 'calendar'
+                      && showPublicSetupInput
+                      && !publicAdjustmentOpen
+                      ? renderPublicHeroSetup()
+                      : undefined}
                     calendarEmptyAction={publicCalendarEmptyAction}
                     onRowOpen={publicApprovedPlanExecutionEnabled
                       ? openPublicProjectionRowPreview
@@ -27081,12 +27197,13 @@ export function PublicFlow({ slug }: { slug: string }) {
                         `[data-testid="flow-capability-conditional-edit"][data-capability-destination="${candidate.destination}"]`,
                       );
                     }}
-                    onSelect={(candidate) => setPublicCapabilitySelectedDestination(candidate.destination)}
+                    onSelect={(candidate) => selectPublicCapabilityDestination(candidate.destination)}
                   />
                 ) : (
                   <FlowArtifactDataPreview
                     projection={publicExperienceProjection}
                     selectedShape={publicEffectiveArtifactShape}
+                    textSyntaxModel={publicTextSyntaxModel}
                     showShapeChoices={publicApprovedPlanExecutionEnabled}
                     showRecommendationReason={false}
                     previewRowLimit={3}
@@ -27102,7 +27219,7 @@ export function PublicFlow({ slug }: { slug: string }) {
                       : undefined}
                     publicApprovedMode={publicApprovedPlanExecutionEnabled}
                     onSelectedShapeChange={publicApprovedPlanExecutionEnabled
-                      ? (shape) => setPublicCapabilitySelectedDestination(
+                      ? (shape) => selectPublicCapabilityDestination(
                           shape === 'calendar'
                             ? 'calendar'
                             : shape === 'checklist'
@@ -27111,6 +27228,12 @@ export function PublicFlow({ slug }: { slug: string }) {
                         )
                       : undefined}
                     anchorDate={displayAnchor}
+                    calendarPreamble={publicApprovedPlanExecutionEnabled
+                      && publicEffectiveDestination === 'calendar'
+                      && showPublicSetupInput
+                      && !publicAdjustmentOpen
+                      ? renderPublicHeroSetup()
+                      : undefined}
                     emptyAction={publicEffectiveDestination === 'calendar'
                       ? publicCalendarEmptyAction
                       : undefined}
@@ -27123,7 +27246,11 @@ export function PublicFlow({ slug }: { slug: string }) {
                 {publicPastDateWarning}
               </>
             )}
-            setup={showPublicSetupInput && !publicAdjustmentOpen ? renderPublicHeroSetup() : undefined}
+            setup={showPublicSetupInput
+              && !publicAdjustmentOpen
+              && !(publicApprovedPlanExecutionEnabled && publicEffectiveDestination === 'calendar')
+              ? renderPublicHeroSetup()
+              : undefined}
             actions={(
               <>
                 {!hideSharedPublicFooter && bundle.flow.warning ? (

@@ -1,6 +1,6 @@
 # Production Visual-Only Refresh
 
-**Status:** ACTIVE / IMPLEMENTATION AND SCOPED AUTOMATED QA COMPLETE / SOURCE-REVIEW PREREQUISITE RESOLVED / EXACT-HEAD CI, SEQUENTIAL MERGE, AND PRODUCTION VERIFICATION AUTHORIZED<br>
+**Status:** RELEASED / SOURCE-REVIEW PREREQUISITE RESOLVED / EXACT-HEAD CI PASSED / PR #194 MERGED / PRODUCTION VERIFIED<br>
 **Owner approval:** 2026-08-20<br>
 **Observed users:** 0
 
@@ -64,9 +64,10 @@ behavior. The approved direction is documented in the
    collide, and the console/page-error count is zero on representative journeys.
 5. Keyboard focus is visible, named controls remain named, and approved mobile
    actions preserve their existing 48px gates.
-6. Publication stays limited to the authorized PR #194 then PR #195 sequence;
-   exact-head CI and resulting Production verification are required, while
-   observed-user evidence remains 0.
+6. Publication stays limited to the authorized PR #194 then PR #195 sequence.
+   PR #194 passed exact-head CI, merged, and reached verified Production; PR
+   #195 retains its own exact-head CI and resulting Production verification
+   gate. Observed-user evidence remains 0.
 
 ## Reopen Conditions
 

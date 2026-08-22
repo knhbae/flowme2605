@@ -2,10 +2,12 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
+  buildMyFlowCopyDisambiguationMap,
   buildMyFlowCopyOrdinalMap,
   buildMyFlowCompactTodayModel,
   consumeMyFlowFirstEntry,
   consumeMyFlowFirstEntryPlan,
+  formatMyFlowCopyDisplayTitle,
   getCanonicalMyFlowLibrarySortHref,
   getMyFlowLibraryControlVisibility,
   getMyFlowLibraryHref,
@@ -180,6 +182,31 @@ test('copy ordinals are derived per source by savedAt then planId and are not id
     'moving-b': 2,
     'moving-c': 3,
     reading: 1,
+  });
+});
+
+test('copy display numbering is omitted for one copy and disambiguates sibling copies', () => {
+  const displayOrdinals = buildMyFlowCopyDisambiguationMap([
+    { planId: 'moving-b', sourceId: 'moving', savedAt: '2026-08-10T08:20:00+09:00' },
+    { planId: 'reading', sourceId: 'reading', savedAt: '2026-08-10T08:30:00+09:00' },
+    { planId: 'moving-a', sourceId: 'moving', savedAt: '2026-08-10T08:10:00+09:00' },
+  ]);
+
+  assert.equal(formatMyFlowCopyDisplayTitle(
+    '중1 수학 목차 진도',
+    displayOrdinals.get('reading'),
+  ), '중1 수학 목차 진도');
+  assert.equal(formatMyFlowCopyDisplayTitle(
+    '이사 D-30 준비',
+    displayOrdinals.get('moving-a'),
+  ), '사본 1 · 이사 D-30 준비');
+  assert.equal(formatMyFlowCopyDisplayTitle(
+    '이사 D-30 준비',
+    displayOrdinals.get('moving-b'),
+  ), '사본 2 · 이사 D-30 준비');
+  assert.deepEqual(Object.fromEntries(displayOrdinals), {
+    'moving-a': 1,
+    'moving-b': 2,
   });
 });
 

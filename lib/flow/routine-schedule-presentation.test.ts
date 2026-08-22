@@ -3,8 +3,17 @@ import test from 'node:test';
 
 import {
   buildRoutineSchedulePresentation,
+  formatRoutineOverflowLabel,
   formatRoutineRepeatRuleLabel,
 } from './routine-schedule-presentation';
+
+test('routine overflow label stays within the compact two-character rail slot', () => {
+  assert.equal(formatRoutineOverflowLabel(0), '');
+  assert.equal(formatRoutineOverflowLabel(3), '+3');
+  assert.equal(formatRoutineOverflowLabel(9), '+9');
+  assert.equal(formatRoutineOverflowLabel(10), '9+');
+  assert.equal(formatRoutineOverflowLabel(128), '9+');
+});
 
 test('routine summary keeps weekday, time, duration, and count in one line', () => {
   const presentation = buildRoutineSchedulePresentation({

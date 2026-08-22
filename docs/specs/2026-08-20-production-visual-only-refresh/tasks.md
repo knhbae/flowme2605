@@ -14,3 +14,6 @@
   merge, Production, and observed-user states explicit and separate.
 - [x] PVR-10 Record the Owner decision to release PR #194 then PR #195, with
   exact-head CI and Production verification required at each step.
+- [x] PVR-11 Pass PR #194 exact-head CI (`624/624` Playwright), merge as
+  `c8a57ba37c4087b84b526bc778c3604f68299faa`, and verify the resulting
+  Production deployment.

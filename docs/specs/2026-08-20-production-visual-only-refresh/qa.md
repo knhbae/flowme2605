@@ -1,8 +1,9 @@
 # QA
 
-**Current state:** IMPLEMENTATION AND SCOPED AUTOMATED QA COMPLETE / SOURCE-REVIEW
-PREREQUISITE RESOLVED BY PR #196 / EXACT-HEAD CI, SEQUENTIAL MERGE, AND
-PRODUCTION VERIFICATION AUTHORIZED / OBSERVED USERS `0`.
+**Current state:** RELEASED / SOURCE-REVIEW PREREQUISITE RESOLVED BY PR #196 /
+PR #194 EXACT-HEAD CI PASSED / MERGED AS
+`c8a57ba37c4087b84b526bc778c3604f68299faa` / PRODUCTION VERIFIED / OBSERVED
+USERS `0`.
 
 ## Fresh Local Evidence — 2026-08-20
 
@@ -42,7 +43,16 @@ separately: `135` normal-user routes are current, with overdue and missing count
 merged as `8c0bfd8de9fb8877c4045b2c3f725b60ca236843`; the resulting Vercel status
 succeeded and the canonical Production URL returned HTTP `200`. The historical
 `623/624` result remains evidence of the original boundary, not a current blocker.
-PR #194 must still pass its own final exact-head CI before merge.
+
+## Release Evidence — 2026-08-23
+
+- PR #194 final head `9dd05c3ffe9df495d6d5f59a7942bc7cd72cfaf7`
+  passed Docs, Unit, Build and full Playwright `624/624` in GitHub Actions run
+  [`32583981208`](https://github.com/knhbae/flowme2605/actions/runs/32583981208);
+  Vercel Preview also passed.
+- PR #194 merged as `c8a57ba37c4087b84b526bc778c3604f68299faa`.
+- The resulting Vercel status succeeded and the
+  [canonical Production URL](https://flowme2605.vercel.app) returned HTTP `200`.
 
 ## Known Layout Exception
 
@@ -68,6 +78,6 @@ universal 44px controls. Ordinary primary and secondary actions meet their
 ## Evidence Boundary
 
 Screenshots and automation are implementation evidence, not observed-user
-validation. The Owner authorized sequential PR #194 then PR #195 merge and
-Production verification after exact-head CI. Observed-user testing remains
-unperformed and observed users remain `0`.
+validation. PR #194 completed its authorized merge and Production verification;
+PR #195 retains a separate exact-head CI, merge, and Production verification
+gate. Observed-user testing remains unperformed and observed users remain `0`.

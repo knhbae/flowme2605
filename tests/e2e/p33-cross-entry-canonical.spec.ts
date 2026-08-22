@@ -68,7 +68,7 @@ test.describe('P33 cross-entry canonical alignment', () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/flows');
     await clearLocalState(page);
-    await page.getByTestId('flow-catalog-search').fill('이사 D-30');
+    await page.getByTestId('flow-url-lookup-input').fill('이사 D-30');
 
     const results = page.getByTestId('flow-catalog-browse-results');
     const movingCards = results

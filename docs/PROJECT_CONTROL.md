@@ -10,7 +10,8 @@ This file is an index, not a second source of product truth. Update its links af
 
 - [Current status and owner action](./STATUS.md)
 - [Current roadmap and inactive shelves](./ROADMAP.md)
-- [Active Production visual-only refresh](./specs/2026-08-20-production-visual-only-refresh/spec.md)
+- [Active Flow Entry And Preview Clarity](./specs/2026-08-20-flow-entry-preview-clarity/spec.md)
+- [Released visual-refresh baseline](./specs/2026-08-20-production-visual-only-refresh/spec.md)
 - [Approved visual-only Production review](./content-audit/2026-08-19-flowme-production-ux-visual-only-refresh-ko.html)
 - [Released Flow Map Item date parity](./pr-history/2026-08-13-flow-map-item-date-parity.md)
 - [Released Plan edit and lifecycle unification](./pr-history/2026-08-12-plan-edit-lifecycle-unification.md)
@@ -28,32 +29,25 @@ This file is an index, not a second source of product truth. Update its links af
 - [R3A My Flow experience boundary release](./pr-history/2026-08-09-r3a-my-flow-experience-boundary.md)
 - [P35 Round 2 MVP production closeout](./pr-history/2026-08-06-p35-round2-mvp-closeout-production.md)
 
-[PR #182](https://github.com/knhbae/flowme2605/pull/182) final head
-`0aca76687ac582ff4cf11b19a0f46db5593c768e` passed exact-head CI run
-[`31655643163`](https://github.com/knhbae/flowme2605/actions/runs/31655643163)
-and merged at `2026-08-13T01:05:33Z` as
-`f6f796c035d5762eea07ec35abb7f1af1577a5a5`. GitHub Production deployment
-record `5880059975`, status `16743295490`, reports success for that exact
-runtime-bearing merge; its
-[protected direct deployment-record URL](https://flowme2605-hph3l1si0-flowme.vercel.app)
-is deployment evidence. Canonical Production smoke against
-[flowme2605.vercel.app](https://flowme2605.vercel.app) passed `41/41` with
-workers `1`, retries `0`, in `264804.24ms`, with unexpected, flaky, and skipped
-results `0`.
+[PR #196](https://github.com/knhbae/flowme2605/pull/196) refreshed the source
+contracts, leaving `135` normal-user routes current with overdue and missing
+counts `0`, and merged as `8c0bfd8de9fb8877c4045b2c3f725b60ca236843`.
+[PR #194](https://github.com/knhbae/flowme2605/pull/194) then passed its exact-head
+release gate, merged as `c8a57ba37c4087b84b526bc778c3604f68299faa`, and its
+resulting Production deployment was verified at
+[flowme2605.vercel.app](https://flowme2605.vercel.app). It is the current
+visual-refresh Production baseline.
 
-The release gives executable single-plan Maps the same shared Item title, memo,
-and date editor as ordinary Flows while preserving Map/version/child/storage
-identity and the PR #178 Plan edit/lifecycle foundation. Post-merge `main` run
-[`31656595092`](https://github.com/knhbae/flowme2605/actions/runs/31656595092)
-passed core job `94312307779` and Playwright job `94312307849`.
-Automated QA, deployment, smoke, and local capture reports remain separate from
-observed-user validation; observed users remain `0`. The active product gate is the
-[Production Visual-Only Refresh](./specs/2026-08-20-production-visual-only-refresh/spec.md):
-implementation and scoped QA are complete, and [PR #196](https://github.com/knhbae/flowme2605/pull/196)
-resolved the separate source-review freshness gate before merging as
-`8c0bfd8de9fb8877c4045b2c3f725b60ca236843`. The Owner authorized the sequential
-PR #194 then PR #195 merge and Production path. Each merge remains gated by its
-own exact-head CI and Production verification; observed users remain `0`.
+The active product gate is
+[Flow Entry And Preview Clarity](./specs/2026-08-20-flow-entry-preview-clarity/spec.md).
+The Owner completed FPC-11 and authorized [PR #195](https://github.com/knhbae/flowme2605/pull/195)
+for release after PR #194. Its bounded discovery, complete Text/Todo/Calendar,
+and copy-title behavior is implemented, but the reconciled exact head must still
+pass CI before merge and the resulting Production deployment must be verified.
+Earlier `624/625`, `623/629`, and `629/629` runs remain dated QA history rather
+than a current source-freshness blocker. Automated QA, deployment, smoke, and
+local capture reports remain separate from observed-user validation; observed
+users remain `0`.
 
 ## Canonical Project Truth
 

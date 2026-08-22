@@ -19,6 +19,14 @@ export type RoutineSchedulePresentation = {
   summary: string;
 };
 
+export function formatRoutineOverflowLabel(hiddenCount: number): string {
+  const normalizedCount = Number.isFinite(hiddenCount)
+    ? Math.max(0, Math.floor(hiddenCount))
+    : 0;
+  if (normalizedCount === 0) return '';
+  return normalizedCount >= 10 ? '9+' : `+${normalizedCount}`;
+}
+
 function formatSourceDuration(days?: number): string {
   if (!days) return '계속 반복';
   return days % 7 === 0 ? `${days / 7}주` : `${days}일`;

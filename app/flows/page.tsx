@@ -30,10 +30,10 @@ function FlowCatalogServerFallback() {
         <section aria-labelledby="flow-catalog-server-title">
           <p className="text-sm font-semibold text-[#6E6B64]">계획 찾기</p>
           <h1 id="flow-catalog-server-title" className="mt-1 break-keep text-2xl font-semibold text-[#1B1A17] sm:text-3xl">
-            URL이나 메모로 계획 찾기
+            필요한 계획 찾기
           </h1>
           <p className="mt-2 max-w-2xl break-keep text-sm leading-6 text-[#6E6B64]">
-            링크나 메모를 붙여 넣어 준비된 계획을 찾거나, 아래 계획부터 확인할 수 있습니다.
+            검색어로 준비된 계획을 찾거나, 링크·메모를 붙여넣으세요.
           </p>
           <div className="mt-5 grid gap-3 md:grid-cols-3" aria-label="바로 확인할 계획">
             {serverCatalogLinks.map((item) => (
