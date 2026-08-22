@@ -1,6 +1,6 @@
 # Production Visual-Only Refresh
 
-**Status:** ACTIVE / LOCAL IMPLEMENTATION AND SCOPED AUTOMATED QA COMPLETE / FULL SUITE HAS ONE PRE-EXISTING SOURCE-REVIEW GATE / PR AND VERCEL PREVIEW AUTHORIZED / MERGE AND PRODUCTION NOT AUTHORIZED<br>
+**Status:** ACTIVE / IMPLEMENTATION AND SCOPED AUTOMATED QA COMPLETE / SOURCE-REVIEW PREREQUISITE RESOLVED / EXACT-HEAD CI, SEQUENTIAL MERGE, AND PRODUCTION VERIFICATION AUTHORIZED<br>
 **Owner approval:** 2026-08-20<br>
 **Observed users:** 0
 
@@ -36,8 +36,9 @@ behavior. The approved direction is documented in the
 - No repair of date/result semantics or Calendar availability.
 - No lifecycle vocabulary change; the unpublished trash work remains separate.
 - No Figma artifact, new font/icon package, animation system, or backend change.
-- Scoped commit, branch push, PR, and Vercel Preview are authorized on 2026-08-20;
-  merge and Production deployment still require a separate Owner decision.
+- Scoped commit, branch push, PR, and Vercel Preview were authorized on 2026-08-20.
+- On 2026-08-23 the Owner authorized sequential PR #194 then PR #195 merge and
+  Production verification; neither PR may bypass its own exact-head CI.
 
 ## Visual Contract
 
@@ -63,8 +64,9 @@ behavior. The approved direction is documented in the
    collide, and the console/page-error count is zero on representative journeys.
 5. Keyboard focus is visible, named controls remain named, and approved mobile
    actions preserve their existing 48px gates.
-6. Review publication is limited to a scoped PR and Vercel Preview; merge and
-   Production remain explicitly unapproved, and observed-user evidence remains 0.
+6. Publication stays limited to the authorized PR #194 then PR #195 sequence;
+   exact-head CI and resulting Production verification are required, while
+   observed-user evidence remains 0.
 
 ## Reopen Conditions
 

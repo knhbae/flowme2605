@@ -1,6 +1,6 @@
 # FlowMe Project Control
 
-**Last Updated:** 2026-08-20
+**Last Updated:** 2026-08-23
 
 **Purpose:** Stable entry point for the current FlowMe stage, evidence boundary, and next owner decision.
 
@@ -47,11 +47,13 @@ identity and the PR #178 Plan edit/lifecycle foundation. Post-merge `main` run
 [`31656595092`](https://github.com/knhbae/flowme2605/actions/runs/31656595092)
 passed core job `94312307779` and Playwright job `94312307849`.
 Automated QA, deployment, smoke, and local capture reports remain separate from
-observed-user validation; observed users remain `0`. The active local gate is the
+observed-user validation; observed users remain `0`. The active product gate is the
 [Production Visual-Only Refresh](./specs/2026-08-20-production-visual-only-refresh/spec.md):
-implementation and scoped QA are complete, full `npm test` retains one separate
-source-review-due failure, and the Owner authorized a scoped PR plus Vercel
-Preview. Merge and Production remain unapproved; observed users remain `0`.
+implementation and scoped QA are complete, and [PR #196](https://github.com/knhbae/flowme2605/pull/196)
+resolved the separate source-review freshness gate before merging as
+`8c0bfd8de9fb8877c4045b2c3f725b60ca236843`. The Owner authorized the sequential
+PR #194 then PR #195 merge and Production path. Each merge remains gated by its
+own exact-head CI and Production verification; observed users remain `0`.
 
 ## Canonical Project Truth
 

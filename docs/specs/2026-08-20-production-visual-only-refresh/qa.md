@@ -1,9 +1,8 @@
 # QA
 
-**Current state:** LOCAL IMPLEMENTATION AND SCOPED AUTOMATED QA COMPLETE / FULL
-`npm test` NOT GREEN BECAUSE OF ONE PRE-EXISTING SOURCE-REVIEW-DUE GATE /
-PR AND VERCEL PREVIEW AUTHORIZED / MERGE AND PRODUCTION NOT AUTHORIZED /
-OBSERVED USERS `0`.
+**Current state:** IMPLEMENTATION AND SCOPED AUTOMATED QA COMPLETE / SOURCE-REVIEW
+PREREQUISITE RESOLVED BY PR #196 / EXACT-HEAD CI, SEQUENTIAL MERGE, AND
+PRODUCTION VERIFICATION AUTHORIZED / OBSERVED USERS `0`.
 
 ## Fresh Local Evidence — 2026-08-20
 
@@ -26,15 +25,24 @@ OBSERVED USERS `0`.
 - Independent UX/accessibility and React diff reviews: changed-diff Blocker `0`,
   High `0`, Medium `0` after fixes.
 
-## Full-Suite Boundary
+## Historical Full-Suite Boundary And Resolution
 
-`npm.cmd test` is not recorded as PASS. Its pretest passed `175/175`, and the
-main suite reached `623/624`; the single failure is
+The original 2026-08-20 run was not recorded as PASS. Its pretest passed
+`175/175`, and the main suite reached `623/624`; the single failure was
 `lib/flow/seed-flows.test.ts` (`normal user routes fail the standard suite when
 source review is due`). A focused rerun passed `68/69` and reported `30`
 source-backed entries with review date `2026-05-21`, expected `0`. No content
 dates, source decisions, or runtime behavior were changed in this visual-only
-scope. This freshness gate must be resolved separately before merge or Production.
+scope.
+
+[PR #196](https://github.com/knhbae/flowme2605/pull/196) resolved that prerequisite
+separately: `135` normal-user routes are current, with overdue and missing counts
+`0`. Its exact head `97c537ff8357b2989541facaac94711634594e4c` passed full
+`npm.cmd test`, build, docs, dependency audit, and Playwright `612/612`, then
+merged as `8c0bfd8de9fb8877c4045b2c3f725b60ca236843`; the resulting Vercel status
+succeeded and the canonical Production URL returned HTTP `200`. The historical
+`623/624` result remains evidence of the original boundary, not a current blocker.
+PR #194 must still pass its own final exact-head CI before merge.
 
 ## Known Layout Exception
 
@@ -60,5 +68,6 @@ universal 44px controls. Ordinary primary and secondary actions meet their
 ## Evidence Boundary
 
 Screenshots and automation are implementation evidence, not observed-user
-validation. The Owner authorized a scoped PR and Vercel Preview for review;
-merge, Production deployment, and observed-user testing remain unapproved.
+validation. The Owner authorized sequential PR #194 then PR #195 merge and
+Production verification after exact-head CI. Observed-user testing remains
+unperformed and observed users remain `0`.
