@@ -78,10 +78,8 @@ test('second real-source artifact batch covers routine, study, travel, and vehic
   const expectedSecondBatchSlugs = [
     'real-thankyou-bubu-video-full-body-no-jump',
     'real-thankyou-bubu-video-daily-stretch-9min',
-    'real-fitvely-video-body-fat-6kg-method',
     'real-fitvely-video-workout-split-science',
     'real-sinagong-computer-d30-study',
-    'real-mofa-overseas-travel-prep',
     'real-ts-vehicle-inspection-prep',
     'real-safe-driving-license-renewal',
   ];
@@ -94,6 +92,20 @@ test('second real-source artifact batch covers routine, study, travel, and vehic
       `${slug} should simulate a calendar-like natural artifact`,
     );
   }
+
+  const bodyFat = getNaturalArtifactAudit('real-fitvely-video-body-fat-6kg-method');
+  assert.ok(bodyFat);
+  assert.ok(bodyFat.naturalArtifacts.some((artifact) => artifact.kind === 'spreadsheet'));
+  assert.ok(bodyFat.naturalArtifacts.some((artifact) => artifact.kind === 'memo'));
+  assert.ok(bodyFat.naturalArtifacts.every((artifact) => !artifact.kind.includes('calendar')));
+
+  const travel = getNaturalArtifactAudit('real-mofa-overseas-travel-prep');
+  assert.ok(travel);
+  assert.ok(travel.naturalArtifacts.some((artifact) => artifact.kind === 'checklist'));
+  assert.ok(
+    travel.naturalArtifacts.every((artifact) => !['monthly_calendar', 'routine_calendar'].includes(artifact.kind)),
+  );
+  assert.doesNotMatch(JSON.stringify(travel.naturalArtifacts), /D-14|D-10|D-7|D-1|입국 조건|비자|보험/);
 });
 
 test('Sinagong study broad source route is replaced with an exact-source reshape record', () => {

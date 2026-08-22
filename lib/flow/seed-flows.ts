@@ -255,14 +255,14 @@ const sourceReviewMeta: Record<
     source_status: 'needs_review',
     source_precision: 'exact',
     source_checked_at: '2026-05-23',
-    conversion_note: '퇴사/이직 의사결정 체크리스트를 원문 적합성 확인 전 검토 대기 Flow로 정규화했습니다.',
+    conversion_note: '경험형 원문보다 노무·보험·연금 항목이 넓어 공식 출처를 분리할 때까지 카탈로그 검토용으로만 유지합니다.',
     primary_destination: 'memo',
   },
   'year-end-tax-docs': {
     source_status: 'needs_review',
     source_precision: 'exact',
-    source_checked_at: '2026-05-23',
-    conversion_note: '국세청 연말정산 간소화 공식 안내 기반 Flow입니다. 회사 제출 기준과 개인별 공제 판단을 분리해 정리했습니다.',
+    source_checked_at: '2026-08-22',
+    conversion_note: '2025년 귀속·2026년 처리 국세청 공지를 기준으로 간소화 자료 수집과 회사별 제출 메모, 개인별 공제 판단을 분리했습니다.',
     primary_destination: 'sheet',
   },
   'passport-renewal-docs': {
@@ -276,28 +276,28 @@ const sourceReviewMeta: Record<
     source_status: 'needs_review',
     source_precision: 'exact',
     source_checked_at: '2026-05-23',
-    conversion_note: '건강검진 공식 안내 기반 Flow입니다. 민감 영역이라 공개 전 수동 검토가 필요합니다.',
+    conversion_note: '일반건강검진 원문보다 수면내시경·이동 안내 범위가 넓어 검사별 공식 안내를 분리할 때까지 카탈로그 검토용으로만 유지합니다.',
     primary_destination: 'calendar',
   },
   'business-registration-basic': {
     source_status: 'needs_review',
     source_precision: 'exact',
-    source_checked_at: '2026-05-23',
-    conversion_note: '사업자등록 서류 안내 기반 Flow입니다. 세무/행정 리스크 검토 후 승격합니다.',
+    source_checked_at: '2026-08-22',
+    conversion_note: '국세청 사업자등록 신청·제출서류 안내를 기준으로 신청 준비와 세무서 확인 질문을 분리했습니다.',
     primary_destination: 'memo',
   },
   'driver-license-renewal-check': {
     source_status: 'needs_review',
     source_precision: 'exact',
-    source_checked_at: '2026-05-23',
-    conversion_note: '안전운전 통합민원 안내 기반 Flow입니다. 면허 조건별 분기 확인이 필요합니다.',
-    primary_destination: 'calendar',
+    source_checked_at: '2026-08-22',
+    conversion_note: '일반 적성검사·면허갱신 안내를 기준으로 개인별 갱신기간 조회와 준비물 확인을 분리했습니다.',
+    primary_destination: 'sheet',
   },
   'happy-birth-service-check': {
     source_status: 'needs_review',
     source_precision: 'exact',
-    source_checked_at: '2026-05-23',
-    conversion_note: '행복출산 원스톱서비스 안내 기반 Flow입니다. 민감 행정/육아 정보를 수동 검토해야 합니다.',
+    source_checked_at: '2026-08-22',
+    conversion_note: '정부24 출산 관련 서비스 통합처리 신청(행복출산)의 신청 경로와 조건부 서류를 재확인했습니다.',
     primary_destination: 'memo',
   },
   'pet-registration-basic': {
@@ -311,28 +311,28 @@ const sourceReviewMeta: Record<
   'vaccination-certificate-issue': {
     source_status: 'needs_review',
     source_precision: 'exact',
-    source_checked_at: '2026-05-23',
-    conversion_note: '예방접종증명 발급 안내 기반 Flow입니다. 의료 민감 영역이라 수동 검토가 필요합니다.',
+    source_checked_at: '2026-08-22',
+    conversion_note: '정부24 예방접종증명 발급 경로와 본인·보호자 준비를 기준으로 삼고 제출처별 요구사항은 개인 메모로 분리했습니다.',
     primary_destination: 'memo',
   },
   'family-certificate-issue': {
     source_status: 'needs_review',
     source_precision: 'exact',
-    source_checked_at: '2026-05-23',
-    conversion_note: '가족관계등록부 증명서 안내 기반 Flow입니다. 제출처별 요구사항 확인이 필요합니다.',
+    source_checked_at: '2026-08-22',
+    conversion_note: '대한민국 법원 전자가족관계등록시스템을 정본으로 바꾸고 제출처별 요구 범위는 개인 메모로 분리했습니다.',
     primary_destination: 'memo',
   },
   'resident-register-copy-issue': {
     source_status: 'needs_review',
     source_precision: 'exact',
-    source_checked_at: '2026-05-23',
+    source_checked_at: '2026-08-22',
     conversion_note: '주민등록표 등본/초본 안내 기반 Flow입니다. 표시 항목 선택과 증빙 보관 UX 검토가 필요합니다.',
     primary_destination: 'memo',
   },
   'industrial-accident-claim-docs': {
     source_status: 'needs_review',
     source_precision: 'exact',
-    source_checked_at: '2026-05-23',
+    source_checked_at: '2026-08-22',
     conversion_note: '산재보험 요양비청구 안내 기반 Flow입니다. 재정/노무 민감성 검토가 필요합니다.',
     primary_destination: 'sheet',
   },
@@ -347,7 +347,7 @@ const sourceReviewMeta: Record<
     source_status: 'needs_review',
     source_precision: 'exact',
     source_checked_at: '2026-05-23',
-    conversion_note: '질병관리청 건강 체중감량 안내 중 수면 원칙 하나만 14일 체크로 좁힌 Flow입니다. 포괄 식단/활동 관찰표로 대표하지 않습니다.',
+    conversion_note: '성장기 비만 원문을 일반 성인 2주 수면 루틴으로 확장해 대상이 맞지 않으므로 카탈로그 검토용으로만 유지합니다.',
     primary_destination: 'calendar',
   },
   'samsung-aircon-seasonal-check': {
@@ -374,9 +374,9 @@ const sourceReviewMeta: Record<
   'qnet-exam-application-prep': {
     source_status: 'needs_review',
     source_precision: 'exact',
-    source_checked_at: '2026-05-23',
-    conversion_note: 'Q-Net 원서접수 안내 기반 Flow입니다. 일정/서류/결제 증빙 산출물 확인이 필요합니다.',
-    primary_destination: 'hybrid',
+    source_checked_at: '2026-08-22',
+    conversion_note: 'Q-Net 원서접수 안내를 기준으로 고정 D-day를 제거하고 실제 시험 공고·접수 내역·인정 신분증 확인으로 좁혔습니다.',
+    primary_destination: 'memo',
   },
   'computer-skills-d30-study': {
     source_status: 'real',
@@ -389,17 +389,26 @@ const sourceReviewMeta: Record<
     source_status: 'needs_review',
     source_precision: 'exact',
     source_checked_at: '2026-05-23',
-    conversion_note: '질병관리청 건강 체중감량 안내 기반 Flow입니다. 식사/운동/컨디션 기록의 안전 경계를 정리했습니다.',
+    conversion_note: '성장기 비만 원문을 일반 성인 식사·운동 기록표로 확장해 대상과 기록 항목이 맞지 않으므로 카탈로그 검토용으로만 유지합니다.',
     primary_destination: 'sheet',
   },
   'diet-reset-2week': {
     source_status: 'needs_review',
     source_precision: 'exact',
     source_checked_at: '2026-05-23',
-    conversion_note: '질병관리청 건강 체중감량 안내 기반 Flow입니다. 무리한 제한 방지와 유지 가능한 규칙 산출물 중심으로 구성했습니다.',
+    conversion_note: '장기 체중관리 원문을 2주 리셋 프로그램으로 바꾼 구성이라 기간과 대상 근거를 다시 세울 때까지 카탈로그 검토용으로만 유지합니다.',
     primary_destination: 'sheet',
   },
 };
+
+const sourceFreshnessContentUpdatedSeedSlugs = new Set([
+  'year-end-tax-docs',
+  'business-registration-basic',
+  'driver-license-renewal-check',
+  'happy-birth-service-check',
+  'vaccination-certificate-issue',
+  'family-certificate-issue',
+]);
 
 function withItemDetails(
   bundle: FlowBundle,
@@ -734,10 +743,10 @@ const overseasTravelText = `## D-14 서류와 입국 조건
 - 수하물 위탁 전 보조배터리와 귀중품 분리하기 D-Day
 - 탑승구와 탑승 마감 시간을 다시 확인하기 D-Day`;
 
-const yearEndTaxText = `## 1. 기본 확인
-- 회사 연말정산 제출 일정 확인하기
-- 홈택스 연말정산 간소화 서비스 접속 준비하기
-- 공동/간편 인증 수단 확인하기
+const yearEndTaxText = `## 1. 해당 귀속연도 일정 확인
+- 국세청 간소화 서비스 개통일과 최종자료 제공일 확인하기
+- 회사별 제출 일정과 제출 방식은 회사 안내에서 따로 기록하기
+- 홈택스 로그인과 공동/간편 인증 수단 확인하기
 
 ## 2. 간소화 자료 내려받기
 - 소득·세액공제 자료 조회하기
@@ -749,10 +758,45 @@ const yearEndTaxText = `## 1. 기본 확인
 - 월세, 기부금, 안경구입비 등 간소화 누락 가능 자료 확인하기
 - 부양가족 자료 제공 동의 상태 확인하기
 
-## 4. 제출 전 검토
+## 4. 회사 제출 전 검토
 - 공제 대상이 아닌 항목을 제외했는지 확인하기
-- 회사 시스템에 업로드하고 제출 완료 상태 확인하기
-- 환급 또는 추가 납부 예상 금액을 기록하기`;
+- 회사 안내에 따라 제출하고 완료 상태를 개인 메모에 남기기
+- 공제 가능 여부가 불분명한 항목은 국세청 또는 회사에 확인하기`;
+
+const yearEndTaxCompanyReferenceTitles = new Set([
+  '회사별 제출 일정과 제출 방식은 회사 안내에서 따로 기록하기',
+  'PDF 다운로드 또는 회사 제출 방식에 맞게 파일 저장하기',
+  '회사 안내에 따라 제출하고 완료 상태를 개인 메모에 남기기',
+]);
+
+function withYearEndTaxSourceBoundary(bundle: FlowBundle): FlowBundle {
+  const detailByItem = new Map(bundle.itemDetails?.map((detail) => [detail.item_id, detail]));
+  const officialLink = {
+    label: bundle.flow.source_title ?? '국세청 연말정산 간소화 서비스 개통 안내',
+    url: bundle.flow.source_url ?? 'https://www.nts.go.kr',
+    type: 'official' as const,
+  };
+
+  return {
+    ...bundle,
+    items: bundle.items.map((item) => {
+      if (detailByItem.has(item.id)) return item;
+      return {
+        ...item,
+        source_type: yearEndTaxCompanyReferenceTitles.has(item.title) ? 'reference' : 'official',
+        risk_level: 'financial_sensitive',
+      };
+    }),
+    itemDetails: bundle.items.map((item) => {
+      const existing = detailByItem.get(item.id);
+      if (existing) return existing;
+      return {
+        item_id: item.id,
+        links: yearEndTaxCompanyReferenceTitles.has(item.title) ? undefined : [officialLink],
+      };
+    }),
+  };
+}
 
 function withOfficialSourceDetails(
   bundle: FlowBundle,
@@ -822,9 +866,9 @@ const healthCheckupText = `## D-7 예약 준비
 - 검진 결과 수령 방법 확인하기 D-Day`;
 
 const businessRegistrationText = `## 신청 전 준비
-- 개인/법인과 업종 유형 정리하기
+- 개인사업자 등록 신청 대상인지 확인하기
+- 업종과 인허가 여부는 관할 기관 또는 세무서에 확인할 질문으로 적기
 - 사업장 임대차계약서 필요 여부 확인하기
-- 인허가 업종인지 확인하기
 - 공동사업이면 동업계약서 준비하기
 
 ## 신청 진행
@@ -833,8 +877,9 @@ const businessRegistrationText = `## 신청 전 준비
 - 신청 후 등록 상태와 정정 필요 여부 확인하기`;
 
 const driverLicenseRenewalText = `## 갱신 대상 확인
-- 면허 종류와 갱신/적성검사 대상 여부 정리하기
-- 만료일과 건강검진 자료 활용 가능 여부 확인하기
+- 면허 종류와 갱신/적성검사 대상 여부 확인하기
+- 안전운전 통합민원에서 개인별 갱신기간 확인하기
+- 건강검진 자료 활용 가능 여부 확인하기
 - 사진 규격, 신분증, 수수료 준비 상태 확인하기
 
 ## 신청 진행
@@ -864,21 +909,21 @@ const petRegistrationText = `## 등록 전 확인
 
 const vaccinationCertificateText = `## 발급 전 확인
 - 본인 또는 자녀 증명서 발급 가능 여부 확인하기
-- 예방접종도우미 또는 정부24 발급 경로 확인하기
+- 정부24 또는 방문 발급 경로 확인하기
 - 방문 발급 시 신분증 준비하기
 
 ## 발급 진행
-- 필요한 접종 항목과 언어 확인하기
-- 증명서 출력 또는 파일 저장하기
-- 제출처가 요구하는 형식과 유효기간 확인하기`;
+- 증명서 발급 신청하고 발급 결과 확인하기
+- 제출처가 요구하는 언어·표시 항목은 제출처 안내에서 따로 확인하기
+- 제출한 증명서의 발급일과 보관 위치를 개인 메모에 남기기`;
 
 const familyCertificateText = `## 발급 목적 확인
-- 제출처가 요구한 증명서 종류와 발급 기한 적기
+- 제출처가 요구한 증명서 종류와 제출 기한을 개인 메모에 적기
 - 일반/상세/특정 증명서 중 필요한 범위 선택하기
-- 주민등록번호 공개 범위와 대상자 기준 확인하기
+- 주민등록번호 공개 범위와 대상자 기준은 제출처에 확인하기
 
 ## 발급 진행
-- 전자가족관계등록시스템 또는 정부24 경로 확인하기
+- 대한민국 법원 전자가족관계등록시스템에서 발급 경로 확인하기
 - 본인 인증 후 선택한 범위로 증명서 발급하기
 - 제출 전 이름, 관계, 공개 범위, 파일 위치 확인하기`;
 
@@ -2048,22 +2093,22 @@ const additionalOnlineBundles: FlowBundle[] = [
         id: 'flow-business-registration',
         slug: 'business-registration-basic',
         title: '개인 사업자등록 준비 Flow',
-        description: '업종, 사업장, 임대차계약서, 인허가 여부를 정리하고 홈택스 신청 전 준비물을 점검합니다.',
+        description: '개인사업자 신청 대상과 사업장 서류를 정리하고 업종·인허가 관련 확인 질문을 준비합니다.',
         category: '사업/세무',
         structure_type: 'checklist',
         content_type: 'default',
         anchor_type: 'none',
         status: 'published',
         risk_level: 'financial_sensitive',
-        source_title: '홈택스 사업자등록 제출서류 안내',
-        source_url: 'https://mob.tbht.hometax.go.kr/jsonAction.do?actionId=UTBABAAB92F001',
+        source_title: '국세청 사업자등록 신청 안내',
+        source_url: 'https://s.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7777&mi=2444',
         warning: '사업자등록, 인허가, 세무 처리는 업종과 개인 상황에 따라 달라질 수 있습니다. 세무서 또는 세무 전문가 확인이 필요할 수 있습니다.',
       },
       businessRegistrationText,
     ),
     {
-      label: '홈택스 사업자등록 제출서류 안내',
-      url: 'https://mob.tbht.hometax.go.kr/jsonAction.do?actionId=UTBABAAB92F001',
+      label: '국세청 사업자등록 신청 안내',
+      url: 'https://s.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7777&mi=2444',
     },
     'financial_sensitive',
   ),
@@ -2080,15 +2125,15 @@ const additionalOnlineBundles: FlowBundle[] = [
         anchor_type: 'none',
         status: 'published',
         risk_level: 'medium',
-        source_title: '한국도로교통공단 안전운전 통합민원 면허갱신 안내',
-        source_url: 'https://www.safedriving.or.kr/diGuide/selectDiGuide02.do',
+        source_title: '한국도로교통공단 적성검사·면허갱신 안내',
+        source_url: 'https://www.safedriving.or.kr/diGuide/selectDiGuide01.do',
         warning: '면허 갱신 기간과 적성검사 요건은 개인 면허 종류와 상태에 따라 달라질 수 있습니다.',
       },
       driverLicenseRenewalText,
     ),
     {
-      label: '한국도로교통공단 안전운전 통합민원 면허갱신 안내',
-      url: 'https://www.safedriving.or.kr/diGuide/selectDiGuide02.do',
+      label: '한국도로교통공단 적성검사·면허갱신 안내',
+      url: 'https://www.safedriving.or.kr/diGuide/selectDiGuide01.do',
     },
     'medium',
   ),
@@ -2105,14 +2150,14 @@ const additionalOnlineBundles: FlowBundle[] = [
         anchor_type: 'none',
         status: 'published',
         risk_level: 'medical_sensitive',
-        source_title: '정부24 행복출산 민원 안내',
+        source_title: '출산 관련 서비스 통합처리 신청(행복출산)',
         source_url: 'https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=17410000001&HighCtgCD=A01004&tp_seq=01',
         warning: '지원 대상, 지급 조건, 신청 가능 기간은 거주지와 가족 상황에 따라 달라질 수 있습니다.',
       },
       happyBirthText,
     ),
     {
-      label: '정부24 행복출산 민원 안내',
+      label: '출산 관련 서비스 통합처리 신청(행복출산)',
       url: 'https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=17410000001&HighCtgCD=A01004&tp_seq=01',
     },
     'medical_sensitive',
@@ -2147,7 +2192,7 @@ const additionalOnlineBundles: FlowBundle[] = [
         id: 'flow-vaccination-certificate',
         slug: 'vaccination-certificate-issue',
         title: '예방접종증명서 발급 Flow',
-        description: '본인·자녀 예방접종증명서 발급 경로, 언어, 제출처 요구 형식을 확인합니다.',
+        description: '본인·자녀 예방접종증명서 발급 경로를 확인하고 제출처 요구사항은 별도 메모로 정리합니다.',
         category: '건강/증명서',
         structure_type: 'checklist',
         content_type: 'default',
@@ -2179,14 +2224,14 @@ const additionalOnlineBundles: FlowBundle[] = [
         anchor_type: 'none',
         status: 'published',
         risk_level: 'low',
-        source_title: '정부24 가족관계등록부 증명서 안내',
-        source_url: 'https://m.gov.kr/mw/AA020InfoCappView.do?CappBizCD=97400000004&HighCtgCD=A01008&tp_seq=01',
+        source_title: '대한민국 법원 전자가족관계등록시스템',
+        source_url: 'https://efamily.scourt.go.kr/index.jsp',
       },
       familyCertificateText,
     ),
     {
-      label: '정부24 가족관계등록부 증명서 안내',
-      url: 'https://m.gov.kr/mw/AA020InfoCappView.do?CappBizCD=97400000004&HighCtgCD=A01008&tp_seq=01',
+      label: '대한민국 법원 전자가족관계등록시스템',
+      url: 'https://efamily.scourt.go.kr/index.jsp',
     },
     'low',
   ),
@@ -2802,7 +2847,7 @@ const creatorInspiredBundles: FlowBundle[] = [
         anchor_type: 'start_date',
         status: 'published',
         risk_level: 'medical_sensitive',
-        source_title: '질병관리청 건강하게 체중 감량하기 안내',
+        source_title: '질병관리청 성장기 비만, 건강하게 체중 관리하기!',
         source_url:
           'https://health.kdca.go.kr/healthinfo/biz/health/ntcnInfo/healthSourc/thtimtCntnts/thtimtCntntsView.do?thtimt_cntnts_sn=82',
         warning: '이 Flow는 감량 처방이나 수면 치료가 아니라 14일 수면 체크용입니다. 질환, 임신·수유, 섭식장애 경험, 약물 복용, 어지러움·통증·수면 문제가 반복되면 체크보다 전문가 상담을 우선하세요.',
@@ -2810,7 +2855,7 @@ const creatorInspiredBundles: FlowBundle[] = [
       dietHabitText,
     ),
     {
-      label: '질병관리청 건강하게 체중 감량하기 안내',
+      label: '질병관리청 성장기 비만, 건강하게 체중 관리하기!',
       url: 'https://health.kdca.go.kr/healthinfo/biz/health/ntcnInfo/healthSourc/thtimtCntnts/thtimtCntntsView.do?thtimt_cntnts_sn=82',
     },
     'medical_sensitive',
@@ -2926,10 +2971,6 @@ const validationFixMeta: Record<string, ValidationFixMeta> = {
   'vehicle-inspection-prep': {
     setup_anchor_label: '검사일',
     setup_anchor_hint: '자동차검사 예약일을 기준으로 예약 정보, 차량 사전점검, 결과표와 후속 정비 메모 일정을 계산합니다.',
-  },
-  'real-mofa-overseas-travel-prep': {
-    setup_anchor_label: '출국일',
-    setup_anchor_hint: '출국일 기준으로 안전 정보, 비상연락망, 현지 위험 확인 항목을 배치합니다.',
   },
 };
 
@@ -3082,91 +3123,6 @@ function applyValidationFixMeta(bundle: FlowBundle): FlowBundle {
     };
   }
 
-  if (bundle.flow.slug === 'real-mofa-overseas-travel-prep') {
-    const mofaCopyByTitle: Record<
-      string,
-      {
-        description: string;
-        why: string;
-        how: string;
-        completion_criteria: string;
-        caution: string;
-      }
-    > = {
-      '방문 국가 여행경보 확인': {
-        description: '외교부 해외안전여행에서 베트남 국가/지역별 여행경보와 최신 안전 공지를 확인합니다.',
-        why: '여행경보 단계와 최근 안전 공지는 일정 변경, 야간 이동, 보험 확인 여부를 정하는 기준입니다.',
-        how: '외교부 해외안전여행 국가/지역별 정보에서 방문 도시를 검색하고 여행경보 단계, 최근 공지, 확인일을 실행 항목 메모에 적습니다.',
-        completion_criteria: '여행경보 단계, 확인일, 피해야 할 지역/시간대가 메모에 남았습니다.',
-        caution: 'FLOW는 출국 가능 여부를 판단하지 않습니다. 외교부 공지와 항공/입국 조건을 직접 확인하세요.',
-      },
-      '여권과 비자 조건 확인': {
-        description: '여권 만료일, 무비자 체류 가능 기간, 전자허가/비자 필요 여부를 확인합니다.',
-        why: '여권 유효기간이나 입국 조건이 맞지 않으면 항공권이 있어도 출국 또는 입국이 막힐 수 있습니다.',
-        how: '여권 만료일과 항공권 정보를 놓고 외교부/방문국 공지의 입국 조건을 확인한 뒤 부족한 서류를 실행 항목 메모에 적습니다.',
-        completion_criteria: '여권 유효기간, 체류 가능 기간, 필요한 입국 서류가 적혔습니다.',
-        caution: 'FLOW는 출국 가능 여부를 판단하지 않습니다. 외교부 공지와 항공/입국 조건을 직접 확인하세요.',
-      },
-      '긴급 연락처와 영사콜센터 저장': {
-        description: '영사콜센터, 현지 공관, 보험사 긴급번호를 휴대폰과 오프라인 메모에 저장합니다.',
-        why: '분실, 사고, 통신 장애가 생기면 온라인 검색보다 저장된 연락처가 먼저 필요합니다.',
-        how: '영사콜센터, 주베트남 대한민국 대사관/총영사관, 보험사 긴급번호, 동행자 연락처를 휴대폰과 오프라인 메모에 같이 저장합니다.',
-        completion_criteria: '영사콜센터와 현지 공관 연락처가 휴대폰 및 오프라인 메모에 저장됐습니다.',
-        caution: 'FLOW는 출국 가능 여부를 판단하지 않습니다. 외교부 공지와 항공/입국 조건을 직접 확인하세요.',
-      },
-      '보험과 현지 이동 계획 점검': {
-        description: '여행자보험 보장 범위와 공항-숙소 이동, 야간 이동 피할 구간을 확인합니다.',
-        why: '보험 보장 범위와 첫 이동 경로가 정리되어야 사고나 지연 상황에서 바로 대응할 수 있습니다.',
-        how: '여행자보험 증권의 보장 범위와 긴급 연락처를 확인하고 공항-숙소 이동, 야간 이동, 피해야 할 지역을 실행 항목 메모에 적습니다.',
-        completion_criteria: '보험 증권 위치, 보험사 긴급번호, 공항-숙소 이동 경로가 저장됐습니다.',
-        caution: 'FLOW는 출국 가능 여부를 판단하지 않습니다. 외교부 공지와 항공/입국 조건을 직접 확인하세요.',
-      },
-      '가족에게 일정과 비상 연락 방법 공유': {
-        description: '항공편, 숙소, 현지 연락처, 연락 두절 시 확인 방법을 가족이나 동행자에게 보냅니다.',
-        why: '현지에서 연락이 끊겼을 때 가족이 확인할 기준 정보가 있어야 신고와 지원 요청이 빨라집니다.',
-        how: '항공편, 숙소, 주요 이동일, 영사콜센터, 보험사 연락처, 연락 두절 시 확인 순서를 가족이나 동행자에게 공유합니다.',
-        completion_criteria: '최신 일정과 비상 연락 방법이 가족 또는 동행자에게 전달됐습니다.',
-        caution: 'FLOW는 출국 가능 여부를 판단하지 않습니다. 외교부 공지와 항공/입국 조건을 직접 확인하세요.',
-      },
-    };
-
-    next = {
-      ...next,
-      flow: {
-        ...next.flow,
-        description: '외교부 해외안전여행 국가/지역별 정보를 출국일 기준 체크리스트와 캘린더로 바꾼 Flow입니다.',
-        conversion_note:
-          '외교부 해외안전여행 국가/지역별 정보를 출국일 기준 여행경보, 입국 조건, 영사 연락처, 보험/이동, 가족 공유 체크로 압축했습니다.',
-        primary_destination: 'hybrid',
-        ...creatorMeta('FLOW 큐레이션팀', '공식자료 큐레이터', '외교부 해외안전여행 정보를 출국일 기준 실행 항목으로 정리합니다.', 642, 118),
-        owner_user_id: next.flow.owner_user_id,
-      },
-      sections: next.sections.map((section) =>
-        section.title === '출국 전'
-          ? { ...section, description: '출국 전 공식 안전정보와 입국 조건을 확인합니다.' }
-          : section.title === '현지 대비'
-            ? { ...section, description: '현지에서 바로 쓸 연락처와 이동/보험 정보를 저장합니다.' }
-            : section,
-      ),
-      items: next.items.map((item) => {
-        const copy = mofaCopyByTitle[item.title];
-        return copy ? { ...item, description: copy.description } : item;
-      }),
-      itemDetails: next.itemDetails?.map((detail) => {
-        const item = next.items.find((entry) => entry.id === detail.item_id);
-        const copy = item ? mofaCopyByTitle[item.title] : undefined;
-        if (!copy) return detail;
-        return {
-          ...detail,
-          why: copy.why,
-          how: copy.how,
-          completion_criteria: copy.completion_criteria,
-          caution: copy.caution,
-        };
-      }),
-    };
-  }
-
   if (bundle.flow.slug === 'new-car-delivery-check') {
     next = {
       ...next,
@@ -3293,6 +3249,9 @@ function enrichSeedMeta(bundle: FlowBundle, index: number): FlowBundle {
     flow: {
       ...bundle.flow,
       ...reviewMeta,
+      updated_at: sourceFreshnessContentUpdatedSeedSlugs.has(bundle.flow.slug)
+        ? '2026-08-22T00:00:00.000Z'
+        : bundle.flow.updated_at,
       ...(bundle.flow.creator_name ? {} : creatorByCategory),
       tags: bundle.flow.tags ?? buildSeedTags(bundle),
     },
@@ -3336,7 +3295,7 @@ const sourceRiskCopyPolish: Record<string, CopyPolishConfig> = {
   'year-end-tax-docs': {
     artifact: '연말정산 회사 제출 메모',
     record: '회사 마감, 간소화 확인일, 추가 증빙, 공제 판단 질문, 제출 상태',
-    sourceCheck: '국세청 간소화 일정과 회사 제출 기준',
+    sourceCheck: '국세청 간소화 일정과 회사 제출 안내',
     boundary: '공제 가능 여부는 Flow가 확정하지 않고 회사 또는 국세청 확인 질문으로 남깁니다.',
     sourceType: 'official',
     riskLevel: 'financial_sensitive',
@@ -5103,7 +5062,7 @@ const baseSeedBundles: FlowBundle[] = [
         anchor_type: 'none',
         status: 'published',
         risk_level: 'financial_sensitive',
-        source_title: '이직 준비 체크리스트 참고',
+        source_title: '성공적인 이직을 위한 사전 준비 체크리스트',
         source_url: 'https://luckysuni-diary.tistory.com/102',
         warning: '재정 관련 항목은 개인 상황에 따라 달라질 수 있습니다. 법적·재정적 확정 조언으로 사용하지 마세요.',
       },
@@ -5222,13 +5181,14 @@ const baseSeedBundles: FlowBundle[] = [
       },
     },
   ),
-  withItemDetails(
-    makeTextBundle(
-      {
-        id: 'flow-year-end-tax',
+  withYearEndTaxSourceBoundary(
+    withItemDetails(
+      makeTextBundle(
+        {
+          id: 'flow-year-end-tax',
         slug: 'year-end-tax-docs',
         title: '연말정산 서류 준비 Flow',
-        description: '홈택스 간소화 자료와 추가 증빙을 확인해 회사 제출 전 누락을 줄입니다.',
+        description: '국세청 간소화 일정과 추가 증빙을 확인하고 회사별 제출 방식은 개인 메모로 분리합니다.',
         category: '세금/연말정산',
         structure_type: 'checklist',
         content_type: 'default',
@@ -5239,10 +5199,10 @@ const baseSeedBundles: FlowBundle[] = [
         source_url: 'https://www.nts.go.kr/nts/na/ntt/selectNttInfo.do?mi=&nttSn=1347979',
         warning: '세액공제 가능 여부는 개인 상황과 해당 연도 세법에 따라 달라질 수 있습니다. 공식 안내와 회사 기준을 확인하세요.',
       },
-      yearEndTaxText,
-    ),
-    {
-      '홈택스 연말정산 간소화 서비스 접속 준비하기': {
+        yearEndTaxText,
+      ),
+      {
+      '홈택스 로그인과 공동/간편 인증 수단 확인하기': {
         description: '간소화 자료 조회를 위해 홈택스 로그인과 인증 수단을 미리 준비합니다.',
         why: '연말정산 기간에는 접속과 인증 과정에서 시간이 오래 걸릴 수 있습니다.',
         how: '홈택스 접속, 간편인증 또는 공동/금융인증서 사용 가능 여부를 확인합니다.',
@@ -5287,7 +5247,8 @@ const baseSeedBundles: FlowBundle[] = [
         source_type: 'reference',
         risk_level: 'financial_sensitive',
       },
-    },
+      },
+    ),
   ),
   ...additionalOnlineBundles,
   ...creatorInspiredBundles,

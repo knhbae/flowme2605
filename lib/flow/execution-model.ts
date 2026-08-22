@@ -131,6 +131,7 @@ function isExactVideoMiniFlow(bundle: FlowBundle): boolean {
     bundle.flow.source_status === 'real' &&
       bundle.flow.source_precision === 'exact' &&
       bundle.flow.tags?.includes('exact-video') &&
+      bundle.flow.structure_type === 'routine' &&
       bundle.items.length === 1,
   );
 }
