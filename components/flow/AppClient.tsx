@@ -2972,7 +2972,7 @@ function FlowUrlLookupEntry({
   return (
     <section
       data-testid="flow-url-lookup-entry"
-      className="mb-5 rounded-[var(--flowme-radius-card)] border border-[var(--flowme-border)] bg-[var(--flowme-surface)] p-4"
+      className="mb-3 rounded-[var(--flowme-radius-card)] border border-[var(--flowme-border)] bg-[var(--flowme-surface)] p-3 sm:mb-5 sm:p-4"
     >
       <form className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-2" onSubmit={onSubmit}>
         <label className="min-w-0">
@@ -3676,12 +3676,12 @@ export function FlowList() {
               placeholder="이사, 공부, 식단, 체크리스트"
             />
           </label>
-          <div className="flex flex-wrap gap-2" aria-label="상황별 콘텐츠 필터">
+          <div className="flex flex-nowrap gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible sm:pb-0" aria-label="상황별 콘텐츠 필터">
             {catalogIntentFilters.map((item) => (
               <button
                 key={item.id}
                 type="button"
-                className={`min-h-11 rounded-full border px-3 py-1.5 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${
+                className={`min-h-11 shrink-0 rounded-full border px-3 py-1.5 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${
                   catalogIntent === item.id ? 'border-[var(--flowme-text)] bg-[var(--flowme-text)] text-white' : 'border-[var(--flowme-border-strong)] bg-[var(--flowme-surface)] text-[var(--flowme-text-secondary)] hover:bg-[var(--flowme-surface-subtle)]'
                 }`}
                 aria-pressed={catalogIntent === item.id}
@@ -15590,7 +15590,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
             <button
               type="button"
               aria-label={`${info.event.startStr} 루틴 ${hiddenCount}개 더 보기`}
-              className="inline-flex h-7 min-w-4 shrink-0 items-center justify-center rounded-[var(--flowme-radius-compact)] bg-[var(--flowme-surface-subtle)] px-0 text-xs font-black text-[var(--flowme-text-secondary)] ring-1 ring-[var(--flowme-border)] hover:ring-[var(--flowme-action)] focus:outline-none focus:ring-2 focus:ring-[var(--flowme-focus)] sm:min-w-7 sm:px-0.5"
+              className="inline-flex h-7 w-3.5 min-w-0 shrink-0 items-center justify-center overflow-hidden rounded-[var(--flowme-radius-compact)] bg-[var(--flowme-surface-subtle)] px-0 text-xs font-black leading-none tracking-[-0.08em] text-[var(--flowme-text-secondary)] ring-1 ring-[var(--flowme-border)] hover:ring-[var(--flowme-action)] focus:outline-none focus:ring-2 focus:ring-[var(--flowme-focus)] sm:w-auto sm:min-w-7 sm:px-0.5 sm:tracking-normal"
               data-testid="my-flow-routine-overflow"
               onClick={(event) => {
                 event.stopPropagation();
