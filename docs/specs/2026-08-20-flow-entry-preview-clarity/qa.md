@@ -34,6 +34,13 @@ CI, MERGE, AND POST-MERGE PRODUCTION VERIFICATION PENDING / OBSERVED USERS `0`.
 - After the compact `9+` overflow-label correction, a fresh-build targeted run
   covering mobile overflow, mobile Calendar layout, and both concurrent-save
   scenarios passed `4/4`.
+- Exact-head Actions run `32587222087` on `9c469b050ba788e536210717168c3e0004864ed0`
+  passed Docs/Unit/Build and Vercel; Playwright passed `628/629`. The sole
+  failure, including both retries, measured a Linux Chromium `+3` label at
+  `15px` inside its `14px` mobile slot. The slot was widened to `16px` without
+  changing the `12px` label, `9+` cap, exact accessible count, or assertion;
+  the fresh-build exact scenario then passed `1/1`. Replacement exact-head CI
+  remains the merge gate.
 - The final changed-diff audit found P1 `0` and P2 `0`. GitHub's exact-head core,
   full Playwright, and Vercel checks remain the release gate; this local evidence
   is not a substitute for them or for observed-user validation.

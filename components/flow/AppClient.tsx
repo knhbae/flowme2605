@@ -15681,7 +15681,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
             <button
               type="button"
               aria-label={`${info.event.startStr} 루틴 ${hiddenCount}개 더 보기`}
-              className="inline-flex h-7 w-3.5 min-w-0 shrink-0 items-center justify-center overflow-hidden rounded-[var(--flowme-radius-compact)] bg-[var(--flowme-surface-subtle)] px-0 text-xs font-black leading-none tracking-[-0.08em] text-[var(--flowme-text-secondary)] ring-1 ring-[var(--flowme-border)] hover:ring-[var(--flowme-action)] focus:outline-none focus:ring-2 focus:ring-[var(--flowme-focus)] sm:w-auto sm:min-w-7 sm:px-0.5 sm:tracking-normal"
+              className="inline-flex h-7 w-4 min-w-0 shrink-0 items-center justify-center overflow-hidden rounded-[var(--flowme-radius-compact)] bg-[var(--flowme-surface-subtle)] px-0 text-xs font-black leading-none tracking-[-0.08em] text-[var(--flowme-text-secondary)] ring-1 ring-[var(--flowme-border)] hover:ring-[var(--flowme-action)] focus:outline-none focus:ring-2 focus:ring-[var(--flowme-focus)] sm:w-auto sm:min-w-7 sm:px-0.5 sm:tracking-normal"
               data-testid="my-flow-routine-overflow"
               data-hidden-count={hiddenCount}
               onClick={(event) => {
