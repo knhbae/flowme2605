@@ -56,6 +56,7 @@ import {
   buildTextAuthoringLongDocumentRuntimeView,
   createTextAuthoringDocument,
 } from "@/lib/flow/text-authoring/parser";
+import { buildAuthoringFlowViewModel } from "@/lib/flow/text-authoring/flow-view-model";
 import {
   deriveAuthoringLifecycleStatus,
   evaluateAuthoringWritePolicy,
@@ -122,6 +123,15 @@ import {
   type SourceUpdateDialogView,
 } from "./SourceUpdateDialog";
 import { StructurePane } from "./StructurePane";
+import {
+  createDefaultTextAuthoringFlowViewUiState,
+  createTextAuthoringFlowViewUiStateKey,
+  fingerprintTextAuthoringFlowViewSource,
+  readTextAuthoringFlowViewUiState,
+  writeTextAuthoringFlowViewUiState,
+  type TextAuthoringFlowViewMode,
+  type TextAuthoringFlowViewUiState,
+} from "./flow-view-ui-state";
 import type {
   AuthoringItemPatch,
   AuthoringLongDocumentFocusView,
@@ -788,6 +798,8 @@ export type TextAuthoringWorkspaceProps = {
   initialSaveReceipt?: AuthoringReceiptView | null;
   p1LongDocumentTableEnabled?: boolean;
   p1SourceCandidateEnabled?: boolean;
+  /** Isolated, local-only PoC surface. Product routes leave this disabled. */
+  flowViewPocEnabled?: boolean;
   onNavigateDraft?: (
     draftId: string | null,
     options?: {
@@ -807,6 +819,7 @@ export function TextAuthoringWorkspace({
   initialSaveReceipt,
   p1LongDocumentTableEnabled,
   p1SourceCandidateEnabled,
+  flowViewPocEnabled = false,
   onNavigateDraft,
   onNavigateNew,
 }: TextAuthoringWorkspaceProps = {}) {
@@ -833,6 +846,13 @@ export function TextAuthoringWorkspace({
   const [document, setDocument] = useState<TextAuthoringDocument | null>(() =>
     productMode ? null : DEFAULT_EXAMPLE_DOCUMENT,
   );
+  const [flowViewFallbackDocument] = useState(() =>
+    createTextAuthoringDocument("", {
+      ownership: "personal",
+      longDocumentTable: { enabled: longDocumentTableGateEnabled },
+    }),
+  );
+  const [flowViewComposing, setFlowViewComposing] = useState(false);
   const [title, setTitle] = useState(() =>
     productMode ? "" : SIMPLE_TEXT_AUTHORING_EXAMPLE.title,
   );
@@ -845,6 +865,15 @@ export function TextAuthoringWorkspace({
   const [rawText, setRawText] = useState(() =>
     productMode ? "" : SIMPLE_TEXT_AUTHORING_EXAMPLE.rawText,
   );
+  const [flowViewUiState, setFlowViewUiState] =
+    useState<TextAuthoringFlowViewUiState>(() =>
+      createDefaultTextAuthoringFlowViewUiState(
+        fingerprintTextAuthoringFlowViewSource(
+          productMode ? "" : SIMPLE_TEXT_AUTHORING_EXAMPLE.rawText,
+        ),
+      ),
+    );
+  const flowViewUiStateRef = useRef(flowViewUiState);
   const anchor = useMemo(() => sourceAnchorDate(rawText), [rawText]);
   const [ownership, setOwnership] =
     useState<TextAuthoringOwnership>("personal");
@@ -925,6 +954,10 @@ export function TextAuthoringWorkspace({
   const workspaceGridRef = useRef<HTMLDivElement | null>(null);
   const inputPaneScrollRef = useRef<HTMLDivElement | null>(null);
   const sourceTextAreaRef = useRef<HTMLTextAreaElement | null>(null);
+  const flowViewScrollRef = useRef<HTMLDivElement | null>(null);
+  const flowViewRestoreRequestedRef = useRef(true);
+  const flowViewPendingDomRestoreRef =
+    useRef<TextAuthoringFlowViewUiState | null>(null);
   const initialDraftOpenedRef = useRef<string | null>(null);
   const restoredSourceFocusRef = useRef<string | null>(null);
   const restoredSourceCandidateRef = useRef<string | null>(null);
@@ -1076,6 +1109,309 @@ export function TextAuthoringWorkspace({
       enabled: longDocumentTableGateEnabled,
     });
   }, [document, longDocumentTableGateEnabled, productMode]);
+  const flowViewSourceDocument = useMemo(() => {
+    if (!flowViewPocEnabled) return effectiveDocument;
+    return effectiveDocument ?? flowViewFallbackDocument;
+  }, [effectiveDocument, flowViewFallbackDocument, flowViewPocEnabled]);
+  const flowViewSourceText = rawText;
+  const flowViewModel = useMemo(
+    () =>
+      flowViewPocEnabled && flowViewSourceDocument
+        ? buildAuthoringFlowViewModel({
+            documentId: flowViewSourceDocument.documentId,
+            rawText: flowViewSourceText,
+            parseResult: flowViewSourceDocument.parseResult,
+          })
+        : null,
+    [flowViewPocEnabled, flowViewSourceDocument, flowViewSourceText],
+  );
+  const flowViewUiStateKey = useMemo(
+    () =>
+      createTextAuthoringFlowViewUiStateKey({
+        draftId: activeDraftId ?? initialDraftId,
+        documentId: document?.documentId,
+      }),
+    [activeDraftId, document?.documentId, initialDraftId],
+  );
+  const flowViewSourceFingerprint = useMemo(
+    () =>
+      flowViewPocEnabled
+        ? fingerprintTextAuthoringFlowViewSource(rawText)
+        : "flow-view-poc-disabled",
+    [flowViewPocEnabled, rawText],
+  );
+  const flowViewLocatorIds = useMemo(
+    () => flowViewModel?.blocks.map((block) => block.blockId) ?? [],
+    [flowViewModel],
+  );
+  const flowViewLocatorKey = flowViewLocatorIds.join("|");
+
+  const persistFlowViewUiState = useCallback(
+    (nextState: TextAuthoringFlowViewUiState) => {
+      flowViewUiStateRef.current = nextState;
+      setFlowViewUiState(nextState);
+      if (!flowViewPocEnabled) return;
+      let storage: Storage | null = null;
+      try {
+        storage = window.sessionStorage;
+      } catch {
+        storage = null;
+      }
+      writeTextAuthoringFlowViewUiState(storage, flowViewUiStateKey, nextState);
+    },
+    [flowViewPocEnabled, flowViewUiStateKey],
+  );
+
+  const captureFlowViewUiState = useCallback(
+    (mode: TextAuthoringFlowViewMode) => {
+      const current = flowViewUiStateRef.current;
+      const inputScroller = inputPaneScrollRef.current;
+      const editorScroller = flowViewScrollRef.current;
+      const captureTextMode = current.mode === "text";
+      const captureFlowMode = current.mode === "flow";
+      return {
+        ...current,
+        mode,
+        fingerprint: flowViewSourceFingerprint,
+        textScrollTop: captureTextMode
+          ? (editorScroller?.scrollTop ?? current.textScrollTop)
+          : current.textScrollTop,
+        textScrollLeft: captureTextMode
+          ? (editorScroller?.scrollLeft ?? current.textScrollLeft)
+          : current.textScrollLeft,
+        inputPaneScrollTop:
+          inputScroller?.scrollTop ?? current.inputPaneScrollTop,
+        flowScrollTop: captureFlowMode
+          ? (editorScroller?.scrollTop ?? current.flowScrollTop)
+          : current.flowScrollTop,
+      } satisfies TextAuthoringFlowViewUiState;
+    },
+    [flowViewSourceFingerprint],
+  );
+
+  useEffect(() => {
+    if (!flowViewPocEnabled) return;
+    if ((dirty || parsePending) && !flowViewRestoreRequestedRef.current) {
+      if (flowViewPendingDomRestoreRef.current) return;
+      persistFlowViewUiState(
+        captureFlowViewUiState(flowViewUiStateRef.current.mode),
+      );
+      return;
+    }
+    let storage: Storage | null = null;
+    try {
+      storage = window.sessionStorage;
+    } catch {
+      storage = null;
+    }
+    const restored = readTextAuthoringFlowViewUiState(
+      storage,
+      flowViewUiStateKey,
+      flowViewSourceFingerprint,
+      {
+        sourceLength: rawText.length,
+        validLocatorIds: flowViewLocatorIds,
+      },
+    );
+    flowViewRestoreRequestedRef.current = false;
+    flowViewPendingDomRestoreRef.current = restored.state;
+    flowViewUiStateRef.current = restored.state;
+    setFlowViewUiState(restored.state);
+  }, [
+    captureFlowViewUiState,
+    dirty,
+    flowViewLocatorKey,
+    flowViewPocEnabled,
+    flowViewSourceFingerprint,
+    flowViewUiStateKey,
+    parsePending,
+    persistFlowViewUiState,
+    rawText.length,
+  ]);
+
+  const applyPendingFlowViewDomState = useCallback(
+    (editorScroller: HTMLDivElement | null = flowViewScrollRef.current) => {
+      const pending = flowViewPendingDomRestoreRef.current;
+      if (!flowViewPocEnabled || !pending || !editorScroller) return false;
+      if (inputPaneScrollRef.current) {
+        inputPaneScrollRef.current.scrollTop = pending.inputPaneScrollTop;
+      }
+      editorScroller.scrollTop =
+        pending.mode === "flow" ? pending.flowScrollTop : pending.textScrollTop;
+      editorScroller.scrollLeft = pending.textScrollLeft;
+      flowViewPendingDomRestoreRef.current = null;
+      return true;
+    },
+    [flowViewPocEnabled],
+  );
+
+  const handleFlowViewScrollContainer = useCallback(
+    (node: HTMLDivElement | null) => {
+      flowViewScrollRef.current = node;
+      if (node) applyPendingFlowViewDomState(node);
+    },
+    [applyPendingFlowViewDomState],
+  );
+
+  useEffect(() => {
+    applyPendingFlowViewDomState();
+  }, [
+    applyPendingFlowViewDomState,
+    flowViewPocEnabled,
+    flowViewUiState.fingerprint,
+    flowViewUiState.flowScrollTop,
+    flowViewUiState.inputPaneScrollTop,
+    flowViewUiState.mode,
+    flowViewUiState.selectionDirection,
+    flowViewUiState.selectionEnd,
+    flowViewUiState.selectionStart,
+    flowViewUiState.textScrollLeft,
+    flowViewUiState.textScrollTop,
+  ]);
+
+  useEffect(() => {
+    if (!flowViewPocEnabled) return;
+    let frame: number | null = null;
+    const saveCurrentUiState = () => {
+      if (flowViewPendingDomRestoreRef.current) return;
+      const nextState = captureFlowViewUiState(flowViewUiStateRef.current.mode);
+      flowViewUiStateRef.current = nextState;
+      let storage: Storage | null = null;
+      try {
+        storage = window.sessionStorage;
+      } catch {
+        storage = null;
+      }
+      writeTextAuthoringFlowViewUiState(storage, flowViewUiStateKey, nextState);
+    };
+    const scheduleSave = () => {
+      if (frame !== null) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = null;
+        saveCurrentUiState();
+      });
+    };
+    const inputScroller = inputPaneScrollRef.current;
+    const textarea = sourceTextAreaRef.current;
+    const flowScroller = flowViewScrollRef.current;
+    inputScroller?.addEventListener("scroll", scheduleSave, { passive: true });
+    textarea?.addEventListener("scroll", scheduleSave, { passive: true });
+    textarea?.addEventListener("select", scheduleSave);
+    flowScroller?.addEventListener("scroll", scheduleSave, { passive: true });
+    window.addEventListener("pagehide", saveCurrentUiState);
+    return () => {
+      if (frame !== null) window.cancelAnimationFrame(frame);
+      inputScroller?.removeEventListener("scroll", scheduleSave);
+      textarea?.removeEventListener("scroll", scheduleSave);
+      textarea?.removeEventListener("select", scheduleSave);
+      flowScroller?.removeEventListener("scroll", scheduleSave);
+      window.removeEventListener("pagehide", saveCurrentUiState);
+    };
+  }, [captureFlowViewUiState, flowViewPocEnabled, flowViewUiStateKey]);
+
+  const handleFlowViewModeChange = useCallback(
+    (mode: TextAuthoringFlowViewMode) => {
+      if (!flowViewPocEnabled) return;
+      const nextState = captureFlowViewUiState(mode);
+      persistFlowViewUiState(nextState);
+      window.requestAnimationFrame(() => {
+        if (inputPaneScrollRef.current) {
+          inputPaneScrollRef.current.scrollTop = nextState.inputPaneScrollTop;
+        }
+        if (flowViewScrollRef.current) {
+          flowViewScrollRef.current.scrollTop =
+            mode === "flow" ? nextState.flowScrollTop : nextState.textScrollTop;
+          flowViewScrollRef.current.scrollLeft = nextState.textScrollLeft;
+        }
+      });
+    },
+    [captureFlowViewUiState, flowViewPocEnabled, persistFlowViewUiState],
+  );
+
+  const handleFlowViewSelectionChange = useCallback(
+    (selection: {
+      start: number;
+      end: number;
+      direction: "forward" | "backward" | "none";
+      activeBlockId: string | null;
+    }) => {
+      if (!flowViewPocEnabled) return;
+      const current = flowViewUiStateRef.current;
+      if (
+        current.selectionStart === selection.start &&
+        current.selectionEnd === selection.end &&
+        current.selectionDirection === selection.direction &&
+        current.activeLocatorId === selection.activeBlockId &&
+        current.fingerprint === flowViewSourceFingerprint
+      ) {
+        return;
+      }
+      persistFlowViewUiState({
+        ...current,
+        fingerprint: flowViewSourceFingerprint,
+        selectionStart: selection.start,
+        selectionEnd: selection.end,
+        selectionDirection: selection.direction,
+        activeLocatorId: selection.activeBlockId,
+      });
+    },
+    [flowViewPocEnabled, flowViewSourceFingerprint, persistFlowViewUiState],
+  );
+
+  const focusSourceRange = useCallback(
+    (start: number, end: number, scrollTop?: number) => {
+      if (flowViewPocEnabled) {
+        const safeStart = Math.min(Math.max(start, 0), rawText.length);
+        const safeEnd = Math.min(Math.max(end, safeStart), rawText.length);
+        const current = flowViewUiStateRef.current;
+        const activeBlock = flowViewModel?.blocks.find(
+          (block) =>
+            safeStart >= block.selectionRange.startOffset &&
+            safeStart <= block.selectionRange.endOffset,
+        );
+        persistFlowViewUiState({
+          ...current,
+          fingerprint: flowViewSourceFingerprint,
+          selectionStart: safeStart,
+          selectionEnd: safeEnd,
+          selectionDirection: safeStart === safeEnd ? "none" : "forward",
+          activeLocatorId: activeBlock?.blockId ?? null,
+          ...(scrollTop === undefined
+            ? {}
+            : {
+                textScrollTop: scrollTop,
+                flowScrollTop: scrollTop,
+              }),
+        });
+        window.requestAnimationFrame(() => {
+          if (scrollTop !== undefined && flowViewScrollRef.current) {
+            flowViewScrollRef.current.scrollTop = scrollTop;
+          }
+          window.document
+            .querySelector<HTMLElement>(
+              '[data-testid="ta-authoring-flow-editor-content"]',
+            )
+            ?.focus();
+        });
+        return;
+      }
+
+      window.requestAnimationFrame(() => {
+        const textarea = sourceTextAreaRef.current;
+        textarea?.focus();
+        textarea?.setSelectionRange(start, end);
+        if (textarea && scrollTop !== undefined) textarea.scrollTop = scrollTop;
+      });
+    },
+    [
+      flowViewModel,
+      flowViewPocEnabled,
+      flowViewSourceFingerprint,
+      persistFlowViewUiState,
+      rawText.length,
+    ],
+  );
+
   const outline = useMemo(
     () => buildAuthoringOutlineView(effectiveDocument),
     [effectiveDocument],
@@ -1659,7 +1995,15 @@ export function TextAuthoringWorkspace({
   );
 
   useEffect(() => {
-    if (!repository || !activeDraftId || !dirty || !rawText.trim()) return;
+    if (
+      !repository ||
+      !activeDraftId ||
+      !dirty ||
+      !rawText.trim() ||
+      (flowViewPocEnabled && flowViewComposing)
+    ) {
+      return;
+    }
     const timer = window.setTimeout(() => {
       const recoveryDocument =
         document && !parsePending
@@ -1716,6 +2060,8 @@ export function TextAuthoringWorkspace({
     dirty,
     document,
     finiteOccurrenceLimit,
+    flowViewComposing,
+    flowViewPocEnabled,
     openEndedOccurrenceWeeks,
     ownership,
     parsePending,
@@ -1928,12 +2274,24 @@ export function TextAuthoringWorkspace({
   );
 
   useEffect(() => {
-    if (!parsePending || pendingSourceState) return;
+    if (
+      !parsePending ||
+      pendingSourceState ||
+      (flowViewPocEnabled && flowViewComposing)
+    ) {
+      return;
+    }
     const timer = window.setTimeout(() => {
       applyCurrentInput("live");
     }, 180);
     return () => window.clearTimeout(timer);
-  }, [applyCurrentInput, parsePending, pendingSourceState]);
+  }, [
+    applyCurrentInput,
+    flowViewComposing,
+    flowViewPocEnabled,
+    parsePending,
+    pendingSourceState,
+  ]);
 
   const performOperation = useCallback(
     (operation: AuthoringCorrectionOperation, message: string) => {
@@ -2258,17 +2616,9 @@ export function TextAuthoringWorkspace({
       setStatusMessage(
         `${startLine === endLine ? `${startLine}행` : `${startLine}~${endLine}행`}을 선택했습니다. 수정하면 보던 결과로 돌아갑니다.`,
       );
-      window.requestAnimationFrame(() => {
-        window.requestAnimationFrame(() => {
-          sourceTextAreaRef.current?.focus();
-          sourceTextAreaRef.current?.setSelectionRange(
-            selectionStart,
-            selectionEnd,
-          );
-        });
-      });
+      focusSourceRange(selectionStart, selectionEnd);
     },
-    [activeArtifact, document, rawText],
+    [activeArtifact, document, focusSourceRange, rawText],
   );
 
   const focusSourceLocator = useCallback(
@@ -2372,21 +2722,19 @@ export function TextAuthoringWorkspace({
           ? `원문 위치가 바뀌어 가까운 ${effectiveLocator.startLine === effectiveLocator.endLine ? `${effectiveLocator.startLine}행` : `${effectiveLocator.startLine}~${effectiveLocator.endLine}행`}을 선택했습니다.`
           : `${effectiveLocator.startLine === effectiveLocator.endLine ? `${effectiveLocator.startLine}행` : `${effectiveLocator.startLine}~${effectiveLocator.endLine}행`}을 선택했습니다.`,
       );
-      window.requestAnimationFrame(() => {
-        window.requestAnimationFrame(() => {
-          const textarea = sourceTextAreaRef.current;
-          textarea?.focus();
-          textarea?.setSelectionRange(
-            effectiveLocator.startOffset,
-            effectiveLocator.endOffset,
-          );
-          if (textarea) {
-            textarea.scrollTop = sourceScrollTop;
-          }
-        });
-      });
+      focusSourceRange(
+        effectiveLocator.startOffset,
+        effectiveLocator.endOffset,
+        sourceScrollTop,
+      );
     },
-    [activeArtifact, longDocumentAnalysis, rawText, sourceFocusLocatorViews],
+    [
+      activeArtifact,
+      focusSourceRange,
+      longDocumentAnalysis,
+      rawText,
+      sourceFocusLocatorViews,
+    ],
   );
 
   useEffect(() => {
@@ -2451,19 +2799,18 @@ export function TextAuthoringWorkspace({
       );
     }
 
-    window.requestAnimationFrame(() => {
-      window.requestAnimationFrame(() => {
-        const textarea = sourceTextAreaRef.current;
-        if (!textarea) return;
-        textarea.focus();
-        textarea.setSelectionRange(
-          nearestEntry.startOffset,
-          nearestEntry.endOffset,
-        );
-        textarea.scrollTop = restoredFocus.sourceScrollTop;
-      });
-    });
-  }, [document, parsePending, sourceFocusLocatorViews, stage]);
+    focusSourceRange(
+      nearestEntry.startOffset,
+      nearestEntry.endOffset,
+      restoredFocus.sourceScrollTop,
+    );
+  }, [
+    document,
+    focusSourceRange,
+    parsePending,
+    sourceFocusLocatorViews,
+    stage,
+  ]);
 
   const returnFromSourceLocation = useCallback(() => {
     const target = sourceCorrectionReturnTarget;
@@ -2804,6 +3151,10 @@ export function TextAuthoringWorkspace({
   ]);
 
   const runPrimaryAction = useCallback(() => {
+    if (flowViewPocEnabled && flowViewComposing) {
+      setStatusMessage("한글 입력을 마친 뒤 다시 실행해 주세요.");
+      return;
+    }
     if (parsePending || !document) {
       handleParse();
     } else if (stage === "input") {
@@ -2811,7 +3162,16 @@ export function TextAuthoringWorkspace({
     } else {
       handleSave();
     }
-  }, [document, goToResult, handleParse, handleSave, parsePending, stage]);
+  }, [
+    document,
+    flowViewComposing,
+    flowViewPocEnabled,
+    goToResult,
+    handleParse,
+    handleSave,
+    parsePending,
+    stage,
+  ]);
 
   const anyOverlayOpen =
     inspectorOpen ||
@@ -2829,7 +3189,14 @@ export function TextAuthoringWorkspace({
 
   useEffect(() => {
     const handleShortcut = (event: KeyboardEvent) => {
-      if (anyOverlayOpen) return;
+      if (
+        event.isComposing ||
+        (flowViewPocEnabled && flowViewComposing) ||
+        anyOverlayOpen ||
+        event.defaultPrevented
+      ) {
+        return;
+      }
       if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
         event.preventDefault();
         runPrimaryAction();
@@ -2839,7 +3206,8 @@ export function TextAuthoringWorkspace({
       const editing =
         target instanceof HTMLInputElement ||
         target instanceof HTMLTextAreaElement ||
-        target instanceof HTMLSelectElement;
+        target instanceof HTMLSelectElement ||
+        (target instanceof HTMLElement && target.isContentEditable);
       if (
         !editing &&
         event.altKey &&
@@ -2852,7 +3220,14 @@ export function TextAuthoringWorkspace({
     };
     window.addEventListener("keydown", handleShortcut);
     return () => window.removeEventListener("keydown", handleShortcut);
-  }, [anyOverlayOpen, handleMove, runPrimaryAction, selectedItemId]);
+  }, [
+    anyOverlayOpen,
+    flowViewComposing,
+    flowViewPocEnabled,
+    handleMove,
+    runPrimaryAction,
+    selectedItemId,
+  ]);
 
   const resetWorkspace = useCallback(
     (options: { navigate?: "new" | "library" | "none" } = {}) => {
@@ -2936,6 +3311,7 @@ export function TextAuthoringWorkspace({
         draftTitle?: string;
       } = {},
     ) => {
+      flowViewRestoreRequestedRef.current = true;
       const resolvedTitle =
         extractMarkdownFlowTitle(nextDocument.rawText) ||
         nextDocument.title ||
@@ -4050,7 +4426,9 @@ export function TextAuthoringWorkspace({
               activeScenarioId={dirty ? null : activeScenarioId}
               onSelect={handleExampleSelect}
               productMode={productMode}
-              showQaCatalog={showQaCatalog && !productMode}
+              showQaCatalog={
+                showQaCatalog && (!productMode || flowViewPocEnabled)
+              }
             />
 
             {productMode &&
@@ -4118,6 +4496,21 @@ export function TextAuthoringWorkspace({
                     scrollContainerRef={inputPaneScrollRef}
                     sourceTextAreaRef={sourceTextAreaRef}
                     showDocumentNavigator={showDocumentNavigator}
+                    flowViewPocEnabled={flowViewPocEnabled}
+                    flowViewMode={flowViewUiState.mode}
+                    flowViewModel={flowViewModel}
+                    flowViewBusy={parsePending}
+                    flowViewSelectionStart={flowViewUiState.selectionStart}
+                    flowViewSelectionEnd={flowViewUiState.selectionEnd}
+                    flowViewSelectionDirection={
+                      flowViewUiState.selectionDirection
+                    }
+                    flowViewEditorIdentity={
+                      activeDraftId ??
+                      initialDraftId ??
+                      "new-text-authoring-workspace"
+                    }
+                    flowViewScrollContainerRef={handleFlowViewScrollContainer}
                     sourceLocationReturnLabel={
                       sourceCorrectionReturnTarget
                         ? "보던 결과로 돌아가기"
@@ -4128,6 +4521,9 @@ export function TextAuthoringWorkspace({
                       setDocumentNavigatorOpen(true)
                     }
                     onReturnToSourceLocation={returnFromSourceLocation}
+                    onFlowViewModeChange={handleFlowViewModeChange}
+                    onFlowViewSelectionChange={handleFlowViewSelectionChange}
+                    onFlowViewCompositionChange={setFlowViewComposing}
                     onTitleChange={(value) => {
                       ensureActiveDraft();
                       if (productMode) {

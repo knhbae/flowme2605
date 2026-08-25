@@ -1,11 +1,20 @@
 "use client";
 
-import type { Ref } from "react";
+import { lazy, Suspense } from "react";
+import type { KeyboardEvent, Ref } from "react";
 
 import { FLOW_UI_INPUT_CLASS } from "@/components/flow/flow-ui";
+import type { AuthoringFlowViewModel } from "@/lib/flow/text-authoring/flow-view-model";
 
 import type { AuthoringOwnership } from "./authoring-ui-types";
+import type { FlowLiveEditorSelection } from "./FlowLiveEditor";
+import type { TextAuthoringFlowViewMode } from "./flow-view-ui-state";
 import { InlineHelp } from "./InlineHelp";
+
+const FlowLiveEditor = lazy(async () => {
+  const module = await import("./FlowLiveEditor");
+  return { default: module.FlowLiveEditor };
+});
 
 const OWNERSHIP_OPTIONS: Array<{
   value: AuthoringOwnership;
@@ -156,12 +165,24 @@ export function InputPane({
   sourceTextAreaRef,
   showDocumentNavigator = false,
   sourceLocationReturnLabel,
+  flowViewPocEnabled = false,
+  flowViewMode = "text",
+  flowViewModel,
+  flowViewBusy = false,
+  flowViewSelectionStart = 0,
+  flowViewSelectionEnd = flowViewSelectionStart,
+  flowViewSelectionDirection = "none",
+  flowViewEditorIdentity,
+  flowViewScrollContainerRef,
   onTitleChange,
   onSourceChange,
   onRawTextChange,
   onOwnershipChange,
   onOpenDocumentNavigator,
   onReturnToSourceLocation,
+  onFlowViewModeChange,
+  onFlowViewSelectionChange,
+  onFlowViewCompositionChange,
   productMode = false,
 }: {
   title: string;
@@ -178,31 +199,127 @@ export function InputPane({
   sourceTextAreaRef: Ref<HTMLTextAreaElement>;
   showDocumentNavigator?: boolean;
   sourceLocationReturnLabel?: string;
+  flowViewPocEnabled?: boolean;
+  flowViewMode?: TextAuthoringFlowViewMode;
+  flowViewModel?: AuthoringFlowViewModel | null;
+  flowViewBusy?: boolean;
+  flowViewSelectionStart?: number;
+  flowViewSelectionEnd?: number;
+  flowViewSelectionDirection?: "forward" | "backward" | "none";
+  flowViewEditorIdentity?: string;
+  flowViewScrollContainerRef?: Ref<HTMLDivElement>;
   onTitleChange: (value: string) => void;
   onSourceChange: (value: string) => void;
   onRawTextChange: (value: string) => void;
   onOwnershipChange: (value: AuthoringOwnership) => void;
   onOpenDocumentNavigator?: () => void;
   onReturnToSourceLocation?: () => void;
+  onFlowViewModeChange?: (mode: TextAuthoringFlowViewMode) => void;
+  onFlowViewSelectionChange?: (selection: FlowLiveEditorSelection) => void;
+  onFlowViewCompositionChange?: (composing: boolean) => void;
   productMode?: boolean;
 }) {
+  const selectFlowViewMode = (
+    mode: TextAuthoringFlowViewMode,
+    focusEditor: boolean,
+  ) => {
+    onFlowViewModeChange?.(mode);
+    if (!focusEditor) return;
+    window.requestAnimationFrame(() => {
+      window.document
+        .querySelector<HTMLElement>(
+          '[data-testid="ta-authoring-flow-editor-content"]',
+        )
+        ?.focus();
+    });
+  };
+  const handleFlowViewTabKeyDown = (
+    event: KeyboardEvent<HTMLButtonElement>,
+    mode: TextAuthoringFlowViewMode,
+  ) => {
+    let nextMode: TextAuthoringFlowViewMode | null = null;
+    if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+      nextMode = mode === "text" ? "flow" : "text";
+    } else if (event.key === "Home") {
+      nextMode = "text";
+    } else if (event.key === "End") {
+      nextMode = "flow";
+    }
+    if (!nextMode) return;
+    event.preventDefault();
+    selectFlowViewMode(nextMode, false);
+    window.requestAnimationFrame(() => {
+      window.document
+        .getElementById(`text-authoring-view-tab-${nextMode}`)
+        ?.focus();
+    });
+  };
+
   return (
     <section
       className="ta-pane ta-input-pane flex h-full min-h-0 flex-col bg-[var(--flowme-surface)]"
       aria-labelledby="text-authoring-input-heading"
     >
       <header className="ta-pane-header border-b border-[var(--flowme-border)] px-4 py-4">
-        <h2
-          id="text-authoring-input-heading"
-          className="text-lg font-semibold tracking-[-0.02em]"
-        >
-          {productMode ? "작업 원문" : "무엇을 Flow로 만들까요?"}
-        </h2>
-        {productMode ? (
-          <p className="mt-1 text-xs text-[var(--flowme-text-secondary)]">
-            일반 문장을 그대로 붙여 넣어도 됩니다.
-          </p>
-        ) : null}
+        {flowViewPocEnabled ? (
+          <div className="flex min-w-0 flex-wrap items-start justify-between gap-3">
+            <div className="min-w-0">
+              <h2
+                id="text-authoring-input-heading"
+                className="text-lg font-semibold tracking-[-0.02em]"
+              >
+                {productMode ? "작성" : "무엇을 Flow로 만들까요?"}
+              </h2>
+              {productMode && flowViewMode === "text" ? (
+                <p className="mt-1 text-xs text-[var(--flowme-text-secondary)]">
+                  일반 문장을 그대로 붙여 넣어도 됩니다.
+                </p>
+              ) : null}
+            </div>
+            <div
+              role="group"
+              aria-label="편집 방식"
+              className="grid w-full min-w-0 flex-1 grid-cols-2 rounded-[var(--flowme-radius-control)] border border-[var(--flowme-border)] p-0.5 sm:w-auto sm:min-w-[14rem] sm:max-w-[16rem] sm:flex-none"
+            >
+              {(["text", "flow"] as const).map((mode) => {
+                const selected = flowViewMode === mode;
+                const label = mode === "text" ? "순수 텍스트" : "Flow 편집";
+                return (
+                  <button
+                    key={mode}
+                    id={`text-authoring-view-tab-${mode}`}
+                    type="button"
+                    data-testid={`ta-authoring-view-${mode}`}
+                    aria-pressed={selected}
+                    className={`min-h-11 rounded-[calc(var(--flowme-radius-control)-2px)] px-3 py-2 text-xs font-semibold motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${
+                      selected
+                        ? "bg-[var(--flowme-action-soft)] text-[var(--flowme-action-strong)]"
+                        : "text-[var(--flowme-text-secondary)] hover:text-[var(--flowme-text)]"
+                    }`}
+                    onClick={() => selectFlowViewMode(mode, true)}
+                    onKeyDown={(event) => handleFlowViewTabKeyDown(event, mode)}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ) : (
+          <>
+            <h2
+              id="text-authoring-input-heading"
+              className="text-lg font-semibold tracking-[-0.02em]"
+            >
+              {productMode ? "작업 원문" : "무엇을 Flow로 만들까요?"}
+            </h2>
+            {productMode ? (
+              <p className="mt-1 text-xs text-[var(--flowme-text-secondary)]">
+                일반 문장을 그대로 붙여 넣어도 됩니다.
+              </p>
+            ) : null}
+          </>
+        )}
       </header>
 
       <div
@@ -211,23 +328,49 @@ export function InputPane({
         data-testid="ta-authoring-input-scroll"
         className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4 py-4"
       >
-        <label className="block">
-          <span className="text-xs font-semibold text-[var(--flowme-text-secondary)]">
-            {productMode ? "제목" : "Flow 제목"}
-          </span>
-          <input
-            data-testid="ta-authoring-title"
-            className={`${FLOW_UI_INPUT_CLASS} mt-1 w-full`}
-            value={title}
-            maxLength={120}
-            placeholder="예: 제주 여행 준비"
-            onChange={(event) => onTitleChange(event.target.value)}
-          />
-        </label>
+        {flowViewPocEnabled ? (
+          <div
+            id="text-authoring-view-panel-text"
+            hidden={flowViewMode !== "text"}
+            className={flowViewMode !== "text" ? "hidden" : "block"}
+          >
+            <label className="mb-4 block">
+              <span className="text-xs font-semibold text-[var(--flowme-text-secondary)]">
+                {productMode ? "제목" : "Flow 제목"}
+              </span>
+              <input
+                data-testid="ta-authoring-title"
+                className={`${FLOW_UI_INPUT_CLASS} mt-1 w-full`}
+                value={title}
+                maxLength={120}
+                placeholder="예: 제주 여행 준비"
+                onChange={(event) => onTitleChange(event.target.value)}
+              />
+            </label>
+          </div>
+        ) : (
+          <label className="block">
+            <span className="text-xs font-semibold text-[var(--flowme-text-secondary)]">
+              {productMode ? "제목" : "Flow 제목"}
+            </span>
+            <input
+              data-testid="ta-authoring-title"
+              className={`${FLOW_UI_INPUT_CLASS} mt-1 w-full`}
+              value={title}
+              maxLength={120}
+              placeholder="예: 제주 여행 준비"
+              onChange={(event) => onTitleChange(event.target.value)}
+            />
+          </label>
+        )}
 
-        <div className="block">
+        <div className={flowViewPocEnabled ? "space-y-4" : "block"}>
           <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-[var(--flowme-text-secondary)]">
-            <label htmlFor="text-authoring-source">작업 원문</label>
+            {flowViewPocEnabled ? (
+              <span>작업 원문</span>
+            ) : (
+              <label htmlFor="text-authoring-source">작업 원문</label>
+            )}
             <InlineHelp
               label="작성 문법 설명"
               testId="ta-authoring-syntax-guide"
@@ -268,44 +411,104 @@ export function InputPane({
               </span>
             ) : null}
           </div>
-          <textarea
-            id="text-authoring-source"
-            autoFocus={productMode}
-            ref={sourceTextAreaRef}
-            data-testid="ta-authoring-source"
-            aria-label="작업 원문"
-            aria-describedby="text-authoring-source-hint"
-            aria-invalid={sourceError ? true : undefined}
-            aria-errormessage={sourceError?.id}
-            className={`${FLOW_UI_INPUT_CLASS} mt-1 min-h-[300px] w-full resize-y font-mono text-[13px] font-normal leading-6 md:min-h-[420px]`}
-            value={rawText}
-            spellCheck={false}
-            placeholder={
-              productMode
-                ? "제목입니다.\n설명입니다.\n\n- [ ] 첫 번째 항목입니다.\n  - 날짜: 2026-08-03"
-                : "일반 메모 또는 항목 목록을 붙여 넣으세요.\n\n## 예약\n- [ ] 항공권 확인\n  - 날짜: 2026-08-03\n  - 완료 기준: 예약번호를 남김"
-            }
-            onChange={(event) => onRawTextChange(event.target.value)}
-          />
+
+          {flowViewPocEnabled && flowViewModel ? (
+            <div
+              id="text-authoring-live-editor-panel"
+              className="h-[min(31rem,58dvh)] min-h-[300px] min-w-0 overflow-hidden md:h-[420px]"
+            >
+              <Suspense
+                fallback={
+                  <div
+                    data-testid="ta-authoring-flow-editor-loading"
+                    className="min-h-[300px] md:min-h-[420px]"
+                    role="status"
+                  >
+                    <span className="sr-only">
+                      텍스트 편집기를 여는 중입니다.
+                    </span>
+                  </div>
+                }
+              >
+                <FlowLiveEditor
+                  model={flowViewModel}
+                  rawText={rawText}
+                  editorIdentity={flowViewEditorIdentity}
+                  renderFlow={flowViewMode === "flow"}
+                  busy={flowViewBusy}
+                  selectionStart={flowViewSelectionStart}
+                  selectionEnd={flowViewSelectionEnd}
+                  selectionDirection={flowViewSelectionDirection}
+                  describedById="text-authoring-source-hint"
+                  errorMessageId={sourceError?.id}
+                  invalid={Boolean(sourceError)}
+                  scrollContainerRef={flowViewScrollContainerRef}
+                  onRawTextChange={onRawTextChange}
+                  onSelectionChange={onFlowViewSelectionChange}
+                  onCompositionChange={onFlowViewCompositionChange}
+                />
+              </Suspense>
+            </div>
+          ) : (
+            <textarea
+              id="text-authoring-source"
+              autoFocus={productMode}
+              ref={sourceTextAreaRef}
+              data-testid="ta-authoring-source"
+              aria-label="작업 원문"
+              aria-describedby="text-authoring-source-hint"
+              aria-invalid={sourceError ? true : undefined}
+              aria-errormessage={sourceError?.id}
+              className={`${FLOW_UI_INPUT_CLASS} mt-1 min-h-[300px] w-full resize-y font-mono text-[13px] font-normal leading-6 md:min-h-[420px]`}
+              value={rawText}
+              spellCheck={false}
+              placeholder={
+                productMode
+                  ? "제목입니다.\n설명입니다.\n\n- [ ] 첫 번째 항목입니다.\n  - 날짜: 2026-08-03"
+                  : "일반 메모 또는 항목 목록을 붙여 넣으세요.\n\n## 예약\n- [ ] 항공권 확인\n  - 날짜: 2026-08-03\n  - 완료 기준: 예약번호를 남김"
+              }
+              onChange={(event) => onRawTextChange(event.target.value)}
+            />
+          )}
+
           <span id="text-authoring-source-hint" className="sr-only">
             작성 문법은 작업 원문 옆 물음표 버튼에서 확인할 수 있습니다.
           </span>
           {sourceError ? (
-            <span id={sourceError.id} className="sr-only">
-              {sourceError.message}
-            </span>
+            flowViewPocEnabled ? (
+              <p
+                id={sourceError.id}
+                role="alert"
+                className="rounded-[var(--flowme-radius-control)] border border-[var(--flowme-warning)] bg-[var(--flowme-warning-soft)] px-3 py-2 text-xs leading-5 text-[var(--flowme-warning-strong)]"
+              >
+                {sourceError.message}
+              </p>
+            ) : (
+              <span id={sourceError.id} className="sr-only">
+                {sourceError.message}
+              </span>
+            )
           ) : null}
           {parsePending && liveUpdateBlocked ? (
-            <span className="mt-1 block text-[11px] leading-4 text-[var(--flowme-warning-strong)]">
-              저장했거나 직접 고친 결과는 자동으로 덮어쓰지 않습니다. 아래
-              버튼에서 원문 변경을 확인해 주세요.
-            </span>
+            flowViewPocEnabled ? (
+              <p className="text-[11px] leading-4 text-[var(--flowme-warning-strong)]">
+                저장했거나 직접 고친 결과는 자동으로 덮어쓰지 않습니다. 아래
+                버튼에서 원문 변경을 확인해 주세요.
+              </p>
+            ) : (
+              <span className="mt-1 block text-[11px] leading-4 text-[var(--flowme-warning-strong)]">
+                저장했거나 직접 고친 결과는 자동으로 덮어쓰지 않습니다. 아래
+                버튼에서 원문 변경을 확인해 주세요.
+              </span>
+            )
           ) : null}
           {sourceLocationReturnLabel && onReturnToSourceLocation ? (
             <button
               type="button"
               data-testid="ta-authoring-source-location-return"
-              className="mt-2 inline-flex min-h-11 items-center rounded-[var(--flowme-radius-control)] px-2.5 py-1.5 text-xs font-semibold text-[var(--flowme-action)] transition hover:bg-[var(--flowme-action-soft)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+              className={`${
+                flowViewPocEnabled ? "self-start" : "mt-2"
+              } inline-flex min-h-11 items-center rounded-[var(--flowme-radius-control)] px-2.5 py-1.5 text-xs font-semibold text-[var(--flowme-action)] transition hover:bg-[var(--flowme-action-soft)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]`}
               onClick={onReturnToSourceLocation}
             >
               {sourceLocationReturnLabel}
@@ -313,92 +516,94 @@ export function InputPane({
           ) : null}
         </div>
 
-        <details
-          data-testid="ta-authoring-source-settings"
-          className="rounded-[var(--flowme-radius-control)] border border-[var(--flowme-border)] bg-[var(--flowme-surface)]"
-        >
-          <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 px-3 py-2 text-sm font-semibold text-[var(--flowme-text)] outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)] [&::-webkit-details-marker]:hidden">
-            <span>{productMode ? "원문 정보" : "출처·저장 설정"}</span>
-            <span className="text-xs font-normal text-[var(--flowme-text-tertiary)]">
-              {productMode ? "+" : ownershipLabel(ownership)}
-            </span>
-          </summary>
+        {!flowViewPocEnabled || flowViewMode === "text" ? (
+          <details
+            data-testid="ta-authoring-source-settings"
+            className="rounded-[var(--flowme-radius-control)] border border-[var(--flowme-border)] bg-[var(--flowme-surface)]"
+          >
+            <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 px-3 py-2 text-sm font-semibold text-[var(--flowme-text)] outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)] [&::-webkit-details-marker]:hidden">
+              <span>{productMode ? "원문 정보" : "출처·저장 설정"}</span>
+              <span className="text-xs font-normal text-[var(--flowme-text-tertiary)]">
+                {productMode ? "+" : ownershipLabel(ownership)}
+              </span>
+            </summary>
 
-          <div className="space-y-4 border-t border-[var(--flowme-border)] px-3 py-3">
-            <div>
-              <label
-                htmlFor="text-authoring-source-meta"
-                className="text-xs font-semibold text-[var(--flowme-text-secondary)]"
-              >
-                출처 또는 원문 이름
-              </label>
-              <input
-                id="text-authoring-source-meta"
-                data-testid="ta-authoring-source-meta"
-                className={`${FLOW_UI_INPUT_CLASS} mt-1 w-full`}
-                value={source}
-                maxLength={300}
-                placeholder="예: 개인 메모 또는 원문 URL"
-                onChange={(event) => onSourceChange(event.target.value)}
-              />
-              <p
-                data-testid="ta-authoring-source-boundary"
-                className="mt-1.5 text-[11px] leading-5 text-[var(--flowme-text-tertiary)]"
-              >
-                URL 본문은 가져오지 않고, 직접 붙여 넣은 내용만 해석합니다.
-              </p>
-            </div>
-            {!productMode ? (
-              <div className="space-y-2">
-                <p className="text-xs font-semibold text-[var(--flowme-text-secondary)]">
-                  저장 성격
-                </p>
-                <fieldset
-                  data-testid="ta-authoring-ownership"
-                  disabled={ownershipLocked}
+            <div className="space-y-4 border-t border-[var(--flowme-border)] px-3 py-3">
+              <div>
+                <label
+                  htmlFor="text-authoring-source-meta"
+                  className="text-xs font-semibold text-[var(--flowme-text-secondary)]"
                 >
-                  <legend className="sr-only">저장 성격</legend>
-                  <div className="grid grid-cols-3 gap-2">
-                    {OWNERSHIP_OPTIONS.map((option) => {
-                      const selected = option.value === ownership;
-                      return (
-                        <label
-                          key={option.value}
-                          className={`flex min-h-11 items-center justify-center rounded-[var(--flowme-radius-control)] border px-2 py-2 text-center transition focus-within:outline-none focus-within:ring-2 focus-within:ring-[var(--flowme-focus)] ${
-                            ownershipLocked
-                              ? "cursor-not-allowed opacity-65"
-                              : "cursor-pointer"
-                          } ${
-                            selected
-                              ? "border-[var(--flowme-positive)] bg-[var(--flowme-positive-soft)]"
-                              : "border-[var(--flowme-border)] bg-[var(--flowme-surface)] hover:border-[var(--flowme-border-strong)]"
-                          }`}
-                        >
-                          <input
-                            className="sr-only"
-                            type="radio"
-                            name="text-authoring-ownership"
-                            value={option.value}
-                            checked={selected}
-                            onChange={() => onOwnershipChange(option.value)}
-                          />
-                          <span className="text-xs font-semibold sm:text-sm">
-                            {option.label}
-                          </span>
-                        </label>
-                      );
-                    })}
-                  </div>
-                </fieldset>
-                <p className="text-[11px] leading-5 text-[var(--flowme-text-tertiary)]">
-                  {ownershipLocked
-                    ? "항목을 만든 뒤에는 저장 성격을 바꾸지 않습니다. 다른 성격은 새 Flow에서 선택하세요."
-                    : "제작자 초안과 수정 제안은 파일로 가져가기 전에 권리·안전을 확인합니다."}
+                  출처 또는 원문 이름
+                </label>
+                <input
+                  id="text-authoring-source-meta"
+                  data-testid="ta-authoring-source-meta"
+                  className={`${FLOW_UI_INPUT_CLASS} mt-1 w-full`}
+                  value={source}
+                  maxLength={300}
+                  placeholder="예: 개인 메모 또는 원문 URL"
+                  onChange={(event) => onSourceChange(event.target.value)}
+                />
+                <p
+                  data-testid="ta-authoring-source-boundary"
+                  className="mt-1.5 text-[11px] leading-5 text-[var(--flowme-text-tertiary)]"
+                >
+                  URL 본문은 가져오지 않고, 직접 붙여 넣은 내용만 해석합니다.
                 </p>
               </div>
-            ) : null}
-          </div>
-        </details>
+              {!productMode ? (
+                <div className="space-y-2">
+                  <p className="text-xs font-semibold text-[var(--flowme-text-secondary)]">
+                    저장 성격
+                  </p>
+                  <fieldset
+                    data-testid="ta-authoring-ownership"
+                    disabled={ownershipLocked}
+                  >
+                    <legend className="sr-only">저장 성격</legend>
+                    <div className="grid grid-cols-3 gap-2">
+                      {OWNERSHIP_OPTIONS.map((option) => {
+                        const selected = option.value === ownership;
+                        return (
+                          <label
+                            key={option.value}
+                            className={`flex min-h-11 items-center justify-center rounded-[var(--flowme-radius-control)] border px-2 py-2 text-center transition focus-within:outline-none focus-within:ring-2 focus-within:ring-[var(--flowme-focus)] ${
+                              ownershipLocked
+                                ? "cursor-not-allowed opacity-65"
+                                : "cursor-pointer"
+                            } ${
+                              selected
+                                ? "border-[var(--flowme-positive)] bg-[var(--flowme-positive-soft)]"
+                                : "border-[var(--flowme-border)] bg-[var(--flowme-surface)] hover:border-[var(--flowme-border-strong)]"
+                            }`}
+                          >
+                            <input
+                              className="sr-only"
+                              type="radio"
+                              name="text-authoring-ownership"
+                              value={option.value}
+                              checked={selected}
+                              onChange={() => onOwnershipChange(option.value)}
+                            />
+                            <span className="text-xs font-semibold sm:text-sm">
+                              {option.label}
+                            </span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </fieldset>
+                  <p className="text-[11px] leading-5 text-[var(--flowme-text-tertiary)]">
+                    {ownershipLocked
+                      ? "항목을 만든 뒤에는 저장 성격을 바꾸지 않습니다. 다른 성격은 새 Flow에서 선택하세요."
+                      : "제작자 초안과 수정 제안은 파일로 가져가기 전에 권리·안전을 확인합니다."}
+                  </p>
+                </div>
+              ) : null}
+            </div>
+          </details>
+        ) : null}
       </div>
     </section>
   );
