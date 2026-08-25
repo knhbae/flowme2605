@@ -1,21 +1,26 @@
-import fs from 'node:fs/promises';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import fs from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-import autoprefixer from 'autoprefixer';
-import { build } from 'esbuild';
-import postcss from 'postcss';
-import tailwindcss from 'tailwindcss';
+import autoprefixer from "autoprefixer";
+import { build } from "esbuild";
+import postcss from "postcss";
+import tailwindcss from "tailwindcss";
 
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
-const repositoryRoot = path.resolve(scriptDirectory, '..');
-const outputPath = path.join(
-  repositoryRoot,
-  'docs',
-  'content-audit',
-  '2026-08-04-flowme-text-authoring-grammar-ux-improvement-results',
-  'flowme-text-authoring-v2-test.html',
-);
+const repositoryRoot = path.resolve(scriptDirectory, "..");
+const requestedOutputPath = process.argv[2];
+const productMode = process.argv.includes("--product");
+const flowViewPocMode = process.argv.includes("--flow-view-poc");
+const outputPath = requestedOutputPath
+  ? path.resolve(repositoryRoot, requestedOutputPath)
+  : path.join(
+      repositoryRoot,
+      "docs",
+      "content-audit",
+      "2026-08-04-flowme-text-authoring-grammar-ux-improvement-results",
+      "flowme-text-authoring-v2-test.html",
+    );
 
 const entrySource = `
 import React from 'react';
@@ -30,26 +35,32 @@ createRoot(root).render(
   React.createElement(
     React.StrictMode,
     null,
-    React.createElement(TextAuthoringWorkspace, { showQaCatalog }),
+    React.createElement(TextAuthoringWorkspace, {
+      showQaCatalog,
+      productMode: ${productMode ? "true" : "false"},
+      flowViewPocEnabled: ${flowViewPocMode ? "true" : "false"},
+      p1LongDocumentTableEnabled: ${flowViewPocMode ? "true" : "undefined"},
+      p1SourceCandidateEnabled: ${flowViewPocMode ? "true" : "undefined"},
+    }),
   ),
 );
 `;
 
 const nextStubPlugin = {
-  name: 'flowme-standalone-next-stubs',
+  name: "flowme-standalone-next-stubs",
   setup(buildApi) {
     buildApi.onResolve({ filter: /^next\/link$/ }, () => ({
-      path: 'next-link',
-      namespace: 'flowme-standalone',
+      path: "next-link",
+      namespace: "flowme-standalone",
     }));
     buildApi.onResolve({ filter: /^next\/navigation$/ }, () => ({
-      path: 'next-navigation',
-      namespace: 'flowme-standalone',
+      path: "next-navigation",
+      namespace: "flowme-standalone",
     }));
     buildApi.onLoad(
-      { filter: /^next-link$/, namespace: 'flowme-standalone' },
+      { filter: /^next-link$/, namespace: "flowme-standalone" },
       () => ({
-        loader: 'jsx',
+        loader: "jsx",
         resolveDir: repositoryRoot,
         contents: `
 import React from 'react';
@@ -69,9 +80,9 @@ export default function Link({ href, onClick, ...props }) {
       }),
     );
     buildApi.onLoad(
-      { filter: /^next-navigation$/, namespace: 'flowme-standalone' },
+      { filter: /^next-navigation$/, namespace: "flowme-standalone" },
       () => ({
-        loader: 'js',
+        loader: "js",
         resolveDir: repositoryRoot,
         contents: `
 export function usePathname() {
@@ -102,43 +113,47 @@ const bundleResult = await build({
   absWorkingDir: repositoryRoot,
   bundle: true,
   define: {
-    'process.env.NODE_ENV': '"production"',
+    "process.env.NODE_ENV": '"production"',
+    "process.env.NEXT_PUBLIC_FLOWME_TEXT_AUTHORING_P1_LONG_DOCUMENT_TABLE":
+      "undefined",
+    "process.env.NEXT_PUBLIC_FLOWME_TEXT_AUTHORING_P1_SOURCE_CANDIDATE":
+      "undefined",
   },
-  entryNames: 'flowme-text-authoring-ta-test',
-  format: 'iife',
-  jsx: 'automatic',
-  logLevel: 'info',
+  entryNames: "flowme-text-authoring-ta-test",
+  format: "iife",
+  jsx: "automatic",
+  logLevel: "info",
   minify: true,
-  outdir: 'standalone-output',
-  platform: 'browser',
+  outdir: "standalone-output",
+  platform: "browser",
   plugins: [nextStubPlugin],
   sourcemap: false,
   stdin: {
     contents: entrySource,
-    loader: 'tsx',
+    loader: "tsx",
     resolveDir: repositoryRoot,
-    sourcefile: 'flowme-text-authoring-ta-test-entry.tsx',
+    sourcefile: "flowme-text-authoring-ta-test-entry.tsx",
   },
-  target: ['chrome110', 'edge110', 'firefox110', 'safari16'],
+  target: ["chrome110", "edge110", "firefox110", "safari16"],
   treeShaking: true,
-  tsconfig: path.join(repositoryRoot, 'tsconfig.json'),
+  tsconfig: path.join(repositoryRoot, "tsconfig.json"),
   write: false,
 });
 
 const javascriptOutput = bundleResult.outputFiles.find((file) =>
-  file.path.endsWith('.js'),
+  file.path.endsWith(".js"),
 );
 if (!javascriptOutput) {
-  throw new Error('Standalone JavaScript bundle was not generated.');
+  throw new Error("Standalone JavaScript bundle was not generated.");
 }
 
-const globalsPath = path.join(repositoryRoot, 'app', 'globals.css');
-const globalsCss = await fs.readFile(globalsPath, 'utf8');
+const globalsPath = path.join(repositoryRoot, "app", "globals.css");
+const globalsCss = await fs.readFile(globalsPath, "utf8");
 const cssResult = await postcss([
   tailwindcss({
     content: [
-      path.join(repositoryRoot, 'app/**/*.{ts,tsx}'),
-      path.join(repositoryRoot, 'components/**/*.{ts,tsx}'),
+      path.join(repositoryRoot, "app/**/*.{ts,tsx}"),
+      path.join(repositoryRoot, "components/**/*.{ts,tsx}"),
     ],
     plugins: [],
     theme: { extend: {} },
@@ -149,15 +164,15 @@ const cssResult = await postcss([
 });
 
 const escapedJavascript = javascriptOutput.text
-  .replaceAll('</script>', '<\\/script>')
+  .replaceAll("</script>", "<\\/script>")
   // One bundled dependency starts a template literal with a literal tab.
   // Escaping that tab preserves the runtime string and keeps the generated
   // review artifact free of trailing-whitespace diffs.
-  .replace(/=`\t(?=\r?\n)/gu, '=`\\t')
+  .replace(/=`\t(?=\r?\n)/gu, "=`\\t")
   // Minified dependency license blocks can contain whitespace-only lines.
   // Keep the generated review artifact clean for git diff --check.
-  .replace(/^[ \t]+$/gmu, '');
-const escapedCss = cssResult.css.replaceAll('</style>', '<\\/style>');
+  .replace(/^[ \t]+$/gmu, "");
+const escapedCss = cssResult.css.replaceAll("</style>", "<\\/style>");
 
 const html = `<!doctype html>
 <html lang="ko">
@@ -169,7 +184,7 @@ const html = `<!doctype html>
       http-equiv="Content-Security-Policy"
       content="default-src 'none'; base-uri 'none'; connect-src 'none'; form-action 'none'; img-src data: blob:; object-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; font-src data:"
     >
-    <title>FlowMe 텍스트 저작 TA 테스트</title>
+    <title>${productMode ? "FlowMe Text Authoring 인라인 Flow 편집 PoC" : "FlowMe 텍스트 저작 TA 테스트"}</title>
     <style>${escapedCss}</style>
   </head>
   <body>
@@ -181,14 +196,14 @@ const html = `<!doctype html>
 `;
 
 await fs.mkdir(path.dirname(outputPath), { recursive: true });
-await fs.writeFile(outputPath, html, 'utf8');
+await fs.writeFile(outputPath, html, "utf8");
 
 const outputStats = await fs.stat(outputPath);
 console.log(
   JSON.stringify(
     {
       bytes: outputStats.size,
-      output: path.relative(repositoryRoot, outputPath).replaceAll('\\', '/'),
+      output: path.relative(repositoryRoot, outputPath).replaceAll("\\", "/"),
     },
     null,
     2,

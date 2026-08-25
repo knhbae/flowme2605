@@ -244,13 +244,17 @@ export function AuthoringExampleSwitcher({
                 <option
                   key={example.id}
                   value={
-                    productMode ? `example:${index}` : `product:${example.id}`
+                    showQaCatalog || !productMode
+                      ? `product:${example.id}`
+                      : `example:${index}`
                   }
-                  data-example-id={productMode ? undefined : example.id}
+                  data-example-id={
+                    showQaCatalog || !productMode ? example.id : undefined
+                  }
                 >
-                  {productMode
-                    ? example.label
-                    : `${example.label} · ${example.resultLabel}`}
+                  {showQaCatalog || !productMode
+                    ? `${example.label} · ${example.resultLabel}`
+                    : example.label}
                 </option>
               ))}
             </optgroup>
@@ -284,7 +288,7 @@ export function AuthoringExampleSwitcher({
           <span id="ta-authoring-example-select-help" className="sr-only">
             선택하면 입력과 결과가 함께 바뀝니다.
           </span>
-          {!productMode ? (
+          {!productMode || showQaCatalog ? (
             <span data-testid="ta-authoring-example-count" className="sr-only">
               {showQaCatalog
                 ? `전체 예시 ${visibleExampleCount}개`
@@ -299,7 +303,7 @@ export function AuthoringExampleSwitcher({
             </span>
             <a
               href="?authoringQa=0"
-              className="rounded border border-[var(--flowme-border)] bg-[var(--flowme-surface)] px-2 py-1 text-[10px] font-bold text-[var(--flowme-text-secondary)] underline-offset-2 hover:underline"
+              className="flex min-h-11 items-center rounded border border-[var(--flowme-border)] bg-[var(--flowme-surface)] px-2 py-1 text-[10px] font-bold text-[var(--flowme-text-secondary)] underline-offset-2 hover:underline"
             >
               대표 5개 비교
             </a>
