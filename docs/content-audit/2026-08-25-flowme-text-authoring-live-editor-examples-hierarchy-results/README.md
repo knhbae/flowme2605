@@ -1,12 +1,12 @@
 # Text Authoring Live Editor 예시 복구·계층 표현 결과
 
 - 목표 ID: `TA-TEXT-AUTHORING-LIVE-EDITOR-EXAMPLES-HIERARCHY-20260825-01`
-- 상태: `LOCAL_INTERNAL_QA_PASS`
+- 상태: `LOCAL_INTERNAL_QA_PASS / DRAFT_PR_PREVIEW_READY`
 - checkout: `D:\flowme2605\flow-text-authoring-flow-view-poc-20260824`
 - branch / baseline: `agent/text-authoring-flow-view-poc-20260824` / `152b356fbaaec046bc32e5d2021b727706fe28fe`
-- upstream: 없음
-- publish boundary: `LOCAL_ONLY`
-- external side effect / observed-user session: `0 / 0`
+- upstream: `origin/agent/text-authoring-flow-view-poc-20260824`
+- publish boundary: `DRAFT_PR + VERCEL_PREVIEW_ONLY`
+- merge / production deploy / product external side effect / observed-user session: `0 / 0 / 0 / 0`
 
 ## 결론
 
@@ -28,6 +28,16 @@
 - [1024px](./flow-live-editor-after-1024.png)
 
 화면 캡처와 자동화는 내부 QA 증거이며 관찰 사용자 검증이 아니다.
+
+## 리뷰 배포
+
+- 전용 standalone PoC Preview: <https://flowme-text-authoring-flow-view-p2f7ppxv1-flowme.vercel.app>
+- Vercel Inspector: <https://vercel.com/flowme/flowme-text-authoring-flow-view-poc/D849b3uogf5QyxywnFAvbhoxEAwW>
+- Draft PR: <https://github.com/knhbae/flowme2605/pull/197>
+- 구현 commit: `abd006ebdfd8a995cf29113681b68f9d33facff8`
+- PR base / head: `agent/text-authoring-p1-g-linked-lineage-20260813` / `agent/text-authoring-flow-view-poc-20260824`
+
+전용 URL은 이 결과의 self-contained HTML만 올린 Vercel `preview` deployment다. 일반 앱 PR Preview는 의도대로 제품 route의 PoC gate가 꺼져 있으므로 standalone PoC 화면을 노출하지 않는다. 두 Preview 모두 production promotion이 아니며, 배포 상태 `READY`는 사용성 검증이나 release 완료를 뜻하지 않는다.
 
 ## current → target → 결과
 
@@ -78,12 +88,16 @@
 
 추가 진단에서 repo-wide `npm.cmd test`는 Text Authoring과 무관한 `seed-flows` source-review 날짜 gate 1건 때문에 `623/624`로 끝났다. 2026-05-21/23 기준 source 44개가 현재 날짜에 `review_due`인 것이 원인이며 이 격리 PoC에서 source 날짜를 고치거나 gate를 완화하지 않았다. 별도 `npx.cmd tsc --noEmit`도 기존 repo-wide test typing 오류를 보고했지만, 지원되는 `npm.cmd run build`의 compile·typecheck는 통과했고 이번 scoped 파일 오류는 없었다.
 
+첫 push의 GitHub Actions `Docs, Unit, Build` 묶음도 같은 `seed-flows` 날짜 gate에서 `623/624`로 실패했다. Vercel과 Vercel Preview Comments는 통과했다. 이 기존 source 검토기한 문제는 PoC 승인 범위가 아니므로 구현 commit에 섞어 수정하지 않았으며, 정확한 최신 check 상태는 Draft PR에 남긴다.
+
 ## Subtraction과 상태 분리
 
 - 추가하지 않음: 별도 preview 영역, Todo식 카드 분할, 깊은 rainbow nesting, 새 helper/card/badge, 변환·적용 버튼, 새 top-level route.
 - 변경하지 않음: parser 의미, canonical 객체, projection, durable save/revision, P1/P2 runtime, main app navigation/store/schema.
-- local edits: 있음
-- commit / push / PR / merge / deploy: `0 / 0 / 0 / 0 / 0`
-- P35 / external side effect / observed-user session: `0 / 0 / 0`
+- local implementation: 구현 commit에 보존
+- implementation commit / publication-note commit / pushed branch / Draft PR: `1 / 1 / 1 / 1`
+- merge / production deploy: `0 / 0`
+- Vercel Preview: standalone PoC `1`, 일반 앱 PR Preview `1`
+- P35 / product external side effect / observed-user session: `0 / 0 / 0`
 
-최종 상태는 `LOCAL_INTERNAL_QA_PASS`다. 실제 사용성 검증이나 release 완료를 뜻하지 않는다.
+최종 상태는 `LOCAL_INTERNAL_QA_PASS / DRAFT_PR_PREVIEW_READY`다. 실제 사용성 검증이나 release 완료를 뜻하지 않는다.
