@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe Text Authoring · 속성 재진입·단순화 QA</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17211d;
+      --muted: #5b6661;
+      --line: #dce5e0;
+      --surface: #ffffff;
+      --wash: #f4f8f6;
+      --green: #176b50;
+      --green-soft: #e8f5ef;
+      --blue: #3159c6;
+      --amber: #8a5a13;
+      --amber-soft: #fff4dc;
+      --radius: 18px;
+      font-family: Pretendard, "Noto Sans KR", system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--wash); color: var(--ink); line-height: 1.55; }
+    main { width: min(1120px, calc(100% - 32px)); margin: 0 auto; padding: 48px 0 72px; }
+    header { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; align-items: end; border-bottom: 1px solid var(--line); padding-bottom: 28px; }
+    h1 { margin: 0; max-width: 760px; font-size: clamp(30px, 5vw, 54px); line-height: 1.12; letter-spacing: -0.045em; }
+    header p { margin: 14px 0 0; max-width: 720px; color: var(--muted); font-size: 17px; }
+    .status { min-width: 190px; border: 1px solid #b8d9ca; border-radius: 999px; background: var(--green-soft); color: var(--green); padding: 12px 18px; text-align: center; font-weight: 800; }
+    section { margin-top: 44px; }
+    h2 { margin: 0 0 18px; font-size: 23px; letter-spacing: -0.025em; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+    .panel { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); padding: 24px; box-shadow: 0 10px 30px rgba(29, 54, 43, 0.05); }
+    .panel h3 { margin: 0 0 10px; font-size: 18px; }
+    .panel p { margin: 0; color: var(--muted); }
+    .editor-demo { margin-top: 18px; border: 1px solid #cdd8d3; border-radius: 14px; background: #fbfdfc; padding: 18px; font: 600 16px/1.9 ui-monospace, SFMono-Regular, Consolas, monospace; }
+    .bad { color: #9b2c2c; text-decoration: line-through; text-decoration-thickness: 2px; }
+    .caret { display: inline-block; width: 2px; height: 1.2em; background: var(--blue); vertical-align: -0.2em; }
+    .selection { background: #dfe7ff; border-radius: 3px; padding: 1px 2px; }
+    .flow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 18px; }
+    .flow div { border-left: 3px solid #b8d9ca; padding: 8px 12px; }
+    .flow strong { display: block; margin-bottom: 3px; }
+    .flow span { color: var(--muted); font-size: 14px; }
+    .groups { display: grid; grid-template-columns: 0.95fr 1fr 1.25fr; gap: 12px; margin-top: 16px; }
+    .group { border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
+    .group strong { display: block; margin-bottom: 8px; }
+    .group ul { margin: 0; padding-left: 20px; color: var(--muted); }
+    table { width: 100%; border-collapse: collapse; overflow: hidden; border-radius: 14px; background: var(--surface); }
+    th, td { border-bottom: 1px solid var(--line); padding: 13px 16px; text-align: left; vertical-align: top; }
+    th { color: #43504a; background: #eef4f1; font-size: 14px; }
+    tr:last-child td { border-bottom: 0; }
+    .pass { color: var(--green); font-weight: 800; }
+    .hold { color: var(--amber); font-weight: 800; }
+    .callout { border: 1px solid #ead39f; border-radius: 14px; background: var(--amber-soft); padding: 18px 20px; }
+    .callout strong { color: var(--amber); }
+    .ledger { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+    .ledger div { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: 14px; }
+    .ledger dt { color: var(--muted); font-size: 13px; }
+    .ledger dd { margin: 4px 0 0; font-weight: 800; }
+    footer { margin-top: 48px; border-top: 1px solid var(--line); padding-top: 20px; color: var(--muted); font-size: 14px; }
+    code { word-break: break-all; }
+    @media (max-width: 760px) {
+      main { width: min(100% - 24px, 1120px); padding-top: 28px; }
+      header { grid-template-columns: 1fr; align-items: start; }
+      .status { justify-self: start; min-width: 0; }
+      .grid, .groups { grid-template-columns: 1fr; }
+      .flow { grid-template-columns: 1fr; }
+      .ledger { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .table-wrap { overflow-x: auto; }
+      table { min-width: 680px; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>속성을 다시 눌러도<br>값부터 바로 고친다</h1>
+        <p>사용자가 발견한 <code>장소:</code> 왼쪽 커서 결함을 15종 속성 공통 계약으로 고쳤다. 팝업을 늘리지 않고 Text editor의 흐름, 원문, undo를 그대로 유지했다.</p>
+      </div>
+      <div class="status">LOCAL QA · 핵심 9/9</div>
+    </header>
+
+    <section>
+      <h2>문제와 수정</h2>
+      <div class="grid">
+        <article class="panel">
+          <h3>이전: 라벨 앞에서 원문이 깨짐</h3>
+          <p>렌더링된 <code>장소</code>를 다시 탭하면 표시 문자열을 원문에서 찾지 못해 줄 시작으로 이동했다.</p>
+          <div class="editor-demo"><span class="caret"></span><span class="bad">장소: </span> → 서울역장소:</div>
+        </article>
+        <article class="panel">
+          <h3>수정: 값 영역만 편집</h3>
+          <p>빈 값은 콜론 뒤에 caret을 두고, 기존 값은 실제 raw value만 선택한다. 탭 자체는 source write 0이다.</p>
+          <div class="editor-demo">장소: <span class="caret"></span><br>장소: <span class="selection">제주공항</span></div>
+        </article>
+      </div>
+      <div class="flow" aria-label="속성 재진입 처리 순서">
+        <div><strong>1. 속성 탭</strong><span>label/value 의미 판정</span></div>
+        <div><strong>2. 안전 selection</strong><span>prefix 밖 값 범위만 선택</span></div>
+        <div><strong>3. 기존 editor 입력</strong><span>한 transaction·undo/redo</span></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>정보 tray도 한 단계 줄였다</h2>
+      <div class="panel">
+        <p>기본 정보 4개는 계속 보인다. <strong>다른 정보</strong>를 펼치면 별도 화면으로 보내지 않고 같은 패널에서 9개를 구분한다. 기존 속성은 예시가 아니라 실제 원문 값을 보여 준다.</p>
+        <div class="groups">
+          <div class="group"><strong>기본 정보</strong><ul><li>날짜</li><li>시간</li><li>장소</li><li>완료 기준</li></ul></div>
+          <div class="group"><strong>일정 · 실행</strong><ul><li>상대 날짜</li><li>소요 시간</li><li>반복</li><li>설명</li><li>실행 조건</li></ul></div>
+          <div class="group"><strong>참고·출처</strong><ul><li>자료</li><li>안내</li><li>주의</li><li>출처</li></ul></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>fresh QA</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>범위</th><th>결과</th><th>검증한 내용</th></tr></thead>
+          <tbody>
+            <tr><td>successor browser</td><td class="pass">9/9 PASS</td><td>빈/기존 값, 15종, actual-value tray, cross-Item owner, keyboard, 320–390px, 200%, 보호 원문</td></tr>
+            <tr><td>predecessor browser</td><td class="pass">16/16 PASS</td><td>busy/stale, 관계 속성, focus, 예시 대비, 흔들림, undo</td></tr>
+            <tr><td>pure transaction</td><td class="pass">30/30 PASS</td><td>successor 7 + 기존 state 14 + quick-property 9</td></tr>
+            <tr><td>Text Authoring shared</td><td class="pass">445/445 PASS</td><td>parser, canonical, projection, storage, P1-C/E/G 회귀</td></tr>
+            <tr><td>full suite</td><td class="hold">pretest 175/175 · main 623/624</td><td>이번 범위 밖 2026-05 source review due gate 1건 실패</td></tr>
+            <tr><td>build / docs</td><td class="pass">PASS</td><td>Next production build, 16 required docs, 4,691 links</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>경계와 남은 확인</h2>
+      <div class="callout"><strong>자동화는 사용자 검증이 아니다.</strong> Chrome viewport·Unicode/IME proxy까지 확인했다. 실제 Samsung Keyboard/Gboard와 TalkBack/VoiceOver 관찰은 아직 0회다. production route/store/schema, commit, push, PR, 배포도 모두 0이다.</div>
+      <dl class="ledger">
+        <div><dt>local edits</dt><dd>있음</dd></div>
+        <div><dt>commit / push</dt><dd>0 / 0</dd></div>
+        <div><dt>deploy</dt><dd>0</dd></div>
+        <div><dt>observed users</dt><dd>0</dd></div>
+      </dl>
+    </section>
+
+    <footer>
+      <div>목표 ID · TA-TEXT-AUTHORING-PROPERTY-REENTRY-SIMPLICITY-20260829-01</div>
+      <div>HEAD · 849d4f6df9580b3b5230457387ec7569d177ef6c · LOCAL_ONLY</div>
+    </footer>
+  </main>
+</body>
+</html>
