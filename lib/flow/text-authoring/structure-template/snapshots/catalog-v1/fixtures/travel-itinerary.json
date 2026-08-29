@@ -1,0 +1,138 @@
+{
+  "fixtureVersion": "p0.2",
+  "fixtureId": "travel-prep-and-first-day",
+  "definitionRef": {
+    "templateId": "travel-itinerary-prep-v1",
+    "version": "1.0.0"
+  },
+  "purpose": "출발 전 준비와 날짜별 일정을 같은 Item 계약으로 만들고 날짜 화면에서 복제하지 않는다.",
+  "initialRawText": "",
+  "sourceFingerprint": "raw-v1:0:0ztntfp",
+  "structureDraft": {
+    "schemaVersion": "p0.2",
+    "draftId": "draft-fixture-travel-itinerary",
+    "templateId": "travel-itinerary-prep-v1",
+    "templateVersion": "1.0.0",
+    "sourceFingerprint": "raw-v1:0:0ztntfp",
+    "values": {
+      "flow_title": "첫 도쿄 여행",
+      "departure_date": "2026-09-10",
+      "timezone": "Asia/Tokyo"
+    },
+    "groups": [
+      {
+        "instanceId": "travel-group-preparation",
+        "groupId": "preparation",
+        "order": 0,
+        "values": { "preparation_step_title": "출발 전 준비" },
+        "children": [
+          {
+            "instanceId": "travel-prep-passport",
+            "groupId": "tasks",
+            "order": 0,
+            "values": {
+              "prep_item_title": "여권 유효기간 확인",
+              "prep_schedule_mode": "departure_offset",
+              "prep_day_offset": -14,
+              "prep_checks": ["여권 만료일 확인", "영문 이름 확인"]
+            },
+            "children": []
+          },
+          {
+            "instanceId": "travel-prep-battery",
+            "groupId": "tasks",
+            "order": 1,
+            "values": {
+              "prep_item_title": "보조배터리 챙기기",
+              "prep_schedule_mode": "unscheduled"
+            },
+            "children": []
+          }
+        ]
+      },
+      {
+        "instanceId": "travel-day-one",
+        "groupId": "itinerary_days",
+        "order": 1,
+        "values": {
+          "itinerary_step_title": "첫째 날",
+          "itinerary_date": "2026-09-10"
+        },
+        "children": [
+          {
+            "instanceId": "travel-day-one-airport-transfer",
+            "groupId": "schedule_items",
+            "order": 0,
+            "values": {
+              "itinerary_item_title": "공항에서 숙소로 이동",
+              "itinerary_time": "15:00",
+              "itinerary_place": "하네다공항",
+              "itinerary_duration_minutes": 90,
+              "itinerary_detail": "도착 시간이 달라지면 현장에서 이동 수단을 다시 고른다."
+            },
+            "children": []
+          }
+        ]
+      }
+    ],
+    "dismissedSlots": [],
+    "materialized": false,
+    "revision": 1,
+    "updatedAt": "2026-08-29T12:00:00.000Z"
+  },
+  "expectedPlan": {
+    "userValueCount": 17,
+    "itemCount": 3,
+    "sourceCallbackCount": 1,
+    "undoCountToRestoreInitial": 1,
+    "warnings": [],
+    "derivedValues": [
+      {
+        "kind": "resolved_anchor_date",
+        "sourceSlotKeys": ["departure_date", "travel-prep-passport.prep_day_offset"],
+        "value": "2026-08-27"
+      }
+    ],
+    "forbiddenGeneratedContentCount": 0
+  },
+  "expectedRawText": "# 첫 도쿄 여행\n- 기준일: 2026-09-10\n\n## 출발 전 준비\n- [ ] 여권 유효기간 확인\n  - 상대 날짜: D-14\n  - [ ] 여권 만료일 확인\n  - [ ] 영문 이름 확인\n- [ ] 보조배터리 챙기기\n\n## 첫째 날\n- [ ] 공항에서 숙소로 이동\n  - 날짜: 2026-09-10\n  - 시간: 15:00\n  - 시간대: Asia/Tokyo\n  - 소요 시간: 90분\n  - 장소: 하네다공항\n  - 설명: 도착 시간이 달라지면 현장에서 이동 수단을 다시 고른다.",
+  "expectedCanonical": {
+    "flowTitle": "첫 도쿄 여행",
+    "anchorDate": "2026-09-10",
+    "stepCount": 2,
+    "itemCount": 3,
+    "scheduledItemCount": 2,
+    "unscheduledItemCount": 1,
+    "items": [
+      {
+        "title": "여권 유효기간 확인",
+        "dayOffset": -14,
+        "resolvedDate": "2026-08-27",
+        "subcheckCount": 2
+      },
+      { "title": "보조배터리 챙기기", "schedule": "unscheduled" },
+      {
+        "title": "공항에서 숙소로 이동",
+        "date": "2026-09-10",
+        "time": "15:00",
+        "timezone": "Asia/Tokyo",
+        "place": "하네다공항"
+      }
+    ],
+    "sameItemAcrossProjections": true,
+    "dayViewDuplicates": 0
+  },
+  "expectedProjectionAssertions": {
+    "fixtureExpectedPrimary": "todo",
+    "primaryRule": "calendar_when_all_items_scheduled_else_todo",
+    "offeredArtifacts": ["calendar", "todo", "memo"],
+    "optionalWhenEligible": [],
+    "notOffered": ["sheet"]
+  },
+  "negativeAssertions": [
+    "reservation_status",
+    "reservation_kind",
+    "EXAMPLE-HOTEL-001",
+    "비자 자동 확인"
+  ]
+}

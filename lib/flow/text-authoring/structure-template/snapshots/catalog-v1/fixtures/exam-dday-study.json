@@ -1,0 +1,105 @@
+{
+  "fixtureVersion": "p0.2",
+  "fixtureId": "exam-dday-bounded-study",
+  "definitionRef": {
+    "templateId": "exam-dday-study-v1",
+    "version": "1.0.0"
+  },
+  "purpose": "사용자가 입력한 학습 행동을 시험 전까지 반복하고 시험 일정을 별도 Item으로 만든다.",
+  "initialRawText": "",
+  "sourceFingerprint": "raw-v1:0:0ztntfp",
+  "structureDraft": {
+    "schemaVersion": "p0.2",
+    "draftId": "draft-fixture-exam-study",
+    "templateId": "exam-dday-study-v1",
+    "templateVersion": "1.0.0",
+    "sourceFingerprint": "raw-v1:0:0ztntfp",
+    "values": {
+      "flow_title": "정보처리기사 필기 준비",
+      "exam_date": "2026-11-07",
+      "study_start_date": "2026-09-07",
+      "study_end_date": "2026-11-06"
+    },
+    "groups": [
+      {
+        "instanceId": "exam-study-past-papers",
+        "groupId": "study_blocks",
+        "order": 0,
+        "values": {
+          "study_item_title": "기출문제 20문제 풀기",
+          "study_scope": "최근 5개년 기출",
+          "study_weekdays": ["MO", "WE", "FR"],
+          "study_time": "19:30",
+          "study_duration_minutes": 60,
+          "study_done_when": "20문제를 풀고 틀린 문제에 표시하면 완료"
+        },
+        "children": []
+      },
+      {
+        "instanceId": "exam-milestone-written-test",
+        "groupId": "milestones",
+        "order": 1,
+        "values": {
+          "milestone_title": "필기 시험 응시",
+          "milestone_date": "2026-11-07",
+          "milestone_detail": "수험표에 적힌 시험장과 입실 시간을 전날 확인한다."
+        },
+        "children": []
+      }
+    ],
+    "dismissedSlots": [],
+    "materialized": false,
+    "revision": 1,
+    "updatedAt": "2026-08-29T12:00:00.000Z"
+  },
+  "expectedPlan": {
+    "userValueCount": 13,
+    "itemCount": 2,
+    "sourceCallbackCount": 1,
+    "undoCountToRestoreInitial": 1,
+    "warnings": [],
+    "derivedValues": [
+      {
+        "kind": "first_occurrence",
+        "sourceSlotKeys": ["study_start_date", "exam-study-past-papers.study_weekdays"],
+        "value": "2026-09-07"
+      },
+      {
+        "kind": "recurrence_count",
+        "sourceSlotKeys": ["study_start_date", "study_end_date", "exam-study-past-papers.study_weekdays"],
+        "value": 27
+      }
+    ],
+    "forbiddenGeneratedContentCount": 0
+  },
+  "expectedRawText": "# 정보처리기사 필기 준비\n- 기준일: 2026-11-07\n\n- [ ] 기출문제 20문제 풀기\n  - 날짜: 2026-09-07\n  - 시간: 19:30\n  - 소요 시간: 60분\n  - 반복: 매주 월, 수, 금\n  - 반복 종료: 2026-11-06\n  - 설명: 최근 5개년 기출\n  - 완료 기준: 20문제를 풀고 틀린 문제에 표시하면 완료\n\n- [ ] 필기 시험 응시\n  - 날짜: 2026-11-07\n  - 설명: 수험표에 적힌 시험장과 입실 시간을 전날 확인한다.",
+  "expectedCanonical": {
+    "flowTitle": "정보처리기사 필기 준비",
+    "stepCount": 1,
+    "itemCount": 2,
+    "scheduledItemCount": 2,
+    "items": [
+      {
+        "title": "기출문제 20문제 풀기",
+        "firstOccurrence": "2026-09-07",
+        "recurrenceEnd": { "mode": "until", "date": "2026-11-06" },
+        "occurrenceCount": 27
+      },
+      { "title": "필기 시험 응시", "date": "2026-11-07" }
+    ],
+    "sameItemAcrossProjections": true,
+    "generatedCurriculumRows": 0
+  },
+  "expectedProjectionAssertions": {
+    "fixtureExpectedPrimary": "calendar",
+    "offeredArtifacts": ["calendar", "todo", "memo"],
+    "optionalWhenEligible": [],
+    "notOffered": ["sheet"]
+  },
+  "negativeAssertions": [
+    "자동 과목 배분",
+    "진도율",
+    "Sheet",
+    "추천 커리큘럼"
+  ]
+}

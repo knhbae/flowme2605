@@ -1,0 +1,134 @@
+{
+  "fixtureVersion": "p0.2",
+  "fixtureId": "exercise-phased-two-windows",
+  "definitionRef": {
+    "templateId": "exercise-phased-4w-v1",
+    "version": "1.0.0"
+  },
+  "purpose": "사용자가 정한 두 단계와 운동 요일을 4주 안의 유한 반복 일정으로 계산한다.",
+  "initialRawText": "",
+  "sourceFingerprint": "raw-v1:0:0ztntfp",
+  "structureDraft": {
+    "schemaVersion": "p0.2",
+    "draftId": "draft-fixture-exercise-phased",
+    "templateId": "exercise-phased-4w-v1",
+    "templateVersion": "1.0.0",
+    "sourceFingerprint": "raw-v1:0:0ztntfp",
+    "values": {
+      "flow_title": "4주 러닝 적응",
+      "start_date": "2026-09-01"
+    },
+    "groups": [
+      {
+        "instanceId": "phase-adaptation",
+        "groupId": "phases",
+        "order": 0,
+        "values": {
+          "phase_title": "적응 단계",
+          "duration_weeks": 2
+        },
+        "children": [
+          {
+            "instanceId": "session-adaptation-easy-run",
+            "groupId": "sessions",
+            "order": 0,
+            "values": {
+              "item_title": "가볍게 달리기",
+              "weekdays": ["TU", "TH"],
+              "duration_minutes": 30
+            },
+            "children": []
+          }
+        ]
+      },
+      {
+        "instanceId": "phase-maintenance",
+        "groupId": "phases",
+        "order": 1,
+        "values": {
+          "phase_title": "유지 단계",
+          "duration_weeks": 2
+        },
+        "children": [
+          {
+            "instanceId": "session-maintenance-run-walk",
+            "groupId": "sessions",
+            "order": 0,
+            "values": {
+              "item_title": "걷기와 달리기 섞기",
+              "weekdays": ["TU", "TH"],
+              "duration_minutes": 30
+            },
+            "children": []
+          }
+        ]
+      }
+    ],
+    "dismissedSlots": [],
+    "materialized": false,
+    "revision": 1,
+    "updatedAt": "2026-08-29T12:00:00.000Z"
+  },
+  "expectedPlan": {
+    "userValueCount": 12,
+    "itemCount": 2,
+    "sourceCallbackCount": 1,
+    "undoCountToRestoreInitial": 1,
+    "warnings": [],
+    "derivedValues": [
+      {
+        "kind": "first_occurrence",
+        "sourceSlotKeys": ["start_date", "phase-adaptation.duration_weeks", "session-adaptation-easy-run.weekdays"],
+        "value": "2026-09-01"
+      },
+      {
+        "kind": "recurrence_end",
+        "sourceSlotKeys": ["start_date", "phase-adaptation.duration_weeks"],
+        "value": "2026-09-14"
+      },
+      {
+        "kind": "first_occurrence",
+        "sourceSlotKeys": ["start_date", "phase-adaptation.duration_weeks", "session-maintenance-run-walk.weekdays"],
+        "value": "2026-09-15"
+      },
+      {
+        "kind": "recurrence_end",
+        "sourceSlotKeys": ["start_date", "phase-adaptation.duration_weeks", "phase-maintenance.duration_weeks"],
+        "value": "2026-09-28"
+      }
+    ],
+    "forbiddenGeneratedContentCount": 0
+  },
+  "expectedRawText": "# 4주 러닝 적응\n- 기준일: 2026-09-01\n\n## 적응 단계\n- [ ] 가볍게 달리기\n  - 날짜: 2026-09-01\n  - 소요 시간: 30분\n  - 반복: 매주 화, 목\n  - 반복 종료: 2026-09-14\n\n## 유지 단계\n- [ ] 걷기와 달리기 섞기\n  - 날짜: 2026-09-15\n  - 소요 시간: 30분\n  - 반복: 매주 화, 목\n  - 반복 종료: 2026-09-28",
+  "expectedCanonical": {
+    "flowTitle": "4주 러닝 적응",
+    "stepCount": 2,
+    "itemCount": 2,
+    "items": [
+      {
+        "title": "가볍게 달리기",
+        "firstOccurrence": "2026-09-01",
+        "recurrenceEnd": { "mode": "until", "date": "2026-09-14" },
+        "occurrenceCount": 4
+      },
+      {
+        "title": "걷기와 달리기 섞기",
+        "firstOccurrence": "2026-09-15",
+        "recurrenceEnd": { "mode": "until", "date": "2026-09-28" },
+        "occurrenceCount": 4
+      }
+    ],
+    "sameItemAcrossProjections": true
+  },
+  "expectedProjectionAssertions": {
+    "fixtureExpectedPrimary": "calendar",
+    "offeredArtifacts": ["calendar", "todo", "memo"],
+    "optionalWhenEligible": ["sheet"],
+    "notOffered": []
+  },
+  "negativeAssertions": [
+    "단계 이름을 적어 주세요",
+    "예: 1단계 적응",
+    "퇴근 후 4주 영상 루틴"
+  ]
+}

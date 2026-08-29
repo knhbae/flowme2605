@@ -17,3 +17,4 @@ export * from "./markdown-roundtrip";
 export * from "./receipt";
 export * from "./service-state";
 export * from "./storage";
+export * from "./structure-template";
