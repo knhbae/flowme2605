@@ -4,6 +4,8 @@
   "outputDirectory": null,
   "git": {
     "deploymentEnabled": {
+      "agent/text-authoring-unified-editor-guidance-poc-20260830": false,
+      "agent/text-authoring-flow-view-hybrid-ux-poc-20260828": false,
       "codex/p35-production-mobile-p0": false,
       "codex/p35-round2-candidate-20260805": false,
       "codex/p35-round2-correction-pprime2-20260805": false,

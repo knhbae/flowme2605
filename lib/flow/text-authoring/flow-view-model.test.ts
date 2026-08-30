@@ -429,6 +429,72 @@ test("property mappings retain Flow and parent Item ownership", () => {
   }
 });
 
+test("blank property scaffolds keep presentation ownership without canonical fields", () => {
+  const rawText = [
+    "# 여행 준비",
+    "## 예약",
+    "- [ ] 숙소 예약",
+    "  - 장소: ",
+  ].join("\n");
+  const { document, model } = modelFor(rawText, {
+    documentId: "flow-view-blank-property-scaffold",
+  });
+  const item = document.parseResult.canonical.items[0];
+  const blankParserBlock = document.parseResult.blocks.find(
+    (block) => block.rawText === "  - 장소: ",
+  );
+  const blankViewBlock = model.blocks.find(
+    (block) => block.rawText === "  - 장소: ",
+  );
+
+  assert.ok(item);
+  assert.ok(blankParserBlock);
+  assert.equal(document.parseResult.canonical.fields.length, 0);
+  assert.equal(item.properties.length, 0);
+  assert.equal(document.parseResult.issues.length, 0);
+  assert.equal(
+    document.parseResult.mappings.some((mapping) =>
+      mapping.blockIds.includes(blankParserBlock.blockId),
+    ),
+    false,
+  );
+  assert.equal(blankViewBlock?.kind, "property");
+  if (blankViewBlock?.kind === "property") {
+    assert.equal(blankViewBlock.label, "장소");
+    assert.equal(blankViewBlock.value, "");
+    assert.deepEqual(blankViewBlock.owner, { kind: "item", id: item.itemId });
+    assert.deepEqual(getAuthoringFlowViewHierarchy(blankViewBlock), {
+      depth: 1,
+      role: "item-property",
+    });
+  }
+});
+
+test("a blank Flow anchor after an Item never becomes Item information", () => {
+  const rawText = [
+    "# 여행 준비",
+    "## 예약",
+    "- [ ] 숙소 예약",
+    "- 기준일: ",
+  ].join("\n");
+  const { document, model } = modelFor(rawText, {
+    documentId: "flow-view-blank-flow-anchor-scaffold",
+  });
+  const anchorParserBlock = document.parseResult.blocks.find(
+    (block) => block.rawText === "- 기준일: ",
+  );
+  const anchorViewBlock = model.blocks.find(
+    (block) => block.rawText === "- 기준일: ",
+  );
+
+  assert.ok(anchorParserBlock);
+  assert.equal(anchorParserBlock.interpretedRole, "field");
+  assert.equal(anchorParserBlock.parentBlockId, undefined);
+  assert.equal(document.parseResult.canonical.fields.length, 0);
+  assert.equal(document.parseResult.issues.length, 0);
+  assert.notEqual(anchorViewBlock?.kind, "property");
+});
+
 test("live-editor hierarchy exposes one root/child level without changing source meaning", () => {
   const rawText = [
     "- 기준일: 2026-08-24",

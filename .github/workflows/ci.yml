@@ -34,6 +34,9 @@ jobs:
       - name: Audit high-severity dependencies
         run: npm run security:audit
 
+      - name: Run unified editor guidance controller tests
+        run: node --test docs/specs/2026-08-30-flowme-text-authoring-unified-editor-guidance-poc/prototype/unified-editor-guidance-controller.test.mjs
+
       - name: Run core verification
         run: npm run verify
 
@@ -63,6 +66,9 @@ jobs:
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium
 
+      - name: Run unified editor guidance PoC E2E
+        run: npx playwright test --config=playwright.unified-editor-guidance-poc.config.ts
+
       - name: Run Playwright E2E
         run: npm run test:e2e
 
@@ -74,5 +80,6 @@ jobs:
           path: |
             playwright-report/
             test-results/
+            output/playwright/text-authoring-unified-editor-guidance-poc/
           if-no-files-found: ignore
           retention-days: 14

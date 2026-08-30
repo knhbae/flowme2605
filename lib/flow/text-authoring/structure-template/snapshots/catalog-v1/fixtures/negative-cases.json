@@ -1,0 +1,393 @@
+{
+  "fixtureVersion": "p0.2",
+  "purpose": "positive fixture에 RFC 6902 JSON Patch를 적용해 validator와 planner의 fail-closed 규칙을 자동 검증한다.",
+  "patchFormat": "RFC 6902 subset: add, remove, replace",
+  "expectationContract": {
+    "required": ["expectedRuleCode", "expectedScopeInstanceId", "expectedMaterialization"],
+    "slotId": "required_when_issue_targets_a_field",
+    "defaultSeverity": "error",
+    "blockedValue": "blocked"
+  },
+  "cases": [
+    {
+      "caseId": "draft-duplicate-instance-id",
+      "scope": "shared",
+      "baseFixtureId": "exercise-phased-two-windows",
+      "templateId": "exercise-phased-4w-v1",
+      "mutation": "두 번째 단계가 첫 번째 단계와 같은 instanceId를 사용한다.",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/structureDraft/groups/1/instanceId",
+          "value": "phase-adaptation"
+        }
+      ],
+      "expectedRuleCode": "DRAFT_DUPLICATE_INSTANCE_ID",
+      "expectedScopeInstanceId": "root",
+      "expectedMaterialization": "blocked"
+    },
+    {
+      "caseId": "draft-fingerprint-mismatch",
+      "scope": "shared",
+      "baseFixtureId": "exercise-phased-two-windows",
+      "templateId": "exercise-phased-4w-v1",
+      "mutation": "빈 원문의 실제 fingerprint와 다른 값을 draft에 기록한다.",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/structureDraft/sourceFingerprint",
+          "value": "raw-v1:1:mismatch"
+        }
+      ],
+      "expectedRuleCode": "SOURCE_FINGERPRINT_MISMATCH",
+      "expectedScopeInstanceId": "root",
+      "expectedSlotId": "sourceFingerprint",
+      "expectedMaterialization": "blocked"
+    },
+    {
+      "caseId": "phased-duration-sum-not-four-weeks",
+      "scope": "recurring_routine",
+      "baseFixtureId": "exercise-phased-two-windows",
+      "templateId": "exercise-phased-4w-v1",
+      "mutation": "두 번째 단계 기간을 3주로 바꿔 전체 기간을 5주로 만든다.",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/structureDraft/groups/1/values/duration_weeks",
+          "value": 3
+        }
+      ],
+      "expectedRuleCode": "EX4W_DURATION_SUM",
+      "expectedScopeInstanceId": "phase-maintenance",
+      "expectedSlotId": "duration_weeks",
+      "expectedMaterialization": "blocked"
+    },
+    {
+      "caseId": "phased-time-without-duration",
+      "scope": "recurring_routine",
+      "baseFixtureId": "exercise-phased-two-windows",
+      "templateId": "exercise-phased-4w-v1",
+      "mutation": "운동 시각을 추가하면서 소요시간을 제거한다.",
+      "patch": [
+        {
+          "op": "add",
+          "path": "/structureDraft/groups/0/children/0/values/time",
+          "value": "07:00"
+        },
+        {
+          "op": "remove",
+          "path": "/structureDraft/groups/0/children/0/values/duration_minutes"
+        }
+      ],
+      "expectedRuleCode": "EX4W_TIME_DURATION_PAIR",
+      "expectedScopeInstanceId": "session-adaptation-easy-run",
+      "expectedSlotId": "duration_minutes",
+      "expectedMaterialization": "blocked"
+    },
+    {
+      "caseId": "phased-no-occurrence-in-phase",
+      "scope": "recurring_routine",
+      "baseFixtureId": "exercise-phased-two-windows",
+      "templateId": "exercise-phased-4w-v1",
+      "mutation": "첫 단계 운동의 반복 요일을 모두 제거해 단계 안에 실제 발생일이 없게 만든다.",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/structureDraft/groups/0/children/0/values/weekdays",
+          "value": []
+        }
+      ],
+      "expectedRuleCode": "EX4W_OCCURRENCE_IN_PHASE",
+      "expectedScopeInstanceId": "session-adaptation-easy-run",
+      "expectedSlotId": "weekdays",
+      "expectedMaterialization": "blocked"
+    },
+    {
+      "caseId": "weekly-conflicting-end-values",
+      "scope": "recurring_routine",
+      "baseFixtureId": "exercise-weekly-bounded-count",
+      "templateId": "exercise-weekly-repeat-v1",
+      "mutation": "총 회차가 있는 상태에서 종료일까지 함께 입력한다.",
+      "patch": [
+        {
+          "op": "add",
+          "path": "/structureDraft/values/until_date",
+          "value": "2026-09-30"
+        }
+      ],
+      "expectedRuleCode": "EXW_END_EXCLUSIVE",
+      "expectedScopeInstanceId": "root",
+      "expectedSlotId": "end_mode",
+      "expectedMaterialization": "blocked"
+    },
+    {
+      "caseId": "weekly-no-occurrence-before-until",
+      "scope": "recurring_routine",
+      "baseFixtureId": "exercise-weekly-bounded-count",
+      "templateId": "exercise-weekly-repeat-v1",
+      "mutation": "종료일을 시작일보다 이르게 바꿔 첫 운동 발생일이 없게 만든다.",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/structureDraft/values/end_mode",
+          "value": "until"
+        },
+        {
+          "op": "add",
+          "path": "/structureDraft/values/until_date",
+          "value": "2026-08-31"
+        },
+        {
+          "op": "remove",
+          "path": "/structureDraft/values/repeat_count"
+        }
+      ],
+      "expectedRuleCode": "EXW_FIRST_OCCURRENCE",
+      "expectedScopeInstanceId": "root",
+      "expectedSlotId": "until_date",
+      "expectedMaterialization": "blocked"
+    },
+    {
+      "caseId": "moving-offset-without-anchor",
+      "scope": "date_preparation",
+      "baseFixtureId": "moving-dday-three-schedule-modes",
+      "templateId": "moving-dday-v1",
+      "mutation": "D-day 할 일을 유지한 채 이사일을 제거한다.",
+      "patch": [
+        {
+          "op": "remove",
+          "path": "/structureDraft/values/anchor_date"
+        }
+      ],
+      "expectedRuleCode": "MOVE_OFFSET_ANCHOR",
+      "expectedScopeInstanceId": "root",
+      "expectedSlotId": "anchor_date",
+      "expectedMaterialization": "blocked"
+    },
+    {
+      "caseId": "moving-absolute-without-date",
+      "scope": "date_preparation",
+      "baseFixtureId": "moving-dday-three-schedule-modes",
+      "templateId": "moving-dday-v1",
+      "mutation": "날짜 방식이 absolute인 할 일에서 날짜를 제거한다.",
+      "patch": [
+        {
+          "op": "remove",
+          "path": "/structureDraft/groups/1/children/0/values/absolute_date"
+        }
+      ],
+      "expectedRuleCode": "MOVE_SCHEDULE_MODE",
+      "expectedScopeInstanceId": "moving-task-transfer-limit",
+      "expectedSlotId": "absolute_date",
+      "expectedMaterialization": "blocked"
+    },
+    {
+      "caseId": "moving-unscheduled-retains-offset",
+      "scope": "date_preparation",
+      "baseFixtureId": "moving-dday-three-schedule-modes",
+      "templateId": "moving-dday-v1",
+      "mutation": "날짜 미정 할 일에 D-day offset을 남긴다.",
+      "patch": [
+        {
+          "op": "add",
+          "path": "/structureDraft/groups/0/children/1/values/day_offset",
+          "value": -7
+        }
+      ],
+      "expectedRuleCode": "MOVE_SCHEDULE_MODE",
+      "expectedScopeInstanceId": "moving-task-disposal-list",
+      "expectedSlotId": "day_offset",
+      "expectedMaterialization": "blocked"
+    },
+    {
+      "caseId": "wedding-offset-without-anchor",
+      "scope": "date_preparation",
+      "baseFixtureId": "wedding-dday-contract-and-three-modes",
+      "templateId": "wedding-dday-v1",
+      "mutation": "D-day 할 일을 유지한 채 예식일을 제거한다.",
+      "patch": [
+        {
+          "op": "remove",
+          "path": "/structureDraft/values/anchor_date"
+        }
+      ],
+      "expectedRuleCode": "WED_OFFSET_ANCHOR",
+      "expectedScopeInstanceId": "root",
+      "expectedSlotId": "anchor_date",
+      "expectedMaterialization": "blocked"
+    },
+    {
+      "caseId": "wedding-absolute-without-date",
+      "scope": "date_preparation",
+      "baseFixtureId": "wedding-dday-contract-and-three-modes",
+      "templateId": "wedding-dday-v1",
+      "mutation": "날짜 방식이 absolute인 할 일에서 날짜를 제거한다.",
+      "patch": [
+        {
+          "op": "remove",
+          "path": "/structureDraft/groups/1/children/0/values/absolute_date"
+        }
+      ],
+      "expectedRuleCode": "WED_SCHEDULE_MODE",
+      "expectedScopeInstanceId": "wedding-task-route",
+      "expectedSlotId": "absolute_date",
+      "expectedMaterialization": "blocked"
+    },
+    {
+      "caseId": "wedding-invalid-reference-url",
+      "scope": "date_preparation",
+      "baseFixtureId": "wedding-dday-contract-and-three-modes",
+      "templateId": "wedding-dday-v1",
+      "mutation": "참고 자료 링크를 http·https가 아닌 문자열로 바꾼다.",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/structureDraft/groups/0/children/0/values/reference_url",
+          "value": "ftp://example.com/contract"
+        }
+      ],
+      "expectedRuleCode": "WED_REFERENCE_URL",
+      "expectedScopeInstanceId": "wedding-task-final-payment",
+      "expectedSlotId": "reference_url",
+      "expectedMaterialization": "blocked"
+    },
+    {
+      "caseId": "travel-itinerary-before-departure",
+      "scope": "itinerary_preparation",
+      "baseFixtureId": "travel-prep-and-first-day",
+      "templateId": "travel-itinerary-prep-v1",
+      "mutation": "첫째 날 일정을 출발일보다 하루 이르게 바꾼다.",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/structureDraft/groups/1/values/itinerary_date",
+          "value": "2026-09-09"
+        }
+      ],
+      "expectedRuleCode": "TRAVEL_DAY_AFTER_DEPARTURE",
+      "expectedScopeInstanceId": "travel-day-one",
+      "expectedSlotId": "itinerary_date",
+      "expectedMaterialization": "blocked"
+    },
+    {
+      "caseId": "travel-invalid-timezone",
+      "scope": "itinerary_preparation",
+      "baseFixtureId": "travel-prep-and-first-day",
+      "templateId": "travel-itinerary-prep-v1",
+      "mutation": "시간이 있는 상태에서 IANA 목록에 없는 시간대 문자열을 입력한다.",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/structureDraft/values/timezone",
+          "value": "Mars/Olympus"
+        }
+      ],
+      "expectedRuleCode": "TRAVEL_TIMEZONE",
+      "expectedScopeInstanceId": "root",
+      "expectedSlotId": "timezone",
+      "expectedMaterialization": "blocked"
+    },
+    {
+      "caseId": "travel-prep-offset-without-departure",
+      "scope": "itinerary_preparation",
+      "baseFixtureId": "travel-prep-and-first-day",
+      "templateId": "travel-itinerary-prep-v1",
+      "mutation": "출발일 기준 준비 항목만 남기고 출발일을 제거한다.",
+      "patch": [
+        {
+          "op": "remove",
+          "path": "/structureDraft/groups/1"
+        },
+        {
+          "op": "remove",
+          "path": "/structureDraft/values/departure_date"
+        }
+      ],
+      "expectedRuleCode": "TRAVEL_PREP_OFFSET_ANCHOR",
+      "expectedScopeInstanceId": "root",
+      "expectedSlotId": "departure_date",
+      "expectedMaterialization": "blocked"
+    },
+    {
+      "caseId": "travel-prep-absolute-without-date",
+      "scope": "itinerary_preparation",
+      "baseFixtureId": "travel-prep-and-first-day",
+      "templateId": "travel-itinerary-prep-v1",
+      "mutation": "준비 항목의 날짜 방식을 absolute로 바꾸고 날짜 값은 주지 않는다.",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/structureDraft/groups/0/children/0/values/prep_schedule_mode",
+          "value": "absolute"
+        },
+        {
+          "op": "remove",
+          "path": "/structureDraft/groups/0/children/0/values/prep_day_offset"
+        }
+      ],
+      "expectedRuleCode": "TRAVEL_PREP_ABSOLUTE_DATE",
+      "expectedScopeInstanceId": "travel-prep-passport",
+      "expectedSlotId": "prep_absolute_date",
+      "expectedMaterialization": "blocked"
+    },
+    {
+      "caseId": "travel-prep-unscheduled-retains-offset",
+      "scope": "itinerary_preparation",
+      "baseFixtureId": "travel-prep-and-first-day",
+      "templateId": "travel-itinerary-prep-v1",
+      "mutation": "준비 항목을 날짜 미정으로 바꾸면서 기존 offset을 남긴다.",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/structureDraft/groups/0/children/0/values/prep_schedule_mode",
+          "value": "unscheduled"
+        }
+      ],
+      "expectedRuleCode": "TRAVEL_PREP_UNSCHEDULED_CONFLICT",
+      "expectedScopeInstanceId": "travel-prep-passport",
+      "expectedSlotId": "prep_day_offset",
+      "expectedMaterialization": "blocked"
+    },
+    {
+      "caseId": "exam-invalid-study-window",
+      "scope": "date_preparation",
+      "baseFixtureId": "exam-dday-bounded-study",
+      "templateId": "exam-dday-study-v1",
+      "mutation": "학습 종료일을 시험일 뒤로 바꾼다.",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/structureDraft/values/study_end_date",
+          "value": "2026-11-08"
+        }
+      ],
+      "expectedRuleCode": "EXAM_DATE_ORDER",
+      "expectedScopeInstanceId": "root",
+      "expectedSlotId": "study_end_date",
+      "expectedMaterialization": "blocked"
+    },
+    {
+      "caseId": "exam-no-occurrence-in-study-window",
+      "scope": "date_preparation",
+      "baseFixtureId": "exam-dday-bounded-study",
+      "templateId": "exam-dday-study-v1",
+      "mutation": "학습 기간을 선택 요일이 없는 하루로 줄인다.",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/structureDraft/values/study_start_date",
+          "value": "2026-09-08"
+        },
+        {
+          "op": "replace",
+          "path": "/structureDraft/values/study_end_date",
+          "value": "2026-09-08"
+        }
+      ],
+      "expectedRuleCode": "EXAM_OCCURRENCE_WINDOW",
+      "expectedScopeInstanceId": "exam-study-past-papers",
+      "expectedSlotId": "study_weekdays",
+      "expectedMaterialization": "blocked"
+    }
+  ]
+}
