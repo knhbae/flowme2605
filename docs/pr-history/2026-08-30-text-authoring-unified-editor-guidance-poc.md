@@ -3,8 +3,8 @@
 - Date: 2026-08-30
 - Branch: `agent/text-authoring-unified-editor-guidance-poc-20260830`
 - Base: `agent/text-authoring-flow-view-hybrid-ux-poc-20260828`
-- PR: `PENDING`
-- Status: `Ready to publish`
+- PR: `https://github.com/knhbae/flowme2605/pull/199`
+- Status: `Merge authorized`
 - Deploy: `Not requested`; source와 target feature branch의 Vercel deployment를 비활성화
 
 ## Why

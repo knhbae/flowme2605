@@ -53,10 +53,10 @@ Production route/store/schema, main app, AI 생성, non-empty 문서 전체 틀 
 | 상태 | 결과 |
 | --- | --- |
 | local edits | 있음, 격리 checkout의 task-owned path만 |
-| commit | `8dca3f14`, `53386931` local commits |
-| push | 게시 절차에서 갱신 |
-| PR | 게시 절차에서 갱신 |
-| merge | 게시 절차에서 갱신 |
+| commit | PR #199의 게시 commit으로 보존 |
+| push | `origin/agent/text-authoring-unified-editor-guidance-poc-20260830` |
+| PR | [#199](https://github.com/knhbae/flowme2605/pull/199) |
+| merge | owner 승인 완료. 최종 결과는 PR #199에서 추적 |
 | deploy | 제외. source·target feature branch 모두 Vercel 비활성화 |
 | external side effect | 0 |
 | observed-user sessions | 0 |
