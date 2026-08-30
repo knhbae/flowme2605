@@ -354,8 +354,16 @@ function hierarchyLineAttributes(
   if (rootGroupStart) classNames.push("ta-flow-live-line-root-group");
   if (activeRaw) classNames.push("ta-flow-live-line-active-raw");
 
+  const ownerItemId =
+    block.kind === "action"
+      ? block.entity.ownerItemId
+      : block.kind === "property" && block.owner.kind === "item"
+        ? block.owner.id
+        : undefined;
   return {
     class: classNames.join(" "),
+    "data-flow-block-id": block.blockId,
+    ...(ownerItemId ? { "data-flow-item-id": ownerItemId } : {}),
     "data-flow-hierarchy-depth": String(hierarchy.depth),
     "data-flow-hierarchy-role": hierarchy.role,
     "data-flow-editor-state": activeRaw ? "raw" : "rendered",

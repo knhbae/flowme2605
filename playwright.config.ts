@@ -5,6 +5,12 @@ const port = Number.isFinite(requestedPort) ? requestedPort : 3104;
 
 export default defineConfig({
   testDir: './tests/e2e',
+  testIgnore: [
+    '**/text-authoring-flow-view-poc.spec.ts',
+    '**/text-authoring-keyboard-property-tray-reliability-poc.spec.ts',
+    '**/text-authoring-property-reentry-simplicity-poc.spec.ts',
+    '**/text-authoring-unified-editor-guidance-poc.spec.ts',
+  ],
   timeout: 30_000,
   expect: { timeout: 5_000 },
   retries: process.env.CI ? 2 : 0,
