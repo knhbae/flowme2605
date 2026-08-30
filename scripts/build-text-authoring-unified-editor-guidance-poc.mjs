@@ -109,7 +109,9 @@ const predecessor = await readAndVerify(
   expectedPredecessorSha256,
   "Predecessor",
 );
-const templateScaffoldSha256 = sha256(await readFile(templateScaffoldPath));
+const templateScaffoldSha256 = sha256(
+  normalizeEmbeddedText(await readFile(templateScaffoldPath, "utf8")),
+);
 
 const predecessorHtml = predecessor.buffer.toString("utf8");
 const inheritedStyles = inheritedStyleIds.map((id) => extractElement(predecessorHtml, "style", id));
