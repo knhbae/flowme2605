@@ -4,7 +4,7 @@
 - Branch: `agent/text-authoring-unified-editor-guidance-poc-20260830`
 - Base: `agent/text-authoring-flow-view-hybrid-ux-poc-20260828`
 - PR: `PENDING`
-- Status: `Draft`
+- Status: `Ready to publish`
 - Deploy: `Not requested`; source와 target feature branch의 Vercel deployment를 비활성화
 
 ## Why

@@ -53,7 +53,7 @@ Production route/store/schema, main app, AI 생성, non-empty 문서 전체 틀 
 | 상태 | 결과 |
 | --- | --- |
 | local edits | 있음, 격리 checkout의 task-owned path만 |
-| commit | 게시 절차에서 갱신 |
+| commit | `8dca3f14`, `53386931` local commits |
 | push | 게시 절차에서 갱신 |
 | PR | 게시 절차에서 갱신 |
 | merge | 게시 절차에서 갱신 |

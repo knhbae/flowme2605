@@ -30,7 +30,7 @@
 
 ## Fresh 결과
 
-2026-08-30 KST에 현재 checkout에서 다시 실행했다. 명령별 별도 시작·종료 시각은 수집하지 않았으므로 만들지 않는다. 자동화, headless 브라우저, 수동 화면 확인과 관찰 사용자는 서로 다른 근거다.
+2026-08-31 KST에 commit `53386931bd648b1b4c529dd3d6291692cd002362`의 새 detached verification checkout에서 다시 실행했다. 명령별 별도 시작·종료 시각은 수집하지 않았으므로 만들지 않는다. 자동화, headless 브라우저, 수동 화면 확인과 관찰 사용자는 서로 다른 근거다.
 
 | 검증 | 상태 | 결과 |
 | --- | --- | --- |
@@ -42,7 +42,7 @@
 | shared Text Authoring | PASS | structure template 51/51 + Text Authoring 371/371 = 422/422, exit 0 |
 | full test | **NOT GREEN** | 623/624, exit 1. 수정하지 않은 `lib/flow/seed-flows.test.ts`의 날짜 민감 `review_due` 기대 0/실제 44 실패 |
 | build | PASS | Next.js 15.5.21, 정적 페이지 19개, exit 0 |
-| docs:check | PASS | required files 16개, local links 4,743개, exit 0 |
+| docs:check | PASS | required files 16개, local links 4,650개, exit 0 |
 | embedded artifact parse | PASS | module script 5개, stylesheet 5개 |
 | manual local visual check | PASS WITH LIMIT | 390×844 picker/editor 화면 확인. 실제 Android/iOS 기기는 실행하지 않음 |
 | mobile/a11y automation | PASS WITH LIMIT | 320·360·390 keyboard proxy, 844×390, 320+200%, keyboard-only, Escape/Tab, 44px, reduced motion |
@@ -52,21 +52,23 @@
 
 ```text
 node --test docs/specs/2026-08-30-flowme-text-authoring-unified-editor-guidance-poc/prototype/unified-editor-guidance-controller.test.mjs
+node scripts/build-text-authoring-unified-editor-guidance-poc.mjs
 npx.cmd tsx --test lib/flow/text-authoring/parser.blank-scaffold.test.ts lib/flow/text-authoring/parser.test.ts lib/flow/text-authoring/flow-view-model.test.ts
 npx.cmd playwright test tests/e2e/text-authoring-unified-editor-guidance-poc.spec.ts tests/e2e/text-authoring-property-reentry-simplicity-poc.spec.ts --config=playwright.unified-editor-guidance-poc.config.ts
 npm.cmd run test:text-authoring
 npm.cmd test
 npm.cmd run build
 npm.cmd run docs:check
+npm.cmd run security:audit
 ```
 
 ### full test 실패 경계
 
-실패한 suite는 현재 날짜 2026-08-30에서 seed source review가 기한을 넘었다고 판단한다. 이 작업은 해당 fixture와 test를 수정하지 않았고, 이번 편집기 기능과 직접 관련된 targeted·shared·browser·build 검증은 모두 통과했다. 따라서 전체 suite를 PASS로 표현하지 않으며, 날짜 기준 또는 기대값의 별도 소유권 결정을 남긴다.
+실패한 suite는 현재 날짜 2026-08-31에서 seed source review가 기한을 넘었다고 판단한다. 이 작업은 해당 fixture와 test를 수정하지 않았고, 이번 편집기 기능과 직접 관련된 targeted·shared·browser·build 검증은 모두 통과했다. 따라서 전체 suite를 PASS로 표현하지 않으며, 날짜 기준 또는 기대값의 별도 소유권 결정을 남긴다.
 
 ### 결과물 무결성
 
-- HTML bytes: `2,815,445`
+- HTML bytes: `2,814,564`
 - HTML SHA-256: `1B7BC8D4ED432121CE5F8787E21C37131120E3A2079E28DE8A2008396FE9C0D4`
 - predecessor HTML은 exact SHA guard를 통과했고 수정하지 않았다.
 - 6개 TXT scaffold는 successor-local snapshot으로 versioning되며 SHA-256은 `1278E7EF1EC7A00F332FE56B38609054E412FA5FE014FC6B9DA8849B3628AEAF`다.
