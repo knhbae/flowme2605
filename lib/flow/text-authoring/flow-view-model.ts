@@ -785,6 +785,44 @@ function buildCurrentBlocks(
       ),
     );
     if (targets.length !== 1) {
+      // An exact blank property scaffold intentionally has no semantic
+      // mapping yet. It can still inherit the already-mapped owner of its
+      // parent block for presentation, so the existing inline editor keeps
+      // showing a property row without inventing a canonical field.
+      if (targets.length === 0 && rowTypes.has("property")) {
+        const parts = propertyParts(line.content);
+        const parentTargets = uniqueTargets(
+          overlappingBlocks.flatMap((block) =>
+            block.parentBlockId
+              ? mappingByBlockId.get(block.parentBlockId) ?? []
+              : [],
+          ),
+        );
+        if (parts.value === "" && parentTargets.length === 1) {
+          const owner = resolveOwner(
+            parentTargets[0],
+            parseResult,
+            itemById,
+            stepIds,
+            ownerByFieldId,
+          );
+          if (owner) {
+            return {
+              ...baseBlock(
+                documentId,
+                line,
+                `property:blank-scaffold:${overlappingBlocks[0]?.blockId ?? line.line}`,
+                line.content,
+              ),
+              kind: "property",
+              label: parts.label,
+              value: "",
+              depth: sourceIndentationDepth(line.content),
+              owner,
+            };
+          }
+        }
+      }
       return textBlock(
         documentId,
         line,

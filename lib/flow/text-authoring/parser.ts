@@ -623,6 +623,91 @@ function propertyRowType(property: ParsedProperty): SourceRowType {
   return 'property';
 }
 
+type BlankScaffoldLine = {
+  rowType: SourceRowType;
+  role: AuthoringTargetKind;
+  depth: number;
+  propertyKey?: string;
+};
+
+/**
+ * Recognizes only empty authoring syntax that is useful as an editable
+ * scaffold. The row is still captured below, but it must not create a Flow,
+ * Step, Item, property, or validation issue until the user supplies a value.
+ */
+function blankScaffoldLine(rawText: string): BlankScaffoldLine | undefined {
+  const trimmed = rawText.trim();
+  if (/^#{1,2}$/u.test(trimmed)) {
+    return {
+      rowType: 'heading',
+      role: trimmed === '#' ? 'flow' : 'step',
+      depth: 0,
+    };
+  }
+
+  if (/^[-*+]\s+\[ \]$/u.test(trimmed)) {
+    const leadingWhitespace = /^\s*/u.exec(rawText)?.[0] ?? '';
+    return {
+      rowType: 'check',
+      role: 'item',
+      depth: Math.floor(indentationWidth(leadingWhitespace) / 2),
+    };
+  }
+
+  const bullet = /^([ \t]*)[-*+]\s+(.*)$/u.exec(rawText);
+  const candidate = (bullet ? bullet[2] : trimmed).trim();
+  const property = parseProperty(candidate);
+  if (!property || property.value !== '') return undefined;
+
+  const leadingWhitespace = bullet
+    ? bullet[1]
+    : rawText.slice(0, rawText.indexOf(trimmed));
+  return {
+    rowType: propertyRowType(property),
+    role: property.targetKind,
+    depth: Math.floor(indentationWidth(leadingWhitespace) / 2),
+    propertyKey: property.key,
+  };
+}
+
+function preserveBlankScaffoldLine(
+  state: MutableParseState,
+  line: ParsedLine,
+  scaffold: BlankScaffoldLine,
+): void {
+  const parentBlockId = scaffold.rowType === 'heading' || scaffold.propertyKey === 'anchor'
+    ? undefined
+    : scaffold.rowType === 'check' && scaffold.depth === 0
+      ? state.currentStepBlockId
+      : state.currentItemBlockId ?? state.currentStepBlockId;
+  const unit = sourceUnit(
+    state,
+    line.raw,
+    rangeForLine(line),
+    scaffold.rowType,
+    scaffold.role,
+    'high',
+    scaffold.depth,
+    parentBlockId,
+  );
+  unit.block.included = false;
+
+  if (scaffold.rowType === 'heading') {
+    state.currentStep = undefined;
+    state.currentStepBlockId = undefined;
+    state.currentStepSchedule = undefined;
+    state.currentStepScheduleRowId = undefined;
+    state.currentItem = undefined;
+    state.currentItemBlockId = undefined;
+    return;
+  }
+
+  if (scaffold.rowType === 'check' && scaffold.depth === 0) {
+    state.currentItem = undefined;
+    state.currentItemBlockId = undefined;
+  }
+}
+
 function addInvalidDateIssue(
   state: MutableParseState,
   unit: SourceUnit,
@@ -2178,6 +2263,12 @@ export function parseTextAuthoringDocument(
     }
     if (/^(?:>|!\[|<[^>]+>|-{3,}$)/u.test(trimmed)) {
       addUnsupportedLine(state, line);
+      continue;
+    }
+
+    const blankScaffold = blankScaffoldLine(line.raw);
+    if (blankScaffold) {
+      preserveBlankScaffoldLine(state, line, blankScaffold);
       continue;
     }
 

@@ -1,0 +1,92 @@
+{
+  "fixtureVersion": "p0.2",
+  "fixtureId": "exercise-weekly-bounded-count",
+  "definitionRef": {
+    "templateId": "exercise-weekly-repeat-v1",
+    "version": "1.0.0"
+  },
+  "purpose": "사용자가 정한 요일과 총 회차로 주간 운동을 유한 반복한다.",
+  "initialRawText": "",
+  "sourceFingerprint": "raw-v1:0:0ztntfp",
+  "structureDraft": {
+    "schemaVersion": "p0.2",
+    "draftId": "draft-fixture-exercise-weekly",
+    "templateId": "exercise-weekly-repeat-v1",
+    "templateVersion": "1.0.0",
+    "sourceFingerprint": "raw-v1:0:0ztntfp",
+    "values": {
+      "flow_title": "아침 스트레칭 루틴",
+      "start_date": "2026-09-01",
+      "end_mode": "count",
+      "repeat_count": 8
+    },
+    "groups": [
+      {
+        "instanceId": "routine-morning",
+        "groupId": "routine_groups",
+        "order": 0,
+        "values": { "group_title": "아침 루틴" },
+        "children": [
+          {
+            "instanceId": "session-morning-stretch",
+            "groupId": "sessions",
+            "order": 0,
+            "values": {
+              "item_title": "전신 스트레칭",
+              "weekdays": ["TU", "TH"],
+              "time": "07:00",
+              "duration_minutes": 20,
+              "detail": "동작 사이에 10초씩 쉰다."
+            },
+            "children": []
+          }
+        ]
+      }
+    ],
+    "dismissedSlots": [],
+    "materialized": false,
+    "revision": 1,
+    "updatedAt": "2026-08-29T12:00:00.000Z"
+  },
+  "expectedPlan": {
+    "userValueCount": 10,
+    "itemCount": 1,
+    "sourceCallbackCount": 1,
+    "undoCountToRestoreInitial": 1,
+    "warnings": [],
+    "derivedValues": [
+      {
+        "kind": "first_occurrence",
+        "sourceSlotKeys": ["start_date", "session-morning-stretch.weekdays"],
+        "value": "2026-09-01"
+      }
+    ],
+    "forbiddenGeneratedContentCount": 0
+  },
+  "expectedRawText": "# 아침 스트레칭 루틴\n- 기준일: 2026-09-01\n\n## 아침 루틴\n- [ ] 전신 스트레칭\n  - 날짜: 2026-09-01\n  - 시간: 07:00\n  - 소요 시간: 20분\n  - 반복: 매주 화, 목\n  - 반복 종료: 8회\n  - 설명: 동작 사이에 10초씩 쉰다.",
+  "expectedCanonical": {
+    "flowTitle": "아침 스트레칭 루틴",
+    "stepCount": 1,
+    "itemCount": 1,
+    "items": [
+      {
+        "title": "전신 스트레칭",
+        "firstOccurrence": "2026-09-01",
+        "recurrenceEnd": { "mode": "count", "count": 8 },
+        "occurrenceCount": 8
+      }
+    ],
+    "sameItemAcrossProjections": true
+  },
+  "expectedProjectionAssertions": {
+    "fixtureExpectedPrimary": "calendar",
+    "offeredArtifacts": ["calendar", "todo", "memo"],
+    "optionalWhenEligible": ["sheet"],
+    "notOffered": []
+  },
+  "negativeAssertions": [
+    "명시적 무기한",
+    "매일 자동 생성",
+    "추천 운동량"
+  ]
+}

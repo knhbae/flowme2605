@@ -1,0 +1,126 @@
+{
+  "fixtureVersion": "p0.2",
+  "fixtureId": "moving-dday-three-schedule-modes",
+  "definitionRef": {
+    "templateId": "moving-dday-v1",
+    "version": "1.0.0"
+  },
+  "purpose": "이사일 기준 날짜, 직접 지정 날짜, 날짜 없는 할 일을 한 구조에서 구분한다.",
+  "initialRawText": "",
+  "sourceFingerprint": "raw-v1:0:0ztntfp",
+  "structureDraft": {
+    "schemaVersion": "p0.2",
+    "draftId": "draft-fixture-moving-dday",
+    "templateId": "moving-dday-v1",
+    "templateVersion": "1.0.0",
+    "sourceFingerprint": "raw-v1:0:0ztntfp",
+    "values": {
+      "flow_title": "11월 이사 준비",
+      "anchor_date": "2026-11-01"
+    },
+    "groups": [
+      {
+        "instanceId": "moving-group-contract",
+        "groupId": "windows",
+        "order": 0,
+        "values": { "step_title": "계약과 정리" },
+        "children": [
+          {
+            "instanceId": "moving-task-company",
+            "groupId": "tasks",
+            "order": 0,
+            "values": {
+              "item_title": "이사업체 확정",
+              "schedule_mode": "anchor_offset",
+              "day_offset": -30,
+              "checks": ["계약 범위 확인", "추가 비용 조건 확인"],
+              "note": "통화한 조건과 계약서 내용이 같은지 본다."
+            },
+            "children": []
+          },
+          {
+            "instanceId": "moving-task-disposal-list",
+            "groupId": "tasks",
+            "order": 1,
+            "values": {
+              "item_title": "버릴 물건 목록 정리",
+              "schedule_mode": "unscheduled"
+            },
+            "children": []
+          }
+        ]
+      },
+      {
+        "instanceId": "moving-group-last-check",
+        "groupId": "windows",
+        "order": 1,
+        "values": { "step_title": "이사 직전" },
+        "children": [
+          {
+            "instanceId": "moving-task-transfer-limit",
+            "groupId": "tasks",
+            "order": 0,
+            "values": {
+              "item_title": "잔금 이체 한도 확인",
+              "schedule_mode": "absolute",
+              "absolute_date": "2026-10-29"
+            },
+            "children": []
+          }
+        ]
+      }
+    ],
+    "dismissedSlots": [],
+    "materialized": false,
+    "revision": 1,
+    "updatedAt": "2026-08-29T12:00:00.000Z"
+  },
+  "expectedPlan": {
+    "userValueCount": 14,
+    "itemCount": 3,
+    "sourceCallbackCount": 1,
+    "undoCountToRestoreInitial": 1,
+    "warnings": [],
+    "derivedValues": [
+      {
+        "kind": "resolved_anchor_date",
+        "sourceSlotKeys": ["anchor_date", "moving-task-company.day_offset"],
+        "value": "2026-10-02"
+      }
+    ],
+    "forbiddenGeneratedContentCount": 0
+  },
+  "expectedRawText": "# 11월 이사 준비\n- 기준일: 2026-11-01\n\n## 계약과 정리\n- [ ] 이사업체 확정\n  - 상대 날짜: D-30\n  - 설명: 통화한 조건과 계약서 내용이 같은지 본다.\n  - [ ] 계약 범위 확인\n  - [ ] 추가 비용 조건 확인\n- [ ] 버릴 물건 목록 정리\n\n## 이사 직전\n- [ ] 잔금 이체 한도 확인\n  - 날짜: 2026-10-29",
+  "expectedCanonical": {
+    "flowTitle": "11월 이사 준비",
+    "anchorDate": "2026-11-01",
+    "stepCount": 2,
+    "itemCount": 3,
+    "scheduledItemCount": 2,
+    "unscheduledItemCount": 1,
+    "items": [
+      {
+        "title": "이사업체 확정",
+        "dayOffset": -30,
+        "resolvedDate": "2026-10-02",
+        "subcheckCount": 2
+      },
+      { "title": "버릴 물건 목록 정리", "schedule": "unscheduled" },
+      { "title": "잔금 이체 한도 확인", "date": "2026-10-29" }
+    ],
+    "sameItemAcrossProjections": true
+  },
+  "expectedProjectionAssertions": {
+    "fixtureExpectedPrimary": "todo",
+    "primaryRule": "calendar_when_all_items_scheduled_else_todo",
+    "offeredArtifacts": ["calendar", "todo", "memo"],
+    "optionalWhenEligible": [],
+    "notOffered": ["sheet"]
+  },
+  "negativeAssertions": [
+    "전입신고하기",
+    "이사 체크리스트",
+    "업체 추천",
+    "window_start_offset"
+  ]
+}

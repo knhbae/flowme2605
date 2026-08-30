@@ -1,7 +1,10 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
-const ARTIFACT =
+const DEFAULT_ARTIFACT =
   "/docs/content-audit/2026-08-29-flowme-text-authoring-property-reentry-simplicity-poc-results/flowme-text-authoring-property-reentry-simplicity-poc.html";
+const ARTIFACT =
+  process.env.FLOWME_PROPERTY_REENTRY_SIMPLICITY_POC_ARTIFACT?.trim()
+  || DEFAULT_ARTIFACT;
 const CONTENT = '[data-testid="ta-authoring-flow-editor-content"]';
 const FLOW_EDITOR = '[data-testid="ta-authoring-flow-editor"][data-editor-mode="flow"]';
 const TRIGGER = '[data-testid="ta-authoring-stable-inline-trigger"]';

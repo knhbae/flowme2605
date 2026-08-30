@@ -1,2 +1,5 @@
 docs/content-audit/2026-08-29-flowme-text-authoring-keyboard-property-tray-reliability-poc-results/flowme-text-authoring-keyboard-property-tray-reliability-poc.html binary
 docs/content-audit/2026-08-29-flowme-text-authoring-property-reentry-simplicity-poc-results/flowme-text-authoring-property-reentry-simplicity-poc.html binary
+docs/content-audit/2026-08-30-flowme-text-authoring-unified-editor-guidance-poc-results/flowme-text-authoring-unified-editor-guidance-poc.html binary
+lib/flow/text-authoring/structure-template/snapshots/catalog-v1/*.json text eol=lf
+lib/flow/text-authoring/structure-template/snapshots/catalog-v1/**/*.json text eol=lf
