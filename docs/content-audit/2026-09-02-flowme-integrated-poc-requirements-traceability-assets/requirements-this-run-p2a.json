@@ -1,0 +1,32 @@
+[
+  {
+    "id": "D1-020",
+    "status": "P2-A 개선 적용",
+    "detail": "동일 source Flow의 활성 사본이 둘 이상일 때만 savedCopyId/ref의 안정 순서로 사본 1·2를 표시하고, 단일 사본과 휴지통 뒤 남은 사본은 원제목을 유지한다. React와 독립 HTML의 목록·상세에서 확인하고 source identity와 진행 상태는 바꾸지 않았다."
+  },
+  {
+    "id": "D2-017",
+    "status": "P2-A 부분 개선",
+    "detail": "작성 결과와 저장 Flow 결과에 실행 날짜 우선 7열·42칸 월간 grid, 월 이동, 선택일, 날짜 미정 목록을 연결했다. 반복 Item의 bounded occurrence와 네 결과의 동일 occurrence identity는 아직 없다."
+  },
+  {
+    "id": "D2-020",
+    "status": "P2-A 부분 개선",
+    "detail": "WorkingSource와 분리된 deterministic TXT·CSV를 브라우저 Blob으로 내려받고 즉시 URL을 해제한다. 원 정본의 자동 번호·전용 속성·하위 체크·반복 회차를 모두 담는 완전한 배포용 TXT serializer는 아직 없다."
+  },
+  {
+    "id": "D2-023",
+    "status": "P2-A 부분 개선",
+    "detail": "개발2 정본에서 추출한 31개 문법·실콘텐츠·변경·오류·표 사례를 provenance와 함께 자동 재생해 원문 bytes와 무합성 경계를 확인한다. 사용자가 화면에서 31개 사례를 선택·재생하는 QA surface는 없다."
+  },
+  {
+    "id": "D2-024",
+    "status": "P2-A 개선 적용",
+    "detail": "Markdown table·CSV·TSV의 결정 가능한 안전 행만 SourceRow 표로 보여 주고, 모호하거나 위험한 표는 전체 원문 fallback으로 남긴다. 표 행에서 Item·Todo·Calendar를 생성하지 않는다."
+  },
+  {
+    "id": "D2-025",
+    "status": "P2-A 개선 적용",
+    "detail": "blockquote·code fence·HTML/comment·빈 줄·표 cell과 LF·CRLF·CR·mixed line ending을 원문 locator와 함께 보존하고, 위험 입력은 자르거나 추측하지 않고 원문으로 되돌린다."
+  }
+]

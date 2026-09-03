@@ -1,0 +1,1065 @@
+{
+  "version": 4,
+  "generatedAt": "2026-09-03T18:55:49.481+09:00",
+  "baseline": {
+    "branch": "agent/personal-workspace-v4-1-poc-20260901",
+    "head": "db74a36cbf2325573b2d696589daa659619e50f2",
+    "originMain": "db74a36cbf2325573b2d696589daa659619e50f2",
+    "ahead": 0,
+    "behind": 0,
+    "isolatedWorktree": true
+  },
+  "coverage": {
+    "primaryRequirements": 168,
+    "bridgeContracts": 86,
+    "compoundParents": 77,
+    "subchecks": 386,
+    "currentPrimaryGaps": 17,
+    "currentPrimaryGapsByProduct": {
+      "V41": 6,
+      "D1": 0,
+      "D2": 11
+    },
+    "primaryVerdictStage": "P2-C",
+    "currentPrimaryVerdicts": {
+      "fulfilled": 128,
+      "partial": 13,
+      "missing": 4,
+      "intentionalChange": 11,
+      "decisionRequired": 0,
+      "excluded": 12
+    },
+    "subcheckVerdictStage": "P2-B",
+    "currentSubcheckVerdicts": {
+      "fulfilled": 260,
+      "partial": 58,
+      "missing": 51,
+      "intentionalChange": 5,
+      "decisionRequired": 0,
+      "excluded": 12
+    },
+    "bridgeVerdictStage": "P2-B",
+    "currentBridgeGaps": 21,
+    "currentBridgeVerdicts": {
+      "fulfilled": 59,
+      "partial": 18,
+      "missing": 3,
+      "intentionalChange": 2,
+      "decisionRequired": 0,
+      "excluded": 4
+    },
+    "decisionHistory": {
+      "V41": 5,
+      "D1": 9,
+      "D2": 5
+    },
+    "stage1Parents": 32,
+    "stage1ParentVerdicts": {
+      "fulfilled": 2,
+      "partial": 25,
+      "missing": 2,
+      "intentionalChange": 2,
+      "excluded": 1
+    },
+    "stage1Subchecks": 77,
+    "stage1SubcheckVerdicts": {
+      "fulfilled": 31,
+      "partial": 31,
+      "missing": 9,
+      "excluded": 6
+    }
+  },
+  "runs": [
+    {
+      "id": "personal-workspace-poc-model",
+      "command": "npm.cmd run test:personal-workspace-poc",
+      "tests": 355,
+      "passed": 355,
+      "failed": 0
+    },
+    {
+      "id": "standalone-model",
+      "command": "node --test docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/standalone.test.cjs",
+      "tests": 54,
+      "passed": 54,
+      "failed": 0
+    },
+    {
+      "id": "standalone-runtime-browser",
+      "command": "npx.cmd playwright test tests/e2e/personal-workspace-integration-poc.spec.ts tests/e2e/personal-workspace-integrated-standalone.spec.ts --reporter=line (standalone 24-test slice)",
+      "tests": 24,
+      "passed": 24,
+      "failed": 0,
+      "viewports": [
+        "320x700",
+        "390x844",
+        "375x812",
+        "844x390",
+        "1024x768",
+        "1440x900"
+      ],
+      "horizontalOverflowFailures": 0,
+      "consoleErrors": 0,
+      "pageErrors": 0,
+      "writesOutsideAllowedPrefix": 0,
+      "removesOutsideAllowedPrefix": 0,
+      "clearCalls": 0,
+      "operatingSnapshotByteIdentical": true
+    },
+    {
+      "id": "full-regression",
+      "command": "npm.cmd test",
+      "tests": 1636,
+      "passed": 1635,
+      "failed": 1,
+      "status": "FAIL",
+      "stoppedEarly": true,
+      "failure": {
+        "suite": "seed-flows",
+        "fixtureId": "dog-adoption-first-week",
+        "field": "review_due",
+        "value": "2026-06-04",
+        "classification": "time-dependent-content-freshness",
+        "summary": "seed-flows의 dog-adoption-first-week review_due 2026-06-04가 현재 날짜 기준 콘텐츠 신선도 검증을 통과하지 못해 전체 실행이 중단됐다."
+      },
+      "scope": "P2-B 변경 반영 후 fresh npm test; 유일한 실패는 기존 시간 의존 seed fixture이며 downstream은 &&에서 중단"
+    },
+    {
+      "id": "full-regression-tail-after-stop",
+      "command": "npm.cmd run test:approved-plan-execution ; npm.cmd run test:public-plan-surface (npm test 중단 뒤 각각 별도 실행)",
+      "commandExact": true,
+      "tests": 220,
+      "passed": 220,
+      "failed": 0,
+      "status": "PASS",
+      "groups": 2,
+      "scope": "P2-B fresh npm.cmd test 중단 뒤 남은 tail 두 그룹을 별도 실행: approved-plan-execution 201/201, public-plan-surface 19/19"
+    },
+    {
+      "id": "p2a-lossless-parity-model",
+      "command": "npx.cmd tsx --test lib/flow/personal-workspace-poc-lossless-authoring.test.ts lib/flow/personal-workspace-poc-cross-surface-parity.test.ts",
+      "tests": 48,
+      "passed": 48,
+      "failed": 0
+    },
+    {
+      "id": "p2a-browser-focused",
+      "command": "npx.cmd playwright test tests/e2e/personal-workspace-integration-poc.spec.ts tests/e2e/personal-workspace-integrated-standalone.spec.ts --grep P2-A --reporter=line",
+      "tests": 3,
+      "passed": 3,
+      "failed": 0,
+      "viewports": [
+        "320x700",
+        "390x844",
+        "375x812",
+        "844x390",
+        "1024x768",
+        "1440x900"
+      ],
+      "horizontalOverflowFailures": 0,
+      "consoleErrors": 0,
+      "pageErrors": 0,
+      "writesOutsideAllowedPrefix": 0,
+      "removesOutsideAllowedPrefix": 0,
+      "clearCalls": 0,
+      "operatingSnapshotByteIdentical": true
+    },
+    {
+      "id": "p2a-browser-regression",
+      "command": "npx.cmd playwright test tests/e2e/personal-workspace-integration-poc.spec.ts tests/e2e/personal-workspace-integrated-standalone.spec.ts --reporter=line",
+      "tests": 30,
+      "passed": 30,
+      "failed": 0,
+      "viewports": [
+        "320x700",
+        "390x844",
+        "375x812",
+        "844x390",
+        "1024x768",
+        "1440x900"
+      ],
+      "horizontalOverflowFailures": 0,
+      "consoleErrors": 0,
+      "pageErrors": 0,
+      "writesOutsideAllowedPrefix": 0,
+      "removesOutsideAllowedPrefix": 0,
+      "clearCalls": 0,
+      "operatingSnapshotByteIdentical": true
+    },
+    {
+      "id": "production-build",
+      "command": "npm.cmd run build",
+      "staticPages": 18,
+      "passed": 18,
+      "failed": 0,
+      "scope": "최종 React와 standalone 변경을 모두 반영한 production build"
+    },
+    {
+      "id": "a8-browser-repeat",
+      "command": "npx.cmd playwright test personal-workspace-poc.spec.ts --grep <four A8 core scenarios> --workers=1 --repeat-each=2",
+      "tests": 8,
+      "passed": 8,
+      "failed": 0
+    },
+    {
+      "id": "a8-browser-expanded-repeat",
+      "command": "npx.cmd playwright test personal-workspace-poc.spec.ts --grep <six A8 related scenarios> --workers=1 --repeat-each=2",
+      "tests": 12,
+      "passed": 12,
+      "failed": 0
+    },
+    {
+      "id": "a9-offscreen-date-repeat",
+      "command": "npx.cmd playwright test personal-workspace-poc.spec.ts --grep <844x300 reduced-motion offscreen DATE> --workers=1 --repeat-each=10",
+      "tests": 10,
+      "passed": 10,
+      "failed": 0
+    },
+    {
+      "id": "relevant-browser",
+      "command": "npx.cmd playwright test tests/e2e/personal-workspace-poc.spec.ts tests/e2e/personal-workspace-integration-poc.spec.ts tests/e2e/personal-workspace-integrated-standalone.spec.ts tests/e2e/personal-workspace-standalone-demo.spec.ts tests/e2e/personal-workspace-gap-closure-plan.spec.ts tests/e2e/personal-workspace-integrated-validation-report.spec.ts tests/e2e/personal-workspace-requirements-traceability.spec.ts --workers=1",
+      "tests": 37,
+      "passed": 37,
+      "failed": 0
+    },
+    {
+      "id": "report-browser-after-refresh",
+      "command": "npx.cmd playwright test tests/e2e/personal-workspace-gap-closure-plan.spec.ts tests/e2e/personal-workspace-integrated-validation-report.spec.ts tests/e2e/personal-workspace-requirements-traceability.spec.ts --workers=1",
+      "tests": 6,
+      "passed": 6,
+      "failed": 0
+    },
+    {
+      "id": "a0-decision-packet-browser",
+      "command": "npx.cmd playwright test tests/e2e/personal-workspace-a0-decision-packet.spec.ts --workers=1",
+      "tests": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    {
+      "id": "a0-report-bundle-browser",
+      "command": "npx.cmd playwright test tests/e2e/personal-workspace-a0-decision-packet.spec.ts tests/e2e/personal-workspace-gap-closure-plan.spec.ts tests/e2e/personal-workspace-requirements-traceability.spec.ts --workers=1",
+      "tests": 6,
+      "passed": 6,
+      "failed": 0
+    },
+    {
+      "id": "documentation-check",
+      "command": "npm.cmd run docs:check",
+      "requiredFiles": 16,
+      "localLinks": 4594,
+      "passed": 4594,
+      "failed": 0,
+      "status": "PASS",
+      "scope": "P2-B 변경 반영 후 fresh documentation check"
+    },
+    {
+      "id": "stage1-combined-model",
+      "command": "npx.cmd tsx --test lib/flow/flow-editor-transaction.test.ts lib/flow/personal-workspace-poc-authoring-fidelity.test.ts lib/flow/personal-workspace-poc-authoring.test.ts lib/flow/personal-workspace-poc-plan-editor.test.ts lib/flow/personal-workspace-poc-state.test.ts lib/flow/personal-workspace-poc-storage-transaction.test.ts",
+      "tests": 197,
+      "passed": 197,
+      "failed": 0
+    },
+    {
+      "id": "stage1-runtime-browser",
+      "command": "npx.cmd playwright test tests/e2e/personal-workspace-stage-1-runtime.spec.ts",
+      "tests": 4,
+      "passed": 4,
+      "failed": 0,
+      "viewports": [
+        "390x844",
+        "1440x900"
+      ],
+      "horizontalOverflowFailures": 0,
+      "consoleErrors": 0,
+      "pageErrors": 0
+    },
+    {
+      "id": "stage2-runtime-browser",
+      "command": "npx.cmd playwright test tests/e2e/personal-workspace-stage-2-runtime.spec.ts --workers=1",
+      "tests": 11,
+      "passed": 11,
+      "failed": 0,
+      "viewports": [
+        "320x700",
+        "375x812",
+        "390x844",
+        "844x390",
+        "1024x768",
+        "1440x900"
+      ],
+      "horizontalOverflowFailures": 0,
+      "consoleErrors": 0,
+      "pageErrors": 0,
+      "coveredPrimaryActions": 0,
+      "writesOutsideAllowedPrefix": 0,
+      "removesOutsideAllowedPrefix": 0,
+      "clearCalls": 0,
+      "operatingSnapshotByteIdentical": true
+    },
+    {
+      "id": "stage2-integration-runtime-browser",
+      "command": "npx.cmd playwright test tests/e2e/personal-workspace-integration-poc.spec.ts --workers=1",
+      "tests": 3,
+      "passed": 3,
+      "failed": 0,
+      "viewports": [
+        "390x844",
+        "375x812",
+        "844x390",
+        "1024x768",
+        "1440x900"
+      ],
+      "screenshots": 5,
+      "horizontalOverflowFailures": 0,
+      "consoleErrors": 0,
+      "pageErrors": 0,
+      "coveredPrimaryActions": 0,
+      "writesOutsideAllowedPrefix": 0,
+      "removesOutsideAllowedPrefix": 0,
+      "clearCalls": 0,
+      "operatingSnapshotByteIdentical": true
+    },
+    {
+      "id": "personal-workspace-v41-core-runtime-browser",
+      "command": "npx.cmd playwright test tests/e2e/personal-workspace-poc.spec.ts --workers=1 --output=test-results-v41-core-final",
+      "resultArtifact": "test-results-v41-core-final/.last-run.json",
+      "tests": 13,
+      "passed": 13,
+      "failed": 0,
+      "viewports": [
+        "390x844",
+        "375x812",
+        "844x390",
+        "1024x768",
+        "1440x900",
+        "844x300"
+      ],
+      "horizontalOverflowFailures": 0,
+      "consoleErrors": 0,
+      "pageErrors": 0,
+      "coveredPrimaryActions": 0,
+      "writesOutsideAllowedPrefix": 0,
+      "removesOutsideAllowedPrefix": 0,
+      "clearCalls": 0,
+      "operatingSnapshotByteIdentical": true
+    },
+    {
+      "id": "stage3-runtime-browser",
+      "command": "npx.cmd playwright test tests/e2e/personal-workspace-stage-3-runtime.spec.ts --workers=1 --output=test-results-stage3-final-5",
+      "resultArtifact": "test-results-stage3-final-5/.last-run.json",
+      "tests": 13,
+      "passed": 13,
+      "failed": 0,
+      "viewports": [
+        "320x700",
+        "375x812",
+        "390x844",
+        "844x390",
+        "1024x768",
+        "1440x900"
+      ],
+      "screenshots": 24,
+      "horizontalOverflowFailures": 0,
+      "consoleErrors": 0,
+      "pageErrors": 0,
+      "writesOutsideAllowedPrefix": 0,
+      "removesOutsideAllowedPrefix": 0,
+      "clearCalls": 0,
+      "operatingSnapshotByteIdentical": true
+    },
+    {
+      "id": "stage4-runtime-browser",
+      "command": "npx.cmd playwright test tests/e2e/personal-workspace-stage-4-runtime.spec.ts --workers=1",
+      "tests": 5,
+      "passed": 5,
+      "failed": 0,
+      "viewports": [
+        "320x700",
+        "375x812",
+        "390x844",
+        "844x390",
+        "1024x768",
+        "1440x900"
+      ],
+      "horizontalOverflowFailures": 0,
+      "consoleErrors": 0,
+      "pageErrors": 0,
+      "writesOutsideAllowedPrefix": 0,
+      "removesOutsideAllowedPrefix": 0,
+      "clearCalls": 0,
+      "nonPocSnapshotByteIdentical": true
+    },
+    {
+      "id": "authoring-workspace-parity-browser",
+      "command": "npx.cmd playwright test tests/e2e/personal-workspace-authoring-workspace-parity.spec.ts --workers=1",
+      "tests": 2,
+      "passed": 2,
+      "failed": 0,
+      "viewports": [
+        "390x844"
+      ],
+      "writesOutsideAllowedPrefix": 0,
+      "removesOutsideAllowedPrefix": 0,
+      "clearCalls": 0,
+      "operatingSnapshotByteIdentical": true
+    },
+    {
+      "id": "authoring-workspace-final-browser-bundle",
+      "command": "npx.cmd playwright test tests/e2e/personal-workspace-authoring-workspace-parity.spec.ts tests/e2e/personal-workspace-integrated-standalone.spec.ts tests/e2e/personal-workspace-integration-poc.spec.ts tests/e2e/personal-workspace-stage-2-runtime.spec.ts --workers=1",
+      "tests": 37,
+      "passed": 37,
+      "failed": 0,
+      "composition": {
+        "crossSurfaceParity": 2,
+        "standalone": 21,
+        "integration": 3,
+        "reactStage2": 11
+      },
+      "viewports": [
+        "320x700",
+        "375x812",
+        "390x844",
+        "844x390",
+        "1024x768",
+        "1440x900"
+      ],
+      "horizontalOverflowFailures": 0,
+      "consoleErrors": 0,
+      "pageErrors": 0,
+      "writesOutsideAllowedPrefix": 0,
+      "removesOutsideAllowedPrefix": 0,
+      "clearCalls": 0,
+      "operatingSnapshotByteIdentical": true
+    },
+    {
+      "id": "traceability-report-browser-authoring-closeout",
+      "command": "npx.cmd playwright test tests/e2e/personal-workspace-requirements-traceability.spec.ts --workers=1 --output=test-results-final-trace-report-authoring-closeout-2",
+      "tests": 2,
+      "passed": 2,
+      "failed": 0,
+      "viewports": [
+        "390x844",
+        "375x812",
+        "844x390",
+        "1024x768",
+        "1440x900"
+      ],
+      "horizontalOverflowFailures": 0,
+      "consoleErrors": 0,
+      "pageErrors": 0,
+      "storageWrites": 0
+    },
+    {
+      "id": "p2a-report-browser",
+      "command": "npx.cmd playwright test tests/e2e/personal-workspace-requirements-traceability.spec.ts tests/e2e/personal-workspace-p2a-lossless-result-validation-report.spec.ts --reporter=line (P2-A report 2-test slice)",
+      "tests": 2,
+      "passed": 2,
+      "failed": 0,
+      "viewports": [
+        "320x700",
+        "390x844",
+        "375x812",
+        "844x390",
+        "1024x768",
+        "1440x900"
+      ],
+      "horizontalOverflowFailures": 0,
+      "consoleErrors": 0,
+      "pageErrors": 0,
+      "storageWrites": 0
+    },
+    {
+      "id": "traceability-report-browser-p2a-closeout",
+      "command": "npx.cmd playwright test tests/e2e/personal-workspace-requirements-traceability.spec.ts tests/e2e/personal-workspace-p2a-lossless-result-validation-report.spec.ts --reporter=line (traceability report 2-test slice)",
+      "tests": 2,
+      "passed": 2,
+      "failed": 0,
+      "viewports": [
+        "390x844",
+        "375x812",
+        "844x390",
+        "1024x768",
+        "1440x900"
+      ],
+      "horizontalOverflowFailures": 0,
+      "consoleErrors": 0,
+      "pageErrors": 0,
+      "storageWrites": 0
+    },
+    {
+      "id": "p2b-occurrence-txt-model",
+      "command": "npx.cmd tsx --test lib/flow/personal-workspace-poc-authoring.test.ts lib/flow/personal-workspace-poc-authoring-fidelity.test.ts lib/flow/personal-workspace-poc-occurrence.test.ts lib/flow/personal-workspace-poc-state.test.ts lib/flow/personal-workspace-poc-result-projection.test.ts components/flow/personal-workspace-poc/PersonalWorkspacePocResultPresenter.test.tsx",
+      "tests": 77,
+      "passed": 77,
+      "failed": 0,
+      "status": "PASS",
+      "scope": "P2-B exact parser, occurrence v1 identity and bounded horizon, per-occurrence shadow transitions, shared four-result projection, complete TXT v2 bytes and React presenter intents"
+    },
+    {
+      "id": "p2b-personal-workspace-poc-suite",
+      "command": "npm.cmd run test:personal-workspace-poc",
+      "tests": 371,
+      "passed": 371,
+      "failed": 0,
+      "status": "PASS",
+      "groups": {
+        "pretestCrossSurfaceContract": { "tests": 17, "passed": 17, "failed": 0 },
+        "mainModelSuite": { "tests": 354, "passed": 354, "failed": 0 }
+      },
+      "scope": "P2-B 변경을 포함한 fresh personal-workspace PoC 전체 모델 회귀"
+    },
+    {
+      "id": "p2b-standalone-model",
+      "command": "node --test docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/standalone.test.cjs",
+      "tests": 62,
+      "passed": 62,
+      "failed": 0,
+      "status": "PASS",
+      "scope": "standalone exact recurrence grammar, bounded expansion, shared occurrence manifest, complete TXT bytes, per-occurrence move/complete/reopen/Undo/reload and zero-mutation failures"
+    },
+    {
+      "id": "p2b-cross-surface-contract",
+      "command": "npm.cmd run pretest:personal-workspace-poc",
+      "script": "tsx --test lib/flow/personal-workspace-poc-occurrence.test.ts lib/flow/personal-workspace-poc-cross-surface-parity.test.ts",
+      "tests": 17,
+      "passed": 17,
+      "failed": 0,
+      "status": "PASS",
+      "scope": "React와 standalone의 four-result occurrence manifest 및 TXT/CSV byte parity 계약"
+    },
+    {
+      "id": "p2b-browser-focused",
+      "command": "npx.cmd playwright test tests/e2e/personal-workspace-integration-poc.spec.ts --grep P2-B --workers=1 --reporter=line --output=test-results-p2b-trace-focused-browser-final",
+      "resultArtifact": "test-results-p2b-trace-focused-browser-final/.last-run.json",
+      "tests": 1,
+      "passed": 1,
+      "failed": 0,
+      "status": "PASS",
+      "viewports": [
+        "390x844"
+      ],
+      "horizontalOverflowFailures": 0,
+      "consoleErrors": 0,
+      "pageErrors": 0,
+      "writesOutsideAllowedPrefix": 0,
+      "removesOutsideAllowedPrefix": 0,
+      "clearCalls": 0,
+      "operatingSnapshotByteIdentical": true,
+      "scope": "React authoring to saved workspace: three shared occurrences, 42-cell Calendar, Todo/Sheet/TXT parity, one-occurrence move/complete/reload/Undo"
+    },
+    {
+      "id": "p2b-result-six-viewport-browser",
+      "command": "$env:FLOWME_PLAYWRIGHT_PORT='3199'; npx.cmd playwright test tests/e2e/personal-workspace-integration-poc.spec.ts --grep \"P2-A 복수 사본\" --output test-results-p2b-react-viewports",
+      "resultArtifact": "test-results-p2b-react-viewports/.last-run.json",
+      "tests": 1,
+      "passed": 1,
+      "failed": 0,
+      "status": "PASS",
+      "viewports": [
+        "320x700",
+        "390x844",
+        "375x812",
+        "844x390",
+        "1024x768",
+        "1440x900"
+      ],
+      "screenshots": [
+        "docs/content-audit/2026-09-03-flowme-integrated-poc-p2a-evidence-assets/react-result-320x700.png",
+        "docs/content-audit/2026-09-03-flowme-integrated-poc-p2a-evidence-assets/react-result-390x844.png",
+        "docs/content-audit/2026-09-03-flowme-integrated-poc-p2a-evidence-assets/react-result-375x812.png",
+        "docs/content-audit/2026-09-03-flowme-integrated-poc-p2a-evidence-assets/react-result-844x390.png",
+        "docs/content-audit/2026-09-03-flowme-integrated-poc-p2a-evidence-assets/react-result-1024x768.png",
+        "docs/content-audit/2026-09-03-flowme-integrated-poc-p2a-evidence-assets/react-result-1440x900.png"
+      ],
+      "horizontalOverflowFailures": 0,
+      "consoleErrors": 0,
+      "pageErrors": 0,
+      "writesOutsideAllowedPrefix": 0,
+      "removesOutsideAllowedPrefix": 0,
+      "clearCalls": 0,
+      "operatingSnapshotByteIdentical": true,
+      "scope": "최종 React result projection을 320 포함 6개 viewport에서 확인한 fresh run; 요구 5개 viewport, 복수 사본, 월간 결과, TXT/CSV 로컬 다운로드와 운영 bytes 보존 포함"
+    },
+    {
+      "id": "p2b-standalone-browser-focused",
+      "command": "npx.cmd playwright test tests/e2e/personal-workspace-integrated-standalone.spec.ts --grep \"P2-B standalone restores one recurring Item and three occurrence rows after move and completion\" --workers=1 --reporter=line --output test-results-p2b-standalone-final",
+      "resultArtifact": "test-results-p2b-standalone-final/.last-run.json",
+      "tests": 1,
+      "passed": 1,
+      "failed": 0,
+      "status": "PASS",
+      "durationSeconds": 11.7,
+      "viewports": [
+        "390x844"
+      ],
+      "horizontalOverflowFailures": 0,
+      "consoleErrors": 0,
+      "pageErrors": 0,
+      "writesOutsideAllowedPrefix": 0,
+      "removesOutsideAllowedPrefix": 0,
+      "clearCalls": 0,
+      "operatingSnapshotByteIdentical": true,
+      "scope": "standalone에서 원본 Item 1개와 3개 occurrence를 복원하고 한 회차 이동·완료 뒤 reload와 운영 snapshot byte parity를 확인"
+    },
+    {
+      "id": "p2b-standalone-six-viewport-browser",
+      "command": "npx.cmd playwright test tests/e2e/personal-workspace-integrated-standalone.spec.ts --grep \"single-file integrated PoC has no overflow, browser errors, or covered primary action in six viewports\" --workers=1 --reporter=line --output test-results-p2b-standalone-viewports",
+      "resultArtifact": "test-results-p2b-standalone-viewports/.last-run.json",
+      "tests": 1,
+      "passed": 1,
+      "failed": 0,
+      "status": "PASS",
+      "durationSeconds": 11.3,
+      "viewports": [
+        "320x700",
+        "390x844",
+        "375x812",
+        "844x390",
+        "1024x768",
+        "1440x900"
+      ],
+      "horizontalOverflowFailures": 0,
+      "consoleErrors": 0,
+      "pageErrors": 0,
+      "coveredPrimaryActions": 0,
+      "scope": "최종 standalone single-file의 6개 viewport overflow·console·page error와 핵심 행동 hit-test를 fresh 확인"
+    },
+    {
+      "id": "p2b-production-build",
+      "command": "npm.cmd run build",
+      "staticPages": 18,
+      "passed": 18,
+      "failed": 0,
+      "status": "PASS",
+      "framework": "Next.js 15.5.21",
+      "scope": "P2-B occurrence, complete TXT, React presenter와 standalone 결합 변경을 반영한 fresh production build"
+    },
+    {
+      "id": "p2b-trace-assets",
+      "command": "node --test docs/content-audit/2026-09-02-flowme-integrated-poc-requirements-traceability-assets/requirements-p2b-assets.test.cjs",
+      "tests": 5,
+      "passed": 5,
+      "failed": 0,
+      "status": "PASS",
+      "scope": "P2-A snapshot byte lock, additive P2-B rows, 168-row 124/18/4/10/12 verdict lock, gap 22, fulfilled evidence gate and verify-only HTML immutability"
+    },
+    {
+      "id": "p2b-full-regression",
+      "command": "npm.cmd test",
+      "tests": 1636,
+      "passed": 1635,
+      "failed": 1,
+      "status": "FAIL",
+      "p2bFailures": 0,
+      "knownBaselineFailures": 1,
+      "stoppedEarly": true,
+      "failure": {
+        "suite": "seed-flows",
+        "fixtureId": "dog-adoption-first-week",
+        "field": "review_due",
+        "value": "2026-06-04",
+        "classification": "time-dependent-content-freshness",
+        "summary": "seed-flows의 dog-adoption-first-week review_due 2026-06-04가 현재 날짜 기준 콘텐츠 신선도 검증을 통과하지 못했다. P2-B 변경 관련 실패는 0건이다."
+      },
+      "scope": "P2-B 변경을 포함한 fresh npm test; 기존 날짜 기준 seed fixture 1건에서 chain 중단"
+    },
+    {
+      "id": "p2b-full-regression-tail",
+      "command": "npm.cmd run test:approved-plan-execution ; npm.cmd run test:public-plan-surface (npm test 중단 뒤 각각 별도 실행)",
+      "tests": 220,
+      "passed": 220,
+      "failed": 0,
+      "status": "PASS",
+      "groups": {
+        "approvedPlanExecution": { "tests": 201, "passed": 201, "failed": 0 },
+        "publicPlanSurface": { "tests": 19, "passed": 19, "failed": 0 }
+      },
+      "scope": "fresh npm test 중단 뒤 남은 downstream suite를 별도 실행"
+    },
+    {
+      "id": "p2b-documentation-check",
+      "command": "npm.cmd run docs:check",
+      "requiredFiles": 16,
+      "localLinks": 4594,
+      "passed": 4594,
+      "failed": 0,
+      "status": "PASS",
+      "scope": "P2-B 정본·trace·검증 보고서를 포함한 문서와 로컬 링크 검사"
+    },
+    {
+      "id": "p2b-p2a-report-snapshot-browser",
+      "command": "npx.cmd playwright test tests/e2e/personal-workspace-requirements-traceability.spec.ts --grep \"preserves three outputs\" --workers=1 --reporter=line --output=test-results-p2b-trace-p2a-snapshot",
+      "tests": 1,
+      "passed": 1,
+      "failed": 0,
+      "status": "PASS",
+      "viewports": [
+        "1440x900"
+      ],
+      "consoleErrors": 0,
+      "pageErrors": 0,
+      "storageWrites": 0,
+      "scope": "동결된 P2-A HTML 자체 포함 데이터로 168행, 122/20/4/10/12와 gap 24, 필터, 이미지, storage read-only를 재검증"
+    },
+    {
+      "id": "p2b-report-browser",
+      "command": "npx.cmd playwright test tests/e2e/personal-workspace-p2b-occurrence-txt-validation-report.spec.ts --workers=1 --reporter=line --output test-results-p2b-report-final3",
+      "resultArtifact": "test-results-p2b-report-final3/.last-run.json",
+      "tests": 2,
+      "passed": 2,
+      "failed": 0,
+      "status": "PASS",
+      "durationSeconds": 13.7,
+      "viewports": [
+        "320x700",
+        "390x844",
+        "375x812",
+        "844x390",
+        "1024x768",
+        "1440x900"
+      ],
+      "horizontalOverflowFailures": 0,
+      "consoleErrors": 0,
+      "pageErrors": 0,
+      "brokenImages": 0,
+      "coveredPrimaryActions": 0,
+      "storageWrites": 0,
+      "scope": "P2-B 보고서의 정본·manifest 상태 반영, pending honesty, read-only storage, gate filter, local links와 6개 viewport overflow·hit-test"
+    },
+    {
+      "id": "p2c-personal-workspace-poc-suite",
+      "command": "npm.cmd run test:personal-workspace-poc",
+      "tests": 388,
+      "passed": 388,
+      "failed": 0,
+      "status": "PASS",
+      "groups": {
+        "pretestCrossSurfaceContract": { "tests": 18, "passed": 18, "failed": 0 },
+        "mainModelSuite": { "tests": 370, "passed": 370, "failed": 0 }
+      },
+      "scope": "P2-C 개인 section shadow와 16속성 source transaction을 포함한 fresh personal-workspace PoC 전체 모델 회귀"
+    },
+    {
+      "id": "p2c-standalone-model",
+      "command": "node --test docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/standalone.test.cjs",
+      "tests": 63,
+      "passed": 63,
+      "failed": 0,
+      "status": "PASS",
+      "scope": "독립 HTML의 16속성 편집, distinct 안내·주의, 하위 체크 exact re-entry, dependent pair 1회 transaction과 ownership copy 계약"
+    },
+    {
+      "id": "p2c-cross-surface-contract",
+      "command": "npx.cmd tsx --test lib/flow/personal-workspace-poc-cross-surface-parity.test.ts",
+      "tests": 9,
+      "passed": 9,
+      "failed": 0,
+      "status": "PASS",
+      "scope": "React와 standalone의 16속성 순서·편집성, dependent pair 단일 source change, exact selection과 결과 byte parity"
+    },
+    {
+      "id": "p2c-react-browser-focused",
+      "command": "npx.cmd playwright test tests/e2e/personal-workspace-integration-poc.spec.ts --grep P2-C --workers=1 --reporter=line --output=test-results-p2c-react-final2",
+      "resultArtifact": "test-results-p2c-react-final2/.last-run.json",
+      "tests": 3,
+      "passed": 3,
+      "failed": 0,
+      "status": "PASS",
+      "viewports": [
+        "390x844",
+        "375x812",
+        "844x390",
+        "1024x768",
+        "1440x900"
+      ],
+      "screenshots": [
+        "docs/content-audit/2026-09-03-flowme-integrated-poc-p2c-evidence-assets/authoring-property-390x844.png",
+        "docs/content-audit/2026-09-03-flowme-integrated-poc-p2c-evidence-assets/authoring-property-375x812.png",
+        "docs/content-audit/2026-09-03-flowme-integrated-poc-p2c-evidence-assets/authoring-property-844x390.png",
+        "docs/content-audit/2026-09-03-flowme-integrated-poc-p2c-evidence-assets/authoring-property-1024x768.png",
+        "docs/content-audit/2026-09-03-flowme-integrated-poc-p2c-evidence-assets/authoring-property-1440x900.png"
+      ],
+      "horizontalOverflowFailures": 0,
+      "consoleErrors": 0,
+      "pageErrors": 0,
+      "coveredPrimaryActions": 0,
+      "writesOutsideAllowedPrefix": 0,
+      "removesOutsideAllowedPrefix": 0,
+      "clearCalls": 0,
+      "operatingSnapshotByteIdentical": true,
+      "scope": "React의 개인 section title shadow, 16속성 inline·dependent 편집, exact re-entry, 단방향 ownership과 필수 5개 viewport"
+    },
+    {
+      "id": "p2c-react-five-viewport-browser",
+      "command": "npx.cmd playwright test tests/e2e/personal-workspace-integration-poc.spec.ts --grep \"P2-C inline·dependent 속성 surface가 지정 5개 viewport\" --workers=1 --reporter=line",
+      "tests": 1,
+      "passed": 1,
+      "failed": 0,
+      "status": "PASS",
+      "viewports": [
+        "390x844",
+        "375x812",
+        "844x390",
+        "1024x768",
+        "1440x900"
+      ],
+      "screenshots": 5,
+      "horizontalOverflowFailures": 0,
+      "consoleErrors": 0,
+      "pageErrors": 0,
+      "coveredPrimaryActions": 0,
+      "writesOutsideAllowedPrefix": 0,
+      "removesOutsideAllowedPrefix": 0,
+      "clearCalls": 0,
+      "operatingSnapshotByteIdentical": true,
+      "scope": "React inline·dependent 속성 surface의 필수 5개 viewport overflow·error·hit-test와 취소 zero-write"
+    },
+    {
+      "id": "p2c-standalone-browser-focused",
+      "command": "npx.cmd playwright test tests/e2e/personal-workspace-integrated-standalone.spec.ts --grep P2-C --workers=1 --reporter=line --output=test-results-p2c-standalone-final",
+      "resultArtifact": "test-results-p2c-standalone-final/.last-run.json",
+      "tests": 2,
+      "passed": 2,
+      "failed": 0,
+      "status": "PASS",
+      "viewports": [
+        "390x844",
+        "375x812",
+        "844x390",
+        "1024x768",
+        "1440x900"
+      ],
+      "horizontalOverflowFailures": 0,
+      "consoleErrors": 0,
+      "pageErrors": 0,
+      "coveredPrimaryActions": 0,
+      "writesOutsideAllowedPrefix": 0,
+      "removesOutsideAllowedPrefix": 0,
+      "clearCalls": 0,
+      "operatingSnapshotByteIdentical": true,
+      "scope": "독립 HTML의 16속성·4범주·inline·dependent batch·하위 체크 exact re-entry와 취소 zero-write"
+    },
+    {
+      "id": "p2c-standalone-five-viewport-browser",
+      "command": "npx.cmd playwright test tests/e2e/personal-workspace-integrated-standalone.spec.ts --grep \"P2-C inline and dependent property surfaces stay operable\" --workers=1 --reporter=line",
+      "tests": 1,
+      "passed": 1,
+      "failed": 0,
+      "status": "PASS",
+      "viewports": [
+        "390x844",
+        "375x812",
+        "844x390",
+        "1024x768",
+        "1440x900"
+      ],
+      "horizontalOverflowFailures": 0,
+      "consoleErrors": 0,
+      "pageErrors": 0,
+      "coveredPrimaryActions": 0,
+      "writesOutsideAllowedPrefix": 0,
+      "removesOutsideAllowedPrefix": 0,
+      "clearCalls": 0,
+      "operatingSnapshotByteIdentical": true,
+      "scope": "독립 HTML inline·dependent 속성 surface의 필수 5개 viewport overflow·error·hit-test와 취소 zero-write"
+    },
+    {
+      "id": "p2c-production-build",
+      "command": "npm.cmd run build",
+      "staticPages": 18,
+      "passed": 18,
+      "failed": 0,
+      "status": "PASS",
+      "framework": "Next.js 15.5.21",
+      "scope": "P2-C React와 독립 HTML 개인 편집 parity 변경을 포함한 fresh production build"
+    },
+    {
+      "id": "p2c-full-regression",
+      "command": "npm.cmd test",
+      "tests": 1653,
+      "passed": 1652,
+      "failed": 1,
+      "status": "FAIL",
+      "p2cFailures": 0,
+      "knownBaselineFailures": 1,
+      "stoppedEarly": true,
+      "failure": {
+        "suite": "seed-flows",
+        "fixtureId": "dog-adoption-first-week",
+        "field": "review_due",
+        "value": "2026-06-04",
+        "classification": "time-dependent-content-freshness",
+        "summary": "seed-flows의 dog-adoption-first-week review_due 2026-06-04가 현재 날짜 기준 콘텐츠 신선도 검증을 통과하지 못했다. P2-C 변경 관련 실패는 0건이다."
+      },
+      "scope": "P2-C 변경을 포함한 fresh npm test; 기존 날짜 기준 seed fixture 1건에서 chain 중단"
+    },
+    {
+      "id": "p2c-full-regression-tail",
+      "command": "npm.cmd run test:approved-plan-execution ; npm.cmd run test:public-plan-surface (npm test 중단 뒤 각각 별도 실행)",
+      "tests": 220,
+      "passed": 220,
+      "failed": 0,
+      "status": "PASS",
+      "groups": {
+        "approvedPlanExecution": { "tests": 201, "passed": 201, "failed": 0 },
+        "publicPlanSurface": { "tests": 19, "passed": 19, "failed": 0 }
+      },
+      "scope": "P2-C fresh npm test 중단 뒤 남은 downstream suite를 별도 실행"
+    },
+    {
+      "id": "p2c-trace-assets",
+      "command": "node --test docs/content-audit/2026-09-02-flowme-integrated-poc-requirements-traceability-assets/requirements-p2c-assets.test.cjs",
+      "tests": 4,
+      "passed": 4,
+      "failed": 0,
+      "status": "PASS",
+      "scope": "P2-C 168-row 128/13/4/11/12 verdict, gap 17, 다섯 override와 E4 implementation·test evidence lock"
+    },
+    {
+      "id": "p2c-report-browser",
+      "command": "npx.cmd playwright test tests/e2e/personal-workspace-p2c-personal-editing-validation-report.spec.ts --workers=1 --reporter=line --output=test-results-p2c-report-final",
+      "resultArtifact": "test-results-p2c-report-final/.last-run.json",
+      "tests": 2,
+      "passed": 2,
+      "failed": 0,
+      "status": "PASS",
+      "durationSeconds": 12.7,
+      "viewports": [
+        "390x844",
+        "375x812",
+        "844x390",
+        "1024x768",
+        "1440x900"
+      ],
+      "horizontalOverflowFailures": 0,
+      "consoleErrors": 0,
+      "pageErrors": 0,
+      "brokenImages": 0,
+      "coveredPrimaryActions": 0,
+      "storageWrites": 0,
+      "clearCalls": 0,
+      "scope": "P2-C 검증 보고서의 정본·manifest 무결성, 필터·로컬 링크·read-only storage와 필수 5개 viewport 핵심 행동 hit-test"
+    },
+    {
+      "id": "p2c-documentation-check",
+      "command": "npm.cmd run docs:check",
+      "requiredFiles": 16,
+      "localLinks": 4594,
+      "passed": 4594,
+      "failed": 0,
+      "status": "PASS",
+      "scope": "P2-C 검증 보고서와 정본을 포함한 fresh documentation check"
+    },
+    {
+      "id": "p2c-integrated-browser-regression",
+      "command": "$env:FLOWME_PLAYWRIGHT_PORT='3206'; npx.cmd playwright test tests/e2e/personal-workspace-integration-poc.spec.ts tests/e2e/personal-workspace-integrated-standalone.spec.ts --workers=1 --reporter=line --output=test-results-p2c-combined-regression-final",
+      "resultArtifact": "test-results-p2c-combined-regression-final/.last-run.json",
+      "tests": 35,
+      "passed": 35,
+      "failed": 0,
+      "status": "PASS",
+      "viewports": [
+        "320x700",
+        "390x844",
+        "375x812",
+        "844x390",
+        "1024x768",
+        "1440x900"
+      ],
+      "horizontalOverflowFailures": 0,
+      "consoleErrors": 0,
+      "pageErrors": 0,
+      "coveredPrimaryActions": 0,
+      "writesOutsideAllowedPrefix": 0,
+      "removesOutsideAllowedPrefix": 0,
+      "clearCalls": 0,
+      "operatingSnapshotByteIdentical": true,
+      "scope": "P2-C 보정 후 React·standalone 전체 결합 회귀. 작성 저장·복구, 속성 편집, 네 결과, 반복 회차, drag·long press·menu·keyboard 수렴과 PoC 저장 경계를 fresh 확인"
+    }
+  ],
+  "browser": {
+    "viewports": [
+      "320x700",
+      "390x844",
+      "375x812",
+      "844x390",
+      "1024x768",
+      "1440x900"
+    ],
+    "a8OffscreenDateViewport": "844x300",
+    "reducedMotionEdgeScroll": "PASS; frame delta 1-8px",
+    "browserZoom200Percent": "미실행; CDP pageScaleFactor는 hit-test 좌표 왜곡으로 증거에서 제외",
+    "horizontalOverflowFailures": 0,
+    "consoleErrors": 0,
+    "pageErrors": 0,
+    "coveredPrimaryActions": 0,
+    "keyboardAndNonDragPaths": true
+  },
+  "storageBoundary": {
+    "allowedPrefixes": [
+      "flow:poc:personal-workspace:v1:"
+    ],
+    "writesOutsideAllowedPrefix": 0,
+    "removesOutsideAllowedPrefix": 0,
+    "clearCalls": 0,
+    "operatingSentinelBytesChanged": 0,
+    "scope": "자동 테스트의 격리된 localStorage fixture와 브라우저 context",
+    "note": "사용자의 실제 브라우저 profile이나 운영 backend를 열어 검사한 증거는 아니다.",
+    "stage1Evidence": "unit fault injection과 Stage 1 browser runtime 4/4에서 no-op·stale·invalid·failure mutation 0, PoC prefix 밖 set/remove 0, clear 0, operating sentinel byte parity를 확인했다.",
+    "v41CoreEvidence": "v4.1 core Chromium 13/13에서 8개 필수 시나리오, pointer·drag·menu·keyboard 수렴, no-op·cancel·failure 경계와 operating snapshot byte parity를 확인했다.",
+    "stage3Evidence": "Stage 3 Chromium 13/13에서 prefix 밖 set/remove/clear 0과 operating snapshot byte-identical을 확인했다.",
+    "stage4Evidence": "Stage 4 Chromium 5/5에서 Task·Flow 이동 parity, prefix 밖 set/remove/clear 0과 non-PoC snapshot byte-identical을 확인했다.",
+    "standaloneEvidence": "최종 standalone node 54/54와 fresh Chromium 결합 회귀의 standalone slice 24/24에서 state+draft rollback·stable identity·exact prefix, 6개 viewport, 월간 결과·TXT/CSV 다운로드·lossless adapter·browser-native Undo를 확인했다.",
+    "p2aEvidence": "P2-A focused Chromium 3/3과 두 실행 표면 결합 회귀 30/30에서 복수 사본, 월간 42칸, 로컬 다운로드, safe table/raw fallback, overflow·console/page error 0, 운영 snapshot byte parity를 확인했다.",
+    "p2bModelEvidence": "P2-B fresh personal-workspace PoC suite 371/371(교차 표면 17 + main 354), React pure model/presenter focused 77/77, standalone model 62/62에서 occurrence/TXT 계약, 네 결과 manifest와 TXT/CSV byte parity, 회차별 shadow transition, reload/Undo, fail-closed·zero mutation을 확인했다.",
+    "p2bBrowserEvidence": "P2-B focused React Chromium 1/1과 최종 result projection 6-viewport Chromium 1/1에서 42칸 Calendar, Todo/Sheet/TXT parity, 회차 이동·완료·reload·Undo, overflow·console·page error 0, prefix 밖 set/remove/clear 0과 operating snapshot byte parity를 확인했다.",
+    "p2cModelEvidence": "P2-C fresh personal-workspace PoC suite 388/388(pretest 18 + main 370), standalone model 63/63, React·standalone 교차 표면 계약 9/9에서 개인 section shadow, 16속성 source transaction, dependent pair 1회 변경, exact re-entry와 실패·취소 zero mutation을 확인했다.",
+    "p2cBrowserEvidence": "P2-C focused React Chromium 3/3과 standalone Chromium 2/2, 각 필수 5개 viewport 1/1에서 inline·dependent 편집, reload·Undo, overflow·console·page error·가려진 핵심 행동 0, prefix 밖 set/remove/clear 0과 operating sentinel byte parity를 확인했다."
+  },
+  "singleFiles": {
+    "standaloneBytes": 396379,
+    "androidBytes": 396379,
+    "byteEqual": true,
+    "sha256": "7BA87A3033DF0EEDF3B9CDE3938B7E7BD581C89231D09A4FF056FB195F0AD8FF"
+  },
+  "finalVerification": {
+    "documentationCheck": "PASS - 16 required files and 4594 local links",
+    "diffCheck": "PASS - tracked diff plus scoped conflict-marker and trailing-whitespace checks",
+    "p2bProductionBuild": "PASS - Next.js 15.5.21, 18/18 static pages",
+    "p2bTraceAssets": "PASS - 5/5; verify-only kept the frozen P2-A report HTML byte-identical",
+    "p2bFullRegression": "FAIL - 1635/1636; unrelated time-based seed fixture only, then tail 220/220 PASS separately",
+    "p2cProductionBuild": "PASS - Next.js 15.5.21, 18/18 static pages",
+    "p2cTraceAssets": "PASS - 4/4; 168-row P2-C primary verdict and evidence lock",
+    "p2cFullRegression": "FAIL - 1652/1653; unrelated time-based seed fixture only, P2-C failures 0, then tail 220/220 PASS separately",
+    "p2aFrozenReportSha256": "26E5ECEF034FC16CE3B39BDD5438F6025C2794D65288BFF5D29F6F2BD88DAF89"
+  },
+  "knownIssues": {
+    "securityAudit": {
+      "command": "npm.cmd run security:audit",
+      "status": "FAIL",
+      "vulnerabilities": 2,
+      "high": 1,
+      "low": 1,
+      "packages": [
+        "browserslist",
+        "postcss-selector-parser"
+      ],
+      "scope": "기존 의존성 감사 결과이며 이번 PoC 단계에서 자동 수정하지 않았다."
+    }
+  },
+  "externalEvidence": {
+    "androidChrome": "미실행",
+    "iosSafari": "미실행",
+    "screenReader": "미실행",
+    "browserZoom200Percent": "미실행",
+    "observedUsers": 0
+  },
+  "publish": {
+    "commit": "미진행",
+    "push": "미진행",
+    "pullRequest": "미진행",
+    "preview": "미진행",
+    "production": "미진행"
+  }
+}

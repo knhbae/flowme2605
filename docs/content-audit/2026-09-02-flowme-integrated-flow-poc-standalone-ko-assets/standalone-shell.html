@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>FlowMe 개인공간</title>
+  <link rel="icon" href="data:,">
+  <style data-flowme-standalone-inline="style">
+/*__FLOWME_INLINE_STYLE__*/
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">본문으로 이동</a>
+  <header class="topbar">
+    <button class="brand" type="button" data-action="go-workspace" aria-label="개인공간으로 이동">
+      <span class="brand-mark" aria-hidden="true">F</span>
+      <span>FlowMe</span>
+    </button>
+    <nav class="product-nav" aria-label="통합 흐름">
+      <button type="button" data-action="go-workspace">개인공간</button>
+      <button type="button" data-action="go-authoring">새 Flow 만들기</button>
+    </nav>
+    <div class="top-actions">
+      <button id="undo-button" class="button quiet" type="button" data-action="undo" disabled>되돌리기</button>
+      <button class="button quiet" type="button" data-action="open-guide">도움말</button>
+    </div>
+  </header>
+
+  <div class="global-feedback">
+    <span id="save-status" class="save-status" role="status" aria-live="polite" aria-atomic="true" hidden></span>
+  </div>
+
+  <div id="standalone-diagnostics" hidden aria-hidden="true">
+    <output id="mutation-count" data-successful-mutations="0"></output>
+    <span id="storage-mode-note" data-storage-mode=""></span>
+    <span id="footer-storage-note" data-storage-key=""></span>
+    <button id="compact-undo-button" type="button" data-action="undo" disabled tabindex="-1">되돌리기</button>
+  </div>
+
+  <div id="app" class="app-shell" data-product-plan-item-grammar="v1">
+    <aside id="sidebar" class="sidebar" aria-label="개인공간 탐색"></aside>
+    <main id="main" class="main" tabindex="-1">
+      <div id="content" class="content">
+        <section id="boot-fallback" class="boot-fallback" role="status">
+          <h1>FlowMe를 여는 중입니다</h1>
+          <p>이 안내가 계속 보이면 현재 미리보기에서는 화면을 조작할 수 없습니다.</p>
+          <p><strong>파일을 내려받은 뒤 Chrome, Safari 또는 데스크톱 브라우저에서 열어 주세요.</strong></p>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <aside
+    id="move-panel"
+    class="move-panel"
+    role="dialog"
+    aria-modal="false"
+    aria-labelledby="move-panel-title"
+    aria-describedby="move-panel-description"
+    hidden
+  >
+    <div class="move-panel-head">
+      <div>
+        <p class="move-panel-kicker">이동할 곳</p>
+        <h2 id="move-panel-title"></h2>
+      </div>
+      <button id="move-panel-close" class="icon-button" type="button" data-action="close-move-panel" aria-label="이동 창 닫기">×</button>
+    </div>
+    <p id="move-panel-description" class="visually-hidden">날짜와 폴더를 선택하거나 같은 목록 안의 순서를 바꿉니다.</p>
+    <p id="move-panel-status" class="move-panel-status" aria-live="off">이동할 위치를 선택해 주세요.</p>
+    <div id="move-panel-body" class="move-panel-body"></div>
+  </aside>
+
+  <dialog id="dialog" aria-labelledby="dialog-title">
+    <div class="dialog-head">
+      <h2 id="dialog-title"></h2>
+      <button class="icon-button" type="button" data-action="close-dialog" aria-label="닫기">×</button>
+    </div>
+    <div id="dialog-body"></div>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true" hidden>
+    <span id="toast-message"></span>
+    <button id="toast-retry" type="button" data-action="retry" hidden>다시 시도</button>
+    <button type="button" data-action="undo">되돌리기</button>
+    <button class="icon-button" type="button" data-action="dismiss-toast" aria-label="알림 닫기">×</button>
+  </div>
+
+  <script data-flowme-standalone-inline="lossless-authoring">
+/*__FLOWME_INLINE_LOSSLESS_AUTHORING__*/
+  </script>
+  <script data-flowme-standalone-inline="model">
+/*__FLOWME_INLINE_MODEL__*/
+  </script>
+  <script data-flowme-standalone-inline="app">
+/*__FLOWME_INLINE_APP__*/
+  </script>
+</body>
+</html>

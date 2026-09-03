@@ -1,0 +1,1756 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23087f71'/%3E%3Cpath d='M17 15h31v9H27v9h17v9H27v16H17z' fill='white'/%3E%3C/svg%3E">
+  <title>FlowMe 통합 PoC P2-A 무손실 결과 검증</title>
+  <style>:root {
+  --ink: #14211e;
+  --muted: #5c6c67;
+  --paper: #ffffff;
+  --wash: #eef4f2;
+  --line: #cdd9d5;
+  --line-strong: #9fb3ac;
+  --teal: #087f71;
+  --teal-dark: #075e56;
+  --teal-soft: #e0f3ee;
+  --amber: #946000;
+  --amber-soft: #fff2d2;
+  --red: #a13b36;
+  --red-soft: #fff0ed;
+  --violet: #6250a6;
+  --violet-soft: #efecff;
+  --slate: #36506d;
+  --slate-soft: #edf2f7;
+  --gray-soft: #edf0ef;
+  --shadow: 0 22px 60px rgba(16, 42, 36, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 74px;
+}
+
+body {
+  margin: 0;
+  background: var(--wash);
+  color: var(--ink);
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", "Noto Sans KR", sans-serif;
+  line-height: 1.6;
+}
+
+button,
+a {
+  touch-action: manipulation;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  overflow-wrap: anywhere;
+}
+
+.skip {
+  position: fixed;
+  top: -100px;
+  left: 12px;
+  z-index: 100;
+  padding: 12px 16px;
+  background: #fff;
+  border: 2px solid var(--teal);
+  font-weight: 850;
+}
+
+.skip:focus {
+  top: 12px;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  min-height: 62px;
+  padding: 7px max(18px, env(safe-area-inset-right)) 7px max(18px, env(safe-area-inset-left));
+  background: rgba(255, 255, 255, 0.96);
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(14px);
+}
+
+.brand {
+  font-weight: 950;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+}
+
+.topnav {
+  display: flex;
+  gap: 2px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.topnav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 11px;
+  color: #40514c;
+  font-size: 13px;
+  font-weight: 760;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.topnav a:hover,
+.topnav a:focus-visible {
+  background: var(--teal-soft);
+  outline: 0;
+}
+
+.page {
+  width: min(1440px, 100%);
+  margin: 0 auto;
+  background: var(--paper);
+  box-shadow: var(--shadow);
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(300px, 0.7fr);
+  gap: clamp(32px, 6vw, 74px);
+  padding: clamp(48px, 7vw, 98px) clamp(20px, 6vw, 84px) 46px;
+  background: linear-gradient(135deg, #fff 55%, #e7f5f1);
+}
+
+.hero h1 {
+  max-width: 850px;
+  margin: 0;
+  font-size: clamp(40px, 6.2vw, 78px);
+  line-height: 1.02;
+  letter-spacing: -0.06em;
+  word-break: keep-all;
+}
+
+.lead {
+  max-width: 790px;
+  margin: 24px 0 0;
+  color: #40534e;
+  font-size: clamp(16px, 1.7vw, 21px);
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  color: var(--teal-dark);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.scope-note {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.scope-note strong {
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.hero-verdict {
+  align-self: center;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-top: 5px solid var(--teal);
+  box-shadow: 0 16px 44px rgba(16, 42, 36, 0.1);
+}
+
+.hero-verdict > div {
+  padding: 23px;
+  border-bottom: 1px solid var(--line);
+}
+
+.hero-verdict > div:last-child {
+  border-bottom: 0;
+}
+
+.hero-verdict span,
+.metric span,
+.source-card dt,
+.boundary-card span,
+.evidence-card span,
+.run-card span {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.hero-verdict strong {
+  display: block;
+  margin-top: 4px;
+  font-size: clamp(27px, 3vw, 38px);
+  letter-spacing: -0.045em;
+}
+
+.hero-verdict p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.hero-verdict .partial {
+  background: var(--amber-soft);
+}
+
+.action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  grid-column: 1 / -1;
+  margin-top: -8px;
+}
+
+.action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 18px;
+  border: 1px solid var(--teal);
+  background: var(--teal);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.action.secondary {
+  background: #fff;
+  color: var(--teal-dark);
+}
+
+.action:hover,
+.action:focus-visible {
+  box-shadow: 0 0 0 3px rgba(8, 127, 113, 0.2);
+  outline: 0;
+}
+
+.metric-rail {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.metric {
+  min-width: 0;
+  padding: 20px clamp(12px, 2vw, 24px);
+  border-right: 1px solid var(--line);
+}
+
+.metric:last-child {
+  border-right: 0;
+}
+
+.metric strong {
+  display: block;
+  margin-top: 3px;
+  font-size: clamp(25px, 3vw, 36px);
+  letter-spacing: -0.045em;
+}
+
+.metric[data-verdict="satisfied"] {
+  background: var(--teal-soft);
+}
+
+.metric[data-verdict="partial"] {
+  background: var(--amber-soft);
+}
+
+.metric[data-verdict="missing"] {
+  background: var(--red-soft);
+}
+
+.metric[data-verdict="intentionalChange"] {
+  background: var(--violet-soft);
+}
+
+.metric[data-verdict="excluded"] {
+  background: var(--gray-soft);
+}
+
+.section {
+  padding: clamp(44px, 6vw, 78px) clamp(18px, 6vw, 84px);
+  border-bottom: 1px solid var(--line);
+}
+
+.section:focus {
+  outline: 3px solid rgba(8, 127, 113, 0.3);
+  outline-offset: -3px;
+}
+
+.section-head {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(300px, 1.15fr);
+  gap: 36px;
+  align-items: end;
+  margin-bottom: 28px;
+}
+
+.section-head h2 {
+  margin: 0;
+  font-size: clamp(30px, 4.2vw, 50px);
+  line-height: 1.08;
+  letter-spacing: -0.045em;
+  word-break: keep-all;
+}
+
+.section-head > p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.before-after {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 64px minmax(0, 1fr);
+  align-items: stretch;
+}
+
+.state {
+  padding: 24px;
+  border: 1px solid var(--line);
+}
+
+.state.before {
+  background: #f7f9f8;
+}
+
+.state.after {
+  background: var(--teal-soft);
+  border-color: #87b9af;
+}
+
+.state h3 {
+  margin: 0 0 14px;
+  font-size: 24px;
+}
+
+.state dl {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  margin: 0;
+}
+
+.state dl div {
+  min-width: 0;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.76);
+}
+
+.state dt {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.state dd {
+  margin: 2px 0 0;
+  font-weight: 900;
+}
+
+.arrow {
+  display: grid;
+  place-items: center;
+  color: var(--teal);
+  font-size: 29px;
+  font-weight: 950;
+}
+
+.ratio-strip {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  margin-top: 14px;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+
+.ratio-strip div {
+  padding: 15px 18px;
+  background: #fff;
+}
+
+.ratio-strip span {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.ratio-strip strong {
+  display: block;
+  margin-top: 2px;
+  font-size: 21px;
+}
+
+.source-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.source-card {
+  padding: 20px;
+  border: 1px solid var(--line);
+  background: #fff;
+}
+
+.source-card header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.source-card h3 {
+  margin: 0;
+  font-size: 21px;
+}
+
+.source-card header span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.source-card dl {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 5px;
+  margin: 17px 0 0;
+}
+
+.source-card dl div {
+  min-width: 0;
+  padding: 8px;
+  background: var(--wash);
+}
+
+.source-card dd {
+  margin: 2px 0 0;
+  font-weight: 900;
+}
+
+.filterbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  background: #fff;
+}
+
+.filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.filter-button {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--line-strong);
+  background: #fff;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 820;
+  cursor: pointer;
+}
+
+.filter-button[aria-pressed="true"] {
+  border-color: var(--teal);
+  background: var(--teal);
+  color: #fff;
+}
+
+.filter-meta {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.requirement-list {
+  display: grid;
+  gap: 10px;
+}
+
+.requirement-card {
+  border: 1px solid var(--line);
+  border-left: 5px solid var(--teal);
+  background: #fff;
+}
+
+.requirement-card[data-kind="partial"] {
+  border-left-color: #d79315;
+}
+
+.requirement-card[hidden],
+.run-row[hidden] {
+  display: none;
+}
+
+.requirement-card summary {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  min-height: 66px;
+  padding: 12px 16px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.requirement-card summary::-webkit-details-marker {
+  display: none;
+}
+
+.requirement-card summary:hover {
+  background: #f7faf9;
+}
+
+.req-id {
+  color: var(--teal-dark);
+  font-weight: 950;
+}
+
+.req-title {
+  font-weight: 840;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--teal-soft);
+  color: var(--teal-dark);
+  font-size: 11px;
+  font-weight: 880;
+  white-space: nowrap;
+}
+
+.chip.partial {
+  background: var(--amber-soft);
+  color: var(--amber);
+}
+
+.chip.evidence {
+  background: var(--slate-soft);
+  color: var(--slate);
+}
+
+.requirement-body {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-top: 1px solid var(--line);
+}
+
+.requirement-body section {
+  padding: 17px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.requirement-body section:nth-child(2n) {
+  border-right: 0;
+}
+
+.requirement-body h4 {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+
+.requirement-body p {
+  margin: 0;
+  font-size: 14px;
+  white-space: pre-line;
+}
+
+.evidence-files {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 0;
+  padding: 15px 17px;
+  background: #f7faf9;
+  list-style: none;
+}
+
+.evidence-files a {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  padding: 4px 8px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--slate);
+  font: 700 11px/1.35 ui-monospace, SFMono-Regular, Consolas, monospace;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.surface-grid,
+.contract-grid,
+.lossless-grid,
+.boundary-grid,
+.evidence-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.surface,
+.contract,
+.lossless,
+.boundary-card,
+.evidence-card,
+.run-card {
+  min-width: 0;
+  padding: 22px;
+  border: 1px solid var(--line);
+  background: #fff;
+}
+
+.surface {
+  border-top: 5px solid var(--slate);
+}
+
+.surface.standalone {
+  border-top-color: var(--teal);
+}
+
+.surface h3,
+.contract h3,
+.lossless h3,
+.boundary-card h3,
+.evidence-card h3 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.surface > p,
+.contract > p,
+.lossless > p,
+.boundary-card > p,
+.evidence-card > p {
+  margin: 9px 0 0;
+  color: var(--muted);
+}
+
+.surface ul,
+.contract ul,
+.lossless ul,
+.evidence-card ul {
+  display: grid;
+  gap: 7px;
+  margin: 17px 0 0;
+  padding-left: 20px;
+}
+
+.surface-path {
+  display: block;
+  margin-top: 16px;
+  padding-top: 13px;
+  border-top: 1px solid var(--line);
+  color: var(--slate);
+  font-size: 12px;
+}
+
+.contract-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.contract {
+  position: relative;
+  padding-top: 52px;
+}
+
+.contract::before {
+  content: attr(data-index);
+  position: absolute;
+  top: 17px;
+  left: 21px;
+  color: #b9cbc5;
+  font: 950 24px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.byte-proof {
+  display: grid;
+  grid-template-columns: 1fr 1fr 2fr;
+  gap: 1px;
+  margin-top: 14px;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+
+.byte-proof div {
+  min-width: 0;
+  padding: 14px 16px;
+  background: #fff;
+}
+
+.byte-proof span {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.byte-proof strong,
+.byte-proof code {
+  display: block;
+  margin-top: 3px;
+  font-size: 14px;
+}
+
+.byte-proof code {
+  overflow-wrap: anywhere;
+}
+
+.lossless-grid {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.lossless.safe {
+  background: var(--teal-soft);
+  border-color: #8bbcb2;
+}
+
+.lossless.raw {
+  background: var(--amber-soft);
+  border-color: #dcc084;
+}
+
+.lossless.zero {
+  background: var(--slate-soft);
+  border-color: #acb9c8;
+}
+
+.corpus-line {
+  display: grid;
+  grid-template-columns: 170px 1fr;
+  margin-top: 14px;
+  border: 1px solid var(--line);
+}
+
+.corpus-line strong,
+.corpus-line span {
+  padding: 15px 17px;
+}
+
+.corpus-line strong {
+  background: var(--teal);
+  color: #fff;
+  font-size: 20px;
+}
+
+.corpus-line span {
+  color: var(--muted);
+}
+
+.boundary-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.boundary-card strong,
+.evidence-card strong,
+.run-card strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 29px;
+  letter-spacing: -0.04em;
+}
+
+.viewport-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  margin-top: 14px;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+
+.viewport-list div {
+  padding: 14px 16px;
+  background: #fff;
+}
+
+.viewport-list strong,
+.viewport-list span {
+  display: block;
+}
+
+.viewport-list span {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.evidence-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.evidence-card.failed,
+.run-row.failed {
+  background: var(--red-soft);
+}
+
+.evidence-card.warn {
+  background: var(--amber-soft);
+}
+
+.run-table-wrap {
+  margin-top: 15px;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+}
+
+.run-table {
+  width: 100%;
+  min-width: 780px;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.run-table th,
+.run-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.run-table th {
+  background: #f4f7f6;
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+}
+
+.run-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.run-table code {
+  color: var(--slate);
+  font-size: 11px;
+}
+
+.run-table .result {
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.all-runs {
+  margin-top: 14px;
+  border: 1px solid var(--line);
+  background: #fff;
+}
+
+.all-runs > summary {
+  min-height: 48px;
+  padding: 12px 16px;
+  cursor: pointer;
+  font-weight: 830;
+}
+
+.regression-note,
+.manual-note {
+  margin-top: 14px;
+  padding: 18px;
+  border-left: 5px solid var(--red);
+  background: var(--red-soft);
+}
+
+.manual-note {
+  border-left-color: var(--slate);
+  background: var(--slate-soft);
+}
+
+.regression-note strong,
+.manual-note strong {
+  display: block;
+  font-size: 17px;
+}
+
+.regression-note p,
+.manual-note p {
+  margin: 6px 0 0;
+  color: #4a5a55;
+}
+
+.external-publish {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.7fr);
+  gap: 14px;
+}
+
+.status-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  margin: 0;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+
+.status-list div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  padding: 13px 15px;
+  background: #fff;
+}
+
+.status-list dt {
+  color: var(--muted);
+}
+
+.status-list dd {
+  margin: 0;
+  font-weight: 850;
+}
+
+.observed {
+  display: grid;
+  align-content: center;
+  padding: 24px;
+  background: var(--ink);
+  color: #fff;
+}
+
+.observed span {
+  color: #b8c8c3;
+}
+
+.observed strong {
+  display: block;
+  margin-top: 4px;
+  font-size: clamp(42px, 7vw, 70px);
+  line-height: 1;
+  letter-spacing: -0.06em;
+}
+
+.observed p {
+  margin: 13px 0 0;
+  color: #c7d5d0;
+  font-size: 13px;
+}
+
+.footer {
+  width: min(1440px, 100%);
+  margin: 0 auto;
+  padding: 22px clamp(18px, 6vw, 84px) calc(22px + env(safe-area-inset-bottom));
+  color: #52635e;
+  font-size: 12px;
+}
+
+.footer p {
+  margin: 4px 0;
+}
+
+@media (max-width: 980px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-verdict {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .hero-verdict > div {
+    border-right: 1px solid var(--line);
+    border-bottom: 0;
+  }
+
+  .hero-verdict > div:last-child {
+    border-right: 0;
+  }
+
+  .action-row {
+    margin-top: 0;
+  }
+
+  .section-head {
+    grid-template-columns: 1fr;
+    gap: 13px;
+  }
+
+  .source-card dl,
+  .state dl {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .contract-grid,
+  .boundary-grid,
+  .evidence-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .lossless-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .topbar {
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .topnav {
+    max-width: calc(100vw - 118px);
+  }
+
+  .hero {
+    padding-top: 42px;
+  }
+
+  .hero h1 {
+    font-size: clamp(39px, 13vw, 58px);
+  }
+
+  .hero-verdict {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-verdict > div {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .metric-rail {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .metric {
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .metric:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .metric:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .before-after {
+    grid-template-columns: 1fr;
+  }
+
+  .arrow {
+    min-height: 52px;
+    transform: rotate(90deg);
+  }
+
+  .state dl,
+  .source-card dl {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .ratio-strip,
+  .source-grid,
+  .surface-grid,
+  .contract-grid,
+  .boundary-grid,
+  .evidence-grid,
+  .external-publish {
+    grid-template-columns: 1fr;
+  }
+
+  .requirement-card summary {
+    grid-template-columns: 74px minmax(0, 1fr);
+  }
+
+  .requirement-card summary .chip {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  .requirement-body {
+    grid-template-columns: 1fr;
+  }
+
+  .requirement-body section,
+  .requirement-body section:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .byte-proof,
+  .status-list {
+    grid-template-columns: 1fr;
+  }
+
+  .viewport-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .corpus-line {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 390px) {
+  .topbar {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .brand {
+    font-size: 14px;
+  }
+
+  .topnav {
+    max-width: calc(100vw - 96px);
+  }
+
+  .topnav a {
+    padding-inline: 9px;
+    font-size: 12px;
+  }
+
+  .section,
+  .hero {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .state dl,
+  .source-card dl,
+  .viewport-list {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .filterbar {
+    align-items: stretch;
+  }
+
+  .filter-group {
+    width: 100%;
+  }
+
+  .filter-button {
+    flex: 1 1 auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+@media print {
+  body {
+    background: #fff;
+  }
+
+  .topbar,
+  .skip,
+  .filterbar {
+    display: none;
+  }
+
+  .page {
+    box-shadow: none;
+  }
+
+  .requirement-card[hidden],
+  .run-row[hidden] {
+    display: block;
+  }
+}
+</style>
+</head>
+<body>
+  <a class="skip" href="#verdict">최종 판정으로 이동</a>
+  <header class="topbar">
+    <span class="brand">FlowMe · P2-A 검증</span>
+    <nav class="topnav" aria-label="보고서 구획">
+      <a href="#verdict">판정</a>
+      <a href="#requirements">6개 항목</a>
+      <a href="#surfaces">두 표면</a>
+      <a href="#lossless">무손실</a>
+      <a href="#tests">테스트</a>
+      <a href="#limits">미실행</a>
+    </nav>
+  </header>
+
+  <main class="page">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">2026-09-03 · integrated poc · p2-a</p>
+        <h1>P2-A 무손실 결과 검증</h1>
+        <p class="lead">v4.1 UI·개발 1·개발 2의 원자 요구 168개를 다시 판정했습니다. 같은 원본의 복수 사본, 결과 화면, 표·장문 원문 보존을 구현 증거와 남은 범위로 나눠 보여 줍니다.</p>
+        <p class="scope-note"><strong>증거 성격</strong><span>이 독립 HTML은 코드·자동 테스트 결과를 읽기 쉽게 묶은 수동 검토 동반물입니다. 실제 기기 검사나 관찰 사용자 검증이 아닙니다.</span></p>
+      </div>
+      <aside class="hero-verdict" aria-label="P2-A 최종 판정 요약">
+        <div><span>현재 충족</span><strong id="hero-satisfied">122 / 168</strong><p>제외도 전체 168개 안에 별도 집계</p></div>
+        <div><span>이번 실제 승격</span><strong id="hero-promoted">3건</strong><p>D1-020 · D2-024 · D2-025</p></div>
+        <div class="partial"><span>부분 유지</span><strong id="hero-partial-kept">3건</strong><p>D2-017 · D2-020 · D2-023</p></div>
+      </aside>
+      <div class="action-row">
+        <a class="action" id="open-standalone" href="./2026-09-02-flowme-integrated-flow-poc-standalone-ko.html">조작형 독립 HTML 열기</a>
+        <a class="action secondary" id="open-trace" href="./2026-09-02-flowme-integrated-poc-requirements-traceability-ko.html">168개 갱신 추적표 열기</a>
+      </div>
+    </section>
+
+    <div class="metric-rail" aria-label="P2-A 이후 168개 판정">
+
+  <article class="metric" data-verdict="satisfied">
+    <span>충족</span>
+    <strong id="metric-satisfied">122</strong>
+  </article>
+  <article class="metric" data-verdict="partial">
+    <span>부분</span>
+    <strong id="metric-partial">20</strong>
+  </article>
+  <article class="metric" data-verdict="missing">
+    <span>미구현</span>
+    <strong id="metric-missing">4</strong>
+  </article>
+  <article class="metric" data-verdict="intentionalChange">
+    <span>의도 변경</span>
+    <strong id="metric-intentionalChange">10</strong>
+  </article>
+  <article class="metric" data-verdict="excluded">
+    <span>제외</span>
+    <strong id="metric-excluded">12</strong>
+  </article>
+    </div>
+
+    <section class="section" id="verdict" tabindex="-1">
+      <header class="section-head">
+        <div><p class="eyebrow">01 · honest verdict</p><h2>119에서 122로, 세 항목만 승격했습니다.</h2></div>
+        <p>숫자는 <code>current-verdict-overrides.json</code>의 전후 집계를 그대로 읽습니다. 부분 구현을 충족으로 올리지 않았고, 의도 변경과 제외도 충족 분모에 섞지 않았습니다.</p>
+      </header>
+      <div class="before-after">
+        <article class="state before">
+  <h3>P2-A 전</h3>
+  <dl><div><dt>충족</dt><dd>119</dd></div><div><dt>부분</dt><dd>21</dd></div><div><dt>미구현</dt><dd>6</dd></div><div><dt>의도 변경</dt><dd>10</dd></div><div><dt>제외</dt><dd>12</dd></div></dl>
+</article>
+        <div class="arrow" aria-hidden="true">→</div>
+        <article class="state after">
+  <h3>P2-A 후</h3>
+  <dl><div><dt>충족</dt><dd>122</dd></div><div><dt>부분</dt><dd>20</dd></div><div><dt>미구현</dt><dd>4</dd></div><div><dt>의도 변경</dt><dd>10</dd></div><div><dt>제외</dt><dd>12</dd></div></dl>
+</article>
+      </div>
+      <div class="ratio-strip">
+        <div><span>제외 12개를 뺀 완전 충족률</span><strong>122 / 156 · 78.2%</strong></div>
+        <div><span>충족+부분 적용 범위</span><strong>142 / 156 · 91.0%</strong></div>
+      </div>
+      <div class="source-grid">
+        <article class="source-card" data-product="V41">
+    <header><h3>v4.1 UI</h3><span>V41 · 78개</span></header>
+    <dl><div><dt>충족</dt><dd>60</dd></div><div><dt>부분</dt><dd>3</dd></div><div><dt>미구현</dt><dd>3</dd></div><div><dt>의도 변경</dt><dd>6</dd></div><div><dt>제외</dt><dd>6</dd></div></dl>
+  </article><article class="source-card" data-product="D1">
+    <header><h3>개발 1</h3><span>D1 · 26개</span></header>
+    <dl><div><dt>충족</dt><dd>25</dd></div><div><dt>부분</dt><dd>1</dd></div><div><dt>미구현</dt><dd>0</dd></div><div><dt>의도 변경</dt><dd>0</dd></div><div><dt>제외</dt><dd>0</dd></div></dl>
+  </article><article class="source-card" data-product="D2">
+    <header><h3>개발 2</h3><span>D2 · 64개</span></header>
+    <dl><div><dt>충족</dt><dd>37</dd></div><div><dt>부분</dt><dd>16</dd></div><div><dt>미구현</dt><dd>1</dd></div><div><dt>의도 변경</dt><dd>4</dd></div><div><dt>제외</dt><dd>6</dd></div></dl>
+  </article>
+      </div>
+    </section>
+
+    <section class="section" id="requirements" tabindex="-1">
+      <header class="section-head">
+        <div><p class="eyebrow">02 · requirement decisions</p><h2>승격 3건과 부분 유지 3건</h2></div>
+        <p>각 행을 열면 원 요구, 실제 구현 근거, 현재 판정 이유, 다음 조치를 한자리에서 볼 수 있습니다. 증거 경로도 override JSON에서 읽어 직접 연결합니다.</p>
+      </header>
+      <div class="filterbar">
+        <div class="filter-group" aria-label="P2-A 요구 필터">
+          <button class="filter-button" type="button" data-requirement-filter="all" aria-pressed="true">전체 6</button>
+          <button class="filter-button" type="button" data-requirement-filter="promoted" aria-pressed="false">승격 3</button>
+          <button class="filter-button" type="button" data-requirement-filter="partial" aria-pressed="false">부분 유지 3</button>
+        </div>
+        <span class="filter-meta" id="requirement-count" aria-live="polite">6건 표시</span>
+      </div>
+      <div class="requirement-list">
+        <details class="requirement-card" data-kind="promoted" >
+    <summary>
+      <span class="req-id">D1-020</span>
+      <span class="req-title">단일 사본 번호 숨김</span>
+      <span class="chip ">부분 → 충족</span>
+    </summary>
+    <div class="requirement-body">
+      <section><h4>원 요구</h4><p>사본이 하나면 번호를 숨기고 둘 이상일 때만 사본 1·2를 표시하며 identity와 진행 기록은 유지한다.</p></section>
+      <section><h4>이번 판정 근거</h4><p>P2-A deterministic active-copy labels in React and standalone list/detail, with identity and state unchanged</p></section>
+      <section><h4>현재 판정 이유</h4><p>활성 사본이 둘 이상일 때만 stable savedCopyId/ref 순서로 사본 번호를 표시하고, React 목록·검색·선택 상세와 standalone 목록·상세가 같은 이름을 쓴다. 단일 사본과 휴지통 뒤 남은 사본은 원제목을 유지하며 표시 계산은 source identity, Item ref, 완료·배치 상태를 바꾸지 않는다.</p></section>
+      <section><h4>남은 조치</h4><p>운영 이관 전에 실제 저장 시각을 정렬 기준으로 쓸지 별도 제품 계약에서 결정한다.</p></section>
+      <ul class="evidence-files"><li><a href="../../lib/flow/personal-workspace-poc-copy-disambiguation.ts">lib/flow/personal-workspace-poc-copy-disambiguation.ts</a></li><li><a href="../../lib/flow/personal-workspace-poc-copy-disambiguation.test.ts">lib/flow/personal-workspace-poc-copy-disambiguation.test.ts</a></li><li><a href="../../components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx">components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx</a></li><li><a href="../../components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx">components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx</a></li><li><a href="../../docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js">docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js</a></li><li><a href="../../tests/e2e/personal-workspace-integration-poc.spec.ts">tests/e2e/personal-workspace-integration-poc.spec.ts</a></li><li><a href="../../tests/e2e/personal-workspace-integrated-standalone.spec.ts">tests/e2e/personal-workspace-integrated-standalone.spec.ts</a></li></ul>
+    </div>
+  </details><details class="requirement-card" data-kind="promoted" >
+    <summary>
+      <span class="req-id">D2-024</span>
+      <span class="req-title">표 사례도 표준 Flow 문법과 보존 경계 사용</span>
+      <span class="chip ">미충족 → 충족</span>
+    </summary>
+    <div class="requirement-body">
+      <section><h4>원 요구</h4><p>표 입력을 별도 특혜 문법으로 해석하지 않고 안전 행만 구조화하며 나머지는 원문으로 보존한다.</p></section>
+      <section><h4>이번 판정 근거</h4><p>P2-A lossless adapter projects deterministic Markdown CSV TSV source rows and fails risky or ambiguous tables to exact raw text without generated actions</p></section>
+      <section><h4>현재 판정 이유</h4><p>안전한 Markdown·CSV·TSV 표만 SourceRow로 보여 주며 표 행에서 Item·Todo·Calendar를 만들지 않는다. 모호하거나 위험한 표는 전체 원문 fallback으로 보존한다.</p></section>
+      <section><h4>남은 조치</h4><p>표 의미를 실행 항목으로 바꾸는 기능은 별도 명시적 materialization 계약이 승인될 때만 연다.</p></section>
+      <ul class="evidence-files"><li><a href="../../lib/flow/personal-workspace-poc-lossless-authoring.ts">lib/flow/personal-workspace-poc-lossless-authoring.ts</a></li><li><a href="../../lib/flow/personal-workspace-poc-lossless-authoring.test.ts">lib/flow/personal-workspace-poc-lossless-authoring.test.ts</a></li><li><a href="../../components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx">components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx</a></li><li><a href="../../tests/e2e/personal-workspace-integration-poc.spec.ts">tests/e2e/personal-workspace-integration-poc.spec.ts</a></li><li><a href="../../tests/e2e/personal-workspace-integrated-standalone.spec.ts">tests/e2e/personal-workspace-integrated-standalone.spec.ts</a></li></ul>
+    </div>
+  </details><details class="requirement-card" data-kind="promoted" >
+    <summary>
+      <span class="req-id">D2-025</span>
+      <span class="req-title">P1-C 장문·표의 원문 손실 방지</span>
+      <span class="chip ">미충족 → 충족</span>
+    </summary>
+    <div class="requirement-body">
+      <section><h4>원 요구</h4><p>blockquote/code/HTML/comment/blank와 table cell shape를 보존하고 안전 block만 구조화하며 위험 표는 TXT fallback으로 남긴다.</p></section>
+      <section><h4>이번 판정 근거</h4><p>P2-A rich-block and table-cell locators preserve exact source bytes and all tested newline forms, with raw fallback and zero generated actions</p></section>
+      <section><h4>현재 판정 이유</h4><p>blockquote·code fence·HTML/comment·빈 줄·표 cell과 LF·CRLF·CR·mixed ending을 원문 locator로 보존하고, 위험 입력은 잘라내거나 추측하지 않는다.</p></section>
+      <section><h4>남은 조치</h4><p>현재 version 1 budget과 지원 형식 변경은 별도 version에서만 한다.</p></section>
+      <ul class="evidence-files"><li><a href="../../lib/flow/personal-workspace-poc-lossless-authoring.ts">lib/flow/personal-workspace-poc-lossless-authoring.ts</a></li><li><a href="../../lib/flow/personal-workspace-poc-lossless-authoring.test.ts">lib/flow/personal-workspace-poc-lossless-authoring.test.ts</a></li><li><a href="../../lib/flow/personal-workspace-poc-cross-surface-parity.test.ts">lib/flow/personal-workspace-poc-cross-surface-parity.test.ts</a></li><li><a href="../../components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx">components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx</a></li><li><a href="../../tests/e2e/personal-workspace-integrated-standalone.spec.ts">tests/e2e/personal-workspace-integrated-standalone.spec.ts</a></li></ul>
+    </div>
+  </details><details class="requirement-card" data-kind="partial" open>
+    <summary>
+      <span class="req-id">D2-017</span>
+      <span class="req-title">Calendar는 실제 월간 달력 projection</span>
+      <span class="chip partial">부분 유지</span>
+    </summary>
+    <div class="requirement-body">
+      <section><h4>원 요구</h4><p>날짜 있는 occurrence만 월간 Calendar grid와 선택일 상세에 나타난다.</p></section>
+      <section><h4>이번 판정 근거</h4><p>P2-A actual 7-column 42-cell month grid, month navigation, selected day and undated projection; recurrence occurrence remains absent</p></section>
+      <section><h4>현재 판정 이유</h4><p>실행 날짜 우선 월간 grid·월 이동·선택일·날짜 미정 분리는 구현했다. 반복 Item의 bounded occurrence와 네 결과의 동일 occurrence identity는 아직 없다.</p></section>
+      <section><h4>남은 조치</h4><p>stable occurrenceId와 반복 horizon을 정한 뒤 Calendar·Todo·Sheet·TXT에서 같은 회차를 투영한다.</p></section>
+      <ul class="evidence-files"><li><a href="../../lib/flow/personal-workspace-poc-result-projection.ts">lib/flow/personal-workspace-poc-result-projection.ts</a></li><li><a href="../../lib/flow/personal-workspace-poc-result-projection.test.ts">lib/flow/personal-workspace-poc-result-projection.test.ts</a></li><li><a href="../../components/flow/personal-workspace-poc/PersonalWorkspacePocResultPresenter.tsx">components/flow/personal-workspace-poc/PersonalWorkspacePocResultPresenter.tsx</a></li><li><a href="../../tests/e2e/personal-workspace-integration-poc.spec.ts">tests/e2e/personal-workspace-integration-poc.spec.ts</a></li><li><a href="../../tests/e2e/personal-workspace-integrated-standalone.spec.ts">tests/e2e/personal-workspace-integrated-standalone.spec.ts</a></li></ul>
+    </div>
+  </details><details class="requirement-card" data-kind="partial" open>
+    <summary>
+      <span class="req-id">D2-020</span>
+      <span class="req-title">WorkingSource와 복사용 TXT 결과 구분</span>
+      <span class="chip partial">부분 유지</span>
+    </summary>
+    <div class="requirement-body">
+      <section><h4>원 요구</h4><p>좌측은 편집 source, 결과 TXT는 들여쓰기·번호·상세가 정리된 복사·다운로드 배포본이다.</p></section>
+      <section><h4>이번 판정 근거</h4><p>P2-A deterministic PoC-local TXT and CSV Blob downloads, separate from WorkingSource and operating export writers</p></section>
+      <section><h4>현재 판정 이유</h4><p>WorkingSource와 분리된 TXT 복사·로컬 다운로드 및 CSV 다운로드는 구현했다. 자동 번호·전용 속성·하위 체크·반복 회차를 모두 보존하는 원 정본의 완전한 배포용 TXT 계약은 아직 충족하지 않는다.</p></section>
+      <section><h4>남은 조치</h4><p>원 Text Authoring TXT serializer 구조를 effective Item과 occurrence model에 이식하고 formula-leading CSV cell 정책을 결정한다.</p></section>
+      <ul class="evidence-files"><li><a href="../../lib/flow/personal-workspace-poc-result-projection.ts">lib/flow/personal-workspace-poc-result-projection.ts</a></li><li><a href="../../components/flow/personal-workspace-poc/PersonalWorkspacePocResultPresenter.tsx">components/flow/personal-workspace-poc/PersonalWorkspacePocResultPresenter.tsx</a></li><li><a href="../../lib/flow/personal-workspace-poc-cross-surface-parity.test.ts">lib/flow/personal-workspace-poc-cross-surface-parity.test.ts</a></li><li><a href="../../tests/e2e/personal-workspace-integration-poc.spec.ts">tests/e2e/personal-workspace-integration-poc.spec.ts</a></li><li><a href="../../tests/e2e/personal-workspace-integrated-standalone.spec.ts">tests/e2e/personal-workspace-integrated-standalone.spec.ts</a></li></ul>
+    </div>
+  </details><details class="requirement-card" data-kind="partial" open>
+    <summary>
+      <span class="req-id">D2-023</span>
+      <span class="req-title">실제·검증 콘텐츠 예시 전체 보존</span>
+      <span class="chip partial">부분 유지</span>
+    </summary>
+    <div class="requirement-body">
+      <section><h4>원 요구</h4><p>기존 문법·실콘텐츠·조건 변경·예외 사례를 누락 없이 선택·재생하고 source에 없는 정보는 합성하지 않는다.</p></section>
+      <section><h4>이번 판정 근거</h4><p>P2-A versioned canonical 31-case corpus with provenance, byte preservation and React-standalone automated parity; no user-facing QA picker</p></section>
+      <section><h4>현재 판정 이유</h4><p>31개 정본 사례를 provenance와 함께 자동 재생하고 byte-exact·무합성 경계를 확인한다. 사용자가 화면에서 31개 사례를 선택·재생하는 기능은 없다.</p></section>
+      <section><h4>남은 조치</h4><p>작성 틀과 분리된 읽기 전용 QA 사례 picker를 제공하거나 원 요구를 자동 corpus 전용으로 축소할지 결정한다.</p></section>
+      <ul class="evidence-files"><li><a href="../../lib/flow/personal-workspace-poc-lossless-authoring.fixtures.ts">lib/flow/personal-workspace-poc-lossless-authoring.fixtures.ts</a></li><li><a href="../../lib/flow/personal-workspace-poc-lossless-authoring.test.ts">lib/flow/personal-workspace-poc-lossless-authoring.test.ts</a></li><li><a href="../../lib/flow/personal-workspace-poc-cross-surface-parity.test.ts">lib/flow/personal-workspace-poc-cross-surface-parity.test.ts</a></li></ul>
+    </div>
+  </details>
+      </div>
+    </section>
+
+    <section class="section" id="surfaces" tabindex="-1">
+      <header class="section-head">
+        <div><p class="eyebrow">03 · react / standalone</p><h2>두 실행 표면에 같은 계약을 연결했습니다.</h2></div>
+        <p>React 제품 PoC와 내려받아 여는 단일 HTML은 같은 identity·effective Item·결과 payload를 사용합니다. 화면 전환과 미리보기는 원본 source나 운영 writer를 바꾸지 않습니다.</p>
+      </header>
+      <div class="surface-grid">
+        <article class="surface react">
+          <h3>React 제품 PoC</h3>
+          <p><code>/my?personalWorkspacePoc=v1</code>과 작성 화면에서 확인하는 통합 표면입니다.</p>
+          <ul><li>활성 복수 사본에만 결정적 ordinal label</li><li>일요일 시작 7열·42칸 월간 결과와 날짜 미정 분리</li><li>TXT 복사·다운로드, CSV 다운로드</li><li>안전한 표 projection과 exact raw fallback</li></ul>
+          <span class="surface-path"><code>components/flow/personal-workspace-poc/</code></span>
+        </article>
+        <article class="surface standalone">
+          <h3>조작형 독립 HTML</h3>
+          <p>브라우저에서 파일로 열어 같은 목록·상세·결과·무손실 상태를 직접 검토합니다.</p>
+          <ul><li>목록·검색·상세의 동일 사본 구분</li><li>월 이동·선택일·날짜 미정 결과 전환</li><li>명시 클릭으로 메모리 Blob 다운로드</li><li>표와 장문 block의 safe/raw 표시</li></ul>
+          <span class="surface-path"><code>docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko.html</code></span>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="downloads" tabindex="-1">
+      <header class="section-head">
+        <div><p class="eyebrow">04 · download bytes</p><h2>다운로드 형식과 배포 파일 byte를 구분했습니다.</h2></div>
+        <p>TXT·CSV 결과 payload 계약과 단일 HTML·Android 전달 사본의 동일성은 다른 증거입니다. 둘을 하나의 “다운로드 성공”으로 합치지 않습니다.</p>
+      </header>
+      <div class="contract-grid">
+        <article class="contract" data-index="01"><h3>TXT MIME</h3><p><code>text/plain;charset=utf-8</code></p><ul><li>본문 개행 LF 정규화</li><li>UTF-8 BOM 없음</li></ul></article>
+        <article class="contract" data-index="02"><h3>CSV MIME</h3><p><code>text/csv;charset=utf-8</code></p><ul><li>UTF-8 BOM 포함</li><li>행 끝 CRLF</li></ul></article>
+        <article class="contract" data-index="03"><h3>CSV escaping</h3><p>RFC 4180 방식의 큰따옴표 escape</p><ul><li>결정적 filename</li><li>경로·제어문자 제외</li></ul></article>
+        <article class="contract" data-index="04"><h3>쓰기 경계</h3><p>사용자 명시 클릭과 메모리 Blob만 사용</p><ul><li>운영 export writer 호출 안 함</li><li>source mutation 0</li></ul></article>
+      </div>
+      <div class="byte-proof" aria-label="manifest 단일 파일 byte 증거">
+        <div><span>독립 HTML bytes</span><strong>327,074</strong></div>
+        <div><span>Android 사본 bytes</span><strong>327,074</strong></div>
+        <div><span>manifest byte 판정 · SHA-256</span><strong>동일</strong><code>90BAE48AC85A42301A1BD2F2D017B091D179F537F1E6A74C7FF3A20DA19C7984</code></div>
+      </div>
+    </section>
+
+    <section class="section" id="lossless" tabindex="-1">
+      <header class="section-head">
+        <div><p class="eyebrow">05 · 31-case corpus</p><h2>구조화보다 원문 보존을 먼저 판정했습니다.</h2></div>
+        <p>31개 정본 fixture는 출처와 원문 bytes를 갖습니다. 안전한 표만 SourceRow preview로 보이고, 모호하거나 위험하면 전체 raw text로 돌아갑니다.</p>
+      </header>
+      <div class="lossless-grid">
+        <article class="lossless safe"><h3>안전한 표</h3><p>열 수와 delimiter가 결정적인 Markdown·CSV·TSV만 행·cell locator로 투영합니다.</p><ul><li>원문 slice 위치 유지</li><li>cell·row stable id</li><li>원문 round trip</li></ul></article>
+        <article class="lossless raw"><h3>표·장문 fallback</h3><p>열 수 불일치, 닫히지 않은 quote, 혼합 delimiter, 위험 HTML은 잘라내거나 추측하지 않습니다.</p><ul><li>blockquote·code fence 보존</li><li>HTML/comment·빈 줄 보존</li><li>LF·CRLF·CR·mixed ending 보존</li></ul></article>
+        <article class="lossless zero"><h3>자동 합성 0</h3><p>preview adapter는 표 행을 실행 행동으로 해석하지 않습니다.</p><ul><li>generated Item 0</li><li>generated Todo 0</li><li>generated Calendar 0</li></ul></article>
+      </div>
+      <div class="corpus-line"><strong>31개 canonical corpus</strong><span>React와 standalone의 status·rawText·lineEnding·headers·row locator·fallback·source mutation 의미를 맞추는 자동 계약입니다. UI에서 31개 사례를 고르는 QA picker는 아직 없어 D2-023은 부분으로 남습니다.</span></div>
+    </section>
+
+    <section class="section" id="boundary" tabindex="-1">
+      <header class="section-head">
+        <div><p class="eyebrow">06 · boundary / viewport</p><h2>저장 경계와 화면 검사를 따로 읽습니다.</h2></div>
+        <p>아래 값은 <code>verification-manifest.json</code>의 현재 기록입니다. 사용자의 실제 브라우저 profile이나 운영 backend를 직접 검사한 결과로 확대 해석하지 않습니다.</p>
+      </header>
+      <div class="boundary-grid">
+        <article class="boundary-card"><span>허용 prefix 밖 setItem</span><strong>0</strong><p>자동 테스트의 격리된 localStorage fixture와 브라우저 context</p></article>
+        <article class="boundary-card"><span>허용 prefix 밖 removeItem</span><strong>0</strong><p><code>flow:poc:personal-workspace:v1:*</code> 이외 쓰기 금지</p></article>
+        <article class="boundary-card"><span>localStorage.clear()</span><strong>0</strong><p>초기화는 정확한 PoC prefix만 제거</p></article>
+        <article class="boundary-card"><span>운영 sentinel bytes 변경</span><strong>0</strong><p>사용자의 실제 브라우저 profile이나 운영 backend를 열어 검사한 증거는 아니다.</p></article>
+      </div>
+      <div class="viewport-list" aria-label="manifest viewport 기록">
+        <div data-viewport="320x700"><strong>320 × 700</strong><span>manifest 자동 검사 기록</span></div><div data-viewport="390x844"><strong>390 × 844</strong><span>manifest 자동 검사 기록</span></div><div data-viewport="375x812"><strong>375 × 812</strong><span>manifest 자동 검사 기록</span></div><div data-viewport="844x390"><strong>844 × 390</strong><span>manifest 자동 검사 기록</span></div><div data-viewport="1024x768"><strong>1024 × 768</strong><span>manifest 자동 검사 기록</span></div><div data-viewport="1440x900"><strong>1440 × 900</strong><span>manifest 자동 검사 기록</span></div>
+      </div>
+    </section>
+
+    <section class="section" id="tests" tabindex="-1">
+      <header class="section-head">
+        <div><p class="eyebrow">07 · executed evidence</p><h2>실제 실행 수는 manifest만 표시합니다.</h2></div>
+        <p>이 HTML에는 테스트 통과 개수를 고정해서 쓰지 않았습니다. builder를 다시 실행하면 manifest의 실행 수·통과·실패·명령이 그대로 갱신됩니다.</p>
+      </header>
+      <div class="evidence-grid">
+        <article class="evidence-card"><span>manifest 버전</span><strong id="manifest-version">v3</strong><p>2026-09-03T15:43:00+09:00</p></article>
+        <article class="evidence-card"><span>기록된 실행</span><strong id="manifest-run-count">29개</strong><p>테스트·브라우저·build·문서 실행을 합산하지 않고 행별 표시</p></article>
+        <article class="evidence-card"><span>PASS 실행</span><strong>28개</strong><p>각 실행의 내부 test 수와 별도인 run 개수</p></article>
+        <article class="evidence-card failed"><span>FAIL 실행</span><strong>1개</strong><p>실패가 있으면 전체 성공으로 바꾸지 않음</p></article>
+      </div>
+      <div class="filterbar" style="margin-top: 15px">
+        <div class="filter-group" aria-label="검증 실행 필터">
+          <button class="filter-button" type="button" data-run-filter="all" aria-pressed="true">전체</button>
+          <button class="filter-button" type="button" data-run-filter="passed" aria-pressed="false">PASS</button>
+          <button class="filter-button" type="button" data-run-filter="failed" aria-pressed="false">FAIL</button>
+        </div>
+        <span class="filter-meta" id="run-count" aria-live="polite">11개 핵심 실행 표시</span>
+      </div>
+      <div class="run-table-wrap"><table class="run-table">
+      <thead><tr><th>실행</th><th>통과 / 전체</th><th>판정</th><th>실제 명령</th></tr></thead>
+      <tbody><tr class="run-row passed" data-run-id="personal-workspace-poc-model" data-run-state="passed">
+    <td><strong>personal-workspace-poc-model</strong></td>
+    <td class="result">355 / 355</td>
+    <td><span class="chip ">PASS</span></td>
+    <td><code>npm.cmd run test:personal-workspace-poc</code></td>
+  </tr><tr class="run-row passed" data-run-id="standalone-model" data-run-state="passed">
+    <td><strong>standalone-model</strong></td>
+    <td class="result">54 / 54</td>
+    <td><span class="chip ">PASS</span></td>
+    <td><code>node --test docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/standalone.test.cjs</code></td>
+  </tr><tr class="run-row passed" data-run-id="standalone-runtime-browser" data-run-state="passed">
+    <td><strong>standalone-runtime-browser</strong></td>
+    <td class="result">24 / 24</td>
+    <td><span class="chip ">PASS</span></td>
+    <td><code>npx.cmd playwright test tests/e2e/personal-workspace-integration-poc.spec.ts tests/e2e/personal-workspace-integrated-standalone.spec.ts --reporter=line (standalone 24-test slice)</code></td>
+  </tr><tr class="run-row failed" data-run-id="full-regression" data-run-state="failed">
+    <td><strong>full-regression</strong><br><small>seed-flows의 dog-adoption-first-week review_due 2026-06-04가 현재 날짜 기준 콘텐츠 신선도 검증을 통과하지 못해 전체 실행이 중단됐다.</small></td>
+    <td class="result">1,619 / 1,620</td>
+    <td><span class="chip partial">FAIL</span></td>
+    <td><code>npm.cmd test</code></td>
+  </tr><tr class="run-row passed" data-run-id="p2a-lossless-parity-model" data-run-state="passed">
+    <td><strong>p2a-lossless-parity-model</strong></td>
+    <td class="result">48 / 48</td>
+    <td><span class="chip ">PASS</span></td>
+    <td><code>npx.cmd tsx --test lib/flow/personal-workspace-poc-lossless-authoring.test.ts lib/flow/personal-workspace-poc-cross-surface-parity.test.ts</code></td>
+  </tr><tr class="run-row passed" data-run-id="p2a-browser-focused" data-run-state="passed">
+    <td><strong>p2a-browser-focused</strong></td>
+    <td class="result">3 / 3</td>
+    <td><span class="chip ">PASS</span></td>
+    <td><code>npx.cmd playwright test tests/e2e/personal-workspace-integration-poc.spec.ts tests/e2e/personal-workspace-integrated-standalone.spec.ts --grep P2-A --reporter=line</code></td>
+  </tr><tr class="run-row passed" data-run-id="p2a-browser-regression" data-run-state="passed">
+    <td><strong>p2a-browser-regression</strong></td>
+    <td class="result">30 / 30</td>
+    <td><span class="chip ">PASS</span></td>
+    <td><code>npx.cmd playwright test tests/e2e/personal-workspace-integration-poc.spec.ts tests/e2e/personal-workspace-integrated-standalone.spec.ts --reporter=line</code></td>
+  </tr><tr class="run-row passed" data-run-id="production-build" data-run-state="passed">
+    <td><strong>production-build</strong><br><small>최종 React와 standalone 변경을 모두 반영한 production build</small></td>
+    <td class="result">18 / 18</td>
+    <td><span class="chip ">PASS</span></td>
+    <td><code>npm.cmd run build</code></td>
+  </tr><tr class="run-row passed" data-run-id="documentation-check" data-run-state="passed">
+    <td><strong>documentation-check</strong></td>
+    <td class="result">4,594 / 4,594</td>
+    <td><span class="chip ">PASS</span></td>
+    <td><code>npm.cmd run docs:check</code></td>
+  </tr><tr class="run-row passed" data-run-id="p2a-report-browser" data-run-state="passed">
+    <td><strong>p2a-report-browser</strong></td>
+    <td class="result">2 / 2</td>
+    <td><span class="chip ">PASS</span></td>
+    <td><code>npx.cmd playwright test tests/e2e/personal-workspace-requirements-traceability.spec.ts tests/e2e/personal-workspace-p2a-lossless-result-validation-report.spec.ts --reporter=line (P2-A report 2-test slice)</code></td>
+  </tr><tr class="run-row passed" data-run-id="traceability-report-browser-p2a-closeout" data-run-state="passed">
+    <td><strong>traceability-report-browser-p2a-closeout</strong></td>
+    <td class="result">2 / 2</td>
+    <td><span class="chip ">PASS</span></td>
+    <td><code>npx.cmd playwright test tests/e2e/personal-workspace-requirements-traceability.spec.ts tests/e2e/personal-workspace-p2a-lossless-result-validation-report.spec.ts --reporter=line (traceability report 2-test slice)</code></td>
+  </tr></tbody>
+    </table></div>
+      <article class="regression-note"><strong>전체 회귀 판정: FAIL</strong><p>seed-flows의 dog-adoption-first-week review_due 2026-06-04가 현재 날짜 기준 콘텐츠 신선도 검증을 통과하지 못해 전체 실행이 중단됐다. 별도 tail 실행은 이 실행을 PASS로 바꾸지 않습니다.</p></article>
+      <details class="all-runs"><summary>manifest 전체 실행 원장 29개 보기</summary><div class="run-table-wrap"><table class="run-table">
+      <thead><tr><th>실행</th><th>통과 / 전체</th><th>판정</th><th>실제 명령</th></tr></thead>
+      <tbody><tr class="run-row passed" data-run-id="personal-workspace-poc-model" data-run-state="passed">
+    <td><strong>personal-workspace-poc-model</strong></td>
+    <td class="result">355 / 355</td>
+    <td><span class="chip ">PASS</span></td>
+    <td><code>npm.cmd run test:personal-workspace-poc</code></td>
+  </tr><tr class="run-row passed" data-run-id="standalone-model" data-run-state="passed">
+    <td><strong>standalone-model</strong></td>
+    <td class="result">54 / 54</td>
+    <td><span class="chip ">PASS</span></td>
+    <td><code>node --test docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/standalone.test.cjs</code></td>
+  </tr><tr class="run-row passed" data-run-id="standalone-runtime-browser" data-run-state="passed">
+    <td><strong>standalone-runtime-browser</strong></td>
+    <td class="result">24 / 24</td>
+    <td><span class="chip ">PASS</span></td>
+    <td><code>npx.cmd playwright test tests/e2e/personal-workspace-integration-poc.spec.ts tests/e2e/personal-workspace-integrated-standalone.spec.ts --reporter=line (standalone 24-test slice)</code></td>
+  </tr><tr class="run-row failed" data-run-id="full-regression" data-run-state="failed">
+    <td><strong>full-regression</strong><br><small>seed-flows의 dog-adoption-first-week review_due 2026-06-04가 현재 날짜 기준 콘텐츠 신선도 검증을 통과하지 못해 전체 실행이 중단됐다.</small></td>
+    <td class="result">1,619 / 1,620</td>
+    <td><span class="chip partial">FAIL</span></td>
+    <td><code>npm.cmd test</code></td>
+  </tr><tr class="run-row passed" data-run-id="full-regression-tail-after-stop" data-run-state="passed">
+    <td><strong>full-regression-tail-after-stop</strong><br><small>2026-09-03 fresh npm.cmd test 중단 뒤 남은 tail 두 그룹을 별도 실행: approved-plan-execution 201/201, public-plan-surface 19/19</small></td>
+    <td class="result">220 / 220</td>
+    <td><span class="chip ">PASS</span></td>
+    <td><code>npm.cmd run test:approved-plan-execution ; npm.cmd run test:public-plan-surface (npm test 중단 뒤 각각 별도 실행)</code></td>
+  </tr><tr class="run-row passed" data-run-id="p2a-lossless-parity-model" data-run-state="passed">
+    <td><strong>p2a-lossless-parity-model</strong></td>
+    <td class="result">48 / 48</td>
+    <td><span class="chip ">PASS</span></td>
+    <td><code>npx.cmd tsx --test lib/flow/personal-workspace-poc-lossless-authoring.test.ts lib/flow/personal-workspace-poc-cross-surface-parity.test.ts</code></td>
+  </tr><tr class="run-row passed" data-run-id="p2a-browser-focused" data-run-state="passed">
+    <td><strong>p2a-browser-focused</strong></td>
+    <td class="result">3 / 3</td>
+    <td><span class="chip ">PASS</span></td>
+    <td><code>npx.cmd playwright test tests/e2e/personal-workspace-integration-poc.spec.ts tests/e2e/personal-workspace-integrated-standalone.spec.ts --grep P2-A --reporter=line</code></td>
+  </tr><tr class="run-row passed" data-run-id="p2a-browser-regression" data-run-state="passed">
+    <td><strong>p2a-browser-regression</strong></td>
+    <td class="result">30 / 30</td>
+    <td><span class="chip ">PASS</span></td>
+    <td><code>npx.cmd playwright test tests/e2e/personal-workspace-integration-poc.spec.ts tests/e2e/personal-workspace-integrated-standalone.spec.ts --reporter=line</code></td>
+  </tr><tr class="run-row passed" data-run-id="production-build" data-run-state="passed">
+    <td><strong>production-build</strong><br><small>최종 React와 standalone 변경을 모두 반영한 production build</small></td>
+    <td class="result">18 / 18</td>
+    <td><span class="chip ">PASS</span></td>
+    <td><code>npm.cmd run build</code></td>
+  </tr><tr class="run-row passed" data-run-id="a8-browser-repeat" data-run-state="passed">
+    <td><strong>a8-browser-repeat</strong></td>
+    <td class="result">8 / 8</td>
+    <td><span class="chip ">PASS</span></td>
+    <td><code>npx.cmd playwright test personal-workspace-poc.spec.ts --grep &lt;four A8 core scenarios&gt; --workers=1 --repeat-each=2</code></td>
+  </tr><tr class="run-row passed" data-run-id="a8-browser-expanded-repeat" data-run-state="passed">
+    <td><strong>a8-browser-expanded-repeat</strong></td>
+    <td class="result">12 / 12</td>
+    <td><span class="chip ">PASS</span></td>
+    <td><code>npx.cmd playwright test personal-workspace-poc.spec.ts --grep &lt;six A8 related scenarios&gt; --workers=1 --repeat-each=2</code></td>
+  </tr><tr class="run-row passed" data-run-id="a9-offscreen-date-repeat" data-run-state="passed">
+    <td><strong>a9-offscreen-date-repeat</strong></td>
+    <td class="result">10 / 10</td>
+    <td><span class="chip ">PASS</span></td>
+    <td><code>npx.cmd playwright test personal-workspace-poc.spec.ts --grep &lt;844x300 reduced-motion offscreen DATE&gt; --workers=1 --repeat-each=10</code></td>
+  </tr><tr class="run-row passed" data-run-id="relevant-browser" data-run-state="passed">
+    <td><strong>relevant-browser</strong></td>
+    <td class="result">37 / 37</td>
+    <td><span class="chip ">PASS</span></td>
+    <td><code>npx.cmd playwright test tests/e2e/personal-workspace-poc.spec.ts tests/e2e/personal-workspace-integration-poc.spec.ts tests/e2e/personal-workspace-integrated-standalone.spec.ts tests/e2e/personal-workspace-standalone-demo.spec.ts tests/e2e/personal-workspace-gap-closure-plan.spec.ts tests/e2e/personal-workspace-integrated-validation-report.spec.ts tests/e2e/personal-workspace-requirements-traceability.spec.ts --workers=1</code></td>
+  </tr><tr class="run-row passed" data-run-id="report-browser-after-refresh" data-run-state="passed">
+    <td><strong>report-browser-after-refresh</strong></td>
+    <td class="result">6 / 6</td>
+    <td><span class="chip ">PASS</span></td>
+    <td><code>npx.cmd playwright test tests/e2e/personal-workspace-gap-closure-plan.spec.ts tests/e2e/personal-workspace-integrated-validation-report.spec.ts tests/e2e/personal-workspace-requirements-traceability.spec.ts --workers=1</code></td>
+  </tr><tr class="run-row passed" data-run-id="a0-decision-packet-browser" data-run-state="passed">
+    <td><strong>a0-decision-packet-browser</strong></td>
+    <td class="result">2 / 2</td>
+    <td><span class="chip ">PASS</span></td>
+    <td><code>npx.cmd playwright test tests/e2e/personal-workspace-a0-decision-packet.spec.ts --workers=1</code></td>
+  </tr><tr class="run-row passed" data-run-id="a0-report-bundle-browser" data-run-state="passed">
+    <td><strong>a0-report-bundle-browser</strong></td>
+    <td class="result">6 / 6</td>
+    <td><span class="chip ">PASS</span></td>
+    <td><code>npx.cmd playwright test tests/e2e/personal-workspace-a0-decision-packet.spec.ts tests/e2e/personal-workspace-gap-closure-plan.spec.ts tests/e2e/personal-workspace-requirements-traceability.spec.ts --workers=1</code></td>
+  </tr><tr class="run-row passed" data-run-id="documentation-check" data-run-state="passed">
+    <td><strong>documentation-check</strong></td>
+    <td class="result">4,594 / 4,594</td>
+    <td><span class="chip ">PASS</span></td>
+    <td><code>npm.cmd run docs:check</code></td>
+  </tr><tr class="run-row passed" data-run-id="stage1-combined-model" data-run-state="passed">
+    <td><strong>stage1-combined-model</strong></td>
+    <td class="result">197 / 197</td>
+    <td><span class="chip ">PASS</span></td>
+    <td><code>npx.cmd tsx --test lib/flow/flow-editor-transaction.test.ts lib/flow/personal-workspace-poc-authoring-fidelity.test.ts lib/flow/personal-workspace-poc-authoring.test.ts lib/flow/personal-workspace-poc-plan-editor.test.ts lib/flow/personal-workspace-poc-state.test.ts lib/flow/personal-workspace-poc-storage-transaction.test.ts</code></td>
+  </tr><tr class="run-row passed" data-run-id="stage1-runtime-browser" data-run-state="passed">
+    <td><strong>stage1-runtime-browser</strong></td>
+    <td class="result">4 / 4</td>
+    <td><span class="chip ">PASS</span></td>
+    <td><code>npx.cmd playwright test tests/e2e/personal-workspace-stage-1-runtime.spec.ts</code></td>
+  </tr><tr class="run-row passed" data-run-id="stage2-runtime-browser" data-run-state="passed">
+    <td><strong>stage2-runtime-browser</strong></td>
+    <td class="result">11 / 11</td>
+    <td><span class="chip ">PASS</span></td>
+    <td><code>npx.cmd playwright test tests/e2e/personal-workspace-stage-2-runtime.spec.ts --workers=1</code></td>
+  </tr><tr class="run-row passed" data-run-id="stage2-integration-runtime-browser" data-run-state="passed">
+    <td><strong>stage2-integration-runtime-browser</strong></td>
+    <td class="result">3 / 3</td>
+    <td><span class="chip ">PASS</span></td>
+    <td><code>npx.cmd playwright test tests/e2e/personal-workspace-integration-poc.spec.ts --workers=1</code></td>
+  </tr><tr class="run-row passed" data-run-id="personal-workspace-v41-core-runtime-browser" data-run-state="passed">
+    <td><strong>personal-workspace-v41-core-runtime-browser</strong></td>
+    <td class="result">13 / 13</td>
+    <td><span class="chip ">PASS</span></td>
+    <td><code>npx.cmd playwright test tests/e2e/personal-workspace-poc.spec.ts --workers=1 --output=test-results-v41-core-final</code></td>
+  </tr><tr class="run-row passed" data-run-id="stage3-runtime-browser" data-run-state="passed">
+    <td><strong>stage3-runtime-browser</strong></td>
+    <td class="result">13 / 13</td>
+    <td><span class="chip ">PASS</span></td>
+    <td><code>npx.cmd playwright test tests/e2e/personal-workspace-stage-3-runtime.spec.ts --workers=1 --output=test-results-stage3-final-5</code></td>
+  </tr><tr class="run-row passed" data-run-id="stage4-runtime-browser" data-run-state="passed">
+    <td><strong>stage4-runtime-browser</strong></td>
+    <td class="result">5 / 5</td>
+    <td><span class="chip ">PASS</span></td>
+    <td><code>npx.cmd playwright test tests/e2e/personal-workspace-stage-4-runtime.spec.ts --workers=1</code></td>
+  </tr><tr class="run-row passed" data-run-id="authoring-workspace-parity-browser" data-run-state="passed">
+    <td><strong>authoring-workspace-parity-browser</strong></td>
+    <td class="result">2 / 2</td>
+    <td><span class="chip ">PASS</span></td>
+    <td><code>npx.cmd playwright test tests/e2e/personal-workspace-authoring-workspace-parity.spec.ts --workers=1</code></td>
+  </tr><tr class="run-row passed" data-run-id="authoring-workspace-final-browser-bundle" data-run-state="passed">
+    <td><strong>authoring-workspace-final-browser-bundle</strong></td>
+    <td class="result">37 / 37</td>
+    <td><span class="chip ">PASS</span></td>
+    <td><code>npx.cmd playwright test tests/e2e/personal-workspace-authoring-workspace-parity.spec.ts tests/e2e/personal-workspace-integrated-standalone.spec.ts tests/e2e/personal-workspace-integration-poc.spec.ts tests/e2e/personal-workspace-stage-2-runtime.spec.ts --workers=1</code></td>
+  </tr><tr class="run-row passed" data-run-id="traceability-report-browser-authoring-closeout" data-run-state="passed">
+    <td><strong>traceability-report-browser-authoring-closeout</strong></td>
+    <td class="result">2 / 2</td>
+    <td><span class="chip ">PASS</span></td>
+    <td><code>npx.cmd playwright test tests/e2e/personal-workspace-requirements-traceability.spec.ts --workers=1 --output=test-results-final-trace-report-authoring-closeout-2</code></td>
+  </tr><tr class="run-row passed" data-run-id="p2a-report-browser" data-run-state="passed">
+    <td><strong>p2a-report-browser</strong></td>
+    <td class="result">2 / 2</td>
+    <td><span class="chip ">PASS</span></td>
+    <td><code>npx.cmd playwright test tests/e2e/personal-workspace-requirements-traceability.spec.ts tests/e2e/personal-workspace-p2a-lossless-result-validation-report.spec.ts --reporter=line (P2-A report 2-test slice)</code></td>
+  </tr><tr class="run-row passed" data-run-id="traceability-report-browser-p2a-closeout" data-run-state="passed">
+    <td><strong>traceability-report-browser-p2a-closeout</strong></td>
+    <td class="result">2 / 2</td>
+    <td><span class="chip ">PASS</span></td>
+    <td><code>npx.cmd playwright test tests/e2e/personal-workspace-requirements-traceability.spec.ts tests/e2e/personal-workspace-p2a-lossless-result-validation-report.spec.ts --reporter=line (traceability report 2-test slice)</code></td>
+  </tr></tbody>
+    </table></div></details>
+    </section>
+
+    <section class="section" id="limits" tabindex="-1">
+      <header class="section-head">
+        <div><p class="eyebrow">08 · external / publish</p><h2>미실행과 미게시를 분리해서 남깁니다.</h2></div>
+        <p>자동 브라우저와 화면 캡처는 실제 Android Chrome·iOS Safari 검사도, 관찰 사용자의 성공률 증거도 아닙니다. 게시 상태도 기능 검증과 별개입니다.</p>
+      </header>
+      <div class="external-publish">
+        <div>
+          <dl class="status-list"><div><dt>실제 Android Chrome</dt><dd>미실행</dd></div><div><dt>실제 iOS Safari</dt><dd>미실행</dd></div><div><dt>스크린리더</dt><dd>미실행</dd></div><div><dt>브라우저 200% 확대</dt><dd>미실행</dd></div></dl>
+          <div style="height: 14px"></div>
+          <dl class="status-list"><div><dt>commit</dt><dd>미진행</dd></div><div><dt>push</dt><dd>미진행</dd></div><div><dt>PR</dt><dd>미진행</dd></div><div><dt>Preview</dt><dd>미진행</dd></div><div><dt>Production</dt><dd>미진행</dd></div></dl>
+        </div>
+        <aside class="observed"><span>관찰 사용자 수</span><strong>0명</strong><p>수동 검토 동반물과 자동화 결과를 관찰 사용자 검증으로 세지 않았습니다.</p></aside>
+      </div>
+      <article class="manual-note"><strong>이 보고서의 용도</strong><p>독립 HTML을 열어 구현·판정·증거 경로를 사람이 검토하는 데 쓰는 문서입니다. 제품 배포물, 실제 기기 인증서, 관찰 사용자 조사 결과가 아닙니다.</p></article>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p><strong>빌드:</strong> 2026년 9월 3일 오후 3:44:36 · <strong>manifest:</strong> v3 / 2026-09-03T15:43:00+09:00</p>
+    <p><strong>입력:</strong> verification-manifest.json + current-verdict-overrides.json · <strong>SHA-256:</strong> <code>53aa726978b4b998f3dbde9a058f88bc6b2c5f9fd45611caef8776dbb4374f8c</code></p>
+    <p>입력 JSON이 바뀌면 <code>assets/build-report.cjs</code>를 다시 실행해야 이 단일 HTML에 반영됩니다.</p>
+  </footer>
+
+  <script id="report-data" type="application/json">{"beforeP2A":{"V41":{"total":78,"satisfied":60,"partial":3,"missing":3,"intentionalChange":6,"excluded":6},"D1":{"total":26,"satisfied":24,"partial":2,"missing":0,"intentionalChange":0,"excluded":0},"D2":{"total":64,"satisfied":35,"partial":16,"missing":3,"intentionalChange":4,"excluded":6},"total":{"total":168,"satisfied":119,"partial":21,"missing":6,"intentionalChange":10,"excluded":12}},"afterP2A":{"V41":{"total":78,"satisfied":60,"partial":3,"missing":3,"intentionalChange":6,"excluded":6},"D1":{"total":26,"satisfied":25,"partial":1,"missing":0,"intentionalChange":0,"excluded":0},"D2":{"total":64,"satisfied":37,"partial":16,"missing":1,"intentionalChange":4,"excluded":6},"total":{"total":168,"satisfied":122,"partial":20,"missing":4,"intentionalChange":10,"excluded":12}},"targetIds":["D1-020","D2-024","D2-025","D2-017","D2-020","D2-023"],"promotedIds":["D1-020","D2-024","D2-025"],"partialIds":["D2-017","D2-020","D2-023"],"manifestVersion":3,"manifestGeneratedAt":"2026-09-03T15:43:00+09:00","manifestRunCount":29,"focusRunIds":["personal-workspace-poc-model","standalone-model","standalone-runtime-browser","full-regression","p2a-lossless-parity-model","p2a-browser-focused","p2a-browser-regression","production-build","documentation-check","p2a-report-browser","traceability-report-browser-p2a-closeout"],"viewports":["320x700","390x844","375x812","844x390","1024x768","1440x900"],"storageBoundary":{"allowedPrefixes":["flow:poc:personal-workspace:v1:"],"writesOutsideAllowedPrefix":0,"removesOutsideAllowedPrefix":0,"clearCalls":0,"operatingSentinelBytesChanged":0,"scope":"자동 테스트의 격리된 localStorage fixture와 브라우저 context","note":"사용자의 실제 브라우저 profile이나 운영 backend를 열어 검사한 증거는 아니다.","stage1Evidence":"unit fault injection과 Stage 1 browser runtime 4/4에서 no-op·stale·invalid·failure mutation 0, PoC prefix 밖 set/remove 0, clear 0, operating sentinel byte parity를 확인했다.","v41CoreEvidence":"v4.1 core Chromium 13/13에서 8개 필수 시나리오, pointer·drag·menu·keyboard 수렴, no-op·cancel·failure 경계와 operating snapshot byte parity를 확인했다.","stage3Evidence":"Stage 3 Chromium 13/13에서 prefix 밖 set/remove/clear 0과 operating snapshot byte-identical을 확인했다.","stage4Evidence":"Stage 4 Chromium 5/5에서 Task·Flow 이동 parity, prefix 밖 set/remove/clear 0과 non-PoC snapshot byte-identical을 확인했다.","standaloneEvidence":"최종 standalone node 54/54와 fresh Chromium 결합 회귀의 standalone slice 24/24에서 state+draft rollback·stable identity·exact prefix, 6개 viewport, 월간 결과·TXT/CSV 다운로드·lossless adapter·browser-native Undo를 확인했다.","p2aEvidence":"P2-A focused Chromium 3/3과 두 실행 표면 결합 회귀 30/30에서 복수 사본, 월간 42칸, 로컬 다운로드, safe table/raw fallback, overflow·console/page error 0, 운영 snapshot byte parity를 확인했다."},"singleFiles":{"standaloneBytes":327074,"androidBytes":327074,"byteEqual":true,"sha256":"90BAE48AC85A42301A1BD2F2D017B091D179F537F1E6A74C7FF3A20DA19C7984"},"externalEvidence":{"androidChrome":"미실행","iosSafari":"미실행","screenReader":"미실행","browserZoom200Percent":"미실행","observedUsers":0},"publish":{"commit":"미진행","push":"미진행","pullRequest":"미진행","preview":"미진행","production":"미진행"},"sourceHash":"53aa726978b4b998f3dbde9a058f88bc6b2c5f9fd45611caef8776dbb4374f8c","builtAt":"2026년 9월 3일 오후 3:44:36"}</script>
+  <script>
+    (() => {
+      const requirementCards = [...document.querySelectorAll('.requirement-card')];
+      const requirementCount = document.querySelector('#requirement-count');
+      document.querySelectorAll('[data-requirement-filter]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const filter = button.dataset.requirementFilter;
+          document.querySelectorAll('[data-requirement-filter]').forEach((item) => {
+            item.setAttribute('aria-pressed', String(item === button));
+          });
+          let visible = 0;
+          requirementCards.forEach((card) => {
+            const show = filter === 'all' || card.dataset.kind === filter;
+            card.hidden = !show;
+            if (show) visible += 1;
+          });
+          requirementCount.textContent = visible + '건 표시';
+        });
+      });
+
+      const focusRunRows = [...document.querySelectorAll('#tests > .run-table-wrap .run-row')];
+      const runCount = document.querySelector('#run-count');
+      document.querySelectorAll('[data-run-filter]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const filter = button.dataset.runFilter;
+          document.querySelectorAll('[data-run-filter]').forEach((item) => {
+            item.setAttribute('aria-pressed', String(item === button));
+          });
+          let visible = 0;
+          focusRunRows.forEach((row) => {
+            const show = filter === 'all' || row.dataset.runState === filter;
+            row.hidden = !show;
+            if (show) visible += 1;
+          });
+          runCount.textContent = visible + '개 핵심 실행 표시';
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

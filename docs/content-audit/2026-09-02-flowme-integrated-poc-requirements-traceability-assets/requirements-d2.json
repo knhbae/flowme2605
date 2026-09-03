@@ -1,0 +1,1695 @@
+[
+  {
+    "id": "D2-001",
+    "product": "D2",
+    "title": "AI 없이 평문을 우선하는 저작",
+    "category": [
+      "기능",
+      "데이터"
+    ],
+    "journey": "입력",
+    "priority": "P0",
+    "decision": "현행확정",
+    "source": "D2 baseline session / turn D2-conversation-001: AI가 없는 범위에서 규칙 기반 작성 도구로 진행",
+    "sourceArtifact": [
+      "docs/specs/2026-07-28-flowme-text-authoring-ux-v1/spec.md"
+    ],
+    "expected": "일반 TXT·Markdown·목록·표를 먼저 보존하고 명시 문법만 결정적으로 해석한다. AI가 제목·할 일·메모·장소를 생성하지 않는다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-authoring.ts",
+      "lib/flow/personal-workspace-poc-authoring.test.ts",
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx"
+    ],
+    "verdict": "충족",
+    "evidence": "E4",
+    "reason": "현재 parser는 명시 문법만 읽고 원문 전체를 authoring metadata로 보존하며 AI 경로가 없다.",
+    "action": "AI 추론이나 source에 없는 콘텐츠 생성을 추가하지 않는다.",
+    "linkGroup": "D2-authoring-foundation"
+  },
+  {
+    "id": "D2-002",
+    "product": "D2",
+    "title": "Canonical 계층과 Item 상태 소유권",
+    "category": [
+      "데이터"
+    ],
+    "journey": "구조",
+    "priority": "P0",
+    "decision": "현행확정",
+    "source": "turn D2-conversation-002: canonical 정의는 SourceRow → Item → Step → Flow → Bundle/Flow Map",
+    "sourceArtifact": [
+      "docs/specs/2026-07-11-canonical-flow-data-model/spec.md"
+    ],
+    "expected": "Item이 최소 독립 상태 단위이며 Step은 Item 묶음이다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-authoring.ts",
+      "lib/flow/personal-workspace-poc-authoring-fidelity.ts",
+      "lib/flow/personal-workspace-poc-contract.ts"
+    ],
+    "verdict": "부분",
+    "evidence": "E4",
+    "reason": "source line→Item mapping, Item/Step/Flow identity와 provenance를 보존하지만 SourceRow와 Bundle/Flow Map 전체 authoring 계층은 PoC 축약 범위다.",
+    "action": "production 승격 전 canonical adapter 계약을 별도 검토하고 이번 PoC를 새 canonical schema로 취급하지 않는다.",
+    "linkGroup": "D2-canonical-model"
+  },
+  {
+    "id": "D2-003",
+    "product": "D2",
+    "title": "Calendar·Todo·Sheet·TXT는 같은 Item의 projection",
+    "category": [
+      "데이터",
+      "화면"
+    ],
+    "journey": "결과",
+    "priority": "P0",
+    "decision": "현행확정",
+    "source": "turn D2-conversation-002 및 D2-conversation-003",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-review/docs/specs/2026-07-28-flowme-text-authoring-ux-v1/authoring-grammar-logic.md"
+    ],
+    "expected": "네 결과는 경쟁 canonical이 아니라 동일 Item의 projection이며 같은 수정과 상태를 공유한다.",
+    "currentEvidence": [
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx:676",
+      "lib/flow/personal-workspace-poc-authoring.ts"
+    ],
+    "verdict": "부분",
+    "evidence": "E3",
+    "reason": "현재 authoring 결과는 할 일과 날짜 보기만 제공하며 Sheet·복사용 TXT projection이 없다.",
+    "action": "Sheet/TXT를 추가하거나 이번 Personal handoff가 D2 전체 result surface를 의도적으로 축소했음을 보고한다.",
+    "linkGroup": "D2-result-projections"
+  },
+  {
+    "id": "D2-004",
+    "product": "D2",
+    "title": "Source·Creator·Public·Personal·Execution 계층 분리",
+    "category": [
+      "데이터"
+    ],
+    "journey": "공통",
+    "priority": "P0",
+    "decision": "현행확정",
+    "source": "turn D2-conversation-004 및 D2-conversation-005",
+    "sourceArtifact": [
+      "docs/specs/2026-07-28-flowme-text-authoring-ux-v1/data-handoff.md"
+    ],
+    "expected": "SourceSnapshot, WorkingSource, canonical, CreatorDraft, PublishedVersion, PersonalOverlay, ExecutionRun, ExportSnapshot을 분리한다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-read-model.ts",
+      "lib/flow/personal-workspace-poc-contract.ts",
+      "lib/flow/personal-workspace-poc-composition.ts"
+    ],
+    "verdict": "부분",
+    "evidence": "E4",
+    "reason": "source·existing personal·PoC personal plan·execution 계층을 분리했다. CreatorDraft·PublishedVersion·ExportSnapshot owner는 이번 개인 handoff 범위에서 구현하지 않았다.",
+    "action": "creator/public/export를 개인공간 shadow state에 합치지 말고 각 owner가 승인되는 후속 단계로 유지한다.",
+    "linkGroup": "D2-ownership-layers"
+  },
+  {
+    "id": "D2-005",
+    "product": "D2",
+    "title": "저작 결과의 저장 대상",
+    "category": [
+      "데이터",
+      "전환"
+    ],
+    "journey": "저장",
+    "priority": "P0",
+    "decision": "통합 blueprint로 대체 확정",
+    "source": "turn D2-conversation-006: 모바일의 ‘개인 Flow로 저장’을 제작자 문맥 불일치로 판정하고 ‘제작 초안 저장/검토 준비’를 요구",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-review/docs/content-audit/2026-08-11-flowme-text-authoring-service-ux-planning-handoff/README.md",
+      "docs/specs/2026-09-01-flowme-integration-blueprint-v0/spec.md"
+    ],
+    "expected": "D2 원안은 CreatorDraft 또는 검토 준비로 저장하고 Personal Flow는 별도 handoff로 둔다.",
+    "currentEvidence": [
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx:754",
+      "lib/flow/personal-workspace-poc-composition.ts",
+      "tests/e2e/personal-workspace-integration-poc.spec.ts:377"
+    ],
+    "verdict": "의도적 변경",
+    "evidence": "E4",
+    "reason": "D2 원안의 creator 문맥은 보존하되 후속 통합 blueprint가 이번 PoC의 첫 성공 경로를 명시적인 개인 Flow handoff로 확정했다. CreatorDraft library와 공개 후보는 별도 owner의 후속 범위라 같은 CTA에 섞지 않는다.",
+    "action": "현재는 개인 Flow handoff와 lineage·reload를 완성하고 CreatorDraft 저장·검색·복제·보관은 A11의 별도 승인 조건으로 유지한다.",
+    "linkGroup": "D2-save-owner-conflict"
+  },
+  {
+    "id": "D2-006",
+    "product": "D2",
+    "title": "Main 앱과 분리된 제작 PoC",
+    "category": [
+      "데이터",
+      "검증"
+    ],
+    "journey": "공통",
+    "priority": "P0",
+    "decision": "현행확정",
+    "source": "turn D2-conversation-007: main app 통합이 아니라 별도 Flow 콘텐츠 제작 PoC임을 재확인",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-structure-template-inline-baseline-20260830/docs/specs/2026-08-30-flowme-text-authoring-unified-editor-guidance-poc/spec.md"
+    ],
+    "expected": "Production Text Authoring route/store/schema와 분리하고 외부 side effect를 만들지 않는다.",
+    "currentEvidence": [
+      "app/flows/new/page.tsx",
+      "lib/flow/personal-workspace-poc-gate.ts",
+      "lib/flow/personal-workspace-poc-storage.ts",
+      "tests/e2e/personal-workspace-integration-poc.spec.ts"
+    ],
+    "verdict": "충족",
+    "evidence": "E4",
+    "reason": "exact query gate와 PoC prefix storage에 격리되어 기본 route와 운영 writer를 건드리지 않는다.",
+    "action": "이 경계를 유지한다.",
+    "linkGroup": "D2-poc-boundary"
+  },
+  {
+    "id": "D2-007",
+    "product": "D2",
+    "title": "FlowMe 시각 체계 유지와 Claude 구조 참고",
+    "category": [
+      "화면"
+    ],
+    "journey": "공통",
+    "priority": "P1",
+    "decision": "현행확정",
+    "source": "turn D2-conversation-008: ‘색감 등은 이전 게 낫고 Claude는 구조적으로 참고’",
+    "sourceArtifact": [
+      "claude_work/FlowMe 텍스트 저작 설계 완료_0729_1412.zip"
+    ],
+    "expected": "FlowMe token과 navigation을 유지하고 Claude의 3영역·모바일 단계·구조만 참고한다.",
+  "currentEvidence": [
+    "components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx",
+    "tests/e2e/personal-workspace-stage-2-runtime.spec.ts",
+    "docs/content-audit/2026-09-03-flowme-integrated-poc-authoring-workspace-parity-report-assets/after-react-390x844.png",
+    "docs/content-audit/2026-09-03-flowme-integrated-poc-authoring-workspace-parity-report-assets/after-react-844x390.png"
+  ],
+  "verdict": "부분",
+  "evidence": "E3",
+  "reason": "React와 독립 HTML의 compact 2-state·short-landscape·CTA geometry는 맞췄지만, 운영 PlatformNav와 PoC teal surface 중 어느 shell·token을 제품 기준으로 삼을지는 승인되지 않았다.",
+  "action": "현재 반응형 계약을 유지하고 production shell·token 선택은 별도 디자인 게이트에서 결정한다.",
+    "linkGroup": "D2-visual-language"
+  },
+  {
+    "id": "D2-008",
+    "product": "D2",
+    "title": "자동 QA와 관찰 사용자 검증 분리",
+    "category": [
+      "검증"
+    ],
+    "journey": "공통",
+    "priority": "P0",
+    "decision": "보류·제외",
+    "source": "turn D2-conversation-009: 사용자 검증을 현재 범위에서 제외",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-structure-template-inline-baseline-20260830/docs/specs/2026-08-30-flowme-text-authoring-unified-editor-guidance-poc/handoff.md"
+    ],
+    "expected": "브라우저 자동화·캡처를 관찰 사용자 증거로 표현하지 않고 observed users를 0으로 기록한다.",
+    "currentEvidence": [
+      "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-validation-report-ko.html"
+    ],
+    "verdict": "제외",
+    "evidence": "E1",
+    "reason": "현재 보고서는 실제 기기와 관찰 사용자를 별도 미실행으로 구분한다.",
+    "action": "실제 검증 전까지 0을 유지한다.",
+    "linkGroup": "D2-validation-boundary"
+  },
+  {
+    "id": "D2-009",
+    "product": "D2",
+    "title": "직접 조작 가능한 로컬 HTML",
+    "category": [
+      "검증",
+      "기능"
+    ],
+    "journey": "공통",
+    "priority": "P0",
+    "decision": "현행확정",
+    "source": "turn D2-conversation-010: ‘html로 만들어줘야 테스트 가능’",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-structure-template-inline-baseline-20260830/docs/content-audit/2026-08-30-flowme-text-authoring-unified-editor-guidance-poc-results/flowme-text-authoring-unified-editor-guidance-poc.html"
+    ],
+    "expected": "서버 없이 열고 입력·구조 확인·저장 흐름을 조작할 수 있는 단일 HTML을 제공한다.",
+  "currentEvidence": [
+    "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko.html",
+    "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-android-single-file-ko.html",
+    "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/standalone.test.cjs",
+    "tests/e2e/personal-workspace-integrated-standalone.spec.ts"
+  ],
+  "verdict": "충족",
+  "evidence": "E3",
+  "reason": "서버 없이 여는 standalone과 Android single-file artifact가 byte-identical하게 생성됐고, 입력·틀·예시·선택형 검토·개인 Flow 저장을 자동 브라우저로 직접 조작했다.",
+    "action": "standalone을 live origin 증거가 아닌 fixture simulator로 계속 표시한다.",
+    "linkGroup": "D2-local-artifact"
+  },
+  {
+    "id": "D2-010",
+    "product": "D2",
+    "title": "기존 dirty 작업 보존",
+    "category": [
+      "검증"
+    ],
+    "journey": "공통",
+    "priority": "P0",
+    "decision": "현행확정",
+    "source": "turn D2-conversation-011 및 모든 publish handoff",
+    "sourceArtifact": [
+      "AGENTS.md"
+    ],
+    "expected": "별도 worktree에서 작업하고 미소유 dirty 파일을 reset·stage·overwrite하지 않는다.",
+    "currentEvidence": [
+      "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-validation-report-ko.html"
+    ],
+    "verdict": "충족",
+    "evidence": "E1",
+    "reason": "현재 PoC 전용 worktree와 task-owned 신규 경로를 사용한다.",
+    "action": "향후 publish 전 exact staged diff를 다시 확인한다.",
+    "linkGroup": "D2-worktree-safety"
+  },
+  {
+    "id": "D2-011",
+    "product": "D2",
+    "title": "표식 없는 일반 문장 보존",
+    "category": [
+      "데이터",
+      "기능"
+    ],
+    "journey": "입력",
+    "priority": "P0",
+    "decision": "현행확정",
+    "source": "turn D2-conversation-012: ‘-가 없으면 그냥 text 처리’",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-review/docs/specs/2026-07-28-flowme-text-authoring-ux-v1/authoring-grammar-logic.md"
+    ],
+    "expected": "표식 없는 문장은 Todo가 되지 않고 source/TXT 메모로 보존된다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-authoring.ts",
+      "lib/flow/personal-workspace-poc-authoring-fidelity.ts",
+      "lib/flow/personal-workspace-poc-state.ts",
+      "tests/e2e/personal-workspace-stage-1-runtime.spec.ts"
+    ],
+    "verdict": "충족",
+    "evidence": "E4",
+    "reason": "표식 없는 일반 문장을 포함한 exact rawText를 draft와 durable authoring lineage에 byte 그대로 보존하고, 저장 payload의 source projection 일치까지 fail-closed 검증한다.",
+    "action": "단계 2·3 UI 변경 뒤에도 exact rawText와 TXT 접근 경로 회귀를 유지한다.",
+    "linkGroup": "D2-source-fidelity"
+  },
+  {
+    "id": "D2-012",
+    "product": "D2",
+    "title": "Item·하위 체크·속성의 들여쓰기 문법",
+    "category": [
+      "데이터",
+      "화면"
+    ],
+    "journey": "구조",
+    "priority": "P0",
+    "decision": "현행확정",
+    "source": "turn D2-conversation-013 및 D2-conversation-014",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-review/docs/specs/2026-07-28-flowme-text-authoring-ux-v1/authoring-grammar-logic.md"
+    ],
+    "expected": "root `- [ ]`, 한 단계 하위 `  - [ ]`, 속성 `  - 설명:`처럼 계층을 문법과 들여쓰기로 표현한다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-authoring-fidelity.ts",
+      "lib/flow/personal-workspace-poc-authoring-fidelity.test.ts"
+    ],
+    "verdict": "의도적 변경",
+    "evidence": "E4",
+    "reason": "nested checklist를 부모 설명으로 평탄화하지 않고 exact line/rawText와 blocking manifest로 보존해 commit을 차단한다. ChecklistEntry owner가 없는 이번 PoC의 의도된 fail-closed 처리다.",
+    "action": "하위 체크 canonical owner와 편집 UI가 승인될 때 별도 slice로 구조화한다.",
+    "linkGroup": "D2-grammar-hierarchy"
+  },
+  {
+    "id": "D2-013",
+    "product": "D2",
+    "title": "정의되지 않은 속성의 설명 보존",
+    "category": [
+      "데이터"
+    ],
+    "journey": "구조",
+    "priority": "P0",
+    "decision": "현행확정",
+    "source": "turn D2-conversation-015: 정의되지 않은 속성은 설명으로 보냄",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-review/docs/content-audit/2026-08-10-flowme-text-authoring-routine-checklist-validation-results/README.md"
+    ],
+    "expected": "알 수 없는 Item 속성을 버리지 않고 설명/TXT에 보존한다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-authoring-fidelity.ts",
+      "lib/flow/personal-workspace-poc-authoring-fidelity.test.ts",
+      "lib/flow/personal-workspace-poc-state.test.ts"
+    ],
+    "verdict": "의도적 변경",
+    "evidence": "E4",
+    "reason": "정의되지 않은 속성을 설명으로 추정하지 않고 exact raw line과 material blocker로 보존하며 tampered manifest 저장을 차단한다.",
+    "action": "지원 catalog가 승인될 때 명시 mapping을 추가하고 그 전에는 임의 설명 변환을 금지한다.",
+    "linkGroup": "D2-source-fidelity"
+  },
+  {
+    "id": "D2-014",
+    "product": "D2",
+    "title": "잘못된 날짜·URL과 빈 값의 구분",
+    "category": [
+      "오류·복구",
+      "데이터"
+    ],
+    "journey": "구조",
+    "priority": "P0",
+    "decision": "현행확정",
+    "source": "turn D2-conversation-015",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-review/docs/specs/2026-07-28-flowme-text-authoring-ux-v1/authoring-grammar-logic.md"
+    ],
+    "expected": "빈 scaffold는 오류 0, 값이 있지만 잘못된 날짜·URL은 입력값과 기대 형식을 보여 주고 저장을 차단한다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-authoring.ts:126",
+      "lib/flow/personal-workspace-poc-authoring.test.ts",
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx:626"
+    ],
+    "verdict": "충족",
+    "evidence": "E4",
+    "reason": "blank property는 건너뛰고 invalid date/time/timezone/url은 blocking issue로 표시한다.",
+    "action": "오류 line focus 연결을 추가 검증한다.",
+    "linkGroup": "D2-validation-errors"
+  },
+  {
+    "id": "D2-015",
+    "product": "D2",
+    "title": "상대 날짜는 기준일이 있을 때만 해석",
+    "category": [
+      "데이터",
+      "오류·복구"
+    ],
+    "journey": "구조",
+    "priority": "P0",
+    "decision": "현행확정",
+    "source": "turn D2-conversation-012 및 D2-conversation-015",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-review/docs/specs/2026-07-28-flowme-text-authoring-ux-v1/authoring-grammar-logic.md"
+    ],
+    "expected": "기준일 없이 D-day를 실제 날짜로 추정하지 않고 anchor 지정 후에만 계산한다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-authoring.ts",
+      "lib/flow/personal-workspace-poc-authoring.test.ts"
+    ],
+    "verdict": "충족",
+    "evidence": "E2",
+    "reason": "relative-date-requires-anchor issue와 결정적 계산 테스트가 있다.",
+    "action": "현재 계약을 유지한다.",
+    "linkGroup": "D2-date-semantics"
+  },
+  {
+    "id": "D2-016",
+    "product": "D2",
+    "title": "Routine은 recurrence 속성과 occurrence로 표현",
+    "category": [
+      "데이터",
+      "기능"
+    ],
+    "journey": "결과",
+    "priority": "P0",
+    "decision": "현행확정",
+    "source": "turn D2-conversation-015 및 D2-conversation-016",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-review/docs/content-audit/2026-08-10-flowme-text-authoring-routine-checklist-validation-results/README.md"
+    ],
+    "expected": "Routine은 별도 결과형이 아니라 Item recurrence이며 일/주/월 반복 회차가 네 projection에 같은 수로 나타난다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-authoring-fidelity.ts",
+      "lib/flow/personal-workspace-poc-authoring-fidelity.test.ts",
+      "docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md"
+    ],
+    "verdict": "제외",
+    "evidence": "E4",
+    "reason": "recurrence와 recurrence end는 raw source에 남기고 commit을 hard-block한다. occurrence identity와 완료 owner가 없는 이번 PoC에서는 실행 엔진을 열지 않는다.",
+    "action": "recurrence owner·bounded horizon·Undo 계약이 별도로 승인될 때 재검토한다.",
+    "linkGroup": "D2-recurrence"
+  },
+  {
+    "id": "D2-017",
+    "product": "D2",
+    "title": "Calendar는 실제 월간 달력 projection",
+    "category": [
+      "화면",
+      "기능"
+    ],
+    "journey": "결과",
+    "priority": "P0",
+    "decision": "현행확정",
+    "source": "turn D2-conversation-016: Todo와 다른 월간 grid·월 이동·선택일 상세",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-review/docs/specs/2026-08-11-flowme-text-authoring-calendar-projection-parity/00-development-goal-ko.md"
+    ],
+    "expected": "날짜 있는 occurrence만 월간 Calendar grid와 선택일 상세에 나타난다.",
+    "currentEvidence": [
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx:693",
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx"
+    ],
+    "verdict": "부분",
+    "evidence": "E3",
+    "reason": "저장 후 월간 개인공간 view는 있으나 authoring 결과는 날짜 목록이고 recurrence occurrence parity가 없다.",
+    "action": "D2 authoring Calendar와 v4.1 월간 개인공간을 연결하는 projection 계약을 명시한다.",
+    "linkGroup": "D2-calendar"
+  },
+  {
+    "id": "D2-018",
+    "product": "D2",
+    "title": "표시 정렬과 원문 재정렬 분리",
+    "category": [
+      "기능",
+      "데이터",
+      "오류·복구"
+    ],
+    "journey": "결과",
+    "priority": "P0",
+    "decision": "현행확정",
+    "source": "turn D2-conversation-012 및 D2-conversation-015",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-review/docs/specs/2026-07-28-flowme-text-authoring-ux-v1/authoring-grammar-logic.md"
+    ],
+    "expected": "Calendar는 날짜/시간순으로 표시하되 source는 작성순을 유지하고 명시적 ‘원문에도 적용’에서만 원자 재정렬·Undo한다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-read-model.ts",
+      "lib/flow/personal-workspace-poc-composition.ts",
+      "lib/flow/personal-workspace-poc-state.ts"
+    ],
+    "verdict": "부분",
+    "evidence": "E4",
+    "reason": "source order, PoC personal plan order, TimelineOrder를 서로 다른 owner로 분리했다. 결과의 source line 자체를 재정렬하는 authoring action은 없다.",
+    "action": "단계 3에서는 display/personal order만 연결하고 source rewrite는 별도 명시 계약 전까지 막는다.",
+    "linkGroup": "D2-ordering"
+  },
+  {
+    "id": "D2-019",
+    "product": "D2",
+    "title": "고정된 네 결과 슬롯",
+    "category": [
+      "화면",
+      "기능"
+    ],
+    "journey": "결과",
+    "priority": "P0",
+    "decision": "현행확정",
+    "source": "turn D2-conversation-012 및 D2-conversation-003",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-review/docs/content-audit/2026-08-04-flowme-text-authoring-grammar-ux-improvement-results/flowme-text-authoring-v2-test.html"
+    ],
+    "expected": "TXT·할 일·캘린더·표/Excel의 위치는 고정되고 입력 조건에 따라 활성화만 바뀐다.",
+    "currentEvidence": [
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx:676"
+    ],
+    "verdict": "미충족",
+    "evidence": "E3",
+    "reason": "현재 결과 패널에는 할 일과 날짜 보기 두 개만 있다.",
+    "action": "네 슬롯을 복원하거나 Personal handoff 축소 결정으로 명시한다.",
+    "linkGroup": "D2-result-projections"
+  },
+  {
+    "id": "D2-020",
+    "product": "D2",
+    "title": "WorkingSource와 복사용 TXT 결과 구분",
+    "category": [
+      "화면",
+      "기능"
+    ],
+    "journey": "결과",
+    "priority": "P1",
+    "decision": "현행확정",
+    "source": "turn D2-conversation-012: ‘원래 복붙할 수 있는 TXT’",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-review/docs/content-audit/2026-08-10-flowme-text-authoring-routine-checklist-validation-results/README.md"
+    ],
+    "expected": "좌측은 편집 source, 결과 TXT는 들여쓰기·번호·상세가 정리된 복사·다운로드 배포본이다.",
+    "currentEvidence": [
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx",
+      "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:267"
+    ],
+    "verdict": "부분",
+    "evidence": "E3",
+    "reason": "저장 후 원문 보기만 있고 정리된 TXT projection의 복사·다운로드 UI가 없다.",
+    "action": "copyable TXT 결과를 추가하거나 범위 제외를 명시한다.",
+    "linkGroup": "D2-txt-output"
+  },
+  {
+    "id": "D2-021",
+    "product": "D2",
+    "title": "원문과 결과의 원자 동기화",
+    "category": [
+      "기능",
+      "오류·복구"
+    ],
+    "journey": "구조",
+    "priority": "P0",
+    "decision": "현행확정",
+    "source": "turn D2-conversation-017 및 D2-conversation-003",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-review/docs/specs/2026-08-10-flowme-text-authoring-review-completeness-source-sync/00-development-goal-ko.md"
+    ],
+    "expected": "source 편집은 즉시 projection에 반영되고 결과 Item 수정은 정확한 source 줄·canonical·projection을 한 transaction으로 변경하며 Undo 1회로 복구한다.",
+    "currentEvidence": [
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx",
+      "lib/flow/personal-workspace-poc-plan-editor.ts",
+      "lib/flow/personal-workspace-poc-composition.ts"
+    ],
+    "verdict": "부분",
+    "evidence": "E4",
+    "reason": "source 입력은 preview에 즉시 반영되고 personal overlay는 원자 적용된다. 결과 Item 수정으로 raw source를 역편집하는 경로는 A0 personal handoff 결정에 따라 이번 PoC에서 열지 않았다.",
+    "action": "단계 3에서 결과의 개인 수정만 공통 editor로 연결하고 source reverse edit는 excluded 경계를 유지한다.",
+    "linkGroup": "D2-roundtrip-edit"
+  },
+  {
+    "id": "D2-022",
+    "product": "D2",
+    "title": "항목 구조 검토는 선택형",
+    "category": [
+      "전환",
+      "화면"
+    ],
+    "journey": "구조",
+    "priority": "P0",
+    "decision": "현행확정",
+    "source": "turn D2-conversation-018 및 D2-conversation-019",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-review/docs/specs/2026-08-04-flowme-text-authoring-optional-structure-review/00-development-goal-ko.md"
+    ],
+    "expected": "정상 문서는 입력→결과로 가고 구조 검토는 필요할 때 drawer/bottom sheet로 연다. 모호한 항목만 강조한다.",
+  "currentEvidence": [
+    "components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx",
+    "tests/e2e/personal-workspace-stage-2-runtime.spec.ts",
+    "tests/e2e/personal-workspace-integrated-standalone.spec.ts"
+  ],
+    "verdict": "충족",
+    "evidence": "E4",
+  "reason": "React와 독립 HTML 모두 입력과 결과의 두 상태이며 정상 원문은 구조 검토를 강제하지 않는다. 경고나 사용자 요청 때만 선택형 검토를 열고 닫기·Escape로 원문 편집에 돌아간다.",
+    "action": "정상 문서가 선택형 검토 없이 결과에 도달하는 브라우저 회귀를 유지한다.",
+    "linkGroup": "D2-optional-structure"
+  },
+  {
+    "id": "D2-023",
+    "product": "D2",
+    "title": "실제·검증 콘텐츠 예시 전체 보존",
+    "category": [
+      "화면",
+      "검증"
+    ],
+    "journey": "입력",
+    "priority": "P1",
+    "decision": "현행확정",
+    "source": "turn D2-conversation-003 및 D2-conversation-020",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-review/docs/content-audit/2026-08-11-flowme-text-authoring-exception-coverage-v5-results/README.md"
+    ],
+    "expected": "기존 문법·실콘텐츠·조건 변경·예외 사례를 누락 없이 선택·재생하고 source에 없는 정보는 합성하지 않는다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-authoring.ts:48",
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx:504"
+    ],
+    "verdict": "부분",
+    "evidence": "E3",
+    "reason": "구조 template 6개 예시는 있으나 D2의 전체 31개 grammar/real-content 검증 사례는 포함하지 않는다.",
+    "action": "검증 fixture coverage를 별도 QA surface에 연결한다.",
+    "linkGroup": "D2-content-fixtures"
+  },
+  {
+    "id": "D2-024",
+    "product": "D2",
+    "title": "표 사례도 표준 Flow 문법과 보존 경계 사용",
+    "category": [
+      "데이터",
+      "검증"
+    ],
+    "journey": "구조",
+    "priority": "P1",
+    "decision": "현행확정",
+    "source": "turn D2-conversation-016: K-MOOC·LibriVox도 일반 Flow 문법으로 통일",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-review/docs/content-audit/2026-08-11-flowme-text-authoring-calendar-projection-parity-results/README.md"
+    ],
+    "expected": "표 입력을 별도 특혜 문법으로 해석하지 않고 안전 행만 구조화하며 나머지는 원문으로 보존한다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-authoring.ts"
+    ],
+    "verdict": "미충족",
+    "evidence": "E1",
+    "reason": "현재 통합 parser는 CSV/TSV/Markdown table을 지원하지 않는다.",
+    "action": "P1-C adapter를 채택할 때만 활성화한다.",
+    "linkGroup": "D2-longform-table"
+  },
+  {
+    "id": "D2-025",
+    "product": "D2",
+    "title": "P1-C 장문·표의 원문 손실 방지",
+    "category": [
+      "데이터",
+      "오류·복구"
+    ],
+    "journey": "입력",
+    "priority": "P1",
+    "decision": "후보구현",
+    "source": "turn D2-conversation-021: P1-C local commit 완료",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-p1-c-longform-20260813/docs/specs/2026-08-13-flowme-text-authoring-p1-c-longform/00-development-goal-ko.md"
+    ],
+    "expected": "blockquote/code/HTML/comment/blank와 table cell shape를 보존하고 안전 block만 구조화하며 위험 표는 TXT fallback으로 남긴다.",
+    "currentEvidence": [],
+    "verdict": "미충족",
+    "evidence": "E0",
+    "reason": "후보 checkout 구현은 있으나 현재 통합 PoC에 재적용되지 않았다.",
+    "action": "제품 채택 승인 전 현재 parser에 몰래 복사하지 않는다.",
+    "linkGroup": "D2-longform-table"
+  },
+  {
+    "id": "D2-026",
+    "product": "D2",
+    "title": "P1-E versioned source candidate의 원자 적용",
+    "category": [
+      "데이터",
+      "오류·복구"
+    ],
+    "journey": "복구",
+    "priority": "P1",
+    "decision": "후보구현",
+    "source": "turn D2-conversation-022: P1-E local implementation 완료",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-p1-e-source-update-20260813/docs/specs/2026-08-13-flowme-text-authoring-p1-e-source-update/00-development-goal-ko.md"
+    ],
+    "expected": "완전한 immutable envelope에서 Base/내 작업/새 원문을 비교하고 unresolved·stale·tampered 후보를 차단하며 전체 resolution set을 한 번에 적용·Undo한다.",
+    "currentEvidence": [],
+    "verdict": "미충족",
+    "evidence": "E0",
+    "reason": "현재 PoC에는 source candidate host나 비교·apply 상태가 없다.",
+    "action": "외부 fetch/sync 없이 별도 승인된 provider-neutral adapter로만 도입한다.",
+    "linkGroup": "D2-source-update"
+  },
+  {
+    "id": "D2-027",
+    "product": "D2",
+    "title": "P1-G linked Flow lineage는 spec·fixture only",
+    "category": [
+      "데이터"
+    ],
+    "journey": "관리",
+    "priority": "P1",
+    "decision": "후보구현",
+    "source": "turn D2-conversation-023: runtime 0인 spec·fixture track 완료",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-p1-g-linked-lineage-20260813/docs/specs/2026-08-13-flowme-text-authoring-p1-g-linked-lineage/linked-flow-lineage-contract-v1.json"
+    ],
+    "expected": "같은 원문에서 별도 완료 owner가 필요한 bounded child Flow의 lineage와 condition을 정의하되 runtime에 임시 삽입하지 않는다.",
+    "currentEvidence": [],
+    "verdict": "제외",
+    "evidence": "E1",
+    "reason": "현재 통합 PoC 범위에 runtime linked lineage를 넣지 않은 것이 승인 경계와 일치한다.",
+    "action": "spec link만 유지한다.",
+    "linkGroup": "D2-linked-lineage"
+  },
+  {
+    "id": "D2-028",
+    "product": "D2",
+    "title": "미승인 P1/P2 관리·발행 기능 보류",
+    "category": [
+      "데이터",
+      "검증"
+    ],
+    "journey": "관리",
+    "priority": "P2",
+    "decision": "보류·제외",
+    "source": "turn D2-conversation-024 및 D2-conversation-025",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-structure-template-inline-baseline-20260830/docs/specs/README.md"
+    ],
+    "expected": "P1-A/B/D/F, P2 experience runtime, publication, P35, 외부 direct write를 현재 PoC에 만들지 않는다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-storage.ts",
+      "app/flows/new/page.tsx"
+    ],
+    "verdict": "제외",
+    "evidence": "E4",
+    "reason": "해당 runtime/schema/writer가 현재 PoC에 없다.",
+    "action": "의도적 제외로 유지한다.",
+    "linkGroup": "D2-deferred-management"
+  },
+  {
+    "id": "D2-029",
+    "product": "D2",
+    "title": "같은 source를 보는 순수 텍스트·Flow 편집",
+    "category": [
+      "화면",
+      "전환"
+    ],
+    "journey": "입력",
+    "priority": "P0",
+    "decision": "PoC확정",
+    "source": "turn D2-conversation-026: 왼쪽 편집기 자체가 Obsidian식 Live Preview",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-flow-view-poc-20260824/docs/specs/2026-08-24-flowme-text-authoring-flow-view-poc/00-goal-ux-and-acceptance-ko.md"
+    ],
+    "expected": "하나의 source를 `순수 텍스트/Flow 편집` 두 표현으로 보고 오른쪽 결과는 유지한다.",
+    "currentEvidence": [
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocLiveEditor.tsx",
+      "tests/e2e/personal-workspace-stage-2-runtime.spec.ts"
+    ],
+    "verdict": "충족",
+    "evidence": "E4",
+    "reason": "하나의 native source editor를 유지한 채 순수 텍스트와 Flow 편집 표현을 전환한다. 왕복 뒤 raw bytes, selection, scroll, native history와 오른쪽 결과 identity가 동일함을 component와 Chromium에서 확인했다.",
+    "action": "두 번째 editable source가 생기지 않는 one-editor 회귀를 유지한다.",
+    "linkGroup": "D2-live-editor"
+  },
+  {
+    "id": "D2-030",
+    "product": "D2",
+    "title": "카드가 아닌 문서형 Flow 표현",
+    "category": [
+      "화면"
+    ],
+    "journey": "구조",
+    "priority": "P0",
+    "decision": "PoC확정",
+    "source": "turn D2-conversation-027: Todo처럼 영역을 나누지 않는 Obsidian/Notion 수준 표현",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-flow-view-poc-20260824/docs/content-audit/2026-08-24-flowme-text-authoring-flow-view-poc-results/flowme-text-authoring-flow-view-poc.html"
+    ],
+    "expected": "제목·문단·체크·속성이 한 문서 흐름으로 이어지고 Item마다 카드·배지를 만들지 않는다.",
+    "currentEvidence": [
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocLiveEditor.tsx",
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocLiveEditor.test.tsx"
+    ],
+    "verdict": "충족",
+    "evidence": "E4",
+    "reason": "Flow 편집 표현은 제목·문단·Item·속성·한 단계 확인을 같은 문서 흐름에 놓고 Item별 카드나 배지를 만들지 않는다. source line 순서와 long prose를 유지한다.",
+    "action": "문서형 line projection과 카드 inventory 0 회귀를 유지한다.",
+    "linkGroup": "D2-live-editor"
+  },
+  {
+    "id": "D2-031",
+    "product": "D2",
+    "title": "현재 줄만 raw, 나머지는 rendered",
+    "category": [
+      "화면",
+      "기능"
+    ],
+    "journey": "입력",
+    "priority": "P0",
+    "decision": "PoC확정",
+    "source": "turn D2-conversation-026",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-flow-view-poc-20260824/docs/content-audit/2026-08-24-flowme-text-authoring-flow-view-poc-results/README.md"
+    ],
+    "expected": "현재 편집 줄은 원문 문법, 나머지 유효 줄은 inline Flow 형태로 보이며 미완성 문장은 raw로 남는다.",
+    "currentEvidence": [
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocLiveEditor.tsx",
+      "tests/e2e/personal-workspace-stage-2-runtime.spec.ts"
+    ],
+    "verdict": "충족",
+    "evidence": "E4",
+    "reason": "Flow 편집에서 현재 caret 줄은 exact raw syntax로 두고 비활성 지원 줄만 파생 문서 표현으로 보인다. 일반 문장, 미완성·unsupported·protected line은 raw로 남고 active line 전환은 source를 바꾸지 않는다.",
+    "action": "caret·keyboard·IME active-line 전환과 source byte 불변 회귀를 유지한다.",
+    "linkGroup": "D2-live-editor"
+  },
+  {
+    "id": "D2-032",
+    "product": "D2",
+    "title": "입력 중 전체 화면 raw/rendered 깜빡임 방지",
+    "category": [
+      "화면",
+      "반응형"
+    ],
+    "journey": "입력",
+    "priority": "P0",
+    "decision": "PoC확정",
+    "source": "turn D2-conversation-028: 입력할 때 전체 UI가 TXT↔UI로 변해 정신없음",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-flow-view-hybrid-ux-poc-20260828/docs/content-audit/2026-08-29-flowme-text-authoring-stable-inline-info-poc-results/README.md"
+    ],
+    "expected": "caret·selection·scroll을 보존하고 현재 줄 update가 전체 editor 표현을 뒤집지 않는다.",
+    "currentEvidence": [
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocLiveEditor.tsx",
+      "tests/e2e/personal-workspace-stage-2-runtime.spec.ts"
+    ],
+    "verdict": "충족",
+    "evidence": "E4",
+    "reason": "native editor owner는 remount하지 않고 line presentation만 갱신한다. selection-only 변경, 연속 입력과 IME sequence에서 source fingerprint·selection·scroll과 결과 identity가 유지된다.",
+    "action": "전체 editor raw/rendered 반전과 selection jump가 없는 회귀를 유지한다.",
+    "linkGroup": "D2-live-editor-stability"
+  },
+  {
+    "id": "D2-033",
+    "product": "D2",
+    "title": "상시 툴바 없이 문맥형 작은 +",
+    "category": [
+      "화면",
+      "기능"
+    ],
+    "journey": "입력",
+    "priority": "P0",
+    "decision": "PoC확정",
+    "source": "turn D2-conversation-029",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-flow-view-hybrid-ux-poc-20260828/docs/specs/2026-08-28-flowme-text-authoring-text-first-contextual-editor-poc/spec.md"
+    ],
+    "expected": "평소에는 text만 보이고 현재 빈 줄/Item에만 작은 + 또는 / helper가 나타난다.",
+    "currentEvidence": [
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx",
+      "lib/flow/personal-workspace-poc-authoring-guide.ts",
+      "tests/e2e/personal-workspace-stage-2-runtime.spec.ts"
+    ],
+    "verdict": "충족",
+    "evidence": "E4",
+    "reason": "평상시 상시 구조 툴바를 숨기고 현재 safe blank line 또는 root Item에만 문맥형 +를 표시한다. protected line에서는 차단되고 열기·둘러보기·취소는 source와 저장을 바꾸지 않는다.",
+    "action": "safe target 판정과 닫힌 helper의 listener·tab stop 0 회귀를 유지한다.",
+    "linkGroup": "D2-contextual-authoring"
+  },
+  {
+    "id": "D2-034",
+    "product": "D2",
+    "title": "문맥별 첫 단계·첫 할 일·다음 할 일·다음 체크",
+    "category": [
+      "기능",
+      "화면"
+    ],
+    "journey": "입력",
+    "priority": "P0",
+    "decision": "PoC확정",
+    "source": "turn D2-conversation-030",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-flow-view-poc-20260824/docs/specs/2026-08-26-flowme-text-authoring-guided-authoring-ux/spec.md"
+    ],
+    "expected": "현재 문맥에 맞는 기본 구조를 popup 없이 이어 쓰고 드문 구조만 ‘다른 내용’에서 선택한다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-authoring-guide.ts",
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx",
+      "tests/e2e/personal-workspace-stage-2-runtime.spec.ts"
+    ],
+    "verdict": "충족",
+    "evidence": "E4",
+    "reason": "owner 문맥에 따라 Flow 이름, 첫 단계, 첫 할 일, 다음 할 일, 다음 체크, 내용 추가를 먼저 제안하고 드문 구조는 다른 내용에 둔다. 선택은 계산된 offset 한 곳에 native transaction으로 삽입되고 Undo 한 번으로 복구된다.",
+    "action": "문맥별 기본 행동·offset·one Undo 회귀를 유지한다.",
+    "linkGroup": "D2-contextual-authoring"
+  },
+  {
+    "id": "D2-035",
+    "product": "D2",
+    "title": "Item 정보 catalog 전체 지원",
+    "category": [
+      "기능",
+      "데이터"
+    ],
+    "journey": "구조",
+    "priority": "P0",
+    "decision": "PoC확정",
+    "source": "turn D2-conversation-031 및 D2-conversation-032",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-flow-view-poc-20260824/docs/specs/2026-08-26-flowme-text-authoring-contextual-item-palette/spec.md"
+    ],
+    "expected": "날짜·시간·시간대·장소·소요·반복/종료·완료기준·조건·하위체크·설명·링크·안내·주의·출처를 실제 catalog로 제공한다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-authoring.ts",
+      "lib/flow/personal-workspace-poc-authoring-fidelity.ts",
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx"
+    ],
+    "verdict": "부분",
+    "evidence": "E3",
+    "reason": "날짜·시간·시간대·장소·링크·완료 기준·nested/source 계열은 parse 또는 fidelity manifest로 식별하지만 전체 property catalog와 삽입 UI는 없다.",
+    "action": "단계 2에서 승인된 P0 helper만 연결하고 recurrence·미지원 catalog는 hard-block한다.",
+    "linkGroup": "D2-item-editor"
+  },
+  {
+    "id": "D2-036",
+    "product": "D2",
+    "title": "단순 입력은 inline, 복합 설정만 popover",
+    "category": [
+      "기능",
+      "화면"
+    ],
+    "journey": "입력",
+    "priority": "P0",
+    "decision": "PoC확정",
+    "source": "turn D2-conversation-033 및 D2-conversation-034",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-flow-view-hybrid-ux-poc-20260828/docs/content-audit/2026-08-28-flowme-text-authoring-native-inline-poc-results/README.md"
+    ],
+    "expected": "할 일·메모·장소·링크·설명은 editor inline, 날짜·시간은 inline+native picker, 반복·시간대 같은 의존 값만 별도 surface를 쓴다.",
+    "currentEvidence": [
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx"
+    ],
+    "verdict": "미충족",
+    "evidence": "E1",
+    "reason": "현재 authoring은 raw textarea 입력 중심이며 단순 속성 inline helper, native picker, 복합 설정 surface가 없다.",
+    "action": "단계 2에서 contextual helper와 날짜 picker 범위를 설계·구현한다.",
+    "linkGroup": "D2-item-editor"
+  },
+  {
+    "id": "D2-037",
+    "product": "D2",
+    "title": "추가 메뉴에 실제 문법과 계층 미리보기",
+    "category": [
+      "화면",
+      "접근성"
+    ],
+    "journey": "구조",
+    "priority": "P0",
+    "decision": "현행확정",
+    "source": "turn D2-conversation-035 및 D2-conversation-036",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-structure-template-inline-baseline-20260830/docs/specs/2026-08-30-flowme-text-authoring-unified-editor-guidance-poc/spec.md"
+    ],
+    "expected": "`- [ ]`, `  - [ ]`, `##`, `- 날짜:`와 들여쓰기·연결선으로 삽입 위치를 보여 주며 색상만으로 구분하지 않는다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-authoring-guide.ts",
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx",
+      "tests/e2e/personal-workspace-stage-2-runtime.spec.ts"
+    ],
+    "verdict": "충족",
+    "evidence": "E4",
+    "reason": "문맥형 추가 메뉴에 실제 `- [ ]`, `  - [ ]`, `- 날짜:`, `##` 문법과 한 단계 계층 설명을 함께 표시한다. 시각 미리보기는 장식으로 숨기고 label과 설명만으로 관계를 이해할 수 있다.",
+    "action": "지원 문법·계층 설명·색상 비의존 회귀를 유지한다.",
+    "linkGroup": "D2-structure-menu"
+  },
+  {
+    "id": "D2-038",
+    "product": "D2",
+    "title": "+ anchor 고정과 키보드 위 메뉴",
+    "category": [
+      "반응형",
+      "기능"
+    ],
+    "journey": "입력",
+    "priority": "P0",
+    "decision": "PoC확정",
+    "source": "turn D2-conversation-037",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-flow-view-hybrid-ux-poc-20260828/docs/content-audit/2026-08-29-flowme-text-authoring-stable-anchor-keyboard-poc-results/README.md"
+    ],
+    "expected": "+는 owner Item 위치에 고정되고 모바일 메뉴는 visual viewport에서 키보드 위에 보이며 전체 항목에 scroll 접근한다.",
+  "currentEvidence": [
+    "components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx",
+    "tests/e2e/personal-workspace-stage-2-runtime.spec.ts",
+    "tests/e2e/personal-workspace-integrated-standalone.spec.ts",
+    "docs/content-audit/2026-09-03-flowme-integrated-poc-authoring-workspace-parity-report-assets/after-react-320x700.png"
+  ],
+    "verdict": "부분",
+    "evidence": "E4",
+    "reason": "+는 계산된 owner line에 고정되고 좁은 화면은 visualViewport와 sticky CTA 경계를 반영한 비모달 sheet, 넓은 화면은 anchored popover를 사용한다. 필수 viewport 자동 검사는 통과했지만 실제 모바일 가상 키보드로 모든 항목 접근을 확인하지 않았다.",
+    "action": "실제 Android/iOS 가상 키보드에서 anchor·내부 scroll·닫기·적용 접근을 확인한다.",
+    "linkGroup": "D2-mobile-keyboard"
+  },
+  {
+    "id": "D2-039",
+    "product": "D2",
+    "title": "속성 재진입 caret과 실제 값 선택",
+    "category": [
+      "기능",
+      "오류·복구"
+    ],
+    "journey": "구조",
+    "priority": "P0",
+    "decision": "PoC확정",
+    "source": "turn D2-conversation-038 및 D2-conversation-039",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-flow-view-hybrid-ux-poc-20260828/docs/content-audit/2026-08-29-flowme-text-authoring-property-reentry-simplicity-poc-results/README.md"
+    ],
+    "expected": "빈 속성은 prefix 뒤에 caret, 기존 속성은 값만 선택하고 다른 Item 값이 섞이지 않는다.",
+    "currentEvidence": [],
+    "verdict": "미충족",
+    "evidence": "E0",
+    "reason": "rendered property를 다시 눌러 정확한 source caret·실제 값을 선택하는 통합 경로가 없다.",
+    "action": "단계 2 helper와 단계 3 editor 연결 시 caret·selection·scroll 복귀 계약을 추가한다.",
+    "linkGroup": "D2-item-editor"
+  },
+  {
+    "id": "D2-040",
+    "product": "D2",
+    "title": "IME·Enter·stale 상태의 write 0",
+    "category": [
+      "오류·복구",
+      "접근성"
+    ],
+    "journey": "입력",
+    "priority": "P0",
+    "decision": "PoC확정",
+    "source": "turn D2-conversation-040",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-flow-view-hybrid-ux-poc-20260828/docs/specs/2026-08-29-flowme-text-authoring-keyboard-property-tray-reliability-poc/spec.md"
+    ],
+    "expected": "IME composing Enter, submenu focus, parser busy/stale Item, 빠른 이중 적용에서 중복·오적용이 없고 취소는 write 0이다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-plan-editor.ts",
+      "lib/flow/personal-workspace-poc-authoring.ts",
+      "lib/flow/personal-workspace-poc-plan-editor.test.ts",
+      "tests/e2e/personal-workspace-stage-1-runtime.spec.ts"
+    ],
+    "verdict": "부분",
+    "evidence": "E4",
+    "reason": "revision·raw/source fingerprint stale 차단, 중복/no-op/cancel write 0은 검증했다. IME composing과 submenu focus의 실제 browser interaction은 선행 UI가 없어 미검증이다.",
+    "action": "단계 2 contextual helper 구현 때 IME·submenu focus 회귀를 추가한다.",
+    "linkGroup": "D2-edit-transaction"
+  },
+  {
+    "id": "D2-041",
+    "product": "D2",
+    "title": "거의 맞는 문법의 명시적 복구",
+    "category": [
+      "오류·복구",
+      "기능"
+    ],
+    "journey": "구조",
+    "priority": "P1",
+    "decision": "PoC확정",
+    "source": "turn D2-conversation-041: `- []`는 자동 변경하지 않고 명시적 복구",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-flow-view-poc-20260824/docs/specs/2026-08-26-flowme-text-authoring-guided-authoring-ux/spec.md"
+    ],
+    "expected": "near-miss 문법을 그대로 보존하고 사용자가 ‘할 일 형식으로 고치기’를 눌렀을 때만 한 transaction으로 수정·Undo한다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-authoring.ts"
+    ],
+    "verdict": "미충족",
+    "evidence": "E1",
+    "reason": "near-miss 진단과 복구 action이 없다.",
+    "action": "문법 복구를 별도 P1로 남긴다.",
+    "linkGroup": "D2-grammar-recovery"
+  },
+  {
+    "id": "D2-042",
+    "product": "D2",
+    "title": "작은 화면·키보드에서 마지막 내용과 CTA 접근",
+    "category": [
+      "반응형",
+      "접근성"
+    ],
+    "journey": "공통",
+    "priority": "P0",
+    "decision": "현행확정",
+    "source": "turn D2-conversation-042 및 D2-conversation-043",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-structure-template-inline-baseline-20260830/docs/specs/2026-08-30-flowme-text-authoring-unified-editor-guidance-poc/spec.md"
+    ],
+    "expected": "320/360/390/landscape/200%와 키보드 상태에서 caret·마지막 field·CTA가 가려지지 않고 내부 scroll로 도달한다.",
+    "currentEvidence": [
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx:657",
+      "tests/e2e/personal-workspace-integration-poc.spec.ts",
+      "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-validation-report-assets/after-authoring-844x390.png"
+    ],
+    "verdict": "부분",
+    "evidence": "E3",
+    "reason": "요구 viewport 캡처와 sticky CTA는 있으나 실제 mobile keyboard/visualViewport 기기 증거가 없다.",
+    "action": "실제 Android/iOS 검사 전 자동화 한계로 표시한다.",
+    "linkGroup": "D2-responsive-authoring"
+  },
+  {
+    "id": "D2-043",
+    "product": "D2",
+    "title": "불필요한 설명과 QA 정보 감산",
+    "category": [
+      "화면"
+    ],
+    "journey": "공통",
+    "priority": "P1",
+    "decision": "현행확정",
+    "source": "turn D2-conversation-044 및 D2-conversation-045",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-flow-view-hybrid-ux-poc-20260828/docs/content-audit/2026-08-28-flowme-text-authoring-ui-design-interaction-review-ko.html"
+    ],
+    "expected": "다음 행동에 필요 없는 카드·배지·긴 설명을 제거하고 상세는 on-demand 도움말로 연다.",
+    "currentEvidence": [
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx",
+      "tests/e2e/personal-workspace-stage-2-runtime.spec.ts",
+      "docs/content-audit/2026-09-02-flowme-integrated-poc-stage-2-runtime-assets/authoring-390x844.png"
+    ],
+    "verdict": "충족",
+    "evidence": "E4",
+  "reason": "React와 독립 HTML 작성면은 입력/결과 두 상태, local title, 변화 시 compact status와 local primary 한 개를 유지한다. 강제 3-step 안내와 일반 확인 checkbox를 제거했고 320×700을 포함한 여섯 viewport에서 editor와 주 행동의 겹침이 없음을 확인했다.",
+  "action": "설명·QA chrome이 다시 입력과 주 행동보다 앞서지 않도록 compact geometry 회귀를 유지한다.",
+    "linkGroup": "D2-subtraction"
+  },
+  {
+    "id": "D2-044",
+    "product": "D2",
+    "title": "Obsidian식 한 단계 hierarchy guide",
+    "category": [
+      "화면",
+      "접근성"
+    ],
+    "journey": "입력",
+    "priority": "P1",
+    "decision": "PoC확정",
+    "source": "turn D2-conversation-020 및 D2-conversation-046",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-flow-view-poc-20260824/docs/specs/2026-08-25-flowme-text-authoring-live-editor-examples-hierarchy/00-goal-ux-and-acceptance-ko.md"
+    ],
+    "expected": "한 단계 indent·hanging guide로 부모/하위/속성을 구분하고 parser 범위 밖의 깊은 들여쓰기는 원문으로 보존한다.",
+    "currentEvidence": [
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocLiveEditor.tsx",
+      "tests/e2e/personal-workspace-stage-2-runtime.spec.ts"
+    ],
+    "verdict": "충족",
+    "evidence": "E4",
+    "reason": "Flow presentation은 root와 child/property 시작 x를 구분하고 depth 1에 중립 guide와 hanging indent를 함께 쓴다. 더 깊거나 지원하지 않는 줄은 승격하지 않고 exact raw로 보존한다.",
+    "action": "긴 줄 줄바꿈과 한 단계 계층의 색상 비의존 회귀를 유지한다.",
+    "linkGroup": "D2-live-editor-hierarchy"
+  },
+  {
+    "id": "D2-045",
+    "product": "D2",
+    "title": "구조명 중심 6개 작성 틀 직접 노출",
+    "category": [
+      "화면",
+      "기능"
+    ],
+    "journey": "입력",
+    "priority": "P0",
+    "decision": "현행확정",
+    "source": "turn D2-conversation-047부터 D2-conversation-048까지",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-structure-template-inline-baseline-20260830/docs/specs/2026-08-30-flowme-text-authoring-unified-editor-guidance-poc/spec.md"
+    ],
+    "expected": "단계별 반복, 같은 일정 반복, 기준일 전후 준비, +자료, 준비+날짜별 일정, 반복 준비+목표일을 직접 보여 주고 주제는 예시로만 둔다.",
+  "currentEvidence": [
+    "lib/flow/personal-workspace-poc-authoring.ts:48",
+    "components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx:504",
+    "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js",
+    "tests/e2e/personal-workspace-stage-2-runtime.spec.ts",
+    "tests/e2e/personal-workspace-integrated-standalone.spec.ts"
+  ],
+    "verdict": "충족",
+    "evidence": "E4",
+  "reason": "React와 독립 HTML에서 버전 고정 6개 label·description·짧은 example·전체 example source·scaffold를 같은 계약으로 직접 노출하고 검증했다. example은 선택 전 source에 삽입되지 않는다.",
+    "action": "구조명과 scaffold bytes를 versioned contract로 유지한다.",
+    "linkGroup": "D2-template-catalog"
+  },
+  {
+    "id": "D2-046",
+    "product": "D2",
+    "title": "기존 편집기에 TXT scaffold 한 번 삽입",
+    "category": [
+      "기능",
+      "전환"
+    ],
+    "journey": "입력",
+    "priority": "P0",
+    "decision": "현행확정",
+    "source": "turn D2-conversation-049 및 D2-conversation-050",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-structure-template-inline-baseline-20260830/docs/specs/2026-08-30-flowme-text-authoring-unified-editor-guidance-poc/spec.md"
+    ],
+    "expected": "작성 틀 선택 시 기존 Flow editor 하나에 미완성 TXT scaffold를 정확히 한 번 넣고 첫 빈 입력 위치로 caret을 옮긴다.",
+  "currentEvidence": [
+    "lib/flow/personal-workspace-poc-authoring-guide.ts",
+    "lib/flow/personal-workspace-poc-source-editor.ts",
+    "components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.test.tsx",
+    "tests/e2e/personal-workspace-stage-2-runtime.spec.ts",
+    "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/standalone.test.cjs",
+    "tests/e2e/personal-workspace-integrated-standalone.spec.ts"
+  ],
+    "verdict": "충족",
+    "evidence": "E4",
+  "reason": "양쪽 모두 여섯 승인 scaffold를 같은 editor에 exact bytes로 한 번 삽입하고 first blank 위치로 focus를 옮긴다. picker 예시는 둘러보기용 presentation이며 apply 전 source를 바꾸지 않는다.",
+    "action": "template별 bytes·caret·focus와 중복 삽입 0 회귀를 유지한다.",
+    "linkGroup": "D2-template-insertion"
+  },
+  {
+    "id": "D2-047",
+    "product": "D2",
+    "title": "별도 템플릿 편집 화면·완성 gate 제거",
+    "category": [
+      "화면",
+      "전환"
+    ],
+    "journey": "입력",
+    "priority": "P0",
+    "decision": "현행확정",
+    "source": "turn D2-conversation-049",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-structure-template-inline-baseline-20260830/docs/specs/2026-08-30-flowme-text-authoring-unified-editor-guidance-poc/spec.md"
+    ],
+    "expected": "두 번째 template editor, 초안 보관, 모든 칸 완료 후 Flow 확인 CTA 없이 같은 editor에서 계속 작성한다.",
+    "currentEvidence": [
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx:480"
+    ],
+    "verdict": "충족",
+    "evidence": "E3",
+    "reason": "picker는 선택 UI일 뿐 별도 editor/form이 아니며 선택 후 같은 textarea를 쓴다.",
+    "action": "template-specific completion gate를 추가하지 않는다.",
+    "linkGroup": "D2-template-insertion"
+  },
+  {
+    "id": "D2-048",
+    "product": "D2",
+    "title": "미완성 틀의 자유 편집과 부분 해석",
+    "category": [
+      "기능",
+      "데이터"
+    ],
+    "journey": "구조",
+    "priority": "P0",
+    "decision": "현행확정",
+    "source": "turn D2-conversation-051 및 D2-conversation-049",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-structure-template-inline-baseline-20260830/docs/specs/2026-08-30-flowme-text-authoring-unified-editor-guidance-poc/spec.md"
+    ],
+    "expected": "일부만 채우고 필요 없는 줄을 삭제·복사·붙여넣을 수 있으며 값 있는 유효한 형제만 결과가 된다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-authoring.ts",
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx:551",
+      "lib/flow/personal-workspace-poc-authoring.test.ts"
+    ],
+    "verdict": "충족",
+    "evidence": "E4",
+    "reason": "native textarea와 blank-skipping parser가 부분 작성·삭제를 허용한다.",
+    "action": "부분 해석 회귀를 유지한다.",
+    "linkGroup": "D2-template-partial"
+  },
+  {
+    "id": "D2-049",
+    "product": "D2",
+    "title": "Template browse는 no-op, 선택은 명시 insertion",
+    "category": [
+      "전환",
+      "오류·복구"
+    ],
+    "journey": "입력",
+    "priority": "P0",
+    "decision": "대체됨",
+    "source": "turn D2-conversation-049에서 이전 ‘작성 중 rawText 0+별도 materialize’를 대체",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-structure-template-inline-baseline-20260830/docs/specs/2026-08-30-flowme-text-authoring-unified-editor-guidance-poc/spec.md"
+    ],
+    "expected": "picker를 열고 닫거나 취소하면 write 0, template 선택 자체가 사용자의 명시적 1회 TXT insertion이다.",
+    "currentEvidence": [
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx:271",
+      "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:449",
+      "tests/e2e/personal-workspace-integration-poc.spec.ts:528"
+    ],
+    "verdict": "충족",
+    "evidence": "E4",
+    "reason": "browse/cancel은 no-op status이고 selection만 source를 바꾼다.",
+    "action": "이 최신 successor 계약을 이전 P0.2 materialize 계약보다 우선한다.",
+    "linkGroup": "D2-template-transaction"
+  },
+  {
+    "id": "D2-050",
+    "product": "D2",
+    "title": "빈 원문·fingerprint·stale guard",
+    "category": [
+      "오류·복구",
+      "데이터"
+    ],
+    "journey": "입력",
+    "priority": "P0",
+    "decision": "현행확정",
+    "source": "2026-08-30 unified-editor successor contract",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-structure-template-inline-baseline-20260830/docs/specs/2026-08-30-flowme-text-authoring-unified-editor-guidance-poc/spec.md"
+    ],
+    "expected": "empty source·동일 editor/document fingerprint·non-composing 상태에서만 삽입하고 source/host 변경 시 bytes를 보존하며 fail-closed한다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-source-editor.ts",
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.test.tsx",
+      "tests/e2e/personal-workspace-stage-2-runtime.spec.ts"
+    ],
+    "verdict": "충족",
+    "evidence": "E4",
+    "reason": "picker open 시 editorId·documentId·source fingerprint·dispatch count를 캡처하고 apply 직전에 최신 snapshot과 대조한다. non-empty, stale source/host, double apply, IME composing은 source·draft·workspace write 0으로 fail-closed한다.",
+    "action": "owner·fingerprint·composition guard의 browser 회귀를 유지한다.",
+    "linkGroup": "D2-template-transaction"
+  },
+  {
+    "id": "D2-051",
+    "product": "D2",
+    "title": "Blank scaffold는 canonical 객체·issue 0",
+    "category": [
+      "데이터",
+      "오류·복구"
+    ],
+    "journey": "구조",
+    "priority": "P0",
+    "decision": "현행확정",
+    "source": "2026-08-30 unified-editor successor contract의 빈 골격과 실제 오류 절",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-structure-template-inline-baseline-20260830/docs/specs/2026-08-30-flowme-text-authoring-unified-editor-guidance-poc/spec.md"
+    ],
+    "expected": "`# `, `## `, `- [ ] `, `  - [ ] `, `- 기준일: `와 빈 property는 source에 남아도 Step·Item·field·blocking issue를 만들지 않는다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-authoring.ts",
+      "lib/flow/personal-workspace-poc-authoring.test.ts",
+      "tests/e2e/personal-workspace-integration-poc.spec.ts:351"
+    ],
+    "verdict": "충족",
+    "evidence": "E4",
+    "reason": "blank line을 건너뛰고 nonblank sibling만 materialize한다.",
+    "action": "blank와 invalid nonblank의 분리를 유지한다.",
+    "linkGroup": "D2-template-partial"
+  },
+  {
+    "id": "D2-052",
+    "product": "D2",
+    "title": "Template 전체 native Undo·Redo",
+    "category": [
+      "오류·복구",
+      "접근성"
+    ],
+    "journey": "복구",
+    "priority": "P0",
+    "decision": "현행확정",
+    "source": "turn D2-conversation-052 및 unified-editor spec",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-structure-template-inline-baseline-20260830/docs/specs/2026-08-30-flowme-text-authoring-unified-editor-guidance-poc/spec.md"
+    ],
+    "expected": "삽입 전체를 native Undo 한 번으로 제거하고 Redo 한 번으로 byte-identical 복구하며 picker/ghost toggle은 history를 바꾸지 않는다.",
+  "currentEvidence": [
+    "lib/flow/personal-workspace-poc-source-editor.ts",
+    "components/flow/personal-workspace-poc/PersonalWorkspacePocLiveEditor.tsx",
+    "tests/e2e/personal-workspace-stage-2-runtime.spec.ts",
+    "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js",
+    "tests/e2e/personal-workspace-integrated-standalone.spec.ts"
+  ],
+    "verdict": "충족",
+    "evidence": "E4",
+  "reason": "React와 독립 HTML의 template apply는 browser-owned native source transaction 한 번이며 Ctrl/Cmd+Z 한 번으로 삽입 전 exact bytes, Redo 한 번으로 삽입 bytes를 복구한다. standalone의 수동 history owner와 keydown 가로채기는 제거됐다.",
+    "action": "native Undo/Redo byte parity와 picker·ghost history 무영향 회귀를 유지한다.",
+    "linkGroup": "D2-template-undo"
+  },
+  {
+    "id": "D2-053",
+    "product": "D2",
+    "title": "Flow 편집 전체의 입력 예시 보기·숨기기",
+    "category": [
+      "화면",
+      "기능"
+    ],
+    "journey": "입력",
+    "priority": "P0",
+    "decision": "현행확정",
+    "source": "turn D2-conversation-051 및 D2-conversation-049",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-structure-template-inline-baseline-20260830/docs/specs/2026-08-30-flowme-text-authoring-unified-editor-guidance-poc/spec.md"
+    ],
+    "expected": "직접 입력·문맥별 +·template·기존 문서 모두 같은 전역 ghost example toggle을 쓴다.",
+  "currentEvidence": [
+    "components/flow/personal-workspace-poc/PersonalWorkspacePocLiveEditor.tsx",
+    "lib/flow/personal-workspace-poc-authoring-guide.ts",
+    "tests/e2e/personal-workspace-stage-2-runtime.spec.ts",
+    "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js",
+    "tests/e2e/personal-workspace-integrated-standalone.spec.ts"
+  ],
+    "verdict": "충족",
+    "evidence": "E4",
+  "reason": "React의 직접 작성·helper·template·복원 문서와 독립 HTML이 같은 `입력 예시` 의미를 사용한다. 인식된 모든 빈 heading·Item·subcheck·property에 줄별 ghost를 보이고 source owner는 교체하지 않는다.",
+    "action": "네 진입 방식의 같은 toggle·presentation state 회귀를 유지한다.",
+    "linkGroup": "D2-ghost-examples"
+  },
+  {
+    "id": "D2-054",
+    "product": "D2",
+    "title": "Ghost 예시의 source·clipboard·undo 무영향",
+    "category": [
+      "데이터",
+      "접근성"
+    ],
+    "journey": "입력",
+    "priority": "P0",
+    "decision": "현행확정",
+    "source": "2026-08-30 unified-editor spec의 편집기 전체 입력 예시 절",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-structure-template-inline-baseline-20260830/docs/specs/2026-08-30-flowme-text-authoring-unified-editor-guidance-poc/spec.md"
+    ],
+    "expected": "ghost는 aria-hidden/pointer-none/user-select-none이며 source, clipboard, selection, scroll, revision, dispatch, undo에 영향 0이다.",
+  "currentEvidence": [
+    "components/flow/personal-workspace-poc/PersonalWorkspacePocLiveEditor.tsx",
+    "tests/e2e/personal-workspace-stage-2-runtime.spec.ts",
+    "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js",
+    "tests/e2e/personal-workspace-integrated-standalone.spec.ts"
+  ],
+    "verdict": "충족",
+    "evidence": "E4",
+  "reason": "양쪽 line ghost는 aria-hidden·pointer-events none인 source 밖 presentation layer다. toggle·render 전후 source, clipboard, selection, scroll, revision, draft, native history가 변하지 않고 예시가 source에 삽입되지 않음을 여섯 viewport에서 계측했다.",
+    "action": "ghost의 source·접근성 tree·selection·history 무영향 회귀를 유지한다.",
+    "linkGroup": "D2-ghost-examples"
+  },
+  {
+    "id": "D2-055",
+    "product": "D2",
+    "title": "구조 menu의 최종 계층",
+    "category": [
+      "화면",
+      "기능"
+    ],
+    "journey": "구조",
+    "priority": "P0",
+    "decision": "현행확정",
+    "source": "turn D2-conversation-049 및 unified-editor spec",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-structure-template-inline-baseline-20260830/docs/specs/2026-08-30-flowme-text-authoring-unified-editor-guidance-poc/spec.md"
+    ],
+    "expected": "다음 할 일 → 하위 확인/항목 정보 → 새 단계로 구분하고 항목 정보는 실제 property catalog를 설명한다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-authoring-guide.ts",
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx",
+      "tests/e2e/personal-workspace-stage-2-runtime.spec.ts"
+    ],
+    "verdict": "충족",
+    "evidence": "E4",
+    "reason": "최종 menu는 다음 할 일, 현재 할 일 안의 하위 확인·항목 정보, 새 단계 순서를 사용하고 항목 정보에는 현재 지원 catalog만 노출한다. 한 단계 제한과 source insertion이 같은 guide catalog를 사용한다.",
+    "action": "menu 순서·문구·지원 범위·one-level limit 회귀를 유지한다.",
+    "linkGroup": "D2-structure-menu"
+  },
+  {
+    "id": "D2-056",
+    "product": "D2",
+    "title": "StructureDraft·compiler는 versioned 내부 자산",
+    "category": [
+      "데이터",
+      "검증"
+    ],
+    "journey": "구조",
+    "priority": "P1",
+    "decision": "후보구현",
+    "source": "turn D2-conversation-053",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-structure-template-p0-baseline-20260829/docs/specs/2026-08-29-flowme-p0-structure-template-development/handoff.md"
+    ],
+    "expected": "catalog/compiler/sidecar snapshot을 version 관리하고 동일 입력은 byte-identical이며 질문·예시·placeholder를 source로 만들지 않는다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-authoring.ts:12",
+      "lib/flow/personal-workspace-poc-authoring.test.ts"
+    ],
+    "verdict": "부분",
+    "evidence": "E2",
+    "reason": "승인 scaffold bytes의 PoC-local snapshot은 있으나 recursive StructureDraft/compiler와 19 rule catalog는 통합하지 않는다.",
+    "action": "단순 scaffold 계약으로 충분한지, compiler 채택이 필요한지 별도 결정한다.",
+    "linkGroup": "D2-template-engine"
+  },
+  {
+    "id": "D2-057",
+    "product": "D2",
+    "title": "Creator draft 저장·재진입·관리",
+    "category": [
+      "기능",
+      "데이터"
+    ],
+    "journey": "관리",
+    "priority": "P0",
+    "decision": "결정필요",
+    "source": "turn D2-conversation-054 및 초기 구현 turn D2-conversation-055",
+    "sourceArtifact": [
+      "docs/specs/2026-07-28-flowme-text-authoring-ux-v1/state-model.md"
+    ],
+    "expected": "작성 중 초안을 복구하고 CreatorDraft 목록에서 저장·검색·복제·보관·재진입한다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-storage.ts",
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx:182",
+      "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js:420",
+      "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/standalone.test.cjs:276",
+      "tests/e2e/personal-workspace-integration-poc.spec.ts:493"
+    ],
+    "verdict": "부분",
+    "evidence": "E4",
+    "reason": "작성 중 draft reload 복구는 있지만 CreatorDraft library/search/clone/archive가 없고 성공 결과는 Personal Flow이다.",
+    "action": "개인 저작과 creator 관리의 제품 lane을 결정한다.",
+    "linkGroup": "D2-creator-draft"
+  },
+  {
+    "id": "D2-058",
+    "product": "D2",
+    "title": "취소·실패·stale의 원자성 및 복구",
+    "category": [
+      "오류·복구",
+      "데이터"
+    ],
+    "journey": "복구",
+    "priority": "P0",
+    "decision": "현행확정",
+    "source": "Text Authoring state/transaction 계약과 turn D2-conversation-003",
+    "sourceArtifact": [
+      "docs/specs/2026-07-28-flowme-text-authoring-ux-v1/state-model.md"
+    ],
+    "expected": "취소·Escape·blank·stale·invalid·storage failure는 write 0, 성공은 source+canonical+projection atomic, Undo 1이며 recovery와 durable save를 분리한다.",
+  "currentEvidence": [
+    "lib/flow/personal-workspace-poc-storage-transaction.ts",
+    "lib/flow/personal-workspace-poc-plan-editor.ts",
+    "lib/flow/personal-workspace-poc-state.ts",
+    "tests/e2e/personal-workspace-stage-1-runtime.spec.ts",
+    "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js",
+    "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/standalone.test.cjs"
+  ],
+    "verdict": "부분",
+    "evidence": "E4",
+  "reason": "React와 독립 HTML에서 취소·blank·stale·invalid write 0, late failure state+draft byte rollback, source+canonical+projection 원자 저장, stable same-source retry, exact draft Undo·reload를 검증했다. 결과→source reverse edit는 A0 제외 경계이므로 부모 요구 전체는 부분이다.",
+  "action": "원자성 하위 조건과 stable identity 회귀를 유지하고 source reverse edit는 별도 승인 전 열지 않는다.",
+    "linkGroup": "D2-atomic-recovery"
+  },
+  {
+    "id": "D2-059",
+    "product": "D2",
+    "title": "최신 Unified Editor PoC의 게시 상태",
+    "category": [
+      "검증"
+    ],
+    "journey": "공통",
+    "priority": "P0",
+    "decision": "현행확정",
+    "source": "turn D2-conversation-056 및 D2-conversation-057",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-structure-template-inline-baseline-20260830/docs/specs/2026-08-30-flowme-text-authoring-unified-editor-guidance-poc/handoff.md"
+    ],
+    "expected": "PR #199은 PoC branch merge이며 main과 Vercel production/preview를 바꾸지 않는다.",
+    "currentEvidence": [
+      "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-validation-report-ko.html"
+    ],
+    "verdict": "충족",
+    "evidence": "E1",
+    "reason": "세션 결과는 merge commit 8989084, main 변경 0, Vercel 0으로 기록돼 있다.",
+    "action": "production 배포 또는 main merge로 표현하지 않는다.",
+    "linkGroup": "D2-publish-lineage"
+  },
+  {
+    "id": "D2-060",
+    "product": "D2",
+    "title": "Main-stack PR과 격리 PoC 계보 구분",
+    "category": [
+      "검증",
+      "데이터"
+    ],
+    "journey": "공통",
+    "priority": "P0",
+    "decision": "대체됨",
+    "source": "turn D2-conversation-058 뒤 D2-conversation-007에서 방향 수정",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-structure-template-inline-baseline-20260830/docs/specs/2026-08-30-flowme-text-authoring-unified-editor-guidance-poc/handoff.md"
+    ],
+    "expected": "#184~187 main-stack 후보는 merge하지 않고 #197/#198 live-editor evidence와 #199 unified template successor를 격리 계보로 본다.",
+    "currentEvidence": [
+      "app/flows/new/page.tsx",
+      "lib/flow/personal-workspace-poc-gate.ts"
+    ],
+    "verdict": "의도적 변경",
+    "evidence": "E4",
+    "reason": "현재 통합은 main production writer가 아니라 exact-query PoC route에서 D2 일부를 재구성했다.",
+    "action": "traceability에서 main-stack 후보를 현재 정본으로 사용하지 않는다.",
+    "linkGroup": "D2-publish-lineage"
+  },
+  {
+    "id": "D2-061",
+    "product": "D2",
+    "title": "Unified Editor 접근성·반응형 계약",
+    "category": [
+      "접근성",
+      "반응형"
+    ],
+    "journey": "공통",
+    "priority": "P0",
+    "decision": "현행확정",
+    "source": "2026-08-30 unified-editor spec의 접근성·모바일 절",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-structure-template-inline-baseline-20260830/docs/specs/2026-08-30-flowme-text-authoring-unified-editor-guidance-poc/spec.md"
+    ],
+    "expected": "44/48px, non-modal, Escape focus return, 정상 Tab 흐름, 320/390/landscape/200% overflow 0, reduced motion, keyboard 위 caret/menu를 보장한다.",
+  "currentEvidence": [
+    "components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx",
+    "tests/e2e/personal-workspace-stage-2-runtime.spec.ts",
+    "tests/e2e/personal-workspace-integrated-standalone.spec.ts",
+    "docs/content-audit/2026-09-03-flowme-integrated-poc-authoring-workspace-parity-report-assets/after-react-844x390.png"
+  ],
+    "verdict": "부분",
+    "evidence": "E3",
+  "reason": "48px control, non-modal 선택형 검토, Escape focus return, 320×700 포함 여섯 Chromium viewport의 overflow·editor/CTA 겹침 0을 확인했다. 실제 Android/iOS 가상 키보드, screen reader, browser 200% text zoom은 미실행이다.",
+  "action": "자동 반응형 회귀를 유지하고 실제 device·screen reader·200% text zoom 뒤에만 전체 충족으로 재판정한다.",
+    "linkGroup": "D2-responsive-authoring"
+  },
+  {
+    "id": "D2-062",
+    "product": "D2",
+    "title": "실제 Android/iOS와 관찰 사용자 미실행",
+    "category": [
+      "검증"
+    ],
+    "journey": "공통",
+    "priority": "P0",
+    "decision": "보류·제외",
+    "source": "모든 D2 handoff의 observed users 0 및 actual device 0",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-structure-template-inline-baseline-20260830/docs/specs/2026-08-30-flowme-text-authoring-unified-editor-guidance-poc/handoff.md"
+    ],
+    "expected": "자동화와 actual Android Chrome/iOS Safari, 관찰 사용자 과업을 별도 상태로 보고한다.",
+    "currentEvidence": [
+      "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-validation-report-ko.html"
+    ],
+    "verdict": "제외",
+    "evidence": "E1",
+    "reason": "현재 작업에서도 실제 기기와 관찰 사용자 검증은 수행하지 않았다.",
+    "action": "미실행을 유지해 보고하고 추정하지 않는다.",
+    "linkGroup": "D2-validation-boundary"
+  },
+  {
+    "id": "D2-063",
+    "product": "D2",
+    "title": "Fresh QA와 기준선 실패의 분리",
+    "category": [
+      "검증"
+    ],
+    "journey": "공통",
+    "priority": "P0",
+    "decision": "현행확정",
+    "source": "D2 전 세션의 targeted→shared→full→browser closeout과 날짜 기반 seed failure 기록",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-structure-template-inline-baseline-20260830/docs/specs/2026-08-30-flowme-text-authoring-unified-editor-guidance-poc/qa.md"
+    ],
+    "expected": "현재 checkout에서 targeted, shared, full test/build, browser/a11y를 fresh 실행하고 baseline failure를 green으로 숨기지 않는다.",
+  "currentEvidence": [
+    "lib/flow/personal-workspace-poc-authoring.test.ts",
+    "components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.test.tsx",
+    "tests/e2e/personal-workspace-stage-2-runtime.spec.ts",
+    "tests/e2e/personal-workspace-integrated-standalone.spec.ts",
+    "docs/content-audit/2026-09-03-flowme-integrated-poc-authoring-workspace-parity-report-ko.html"
+  ],
+    "verdict": "부분",
+    "evidence": "E4",
+  "reason": "현재 authoring 변경의 model/component 256/256, 최종 browser 37/37(교차 parity 2, standalone 21, 통합 3, React Stage 2 11), standalone node 39/39와 production build 18/18을 기록했다. 전체 npm은 1520/1521에서 기존 seed freshness 1건으로 실패·중단됐고 보조기술 실기는 미실행이다.",
+  "action": "docs·diff check를 root closeout에서 기록하고 기존 seed freshness 실패와 실제 screen reader·OS 확대 미실행을 계속 분리한다.",
+    "linkGroup": "D2-fresh-qa"
+  },
+  {
+    "id": "D2-064",
+    "product": "D2",
+    "title": "계정·cloud·AI·정식 발행·외부 동기화 제외",
+    "category": [
+      "데이터",
+      "검증"
+    ],
+    "journey": "관리",
+    "priority": "P2",
+    "decision": "보류·제외",
+    "source": "초기 D2 범위와 2026-08-30 unified-editor spec의 제외 목록",
+    "sourceArtifact": [
+      "<workspace>/flow-text-authoring-structure-template-inline-baseline-20260830/docs/specs/2026-08-30-flowme-text-authoring-unified-editor-guidance-poc/spec.md"
+    ],
+    "expected": "계정/cloud/AI/publication/analytics/payment/P35/외부 sync를 이 PoC에 구현하지 않는다.",
+    "currentEvidence": [
+      "app/flows/new/page.tsx",
+      "lib/flow/personal-workspace-poc-storage.ts"
+    ],
+    "verdict": "제외",
+    "evidence": "E4",
+    "reason": "모든 변경이 PoC-local storage와 local UI에 닫혀 있다.",
+    "action": "의도적 제외로 유지한다.",
+    "linkGroup": "D2-deferred-management"
+  }
+]

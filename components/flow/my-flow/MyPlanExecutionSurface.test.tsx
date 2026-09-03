@@ -170,6 +170,97 @@ test('export uses the full one-column action row when editing is unavailable', (
   assert.doesNotMatch(actionRowClass, /sm:grid-cols/u);
 });
 
+test('header keeps h3 by default and allows a focusable h2 for embedded detail navigation', () => {
+  const defaultMarkup = renderToStaticMarkup(
+    <MyPlanExecutionSurface model={buildModel()} actions={actions} renderers={renderers} />,
+  );
+  const embeddedMarkup = renderToStaticMarkup(
+    <MyPlanExecutionSurface
+      model={buildModel({
+        headingLevel: 2,
+        headingId: 'personal-workspace-flow-detail-heading',
+        headingTabIndex: -1,
+      })}
+      actions={actions}
+      renderers={renderers}
+    />,
+  );
+
+  assert.match(defaultMarkup, /<h3[^>]*>이사 준비 계획<\/h3>/u);
+  assert.match(
+    embeddedMarkup,
+    /<h2 id="personal-workspace-flow-detail-heading" tabindex="-1"[^>]*>이사 준비 계획<\/h2>/u,
+  );
+});
+
+test('transfer remains available by default with the established mobile sheet behavior', () => {
+  let transferPanelRenderCount = 0;
+  const markup = renderToStaticMarkup(
+    <MyPlanExecutionSurface
+      model={buildModel({ composition: 'mobile', transferOpen: true })}
+      actions={actions}
+      renderers={{
+        ...renderers,
+        renderTransferPanel: ({ showClose }) => {
+          transferPanelRenderCount += 1;
+          return (
+            <div data-testid="transfer-panel" data-show-close={String(showClose)} />
+          );
+        },
+      }}
+    />,
+  );
+
+  assert.equal(transferPanelRenderCount, 1);
+  assert.match(markup, /data-testid="my-plan-actions"/u);
+  assert.match(markup, /data-testid="my-flow-export-entry"/u);
+  assert.match(markup, /data-testid="my-plan-transfer-sheet"/u);
+  assert.match(markup, /data-testid="transfer-panel" data-show-close="false"/u);
+  assert.match(markup, /aria-expanded="true"/u);
+});
+
+test('action-less read-only mode hides edit, export, and every transfer surface', () => {
+  let transferPanelRenderCount = 0;
+  const readOnlyRenderers: MyPlanExecutionSurfaceRenderers = {
+    ...renderers,
+    renderTransferPanel: () => {
+      transferPanelRenderCount += 1;
+      return <div data-testid="unexpected-transfer-panel" />;
+    },
+  };
+  const renderReadOnly = (
+    composition: MyPlanExecutionSurfaceModel<TestTodo>['composition'],
+  ) => renderToStaticMarkup(
+    <MyPlanExecutionSurface
+      model={buildModel({
+        composition,
+        editAvailable: false,
+        transferAvailable: false,
+        transferOpen: true,
+        activeItemOpen: true,
+      })}
+      actions={actions}
+      renderers={readOnlyRenderers}
+    />,
+  );
+  const markup = [
+    renderReadOnly('mobile'),
+    renderReadOnly('stacked'),
+    renderReadOnly('desktop_full'),
+  ].join('\n');
+
+  assert.equal(transferPanelRenderCount, 0);
+  assert.doesNotMatch(markup, /data-testid="my-plan-actions"/u);
+  assert.doesNotMatch(markup, /data-testid="my-plan-edit"/u);
+  assert.doesNotMatch(markup, /data-testid="my-flow-export-entry"/u);
+  assert.doesNotMatch(markup, /data-testid="my-plan-transfer-sheet"/u);
+  assert.doesNotMatch(markup, /data-testid="my-plan-stacked-transfer"/u);
+  assert.doesNotMatch(markup, /data-testid="unexpected-transfer-panel"/u);
+  assert.match(markup, /data-testid="my-plan-stacked-item-detail"/u);
+  assert.match(markup, /data-testid="my-plan-item-inspector"/u);
+  assert.match(markup, /data-testid="item-detail"/u);
+});
+
 test('mobile transfer keeps the bottom sheet, back action, and hidden inner close control', () => {
   const markup = renderToStaticMarkup(
     <MyPlanExecutionSurface

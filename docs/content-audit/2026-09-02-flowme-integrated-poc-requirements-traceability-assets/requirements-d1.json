@@ -1,0 +1,683 @@
+[
+  {
+    "id": "D1-001",
+    "product": "D1",
+    "title": "네 origin 공통 Plan-Item surface",
+    "category": [
+      "화면",
+      "기능",
+      "데이터"
+    ],
+    "journey": "편집",
+    "priority": "P0",
+    "decision": "확정",
+    "source": "turn D1-conversation-001 · 일반 Flow, Flow Map, 개인 메모·URL 초안, 이전 저장본이 동일한 계획 편집 화면",
+    "sourceArtifact": "docs/specs/2026-08-12-my-plan-edit-lifecycle-unification/spec.md",
+    "expected": "네 saved-plan origin이 같은 Plan→Item 화면과 필드 순서를 사용하고 origin 차이는 adapter에만 남는다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-plan-editor.ts",
+      "lib/flow/personal-workspace-poc-plan-editor.test.ts",
+      "lib/flow/personal-workspace-poc-read-model.test.ts"
+    ],
+    "verdict": "부분",
+    "evidence": "E4",
+    "reason": "네 origin을 같은 staged Plan→Item adapter로 여는 순수 모델과 preflight는 구현했다. 공통 editor 화면과 각 opener 연결은 단계 3에 남아 있다.",
+    "action": "단계 3에서 네 origin opener를 이 adapter와 기존 공통 editor UI에 연결하고 동일 field order를 브라우저로 검증한다.",
+    "linkGroup": "editor-unification"
+  },
+  {
+    "id": "D1-002",
+    "product": "D1",
+    "title": "모든 Item 진입의 transition 통일",
+    "category": [
+      "기능",
+      "상태",
+      "전환"
+    ],
+    "journey": "편집",
+    "priority": "P0",
+    "decision": "확정",
+    "source": "turn D1-conversation-002 · 다른 경로의 단일 Step 수정 UX가 따로 있지 않나",
+    "sourceArtifact": "docs/specs/2026-08-13-plan-edit-trash-structure-unification/spec.md",
+    "expected": "selected Plan, 실행 상세, Calendar, Quick Item, 여러 항목 조정의 Item 행동이 같은 transition과 거래로 수렴한다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-plan-editor.ts",
+      "lib/flow/personal-workspace-poc-state.ts",
+      "lib/flow/personal-workspace-poc-plan-editor.test.ts"
+    ],
+    "verdict": "부분",
+    "evidence": "E4",
+    "reason": "Item 적용과 Plan 최종 적용은 한 adapter·transition으로 수렴하지만 selected Plan, 실행 상세, Calendar 등 실제 opener는 아직 이 editor를 호출하지 않는다.",
+    "action": "단계 3에서 모든 opener가 동일 edit intent와 adapter를 사용하도록 연결한다.",
+    "linkGroup": "editor-unification"
+  },
+  {
+    "id": "D1-003",
+    "product": "D1",
+    "title": "staged Plan 단일 저장",
+    "category": [
+      "상태",
+      "전환",
+      "데이터"
+    ],
+    "journey": "저장",
+    "priority": "P0",
+    "decision": "확정",
+    "source": "turn D1-conversation-003 · Item 계획에 반영, Plan 변경 적용, 내 계획에 저장",
+    "sourceArtifact": "docs/specs/2026-08-12-public-plan-edit-surface-unification/qa.md",
+    "expected": "Item 적용은 부모 draft만 갱신하고 Plan의 최종 단일 저장 전에는 운영 storage mutation이 없다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-plan-editor.ts",
+      "lib/flow/personal-workspace-poc-plan-editor.test.ts",
+      "lib/flow/personal-workspace-poc-storage-transaction.ts"
+    ],
+    "verdict": "부분",
+    "evidence": "E4",
+    "reason": "Item 적용은 메모리의 부모 Plan draft만 바꾸고 최종 Plan 적용에서 revision·Undo·state target write를 각각 한 번 만드는 모델을 검증했다. 사용자 화면 연결은 아직 없다.",
+    "action": "단계 3 editor UI에서 같은 staged session을 사용하고 apply 전 storage 0·최종 target write 1을 E2E로 확인한다.",
+    "linkGroup": "staged-save"
+  },
+  {
+    "id": "D1-004",
+    "product": "D1",
+    "title": "dirty 취소와 focus 복귀",
+    "category": [
+      "상태",
+      "전환",
+      "접근성",
+      "오류·복구"
+    ],
+    "journey": "복구",
+    "priority": "P0",
+    "decision": "확정",
+    "source": "turn D1-conversation-003 · dirty 취소·Escape·browser Back은 같은 버리기 확인",
+    "sourceArtifact": "docs/specs/2026-08-12-my-plan-edit-lifecycle-unification/qa.md",
+    "expected": "취소·Escape·Back이 같은 discard 규칙을 따르고 닫은 뒤 정확한 opener focus와 scroll 위치로 돌아간다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-plan-editor.ts",
+      "lib/flow/personal-workspace-poc-plan-editor.test.ts",
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx"
+    ],
+    "verdict": "부분",
+    "evidence": "E4",
+    "reason": "순수 editor session의 dirty·cancel·stale 규칙과 기존 panel focus 복귀는 있으나 staged editor의 Escape·Back·scroll 복귀 UI는 연결되지 않았다.",
+    "action": "단계 3에서 dirty leave dialog, 정확한 opener focus와 scroll snapshot 복귀를 브라우저로 검증한다.",
+    "linkGroup": "editor-recovery"
+  },
+  {
+    "id": "D1-005",
+    "product": "D1",
+    "title": "개인 편집과 원문 읽기 경계",
+    "category": [
+      "화면",
+      "기능",
+      "데이터"
+    ],
+    "journey": "상세",
+    "priority": "P0",
+    "decision": "확정",
+    "source": "turn D1-conversation-002 · 할 일 이름·날짜·개인 메모, 원문 설명·완료 기준·출처는 읽기 전용",
+    "sourceArtifact": "D1 baseline session#D1-conversation-002",
+    "expected": "개인 제목·날짜·메모는 편집하고 원문 설명·완료 기준·출처는 구분된 읽기 전용 정보로 본다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-read-model.ts",
+      "lib/flow/personal-workspace-poc-composition.ts",
+      "lib/flow/personal-workspace-poc-plan-editor.ts"
+    ],
+    "verdict": "부분",
+    "evidence": "E4",
+    "reason": "source·existingPersonal·PoC personal·execution owner와 개인 title·memo·schedule overlay를 분리했다. 읽기 전용/편집 가능 block을 실제 editor 화면으로 연결하는 일은 남았다.",
+    "action": "단계 3에서 source definition block과 내 계획 편집 block을 같은 Item editor에 표시한다.",
+    "linkGroup": "item-content-boundary"
+  },
+  {
+    "id": "D1-006",
+    "product": "D1",
+    "title": "날짜 3상태와 기준일 재계산",
+    "category": [
+      "상태",
+      "전환",
+      "데이터"
+    ],
+    "journey": "편집",
+    "priority": "P0",
+    "decision": "확정",
+    "source": "turn D1-conversation-002 · 원본 일정 사용, 특정 날짜로 고정, 날짜 없음",
+    "sourceArtifact": "docs/pr-history/2026-08-13-flow-map-item-date-parity.md",
+    "expected": "날짜는 inherit·fixed·unscheduled를 명시하고 기준일 변경 시 preview를 즉시 재계산하되 source 일정과 Flow 소속은 바꾸지 않는다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-contract.ts",
+      "lib/flow/personal-workspace-poc-state.ts",
+      "lib/flow/personal-workspace-poc-composition.test.ts",
+      "tests/e2e/personal-workspace-stage-1-runtime.spec.ts"
+    ],
+    "verdict": "부분",
+    "evidence": "E4",
+    "reason": "personal plan과 execution placement의 inherit·fixed_date·unscheduled를 분리하고 원래 날짜 따르기와 source 보존을 검증했다. 기준일 편집·preview와 plan schedule UI는 없다.",
+    "action": "단계 3에서 계획 날짜 editor와 기준일 preview를 연결하고 execution 이동과 문구를 분리한다.",
+    "linkGroup": "date-contract"
+  },
+  {
+    "id": "D1-007",
+    "product": "D1",
+    "title": "unsupported fail-closed",
+    "category": [
+      "기능",
+      "데이터",
+      "오류·복구"
+    ],
+    "journey": "공통",
+    "priority": "P0",
+    "decision": "확정",
+    "source": "turn D1-conversation-004 · 지원 불가능한 수정 동작은 무반응 대신 숨김·차단",
+    "sourceArtifact": "docs/specs/2026-08-12-my-plan-edit-lifecycle-unification/spec.md",
+    "expected": "미지원 capability는 숨김 또는 이유 있는 차단으로 처리하고 malformed·unsupported origin은 fail closed한다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-gate.ts",
+      "lib/flow/personal-workspace-poc-read-model.ts",
+      "lib/flow/personal-workspace-poc-gate.test.ts",
+      "lib/flow/personal-workspace-poc-read-model.test.ts"
+    ],
+    "verdict": "충족",
+    "evidence": "E4",
+    "reason": "exact query gate와 strict origin/payload 검증이 실패 시 기존 /my로 닫힌다.",
+    "action": "회귀 테스트를 유지한다.",
+    "linkGroup": "fail-closed"
+  },
+  {
+    "id": "D1-008",
+    "product": "D1",
+    "title": "운영 identity와 storage 불변",
+    "category": [
+      "데이터",
+      "오류·복구"
+    ],
+    "journey": "공통",
+    "priority": "P0",
+    "decision": "확정",
+    "source": "turn D1-conversation-005 · 기존 Map ID·저장 키·스키마는 변경하지 않음",
+    "sourceArtifact": "D1 baseline session#D1-conversation-005",
+    "expected": "Map ID/version, child·Item identity, source/personal/execution/export ownership과 운영 key/schema가 바뀌지 않는다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-contract.ts",
+      "lib/flow/personal-workspace-poc-read-model.ts",
+      "lib/flow/personal-workspace-poc-storage.ts",
+      "lib/flow/personal-workspace-poc-storage.test.ts"
+    ],
+    "verdict": "충족",
+    "evidence": "E4",
+    "reason": "운영 data는 읽기 전용이고 쓰기는 전용 prefix와 충돌 없는 identity에 한정된다.",
+    "action": "운영 key byte 비교 테스트를 최종 매트릭스에 유지한다.",
+    "linkGroup": "data-boundary"
+  },
+  {
+    "id": "D1-009",
+    "product": "D1",
+    "title": "Flow Map 사용자 화면 평탄화",
+    "category": [
+      "화면",
+      "기능",
+      "데이터"
+    ],
+    "journey": "선택",
+    "priority": "P0",
+    "decision": "확정",
+    "source": "turn D1-conversation-006 · 현재 컨텐츠에선 flowmap이 사실 의미없지 않아",
+    "sourceArtifact": "docs/content-audit/2026-08-12-public-plan-edit-surface-unification-ui-review-ko.html",
+    "expected": "single-child Map은 일반 Flow로 보이고 multi-child만 choose_child를 제공하며 review_hold는 미노출한다. Map은 내부 출처·복구 경계로만 남는다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-read-model.ts",
+      "lib/flow/personal-workspace-poc-map-selection.ts",
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx",
+      "tests/e2e/personal-workspace-stage-2-runtime.spec.ts"
+    ],
+    "verdict": "충족",
+    "evidence": "E4",
+    "reason": "single-child는 일반 Flow 한 개로 평탄화하고 multi-child만 결과 위 selector로 묶는다. child 변경은 Text 초기화·Item detail 닫기·결과 heading focus 복귀를 하나의 무저장 전환으로 실행하며 review_hold와 기술 Map 식별자는 기본 화면에 노출하지 않는다.",
+    "action": "네 origin과 single/multi Map의 duplicate 0 및 무저장 선택 회귀를 유지한다.",
+    "linkGroup": "map-flattening"
+  },
+  {
+    "id": "D1-010",
+    "product": "D1",
+    "title": "로컬 휴지통 lifecycle",
+    "category": [
+      "화면",
+      "상태",
+      "전환",
+      "데이터",
+      "오류·복구"
+    ],
+    "journey": "복구",
+    "priority": "P0",
+    "decision": "확정",
+    "source": "turn D1-conversation-007 · 보관이 아니라 휴지통 같은 의미로 변경하는 거 아니었어",
+    "sourceArtifact": "docs/specs/2026-08-13-plan-edit-trash-structure-unification/spec.md",
+    "expected": "휴지통으로 이동·휴지통·복원·이 기기에서 영구 삭제를 제공하고 내부 archive 호환과 진행 기록을 영구 삭제 전까지 보존한다. 자동 삭제는 없다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-contract.ts",
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx"
+    ],
+    "verdict": "부분",
+    "evidence": "E4",
+    "reason": "개발 1의 휴지통 문법과 기존 lifecycle owner는 이미 승인·검증됐고, A0는 PoC에서 같은 staged 문법을 shadow command로만 재현하기로 확정했다. 현재 통합 PoC에는 Flow lifecycle UI와 transition이 아직 없다.",
+    "action": "A3/A4에서 휴지통 이동·복원·영구 삭제 전 경고를 PoC shadow lifecycle로 구현하고 운영 archive writer는 호출하지 않는다.",
+    "linkGroup": "trash-lifecycle"
+  },
+  {
+    "id": "D1-011",
+    "product": "D1",
+    "title": "Undo와 오류 복구 피드백",
+    "category": [
+      "상태",
+      "전환",
+      "접근성",
+      "오류·복구"
+    ],
+    "journey": "복구",
+    "priority": "P1",
+    "decision": "확정",
+    "source": "turn D1-conversation-008 · Undo, 결과 개수, 삭제 실패 복구, 이중 탭 방지와 알림 접근성",
+    "sourceArtifact": "docs/specs/2026-08-13-plan-edit-trash-structure-unification/qa.md",
+    "expected": "저장 직후 Undo, 실패 복구, 중복 조작 방지, 정확한 결과 count와 aria-live 성공·오류 알림을 제공한다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-receipt.ts",
+      "lib/flow/personal-workspace-poc-storage-transaction.ts",
+      "tests/e2e/personal-workspace-stage-1-runtime.spec.ts"
+    ],
+    "verdict": "부분",
+    "evidence": "E4",
+    "reason": "one-snapshot Undo, exact authoring draft 복구, failure rollback과 구조화 receipt를 검증했다. trash lifecycle count와 상세 receipt UI는 범위 밖 또는 미연결이다.",
+    "action": "단계 3에서 receipt의 구체 변경값·retry를 UI에 연결하고 trash count는 운영 owner 승인 뒤 별도 처리한다.",
+    "linkGroup": "feedback-recovery"
+  },
+  {
+    "id": "D1-012",
+    "product": "D1",
+    "title": "개인 소유 구간 제목 편집",
+    "category": [
+      "기능",
+      "데이터"
+    ],
+    "journey": "편집",
+    "priority": "P1",
+    "decision": "확정-소유권제한",
+    "source": "turn D1-conversation-009 · 큰 일정, D-30 큰 준비 같은 그룹명 수정 요구",
+    "sourceArtifact": "docs/specs/2026-08-13-plan-edit-trash-structure-unification/spec.md",
+    "expected": "개인 소유 memo·URL draft의 실제 구간 제목만 편집·reload·projection에 반영하고 source-owned group은 읽기 전용으로 둔다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-contract.ts",
+      "lib/flow/personal-workspace-poc-plan-editor.ts",
+      "lib/flow/personal-workspace-poc-composition.ts"
+    ],
+    "verdict": "부분",
+    "evidence": "E3",
+    "reason": "개인 Flow/Item title·memo·order overlay는 생겼지만 authoring-owned section 제목 편집과 모든 projection 동기화는 구현하지 않았다.",
+    "action": "section owner를 고정한 뒤 단계 3 editor와 결과 projection에 제한된 shadow edit를 연결한다.",
+    "linkGroup": "ownership-editing"
+  },
+  {
+    "id": "D1-013",
+    "product": "D1",
+    "title": "Production 시각 문법 통일",
+    "category": [
+      "화면"
+    ],
+    "journey": "공통",
+    "priority": "P1",
+    "decision": "확정",
+    "source": "turn D1-conversation-010 · 디자인만 개선 목표를 잡아서 main 앱 디자인 개선",
+    "sourceArtifact": "docs/specs/2026-08-20-production-visual-only-refresh/qa.md",
+    "expected": "따뜻한 미색·흰 카드·잉크·코발트·semantic color와 공통 token을 유지하며 시각 수정이 기능·route·storage를 바꾸지 않는다.",
+    "currentEvidence": [
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx",
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx",
+      "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css"
+    ],
+    "verdict": "충족",
+    "evidence": "E4",
+    "reason": "A0에서 production PlatformNav와 ink/cobalt를 전역 owner로 유지하고 white/gray/teal은 exact-query 개인공간 내부 accent로 한정했다. 기본 route·token·storage는 바꾸지 않으며 standalone은 제품 shell 증거에서 제외한다.",
+    "action": "전역 문법 회귀를 유지하고 A9에서 exact-query 내부 chrome의 한 줄 모바일 header와 평면 목록 차이만 보완한다.",
+    "linkGroup": "visual-language"
+  },
+  {
+    "id": "D1-014",
+    "product": "D1",
+    "title": "CTA 위계와 조작 크기",
+    "category": [
+      "화면",
+      "반응형",
+      "접근성"
+    ],
+    "journey": "공통",
+    "priority": "P1",
+    "decision": "확정",
+    "source": "turn D1-conversation-010 · main 앱을 기능·route·storage 변경 없이 디자인-only로 개선 승인. 48/44px은 승인된 구현 계약",
+    "sourceArtifact": "docs/content-audit/2026-08-19-flowme-production-ux-visual-only-refresh-ko.html",
+    "expected": "주 CTA는 48px, 보조 행동은 44px 이상이며 명확한 focus와 한 화면 한 primary 위계를 갖는다.",
+    "currentEvidence": [
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx",
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx",
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.test.tsx"
+    ],
+    "verdict": "부분",
+    "evidence": "E3",
+    "reason": "주요 target과 focus는 보강됐지만 일부 화면에서 primary 행동이 경쟁하고 teal 위계가 별도다.",
+    "action": "화면별 primary 한 개를 지정하고 나머지를 secondary 또는 text action으로 낮춘다.",
+    "linkGroup": "visual-language"
+  },
+  {
+    "id": "D1-015",
+    "product": "D1",
+    "title": "반응형 workspace 구성",
+    "category": [
+      "화면",
+      "반응형",
+      "접근성"
+    ],
+    "journey": "공통",
+    "priority": "P1",
+    "decision": "확정",
+    "source": "turn D1-conversation-011 · 1023까지 적층, 1024 목록+실행, 1280 이상 3열",
+    "sourceArtifact": "docs/content-audit/2026-08-20-flowme-now-completion-reflection-history-before-after-ko.html",
+    "expected": "390 mobile과 844 landscape는 compact, 1023까지 stacked, 1024는 list+execution, 1280 이상은 inspector 3-pane이며 overflow와 핵심 CTA 가림이 없다.",
+    "currentEvidence": [
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx",
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx",
+      "tests/e2e/personal-workspace-poc.spec.ts",
+      "tests/e2e/personal-workspace-integration-poc.spec.ts"
+    ],
+    "verdict": "부분",
+    "evidence": "E4",
+    "reason": "landscape compact와 1024/1280 분기는 보강됐으나 최종 다섯 viewport 시각 판정이 남았다.",
+    "action": "최종 캡처에서 overflow·CTA 가림·첫 task 노출을 다시 판정한다.",
+    "linkGroup": "responsive-composition"
+  },
+  {
+    "id": "D1-016",
+    "product": "D1",
+    "title": "한 여정 한 문법",
+    "category": [
+      "화면",
+      "기능",
+      "전환"
+    ],
+    "journey": "공통",
+    "priority": "P1",
+    "decision": "확정",
+    "source": "turn D1-conversation-012 · 전체적으로 어떻게 변경되는지 잘 이해가 안 된다",
+    "sourceArtifact": "docs/content-audit/2026-08-19-production-ux-coherence-before-after-review-ko.html",
+    "expected": "계획 찾기→쓸모·자연 결과 확인→결과·기준일 결정→조정→저장→실행·이동→복구가 한 화면 한 결정과 한 문법으로 연결된다.",
+    "currentEvidence": [
+      "app/flows/new/page.tsx",
+      "app/my/page.tsx",
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx",
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx",
+      "tests/e2e/personal-workspace-integration-poc.spec.ts"
+    ],
+    "verdict": "부분",
+    "evidence": "E4",
+    "reason": "작성→구조 확인→개인 Flow 저장→개인공간 실행은 이어지지만 기존 Flow 탐색·staged 조정·trash 복구까지 한 여정은 아니다.",
+    "action": "통합 journey map에 기존 Flow 선택과 shadow edit를 연결한다.",
+    "linkGroup": "end-to-end-journey"
+  },
+  {
+    "id": "D1-017",
+    "product": "D1",
+    "title": "출처와 개인 사본 경계",
+    "category": [
+      "화면",
+      "데이터"
+    ],
+    "journey": "상세",
+    "priority": "P0",
+    "decision": "확정",
+    "source": "turn D1-conversation-013 · Production의 출처·원문 기준·완료 기준이 빠짐",
+    "sourceArtifact": "docs/content-audit/2026-08-19-flowme-after-end-to-end-ui-scenarios-ko.html",
+    "expected": "선택 전 출처명·원문 링크와 상세의 원문 기준·바로 할 일·완료 기준·개인 메모를 구분하고 공유 계획 미리보기와 내 계획 상태를 명시한다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-read-model.ts",
+      "lib/flow/personal-workspace-poc-authoring.ts",
+      "lib/flow/personal-workspace-poc-state.test.ts"
+    ],
+    "verdict": "부분",
+    "evidence": "E4",
+    "reason": "origin·source 값·existing personal baseline·authoring raw lineage를 구조적으로 분리했다. 모든 origin의 원문 링크·완료 기준·개인 메모를 한 화면에서 완전히 표시하지는 않는다.",
+    "action": "단계 3 source read-only block에 실제 보유 metadata만 노출하고 없는 source link는 만들지 않는다.",
+    "linkGroup": "source-trust"
+  },
+  {
+    "id": "D1-018",
+    "product": "D1",
+    "title": "변경 영향과 저장 안전장치",
+    "category": [
+      "상태",
+      "전환",
+      "오류·복구"
+    ],
+    "journey": "저장",
+    "priority": "P0",
+    "decision": "확정",
+    "source": "turn D1-conversation-013 · 선택 n/전체 n, 제외 확인·복원, 기존 사본 충돌, 저장·Undo가 빠짐",
+    "sourceArtifact": "docs/content-audit/2026-08-19-flowme-after-end-to-end-ui-scenarios-ko.html",
+    "expected": "변경 영향과 제외 항목을 확인·복원하고 dirty 이탈, duplicate copy, 저장 성공·실패·Undo를 명시한다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-plan-editor.ts",
+      "lib/flow/personal-workspace-poc-receipt.ts",
+      "lib/flow/personal-workspace-poc-plan-editor.test.ts"
+    ],
+    "verdict": "부분",
+    "evidence": "E4",
+    "reason": "revision·raw/source fingerprint·identity collision preflight와 영향 ref/count receipt를 구현했다. included/excluded 영향 요약과 duplicate conflict 선택 UI는 없다.",
+    "action": "단계 3 apply 직전에 영향 요약을 보여 주고 collision은 write 0인 복구 가능한 실패로 안내한다.",
+    "linkGroup": "save-safety"
+  },
+  {
+    "id": "D1-019",
+    "product": "D1",
+    "title": "Flow 찾기 단일 입력",
+    "category": [
+      "화면",
+      "기능",
+      "전환"
+    ],
+    "journey": "탐색",
+    "priority": "P0",
+    "decision": "확정",
+    "source": "turn D1-conversation-014 · 두 입력의 필요성을 문제 제기했고 후속 묶음 구현 승인 아래 단일 intent-routing 입력을 채택",
+    "sourceArtifact": "PR #195",
+    "expected": "하나의 입력이 준비된 Flow query는 filter, URL은 lookup, 일반 문장은 memo draft로 분기하며 기존 기능을 잃지 않는다.",
+    "currentEvidence": [
+      "app/flows/new/page.tsx",
+      "app/my/page.tsx",
+      "lib/flow/personal-workspace-poc-entry.ts",
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx",
+      "tests/e2e/personal-workspace-stage-2-runtime.spec.ts"
+    ],
+    "verdict": "충족",
+    "evidence": "E4",
+    "reason": "통합 entry 한 개가 query hit, HTTP(S) URL lookup, invalid URL-like 안내, 일반 memo 작성 후보를 결정적으로 분기한다. 네 origin 결과는 중복 없이 표시되고 분기 자체는 운영·PoC 저장을 만들지 않는다.",
+    "action": "분기 우선순위와 URL miss/error fallback의 브라우저 회귀를 유지한다.",
+    "linkGroup": "flow-discovery"
+  },
+  {
+    "id": "D1-020",
+    "product": "D1",
+    "title": "단일 사본 번호 숨김",
+    "category": [
+      "화면",
+      "데이터"
+    ],
+    "journey": "선택",
+    "priority": "P1",
+    "decision": "확정",
+    "source": "turn D1-conversation-015 · 하나의 flow에는 사본 1을 안 붙여도 될 듯",
+    "sourceArtifact": "PR #195",
+    "expected": "사본이 하나면 번호를 숨기고 둘 이상일 때만 사본 1·2를 표시하며 identity와 진행 기록은 유지한다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-read-model.ts",
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx"
+    ],
+    "verdict": "충족",
+    "evidence": "E3",
+    "reason": "사용자 제목에는 사본 번호를 붙이지 않고 copy identity는 내부 ref에만 유지한다.",
+    "action": "동일 source의 2개 copy fixture에서 구분 가능성을 추가 검증한다.",
+    "linkGroup": "copy-label"
+  },
+  {
+    "id": "D1-021",
+    "product": "D1",
+    "title": "effective Flow 문법형 Text 기본",
+    "category": [
+      "화면",
+      "기능",
+      "상태"
+    ],
+    "journey": "선택",
+    "priority": "P0",
+    "decision": "확정",
+    "source": "turn D1-conversation-016 · 첫 화면 txt는 flow 만드는 문법 형태 text",
+    "sourceArtifact": "PR #195",
+    "expected": "Flow 선택·변경 시 Text로 초기화하고 개인 조정이 반영된 title·order·date를 전체 Flow 문법으로 보여주며 raw source나 내부 trace를 가장하지 않는다.",
+    "currentEvidence": [
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx",
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx",
+      "lib/flow/personal-workspace-poc-result-projection.ts",
+      "tests/e2e/personal-workspace-stage-3-runtime.spec.ts"
+    ],
+    "verdict": "충족",
+    "evidence": "E4",
+    "reason": "선택한 Flow의 effective title·Item order·계획 날짜를 같은 ref의 Flow 문법형 Text 기본 보기에 투영하고 Flow 또는 Map child 변경 시 Text로 초기화한다. 원문과 내부 trace는 별도 읽기 전용 정보로 유지한다.",
+    "action": "Text·Todo·PoC Calendar·TXT가 같은 effective ref를 읽는 회귀를 유지한다.",
+    "linkGroup": "result-projection"
+  },
+  {
+    "id": "D1-022",
+    "product": "D1",
+    "title": "Todo·Calendar 전체 표시",
+    "category": [
+      "화면",
+      "기능",
+      "반응형"
+    ],
+    "journey": "상세",
+    "priority": "P0",
+    "decision": "확정",
+    "source": "turn D1-conversation-016 · 3개 초과 아이템이라고 접어두지 않아도 될 듯",
+    "sourceArtifact": "PR #195",
+    "expected": "Todo·Calendar는 임의 3개 접기 없이 전체 표시하고 Step·날짜 그룹을 유지한다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-view-model.ts",
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx",
+      "tests/e2e/personal-workspace-poc.spec.ts"
+    ],
+    "verdict": "부분",
+    "evidence": "E4",
+    "reason": "기간 Todo는 전체 표시하지만 Calendar projection과 Text/Todo/Calendar 결과 선택이 없다.",
+    "action": "Calendar read projection을 추가하되 기존 전체 표시 규칙을 유지한다.",
+    "linkGroup": "result-projection"
+  },
+  {
+    "id": "D1-023",
+    "product": "D1",
+    "title": "기준일 우선과 결과형식 분리",
+    "category": [
+      "화면",
+      "상태",
+      "데이터"
+    ],
+    "journey": "상세",
+    "priority": "P0",
+    "decision": "확정",
+    "source": "turn D1-conversation-016 · 이사일 선택 후 계산된 일정 전체 확인",
+    "sourceArtifact": "PR #195",
+    "expected": "Calendar 기준일은 전체 목록 위에 있고 보고 있는 Text·Todo·Calendar와 저장되는 날짜 의미는 분리된다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-contract.ts",
+      "lib/flow/personal-workspace-poc-state.ts",
+      "lib/flow/personal-workspace-poc-result-projection.ts",
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx",
+      "tests/e2e/personal-workspace-stage-3-runtime.spec.ts"
+    ],
+    "verdict": "충족",
+    "evidence": "E4",
+    "reason": "기준일, 선택 날짜, Text·Todo·Calendar 결과 보기는 탐색 상태로 분리돼 저장되는 계획·실행 날짜를 바꾸지 않는다. 결과 날짜는 execution placement, 개인 계획, 가져온 개인 값, source 순으로 계산한다.",
+    "action": "기준일·보기 전환이 저장 mutation을 만들지 않는 회귀를 유지한다.",
+    "linkGroup": "result-projection"
+  },
+  {
+    "id": "D1-024",
+    "product": "D1",
+    "title": "Map child 선택 후 결과 확인",
+    "category": [
+      "화면",
+      "상태",
+      "전환"
+    ],
+    "journey": "선택",
+    "priority": "P1",
+    "decision": "확정",
+    "source": "turn D1-conversation-017 · Flow Map에서도 계획 선택 후 전체 결과 확인",
+    "sourceArtifact": "PR #195",
+    "expected": "child selector는 전체 결과 위에 있고 child 변경 시 Text로 초기화하며 열린 Item detail을 닫는다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-read-model.ts",
+      "lib/flow/personal-workspace-poc-map-selection.ts",
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx",
+      "tests/e2e/personal-workspace-stage-2-runtime.spec.ts"
+    ],
+    "verdict": "충족",
+    "evidence": "E4",
+    "reason": "multi-child selector를 전체 결과 위에 두고 child 변경을 Text reset·열린 Item detail 닫기·결과 heading focus 복귀로 처리한다. 같은 child와 stale·foreign child는 무변경이다.",
+    "action": "Map child 선택의 focus·상태·write 0 회귀를 유지한다.",
+    "linkGroup": "map-flattening"
+  },
+  {
+    "id": "D1-025",
+    "product": "D1",
+    "title": "내부 추적정보 감춤과 중복 낭독 방지",
+    "category": [
+      "데이터",
+      "접근성"
+    ],
+    "journey": "공통",
+    "priority": "P0",
+    "decision": "확정",
+    "source": "turn D1-conversation-017 · sourceTrace 노출과 Calendar 날짜 중복 낭독 회귀 수정",
+    "sourceArtifact": "PR #195",
+    "expected": "내부 sourceTrace·source 식별자를 사용자 Text에서 감추고 사용자용 출처명을 쓰며 날짜 rail을 중복 낭독하지 않는다.",
+    "currentEvidence": [
+      "lib/flow/personal-workspace-poc-read-model.ts",
+      "components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx",
+      "tests/e2e/personal-workspace-stage-1-runtime.spec.ts"
+    ],
+    "verdict": "부분",
+    "evidence": "E3",
+    "reason": "내부 identity·fingerprint·lineage는 화면에 노출하지 않고 출처 provenance만 사용한다. Calendar rail과 완전한 중복 낭독 접근성 검사는 단계 3 이후다.",
+    "action": "단계 3 결과·Calendar UI에서 사용자용 출처명과 하나의 accessible name을 검증한다.",
+    "linkGroup": "source-trust"
+  },
+  {
+    "id": "D1-026",
+    "product": "D1",
+    "title": "자동 QA와 사용자 관찰 분리",
+    "category": [
+      "오류·복구"
+    ],
+    "journey": "공통",
+    "priority": "P0",
+    "decision": "관찰",
+    "source": "turn D1-conversation-009 · observed users는 여전히 0",
+    "sourceArtifact": "D1 baseline session",
+    "expected": "자동 테스트·스크린샷·Preview·배포와 실제 기기·관찰 사용자 검증을 구분하고 0명을 그대로 보고한다.",
+    "currentEvidence": [
+      "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-validation-report-ko.html",
+      "tests/e2e/personal-workspace-integrated-validation-report.spec.ts"
+    ],
+    "verdict": "충족",
+    "evidence": "E3",
+    "reason": "검증 보고서가 실제 기기와 관찰 사용자를 자동 QA와 별도로 표시한다.",
+    "action": "최종 보고서에서 실제 기기 미실행과 관찰 사용자 0명을 유지한다.",
+    "linkGroup": "evidence-labeling"
+  }
+]

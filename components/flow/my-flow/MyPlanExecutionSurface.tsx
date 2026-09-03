@@ -22,6 +22,10 @@ export type MyPlanExecutionSurfaceModel<Data = unknown> = Readonly<{
   transferItemCount: number;
   activeItemOpen: boolean;
   editAvailable?: boolean;
+  transferAvailable?: boolean;
+  headingLevel?: 2 | 3;
+  headingId?: string;
+  headingTabIndex?: number;
 }>;
 
 export type MyPlanExecutionSurfaceActions<Data = unknown> = Readonly<{
@@ -62,7 +66,14 @@ export function MyPlanExecutionSurface<Data = unknown>({
     transferItemCount,
     activeItemOpen,
     editAvailable = true,
+    transferAvailable = true,
+    headingLevel = 3,
+    headingId,
+    headingTabIndex,
   } = model;
+  const effectiveTransferOpen = transferAvailable && transferOpen;
+  const actionsAvailable = editAvailable || transferAvailable;
+  const Heading = headingLevel === 2 ? 'h2' : 'h3';
 
   return (
     <section
@@ -96,9 +107,13 @@ export function MyPlanExecutionSurface<Data = unknown>({
               </button>
             ) : null}
             <div className="min-w-0">
-              <h3 className="break-words text-xl font-semibold text-[var(--flowme-text)]">
+              <Heading
+                id={headingId}
+                tabIndex={headingTabIndex}
+                className="break-words text-xl font-semibold text-[var(--flowme-text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+              >
                 {flowTitle}
-              </h3>
+              </Heading>
               <p className="mt-1 text-sm font-semibold text-[var(--flowme-text-secondary)]">
                 {progressLabel}
               </p>
@@ -122,44 +137,48 @@ export function MyPlanExecutionSurface<Data = unknown>({
           onToggleItem={(todo) => actions.onToggleItem(todo)}
         />
 
-        <div
-          data-testid="my-plan-actions"
-          className={`grid gap-2 border-t border-[var(--flowme-border)] pt-4 ${editAvailable
-            ? 'sm:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]'
-            : 'grid-cols-1'}`}
-        >
-          {editAvailable ? (
-            <button
-              type="button"
-              data-testid="my-plan-edit"
-              className="inline-flex min-h-12 items-center justify-center rounded-md border border-[var(--flowme-border-strong)] bg-white px-4 text-sm font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
-              onClick={actions.onEditPlan}
-            >
-              수정
-            </button>
-          ) : null}
-          <button
-            type="button"
-            data-testid="my-flow-export-entry"
-            data-action-role="transfer-to-own-tool"
-            aria-expanded={transferOpen}
-            className="inline-flex min-h-12 items-center justify-center rounded-md bg-[var(--flowme-action)] px-4 text-sm font-semibold text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
-            onClick={actions.onToggleTransfer}
+        {actionsAvailable ? (
+          <div
+            data-testid="my-plan-actions"
+            className={`grid gap-2 border-t border-[var(--flowme-border)] pt-4 ${editAvailable && transferAvailable
+              ? 'sm:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]'
+              : 'grid-cols-1'}`}
           >
-            내 도구로 옮기기 · {transferItemCount}개
-          </button>
-        </div>
+            {editAvailable ? (
+              <button
+                type="button"
+                data-testid="my-plan-edit"
+                className="inline-flex min-h-12 items-center justify-center rounded-md border border-[var(--flowme-border-strong)] bg-white px-4 text-sm font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                onClick={actions.onEditPlan}
+              >
+                수정
+              </button>
+            ) : null}
+            {transferAvailable ? (
+              <button
+                type="button"
+                data-testid="my-flow-export-entry"
+                data-action-role="transfer-to-own-tool"
+                aria-expanded={effectiveTransferOpen}
+                className="inline-flex min-h-12 items-center justify-center rounded-md bg-[var(--flowme-action)] px-4 text-sm font-semibold text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                onClick={actions.onToggleTransfer}
+              >
+                내 도구로 옮기기 · {transferItemCount}개
+              </button>
+            ) : null}
+          </div>
+        ) : null}
 
         {composition !== 'mobile'
         && composition !== 'desktop_full'
-        && (transferOpen || activeItemOpen) ? (
+        && (effectiveTransferOpen || activeItemOpen) ? (
           <div
-            data-testid={transferOpen
+            data-testid={effectiveTransferOpen
               ? 'my-plan-stacked-transfer'
               : 'my-plan-stacked-item-detail'}
             className="mt-4 border-t border-[var(--flowme-border)] pt-4"
           >
-            {transferOpen
+            {effectiveTransferOpen
               ? renderers.renderTransferPanel({ showClose: true })
               : activeItemOpen
                 ? renderers.renderItemDetail()
@@ -173,7 +192,7 @@ export function MyPlanExecutionSurface<Data = unknown>({
           data-testid="my-plan-item-inspector"
           className="min-w-0 border-l border-[var(--flowme-border)] pl-5"
         >
-          {transferOpen ? (
+          {effectiveTransferOpen ? (
             renderers.renderTransferPanel({ showClose: true })
           ) : activeItemOpen ? (
             renderers.renderItemDetail()
@@ -188,7 +207,7 @@ export function MyPlanExecutionSurface<Data = unknown>({
         </aside>
       ) : null}
       </div>
-      {composition === 'mobile' && transferOpen ? (
+      {composition === 'mobile' && effectiveTransferOpen ? (
         <FlowBottomSheet
           testId="my-plan-transfer-sheet"
           headingId="my-plan-transfer-sheet-title"

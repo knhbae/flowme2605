@@ -1,0 +1,65 @@
+[
+  {
+    "id": "R1",
+    "status": "대체",
+    "source": "turn D1-conversation-018 · 첫 화면은 Todo가 나을 듯",
+    "replacedBy": "D1-021",
+    "meaning": "interrupted 제안이며 다음 완료 턴에서 사용자가 Flow 문법형 Text를 첫 화면으로 명시해 대체했다."
+  },
+  {
+    "id": "R2",
+    "status": "대체",
+    "source": "turn D1-conversation-014 · 아래 검색 제거와 URL·메모 입력 분리 제안",
+    "replacedBy": "D1-019",
+    "meaning": "후속 통합 개발에서 하나의 입력이 catalog query·URL·memo로 분기하는 계약으로 바뀌었다."
+  },
+  {
+    "id": "R3",
+    "status": "대체",
+    "source": "turn D1-conversation-019 · 계획수정 부분 아직 flow마다 다른데 이거 맞아",
+    "replacedBy": "D1-001,D1-009",
+    "meaning": "초기 /my 편집 통합을 전체 Flow 편집 통합으로 표현한 과장을 정정하고 public surface와 Map 평탄화까지 최종 범위로 삼았다."
+  },
+  {
+    "id": "R4",
+    "status": "대체",
+    "source": "turn D1-conversation-006 · 현재 컨텐츠에선 flowmap이 사실 의미없지 않아",
+    "replacedBy": "D1-009,D1-024",
+    "meaning": "별도 rich Flow Map editor는 폐기하고 single-child 평탄화와 multi-child choose_child만 남겼다."
+  },
+  {
+    "id": "R5",
+    "status": "보류",
+    "source": "turn D1-conversation-020 · Flow가 게임의 미션이고 경험치·레벨·페르소나·자격증이 생길 수 있지 않을까",
+    "replacedBy": null,
+    "meaning": "Flow=미션, 다차원 XP, 레벨, 페르소나, 자격증, Experience Passport는 장기 아이디어다."
+  },
+  {
+    "id": "R6",
+    "status": "대체",
+    "source": "turn D1-conversation-021 · 지금 UX UI에 맞지 않지 않아",
+    "replacedBy": "R7",
+    "meaning": "dark Career RPG와 Mission Briefing·Live Run·My Build 중심 IA는 현재 제품과 다른 리브랜딩이라 폐기됐다."
+  },
+  {
+    "id": "R7",
+    "status": "보류",
+    "source": "turn D1-conversation-022 · 이건 아이디어에 킵하자",
+    "replacedBy": null,
+    "meaning": "기존 My Plan 안의 증분 경험 레이어와 최소 완료→선택 회고→지난 실행도 active spec·runtime에서 내리고 IDEAS 참고안으로 남겼다."
+  },
+  {
+    "id": "R8",
+    "status": "관찰",
+    "source": "turn D1-conversation-023 · 아직 이 기능을 도입하기엔 시기상조 같긴 한가",
+    "replacedBy": null,
+    "meaning": "반복 완료, 자발적 회고·결과물, 다시 보기·공유 욕구가 실제 관찰될 때 XP·페르소나·공개 기능을 재검토한다. 현재 관찰 사용자는 0명이다."
+  },
+  {
+    "id": "R9",
+    "status": "범위외",
+    "source": "turn D1-conversation-009 · 구조화 체크리스트 Option B는 로컬 구현만 있고 Text Authoring도 별도 작업 묶음",
+    "replacedBy": null,
+    "meaning": "Structured Checklist Option B와 Text Authoring은 개발1 완료 범위에 합산하지 않는 별도 local·보류 작업이다."
+  }
+]

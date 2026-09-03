@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2300756a'/%3E%3Cpath d='M17 16h32v9H27v8h17v9H27v16H17z' fill='white'/%3E%3C/svg%3E">
+  <title>FlowMe 작성→개인공간 일치 검증 리포트</title>
+  <style>
+    :root {
+      --ink:#14221f; --muted:#5f6f6a; --line:#d2ddda; --line-strong:#9fb3ad;
+      --paper:#fff; --wash:#f0f5f3; --teal:#00756a; --teal-dark:#075d56;
+      --teal-soft:#e4f4f0; --amber:#8b5d00; --amber-soft:#fff3d4;
+      --red:#9d3d36; --red-soft:#fff0ed; --blue:#365b7c; --blue-soft:#edf3f8;
+      --gray:#eef1f0; --shadow:0 18px 52px rgba(12,47,39,.09);
+    }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; scroll-padding-top:76px; }
+    body { margin:0; background:var(--wash); color:var(--ink); font-family:Inter,system-ui,-apple-system,"Segoe UI","Noto Sans KR",sans-serif; line-height:1.58; }
+    button,a { touch-action:manipulation; }
+    button { font:inherit; }
+    a { color:inherit; }
+    :focus-visible { outline:3px solid #005f57; outline-offset:3px; }
+    .skip { position:fixed; left:12px; top:-100px; z-index:100; padding:12px 16px; background:#fff; border:2px solid var(--teal); font-weight:850; }
+    .skip:focus { top:12px; }
+    .topbar { position:sticky; top:0; z-index:40; display:flex; align-items:center; justify-content:space-between; gap:18px; min-height:62px; padding:7px max(18px,env(safe-area-inset-right)) 7px max(18px,env(safe-area-inset-left)); background:rgba(255,255,255,.96); border-bottom:1px solid var(--line); backdrop-filter:blur(14px); }
+    .brand { font-weight:950; letter-spacing:-.03em; white-space:nowrap; }
+    .topnav { display:flex; gap:2px; overflow:auto; overscroll-behavior-inline:contain; }
+    .topnav a { display:inline-flex; align-items:center; min-height:44px; padding:0 10px; color:#40514c; font-size:13px; font-weight:780; text-decoration:none; white-space:nowrap; }
+    .topnav a:hover,.topnav a:focus-visible { background:var(--teal-soft); outline:0; }
+    .page { width:min(1440px,100%); margin:auto; background:var(--paper); box-shadow:var(--shadow); }
+    .hero { display:grid; grid-template-columns:minmax(0,1.45fr) minmax(290px,.62fr); gap:50px; padding:clamp(42px,7vw,92px) clamp(20px,6vw,84px) 44px; background:linear-gradient(135deg,#fff 58%,#e8f5f1); }
+    .eyebrow { margin:0 0 10px; color:var(--teal-dark); font-size:11px; font-weight:900; letter-spacing:.11em; text-transform:uppercase; }
+    h1 { max-width:850px; margin:0; font-size:clamp(39px,6vw,74px); line-height:1.03; letter-spacing:-.058em; word-break:keep-all; overflow-wrap:break-word; }
+    .lead { max-width:780px; margin:23px 0 0; color:#40534d; font-size:clamp(16px,1.8vw,21px); }
+    .actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:25px; }
+    .button { display:inline-flex; align-items:center; justify-content:center; min-height:48px; padding:10px 16px; border:1px solid var(--line-strong); background:#fff; color:var(--ink); font-weight:850; text-decoration:none; }
+    .button.primary { border-color:var(--teal); background:var(--teal); color:#fff; }
+    .button:hover { border-color:var(--teal); }
+    .hero-verdict { align-self:center; border-top:4px solid var(--amber); background:#fff; box-shadow:0 16px 40px rgba(12,47,39,.09); }
+    .hero-verdict div { padding:20px; border:1px solid var(--line); border-top:0; }
+    .hero-verdict span { display:block; color:var(--muted); font-size:12px; }
+    .hero-verdict strong { display:block; margin-top:3px; font-size:clamp(23px,3vw,32px); letter-spacing:-.04em; word-break:keep-all; }
+    .hero-verdict p { margin:6px 0 0; color:var(--muted); font-size:13px; }
+    .hero-verdict .done { border-left:4px solid var(--teal); background:var(--teal-soft); }
+    .metric-rail { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+    .metric { padding:18px clamp(13px,2vw,22px); border-right:1px solid var(--line); }
+    .metric:last-child { border:0; }
+    .metric span { display:block; color:var(--muted); font-size:11px; }
+    .metric strong { display:block; margin-top:3px; font-size:clamp(22px,2.6vw,32px); letter-spacing:-.04em; }
+    .metric.pending { background:var(--amber-soft); }
+    .metric.fail { background:var(--red-soft); }
+    .section { padding:clamp(40px,6vw,74px) clamp(18px,6vw,84px); border-bottom:1px solid var(--line); }
+    .section-head { display:grid; grid-template-columns:minmax(0,.8fr) minmax(300px,1.2fr); gap:34px; align-items:end; margin-bottom:27px; }
+    .section-head h2 { margin:0; font-size:clamp(29px,4vw,47px); line-height:1.08; letter-spacing:-.045em; }
+    .section-head p { margin:0; color:var(--muted); }
+    .source-map { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+    .source { position:relative; padding:21px; border:1px solid var(--line); background:#fff; }
+    .source::after { content:"↓"; position:absolute; left:50%; bottom:-31px; z-index:2; color:var(--teal); font-size:23px; font-weight:950; }
+    .source small { color:var(--teal-dark); font-weight:850; }
+    .source h3 { margin:5px 0 7px; font-size:21px; }
+    .source p { margin:0; color:var(--muted); font-size:13px; }
+    .contract { margin-top:30px; padding:24px; border:1px solid var(--teal); background:var(--teal); color:#fff; }
+    .contract h3 { margin:0; font-size:25px; letter-spacing:-.025em; }
+    .contract ol { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:1px; margin:17px 0 0; padding:0; list-style:none; background:rgba(255,255,255,.28); }
+    .contract li { padding:13px; background:var(--teal); font-size:13px; }
+    .contract b { display:block; margin-bottom:4px; color:#d8f5ee; font-size:11px; }
+    .before-after { display:grid; grid-template-columns:1fr 62px 1fr; }
+    .state { padding:24px; border:1px solid var(--line); }
+    .state.before { background:#f5f7f6; }
+    .state.after { border-color:#8bbcaf; background:var(--teal-soft); }
+    .state h3 { margin:0 0 13px; font-size:23px; }
+    .state ul { display:grid; gap:8px; margin:0; padding:0; list-style:none; }
+    .state li { padding-left:18px; position:relative; }
+    .state li::before { content:""; position:absolute; left:0; top:.7em; width:9px; height:2px; background:var(--line-strong); }
+    .state.after li::before { background:var(--teal); }
+    .arrow { display:grid; place-items:center; color:var(--teal); font-size:27px; font-weight:950; }
+    .feature-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin-top:16px; }
+    .feature { padding:18px; border-top:3px solid var(--teal); background:#f7faf9; }
+    .feature h3 { margin:0 0 6px; font-size:17px; }
+    .feature p { margin:0; color:var(--muted); font-size:13px; }
+    .table-wrap { overflow:auto; border:1px solid var(--line); }
+    table { width:100%; min-width:820px; border-collapse:collapse; }
+    th,td { padding:13px 14px; border-right:1px solid var(--line); border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
+    th:last-child,td:last-child { border-right:0; }
+    tr:last-child td { border-bottom:0; }
+    th { background:#f1f5f3; color:var(--muted); font-size:12px; }
+    td { font-size:13px; }
+    td:first-child { font-weight:850; }
+    .status { display:inline-flex; align-items:center; min-height:27px; padding:2px 8px; border-radius:999px; background:var(--gray); font-size:11px; font-weight:850; white-space:nowrap; }
+    .status.pass { background:var(--teal-soft); color:var(--teal-dark); }
+    .status.partial,.status.pending { background:var(--amber-soft); color:var(--amber); }
+    .status.fail { background:var(--red-soft); color:var(--red); }
+    .status.info { background:var(--blue-soft); color:var(--blue); }
+    .filters { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px; margin-bottom:13px; }
+    .filter-group { display:flex; flex-wrap:wrap; gap:6px; }
+    .filter { min-height:44px; padding:0 13px; border:1px solid var(--line-strong); background:#fff; cursor:pointer; font-weight:800; }
+    .filter[aria-pressed="true"] { border-color:var(--teal); background:var(--teal); color:#fff; }
+    .filter-meta { color:var(--muted); font-size:12px; }
+    .scenario-list { display:grid; gap:9px; }
+    .scenario { display:grid; grid-template-columns:68px minmax(0,1fr) 110px; gap:14px; align-items:start; padding:17px; border:1px solid var(--line); background:#fff; }
+    .scenario[hidden] { display:none; }
+    .scenario-id { color:var(--teal-dark); font-weight:950; }
+    .scenario h3 { margin:0; font-size:17px; }
+    .scenario p { margin:5px 0 0; color:var(--muted); font-size:13px; }
+    .scenario-result { justify-self:end; text-align:right; }
+    .scenario-result small { display:block; margin-top:5px; color:var(--muted); }
+    .test-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:9px; }
+    .test-card { padding:18px; border:1px solid var(--line); border-top:4px solid var(--teal); background:#fff; }
+    .test-card.pending { border-top-color:#d69a24; background:var(--amber-soft); }
+    .test-card.fail { border-top-color:var(--red); background:var(--red-soft); }
+    .test-card span { color:var(--muted); font-size:11px; }
+    .test-card strong { display:block; margin:5px 0; font-size:25px; letter-spacing:-.04em; }
+    .test-card p { margin:0; color:var(--muted); font-size:12px; }
+    .baseline { display:grid; grid-template-columns:190px minmax(0,1fr); gap:18px; margin-top:10px; padding:18px; border-left:4px solid var(--red); background:var(--red-soft); }
+    .baseline strong { font-size:16px; }
+    .baseline p { margin:0; color:#6a3935; font-size:13px; }
+    .viewport-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1px; border:1px solid var(--line); background:var(--line); }
+    .viewport { padding:17px; background:#fff; }
+    .viewport strong { display:block; }
+    .viewport p { margin:5px 0 10px; color:var(--muted); font-size:12px; }
+    .evidence-pair { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:18px; }
+    figure { min-width:0; margin:0; padding:10px; border:1px solid var(--line); background:#fff; }
+    figure img { display:block; width:100%; height:430px; object-fit:contain; background:#e9efed; }
+    figcaption { margin-top:8px; color:var(--muted); font-size:12px; }
+    .pending-shot { display:grid; place-items:center; align-content:center; min-height:430px; padding:25px; background:repeating-linear-gradient(135deg,#f5f7f6,#f5f7f6 13px,#edf1f0 13px,#edf1f0 26px); text-align:center; }
+    .pending-shot strong { font-size:22px; }
+    .pending-shot span { max-width:420px; margin-top:7px; color:var(--muted); }
+    .boundary { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); border:1px solid var(--line); }
+    .boundary div { padding:18px; border-right:1px solid var(--line); }
+    .boundary div:last-child { border:0; }
+    .boundary small { color:var(--muted); }
+    .boundary strong { display:block; margin-top:4px; font-size:21px; }
+    .file-groups { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+    .file-group { padding:19px; border:1px solid var(--line); }
+    .file-group h3 { margin:0 0 10px; font-size:17px; }
+    .file-group ul { margin:0; padding-left:18px; }
+    .file-group li { margin:7px 0; color:var(--muted); font-size:12px; overflow-wrap:anywhere; }
+    .remaining { display:grid; grid-template-columns:minmax(0,1.2fr) minmax(280px,.8fr); gap:14px; }
+    .remaining-list { border-top:1px solid var(--line); }
+    .remaining-row { display:grid; grid-template-columns:94px minmax(0,1fr); gap:13px; padding:15px 0; border-bottom:1px solid var(--line); }
+    .remaining-row>div { min-width:0; }
+    .remaining-row h3 { margin:0; font-size:15px; overflow-wrap:anywhere; }
+    .remaining-row p { margin:4px 0 0; color:var(--muted); font-size:13px; overflow-wrap:anywhere; }
+    .publish { padding:21px; border:1px solid var(--line); background:#f6f8f7; }
+    .publish h3 { margin:0 0 13px; }
+    .publish dl { display:grid; grid-template-columns:1fr auto; gap:8px; margin:0; }
+    .publish dd { margin:0; font-weight:850; }
+    .publish .users { margin-top:18px; padding-top:14px; border-top:1px solid var(--line); }
+    .publish .users strong { display:block; font-size:34px; }
+    .footer { padding:28px clamp(18px,6vw,84px) max(34px,env(safe-area-inset-bottom)); background:#eaf0ee; color:var(--muted); font-size:12px; }
+    .footer code { overflow-wrap:anywhere; }
+    @media(max-width:1050px) {
+      .hero { grid-template-columns:1fr; }
+      .hero-verdict { display:grid; grid-template-columns:1fr 1fr; }
+      .metric-rail { grid-template-columns:repeat(3,1fr); }
+      .metric:nth-child(3) { border-right:0; }
+      .metric:nth-child(-n+3) { border-bottom:1px solid var(--line); }
+      .contract ol,.test-grid { grid-template-columns:repeat(2,1fr); }
+      .feature-grid,.file-groups { grid-template-columns:1fr 1fr; }
+    }
+    @media(max-width:760px) {
+      html { scroll-padding-top:110px; }
+      .topbar { display:block; }
+      .topnav { flex-wrap:wrap; margin:3px -8px -3px; padding:0 8px; overflow:visible; }
+      .topnav a { min-height:36px; padding:0 7px; }
+      .hero { padding-top:39px; gap:27px; }
+      h1 { font-size:41px; }
+      .hero-verdict { grid-template-columns:1fr; }
+      .metric-rail { grid-template-columns:1fr 1fr; }
+      .metric:nth-child(n) { border-right:1px solid var(--line); border-bottom:1px solid var(--line); }
+      .metric:nth-child(2n) { border-right:0; }
+      .metric:last-child { grid-column:1/-1; border-bottom:0; }
+      .section-head { grid-template-columns:1fr; gap:11px; }
+      .source-map { grid-template-columns:1fr; }
+      .source::after { left:auto; right:20px; }
+      .contract ol,.feature-grid,.test-grid,.viewport-grid,.evidence-pair,.file-groups,.remaining,.baseline { grid-template-columns:1fr; }
+      .before-after { grid-template-columns:1fr; }
+      .arrow { min-height:52px; transform:rotate(90deg); }
+      .scenario { grid-template-columns:61px minmax(0,1fr); gap:8px; }
+      .scenario-result { grid-column:1/-1; justify-self:start; text-align:left; }
+      figure img,.pending-shot { height:auto; min-height:280px; max-height:600px; }
+      .boundary { grid-template-columns:1fr 1fr; }
+      .boundary div:nth-child(2) { border-right:0; }
+      .boundary div:nth-child(-n+2) { border-bottom:1px solid var(--line); }
+    }
+    @media(max-width:430px) {
+      h1 { font-size:37px; }
+      .actions { display:grid; }
+      .button { width:100%; }
+      .metric strong { font-size:25px; }
+      .filters { align-items:stretch; }
+      .filter-group { display:grid; grid-template-columns:1fr 1fr; width:100%; }
+      .filter { width:100%; }
+      .boundary { grid-template-columns:1fr; }
+      .boundary div:nth-child(n) { border-right:0; border-bottom:1px solid var(--line); }
+      .boundary div:last-child { border-bottom:0; }
+      .publish dl { grid-template-columns:1fr; }
+      .publish dd { margin-bottom:4px; }
+    }
+    @media(max-height:520px) { .topbar { position:static; } }
+    @media(max-height:520px) and (min-width:761px) {
+      .hero { padding-top:26px; padding-bottom:26px; }
+      .lead { margin-top:14px; }
+      .actions { margin-top:16px; }
+    }
+    @media(prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } * { scroll-behavior:auto!important; transition:none!important; } }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#summary">핵심 판정으로 이동</a>
+  <header class="topbar">
+    <div class="brand">FLOW · 작성→개인공간 검증</div>
+    <nav class="topnav" aria-label="리포트 바로가기">
+      <a href="#sources">세 원천</a><a href="#implementation">구현</a><a href="#scenarios">시나리오</a><a href="#tests">테스트</a><a href="#viewports">화면</a><a href="#boundary">저장 경계</a><a href="#remaining">남은 일</a>
+    </nav>
+  </header>
+
+  <main class="page">
+    <section class="hero" id="summary">
+      <div>
+        <p class="eyebrow">FlowMe integrated PoC · authoring to workspace parity</p>
+        <h1>작성에서 개인공간까지,<br>한 제품 흐름으로 맞췄습니다.</h1>
+        <p class="lead">v4.1 개인공간, 개발 1 saved-plan 편집, 개발 2 Text Authoring의 결정을 같은 원문·개인 Flow·실행 위치 계약으로 연결했습니다. React와 조작형 단일 HTML을 같은 기준으로 구현하고 최종 통합 브라우저 검증까지 마쳤습니다.</p>
+        <div class="actions">
+          <a class="button primary" id="open-standalone" href="2026-09-02-flowme-integrated-flow-poc-standalone-ko.html">조작형 통합 PoC 열기</a>
+          <a class="button" href="../specs/2026-09-03-flowme-integrated-poc-authoring-workspace-parity-v1/requirements.md">요구 추적표 보기</a>
+        </div>
+      </div>
+      <aside class="hero-verdict" aria-label="현재 판정">
+        <div class="done"><span>구현 상태</span><strong>두 화면 보완 완료</strong><p>React 정본과 독립 HTML의 핵심 작성 계약을 맞췄습니다.</p></div>
+        <div><span>최종 판정</span><strong id="final-verdict">통합 PoC 시나리오 통과</strong><p id="final-run-note">제품 브라우저 37/37 통과. 전체 npm은 기존 콘텐츠 신선도 1건 때문에 1,520/1,521입니다.</p></div>
+      </aside>
+    </section>
+
+    <div class="metric-rail" aria-label="검증 요약">
+      <div class="metric"><span>React 관련 테스트</span><strong id="metric-react">256 / 256</strong></div>
+      <div class="metric"><span>독립 HTML Node</span><strong id="metric-standalone-node">39 / 39</strong></div>
+      <div class="metric"><span>독립 HTML 브라우저</span><strong id="metric-standalone-browser">21 / 21</strong></div>
+      <div class="metric"><span>통합 제품 브라우저</span><strong id="metric-root-browser">37 / 37</strong></div>
+      <div class="metric fail"><span>전체 npm test</span><strong id="metric-full-tests">1,520 / 1,521</strong></div>
+    </div>
+
+    <section class="section" id="sources">
+      <div class="section-head"><h2>세 결과물을 빠짐없이 연결했습니다.</h2><p>화면 모양을 한쪽에 맞추는 작업이 아니라, 각 세션에서 확정한 소유권과 조작 흐름을 하나의 제품 계약으로 합쳤습니다.</p></div>
+      <div class="source-map">
+        <article class="source"><small>v4.1</small><h3>개인공간</h3><p>폴더·기간·상세·완료·실행 위치와 저장 상태 피드백을 유지합니다.</p></article>
+        <article class="source"><small>개발 1</small><h3>saved-plan 편집</h3><p>네 origin은 읽기 전용으로 투영하고, 개인 사본의 변경만 shadow state가 소유합니다.</p></article>
+        <article class="source"><small>개발 2</small><h3>Text Authoring</h3><p>원문 편집기는 하나이며, 작성 틀·입력 예시·파생 결과·선택형 검토를 보존합니다.</p></article>
+      </div>
+      <div class="contract">
+        <h3>하나로 합친 핵심 여정</h3>
+        <ol><li><b>01 · 작성</b>일반 메모 또는 여섯 작성 틀</li><li><b>02 · 확인</b>같은 원문의 실행 항목과 날짜</li><li><b>03 · 저장</b>개인 Flow 한 건과 복구 가능한 transaction</li><li><b>04 · 실행</b>개인공간 상세·편집·기간·새로고침</li></ol>
+      </div>
+    </section>
+
+    <section class="section" id="implementation">
+      <div class="section-head"><h2>이번에 고친 부분</h2><p>기능은 되지만 기존 결정과 달랐던 단계 구조, 빈칸 예시, 저장 정체성, 작은 화면 겹침을 우선 닫았습니다.</p></div>
+      <div class="before-after">
+        <article class="state before"><h3>수정 전</h3><ul><li>독립 HTML이 작성·구조 확인·저장의 3단계를 강제했습니다.</li><li>정상 원문에도 확인 checkbox가 필요했습니다.</li><li>React는 첫 제목 밖의 빈칸 예시가 보이지 않았습니다.</li><li>320×700에서 편집기와 하단 행동이 겹쳤습니다.</li><li>독립 HTML 재저장이 같은 Flow인지 안정적으로 판별하지 못했습니다.</li></ul></article>
+        <div class="arrow" aria-hidden="true">→</div>
+        <article class="state after"><h3>현재 구현</h3><ul><li>compact 화면은 입력·결과 두 상태, desktop은 두 pane을 씁니다.</li><li>구조 검토는 사용자가 요청하거나 문제가 있을 때만 엽니다.</li><li>인식 가능한 모든 빈칸에 source 밖 장식 예시를 표시합니다.</li><li>편집기가 보일 때 CTA를 고정하지 않아 입력 영역을 가리지 않습니다.</li><li>source fingerprint와 state+draft transaction으로 중복·실패를 다룹니다.</li></ul></article>
+      </div>
+      <div class="feature-grid">
+        <article class="feature"><h3>작성 틀</h3><p>여섯 틀의 이름·용도·짧은 예시·전체 원문 예시·scaffold를 versioned 계약으로 맞췄습니다.</p></article>
+        <article class="feature"><h3>입력 예시</h3><p>ghost는 source·clipboard·selection·draft·Undo에 들어가지 않고 포인터와 접근성 트리에서도 빠집니다.</p></article>
+        <article class="feature"><h3>저장과 재시도</h3><p>같은 source는 같은 handoff identity를 사용합니다. 늦은 실패는 state와 draft의 이전 bytes를 함께 복원합니다.</p></article>
+        <article class="feature"><h3>개인공간 연결</h3><p>저장 영수증의 주 행동을 `개인공간에서 열기`로 정리하고 같은 Flow 상세로 이어지게 했습니다.</p></article>
+        <article class="feature"><h3>작은 화면</h3><p>편집기·CTA 겹침을 없애고 844×390에서는 chrome 높이와 panel scroll을 줄였습니다.</p></article>
+        <article class="feature"><h3>독립 검토본</h3><p>단일 HTML 두 파일을 다시 만들었습니다. fixture-only라는 경계를 유지하면서 직접 조작할 수 있습니다.</p></article>
+      </div>
+    </section>
+
+    <section class="section" id="scenarios">
+      <div class="section-head"><h2>시나리오별 판정</h2><p>제품 기능과 저장 경계는 통과로, 저장 경계와 무관한 기존 콘텐츠 신선도 실패는 부분으로 분리했습니다. 버튼으로 현재 상태만 골라볼 수 있습니다.</p></div>
+      <div class="filters"><div class="filter-group" role="group" aria-label="시나리오 필터"><button class="filter" type="button" data-filter="all" aria-pressed="true">전체 8</button><button class="filter" type="button" data-filter="pass" aria-pressed="false">통과 7</button><button class="filter" type="button" data-filter="partial" aria-pressed="false">부분 1</button></div><span class="filter-meta" id="filter-meta" aria-live="polite">8개 표시</span></div>
+      <div class="scenario-list">
+        <article class="scenario" data-result="pass"><span class="scenario-id">S-01</span><div><h3>여섯 작성 틀과 빈칸 예시</h3><p>picker의 짧은 예시, 선택 뒤 전체 예시, exact scaffold와 인식 가능한 모든 빈 값 ghost를 구현했습니다. React component와 독립 HTML 자동화가 각각 확인했습니다.</p></div><div class="scenario-result"><span class="status pass">통과</span><small>양쪽 근거 있음</small></div></article>
+        <article class="scenario" data-result="pass"><span class="scenario-id">S-02</span><div><h3>일반 메모의 입력→결과</h3><p>강제 3단계와 일반 확인 checkbox를 없앴습니다. 정상 원문은 선택형 검토를 건너뛰고 결과와 저장으로 갑니다.</p></div><div class="scenario-result"><span class="status pass">통과</span><small>독립 HTML 21/21</small></div></article>
+        <article class="scenario" data-result="pass"><span class="scenario-id">S-03</span><div><h3>저장→개인공간 상세→편집→기간→reload</h3><p>저장 뒤 같은 개인 Flow의 상세를 열고, 편집·기간 보기·새로고침 복구까지 이어지는 통합 경로를 실제 브라우저에서 확인했습니다.</p></div><div class="scenario-result"><span class="status pass">통과</span><small>통합 E2E 3/3</small></div></article>
+        <article class="scenario" data-result="pass"><span class="scenario-id">S-04</span><div><h3>같은 source 재시도</h3><p>stable fingerprint를 사용해 첫 저장 뒤 같은 Flow를 다시 찾습니다. 개인 Flow 추가는 0건이며 기존 영수증으로 돌아갑니다.</p></div><div class="scenario-result"><span class="status pass">통과</span><small>Node·브라우저</small></div></article>
+        <article class="scenario" data-result="pass"><span class="scenario-id">S-05</span><div><h3>늦은 저장 실패와 rollback</h3><p>standalone의 state 기록 뒤 draft 제거가 실패해도 두 key를 이전 bytes로 되돌립니다. 성공 표시와 성공 mutation은 0건입니다.</p></div><div class="scenario-result"><span class="status pass">통과</span><small>강제 실패 검증</small></div></article>
+        <article class="scenario" data-result="pass"><span class="scenario-id">S-06</span><div><h3>취소·Escape·stale·IME·중복 적용</h3><p>모델·component와 양쪽 surface를 한 run에서 비교해 취소와 no-op의 mutation 0건, 동일 transition 결과를 확인했습니다.</p></div><div class="scenario-result"><span class="status pass">통과</span><small>교차 parity 2/2</small></div></article>
+        <article class="scenario" data-result="pass"><span class="scenario-id">S-07</span><div><h3>여섯 viewport와 200% 등가 reflow</h3><p>React와 독립 HTML 모두 여섯 화면에서 핵심 행동, 가로 넘침, console·page 오류를 검사했습니다. 320px CSS viewport를 200% 등가 reflow proxy로 사용했으며 실제 브라우저 zoom 200% 검사는 별도입니다.</p></div><div class="scenario-result"><span class="status pass">통과</span><small>양쪽 화면 검증</small></div></article>
+        <article class="scenario" data-result="partial"><span class="scenario-id">S-08</span><div><h3>전체 회귀와 production build</h3><p>production build와 정적 페이지 18/18 생성은 통과했습니다. 전체 npm은 1,520/1,521이며 기존 `seed-flows` review_due 신선도 1건에서 fail-fast로 멈췄습니다.</p></div><div class="scenario-result"><span class="status partial">부분</span><small>기존 콘텐츠 1건</small></div></article>
+      </div>
+    </section>
+
+    <section class="section" id="tests">
+      <div class="section-head"><h2>자동 테스트와 실제 실행 수</h2><p>여기 적은 수치는 이번 목표에서 실제 실행한 결과입니다. 통과하지 않은 전체 회귀도 실행 수와 원인을 그대로 남겼습니다.</p></div>
+      <div class="test-grid">
+        <article class="test-card"><span>React authoring focused</span><strong>23 / 23</strong><p>새 계약 3건을 먼저 실패시킨 뒤 구현해 전부 통과했습니다.</p></article>
+        <article class="test-card"><span>Personal workspace 전체</span><strong>256 / 256</strong><p>관련 순수 모델·component 회귀가 통과했습니다.</p></article>
+        <article class="test-card"><span>Standalone Node</span><strong>39 / 39</strong><p>catalog·identity·transaction·native Undo·rollback을 포함합니다.</p></article>
+        <article class="test-card"><span>Standalone browser</span><strong>21 / 21</strong><p>여섯 viewport와 입력 예시·native Undo 시나리오를 포함합니다.</p></article>
+        <article class="test-card"><span>Next production type check</span><strong>통과</strong><p>production build 안의 lint와 TypeScript 검사가 통과했습니다.</p></article>
+        <article class="test-card"><span>Production build</span><strong>통과</strong><p>정적 페이지 18/18을 생성했습니다.</p></article>
+        <article class="test-card"><span>통합 제품 browser</span><strong id="test-root-browser">37 / 37</strong><p>React·standalone·handoff·저장 경계를 한 번에 재실행했습니다.</p></article>
+        <article class="test-card fail"><span>전체 npm test</span><strong id="test-full-regression">1,520 / 1,521</strong><p>기존 콘텐츠 신선도 1건에서 fail-fast로 중단됐습니다.</p></article>
+      </div>
+      <div class="baseline"><strong>기존 기준선 실패 1건</strong><p><code>lib/flow/seed-flows.test.ts</code>의 <code>dog-adoption-first-week:review_due:2026-06-04</code>가 2026-09-03 기준으로 신선도 조건을 넘었습니다. 콘텐츠 검토 없이 날짜를 바꾸지 않았고, 최종 전체 테스트를 통과로 과장하지 않습니다.</p></div>
+    </section>
+
+    <section class="section" id="viewports">
+      <div class="section-head"><h2>브라우저 화면별 평가</h2><p>React와 독립 HTML을 실제 Chromium 자동화로 검사했습니다. 아래 결과는 실제 Android Chrome이나 iOS Safari 검사가 아닙니다.</p></div>
+      <div class="viewport-grid">
+        <article class="viewport"><strong>320×700</strong><p>편집기·CTA 교차 0, 마지막 입력 줄 접근, 16px input, 48px target</p><span class="status pass">양쪽 통과</span></article>
+        <article class="viewport"><strong>375×812</strong><p>compact 2-state, picker·review scroll, 주 행동 가림 0</p><span class="status pass">양쪽 통과</span></article>
+        <article class="viewport"><strong>390×844</strong><p>전체 ghost, focus return, safe-area와 CTA 경계</p><span class="status pass">양쪽 통과</span></article>
+        <article class="viewport"><strong>844×390</strong><p>compact header, panel 내부 scroll, 마지막 행동 접근</p><span class="status pass">양쪽 통과</span></article>
+        <article class="viewport"><strong>1024×768</strong><p>원문·결과 두 pane, 독립 scroll, 빈 세 번째 열 0</p><span class="status pass">양쪽 통과</span></article>
+        <article class="viewport"><strong>1440×900</strong><p>40~44/56~60% 두 pane, 결과와 저장 우선순위</p><span class="status pass">양쪽 통과</span></article>
+      </div>
+      <div class="evidence-pair">
+        <figure><img src="2026-09-03-flowme-integrated-poc-authoring-workspace-parity-report-assets/before-react-320x700.png" alt="수정 전 320×700 React 작성 화면. 하단 행동이 편집 영역과 가까이 겹쳐 보인다."><figcaption>수정 전 · React 320×700. 편집기와 하단 행동의 여유가 부족했습니다.</figcaption></figure>
+        <figure><img src="2026-09-03-flowme-integrated-poc-authoring-workspace-parity-report-assets/after-react-320x700.png" alt="수정 뒤 320×700 React 작성 화면. 입력과 결과 탭, 원문 편집기, 모든 빈칸 입력 예시가 보인다."><figcaption>수정 뒤 · React 320×700. 모든 빈칸 예시와 겹치지 않는 CTA를 확인했습니다.</figcaption></figure>
+        <figure><img src="2026-09-03-flowme-integrated-poc-authoring-workspace-parity-report-assets/before-standalone-390x844.png" alt="수정 전 390×844 독립 HTML 작성 화면. 세 단계 진행 표시가 화면 상단을 차지한다."><figcaption>수정 전 · 독립 HTML 390×844. 강제 3단계와 일반 확인 절차가 있었습니다.</figcaption></figure>
+        <figure><img src="2026-09-03-flowme-integrated-poc-authoring-workspace-parity-report-assets/after-standalone-390x844.png" alt="수정 뒤 390×844 독립 HTML 결과 화면. 한 개인 Flow와 날짜, 저장 행동이 보인다."><figcaption>수정 뒤 · 독립 HTML 390×844. 입력·결과 두 상태와 저장 행동을 확인했습니다.</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="section" id="boundary">
+      <div class="section-head"><h2>기존 운영 데이터 불변 증거</h2><p>PoC가 개인공간처럼 보여도 쓰기 권한은 전용 shadow state에만 있습니다. standalone 자동화는 정상·재시도·실패를 모두 포함해 경계를 검사했습니다.</p></div>
+      <div class="boundary">
+        <div><small>허용 prefix 밖 setItem</small><strong>0건</strong></div>
+        <div><small>허용 prefix 밖 removeItem</small><strong>0건</strong></div>
+        <div><small>localStorage.clear()</small><strong>0건</strong></div>
+        <div><small>운영 flow:* byte 차이</small><strong>0건</strong></div>
+      </div>
+      <div class="baseline" style="border-left-color:var(--teal);background:var(--teal-soft)"><strong>확인한 방식</strong><p>시나리오 시작 전에 operating sentinel의 key와 value bytes를 저장하고, 성공·같은 source 재시도·강제 late failure 뒤 다시 비교했습니다. React와 독립 HTML을 포함한 최종 통합 실행에서 허용 prefix 밖 setItem·removeItem·clear는 0건이었고, 운영 sentinel의 key와 value bytes도 전후가 같았습니다.</p></div>
+    </section>
+
+    <section class="section" id="files">
+      <div class="section-head"><h2>변경한 파일</h2><p>이번 목표의 작성 일치 구현에 직접 연결된 파일만 묶었습니다. 기존 dirty 작업 전체를 이번 변경으로 주장하지 않습니다.</p></div>
+      <div class="file-groups">
+        <article class="file-group"><h3>React 정본</h3><ul><li>components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx</li><li>components/flow/personal-workspace-poc/PersonalWorkspacePocLiveEditor.tsx</li><li>위 두 component의 test 파일</li><li>tests/e2e/personal-workspace-stage-2-runtime.spec.ts</li></ul></article>
+        <article class="file-group"><h3>독립 HTML</h3><ul><li>2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js</li><li>같은 assets의 app.js, style.css, standalone.test.cjs</li><li>2026-09-02-flowme-integrated-flow-poc-standalone-ko.html</li><li>2026-09-02-flowme-integrated-flow-poc-android-single-file-ko.html</li><li>tests/e2e/personal-workspace-integrated-standalone.spec.ts</li></ul></article>
+        <article class="file-group"><h3>설계·검증</h3><ul><li>docs/specs/2026-09-03-flowme-integrated-poc-authoring-workspace-parity-v1/</li><li>tests/e2e/personal-workspace-authoring-workspace-parity.spec.ts</li><li>tests/e2e/personal-workspace-authoring-parity-report.spec.ts</li><li>이 HTML과 report-assets의 비교 화면</li></ul></article>
+      </div>
+    </section>
+
+    <section class="section" id="remaining">
+      <div class="section-head"><h2>남은 결함과 의사결정</h2><p>자동화로 닫을 일, 실제 기기에서 확인할 일, 제품 정책으로 따로 결정할 일을 분리했습니다.</p></div>
+      <div class="remaining">
+        <div class="remaining-list">
+          <article class="remaining-row"><span class="status fail">기준선 1건</span><div><h3>dog-adoption-first-week 콘텐츠 검토일 갱신 여부</h3><p>review_due가 2026-06-04로 신선도 기준을 넘었습니다. 콘텐츠 owner가 재검토한 뒤 날짜를 정해야 하며, 이번 PoC가 근거 없이 metadata를 바꾸지 않았습니다.</p></div></article>
+          <article class="remaining-row"><span class="status partial">실기 필요</span><div><h3>Android Chrome·iOS Safari·가상 키보드·screen reader·실제 200% zoom</h3><p>Chromium viewport와 캡처로 대체하지 않습니다. 이번 작업에서는 미실행입니다.</p></div></article>
+          <article class="remaining-row"><span class="status info">P1 제외</span><div><h3>Sheet/TXT 전체 결과, property picker, source reverse edit</h3><p>이번 P0의 Todo·날짜 preview와 개인공간 인계 범위를 넘으므로 완료로 올리지 않습니다.</p></div></article>
+          <article class="remaining-row"><span class="status info">결정 보류</span><div><h3>CreatorDraft·운영 navigation/token·migration/writer owner</h3><p>계정·revision·publish 소유권과 운영 반영 승인이 필요합니다. PoC가 정책을 대신 확정하지 않습니다.</p></div></article>
+        </div>
+        <aside class="publish" aria-label="게시와 외부 검증 상태">
+          <h3>게시 상태</h3>
+          <dl><dt>commit</dt><dd>미진행</dd><dt>push</dt><dd>미진행</dd><dt>PR</dt><dd>미진행</dd><dt>Preview</dt><dd>미진행</dd><dt>Production</dt><dd>미진행</dd><dt>실제 Android</dt><dd>미실행</dd><dt>실제 iOS</dt><dd>미실행</dd></dl>
+          <div class="users"><span>관찰 사용자 수</span><strong>0명</strong><small>자동 테스트와 브라우저 캡처는 사용자 관찰이 아닙니다.</small></div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>작성일 2026-09-03 · 현재 repo와 이번 목표에서 실제 실행한 자동 테스트·브라우저·빌드 결과만 근거로 사용했습니다.</p>
+    <p>브라우저 자동화·화면 캡처는 실제 기기 검사나 관찰 사용자 검증이 아닙니다.</p>
+  </footer>
+
+  <script>
+    (() => {
+      const buttons = [...document.querySelectorAll('[data-filter]')];
+      const scenarios = [...document.querySelectorAll('.scenario')];
+      const meta = document.querySelector('#filter-meta');
+      buttons.forEach((button) => button.addEventListener('click', () => {
+        const filter = button.dataset.filter;
+        buttons.forEach((candidate) => candidate.setAttribute('aria-pressed', String(candidate === button)));
+        let visible = 0;
+        scenarios.forEach((scenario) => {
+          const show = filter === 'all' || scenario.dataset.result === filter;
+          scenario.hidden = !show;
+          if (show) visible += 1;
+        });
+        meta.textContent = `${visible}개 표시`;
+      }));
+    })();
+  </script>
+</body>
+</html>

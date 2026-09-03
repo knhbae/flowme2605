@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>FlowMe 개인공간 v4.1 · 독립 실행형 조작 데모</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="./2026-09-01-flowme-personal-workspace-v4-1-standalone-demo-assets/style.css">
+</head>
+<body>
+<a class="skip" href="#main">본문으로 이동</a>
+<header class="review"><div><strong>개인공간 v4.1</strong><span class="poc-badge">독립 시뮬레이션</span></div><div><span id="save-status" class="save-status" role="status" aria-live="polite">PoC 저장 준비</span><button id="undo" data-action="undo" disabled>되돌리기</button><button data-action="review">사용 안내</button></div></header>
+<div id="scenario" hidden></div>
+<div class="mobile-bar"><button data-action="nav" aria-label="탐색 메뉴 열기">탐색</button><div><strong>FlowMe</strong><span class="poc-badge">PoC</span></div><button data-action="review" aria-label="사용 안내 열기">안내</button></div>
+<p id="touch-drag-help" class="sr-only">길게 누르면 이동할 곳이 열립니다. 왼쪽으로 끌어 날짜나 폴더를 고르고, 오른쪽 목록에서 세로로 끌면 순서를 바꿉니다. 대상 밖에 놓으면 취소됩니다. 짧게 누르면 이동 옵션이 열립니다.</p>
+<div class="app"><aside id="sidebar" class="sidebar" aria-label="앱 탐색"></aside><main id="main" tabindex="-1"><div id="content" class="content"></div></main></div>
+<section id="drag-destinations" aria-label="이동할 곳" aria-hidden="true" hidden><div class="drag-destinations-head"><div><span>이동할 곳</span><strong id="drag-item-title"></strong></div><small id="drag-destinations-status">왼쪽은 날짜·폴더, 오른쪽은 순서 · 밖에 놓으면 취소</small></div><div id="drag-destinations-body"></div></section>
+<footer>실제 앱과 분리된 기능 시뮬레이션 · 변경은 <code>flow:poc:personal-workspace:v1:standalone-demo</code>에만 저장 · 새로고침 복원</footer>
+<dialog id="dialog" aria-labelledby="dialog-title"><div class="dialog-head"><h2 id="dialog-title"></h2><button data-action="close" class="icon-btn" aria-label="닫기">×</button></div><div id="dialog-body"></div></dialog>
+<div class="toast" id="toast" hidden><span id="notice" role="status" aria-live="polite"></span><button data-action="undo">되돌리기</button><button data-action="dismiss" aria-label="알림 닫기">×</button></div>
+<div id="drag-ghost" hidden></div><div id="drop-hint" role="status" aria-live="polite" hidden></div>
+<script src="./2026-09-01-flowme-personal-workspace-v4-1-standalone-demo-assets/model.js"></script>
+<script src="./2026-09-01-flowme-personal-workspace-v4-1-standalone-demo-assets/app.js"></script>
+</body></html>

@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <link rel="icon" href="data:,">
+  <title>FlowMe 통합 PoC 단계별 구현·검증 보고서</title>
+  <style>
+    :root {
+      --ink:#172126; --muted:#617078; --line:#d7e0df; --paper:#fff;
+      --soft:#f4f7f6; --teal:#006f68; --teal-soft:#e4f3f1;
+      --green:#176b43; --green-soft:#e7f4ec; --amber:#875a00;
+      --amber-soft:#fff3d6; --red:#a43b32; --red-soft:#fcebea;
+      --blue:#2458a6; --violet:#6741a5; --shadow:0 18px 45px rgba(20,34,39,.08);
+    }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; background:var(--paper); color:var(--ink); font-family:Pretendard,"Noto Sans KR","Apple SD Gothic Neo",system-ui,sans-serif; font-size:16px; line-height:1.62; }
+    a { color:inherit; }
+    button { font:inherit; }
+    code { overflow-wrap:anywhere; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-size:.9em; }
+    :focus-visible { outline:3px solid var(--teal); outline-offset:3px; }
+    .skip { position:fixed; z-index:99; left:12px; top:-80px; background:#fff; border:2px solid var(--teal); padding:10px 14px; font-weight:900; }
+    .skip:focus { top:12px; }
+    .top { position:sticky; top:0; z-index:20; display:flex; min-height:58px; align-items:center; justify-content:space-between; gap:18px; border-bottom:1px solid var(--line); background:rgba(255,255,255,.96); padding:9px clamp(16px,3vw,36px); backdrop-filter:blur(12px); }
+    .brand { color:var(--teal); font-size:18px; font-weight:950; letter-spacing:-.03em; }
+    .top nav { display:flex; flex-wrap:wrap; justify-content:end; gap:5px; }
+    .top nav a { min-height:40px; display:inline-flex; align-items:center; padding:7px 10px; border-radius:5px; color:var(--muted); font-size:13px; font-weight:800; text-decoration:none; }
+    .top nav a:hover { background:var(--teal-soft); color:var(--teal); }
+    main { max-width:1240px; margin:0 auto; padding:0 clamp(18px,4vw,58px) 100px; }
+    section { scroll-margin-top:76px; }
+    .hero { padding:clamp(44px,7vw,90px) 0 46px; }
+    .eyebrow,.kicker { color:var(--teal); font-size:12px; font-weight:950; letter-spacing:.09em; }
+    h1 { max-width:920px; margin:10px 0 0; font-size:clamp(38px,6vw,70px); line-height:1.07; letter-spacing:-.055em; }
+    .lead { max-width:880px; margin:22px 0 0; color:var(--muted); font-size:clamp(17px,2vw,21px); }
+    .hero-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:28px; }
+    .button { display:inline-flex; min-height:46px; align-items:center; justify-content:center; border:1px solid #aebcba; border-radius:6px; background:#fff; padding:9px 15px; font-weight:900; text-decoration:none; cursor:pointer; }
+    .button.primary { border-color:var(--teal); background:var(--teal); color:#fff; }
+    .verdicts { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); border:1px solid var(--line); box-shadow:var(--shadow); }
+    .verdicts article { min-width:0; border-right:1px solid var(--line); padding:17px; }
+    .verdicts article:last-child { border:0; }
+    .verdicts span { display:block; color:var(--muted); font-size:12px; font-weight:800; }
+    .verdicts strong { display:block; margin-top:4px; font-size:18px; }
+    .section { padding-top:74px; }
+    .section-head { display:flex; justify-content:space-between; align-items:end; gap:30px; margin-bottom:22px; }
+    .section-head h2 { margin:5px 0 0; font-size:clamp(28px,4vw,44px); line-height:1.14; letter-spacing:-.045em; }
+    .section-head p { max-width:690px; margin:8px 0 0; color:var(--muted); }
+    .callout { border-left:4px solid var(--teal); background:var(--teal-soft); padding:17px 19px; }
+    .callout.warn { border-left-color:#c08716; background:var(--amber-soft); }
+    .callout strong { display:block; margin-bottom:3px; }
+    .stage-list { display:grid; gap:10px; }
+    .stage { display:grid; grid-template-columns:68px minmax(0,1fr) auto; gap:16px; align-items:start; border:1px solid var(--line); padding:18px; }
+    .stage-number { color:var(--teal); font-size:28px; font-weight:950; line-height:1; }
+    .stage h3 { margin:0; font-size:19px; }
+    .stage p { margin:5px 0 0; color:var(--muted); }
+    .stage small { display:block; margin-top:8px; }
+    .status { display:inline-flex; min-height:27px; align-items:center; border-radius:99px; padding:3px 9px; font-size:12px; font-weight:900; white-space:nowrap; }
+    .pass { background:var(--green-soft); color:var(--green); }
+    .partial { background:var(--amber-soft); color:var(--amber); }
+    .deferred { background:#eee9f8; color:var(--violet); }
+    .pending { background:var(--red-soft); color:var(--red); }
+    .source-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); border-top:1px solid var(--line); border-left:1px solid var(--line); }
+    .source-card { min-width:0; border-right:1px solid var(--line); border-bottom:1px solid var(--line); padding:20px; }
+    .source-card h3 { margin:7px 0; font-size:22px; }
+    .source-card ul { margin:12px 0 0; padding-left:20px; }
+    .source-card li+li { margin-top:7px; }
+    .source-card[data-source="V41"] .kicker { color:var(--teal); }
+    .source-card[data-source="D1"] .kicker { color:var(--blue); }
+    .source-card[data-source="D2"] .kicker { color:var(--violet); }
+    .filters { display:flex; flex-wrap:wrap; gap:7px; margin-bottom:14px; }
+    .filter { min-height:42px; border:1px solid #aebcba; border-radius:99px; background:#fff; padding:7px 13px; font-weight:850; cursor:pointer; }
+    .filter[aria-pressed="true"] { border-color:var(--teal); background:var(--teal); color:#fff; }
+    .matrix { width:100%; border-collapse:collapse; border-top:2px solid var(--ink); }
+    .matrix caption { padding:0 0 10px; color:var(--muted); font-size:13px; text-align:left; }
+    .matrix th,.matrix td { border-bottom:1px solid var(--line); padding:13px 11px; text-align:left; vertical-align:top; }
+    .matrix th { color:var(--muted); font-size:12px; }
+    .matrix td:first-child { width:90px; font-weight:950; }
+    .matrix td:nth-child(2) { width:19%; font-weight:850; }
+    .matrix small { display:block; margin-top:5px; color:var(--muted); }
+    .scenario-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+    .scenario { border:1px solid var(--line); padding:17px; }
+    .scenario h3 { margin:6px 0; font-size:18px; }
+    .scenario p { margin:0; color:var(--muted); }
+    .proofs { border-top:2px solid var(--ink); }
+    .proof { display:grid; grid-template-columns:minmax(180px,.7fr) minmax(0,1.6fr) auto; gap:18px; align-items:start; border-bottom:1px solid var(--line); padding:14px 4px; }
+    .proof span:not(.status) { color:var(--muted); }
+    .shots { display:grid; grid-template-columns:repeat(12,minmax(0,1fr)); gap:10px; }
+    figure { margin:0; min-width:0; border:1px solid var(--line); background:var(--soft); }
+    figure.mobile { grid-column:span 3; }
+    figure.landscape { grid-column:span 6; }
+    figure.desktop { grid-column:span 6; }
+    figure img { display:block; width:100%; max-height:540px; object-fit:contain; background:#eef2f1; }
+    figcaption { border-top:1px solid var(--line); background:#fff; padding:11px; color:var(--muted); font-size:13px; }
+    .ledger { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); border-left:1px solid var(--line); border-top:1px solid var(--line); }
+    .ledger div { border-right:1px solid var(--line); border-bottom:1px solid var(--line); padding:15px; }
+    .ledger span { display:block; color:var(--muted); font-size:12px; }
+    .ledger strong { display:block; margin-top:3px; }
+    .fine { margin-top:18px; color:var(--muted); font-size:13px; }
+    .sr-only { position:absolute; width:1px; height:1px; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; padding:0; }
+    @media(prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }
+    @media(max-width:900px) {
+      .verdicts { grid-template-columns:repeat(2,1fr); }
+      .verdicts article { border-bottom:1px solid var(--line); }
+      .verdicts article:nth-child(2n) { border-right:0; }
+      .source-grid,.scenario-grid { grid-template-columns:1fr; }
+      .stage { grid-template-columns:54px minmax(0,1fr); }
+      .stage>.status { grid-column:2; justify-self:start; }
+      .matrix,.matrix tbody,.matrix tr,.matrix td { display:block; }
+      .matrix thead { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+      .matrix tr { border-bottom:1px solid var(--line); padding:12px 0; }
+      .matrix td { width:auto!important; border:0; padding:4px 0; }
+      .matrix td::before { display:block; color:var(--muted); font-size:11px; font-weight:850; content:attr(data-label); }
+      figure.mobile { grid-column:span 6; }
+    }
+    @media(max-width:620px) {
+      .top nav { display:none; }
+      .verdicts { grid-template-columns:1fr; }
+      .verdicts article,.verdicts article:last-child { grid-column:auto; border-right:0; }
+      .section-head { display:block; }
+      .proof { grid-template-columns:1fr; gap:5px; }
+      figure.mobile,figure.landscape,figure.desktop { grid-column:1/-1; }
+      .ledger { grid-template-columns:1fr 1fr; }
+      h1 { font-size:38px; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#stages">단계별 결과로 이동</a>
+  <header class="top">
+    <div class="brand">FLOW · 통합 PoC</div>
+    <nav aria-label="보고서 바로가기"><a href="#sources">세 결과물</a><a href="#coverage">충족 현황</a><a href="#scenarios">시나리오</a><a href="#evidence">검증</a><a href="#files">산출물</a><a href="#screens">화면</a><a href="#boundaries">운영 불변</a><a href="#remaining">남은 일</a><a href="#publish">게시 상태</a></nav>
+  </header>
+  <main>
+    <section class="hero">
+      <p class="eyebrow">PERSONAL WORKSPACE V4.1 + DEVELOPMENT 1 + DEVELOPMENT 2</p>
+      <h1>세 결과물을 하나의 격리된<br>PoC 흐름으로 연결했습니다.</h1>
+      <p class="lead">개인공간 실행 경험, 네 saved-plan origin의 공통 편집, 일반 텍스트 작성과 결과 projection을 하나의 격리된 React PoC로 연결했습니다. 이 보고서는 무엇을 그대로 반영했고, 무엇을 의도적으로 바꿨으며, 무엇이 아직 증거 부족인지 분리합니다.</p>
+      <div class="hero-actions">
+        <a class="button primary" href="./2026-09-02-flowme-integrated-flow-poc-standalone-ko.html">직접 조작하는 HTML</a>
+        <a class="button" href="./2026-09-02-flowme-integrated-poc-requirements-traceability-ko.html">상세 추적표 보기</a>
+        <a class="button" href="./2026-09-02-flowme-integrated-poc-gap-closure-plan-ko.html">단계 계획 보기</a>
+      </div>
+    </section>
+
+    <section class="verdicts" aria-label="최종 요약">
+      <article><span>PoC 정본</span><strong>React exact-query</strong></article>
+      <article><span>집중 모델·component</span><strong id="focused-count">253 / 253</strong></article>
+      <article><span>최종 React runtime</span><strong id="runtime-count">6 suites · 48 / 48</strong></article>
+      <article><span>운영 sentinel</span><strong id="storage-count">byte 변화 0</strong></article>
+      <article><span>실제 기기·보조기술</span><strong>0종 · 미실행</strong></article>
+      <article><span>관찰 사용자</span><strong>0명</strong></article>
+    </section>
+
+    <section class="section" id="stages" tabindex="-1">
+      <div class="section-head"><div><span class="kicker">STAGED DELIVERY</span><h2>기획부터 검증까지 한 단계씩 진행</h2><p>각 단계 안에서 기획, UX/UI 대조, 개발 설계, 구현, 자동·브라우저 검증을 묶었습니다. 제외한 기능도 완료처럼 세지 않고 별도 경계로 닫았습니다.</p></div></div>
+      <div class="stage-list">
+        <article class="stage"><div class="stage-number">0</div><div><h3>제품 소유권과 통합 shell 결정</h3><p>v4.1은 개인 조직·실행, 개발 1은 Plan/Item 조정, 개발 2는 Text Authoring으로 역할을 나눴습니다. React를 PoC 정본, 독립 HTML을 fixture 기반 수동 검토 동반물로 정했습니다.</p><small>A0 · 9개 결정 기록</small></div><span class="status pass">완료</span></article>
+        <article class="stage"><div class="stage-number">1</div><div><h3>identity·read model·원자 저장</h3><p><code>savedCopyId + flowId + itemId</code> identity, 네 origin fail-closed adapter, versioned shadow state, one-snapshot Undo와 exact rollback을 먼저 고정했습니다.</p><small>운영 writer 0 · PoC prefix 전용</small></div><span class="status pass">완료</span></article>
+        <article class="stage"><div class="stage-number">2</div><div><h3>일반 텍스트 → 결과 → 개인 Flow</h3><p>하나의 native textarea, 선택형 구조 보기, 작성 틀과 예시, context helper, exact raw/lineage 보존, 명시적 한 번의 handoff를 연결했습니다.</p><small>구조 검토는 필수가 아님 · source bytes 보존 · runtime 11/11, integration 3/3</small></div><span class="status pass">완료</span></article>
+        <article class="stage"><div class="stage-number">3</div><div><h3>공통 Plan·Item·Quick 편집과 결과</h3><p>네 origin과 작성 Flow를 같은 Plan→Item 문법으로 열고, 개인 제목·메모·계획일·순서를 staged 저장합니다. Text·Todo·PoC Calendar·TXT는 같은 effective Item을 읽습니다.</p><small>저장 bytes 검증 · retry · 값 기반 receipt · Undo</small></div><span class="status pass" id="stage3-status">13 / 13 통과</span></article>
+        <article class="stage"><div class="stage-number">4</div><div><h3>이동 조작·focus·반응형 완성</h3><p>날짜·폴더·순서 이동을 포인터·길게 누르기·메뉴·키보드의 같은 transition으로 모으고, current/valid/invalid 피드백과 의미상 opener focus 복귀를 보완했습니다.</p><small>320 보조 + 필수 5 viewport · 실제 기기는 별도</small></div><span class="status pass" id="stage4-status">4 / 4 통과</span></article>
+        <article class="stage"><div class="stage-number">5</div><div><h3>고급 fidelity 보존·보류 경계</h3><p>recurrence, 공개 version, table/source 역편집은 정책을 발명하지 않았습니다. 원문·lineage를 보존하고 손실 가능 commit을 막은 뒤 다시 여는 조건을 기록했습니다.</p><small>기능 완료가 아닌 안전 경계 완료</small></div><span class="status deferred">보류 경계 완료</span></article>
+        <article class="stage"><div class="stage-number">6</div><div><h3>전체 회귀·브라우저·보고</h3><p>최종 build, 전체 테스트, runtime 시나리오, viewport, 운영 sentinel, 문서 링크와 게시 상태를 서로 분리해 검증했습니다.</p><small>내부 자동 검증 완료 · 실제 기기·보조기술·관찰 사용자는 미실행으로 별도 유지</small></div><span class="status pass" id="stage6-status">내부 자동 검증 완료</span></article>
+      </div>
+    </section>
+
+    <section class="section" id="sources">
+      <div class="section-head"><div><span class="kicker">THREE SOURCE PRODUCTS</span><h2>세 결과물을 빠뜨리지 않은 방식</h2><p>통합 blueprint는 네 번째 제품이 아니라 세 결과물 사이의 소유권·전환 계약으로 사용했습니다.</p></div></div>
+      <div class="source-grid">
+        <article class="source-card" data-source="V41"><span class="kicker">V4.1</span><h3>개인공간 화면·실행 문법</h3><ul><li>폴더·오늘·주간·월간·날짜 미정 IA</li><li>QuickItem과 Flow/Item 실행 목록</li><li>날짜·폴더·순서 이동, 완료·다시 열기</li><li>48px 손잡이, 350ms, 8px 취소, safe area</li><li>실기 touch는 미실행으로 유지</li></ul></article>
+        <article class="source-card" data-source="D1"><span class="kicker">DEVELOPMENT 1 · 019ff3</span><h3>공통 Plan·Item 편집</h3><ul><li>네 saved-plan origin 공통 adapter</li><li>source / personal plan / execution owner 분리</li><li>Item은 부모 draft에만 반영, Plan 한 번 저장</li><li>dirty 이탈·focus 복귀·오류·retry·Undo</li><li>운영 lifecycle·trash writer는 연결하지 않음</li></ul></article>
+        <article class="source-card" data-source="D2"><span class="kicker">DEVELOPMENT 2 · 019fab</span><h3>Text Authoring·결과 projection</h3><ul><li>일반 텍스트가 기본, 구조 검토는 선택</li><li>작성 틀의 이름·설명·예시와 native Undo</li><li>원문·lineage 보존 뒤 명시적 개인 Flow handoff</li><li>Text·Todo·Calendar·TXT의 같은 Item ref</li><li>Sheet·공개·source 역편집은 부분/제외</li></ul></article>
+      </div>
+    </section>
+
+    <section class="section" id="coverage">
+      <div class="section-head"><div><span class="kicker">TRACEABILITY DELTA</span><h2>기능·화면 연결별 현재 판정</h2><p>상세 168개 원 요구, 86개 연결 계약, 386개 하위 판정은 원자 추적 보고서에서 볼 수 있습니다. 아래는 이번 단계 구현이 바꾼 핵심 묶음입니다.</p></div></div>
+      <div class="filters" role="group" aria-label="요구 묶음 필터"><button class="filter" type="button" data-filter="all" aria-pressed="true">전체</button><button class="filter" type="button" data-filter="V41" aria-pressed="false">v4.1</button><button class="filter" type="button" data-filter="D1" aria-pressed="false">개발 1</button><button class="filter" type="button" data-filter="D2" aria-pressed="false">개발 2</button><button class="filter" type="button" data-filter="BP" aria-pressed="false">통합 계약</button></div>
+      <p class="sr-only" id="filter-result" aria-live="polite">전체 요구 묶음 8개를 표시합니다.</p>
+      <table class="matrix">
+        <caption>세 결과물과 통합 계약의 핵심 요구 충족 현황</caption>
+        <thead><tr><th scope="col">묶음</th><th scope="col">요구</th><th scope="col">현재 적용·근거</th><th scope="col">판정</th></tr></thead>
+        <tbody>
+          <tr data-product="D1 BP"><td data-label="묶음">A1·A3</td><td data-label="요구">네 origin·작성 Flow의 공통 Plan→Item<small>D1-001~005,018 · BP-038,080</small></td><td data-label="현재 적용·근거">같은 field order, stable ref, parent-draft-only Item apply, Plan 1회 shadow commit. section title과 Flow-level memo owner는 추정하지 않음.</td><td data-label="판정"><span class="status partial">핵심 충족·일부 부분</span></td></tr>
+          <tr data-product="D1 BP"><td data-label="묶음">A4</td><td data-label="요구">saving·success·same·failure·cancel·Undo<small>D1-011 · BP-059,060,062,063</small></td><td data-label="현재 적용·근거">실제 target bytes와 strict parse 뒤 success, exact rollback, 동일 retry descriptor, 버린 draft 값이 보이는 receipt.</td><td data-label="판정"><span class="status pass">PoC 범위 충족</span></td></tr>
+          <tr data-product="D1 D2 BP"><td data-label="묶음">A5</td><td data-label="요구">Text·Todo·Calendar·TXT 결과 동등성<small>D1-021~023 · D2-003,017,019,020 · BP-007,049,069,079</small></td><td data-label="현재 적용·근거">한 effective array의 ref/date/order/completion을 네 보기가 공유. 실제 <code>/calendar</code>, Sheet, download는 연결하지 않음.</td><td data-label="판정"><span class="status partial">PoC 충족·운영 부분</span></td></tr>
+          <tr data-product="D2 BP"><td data-label="묶음">A6·A7</td><td data-label="요구">일반 Text Authoring·작성 틀·선택형 구조<small>D2-022,029~040,043,044,046,050,052~056 · BP-074</small></td><td data-label="현재 적용·근거">한 native editor, 예시가 보이는 6개 틀, contextual helper, exact bytes·caret·Undo, 명시 handoff.</td><td data-label="판정"><span class="status pass">선택 범위 충족</span></td></tr>
+          <tr data-product="V41"><td data-label="묶음">A8</td><td data-label="요구">날짜·폴더·순서 이동의 입력 동등성<small>V41-004~010,018~020,037,043,051,058,065~068</small></td><td data-label="현재 적용·근거">왼쪽 destination, 오른쪽 corridor, insertion line, pointer/menu/keyboard transition, 취소 mutation 0. Flow row 자체 drag는 미제공.</td><td data-label="판정"><span class="status partial">Item 충족·Flow drag 부분</span></td></tr>
+          <tr data-product="V41 D1 D2"><td data-label="묶음">A9</td><td data-label="요구">모바일·가로·tablet·desktop shell<small>V41-028,033,034,036,049,053,070 · D1-014,015 · D2-007,042,061</small></td><td data-label="현재 적용·근거">모바일 한 줄 header, 한 primary CTA, one-column Flow/folder, 16px 입력, sticky panel, safe area와 의미상 focus.</td><td data-label="판정"><span class="status partial">Chromium 레이아웃 통과 · 실기·보조기술 미실행</span></td></tr>
+          <tr data-product="D2 BP"><td data-label="묶음">A10</td><td data-label="요구">recurrence·public·table/source update<small>D2-016,023~026,041 · BP-019,075</small></td><td data-label="현재 적용·근거">원문·lineage·table block 보존, unsupported material commit 차단. occurrence/public/source writer는 없음.</td><td data-label="판정"><span class="status deferred">승인 전 보류</span></td></tr>
+          <tr data-product="D2"><td data-label="묶음">A11</td><td data-label="요구">CreatorDraft 관리<small>D2-057</small></td><td data-label="현재 적용·근거">작성 중 초안과 personal handoff만 제공. 목록·검색·복제·보관·공개 후보는 A0 결정대로 보류.</td><td data-label="판정"><span class="status deferred">보류</span></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section" id="scenarios">
+      <div class="section-head"><div><span class="kicker">END-TO-END SCENARIOS</span><h2>통합 시나리오 판정</h2><p>새 build에서 실행한 여러 runtime 묶음을 시나리오별로 대조했습니다. 복합 근거는 한 테스트가 아니라 Stage 3·4의 관련 검증을 함께 판정한 것이며, 실패 과정의 PoC writer 호출과 최종 성공 state mutation을 구분합니다.</p></div></div>
+      <div class="scenario-grid">
+        <article class="scenario"><span class="status pass scenario-result">PASS · Stage 3</span><h3>1 · 네 origin → 미분류 → 상세</h3><p>중복 없이 stable identity로 열고 공통 Plan/Item 편집 문법과 source read-only 구획을 확인했습니다.</p></article>
+        <article class="scenario"><span class="status pass scenario-result">복합 근거 PASS · Stage 3/4</span><h3>2 · QuickItem → 날짜·폴더 → Undo</h3><p>독립 root Item을 만들고 이동한 뒤 마지막 성공 snapshot으로 복원했습니다.</p></article>
+        <article class="scenario"><span class="status pass scenario-result">복합 근거 PASS · Stage 3/4</span><h3>3 · Flow 폴더 + Item 실행 날짜</h3><p>Flow Item은 부모 폴더를 상속하고 실행 날짜만 바뀌며 source 일정과 소속은 그대로임을 확인했습니다.</p></article>
+        <article class="scenario"><span class="status pass scenario-result">PASS · Stage 3</span><h3>4 · 오늘 완료 → 상세·결과 → 다시 열기</h3><p>Flow 상세, Todo, Calendar가 같은 ref의 완료 상태를 읽고 override를 제거해 다시 여는 결과를 확인했습니다.</p></article>
+        <article class="scenario"><span class="status partial scenario-result">부분 · Quick 이동 PASS / Flow row drag 미제공</span><h3>5 · drag·길게·메뉴·키보드</h3><p>Item/Quick 이동은 같은 transition 결과로 수렴합니다. Flow 폴더 이동은 메뉴·키보드로 가능하지만 Flow row 전용 drag handle은 남아 있습니다.</p></article>
+        <article class="scenario"><span class="status pass scenario-result">PASS · Stage 3/4</span><h3>6 · same·취소·Escape·pointer cancel·오류</h3><p>same/cancel은 API 호출 0이었습니다. 저장 실패는 허용된 PoC prefix 안에서 시도·rollback할 수 있지만 최종 성공 state mutation은 0이고 prefix 밖 호출도 0이었습니다.</p></article>
+        <article class="scenario"><span class="status pass scenario-result">PASS · Stage 3</span><h3>7 · reload·손상 payload</h3><p>마지막 성공 overlay를 복원하고 손상된 state/recovery는 기존 <code>/my</code>로 fail-closed함을 확인했습니다.</p></article>
+        <article class="scenario"><span class="status pass scenario-result">PASS · Stage 3/4</span><h3>8 · 운영 <code>flow:*</code> bytes 불변</h3><p>격리 browser context의 sentinel과 허용 prefix 밖 set/remove/clear 호출을 전후 비교했습니다.</p></article>
+      </div>
+    </section>
+
+    <section class="section" id="evidence">
+      <div class="section-head"><div><span class="kicker">EXECUTED EVIDENCE</span><h2>실제로 실행한 검증</h2><p>테스트 개수는 중복 합산하지 않고 실행 묶음별로 그대로 적습니다. 진단 중 발견된 실패는 수정 전 증거이며 최종 PASS에 섞지 않습니다.</p></div></div>
+      <div class="proofs">
+        <div class="proof"><strong>PoC 모델·component</strong><span>identity, authoring, editor, receipt, storage, transition, projection, 5,000-step simulation</span><span class="status pass">253 / 253</span></div>
+        <div class="proof"><strong>Stage 1 React runtime</strong><span>identity, 원자 저장·Undo, exact raw/lineage, reload·fail-closed</span><span class="status pass">4 / 4</span></div>
+        <div class="proof"><strong>Stage 2 React runtime</strong><span>일반 텍스트, 작성 틀·예시, 선택형 구조, 결과와 개인 Flow handoff</span><span class="status pass">11 / 11</span></div>
+        <div class="proof"><strong>Stage 2 통합 runtime</strong><span>작성 → 저장 → 개인공간 → 편집·이동·완료와 필수 5 viewport</span><span class="status pass">3 / 3</span></div>
+        <div class="proof"><strong>v4.1 core React runtime</strong><span>8개 필수 시나리오, pointer·drag·menu·keyboard, safe area와 필수 5 viewport</span><span class="status pass">13 / 13</span></div>
+        <div class="proof"><strong>Stage 3 React runtime</strong><span>네 origin, staged edit, results, failure/retry/Undo, reload/corrupt, 6 viewport</span><span class="status pass" id="stage3-proof">13 / 13</span></div>
+        <div class="proof"><strong>Stage 4 React runtime</strong><span>focus, Quick input parity, current/valid/invalid/cancel, 320+5 viewport</span><span class="status pass" id="stage4-proof">4 / 4</span></div>
+        <div class="proof"><strong>Stage 3 화면 캡처</strong><span>workspace/result/Plan/Item × 6 viewport</span><span class="status pass">PNG 24장</span></div>
+        <div class="proof"><strong>독립 HTML 모델·runtime</strong><span>fixture-only 수동 검토 동반물, 단일 파일 생성, file URL 브라우저 조작</span><span class="status pass" id="standalone-proof">33 / 33 · 14 / 14</span></div>
+        <div class="proof"><strong>전체 <code>npm test</code></strong><span>관련 기존 회귀를 포함한 6개 TAP 실행 묶음 합계</span><span class="status pass" id="full-proof">1,738 / 1,738</span></div>
+        <div class="proof"><strong>production build</strong><span>Next compile, lint, type check, static generation</span><span class="status pass">18 / 18</span></div>
+        <div class="proof"><strong>보고서 browser</strong><span>단계별 보고서와 상세 추적표, 필수 5 viewport, filter·focus·접근성 구조</span><span class="status pass">4 / 4</span></div>
+        <div class="proof"><strong>문서 검사</strong><span>16개 필수 문서와 로컬 링크</span><span class="status pass" id="docs-proof">4,588 / 4,588</span></div>
+        <div class="proof"><strong>tracked diff 검사</strong><span>추적 중인 변경 파일의 whitespace 오류</span><span class="status pass" id="diff-proof">PASS</span></div>
+      </div>
+      <div class="callout warn" style="margin-top:18px"><strong>수정 전 진단에서 결함을 실제로 발견했습니다.</strong>첫 Stage 3 run은 저장 뒤 editor가 닫혀도 receipt가 <code>saving</code>에 머무는 문제로 13건 중 7건이 실패했고, 후속 진단에서는 history 정리와 Undo가 경합하는 문제를 재현했습니다. Stage 4 첫 run은 drop target 위 edge auto-scroll 재판정과 320px 순서 영역 넘침을 잡았습니다. 진단 run은 최종 수치에서 제외했고, 수정한 새 build에서 Stage 3 13건과 Stage 4 4건이 모두 통과했습니다.</div>
+    </section>
+
+    <section class="section" id="files">
+      <div class="section-head"><div><span class="kicker">IMPLEMENTATION OUTPUTS</span><h2>변경한 코드와 검토 산출물</h2><p>파일을 나열하기보다 책임 단위로 묶었습니다. <code>/my</code>와 <code>/flows/new</code>에는 exact-query gate를 추가했고, 공용 <code>MyPlanExecutionSurface</code>에는 heading/focus와 transfer availability 보강을 적용했습니다. 기본 경로 불변은 회귀 테스트로 확인했습니다.</p></div></div>
+      <div class="proofs">
+        <div class="proof"><strong>진입점</strong><span><code>app/my/page.tsx</code>, <code>app/my/page.test.ts</code>, <code>app/flows/new/page.tsx</code>, <code>app/flows/new/page.test.ts</code></span><span class="status pass">격리 gate</span></div>
+        <div class="proof"><strong>공용 실행 표면</strong><span><code>components/flow/my-flow/MyPlanExecutionSurface.tsx</code>와 회귀 테스트</span><span class="status pass">focus·transfer 보강</span></div>
+        <div class="proof"><strong>제품 화면</strong><span><code>components/flow/personal-workspace-poc/</code>의 개인공간·작성·편집·receipt·결과 표면</span><span class="status pass">React 정본</span></div>
+        <div class="proof"><strong>순수 모델</strong><span><code>lib/flow/personal-workspace-poc-*</code>의 identity, read model, state, transition, authoring, projection</span><span class="status pass">shadow state</span></div>
+        <div class="proof"><strong>브라우저 계약</strong><span><code>tests/e2e/personal-workspace-*</code>의 runtime·독립 HTML·보고서 시나리오</span><span class="status pass">자동 증거</span></div>
+        <div class="proof"><strong>기획·설계</strong><span><code>docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/</code>의 A0와 단계별 계약</span><span class="status pass">결정·보류 분리</span></div>
+        <div class="proof"><strong>직접 검토물</strong><span>통합 단일 HTML, Android 전달용 단일 파일, 상세 요구 추적표와 이 최종 보고서</span><span class="status pass">로컬 전용</span></div>
+        <div class="proof"><strong>실행 계약</strong><span><code>package.json</code>의 PoC 집중 테스트 명령</span><span class="status pass">재실행 가능</span></div>
+      </div>
+    </section>
+
+    <section class="section" id="screens">
+      <div class="section-head"><div><span class="kicker">BROWSER VIEWPORTS</span><h2>화면 크기별 평가</h2><p>아래는 Stage 3 자동 캡처 24장 중 대표 5장입니다. 실제 Android Chrome·iOS Safari 사진이나 관찰 사용자 증거가 아닙니다.</p></div></div>
+      <div class="shots">
+        <figure class="mobile"><img src="2026-09-02-flowme-integrated-poc-stage-3-runtime-assets/workspace-390x844.png" alt="390 곱하기 844 통합 개인공간"><figcaption><strong>390×844</strong> · 모바일 세로 · 한 줄 header와 본문 primary CTA</figcaption></figure>
+        <figure class="mobile"><img src="2026-09-02-flowme-integrated-poc-stage-3-runtime-assets/plan-375x812.png" alt="375 곱하기 812 Plan 편집"><figcaption><strong>375×812</strong> · Plan 편집 · sticky 저장과 16px 입력</figcaption></figure>
+        <figure class="landscape"><img src="2026-09-02-flowme-integrated-poc-stage-3-runtime-assets/result-844x390.png" alt="844 곱하기 390 결과 보기"><figcaption><strong>844×390</strong> · 짧은 가로 · 결과 선택과 내부 scroll</figcaption></figure>
+        <figure class="desktop"><img src="2026-09-02-flowme-integrated-poc-stage-3-runtime-assets/item-1024x768.png" alt="1024 곱하기 768 Item 편집"><figcaption><strong>1024×768</strong> · Item 원본/내 계획/실행 위치 구획</figcaption></figure>
+        <figure class="desktop"><img src="2026-09-02-flowme-integrated-poc-stage-3-runtime-assets/workspace-1440x900.png" alt="1440 곱하기 900 개인공간"><figcaption><strong>1440×900</strong> · desktop · 평면 Flow 목록과 넓은 실행 영역</figcaption></figure>
+      </div>
+      <div class="callout" style="margin-top:18px"><strong id="viewport-verdict">6개 viewport 자동 검사 통과</strong><span id="viewport-copy">320×700, 375×812, 390×844, 844×390, 1024×768, 1440×900에서 페이지·이동 패널 가로 넘침, console error, page error, 패널 경계 위반, 가려진 핵심 행동이 모두 0이었습니다.</span></div>
+    </section>
+
+    <section class="section" id="boundaries">
+      <div class="section-head"><div><span class="kicker">DATA BOUNDARY</span><h2>운영 데이터를 바꾸지 않는 구조</h2><p>기존 Flow는 읽고 투영하기만 하며 개인 편집·실행·authoring 변경은 전용 shadow state에만 기록합니다.</p></div></div>
+      <div class="ledger">
+        <div><span>허용 쓰기</span><strong><code>flow:poc:personal-workspace:v1:*</code></strong></div>
+        <div><span>허용 prefix 밖 setItem</span><strong id="outside-set">0건</strong></div>
+        <div><span>허용 prefix 밖 removeItem</span><strong id="outside-remove">0건</strong></div>
+        <div><span><code>localStorage.clear()</code></span><strong id="clear-count">0건</strong></div>
+        <div><span>운영 sentinel byte 변화</span><strong id="sentinel-change">0건</strong></div>
+        <div><span>실제 사용자 profile/backend</span><strong>열지 않음</strong></div>
+      </div>
+      <p class="fine">Stage 3 operating snapshot과 Stage 4 non-PoC snapshot은 byte-for-byte 동일했습니다. 이는 자동 테스트가 만든 격리 localStorage fixture와 browser context의 증거이며, 사용자의 실제 브라우저 profile이나 운영 backend를 직접 조사했다는 뜻은 아닙니다.</p>
+    </section>
+
+    <section class="section" id="remaining">
+      <div class="section-head"><div><span class="kicker">OPEN ITEMS</span><h2>남은 결함·결정·증거 부족</h2><p>기능 결함, 의도적 제외, 실제 기기·사용자 증거를 섞지 않았습니다.</p></div></div>
+      <table class="matrix">
+        <caption>PoC 이후에도 남아 있는 구현·정책·검증 항목</caption>
+        <thead><tr><th scope="col">종류</th><th scope="col">항목</th><th scope="col">현재 판단</th><th scope="col">다음 조건</th></tr></thead>
+        <tbody>
+          <tr><td data-label="종류">부분 구현</td><td data-label="항목">Flow row drag</td><td data-label="현재 판단">Flow 폴더 이동은 메뉴·키보드로 가능하지만 Flow 자체 전용 drag handle은 없음</td><td data-label="다음 조건">Flow와 Item의 modality parity를 제품 요구로 확정하면 별도 slice</td></tr>
+          <tr><td data-label="종류">의도적 분리</td><td data-label="항목">Item editor 안 완료 action</td><td data-label="현재 판단">staged Plan draft와 즉시 저장 execution을 섞지 않고 목록·상세 action으로 분리</td><td data-label="다음 조건">하나의 compound transaction UX가 승인될 때 재설계</td></tr>
+          <tr><td data-label="종류">보류</td><td data-label="항목">Sheet·실제 Calendar·export·CreatorDraft 관리</td><td data-label="현재 판단">PoC projection 또는 별도 owner이며 운영 writer는 연결하지 않음</td><td data-label="다음 조건">owner·schema·rollback·권한 승인</td></tr>
+          <tr><td data-label="종류">제외</td><td data-label="항목">recurrence·public S3·source reverse edit</td><td data-label="현재 판단">원문 보존·fail-closed만 지원</td><td data-label="다음 조건">occurrence/row/version identity와 conflict 정책 승인</td></tr>
+          <tr><td data-label="종류">증거 부족</td><td data-label="항목">Android Chrome·iOS Safari·가상 키보드·screen reader·200% 확대</td><td data-label="현재 판단">미실행</td><td data-label="다음 조건">실제 기기·보조기술에서 지정 과업 수행</td></tr>
+          <tr><td data-label="종류">사용자 검증</td><td data-label="항목">발견·이해·회복·효용</td><td data-label="현재 판단">관찰 사용자 0명</td><td data-label="다음 조건">목표 사용자 관찰 과업과 기록</td></tr>
+          <tr><td data-label="종류">기존 의존성 감사</td><td data-label="항목"><code>browserslist</code>, <code>postcss-selector-parser</code></td><td data-label="현재 판단">FAIL · 2건(high 1, low 1) · PoC 기능 실패와 별도</td><td data-label="다음 조건">dependency owner가 영향과 안전한 업데이트 범위를 검토</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section" id="publish">
+      <div class="section-head"><div><span class="kicker">PUBLISH LEDGER</span><h2>게시 상태</h2><p>사용자가 요청하지 않은 외부 변경은 진행하지 않았습니다.</p></div></div>
+      <div class="ledger"><div><span>commit</span><strong>미진행</strong></div><div><span>push</span><strong>미진행</strong></div><div><span>PR</span><strong>미진행</strong></div><div><span>Preview</span><strong>미진행</strong></div><div><span>Production</span><strong>미진행</strong></div><div><span>관찰 사용자</span><strong>0명</strong></div></div>
+      <p class="fine">현재 파일은 로컬 검토 산출물입니다. 이 HTML의 필터는 운영 데이터나 localStorage에 아무 것도 저장하지 않습니다.</p>
+    </section>
+  </main>
+  <script>
+    (() => {
+      const buttons = Array.from(document.querySelectorAll('[data-filter]'));
+      const rows = Array.from(document.querySelectorAll('[data-product]'));
+      const result = document.getElementById('filter-result');
+      buttons.forEach((button) => button.addEventListener('click', () => {
+        const selected = button.dataset.filter;
+        buttons.forEach((candidate) => candidate.setAttribute('aria-pressed', String(candidate === button)));
+        rows.forEach((row) => {
+          row.hidden = selected !== 'all' && !String(row.dataset.product || '').split(' ').includes(selected);
+        });
+        const visibleCount = rows.filter((row) => !row.hidden).length;
+        if (result) result.textContent = button.textContent + ' 요구 묶음 ' + visibleCount + '개를 표시합니다.';
+      }));
+    })();
+  </script>
+</body>
+</html>

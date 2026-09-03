@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <link rel="icon" href="data:,">
+  <title>FlowMe 통합 PoC A0 결정 패킷</title>
+  <style>
+    :root{--ink:#172321;--muted:#5e6e6a;--line:#d6e0dd;--paper:#fff;--soft:#f3f7f6;--teal:#0f766e;--teal-dark:#0b5e58;--teal-soft:#e5f5f1;--cobalt:#315788;--amber:#8c5700;--amber-soft:#fff3d6;--violet:#6353a5;--violet-soft:#f1eeff;--shadow:0 20px 54px rgba(20,47,41,.11)}
+    *{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:max(74px,calc(env(safe-area-inset-top) + 64px))}body{margin:0;background:#e9efed;color:var(--ink);font-family:Inter,system-ui,-apple-system,"Segoe UI","Noto Sans KR",sans-serif;line-height:1.6}button,a{touch-action:manipulation}button{font:inherit}.skip{position:fixed;z-index:1000;top:-90px;left:max(12px,env(safe-area-inset-left));padding:12px 16px;border:2px solid var(--teal);background:#fff;color:var(--ink);font-weight:850}.skip:focus{top:max(12px,env(safe-area-inset-top))}.shell{width:min(1440px,100%);min-height:100vh;margin:auto;background:var(--paper);box-shadow:var(--shadow)}.top{position:sticky;z-index:50;top:0;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:62px;padding:max(8px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) 8px max(16px,env(safe-area-inset-left));border-bottom:1px solid var(--line);background:rgba(255,255,255,.96);backdrop-filter:blur(12px)}.brand{font-weight:950;letter-spacing:-.04em}.top nav{display:flex;gap:3px;overflow:auto}.top a{display:inline-flex;align-items:center;min-height:44px;padding:0 10px;color:#40514d;text-decoration:none;font-size:13px;font-weight:800;white-space:nowrap}.hero{padding:clamp(42px,7vw,88px) clamp(18px,6vw,82px) 42px;border-bottom:1px solid var(--line);background:linear-gradient(135deg,#fff 22%,#edf8f5)}.eyebrow{margin:0 0 11px;color:var(--teal);font-size:12px;font-weight:950;letter-spacing:.14em}.hero h1{max-width:1250px;margin:0;font-size:clamp(36px,5.5vw,64px);line-height:1.05;letter-spacing:-.06em}.lead{max-width:900px;margin:21px 0 0;color:#445652;font-size:clamp(16px,2vw,20px)}.actions,.status,.filters{display:flex;flex-wrap:wrap;gap:8px}.actions{margin-top:25px}.status{margin-top:22px}.button,.filter{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 15px;border:1px solid #9aaca7;border-radius:8px;background:#fff;color:var(--ink);font-weight:850;text-decoration:none;cursor:pointer}.button.primary,.filter[aria-pressed="true"]{border-color:var(--teal);background:var(--teal);color:#fff}.pill{display:inline-flex;align-items:center;min-height:30px;padding:3px 10px;border-radius:999px;background:#e9eeec;color:#41514d;font-size:12px;font-weight:850}.pill.done{background:var(--teal-soft);color:var(--teal-dark)}.pill.boundary{background:var(--violet-soft);color:var(--violet)}.metrics{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));border-bottom:1px solid var(--line)}.metric{padding:20px clamp(13px,2.4vw,27px);border-right:1px solid var(--line)}.metric:last-child{border-right:0}.metric span{display:block;color:var(--muted);font-size:12px}.metric strong{display:block;margin-top:2px;font-size:clamp(25px,3vw,38px);line-height:1.2;letter-spacing:-.04em}.section{padding:clamp(38px,6vw,74px) clamp(18px,5vw,72px);border-bottom:1px solid var(--line)}.section.alt{background:var(--soft)}.section-head{display:flex;align-items:end;justify-content:space-between;gap:24px;margin-bottom:23px}.section-head h2{margin:0;font-size:clamp(27px,4vw,43px);line-height:1.14;letter-spacing:-.045em}.section-head p{max-width:660px;margin:0;color:var(--muted)}.legend{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.legend article{padding:19px;border:1px solid var(--line);background:#fff}.legend b{display:block;margin-bottom:5px}.legend p{margin:0;color:var(--muted);font-size:14px}.legend .existing{border-top:4px solid var(--cobalt)}.legend .working{border-top:4px solid var(--teal)}.legend .deferred{border-top:4px solid var(--amber)}.journey{display:grid;grid-template-columns:1fr 48px 1fr 48px 1fr;align-items:stretch;gap:8px}.journey article{min-height:150px;padding:20px;border:1px solid var(--line);background:#fff}.journey b{color:var(--teal);font-size:12px}.journey h3{margin:5px 0 7px;font-size:19px}.journey p{margin:0;color:var(--muted);font-size:14px}.arrow{display:flex;align-items:center;justify-content:center;color:var(--teal);font-size:26px;font-weight:900}.branch{margin-top:12px;padding:17px 20px;border-left:4px solid var(--amber);background:var(--amber-soft)}.branch strong{display:block}.branch p{margin:4px 0 0;color:#69532c;font-size:14px}.filters{margin-bottom:16px}.filter{min-height:44px;border-radius:999px}.decision-list{display:grid;gap:11px}.decision{border:1px solid var(--line);background:#fff}.decision[hidden]{display:none}.decision summary{display:grid;grid-template-columns:76px minmax(0,1fr) auto;align-items:center;gap:12px;min-height:76px;padding:13px 16px;cursor:pointer;list-style:none}.decision summary::-webkit-details-marker{display:none}.id{color:var(--teal);font-size:12px;font-weight:950}.title{font-size:18px;font-weight:900}.kind{font-size:11px}.decision-body{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid var(--line)}.decision-body article{padding:18px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}.decision-body article:nth-child(2n){border-right:0}.decision-body article:nth-last-child(-n+2){border-bottom:0}.decision-body h3{margin:0 0 7px;color:var(--muted);font-size:11px;letter-spacing:.08em}.decision-body p,.decision-body ul{margin:0;font-size:14px}.decision-body ul{padding-left:18px}.owner{width:100%;border-collapse:collapse;background:#fff}.owner th,.owner td{padding:13px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;font-size:13px}.owner th{background:#edf3f1;color:#4c5c58;font-size:11px;letter-spacing:.06em}.owner td:first-child{font-weight:900}.next-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}.next-card{padding:20px;border:1px solid var(--line);background:#fff}.next-card b{color:var(--teal);font-size:12px}.next-card h3{margin:5px 0 8px;font-size:19px}.next-card p{margin:0;color:var(--muted);font-size:14px}.next-card.active{border-color:var(--teal);background:var(--teal-soft)}.callout{margin-top:14px;padding:22px;border-left:4px solid var(--teal);background:var(--teal-soft)}.callout h3{margin:0 0 7px}.callout p{margin:0 0 15px}.link-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.link-card{display:block;padding:18px;border:1px solid var(--line);background:#fff;color:var(--ink);text-decoration:none}.link-card:hover,.link-card:focus-visible{border-color:var(--teal);background:var(--teal-soft)}.link-card b{display:block}.link-card span{display:block;margin-top:3px;color:var(--muted);font-size:13px}.footer{padding:24px max(18px,env(safe-area-inset-left)) max(24px,calc(18px + env(safe-area-inset-bottom)));color:var(--muted);font-size:12px}.visually-hidden{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+    @media(max-width:1080px){.metrics{grid-template-columns:repeat(3,1fr)}.metric:nth-child(3){border-right:0}.metric:nth-child(-n+3){border-bottom:1px solid var(--line)}.next-grid{grid-template-columns:1fr 1fr}.next-card.active{grid-column:1/-1}.journey{grid-template-columns:1fr 34px 1fr 34px 1fr}}
+    @media(max-width:760px){.top nav{display:none}.section-head{display:block}.section-head p{margin-top:9px}.legend,.next-grid,.link-grid{grid-template-columns:1fr}.next-card.active{grid-column:auto}.journey{grid-template-columns:1fr}.arrow{min-height:28px;transform:rotate(90deg)}.decision summary{grid-template-columns:58px minmax(0,1fr)}.decision summary .kind{grid-column:1/-1;justify-self:start}.decision-body{grid-template-columns:1fr}.decision-body article,.decision-body article:nth-child(2n){border-right:0}.decision-body article:nth-last-child(2){border-bottom:1px solid var(--line)}.owner,.owner tbody,.owner tr,.owner td{display:block}.owner thead{display:none}.owner tr{padding:9px 0;border-bottom:1px solid var(--line)}.owner td{border:0;padding:4px 10px}.owner td::before{content:attr(data-label);display:block;color:var(--muted);font-size:10px;font-weight:850}}
+    @media(max-width:430px){.metrics{grid-template-columns:repeat(2,1fr)}.metric,.metric:nth-child(3){border-right:1px solid var(--line);border-bottom:1px solid var(--line)}.metric:nth-child(2n){border-right:0}.metric:nth-last-child(-n+2){border-bottom:0}.hero h1{font-size:38px}.title{font-size:16px}}
+    @media(orientation:landscape) and (max-height:500px){.top{position:static}.hero{padding-top:28px;padding-bottom:28px}.hero h1{font-size:41px}.section{padding-top:32px;padding-bottom:32px}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">본문으로 건너뛰기</a>
+  <div class="shell">
+    <header class="top"><div class="brand">FLOW · 통합 PoC</div><nav aria-label="보고서 바로가기"><a href="#journey">통합 흐름</a><a href="#decisions">6개 결정</a><a href="#owners">소유권</a><a href="#next">다음 단계</a></nav></header>
+    <main id="main" tabindex="-1">
+      <section class="hero">
+        <p class="eyebrow">A0 DECISION PACKET · 2026-09-02</p>
+        <h1>여섯 질문을 닫고,<br>다음 구현 기준을 맞췄습니다</h1>
+        <p class="lead">개인공간 v4.1, 개발 1, 개발 2의 결정이 충돌하는 지점을 다시 대조했습니다. 이번 결론은 운영 정책 확정이 아니라 exact-query 통합 PoC 안에서 안전하게 구현하기 위한 작업 계약입니다.</p>
+        <div class="actions"><a class="button primary" href="#decisions">결정 하나씩 보기</a><a class="button" href="2026-09-02-flowme-integrated-poc-gap-closure-plan-ko.html">전체 단계 계획</a><a class="button" href="2026-09-02-flowme-integrated-flow-poc-standalone-ko.html">조작형 PoC</a></div>
+        <div class="status"><span class="pill done">A0 작업 결정 6/6</span><span class="pill done">Primary 결정 필요 0</span><span class="pill boundary">운영 writer 계속 금지</span></div>
+      </section>
+
+      <section class="metrics" aria-label="A0 판정 수치">
+        <article class="metric"><span>닫은 결정</span><strong>6</strong></article>
+        <article class="metric"><span>A0 추적 행</span><strong>9</strong></article>
+        <article class="metric"><span>Primary 결정 필요</span><strong>0</strong></article>
+        <article class="metric"><span>현재 열린 gap</span><strong>79</strong></article>
+        <article class="metric"><span>운영 write</span><strong>0</strong></article>
+        <article class="metric"><span>관찰 사용자</span><strong>0</strong></article>
+      </section>
+
+      <section class="section alt" aria-labelledby="meaning-title">
+        <div class="section-head"><div><p class="eyebrow">DECISION LEVELS</p><h2 id="meaning-title">같은 “결정”으로 뭉개지 않았습니다</h2></div><p>이미 합의된 원칙, 이번 PoC에서만 쓰는 선택, 별도 승인 전 보류한 범위를 구분했습니다.</p></div>
+        <div class="legend">
+          <article class="existing"><b>기존 확정 원칙</b><p>개발 1의 공통 편집 owner, 개발 2의 한 편집기·작성 틀·ghost, v4.1 실행 문법을 유지합니다.</p></article>
+          <article class="working"><b>PoC 작업 결정</b><p>Personal Flow handoff, shadow staged command, shell 계층, standalone 역할을 이번 격리 구현에 적용합니다.</p></article>
+          <article class="deferred"><b>보류·재검토</b><p>CreatorDraft 관리, public, recurrence runtime, table/source update, 운영 writer는 별도 권한과 loss-safe 설계 전까지 열지 않습니다.</p></article>
+        </div>
+      </section>
+
+      <section class="section" id="journey" aria-labelledby="journey-title">
+        <div class="section-head"><div><p class="eyebrow">ONE PRODUCT JOURNEY</p><h2 id="journey-title">세 결과물은 이 흐름으로 만납니다</h2></div><p>저작과 개인 실행을 한 schema로 합치지 않고, 명시적 handoff를 경계로 연결합니다.</p></div>
+        <div class="journey" aria-label="통합 제품 흐름">
+          <article><b>개발 2</b><h3>일반 텍스트 작성</h3><p>한 편집기에서 작성하고 필요할 때만 구조를 검토합니다. 작성 틀과 ghost는 원문을 대신하지 않습니다.</p></article><div class="arrow" aria-hidden="true">→</div>
+          <article><b>명시적 경계</b><h3>Personal Flow로 만들기</h3><p>사용자가 확인해야만 개인 Flow가 생깁니다. source text와 개인 실행 값의 owner는 계속 분리됩니다.</p></article><div class="arrow" aria-hidden="true">→</div>
+          <article><b>v4.1 + 개발 1</b><h3>/my에서 배치·실행</h3><p>네 origin을 한 read model로 투영하고 폴더·기간·완료·Undo를 shadow state에서 조작합니다.</p></article>
+        </div>
+        <div class="branch"><strong>CreatorDraft·공개 경로는 삭제한 것이 아닙니다.</strong><p>현재 개인 실행 PoC와 같은 저장으로 가장하지 않고, creator lifecycle과 review/public version 설계가 승인될 때 별도 lane으로 다시 엽니다.</p></div>
+      </section>
+
+      <section class="section alt" id="decisions" aria-labelledby="decision-title">
+        <div class="section-head"><div><p class="eyebrow">SIX WORKING DECISIONS</p><h2 id="decision-title">결정과 경계를 함께 봅니다</h2></div><p>필터하거나 각 행을 펼쳐 선택 이유, 거절안, owner, 쓰기 경계와 재검토 조건을 확인할 수 있습니다.</p></div>
+        <div class="filters" role="group" aria-label="결정 유형 필터">
+          <button class="filter" type="button" data-filter="all" aria-pressed="true">전체 6</button>
+          <button class="filter" type="button" data-filter="existing" aria-pressed="false">기존 결정 계승 3</button>
+          <button class="filter" type="button" data-filter="working" aria-pressed="false">PoC 선택 2</button>
+          <button class="filter" type="button" data-filter="deferred" aria-pressed="false">범위 보류 1</button>
+        </div>
+        <div class="decision-list">
+          <details class="decision" data-kind="existing" open><summary><span class="id">A0-1</span><span class="title">일반 텍스트는 Personal Flow로 명시적 handoff</span><span class="pill kind">기존 방향 계승</span></summary><div class="decision-body"><article><h3>선택과 이유</h3><p>개발 2의 plain-text first를 유지하고, 통합 blueprint가 정한 개인공간 진입 목적지를 따른다. 사용자의 확인 전에는 Flow를 만들지 않는다.</p></article><article><h3>채택하지 않은 안</h3><p>CreatorDraft와 Personal Flow를 한 저장처럼 합치지 않는다. CreatorDraft lifecycle을 별도 구현할 때 다시 검토한다.</p></article><article><h3>OWNER · WRITE</h3><p>authoring source는 그대로 보존하고 handoff 결과만 PoC shadow namespace에 기록한다.</p></article><article><h3>NEXT ACCEPTANCE</h3><p>작성 → 선택형 검토 → 명시적 생성 → 개인공간 재진입에서 원문 byte가 유지돼야 한다.</p></article></div></details>
+          <details class="decision" data-kind="existing"><summary><span class="id">A0-2</span><span class="title">운영 데이터는 읽기만, 변경은 shadow staged command</span><span class="pill kind">기존 owner 계승</span></summary><div class="decision-body"><article><h3>선택과 이유</h3><p>개발 1의 공통 Plan·Item editor와 one-owner apply 계약을 미래 owner로 재사용하되, 이번 PoC는 운영 writer를 열지 않는다.</p></article><article><h3>채택하지 않은 안</h3><p>현재 단계에서 Calendar·trash·export writer를 연결하지 않는다. 운영 migration과 rollback 승인이 있어야 다시 연다.</p></article><article><h3>OWNER · WRITE</h3><p>네 origin adapter는 read-only다. 모든 변경과 receipt는 <code>flow:poc:personal-workspace:v1:*</code>에만 쓴다.</p></article><article><h3>NEXT ACCEPTANCE</h3><p>Plan draft와 Item draft를 거친 성공·취소·오류·Undo의 mutation 수와 operating byte 불변을 증명한다.</p></article></div></details>
+          <details class="decision" data-kind="working"><summary><span class="id">A0-3</span><span class="title">global cobalt shell + scoped teal workspace</span><span class="pill kind">PoC 계층 선택</span></summary><div class="decision-body"><article><h3>선택과 이유</h3><p>production PlatformNav와 cobalt는 제품 전역을 소유한다. v4.1 teal과 평면 목록은 개인공간 내부의 실행 문법으로 제한한다.</p></article><article><h3>채택하지 않은 안</h3><p>전역 shell을 teal로 갈아끼우거나 한 화면에서 primary CTA를 중복하지 않는다. 영구 token 변경은 디자인 시스템 결정 때 재검토한다.</p></article><article><h3>OWNER · WRITE</h3><p>global shell은 기존 app, workspace view는 PoC component가 소유한다. 데이터 write와 무관하다.</p></article><article><h3>NEXT ACCEPTANCE</h3><p>5개 viewport에서 header·navigation·workspace CTA가 겹치지 않고 첫 행동이 하나여야 한다.</p></article></div></details>
+          <details class="decision" data-kind="existing"><summary><span class="id">A0-4</span><span class="title">한 text editor + 선택형 구조 검토 + global ghost</span><span class="pill kind">개발 2 결정 계승</span></summary><div class="decision-body"><article><h3>선택과 이유</h3><p>일반 입력이 기본이다. 구조 검토는 사용자가 요청할 때만 열고, 작성 틀은 비어 있는 문서에 한 번 삽입한다.</p></article><article><h3>채택하지 않은 안</h3><p>강제 3-step editor, 별도 template form, ghost를 실제 값으로 materialize하는 방식을 쓰지 않는다.</p></article><article><h3>OWNER · WRITE</h3><p>editor rawText가 원문의 단일 owner다. preview·ghost·selection은 파생 표현이며 저장 owner가 아니다.</p></article><article><h3>NEXT ACCEPTANCE</h3><p>native Undo/Redo에서 정확한 bytes·caret를 복구하고 ghost가 value·selection·clipboard에 포함되지 않아야 한다.</p></article></div></details>
+          <details class="decision" data-kind="deferred"><summary><span class="id">A0-5</span><span class="title">고급 문법은 추정하지 않고 보존·차단·보류</span><span class="pill kind">이번 PoC 제외</span></summary><div class="decision-body"><article><h3>선택과 이유</h3><p>recurrence, public S3, table/source update는 material loss와 owner 충돌 위험이 있어 현재 범위에서 구현하지 않는다.</p></article><article><h3>채택하지 않은 안</h3><p>겉보기만 동작하는 mock이나 silent flattening을 만들지 않는다. loss manifest와 정책 승인이 있을 때 다시 연다.</p></article><article><h3>OWNER · WRITE</h3><p>원문은 그대로 보존하고 unsupported payload는 fail-closed한다. 운영 source·public writer는 호출하지 않는다.</p></article><article><h3>NEXT ACCEPTANCE</h3><p>near-miss fixture에서 silent drop 0, fake date 0, early write 0이어야 한다.</p></article></div></details>
+          <details class="decision" data-kind="working"><summary><span class="id">A0-6</span><span class="title">React는 제품 정본, standalone은 조작형 offline fixture</span><span class="pill kind">PoC 역할 선택</span></summary><div class="decision-body"><article><h3>선택과 이유</h3><p>React만 live origin과 exact route 통합을 증명한다. standalone은 사용자가 파일을 직접 열어 core 시나리오를 조작·검토하는 동반 산출물이다.</p></article><article><h3>채택하지 않은 안</h3><p>standalone을 운영 integration과 동등하다고 표현하지 않는다. core UX가 달라지면 fixture라는 이유로 숨기지 않고 맞춘다.</p></article><article><h3>OWNER · WRITE</h3><p>각 파일은 자기 전용 PoC key만 사용한다. live origin·operating writer는 standalone 범위가 아니다.</p></article><article><h3>NEXT ACCEPTANCE</h3><p>QuickItem·이동·완료·Undo·reload·오류 상태의 사용자-visible 결과가 React와 같아야 한다.</p></article></div></details>
+        </div>
+      </section>
+
+      <section class="section" id="owners" aria-labelledby="owner-title">
+        <div class="section-head"><div><p class="eyebrow">OWNER MATRIX</p><h2 id="owner-title">무엇을 누가 소유하는지 고정했습니다</h2></div><p>한 객체를 여러 화면이 직접 덮어쓰지 않도록 source·authoring·personal·execution을 나눕니다.</p></div>
+        <table class="owner"><thead><tr><th>층</th><th>소유 값</th><th>이번 PoC 동작</th><th>금지</th></tr></thead><tbody>
+          <tr><td data-label="층">Source</td><td data-label="소유 값">원문·출처·원래 일정·완료 기준</td><td data-label="이번 PoC 동작">읽기·투영·byte 보존</td><td data-label="금지">수정·silent loss</td></tr>
+          <tr><td data-label="층">Authoring</td><td data-label="소유 값">rawText·caret·선택형 structure draft</td><td data-label="이번 PoC 동작">한 editor에서 작성·명시적 handoff</td><td data-label="금지">자동 Flow 생성</td></tr>
+          <tr><td data-label="층">Personal</td><td data-label="소유 값">폴더·개인 제목·메모·기간 숨김</td><td data-label="이번 PoC 동작">shadow state에 staged 저장</td><td data-label="금지">운영 schema 변경</td></tr>
+          <tr><td data-label="층">Execution</td><td data-label="소유 값">실행 날짜·순서·완료·Undo receipt</td><td data-label="이번 PoC 동작">순수 transition 뒤 전용 key 저장</td><td data-label="금지">원래 일정·Flow 소속 변경</td></tr>
+        </tbody></table>
+      </section>
+
+      <section class="section alt" id="next" aria-labelledby="next-title">
+        <div class="section-head"><div><p class="eyebrow">STEP-BY-STEP DELIVERY</p><h2 id="next-title">이제 단계 1의 비화면 기반으로 갑니다</h2></div><p>각 단계 안에서 기획 → UX/디자인 → 개발 설계 → 구현 → 자동 테스트 → 브라우저 평가 → 증거 갱신을 모두 닫습니다.</p></div>
+        <div class="next-grid">
+          <article class="next-card active"><b>NEXT · STAGE 1</b><h3>Ownership·staged transition</h3><p>필드별 owner, 날짜 의미, unsupported 정책, Plan/Item draft와 Undo receipt를 순수 모델·store 테스트로 먼저 고정합니다.</p></article>
+          <article class="next-card"><b>STAGE 2</b><h3>진입·한 editor·작성 틀</h3><p>네 origin과 Text Authoring을 한 제품 여정에 연결하고, 한 editor·선택형 구조·ghost를 화면에 수렴시킵니다.</p></article>
+          <article class="next-card"><b>STAGE 3+</b><h3>편집·결과·UI 통합</h3><p>공통 상세, staged save, Text/Todo/Calendar projection, responsive shell을 순차적으로 닫고 실기·사용자 검증을 분리합니다.</p></article>
+        </div>
+        <div class="callout"><h3>단계 1 완료 문장</h3><p id="next-copy">source·authoring·personal·execution owner가 필드별로 분리되고, 모든 성공·취소·오류·Undo가 같은 순수 transition과 PoC shadow namespace 안에서 검증되며, 운영 flow:* bytes는 변하지 않는다.</p><button class="button primary" id="copy-next" type="button">완료 기준 복사</button> <span class="pill" id="copy-status" role="status" aria-live="polite">저장 또는 전송하지 않음</span></div>
+      </section>
+
+      <section class="section" aria-labelledby="artifact-title">
+        <div class="section-head"><div><p class="eyebrow">EVIDENCE LINKS</p><h2 id="artifact-title">판정 근거와 다음 작업</h2></div><p>HTML은 이해·검토용이고 Markdown과 JSON이 세부 정본입니다.</p></div>
+        <div class="link-grid">
+          <a class="link-card" href="../specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md"><b>A0 결정 기록</b><span>선택안·거절안·owner·write 경계·revisit trigger</span></a>
+          <a class="link-card" href="2026-09-02-flowme-integrated-poc-requirements-traceability-ko.html"><b>168개 요구 추적</b><span>세 결과물 primary와 통합 bridge의 현재 판정</span></a>
+          <a class="link-card" href="../specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/engineering-design.md"><b>개발 설계</b><span>read model·transition·store·adapter 불변식</span></a>
+          <a class="link-card" href="../specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/ux-review.md"><b>UX 정합성 검토</b><span>원본 화면·대화 결정과 현재 구현의 기능별 대조</span></a>
+        </div>
+      </section>
+    </main>
+    <footer class="footer">A0는 로컬 격리 PoC 작업 계약입니다. commit · push · PR · Preview · Production 미진행, 실제 Android/iOS·screen reader·관찰 사용자 검증 미실행.</footer>
+  </div>
+  <script>
+    (() => {
+      const buttons = [...document.querySelectorAll('[data-filter]')];
+      const rows = [...document.querySelectorAll('.decision')];
+      buttons.forEach((button) => button.addEventListener('click', () => {
+        const value = button.dataset.filter;
+        buttons.forEach((item) => item.setAttribute('aria-pressed', String(item === button)));
+        rows.forEach((row) => { row.hidden = value !== 'all' && row.dataset.kind !== value; });
+      }));
+      const copy = document.getElementById('copy-next');
+      const status = document.getElementById('copy-status');
+      copy.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(document.getElementById('next-copy').textContent.trim());
+          status.textContent = '클립보드에 복사됨';
+        } catch {
+          status.textContent = '복사 권한이 없어 문장을 직접 선택해 주세요';
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

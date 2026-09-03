@@ -1,0 +1,2020 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23096772'/%3E%3Cpath d='M16 14h33v9H26v9h18v9H26v9h23v9H16z' fill='white'/%3E%3C/svg%3E">
+  <title>FlowMe 통합 PoC P2-B 반복 회차·완전 TXT 검증</title>
+  <style>:root {
+  --ink: #142527;
+  --muted: #5d6c6f;
+  --paper: #ffffff;
+  --wash: #eef4f3;
+  --wash-strong: #dceae7;
+  --line: #cad8d5;
+  --line-dark: #9db3ae;
+  --teal: #096772;
+  --teal-dark: #07515a;
+  --teal-soft: #def2ef;
+  --navy: #172b3a;
+  --navy-soft: #e9eef3;
+  --amber: #8a5900;
+  --amber-soft: #fff1c9;
+  --red: #9c3d38;
+  --red-soft: #fff0ed;
+  --shadow: 0 22px 62px rgba(24, 49, 45, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 76px;
+}
+
+body {
+  min-width: 0;
+  margin: 0;
+  overflow-x: clip;
+  background: var(--wash);
+  color: var(--ink);
+  font-family: Inter, Pretendard, system-ui, -apple-system, "Segoe UI", "Noto Sans KR", sans-serif;
+  line-height: 1.62;
+}
+
+button,
+a {
+  touch-action: manipulation;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+code,
+pre {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+}
+
+code {
+  overflow-wrap: anywhere;
+}
+
+.skip {
+  position: fixed;
+  top: -100px;
+  left: 12px;
+  z-index: 100;
+  padding: 11px 15px;
+  border: 2px solid var(--teal);
+  background: #fff;
+  font-weight: 800;
+}
+
+.skip:focus {
+  top: 12px;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 24px;
+  min-height: 64px;
+  padding: 8px max(18px, env(safe-area-inset-right)) 8px max(18px, env(safe-area-inset-left));
+  border-bottom: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(14px);
+}
+
+.brand {
+  color: var(--teal-dark);
+  font-size: 18px;
+  font-weight: 950;
+  letter-spacing: -0.035em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.brand span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 760;
+  letter-spacing: 0;
+}
+
+.topbar nav {
+  display: flex;
+  min-width: 0;
+  justify-content: flex-end;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.topbar nav a {
+  display: inline-flex;
+  flex: 0 0 auto;
+  min-height: 44px;
+  align-items: center;
+  padding: 0 11px;
+  color: #45585a;
+  font-size: 13px;
+  font-weight: 760;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.topbar nav a:hover,
+.topbar nav a:focus-visible {
+  background: var(--teal-soft);
+  outline: 0;
+}
+
+.page {
+  width: min(1440px, 100%);
+  min-width: 0;
+  margin: 0 auto;
+  background: var(--paper);
+  box-shadow: var(--shadow);
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(300px, 0.65fr);
+  gap: clamp(34px, 6vw, 82px);
+  align-items: center;
+  padding: clamp(54px, 8vw, 108px) clamp(20px, 6vw, 88px) clamp(46px, 7vw, 86px);
+  background:
+    linear-gradient(90deg, rgba(9, 103, 114, 0.08) 1px, transparent 1px) 0 0 / 72px 72px,
+    linear-gradient(rgba(9, 103, 114, 0.08) 1px, transparent 1px) 0 0 / 72px 72px,
+    linear-gradient(135deg, #fff 54%, #e4f3f0);
+}
+
+.hero-main,
+.hero-status {
+  min-width: 0;
+}
+
+.meta {
+  margin: 0 0 16px;
+  color: var(--teal-dark);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  max-width: 900px;
+  margin: 0;
+  font-size: clamp(43px, 6.4vw, 82px);
+  line-height: 1.02;
+  letter-spacing: -0.062em;
+  word-break: keep-all;
+}
+
+.lead {
+  max-width: 790px;
+  margin: 24px 0 0;
+  color: #43585a;
+  font-size: clamp(16px, 1.65vw, 21px);
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 30px;
+}
+
+.primary-action,
+.secondary-action {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 18px;
+  border: 1px solid var(--teal);
+  background: var(--teal);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 850;
+  text-align: center;
+  text-decoration: none;
+}
+
+.secondary-action {
+  background: #fff;
+  color: var(--teal-dark);
+}
+
+.primary-action:hover,
+.primary-action:focus-visible,
+.secondary-action:hover,
+.secondary-action:focus-visible {
+  box-shadow: 0 0 0 3px rgba(9, 103, 114, 0.2);
+  outline: 0;
+}
+
+.hero-status {
+  border: 1px solid var(--line-dark);
+  border-top: 6px solid var(--amber);
+  background: #fff;
+  box-shadow: 0 18px 46px rgba(22, 53, 48, 0.12);
+}
+
+.hero-status.passed {
+  border-top-color: var(--teal);
+}
+
+.hero-status.conditional {
+  border-top-color: var(--amber);
+  background: #fffdf7;
+}
+
+.hero-status.failed {
+  border-top-color: var(--red);
+}
+
+.hero-status > span,
+.status-rail span,
+.verdict-ledger article > span,
+.contract-strip span,
+.byte-contract dt,
+.boundary-proof > span,
+.external-grid span,
+.publish-grid span,
+.source-footer span {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.hero-status > span,
+.hero-status > strong,
+.hero-status > p {
+  margin-left: 24px;
+  margin-right: 24px;
+}
+
+.hero-status > span {
+  margin-top: 23px;
+}
+
+.hero-status > strong {
+  display: block;
+  margin-top: 2px;
+  font-size: clamp(31px, 4vw, 46px);
+  letter-spacing: -0.05em;
+}
+
+.hero-status > p {
+  margin-top: 7px;
+  margin-bottom: 21px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.hero-status dl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0;
+  border-top: 1px solid var(--line);
+}
+
+.hero-status dl div {
+  min-width: 0;
+  padding: 14px;
+  border-right: 1px solid var(--line);
+}
+
+.hero-status dl div:last-child {
+  border-right: 0;
+}
+
+.hero-status dt {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.hero-status dd {
+  margin: 2px 0 0;
+  font-size: 15px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.status-rail {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.status-rail > div {
+  min-width: 0;
+  padding: 19px clamp(15px, 2.2vw, 28px);
+  border-right: 1px solid var(--line);
+}
+
+.status-rail > div:last-child {
+  border-right: 0;
+}
+
+.status-rail strong,
+.contract-strip strong {
+  display: block;
+  margin-top: 1px;
+  font-size: clamp(24px, 3vw, 38px);
+  letter-spacing: -0.05em;
+}
+
+.status-rail small,
+.contract-strip small {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.section {
+  min-width: 0;
+  padding: clamp(50px, 7vw, 92px) clamp(18px, 6vw, 88px);
+  border-bottom: 1px solid var(--line);
+}
+
+.section:focus {
+  outline: 3px solid rgba(9, 103, 114, 0.28);
+  outline-offset: -3px;
+}
+
+.section.dark {
+  background: var(--navy);
+  color: #f6fbfb;
+}
+
+.section-head {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(300px, 1.05fr);
+  gap: clamp(24px, 5vw, 70px);
+  align-items: end;
+  margin-bottom: 31px;
+}
+
+.section-head > div {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+}
+
+.section-head > div > span {
+  padding-top: 8px;
+  color: var(--teal);
+  font: 950 13px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.dark .section-head > div > span {
+  color: #73d7ca;
+}
+
+.section-head h2 {
+  margin: 0;
+  font-size: clamp(31px, 4.1vw, 51px);
+  line-height: 1.08;
+  letter-spacing: -0.05em;
+  word-break: keep-all;
+}
+
+.section-head > p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.dark .section-head > p {
+  color: #c0d0d3;
+}
+
+.verdict-ledger {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 52px minmax(0, 1fr) 52px minmax(0, 1.25fr);
+  align-items: stretch;
+}
+
+.verdict-ledger article {
+  min-width: 0;
+  padding: 23px;
+  border: 1px solid var(--line);
+  background: #f7faf9;
+}
+
+.verdict-ledger article.target {
+  background: var(--teal-soft);
+  border-color: #92c6bd;
+}
+
+.verdict-ledger article.result.pending {
+  background: var(--amber-soft);
+  border-color: #ddc47e;
+}
+
+.verdict-ledger article.result.passed {
+  background: var(--teal-soft);
+  border-color: #8fc5bb;
+}
+
+.verdict-ledger article.result.conditional {
+  background: var(--amber-soft);
+  border-color: #ddc47e;
+}
+
+.verdict-ledger article.result.failed {
+  background: var(--red-soft);
+  border-color: #d8a19c;
+}
+
+.verdict-ledger strong {
+  display: block;
+  margin-top: 4px;
+  font-size: clamp(32px, 4.5vw, 55px);
+  line-height: 1.1;
+  letter-spacing: -0.055em;
+}
+
+.verdict-ledger p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.ledger-arrow,
+.flow-arrow {
+  display: grid;
+  place-items: center;
+  color: var(--teal);
+  font-size: 28px;
+  font-weight: 950;
+}
+
+.honesty-note,
+.history-note,
+.remaining {
+  margin-top: 16px;
+  padding: 18px 20px;
+  border-left: 5px solid var(--amber);
+  background: var(--amber-soft);
+}
+
+.honesty-note strong,
+.history-note strong,
+.remaining strong {
+  display: block;
+  font-size: 17px;
+}
+
+.honesty-note p,
+.history-note p {
+  margin: 5px 0 0;
+  color: #4d5d5d;
+}
+
+.decision-list {
+  display: grid;
+  border-top: 1px solid #455863;
+}
+
+.decision {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  gap: 22px;
+  padding: 24px 0;
+  border-bottom: 1px solid #455863;
+}
+
+.decision-index {
+  color: #73d7ca;
+  font: 900 13px/1.4 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.decision h3 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.decision dl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  margin: 16px 0 0;
+  background: #455863;
+}
+
+.decision dl div {
+  min-width: 0;
+  padding: 15px;
+  background: #203747;
+}
+
+.decision dt {
+  color: #9fc4c4;
+  font-size: 11px;
+}
+
+.decision dd {
+  margin: 5px 0 0;
+  color: #eef7f6;
+  font-size: 13px;
+}
+
+.requirement-list {
+  display: grid;
+  gap: 13px;
+}
+
+.requirement {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-left: 6px solid var(--amber);
+  background: #fff;
+}
+
+.requirement[data-state="passed"] {
+  border-left-color: var(--teal);
+}
+
+.requirement[data-state="failed"] {
+  border-left-color: var(--red);
+}
+
+.requirement summary {
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  min-height: 78px;
+  padding: 14px 18px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.requirement summary::-webkit-details-marker {
+  display: none;
+}
+
+.requirement summary:hover {
+  background: #f7faf9;
+}
+
+.req-id {
+  color: var(--teal-dark);
+  font-weight: 950;
+}
+
+.req-copy {
+  min-width: 0;
+}
+
+.req-copy strong,
+.req-copy small {
+  display: block;
+}
+
+.req-copy strong {
+  font-size: 17px;
+}
+
+.req-copy small {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.status {
+  display: inline-flex;
+  min-height: 29px;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--navy-soft);
+  color: var(--navy);
+  font-size: 11px;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.status.passed {
+  background: var(--teal-soft);
+  color: var(--teal-dark);
+}
+
+.status.pending {
+  background: var(--amber-soft);
+  color: var(--amber);
+}
+
+.status.conditional {
+  border: 1px solid #d9b95f;
+  background: #fff7df;
+  color: var(--amber);
+}
+
+.status.failed {
+  background: var(--red-soft);
+  color: var(--red);
+}
+
+.requirement-body {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-top: 1px solid var(--line);
+}
+
+.requirement-body section {
+  min-width: 0;
+  padding: 18px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.requirement-body section:nth-child(2n) {
+  border-right: 0;
+}
+
+.requirement-body h4 {
+  margin: 0 0 5px;
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+}
+
+.requirement-body p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.evidence-links {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 0;
+  padding: 16px 18px;
+  background: #f4f8f7;
+  list-style: none;
+}
+
+.evidence-links a {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  padding: 4px 8px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--teal-dark);
+  font: 700 11px/1.35 ui-monospace, SFMono-Regular, Consolas, monospace;
+  overflow-wrap: anywhere;
+  text-decoration: none;
+}
+
+.manifest-section {
+  background: #f6faf9;
+}
+
+.manifest-flow {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.8fr) 54px minmax(220px, 1fr) 54px minmax(260px, 1.25fr);
+  align-items: center;
+}
+
+.source-node,
+.manifest-node {
+  min-width: 0;
+  padding: 23px;
+  border: 1px solid var(--line-dark);
+  background: #fff;
+}
+
+.manifest-node {
+  border-top: 5px solid var(--teal);
+}
+
+.source-node span,
+.manifest-node span {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.source-node strong,
+.manifest-node strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 23px;
+  letter-spacing: -0.035em;
+}
+
+.source-node code,
+.manifest-node code {
+  display: block;
+  margin-top: 9px;
+  color: var(--teal-dark);
+  font-size: 11px;
+}
+
+.output-stack {
+  display: grid;
+  gap: 6px;
+}
+
+.output-stack article {
+  min-width: 0;
+  padding: 13px 15px;
+  border-left: 4px solid var(--teal);
+  background: #fff;
+  box-shadow: 0 5px 16px rgba(22, 53, 48, 0.07);
+}
+
+.output-stack strong,
+.output-stack span,
+.output-stack small {
+  display: block;
+}
+
+.output-stack span {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.output-stack small {
+  margin-top: 3px;
+  color: var(--teal-dark);
+  font-size: 10px;
+}
+
+.contract-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  margin-top: 22px;
+  border: 1px solid var(--line);
+  background: var(--line);
+}
+
+.contract-strip div {
+  min-width: 0;
+  padding: 17px;
+  background: #fff;
+}
+
+.contract-strip strong {
+  font-size: 23px;
+}
+
+.txt-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.8fr) minmax(0, 1.2fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.byte-contract {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  margin: 0;
+  border: 1px solid var(--line);
+  background: var(--line);
+}
+
+.byte-contract div {
+  min-width: 0;
+  padding: 13px 15px;
+  background: #fff;
+}
+
+.byte-contract dd {
+  margin: 2px 0 0;
+  font-weight: 900;
+}
+
+.property-order {
+  margin-top: 14px;
+  padding: 18px;
+  border: 1px solid var(--line);
+}
+
+.property-order ol {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 5px 18px;
+  margin: 12px 0 0;
+  padding-left: 22px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.txt-sample {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid #324954;
+  background: #102832;
+  color: #edf9f7;
+  box-shadow: 0 18px 45px rgba(13, 38, 47, 0.16);
+}
+
+.txt-sample figcaption {
+  padding: 12px 16px;
+  border-bottom: 1px solid #324954;
+  color: #a8c8c6;
+  font-size: 11px;
+}
+
+.txt-sample pre {
+  margin: 0;
+  padding: 20px;
+  overflow-x: auto;
+  color: #edf9f7;
+  font-size: clamp(11px, 1.2vw, 13px);
+  line-height: 1.7;
+  white-space: pre;
+}
+
+.transition-flow {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  background: #455863;
+  list-style: none;
+}
+
+.transition-flow li {
+  min-width: 0;
+  padding: 21px;
+  background: #203747;
+}
+
+.transition-flow span,
+.transition-flow strong,
+.transition-flow small {
+  display: block;
+}
+
+.transition-flow span {
+  color: #73d7ca;
+  font: 900 12px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.transition-flow strong {
+  margin-top: 11px;
+  font-size: 18px;
+}
+
+.transition-flow small {
+  margin-top: 5px;
+  color: #bcd0d2;
+}
+
+.invariant {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 14px;
+  margin-top: 15px;
+  padding-top: 16px;
+  border-top: 1px solid #455863;
+}
+
+.invariant strong {
+  color: #73d7ca;
+  white-space: nowrap;
+}
+
+.invariant span {
+  color: #d4e2e3;
+}
+
+.surface-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 13px;
+}
+
+.surface-pair article {
+  min-width: 0;
+  padding: 25px;
+  border: 1px solid var(--line);
+  border-top: 6px solid var(--navy);
+  background: #fff;
+}
+
+.surface-pair article:last-child {
+  border-top-color: var(--teal);
+}
+
+.surface-pair article > span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.surface-pair h3 {
+  margin: 4px 0 0;
+  font-size: 25px;
+}
+
+.surface-pair p {
+  margin: 9px 0 0;
+  color: var(--muted);
+}
+
+.surface-pair ul {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px 22px;
+  margin: 17px 0 0;
+  padding-left: 20px;
+  font-size: 13px;
+}
+
+.scenario-section {
+  background: #f7faf9;
+}
+
+.table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  background: #fff;
+}
+
+table {
+  width: 100%;
+  min-width: 780px;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+th,
+td {
+  padding: 13px 15px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+tr:last-child td {
+  border-bottom: 0;
+}
+
+th {
+  background: #edf3f1;
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+
+td strong,
+td small {
+  display: block;
+}
+
+td small {
+  margin-top: 4px;
+  color: var(--muted);
+}
+
+.scenario-id {
+  display: inline-block;
+  margin-bottom: 4px;
+  color: var(--teal-dark);
+  font: 900 11px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.boundary-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+  gap: 15px;
+}
+
+.boundary-list {
+  display: grid;
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--line);
+  background: var(--line);
+  list-style: none;
+}
+
+.boundary-list li {
+  position: relative;
+  padding: 14px 16px 14px 46px;
+  background: #fff;
+}
+
+.boundary-list li::before {
+  content: "✓";
+  position: absolute;
+  top: 14px;
+  left: 17px;
+  color: var(--teal);
+  font-weight: 950;
+}
+
+.boundary-proof {
+  align-self: stretch;
+  padding: 22px;
+  border: 1px solid var(--line-dark);
+  border-top: 6px solid var(--amber);
+  background: var(--amber-soft);
+}
+
+.boundary-proof.passed {
+  border-top-color: var(--teal);
+  background: var(--teal-soft);
+}
+
+.boundary-proof.conditional {
+  border-top-color: var(--amber);
+  background: var(--amber-soft);
+}
+
+.boundary-proof.failed {
+  border-top-color: var(--red);
+  background: var(--red-soft);
+}
+
+.boundary-proof > strong {
+  display: block;
+  margin-top: 3px;
+  font-size: 29px;
+  letter-spacing: -0.04em;
+}
+
+.boundary-proof dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  margin: 16px 0 0;
+  background: rgba(77, 93, 93, 0.15);
+}
+
+.boundary-proof dl div {
+  min-width: 0;
+  padding: 11px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.boundary-proof dt {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.boundary-proof dd {
+  margin: 2px 0 0;
+  font-weight: 900;
+}
+
+.filterbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding: 11px;
+  border: 1px solid var(--line);
+  background: #fff;
+}
+
+.filterbar > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.filterbar button {
+  min-height: 42px;
+  padding: 0 13px;
+  border: 1px solid var(--line-dark);
+  background: #fff;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.filterbar button[aria-pressed="true"] {
+  border-color: var(--teal);
+  background: var(--teal);
+  color: #fff;
+}
+
+#gate-count {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.gate-row[hidden] {
+  display: none;
+}
+
+.gate-table code {
+  color: var(--teal-dark);
+  font-size: 11px;
+}
+
+.numeric {
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.supplemental-runs {
+  margin-top: 15px;
+  border: 1px solid var(--line);
+  background: #fff;
+}
+
+.supplemental-runs > h3 {
+  margin: 0;
+  padding: 13px 16px;
+  border-bottom: 1px solid var(--line);
+  background: #edf3f1;
+  font-size: 15px;
+}
+
+.supplemental-runs article {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) auto auto minmax(280px, 1.3fr);
+  gap: 13px;
+  align-items: center;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.supplemental-runs article div,
+.supplemental-runs article code {
+  min-width: 0;
+}
+
+.supplemental-runs article div > strong,
+.supplemental-runs article div > small {
+  display: block;
+}
+
+.supplemental-runs article div > small {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.supplemental-count {
+  white-space: nowrap;
+}
+
+.supplemental-runs article code {
+  color: var(--teal-dark);
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+
+.supplemental-runs > p {
+  margin: 0;
+  padding: 12px 16px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.viewport-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 1px;
+  margin-top: 15px;
+  border: 1px solid var(--line);
+  background: var(--line);
+}
+
+.viewport-grid article {
+  min-width: 0;
+  padding: 13px;
+  background: #fff;
+}
+
+.viewport-grid strong,
+.viewport-grid span,
+.viewport-grid small {
+  display: block;
+}
+
+.viewport-grid strong {
+  font-size: 15px;
+}
+
+.viewport-grid span,
+.viewport-grid small {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.limits-section {
+  background: #f3f6f5;
+}
+
+.external-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  border: 1px solid var(--line);
+  background: var(--line);
+}
+
+.external-grid article {
+  min-width: 0;
+  padding: 20px;
+  background: #fff;
+}
+
+.external-grid article.users {
+  background: var(--navy);
+  color: #fff;
+}
+
+.external-grid .users span {
+  color: #b9cbce;
+}
+
+.external-grid strong {
+  display: block;
+  margin-top: 3px;
+  font-size: clamp(24px, 3vw, 37px);
+  letter-spacing: -0.04em;
+}
+
+.publish-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 1px;
+  margin-top: 13px;
+  border: 1px solid var(--line);
+  background: var(--line);
+}
+
+.publish-grid div {
+  min-width: 0;
+  padding: 14px 16px;
+  background: #fff;
+}
+
+.publish-grid strong {
+  display: block;
+  margin-top: 2px;
+  font-size: 14px;
+}
+
+.remaining {
+  border-left-color: var(--navy);
+  background: var(--navy-soft);
+}
+
+.remaining ul {
+  display: grid;
+  gap: 6px;
+  margin: 10px 0 0;
+  padding-left: 20px;
+}
+
+.source-footer {
+  display: grid;
+  grid-template-columns: 1.2fr 0.35fr 1.45fr;
+  gap: 1px;
+  padding: 22px clamp(18px, 6vw, 88px);
+  background: var(--navy);
+  color: #fff;
+}
+
+.source-footer > div {
+  min-width: 0;
+  padding: 14px;
+  background: #203747;
+}
+
+.source-footer span {
+  color: #a9c2c4;
+}
+
+.source-footer strong,
+.source-footer code {
+  display: block;
+  margin-top: 2px;
+  overflow-wrap: anywhere;
+  font-size: 12px;
+}
+
+.source-footer p {
+  grid-column: 1 / -1;
+  margin: 11px 0 0;
+  color: #b9cbce;
+  font-size: 11px;
+}
+
+footer {
+  width: min(1440px, 100%);
+  margin: 0 auto;
+  padding: 20px clamp(18px, 6vw, 88px) calc(20px + env(safe-area-inset-bottom));
+  color: var(--muted);
+  font-size: 11px;
+}
+
+footer p {
+  margin: 0;
+}
+
+@media (max-width: 1040px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-status {
+    width: min(720px, 100%);
+  }
+
+  .section-head {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .decision dl {
+    grid-template-columns: 1fr;
+  }
+
+  .manifest-flow {
+    grid-template-columns: minmax(180px, 0.8fr) 46px minmax(220px, 1fr);
+  }
+
+  .flow-arrow.split {
+    grid-column: 1 / -1;
+    min-height: 48px;
+    transform: rotate(90deg);
+  }
+
+  .output-stack {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .viewport-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  html {
+    scroll-padding-top: 104px;
+  }
+
+  .topbar {
+    grid-template-columns: 1fr;
+    gap: 2px;
+    padding-top: 7px;
+    padding-bottom: 5px;
+  }
+
+  .brand {
+    padding-left: 2px;
+  }
+
+  .topbar nav {
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .topbar nav a {
+    min-height: 38px;
+    padding: 0 10px;
+    font-size: 12px;
+  }
+
+  .hero {
+    padding-top: 46px;
+  }
+
+  .hero h1 {
+    font-size: clamp(39px, 12.5vw, 62px);
+  }
+
+  .status-rail {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .status-rail > div:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .status-rail > div:nth-child(-n + 2) {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .verdict-ledger {
+    grid-template-columns: 1fr;
+  }
+
+  .ledger-arrow {
+    min-height: 44px;
+    transform: rotate(90deg);
+  }
+
+  .decision {
+    grid-template-columns: 1fr;
+    gap: 9px;
+  }
+
+  .requirement summary {
+    grid-template-columns: 72px minmax(0, 1fr);
+  }
+
+  .requirement summary .status {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  .requirement-body,
+  .txt-layout,
+  .surface-pair,
+  .boundary-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .requirement-body section,
+  .requirement-body section:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .manifest-flow {
+    grid-template-columns: 1fr;
+  }
+
+  .flow-arrow {
+    min-height: 46px;
+    transform: rotate(90deg);
+  }
+
+  .output-stack {
+    grid-column: auto;
+    grid-template-columns: 1fr;
+  }
+
+  .contract-strip,
+  .transition-flow,
+  .external-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .property-order ol {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .surface-pair ul {
+    grid-template-columns: 1fr;
+  }
+
+  .publish-grid,
+  .source-footer {
+    grid-template-columns: 1fr;
+  }
+
+  .supplemental-runs article {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .supplemental-runs article code {
+    grid-column: 1 / -1;
+  }
+
+  .source-footer p {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 430px) {
+  .hero,
+  .section {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .hero-actions {
+    display: grid;
+  }
+
+  .primary-action,
+  .secondary-action {
+    width: 100%;
+  }
+
+  .hero-status dl {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-status dl div {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .hero-status dl div:last-child {
+    border-bottom: 0;
+  }
+
+  .section-head > div {
+    grid-template-columns: 38px minmax(0, 1fr);
+  }
+
+  .contract-strip,
+  .transition-flow,
+  .external-grid,
+  .byte-contract,
+  .boundary-proof dl,
+  .viewport-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .property-order ol {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .filterbar {
+    align-items: stretch;
+  }
+
+  .filterbar > div {
+    width: 100%;
+  }
+
+  .filterbar button {
+    flex: 1 1 40%;
+  }
+
+  .invariant {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+@media print {
+  body {
+    background: #fff;
+  }
+
+  .topbar,
+  .skip,
+  .filterbar {
+    display: none;
+  }
+
+  .page {
+    box-shadow: none;
+  }
+
+  .gate-row[hidden] {
+    display: table-row;
+  }
+}
+</style>
+</head>
+<body>
+  <a class="skip" href="#verdict">판정으로 바로 이동</a>
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="보고서 처음으로">FlowMe <span>P2-B 검증</span></a>
+    <nav aria-label="보고서 구획">
+      <a href="#verdict">판정</a>
+      <a href="#decisions">결정</a>
+      <a href="#requirements">요구</a>
+      <a href="#manifest">Manifest</a>
+      <a href="#txt">TXT</a>
+      <a href="#scenarios">시나리오</a>
+      <a href="#verification">검증</a>
+    </nav>
+  </header>
+
+  <main class="page" id="top">
+    <section class="hero">
+      <div class="hero-main">
+        <p class="meta">2026-09-03 · isolated functional PoC · evidence report</p>
+        <h1>반복 회차와 완전 TXT,<br>끝났는지까지 검증합니다.</h1>
+        <p class="lead">D2-017 반복 회차 projection과 D2-020 복사용 TXT의 남은 갭을 닫되, 구현 증거와 아직 끝나지 않은 실행 검증을 분리해 판정한다.</p>
+        <div class="hero-actions">
+          <a class="primary-action" id="open-standalone" href="./2026-09-02-flowme-integrated-flow-poc-standalone-ko.html">조작형 독립 HTML 열기</a>
+          <a class="secondary-action" id="open-trace" href="./2026-09-02-flowme-integrated-poc-requirements-traceability-ko.html">168개 추적표 열기</a>
+        </div>
+      </div>
+      <aside class="hero-status conditional" aria-label="P2-B 검증 상태">
+        <span>종합 종료 판정</span>
+        <strong id="overall-status">검증 완료 · 기존 회귀 1건</strong>
+        <p>P2-B 관련 실패는 0건입니다. 기존 날짜 기준 회귀 1건은 별도 결함으로 남겼습니다.</p>
+        <dl>
+          <div><dt>이전 확정</dt><dd>122 / 168</dd></div>
+          <div><dt>목표 판정</dt><dd>124 / 168</dd></div>
+          <div><dt>확인된 gate</dt><dd>6 / 7</dd></div>
+        </dl>
+      </aside>
+    </section>
+
+    <section class="status-rail" aria-label="P2-B 핵심 계약">
+      <div><span>닫을 갭</span><strong>2개</strong><small>D2-017 · D2-020</small></div>
+      <div><span>원본 관계</span><strong>1 → N</strong><small>Item 1개 · occurrence N개</small></div>
+      <div><span>결과 화면</span><strong>4개</strong><small>Text · Todo · Calendar · Sheet</small></div>
+      <div><span>TXT 계약</span><strong>v2</strong><small>화면 · 복사 · 다운로드 동일 byte</small></div>
+    </section>
+
+    <section class="section" id="verdict" tabindex="-1">
+      <header class="section-head">
+        <div><span>01</span><h2>목표 숫자와 종료 판정을 분리했습니다.</h2></div>
+        <p><code>afterP2B</code>의 124개는 두 갭을 닫았을 때의 목표 판정입니다. 현재 보고서는 코드 파일의 존재만으로 종합 통과를 만들지 않고, 필수 fresh 실행이 빠져 있으면 “검증 대기”로 남깁니다.</p>
+      </header>
+      <div class="verdict-ledger">
+        <article>
+          <span>P2-B 전 확정 기준</span>
+          <strong>122</strong>
+          <p>충족 · 전체 168개</p>
+        </article>
+        <div class="ledger-arrow" aria-hidden="true">→</div>
+        <article class="target">
+          <span>두 항목 승격 목표</span>
+          <strong>+2</strong>
+          <p>D2-017 · D2-020</p>
+        </article>
+        <div class="ledger-arrow" aria-hidden="true">→</div>
+        <article class="result conditional">
+          <span>이 보고서의 현재 종료 판정</span>
+          <strong>검증 완료 · 기존 회귀 1건</strong>
+          <p>현재 사용할 수 있는 확정 충족 124개</p>
+        </article>
+      </div>
+      <div class="honesty-note">
+        <strong>추적표 snapshot과의 관계</strong>
+        <p>현재 verification manifest에는 충족 128개가 기록돼 있습니다. 이 숫자는 P2-B override 반영 상태이며, 이 보고서의 종료 gate 판정과 별개입니다. 빠진 실행이 있으면 보고서는 계속 검증 대기로 표시합니다.</p>
+      </div>
+    </section>
+
+    <section class="section dark" id="decisions" tabindex="-1">
+      <header class="section-head">
+        <div><span>02</span><h2>정본 충돌을 세 가지 결정으로 고정했습니다.</h2></div>
+        <p>원 개발 결과를 덮어쓰지 않고, 통합 PoC에서 필요한 확장만 좁게 허용했습니다. 이 결정은 운영 schema나 영구 제품 정책이 아닙니다.</p>
+      </header>
+      <div class="decision-list"><article class="decision">
+  <div class="decision-index">DEC-01</div>
+  <div><h3>회차별 완료 저장의 범위</h3><dl>
+    <div><dt>충돌</dt><dd>개발 2 원 정본은 회차별 완료 저장을 당시 범위 밖으로 뒀지만, 통합 PoC 목표는 회차 이동·완료·다시 열기·Undo·reload를 요구한다.</dd></div>
+    <div><dt>이번 결정</dt><dd>운영 정책이나 migration으로 올리지 않고, occurrenceId 단위의 PoC 전용 shadow state로만 구현한다.</dd></div>
+    <div><dt>보호선</dt><dd>원본 Item, 원 일정, Flow 소속과 운영 writer는 바꾸지 않는다.</dd></div>
+  </dl></div>
+</article><article class="decision">
+  <div class="decision-index">DEC-02</div>
+  <div><h3>네 결과와 TXT의 관계</h3><dl>
+    <div><dt>충돌</dt><dd>요구 문장에는 Todo·Calendar·Sheet·TXT가 함께 열거되지만 현재 제품 IA의 결과 화면은 Text·Todo·Calendar·Sheet 네 개다.</dd></div>
+    <div><dt>이번 결정</dt><dd>TXT를 다섯 번째 독립 화면으로 만들지 않고 Text 결과의 화면·복사·다운로드 payload로 둔다. 네 화면과 TXT가 같은 occurrence manifest를 공유한다.</dd></div>
+    <div><dt>보호선</dt><dd>Working Source와 배포용 TXT는 계속 분리한다.</dd></div>
+  </dl></div>
+</article><article class="decision">
+  <div class="decision-index">DEC-03</div>
+  <div><h3>안내 속성 보존</h3><dl>
+    <div><dt>충돌</dt><dd>P2-B TXT 요약 목록에는 안내가 생략돼 있지만 개발 2 authoring 정본에는 안내가 전용 속성으로 존재한다.</dd></div>
+    <div><dt>이번 결정</dt><dd>안내를 설명에 합치지 않고 출처와 주의 사이의 전용 행으로 보존한다.</dd></div>
+    <div><dt>보호선</dt><dd>이 추가 보존은 D2-035·D2-036·D2-039의 속성 picker/editor·재진입 완성 판정으로 쓰지 않는다. D2-023은 31개 실제·검증 콘텐츠 예시 보존 요구다.</dd></div>
+  </dl></div>
+</article></div>
+    </section>
+
+    <section class="section" id="requirements" tabindex="-1">
+      <header class="section-head">
+        <div><span>03</span><h2>두 요구를 하나씩 원문과 맞췄습니다.</h2></div>
+        <p>구현·테스트 파일은 직접 연결합니다. 상태 배지는 필수 종료 gate에서 계산하므로 아직 끝나지 않은 검증을 숨기지 않습니다.</p>
+      </header>
+      <div class="requirement-list"><details class="requirement" data-state="conditional" open>
+    <summary>
+      <span class="req-id">D2-017</span>
+      <span class="req-copy"><strong>Calendar는 실제 월간 달력 projection</strong><small>날짜 있는 occurrence만 월간 Calendar grid와 선택일 상세에 나타난다.</small></span>
+      <span class="status conditional">충족 확인 · 기존 결함 별도</span>
+    </summary>
+    <div class="requirement-body">
+      <section><h4>이전 판정</h4><p>부분 · 저장 후 월간 개인공간 view는 있으나 authoring 결과는 날짜 목록이고 recurrence occurrence parity가 없다.</p></section>
+      <section><h4>구현된 닫힘 조건</h4><p>원본 Item 1개와 파생 회차를 분리하고 exact D2 문법·종료·bounded horizon으로 만든 stable manifest를 네 결과가 공유한다. 회차 이동·완료·다시 열기·Undo·reload는 occurrenceId 기준 PoC shadow state에만 기록되며 원 일정·Item·Flow 소속은 불변이다.</p></section>
+      <section><h4>판정 경계</h4><p>반복 규칙 편집, 이번 이후 일괄 변경, 예외일은 별도 versioned 계약에서 다룬다.</p></section>
+      <section><h4>검증 상태</h4><p>P2-B 관련 실패는 0건입니다. 기존 날짜 기준 회귀 1건은 별도 결함으로 남긴 채 충족 판정을 사용할 수 있습니다.</p></section>
+      <ul class="evidence-links"><li><a href="../../lib/flow/personal-workspace-poc-occurrence.ts">lib/flow/personal-workspace-poc-occurrence.ts</a></li><li><a href="../../lib/flow/personal-workspace-poc-result-projection.ts">lib/flow/personal-workspace-poc-result-projection.ts</a></li><li><a href="../../lib/flow/personal-workspace-poc-state.ts">lib/flow/personal-workspace-poc-state.ts</a></li><li><a href="../../components/flow/personal-workspace-poc/PersonalWorkspacePocResultPresenter.tsx">components/flow/personal-workspace-poc/PersonalWorkspacePocResultPresenter.tsx</a></li><li><a href="../../components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx">components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx</a></li><li><a href="../../docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js">docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js</a></li><li><a href="../../docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js">docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js</a></li><li><a href="../../lib/flow/personal-workspace-poc-occurrence.test.ts">lib/flow/personal-workspace-poc-occurrence.test.ts</a></li><li><a href="../../lib/flow/personal-workspace-poc-result-projection.test.ts">lib/flow/personal-workspace-poc-result-projection.test.ts</a></li><li><a href="../../lib/flow/personal-workspace-poc-state.test.ts">lib/flow/personal-workspace-poc-state.test.ts</a></li><li><a href="../../components/flow/personal-workspace-poc/PersonalWorkspacePocResultPresenter.test.tsx">components/flow/personal-workspace-poc/PersonalWorkspacePocResultPresenter.test.tsx</a></li><li><a href="../../docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/standalone.test.cjs">docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/standalone.test.cjs</a></li><li><a href="../../tests/e2e/personal-workspace-integration-poc.spec.ts">tests/e2e/personal-workspace-integration-poc.spec.ts</a></li><li><a href="../../tests/e2e/personal-workspace-integrated-standalone.spec.ts">tests/e2e/personal-workspace-integrated-standalone.spec.ts</a></li></ul>
+    </div>
+  </details><details class="requirement" data-state="conditional" open>
+    <summary>
+      <span class="req-id">D2-020</span>
+      <span class="req-copy"><strong>WorkingSource와 복사용 TXT 결과 구분</strong><small>좌측은 편집 source, 결과 TXT는 들여쓰기·번호·상세가 정리된 복사·다운로드 배포본이다.</small></span>
+      <span class="status conditional">충족 확인 · 기존 결함 별도</span>
+    </summary>
+    <div class="requirement-body">
+      <section><h4>이전 판정</h4><p>부분 · 저장 후 원문 보기만 있고 정리된 TXT projection의 복사·다운로드 UI가 없다.</p></section>
+      <section><h4>구현된 닫힘 조건</h4><p>작성 원문과 별도인 complete TXT v2가 단계별 자동 번호와 supported 전용 속성·하위 체크·반복 회차·원문 메모를 고정 순서로 직렬화한다. 화면·clipboard·다운로드는 UTF-8 BOM 없음, LF, 마지막 개행 1개의 동일 payload를 공유한다.</p></section>
+      <section><h4>판정 경계</h4><p>외부 전송과 운영 export writer 연결은 승인된 별도 migration에서만 다룬다.</p></section>
+      <section><h4>검증 상태</h4><p>P2-B 관련 실패는 0건입니다. 기존 날짜 기준 회귀 1건은 별도 결함으로 남긴 채 충족 판정을 사용할 수 있습니다.</p></section>
+      <ul class="evidence-links"><li><a href="../../lib/flow/personal-workspace-poc-authoring.ts">lib/flow/personal-workspace-poc-authoring.ts</a></li><li><a href="../../lib/flow/personal-workspace-poc-authoring-fidelity.ts">lib/flow/personal-workspace-poc-authoring-fidelity.ts</a></li><li><a href="../../lib/flow/personal-workspace-poc-contract.ts">lib/flow/personal-workspace-poc-contract.ts</a></li><li><a href="../../lib/flow/personal-workspace-poc-result-projection.ts">lib/flow/personal-workspace-poc-result-projection.ts</a></li><li><a href="../../components/flow/personal-workspace-poc/PersonalWorkspacePocResultPresenter.tsx">components/flow/personal-workspace-poc/PersonalWorkspacePocResultPresenter.tsx</a></li><li><a href="../../docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js">docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js</a></li><li><a href="../../docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js">docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js</a></li><li><a href="../../lib/flow/personal-workspace-poc-authoring.test.ts">lib/flow/personal-workspace-poc-authoring.test.ts</a></li><li><a href="../../lib/flow/personal-workspace-poc-authoring-fidelity.test.ts">lib/flow/personal-workspace-poc-authoring-fidelity.test.ts</a></li><li><a href="../../lib/flow/personal-workspace-poc-result-projection.test.ts">lib/flow/personal-workspace-poc-result-projection.test.ts</a></li><li><a href="../../docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/standalone.test.cjs">docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/standalone.test.cjs</a></li><li><a href="../../tests/e2e/personal-workspace-integration-poc.spec.ts">tests/e2e/personal-workspace-integration-poc.spec.ts</a></li><li><a href="../../tests/e2e/personal-workspace-integrated-standalone.spec.ts">tests/e2e/personal-workspace-integrated-standalone.spec.ts</a></li></ul>
+    </div>
+  </details></div>
+    </section>
+
+    <section class="section manifest-section" id="manifest" tabindex="-1">
+      <header class="section-head">
+        <div><span>04</span><h2>한 occurrence manifest가 모든 결과를 만듭니다.</h2></div>
+        <p><code>sourceItemRef</code>는 원본 Item을 가리키고, <code>occurrenceId</code>는 원 발생일과 반복 signature로 고정됩니다. 실행 날짜를 옮겨도 occurrence identity는 바뀌지 않습니다.</p>
+      </header>
+      <div class="manifest-flow" aria-label="source Item에서 네 결과로 이어지는 occurrence manifest">
+        <article class="source-node"><span>Canonical source</span><strong>Item 1개</strong><code>sourceItemRef</code></article>
+        <div class="flow-arrow" aria-hidden="true">→</div>
+        <article class="manifest-node"><span>occurrence contract v1</span><strong>안정적인 N개 회차</strong><code>occurrenceId · originalDate · index</code></article>
+        <div class="flow-arrow split" aria-hidden="true">→</div>
+        <div class="output-stack"><article>
+          <strong>Todo</strong><span>날짜별 실행 목록</span><small>row ref, effective date, completion, order</small>
+        </article><article>
+          <strong>월간 Calendar</strong><span>날짜가 있는 회차의 월 grid와 선택일 상세</span><small>row ref, effective date, completion, order</small>
+        </article><article>
+          <strong>Sheet</strong><span>회차와 source identity를 함께 드러내는 표</span><small>row ref, sourceItemRef, occurrenceId, property values</small>
+        </article><article>
+          <strong>Text + TXT</strong><span>읽기 화면과 동일 바이트 복사·다운로드</span><small>row ref order, occurrence index, property order, bytes</small>
+        </article></div>
+      </div>
+      <div class="contract-strip">
+        <div><span>유한 반복</span><strong>기본 30회</strong><small>첫 회차 포함 · offset 확장</small></div>
+        <div><span>종료 없는 반복</span><strong>기본 4주</strong><small>공통 window 확장</small></div>
+        <div><span>3회 종료</span><strong>정확히 3행</strong><small>첫 날짜가 1회차</small></div>
+        <div><span>무효 규칙</span><strong>fail-closed</strong><small>가짜 회차·저장 없음</small></div>
+      </div>
+    </section>
+
+    <section class="section txt-section" id="txt" tabindex="-1">
+      <header class="section-head">
+        <div><span>05</span><h2>Complete TXT는 하나의 byte payload입니다.</h2></div>
+        <p>화면에서 읽는 TXT, clipboard에 전달하는 문자열, 로컬 <code>.txt</code> Blob이 같은 normalized text를 사용합니다. Working Source는 별도 원문으로 남습니다.</p>
+      </header>
+      <div class="txt-layout">
+        <div>
+          <dl class="byte-contract">
+            <div><dt>인코딩</dt><dd>UTF-8</dd></div>
+            <div><dt>BOM</dt><dd>없음</dd></div>
+            <div><dt>개행</dt><dd>LF</dd></div>
+            <div><dt>마지막 개행</dt><dd>정확히 1개</dd></div>
+            <div><dt>행 끝 공백</dt><dd>없음</dd></div>
+            <div><dt>번호</dt><dd>단계마다 1부터 자동 번호</dd></div>
+          </dl>
+          <div class="property-order"><strong>전용 속성 고정 순서</strong><ol><li>설명</li><li>메모</li><li>완료 기준</li><li>날짜</li><li>시간</li><li>시간대</li><li>장소</li><li>소요 시간</li><li>반복</li><li>실행 조건</li><li>하위 체크</li><li>자료</li><li>출처</li><li>안내</li><li>주의</li></ol></div>
+        </div>
+        <figure class="txt-sample"><figcaption>계약 예시 · 실제 출력 일치 여부는 자동 검증 gate로 판정</figcaption><pre>아침 루틴
+=====
+
+[준비]
+1. ☐ 아침 스트레칭 · 1회차
+   완료 기준: 10분 마치기
+   날짜: 2026-09-03
+   시간: 07:30
+   반복: 매일 · 종료 3회
+   체크리스트:
+     ☐ 물 준비하기
+
+[원문 메모]
+몸 상태에 맞춰 강도를 조절한다.
+</pre></figure>
+      </div>
+    </section>
+
+    <section class="section dark" id="transitions" tabindex="-1">
+      <header class="section-head">
+        <div><span>06</span><h2>회차 조작은 shadow state에서만 움직입니다.</h2></div>
+        <p>날짜 이동·완료·다시 열기·Undo·reload는 occurrence 단위 실행 기록입니다. source Item과 원 일정은 편집하지 않습니다.</p>
+      </header>
+      <ol class="transition-flow">
+        <li><span>1</span><strong>회차 선택</strong><small>occurrenceId와 sourceItemRef 함께 검증</small></li>
+        <li><span>2</span><strong>날짜 이동 또는 완료</strong><small>PoC shadow map만 변경</small></li>
+        <li><span>3</span><strong>다시 열기·Undo</strong><small>해당 회차 snapshot만 복원</small></li>
+        <li><span>4</span><strong>reload</strong><small>마지막 성공 상태만 복구</small></li>
+      </ol>
+      <div class="invariant"><strong>계속 불변</strong><span>source Item 수 1 · originalDate · Flow 소속 · 운영 flow:* byte · 기존 /my</span></div>
+    </section>
+
+    <section class="section" id="surfaces" tabindex="-1">
+      <header class="section-head">
+        <div><span>07</span><h2>React와 독립 HTML을 따로 판정합니다.</h2></div>
+        <p>같은 계약을 구현했다는 코드 증거와 실제 브라우저에서 같은 조작 결과가 나온다는 증거는 서로 다른 gate입니다.</p>
+      </header>
+      <div class="surface-pair">
+        <article><span>제품 내 격리 표면</span><h3>React exact-query PoC</h3><p><code>/my?personalWorkspacePoc=v1</code>에서 저장 Flow 결과의 회차를 조작합니다.</p><ul><li>result projection v3</li><li>occurrence shadow transition</li><li>Text/Todo/Calendar/Sheet</li><li>clipboard와 로컬 download</li></ul></article>
+        <article><span>브라우저 파일 표면</span><h3>Standalone single-file</h3><p>서버 없이 파일로 열어 같은 회차·TXT 계약과 저장 경계를 조작합니다.</p><ul><li>동일 recurrence grammar</li><li>동일 stable occurrence identity</li><li>Undo·reload 복구</li><li>운영 key sentinel 비교</li></ul></article>
+      </div>
+    </section>
+
+    <section class="section scenario-section" id="scenarios" tabindex="-1">
+      <header class="section-head">
+        <div><span>08</span><h2>시나리오 결과를 모델과 브라우저로 나눴습니다.</h2></div>
+        <p>모델 통과만으로 조작 경험까지 통과했다고 쓰지 않습니다. 각 행에서 계약 검증과 실제 화면 검증 상태를 따로 확인할 수 있습니다.</p>
+      </header>
+      <div class="table-wrap"><table>
+        <thead><tr><th>시나리오</th><th>기대 결과</th><th>순수 계약</th><th>실제 브라우저</th></tr></thead>
+        <tbody><tr class="scenario-row" data-scenario-state="passed">
+    <td><span class="scenario-id">S1</span><strong>3회 반복과 공통 manifest</strong></td>
+    <td>첫 날짜를 포함한 3개 occurrence가 네 결과에서 같은 ID·순서·날짜를 가진다.</td>
+    <td><span class="status passed">모델 확인됨</span></td>
+    <td><span class="status passed">브라우저 확인됨</span></td>
+  </tr><tr class="scenario-row" data-scenario-state="passed">
+    <td><span class="scenario-id">S2</span><strong>유한 30회·종료 없는 4주</strong></td>
+    <td>기본 범위가 bounded되고 더 보기 전 ID와 순서가 유지된다.</td>
+    <td><span class="status passed">모델 확인됨</span></td>
+    <td><span class="status passed">브라우저 확인됨</span></td>
+  </tr><tr class="scenario-row" data-scenario-state="passed">
+    <td><span class="scenario-id">S3</span><strong>한 회차 날짜 이동</strong></td>
+    <td>선택한 occurrence의 실행 날짜만 바뀌고 source Item·원 일정·다른 회차는 불변이다.</td>
+    <td><span class="status passed">모델 확인됨</span></td>
+    <td><span class="status passed">브라우저 확인됨</span></td>
+  </tr><tr class="scenario-row" data-scenario-state="passed">
+    <td><span class="scenario-id">S4</span><strong>완료·다시 열기·Undo·reload</strong></td>
+    <td>해당 occurrence의 shadow state만 바뀌고 성공 상태만 새로고침 뒤 복원된다.</td>
+    <td><span class="status passed">모델 확인됨</span></td>
+    <td><span class="status passed">브라우저 확인됨</span></td>
+  </tr><tr class="scenario-row" data-scenario-state="passed">
+    <td><span class="scenario-id">S5</span><strong>Complete TXT 바이트</strong></td>
+    <td>화면·clipboard·.txt가 BOM 없는 UTF-8, LF, 마지막 개행 1개의 같은 payload다.</td>
+    <td><span class="status passed">모델 확인됨</span></td>
+    <td><span class="status passed">브라우저 확인됨</span></td>
+  </tr><tr class="scenario-row" data-scenario-state="passed">
+    <td><span class="scenario-id">S6</span><strong>무효·같은 위치·취소·저장 실패</strong></td>
+    <td>invalid recurrence와 no-op·cancel·failure에서 mutation이 0건이다.</td>
+    <td><span class="status passed">모델 확인됨</span></td>
+    <td><span class="status passed">브라우저 확인됨</span></td>
+  </tr><tr class="scenario-row" data-scenario-state="passed">
+    <td><span class="scenario-id">S7</span><strong>React·standalone 동등성</strong></td>
+    <td>같은 fixture가 같은 occurrence와 TXT 계약을 만든다.</td>
+    <td><span class="status passed">모델 확인됨</span></td>
+    <td><span class="status passed">브라우저 확인됨</span></td>
+  </tr><tr class="scenario-row" data-scenario-state="passed">
+    <td><span class="scenario-id">S8</span><strong>운영 데이터 불변</strong></td>
+    <td>시나리오 전후 PoC prefix 밖 flow:* key/value가 byte-for-byte 동일하다.</td>
+    <td><span class="status passed">모델 확인됨</span></td>
+    <td><span class="status passed">브라우저 확인됨</span></td>
+  </tr></tbody>
+      </table></div>
+    </section>
+
+    <section class="section" id="boundary" tabindex="-1">
+      <header class="section-head">
+        <div><span>09</span><h2>운영 데이터 보호선을 별도 gate로 둡니다.</h2></div>
+        <p>자동 브라우저 fixture의 byte 비교는 실제 사용자의 브라우저 profile이나 운영 backend 검사가 아닙니다. 증거 범위를 그대로 표시합니다.</p>
+      </header>
+      <div class="boundary-layout">
+        <ul class="boundary-list"><li>진입점은 exact /my?personalWorkspacePoc=v1이다.</li><li>쓰기는 flow:poc:personal-workspace:v1:* prefix 안에서만 허용한다.</li><li>기존 Flow 데이터는 read model 입력으로만 사용하고 운영 writer를 호출하지 않는다.</li><li>localStorage.clear()는 호출하지 않는다.</li><li>자동 시나리오 전후 PoC prefix 밖 flow:* key/value는 byte-for-byte 동일해야 한다.</li><li>손상 payload와 unsupported origin은 기존 /my로 fail-closed한다.</li><li>반복 규칙 편집·이번 이후 일괄 변경·외부 동기화·운영 migration은 범위 밖이다.</li></ul>
+        <aside class="boundary-proof passed">
+          <span>이번 P2-B browser boundary</span><strong>확인됨</strong>
+          <dl><div><dt>prefix 밖 set</dt><dd>0</dd></div><div><dt>prefix 밖 remove</dt><dd>0</dd></div><div><dt>clear</dt><dd>0</dd></div><div><dt>운영 byte 변경</dt><dd>0</dd></div></dl>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section verification-section" id="verification" tabindex="-1">
+      <header class="section-head">
+        <div><span>10</span><h2>실제 실행 기록으로만 상태가 바뀝니다.</h2></div>
+        <p>표는 verification manifest의 run ID를 읽습니다. 기록이 없으면 0/0 PASS로 만들지 않고 “검증 대기”로 표시합니다.</p>
+      </header>
+      <div class="filterbar" aria-label="검증 gate 필터">
+        <div>
+          <button type="button" data-gate-filter="all" aria-pressed="true">전체 7</button>
+          <button type="button" data-gate-filter="passed" aria-pressed="false">확인 6</button>
+          <button type="button" data-gate-filter="conditional" aria-pressed="false">조건부 1</button>
+          <button type="button" data-gate-filter="pending" aria-pressed="false">대기 0</button>
+          <button type="button" data-gate-filter="failed" aria-pressed="false">실패 0</button>
+        </div>
+        <span id="gate-count" aria-live="polite">7건 표시</span>
+      </div>
+      <div class="table-wrap"><table class="gate-table">
+        <thead><tr><th>검증 gate</th><th>상태</th><th>실행 결과</th><th>명령 또는 대기 run ID</th></tr></thead>
+        <tbody><tr class="gate-row" data-gate-state="passed">
+    <td><strong>React 순수 모델·계약</strong><small>parser, occurrence v1, state transition, result projection v3, TXT v2와 presenter intent</small></td>
+    <td><span class="status passed">확인됨</span></td>
+    <td class="numeric">77 / 77</td>
+    <td><code>npx.cmd tsx --test lib/flow/personal-workspace-poc-authoring.test.ts lib/flow/personal-workspace-poc-authoring-fidelity.test.ts lib/flow/personal-workspace-poc-occurrence.test.ts lib/flow/personal-workspace-poc-state.test.ts lib/flow/personal-workspace-poc-result-projection.test.ts components/flow/personal-workspace-poc/PersonalWorkspacePocResultPresenter.test.tsx</code></td>
+  </tr><tr class="gate-row" data-gate-state="passed">
+    <td><strong>독립 HTML 모델 동등성</strong><small>standalone model·parser·projection·transition과 single-file 재생성</small></td>
+    <td><span class="status passed">확인됨</span></td>
+    <td class="numeric">62 / 62</td>
+    <td><code>node --test docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/standalone.test.cjs</code></td>
+  </tr><tr class="gate-row" data-gate-state="passed">
+    <td><strong>통합 브라우저 시나리오</strong><small>React와 standalone의 조작, 6개 viewport, overflow·console·page error·storage 경계</small></td>
+    <td><span class="status passed">확인됨</span></td>
+    <td class="numeric">4 / 4</td>
+    <td><code>npx.cmd playwright test tests/e2e/personal-workspace-integration-poc.spec.ts --grep P2-B --workers=1 --reporter=line --output=test-results-p2b-trace-focused-browser-final + npx.cmd playwright test tests/e2e/personal-workspace-integrated-standalone.spec.ts --grep &quot;P2-B standalone restores one recurring Item and three occurrence rows after move and completion&quot; --workers=1 --reporter=line --output test-results-p2b-standalone-final + $env:FLOWME_PLAYWRIGHT_PORT=&#39;3199&#39;; npx.cmd playwright test tests/e2e/personal-workspace-integration-poc.spec.ts --grep &quot;P2-A 복수 사본&quot; --output test-results-p2b-react-viewports + npx.cmd playwright test tests/e2e/personal-workspace-integrated-standalone.spec.ts --grep &quot;single-file integrated PoC has no overflow, browser errors, or covered primary action in six viewports&quot; --workers=1 --reporter=line --output test-results-p2b-standalone-viewports</code></td>
+  </tr><tr class="gate-row" data-gate-state="conditional">
+    <td><strong>전체 npm test</strong><small>P2-B 변경을 포함한 fresh 전체 회귀와 중단 뒤 남은 downstream suite</small></td>
+    <td><span class="status conditional">조건부 확인</span></td>
+    <td class="numeric">1,855 / 1,856</td>
+    <td><code>npm.cmd test + npm.cmd run test:approved-plan-execution ; npm.cmd run test:public-plan-surface (npm test 중단 뒤 각각 별도 실행)</code></td>
+  </tr><tr class="gate-row" data-gate-state="passed">
+    <td><strong>Production build</strong><small>P2-B 변경과 독립 HTML을 포함한 fresh production build</small></td>
+    <td><span class="status passed">확인됨</span></td>
+    <td class="numeric">18 / 18</td>
+    <td><code>npm.cmd run build</code></td>
+  </tr><tr class="gate-row" data-gate-state="passed">
+    <td><strong>문서·로컬 링크</strong><small>보고서와 정본 문서의 required file·local link 검사</small></td>
+    <td><span class="status passed">확인됨</span></td>
+    <td class="numeric">4,594 / 4,594</td>
+    <td><code>npm.cmd run docs:check</code></td>
+  </tr><tr class="gate-row" data-gate-state="passed">
+    <td><strong>검증 보고서 브라우저 smoke</strong><small>정본·manifest 반영, read-only, 6개 viewport overflow·오류·핵심 링크 hit-test</small></td>
+    <td><span class="status passed">확인됨</span></td>
+    <td class="numeric">2 / 2</td>
+    <td><code>npx.cmd playwright test tests/e2e/personal-workspace-p2b-occurrence-txt-validation-report.spec.ts --workers=1 --reporter=line --output test-results-p2b-report-final3</code></td>
+  </tr></tbody>
+      </table></div>
+      <div class="supplemental-runs" aria-label="P2-B fresh 지원 실행">
+        <h3>Fresh 지원 실행</h3>
+        <article>
+          <div><strong></strong><small>P2-B 변경을 포함한 fresh personal-workspace PoC 전체 모델 회귀</small></div>
+          <span class="status passed">확인됨</span>
+          <strong class="supplemental-count">371 / 371</strong>
+          <code>npm.cmd run test:personal-workspace-poc</code>
+        </article><article>
+          <div><strong></strong><small>React와 standalone의 four-result occurrence manifest 및 TXT/CSV byte parity 계약</small></div>
+          <span class="status passed">확인됨</span>
+          <strong class="supplemental-count">17 / 17</strong>
+          <code>npm.cmd run pretest:personal-workspace-poc</code>
+        </article><article>
+          <div><strong></strong><small>P2-A snapshot byte lock, additive P2-B rows, 168-row 124/18/4/10/12 verdict lock, gap 22, fulfilled evidence gate and verify-only HTML immutability</small></div>
+          <span class="status passed">확인됨</span>
+          <strong class="supplemental-count">5 / 5</strong>
+          <code>node --test docs/content-audit/2026-09-02-flowme-integrated-poc-requirements-traceability-assets/requirements-p2b-assets.test.cjs</code>
+        </article>
+        <p>이 실행은 fresh 회귀 보강 증거입니다. 누락된 closure gate를 대신하거나 종합 종료 판정을 자동으로 올리지 않습니다.</p>
+      </div>
+      <div class="history-note"><strong>이전 전체 회귀 참고</strong><p>P2-A 시점의 <code>full-regression</code>은 1,635 / 1,636에서 중단됐습니다. seed-flows의 dog-adoption-first-week review_due 2026-06-04가 현재 날짜 기준 콘텐츠 신선도 검증을 통과하지 못해 전체 실행이 중단됐다. 이 기록을 이번 P2-B fresh 전체 회귀로 대체하지 않습니다.</p></div>
+      <div class="viewport-grid" aria-label="브라우저 검사 화면"><article><strong>320×700</strong><span>320 × 700</span><small>P2-B 확인됨</small></article><article><strong>390×844</strong><span>390 × 844</span><small>P2-B 확인됨</small></article><article><strong>375×812</strong><span>375 × 812</span><small>P2-B 확인됨</small></article><article><strong>844×390</strong><span>844 × 390</span><small>P2-B 확인됨</small></article><article><strong>1024×768</strong><span>1,024 × 768</span><small>P2-B 확인됨</small></article><article><strong>1440×900</strong><span>1,440 × 900</span><small>P2-B 확인됨</small></article></div>
+    </section>
+
+    <section class="section limits-section" id="limits" tabindex="-1">
+      <header class="section-head">
+        <div><span>11</span><h2>자동화 밖의 증거는 별도로 남깁니다.</h2></div>
+        <p>화면 캡처와 Chromium 자동화는 실제 기기 검사나 관찰 사용자 검증이 아닙니다. publish도 사용자 승인 전에는 진행하지 않습니다.</p>
+      </header>
+      <div class="external-grid">
+        <article><span>실제 Android Chrome</span><strong>미실행</strong></article>
+        <article><span>실제 iOS Safari</span><strong>미실행</strong></article>
+        <article><span>보조기술</span><strong>미실행</strong></article>
+        <article class="users"><span>관찰 사용자</span><strong>0명</strong></article>
+      </div>
+      <div class="publish-grid">
+        <div><span>commit</span><strong>미진행</strong></div>
+        <div><span>push</span><strong>미진행</strong></div>
+        <div><span>PR</span><strong>미진행</strong></div>
+        <div><span>Preview</span><strong>미진행</strong></div>
+        <div><span>Production</span><strong>미진행</strong></div>
+      </div>
+      <div class="remaining"><strong>남은 결함·의사결정</strong><ul><li>D1-012와 P2-B 이전의 다른 갭은 이번 판정에서 바꾸지 않는다.</li><li>D2-035·D2-036·D2-039의 속성 picker/editor·재진입은 별도 갭으로 남는다. D2-023은 31개 실제·검증 콘텐츠 예시 보존 요구다.</li><li>D2-026 외부 동기화와 운영 export writer 연결은 범위 밖이다.</li><li>깊은 하위 체크와 모호한 속성은 fail-closed한다.</li><li>실제 Android Chrome·iOS Safari·보조기술·관찰 사용자 검증은 자동화 증거와 분리한다.</li></ul></div>
+    </section>
+
+    <section class="source-footer" aria-label="보고서 생성 근거">
+      <div><span>보고서 범위</span><strong>격리된 /my?personalWorkspacePoc=v1 및 조작형 독립 HTML</strong></div>
+      <div><span>manifest</span><strong id="manifest-version">v4</strong></div>
+      <div><span>source hash</span><code>266858de956272cc61c3a60b31c6f679b380ba1b5961c2ea4a05957d7fe5a103</code></div>
+      <p>이 파일은 P2-B spec·요구 추적 행·판정 override·verification manifest에서 생성한 읽기 전용 검증 동반물입니다.</p>
+    </section>
+  </main>
+
+  <footer><p>FlowMe 통합 PoC P2-B · 실제 기기 및 관찰 사용자 증거와 자동화 결과를 구분합니다.</p></footer>
+  <script type="application/json" id="report-data">{"dataVersion":1,"stage":"P2-B","overallState":"conditional","overallLabel":"검증 완료 · 기존 회귀 1건","allClosureAccepted":true,"currentSummary":{"total":168,"satisfied":124,"partial":18,"missing":4,"intentionalChange":10,"excluded":12},"beforeP2B":{"V41":{"total":78,"satisfied":60,"partial":3,"missing":3,"intentionalChange":6,"excluded":6},"D1":{"total":26,"satisfied":25,"partial":1,"missing":0,"intentionalChange":0,"excluded":0},"D2":{"total":64,"satisfied":37,"partial":16,"missing":1,"intentionalChange":4,"excluded":6},"total":{"total":168,"satisfied":122,"partial":20,"missing":4,"intentionalChange":10,"excluded":12}},"afterP2B":{"V41":{"total":78,"satisfied":60,"partial":3,"missing":3,"intentionalChange":6,"excluded":6},"D1":{"total":26,"satisfied":25,"partial":1,"missing":0,"intentionalChange":0,"excluded":0},"D2":{"total":64,"satisfied":39,"partial":14,"missing":1,"intentionalChange":4,"excluded":6},"total":{"total":168,"satisfied":124,"partial":18,"missing":4,"intentionalChange":10,"excluded":12}},"traceVerdicts":{"fulfilled":128,"partial":13,"missing":4,"intentionalChange":11,"decisionRequired":0,"excluded":12},"requirementIds":["D2-017","D2-020"],"gates":[{"id":"model","label":"React 순수 모델·계약","matchedIds":["p2b-occurrence-txt-model"],"missingIds":[],"state":"passed","total":77,"passed":77,"failed":0},{"id":"standalone","label":"독립 HTML 모델 동등성","matchedIds":["p2b-standalone-model"],"missingIds":[],"state":"passed","total":62,"passed":62,"failed":0},{"id":"browser","label":"통합 브라우저 시나리오","matchedIds":["p2b-browser-focused","p2b-standalone-browser-focused","p2b-result-six-viewport-browser","p2b-standalone-six-viewport-browser"],"missingIds":[],"state":"passed","total":4,"passed":4,"failed":0},{"id":"full","label":"전체 npm test","matchedIds":["p2b-full-regression","p2b-full-regression-tail"],"missingIds":[],"state":"conditional","total":1856,"passed":1855,"failed":1},{"id":"build","label":"Production build","matchedIds":["p2b-production-build"],"missingIds":[],"state":"passed","total":18,"passed":18,"failed":0},{"id":"docs","label":"문서·로컬 링크","matchedIds":["p2b-documentation-check"],"missingIds":[],"state":"passed","total":4594,"passed":4594,"failed":0},{"id":"report","label":"검증 보고서 브라우저 smoke","matchedIds":["p2b-report-browser"],"missingIds":[],"state":"passed","total":2,"passed":2,"failed":0}],"supplementalRuns":[{"id":"p2b-personal-workspace-poc-suite","command":"npm.cmd run test:personal-workspace-poc","tests":371,"passed":371,"failed":0,"status":"PASS","groups":{"pretestCrossSurfaceContract":{"tests":17,"passed":17,"failed":0},"mainModelSuite":{"tests":354,"passed":354,"failed":0}},"scope":"P2-B 변경을 포함한 fresh personal-workspace PoC 전체 모델 회귀","total":371,"state":"passed"},{"id":"p2b-cross-surface-contract","command":"npm.cmd run pretest:personal-workspace-poc","script":"tsx --test lib/flow/personal-workspace-poc-occurrence.test.ts lib/flow/personal-workspace-poc-cross-surface-parity.test.ts","tests":17,"passed":17,"failed":0,"status":"PASS","scope":"React와 standalone의 four-result occurrence manifest 및 TXT/CSV byte parity 계약","total":17,"state":"passed"},{"id":"p2b-trace-assets","command":"node --test docs/content-audit/2026-09-02-flowme-integrated-poc-requirements-traceability-assets/requirements-p2b-assets.test.cjs","tests":5,"passed":5,"failed":0,"status":"PASS","scope":"P2-A snapshot byte lock, additive P2-B rows, 168-row 124/18/4/10/12 verdict lock, gap 22, fulfilled evidence gate and verify-only HTML immutability","total":5,"state":"passed"}],"viewports":[{"label":"320×700","width":320,"height":700},{"label":"390×844","width":390,"height":844},{"label":"375×812","width":375,"height":812},{"label":"844×390","width":844,"height":390},{"label":"1024×768","width":1024,"height":768},{"label":"1440×900","width":1440,"height":900}],"manifestVersion":4,"manifestGeneratedAt":"2026-09-03T18:55:49.481+09:00","sourceHash":"266858de956272cc61c3a60b31c6f679b380ba1b5961c2ea4a05957d7fe5a103"}</script>
+  <script>
+    (() => {
+      const buttons = [...document.querySelectorAll('[data-gate-filter]')];
+      const rows = [...document.querySelectorAll('.gate-row')];
+      const count = document.querySelector('#gate-count');
+      buttons.forEach((button) => button.addEventListener('click', () => {
+        const filter = button.dataset.gateFilter;
+        buttons.forEach((candidate) => candidate.setAttribute('aria-pressed', String(candidate === button)));
+        let visible = 0;
+        rows.forEach((row) => {
+          const show = filter === 'all' || row.dataset.gateState === filter;
+          row.hidden = !show;
+          if (show) visible += 1;
+        });
+        if (count) count.textContent = visible + '건 표시';
+      }));
+    })();
+  </script>
+</body>
+</html>

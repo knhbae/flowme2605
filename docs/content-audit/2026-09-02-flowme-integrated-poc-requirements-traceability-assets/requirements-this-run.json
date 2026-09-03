@@ -1,0 +1,572 @@
+[
+  {
+    "id": "V41-003",
+    "status": "개선 적용",
+    "detail": "React와 독립 HTML의 Task·Flow 모든 행에 본문과 분리된 48×48px 전용 이동 손잡이를 연결하고 브라우저에서 실제 크기를 확인했다."
+  },
+  {
+    "id": "V41-004",
+    "status": "개선 적용",
+    "detail": "독립 HTML의 350ms 길게 누르기 시작점을 행 본문에서 전용 손잡이로 옮기고 React와 같은 조작 규칙으로 검증했다."
+  },
+  {
+    "id": "V41-005",
+    "status": "개선 적용",
+    "detail": "React와 독립 HTML에 Math.hypot 8px 취소, 합성 click 한 번 억제, 다음 실제 click 복원 회귀를 추가했다."
+  },
+  {
+    "id": "V41-006",
+    "status": "개선 적용",
+    "detail": "React browser wheel과 독립 HTML trusted touch emulation에서 행 본문 scrollY 증가·이동 UI 0·저장 0을 확인했다."
+  },
+  {
+    "id": "V41-008",
+    "status": "개선 적용",
+    "detail": "독립 HTML의 중앙 이동 dialog를 왼쪽 비모달 패널로 바꾸고 React와 함께 오른쪽 행 식별·48px 손잡이·재정렬 corridor를 유지하도록 맞췄다. 320×700과 필수 5개 viewport에서 geometry와 overflow 0을 확인했다."
+  },
+  {
+    "id": "V41-007",
+    "status": "개선 적용",
+    "detail": "React와 독립 HTML의 Task·Flow 손잡이 350ms 길게 누르기가 중앙 modal 없이 같은 왼쪽 aria-modal=false 이동 패널을 자동으로 연다."
+  },
+  {
+    "id": "V41-009",
+    "status": "개선 적용",
+    "detail": "React Flow와 독립 HTML Task의 350ms pointer session을 움직이지 않고 놓아도 열린 이동 패널을 유지하며 state와 storage를 바꾸지 않는 브라우저 회귀를 추가했다."
+  },
+  {
+    "id": "V41-017",
+    "status": "개선 확인",
+    "detail": "Flow의 손잡이·길게 누르기·native drag·더보기·키보드가 모두 기존 move-folder saved_flow transition으로 수렴하고 Item은 부모 폴더를 상속하며 매 성공을 Undo로 복구함을 확인했다."
+  },
+  {
+    "id": "V41-018",
+    "status": "개선 적용",
+    "detail": "현재 날짜·폴더·자기 행을 같은 slate 중립 표현으로 맞추고 computed style 일치·shadow 없음·neutral status·raw bytes와 storage call 0을 Chromium에서 확인했다."
+  },
+  {
+    "id": "V41-010",
+    "status": "개선 적용",
+    "detail": "독립 HTML의 손잡이 짧은 누르기·길게 누르기·더보기가 같은 이동 메뉴 opener로 수렴한다."
+  },
+  {
+    "id": "V41-011",
+    "status": "개선 적용",
+    "detail": "독립 HTML에 48px 손잡이와 비드래그 메뉴·키보드 경로를 함께 제공했다."
+  },
+  {
+    "id": "V41-019",
+    "status": "개선 적용",
+    "detail": "React와 독립 HTML에 midpoint before/after 3px 삽입선과 current·invalid·결과 문구를 연결했다."
+  },
+  {
+    "id": "V41-020",
+    "status": "개선 적용",
+    "detail": "active pointer 중 isTrusted=true mouse wheel scroll, cleanup, 첫 합성 click 억제와 다음 click 복원을 한 무변경 흐름으로 닫았다."
+  },
+  {
+    "id": "V41-028",
+    "status": "개선 적용",
+    "detail": "React와 독립 HTML 월간을 점유·빈 날짜의 세로 section으로 맞추고 모든 날짜의 빠른 추가, 정확한 날짜 저장, 취소·오류 무변경, reload·Undo를 844×390에서 검증했다."
+  },
+  {
+    "id": "V41-033",
+    "status": "개선 적용",
+    "detail": "React 개인공간과 Text Authoring shell에 상하좌우 safe-area 변수를 추가하고 독립 HTML과 같은 네 방향 계약으로 맞췄다."
+  },
+  {
+    "id": "V41-034",
+    "status": "개선 적용",
+    "detail": "React 개인공간과 Text Authoring에 본문 건너뛰기 링크를 추가하고 focus 이동을 브라우저에서 확인했다."
+  },
+  {
+    "id": "V41-037",
+    "status": "개선 적용",
+    "detail": "React와 독립 HTML Task·Flow 손잡이에 label/describedby/controls/expanded를 연결하고, 왼쪽 날짜·폴더·오른쪽 순서·취소 대안과 Flow 폴더 전용 의미를 구분해 설명했다."
+  },
+  {
+    "id": "V41-040",
+    "status": "개선 적용",
+    "detail": "독립 HTML 작성 초안도 새로고침 뒤 마지막 성공 저장 상태로 복원한다."
+  },
+  {
+    "id": "V41-043",
+    "status": "개선 적용",
+    "detail": "이동 중 모든 위치 문구는 PoC 전역 status 한 곳에서만 발표하고 패널 안 문구는 aria-live=off 시각 사본으로 정리했다."
+  },
+  {
+    "id": "V41-046",
+    "status": "개선 적용",
+    "detail": "독립 HTML 초안을 별도 PoC exact key에 저장하고 허용된 두 key 밖 mutation이 없도록 고정했다."
+  },
+  {
+    "id": "V41-047",
+    "status": "개선 적용",
+    "detail": "현재 통합 state model에 고정 seed 5,000-step 시뮬레이션을 추가해 state·ref·Undo·source 불변식을 매 step 검증했다."
+  },
+  {
+    "id": "V41-049",
+    "status": "개선 적용",
+    "detail": "24/18/30/22px 강제 inset에서 React move/item/reset overlay와 독립 HTML dialog/toast의 실제 경계를 측정했다."
+  },
+  {
+    "id": "V41-051",
+    "status": "개선 적용",
+    "detail": "빠른 8px 초과 이동과 길게 누른 뒤 Escape에서 synthetic click 재개방 0, 다음 유효 click 복원을 실행했다."
+  },
+  {
+    "id": "V41-057",
+    "status": "개선 적용",
+    "detail": "React와 독립 HTML 모두 Item 오른쪽에 같은 전용 이동 affordance를 표시한다."
+  },
+  {
+    "id": "V41-058",
+    "status": "개선 적용",
+    "detail": "React와 독립 HTML의 Task·Flow 이동 상태를 390×844·844×390으로 새로 캡처하고 왼쪽 목적지와 오른쪽 원 목록·손잡이가 동시에 남는지 실측했다."
+  },
+  {
+    "id": "V41-065",
+    "status": "개선 적용",
+    "detail": "빠졌던 맨 위·맨 아래를 React와 독립 HTML에 복원하고 기존 reorder transition, Undo, 경계 무저장에 연결했다."
+  },
+  {
+    "id": "V41-066",
+    "status": "부분 개선",
+    "detail": "350ms Chromium touch 날짜 이동·Undo와 pointercancel 뒤 ghost·강조·삽입선·상태·RAF cleanup을 자동 검증했다. 실제 Android/iOS touch 검사는 남았다."
+  },
+  {
+    "id": "V41-067",
+    "status": "개선 적용",
+    "detail": "844×300 reduced-motion에서 처음 화면 밖인 DATE target까지 패널을 연속 스크롤해 이동하고 Undo했다."
+  },
+  {
+    "id": "V41-068",
+    "status": "개선 적용",
+    "detail": "같은 fixture에서 Chromium trusted touch scroll의 무변경을 확인한 뒤 desktop mouse handle drag와 저장 성공을 연속 실행했다."
+  },
+  {
+    "id": "V41-070",
+    "status": "개선 적용",
+    "detail": "844×390에서 모바일 IA·48px 손잡이·가로 넘침 0·이동 창 내부 scroll·해당 월 빈 날짜 28일 toggle을 한 브라우저 시나리오로 닫았다."
+  },
+  {
+    "id": "V41-073",
+    "status": "개선 적용",
+    "detail": "독립 HTML도 versioned state와 draft를 PoC 전용 저장 계약으로 분리했다."
+  },
+  {
+    "id": "D2-007",
+    "status": "반응형 개선·제품 결정 유지",
+    "detail": "React와 독립 HTML의 compact 2-state, 320×700, 844×390 shell·CTA geometry를 맞췄다. 운영 PlatformNav와 PoC teal token 중 제품 기준 선택은 별도 디자인 게이트로 남겼다."
+  },
+  {
+    "id": "D2-009",
+    "status": "개선 적용",
+    "detail": "직접 열고 조작하는 단일 HTML 두 개를 201,783 bytes·SHA-256 361B97E037B106EAF307FCA92D92826ECA9C4F07E261D40D4DC9284766A7FCB6로 동일하게 다시 빌드하고 focused Chromium 5/5를 실행했다."
+  },
+  {
+    "id": "D2-057",
+    "status": "부분 개선",
+    "detail": "독립 HTML에도 원문·선택 틀·폴더·틀 Undo 이력의 draft reload 복구를 추가했다. CreatorDraft 관리 lane은 미구현이다."
+  },
+  {
+    "id": "D2-058",
+    "status": "작성 handoff 부분 개선",
+    "detail": "React와 독립 HTML에서 취소·no-op·stale·저장 실패의 target write 0, state+draft exact rollback, stable same-source retry, Undo·reload를 확인했다. 결과→raw source 역편집은 A0 제외 경계라 부모 요구는 부분이다."
+  },
+  {
+    "id": "BP-046",
+    "status": "개선 적용",
+    "detail": "Authoring draft를 독립 HTML에서도 새 PoC namespace key에 저장하고 reload 복구했다."
+  },
+  {
+    "id": "BP-064",
+    "status": "개선 적용",
+    "detail": "독립 HTML의 정상 draft는 복원하고 손상 draft는 쓰기 없이 빈 작성 상태로 fail-closed한다."
+  },
+  {
+    "id": "BP-066",
+    "status": "개선 적용",
+    "detail": "state와 draft 두 exact key 초기화 중 실패하면 두 기존 byte를 모두 되돌리며 운영 sentinel을 보존한다."
+  },
+  {
+    "id": "BP-068",
+    "status": "개선 적용",
+    "detail": "Task 순서뿐 아니라 Flow 폴더도 React와 독립 HTML의 drag·길게 누르기·메뉴·키보드가 같은 대상별 transition과 동일한 최종 membership을 사용한다."
+  },
+  {
+    "id": "BP-034",
+    "status": "개선 확인",
+    "detail": "Flow와 Task 이동 시 React Stage 4·standalone 브라우저 모두 PoC prefix 밖 set/remove/clear 0, 운영 key/value byte 동일을 확인했다."
+  },
+  {
+    "id": "BP-072",
+    "status": "개선 적용",
+    "detail": "전달용 독립 HTML의 이동·복구·저장 경계를 새 회귀 시나리오로 닫았다."
+  },
+  {
+    "id": "BP-078",
+    "status": "개선 적용",
+    "detail": "기능형 React의 날짜·순서 이동에 더해 독립 HTML의 reorder 입력 경로 동등성을 검증했다."
+  },
+  {
+    "id": "D1-010",
+    "status": "A0 결정 확정",
+    "detail": "기존 개발 1 lifecycle owner를 운영 정본으로 보존하고 통합 PoC에서는 같은 휴지통 UX를 shadow transition으로만 구현하도록 배치했다."
+  },
+  {
+    "id": "D1-013",
+    "status": "A0 결정 확정",
+    "detail": "production PlatformNav의 ink/cobalt를 전역 owner로, white/gray/teal을 exact-query 개인공간 내부 accent로 분리해 둘 중 하나를 폐기하는 충돌을 해소했다."
+  },
+  {
+    "id": "D2-005",
+    "status": "A0 의도적 변경 확정",
+    "detail": "D2의 creator 문맥은 별도 owner로 보존하되 이번 통합 PoC 첫 성공 경로는 후속 blueprint의 명시적 개인 Flow handoff로 확정했다."
+  },
+  {
+    "id": "BP-019",
+    "status": "A0 후속 제외 확정",
+    "detail": "recurrence runtime과 occurrence 이동은 canonical identity·완료 owner 승인 전까지 구현하지 않고 raw source·loss manifest로 fail-closed한다."
+  },
+  {
+    "id": "BP-056",
+    "status": "A0 결정 확정",
+    "detail": "detail·Calendar는 read projection, 편집·휴지통·완료는 PoC shadow command, 운영 이관은 기존 D1 owner adapter라는 세 층으로 충돌을 해소했다."
+  },
+  {
+    "id": "BP-075",
+    "status": "A0 후속 제외 확정",
+    "detail": "공개 Flow 저장 S3는 이번 PoC에서 제외하고 immutable public version·권한 owner가 별도 승인될 때 다시 열도록 했다."
+  },
+  {
+    "id": "D2-054",
+    "status": "추적 재판정·개선 확인",
+    "detail": "React와 독립 HTML의 line ghost를 source 밖 aria-hidden·pointer-events none presentation으로 맞췄다. toggle 전후 source·clipboard·selection·scroll·revision·draft·native history가 바뀌지 않고 예시가 source에 들어가지 않음을 여섯 viewport에서 확인했다."
+  },
+  {
+    "id": "D1-002",
+    "status": "단계 3 개선 적용",
+    "detail": "네 saved-plan origin과 작성 handoff가 실제 화면에서 같은 Plan→Item editor, edit intent, field order를 사용한다. 결과 보기와 실행 상세의 Item도 같은 ref의 편집기로 이어지는 경계를 Stage 3 Chromium에서 확인했다."
+  },
+  {
+    "id": "D1-014",
+    "status": "추적 출처 수정",
+    "detail": "사용자 승인 범위와 구현 계약의 48/44px 수치를 구분하고 누락됐던 flowme- 포함 실제 visual report 경로로 수정했다."
+  },
+  {
+    "id": "D1-019",
+    "status": "추적 출처 정밀화",
+    "detail": "사용자 원문 설계로 과장하지 않고 두 입력 문제 제기와 후속 묶음 구현 승인 아래 채택된 단일 intent-routing 구현임을 기록했다."
+  },
+  {
+    "id": "D1-009",
+    "status": "추적 재판정·개선 확인",
+    "detail": "single-child Map은 일반 Flow로 평탄화하고 multi-child에서만 결과 위 selector를 제공한다. child 변경은 Text 초기화·Item detail 닫기·결과 heading focus를 같은 무저장 전환으로 처리함을 코드·컴포넌트·Chromium 증거로 확인했다."
+  },
+  {
+    "id": "D1-024",
+    "status": "추적 재판정·개선 확인",
+    "detail": "multi-child selector의 위치, child 변경 뒤 Text 초기화, 열린 Item detail 닫기, 결과 heading focus 복귀, same·stale·foreign child의 write 0을 최신 통합 화면과 브라우저 시나리오에 맞춰 충족으로 바로잡았다."
+  },
+  {
+    "id": "D1-001",
+    "status": "단계 3 개선 적용",
+    "detail": "순수 adapter에 머물던 공통 Plan→Item 흐름을 네 saved-plan origin과 작성 handoff의 실제 opener에 연결했다. 각 origin의 source 읽기 전용·개인 편집 구획과 clean close write 0을 브라우저에서 비교했다."
+  },
+  {
+    "id": "D1-003",
+    "status": "단계 3 개선 적용",
+    "detail": "Item의 `계획에 반영` 전 persistent write 0과 부모 Plan의 `변경 저장` state target write 1을 실제 UI에서 확인했다. 저장 뒤 같은 overlay와 Item 순서가 결과 projection과 reload에 유지된다."
+  },
+  {
+    "id": "D1-004",
+    "status": "단계 3 개선 적용",
+    "detail": "dirty Cancel·Escape·브라우저 Back이 같은 discard 확인을 쓰며 `계속 편집`은 draft·focus·scroll을 보존한다. 버리기 뒤 원래 opener와 route로 돌아가고 storage write는 0이다."
+  },
+  {
+    "id": "D1-005",
+    "status": "단계 3 개선 적용",
+    "detail": "source·existing personal·PoC personal·execution owner 구분을 실제 Plan/Item editor의 `원본 정보 · 읽기 전용`과 `내 계획 · 편집 가능` 구획으로 연결했다. source control은 노출하지 않고 개인 title·memo·schedule만 shadow에 저장한다."
+  },
+  {
+    "id": "D1-006",
+    "status": "단계 1 부분 개선",
+    "detail": "personal plan과 execution placement의 inherit·fixed_date·unscheduled를 분리하고 원래 날짜 따르기와 source 보존을 검증했다. 기준일 편집·preview와 plan schedule UI는 없다."
+  },
+  {
+    "id": "D1-011",
+    "status": "단계 3 부분 개선",
+    "detail": "성공·no-op·failure·undone receipt와 same-intent retry·one-snapshot Undo를 실제 편집 UI에 연결했다. 저장 대상·변경값·target write 수를 표시하지만 운영 trash lifecycle count는 승인 범위 밖이라 부모 요구는 부분이다."
+  },
+  {
+    "id": "D1-012",
+    "status": "단계 3 보류 경계 확정",
+    "detail": "개인 Flow·Item title·memo·order는 편집과 네 projection에 연결했다. 안정적인 section identity와 overlay가 없어 section 제목 편집은 추정 구현하지 않고 숨겨 부모 요구를 부분으로 유지했다."
+  },
+  {
+    "id": "D1-017",
+    "status": "단계 3 개선 적용",
+    "detail": "각 origin이 실제로 가진 source 제목·설명·일정·출처·완료 기준만 Plan/Item의 읽기 전용 구획에 표시하고 개인 메모와 분리했다. 없는 링크나 값을 만들지 않는 경계를 네 origin에서 확인했다."
+  },
+  {
+    "id": "D1-018",
+    "status": "단계 3 부분 개선",
+    "detail": "저장 전 영향 요약과 revision·raw fingerprint stale 차단을 UI에 연결하고 실패 시 draft 유지·target write 0을 확인했다. duplicate conflict 선택과 운영 included/excluded 정책은 열지 않아 부모 요구는 부분이다."
+  },
+  {
+    "id": "D1-025",
+    "status": "단계 1 부분 개선",
+    "detail": "내부 identity·fingerprint·lineage는 화면에 노출하지 않고 출처 provenance만 사용한다. Calendar rail과 완전한 중복 낭독 접근성 검사는 단계 3 이후다."
+  },
+  {
+    "id": "D2-002",
+    "status": "단계 1 부분 개선",
+    "detail": "source line→Item mapping, Item/Step/Flow identity와 provenance를 보존하지만 SourceRow와 Bundle/Flow Map 전체 authoring 계층은 PoC 축약 범위다."
+  },
+  {
+    "id": "D2-004",
+    "status": "단계 1 부분 개선",
+    "detail": "source·existing personal·PoC personal plan·execution 계층을 분리했다. CreatorDraft·PublishedVersion·ExportSnapshot owner는 이번 개인 handoff 범위에서 구현하지 않았다."
+  },
+  {
+    "id": "D2-011",
+    "status": "단계 1 충족",
+    "detail": "표식 없는 일반 문장을 포함한 exact rawText를 draft와 durable authoring lineage에 byte 그대로 보존하고, 저장 payload의 source projection 일치까지 fail-closed 검증한다."
+  },
+  {
+    "id": "D2-012",
+    "status": "단계 1 의도적 변경 확정",
+    "detail": "nested checklist를 부모 설명으로 평탄화하지 않고 exact line/rawText와 blocking manifest로 보존해 commit을 차단한다. ChecklistEntry owner가 없는 이번 PoC의 의도된 fail-closed 처리다."
+  },
+  {
+    "id": "D2-013",
+    "status": "단계 1 의도적 변경 확정",
+    "detail": "정의되지 않은 속성을 설명으로 추정하지 않고 exact raw line과 material blocker로 보존하며 tampered manifest 저장을 차단한다."
+  },
+  {
+    "id": "D2-016",
+    "status": "단계 1 제외 유지",
+    "detail": "recurrence와 recurrence end는 raw source에 남기고 commit을 hard-block한다. occurrence identity와 완료 owner가 없는 이번 PoC에서는 실행 엔진을 열지 않는다."
+  },
+  {
+    "id": "D2-018",
+    "status": "단계 1 부분 개선",
+    "detail": "source order, PoC personal plan order, TimelineOrder를 서로 다른 owner로 분리했다. 결과의 source line 자체를 재정렬하는 authoring action은 없다."
+  },
+  {
+    "id": "D2-021",
+    "status": "단계 3 부분 개선",
+    "detail": "작성 handoff의 결과 Item을 공통 editor에서 개인 수정하고 Text·Todo·PoC Calendar·TXT에 같은 ref로 원자 반영한다. raw source 역편집은 A0 personal handoff 결정에 따라 열지 않아 부모 요구는 부분이다."
+  },
+  {
+    "id": "D2-035",
+    "status": "단계 3 부분 개선",
+    "detail": "개인 Item title·memo·계획 날짜를 공통 editor에서 조정하고 source 일정·완료 기준은 읽기 전용으로 보존한다. 전체 property catalog와 recurrence·복합 설정 UI는 지원하지 않아 부모 요구는 부분이다."
+  },
+  {
+    "id": "D2-036",
+    "status": "단계 1 미구현 유지",
+    "detail": "현재 authoring은 raw textarea 입력 중심이며 단순 속성 inline helper, native picker, 복합 설정 surface가 없다."
+  },
+  {
+    "id": "D2-039",
+    "status": "단계 1 미구현 유지",
+    "detail": "rendered property를 다시 눌러 정확한 source caret·실제 값을 선택하는 통합 경로가 없다."
+  },
+  {
+    "id": "D2-040",
+    "status": "단계 3 부분 개선",
+    "detail": "실제 Plan·QuickItem editor에서 external raw drift stale 차단, no-op·Cancel write 0, 실패 후 draft·focus 보존을 확인했다. authoring inline helper의 IME composing·submenu focus는 별도 요구로 남아 부모 요구는 부분이다."
+  },
+  {
+    "id": "BP-032",
+    "status": "단계 1 부분 개선",
+    "detail": "원문·계보·차단 문제는 저장·검증하지만 사용자가 미해결 문제를 관리하거나 재진입하는 별도 목록 UI는 없다."
+  },
+  {
+    "id": "BP-033",
+    "status": "단계 1 충족",
+    "detail": "실행 의미가 달라질 수 있는 문법은 exact raw line을 남기고 구조화 저장을 0건으로 차단하며 lossAccepted로 우회할 수 없다."
+  },
+  {
+    "id": "BP-038",
+    "status": "단계 3 개선 적용",
+    "detail": "saved Flow의 Item memo를 공통 editor에서 PoC personal owner로 편집하고 QuickItem memo는 Flow identity 없는 root editor에 남겼다. 두 저장 owner가 섞이지 않으며 각각 target write 1을 사용한다."
+  },
+  {
+    "id": "BP-059",
+    "status": "단계 3 개선 적용",
+    "detail": "공통 편집 UI가 saving target·affected refs/count를 구조화 receipt와 비활성화된 중복 action으로 표시하도록 연결됐다."
+  },
+  {
+    "id": "BP-060",
+    "status": "단계 3 개선 적용",
+    "detail": "성공 receipt가 개인 제목·메모·날짜·순서의 before→after, affected refs, target/support write 수와 Undo action을 실제 화면에 표시한다."
+  },
+  {
+    "id": "BP-062",
+    "status": "단계 3 개선 적용",
+    "detail": "late storage failure 뒤 exact rollback·draft·오류 focus를 유지하고 화면의 `다시 시도`가 같은 intentId로 성공한 뒤 Undo까지 이어지는 경로를 검증했다."
+  },
+  {
+    "id": "BP-063",
+    "status": "단계 3 개선 적용",
+    "detail": "성공 직후 Undo label과 복원할 구체 변경값을 표시하고, 실행 뒤 같은 intentId의 undone receipt와 target write 1로 전환한다."
+  },
+  {
+    "id": "BP-080",
+    "status": "단계 3 부분 개선",
+    "detail": "personal edit→Plan 저장→Text·Todo·PoC Calendar·TXT 확인→다시 열기 round trip을 사용자 화면에서 닫았다. 실제 export/download writer는 A0 제외 경계라 부모 요구는 부분이다."
+  },
+  {
+    "id": "D1-021",
+    "status": "단계 3 개선 적용",
+    "detail": "선택한 Flow의 effective title·Item order·계획일을 같은 ref의 Flow 문법형 Text 기본 보기로 연결하고 Flow 변경 시 Text로 초기화했다."
+  },
+  {
+    "id": "D1-022",
+    "status": "단계 3 부분 개선",
+    "detail": "축약 없는 전체 Todo와 월간 grid·selected-day 목록을 같은 effective refs로 구현했다. Calendar는 PoC 내부 읽기 projection이며 실제 `/calendar` owner는 연결하지 않아 부모 요구는 부분이다."
+  },
+  {
+    "id": "D1-023",
+    "status": "단계 3 개선 적용",
+    "detail": "result view·base date·selected date를 탐색 상태로 분리하고 execution placement→personal plan→imported personal→source 날짜 우선순위를 같은 projection에 적용했다."
+  },
+  {
+    "id": "D2-022",
+    "status": "양쪽 parity 개선 확인",
+    "detail": "React와 독립 HTML을 입력/결과 두 상태로 맞추고 강제 3단계와 일반 확인 checkbox를 제거했다. 경고나 사용자 요청 때만 선택형 검토를 열고 Escape로 편집기에 돌아간다."
+  },
+  {
+    "id": "D2-029",
+    "status": "추적 재판정·개선 확인",
+    "detail": "native source editor 하나에서 순수 텍스트와 Flow 편집 표현을 왕복하고 raw bytes·selection·scroll·native history·오른쪽 결과 identity가 유지되는 현재 구현을 충족으로 반영했다."
+  },
+  {
+    "id": "D2-030",
+    "status": "추적 재판정·개선 확인",
+    "detail": "Flow 편집이 제목·문단·Item·속성·한 단계 확인을 카드와 배지 없이 한 문서 흐름으로 표현하고 source line 순서와 긴 문장을 보존하는 최신 component 증거를 반영했다."
+  },
+  {
+    "id": "D2-031",
+    "status": "추적 재판정·개선 확인",
+    "detail": "현재 caret 줄만 exact raw syntax로 두고 지원되는 비활성 줄만 파생 문서 표현으로 보여 주며 일반·미완성·unsupported·protected line은 원문으로 남기는 최신 브라우저 증거를 반영했다."
+  },
+  {
+    "id": "D2-032",
+    "status": "추적 재판정·개선 확인",
+    "detail": "editor owner를 remount하지 않고 line presentation만 갱신해 selection·scroll·연속 입력·IME와 결과 identity를 보존하는 현행 구현을 충족으로 바로잡았다."
+  },
+  {
+    "id": "D2-033",
+    "status": "추적 재판정·개선 확인",
+    "detail": "상시 구조 툴바를 없애고 safe blank line 또는 root Item에서만 문맥형 +를 노출하며 열기·둘러보기·취소가 source와 저장을 바꾸지 않는 최신 증거를 반영했다."
+  },
+  {
+    "id": "D2-034",
+    "status": "추적 재판정·개선 확인",
+    "detail": "owner 문맥에 따라 첫 단계·첫 할 일·다음 할 일·다음 체크를 먼저 제안하고 드문 구조는 다른 내용에 두며 선택을 native transaction 한 번으로 삽입·Undo하는 현재 구현을 충족으로 반영했다."
+  },
+  {
+    "id": "D2-037",
+    "status": "추적 재판정·개선 확인",
+    "detail": "추가 메뉴가 실제 문법과 한 단계 계층 설명을 함께 제공하고 장식 미리보기는 접근성 트리에서 숨겨 색상 없이도 관계를 설명하는 최신 구현·Chromium 증거를 반영했다."
+  },
+  {
+    "id": "D2-038",
+    "status": "추적 재판정·부분 유지",
+    "detail": "+ anchor와 visualViewport 기반 모바일 sheet, 내부 scroll은 자동 브라우저 증거로 확인했다. 실제 Android·iOS 가상 키보드에서 모든 항목 접근을 실행하지 않았으므로 부분 충족을 유지한다."
+  },
+  {
+    "id": "D2-043",
+    "status": "반응형 결함 개선 확인",
+    "detail": "작성면을 입력/결과 두 상태와 local primary 한 개로 감산하고, 320×700에서 editor와 하단 CTA의 사각형 교차를 0으로 만들었다. 여섯 viewport에서 강제 3-step·일반 확인 checkbox·가려진 주 행동이 없다."
+  },
+  {
+    "id": "D2-044",
+    "status": "추적 재판정·개선 확인",
+    "detail": "root와 child/property의 시작 x, depth 1 중립 guide와 hanging indent, 더 깊거나 unsupported line의 exact raw 보존을 최신 LiveEditor와 Chromium 증거로 확인했다."
+  },
+  {
+    "id": "D2-045",
+    "status": "양쪽 catalog parity 개선 확인",
+    "detail": "React와 독립 HTML의 여섯 구조명·설명·짧은 예시·전체 예시 source·scaffold를 같은 versioned 계약으로 맞췄다. picker 둘러보기 예시는 적용 전 source에 들어가지 않는다."
+  },
+  {
+    "id": "D2-046",
+    "status": "양쪽 삽입 parity 개선 확인",
+    "detail": "양쪽 모두 여섯 승인 TXT scaffold를 같은 editor에 정확히 한 번 삽입하고 첫 빈 값 위치로 focus를 옮긴다. picker example은 source와 분리한 둘러보기 정보로 유지한다."
+  },
+  {
+    "id": "D2-050",
+    "status": "추적 재판정·개선 확인",
+    "detail": "editorId·documentId·source fingerprint·dispatch count와 non-composing guard를 apply 직전에 재검증하고 non-empty·stale·double apply·IME를 write 0으로 차단하는 현재 transaction을 충족으로 반영했다."
+  },
+  {
+    "id": "D2-052",
+    "status": "양쪽 native history 개선 확인",
+    "detail": "React와 독립 HTML 모두 template 전체를 browser-owned native transaction 한 번으로 적용하고 Undo 한 번으로 제거, Redo 한 번으로 byte-identical 복구한다. standalone의 수동 templateEditHistory와 keydown 가로채기를 제거했다."
+  },
+  {
+    "id": "D2-053",
+    "status": "양쪽 전체 빈칸 예시 개선 확인",
+    "detail": "React와 독립 HTML의 모든 인식 가능 빈 heading·Item·subcheck·property에 line ghost와 전역 `입력 예시` toggle을 적용했다. standalone은 React와 같은 10개 hint를 여섯 viewport에서 확인했다."
+  },
+  {
+    "id": "D2-055",
+    "status": "추적 재판정·개선 확인",
+    "detail": "최종 구조 메뉴가 다음 할 일, 현재 할 일 안의 하위 확인·항목 정보, 새 단계 순서를 사용하고 항목 정보는 실제 지원 catalog만 설명하는 현재 구현을 충족으로 반영했다."
+  },
+  {
+    "id": "D2-061",
+    "status": "자동 반응형 개선·실기 미실행",
+    "detail": "48px control, non-modal review, Escape focus return, 320×700 포함 여섯 Chromium viewport의 overflow·editor/CTA 겹침 0을 확인했다. 실제 Android/iOS 키보드, screen reader, browser 200% text zoom은 미실행이다."
+  },
+  {
+    "id": "D2-063",
+    "status": "최종 자동 근거 갱신",
+    "detail": "authoring model/component 256/256, 최종 browser 37/37(교차 parity 2, standalone 21, 통합 3, React Stage 2 11), standalone node 39/39, production build 18/18을 기록했다. 전체 npm은 1520/1521에서 기존 seed freshness 1건으로 실패·중단됐다."
+  },
+  {
+    "id": "D2-003",
+    "status": "단계 3 부분 개선",
+    "detail": "Text·Todo·PoC Calendar·정규화 TXT가 같은 effective Item refs를 읽는다. Sheet와 실제 Calendar/export writer는 A0 범위 밖이라 고정 4-slot 전체 충족으로 올리지 않았다."
+  },
+  {
+    "id": "D2-017",
+    "status": "단계 3 부분 개선",
+    "detail": "작성 handoff Flow를 실제 월간 grid와 selected-day 전체 목록으로 확인하는 PoC Calendar를 연결했다. 실제 `/calendar`와 recurrence occurrence는 보류해 부모 요구는 부분이다."
+  },
+  {
+    "id": "D2-020",
+    "status": "단계 3 부분 개선",
+    "detail": "exact WorkingSource와 분리된 정규화 TXT 읽기 projection을 같은 effective items로 제공한다. 복사·다운로드는 운영 export owner 미승인으로 제공하지 않아 부모 요구는 부분이다."
+  },
+  {
+    "id": "BP-007",
+    "status": "단계 3 부분 개선",
+    "detail": "개인공간의 기간 목록과 PoC Calendar가 같은 ref·effective date·completion을 읽는다. 실제 `/calendar` cross-route는 A0 보류라 부모 요구는 부분이다."
+  },
+  {
+    "id": "BP-035",
+    "status": "단계 3 부분 개선",
+    "detail": "folder membership, execution date, 네 결과 projection이 별도 Item을 복제하지 않고 같은 ref를 공유함을 브라우저에서 확인했다. 실제 Calendar route는 연결하지 않았다."
+  },
+  {
+    "id": "BP-049",
+    "status": "단계 3 부분 개선",
+    "detail": "PoC Calendar와 Today·Todo·상세의 완료·날짜가 같은 ref로 일치한다. 운영 Calendar owner와 command는 호출하지 않아 전체 요구는 부분이다."
+  },
+  {
+    "id": "BP-069",
+    "status": "단계 3 부분 개선",
+    "detail": "공통 편집, staged save, 네 projection, 완료·다시 열기, retry·Undo의 개인공간 내부 조건을 닫았다. 실제 Calendar·export·기기·관찰 사용자 조건은 별도라 묶음 전체는 부분이다."
+  },
+  {
+    "id": "BP-079",
+    "status": "단계 3 부분 개선",
+    "detail": "Today 완료가 상세·Todo·PoC Calendar의 같은 ref에 나타나고 다시 열기 뒤 open 상태로 복원되는 S7을 브라우저에서 확인했다. 실제 Calendar route는 보류다."
+  }
+]

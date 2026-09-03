@@ -1,0 +1,234 @@
+{
+  "version": 1,
+  "stage": "P2-B",
+  "asOf": "2026-09-03",
+  "title": "FlowMe 통합 PoC P2-B 반복 회차·완전 TXT 검증",
+  "purpose": "D2-017 반복 회차 projection과 D2-020 복사용 TXT의 남은 갭을 닫되, 구현 증거와 아직 끝나지 않은 실행 검증을 분리해 판정한다.",
+  "audience": "FlowMe 제품·UX·개발 검토자",
+  "scope": "격리된 /my?personalWorkspacePoc=v1 및 조작형 독립 HTML",
+  "sourcePaths": {
+    "spec": "docs/specs/2026-09-03-flowme-integrated-poc-occurrence-txt-closure-v1/spec.md",
+    "plan": "docs/specs/2026-09-03-flowme-integrated-poc-occurrence-txt-closure-v1/plan.md",
+    "tasks": "docs/specs/2026-09-03-flowme-integrated-poc-occurrence-txt-closure-v1/tasks.md",
+    "handoff": "docs/specs/2026-09-03-flowme-integrated-poc-occurrence-txt-closure-v1/handoff.md",
+    "verdicts": "docs/specs/2026-09-03-flowme-integrated-poc-occurrence-txt-closure-v1/current-verdict-overrides.json",
+    "requirements": "docs/content-audit/2026-09-02-flowme-integrated-poc-requirements-traceability-assets/requirements-d2.json",
+    "manifest": "docs/content-audit/2026-09-02-flowme-integrated-poc-requirements-traceability-assets/verification-manifest.json",
+    "standalone": "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko.html",
+    "trace": "docs/content-audit/2026-09-02-flowme-integrated-poc-requirements-traceability-ko.html"
+  },
+  "requirementIds": [
+    "D2-017",
+    "D2-020"
+  ],
+  "decisions": [
+    {
+      "id": "DEC-01",
+      "title": "회차별 완료 저장의 범위",
+      "conflict": "개발 2 원 정본은 회차별 완료 저장을 당시 범위 밖으로 뒀지만, 통합 PoC 목표는 회차 이동·완료·다시 열기·Undo·reload를 요구한다.",
+      "decision": "운영 정책이나 migration으로 올리지 않고, occurrenceId 단위의 PoC 전용 shadow state로만 구현한다.",
+      "guardrail": "원본 Item, 원 일정, Flow 소속과 운영 writer는 바꾸지 않는다."
+    },
+    {
+      "id": "DEC-02",
+      "title": "네 결과와 TXT의 관계",
+      "conflict": "요구 문장에는 Todo·Calendar·Sheet·TXT가 함께 열거되지만 현재 제품 IA의 결과 화면은 Text·Todo·Calendar·Sheet 네 개다.",
+      "decision": "TXT를 다섯 번째 독립 화면으로 만들지 않고 Text 결과의 화면·복사·다운로드 payload로 둔다. 네 화면과 TXT가 같은 occurrence manifest를 공유한다.",
+      "guardrail": "Working Source와 배포용 TXT는 계속 분리한다."
+    },
+    {
+      "id": "DEC-03",
+      "title": "안내 속성 보존",
+      "conflict": "P2-B TXT 요약 목록에는 안내가 생략돼 있지만 개발 2 authoring 정본에는 안내가 전용 속성으로 존재한다.",
+      "decision": "안내를 설명에 합치지 않고 출처와 주의 사이의 전용 행으로 보존한다.",
+      "guardrail": "이 추가 보존은 D2-035·D2-036·D2-039의 속성 picker/editor·재진입 완성 판정으로 쓰지 않는다. D2-023은 31개 실제·검증 콘텐츠 예시 보존 요구다."
+    }
+  ],
+  "manifestOutputs": [
+    {
+      "name": "Todo",
+      "role": "날짜별 실행 목록",
+      "mustMatch": "row ref, effective date, completion, order"
+    },
+    {
+      "name": "월간 Calendar",
+      "role": "날짜가 있는 회차의 월 grid와 선택일 상세",
+      "mustMatch": "row ref, effective date, completion, order"
+    },
+    {
+      "name": "Sheet",
+      "role": "회차와 source identity를 함께 드러내는 표",
+      "mustMatch": "row ref, sourceItemRef, occurrenceId, property values"
+    },
+    {
+      "name": "Text + TXT",
+      "role": "읽기 화면과 동일 바이트 복사·다운로드",
+      "mustMatch": "row ref order, occurrence index, property order, bytes"
+    }
+  ],
+  "txtContract": {
+    "version": 2,
+    "encoding": "UTF-8",
+    "bom": "없음",
+    "newline": "LF",
+    "finalNewline": "정확히 1개",
+    "trailingSpaces": "없음",
+    "numbering": "단계마다 1부터 자동 번호",
+    "propertyOrder": [
+      "설명",
+      "메모",
+      "완료 기준",
+      "날짜",
+      "시간",
+      "시간대",
+      "장소",
+      "소요 시간",
+      "반복",
+      "실행 조건",
+      "하위 체크",
+      "자료",
+      "출처",
+      "안내",
+      "주의"
+    ],
+    "sample": "아침 루틴\n=====\n\n[준비]\n1. ☐ 아침 스트레칭 · 1회차\n   완료 기준: 10분 마치기\n   날짜: 2026-09-03\n   시간: 07:30\n   반복: 매일 · 종료 3회\n   체크리스트:\n     ☐ 물 준비하기\n\n[원문 메모]\n몸 상태에 맞춰 강도를 조절한다.\n"
+  },
+  "verificationGates": [
+    {
+      "id": "model",
+      "label": "React 순수 모델·계약",
+      "description": "parser, occurrence v1, state transition, result projection v3, TXT v2와 presenter intent",
+      "runIds": ["p2b-occurrence-txt-model"]
+    },
+    {
+      "id": "standalone",
+      "label": "독립 HTML 모델 동등성",
+      "description": "standalone model·parser·projection·transition과 single-file 재생성",
+      "runIds": ["p2b-standalone-model"]
+    },
+    {
+      "id": "browser",
+      "label": "통합 브라우저 시나리오",
+      "description": "React와 standalone의 조작, 6개 viewport, overflow·console·page error·storage 경계",
+      "match": "all",
+      "runIds": [
+        "p2b-browser-focused",
+        "p2b-standalone-browser-focused",
+        "p2b-result-six-viewport-browser",
+        "p2b-standalone-six-viewport-browser"
+      ]
+    },
+    {
+      "id": "full",
+      "label": "전체 npm test",
+      "description": "P2-B 변경을 포함한 fresh 전체 회귀와 중단 뒤 남은 downstream suite",
+      "match": "all",
+      "runIds": ["p2b-full-regression", "p2b-full-regression-tail"]
+    },
+    {
+      "id": "build",
+      "label": "Production build",
+      "description": "P2-B 변경과 독립 HTML을 포함한 fresh production build",
+      "runIds": ["p2b-production-build"]
+    },
+    {
+      "id": "docs",
+      "label": "문서·로컬 링크",
+      "description": "보고서와 정본 문서의 required file·local link 검사",
+      "runIds": ["p2b-documentation-check"]
+    },
+    {
+      "id": "report",
+      "label": "검증 보고서 브라우저 smoke",
+      "description": "정본·manifest 반영, read-only, 6개 viewport overflow·오류·핵심 링크 hit-test",
+      "runIds": ["p2b-report-browser"]
+    }
+  ],
+  "supplementalRunIds": [
+    "p2b-personal-workspace-poc-suite",
+    "p2b-cross-surface-contract",
+    "p2b-trace-assets"
+  ],
+  "scenarios": [
+    {
+      "id": "S1",
+      "title": "3회 반복과 공통 manifest",
+      "expected": "첫 날짜를 포함한 3개 occurrence가 네 결과에서 같은 ID·순서·날짜를 가진다.",
+      "modelGate": "model",
+      "runtimeGate": "browser"
+    },
+    {
+      "id": "S2",
+      "title": "유한 30회·종료 없는 4주",
+      "expected": "기본 범위가 bounded되고 더 보기 전 ID와 순서가 유지된다.",
+      "modelGate": "model",
+      "runtimeGate": "browser"
+    },
+    {
+      "id": "S3",
+      "title": "한 회차 날짜 이동",
+      "expected": "선택한 occurrence의 실행 날짜만 바뀌고 source Item·원 일정·다른 회차는 불변이다.",
+      "modelGate": "model",
+      "runtimeGate": "browser"
+    },
+    {
+      "id": "S4",
+      "title": "완료·다시 열기·Undo·reload",
+      "expected": "해당 occurrence의 shadow state만 바뀌고 성공 상태만 새로고침 뒤 복원된다.",
+      "modelGate": "model",
+      "runtimeGate": "browser"
+    },
+    {
+      "id": "S5",
+      "title": "Complete TXT 바이트",
+      "expected": "화면·clipboard·.txt가 BOM 없는 UTF-8, LF, 마지막 개행 1개의 같은 payload다.",
+      "modelGate": "model",
+      "runtimeGate": "browser"
+    },
+    {
+      "id": "S6",
+      "title": "무효·같은 위치·취소·저장 실패",
+      "expected": "invalid recurrence와 no-op·cancel·failure에서 mutation이 0건이다.",
+      "modelGate": "model",
+      "runtimeGate": "browser"
+    },
+    {
+      "id": "S7",
+      "title": "React·standalone 동등성",
+      "expected": "같은 fixture가 같은 occurrence와 TXT 계약을 만든다.",
+      "modelGate": "standalone",
+      "runtimeGate": "browser"
+    },
+    {
+      "id": "S8",
+      "title": "운영 데이터 불변",
+      "expected": "시나리오 전후 PoC prefix 밖 flow:* key/value가 byte-for-byte 동일하다.",
+      "modelGate": "standalone",
+      "runtimeGate": "browser"
+    }
+  ],
+  "viewports": [
+    { "label": "320×700", "width": 320, "height": 700 },
+    { "label": "390×844", "width": 390, "height": 844 },
+    { "label": "375×812", "width": 375, "height": 812 },
+    { "label": "844×390", "width": 844, "height": 390 },
+    { "label": "1024×768", "width": 1024, "height": 768 },
+    { "label": "1440×900", "width": 1440, "height": 900 }
+  ],
+  "boundaries": [
+    "진입점은 exact /my?personalWorkspacePoc=v1이다.",
+    "쓰기는 flow:poc:personal-workspace:v1:* prefix 안에서만 허용한다.",
+    "기존 Flow 데이터는 read model 입력으로만 사용하고 운영 writer를 호출하지 않는다.",
+    "localStorage.clear()는 호출하지 않는다.",
+    "자동 시나리오 전후 PoC prefix 밖 flow:* key/value는 byte-for-byte 동일해야 한다.",
+    "손상 payload와 unsupported origin은 기존 /my로 fail-closed한다.",
+    "반복 규칙 편집·이번 이후 일괄 변경·외부 동기화·운영 migration은 범위 밖이다."
+  ],
+  "remaining": [
+    "D1-012와 P2-B 이전의 다른 갭은 이번 판정에서 바꾸지 않는다.",
+    "D2-035·D2-036·D2-039의 속성 picker/editor·재진입은 별도 갭으로 남는다. D2-023은 31개 실제·검증 콘텐츠 예시 보존 요구다.",
+    "D2-026 외부 동기화와 운영 export writer 연결은 범위 밖이다.",
+    "깊은 하위 체크와 모호한 속성은 fail-closed한다.",
+    "실제 Android Chrome·iOS Safari·보조기술·관찰 사용자 검증은 자동화 증거와 분리한다."
+  ]
+}

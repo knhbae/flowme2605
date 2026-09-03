@@ -1,0 +1,3089 @@
+[
+  {
+    "parentId": "V41-005",
+    "subchecks": [
+      {
+        "id": "V41-005.1",
+        "title": "8px 초과 이동 시 길게 누르기 시작 취소",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "React와 standalone에서 Math.hypot 임계값과 timer 취소를 pointer sequence로 실행했다."
+      },
+      {
+        "id": "V41-005.2",
+        "title": "취소 직후 합성 클릭의 이동 창 재개방 차단",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "두 surface 모두 synthetic click 한 번만 막고 다음 실제 click을 복원하는 브라우저 회귀를 통과했다."
+      }
+    ]
+  },
+  {
+    "parentId": "V41-008",
+    "subchecks": [
+      {
+        "id": "V41-008.1",
+        "title": "날짜·폴더 목적지를 왼쪽 패널에 배치",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "React와 독립 HTML의 이동 패널·브라우저 캡처에서 왼쪽 날짜·폴더 목적지 영역을 확인했다."
+      },
+      {
+        "id": "V41-008.2",
+        "title": "오른쪽에 행 이름 식별 영역 유지",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "320×700과 필수 5개 viewport에서 패널 너비 제한과 오른쪽 행 제목의 실제 visible width를 검사했다."
+      },
+      {
+        "id": "V41-008.3",
+        "title": "오른쪽에 48px 손잡이 통로 유지",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "React·standalone Task/Flow 캡처와 bounding-box 검사에서 패널 오른쪽의 48px 손잡이 통로를 확인했다."
+      },
+      {
+        "id": "V41-008.4",
+        "title": "같은 목록 재정렬 대상을 오른쪽 통로에 배치",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "React와 독립 HTML 모두 왼쪽 패널이 열린 상태에서 오른쪽 원 목록을 before/after 재정렬 대상으로 사용하고 Undo한다."
+      }
+    ]
+  },
+  {
+    "parentId": "V41-018",
+    "subchecks": [
+      {
+        "id": "V41-018.1",
+        "title": "현재 날짜·폴더·자기 행의 중립 표시",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "React Chromium에서 세 target의 background·border·text computed style가 같고 shadow가 없음을 검사했으며 standalone도 같은 중립 current style을 사용한다."
+      },
+      {
+        "id": "V41-018.2",
+        "title": "현재 위치 놓기 시 state mutation 0",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "React Stage 4와 standalone Flow/Task 시나리오에서 raw state·draft bytes와 storage call count가 동일하다."
+      },
+      {
+        "id": "V41-018.3",
+        "title": "현재 위치 놓기 시 성공 알림 0",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "같은 위치는 panel과 전역 status 모두 neutral이며 성공한 변경 수를 늘리지 않는다."
+      }
+    ]
+  },
+  {
+    "parentId": "V41-019",
+    "subchecks": [
+      {
+        "id": "V41-019.1",
+        "title": "현재 drag target을 글로 안내",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "React와 독립 HTML의 단일 상태 영역이 현재 행과 before/after 위치를 말한다."
+      },
+      {
+        "id": "V41-019.2",
+        "title": "drop 가능 여부를 글로 안내",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "current, invalid/outside, before, after를 Chromium pointer matrix에서 각각 확인했다."
+      },
+      {
+        "id": "V41-019.3",
+        "title": "drop 결과를 글로 안내",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "성공·같은 위치·취소·날짜 결과가 전역 status에 노출된다."
+      },
+      {
+        "id": "V41-019.4",
+        "title": "before/after 삽입선 표시",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "두 surface의 midpoint 양쪽에서 layout을 밀지 않는 3px 선을 실측했다."
+      }
+    ]
+  },
+  {
+    "parentId": "V41-020",
+    "subchecks": [
+      {
+        "id": "V41-020.1",
+        "title": "대상 밖 놓기 취소와 원상 복구",
+        "verdict": "충족",
+        "evidence": "E3",
+        "note": "outside drop 경로가 원상태를 유지한다."
+      },
+      {
+        "id": "V41-020.2",
+        "title": "빠른 스크롤 중 이동 취소와 원상 복구",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "active pointer session 중 isTrusted=true인 Playwright wheel로 scrollY를 바꿔 panel cleanup과 raw byte 불변을 확인했다."
+      },
+      {
+        "id": "V41-020.3",
+        "title": "Escape 취소와 원상 복구",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "컴포넌트와 브라우저 경로에서 Escape 취소를 확인했다."
+      },
+      {
+        "id": "V41-020.4",
+        "title": "pointer cancel 취소와 원상 복구",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "pointercancel 후 state mutation 0을 확인했다."
+      },
+      {
+        "id": "V41-020.5",
+        "title": "창 이탈·resize 취소와 원상 복구",
+        "verdict": "충족",
+        "evidence": "E3",
+        "note": "blur와 resize handler가 drag session을 닫는다."
+      },
+      {
+        "id": "V41-020.6",
+        "title": "각 취소 뒤 후속 클릭 억제",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "trusted wheel 취소 뒤 첫 합성 click은 무시되고 다음 실제 click만 같은 이동 창을 연다."
+      }
+    ]
+  },
+  {
+    "parentId": "V41-028",
+    "subchecks": [
+      {
+        "id": "V41-028.1",
+        "title": "점유·빈 날짜의 세로 date section",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "React PersonalWorkspacePocSurface와 독립 HTML renderMonthTaskGroups가 월간 점유 날짜와 펼친 빈 날짜를 같은 세로 section 문법으로 렌더링하고 브라우저가 30개 section을 확인했다."
+      },
+      {
+        "id": "V41-028.2",
+        "title": "점유 날짜별 빠른 할 일 추가",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "React 844×390 시나리오가 점유 날짜의 48px 추가 버튼을 키보드로 열어 해당 날짜 prefill과 Escape·취소 저장 0건을 확인했다."
+      },
+      {
+        "id": "V41-028.3",
+        "title": "펼친 빈 날짜별 빠른 할 일 추가",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "React와 독립 HTML 844×390 시나리오가 빈 날짜 28개와 날짜별 추가 버튼 28개를 확인하고 마지막 빈 날짜 및 2026-09-15에 QuickItem을 생성했다."
+      },
+      {
+        "id": "V41-028.4",
+        "title": "정확한 날짜 저장과 취소·오류 zero-write",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "날짜별 form의 target date 저장, 실패 rollback, Escape·취소 byte 불변, 성공 후 reload 복원과 Undo를 storage mutation audit로 직접 검사했다."
+      }
+    ]
+  },
+  {
+    "parentId": "V41-047",
+    "subchecks": [
+      {
+        "id": "V41-047.1",
+        "title": "현재 통합 model에 고정 seed 5,000회 실행",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "현재 통합 state model에 고정 seed 5,000-step 실행을 추가해 통과했다."
+      },
+      {
+        "id": "V41-047.2",
+        "title": "변경·거절·no-op·Undo 분류 검증",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "매 step에서 state·ref·Undo·source 불변식을 확인한다."
+      },
+      {
+        "id": "V41-047.3",
+        "title": "시뮬레이션을 사용자 수로 해석하지 않음",
+        "verdict": "충족",
+        "evidence": "E3",
+        "note": "보고서가 자동 증거와 관찰 사용자를 분리한다."
+      }
+    ]
+  },
+  {
+    "parentId": "V41-048",
+    "subchecks": [
+      {
+        "id": "V41-048.1",
+        "title": "데스크톱 마우스 DOM 조작",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "브라우저 회귀에서 mouse drag와 menu 경로를 실행했다."
+      },
+      {
+        "id": "V41-048.2",
+        "title": "390×844 DOM 조작",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "요구 viewport에서 pointer·click·keyboard 조작을 실행했다."
+      },
+      {
+        "id": "V41-048.3",
+        "title": "375×812 DOM 조작",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "요구 viewport 브라우저 검사를 통과했다."
+      },
+      {
+        "id": "V41-048.4",
+        "title": "844×390 DOM 조작",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "짧은 가로 viewport 브라우저 검사를 통과했다."
+      }
+    ]
+  },
+  {
+    "parentId": "V41-049",
+    "subchecks": [
+      {
+        "id": "V41-049.1",
+        "title": "강제 inset에서 탐색 영역 경계 검사",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "강제 네 방향 inset이 적용된 shell 안에서 skip-link와 탐색 focus를 실행했다."
+      },
+      {
+        "id": "V41-049.2",
+        "title": "강제 inset에서 본문 경계 검사",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "24/18/30/22px fixture에서 본문 shell의 네 방향 계산 padding을 확인했다."
+      },
+      {
+        "id": "V41-049.3",
+        "title": "강제 inset에서 이동 패널 경계 검사",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "React move panel과 item sheet의 좌·우·상·하 계산 경계를 실측했다."
+      },
+      {
+        "id": "V41-049.4",
+        "title": "강제 inset에서 dialog 경계 검사",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "React reset confirmation sheet와 독립 HTML dialog가 강제 inset 안에 남았다."
+      },
+      {
+        "id": "V41-049.5",
+        "title": "강제 inset에서 toast 경계 검사",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "독립 HTML transaction toast의 bounding box가 강제 inset 안에 남았다."
+      }
+    ]
+  },
+  {
+    "parentId": "V41-050",
+    "subchecks": [
+      {
+        "id": "V41-050.1",
+        "title": "더보기 메뉴 조작 검사",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "브라우저 메뉴 이동 시나리오를 통과했다."
+      },
+      {
+        "id": "V41-050.2",
+        "title": "Enter·Space 조작 검사",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "키보드 활성화 경로를 검사했다."
+      },
+      {
+        "id": "V41-050.3",
+        "title": "화살표 이동 검사",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "키보드 순서 이동을 검사했다."
+      },
+      {
+        "id": "V41-050.4",
+        "title": "Escape·닫기 검사",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "패널 종료 경로를 검사했다."
+      },
+      {
+        "id": "V41-050.5",
+        "title": "닫은 뒤 opener focus 복귀 검사",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "컴포넌트 focus contract와 브라우저 경로가 있다."
+      }
+    ]
+  },
+  {
+    "parentId": "V41-051",
+    "subchecks": [
+      {
+        "id": "V41-051.1",
+        "title": "8px 초과 move→pointerup→click 재개방 차단",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "React와 standalone의 실제 연속 pointer sequence에서 재개방과 저장 0을 확인했다."
+      },
+      {
+        "id": "V41-051.2",
+        "title": "Escape→후속 click 재개방 차단",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "Escape·pointer cancel 뒤 panel 상태와 저장 bytes를 확인하고 다음 유효 click 복원을 실행했다."
+      }
+    ]
+  },
+  {
+    "parentId": "V41-052",
+    "subchecks": [
+      {
+        "id": "V41-052.1",
+        "title": "요구 viewport 가로 넘침 0",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "5 viewport 브라우저 묶음이 scrollWidth를 검사한다."
+      },
+      {
+        "id": "V41-052.2",
+        "title": "console error·warn 0",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "브라우저 오류 배열이 비어 있다."
+      },
+      {
+        "id": "V41-052.3",
+        "title": "page error 0",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "pageerror 수집 결과가 0이다."
+      }
+    ]
+  },
+  {
+    "parentId": "V41-062",
+    "subchecks": [
+      {
+        "id": "V41-062.1",
+        "title": "실제 Android Chrome 길게 누르기 재검사",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "수정 후 실기 증거가 없다."
+      },
+      {
+        "id": "V41-062.2",
+        "title": "실제 Android Chrome 목적지 조작 재검사",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "수정 후 실기 증거가 없다."
+      },
+      {
+        "id": "V41-062.3",
+        "title": "실제 Android Chrome 문맥 메뉴 재검사",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "수정 후 실기 증거가 없다."
+      },
+      {
+        "id": "V41-062.4",
+        "title": "실제 Android Chrome 스크롤 충돌 재검사",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "제공 사진은 수정 전 문제 증거다."
+      }
+    ]
+  },
+  {
+    "parentId": "V41-063",
+    "subchecks": [
+      {
+        "id": "V41-063.1",
+        "title": "실제 iOS Safari 제스처 검사",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "iOS 실기 증거가 없다."
+      },
+      {
+        "id": "V41-063.2",
+        "title": "실제 iOS Safari safe area 검사",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "iOS 실기 증거가 없다."
+      },
+      {
+        "id": "V41-063.3",
+        "title": "실제 iOS Safari 문맥 메뉴 검사",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "iOS 실기 증거가 없다."
+      },
+      {
+        "id": "V41-063.4",
+        "title": "실제 iOS Safari 스크롤 충돌 검사",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "iOS 실기 증거가 없다."
+      }
+    ]
+  },
+  {
+    "parentId": "V41-064",
+    "subchecks": [
+      {
+        "id": "V41-064.1",
+        "title": "TalkBack 검사",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "실제 보조기술 조작 증거가 없다."
+      },
+      {
+        "id": "V41-064.2",
+        "title": "VoiceOver 검사",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "실제 보조기술 조작 증거가 없다."
+      },
+      {
+        "id": "V41-064.3",
+        "title": "OS 최대 글자 검사",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "실기 확대 증거가 없다."
+      },
+      {
+        "id": "V41-064.4",
+        "title": "browser zoom 검사",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "200% 확대 전용 검증 결과가 없다."
+      },
+      {
+        "id": "V41-064.5",
+        "title": "장시간 사용 검사",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "장시간 조작 세션 증거가 없다."
+      }
+    ]
+  },
+  {
+    "parentId": "V41-065",
+    "subchecks": [
+      {
+        "id": "V41-065.1",
+        "title": "맨 위로 이동",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "React resolvePersonalWorkspacePocReorderControl과 독립 HTML moveOrderToEdge가 맨 위 control을 기존 reorder transition으로 연결하고 이동·Undo·경계 무저장을 검사한다."
+      },
+      {
+        "id": "V41-065.2",
+        "title": "한 칸 위로 이동",
+        "verdict": "충족",
+        "evidence": "E3",
+        "note": "현재 패널과 키보드 경로에서 조작된다."
+      },
+      {
+        "id": "V41-065.3",
+        "title": "한 칸 아래로 이동",
+        "verdict": "충족",
+        "evidence": "E3",
+        "note": "현재 패널과 키보드 경로에서 조작된다."
+      },
+      {
+        "id": "V41-065.4",
+        "title": "맨 아래로 이동",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "React resolvePersonalWorkspacePocReorderControl과 독립 HTML moveOrderToEdge가 맨 아래 control을 기존 reorder transition으로 연결하고 이동·Undo·경계 무저장을 검사한다."
+      },
+      {
+        "id": "V41-065.5",
+        "title": "직접 날짜 입력",
+        "verdict": "충족",
+        "evidence": "E3",
+        "note": "직접 날짜 target을 조작할 수 있다."
+      },
+      {
+        "id": "V41-065.6",
+        "title": "오늘로 이동",
+        "verdict": "충족",
+        "evidence": "E3",
+        "note": "날짜 preset이 있다."
+      },
+      {
+        "id": "V41-065.7",
+        "title": "내일로 이동",
+        "verdict": "충족",
+        "evidence": "E3",
+        "note": "날짜 preset이 있다."
+      },
+      {
+        "id": "V41-065.8",
+        "title": "날짜 지우기",
+        "verdict": "충족",
+        "evidence": "E3",
+        "note": "날짜 미정 transition이 있다."
+      },
+      {
+        "id": "V41-065.9",
+        "title": "폴더 이동",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "Flow와 Quick의 허용 owner 경로를 검사했다."
+      },
+      {
+        "id": "V41-065.10",
+        "title": "시간순 복귀",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "TimelineOrder 제거 transition을 검사했다."
+      }
+    ]
+  },
+  {
+    "parentId": "V41-066",
+    "subchecks": [
+      {
+        "id": "V41-066.1",
+        "title": "보이는 다른 날짜로 touch drag",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "350ms Chromium pointerType=touch 자동화가 다른 날짜로 move-date 1회와 Undo 1회를 실행했다. 실제 기기 touch 증거는 아니다."
+      },
+      {
+        "id": "V41-066.2",
+        "title": "pointer cancel 후 data mutation 0",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "브라우저와 상태 검증에서 byte parity를 확인했다."
+      },
+      {
+        "id": "V41-066.3",
+        "title": "pointer cancel 후 ghost·강조·상태 cleanup",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "React와 독립 HTML 브라우저 검사가 pointercancel 뒤 drag·drop·삽입선·corridor·data-drop-position 0, 취소 상태 안내, RAF/auto-scroll 정지와 storage byte 불변을 직접 확인했다."
+      }
+    ]
+  },
+  {
+    "parentId": "V41-067",
+    "subchecks": [
+      {
+        "id": "V41-067.1",
+        "title": "edge hold 연속 auto-scroll",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "844×300 패널 하단 edge hold가 scrollTop을 연속 증가시키고 reduced-motion frame delta를 1~8px로 제한했다."
+      },
+      {
+        "id": "V41-067.2",
+        "title": "auto-scroll 후 화면 밖 날짜 drop",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "처음 패널 viewport 밖인 일주일 뒤 DATE target을 실제 scroll로 드러내 move-date 1회를 실행했다."
+      },
+      {
+        "id": "V41-067.3",
+        "title": "화면 밖 날짜 이동 Undo",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "화면 밖 날짜 이동 직후 Undo가 이전 placement bytes를 복원했다."
+      }
+    ]
+  },
+  {
+    "parentId": "V41-068",
+    "subchecks": [
+      {
+        "id": "V41-068.1",
+        "title": "행 본문 touch scroll",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "Chromium trusted touch 입력으로 행 본문 scrollY 증가와 mutation 0을 확인했다."
+      },
+      {
+        "id": "V41-068.2",
+        "title": "desktop mouse drag",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "전용 handle drag Playwright를 통과했다."
+      },
+      {
+        "id": "V41-068.3",
+        "title": "touch scroll 뒤 mouse drag 연속 공존",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "같은 fixture에서 touch scroll 무변경 뒤 desktop mouse reorder 저장 성공을 연속 실행했다."
+      }
+    ]
+  },
+  {
+    "parentId": "V41-069",
+    "subchecks": [
+      {
+        "id": "V41-069.1",
+        "title": "따라보기 종료 뒤 manual order 복원",
+        "verdict": "의도적 변경",
+        "evidence": "E3",
+        "note": "제품 surface의 내장 따라보기를 제거해 별도 보고서 시나리오로 옮겼다."
+      },
+      {
+        "id": "V41-069.2",
+        "title": "따라보기 종료 뒤 Undo 복원",
+        "verdict": "의도적 변경",
+        "evidence": "E3",
+        "note": "내장 따라보기 자체가 없다."
+      },
+      {
+        "id": "V41-069.3",
+        "title": "따라보기 종료 뒤 quick draft 복원",
+        "verdict": "의도적 변경",
+        "evidence": "E3",
+        "note": "내장 따라보기 자체가 없다."
+      },
+      {
+        "id": "V41-069.4",
+        "title": "따라보기 종료 뒤 빈 날짜 toggle 복원",
+        "verdict": "의도적 변경",
+        "evidence": "E3",
+        "note": "내장 따라보기 자체가 없다."
+      }
+    ]
+  },
+  {
+    "parentId": "V41-070",
+    "subchecks": [
+      {
+        "id": "V41-070.1",
+        "title": "844×390 모바일 IA",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "가로 viewport 캡처와 브라우저 검사가 있다."
+      },
+      {
+        "id": "V41-070.2",
+        "title": "844×390 48px 손잡이",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "standalone과 React에서 전용 손잡이를 확인했다."
+      },
+      {
+        "id": "V41-070.3",
+        "title": "844×390 패널 내부 scroll",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "React move panel과 독립 HTML dialog body에서 scrollHeight>clientHeight, scrollTop>0, 바깥 page scroll 고정을 844×390 브라우저 시나리오가 직접 확인했다."
+      },
+      {
+        "id": "V41-070.4",
+        "title": "844×390 가로 넘침 0",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "browser viewport 검사에서 overflow 0이다."
+      },
+      {
+        "id": "V41-070.5",
+        "title": "844×390 해당 월 빈 날짜 28일 toggle",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "React와 독립 HTML이 844×390에서 ‘할 일 없는 날짜 28일 보기’를 열어 빈 date section 28개와 각 날짜 추가 버튼을 직접 확인했다."
+      }
+    ]
+  },
+  {
+    "parentId": "D1-004",
+    "subchecks": [
+      {
+        "id": "D1-004.1",
+        "title": "취소·Escape·Back의 동일 discard 규칙",
+        "verdict": "부분",
+        "evidence": "E3",
+        "note": "순수 staged session의 취소·stale 규칙은 같지만 Escape·Back을 포함한 실제 editor discard UI는 단계 3에 남아 있다."
+      },
+      {
+        "id": "D1-004.2",
+        "title": "닫은 뒤 정확한 opener focus 복귀",
+        "verdict": "부분",
+        "evidence": "E3",
+        "note": "기존 panel·sheet는 opener focus로 돌아가지만 아직 화면에 없는 staged editor까지 동일하다고 검증할 수 없다."
+      },
+      {
+        "id": "D1-004.3",
+        "title": "닫은 뒤 scroll 위치 복귀",
+        "verdict": "미충족",
+        "evidence": "E1",
+        "note": "staged editor의 scroll snapshot·restore 구현과 브라우저 증거가 없다."
+      }
+    ]
+  },
+  {
+    "parentId": "D1-005",
+    "subchecks": [
+      {
+        "id": "D1-005.1",
+        "title": "개인 제목 편집",
+        "verdict": "부분",
+        "evidence": "E4",
+        "note": "personal title overlay와 staged draft/apply는 구현했지만 실제 입력 화면은 단계 3에 남아 있다."
+      },
+      {
+        "id": "D1-005.2",
+        "title": "개인 날짜 편집",
+        "verdict": "부분",
+        "evidence": "E4",
+        "note": "personal plan schedule과 execution placement transition은 구현했지만 계획 날짜 editor UI는 아직 없다."
+      },
+      {
+        "id": "D1-005.3",
+        "title": "개인 메모 편집",
+        "verdict": "부분",
+        "evidence": "E4",
+        "note": "Flow/Item personal memo overlay와 transition은 있으나 saved Item 편집 UI는 아직 없다."
+      },
+      {
+        "id": "D1-005.4",
+        "title": "원문 설명 읽기 전용 구분",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "source description과 owner가 별도 read-only provenance로 유지되고 personal overlay가 이를 덮어쓰지 않는다."
+      },
+      {
+        "id": "D1-005.5",
+        "title": "원문 완료 기준 읽기 전용 구분",
+        "verdict": "부분",
+        "evidence": "E3",
+        "note": "authoring lineage와 manifest는 원문 의미를 보존하지만 모든 saved Flow 완료 기준을 별도 UI 필드로 표시하지 않는다."
+      },
+      {
+        "id": "D1-005.6",
+        "title": "원문 출처 읽기 전용 구분",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "네 origin과 source identity를 personal/execution owner와 분리해 투영한다."
+      }
+    ]
+  },
+  {
+    "parentId": "D1-006",
+    "subchecks": [
+      {
+        "id": "D1-006.1",
+        "title": "inherit·fixed·unscheduled 세 상태 계약",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "personal plan과 execution placement 모두 inherit·fixed_date·unscheduled 세 상태 계약과 테스트가 있다."
+      },
+      {
+        "id": "D1-006.2",
+        "title": "세 상태를 UI에서 명시",
+        "verdict": "부분",
+        "evidence": "E4",
+        "note": "실행 이동 UI에 날짜 지정·날짜 미정·원래 계획 날짜 따르기가 있으나 personal plan schedule UI는 없다."
+      },
+      {
+        "id": "D1-006.3",
+        "title": "기준일 변경 즉시 preview 재계산",
+        "verdict": "미충족",
+        "evidence": "E1",
+        "note": "기준일을 편집하고 day-offset preview를 즉시 다시 계산하는 surface가 없다."
+      },
+      {
+        "id": "D1-006.4",
+        "title": "source 일정 보존",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "날짜 이동·복구 전후 source schedule과 operating bytes가 동일함을 모델과 브라우저에서 확인했다."
+      },
+      {
+        "id": "D1-006.5",
+        "title": "Flow 소속 보존",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "execution placement만 바뀌며 savedCopyId·flowId·itemId와 부모 Flow 소속은 유지된다."
+      }
+    ]
+  },
+  {
+    "parentId": "D1-010",
+    "subchecks": [
+      {
+        "id": "D1-010.1",
+        "title": "휴지통으로 이동",
+        "verdict": "미충족",
+        "evidence": "E1",
+        "note": "A0에서 PoC shadow lifecycle로 구현하기로 했으나 transition과 화면은 아직 없다."
+      },
+      {
+        "id": "D1-010.2",
+        "title": "휴지통 목록과 복원",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "PoC shadow 휴지통 목록과 복원은 아직 구현되지 않았다."
+      },
+      {
+        "id": "D1-010.3",
+        "title": "이 기기에서 영구 삭제",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "PoC shadow 범위의 명시 확인·영구 삭제 transition은 아직 구현되지 않았다."
+      },
+      {
+        "id": "D1-010.4",
+        "title": "영구 삭제 전 archive 호환·진행 기록 보존",
+        "verdict": "부분",
+        "evidence": "E2",
+        "note": "운영 archive·진행 기록을 수정하지 않는 경계는 확정했으나 shadow lifecycle의 보존 검증은 아직 없다."
+      },
+      {
+        "id": "D1-010.5",
+        "title": "자동 삭제 없음",
+        "verdict": "충족",
+        "evidence": "E1",
+        "note": "현재 PoC에 자동 삭제 동작이 없다."
+      }
+    ]
+  },
+  {
+    "parentId": "D1-011",
+    "subchecks": [
+      {
+        "id": "D1-011.1",
+        "title": "저장 직후 Undo",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "Plan apply와 authoring handoff가 one-snapshot Undo로 state와 exact draft bytes를 복구한다."
+      },
+      {
+        "id": "D1-011.2",
+        "title": "저장 실패 원상 복구",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "state 검증·draft remove·marker/journal 정리 실패 fault injection에서 이전 bytes를 복구한다."
+      },
+      {
+        "id": "D1-011.3",
+        "title": "중복 조작 방지",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "editor commit과 receipt transition이 pending/saving 중복 제출을 차단한다."
+      },
+      {
+        "id": "D1-011.4",
+        "title": "정확한 결과 count",
+        "verdict": "부분",
+        "evidence": "E3",
+        "note": "receipt는 affectedCount와 refs를 계산하지만 trash lifecycle count는 제외됐고 UI 연결도 남아 있다."
+      },
+      {
+        "id": "D1-011.5",
+        "title": "aria-live 성공·오류 알림",
+        "verdict": "충족",
+        "evidence": "E3",
+        "note": "기존 surface의 저장 상태 live region과 구조화 receipt 상태 contract가 성공·오류를 분리한다."
+      }
+    ]
+  },
+  {
+    "parentId": "D1-015",
+    "subchecks": [
+      {
+        "id": "D1-015.1",
+        "title": "390 mobile compact",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "390×844 브라우저 검증과 캡처가 있다."
+      },
+      {
+        "id": "D1-015.2",
+        "title": "844 landscape compact",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "844×390 브라우저 검증과 compact 분기가 있다."
+      },
+      {
+        "id": "D1-015.3",
+        "title": "1023 이하 stacked",
+        "verdict": "부분",
+        "evidence": "E3",
+        "note": "CSS breakpoint는 있으나 1023 경계값 직접 assertion이 없다."
+      },
+      {
+        "id": "D1-015.4",
+        "title": "1024 list+execution",
+        "verdict": "충족",
+        "evidence": "E3",
+        "note": "1024×768 캡처와 레이아웃 분기를 확인했다."
+      },
+      {
+        "id": "D1-015.5",
+        "title": "1280 이상 inspector 3-pane",
+        "verdict": "부분",
+        "evidence": "E3",
+        "note": "1440 캡처는 있으나 inspector 기능 완결성과 1280 경계 직접 검증은 부족하다."
+      },
+      {
+        "id": "D1-015.6",
+        "title": "요구 viewport overflow 0",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "5 viewport 브라우저 검사에서 가로 넘침 0이다."
+      },
+      {
+        "id": "D1-015.7",
+        "title": "핵심 CTA 가림 0",
+        "verdict": "부분",
+        "evidence": "E3",
+        "note": "캡처와 sticky CTA는 있으나 모든 surface의 가림 bounding-box assertion이 없다."
+      }
+    ]
+  },
+  {
+    "parentId": "D1-016",
+    "subchecks": [
+      {
+        "id": "D1-016.1",
+        "title": "계획 찾기",
+        "verdict": "부분",
+        "evidence": "E2",
+        "note": "saved origin 투영은 있으나 D1의 단일 검색 입력은 없다."
+      },
+      {
+        "id": "D1-016.2",
+        "title": "쓸모·자연 결과 확인",
+        "verdict": "충족",
+        "evidence": "E3",
+        "note": "Authoring preview와 saved Flow 상세 확인 경로가 있다."
+      },
+      {
+        "id": "D1-016.3",
+        "title": "결과·기준일 결정",
+        "verdict": "부분",
+        "evidence": "E3",
+        "note": "결과 확인은 되지만 기준일을 독립 결정하는 surface가 제한적이다."
+      },
+      {
+        "id": "D1-016.4",
+        "title": "조정과 저장",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "Authoring 수정과 personal Flow handoff를 검증했다."
+      },
+      {
+        "id": "D1-016.5",
+        "title": "실행과 이동",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "workspace에서 date/folder/order/complete를 조작한다."
+      },
+      {
+        "id": "D1-016.6",
+        "title": "복구",
+        "verdict": "부분",
+        "evidence": "E4",
+        "note": "Undo와 reload 복구는 있으나 trash 복원은 없다."
+      },
+      {
+        "id": "D1-016.7",
+        "title": "여정 전체의 한 화면 한 결정·한 문법",
+        "verdict": "부분",
+        "evidence": "E3",
+        "note": "Authoring과 workspace는 연결되지만 D1 전체 lifecycle이 한 문법으로 닫히지 않았다."
+      }
+    ]
+  },
+  {
+    "parentId": "D1-017",
+    "subchecks": [
+      {
+        "id": "D1-017.1",
+        "title": "선택 전 출처명 표시",
+        "verdict": "부분",
+        "evidence": "E3",
+        "note": "origin provenance는 있으나 모든 origin을 사용자용 출처명으로 정리한 선택 전 UI는 아직 완결되지 않았다."
+      },
+      {
+        "id": "D1-017.2",
+        "title": "선택 전 원문 링크 표시",
+        "verdict": "미충족",
+        "evidence": "E1",
+        "note": "모든 source에 공통된 원문 URL field와 선택 전 action이 없으며 없는 링크를 만들지 않는다."
+      },
+      {
+        "id": "D1-017.3",
+        "title": "상세 원문 기준 구분",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "source 값·existing personal baseline·PoC overlay·execution을 별도 계층으로 보존한다."
+      },
+      {
+        "id": "D1-017.4",
+        "title": "상세 바로 할 일 구분",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "Item execution ref와 목록은 source metadata와 분리되어 기존 상세에서 조작된다."
+      },
+      {
+        "id": "D1-017.5",
+        "title": "상세 완료 기준 구분",
+        "verdict": "부분",
+        "evidence": "E3",
+        "note": "authoring manifest는 완료 기준 관련 원문을 보존하지만 모든 saved Flow 상세에 독립 표시하지 않는다."
+      },
+      {
+        "id": "D1-017.6",
+        "title": "상세 개인 메모 구분",
+        "verdict": "부분",
+        "evidence": "E3",
+        "note": "personal memo owner와 overlay는 있으나 saved Flow/Item memo 화면은 단계 3에 남아 있다."
+      },
+      {
+        "id": "D1-017.7",
+        "title": "공유 계획 미리보기와 내 계획 상태 명시",
+        "verdict": "부분",
+        "evidence": "E3",
+        "note": "source/personal/effective provenance는 있으나 완결된 shared preview→내 계획 화면 상태는 없다."
+      }
+    ]
+  },
+  {
+    "parentId": "D1-018",
+    "subchecks": [
+      {
+        "id": "D1-018.1",
+        "title": "변경 영향과 제외 항목 확인",
+        "verdict": "부분",
+        "evidence": "E4",
+        "note": "receipt가 affected refs/count를 계산하지만 저장 전 included/excluded 영향 요약 UI는 없다."
+      },
+      {
+        "id": "D1-018.2",
+        "title": "변경 영향 복원",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "Plan 단위 snapshot과 atomic Undo가 같은 apply의 전체 overlay를 복원한다."
+      },
+      {
+        "id": "D1-018.3",
+        "title": "dirty 이탈 명시",
+        "verdict": "부분",
+        "evidence": "E4",
+        "note": "dirty/no-op/stale pure session은 있지만 실제 editor의 Back·Escape 이탈 UI 증거가 없다."
+      },
+      {
+        "id": "D1-018.4",
+        "title": "duplicate copy 충돌 명시",
+        "verdict": "부분",
+        "evidence": "E4",
+        "note": "duplicate identity와 foreign Item은 write 0으로 차단하지만 사용자가 충돌을 선택·해결하는 UI는 없다."
+      },
+      {
+        "id": "D1-018.5",
+        "title": "저장 성공·실패·Undo 명시",
+        "verdict": "부분",
+        "evidence": "E4",
+        "note": "receipt 모델은 success·failure·undone을 구분하지만 단계 3 editor 화면에 아직 연결되지 않았다."
+      }
+    ]
+  },
+  {
+    "parentId": "D1-021",
+    "subchecks": [
+      {
+        "id": "D1-021.1",
+        "title": "Flow 선택·변경 시 Text 결과로 초기화",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "선택한 Flow와 Map child 변경은 effective Text 결과로 초기화됨을 Stage 2·3 Chromium에서 확인했다."
+      },
+      {
+        "id": "D1-021.2",
+        "title": "개인 title을 effective Text에 반영",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "개인 Plan 제목 변경이 같은 Flow 문법형 Text에 반영되고 reload 뒤 유지된다."
+      },
+      {
+        "id": "D1-021.3",
+        "title": "개인 order를 effective Text에 반영",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "개인 Plan Item 순서가 effective Text와 Todo·Calendar·TXT의 같은 ref 순서에 반영된다."
+      },
+      {
+        "id": "D1-021.4",
+        "title": "개인 date를 effective Text에 반영",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "개인 계획 날짜와 실행 위치 우선순위가 effective Text에 반영된다."
+      },
+      {
+        "id": "D1-021.5",
+        "title": "raw source·내부 trace를 사용자 Text로 가장하지 않음",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "사용자용 effective Text와 raw source·내부 lineage를 별도 소유 구획으로 분리한다."
+      }
+    ]
+  },
+  {
+    "parentId": "D1-026",
+    "subchecks": [
+      {
+        "id": "D1-026.1",
+        "title": "자동 테스트와 실제 기기 검증 구분",
+        "verdict": "충족",
+        "evidence": "E3",
+        "note": "보고서가 자동화와 Android/iOS를 별도 상태로 둔다."
+      },
+      {
+        "id": "D1-026.2",
+        "title": "스크린샷과 관찰 사용자 검증 구분",
+        "verdict": "충족",
+        "evidence": "E3",
+        "note": "캡처를 사용자 관찰로 표현하지 않는다."
+      },
+      {
+        "id": "D1-026.3",
+        "title": "Preview·배포와 기능 검증 구분",
+        "verdict": "충족",
+        "evidence": "E3",
+        "note": "게시 상태를 별도 표로 보고한다."
+      },
+      {
+        "id": "D1-026.4",
+        "title": "관찰 사용자 0명 그대로 보고",
+        "verdict": "충족",
+        "evidence": "E3",
+        "note": "observed users 0을 명시한다."
+      }
+    ]
+  },
+  {
+    "parentId": "D2-014",
+    "subchecks": [
+      {
+        "id": "D2-014.1",
+        "title": "빈 scaffold의 blocking issue 0",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "blank property를 건너뛰는 parser와 테스트가 있다."
+      },
+      {
+        "id": "D2-014.2",
+        "title": "잘못된 날짜의 입력값·기대 형식 표시",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "invalid date issue에 입력값과 YYYY-MM-DD 안내가 있다."
+      },
+      {
+        "id": "D2-014.3",
+        "title": "잘못된 URL의 입력값·기대 형식 표시",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "invalid resource URL을 blocking issue로 노출한다."
+      },
+      {
+        "id": "D2-014.4",
+        "title": "invalid 날짜·URL 저장 차단",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "blocking issue가 있으면 handoff commit 0이다."
+      }
+    ]
+  },
+  {
+    "parentId": "D2-021",
+    "subchecks": [
+      {
+        "id": "D2-021.1",
+        "title": "source 편집의 projection 즉시 반영",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "한 rawText source가 authoring preview와 fingerprint를 즉시 갱신한다."
+      },
+      {
+        "id": "D2-021.2",
+        "title": "결과 Item 수정의 정확한 source 줄 반영",
+        "verdict": "제외",
+        "evidence": "E4",
+        "note": "A0에서 결과 Item 수정은 personal overlay로 두고 raw source 줄 역편집은 이번 PoC에서 열지 않았다."
+      },
+      {
+        "id": "D2-021.3",
+        "title": "결과 Item 수정의 canonical 원자 반영",
+        "verdict": "제외",
+        "evidence": "E4",
+        "note": "source reverse edit transaction은 이번 개인 handoff 범위 밖이며 personal overlay만 원자 적용한다."
+      },
+      {
+        "id": "D2-021.4",
+        "title": "결과 Item 수정의 모든 projection 원자 반영",
+        "verdict": "제외",
+        "evidence": "E4",
+        "note": "source reverse edit의 모든 projection 갱신은 범위 밖이고 personal effective projection만 단계 3에서 연결한다."
+      },
+      {
+        "id": "D2-021.5",
+        "title": "결과 Item 수정의 Undo 1회 복구",
+        "verdict": "제외",
+        "evidence": "E4",
+        "note": "source reverse edit Undo는 범위 밖이며 personal Plan apply의 one-snapshot Undo만 구현했다."
+      }
+    ]
+  },
+  {
+    "parentId": "D2-025",
+    "subchecks": [
+    {
+      "id": "D2-025.1",
+      "title": "blockquote·code·HTML·comment·blank 보존",
+      "verdict": "충족",
+      "evidence": "E4",
+      "note": "P2-A lossless adapter가 각 protected block과 빈 줄의 exact raw bytes와 locator를 보존한다."
+    },
+      {
+        "id": "D2-025.2",
+        "title": "table cell shape 보존",
+      "verdict": "충족",
+      "evidence": "E4",
+      "note": "CSV·TSV·Markdown cell의 value, raw span, source row locator를 보존하고 stale source 재결합을 차단한다."
+      },
+      {
+        "id": "D2-025.3",
+        "title": "안전 block만 구조화",
+      "verdict": "충족",
+      "evidence": "E4",
+      "note": "결정 가능한 단일 안전 표만 sheet-source-rows로 보여 주며 생성 Item·Todo·Calendar는 모두 0이다."
+      },
+      {
+        "id": "D2-025.4",
+        "title": "위험 표 TXT fallback",
+      "verdict": "충족",
+      "evidence": "E4",
+      "note": "formula-like·모호한 delimiter·열 불일치·budget 초과는 자르지 않고 전체 raw fallback으로 남긴다."
+      }
+    ]
+  },
+  {
+    "parentId": "D2-026",
+    "subchecks": [
+      {
+        "id": "D2-026.1",
+        "title": "완전한 immutable candidate envelope",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "source candidate host가 없다."
+      },
+      {
+        "id": "D2-026.2",
+        "title": "Base·내 작업·새 원문 비교",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "3-way 비교 surface가 없다."
+      },
+      {
+        "id": "D2-026.3",
+        "title": "unresolved·stale·tampered 후보 차단",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "후보 검증 state가 없다."
+      },
+      {
+        "id": "D2-026.4",
+        "title": "전체 resolution set 원자 적용",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "resolution transaction이 없다."
+      },
+      {
+        "id": "D2-026.5",
+        "title": "적용 전체 Undo",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "선행 transaction이 없다."
+      }
+    ]
+  },
+  {
+    "parentId": "D2-035",
+    "subchecks": [
+      {
+        "id": "D2-035.1",
+        "title": "날짜·시간·시간대 catalog",
+        "verdict": "부분",
+        "evidence": "E4",
+        "note": "날짜·시간·시간대 문법을 exact parse 또는 material blocker로 식별하지만 선택형 catalog UI는 없다."
+      },
+      {
+        "id": "D2-035.2",
+        "title": "장소·링크 catalog",
+        "verdict": "부분",
+        "evidence": "E3",
+        "note": "장소·링크 원문을 parse·보존하지만 catalog 삽입 UI는 없다."
+      },
+      {
+        "id": "D2-035.3",
+        "title": "소요 catalog",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "duration property 계약과 선택 UI가 없다."
+      },
+      {
+        "id": "D2-035.4",
+        "title": "반복·종료 catalog",
+        "verdict": "제외",
+        "evidence": "E4",
+        "note": "recurrence·종료는 A0에서 실행 owner 승인 전 hard-block 대상으로 제외했다."
+      },
+      {
+        "id": "D2-035.5",
+        "title": "완료 기준·조건·하위 체크 catalog",
+        "verdict": "부분",
+        "evidence": "E4",
+        "note": "완료 기준과 nested checklist를 원문·manifest로 보존하지만 조건·하위 체크 catalog는 없다."
+      },
+      {
+        "id": "D2-035.6",
+        "title": "설명·안내·주의·출처 catalog",
+        "verdict": "부분",
+        "evidence": "E3",
+        "note": "설명·출처 등 원문은 보존하고 미지원 명령은 차단하지만 catalog 삽입 UI는 없다."
+      }
+    ]
+  },
+  {
+    "parentId": "D2-036",
+    "subchecks": [
+      {
+        "id": "D2-036.1",
+        "title": "할 일·메모·장소·링크·설명 inline helper",
+        "verdict": "미충족",
+        "evidence": "E1",
+        "note": "할 일·메모·장소·링크·설명을 넣는 contextual inline helper가 없다."
+      },
+      {
+        "id": "D2-036.2",
+        "title": "날짜·시간 inline+native picker",
+        "verdict": "미충족",
+        "evidence": "E1",
+        "note": "authoring source 편집기에 날짜·시간 native picker가 없다."
+      },
+      {
+        "id": "D2-036.3",
+        "title": "반복·시간대 의존 값 전용 surface",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "반복·시간대 의존 값을 다루는 전용 surface가 없고 recurrence는 제외 상태다."
+      }
+    ]
+  },
+  {
+    "parentId": "D2-040",
+    "subchecks": [
+      {
+        "id": "D2-040.1",
+        "title": "IME composing Enter write 0",
+        "verdict": "미충족",
+        "evidence": "E1",
+        "note": "IME composing 중 Enter의 실제 browser write 0 회귀가 없다."
+      },
+      {
+        "id": "D2-040.2",
+        "title": "submenu focus 중 오적용 0",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "line submenu가 아직 없어 focus 중 오적용을 검증할 대상이 없다."
+      },
+      {
+        "id": "D2-040.3",
+        "title": "parser busy·stale Item 오적용 0",
+        "verdict": "부분",
+        "evidence": "E4",
+        "note": "state revision·raw/source fingerprint stale 차단은 순수 테스트했지만 향후 helper의 parser busy 경로는 없다."
+      },
+      {
+        "id": "D2-040.4",
+        "title": "빠른 이중 적용 중복 0",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "saving lock, deterministic fingerprint와 no-op preflight가 빠른 중복 apply의 target write를 0으로 유지한다."
+      },
+      {
+        "id": "D2-040.5",
+        "title": "취소 write 0",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "cancel·clean/no-op과 변경 후 재확인 전 저장이 state·draft를 바꾸지 않음을 검증했다."
+      }
+    ]
+  },
+  {
+    "parentId": "D2-042",
+    "subchecks": [
+      {
+        "id": "D2-042.1",
+        "title": "320px에서 마지막 내용·CTA 접근",
+        "verdict": "부분",
+        "evidence": "E1",
+        "note": "responsive CSS는 있으나 320px 직접 브라우저 근거가 없다."
+      },
+      {
+        "id": "D2-042.2",
+        "title": "360px에서 마지막 내용·CTA 접근",
+        "verdict": "부분",
+        "evidence": "E1",
+        "note": "360px 직접 브라우저 근거가 없다."
+      },
+      {
+        "id": "D2-042.3",
+        "title": "390px에서 마지막 내용·CTA 접근",
+        "verdict": "충족",
+        "evidence": "E3",
+        "note": "390×844 캡처와 브라우저 검사가 있다."
+      },
+      {
+        "id": "D2-042.4",
+        "title": "landscape에서 마지막 내용·CTA 접근",
+        "verdict": "충족",
+        "evidence": "E3",
+        "note": "844×390 캡처와 내부 scroll 구조가 있다."
+      },
+      {
+        "id": "D2-042.5",
+        "title": "200% 확대에서 마지막 내용·CTA 접근",
+        "verdict": "부분",
+        "evidence": "E1",
+        "note": "전용 200% zoom 브라우저 assertion이 없다."
+      },
+      {
+        "id": "D2-042.6",
+        "title": "모바일 키보드 위 caret·마지막 field·CTA 접근",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "visualViewport 또는 실제 키보드 증거가 없다."
+      }
+    ]
+  },
+  {
+    "parentId": "D2-050",
+    "subchecks": [
+      {
+        "id": "D2-050.1",
+        "title": "empty source에서만 template 삽입",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "non-empty source는 no-op이며 source·draft·workspace write 0을 Chromium에서 확인했다."
+      },
+      {
+        "id": "D2-050.2",
+        "title": "동일 editor/document fingerprint에서만 삽입",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "editorId·documentId·sourceFingerprint를 picker open과 apply 직전에 대조한다."
+      },
+      {
+        "id": "D2-050.3",
+        "title": "non-composing 상태에서만 삽입",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "실제 Chromium compositionstart~compositionend 중 apply가 source와 저장을 바꾸지 않는다."
+      },
+      {
+        "id": "D2-050.4",
+        "title": "source·host 변경 시 기존 bytes 보존",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "stale source와 stale editor host에서 기존 bytes·selection·저장값을 보존한다."
+      },
+      {
+        "id": "D2-050.5",
+        "title": "stale source·host fail-closed",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "source·host fingerprint와 dispatch count 불일치는 fail-closed하고 write 0으로 끝난다."
+      }
+    ]
+  },
+  {
+    "parentId": "D2-052",
+    "subchecks": [
+      {
+        "id": "D2-052.1",
+        "title": "template 삽입 전체 Undo 1회",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "browser-owned transaction의 Ctrl/Cmd+Z 한 번이 template 전체를 제거하고 exact 이전 bytes를 복구한다."
+      },
+      {
+        "id": "D2-052.2",
+        "title": "Redo 1회 byte-identical 복구",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "실제 Chromium Redo 한 번이 template bytes를 byte-identical하게 복구한다."
+      },
+      {
+        "id": "D2-052.3",
+        "title": "picker 열기·닫기 history 무영향",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "picker browse/cancel 전후 source와 native history가 동일함을 Chromium에서 확인했다."
+      },
+      {
+        "id": "D2-052.4",
+        "title": "ghost toggle history 무영향",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "ghost toggle 전후 source와 native Undo/Redo history가 동일함을 계측했다."
+      }
+    ]
+  },
+  {
+    "parentId": "D2-054",
+    "subchecks": [
+      {
+        "id": "D2-054.1",
+        "title": "ghost aria-hidden",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "recognized blank value의 line ghost presentation은 aria-hidden=true다."
+      },
+      {
+        "id": "D2-054.2",
+        "title": "ghost pointer-none·user-select-none",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "ghost overlay의 computed pointer-events none과 user-select none을 Chromium에서 확인했다."
+      },
+      {
+        "id": "D2-054.3",
+        "title": "ghost의 source·clipboard 무영향",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "native textarea가 selection·clipboard owner이고 ghost text는 source와 복사 결과에 들어가지 않는다."
+      },
+      {
+        "id": "D2-054.4",
+        "title": "ghost의 selection·scroll 무영향",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "ghost toggle·render 전후 selectionStart/End와 scrollTop이 동일하다."
+      },
+      {
+        "id": "D2-054.5",
+        "title": "ghost의 revision·dispatch·undo 무영향",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "ghost toggle은 source revision·dispatch·draft write·native history를 바꾸지 않는다."
+      }
+    ]
+  },
+  {
+    "parentId": "D2-057",
+    "subchecks": [
+      {
+        "id": "D2-057.1",
+        "title": "작성 중 초안 reload 복구",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "React와 standalone draft reload를 검증했다."
+      },
+      {
+        "id": "D2-057.2",
+        "title": "CreatorDraft로 저장",
+        "verdict": "의도적 변경",
+        "evidence": "E3",
+        "note": "A0-1에서 현재 PoC는 명시 확인 뒤 Personal Flow handoff로 정했고 CreatorDraft library는 별도 lane으로 보류했다."
+      },
+      {
+        "id": "D2-057.3",
+        "title": "CreatorDraft 목록 재진입",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "CreatorDraft library가 없다."
+      },
+      {
+        "id": "D2-057.4",
+        "title": "CreatorDraft 검색",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "검색 surface가 없다."
+      },
+      {
+        "id": "D2-057.5",
+        "title": "CreatorDraft 복제",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "복제 action이 없다."
+      },
+      {
+        "id": "D2-057.6",
+        "title": "CreatorDraft 보관",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "보관 lifecycle이 없다."
+      }
+    ]
+  },
+  {
+    "parentId": "D2-058",
+    "subchecks": [
+      {
+        "id": "D2-058.1",
+        "title": "취소·Escape write 0",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "cancel·Escape 계열 session 종료는 target write 0인 순수 transition으로 검증했다."
+      },
+      {
+        "id": "D2-058.2",
+        "title": "blank write 0",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "blank canonical과 빈 필수값은 identity·state·storage write 0으로 끝난다."
+      },
+      {
+        "id": "D2-058.3",
+        "title": "stale write 0",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "state revision/raw bytes와 source fingerprint가 달라진 stale apply를 preflight에서 write 0으로 차단한다."
+      },
+      {
+        "id": "D2-058.4",
+        "title": "invalid write 0",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "foreign Item, duplicate ref, unsupported manifest와 tampered lineage는 write 0으로 fail-closed한다."
+      },
+      {
+        "id": "D2-058.5",
+        "title": "storage failure write 0·rollback",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "두 번째 target operation과 검증·marker/journal 정리 실패에서 이전 state·draft bytes를 복구한다."
+      },
+      {
+        "id": "D2-058.6",
+        "title": "성공 시 source+canonical+projection 원자 반영",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "authoring source lineage·canonical Flow·effective projection을 검증한 뒤 state 저장과 draft 제거를 한 PoC transaction으로 실행한다."
+      },
+      {
+        "id": "D2-058.7",
+        "title": "성공 mutation Undo 1회",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "한 성공 mutation의 Undo가 이전 state와 exact authoring draft raw bytes를 함께 한 번에 복구한다."
+      },
+      {
+        "id": "D2-058.8",
+        "title": "recovery draft와 durable save 분리",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "recovery draft key와 durable state key를 분리하고 commit·Undo·reload에서 원자 관계를 브라우저 4/4로 확인했다."
+      }
+    ]
+  },
+  {
+    "parentId": "D2-061",
+    "subchecks": [
+      {
+        "id": "D2-061.1",
+        "title": "44/48px 조작 크기",
+        "verdict": "충족",
+        "evidence": "E3",
+        "note": "주요 authoring control의 크기와 viewport 캡처를 확인했다."
+      },
+      {
+        "id": "D2-061.2",
+        "title": "non-modal 편집",
+        "verdict": "부분",
+        "evidence": "E1",
+        "note": "현재 authoring은 page surface지만 요구된 line helper/menu의 non-modal 동작은 대상이 없다."
+      },
+      {
+        "id": "D2-061.3",
+        "title": "Escape 뒤 opener focus 복귀",
+        "verdict": "부분",
+        "evidence": "E2",
+        "note": "workspace panel에는 있으나 Unified Editor 전역 interaction으로 검증되지 않았다."
+      },
+      {
+        "id": "D2-061.4",
+        "title": "정상 Tab 흐름",
+        "verdict": "부분",
+        "evidence": "E2",
+        "note": "기본 DOM 순서는 있으나 authoring 전체 tab-sequence assertion이 없다."
+      },
+      {
+        "id": "D2-061.5",
+        "title": "320px overflow 0",
+        "verdict": "부분",
+        "evidence": "E1",
+        "note": "320px 직접 브라우저 검증이 없다."
+      },
+      {
+        "id": "D2-061.6",
+        "title": "390px overflow 0",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "390×844에서 overflow 0을 확인했다."
+      },
+      {
+        "id": "D2-061.7",
+        "title": "landscape overflow 0",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "844×390에서 overflow 0을 확인했다."
+      },
+      {
+        "id": "D2-061.8",
+        "title": "200% overflow 0",
+        "verdict": "부분",
+        "evidence": "E1",
+        "note": "200% 확대 전용 검증이 없다."
+      },
+      {
+        "id": "D2-061.9",
+        "title": "reduced motion",
+        "verdict": "부분",
+        "evidence": "E1",
+        "note": "일부 CSS 외 authoring transition 전체 검증이 없다."
+      },
+      {
+        "id": "D2-061.10",
+        "title": "모바일 키보드 위 caret·menu",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "visualViewport/실기 키보드 증거와 line menu가 없다."
+      }
+    ]
+  },
+  {
+    "parentId": "D2-062",
+    "subchecks": [
+      {
+        "id": "D2-062.1",
+        "title": "자동화와 actual device 결과를 별도 보고",
+        "verdict": "충족",
+        "evidence": "E3",
+        "note": "보고서가 자동 브라우저를 실기로 표현하지 않는다."
+      },
+      {
+        "id": "D2-062.2",
+        "title": "Android Chrome 실제 검사 상태",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "미실행으로 별도 보고됐다."
+      },
+      {
+        "id": "D2-062.3",
+        "title": "iOS Safari 실제 검사 상태",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "미실행으로 별도 보고됐다."
+      },
+      {
+        "id": "D2-062.4",
+        "title": "관찰 사용자 과업 상태",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "관찰 사용자 0명으로 별도 보고됐다."
+      }
+    ]
+  },
+  {
+    "parentId": "D2-063",
+    "subchecks": [
+      {
+        "id": "D2-063.1",
+        "title": "targeted test fresh 실행",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "통합 모델·storage·authoring 테스트 수를 집계한다."
+      },
+      {
+        "id": "D2-063.2",
+        "title": "shared regression fresh 실행",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "관련 회귀 묶음을 현재 checkout에서 실행했다."
+      },
+      {
+        "id": "D2-063.3",
+        "title": "full test·build fresh 실행",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "전체 테스트와 production build 결과를 분리 집계한다."
+      },
+      {
+        "id": "D2-063.4",
+        "title": "browser 검사 fresh 실행",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "통합과 standalone 브라우저 묶음을 실행했다."
+      },
+      {
+        "id": "D2-063.5",
+        "title": "a11y 검사 fresh 실행",
+        "verdict": "부분",
+        "evidence": "E3",
+        "note": "키보드·ARIA 자동 근거는 있으나 보조기술 실기는 없다."
+      },
+      {
+        "id": "D2-063.6",
+        "title": "baseline failure를 green으로 은폐하지 않음",
+        "verdict": "충족",
+        "evidence": "E3",
+        "note": "보고서가 실행 종류와 미실행·미충족을 분리한다."
+      }
+    ]
+  },
+  {
+    "parentId": "BP-006",
+    "subchecks": [
+      {
+        "id": "BP-006.1",
+        "title": "public save 지정 owner",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "public save는 이번 PoC에 연결되지 않았다."
+      },
+      {
+        "id": "BP-006.2",
+        "title": "workspace 지정 owner",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "PoC workspace owner와 state contract를 검증했다."
+      },
+      {
+        "id": "BP-006.3",
+        "title": "period 지정 owner",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "Today/week/month/undated가 같은 projection을 읽는다."
+      },
+      {
+        "id": "BP-006.4",
+        "title": "Calendar 지정 owner",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "실제 /calendar 연결이 없다."
+      },
+      {
+        "id": "BP-006.5",
+        "title": "detail 지정 owner",
+        "verdict": "충족",
+        "evidence": "E3",
+        "note": "no-write 상세 surface를 연결했다."
+      },
+      {
+        "id": "BP-006.6",
+        "title": "editor 지정 owner",
+        "verdict": "미충족",
+        "evidence": "E1",
+        "note": "공통 기존 Item editor command가 연결되지 않았다."
+      },
+      {
+        "id": "BP-006.7",
+        "title": "Quick 지정 owner",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "QuickItem owner와 status/memo를 shadow state로 검증했다."
+      },
+      {
+        "id": "BP-006.8",
+        "title": "Authoring 지정 owner",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "별도 authoring surface와 draft owner가 있다."
+      },
+      {
+        "id": "BP-006.9",
+        "title": "handoff 지정 owner",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "composition transaction이 personal workspace에 연결된다."
+      }
+    ]
+  },
+  {
+    "parentId": "BP-027",
+    "subchecks": [
+      {
+        "id": "BP-027.1",
+        "title": "handoff identity",
+        "verdict": "충족",
+        "evidence": "E2",
+        "note": "안정된 handoff/receipt identity를 만든다."
+      },
+      {
+        "id": "BP-027.2",
+        "title": "handoff destination",
+        "verdict": "부분",
+        "evidence": "E2",
+        "note": "현재 목적지는 personal workspace 한 경로로 암묵적이며 versioned destination field가 없다."
+      },
+      {
+        "id": "BP-027.3",
+        "title": "handoff status",
+        "verdict": "부분",
+        "evidence": "E2",
+        "note": "UI 단계 상태는 있으나 durable status object가 없다."
+      },
+      {
+        "id": "BP-027.4",
+        "title": "blockingIssues",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "parser issue가 저장을 차단한다."
+      },
+      {
+        "id": "BP-027.5",
+        "title": "lossFields",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "fidelity loss를 preview와 receipt에 표시한다."
+      },
+      {
+        "id": "BP-027.6",
+        "title": "identityMap",
+        "verdict": "미충족",
+        "evidence": "E1",
+        "note": "완전한 source→Flow→Item identity map 객체가 없다."
+      }
+    ]
+  },
+  {
+    "parentId": "BP-040",
+    "subchecks": [
+      {
+        "id": "BP-040.1",
+        "title": "move transaction",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "순수 transition과 단일 state save로 반영한다."
+      },
+      {
+        "id": "BP-040.2",
+        "title": "authoring save transaction",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "composition commit이 전부 성공하거나 rollback한다."
+      },
+      {
+        "id": "BP-040.3",
+        "title": "cancel·fail의 전 상태 복구",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "write 0과 storage rollback을 검증했다."
+      },
+      {
+        "id": "BP-040.4",
+        "title": "Undo의 전 상태 복구",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "one-snapshot Undo가 전체 mutation을 복구한다."
+      },
+      {
+        "id": "BP-040.5",
+        "title": "화면 간 primary handoff action 하나",
+        "verdict": "충족",
+        "evidence": "E3",
+        "note": "개인 Flow로 저장 action 하나로 workspace에 넘긴다."
+      }
+    ]
+  },
+  {
+    "parentId": "BP-050",
+    "subchecks": [
+      {
+        "id": "BP-050.1",
+        "title": "folder contract",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "versioned folder state와 transition 테스트가 있다."
+      },
+      {
+        "id": "BP-050.2",
+        "title": "membership contract",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "one-folder와 inheritance invariants를 검사한다."
+      },
+      {
+        "id": "BP-050.3",
+        "title": "QuickItem contract",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "생성·이동·완료·Undo를 검사한다."
+      },
+      {
+        "id": "BP-050.4",
+        "title": "ExecutionPlacement contract",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "schedule mode와 date/time owner를 검사한다."
+      },
+      {
+        "id": "BP-050.5",
+        "title": "TimelineOrder contract",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "manual order와 chronological reset을 검사한다."
+      },
+      {
+        "id": "BP-050.6",
+        "title": "write lock",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "pending 상태에서 중복 조작을 막는다."
+      },
+      {
+        "id": "BP-050.7",
+        "title": "atomic mutation",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "부분 state가 남지 않는 rollback을 검사한다."
+      },
+      {
+        "id": "BP-050.8",
+        "title": "Undo snapshot",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "마지막 전체 mutation을 한 번에 복구한다."
+      },
+      {
+        "id": "BP-050.9",
+        "title": "reload recovery",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "state와 authoring draft를 각각 복구한다."
+      }
+    ]
+  },
+  {
+    "parentId": "BP-053",
+    "subchecks": [
+      {
+        "id": "BP-053.1",
+        "title": "한 editor",
+        "verdict": "충족",
+        "evidence": "E3",
+        "note": "별도 template editor 없이 기존 textarea에서 계속 작성한다."
+      },
+      {
+        "id": "BP-053.2",
+        "title": "6개 scaffold",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "구조명 6개와 정확한 빈 scaffold를 검증했다."
+      },
+      {
+        "id": "BP-053.3",
+        "title": "personal Flow handoff",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "preview 확인 뒤 workspace에 저장하고 연다."
+      },
+      {
+        "id": "BP-053.4",
+        "title": "recurrence fidelity gate",
+        "verdict": "부분",
+        "evidence": "E3",
+        "note": "loss는 표시하지만 모든 recurrence를 보존·교정하지 못한다."
+      },
+      {
+        "id": "BP-053.5",
+        "title": "nested fidelity gate",
+        "verdict": "부분",
+        "evidence": "E2",
+        "note": "일부 구조 차단은 있으나 전체 nested correction path가 없다."
+      },
+      {
+        "id": "BP-053.6",
+        "title": "time fidelity gate",
+        "verdict": "부분",
+        "evidence": "E3",
+        "note": "시간 loss를 설명으로 보존하지만 운영 실행 시간 owner로 완전 연결되지 않는다."
+      }
+    ]
+  },
+  {
+    "parentId": "BP-056",
+    "subchecks": [
+      {
+        "id": "BP-056.1",
+        "title": "기존 detail 연결",
+        "verdict": "충족",
+        "evidence": "E3",
+        "note": "no-write projection 상세를 연다."
+      },
+      {
+        "id": "BP-056.2",
+        "title": "기존 edit 연결",
+        "verdict": "미충족",
+        "evidence": "E1",
+        "note": "기존 editor command가 연결되지 않았다."
+      },
+      {
+        "id": "BP-056.3",
+        "title": "기존 archive 연결",
+        "verdict": "제외",
+        "evidence": "E3",
+        "note": "A0-2에서 운영 archive writer 연결은 후속 승인 범위로 보류하고 현재 PoC는 shadow lifecycle만 구현하기로 했다."
+      },
+      {
+        "id": "BP-056.4",
+        "title": "기존 complete owner 연결",
+        "verdict": "부분",
+        "evidence": "E4",
+        "note": "PoC shadow 완료는 일치하지만 기존 운영 execution writer는 의도적으로 호출하지 않는다."
+      },
+      {
+        "id": "BP-056.5",
+        "title": "실제 Calendar 연결",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "PoC month projection만 있고 /calendar 통합이 없다."
+      },
+      {
+        "id": "BP-056.6",
+        "title": "PoC에서 operating writer 호출 0",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "허용 prefix 밖 mutation audit가 0이다."
+      }
+    ]
+  },
+  {
+    "parentId": "BP-057",
+    "subchecks": [
+      {
+        "id": "BP-057.1",
+        "title": "default /my와 migration 제외",
+        "verdict": "제외",
+        "evidence": "E4",
+        "note": "exact-query gate 밖 기본 route와 schema를 바꾸지 않았다."
+      },
+      {
+        "id": "BP-057.2",
+        "title": "full authoring branch 제외",
+        "verdict": "제외",
+        "evidence": "E4",
+        "note": "선별된 bounded authoring만 포함했다."
+      },
+      {
+        "id": "BP-057.3",
+        "title": "public·collab 제외",
+        "verdict": "제외",
+        "evidence": "E4",
+        "note": "공개와 협업 owner를 호출하지 않았다."
+      },
+      {
+        "id": "BP-057.4",
+        "title": "sync·cloud·AI 제외",
+        "verdict": "제외",
+        "evidence": "E4",
+        "note": "외부 side effect가 없다."
+      },
+      {
+        "id": "BP-057.5",
+        "title": "관찰 사용자 완료 주장 제외",
+        "verdict": "제외",
+        "evidence": "E3",
+        "note": "observed users 0으로 보고한다."
+      }
+    ]
+  },
+  {
+    "parentId": "BP-059",
+    "subchecks": [
+      {
+        "id": "BP-059.1",
+        "title": "저장 target 표시",
+        "verdict": "부분",
+        "evidence": "E4",
+        "note": "saving receipt는 scopeRef·affected refs/count를 가지지만 실제 editor 화면에 target 상세를 렌더링하지 않는다."
+      },
+      {
+        "id": "BP-059.2",
+        "title": "저장 progress 표시",
+        "verdict": "부분",
+        "evidence": "E3",
+        "note": "saving 상태와 write count contract는 있으나 사용자에게 단계별 progress를 표시하지 않는다."
+      },
+      {
+        "id": "BP-059.3",
+        "title": "저장 중 중복 입력 차단",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "saving 상태의 허용 transition과 commit lock이 중복 입력을 차단한다."
+      },
+      {
+        "id": "BP-059.4",
+        "title": "commit 전 원상태 유지",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "Plan Item apply는 persistent write 0이고 final preflight 전 기존 raw state를 유지한다."
+      }
+    ]
+  },
+  {
+    "parentId": "BP-060",
+    "subchecks": [
+      {
+        "id": "BP-060.1",
+        "title": "변경된 date 값 표시",
+        "verdict": "부분",
+        "evidence": "E4",
+        "note": "receipt model은 date before/after를 보존하지만 현재 UI가 항상 이를 표시하지 않는다."
+      },
+      {
+        "id": "BP-060.2",
+        "title": "변경된 folder 값 표시",
+        "verdict": "부분",
+        "evidence": "E4",
+        "note": "receipt model은 folder before/after를 표현할 수 있지만 현재 UI가 항상 이를 표시하지 않는다."
+      },
+      {
+        "id": "BP-060.3",
+        "title": "변경된 order 값 표시",
+        "verdict": "부분",
+        "evidence": "E4",
+        "note": "receipt model은 order before/after와 affected refs를 보존하지만 현재 UI가 항상 이를 표시하지 않는다."
+      },
+      {
+        "id": "BP-060.4",
+        "title": "성공 직후 Undo 표시",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "성공 receipt의 undoLabel과 기존 Undo action을 검증했다."
+      },
+      {
+        "id": "BP-060.5",
+        "title": "PoC namespace 1회 갱신",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "성공 Plan apply의 제품 target은 PoC state key 한 번이며 support journal/marker write와 별도 집계한다."
+      }
+    ]
+  },
+  {
+    "parentId": "BP-062",
+    "subchecks": [
+      {
+        "id": "BP-062.1",
+        "title": "실패 시 원래 상태 복구",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "storage fault injection과 recovery boot가 이전 state·draft bytes를 정확히 복구한다."
+      },
+      {
+        "id": "BP-062.2",
+        "title": "실패 후 명시적 retry action",
+        "verdict": "부분",
+        "evidence": "E4",
+        "note": "failure receipt는 동일 serializable retryIntent를 보존하지만 실제 다시 시도 버튼은 단계 3에 남아 있다."
+      },
+      {
+        "id": "BP-062.3",
+        "title": "partial save 0",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "late failure 뒤 target raw bytes가 전부 이전 값이어서 partial save가 0임을 검증했다."
+      }
+    ]
+  },
+  {
+    "parentId": "BP-064",
+    "subchecks": [
+      {
+        "id": "BP-064.1",
+        "title": "reload 후 마지막 성공 workspace state 복원",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "React와 standalone reload 시나리오를 통과했다."
+      },
+      {
+        "id": "BP-064.2",
+        "title": "reload 후 authoring draft 복원",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "독립 draft key의 reload 복구를 검증했다."
+      },
+      {
+        "id": "BP-064.3",
+        "title": "손상 workspace payload fail-closed",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "기존 /my fallback과 write 0을 검사했다."
+      },
+      {
+        "id": "BP-064.4",
+        "title": "손상 authoring draft fail-closed",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "손상 draft가 route/surface를 안전하게 닫는다."
+      }
+    ]
+  },
+  {
+    "parentId": "BP-065",
+    "subchecks": [
+      {
+        "id": "BP-065.1",
+        "title": "폴더 depth 2 기본값 versioning",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "PERSONAL_WORKSPACE_POC_DEFAULTS에 있다."
+      },
+      {
+        "id": "BP-065.2",
+        "title": "한 항목 한 폴더 기본값 versioning",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "membership invariant와 상수에 있다."
+      },
+      {
+        "id": "BP-065.3",
+        "title": "날짜 Item auto/hide 기본값 versioning",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "timeline policy 상수와 상태에 있다."
+      },
+      {
+        "id": "BP-065.4",
+        "title": "Quick status/completedAt 기본값 versioning",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "Quick owner contract와 테스트가 있다."
+      },
+      {
+        "id": "BP-065.5",
+        "title": "폴더 삭제 시 unfiled 기본값 versioning",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "delete transition과 상수에 있다."
+      },
+      {
+        "id": "BP-065.6",
+        "title": "Flow Item 폴더 상속 기본값 versioning",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "직접 membership을 금지한다."
+      },
+      {
+        "id": "BP-065.7",
+        "title": "Item date overlay 기본값 versioning",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "source timing과 별도 owner로 정의했다."
+      }
+    ]
+  },
+  {
+    "parentId": "BP-066",
+    "subchecks": [
+      {
+        "id": "BP-066.1",
+        "title": "전후 operating flow:* bytes 동일",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "React와 standalone sentinel parity를 검증했다."
+      },
+      {
+        "id": "BP-066.2",
+        "title": "reset은 exact PoC keys만 제거",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "state와 draft 두 exact key만 제거하고 실패 시 rollback한다."
+      },
+      {
+        "id": "BP-066.3",
+        "title": "localStorage.clear 호출 0",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "mutation audit에서 clear 0이다."
+      }
+    ]
+  },
+  {
+    "parentId": "BP-058",
+    "subchecks": [
+      {
+        "id": "BP-058.1",
+        "title": "기존 Flow의 최초 위치 unfiled",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "read model 초기 projection과 테스트가 있다."
+      },
+      {
+        "id": "BP-058.2",
+        "title": "PoC Quick 별도 표시",
+        "verdict": "충족",
+        "evidence": "E3",
+        "note": "QuickItem kind와 생성 surface를 별도로 노출한다."
+      },
+      {
+        "id": "BP-058.3",
+        "title": "처음 열기 operating write 0",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "첫 projection과 route 진입 시 operating mutation이 없다."
+      }
+    ]
+  },
+  {
+    "parentId": "BP-061",
+    "subchecks": [
+      {
+        "id": "BP-061.1",
+        "title": "같은 위치 중립 안내",
+        "verdict": "충족",
+        "evidence": "E3",
+        "note": "성공이 아닌 neutral live status를 표시한다."
+      },
+      {
+        "id": "BP-061.2",
+        "title": "같은 위치 write 0",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "브라우저 전후 raw bytes 동일을 확인했다."
+      }
+    ]
+  },
+  {
+    "parentId": "BP-063",
+    "subchecks": [
+      {
+        "id": "BP-063.1",
+        "title": "마지막 전체 mutation 복구",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "마지막 성공 Plan/authoring mutation의 전체 state와 companion draft를 one-snapshot Undo로 복구한다."
+      },
+      {
+        "id": "BP-063.2",
+        "title": "Undo 전 복구될 값 표시",
+        "verdict": "부분",
+        "evidence": "E4",
+        "note": "receipt changes는 복구 전 값을 가지지만 현재 Undo UI가 모든 값을 열거하지 않는다."
+      },
+      {
+        "id": "BP-063.3",
+        "title": "Undo 뒤 복구 결과 표시",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "Undo 성공 상태와 reload 뒤 복구된 state·draft를 브라우저에서 확인했다."
+      }
+    ]
+  },
+  {
+    "parentId": "BP-067",
+    "subchecks": [
+      {
+        "id": "BP-067.1",
+        "title": "unsupported origin fail-closed",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "지원하지 않는 origin은 PoC surface를 열지 않는다."
+      },
+      {
+        "id": "BP-067.2",
+        "title": "duplicate identity fail-closed",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "중복 read-model identity를 hard-stop한다."
+      },
+      {
+        "id": "BP-067.3",
+        "title": "corrupt payload fail-closed",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "손상 payload는 fallback하고 normalization write를 하지 않는다."
+      }
+    ]
+  },
+  {
+    "parentId": "BP-068",
+    "subchecks": [
+      {
+        "id": "BP-068.1",
+        "title": "drag 이동 경로",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "pointer/drag 브라우저 시나리오가 있다."
+      },
+      {
+        "id": "BP-068.2",
+        "title": "더보기 메뉴 이동 경로",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "menu 경로를 브라우저에서 실행했다."
+      },
+      {
+        "id": "BP-068.3",
+        "title": "키보드 이동 경로",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "키보드 순서·패널 조작을 실행했다."
+      },
+      {
+        "id": "BP-068.4",
+        "title": "세 경로의 같은 transition·결과",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "동일한 순수 state transition으로 수렴하고 결과 parity를 검사한다."
+      }
+    ]
+  },
+  {
+    "parentId": "BP-069",
+    "subchecks": [
+      {
+        "id": "BP-069.1",
+        "title": "네 origin 조건",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "read-model identity와 origin fixture를 통과했다."
+      },
+      {
+        "id": "BP-069.2",
+        "title": "PoC storage 경계 조건",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "허용 prefix 밖 mutation 0이다."
+      },
+      {
+        "id": "BP-069.3",
+        "title": "owner·이동 invariants 조건",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "folder/date/order/completion 보존 불변식을 검사했다."
+      },
+      {
+        "id": "BP-069.4",
+        "title": "no-op mutation 0 조건",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "같은 위치·취소·pointer cancel이 bytes를 유지한다."
+      },
+      {
+        "id": "BP-069.5",
+        "title": "Undo 조건",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "마지막 원자 mutation을 복구한다."
+      },
+      {
+        "id": "BP-069.6",
+        "title": "detail 조건",
+        "verdict": "충족",
+        "evidence": "E3",
+        "note": "no-write 상세와 period 결과를 확인한다."
+      },
+      {
+        "id": "BP-069.7",
+        "title": "실제 Calendar 조건",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "실제 /calendar owner와 연결되지 않았다."
+      }
+    ]
+  },
+  {
+    "parentId": "BP-070",
+    "subchecks": [
+      {
+        "id": "BP-070.1",
+        "title": "390×844 검사",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "브라우저 viewport 검사를 통과했다."
+      },
+      {
+        "id": "BP-070.2",
+        "title": "375×812 검사",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "브라우저 viewport 검사를 통과했다."
+      },
+      {
+        "id": "BP-070.3",
+        "title": "844×390 검사",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "브라우저 viewport 검사를 통과했다."
+      },
+      {
+        "id": "BP-070.4",
+        "title": "1024×768 검사",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "브라우저 viewport 검사를 통과했다."
+      },
+      {
+        "id": "BP-070.5",
+        "title": "1440×900 검사",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "브라우저 viewport 검사를 통과했다."
+      },
+      {
+        "id": "BP-070.6",
+        "title": "model tests",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "PoC와 standalone model 테스트 수를 집계했다."
+      },
+      {
+        "id": "BP-070.7",
+        "title": "storage tests",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "write boundary·rollback·reload를 검사했다."
+      },
+      {
+        "id": "BP-070.8",
+        "title": "regression tests",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "전체 npm 회귀 결과를 별도 기록했다."
+      },
+      {
+        "id": "BP-070.9",
+        "title": "production build",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "build 결과를 테스트와 분리 기록했다."
+      },
+      {
+        "id": "BP-070.10",
+        "title": "browser tests",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "React와 standalone 브라우저 묶음을 실행했다."
+      }
+    ]
+  },
+  {
+    "parentId": "BP-071",
+    "subchecks": [
+      {
+        "id": "BP-071.1",
+        "title": "Android 검사 상태 별도 보고",
+        "verdict": "충족",
+        "evidence": "E3",
+        "note": "미실행으로 분리 보고한다."
+      },
+      {
+        "id": "BP-071.2",
+        "title": "iOS 검사 상태 별도 보고",
+        "verdict": "충족",
+        "evidence": "E3",
+        "note": "미실행으로 분리 보고한다."
+      },
+      {
+        "id": "BP-071.3",
+        "title": "commit 상태 별도 보고",
+        "verdict": "충족",
+        "evidence": "E3",
+        "note": "미진행 상태를 따로 표시한다."
+      },
+      {
+        "id": "BP-071.4",
+        "title": "push·PR 상태 별도 보고",
+        "verdict": "충족",
+        "evidence": "E3",
+        "note": "각 게시 상태를 따로 표시한다."
+      },
+      {
+        "id": "BP-071.5",
+        "title": "Preview 상태 별도 보고",
+        "verdict": "충족",
+        "evidence": "E3",
+        "note": "미진행 상태를 표시한다."
+      },
+      {
+        "id": "BP-071.6",
+        "title": "Production 상태 별도 보고",
+        "verdict": "충족",
+        "evidence": "E3",
+        "note": "미진행 상태를 표시한다."
+      },
+      {
+        "id": "BP-071.7",
+        "title": "observed users 수 별도 보고",
+        "verdict": "충족",
+        "evidence": "E3",
+        "note": "0명을 자동 QA와 분리한다."
+      }
+    ]
+  },
+  {
+    "parentId": "BP-072",
+    "subchecks": [
+      {
+        "id": "BP-072.1",
+        "title": "네 origin 투영 시나리오",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "중복 없는 read model과 상세 진입을 검사했다."
+      },
+      {
+        "id": "BP-072.2",
+        "title": "Quick 생성·이동·Undo 시나리오",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "모델과 브라우저에서 실행했다."
+      },
+      {
+        "id": "BP-072.3",
+        "title": "Flow folder·Item date 시나리오",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "상속과 source timing 보존을 검사했다."
+      },
+      {
+        "id": "BP-072.4",
+        "title": "completion·reopen 시나리오",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "PoC period/detail projection에서 실행했다."
+      },
+      {
+        "id": "BP-072.5",
+        "title": "drag·menu·keyboard modality 시나리오",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "같은 transition 결과를 검사했다."
+      },
+      {
+        "id": "BP-072.6",
+        "title": "same·cancel·Escape·pointer cancel·failure no-op 시나리오",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "mutation 0과 rollback을 검사했다."
+      },
+      {
+        "id": "BP-072.7",
+        "title": "reload·corrupt 시나리오",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "정상 복구와 fail-closed를 검사했다."
+      },
+      {
+        "id": "BP-072.8",
+        "title": "operating bytes parity 시나리오",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "전후 sentinel bytes 동일을 검사했다."
+      }
+    ]
+  },
+  {
+    "parentId": "BP-074",
+    "subchecks": [
+      {
+        "id": "BP-074.1",
+        "title": "silent drop 0",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "loss와 blocking issue를 명시한다."
+      },
+      {
+        "id": "BP-074.2",
+        "title": "fake date 0",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "기준일 없는 상대 날짜와 invalid date를 차단한다."
+      },
+      {
+        "id": "BP-074.3",
+        "title": "확인 전 early write 0",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "preview 단계에는 workspace commit이 없다."
+      },
+      {
+        "id": "BP-074.4",
+        "title": "partial parse를 사용자가 수정",
+        "verdict": "부분",
+        "evidence": "E3",
+        "note": "raw source 수정은 되지만 구조 correction 전용 UI가 없다."
+      },
+      {
+        "id": "BP-074.5",
+        "title": "날짜 미정 처리",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "unscheduled placement와 undated view가 있다."
+      },
+      {
+        "id": "BP-074.6",
+        "title": "draft reload 복구",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "React와 standalone draft key를 복구한다."
+      }
+    ]
+  },
+  {
+    "parentId": "BP-077",
+    "subchecks": [
+      {
+        "id": "BP-077.1",
+        "title": "Flow Item의 부모 folder 상속 유지",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "직접 membership을 만들지 않는다."
+      },
+      {
+        "id": "BP-077.2",
+        "title": "Item 하나의 execution date만 변경",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "composite ref의 placement만 바꾼다."
+      },
+      {
+        "id": "BP-077.3",
+        "title": "source order 보존",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "TimelineOrder가 source 구조를 덮지 않는다."
+      },
+      {
+        "id": "BP-077.4",
+        "title": "source timing 보존",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "개인 overlay와 source timing을 분리한다."
+      }
+    ]
+  },
+  {
+    "parentId": "BP-079",
+    "subchecks": [
+      {
+        "id": "BP-079.1",
+        "title": "Today에서 완료",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "PoC Today transition을 검사했다."
+      },
+      {
+        "id": "BP-079.2",
+        "title": "detail에서 완료 결과 확인",
+        "verdict": "충족",
+        "evidence": "E3",
+        "note": "같은 shadow state projection을 표시한다."
+      },
+      {
+        "id": "BP-079.3",
+        "title": "실제 Calendar에서 완료 결과 확인",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "실제 /calendar 연결이 없다."
+      },
+      {
+        "id": "BP-079.4",
+        "title": "다시 열기",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "PoC period/detail projection에서 reopen한다."
+      },
+      {
+        "id": "BP-079.5",
+        "title": "complete·reopen의 기존 execution owner 일치",
+        "verdict": "부분",
+        "evidence": "E4",
+        "note": "PoC 내부 owner는 하나지만 운영 execution owner가 아니라 shadow다."
+      }
+    ]
+  },
+  {
+    "parentId": "BP-080",
+    "subchecks": [
+      {
+        "id": "BP-080.1",
+        "title": "personal edit 결과",
+        "verdict": "부분",
+        "evidence": "E4",
+        "note": "personal plan edit·apply 모델은 있으나 결과 화면의 공통 editor 연결은 단계 3에 남아 있다."
+      },
+      {
+        "id": "BP-080.2",
+        "title": "preview와 저장 결과 일치",
+        "verdict": "부분",
+        "evidence": "E4",
+        "note": "composition test는 preview와 저장 effective 값을 맞추지만 전체 사용자 round trip UI는 아직 없다."
+      },
+      {
+        "id": "BP-080.3",
+        "title": "export scope 일치",
+        "verdict": "제외",
+        "evidence": "E4",
+        "note": "기존 export writer는 A0 경계에 따라 호출하지 않으며 이번 PoC export scope에서 제외했다."
+      },
+      {
+        "id": "BP-080.4",
+        "title": "receipt와 저장 결과 일치",
+        "verdict": "부분",
+        "evidence": "E4",
+        "note": "receipt와 저장 state identity·revision은 맞지만 receipt UI가 아직 editor에 연결되지 않았다."
+      }
+    ]
+  },
+  {
+    "parentId": "BP-081",
+    "subchecks": [
+      {
+        "id": "BP-081.1",
+        "title": "P0 model 조건",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "identity·transition·invariant 테스트가 통과했다."
+      },
+      {
+        "id": "BP-081.2",
+        "title": "P0 store 조건",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "prefix·atomic rollback·reload 테스트가 통과했다."
+      },
+      {
+        "id": "BP-081.3",
+        "title": "P0 browser 조건",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "통합과 standalone 브라우저 묶음을 실행했다."
+      },
+      {
+        "id": "BP-081.4",
+        "title": "허용 밖 mutation 0",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "operating key byte parity와 clear 0을 확인했다."
+      },
+      {
+        "id": "BP-081.5",
+        "title": "hard-stop 조건",
+        "verdict": "부분",
+        "evidence": "E4",
+        "note": "corrupt·duplicate·blocking issue는 닫지만 public S3와 실제 Calendar 결정을 닫지 못했다."
+      },
+      {
+        "id": "BP-081.6",
+        "title": "5 viewport 조건",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "요구한 다섯 크기를 검사했다."
+      },
+      {
+        "id": "BP-081.7",
+        "title": "menu·keyboard와 overflow 0 조건",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "비드래그 이동과 가로 넘침 0을 검사했다."
+      },
+      {
+        "id": "BP-081.8",
+        "title": "실제 Android·iOS device 조건",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "실제 기기 검사를 실행하지 않았다."
+      }
+    ]
+  },
+  {
+    "parentId": "BP-083",
+    "subchecks": [
+      {
+        "id": "BP-083.1",
+        "title": "메모 저장·다시 찾기 관찰",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "관찰 사용자 0명이다."
+      },
+      {
+        "id": "BP-083.2",
+        "title": "date와 folder 차이 설명 관찰",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "이해 과업을 관찰하지 않았다."
+      },
+      {
+        "id": "BP-083.3",
+        "title": "complete cross-view·reopen 관찰",
+        "verdict": "미충족",
+        "evidence": "E0",
+        "note": "자동 시나리오는 사용자 관찰 증거가 아니다."
+      }
+    ]
+  },
+  {
+    "parentId": "BP-086",
+    "subchecks": [
+      {
+        "id": "BP-086.1",
+        "title": "latest-main 기반 isolated worktree",
+        "verdict": "충족",
+        "evidence": "E1",
+        "note": "현재 worktree와 origin/main baseline을 확인했다."
+      },
+      {
+        "id": "BP-086.2",
+        "title": "dirty original을 unowned로 보존",
+        "verdict": "충족",
+        "evidence": "E1",
+        "note": "원본 dirty repo를 수정·stage·정리하지 않았다."
+      },
+      {
+        "id": "BP-086.3",
+        "title": "default /my 불변",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "exact-query gate 밖 route 회귀가 통과했다."
+      },
+      {
+        "id": "BP-086.4",
+        "title": "operating data 불변",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "전후 operating flow:* key/value bytes가 동일하다."
+      },
+      {
+        "id": "BP-086.5",
+        "title": "exact-prefix reset",
+        "verdict": "충족",
+        "evidence": "E4",
+        "note": "두 PoC exact key만 제거하고 실패 시 rollback한다."
+      },
+      {
+        "id": "BP-086.6",
+        "title": "자동 QA와 observed use 분리",
+        "verdict": "충족",
+        "evidence": "E3",
+        "note": "실제 기기·관찰 사용자·게시 상태를 별도 보고한다."
+      }
+    ]
+  }
+]
