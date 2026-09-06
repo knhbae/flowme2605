@@ -18,5 +18,6 @@
 - [x] FPC-10 Publish a stacked review PR and Vercel Preview only.
 - [x] FPC-11 Owner reviewed the Preview and authorized the bounded #195 release
   after #194.
-- [ ] FPC-12 Pass reconciled exact-head CI, merge #195, and verify the resulting
-  Production deployment.
+- [x] FPC-12 Pass reconciled exact-head CI, merge #195, and record the resulting
+  exact-source Production deployment. Canonical Production smoke remains
+  explicitly `NOT_RUN`.
