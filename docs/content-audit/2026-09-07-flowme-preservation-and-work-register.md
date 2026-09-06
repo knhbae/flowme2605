@@ -3,8 +3,8 @@
 **Captured:** 2026-09-07 KST  
 **Release baseline at capture:** `origin/main@db74a36cbf2325573b2d696589daa659619e50f2`
 **Maintenance worktree:** `D:\flowme2605\flow-workspace-maintenance-20260829`  
-**Publication sequence:** [PR #200](https://github.com/knhbae/flowme2605/pull/200) verification maintenance -> [PR #201](https://github.com/knhbae/flowme2605/pull/201) core-journey package -> final documentation reconciliation
-**Publish state:** the source/security maintenance and core-journey package are integrated; this register is part of the final documentation publication
+**Publication sequence:** [PR #200](https://github.com/knhbae/flowme2605/pull/200) verification maintenance -> [PR #201](https://github.com/knhbae/flowme2605/pull/201) core-journey package -> [PR #202](https://github.com/knhbae/flowme2605/pull/202) documentation reconciliation
+**Publish state:** the source/security maintenance, core-journey package, and this register are integrated through the recorded sequence
 
 ## Verdict
 
@@ -49,7 +49,7 @@ The canonical progress record is outside `main` at:
 
 ```text
 feature baseline: main@db74a36c (PR #195)
-  ├─ #200 verification maintenance -> #201 core-journey package -> documentation reconciliation
+  ├─ #200 verification maintenance -> #201 core-journey package -> #202 documentation reconciliation
   ├─ #184 -> #185 -> #186 -> #187 -> #197 -> #198
   │    conflict                    CI fail  CI fail
   ├─ #188 ... #193  dependency proposals

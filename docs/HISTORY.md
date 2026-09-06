@@ -8,6 +8,7 @@ below are deployment milestones unless they explicitly name another tag.
 
 - [PR #200](https://github.com/knhbae/flowme2605/pull/200) restored the current source and security verification gates: nine due source reviews were checked against their real pages, one retired official EV URL was replaced, audited transitive dependencies were patched, and one historical recurrence E2E received the existing fixed clock after its hard-coded dates crossed the 31-day lookback boundary.
 - [PR #201](https://github.com/knhbae/flowme2605/pull/201) published the 29-file [core-journey wireframe review package](./content-audit/2026-09-07-flowme-core-journey-wireframes/README.md) with interactive HTML, implementation mapping, QA, simulation evidence, and responsive captures.
+- [PR #202](https://github.com/knhbae/flowme2605/pull/202) reconciled the canonical status, roadmap, spec index, release history, preservation inventory, and next Owner decisions without changing product behavior.
 - These are maintenance and design-evidence milestones. They do not create a semantic version, approve a new Production feature gate, or count as observed-user validation; observed users remain `0`.
 
 ## 2026-08-23 - Flow Entry And Preview Clarity

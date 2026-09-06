@@ -1,7 +1,7 @@
 # Project Status
 
 **Last Updated:** 2026-09-07 (release, source/security maintenance, UX review publication, and preservation state reconciled)
-**Status:** v0.1.0 RELEASED / PR #200 VERIFICATION MAINTENANCE INTEGRATED / PR #201 CORE-JOURNEY REVIEW PACKAGE PUBLISHED / CANONICAL PRODUCTION SMOKE NOT RUN / NO ACTIVE PRODUCT GATE / OBSERVED USERS 0
+**Status:** v0.1.0 RELEASED / PR #200 VERIFICATION MAINTENANCE INTEGRATED / PR #201 CORE-JOURNEY REVIEW PACKAGE PUBLISHED / PR #202 STATUS RECONCILIATION PUBLISHED / CANONICAL PRODUCTION SMOKE NOT RUN / NO ACTIVE PRODUCT GATE / OBSERVED USERS 0
 **Current Version:** v0.1.0  
 **Primary Focus:** Preserve the released baseline while Development 3 continues only its recorded Personal Workspace K4-A1 slice and the Owner reviews the two core-journey UX candidates before choosing a Production gate.
 

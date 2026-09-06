@@ -14,6 +14,7 @@ This file is an index, not a second source of product truth. Update its links af
 - [Flow Entry And Preview Clarity release history](./pr-history/2026-08-23-flow-entry-preview-clarity.md)
 - [Current source and verification maintenance](./pr-history/2026-09-07-verification-gate-refresh.md)
 - [Core-journey wireframe review publication](./pr-history/2026-09-07-core-journey-wireframe-review.md)
+- [Workspace status reconciliation publication](./pr-history/2026-09-07-workspace-status-reconciliation.md)
 - [Current preservation and work register](./content-audit/2026-09-07-flowme-preservation-and-work-register.md)
 - [2026-08-29 workspace and backlog maintenance inventory](./content-audit/2026-08-29-flowme-workspace-backlog-maintenance-inventory.md)
 - [Released visual-refresh baseline](./specs/2026-08-20-production-visual-only-refresh/spec.md)
