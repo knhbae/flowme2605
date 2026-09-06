@@ -1518,8 +1518,13 @@ test('sensitive source refresh keeps current official procedure and removes unsu
   const smallBusiness = bySlug.get('small-business-fund-check')!;
   const propertyTax = bySlug.get('property-local-tax-pay')!;
 
-  assert.equal(ev.flow.source_checked_at, '2026-07-12');
-  assert.equal(ev.flow.updated_at, '2026-07-12T00:00:00.000Z');
+  assert.equal(ev.flow.source_checked_at, '2026-09-07');
+  assert.equal(ev.flow.updated_at, '2026-09-07T00:00:00.000Z');
+  assert.equal(ev.flow.source_url, 'https://ev.or.kr/nportal/buySupprt/initSubsiGuideAction.do');
+  assert.equal(
+    ev.itemDetails?.[0]?.links?.[0]?.url,
+    'https://www.ev.or.kr/nportal/buySupprt/initSubsidyPaymentCheckAction.do',
+  );
   assert.match(ev.flow.raw_text ?? '', /구매계약 후 제조사·수입사가 구매 지원신청서를/);
   assert.doesNotMatch(ev.flow.raw_text ?? '', /지원 확인서.*계약 전 필수|지원 확인서 없이 차량 계약/);
 

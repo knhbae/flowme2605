@@ -204,7 +204,7 @@ test('sensitive current-source pass separates exact execution routes from broad 
   for (const [slug, decision] of expected) {
     const audit = getSourceFitAudit(slug);
     assert.ok(audit, slug);
-    assert.equal(audit.checkedAt, '2026-07-12', slug);
+    assert.equal(audit.checkedAt, slug === 'ev-subsidy-apply' ? '2026-09-07' : '2026-07-12', slug);
     assert.equal(audit.decision, decision, slug);
     assert.ok(audit.naturalArtifacts.length > 0, slug);
   }
