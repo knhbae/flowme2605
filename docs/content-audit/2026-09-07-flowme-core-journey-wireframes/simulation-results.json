@@ -1,0 +1,333 @@
+{
+  "tests": 65,
+  "passed": 65,
+  "results": [
+    {
+      "name": "A01 빈 문서에서 원문 입력이 첫 행동",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "A02 할 일 변환 없이 저장·재진입",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "A03 연결 취소는 항목 생성 0",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "A04 아무 줄도 선택하지 않으면 오류·변경 0",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "A05 선택한 줄만 연결·원문 보존",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "A05b 되돌리기는 행동명을 표시",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "A05c 완료만 되돌리고 원문 보존",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "A06 같은 원문 줄 중복 연결 차단",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "A07 오늘은 날짜 있는 같은 ID만 투영",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "A08 완료·원문 복귀 일관성",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "A09 날짜 미정은 별도 필터",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "A10 원문 수정은 기존 연결을 덮어쓰지 않음",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "A10b 원문 변경 검토는 중복 재생성 차단",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "A10c 기존 연결 유지시 변경 0",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "A11 저장 실패 시 입력 유지·저장본 불변",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "A12 재시도 후 실제 reload 복원",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "B01 사본 없이 외부 출력 미리보기",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "B02 실제 TXT 다운로드 이벤트",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "B03 읽기·질문 진입에 저장 강제 없음",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "B04 사본 생성 취소는 변경 0",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "B05 개인 사본은 출처 버전과 별도 생성",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "B06 날짜 조정 후 미저장 메모 유지",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "B07 내보내기 기본값에서 개인 메모 제외",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "B08 명시 선택 시에만 내보내기 메모 포함",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "B09 오늘과 사본의 완료 상태는 같은 항목",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "B10 공개 후보는 개인 메모·날짜·완료 제외",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "B11 개인 수정·완료 후 공개본 불변",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "B12 기존 사본 다시 열기·중복 생성 없음",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "B13 reload 뒤 같은 사본·메모·완료 복원",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "L 1194×834 개인 사본 가로 넘침 없음",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "L 1194×834 오늘 가로 넘침 없음",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "L 390×844 개인 사본 가로 넘침 없음",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "L 390×844 오늘 가로 넘침 없음",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "B14 브라우저 Back은 같은 사본으로 복귀",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "C01 공개 첫 버튼 배치 비교",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "C02 외부 우선 배치 복귀",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "C03 배치 비교는 저장 데이터에 영향 없음",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "L 1440×900 document 가로 넘침 없음",
+      "pass": true,
+      "detail": "0"
+    },
+    {
+      "name": "L 1440×900 public 가로 넘침 없음",
+      "pass": true,
+      "detail": "0"
+    },
+    {
+      "name": "L 1440×900 review 가로 넘침 없음",
+      "pass": true,
+      "detail": "0"
+    },
+    {
+      "name": "L 1440×900 dialog 화면 안",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "L 1440×900 Escape 취소",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "L 1194×834 document 가로 넘침 없음",
+      "pass": true,
+      "detail": "0"
+    },
+    {
+      "name": "L 1194×834 public 가로 넘침 없음",
+      "pass": true,
+      "detail": "0"
+    },
+    {
+      "name": "L 1194×834 review 가로 넘침 없음",
+      "pass": true,
+      "detail": "0"
+    },
+    {
+      "name": "L 1194×834 dialog 화면 안",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "L 1194×834 Escape 취소",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "L 1024×768 document 가로 넘침 없음",
+      "pass": true,
+      "detail": "0"
+    },
+    {
+      "name": "L 1024×768 public 가로 넘침 없음",
+      "pass": true,
+      "detail": "0"
+    },
+    {
+      "name": "L 1024×768 review 가로 넘침 없음",
+      "pass": true,
+      "detail": "0"
+    },
+    {
+      "name": "L 1024×768 dialog 화면 안",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "L 1024×768 Escape 취소",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "L 390×844 document 가로 넘침 없음",
+      "pass": true,
+      "detail": "0"
+    },
+    {
+      "name": "L 390×844 public 가로 넘침 없음",
+      "pass": true,
+      "detail": "0"
+    },
+    {
+      "name": "L 390×844 review 가로 넘침 없음",
+      "pass": true,
+      "detail": "0"
+    },
+    {
+      "name": "L 390×844 dialog 화면 안",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "L 390×844 Escape 취소",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "L 모바일 탐색으로 할 일 열기",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "L 모달 키보드 초점 유지",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "L reduced motion",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "E01 손상 데이터 fail-closed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "E02 손상 저장본을 자동 교체하지 않음",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "E03 초기화는 예시 키만 변경",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Q page/console errors 0",
+      "pass": true,
+      "detail": "[]"
+    },
+    {
+      "name": "Q 외부 네트워크 요청 0",
+      "pass": true,
+      "detail": "[]"
+    }
+  ],
+  "errors": [],
+  "remote": []
+}
