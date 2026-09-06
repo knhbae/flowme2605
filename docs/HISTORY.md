@@ -4,6 +4,12 @@ The repository's current semantic-version tag is `v0.1.0` at
 `d18f4218de48e23f894c7615945e37339a4a0153` (`2026-06-11`). Later entries
 below are deployment milestones unless they explicitly name another tag.
 
+## 2026-09-07 - Verification Maintenance And Core-Journey Review
+
+- [PR #200](https://github.com/knhbae/flowme2605/pull/200) restored the current source and security verification gates: nine due source reviews were checked against their real pages, one retired official EV URL was replaced, audited transitive dependencies were patched, and one historical recurrence E2E received the existing fixed clock after its hard-coded dates crossed the 31-day lookback boundary.
+- [PR #201](https://github.com/knhbae/flowme2605/pull/201) published the 29-file [core-journey wireframe review package](./content-audit/2026-09-07-flowme-core-journey-wireframes/README.md) with interactive HTML, implementation mapping, QA, simulation evidence, and responsive captures.
+- These are maintenance and design-evidence milestones. They do not create a semantic version, approve a new Production feature gate, or count as observed-user validation; observed users remain `0`.
+
 ## 2026-08-23 - Flow Entry And Preview Clarity
 
 - Released one `/flows` query, URL, and memo entry; source-faithful complete Text previews; full approved Todo and Calendar rows; meaningful copy titles; and matching executable Flow Map result behavior without changing existing save, edit, persistence, export, receipt, or lifecycle ownership.

@@ -2,8 +2,10 @@
 
 - **Date:** 2026-09-07 KST
 - **Branch:** `codex/security-audit-refresh-20260907`
-- **Status:** Ready for PR
+- **PR:** [#200](https://github.com/knhbae/flowme2605/pull/200)
+- **Status:** Merged
 - **Base:** `origin/main` at `db74a36c`
+- **Final head:** `f095341b`
 
 ## Why
 
@@ -17,6 +19,7 @@
 - 전체 링크 감사에서 발견한 전기차 보조금 공식 404 주소를 현재 지원 절차·지급현황 주소로 교체했습니다.
 - source-fit 기록의 `checkedAt`도 같은 실제 검토일로 맞췄습니다.
 - `package-lock.json`의 전이 의존성만 갱신해 `browserslist`와 `postcss-selector-parser` 보안 경고를 해소했습니다.
+- 첫 GitHub 전체 회귀가 현재일 기준 31일 조회 범위를 벗어난 2026-07-27 반복 일정을 찾지 못해 실패했습니다. 같은 파일의 기존 `FIXED_CLOCK`을 해당 테스트에도 설치해 시간 경계를 고정했습니다.
 
 ## Not Done
 
@@ -31,6 +34,7 @@
 - `npm.cmd exec -- tsx scripts/content-audit/audit-flow-source-freshness.ts` - 일반 사용자 경로 135개 최신, 검토 기한 초과·누락 0개
 - `npm.cmd exec -- tsx scripts/content-audit/audit-exposed-source-reachability.ts --strict --output ...` - 고유 링크 156개, 자동 판정 끊어진 링크 0개, 수동 재확인 8개
 - `npm.cmd exec -- playwright test tests/e2e/workbench-source-density.spec.ts --grep "corrected official routes expose current source and save actions" --workers=1 --retries=0` - 1/1 통과
+- `npx.cmd playwright test tests/e2e/approved-plan-execution-ux.spec.ts --grep "legacy skipped recurrence"` - 1/1 통과
 - `npm.cmd run verify` - 문서 검사, 전체 단위 테스트, 프로덕션 빌드 통과
 
 ## Rollback

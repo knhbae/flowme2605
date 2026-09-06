@@ -12,6 +12,8 @@ This file is an index, not a second source of product truth. Update its links af
 - [Current roadmap and inactive shelves](./ROADMAP.md)
 - [Released Flow Entry And Preview Clarity](./specs/2026-08-20-flow-entry-preview-clarity/spec.md)
 - [Flow Entry And Preview Clarity release history](./pr-history/2026-08-23-flow-entry-preview-clarity.md)
+- [Current source and verification maintenance](./pr-history/2026-09-07-verification-gate-refresh.md)
+- [Core-journey wireframe review publication](./pr-history/2026-09-07-core-journey-wireframe-review.md)
 - [Current preservation and work register](./content-audit/2026-09-07-flowme-preservation-and-work-register.md)
 - [2026-08-29 workspace and backlog maintenance inventory](./content-audit/2026-08-29-flowme-workspace-backlog-maintenance-inventory.md)
 - [Released visual-refresh baseline](./specs/2026-08-20-production-visual-only-refresh/spec.md)
@@ -48,14 +50,23 @@ status `17168906607`, succeeded for that exact merge source at
 [the canonical alias](https://flowme2605.vercel.app) returned HTTP `200` on
 2026-08-29. A separate canonical Production smoke suite is `NOT_RUN`.
 
+[PR #200](https://github.com/knhbae/flowme2605/pull/200) is the later runtime
+maintenance line. It refreshed nine due source reviews, replaced one retired
+official EV URL, patched the audited transitive dependencies, and fixed a
+calendar E2E test whose unfrozen clock had crossed the product's 31-day lookback
+boundary. [PR #201](https://github.com/knhbae/flowme2605/pull/201) publishes the
+29-file core-journey review package as design evidence. These changes restore
+verification and make the review artifact durable; they do not promote a new
+feature gate or count as observed-user validation.
+
 No Production product gate is active. The isolated Personal Workspace PoC has a
 separately recorded next development slice, K4-A1 pure read-preview, after its
 bounded K1-K3 implementation and K4-D design package. Text Authoring remains an
 unreleased Draft PR chain, and the 2026-09-06 vision review plus the completed
-local 2026-09-07 core-journey wireframe package remain UX decision inputs rather
-than implementation approval. See the current preservation and work register
-for their exact paths, QA boundary, commits, PR dependencies, and
-local-publication boundaries.
+2026-09-07 core-journey wireframe package published through PR #201 remain UX
+decision inputs rather than implementation approval. See the current
+preservation and work register for their exact paths, QA boundary, commits, PR
+dependencies, and publication boundaries.
 Automated QA, deployment, HTTP checks, and local reports remain separate from
 observed-user validation; observed users remain `0`.
 

@@ -3,7 +3,8 @@
 **Date:** 2026-09-07  
 **Branch:** `codex/core-journey-wireframes-20260907`  
 **PR:** [#201](https://github.com/knhbae/flowme2605/pull/201)  
-**Status:** Open
+**Status:** Merged
+**Final head:** `f91e655c`
 
 ## Why
 

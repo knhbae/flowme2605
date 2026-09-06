@@ -2,9 +2,9 @@
 
 **Last Updated:** 2026-09-07<br>
 **Current Version:** v0.1.0 (released product PoC)<br>
-**Current Validation Stage:** internal alpha / PR #194, #195, and #196 merged / PR #195 exact-head and post-merge CI passed / exact-source Production deployment succeeded / canonical HTTP 200 / canonical Production smoke not run / no active product gate / observed users 0<br>
+**Current Validation Stage:** internal alpha / PR #195 feature baseline released / PR #200 source and security verification maintenance integrated / PR #201 core-journey review package published / canonical Production smoke not run / no active product gate / observed users 0<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** preserve the current branches, complete only the recorded Personal Workspace K4-A1 slice, and review two core-journey wireframes before selecting a Production gate
+**Next Milestone:** preserve the current branches, complete only the recorded Personal Workspace K4-A1 slice, and review the published two-journey wireframe before selecting a Production gate
 
 Human-facing control surface: [FlowMe Project Control](./PROJECT_CONTROL.md).
 The [2026-07-29 P35 stage board](./content-audit/2026-07-29-flowme-current-stage-control-board-ko.html)
@@ -13,7 +13,7 @@ is retained as a dated evidence snapshot rather than the current backlog.
 ## Current Isolated Development And Review Lanes
 
 - **Personal Workspace Development 3:** remote checkpoint `6e4b44fe` plus local unpublished work. K1-K3 are complete only within their bounded implementation and verification records; K4-D design is complete; K4 product persistence, Undo, legacy handling, and UI are not. The next recorded slice is K4-A1 pure read-preview. This lane has no PR and is not a Production release.
-- **Core-journey UX review:** the 2026-09-06 vision/journey report is a local review artifact. The planning-owned 2026-09-07 package is complete as a local, untracked design artifact with interactive HTML, README, implementation map, QA, simulator, result JSON, exports, and captures. Its design simulator passed `65/65` across four recorded viewport sizes, with page/console errors `0` and external requests `0`. Owner review, product implementation, real-device checks, observed-user validation, and publication remain open. This package may inform a later gate but does not change Development 3's current sequence or approve implementation.
+- **Core-journey UX review:** the 2026-09-06 vision/journey report remains a local review artifact. The planning-owned [2026-09-07 package](./content-audit/2026-09-07-flowme-core-journey-wireframes/README.md) is published through [PR #201](https://github.com/knhbae/flowme2605/pull/201) with interactive HTML, implementation map, QA, simulator, result JSON, exports, and captures. Its design simulator passed `65/65` across four recorded viewport sizes, with page/console errors `0` and external requests `0`. Owner review, product implementation, real-device checks, and observed-user validation remain open. Publication does not change Development 3's sequence or approve implementation.
 - **Text Authoring:** Draft PR chain #184 -> #185 -> #186 -> #187 -> #197 -> #198 remains outside Production. #184 conflicts with `main`; #197 and #198 have failing CI that is not diagnosed here. PR #199 merged into the hybrid feature branch only, not `main`.
 - **Preservation and maintenance:** the [current work register](./content-audit/2026-09-07-flowme-preservation-and-work-register.md) records paths, commits, dirty ownership, PR dependencies, and the local backup boundary. This operating lane is not a product gate.
 
@@ -43,6 +43,12 @@ passed both required jobs. Production deployment record `6039611238`, status
 canonical alias returned HTTP `200` on 2026-08-29. A separate canonical
 Production smoke suite is `NOT_RUN`, observed-user validation remains `0`, and
 no later product gate is active.
+
+[PR #200](https://github.com/knhbae/flowme2605/pull/200) later refreshed nine
+due source reviews, replaced one retired official EV URL, patched audited
+transitive dependencies, and fixed an unfrozen calendar E2E clock. It is
+verification maintenance inherited by the released feature baseline, not a new
+product gate or semantic version.
 
 ## Released: Flow Map Item Date Parity
 
@@ -517,10 +523,14 @@ deployment. Canonical HTTP checks passed; a separate canonical Production smoke
 suite is `NOT_RUN`. No product gate is active. External user observation stays
 separate and the count stays `0`.
 
+PR #200 is the current source/security verification maintenance and PR #201
+publishes the core-journey design evidence. Both remain separate from feature
+promotion and observed-user validation.
+
 | Lane | Owner | Work | Next checkpoint | Done when |
 | --- | --- | --- | --- | --- |
 | Personal Workspace isolated continuation | Development 3 | Continue only the recorded K4-A1 pure read-preview slice from the preserved local PoC | Meet the K4-A1 no-write, supported-source, and preview-result gates recorded in Development 3 | The bounded K4-A1 evidence is recorded without claiming K4 persistence/UI, PR, Preview, Production, or user validation |
-| Core-journey UX review | Owner | Review the completed local package comparing text-first personal management and public-Flow reuse as two coherent start/save/return journeys | Open `D:\flowme2605\flow-mvp\docs\content-audit\2026-09-07-flowme-core-journey-wireframes\index.html` with its QA and implementation map | Owner accepts, revises, or holds each journey; no implementation approval is inferred |
+| Core-journey UX review | Owner | Review the published package comparing text-first personal management and public-Flow reuse as two coherent start/save/return journeys | Open the [interactive wireframe](./content-audit/2026-09-07-flowme-core-journey-wireframes/index.html) with its [QA](./content-audit/2026-09-07-flowme-core-journey-wireframes/qa.md) and [implementation map](./content-audit/2026-09-07-flowme-core-journey-wireframes/implementation-map.md) | Owner accepts, revises, or holds each journey; no implementation approval is inferred |
 | Next Production product gate | Owner | Choose one program using the released baseline, journey review, and preserved shelves | Make one explicit promotion decision after the UX review | Exactly one Production gate is active; all other implementation and research lanes retain their stated boundaries |
 | Completed Flow entry and preview clarity | AI + Owner | Preserve one discovery entry, source-faithful complete Text, full approved Todo/Calendar, and sibling-only copy numbering | Preserve [PR #195](https://github.com/knhbae/flowme2605/pull/195) merge `db74a36c` and its release evidence | Exact-head and post-merge CI PASS, exact-source Production deployment PASS, canonical HTTP 200, smoke `NOT_RUN`, observed users `0` |
 | Completed Production visual-only refresh | AI + Owner | Preserve the visual-only scope and released behavior contracts | Preserve [PR #194](https://github.com/knhbae/flowme2605/pull/194) merge `c8a57ba3` as the presentation foundation inherited by PR #195 | Exact-head release gate and Production verification complete; observed users `0` |
