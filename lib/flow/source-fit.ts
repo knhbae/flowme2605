@@ -2012,8 +2012,8 @@ export const sourceFitAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'dog-adoption-first-week',
-    checkedAt: '2026-06-04',
-    sourceTitle: '강아지 입양 전 준비 가이드 참고',
+    checkedAt: '2026-09-07',
+    sourceTitle: '강아지 입양 전 완전 가이드 - 보호소·브리더·동물등록·예방접종 총정리',
     sourceUrl: 'https://www.gomin77.co.kr/blog/dog-puppy-pet-adoption',
     sourcePrecision: 'exact',
     sourceUsefulness:
@@ -2108,7 +2108,7 @@ export const sourceFitAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'monstera-care-routine',
-    checkedAt: '2026-06-06',
+    checkedAt: '2026-09-07',
     sourceTitle: '몬스테라 물주기·분갈이 루틴 참고',
     sourceUrl: 'https://jhbd2.tistory.com/178',
     sourcePrecision: 'exact',
@@ -2157,7 +2157,7 @@ export const sourceFitAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'water-purifier-filter-cycle',
-    checkedAt: '2026-06-06',
+    checkedAt: '2026-09-07',
     sourceTitle: '정수기 필터 교체 주기표 참고',
     sourceUrl: 'https://pihamadam.tistory.com/267',
     sourcePrecision: 'exact',
@@ -2207,7 +2207,7 @@ export const sourceFitAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'plank-30-day-challenge',
-    checkedAt: '2026-06-07',
+    checkedAt: '2026-09-07',
     sourceTitle: '플랭크 30일 챌린지 계획표 공유',
     sourceUrl:
       'https://khj2510.tistory.com/entry/%ED%94%8C%EB%9E%AD%ED%81%AC-30%EC%9D%BC-%EC%B1%8C%EB%A6%B0%EC%A7%80-%EA%B3%84%ED%9A%8D%ED%91%9C-%EA%B3%B5%EC%9C%A0',
@@ -2418,7 +2418,7 @@ const promotedNeedsReviewManualAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'alt-phone-sk7-self-activation',
-    checkedAt: '2026-06-08',
+    checkedAt: '2026-09-07',
     sourceTitle: '알뜰폰 SK7모바일 셀프개통 후기',
     sourceUrl: 'https://blog.naver.com/PostView.nhn?blogId=saljjak-&logNo=223661947600',
     sourcePrecision: 'exact',
@@ -2506,7 +2506,7 @@ const promotedNeedsReviewManualAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'chiangmai-solo-trip-packing',
-    checkedAt: '2026-06-08',
+    checkedAt: '2026-09-07',
     sourceTitle: '치앙마이 혼자 여행 준비물 체크리스트',
     sourceUrl: 'https://blog.naver.com/PostView.nhn?blogId=mat_zip_diary&logNo=223137520451',
     sourcePrecision: 'exact',
@@ -2594,7 +2594,7 @@ const promotedNeedsReviewManualAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'jeonse-contract-precheck-docs',
-    checkedAt: '2026-06-08',
+    checkedAt: '2026-09-07',
     sourceTitle: "카카오페이 페이어텐션 - 전세 계약할 때 '이것' 꼭 확인하세요",
     sourceUrl: 'https://contents.kakaopay.com/contents/2056',
     sourcePrecision: 'exact',
@@ -2638,8 +2638,8 @@ const promotedNeedsReviewManualAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'elementary-school-entry-d30',
-    checkedAt: '2026-06-08',
-    sourceTitle: '교육부 2026학년도 초등학교 취학통지 및 예비소집 안내',
+    checkedAt: '2026-09-07',
+    sourceTitle: '2026학년도 초등학교 취학통지 및 예비소집 실시',
     sourceUrl:
       'https://www.moe.go.kr/boardCnts/viewRenew.do?boardID=294&boardSeq=104634&lev=0&m=020402&opType=N&page=1&s=moe&searchType=null&statusYN=W',
     sourcePrecision: 'exact',
@@ -2773,8 +2773,8 @@ const promotedNeedsReviewManualAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'banana-peanut-recipe-video',
-    checkedAt: '2026-06-08',
-    sourceTitle: '노밀가루 바나나 땅콩버터 빵 20분 완성',
+    checkedAt: '2026-09-07',
+    sourceTitle: '노밀가루 바나나 땅콩버터 빵 (with 계란)',
     sourceUrl: 'https://www.recipio.kr/recipes/WwyL63J3',
     sourcePrecision: 'exact',
     sourceUsefulness:
@@ -3430,11 +3430,11 @@ const currentSourceFreshnessAudits: SourceFitAudit[] = [
 const currentSensitiveSourceAudits: SourceFitAudit[] = [
   defineCurrentSourceAudit({
     slug: 'ev-subsidy-apply',
-    checkedAt: '2026-07-12',
-    sourceTitle: '무공해차 통합누리집 – 전기차 구매보조금 지원 절차',
-    sourceUrl: 'https://ev.or.kr/nportal/buySupprt/initBuySubsidySupprtAction.do',
+    checkedAt: '2026-09-07',
+    sourceTitle: '무공해차 통합누리집 - 보조금 지원 대상 및 신청절차',
+    sourceUrl: 'https://ev.or.kr/nportal/buySupprt/initSubsiGuideAction.do',
     sourcePrecision: 'exact',
-    sourceUsefulness: '지원 차종·지역 공고·잔여 물량과 구매계약부터 보조금 지급까지의 현재 공식 절차를 제공한다.',
+    sourceUsefulness: '지원 대상과 구매계약부터 보조금 지급까지의 공식 절차를 제공하고, 같은 공식 사이트의 지급현황에서 차종·지역 공고·잔여 물량을 확인할 수 있다.',
     artifactKind: 'checklist',
     artifactTitle: '전기차 보조금 계약·신청 체크',
     simulatedInputs: ['구매 예정 차종', '거주 지자체', '계약일'],

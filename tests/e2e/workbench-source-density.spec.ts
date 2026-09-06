@@ -150,7 +150,7 @@ test.describe('field checklist workbench source density', () => {
     const routes = [
       {
         route: '/f/ev-subsidy-apply',
-        sourceUrl: 'https://ev.or.kr/nportal/buySupprt/initBuySubsidySupprtAction.do',
+        sourceUrl: 'https://ev.or.kr/nportal/buySupprt/initSubsiGuideAction.do',
       },
       {
         route: '/f/adult-vaccine-schedule-check',

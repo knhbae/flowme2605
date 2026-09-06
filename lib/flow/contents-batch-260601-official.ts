@@ -705,11 +705,11 @@ const specs: BatchSpec[] = [
       status: 'published',
       risk_level: 'financial_sensitive',
       primary_destination: 'memo',
-      source_title: '무공해차 통합누리집 – 전기차 구매보조금 지급현황·대상 차종',
-      source_url: 'https://ev.or.kr/nportal/buySupprt/initBuySubsidySupprtAction.do',
+      source_title: '무공해차 통합누리집 - 보조금 지원 대상 및 신청절차',
+      source_url: 'https://ev.or.kr/nportal/buySupprt/initSubsiGuideAction.do',
       source_status: 'real',
       source_precision: 'exact',
-      source_checked_at: '2026-07-12',
+      source_checked_at: '2026-09-07',
       conversion_note: '2026년 무공해차 통합누리집의 실제 절차에 맞춰 구매계약→제조·수입사의 지원신청→대상자 선정→출고·등록→보조금 지급신청 순서로 바로잡았습니다.',
       warning: '보조금 금액, 잔여물량, 지원 조건은 연도·지자체마다 다르고 조기 소진될 수 있습니다. 공식 누리집으로 확인하세요.',
     },
@@ -718,7 +718,7 @@ const specs: BatchSpec[] = [
   why: 지원 차종, 금액과 남은 물량은 지자체 공고마다 다르고 예산이 소진될 수 있습니다.
   how: 무공해차 통합누리집에서 지원 차종과 거주 지자체 공고·남은 물량을 확인합니다.
   done: 차종별 보조금 금액과 거주지 잔여물량을 메모했다.
-  link: 무공해차 통합누리집 전기차 보조금 | https://ev.or.kr/nportal/buySupprt/initBuySubsidySupprtAction.do | official
+  link: 무공해차 통합누리집 지자체별 보조금 현황 | https://www.ev.or.kr/nportal/buySupprt/initSubsidyPaymentCheckAction.do | official
   caution: 보조금 금액과 항목은 연도·지자체마다 변경됩니다. 정확한 금액은 반드시 공식 누리집에서 확인하세요.
 - 거주지 신청 자격·우선순위 확인하기
   why: 지자체별로 신청 자격(실거주 여부, 이전 보조금 수령 이력 등)과 우선순위 기준이 다릅니다.
