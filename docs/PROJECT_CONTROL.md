@@ -1,6 +1,6 @@
 # FlowMe Project Control
 
-**Last Updated:** 2026-08-23
+**Last Updated:** 2026-09-07
 
 **Purpose:** Stable entry point for the current FlowMe stage, evidence boundary, and next owner decision.
 
@@ -10,7 +10,13 @@ This file is an index, not a second source of product truth. Update its links af
 
 - [Current status and owner action](./STATUS.md)
 - [Current roadmap and inactive shelves](./ROADMAP.md)
-- [Active Flow Entry And Preview Clarity](./specs/2026-08-20-flow-entry-preview-clarity/spec.md)
+- [Released Flow Entry And Preview Clarity](./specs/2026-08-20-flow-entry-preview-clarity/spec.md)
+- [Flow Entry And Preview Clarity release history](./pr-history/2026-08-23-flow-entry-preview-clarity.md)
+- [Current source and verification maintenance](./pr-history/2026-09-07-verification-gate-refresh.md)
+- [Core-journey wireframe review publication](./pr-history/2026-09-07-core-journey-wireframe-review.md)
+- [Workspace status reconciliation publication](./pr-history/2026-09-07-workspace-status-reconciliation.md)
+- [Current preservation and work register](./content-audit/2026-09-07-flowme-preservation-and-work-register.md)
+- [2026-08-29 workspace and backlog maintenance inventory](./content-audit/2026-08-29-flowme-workspace-backlog-maintenance-inventory.md)
 - [Released visual-refresh baseline](./specs/2026-08-20-production-visual-only-refresh/spec.md)
 - [Approved visual-only Production review](./content-audit/2026-08-19-flowme-production-ux-visual-only-refresh-ko.html)
 - [Released Flow Map Item date parity](./pr-history/2026-08-13-flow-map-item-date-parity.md)
@@ -30,24 +36,40 @@ This file is an index, not a second source of product truth. Update its links af
 - [P35 Round 2 MVP production closeout](./pr-history/2026-08-06-p35-round2-mvp-closeout-production.md)
 
 [PR #196](https://github.com/knhbae/flowme2605/pull/196) refreshed the source
-contracts, leaving `135` normal-user routes current with overdue and missing
-counts `0`, and merged as `8c0bfd8de9fb8877c4045b2c3f725b60ca236843`.
-[PR #194](https://github.com/knhbae/flowme2605/pull/194) then passed its exact-head
-release gate, merged as `c8a57ba37c4087b84b526bc778c3604f68299faa`, and its
-resulting Production deployment was verified at
-[flowme2605.vercel.app](https://flowme2605.vercel.app). It is the current
-visual-refresh Production baseline.
+contracts and merged as `8c0bfd8de9fb8877c4045b2c3f725b60ca236843`.
+[PR #194](https://github.com/knhbae/flowme2605/pull/194) released the visual
+refresh as `c8a57ba37c4087b84b526bc778c3604f68299faa`. The follow-up
+[PR #195](https://github.com/knhbae/flowme2605/pull/195) final head
+`bf11ce250be8df0b438087febe4068713c2783be` passed exact-head CI run
+[`32588338583`](https://github.com/knhbae/flowme2605/actions/runs/32588338583)
+and merged at `2026-08-22T17:55:30Z` as
+`db74a36cbf2325573b2d696589daa659619e50f2`. Post-merge `main` run
+[`32589202555`](https://github.com/knhbae/flowme2605/actions/runs/32589202555)
+passed both required jobs. GitHub Production deployment record `6039611238`,
+status `17168906607`, succeeded for that exact merge source at
+[its direct URL](https://flowme2605-2exs7soph-flowme.vercel.app); that URL and
+[the canonical alias](https://flowme2605.vercel.app) returned HTTP `200` on
+2026-08-29. A separate canonical Production smoke suite is `NOT_RUN`.
 
-The active product gate is
-[Flow Entry And Preview Clarity](./specs/2026-08-20-flow-entry-preview-clarity/spec.md).
-The Owner completed FPC-11 and authorized [PR #195](https://github.com/knhbae/flowme2605/pull/195)
-for release after PR #194. Its bounded discovery, complete Text/Todo/Calendar,
-and copy-title behavior is implemented, but the reconciled exact head must still
-pass CI before merge and the resulting Production deployment must be verified.
-Earlier `624/625`, `623/629`, and `629/629` runs remain dated QA history rather
-than a current source-freshness blocker. Automated QA, deployment, smoke, and
-local capture reports remain separate from observed-user validation; observed
-users remain `0`.
+[PR #200](https://github.com/knhbae/flowme2605/pull/200) is the later runtime
+maintenance line. It refreshed nine due source reviews, replaced one retired
+official EV URL, patched the audited transitive dependencies, and fixed a
+calendar E2E test whose unfrozen clock had crossed the product's 31-day lookback
+boundary. [PR #201](https://github.com/knhbae/flowme2605/pull/201) publishes the
+29-file core-journey review package as design evidence. These changes restore
+verification and make the review artifact durable; they do not promote a new
+feature gate or count as observed-user validation.
+
+No Production product gate is active. The isolated Personal Workspace PoC has a
+separately recorded next development slice, K4-A1 pure read-preview, after its
+bounded K1-K3 implementation and K4-D design package. Text Authoring remains an
+unreleased Draft PR chain, and the 2026-09-06 vision review plus the completed
+2026-09-07 core-journey wireframe package published through PR #201 remain UX
+decision inputs rather than implementation approval. See the current
+preservation and work register for their exact paths, QA boundary, commits, PR
+dependencies, and publication boundaries.
+Automated QA, deployment, HTTP checks, and local reports remain separate from
+observed-user validation; observed users remain `0`.
 
 ## Canonical Project Truth
 

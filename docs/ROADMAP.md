@@ -1,16 +1,23 @@
 # Roadmap
 
-**Last Updated:** 2026-08-23<br>
+**Last Updated:** 2026-09-07<br>
 **Current Version:** v0.1.0 (released product PoC)<br>
-**Current Validation Stage:** internal alpha / PR #194 visual refresh released and Production verified / PR #195 release authorized / reconciled exact-head CI and post-merge Production verification pending / observed users 0<br>
+**Current Validation Stage:** internal alpha / PR #195 feature baseline released / PR #200 source and security verification maintenance integrated / PR #201 core-journey review package published / canonical Production smoke not run / no active product gate / observed users 0<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** pass PR #195 exact-head CI, merge it, and verify the resulting Production deployment
+**Next Milestone:** preserve the current branches, complete only the recorded Personal Workspace K4-A1 slice, and review the published two-journey wireframe before selecting a Production gate
 
 Human-facing control surface: [FlowMe Project Control](./PROJECT_CONTROL.md).
 The [2026-07-29 P35 stage board](./content-audit/2026-07-29-flowme-current-stage-control-board-ko.html)
 is retained as a dated evidence snapshot rather than the current backlog.
 
-## Active: Flow Entry And Preview Clarity
+## Current Isolated Development And Review Lanes
+
+- **Personal Workspace Development 3:** remote checkpoint `6e4b44fe` plus local unpublished work. K1-K3 are complete only within their bounded implementation and verification records; K4-D design is complete; K4 product persistence, Undo, legacy handling, and UI are not. The next recorded slice is K4-A1 pure read-preview. This lane has no PR and is not a Production release.
+- **Core-journey UX review:** the 2026-09-06 vision/journey report remains a local review artifact. The planning-owned [2026-09-07 package](./content-audit/2026-09-07-flowme-core-journey-wireframes/README.md) is published through [PR #201](https://github.com/knhbae/flowme2605/pull/201) with interactive HTML, implementation map, QA, simulator, result JSON, exports, and captures. Its design simulator passed `65/65` across four recorded viewport sizes, with page/console errors `0` and external requests `0`. Owner review, product implementation, real-device checks, and observed-user validation remain open. Publication does not change Development 3's sequence or approve implementation.
+- **Text Authoring:** Draft PR chain #184 -> #185 -> #186 -> #187 -> #197 -> #198 remains outside Production. #184 conflicts with `main`; #197 and #198 have failing CI that is not diagnosed here. PR #199 merged into the hybrid feature branch only, not `main`.
+- **Preservation and maintenance:** the [current work register](./content-audit/2026-09-07-flowme-preservation-and-work-register.md) records paths, commits, dirty ownership, PR dependencies, and the local backup boundary. This operating lane is not a product gate.
+
+## Released: Flow Entry And Preview Clarity
 
 The Owner promoted [Flow Entry And Preview Clarity](./specs/2026-08-20-flow-entry-preview-clarity/spec.md)
 on 2026-08-20 as a behavior follow-up to the
@@ -26,11 +33,22 @@ missing counts `0`, then merged as `8c0bfd8de9fb8877c4045b2c3f725b60ca236843`.
 [PR #194](https://github.com/knhbae/flowme2605/pull/194) merged as
 `c8a57ba37c4087b84b526bc778c3604f68299faa` and its Production deployment was
 verified. The Owner completed FPC-11 and authorized
-[PR #195](https://github.com/knhbae/flowme2605/pull/195) for release. Its
-reconciled exact head must still pass CI before merge, and the resulting
-Production deployment must be verified. The earlier `624/625`, `623/629`, and
-`629/629` runs remain dated QA history, not the current gate. Observed-user
-validation remains `0`.
+[PR #195](https://github.com/knhbae/flowme2605/pull/195) for release. Final head
+`bf11ce250be8df0b438087febe4068713c2783be` passed exact-head CI run
+[`32588338583`](https://github.com/knhbae/flowme2605/actions/runs/32588338583)
+and merged as `db74a36cbf2325573b2d696589daa659619e50f2`. Post-merge
+`main` run [`32589202555`](https://github.com/knhbae/flowme2605/actions/runs/32589202555)
+passed both required jobs. Production deployment record `6039611238`, status
+`17168906607`, succeeded for the exact merge source; its direct URL and the
+canonical alias returned HTTP `200` on 2026-08-29. A separate canonical
+Production smoke suite is `NOT_RUN`, observed-user validation remains `0`, and
+no later product gate is active.
+
+[PR #200](https://github.com/knhbae/flowme2605/pull/200) later refreshed nine
+due source reviews, replaced one retired official EV URL, patched audited
+transitive dependencies, and fixed an unfrozen calendar E2E clock. It is
+verification maintenance inherited by the released feature baseline, not a new
+product gate or semantic version.
 
 ## Released: Flow Map Item Date Parity
 
@@ -54,7 +72,7 @@ semantic no-op and is removed only by explicit reset. Map/version/child/storage
 identity, schema, and atomic save ownership remain unchanged. See the
 [release record](./pr-history/2026-08-13-flow-map-item-date-parity.md). At that
 release closeout no next product gate was active, and observed users were `0`;
-the current active release gate is recorded above.
+the later Flow Entry And Preview Clarity release is recorded above.
 
 ## Released: Plan Edit And Lifecycle Unification
 
@@ -76,7 +94,7 @@ unifying saved and public Plan/Item editing. Single-plan Maps appear as ordinary
 Flows, real alternatives use `choose_child`, and `review_hold` stays
 editor-free. See the [release record](./pr-history/2026-08-12-plan-edit-lifecycle-unification.md).
 At that release closeout no next product gate was active, and observed users
-were `0`; the current active release gate is recorded above.
+were `0`; the later Flow Entry And Preview Clarity release is recorded above.
 
 ## Released: Public Plan Surface Unification
 
@@ -497,20 +515,26 @@ Detailed scope: [Save, Personalize, Execute Journey Reset](./specs/2026-07-18-sa
 ## Operating Queue
 
 The source-review prerequisite is complete through PR #196 merge
-`8c0bfd8de9fb8877c4045b2c3f725b60ca236843`: `135` normal-user routes are current
-and overdue or missing counts are `0`. PR #194 is also complete through merge
-`c8a57ba37c4087b84b526bc778c3604f68299faa`, with its resulting Production
-deployment verified. Flow Entry And Preview Clarity is the one active gate. The
-Owner completed FPC-11 and authorized PR #195 for release; reconciled exact-head
-CI, merge, and post-merge Production verification remain. Older `624/625`,
-`623/629`, and `629/629` results are dated QA history rather than a present
-blocker. External user observation stays separate and the count stays `0`.
+`8c0bfd8de9fb8877c4045b2c3f725b60ca236843`. PR #194 released the visual refresh
+through merge `c8a57ba37c4087b84b526bc778c3604f68299faa`. PR #195 then passed
+exact-head CI, merged as `db74a36cbf2325573b2d696589daa659619e50f2`,
+passed post-merge `main` CI, and received a successful exact-source Production
+deployment. Canonical HTTP checks passed; a separate canonical Production smoke
+suite is `NOT_RUN`. No product gate is active. External user observation stays
+separate and the count stays `0`.
+
+PR #200 is the current source/security verification maintenance and PR #201
+publishes the core-journey design evidence. Both remain separate from feature
+promotion and observed-user validation.
 
 | Lane | Owner | Work | Next checkpoint | Done when |
 | --- | --- | --- | --- | --- |
-| Active Flow entry and preview clarity | AI | One discovery entry, source-faithful complete Text, full approved Todo/Calendar, and copy ordinals only for siblings | Pass [PR #195](https://github.com/knhbae/flowme2605/pull/195) reconciled exact-head CI, merge, then verify the resulting Production deployment | Exact-head CI PASS, merge and Production verification recorded, observed users `0` |
-| Completed Production visual-only refresh | AI + Owner | Preserve the visual-only scope and released behavior contracts | Preserve [PR #194](https://github.com/knhbae/flowme2605/pull/194) merge `c8a57ba3` as the current Production baseline while #195 is pending | Exact-head release gate and Production verification complete; observed users `0` |
-| Completed Flow Map Item date-parity release | AI + Owner | Preserve ordinary Flow and executable single-plan Map Item title/memo/date parity without moving persistence ownership | Preserve [PR #182](https://github.com/knhbae/flowme2605/pull/182) merge `f6f796c0` as the runtime product baseline until a later explicit product release | Exact-head CI PASS, Production PASS, canonical smoke `41/41`, post-merge `main` run truth explicit, observed users `0` |
+| Personal Workspace isolated continuation | Development 3 | Continue only the recorded K4-A1 pure read-preview slice from the preserved local PoC | Meet the K4-A1 no-write, supported-source, and preview-result gates recorded in Development 3 | The bounded K4-A1 evidence is recorded without claiming K4 persistence/UI, PR, Preview, Production, or user validation |
+| Core-journey UX review | Owner | Review the published package comparing text-first personal management and public-Flow reuse as two coherent start/save/return journeys | Open the [interactive wireframe](./content-audit/2026-09-07-flowme-core-journey-wireframes/index.html) with its [QA](./content-audit/2026-09-07-flowme-core-journey-wireframes/qa.md) and [implementation map](./content-audit/2026-09-07-flowme-core-journey-wireframes/implementation-map.md) | Owner accepts, revises, or holds each journey; no implementation approval is inferred |
+| Next Production product gate | Owner | Choose one program using the released baseline, journey review, and preserved shelves | Make one explicit promotion decision after the UX review | Exactly one Production gate is active; all other implementation and research lanes retain their stated boundaries |
+| Completed Flow entry and preview clarity | AI + Owner | Preserve one discovery entry, source-faithful complete Text, full approved Todo/Calendar, and sibling-only copy numbering | Preserve [PR #195](https://github.com/knhbae/flowme2605/pull/195) merge `db74a36c` and its release evidence | Exact-head and post-merge CI PASS, exact-source Production deployment PASS, canonical HTTP 200, smoke `NOT_RUN`, observed users `0` |
+| Completed Production visual-only refresh | AI + Owner | Preserve the visual-only scope and released behavior contracts | Preserve [PR #194](https://github.com/knhbae/flowme2605/pull/194) merge `c8a57ba3` as the presentation foundation inherited by PR #195 | Exact-head release gate and Production verification complete; observed users `0` |
+| Completed Flow Map Item date-parity release | AI + Owner | Preserve ordinary Flow and executable single-plan Map Item title/memo/date parity without moving persistence ownership | Preserve [PR #182](https://github.com/knhbae/flowme2605/pull/182) merge `f6f796c0` as a historical foundation inherited by PR #195 | Exact-head CI PASS, Production PASS, canonical smoke `41/41`, post-merge `main` run truth explicit, observed users `0` |
 | Completed Plan edit/lifecycle release | AI + Owner | Preserve one Plan/Item editor and lifecycle contract across saved, public Flow, and executable Map origins without moving persistence ownership | Preserve [PR #178](https://github.com/knhbae/flowme2605/pull/178) merge `908ee849` as the broader lifecycle foundation inherited by PR #182 | Exact-head CI PASS, Production PASS, canonical smoke `38/38`, post-merge `main` run truth explicit, observed users `0` |
 | Completed documentation-only closeouts | AI | Publish the exact PR #176 and PR #178 release facts and observed-user boundary without changing product code | Preserve [PR #177](https://github.com/knhbae/flowme2605/pull/177) and [PR #179](https://github.com/knhbae/flowme2605/pull/179) as documentation history, separate from the runtime-bearing product release | Canonical docs agree, docs checks passed, and documentation-only deployments are not mistaken for a new product baseline |
 | Completed public plan surface release | AI + Owner | One public Flow/Map result grammar with existing save identity, rollback, CI, deployment, and smoke boundaries | Preserve merge `47c54803c6bb7544aad757ce62c4ce58decbfe53` as the historical predecessor to PR #178 | PR #176, exact-head and post-merge CI PASS, exact-source Production PASS, canonical smoke `11/11`, observed users `0` |
