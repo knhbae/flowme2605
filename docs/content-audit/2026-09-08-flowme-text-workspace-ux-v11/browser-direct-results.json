@@ -1,0 +1,2436 @@
+{
+  "schema": "flowme-v11-child-direct-qa",
+  "mode": "executed",
+  "url": "http://127.0.0.1:52203/index.html",
+  "storageKey": "flowme:ux-review:text-workspace-v11:20260908",
+  "createdAt": "2026-09-08T04:10:13.602Z",
+  "realDevices": 0,
+  "observedUsers": 0,
+  "productionIntegration": 0,
+  "summary": {
+    "planned": 14,
+    "executed": 14,
+    "passed": 14,
+    "failed": 0,
+    "notRun": 0
+  },
+  "cases": [
+    {
+      "id": "N01",
+      "name": "하위 상태칸 열기·취소·미저장100",
+      "input": "keyboard",
+      "expectation": "기록0·부모 완료/진행 불변",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "childId": "line-a08b6afe-5df8-4705-b2ff-ab351b9186cb",
+        "openCancelRecords": 0,
+        "parentChanged": false
+      },
+      "progressCalls": [],
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        }
+      ],
+      "elapsedMs": 1682
+    },
+    {
+      "id": "N02",
+      "name": "하위 0/20/100·부모 비합산",
+      "input": "keyboard",
+      "expectation": "하위만 독립 기록·최신 완료 일치·부모 값 불변",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "checks": [
+          {
+            "value": 0,
+            "done": false
+          },
+          {
+            "value": 20,
+            "done": false
+          },
+          {
+            "value": 100,
+            "done": true
+          }
+        ],
+        "parentAggregation": 0,
+        "childPromotedToIndependentPeriodItem": false
+      },
+      "progressCalls": [
+        {
+          "id": "line-a40a2db9-ce60-435f-96ff-fc892f0aa7b6",
+          "date": "2026-09-07",
+          "percent": 0
+        },
+        {
+          "id": "line-a40a2db9-ce60-435f-96ff-fc892f0aa7b6",
+          "date": "2026-09-07",
+          "percent": 20
+        },
+        {
+          "id": "line-a40a2db9-ce60-435f-96ff-fc892f0aa7b6",
+          "date": "2026-09-07",
+          "percent": 100
+        }
+      ],
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-progress-badge"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-progress-badge"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-progress-badge"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        }
+      ],
+      "elapsedMs": 3869
+    },
+    {
+      "id": "N03",
+      "name": "하위 날짜별 기록·과거 수정",
+      "input": "keyboard",
+      "expectation": "7일10/8일20·과거15수정이 최신20을 덮지 않음",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "childId": "line-079eb7ac-6239-42ce-b8c5-200325bcb4e4",
+        "history": [
+          {
+            "date": "2026-09-07",
+            "percent": 15
+          },
+          {
+            "date": "2026-09-08",
+            "percent": 20
+          }
+        ],
+        "sourceDefault": "2026-09-08",
+        "parentAggregation": 0
+      },
+      "progressCalls": [
+        {
+          "id": "line-079eb7ac-6239-42ce-b8c5-200325bcb4e4",
+          "date": "2026-09-07",
+          "percent": 10
+        },
+        {
+          "id": "line-079eb7ac-6239-42ce-b8c5-200325bcb4e4",
+          "date": "2026-09-08",
+          "percent": 20
+        },
+        {
+          "id": "line-079eb7ac-6239-42ce-b8c5-200325bcb4e4",
+          "date": "2026-09-07",
+          "percent": 15
+        }
+      ],
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-progress-badge"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-progress-badge"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-progress-badge"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-progress-badge"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-progress-badge"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-progress-badge"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-progress-badge"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-progress-badge"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-progress-badge"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        }
+      ],
+      "elapsedMs": 3983
+    },
+    {
+      "id": "N04",
+      "name": "하위 TXT 다섯 수치 표기",
+      "input": "keyboard",
+      "expectation": "20%/20/0.2/1/1.0·lexical·하위 ID 보존",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "values": [
+          20,
+          20,
+          20,
+          1,
+          100
+        ],
+        "lexicalPreserved": true,
+        "parentAggregation": 0,
+        "childIds": [
+          "line-03e6f89e-47df-4a52-8d4c-7840f5b6d00a",
+          "line-b0868932-9422-4fee-9b7f-640ad6dc9b5d",
+          "line-0acc6f13-6d00-42f6-b8fd-b296f13f6207",
+          "line-07f99561-c89b-4757-84e8-313d64c7dad2",
+          "line-fd07ff6e-a001-4977-8148-1359fb71cd21"
+        ]
+      },
+      "progressCalls": [],
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        }
+      ],
+      "elapsedMs": 1289
+    },
+    {
+      "id": "N05",
+      "name": "하위 날짜·같은값/제목 재편집",
+      "input": "keyboard",
+      "expectation": "날짜 우선·같은값 재표기 기록0·부모와 분리",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "childId": "line-eb1dc4da-697c-48b0-895f-07fca7c26c15",
+        "individualParentDatePriority": true,
+        "lexicalAndTitleRecords": 0,
+        "history": [
+          {
+            "date": "2026-09-09",
+            "percent": 20
+          },
+          {
+            "date": "2026-09-10",
+            "percent": 30
+          }
+        ]
+      },
+      "progressCalls": [],
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        }
+      ],
+      "elapsedMs": 2336
+    },
+    {
+      "id": "N06",
+      "name": "하위 저장 실패·충돌·재진입",
+      "input": "keyboard",
+      "expectation": "초안/외부 기록 보호·retry·reload",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "quotaRetry": 35,
+        "reloadPreserved": true,
+        "conflictDraft": 45,
+        "externalLatest": 50,
+        "parentAggregation": 0
+      },
+      "progressCalls": [],
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-progress-badge"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-progress-badge"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-progress-badge"
+        }
+      ],
+      "elapsedMs": 3526
+    },
+    {
+      "id": "N07",
+      "name": "부모 hold→직접drag·Undo",
+      "input": "cdp-touch",
+      "expectation": "후손 전체·독립 진행/ID/날짜/owner 보존·이동 1회",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "selectedIds": [
+          "line-4e442bb2-ee89-4e3a-9b0e-a7052e1770b0",
+          "line-496dce47-51c9-4667-8c2f-50454a2f7b25",
+          "line-f1fc7ae2-e20f-43dd-acc6-79b0e78db8a6"
+        ],
+        "directDrop": "line-9a572c48-e8b3-4eb2-8bda-919e24e2198b",
+        "progressPreserved": true,
+        "oneUndoAndReload": true,
+        "eventsBeforeReload": [
+          {
+            "type": "pointerdown",
+            "trusted": true,
+            "pointerType": "mouse",
+            "target": "quiet mobile-only"
+          },
+          {
+            "type": "pointerup",
+            "trusted": true,
+            "pointerType": "mouse",
+            "target": "quiet mobile-only"
+          },
+          {
+            "type": "click",
+            "trusted": true,
+            "pointerType": "mouse",
+            "target": "quiet mobile-only"
+          },
+          {
+            "type": "pointerdown",
+            "trusted": true,
+            "pointerType": "mouse",
+            "target": "nav-item"
+          },
+          {
+            "type": "pointerup",
+            "trusted": true,
+            "pointerType": "mouse",
+            "target": "nav-item"
+          },
+          {
+            "type": "click",
+            "trusted": true,
+            "pointerType": "mouse",
+            "target": "nav-item"
+          },
+          {
+            "type": "pointerdown",
+            "trusted": true,
+            "pointerType": "mouse",
+            "target": "primary"
+          },
+          {
+            "type": "pointerup",
+            "trusted": true,
+            "pointerType": "mouse",
+            "target": "primary"
+          },
+          {
+            "type": "click",
+            "trusted": true,
+            "pointerType": "mouse",
+            "target": "primary"
+          },
+          {
+            "type": "pointerdown",
+            "trusted": true,
+            "pointerType": "mouse",
+            "target": "document-title"
+          },
+          {
+            "type": "pointerup",
+            "trusted": true,
+            "pointerType": "mouse",
+            "target": "document-title"
+          },
+          {
+            "type": "click",
+            "trusted": true,
+            "pointerType": "mouse",
+            "target": "document-title"
+          },
+          {
+            "type": "pointerdown",
+            "trusted": true,
+            "pointerType": "mouse",
+            "target": "tle-check-hit tle-progress-hit tle-move-handle"
+          },
+          {
+            "type": "pointerup",
+            "trusted": true,
+            "pointerType": "mouse",
+            "target": "tle-check-hit tle-progress-hit tle-move-handle"
+          },
+          {
+            "type": "click",
+            "trusted": true,
+            "pointerType": "mouse",
+            "target": "tle-check-hit tle-progress-hit tle-move-handle"
+          },
+          {
+            "type": "pointerdown",
+            "trusted": true,
+            "pointerType": "mouse",
+            "target": "primary"
+          },
+          {
+            "type": "pointerup",
+            "trusted": true,
+            "pointerType": "mouse",
+            "target": "primary"
+          },
+          {
+            "type": "click",
+            "trusted": true,
+            "pointerType": "mouse",
+            "target": "primary"
+          },
+          {
+            "type": "click",
+            "trusted": true,
+            "pointerType": "",
+            "target": "tle-move-target-button"
+          },
+          {
+            "type": "pointerdown",
+            "trusted": true,
+            "pointerType": "mouse",
+            "target": ""
+          },
+          {
+            "type": "pointerup",
+            "trusted": true,
+            "pointerType": "mouse",
+            "target": ""
+          },
+          {
+            "type": "click",
+            "trusted": true,
+            "pointerType": "mouse",
+            "target": ""
+          },
+          {
+            "type": "pointerdown",
+            "trusted": true,
+            "pointerType": "mouse",
+            "target": "document-title"
+          },
+          {
+            "type": "pointerup",
+            "trusted": true,
+            "pointerType": "mouse",
+            "target": "document-title"
+          },
+          {
+            "type": "click",
+            "trusted": true,
+            "pointerType": "mouse",
+            "target": "document-title"
+          },
+          {
+            "type": "pointerdown",
+            "trusted": true,
+            "pointerType": "touch",
+            "target": "tle-check-hit tle-progress-hit tle-move-handle"
+          },
+          {
+            "type": "pointerup",
+            "trusted": true,
+            "pointerType": "touch",
+            "target": "tle-root tle-has-move-selection"
+          },
+          {
+            "type": "pointerdown",
+            "trusted": true,
+            "pointerType": "mouse",
+            "target": ""
+          },
+          {
+            "type": "pointerup",
+            "trusted": true,
+            "pointerType": "mouse",
+            "target": ""
+          },
+          {
+            "type": "click",
+            "trusted": true,
+            "pointerType": "mouse",
+            "target": ""
+          }
+        ]
+      },
+      "progressCalls": [],
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet mobile-only"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet mobile-only"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet mobile-only"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "nav-item"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "nav-item"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "nav-item"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "",
+          "target": "tle-move-target-button"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-root tle-has-move-selection"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        }
+      ],
+      "elapsedMs": 5398
+    },
+    {
+      "id": "N08",
+      "name": "하위 묶음만 직접drag",
+      "input": "cdp-touch",
+      "expectation": "같은 부모 허용대상으로 하위와 딸린 줄만 이동",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "selectedIds": [
+          "line-4452d6af-0da0-4bd8-94ba-13c7e8594cbc",
+          "line-b7520ff8-3633-4055-87f8-04724d454104"
+        ],
+        "sameParent": true,
+        "parentId": "line-50f59a6a-8747-405b-9857-d8304bc65de6",
+        "childProgress": 20,
+        "oneUndo": true
+      },
+      "progressCalls": [],
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet mobile-only"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet mobile-only"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet mobile-only"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "nav-item"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "nav-item"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "nav-item"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-progress-badge"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-root tle-has-move-selection"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        }
+      ],
+      "elapsedMs": 3225
+    },
+    {
+      "id": "N09",
+      "name": "선택 유지 후 즉시 재잡기",
+      "input": "cdp-touch",
+      "expectation": "손을 떼었다 다시 잡으면 추가450ms 없이 drag",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "regrabToDraggingMs": 82,
+        "second450msWait": false,
+        "progressCalls": 0
+      },
+      "progressCalls": [],
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet mobile-only"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet mobile-only"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet mobile-only"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "nav-item"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "nav-item"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "nav-item"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-root tle-has-move-selection"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-root tle-has-move-selection"
+        }
+      ],
+      "elapsedMs": 2736
+    },
+    {
+      "id": "N10",
+      "name": "목적지0·유령 메뉴 방지",
+      "input": "cdp-touch",
+      "expectation": "불가능 이동은 원문/이력0·첫 대상 오선택0",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "legalTargets": 0,
+        "phantomMenu": false,
+        "phantomHistory": false,
+        "progressCalls": 0
+      },
+      "progressCalls": [],
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet mobile-only"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet mobile-only"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet mobile-only"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "nav-item"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "nav-item"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "nav-item"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        }
+      ],
+      "elapsedMs": 2722
+    },
+    {
+      "id": "N11",
+      "name": "밖drop·pointercancel·Escape",
+      "input": "cdp-touch",
+      "expectation": "무효/취소는 원위치·기록/이력0",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "outsideDrop": true,
+        "pointercancel": true,
+        "escape": true,
+        "extraHistoryEntries": 0,
+        "progressCalls": 0
+      },
+      "progressCalls": [],
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet mobile-only"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet mobile-only"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet mobile-only"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "nav-item"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "nav-item"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "nav-item"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-root tle-has-move-selection"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "pointercancel",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-root tle-has-move-selection"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-root tle-has-move-selection"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        }
+      ],
+      "elapsedMs": 4870
+    },
+    {
+      "id": "N12",
+      "name": "inline 목적지 탭·키보드",
+      "input": "keyboard+cdp-touch",
+      "expectation": "modal/하단bar 없이 Enter확정·Escape·기존Undo만",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "keyboardInlineTarget": null,
+        "cdpTapSameTarget": true,
+        "escapeKeepsSource": true,
+        "existingUndoOnly": true
+      },
+      "progressCalls": [],
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "",
+          "target": "tle-move-target-button"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-move-target-button"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-move-target-button"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-move-target-button"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        }
+      ],
+      "elapsedMs": 3923
+    },
+    {
+      "id": "N13",
+      "name": "접힌 줄·스크롤 후 이동 geometry",
+      "input": "cdp-touch",
+      "expectation": "보이는 삽입선과 실제 beforeLineId 일치",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "foldUnfoldOnSelection": true,
+        "sourceUnchanged": true,
+        "positions": [
+          {
+            "id": "d-move-line-1",
+            "index": 0,
+            "y": 241.9375
+          },
+          {
+            "id": "d-move-line-2",
+            "index": 1,
+            "y": 285.9375
+          }
+        ],
+        "screenshot": "D:\\flowme2605\\flow-mvp\\output\\playwright\\flowme-text-v11\\folded-then-inline-scroll-390.png"
+      },
+      "progressCalls": [],
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-fold-toggle"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-fold-toggle"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-fold-toggle"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-root tle-has-move-selection"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": ""
+        }
+      ],
+      "elapsedMs": 1075
+    },
+    {
+      "id": "N14",
+      "name": "375/390·가로/세로 태블릿",
+      "input": "cdp-touch",
+      "expectation": "터치·수평넘침·inline target·새Undo/이동패널0",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "checks": [
+          {
+            "width": 375,
+            "height": 844,
+            "scrollWidth": 375,
+            "fonts": "loaded",
+            "targets": 2
+          },
+          {
+            "width": 390,
+            "height": 844,
+            "scrollWidth": 390,
+            "fonts": "loaded",
+            "targets": 2
+          },
+          {
+            "width": 1194,
+            "height": 834,
+            "scrollWidth": 1194,
+            "fonts": "loaded",
+            "targets": 2
+          },
+          {
+            "width": 834,
+            "height": 1194,
+            "scrollWidth": 834,
+            "fonts": "loaded",
+            "targets": 2
+          }
+        ],
+        "screenshots": [
+          "D:\\flowme2605\\flow-mvp\\output\\playwright\\flowme-text-v11\\direct-inline-375x844.png",
+          "D:\\flowme2605\\flow-mvp\\output\\playwright\\flowme-text-v11\\child-quick-375x844.png",
+          "D:\\flowme2605\\flow-mvp\\output\\playwright\\flowme-text-v11\\direct-inline-390x844.png",
+          "D:\\flowme2605\\flow-mvp\\output\\playwright\\flowme-text-v11\\child-quick-390x844.png",
+          "D:\\flowme2605\\flow-mvp\\output\\playwright\\flowme-text-v11\\direct-inline-1194x834.png",
+          "D:\\flowme2605\\flow-mvp\\output\\playwright\\flowme-text-v11\\child-quick-1194x834.png",
+          "D:\\flowme2605\\flow-mvp\\output\\playwright\\flowme-text-v11\\direct-inline-834x1194.png",
+          "D:\\flowme2605\\flow-mvp\\output\\playwright\\flowme-text-v11\\child-quick-834x1194.png"
+        ],
+        "realDevices": 0,
+        "existingUndoOnly": true
+      },
+      "progressCalls": [],
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet mobile-only"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet mobile-only"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet mobile-only"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "nav-item"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "nav-item"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "nav-item"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-root tle-has-move-selection"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-root tle-has-move-selection"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-root tle-has-move-selection"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-root tle-has-move-selection"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        }
+      ],
+      "elapsedMs": 5871
+    }
+  ],
+  "phase": "final",
+  "sourceHashesBefore": {
+    "app.js": "9ef5c49ad1b2e776fd7b9eca2089a61a21a66f425c145738908e139c71a53811",
+    "model.js": "f78a8f99053f1d8e10dd2435de68496f4587b8ed4ffe4f5bbb2f214b74425f03",
+    "editor.js": "04451e22571d5953745231bf8124ca031d4c3c205344c452f9dbbe3feb831718",
+    "index.html": "b11853d117e096c3f14013deee98d6278cf6c32952ac4caaa22241063afb94eb",
+    "styles.css": "128f8016993569a848c1a7ddffb815f99fb751b7291c2cc6f554ab48d586addf",
+    "editor.css": "fa41f20bac8614f2d2e8b17ca191e1aa39a6e85270bcc0975fa4ab91a3852637"
+  },
+  "v10HashesBefore": {
+    "app.js": "1f6fadb3078f4f27ae772236a0e70818c94819eab1b06db9e9e5fe10fb56e986",
+    "model.js": "dded9be73a6cc1f9a69e66cfd001dd1822f65c11bde8ca05cea1f41e607ef72a",
+    "editor.js": "4a779be2bf8046e5b4d3f52a74bc951aef960e200f1ac7b65299d25ca951e064",
+    "index.html": "8dce4288cf58c5138e834306a06e3376f1ef333a544a1208362d91614f95672a",
+    "styles.css": "128f8016993569a848c1a7ddffb815f99fb751b7291c2cc6f554ab48d586addf",
+    "editor.css": "49e1fd18d28c8c489863160c093047bd484fc131212de3df7bce96405f176b37"
+  },
+  "browser": "149.0.7827.55",
+  "startedAt": "2026-09-08T04:10:14.081Z",
+  "finishedAt": "2026-09-08T04:11:01.706Z",
+  "sourceHashesAfter": {
+    "app.js": "9ef5c49ad1b2e776fd7b9eca2089a61a21a66f425c145738908e139c71a53811",
+    "model.js": "f78a8f99053f1d8e10dd2435de68496f4587b8ed4ffe4f5bbb2f214b74425f03",
+    "editor.js": "04451e22571d5953745231bf8124ca031d4c3c205344c452f9dbbe3feb831718",
+    "index.html": "b11853d117e096c3f14013deee98d6278cf6c32952ac4caaa22241063afb94eb",
+    "styles.css": "128f8016993569a848c1a7ddffb815f99fb751b7291c2cc6f554ab48d586addf",
+    "editor.css": "fa41f20bac8614f2d2e8b17ca191e1aa39a6e85270bcc0975fa4ab91a3852637"
+  },
+  "v10HashesAfter": {
+    "app.js": "1f6fadb3078f4f27ae772236a0e70818c94819eab1b06db9e9e5fe10fb56e986",
+    "model.js": "dded9be73a6cc1f9a69e66cfd001dd1822f65c11bde8ca05cea1f41e607ef72a",
+    "editor.js": "4a779be2bf8046e5b4d3f52a74bc951aef960e200f1ac7b65299d25ca951e064",
+    "index.html": "8dce4288cf58c5138e834306a06e3376f1ef333a544a1208362d91614f95672a",
+    "styles.css": "128f8016993569a848c1a7ddffb815f99fb751b7291c2cc6f554ab48d586addf",
+    "editor.css": "49e1fd18d28c8c489863160c093047bd484fc131212de3df7bce96405f176b37"
+  },
+  "sourcesUnchangedDuringRun": true,
+  "v10UnchangedDuringRun": true
+}

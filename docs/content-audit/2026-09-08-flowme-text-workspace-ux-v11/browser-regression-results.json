@@ -1,0 +1,5708 @@
+{
+  "schema": "flowme-ux-v11-move-review",
+  "mode": "executed",
+  "createdAt": "2026-09-08T04:10:13.571Z",
+  "url": "http://127.0.0.1:52203/index.html",
+  "storageKey": "flowme:ux-review:text-workspace-v11:20260908",
+  "runtimeContract": {
+    "longpressMs": 450,
+    "prethresholdCancelPx": 8,
+    "selectionEnd": "exclusive"
+  },
+  "method": "Independent ephemeral Chromium contexts. CDP touch is browser input emulation, not physical-device validation. Completion APIs are wrapped only to log calls; original arguments, return values and behavior are unchanged.",
+  "observedUsers": 0,
+  "realDevices": 0,
+  "productionIntegration": 0,
+  "syntheticPointerEvents": "none; do not relabel CDP touch as physical touch",
+  "sourceHashesBefore": {
+    "app.js": "9ef5c49ad1b2e776fd7b9eca2089a61a21a66f425c145738908e139c71a53811",
+    "model.js": "f78a8f99053f1d8e10dd2435de68496f4587b8ed4ffe4f5bbb2f214b74425f03",
+    "editor.js": "04451e22571d5953745231bf8124ca031d4c3c205344c452f9dbbe3feb831718",
+    "index.html": "b11853d117e096c3f14013deee98d6278cf6c32952ac4caaa22241063afb94eb",
+    "styles.css": "128f8016993569a848c1a7ddffb815f99fb751b7291c2cc6f554ab48d586addf",
+    "editor.css": "fa41f20bac8614f2d2e8b17ca191e1aa39a6e85270bcc0975fa4ab91a3852637"
+  },
+  "sourceHashesAfter": {
+    "app.js": "9ef5c49ad1b2e776fd7b9eca2089a61a21a66f425c145738908e139c71a53811",
+    "model.js": "f78a8f99053f1d8e10dd2435de68496f4587b8ed4ffe4f5bbb2f214b74425f03",
+    "editor.js": "04451e22571d5953745231bf8124ca031d4c3c205344c452f9dbbe3feb831718",
+    "index.html": "b11853d117e096c3f14013deee98d6278cf6c32952ac4caaa22241063afb94eb",
+    "styles.css": "128f8016993569a848c1a7ddffb815f99fb751b7291c2cc6f554ab48d586addf",
+    "editor.css": "fa41f20bac8614f2d2e8b17ca191e1aa39a6e85270bcc0975fa4ab91a3852637"
+  },
+  "sourcesUnchangedDuringRun": true,
+  "summary": {
+    "planned": 29,
+    "executed": 29,
+    "passed": 29,
+    "failed": 0,
+    "notRun": 0
+  },
+  "cases": [
+    {
+      "id": "R901",
+      "name": "v11 격리 저장·기본 입력·재진입",
+      "input": "keyboard",
+      "expectation": "v11 키/version과 원문·줄 ID 보존",
+      "status": "passed",
+      "evidence": {
+        "reloadPreservesSourceAndIds": true,
+        "storageObservation": "isolated context only"
+      },
+      "events": [],
+      "console": [],
+      "pageErrors": [],
+      "completionCalls": [],
+      "elapsedMs": 1508
+    },
+    {
+      "id": "R902",
+      "name": "마우스 상태칸 탭",
+      "input": "mouse",
+      "expectation": "빠른 조절창 열기·완료/기록 0",
+      "status": "passed",
+      "evidence": {
+        "quickOpen": true,
+        "completionChanges": 0,
+        "progressRecords": 0
+      },
+      "events": [
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 239.39999961853027,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 239.89999961853027,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 240.39999961853027,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 240.5,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 303.8999996185303,
+          "className": "tle-check-hit tle-progress-hit tle-move-handle",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 304.19999980926514,
+          "className": "tle-check-hit tle-progress-hit tle-move-handle",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 304.5,
+          "className": "tle-check-hit tle-progress-hit tle-move-handle",
+          "lineIndex": "1"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 304.5,
+          "className": "tle-check-hit tle-progress-hit tle-move-handle",
+          "lineIndex": "1"
+        }
+      ],
+      "console": [],
+      "pageErrors": [],
+      "completionCalls": [],
+      "elapsedMs": 389
+    },
+    {
+      "id": "R903",
+      "name": "터치 상태칸 탭",
+      "input": "cdp-touch",
+      "expectation": "trusted touch 경로·빠른 조절창·완료/기록 0",
+      "status": "passed",
+      "evidence": {
+        "quickOpen": true,
+        "completionChanges": 0,
+        "progressRecords": 0
+      },
+      "events": [
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 270.59999990463257,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 271.40000009536743,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 271.90000009536743,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 272,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 315.80000019073486,
+          "className": "tle-check-hit tle-progress-hit tle-move-handle",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 403.5,
+          "className": "tle-check-hit tle-progress-hit tle-move-handle",
+          "lineIndex": "1"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 404.30000019073486,
+          "className": "tle-check-hit tle-progress-hit tle-move-handle",
+          "lineIndex": "1"
+        }
+      ],
+      "console": [],
+      "pageErrors": [],
+      "completionCalls": [],
+      "elapsedMs": 449
+    },
+    {
+      "id": "R904",
+      "name": "Task 길게 누름과 실제 후손",
+      "input": "cdp-touch",
+      "expectation": "체크/메모/시간 포함·다음 형제 제외·완료 0",
+      "status": "passed",
+      "evidence": {
+        "selectedLineIds": [
+          "line-982ab549-2bdc-4342-a345-c87d0aca64f4",
+          "line-b2043d5e-3f12-428b-a049-2d4b3c53495a",
+          "line-69d39543-41fa-48cc-8e43-add532df6cf0",
+          "line-e492bb69-0b3d-42f2-bc9b-a473a1637111"
+        ],
+        "includesMemoTimeAndSubcheck": true,
+        "nextSiblingExcluded": true,
+        "completionChanges": 0
+      },
+      "events": [
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 187.09999990463257,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 187.59999990463257,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 187.80000019073486,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 187.80000019073486,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 237.59999990463257,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 237.90000009536743,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 238,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 238,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 289.30000019073486,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 289.59999990463257,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 289.90000009536743,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 290,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1358.2000002861023,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1358.7000002861023,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1359.2000002861023,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1359.3000001907349,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1422.0999999046326,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1422.3000001907349,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1422.4000000953674,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1422.4000000953674,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 1467.3000001907349,
+          "className": "tle-check-hit tle-progress-hit tle-move-handle",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 2082.5999999046326,
+          "className": "tle-root tle-has-move-selection",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 2083.5999999046326,
+          "className": "tle-check-hit tle-progress-hit tle-move-handle",
+          "lineIndex": "1"
+        }
+      ],
+      "console": [],
+      "pageErrors": [],
+      "completionCalls": [],
+      "elapsedMs": 2132
+    },
+    {
+      "id": "R905",
+      "name": "폴더·Flow 아이콘 길게 누름",
+      "input": "cdp-touch",
+      "expectation": "같은 선택 규칙·원본과 완료 불변",
+      "status": "passed",
+      "evidence": {
+        "checks": [
+          {
+            "scopeId": "folder-move",
+            "selectedLineIds": [
+              "d-move-line-3",
+              "d-move-line-4",
+              "d-move-line-5",
+              "d-move-line-6",
+              "d-move-line-7",
+              "d-move-line-8",
+              "d-move-line-9",
+              "d-move-line-10"
+            ]
+          },
+          {
+            "scopeId": "flow-move-d30",
+            "selectedLineIds": [
+              "d-move-line-8",
+              "d-move-line-9",
+              "d-move-line-10"
+            ]
+          }
+        ],
+        "canonicalChanges": 0
+      },
+      "events": [
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 218.09999990463257,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 218.5,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 218.90000009536743,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 219,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 264.09999990463257,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 885.2999997138977,
+          "className": "tle-root tle-has-move-selection",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 886.5,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1034.0999999046326,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1034.4000000953674,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1035,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1035.0999999046326,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 1080.5999999046326,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 1685.7999997138977,
+          "className": "tle-root tle-has-move-selection",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 1686.5999999046326,
+          "className": "",
+          "lineIndex": null
+        }
+      ],
+      "console": [],
+      "pageErrors": [],
+      "completionCalls": [],
+      "elapsedMs": 1767
+    },
+    {
+      "id": "R906",
+      "name": "손을 떼어도 선택 유지·취소",
+      "input": "cdp-touch",
+      "expectation": "inline 위치 유지·취소·다른 뷰 진입 후 선택 정리",
+      "status": "passed",
+      "evidence": {
+        "retainedAfterRelease": true,
+        "cancelAndNavigationClearSelection": true,
+        "mutations": 0
+      },
+      "events": [
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 202,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 202.40000009536743,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 202.59999990463257,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 202.7000002861023,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 235.30000019073486,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 235.5,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 235.59999990463257,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 235.59999990463257,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 284.30000019073486,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 284.59999990463257,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 284.80000019073486,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 284.80000019073486,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1368.5,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1368.8000001907349,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1369.3000001907349,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1369.3000001907349,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1435.9000000953674,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1436.2000002861023,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1436.3000001907349,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1436.3000001907349,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 1481.9000000953674,
+          "className": "tle-check-hit tle-progress-hit tle-move-handle",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 2089,
+          "className": "tle-root tle-has-move-selection",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 2090,
+          "className": "tle-check-hit tle-progress-hit tle-move-handle",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2700,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2700,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2700.4000000953674,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2700.4000000953674,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 2748,
+          "className": "tle-check-hit tle-progress-hit tle-move-handle",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 3365.2000002861023,
+          "className": "tle-root tle-has-move-selection",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 3367,
+          "className": "tle-check-hit tle-progress-hit tle-move-handle",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 3434.5999999046326,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 3435,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 3436.300000190735,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 3436.4000000953674,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 3484.2000002861023,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 3484.300000190735,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 3484.4000000953674,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 3484.5,
+          "className": "",
+          "lineIndex": null
+        }
+      ],
+      "console": [],
+      "pageErrors": [],
+      "completionCalls": [],
+      "elapsedMs": 3511
+    },
+    {
+      "id": "R907",
+      "name": "마우스 드래그·삽입선·Undo/Redo",
+      "input": "mouse",
+      "expectation": "놓을 때 원자적 이동 1회·ID/속성 보존",
+      "status": "passed",
+      "evidence": {
+        "sourceLineIds": [
+          "line-36d3615e-2f21-46a5-b28b-680c8638edb4",
+          "line-1a478325-2f86-4e5a-b564-9b51901dbcfc",
+          "line-d437cb98-6065-4f2d-bc75-185b8ff670d2",
+          "line-5caf0774-7f6c-4cae-bd9a-17842993ba68"
+        ],
+        "beforeLineId": "line-b84f68a7-deb1-4ecd-9071-e6969dfb952a",
+        "completionChanges": 0,
+        "oneUndoRestoresOriginal": true
+      },
+      "events": [
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 196.80000019073486,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 197.90000009536743,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 198.40000009536743,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 198.40000009536743,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 246.19999980926514,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 246.40000009536743,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 246.80000019073486,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 246.80000019073486,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1311.9000000953674,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1312.1999998092651,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1312.6999998092651,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1312.6999998092651,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1378.5,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1378.5999999046326,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1378.6999998092651,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1378.6999998092651,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1424.4000000953674,
+          "className": "tle-check-hit tle-progress-hit tle-move-handle",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1425.9000000953674,
+          "className": "tle-check-hit tle-progress-hit tle-move-handle",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2050,
+          "className": "tle-root tle-has-move-selection",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2058.199999809265,
+          "className": "tle-root tle-has-move-selection",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2074.0999999046326,
+          "className": "tle-root tle-has-move-selection",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2090.5999999046326,
+          "className": "tle-root tle-has-move-selection",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2107.5999999046326,
+          "className": "tle-root tle-has-move-selection",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2113.300000190735,
+          "className": "tle-root tle-has-move-selection",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2661.9000000953674,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2662.699999809265,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2663.0999999046326,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2663.0999999046326,
+          "className": "",
+          "lineIndex": null
+        }
+      ],
+      "console": [],
+      "pageErrors": [],
+      "completionCalls": [],
+      "elapsedMs": 3739
+    },
+    {
+      "id": "R908",
+      "name": "터치 길게 누른 뒤 드래그",
+      "input": "cdp-touch",
+      "expectation": "pointer capture를 통한 실제 입력 경로·원자적 이동",
+      "status": "passed",
+      "evidence": {
+        "sourceLineIds": [
+          "line-2ff6f93b-3d27-4338-ac4d-c3e64e230469",
+          "line-c12749b5-5820-406a-8112-6fb5550fb2f1",
+          "line-388eee9b-cc93-4283-805e-0e274f0fdca0",
+          "line-37105567-6a44-40a6-a8b1-1fab17e913e5"
+        ],
+        "beforeLineId": "line-512f3190-8578-4476-a74a-34faf5513628",
+        "completionChanges": 0,
+        "oneUndoRestoresOriginal": true
+      },
+      "events": [
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 177.80000019073486,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 178.30000019073486,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 178.40000009536743,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 178.40000009536743,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 227.09999990463257,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 227.40000009536743,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 227.5,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 227.5,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 261.09999990463257,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 261.59999990463257,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 262.09999990463257,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 262.09999990463257,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1376.7000002861023,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1376.9000000953674,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1377.4000000953674,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1377.4000000953674,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1443.8000001907349,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1443.9000000953674,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1444,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1444.0999999046326,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 1493.9000000953674,
+          "className": "tle-check-hit tle-progress-hit tle-move-handle",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 2123.800000190735,
+          "className": "tle-root tle-has-move-selection",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 2140.5,
+          "className": "tle-root tle-has-move-selection",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2693.7000002861023,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2694,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2694.0999999046326,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2694.0999999046326,
+          "className": "",
+          "lineIndex": null
+        }
+      ],
+      "console": [],
+      "pageErrors": [],
+      "completionCalls": [],
+      "elapsedMs": 3767
+    },
+    {
+      "id": "R909",
+      "name": "임계 전 스크롤",
+      "input": "cdp-touch",
+      "expectation": "8px 초과 이동은 스크롤·선택/완료/이동 0",
+      "status": "passed",
+      "evidence": {
+        "scrollBefore": 0,
+        "scrollAfter": 20,
+        "mutations": 0,
+        "selected": false
+      },
+      "events": [
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 210.40000009536743,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 210.90000009536743,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 211,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 211.09999990463257,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 261.30000019073486,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 261.5,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 261.7000002861023,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 261.7000002861023,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 309.59999990463257,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 309.90000009536743,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 310.2000002861023,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 310.2000002861023,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1410.7000002861023,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1410.8000001907349,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1411.5,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1411.5,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1492,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1492.0999999046326,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1492.3000001907349,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1492.3000001907349,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 1538.0999999046326,
+          "className": "tle-check-hit tle-progress-hit tle-move-handle",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 1639.3000001907349,
+          "className": "tle-check-hit tle-progress-hit tle-move-handle",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 1689.3000001907349,
+          "className": "tle-root",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 1721.9000000953674,
+          "className": "tle-textarea",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 1754.9000000953674,
+          "className": "tle-textarea",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 1788.4000000953674,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 1813.8000001907349,
+          "className": "",
+          "lineIndex": null
+        }
+      ],
+      "console": [],
+      "pageErrors": [],
+      "completionCalls": [],
+      "elapsedMs": 1998
+    },
+    {
+      "id": "R910",
+      "name": "pointercancel",
+      "input": "cdp-touch",
+      "expectation": "touchCancel 이후 원문·완료·순서 불변",
+      "status": "passed",
+      "evidence": {
+        "touchCancel": true,
+        "mutations": 0
+      },
+      "events": [
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 196.40000009536743,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 197.2999997138977,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 197.7999997138977,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 198,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 244.5,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 244.7999997138977,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 244.90000009536743,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 245,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 295.2999997138977,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 295.59999990463257,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 295.90000009536743,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 295.90000009536743,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1361.9000000953674,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1362,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1362.5,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1362.5,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1427.5999999046326,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1427.7999997138977,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1427.9000000953674,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1428,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 1475.9000000953674,
+          "className": "tle-check-hit tle-progress-hit tle-move-handle",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointercancel",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 2080.5999999046326,
+          "className": "tle-root tle-has-move-selection",
+          "lineIndex": null
+        }
+      ],
+      "console": [],
+      "pageErrors": [],
+      "completionCalls": [],
+      "elapsedMs": 2124
+    },
+    {
+      "id": "R911",
+      "name": "편집기 밖에 놓기",
+      "input": "cdp-touch",
+      "expectation": "삽입 위치 없는 drop은 이동/완료 0",
+      "status": "passed",
+      "evidence": {
+        "dropOutsideEditor": true,
+        "mutations": 0
+      },
+      "events": [
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 168.2000002861023,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 168.7000002861023,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 168.90000009536743,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 168.90000009536743,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 201.10000038146973,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 201.30000019073486,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 201.40000009536743,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 201.5,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 251.60000038146973,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 251.90000009536743,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 252.10000038146973,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 252.2000002861023,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1335.8000001907349,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1336,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1336.6000003814697,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1336.6000003814697,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1401.3000001907349,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1401.5,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1401.7000002861023,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1401.7000002861023,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 1447.9000000953674,
+          "className": "tle-check-hit tle-progress-hit tle-move-handle",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 2064.6000003814697,
+          "className": "tle-root tle-has-move-selection",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 2081.7000002861023,
+          "className": "tle-root tle-has-move-selection",
+          "lineIndex": null
+        }
+      ],
+      "console": [],
+      "pageErrors": [],
+      "completionCalls": [],
+      "elapsedMs": 2127
+    },
+    {
+      "id": "R912",
+      "name": "텍스트 영역 길게 누름",
+      "input": "cdp-touch",
+      "expectation": "본문의 원문 보존·묶음 선택 가로채기 없음",
+      "status": "passed",
+      "evidence": {
+        "textAreaSourcePreserved": true,
+        "moveSelection": false,
+        "nativeSelectionHandles": "not asserted"
+      },
+      "events": [
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 203.7999997138977,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 204.2999997138977,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 204.40000009536743,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 204.5,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 251.59999990463257,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 251.7999997138977,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 251.90000009536743,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 251.90000009536743,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 304.09999990463257,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 304.40000009536743,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 304.59999990463257,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 304.59999990463257,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1369.9000000953674,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1370,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1370.5,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1370.5,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 1449.1999998092651,
+          "className": "tle-textarea",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 2065.9000000953674,
+          "className": "tle-textarea",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 2066.4000000953674,
+          "className": "tle-textarea",
+          "lineIndex": null
+        }
+      ],
+      "console": [],
+      "pageErrors": [],
+      "completionCalls": [],
+      "elapsedMs": 2114
+    },
+    {
+      "id": "R913",
+      "name": "줄 메뉴·키보드·Escape",
+      "input": "keyboard",
+      "expectation": "드래그 없이 진입·선택 취소·원문 보존",
+      "status": "passed",
+      "evidence": {
+        "shortcutAndRowMenu": true,
+        "escapePreservesSource": true
+      },
+      "events": [
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 169.69999980926514,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 170.09999990463257,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 170.30000019073486,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 170.40000009536743,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 218.19999980926514,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 218.5,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 218.90000009536743,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 218.90000009536743,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1285,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1285.0999999046326,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1285.6999998092651,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1285.6999998092651,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1434.9000000953674,
+          "className": "tle-row-menu tle-move-handle",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1435.1999998092651,
+          "className": "tle-row-menu tle-move-handle",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1435.5,
+          "className": "tle-row-menu tle-move-handle",
+          "lineIndex": "1"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1435.5,
+          "className": "tle-row-menu tle-move-handle",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1468.1999998092651,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1468.5,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1468.6999998092651,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1468.6999998092651,
+          "className": "",
+          "lineIndex": null
+        }
+      ],
+      "console": [],
+      "pageErrors": [],
+      "completionCalls": [],
+      "elapsedMs": 1494
+    },
+    {
+      "id": "R914",
+      "name": "이동 목적지 버튼과 키보드",
+      "input": "keyboard",
+      "expectation": "가능한 대상만 제시·Enter 확정·한 번 Undo",
+      "status": "passed",
+      "evidence": {
+        "keyboardDestination": "line-c8ac8d4c-198d-4de7-aaf9-aea7cbdd5697",
+        "offeredTargets": [
+          "line-a967c1b1-be6d-4894-8465-c41232cb109b",
+          "line-c8ac8d4c-198d-4de7-aaf9-aea7cbdd5697",
+          null
+        ],
+        "oneUndoRestoresOriginal": true
+      },
+      "events": [
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 179.5,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 180.5,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 180.7000002861023,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 180.80000019073486,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 229.40000009536743,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 229.7000002861023,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 230.10000038146973,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 230.2000002861023,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1295.8000001907349,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1296,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1296.5,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1296.6000003814697,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "",
+          "time": 1552.7000002861023,
+          "className": "tle-move-target-button",
+          "lineIndex": "6"
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2096.1000003814697,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2096.4000000953674,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2096.6000003814697,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2096.6000003814697,
+          "className": "",
+          "lineIndex": null
+        }
+      ],
+      "console": [],
+      "pageErrors": [],
+      "completionCalls": [],
+      "elapsedMs": 3152
+    },
+    {
+      "id": "R915",
+      "name": "저장 실패에서 선택 차단·재시도",
+      "input": "cdp-touch+keyboard",
+      "expectation": "미저장 입력 유지·선택 차단·재시도 후 복구",
+      "status": "passed",
+      "evidence": {
+        "failedInputPreserved": true,
+        "selectionBlockedUntilRetry": true
+      },
+      "events": [
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 180.39999961853027,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 181.39999961853027,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 182.09999990463257,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 182.2999997138977,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 228,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 228.2999997138977,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 228.39999961853027,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 228.39999961853027,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 278.5,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 278.7999997138977,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 279.19999980926514,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 279.19999980926514,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1359.8999996185303,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1360.0999999046326,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1360.5999999046326,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1360.5999999046326,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1944.0999999046326,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1944.1999998092651,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1944.6999998092651,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1944.6999998092651,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 1990.8999996185303,
+          "className": "tle-check-hit tle-progress-hit tle-move-handle",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 2593.2999997138977,
+          "className": "tle-check-hit tle-progress-hit tle-move-handle",
+          "lineIndex": "1"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 2594,
+          "className": "tle-check-hit tle-progress-hit tle-move-handle",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2693.5999999046326,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2693.8999996185303,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2694.0999999046326,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2694.0999999046326,
+          "className": "",
+          "lineIndex": null
+        }
+      ],
+      "console": [],
+      "pageErrors": [],
+      "completionCalls": [],
+      "elapsedMs": 2741
+    },
+    {
+      "id": "R916",
+      "name": "두 탭 충돌에서 선택 차단",
+      "input": "cdp-touch+keyboard",
+      "expectation": "현재 입력 보존·외부 저장 덮어쓰기 0",
+      "status": "passed",
+      "evidence": {
+        "conflictBlocksSelection": true,
+        "pendingSourcePreserved": true,
+        "externalStateNotOverwritten": true
+      },
+      "events": [
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 179.19999980926514,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 179.59999990463257,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 179.7999997138977,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 179.7999997138977,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 212.7999997138977,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 213,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 213.19999980926514,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 213.19999980926514,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 262.7999997138977,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 263.09999990463257,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 263.3999996185303,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 263.5,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1345.7999997138977,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1346.2999997138977,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1347,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1347,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2177.7999997138977,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2178,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2178.3999996185303,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2178.3999996185303,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 2226.3999996185303,
+          "className": "tle-check-hit tle-progress-hit tle-move-handle",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 2838.7999997138977,
+          "className": "tle-check-hit tle-progress-hit tle-move-handle",
+          "lineIndex": "1"
+        }
+      ],
+      "console": [],
+      "pageErrors": [],
+      "completionCalls": [],
+      "elapsedMs": 2869
+    },
+    {
+      "id": "R917",
+      "name": "참조 이동·reload·기간/원문",
+      "input": "keyboard",
+      "expectation": "ID·기존 날짜·owner·참조 원본·canonical 개수 유지",
+      "status": "passed",
+      "evidence": {
+        "referenceId": "flow-move-d30-line-3",
+        "effectiveDatesAndOwnersPreserved": true,
+        "sourceFlowUnchanged": true,
+        "reloadAndPeriodCanonicalCount": 7
+      },
+      "events": [
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 79.2000002861023,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 79.5,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 79.59999990463257,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 79.7000002861023,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 128.5,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 128.59999990463257,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 128.80000019073486,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 128.90000009536743,
+          "className": "",
+          "lineIndex": null
+        }
+      ],
+      "console": [],
+      "pageErrors": [],
+      "completionCalls": [],
+      "elapsedMs": 1010
+    },
+    {
+      "id": "R918",
+      "name": "390px·1194px 선택과 inline 위치",
+      "input": "geometry",
+      "expectation": "폰트 로드·선택 범위·inline 위치 버튼·가로 넘침",
+      "status": "passed",
+      "evidence": {
+        "checks": [
+          {
+            "x": 324,
+            "y": 241.9375,
+            "right": 368,
+            "bottom": 285.9375,
+            "width": 44,
+            "height": 44,
+            "viewport": {
+              "width": 390,
+              "height": 844,
+              "left": 0,
+              "top": 0
+            },
+            "innerWidth": 390,
+            "scrollWidth": 390
+          },
+          {
+            "x": 1089.078125,
+            "y": 321.9375,
+            "right": 1133.078125,
+            "bottom": 365.9375,
+            "width": 44,
+            "height": 44,
+            "viewport": {
+              "width": 1194,
+              "height": 834,
+              "left": 0,
+              "top": 0
+            },
+            "innerWidth": 1194,
+            "scrollWidth": 1194
+          }
+        ],
+        "screenshots": [
+          "D:\\flowme2605\\flow-mvp\\output\\playwright\\flowme-text-v11\\inline-selected-390x844.png",
+          "D:\\flowme2605\\flow-mvp\\output\\playwright\\flowme-text-v11\\inline-selected-1194x834.png"
+        ],
+        "removedMoveBarAndDialog": true,
+        "realDevice": false
+      },
+      "events": [
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 175,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 175.5,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 175.59999990463257,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 175.69999980926514,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 209.5,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 209.7999997138977,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 210,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 210,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 258.7999997138977,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 259,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 259.40000009536743,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 259.40000009536743,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1324.6999998092651,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1324.9000000953674,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1325.2999997138977,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1325.2999997138977,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1424.5999999046326,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1424.7999997138977,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1424.9000000953674,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1424.9000000953674,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 1472.4000000953674,
+          "className": "tle-check-hit tle-progress-hit tle-move-handle",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 2089.5999999046326,
+          "className": "tle-root tle-has-move-selection",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 2090.4000000953674,
+          "className": "tle-check-hit tle-progress-hit tle-move-handle",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2280.5,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2280.9000000953674,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2281.199999809265,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2281.2999997138977,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 2323.0999999046326,
+          "className": "tle-check-hit tle-progress-hit tle-move-handle",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 2934.5,
+          "className": "tle-root tle-has-move-selection",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 2935.699999809265,
+          "className": "tle-check-hit tle-progress-hit tle-move-handle",
+          "lineIndex": "1"
+        }
+      ],
+      "console": [],
+      "pageErrors": [],
+      "completionCalls": [],
+      "elapsedMs": 3068
+    },
+    {
+      "id": "R919",
+      "name": "화면 밖 이동·Undo/Redo 포커스",
+      "input": "keyboard",
+      "expectation": "38행 문서의 동일 Task ID 아이콘을 보이게 하고 포커스 복원",
+      "status": "passed",
+      "evidence": {
+        "sourceId": "line-5abda8ad-f4d0-4c3f-8b8d-f70d74622fbb",
+        "documentLines": 38,
+        "movedFocus": {
+          "index": 33,
+          "className": "tle-check-hit tle-progress-hit tle-move-handle",
+          "hidden": false,
+          "box": {
+            "top": 549.9375,
+            "bottom": 593.9375
+          },
+          "viewport": {
+            "top": 283.9375,
+            "bottom": 833.9375
+          },
+          "scrollTop": 1206
+        },
+        "undoFocus": {
+          "index": 1,
+          "className": "tle-check-hit tle-progress-hit tle-move-handle",
+          "hidden": false,
+          "box": {
+            "top": 283.9375,
+            "bottom": 327.9375
+          },
+          "viewport": {
+            "top": 283.9375,
+            "bottom": 833.9375
+          },
+          "scrollTop": 64
+        },
+        "redoFocus": {
+          "index": 33,
+          "className": "tle-check-hit tle-progress-hit tle-move-handle",
+          "hidden": false,
+          "box": {
+            "top": 789.9375,
+            "bottom": 833.9375
+          },
+          "viewport": {
+            "top": 283.9375,
+            "bottom": 833.9375
+          },
+          "scrollTop": 966
+        }
+      },
+      "events": [
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 175.09999990463257,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 175.59999990463257,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 175.7000002861023,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 175.90000009536743,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 225.5,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 225.90000009536743,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 226.40000009536743,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 226.5,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1307.2000002861023,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1307.4000000953674,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1308,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1308,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "",
+          "time": 1535.2000002861023,
+          "className": "tle-move-target-button",
+          "lineIndex": "37"
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2124.300000190735,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2124.5999999046326,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2124.800000190735,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2124.800000190735,
+          "className": "",
+          "lineIndex": null
+        }
+      ],
+      "console": [],
+      "pageErrors": [],
+      "completionCalls": [],
+      "elapsedMs": 3259
+    },
+    {
+      "id": "R920",
+      "name": "편집·텍스트 longpress 후 ⋮·이동 포커스",
+      "input": "cdp-touch+keyboard",
+      "expectation": "현재 줄 조작 유지·명시 이동 시 textarea blur·원문 보존",
+      "status": "passed",
+      "evidence": {
+        "editingMenuVisible": true,
+        "textLongpressMenuVisible": true,
+        "moveBlursTextarea": true,
+        "nativeSelectionHandles": "not asserted",
+        "realKeyboard": "not tested",
+        "screenshots": [
+          "D:\\flowme2605\\flow-mvp\\output\\playwright\\flowme-text-v11\\initial-390x844.png",
+          "D:\\flowme2605\\flow-mvp\\output\\playwright\\flowme-text-v11\\row-menu-390x844.png"
+        ]
+      },
+      "events": [
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 235.30000019073486,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 235.7000002861023,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 236,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 236.09999990463257,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 268.2000002861023,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 268.40000009536743,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 268.59999990463257,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 268.59999990463257,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 322.90000009536743,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 323.09999990463257,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 323.59999990463257,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 323.59999990463257,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1402.5,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1402.8000001907349,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1403.3000001907349,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1403.4000000953674,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 1482.7000002861023,
+          "className": "tle-textarea",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 2089,
+          "className": "tle-textarea",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "touch",
+          "time": 2089.5,
+          "className": "tle-textarea",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2151.5,
+          "className": "tle-row-menu tle-move-handle",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2151.7000002861023,
+          "className": "tle-row-menu tle-move-handle",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2151.9000000953674,
+          "className": "tle-row-menu tle-move-handle",
+          "lineIndex": "1"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2152,
+          "className": "tle-row-menu tle-move-handle",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2217.5,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2217.800000190735,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2218,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2218,
+          "className": "",
+          "lineIndex": null
+        }
+      ],
+      "console": [],
+      "pageErrors": [],
+      "completionCalls": [],
+      "elapsedMs": 2261
+    },
+    {
+      "id": "R921",
+      "name": "이동 중 실제 viewport 축소·복귀",
+      "input": "keyboard",
+      "expectation": "resize 모사에서 선택·inline 위치·원문 보존; 실제 키보드 미검증",
+      "status": "passed",
+      "evidence": {
+        "method": "Playwright actual browser viewport resize; no soft keyboard",
+        "checks": [
+          {
+            "x": 324,
+            "y": 241.9375,
+            "right": 368,
+            "bottom": 285.9375,
+            "width": 44,
+            "height": 44,
+            "viewport": {
+              "width": 390,
+              "height": 500,
+              "left": 0,
+              "top": 0
+            },
+            "innerWidth": 390,
+            "scrollWidth": 390
+          },
+          {
+            "x": 324,
+            "y": 241.9375,
+            "right": 368,
+            "bottom": 285.9375,
+            "width": 44,
+            "height": 44,
+            "viewport": {
+              "width": 390,
+              "height": 844,
+              "left": 0,
+              "top": 0
+            },
+            "innerWidth": 390,
+            "scrollWidth": 390
+          }
+        ],
+        "selected": [
+          "line-d9c8bfb7-5e5b-4cf6-8866-2ffc548556ad",
+          "line-f89f9742-bcdc-40a6-a29c-f5e52f3940b7",
+          "line-c9a23984-aea4-43ca-980d-381293a45e82",
+          "line-2c851611-7e70-44e4-ba27-2fb4d345e7c0"
+        ]
+      },
+      "events": [
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 190.09999990463257,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 190.5,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 190.59999990463257,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 190.69999980926514,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 222.69999980926514,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 222.89999961853027,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 223.09999990463257,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 223.09999990463257,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 273.3999996185303,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 273.59999990463257,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 274.09999990463257,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 274.09999990463257,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1339.2999997138977,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1339.5,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1339.8999996185303,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1339.8999996185303,
+          "className": "document-title",
+          "lineIndex": null
+        }
+      ],
+      "console": [],
+      "pageErrors": [],
+      "completionCalls": [],
+      "elapsedMs": 1849
+    },
+    {
+      "id": "R922",
+      "name": "visualViewport 높이·offset 모사",
+      "input": "synthetic-viewport",
+      "expectation": "합성 viewport 이벤트와 CDP 터치·실기기 증거를 구분",
+      "status": "passed",
+      "evidence": {
+        "method": "Synthetic viewport getters/events; not physical keyboard",
+        "inlineTargets": 3,
+        "noAnchoredMovePanel": true,
+        "selectionPreserved": true
+      },
+      "events": [
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 177.5,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 178,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 178.09999990463257,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 178.19999980926514,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 208.59999990463257,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 208.90000009536743,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 209.09999990463257,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 209.09999990463257,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 258.80000019073486,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 259.09999990463257,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 259.30000019073486,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 259.40000009536743,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1325.1999998092651,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1325.5,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1326,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1326,
+          "className": "document-title",
+          "lineIndex": null
+        }
+      ],
+      "console": [],
+      "pageErrors": [],
+      "completionCalls": [],
+      "elapsedMs": 1467
+    },
+    {
+      "id": "R923",
+      "name": "+ 추가 문법·관계와 실제 삽입",
+      "input": "keyboard",
+      "expectation": "조작 항목 없음·같은 높이/하위 체크/메모 추가를 원문으로 확인",
+      "status": "passed",
+      "evidence": {
+        "checks": [
+          {
+            "kind": "task",
+            "relation": "같은 높이에",
+            "syntax": "- [ ] ",
+            "depth": 0,
+            "parent": "line-7c0c413a-f1bb-4144-b145-83af1c1bdba4"
+          },
+          {
+            "kind": "subcheck",
+            "relation": "이 할 일 안에",
+            "syntax": "- [ ] ",
+            "depth": 1,
+            "parent": "line-deb34213-08b4-48c4-b176-f2328460bed5"
+          },
+          {
+            "kind": "note",
+            "relation": "이 할 일 안에",
+            "syntax": "- 메모: ",
+            "depth": 1,
+            "parent": "line-d4adebbe-a412-4288-a26b-0c48c80faeca"
+          }
+        ],
+        "addOnly": true,
+        "endDateExplicit": true,
+        "screenshots": [
+          "D:\\flowme2605\\flow-mvp\\output\\playwright\\flowme-text-v11\\add-menu-390x844.png"
+        ]
+      },
+      "events": [
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 191.19999980926514,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 191.69999980926514,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 191.7999997138977,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 191.7999997138977,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 223.7999997138977,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 224.19999980926514,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 224.2999997138977,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 224.2999997138977,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 258.40000009536743,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 258.59999990463257,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 259,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 259,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1322.6999998092651,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1322.9000000953674,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1323.4000000953674,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1323.5,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1424.0999999046326,
+          "className": "tle-plus",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1424.2999997138977,
+          "className": "tle-plus",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1424.4000000953674,
+          "className": "tle-plus",
+          "lineIndex": "1"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1424.4000000953674,
+          "className": "tle-plus",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1506.2999997138977,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1506.6999998092651,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1506.6999998092651,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1506.7999997138977,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2088.9000000953674,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2089.0999999046326,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2089.2999997138977,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2089.2999997138977,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2122.7999997138977,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2123,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2123,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2123.0999999046326,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2155.9000000953674,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2156.199999809265,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2156.5999999046326,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2156.699999809265,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 3221.7999997138977,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 3222,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 3222.4000000953674,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 3222.4000000953674,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 3322.0999999046326,
+          "className": "tle-plus",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 3322.2999997138977,
+          "className": "tle-plus",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 3322.4000000953674,
+          "className": "tle-plus",
+          "lineIndex": "1"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 3322.4000000953674,
+          "className": "tle-plus",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 3357.199999809265,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 3357.5,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 3357.699999809265,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 3357.699999809265,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 3923,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 3923.199999809265,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 3923.5,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 3923.5,
+          "className": "quiet mobile-only",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 3955.5999999046326,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 3955.7999997138977,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 3955.7999997138977,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 3955.7999997138977,
+          "className": "nav-item",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 3988.699999809265,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 3988.9000000953674,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 3989.199999809265,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 3989.199999809265,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 5056.400000095367,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 5056.5,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 5056.900000095367,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 5056.900000095367,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 5155.400000095367,
+          "className": "tle-plus",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 5155.5,
+          "className": "tle-plus",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 5155.599999904633,
+          "className": "tle-plus",
+          "lineIndex": "1"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 5155.599999904633,
+          "className": "tle-plus",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 5189.299999713898,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 5189.5,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 5189.900000095367,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 5189.900000095367,
+          "className": "",
+          "lineIndex": null
+        }
+      ],
+      "console": [],
+      "pageErrors": [],
+      "completionCalls": [],
+      "elapsedMs": 5748
+    },
+    {
+      "id": "R924",
+      "name": "⋮ 기존 줄 조작 전용",
+      "input": "keyboard",
+      "expectation": "추가 항목 없음·날짜/메모/이동·취소 원문 보존",
+      "status": "passed",
+      "evidence": {
+        "actions": [
+          "move-row",
+          "outdent-row",
+          "indent-row",
+          "task-date",
+          "task-detail",
+          "progress-open"
+        ],
+        "operateOnly": true,
+        "cancelMutations": 0
+      },
+      "events": [
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 160.7999997138977,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 161.19999980926514,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 161.2999997138977,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 161.39999961853027,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 210,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 210.2999997138977,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 210.69999980926514,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 210.69999980926514,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1292.5,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1292.7999997138977,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1293.2999997138977,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1293.3999996185303,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1394.6999998092651,
+          "className": "tle-row-menu tle-move-handle",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1395,
+          "className": "tle-row-menu tle-move-handle",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1395.2999997138977,
+          "className": "tle-row-menu tle-move-handle",
+          "lineIndex": "1"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1395.2999997138977,
+          "className": "tle-row-menu tle-move-handle",
+          "lineIndex": "1"
+        }
+      ],
+      "console": [],
+      "pageErrors": [],
+      "completionCalls": [],
+      "elapsedMs": 1424
+    },
+    {
+      "id": "R925",
+      "name": "폴더·Flow 원래 내용과 접기 분리",
+      "input": "keyboard",
+      "expectation": "아이콘 탐색·접기 비탐색·원문과 소속 보존",
+      "status": "passed",
+      "evidence": {
+        "foldNavigation": false,
+        "folderRoute": {
+          "view": "all",
+          "doc": "d-move",
+          "date": "2026-09-07",
+          "folder": "folder-move"
+        },
+        "flowOriginalDoc": "flow-move-d30",
+        "sourceMutations": 0,
+        "screenshots": [
+          "D:\\flowme2605\\flow-mvp\\output\\playwright\\flowme-text-v11\\folded-390x844.png"
+        ]
+      },
+      "events": [
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 207.19999980926514,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 207.59999990463257,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 208,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 208.19999980926514,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 274.19999980926514,
+          "className": "tle-fold-toggle",
+          "lineIndex": "2"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 274.5,
+          "className": "tle-fold-toggle",
+          "lineIndex": "2"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 274.59999990463257,
+          "className": "tle-fold-toggle",
+          "lineIndex": "2"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 274.59999990463257,
+          "className": "tle-fold-toggle",
+          "lineIndex": "2"
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 373.5,
+          "className": "tle-fold-toggle",
+          "lineIndex": "2"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 373.8999996185303,
+          "className": "tle-fold-toggle",
+          "lineIndex": "2"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 373.8999996185303,
+          "className": "tle-fold-toggle",
+          "lineIndex": "2"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 373.8999996185303,
+          "className": "tle-fold-toggle",
+          "lineIndex": "2"
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 441.2999997138977,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 441.5,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 441.69999980926514,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 441.7999997138977,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 508.19999980926514,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 508.5,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 508.69999980926514,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 508.7999997138977,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 574.1999998092651,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 574.3999996185303,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 574.5,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 574.5,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 623.7999997138977,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 623.8999996185303,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 624.2999997138977,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 624.2999997138977,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 690.6999998092651,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 690.8999996185303,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 691.0999999046326,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 691.0999999046326,
+          "className": "",
+          "lineIndex": null
+        }
+      ],
+      "console": [],
+      "pageErrors": [],
+      "completionCalls": [],
+      "elapsedMs": 710
+    },
+    {
+      "id": "R926",
+      "name": "접기 원문·ID·기간·reload",
+      "input": "keyboard",
+      "expectation": "보기 상태만 변경·canonical 개수와 원문 불변",
+      "status": "passed",
+      "evidence": {
+        "rawAndIdsUnchanged": true,
+        "periodCanonicalCount": 7,
+        "reloadPreserved": true,
+        "foldPersistence": "not required"
+      },
+      "events": [],
+      "console": [],
+      "pageErrors": [],
+      "completionCalls": [],
+      "elapsedMs": 454
+    },
+    {
+      "id": "R927",
+      "name": "접힌 원문의 안전한 편집 전환",
+      "input": "keyboard",
+      "expectation": "숨은 textarea 비편집·펼친 후 같은 sourceIndex에서 입력",
+      "status": "passed",
+      "evidence": {
+        "hidden": {
+          "readonly": false,
+          "inert": true,
+          "tabIndex": -1,
+          "aria": "true",
+          "visibility": "hidden"
+        },
+        "focus": {
+          "active": true,
+          "index": 1,
+          "readonly": false
+        },
+        "editedLine": 1,
+        "hiddenLinesPreserved": true
+      },
+      "events": [
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 182.19999980926514,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 182.5,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 183,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 183.09999990463257,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 248.7999997138977,
+          "className": "tle-fold-toggle",
+          "lineIndex": "2"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 249,
+          "className": "tle-fold-toggle",
+          "lineIndex": "2"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 249.19999980926514,
+          "className": "tle-fold-toggle",
+          "lineIndex": "2"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 249.19999980926514,
+          "className": "tle-fold-toggle",
+          "lineIndex": "2"
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 331.90000009536743,
+          "className": "tle-line tle-line-task",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 332,
+          "className": "tle-line tle-line-task",
+          "lineIndex": "1"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 332.2999997138977,
+          "className": "tle-line tle-line-task",
+          "lineIndex": "1"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 332.2999997138977,
+          "className": "tle-line tle-line-task",
+          "lineIndex": "1"
+        }
+      ],
+      "console": [],
+      "pageErrors": [],
+      "completionCalls": [],
+      "elapsedMs": 923
+    },
+    {
+      "id": "R928",
+      "name": "잘못된 입력·저장 실패·접기 복구",
+      "input": "keyboard",
+      "expectation": "미반영 원문 보존·작업 차단·정확한 복구 후 저장 재개",
+      "status": "passed",
+      "evidence": {
+        "invalidFixture": "property under existing reference, no large-document fixture",
+        "invalidInputPreserved": true,
+        "normalDraftTimerRecovered": true,
+        "saveFailureFoldNoLoss": true,
+        "retrySaved": true
+      },
+      "events": [
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 989.5,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 989.7999997138977,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 990.0999999046326,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 990.0999999046326,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2072.5999999046326,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2072.7999997138977,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2073.2999997138977,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2073.2999997138977,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2138.2999997138977,
+          "className": "tle-fold-toggle",
+          "lineIndex": "2"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2138.5999999046326,
+          "className": "tle-fold-toggle",
+          "lineIndex": "2"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2138.699999809265,
+          "className": "tle-fold-toggle",
+          "lineIndex": "2"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2138.699999809265,
+          "className": "tle-fold-toggle",
+          "lineIndex": "2"
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2205.2999997138977,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2205.5,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2205.5,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 2205.5,
+          "className": "",
+          "lineIndex": null
+        }
+      ],
+      "console": [],
+      "pageErrors": [],
+      "completionCalls": [],
+      "elapsedMs": 2214
+    },
+    {
+      "id": "R929",
+      "name": "3 viewport·큰 글자·짧은 화면",
+      "input": "layout",
+      "expectation": "390/1194/834·large-text CSS 모사·수평 넘침 및 도구 영역",
+      "status": "passed",
+      "evidence": {
+        "method": "CSS font/line-height + viewport resize simulation; not OS text scale or keyboard",
+        "checks": [
+          {
+            "width": 390,
+            "height": 844,
+            "g": {
+              "x": 324,
+              "y": 599.9375,
+              "right": 368,
+              "bottom": 643.9375,
+              "width": 44,
+              "height": 44,
+              "viewport": {
+                "width": 390,
+                "height": 844,
+                "left": 0,
+                "top": 0
+              },
+              "innerWidth": 390,
+              "scrollWidth": 390
+            },
+            "heights": {
+              "textarea": 924,
+              "mirror": 924,
+              "font": "23px"
+            }
+          },
+          {
+            "shortened": true,
+            "g": {
+              "x": 324,
+              "y": 323.9375,
+              "right": 368,
+              "bottom": 367.9375,
+              "width": 44,
+              "height": 44,
+              "viewport": {
+                "width": 390,
+                "height": 500,
+                "left": 0,
+                "top": 0
+              },
+              "innerWidth": 390,
+              "scrollWidth": 390
+            }
+          },
+          {
+            "width": 1194,
+            "height": 834,
+            "g": {
+              "x": 1089.078125,
+              "y": 183.9375,
+              "right": 1133.078125,
+              "bottom": 227.9375,
+              "width": 44,
+              "height": 44,
+              "viewport": {
+                "width": 1194,
+                "height": 834,
+                "left": 0,
+                "top": 0
+              },
+              "innerWidth": 1194,
+              "scrollWidth": 1194
+            },
+            "heights": {
+              "textarea": 644,
+              "mirror": 644,
+              "font": "23px"
+            }
+          },
+          {
+            "shortened": true,
+            "g": {
+              "x": 1089.078125,
+              "y": 183.9375,
+              "right": 1133.078125,
+              "bottom": 227.9375,
+              "width": 44,
+              "height": 44,
+              "viewport": {
+                "width": 1194,
+                "height": 500,
+                "left": 0,
+                "top": 0
+              },
+              "innerWidth": 1194,
+              "scrollWidth": 1194
+            }
+          },
+          {
+            "width": 834,
+            "height": 1194,
+            "g": {
+              "x": 759,
+              "y": 321.9375,
+              "right": 803,
+              "bottom": 365.9375,
+              "width": 44,
+              "height": 44,
+              "viewport": {
+                "width": 834,
+                "height": 1194,
+                "left": 0,
+                "top": 0
+              },
+              "innerWidth": 834,
+              "scrollWidth": 834
+            },
+            "heights": {
+              "textarea": 700,
+              "mirror": 700,
+              "font": "23px"
+            }
+          },
+          {
+            "shortened": true,
+            "g": {
+              "x": 759,
+              "y": 321.9375,
+              "right": 803,
+              "bottom": 365.9375,
+              "width": 44,
+              "height": 44,
+              "viewport": {
+                "width": 834,
+                "height": 500,
+                "left": 0,
+                "top": 0
+              },
+              "innerWidth": 834,
+              "scrollWidth": 834
+            }
+          }
+        ],
+        "screenshots": [
+          "D:\\flowme2605\\flow-mvp\\output\\playwright\\flowme-text-v11\\large-text-390x844.png",
+          "D:\\flowme2605\\flow-mvp\\output\\playwright\\flowme-text-v11\\large-text-1194x834.png",
+          "D:\\flowme2605\\flow-mvp\\output\\playwright\\flowme-text-v11\\large-text-834x1194.png"
+        ],
+        "realDevices": 0
+      },
+      "events": [
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 175.30000019073486,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 175.80000019073486,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 175.90000009536743,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 176,
+          "className": "",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 211.5,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 211.7000002861023,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 212.09999990463257,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 212.09999990463257,
+          "className": "primary",
+          "lineIndex": null
+        },
+        {
+          "type": "pointermove",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1274.5999999046326,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1274.8000001907349,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1275.4000000953674,
+          "className": "document-title",
+          "lineIndex": null
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "time": 1275.4000000953674,
+          "className": "document-title",
+          "lineIndex": null
+        }
+      ],
+      "console": [],
+      "pageErrors": [],
+      "completionCalls": [],
+      "elapsedMs": 2169
+    }
+  ],
+  "phase": "final",
+  "v10HashesBefore": {
+    "app.js": "1f6fadb3078f4f27ae772236a0e70818c94819eab1b06db9e9e5fe10fb56e986",
+    "model.js": "dded9be73a6cc1f9a69e66cfd001dd1822f65c11bde8ca05cea1f41e607ef72a",
+    "editor.js": "4a779be2bf8046e5b4d3f52a74bc951aef960e200f1ac7b65299d25ca951e064",
+    "index.html": "8dce4288cf58c5138e834306a06e3376f1ef333a544a1208362d91614f95672a",
+    "styles.css": "128f8016993569a848c1a7ddffb815f99fb751b7291c2cc6f554ab48d586addf",
+    "editor.css": "49e1fd18d28c8c489863160c093047bd484fc131212de3df7bce96405f176b37"
+  },
+  "startedAt": "2026-09-08T04:10:14.043Z",
+  "browser": "149.0.7827.55",
+  "finishedAt": "2026-09-08T04:11:18.466Z",
+  "v10HashesAfter": {
+    "app.js": "1f6fadb3078f4f27ae772236a0e70818c94819eab1b06db9e9e5fe10fb56e986",
+    "model.js": "dded9be73a6cc1f9a69e66cfd001dd1822f65c11bde8ca05cea1f41e607ef72a",
+    "editor.js": "4a779be2bf8046e5b4d3f52a74bc951aef960e200f1ac7b65299d25ca951e064",
+    "index.html": "8dce4288cf58c5138e834306a06e3376f1ef333a544a1208362d91614f95672a",
+    "styles.css": "128f8016993569a848c1a7ddffb815f99fb751b7291c2cc6f554ab48d586addf",
+    "editor.css": "49e1fd18d28c8c489863160c093047bd484fc131212de3df7bce96405f176b37"
+  },
+  "v10UnchangedDuringRun": true
+}

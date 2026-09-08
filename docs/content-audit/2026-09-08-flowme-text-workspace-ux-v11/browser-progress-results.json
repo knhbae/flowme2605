@@ -1,0 +1,2543 @@
+{
+  "schema": "flowme-v11-progress-qa",
+  "mode": "executed",
+  "url": "http://127.0.0.1:52203/index.html",
+  "storageKey": "flowme:ux-review:text-workspace-v11:20260908",
+  "createdAt": "2026-09-08T04:10:13.583Z",
+  "realDevices": 0,
+  "observedUsers": 0,
+  "productionIntegration": 0,
+  "summary": {
+    "planned": 16,
+    "executed": 16,
+    "passed": 16,
+    "failed": 0,
+    "notRun": 0
+  },
+  "cases": [
+    {
+      "id": "P901",
+      "name": "예시 날짜별10/20·현재20 동일항목",
+      "input": "keyboard",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "checks": [
+          {
+            "name": "일",
+            "date": "2026-09-07",
+            "actual": [
+              {
+                "date": "2026-09-07",
+                "percent": 10
+              }
+            ]
+          },
+          {
+            "name": "일",
+            "date": "2026-09-08",
+            "actual": [
+              {
+                "date": "2026-09-08",
+                "percent": 20
+              }
+            ]
+          },
+          {
+            "name": "주",
+            "date": "2026-09-07",
+            "actual": [
+              {
+                "date": "2026-09-07",
+                "percent": 10
+              },
+              {
+                "date": "2026-09-08",
+                "percent": 20
+              }
+            ]
+          },
+          {
+            "name": "월",
+            "date": "2026-09-07",
+            "actual": [
+              {
+                "date": "2026-09-07",
+                "percent": 10
+              },
+              {
+                "date": "2026-09-08",
+                "percent": 20
+              }
+            ]
+          }
+        ],
+        "currentUnique": true,
+        "sourceCurrent20": true
+      },
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-progress-badge"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-progress-badge"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-progress-badge"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        }
+      ],
+      "elapsedMs": 1169
+    },
+    {
+      "id": "P902",
+      "name": "빈 항목 메뉴에서7일10→8일20 기록",
+      "input": "keyboard",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "id": "line-cd3f47be-0e1b-441a-a792-b8a7aea431ea",
+        "records": [
+          {
+            "date": "2026-09-07",
+            "percent": 10
+          },
+          {
+            "date": "2026-09-08",
+            "percent": 20
+          }
+        ],
+        "newItems": 0,
+        "scheduledDatePreserved": true
+      },
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-box"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-box"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-box"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        }
+      ],
+      "elapsedMs": 2617
+    },
+    {
+      "id": "P903",
+      "name": "과거15 수정·현재20 보존",
+      "input": "keyboard",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "history": [
+          {
+            "date": "2026-09-07",
+            "percent": 15
+          },
+          {
+            "date": "2026-09-08",
+            "percent": 20
+          }
+        ],
+        "latest": {
+          "date": "2026-09-08",
+          "percent": 20
+        },
+        "pastFormDateCorrect": true
+      },
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        }
+      ],
+      "elapsedMs": 1290
+    },
+    {
+      "id": "P904",
+      "name": "같은날 upsert·0% 유효값",
+      "input": "keyboard",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "upsertRecords": 2,
+        "zeroIsRecorded": true
+      },
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        }
+      ],
+      "elapsedMs": 1899
+    },
+    {
+      "id": "P905",
+      "name": "범위밖·소수·빈 입력 거부",
+      "input": "keyboard",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "checks": [
+          {
+            "value": "-1",
+            "valid": false
+          },
+          {
+            "value": "101",
+            "valid": false
+          },
+          {
+            "value": "12.5",
+            "valid": false
+          },
+          {
+            "value": "",
+            "valid": false
+          }
+        ],
+        "emptyDateRejected": true,
+        "cancelMutations": 0
+      },
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        }
+      ],
+      "elapsedMs": 831
+    },
+    {
+      "id": "P906",
+      "name": "진행 기록 Undo/Redo 원자성",
+      "input": "keyboard",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "oneUndoRestoresRecordAndDone": true,
+        "redoRestores": true
+      },
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        }
+      ],
+      "elapsedMs": 2045
+    },
+    {
+      "id": "P907",
+      "name": "reload·저장키·원문/참조 보존",
+      "input": "keyboard",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "reloadRecordsAndIds": true,
+        "onlyIsolatedV8Key": true
+      },
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        }
+      ],
+      "elapsedMs": 1159
+    },
+    {
+      "id": "P908",
+      "name": "저장 실패 값 유지·다시 저장",
+      "input": "keyboard",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "unsavedValueVisible": true,
+        "globalSaveRetry": true,
+        "reopenedValue": 35,
+        "duplicateRecord": 0
+      },
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        }
+      ],
+      "elapsedMs": 1208
+    },
+    {
+      "id": "P909",
+      "name": "두 탭 충돌·입력 보존·외부 기록 보호",
+      "input": "keyboard",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "externalLatest": {
+          "date": "2026-09-09",
+          "percent": 40
+        },
+        "localInputPreserved": true,
+        "externalNotOverwritten": true
+      },
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        }
+      ],
+      "elapsedMs": 1841
+    },
+    {
+      "id": "P910",
+      "name": "동명 항목 두 ID 분리",
+      "input": "keyboard",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "ids": [
+          "line-5960606d-bf18-4295-85a1-082e52502789",
+          "line-9ec0cf35-bfe5-4b4b-a4b7-5d4cbf49bb52"
+        ],
+        "notMerged": true
+      },
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-box"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-box"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-box"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        }
+      ],
+      "elapsedMs": 1681
+    },
+    {
+      "id": "P911",
+      "name": "참조 문서순서 이동·기록 보존",
+      "input": "keyboard",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "referenceLine": "d-move-line-9",
+        "canonicalId": "flow-move-d30-line-3",
+        "target": "d-move-line-5",
+        "historyAndOriginalPreserved": true
+      },
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "",
+          "target": "tle-move-target-button"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        }
+      ],
+      "elapsedMs": 1576
+    },
+    {
+      "id": "P912",
+      "name": "375/390 CDP 터치·진행 입력 화면",
+      "input": "cdp-touch",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "checks": [
+          {
+            "width": 375,
+            "height": 844,
+            "scrollWidth": 375,
+            "dialog": {
+              "x": 19,
+              "y": 17.6171875,
+              "right": 356,
+              "bottom": 826.3828125
+            },
+            "fonts": "loaded"
+          },
+          {
+            "width": 390,
+            "height": 844,
+            "scrollWidth": 390,
+            "dialog": {
+              "x": 19,
+              "y": 17.6171875,
+              "right": 371,
+              "bottom": 826.3828125
+            },
+            "fonts": "loaded"
+          }
+        ],
+        "screenshots": [
+          "D:\\flowme2605\\flow-mvp\\output\\playwright\\flowme-text-v11\\progress-form-375x844.png",
+          "D:\\flowme2605\\flow-mvp\\output\\playwright\\flowme-text-v11\\progress-current-375x844.png",
+          "D:\\flowme2605\\flow-mvp\\output\\playwright\\flowme-text-v11\\progress-form-390x844.png",
+          "D:\\flowme2605\\flow-mvp\\output\\playwright\\flowme-text-v11\\progress-current-390x844.png"
+        ],
+        "method": "Trusted CDP touch at exact button centers; not physical finger or OS keyboard"
+      },
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "progress-value "
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "progress-value "
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "progress-value "
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "progress-value "
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "progress-value "
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "progress-value "
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "primary"
+        }
+      ],
+      "elapsedMs": 1397
+    },
+    {
+      "id": "P913",
+      "name": "태블릿 가로/세로·진행 화면",
+      "input": "layout",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "checks": [
+          {
+            "width": 1194,
+            "height": 834,
+            "scrollWidth": 1194,
+            "dialog": {
+              "x": 317,
+              "y": 59.453125,
+              "right": 877,
+              "bottom": 774.546875
+            },
+            "fonts": "loaded"
+          },
+          {
+            "width": 834,
+            "height": 1194,
+            "scrollWidth": 834,
+            "dialog": {
+              "x": 137,
+              "y": 239.453125,
+              "right": 697,
+              "bottom": 954.546875
+            },
+            "fonts": "loaded"
+          }
+        ],
+        "screenshots": [
+          "D:\\flowme2605\\flow-mvp\\output\\playwright\\flowme-text-v11\\progress-form-1194x834.png",
+          "D:\\flowme2605\\flow-mvp\\output\\playwright\\flowme-text-v11\\progress-week-1194x834.png",
+          "D:\\flowme2605\\flow-mvp\\output\\playwright\\flowme-text-v11\\progress-week-filtered-1194x834.png",
+          "D:\\flowme2605\\flow-mvp\\output\\playwright\\flowme-text-v11\\progress-form-834x1194.png",
+          "D:\\flowme2605\\flow-mvp\\output\\playwright\\flowme-text-v11\\progress-week-834x1194.png",
+          "D:\\flowme2605\\flow-mvp\\output\\playwright\\flowme-text-v11\\progress-week-filtered-834x1194.png"
+        ],
+        "realTablet": false
+      },
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        }
+      ],
+      "elapsedMs": 1112
+    },
+    {
+      "id": "P914",
+      "name": "100완료·과거수정·최신감소20",
+      "input": "keyboard",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "latestDateControlsDone": true,
+        "decreaseAllowed": true,
+        "notSummed": true
+      },
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-box checked"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-box checked"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-box checked"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-box checked"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-box checked"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-box checked"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        }
+      ],
+      "elapsedMs": 2598
+    },
+    {
+      "id": "P915",
+      "name": "예정일 변경·과거 기록 불이동",
+      "input": "keyboard",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "scheduleDateChanged": true,
+        "recordDatesUnchanged": true,
+        "currentMenuUsesLatestRecordDate": true
+      },
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet date-button"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet date-button"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet date-button"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "icon-button"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "icon-button"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "icon-button"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        }
+      ],
+      "elapsedMs": 1117
+    },
+    {
+      "id": "P916",
+      "name": "tracked 원문 완료/삭제 차단·복구",
+      "input": "keyboard",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "rawDoneConflictBlocked": true,
+        "recordedItemDeleteBlocked": true,
+        "recoveryExact": true
+      },
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "progress-value "
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        }
+      ],
+      "elapsedMs": 656
+    }
+  ],
+  "phase": "final",
+  "sourceHashesBefore": {
+    "app.js": "9ef5c49ad1b2e776fd7b9eca2089a61a21a66f425c145738908e139c71a53811",
+    "model.js": "f78a8f99053f1d8e10dd2435de68496f4587b8ed4ffe4f5bbb2f214b74425f03",
+    "editor.js": "04451e22571d5953745231bf8124ca031d4c3c205344c452f9dbbe3feb831718",
+    "index.html": "b11853d117e096c3f14013deee98d6278cf6c32952ac4caaa22241063afb94eb",
+    "styles.css": "128f8016993569a848c1a7ddffb815f99fb751b7291c2cc6f554ab48d586addf",
+    "editor.css": "fa41f20bac8614f2d2e8b17ca191e1aa39a6e85270bcc0975fa4ab91a3852637"
+  },
+  "v10HashesBefore": {
+    "app.js": "1f6fadb3078f4f27ae772236a0e70818c94819eab1b06db9e9e5fe10fb56e986",
+    "model.js": "dded9be73a6cc1f9a69e66cfd001dd1822f65c11bde8ca05cea1f41e607ef72a",
+    "editor.js": "4a779be2bf8046e5b4d3f52a74bc951aef960e200f1ac7b65299d25ca951e064",
+    "index.html": "8dce4288cf58c5138e834306a06e3376f1ef333a544a1208362d91614f95672a",
+    "styles.css": "128f8016993569a848c1a7ddffb815f99fb751b7291c2cc6f554ab48d586addf",
+    "editor.css": "49e1fd18d28c8c489863160c093047bd484fc131212de3df7bce96405f176b37"
+  },
+  "browser": "149.0.7827.55",
+  "startedAt": "2026-09-08T04:10:14.031Z",
+  "finishedAt": "2026-09-08T04:10:39.490Z",
+  "sourceHashesAfter": {
+    "app.js": "9ef5c49ad1b2e776fd7b9eca2089a61a21a66f425c145738908e139c71a53811",
+    "model.js": "f78a8f99053f1d8e10dd2435de68496f4587b8ed4ffe4f5bbb2f214b74425f03",
+    "editor.js": "04451e22571d5953745231bf8124ca031d4c3c205344c452f9dbbe3feb831718",
+    "index.html": "b11853d117e096c3f14013deee98d6278cf6c32952ac4caaa22241063afb94eb",
+    "styles.css": "128f8016993569a848c1a7ddffb815f99fb751b7291c2cc6f554ab48d586addf",
+    "editor.css": "fa41f20bac8614f2d2e8b17ca191e1aa39a6e85270bcc0975fa4ab91a3852637"
+  },
+  "v10HashesAfter": {
+    "app.js": "1f6fadb3078f4f27ae772236a0e70818c94819eab1b06db9e9e5fe10fb56e986",
+    "model.js": "dded9be73a6cc1f9a69e66cfd001dd1822f65c11bde8ca05cea1f41e607ef72a",
+    "editor.js": "4a779be2bf8046e5b4d3f52a74bc951aef960e200f1ac7b65299d25ca951e064",
+    "index.html": "8dce4288cf58c5138e834306a06e3376f1ef333a544a1208362d91614f95672a",
+    "styles.css": "128f8016993569a848c1a7ddffb815f99fb751b7291c2cc6f554ab48d586addf",
+    "editor.css": "49e1fd18d28c8c489863160c093047bd484fc131212de3df7bce96405f176b37"
+  },
+  "sourcesUnchangedDuringRun": true,
+  "v10UnchangedDuringRun": true
+}

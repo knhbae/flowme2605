@@ -1,0 +1,162 @@
+{
+  "purpose": "Historical preservation snapshot from v11 creation; not a dependency of standalone reruns.",
+  "createdAt": "2026-09-08T03:02:04.8599996Z",
+  "preserved": [
+    {
+      "path": "docs\\content-audit\\2026-09-08-flowme-text-workspace-ux-v10\\app.js",
+      "sha256": "1f6fadb3078f4f27ae772236a0e70818c94819eab1b06db9e9e5fe10fb56e986"
+    },
+    {
+      "path": "docs\\content-audit\\2026-09-08-flowme-text-workspace-ux-v10\\baseline.json",
+      "sha256": "42dd0a47f70ab8be5124dbd0381471a9b889c71a29c658cd693a37847ae279cf"
+    },
+    {
+      "path": "docs\\content-audit\\2026-09-08-flowme-text-workspace-ux-v10\\browser-direct-results-final-initial.json",
+      "sha256": "81e71861d85b90c0447db8a385f1fcb61dd5ee3d45dbd5bc22be337ff04e97e8"
+    },
+    {
+      "path": "docs\\content-audit\\2026-09-08-flowme-text-workspace-ux-v10\\browser-direct-results-initial.json",
+      "sha256": "ea01f2c9dd9f8c62ed6686b712496aa4c9ec1cb8fa7de3099473f0b35eb3c030"
+    },
+    {
+      "path": "docs\\content-audit\\2026-09-08-flowme-text-workspace-ux-v10\\browser-direct-results-n07.json",
+      "sha256": "41827406a8d1f23ed6521733aad46d1c205f32bd2e7414b511c06bd4dad0886f"
+    },
+    {
+      "path": "docs\\content-audit\\2026-09-08-flowme-text-workspace-ux-v10\\browser-direct-results-n12.json",
+      "sha256": "d46ca1045bdcf2a5fb6bd9cc416776783314dbd92992a17fd5acd1633b791838"
+    },
+    {
+      "path": "docs\\content-audit\\2026-09-08-flowme-text-workspace-ux-v10\\browser-direct-results-n14.json",
+      "sha256": "e9f5e3cb29ddd68e16cf49c2499a14c623ee96dc42d187822ee11749a44af2a2"
+    },
+    {
+      "path": "docs\\content-audit\\2026-09-08-flowme-text-workspace-ux-v10\\browser-direct-results.json",
+      "sha256": "533fa7e622c2d76c192828e3cc6c24e650677b42eea16e593d7a0ee93cf63740"
+    },
+    {
+      "path": "docs\\content-audit\\2026-09-08-flowme-text-workspace-ux-v10\\browser-direct.cjs",
+      "sha256": "76a5c3a4672f311a27f6dc687f2e4dca7d45aa645b37da7942ecc93702fb18cf"
+    },
+    {
+      "path": "docs\\content-audit\\2026-09-08-flowme-text-workspace-ux-v10\\browser-progress-results.json",
+      "sha256": "da12ea846b7bf50bb03bac157081b49781325465c8e9d4b92e24b45b6c1b1e0b"
+    },
+    {
+      "path": "docs\\content-audit\\2026-09-08-flowme-text-workspace-ux-v10\\browser-progress.cjs",
+      "sha256": "f492412ef19ce4d2a1ca5bbb1d7bf9ed7b88888e0924d72c9b54c4203b8c9865"
+    },
+    {
+      "path": "docs\\content-audit\\2026-09-08-flowme-text-workspace-ux-v10\\browser-regression-results.json",
+      "sha256": "bb709d193b599b4af10860c5471e6eb814690c1a2b466fa24b4141b1f2915fd9"
+    },
+    {
+      "path": "docs\\content-audit\\2026-09-08-flowme-text-workspace-ux-v10\\browser-regression.cjs",
+      "sha256": "adc54858ff4ab8635f2572d2bf51959e3444a5792f6e6f4bc8aadfc31c8bfda0"
+    },
+    {
+      "path": "docs\\content-audit\\2026-09-08-flowme-text-workspace-ux-v10\\browser-v10-results.json",
+      "sha256": "e3beccb362e813dcd855f9307f92dcaf7c6b36e942eda2ef734e2f4f8c68ede1"
+    },
+    {
+      "path": "docs\\content-audit\\2026-09-08-flowme-text-workspace-ux-v10\\browser-v10.cjs",
+      "sha256": "012284c7997e5a3f844bdba563ecd35a6d5ca10121ce5223d0ccda7dcc72f936"
+    },
+    {
+      "path": "docs\\content-audit\\2026-09-08-flowme-text-workspace-ux-v10\\build-portable.cjs",
+      "sha256": "41cdd1189c229ea8d2bdc12b3677210baaf59cf8489425c50d2b9bdfea380baf"
+    },
+    {
+      "path": "docs\\content-audit\\2026-09-08-flowme-text-workspace-ux-v10\\editor.css",
+      "sha256": "49e1fd18d28c8c489863160c093047bd484fc131212de3df7bce96405f176b37"
+    },
+    {
+      "path": "docs\\content-audit\\2026-09-08-flowme-text-workspace-ux-v10\\editor.js",
+      "sha256": "4a779be2bf8046e5b4d3f52a74bc951aef960e200f1ac7b65299d25ca951e064"
+    },
+    {
+      "path": "docs\\content-audit\\2026-09-08-flowme-text-workspace-ux-v10\\flowme-text-workspace-v10.html",
+      "sha256": "b5ba7f17bfd6398d329fd8a67562eec2a9a2656dfe67f3447c0f6d9c0c63d0cd"
+    },
+    {
+      "path": "docs\\content-audit\\2026-09-08-flowme-text-workspace-ux-v10\\index.html",
+      "sha256": "8dce4288cf58c5138e834306a06e3376f1ef333a544a1208362d91614f95672a"
+    },
+    {
+      "path": "docs\\content-audit\\2026-09-08-flowme-text-workspace-ux-v10\\integrity-results.json",
+      "sha256": "47dee99b0024fd8ae9c246e52d282ee0f3e8a56b12fcded6497c3dbdb89f8071"
+    },
+    {
+      "path": "docs\\content-audit\\2026-09-08-flowme-text-workspace-ux-v10\\model-results.json",
+      "sha256": "653739d262db64b147ef36fe1ec90b00995b095cb77e7838d5419b3559699f7f"
+    },
+    {
+      "path": "docs\\content-audit\\2026-09-08-flowme-text-workspace-ux-v10\\model.js",
+      "sha256": "dded9be73a6cc1f9a69e66cfd001dd1822f65c11bde8ca05cea1f41e607ef72a"
+    },
+    {
+      "path": "docs\\content-audit\\2026-09-08-flowme-text-workspace-ux-v10\\model.test.cjs",
+      "sha256": "f6a49f352f09769792f477777bdc433011a2e06072698f97183120176fac7f1f"
+    },
+    {
+      "path": "docs\\content-audit\\2026-09-08-flowme-text-workspace-ux-v10\\plan.md",
+      "sha256": "084e4aa86f29ef0d232a280e55f51cd46288c310c941b83eacc8abd8622063b5"
+    },
+    {
+      "path": "docs\\content-audit\\2026-09-08-flowme-text-workspace-ux-v10\\portable-results.json",
+      "sha256": "cb19b9084ab061a5d10c157fe197401d1ad6be568fe873ba006d7110d9350d70"
+    },
+    {
+      "path": "docs\\content-audit\\2026-09-08-flowme-text-workspace-ux-v10\\portable-smoke.cjs",
+      "sha256": "c34ce2f0ad12e33efc24d78c88c95be20bde1498b83e28576224c4c376acf87e"
+    },
+    {
+      "path": "docs\\content-audit\\2026-09-08-flowme-text-workspace-ux-v10\\qa.md",
+      "sha256": "74ab8d8b6ba84bb830cf7827abba82ef7a091ecdd8ea982a871dcdd3930108b5"
+    },
+    {
+      "path": "docs\\content-audit\\2026-09-08-flowme-text-workspace-ux-v10\\README.md",
+      "sha256": "6e0e612f3136a3b400ddd344cded771ccb24e0dc753c80c87f5c10dbedeb68f9"
+    },
+    {
+      "path": "docs\\content-audit\\2026-09-08-flowme-text-workspace-ux-v10\\styles.css",
+      "sha256": "128f8016993569a848c1a7ddffb815f99fb751b7291c2cc6f554ab48d586addf"
+    },
+    {
+      "path": "docs\\content-audit\\2026-09-08-flowme-text-workspace-ux-v10\\ux-review.md",
+      "sha256": "45fa6314ebd52b26db7ed4ebab12aaa13782f13b3e46fbacf30d1f64ece10ffe"
+    },
+    {
+      "path": "docs\\content-audit\\2026-09-08-flowme-text-workspace-ux-v10\\verify-package.cjs",
+      "sha256": "85a973dbafa51531f39f2527c66ce222e5c99509604da5cb6601e35d5258adfe"
+    },
+    {
+      "path": "docs\\specs\\2026-09-08-text-workspace-direct-v10\\plan.md",
+      "sha256": "42ec6693d75eb2a3312773a10c4f726a09e72f1e5a7e58a801bf06991741b2f6"
+    },
+    {
+      "path": "docs\\specs\\2026-09-08-text-workspace-direct-v10\\qa.md",
+      "sha256": "6a15175c30a00cdf58c6ef2d9e8b0f1507fad2d65a45b9e68e4538116ed8e51f"
+    },
+    {
+      "path": "docs\\specs\\2026-09-08-text-workspace-direct-v10\\spec.md",
+      "sha256": "3732882c9d3eae216624b567377229cb31f711673d4dc1626c9b6585f2701720"
+    },
+    {
+      "path": "docs\\specs\\2026-09-08-text-workspace-direct-v10\\tasks.md",
+      "sha256": "599aeddcaf2573bfe915b913cfbea08f9f1d407280a8cbbe1f25e7229dc38312"
+    },
+    {
+      "path": "docs\\DECISIONS.md",
+      "sha256": "1b308b59bb55d019dd596659f790a7cd9efbbca8d5127f66147efff0a593dfb7"
+    },
+    {
+      "path": "docs\\IDEAS.md",
+      "sha256": "319940dac63719f05cb746caae345a4ddd34c7b6e44c33a5b8f34c265bc17ef3"
+    },
+    {
+      "path": "tests\\e2e\\helpers\\my-flow-library.ts",
+      "sha256": "fc529d0e4d9bda88fae42616471d620fd857cee940ac142ea02bb20f70c5a872"
+    }
+  ]
+}

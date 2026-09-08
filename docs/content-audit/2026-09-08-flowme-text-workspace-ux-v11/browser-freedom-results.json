@@ -1,0 +1,1781 @@
+{
+  "schema": "flowme-v11-freedom-qa",
+  "mode": "executed",
+  "url": "http://127.0.0.1:52203/index.html",
+  "storageKey": "flowme:ux-review:text-workspace-v11:20260908",
+  "createdAt": "2026-09-08T04:10:13.595Z",
+  "realDevices": 0,
+  "observedUsers": 0,
+  "productionIntegration": 0,
+  "summary": {
+    "planned": 16,
+    "executed": 16,
+    "passed": 16,
+    "failed": 0,
+    "notRun": 0
+  },
+  "cases": [
+    {
+      "id": "F01",
+      "name": "큰 박스 확인 다른 부모로 이동",
+      "input": "keyboard",
+      "expectation": "같은 하위ID/기록/날짜 유지·실제 parent 변경",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "id": "d-move-line-7",
+        "fromParent": "d-move-line-6",
+        "toParent": "d-move-line-4",
+        "target": {
+          "beforeLineId": "d-move-line-5",
+          "label": "관리실에 전화 아래 · 박스 준비 앞",
+          "index": 4,
+          "depth": 2,
+          "parentLineId": "d-move-line-4",
+          "targetKey": "d-move-line-5:2"
+        },
+        "progress": 35
+      },
+      "progressCalls": [
+        {
+          "id": "d-move-line-7",
+          "date": "2026-09-07",
+          "percent": 35
+        }
+      ],
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "",
+          "target": "tle-move-target-button"
+        }
+      ],
+      "elapsedMs": 1838
+    },
+    {
+      "id": "F02",
+      "name": "하위→최상위→재하위",
+      "input": "keyboard",
+      "expectation": "동일ID 승격·canonical/기간 노출 유지·새 하위 과노출0",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "promotedId": "d-move-line-7",
+        "countBefore": 7,
+        "countAfterPromotion": 8,
+        "reNestedStillCanonical": true,
+        "newChildIndependentRows": 0
+      },
+      "progressCalls": [
+        {
+          "id": "d-move-line-7",
+          "date": "2026-09-07",
+          "percent": 20
+        }
+      ],
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-check-hit tle-progress-hit tle-move-handle"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "",
+          "target": "tle-move-target-button"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "",
+          "target": "tle-move-target-button"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        }
+      ],
+      "elapsedMs": 3451
+    },
+    {
+      "id": "F03",
+      "name": "진행/메모/시간/참조 Task를 하위로",
+      "input": "keyboard",
+      "expectation": "canonical/이력/날짜/소속/참조 보존",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "canonicalId": "flow-move-d30-line-3",
+        "target": {
+          "beforeLineId": null,
+          "label": "주소 변경 목록 확인 아래 · 문서 맨 끝",
+          "index": 8,
+          "depth": 1,
+          "parentLineId": "flow-move-d30-line-6",
+          "targetKey": "$end:1"
+        },
+        "parentId": "flow-move-d30-line-6",
+        "history": [
+          {
+            "date": "2026-09-07",
+            "percent": 10
+          },
+          {
+            "date": "2026-09-08",
+            "percent": 20
+          }
+        ],
+        "note": "원문 세부 메모\n같은 조건으로 견적 받기",
+        "time": "10:00",
+        "referenceDocsUnchanged": true
+      },
+      "progressCalls": [],
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "",
+          "target": "tle-move-target-button"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        }
+      ],
+      "elapsedMs": 1672
+    },
+    {
+      "id": "F04",
+      "name": "부모와 후손 함께 재부모",
+      "input": "keyboard",
+      "expectation": "상대깊이·하위 독립기록·원문ID 보존",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "parentId": "line-5944520b-3398-4d4b-a039-5e70574fe118",
+        "newParent": "line-9f640dac-637d-4e37-aad8-09ca5f4d4320",
+        "movedIds": [
+          "line-5944520b-3398-4d4b-a039-5e70574fe118",
+          "line-295233c6-4dbd-4e4b-8d98-2ea961cfa37a",
+          "line-6a6d6934-c107-4c6f-a798-28e0ef4c3769",
+          "line-5c360ce2-a95a-411c-9fe7-f6c52358bcc9",
+          "line-614e45e2-8240-4545-a9b2-1e71b698f45a"
+        ],
+        "relativeDepthDelta": 1,
+        "records": [
+          {
+            "taskId": "line-5944520b-3398-4d4b-a039-5e70574fe118",
+            "date": "2026-09-07",
+            "percent": 20
+          },
+          {
+            "taskId": "line-5c360ce2-a95a-411c-9fe7-f6c52358bcc9",
+            "date": "2026-09-07",
+            "percent": 10
+          }
+        ]
+      },
+      "progressCalls": [],
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "",
+          "target": "tle-move-target-button"
+        }
+      ],
+      "elapsedMs": 2116
+    },
+    {
+      "id": "F05",
+      "name": "폴더 scope 재배치",
+      "input": "keyboard",
+      "expectation": "문서 부모만 변경·실제 folder catalog 부모 불변",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "scopeId": "folder-box",
+        "lineId": "d-move-line-5",
+        "newOutlineParent": "d-move-line-2",
+        "catalogParentChanged": false
+      },
+      "progressCalls": [],
+      "events": [
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "",
+          "target": "tle-move-target-button"
+        }
+      ],
+      "elapsedMs": 973
+    },
+    {
+      "id": "F06",
+      "name": "Flow 연결과 참조 묶음 재배치",
+      "input": "keyboard",
+      "expectation": "개인 Flow 원문/binding/canonical 보존",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "pickerCheck": {
+          "existingID": "line-982205fb-b1fe-440e-8bc6-bfc9e5a4cf39",
+          "parentID": "line-8d29d1c3-4637-4475-a4ef-8b5bff1fb0a5",
+          "keepDate": "2026-09-08",
+          "newCanonicalItems": 0,
+          "selfReferenceRejected": true
+        },
+        "exportChecks": [
+          {
+            "id": "d-move-line-9",
+            "depth": 3,
+            "supplementDepth": 4
+          },
+          {
+            "id": "d-move-line-10",
+            "depth": 3,
+            "supplementDepth": 4
+          }
+        ],
+        "downloadedTXTContentRead": true,
+        "flowId": "flow-move-d30",
+        "newOutlineParent": "d-move-line-4",
+        "flowSourceUnchanged": true,
+        "canonicalCount": 7,
+        "localChildUnderReference": "d-move-line-7",
+        "referenceLineId": "d-move-line-9"
+      },
+      "progressCalls": [],
+      "events": [
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "",
+          "target": "tle-move-target-button"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "",
+          "target": "tle-move-target-button"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "icon-button"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "icon-button"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "icon-button"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-plus"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-plus"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-plus"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-plus"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-plus"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-plus"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        }
+      ],
+      "elapsedMs": 4238
+    },
+    {
+      "id": "F07",
+      "name": "자기 후손/구조 불가 대상",
+      "input": "keyboard",
+      "expectation": "UI 미제공·pure API atomic거부·원문/기록0",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "ownDescendantTargets": 0,
+        "invalidDirectAPIReturnsSameState": true,
+        "rawAndHistoryUnchanged": true
+      },
+      "progressCalls": [],
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        }
+      ],
+      "elapsedMs": 1418
+    },
+    {
+      "id": "F08",
+      "name": "가로 드래그 깊이 미리보기",
+      "input": "cdp-touch",
+      "expectation": "같은 boundary에서 표시depth와 실제parent 일치",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "sourceDepth": 0,
+        "previewDepth": 1,
+        "finalDepth": 1,
+        "step2ch": 11.015625,
+        "targetKey": "line-b17c962e-9b99-4b1f-aa44-fe7809081137:1",
+        "actualCDPTouch": true
+      },
+      "progressCalls": [],
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet mobile-only"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet mobile-only"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet mobile-only"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "nav-item"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "nav-item"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "nav-item"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "document-title"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-progress-badge"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-root tle-has-move-selection"
+        }
+      ],
+      "elapsedMs": 2640
+    },
+    {
+      "id": "F09",
+      "name": "inline 깊이 버튼은 미리보기만",
+      "input": "keyboard",
+      "expectation": "depth 전환 자체는 기록/Undo0·Enter확정",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "depthButtonPreviewOnly": true,
+        "fromDepth": 1,
+        "toDepth": 2,
+        "oneUndo": true
+      },
+      "progressCalls": [],
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-move-depth-button"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-move-depth-button"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "tle-move-depth-button"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "",
+          "target": "tle-move-target-button"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        }
+      ],
+      "elapsedMs": 2721
+    },
+    {
+      "id": "F10",
+      "name": "좌우/상하 키보드 이동",
+      "input": "keyboard",
+      "expectation": "depth/boundary 구분·선택 유지·같은 targetKey 확정",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "leftRightDepth": true,
+        "upDownBoundary": true,
+        "targetKey": "line-03bb61c6-482a-4dee-b1b8-fbb270e4c030:1"
+      },
+      "progressCalls": [],
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "",
+          "target": "tle-move-target-button"
+        }
+      ],
+      "elapsedMs": 2272
+    },
+    {
+      "id": "F11",
+      "name": "CDP 탭으로 깊이 선택·이동",
+      "input": "cdp-touch",
+      "expectation": "깊이 버튼→목적지 탭·이동1회·기존Undo",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "cdpDepthTap": true,
+        "cdpDestinationTap": true,
+        "targetKey": "line-2041c8ce-6b5a-49ba-b942-7687a33dcce3:2",
+        "oneUndo": true
+      },
+      "progressCalls": [],
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet mobile-only"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet mobile-only"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet mobile-only"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "nav-item"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "nav-item"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "nav-item"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-move-depth-button"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-move-depth-button"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-move-depth-button"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-move-target-button"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-move-target-button"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-move-target-button"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        }
+      ],
+      "elapsedMs": 3018
+    },
+    {
+      "id": "F12",
+      "name": "재부모 Undo/Redo/reload",
+      "input": "keyboard",
+      "expectation": "원문/ID/기록/기간현재값 복구",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "undoRedoReload": true,
+        "canonicalId": "line-a3532053-5df1-4e80-9791-082cc573759f",
+        "current": 20,
+        "uniqueRow": 1
+      },
+      "progressCalls": [],
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        }
+      ],
+      "elapsedMs": 3337
+    },
+    {
+      "id": "F13",
+      "name": "이동 저장 실패·retry",
+      "input": "keyboard",
+      "expectation": "저장본 원위치·화면에 완전한초안·재시도 원자저장",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "backupFormat": "flowme-ux-v11-recovery",
+        "backupPendingStateRead": true,
+        "storedRollbackDuringFailure": true,
+        "completeDraftRetained": true,
+        "retryAtomic": true
+      },
+      "progressCalls": [],
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "",
+          "target": "tle-move-target-button"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        }
+      ],
+      "elapsedMs": 2210
+    },
+    {
+      "id": "F14",
+      "name": "다중 탭 충돌 중 이동 차단",
+      "input": "keyboard",
+      "expectation": "외부저장 불변·기존입력 보존·선택 취소",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "externalRaw": "[2026-09-07]\n- [20] 항목 A\n  - [10] 하위 A\n- [ ] 항목 B\n  - [ ] 하위 B\n- [ ] 항목 C\n다른 탭 입력",
+        "localSourcePreserved": true,
+        "moveBlocked": true
+      },
+      "progressCalls": [],
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        }
+      ],
+      "elapsedMs": 2196
+    },
+    {
+      "id": "F15",
+      "name": "4단계보다 깊은 구조·IME guard",
+      "input": "synthetic-ime",
+      "expectation": "기존 고정depth4제한 없음·조합중 이동0",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "propertyOrphanTabRejected": true,
+        "rawAndAttributesPreserved": true,
+        "acceptedDepth": 6,
+        "oldDepth4Limit": false,
+        "nativeTabShiftTab": true,
+        "syntheticCompositionGuard": true,
+        "physicalIME": false
+      },
+      "progressCalls": [],
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "",
+          "target": "tle-move-target-button"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        }
+      ],
+      "elapsedMs": 4436
+    },
+    {
+      "id": "F16",
+      "name": "4뷰포트 자유 이동 geometry",
+      "input": "cdp-touch",
+      "expectation": "375/390/1194가로/834세로·깊이표식/줄높이/넘침",
+      "status": "passed",
+      "console": [],
+      "pageErrors": [],
+      "evidence": {
+        "checks": [
+          {
+            "width": 375,
+            "height": 844,
+            "scrollWidth": 375,
+            "target": {
+              "x": 309,
+              "y": 461.9375,
+              "right": 353,
+              "bottom": 505.9375
+            },
+            "textarea": 450,
+            "mirror": 450,
+            "fonts": "loaded"
+          },
+          {
+            "width": 390,
+            "height": 844,
+            "scrollWidth": 390,
+            "target": {
+              "x": 324,
+              "y": 461.9375,
+              "right": 368,
+              "bottom": 505.9375
+            },
+            "textarea": 450,
+            "mirror": 450,
+            "fonts": "loaded"
+          },
+          {
+            "width": 1194,
+            "height": 834,
+            "scrollWidth": 1194,
+            "target": {
+              "x": 1089.078125,
+              "y": 541.9375,
+              "right": 1133.078125,
+              "bottom": 585.9375
+            },
+            "textarea": 550,
+            "mirror": 550,
+            "fonts": "loaded"
+          },
+          {
+            "width": 834,
+            "height": 1194,
+            "scrollWidth": 834,
+            "target": {
+              "x": 759,
+              "y": 541.9375,
+              "right": 803,
+              "bottom": 585.9375
+            },
+            "textarea": 550,
+            "mirror": 550,
+            "fonts": "loaded"
+          }
+        ],
+        "screenshots": [
+          "D:\\flowme2605\\flow-mvp\\output\\playwright\\flowme-text-v11\\freedom-depth-375x844.png",
+          "D:\\flowme2605\\flow-mvp\\output\\playwright\\flowme-text-v11\\freedom-nested-375x844.png",
+          "D:\\flowme2605\\flow-mvp\\output\\playwright\\flowme-text-v11\\freedom-depth-390x844.png",
+          "D:\\flowme2605\\flow-mvp\\output\\playwright\\flowme-text-v11\\freedom-nested-390x844.png",
+          "D:\\flowme2605\\flow-mvp\\output\\playwright\\flowme-text-v11\\freedom-depth-1194x834.png",
+          "D:\\flowme2605\\flow-mvp\\output\\playwright\\flowme-text-v11\\freedom-nested-1194x834.png",
+          "D:\\flowme2605\\flow-mvp\\output\\playwright\\flowme-text-v11\\freedom-depth-834x1194.png",
+          "D:\\flowme2605\\flow-mvp\\output\\playwright\\flowme-text-v11\\freedom-nested-834x1194.png"
+        ],
+        "realDevices": 0
+      },
+      "progressCalls": [],
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet mobile-only"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet mobile-only"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet mobile-only"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "nav-item"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "nav-item"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "nav-item"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-move-target-button"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-move-target-button"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-move-target-button"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet mobile-only"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet mobile-only"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "quiet mobile-only"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "nav-item"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "nav-item"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "nav-item"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-move-target-button"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-move-target-button"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-move-target-button"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-move-target-button"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-move-target-button"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-move-target-button"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": ""
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "mouse",
+          "target": "primary"
+        },
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-move-target-button"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-move-target-button"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "pointerType": "touch",
+          "target": "tle-move-target-button"
+        }
+      ],
+      "elapsedMs": 8704
+    }
+  ],
+  "phase": "final",
+  "sourceHashesBefore": {
+    "app.js": "9ef5c49ad1b2e776fd7b9eca2089a61a21a66f425c145738908e139c71a53811",
+    "model.js": "f78a8f99053f1d8e10dd2435de68496f4587b8ed4ffe4f5bbb2f214b74425f03",
+    "editor.js": "04451e22571d5953745231bf8124ca031d4c3c205344c452f9dbbe3feb831718",
+    "index.html": "b11853d117e096c3f14013deee98d6278cf6c32952ac4caaa22241063afb94eb",
+    "styles.css": "128f8016993569a848c1a7ddffb815f99fb751b7291c2cc6f554ab48d586addf",
+    "editor.css": "fa41f20bac8614f2d2e8b17ca191e1aa39a6e85270bcc0975fa4ab91a3852637"
+  },
+  "v10HashesBefore": {
+    "app.js": "1f6fadb3078f4f27ae772236a0e70818c94819eab1b06db9e9e5fe10fb56e986",
+    "model.js": "dded9be73a6cc1f9a69e66cfd001dd1822f65c11bde8ca05cea1f41e607ef72a",
+    "editor.js": "4a779be2bf8046e5b4d3f52a74bc951aef960e200f1ac7b65299d25ca951e064",
+    "index.html": "8dce4288cf58c5138e834306a06e3376f1ef333a544a1208362d91614f95672a",
+    "styles.css": "128f8016993569a848c1a7ddffb815f99fb751b7291c2cc6f554ab48d586addf",
+    "editor.css": "49e1fd18d28c8c489863160c093047bd484fc131212de3df7bce96405f176b37"
+  },
+  "browser": "149.0.7827.55",
+  "startedAt": "2026-09-08T04:10:14.126Z",
+  "finishedAt": "2026-09-08T04:11:02.698Z",
+  "sourceHashesAfter": {
+    "app.js": "9ef5c49ad1b2e776fd7b9eca2089a61a21a66f425c145738908e139c71a53811",
+    "model.js": "f78a8f99053f1d8e10dd2435de68496f4587b8ed4ffe4f5bbb2f214b74425f03",
+    "editor.js": "04451e22571d5953745231bf8124ca031d4c3c205344c452f9dbbe3feb831718",
+    "index.html": "b11853d117e096c3f14013deee98d6278cf6c32952ac4caaa22241063afb94eb",
+    "styles.css": "128f8016993569a848c1a7ddffb815f99fb751b7291c2cc6f554ab48d586addf",
+    "editor.css": "fa41f20bac8614f2d2e8b17ca191e1aa39a6e85270bcc0975fa4ab91a3852637"
+  },
+  "v10HashesAfter": {
+    "app.js": "1f6fadb3078f4f27ae772236a0e70818c94819eab1b06db9e9e5fe10fb56e986",
+    "model.js": "dded9be73a6cc1f9a69e66cfd001dd1822f65c11bde8ca05cea1f41e607ef72a",
+    "editor.js": "4a779be2bf8046e5b4d3f52a74bc951aef960e200f1ac7b65299d25ca951e064",
+    "index.html": "8dce4288cf58c5138e834306a06e3376f1ef333a544a1208362d91614f95672a",
+    "styles.css": "128f8016993569a848c1a7ddffb815f99fb751b7291c2cc6f554ab48d586addf",
+    "editor.css": "49e1fd18d28c8c489863160c093047bd484fc131212de3df7bce96405f176b37"
+  },
+  "sourcesUnchangedDuringRun": true,
+  "v10UnchangedDuringRun": true
+}

@@ -1,0 +1,68 @@
+{
+  "createdAt": "2026-09-08T04:13:52.590Z",
+  "standalonePackage": true,
+  "preservationAtCreation": {
+    "recordedAt": "2026-09-08T03:02:04.8599996Z",
+    "files": 39,
+    "result": "unchanged"
+  },
+  "sourceHashes": {
+    "index.html": "b11853d117e096c3f14013deee98d6278cf6c32952ac4caaa22241063afb94eb",
+    "model.js": "f78a8f99053f1d8e10dd2435de68496f4587b8ed4ffe4f5bbb2f214b74425f03",
+    "editor.js": "04451e22571d5953745231bf8124ca031d4c3c205344c452f9dbbe3feb831718",
+    "app.js": "9ef5c49ad1b2e776fd7b9eca2089a61a21a66f425c145738908e139c71a53811",
+    "editor.css": "fa41f20bac8614f2d2e8b17ca191e1aa39a6e85270bcc0975fa4ab91a3852637",
+    "styles.css": "128f8016993569a848c1a7ddffb815f99fb751b7291c2cc6f554ab48d586addf"
+  },
+  "captureHashes": {
+    "freedom-depth-375x844.png": "b41799306f3ed3e8f156a816f261065cc7e0da922cfd6c2b33459351c0b77a1b",
+    "freedom-nested-375x844.png": "b33702b7299ad7157ac34a0a008582b46884357cef787d20403b9ebfbb46177c",
+    "freedom-depth-1194x834.png": "de2903a3a3097264bcfcf1d2740d2c159f7bca2e16ace725eac77bc6ae53be3d"
+  },
+  "bundleSha256": "01c796055ec05d491c7997efbd899475b0a433e0be5f4787257900e6ca7b541c",
+  "bundleMatchesSources": true,
+  "portableTestMatchesBundle": true,
+  "browserTestsMatchSources": true,
+  "modelPassed": 405,
+  "browserSummaries": {
+    "browser-regression-results.json": {
+      "planned": 29,
+      "executed": 29,
+      "passed": 29,
+      "failed": 0,
+      "notRun": 0
+    },
+    "browser-progress-results.json": {
+      "planned": 16,
+      "executed": 16,
+      "passed": 16,
+      "failed": 0,
+      "notRun": 0
+    },
+    "browser-v11-results.json": {
+      "planned": 18,
+      "executed": 18,
+      "passed": 18,
+      "failed": 0,
+      "notRun": 0
+    },
+    "browser-direct-results.json": {
+      "planned": 14,
+      "executed": 14,
+      "passed": 14,
+      "failed": 0,
+      "notRun": 0
+    },
+    "browser-freedom-results.json": {
+      "planned": 16,
+      "executed": 16,
+      "passed": 16,
+      "failed": 0,
+      "notRun": 0
+    }
+  },
+  "portablePassed": 13,
+  "syntaxChecks": 14,
+  "realDevices": 0,
+  "observedUsers": 0
+}

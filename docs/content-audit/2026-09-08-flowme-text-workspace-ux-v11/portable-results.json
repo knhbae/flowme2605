@@ -1,0 +1,28 @@
+{
+  "createdAt": "2026-09-08T04:11:24.875Z",
+  "file": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-09-08-flowme-text-workspace-ux-v11\\flowme-text-workspace-v11.html",
+  "sha256": "01c796055ec05d491c7997efbd899475b0a433e0be5f4787257900e6ca7b541c",
+  "browser": "149.0.7827.55",
+  "method": "isolated headless Chromium; local file URL; no existing user profile",
+  "passed": 13,
+  "total": 13,
+  "checks": [
+    "file URL에서 중첩 폴더·Flow 예시 단독 실행",
+    "폴더·개인 Flow 후보와 취소",
+    "이동 창 없이 본문에서 하위 2줄 포함 이동과 기존 Undo",
+    "file URL 재열기 후 Undo 결과 유지",
+    "주간 고유 Task 5개와 같은 Task의 10%·20% 날짜별 기록",
+    "단일 HTML의 첫 조절 100% 기본값과 Escape 무기록",
+    "단일 HTML TXT 다섯 표기·날짜 기록·재열기 원문 보존",
+    "하위 체크 20% 저장·재열기, 부모 진행률 비합산",
+    "단일 HTML 하위 체크 최상위 승격: 같은 ID·20% 기록·소속 유지",
+    "다른 부모에 다시 중첩해도 독립 할 일 ID·기간 등록 유지",
+    "부모·깊이 변경 Undo/Redo 한 번으로 전체 상태 복원",
+    "단일 HTML 재열기 후 같은 ID의 기간 목록 노출 한 건",
+    "콘솔·페이지 오류 및 HTTP 자산 요청 0"
+  ],
+  "errors": [],
+  "network": [],
+  "realDevice": false,
+  "observedUsers": 0
+}

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe · 텍스트 작업 공간 v11</title>
+  <link rel="stylesheet" href="editor.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip" href="#main">본문으로 건너뛰기</a>
+  <header class="topbar"><button class="quiet mobile-only" data-action="explore">탐색</button><strong>FlowMe</strong><button class="quiet" data-action="review">검토</button></header>
+  <div class="shell">
+    <aside class="sidebar" aria-label="개인 공간 탐색"><nav id="navigation"></nav></aside>
+    <main id="main" tabindex="-1">
+      <div class="document-meta"><span id="breadcrumb"></span><div class="meta-actions"><span id="save-status" role="status">이 기기에 저장됨</span><button class="icon-button" id="undo-button" data-action="undo" aria-label="되돌리기" title="되돌리기 · Ctrl+Z"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4 3 9l5 5M3 9h10a6 6 0 1 1 0 12h-3"/></svg></button><button class="icon-button" data-action="document-menu" aria-label="더 보기">···</button></div></div>
+      <div id="save-error" class="error" role="alert" hidden><p id="save-error-text"></p><div class="actions"><button data-action="retry">다시 저장</button><button data-action="download-all">모든 문서 보관</button><button data-action="download">현재 문서 텍스트 받기</button></div></div>
+      <div class="page-heading"><label class="sr-only" for="document-title">문서 제목</label><input id="document-title" class="document-title" aria-label="문서 제목" maxlength="100" value="준비 메모"><h1 id="period-title" hidden></h1><div class="range-actions" id="range-actions" hidden><button class="icon-button" data-action="previous" aria-label="이전 기간"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 5-7 7 7 7"/></svg></button><label class="sr-only" for="anchor-date">기준 날짜</label><input type="date" id="anchor-date" value="2026-09-07"><button class="icon-button" data-action="next" aria-label="다음 기간"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 5 7 7-7 7"/></svg></button></div></div>
+      <div class="view-bar"><div class="view-tabs" role="tablist" aria-label="작업 보기"><button role="tab" data-view="document" aria-selected="true">문서</button><button role="tab" data-view="day" aria-selected="false">일</button><button role="tab" data-view="week" aria-selected="false">주</button><button role="tab" data-view="month" aria-selected="false">월</button><button role="tab" data-view="all" aria-selected="false">전체</button></div><button class="outline" id="text-mode" data-action="text-mode" aria-pressed="false">텍스트 보기</button><label id="folder-filter-label" class="folder-filter" hidden><span class="sr-only">폴더 필터</span><select id="folder-filter" aria-label="폴더 필터"></select></label></div>
+      <section id="document-view" aria-label="문서 작업"><div id="flow-source" class="source-label" hidden></div><div id="live-editor"></div><p id="source-issues" class="warning" role="status" hidden></p><div class="document-footer"><div class="actions"><button class="quiet" data-action="date-section">＋ 문서 끝에 날짜</button><button class="quiet" data-action="connect-at-end">＋ 폴더 · Flow 연결</button></div><span id="document-count" class="muted"></span></div></section>
+      <div id="period-tools" class="period-tools" hidden><label class="search-field"><span class="sr-only">할 일 또는 태그 검색</span><input id="task-search" type="search" placeholder="할 일 또는 #태그 검색" autocomplete="off"></label><label class="check-option"><input type="checkbox" id="hide-completed">미완료만</label></div>
+      <p id="period-summary" class="muted period-summary" hidden></p>
+      <section id="period-view" aria-label="기간 작업" hidden></section>
+    </main>
+  </div>
+  <dialog id="dialog" aria-labelledby="dialog-title"><div class="dialog-head"><h2 id="dialog-title"></h2><button class="icon-button" data-action="close-dialog" aria-label="닫기">×</button></div><p id="dialog-error" class="error" role="alert" hidden></p><div id="dialog-body"></div></dialog>
+  <div id="move-status" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+  <div id="toast" role="status" hidden></div>
+  <script src="model.js"></script><script src="editor.js"></script><script src="app.js"></script>
+</body>
+</html>
