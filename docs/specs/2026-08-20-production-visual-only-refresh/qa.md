@@ -78,6 +78,7 @@ universal 44px controls. Ordinary primary and secondary actions meet their
 ## Evidence Boundary
 
 Screenshots and automation are implementation evidence, not observed-user
-validation. PR #194 completed its authorized merge and Production verification;
-PR #195 retains a separate exact-head CI, merge, and Production verification
-gate. Observed-user testing remains unperformed and observed users remain `0`.
+validation. PR #194 and PR #195 completed their authorized sequence. PR #195
+exact-head and post-merge CI passed, and its exact-source Production deployment
+succeeded; a separate canonical Production smoke suite is `NOT_RUN`. Observed-
+user testing remains unperformed and observed users remain `0`.

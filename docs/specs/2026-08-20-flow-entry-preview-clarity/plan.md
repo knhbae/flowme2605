@@ -33,7 +33,8 @@
 8. Publish the scoped stacked PR and Vercel Preview, then obtain the Owner's
    separate release decision. Complete.
 9. Reconcile PR #195 onto the released PR #194 baseline, pass exact-head CI,
-   merge only that head, and verify the resulting Production deployment.
+   merge only that head, and record the resulting Production deployment.
+   Complete; canonical Production smoke remains `NOT_RUN`.
 
 ## Risk Controls
 

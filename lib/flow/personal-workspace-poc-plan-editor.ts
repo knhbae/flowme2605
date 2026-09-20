@@ -46,7 +46,8 @@ const SUPPORTED_ORIGINS = new Set<PersonalWorkspacePocOrigin>([
   'authoring-handoff',
 ]);
 
-const PLAN_ERROR_FOCUS = '[data-personal-plan-error-summary]';
+// Plan failures are rendered by the shared editor's single local error owner.
+const PLAN_ERROR_FOCUS = '[data-editor-error-summary]';
 const PLAN_TITLE_FOCUS = '[data-personal-plan-title]';
 const PLAN_ORDER_FOCUS = '[data-personal-plan-order]';
 const PLAN_SECTION_TITLE_FOCUS = '[data-personal-plan-section-title]';

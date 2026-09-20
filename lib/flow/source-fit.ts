@@ -2012,6 +2012,8 @@ export const sourceFitAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'dog-adoption-first-week',
+    // The September 7 source review does not resolve this dated
+    // source-row and conditional registration/health mismatch. Keep the hold.
     checkedAt: '2026-09-04',
     sourceTitle: 'LIFE FLOW – 강아지 입양 전 완전 가이드',
     sourceUrl: 'https://www.gomin77.co.kr/blog/dog-puppy-pet-adoption',
@@ -3429,11 +3431,11 @@ const currentSourceFreshnessAudits: SourceFitAudit[] = [
 const currentSensitiveSourceAudits: SourceFitAudit[] = [
   defineCurrentSourceAudit({
     slug: 'ev-subsidy-apply',
-    checkedAt: '2026-07-12',
-    sourceTitle: '무공해차 통합누리집 – 전기차 구매보조금 지원 절차',
-    sourceUrl: 'https://ev.or.kr/nportal/buySupprt/initBuySubsidySupprtAction.do',
+    checkedAt: '2026-09-07',
+    sourceTitle: '무공해차 통합누리집 - 보조금 지원 대상 및 신청절차',
+    sourceUrl: 'https://ev.or.kr/nportal/buySupprt/initSubsiGuideAction.do',
     sourcePrecision: 'exact',
-    sourceUsefulness: '지원 차종·지역 공고·잔여 물량과 구매계약부터 보조금 지급까지의 현재 공식 절차를 제공한다.',
+    sourceUsefulness: '지원 대상과 구매계약부터 보조금 지급까지의 공식 절차를 제공하고, 같은 공식 사이트의 지급현황에서 차종·지역 공고·잔여 물량을 확인할 수 있다.',
     artifactKind: 'checklist',
     artifactTitle: '전기차 보조금 계약·신청 체크',
     simulatedInputs: ['구매 예정 차종', '거주 지자체', '계약일'],

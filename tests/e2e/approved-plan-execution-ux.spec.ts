@@ -1224,6 +1224,7 @@ test.describe('approved plan execution UX', () => {
   test('a legacy skipped recurrence can complete inline, Undo, and leave sibling occurrences and series untouched', async ({ page }) => {
     test.setTimeout(60_000);
     await page.setViewportSize({ width: 1440, height: 900 });
+    await page.clock.install({ time: new Date(FIXED_CLOCK) });
     await seedRoutinePlan(page);
     await page.goto('/calendar');
     await page.getByTestId('my-flow-month-picker').fill('2026-08');

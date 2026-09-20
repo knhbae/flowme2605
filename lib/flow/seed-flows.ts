@@ -4978,7 +4978,7 @@ const baseSeedBundles: FlowBundle[] = [
         anchor_type: 'start_date',
         status: 'published',
         risk_level: 'medium',
-        source_title: '강아지 입양 전 준비 가이드 참고',
+        source_title: '강아지 입양 전 완전 가이드 - 보호소·브리더·동물등록·예방접종 총정리',
         source_url: 'https://www.gomin77.co.kr/blog/dog-puppy-pet-adoption',
         source_status: 'needs_review',
         source_precision: 'exact',

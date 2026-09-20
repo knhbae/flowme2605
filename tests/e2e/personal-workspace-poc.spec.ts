@@ -70,14 +70,14 @@ async function undo(page: Page): Promise<void> {
   await expectSaved(page);
 }
 
-async function selectView(page: Page, label: '폴더' | '오늘' | '주간' | '월간' | '날짜 미정'): Promise<void> {
+async function selectView(page: Page, label: '폴더' | '오늘' | '주간' | '월간' | '날짜 미정' | `휴지통 ${number}`): Promise<void> {
   const target = visibleButton(page, label);
   if (label === '폴더' && await target.count() === 0) {
     await visibleButton(page, '미분류').click();
   } else {
     await target.click();
   }
-  const id = label === '폴더' ? 'folder' : label === '오늘' ? 'today' : label === '주간' ? 'week' : label === '월간' ? 'month' : 'undated';
+  const id = label === '폴더' ? 'folder' : label === '오늘' ? 'today' : label === '주간' ? 'week' : label === '월간' ? 'month' : label.startsWith('휴지통 ') ? 'trash' : 'undated';
   await expect(page.getByTestId(`personal-workspace-${id}-surface`)).toBeVisible();
 }
 
@@ -530,7 +530,7 @@ test.describe('FlowMe 개인공간 v4.1 기능형 PoC', () => {
     await expect(planEditor).toBeVisible();
     await expect(planEditor).toHaveAttribute(
       'data-editor-schema-fields',
-      'source-read-only,personal-title,plan-items,impact-summary',
+      'source-read-only,personal-title,personal-section-title,plan-items,impact-summary',
     );
     await expect(planEditor).toHaveAttribute('data-editor-persistence-scope', 'poc-shadow-only');
     const sourceSection = planEditor.locator('[data-personal-plan-section="source"]');
@@ -1137,6 +1137,52 @@ test.describe('FlowMe 개인공간 v4.1 기능형 PoC', () => {
       expect(panelTargetBox.y).toBeGreaterThanOrEqual(panelBox.y);
       expect(panelTargetBox.y + panelTargetBox.height).toBeLessThanOrEqual(panelBox.y + panelBox.height);
     }
+    // Geometry-only stress: vary rendered copy without mutating the product
+    // state, then exercise the same browser scrollIntoView path after resize.
+    const rawBeforeGeometry = await readPocRaw(page);
+    const callsBeforeGeometry = calls.length;
+    const stressPanelCopy = () => movePanel.evaluate((panel) => {
+      const heading = panel.querySelector('#personal-workspace-move-title')!;
+      const status = panel.querySelector('[data-testid="personal-workspace-move-status"]')!;
+      const original = { title: heading.textContent, status: status.textContent };
+      heading.textContent = '아주 긴 개인 실행 항목의 제목이 여러 줄로 표시되는 이동 창 검증';
+      status.textContent = '저장하지 못했어요. 입력한 내용은 유지됩니다. 저장 공간을 확인한 뒤 다시 시도해 주세요.';
+      return original;
+    });
+    const panelHeader = movePanel.getByTestId('personal-workspace-move-panel-header');
+    for (const viewport of [{ width: 844, height: 300 }, { width: 375, height: 812 }]) {
+      await page.setViewportSize(viewport);
+      // Existing resize cancellation is part of the move contract, not a
+      // geometry failure. Reopen at the new size without committing anything.
+      await expect(movePanel).toHaveCount(0);
+      await createdRow.getByRole('button', { name: `${failedTitle} 더보기` }).click();
+      await expect(movePanel).toBeVisible();
+      await stressPanelCopy();
+      if (viewport.height === 300) await expect(panelHeader).toHaveCSS('position', 'static');
+      await expect.poll(() => movePanel.evaluate((panel) => Number.parseFloat(getComputedStyle(panel).scrollPaddingTop))).toBeGreaterThan(0);
+      await panelScrollTarget.evaluate((element) => element.scrollIntoView({ block: 'center', inline: 'nearest' }));
+      await locatorHitPoint(panelScrollTarget);
+      const geometry = await panelScrollTarget.evaluate((target) => {
+        const panel = target.closest('[data-testid="personal-workspace-move-panel"]')!;
+        const header = panel.querySelector('[data-testid="personal-workspace-move-panel-header"]')!;
+        const box = target.getBoundingClientRect();
+        const panelBox = panel.getBoundingClientRect();
+        return { top: box.top, bottom: box.bottom, panelTop: panelBox.top, panelBottom: panelBox.bottom,
+          headerBottom: header.getBoundingClientRect().bottom, sticky: getComputedStyle(header).position === 'sticky' };
+      });
+      expect(geometry.top).toBeGreaterThanOrEqual(geometry.panelTop);
+      expect(geometry.bottom).toBeLessThanOrEqual(geometry.panelBottom);
+      if (geometry.sticky) expect(geometry.top).toBeGreaterThanOrEqual(geometry.headerBottom);
+      if (viewport.height === 300) await expect(panelHeader).toHaveCSS('position', 'static');
+    }
+    await page.setViewportSize({ width: 844, height: 390 });
+    await expect(movePanel).toHaveCount(0);
+    await createdRow.getByRole('button', { name: `${failedTitle} 더보기` }).click();
+    await expect(panelHeader).toHaveCSS('position', 'sticky');
+    await panelScrollTarget.evaluate((element) => element.scrollIntoView({ block: 'center', inline: 'nearest' }));
+    await locatorHitPoint(panelScrollTarget);
+    expect(await readPocRaw(page)).toBe(rawBeforeGeometry);
+    expect(calls).toHaveLength(callsBeforeGeometry);
     await page.getByTestId('personal-workspace-move-close').click();
 
     const successfulRaw = await readPocRaw(page);
@@ -1568,7 +1614,7 @@ test.describe('FlowMe 개인공간 v4.1 기능형 PoC', () => {
       { label: '1024x768', width: 1024, height: 768 },
       { label: '1440x900', width: 1440, height: 900 },
     ] as const;
-    const screenshotDir = path.join(process.cwd(), 'docs', 'content-audit', '2026-09-01-flowme-personal-workspace-v4-1-poc-local-validation-assets');
+    const screenshotDir = path.join(process.cwd(), 'output', 'playwright', 'historical-current', '2026-09-01-flowme-personal-workspace-v4-1-poc-local-validation-assets');
 
     for (const viewport of viewports) {
       await page.setViewportSize({ width: viewport.width, height: viewport.height });
@@ -1765,11 +1811,11 @@ test.describe('FlowMe 개인공간 v4.1 기능형 PoC', () => {
     await page.getByTestId('personal-workspace-move-to-trash').click();
     await expectSaved(page);
 
-    await page.getByRole('button', { name: /^휴지통 1$/u }).click();
+    await selectView(page, '휴지통 1');
     await expect(page.getByTestId('personal-workspace-trash-row')).toContainText(flowTitle);
     await page.reload();
     await expect(page.getByTestId('personal-workspace-poc-shell')).toBeVisible();
-    await page.getByRole('button', { name: /^휴지통 1$/u }).click();
+    await selectView(page, '휴지통 1');
     await expect(page.getByTestId('personal-workspace-trash-row')).toContainText(flowTitle);
     await page.getByTestId('personal-workspace-trash-restore').click();
     await expectSaved(page);
@@ -1781,7 +1827,7 @@ test.describe('FlowMe 개인공간 v4.1 기능형 PoC', () => {
     await quickRow.getByRole('button', { name: '휴지통 빠른 할 일 더보기', exact: true }).click();
     await page.getByTestId('personal-workspace-move-to-trash').click();
     await expectSaved(page);
-    await page.getByRole('button', { name: /^휴지통 1$/u }).click();
+    await selectView(page, '휴지통 1');
     const trashRow = page.getByTestId('personal-workspace-trash-row');
     await expect(trashRow).toContainText('휴지통 빠른 할 일');
     await page.getByTestId('personal-workspace-trash-restore').click();
@@ -1793,7 +1839,7 @@ test.describe('FlowMe 개인공간 v4.1 기능형 PoC', () => {
     await restoredQuickRow.getByRole('button', { name: '휴지통 빠른 할 일 더보기', exact: true }).click();
     await page.getByTestId('personal-workspace-move-to-trash').click();
     await expectSaved(page);
-    await page.getByRole('button', { name: /^휴지통 1$/u }).click();
+    await selectView(page, '휴지통 1');
     await page.getByTestId('personal-workspace-trash-search').fill('빠른');
     await expect(page.getByTestId('personal-workspace-trash-visible-count')).toHaveText('1개 표시 · 전체 1개');
 

@@ -4,6 +4,20 @@ The repository's current semantic-version tag is `v0.1.0` at
 `d18f4218de48e23f894c7615945e37339a4a0153` (`2026-06-11`). Later entries
 below are deployment milestones unless they explicitly name another tag.
 
+## 2026-09-07 - Verification Maintenance And Core-Journey Review
+
+- [PR #200](https://github.com/knhbae/flowme2605/pull/200) restored the current source and security verification gates: nine due source reviews were checked against their real pages, one retired official EV URL was replaced, audited transitive dependencies were patched, and one historical recurrence E2E received the existing fixed clock after its hard-coded dates crossed the 31-day lookback boundary.
+- [PR #201](https://github.com/knhbae/flowme2605/pull/201) published the 29-file [core-journey wireframe review package](./content-audit/2026-09-07-flowme-core-journey-wireframes/README.md) with interactive HTML, implementation mapping, QA, simulation evidence, and responsive captures.
+- [PR #202](https://github.com/knhbae/flowme2605/pull/202) reconciled the canonical status, roadmap, spec index, release history, preservation inventory, and next Owner decisions without changing product behavior.
+- These are maintenance and design-evidence milestones. They do not create a semantic version, approve a new Production feature gate, or count as observed-user validation; observed users remain `0`.
+
+## 2026-08-23 - Flow Entry And Preview Clarity
+
+- Released one `/flows` query, URL, and memo entry; source-faithful complete Text previews; full approved Todo and Calendar rows; meaningful copy titles; and matching executable Flow Map result behavior without changing existing save, edit, persistence, export, receipt, or lifecycle ownership.
+- [PR #195](https://github.com/knhbae/flowme2605/pull/195) final head `bf11ce250be8df0b438087febe4068713c2783be` passed exact-head CI run [`32588338583`](https://github.com/knhbae/flowme2605/actions/runs/32588338583) and merged at `2026-08-22T17:55:30Z` as `db74a36cbf2325573b2d696589daa659619e50f2` after [PR #196](https://github.com/knhbae/flowme2605/pull/196) resolved source freshness and [PR #194](https://github.com/knhbae/flowme2605/pull/194) released the visual foundation.
+- Post-merge `main` run [`32589202555`](https://github.com/knhbae/flowme2605/actions/runs/32589202555) passed `Docs, Unit, Build` and `Playwright E2E`. GitHub Production deployment record `6039611238`, status `17168906607`, succeeded for the exact merge source at <https://flowme2605-2exs7soph-flowme.vercel.app>; that URL and <https://flowme2605.vercel.app> returned HTTP `200` on 2026-08-29.
+- A separate canonical Production smoke suite is `NOT_RUN`. This release evidence is automated QA and deployment proof, not observed-user validation; observed users remain `0`. No semantic version tag was created. See the [release record](./pr-history/2026-08-23-flow-entry-preview-clarity.md).
+
 ## 2026-08-23 - Production Visual Refresh
 
 - Released the approved warm-paper, ink, cobalt, and semantic-state visual system across discovery, public preview, Plan/Item sheets, My Plan, export/management, and Calendar surfaces while preserving routes, copy, ordering, data ownership, persistence, save/export, and lifecycle behavior.

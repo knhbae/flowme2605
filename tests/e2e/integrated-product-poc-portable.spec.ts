@@ -104,7 +104,18 @@ test('portable discovery: public version becomes a private copy without mutating
   const input = editor.locator('textarea');
   await input.fill((await input.inputValue()) + '\nPortable private note only');
   await input.press('Tab');
-  await expect.poll(async () => JSON.stringify((await state(page)).data.spaces['local-user'].text).includes('Portable private note only')).toBe(true);
+  // Tab is the native editor's two-space indent command, not blur. Wait for
+  // that final command's raw and position, not an earlier fill-only save.
+  const finalInput = await input.evaluate((element: HTMLTextAreaElement) => ({
+    raw: element.value, start: element.selectionStart, end: element.selectionEnd, scrollTop: element.scrollTop,
+  }));
+  expect(finalInput.raw.split('\n').at(-1)).toBe('  Portable private note only');
+  await expect.poll(async () => {
+    const saved = (await state(page)).data.spaces['local-user'];
+    return { raw: M.raw(M.getDocument(saved.text, copy.documentId)),
+      documentId: saved.position.documentId, start: saved.position.start,
+      end: saved.position.end, scrollTop: saved.position.scrollTop };
+  }).toEqual({ ...finalInput, documentId: copy.documentId });
   const after = await state(page);
   expect(after.data.public).toEqual(before.data.public);
   expect(JSON.stringify(after.data.public)).not.toContain('Portable private note only');

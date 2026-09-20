@@ -1,8 +1,8 @@
 # Flow Entry And Preview Clarity
 
-**Status:** ACTIVE / LOCAL IMPLEMENTATION AND PRIOR-HEAD AUTOMATED QA COMPLETE /
-OWNER RELEASE DECISION COMPLETE / RECONCILED EXACT-HEAD CI, MERGE, AND
-POST-MERGE PRODUCTION VERIFICATION PENDING
+**Status:** RELEASED / OWNER RELEASE DECISION COMPLETE / EXACT-HEAD CI PASSED /
+PR #195 MERGED / POST-MERGE MAIN CI PASSED / EXACT-SOURCE PRODUCTION DEPLOYMENT
+SUCCESS / CANONICAL HTTP 200 / CANONICAL PRODUCTION SMOKE NOT RUN
 
 **Owner approval:** 2026-08-20
 
@@ -143,5 +143,10 @@ release after the visual-refresh baseline. [PR #196](https://github.com/knhbae/f
 resolved the source-review prerequisite, and [PR #194](https://github.com/knhbae/flowme2605/pull/194)
 merged as `c8a57ba37c4087b84b526bc778c3604f68299faa` with its Production
 deployment verified. [PR #195](https://github.com/knhbae/flowme2605/pull/195)
-must still pass reconciled exact-head CI before merge, followed by separate
-Production verification. Observed users remain `0`.
+final head `bf11ce250be8df0b438087febe4068713c2783be` passed exact-head CI run
+`32588338583`, merged as `db74a36cbf2325573b2d696589daa659619e50f2`,
+and passed post-merge `main` run `32589202555`. Exact-source Production
+deployment record `6039611238`, status `17168906607`, succeeded. The direct
+deployment URL and canonical alias returned HTTP `200` on 2026-08-29; a
+separate canonical Production smoke suite is `NOT_RUN`. Observed users remain
+`0`.

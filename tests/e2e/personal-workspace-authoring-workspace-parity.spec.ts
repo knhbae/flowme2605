@@ -3,6 +3,8 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 import { PERSONAL_WORKSPACE_POC_AUTHORING_TEMPLATES } from '../../lib/flow/personal-workspace-poc-authoring';
+import { applyHistoricalTemplate } from './historical-template';
+import { findPersonalWorkspacePocStructureTemplatePreview } from '../../lib/flow/personal-workspace-poc-structure-template';
 
 const AUTHORING_URL = '/flows/new?personalWorkspacePoc=v1';
 const POC_PREFIX = 'flow:poc:personal-workspace:v1:';
@@ -115,10 +117,23 @@ async function expectPocOnlyStorageWrites(
 }
 
 async function expectCompactTwoStateContract(page: Page): Promise<void> {
-  const stateNavigation = page.getByRole('navigation', { name: '작성 화면' });
-  await expect(stateNavigation.getByRole('button')).toHaveCount(2);
-  await expect(stateNavigation.getByRole('button').nth(0)).toHaveText('입력');
-  await expect(stateNavigation.getByRole('button').nth(1)).toHaveText('결과');
+  // K3A design:208 preserves two input/result steps and adds a separate draft lane.
+  const isStandalone = page.url().startsWith('file:');
+  const stateNavigation = page.getByRole('navigation', { name: isStandalone ? '작성 화면' : '작성 단계' });
+  const editingSteps = isStandalone
+    ? stateNavigation.locator('button[data-step="input"], button[data-step="result"]')
+    : stateNavigation.getByRole('button');
+  await expect(editingSteps).toHaveCount(2);
+  await expect(editingSteps.nth(0)).toHaveText('입력');
+  await expect(editingSteps.nth(1)).toHaveText('결과');
+  if (isStandalone) {
+    await expect(stateNavigation.getByRole('button')).toHaveCount(3);
+    await expect(stateNavigation.locator('button[data-step="drafts"]')).toHaveText('내 초안');
+  }
+  if (!isStandalone) {
+    await expect(page.getByTestId('creator-draft-library-open')).toContainText('내 초안');
+    await expect(stateNavigation.getByTestId('creator-draft-library-open')).toHaveCount(0);
+  }
   await expect(page.locator('body')).not.toContainText('1 작성');
   await expect(page.locator('body')).not.toContainText('2 구조 확인');
   await expect(page.locator('body')).not.toContainText('3 저장');
@@ -152,11 +167,9 @@ async function verifyReactTemplateCatalog(page: Page): Promise<string[][]> {
     await expect(card).toContainText(template.label);
     await expect(card).toContainText(`예: ${template.exampleLabel}`);
     await card.focus();
-    await expect(page.getByTestId('personal-workspace-authoring-template-example-source'))
-      .toHaveText(template.exampleSource);
     await expect(editor).toHaveValue('');
 
-    await card.click();
+    await applyHistoricalTemplate(page, template.templateId);
     await expect(editor).toHaveValue(template.scaffold);
     expect(await editor.inputValue()).not.toBe(template.exampleSource);
     await expect(page.getByTestId('personal-workspace-live-editor-ghost-toggle'))
@@ -190,10 +203,15 @@ async function verifyStandaloneTemplateCatalog(page: Page): Promise<string[][]> 
     await expect(card).toContainText(template.label);
     await expect(card).toContainText(`예: ${template.exampleLabel}`);
     await card.focus();
-    await expect(page.locator('#template-example-source')).toHaveText(template.exampleSource);
     await expect(editor).toHaveValue('');
 
+    const storageBeforeSelection = await page.evaluate(() => Object.fromEntries(Object.entries(localStorage)));
     await card.click();
+    await expect(editor).toHaveValue('');
+    expect(await page.locator('#template-example-source').textContent())
+      .toBe(findPersonalWorkspacePocStructureTemplatePreview(template.templateId)!.expectedRawText);
+    expect(await page.evaluate(() => Object.fromEntries(Object.entries(localStorage)))).toEqual(storageBeforeSelection);
+    await page.locator(`button[data-action="apply-template"][data-template-id="${template.templateId}"]`).click();
     await expect(editor).toHaveValue(template.scaffold);
     expect(await editor.inputValue()).not.toBe(template.exampleSource);
     await expect(page.locator('#authoring-ghost-toggle')).toHaveAttribute('aria-pressed', 'true');
@@ -304,8 +322,15 @@ test.describe('Text Authoring → 개인공간 UX parity', () => {
 
     const gateContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
     const gatePage = await gateContext.newPage();
+    const gateCalls: StorageMutation[] = [];
+    await installStorageBoundaryAudit(gatePage, gateCalls, 'parity-invalid-gate');
     await gatePage.goto('/flows/new?personalWorkspacePoc=v1&unexpected=1');
-    await gatePage.waitForURL((url) => url.pathname === '/my' && url.search === '');
+    await gatePage.waitForURL((url) => url.pathname === '/my' && ['', '?sort=next'].includes(url.search));
+    await expect(gatePage.getByRole('heading', { name: '내 계획', exact: true })).toBeVisible();
+    await expect(gatePage.getByTestId('personal-workspace-poc-shell')).toHaveCount(0);
+    await expect(gatePage.getByTestId('integrated-program-app')).toHaveCount(0);
+    expect(await readOperatingStorage(gatePage)).toEqual({ [OPERATING_SENTINEL_KEY]: OPERATING_SENTINEL_BYTES });
+    expect(gateCalls).toEqual([]);
     await gateContext.close();
 
     const reactContext = await browser.newContext({ viewport: { width: 390, height: 844 } });

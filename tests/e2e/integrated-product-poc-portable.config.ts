@@ -3,6 +3,8 @@ import base from '../../playwright.config';
 
 export default defineConfig({
   ...base,
+  // Do not inherit the full-suite current/history projects into this focused lane.
+  projects: undefined,
   testDir: '.',
   testMatch: 'integrated-product-poc-portable.spec.ts',
   workers: 1,

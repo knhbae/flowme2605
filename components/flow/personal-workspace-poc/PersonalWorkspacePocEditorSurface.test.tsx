@@ -136,6 +136,18 @@ function frameProps(node: React.ReactElement) {
   return node.props as React.ComponentProps<typeof FlowEditorSurface>;
 }
 
+test('Plan diagnostic intent is read-only and does not serialize private draft guards', () => {
+  const props = { draft: planDraft(), transaction: recoverableTransaction,
+    actions: noopActions, source, items: [], impact: planImpact,
+    onDraftChange: () => undefined, onOpenItem: () => undefined, onCommitIntent: () => undefined };
+  const normal = renderToStaticMarkup(<PersonalWorkspacePocPlanEditorSurface {...props} />);
+  assert.doesNotMatch(normal, /data-intent-id/u);
+  const html = renderToStaticMarkup(<PersonalWorkspacePocPlanEditorSurface {...props} diagnosticIntentId="public-intent-1" />);
+  assert.match(html, /data-intent-id="public-intent-1"/u);
+  assert.doesNotMatch(html, /guard-1|data-(?:state|draft|guard|retry-descriptor)|retryDescriptor|stateRaw/u);
+  assert.equal((html.match(/role="alert"/gu) ?? []).length, 1);
+});
+
 test('Plan presenter keeps source read-only before personal fields, Item order, and impact', () => {
   const draft = {
     ...planDraft(),

@@ -905,6 +905,34 @@ export function PersonalWorkspacePocSurface({
     resultView: 'text',
   });
   const [moveTarget, setMoveTarget] = useState<MoveTarget>();
+  const movePanelRef = useRef<HTMLElement | null>(null);
+  const movePanelHeaderRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const panel = movePanelRef.current;
+    const header = movePanelHeaderRef.current;
+    if (!moveTarget || !panel || !header) return;
+    const updateScrollClearance = () => {
+      const style = window.getComputedStyle(panel);
+      const padding = Number.parseFloat(style.paddingTop) || 0;
+      const bottomPadding = Number.parseFloat(style.paddingBottom) || 0;
+      const headerHeight = header.getBoundingClientRect().height;
+      // A sticky heading must leave room for a complete touch target. When a
+      // long title/error consumes a short viewport, scroll the heading too.
+      const sticky = headerHeight + padding + bottomPadding + 64 <= panel.clientHeight;
+      header.style.position = sticky ? 'sticky' : 'static';
+      panel.style.scrollPaddingTop = `${sticky ? headerHeight + padding : padding}px`;
+      panel.style.scrollPaddingBottom = `${bottomPadding}px`;
+    };
+    updateScrollClearance();
+    const observer = new ResizeObserver(updateScrollClearance);
+    observer.observe(panel);
+    observer.observe(header);
+    window.addEventListener('resize', updateScrollClearance);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', updateScrollClearance);
+    };
+  }, [moveTarget]);
   const [moveReturnFocusSelector, setMoveReturnFocusSelector] = useState<string>();
   const [quickFormOpen, setQuickFormOpen] = useState(false);
   const [folderFormOpen, setFolderFormOpen] = useState(false);
@@ -3832,6 +3860,7 @@ export function PersonalWorkspacePocSurface({
 
     return (
       <aside
+        ref={movePanelRef}
         id="personal-workspace-move-panel"
         role="dialog"
         aria-labelledby="personal-workspace-move-title"
@@ -3861,7 +3890,7 @@ export function PersonalWorkspacePocSurface({
           resolveActiveMoveAtPoint(event.clientX, event.clientY);
         }}
       >
-        <div className="sticky top-0 z-20 -mx-4 -mt-4 bg-white px-4 pb-3 pt-4 sm:-mx-5 sm:px-5">
+        <div ref={movePanelHeaderRef} data-testid="personal-workspace-move-panel-header" className="sticky top-0 z-20 -mx-4 -mt-4 bg-white px-4 pb-3 pt-4 sm:-mx-5 sm:px-5">
         <div className="flex items-start justify-between gap-3 border-b border-[var(--flowme-border)] pb-3">
           <div className="min-w-0">
             <p className="text-xs font-semibold text-[var(--flowme-workspace-accent-strong)]">이동할 곳</p>
@@ -4726,6 +4755,7 @@ export function PersonalWorkspacePocSurface({
         const sourceItems = new Map(sourceFlow.items.map((item) => [item.ref, item]));
         return (
           <PersonalWorkspacePocPlanEditorSurface
+            diagnosticIntentId={planAttempt.current?.intentId}
             draft={activePlanEditor.draft}
             transaction={transaction}
             actions={commonActions}

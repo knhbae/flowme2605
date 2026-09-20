@@ -443,12 +443,30 @@ test.describe('FlowMe 개인공간 Stage 4 이동·반응형 runtime 계약', ()
     await page.getByTestId('personal-workspace-move-close').click();
     await expectSemanticFocus(rowMore);
 
-    await rowMore.click();
-    await folderTarget(page, targetFolderId).click();
+    await rowMore.focus();
+    await page.keyboard.press('Enter');
+    await folderTarget(page, targetFolderId).focus();
+    await page.keyboard.press('Enter');
     await expectSaved(page);
     row = taskRow(page, 'Stage 4 포커스 빠른 할 일');
     rowMore = row.getByRole('button', { name: 'Stage 4 포커스 빠른 할 일 더보기' });
     await expectSemanticFocus(rowMore);
+
+    // K2C pointer success keeps a visible local result without stealing focus
+    // for Undo; keyboard success above still returns to its semantic owner.
+    await rowMore.click();
+    await page.getByTestId('personal-workspace-move-panel')
+      .getByTestId('personal-workspace-folder-target-unfiled').click();
+    await expectSaved(page);
+    const contextualUndo = page.getByTestId('personal-workspace-contextual-undo');
+    await expect(contextualUndo).toBeVisible();
+    await expect(contextualUndo).not.toBeFocused();
+    await expect(contextualUndo).toBeInViewport();
+    expect(await contextualUndo.evaluate((element) => {
+      const rect = element.getBoundingClientRect();
+      const hit = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
+      return hit === element || element.contains(hit);
+    })).toBe(true);
 
     await selectView(page, '폴더');
     const flowCard = page.locator(
@@ -473,8 +491,10 @@ test.describe('FlowMe 개인공간 Stage 4 이동·반응형 runtime 계약', ()
     await itemOpener.click();
     await page.getByTestId('personal-workspace-item-sheet')
       .getByRole('button', { name: '이동', exact: true })
-      .click();
-    await page.getByTestId('personal-workspace-date-target-1').click();
+      .focus();
+    await page.keyboard.press('Enter');
+    await page.getByTestId('personal-workspace-date-target-1').focus();
+    await page.keyboard.press('Enter');
     await expectSaved(page);
     itemOpener = page.locator(`[data-todo-detail-link="${itemRef}"]`);
     await expectSemanticFocus(itemOpener);
@@ -484,8 +504,10 @@ test.describe('FlowMe 개인공간 Stage 4 이동·반응형 runtime 계약', ()
     await page.getByTestId('personal-workspace-move-close').click();
     await expectSemanticFocus(flowMove);
 
-    await flowMove.click();
-    await folderTarget(page, targetFolderId).click();
+    await flowMove.focus();
+    await page.keyboard.press('Enter');
+    await folderTarget(page, targetFolderId).focus();
+    await page.keyboard.press('Enter');
     await expectSaved(page);
     flowMove = page.getByRole('button', { name: '폴더 이동', exact: true });
     await expectSemanticFocus(flowMove);
@@ -866,8 +888,7 @@ test.describe('FlowMe 개인공간 Stage 4 이동·반응형 runtime 계약', ()
     const callsBeforeOpenOnlyChecks = calls.length;
     const screenshotDir = path.join(
       process.cwd(),
-      'docs',
-      'content-audit',
+      'output', 'playwright', 'historical-current',
       '2026-09-03-flowme-integrated-poc-movement-parity-report-assets',
     );
     mkdirSync(screenshotDir, { recursive: true });

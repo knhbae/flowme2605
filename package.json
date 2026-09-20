@@ -48,6 +48,8 @@
     "test:integrated-product-poc": "node scripts/personal-workspace-poc/program-verify.mjs new-tests 2",
     "typecheck:integrated-product-poc": "node scripts/personal-workspace-poc/program-check.mjs",
     "test:e2e:integrated-product-poc": "playwright test --config tests/e2e/integrated-product-poc-portable.config.ts",
+    "build:e2e:historical": "next build tests/e2e/historical-app",
+    "pretest:e2e": "tsx tests/e2e/verify-owner-manifest.ts && npm run build:e2e:historical",
     "test:e2e": "playwright test"
   },
   "dependencies": {

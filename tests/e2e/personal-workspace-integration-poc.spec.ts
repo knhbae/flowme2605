@@ -3,12 +3,31 @@ import { mkdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 
 import { PERSONAL_WORKSPACE_POC_AUTHORING_TEMPLATES } from '../../lib/flow/personal-workspace-poc-authoring';
+import { applyHistoricalTemplate } from './historical-template';
 
 const WORKSPACE_URL = '/my?personalWorkspacePoc=v1';
 const AUTHORING_URL = '/flows/new?personalWorkspacePoc=v1';
 const POC_PREFIX = 'flow:poc:personal-workspace:v1:';
 const POC_STATE_KEY = `${POC_PREFIX}state`;
 const POC_AUTHORING_DRAFT_KEY = `${POC_PREFIX}authoring-draft`;
+// K3A design:13,57,66-68,193: same 16 canonical fields, staged navigation.
+const PROPERTY_GROUP_KEYS = {
+  schedule: ['date', 'relativeDate', 'time', 'timezone', 'place', 'duration'],
+  execution: ['completion', 'condition', 'subcheck'],
+  content: ['detail', 'resource'],
+  provenance: ['repeat', 'repeatEnd', 'guide', 'caution', 'source'],
+} as const;
+async function choosePropertyGroup(page: Page, group: keyof typeof PROPERTY_GROUP_KEYS) {
+  const helper = page.getByTestId('personal-workspace-authoring-helper-menu');
+  if (await helper.getAttribute('data-chooser-stage') === 'structure') {
+    await page.getByTestId('personal-workspace-authoring-chooser-information').click();
+  }
+  await expect(helper).toHaveAttribute('data-chooser-stage', 'groups');
+  await expect(page.getByTestId('personal-workspace-authoring-chooser-groups').getByRole('button')).toHaveCount(4);
+  await expect(page.locator('[data-property-support]')).toHaveCount(0);
+  await page.getByTestId(`personal-workspace-authoring-chooser-group-${group}`).click();
+  await expect(helper).toHaveAttribute('data-chooser-stage', 'properties');
+}
 const MOVING_TEMPLATE = PERSONAL_WORKSPACE_POC_AUTHORING_TEMPLATES.find(
   (template) => template.templateId === 'moving-dday-v1',
 );
@@ -445,7 +464,7 @@ test.describe('FlowMe Text Authoring -> 개인공간 통합 흐름 PoC', () => {
     if (!MOVING_TEMPLATE) throw new Error('moving-dday-v1 작성 틀을 찾지 못했습니다.');
     await page.getByTestId('personal-workspace-entry-start-template').click();
     await expect(page.getByTestId('personal-workspace-authoring-template-picker')).toBeVisible();
-    await page.getByTestId('personal-workspace-authoring-template-moving-dday-v1').click();
+    await applyHistoricalTemplate(page, 'moving-dday-v1');
     const source = page.getByTestId('personal-workspace-live-editor-textarea');
     await expect(source).toHaveValue(MOVING_TEMPLATE.scaffold);
     expect(await readAuthoringDraft(page)).toEqual({
@@ -478,7 +497,7 @@ test.describe('FlowMe Text Authoring -> 개인공간 통합 흐름 PoC', () => {
     await expect(review).toBeVisible();
     await expect(review.getByTestId('personal-workspace-authoring-preview')).toContainText('행정 준비');
     await expect(review.getByTestId('personal-workspace-authoring-preview')).toContainText('전입 신고 준비');
-    await review.getByRole('button', { name: '닫기', exact: true }).click();
+    await review.getByRole('button', { name: '원문과 실행 항목 검토 닫기', exact: true }).click();
     await expect(review).toHaveCount(0);
     const lossConfirm = page.getByTestId('personal-workspace-authoring-loss-confirm');
     if (await lossConfirm.count()) await lossConfirm.check();
@@ -628,7 +647,7 @@ test.describe('FlowMe Text Authoring -> 개인공간 통합 흐름 PoC', () => {
     await expect(page.getByTestId('personal-workspace-result-txt-copy')).toBeVisible();
 
     await page.getByTestId('personal-workspace-authoring-tab-input').click();
-    const openRootHelper = async () => {
+    const openRootHelper = async (group: keyof typeof PROPERTY_GROUP_KEYS = 'schedule') => {
       await source.focus();
       await source.press('Control+Home');
       await source.press('ArrowDown');
@@ -637,11 +656,25 @@ test.describe('FlowMe Text Authoring -> 개인공간 통합 흐름 PoC', () => {
       await expect(anchor).toBeVisible();
       await anchor.click();
       await expect(page.getByTestId('personal-workspace-authoring-helper-menu')).toBeVisible();
+      await choosePropertyGroup(page, group);
     };
 
     await openRootHelper();
-    await expect(page.locator('[data-property-support]')).toHaveCount(16);
-    await expect(page.locator('[data-property-support="editable"]')).toHaveCount(16);
+    await page.getByTestId('personal-workspace-authoring-chooser-back').click();
+    const observedKeys: string[] = [];
+    for (const group of Object.keys(PROPERTY_GROUP_KEYS) as Array<keyof typeof PROPERTY_GROUP_KEYS>) {
+      await choosePropertyGroup(page, group);
+      const rows = page.locator('[data-property-support]');
+      await expect(rows).toHaveCount(PROPERTY_GROUP_KEYS[group].length);
+      await expect(page.locator('[data-property-support="editable"]')).toHaveCount(PROPERTY_GROUP_KEYS[group].length);
+      const keys = await rows.evaluateAll(elements => elements.map(element => element.getAttribute('data-testid')!.replace('personal-workspace-authoring-property-', '')));
+      expect(keys).toEqual(PROPERTY_GROUP_KEYS[group]);
+      observedKeys.push(...keys);
+      await page.getByTestId('personal-workspace-authoring-chooser-back').click();
+    }
+    expect(observedKeys).toHaveLength(16);
+    expect(new Set(observedKeys).size).toBe(16);
+    await choosePropertyGroup(page, 'schedule');
     await expect(page.getByTestId('personal-workspace-authoring-property-time')).toHaveAttribute('data-property-editor', 'native-time');
     await expect(page.getByTestId('personal-workspace-authoring-property-duration')).toHaveAttribute('data-property-support', 'editable');
     await page.getByTestId('personal-workspace-authoring-property-focus-date').click();
@@ -682,12 +715,12 @@ test.describe('FlowMe Text Authoring -> 개인공간 통합 흐름 PoC', () => {
     await page.getByTestId('personal-workspace-authoring-property-apply').click();
     await expect(source).toHaveValue(`${sourceText}\n  - 시간: 09:00\n  - 시간대: Asia/Seoul`);
 
-    await openRootHelper();
+    await openRootHelper('execution');
     await page.getByTestId('personal-workspace-authoring-property-edit-subcheck').click();
     await propertyInput.fill('표 확인하기');
     await page.getByTestId('personal-workspace-authoring-property-apply').click();
     await expect(source).toHaveValue(/  - \[ \] 표 확인하기/u);
-    await openRootHelper();
+    await openRootHelper('execution');
     await page.getByTestId('personal-workspace-authoring-subcheck-focus-4').click();
     expect(await source.evaluate((element) => {
       const textarea = element as HTMLTextAreaElement;
@@ -734,7 +767,7 @@ test.describe('FlowMe Text Authoring -> 개인공간 통합 흐름 PoC', () => {
       { label: '1024x768', width: 1024, height: 768 },
       { label: '1440x900', width: 1440, height: 900 },
     ] as const;
-    const screenshotDir = path.join(process.cwd(), 'docs', 'content-audit', '2026-09-03-flowme-integrated-poc-p2c-evidence-assets');
+    const screenshotDir = path.join(process.cwd(), 'output', 'playwright', 'historical-current', '2026-09-03-flowme-integrated-poc-p2c-evidence-assets');
     mkdirSync(screenshotDir, { recursive: true });
 
     for (const viewport of viewports) {
@@ -743,6 +776,13 @@ test.describe('FlowMe Text Authoring -> 개인공간 통합 흐름 PoC', () => {
       const sourceText = '# 여행\n## 예약\n- [ ] 기차 예약\n  - 날짜: 2026-09-10';
       const source = await startAuthoringWithSource(page, sourceText);
       const openRootHelper = async () => {
+        // K3A Escape from a value returns to its group; close that owner
+        // explicitly before starting a new helper navigation.
+        const helper = page.getByTestId('personal-workspace-authoring-helper-menu');
+        if (await helper.count()) {
+          await helper.getByRole('button', { name: '원문 작성 도움 닫기', exact: true }).click();
+          await expect(helper).toHaveCount(0);
+        }
         if (viewport.width < 1024 && await page.getByTestId('personal-workspace-authoring-tab-input').count()) {
           await page.getByTestId('personal-workspace-authoring-tab-input').click();
         }
@@ -751,6 +791,7 @@ test.describe('FlowMe Text Authoring -> 개인공간 통합 흐름 PoC', () => {
         await source.press('ArrowDown');
         await source.press('ArrowDown');
         await page.getByTestId('personal-workspace-authoring-helper-anchor').click();
+        await choosePropertyGroup(page, 'schedule');
       };
 
       await openRootHelper();
@@ -950,8 +991,7 @@ test.describe('FlowMe Text Authoring -> 개인공간 통합 흐름 PoC', () => {
     ] as const;
     const screenshotDir = path.join(
       process.cwd(),
-      'docs',
-      'content-audit',
+      'output', 'playwright', 'historical-current',
       '2026-09-03-flowme-integrated-poc-p2a-evidence-assets',
     );
     mkdirSync(screenshotDir, { recursive: true });
@@ -1069,8 +1109,7 @@ test.describe('FlowMe Text Authoring -> 개인공간 통합 흐름 PoC', () => {
     ] as const;
     const screenshotDir = path.join(
       process.cwd(),
-      'docs',
-      'content-audit',
+      'output', 'playwright', 'historical-current',
       '2026-09-03-flowme-integrated-poc-p2a-evidence-assets',
     );
     mkdirSync(screenshotDir, { recursive: true });
@@ -1138,8 +1177,7 @@ test.describe('FlowMe Text Authoring -> 개인공간 통합 흐름 PoC', () => {
     ] as const;
     const screenshotDir = path.join(
       process.cwd(),
-      'docs',
-      'content-audit',
+      'output', 'playwright', 'historical-current',
       '2026-09-02-flowme-integrated-flow-poc-local-validation-assets',
     );
     mkdirSync(screenshotDir, { recursive: true });

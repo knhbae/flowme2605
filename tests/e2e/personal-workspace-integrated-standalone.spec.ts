@@ -2,8 +2,67 @@ import { expect, test, type Page } from '@playwright/test';
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { PERSONAL_WORKSPACE_POC_AUTHORING_TEMPLATES } from '../../lib/flow/personal-workspace-poc-authoring';
+import { findPersonalWorkspacePocStructureTemplatePreview } from '../../lib/flow/personal-workspace-poc-structure-template';
+
+// K3-A adaptation: selecting a historical D2 template now previews only.
+// This proves the pinned HTML's explicit apply contract, not original D2 parity.
+async function applyStandaloneTemplate(page: Page, index = 0, nativeAvailable = true) {
+  const template = PERSONAL_WORKSPACE_POC_AUTHORING_TEMPLATES[index];
+  const editor = page.locator('#flow-editor');
+  await expect(editor).toHaveValue('');
+  const before = await page.evaluate(() => {
+    const w = window as typeof window & { __templateAudit?: { writes: number; native: number; restore: () => void } };
+    const methods = ['setItem', 'removeItem', 'clear'] as const;
+    const originals = methods.map(method => Storage.prototype[method]);
+    const exec = document.execCommand;
+    const audit = { writes: 0, native: 0, restore: () => {
+      methods.forEach((method, index) => Object.defineProperty(Storage.prototype, method, { configurable: true, writable: true, value: originals[index] }));
+      document.execCommand = exec;
+    } };
+    methods.forEach((method, index) => Object.defineProperty(Storage.prototype, method, { configurable: true, writable: true, value: function(this: Storage, ...args: string[]) {
+      audit.writes++;
+      return Reflect.apply(originals[index], this, args);
+    } }));
+    document.execCommand = function(command, ...args) { if (command === 'insertText') audit.native++; return Reflect.apply(exec, document, [command, ...args]); };
+    w.__templateAudit = audit;
+    try { return Object.fromEntries(Object.entries(localStorage)); } catch { return null; }
+  });
+  try {
+    await page.locator(`button[data-action="select-template"][data-template-id="${template.templateId}"]`).click();
+    await expect(editor).toHaveValue('');
+    expect(await page.locator('#template-example-source').textContent()).toBe(findPersonalWorkspacePocStructureTemplatePreview(template.templateId)!.expectedRawText);
+    const preview = await page.evaluate(() => {
+      const audit = (window as typeof window & { __templateAudit: { writes: number; native: number } }).__templateAudit;
+      let storage = null;
+      try { storage = Object.fromEntries(Object.entries(localStorage)); } catch { /* Explicit storage-denied scenario. */ }
+      return { writes: audit.writes, native: audit.native, storage };
+    });
+    expect(preview).toEqual({ writes: 0, native: 0, storage: before });
+    await page.locator(`button[data-action="apply-template"][data-template-id="${template.templateId}"]`).click();
+    await expect(editor).toHaveValue(nativeAvailable ? template.scaffold : '');
+    expect(await page.evaluate(() => (window as typeof window & { __templateAudit: { native: number } }).__templateAudit.native)).toBe(1);
+  } finally {
+    await page.evaluate(() => (window as typeof window & { __templateAudit: { restore: () => void } }).__templateAudit.restore());
+  }
+}
 
 const STORAGE_KEY = 'flow:poc:personal-workspace:v1:standalone-integrated';
+const WORKSPACE_STORAGE_KEY = `${STORAGE_KEY}:workspace-v2`;
+const WORKSPACE_RECOVERY_KEY = 'flow:poc:personal-workspace:v1:standalone-plan-item-recovery:v2';
+// Read-only checkpoint projection. A missing/invalid v2 record is never silently
+// substituted with a seed or repaired; legacy bytes are checked separately.
+async function readStandaloneCheckpoint(page: Page) {
+  return page.evaluate(key => {
+    const raw = localStorage.getItem(key);
+    if (raw === null) throw Error('Expected a persisted v2 checkpoint');
+    const checkpoint = JSON.parse(raw);
+    const api = (window as unknown as { FlowPocWorkspaceCheckpoint: { validateCheckpoint: (value: unknown) => { ok: boolean; reason?: string } } }).FlowPocWorkspaceCheckpoint;
+    const checked = api.validateCheckpoint(checkpoint);
+    if (!checked.ok || checkpoint.version !== 2 || checkpoint.contract !== 'flowme-standalone-workspace-checkpoint-v2') throw Error(`Invalid v2 checkpoint: ${checked.reason}`);
+    return checkpoint;
+  }, WORKSPACE_STORAGE_KEY);
+}
 const DRAFT_STORAGE_KEY = 'flow:poc:personal-workspace:v1:standalone-integrated:draft';
 const OPERATING_SENTINEL_KEY = 'flow:standalone:android-sentinel';
 const HTML_PATH = path.join(
@@ -13,6 +72,15 @@ const HTML_PATH = path.join(
   '2026-09-02-flowme-integrated-flow-poc-android-single-file-ko.html',
 );
 const HTML_URL = pathToFileURL(HTML_PATH).href;
+async function standaloneUntimedSeedRows(page: Page) {
+  // Freeze Date, not timers: preserve the original 9/2 seed journey while the
+  // live timeline otherwise includes seven overdue rows on later dates.
+  expect(await page.locator('.task-row').evaluateAll(rows => rows.map(row => row.getAttribute('data-task-id'))))
+    .toEqual(['meeting', 'memo-share', 'washer-filter', 'checklist']);
+  const rows = page.locator('.task-row:not([data-task-id="meeting"])');
+  await expect(rows).toHaveCount(3);
+  return rows;
+}
 const VALID_SOURCE = [
   '# 휴대폰 검증 Flow',
   '- 기준일: 2026-09-20',
@@ -106,7 +174,7 @@ async function authorAndOpenFlow(page: import('@playwright/test').Page): Promise
   await expect(page.locator('.template-choice')).toHaveCount(6);
   await expect(page.locator('#template-picker-panel')).toContainText('예:');
   await expect(page.locator('#flow-editor')).toHaveValue('');
-  await page.locator('button[data-action="select-template"]').first().click();
+  await applyStandaloneTemplate(page);
   const insertedTemplate = await page.locator('#flow-editor').inputValue();
   expect(insertedTemplate.length).toBeGreaterThan(0);
   await page.locator('#flow-editor').press('Control+z');
@@ -231,16 +299,21 @@ test('single-file standalone works from file URL and writes only its exact PoC k
   await page.locator('button[data-action="undo"]:visible').first().click();
   await expect(task).not.toHaveClass(/done/u);
 
-  const stateBeforeReload = await page.evaluate((key) => window.localStorage.getItem(key), STORAGE_KEY);
+  await readStandaloneCheckpoint(page);
+  const stateBeforeReload = await page.evaluate((key) => window.localStorage.getItem(key), WORKSPACE_STORAGE_KEY);
+  expect(stateBeforeReload).not.toBeNull();
   await page.reload();
   await page.locator('button[data-view="folder:unfiled"]').click();
   await expect(page.locator('.flow-row')).toHaveCount(5);
-  expect(await page.evaluate((key) => window.localStorage.getItem(key), STORAGE_KEY)).toBe(stateBeforeReload);
+  expect(await page.evaluate((key) => window.localStorage.getItem(key), WORKSPACE_STORAGE_KEY)).toBe(stateBeforeReload);
+  expect(await page.evaluate((key) => window.localStorage.getItem(key), STORAGE_KEY)).toBeNull();
+  expect(await page.evaluate((key) => window.localStorage.getItem(key), WORKSPACE_RECOVERY_KEY)).toBeNull();
+  await readStandaloneCheckpoint(page);
   expect(
     await page.evaluate((key) => window.localStorage.getItem(key), OPERATING_SENTINEL_KEY),
   ).toBe('  keep exact Android bytes  ');
   expect(calls.filter((entry) => entry.method === 'clear')).toEqual([]);
-  expect(calls.filter((entry) => entry.key && ![STORAGE_KEY, DRAFT_STORAGE_KEY].includes(entry.key))).toEqual([]);
+  expect(calls.filter((entry) => entry.key && ![WORKSPACE_STORAGE_KEY, WORKSPACE_RECOVERY_KEY, DRAFT_STORAGE_KEY].includes(entry.key))).toEqual([]);
   expect(assetRequests).toEqual([]);
   expect(errors).toEqual([]);
 });
@@ -264,7 +337,7 @@ test('authoring draft restores after reload and corrupt draft fails closed', asy
   await page.goto(HTML_URL);
   await page.locator('button[data-action="go-authoring"]').first().click();
   await page.locator('#template-picker-opener').click();
-  await page.locator('button[data-action="select-template"]').first().click();
+  await applyStandaloneTemplate(page);
   const scaffold = await page.locator('#flow-editor').inputValue();
   expect(scaffold.length).toBeGreaterThan(0);
   const storedDraft = await page.evaluate((key) => window.localStorage.getItem(key), DRAFT_STORAGE_KEY);
@@ -282,16 +355,33 @@ test('authoring draft restores after reload and corrupt draft fails closed', asy
     key: DRAFT_STORAGE_KEY,
     bytes: corruptDraft,
   });
+  const corruptStorage = await page.evaluate(() => Object.entries(window.localStorage).sort());
+  const corruptCalls: StandaloneStorageMutation[] = [];
+  await page.exposeFunction('__recordCorruptDraftMutation', (entry: StandaloneStorageMutation) => corruptCalls.push(entry));
+  await page.addInitScript(() => {
+    const target = window as typeof window & { __recordCorruptDraftMutation: (entry: { method: string; key?: string }) => Promise<void> };
+    for (const method of ['setItem', 'removeItem', 'clear'] as const) {
+      const original = Storage.prototype[method];
+      Storage.prototype[method] = function (...args: string[]) {
+        if (this === window.localStorage) void target.__recordCorruptDraftMutation({ method, key: args[0] });
+        return Reflect.apply(original, this, args);
+      };
+    }
+  });
   await page.reload();
   await expect(page.getByRole('heading', { name: '오늘', exact: true })).toBeVisible();
   await expect(page.locator('#save-status')).toContainText('손상된 작성 초안 차단');
   await page.locator('button[data-action="go-authoring"]').first().click();
-  await expect(page.locator('#flow-editor')).toHaveValue('');
+  // K2-B quarantines the draft feature instead of mounting an empty writable editor.
+  await expect(page.locator('#flow-editor')).toHaveCount(0);
   expect(await page.evaluate((key) => window.localStorage.getItem(key), DRAFT_STORAGE_KEY)).toBe(corruptDraft);
   expect(await page.evaluate((key) => window.localStorage.getItem(key), OPERATING_SENTINEL_KEY)).toBe(operatingBytes);
+  expect(await page.evaluate(() => Object.entries(window.localStorage).sort())).toEqual(corruptStorage);
+  expect(corruptCalls).toEqual([]);
 });
 
 test('P1 fixed result slots and trash lifecycle stay interactive, reload-safe, and PoC-only', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-09-02T03:00:00Z'));
   test.setTimeout(45_000);
   const calls: StandaloneStorageMutation[] = [];
   const errors: string[] = [];
@@ -336,14 +426,18 @@ test('P1 fixed result slots and trash lifecycle stay interactive, reload-safe, a
   await expect(result.locator('[data-action="result-open-item"][data-item-ref="' + effectiveRef + '"]')).toHaveAttribute('data-effective-date', effectiveDate);
   await result.getByRole('tab', { name: '표', exact: true }).click();
   const effectiveSheetRow = result.locator('.result-sheet tbody tr[data-item-ref="' + effectiveRef + '"]');
-  await expect(effectiveSheetRow.locator('td').nth(3)).toHaveText('미정');
-  await expect(effectiveSheetRow.locator('td').nth(4)).toHaveText(effectiveDate);
+  const sheetHeaders = await result.locator('.result-sheet thead th').allTextContents();
+  expect(sheetHeaders).toContain('원 발생일');
+  expect(sheetHeaders).toContain('실행 날짜');
+  await expect(effectiveSheetRow.locator('td').nth(sheetHeaders.indexOf('원 발생일'))).toHaveText('미정');
+  await expect(effectiveSheetRow.locator('td').nth(sheetHeaders.indexOf('실행 날짜'))).toHaveText(effectiveDate);
 
   await page.locator('[data-action="move-to-trash"][data-kind="flow"]').click();
   await expect(page.locator('.trash-row[data-trash-id="moving"]')).toBeVisible();
-  const bytesAfterTrash = await page.evaluate((key) => window.localStorage.getItem(key), STORAGE_KEY);
+  const bytesAfterTrash = await page.evaluate((key) => window.localStorage.getItem(key), WORKSPACE_STORAGE_KEY);
+  await readStandaloneCheckpoint(page);
   await page.reload();
-  expect(await page.evaluate((key) => window.localStorage.getItem(key), STORAGE_KEY)).toBe(bytesAfterTrash);
+  expect(await page.evaluate((key) => window.localStorage.getItem(key), WORKSPACE_STORAGE_KEY)).toBe(bytesAfterTrash);
   await page.locator('[data-view="trash"]').click();
   const trashRow = page.locator('.trash-row[data-trash-id="moving"]');
   await expect(trashRow).toBeVisible();
@@ -356,22 +450,55 @@ test('P1 fixed result slots and trash lifecycle stay interactive, reload-safe, a
   await trashRow.locator('[data-action="permanent-delete"]').click();
   await expect(trashRow).toBeVisible();
   await expectSaveStatus(page, '영구 삭제를 취소했어요', 'noop');
+  expect(calls.filter(entry => entry.method === 'clear' || (entry.key && ![WORKSPACE_STORAGE_KEY, WORKSPACE_RECOVERY_KEY, DRAFT_STORAGE_KEY].includes(entry.key)))).toEqual([]);
+  expect(await page.evaluate(key => localStorage.getItem(key), STORAGE_KEY)).toBeNull();
+  const deletionCallStart = calls.length;
   page.once('dialog', (dialog) => dialog.accept());
   await trashRow.locator('[data-action="permanent-delete"]').click();
   await expect(trashRow).toHaveCount(0);
   await expect(page.locator('button[data-action="undo"]:visible').first()).toBeDisabled();
-  const bytesAfterPermanentDelete = await page.evaluate((key) => window.localStorage.getItem(key), STORAGE_KEY);
+  const bytesAfterPermanentDelete = await page.evaluate((key) => window.localStorage.getItem(key), WORKSPACE_STORAGE_KEY);
   await page.reload();
-  expect(await page.evaluate((key) => window.localStorage.getItem(key), STORAGE_KEY)).toBe(bytesAfterPermanentDelete);
+  expect(await page.evaluate((key) => window.localStorage.getItem(key), WORKSPACE_STORAGE_KEY)).toBe(bytesAfterPermanentDelete);
+  await readStandaloneCheckpoint(page);
+  const legacyAfterDeletion = await page.evaluate((key) => window.localStorage.getItem(key), STORAGE_KEY);
+  expect(legacyAfterDeletion).not.toBeNull();
+  expect((await readStandaloneCheckpoint(page)).legacyBaseRaw).toBe(legacyAfterDeletion);
   await page.locator('[data-view="trash"]').click();
   await expect(page.locator('.trash-row[data-trash-id="moving"]')).toHaveCount(0);
   await expect(page.locator('button[data-action="undo"]:visible').first()).toBeDisabled();
 
   expect(await page.evaluate((key) => window.localStorage.getItem(key), OPERATING_SENTINEL_KEY)).toBe(operatingBytes);
   expect(calls.filter((entry) => entry.method === 'clear')).toEqual([]);
-  expect(calls.filter((entry) => entry.key && ![STORAGE_KEY, DRAFT_STORAGE_KEY].includes(entry.key))).toEqual([]);
+  const deletionCalls = calls.slice(deletionCallStart);
+  expect(deletionCalls.filter(entry => entry.key && ![WORKSPACE_STORAGE_KEY, WORKSPACE_RECOVERY_KEY, STORAGE_KEY, 'flow:poc:personal-workspace:v1:source-candidates'].includes(entry.key))).toEqual([]);
+  expect(deletionCalls.filter(entry => entry.key === WORKSPACE_STORAGE_KEY)).toHaveLength(1);
+  expect(deletionCalls.filter(entry => entry.key === STORAGE_KEY)).toHaveLength(1);
+  // This seed has no source-candidate sidecar: null -> null is not a write.
+  expect(deletionCalls.filter(entry => entry.key === 'flow:poc:personal-workspace:v1:source-candidates')).toHaveLength(0);
+  expect(await page.evaluate(key => localStorage.getItem(key), 'flow:poc:personal-workspace:v1:source-candidates')).toBeNull();
   expect(errors).toEqual([]);
 });
+
+const STANDALONE_PROPERTY_KEYS = {
+  schedule: ['date', 'relativeDate', 'time', 'timezone', 'place', 'duration'],
+  execution: ['completion', 'condition', 'subcheck'],
+  content: ['detail', 'resource'],
+  provenance: ['repeat', 'repeatEnd', 'guide', 'caution', 'source'],
+} as const;
+
+async function chooseStandalonePropertyGroup(page: Page, group: keyof typeof STANDALONE_PROPERTY_KEYS) {
+  const tray = page.locator('[data-authoring-property-tray]');
+  if (await tray.count() === 0) await page.locator('[data-action="open-authoring-properties"]').first().click();
+  for (let step = 0; step < 2 && await tray.getAttribute('data-chooser-stage') !== 'groups'; step++) {
+    await tray.locator('[data-action="back-authoring-chooser"]').click();
+  }
+  await expect(tray).toHaveAttribute('data-chooser-stage', 'groups');
+  await expect(tray.locator('.property-group-choice')).toHaveCount(4);
+  await expect(tray.locator('.property-card')).toHaveCount(0);
+  await tray.locator(`[data-action="choose-authoring-property-group"][data-group="${group}"]`).click();
+  await expect(tray).toHaveAttribute('data-chooser-stage', 'properties');
+}
 
 test('P2-C property catalog keeps all 16 fields editable with inline, dependent batch, exact reentry, and zero-write cancel', async ({ page }) => {
   test.setTimeout(75_000);
@@ -406,29 +533,26 @@ test('P2-C property catalog keeps all 16 fields editable with inline, dependent 
   await page.locator('[data-action="open-authoring-properties"]').first().click();
   const tray = page.locator('[data-authoring-property-tray]');
   await expect(tray).toBeVisible();
-  await expect(tray.locator('.property-boundary-copy')).toContainText('WorkingSource와 결과가 함께 갱신됩니다.');
-  await expect(tray.locator('.property-boundary-copy')).toContainText('shadow 수정은 이 원문으로 돌아오지 않습니다.');
+  await expect(tray.locator('.property-boundary-copy')).toHaveText('적용하면 이 항목의 원문과 결과가 함께 바뀝니다.');
   await expect(tray.locator('.property-group-choice')).toHaveCount(4);
   await expect(tray.locator('.property-group-choice strong')).toHaveText(['일정', '실행', '내용', '더 보기']);
 
-  const expectedGroupSizes = new Map([
-    ['schedule', 8],
-    ['execution', 3],
-    ['content', 4],
-    ['provenance', 1],
-  ]);
-  let editablePropertyCount = 0;
-  for (const [group, expectedCount] of expectedGroupSizes) {
-    await tray.locator(`[data-action="choose-authoring-property-group"][data-group="${group}"]`).click();
+  const observedPropertyKeys: string[] = [];
+  for (const group of Object.keys(STANDALONE_PROPERTY_KEYS) as Array<keyof typeof STANDALONE_PROPERTY_KEYS>) {
+    const expectedKeys = STANDALONE_PROPERTY_KEYS[group];
+    await chooseStandalonePropertyGroup(page, group);
     await expect(tray.locator('.property-card-list')).toHaveAttribute('data-property-group', group);
-    await expect(tray.locator('.property-card')).toHaveCount(expectedCount);
-    await expect(tray.locator('.property-card[data-write-support="editable"]')).toHaveCount(expectedCount);
+    await expect(tray.locator('.property-card')).toHaveCount(expectedKeys.length);
+    await expect(tray.locator('.property-card[data-write-support="editable"]')).toHaveCount(expectedKeys.length);
     await expect(tray.locator('.property-card[data-write-support="blocked"]')).toHaveCount(0);
-    editablePropertyCount += expectedCount;
+    const keys = await tray.locator('.property-card').evaluateAll(nodes => nodes.map(node => node.getAttribute('data-property-key')!));
+    expect(keys).toEqual(expectedKeys);
+    observedPropertyKeys.push(...keys);
   }
-  expect(editablePropertyCount).toBe(16);
+  expect(observedPropertyKeys).toHaveLength(16);
+  expect(new Set(observedPropertyKeys).size).toBe(16);
 
-  await tray.locator('[data-action="choose-authoring-property-group"][data-group="schedule"]').click();
+  await chooseStandalonePropertyGroup(page, 'schedule');
   const beforeInlineCancel = await page.locator('#flow-editor').inputValue();
   const callsBeforeInlineCancel = calls.length;
   await tray.locator('[data-action="edit-authoring-property"][data-key="duration"]').click();
@@ -439,7 +563,8 @@ test('P2-C property catalog keeps all 16 fields editable with inline, dependent 
   await inlineDuration.locator('input[name="value"]').fill('45분');
   await inlineDuration.locator('[data-action="cancel-authoring-property"]').click();
   await expect(inlineDuration).toHaveCount(0);
-  await expectSaveStatus(page, '취소했어요. 원문은 바뀌지 않았습니다.', 'noop');
+  await expect(tray).toHaveAttribute('data-chooser-stage', 'properties');
+  await expect(tray.locator('[data-action="edit-authoring-property"][data-key="duration"]')).toBeFocused();
   await expect(page.locator('#flow-editor')).toHaveValue(beforeInlineCancel);
   expect(calls).toHaveLength(callsBeforeInlineCancel);
 
@@ -453,6 +578,7 @@ test('P2-C property catalog keeps all 16 fields editable with inline, dependent 
   await page.locator('#authoring-tab-result').click();
   await page.locator('#authoring-review-opener').click();
   const callsBeforeDependentCancel = calls.length;
+  await chooseStandalonePropertyGroup(page, 'schedule');
   await tray.locator('[data-action="edit-authoring-property"][data-key="timezone"]').click();
   const timezoneForm = page.locator('[data-dialog-form="authoring-dependent-property"][data-dependent-kind="timezone"]');
   await expect(timezoneForm).toBeVisible();
@@ -461,7 +587,8 @@ test('P2-C property catalog keeps all 16 fields editable with inline, dependent 
   await page.keyboard.press('Escape');
   await expect(page.locator('#dialog')).not.toHaveAttribute('open', '');
   await expect(timezoneForm).toBeHidden();
-  await expectSaveStatus(page, '취소했어요. 원문은 바뀌지 않았습니다.', 'noop');
+  await expect(tray).toHaveAttribute('data-chooser-stage', 'properties');
+  await expect(tray.locator('[data-action="edit-authoring-property"][data-key="timezone"]')).toBeFocused();
   await expect(page.locator('#flow-editor')).toHaveValue(afterDuration);
   await expect(page.locator('#app')).toHaveAttribute('data-authoring-source-mutations', '1');
   expect(calls).toHaveLength(callsBeforeDependentCancel);
@@ -477,6 +604,7 @@ test('P2-C property catalog keeps all 16 fields editable with inline, dependent 
 
   await page.locator('#authoring-tab-result').click();
   await page.locator('#authoring-review-opener').click();
+  await chooseStandalonePropertyGroup(page, 'schedule');
   await tray.locator('.property-card[data-property-key="timezone"] [data-action="locate-authoring-property"]').click();
   await expect.poll(() => page.locator('#flow-editor').evaluate((editor) => {
     const textarea = editor as HTMLTextAreaElement;
@@ -485,7 +613,7 @@ test('P2-C property catalog keeps all 16 fields editable with inline, dependent 
 
   await page.locator('#authoring-tab-result').click();
   await page.locator('#authoring-review-opener').click();
-  await tray.locator('[data-action="choose-authoring-property-group"][data-group="execution"]').click();
+  await chooseStandalonePropertyGroup(page, 'execution');
   await tray.locator('[data-action="edit-authoring-property"][data-key="subcheck"]').click();
   const subcheckForm = tray.locator('[data-authoring-inline-form][data-key="subcheck"]');
   await subcheckForm.locator('input[name="value"]').fill('예약번호 확인');
@@ -496,6 +624,7 @@ test('P2-C property catalog keeps all 16 fields editable with inline, dependent 
 
   await page.locator('#authoring-tab-result').click();
   await page.locator('#authoring-review-opener').click();
+  await chooseStandalonePropertyGroup(page, 'execution');
   const subcheckInstance = tray.locator('.property-card[data-property-key="subcheck"] [data-action="locate-authoring-property"]');
   await expect(subcheckInstance).toHaveCount(1);
   await expect(subcheckInstance).toHaveAttribute('data-property-source-line', /\d+/u);
@@ -569,6 +698,7 @@ test('P2-C inline and dependent property surfaces stay operable and cancel witho
 
     const tray = page.locator('[data-authoring-property-tray]');
     await expect(tray.locator('.property-group-choice')).toHaveCount(4);
+    await chooseStandalonePropertyGroup(page, 'schedule');
     await tray.locator('[data-action="edit-authoring-property"][data-key="duration"]').click();
     const inlineForm = tray.locator('[data-authoring-inline-form][data-key="duration"]');
     await inlineForm.scrollIntoViewIfNeeded();
@@ -666,14 +796,14 @@ test('authoring template, optional review, and save action stay operable across 
     const templateAction = page.locator('button[data-action="select-template"]').first();
     await templateAction.focus();
     await expect(templateAction).toBeFocused();
-    await expect(page.locator('#template-example-source')).toContainText('# 4주 운동 적응');
+    await expect(page.locator('#template-example-source')).toHaveText(findPersonalWorkspacePocStructureTemplatePreview(PERSONAL_WORKSPACE_POC_AUTHORING_TEMPLATES[0].templateId)!.expectedRawText);
     await templateAction.press('ArrowRight');
     const secondTemplateAction = page.locator('button[data-action="select-template"]').nth(1);
     await expect(secondTemplateAction).toBeFocused();
     await expect(secondTemplateAction).toHaveAttribute('data-preview-active', 'true');
-    await expect(page.locator('#template-example-source')).toContainText('# 주간 운동 루틴');
+    await expect(page.locator('#template-example-source')).toHaveText(findPersonalWorkspacePocStructureTemplatePreview(PERSONAL_WORKSPACE_POC_AUTHORING_TEMPLATES[1].templateId)!.expectedRawText);
     await templateAction.focus();
-    await expect(page.locator('#template-example-source')).toContainText('# 4주 운동 적응');
+    await expect(page.locator('#template-example-source')).toHaveText(findPersonalWorkspacePocStructureTemplatePreview(PERSONAL_WORKSPACE_POC_AUTHORING_TEMPLATES[0].templateId)!.expectedRawText);
     const templateBox = await templateAction.boundingBox();
     expect(templateBox, `${viewport.label} template target`).not.toBeNull();
     if (templateBox) expect(templateBox.height).toBeGreaterThanOrEqual(48);
@@ -688,7 +818,7 @@ test('authoring template, optional review, and save action stay operable across 
         ),
       });
     }
-    await templateAction.click();
+    await applyStandaloneTemplate(page);
     const scaffold = await page.locator('#flow-editor').inputValue();
     expect(scaffold).not.toContain('4주 운동 적응');
     await page.locator('#flow-editor').press('Control+z');
@@ -761,7 +891,7 @@ test('inline blank examples and native template Undo preserve the textarea bytes
 
     const editor = page.locator('#flow-editor');
     await page.locator('#template-picker-opener').click();
-    await page.locator('button[data-action="select-template"]').first().click();
+    await applyStandaloneTemplate(page);
     const scaffold = await editor.inputValue();
     expect(scaffold.length, `${viewport.label} native scaffold`).toBeGreaterThan(0);
     const templateDraft = await page.evaluate((key) => window.localStorage.getItem(key), DRAFT_STORAGE_KEY);
@@ -915,7 +1045,7 @@ test('template insertion fails closed when the native browser transaction is una
   await page.evaluate(() => {
     document.execCommand = () => false;
   });
-  await page.locator('button[data-action="select-template"]').first().click();
+  await applyStandaloneTemplate(page, 0, false);
   await expect(page.locator('#flow-editor')).toHaveValue('');
   await expectSaveStatus(page, '작성 틀을 넣지 못했어요.', 'error');
   expect(await page.evaluate((key) => window.localStorage.getItem(key), DRAFT_STORAGE_KEY)).toBe(beforeDraft);
@@ -927,7 +1057,8 @@ test('authoring commit rolls state and draft back together when exact draft clea
   await page.locator('button[data-action="go-authoring"]').first().click();
   await page.locator('#flow-editor').fill(VALID_SOURCE);
   const draftBefore = await page.evaluate((key) => window.localStorage.getItem(key), DRAFT_STORAGE_KEY);
-  const stateBefore = await page.evaluate((key) => window.localStorage.getItem(key), STORAGE_KEY);
+  const stateBefore = await page.evaluate((key) => window.localStorage.getItem(key), WORKSPACE_STORAGE_KEY);
+  const legacyBefore = await page.evaluate((key) => window.localStorage.getItem(key), STORAGE_KEY);
   expect(draftBefore).not.toBeNull();
   await page.evaluate((draftKey) => {
     const originalRemove = Storage.prototype.removeItem;
@@ -943,13 +1074,34 @@ test('authoring commit rolls state and draft back together when exact draft clea
   const resultTab = page.locator('#authoring-tab-result');
   if (await resultTab.isVisible()) await resultTab.click();
   await page.locator('#commit-authoring').click();
-  await expect(page.locator('#save-status')).toContainText('저장 실패');
+  await expect(page.getByTestId('workspace-storage-gate')).toBeVisible();
+  await expect(page.locator('#save-status')).toContainText('저장 상태 확인 필요');
   await expect(page.getByRole('heading', { name: '개인 Flow로 저장했어요' })).toHaveCount(0);
-  expect(await page.evaluate((key) => window.localStorage.getItem(key), STORAGE_KEY)).toBe(stateBefore);
+  await expectSuccessfulMutationCount(page, 0);
+  expect(await page.evaluate((key) => window.localStorage.getItem(key), STORAGE_KEY)).toBe(legacyBefore);
   expect(await page.evaluate((key) => window.localStorage.getItem(key), DRAFT_STORAGE_KEY)).toBe(draftBefore);
+  const prepared = await page.evaluate(key => JSON.parse(localStorage.getItem(key)!), WORKSPACE_RECOVERY_KEY);
+  expect(prepared.contract).toBe('flowme-workspace-action-journal-v2');
+  expect(prepared.phase).toBe('prepared');
+  expect(prepared.operation).toBe('authoring-handoff');
+  expect(prepared.entries.map((entry: { key: string }) => entry.key)).toEqual([WORKSPACE_STORAGE_KEY, DRAFT_STORAGE_KEY]);
+  expect(prepared.entries.map((entry: { beforeRaw: string | null }) => entry.beforeRaw)).toEqual([stateBefore, draftBefore]);
+  const interruptedBytes = await page.evaluate(() => Object.entries(localStorage).sort());
+  await page.reload();
+  await expect(page.getByTestId('workspace-storage-gate')).toBeVisible();
+  expect(await page.evaluate(() => Object.entries(localStorage).sort())).toEqual(interruptedBytes);
+  await page.locator('[data-action="workspace-recover-storage"]').click();
+  await expect(page.getByTestId('workspace-storage-gate')).toHaveCount(0);
+  expect(await page.evaluate(key => localStorage.getItem(key), WORKSPACE_STORAGE_KEY)).toBe(stateBefore);
+  expect(await page.evaluate(key => localStorage.getItem(key), DRAFT_STORAGE_KEY)).toBe(draftBefore);
+  expect(await page.evaluate(key => localStorage.getItem(key), STORAGE_KEY)).toBe(legacyBefore);
+  expect(await page.evaluate(key => localStorage.getItem(key), WORKSPACE_RECOVERY_KEY)).toBeNull();
 });
 
-test('same source retry opens the existing Flow, removes the retried draft, and adds no duplicate', async ({ page }) => {
+test('same source retry opens the existing Flow, preserves the retried draft with zero writes, and adds no duplicate', async ({ page }) => {
+  const calls: StandaloneStorageMutation[] = [];
+  const operatingBytes = '  same-source retry operating bytes  ';
+  await installStandaloneA8StorageAudit(page, calls, operatingBytes);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(HTML_URL);
   await page.locator('button[data-action="go-authoring"]').first().click();
@@ -957,34 +1109,39 @@ test('same source retry opens the existing Flow, removes the retried draft, and 
   await page.locator('#authoring-tab-result').click();
   await page.locator('#commit-authoring').click();
   await expect(page.getByRole('heading', { name: '개인 Flow로 저장했어요' })).toBeVisible();
-  const firstStateBytes = await page.evaluate((key) => window.localStorage.getItem(key), STORAGE_KEY);
-  const firstAuthoredCount = await page.evaluate((key) => {
-    const stored = JSON.parse(window.localStorage.getItem(key) || '{}');
-    return stored.state.flows.filter((flow: { origin: string }) => flow.origin === 'authoring-handoff').length;
-  }, STORAGE_KEY);
+  const legacyBytes = await page.evaluate((key) => window.localStorage.getItem(key), STORAGE_KEY);
+  const firstStateBytes = await page.evaluate((key) => window.localStorage.getItem(key), WORKSPACE_STORAGE_KEY);
+  const firstAuthoredCount = (await readStandaloneCheckpoint(page)).state.flows.filter((flow: { origin: string }) => flow.origin === 'authoring-handoff').length;
   expect(await page.evaluate((key) => window.localStorage.getItem(key), DRAFT_STORAGE_KEY)).toBeNull();
 
   await page.locator('button[data-action="go-authoring"]').first().click();
   await page.locator('#flow-editor').fill(VALID_SOURCE);
   expect(await page.evaluate((key) => window.localStorage.getItem(key), DRAFT_STORAGE_KEY)).not.toBeNull();
   await page.locator('#authoring-tab-result').click();
+  const retryDraftBytes = await page.evaluate(key => localStorage.getItem(key), DRAFT_STORAGE_KEY);
+  await page.waitForTimeout(25);
+  calls.length = 0;
   await page.locator('#commit-authoring').click();
 
   await expect(page.getByRole('heading', { name: '개인 Flow로 저장했어요' })).toBeVisible();
   await expect(page.locator('.receipt-actions button')).toHaveCount(1);
-  expect(await page.evaluate((key) => window.localStorage.getItem(key), STORAGE_KEY)).toBe(firstStateBytes);
-  expect(await page.evaluate((key) => window.localStorage.getItem(key), DRAFT_STORAGE_KEY)).toBeNull();
-  expect(await page.evaluate((key) => {
-    const stored = JSON.parse(window.localStorage.getItem(key) || '{}');
-    return stored.state.flows.filter((flow: { origin: string }) => flow.origin === 'authoring-handoff').length;
-  }, STORAGE_KEY)).toBe(firstAuthoredCount);
+  expect(await page.evaluate((key) => window.localStorage.getItem(key), WORKSPACE_STORAGE_KEY)).toBe(firstStateBytes);
+  expect(await page.evaluate((key) => window.localStorage.getItem(key), STORAGE_KEY)).toBe(legacyBytes);
+  // K2B caller-switch C3-08 explicitly corrects duplicate handoff to a read-only
+  // existing-copy result: do not write a draft-only cleanup transaction.
+  expect(await page.evaluate((key) => window.localStorage.getItem(key), DRAFT_STORAGE_KEY)).toBe(retryDraftBytes);
+  await expect(page.locator('#save-status')).toContainText('작성 초안은 그대로 두었습니다');
+  expect(await page.evaluate(key => localStorage.getItem(key), WORKSPACE_RECOVERY_KEY)).toBeNull();
+  expect(await page.evaluate(key => localStorage.getItem(key), OPERATING_SENTINEL_KEY)).toBe(operatingBytes);
+  expect(calls).toEqual([]);
+  expect((await readStandaloneCheckpoint(page)).state.flows.filter((flow: { origin: string }) => flow.origin === 'authoring-handoff').length).toBe(firstAuthoredCount);
 });
 
 test('dedicated 48px drag handle and menu or keyboard use the same scoped order transition', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-09-02T03:00:00Z'));
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(HTML_URL);
-  const rows = page.locator('.task-row');
-  await expect(rows).toHaveCount(4);
+  const rows = await standaloneUntimedSeedRows(page);
   const originalOrder = await rows.evaluateAll((entries) => entries.map((entry) => entry.getAttribute('data-task-id')));
   const first = rows.first();
   const second = rows.nth(1);
@@ -1005,25 +1162,26 @@ test('dedicated 48px drag handle and menu or keyboard use the same scoped order 
   });
   const draggedOrder = await rows.evaluateAll((entries) => entries.map((entry) => entry.getAttribute('data-task-id')));
   expect(draggedOrder).toEqual([originalOrder[1], originalOrder[0], ...originalOrder.slice(2)]);
-  const dragStoredOrder = await page.evaluate((key) => {
-    const stored = JSON.parse(window.localStorage.getItem(key) || '{}');
-    return stored.state?.orders?.today;
-  }, STORAGE_KEY);
-  expect(dragStoredOrder).toEqual(draggedOrder);
+  const dragStoredOrder = (await readStandaloneCheckpoint(page)).state.timelineContextV1.records;
+  expect(dragStoredOrder).toHaveLength(1);
+  expect(dragStoredOrder[0].contextKey).toBe('2026-09-02');
 
   await page.locator('button[data-action="undo"]:visible').first().click();
   await expect(rows.first()).toHaveAttribute('data-task-id', originalOrder[0] || '');
+  // The contextual Undo returns to the move owner. Close it before beginning a
+  // fresh keyboard transaction, rather than reusing its pre-Undo order ticket.
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#move-panel')).not.toBeVisible();
   await rows.nth(1).focus();
   await rows.nth(1).press('Alt+ArrowUp');
+  await expect.poll(() => rows.evaluateAll(entries => entries.map(entry => entry.getAttribute('data-task-id')))).toEqual(draggedOrder);
   const keyboardOrder = await rows.evaluateAll((entries) => entries.map((entry) => entry.getAttribute('data-task-id')));
   expect(keyboardOrder).toEqual(draggedOrder);
-  const keyboardStoredOrder = await page.evaluate((key) => {
-    const stored = JSON.parse(window.localStorage.getItem(key) || '{}');
-    return stored.state?.orders?.today;
-  }, STORAGE_KEY);
-  expect(keyboardStoredOrder).toEqual(dragStoredOrder);
+  const keyboardStoredOrder = (await readStandaloneCheckpoint(page)).state.timelineContextV1.records;
+  expect(keyboardStoredOrder[0].orderedRefKeys).toEqual(dragStoredOrder[0].orderedRefKeys);
+  await expect(page.locator('.task-row').first()).toHaveAttribute('data-task-id', 'meeting');
 
-  const bytesBeforeCanceledDrop = await page.evaluate((key) => window.localStorage.getItem(key), STORAGE_KEY);
+  const bytesBeforeCanceledDrop = await page.evaluate((key) => window.localStorage.getItem(key), WORKSPACE_STORAGE_KEY);
   const currentHandle = rows.nth(1).locator('.drag-handle');
   await currentHandle.dispatchEvent('dragstart');
   await expect(rows.nth(1)).toHaveClass(/dragging/u);
@@ -1031,11 +1189,13 @@ test('dedicated 48px drag handle and menu or keyboard use the same scoped order 
   await expect(rows.first()).toHaveClass(/drop-target/u);
   await page.locator('body').dispatchEvent('drop');
   await expect(page.locator('.dragging,.drop-target')).toHaveCount(0);
-  expect(await page.evaluate((key) => window.localStorage.getItem(key), STORAGE_KEY)).toBe(bytesBeforeCanceledDrop);
+  expect(await page.evaluate((key) => window.localStorage.getItem(key), WORKSPACE_STORAGE_KEY)).toBe(bytesBeforeCanceledDrop);
+  expect(await page.evaluate((key) => window.localStorage.getItem(key), STORAGE_KEY)).toBeNull();
   await expectSaveStatus(page, '이동을 취소했어요.', 'noop');
 });
 
 test('mouse drag exposes its list corridor and 3px before or after insertion line without saving an outside drop', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-09-02T03:00:00Z'));
   test.setTimeout(30_000);
   const operatingBytes = '  keep A8 corridor operating bytes  ';
   const calls: StandaloneStorageMutation[] = [];
@@ -1043,9 +1203,9 @@ test('mouse drag exposes its list corridor and 3px before or after insertion lin
   await page.setViewportSize({ width: 390, height: 500 });
   await page.goto(HTML_URL);
 
-  const rows = page.locator('.task-row');
+  const rows = await standaloneUntimedSeedRows(page);
   const list = page.locator('.task-list').first();
-  await expect(rows).toHaveCount(4);
+  await expect(rows).toHaveCount(3);
   await expect(page.locator('#save-status')).toHaveAttribute('role', 'status');
   await expect(page.locator('#save-status')).toHaveAttribute('aria-live', 'polite');
   const stateBytesBeforeDrag = await page.evaluate((key) => window.localStorage.getItem(key), STORAGE_KEY);
@@ -1108,6 +1268,7 @@ test('mouse drag exposes its list corridor and 3px before or after insertion lin
 });
 
 test('edge-held mouse drag scrolls; browser drop moves the originally offscreen task and Undo restores it', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-09-02T03:00:00Z'));
   test.setTimeout(30_000);
   const operatingBytes = '  keep A8 edge-scroll operating bytes  ';
   const calls: StandaloneStorageMutation[] = [];
@@ -1115,12 +1276,16 @@ test('edge-held mouse drag scrolls; browser drop moves the originally offscreen 
   await page.setViewportSize({ width: 390, height: 360 });
   await page.goto(HTML_URL);
 
-  const rows = page.locator('.task-row');
+  const rows = await standaloneUntimedSeedRows(page);
   const list = page.locator('.task-list').first();
-  await expect(rows).toHaveCount(4);
+  await expect(rows).toHaveCount(3);
   const initialOrder = await rows.evaluateAll((entries) => entries.map((entry) => entry.getAttribute('data-task-id')));
   const sourceHandle = rows.first().locator('.drag-handle');
   await sourceHandle.scrollIntoViewIfNeeded();
+  // Position the actual source in view without centering the last target into
+  // view as scrollIntoView does for this three-untimed-row context.
+  const lastCenteredBox = await rows.last().boundingBox();
+  if (lastCenteredBox && lastCenteredBox.y < 360) await page.evaluate(delta => window.scrollBy(0, delta), lastCenteredBox.y - 370);
   const lastBeforeScroll = await rows.last().boundingBox();
   expect(lastBeforeScroll).not.toBeNull();
   if (lastBeforeScroll) expect(lastBeforeScroll.y).toBeGreaterThanOrEqual(360);
@@ -1169,7 +1334,10 @@ test('edge-held mouse drag scrolls; browser drop moves the originally offscreen 
   await expectSuccessfulMutationCount(page, 1);
   await expect.poll(() => calls.length).toBeGreaterThanOrEqual(1);
   expect(calls.filter((entry) => entry.method === 'clear')).toEqual([]);
-  expect(calls.filter((entry) => entry.key && entry.key !== STORAGE_KEY)).toEqual([]);
+  expect(calls.filter((entry) => entry.key && ![WORKSPACE_STORAGE_KEY, WORKSPACE_RECOVERY_KEY].includes(entry.key))).toEqual([]);
+  expect(await page.evaluate(key => localStorage.getItem(key), STORAGE_KEY)).toBeNull();
+  await readStandaloneCheckpoint(page);
+  await expect(page.locator('.task-row').first()).toHaveAttribute('data-task-id', 'meeting');
   expect(await page.evaluate((key) => window.localStorage.getItem(key), OPERATING_SENTINEL_KEY)).toBe(operatingBytes);
 
   await page.locator('button[data-action="undo"]:visible').first().click();
@@ -1186,6 +1354,20 @@ test('move menu sends one task to the bottom or top through one write and keeps 
   await installStandaloneA8StorageAudit(page, calls, operatingBytes);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(HTML_URL);
+  const legacyBefore = await page.evaluate(key => localStorage.getItem(key), STORAGE_KEY);
+  const transactionCalls = [
+    { method: 'setItem', key: WORKSPACE_RECOVERY_KEY },
+    { method: 'setItem', key: WORKSPACE_STORAGE_KEY },
+    { method: 'setItem', key: WORKSPACE_RECOVERY_KEY },
+    { method: 'removeItem', key: WORKSPACE_RECOVERY_KEY },
+  ];
+  const expectTransactions = async (count: number) => {
+    await expect.poll(() => calls.slice()).toEqual(Array.from({ length: count }, () => transactionCalls).flat());
+    expect(calls.filter(entry => entry.method === 'setItem' && entry.key === WORKSPACE_STORAGE_KEY)).toHaveLength(count);
+    expect(await page.evaluate(key => localStorage.getItem(key), WORKSPACE_RECOVERY_KEY)).toBeNull();
+    expect(await page.evaluate(key => localStorage.getItem(key), STORAGE_KEY)).toBe(legacyBefore);
+    await readStandaloneCheckpoint(page);
+  };
 
   const rows = page.locator('.task-row');
   const initialOrder = await rows.evaluateAll((entries) => entries.map((entry) => entry.getAttribute('data-task-id')));
@@ -1196,33 +1378,32 @@ test('move menu sends one task to the bottom or top through one write and keeps 
   await page.locator('#move-panel button[data-action="move-bottom"]').click();
   await expect.poll(async () => rows.last().getAttribute('data-task-id')).toBe(movedId);
   await expectSuccessfulMutationCount(page, 1);
-  await expect.poll(() => calls.length).toBe(1);
-  expect(calls[0]).toEqual({ method: 'setItem', key: STORAGE_KEY });
+  await expectTransactions(1);
 
   await rows.last().locator('button[data-action="task-menu"]').click();
   await expect(page.locator('#move-panel button[data-action="move-bottom"]')).toBeDisabled();
-  const bytesAtBottom = await page.evaluate((key) => window.localStorage.getItem(key), STORAGE_KEY);
+  const bytesAtBottom = await page.evaluate((key) => window.localStorage.getItem(key), WORKSPACE_STORAGE_KEY);
   await page.locator('#move-panel button[data-action="close-move-panel"]').click();
-  expect(calls).toHaveLength(1);
-  expect(await page.evaluate((key) => window.localStorage.getItem(key), STORAGE_KEY)).toBe(bytesAtBottom);
+  await expectTransactions(1);
+  expect(await page.evaluate((key) => window.localStorage.getItem(key), WORKSPACE_STORAGE_KEY)).toBe(bytesAtBottom);
 
   await rows.last().locator('button[data-action="task-menu"]').click();
   await page.locator('#move-panel button[data-action="move-top"]').click();
   await expect.poll(async () => rows.first().getAttribute('data-task-id')).toBe(movedId);
   await expectSuccessfulMutationCount(page, 2);
-  await expect.poll(() => calls.length).toBe(2);
+  await expectTransactions(2);
 
   await rows.first().locator('button[data-action="task-menu"]').click();
   await expect(page.locator('#move-panel button[data-action="move-top"]')).toBeDisabled();
   await page.locator('#move-panel button[data-action="close-move-panel"]').click();
-  expect(calls).toHaveLength(2);
+  await expectTransactions(2);
 
   await page.locator('button[data-action="undo"]:visible').first().click();
   await expect.poll(async () => rows.last().getAttribute('data-task-id')).toBe(movedId);
   await expectSuccessfulMutationCount(page, 3);
-  await expect.poll(() => calls.length).toBe(3);
+  await expectTransactions(3);
   expect(calls.filter((entry) => entry.method === 'clear')).toEqual([]);
-  expect(calls.filter((entry) => entry.key && entry.key !== STORAGE_KEY)).toEqual([]);
+  expect(calls.filter((entry) => entry.key && ![WORKSPACE_STORAGE_KEY, WORKSPACE_RECOVERY_KEY].includes(entry.key))).toEqual([]);
   expect(await page.evaluate((key) => window.localStorage.getItem(key), OPERATING_SENTINEL_KEY)).toBe(operatingBytes);
 });
 
@@ -1318,44 +1499,57 @@ test('844x390 month expands exactly 28 empty dates and every date can create a d
   await page.setViewportSize({ width: 844, height: 390 });
   await page.goto(HTML_URL);
 
-  await page.locator('.task-row').first().locator('button[data-action="toggle-complete"]').click();
-  await page.evaluate(({ key, today, tomorrow }) => {
-    const envelope = JSON.parse(window.localStorage.getItem(key) || '{}');
+  // Build validated legacy INPUT, then let the real boot reader project v2.
+  // Mutating a persisted v2 .state alone would invalidate its timeline context.
+  const legacyInput = await page.evaluate(({ key, targetKey, today, tomorrow }) => {
+    const apis = window as unknown as {
+      FlowMeIntegratedPoc: { initialEnvelope: () => { state: { tasks: { date: string | null }[]; orders: object } }; validate: (state: unknown) => string[] };
+      FlowPocWorkspaceCheckpoint: { fromLegacy: (raw: string) => { ok: boolean } };
+    };
+    if (localStorage.getItem(targetKey) !== null) throw Error('Fixture requires a fresh checkpoint');
+    const envelope = apis.FlowMeIntegratedPoc.initialEnvelope();
     envelope.state.tasks.forEach((task: { date: string | null }, index: number) => {
       task.date = index % 2 === 0 ? today : tomorrow;
     });
     envelope.state.orders = {};
-    window.localStorage.setItem(key, JSON.stringify(envelope));
-  }, { key: STORAGE_KEY, today: '2026-09-02', tomorrow: '2026-09-03' });
+    const raw = JSON.stringify(envelope);
+    if (apis.FlowMeIntegratedPoc.validate(envelope.state).length || !apis.FlowPocWorkspaceCheckpoint.fromLegacy(raw).ok) throw Error('Invalid month fixture');
+    window.localStorage.setItem(key, raw);
+    return raw;
+  }, { key: STORAGE_KEY, targetKey: WORKSPACE_STORAGE_KEY, today: '2026-09-02', tomorrow: '2026-09-03' });
   await page.reload();
   calls.length = 0;
 
   await page.locator('button[data-view="month"]').click();
   const toggle = page.locator('button[data-action="toggle-empty-month"]');
   await expect(toggle).toHaveText('할 일 없는 날짜 28일 보기');
-  const bytesBeforeToggle = await page.evaluate((key) => window.localStorage.getItem(key), STORAGE_KEY);
+  const bytesBeforeToggle = await page.evaluate((key) => window.localStorage.getItem(key), WORKSPACE_STORAGE_KEY);
   await toggle.click();
   await expect(toggle).toHaveText('빈 날짜 접기');
   await expect(page.locator('.period-day')).toHaveCount(30);
   await expect(page.locator('.period-day-empty')).toHaveCount(28);
   await expect(page.locator('.month-date-add')).toHaveCount(30);
-  await expect(page.locator('#task-order-help-month')).toHaveCount(1);
+  // K2B scopes timeline ordering to each date, not one month-wide list.
+  await expect(page.locator('.period-day [id^="task-order-help-"]')).toHaveCount(2);
   expect(await page.locator('.period-day .drag-handle').evaluateAll((handles) => (
-    handles.every((handle) => handle.getAttribute('aria-describedby') === 'task-order-help-month')
+    handles.length === 10 && handles.every((handle) => {
+      const help = document.getElementById(handle.getAttribute('aria-describedby') ?? '');
+      return help?.closest('.period-day') === handle.closest('.period-day') && help?.textContent?.includes('Enter 또는 Space');
+    })
   ))).toBe(true);
   await expectSuccessfulMutationCount(page, 0);
-  expect(await page.evaluate((key) => window.localStorage.getItem(key), STORAGE_KEY)).toBe(bytesBeforeToggle);
+  expect(await page.evaluate((key) => window.localStorage.getItem(key), WORKSPACE_STORAGE_KEY)).toBe(bytesBeforeToggle);
   expect(calls).toEqual([]);
   expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
 
   const targetDate = '2026-09-15';
   const targetSection = page.locator(`.period-day[data-period-date="${targetDate}"]`);
-  const bytesBeforeDateEntry = await page.evaluate((key) => window.localStorage.getItem(key), STORAGE_KEY);
+  const bytesBeforeDateEntry = await page.evaluate((key) => window.localStorage.getItem(key), WORKSPACE_STORAGE_KEY);
   await targetSection.locator('.month-date-add').click();
   await expect(page.locator('form[data-dialog-form="quick"] input[name="date"]')).toHaveValue(targetDate);
   await page.keyboard.press('Escape');
   await expect(page.locator('#dialog')).not.toBeVisible();
-  expect(await page.evaluate((key) => window.localStorage.getItem(key), STORAGE_KEY)).toBe(bytesBeforeDateEntry);
+  expect(await page.evaluate((key) => window.localStorage.getItem(key), WORKSPACE_STORAGE_KEY)).toBe(bytesBeforeDateEntry);
   expect(calls).toEqual([]);
 
   await page.evaluate(() => (document.querySelector('[data-action="open-guide"]') as HTMLElement).click());
@@ -1365,9 +1559,19 @@ test('844x390 month expands exactly 28 empty dates and every date can create a d
   await targetSection.locator('.month-date-add').click();
   await page.locator('form[data-dialog-form="quick"] input[name="title"]').fill('저장되면 안 되는 월간 할 일');
   await page.locator('form[data-dialog-form="quick"] button[type="submit"]').click();
-  await expectSaveStatus(page, '저장하지 못했어요.', 'error');
+  // K2B requires explicit recovery even when the prepared journal write threw
+  // before mutation. The old month stays unavailable until storage is verified.
+  await expectSaveStatus(page, '저장 상태 확인 필요 · 변경 차단', 'error');
+  const recovery = page.getByTestId('workspace-storage-gate');
+  await expect(recovery).toBeVisible();
+  await expect(recovery.getByRole('alert')).toContainText('현재 입력을 보존');
+  expect(await page.evaluate((key) => window.localStorage.getItem(key), WORKSPACE_STORAGE_KEY)).toBe(bytesBeforeDateEntry);
+  expect(await page.evaluate(key => localStorage.getItem(key), WORKSPACE_RECOVERY_KEY)).toBeNull();
+  expect(calls).toEqual([]);
+  await recovery.getByRole('button', { name: '이전 상태 복구', exact: true }).click();
+  await expect(recovery).toHaveCount(0);
+  await expect(page.locator('form[data-dialog-form="quick"] input[name="title"]')).toHaveValue('저장되면 안 되는 월간 할 일');
   await expect(targetSection.locator('.task-row').filter({ hasText: '저장되면 안 되는 월간 할 일' })).toHaveCount(0);
-  expect(await page.evaluate((key) => window.localStorage.getItem(key), STORAGE_KEY)).toBe(bytesBeforeDateEntry);
   expect(calls).toEqual([]);
   await page.keyboard.press('Escape');
   await page.evaluate(() => (document.querySelector('[data-action="open-guide"]') as HTMLElement).click());
@@ -1382,8 +1586,15 @@ test('844x390 month expands exactly 28 empty dates and every date can create a d
   await expect(targetSection.locator('.task-row').filter({ hasText: '월간 날짜별 빠른 할 일' })).toBeVisible();
   await expect(targetSection.locator('.task-row').filter({ hasText: targetDate })).toHaveCount(0);
   await expectSuccessfulMutationCount(page, 1);
-  await expect.poll(() => calls.length).toBe(1);
-  expect(calls[0]).toEqual({ method: 'setItem', key: STORAGE_KEY });
+  const transactionCalls = [
+    { method: 'setItem', key: WORKSPACE_RECOVERY_KEY },
+    { method: 'setItem', key: WORKSPACE_STORAGE_KEY },
+    { method: 'setItem', key: WORKSPACE_RECOVERY_KEY },
+    { method: 'removeItem', key: WORKSPACE_RECOVERY_KEY },
+  ];
+  await expect.poll(() => calls).toEqual(transactionCalls);
+  await readStandaloneCheckpoint(page);
+  expect(await page.evaluate(key => localStorage.getItem(key), WORKSPACE_RECOVERY_KEY)).toBeNull();
 
   const menuButton = page.locator('.task-row button[data-action="task-menu"]').first();
   await menuButton.scrollIntoViewIfNeeded();
@@ -1403,19 +1614,21 @@ test('844x390 month expands exactly 28 empty dates and every date can create a d
   await page.reload();
   await page.locator('button[data-view="month"]').click();
   await expect(page.locator(`.period-day[data-period-date="${targetDate}"]`).filter({ hasText: '월간 날짜별 빠른 할 일' })).toBeVisible();
-  await expect.poll(() => calls.length).toBe(1);
+  await expect.poll(() => calls).toEqual(transactionCalls);
   const persistentUndo = page.locator('button[data-action="undo"]:visible').first();
   await expect(persistentUndo).toBeEnabled();
   await persistentUndo.click();
   await expect(page.locator(`.period-day[data-period-date="${targetDate}"]`).filter({ hasText: '월간 날짜별 빠른 할 일' })).toHaveCount(0);
-  await expect.poll(() => calls.length).toBe(2);
-  expect(calls[1]).toEqual({ method: 'setItem', key: STORAGE_KEY });
+  await expect.poll(() => calls).toEqual([...transactionCalls, ...transactionCalls]);
+  await readStandaloneCheckpoint(page);
+  expect(await page.evaluate(key => localStorage.getItem(key), WORKSPACE_RECOVERY_KEY)).toBeNull();
   await page.reload();
   await page.locator('button[data-view="month"]').click();
   await expect(page.locator('.task-row').filter({ hasText: '월간 날짜별 빠른 할 일' })).toHaveCount(0);
   expect(await page.evaluate((key) => window.localStorage.getItem(key), OPERATING_SENTINEL_KEY)).toBe(operatingBytes);
   expect(calls.filter((entry) => entry.method === 'clear')).toEqual([]);
-  expect(calls.filter((entry) => entry.key && entry.key !== STORAGE_KEY)).toEqual([]);
+  expect(await page.evaluate(key => localStorage.getItem(key), STORAGE_KEY)).toBe(legacyInput);
+  expect(calls.filter((entry) => entry.key && ![WORKSPACE_STORAGE_KEY, WORKSPACE_RECOVERY_KEY].includes(entry.key))).toEqual([]);
 });
 
 test('row scroll stays inert while handle click, long press and menu share one task menu', async ({ page }) => {
@@ -1527,10 +1740,7 @@ test('Flow handle click, long press, native drag, more, Space and Enter converge
   const movePanel = page.locator('#move-panel');
   const targetFolder = () => movePanel.locator(`[data-action="move-folder-target"][data-folder-id="${targetFolderId}"]`);
   const currentFolder = () => movePanel.locator('[data-action="move-folder-target"][data-folder-id=""]');
-  const readMembership = () => page.evaluate(({ key, id }) => {
-    const envelope = JSON.parse(window.localStorage.getItem(key) || '{}');
-    return envelope.state?.flows?.find((flow: { id: string }) => flow.id === id)?.folderId ?? null;
-  }, { key: STORAGE_KEY, id: flowId });
+  const readMembership = async () => (await readStandaloneCheckpoint(page)).state.flows.find((flow: { id: string }) => flow.id === flowId).folderId;
   const outcomes: Array<string | null> = [];
   let undoBaselineBytes: string | null = null;
 
@@ -1541,7 +1751,7 @@ test('Flow handle click, long press, native drag, more, Space and Enter converge
     await page.locator('button[data-action="undo"]:visible').first().click();
     await expect.poll(readMembership).toBeNull();
     await expect(flowRow()).toBeVisible();
-    const restoredBytes = await page.evaluate((key) => window.localStorage.getItem(key), STORAGE_KEY);
+    const restoredBytes = JSON.stringify((await readStandaloneCheckpoint(page)).state);
     if (undoBaselineBytes === null) undoBaselineBytes = restoredBytes;
     else expect(restoredBytes).toBe(undoBaselineBytes);
   };
@@ -1617,13 +1827,18 @@ test('Flow handle click, long press, native drag, more, Space and Enter converge
   await assertMovedThenUndo();
 
   expect(outcomes).toEqual(Array(6).fill(targetFolderId));
-  await expect.poll(() => calls.length).toBe(12);
-  expect(calls.every((entry) => entry.method === 'setItem' && entry.key === STORAGE_KEY)).toBe(true);
+  const transactionCalls = [
+    { method: 'setItem', key: WORKSPACE_RECOVERY_KEY },
+    { method: 'setItem', key: WORKSPACE_STORAGE_KEY },
+    { method: 'setItem', key: WORKSPACE_RECOVERY_KEY },
+    { method: 'removeItem', key: WORKSPACE_RECOVERY_KEY },
+  ];
+  await expect.poll(() => calls.slice()).toEqual(Array.from({ length: 12 }, () => transactionCalls).flat());
 
   const bytesBeforeNoops = await page.evaluate(({ stateKey, draftKey }) => ({
     state: window.localStorage.getItem(stateKey),
     draft: window.localStorage.getItem(draftKey),
-  }), { stateKey: STORAGE_KEY, draftKey: DRAFT_STORAGE_KEY });
+  }), { stateKey: WORKSPACE_STORAGE_KEY, draftKey: DRAFT_STORAGE_KEY });
   const callsBeforeNoops = calls.length;
 
   await flowHandle().click();
@@ -1662,10 +1877,12 @@ test('Flow handle click, long press, native drag, more, Space and Enter converge
   expect(await page.evaluate(({ stateKey, draftKey }) => ({
     state: window.localStorage.getItem(stateKey),
     draft: window.localStorage.getItem(draftKey),
-  }), { stateKey: STORAGE_KEY, draftKey: DRAFT_STORAGE_KEY })).toEqual(bytesBeforeNoops);
+  }), { stateKey: WORKSPACE_STORAGE_KEY, draftKey: DRAFT_STORAGE_KEY })).toEqual(bytesBeforeNoops);
+  expect(await page.evaluate(key => localStorage.getItem(key), STORAGE_KEY)).toBeNull();
+  expect(await page.evaluate(key => localStorage.getItem(key), WORKSPACE_RECOVERY_KEY)).toBeNull();
   expect(await page.evaluate((key) => window.localStorage.getItem(key), OPERATING_SENTINEL_KEY)).toBe(operatingBytes);
   expect(calls.filter((entry) => entry.method === 'clear')).toEqual([]);
-  expect(calls.filter((entry) => entry.key && entry.key !== STORAGE_KEY)).toEqual([]);
+  expect(calls.filter((entry) => entry.key && ![WORKSPACE_STORAGE_KEY, WORKSPACE_RECOVERY_KEY].includes(entry.key))).toEqual([]);
   expect(errors).toEqual([]);
 });
 
@@ -1726,7 +1943,7 @@ test('trusted Chromium touch scroll on a row body leaves state unchanged before 
   expect(await page.evaluate((key) => window.localStorage.getItem(key), OPERATING_SENTINEL_KEY)).toBe(operatingBytes);
 });
 
-test('forced four-side safe variables keep the standalone move panel and toast inside the viewport', async ({ page }) => {
+test('forced four-side safe variables keep the standalone move panel and contextual completion result inside the viewport', async ({ page }) => {
   const operatingBytes = '  keep forced safe-area operating bytes  ';
   await page.addInitScript(({ key, bytes }) => {
     window.localStorage.setItem(key, bytes);
@@ -1759,8 +1976,18 @@ test('forced four-side safe variables keep the standalone move panel and toast i
   await page.keyboard.press('Escape');
 
   await row.locator('button[data-action="toggle-complete"]').click();
-  await expect(page.locator('#toast')).toBeVisible();
-  await assertInsideForcedInsets('#toast');
+  const result = page.getByTestId('workspace-contextual-result');
+  await expect(result).toBeVisible();
+  await expect(page.locator('#toast')).toBeHidden();
+  await assertInsideForcedInsets('[data-testid="workspace-contextual-result"]');
+  const undo = result.locator('[data-action="contextual-undo"]');
+  await expect(undo).toBeVisible();
+  await undo.click({ trial: true });
+  expect(await undo.evaluate(element => {
+    const rect = element.getBoundingClientRect();
+    const hit = document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2);
+    return hit === element || element.contains(hit);
+  })).toBe(true);
   expect(await page.evaluate((key) => window.localStorage.getItem(key), OPERATING_SENTINEL_KEY)).toBe(operatingBytes);
 });
 
@@ -1951,14 +2178,14 @@ test('P2-B standalone restores one recurring Item and three occurrence rows afte
     savedIdentity.map((row) => row.occurrenceId),
   );
 
-  const sourceItemBytes = await page.evaluate((storageKey) => {
-    const envelope = JSON.parse(window.localStorage.getItem(storageKey) ?? 'null');
-    const flow = envelope.state.flows.find((candidate: { id: string }) => (
-      candidate.id === envelope.state.lastReceipt.flowId
-    ));
+  const legacyBytes = await page.evaluate(key => localStorage.getItem(key), STORAGE_KEY);
+  const readSourceItemBytes = async () => {
+    const checkpoint = await readStandaloneCheckpoint(page);
+    const flow = checkpoint.state.flows.find((candidate: { id: string }) => candidate.id === checkpoint.state.lastReceipt.flowId);
     const sourceItemId = flow.steps.flatMap((step: { itemIds: string[] }) => step.itemIds)[0];
-    return JSON.stringify(envelope.state.tasks.find((task: { id: string }) => task.id === sourceItemId));
-  }, STORAGE_KEY);
+    return JSON.stringify(checkpoint.state.tasks.find((task: { id: string }) => task.id === sourceItemId));
+  };
+  const sourceItemBytes = await readSourceItemBytes();
   const secondOccurrenceId = savedIdentity[1].occurrenceId;
   expect(secondOccurrenceId).toBeTruthy();
   const secondOccurrence = () => resultSurface.locator(
@@ -1967,7 +2194,7 @@ test('P2-B standalone restores one recurring Item and three occurrence rows afte
 
   await page.waitForTimeout(25);
   const callsBeforeEscape = calls.length;
-  const stateBeforeEscape = await page.evaluate((key) => window.localStorage.getItem(key), STORAGE_KEY);
+  const stateBeforeEscape = await page.evaluate((key) => window.localStorage.getItem(key), WORKSPACE_STORAGE_KEY);
   await secondOccurrence().locator('[data-action="move-result-occurrence-date"]').click();
   const occurrenceDialog = page.locator('[data-dialog-form="occurrence-date"]');
   await expect(occurrenceDialog).toBeVisible();
@@ -1976,7 +2203,7 @@ test('P2-B standalone restores one recurring Item and three occurrence rows afte
   await expect(occurrenceDialog).not.toBeVisible();
   await page.waitForTimeout(25);
   expect(calls).toHaveLength(callsBeforeEscape);
-  expect(await page.evaluate((key) => window.localStorage.getItem(key), STORAGE_KEY)).toBe(stateBeforeEscape);
+  expect(await page.evaluate((key) => window.localStorage.getItem(key), WORKSPACE_STORAGE_KEY)).toBe(stateBeforeEscape);
   await expectSuccessfulMutationCount(page, 1);
 
   await secondOccurrence().locator('[data-action="move-result-occurrence-date"]').click();
@@ -1997,12 +2224,12 @@ test('P2-B standalone restores one recurring Item and three occurrence rows afte
   await expectSuccessfulMutationCount(page, 3);
   const stateAfterMoveAndCompletion = await page.evaluate(
     (key) => window.localStorage.getItem(key),
-    STORAGE_KEY,
+    WORKSPACE_STORAGE_KEY,
   );
 
   await page.reload();
   await expectSuccessfulMutationCount(page, 0);
-  expect(await page.evaluate((key) => window.localStorage.getItem(key), STORAGE_KEY)).toBe(
+  expect(await page.evaluate((key) => window.localStorage.getItem(key), WORKSPACE_STORAGE_KEY)).toBe(
     stateAfterMoveAndCompletion,
   );
   await page.locator('button[data-view="folder:unfiled"]').click();
@@ -2025,14 +2252,9 @@ test('P2-B standalone restores one recurring Item and three occurrence rows afte
     '이 회차 완료',
   );
   await expectSuccessfulMutationCount(page, 1);
-  expect(await page.evaluate((storageKey) => {
-    const envelope = JSON.parse(window.localStorage.getItem(storageKey) ?? 'null');
-    const flow = envelope.state.flows.find((candidate: { id: string }) => (
-      candidate.id === envelope.state.lastReceipt.flowId
-    ));
-    const sourceItemId = flow.steps.flatMap((step: { itemIds: string[] }) => step.itemIds)[0];
-    return JSON.stringify(envelope.state.tasks.find((task: { id: string }) => task.id === sourceItemId));
-  }, STORAGE_KEY)).toBe(sourceItemBytes);
+  expect(await readSourceItemBytes()).toBe(sourceItemBytes);
+  expect(await page.evaluate(key => localStorage.getItem(key), STORAGE_KEY)).toBe(legacyBytes);
+  expect(await page.evaluate(key => localStorage.getItem(key), WORKSPACE_RECOVERY_KEY)).toBeNull();
 
   const operatingAfter = await page.evaluate((prefix) => Object.fromEntries(
     Object.entries(window.localStorage)
@@ -2042,7 +2264,7 @@ test('P2-B standalone restores one recurring Item and three occurrence rows afte
   expect(operatingAfter).toEqual(operatingBefore);
   expect(operatingAfter[OPERATING_SENTINEL_KEY]).toBe(operatingBytes);
   expect(calls.filter((entry) => entry.method === 'clear')).toEqual([]);
-  expect(calls.filter((entry) => entry.key && ![STORAGE_KEY, DRAFT_STORAGE_KEY].includes(entry.key))).toEqual([]);
+  expect(calls.filter((entry) => entry.key && ![WORKSPACE_STORAGE_KEY, WORKSPACE_RECOVERY_KEY, DRAFT_STORAGE_KEY].includes(entry.key))).toEqual([]);
   expect(errors).toEqual([]);
 });
 

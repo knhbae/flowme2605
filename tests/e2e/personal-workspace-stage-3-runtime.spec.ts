@@ -1,5 +1,5 @@
 import { expect, test, type Browser, type Locator, type Page } from '@playwright/test';
-import { mkdirSync } from 'node:fs';
+import { mkdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 
 const WORKSPACE_URL = '/my?personalWorkspacePoc=v1';
@@ -708,7 +708,7 @@ test.describe('개인공간 통합 PoC Stage 3 런타임', () => {
     }
 
     expect(planSignatures).toEqual(Array.from({ length: origins.length }, () => ({
-      schema: 'source-read-only,personal-title,plan-items,impact-summary',
+      schema: 'source-read-only,personal-title,personal-section-title,plan-items,impact-summary',
       persistence: 'poc-shadow-only',
       sections: ['identity', 'source', 'personal', 'items', 'warnings', 'impact'],
       sourceControlCount: 0,
@@ -790,14 +790,29 @@ test.describe('개인공간 통합 PoC Stage 3 런타임', () => {
     const manifest = await readResultManifest(page);
     expect(manifest).toEqual(expectedOrder);
     const perView = new Map<string, readonly ResultItemMetadata[]>();
-    for (const view of ['text', 'todo', 'txt'] as const) {
+    for (const view of ['text', 'todo'] as const) {
       await page.getByTestId(`personal-workspace-result-view-${view}`).click();
       await expect(result).toHaveAttribute('data-result-view', view);
       expect(await readResultManifest(page)).toEqual(manifest);
       perView.set(view, await readVisibleResultMetadata(page));
     }
     expect(perView.get('todo')).toEqual(perView.get('text'));
-    expect(perView.get('txt')).toEqual(perView.get('text'));
+    // Current result owner exposes TXT in the text tab, not a second txt tab.
+    // Compare the real downloaded bytes with the same visible Item projection.
+    await page.getByTestId('personal-workspace-result-view-text').click();
+    expect(await readVisibleResultMetadata(page)).toEqual(perView.get('text'));
+    const visibleText = await page.getByTestId('personal-workspace-result-text-panel').locator('ol > li').evaluateAll(lines =>
+      lines.map(line => (line.textContent ?? '').replace(/[\t ]+$/u, '')).join('\n').replace(/\n*$/u, '') + '\n');
+    const beforeDownload = await readRawStorage(page, POC_STATE_KEY);
+    const downloadCursor = mutationCursor(await readStorageMutations(page));
+    const downloadPromise = page.waitForEvent('download');
+    await page.getByTestId('personal-workspace-result-txt-download').click();
+    const download = await downloadPromise, downloadedPath = await download.path();
+    expect(downloadedPath).toBeTruthy();
+    expect(readFileSync(downloadedPath!, 'utf8')).toBe(visibleText);
+    expect(await readResultManifest(page)).toEqual(manifest);
+    expect(await readRawStorage(page, POC_STATE_KEY)).toBe(beforeDownload);
+    expect(mutationsAfter(await readStorageMutations(page), downloadCursor)).toEqual([]);
     const referenceMetadata = perView.get('text') ?? [];
     expect(referenceMetadata.find((item) => item.ref === itemRef)?.effectiveDate)
       .toBe(EDITED_ITEM_DATE);
@@ -861,10 +876,14 @@ test.describe('개인공간 통합 PoC Stage 3 런타임', () => {
     await page.getByTestId('personal-workspace-poc-plan-editor-commit').click();
     const editor = page.getByTestId('personal-workspace-plan-editor');
     await expect(editor).toHaveAttribute('data-editor-status', 'recoverable-error');
-    await expect(page.getByTestId('personal-workspace-editor-receipt'))
-      .toHaveAttribute('data-receipt-status', 'failure');
-    await expect(page.getByTestId('personal-workspace-editor-receipt'))
-      .toHaveAttribute('data-target-write-count', '0');
+    // K3B: the active Plan editor owns one local error; PlanDisplay is not a
+    // second receipt/live owner while this editor retains the prepared input.
+    await expect(page.getByTestId('personal-workspace-editor-receipt')).toHaveCount(0);
+    const error = editor.getByTestId('personal-workspace-poc-editor-error');
+    await expect(error).toHaveAttribute('role', 'alert');
+    await expect(error).toBeVisible();
+    await expect(editor.getByRole('alert')).toHaveCount(1);
+    await expect(error).toBeFocused();
     await expect(page.getByTestId('personal-workspace-plan-title'))
       .toHaveValue('stale에서 유지할 draft');
     expect(await readRawStorage(page, POC_STATE_KEY)).toBe(equivalentButDifferentRaw);
@@ -956,6 +975,7 @@ test.describe('개인공간 통합 PoC Stage 3 런타임', () => {
     const receipt = page.getByTestId('personal-workspace-editor-receipt');
     await expect(receipt).toHaveAttribute('data-receipt-status', 'success');
     const intentId = await receipt.getAttribute('data-intent-id');
+    expect(intentId).toBeTruthy();
     await expect(page.getByTestId('personal-workspace-undo')).toBeEnabled();
     const undoCursor = mutationCursor(await readStorageMutations(page));
     await page.getByTestId('personal-workspace-undo').click();
@@ -1060,9 +1080,11 @@ test.describe('개인공간 통합 PoC Stage 3 런타임', () => {
     const editor = page.getByTestId('personal-workspace-plan-editor');
     await expect(editor).toHaveAttribute('data-editor-status', 'recoverable-error');
     const receipt = page.getByTestId('personal-workspace-editor-receipt');
-    await expect(receipt).toHaveAttribute('data-receipt-status', 'failure');
-    await expect(receipt).toHaveAttribute('data-target-write-count', '0');
-    const intentId = await receipt.getAttribute('data-intent-id');
+    await expect(receipt).toHaveCount(0);
+    const localError = editor.getByTestId('personal-workspace-poc-editor-error');
+    await expect(localError).toHaveAttribute('role', 'alert');
+    await expect(editor.getByRole('alert')).toHaveCount(1);
+    const intentId = await editor.getAttribute('data-intent-id');
     expect(intentId).toBeTruthy();
     expect(await readRawStorage(page, POC_STATE_KEY)).toBe(rawBefore);
     await expect(page.getByTestId('personal-workspace-plan-title'))
@@ -1213,10 +1235,9 @@ test.describe('개인공간 통합 PoC Stage 3 런타임', () => {
 
   test('6개 viewport의 workspace·result·Plan·Item에 overflow, console/page error, 가려진 CTA가 없다', async ({ browser }) => {
     test.setTimeout(240_000);
-    const screenshotDir = path.join(
+const screenshotDir = path.join(
       process.cwd(),
-      'docs',
-      'content-audit',
+      'output', 'playwright', 'historical-current',
       '2026-09-02-flowme-integrated-poc-stage-3-runtime-assets',
     );
     mkdirSync(screenshotDir, { recursive: true });

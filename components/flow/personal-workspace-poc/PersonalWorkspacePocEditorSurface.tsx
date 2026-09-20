@@ -122,6 +122,8 @@ export type PersonalWorkspacePocQuickItemCommitIntent = Readonly<{
 }>;
 
 export type PersonalWorkspacePocPlanEditorSurfaceProps = Readonly<{
+  /** Read-only issued intent identity; never a commit/retry capability. */
+  diagnosticIntentId?: string;
   draft: PersonalWorkspacePocPlanDraft;
   transaction: PersonalWorkspacePocEditorTransactionView;
   actions: PersonalWorkspacePocEditorCommonActions;
@@ -577,6 +579,7 @@ export function PersonalWorkspacePocPlanEditorSurface({
   onDraftChange,
   onOpenItem,
   onCommitIntent,
+  diagnosticIntentId,
 }: PersonalWorkspacePocPlanEditorSurfaceProps) {
   const itemByRef = new Map(items.map((item) => [item.itemRef, item]));
   const commitBlocked = transaction.status === 'dirty-invalid'
@@ -628,6 +631,7 @@ export function PersonalWorkspacePocPlanEditorSurface({
       enforce48pxTargets
       dialogProps={{
         'data-personal-workspace-editor-kind': 'plan',
+        'data-intent-id': diagnosticIntentId,
         'data-editor-schema-fields': 'source-read-only,personal-title,personal-section-title,plan-items,impact-summary',
         'data-editor-persistence-scope': 'poc-shadow-only',
         'data-flow-ref': draft.flowRef,

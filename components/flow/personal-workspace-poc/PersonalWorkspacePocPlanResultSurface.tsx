@@ -41,6 +41,8 @@ export function PersonalWorkspacePocPlanResultSurface({ display, announce = true
   return <section
     data-testid={preview ? 'personal-workspace-plan-change-preview' : 'personal-workspace-editor-receipt'}
     data-plan-display-contract={display.contract}
+    data-operation={display.operation}
+    data-intent-id={display.intentId}
     data-receipt-status={display.status}
     data-affected-count={display.affectedCount}
     data-changed-field-count={display.changedFieldCount}

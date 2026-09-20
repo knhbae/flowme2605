@@ -316,7 +316,7 @@ test.describe('개인공간 통합 PoC Stage 1 런타임', () => {
     await page.getByTestId('personal-workspace-authoring-tab-result').click();
     await expect(page.getByTestId('personal-workspace-authoring-save')).toBeEnabled();
     const mutationsBeforeCommit = await readDocumentMutations(page);
-    await page.getByTestId('personal-workspace-authoring-save').click();
+    await page.getByTestId('personal-workspace-authoring-save').dblclick();
     await expect(page.getByTestId('personal-workspace-authoring-status'))
       .toHaveAttribute('data-status', 'success');
     await expect(page.getByTestId('personal-workspace-authoring-receipt')).toBeVisible();
@@ -350,6 +350,7 @@ test.describe('개인공간 통합 PoC Stage 1 런타임', () => {
     expect(markerWrite).toBeGreaterThan(draftRemoval);
 
     const committed = await readPocState(page);
+    expect(committed?.authoredFlows).toHaveLength(1);
     const authored = committed?.authoredFlows?.[0];
     expect(authored).toBeTruthy();
     if (!authored) throw new Error('Stage 1 authored Flow가 저장되지 않았습니다.');
@@ -363,9 +364,13 @@ test.describe('개인공간 통합 PoC Stage 1 런타임', () => {
 
     const mutationsBeforeNoopRetry = await readDocumentMutations(page);
     const stateBeforeNoopRetry = await readPocRaw(page);
-    await page.getByTestId('personal-workspace-authoring-save').click();
+    await expect(page.getByTestId('personal-workspace-authoring-save')).toHaveCount(0);
+    await page.locator('#personal-workspace-authoring-receipt-title').focus();
+    await page.keyboard.press('Enter');
+    await page.keyboard.press('Space');
     await expect(page.getByTestId('personal-workspace-authoring-status'))
-      .toHaveAttribute('data-status', 'neutral');
+      .toHaveAttribute('data-status', 'success');
+    await expect(page.getByTestId('personal-workspace-authoring-receipt')).toBeVisible();
     expect(await readPocRaw(page)).toBe(stateBeforeNoopRetry);
     expect(await readDocumentMutations(page)).toHaveLength(mutationsBeforeNoopRetry.length);
 
@@ -497,8 +502,7 @@ test.describe('개인공간 통합 PoC Stage 1 런타임', () => {
 
     const screenshotDir = path.join(
       process.cwd(),
-      'docs',
-      'content-audit',
+      'output', 'playwright', 'historical-current',
       '2026-09-02-flowme-integrated-poc-stage-1-runtime-assets',
     );
     mkdirSync(screenshotDir, { recursive: true });

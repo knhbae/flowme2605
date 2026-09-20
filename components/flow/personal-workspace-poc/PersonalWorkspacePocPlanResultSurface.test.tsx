@@ -179,7 +179,11 @@ test('PRS07 SSR escapes caller display strings and does not serialize display DT
   assert.match(html, /&lt;b&gt;메모 &amp; &quot;제목&quot;&lt;\/b&gt;/u);
   assert.match(html, /&lt;script&gt;bad\(\)&lt;\/script&gt;/u);
   assert.match(html, /&lt;img src=x onerror=bad\(\)&gt;/u);
-  assert.doesNotMatch(html, /<script|<img|ssr-result-1|ssr-intent-1|ssr-private-copy|PRIVATE_SOURCE_SLUG_NOT_FOR_UI|affectedRefs|scopeRef|stateRaw|retryIntent/u);
+  // Public intent/operation diagnostics identify an issued display, not the
+  // private attempt, storage guard, draft, or retry capability.
+  assert.doesNotMatch(html, /<script|<img|ssr-result-1|ssr-private-copy|PRIVATE_SOURCE_SLUG_NOT_FOR_UI|affectedRefs|scopeRef|stateRaw|retryIntent/u);
+  assert.match(html, /data-intent-id="ssr-intent-1"/u);
+  assert.match(html, /data-operation="commit-personal-plan"/u);
   assert.match(html, /data-plan-display-contract="flowme-personal-workspace-plan-display-v1"/u);
 });
 

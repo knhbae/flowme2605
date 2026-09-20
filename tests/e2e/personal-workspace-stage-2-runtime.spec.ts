@@ -4,6 +4,7 @@ import path from 'node:path';
 
 import { PERSONAL_WORKSPACE_POC_AUTHORING_TEMPLATES } from '../../lib/flow/personal-workspace-poc-authoring';
 import { PERSONAL_WORKSPACE_POC_AUTHORING_GUIDE_CATALOG } from '../../lib/flow/personal-workspace-poc-authoring-guide';
+import { applyHistoricalTemplate, previewHistoricalTemplate } from './historical-template';
 
 const WORKSPACE_URL = '/my?personalWorkspacePoc=v1';
 const AUTHORING_URL = '/flows/new?personalWorkspacePoc=v1';
@@ -372,16 +373,17 @@ test.describe('개인공간 통합 PoC Stage 2 런타임', () => {
     const mapSelect = page.getByTestId('personal-workspace-entry-map-child');
     await expect(mapSelect).toBeVisible();
     await expect(mapSelect).toHaveValue(/stage2-map-multi-a/u);
-    await page.getByTestId('personal-workspace-entry-view-todo').click();
-    await expect(page.getByTestId('personal-workspace-entry-view-todo')).toHaveAttribute('aria-pressed', 'true');
-    await page.getByTestId('personal-workspace-entry-flow-items').locator('button').first().click();
+    const entryPreview = page.getByTestId('personal-workspace-entry-preview');
+    await entryPreview.getByTestId('personal-workspace-result-view-todo').click();
+    await expect(entryPreview.getByTestId('personal-workspace-result-view-todo')).toHaveAttribute('aria-selected', 'true');
+    await entryPreview.getByTestId('personal-workspace-result-item-row').first().getByRole('button').first().click();
     await expect(page.getByTestId('personal-workspace-entry-item-detail')).toBeVisible();
     const stateBeforeChildChange = await page.evaluate((key) => window.localStorage.getItem(key), POC_STATE_KEY);
     const mutationsBeforeChildChange = await readDocumentMutations(page);
     await mapSelect.selectOption({ label: '통합 다중 B' });
     await expect(page.locator('#personal-workspace-entry-result-heading')).toHaveText('통합 다중 B');
     await expect(page.locator('#personal-workspace-entry-result-heading')).toBeFocused();
-    await expect(page.getByTestId('personal-workspace-entry-view-text')).toHaveAttribute('aria-pressed', 'true');
+    await expect(entryPreview.getByTestId('personal-workspace-result-view-text')).toHaveAttribute('aria-selected', 'true');
     await expect(page.getByTestId('personal-workspace-entry-item-detail')).toHaveCount(0);
     expect(await page.evaluate((key) => window.localStorage.getItem(key), POC_STATE_KEY))
       .toBe(stateBeforeChildChange);
@@ -512,16 +514,12 @@ test.describe('개인공간 통합 PoC Stage 2 런타임', () => {
         const sourceBeforePreview = await readEditorSnapshot(source);
         await templateCard.hover();
         await expect(templateCard).toContainText(`예: ${template.exampleLabel}`);
-        await expect(page.getByTestId('personal-workspace-authoring-template-example-preview'))
-          .toContainText(template.exampleLabel);
-        expect(await page.getByTestId('personal-workspace-authoring-template-example-source').textContent())
-          .toBe(template.exampleSource);
         await templateCard.focus();
-        expect(await page.getByTestId('personal-workspace-authoring-template-example-source').textContent())
-          .toBe(template.exampleSource);
         expect(await readEditorSnapshot(source)).toEqual(sourceBeforePreview);
         expect(await readDocumentMutations(page)).toEqual(mutationsBeforeTemplate);
-        await templateCard.click();
+        await previewHistoricalTemplate(page, template.templateId);
+        expect(await readDocumentMutations(page)).toEqual(mutationsBeforeTemplate);
+        await page.getByTestId('personal-workspace-authoring-template-apply').click();
         await expect(source).toHaveValue(template.scaffold);
         expect(await page.evaluate(() => (
           window as Window & typeof globalThis & {
@@ -639,7 +637,7 @@ test.describe('개인공간 통합 PoC Stage 2 런타임', () => {
     await page.setViewportSize({ width: 390, height: 844 });
     const source = await openBlankAuthoring(page);
     const operatingBefore = await readNonPocStorage(page);
-    await page.getByTestId('personal-workspace-authoring-template-travel-itinerary-prep-v1').click();
+    await applyHistoricalTemplate(page, 'travel-itinerary-prep-v1');
     const template = PERSONAL_WORKSPACE_POC_AUTHORING_TEMPLATES.find(
       (candidate) => candidate.templateId === 'travel-itinerary-prep-v1',
     );
@@ -704,12 +702,41 @@ test.describe('개인공간 통합 PoC Stage 2 런타임', () => {
     await page.keyboard.press('ArrowLeft');
     await page.getByTestId('personal-workspace-authoring-helper-anchor').click();
     await expect(page.getByTestId('personal-workspace-authoring-helper-child-check')).toBeDisabled();
-    const dateAction = page.getByTestId('personal-workspace-authoring-helper-item-date');
-    await expect(dateAction).toContainText('날짜');
-    await expect(dateAction.locator('span').first()).toHaveText('  - 날짜: ');
-    await dateAction.click();
-    const withDateSyntax = `${helperBase}\n  - 날짜: `;
+    await page.getByTestId('personal-workspace-authoring-chooser-information').click();
+    await page.getByTestId('personal-workspace-authoring-chooser-group-schedule').click();
+    await expect(page.getByTestId('personal-workspace-authoring-property-date')).toContainText('날짜');
+    await page.getByTestId('personal-workspace-authoring-property-edit-date').click();
+    const dateValue = page.getByTestId('personal-workspace-authoring-property-input');
+    await expect(dateValue).toHaveValue('');
+    const beforeInvalidDate = await readDocumentMutations(page);
+    const beforeInvalidDraft = await readDraftRaw(page);
+    await source.evaluate((element) => {
+      const audit = window as Window & { __dateHelperInputTypes?: string[]; __dateHelperCommands?: number };
+      audit.__dateHelperInputTypes = [];
+      audit.__dateHelperCommands = 0;
+      element.addEventListener('input', event => audit.__dateHelperInputTypes!.push((event as InputEvent).inputType));
+      const command = document.execCommand.bind(document);
+      document.execCommand = (name: string, showUI?: boolean, value?: string) => {
+        if (name === 'insertText') audit.__dateHelperCommands! += 1;
+        return command(name, showUI, value);
+      };
+    });
+    await page.getByTestId('personal-workspace-authoring-property-apply').click();
+    await expect(source).toHaveValue(helperBase);
+    expect(await readDraftRaw(page)).toBe(beforeInvalidDraft);
+    expect(await readDocumentMutations(page)).toEqual(beforeInvalidDate);
+    expect(await page.evaluate(() => (window as Window & { __dateHelperInputTypes?: string[] }).__dateHelperInputTypes)).toEqual([]);
+    expect(await page.evaluate(() => (window as Window & { __dateHelperCommands?: number }).__dateHelperCommands)).toBe(0);
+    await dateValue.fill('2026-09-21');
+    await page.getByTestId('personal-workspace-authoring-property-apply').click();
+    const withDateSyntax = `${helperBase}\n  - 날짜: 2026-09-21`;
     await expect(source).toHaveValue(withDateSyntax);
+    // Chromium may emit multiple input events for one multiline native command
+    // (LiveEditor.test.tsx also covers this). Count the actual command, not events.
+    expect(await page.evaluate(() => (window as Window & { __dateHelperCommands?: number }).__dateHelperCommands)).toBe(1);
+    const nativeTypes = await page.evaluate(() => (window as Window & { __dateHelperInputTypes?: string[] }).__dateHelperInputTypes ?? []);
+    expect(nativeTypes.length).toBeGreaterThan(0);
+    expect(nativeTypes.every(type => type === 'insertText')).toBe(true);
     await source.focus();
     await page.keyboard.press('Control+z');
     await expect(source).toHaveValue(helperBase);
@@ -859,8 +886,7 @@ test.describe('개인공간 통합 PoC Stage 2 런타임', () => {
     test.setTimeout(240_000);
     const screenshotDir = path.join(
       process.cwd(),
-      'docs',
-      'content-audit',
+      'output', 'playwright', 'historical-current',
       '2026-09-02-flowme-integrated-poc-stage-2-runtime-assets',
     );
     mkdirSync(screenshotDir, { recursive: true });
@@ -893,7 +919,7 @@ test.describe('개인공간 통합 PoC Stage 2 런타임', () => {
         });
 
         await page.getByTestId('personal-workspace-entry-start-template').click();
-        await page.getByTestId('personal-workspace-authoring-template-moving-dday-v1').click();
+        await applyHistoricalTemplate(page, 'moving-dday-v1');
         await expect(page.getByTestId('personal-workspace-live-editor-textarea')).toBeVisible();
         expect(await page.evaluate(() => (
           document.documentElement.scrollWidth <= document.documentElement.clientWidth
@@ -957,7 +983,7 @@ test.describe('개인공간 통합 PoC Stage 2 런타임', () => {
         fullPage: false,
       });
       await zoom.page.getByTestId('personal-workspace-entry-start-template').click();
-      await zoom.page.getByTestId('personal-workspace-authoring-template-moving-dday-v1').click();
+      await applyHistoricalTemplate(zoom.page, 'moving-dday-v1');
       await expect(zoom.page.getByTestId('personal-workspace-live-editor-textarea')).toBeVisible();
       expect(await zoom.page.evaluate(() => (
         document.documentElement.scrollWidth <= document.documentElement.clientWidth

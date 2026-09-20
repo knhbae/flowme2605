@@ -696,6 +696,9 @@ test('stale revision, exact raw bytes, in-memory state, and canonical source all
   });
   assert.equal(staleSource.ok, false);
   assert.equal(!staleSource.ok && staleSource.failure.code, 'stale-source-bytes');
+  for (const result of [staleRevision, staleRaw, staleMemory, staleSource]) {
+    assert.equal(!result.ok && result.failure.firstErrorFocus, '[data-editor-error-summary]');
+  }
 });
 
 test('duplicate, foreign, missing, and changed identities are rejected', () => {

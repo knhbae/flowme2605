@@ -2,8 +2,11 @@
 
 - **Date:** 2026-08-22 KST
 - **Branch:** `agent/source-freshness-refresh-20260822`
-- **Status:** Ready for PR
+- **PR:** [#196](https://github.com/knhbae/flowme2605/pull/196)
+- **Status:** Merged
 - **Base:** `origin/main` at `a179eb8dbbdcf9ddd6ae3ce7f8fd2bf1bb04714a`
+- **Final head:** `97c537ff8357b2989541facaac94711634594e4c`
+- **Merge:** `8c0bfd8de9fb8877c4045b2c3f725b60ca236843`
 
 ## Why
 

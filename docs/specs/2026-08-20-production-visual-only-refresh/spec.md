@@ -64,10 +64,10 @@ behavior. The approved direction is documented in the
    collide, and the console/page-error count is zero on representative journeys.
 5. Keyboard focus is visible, named controls remain named, and approved mobile
    actions preserve their existing 48px gates.
-6. Publication stays limited to the authorized PR #194 then PR #195 sequence.
-   PR #194 passed exact-head CI, merged, and reached verified Production; PR
-   #195 retains its own exact-head CI and resulting Production verification
-   gate. Observed-user evidence remains 0.
+6. Publication stayed limited to the authorized PR #194 then PR #195 sequence.
+   Both PRs passed their exact-head gates and merged; PR #195 post-merge CI and
+   exact-source Production deployment succeeded. A separate canonical
+   Production smoke suite is `NOT_RUN`. Observed-user evidence remains 0.
 
 ## Reopen Conditions
 

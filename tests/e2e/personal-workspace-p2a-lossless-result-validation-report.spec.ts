@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -13,8 +14,7 @@ const reportPath = path.join(
 const reportUrl = pathToFileURL(reportPath).href;
 const assetDir = path.join(
   root,
-  'docs',
-  'content-audit',
+  'output', 'playwright', 'historical-current',
   '2026-09-03-flowme-integrated-poc-p2a-lossless-result-validation-assets',
 );
 const manifestPath = path.join(
@@ -49,6 +49,16 @@ const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8')) as {
   generatedAt?: string;
   runs: Array<{ id: string }>;
   browser?: { viewports?: string[] };
+};
+// The P2-B manifest explicitly records p2b-p2a-report-snapshot-browser as a
+// frozen P2-A report check. Later P2-B/P2-C runs must not rewrite that history.
+// Pin the preserved published report's complete embedded evidence, not the
+// currently growing shared manifest. This is artifact integrity, not fresh QA.
+const P2A_SNAPSHOT = {
+  version: 3,
+  generatedAt: '2026-09-03T15:43:00+09:00',
+  runCount: 29,
+  dataSha256: 'f553576edaf51d5a2284d468d537fec62e9c26bbf4716dff171d1575ce10b69b',
 };
 const verdictConfig = JSON.parse(fs.readFileSync(overridePath, 'utf8')) as {
   beforeP2A: Record<string, unknown>;
@@ -90,7 +100,7 @@ async function installReadOnlyStorageLedger(page: Page) {
 }
 
 test.describe('P2-A 무손실 결과 검증 보고서', () => {
-  test('판정 JSON과 manifest를 그대로 반영하고 저장을 호출하지 않는다', async ({ page }) => {
+  test('동결된 P2-A 판정과 당시 manifest 증거를 보존하고 저장을 호출하지 않는다', async ({ page }) => {
     expect(fs.existsSync(reportPath)).toBe(true);
     expect(fs.existsSync(standalonePath)).toBe(true);
     expect(fs.existsSync(tracePath)).toBe(true);
@@ -113,11 +123,16 @@ test.describe('P2-A 무손실 결과 검증 보고서', () => {
     await expect(page.getByRole('heading', { name: 'P2-A 무손실 결과 검증' })).toBeVisible();
     await expect(page.getByText('수동 검토 동반물입니다', { exact: false })).toBeVisible();
 
-    const reportData = JSON.parse(await page.locator('#report-data').textContent() ?? '{}');
+    const embedded = await page.locator('#report-data').textContent() ?? '{}';
+    expect(createHash('sha256').update(embedded).digest('hex')).toBe(P2A_SNAPSHOT.dataSha256);
+    const reportData = JSON.parse(embedded);
     expect(reportData.beforeP2A).toEqual(verdictConfig.beforeP2A);
     expect(reportData.afterP2A).toEqual(verdictConfig.afterP2A);
-    expect(reportData.manifestVersion).toBe(manifest.version);
-    expect(reportData.manifestRunCount).toBe(manifest.runs.length);
+    expect(reportData.manifestVersion).toBe(P2A_SNAPSHOT.version);
+    expect(reportData.manifestGeneratedAt).toBe(P2A_SNAPSHOT.generatedAt);
+    expect(reportData.manifestRunCount).toBe(P2A_SNAPSHOT.runCount);
+    expect(manifest.runs.some(run => run.id === 'p2b-p2a-report-snapshot-browser')).toBe(true);
+    for (const id of reportData.focusRunIds) expect(manifest.runs.some(run => run.id === id), id).toBe(true);
     expect(reportData.viewports).toEqual(manifest.browser?.viewports ?? []);
 
     const after = verdictConfig.afterP2A.total;
@@ -161,8 +176,8 @@ test.describe('P2-A 무손실 결과 검증 보고서', () => {
       'href',
       './2026-09-02-flowme-integrated-poc-requirements-traceability-ko.html',
     );
-    await expect(page.locator('#manifest-version')).toHaveText(`v${manifest.version}`);
-    await expect(page.locator('#manifest-run-count')).toHaveText(`${manifest.runs.length}개`);
+    await expect(page.locator('#manifest-version')).toHaveText(`v${P2A_SNAPSHOT.version}`);
+    await expect(page.locator('#manifest-run-count')).toHaveText(`${P2A_SNAPSHOT.runCount}개`);
     await expect(page.locator('#tests > .run-table-wrap .run-row')).toHaveCount(
       reportData.focusRunIds.length,
     );
