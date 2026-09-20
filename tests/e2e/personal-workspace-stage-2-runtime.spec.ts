@@ -882,6 +882,55 @@ test.describe('개인공간 통합 PoC Stage 2 런타임', () => {
     }
   });
 
+  test('320px portrait keeps editable source ahead of optional references with wider font metrics', async ({ browser }) => {
+    for (const font of ['sans-serif', 'monospace']) {
+      const { page } = await newAuditedPage(browser, { width: 320, height: 700 });
+      const errors: string[] = [];
+      page.on('pageerror', error => errors.push(error.message));
+      page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
+      try {
+        await page.goto(AUTHORING_URL);
+        await page.addStyleTag({ content: `[data-testid="personal-workspace-authoring-shell"] { font-family: ${font}; }` });
+        await page.getByTestId('personal-workspace-entry-start-template').click();
+        await expect(page.getByTestId('personal-workspace-authoring-template-control')).toBeVisible();
+        await applyHistoricalTemplate(page, 'moving-dday-v1');
+        const editor = page.getByTestId('personal-workspace-live-editor-textarea');
+        const source = PERSONAL_WORKSPACE_POC_AUTHORING_TEMPLATES.find(template => template.templateId === 'moving-dday-v1')!.scaffold;
+        await expect(editor).toHaveValue(source);
+        await expect(page.getByTestId('personal-workspace-authoring-template-control')).toBeVisible();
+        const visible = await editor.evaluate(element => {
+          const rect = element.getBoundingClientRect();
+          let pixels = 0;
+          // Count actually unobscured vertical pixels, including the bottom
+          // navigation overlay rather than only intersecting the viewport.
+          for (let y = Math.max(0, Math.ceil(rect.top)); y < Math.min(innerHeight, Math.floor(rect.bottom)); y++) {
+            const hit = document.elementFromPoint(rect.left + 24, y);
+            if (hit === element) pixels++;
+          }
+          return pixels;
+        });
+        expect(visible, `${font} unobscured editable height`).toBeGreaterThanOrEqual(96);
+        await test.info().attach(`portrait-editor-${font}`, {
+          body: JSON.stringify({ viewport: { width: 320, height: 700 }, font, unobscuredEditablePixels: visible, frame: await readElementRect(page.getByTestId('personal-workspace-live-editor-frame')) }),
+          contentType: 'application/json',
+        });
+        expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+        await page.screenshot({ path: test.info().outputPath(`source-320-${font}.png`) });
+        const example = page.getByTestId('personal-workspace-authoring-validation-examples-open');
+        expect(await editor.evaluate(element => Boolean(element.compareDocumentPosition(document.querySelector('[data-testid="personal-workspace-authoring-validation-examples-open"]')!) & Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true);
+        const storageBeforeExamples = await page.evaluate(() => Object.entries(localStorage).sort());
+        const callsBeforeExamples = await readDocumentMutations(page);
+        await expectReachableAction(example);
+        await example.click();
+        await expect(page.getByRole('dialog')).toBeVisible();
+        await expect(editor).toHaveValue(source);
+        expect(await page.evaluate(() => Object.entries(localStorage).sort())).toEqual(storageBeforeExamples);
+        expect(await readDocumentMutations(page)).toEqual(callsBeforeExamples);
+        expect(errors).toEqual([]);
+      } finally { await page.close(); }
+    }
+  });
+
   test('지정 화면과 200% 등가 reflow에서 overflow, console/page error, 가려진 핵심 행동이 없다', async ({ browser }) => {
     test.setTimeout(240_000);
     const screenshotDir = path.join(
@@ -941,7 +990,7 @@ test.describe('개인공간 통합 PoC Stage 2 런타임', () => {
           expect(headingRect.top).toBeLessThan(viewport.height);
           expect(guidanceRect.bottom).toBeGreaterThan(0);
           expect(guidanceRect.top).toBeLessThan(viewport.height);
-          expect(visibleEditorHeight).toBeGreaterThanOrEqual(96);
+          expect(visibleEditorHeight, `${viewport.label} visible editor height`).toBeGreaterThanOrEqual(96);
           expect(intersectionArea(editorRect, ctaRect)).toBe(0);
           await page.getByTestId('personal-workspace-authoring-tab-result').click();
         }

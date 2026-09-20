@@ -155,3 +155,23 @@ Windows에서 Arial/Noto/monospace 대체 글꼴로 gap6px, validation44px(375px
 이어 gate·개인 실행·전체 교체·일반 추가를 한 번에 실행해4/4 PASS(34.228초, 실패/skip/flaky/retry0)했다. 전체 교체20.801초, 일반 추가3.803초였으며 `output/playwright/portable-contract-final/results.json`에 보존한다. 앞의 반복4회와 합쳐8개 신규 기능으로 계산하지 않는다.
 
 긴 문서 전체 교체의 반복 렌더 비용은 **해결하지 않은 성능 위험**이다. 기존 [알파 계획](alpha-transition.md)의 A23/D07·T06/T12에서 실사용 전 재검토한다. 재개 시 실제 paste·IME·대량 선택 편집을 각각 계측하고 승인된 성능 예산을 세운다. 검증/보호 경계나 native Undo를 제거해서 빠르게 만들지 않는다. 이번60초는 검사 실행 예산이며 사용자에게 허용할 편집 지연 기준이 아니다.
+
+### 첫 Linux 전체 완주: 역사 Surface 3개 후속 수정
+
+`3a06e24f`의 [전체 실행](https://github.com/knhbae/flowme2605/actions/runs/35520309294)은758개 중755 PASS/3 FAIL, skip/flaky0으로19분에 완주했다. core는 전부 PASS다. report 내장 JSON에서도 같은 집계를 확인했다. 운영629/629, 현행 Program17/17, 보고서·standalone54/54는 같은 실행에서 모두 통과했고 역사 Surface만55/58이었다. 앞서 수정한 보고서3종9개와 portable3개도 통과했다. 로그는 `output/ci-e2e-complete-35520309294.log`, 원격 report·원본 화면·trace는 `output/ci-e2e-35520309294/`에 보존한다.
+
+실패3개는 최초 및 retry2회 모두 같은 조건에서 실패했다. Windows의 앞선58/58 결과로 이를 덮지 않았다.
+
+- Stage2의320×700 편집 높이: Linux 화면에서 보이는 editor가52px로 기존96px 기준보다 작았다. 작성 틀과 읽기 전용 예시가 editor 앞을 차지했다. 원문이 있을 때 두 도구를 editor 다음 **DOM 위치**로 옮겨 시각/키보드 순서를 맞췄다. 빈 원문에서는 기존 위치와 틀·예시 접근을 보존한다. 첫 시안은 portrait의 nonempty 틀을 숨겼으나 기존 ‘틀 재열기→확인→취소·무변경’ 검사가 그 경로 상실을 잡았다. 숨김 변경은 철회했으며 원래 landscape 계약은 확장하지 않았다. 중단된 검사에서 확인한4PASS와 다음 항목의 중단은 전체12PASS로 집계하지 않는다.
+- Stage4의invalid drop: 테스트가 활성 long-press 중 목적지를 `scrollIntoView`해 제품의 빠른 스크롤 취소가 정상 작동했다. 취소 규칙을 바꾸지 않고 gesture 시작 전에 목적지를 준비한다. 시작 handle의 실제 hit 가능성과 목적지의 실제 hit를 검사하고, gesture 중에는 좌표만 읽는다. 기존invalid 판정·상태/저장 무변경 및 별도 스크롤 취소 검사는 유지한다. 추가 표적 검사에서 드러난 opening animation-frame focus 경쟁도 초기 focus 인계를 먼저 확인한 뒤 정확한 목적지에 focus/Enter하도록 보강했다.
+- Stage4의320px 이동 창: 약128px 너비에서 긴 제목과 닫기를 같은 줄에 두면 sticky header가 커져 기존 안전 fallback이 일반 스크롤로 전환됐다. 닫기와 짧은 ‘이동할 곳’을 윗줄에, 전체 제목을 다음 줄에 배치했다. 제목을 자르거나 닫기/status를 숨기지 않는다. 기존6개 화면·긴 제목·작은 높이·resize·실제 hit/저장 경계 검사에320px monospace 경우를 추가했다.
+
+Stage2 새 회귀는320px sans-serif/monospace에서 실제 hit 가능한 editor 높이96px 이상, 원문 전체 동일, 예시의 DOM 후행 순서와 dialog 접근, 예시 열기의 전체 localStorage bytes 및 mutation0, console/page error0을 확인한다. 기존 viewport 기준은 낮추지 않았다. 이1개를 더해 전체 수집은105파일760개다(기존741+현행14+보고서글꼴3+native append1+portrait1).
+
+로컬 첫 재검사에서는 별도 test app의 `/favicon.ico`404도 발견했다. trace의 실제 URL을 확인한 뒤 build 경쟁이라는 초기 추정을 철회했다. 제품에 이미 있는307→`/icon.svg` 규칙과 같은 icon 내용을 **역사 harness에만** 추가하고 owner 검사가 정본 icon과 내용 동등성을 확인하도록 했다. 오류를 console 검사에서 제외하지 않았다. 새 build에서 실제 favicon307/icon200·image/svg+xml·정본 내용 동일을 확인했다. 제품의 `next.config.ts`, 운영 경로·저장 writer는 변경하지 않았다.
+
+React/UX 검토에서는 새 네트워크·state/effect·저장 경로가 없고, 틀과 예시가 각각 한 번만 렌더되며 기존 handler/ref를 유지하는지 확인했다. 첫 화면의 부가 도구를 editor 뒤로 옮기되 원문·안전 안내·틀 재열기·예시·닫기·취소 피드백을 보존했다. 감산 검토도 기존 사용 경로를 없애는 근거로 쓰지 않는다. 이 국소 검토는 전체 제품 UX 평가나 원래 D2/M4 동등성 판정을 대체하지 않는다.
+
+최종 수정 후 Stage2 전체12/12 PASS(71.295초, 실패/skip/flaky/retry0), Stage4 전체5개와 인접3개는8/8 PASS(63.471초, 실패/skip/flaky/retry0)했다. Stage2는 기존6화면·200% reflow·원문이 있는 상태의 틀 재열기/취소·native Undo를 모두 유지했다. 새320×700 검사의 실제 가림 제외 editor 높이는 sans-serif139px, monospace121px였다. Stage4는320px fallback font에서도 스크롤 후 닫기/status와 마지막 행동의 실제 hit 검사를 통과했다. 결과 JSON은 `output/playwright/stage2-portrait-complete/results.json`, `output/playwright/stage4-linux-final-summary.json`이다. 중단된 옛 `stage2-portrait-final/results.json`은 `--list` 수집 결과이지 실행 결과가 아니므로 성공 수에 포함하지 않는다.
+
+관련 authoring SSR57/57과 Surface/Product UX38/38, 역사 test build와 최종 product production build도 통과했다. 이는 서로 다른 표적 실행이며 앞선 전체 검증과 중복 합산하지 않는다. 최종 로컬 수정의 전체 Linux CI는 아직 후속 push 뒤 확인해야 한다. PR Draft·main merge0·배포0의 경계는 그대로다.

@@ -7,6 +7,10 @@ const config: NextConfig = {
   distDir: '.next-history',
   outputFileTracingRoot: root,
   experimental: { externalDir: true },
+  async redirects() {
+    // Match the product's existing browser-icon fallback in this isolated app.
+    return [{ source: '/favicon.ico', destination: '/icon.svg', permanent: false }];
+  },
   webpack(config) {
     config.resolve.alias['@'] = root;
     config.resolve.alias['../integrated-poc/ProgramApp$'] = path.join(__dirname, 'LegacySurfaceAdapter.tsx');

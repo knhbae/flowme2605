@@ -50,6 +50,7 @@ type PointerSession = Readonly<{
 
 const VIEWPORTS = [
   { label: '320x700', width: 320, height: 700, forcedSafeArea: true },
+  { label: '320x700-fallback-font', width: 320, height: 700, forcedSafeArea: true, fallbackFont: true },
   { label: '375x812', width: 375, height: 812, forcedSafeArea: false },
   { label: '390x844', width: 390, height: 844, forcedSafeArea: false },
   { label: '844x390', width: 844, height: 390, forcedSafeArea: false },
@@ -676,8 +677,12 @@ test.describe('FlowMe 개인공간 Stage 4 이동·반응형 runtime 계약', ()
     handle = card.getByTestId('personal-workspace-flow-move-handle');
     await handle.focus();
     await page.keyboard.press('Space');
+    // The opening effect owns the initial focus. Wait for that handoff before
+    // choosing another target, rather than racing its animation-frame focus.
+    await expect(page.getByTestId('personal-workspace-folder-target-unfiled')).toBeFocused();
     target = folderTarget(page, targetFolderId);
     await target.focus();
+    await expect(target).toBeFocused();
     await page.keyboard.press('Enter');
     await expectSaved(page);
     await expectFolder(page, flowRef, targetFolderId);
@@ -730,10 +735,21 @@ test.describe('FlowMe 개인공간 Stage 4 이동·반응형 runtime 계약', ()
     handle = card.getByTestId('personal-workspace-flow-move-handle');
     rawBefore = await readPocRaw(page);
     callsBefore = calls.length;
+    const invalidRow = taskRow(page, 'Stage 4 Flow invalid 대상');
+    // Prepare the destination before opening the gesture: scrolling during an
+    // active move deliberately cancels it, including browser-driven scrolls.
+    await invalidRow.scrollIntoViewIfNeeded();
+    await expect(handle).toBeInViewport();
+    await handle.click({ trial: true });
     session = await startLongPress(page, handle, 453);
     expect(await page.getByTestId('personal-workspace-date-target-0').count()).toBe(0);
-    const invalidRow = taskRow(page, 'Stage 4 Flow invalid 대상');
-    const invalidPoint = await pointAt(invalidRow);
+    const invalidPoint = await invalidRow.evaluate(element => {
+      const rect = element.getBoundingClientRect();
+      const x = rect.right - 12, y = rect.top + rect.height / 2;
+      const hit = document.elementFromPoint(x, y);
+      return { x, y, hit: hit === element || element.contains(hit) };
+    });
+    expect(invalidPoint.hit).toBe(true);
     await movePointer(handle, session, invalidPoint.x, invalidPoint.y);
     await expect(page.getByTestId('personal-workspace-move-panel'))
       .toHaveAttribute('data-personal-workspace-drop-outcome', 'invalid');
@@ -886,17 +902,16 @@ test.describe('FlowMe 개인공간 Stage 4 이동·반응형 runtime 계약', ()
     await createFolder(page, '아주 긴 Stage 4 이동 대상 폴더 이름');
     await createQuickItem(page, 'Stage 4 viewport corridor 제목');
     const callsBeforeOpenOnlyChecks = calls.length;
-    const screenshotDir = path.join(
-      process.cwd(),
-      'output', 'playwright', 'historical-current',
-      '2026-09-03-flowme-integrated-poc-movement-parity-report-assets',
-    );
+    const screenshotDir = test.info().outputPath('movement-report-assets');
     mkdirSync(screenshotDir, { recursive: true });
 
     for (const viewport of VIEWPORTS) {
       await page.setViewportSize({ width: viewport.width, height: viewport.height });
       await page.goto(POC_URL);
       await expect(page.getByTestId('personal-workspace-poc-shell')).toBeVisible();
+      if ('fallbackFont' in viewport && viewport.fallbackFont) {
+        await page.addStyleTag({ content: '[data-testid="personal-workspace-move-panel"], [data-testid="personal-workspace-move-panel"] * { font-family: monospace !important; }' });
+      }
       if (viewport.forcedSafeArea) {
         await page.addStyleTag({
           content: `[data-testid="personal-workspace-poc-shell"] {
@@ -949,7 +964,7 @@ test.describe('FlowMe 개인공간 Stage 4 이동·반응형 runtime 계약', ()
       const moveStatus = page.getByTestId('personal-workspace-move-status');
       await expect(panel).toBeVisible();
 
-      if (viewport.label === '390x844' || viewport.label === '844x390') {
+      if (viewport.width === 320 || viewport.label === '390x844' || viewport.label === '844x390') {
         await page.screenshot({
           path: path.join(screenshotDir, `react-task-move-${viewport.label}.png`),
           fullPage: false,
@@ -1077,6 +1092,9 @@ test.describe('FlowMe 개인공간 Stage 4 이동·반응형 runtime 계약', ()
         const hit = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
         return hit === element || element.contains(hit);
       }), `${viewport.label}: sticky close remains actionable`).toBe(true);
+      if (viewport.width === 320) {
+        await page.screenshot({ path: path.join(screenshotDir, `react-task-move-scrolled-${viewport.label}.png`), fullPage: false });
+      }
       await close.click();
       await expect(panel).toHaveCount(0);
 

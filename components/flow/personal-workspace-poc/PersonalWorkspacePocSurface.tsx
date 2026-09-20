@@ -3891,11 +3891,9 @@ export function PersonalWorkspacePocSurface({
         }}
       >
         <div ref={movePanelHeaderRef} data-testid="personal-workspace-move-panel-header" className="sticky top-0 z-20 -mx-4 -mt-4 bg-white px-4 pb-3 pt-4 sm:-mx-5 sm:px-5">
-        <div className="flex items-start justify-between gap-3 border-b border-[var(--flowme-border)] pb-3">
-          <div className="min-w-0">
+        <div className="border-b border-[var(--flowme-border)] pb-3">
+          <div className="flex items-center justify-between gap-2">
             <p className="text-xs font-semibold text-[var(--flowme-workspace-accent-strong)]">이동할 곳</p>
-            <h2 id="personal-workspace-move-title" className="mt-1 break-words text-lg font-semibold text-[var(--flowme-text)]">{title}</h2>
-          </div>
           <button
             type="button"
             data-testid="personal-workspace-move-close"
@@ -3904,6 +3902,8 @@ export function PersonalWorkspacePocSurface({
             className={`${SECONDARY_CLASS} shrink-0`}
             onClick={() => cancelMove()}
           >닫기</button>
+          </div>
+          <h2 id="personal-workspace-move-title" className="mt-1 break-words text-lg font-semibold text-[var(--flowme-text)]">{title}</h2>
         </div>
         <p id="personal-workspace-move-description" className="sr-only">
           {moveTarget.kind === 'flow'

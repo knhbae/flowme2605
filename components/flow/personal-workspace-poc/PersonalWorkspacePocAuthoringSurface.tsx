@@ -3182,37 +3182,23 @@ export function PersonalWorkspacePocAuthoringSurface({
   };
 
   const authoringSourceReadOnly = entryAuthoringBridge.isLocked() || sourceHelperRecoveryRequired.current;
-  const renderAuthoringInput = () => (
-    <section
-      ref={authoringInputSectionRef}
-      data-testid="personal-workspace-authoring-input-section"
-      data-source-empty={rawText.length === 0 ? 'true' : 'false'}
-      aria-labelledby={authoringStarted ? 'personal-workspace-authoring-write-heading' : 'personal-workspace-authoring-write-heading-retained'}
-      className={`${mobileStep === 'input' ? 'block' : 'hidden'} min-w-0 scroll-mt-20 lg:block lg:scroll-mt-0`}
-    >
-      <div className="flex flex-wrap items-end justify-between gap-2">
-        <div>
-          <p className="text-xs font-bold tracking-[0.12em] text-teal-800">원문</p>
-          <h2 id={authoringStarted ? 'personal-workspace-authoring-write-heading' : 'personal-workspace-authoring-write-heading-retained'} tabIndex={-1} className="mt-1 scroll-mt-24 text-xl font-semibold tracking-[-0.02em] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">메모하듯 작성하세요</h2>
-        </div>
-        <button type="button" data-testid="personal-workspace-authoring-find-existing" className="min-h-11 rounded-md px-3 text-xs font-semibold text-slate-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]" onClick={() => {
-          if (pending.current || entryAttempt.current || entryHistoryConsuming.current || sourceHelperRecoveryRequired.current) return;
-          if (!lastDraftPersistenceOk.current) {
-            setStatus({ kind: 'failure', message: '원문 저장을 확인하지 못해 검색을 열지 않았어요. 현재 원문은 그대로 남아 있습니다.' }); return;
-          }
-          const current = readPersonalWorkspacePocEntryNavigationBinding();
-          if (!entryAuthoringBridge.inspect(current) || !current) { entryWriteFailure(); return; }
-          entryReturnSnapshot.current = sourceRef.current?.readSnapshot() ?? null;
-          entryReturnDocumentY.current = window.scrollY;
-          entryReturnStatus.current = status;
-          setEntryBinding(current); setEntryEpoch(observePersonalWorkspacePocEntryNavigation());
-          entryInvalidated.current = false; setEntryStale(false);
-          setEntryAuthoringPanel(undefined); setAuthoringStarted(false);
-          setStatus({ kind: 'neutral', message: '기존 원문은 그대로 두고 저장된 Flow를 찾습니다.' });
-        }}>기존 Flow 찾기</button>
-      </div>
-      <p data-testid="personal-workspace-authoring-input-guidance" className="mt-2 break-keep text-sm leading-6 text-slate-600">원문은 그대로 남고, 명시한 <code>- [ ]</code> 행만 실행 항목이 됩니다.</p>
-
+  const renderValidationExampleControl = () => (
+    <div data-testid="personal-workspace-authoring-validation-example-control" className="border-b border-slate-200 py-2">
+      <button
+        ref={validationExamplesToggleRef}
+        type="button"
+        data-testid="personal-workspace-authoring-validation-examples-open"
+        aria-haspopup="dialog"
+        aria-expanded={validationExamplesOpen}
+        className="flex min-h-12 w-full items-center justify-between gap-3 text-left text-sm font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+        onClick={openValidationExamples}
+      >
+        <span><span aria-hidden="true" className="mr-2 text-teal-700">◎</span>검증 예시 찾아보기</span>
+        <span className="text-xs font-medium text-slate-500">31개 · 읽기 전용</span>
+      </button>
+    </div>
+  );
+  const renderTemplateControl = () => (
       <div data-testid="personal-workspace-authoring-template-control" className="mt-4 border-y border-slate-200 py-2">
         <button
           ref={templateToggleRef}
@@ -3262,21 +3248,39 @@ export function PersonalWorkspacePocAuthoringSurface({
           </div>
         ) : null}
       </div>
-
-      <div data-testid="personal-workspace-authoring-validation-example-control" className="border-b border-slate-200 py-2">
-        <button
-          ref={validationExamplesToggleRef}
-          type="button"
-          data-testid="personal-workspace-authoring-validation-examples-open"
-          aria-haspopup="dialog"
-          aria-expanded={validationExamplesOpen}
-          className="flex min-h-12 w-full items-center justify-between gap-3 text-left text-sm font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
-          onClick={openValidationExamples}
-        >
-          <span><span aria-hidden="true" className="mr-2 text-teal-700">◎</span>검증 예시 찾아보기</span>
-          <span className="text-xs font-medium text-slate-500">31개 · 읽기 전용</span>
-        </button>
+  );
+  const renderAuthoringInput = () => (
+    <section
+      ref={authoringInputSectionRef}
+      data-testid="personal-workspace-authoring-input-section"
+      data-source-empty={rawText.length === 0 ? 'true' : 'false'}
+      aria-labelledby={authoringStarted ? 'personal-workspace-authoring-write-heading' : 'personal-workspace-authoring-write-heading-retained'}
+      className={`${mobileStep === 'input' ? 'block' : 'hidden'} min-w-0 scroll-mt-20 lg:block lg:scroll-mt-0`}
+    >
+      <div className="flex flex-wrap items-end justify-between gap-2">
+        <div>
+          <p className="text-xs font-bold tracking-[0.12em] text-teal-800">원문</p>
+          <h2 id={authoringStarted ? 'personal-workspace-authoring-write-heading' : 'personal-workspace-authoring-write-heading-retained'} tabIndex={-1} className="mt-1 scroll-mt-24 text-xl font-semibold tracking-[-0.02em] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">메모하듯 작성하세요</h2>
+        </div>
+        <button type="button" data-testid="personal-workspace-authoring-find-existing" className="min-h-11 rounded-md px-3 text-xs font-semibold text-slate-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]" onClick={() => {
+          if (pending.current || entryAttempt.current || entryHistoryConsuming.current || sourceHelperRecoveryRequired.current) return;
+          if (!lastDraftPersistenceOk.current) {
+            setStatus({ kind: 'failure', message: '원문 저장을 확인하지 못해 검색을 열지 않았어요. 현재 원문은 그대로 남아 있습니다.' }); return;
+          }
+          const current = readPersonalWorkspacePocEntryNavigationBinding();
+          if (!entryAuthoringBridge.inspect(current) || !current) { entryWriteFailure(); return; }
+          entryReturnSnapshot.current = sourceRef.current?.readSnapshot() ?? null;
+          entryReturnDocumentY.current = window.scrollY;
+          entryReturnStatus.current = status;
+          setEntryBinding(current); setEntryEpoch(observePersonalWorkspacePocEntryNavigation());
+          entryInvalidated.current = false; setEntryStale(false);
+          setEntryAuthoringPanel(undefined); setAuthoringStarted(false);
+          setStatus({ kind: 'neutral', message: '기존 원문은 그대로 두고 저장된 Flow를 찾습니다.' });
+        }}>기존 Flow 찾기</button>
       </div>
+      <p data-testid="personal-workspace-authoring-input-guidance" className="mt-2 break-keep text-sm leading-6 text-slate-600">원문은 그대로 남고, 명시한 <code>- [ ]</code> 행만 실행 항목이 됩니다.</p>
+      {rawText.length === 0 ? renderTemplateControl() : null}
+      {rawText.length === 0 ? renderValidationExampleControl() : null}
 
       <div className="mt-4">
         <PersonalWorkspacePocLiveEditor
@@ -3301,6 +3305,8 @@ export function PersonalWorkspacePocAuthoringSurface({
           inlinePanel={renderPropertyEditorForm('inline')}
         />
       </div>
+      {rawText.length > 0 ? renderTemplateControl() : null}
+      {rawText.length > 0 ? renderValidationExampleControl() : null}
       <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs leading-5 text-slate-500">
         <span>입력 {rawText.length.toLocaleString('ko-KR')}자 · 실행 항목 {parsedItems.length}개</span>
         <span>가이드는 원문·복사·저장에 포함되지 않습니다.</span>
