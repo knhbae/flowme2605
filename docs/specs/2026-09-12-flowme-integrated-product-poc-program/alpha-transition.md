@@ -2,9 +2,9 @@
 
 2026-09-20 · M0 문서·설계 정합화 완료. M1 구현은 예정이며 기능형 PoC 완료와 서버 실사용 완료를 구분한다.
 
-현재 후속 목표는 M1 전에 Git 보존 기준점을 만드는 것이다. [사용자 결정](../../DECISIONS.md#2026-09-20---실사용-알파-인증가입무료-검증과-발행-권한)을 반영했으며 commit/push·Draft PR을 준비한다. [사전 검사](git-preservation-2026-09-20.md)에서 기존 source freshness 실패·보안 취약점과 공개본 재현 의존성을 확인했고 사용자는 그 실제 수정·재검증까지 승인했다. hook을 우회하지 않으며 아래 M0 완료 기록은 과거 문서 목표 범위다.
+M1 전 Git 보존 기준점은 코드 commit `181302ed`·작업 branch push·[Draft PR #203](https://github.com/knhbae/flowme2605/pull/203)으로 만들었다. [사용자 결정](../../DECISIONS.md#2026-09-20---실사용-알파-인증가입무료-검증과-발행-권한)을 반영하고 승인된 출처 기한·취약점·공개본 재현 의존성을 수정했다. [보존 검사와 발행 결과](git-preservation-2026-09-20.md)에 실패·재검증·공개/로컬 증거를 구분해 남겼다. hook 우회·main merge·배포는 하지 않았다. 아래 M0 완료 기록은 과거 문서 목표 범위다.
 
-보존 재검사에서 출처·취약점을 처리하고 현행 통합 브라우저3경로를 추가했다. 다만 기존 v4.1 브라우저 검사 대표1개는 옛 Surface/저장 owner를 전제해 현행 Program에서 실패했다. 전체 E2E/merge-ready가 아니며, M1 착수 전 현행 요구와 회귀 검사의 대응·역사 재현 경계를 정리해야 한다. 상세 실행과 공개·로컬 증거 분리는 위 Git 보존 원장을 따른다.
+보존 재검사에서 출처·취약점을 처리하고 현행 통합 브라우저3경로를 추가했다. 다만 기존 v4.1 브라우저 검사 대표1개는 옛 Surface/저장 owner를 전제해 현행 Program에서 실패했다. PR도 main 충돌 상태이고 CI 실행 결과가 없다. 전체 E2E/merge-ready가 아니며, M1 착수 전 현행 요구와 회귀 검사의 대응·역사 재현 경계 및 충돌 통합 계획을 정리해야 한다. 상세 실행과 공개·로컬 증거 분리는 위 Git 보존 원장을 따른다.
 
 ## 지금 어디까지 왔나
 
@@ -44,8 +44,8 @@ M0 당시 승인 범위는 조사·설계·문서 갱신·문서 검사였으며
 | Supabase 조직 | `Flowme` / `ottkvrramtqszwoncwvo` | 앞선 계정 조회에서 Free 확인. 플랜 변경·결제 없음 |
 | 개발계 | [flowme-dev](https://supabase.com/dashboard/project/wkmzcxpnojobxrgebapw) / `wkmzcxpnojobxrgebapw` | 사용자 승인 후 9/20 10:03:29 UTC 생성. 생성 비용 조회 월 $0·전용 확인 절차 후 실행. `ap-northeast-1`. 이번 목표에서는 조회만 함 |
 | 운영용으로 확보 | [knhbae's Project](https://supabase.com/dashboard/project/ldellkztijrijbpwthjl) / `ldellkztijrijbpwthjl` | 사용자가 FlowMe용이라고 확인. `ap-northeast-1`. 이름 변경·테이블 생성·설정 변경 없음. 아직 실사용 DB로 연결하지 않음 |
-| Vercel | 앞선 조회의 `hubert's projects` 팀 / 기존 `flowme2605` 등 | 플러그인 조회 성공 이력만 확인. 기존 배포에 알파를 덮어쓰지 않음. 알파 프로젝트·URL·개발/운영 환경 연결은 미설정, 이번에 배포 상태 재검증 안 함 |
-| 현재 개발 코드 | branch `agent/personal-workspace-v4-1-poc-20260901`, HEAD `6e4b44fe` | 시작 modified189/untracked478. 미커밋 작업을 실제 PoC 기준으로 보존하며 원래 `flow-mvp` dirty 자료를 정리·stage하지 않음 |
+| Vercel | 기존 `flowme2605` | 후속 Git 보존 때 읽기 UI로 연결 프로젝트1개·저장소 루트·Deploy Hook 없음을 확인. branch 자동배포 차단을 저장소에 추가. 9/20 13:02 UTC 목표 시작 이후 새 배포0. 알파 프로젝트·URL·개발/운영 환경 연결은 미설정 |
+| 현재 개발 코드 | branch `agent/personal-workspace-v4-1-poc-20260901`, 코드 보존 `181302ed` | M0 시작 HEAD `6e4b44fe`, modified189/untracked478. 후속 보존 commit/push·Draft PR 완료. 원래 `flow-mvp` dirty 자료는 수정·정리·stage하지 않음 |
 
 월 $0은 당시 신규 개발 프로젝트 비용 조회 결과이지 운영 전체 비용 보장이 아니다. 키·비밀번호·토큰은 이 문서나 채팅에 기록하지 않는다. 운영용 프로젝트 ID를 개발 실행에 주입하면 시작/쓰기/테스트가 실패하도록 M1–M2에서 검증한다. 앱 build와 CI에서 자동 migration을 실행하지 않는다.
 

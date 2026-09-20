@@ -1,6 +1,6 @@
 # 통합 PoC Git 보존 — 2026-09-20 실행 근거
 
-현재 실행 상태는 [알파 원장](alpha-transition.md)에 연결한다. 이 문서는 M1 전에 현재 기능형 PoC·검증·계획을 Git 기준점으로 보존하는 작업의 근거다. 수정·검증과 발행 상태를 구분하며, 아래 과거 실패는 후속 성공으로 지우지 않는다.
+현재 실행 상태는 [알파 원장](alpha-transition.md)에 연결한다. 이 문서는 M1 전에 현재 기능형 PoC·검증·계획을 Git 기준점으로 보존하는 작업의 근거다. 코드 보존 commit·작업 브랜치 push·[Draft PR #203](https://github.com/knhbae/flowme2605/pull/203)을 완료했다. 수정·검증과 발행 상태를 구분하며, 아래 과거 실패는 후속 성공으로 지우지 않는다. merge-ready 또는 서비스 출시 완료 판정은 아니다.
 
 ## 승인과 경계
 
@@ -75,12 +75,16 @@ clean archive의 최초npm778중777PASS/1FAIL은 template fixture8개 줄바꿈,
 
 브라우저는 새로운 임시 context의 합성 sentinel을 사용했다. 성공/실패/reload 후 운영 sentinel bytes 동일, 허용 PoC prefix 밖 set/remove·clear0, console/page error0을 해당 새 시나리오에서 확인했다. 사용자의 실제 데이터나 기존 누적 프로필을 열지 않았다. 실제 Android/iOS 검사 미실행, 관찰 사용자0.
 
-## 남은 실행
+## 보존 목표 완료와 후속 작업
 
 1. [x] 사용자 결정 반영과 공개 가능한 파일 allowlist·의존성·민감정보 점검.
 2. [x] 승인된 기존 검증 실패/취약점 및 외부 worktree 의존 테스트 수정.
 3. [x] 새 checkout 기준 docs·통합 tests/strict·npm/build/security·현행 대표 E2E 재현. 기존 전체 E2E 실패는 별도 잔여 항목.
-4. [ ] staged diff/비밀·개인자료·파일크기 점검 후 commit.
-5. [ ] 자동배포 차단 확인 후 branch push·Draft PR·원격 결과 확인. main 병합/배포는 하지 않음.
+4. [x] staged diff/비밀·개인자료·파일크기 점검 후 commit. 코드 보존 `181302edcac39cd1fc99ad453ebe390226fdf532`, 1018파일. pre-commit docs6245링크 PASS.
+5. [x] branch push·Draft PR·원격 결과 확인. pre-push docs·npm·build 전부 PASS, 우회0. 원격 head는 코드 보존 SHA와 일치. main 병합/배포는 하지 않음.
 
-발행 전 상태: stage1018·이번 목표 commit0·push0·PR0·merge0·Preview0·Production0. 제한된 secret 패턴 탐지0, staged output/이미지/zip0. 이는 모든 비밀·개인정보 부재의 자동 보증은 아니다. CRLF 원본 vendor, 과거 Markdown 줄바꿈/EOF와 이전 source의 공백 경고는 보존했고 일괄 정리하지 않았다. 실제 기기 검사 미실행, 관찰 사용자0.
+2026-09-20 13:02 UTC 발행 확인: 코드 commit/push 완료·Draft PR1·merge0·Preview0·Production0. Vercel 연결 프로젝트의 목표 시작 이후 deployment 조회0건. DB/Auth/환경변수/유료 설정 변경0, 원래 flow-mvp dirty 파일 수정·stage0. 제한된 secret 패턴 탐지0, staged output/이미지/zip0. 이는 모든 비밀·개인정보 부재의 자동 보증은 아니다. CRLF 원본 vendor, 과거 Markdown 줄바꿈/EOF와 이전 source의 공백 경고는 보존했고 일괄 정리하지 않았다. 실제 기기 검사 미실행, 관찰 사용자0.
+
+PR은 OPEN/DRAFT이며 GitHub 판정은 `CONFLICTING`/`DIRTY`, status check 목록과 해당 branch workflow run 목록은 비어 있었다. 원격 main `b4a25a4fc85c99de32fb4282a00a9293ee532952`는 그대로다. CI PASS를 주장하지 않으며 자동 merge/rebase나 workflow 제외로 해결하지 않는다. 이 문서의 발행 결과 기록은 코드 수정과 분리된 후속 문서 commit으로 보존한다.
+
+다음 목표는 **현재 요구와 회귀 검사의 정합화 및 main 충돌의 안전한 통합 계획**이다. 옛 v4.1 시나리오를 v4.1·개발1·개발2 요구 원장과 현재 Program의 행동에 대응하고, 실제 미구현과 역사 재현 전용 검사를 구분한다. 기존 assertion을 무작정 바꾸거나 버리지 않는다. 충돌은 파일별 소유·의미를 검토한 뒤 승인된 범위에서만 해결한다. 이 단계의 통과 기준을 정한 후 M1 저장 경계·복구 계약으로 이어간다. 이 후속 작업은 이번 보존 목표에서 구현하지 않았다.
