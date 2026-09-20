@@ -119,3 +119,7 @@ push 전 Vercel 대시보드 읽기 재확인: 이 저장소 연결 프로젝트
 타입·통합 테스트 검사기 양쪽이 Node 표준 파일 탐색을 공유하도록 수정했다. 실제 작업본에서 기존 rg 수집과 새 수집의 경로 전체가 정확히 같음(소스424개/테스트 파일181개)을 assert했다. 경로는 정렬된 저장소 상대경로이며 하위 파일·두 route seam을 보존한다. 범위 밖 파일은 수집하지 않고 루트 누락·지원하지 않는 파일 유형은 오류로 중단한다. 이후 추가되는 숨김 파일도 조용히 제외하지 않는다.
 
 새 수집기 회귀4/4(빈 PATH 포함), 통합 strict392entry/424source/진단0/실행 중 변경0, recorder를 통한 docs4/4 및6332링크 PASS다. 이4개는 npm2255 및 제품 모델1749개와 별도의 검사기 테스트다. 전체 모델 재검사와 수정판 Linux CI는 별도로 확인한다. 두 번째 core 실패 로그는 `output/ci-core-35518329550.log`에 보존한다. 검사 skip·CI hook 우회·제품 코드 변경은 없다.
+
+검사기 추가 검토에서는 child가 signal로 종료해 `code=null`인 경우 기존 `code || 0`이 성공으로 종료할 수 있음을 확인했다. 종료 판정을 순수 계약으로 분리하여 nonzero/null·signal·실행 오류·검사 중 source 변경을 실패로 처리한다. `new-tests`만 실행 수가 양의 정수이고 pass=실행 수, fail/skip/cancel=0일 때 통과한다. build/docs/audit에는 TAP 개수 조건을 강제하지 않는다. 이4개 회귀를 앞 수집기4개와 함께 실행해8/8 PASS이며, JSON은 raw child exit/signal/error와 최종 verifiedExitCode를 구분한다. 실행 중인 로컬 모델 재검사에는 새 종료 코드를 소급 적용했다고 주장하지 않으며 수정 후 Linux 전체 실행으로 확인한다. 독립 코드 리뷰도 같은 위험과 경계를 확인했다.
+
+Node 수집기를 사용한 로컬 모델 재검사는181파일1749/1749 PASS, fail/skip0, sourceChanged0으로 끝났다(2worker/256MiB,464.607초). 증거는 `output/integrated-product-poc/new-tests-2026-09-20T15-08-46-142Z.json`이다. 위 종료 판정 수정 전에 시작한 실행이므로 이 결과로 signal 처리의 실제 통합 실행까지 주장하지 않는다. clean repro checkout의 수집기4/4 및 strict392/424/0도 통과했다. 최종 원격 exact-head 실행 결과는 PR의 CI 결과와 별도로 대조한다.

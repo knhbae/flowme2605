@@ -4,12 +4,15 @@ import { readFileSync, writeFileSync, mkdirSync, createWriteStream, existsSync }
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { listProgramSourcePaths } from './program-source-files.mjs';
+import { verificationExitCode } from './program-verification-result.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const kind = process.argv[2];
 if (!['new-tests', 'npm-test', 'approved-tests', 'public-tests', 'build', 'docs', 'audit'].includes(kind)) throw Error('choose new-tests/npm-test/approved-tests/public-tests/build/docs/audit');
 const listPaths = () => listProgramSourcePaths(root);
 const paths = listPaths();
+const testPaths = paths.filter(path => /\.test\.tsx?$/.test(path));
+if (kind === 'new-tests' && testPaths.length === 0) throw new Error('No integrated test files collected');
 const hashes = selected => selected.map(path => ({ path, sha256: existsSync(resolve(root, path)) ? createHash('sha256').update(readFileSync(resolve(root, path))).digest('hex') : null }));
 const before = hashes(paths), started = new Date().toISOString();
 const directory = resolve(root, 'output/integrated-product-poc'); mkdirSync(directory, { recursive: true });
@@ -34,19 +37,21 @@ const requestedTestHeap = process.argv[4];
 if (requestedTestHeap !== undefined && (kind !== 'new-tests' || !['256', '512'].includes(requestedTestHeap))) throw Error('new-tests heap must be 256 or 512');
 const testMaxOldSpaceMb = kind === 'new-tests' ? Number(requestedTestHeap ?? 512) : null;
 const testMaxSemiSpaceMb = testMaxOldSpaceMb === 256 ? 4 : null;
-const args = kind === 'new-tests' ? [`--max-old-space-size=${testMaxOldSpaceMb}`, ...(testMaxSemiSpaceMb ? [`--max-semi-space-size=${testMaxSemiSpaceMb}`] : []), '--import', 'tsx', '--test', `--test-concurrency=${testConcurrency}`, '--test-reporter=tap', ...paths.filter(path => /\.test\.tsx?$/.test(path))] : windows ? ['/d', '/s', '/c', ['npm.cmd', ...commands[kind]].join(' ')] : commands[kind];
+const args = kind === 'new-tests' ? [`--max-old-space-size=${testMaxOldSpaceMb}`, ...(testMaxSemiSpaceMb ? [`--max-semi-space-size=${testMaxSemiSpaceMb}`] : []), '--import', 'tsx', '--test', `--test-concurrency=${testConcurrency}`, '--test-reporter=tap', ...testPaths] : windows ? ['/d', '/s', '/c', ['npm.cmd', ...commands[kind]].join(' ')] : commands[kind];
 let output = '';
+let launchError = null;
 const child = spawn(command, args, { cwd: root, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
 for (const stream of [child.stdout, child.stderr]) stream.on('data', bytes => { const text = bytes.toString(); output += text; log.write(bytes); });
-child.on('error', error => { output += String(error); log.write(String(error)); });
-child.on('close', code => {
+child.on('error', error => { launchError = String(error); output += launchError; log.write(launchError); });
+child.on('close', (code, signal) => {
   log.end();
   const total = label => [...output.matchAll(new RegExp(`^(?:# |ℹ )?${label} (\\d+)\\s*$`, 'gm'))].reduce((sum, item) => sum + Number(item[1]), 0);
   const after = hashes(listPaths()), prior = new Map(before.map(file => [file.path, file.sha256])), final = new Map(after.map(file => [file.path, file.sha256]));
   const changed = [...new Set([...prior.keys(), ...final.keys()])].filter(path => prior.get(path) !== final.get(path));
-  const result = { kind, started, ended: new Date().toISOString(), exitCode: code, nodeOptions: process.env.NODE_OPTIONS ?? null, testConcurrency, testMaxOldSpaceMb, testMaxSemiSpaceMb, testFileCount: kind === 'new-tests' ? paths.filter(path => /\.test\.tsx?$/.test(path)).length : null, testExecutions: total('tests'), passed: total('pass'), failed: total('fail'), skipped: total('skipped'), sourceChangedDuringRun: changed, log: `${name}.log`, sourceHashes: after };
-  writeFileSync(resolve(directory, `${name}.json`), JSON.stringify(result, null, 2));
-  writeFileSync(resolve(directory, `${kind}-latest.json`), JSON.stringify(result, null, 2));
-  console.log(JSON.stringify({ ...result, sourceHashes: `${name}.json` }, null, 2));
-  process.exitCode = code || (changed.length ? 2 : 0);
+  const result = { kind, started, ended: new Date().toISOString(), exitCode: code, signal, launchError, nodeOptions: process.env.NODE_OPTIONS ?? null, testConcurrency, testMaxOldSpaceMb, testMaxSemiSpaceMb, testFileCount: kind === 'new-tests' ? testPaths.length : null, testExecutions: total('tests'), passed: total('pass'), failed: total('fail'), skipped: total('skipped'), cancelled: total('cancelled'), sourceChangedDuringRun: changed, log: `${name}.log`, sourceHashes: after };
+  const verifiedExitCode = verificationExitCode(result);
+  writeFileSync(resolve(directory, `${name}.json`), JSON.stringify({ ...result, verifiedExitCode }, null, 2));
+  writeFileSync(resolve(directory, `${kind}-latest.json`), JSON.stringify({ ...result, verifiedExitCode }, null, 2));
+  console.log(JSON.stringify({ ...result, verifiedExitCode, sourceHashes: `${name}.json` }, null, 2));
+  process.exitCode = verifiedExitCode;
 });
