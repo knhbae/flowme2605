@@ -3,12 +3,6 @@
   "framework": "nextjs",
   "outputDirectory": null,
   "git": {
-    "deploymentEnabled": {
-      "codex/p35-production-mobile-p0": false,
-      "codex/p35-round2-candidate-20260805": false,
-      "codex/p35-round2-correction-pprime2-20260805": false,
-      "agent/personal-workspace-v4-1-poc-20260901": false,
-      "review/p35-round2-*": false
-    }
+    "deploymentEnabled": false
   }
 }
