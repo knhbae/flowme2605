@@ -1,0 +1,1584 @@
+{
+  "catalogVersion": "1.1.0-p0",
+  "templateContractVersion": "p0.2",
+  "status": "planning_contract",
+  "revisionNote": "p0.1 had no deployed or canary instances, so template versions remain 1.0.0 while the catalog contract is corrected",
+  "baseline": {
+    "repository": "flow-text-authoring-flow-view-hybrid-ux-poc-20260828",
+    "commit": "a5da5d11424d0371ddcb8a516b986b486a65bb96",
+    "cleanWorktree": "D:\\flowme2605\\flow-text-authoring-structure-template-p0-baseline-20260829",
+    "productionIntegration": false,
+    "logicBaselineStatus": "clean_for_pure_logic",
+    "uiIntegrationBaselineStatus": "pending_latest_dirty_freeze"
+  },
+  "terminology": {
+    "definition": "버전이 고정된 빈 구조와 검증 규칙",
+    "previewFixture": "선택 화면에서만 보는 합성 예시",
+    "instance": "사용자 값이 들어간 sidecar StructureDraft",
+    "flowContent": "원문 반영과 사용자 확인을 거친 canonical 결과"
+  },
+  "sourceSafety": {
+    "selectionMutatesRawText": false,
+    "draftInputMutatesRawText": false,
+    "materializationMode": "single_transaction",
+    "allowedSourceContent": [
+      "text_authoring_grammar_tokens",
+      "user_typed_values",
+      "user_selected_values",
+      "deterministic_derived_values_from_confirmed_inputs"
+    ],
+    "forbiddenSourceContent": [
+      "prompt",
+      "placeholder",
+      "preview_fixture",
+      "template_label",
+      "category_label",
+      "research_copy",
+      "empty_slot"
+    ],
+    "emptySlotOutput": {
+      "sourceLines": 0,
+      "steps": 0,
+      "items": 0,
+      "projectionRows": 0
+    },
+    "minimumConfirmableFlow": {
+      "userTitleCount": 1,
+      "userRequestItemCount": 1
+    },
+    "sourceFingerprintMismatch": "fail_closed",
+    "templateSwitch": {
+      "beforeAnyUserValue": "allowed",
+      "beforeMaterializationWithUserValues": "confirm_and_keep_one_local_undo",
+      "afterMaterialization": "blocked_detach_only"
+    },
+    "templateUpdate": "pin_version_no_automatic_migration",
+    "researchEvidenceBecomesContentSource": false
+  },
+  "derivedValuePolicy": {
+    "requiresUserConfirmedInputs": true,
+    "visibleInMaterializationPreview": true,
+    "allowed": [
+      "anchor_plus_relative_day_offset",
+      "phase_start_from_prior_phase_duration",
+      "recurrence_end_from_user_window",
+      "recurrence_count_from_user_window",
+      "first_occurrence_from_start_date_and_weekdays"
+    ],
+    "forbidden": [
+      "generated_title",
+      "generated_task",
+      "generated_note",
+      "generated_place",
+      "generated_check_row"
+    ]
+  },
+  "userValuePropagationPolicy": {
+    "classification": "same_confirmed_user_value_not_derived_value",
+    "writesDerivedValueLog": false,
+    "incrementsUserValueCount": false,
+    "rules": [
+      {
+        "fromBinding": "generation.global_recurrence.until",
+        "toBinding": "item.recurrence.until",
+        "scope": "all_descendant_sessions",
+        "when": "generation.global_recurrence.end_mode == until"
+      },
+      {
+        "fromBinding": "generation.global_recurrence.count",
+        "toBinding": "item.recurrence.count",
+        "scope": "all_descendant_sessions",
+        "when": "generation.global_recurrence.end_mode == count"
+      },
+      {
+        "fromBinding": "generation.group_date",
+        "toBinding": "item.schedule.date",
+        "scope": "all_nonempty_descendant_schedule_items_in_same_group"
+      },
+      {
+        "fromBinding": "generation.default_timezone",
+        "toBinding": "item.schedule.timezone",
+        "scope": "all_timed_descendant_schedule_items"
+      }
+    ]
+  },
+  "structureDraftContract": {
+    "schemaVersion": "p0.2",
+    "required": [
+      "draftId",
+      "templateId",
+      "templateVersion",
+      "sourceFingerprint",
+      "values",
+      "groups",
+      "dismissedSlots",
+      "materialized",
+      "revision",
+      "updatedAt"
+    ],
+    "groupInstanceRequired": ["instanceId", "groupId", "order", "values", "children"],
+    "dismissalScope": "scopeInstanceId_plus_slotId",
+    "emptyRawTextRecovery": "independent_sidecar_restore_with_exact_fingerprint",
+    "materializeCommand": "editor_internal_single_history_transaction",
+    "externalRawTextPropReplacement": "forbidden_for_materialization",
+    "issueContract": {
+      "scopeInstanceIdRequired": true,
+      "rootScopeValue": "root",
+      "repeatedFieldScope": "group_instance_id_plus_slot_id",
+      "errorsBlockMaterialization": true
+    },
+    "sharedValidationRules": [
+      {
+        "code": "DRAFT_DUPLICATE_INSTANCE_ID",
+        "when": "draft_validation",
+        "rule": "every GroupInstance.instanceId is unique within one draft",
+        "message": "반복 행 식별자가 겹쳤습니다. 초안을 다시 불러와 주세요."
+      },
+      {
+        "code": "SOURCE_FINGERPRINT_MISMATCH",
+        "when": "materialization",
+        "rule": "draft sourceFingerprint equals the current raw source fingerprint",
+        "message": "원문이 바뀌었습니다. 최신 원문을 확인한 뒤 다시 시도해 주세요."
+      }
+    ],
+    "userValueCountPolicy": {
+      "unit": "nonempty_slot",
+      "collectionSlotCountsAs": 1,
+      "emptyDerivedAndPropagatedValuesCountAs": 0
+    }
+  },
+  "validationRuleCodeContract": {
+    "stability": "fixed_for_p0.2",
+    "issueCodeSources": [
+      "structureDraftContract.sharedValidationRules[].code",
+      "templates[].validationRules[].code"
+    ],
+    "defaultSeverity": "error",
+    "duplicateCodesAllowed": false,
+    "renameRequiresTemplateContractVersionBump": true
+  },
+  "sourceMaterializationContract": {
+    "grammarVersion": "text-authoring-existing-v1",
+    "bindings": {
+      "flow.title": "# {value}",
+      "flow.anchor_date": "- 기준일: {date}",
+      "step.title": "## {value}",
+      "item.title": "- [ ] {value}",
+      "item.schedule.date": "  - 날짜: {date}",
+      "item.schedule.day_offset": "  - 상대 날짜: {formattedDayOffset}",
+      "item.schedule.time": "  - 시간: {time}",
+      "item.schedule.timezone": "  - 시간대: {ianaTimezone}",
+      "item.schedule.duration": "  - 소요 시간: {minutes}분",
+      "item.recurrence.weekdays": "  - 반복: {weekdayRule}",
+      "item.recurrence.until": "  - 반복 종료: {date}",
+      "item.recurrence.count": "  - 반복 종료: {count}회",
+      "item.properties.place": "  - 장소: {value}",
+      "item.detail": "  - 설명: {line}",
+      "item.completion.doneWhen": "  - 완료 기준: {value}",
+      "item.resources.reference": "  - 자료: {httpUrl}",
+      "item.subchecks": "  - [ ] {value}"
+    },
+    "generationBindingsWriteSource": false,
+    "propertyOrder": [
+      "날짜",
+      "상대 날짜",
+      "시간",
+      "시간대",
+      "소요 시간",
+      "반복",
+      "반복 종료",
+      "장소",
+      "설명",
+      "완료 기준",
+      "자료"
+    ],
+    "emptyValueBehavior": "omit",
+    "relativeDayOffsetFormatting": {
+      "negative": "-1 => D-1",
+      "zero": "0 => D-Day",
+      "positive": "+1 => D+1"
+    },
+    "weekdayRuleFormatting": {
+      "allowedTokens": ["MO", "TU", "WE", "TH", "FR", "SA", "SU"],
+      "deduplicate": true,
+      "sortOrder": ["MO", "TU", "WE", "TH", "FR", "SA", "SU"],
+      "outputLabels": ["월", "화", "수", "목", "금", "토", "일"],
+      "outputPrefix": "매주 "
+    },
+    "singleLineFieldsRejectLineBreaks": true,
+    "multilineTextBehavior": "one_description_property_per_nonempty_line",
+    "subcheckPlacement": "after_all_item_properties_in_user_order",
+    "structureTokenEscaping": "treat_user_value_as_value_not_grammar",
+    "urlSchemes": ["http", "https"],
+    "timezoneValidation": "IANA",
+    "controlBindings": [
+      "generation.default_timezone",
+      "generation.global_recurrence.end_mode",
+      "generation.global_recurrence.until",
+      "generation.global_recurrence.count",
+      "generation.group_date",
+      "generation.phase_window",
+      "generation.study_window.start",
+      "generation.study_window.end",
+      "item.schedule.mode"
+    ],
+    "materializationMode": "single_transaction"
+  },
+  "catalogMetadataDefaults": {
+    "locale": "ko-KR",
+    "origin": "first_party_blank_structure",
+    "sources": [],
+    "researchEvidenceField": "references",
+    "rights": {
+      "status": "needs_review",
+      "rightsHolder": null,
+      "licenseUri": null,
+      "accessRights": "internal_canary_only",
+      "clearedFor": [],
+      "thirdPartyAssets": []
+    },
+    "lifecycle": {
+      "definitionStatus": "planning_contract",
+      "canaryStatus": "not_started",
+      "publicExposure": "not_approved"
+    },
+    "semanticVersioning": {
+      "major": "slot removal, type change, stronger requirement or projection meaning change",
+      "minor": "compatible optional slot or projection addition",
+      "patch": "copy, preview or validation fix without save meaning change",
+      "releasedPayloadMutable": false
+    }
+  },
+  "fieldTypes": [
+    "short_text",
+    "long_text",
+    "date",
+    "time",
+    "timezone",
+    "positive_integer",
+    "relative_day_offset",
+    "weekday_set",
+    "url",
+    "enum",
+    "check_rows"
+  ],
+  "fieldTypeRules": {
+    "positive_integer": {
+      "jsonType": "integer",
+      "minimum": 1
+    },
+    "relative_day_offset": {
+      "jsonType": "integer",
+      "allowsNegative": true,
+      "allowsZero": true
+    },
+    "timezone": {
+      "jsonType": "string",
+      "validation": "IANA"
+    }
+  },
+  "archetypes": [
+    {
+      "archetypeId": "recurring_routine",
+      "label": "반복 루틴",
+      "compilerId": "compile_recurring_routine_v1",
+      "windowStrategies": ["phase", "global"],
+      "sourceShape": "user title + anchor + optional user-named phases + user-named recurring items",
+      "canonicalRules": [
+        "Step is grouping only and is created only when it has at least one user Item",
+        "phase duration stays in StructureDraft generation metadata when windowStrategy is phase",
+        "each Item recurrence is bounded by the selected phase or global window",
+        "DTSTART is the first real selected weekday within the selected phase or global window",
+        "COUNT and UNTIL are mutually exclusive",
+        "open-ended recurrence is excluded from P0"
+      ]
+    },
+    {
+      "archetypeId": "date_preparation",
+      "label": "D-day 준비",
+      "compilerId": "compile_date_preparation_v1",
+      "sourceShape": "user title + event anchor + user-named groups + offset, absolute or recurring Items",
+      "canonicalRules": [
+        "offset schedule requires a user anchor",
+        "unscheduled Items remain Todo-only",
+        "user-named groups do not imply a hidden date range",
+        "D-day offset is not recurrence"
+      ]
+    },
+    {
+      "archetypeId": "itinerary_preparation",
+      "label": "일정+준비",
+      "compilerId": "compile_itinerary_preparation_v1",
+      "sourceShape": "user departure date + preparation Items + user-named itinerary groups + timed/place Items",
+      "canonicalRules": [
+        "preparation and itinerary use the same canonical Item model",
+        "date views never duplicate canonical Items",
+        "itinerary date must be on or after the user departure date",
+        "ordinary prose stays TXT or Memo"
+      ]
+    }
+  ],
+  "templates": [
+    {
+      "templateId": "exercise-phased-4w-v1",
+      "version": "1.0.0",
+      "status": "p0",
+      "categoryId": "exercise",
+      "categoryLabel": "운동",
+      "lifeArea": "health_fitness",
+      "planningPatterns": ["phase_lifecycle", "repeating_routine"],
+      "label": "4주 운동 적응",
+      "archetypeId": "recurring_routine",
+      "windowStrategy": "phase",
+      "projectionPolicy": {
+        "fixtureExpectedPrimary": "calendar",
+        "primaryRule": "calendar_when_all_items_scheduled_else_todo",
+        "offeredArtifacts": ["calendar", "todo", "memo"],
+        "optionalWhenEligible": ["sheet"],
+        "notOffered": []
+      },
+      "userNeed": "4주 안에서 단계마다 다른 운동을 반복 배치하고 회차별로 확인한다.",
+      "instanceDefaults": {
+        "values": {},
+        "seedGroups": [
+          {
+            "groupId": "phases",
+            "childSeeds": [{ "groupId": "sessions" }]
+          }
+        ],
+        "instantiateWithStableIds": true
+      },
+      "setupFields": [
+        {
+          "slotId": "flow_title",
+          "label": "루틴 이름",
+          "type": "short_text",
+          "requiredAt": "flow_confirm",
+          "sourceBinding": "flow.title"
+        },
+        {
+          "slotId": "start_date",
+          "label": "시작일",
+          "type": "date",
+          "requiredAt": "scheduled_materialization",
+          "sourceBinding": "flow.anchor_date"
+        }
+      ],
+      "groups": [
+        {
+          "groupId": "phases",
+          "label": "단계",
+          "repeatable": true,
+          "minAtConfirm": 1,
+          "fields": [
+            {
+              "slotId": "phase_title",
+              "label": "단계 이름",
+              "type": "short_text",
+              "requiredAt": "group_materialization",
+              "sourceBinding": "step.title"
+            },
+            {
+              "slotId": "duration_weeks",
+              "label": "기간",
+              "type": "positive_integer",
+              "unit": "week",
+              "requiredAt": "group_materialization",
+              "sourceBinding": "generation.phase_window"
+            }
+          ],
+          "childGroups": [
+            {
+              "groupId": "sessions",
+              "label": "운동 항목",
+              "repeatable": true,
+              "minAtConfirm": 1,
+              "fields": [
+                {
+                  "slotId": "item_title",
+                  "label": "운동 항목",
+                  "type": "short_text",
+                  "requiredAt": "item_materialization",
+                  "sourceBinding": "item.title"
+                },
+                {
+                  "slotId": "weekdays",
+                  "label": "반복 요일",
+                  "type": "weekday_set",
+                  "requiredAt": "scheduled_materialization",
+                  "sourceBinding": "item.recurrence.weekdays"
+                },
+                {
+                  "slotId": "time",
+                  "label": "시작 시각",
+                  "type": "time",
+                  "requiredAt": "never",
+                  "sourceBinding": "item.schedule.time"
+                },
+                {
+                  "slotId": "duration_minutes",
+                  "label": "캘린더 소요시간",
+                  "type": "positive_integer",
+                  "unit": "minute",
+                  "requiredAt": "when_time_exists",
+                  "sourceBinding": "item.schedule.duration"
+                },
+                {
+                  "slotId": "detail",
+                  "label": "방법·준비 메모",
+                  "type": "long_text",
+                  "requiredAt": "never",
+                  "sourceBinding": "item.detail"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "validationRules": [
+        {
+          "code": "EX4W_DURATION_SUM",
+          "when": "flow_confirm",
+          "rule": "sum(phases.duration_weeks) == 4",
+          "message": "단계 기간의 합을 4주로 맞춰 주세요."
+        },
+        {
+          "code": "EX4W_OCCURRENCE_IN_PHASE",
+          "when": "scheduled_materialization",
+          "rule": "each session has at least one occurrence inside its phase window",
+          "message": "이 단계 안에 실제 운동 날짜가 생기도록 요일을 확인해 주세요."
+        },
+        {
+          "code": "EX4W_TIME_DURATION_PAIR",
+          "when": "materialization",
+          "rule": "time implies duration_minutes",
+          "message": "시각을 넣었다면 캘린더 소요시간도 입력해 주세요."
+        }
+      ],
+      "materialization": {
+        "stepCreation": "only_nonempty_phase_with_nonempty_session",
+        "itemCreation": "only_nonempty_item_title",
+        "phaseWindow": "start_date + cumulative previous duration_weeks",
+        "recurrenceEnd": "inclusive phase end",
+        "timedUntilFallback": "deterministic count or finite events",
+        "supportLevel": "user_request"
+      },
+      "previewFixture": {
+        "previewOnly": true,
+        "synthetic": true,
+        "title": "퇴근 후 4주 영상 루틴",
+        "summary": "2주 적응 + 2주 유지, 사용자가 고른 영상 반복",
+        "fieldExamples": [
+          ["시작일", "2026-09-01"],
+          ["단계", "적응 단계 · 2주"],
+          ["운동 항목", "가볍게 달리기 · 화/목"]
+        ],
+        "sourcePreview": [
+          "## 적응 단계",
+          "- [ ] 가볍게 달리기",
+          "  - 반복 종료: 2026-09-14"
+        ]
+      },
+      "researchEvidence": [
+        {
+          "label": "TrainingPeaks Structured Workout Builder",
+          "url": "https://help.trainingpeaks.com/hc/en-us/articles/235164967-Structured-Workout-Builder",
+          "use": "block, repeat and duration structure only",
+          "contentSource": false
+        },
+        {
+          "label": "NHS Couch to 5K",
+          "url": "https://www.nhs.uk/better-health/get-active/get-running-with-couch-to-5k/couch-to-5k-running-plan/",
+          "use": "week and session hierarchy only",
+          "contentSource": false
+        }
+      ],
+      "p0Exclusions": [
+        "exercise prescription",
+        "automatic intensity progression",
+        "health judgment",
+        "rest day generation",
+        "variable total duration"
+      ]
+    },
+    {
+      "templateId": "exercise-weekly-repeat-v1",
+      "version": "1.0.0",
+      "status": "p0",
+      "categoryId": "exercise",
+      "categoryLabel": "운동",
+      "lifeArea": "health_fitness",
+      "planningPatterns": ["repeating_routine"],
+      "label": "주간 운동 루틴",
+      "archetypeId": "recurring_routine",
+      "windowStrategy": "global",
+      "projectionPolicy": {
+        "fixtureExpectedPrimary": "calendar",
+        "primaryRule": "calendar_when_all_items_scheduled_else_todo",
+        "offeredArtifacts": ["calendar", "todo", "memo"],
+        "optionalWhenEligible": ["sheet"],
+        "notOffered": []
+      },
+      "userNeed": "서로 다른 운동 세션을 정한 요일에 반복하고 각 회차를 확인한다.",
+      "instanceDefaults": {
+        "values": {},
+        "seedGroups": [
+          {
+            "groupId": "routine_groups",
+            "childSeeds": [{ "groupId": "sessions" }]
+          }
+        ],
+        "instantiateWithStableIds": true
+      },
+      "setupFields": [
+        {
+          "slotId": "flow_title",
+          "label": "루틴 이름",
+          "type": "short_text",
+          "requiredAt": "flow_confirm",
+          "sourceBinding": "flow.title"
+        },
+        {
+          "slotId": "start_date",
+          "label": "시작일",
+          "type": "date",
+          "requiredAt": "scheduled_materialization",
+          "sourceBinding": "flow.anchor_date"
+        },
+        {
+          "slotId": "end_mode",
+          "label": "반복 종료 방식",
+          "type": "enum",
+          "options": ["until", "count"],
+          "requiredAt": "scheduled_materialization",
+          "sourceBinding": "generation.global_recurrence.end_mode"
+        },
+        {
+          "slotId": "until_date",
+          "label": "종료일",
+          "type": "date",
+          "requiredAt": "when_end_mode_until",
+          "sourceBinding": "generation.global_recurrence.until"
+        },
+        {
+          "slotId": "repeat_count",
+          "label": "총 회차",
+          "type": "positive_integer",
+          "requiredAt": "when_end_mode_count",
+          "sourceBinding": "generation.global_recurrence.count"
+        }
+      ],
+      "groups": [
+        {
+          "groupId": "routine_groups",
+          "label": "루틴 묶음",
+          "repeatable": true,
+          "minAtConfirm": 1,
+          "fields": [
+            {
+              "slotId": "group_title",
+              "label": "묶음 이름",
+              "type": "short_text",
+              "requiredAt": "group_materialization",
+              "sourceBinding": "step.title"
+            }
+          ],
+          "childGroups": [
+            {
+              "groupId": "sessions",
+              "label": "운동 세션",
+              "repeatable": true,
+              "minAtConfirm": 1,
+              "fields": [
+                {
+                  "slotId": "item_title",
+                  "label": "운동 항목",
+                  "type": "short_text",
+                  "requiredAt": "item_materialization",
+                  "sourceBinding": "item.title"
+                },
+                {
+                  "slotId": "weekdays",
+                  "label": "반복 요일",
+                  "type": "weekday_set",
+                  "requiredAt": "scheduled_materialization",
+                  "sourceBinding": "item.recurrence.weekdays"
+                },
+                {
+                  "slotId": "time",
+                  "label": "시각",
+                  "type": "time",
+                  "requiredAt": "never",
+                  "sourceBinding": "item.schedule.time"
+                },
+                {
+                  "slotId": "duration_minutes",
+                  "label": "소요시간",
+                  "type": "positive_integer",
+                  "unit": "minute",
+                  "requiredAt": "when_time_exists",
+                  "sourceBinding": "item.schedule.duration"
+                },
+                {
+                  "slotId": "detail",
+                  "label": "방법·영상·주의 메모",
+                  "type": "long_text",
+                  "requiredAt": "never",
+                  "sourceBinding": "item.detail"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "validationRules": [
+        {
+          "code": "EXW_END_EXCLUSIVE",
+          "when": "materialization",
+          "rule": "exactly one of until or count",
+          "message": "반복 종료 방식을 하나만 선택해 주세요."
+        },
+        {
+          "code": "EXW_FIRST_OCCURRENCE",
+          "when": "scheduled_materialization",
+          "rule": "DTSTART is the first selected weekday on or after start_date and must fall inside the selected until or count boundary",
+          "message": "시작일과 반복 종료 범위 안에 첫 운동 날짜가 있는지 확인해 주세요."
+        }
+      ],
+      "materialization": {
+        "stepCreation": "only_nonempty_group_with_nonempty_session",
+        "itemCreation": "only_nonempty_item_title",
+        "recurrenceEnd": "user selected until or count; open ended is excluded",
+        "globalRecurrenceBroadcast": "all_descendant_sessions",
+        "supportLevel": "user_request"
+      },
+      "previewFixture": {
+        "previewOnly": true,
+        "synthetic": true,
+        "title": "아침 스트레칭 영상 루틴",
+        "summary": "화·토 07:00, 8회",
+        "fieldExamples": [
+          ["시작일", "2026-09-01"],
+          ["종료 방식", "총 8회"],
+          ["운동 항목", "전신 스트레칭 · 화/토"]
+        ],
+        "sourcePreview": [
+          "## 아침 루틴",
+          "- [ ] 전신 스트레칭",
+          "  - 반복 종료: 8회"
+        ]
+      },
+      "researchEvidence": [
+        {
+          "label": "Google Calendar recurring tasks",
+          "url": "https://support.google.com/calendar/answer/12132599",
+          "use": "user-facing recurrence end choices",
+          "contentSource": false
+        },
+        {
+          "label": "RFC 5545 recurrence rule",
+          "url": "https://datatracker.ietf.org/doc/html/rfc5545#section-3.3.10",
+          "use": "COUNT and UNTIL contract",
+          "contentSource": false
+        }
+      ],
+      "p0Exclusions": [
+        "streak",
+        "biometric tracking",
+        "automatic makeup sessions",
+        "automatic progression"
+      ]
+    },
+    {
+      "templateId": "moving-dday-v1",
+      "version": "1.0.0",
+      "status": "p0",
+      "categoryId": "moving",
+      "categoryLabel": "이사",
+      "lifeArea": "home_living",
+      "planningPatterns": ["date_preparation"],
+      "label": "이사 준비",
+      "archetypeId": "date_preparation",
+      "projectionPolicy": {
+        "fixtureExpectedPrimary": "todo",
+        "primaryRule": "calendar_when_all_items_scheduled_else_todo",
+        "offeredArtifacts": ["calendar", "todo", "memo"],
+        "optionalWhenEligible": [],
+        "notOffered": ["sheet"]
+      },
+      "userNeed": "내 이사일을 기준으로 내 준비 항목과 확인 목록을 직접 배치한다.",
+      "instanceDefaults": {
+        "values": {},
+        "seedGroups": [
+          {
+            "groupId": "windows",
+            "childSeeds": [{ "groupId": "tasks" }]
+          }
+        ],
+        "instantiateWithStableIds": true
+      },
+      "setupFields": [
+        {
+          "slotId": "flow_title",
+          "label": "Flow 이름",
+          "type": "short_text",
+          "requiredAt": "flow_confirm",
+          "sourceBinding": "flow.title"
+        },
+        {
+          "slotId": "anchor_date",
+          "label": "이사일",
+          "type": "date",
+          "requiredAt": "offset_schedule",
+          "sourceBinding": "flow.anchor_date"
+        }
+      ],
+      "groups": [
+        {
+          "groupId": "windows",
+          "label": "준비 구간",
+          "repeatable": true,
+          "minAtConfirm": 1,
+          "fields": [
+            {
+              "slotId": "step_title",
+              "label": "구간 이름",
+              "type": "short_text",
+              "requiredAt": "group_materialization",
+              "sourceBinding": "step.title"
+            }
+          ],
+          "childGroups": [
+            {
+              "groupId": "tasks",
+              "label": "할 일",
+              "repeatable": true,
+              "minAtConfirm": 1,
+              "fields": [
+                {
+                  "slotId": "item_title",
+                  "label": "할 일",
+                  "type": "short_text",
+                  "requiredAt": "item_materialization",
+                  "sourceBinding": "item.title"
+                },
+                {
+                  "slotId": "schedule_mode",
+                  "label": "날짜 방식",
+                  "type": "enum",
+                  "options": ["anchor_offset", "absolute", "unscheduled"],
+                  "requiredAt": "item_materialization",
+                  "sourceBinding": "item.schedule.mode"
+                },
+                {
+                  "slotId": "day_offset",
+                  "label": "D-day",
+                  "type": "relative_day_offset",
+                  "requiredAt": "when_anchor_offset",
+                  "sourceBinding": "item.schedule.day_offset"
+                },
+                {
+                  "slotId": "absolute_date",
+                  "label": "날짜",
+                  "type": "date",
+                  "requiredAt": "when_absolute",
+                  "sourceBinding": "item.schedule.date"
+                },
+                {
+                  "slotId": "checks",
+                  "label": "확인 목록",
+                  "type": "check_rows",
+                  "requiredAt": "never",
+                  "sourceBinding": "item.subchecks"
+                },
+                {
+                  "slotId": "note",
+                  "label": "업체·비용·계약 메모",
+                  "type": "long_text",
+                  "requiredAt": "never",
+                  "sourceBinding": "item.detail"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "validationRules": [
+        {
+          "code": "MOVE_OFFSET_ANCHOR",
+          "when": "materialization",
+          "rule": "anchor_offset requires anchor_date; missing anchor blocks materialization",
+          "message": "D-day를 쓰려면 이사일을 먼저 입력해 주세요."
+        },
+        {
+          "code": "MOVE_SCHEDULE_MODE",
+          "when": "materialization",
+          "rule": "anchor_offset requires day_offset and forbids absolute_date; absolute requires absolute_date and forbids day_offset; unscheduled forbids day_offset and absolute_date",
+          "message": "선택한 날짜 방식에 맞는 값만 입력해 주세요."
+        }
+      ],
+      "materialization": {
+        "stepCreation": "only_nonempty_group_with_nonempty_task",
+        "itemCreation": "only_nonempty_item_title",
+        "missingOffsetAnchor": "block_materialization",
+        "unscheduledProjection": "todo_only",
+        "completionMode": "check",
+        "supportLevel": "user_request"
+      },
+      "previewFixture": {
+        "previewOnly": true,
+        "synthetic": true,
+        "title": "11월 이사 준비",
+        "summary": "D-30 계약 확인, 직접 날짜, 날짜 미정 할 일",
+        "fieldExamples": [
+          ["이사일", "2026-11-01"],
+          ["준비 구간", "계약과 정리"],
+          ["할 일", "이사업체 확정 · D-30"]
+        ],
+        "sourcePreview": [
+          "## 계약과 정리",
+          "- [ ] 이사업체 확정",
+          "  - 상대 날짜: D-30"
+        ]
+      },
+      "researchEvidence": [
+        {
+          "label": "정부24 전입신고",
+          "url": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000016&tp_seq=01",
+          "use": "event-relative official action shape",
+          "contentSource": false
+        },
+        {
+          "label": "찾기쉬운 생활법령정보 이사 체크리스트",
+          "url": "https://m.easylaw.go.kr/MOB/CsmInfoRetrieve.laf?ccfNo=3&cciNo=1&cnpClsNo=1&csmSeq=666",
+          "use": "relative preparation windows",
+          "contentSource": false
+        }
+      ],
+      "p0Exclusions": [
+        "default moving checklist items",
+        "legal deadline calculation",
+        "vendor recommendation",
+        "contract file storage",
+        "cost calculator"
+      ]
+    },
+    {
+      "templateId": "wedding-dday-v1",
+      "version": "1.0.0",
+      "status": "p0",
+      "categoryId": "wedding",
+      "categoryLabel": "결혼 준비",
+      "lifeArea": "home_living",
+      "planningPatterns": ["date_preparation"],
+      "label": "결혼 준비",
+      "archetypeId": "date_preparation",
+      "projectionPolicy": {
+        "fixtureExpectedPrimary": "todo",
+        "primaryRule": "calendar_when_all_items_scheduled_else_todo",
+        "offeredArtifacts": ["calendar", "todo", "memo"],
+        "optionalWhenEligible": [],
+        "notOffered": ["sheet"]
+      },
+      "userNeed": "우리 예식일과 실제 계약을 기준으로 준비 항목을 직접 배치한다.",
+      "instanceDefaults": {
+        "values": {},
+        "seedGroups": [
+          {
+            "groupId": "windows",
+            "childSeeds": [{ "groupId": "tasks" }]
+          }
+        ],
+        "instantiateWithStableIds": true
+      },
+      "setupFields": [
+        {
+          "slotId": "flow_title",
+          "label": "Flow 이름",
+          "type": "short_text",
+          "requiredAt": "flow_confirm",
+          "sourceBinding": "flow.title"
+        },
+        {
+          "slotId": "anchor_date",
+          "label": "예식일",
+          "type": "date",
+          "requiredAt": "offset_schedule",
+          "sourceBinding": "flow.anchor_date"
+        }
+      ],
+      "groups": [
+        {
+          "groupId": "windows",
+          "label": "준비 구간",
+          "repeatable": true,
+          "minAtConfirm": 1,
+          "fields": [
+            {
+              "slotId": "step_title",
+              "label": "구간 이름",
+              "type": "short_text",
+              "requiredAt": "group_materialization",
+              "sourceBinding": "step.title"
+            }
+          ],
+          "childGroups": [
+            {
+              "groupId": "tasks",
+              "label": "할 일",
+              "repeatable": true,
+              "minAtConfirm": 1,
+              "fields": [
+                {
+                  "slotId": "item_title",
+                  "label": "할 일",
+                  "type": "short_text",
+                  "requiredAt": "item_materialization",
+                  "sourceBinding": "item.title"
+                },
+                {
+                  "slotId": "schedule_mode",
+                  "label": "날짜 방식",
+                  "type": "enum",
+                  "options": ["anchor_offset", "absolute", "unscheduled"],
+                  "requiredAt": "item_materialization",
+                  "sourceBinding": "item.schedule.mode"
+                },
+                {
+                  "slotId": "day_offset",
+                  "label": "D-day",
+                  "type": "relative_day_offset",
+                  "requiredAt": "when_anchor_offset",
+                  "sourceBinding": "item.schedule.day_offset"
+                },
+                {
+                  "slotId": "absolute_date",
+                  "label": "날짜",
+                  "type": "date",
+                  "requiredAt": "when_absolute",
+                  "sourceBinding": "item.schedule.date"
+                },
+                {
+                  "slotId": "checks",
+                  "label": "확인 목록",
+                  "type": "check_rows",
+                  "requiredAt": "never",
+                  "sourceBinding": "item.subchecks"
+                },
+                {
+                  "slotId": "note",
+                  "label": "계약·비용 메모",
+                  "type": "long_text",
+                  "requiredAt": "never",
+                  "sourceBinding": "item.detail"
+                },
+                {
+                  "slotId": "reference_url",
+                  "label": "참고 자료 링크",
+                  "type": "url",
+                  "requiredAt": "never",
+                  "sourceBinding": "item.resources.reference"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "validationRules": [
+        {
+          "code": "WED_OFFSET_ANCHOR",
+          "when": "materialization",
+          "rule": "anchor_offset requires anchor_date; missing anchor blocks materialization",
+          "message": "D-day를 쓰려면 예식일을 먼저 입력해 주세요."
+        },
+        {
+          "code": "WED_REFERENCE_URL",
+          "when": "materialization",
+          "rule": "reference_url must be http or https and never upgrades the Item supportLevel",
+          "message": "참고 자료 링크 형식을 확인해 주세요."
+        },
+        {
+          "code": "WED_SCHEDULE_MODE",
+          "when": "materialization",
+          "rule": "anchor_offset requires day_offset and forbids absolute_date; absolute requires absolute_date and forbids day_offset; unscheduled forbids day_offset and absolute_date",
+          "message": "선택한 날짜 방식에 맞는 값만 입력해 주세요."
+        }
+      ],
+      "materialization": {
+        "stepCreation": "only_nonempty_group_with_nonempty_task",
+        "itemCreation": "only_nonempty_item_title",
+        "missingOffsetAnchor": "block_materialization",
+        "unscheduledProjection": "todo_only",
+        "completionMode": "check",
+        "supportLevel": "user_request",
+        "referenceBehavior": "memo_or_source_detail_not_item_primary_source"
+      },
+      "previewFixture": {
+        "previewOnly": true,
+        "synthetic": true,
+        "title": "우리 예식 준비",
+        "summary": "예식일 기준 일정, 직접 날짜와 계약 메모",
+        "fieldExamples": [
+          ["예식일", "2027-05-15"],
+          ["준비 구간", "계약과 비용"],
+          ["할 일", "예식장 잔금 조건 확인 · D-14"]
+        ],
+        "sourcePreview": [
+          "## 계약과 비용",
+          "- [ ] 예식장 잔금 조건 확인",
+          "  - 자료: https://www.ftc.go.kr/"
+        ]
+      },
+      "researchEvidence": [
+        {
+          "label": "공정위 결혼준비대행업 표준계약서",
+          "url": "https://www.ftc.go.kr/www/selectBbsNttView.do?bordCd=3&key=12&nttSn=45967&pageIndex=1&pageUnit=10&rltnNttSn=43714&searchCnd=all&searchCtgry=01%2C02&searchViolt=000002",
+          "use": "contract memo separation",
+          "contentSource": false
+        },
+        {
+          "label": "찾기쉬운 생활법령정보 예식장 계약",
+          "url": "https://easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=2&cciNo=3&cnpClsNo=2&csmSeq=1894&popMenu=ov",
+          "use": "event-relative contract windows",
+          "contentSource": false
+        }
+      ],
+      "p0Exclusions": [
+        "default wedding checklist items",
+        "vendor recommendation",
+        "contract interpretation",
+        "cost calculator",
+        "guest and seating management",
+        "marriage registration date inference"
+      ]
+    },
+    {
+      "templateId": "travel-itinerary-prep-v1",
+      "version": "1.0.0",
+      "status": "p0",
+      "categoryId": "travel",
+      "categoryLabel": "여행",
+      "lifeArea": "travel_outings",
+      "planningPatterns": ["date_preparation", "ordered_procedure"],
+      "label": "여행 준비와 날짜별 일정",
+      "archetypeId": "itinerary_preparation",
+      "projectionPolicy": {
+        "fixtureExpectedPrimary": "todo",
+        "primaryRule": "calendar_when_all_items_scheduled_else_todo",
+        "offeredArtifacts": ["calendar", "todo", "memo"],
+        "optionalWhenEligible": [],
+        "notOffered": ["sheet"]
+      },
+      "userNeed": "출발일, 출발 전 준비와 날짜별 일정을 같은 원문에서 직접 만든다.",
+      "instanceDefaults": {
+        "values": {},
+        "seedGroups": [
+          {
+            "groupId": "preparation",
+            "childSeeds": [{ "groupId": "tasks" }]
+          },
+          {
+            "groupId": "itinerary_days",
+            "childSeeds": [{ "groupId": "schedule_items" }]
+          }
+        ],
+        "instantiateWithStableIds": true
+      },
+      "setupFields": [
+        {
+          "slotId": "flow_title",
+          "label": "여행 이름",
+          "type": "short_text",
+          "requiredAt": "flow_confirm",
+          "sourceBinding": "flow.title"
+        },
+        {
+          "slotId": "departure_date",
+          "label": "출발일",
+          "type": "date",
+          "requiredAt": "scheduled_materialization",
+          "sourceBinding": "flow.anchor_date"
+        },
+        {
+          "slotId": "timezone",
+          "label": "현지 시간대",
+          "type": "timezone",
+          "requiredAt": "when_time_exists",
+          "sourceBinding": "generation.default_timezone"
+        }
+      ],
+      "groups": [
+        {
+          "groupId": "preparation",
+          "label": "출발 전 준비",
+          "repeatable": false,
+          "minAtConfirm": 0,
+          "fields": [
+            {
+              "slotId": "preparation_step_title",
+              "label": "준비 구간 이름",
+              "type": "short_text",
+              "requiredAt": "when_group_has_items",
+              "sourceBinding": "step.title"
+            }
+          ],
+          "childGroups": [
+            {
+              "groupId": "tasks",
+              "label": "준비 항목",
+              "repeatable": true,
+              "minAtConfirm": 0,
+              "fields": [
+                {
+                  "slotId": "prep_item_title",
+                  "label": "준비 항목",
+                  "type": "short_text",
+                  "requiredAt": "item_materialization",
+                  "sourceBinding": "item.title"
+                },
+                {
+                  "slotId": "prep_schedule_mode",
+                  "label": "날짜 방식",
+                  "type": "enum",
+                  "options": ["departure_offset", "absolute", "unscheduled"],
+                  "requiredAt": "item_materialization",
+                  "sourceBinding": "item.schedule.mode"
+                },
+                {
+                  "slotId": "prep_day_offset",
+                  "label": "출발일 기준 D-day",
+                  "type": "relative_day_offset",
+                  "requiredAt": "when_departure_offset",
+                  "sourceBinding": "item.schedule.day_offset"
+                },
+                {
+                  "slotId": "prep_absolute_date",
+                  "label": "날짜",
+                  "type": "date",
+                  "requiredAt": "when_absolute",
+                  "sourceBinding": "item.schedule.date"
+                },
+                {
+                  "slotId": "prep_checks",
+                  "label": "확인 목록",
+                  "type": "check_rows",
+                  "requiredAt": "never",
+                  "sourceBinding": "item.subchecks"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "groupId": "itinerary_days",
+          "label": "현지 일정 구간",
+          "repeatable": true,
+          "minAtConfirm": 0,
+          "fields": [
+            {
+              "slotId": "itinerary_step_title",
+              "label": "일정 구간 이름",
+              "type": "short_text",
+              "requiredAt": "group_materialization",
+              "sourceBinding": "step.title"
+            },
+            {
+              "slotId": "itinerary_date",
+              "label": "날짜",
+              "type": "date",
+              "requiredAt": "scheduled_materialization",
+              "sourceBinding": "generation.group_date"
+            }
+          ],
+          "childGroups": [
+            {
+              "groupId": "schedule_items",
+              "label": "일정",
+              "repeatable": true,
+              "minAtConfirm": 1,
+              "fields": [
+                {
+                  "slotId": "itinerary_item_title",
+                  "label": "일정 이름",
+                  "type": "short_text",
+                  "requiredAt": "item_materialization",
+                  "sourceBinding": "item.title"
+                },
+                {
+                  "slotId": "itinerary_time",
+                  "label": "시간",
+                  "type": "time",
+                  "requiredAt": "never",
+                  "sourceBinding": "item.schedule.time"
+                },
+                {
+                  "slotId": "itinerary_place",
+                  "label": "장소",
+                  "type": "short_text",
+                  "requiredAt": "never",
+                  "sourceBinding": "item.properties.place"
+                },
+                {
+                  "slotId": "itinerary_duration_minutes",
+                  "label": "소요시간",
+                  "type": "positive_integer",
+                  "unit": "minute",
+                  "requiredAt": "never",
+                  "sourceBinding": "item.schedule.duration"
+                },
+                {
+                  "slotId": "itinerary_detail",
+                  "label": "변경 가능성·메모",
+                  "type": "long_text",
+                  "requiredAt": "never",
+                  "sourceBinding": "item.detail"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "validationRules": [
+        {
+          "code": "TRAVEL_PREP_OFFSET_ANCHOR",
+          "when": "materialization",
+          "rule": "departure_offset requires departure_date and prep_day_offset and forbids prep_absolute_date; any violation blocks materialization",
+          "message": "출발일 기준 날짜를 쓰려면 출발일과 D-day를 입력하고 직접 날짜는 비워 주세요."
+        },
+        {
+          "code": "TRAVEL_PREP_ABSOLUTE_DATE",
+          "when": "materialization",
+          "rule": "absolute requires prep_absolute_date and forbids prep_day_offset; any violation blocks materialization",
+          "message": "직접 날짜를 쓰려면 날짜를 입력하고 D-day는 비워 주세요."
+        },
+        {
+          "code": "TRAVEL_PREP_UNSCHEDULED_CONFLICT",
+          "when": "materialization",
+          "rule": "unscheduled forbids prep_day_offset and prep_absolute_date; any violation blocks materialization",
+          "message": "날짜 미정 항목에는 D-day나 직접 날짜를 남기지 말아 주세요."
+        },
+        {
+          "code": "TRAVEL_DAY_AFTER_DEPARTURE",
+          "when": "scheduled_materialization",
+          "rule": "itinerary day date >= departure_date",
+          "message": "현지 일정 날짜를 출발일 이후로 맞춰 주세요."
+        },
+        {
+          "code": "TRAVEL_TIMEZONE",
+          "when": "materialization",
+          "rule": "time requires an explicit valid IANA timezone for cross-timezone calendar export",
+          "message": "시간을 넣었다면 IANA 형식의 현지 시간대를 확인해 주세요."
+        }
+      ],
+      "materialization": {
+        "stepCreation": "only_nonempty_user_named_group_with_nonempty_item",
+        "itemCreation": "only_nonempty_item_title",
+        "preparationScheduleModeValidation": "fail_closed_for_departure_offset_absolute_and_unscheduled",
+        "sameItemAcrossViews": true,
+        "unscheduledProjection": "todo_only",
+        "supportLevel": "user_request"
+      },
+      "previewFixture": {
+        "previewOnly": true,
+        "synthetic": true,
+        "title": "첫 도쿄 여행",
+        "summary": "출발 전 확인 + 첫째 날 일정",
+        "fieldExamples": [
+          ["출발일", "2026-09-10"],
+          ["준비", "여권 유효기간 확인 · D-14"],
+          ["첫째 날", "15:00 · 하네다공항"]
+        ],
+        "sourcePreview": [
+          "## 첫째 날",
+          "- [ ] 공항에서 숙소로 이동",
+          "  - 시간대: Asia/Tokyo"
+        ]
+      },
+      "researchEvidence": [
+        {
+          "label": "Asana Travel Planner",
+          "url": "https://asana.com/templates/travel-planner",
+          "use": "trip details, day itinerary and preparation sections",
+          "contentSource": false
+        },
+        {
+          "label": "TripIt Add a new trip",
+          "url": "https://help.tripit.com/en/support/solutions/articles/103000063431-add-a-new-trip-using-the-website",
+          "use": "trip shell reference only; reservation fields are excluded from P0",
+          "contentSource": false
+        },
+        {
+          "label": "Google Calendar Events",
+          "url": "https://developers.google.com/workspace/calendar/api/v3/reference/events",
+          "use": "summary, start, end, location, timezone and status separation",
+          "contentSource": false
+        },
+        {
+          "label": "외교부 해외안전여행",
+          "url": "https://www.0404.go.kr/",
+          "use": "optional official caution link boundary",
+          "contentSource": false
+        }
+      ],
+      "p0Exclusions": [
+        "destination recommendation",
+        "booking search",
+        "price tracking",
+        "live flight status",
+        "automatic timezone inference",
+        "automatic itinerary generation",
+        "reservation kind, status and private reservation fields",
+        "dedicated destination and return-date Flow fields until the source grammar supports them"
+      ]
+    },
+    {
+      "templateId": "exam-dday-study-v1",
+      "version": "1.0.0",
+      "status": "p0",
+      "categoryId": "exam",
+      "categoryLabel": "시험·학습",
+      "lifeArea": "study_reading",
+      "planningPatterns": ["date_preparation", "repeating_routine"],
+      "label": "시험 준비",
+      "archetypeId": "date_preparation",
+      "projectionPolicy": {
+        "fixtureExpectedPrimary": "calendar",
+        "primaryRule": "calendar_when_all_items_scheduled_else_todo",
+        "offeredArtifacts": ["calendar", "todo", "memo"],
+        "optionalWhenEligible": [],
+        "notOffered": ["sheet"]
+      },
+      "userNeed": "시험일을 기준으로 반복 학습과 꼭 확인할 일정을 직접 배치한다.",
+      "instanceDefaults": {
+        "values": {},
+        "seedGroups": [
+          { "groupId": "study_blocks", "childSeeds": [] },
+          { "groupId": "milestones", "childSeeds": [] }
+        ],
+        "instantiateWithStableIds": true
+      },
+      "setupFields": [
+        {
+          "slotId": "flow_title",
+          "label": "시험 이름",
+          "type": "short_text",
+          "requiredAt": "flow_confirm",
+          "sourceBinding": "flow.title"
+        },
+        {
+          "slotId": "exam_date",
+          "label": "시험일",
+          "type": "date",
+          "requiredAt": "scheduled_materialization",
+          "sourceBinding": "flow.anchor_date"
+        },
+        {
+          "slotId": "study_start_date",
+          "label": "학습 시작일",
+          "type": "date",
+          "requiredAt": "recurring_materialization",
+          "sourceBinding": "generation.study_window.start"
+        },
+        {
+          "slotId": "study_end_date",
+          "label": "학습 종료일",
+          "type": "date",
+          "requiredAt": "recurring_materialization",
+          "sourceBinding": "generation.study_window.end"
+        }
+      ],
+      "groups": [
+        {
+          "groupId": "study_blocks",
+          "label": "반복 학습",
+          "repeatable": true,
+          "minAtConfirm": 1,
+          "fields": [
+            {
+              "slotId": "study_item_title",
+              "label": "학습 행동",
+              "type": "short_text",
+              "requiredAt": "item_materialization",
+              "sourceBinding": "item.title"
+            },
+            {
+              "slotId": "study_scope",
+              "label": "자료·범위",
+              "type": "long_text",
+              "requiredAt": "flow_confirm",
+              "sourceBinding": "item.detail"
+            },
+            {
+              "slotId": "study_weekdays",
+              "label": "요일",
+              "type": "weekday_set",
+              "requiredAt": "recurring_materialization",
+              "sourceBinding": "item.recurrence.weekdays"
+            },
+            {
+              "slotId": "study_time",
+              "label": "시각",
+              "type": "time",
+              "requiredAt": "never",
+              "sourceBinding": "item.schedule.time"
+            },
+            {
+              "slotId": "study_duration_minutes",
+              "label": "소요시간",
+              "type": "positive_integer",
+              "unit": "minute",
+              "requiredAt": "when_time_exists",
+              "sourceBinding": "item.schedule.duration"
+            },
+            {
+              "slotId": "study_done_when",
+              "label": "완료 기준",
+              "type": "short_text",
+              "requiredAt": "flow_confirm",
+              "sourceBinding": "item.completion.doneWhen"
+            }
+          ]
+        },
+        {
+          "groupId": "milestones",
+          "label": "시험 일정",
+          "repeatable": true,
+          "minAtConfirm": 0,
+          "fields": [
+            {
+              "slotId": "milestone_title",
+              "label": "일정 이름",
+              "type": "short_text",
+              "requiredAt": "item_materialization",
+              "sourceBinding": "item.title"
+            },
+            {
+              "slotId": "milestone_date",
+              "label": "날짜",
+              "type": "date",
+              "requiredAt": "scheduled_materialization",
+              "sourceBinding": "item.schedule.date"
+            },
+            {
+              "slotId": "milestone_detail",
+              "label": "자료·메모",
+              "type": "long_text",
+              "requiredAt": "never",
+              "sourceBinding": "item.detail"
+            }
+          ]
+        }
+      ],
+      "validationRules": [
+        {
+          "code": "EXAM_DATE_ORDER",
+          "when": "recurring_materialization",
+          "rule": "study_start_date <= study_end_date <= exam_date",
+          "message": "학습 기간과 시험일 순서를 확인해 주세요."
+        },
+        {
+          "code": "EXAM_OCCURRENCE_WINDOW",
+          "when": "recurring_materialization",
+          "rule": "each study block has at least one occurrence in study window",
+          "message": "학습 기간 안에 실제 학습 날짜가 생기도록 요일을 확인해 주세요."
+        }
+      ],
+      "materialization": {
+        "stepCreation": "no template heading; existing parser may create a generated Step for root Items",
+        "itemCreation": "only_nonempty_item_title",
+        "studyRecurrenceEnd": "inclusive study_end_date",
+        "examDayDisplay": "derived_view_only",
+        "outputAssertions": [
+          "generatedCurriculumRows == 0",
+          "forbiddenGeneratedContentCount == 0"
+        ],
+        "supportLevel": "user_request"
+      },
+      "previewFixture": {
+        "previewOnly": true,
+        "synthetic": true,
+        "title": "정보처리기사 필기 준비",
+        "summary": "시험 전 유한 반복 학습 + 시험 일정",
+        "fieldExamples": [
+          ["시험일", "2026-11-07"],
+          ["학습", "기출문제 20문제 · 월/수/금"],
+          ["완료 기준", "풀이와 오답 표시까지"]
+        ],
+        "sourcePreview": [
+          "- [ ] 기출문제 20문제 풀기",
+          "  - 반복 종료: 2026-11-06",
+          "- [ ] 필기 시험 응시"
+        ]
+      },
+      "researchEvidence": [
+        {
+          "label": "Q-Net 시험일정 안내",
+          "url": "https://www.q-net.or.kr/crf021.do?CST_ID=CRF_Stns_06&gId=&gSite=S&id=crf02103",
+          "use": "registration, exam and result lifecycle shape",
+          "contentSource": false
+        },
+        {
+          "label": "EBSi 고3/N수 커리큘럼",
+          "url": "https://www.ebsi.co.kr/ebs/lms/lmsm/retriveMyClmYear.ebs",
+          "use": "D-day, learning phase and resource separation",
+          "contentSource": false
+        }
+      ],
+      "p0Exclusions": [
+        "official schedule import",
+        "automatic subject allocation",
+        "score prediction",
+        "adaptive replanning",
+        "sheet progress tracking without source curriculum rows",
+        "source-free curriculum generation"
+      ]
+    }
+  ],
+  "sharedResearchEvidence": [
+    {
+      "label": "Process Street workflow runs",
+      "url": "https://www.process.st/help/docs/running-workflows/",
+      "use": "definition and run instance separation",
+      "contentSource": false
+    },
+    {
+      "label": "Miro templates",
+      "url": "https://help.miro.com/hc/en-us/articles/360017572134-Templates",
+      "use": "blank structure and preview example separation",
+      "contentSource": false
+    },
+    {
+      "label": "Trello template cards",
+      "url": "https://support.atlassian.com/trello/docs/creating-template-cards/",
+      "use": "template and created copy version independence",
+      "contentSource": false
+    }
+  ],
+  "canaryChecks": [
+    "all six templates have one positive p0.2 fixture",
+    "fixture values conform to declared field types and enum options",
+    "group instance IDs are unique and stable within a draft",
+    "all validation errors and planner warnings carry scopeInstanceId",
+    "template selection creates zero source changes",
+    "previewFixture values never appear in a source plan",
+    "seed rows receive stable sidecar IDs but empty rows produce zero source lines, Steps and Items",
+    "relative offsets serialize as D-minus, D-Day or D-plus and weekdays serialize in Monday-to-Sunday order",
+    "global recurrence end values broadcast to all descendant sessions",
+    "propagated timezone and itinerary group dates do not create derived value log entries",
+    "materialization requires a matching source fingerprint",
+    "materialization calls the raw source callback once",
+    "one undo restores the entire pre-materialization source",
+    "ordinary prose remains TXT with importAssist disabled",
+    "one canonical Item ID is preserved across projections",
+    "template detach preserves raw source byte-for-byte",
+    "save failure preserves raw source and StructureDraft",
+    "empty raw source restores an unmaterialized sidecar draft",
+    "open-ended recurrence, invalid IANA timezone and conflicting schedule modes fail closed",
+    "shared and template validation rule codes are unique",
+    "definition IDs, versions and slot IDs are unique",
+    "expected and forbidden projections are both fixture-tested",
+    "private and sensitive fields are excluded from default exports",
+    "template retirement keeps pinned user instances readable",
+    "internal canary status never implies public or observed-user validation"
+  ]
+}

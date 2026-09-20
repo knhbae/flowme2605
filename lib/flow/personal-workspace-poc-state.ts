@@ -8,6 +8,7 @@ import {
   type PersonalWorkspacePocAuthoredFlow,
   type PersonalWorkspacePocFolder,
   type PersonalWorkspacePocPersonalPlanOverlay,
+  type PersonalWorkspacePocQuickConversionReceipt,
   type PersonalWorkspacePocReadModel,
   type PersonalWorkspacePocSnapshot,
   type PersonalWorkspacePocState,
@@ -25,6 +26,7 @@ import {
   isLegacyPersonalWorkspacePocAuthoringFidelityManifestForSource,
 } from './personal-workspace-poc-authoring-fidelity';
 import { expandPersonalWorkspacePocOccurrences } from './personal-workspace-poc-occurrence';
+import { materializePersonalWorkspacePocQuickConversion } from './personal-workspace-poc-quick-conversion';
 
 const PLAIN_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const TIME_PATTERN = /^([01]\d|2[0-3]):[0-5]\d$/;
@@ -136,12 +138,15 @@ function snapshotOf(state: PersonalWorkspacePocState): PersonalWorkspacePocSnaps
     occurrenceCompletions: state.occurrenceCompletions ?? {},
     authoredFlows: state.authoredFlows ?? [],
     authoringReceipts: state.authoringReceipts ?? [],
+    quickConversionReceipts: state.quickConversionReceipts ?? [],
     personalPlanOverlays: state.personalPlanOverlays ?? {},
     trashEntries: state.trashEntries ?? [],
     deletedMembers: state.deletedMembers ?? [],
     updatedAt: state.updatedAt,
   });
 }
+
+export { isAuthoredFlow as isPersonalWorkspacePocAuthoredSourceFlow };
 
 function isAuthoredFlow(value: unknown): value is PersonalWorkspacePocAuthoredFlow {
   if (!isRecord(value)
@@ -398,6 +403,8 @@ function validateSnapshot(value: unknown): value is PersonalWorkspacePocSnapshot
     || (value.occurrenceCompletions !== undefined && !isRecord(value.occurrenceCompletions))
     || (value.authoredFlows !== undefined && !Array.isArray(value.authoredFlows))
     || (value.authoringReceipts !== undefined && !Array.isArray(value.authoringReceipts))
+    || (value.quickConversionReceipts !== undefined
+      && !Array.isArray(value.quickConversionReceipts))
     || (value.personalPlanOverlays !== undefined && !isRecord(value.personalPlanOverlays))
     || (value.trashEntries !== undefined && !Array.isArray(value.trashEntries))
     || (value.deletedMembers !== undefined && !Array.isArray(value.deletedMembers))
@@ -434,6 +441,63 @@ function validateSnapshot(value: unknown): value is PersonalWorkspacePocSnapshot
     receiptHandoffIds.add(receipt.handoffId);
   }
   if (receiptHandoffIds.size !== handoffIds.size) return false;
+
+  const quickConversionReceipts = value.quickConversionReceipts ?? [];
+  const conversionIds = new Set<string>();
+  const convertedQuickRefs = new Set<string>();
+  const convertedFlowRefs = new Set<string>();
+  for (const receipt of quickConversionReceipts) {
+    if (!isRecord(receipt)
+      || !hasOnlyKeys(receipt, [
+        'version',
+        'conversionId',
+        'handoffId',
+        'sourceQuickItemRef',
+        'sourceQuickItemId',
+        'sourceTitle',
+        'sourceMemo',
+        'sourceFolderId',
+        'sourceDate',
+        'flowRef',
+        'itemRef',
+        'flowTitle',
+        'completionPolicy',
+        'committedAt',
+      ])
+      || receipt.version !== PERSONAL_WORKSPACE_POC_DEFAULTS.quickItemToFlow.version
+      || !isNonEmptyString(receipt.conversionId)
+      || conversionIds.has(receipt.conversionId)
+      || receipt.handoffId !== receipt.conversionId
+      || !isNonEmptyString(receipt.sourceQuickItemId)
+      || receipt.sourceQuickItemRef !== toPersonalWorkspacePocQuickItemRef(receipt.sourceQuickItemId)
+      || convertedQuickRefs.has(receipt.sourceQuickItemRef)
+      || !isNonEmptyString(receipt.sourceTitle)
+      || receipt.sourceTitle !== receipt.sourceTitle.trim()
+      || typeof receipt.sourceMemo !== 'string'
+      || (receipt.sourceFolderId !== undefined && !isNonEmptyString(receipt.sourceFolderId))
+      || (receipt.sourceDate !== undefined && !isPersonalWorkspacePocDate(receipt.sourceDate))
+      || !isNonEmptyString(receipt.flowRef)
+      || convertedFlowRefs.has(receipt.flowRef)
+      || !isNonEmptyString(receipt.itemRef)
+      || !isNonEmptyString(receipt.flowTitle)
+      || receipt.flowTitle !== receipt.flowTitle.trim()
+      || receipt.completionPolicy !== 'source-preserved-new-item-open'
+      || !isIsoTimestamp(receipt.committedAt)) return false;
+    const flow = (authoredFlows as PersonalWorkspacePocAuthoredFlow[]).find(
+      (candidate) => candidate.ref === receipt.flowRef,
+    );
+    const item = flow?.items.find((candidate) => candidate.ref === receipt.itemRef);
+    if (!flow
+      || flow.authoring.handoffId !== receipt.handoffId
+      || flow.authoring.committedAt !== receipt.committedAt
+      || flow.title !== receipt.flowTitle
+      || flow.items.length !== PERSONAL_WORKSPACE_POC_DEFAULTS.quickItemToFlow.itemCount
+      || !item
+      || item.title !== receipt.sourceTitle) return false;
+    conversionIds.add(receipt.conversionId);
+    convertedQuickRefs.add(receipt.sourceQuickItemRef);
+    convertedFlowRefs.add(receipt.flowRef);
+  }
 
   const folderIds = new Set<string>();
   for (const folder of value.folders) {
@@ -801,6 +865,7 @@ export function createPersonalWorkspacePocState(
     occurrenceCompletions: {},
     authoredFlows: [],
     authoringReceipts: [],
+    quickConversionReceipts: [],
     personalPlanOverlays: {},
     trashEntries: [],
     deletedMembers: [],
@@ -1233,6 +1298,9 @@ export function applyPersonalWorkspacePocTransition(
           next.authoringReceipts = (next.authoringReceipts ?? []).filter(
             (receipt) => receipt.flowRef !== action.memberRef,
           );
+          next.quickConversionReceipts = (next.quickConversionReceipts ?? []).filter(
+            (receipt) => receipt.flowRef !== action.memberRef,
+          );
         }
       }
       removedTaskRefs.forEach((itemRef) => {
@@ -1539,6 +1607,127 @@ export function applyPersonalWorkspacePocTransition(
           kind: 'authoring-draft',
           rawValue: action.undoAuthoringDraftRawValue,
         },
+      );
+    }
+    case 'convert-quick-item-to-flow': {
+      if (!Number.isSafeInteger(action.expectedRevision)
+        || action.expectedRevision !== state.revision) {
+        return unchanged(
+          state,
+          '다른 변경이 먼저 저장됐어요. 빠른 할 일을 다시 확인해 주세요.',
+          'stale-state-revision',
+        );
+      }
+      const existingReceipt = (next.quickConversionReceipts ?? []).find(
+        (receipt) => receipt.sourceQuickItemRef === action.quickItemRef,
+      );
+      if (existingReceipt) {
+        return unchanged(state, '이미 Flow로 정리했어요. 저장된 Flow를 열 수 있어요.');
+      }
+      const quickItem = next.quickItems.find(
+        (item) => toPersonalWorkspacePocQuickItemRef(item.quickItemId) === action.quickItemRef,
+      );
+      if (!quickItem) {
+        return unchanged(state, '정리할 빠른 할 일을 찾을 수 없어요.', 'unknown-quick-item');
+      }
+      if (isInactiveMemberRef(next, action.quickItemRef)) {
+        return unchanged(
+          state,
+          '휴지통에 있는 빠른 할 일은 복원한 뒤 정리해 주세요.',
+          'inactive-quick-item',
+        );
+      }
+      const flowTitle = action.flowTitle.trim();
+      const materialized = materializePersonalWorkspacePocQuickConversion({
+        quickItem,
+        quickItemRef: action.quickItemRef,
+        flowTitle,
+        stateRevision: state.revision,
+        committedAt: action.now,
+      });
+      if (!materialized.ok) {
+        return unchanged(state, '새 Flow 이름과 빠른 할 일 내용을 확인해 주세요.', materialized.error);
+      }
+      if ((next.authoredFlows ?? []).some((flow) => flow.ref === materialized.flow.ref)
+        || action.existingFlowRefs?.includes(materialized.flow.ref)
+        || (next.deletedMembers ?? []).some((entry) => entry.memberRef === materialized.flow.ref)) {
+        return unchanged(state, 'Flow 식별자가 겹쳐 저장하지 않았어요.', 'flow-identity-collision');
+      }
+      const existingItemRefs = new Set(
+        (next.authoredFlows ?? []).flatMap((flow) => flow.items.map((item) => item.ref)),
+      );
+      if (existingItemRefs.has(materialized.itemRef)) {
+        return unchanged(state, '할 일 식별자가 겹쳐 저장하지 않았어요.', 'item-identity-collision');
+      }
+
+      const sourceMembership = next.memberships.find(
+        (membership) => membership.member === 'quick_item'
+          && membership.memberRef === action.quickItemRef,
+      );
+      const sourcePlacement = next.placements[action.quickItemRef];
+      if (!sourcePlacement || sourcePlacement.scheduleMode === 'inherit') {
+        return unchanged(state, '빠른 할 일의 실행 위치를 확인해 주세요.', 'invalid-quick-placement');
+      }
+      const receipt: PersonalWorkspacePocQuickConversionReceipt = {
+        version: PERSONAL_WORKSPACE_POC_DEFAULTS.quickItemToFlow.version,
+        conversionId: materialized.conversionId,
+        handoffId: materialized.handoffId,
+        sourceQuickItemRef: action.quickItemRef,
+        sourceQuickItemId: quickItem.quickItemId,
+        sourceTitle: quickItem.title,
+        sourceMemo: quickItem.memo,
+        ...(sourceMembership?.folderId ? { sourceFolderId: sourceMembership.folderId } : {}),
+        ...(sourcePlacement.scheduleMode === 'fixed_date' && sourcePlacement.date
+          ? { sourceDate: sourcePlacement.date }
+          : {}),
+        flowRef: materialized.flow.ref,
+        itemRef: materialized.itemRef,
+        flowTitle,
+        completionPolicy: 'source-preserved-new-item-open',
+        committedAt: action.now,
+      };
+
+      next.authoredFlows = [...(next.authoredFlows ?? []), clone(materialized.flow)];
+      next.authoringReceipts = [...(next.authoringReceipts ?? []), {
+        handoffId: materialized.handoffId,
+        flowRef: materialized.flow.ref,
+        committedAt: action.now,
+      }];
+      next.quickConversionReceipts = [...(next.quickConversionReceipts ?? []), receipt];
+      next.memberships.push({
+        member: 'saved_flow',
+        memberRef: materialized.flow.ref,
+        ...(sourceMembership?.folderId ? { folderId: sourceMembership.folderId } : {}),
+        orderKey: next.memberships.filter(
+          (membership) => membership.folderId === sourceMembership?.folderId,
+        ).length,
+      });
+      next.placements[materialized.itemRef] = {
+        ...clone(sourcePlacement),
+        itemRef: materialized.itemRef,
+      };
+      if (quickItem.memo !== '') {
+        next.personalPlanOverlays = {
+          ...(next.personalPlanOverlays ?? {}),
+          [materialized.flow.ref]: {
+            flowRef: materialized.flow.ref,
+            savedCopyId: materialized.flow.savedCopyId,
+            flowId: materialized.flow.flowId,
+            items: {
+              [materialized.itemRef]: {
+                itemRef: materialized.itemRef,
+                memo: quickItem.memo,
+              },
+            },
+          },
+        };
+      }
+      return finalizeMutation(
+        state,
+        next,
+        '빠른 할 일 Flow 정리',
+        action.now,
+        '빠른 할 일은 그대로 두고 새 Flow로 정리했어요.',
       );
     }
     case 'complete': {

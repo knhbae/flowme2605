@@ -335,6 +335,17 @@ production build 18/18; Chrome 151 runtime 11/11; viewport 보강 1/1;
 - [x] 보류 기능을 지원하는 것처럼 노출하거나 판정하지 않는다.
 - [x] P0 전체 flow·storage 최종 회귀 수치를 단계 6에서 확정했다.
 
+### 2026-09-05 BP-017 독립 재개
+
+- [x] 사용자 승인에 따라 QuickItem→Flow만 교체 가능한 PoC v1 계약으로 다시 열었다.
+- [x] 원본 QuickItem 존치, 새 Flow 1개·열린 Item 1개, 전환 snapshot receipt를 정의했다.
+- [x] 폴더·실행 날짜·개인 메모만 복사하고 완료 상태는 복사하지 않도록 정했다.
+- [x] atomic transition, Undo, reload, 저장 오류 retry와 fail-closed 경계를 구현했다.
+- [x] React와 독립 HTML에 같은 결과 계약을 연결했다.
+- [x] 새 작업의 최종 회귀·다섯 viewport·traceability·리포트 증거를
+  [독립 작업 목록](../2026-09-05-flowme-integrated-poc-quick-to-flow-bridge-v1/tasks.md)에서 닫는다.
+- [x] recurrence/public/table-source 보류와 운영 writer 금지는 유지했다.
+
 ## 8. 단계 6 — A12 검증·평가·보고
 
 ### 자동 모델·회귀

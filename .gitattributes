@@ -1,0 +1,13 @@
+# Portable PoC source-inspection tests use LF independently of host autocrlf.
+components/flow/integrated-poc/** text eol=lf
+components/flow/personal-workspace-poc/** text eol=lf
+lib/flow/integrated-poc/** text eol=lf
+lib/flow/personal-workspace-poc* text eol=lf
+lib/flow/personal-workspace-poc-*/** text eol=lf
+# Vendor provenance asserts exact original bytes, including CRLF, on all hosts.
+lib/flow/integrated-poc/native-creator-vendor/** -text
+# These versioned fixtures already use LF and their manifest checks exact bytes.
+lib/flow/personal-workspace-poc-structure-template/snapshots/** -text
+# Executable QA harnesses are hash-pinned; these are code, not device evidence.
+docs/content-audit/2026-09-02-flowme-integrated-flow-poc-android-single-file-ko.html -text
+docs/content-audit/2026-09-04-flowme-integrated-poc-p3h1-android-device-runner-ko.html -text

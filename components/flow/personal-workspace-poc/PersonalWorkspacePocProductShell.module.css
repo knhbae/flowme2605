@@ -1,0 +1,262 @@
+.productShell {
+  --personal-workspace-safe-top: env(safe-area-inset-top, 0px);
+  --personal-workspace-safe-right: env(safe-area-inset-right, 0px);
+  --personal-workspace-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --personal-workspace-safe-left: env(safe-area-inset-left, 0px);
+  --personal-workspace-visual-viewport-top: 0px;
+  --personal-workspace-visual-viewport-right: 0px;
+  --personal-workspace-visual-viewport-bottom: 0px;
+  --personal-workspace-visual-viewport-left: 0px;
+  --personal-workspace-visual-viewport-width: 100vw;
+  --personal-workspace-visual-viewport-height: 100dvh;
+  min-height: 100dvh;
+  overflow-x: clip;
+  background: var(--flowme-bg);
+  color: var(--flowme-text);
+}
+
+.navigationFrame,
+.localMain {
+  width: 100%;
+  max-width: 1240px;
+  margin-inline: auto;
+}
+
+.navigationFrame {
+  padding-top: max(0.75rem, var(--personal-workspace-safe-top));
+  padding-right: max(1rem, var(--personal-workspace-safe-right));
+  padding-left: max(1rem, var(--personal-workspace-safe-left));
+}
+
+.navigationFrame :global([data-testid='platform-nav']) {
+  margin-bottom: 0;
+}
+
+.localMain {
+  /* Alias existing roles only inside PoC content. PlatformNav is a sibling
+     and continues to inherit the operating palette from app/globals.css. */
+  --flowme-workspace-accent: #087f73;
+  --flowme-workspace-accent-strong: #066a61;
+  --flowme-workspace-accent-soft: #e5f2ef;
+  --flowme-workspace-accent-border: #b8dcd6;
+  --flowme-workspace-rail: #f5f7f8;
+  --flowme-workspace-line: #dce3e6;
+  --flowme-action: var(--flowme-workspace-accent);
+  --flowme-action-hover: var(--flowme-workspace-accent-strong);
+  --flowme-action-strong: var(--flowme-workspace-accent-strong);
+  --flowme-action-soft: var(--flowme-workspace-accent-soft);
+  --flowme-action-border: var(--flowme-workspace-accent-border);
+  --flowme-surface-selected: var(--flowme-workspace-accent-soft);
+  --flowme-focus: var(--flowme-workspace-accent-strong);
+  --flowme-focus-outline: 3px solid var(--flowme-focus);
+  min-width: 0;
+  overflow-x: clip;
+  background: var(--flowme-surface);
+  scroll-padding-top: calc(var(--personal-workspace-safe-top) + 4rem);
+  scroll-padding-bottom: calc(
+    var(--personal-workspace-safe-bottom)
+    + var(--personal-workspace-visual-viewport-bottom)
+    + 4rem
+  );
+}
+
+/* Explicit local action inventory, not a blanket button/calendar-cell rule.
+   Keep visual radio/check glyphs small while their real labels remain usable. */
+.localMain :global([data-testid='personal-workspace-source-update-dialog']) button,
+.localMain :global([data-testid='personal-workspace-source-update-dialog']) label,
+.localMain :global([data-testid='personal-workspace-source-update-banner']) button,
+.localMain :global([data-testid='personal-workspace-source-practice-records']) button,
+.localMain :global([data-testid='personal-workspace-source-practice-guide']) button,
+.localMain :global([data-testid='personal-workspace-authoring-find-existing']),
+.localMain :global([data-testid^='personal-workspace-authoring-property-focus-']),
+.localMain :global([data-testid^='personal-workspace-authoring-property-edit-']),
+.localMain :global([data-testid^='personal-workspace-authoring-subcheck-focus-']),
+.localMain :global([data-testid='personal-workspace-entry-preview']) > [role='group'] button,
+.localMain :global([id^='personal-workspace-entry-source-item-']),
+.localMain :global([data-testid='personal-workspace-entry-item-detail']) > div > button {
+  min-width: 48px;
+  min-height: 48px;
+}
+
+.localMain :global(input:not([type='hidden'])),
+.localMain :global(textarea),
+.localMain :global(select),
+.localMain :global([contenteditable='true']),
+.localMain :global([data-keyboard-safe-action='true']) {
+  scroll-margin-top: calc(var(--personal-workspace-visual-viewport-top) + 0.75rem);
+  scroll-margin-bottom: calc(
+    var(--personal-workspace-visual-viewport-bottom)
+    + var(--personal-workspace-safe-bottom)
+    + 0.75rem
+  );
+}
+
+.workspaceMain {
+  min-height: calc(100dvh - 4rem);
+  padding-top: max(0.75rem, var(--personal-workspace-safe-top));
+  padding-right: max(1rem, var(--personal-workspace-safe-right));
+  padding-bottom: max(
+    var(--flowme-mobile-tab-clearance),
+    calc(
+      var(--personal-workspace-safe-bottom)
+      + var(--personal-workspace-visual-viewport-bottom)
+      + 1rem
+    )
+  );
+  padding-left: max(1rem, var(--personal-workspace-safe-left));
+}
+
+.workspaceMain :global([data-testid='personal-workspace-shell-layout']) {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+.authoringMain {
+  --personal-workspace-authoring-safe-top: var(--personal-workspace-safe-top);
+  --personal-workspace-authoring-safe-right: var(--personal-workspace-safe-right);
+  --personal-workspace-authoring-safe-bottom: var(--personal-workspace-safe-bottom);
+  --personal-workspace-authoring-safe-left: var(--personal-workspace-safe-left);
+  min-height: calc(100dvh - 4rem);
+}
+
+.skipLink {
+  position: fixed;
+  z-index: 100;
+  top: max(1rem, var(--personal-workspace-safe-top));
+  left: max(1rem, var(--personal-workspace-safe-left));
+  min-height: 44px;
+  max-width: calc(100vw - 2rem);
+  align-items: center;
+  border-radius: var(--flowme-radius-control);
+  background: var(--flowme-surface);
+  color: var(--flowme-action-strong);
+  font-weight: 700;
+  padding: 0.625rem 1rem;
+  box-shadow: var(--flowme-shadow-raised);
+  transform: translateY(calc(-100% - 2rem));
+}
+
+.skipLink:focus-visible {
+  display: inline-flex;
+  transform: translateY(0);
+}
+
+/* A sticky CTA is positioned against the layout viewport, so a software
+   keyboard can still cover it even after scroll correction. When browser
+   geometry reports a real lower occlusion, pin only the final authoring CTA
+   to the visual viewport and reserve enough scroll room behind it. */
+@media (max-width: 900px) {
+  .productShell:not([data-product-visual-viewport-bottom='0']) .authoringMain {
+    padding-bottom: calc(
+      var(--personal-workspace-visual-viewport-bottom)
+      + var(--personal-workspace-safe-bottom)
+      + 5rem
+    );
+  }
+
+  .productShell:not([data-product-visual-viewport-bottom='0'])
+    .authoringMain
+    :global([data-product-primary='authoring-save']) {
+    position: fixed !important;
+    z-index: 45;
+    right: calc(var(--personal-workspace-visual-viewport-right) + max(1rem, var(--personal-workspace-safe-right)));
+    left: calc(var(--personal-workspace-visual-viewport-left) + max(1rem, var(--personal-workspace-safe-left)));
+    width: auto !important;
+  }
+}
+
+@media (max-width: 639px) {
+  .productShell:not([data-product-visual-viewport-bottom='0'])
+    .authoringMain
+    :global([data-product-primary='authoring-save']) {
+    bottom: calc(
+      var(--personal-workspace-visual-viewport-bottom)
+      + var(--flowme-mobile-workbar-bottom)
+    ) !important;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 900px) {
+  .productShell:not([data-product-visual-viewport-bottom='0'])
+    .authoringMain
+    :global([data-product-primary='authoring-save']) {
+    bottom: calc(
+      var(--personal-workspace-visual-viewport-bottom)
+      + max(0.75rem, var(--personal-workspace-safe-bottom))
+    ) !important;
+  }
+}
+
+/* 375x812 and 390x844: one compact content column with the platform workbar
+   clearance reserved below the final action. */
+@media (min-width: 375px) and (max-width: 390px) {
+  .workspaceMain {
+    padding-right: max(1rem, var(--personal-workspace-safe-right));
+    padding-left: max(1rem, var(--personal-workspace-safe-left));
+  }
+}
+
+@media (min-width: 640px) {
+  .navigationFrame,
+  .workspaceMain {
+    padding-right: max(1.25rem, var(--personal-workspace-safe-right));
+    padding-left: max(1.25rem, var(--personal-workspace-safe-left));
+  }
+
+  .workspaceMain {
+    padding-bottom: max(2rem, var(--personal-workspace-safe-bottom));
+  }
+}
+
+/* 844x390: retain a compact location/stage line and let the active pane own
+   scrolling instead of hiding the whole local context. */
+@media (min-width: 640px) and (max-width: 1023px) and (max-height: 500px) and (orientation: landscape) {
+  .navigationFrame {
+    padding-top: max(0.25rem, var(--personal-workspace-safe-top));
+  }
+
+  .navigationFrame :global([data-testid='platform-nav']) {
+    margin-bottom: 0;
+    padding-bottom: 0.25rem;
+  }
+
+  .workspaceMain {
+    padding-top: 0.25rem;
+  }
+}
+
+/* 1024x768: the product shell exposes the full content width for the two
+   active work panes; the persistent local rail starts at the wide layout. */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .localMain {
+    --personal-workspace-shell-layout: dual-pane;
+  }
+}
+
+/* 1440x900: enough width exists for local navigation plus active content;
+   authoring still keeps its approved two-pane input/result composition. */
+@media (min-width: 1280px) {
+  .localMain {
+    --personal-workspace-shell-layout: adaptive-wide;
+  }
+
+  .workspaceMain :global([data-testid='personal-workspace-shell-layout']) {
+    grid-template-columns: 240px minmax(0, 1fr) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skipLink {
+    transition: none;
+  }
+
+  .productShell,
+  .productShell *,
+  .productShell *::before,
+  .productShell *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,13 @@
+.tools { min-width:0; margin-block:12px; }
+.tools summary { cursor:pointer; min-height:44px; align-content:center; }
+.tools label { display:grid; gap:6px; margin-block:12px; }
+.tools select { width:100%; max-width:100%; min-width:0; min-height:44px; padding:8px; }
+.tools button { min-height:44px; max-width:100%; overflow-wrap:anywhere; }
+.tools button:focus-visible,.tools summary:focus-visible,.tools select:focus-visible { outline:3px solid #216f5a; outline-offset:3px; }
+.hint { color:#52615b; font-size:.9rem; line-height:1.6; }
+.actions { display:flex; gap:8px; flex-wrap:wrap; }
+.actions button { flex:1 1 140px; }
+.list { list-style:none; padding:0; margin:0; }
+.list button { display:grid; width:100%; text-align:left; padding:10px; }
+.list small { font-size:.8rem; color:#52615b; }
+@media (max-width:440px) { .actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); } .actions button { width:100%; } }

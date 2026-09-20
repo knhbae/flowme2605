@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "files": [
+    {
+      "path": "components/flow/personal-workspace-poc/PersonalWorkspacePocResultPresenter.tsx",
+      "beforeSha256": "761892f9849753100682000bdc7ec36976d7fa239342124ae78c09655e8b494a",
+      "afterSha256": "3a6391183a251e066ebad8fb96b3f5c1b255cb90c753829ab6b93d5d2f309290",
+      "reason": "Optional availableViews presentation port for the original six-template projection policy. Default callers retain all four views and legacy txt; limited tabs and keyboard use the same rendered list. The prior readOnly edits are preserved in the exact before snapshot output/integrated-product-poc/result-presenter-before-template-policy.tsx. No data/operating writer or route changes."
+    },
+    {
+      "path": "docs/STATUS.md",
+      "beforeSha256": "027ff9ad6a1dcafec1ef48bf7138f7eb6eb53f24cf4b72ad6abd857797c106d8",
+      "afterSha256": "9da9c389a47dac416b5471b9bf1c4ceff35c5e571b35a2011e1522307e8bcaeb",
+      "reason": "Current isolated PoC note only, four added lines and three surrounding CRLF-to-LF context lines. program-status-note-audit.mjs reconstructs the exact original baseline hash after removing this note and restoring only those context endings. Inherited operating release/status text stays byte-for-byte unchanged; this does not claim remote CI/deploy verification."
+    },
+    {
+      "path": "components/flow/personal-workspace-poc/PersonalWorkspacePocRoute.tsx",
+      "beforeSha256": "5236d4c4db4845e65fe3702831912f1edd6518f02c3083e5ce4938bea616bd13",
+      "afterSha256": "915cb87d76bc7408b56896a9caafd31be1f21e836cf043e90f17c743f510306f",
+      "reason": "Preserve the existing boot/read/source-candidate guards and legacy surface; wrap that surface in ProgramApp and pass decoded model, state and sourceCandidateStore. Load ProgramApp with next/dynamic only in the gated client route, preserving Node route regression checks and avoiding eager editor CSS imports. No default /my or operating writer change."
+    }
+  ]
+}

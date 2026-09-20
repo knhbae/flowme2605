@@ -40,6 +40,7 @@ export type MyPlanExecutionSurfaceActions<Data = unknown> = Readonly<{
 
 export type MyPlanExecutionSurfaceRenderers = Readonly<{
   renderManagementMenu?: () => ReactNode;
+  renderAfterItem?: (itemId: string) => ReactNode;
   renderTransferPanel: (options: Readonly<{ showClose: boolean }>) => ReactNode;
   renderItemDetail: () => ReactNode;
 }>;
@@ -135,6 +136,7 @@ export function MyPlanExecutionSurface<Data = unknown>({
           getItemHref={actions.getItemHref}
           onOpenItem={actions.onOpenItem}
           onToggleItem={(todo) => actions.onToggleItem(todo)}
+          renderAfterItem={renderers.renderAfterItem ? (todo) => renderers.renderAfterItem?.(todo.id) : undefined}
         />
 
         {actionsAvailable ? (

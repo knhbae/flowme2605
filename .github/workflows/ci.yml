@@ -37,6 +37,18 @@ jobs:
       - name: Run core verification
         run: npm run verify
 
+      - name: Check integrated PoC types
+        run: npm run typecheck:integrated-product-poc
+
+      - name: Test integrated PoC contracts
+        run: npm run test:integrated-product-poc
+
+      - name: Install integrated PoC browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Test portable integrated PoC journeys
+        run: npm run test:e2e:integrated-product-poc
+
   e2e:
     name: Playwright E2E
     runs-on: ubuntu-latest

@@ -1,8 +1,10 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
+import { AUTHORING_CHOOSER_GROUPS } from '@/lib/flow/personal-workspace-poc-authoring-chooser';
 
 import {
+  fingerprintPersonalWorkspacePocAuthoringSource,
   getPersonalWorkspacePocAuthoringTemplate,
   materializePersonalWorkspacePocAuthoring,
 } from '@/lib/flow/personal-workspace-poc-authoring';
@@ -11,6 +13,8 @@ import {
   buildPersonalWorkspacePocAuthoringIdentity,
   getPersonalWorkspacePocAuthoringOpenHref,
   getPersonalWorkspacePocTemplateInsertion,
+  isPersonalWorkspacePocAuthoringPropertyOwnerCurrent,
+  type PersonalWorkspacePocAuthoringPropertyOwner,
 } from './PersonalWorkspacePocAuthoringSurface';
 
 const surfaceSource = readFileSync(
@@ -19,6 +23,10 @@ const surfaceSource = readFileSync(
 );
 const routeSource = readFileSync(
   new URL('./PersonalWorkspacePocAuthoringRoute.tsx', import.meta.url),
+  'utf8',
+);
+const guidanceSource = readFileSync(
+  new URL('../../../lib/flow/personal-workspace-poc-editor-guidance.ts', import.meta.url),
   'utf8',
 );
 
@@ -73,9 +81,10 @@ test('preview displays materialization-level missing title and item issues', () 
   assert.match(surfaceSource, /const issues = preview\.parseResult\.blockingIssues/u);
 });
 
-test('authoring exposes one entry, two visible stages, optional review, and real projections', () => {
+test('authoring exposes one entry, two authoring stages, a separate draft library, and real projections', () => {
   assert.match(surfaceSource, /personal-workspace-entry-input/u);
-  assert.match(surfaceSource, /type MobileStep = 'input' \| 'result'/u);
+  assert.match(surfaceSource, /personal-workspace-entry-input[\s\S]{0,420}placeholder:text-slate-500/u);
+  assert.match(surfaceSource, /type MobileStep = 'input' \| 'result' \| 'library'/u);
   assert.doesNotMatch(surfaceSource, /type MobileStep = 'write' \| 'structure' \| 'result'/u);
   assert.match(surfaceSource, /personal-workspace-authoring-review-open/u);
   assert.match(surfaceSource, /원문 \{item\.sourceLine\}행/u);
@@ -132,11 +141,14 @@ test('authoring connects the full property catalog, native pickers, exact re-ent
   assert.match(surfaceSource, /entry\?\.editor === 'native-date'/u);
   assert.match(surfaceSource, /entry\?\.editor === 'native-time'/u);
   assert.match(surfaceSource, /personal-workspace-authoring-dependent-property-surface/u);
-  assert.match(surfaceSource, /personal-workspace-authoring-property-group-\$\{group\}/u);
-  assert.match(surfaceSource, /\['schedule', '일정'\]/u);
-  assert.match(surfaceSource, /\['execution', '실행'\]/u);
-  assert.match(surfaceSource, /\['content', '내용'\]/u);
-  assert.match(surfaceSource, /\['provenance', '더 보기'\]/u);
+  // K3-A: the approved first four groups now come from the shared UI mapping;
+  // only the chosen group's properties render, rather than all sixteen at once.
+  assert.match(surfaceSource, /personal-workspace-authoring-property-group-\$\{chooserView\.group\}/u);
+  assert.deepEqual(AUTHORING_CHOOSER_GROUPS.map(({ key, label }) => [key, label]), [
+    ['schedule', '일정'], ['execution', '실행'], ['content', '내용'], ['provenance', '더 보기'],
+  ]);
+  assert.match(surfaceSource, /chooserView\?\.stage === 'groups'[\s\S]*PersonalWorkspacePocAuthoringChooserGroups/u);
+  assert.match(surfaceSource, /chooserView\?\.stage === 'properties'[\s\S]*chooserView\.propertyKeys\.map/u);
   assert.match(surfaceSource, /inlinePanel=\{renderPropertyEditorForm\('inline'\)\}/u);
   assert.match(surfaceSource, /locatePersonalWorkspacePocAuthoringPropertyValue/u);
   assert.match(surfaceSource, /pendingSourceFocus\.current = located\.selection/u);
@@ -154,7 +166,7 @@ test('authoring connects the full property catalog, native pickers, exact re-ent
   const nearMissBody = surfaceSource.match(
     /const repairNearMiss = async \(target: PersonalWorkspacePocAuthoringNearMissTarget\) => \{([\s\S]*?)\n  \};/u,
   )?.[1] ?? '';
-  assert.match(propertyApplyBody, /applyNativeReplacement/u);
+  assert.match(propertyApplyBody, /applyPersistedSourceHelper/u);
   assert.match(nearMissBody, /applyNativeReplacement/u);
   assert.doesNotMatch(`${propertyApplyBody}\n${nearMissBody}`, /setRawText\(/u);
 });
@@ -164,7 +176,7 @@ test('responsive authoring owns one contextual overlay plus one bounded dependen
   assert.match(surfaceSource, /const \[overlay, setOverlay\] = useState<AuthoringOverlay>/u);
   assert.doesNotMatch(surfaceSource, /setHelperOpen|setReviewOpen|reviewReturnRef/u);
   assert.match(surfaceSource, /overlay\?\.kind === 'helper'[\s\S]*overlay\?\.kind === 'review'/u);
-  assert.equal(surfaceSource.match(/role="dialog"/gu)?.length, 3);
+  assert.equal(surfaceSource.match(/role="dialog"/gu)?.length, 4);
   assert.match(surfaceSource, /overlayHeadingRef\.current\?\.focus/u);
   assert.match(surfaceSource, /opener\?\.isConnected/u);
   assert.match(surfaceSource, /opener\.focus\(\{ preventScroll: true \}\)/u);
@@ -177,43 +189,109 @@ test('responsive authoring owns one contextual overlay plus one bounded dependen
   assert.doesNotMatch(surfaceSource, /personal-workspace-authoring-helper-toggle/u);
 });
 
-test('template picker exposes one presentation-only full example without changing the source contract', () => {
+test('review and property editors expose explicit names and restore their exact openers', () => {
+  assert.match(surfaceSource, /aria-label=\{`원문과 실행 항목 검토, \$\{issues\.length > 0 \? issues\.length : parsedItems\.length\}개`\}/u);
+  assert.match(surfaceSource, /aria-label="원문과 실행 항목 검토 닫기"/u);
+  assert.match(surfaceSource, /aria-label="원문 작성 도움 닫기"/u);
+  assert.match(surfaceSource, /aria-label="항목 정보 편집 닫기"/u);
+  assert.match(surfaceSource, /const propertyEditorOpenerRef = useRef<AuthoringPropertyEditorReturn \| null>/u);
+  assert.match(surfaceSource, /opener: HTMLButtonElement/u);
+  assert.match(surfaceSource, /propertyEditorOpenerRef\.current = \{[\s\S]*propertyKey: key/u);
+  assert.match(surfaceSource, /if \(returnOverlay && isPersonalWorkspacePocAuthoringPropertyOwnerCurrent/u);
+  assert.match(surfaceSource, /personal-workspace-authoring-property-edit-\$\{returnTarget\.propertyKey\}/u);
+  assert.match(surfaceSource, /if \(opener\?\.isConnected\) opener\.focus\(\{ preventScroll: true \}\)/u);
+  assert.match(surfaceSource, /onClick=\{closePropertyEditor\}>취소/u);
+  assert.match(surfaceSource, /if \(propertyEditor\) \{[\s\S]*closePropertyEditor\(\)/u);
+  assert.match(surfaceSource, /sourceRef\.current\?\.focusRange\(planned\.selection\.start, planned\.selection\.end\)/u);
+});
+
+test('template picker prioritizes a scaffold and discloses the full example without changing its source contract', () => {
   assert.match(surfaceSource, /template\.exampleLabel/u);
-  assert.match(surfaceSource, /templatePreview\.exampleSource/u);
+  assert.match(surfaceSource, /structure\.expectedRawText/u);
+  assert.match(surfaceSource, /template\.scaffold/u);
+  assert.match(surfaceSource, /<PersonalWorkspacePocAuthoringTemplatePreview[\s\S]*structure=\{structureTemplatePreview\}/u);
   assert.match(surfaceSource, /personal-workspace-authoring-template-example-preview/u);
   assert.match(surfaceSource, /personal-workspace-authoring-template-example-source/u);
   assert.match(surfaceSource, /onPointerMove=\{\(\) => setTemplatePreviewId\(template\.templateId\)\}/u);
   assert.match(surfaceSource, /onFocus=\{\(\) => setTemplatePreviewId\(template\.templateId\)\}/u);
   assert.match(surfaceSource, /aria-live="polite"/u);
-  assert.match(surfaceSource, /예시는 원문에 들어가지 않습니다/u);
+  assert.match(surfaceSource, /완성 예시 보기/u);
+  assert.match(surfaceSource, /<details data-testid="personal-workspace-authoring-template-completed-example"/u);
+  assert.match(surfaceSource, /<details data-testid="personal-workspace-authoring-template-technical-details"/u);
+  assert.doesNotMatch(surfaceSource, /<details[^>]*personal-workspace-authoring-template-[^>]*\bopen[=\s>]/u);
   assert.doesNotMatch(surfaceSource, /setRawText\(templatePreview\.exampleSource\)/u);
+});
+
+test('StructureDraft p0.2 preview is version-pinned and materializes through one guarded native transaction', () => {
+  assert.match(surfaceSource, /PERSONAL_WORKSPACE_POC_STRUCTURE_TEMPLATE_PREVIEW_CATALOG_VERSION/u);
+  assert.match(surfaceSource, /PERSONAL_WORKSPACE_POC_STRUCTURE_TEMPLATE_PREVIEW_CONTRACT_VERSION/u);
+  assert.match(surfaceSource, /findPersonalWorkspacePocStructureTemplatePreview/u);
+  assert.match(surfaceSource, /StructureDraft \{structure\.contractVersion\}/u);
+  assert.match(surfaceSource, /personal-workspace-authoring-structure-materialize/u);
+  assert.match(surfaceSource, /planPersonalWorkspacePocStructureTemplatePreviewApply/u);
+  assert.match(surfaceSource, /expectedSourceFingerprint: snapshot\.sourceFingerprint/u);
+  assert.match(surfaceSource, /materialization\.status !== 'applied'/u);
+  assert.match(surfaceSource, /kind: 'structure-materialization'/u);
+  assert.match(surfaceSource, /requireEmptySource: true/u);
+  assert.match(surfaceSource, /consumedTransactionIds\.current\.push\(ticket\.transactionId\)/u);
+});
+
+test('validation examples remain a separate read-only explorer until one blank-only native transaction', () => {
+  assert.match(surfaceSource, /PersonalWorkspacePocValidationExampleExplorer/u);
+  assert.match(surfaceSource, /PERSONAL_WORKSPACE_POC_VALIDATION_EXAMPLE_CATALOG/u);
+  assert.match(surfaceSource, /personal-workspace-authoring-validation-examples-open/u);
+  assert.match(surfaceSource, /sourceEmpty=\{rawText\.length === 0\}/u);
+  assert.match(surfaceSource, /!validationExamplesToggleRef\.current\?\.contains\(target\)/u);
+  assert.match(surfaceSource, /planPersonalWorkspacePocValidationExampleApply/u);
+  assert.match(surfaceSource, /kind: 'validation-example'/u);
+  assert.match(surfaceSource, /requireEmptySource: true/u);
+  assert.match(surfaceSource, /planPersonalWorkspacePocSourceEditorTransaction/u);
+  assert.match(surfaceSource, /consumedTransactionIds\.current\.push\(ticket\.transactionId\)/u);
+  assert.match(surfaceSource, /setTemplateId\(undefined\)/u);
+  assert.match(surfaceSource, /Ctrl\+Z \uD55C \uBC88/u);
 });
 
 test('starting a new source clears document-owned template state and requires fresh loss consent', () => {
   const beginAuthoringBody = surfaceSource.match(
     /const beginAuthoring = \(exactText: string\) => \{([\s\S]*?)\n  \};/u,
   )?.[1] ?? '';
-
-  assert.match(beginAuthoringBody, /if \(pending\.current\) return;/u);
-  assert.match(beginAuthoringBody, /pendingTemplateId\.current = undefined/u);
-  assert.match(beginAuthoringBody, /templateIdRef\.current = undefined/u);
-  assert.match(beginAuthoringBody, /setTemplateId\(undefined\)/u);
-  assert.match(beginAuthoringBody, /setLossAccepted\(false\)/u);
-  assert.match(beginAuthoringBody, /setTemplateTicket\(undefined\)/u);
-  assert.match(beginAuthoringBody, /setOverlay\(undefined\)/u);
+  const adopt = surfaceSource.match(/const adoptAuthoringDocument = \(exactText: string\) => \{([\s\S]*?)\n  \};/u)?.[1] ?? '';
+  const commit = surfaceSource.match(/const commitEntryAuthoring = \(\) => \{([\s\S]*?)\n  \};/u)?.[1] ?? '';
+  assert.match(beginAuthoringBody, /if \(pending\.current \|\| entryAttempt\.current \|\| entryHistoryConsuming\.current\) return;/u);
+  assert.match(beginAuthoringBody, /if \(!currentOwnedEntry\(\)\) \{ entryWriteFailure\(\); return; \}/u);
+  assert.match(adopt, /pendingTemplateId\.current = undefined/u);
+  assert.match(adopt, /templateIdRef\.current = undefined/u);
+  assert.match(adopt, /setTemplateId\(undefined\)/u);
+  assert.match(adopt, /setCurrentCreatorDraftId\(undefined\)/u);
+  assert.match(adopt, /setLossAccepted\(false\)/u);
+  assert.match(adopt, /setTemplateTicket\(undefined\)/u);
+  assert.match(adopt, /setOverlay\(undefined\)/u);
   assert.ok(
-    beginAuthoringBody.indexOf('setLossAccepted(false)')
-      < beginAuthoringBody.indexOf('persistAuthoringDraft(exactText)'),
+    beginAuthoringBody.indexOf('adoptAuthoringDocument(exactText)')
+      < beginAuthoringBody.indexOf('persistAuthoringDraft(exactText, undefined, null)'),
   );
+  assert.ok(beginAuthoringBody.indexOf('currentOwnedEntry()') < beginAuthoringBody.indexOf('adoptAuthoringDocument(exactText)'));
+  assert.ok(beginAuthoringBody.indexOf('pending.current') < beginAuthoringBody.indexOf('adoptAuthoringDocument(exactText)'));
+  assert.ok(beginAuthoringBody.indexOf('adoptAuthoringDocument(exactText)') < beginAuthoringBody.indexOf("persistAuthoringDraft('', undefined, null)"));
+  assert.match(commit, /if \(saved\.status === 'success'\) \{[\s\S]*if \(!finishOwnedEntryWrite\(attempt\.ownTicket, \{ draftRaw: saved\.serialized \}\)\) \{[\s\S]*return;[\s\S]*adoptAuthoringDocument\(saved\.draft\.rawText\)/u);
+  assert.doesNotMatch(commit, /persistAuthoringDraft\(/u);
+  assert.doesNotMatch(surfaceSource, /beginAuthoring\((?!''\))[^)]/u);
   assert.doesNotMatch(beginAuthoringBody, /persistAuthoringDraft\(exactText,\s*templateId/u);
 });
 
 test('responsive, hierarchy, and subtraction contracts are explicit in the integrated surface', () => {
-  assert.match(surfaceSource, /hierarchyDepth: line\.hierarchyDepth/u);
-  assert.match(surfaceSource, /showHierarchyGuide: line\.showHierarchyGuide/u);
+  // K3-A exact presenter extraction keeps the same input/output in a shared
+  // pure module; keep checking hierarchy fields at their new owner.
+  assert.match(surfaceSource, /buildPersonalWorkspacePocEditorLineGuides\(\{[\s\S]*fidelityManifest: preview\.parseResult\.fidelityManifest,[\s\S]*issues,/u);
+  assert.match(guidanceSource, /hierarchyDepth: line\.hierarchyDepth/u);
+  assert.match(guidanceSource, /showHierarchyGuide: line\.showHierarchyGuide/u);
   assert.match(surfaceSource, /--poc-visual-viewport-top/u);
   assert.match(surfaceSource, /--poc-visual-viewport-height/u);
   assert.match(surfaceSource, /--poc-visual-viewport-bottom/u);
+  assert.match(surfaceSource, /data-keyboard-safe-action="true"/u);
+  assert.equal(surfaceSource.match(/data-keyboard-safe-action="true"/gu)?.length, 2);
+  assert.match(surfaceSource, /--personal-workspace-visual-viewport-bottom, 0px/u);
+  assert.match(surfaceSource, /scroll-padding-bottom: calc\(var\(--personal-workspace-authoring-safe-bottom\) \+ var\(--personal-workspace-visual-viewport-bottom, 0px\) \+ 5rem\)/u);
   assert.match(surfaceSource, /max-height: 480px/u);
   assert.match(surfaceSource, /orientation: landscape/u);
   assert.match(surfaceSource, /data-testid="personal-workspace-authoring-column" className=\{`\$\{mobileStep === 'input' \? 'block' : 'hidden'\} min-w-0 lg:block lg:pr-2`\}/u);
@@ -234,7 +312,7 @@ test('authoring success becomes one focusable receipt screen without competing s
   assert.match(surfaceSource, /data-product-receipt-only="true"/u);
   assert.match(surfaceSource, /personal-workspace-authoring-receipt-title" tabIndex=\{-1\}/u);
   assert.match(surfaceSource, /if \(!receipt\) return;[\s\S]*personal-workspace-authoring-receipt-title/u);
-  assert.match(surfaceSource, /\{receipt \? \([\s\S]*renderAuthoringReceipt\(\)[\s\S]*\) : \(/u);
+  assert.match(surfaceSource, /\) : receipt \? \([\s\S]*renderAuthoringReceipt\(\)[\s\S]*\) : \(/u);
   assert.match(surfaceSource, /aria-hidden=\{receipt \? true : undefined\}/u);
 });
 
@@ -243,16 +321,42 @@ test('authoring draft recovery stays inside the PoC storage facade', () => {
     'recoverPersonalWorkspacePocStorageCommit(window.localStorage)',
   );
   const stateLoad = routeSource.indexOf(
-    'loadPersonalWorkspacePocState(window.localStorage)',
+    'loadPersonalWorkspacePocState({ getItem:',
   );
   assert.ok(recovery >= 0);
   assert.ok(stateLoad > recovery);
+  assert.match(routeSource, /const stateRaw = window\.localStorage\.getItem\(PERSONAL_WORKSPACE_POC_STATE_KEY\)/u);
+  assert.match(routeSource, /key !== PERSONAL_WORKSPACE_POC_STATE_KEY[\s\S]*return stateRaw/u);
   assert.match(surfaceSource, /savePersonalWorkspacePocAuthoringDraft\(window\.localStorage/u);
   assert.match(surfaceSource, /clearPersonalWorkspacePocAuthoringDraft\(window\.localStorage\)/u);
-  assert.match(routeSource, /loadPersonalWorkspacePocAuthoringDraft\(window\.localStorage\)/u);
+  assert.match(routeSource, /const draftRaw = window\.localStorage\.getItem\(PERSONAL_WORKSPACE_POC_AUTHORING_DRAFT_KEY\)/u);
+  assert.match(routeSource, /loadPersonalWorkspacePocAuthoringDraft\(\{ getItem: key =>/u);
+  assert.match(routeSource, /key !== PERSONAL_WORKSPACE_POC_AUTHORING_DRAFT_KEY[\s\S]*return draftRaw/u);
   assert.match(routeSource, /authoringDraft\.kind === 'corrupt'/u);
   assert.match(routeSource, /initialAuthoringDraft=\{boot\.authoringDraft\}/u);
   assert.doesNotMatch(surfaceSource, /window\.localStorage\.(?:setItem|removeItem|clear)\(/u);
+});
+
+test('creator drafts use a separate owner lane, atomic store, library controls, and fail-closed boot', () => {
+  const creatorRecovery = routeSource.indexOf(
+    'recoverPersonalWorkspacePocCreatorDraftStorage(',
+  );
+  const creatorLoad = routeSource.indexOf(
+    'loadPersonalWorkspacePocCreatorDraftLibrary(',
+  );
+  assert.ok(creatorRecovery >= 0);
+  assert.ok(creatorLoad > creatorRecovery);
+  assert.match(routeSource, /creatorDraftLibrary\.kind === 'corrupt'/u);
+  assert.match(routeSource, /library\.records\[creatorBinding\.draftId\]\?\.status !== 'active'/u);
+  assert.match(surfaceSource, /commitPersonalWorkspacePocCreatorDraftStorage/u);
+  assert.match(surfaceSource, /savePersonalWorkspacePocCreatorDraftLibrary/u);
+  assert.match(surfaceSource, /data-testid="creator-draft-save"/u);
+  assert.match(surfaceSource, /data-testid="creator-draft-library-open"/u);
+  assert.match(surfaceSource, /data-testid="personal-workspace-authoring-tab-library"/u);
+  assert.match(surfaceSource, /data-testid="creator-draft-switch-confirmation"/u);
+  assert.match(surfaceSource, /개인 폴더·완료·날짜와 공개 화면은 바뀌지 않습니다/u);
+  assert.match(surfaceSource, /currentCreatorDraft \? \([\s\S]*creator-draft-save-controls[\s\S]*\) : \([\s\S]*personal-workspace-authoring-folder/u);
+  assert.doesNotMatch(surfaceSource, /flow:map:creator-draft|flow:map:published-local/u);
 });
 
 test('authoring handoff uses the PoC atomic writer after composition and semantic preflight', () => {
@@ -272,7 +376,7 @@ test('authoring handoff uses the PoC atomic writer after composition and semanti
   assert.match(surfaceSource, /removeAuthoringDraft: true/u);
 });
 
-test('native replacement failure preserves changed browser bytes in one PoC draft sync', () => {
+test('existing native-first helpers retain their failure sync while properties and structure use persist-first', () => {
   assert.equal(
     surfaceSource.match(/applied\?\.snapshot && applied\.snapshot\.rawText !== snapshot\.rawText/gu)?.length,
     4,
@@ -283,6 +387,129 @@ test('native replacement failure preserves changed browser bytes in one PoC draf
   );
   assert.match(surfaceSource, /현재 원문만 보관했어요/u);
   assert.doesNotMatch(surfaceSource, /textarea\.value\s*=/u);
+  assert.equal(surfaceSource.match(/const applied = await applyPersistedSourceHelper\(\{/gu)?.length, 2);
+});
+
+test('successful native helpers fail closed to the before snapshot when PoC draft persistence fails', () => {
+  assert.match(
+    surfaceSource,
+    /const restoreSourceAfterDraftPersistenceFailure = \([\s\S]*setRawText\(snapshot\.rawText\)[\s\S]*setEditorDocumentEpoch\(\(epoch\) => epoch \+ 1\)/u,
+  );
+  assert.equal(
+    surfaceSource.match(/if \(!lastDraftPersistenceOk\.current\) \{[\s\S]{0,180}restoreSourceAfterDraftPersistenceFailure\(snapshot, previousTemplateId\)/gu)?.length,
+    3,
+  );
+  assert.equal(
+    surfaceSource.match(/consumedTransactionIds\.current\.push\((?:templateTicket|ticket)\.transactionId\)/gu)?.length,
+    3,
+  );
+});
+
+function propertyOwnerFixture(): PersonalWorkspacePocAuthoringPropertyOwner {
+  const rawText = '# 원문\n## 준비\n- [ ] 같은 제목\n- [ ] 같은 제목';
+  return {
+    itemTitle: '같은 제목',
+    draftSerialized: JSON.stringify({ version: 1, rawText }),
+    snapshot: {
+      editorId: 'editor-1', documentId: 'document-1', rawText,
+      sourceFingerprint: fingerprintPersonalWorkspacePocAuthoringSource(rawText),
+      dispatchCount: 7, selectionStart: 12, selectionEnd: 12,
+      selectionDirection: 'none', scrollTop: 40, scrollLeft: 0, composing: false,
+    },
+  };
+}
+
+test('property owner remains exact when only selection, scroll, or form focus changes', () => {
+  const owner = propertyOwnerFixture();
+  const before = JSON.stringify(owner);
+  assert.equal(isPersonalWorkspacePocAuthoringPropertyOwnerCurrent(owner, {
+    ...owner.snapshot, selectionStart: 0, selectionEnd: 5,
+    selectionDirection: 'backward', scrollTop: 120, scrollLeft: 8,
+  }), true);
+  assert.equal(JSON.stringify(owner), before);
+});
+
+for (const [label, change] of [
+  ['insert another same-title Item before the owner', { rawText: '# 원문\n## 준비\n- [ ] 같은 제목\n- [ ] 같은 제목\n- [ ] 같은 제목' }],
+  ['remove the original Item', { rawText: '# 원문\n## 준비\n- [ ] 같은 제목' }],
+  ['edit then Undo to the same bytes (ABA)', { dispatchCount: 9 }],
+  ['open another document with the same bytes', { documentId: 'document-2' }],
+  ['replace the editor instance', { editorId: 'editor-2' }],
+  ['change the source fingerprint', { sourceFingerprint: 'not-the-opened-source' }],
+] as const) {
+  test(`property owner rejects ${label} without rebinding by line or title`, () => {
+    const owner = propertyOwnerFixture();
+    const current = { ...owner.snapshot, ...change };
+    assert.equal(isPersonalWorkspacePocAuthoringPropertyOwnerCurrent(owner, current), false);
+  });
+}
+
+test('property owner rejects an unavailable native editing host', () => {
+  const owner = propertyOwnerFixture();
+  assert.equal(isPersonalWorkspacePocAuthoringPropertyOwnerCurrent(owner, null), false);
+  assert.equal(isPersonalWorkspacePocAuthoringPropertyOwnerCurrent(owner, undefined), false);
+});
+
+test('helper persistence precedes native editing and the native callback never saves the candidate twice', () => {
+  const helper = surfaceSource.match(/const applyPersistedSourceHelper = async \([\s\S]*?\n  \};/u)?.[0] ?? '';
+  const save = helper.indexOf('savePersonalWorkspacePocAuthoringDraft(');
+  const savedGuard = helper.indexOf('if (!saved.ok)');
+  const native = helper.indexOf('applyNativeReplacement(');
+  assert.ok(save >= 0 && savedGuard > save && native > savedGuard);
+  assert.match(helper, /input\.expectedDraftSerialized/u);
+  assert.match(helper, /restorePersonalWorkspacePocAuthoringDraftBytes[\s\S]*expectedSerialized: saved\.serialized[\s\S]*previous: saved\.previous/u);
+  assert.match(helper, /if \(!draftMatches\)[\s\S]*failSourceHelper/u);
+  assert.doesNotMatch(helper, /restoreSourceAfterDraftPersistenceFailure|setEditorDocumentEpoch|\.value\s*=/u);
+  const callback = surfaceSource.match(/const onNativeSourceInput = \([\s\S]*?\n  \};/u)?.[0] ?? '';
+  assert.ok(callback.indexOf('if (sourceHelperPersistence.current) return;') < callback.indexOf('persistAuthoringDraft('));
+});
+
+test('property stale re-selection is explicit, preserves values, and cannot carry them to another document', () => {
+  assert.match(surfaceSource, /data-testid="personal-workspace-authoring-property-owner"/u);
+  assert.match(surfaceSource, /data-testid="personal-workspace-authoring-property-stale"/u);
+  assert.match(surfaceSource, /data-testid="personal-workspace-authoring-property-reselect-confirm"/u);
+  assert.match(surfaceSource, /snapshot\.documentId !== propertyEditor\.owner\.snapshot\.documentId/u);
+  assert.match(surfaceSource, /setPropertyEditor\(\(current\) => current \? \{ \.\.\.current, itemSourceLine, owner \}/u);
+  assert.match(surfaceSource, /disabled=\{formBusy \|\| stale \|\| propertyOwnerSelecting\}/u);
+  assert.match(surfaceSource, /expectedSourceFingerprint: propertyEditor\.owner\.snapshot\.sourceFingerprint/u);
+});
+
+test('opening another creator draft discards helper inputs only after its document commit succeeds', () => {
+  const openDraft = surfaceSource.match(/const openCreatorDraft = async \([\s\S]*?\n  \};/u)?.[0] ?? '';
+  const failureGuard = openDraft.indexOf('if (!saved.ok)');
+  const successfulDocumentChange = openDraft.indexOf('setRawText(record.rawText)');
+  const clearInput = openDraft.indexOf('setPropertyEditor(undefined)');
+  assert.ok(failureGuard >= 0 && successfulDocumentChange > failureGuard && clearInput > successfulDocumentChange);
+  assert.match(openDraft, /if \(pending\.current \|\| sourceHelperRecoveryRequired\.current\) return/u);
+  assert.match(openDraft, /propertyEditorOpenerRef\.current = null/u);
+  assert.match(openDraft, /propertyInputComposing\.current = false/u);
+  assert.match(openDraft, /setPropertyOwnerSelecting\(false\)/u);
+  assert.match(openDraft, /setSourceHelperFeedback\(\{ kind: 'ready' \}\)/u);
+  assert.ok(openDraft.indexOf('setEditorDocumentEpoch(') > clearInput);
+});
+
+test('an open property helper keeps the result CTA in normal flow so retry and cancel remain reachable', () => {
+  assert.match(surfaceSource, /const resultCtaSticky = !propertyEditor && !templatePickerOpen && !editorIntersectsViewport/u);
+  assert.match(surfaceSource, /data-sticky=\{resultCtaSticky \? 'true' : 'false'\}/u);
+  const input = surfaceSource.match(/const renderAuthoringInput = \(\) => \([\s\S]*?\n  \);/u)?.[0] ?? '';
+  assert.ok(input.indexOf('inlinePanel={renderPropertyEditorForm(\'inline\')}') < input.indexOf('data-testid="personal-workspace-authoring-result-cta"'));
+  assert.match(input, /resultCtaSticky \? 'sticky[\s\S]*: 'static shadow-none'/u);
+  assert.match(input, /onClick=\{\(\) => setMobileStep\('result'\)\}/u);
+});
+
+test('helper failures retain explicit retry or recovery and never auto-reset or navigate away', () => {
+  assert.match(surfaceSource, /data-testid="personal-workspace-authoring-property-retry"/u);
+  assert.match(surfaceSource, /personal-workspace-authoring-property-recovery/u);
+  assert.match(surfaceSource, /sourceHelperRecoveryRequired\.current = recoveryRequired/u);
+  assert.match(surfaceSource, /pending\.current = recoveryRequired/u);
+  const failure = surfaceSource.match(/const failSourceHelper = \([\s\S]*?\n  \};/u)?.[0] ?? '';
+  assert.doesNotMatch(failure, /location\.|removeItem|setRawText|setEditorDocumentEpoch/u);
+  assert.match(surfaceSource, /if \(pending\.current \|\| sourceHelperRecoveryRequired\.current\) return/u);
+  assert.match(surfaceSource, /onCompositionStartCapture=\{\(\) => \{ propertyInputComposing\.current = true/u);
+  assert.match(surfaceSource, /onCompositionEndCapture=\{\(\) => \{ propertyInputComposing\.current = false/u);
+  assert.match(surfaceSource, /onKeyDownCapture=\{\(event\) => \{[\s\S]*event\.nativeEvent\.keyCode === 229/u);
+  assert.match(surfaceSource, /if \(!propertyEditor \|\| propertyOwnerSelecting \|\| propertyInputComposing\.current \|\| pending\.current\) return/u);
+  assert.match(surfaceSource, /requestAnimationFrame\(\(\) => sourceRef\.current\?\.focusRange\(planned\.selection\.start, planned\.selection\.end\)\)/u);
 });
 
 test('authoring imports operating data readers only at boot and never imports an operating writer', () => {

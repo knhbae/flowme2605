@@ -1,6 +1,8 @@
 'use client';
 
 import React from 'react';
+import { PersonalWorkspacePocPlanResultSurface } from './PersonalWorkspacePocPlanResultSurface';
+import type { PersonalWorkspacePocPlanDisplay } from '@/lib/flow/personal-workspace-poc-plan-display';
 
 import { FlowEditorSurface } from '../FlowEditorSurface';
 import {
@@ -41,6 +43,8 @@ export type PersonalWorkspacePocEditorSourceSummary = Readonly<{
   ownerLabel?: string;
   title: string;
   description?: string;
+  /** Presentation-only existing-personal baseline; undefined is not an empty memo. */
+  inheritedPersonalMemo?: string;
   originalScheduleLabel?: string;
   sourceLabel?: string;
   sourceUrl?: string;
@@ -66,6 +70,7 @@ export type PersonalWorkspacePocEditorImpactChange = Readonly<
 >;
 
 export type PersonalWorkspacePocEditorImpactSummary = Readonly<{
+  planDisplay?: PersonalWorkspacePocPlanDisplay;
   targetLabel: string;
   affectedCount: number;
   includedCount?: number;
@@ -213,9 +218,9 @@ function safeSourceUrl(value: string | undefined): string | undefined {
 function ReadOnlyRow({ label, value }: { label: string; value?: string }) {
   if (!value) return null;
   return (
-    <div className="grid gap-1 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-3">
+    <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-1 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-3">
       <dt className="text-xs font-semibold text-[var(--flowme-text-tertiary)]">{label}</dt>
-      <dd className="min-w-0 whitespace-pre-wrap break-words text-sm font-medium text-[var(--flowme-text)]">
+      <dd className="min-w-0 whitespace-pre-wrap text-sm font-medium text-[var(--flowme-text)] [overflow-wrap:anywhere]">
         {value}
       </dd>
     </div>
@@ -299,10 +304,10 @@ function ImpactSummary({
         data-personal-plan-section="impact"
         data-impact-target={impact.targetLabel}
         data-impact-affected-count={impact.affectedCount}
-        aria-labelledby="personal-workspace-poc-impact-heading"
+        aria-labelledby={impact.planDisplay ? 'personal-workspace-plan-preview-heading' : 'personal-workspace-poc-impact-heading'}
         className="rounded-[var(--flowme-radius-surface)] border border-[var(--flowme-action-border)] bg-[var(--flowme-action-soft)] p-4"
       >
-      <h3
+      {!impact.planDisplay ? <><h3
         id="personal-workspace-poc-impact-heading"
         className="text-sm font-semibold text-[var(--flowme-text)]"
       >
@@ -312,8 +317,8 @@ function ImpactSummary({
         {impact.targetLabel} · {impact.affectedCount}개 항목
         {impact.includedCount !== undefined ? ` · 반영 ${impact.includedCount}개` : ''}
         {impact.excludedCount !== undefined ? ` · 제외 ${impact.excludedCount}개` : ''}
-      </p>
-      {impact.changes.length ? (
+      </p></> : null}
+      {impact.planDisplay ? <PersonalWorkspacePocPlanResultSurface display={impact.planDisplay} announce={false} /> : impact.changes.length ? (
         <ul className="mt-3 space-y-2">
           {impact.changes.map((change) => (
             <li
@@ -368,7 +373,7 @@ function TextDraftControl({
   allowEmpty: boolean;
   multiline?: boolean;
   inheritOptionLabel?: string;
-  inheritHint?: string;
+  inheritHint?: React.ReactNode;
   modeTestId: string;
   valueTestId: string;
   onChange: (draft: PersonalWorkspacePocPlanTextDraft) => void;
@@ -940,11 +945,23 @@ export function PersonalWorkspacePocItemEditorSurface(
                 id="personal-workspace-poc-item-memo"
                 label="개인 메모"
                 draft={props.draft.memo}
-                inheritedValue=""
+                inheritedValue={props.source.inheritedPersonalMemo ?? ''}
                 allowEmpty
                 multiline
-                inheritOptionLabel="개인 메모 없음"
-                inheritHint="개인 메모를 따로 저장하지 않습니다."
+                inheritOptionLabel={props.source.inheritedPersonalMemo === undefined
+                  ? '개인 메모 없음'
+                  : '기존 개인 메모 유지'}
+                inheritHint={props.source.inheritedPersonalMemo === undefined
+                  ? '개인 메모를 따로 저장하지 않습니다.'
+                  : <>
+                      기존 개인 메모: {' '}
+                      <span
+                        data-testid="personal-workspace-item-memo-inherited"
+                        className="whitespace-pre-wrap [overflow-wrap:anywhere]"
+                      >
+                        {props.source.inheritedPersonalMemo === '' ? '(빈 메모)' : props.source.inheritedPersonalMemo}
+                      </span>
+                    </>}
                 modeTestId="personal-workspace-item-memo-mode"
                 valueTestId="personal-workspace-item-memo"
                 onChange={(memo) => props.onDraftChange({ ...props.draft, memo })}

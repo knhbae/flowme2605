@@ -1,0 +1,2828 @@
+{
+  "product": "V41",
+  "auditVersion": 1,
+  "createdOn": "2026-09-05",
+  "scope": "원본 명세/UI 자산과 현재 코드·후속 결정을 대조한 source shard. 모든 부모는 목록 연결됐지만 코드 존재/결정 대조/과거 증거/미검사를 구분하며 전체 수용 조건의 현재 통과를 주장하지 않는다.",
+  "sources": [
+    "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+    "D:/flowme2605/flow-mvp/docs/content-audit/2026-09-01-flowme-personal-workspace-v4-1-ui-ko.html",
+    "D:/flowme2605/flow-mvp/docs/content-audit/2026-09-01-flowme-personal-workspace-v4-1-assets/app.js",
+    "D:/flowme2605/flow-mvp/docs/content-audit/2026-09-01-flowme-personal-workspace-v4-1-assets/model.js",
+    "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md",
+    "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-product-ux-pass-v1/design-contract.md",
+    "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-04-flowme-integrated-poc-production-candidate-v1/decision-contract.md",
+    "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-occurrence-txt-closure-v1/spec.md"
+  ],
+  "coverage": {
+    "parentCount": 78,
+    "expectedParentCount": 78,
+    "allExactParentIdsMapped": true,
+    "atomicSubchecksIndependentlyReaudited": false,
+    "historicalSubcheckCount": 89,
+    "dispositions": {
+      "gap": 9,
+      "code-confirmed-limited": 43,
+      "intentional-change": 6,
+      "historical-evidence-needs-refresh": 9,
+      "boundary-preserved": 1,
+      "outside-current-completion-gate": 4,
+      "excluded": 5,
+      "stale-scope-needs-reconciliation": 1
+    },
+    "verdictScope": "Source-level/decision-level review statuses only. Full browser judgments join the root audit; do not use these counts as product completion percentage.",
+    "newInMemoryProbes": 4,
+    "probeCountingNote": "Three period projection probes plus one reorder-context probe, no storage or browser. These are diagnostic comparisons, not four passing automated product tests. Shared findings in BP are not additional executions.",
+    "newBrowserExecutionsByThisShard": 0,
+    "rootBrowserEvidenceSeparatelyAttributed": true,
+    "fullNpmTestRerun": false,
+    "productionBuildRerun": false
+  },
+  "requirements": [
+    {
+      "id": "V41-001",
+      "journey": "cross-journey",
+      "requirement": "흰 본문, 평면 목록, 회색 탐색, 청록 강조와 폴더 → 날짜 → 완료 구조를 유지한다.",
+      "title": "v4 시각 문법과 실행 구조 유지",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §목표 L5"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md A0-3",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-04-flowme-integrated-poc-production-candidate-v1/decision-contract.md Visual owner",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-product-ux-pass-v1/design-contract.md §2"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:269-270",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocProductShell.module.css:34-42",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/app/globals.css:17-21"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:10-14"
+      ],
+      "functionality": "not-applicable-visual-contract",
+      "ux": "contract-divergence",
+      "ui": "code-token-contract-mismatch",
+      "evidence": "SOURCE/CODE REVIEW; root computed color evidence separate",
+      "disposition": "gap",
+      "gap": "Surface의 PRIMARY_CLASS가 --flowme-action을 사용하고 전역 값은 #315ee7이다. ProductShell.module.css는 workspace accent만 #087f73로 두며 global action/focus는 유지한다는 구현 주석이 있다. 이 주석은 청록 primary/focus를 대체한 사용자 승인 근거가 아니다. standalone --blue는 #087f73이다.",
+      "proposal": "전역을 재도색하지 않고 exact-query 로컬 primary/focus 소비자를 workspace token으로 정렬한다. 공통 D1 내부 중 전역 owner와 로컬 owner를 component별로 분리한 토큰 매핑을 먼저 확정한다.",
+      "doneWhen": "global PlatformNav/default /my의 computed color와 파일 bytes는 전후 동일. exact-query 로컬 primary/focus는 승인 token과 일치. 다섯 화면·키보드 상태 및 React/standalone 비교에서 범위 밖 색 변경 0.",
+      "findingIds": [
+        "P3K-V41-04"
+      ],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [
+        "V41-001.1",
+        "V41-001.2",
+        "V41-001.3"
+      ],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-002",
+      "journey": "J5",
+      "requirement": "빠른 할 일과 Flow Item을 폴더에서 찾고 날짜에 배치한 뒤 완료·다시 열기까지 조작한다.",
+      "title": "빠른 할 일과 Flow Item의 정리·실행",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §목표 L5"
+      ],
+      "decisionEvidence": [],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-view-model.ts:80-195 same Item tasks/group context",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-state.ts:1014-1041 folder delete;1134-1170 folder move;1327-1446 date/order"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js:776-808 viewTaskIds;2071-2077 reorder"
+      ],
+      "functionality": "divergence-reproduced-in-memory",
+      "ux": "contract-divergence",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "READ-ONLY MODEL PROBE + SOURCE/CODE COMPARISON; no browser/storage",
+      "disposition": "gap",
+      "gap": "원본과 React는 전날 미완료를 Today에 포함하고 월~일 주간을 사용한다. standalone은 Today에 오늘 날짜만 포함하고 주간을 오늘부터 7일로 계산한다. TODAY=2026-09-02인 메모리 fixture에서 React Today는 past/today, standalone은 today; React week는 9/1·9/2, standalone은 9/7·9/2다.",
+      "proposal": "개인공간 기간 selector를 원본 월~일과 overdue/date/undated context 계약에 맞춘다. standalone도 같은 기준일 주입·그룹 구성·포함 기준을 사용한다. 오늘부터7일을 새 정책으로 채택하지 않는다.",
+      "doneWhen": "화/일/월·월말·연말 기준일에서 전날 미완료/완료, 이번 주 시작/끝, 다음 주 시작, 날짜 미정의 ref 집합이 두 runtime과 원본 계약에 일치한다. fixture 날짜 차이는 허용하되 범위 계산은 같아야 한다.",
+      "findingIds": [
+        "P3K-V41-01"
+      ],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-003",
+      "journey": "J5",
+      "requirement": "모바일 각 행에 48px 이상의 전용 이동 손잡이를 표시한다.",
+      "title": "모바일 전용 48px 이동 손잡이",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §상호작용 계약 L9"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md A0-6",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-product-ux-pass-v1/design-contract.md §10"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:5185-5324 WorkspaceMoveHandle 350ms/8px/keyboard/pointer cleanup"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:848-870 renderTask handle/aria and non-drag paths",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:653-689 mobile 48px targets"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "전용 handle·짧은 누르기·350ms·8px·키보드·pointer cancel 코드가 있다. gesture 세부와 실제 화면 크기는 이 shard에서 재실행하지 않았다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "모바일 각 행에 48px 이상의 전용 이동 손잡이를 표시한다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-004",
+      "journey": "J5",
+      "requirement": "이동 손잡이를 350ms 누르면 이동을 시작한다.",
+      "title": "350ms 길게 누르기 시작",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §상호작용 계약 L9"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md A0-6",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-product-ux-pass-v1/design-contract.md §10"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:5185-5324 WorkspaceMoveHandle 350ms/8px/keyboard/pointer cleanup"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:848-870 renderTask handle/aria and non-drag paths",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:653-689 mobile 48px targets"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "전용 handle·짧은 누르기·350ms·8px·키보드·pointer cancel 코드가 있다. gesture 세부와 실제 화면 크기는 이 shard에서 재실행하지 않았다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "이동 손잡이를 350ms 누르면 이동을 시작한다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-005",
+      "journey": "J5",
+      "requirement": "누르는 동안 8px 이상 움직이면 시작을 취소하고 이어지는 합성 클릭으로 이동 창을 열지 않는다.",
+      "title": "8px 이동 취소와 합성 클릭 차단",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §상호작용 계약 L9"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md A0-6",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-product-ux-pass-v1/design-contract.md §10"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:5185-5324 WorkspaceMoveHandle 350ms/8px/keyboard/pointer cleanup"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:848-870 renderTask handle/aria and non-drag paths",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:653-689 mobile 48px targets"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "전용 handle·짧은 누르기·350ms·8px·키보드·pointer cancel 코드가 있다. gesture 세부와 실제 화면 크기는 이 shard에서 재실행하지 않았다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "누르는 동안 8px 이상 움직이면 시작을 취소하고 이어지는 합성 클릭으로 이동 창을 열지 않는다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [
+        "V41-005.1",
+        "V41-005.2"
+      ],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-006",
+      "journey": "J5",
+      "requirement": "손잡이 이외 행 영역은 세로 스크롤에 사용한다.",
+      "title": "행 본문 세로 스크롤 보존",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §상호작용 계약 L9"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md A0-6",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-product-ux-pass-v1/design-contract.md §10"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:5185-5324 WorkspaceMoveHandle 350ms/8px/keyboard/pointer cleanup"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:848-870 renderTask handle/aria and non-drag paths",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:653-689 mobile 48px targets"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "전용 handle·짧은 누르기·350ms·8px·키보드·pointer cancel 코드가 있다. gesture 세부와 실제 화면 크기는 이 shard에서 재실행하지 않았다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "손잡이 이외 행 영역은 세로 스크롤에 사용한다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-007",
+      "journey": "J5",
+      "requirement": "성립한 길게 누르기는 왼쪽 비모달 이동할 곳 패널을 자동으로 연다.",
+      "title": "길게 누르기 뒤 비모달 이동 패널 자동 열기",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §상호작용 계약 L10"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md A0-6",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-product-ux-pass-v1/design-contract.md §10"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:5185-5324 WorkspaceMoveHandle 350ms/8px/keyboard/pointer cleanup"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:848-870 renderTask handle/aria and non-drag paths",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:653-689 mobile 48px targets"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "전용 handle·짧은 누르기·350ms·8px·키보드·pointer cancel 코드가 있다. gesture 세부와 실제 화면 크기는 이 shard에서 재실행하지 않았다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "성립한 길게 누르기는 왼쪽 비모달 이동할 곳 패널을 자동으로 연다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-008",
+      "journey": "J5",
+      "requirement": "날짜·폴더는 왼쪽 패널에, 같은 목록 순서는 오른쪽에 두고 오른쪽에 행 이름 일부와 48px 손잡이 통로를 남긴다.",
+      "title": "왼쪽 목적지와 오른쪽 재정렬 통로",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §상호작용 계약 L10"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md A0-6",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-product-ux-pass-v1/design-contract.md §10"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:5185-5324 WorkspaceMoveHandle 350ms/8px/keyboard/pointer cleanup"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:848-870 renderTask handle/aria and non-drag paths",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:653-689 mobile 48px targets"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "전용 handle·짧은 누르기·350ms·8px·키보드·pointer cancel 코드가 있다. gesture 세부와 실제 화면 크기는 이 shard에서 재실행하지 않았다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "날짜·폴더는 왼쪽 패널에, 같은 목록 순서는 오른쪽에 두고 오른쪽에 행 이름 일부와 48px 손잡이 통로를 남긴다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [
+        "V41-008.1",
+        "V41-008.2",
+        "V41-008.3",
+        "V41-008.4"
+      ],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-009",
+      "journey": "J5",
+      "requirement": "드래그 시작 뒤 움직이지 않고 놓으면 같은 이동 창을 연다.",
+      "title": "움직임 없는 드래그 놓기의 이동 창 전환",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §상호작용 계약 L11"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md A0-6",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-product-ux-pass-v1/design-contract.md §10"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:5185-5324 WorkspaceMoveHandle 350ms/8px/keyboard/pointer cleanup"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:848-870 renderTask handle/aria and non-drag paths",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:653-689 mobile 48px targets"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "전용 handle·짧은 누르기·350ms·8px·키보드·pointer cancel 코드가 있다. gesture 세부와 실제 화면 크기는 이 shard에서 재실행하지 않았다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "드래그 시작 뒤 움직이지 않고 놓으면 같은 이동 창을 연다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-010",
+      "journey": "J5",
+      "requirement": "손잡이 짧은 누르기와 더보기 메뉴가 같은 이동 창과 transition을 사용한다.",
+      "title": "손잡이 짧은 누르기와 더보기의 동일 이동 창",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §상호작용 계약 L11"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md A0-6",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-product-ux-pass-v1/design-contract.md §10"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:5185-5324 WorkspaceMoveHandle 350ms/8px/keyboard/pointer cleanup"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:848-870 renderTask handle/aria and non-drag paths",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:653-689 mobile 48px targets"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "전용 handle·짧은 누르기·350ms·8px·키보드·pointer cancel 코드가 있다. gesture 세부와 실제 화면 크기는 이 shard에서 재실행하지 않았다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "손잡이 짧은 누르기와 더보기 메뉴가 같은 이동 창과 transition을 사용한다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-011",
+      "journey": "J5",
+      "requirement": "드래그가 유일한 수단이 아니며 모바일 이동 창의 모든 조작은 48px 이상이다.",
+      "title": "드래그 외 이동 수단과 48px 패널 조작",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §상호작용 계약 L11"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md A0-6",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-product-ux-pass-v1/design-contract.md §10"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:5185-5324 WorkspaceMoveHandle 350ms/8px/keyboard/pointer cleanup"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:848-870 renderTask handle/aria and non-drag paths",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:653-689 mobile 48px targets"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "전용 handle·짧은 누르기·350ms·8px·키보드·pointer cancel 코드가 있다. gesture 세부와 실제 화면 크기는 이 shard에서 재실행하지 않았다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "드래그가 유일한 수단이 아니며 모바일 이동 창의 모든 조작은 48px 이상이다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-012",
+      "journey": "J5/J7",
+      "requirement": "이동 창에서 이 목록의 순서, 실행 날짜, 정리 폴더를 명확히 구분한다.",
+      "title": "순서·날짜·폴더 구획",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §상호작용 계약 L12"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md A0-2,A0-6",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-product-ux-pass-v1/design-contract.md §10"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:3148-3470 move panel grouped destinations, no-op classification",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-state.ts:1134 move-folder;1327 move-date"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:2428-2448 renderMovePanelBody",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js:1847-2077 apply transition"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "목적지 구획과 Flow Item folder 보호·같은위치 무변경·pointer cancel 코드 경로를 확인했다. modality 동등성 전체를 새로 통과했다고 주장하지 않는다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "이동 창에서 이 목록의 순서, 실행 날짜, 정리 폴더를 명확히 구분한다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-013",
+      "journey": "J5",
+      "requirement": "날짜 이동은 폴더와 Flow 소속을 바꾸지 않는다.",
+      "title": "날짜 이동의 폴더·Flow 소속 보존",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §상호작용 계약 L12"
+      ],
+      "decisionEvidence": [],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-view-model.ts:80-195 same Item tasks/group context",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-state.ts:1014-1041 folder delete;1134-1170 folder move;1327-1446 date/order"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js:776-808 viewTaskIds;2071-2077 reorder"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "React는 날짜 context와 독립 transition을 가진다. standalone 기간/정렬 차이는 별도 finding으로 연결한다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "날짜 이동은 폴더와 Flow 소속을 바꾸지 않는다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-014",
+      "journey": "J5",
+      "requirement": "순서 이동은 날짜와 구조화된 시간을 바꾸지 않는다.",
+      "title": "순서 이동의 날짜·시간 보존",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §상호작용 계약 L12"
+      ],
+      "decisionEvidence": [],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-view-model.ts:80-195 same Item tasks/group context",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-state.ts:1014-1041 folder delete;1134-1170 folder move;1327-1446 date/order"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js:776-808 viewTaskIds;2071-2077 reorder"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "React는 날짜 context와 독립 transition을 가진다. standalone 기간/정렬 차이는 별도 finding으로 연결한다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "순서 이동은 날짜와 구조화된 시간을 바꾸지 않는다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-015",
+      "journey": "J5",
+      "requirement": "Flow Item은 직접 폴더에 속하지 않고 부모 Flow의 폴더를 상속한다.",
+      "title": "Flow Item의 독립 폴더 소속 금지",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §상호작용 계약 L13"
+      ],
+      "decisionEvidence": [],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-view-model.ts:80-195 same Item tasks/group context",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-state.ts:1014-1041 folder delete;1134-1170 folder move;1327-1446 date/order"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js:776-808 viewTaskIds;2071-2077 reorder"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "React는 날짜 context와 독립 transition을 가진다. standalone 기간/정렬 차이는 별도 finding으로 연결한다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "Flow Item은 직접 폴더에 속하지 않고 부모 Flow의 폴더를 상속한다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-016",
+      "journey": "J5/J7",
+      "requirement": "Flow Item에는 실행 날짜만 선택하게 하고 폴더는 Flow와 함께 이동한다고 안내한다.",
+      "title": "Flow Item 이동 패널의 폴더 보호 안내",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §상호작용 계약 L13"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md A0-2,A0-6",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-product-ux-pass-v1/design-contract.md §10"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:3148-3470 move panel grouped destinations, no-op classification",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-state.ts:1134 move-folder;1327 move-date"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:2428-2448 renderMovePanelBody",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js:1847-2077 apply transition"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "목적지 구획과 Flow Item folder 보호·같은위치 무변경·pointer cancel 코드 경로를 확인했다. modality 동등성 전체를 새로 통과했다고 주장하지 않는다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "Flow Item에는 실행 날짜만 선택하게 하고 폴더는 Flow와 함께 이동한다고 안내한다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-017",
+      "journey": "J5",
+      "requirement": "Flow의 폴더 변경은 Flow 전체에만 적용한다.",
+      "title": "Flow 전체에만 폴더 이동 적용",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §상호작용 계약 L13"
+      ],
+      "decisionEvidence": [],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-view-model.ts:80-195 same Item tasks/group context",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-state.ts:1014-1041 folder delete;1134-1170 folder move;1327-1446 date/order"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js:776-808 viewTaskIds;2071-2077 reorder"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "React는 날짜 context와 독립 transition을 가진다. standalone 기간/정렬 차이는 별도 finding으로 연결한다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "Flow의 폴더 변경은 Flow 전체에만 적용한다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-018",
+      "journey": "J5/J7",
+      "requirement": "현재 날짜·폴더·자기 행은 중립으로 표시하고 놓아도 성공 알림이나 상태 변경을 만들지 않는다.",
+      "title": "현재 위치의 중립 표시와 무변경",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §상호작용 계약 L14"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md A0-2,A0-6",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-product-ux-pass-v1/design-contract.md §10"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:3148-3470 move panel grouped destinations, no-op classification",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-state.ts:1134 move-folder;1327 move-date"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:2428-2448 renderMovePanelBody",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js:1847-2077 apply transition"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "목적지 구획과 Flow Item folder 보호·같은위치 무변경·pointer cancel 코드 경로를 확인했다. modality 동등성 전체를 새로 통과했다고 주장하지 않는다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "현재 날짜·폴더·자기 행은 중립으로 표시하고 놓아도 성공 알림이나 상태 변경을 만들지 않는다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [
+        "V41-018.1",
+        "V41-018.2",
+        "V41-018.3"
+      ],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-019",
+      "journey": "J5/J7",
+      "requirement": "드래그 중 target, validity, result를 글과 삽입선으로 표시한다.",
+      "title": "드래그 대상·가능 여부·결과의 글과 선 피드백",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §상호작용 계약 L15"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md A0-2,A0-6",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-product-ux-pass-v1/design-contract.md §10"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:3148-3470 move panel grouped destinations, no-op classification",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-state.ts:1134 move-folder;1327 move-date"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:2428-2448 renderMovePanelBody",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js:1847-2077 apply transition"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "목적지 구획과 Flow Item folder 보호·같은위치 무변경·pointer cancel 코드 경로를 확인했다. modality 동등성 전체를 새로 통과했다고 주장하지 않는다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "드래그 중 target, validity, result를 글과 삽입선으로 표시한다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [
+        "V41-019.1",
+        "V41-019.2",
+        "V41-019.3",
+        "V41-019.4"
+      ],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-020",
+      "journey": "J5/J7",
+      "requirement": "대상 밖 놓기, 빠른 스크롤, Escape, pointer cancel, 창 이탈·resize는 원상태와 클릭 억제를 보장한다.",
+      "title": "대상 밖·Escape·pointer cancel·창 변화 취소",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §상호작용 계약 L15"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md A0-2,A0-6",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-product-ux-pass-v1/design-contract.md §10"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:3148-3470 move panel grouped destinations, no-op classification",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-state.ts:1134 move-folder;1327 move-date"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:2428-2448 renderMovePanelBody",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js:1847-2077 apply transition"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "목적지 구획과 Flow Item folder 보호·같은위치 무변경·pointer cancel 코드 경로를 확인했다. modality 동등성 전체를 새로 통과했다고 주장하지 않는다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "대상 밖 놓기, 빠른 스크롤, Escape, pointer cancel, 창 이탈·resize는 원상태와 클릭 억제를 보장한다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [
+        "V41-020.1",
+        "V41-020.2",
+        "V41-020.3",
+        "V41-020.4",
+        "V41-020.5",
+        "V41-020.6"
+      ],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-021",
+      "journey": "J5",
+      "requirement": "시간이 있는 항목은 날짜별 목록에서 기본 시간순으로 표시한다.",
+      "title": "날짜 목록 기본 시간순",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §표시 계약 L19"
+      ],
+      "decisionEvidence": [],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-view-model.ts:80-195 same Item tasks/group context",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-state.ts:1014-1041 folder delete;1134-1170 folder move;1327-1446 date/order"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js:776-808 viewTaskIds;2071-2077 reorder"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "React는 날짜 context와 독립 transition을 가진다. standalone 기간/정렬 차이는 별도 finding으로 연결한다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "시간이 있는 항목은 날짜별 목록에서 기본 시간순으로 표시한다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-022",
+      "journey": "J5",
+      "requirement": "직접 순서 변경은 해당 날짜 목록만 manual 상태로 바꾼다.",
+      "title": "직접 정렬의 목록별 격리",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §표시 계약 L19"
+      ],
+      "decisionEvidence": [],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-view-model.ts:80-195 same Item tasks/group context",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-state.ts:1014-1041 folder delete;1134-1170 folder move;1327-1446 date/order"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js:776-808 viewTaskIds;2071-2077 reorder"
+      ],
+      "functionality": "divergence-reproduced-in-memory",
+      "ux": "contract-divergence",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "READ-ONLY MODEL PROBE + SOURCE/CODE COMPARISON; no browser/storage",
+      "disposition": "gap",
+      "gap": "standalone은 orders[action.context]에 today/week/month 문자열을 저장한다. Today 순서를 뒤집은 후 같은 날짜를 Week/Month로 열면 이전 순서다. 실제 month 화면은 날짜를 따로 정렬하므로 여기서 month 전체 날짜 표시가 역순이라고 주장하지 않는다.",
+      "proposal": "standalone의 정렬 key를 날짜/미정/지난미완료 단위로 정규화한다. 메뉴·drag·keyboard와 시간순 복귀가 같은 list-context를 사용하게 한다. 기존 PoC payload의 오래된 view-order는 별도 버전 호환 처리 설계 후 안전하게 보존/재표현한다.",
+      "doneWhen": "같은 날짜에서 today→week→month→today와 reload를 왕복해 순서가 같고, 다른 날짜·Flow 내부 순서·시각·완료·메모는 바뀌지 않는다. 시간순 복귀는 해당 context만 제거한다. 기존 PoC payload에 대해 손실 없는 호환 또는 명시적 fail-closed를 검증한다.",
+      "findingIds": [
+        "P3K-V41-02"
+      ],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-023",
+      "journey": "J5",
+      "requirement": "이동 창에서 해당 목록의 직접 순서를 제거하고 시간순으로 복귀한다.",
+      "title": "시간순 복귀",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §표시 계약 L19"
+      ],
+      "decisionEvidence": [],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-view-model.ts:80-195 same Item tasks/group context",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-state.ts:1014-1041 folder delete;1134-1170 folder move;1327-1446 date/order"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js:776-808 viewTaskIds;2071-2077 reorder"
+      ],
+      "functionality": "divergence-reproduced-in-memory",
+      "ux": "contract-divergence",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "READ-ONLY MODEL PROBE + SOURCE/CODE COMPARISON; no browser/storage",
+      "disposition": "gap",
+      "gap": "standalone은 orders[action.context]에 today/week/month 문자열을 저장한다. Today 순서를 뒤집은 후 같은 날짜를 Week/Month로 열면 이전 순서다. 실제 month 화면은 날짜를 따로 정렬하므로 여기서 month 전체 날짜 표시가 역순이라고 주장하지 않는다.",
+      "proposal": "standalone의 정렬 key를 날짜/미정/지난미완료 단위로 정규화한다. 메뉴·drag·keyboard와 시간순 복귀가 같은 list-context를 사용하게 한다. 기존 PoC payload의 오래된 view-order는 별도 버전 호환 처리 설계 후 안전하게 보존/재표현한다.",
+      "doneWhen": "같은 날짜에서 today→week→month→today와 reload를 왕복해 순서가 같고, 다른 날짜·Flow 내부 순서·시각·완료·메모는 바뀌지 않는다. 시간순 복귀는 해당 context만 제거한다. 기존 PoC payload에 대해 손실 없는 호환 또는 명시적 fail-closed를 검증한다.",
+      "findingIds": [
+        "P3K-V41-02"
+      ],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-024",
+      "journey": "J5",
+      "requirement": "날짜 heading 아래 행에는 같은 날짜를 반복 표시하지 않는다.",
+      "title": "행 날짜 중복 제거",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §표시 계약 L20"
+      ],
+      "decisionEvidence": [],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:3900-3980 renderTimelineSurface;5392 source path/time",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-view-model.ts:143-195 date groups"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:848-926 row/date/month rendering",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:493-540 v4.1 fidelity layer"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "interaction-or-discoverability-gap",
+      "ui": "code-evidence; root visual observation to be joined",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "gap",
+      "gap": "Today는 renderTaskList(ids,view)에 hideDate를 전달하지 않아 각 행에 같은 날짜를 표시한다. page-head 설명, summary-strip, '오늘 목록'은 세로/desktop에서 보이고 짧은 가로 media에서만 일부 숨긴다. drag 장문 설명은 visually-hidden이며 진짜 mutation diagnostics는 hidden이므로 시각 삭제 대상이 아니다.",
+      "proposal": "Today를 날짜 heading+행 구조로 맞추고 같은 날짜 반복만 제거한다. 주간도 날짜별 grouping 후 날짜 중복을 제거하되 실제 날짜 정보는 남긴다. 반복 설명·중복 집계는 정보 효용을 확인해 정리하고 출처/에러/Undo/접근성 설명은 보존한다.",
+      "doneWhen": "390/375/844가로/1024/1440에서 Today 날짜 1회, 시간·경로 유지, 첫 실행행과 주 행동 접근을 확인한다. 스크린리더 설명·source·오류·복구는 삭제하지 않는다.",
+      "findingIds": [
+        "P3K-V41-03"
+      ],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-025",
+      "journey": "J5",
+      "requirement": "행에 원본 폴더·Flow 경로와 구조화된 시간을 유지한다.",
+      "title": "원본 경로와 구조화된 시간 유지",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §표시 계약 L20"
+      ],
+      "decisionEvidence": [],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:3900-3980 renderTimelineSurface;5392 source path/time",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-view-model.ts:143-195 date groups"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:848-926 row/date/month rendering",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:493-540 v4.1 fidelity layer"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "기간 행·시간·경로·월간 빈 날짜 토글과 평면 row 구조를 코드에서 대조했다. 각 요소의 현재 가독성·긴 경로 노출은 브라우저 판단이 필요하다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "행에 원본 폴더·Flow 경로와 구조화된 시간을 유지한다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-026",
+      "journey": "J5",
+      "requirement": "월간은 할 일이 있는 날짜를 먼저 보여준다.",
+      "title": "월간의 할 일 있는 날짜 우선 노출",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §표시 계약 L21"
+      ],
+      "decisionEvidence": [],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:3900-3980 renderTimelineSurface;5392 source path/time",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-view-model.ts:143-195 date groups"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:848-926 row/date/month rendering",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:493-540 v4.1 fidelity layer"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "기간 행·시간·경로·월간 빈 날짜 토글과 평면 row 구조를 코드에서 대조했다. 각 요소의 현재 가독성·긴 경로 노출은 브라우저 판단이 필요하다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "월간은 할 일이 있는 날짜를 먼저 보여준다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-027",
+      "journey": "J5",
+      "requirement": "빈 날짜를 한 번에 펼치거나 접는다.",
+      "title": "월간 빈 날짜 일괄 펼침·접기",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §표시 계약 L21"
+      ],
+      "decisionEvidence": [],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:3900-3980 renderTimelineSurface;5392 source path/time",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-view-model.ts:143-195 date groups"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:848-926 row/date/month rendering",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:493-540 v4.1 fidelity layer"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "기간 행·시간·경로·월간 빈 날짜 토글과 평면 row 구조를 코드에서 대조했다. 각 요소의 현재 가독성·긴 경로 노출은 브라우저 판단이 필요하다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "빈 날짜를 한 번에 펼치거나 접는다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-028",
+      "journey": "J5",
+      "requirement": "세로 날짜 목록과 각 날짜에 할 일을 추가하는 기능을 유지한다.",
+      "title": "월간 세로 타임라인과 날짜별 추가",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §표시 계약 L21"
+      ],
+      "decisionEvidence": [],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:3900-3980 renderTimelineSurface;5392 source path/time",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-view-model.ts:143-195 date groups"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:848-926 row/date/month rendering",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:493-540 v4.1 fidelity layer"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "기간 행·시간·경로·월간 빈 날짜 토글과 평면 row 구조를 코드에서 대조했다. 각 요소의 현재 가독성·긴 경로 노출은 브라우저 판단이 필요하다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "세로 날짜 목록과 각 날짜에 할 일을 추가하는 기능을 유지한다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [
+        "V41-028.1",
+        "V41-028.2",
+        "V41-028.3",
+        "V41-028.4"
+      ],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-029",
+      "journey": "cross-journey",
+      "requirement": "모바일에서 검토 header를 숨기고 탐색 / FlowMe / 검토 한 줄만 둔다.",
+      "title": "모바일 한 줄 탐색 헤더",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §표시 계약 L22"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md A0-3,A0-6",
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-flowme-integration-blueprint-v0/spec.md §8,13"
+      ],
+      "reactEvidence": [],
+      "standaloneEvidence": [],
+      "functionality": "scope-reconciled-not-rerun",
+      "ux": "approved-scope-change",
+      "ui": "not-rated-in-source-audit",
+      "evidence": "ORIGINAL/A0 DECISION COMPARISON; not a new browser pass",
+      "disposition": "intentional-change",
+      "gap": "원본 검토용 chrome/정적 route·persistence 제외는 A0/blueprint에서 exact-query 제품 shell과 PoC 전용 저장으로 한정 대체됐다.",
+      "proposal": "원본의 문구·검토 chrome 자체를 복제하지 않고 승인된 제품 목적과 행동·복구 의미를 유지한다.",
+      "doneWhen": "모바일에서 검토 header를 숨기고 탐색 / FlowMe / 검토 한 줄만 둔다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "의도적 변경",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-030",
+      "journey": "J5",
+      "requirement": "작은 화면에서도 행의 핵심 조작 영역을 48px 수준으로 유지한다.",
+      "title": "모바일 행 터치 여백 유지",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §표시 계약 L22"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md A0-6",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-product-ux-pass-v1/design-contract.md §10"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:5185-5324 WorkspaceMoveHandle 350ms/8px/keyboard/pointer cleanup"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:848-870 renderTask handle/aria and non-drag paths",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:653-689 mobile 48px targets"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "전용 handle·짧은 누르기·350ms·8px·키보드·pointer cancel 코드가 있다. gesture 세부와 실제 화면 크기는 이 shard에서 재실행하지 않았다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "작은 화면에서도 행의 핵심 조작 영역을 48px 수준으로 유지한다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-031",
+      "journey": "J5",
+      "requirement": "모바일 세로 화면의 이동 패널은 날짜 target을 한 열로 표시한다.",
+      "title": "세로 화면 날짜 대상 한 열",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §표시 계약 L23"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-product-ux-pass-v1/design-contract.md §10,12"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:273-278 panel viewport CSS;3148-3185 move panel;4768-4813 scoped responsive rules"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:653-689 mobile controls;725-730 short landscape",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:874-889 month groups"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "safe-area·짧은 가로 패널·이동 통로 CSS와 월간 토글이 있다. auto-scroll·모든 교차/가림 수치를 이 shard에서 재시험하지 않았다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "모바일 세로 화면의 이동 패널은 날짜 target을 한 열로 표시한다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-032",
+      "journey": "J5",
+      "requirement": "844×390 같은 짧은 가로 화면에서 페이지 대신 이동 패널 내부를 스크롤한다.",
+      "title": "짧은 가로 화면의 패널 내부 스크롤",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §표시 계약 L23"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-product-ux-pass-v1/design-contract.md §10,12"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:273-278 panel viewport CSS;3148-3185 move panel;4768-4813 scoped responsive rules"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:653-689 mobile controls;725-730 short landscape",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:874-889 month groups"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "safe-area·짧은 가로 패널·이동 통로 CSS와 월간 토글이 있다. auto-scroll·모든 교차/가림 수치를 이 shard에서 재시험하지 않았다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "844×390 같은 짧은 가로 화면에서 페이지 대신 이동 패널 내부를 스크롤한다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-033",
+      "journey": "J5",
+      "requirement": "노치와 홈 인디케이터를 위해 모든 방향 safe-area inset을 적용한다.",
+      "title": "상하좌우 safe area",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §표시 계약 L23"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-product-ux-pass-v1/design-contract.md §10,12"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:273-278 panel viewport CSS;3148-3185 move panel;4768-4813 scoped responsive rules"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:653-689 mobile controls;725-730 short landscape",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:874-889 month groups"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "safe-area·짧은 가로 패널·이동 통로 CSS와 월간 토글이 있다. auto-scroll·모든 교차/가림 수치를 이 shard에서 재시험하지 않았다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "노치와 홈 인디케이터를 위해 모든 방향 safe-area inset을 적용한다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-034",
+      "journey": "J5/J7",
+      "requirement": "키보드 사용자가 본문으로 바로 이동할 수 있다.",
+      "title": "본문 건너뛰기 링크",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/content-audit/2026-09-01-flowme-personal-workspace-v4-1-ui-ko.html L9"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-product-ux-pass-v1/design-contract.md §10"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:3148-3192 move dialog aria;4817-4822 sr-only instructions;4873-4891 status;4909-4944 named nav/aside",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocProductShell.tsx:394-423 skip/global/local shell"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/standalone-shell.html:14,31-77",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:864-870 visually-hidden handle instructions",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:114"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "landmark·이름·live status·skip·숨은 drag 설명 코드가 있다. 스크린리더/실제 기기 검사는 없으며 Undo 발견성은 별도 gap이다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "키보드 사용자가 본문으로 바로 이동할 수 있다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-035",
+      "journey": "cross-journey",
+      "requirement": "데스크톱 검토 header에서 개인 공간 v4.1, Undo, 검토·테스트에 접근한다.",
+      "title": "데스크톱 검토 header와 Undo",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/content-audit/2026-09-01-flowme-personal-workspace-v4-1-ui-ko.html L10"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md A0-3,A0-6",
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-flowme-integration-blueprint-v0/spec.md §8,13"
+      ],
+      "reactEvidence": [],
+      "standaloneEvidence": [],
+      "functionality": "scope-reconciled-not-rerun",
+      "ux": "approved-scope-change",
+      "ui": "not-rated-in-source-audit",
+      "evidence": "ORIGINAL/A0 DECISION COMPARISON; not a new browser pass",
+      "disposition": "intentional-change",
+      "gap": "원본 검토용 chrome/정적 route·persistence 제외는 A0/blueprint에서 exact-query 제품 shell과 PoC 전용 저장으로 한정 대체됐다.",
+      "proposal": "원본의 문구·검토 chrome 자체를 복제하지 않고 승인된 제품 목적과 행동·복구 의미를 유지한다.",
+      "doneWhen": "데스크톱 검토 header에서 개인 공간 v4.1, Undo, 검토·테스트에 접근한다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "의도적 변경",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-036",
+      "journey": "J5/J7",
+      "requirement": "모바일 탐색과 검토 버튼에 명시적 aria-label을 제공한다.",
+      "title": "모바일 탐색·검토 버튼의 접근 가능한 이름",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/content-audit/2026-09-01-flowme-personal-workspace-v4-1-ui-ko.html L12"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-product-ux-pass-v1/design-contract.md §10"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:3148-3192 move dialog aria;4817-4822 sr-only instructions;4873-4891 status;4909-4944 named nav/aside",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocProductShell.tsx:394-423 skip/global/local shell"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/standalone-shell.html:14,31-77",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:864-870 visually-hidden handle instructions",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:114"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "landmark·이름·live status·skip·숨은 drag 설명 코드가 있다. 스크린리더/실제 기기 검사는 없으며 Undo 발견성은 별도 gap이다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "모바일 탐색과 검토 버튼에 명시적 aria-label을 제공한다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-037",
+      "journey": "J5/J7",
+      "requirement": "길게 누르기, 좌측 날짜·폴더, 우측 순서, 밖 놓기 취소, 짧은 누르기 대안을 스크린리더에 설명한다.",
+      "title": "스크린리더용 드래그 설명",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/content-audit/2026-09-01-flowme-personal-workspace-v4-1-ui-ko.html L13"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-product-ux-pass-v1/design-contract.md §10"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:3148-3192 move dialog aria;4817-4822 sr-only instructions;4873-4891 status;4909-4944 named nav/aside",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocProductShell.tsx:394-423 skip/global/local shell"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/standalone-shell.html:14,31-77",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:864-870 visually-hidden handle instructions",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:114"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "landmark·이름·live status·skip·숨은 drag 설명 코드가 있다. 스크린리더/실제 기기 검사는 없으며 Undo 발견성은 별도 gap이다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "길게 누르기, 좌측 날짜·폴더, 우측 순서, 밖 놓기 취소, 짧은 누르기 대안을 스크린리더에 설명한다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-038",
+      "journey": "J5/J7",
+      "requirement": "탐색 aside에 이름을 주고 main을 프로그래밍 방식으로 focus할 수 있다.",
+      "title": "탐색 landmark와 focusable main",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/content-audit/2026-09-01-flowme-personal-workspace-v4-1-ui-ko.html L14"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-product-ux-pass-v1/design-contract.md §10"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:3148-3192 move dialog aria;4817-4822 sr-only instructions;4873-4891 status;4909-4944 named nav/aside",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocProductShell.tsx:394-423 skip/global/local shell"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/standalone-shell.html:14,31-77",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:864-870 visually-hidden handle instructions",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:114"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "landmark·이름·live status·skip·숨은 drag 설명 코드가 있다. 스크린리더/실제 기기 검사는 없으며 Undo 발견성은 별도 gap이다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "탐색 aside에 이름을 주고 main을 프로그래밍 방식으로 focus할 수 있다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-039",
+      "journey": "J5/J7",
+      "requirement": "이동할 곳 surface에 접근 가능한 이름과 열림/숨김 상태, 현재 지침을 제공한다.",
+      "title": "비모달 이동 패널의 aria 상태",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/content-audit/2026-09-01-flowme-personal-workspace-v4-1-ui-ko.html L15"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-product-ux-pass-v1/design-contract.md §10"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:3148-3192 move dialog aria;4817-4822 sr-only instructions;4873-4891 status;4909-4944 named nav/aside",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocProductShell.tsx:394-423 skip/global/local shell"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/standalone-shell.html:14,31-77",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:864-870 visually-hidden handle instructions",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:114"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "landmark·이름·live status·skip·숨은 drag 설명 코드가 있다. 스크린리더/실제 기기 검사는 없으며 Undo 발견성은 별도 gap이다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "이동할 곳 surface에 접근 가능한 이름과 열림/숨김 상태, 현재 지침을 제공한다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-040",
+      "journey": "cross-journey",
+      "requirement": "정적 v4.1 프로토타입은 새로고침 시 예시가 초기화된다고 명확히 알린다.",
+      "title": "새로고침 초기화 안내",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/content-audit/2026-09-01-flowme-personal-workspace-v4-1-ui-ko.html L16"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md A0-3,A0-6",
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-flowme-integration-blueprint-v0/spec.md §8,13"
+      ],
+      "reactEvidence": [],
+      "standaloneEvidence": [],
+      "functionality": "scope-reconciled-not-rerun",
+      "ux": "approved-scope-change",
+      "ui": "not-rated-in-source-audit",
+      "evidence": "ORIGINAL/A0 DECISION COMPARISON; not a new browser pass",
+      "disposition": "intentional-change",
+      "gap": "정적 새로고침 초기화가 실제 PoC reload 복구로 대체됐다. 초기화 footer를 복구하는 작업은 잘못이다.",
+      "proposal": "원본의 문구·검토 chrome 자체를 복제하지 않고 승인된 제품 목적과 행동·복구 의미를 유지한다.",
+      "doneWhen": "정적 v4.1 프로토타입은 새로고침 시 예시가 초기화된다고 명확히 알린다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "의도적 변경",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-041",
+      "journey": "J5/J7",
+      "requirement": "dialog가 제목과 연결되고 닫기 버튼에 접근 가능한 이름이 있다.",
+      "title": "이동·편집 dialog의 제목과 닫기 이름",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/content-audit/2026-09-01-flowme-personal-workspace-v4-1-ui-ko.html L17"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-product-ux-pass-v1/design-contract.md §10"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:3148-3192 move dialog aria;4817-4822 sr-only instructions;4873-4891 status;4909-4944 named nav/aside",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocProductShell.tsx:394-423 skip/global/local shell"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/standalone-shell.html:14,31-77",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:864-870 visually-hidden handle instructions",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:114"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "landmark·이름·live status·skip·숨은 drag 설명 코드가 있다. 스크린리더/실제 기기 검사는 없으며 Undo 발견성은 별도 gap이다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "dialog가 제목과 연결되고 닫기 버튼에 접근 가능한 이름이 있다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-042",
+      "journey": "J5/J7",
+      "requirement": "변경 결과를 polite live status로 알리고 Undo와 알림 닫기 경로를 제공한다.",
+      "title": "변경 알림·Undo·닫기의 live status",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/content-audit/2026-09-01-flowme-personal-workspace-v4-1-ui-ko.html L18"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-product-ux-pass-v1/design-contract.md §10"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:3148-3192 move dialog aria;4817-4822 sr-only instructions;4873-4891 status;4909-4944 named nav/aside",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocProductShell.tsx:394-423 skip/global/local shell"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/standalone-shell.html:14,31-77",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:864-870 visually-hidden handle instructions",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:114"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "interaction-or-discoverability-gap",
+      "ui": "code-evidence; root visual observation to be joined",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "gap",
+      "gap": "React 전역 Undo는 hidden sm:inline-flex이고 640 미만의 Undo는 설정 details 내부 personal-workspace-undo-mobile에 있다. 일반 이동 성공 status는 문구만 있고 즉시 Undo action은 없다. root의 390px 브라우저에서 Today→내일 이동 후 보이는 Undo를 찾지 못했고 desktop resize 후 상단 Undo가 보였다. Undo 기능 자체는 구현되어 있다.",
+      "proposal": "일반 날짜/폴더/순서 이동 성공 feedback에 마지막 성공 변경을 되돌리는 Undo를 함께 노출한다. 기존 설정 경로를 없애거나 항상 떠 있는 중복 CTA를 추가하지 않는다. receipt owner가 이미 Undo를 갖는 경우 중복 announcer/행동을 만들지 않는다.",
+      "doneWhen": "390/375/844가로에서 오늘 행을 내일로 옮긴 직후 설정을 열지 않고 Undo를 발견·키보드로 실행해 동일 ref/날짜/순서를 복구한다. 실패/no-op/cancel에는 잘못된 Undo가 생기지 않는다.",
+      "findingIds": [
+        "P3K-V41-05"
+      ],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-043",
+      "journey": "J5/J7",
+      "requirement": "현재 drop 결과를 role=status와 aria-live로 즉시 알린다.",
+      "title": "드래그 힌트의 live status",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/content-audit/2026-09-01-flowme-personal-workspace-v4-1-ui-ko.html L19"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-product-ux-pass-v1/design-contract.md §10"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:3148-3192 move dialog aria;4817-4822 sr-only instructions;4873-4891 status;4909-4944 named nav/aside",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocProductShell.tsx:394-423 skip/global/local shell"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/standalone-shell.html:14,31-77",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:864-870 visually-hidden handle instructions",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:114"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "landmark·이름·live status·skip·숨은 drag 설명 코드가 있다. 스크린리더/실제 기기 검사는 없으며 Undo 발견성은 별도 gap이다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "현재 drop 결과를 role=status와 aria-live로 즉시 알린다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-044",
+      "journey": "J5/J7",
+      "requirement": "세 정렬 모드의 순수 모델 테스트를 통과한다.",
+      "title": "순수 모델의 시간순·직접 정렬·복귀 검증",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §검증 L27; v4.1 QA L9"
+      ],
+      "decisionEvidence": [],
+      "reactEvidence": [],
+      "standaloneEvidence": [],
+      "functionality": "not-reviewed",
+      "ux": "not-reviewed",
+      "ui": "not-rated-in-source-audit",
+      "evidence": "HISTORICAL QA POINTERS; current source review is not reexecution",
+      "disposition": "historical-evidence-needs-refresh",
+      "gap": "해당 모델/브라우저/시각 기준의 과거 기록은 존재하나 이번 shard에서 새로 실행하거나 전체 화면을 보지 않았다. root의 해당 범위만 새 근거로 결합해야 한다.",
+      "proposal": "원본 기대 행동을 현재 화면·입력·결과와 연결하고, 최신 승인 범위 및 실제 증거를 추가한 뒤 수정 필요 여부를 정한다.",
+      "doneWhen": "세 정렬 모드의 순수 모델 테스트를 통과한다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-045",
+      "journey": "J5/J7",
+      "requirement": "날짜·폴더·Flow 소속·메모·완료가 허용 transition 외에는 바뀌지 않음을 검사한다.",
+      "title": "이동 불변조건 모델 검증",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §검증 L27; v4.1 QA L9"
+      ],
+      "decisionEvidence": [],
+      "reactEvidence": [],
+      "standaloneEvidence": [],
+      "functionality": "not-reviewed",
+      "ux": "not-reviewed",
+      "ui": "not-rated-in-source-audit",
+      "evidence": "HISTORICAL QA POINTERS; current source review is not reexecution",
+      "disposition": "historical-evidence-needs-refresh",
+      "gap": "해당 모델/브라우저/시각 기준의 과거 기록은 존재하나 이번 shard에서 새로 실행하거나 전체 화면을 보지 않았다. root의 해당 범위만 새 근거로 결합해야 한다.",
+      "proposal": "원본 기대 행동을 현재 화면·입력·결과와 연결하고, 최신 승인 범위 및 실제 증거를 추가한 뒤 수정 필요 여부를 정한다.",
+      "doneWhen": "날짜·폴더·Flow 소속·메모·완료가 허용 transition 외에는 바뀌지 않음을 검사한다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-046",
+      "journey": "J5/J7",
+      "requirement": "무효 transition은 state identity를 유지하고 마지막 원자 변경은 snapshot으로 Undo한다.",
+      "title": "무효 동작 무변경과 Undo snapshot 검증",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §검증 L27; v4.1 QA L9"
+      ],
+      "decisionEvidence": [],
+      "reactEvidence": [],
+      "standaloneEvidence": [],
+      "functionality": "not-reviewed",
+      "ux": "not-reviewed",
+      "ui": "not-rated-in-source-audit",
+      "evidence": "HISTORICAL QA POINTERS; current source review is not reexecution",
+      "disposition": "historical-evidence-needs-refresh",
+      "gap": "해당 모델/브라우저/시각 기준의 과거 기록은 존재하나 이번 shard에서 새로 실행하거나 전체 화면을 보지 않았다. root의 해당 범위만 새 근거로 결합해야 한다.",
+      "proposal": "원본 기대 행동을 현재 화면·입력·결과와 연결하고, 최신 승인 범위 및 실제 증거를 추가한 뒤 수정 필요 여부를 정한다.",
+      "doneWhen": "무효 transition은 state identity를 유지하고 마지막 원자 변경은 snapshot으로 Undo한다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-047",
+      "journey": "J5/J7",
+      "requirement": "고정 seed의 5,000회 연속 transition으로 변경·거절·no-op·Undo를 점검하되 사용자 수로 해석하지 않는다.",
+      "title": "장기 무작위 연속 조작 시뮬레이션",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/content-audit/2026-09-01-flowme-personal-workspace-v4-1-assets/qa.md §결과 L10"
+      ],
+      "decisionEvidence": [],
+      "reactEvidence": [],
+      "standaloneEvidence": [],
+      "functionality": "not-reviewed",
+      "ux": "not-reviewed",
+      "ui": "not-rated-in-source-audit",
+      "evidence": "HISTORICAL QA POINTERS; current source review is not reexecution",
+      "disposition": "historical-evidence-needs-refresh",
+      "gap": "해당 모델/브라우저/시각 기준의 과거 기록은 존재하나 이번 shard에서 새로 실행하거나 전체 화면을 보지 않았다. root의 해당 범위만 새 근거로 결합해야 한다.",
+      "proposal": "원본 기대 행동을 현재 화면·입력·결과와 연결하고, 최신 승인 범위 및 실제 증거를 추가한 뒤 수정 필요 여부를 정한다.",
+      "doneWhen": "고정 seed의 5,000회 연속 transition으로 변경·거절·no-op·Undo를 점검하되 사용자 수로 해석하지 않는다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [
+        "V41-047.1",
+        "V41-047.2",
+        "V41-047.3"
+      ],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-048",
+      "journey": "J5/J7",
+      "requirement": "데스크톱 마우스, 390×844, 375×812, 844×390에서 실제 DOM을 조작한다.",
+      "title": "데스크톱 마우스와 모바일 터치 브라우저 검사",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §검증 L28; v4.1 QA L11-12"
+      ],
+      "decisionEvidence": [],
+      "reactEvidence": [],
+      "standaloneEvidence": [],
+      "functionality": "not-reviewed",
+      "ux": "not-reviewed",
+      "ui": "not-rated-in-source-audit",
+      "evidence": "HISTORICAL QA POINTERS; current source review is not reexecution",
+      "disposition": "historical-evidence-needs-refresh",
+      "gap": "해당 모델/브라우저/시각 기준의 과거 기록은 존재하나 이번 shard에서 새로 실행하거나 전체 화면을 보지 않았다. root의 해당 범위만 새 근거로 결합해야 한다.",
+      "proposal": "원본 기대 행동을 현재 화면·입력·결과와 연결하고, 최신 승인 범위 및 실제 증거를 추가한 뒤 수정 필요 여부를 정한다.",
+      "doneWhen": "데스크톱 마우스, 390×844, 375×812, 844×390에서 실제 DOM을 조작한다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [
+        "V41-048.1",
+        "V41-048.2",
+        "V41-048.3",
+        "V41-048.4"
+      ],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-049",
+      "journey": "J5/J7",
+      "requirement": "강제 inset 환경에서 탐색·본문·패널·dialog·toast가 safe area 안에 남는다.",
+      "title": "강제 safe-area 브라우저 검사",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §검증 L28; v4.1 QA L18"
+      ],
+      "decisionEvidence": [],
+      "reactEvidence": [],
+      "standaloneEvidence": [],
+      "functionality": "not-reviewed",
+      "ux": "not-reviewed",
+      "ui": "not-rated-in-source-audit",
+      "evidence": "HISTORICAL QA POINTERS; current source review is not reexecution",
+      "disposition": "historical-evidence-needs-refresh",
+      "gap": "해당 모델/브라우저/시각 기준의 과거 기록은 존재하나 이번 shard에서 새로 실행하거나 전체 화면을 보지 않았다. root의 해당 범위만 새 근거로 결합해야 한다.",
+      "proposal": "원본 기대 행동을 현재 화면·입력·결과와 연결하고, 최신 승인 범위 및 실제 증거를 추가한 뒤 수정 필요 여부를 정한다.",
+      "doneWhen": "강제 inset 환경에서 탐색·본문·패널·dialog·toast가 safe area 안에 남는다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [
+        "V41-049.1",
+        "V41-049.2",
+        "V41-049.3",
+        "V41-049.4",
+        "V41-049.5"
+      ],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-050",
+      "journey": "J5/J7",
+      "requirement": "메뉴, Enter/Space, 화살표, Escape, 닫기와 focus return을 브라우저에서 검사한다.",
+      "title": "메뉴·초점·키보드 대안 브라우저 검사",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §검증 L28; v4.1 QA L19,L27"
+      ],
+      "decisionEvidence": [],
+      "reactEvidence": [],
+      "standaloneEvidence": [],
+      "functionality": "not-reviewed",
+      "ux": "not-reviewed",
+      "ui": "not-rated-in-source-audit",
+      "evidence": "HISTORICAL QA POINTERS; current source review is not reexecution",
+      "disposition": "historical-evidence-needs-refresh",
+      "gap": "해당 모델/브라우저/시각 기준의 과거 기록은 존재하나 이번 shard에서 새로 실행하거나 전체 화면을 보지 않았다. root의 해당 범위만 새 근거로 결합해야 한다.",
+      "proposal": "원본 기대 행동을 현재 화면·입력·결과와 연결하고, 최신 승인 범위 및 실제 증거를 추가한 뒤 수정 필요 여부를 정한다.",
+      "doneWhen": "메뉴, Enter/Space, 화살표, Escape, 닫기와 focus return을 브라우저에서 검사한다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [
+        "V41-050.1",
+        "V41-050.2",
+        "V41-050.3",
+        "V41-050.4",
+        "V41-050.5"
+      ],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-051",
+      "journey": "J5/J7",
+      "requirement": "8px 초과 빠른 움직임과 Escape 후 이동 창이 합성 클릭으로 다시 열리지 않는다.",
+      "title": "빠른 이동·Escape 뒤 합성 클릭 회귀",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §검증 L28; v4.1 QA L23"
+      ],
+      "decisionEvidence": [],
+      "reactEvidence": [],
+      "standaloneEvidence": [],
+      "functionality": "not-reviewed",
+      "ux": "not-reviewed",
+      "ui": "not-rated-in-source-audit",
+      "evidence": "HISTORICAL QA POINTERS; current source review is not reexecution",
+      "disposition": "historical-evidence-needs-refresh",
+      "gap": "해당 모델/브라우저/시각 기준의 과거 기록은 존재하나 이번 shard에서 새로 실행하거나 전체 화면을 보지 않았다. root의 해당 범위만 새 근거로 결합해야 한다.",
+      "proposal": "원본 기대 행동을 현재 화면·입력·결과와 연결하고, 최신 승인 범위 및 실제 증거를 추가한 뒤 수정 필요 여부를 정한다.",
+      "doneWhen": "8px 초과 빠른 움직임과 Escape 후 이동 창이 합성 클릭으로 다시 열리지 않는다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [
+        "V41-051.1",
+        "V41-051.2"
+      ],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-052",
+      "journey": "J5/J7",
+      "requirement": "요구 viewport에서 가로 넘침, console error/warn, page error가 0이다.",
+      "title": "가로 넘침·콘솔·page error 0",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §검증 L28; v4.1 QA L11-12"
+      ],
+      "decisionEvidence": [],
+      "reactEvidence": [],
+      "standaloneEvidence": [],
+      "functionality": "not-reviewed",
+      "ux": "not-reviewed",
+      "ui": "not-rated-in-source-audit",
+      "evidence": "HISTORICAL QA POINTERS; current source review is not reexecution",
+      "disposition": "historical-evidence-needs-refresh",
+      "gap": "해당 모델/브라우저/시각 기준의 과거 기록은 존재하나 이번 shard에서 새로 실행하거나 전체 화면을 보지 않았다. root의 해당 범위만 새 근거로 결합해야 한다.",
+      "proposal": "원본 기대 행동을 현재 화면·입력·결과와 연결하고, 최신 승인 범위 및 실제 증거를 추가한 뒤 수정 필요 여부를 정한다.",
+      "doneWhen": "요구 viewport에서 가로 넘침, console error/warn, page error가 0이다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [
+        "V41-052.1",
+        "V41-052.2",
+        "V41-052.3"
+      ],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-053",
+      "journey": "J5/J7",
+      "requirement": "사용자 제공 수정 전 화면보다 상단 chrome을 줄여 본문 시작을 앞당긴다.",
+      "title": "모바일 상단 높이 시각 비교",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §검증 L29; v4.1 QA L35-38"
+      ],
+      "decisionEvidence": [],
+      "reactEvidence": [],
+      "standaloneEvidence": [],
+      "functionality": "not-reviewed",
+      "ux": "interaction-or-discoverability-gap",
+      "ui": "code-evidence; root visual observation to be joined",
+      "evidence": "HISTORICAL QA POINTERS; current source review is not reexecution",
+      "disposition": "gap",
+      "gap": "Today는 renderTaskList(ids,view)에 hideDate를 전달하지 않아 각 행에 같은 날짜를 표시한다. page-head 설명, summary-strip, '오늘 목록'은 세로/desktop에서 보이고 짧은 가로 media에서만 일부 숨긴다. drag 장문 설명은 visually-hidden이며 진짜 mutation diagnostics는 hidden이므로 시각 삭제 대상이 아니다.",
+      "proposal": "Today를 날짜 heading+행 구조로 맞추고 같은 날짜 반복만 제거한다. 주간도 날짜별 grouping 후 날짜 중복을 제거하되 실제 날짜 정보는 남긴다. 반복 설명·중복 집계는 정보 효용을 확인해 정리하고 출처/에러/Undo/접근성 설명은 보존한다.",
+      "doneWhen": "390/375/844가로/1024/1440에서 Today 날짜 1회, 시간·경로 유지, 첫 실행행과 주 행동 접근을 확인한다. 스크린리더 설명·source·오류·복구는 삭제하지 않는다.",
+      "findingIds": [
+        "P3K-V41-03"
+      ],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-054",
+      "journey": "J5/J7",
+      "requirement": "390×844 첫 화면에 첫 기간 Item과 주 action이 보인다.",
+      "title": "첫 할 일의 첫 화면 노출",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §검증 L29; v4.1 QA L38"
+      ],
+      "decisionEvidence": [],
+      "reactEvidence": [],
+      "standaloneEvidence": [],
+      "functionality": "not-reviewed",
+      "ux": "interaction-or-discoverability-gap",
+      "ui": "code-evidence; root visual observation to be joined",
+      "evidence": "HISTORICAL QA POINTERS; current source review is not reexecution",
+      "disposition": "gap",
+      "gap": "Today는 renderTaskList(ids,view)에 hideDate를 전달하지 않아 각 행에 같은 날짜를 표시한다. page-head 설명, summary-strip, '오늘 목록'은 세로/desktop에서 보이고 짧은 가로 media에서만 일부 숨긴다. drag 장문 설명은 visually-hidden이며 진짜 mutation diagnostics는 hidden이므로 시각 삭제 대상이 아니다.",
+      "proposal": "Today를 날짜 heading+행 구조로 맞추고 같은 날짜 반복만 제거한다. 주간도 날짜별 grouping 후 날짜 중복을 제거하되 실제 날짜 정보는 남긴다. 반복 설명·중복 집계는 정보 효용을 확인해 정리하고 출처/에러/Undo/접근성 설명은 보존한다.",
+      "doneWhen": "390/375/844가로/1024/1440에서 Today 날짜 1회, 시간·경로 유지, 첫 실행행과 주 행동 접근을 확인한다. 스크린리더 설명·source·오류·복구는 삭제하지 않는다.",
+      "findingIds": [
+        "P3K-V41-03"
+      ],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-055",
+      "journey": "J5",
+      "requirement": "11시 → 12시 → 시간 미지정 순서가 화면에서도 보인다.",
+      "title": "시간순 시각 비교",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/content-audit/2026-09-01-flowme-personal-workspace-v4-1-assets/qa.md §시각 비교 L39"
+      ],
+      "decisionEvidence": [],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:3900-3980 renderTimelineSurface;5392 source path/time",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-view-model.ts:143-195 date groups"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:848-926 row/date/month rendering",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:493-540 v4.1 fidelity layer"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "기간 행·시간·경로·월간 빈 날짜 토글과 평면 row 구조를 코드에서 대조했다. 각 요소의 현재 가독성·긴 경로 노출은 브라우저 판단이 필요하다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "11시 → 12시 → 시간 미지정 순서가 화면에서도 보인다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-056",
+      "journey": "J5",
+      "requirement": "날짜는 heading에 한 번만 표시하고 행 공간을 제목·경로에 쓴다.",
+      "title": "날짜 정보 중복 시각 비교",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/content-audit/2026-09-01-flowme-personal-workspace-v4-1-assets/qa.md §시각 비교 L40"
+      ],
+      "decisionEvidence": [],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:3900-3980 renderTimelineSurface;5392 source path/time",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-view-model.ts:143-195 date groups"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:848-926 row/date/month rendering",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:493-540 v4.1 fidelity layer"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "interaction-or-discoverability-gap",
+      "ui": "code-evidence; root visual observation to be joined",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "gap",
+      "gap": "Today는 renderTaskList(ids,view)에 hideDate를 전달하지 않아 각 행에 같은 날짜를 표시한다. page-head 설명, summary-strip, '오늘 목록'은 세로/desktop에서 보이고 짧은 가로 media에서만 일부 숨긴다. drag 장문 설명은 visually-hidden이며 진짜 mutation diagnostics는 hidden이므로 시각 삭제 대상이 아니다.",
+      "proposal": "Today를 날짜 heading+행 구조로 맞추고 같은 날짜 반복만 제거한다. 주간도 날짜별 grouping 후 날짜 중복을 제거하되 실제 날짜 정보는 남긴다. 반복 설명·중복 집계는 정보 효용을 확인해 정리하고 출처/에러/Undo/접근성 설명은 보존한다.",
+      "doneWhen": "390/375/844가로/1024/1440에서 Today 날짜 1회, 시간·경로 유지, 첫 실행행과 주 행동 접근을 확인한다. 스크린리더 설명·source·오류·복구는 삭제하지 않는다.",
+      "findingIds": [
+        "P3K-V41-03"
+      ],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-057",
+      "journey": "J5",
+      "requirement": "각 Item 오른쪽에 48px 손잡이가 보여 이동 가능성을 암시한다.",
+      "title": "이동 손잡이 가시성 시각 비교",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/content-audit/2026-09-01-flowme-personal-workspace-v4-1-assets/qa.md §시각 비교 L41"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md A0-6",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-product-ux-pass-v1/design-contract.md §10"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:5185-5324 WorkspaceMoveHandle 350ms/8px/keyboard/pointer cleanup"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:848-870 renderTask handle/aria and non-drag paths",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:653-689 mobile 48px targets"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "전용 handle·짧은 누르기·350ms·8px·키보드·pointer cancel 코드가 있다. gesture 세부와 실제 화면 크기는 이 shard에서 재실행하지 않았다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "각 Item 오른쪽에 48px 손잡이가 보여 이동 가능성을 암시한다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-058",
+      "journey": "J5",
+      "requirement": "길게 누르는 동안 왼쪽 목적지가 자동 표시되고 오른쪽 행 식별 영역이 남는다.",
+      "title": "드래그 중 숨은 목적지 접근 시각 비교",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/content-audit/2026-09-01-flowme-personal-workspace-v4-1-assets/qa.md §시각 비교 L42"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-product-ux-pass-v1/design-contract.md §10,12"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:273-278 panel viewport CSS;3148-3185 move panel;4768-4813 scoped responsive rules"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:653-689 mobile controls;725-730 short landscape",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:874-889 month groups"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "safe-area·짧은 가로 패널·이동 통로 CSS와 월간 토글이 있다. auto-scroll·모든 교차/가림 수치를 이 shard에서 재시험하지 않았다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "길게 누르는 동안 왼쪽 목적지가 자동 표시되고 오른쪽 행 식별 영역이 남는다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-059",
+      "journey": "J5",
+      "requirement": "활성 날짜만 먼저 보이고 빈 날짜 수를 한 control로 축약한다.",
+      "title": "월간 빈 구간 축약 시각 비교",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/content-audit/2026-09-01-flowme-personal-workspace-v4-1-assets/qa.md §시각 비교 L43"
+      ],
+      "decisionEvidence": [],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:3900-3980 renderTimelineSurface;5392 source path/time",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-view-model.ts:143-195 date groups"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:848-926 row/date/month rendering",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:493-540 v4.1 fidelity layer"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "기간 행·시간·경로·월간 빈 날짜 토글과 평면 row 구조를 코드에서 대조했다. 각 요소의 현재 가독성·긴 경로 노출은 브라우저 판단이 필요하다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "활성 날짜만 먼저 보이고 빈 날짜 수를 한 control로 축약한다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-060",
+      "journey": "J5",
+      "requirement": "카드 장식보다 구분선 중심의 평면 목록을 유지한다.",
+      "title": "평면 목록 유지 시각 비교",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §검증 L29"
+      ],
+      "decisionEvidence": [],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:3900-3980 renderTimelineSurface;5392 source path/time",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-view-model.ts:143-195 date groups"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:848-926 row/date/month rendering",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:493-540 v4.1 fidelity layer"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "기간 행·시간·경로·월간 빈 날짜 토글과 평면 row 구조를 코드에서 대조했다. 각 요소의 현재 가독성·긴 경로 노출은 브라우저 판단이 필요하다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "카드 장식보다 구분선 중심의 평면 목록을 유지한다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-061",
+      "journey": "cross-journey",
+      "requirement": "터치 에뮬레이션·캡처를 Android/iOS 실기나 관찰 사용자 결과로 표현하지 않는다.",
+      "title": "자동 터치와 실제 기기 증거 분리",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §검증 L30; v4.1 QA L47-50,76"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md 검증",
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-flowme-integration-blueprint-v0/spec.md §11"
+      ],
+      "reactEvidence": [],
+      "standaloneEvidence": [],
+      "functionality": "not-applicable-evidence-boundary",
+      "ux": "not-applicable",
+      "ui": "not-applicable",
+      "evidence": "DECISION/REPORTING BOUNDARY READ",
+      "disposition": "boundary-preserved",
+      "gap": "실제 기기와 자동화 증거는 분리한다. 이번 메모리 probe도 브라우저·실기·관찰 결과로 세지 않는다.",
+      "proposal": "원본 기대 행동을 현재 화면·입력·결과와 연결하고, 최신 승인 범위 및 실제 증거를 추가한 뒤 수정 필요 여부를 정한다.",
+      "doneWhen": "터치 에뮬레이션·캡처를 Android/iOS 실기나 관찰 사용자 결과로 표현하지 않는다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-062",
+      "journey": "J5/J7",
+      "requirement": "수정본을 실제 Android Chrome에서 길게 누르기·목적지·문맥 메뉴·스크롤 충돌까지 다시 검사한다.",
+      "title": "수정본 Android Chrome 재검증",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/content-audit/2026-09-01-flowme-personal-workspace-v4-1-assets/qa.md §실제 휴대폰 관찰 L49-50,71"
+      ],
+      "decisionEvidence": [],
+      "reactEvidence": [],
+      "standaloneEvidence": [],
+      "functionality": "not-run-device",
+      "ux": "not-run-device",
+      "ui": "not-run-device",
+      "evidence": "NOT_RUN; observed users 0",
+      "disposition": "outside-current-completion-gate",
+      "gap": "실제 기기/보조기술 증거는 미실행으로 보존하며 P3-K 완료 의존성에서만 제외한다.",
+      "proposal": "운영 검증 단계에서 별도 계획한다. 현재 자동화나 screenshot으로 충족 승격하지 않는다.",
+      "doneWhen": "수정본을 실제 Android Chrome에서 길게 누르기·목적지·문맥 메뉴·스크롤 충돌까지 다시 검사한다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "미충족",
+      "historicalSubchecks": [
+        "V41-062.1",
+        "V41-062.2",
+        "V41-062.3",
+        "V41-062.4"
+      ],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-063",
+      "journey": "J5/J7",
+      "requirement": "실제 iOS Safari에서 제스처·safe area·문맥 메뉴·스크롤 충돌을 검사한다.",
+      "title": "수정본 iOS Safari 검증",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/content-audit/2026-09-01-flowme-personal-workspace-v4-1-assets/qa.md §실제 휴대폰 관찰 L50,71"
+      ],
+      "decisionEvidence": [],
+      "reactEvidence": [],
+      "standaloneEvidence": [],
+      "functionality": "not-run-device",
+      "ux": "not-run-device",
+      "ui": "not-run-device",
+      "evidence": "NOT_RUN; observed users 0",
+      "disposition": "outside-current-completion-gate",
+      "gap": "실제 기기/보조기술 증거는 미실행으로 보존하며 P3-K 완료 의존성에서만 제외한다.",
+      "proposal": "운영 검증 단계에서 별도 계획한다. 현재 자동화나 screenshot으로 충족 승격하지 않는다.",
+      "doneWhen": "실제 iOS Safari에서 제스처·safe area·문맥 메뉴·스크롤 충돌을 검사한다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "미충족",
+      "historicalSubchecks": [
+        "V41-063.1",
+        "V41-063.2",
+        "V41-063.3",
+        "V41-063.4"
+      ],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-064",
+      "journey": "J5/J7",
+      "requirement": "TalkBack, VoiceOver, OS 최대 글자, browser zoom, 장시간 사용을 별도로 확인한다.",
+      "title": "보조기술·글자 확대·브라우저 확대 검사",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/content-audit/2026-09-01-flowme-personal-workspace-v4-1-assets/qa.md §남은 확인 L72"
+      ],
+      "decisionEvidence": [],
+      "reactEvidence": [],
+      "standaloneEvidence": [],
+      "functionality": "not-run-device",
+      "ux": "not-run-device",
+      "ui": "not-run-device",
+      "evidence": "NOT_RUN; observed users 0",
+      "disposition": "outside-current-completion-gate",
+      "gap": "실제 기기/보조기술 증거는 미실행으로 보존하며 P3-K 완료 의존성에서만 제외한다.",
+      "proposal": "운영 검증 단계에서 별도 계획한다. 현재 자동화나 screenshot으로 충족 승격하지 않는다.",
+      "doneWhen": "TalkBack, VoiceOver, OS 최대 글자, browser zoom, 장시간 사용을 별도로 확인한다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "미충족",
+      "historicalSubchecks": [
+        "V41-064.1",
+        "V41-064.2",
+        "V41-064.3",
+        "V41-064.4",
+        "V41-064.5"
+      ],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-065",
+      "journey": "J5/J7",
+      "requirement": "맨 위·위·아래·맨 아래, 날짜 입력·오늘·내일·날짜 지우기, 폴더 이동, 시간순 복귀를 실제 조작한다.",
+      "title": "이동 창 전체 조작 집합",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/content-audit/2026-09-01-flowme-personal-workspace-v4-1-assets/qa.md §브라우저 시나리오 L19-20"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md A0-2,A0-6",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-product-ux-pass-v1/design-contract.md §10"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:3148-3470 move panel grouped destinations, no-op classification",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-state.ts:1134 move-folder;1327 move-date"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:2428-2448 renderMovePanelBody",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js:1847-2077 apply transition"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "목적지 구획과 Flow Item folder 보호·같은위치 무변경·pointer cancel 코드 경로를 확인했다. modality 동등성 전체를 새로 통과했다고 주장하지 않는다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "맨 위·위·아래·맨 아래, 날짜 입력·오늘·내일·날짜 지우기, 폴더 이동, 시간순 복귀를 실제 조작한다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [
+        "V41-065.1",
+        "V41-065.2",
+        "V41-065.3",
+        "V41-065.4",
+        "V41-065.5",
+        "V41-065.6",
+        "V41-065.7",
+        "V41-065.8",
+        "V41-065.9",
+        "V41-065.10"
+      ],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-066",
+      "journey": "J5/J7",
+      "requirement": "다른 날짜로 터치 drag하고 pointer cancel 뒤 ghost·강조·상태 잔류가 없어야 한다.",
+      "title": "보이는 다른 날짜로 터치 이동과 cleanup",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/content-audit/2026-09-01-flowme-personal-workspace-v4-1-assets/qa.md §브라우저 시나리오 L24"
+      ],
+      "decisionEvidence": [],
+      "reactEvidence": [],
+      "standaloneEvidence": [],
+      "functionality": "not-run-device",
+      "ux": "not-run-device",
+      "ui": "not-run-device",
+      "evidence": "NOT_RUN; observed users 0",
+      "disposition": "outside-current-completion-gate",
+      "gap": "실제 기기/보조기술 증거는 미실행으로 보존하며 P3-K 완료 의존성에서만 제외한다.",
+      "proposal": "운영 검증 단계에서 별도 계획한다. 현재 자동화나 screenshot으로 충족 승격하지 않는다.",
+      "doneWhen": "다른 날짜로 터치 drag하고 pointer cancel 뒤 ghost·강조·상태 잔류가 없어야 한다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "부분",
+      "historicalSubchecks": [
+        "V41-066.1",
+        "V41-066.2",
+        "V41-066.3"
+      ],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-067",
+      "journey": "J5",
+      "requirement": "드래그를 가장자리에 유지하면 연속 auto-scroll해 화면 밖 날짜로 이동하고 Undo할 수 있다.",
+      "title": "화면 가장자리 자동 스크롤 이동",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/content-audit/2026-09-01-flowme-personal-workspace-v4-1-assets/qa.md §브라우저 시나리오 L25"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-product-ux-pass-v1/design-contract.md §10,12"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:273-278 panel viewport CSS;3148-3185 move panel;4768-4813 scoped responsive rules"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:653-689 mobile controls;725-730 short landscape",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:874-889 month groups"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "safe-area·짧은 가로 패널·이동 통로 CSS와 월간 토글이 있다. auto-scroll·모든 교차/가림 수치를 이 shard에서 재시험하지 않았다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "드래그를 가장자리에 유지하면 연속 auto-scroll해 화면 밖 날짜로 이동하고 Undo할 수 있다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [
+        "V41-067.1",
+        "V41-067.2",
+        "V41-067.3"
+      ],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-068",
+      "journey": "J5",
+      "requirement": "행 본문 touch scroll과 desktop mouse drag가 서로 막지 않는다.",
+      "title": "행 터치 스크롤과 데스크톱 drag 공존",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/content-audit/2026-09-01-flowme-personal-workspace-v4-1-assets/qa.md §브라우저 시나리오 L26"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md A0-6",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-product-ux-pass-v1/design-contract.md §10"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:5185-5324 WorkspaceMoveHandle 350ms/8px/keyboard/pointer cleanup"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:848-870 renderTask handle/aria and non-drag paths",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:653-689 mobile 48px targets"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "전용 handle·짧은 누르기·350ms·8px·키보드·pointer cancel 코드가 있다. gesture 세부와 실제 화면 크기는 이 shard에서 재실행하지 않았다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "행 본문 touch scroll과 desktop mouse drag가 서로 막지 않는다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [
+        "V41-068.1",
+        "V41-068.2",
+        "V41-068.3"
+      ],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-069",
+      "journey": "cross-journey",
+      "requirement": "가이드 시나리오 전후 manual order, Undo, quick draft, 빈 날짜 toggle을 그대로 복원한다.",
+      "title": "따라보기 종료 뒤 작업 상태 복원",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/content-audit/2026-09-01-flowme-personal-workspace-v4-1-assets/qa.md §브라우저 시나리오 L28"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md A0-3,A0-6",
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-flowme-integration-blueprint-v0/spec.md §8,13"
+      ],
+      "reactEvidence": [],
+      "standaloneEvidence": [],
+      "functionality": "scope-reconciled-not-rerun",
+      "ux": "approved-scope-change",
+      "ui": "not-rated-in-source-audit",
+      "evidence": "ORIGINAL/A0 DECISION COMPARISON; not a new browser pass",
+      "disposition": "intentional-change",
+      "gap": "원본의 내장 따라보기/검토 harness는 제품 핵심 흐름과 별도 검토 영역으로 분리됐다. 전체 guide-state snapshot을 현재 제품에 그대로 추가하지 않는다.",
+      "proposal": "원본의 문구·검토 chrome 자체를 복제하지 않고 승인된 제품 목적과 행동·복구 의미를 유지한다.",
+      "doneWhen": "가이드 시나리오 전후 manual order, Undo, quick draft, 빈 날짜 toggle을 그대로 복원한다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "의도적 변경",
+      "historicalSubchecks": [
+        "V41-069.1",
+        "V41-069.2",
+        "V41-069.3",
+        "V41-069.4"
+      ],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-070",
+      "journey": "J5",
+      "requirement": "844×390에서 모바일 IA, 48px 손잡이, 패널 내부 scroll, no overflow와 해당 월 빈 날짜 28일 toggle을 확인한다.",
+      "title": "844×390 모바일 IA와 월간 28일 toggle",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/content-audit/2026-09-01-flowme-personal-workspace-v4-1-assets/qa.md §브라우저 시나리오 L29"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-product-ux-pass-v1/design-contract.md §10,12"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:273-278 panel viewport CSS;3148-3185 move panel;4768-4813 scoped responsive rules"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:653-689 mobile controls;725-730 short landscape",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:874-889 month groups"
+      ],
+      "functionality": "code-present-not-rerun",
+      "ux": "source-contract-compared",
+      "ui": "not-fully-rated-in-source-audit; root browser captures separate",
+      "evidence": "SOURCE/CODE REVIEW; referenced tests are historical, not rerun",
+      "disposition": "code-confirmed-limited",
+      "gap": "safe-area·짧은 가로 패널·이동 통로 CSS와 월간 토글이 있다. auto-scroll·모든 교차/가림 수치를 이 shard에서 재시험하지 않았다.",
+      "proposal": "확인한 구현은 보존한다. 아래 원래 완료 조건을 화면·오류·키보드 왕복에서 재검증하고 근거 없는 추가 구현은 하지 않는다.",
+      "doneWhen": "844×390에서 모바일 IA, 48px 손잡이, 패널 내부 scroll, no overflow와 해당 월 빈 날짜 28일 toggle을 확인한다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "충족",
+      "historicalSubchecks": [
+        "V41-070.1",
+        "V41-070.2",
+        "V41-070.3",
+        "V41-070.4",
+        "V41-070.5"
+      ],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-071",
+      "journey": "cross-journey",
+      "requirement": "승인된 밝은 화면 범위에서는 dark mode를 구현·평가하지 않는다.",
+      "title": "dark mode 제외",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/content-audit/2026-09-01-flowme-personal-workspace-v4-1-assets/qa.md §남은 확인 L73"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md 범위 밖",
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-flowme-integration-blueprint-v0/spec.md §9",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md A0-2,A0-5"
+      ],
+      "reactEvidence": [],
+      "standaloneEvidence": [],
+      "functionality": "out-of-scope",
+      "ux": "out-of-scope",
+      "ui": "out-of-scope",
+      "evidence": "APPROVED BOUNDARY; not absence inference from code",
+      "disposition": "excluded",
+      "gap": "명시적으로 제외한 운영·동기화·공개 writer·배포 또는 밝은 화면 밖 범위다.",
+      "proposal": "PoC UX gap 구현 대상으로 넣지 않는다.",
+      "doneWhen": "승인된 밝은 화면 범위에서는 dark mode를 구현·평가하지 않는다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "제외",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-072",
+      "journey": "cross-journey",
+      "requirement": "v4.1 정적 시안 자체는 실서비스 route를 변경하지 않는다.",
+      "title": "실서비스 route 제외의 후속 변경",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §범위 밖 L34; v4.1 QA L74"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md A0-3,A0-6",
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-flowme-integration-blueprint-v0/spec.md §8,13"
+      ],
+      "reactEvidence": [],
+      "standaloneEvidence": [],
+      "functionality": "scope-reconciled-not-rerun",
+      "ux": "approved-scope-change",
+      "ui": "not-rated-in-source-audit",
+      "evidence": "ORIGINAL/A0 DECISION COMPARISON; not a new browser pass",
+      "disposition": "intentional-change",
+      "gap": "원본 검토용 chrome/정적 route·persistence 제외는 A0/blueprint에서 exact-query 제품 shell과 PoC 전용 저장으로 한정 대체됐다.",
+      "proposal": "원본의 문구·검토 chrome 자체를 복제하지 않고 승인된 제품 목적과 행동·복구 의미를 유지한다.",
+      "doneWhen": "v4.1 정적 시안 자체는 실서비스 route를 변경하지 않는다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "의도적 변경",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-073",
+      "journey": "cross-journey",
+      "requirement": "v4.1 정적 시안은 product persistence contract를 확정하지 않는다.",
+      "title": "저장 계약 제외의 후속 변경",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §범위 밖 L34; v4.1 QA L74"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md A0-3,A0-6",
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-flowme-integration-blueprint-v0/spec.md §8,13"
+      ],
+      "reactEvidence": [],
+      "standaloneEvidence": [],
+      "functionality": "scope-reconciled-not-rerun",
+      "ux": "approved-scope-change",
+      "ui": "not-rated-in-source-audit",
+      "evidence": "ORIGINAL/A0 DECISION COMPARISON; not a new browser pass",
+      "disposition": "intentional-change",
+      "gap": "원본 검토용 chrome/정적 route·persistence 제외는 A0/blueprint에서 exact-query 제품 shell과 PoC 전용 저장으로 한정 대체됐다.",
+      "proposal": "원본의 문구·검토 chrome 자체를 복제하지 않고 승인된 제품 목적과 행동·복구 의미를 유지한다.",
+      "doneWhen": "v4.1 정적 시안은 product persistence contract를 확정하지 않는다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "의도적 변경",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-074",
+      "journey": "cross-journey",
+      "requirement": "cloud·외부 동기화를 구현하지 않는다.",
+      "title": "동기화 제외",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §범위 밖 L34; v4.1 QA L74"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md 범위 밖",
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-flowme-integration-blueprint-v0/spec.md §9",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md A0-2,A0-5"
+      ],
+      "reactEvidence": [],
+      "standaloneEvidence": [],
+      "functionality": "out-of-scope",
+      "ux": "out-of-scope",
+      "ui": "out-of-scope",
+      "evidence": "APPROVED BOUNDARY; not absence inference from code",
+      "disposition": "excluded",
+      "gap": "명시적으로 제외한 운영·동기화·공개 writer·배포 또는 밝은 화면 밖 범위다.",
+      "proposal": "PoC UX gap 구현 대상으로 넣지 않는다.",
+      "doneWhen": "cloud·외부 동기화를 구현하지 않는다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "제외",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-075",
+      "journey": "cross-journey",
+      "requirement": "공개 후보·공개 저장 writer를 v4.1에서 호출하지 않는다.",
+      "title": "공개 기능 제외",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §범위 밖 L34"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md 범위 밖",
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-flowme-integration-blueprint-v0/spec.md §9",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md A0-2,A0-5"
+      ],
+      "reactEvidence": [],
+      "standaloneEvidence": [],
+      "functionality": "out-of-scope",
+      "ux": "out-of-scope",
+      "ui": "out-of-scope",
+      "evidence": "APPROVED BOUNDARY; not absence inference from code",
+      "disposition": "excluded",
+      "gap": "명시적으로 제외한 운영·동기화·공개 writer·배포 또는 밝은 화면 밖 범위다.",
+      "proposal": "PoC UX gap 구현 대상으로 넣지 않는다.",
+      "doneWhen": "공개 후보·공개 저장 writer를 v4.1에서 호출하지 않는다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "제외",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-076",
+      "journey": "cross-journey",
+      "requirement": "외부 Calendar/Todo 등 도구 연동을 구현하지 않는다.",
+      "title": "외부 도구 연동 제외",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §범위 밖 L34; v4.1 QA L74"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md 범위 밖",
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-flowme-integration-blueprint-v0/spec.md §9",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md A0-2,A0-5"
+      ],
+      "reactEvidence": [],
+      "standaloneEvidence": [],
+      "functionality": "out-of-scope",
+      "ux": "out-of-scope",
+      "ui": "out-of-scope",
+      "evidence": "APPROVED BOUNDARY; not absence inference from code",
+      "disposition": "excluded",
+      "gap": "명시적으로 제외한 운영·동기화·공개 writer·배포 또는 밝은 화면 밖 범위다.",
+      "proposal": "PoC UX gap 구현 대상으로 넣지 않는다.",
+      "doneWhen": "외부 Calendar/Todo 등 도구 연동을 구현하지 않는다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "제외",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-077",
+      "journey": "J3/J5/J6",
+      "requirement": "v4.1 이동 UI에서는 반복 일정·occurrence 편집을 구현하지 않는다.",
+      "title": "반복 일정 제외",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §범위 밖 L34"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md A0-5",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-occurrence-txt-closure-v1/spec.md 버전 계약"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-state.ts:1761 move-occurrence-date"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js:530-555 expandOccurrences"
+      ],
+      "functionality": "scope-partly-superseded",
+      "ux": "scope-partly-superseded",
+      "ui": "not-rated-in-source-audit",
+      "evidence": "FOLLOWUP P2-B CONTRACT READ; no current recurrence replay",
+      "disposition": "stale-scope-needs-reconciliation",
+      "gap": "원본 v4.1의 반복 제외는 역사다. 후속 P2-B는 bounded occurrence 이동/완료를 한정 구현했지만 반복 규칙 수정·이번이후 일괄변경·외부동기화는 여전히 제외다.",
+      "proposal": "후속 지원 회차와 여전히 제외한 recurrence 편집을 나누고 제외/부분 하나로 합치지 않는다.",
+      "doneWhen": "v4.1 이동 UI에서는 반복 일정·occurrence 편집을 구현하지 않는다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [
+        "P3K-BP-02"
+      ],
+      "historicalVerdict": "제외",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    },
+    {
+      "id": "V41-078",
+      "journey": "cross-journey",
+      "requirement": "v4.1 검토 작업에서 Preview·Production 배포를 진행하지 않는다.",
+      "title": "배포 제외",
+      "originalEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md",
+        "Historical source pointer: docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §범위 밖 L34"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md 범위 밖",
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-flowme-integration-blueprint-v0/spec.md §9",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md A0-2,A0-5"
+      ],
+      "reactEvidence": [],
+      "standaloneEvidence": [],
+      "functionality": "out-of-scope",
+      "ux": "out-of-scope",
+      "ui": "out-of-scope",
+      "evidence": "APPROVED BOUNDARY; not absence inference from code",
+      "disposition": "excluded",
+      "gap": "명시적으로 제외한 운영·동기화·공개 writer·배포 또는 밝은 화면 밖 범위다.",
+      "proposal": "PoC UX gap 구현 대상으로 넣지 않는다.",
+      "doneWhen": "v4.1 검토 작업에서 Preview·Production 배포를 진행하지 않는다. 이 기대 결과와 허용 변경 범위를 두 runtime의 현재 근거로 확인한다.",
+      "findingIds": [],
+      "historicalVerdict": "제외",
+      "historicalSubchecks": [],
+      "scopeBoundary": "PoC-only; no operating writer or product-policy expansion"
+    }
+  ],
+  "findings": [
+    {
+      "id": "P3K-V41-01",
+      "title": "standalone 오늘·주간의 포함 범위가 원본과 React와 다름",
+      "severity": "P1",
+      "requirementIds": [
+        "V41-002",
+        "BP-035",
+        "BP-055",
+        "BP-069",
+        "BP-072",
+        "BP-079"
+      ],
+      "original": "오늘은 지난 미완료를 별도 구획으로 함께 보여 주고, 이번 주는 월요일부터 일요일까지 같은 날짜별 projection을 사용한다.",
+      "current": "원본과 React는 전날 미완료를 Today에 포함하고 월~일 주간을 사용한다. standalone은 Today에 오늘 날짜만 포함하고 주간을 오늘부터 7일로 계산한다. TODAY=2026-09-02인 메모리 fixture에서 React Today는 past/today, standalone은 today; React week는 9/1·9/2, standalone은 9/7·9/2다.",
+      "proposal": "개인공간 기간 selector를 원본 월~일과 overdue/date/undated context 계약에 맞춘다. standalone도 같은 기준일 주입·그룹 구성·포함 기준을 사용한다. 오늘부터7일을 새 정책으로 채택하지 않는다.",
+      "doneWhen": "화/일/월·월말·연말 기준일에서 전날 미완료/완료, 이번 주 시작/끝, 다음 주 시작, 날짜 미정의 ref 집합이 두 runtime과 원본 계약에 일치한다. fixture 날짜 차이는 허용하되 범위 계산은 같아야 한다.",
+      "evidence": [
+        "D:/flowme2605/flow-mvp/docs/content-audit/2026-09-01-flowme-personal-workspace-v4-1-assets/app.js:129-146",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-view-model.ts:55-59,143-160",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js:776-784",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:913-926"
+      ],
+      "status": "reproduced-in-memory",
+      "probe": {
+        "kind": "read-only in-memory model comparison, no storage/browser",
+        "today": "2026-09-02",
+        "fixture": [
+          {
+            "id": "past",
+            "date": "2026-09-01",
+            "time": "12:00",
+            "done": false
+          },
+          {
+            "id": "today",
+            "date": "2026-09-02",
+            "time": "11:00",
+            "done": false
+          },
+          {
+            "id": "next",
+            "date": "2026-09-07",
+            "time": "09:00",
+            "done": false
+          }
+        ],
+        "probes": [
+          {
+            "view": "today",
+            "react": [
+              {
+                "context": "overdue",
+                "key": "2026-09-02",
+                "ids": [
+                  "past"
+                ]
+              },
+              {
+                "context": "date",
+                "key": "2026-09-02",
+                "ids": [
+                  "today"
+                ]
+              }
+            ],
+            "standalone": [
+              "today"
+            ]
+          },
+          {
+            "view": "week",
+            "react": [
+              {
+                "context": "date",
+                "key": "2026-09-01",
+                "ids": [
+                  "past"
+                ]
+              },
+              {
+                "context": "date",
+                "key": "2026-09-02",
+                "ids": [
+                  "today"
+                ]
+              }
+            ],
+            "standalone": [
+              "next",
+              "today"
+            ]
+          },
+          {
+            "view": "month",
+            "react": [
+              {
+                "context": "date",
+                "key": "2026-09-01",
+                "ids": [
+                  "past"
+                ]
+              },
+              {
+                "context": "date",
+                "key": "2026-09-02",
+                "ids": [
+                  "today"
+                ]
+              },
+              {
+                "context": "date",
+                "key": "2026-09-07",
+                "ids": [
+                  "next"
+                ]
+              }
+            ],
+            "standalone": [
+              "next",
+              "today",
+              "past"
+            ]
+          }
+        ],
+        "storageCalls": 0
+      }
+    },
+    {
+      "id": "P3K-V41-02",
+      "title": "standalone 직접 정렬이 날짜 대신 today/week/month에 저장됨",
+      "severity": "P1",
+      "requirementIds": [
+        "V41-022",
+        "V41-023",
+        "BP-023",
+        "BP-024",
+        "BP-025",
+        "BP-078"
+      ],
+      "original": "TimelineOrder는 date/undated/overdue의 context+contextKey를 소유한다. 특정 날짜의 직접 순서는 같은 날짜를 보여 주는 다른 기간 화면에서도 같은 의미를 가져야 한다.",
+      "current": "standalone은 orders[action.context]에 today/week/month 문자열을 저장한다. Today 순서를 뒤집은 후 같은 날짜를 Week/Month로 열면 이전 순서다. 실제 month 화면은 날짜를 따로 정렬하므로 여기서 month 전체 날짜 표시가 역순이라고 주장하지 않는다.",
+      "proposal": "standalone의 정렬 key를 날짜/미정/지난미완료 단위로 정규화한다. 메뉴·drag·keyboard와 시간순 복귀가 같은 list-context를 사용하게 한다. 기존 PoC payload의 오래된 view-order는 별도 버전 호환 처리 설계 후 안전하게 보존/재표현한다.",
+      "doneWhen": "같은 날짜에서 today→week→month→today와 reload를 왕복해 순서가 같고, 다른 날짜·Flow 내부 순서·시각·완료·메모는 바뀌지 않는다. 시간순 복귀는 해당 context만 제거한다. 기존 PoC payload에 대해 손실 없는 호환 또는 명시적 fail-closed를 검증한다.",
+      "evidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-flowme-integration-blueprint-v0/spec.md §5.4",
+        "D:/flowme2605/flow-mvp/docs/content-audit/2026-09-01-flowme-personal-workspace-v4-1-assets/model.js:93-109",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-state.ts:1412-1446",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js:804-808,2071-2077",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:874-889"
+      ],
+      "status": "reproduced-in-memory",
+      "probe": {
+        "kind": "read-only in-memory standalone model comparison, no storage/browser",
+        "today": "2026-09-02",
+        "changed": true,
+        "orderKeys": [
+          "today"
+        ],
+        "todayOrder": [
+          "checklist",
+          "washer-filter",
+          "memo-share",
+          "meeting"
+        ],
+        "sameDateInMonth": [
+          "meeting",
+          "memo-share",
+          "washer-filter",
+          "checklist"
+        ],
+        "sameDateInWeek": [
+          "meeting",
+          "memo-share",
+          "washer-filter",
+          "checklist"
+        ],
+        "storageCalls": 0
+      }
+    },
+    {
+      "id": "P3K-V41-03",
+      "title": "standalone Today 날짜 반복과 설명·집계가 목록을 밀어냄",
+      "severity": "P2",
+      "requirementIds": [
+        "V41-024",
+        "V41-053",
+        "V41-054",
+        "V41-056"
+      ],
+      "original": "날짜 heading이 있는 행에는 날짜를 반복하지 않고 제목·경로·시간을 유지한다. 기본 화면에는 같은 기능을 반복 설명하는 문단과 검증용 장식을 넣지 않는다.",
+      "current": "Today는 renderTaskList(ids,view)에 hideDate를 전달하지 않아 각 행에 같은 날짜를 표시한다. page-head 설명, summary-strip, '오늘 목록'은 세로/desktop에서 보이고 짧은 가로 media에서만 일부 숨긴다. drag 장문 설명은 visually-hidden이며 진짜 mutation diagnostics는 hidden이므로 시각 삭제 대상이 아니다.",
+      "proposal": "Today를 날짜 heading+행 구조로 맞추고 같은 날짜 반복만 제거한다. 주간도 날짜별 grouping 후 날짜 중복을 제거하되 실제 날짜 정보는 남긴다. 반복 설명·중복 집계는 정보 효용을 확인해 정리하고 출처/에러/Undo/접근성 설명은 보존한다.",
+      "doneWhen": "390/375/844가로/1024/1440에서 Today 날짜 1회, 시간·경로 유지, 첫 실행행과 주 행동 접근을 확인한다. 스크린리더 설명·source·오류·복구는 삭제하지 않는다.",
+      "evidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md 표시 계약",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:848-926",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:114,166-182,643,725-727",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:5392",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/standalone-shell.html:31-38",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-product-ux-pass-v1/design-contract.md §2"
+      ],
+      "status": "code-divergence; visual impact awaiting joined browser evidence"
+    },
+    {
+      "id": "P3K-V41-04",
+      "title": "React 로컬 주 행동·초점은 cobalt를 사용",
+      "severity": "P2",
+      "requirementIds": [
+        "V41-001",
+        "V41-001.1",
+        "V41-001.3"
+      ],
+      "original": "A0-3와 P3-F는 전역 PlatformNav ink/cobalt와 개인공간 내부 white/gray/teal owner를 구분한다. product-ux design 계약은 청록 primary·focus를 명시한다.",
+      "current": "Surface의 PRIMARY_CLASS가 --flowme-action을 사용하고 전역 값은 #315ee7이다. ProductShell.module.css는 workspace accent만 #087f73로 두며 global action/focus는 유지한다는 구현 주석이 있다. 이 주석은 청록 primary/focus를 대체한 사용자 승인 근거가 아니다. standalone --blue는 #087f73이다.",
+      "proposal": "전역을 재도색하지 않고 exact-query 로컬 primary/focus 소비자를 workspace token으로 정렬한다. 공통 D1 내부 중 전역 owner와 로컬 owner를 component별로 분리한 토큰 매핑을 먼저 확정한다.",
+      "doneWhen": "global PlatformNav/default /my의 computed color와 파일 bytes는 전후 동일. exact-query 로컬 primary/focus는 승인 token과 일치. 다섯 화면·키보드 상태 및 React/standalone 비교에서 범위 밖 색 변경 0.",
+      "evidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md A0-3",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-04-flowme-integrated-poc-production-candidate-v1/decision-contract.md Visual owner",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-product-ux-pass-v1/design-contract.md §2",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:269-270",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocProductShell.module.css:34-42",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/app/globals.css:17-21",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:10-14"
+      ],
+      "status": "code-contract-mismatch; computed style evidence owned by root"
+    },
+    {
+      "id": "P3K-V41-05",
+      "title": "모바일에서 행이 사라진 직후 Undo가 설정 안에 숨어 있음",
+      "severity": "P1",
+      "requirementIds": [
+        "V41-042",
+        "BP-060",
+        "BP-063",
+        "BP-076"
+      ],
+      "original": "변경 알림은 결과와 되돌리기 경로를 함께 제공한다. 이동 후 화면 밖으로 사라진 항목도 즉시 복구할 수 있어야 한다.",
+      "current": "React 전역 Undo는 hidden sm:inline-flex이고 640 미만의 Undo는 설정 details 내부 personal-workspace-undo-mobile에 있다. 일반 이동 성공 status는 문구만 있고 즉시 Undo action은 없다. root의 390px 브라우저에서 Today→내일 이동 후 보이는 Undo를 찾지 못했고 desktop resize 후 상단 Undo가 보였다. Undo 기능 자체는 구현되어 있다.",
+      "proposal": "일반 날짜/폴더/순서 이동 성공 feedback에 마지막 성공 변경을 되돌리는 Undo를 함께 노출한다. 기존 설정 경로를 없애거나 항상 떠 있는 중복 CTA를 추가하지 않는다. receipt owner가 이미 Undo를 갖는 경우 중복 announcer/행동을 만들지 않는다.",
+      "doneWhen": "390/375/844가로에서 오늘 행을 내일로 옮긴 직후 설정을 열지 않고 Undo를 발견·키보드로 실행해 동일 ref/날짜/순서를 복구한다. 실패/no-op/cancel에는 잘못된 Undo가 생기지 않는다.",
+      "evidence": [
+        "D:/flowme2605/flow-mvp/docs/content-audit/2026-09-01-flowme-personal-workspace-v4-1-ui-ko.html:18",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-product-ux-pass-v1/design-contract.md §8",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:4833-4870,4873-4891",
+        "root P3-K browser J5 observation; exact capture/log joined separately"
+      ],
+      "status": "code-confirmed-discoverability-gap; root browser observation"
+    },
+    {
+      "id": "P3K-BP-02",
+      "title": "과거 운영 연결·제외 판정과 후속 PoC 범위가 섞임",
+      "severity": "P2",
+      "requirementIds": [
+        "BP-002",
+        "BP-006",
+        "BP-007",
+        "BP-019",
+        "BP-038",
+        "BP-049",
+        "BP-054",
+        "BP-056",
+        "BP-080",
+        "V41-077"
+      ],
+      "original": "A0는 D1 문법을 재사용하되 운영 writer는 금지했다. 후속 P2-B/P3-B/P3-D는 occurrence·creator drafts·local source update를 한정 승인했다.",
+      "current": "역사 parent BP-049는 실제 /calendar 미충족으로 남고, BP-019 occurrence는 제외로 남아 있다. 그러나 현재 범위에서는 전자는 운영 경계 밖 연결이고 후자는 P2-B 한정 구현이 있다. 개인 memo owner도 기존 운영 key를 직접 쓰라는 뜻으로 해석하면 안 된다.",
+      "proposal": "현재 감사 계층에서 운영 후속·현재 PoC 구현·원본에서 대체된 범위를 나눈다. stale parent 또는 제외 문구를 근거로 새 운영 writer나 중복 구현을 계획하지 않는다.",
+      "doneWhen": "각 행에 A0/P2/P3 supersedes 범위를 연결하고 PoC projection과 실제 /calendar/public writer를 따로 표시한다. 구현 묶음에는 허용 PoC gap만 넣고 운영 확대는 별도 승인 항목으로 남긴다.",
+      "evidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md A0-2,A0-5",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-occurrence-txt-closure-v1/spec.md 버전 계약",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-creator-draft-library-v1/spec.md 목적·범위",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-04-flowme-integrated-poc-source-update-ownership-v1/spec.md 목적·보호 경계",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-04-flowme-integrated-poc-production-candidate-v1/decision-contract.md 금지되는 확대 해석"
+      ],
+      "status": "decision-reconciled; no feature promotion"
+    }
+  ],
+  "limitations": [
+    "원본 v4.1 spec/HTML과 관련 app/model 구간, blueprint, A0, product UX, P2-B/P3-B/P3-D/P3-F 범위 문서를 읽었다. 원본 전체 CSS·모든 QA 문서·모든 대화를 재열람했다고 주장하지 않는다.",
+    "원본 화면 픽셀 비교와 실제 computed style·키보드·반응형 화면은 root의 별도 브라우저 증거와 결합한다. 코드 selector 존재만으로 UI 적합성을 통과 처리하지 않는다.",
+    "개별 부모 안의 모든 하위 조건은 독립 재판정하지 않았다. coverage-inventory.json의 원자 조건/과거 판정을 유지하며 현재 브라우저로 확인한 범위만 승격 가능하다.",
+    "일곱 여정의 Authoring 상세는 d2-audit, D1 opener/staged edit/result는 d1-audit와 함께 읽는다. 이 shard의 cross-shard-review-required는 검토 누락을 숨기기 위한 PASS가 아니다.",
+    "운영 /calendar·public writer·계정/cloud·실제 기기·보조기술·관찰 사용자 검증은 이번 목표의 완료 조건 밖이다. 실제 기기 NOT_RUN, 관찰 사용자0명.",
+    "실제 사용자의 브라우저 프로필·운영 backend·운영 계정 데이터를 검사하지 않았다. 메모리 probe는 별도 JS 객체만 조작하며 저장 호출0이었다.",
+    "제품/trace/원본/global 설정을 수정하지 않았다. 새 감사 문서만 만들었다. commit/push/PR/Preview/Production 없음."
+  ]
+}

@@ -651,6 +651,150 @@ test('authoring handoff commits Flow, source lineage, receipt, and folder in one
   });
 });
 
+test('QuickItem converts to one new Flow and Item while preserving the source and copying only PoC personal placement', () => {
+  let state = createPersonalWorkspacePocState(T0);
+  state = applyPersonalWorkspacePocTransition(state, {
+    type: 'create-folder', folderId: 'plans', title: '내 계획', now: T1,
+  }).state;
+  state = applyPersonalWorkspacePocTransition(state, {
+    type: 'create-quick-item',
+    quickItemId: 'quick-convert',
+    title: '여권 갱신 준비',
+    memo: '사진 규격 다시 확인',
+    date: '2026-09-03',
+    folderId: 'plans',
+    now: T2,
+  }).state;
+  const quickRef = toPersonalWorkspacePocQuickItemRef('quick-convert');
+  state = applyPersonalWorkspacePocTransition(state, {
+    type: 'complete', itemRef: quickRef, completed: true, now: T3,
+  }).state;
+  const sourceBefore = structuredClone(state.quickItems[0]);
+  const sourcePlacementBefore = structuredClone(state.placements[quickRef]);
+  const before = structuredClone(state);
+
+  const converted = applyPersonalWorkspacePocTransition(state, {
+    type: 'convert-quick-item-to-flow',
+    quickItemRef: quickRef,
+    expectedRevision: state.revision,
+    flowTitle: '여권 갱신 Flow',
+    existingFlowRefs: [],
+    now: '2026-09-01T00:04:00.000Z',
+  });
+
+  assert.equal(converted.changed, true);
+  assert.deepEqual(converted.state.quickItems[0], sourceBefore);
+  assert.deepEqual(converted.state.placements[quickRef], sourcePlacementBefore);
+  assert.equal(converted.state.quickItems[0].status, 'completed');
+  assert.equal(converted.state.authoredFlows?.length, 1);
+  const flow = converted.state.authoredFlows?.[0];
+  assert.ok(flow);
+  assert.equal(flow.title, '여권 갱신 Flow');
+  assert.equal(flow.items.length, 1);
+  assert.equal(flow.items[0].title, '여권 갱신 준비');
+  assert.equal(getPersonalWorkspacePocFolderId(converted.state, flow.ref), 'plans');
+  assert.equal(getPersonalWorkspacePocEffectiveDate(converted.state, flow.items[0].ref), '2026-09-03');
+  assert.equal(converted.state.completions[flow.items[0].ref], undefined);
+  assert.equal(
+    converted.state.personalPlanOverlays?.[flow.ref]?.items[flow.items[0].ref]?.memo,
+    '사진 규격 다시 확인',
+  );
+  assert.deepEqual(converted.state.quickConversionReceipts, [{
+    version: 1,
+    conversionId: `quick-item-to-flow:v1:quick-convert:revision-${before.revision}`,
+    handoffId: `quick-item-to-flow:v1:quick-convert:revision-${before.revision}`,
+    sourceQuickItemRef: quickRef,
+    sourceQuickItemId: 'quick-convert',
+    sourceTitle: '여권 갱신 준비',
+    sourceMemo: '사진 규격 다시 확인',
+    sourceFolderId: 'plans',
+    sourceDate: '2026-09-03',
+    flowRef: flow.ref,
+    itemRef: flow.items[0].ref,
+    flowTitle: '여권 갱신 Flow',
+    completionPolicy: 'source-preserved-new-item-open',
+    committedAt: '2026-09-01T00:04:00.000Z',
+  }]);
+  assert.equal(isPersonalWorkspacePocState(JSON.parse(JSON.stringify(converted.state))), true);
+  assert.equal(
+    validatePersonalWorkspacePocStateReferences(converted.state, {
+      version: PERSONAL_WORKSPACE_POC_VERSION,
+      flows: [],
+    }).ok,
+    true,
+  );
+
+  const undone = applyPersonalWorkspacePocTransition(converted.state, {
+    type: 'undo', now: '2026-09-01T00:05:00.000Z',
+  });
+  assert.equal(undone.changed, true);
+  assert.deepEqual(undone.state.quickItems, before.quickItems);
+  assert.deepEqual(undone.state.placements, before.placements);
+  assert.deepEqual(undone.state.authoredFlows, before.authoredFlows);
+  assert.deepEqual(undone.state.authoringReceipts, before.authoringReceipts);
+  assert.deepEqual(undone.state.quickConversionReceipts, before.quickConversionReceipts);
+});
+
+test('QuickItem conversion stale, invalid, collision, repeated, and corrupt receipt paths mutate zero state', () => {
+  const created = applyPersonalWorkspacePocTransition(createPersonalWorkspacePocState(T0), {
+    type: 'create-quick-item',
+    quickItemId: 'quick-guard',
+    title: '정리할 일',
+    memo: '',
+    now: T1,
+  });
+  assert.equal(created.changed, true);
+  const state = created.state;
+  const quickRef = toPersonalWorkspacePocQuickItemRef('quick-guard');
+  const attempt = (overrides: Partial<Extract<
+    Parameters<typeof applyPersonalWorkspacePocTransition>[1],
+    { type: 'convert-quick-item-to-flow' }
+  >> = {}) => applyPersonalWorkspacePocTransition(state, {
+    type: 'convert-quick-item-to-flow',
+    quickItemRef: quickRef,
+    expectedRevision: state.revision,
+    flowTitle: '정리한 Flow',
+    existingFlowRefs: [],
+    now: T2,
+    ...overrides,
+  });
+
+  for (const guarded of [
+    attempt({ expectedRevision: state.revision - 1 }),
+    attempt({ flowTitle: ' ' }),
+    attempt({ flowTitle: '줄바꿈\nFlow' }),
+    attempt({ quickItemRef: toPersonalWorkspacePocQuickItemRef('missing') }),
+  ]) {
+    assert.equal(guarded.changed, false);
+    assert.deepEqual(guarded.state, state);
+  }
+
+  const preview = attempt();
+  assert.equal(preview.changed, true);
+  const flowRef = preview.state.quickConversionReceipts?.[0].flowRef;
+  assert.ok(flowRef);
+  const collision = attempt({ existingFlowRefs: [flowRef] });
+  assert.equal(collision.changed, false);
+  assert.deepEqual(collision.state, state);
+
+  const repeated = applyPersonalWorkspacePocTransition(preview.state, {
+    type: 'convert-quick-item-to-flow',
+    quickItemRef: quickRef,
+    expectedRevision: preview.state.revision,
+    flowTitle: '다른 이름',
+    existingFlowRefs: [],
+    now: T3,
+  });
+  assert.equal(repeated.changed, false);
+  assert.equal(repeated.error, undefined);
+  assert.deepEqual(repeated.state, preview.state);
+
+  const corrupt = structuredClone(preview.state);
+  assert.ok(corrupt.quickConversionReceipts?.[0]);
+  corrupt.quickConversionReceipts[0].itemRef = 'flow-item:foreign';
+  assert.equal(isPersonalWorkspacePocState(corrupt), false);
+});
+
 test('new authoring commits persist exact parser lineage and reject a stale fidelity manifest', () => {
   const rawText = '# 새 Flow\r\n- [ ] 준비\r\n  - 날짜: 2026-09-03\r\n';
   const materialized = materializePersonalWorkspacePocAuthoring({

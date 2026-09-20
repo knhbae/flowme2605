@@ -176,6 +176,111 @@ function structuralDraftBundle(): FlowBundle {
   };
 }
 
+test('P3-J preserves source criteria for four origins alongside imported personal memos without writes', () => {
+  const sources = [
+    bundle('map-child', 'flow:map-child'),
+    structuralDraftBundle(),
+    bundle('canonical-source', 'flow:canonical-source'),
+    bundle('legacy-plan', 'flow:legacy'),
+  ].map((value) => ({
+    ...value,
+    items: value.items.map((item) => ({ ...item, description: `원문 설명:${item.id}` })),
+    itemDetails: value.items.map((item) => ({
+      item_id: item.id,
+      completion_criteria: `원문 완료 기준:${item.id}`,
+      how: `실행 방법:${item.id}`,
+    })),
+  }));
+  const values = {
+    'flow:map:saved:map-one': JSON.stringify({
+      mapId: 'map-one', title: '지도', version: 'v1', savedAt: SAVED_AT,
+      anchor: '2026-09-01', flowSlugs: ['map-child'],
+    }),
+    'flow:saved:map-child': JSON.stringify(legacyRecord('map-child')),
+    'flow:saved:url-draft-note': JSON.stringify(legacyRecord('url-draft-note')),
+    'flow:saved:copy:one': JSON.stringify(canonicalRecord('copy:one')),
+    'flow:saved:legacy-plan': JSON.stringify(legacyRecord('legacy-plan')),
+    'flow:my-flow:item-drafts': JSON.stringify({
+      'legacy-plan::shared-item::2026-09-01': { memo: '사용자가 적은 메모' },
+    }),
+  };
+  const before = JSON.stringify({ values, sources });
+  const storage = new ReadStorage(values);
+  const projected = buildPersonalWorkspacePocReadModel(storage, sources);
+  assert.equal(projected.ok, true);
+  if (!projected.ok) return;
+  assert.equal(projected.model.flows.length, 4);
+  for (const flow of projected.model.flows) {
+    for (const item of flow.items) {
+      assert.equal(item.completionCriterion, `원문 완료 기준:${item.itemId}`);
+      assert.equal(item.fieldOwnership?.description.source.value,
+        `원문 설명:${item.itemId}\n\n실행 방법:${item.itemId}`);
+    }
+  }
+  assert.equal(projected.model.flows.find((flow) => flow.sourceSlug === 'legacy-plan')
+    ?.items[0].fieldOwnership?.description.effective.value, '사용자가 적은 메모');
+  assert.equal(storage.writes, 0);
+  assert.equal(JSON.stringify({ values, sources }), before);
+});
+
+test('P3-J saved Map uses its retained doneWhen instead of live source criteria', () => {
+  const persistence = mapPersistence();
+  Object.assign(persistence.childFlows[0].steps[0].textFallback, { doneWhen: '저장 당시 완료 기준' });
+  const source = bundle('map-child', 'flow:map-child');
+  source.itemDetails = [{ item_id: 'shared-item', completion_criteria: '최신 원문의 다른 기준' }];
+  const storage = new ReadStorage({
+    'flow:map:saved:map-one': JSON.stringify(mapSnapshot()),
+    'flow:map:persistence:map-one': JSON.stringify(persistence),
+  });
+  const projected = buildPersonalWorkspacePocReadModel(storage, [source]);
+  assert.equal(projected.ok, true);
+  if (!projected.ok) return;
+  assert.equal(projected.model.flows[0].items[0].completionCriterion, '저장 당시 완료 기준');
+  assert.equal(projected.model.flows[0].items[0].fieldOwnership?.description.source.value, '저장 당시 설명');
+  assert.equal(projected.model.flows[0].items[0].fieldOwnership?.description.effective.value, '내 메모');
+  assert.equal(storage.writes, 0);
+});
+
+test('P3-J meal slots join source instructions and criteria by slot identity', () => {
+  const source = bundle('legacy-plan', 'flow:legacy');
+  source.flow.content_type = 'meal_plan';
+  source.mealSlots = [{
+    id: 'meal-slot', flow_id: source.flow.id, day_offset: 0, order: 0,
+    recipe_id: 'recipe-prep', duration_days: 1, menu_title: '저녁 준비', new_ingredients: ['당근', '두부'],
+  }];
+  source.itemDetails = [
+    { item_id: 'meal-slot', how: '채소를 먼저 손질한다', completion_criteria: '재료 손질을 끝냈다' },
+    { item_id: 'shared-item', completion_criteria: '다른 항목의 기준' },
+  ];
+  const before = JSON.stringify(source);
+  const storage = new ReadStorage({ 'flow:saved:legacy-plan': JSON.stringify(legacyRecord('legacy-plan')) });
+  const result = buildPersonalWorkspacePocReadModel(storage, [source]);
+  assert.equal(result.ok, true);
+  if (!result.ok) return;
+  const item = result.model.flows[0].items[0];
+  assert.equal(item.itemId, 'meal-slot');
+  assert.equal(item.completionCriterion, '재료 손질을 끝냈다');
+  assert.equal(item.fieldOwnership?.description.source.value, '당근, 두부\n\n채소를 먼저 손질한다');
+  assert.equal(JSON.stringify(source), before);
+  assert.equal(storage.writes, 0);
+});
+
+test('P3-J absent, invalid, or ambiguous source criteria are not invented or partly projected', () => {
+  const source = bundle('legacy-plan', 'flow:legacy');
+  const storage = new ReadStorage({ 'flow:saved:legacy-plan': JSON.stringify(legacyRecord('legacy-plan')) });
+  const absent = buildPersonalWorkspacePocReadModel(storage, [source]);
+  assert.equal(absent.ok, true);
+  if (absent.ok) assert.equal(absent.model.flows[0].items[0].completionCriterion, undefined);
+  for (const itemDetails of [
+    [{ item_id: 'shared-item', completion_criteria: { unexpected: 'object' } }],
+    [{ item_id: 'shared-item', completion_criteria: 'one' }, { item_id: 'shared-item', completion_criteria: 'two' }],
+  ]) {
+    const invalid = buildPersonalWorkspacePocReadModel(storage, [{ ...source, itemDetails } as unknown as FlowBundle]);
+    assert.equal(invalid.ok, false);
+  }
+  assert.equal(storage.writes, 0);
+});
+
 test('projects all four saved-plan origins once into unfiled read-model flows', () => {
   const bundles = [
     bundle('map-child', 'flow:map-child'),

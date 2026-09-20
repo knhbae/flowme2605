@@ -1,0 +1,81 @@
+{
+  "asOf": "2026-09-07",
+  "gateCandidateCount": 9,
+  "additionalBrokenLinkRepairCount": 1,
+  "summary": {
+    "refreshUnchanged": 6,
+    "refreshAfterTitleSync": 3,
+    "hold": 0
+  },
+  "method": [
+    "network_reachability",
+    "current_title",
+    "semantic_scope",
+    "risk_boundary",
+    "exposure_decision"
+  ],
+  "reviews": [
+    {
+      "slug": "alt-phone-sk7-self-activation",
+      "result": "refresh_unchanged",
+      "httpStatus": 200,
+      "note": "셀프개통, 유심, 번호이동 사전동의, 개통 후 연결 확인 범위 일치"
+    },
+    {
+      "slug": "chiangmai-solo-trip-packing",
+      "result": "refresh_unchanged",
+      "httpStatus": 200,
+      "note": "통신, GLN·현금·카드, 보험, 비상약, 압축팩, 필터 샤워기 범위 일치"
+    },
+    {
+      "slug": "jeonse-contract-precheck-docs",
+      "result": "refresh_unchanged",
+      "httpStatus": 200,
+      "note": "시세·등기, 보증보험, 중개사·계약서, 확정일자·신고 확인 범위 일치"
+    },
+    {
+      "slug": "banana-peanut-recipe-video",
+      "result": "refresh_after_title_sync",
+      "httpStatus": 200,
+      "note": "현재 제목의 계란 표기를 반영했고 재료, 180도 15분 조리 흐름 일치"
+    },
+    {
+      "slug": "dog-adoption-first-week",
+      "result": "refresh_after_title_sync",
+      "httpStatus": 200,
+      "note": "현재 페이지 제목을 반영했고 준비, 건강검진, 접종 기록, 동물등록 범위 일치"
+    },
+    {
+      "slug": "elementary-school-entry-d30",
+      "result": "refresh_after_title_sync",
+      "httpStatus": 200,
+      "supportSourceHttpStatus": 200,
+      "note": "교육부 공식 제목을 반영했고 취학통지·예비소집은 공식 원문, 나머지는 보조 출처로 분리 유지"
+    },
+    {
+      "slug": "monstera-care-routine",
+      "result": "refresh_unchanged",
+      "httpStatus": 200,
+      "note": "겉흙, 간접광, 배수, 잎 상태, 분갈이 관찰 범위 일치"
+    },
+    {
+      "slug": "water-purifier-filter-cycle",
+      "result": "refresh_unchanged",
+      "httpStatus": 200,
+      "note": "필터별 주기와 모델별 공식 안내 우선 경계 일치"
+    },
+    {
+      "slug": "plank-30-day-challenge",
+      "result": "refresh_unchanged",
+      "httpStatus": 200,
+      "note": "Day별 초수와 Day 7·19·27 휴식일 일치, 원문의 효능·식단 주장은 계속 제외"
+    },
+    {
+      "slug": "ev-subsidy-apply",
+      "result": "repair_broken_official_url",
+      "previousHttpStatus": 404,
+      "replacementHttpStatus": 200,
+      "note": "기본 원문을 현재 지원 대상·신청절차로, 현황 항목을 현재 지자체별 지급현황 주소로 교체"
+    }
+  ]
+}

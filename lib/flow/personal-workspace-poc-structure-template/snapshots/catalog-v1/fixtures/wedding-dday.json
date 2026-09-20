@@ -1,0 +1,129 @@
+{
+  "fixtureVersion": "p0.2",
+  "fixtureId": "wedding-dday-contract-and-three-modes",
+  "definitionRef": {
+    "templateId": "wedding-dday-v1",
+    "version": "1.0.0"
+  },
+  "purpose": "예식일 기준 계약 확인, 직접 지정 일정, 날짜 없는 메모를 구분하고 URL을 자료로 보존한다.",
+  "initialRawText": "",
+  "sourceFingerprint": "raw-v1:0:0ztntfp",
+  "structureDraft": {
+    "schemaVersion": "p0.2",
+    "draftId": "draft-fixture-wedding-dday",
+    "templateId": "wedding-dday-v1",
+    "templateVersion": "1.0.0",
+    "sourceFingerprint": "raw-v1:0:0ztntfp",
+    "values": {
+      "flow_title": "우리 예식 준비",
+      "anchor_date": "2027-05-15"
+    },
+    "groups": [
+      {
+        "instanceId": "wedding-group-contract",
+        "groupId": "windows",
+        "order": 0,
+        "values": { "step_title": "계약과 비용" },
+        "children": [
+          {
+            "instanceId": "wedding-task-final-payment",
+            "groupId": "tasks",
+            "order": 0,
+            "values": {
+              "item_title": "예식장 잔금 조건 확인",
+              "schedule_mode": "anchor_offset",
+              "day_offset": -14,
+              "checks": ["잔금 금액 확인", "취소·변경 조건 확인"],
+              "note": "계약서와 최종 견적서의 금액을 함께 본다.",
+              "reference_url": "https://www.ftc.go.kr/www/selectBbsNttView.do?bordCd=3&key=12&nttSn=45967"
+            },
+            "children": []
+          },
+          {
+            "instanceId": "wedding-task-cost-note",
+            "groupId": "tasks",
+            "order": 1,
+            "values": {
+              "item_title": "추가 비용 메모 정리",
+              "schedule_mode": "unscheduled",
+              "note": "추가 옵션은 확정한 항목만 적는다."
+            },
+            "children": []
+          }
+        ]
+      },
+      {
+        "instanceId": "wedding-group-final",
+        "groupId": "windows",
+        "order": 1,
+        "values": { "step_title": "예식 직전" },
+        "children": [
+          {
+            "instanceId": "wedding-task-route",
+            "groupId": "tasks",
+            "order": 0,
+            "values": {
+              "item_title": "예식 동선 최종 확인",
+              "schedule_mode": "absolute",
+              "absolute_date": "2027-05-14"
+            },
+            "children": []
+          }
+        ]
+      }
+    ],
+    "dismissedSlots": [],
+    "materialized": false,
+    "revision": 1,
+    "updatedAt": "2026-08-29T12:00:00.000Z"
+  },
+  "expectedPlan": {
+    "userValueCount": 16,
+    "itemCount": 3,
+    "sourceCallbackCount": 1,
+    "undoCountToRestoreInitial": 1,
+    "warnings": [],
+    "derivedValues": [
+      {
+        "kind": "resolved_anchor_date",
+        "sourceSlotKeys": ["anchor_date", "wedding-task-final-payment.day_offset"],
+        "value": "2027-05-01"
+      }
+    ],
+    "forbiddenGeneratedContentCount": 0
+  },
+  "expectedRawText": "# 우리 예식 준비\n- 기준일: 2027-05-15\n\n## 계약과 비용\n- [ ] 예식장 잔금 조건 확인\n  - 상대 날짜: D-14\n  - 설명: 계약서와 최종 견적서의 금액을 함께 본다.\n  - 자료: https://www.ftc.go.kr/www/selectBbsNttView.do?bordCd=3&key=12&nttSn=45967\n  - [ ] 잔금 금액 확인\n  - [ ] 취소·변경 조건 확인\n- [ ] 추가 비용 메모 정리\n  - 설명: 추가 옵션은 확정한 항목만 적는다.\n\n## 예식 직전\n- [ ] 예식 동선 최종 확인\n  - 날짜: 2027-05-14",
+  "expectedCanonical": {
+    "flowTitle": "우리 예식 준비",
+    "anchorDate": "2027-05-15",
+    "stepCount": 2,
+    "itemCount": 3,
+    "scheduledItemCount": 2,
+    "resourceCount": 1,
+    "primarySourceFromReferenceUrl": false,
+    "items": [
+      {
+        "title": "예식장 잔금 조건 확인",
+        "dayOffset": -14,
+        "resolvedDate": "2027-05-01",
+        "subcheckCount": 2
+      },
+      { "title": "추가 비용 메모 정리", "schedule": "unscheduled" },
+      { "title": "예식 동선 최종 확인", "date": "2027-05-14" }
+    ],
+    "sameItemAcrossProjections": true
+  },
+  "expectedProjectionAssertions": {
+    "fixtureExpectedPrimary": "todo",
+    "primaryRule": "calendar_when_all_items_scheduled_else_todo",
+    "offeredArtifacts": ["calendar", "todo", "memo"],
+    "optionalWhenEligible": [],
+    "notOffered": ["sheet"]
+  },
+  "negativeAssertions": [
+    "추천 예식장",
+    "자동 예상 비용",
+    "출처:",
+    "window_start_offset"
+  ]
+}

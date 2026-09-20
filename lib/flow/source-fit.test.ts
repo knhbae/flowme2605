@@ -99,9 +99,22 @@ test('source-fit summary captures keep, reshape, and preview decisions', () => {
   assert.equal(summary.auditedCount, 141);
   assert.ok(summary.averageScore >= 70);
   assert.equal(summary.decisionCounts.keep_representative, 52);
-  assert.equal(summary.decisionCounts.reshape_before_featured, 69);
-  assert.equal(summary.decisionCounts.catalog_preview_only, 19);
+  assert.equal(summary.decisionCounts.reshape_before_featured, 67);
+  assert.equal(summary.decisionCounts.catalog_preview_only, 21);
   assert.equal(summary.decisionCounts.hide_from_public_catalog, 1);
+});
+
+test('dog adoption source review records a dated preview hold without refreshing stale source metadata', () => {
+  const audit = getSourceFitAudit('dog-adoption-first-week');
+  const bundle = seedBundles.find((entry) => entry.flow.slug === 'dog-adoption-first-week');
+
+  assert.ok(audit);
+  assert.ok(bundle);
+  assert.equal(audit.checkedAt, '2026-09-04');
+  assert.equal(audit.sourcePrecision, 'mismatch');
+  assert.equal(audit.decision, 'catalog_preview_only');
+  assert.equal(bundle.flow.source_checked_at, '2026-06-04');
+  assert.match(audit.currentGap, /D\+7|30일/u);
 });
 
 test('current Allblanc source fit separates old video publication dates from current link checks and personal schedules', () => {

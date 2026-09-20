@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "stage": "P3-A",
+  "asOf": "2026-09-03",
+  "inherits": "docs/specs/2026-09-03-flowme-integrated-poc-personal-editing-closure-v1/current-verdict-overrides.json",
+  "beforeP3A": {
+    "V41": { "total": 78, "satisfied": 60, "partial": 3, "missing": 3, "intentionalChange": 6, "excluded": 6 },
+    "D1": { "total": 26, "satisfied": 26, "partial": 0, "missing": 0, "intentionalChange": 0, "excluded": 0 },
+    "D2": { "total": 64, "satisfied": 42, "partial": 10, "missing": 1, "intentionalChange": 5, "excluded": 6 },
+    "total": { "total": 168, "satisfied": 128, "partial": 13, "missing": 4, "intentionalChange": 11, "excluded": 12 }
+  },
+  "afterP3A": {
+    "V41": { "total": 78, "satisfied": 61, "partial": 2, "missing": 3, "intentionalChange": 6, "excluded": 6 },
+    "D1": { "total": 26, "satisfied": 26, "partial": 0, "missing": 0, "intentionalChange": 0, "excluded": 0 },
+    "D2": { "total": 64, "satisfied": 43, "partial": 9, "missing": 1, "intentionalChange": 5, "excluded": 6 },
+    "total": { "total": 168, "satisfied": 130, "partial": 11, "missing": 4, "intentionalChange": 11, "excluded": 12 }
+  },
+  "overrides": [
+    {
+      "id": "V41-036",
+      "from": "부분",
+      "to": "충족",
+      "evidenceLevel": "E4",
+      "currentEvidence": [
+        "docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md",
+        "components/flow/PlatformNav.tsx",
+        "components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx",
+        "components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx",
+        "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/standalone-shell.html",
+        "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js",
+        "tests/e2e/personal-workspace-integration-poc.spec.ts",
+        "tests/e2e/personal-workspace-integrated-standalone.spec.ts"
+      ],
+      "verificationRunIds": [
+        "p3a-react-accessibility-browser",
+        "p3a-standalone-accessibility-browser"
+      ],
+      "reason": "A0-3의 한 번만 렌더하는 전역 navigation과 한 줄 local action 계약에 따라 기존 전역 검토 버튼을 복원하지 않는다. 대신 현재 대응 action인 보조 탐색, 개인공간 보기, 항목 검토에 명시적 accessible name을 제공하고 React와 독립 HTML에서 Escape·닫기 뒤 opener focus 복귀와 zero-write를 브라우저로 확인했다.",
+      "action": "전역 검토 버튼을 중복 추가하지 말고 현재 navigation과 선택형 항목 검토의 이름·focus 회귀를 유지한다."
+    },
+    {
+      "id": "D2-058",
+      "from": "부분",
+      "to": "충족",
+      "evidenceLevel": "E4",
+      "currentEvidence": [
+        "docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/stage-3-contract.md",
+        "lib/flow/personal-workspace-poc-storage-transaction.ts",
+        "lib/flow/personal-workspace-poc-plan-editor.ts",
+        "lib/flow/personal-workspace-poc-state.ts",
+        "lib/flow/personal-workspace-poc-storage-transaction.test.ts",
+        "tests/e2e/personal-workspace-stage-1-runtime.spec.ts",
+        "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js",
+        "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/standalone.test.cjs"
+      ],
+      "verificationRunIds": [
+        "p3a-personal-workspace-poc-suite",
+        "p3a-standalone-model"
+      ],
+      "reason": "정본 expected의 여덟 하위 조건은 모두 E4다. 취소·Escape·blank·stale·invalid·storage failure는 target write 0이고, 성공은 source lineage·canonical Flow·projection을 한 PoC transaction으로 반영하며 Undo 한 번이 state와 draft bytes를 함께 복구한다. 기존 부분 사유였던 결과에서 원문으로의 역편집은 이 요구의 expected가 아니며 D2-021에서 별도 의도적 변경으로 관리한다.",
+      "action": "여덟 원자성 하위 조건과 stable identity 회귀를 유지하고 source reverse edit는 D2-021 경계로 계속 분리한다."
+    }
+  ],
+  "knownBoundaries": [
+    "P2-A, P2-B, P2-C override와 당시 HTML은 단계별 snapshot으로 보존한다.",
+    "P3-A는 현재 탐색·항목 검토의 접근 가능한 이름과 이미 구현된 원자성 요구의 판정 정합성만 닫는다.",
+    "실제 Android Chrome, iOS Safari, TalkBack, VoiceOver, OS 최대 글자, 실제 browser 200% zoom, 장시간 사용은 실행 전 판정을 올리지 않는다.",
+    "D2-002 production adapter, D2-023 corpus QA surface, D2-026 source candidate/sync, CreatorDraft library와 운영 writer는 별도 승인 전 구현하지 않는다."
+  ]
+}

@@ -60,9 +60,9 @@ test('Plan receipt summary reports exact bounded values and affected stable refs
   assert.deepEqual(result.affectedRefs, [flowRef, firstRef]);
   assert.deepEqual(result.changes.map((change) => [change.field, change.before, change.after]), [
     ['flow.title', '원본 · 원본 Flow', '내 계획 · 내 Flow'],
-    ['flow.item-order', `${firstRef} → ${secondRef}`, `${secondRef} → ${firstRef}`],
+    ['flow.item-order', '1. 첫 일 → 2. 둘째 일', '1. 둘째 일 → 2. 내 첫 일'],
     ['item.first.title', '원본 · 첫 일', '내 계획 · 내 첫 일'],
-    ['item.first.memo', '원본 · 원본 메모', '내 계획 · 개인 메모'],
+    ['item.first.memo', '개인 메모 없음', '내 계획 · 개인 메모'],
     ['item.first.schedule', '원본 일정 · 2026-09-03', '내 계획 · 2026-09-10'],
   ]);
 });
@@ -160,7 +160,7 @@ test('same visible text still distinguishes inherited and personal ownership', (
   assert.deepEqual(result.affectedRefs, [flowRef, firstRef]);
   assert.deepEqual(result.changes.map((change) => [change.field, change.before, change.after]), [
     ['flow.title', '내 계획 · 원본 Flow', '원본 · 원본 Flow'],
-    ['item.first.memo', '내 계획 · 원본 메모', '원본 · 원본 메모'],
+    ['item.first.memo', '내 계획 · 원본 메모', '개인 메모 없음'],
   ]);
 });
 

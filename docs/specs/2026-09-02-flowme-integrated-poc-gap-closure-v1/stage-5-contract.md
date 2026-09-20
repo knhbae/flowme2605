@@ -1,7 +1,8 @@
 # 단계 5 계약 — 고급 fidelity의 보존·보류 경계
 
-- 상태: `BOUNDARY_CLOSED_FEATURES_DEFERRED`
+- 상태: `BOUNDARY_CLOSED_BP017_POC_V1_IMPLEMENTED`
 - 작성일: 2026-09-02
+- 최근 결정 갱신: 2026-09-05
 - 대상: `A10`
 - 근거 결정: `a0-decision-record.md`의 A0-5
 
@@ -20,7 +21,7 @@ fail-closed하며, 미구현을 사용자와 보고서에 드러내는 것이다
 | recurrence·occurrence 이동 | 후속 보류 | recurrence/time/timezone 원문 보존, materialization 차단, 가짜 occurrence ID 0 | canonical occurrence identity와 개별 완료 owner 승인 |
 | 공개 후보·immutable version·S3 | 제외 | public writer·후보 UI·버전 update 0 | immutable public version, 개인 사본, 역류 금지, 권한 owner 승인 |
 | table/source 양방향 update | 후속 보류 | Markdown/TSV/보수적 CSV의 exact block 인식과 원문 보존, source row mutation 0 | row identity, conflict, add/delete, rollback 정책 승인 |
-| QuickItem→Flow 변환 | 후속 보류 | QuickItem kind와 ref를 그대로 보존 | 새 Flow identity, 원 QuickItem 존치, receipt·Undo 계약 승인 |
+| QuickItem→Flow 변환 | **PoC v1 임시 승인·구현** | QuickItem kind와 ref를 그대로 보존하고, 새 one-Item Flow·전환 snapshot receipt를 한 번에 만들며 Undo·reload·실패 retry를 지원 | 운영 정책·schema·migration 채택은 별도 승인 |
 | 장기 CreatorDraft 관리 | 후속 보류 | 작성 중 draft와 명시 handoff만 PoC namespace에 존재 | 목록·검색·복제·보관·재진입 제품 범위 승인 |
 | narrow near-miss correction | 제한 지원 | 지원 가능한 root checkbox만 명시 correction 후보, 자동 수정 0 | 현재 P0 helper 범위를 넘기는 grammar는 별도 승인 |
 
@@ -33,6 +34,8 @@ fail-closed하며, 미구현을 사용자와 보고서에 드러내는 것이다
 - 지원 가능한 좁은 near-miss에 대한 명시적 사용자 action
 - 손실 없는 TXT/raw fallback과 날짜 미정 선택
 - stale/tampered manifest, unknown field, unsupported grammar의 무저장 차단
+- 사용자가 명시적으로 선택한 QuickItem→새 Flow 복사. 전환 시점의 제목·메모·폴더·실행
+  날짜만 PoC shadow state와 versioned receipt에 기록하고 완료 상태는 복사하지 않는다.
 
 금지한다.
 
@@ -55,6 +58,8 @@ fail-closed하며, 미구현을 사용자와 보고서에 드러내는 것이다
 - fidelity manifest의 stale source와 altered decision은 실패한다.
 - public editor role은 writer를 호출하지 않는다.
 - blocked, unconfirmed, unaccepted-loss, stale, collision 경로는 state mutation 0이다.
+- QuickItem→Flow는 원본을 바꾸지 않고 새 Flow 1개·열린 Item 1개·receipt 1개를
+  atomic transition으로 만들며, 취소·stale·충돌·반복·저장 오류는 mutation 0이다.
 
 이 증거는 31개 후보 fixture 전체를 제품 기능으로 채택·재생했다는 뜻이 아니다. 채택되지
 않은 P1 후보는 `미구현 결함`이 아니라 `승인 전 보류`로, 원 요구의 충족 판정은 부분 또는
@@ -67,4 +72,13 @@ fail-closed하며, 미구현을 사용자와 보고서에 드러내는 것이다
 - [x] recurrence/public/table/source 기능을 지원하는 것처럼 노출하지 않는다.
 - [x] operating writer와 source mutation을 추가하지 않았다.
 - [x] 채택하지 않은 31-fixture/P1 전체 replay를 완료 증거로 표현하지 않는다.
-- [ ] 향후 제품 결정이 열리면 각 slice를 독립 목표·adapter·검증으로 다시 계획한다.
+- [x] `BP-017`은 사용자 승인으로 독립 PoC v1 목표·adapter·검증을 열었다.
+- [ ] 나머지 보류 slice의 제품 결정이 열리면 각각 독립 목표·adapter·검증으로 다시 계획한다.
+
+## 6. 2026-09-05 결정 보정
+
+이 문서의 2026-09-02 보류는 당시 필요한 계약이 없다는 판단이었다. 이후 사용자가 남은
+통합 gap을 계속 줄이도록 승인했고, `BP-017`에 필요한 원본 존치·새 identity·receipt·Undo
+경계를 [빠른 할 일→Flow 연결 v1](../2026-09-05-flowme-integrated-poc-quick-to-flow-bridge-v1/spec.md)에서
+교체 가능한 임시 계약으로 고정했다. 따라서 `BP-017`만 보류에서 구현으로 바뀐다.
+recurrence, 공개 후보·S3, table/source 양방향 update의 보류와 운영 writer 금지는 그대로다.

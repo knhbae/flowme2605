@@ -1,6 +1,6 @@
 'use client';
 
-import React, { type MouseEvent } from 'react';
+import React, { type MouseEvent, type ReactNode } from 'react';
 
 import type {
   DateGroupedTodoListViewModel,
@@ -18,6 +18,8 @@ type DateGroupedTodoListBaseProps<Data> = {
   checkboxTestId?: string;
   detailLinkTestId?: string;
   className?: string;
+  /** Optional caller-owned feedback; absent callers retain the exact row markup. */
+  renderAfterItem?: (row: DateGroupedTodoRow<Data>) => ReactNode;
 };
 
 type PublicDateGroupedTodoListProps<Data> = DateGroupedTodoListBaseProps<Data> & {
@@ -99,6 +101,7 @@ export function DateGroupedTodoList<Data = unknown>(
           <div role="list" aria-label="할 일">
             {group.rows.map((row) => {
               const isNext = row.id === nextItemId;
+              const afterItem = props.renderAfterItem?.(row);
               return (
                 <div
                   key={row.id}
@@ -171,6 +174,7 @@ export function DateGroupedTodoList<Data = unknown>(
                       ›
                     </span>
                   </a>
+                  {afterItem ? <div className="col-span-2 min-w-0 px-2">{afterItem}</div> : null}
                 </div>
               );
             })}

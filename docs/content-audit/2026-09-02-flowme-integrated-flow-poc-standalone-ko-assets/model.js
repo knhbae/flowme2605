@@ -2,16 +2,102 @@
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
     const losslessRuntime = require('./lossless-authoring-runtime.cjs').loadCommonJs();
-    module.exports = factory(losslessRuntime);
+    const validationExamplesRuntime = require('./validation-examples-runtime.cjs').loadCommonJs();
+    let structureTemplateRuntime = null;
+    let sourceUpdateRuntime = null;
+    try {
+      structureTemplateRuntime = require('./structure-template-runtime.cjs').loadCommonJs();
+    } catch (error) {
+      structureTemplateRuntime = null;
+    }
+    try {
+      sourceUpdateRuntime = require('./source-update-runtime.cjs').loadCommonJs();
+    } catch (error) {
+      sourceUpdateRuntime = null;
+    }
+    module.exports = factory(losslessRuntime, validationExamplesRuntime, structureTemplateRuntime, sourceUpdateRuntime);
   } else {
-    root.FlowMeIntegratedPoc = factory(root.FlowMePersonalWorkspaceLosslessAuthoring);
+    root.FlowMeIntegratedPoc = factory(
+      root.FlowMePersonalWorkspaceLosslessAuthoring,
+      root.FlowMePersonalWorkspacePocValidationExamples,
+      root.FlowMePersonalWorkspaceStructureTemplate,
+      root.FlowMePersonalWorkspaceSourceUpdate
+    );
   }
-})(typeof globalThis !== 'undefined' ? globalThis : this, function (losslessRuntime) {
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (losslessRuntime, validationExamplesRuntime, structureTemplateRuntime, sourceUpdateRuntime) {
   'use strict';
 
   if (!losslessRuntime) throw new Error('lossless-authoring-runtime-missing');
 
+  const EMPTY_VALIDATION_EXAMPLE_CATALOG = Object.freeze([]);
+  const missingValidationExampleSelection = () => Object.freeze({
+    status: 'unavailable',
+    reason: 'runtime-missing',
+    catalogVersion: 0,
+    example: null,
+    previewRawText: null,
+    sourceOwner: null,
+    templateId: null,
+    sourceMutationCount: 0,
+    workspaceMutationCount: 0,
+    operatingMutationCount: 0
+  });
+  const missingValidationExampleApplyPlan = input => Object.freeze({
+    status: 'blocked',
+    reason: 'runtime-missing',
+    catalogVersion: 0,
+    exampleId: input && typeof input.exampleId === 'string' ? input.exampleId : '',
+    currentSourceFingerprint: null,
+    nextRawText: input && typeof input.rawText === 'string' ? input.rawText : '',
+    sourceMutationCount: 0,
+    workspaceMutationCount: 0,
+    operatingMutationCount: 0,
+    replacement: null,
+    sourceOwner: null,
+    templateId: null
+  });
+  const safeValidationExamplesRuntime = validationExamplesRuntime || Object.freeze({
+    PERSONAL_WORKSPACE_POC_VALIDATION_EXAMPLE_CATALOG_VERSION: 0,
+    PERSONAL_WORKSPACE_POC_VALIDATION_EXAMPLE_GROUPS: EMPTY_VALIDATION_EXAMPLE_CATALOG,
+    PERSONAL_WORKSPACE_POC_VALIDATION_EXAMPLE_CATALOG: EMPTY_VALIDATION_EXAMPLE_CATALOG,
+    fingerprintPersonalWorkspacePocAuthoringSource: () => null,
+    normalizePersonalWorkspacePocValidationExampleSearch: value => String(value || '').normalize('NFKC').toLocaleLowerCase('ko-KR').replace(/\s+/gu, ' ').trim(),
+    filterPersonalWorkspacePocValidationExamples: () => EMPTY_VALIDATION_EXAMPLE_CATALOG,
+    projectPersonalWorkspacePocValidationExampleSelection: missingValidationExampleSelection,
+    planPersonalWorkspacePocValidationExampleApply: missingValidationExampleApplyPlan
+  });
+  const EMPTY_STRUCTURE_TEMPLATE_PREVIEWS = Object.freeze([]);
+  const blockedStructureTemplatePreviewPlan = (input, reason) => Object.freeze({
+    status: 'blocked',
+    reason,
+    templateId: input && typeof input.templateId === 'string' ? input.templateId : '',
+    catalogVersion: input && typeof input.catalogVersion === 'string' ? input.catalogVersion : null,
+    contractVersion: input && typeof input.contractVersion === 'string' ? input.contractVersion : null,
+    nextRawText: input && typeof input.rawText === 'string' ? input.rawText : '',
+    sourceMutationCount: 0,
+    workspaceMutationCount: 0,
+    operatingMutationCount: 0,
+    replacement: null,
+    definition: null,
+    inputDraft: null
+  });
+  const missingStructureTemplatePreviewPlan = input => blockedStructureTemplatePreviewPlan(
+    input,
+    structureTemplateRuntime ? 'planner-missing' : 'runtime-missing'
+  );
+  const safeStructureTemplateRuntime = structureTemplateRuntime || Object.freeze({
+    PERSONAL_WORKSPACE_POC_STRUCTURE_TEMPLATE_PREVIEW_CATALOG_VERSION: null,
+    PERSONAL_WORKSPACE_POC_STRUCTURE_TEMPLATE_PREVIEW_CONTRACT_VERSION: null,
+    STRUCTURE_TEMPLATE_SIDECAR_STORAGE_KEY: null,
+    fingerprintStructureTemplateRawText: () => null,
+    listPersonalWorkspacePocStructureTemplatePreviews: () => EMPTY_STRUCTURE_TEMPLATE_PREVIEWS,
+    findPersonalWorkspacePocStructureTemplatePreview: () => null,
+    planPersonalWorkspacePocStructureTemplatePreviewApply: missingStructureTemplatePreviewPlan
+  });
+
   const VERSION = 1;
+  // Replaceable PoC-only defaults for NEW authored copies, never a legacy migration.
+  const AUTHORING_HANDOFF_EXECUTION_DEFAULTS = Object.freeze({ contractVersion: 1, done: false, completedAt: null });
   const OCCURRENCE_CONTRACT_VERSION = 1;
   const RESULT_PROJECTION_VERSION = 3;
   const RESULT_DOWNLOAD_CONTRACT_VERSION = 2;
@@ -23,6 +109,11 @@
   const TODAY = '2026-09-02';
   const STORAGE_KEY = 'flow:poc:personal-workspace:v1:standalone-integrated';
   const DRAFT_STORAGE_KEY = 'flow:poc:personal-workspace:v1:standalone-integrated:draft';
+  const CREATOR_DRAFT_LIBRARY_VERSION = 1;
+  const CREATOR_DRAFT_STORAGE_KEY = 'flow:poc:personal-workspace:v1:creator-drafts';
+  const SOURCE_CANDIDATE_STORAGE_KEY = 'flow:poc:personal-workspace:v1:source-candidates';
+  const SOURCE_UPDATE_FIXTURE_AT = '2026-09-04T00:00:00.000Z';
+  const SOURCE_UPDATE_FIXTURE_ID = 'standalone-local-validation-v1';
   const clone = value => JSON.parse(JSON.stringify(value));
   const own = (object, key) => Object.prototype.hasOwnProperty.call(object, key);
   const RESULT_SHEET_COLUMNS = Object.freeze([
@@ -153,6 +244,88 @@
   const LOSSLESS_AUTHORING_VERSION = losslessRuntime.PERSONAL_WORKSPACE_POC_LOSSLESS_AUTHORING_VERSION;
   const LOSSLESS_AUTHORING_LIMITS = losslessRuntime.PERSONAL_WORKSPACE_POC_LOSSLESS_AUTHORING_LIMITS;
   const analyzeLosslessAuthoring = losslessRuntime.analyzePersonalWorkspacePocLosslessAuthoring;
+  const PERSONAL_WORKSPACE_POC_VALIDATION_EXAMPLE_CATALOG_VERSION = safeValidationExamplesRuntime.PERSONAL_WORKSPACE_POC_VALIDATION_EXAMPLE_CATALOG_VERSION;
+  const PERSONAL_WORKSPACE_POC_VALIDATION_EXAMPLE_GROUPS = safeValidationExamplesRuntime.PERSONAL_WORKSPACE_POC_VALIDATION_EXAMPLE_GROUPS;
+  const PERSONAL_WORKSPACE_POC_VALIDATION_EXAMPLE_CATALOG = safeValidationExamplesRuntime.PERSONAL_WORKSPACE_POC_VALIDATION_EXAMPLE_CATALOG;
+  const fingerprintPersonalWorkspacePocAuthoringSource = safeValidationExamplesRuntime.fingerprintPersonalWorkspacePocAuthoringSource;
+  const normalizePersonalWorkspacePocValidationExampleSearch = safeValidationExamplesRuntime.normalizePersonalWorkspacePocValidationExampleSearch;
+  const filterPersonalWorkspacePocValidationExamples = safeValidationExamplesRuntime.filterPersonalWorkspacePocValidationExamples;
+  const projectPersonalWorkspacePocValidationExampleSelection = safeValidationExamplesRuntime.projectPersonalWorkspacePocValidationExampleSelection;
+  const planPersonalWorkspacePocValidationExampleApply = safeValidationExamplesRuntime.planPersonalWorkspacePocValidationExampleApply;
+  const validationExampleCatalogVersion = PERSONAL_WORKSPACE_POC_VALIDATION_EXAMPLE_CATALOG_VERSION;
+  const validationExampleGroups = PERSONAL_WORKSPACE_POC_VALIDATION_EXAMPLE_GROUPS;
+  const validationExampleCatalog = PERSONAL_WORKSPACE_POC_VALIDATION_EXAMPLE_CATALOG;
+  const filterValidationExamples = input => filterPersonalWorkspacePocValidationExamples(input || {});
+  const projectValidationExampleSelection = input => projectPersonalWorkspacePocValidationExampleSelection(input || {});
+  const planValidationExampleApply = input => planPersonalWorkspacePocValidationExampleApply(input || {});
+  const structureTemplatePreviewCatalogVersion = safeStructureTemplateRuntime.PERSONAL_WORKSPACE_POC_STRUCTURE_TEMPLATE_PREVIEW_CATALOG_VERSION;
+  const structureTemplatePreviewContractVersion = safeStructureTemplateRuntime.PERSONAL_WORKSPACE_POC_STRUCTURE_TEMPLATE_PREVIEW_CONTRACT_VERSION;
+  const structureTemplateSidecarStorageKey = safeStructureTemplateRuntime.STRUCTURE_TEMPLATE_SIDECAR_STORAGE_KEY;
+  let structureTemplatePreviews = EMPTY_STRUCTURE_TEMPLATE_PREVIEWS;
+  try {
+    const previews = safeStructureTemplateRuntime.listPersonalWorkspacePocStructureTemplatePreviews({
+      catalogVersion: structureTemplatePreviewCatalogVersion,
+      contractVersion: structureTemplatePreviewContractVersion
+    });
+    if (Array.isArray(previews)) structureTemplatePreviews = Object.freeze(previews.slice());
+  } catch (error) {
+    structureTemplatePreviews = EMPTY_STRUCTURE_TEMPLATE_PREVIEWS;
+  }
+  const findStructureTemplatePreview = (templateId, lookup) => {
+    try {
+      return safeStructureTemplateRuntime.findPersonalWorkspacePocStructureTemplatePreview(
+        templateId,
+        lookup || {}
+      );
+    } catch (error) {
+      return null;
+    }
+  };
+  const planStructureTemplatePreviewMaterialization = input => {
+    const planner = safeStructureTemplateRuntime.planPersonalWorkspacePocStructureTemplatePreviewApply;
+    if (typeof planner !== 'function') return missingStructureTemplatePreviewPlan(input);
+    try {
+      const request = input || {};
+      const rawText = typeof request.rawText === 'string' ? request.rawText : '';
+      const expectedSourceFingerprint = typeof request.expectedSourceFingerprint === 'string'
+        ? request.expectedSourceFingerprint
+        : safeStructureTemplateRuntime.fingerprintStructureTemplateRawText(rawText);
+      const plan = planner(Object.assign({}, request, { expectedSourceFingerprint }));
+      if (!plan || typeof plan !== 'object') {
+        return blockedStructureTemplatePreviewPlan(request, 'compiler-error');
+      }
+      if (plan.status !== 'applied') {
+        if (
+          plan.sourceMutationCount !== 0
+          || plan.workspaceMutationCount !== 0
+          || plan.operatingMutationCount !== 0
+          || plan.replacement !== null
+          || plan.nextRawText !== rawText
+        ) return blockedStructureTemplatePreviewPlan(request, 'compiler-error');
+        return plan;
+      }
+      const preview = findStructureTemplatePreview(request.templateId, {
+        catalogVersion: request.catalogVersion,
+        contractVersion: request.contractVersion
+      });
+      if (
+        rawText !== ''
+        || request.confirmed !== true
+        || request.composing === true
+        || !preview
+        || plan.sourceMutationCount !== 1
+        || plan.workspaceMutationCount !== 0
+        || plan.operatingMutationCount !== 0
+        || plan.nextRawText !== preview.expectedRawText
+        || !plan.replacement
+        || plan.replacement.beforeRawText !== ''
+        || plan.replacement.afterRawText !== preview.expectedRawText
+      ) return blockedStructureTemplatePreviewPlan(request, 'bytes-mismatch');
+      return plan;
+    } catch (error) {
+      return blockedStructureTemplatePreviewPlan(input, 'compiler-error');
+    }
+  };
 
   function isDate(value) {
     if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
@@ -398,6 +571,12 @@
     return clean || 'entry';
   }
 
+  function isSingleLineTitle(value) {
+    return typeof value === 'string'
+      && Boolean(value.trim())
+      && !/[\r\n\u0000-\u001f\u007f]/u.test(value);
+  }
+
   function seedState() {
     return {
       version: VERSION,
@@ -429,6 +608,7 @@
       orders: {},
       occurrenceOverrides: {},
       trashEntries: [],
+      quickConversionReceipts: [],
       lastReceipt: null,
       updatedAt: null
     };
@@ -558,6 +738,10 @@
     return state && Array.isArray(state.trashEntries) ? state.trashEntries : [];
   }
 
+  function quickConversionReceipts(state) {
+    return state && Array.isArray(state.quickConversionReceipts) ? state.quickConversionReceipts : [];
+  }
+
   function isTrashedFlow(state, flowId) {
     return trashEntries(state).some(entry => entry.kind === 'flow' && entry.id === flowId);
   }
@@ -625,6 +809,38 @@
 
   function flowItemIds(flow) {
     return flow.steps.reduce((ids, step) => ids.concat(step.itemIds), []);
+  }
+
+  /* Read-only Item detail projection. The task snapshot is bound to one exact saved
+     copy / Flow / Item ref when authored; titles and list positions are not keys. */
+  function itemDetails(state, taskId) {
+    if (!state || !Array.isArray(state.tasks) || !Array.isArray(state.flows)) return null;
+    const tasks = state.tasks.filter(task => task.id === taskId);
+    if (tasks.length !== 1) return null;
+    const task = tasks[0];
+    const personalMemo = typeof task.memo === 'string' ? task.memo : '';
+    if (task.flowId === null) return { sourceDescription: '', completionCriterion: '', personalMemo };
+    const flows = state.flows.filter(flow => flow.id === task.flowId);
+    if (flows.length !== 1 || !Array.isArray(flows[0].steps)) return null;
+    const flow = flows[0];
+    const prefix = 'flow-item:' + encodeURIComponent(flow.savedCopyId) + ':' + encodeURIComponent(flow.sourceFlowId) + ':';
+    if (typeof task.ref !== 'string' || !task.ref.startsWith(prefix)
+      || !task.ref.slice(prefix.length) || task.ref.slice(prefix.length).includes(':')
+      || state.tasks.filter(entry => entry.ref === task.ref).length !== 1
+      || flowItemIds(flow).filter(id => id === taskId).length !== 1) return null;
+    try {
+      if (encodeURIComponent(decodeURIComponent(task.ref.slice(prefix.length))) !== task.ref.slice(prefix.length)) return null;
+    } catch (error) { return null; }
+    const properties = task.sourceProperties || {};
+    if (!properties || typeof properties !== 'object' || Array.isArray(properties)
+      || Object.values(properties).some(value => typeof value !== 'string')
+      || (task.sourceDescription !== undefined && typeof task.sourceDescription !== 'string')
+      || (task.completionCriterion !== undefined && typeof task.completionCriterion !== 'string')) return null;
+    return {
+      sourceDescription: task.sourceDescription !== undefined ? task.sourceDescription : (properties['설명'] || properties['상세'] || properties['자세히'] || properties['방법'] || ''),
+      completionCriterion: task.completionCriterion !== undefined ? task.completionCriterion : (properties['완료 기준'] || properties['완료기준'] || ''),
+      personalMemo
+    };
   }
 
   function compareStableText(left, right) {
@@ -770,7 +986,22 @@
     return { ok: true, rows, manifests: [expanded.manifest], hasMore: expanded.manifest.hasMore };
   }
 
-  function resultContextRank(state, task, planOrder) {
+  function resultContextRank(state, task, planOrder, options) {
+    const fallback = { order: planOrder, key: task.date ? 'date:' + task.date : 'undated:undated', manual: false, resolved: false };
+    if (options && Object.prototype.hasOwnProperty.call(options, 'timelineRankResolver')) {
+      // An explicit v2 reader never falls through to the old view priority.
+      // Only this same-date calendar rank consumes the hook; Plan/TXT/Sheet and
+      // authoring previews retain their existing source/Plan order.
+      if (task.occurrenceId) return fallback;
+      try {
+        const rank = typeof options.timelineRankResolver === 'function'
+          ? options.timelineRankResolver(Object.freeze({ id: task.id, date: task.date || null, planOrder })) : null;
+        if (rank && Number.isSafeInteger(rank.order) && rank.order >= 0 && rank.key === fallback.key && typeof rank.manual === 'boolean') {
+          return { order: rank.order, key: rank.key, manual: rank.manual, resolved: true };
+        }
+      } catch (_) { /* Unavailable rank is an explicit Plan fallback, not old order. */ }
+      return fallback;
+    }
     const contexts = [];
     if (!task.date) contexts.push('undated');
     else {
@@ -826,7 +1057,7 @@
     let itemNumber = 0;
     rows.forEach(row => {
       const stepTitle = String(row.sectionTitle || '할 일').trim() || '할 일';
-      const stepKey = row.stepId || stepTitle;
+      const stepKey = row.sectionGroupKey || row.stepId || stepTitle;
       if (stepKey !== currentStepKey) {
         if (currentStepKey && lines[lines.length - 1] !== '') lines.push('');
         lines.push('[' + stepTitle + ']');
@@ -1008,6 +1239,8 @@
     const items = [];
     const recurrenceManifests = [];
     const projectionFailures = [];
+    const hasTimelineRank = !config.preview && config.options && Object.prototype.hasOwnProperty.call(config.options, 'timelineRankResolver');
+    const fallbackContexts = new Map();
     config.sourceItems.forEach(base => {
       const result = resultOccurrenceRows(config.state, base, config.options);
       if (!result.ok) {
@@ -1017,7 +1250,11 @@
       recurrenceManifests.push.apply(recurrenceManifests, result.manifests);
       result.rows.forEach(row => {
         const planOrder = items.length;
-        const rank = resultContextRank(config.state, { id: base.id, date: row.executionDate }, planOrder);
+        const rank = resultContextRank(config.state, { id: base.id, date: row.executionDate, occurrenceId: row.occurrenceId }, planOrder, config.preview ? null : config.options);
+        if (hasTimelineRank && !rank.resolved && row.timelinePolicy !== 'excluded') {
+          const reason = row.occurrenceId ? 'recurrence-order-out-of-scope' : 'incomplete-source-task-membership';
+          if (!fallbackContexts.has(rank.key) || row.occurrenceId) fallbackContexts.set(rank.key, reason);
+        }
         items.push(Object.assign({}, row, {
           planOrder,
           sourcePlanOrder: base.planOrder,
@@ -1026,6 +1263,16 @@
           manualContextOrder: rank.manual
         }));
       });
+    });
+    // Global date indices and per-Flow Plan indices are not comparable. A date
+    // with unmapped/recurring visible rows keeps one existing Plan order rather
+    // than inventing an occurrence merge policy or changing when another Flow
+    // or QuickItem enters the global date group. Other dates stay independent.
+    if (hasTimelineRank && fallbackContexts.size) items.forEach(item => {
+      if (item.timelinePolicy !== 'excluded' && fallbackContexts.has(item.contextKey)) {
+        item.contextOrder = item.planOrder;
+        item.manualContextOrder = false;
+      }
     });
     if (projectionFailures.length && config.failClosed) return null;
     const sourceItemRefs = config.sourceItems.map(item => item.sourceItemRef);
@@ -1113,7 +1360,108 @@
         sheet: Object.assign({ kind: 'read-only-projection', rows: sheet, download: downloads.csv }, slotManifest)
       },
       projectionFailures
-    }, config.extra || {});
+    }, config.extra || {}, hasTimelineRank ? { timelineOrderFallbacks: Array.from(fallbackContexts, ([contextKey, reason]) => ({ contextKey, reason })) } : {});
+  }
+
+  // DTO boundary only: PD owns source/current/Undo validation. Do not import P/C
+  // here (P already depends on M), or treat this display value as edit authority.
+  function safeResultStructureData(value, parents = new Set()) {
+    if (value === null || typeof value === 'string' || typeof value === 'boolean') return true;
+    if (typeof value === 'number') return Number.isFinite(value);
+    if (!value || typeof value !== 'object' || parents.has(value) || Object.getOwnPropertySymbols(value).length) return false;
+    const nativePrototype = (proto, name) => {
+      if (!proto || Object.getOwnPropertyDescriptor(proto, 'toJSON')) return false;
+      const constructor = Object.getOwnPropertyDescriptor(proto, 'constructor');
+      if (!constructor || !own(constructor, 'value') || typeof constructor.value !== 'function'
+        || Function.prototype.toString.call(constructor.value) !== 'function ' + name + '() { [native code] }') return false;
+      const prototype = Object.getOwnPropertyDescriptor(constructor.value, 'prototype');
+      return Boolean(prototype && own(prototype, 'value') && prototype.value === proto);
+    };
+    const plainPrototype = proto => proto === null || (Object.getPrototypeOf(proto) === null && nativePrototype(proto, 'Object'));
+    const array = Array.isArray(value), proto = Object.getPrototypeOf(value), names = Object.getOwnPropertyNames(value);
+    if (array) {
+      if (!nativePrototype(proto, 'Array') || !plainPrototype(Object.getPrototypeOf(proto))
+        || names.length !== value.length + 1 || Object.keys(value).length !== value.length) return false;
+      for (let index = 0; index < value.length; index += 1) if (!own(value, String(index))) return false;
+    } else if (!plainPrototype(proto) || names.length !== Object.keys(value).length) return false;
+    parents.add(value);
+    for (const key of names) {
+      if (array && key === 'length') continue;
+      const descriptor = Object.getOwnPropertyDescriptor(value, key);
+      if (['__proto__', 'constructor', 'prototype'].includes(key) || !descriptor || !own(descriptor, 'value')
+        || !descriptor.enumerable || !safeResultStructureData(descriptor.value, parents)) return false;
+    }
+    parents.delete(value);
+    return true;
+  }
+
+  function personalStructureResultItems(state, flow, sourceItems, view) {
+    try {
+      const exact = (value, keys) => value && typeof value === 'object' && !Array.isArray(value)
+        && Object.keys(value).length === keys.length && keys.every(key => own(value, key));
+      if (!safeResultStructureData(view) || !exact(view, ['ok', 'viewOnly', 'flowRef', 'sections', 'orderedItemRefs'])
+        || view.ok !== true || view.viewOnly !== true || typeof flow.ref !== 'string' || view.flowRef !== flow.ref
+        || !Array.isArray(view.sections) || view.sections.length !== flow.steps.length || !Array.isArray(view.orderedItemRefs)) return null;
+      if (typeof flow.savedCopyId !== 'string' || !flow.savedCopyId.trim() || typeof flow.sourceFlowId !== 'string' || !flow.sourceFlowId.trim()
+        || flow.ref !== 'saved-flow:' + encodeURIComponent(flow.savedCopyId) + ':' + encodeURIComponent(flow.sourceFlowId)) return null;
+      const itemPrefix = 'flow-item:' + encodeURIComponent(flow.savedCopyId) + ':' + encodeURIComponent(flow.sourceFlowId) + ':';
+      const baseByRef = new Map(sourceItems.map(item => [item.sourceItemRef, item]));
+      if (baseByRef.size !== sourceItems.length || view.orderedItemRefs.length !== sourceItems.length
+        || new Set(view.orderedItemRefs).size !== sourceItems.length
+        || view.orderedItemRefs.some(ref => typeof ref !== 'string' || !baseByRef.has(ref))) return null;
+      const sectionOrders = new Set(), sectionIds = new Set(), decorated = new Map();
+      for (const section of view.sections) {
+        if (!exact(section, ['sectionId', 'sourceOrder', 'sourceTitle', 'title', 'itemRefs', 'titleOwner', 'editCapability'])
+          || !Number.isSafeInteger(section.sourceOrder) || section.sourceOrder < 0 || section.sourceOrder >= flow.steps.length
+          || sectionOrders.has(section.sourceOrder) || typeof section.sourceTitle !== 'string' || typeof section.title !== 'string'
+          || !['authoring', 'unproven', 'source'].includes(section.titleOwner)
+          || !['poc-shadow', 'readonly'].includes(section.editCapability) || !Array.isArray(section.itemRefs)) return null;
+        if ((section.editCapability === 'poc-shadow') !== (section.titleOwner === 'authoring')
+          || (section.title !== section.sourceTitle && (!section.title.trim() || section.title.trim() !== section.title))) return null;
+        sectionOrders.add(section.sourceOrder);
+        const step = flow.steps[section.sourceOrder];
+        if (section.sourceTitle !== step.title || section.itemRefs.length !== step.itemIds.length
+          || (section.editCapability === 'readonly' && section.title !== section.sourceTitle)) return null;
+        if (section.sectionId === null) {
+          if (section.editCapability !== 'readonly') return null;
+        } else {
+          if (typeof section.sectionId !== 'string' || !section.sectionId || section.sectionId !== step.id
+            || sectionIds.has(section.sectionId) || flow.steps.filter(entry => entry.id === section.sectionId).length !== 1) return null;
+          sectionIds.add(section.sectionId);
+        }
+        for (let index = 0; index < step.itemIds.length; index += 1) {
+          const matches = state.tasks.filter(task => task.id === step.itemIds[index] && task.flowId === flow.id);
+          if (matches.length !== 1) return null;
+          const task = matches[0], ref = section.itemRefs[index], base = baseByRef.get(ref);
+          // A supplied structure requires actual full refs; the old local-id
+          // fallback remains available only when the option is absent.
+          if (typeof task.ref !== 'string' || ref !== task.ref || !base || base.id !== task.id || decorated.has(ref)) return null;
+          if (!ref.startsWith(itemPrefix)) return null;
+          const sourceId = decodeURIComponent(ref.slice(itemPrefix.length));
+          if (!sourceId.trim() || itemPrefix + encodeURIComponent(sourceId) !== ref) return null;
+          decorated.set(ref, Object.assign({}, base, { sectionTitle: section.title,
+            sectionGroupKey: JSON.stringify([flow.ref, section.sourceOrder]) }));
+        }
+      }
+      if (decorated.size !== sourceItems.length) return null;
+      return view.orderedItemRefs.map(ref => decorated.get(ref));
+    } catch (_) { return null; }
+  }
+
+  function personalResultTextLines(title, items) {
+    const lines = ['# ' + title];
+    let sectionGroupKey = null;
+    items.forEach(item => {
+      if (item.sectionGroupKey !== sectionGroupKey) {
+        lines.push('## ' + item.sectionTitle);
+        sectionGroupKey = item.sectionGroupKey;
+      }
+      lines.push('- [' + (item.completed ? 'x' : ' ') + '] ' + item.title);
+      lines.push('  - 계획 날짜: ' + (item.planDate || '미정'));
+      if (item.executionDate !== item.planDate) lines.push('  - 실행 날짜: ' + (item.executionDate || '미정'));
+      if (item.memo) lines.push('  - 메모: ' + item.memo);
+    });
+    return lines;
   }
 
   /* A read-only projection: writes happen only through explicit occurrence transitions. */
@@ -1157,13 +1505,21 @@
         if (task.memo) lines.push('  - 메모: ' + task.memo);
       });
     });
+    let resultItems = sourceItems, resultLines = lines;
+    if (options && own(options, 'personalPlanStructureView')) {
+      const descriptor = Object.getOwnPropertyDescriptor(options, 'personalPlanStructureView');
+      if (!descriptor || !own(descriptor, 'value') || !descriptor.enumerable) return null;
+      resultItems = personalStructureResultItems(state, flow, sourceItems, descriptor.value);
+      if (!resultItems) return null;
+      resultLines = personalResultTextLines(flow.title, resultItems);
+    }
     const parsedRaw = flow.rawText === null ? null : parseSource(flow.rawText);
     return buildUnifiedResultProjection({
       state,
       flowRef: flow.ref,
       title: flow.title,
       savedCopyId: flow.savedCopyId,
-      sourceItems,
+      sourceItems: resultItems,
       options: options || {},
       sourceOnlyText: parsedRaw ? parsedRaw.sourceOnlyText : [],
       workingSource: {
@@ -1171,7 +1527,7 @@
         editable: false,
         rawText: flow.rawText === null ? lines.join('\n') : flow.rawText
       },
-      textLines: lines,
+      textLines: resultLines,
       preview: false,
       failClosed: true
     });
@@ -1527,7 +1883,7 @@
 
   function validate(state) {
     const errors = [];
-    if (!state || typeof state !== 'object' || state.version !== VERSION || !Array.isArray(state.folders) || !Array.isArray(state.flows) || !Array.isArray(state.tasks) || !state.orders || typeof state.orders !== 'object' || (state.occurrenceOverrides !== undefined && (!state.occurrenceOverrides || typeof state.occurrenceOverrides !== 'object' || Array.isArray(state.occurrenceOverrides))) || (state.trashEntries !== undefined && !Array.isArray(state.trashEntries))) return ['invalid-shape'];
+    if (!state || typeof state !== 'object' || state.version !== VERSION || !Array.isArray(state.folders) || !Array.isArray(state.flows) || !Array.isArray(state.tasks) || !state.orders || typeof state.orders !== 'object' || (state.occurrenceOverrides !== undefined && (!state.occurrenceOverrides || typeof state.occurrenceOverrides !== 'object' || Array.isArray(state.occurrenceOverrides))) || (state.trashEntries !== undefined && !Array.isArray(state.trashEntries)) || (state.quickConversionReceipts !== undefined && !Array.isArray(state.quickConversionReceipts))) return ['invalid-shape'];
     const unique = (entries, label) => {
       const ids = new Set();
       entries.forEach(entry => {
@@ -1561,8 +1917,14 @@
     });
     state.tasks.forEach(task => {
       if (!task.title || (task.date !== null && !isDate(task.date)) || typeof task.done !== 'boolean') errors.push('invalid-task');
+      if ((task.memo !== undefined && typeof task.memo !== 'string')
+        || (task.sourceDescription !== undefined && typeof task.sourceDescription !== 'string')
+        || (task.completionCriterion !== undefined && typeof task.completionCriterion !== 'string')
+        || (task.sourceLine !== undefined && (!Number.isInteger(task.sourceLine) || task.sourceLine < 1))
+        || (task.sourceProperties !== undefined && (!task.sourceProperties || typeof task.sourceProperties !== 'object' || Array.isArray(task.sourceProperties) || Object.values(task.sourceProperties).some(value => typeof value !== 'string')))) errors.push('invalid-item-detail-metadata');
       if (task.flowId === null) { if (!folderExists(task.folderId) || membership.has(task.id)) errors.push('invalid-quick-item'); }
       else if (!flowIds.has(task.flowId) || task.folderId !== null || membership.get(task.id) !== task.flowId) errors.push('invalid-flow-item');
+      else if (!itemDetails(state, task.id)) errors.push('invalid-item-detail-binding');
       const properties = task.sourceProperties && typeof task.sourceProperties === 'object' ? task.sourceProperties : {};
       if (properties['반복 종료'] && !properties['반복']) errors.push('invalid-recurrence-end');
       if (properties['반복']) {
@@ -1570,6 +1932,46 @@
         const parsed = parseRecurrence(properties['반복'], properties['반복 종료']);
         if (!isDate(startDate) || !parsed.ok || (parsed.ok && parsed.rule.end && parsed.rule.end.mode === 'until' && parsed.rule.end.date < startDate)) errors.push('invalid-recurrence');
       }
+    });
+    const conversionIds = new Set();
+    const convertedQuickIds = new Set();
+    const convertedFlowIds = new Set();
+    quickConversionReceipts(state).forEach(receipt => {
+      if (!receipt || typeof receipt !== 'object'
+        || receipt.version !== 1
+        || typeof receipt.conversionId !== 'string' || !receipt.conversionId
+        || receipt.handoffId !== receipt.conversionId
+        || typeof receipt.sourceQuickItemId !== 'string' || !receipt.sourceQuickItemId
+        || typeof receipt.sourceTitle !== 'string' || !receipt.sourceTitle
+        || typeof receipt.sourceMemo !== 'string'
+        || (receipt.sourceFolderId !== null && (typeof receipt.sourceFolderId !== 'string' || !/^[a-z0-9_-]+$/i.test(receipt.sourceFolderId)))
+        || (receipt.sourceDate !== null && !isDate(receipt.sourceDate))
+        || typeof receipt.flowId !== 'string' || !receipt.flowId
+        || typeof receipt.itemId !== 'string' || !receipt.itemId
+        || typeof receipt.flowTitle !== 'string' || !receipt.flowTitle
+        || receipt.completionPolicy !== 'source-preserved-new-item-open'
+        || typeof receipt.committedAt !== 'string' || !receipt.committedAt
+        || conversionIds.has(receipt.conversionId)
+        || convertedQuickIds.has(receipt.sourceQuickItemId)
+        || convertedFlowIds.has(receipt.flowId)) {
+        errors.push('invalid-quick-conversion-receipt');
+        return;
+      }
+      const convertedFlow = state.flows.find(entry => entry.id === receipt.flowId);
+      const convertedItem = state.tasks.find(entry => entry.id === receipt.itemId);
+      if (!convertedFlow
+        || convertedFlow.origin !== 'authoring-handoff'
+        || convertedFlow.handoffId !== receipt.handoffId
+        || flowItemIds(convertedFlow).length !== 1
+        || flowItemIds(convertedFlow)[0] !== receipt.itemId
+        || !convertedItem
+        || convertedItem.flowId !== receipt.flowId) {
+        errors.push('invalid-quick-conversion-binding');
+        return;
+      }
+      conversionIds.add(receipt.conversionId);
+      convertedQuickIds.add(receipt.sourceQuickItemId);
+      convertedFlowIds.add(receipt.flowId);
     });
     const trashIds = new Set();
     trashEntries(state).forEach(entry => {
@@ -1640,6 +2042,47 @@
         message = '빠른 할 일을 저장했어요.';
         break;
       }
+      case 'convert-quick-item-to-flow': {
+        if (action.intent === 'cancel') return { state, changed: false, message: 'Flow로 정리를 취소했어요.' };
+        if (!Number.isSafeInteger(action.expectedRevision) || action.expectedRevision !== state.revision) return reject('stale-state-revision', '다른 변경이 먼저 저장됐어요. 빠른 할 일을 다시 확인해 주세요.');
+        const sourceTask = next.tasks.find(entry => entry.id === action.quickItemId && entry.flowId === null);
+        if (!sourceTask) return reject('invalid-quick-item', '정리할 빠른 할 일을 찾을 수 없어요.');
+        if (isTrashedTask(next, sourceTask)) return reject('trashed-task', '휴지통의 빠른 할 일은 복원한 뒤 정리해 주세요.');
+        if (quickConversionReceipts(next).some(receipt => receipt.sourceQuickItemId === sourceTask.id)) return { state, changed: false, message: '이미 Flow로 정리했어요.' };
+        const flowTitle = typeof action.flowTitle === 'string' ? action.flowTitle.trim() : '';
+        if (!isSingleLineTitle(flowTitle) || !isSingleLineTitle(sourceTask.title)) return reject('invalid-flow-title', '새 Flow 이름과 빠른 할 일 내용을 확인해 주세요.');
+        const conversionId = 'quick-item-to-flow:v1:' + encodeURIComponent(sourceTask.id) + ':revision-' + state.revision;
+        const suffix = safeId(conversionId);
+        const flowId = 'quick-flow-' + suffix;
+        const itemId = 'quick-flow-item-' + suffix;
+        const savedCopyId = 'poc-' + suffix;
+        const sourceFlowId = 'quick-conversion-' + safeId(sourceTask.id);
+        if (next.flows.some(entry => entry.id === flowId || entry.ref === 'saved-flow:' + savedCopyId + ':' + sourceFlowId) || (Array.isArray(action.existingFlowIds) && action.existingFlowIds.includes(flowId))) return reject('flow-identity-collision', 'Flow 식별자가 겹쳐 저장하지 않았어요.');
+        if (next.tasks.some(entry => entry.id === itemId)) return reject('item-identity-collision', '할 일 식별자가 겹쳐 저장하지 않았어요.');
+        const committedAt = typeof action.now === 'string' && action.now ? action.now : TODAY + 'T12:00:00.000Z';
+        const rawText = '# ' + flowTitle + '\n\n- [ ] ' + sourceTask.title;
+        next.tasks.push({ id: itemId, title: sourceTask.title, sourceTitle: sourceTask.title, flowId, folderId: null, date: sourceTask.date, sourceDate: null, time: sourceTask.time || '', memo: sourceTask.memo, sourceMemo: '', done: false, completedAt: null, ref: 'flow-item:' + savedCopyId + ':' + sourceFlowId + ':item-1' });
+        next.flows.push({ id: flowId, ref: 'saved-flow:' + savedCopyId + ':' + sourceFlowId, savedCopyId, sourceFlowId, origin: 'authoring-handoff', originLabel: '빠른 할 일에서 정리', title: flowTitle, sourceTitle: flowTitle, folderId: sourceTask.folderId, rawText, sourceFingerprint: fingerprint(rawText), handoffId: conversionId, steps: [{ id: 'step-1', title: '할 일', itemIds: [itemId] }] });
+        const receipt = {
+          version: 1,
+          conversionId,
+          handoffId: conversionId,
+          sourceQuickItemId: sourceTask.id,
+          sourceTitle: sourceTask.title,
+          sourceMemo: sourceTask.memo,
+          sourceFolderId: sourceTask.folderId,
+          sourceDate: sourceTask.date,
+          flowId,
+          itemId,
+          flowTitle,
+          completionPolicy: 'source-preserved-new-item-open',
+          committedAt
+        };
+        next.quickConversionReceipts = quickConversionReceipts(next).concat(receipt);
+        next.lastReceipt = { operation: 'convert-quick-item-to-flow', conversionId, flowId, title: flowTitle, itemCount: 1 };
+        message = '빠른 할 일은 그대로 두고 새 Flow로 정리했어요.';
+        break;
+      }
       case 'add-folder': {
         if (typeof action.title !== 'string' || !action.title.trim()) return reject('invalid-title', '폴더 이름을 입력해 주세요.');
         if (!folderExists(action.parentId)) return reject('invalid-parent', '상위 폴더를 확인해 주세요.');
@@ -1708,6 +2151,7 @@
           const itemIds = new Set(flowItemIds(target));
           next.tasks = next.tasks.filter(entry => !itemIds.has(entry.id));
           next.flows = next.flows.filter(entry => entry.id !== target.id);
+          if (Array.isArray(next.quickConversionReceipts)) next.quickConversionReceipts = next.quickConversionReceipts.filter(receipt => receipt.flowId !== target.id);
         } else if (action.kind === 'quick') {
           next.tasks = next.tasks.filter(entry => entry.id !== action.id || entry.flowId !== null);
         } else return reject('invalid-trash-kind', '삭제 대상을 확인해 주세요.');
@@ -1796,7 +2240,6 @@
           const task = next.tasks.find(entry => entry.id === id);
           const update = updateById.get(id);
           if (typeof task.sourceTitle !== 'string') task.sourceTitle = task.title;
-          if (typeof task.sourceMemo !== 'string') task.sourceMemo = task.memo;
           task.title = update.title.trim();
           task.memo = update.memo;
           task.planDate = update.planDate;
@@ -1827,7 +2270,7 @@
             itemNumber += 1;
             const itemId = 'authored-item-' + suffix + '-' + itemNumber;
             itemIds.push(itemId);
-            next.tasks.push({ id: itemId, title: parsedItem.title, sourceTitle: parsedItem.title, flowId, folderId: null, date: parsedItem.date, sourceDate: parsedItem.date, time: parsedItem.time || '', memo: '', sourceMemo: '', done: parsedItem.checkedInSource, completedAt: null, ref: 'flow-item:' + savedCopyId + ':' + sourceFlowId + ':item-' + itemNumber, sourceLine: parsedItem.sourceLine, sourceProperties: clone(parsedItem.properties), sourceSubchecks: clone(parsedItem.subchecks || []), sourceResources: clone(parsedItem.resources || []), sourceSources: clone(parsedItem.sources || []) });
+            next.tasks.push({ id: itemId, title: parsedItem.title, sourceTitle: parsedItem.title, flowId, folderId: null, date: parsedItem.date, sourceDate: parsedItem.date, time: parsedItem.time || '', memo: '', sourceMemo: '', done: AUTHORING_HANDOFF_EXECUTION_DEFAULTS.done, completedAt: AUTHORING_HANDOFF_EXECUTION_DEFAULTS.completedAt, ref: 'flow-item:' + savedCopyId + ':' + sourceFlowId + ':item-' + itemNumber, sourceLine: parsedItem.sourceLine, sourceProperties: clone(parsedItem.properties), sourceSubchecks: clone(parsedItem.subchecks || []), sourceResources: clone(parsedItem.resources || []), sourceSources: clone(parsedItem.sources || []) });
           });
           if (itemIds.length) steps.push({ id: 'step-' + (stepIndex + 1), title: parsedStep.title, itemIds });
         });
@@ -1930,11 +2373,259 @@
     return bytes;
   }
 
+  function initialCreatorDraftLibrary() {
+    return { version: CREATOR_DRAFT_LIBRARY_VERSION, revision: 0, drafts: [], undo: null };
+  }
+
+  function creatorDraftName(rawText) {
+    const lines = String(rawText || '').split(/\r\n|\r|\n/u);
+    const heading = lines.find(line => /^#\s+\S/u.test(line));
+    if (heading) return heading.replace(/^#\s+/u, '').trim().slice(0, 100);
+    const first = lines.find(line => line.trim().length > 0);
+    if (!first) return '제목 없는 초안';
+    return first.trim().replace(/^#{1,6}\s*/u, '').replace(/^-\s*(?:\[[ xX]\]\s*)?/u, '').trim().slice(0, 100) || '제목 없는 초안';
+  }
+
+  function creatorDraftSourceLabel(rawText) {
+    const candidates = String(rawText || '').match(/https?:\/\/[^\s<>"'`)\]}]+/giu) || [];
+    for (const candidate of candidates) {
+      try {
+        const parsed = new URL(candidate);
+        if (parsed.protocol === 'http:' || parsed.protocol === 'https:') return candidate;
+      } catch (error) {
+        // Keep looking for the first valid exact-text URL candidate.
+      }
+    }
+    return '직접 작성한 원문';
+  }
+
+  function creatorDraftCopyName(library, sourceName) {
+    const names = new Set(library.drafts.map(draft => draft.title));
+    const base = sourceName.replace(/^사본 \d+ · /u, '');
+    let ordinal = 1;
+    while (true) {
+      const prefix = '사본 ' + ordinal + ' · ';
+      const candidate = prefix + base.slice(0, 100 - prefix.length);
+      if (!names.has(candidate)) return candidate;
+      ordinal += 1;
+    }
+  }
+
+  function validCreatorDraft(value) {
+    if (!value || typeof value !== 'object') return false;
+    const allowedKeys = new Set(['draftId', 'owner', 'title', 'rawText', 'templateId', 'sourceFingerprint', 'status', 'recordRevision', 'createdAt', 'updatedAt', 'archivedAt', 'clonedFrom']);
+    if (Object.keys(value).some(key => !allowedKeys.has(key))) return false;
+    if (typeof value.draftId !== 'string' || !value.draftId) return false;
+    if (value.owner !== 'creator') return false;
+    if (typeof value.title !== 'string' || !value.title.trim() || value.title !== value.title.trim() || value.title.length > 100) return false;
+    if (typeof value.rawText !== 'string' || !value.rawText.trim()) return false;
+    if (value.templateId !== null && !templateById(value.templateId)) return false;
+    if (typeof value.sourceFingerprint !== 'string' || value.sourceFingerprint !== fingerprint(value.rawText)) return false;
+    if (value.status !== 'active' && value.status !== 'archived') return false;
+    if (typeof value.createdAt !== 'string' || !value.createdAt || typeof value.updatedAt !== 'string' || !value.updatedAt) return false;
+    if (value.status === 'active' && own(value, 'archivedAt')) return false;
+    if (value.status === 'archived' && (typeof value.archivedAt !== 'string' || !value.archivedAt)) return false;
+    if (!Number.isSafeInteger(value.recordRevision) || value.recordRevision < 1) return false;
+    if (own(value, 'clonedFrom')) {
+      if (!value.clonedFrom || typeof value.clonedFrom !== 'object') return false;
+      if (Object.keys(value.clonedFrom).some(key => key !== 'draftId' && key !== 'recordRevision')) return false;
+      if (Object.keys(value.clonedFrom).length !== 2) return false;
+      if (typeof value.clonedFrom.draftId !== 'string' || !value.clonedFrom.draftId || value.clonedFrom.draftId === value.draftId) return false;
+      if (!Number.isSafeInteger(value.clonedFrom.recordRevision) || value.clonedFrom.recordRevision < 1) return false;
+    }
+    return true;
+  }
+
+  function validCreatorDraftSnapshot(value) {
+    if (!value || typeof value !== 'object') return false;
+    if (Object.keys(value).some(key => key !== 'revision' && key !== 'drafts')) return false;
+    if (!Number.isSafeInteger(value.revision) || value.revision < 0 || !Array.isArray(value.drafts)) return false;
+    if (!value.drafts.every(validCreatorDraft)) return false;
+    if (new Set(value.drafts.map(draft => draft.draftId)).size !== value.drafts.length) return false;
+    return value.drafts.every(draft => {
+      if (!draft.clonedFrom) return true;
+      const source = value.drafts.find(candidate => candidate.draftId === draft.clonedFrom.draftId);
+      return Boolean(source && source.recordRevision >= draft.clonedFrom.recordRevision);
+    });
+  }
+
+  function validCreatorDraftLibrary(value) {
+    if (!value || typeof value !== 'object' || value.version !== CREATOR_DRAFT_LIBRARY_VERSION) return false;
+    const allowedKeys = new Set(['version', 'revision', 'drafts', 'undo']);
+    if (Object.keys(value).some(key => !allowedKeys.has(key))) return false;
+    if (!validCreatorDraftSnapshot({ revision: value.revision, drafts: value.drafts })) return false;
+    return value.undo === null || validCreatorDraftSnapshot(value.undo);
+  }
+
+  function creatorDraftById(library, id) {
+    return library && Array.isArray(library.drafts) ? library.drafts.find(draft => draft.draftId === id) || null : null;
+  }
+
+  function listCreatorDrafts(library, options) {
+    if (!validCreatorDraftLibrary(library)) return [];
+    const settings = options || {};
+    const archived = settings.archived === true;
+    const query = String(settings.query || '').trim().toLocaleLowerCase('ko-KR');
+    return library.drafts
+      .filter(draft => (draft.status === 'archived') === archived)
+      .filter(draft => !query || (draft.title + '\n' + creatorDraftSourceLabel(draft.rawText) + '\n' + draft.rawText).toLocaleLowerCase('ko-KR').includes(query))
+      .slice()
+      .sort((left, right) => right.updatedAt.localeCompare(left.updatedAt) || left.draftId.localeCompare(right.draftId))
+      .map(clone);
+  }
+
+  function creatorDraftTransitionResult(library, drafts, message, draftId) {
+    return {
+      changed: true,
+      message,
+      draftId: draftId || null,
+      library: {
+        version: CREATOR_DRAFT_LIBRARY_VERSION,
+        revision: library.revision + 1,
+        drafts,
+        undo: { revision: library.revision, drafts: clone(library.drafts) }
+      }
+    };
+  }
+
+  function creatorDraftNoChange(library, message, error) {
+    return { changed: false, message, error: error || null, draftId: null, library };
+  }
+
+  function transitionCreatorDraftLibrary(library, action) {
+    if (!validCreatorDraftLibrary(library)) return creatorDraftNoChange(library, '초안 보관함이 손상되어 변경하지 않았어요.', 'invalid-library');
+    if (!action || typeof action.type !== 'string') return creatorDraftNoChange(library, '초안 변경 요청을 확인할 수 없어요.', 'invalid-action');
+    const now = typeof action.now === 'string' && action.now ? action.now : TODAY + 'T12:00:00.000Z';
+    if (action.type === 'undo') {
+      if (!library.undo) return creatorDraftNoChange(library, '되돌릴 초안 변경이 없어요.');
+      return {
+        changed: true,
+        message: '마지막 초안 변경을 되돌렸어요.',
+        draftId: null,
+        library: {
+          version: CREATOR_DRAFT_LIBRARY_VERSION,
+          revision: library.revision + 1,
+          drafts: clone(library.undo.drafts),
+          undo: null
+        }
+      };
+    }
+
+    if (action.type === 'save') {
+      const id = typeof action.draftId === 'string' ? action.draftId : '';
+      const rawText = typeof action.rawText === 'string' ? action.rawText : '';
+      if (!id || !rawText.trim()) return creatorDraftNoChange(library, '저장할 원문을 입력해 주세요.', 'invalid-draft');
+      const existingIndex = library.drafts.findIndex(draft => draft.draftId === id);
+      const templateId = action.templateId === undefined ? null : action.templateId;
+      if (templateId !== null && !templateById(templateId)) return creatorDraftNoChange(library, '작성 틀 정보를 확인할 수 없어 저장하지 않았어요.', 'invalid-template');
+      if (existingIndex >= 0) {
+        const existing = library.drafts[existingIndex];
+        if (existing.status === 'archived') return creatorDraftNoChange(library, '보관한 초안은 복원한 뒤 변경할 수 있어요.', 'archived-draft');
+        if (action.expectedRevision !== undefined && action.expectedRevision !== existing.recordRevision) return creatorDraftNoChange(library, '다른 변경이 먼저 저장되어 초안을 다시 열어야 해요.', 'stale-draft');
+        const title = action.displayName === undefined ? existing.title : String(action.displayName).trim();
+        if (!title || title.length > 100) return creatorDraftNoChange(library, '초안 이름을 확인해 주세요.', 'invalid-name');
+        const sourceFingerprint = fingerprint(rawText);
+        if (existing.title === title && existing.rawText === rawText && existing.templateId === templateId && existing.sourceFingerprint === sourceFingerprint) {
+          return creatorDraftNoChange(library, '이미 같은 초안이에요.');
+        }
+        const drafts = clone(library.drafts);
+        drafts[existingIndex] = Object.assign({}, existing, { title, rawText, templateId, sourceFingerprint, updatedAt: now, recordRevision: existing.recordRevision + 1 });
+        return creatorDraftTransitionResult(library, drafts, '초안 변경을 저장했어요.', id);
+      }
+      if (action.expectedRevision !== undefined && action.expectedRevision !== null) return creatorDraftNoChange(library, '새 초안의 버전 정보가 올바르지 않아요.', 'invalid-revision');
+      const title = action.displayName === undefined ? creatorDraftName(rawText) : String(action.displayName).trim();
+      if (!title || title.length > 100) return creatorDraftNoChange(library, '초안 이름을 확인해 주세요.', 'invalid-name');
+      const draft = { draftId: id, owner: 'creator', title, rawText, templateId, sourceFingerprint: fingerprint(rawText), status: 'active', recordRevision: 1, createdAt: now, updatedAt: now };
+      const drafts = library.drafts.concat([draft]);
+      return creatorDraftTransitionResult(library, drafts, '제작 초안으로 저장했어요. 개인공간이나 공개 화면에는 추가되지 않았습니다.', id);
+    }
+
+    const index = library.drafts.findIndex(draft => draft.draftId === action.draftId);
+    if (index < 0) return creatorDraftNoChange(library, '초안을 찾을 수 없어 변경하지 않았어요.', 'missing-draft');
+    const current = library.drafts[index];
+    if (action.expectedRevision !== undefined && action.expectedRevision !== current.recordRevision) return creatorDraftNoChange(library, '다른 변경이 먼저 저장되어 목록을 다시 확인해 주세요.', 'stale-draft');
+
+    if (action.type === 'rename') {
+      const title = typeof action.displayName === 'string' ? action.displayName.trim() : '';
+      if (!title || title.length > 100) return creatorDraftNoChange(library, '초안 이름을 확인해 주세요.', 'invalid-name');
+      if (title === current.title) return creatorDraftNoChange(library, '이미 같은 이름이에요.');
+      const drafts = clone(library.drafts);
+      drafts[index] = Object.assign({}, current, { title, updatedAt: now, recordRevision: current.recordRevision + 1 });
+      return creatorDraftTransitionResult(library, drafts, '초안 이름을 바꿨어요. 원문 제목은 바뀌지 않습니다.', current.draftId);
+    }
+
+    if (action.type === 'clone') {
+      const newId = typeof action.newDraftId === 'string' ? action.newDraftId : '';
+      if (!newId || library.drafts.some(draft => draft.draftId === newId)) return creatorDraftNoChange(library, '복사본 식별자를 만들지 못했어요.', 'invalid-clone-id');
+      const draft = Object.assign({}, current, {
+        draftId: newId,
+        title: creatorDraftCopyName(library, current.title),
+        owner: 'creator',
+        sourceFingerprint: fingerprint(current.rawText),
+        status: 'active',
+        createdAt: now,
+        updatedAt: now,
+        recordRevision: 1,
+        clonedFrom: { draftId: current.draftId, recordRevision: current.recordRevision }
+      });
+      delete draft.archivedAt;
+      return creatorDraftTransitionResult(library, library.drafts.concat([draft]), '초안을 복제했어요.', newId);
+    }
+
+    if (action.type === 'archive') {
+      if (current.status === 'archived') return creatorDraftNoChange(library, '이미 보관함에 있어요.');
+      const drafts = clone(library.drafts);
+      drafts[index] = Object.assign({}, current, { status: 'archived', archivedAt: now, updatedAt: now, recordRevision: current.recordRevision + 1 });
+      return creatorDraftTransitionResult(library, drafts, '초안을 보관함으로 옮겼어요.', current.draftId);
+    }
+
+    if (action.type === 'restore') {
+      if (current.status === 'active') return creatorDraftNoChange(library, '이미 작성 중 목록에 있어요.');
+      const drafts = clone(library.drafts);
+      drafts[index] = Object.assign({}, current, { status: 'active', updatedAt: now, recordRevision: current.recordRevision + 1 });
+      delete drafts[index].archivedAt;
+      return creatorDraftTransitionResult(library, drafts, '초안을 작성 중 목록으로 복원했어요.', current.draftId);
+    }
+    return creatorDraftNoChange(library, '지원하지 않는 초안 변경이에요.', 'unsupported-action');
+  }
+
+  function loadCreatorDraftLibrary(storage) {
+    let raw;
+    try { raw = storage.getItem(CREATOR_DRAFT_STORAGE_KEY); } catch (error) { return { library: initialCreatorDraftLibrary(), status: 'read-error', error }; }
+    if (raw === null) return { library: initialCreatorDraftLibrary(), status: 'empty' };
+    try {
+      const parsed = JSON.parse(raw);
+      if (!validCreatorDraftLibrary(parsed)) return { library: initialCreatorDraftLibrary(), status: 'corrupt' };
+      return { library: parsed, status: 'restored' };
+    } catch (error) { return { library: initialCreatorDraftLibrary(), status: 'corrupt', error }; }
+  }
+
+  function writeCreatorDraftLibrary(storage, library) {
+    if (!validCreatorDraftLibrary(library)) throw new Error('invalid-creator-draft-library');
+    const bytes = JSON.stringify(library);
+    const before = storage.getItem(CREATOR_DRAFT_STORAGE_KEY);
+    try {
+      storage.setItem(CREATOR_DRAFT_STORAGE_KEY, bytes);
+      if (storage.getItem(CREATOR_DRAFT_STORAGE_KEY) !== bytes) throw new Error('creator-draft-write-verification-failed');
+    } catch (error) {
+      try {
+        if (before === null) storage.removeItem(CREATOR_DRAFT_STORAGE_KEY);
+        else storage.setItem(CREATOR_DRAFT_STORAGE_KEY, before);
+        if (storage.getItem(CREATOR_DRAFT_STORAGE_KEY) !== before) throw new Error('creator-draft-rollback-verification-failed');
+      } catch (rollbackError) { error.rollbackError = rollbackError; }
+      throw error;
+    }
+    return bytes;
+  }
+
   function validAuthoringDraft(value) {
     if (!value || value.version !== VERSION || typeof value.draftId !== 'string' || !value.draftId || typeof value.rawText !== 'string') return false;
     if (value.templateId !== null && !templateById(value.templateId)) return false;
     if (value.folderId !== null && typeof value.folderId !== 'string') return false;
-    const allowedKeys = new Set(['version', 'draftId', 'rawText', 'templateId', 'folderId']);
+    if (value.creatorDraftId !== undefined && value.creatorDraftId !== null && (typeof value.creatorDraftId !== 'string' || !value.creatorDraftId)) return false;
+    if (value.creatorDraftRevision !== undefined && value.creatorDraftRevision !== null && (!Number.isSafeInteger(value.creatorDraftRevision) || value.creatorDraftRevision < 1)) return false;
+    if ((value.creatorDraftId === null || value.creatorDraftId === undefined) && value.creatorDraftRevision !== null && value.creatorDraftRevision !== undefined) return false;
+    const allowedKeys = new Set(['version', 'draftId', 'rawText', 'templateId', 'folderId', 'creatorDraftId', 'creatorDraftRevision']);
     if (Object.keys(value).some(key => !allowedKeys.has(key))) return false;
     return true;
   }
@@ -1945,7 +2636,9 @@
       draftId: authoring && authoring.draftId,
       rawText: authoring && authoring.rawText,
       templateId: authoring && authoring.templateId === undefined ? null : authoring.templateId,
-      folderId: authoring && authoring.folderId === undefined ? null : authoring.folderId
+      folderId: authoring && authoring.folderId === undefined ? null : authoring.folderId,
+      creatorDraftId: authoring && authoring.creatorDraftId === undefined ? null : authoring.creatorDraftId,
+      creatorDraftRevision: authoring && authoring.creatorDraftRevision === undefined ? null : authoring.creatorDraftRevision
     };
     if (!validAuthoringDraft(draft)) throw new Error('invalid-authoring-draft');
     return JSON.stringify(draft);
@@ -1965,11 +2658,47 @@
           templateId: parsed.templateId,
           templatePickerOpen: false,
           sourceConfirmed: false,
-          folderId: parsed.folderId
+          folderId: parsed.folderId,
+          creatorDraftId: parsed.creatorDraftId === undefined ? null : parsed.creatorDraftId,
+          creatorDraftRevision: parsed.creatorDraftRevision === undefined ? null : parsed.creatorDraftRevision
         },
         status: 'restored'
       };
     } catch (error) { return { authoring: null, status: 'corrupt', error }; }
+  }
+
+  /* K1-A helper-only transaction. Ordinary typing keeps its existing writer. */
+  function restoreAuthoringDraftCandidate(storage, beforeBytes, candidateBytes) {
+    try {
+      const current = storage.getItem(DRAFT_STORAGE_KEY);
+      if (current === beforeBytes) return { status: 'restored', rollbackWriteCount: 0 };
+      if (current !== candidateBytes) return { status: 'recovery-required', reason: 'draft-changed', rollbackWriteCount: 0 };
+      if (beforeBytes === null) storage.removeItem(DRAFT_STORAGE_KEY);
+      else storage.setItem(DRAFT_STORAGE_KEY, beforeBytes);
+      if (storage.getItem(DRAFT_STORAGE_KEY) !== beforeBytes) return { status: 'recovery-required', reason: 'rollback-readback', rollbackWriteCount: 1 };
+      return { status: 'restored', rollbackWriteCount: 1 };
+    } catch (error) {
+      return { status: 'recovery-required', reason: 'rollback-failed', error };
+    }
+  }
+
+  function writeAuthoringDraftCandidate(storage, authoring, beforeBytes) {
+    let candidateBytes;
+    try { candidateBytes = authoringDraftBytes(authoring); }
+    catch (error) { return { status: 'failed', reason: 'invalid-draft', error }; }
+    let current;
+    try { current = storage.getItem(DRAFT_STORAGE_KEY); }
+    catch (error) { return { status: 'failed', reason: 'draft-read-failed', error }; }
+    if (current !== beforeBytes) return { status: 'stale', reason: 'draft-changed' };
+    if (current === candidateBytes) return { status: 'success', candidateBytes, targetWriteCount: 0 };
+    try {
+      storage.setItem(DRAFT_STORAGE_KEY, candidateBytes);
+      if (storage.getItem(DRAFT_STORAGE_KEY) !== candidateBytes) throw new Error('draft-write-verification-failed');
+      return { status: 'success', candidateBytes, targetWriteCount: 1 };
+    } catch (error) {
+      const rollback = restoreAuthoringDraftCandidate(storage, beforeBytes, candidateBytes);
+      return { status: rollback.status === 'restored' ? 'failed' : 'recovery-required', reason: 'draft-write-failed', error, rollback, candidateBytes };
+    }
   }
 
   function writeAuthoringDraft(storage, authoring) {
@@ -2006,8 +2735,372 @@
     }
   }
 
+  /** Save a CreatorDraft revision and its open working-draft pointer as one rollback-safe two-key write. */
+  function writeCreatorDraftCommit(storage, library, authoring) {
+    if (!validCreatorDraftLibrary(library)) throw new Error('invalid-creator-draft-library');
+    const libraryBytes = JSON.stringify(library);
+    const draftBytes = authoringDraftBytes(authoring);
+    const beforeLibrary = storage.getItem(CREATOR_DRAFT_STORAGE_KEY);
+    const beforeDraft = storage.getItem(DRAFT_STORAGE_KEY);
+    try {
+      storage.setItem(CREATOR_DRAFT_STORAGE_KEY, libraryBytes);
+      if (storage.getItem(CREATOR_DRAFT_STORAGE_KEY) !== libraryBytes) throw new Error('creator-draft-write-verification-failed');
+      storage.setItem(DRAFT_STORAGE_KEY, draftBytes);
+      if (storage.getItem(DRAFT_STORAGE_KEY) !== draftBytes) throw new Error('draft-write-verification-failed');
+    } catch (error) {
+      try {
+        if (beforeLibrary === null) storage.removeItem(CREATOR_DRAFT_STORAGE_KEY);
+        else storage.setItem(CREATOR_DRAFT_STORAGE_KEY, beforeLibrary);
+        if (beforeDraft === null) storage.removeItem(DRAFT_STORAGE_KEY);
+        else storage.setItem(DRAFT_STORAGE_KEY, beforeDraft);
+        if (storage.getItem(CREATOR_DRAFT_STORAGE_KEY) !== beforeLibrary || storage.getItem(DRAFT_STORAGE_KEY) !== beforeDraft) {
+          throw new Error('creator-draft-commit-rollback-verification-failed');
+        }
+      } catch (rollbackError) { error.rollbackError = rollbackError; }
+      throw error;
+    }
+    return { libraryBytes, draftBytes };
+  }
+
+  function sourceUpdateRuntimeReady() {
+    return Boolean(
+      sourceUpdateRuntime
+      && sourceUpdateRuntime.PERSONAL_WORKSPACE_POC_SOURCE_CANDIDATE_KEY === SOURCE_CANDIDATE_STORAGE_KEY
+      && typeof sourceUpdateRuntime.createPersonalWorkspacePocSourceCandidateStore === 'function'
+      && typeof sourceUpdateRuntime.isPersonalWorkspacePocSourceCandidateStore === 'function'
+      && typeof sourceUpdateRuntime.createPersonalWorkspacePocCurrentSourceFromAuthoredFlow === 'function'
+      && typeof sourceUpdateRuntime.createPersonalWorkspacePocLocalFixtureEnvelope === 'function'
+      && typeof sourceUpdateRuntime.stagePersonalWorkspacePocSourceCandidate === 'function'
+      && typeof sourceUpdateRuntime.resolvePersonalWorkspacePocSourceCandidateChange === 'function'
+      && typeof sourceUpdateRuntime.clearPersonalWorkspacePocSourceCandidateChangeResolution === 'function'
+      && typeof sourceUpdateRuntime.deferPersonalWorkspacePocSourceCandidate === 'function'
+      && typeof sourceUpdateRuntime.applyPersonalWorkspacePocSourceCandidate === 'function'
+      && typeof sourceUpdateRuntime.undoPersonalWorkspacePocSourceCandidate === 'function'
+      && typeof safeValidationExamplesRuntime.fingerprintPersonalWorkspacePocAuthoringSource === 'function'
+    );
+  }
+
+  function initialSourceCandidateStore(now) {
+    if (!sourceUpdateRuntimeReady()) return null;
+    try {
+      return sourceUpdateRuntime.createPersonalWorkspacePocSourceCandidateStore(now || SOURCE_UPDATE_FIXTURE_AT);
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function canonicalStandaloneFlowRef(savedCopyId, flowId) {
+    return 'saved-flow:' + encodeURIComponent(savedCopyId) + ':' + encodeURIComponent(flowId);
+  }
+
+  function canonicalStandaloneItemRef(savedCopyId, flowId, itemId) {
+    return 'flow-item:' + encodeURIComponent(savedCopyId) + ':' + encodeURIComponent(flowId) + ':' + encodeURIComponent(itemId);
+  }
+
+  function standaloneSourceItemId(flow, task, fallbackIndex) {
+    const prefix = 'flow-item:' + encodeURIComponent(flow.savedCopyId) + ':' + encodeURIComponent(flow.sourceFlowId) + ':';
+    if (typeof task.ref === 'string' && task.ref.indexOf(prefix) === 0) {
+      try {
+        const decoded = decodeURIComponent(task.ref.slice(prefix.length));
+        if (decoded) return decoded;
+      } catch (error) { /* Fall through to a deterministic local identity. */ }
+    }
+    return 'item-' + (fallbackIndex + 1);
+  }
+
+  /**
+   * Adapts only a saved authoring handoff. Personal title, memo, schedule and
+   * completion fields are intentionally excluded from this immutable source view.
+   */
+  function standaloneAuthoredFlowForSourceUpdate(state, flowId) {
+    if (!sourceUpdateRuntimeReady() || !state || !Array.isArray(state.flows) || !Array.isArray(state.tasks)) return null;
+    const flow = state.flows.find(entry => entry.id === flowId);
+    if (!flow || flow.origin !== 'authoring-handoff' || typeof flow.rawText !== 'string' || !flow.handoffId || !flow.savedCopyId || !flow.sourceFlowId) return null;
+    const sourceFingerprint = safeValidationExamplesRuntime.fingerprintPersonalWorkspacePocAuthoringSource(flow.rawText);
+    if (typeof sourceFingerprint !== 'string' || !sourceFingerprint) return null;
+    const items = [];
+    const sections = [];
+    let sourceOrder = 0;
+    (flow.steps || []).forEach((step, stepIndex) => {
+      const sectionId = String(step.id || ('step-' + (stepIndex + 1)));
+      const sectionTitle = String(step.title || ('단계 ' + (stepIndex + 1)));
+      sections.push({ sectionId, title: sectionTitle, sourceOrder: stepIndex, titleOwner: 'authoring', editCapability: 'poc-shadow' });
+      (step.itemIds || []).forEach(taskId => {
+        const task = state.tasks.find(entry => entry.id === taskId && entry.flowId === flow.id);
+        if (!task) return;
+        const itemId = standaloneSourceItemId(flow, task, sourceOrder);
+        const sourceProperties = task.sourceProperties && typeof task.sourceProperties === 'object' ? task.sourceProperties : {};
+        const item = {
+          ref: canonicalStandaloneItemRef(flow.savedCopyId, flow.sourceFlowId, itemId),
+          savedCopyId: flow.savedCopyId,
+          flowId: flow.sourceFlowId,
+          itemId,
+          title: typeof task.sourceTitle === 'string' && task.sourceTitle ? task.sourceTitle : task.title,
+          sectionId,
+          sectionTitle,
+          sourceOrder
+        };
+        if (typeof sourceProperties['설명'] === 'string' && sourceProperties['설명']) item.description = sourceProperties['설명'];
+        if (typeof task.sourceDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(task.sourceDate)) item.sourceDate = task.sourceDate;
+        const timing = [sourceProperties['상대 날짜'], task.time, sourceProperties['시간대']].filter(Boolean).join(' · ');
+        if (timing) item.sourceTimingLabel = timing;
+        items.push(item);
+        sourceOrder += 1;
+      });
+    });
+    if (!items.length) return null;
+    const sourceTitleValue = typeof flow.sourceTitle === 'string' && flow.sourceTitle ? flow.sourceTitle : flow.title;
+    const stableSuffix = safeId(flow.handoffId) + '-' + sourceFingerprint.replace(/[^a-zA-Z0-9_-]/g, '-');
+    return {
+      ref: canonicalStandaloneFlowRef(flow.savedCopyId, flow.sourceFlowId),
+      savedCopyId: flow.savedCopyId,
+      flowId: flow.sourceFlowId,
+      sourceSlug: flow.sourceFlowId,
+      title: sourceTitleValue,
+      origin: 'authoring-handoff',
+      sections,
+      items,
+      authoring: {
+        source: 'text-authoring-poc-v1',
+        handoffId: flow.handoffId,
+        documentId: 'standalone-document-' + stableSuffix,
+        revisionId: 'standalone-revision-' + stableSuffix,
+        parseResultId: 'standalone-parse-' + stableSuffix,
+        sourceSnapshotId: 'standalone-snapshot-' + stableSuffix,
+        rawText: flow.rawText,
+        sourceFingerprint,
+        committedAt: SOURCE_UPDATE_FIXTURE_AT
+      }
+    };
+  }
+
+  function standaloneLocalIncomingSource(rawText) {
+    const suffix = ' · 새 원문 예시';
+    let changed = false;
+    let next = String(rawText || '').replace(/^(#\s+)([^\r\n]+)$/mu, (match, prefix, title) => {
+      if (title.endsWith(suffix)) return match;
+      changed = true;
+      return prefix + title + suffix;
+    });
+    next = next.replace(/^(-\s*\[[ xX]\]\s*)([^\r\n]+)$/mu, (match, prefix, title) => {
+      if (title.endsWith(suffix)) return match;
+      changed = true;
+      return prefix + title + suffix;
+    });
+    return changed ? next : String(rawText || '') + (String(rawText || '').endsWith('\n') ? '' : '\n') + '- [ ] 새 원문 예시 항목';
+  }
+
+  /** Source-only context. Never feed composeSourceCandidateState/personal display into this reader. */
+  function readLocalSourcePracticeContext(store, state, flowId) {
+    if (!sourceUpdateRuntimeReady()) return { ok: false, reason: 'runtime-missing' };
+    if (!sourceUpdateRuntime.isPersonalWorkspacePocSourceCandidateStore(store)) return { ok: false, reason: 'invalid-store' };
+    const authoredFlow = standaloneAuthoredFlowForSourceUpdate(state, flowId);
+    if (!authoredFlow || quickConversionReceipts(state).some(entry => entry.flowId === flowId)) return { ok: false, reason: 'unsupported-origin' };
+    const base = sourceUpdateRuntime.createPersonalWorkspacePocCurrentSourceFromAuthoredFlow(authoredFlow);
+    if (!base) return { ok: false, reason: 'invalid-current-source' };
+    const effective = store.effectiveVersions[authoredFlow.ref];
+    const current = effective ? Object.assign({}, effective.sourceRevision, { projectedFlow: effective.projectedFlow }) : base;
+    const target = { origin: 'authoring-handoff', flowRef: authoredFlow.ref, savedCopyId: authoredFlow.savedCopyId, flowId: authoredFlow.flowId, handoffId: authoredFlow.authoring.handoffId };
+    const catalog = sourceUpdateRuntime.inspectPersonalWorkspacePocSourceCandidateCatalog({ target, current, store });
+    return catalog.ok ? { ok: true, authoredFlow, current, catalog } : catalog;
+  }
+
+  /** Explicitly resume exactly one existing record; no local fixture generation. */
+  function resumeLocalSourceCandidateReview(store, state, flowId, candidateId, now) {
+    const context = readLocalSourcePracticeContext(store, state, flowId);
+    if (!context.ok) return context;
+    const record = context.catalog.candidates.find(entry => entry.candidateId === candidateId);
+    if (!record) return { ok: false, reason: 'not-found' };
+    const candidate = store.envelopes[candidateId];
+    if (record.stale || record.status === 'applied') return { ok: true, code: record.stale ? 'stale-source' : 'already-applied', candidate, current: context.current, store };
+    const staged = sourceUpdateRuntime.stagePersonalWorkspacePocSourceCandidate(store, candidate, context.current, now);
+    return ['staged', 'resumed', 'already-staged', 'already-applied'].includes(staged.code)
+      ? { ok: true, code: staged.code, candidate, current: context.current, store: staged.store }
+      : { ok: false, reason: staged.code };
+  }
+
+  /** Reconcile only in-memory review edits against the durable snapshot they began from.
+   * Conflicting records are not chosen, overwritten or discarded. No IO or source synthesis.
+   */
+  function mergeLocalSourcePracticeStore(durable, working, base) {
+    if (!sourceUpdateRuntimeReady() || ![durable, working, base].every(sourceUpdateRuntime.isPersonalWorkspacePocSourceCandidateStore)) return { ok: false, reason: 'invalid-store' };
+    const next = clone(durable);
+    const equal = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+    for (const group of ['envelopes', 'reviews']) {
+      for (const key of new Set(Object.keys(base[group]).concat(Object.keys(working[group])))) {
+        if (equal(working[group][key], base[group][key])) continue;
+        if (!equal(durable[group][key], base[group][key]) && !equal(durable[group][key], working[group][key])) return { ok: false, reason: 'conflicting-source-practice-record' };
+        if (working[group][key] === undefined) return { ok: false, reason: 'removed-source-practice-record' };
+        Object.defineProperty(next[group], key, { value: clone(working[group][key]), enumerable: true, configurable: true, writable: true });
+      }
+    }
+    next.revision = Math.max(durable.revision, working.revision);
+    next.updatedAt = working.updatedAt > durable.updatedAt ? working.updatedAt : durable.updatedAt;
+    return sourceUpdateRuntime.isPersonalWorkspacePocSourceCandidateStore(next)
+      ? { ok: true, store: next } : { ok: false, reason: 'invalid-merged-source-practice' };
+  }
+
+  function prepareLocalSourceCandidateReview(store, state, flowId, options) {
+    if (!sourceUpdateRuntimeReady()) return { ok: false, reason: 'runtime-missing' };
+    if (!sourceUpdateRuntime.isPersonalWorkspacePocSourceCandidateStore(store)) return { ok: false, reason: 'invalid-store' };
+    const context = readLocalSourcePracticeContext(store, state, flowId);
+    if (!context.ok) return context;
+    const authoredFlow = context.authoredFlow;
+    const settings = options || {};
+    let fixture;
+    try {
+      fixture = sourceUpdateRuntime.createPersonalWorkspacePocLocalFixtureEnvelope(authoredFlow, {
+        current: context.current,
+        incomingRawText: typeof settings.incomingRawText === 'string' ? settings.incomingRawText : standaloneLocalIncomingSource(context.current.rawText),
+        fixtureId: SOURCE_UPDATE_FIXTURE_ID,
+        createdAt: settings.createdAt || SOURCE_UPDATE_FIXTURE_AT
+      });
+    } catch (error) {
+      return { ok: false, reason: 'invalid-candidate', error };
+    }
+    if (!fixture || !fixture.ok) return { ok: false, reason: fixture ? fixture.reason : 'invalid-candidate' };
+    const staged = sourceUpdateRuntime.stagePersonalWorkspacePocSourceCandidate(
+      store,
+      fixture.envelope,
+      fixture.current,
+      settings.now || fixture.envelope.createdAt
+    );
+    if (!['staged', 'resumed', 'already-staged', 'already-applied'].includes(staged.code)) {
+      return { ok: false, reason: staged.code, candidate: fixture.envelope, current: fixture.current, store: staged.store };
+    }
+    return { ok: true, code: staged.code, candidate: fixture.envelope, current: fixture.current, store: staged.store, authoredFlow };
+  }
+
+  function resolveLocalSourceCandidateChange(store, input) {
+    if (!sourceUpdateRuntimeReady()) return { changed: false, code: 'runtime-missing', store };
+    if (input.resolution === 'later') {
+      return sourceUpdateRuntime.clearPersonalWorkspacePocSourceCandidateChangeResolution(store, {
+        candidateId: input.candidateId,
+        changeId: input.changeId,
+        now: input.now
+      });
+    }
+    return sourceUpdateRuntime.resolvePersonalWorkspacePocSourceCandidateChange(store, input);
+  }
+
+  function deferLocalSourceCandidate(store, candidateId, now) {
+    if (!sourceUpdateRuntimeReady()) return { changed: false, code: 'runtime-missing', store };
+    return sourceUpdateRuntime.deferPersonalWorkspacePocSourceCandidate(store, { candidateId, now });
+  }
+
+  function applyLocalSourceCandidate(store, state, flowId, candidateId, now) {
+    if (!sourceUpdateRuntimeReady()) return { changed: false, code: 'runtime-missing', store };
+    const context = readLocalSourcePracticeContext(store, state, flowId);
+    if (!context.ok || !context.catalog.candidates.some(entry => entry.candidateId === candidateId)) return { changed: false, code: 'stale-source', store };
+    return sourceUpdateRuntime.applyPersonalWorkspacePocSourceCandidate(store, { candidateId, current: context.current, now });
+  }
+
+  function undoLocalSourceCandidate(store, now) {
+    if (!sourceUpdateRuntimeReady()) return { changed: false, code: 'runtime-missing', store };
+    return sourceUpdateRuntime.undoPersonalWorkspacePocSourceCandidate(store, now);
+  }
+
+  function loadSourceCandidateStore(storage) {
+    let raw;
+    try { raw = storage.getItem(SOURCE_CANDIDATE_STORAGE_KEY); }
+    catch (error) { return { store: null, raw: null, status: 'read-error', error }; }
+    if (raw === null) return { store: initialSourceCandidateStore(), raw: null, status: sourceUpdateRuntimeReady() ? 'empty' : 'unavailable' };
+    if (!sourceUpdateRuntimeReady()) return { store: null, raw, status: 'unavailable' };
+    try {
+      const parsed = JSON.parse(raw);
+      if (!sourceUpdateRuntime.isPersonalWorkspacePocSourceCandidateStore(parsed)) return { store: null, raw, status: 'corrupt' };
+      return { store: parsed, raw, status: 'restored' };
+    } catch (error) {
+      return { store: null, raw, status: 'corrupt', error };
+    }
+  }
+
+  /** Exact-key compare-and-swap with readback verification and byte rollback. */
+  function writeSourceCandidateStore(storage, store, expectedRaw) {
+    if (!sourceUpdateRuntimeReady() || !sourceUpdateRuntime.isPersonalWorkspacePocSourceCandidateStore(store)) throw new Error('invalid-source-candidate-store');
+    const bytes = JSON.stringify(store);
+    const before = storage.getItem(SOURCE_CANDIDATE_STORAGE_KEY);
+    if (before !== expectedRaw) {
+      const staleError = new Error('source-candidate-stale-write');
+      staleError.code = 'source-candidate-stale-write';
+      throw staleError;
+    }
+    if (before === bytes) return bytes;
+    try {
+      storage.setItem(SOURCE_CANDIDATE_STORAGE_KEY, bytes);
+      if (storage.getItem(SOURCE_CANDIDATE_STORAGE_KEY) !== bytes) throw new Error('source-candidate-write-verification-failed');
+    } catch (error) {
+      // Storage adapters can throw primitives or frozen objects. Do not mutate
+      // the caught value or invoke a message getter / object string coercion.
+      let message = 'source-candidate-write-failed';
+      if (typeof error === 'string' && error.trim()) message = error;
+      else if (error !== null && (typeof error === 'object' || typeof error === 'function')) {
+        try {
+          const descriptor = Object.getOwnPropertyDescriptor(error, 'message');
+          if (descriptor && typeof descriptor.value === 'string' && descriptor.value.trim()) message = descriptor.value;
+        } catch (ignored) { /* An unreadable descriptor does not grant rollback ownership. */ }
+      }
+      const failure = new Error(message);
+      failure.cause = error;
+      failure.rollback = 'recovery-required';
+      try {
+        const current = storage.getItem(SOURCE_CANDIDATE_STORAGE_KEY);
+        if (current === before) {
+          failure.rollback = 'not-needed';
+        } else if (current === bytes) {
+          // Recheck exact ownership even when setItem itself threw after writing.
+          // localStorage still provides no native cross-document atomic CAS.
+          if (before === null) storage.removeItem(SOURCE_CANDIDATE_STORAGE_KEY);
+          else storage.setItem(SOURCE_CANDIDATE_STORAGE_KEY, before);
+          if (storage.getItem(SOURCE_CANDIDATE_STORAGE_KEY) !== before) throw new Error('source-candidate-rollback-verification-failed');
+          failure.rollback = 'complete';
+        } else {
+          failure.rollbackError = new Error('source-candidate-rollback-ownership-lost');
+        }
+      } catch (rollbackError) { failure.rollbackError = rollbackError; }
+      throw failure;
+    }
+    return bytes;
+  }
+
+  /** Applies effective source values to a disposable read model only. */
+  function composeSourceCandidateState(state, store) {
+    if (!sourceUpdateRuntimeReady() || !sourceUpdateRuntime.isPersonalWorkspacePocSourceCandidateStore(store)) return state;
+    const next = clone(state);
+    Object.values(store.effectiveVersions || {}).forEach(version => {
+      const projected = version && version.projectedFlow;
+      if (!projected || projected.origin !== 'authoring-handoff') return;
+      const flow = next.flows.find(entry => entry.ref === projected.ref && entry.origin === 'authoring-handoff');
+      if (!flow) return;
+      const previousSourceTitle = typeof flow.sourceTitle === 'string' ? flow.sourceTitle : flow.title;
+      const hasPersonalTitle = flow.title !== previousSourceTitle;
+      flow.sourceTitle = projected.title;
+      if (!hasPersonalTitle) flow.title = projected.title;
+      flow.rawText = version.sourceRevision.rawText;
+      flow.sourceFingerprint = fingerprint(version.sourceRevision.rawText);
+      const projectedByRef = new Map(projected.items.map(item => [item.ref, item]));
+      next.tasks.filter(task => task.flowId === flow.id && typeof task.ref === 'string').forEach(task => {
+        const sourceItem = projectedByRef.get(task.ref);
+        if (!sourceItem) return;
+        const previousSourceItemTitle = typeof task.sourceTitle === 'string' ? task.sourceTitle : task.title;
+        const hasPersonalItemTitle = task.title !== previousSourceItemTitle;
+        task.sourceTitle = sourceItem.title;
+        if (!hasPersonalItemTitle) task.title = sourceItem.title;
+        task.sourceDate = sourceItem.sourceDate || null;
+        task.sourceDescription = typeof sourceItem.description === 'string' ? sourceItem.description : '';
+        if (typeof sourceItem.completionCriterion === 'string') task.completionCriterion = sourceItem.completionCriterion;
+      });
+      const sectionsById = new Map((projected.sections || []).map(section => [section.sectionId, section]));
+      flow.steps.forEach(step => {
+        const sourceSection = sectionsById.get(step.id);
+        if (sourceSection) step.title = sourceSection.title;
+      });
+    });
+    return next;
+  }
+
   function resetPoc(storage) {
-    const keys = [STORAGE_KEY, DRAFT_STORAGE_KEY];
+    const keys = [STORAGE_KEY, DRAFT_STORAGE_KEY, CREATOR_DRAFT_STORAGE_KEY, SOURCE_CANDIDATE_STORAGE_KEY];
     const before = keys.map(key => storage.getItem(key));
     try {
       keys.forEach(key => storage.removeItem(key));
@@ -2040,5 +3133,5 @@
     };
   }
 
-  return Object.freeze({ VERSION, OCCURRENCE_CONTRACT_VERSION, RESULT_PROJECTION_VERSION, RESULT_DOWNLOAD_CONTRACT_VERSION, FINITE_RECURRENCE_PAGE_SIZE, OPEN_ENDED_RECURRENCE_WEEKS, RESULT_SHEET_COLUMNS, LOSSLESS_AUTHORING_VERSION, LOSSLESS_AUTHORING_LIMITS, AUTHORING_PROPERTY_CATALOG_VERSION, TODAY, STORAGE_KEY, DRAFT_STORAGE_KEY, TEMPLATE_CATALOG, AUTHORING_GHOST_HINTS, AUTHORING_PROPERTY_GROUPS, AUTHORING_PROPERTY_CATALOG, splitLogicalSourceLines, authoringGhostLines, analyzeLosslessAuthoring, addDays, fingerprint, parseRecurrence, buildOccurrenceSeriesId, buildOccurrenceId, expandOccurrences, serializeCompleteResultTxt, seedState, templateById, parseSource, makeHandoff, effectiveFolder, trashManifest, isTrashedFlow, isTrashedTask, viewTaskIds, copyDisambiguation, flowDisplayTitle, resultMonthCells, buildResultDownloads, resultProjection, authoringResultProjection, authoringPropertyByKey, listAuthoringPropertyInstances, locateAuthoringPropertyValue, planAuthoringPropertyEdit, planAuthoringPropertyBatchEdit, listAuthoringNearMissTargets, planAuthoringNearMissRepair, validate, apply, initialEnvelope, transitionEnvelope, undoEnvelope, loadEnvelope, writeEnvelope, writeAuthoringCommit, loadAuthoringDraft, writeAuthoringDraft, clearAuthoringDraft, resetPoc, createMemoryStorage });
+  return Object.freeze({ readLocalSourcePracticeContext, resumeLocalSourceCandidateReview, mergeLocalSourcePracticeStore, AUTHORING_HANDOFF_EXECUTION_DEFAULTS, writeAuthoringDraftCandidate, restoreAuthoringDraftCandidate, itemDetails, VERSION, OCCURRENCE_CONTRACT_VERSION, RESULT_PROJECTION_VERSION, RESULT_DOWNLOAD_CONTRACT_VERSION, FINITE_RECURRENCE_PAGE_SIZE, OPEN_ENDED_RECURRENCE_WEEKS, RESULT_SHEET_COLUMNS, LOSSLESS_AUTHORING_VERSION, LOSSLESS_AUTHORING_LIMITS, PERSONAL_WORKSPACE_POC_VALIDATION_EXAMPLE_CATALOG_VERSION, PERSONAL_WORKSPACE_POC_VALIDATION_EXAMPLE_GROUPS, PERSONAL_WORKSPACE_POC_VALIDATION_EXAMPLE_CATALOG, fingerprintPersonalWorkspacePocAuthoringSource, normalizePersonalWorkspacePocValidationExampleSearch, filterPersonalWorkspacePocValidationExamples, projectPersonalWorkspacePocValidationExampleSelection, planPersonalWorkspacePocValidationExampleApply, validationExampleCatalogVersion, validationExampleGroups, validationExampleCatalog, filterValidationExamples, projectValidationExampleSelection, planValidationExampleApply, structureTemplatePreviewCatalogVersion, structureTemplatePreviewContractVersion, structureTemplatePreviews, findStructureTemplatePreview, structureTemplateSidecarStorageKey, planStructureTemplatePreviewMaterialization, AUTHORING_PROPERTY_CATALOG_VERSION, TODAY, STORAGE_KEY, DRAFT_STORAGE_KEY, CREATOR_DRAFT_LIBRARY_VERSION, CREATOR_DRAFT_STORAGE_KEY, SOURCE_CANDIDATE_STORAGE_KEY, SOURCE_UPDATE_FIXTURE_AT, SOURCE_UPDATE_FIXTURE_ID, TEMPLATE_CATALOG, AUTHORING_GHOST_HINTS, AUTHORING_PROPERTY_GROUPS, AUTHORING_PROPERTY_CATALOG, splitLogicalSourceLines, authoringGhostLines, analyzeLosslessAuthoring, addDays, fingerprint, parseRecurrence, buildOccurrenceSeriesId, buildOccurrenceId, expandOccurrences, serializeCompleteResultTxt, seedState, templateById, parseSource, makeHandoff, effectiveFolder, trashManifest, quickConversionReceipts, isTrashedFlow, isTrashedTask, viewTaskIds, copyDisambiguation, flowDisplayTitle, resultMonthCells, buildResultDownloads, resultProjection, authoringResultProjection, authoringPropertyByKey, listAuthoringPropertyInstances, locateAuthoringPropertyValue, planAuthoringPropertyEdit, planAuthoringPropertyBatchEdit, listAuthoringNearMissTargets, planAuthoringNearMissRepair, validate, apply, initialEnvelope, transitionEnvelope, undoEnvelope, loadEnvelope, writeEnvelope, writeAuthoringCommit, initialCreatorDraftLibrary, creatorDraftName, creatorDraftSourceLabel, creatorDraftCopyName, validCreatorDraftLibrary, creatorDraftById, listCreatorDrafts, transitionCreatorDraftLibrary, loadCreatorDraftLibrary, writeCreatorDraftLibrary, writeCreatorDraftCommit, loadAuthoringDraft, writeAuthoringDraft, clearAuthoringDraft, sourceUpdateRuntimeReady, initialSourceCandidateStore, standaloneAuthoredFlowForSourceUpdate, standaloneLocalIncomingSource, prepareLocalSourceCandidateReview, resolveLocalSourceCandidateChange, deferLocalSourceCandidate, applyLocalSourceCandidate, undoLocalSourceCandidate, loadSourceCandidateStore, writeSourceCandidateStore, composeSourceCandidateState, resetPoc, createMemoryStorage });
 });

@@ -1,0 +1,40 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import { materializePersonalWorkspacePocAuthoring } from '../personal-workspace-poc-authoring';
+import { createPersonalWorkspacePocState } from '../personal-workspace-poc-state';
+import { transitionProgramLegacySourcePayload, readProgramLegacySourceLifecycle } from './legacy-source-lifecycle';
+import { programLegacySourceChanges } from './legacy-source-lifecycle-contract';
+import type { ProgramLegacySnapshotPayload } from './legacy-snapshot';
+import { inspectProgramRecurrence } from './recurrence-bridge';
+import { prepareProgramInitialData } from './legacy-entry';
+import { readProgramExecutionOccurrences } from './recurrence-state';
+import { partitionProgramLegacyCapabilities } from './legacy-capabilities';
+const now = '2026-09-12T00:00:00.000Z';
+test('actual typed source mixed selection retains recurrence/time/subchecks and stable Item mapping without raw zip', () => {
+  const raw = '# 반복 원문\n- [ ] 첫 반복\n  - 날짜: 2026-09-12\n  - 시간: 07:00\n  - 반복: 매일\n  - 반복 종료: 3회\n  - [ ] 하위 확인\n- [ ] 둘째 반복\n  - 날짜: 2026-09-12\n  - 시간: 08:00\n  - 반복: 매일\n  - 반복 종료: 2회';
+  const made = materializePersonalWorkspacePocAuthoring({ handoffId: 'source-context', documentId: 'source-context-doc', revisionId: 'source-context-v1', rawText: raw, committedAt: now }); assert(made.ok); if (!made.ok) return;
+  let payload: ProgramLegacySnapshotPayload = { model: { version: 1, flows: [made.flow] }, state: createPersonalWorkspacePocState(now) };
+  const original = JSON.stringify(payload), input = { flowRef: made.flow.ref, localToday: '2026-09-12' };
+  const initial = prepareProgramInitialData({ baseModel: payload.model, legacyState: payload.state });
+  const before = readProgramExecutionOccurrences(initial.data, { ...input, actorId: initial.data.activeActorId }); assert(before.ok); if (!before.ok) return;
+  const staged = transitionProgramLegacySourcePayload(payload, { type: 'stage', flowRef: made.flow.ref, requestId: 'typed-revision', rawText: raw.replace('07:00', '10:30').replace('3회', '5회').replace('하위 확인', '새 하위 확인'), now });
+  assert(staged.ok); if (!staged.ok) return; payload = staged.payload;
+  const stageData = prepareProgramInitialData({ baseModel: payload.model, legacyState: payload.state, sourceLifecycle: payload.sourceLifecycle });
+  const stagedRead = readProgramExecutionOccurrences(stageData.data, { ...input, actorId: stageData.data.activeActorId }); assert(stagedRead.ok); if (stagedRead.ok) assert.equal(stagedRead.sourceRevisionToken, before.sourceRevisionToken);
+  const owner = readProgramLegacySourceLifecycle(payload, made.flow.ref); assert(owner.ok); if (!owner.ok) return;
+  const review = owner.owner.reviews[0], changes = programLegacySourceChanges(owner.owner, review.incomingRevisionId);
+  assert(changes.some(change => change.itemRef === made.flow.items[0].ref));
+  for (const change of changes) {
+    const selected = transitionProgramLegacySourcePayload(payload, { type: 'choice', flowRef: made.flow.ref, reviewId: review.id, changeId: change.id, choice: change.itemRef === made.flow.items[0].ref ? 'incoming' : 'mine', now }); assert(selected.ok); if (selected.ok) payload = selected.payload;
+  }
+  const applied = transitionProgramLegacySourcePayload(payload, { type: 'apply', flowRef: made.flow.ref, reviewId: review.id, now }); assert(applied.ok); if (!applied.ok) return; payload = applied.payload;
+  const occurrences = inspectProgramRecurrence(payload, input); assert(occurrences.ok); if (!occurrences.ok) return;
+  assert.equal(occurrences.rows.filter(row => row.sourceItemRef === made.flow.items[0].ref).length, 5);
+  assert(occurrences.rows.filter(row => row.sourceItemRef === made.flow.items[0].ref).every(row => row.time === '10:30'));
+  assert.equal(occurrences.rows.filter(row => row.sourceItemRef === made.flow.items[1].ref).length, 2);
+  assert(occurrences.rows.filter(row => row.sourceItemRef === made.flow.items[1].ref).every(row => row.time === '08:00'));
+  const partition = partitionProgramLegacyCapabilities(payload); assert(partition.ok); if (partition.ok) assert(partition.items.every(item => item.capability === 'series'));
+  const projected = prepareProgramInitialData({ baseModel: payload.model, legacyState: payload.state, sourceLifecycle: payload.sourceLifecycle }); assert(projected.projected);
+  assert(projected.data.spaces['local-user'].legacySnapshot!.raw.includes('새 하위 확인'));
+  assert.equal(JSON.stringify({ model: payload.model, state: payload.state }), original);
+});

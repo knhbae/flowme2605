@@ -10,6 +10,15 @@ export const PERSONAL_WORKSPACE_POC_DEFAULTS = Object.freeze({
   membershipsPerMember: 1,
   datedItemTimelinePolicy: 'auto' as const,
   quickItemCompletion: 'status/completedAt' as const,
+  quickItemToFlow: Object.freeze({
+    version: 1 as const,
+    sourceQuickItem: 'preserve' as const,
+    itemCount: 1 as const,
+    copyFolder: true as const,
+    copyExecutionDate: true as const,
+    copyMemoToPersonalItem: true as const,
+    copyCompletion: false as const,
+  }),
   deletedFolderDestination: 'unfiled' as const,
   undoDepth: 1,
 });
@@ -165,6 +174,8 @@ export type PersonalWorkspacePocFlowItem = Readonly<{
   itemId: string;
   title: string;
   description?: string;
+  /** Read-only saved-source criterion; authoring uses its existing lineage snapshot. */
+  completionCriterion?: string;
   /** Stable only when this Item belongs to an actual Flow section. */
   sectionId?: string;
   sectionTitle?: string;
@@ -437,6 +448,28 @@ export type PersonalWorkspacePocAuthoringReceipt = {
   committedAt: string;
 };
 
+/**
+ * Persistent, PoC-only evidence for a QuickItem -> Flow copy. The source
+ * QuickItem keeps its kind and values; this receipt records the exact snapshot
+ * used to create one new Flow and one new Item.
+ */
+export type PersonalWorkspacePocQuickConversionReceipt = Readonly<{
+  version: typeof PERSONAL_WORKSPACE_POC_DEFAULTS.quickItemToFlow.version;
+  conversionId: string;
+  handoffId: string;
+  sourceQuickItemRef: string;
+  sourceQuickItemId: string;
+  sourceTitle: string;
+  sourceMemo: string;
+  sourceFolderId?: string;
+  sourceDate?: string;
+  flowRef: string;
+  itemRef: string;
+  flowTitle: string;
+  completionPolicy: 'source-preserved-new-item-open';
+  committedAt: string;
+}>;
+
 export type PersonalWorkspacePocFolder = {
   folderId: string;
   title: string;
@@ -564,6 +597,8 @@ export type PersonalWorkspacePocSnapshot = {
   /** Additive P1 fields. Optional keeps already-saved P0 v1 payloads readable. */
   authoredFlows?: PersonalWorkspacePocAuthoredFlow[];
   authoringReceipts?: PersonalWorkspacePocAuthoringReceipt[];
+  /** Additive bridge receipt; omission keeps every earlier v1 payload readable. */
+  quickConversionReceipts?: PersonalWorkspacePocQuickConversionReceipt[];
   /** Additive Stage 1 structural shadow edits. */
   personalPlanOverlays?: Record<string, PersonalWorkspacePocPersonalPlanOverlay>;
   /** Additive PoC-only lifecycle state; omission keeps older v1 payloads readable. */
@@ -733,6 +768,14 @@ export type PersonalWorkspacePocTransition =
       existingFlowRefs?: string[];
       /** Exact pre-commit draft bytes, captured read-only for one-step Undo. */
       undoAuthoringDraftRawValue: string | null;
+      now: string;
+    }
+  | {
+      type: 'convert-quick-item-to-flow';
+      quickItemRef: string;
+      expectedRevision: number;
+      flowTitle: string;
+      existingFlowRefs?: string[];
       now: string;
     }
   | { type: 'undo'; now: string }

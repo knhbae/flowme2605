@@ -95,7 +95,7 @@ CreatorDraft destination, 영구 shell token은 선택 범위 밖이므로 계�
 **목표:** UI보다 먼저 원문 보존, identity, staged transition, rollback을 안정화한다.
 **상태:** 기획·UX/디자인·개발 계약과 구현·검증 완료. 정본은
 [단계 1 작업 계약](./stage-1-contract.md)과
-[조작형 계약 화면](../../content-audit/2026-09-02-flowme-integrated-poc-stage-1-contract-ko.html)이다.
+조작형 계약 화면 (로컬 전용 근거: `../../content-audit/2026-09-02-flowme-integrated-poc-stage-1-contract-ko.html`)이다.
 
 ### 기획
 
@@ -402,6 +402,15 @@ PoC focused model/component 253/253, 전체 `npm test` 1,738/1,738, production b
 - 보류 기능을 지원하는 것처럼 노출하거나 충족으로 올리지 않는다.
 - P0 focused 253/253과 전체 `npm test` 1,738/1,738로 회귀를 확인했다. 최종 보고서에는
   이 자동 증거와 미실행 외부 증거를 분리한다.
+
+### 2026-09-05 BP-017 보정
+
+위 보류는 2026-09-02 당시 결정이다. 이후 사용자가 통합 gap 해소를 계속 진행하도록
+승인해 QuickItem→Flow만 [독립 PoC v1 계획](../2026-09-05-flowme-integrated-poc-quick-to-flow-bridge-v1/plan.md)으로
+다시 열었다. 원본 QuickItem 존치, 새 one-Item Flow identity, 전환 snapshot receipt,
+atomic write·Undo·reload·retry를 먼저 고정하고 React와 standalone을 같은 결과로 검증한다.
+완료 상태는 복사하지 않으며 모든 쓰기는 기존 PoC namespace에만 둔다. 나머지
+recurrence/public/table-source 보류와 운영 writer 금지는 바꾸지 않는다.
 
 ## 9. 단계 6 — 최종 검증·평가·보고
 

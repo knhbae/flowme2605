@@ -7,6 +7,13 @@ import {
   type PersonalWorkspacePocReadModel,
   type PersonalWorkspacePocState,
 } from './personal-workspace-poc-contract';
+import {
+  composePersonalWorkspacePocEffectiveSourceFlows,
+  reconcilePersonalWorkspacePocPersonalPlanOverlayForSourceVersion,
+} from './personal-workspace-poc-canonical-ownership';
+import type {
+  PersonalWorkspacePocSourceCandidateStore,
+} from './personal-workspace-poc-source-candidates';
 
 export type PersonalWorkspacePocCompositionResult =
   | { ok: true; model: PersonalWorkspacePocReadModel }
@@ -154,6 +161,7 @@ function applyPersonalPlanOverlay(
 export function composePersonalWorkspacePocReadModel(
   baseModel: PersonalWorkspacePocReadModel,
   state: PersonalWorkspacePocState,
+  sourceCandidateStore?: PersonalWorkspacePocSourceCandidateStore,
 ): PersonalWorkspacePocCompositionResult {
   const authoredFlows = state.authoredFlows ?? [];
   const flowRefs = new Set(baseModel.flows.map((flow) => flow.ref));
@@ -174,14 +182,23 @@ export function composePersonalWorkspacePocReadModel(
   }
 
   const combinedFlows = [...baseModel.flows, ...authoredFlows];
+  const effectiveSourceFlows = sourceCandidateStore
+    ? composePersonalWorkspacePocEffectiveSourceFlows(combinedFlows, sourceCandidateStore)
+    : { ok: true as const, flows: combinedFlows };
+  if (!effectiveSourceFlows.ok) return { ok: false, reason: effectiveSourceFlows.reason };
   const flows: PersonalWorkspacePocFlow[] = [];
-  for (const flow of combinedFlows) {
+  for (const flow of effectiveSourceFlows.flows) {
     const overlay = state.personalPlanOverlays?.[flow.ref];
     if (!overlay) {
       flows.push(flow);
       continue;
     }
-    const composed = applyPersonalPlanOverlay(flow, overlay);
+    const reconciledOverlay = reconcilePersonalWorkspacePocPersonalPlanOverlayForSourceVersion(
+      flow,
+      overlay,
+    );
+    if (!reconciledOverlay.ok) return { ok: false, reason: 'invalid-personal-plan-overlay' };
+    const composed = applyPersonalPlanOverlay(flow, reconciledOverlay.overlay);
     if (!composed) return { ok: false, reason: 'invalid-personal-plan-overlay' };
     flows.push(composed);
   }

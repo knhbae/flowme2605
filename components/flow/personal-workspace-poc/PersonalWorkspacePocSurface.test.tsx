@@ -9,6 +9,7 @@ import {
   getPersonalWorkspacePocMoveTriggerSelector,
   getPersonalWorkspacePocMoveTriggerToken,
   getPersonalWorkspacePocNextLocalDayDelay,
+  buildPersonalWorkspacePocSourceUpdateFixtureRaw,
   parsePersonalWorkspacePocEditorVerifiedStateRaw,
   PersonalWorkspacePocTaskReadOnlyDetails,
   resolvePersonalWorkspacePocReorderControl,
@@ -41,6 +42,20 @@ test('local day rolls at the next local midnight and refreshes after app resume'
   assert.match(source, /window\.addEventListener\('focus', refreshLocalDay\)/u);
   assert.match(source, /document\.addEventListener\('visibilitychange', refreshVisibleLocalDay\)/u);
   assert.match(source, /if \(!document\.hidden\) refreshLocalDay\(\)/u);
+});
+
+test('P3-D fixture is deterministic and source update uses one bounded candidate writer', () => {
+  const raw = '# 이사 준비\n## 계약\n- [ ] 주소 변경\n  - 날짜: 2026-09-10';
+  const next = buildPersonalWorkspacePocSourceUpdateFixtureRaw(raw);
+  assert.equal(next, buildPersonalWorkspacePocSourceUpdateFixtureRaw(raw));
+  assert.match(next, /^# 이사 준비 · 최신 안내/mu);
+  assert.match(next, /- \[ \] 주소 변경 \(확인 내용 갱신\)/u);
+  assert.match(next, /- \[ \] 새 원문 변경 확인하기$/u);
+  assert.match(source, /savePersonalWorkspacePocSourceCandidateStore\(/u);
+  assert.match(source, /expectedRawValue: owner\.sourceRaw/u);
+  assert.match(source, /sourcePracticeOwnerCurrent\(owner\)/u);
+  assert.match(source, /validatePersonalWorkspacePocStateReferences\(stateRef\.current, composed\.model\)/u);
+  assert.match(source, /data-source-update-owner="poc-source-candidate-store"/u);
 });
 
 test('editor success validates exact state bytes and publishes after synchronous owner cleanup', () => {
@@ -300,6 +315,29 @@ test('item detail renders projected Flow Item content as read-only text', () => 
   assert.doesNotMatch(markup, /<(?:input|textarea|button)\b/u);
 });
 
+test('P3-J item detail renders source description, criterion, and personal memo separately', () => {
+  const markup = renderToStaticMarkup(<dl><PersonalWorkspacePocTaskReadOnlyDetails task={{
+    ref: 'flow-item:copy:flow:item', kind: 'flow_item', title: '접수',
+    description: '원문 설명 내용', completionCriterion: '접수번호를 받았다', memo: '내 예약 메모',
+    completed: false, timelinePolicy: 'auto', sourceOrder: 0,
+  }} /></dl>);
+  assert.match(markup, /personal-workspace-item-description[\s\S]*원문 설명[\s\S]*원문 설명 내용/u);
+  assert.match(markup, /personal-workspace-item-completion-criterion[\s\S]*완료 기준[\s\S]*접수번호를 받았다/u);
+  assert.match(markup, /personal-workspace-item-personal-memo[\s\S]*내 메모[\s\S]*내 예약 메모/u);
+  assert.equal((markup.match(/overflow-wrap:anywhere/gu) ?? []).length, 3);
+  assert.equal((markup.match(/<div class="min-w-0"/gu) ?? []).length, 3);
+  assert.doesNotMatch(markup, /<(?:input|textarea|button)\b/u);
+});
+
+test('P3-J QuickItem memo is not relabeled as source description or completion criterion', () => {
+  const markup = renderToStaticMarkup(<dl><PersonalWorkspacePocTaskReadOnlyDetails task={{
+    ref: 'quick-item:one', kind: 'quick_item', title: '접수', memo: '나중에 문의',
+    completed: false, timelinePolicy: 'auto', sourceOrder: 0,
+  }} /></dl>);
+  assert.match(markup, /내 메모/u);
+  assert.doesNotMatch(markup, /원문 설명|완료 기준|personal-workspace-item-description/u);
+});
+
 test('surface keeps semantic preflight before the PoC atomic save call', () => {
   const composition = source.indexOf(
     'const nextComposition = composePersonalWorkspacePocReadModel(initialModel, result.state)',
@@ -321,8 +359,8 @@ test('surface exposes the separate authoring entrance and preserved source for a
   assert.match(source, /href="\/flows\/new\?personalWorkspacePoc=v1"/u);
   assert.match(source, /data-testid="personal-workspace-create-flow"/u);
   assert.match(source, /data-testid="personal-workspace-authored-source"/u);
-  assert.match(source, /authoring\.rawText/u);
-  assert.match(source, /composePersonalWorkspacePocReadModel\(initialModel, state\)/u);
+  assert.match(source, /effectiveSourceVersion\?\.sourceRevision\.rawText\s*\?\? authoring\?\.rawText/u);
+  assert.match(source, /composePersonalWorkspacePocReadModel\([\s\S]*initialModel,[\s\S]*state,[\s\S]*sourceCandidateStore/u);
 });
 
 test('mobile item overlay and non-modal move panel carry focus, Escape, and one live-status owner', () => {
@@ -337,10 +375,10 @@ test('mobile item overlay and non-modal move panel carry focus, Escape, and one 
 
   assert.match(source, /data-testid="personal-workspace-move-panel"/u);
   assert.match(source, /role="dialog"/u);
-  assert.match(source, /top: 'calc\(max\(0\.5rem, var\(--personal-workspace-safe-top\)\) \+ 4\.5rem\)'/u);
-  assert.match(source, /bottom: 'max\(0\.5rem, var\(--personal-workspace-safe-bottom\)\)'/u);
-  assert.match(source, /left: 'max\(0px, var\(--personal-workspace-safe-left\)\)'/u);
-  assert.match(source, /width: 'min\(18\.75rem, max\(8rem, calc\(100vw - 10\.5rem/u);
+  assert.match(source, /top: 'calc\(var\(--personal-workspace-visual-viewport-top, 0px\) \+ max\(0\.5rem, var\(--personal-workspace-safe-top\)\) \+ 4\.5rem\)'/u);
+  assert.match(source, /bottom: 'calc\(var\(--personal-workspace-visual-viewport-bottom, 0px\) \+ max\(0\.5rem, var\(--personal-workspace-safe-bottom\)\)\)'/u);
+  assert.match(source, /left: 'calc\(var\(--personal-workspace-visual-viewport-left, 0px\) \+ max\(0px, var\(--personal-workspace-safe-left\)\)\)'/u);
+  assert.match(source, /width: 'min\(18\.75rem, max\(8rem, calc\(var\(--personal-workspace-visual-viewport-width, 100vw\) - 10\.5rem/u);
   assert.doesNotMatch(source, /className="grid gap-5 py-4 md:grid-cols-2"/u);
   assert.match(source, /sm:grid-cols-2/u);
   assert.match(source, /orientation: landscape/u);
@@ -353,8 +391,9 @@ test('mobile item overlay and non-modal move panel carry focus, Escape, and one 
   assert.match(source, /receipt && status\.receiptStatus === receipt\.status/u);
   assert.match(source, /receiptStatus: 'success'/u);
   assert.match(source, /receiptStatus: 'undone'/u);
-  assert.match(source, /data-testid="personal-workspace-transaction-status"[\s\S]*?role=\{receiptOwnsTransactionStatus \? undefined : status\.kind === 'failure' \? 'alert' : 'status'\}[\s\S]*?aria-live=\{receiptOwnsTransactionStatus \? 'off' : status\.kind === 'failure' \? 'assertive' : 'polite'\}/u);
-  assert.match(source, /aria-hidden=\{receiptOwnsTransactionStatus \? true : undefined\}/u);
+  assert.match(source, /const resultOwnsTransactionStatus = receiptOwnsTransactionStatus \|\| contextualOwnsTransactionStatus/u);
+  assert.match(source, /data-testid="personal-workspace-transaction-status"[\s\S]*?role=\{nativeStatusBox \|\| resultOwnsTransactionStatus \? undefined : status\.kind === 'failure' \? 'alert' : 'status'\}[\s\S]*?aria-live=\{nativeStatusBox \|\| resultOwnsTransactionStatus \? 'off' : status\.kind === 'failure' \? 'assertive' : 'polite'\}/u);
+  assert.match(source, /aria-hidden=\{nativeStatusBox \|\| resultOwnsTransactionStatus \? true : undefined\}/u);
 });
 
 test('drag date targets and outside-drop cancellation converge on the move transition path', () => {
@@ -391,6 +430,14 @@ test('active move cleanup cancels edge scrolling without invoking a storage path
   assert.match(source, /runAutoScroll[\s\S]*resolveActiveMoveAtPoint\(session\.lastX, session\.lastY\)[\s\S]*window\.requestAnimationFrame\(runAutoScroll\)/u);
   assert.doesNotMatch(source, /if \(!target\) resolveActive/u);
   assert.doesNotMatch(source, /runAutoScroll[\s\S]{0,800}savePersonalWorkspacePocState/u);
+  const cancelMoveBody = source.match(
+    /const cancelMove = useCallback\(\(message = '이동을 취소했어요\.'\) => \{([\s\S]*?)\n  \}, \[moveReturnFocusSelector/u,
+  )?.[1] ?? '';
+  const environmentCancelEffect = source.match(
+    /if \(!moveTarget\) return;\n    const viewport = window\.visualViewport;([\s\S]*?)\n  \}, \[cancelMove, moveTarget\]\);/u,
+  )?.[1] ?? '';
+  assert.match(environmentCancelEffect, /onWindowBlur[\s\S]*onWindowResize[\s\S]*onVisualViewportResize/u);
+  assert.doesNotMatch(`${cancelMoveBody}\n${environmentCancelEffect}`, /commitTransition|localStorage|setItem|removeItem/u);
 });
 
 test('touch cancellation suppresses only the synthetic click and exposes accessible movement guidance', () => {
@@ -406,6 +453,18 @@ test('touch cancellation suppresses only the synthetic click and exposes accessi
   assert.match(source, /포인터 동작이 취소되거나, Escape 키를 누르거나 이동 창을 닫으면 변경 없이 취소됩니다/u);
   assert.match(source, /window\.addEventListener\('blur', cancelPendingPress\)/u);
   assert.match(source, /window\.addEventListener\('resize', cancelPendingPress\)/u);
+  assert.match(source, /viewport\?\.addEventListener\('resize', cancelPendingPress\)/u);
+  const cancellationEffect = source.match(
+    /const cancelPendingPress = \(\) => \{([\s\S]*?)\n    \};[\s\S]*?window\.addEventListener\('blur', cancelPendingPress\)/u,
+  )?.[1] ?? '';
+  assert.doesNotMatch(cancellationEffect, /commitTransition|onPointerSessionEnd/u);
+});
+
+test('keyboard reordering uses the shared controls and restores the moved handle focus', () => {
+  assert.match(source, /event\.key === 'ArrowUp'[\s\S]*event\.key === 'ArrowDown'[\s\S]*event\.key === 'Home'[\s\S]*event\.key === 'End'/u);
+  assert.match(source, /event\.key === 'ArrowUp'[\s\S]*\? 'previous'[\s\S]*\? 'next'[\s\S]*\? 'top'[\s\S]*: 'bottom'/u);
+  assert.match(source, /const outcome = await commitTransition\(\{[\s\S]*type: 'reorder'[\s\S]*if \(outcome === 'changed' && !moveTarget\)[\s\S]*focusAfterRender\(getPersonalWorkspacePocMoveTriggerSelector\(task\.ref, 'task-handle'\)\)/u);
+  assert.match(source, /aria-keyshortcuts=\{onReorder[\s\S]*Enter Space ArrowUp ArrowDown Home End Escape/u);
 });
 
 test('Flow rows share the move handle lifecycle but expose folder-only movement', () => {
@@ -432,15 +491,21 @@ test('surface provides a skip link and testable four-side safe-area seams', () =
   assert.match(source, /padding-left: max\(1rem, var\(--personal-workspace-safe-left\)\)/u);
   assert.match(source, /padding-top: max\(\.25rem, var\(--personal-workspace-safe-top\)\) !important/u);
   assert.match(source, /const PERSONAL_WORKSPACE_POC_BOTTOM_SHEET_SAFE_STYLE: CSSProperties/u);
-  assert.match(source, /left: 'var\(--personal-workspace-safe-left\)'/u);
-  assert.match(source, /right: 'var\(--personal-workspace-safe-right\)'/u);
-  assert.match(source, /bottom: 'var\(--personal-workspace-safe-bottom\)'/u);
-  assert.match(source, /maxHeight: 'calc\(86dvh - var\(--personal-workspace-safe-top\) - var\(--personal-workspace-safe-bottom\)\)'/u);
+  assert.match(source, /left: 'calc\(var\(--personal-workspace-visual-viewport-left, 0px\) \+ var\(--personal-workspace-safe-left\)\)'/u);
+  assert.match(source, /right: 'calc\(var\(--personal-workspace-visual-viewport-right, 0px\) \+ var\(--personal-workspace-safe-right\)\)'/u);
+  assert.match(source, /bottom: 'calc\(var\(--personal-workspace-visual-viewport-bottom, 0px\) \+ var\(--personal-workspace-safe-bottom\)\)'/u);
+  assert.match(source, /maxHeight: 'calc\(min\(86dvh, var\(--personal-workspace-visual-viewport-height, 86dvh\)\) - var\(--personal-workspace-safe-top\) - var\(--personal-workspace-safe-bottom\)\)'/u);
   assert.match(source, /paddingBottom: 'calc\(1rem \+ var\(--personal-workspace-safe-bottom\)\)'/u);
   assert.equal(
     source.match(/dialogProps=\{\{ style: PERSONAL_WORKSPACE_POC_BOTTOM_SHEET_SAFE_STYLE \}\}/gu)?.length,
     3,
   );
+});
+
+test('mobile workspace and folder navigation expose contextual accessible names', () => {
+  assert.match(source, /aria-label=\{`개인공간 모바일 보기: \$\{label\}`\}/u);
+  assert.match(source, /aria-label="폴더 탐색: 미분류"/u);
+  assert.match(source, /aria-label=\{`폴더 탐색: \$\{getPersonalWorkspacePocFolderPath\(state, folder\.folderId\)\}`\}/u);
 });
 
 test('quick authoring has explicit toggle, cancel, Escape, and reset confirmation contracts', () => {

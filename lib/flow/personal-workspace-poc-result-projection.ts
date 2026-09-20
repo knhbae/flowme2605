@@ -2,18 +2,25 @@ import {
   getPersonalWorkspacePocFlowFieldOwnership,
   getPersonalWorkspacePocFlowItemFieldOwnership,
   PERSONAL_WORKSPACE_POC_VERSION,
-  toPersonalWorkspacePocFlowItemRef,
-  toPersonalWorkspacePocFlowRef,
   type PersonalWorkspacePocFlow,
   type PersonalWorkspacePocFlowItem,
   type PersonalWorkspacePocAuthoredFlow,
-  type PersonalWorkspacePocAuthoringParsedItemSnapshot,
-  type PersonalWorkspacePocOrigin,
   type PersonalWorkspacePocPersonalPlanItemOverlay,
   type PersonalWorkspacePocReadModel,
   type PersonalWorkspacePocState,
 } from './personal-workspace-poc-contract';
-import { fingerprintPersonalWorkspacePocAuthoringSource } from './personal-workspace-poc-authoring';
+import { resolvePersonalWorkspacePocSourceFlow } from './personal-workspace-poc-source-attributes';
+import { getPersonalWorkspacePocInheritedMemo } from './personal-workspace-poc-plan-memo-baseline';
+import type {
+  PersonalWorkspacePocResultSourceAttributes,
+  PersonalWorkspacePocResultSourceContract,
+  PersonalWorkspacePocSourceReadFailureReason,
+  PersonalWorkspacePocSourceReadIndex,
+} from './personal-workspace-poc-source-attributes-contract';
+export type {
+  PersonalWorkspacePocResultSourceAttributes,
+  PersonalWorkspacePocResultSourceContract,
+} from './personal-workspace-poc-source-attributes-contract';
 import { expandPersonalWorkspacePocOccurrences } from './personal-workspace-poc-occurrence';
 import {
   applyPersonalWorkspacePocTimelineOrder,
@@ -22,6 +29,15 @@ import {
 } from './personal-workspace-poc-state';
 
 export const PERSONAL_WORKSPACE_POC_RESULT_PROJECTION_VERSION = 3 as const;
+
+/** Read-only presentation ownership; this does not version or migrate storage. */
+export const PERSONAL_WORKSPACE_POC_RESULT_COMPLETION_CONTRACT = Object.freeze({
+  version: 1 as const,
+  defaultPurpose: 'personal-execution' as const,
+  unrecordedExecutionCompleted: false as const,
+});
+
+export type PersonalWorkspacePocResultPurpose = 'authoring-preview' | 'personal-execution';
 
 /**
  * Local result files are an additive PoC contract. Keeping this version
@@ -111,33 +127,6 @@ export type PersonalWorkspacePocResultDateOwner =
   | 'source'
   | 'none';
 
-export type PersonalWorkspacePocResultSourceAttributes = Readonly<{
-  description?: string;
-  relativeDate?: string;
-  date?: string;
-  resolvedDate?: string;
-  time?: string;
-  timeZone?: string;
-  place?: string;
-  resourceUrl?: string;
-  recurrence?: string;
-  recurrenceEnd?: string;
-  completionCriteria?: string;
-  durationMinutes?: number;
-  executionCondition?: string;
-  resourceLabel?: string;
-  sourceUrl?: string;
-  sourceLabel?: string;
-  guide?: string;
-  caution?: string;
-  subchecks?: readonly Readonly<{
-    subcheckId: string;
-    title: string;
-    sourceChecked: boolean;
-  }>[];
-  additionalDescriptions?: readonly string[];
-  sourceChecked?: boolean;
-}>;
 
 export type PersonalWorkspacePocResultItem = Readonly<{
   ref: string;
@@ -361,27 +350,6 @@ export type PersonalWorkspacePocResultDownloads = Readonly<{
   sourceMutationCount: 0;
 }>;
 
-export type PersonalWorkspacePocResultSourceContract = Readonly<{
-  origin: PersonalWorkspacePocOrigin;
-  flowRef: string;
-  savedCopyId: string;
-  flowId: string;
-  sourceSlug: string;
-  owner: 'saved-plan-read-model' | 'authoring-working-source';
-  sourcePreserved: true;
-  sourceMutationCount: 0;
-  authoring?: Readonly<{
-    handoffId: string;
-    documentId: string;
-    revisionId: string;
-    parseResultId: string;
-    sourceSnapshotId: string;
-    sourceFingerprint: string;
-    /** Exact original JS string, including CRLF, tabs, and trailing newline. */
-    rawText: string;
-    itemMapping: 'complete' | 'legacy-unavailable';
-  }>;
-}>;
 
 export type PersonalWorkspacePocResultProjection = Readonly<{
   version: typeof PERSONAL_WORKSPACE_POC_RESULT_PROJECTION_VERSION;
@@ -439,6 +407,8 @@ export type PersonalWorkspacePocResultProjectionV3 = Omit<
 export type PersonalWorkspacePocResultProjectionV2 = PersonalWorkspacePocResultProjectionV3;
 
 export type PersonalWorkspacePocResultProjectionFailureReason =
+  | PersonalWorkspacePocSourceReadFailureReason
+  | 'invalid-projection-purpose'
   | 'invalid-model-version'
   | 'invalid-model-shape'
   | 'invalid-state-version'
@@ -472,26 +442,6 @@ type PreorderedItem = Omit<
   'contextOrder' | 'contextKey' | 'manualContextOrder'
 >;
 
-type PersonalWorkspacePocAuthoringItemContext = Readonly<{
-  sourceLine: number;
-  attributes: PersonalWorkspacePocResultSourceAttributes;
-}>;
-
-type PersonalWorkspacePocResultSourceResolution =
-  | Readonly<{
-    ok: true;
-    source: PersonalWorkspacePocResultSourceContract;
-    itemContextByRef: ReadonlyMap<string, PersonalWorkspacePocAuthoringItemContext>;
-  }>
-  | Readonly<{ ok: false; reason: 'invalid-authoring-lineage' }>;
-
-const PERSONAL_WORKSPACE_POC_RESULT_SUPPORTED_ORIGINS = new Set<PersonalWorkspacePocOrigin>([
-  'source-backed-map',
-  'personal-draft',
-  'canonical-personal-copy',
-  'legacy-saved-plan',
-  'authoring-handoff',
-]);
 
 function failure(
   reason: PersonalWorkspacePocResultProjectionFailureReason,
@@ -511,10 +461,6 @@ function isOptionalString(value: unknown): value is string | undefined {
   return value === undefined || typeof value === 'string';
 }
 
-function isSupportedOrigin(value: unknown): value is PersonalWorkspacePocOrigin {
-  return typeof value === 'string'
-    && PERSONAL_WORKSPACE_POC_RESULT_SUPPORTED_ORIGINS.has(value as PersonalWorkspacePocOrigin);
-}
 
 function hasValidStateShape(state: PersonalWorkspacePocState): boolean {
   return isRecord(state)
@@ -527,31 +473,6 @@ function hasValidStateShape(state: PersonalWorkspacePocState): boolean {
     && (state.personalPlanOverlays === undefined || isRecord(state.personalPlanOverlays));
 }
 
-function hasValidFlowShape(flow: PersonalWorkspacePocFlow): boolean {
-  return isRecord(flow)
-    && isNonEmptyString(flow.ref)
-    && isNonEmptyString(flow.savedCopyId)
-    && isNonEmptyString(flow.flowId)
-    && isNonEmptyString(flow.sourceSlug)
-    && isNonEmptyString(flow.title)
-    && isSupportedOrigin(flow.origin)
-    && Array.isArray(flow.items);
-}
-
-function hasValidItemShape(item: PersonalWorkspacePocFlowItem): boolean {
-  return isRecord(item)
-    && isNonEmptyString(item.ref)
-    && isNonEmptyString(item.savedCopyId)
-    && isNonEmptyString(item.flowId)
-    && isNonEmptyString(item.itemId)
-    && isNonEmptyString(item.title)
-    && Number.isSafeInteger(item.sourceOrder)
-    && item.sourceOrder >= 0
-    && isOptionalString(item.description)
-    && (item.sectionTitle === undefined || isNonEmptyString(item.sectionTitle))
-    && (item.sourceDate === undefined || isPersonalWorkspacePocDate(item.sourceDate))
-    && (item.sourceTimingLabel === undefined || isNonEmptyString(item.sourceTimingLabel));
-}
 
 function hasValidPersonalPlanOverlayShape(value: unknown): boolean {
   if (!isRecord(value)
@@ -580,196 +501,6 @@ function hasValidPersonalPlanOverlayShape(value: unknown): boolean {
   });
 }
 
-function sourceAttributesFor(
-  parsed: PersonalWorkspacePocAuthoringParsedItemSnapshot,
-): PersonalWorkspacePocResultSourceAttributes {
-  return {
-    ...(parsed.description !== undefined ? { description: parsed.description } : {}),
-    ...(parsed.additionalDescriptions !== undefined
-      ? { additionalDescriptions: parsed.additionalDescriptions }
-      : {}),
-    ...(parsed.relativeDate !== undefined ? { relativeDate: parsed.relativeDate } : {}),
-    ...(parsed.date !== undefined ? { date: parsed.date } : {}),
-    ...(parsed.resolvedDate !== undefined ? { resolvedDate: parsed.resolvedDate } : {}),
-    ...(parsed.time !== undefined ? { time: parsed.time } : {}),
-    ...(parsed.timeZone !== undefined ? { timeZone: parsed.timeZone } : {}),
-    ...(parsed.place !== undefined ? { place: parsed.place } : {}),
-    ...(parsed.durationMinutes !== undefined ? { durationMinutes: parsed.durationMinutes } : {}),
-    ...(parsed.resourceUrl !== undefined ? { resourceUrl: parsed.resourceUrl } : {}),
-    ...(parsed.resourceLabel !== undefined ? { resourceLabel: parsed.resourceLabel } : {}),
-    ...(parsed.sourceUrl !== undefined ? { sourceUrl: parsed.sourceUrl } : {}),
-    ...(parsed.sourceLabel !== undefined ? { sourceLabel: parsed.sourceLabel } : {}),
-    ...(parsed.recurrence !== undefined ? { recurrence: parsed.recurrence } : {}),
-    ...(parsed.recurrenceEnd !== undefined ? { recurrenceEnd: parsed.recurrenceEnd } : {}),
-    ...(parsed.completionCriteria !== undefined
-      ? { completionCriteria: parsed.completionCriteria }
-      : {}),
-    ...(parsed.executionCondition !== undefined
-      ? { executionCondition: parsed.executionCondition }
-      : {}),
-    ...(parsed.guide !== undefined ? { guide: parsed.guide } : {}),
-    ...(parsed.caution !== undefined ? { caution: parsed.caution } : {}),
-    ...(parsed.subchecks !== undefined ? { subchecks: parsed.subchecks } : {}),
-    ...(parsed.sourceChecked !== undefined ? { sourceChecked: parsed.sourceChecked } : {}),
-  };
-}
-
-function hasValidParsedItemSnapshot(
-  value: unknown,
-): value is PersonalWorkspacePocAuthoringParsedItemSnapshot {
-  if (!isRecord(value)
-    || !Number.isSafeInteger(value.sourceLine)
-    || Number(value.sourceLine) < 1
-    || !Number.isSafeInteger(value.sourceOrder)
-    || Number(value.sourceOrder) < 0
-    || !isNonEmptyString(value.title)
-    || (value.sectionTitle !== undefined && !isNonEmptyString(value.sectionTitle))) return false;
-  const stringsValid = [
-    'description',
-    'relativeDate',
-    'date',
-    'resolvedDate',
-    'time',
-    'timeZone',
-    'place',
-    'resourceUrl',
-    'recurrence',
-    'recurrenceEnd',
-    'completionCriteria',
-    'resourceLabel',
-    'sourceUrl',
-    'sourceLabel',
-    'executionCondition',
-    'guide',
-    'caution',
-  ].every((key) => isOptionalString(value[key]));
-  if (!stringsValid
-    || (value.sourceChecked !== undefined && typeof value.sourceChecked !== 'boolean')
-    || (value.durationMinutes !== undefined
-      && (!Number.isSafeInteger(value.durationMinutes) || Number(value.durationMinutes) < 1))
-    || (value.additionalDescriptions !== undefined
-      && (!Array.isArray(value.additionalDescriptions)
-        || !value.additionalDescriptions.every((entry) => typeof entry === 'string')))
-    || (value.subchecks !== undefined
-      && (!Array.isArray(value.subchecks)
-        || !value.subchecks.every((entry) => isRecord(entry)
-          && isNonEmptyString(entry.subcheckId)
-          && isNonEmptyString(entry.title)
-          && typeof entry.sourceChecked === 'boolean')))) return false;
-  return true;
-}
-
-function resolveResultSource(
-  flow: PersonalWorkspacePocFlow,
-  sourceItemByRef: ReadonlyMap<string, PersonalWorkspacePocFlowItem>,
-): PersonalWorkspacePocResultSourceResolution {
-  const base = {
-    origin: flow.origin,
-    flowRef: flow.ref,
-    savedCopyId: flow.savedCopyId,
-    flowId: flow.flowId,
-    sourceSlug: flow.sourceSlug,
-    sourcePreserved: true as const,
-    sourceMutationCount: 0 as const,
-  };
-  if (flow.origin !== 'authoring-handoff') {
-    return {
-      ok: true,
-      source: { ...base, owner: 'saved-plan-read-model' },
-      itemContextByRef: new Map(),
-    };
-  }
-
-  const authored = flow as PersonalWorkspacePocAuthoredFlow;
-  const lineage = authored.authoring as unknown;
-  if (!isRecord(lineage)
-    || !isNonEmptyString(lineage.handoffId)
-    || !isNonEmptyString(lineage.documentId)
-    || !isNonEmptyString(lineage.revisionId)
-    || !isNonEmptyString(lineage.parseResultId)
-    || !isNonEmptyString(lineage.sourceSnapshotId)
-    || typeof lineage.rawText !== 'string'
-    || !isNonEmptyString(lineage.sourceFingerprint)
-    || fingerprintPersonalWorkspacePocAuthoringSource(lineage.rawText)
-      !== lineage.sourceFingerprint) {
-    return { ok: false, reason: 'invalid-authoring-lineage' };
-  }
-
-  const identityMap = lineage.sourceLineItemIdentityMap;
-  const parsedItems = lineage.parsedItems;
-  if ((identityMap === undefined) !== (parsedItems === undefined)) {
-    return { ok: false, reason: 'invalid-authoring-lineage' };
-  }
-
-  const itemContextByRef = new Map<string, PersonalWorkspacePocAuthoringItemContext>();
-  if (identityMap !== undefined && parsedItems !== undefined) {
-    if (!isRecord(identityMap)
-      || !Array.isArray(parsedItems)
-      || !parsedItems.every(hasValidParsedItemSnapshot)) {
-      return { ok: false, reason: 'invalid-authoring-lineage' };
-    }
-    const parsedByLine = new Map(
-      parsedItems.map((parsed) => [String(parsed.sourceLine), parsed]),
-    );
-    if (parsedByLine.size !== parsedItems.length) {
-      return { ok: false, reason: 'invalid-authoring-lineage' };
-    }
-    for (const [line, unknownIdentity] of Object.entries(identityMap)) {
-      if (!isRecord(unknownIdentity)
-        || String(unknownIdentity.sourceLine) !== line
-        || !Number.isSafeInteger(unknownIdentity.sourceLine)
-        || Number(unknownIdentity.sourceLine) < 1
-        || !isNonEmptyString(unknownIdentity.itemRef)
-        || unknownIdentity.savedCopyId !== flow.savedCopyId
-        || unknownIdentity.flowId !== flow.flowId
-        || !isNonEmptyString(unknownIdentity.itemId)
-        || unknownIdentity.itemRef !== toPersonalWorkspacePocFlowItemRef(
-          flow.savedCopyId,
-          flow.flowId,
-          unknownIdentity.itemId,
-        )
-        || !sourceItemByRef.has(unknownIdentity.itemRef)
-        || itemContextByRef.has(unknownIdentity.itemRef)) {
-        return { ok: false, reason: 'invalid-authoring-lineage' };
-      }
-      const parsed = parsedByLine.get(line);
-      if (!parsed) return { ok: false, reason: 'invalid-authoring-lineage' };
-      const sourceItem = sourceItemByRef.get(unknownIdentity.itemRef);
-      if (!sourceItem
-        || sourceItem.itemId !== unknownIdentity.itemId
-        || sourceItem.sourceOrder !== parsed.sourceOrder) {
-        return { ok: false, reason: 'invalid-authoring-lineage' };
-      }
-      itemContextByRef.set(unknownIdentity.itemRef, {
-        sourceLine: parsed.sourceLine,
-        attributes: sourceAttributesFor(parsed),
-      });
-    }
-    if (itemContextByRef.size !== sourceItemByRef.size
-      || parsedByLine.size !== sourceItemByRef.size) {
-      return { ok: false, reason: 'invalid-authoring-lineage' };
-    }
-  }
-
-  return {
-    ok: true,
-    source: {
-      ...base,
-      owner: 'authoring-working-source',
-      authoring: {
-        handoffId: lineage.handoffId,
-        documentId: lineage.documentId,
-        revisionId: lineage.revisionId,
-        parseResultId: lineage.parseResultId,
-        sourceSnapshotId: lineage.sourceSnapshotId,
-        sourceFingerprint: lineage.sourceFingerprint,
-        rawText: lineage.rawText,
-        itemMapping: identityMap === undefined ? 'legacy-unavailable' : 'complete',
-      },
-    },
-    itemContextByRef,
-  };
-}
 
 function hasUnsupportedItemSchedule(
   flow: PersonalWorkspacePocFlow,
@@ -985,7 +716,7 @@ function buildTextProjection(
     const descriptions = [attrs?.description, ...(attrs?.additionalDescriptions ?? [])]
       .filter((value): value is string => Boolean(value));
     appendProperty('설명', descriptions.length > 0 ? descriptions.join('\n') : undefined, item.ref);
-    if (item.memo && !descriptions.includes(item.memo)) appendProperty('메모', item.memo, item.ref, 'memo');
+    if (item.memo) appendProperty('메모', item.memo, item.ref, 'memo');
     appendProperty('완료 기준', attrs?.completionCriteria, item.ref);
     appendProperty('날짜', item.effectiveDate ?? '날짜 미정', item.ref, 'execution-date');
     appendProperty('시간', item.time ?? attrs?.time, item.ref);
@@ -1330,7 +1061,17 @@ export function buildPersonalWorkspacePocResultProjection(input: Readonly<{
   localToday: string;
   baseDate?: string;
   selectedDate?: string;
+  /** Source preview and personal execution must not share completion owners. */
+  purpose?: PersonalWorkspacePocResultPurpose;
+  /** Verified pre-personal source context, required for effective source updates. */
+  sourceIndex?: PersonalWorkspacePocSourceReadIndex;
 }>): PersonalWorkspacePocResultProjectionResult {
+  const purpose = input.purpose === undefined
+    ? PERSONAL_WORKSPACE_POC_RESULT_COMPLETION_CONTRACT.defaultPurpose
+    : input.purpose;
+  if (purpose !== 'authoring-preview' && purpose !== 'personal-execution') {
+    return failure('invalid-projection-purpose');
+  }
   if (!isRecord(input.model) || !Array.isArray(input.model.flows)) {
     return failure('invalid-model-shape');
   }
@@ -1348,14 +1089,8 @@ export function buildPersonalWorkspacePocResultProjection(input: Readonly<{
     isRecord(candidate) && candidate.ref === input.flowRef
   ));
   if (!flow) return failure('flow-not-found');
-  if (!hasValidFlowShape(flow)) {
-    return isSupportedOrigin(flow.origin)
-      ? failure('invalid-model-shape')
-      : failure('unsupported-origin');
-  }
-  if (flow.ref !== toPersonalWorkspacePocFlowRef(flow.savedCopyId, flow.flowId)) {
-    return failure('malformed-flow-identity');
-  }
+  const sourceResolution = resolvePersonalWorkspacePocSourceFlow(flow, input.sourceIndex);
+  if (!sourceResolution.ok) return failure(sourceResolution.reason);
 
   const base = resolveFlowBaseDate(flow, input.localToday);
   if (!base.ok) return failure(base.reason === 'invalid-local-today'
@@ -1376,17 +1111,7 @@ export function buildPersonalWorkspacePocResultProjection(input: Readonly<{
     || overlay.flowId !== flow.flowId
   )) return failure('invalid-personal-plan-overlay');
 
-  const sourceItemByRef = new Map<string, PersonalWorkspacePocFlowItem>();
-  for (const item of flow.items) {
-    if (!hasValidItemShape(item)) return failure('invalid-model-shape');
-    if (sourceItemByRef.has(item.ref)) return failure('duplicate-item-identity');
-    if (item.ref !== toPersonalWorkspacePocFlowItemRef(item.savedCopyId, item.flowId, item.itemId)
-      || item.savedCopyId !== flow.savedCopyId
-      || item.flowId !== flow.flowId) return failure('malformed-item-identity');
-    sourceItemByRef.set(item.ref, item);
-  }
-  const sourceResolution = resolveResultSource(flow, sourceItemByRef);
-  if (!sourceResolution.ok) return failure(sourceResolution.reason);
+  const sourceItemByRef = sourceResolution.sourceItemByRef;
   if (overlay && Object.keys(overlay.items).some((itemRef) => !sourceItemByRef.has(itemRef))) {
     return failure('invalid-personal-plan-overlay');
   }
@@ -1428,10 +1153,15 @@ export function buildPersonalWorkspacePocResultProjection(input: Readonly<{
     const authoringContext = sourceResolution.itemContextByRef.get(itemRef);
     const memo = itemOverlay && Object.hasOwn(itemOverlay, 'memo')
       ? itemOverlay.memo
-      : authoringContext
-        ? undefined
-        : sourceItem.description;
-    const sourceAttributes = authoringContext?.attributes;
+      : getPersonalWorkspacePocInheritedMemo(sourceItem);
+    const retainedDescription = getPersonalWorkspacePocFlowItemFieldOwnership(sourceItem, flow.origin, flow).description.source;
+    const sourceDescription = ['source', 'authoring'].includes(retainedDescription.owner)
+      && typeof retainedDescription.value === 'string' ? retainedDescription.value : undefined;
+    const sourceAttributes = authoringContext?.attributes
+      ?? (sourceDescription !== undefined || sourceItem.completionCriterion !== undefined ? {
+        ...(sourceDescription !== undefined ? { description: sourceDescription } : {}),
+        ...(sourceItem.completionCriterion !== undefined ? { completionCriteria: sourceItem.completionCriterion } : {}),
+      } : undefined);
     const sourceSection = sourceItem.sectionId
       ? sourceSectionById.get(sourceItem.sectionId)
       : undefined;
@@ -1451,10 +1181,8 @@ export function buildPersonalWorkspacePocResultProjection(input: Readonly<{
       ...(memo !== undefined ? { memo } : {}),
       ...(effectiveSectionTitle ? { sectionTitle: effectiveSectionTitle } : {}),
       sourceOrder: sourceItem.sourceOrder,
-      ...(authoringContext ? {
-        sourceLine: authoringContext.sourceLine,
-        sourceAttributes,
-      } : {}),
+      ...(authoringContext ? { sourceLine: authoringContext.sourceLine } : {}),
+      ...(sourceAttributes ? { sourceAttributes } : {}),
     } as const;
 
     if (sourceAttributes?.recurrence) {
@@ -1483,9 +1211,12 @@ export function buildPersonalWorkspacePocResultProjection(input: Readonly<{
         const effectiveDate = placement?.scheduleMode === 'unscheduled'
           ? undefined
           : placement?.date ?? occurrence.originalDate;
-        const completed = completion
-          ? completion.status === 'completed'
-          : Boolean(sourceAttributes.sourceChecked);
+        const executionCompletion = purpose === 'personal-execution' ? completion : undefined;
+        const completed = purpose === 'authoring-preview'
+          ? Boolean(sourceAttributes.sourceChecked)
+          : executionCompletion
+            ? executionCompletion.status === 'completed'
+            : PERSONAL_WORKSPACE_POC_RESULT_COMPLETION_CONTRACT.unrecordedExecutionCompleted;
         preordered.push({
           ...common,
           ref: occurrence.occurrenceId,
@@ -1502,7 +1233,7 @@ export function buildPersonalWorkspacePocResultProjection(input: Readonly<{
           ...(sourceAttributes.time ? { time: sourceAttributes.time } : {}),
           timelinePolicy: 'auto',
           completed,
-          ...(completion?.completedAt ? { completedAt: completion.completedAt } : {}),
+          ...(executionCompletion?.completedAt ? { completedAt: executionCompletion.completedAt } : {}),
         });
         manifestOrder += 1;
       }
@@ -1512,6 +1243,7 @@ export function buildPersonalWorkspacePocResultProjection(input: Readonly<{
     const effective = resolveEffectiveDate(input.state, itemRef, planDate);
     if (!effective) return failure('invalid-item-date');
     const completion = input.state.completions[itemRef];
+    const executionCompletion = purpose === 'personal-execution' ? completion : undefined;
     const placement = input.state.placements[itemRef];
     preordered.push({
       ...common,
@@ -1527,10 +1259,12 @@ export function buildPersonalWorkspacePocResultProjection(input: Readonly<{
         ? { time: placement?.time ?? sourceAttributes?.time }
         : {}),
       timelinePolicy: placement?.timelinePolicy ?? 'auto',
-      completed: completion
-        ? completion.status === 'completed'
-        : Boolean(sourceAttributes?.sourceChecked),
-      ...(completion?.completedAt ? { completedAt: completion.completedAt } : {}),
+      completed: purpose === 'authoring-preview'
+        ? Boolean(sourceAttributes?.sourceChecked)
+        : executionCompletion
+          ? executionCompletion.status === 'completed'
+          : PERSONAL_WORKSPACE_POC_RESULT_COMPLETION_CONTRACT.unrecordedExecutionCompleted,
+      ...(executionCompletion?.completedAt ? { completedAt: executionCompletion.completedAt } : {}),
     });
     manifestOrder += 1;
   }

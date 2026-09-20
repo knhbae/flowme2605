@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-09-04",
+  "readOnlyExternalSources": true,
+  "sources": [
+    {
+      "role": "v4.1 actual-device QA",
+      "path": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-09-01-flowme-personal-workspace-v4-1-assets\\qa.md",
+      "sha256": "6557D2AED362565A9997C29AFD56FFF4E0AD800D78D5379CCA92014B867C4849",
+      "lineRanges": ["21-29", "47-50", "65", "69-76"],
+      "requirements": ["V41-062", "V41-063", "V41-064", "V41-066"]
+    },
+    {
+      "role": "development-2 stable-anchor result",
+      "path": "D:\\flowme2605\\flow-text-authoring-flow-view-hybrid-ux-poc-20260828\\docs\\content-audit\\2026-08-29-flowme-text-authoring-stable-anchor-keyboard-poc-results\\README.md",
+      "sha256": "90C813BCC40597977ABEFBE0C7F087419E64D9A92AF04440868C1701A0314C17",
+      "lineRanges": ["1-3", "12-18", "32"],
+      "requirements": ["D2-038"]
+    },
+    {
+      "role": "development-2 stable-anchor contract",
+      "path": "D:\\flowme2605\\flow-text-authoring-flow-view-hybrid-ux-poc-20260828\\docs\\specs\\2026-08-29-flowme-text-authoring-stable-anchor-keyboard-poc\\spec.md",
+      "sha256": "6A3A9C215382E01D5861131EB73D3FBD852A0DD3EC14F9DB718037DAFE9C1695",
+      "lineRanges": ["22-29"],
+      "requirements": ["D2-038"]
+    },
+    {
+      "role": "development-2 unified editor contract",
+      "path": "D:\\flowme2605\\flow-text-authoring-structure-template-inline-baseline-20260830\\docs\\specs\\2026-08-30-flowme-text-authoring-unified-editor-guidance-poc\\spec.md",
+      "sha256": "8194A745CF329DB6C81CCAFD539EA959C529C4B43775DE2C6262EE96EE4CD96D",
+      "lineRanges": ["92-102"],
+      "requirements": ["D2-042", "D2-061"]
+    },
+    {
+      "role": "development-2 unified editor QA",
+      "path": "D:\\flowme2605\\flow-text-authoring-structure-template-inline-baseline-20260830\\docs\\specs\\2026-08-30-flowme-text-authoring-unified-editor-guidance-poc\\qa.md",
+      "sha256": "AD236F1BC13047E8A43943A1144D9316D301B7B3133CB827FDB060250AC56BEF",
+      "lineRanges": ["28-29", "47-49"],
+      "requirements": ["D2-042", "D2-061"]
+    }
+  ]
+}
+

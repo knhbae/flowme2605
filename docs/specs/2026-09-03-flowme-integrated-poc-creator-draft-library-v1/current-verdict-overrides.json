@@ -1,0 +1,141 @@
+{
+  "version": 1,
+  "stage": "P3-B",
+  "status": "VERIFIED",
+  "asOf": "2026-09-03",
+  "inherits": "docs/specs/2026-09-03-flowme-integrated-poc-accessibility-atomicity-closure-v1/current-verdict-overrides.json",
+  "beforeP3B": {
+    "V41": { "total": 78, "satisfied": 61, "partial": 2, "missing": 3, "intentionalChange": 6, "excluded": 6 },
+    "D1": { "total": 26, "satisfied": 26, "partial": 0, "missing": 0, "intentionalChange": 0, "excluded": 0 },
+    "D2": { "total": 64, "satisfied": 43, "partial": 9, "missing": 1, "intentionalChange": 5, "excluded": 6 },
+    "total": { "total": 168, "satisfied": 130, "partial": 11, "missing": 4, "intentionalChange": 11, "excluded": 12 }
+  },
+  "targetAfterP3B": {
+    "V41": { "total": 78, "satisfied": 61, "partial": 2, "missing": 3, "intentionalChange": 6, "excluded": 6 },
+    "D1": { "total": 26, "satisfied": 26, "partial": 0, "missing": 0, "intentionalChange": 0, "excluded": 0 },
+    "D2": { "total": 64, "satisfied": 44, "partial": 8, "missing": 1, "intentionalChange": 5, "excluded": 6 },
+    "total": { "total": 168, "satisfied": 131, "partial": 10, "missing": 4, "intentionalChange": 11, "excluded": 12 }
+  },
+  "appliedAfterP3B": {
+    "V41": { "total": 78, "satisfied": 61, "partial": 2, "missing": 3, "intentionalChange": 6, "excluded": 6 },
+    "D1": { "total": 26, "satisfied": 26, "partial": 0, "missing": 0, "intentionalChange": 0, "excluded": 0 },
+    "D2": { "total": 64, "satisfied": 44, "partial": 8, "missing": 1, "intentionalChange": 5, "excluded": 6 },
+    "total": { "total": 168, "satisfied": 131, "partial": 10, "missing": 4, "intentionalChange": 11, "excluded": 12 }
+  },
+  "overrides": [
+    {
+      "id": "D2-057",
+      "from": "부분",
+      "to": "충족",
+      "evidenceLevel": "E4",
+      "decision": "PoC 임시 승인",
+      "currentEvidence": [
+        "docs/specs/2026-09-03-flowme-integrated-poc-creator-draft-library-v1/spec.md",
+        "docs/specs/2026-09-03-flowme-integrated-poc-creator-draft-library-v1/ownership-contract.md",
+        "lib/flow/personal-workspace-poc-creator-drafts.ts",
+        "lib/flow/personal-workspace-poc-creator-drafts.test.ts",
+        "lib/flow/personal-workspace-poc-creator-draft-storage.ts",
+        "lib/flow/personal-workspace-poc-creator-draft-storage.test.ts",
+        "lib/flow/personal-workspace-poc-creator-draft-storage-transaction.ts",
+        "lib/flow/personal-workspace-poc-creator-draft-storage-transaction.test.ts",
+        "lib/flow/personal-workspace-poc-storage.ts",
+        "lib/flow/personal-workspace-poc-storage.test.ts",
+        "components/flow/personal-workspace-poc/PersonalWorkspacePocCreatorDraftLibrary.tsx",
+        "components/flow/personal-workspace-poc/PersonalWorkspacePocCreatorDraftLibrary.test.tsx",
+        "components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx",
+        "components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx",
+        "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js",
+        "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js",
+        "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/standalone.test.cjs",
+        "tests/e2e/personal-workspace-p3b-creator-drafts.spec.ts",
+        "tests/e2e/personal-workspace-integrated-standalone.spec.ts"
+      ],
+      "verificationRunIds": [
+        "p3b-creator-draft-model",
+        "p3b-personal-workspace-poc-suite",
+        "p3b-standalone-model",
+        "p3b-react-browser",
+        "p3b-standalone-browser"
+      ],
+      "reason": "기존 작성 중 reload 복구를 유지하면서 명시 저장 CreatorDraft를 별도 PoC-local library와 working-draft binding으로 분리했다. 저장·목록 재진입·제목과 원문 내 파생 출처 검색·복제·보관/복원은 하나의 versioned 순수 transition과 CAS transaction을 공유하며 React와 standalone에서 reload·Undo·fail-closed·zero-write 경계를 fresh 검증했다.",
+      "action": "PoC-local CreatorDraft lane과 여섯 E4 subcheck 회귀를 유지한다. production canonical adapter, source metadata, PublishedVersion·ExportSnapshot owner, 다중 revision history는 별도 결정 전 추가하지 않는다."
+    }
+  ],
+  "subcheckOverrides": [
+    {
+      "id": "D2-057.2",
+      "fromVerdict": "의도적 변경",
+      "fromEvidence": "E3",
+      "toVerdict": "충족",
+      "toEvidence": "E4",
+      "note": "개인 Flow handoff와 분리된 전용 CreatorDraft library에 사용자가 명시 저장하고 React·standalone·storage transaction에서 검증했다."
+    },
+    {
+      "id": "D2-057.3",
+      "fromVerdict": "미충족",
+      "fromEvidence": "E0",
+      "toVerdict": "충족",
+      "toEvidence": "E4",
+      "note": "active·archive 목록에서 같은 draftId와 exact rawText·template·revision으로 재진입하고 저장하지 않은 변경의 확인·취소와 reload를 검증했다."
+    },
+    {
+      "id": "D2-057.4",
+      "fromVerdict": "미충족",
+      "fromEvidence": "E0",
+      "toVerdict": "충족",
+      "toEvidence": "E4",
+      "note": "제목·exact rawText·첫 http(s) URL의 파생 sourceLabel 검색과 active·archive filter를 제공하며 검색 중 storage mutation 0을 검증했다."
+    },
+    {
+      "id": "D2-057.5",
+      "fromVerdict": "미충족",
+      "fromEvidence": "E0",
+      "toVerdict": "충족",
+      "toEvidence": "E4",
+      "note": "새 draftId·revision 1·clone lineage와 exact source bytes를 가진 복제본을 만들며 원본 불변, Undo와 reload를 검증했다."
+    },
+    {
+      "id": "D2-057.6",
+      "fromVerdict": "미충족",
+      "fromEvidence": "E0",
+      "toVerdict": "충족",
+      "toEvidence": "E4",
+      "note": "영구 삭제 없이 보관·복원하고 exact record·Undo·reload를 React와 standalone에서 검증했다."
+    }
+  ],
+  "plannedOverride": {
+    "id": "D2-057",
+    "from": "부분",
+    "to": "충족",
+    "evidenceLevel": "E4",
+    "decision": "PoC 임시 승인",
+    "requiredSubchecks": [
+      "D2-057.1",
+      "D2-057.2",
+      "D2-057.3",
+      "D2-057.4",
+      "D2-057.5",
+      "D2-057.6"
+    ],
+    "condition": "여섯 subcheck 모두 current E4이고 React·standalone 구현 파일과 실패 0인 fresh verification run이 연결될 때만 overrides와 appliedAfterP3B를 채운다. 이 승인은 PoC-local lane에만 적용하며 영구 제품 정책·운영 schema 승인이 아니다."
+  },
+  "preservedVerdicts": [
+    {
+      "id": "D2-002",
+      "verdict": "부분",
+      "reason": "CreatorDraft preview와 sourceLabel은 replaceable PoC projection이다. SourceRow부터 Bundle/Flow Map까지의 production canonical adapter와 운영 schema를 구현하지 않는다."
+    },
+    {
+      "id": "D2-004",
+      "verdict": "부분",
+      "reason": "CreatorDraft owner만 PoC-local 영역에 분리하며 PublishedVersion·ExportSnapshot owner와 account/cloud workflow를 구현하지 않는다."
+    }
+  ],
+  "knownBoundaries": [
+    "P2-A, P2-B, P2-C, P3-A override와 당시 HTML은 단계별 snapshot으로 보존한다.",
+    "D2-057만 PoC 임시 승인으로 승격했으며 이 판정은 production owner·schema 승인이 아니다.",
+    "제목·원문 내 출처 검색의 sourceLabel은 exact rawText에서 파생하는 replaceable projection이며 production source metadata가 아니다.",
+    "다중 revision history와 이전 revision 복구는 개발2 세션에서 확인된 별도 잔여 요구다.",
+    "실제 Android Chrome, iOS Safari, 보조기술, 관찰 사용자와 배포는 자동화 근거로 대체하지 않는다."
+  ]
+}

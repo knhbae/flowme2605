@@ -121,6 +121,7 @@ type ProjectableItem = {
   id: string;
   title: string;
   description?: string;
+  completionCriterion?: string;
   sectionId?: string;
   order: number;
   dayOffset?: number;
@@ -381,6 +382,21 @@ function isStrictMealSlot(value: unknown, flowId: string): boolean {
     && Number.isFinite(value.day_offset);
 }
 
+function hasValidSourceItemDetails(value: unknown): boolean {
+  if (value === undefined) return true;
+  if (!Array.isArray(value)) return false;
+  const ids = new Set<string>();
+  for (const detail of value) {
+    if (!isRecord(detail) || !isNonEmptyString(detail.item_id)
+      || ids.has(detail.item_id)
+      || ['why', 'how', 'completion_criteria'].some((field) => (
+        hasOwn(detail, field) && typeof detail[field] !== 'string'
+      ))) return false;
+    ids.add(detail.item_id);
+  }
+  return true;
+}
+
 function isStrictBundle(value: unknown): value is FlowBundle {
   if (!isRecord(value) || !isRecord(value.flow)) return false;
   const flow = value.flow;
@@ -398,6 +414,7 @@ function isStrictBundle(value: unknown): value is FlowBundle {
     || !Array.isArray(value.items)
     || value.sections.some((section) => !isStrictSection(section, flow.id as string))
     || value.items.some((item) => !isStrictItem(item, flow.id as string))
+    || !hasValidSourceItemDetails(value.itemDetails)
     || (hasOwn(value, 'mealSlots') && (
       !Array.isArray(value.mealSlots)
       || value.mealSlots.some((slot) => !isStrictMealSlot(slot, flow.id as string))
@@ -583,6 +600,23 @@ function parseStrictSavedMaps(
       if (pairError) return internalFail(pairError);
     }
 
+    // Preserve memo text only after the existing snapshot/persistence pair has
+    // passed validation. Do not relax that pair gate or normalize raw identities.
+    const rawOverrides = isRecord(rawValue.personalCopy)
+      && isRecord(rawValue.personalCopy.stepOverridesByFlow)
+      ? rawValue.personalCopy.stepOverridesByFlow : undefined;
+    if (snapshot.personalCopy?.stepOverridesByFlow && rawOverrides) {
+      snapshot = { ...snapshot, personalCopy: { ...snapshot.personalCopy,
+        stepOverridesByFlow: Object.fromEntries(Object.entries(snapshot.personalCopy.stepOverridesByFlow)
+          .map(([flowSlug, overrides]) => [flowSlug, Object.fromEntries(Object.entries(overrides)
+            .map(([itemId, override]) => {
+              const rawFlow = rawOverrides[flowSlug];
+              const rawItem = isRecord(rawFlow) ? rawFlow[itemId] : undefined;
+              return [itemId, isRecord(rawItem) && typeof rawItem.userMemo === 'string'
+                ? { ...override, userMemo: rawItem.userMemo } : override];
+            }))])),
+      } };
+    }
     mapIds.add(keyMapId);
     maps.push({ snapshot, ...(persistence ? { persistence } : {}) });
   }
@@ -683,7 +717,18 @@ function readStrictStructuralOverlay(
     const overlay = normalizePersonalStructuralOverlay(rawValue, { savedCopyId, flowId });
     if (!overlay) return internalFail('malformed-structural-overlay');
     mergeSavedPlanEditorPersonalStructuralOverlayRaw(rawValue, overlay);
-    return { ok: true, value: overlay };
+    // The operational normalizer is presentation-oriented. After its strict raw
+    // identity/shape validation, retain only the exact personal memo here; this
+    // PoC read adapter must not erase an explicit empty memo or trim its bytes.
+    const rawUserItems = new Map((rawValue as { userItems: Record<string, unknown>[] })
+      .userItems.map((item) => [item.itemId, item]));
+    return { ok: true, value: {
+      ...overlay,
+      userItems: overlay.userItems.map((item) => {
+        const memo = rawUserItems.get(item.itemId)?.personalMemo;
+        return typeof memo === 'string' ? { ...item, personalMemo: memo } : item;
+      }),
+    } };
   } catch {
     return internalFail('malformed-structural-overlay');
   }
@@ -730,11 +775,17 @@ function resolveStructuralScheduleDate(
 }
 
 function toProjectableItems(bundle: FlowBundle): InternalResult<ProjectableItem[]> {
+  const details = new Map((bundle.itemDetails ?? []).map((detail) => [detail.item_id, detail]));
   const sourceItems: ProjectableItem[] = bundle.flow.content_type === 'meal_plan'
     ? (bundle.mealSlots ?? []).map((slot) => ({
         id: slot.id,
         title: slot.menu_title,
-        description: slot.new_ingredients.join(', '),
+        description: [...new Set([
+          slot.new_ingredients.join(', '),
+          details.get(slot.id)?.why,
+          details.get(slot.id)?.how,
+        ].filter((value): value is string => typeof value === 'string' && Boolean(value.trim())))].join('\n\n') || undefined,
+        completionCriterion: details.get(slot.id)?.completion_criteria,
         sectionId: slot.section_id,
         order: slot.order,
         dayOffset: slot.day_offset,
@@ -742,7 +793,12 @@ function toProjectableItems(bundle: FlowBundle): InternalResult<ProjectableItem[
     : bundle.items.map((item) => ({
         id: item.id,
         title: item.title,
-        description: item.description,
+        description: [...new Set([
+          item.description,
+          details.get(item.id)?.why,
+          details.get(item.id)?.how,
+        ].filter((value): value is string => typeof value === 'string' && Boolean(value.trim())))].join('\n\n') || undefined,
+        completionCriterion: details.get(item.id)?.completion_criteria,
         sectionId: item.section_id,
         order: item.order,
         dayOffset: item.day_offset,
@@ -925,6 +981,7 @@ function projectStructuralDraft(options: {
   const sections = new Map(options.bundle.sections.map((section) => [section.id, section.title]));
   const refs = new Set<string>();
   const items: PersonalWorkspacePocFlowItem[] = [];
+  const sourceDetails = new Map((options.bundle.itemDetails ?? []).map((detail) => [detail.item_id, detail]));
   for (const row of projection.effectiveRows) {
     const source = row.sourceItem?.source;
     const sourceSchedule = row.sourceItem
@@ -981,7 +1038,12 @@ function projectStructuralDraft(options: {
       return internalFail('duplicate-item-identity');
     }
     refs.add(ref);
-    const description = row.personalMemo || source?.description;
+    const detail = source ? sourceDetails.get(row.itemId) : undefined;
+    const sourceDescription = [...new Set([
+      source?.description, detail?.why, detail?.how,
+    ].filter((value): value is string => typeof value === 'string' && Boolean(value.trim())))].join('\n\n') || undefined;
+    const inheritedMemo = typeof draft.memo === 'string' ? draft.memo : row.userItem?.personalMemo;
+    const description = inheritedMemo ?? sourceDescription;
     const personalTitle = draft.title?.trim()
       ? {
           value: row.title,
@@ -995,11 +1057,11 @@ function projectStructuralDraft(options: {
             provenance: 'personal-structural-overlay' as const,
           }
         : undefined;
-    const personalDescription = row.personalMemo
+    const personalDescription = typeof inheritedMemo === 'string'
       ? {
-          value: row.personalMemo,
+          value: inheritedMemo,
           owner: 'existing-personal' as const,
-          provenance: draft.memo?.trim()
+          provenance: typeof draft.memo === 'string'
             ? 'my-flow-item-draft' as const
             : 'personal-structural-overlay' as const,
         }
@@ -1041,7 +1103,7 @@ function projectStructuralDraft(options: {
         ...(row.sourceItem
           ? {
               source: {
-                ...(source?.description !== undefined ? { value: source.description } : {}),
+                ...(sourceDescription !== undefined ? { value: sourceDescription } : {}),
                 owner: 'source' as const,
                 provenance: 'flow-bundle' as const,
               },
@@ -1087,6 +1149,7 @@ function projectStructuralDraft(options: {
       itemId: row.itemId,
       title: row.title,
       ...(description ? { description } : {}),
+      ...(detail?.completion_criteria ? { completionCriterion: detail.completion_criteria } : {}),
       ...(source?.section_id && sections.get(source.section_id)
         ? { sectionId: source.section_id, sectionTitle: sections.get(source.section_id) }
         : row.ownership === 'user_created'
@@ -1188,9 +1251,7 @@ function projectRegularItems(options: {
     );
     if (refs.has(ref)) return internalFail('duplicate-item-identity');
     refs.add(ref);
-    const description = personalOverride?.userMemo?.trim()
-      || draft.memo?.trim()
-      || item.description?.trim();
+    const description = personalOverride?.userMemo ?? draft.memo ?? item.description?.trim();
     const personalTitle = personalOverride?.title?.trim()
       ? {
           value: title,
@@ -1204,13 +1265,13 @@ function projectRegularItems(options: {
             provenance: 'my-flow-item-draft' as const,
           }
         : undefined;
-    const personalDescription = personalOverride?.userMemo?.trim()
+    const personalDescription = typeof personalOverride?.userMemo === 'string'
       ? {
           value: description,
           owner: 'existing-personal' as const,
           provenance: 'map-personal-copy' as const,
         }
-      : draft.memo?.trim()
+      : typeof draft.memo === 'string'
         ? {
             value: description,
             owner: 'existing-personal' as const,
@@ -1249,7 +1310,7 @@ function projectRegularItems(options: {
           provenance: options.sourceProvenance,
         },
         ...(personalDescription ? { existingPersonal: personalDescription } : {}),
-        ...(description
+        ...(description !== undefined
           ? {
               effective: personalDescription ?? {
                 value: description,
@@ -1282,7 +1343,8 @@ function projectRegularItems(options: {
       flowId: options.bundle.flow.id,
       itemId: item.id,
       title,
-      ...(description ? { description } : {}),
+      ...(description !== undefined ? { description } : {}),
+      ...(sourceOwnedItem.completionCriterion ? { completionCriterion: sourceOwnedItem.completionCriterion } : {}),
       ...(item.sectionId && sections.get(item.sectionId)
         ? { sectionId: item.sectionId, sectionTitle: sections.get(item.sectionId) }
         : {}),
@@ -1299,6 +1361,9 @@ function projectCandidate(
   storage: PersonalWorkspacePocReadStorage,
   candidate: Candidate,
 ): InternalResult<PersonalWorkspacePocFlow> {
+  if (!hasValidSourceItemDetails(candidate.bundle.itemDetails)) {
+    return internalFail('malformed-flow-item-details');
+  }
   const origin = classifySavedPlanEditorOrigin({
     flowSlug: candidate.flowSlug,
     bundleFlowSlug: candidate.bundle.flow.slug,

@@ -10,6 +10,7 @@ import {
   type PersonalWorkspacePocFlowItem,
   type PersonalWorkspacePocFlowItemFieldOwnership,
   type PersonalWorkspacePocReadModel,
+  type PersonalWorkspacePocState,
 } from './personal-workspace-poc-contract';
 import {
   PERSONAL_WORKSPACE_POC_RESULT_PROJECTION_FIXTURE_RAW_TEXT,
@@ -17,6 +18,7 @@ import {
 } from './personal-workspace-poc-result-projection.fixture';
 import {
   PERSONAL_WORKSPACE_POC_RESULT_DOWNLOAD_CONTRACT,
+  PERSONAL_WORKSPACE_POC_RESULT_COMPLETION_CONTRACT,
   PERSONAL_WORKSPACE_POC_RESULT_DOWNLOAD_CONTRACT_VERSION,
   PERSONAL_WORKSPACE_POC_RESULT_SHEET_COLUMNS,
   PERSONAL_WORKSPACE_POC_RESULT_SLOT_ORDER,
@@ -33,6 +35,209 @@ const NOW = '2026-09-02T00:00:00.000Z';
 const SAVED_COPY_ID = 'projection-copy';
 const FLOW_ID = 'projection-flow';
 const FLOW_REF = toPersonalWorkspacePocFlowRef(SAVED_COPY_ID, FLOW_ID);
+
+function checkedProjectionFixture(repeat: 'none' | 'finite' | 'open-ended' = 'none', copy = 'one') {
+  const rawText = (repeat === 'none' ? [
+    '# 원문 체크 🧭', '## 준비',
+    '- [x] 같은 제목', '  - 날짜: 2026-09-03', '  - [x] 원문 하위 확인',
+    '- [X] 같은 제목', '  - 날짜: 2026-09-03',
+    '## 다음 단계', '- [ ] 같은 제목', '  - 날짜: 2026-09-03', '',
+  ] : [
+    '# 원문 체크 🧭', '## 준비', '- [X] 반복 확인',
+    '  - 날짜: 2026-09-03', '  - 반복: 매일',
+    ...(repeat === 'finite' ? ['  - 반복 종료: 3회'] : []),
+    '  - [x] 원문 하위 확인', '',
+  ]).join('\r\n');
+  const materialized = materializePersonalWorkspacePocAuthoring({
+    handoffId: `k2a-${repeat}-${copy}`, documentId: `k2a-document-${copy}`,
+    revisionId: 'k2a-revision', rawText, committedAt: NOW,
+  });
+  assert.equal(materialized.ok, true);
+  if (!materialized.ok) throw new Error('K2-A checked source must materialize');
+  return {
+    rawText, flow: materialized.flow,
+    model: { version: PERSONAL_WORKSPACE_POC_VERSION, flows: [materialized.flow] },
+    state: createPersonalWorkspacePocState(NOW),
+  };
+}
+
+function checkedProjection(
+  fixture: ReturnType<typeof checkedProjectionFixture>,
+  purpose?: 'authoring-preview' | 'personal-execution',
+  state: PersonalWorkspacePocState = fixture.state,
+) {
+  const input = {
+    model: fixture.model, state, flowRef: fixture.flow.ref,
+    localToday: '2026-09-03', selectedDate: '2026-09-03',
+    ...(purpose ? { purpose } : {}),
+  };
+  const before = JSON.stringify(input);
+  const result = buildPersonalWorkspacePocResultProjection(input);
+  assert.equal(result.ok, true);
+  assert.equal(JSON.stringify(input), before, 'projection must not mutate source or execution state');
+  if (!result.ok) throw new Error(`K2-A projection failed: ${result.reason}`);
+  return result.projection;
+}
+
+test('K2-A personal execution has no source-check fallback in any result slot or download', () => {
+  const fixture = checkedProjectionFixture();
+  const projection = checkedProjection(fixture, 'personal-execution');
+  assert.deepEqual(projection.items.map((item) => item.completed), [false, false, false]);
+  assert.ok(projection.items.every((item) => item.completedAt === undefined));
+  assert.deepEqual(projection.items.map((item) => item.sourceAttributes?.sourceChecked), [true, true, false]);
+  assert.equal(new Set(projection.itemRefs).size, 3, 'identical titles keep distinct identities');
+  assert.ok(projection.todo.groups.flatMap((group) => group.items).every((item) => !item.completed));
+  assert.ok(projection.text.lines.filter((line) => line.kind === 'item').every((line) => line.text.includes('☐')));
+  assert.ok(projection.sheet.rows.every((row) => row.values.status === 'open' && row.values.completedAt === null));
+  assert.ok(projection.calendar.selectedItems.every((item) => !item.completed));
+  assert.equal(projection.calendar.cells.find((cell) => cell.date === '2026-09-03')?.completedCount, 0);
+  assert.equal(projection.source.authoring?.rawText, fixture.rawText);
+  assert.match(projection.txt.copyText, /     ☑ 원문 하위 확인/u);
+  assert.equal(projection.downloads.txt.payload, projection.txt.copyText);
+  assert.doesNotMatch(projection.downloads.csv.payload, /completed/u);
+  assert.deepEqual(fixture.state.completions, {});
+});
+
+test('K2-A omitted purpose defaults safely to personal execution with no completion entry', () => {
+  const fixture = checkedProjectionFixture();
+  assert.deepEqual(checkedProjection(fixture), checkedProjection(fixture, 'personal-execution'));
+  assert.ok(checkedProjection(fixture).items.every((item) => !item.completed));
+});
+
+test('K2-A authoring preview retains x and X checks, unchecked source, and no execution timestamp', () => {
+  const fixture = checkedProjectionFixture();
+  const projection = checkedProjection(fixture, 'authoring-preview');
+  assert.deepEqual(projection.items.map((item) => item.completed), [true, true, false]);
+  assert.ok(projection.items.every((item) => item.completedAt === undefined));
+  assert.equal(projection.source.authoring?.rawText, fixture.rawText);
+  assert.match(projection.txt.copyText, /     ☑ 원문 하위 확인/u);
+  assert.deepEqual(fixture.state.completions, {});
+});
+
+test('K2-A preview never borrows explicit execution completion or its timestamp', () => {
+  const fixture = checkedProjectionFixture();
+  const checkedRef = fixture.flow.items[0].ref;
+  const uncheckedRef = fixture.flow.items[2].ref;
+  fixture.state.completions[checkedRef] = { status: 'open' };
+  fixture.state.completions[uncheckedRef] = { status: 'completed', completedAt: NOW };
+  const projection = checkedProjection(fixture, 'authoring-preview');
+  assert.deepEqual(projection.items.map((item) => item.completed), [true, true, false]);
+  assert.ok(projection.items.every((item) => item.completedAt === undefined));
+});
+
+test('K2-A explicit legacy execution states win without rewriting source or completion bytes', () => {
+  const fixture = checkedProjectionFixture();
+  fixture.state.completions[fixture.flow.items[0].ref] = { status: 'completed', completedAt: NOW };
+  fixture.state.completions[fixture.flow.items[1].ref] = { status: 'open' };
+  fixture.state.completions[fixture.flow.items[2].ref] = { status: 'completed', completedAt: '2026-09-02T00:01:00.000Z' };
+  const projection = checkedProjection(fixture, 'personal-execution');
+  assert.deepEqual(projection.items.map((item) => item.completed), [true, false, true]);
+  assert.deepEqual(projection.items.map((item) => item.completedAt), [NOW, undefined, '2026-09-02T00:01:00.000Z']);
+});
+
+test('K2-A normal complete, reopen with entry deletion, Undo and decoded reload stay separate from source check', () => {
+  const fixture = checkedProjectionFixture();
+  const itemRef = fixture.flow.items[0].ref;
+  const completed = applyPersonalWorkspacePocTransition(fixture.state, { type: 'complete', itemRef, completed: true, now: NOW });
+  assert.equal(completed.changed, true);
+  assert.equal(checkedProjection(fixture, 'personal-execution', completed.state).items[0].completedAt, NOW);
+  const reopened = applyPersonalWorkspacePocTransition(completed.state, { type: 'complete', itemRef, completed: false, now: '2026-09-02T00:01:00.000Z' });
+  assert.equal(reopened.changed, true);
+  assert.equal(Object.hasOwn(reopened.state.completions, itemRef), false);
+  assert.ok(checkedProjection(fixture, 'personal-execution', reopened.state).items.every((item) => !item.completed));
+  const undone = applyPersonalWorkspacePocTransition(reopened.state, { type: 'undo', now: '2026-09-02T00:02:00.000Z' });
+  assert.equal(undone.changed, true);
+  const reloaded = JSON.parse(JSON.stringify(undone.state)) as PersonalWorkspacePocState;
+  const projection = checkedProjection(fixture, 'personal-execution', reloaded);
+  assert.deepEqual(projection.items.map((item) => item.completed), [true, false, false]);
+  assert.equal(projection.items[0].completedAt, NOW);
+  assert.equal(projection.source.authoring?.rawText, fixture.rawText);
+});
+
+test('K2-A finite checked recurrence starts with three open personal occurrences and no stored open entries', () => {
+  const fixture = checkedProjectionFixture('finite');
+  const projection = checkedProjection(fixture, 'personal-execution');
+  assert.equal(projection.items.length, 3);
+  assert.ok(projection.items.every((item) => !item.completed && item.completedAt === undefined));
+  assert.ok(projection.items.every((item) => item.sourceAttributes?.sourceChecked));
+  assert.deepEqual(fixture.state.occurrenceCompletions, {});
+});
+
+test('K2-A finite recurrence authoring preview shows original checks without execution entries', () => {
+  const fixture = checkedProjectionFixture('finite');
+  const projection = checkedProjection(fixture, 'authoring-preview');
+  assert.equal(projection.items.length, 3);
+  assert.ok(projection.items.every((item) => item.completed && item.completedAt === undefined));
+  assert.deepEqual(fixture.state.occurrenceCompletions, {});
+});
+
+test('K2-A one occurrence completion, explicit reopen and Undo never complete sibling occurrences', () => {
+  const fixture = checkedProjectionFixture('finite');
+  const occurrence = checkedProjection(fixture, 'personal-execution').items[1];
+  assert.ok(occurrence.occurrenceId && occurrence.sourceItemRef && occurrence.originalOccurrenceDate);
+  const target = { occurrenceId: occurrence.occurrenceId, sourceItemRef: occurrence.sourceItemRef, originalDate: occurrence.originalOccurrenceDate };
+  const completed = applyPersonalWorkspacePocTransition(fixture.state, { type: 'complete-occurrence', ...target, completed: true, now: NOW });
+  assert.equal(completed.changed, true);
+  assert.deepEqual(checkedProjection(fixture, 'personal-execution', completed.state).items.map((item) => item.completed), [false, true, false]);
+  const preview = checkedProjection(fixture, 'authoring-preview', completed.state);
+  assert.ok(preview.items.every((item) => item.completed && item.completedAt === undefined));
+  const reopened = applyPersonalWorkspacePocTransition(completed.state, { type: 'complete-occurrence', ...target, completed: false, now: '2026-09-02T00:01:00.000Z' });
+  assert.equal(reopened.state.occurrenceCompletions?.[target.occurrenceId].status, 'open');
+  assert.ok(checkedProjection(fixture, 'personal-execution', reopened.state).items.every((item) => !item.completed));
+  const undone = applyPersonalWorkspacePocTransition(reopened.state, { type: 'undo', now: '2026-09-02T00:02:00.000Z' });
+  const reloaded = JSON.parse(JSON.stringify(undone.state)) as PersonalWorkspacePocState;
+  const after = checkedProjection(fixture, 'personal-execution', reloaded);
+  assert.deepEqual(after.items.map((item) => item.completed), [false, true, false]);
+  assert.equal(after.items[1].completedAt, NOW);
+  assert.equal(after.source.authoring?.rawText, fixture.rawText);
+});
+
+test('K2-A open-ended checked recurrence has no inferred completion across its read-only horizon', () => {
+  const fixture = checkedProjectionFixture('open-ended');
+  const projection = checkedProjection(fixture, 'personal-execution');
+  assert.ok(projection.items.length > 3);
+  assert.ok(projection.items.every((item) => !item.completed && item.completedAt === undefined));
+  assert.deepEqual(fixture.state.occurrenceCompletions, {});
+  assert.deepEqual(fixture.state.completions, {});
+});
+
+test('K2-A a completed same-title item in another saved copy cannot change this copy', () => {
+  const first = checkedProjectionFixture('none', 'first');
+  const second = checkedProjectionFixture('none', 'second');
+  const state = createPersonalWorkspacePocState(NOW);
+  state.completions[first.flow.items[0].ref] = { status: 'completed', completedAt: NOW };
+  const projection = checkedProjection(second, 'personal-execution', state);
+  assert.ok(projection.items.every((item) => !item.completed));
+  assert.ok(projection.itemRefs.every((ref) => !first.flow.items.some((item) => item.ref === ref)));
+});
+
+test('K2-A purpose is a versioned read-only contract and malformed purposes fail closed', () => {
+  assert.equal(PERSONAL_WORKSPACE_POC_RESULT_COMPLETION_CONTRACT.version, 1);
+  assert.equal(PERSONAL_WORKSPACE_POC_RESULT_COMPLETION_CONTRACT.defaultPurpose, 'personal-execution');
+  assert.equal(PERSONAL_WORKSPACE_POC_RESULT_COMPLETION_CONTRACT.unrecordedExecutionCompleted, false);
+  assert.equal(Object.isFrozen(PERSONAL_WORKSPACE_POC_RESULT_COMPLETION_CONTRACT), true);
+  const fixture = checkedProjectionFixture();
+  const before = JSON.stringify(fixture);
+  for (const purpose of [null, '', 'source', false]) {
+    assert.deepEqual(buildPersonalWorkspacePocResultProjection({
+      model: fixture.model, state: fixture.state, flowRef: fixture.flow.ref,
+      localToday: '2026-09-03', purpose: purpose as never,
+    }), { ok: false, reason: 'invalid-projection-purpose' });
+  }
+  assert.equal(JSON.stringify(fixture), before);
+});
+
+test('K2-A authoring and workspace callers explicitly choose separate completion owners', () => {
+  for (const [file, purpose] of [
+    ['PersonalWorkspacePocAuthoringSurface.tsx', 'authoring-preview'],
+    ['PersonalWorkspacePocSurface.tsx', 'personal-execution'],
+  ]) {
+    const source = readFileSync(`components/flow/personal-workspace-poc/${file}`, 'utf8');
+    const calls = source.match(/buildPersonalWorkspacePocResultProjection\(\{[\s\S]*?\n    \}\)/gu);
+    assert.equal(calls?.length, 1);
+    assert.ok(calls?.[0].includes(`purpose: '${purpose}'`));
+  }
+});
 
 type ImportedDate = Readonly<{ present: true; date?: string }>;
 
@@ -115,6 +320,8 @@ function item(
   }> = {},
 ): PersonalWorkspacePocFlowItem {
   const importedDate = options.imported?.date;
+  const ownership = dateOwnership(sourceDate, options.imported);
+  const importedMemo = { value: options.memo, owner: 'existing-personal' as const, provenance: 'my-flow-item-draft' as const };
   return {
     ref: toPersonalWorkspacePocFlowItemRef(SAVED_COPY_ID, FLOW_ID, itemId),
     savedCopyId: SAVED_COPY_ID,
@@ -131,7 +338,11 @@ function item(
         : sourceDate
           ? { sourceDate }
           : {}),
-    fieldOwnership: dateOwnership(sourceDate, options.imported),
+    // The fixture explicitly calls this an imported memo: retain its actual owner
+    // instead of declaring every description layer absent while supplying text.
+    fieldOwnership: options.memo !== undefined ? { ...ownership, description: {
+      ...ownership.description, existingPersonal: importedMemo, effective: importedMemo,
+    } } : ownership,
   };
 }
 

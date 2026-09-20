@@ -15,17 +15,61 @@ import React, {
 } from 'react';
 
 import { buildDateGroupedTodoListViewModel } from '@/lib/flow/date-grouped-todo-list';
+import {
+  beginAttempt,
+  beginContextualUndo,
+  createResultOwnerSession,
+  dismissResult,
+  interruptOwner,
+  selectResult,
+  settleAttempt,
+  settleUndo,
+  type ResultFacts,
+  type ResultIntent,
+  type ResultOutcome,
+  type ResultOwnerState,
+  type ResultTicket,
+} from '@/lib/flow/personal-workspace-poc-contextual-result';
 import { composePersonalWorkspacePocReadModel } from '@/lib/flow/personal-workspace-poc-composition';
+import {
+  buildPersonalWorkspacePocSourceReadIndex,
+  readPersonalWorkspacePocTaskSourceContext,
+} from '@/lib/flow/personal-workspace-poc-source-attributes';
+import { getPersonalWorkspacePocItemDetails } from '@/lib/flow/personal-workspace-poc-item-details';
+import { getPersonalWorkspacePocInheritedMemo } from '@/lib/flow/personal-workspace-poc-plan-memo-baseline';
 import {
   PERSONAL_WORKSPACE_POC_DEFAULTS,
   PERSONAL_WORKSPACE_POC_STATE_KEY,
   toPersonalWorkspacePocQuickItemRef,
+  type PersonalWorkspacePocAuthoredFlow,
   type PersonalWorkspacePocFlow,
   type PersonalWorkspacePocReadModel,
   type PersonalWorkspacePocState,
   type PersonalWorkspacePocTrashEntry,
   type PersonalWorkspacePocTransition,
 } from '@/lib/flow/personal-workspace-poc-contract';
+import {
+  composePersonalWorkspacePocEffectiveSourceFlows,
+  getPersonalWorkspacePocEffectiveSourceFlow,
+} from '@/lib/flow/personal-workspace-poc-canonical-ownership';
+import { loadPersonalWorkspacePocSourceCandidateStore, savePersonalWorkspacePocSourceCandidateStore } from '@/lib/flow/personal-workspace-poc-source-candidate-storage';
+import {
+  PERSONAL_WORKSPACE_POC_SOURCE_CANDIDATE_KEY,
+  applyPersonalWorkspacePocSourceCandidate,
+  clearPersonalWorkspacePocSourceCandidateChangeResolution,
+  createPersonalWorkspacePocCurrentSourceFromAuthoredFlow,
+  createPersonalWorkspacePocLocalFixtureEnvelope,
+  createPersonalWorkspacePocSourceCandidateStore,
+  deferPersonalWorkspacePocSourceCandidate,
+  inspectPersonalWorkspacePocSourceCandidateCatalog,
+  isPersonalWorkspacePocSourceCandidateStore,
+  resolvePersonalWorkspacePocSourceCandidateChange,
+  stagePersonalWorkspacePocSourceCandidate,
+  undoPersonalWorkspacePocSourceCandidate,
+  type PersonalWorkspacePocSourceCandidateEnvelope,
+  type PersonalWorkspacePocSourceCandidateCurrentSource,
+  type PersonalWorkspacePocSourceCandidateStore,
+} from '@/lib/flow/personal-workspace-poc-source-candidates';
 import {
   applyPersonalWorkspacePocTransition,
   createPersonalWorkspacePocState,
@@ -53,6 +97,7 @@ import {
   createPersonalWorkspacePocPlanEditorHandlers,
   canonicalPersonalWorkspacePocPlanEditorBytes,
   fingerprintPersonalWorkspacePocPlanEditorBytes,
+  isPersonalWorkspacePocPlanNoopPreparedCommit,
   openPersonalWorkspacePocPlanEditor,
   openPersonalWorkspacePocPlanItemEditor,
   validatePersonalWorkspacePocPlanDraft,
@@ -64,6 +109,12 @@ import {
 import {
   summarizePersonalWorkspacePocPlanDraftChanges,
 } from '@/lib/flow/personal-workspace-poc-editor-receipt';
+import {
+  createPersonalWorkspacePocPlanDisplay,
+  type PersonalWorkspacePocPlanDisplay,
+  type PersonalWorkspacePocPlanDisplayInput,
+} from '@/lib/flow/personal-workspace-poc-plan-display';
+import { PersonalWorkspacePocPlanResultSurface } from './PersonalWorkspacePocPlanResultSurface';
 import {
   createPersonalWorkspacePocEditorEvidenceStorage,
   createPersonalWorkspacePocEditorStorageEvidence,
@@ -99,9 +150,9 @@ import {
   type PersonalWorkspacePocTaskGroup,
   type PersonalWorkspacePocView,
 } from '@/lib/flow/personal-workspace-poc-view-model';
+import { materializePersonalWorkspacePocQuickConversion } from '@/lib/flow/personal-workspace-poc-quick-conversion';
 import { resolvePlanExecutionWorkspaceComposition } from '@/lib/flow/responsive-execution-workspace';
 
-import { PlatformNav } from '../PlatformNav';
 import { FlowBottomSheet } from '../FlowExecutionPrimitives';
 import { MyPlanExecutionSurface } from '../my-flow/MyPlanExecutionSurface';
 import {
@@ -116,10 +167,19 @@ import {
 } from './PersonalWorkspacePocEditorSurface';
 import { PersonalWorkspacePocReceiptSurface } from './PersonalWorkspacePocReceiptSurface';
 import { PersonalWorkspacePocResultPresenter } from './PersonalWorkspacePocResultPresenter';
+import { PersonalWorkspacePocProductShell } from './PersonalWorkspacePocProductShell';
+import {
+  PersonalWorkspacePocSourceUpdateReview,
+  type PersonalWorkspacePocSourceUpdateChange,
+  type PersonalWorkspacePocSourceUpdateResolution,
+  type PersonalWorkspacePocSourceUpdateStatus,
+} from './PersonalWorkspacePocSourceUpdateReview';
 
 type PersonalWorkspacePocSurfaceProps = Readonly<{
   initialModel: PersonalWorkspacePocReadModel;
   initialState: PersonalWorkspacePocState;
+  initialSourceCandidateStore: PersonalWorkspacePocSourceCandidateStore;
+  initialSourceCandidateRaw: string | null;
   restored: boolean;
 }>;
 
@@ -166,10 +226,41 @@ type PersonalWorkspacePocEditorRetryDescriptor = Readonly<{
   }>;
 }>;
 
+type PlanDisplayBinding = {
+  attempt: PersonalWorkspacePocEditorAttempt;
+  sourceFlow: PersonalWorkspacePocFlow;
+  sourceRaw: string | null;
+  sourceEpoch: number;
+  screenKey: string;
+  returnFocusSelector: string;
+  transactionId: string;
+  draftRevision: number;
+  requestId?: string;
+  evidence?: PersonalWorkspacePocEditorStorageEvidence;
+  noopAccepted?: boolean;
+  accepted: boolean;
+};
+
+type PlanResultOwner = {
+  display: PersonalWorkspacePocPlanDisplay;
+  binding: PlanDisplayBinding;
+  exactRaw: string;
+  consumed: boolean;
+};
+
 type PersonalWorkspacePocQuickEditorBaseline = Readonly<{
   draft: PersonalWorkspacePocQuickItemRootDraft;
   stateRevision: number;
   stateRaw: string | null;
+}>;
+
+type PersonalWorkspacePocQuickConversionAttempt = Readonly<{
+  intentId: string;
+  quickItemRef: string;
+  flowTitle: string;
+  stateRevisionBefore: number;
+  affectedRefs: readonly string[];
+  changes: readonly PersonalWorkspacePocReceiptChange[];
 }>;
 
 type TaskMoveTarget = {
@@ -193,6 +284,21 @@ type PersonalWorkspacePocTrashRow = Readonly<{
 
 export type MoveTriggerSource = 'task-title' | 'task-handle' | 'task-more' | 'flow-handle' | 'flow-card' | 'flow-detail' | 'item-detail';
 type TransitionOutcome = 'changed' | 'unchanged' | 'failed';
+// Rendering position only: never a task, timeline group, or stored Undo snapshot.
+type WorkspaceResultOrigin = {
+  section: WorkspaceSection;
+  folderId?: string;
+  flowRef?: string;
+  itemDetailRef?: string;
+  kind: 'flow' | 'task';
+  ref: string;
+  group?: PersonalWorkspacePocTaskGroup;
+  groupIndex: number;
+  rowIndex: number;
+  returnSelector: string;
+  keyboard: boolean;
+  scrollTop: number;
+};
 export type PersonalWorkspacePocReorderPosition = 'before' | 'after';
 export type PersonalWorkspacePocReorderControl = 'top' | 'previous' | 'next' | 'bottom';
 
@@ -232,13 +338,120 @@ const TARGET_CLASS = 'min-h-12 rounded-md px-3 py-2 text-sm font-semibold focus:
 const SECONDARY_CLASS = `${TARGET_CLASS} border border-[var(--flowme-border-strong)] bg-white text-[var(--flowme-action)]`;
 const PRIMARY_CLASS = `${TARGET_CLASS} bg-[var(--flowme-action)] text-white`;
 const PERSONAL_WORKSPACE_POC_BOTTOM_SHEET_SAFE_STYLE: CSSProperties = {
-  left: 'var(--personal-workspace-safe-left)',
-  right: 'var(--personal-workspace-safe-right)',
-  bottom: 'var(--personal-workspace-safe-bottom)',
-  maxHeight: 'calc(86dvh - var(--personal-workspace-safe-top) - var(--personal-workspace-safe-bottom))',
+  left: 'calc(var(--personal-workspace-visual-viewport-left, 0px) + var(--personal-workspace-safe-left))',
+  right: 'calc(var(--personal-workspace-visual-viewport-right, 0px) + var(--personal-workspace-safe-right))',
+  bottom: 'calc(var(--personal-workspace-visual-viewport-bottom, 0px) + var(--personal-workspace-safe-bottom))',
+  maxHeight: 'calc(min(86dvh, var(--personal-workspace-visual-viewport-height, 86dvh)) - var(--personal-workspace-safe-top) - var(--personal-workspace-safe-bottom))',
   paddingBottom: 'calc(1rem + var(--personal-workspace-safe-bottom))',
   scrollPaddingBottom: 'calc(1rem + var(--personal-workspace-safe-bottom))',
 };
+
+/** A deterministic local host fixture. It never fetches or rewrites an operating source. */
+export function buildPersonalWorkspacePocSourceUpdateFixtureRaw(rawText: string): string {
+  const lines = rawText.split('\n');
+  const titleIndex = lines.findIndex((line) => /^#\s+\S/u.test(line));
+  if (titleIndex >= 0) lines[titleIndex] = `${lines[titleIndex]} · 최신 안내`;
+  const itemIndex = lines.findIndex((line) => /^- \[[ xX]\] \S/u.test(line));
+  if (itemIndex >= 0) lines[itemIndex] = `${lines[itemIndex]} (확인 내용 갱신)`;
+  const suffix = lines.at(-1) === '' ? '' : '\n';
+  return `${lines.join('\n')}${suffix}- [ ] 새 원문 변경 확인하기`;
+}
+
+/** Explicit refresh only. Conflicting same-ID history is never silently chosen. */
+export function mergePersonalWorkspacePocSourcePracticeMemory(
+  durable: PersonalWorkspacePocSourceCandidateStore,
+  working: PersonalWorkspacePocSourceCandidateStore,
+  base: PersonalWorkspacePocSourceCandidateStore,
+): PersonalWorkspacePocSourceCandidateStore | undefined {
+  if (!isPersonalWorkspacePocSourceCandidateStore(durable)
+    || !isPersonalWorkspacePocSourceCandidateStore(working)
+    || !isPersonalWorkspacePocSourceCandidateStore(base)) return undefined;
+  // Local deletion has no C2 transition/merge policy. Do not resurrect it from
+  // the durable store or silently treat it as a supported deletion intent.
+  if (Object.keys(base.envelopes).some(id => !Object.hasOwn(working.envelopes, id))
+    || Object.keys(base.reviews).some(id => !Object.hasOwn(working.reviews, id))) return undefined;
+  const envelopes = { ...durable.envelopes }, reviews = { ...durable.reviews };
+  const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
+  for (const [id, value] of Object.entries(working.envelopes)) {
+    if (same(value, base.envelopes[id])) continue;
+    if (!same(envelopes[id], base.envelopes[id]) && !same(envelopes[id], value)) return undefined;
+    envelopes[id] = value;
+  }
+  for (const [id, value] of Object.entries(working.reviews)) {
+    if (same(value, base.reviews[id])) continue;
+    if (!same(reviews[id], base.reviews[id]) && !same(reviews[id], value)) return undefined;
+    reviews[id] = value;
+  }
+  const next = { ...durable, envelopes, reviews };
+  return isPersonalWorkspacePocSourceCandidateStore(next) ? next : undefined;
+}
+
+type SourcePracticeOwner = {
+  routeOwner: object;
+  flowRef: string;
+  candidateId: string;
+  screenKey: string;
+  href: string;
+  sourceRaw: string | null;
+  workspaceRaw: string | null;
+  sourceEpoch: number;
+  workspaceEpoch: number;
+  current: PersonalWorkspacePocSourceCandidateCurrentSource;
+  store: PersonalWorkspacePocSourceCandidateStore;
+  stale: boolean;
+};
+
+function personalWorkspacePocSourceUpdateItemValue(
+  item: PersonalWorkspacePocSourceCandidateEnvelope['mine']['projectedFlow']['items'][number]
+    | undefined,
+): string {
+  if (!item) return '없음';
+  return [
+    item.title,
+    item.description ? `설명: ${item.description}` : undefined,
+    item.sourceDate ? `날짜: ${item.sourceDate}` : undefined,
+    item.sectionTitle ? `단계: ${item.sectionTitle}` : undefined,
+  ].filter(Boolean).join('\n');
+}
+
+export function buildPersonalWorkspacePocSourceUpdateChanges(
+  envelope: PersonalWorkspacePocSourceCandidateEnvelope,
+): readonly PersonalWorkspacePocSourceUpdateChange[] {
+  return envelope.changes.map((change) => {
+    if (change.scope === 'flow') {
+      const flowValue = (value: typeof envelope.mine.projectedFlow) => [
+        value.title,
+        value.anchorDate ? `기준일: ${value.anchorDate}` : '기준일 없음',
+      ].join('\n');
+      return {
+        changeId: change.changeId,
+        kind: 'changed' as const,
+        label: 'Flow 이름과 기준일',
+        baseValue: flowValue(envelope.base.projectedFlow),
+        workingValue: flowValue(envelope.mine.projectedFlow),
+        incomingValue: flowValue(envelope.incoming.projectedFlow),
+      };
+    }
+    const find = (
+      flow: typeof envelope.mine.projectedFlow,
+    ) => flow.items.find((item) => item.ref === change.itemRef);
+    const base = find(envelope.base.projectedFlow);
+    const mine = find(envelope.mine.projectedFlow);
+    const incoming = find(envelope.incoming.projectedFlow);
+    return {
+      changeId: change.changeId,
+      kind: change.kind === 'modified' ? 'changed' : change.kind,
+      label: change.kind === 'added'
+        ? `${incoming?.title ?? '새 항목'} · 새 할 일`
+        : change.kind === 'removed'
+          ? `${mine?.title ?? '기존 항목'} · 빠진 할 일`
+          : `${incoming?.title ?? mine?.title ?? '할 일'} · 내용 변경`,
+      baseValue: personalWorkspacePocSourceUpdateItemValue(base),
+      workingValue: personalWorkspacePocSourceUpdateItemValue(mine),
+      incomingValue: personalWorkspacePocSourceUpdateItemValue(incoming),
+    };
+  });
+}
 
 export function resolvePersonalWorkspacePocReorderPosition({
   currentOrderedRefKeys,
@@ -412,15 +625,26 @@ function originLabel(origin: PersonalWorkspacePocFlow['origin']): string {
 export function PersonalWorkspacePocTaskReadOnlyDetails({
   task,
 }: Readonly<{ task: PersonalWorkspacePocTask }>) {
-  const description = task.description ?? task.memo;
-  if (!description && !task.sourceTimingLabel) return null;
+  if (!task.description && !task.completionCriterion && !task.memo && !task.sourceTimingLabel) return null;
 
   return (
     <>
-      {description ? (
-        <div data-testid="personal-workspace-item-description">
-          <dt className="font-semibold text-[var(--flowme-text-secondary)]">상세</dt>
-          <dd className="whitespace-pre-line break-words">{description}</dd>
+      {task.description ? (
+        <div className="min-w-0" data-testid="personal-workspace-item-description">
+          <dt className="font-semibold text-[var(--flowme-text-secondary)]">원문 설명</dt>
+          <dd className="min-w-0 whitespace-pre-line [overflow-wrap:anywhere]">{task.description}</dd>
+        </div>
+      ) : null}
+      {task.completionCriterion ? (
+        <div className="min-w-0" data-testid="personal-workspace-item-completion-criterion">
+          <dt className="font-semibold text-[var(--flowme-text-secondary)]">완료 기준</dt>
+          <dd className="min-w-0 whitespace-pre-line [overflow-wrap:anywhere]">{task.completionCriterion}</dd>
+        </div>
+      ) : null}
+      {task.memo ? (
+        <div className="min-w-0" data-testid="personal-workspace-item-personal-memo">
+          <dt className="font-semibold text-[var(--flowme-text-secondary)]">내 메모</dt>
+          <dd className="min-w-0 whitespace-pre-line [overflow-wrap:anywhere]">{task.memo}</dd>
         </div>
       ) : null}
       {task.sourceTimingLabel ? (
@@ -646,9 +870,33 @@ function editablePersonalWorkspacePocChanges(
 export function PersonalWorkspacePocSurface({
   initialModel,
   initialState,
+  initialSourceCandidateStore,
+  initialSourceCandidateRaw,
   restored,
 }: PersonalWorkspacePocSurfaceProps) {
   const [state, setState] = useState(initialState);
+  const [sourceCandidateStore, setSourceCandidateStore] = useState(
+    initialSourceCandidateStore,
+  );
+  const [sourceCandidateRaw, setSourceCandidateRaw] = useState<string | null>(
+    initialSourceCandidateRaw,
+  );
+  const [sourceUpdateOpen, setSourceUpdateOpen] = useState(false);
+  const [sourceUpdateSelectedChangeId, setSourceUpdateSelectedChangeId] = useState<string>();
+  const [sourceUpdateStatus, setSourceUpdateStatus] = useState<PersonalWorkspacePocSourceUpdateStatus>('pending');
+  const [sourceUpdateError, setSourceUpdateError] = useState<string>();
+  const [sourcePracticeSelections, setSourcePracticeSelections] = useState<Readonly<Record<string, string>>>({});
+  const sourcePracticeOwner = useRef<SourcePracticeOwner | undefined>(undefined);
+  const sourcePracticePending = useRef<object | undefined>(undefined);
+  const sourcePracticeWorkspaceEpoch = useRef(0);
+  const sourcePracticeObservedState = useRef(JSON.stringify(initialState));
+  const sourcePracticeRecovery = useRef(false);
+  const sourcePracticeFlowRef = useRef<string | undefined>(undefined);
+  const sourcePracticeBaseStore = useRef(initialSourceCandidateStore);
+  const sourcePracticeStaleCandidates = useRef(new Set<string>());
+  const [sourceUpdateLaterChangeIds, setSourceUpdateLaterChangeIds] = useState<
+    Readonly<Record<string, true>>
+  >({});
   const [section, setSection] = useState<WorkspaceSection>('folder');
   const [activeFolderId, setActiveFolderId] = useState<string | undefined>();
   const [selectedFlowRef, setSelectedFlowRef] = useState<string>();
@@ -669,6 +917,8 @@ export function PersonalWorkspacePocSurface({
   const [folderTitle, setFolderTitle] = useState('');
   const [folderParentId, setFolderParentId] = useState('');
   const [moveDateDraft, setMoveDateDraft] = useState(localIsoDate());
+  const [quickConversionOpen, setQuickConversionOpen] = useState(false);
+  const [quickConversionTitle, setQuickConversionTitle] = useState('');
   const [showEmptyMonthDates, setShowEmptyMonthDates] = useState(false);
   const [reorderPreview, setReorderPreview] = useState<PersonalWorkspacePocReorderPreview>();
   const [moveDropFeedback, setMoveDropFeedback] = useState<PersonalWorkspacePocMoveDropFeedback>();
@@ -677,10 +927,59 @@ export function PersonalWorkspacePocSurface({
     message: restored ? '마지막으로 저장한 개인공간을 복원했어요.' : '개인공간이 준비됐어요.',
   });
   const [receipt, setReceipt] = useState<PersonalWorkspacePocReceipt>();
+  const [planDisplay, setPlanDisplay] = useState<PersonalWorkspacePocPlanDisplay>();
+  const planDisplayRef = useRef<PersonalWorkspacePocPlanDisplay | undefined>(undefined);
+  const planDisplayReturnPoint = useRef<Pick<PlanDisplayBinding, 'screenKey' | 'returnFocusSelector'> | undefined>(undefined);
+  const planDisplayBinding = useRef<PlanDisplayBinding | undefined>(undefined);
+  const planResultOwner = useRef<PlanResultOwner | undefined>(undefined);
+  const planSourceEpoch = useRef(0);
+  const planObservedSource = useRef(sourceCandidateRaw);
+  const planScreenKey = JSON.stringify([section, activeFolderId, selectedFlowRef, activeItemRef, resultNavigation.resultView]);
+  const planScreenRef = useRef(planScreenKey);
+  planScreenRef.current = planScreenKey;
+  const planPreviousScreen = useRef(planScreenKey);
+  const planOverlayRef = useRef(false);
+  planOverlayRef.current = sourceUpdateOpen || Boolean(moveTarget) || quickConversionOpen || resetConfirmOpen || Boolean(trashDeleteTarget);
+  const discardPlanDisplay = useCallback(() => {
+    planResultOwner.current = undefined;
+    planDisplayRef.current = undefined;
+    setPlanDisplay(undefined);
+  }, []);
   const pending = useRef(false);
+  // A queued write belongs to this mounted route, not a later visit with the
+  // same storage bytes. Never let a departed screen acquire writer authority.
+  const workspaceWriteOwner = useRef<object | undefined>(undefined);
+  useEffect(() => {
+    const owner = {};
+    workspaceWriteOwner.current = owner;
+    return () => {
+      if (workspaceWriteOwner.current === owner) workspaceWriteOwner.current = undefined;
+    };
+  }, []);
+  const [contextualOwner, setContextualOwner] = useState(() => createResultOwnerSession('react-workspace'));
+  const contextualOwnerRef = useRef(contextualOwner);
+  const resultOrigin = useRef<WorkspaceResultOrigin | undefined>(undefined);
+  const moveOrigin = useRef<WorkspaceResultOrigin | undefined>(undefined);
+  const lastInputWasKeyboard = useRef(false);
+  const contextualReceiptRef = useRef(receipt);
+  contextualReceiptRef.current = receipt;
+  const captureResultOrigin = useRef<(ref: string, group?: PersonalWorkspacePocTaskGroup) => WorkspaceResultOrigin | undefined>(() => undefined);
+  const contextualIntent = useRef<(transition: PersonalWorkspacePocTransition, next: PersonalWorkspacePocState) => ResultIntent | undefined>(() => undefined);
+  const setResultOwner = useCallback((next: ResultOwnerState) => {
+    // Preserve the pure model's private identity and synchronously exclude double Undo.
+    contextualOwnerRef.current = next;
+    setContextualOwner(next);
+  }, []);
+  const interruptResult = useCallback((reason: string) => {
+    setResultOwner(interruptOwner(contextualOwnerRef.current, reason));
+  }, [setResultOwner]);
   const idCounter = useRef(0);
   const stateRef = useRef(state);
   stateRef.current = state;
+  const sourceCandidateStoreRef = useRef(sourceCandidateStore);
+  sourceCandidateStoreRef.current = sourceCandidateStore;
+  const sourceCandidateRawRef = useRef(sourceCandidateRaw);
+  sourceCandidateRawRef.current = sourceCandidateRaw;
   const receiptSequence = useRef(0);
   const planGuard = useRef<PersonalWorkspacePocPlanTrustedOpenGuard | undefined>(undefined);
   const planSourceFlow = useRef<PersonalWorkspacePocFlow | undefined>(undefined);
@@ -689,7 +988,9 @@ export function PersonalWorkspacePocSurface({
   const quickEditorBaseline = useRef<PersonalWorkspacePocQuickEditorBaseline | undefined>(undefined);
   const quickEditorAttempt = useRef<PersonalWorkspacePocEditorAttempt | undefined>(undefined);
   const quickStorageEvidence = useRef<PersonalWorkspacePocEditorStorageEvidence | undefined>(undefined);
+  const quickConversionAttempt = useRef<PersonalWorkspacePocQuickConversionAttempt | undefined>(undefined);
   const planReturnContext = useRef<PersonalWorkspacePocReceiptReturnContext>('period-list');
+  const planReturnFocusSelector = useRef('#personal-workspace-poc-main');
   const quickReturnContext = useRef<PersonalWorkspacePocReceiptReturnContext>('quick-list');
   const editorOwner = useRef<PersonalWorkspacePocEditorOwner | undefined>(undefined);
   const editorHistoryPopstateConsume = useRef(false);
@@ -708,6 +1009,8 @@ export function PersonalWorkspacePocSurface({
   const flowReturnFocusSelector = useRef<string | undefined>(undefined);
   const postMoveFocusSelector = useRef<string | undefined>(undefined);
   const dragDropHandled = useRef(false);
+  const transactionStatusRef = useRef<HTMLDivElement | null>(null);
+  const [nativeStatusBox, setNativeStatusBox] = useState<CSSProperties | undefined>(undefined);
   const activeMoveSession = useRef<PersonalWorkspacePocActiveMoveSession | undefined>(undefined);
   const autoScrollFrame = useRef<number | undefined>(undefined);
   const autoScrollSpeed = useRef(0);
@@ -717,6 +1020,42 @@ export function PersonalWorkspacePocSurface({
   const nextReceiptId = (intentId: string, statusName: string) => {
     receiptSequence.current += 1;
     return `${intentId}:${statusName}:${receiptSequence.current}`;
+  };
+
+  // Display validation is deliberately outside the writer's exception channel.
+  // Its failure cannot roll back a verified save or interrupt editor cleanup.
+  const publishPlanDisplay = (
+    input: PersonalWorkspacePocPlanDisplayInput,
+    source = planSourceFlow.current,
+  ): PersonalWorkspacePocPlanDisplay | undefined => {
+    try {
+      const made = source && createPersonalWorkspacePocPlanDisplay(input, source);
+      if (!made || !made.ok) { discardPlanDisplay(); return undefined; }
+      setReceipt(undefined);
+      contextualReceiptRef.current = undefined;
+      planDisplayRef.current = made.display;
+      planDisplayReturnPoint.current = { screenKey: planScreenRef.current, returnFocusSelector: planReturnFocusSelector.current };
+      setPlanDisplay(made.display);
+      return made.display;
+    } catch { discardPlanDisplay(); return undefined; }
+  };
+
+  const planBindingIsCurrent = (binding: PlanDisplayBinding): boolean => {
+    try {
+      return binding.sourceEpoch === planSourceEpoch.current
+        && binding.sourceRaw === window.localStorage.getItem(PERSONAL_WORKSPACE_POC_SOURCE_CANDIDATE_KEY)
+        && binding.screenKey === planScreenRef.current;
+    } catch { return false; }
+  };
+
+  const publishEditorAttemptDisplay = (input: PersonalWorkspacePocReceiptInput) => {
+    if (input.operation === 'commit-personal-plan') {
+      const { retryIntent: _privateRetry, ...displayInput } = input;
+      return publishPlanDisplay(displayInput as PersonalWorkspacePocPlanDisplayInput);
+    }
+    discardPlanDisplay();
+    setReceipt(requirePersonalWorkspacePocReceipt(input));
+    return undefined;
   };
 
   const requirePlanEditorHandlers = (
@@ -739,7 +1078,7 @@ export function PersonalWorkspacePocSurface({
   };
 
   const showSavingReceipt = (attempt: PersonalWorkspacePocEditorAttempt) => {
-    setReceipt(requirePersonalWorkspacePocReceipt({
+    publishEditorAttemptDisplay({
       receiptId: nextReceiptId(attempt.intentId, 'saving'),
       intentId: attempt.intentId,
       operation: attempt.operation,
@@ -754,7 +1093,7 @@ export function PersonalWorkspacePocSurface({
       targetWriteCount: 0,
       supportWriteCount: 0,
       rollback: 'not-needed',
-    }));
+    });
     setStatus({ kind: 'saving', message: '변경 내용을 저장 중…', receiptStatus: 'saving' });
   };
 
@@ -778,19 +1117,54 @@ export function PersonalWorkspacePocSurface({
           'runtime',
         );
       }
+      const binding = planDisplayBinding.current;
+      if (!binding || binding.attempt !== attempt || binding.transactionId !== input.transactionId
+        || binding.draftRevision !== input.revision || !planBindingIsCurrent(binding)) {
+        throw personalWorkspacePocEditorFailure('stale-plan-display-owner', '편집 기준이 바뀌었습니다. 입력을 확인한 뒤 계획을 다시 열어 주세요.', 'runtime');
+      }
       showSavingReceipt(attempt);
       const evidence = createPersonalWorkspacePocEditorStorageEvidence();
       planStorageEvidence.current = evidence;
+      binding.requestId = input.requestId;
+      binding.evidence = evidence;
       const operation = await requirePlanEditorHandlers(
         createPersonalWorkspacePocEditorEvidenceStorage(window.localStorage, evidence),
       ).preparePersonalOverlay(input);
-      return instrumentPersonalWorkspacePocEditorStorageCommit(operation, evidence, {
+      const genuineNoop = isPersonalWorkspacePocPlanNoopPreparedCommit(operation);
+      const openedRaw = planGuard.current?.openedStateRaw;
+      const measured = instrumentPersonalWorkspacePocEditorStorageCommit(operation, evidence, {
         readTargetRaw: () => window.localStorage.getItem(PERSONAL_WORKSPACE_POC_STATE_KEY),
         parseTargetRaw: (raw) => {
           const parsed = parsePersonalWorkspacePocEditorVerifiedStateRaw(raw);
           return parsed?.revision === attempt.stateRevisionBefore + 1 ? parsed : undefined;
         },
       });
+      return {
+        commit: async () => {
+          if (planDisplayBinding.current !== binding || binding.attempt !== planAttempt.current
+            || binding.requestId !== input.requestId || !planBindingIsCurrent(binding)) {
+            throw personalWorkspacePocEditorFailure('stale-plan-commit-owner', '저장 전에 편집 기준이 바뀌어 변경하지 않았습니다.', 'runtime');
+          }
+          if (genuineNoop) {
+            const unchanged = () => planDisplayBinding.current === binding
+              && binding.attempt === planAttempt.current
+              && binding.requestId === input.requestId
+              && stateRef.current.revision === attempt.stateRevisionBefore
+              && window.localStorage.getItem(PERSONAL_WORKSPACE_POC_STATE_KEY) === openedRaw
+              && planBindingIsCurrent(binding);
+            if (!unchanged()) throw personalWorkspacePocEditorFailure('stale-plan-noop', '변경 없음 판정 뒤 기준이 달라졌습니다. 다시 확인해 주세요.', 'runtime');
+            evidence.commitStarted = true;
+            await operation.commit();
+            if (!unchanged() || evidence.successfulTargetMutationCount !== 0 || evidence.successfulSupportMutationCount !== 0) {
+              throw personalWorkspacePocEditorFailure('unverified-plan-noop', '변경 없음 결과를 확인하지 못했습니다.', 'runtime');
+            }
+            binding.noopAccepted = true;
+            return;
+          }
+          return measured.commit();
+        },
+        rollbackAndVerify: () => measured.rollbackAndVerify(),
+      };
     },
   };
 
@@ -972,8 +1346,12 @@ export function PersonalWorkspacePocSurface({
   }, []);
   const viewportWidth = useViewportWidth();
   const composedModel = useMemo(
-    () => composePersonalWorkspacePocReadModel(initialModel, state),
-    [initialModel, state],
+    () => composePersonalWorkspacePocReadModel(
+      initialModel,
+      state,
+      sourceCandidateStore,
+    ),
+    [initialModel, sourceCandidateStore, state],
   );
   const fullModel = composedModel.ok ? composedModel.model : initialModel;
   const model = useMemo<PersonalWorkspacePocReadModel>(() => ({
@@ -989,14 +1367,37 @@ export function PersonalWorkspacePocSurface({
   const flowDisplayTitle = (flow: PersonalWorkspacePocFlow) => (
     getPersonalWorkspacePocFlowDisplayTitle(flow, flowCopyDisplays)
   );
-  const resultBaseModel = useMemo<PersonalWorkspacePocReadModel>(() => ({
-    version: initialModel.version,
-    flows: [...initialModel.flows, ...(state.authoredFlows ?? [])],
-  }), [initialModel, state.authoredFlows]);
+  const resultBaseModel = useMemo<PersonalWorkspacePocReadModel>(() => {
+    const sourceFlows = composePersonalWorkspacePocEffectiveSourceFlows(
+      [...initialModel.flows, ...(state.authoredFlows ?? [])],
+      sourceCandidateStore,
+    );
+    return {
+      version: initialModel.version,
+      flows: sourceFlows.ok
+        ? sourceFlows.flows
+        : [...initialModel.flows, ...(state.authoredFlows ?? [])],
+    };
+  }, [initialModel, sourceCandidateStore, state.authoredFlows]);
+
+  const sourceRead = useMemo(() => buildPersonalWorkspacePocSourceReadIndex({
+    baseModel: initialModel,
+    authoredFlows: state.authoredFlows ?? [],
+    sourceCandidateStore,
+  }), [initialModel, sourceCandidateStore, state.authoredFlows]);
+  const sourceReadValid = useMemo(() => sourceRead.ok && composedModel.ok
+    && composedModel.model.flows.every((flow) => (
+      readPersonalWorkspacePocTaskSourceContext(sourceRead.index, flow).ok
+    )), [composedModel, sourceRead]);
+  useEffect(() => {
+    if (!sourceReadValid) window.location.replace('/my');
+  }, [sourceReadValid]);
 
   const tasks = useMemo(
-    () => buildPersonalWorkspacePocTasks(model, state),
-    [model, state],
+    () => sourceReadValid && sourceRead.ok
+      ? buildPersonalWorkspacePocTasks(model, state, sourceRead.index)
+      : [],
+    [model, sourceRead, sourceReadValid, state],
   );
   const groups = useMemo(
     () => section === 'folder' || section === 'trash'
@@ -1036,8 +1437,16 @@ export function PersonalWorkspacePocSurface({
   }, [trashQuery, trashRows]);
 
   const findSourceFlow = (flowRef: string): PersonalWorkspacePocFlow | undefined => (
-    initialModel.flows.find((flow) => flow.ref === flowRef)
-      ?? stateRef.current.authoredFlows?.find((flow) => flow.ref === flowRef)
+    (() => {
+      const base = initialModel.flows.find((flow) => flow.ref === flowRef)
+        ?? stateRef.current.authoredFlows?.find((flow) => flow.ref === flowRef);
+      if (!base) return undefined;
+      const effective = getPersonalWorkspacePocEffectiveSourceFlow(
+        base,
+        sourceCandidateStoreRef.current,
+      );
+      return effective.ok ? effective.flow : undefined;
+    })()
   );
 
   const pushEditorHistory = useCallback((
@@ -1113,9 +1522,31 @@ export function PersonalWorkspacePocSurface({
       });
       return;
     }
+    const binding = planDisplayBinding.current;
+    if (attempt.operation === 'commit-personal-plan') {
+      try {
+        if (window.localStorage.getItem(PERSONAL_WORKSPACE_POC_STATE_KEY) !== storageEvidence.verifiedTargetRaw) {
+          discardPlanDisplay();
+          setStatus({ kind: 'failure', message: '저장 뒤 다른 변경을 발견했습니다. 새로고침해 최신 상태를 확인해 주세요.' });
+          return;
+        }
+      } catch {
+        discardPlanDisplay();
+        setStatus({ kind: 'failure', message: '저장 뒤 상태를 읽지 못했습니다. 새로고침해 실제 상태를 확인해 주세요.' });
+        return;
+      }
+    }
     stateRef.current = nextState;
     setState(nextState);
-    setReceipt(requirePersonalWorkspacePocReceipt({
+    if (attempt.operation === 'commit-personal-plan' && (!binding || binding.attempt !== attempt
+      || binding.accepted || binding.evidence !== storageEvidence || !binding.requestId
+      || !planBindingIsCurrent(binding))) {
+      discardPlanDisplay();
+      setStatus({ kind: 'success', message: '저장은 완료했지만 편집 기준이 바뀌어 변경 결과를 표시하지 않았어요.' });
+      return;
+    }
+    if (attempt.operation === 'commit-personal-plan' && binding) binding.accepted = true;
+    const resultDisplay = publishEditorAttemptDisplay({
       receiptId: nextReceiptId(attempt.intentId, 'success'),
       intentId: attempt.intentId,
       operation: attempt.operation,
@@ -1131,7 +1562,14 @@ export function PersonalWorkspacePocSurface({
       supportWriteCount: storageEvidence.successfulSupportMutationCount,
       rollback: 'not-needed',
       undoLabel: '이 변경 되돌리기',
-    }));
+    });
+    if (attempt.operation === 'commit-personal-plan') {
+      if (!resultDisplay || !binding) {
+        setStatus({ kind: 'success', message: '저장은 완료했지만 변경 목록을 표시하지 못했어요.' });
+        return;
+      }
+      planResultOwner.current = { display: resultDisplay, binding, exactRaw: storageEvidence.verifiedTargetRaw, consumed: false };
+    }
     setStatus({ kind: 'success', message: '내 계획 변경을 저장했어요.', receiptStatus: 'success' });
   };
 
@@ -1208,7 +1646,8 @@ export function PersonalWorkspacePocSurface({
       const attempt = planAttempt.current;
       const shouldFinalize = cause === 'commit-success'
         && level === 'plan'
-        && Boolean(attempt?.changes.length);
+        && Boolean(attempt?.changes.length)
+        && !planDisplayBinding.current?.noopAccepted;
       if (level === 'item') {
         setResultNavigation((current) => {
           const { openItemRef: _openItemRef, ...rest } = current;
@@ -1220,7 +1659,7 @@ export function PersonalWorkspacePocSurface({
           ? `item-cancel:${closingActive?.id ?? canceledScopeRef ?? scopeRef}`
           : planAttempt.current?.intentId
             ?? `plan-cancel:${planGuard.current?.guardId ?? canceledScopeRef}`;
-        setReceipt(requirePersonalWorkspacePocReceipt({
+        publishPlanDisplay({
           receiptId: nextReceiptId(intentId, 'canceled'),
           intentId,
           operation: level === 'item'
@@ -1238,7 +1677,7 @@ export function PersonalWorkspacePocSurface({
           supportWriteCount: 0,
           rollback: 'not-needed',
           returnContext: level === 'item' ? 'parent-plan' : planReturnContext.current,
-        }));
+        }, sourceFlow);
         setStatus({
           kind: 'canceled',
           message: level === 'item'
@@ -1250,10 +1689,22 @@ export function PersonalWorkspacePocSurface({
       if (level === 'plan') {
         if (editorOwner.current?.kind === 'plan') editorOwner.current = undefined;
         if (shouldFinalize) finalizeSuccessfulEditorAttempt(attempt);
+        else if (cause === 'commit-success' && attempt
+          && (attempt.changes.length === 0 || planDisplayBinding.current?.noopAccepted)) {
+          publishPlanDisplay({
+            receiptId: nextReceiptId(attempt.intentId, 'noop'), intentId: attempt.intentId,
+            operation: 'commit-personal-plan', status: 'noop', createdAt: new Date().toISOString(),
+            scopeRef: attempt.scopeRef, affectedRefs: [], affectedCount: 0, changes: [],
+            stateRevisionBefore: attempt.stateRevisionBefore, stateRevisionAfter: attempt.stateRevisionBefore,
+            targetWriteCount: 0, supportWriteCount: 0, rollback: 'not-needed',
+          }, sourceFlow);
+          setStatus({ kind: 'neutral', message: '같은 내용이라 저장하지 않았습니다.', receiptStatus: 'noop' });
+        }
         planGuard.current = undefined;
         planSourceFlow.current = undefined;
         planAttempt.current = undefined;
         planStorageEvidence.current = undefined;
+        planDisplayBinding.current = undefined;
       }
     });
   };
@@ -1318,10 +1769,14 @@ export function PersonalWorkspacePocSurface({
         return;
       }
       if (planEditor.active) {
+        if (planEditor.active.pendingClose) { planEditorRearm.current(); return; }
         planEditor.requestClose('browser-back');
         return;
       }
-      if (quickEditor.active) quickEditor.requestClose('browser-back');
+      if (quickEditor.active) {
+        if (quickEditor.active.pendingClose) { quickEditorRearm.current(); return; }
+        quickEditor.requestClose('browser-back');
+      }
     };
     window.addEventListener('popstate', handleEditorPopState);
     return () => window.removeEventListener('popstate', handleEditorPopState);
@@ -1336,10 +1791,10 @@ export function PersonalWorkspacePocSurface({
       planStorageEvidence.current,
       recoveryRequired,
     );
-    setReceipt(requirePersonalWorkspacePocReceipt({
+    publishPlanDisplay({
       receiptId: nextReceiptId(attempt.intentId, 'failure'),
       intentId: attempt.intentId,
-      operation: attempt.operation,
+      operation: 'commit-personal-plan',
       status: 'failure',
       createdAt: new Date().toISOString(),
       scopeRef: attempt.scopeRef,
@@ -1351,17 +1806,8 @@ export function PersonalWorkspacePocSurface({
       targetWriteCount: 0,
       supportWriteCount: storageFailure.supportWriteCount,
       rollback: storageFailure.rollback,
-      retryIntent: {
-        kind: attempt.operation,
-        parameters: {
-          scopeRef: attempt.scopeRef,
-          intentId: attempt.intentId,
-          payload: attempt.retryDescriptor.payload,
-          guard: attempt.retryDescriptor.guard,
-        },
-      },
       errorCode: active.failure.code.replace(/[^a-z0-9_-]/giu, '-').toLowerCase(),
-    }));
+    });
     setStatus({ kind: 'failure', message: active.failure.message, receiptStatus: 'failure' });
   }, [planEditor.active?.failure, planEditor.active?.status]);
 
@@ -1453,6 +1899,11 @@ export function PersonalWorkspacePocSurface({
       setStatus({ kind: 'failure', message: opened.failure.message });
       return undefined;
     }
+    if (canonicalPersonalWorkspacePocPlanEditorBytes(sourceFlow) !== opened.guard.canonicalSourceBytes) {
+      setStatus({ kind: 'failure', message: '표시 중인 원문과 편집 기준이 다릅니다. 원문 변경을 확인한 뒤 다시 열어 주세요.' });
+      return undefined;
+    }
+    discardPlanDisplay();
     planGuard.current = opened.guard;
     planSourceFlow.current = sourceFlow;
     planAttempt.current = undefined;
@@ -1464,6 +1915,7 @@ export function PersonalWorkspacePocSurface({
         : section === 'folder'
           ? 'folder-list'
           : 'period-list';
+    planReturnFocusSelector.current = returnFocusSelector;
     editorOwner.current = { kind: 'plan', phase: 'open' };
     planEditor.openPlan({
       id: `personal-workspace-plan:${flowRef}:${Date.now()}`,
@@ -1612,40 +2064,29 @@ export function PersonalWorkspacePocSurface({
       baseline: active.baseline,
       draft,
     });
+    let currentSourceRaw: string | null;
+    try { currentSourceRaw = window.localStorage.getItem(PERSONAL_WORKSPACE_POC_SOURCE_CANDIDATE_KEY); }
+    catch { setStatus({ kind: 'failure', message: '원문 저장 상태를 읽지 못해 저장하지 않았습니다.' }); return; }
+    if (currentSourceRaw !== sourceCandidateRawRef.current) {
+      setStatus({ kind: 'failure', message: '다른 화면에서 원문 상태가 바뀌었습니다. 새로고침해 확인해 주세요.' });
+      return;
+    }
     planAttempt.current = {
       intentId: `plan-intent:${planGuard.current?.guardId ?? sourceFlow.ref}:${Date.now()}`,
       operation: 'commit-personal-plan',
       scopeRef: sourceFlow.ref,
       stateRevisionBefore: stateRef.current.revision,
-      affectedRefs: summary.affectedRefs,
-      changes: summary.changes,
+      affectedRefs: Object.freeze([...summary.affectedRefs]),
+      changes: Object.freeze(summary.changes.map(change => Object.freeze({ ...change }))),
       retryDescriptor: personalWorkspacePocPlanRetryDescriptor(draft, guard),
     };
+    planDisplayBinding.current = {
+      attempt: planAttempt.current, sourceFlow, sourceRaw: currentSourceRaw,
+      sourceEpoch: planSourceEpoch.current, screenKey: planScreenRef.current,
+      returnFocusSelector: planReturnFocusSelector.current,
+      transactionId: active.id, draftRevision: active.revision, accepted: false,
+    };
     planStorageEvidence.current = undefined;
-    if (summary.changes.length === 0) {
-      const attempt = planAttempt.current;
-      setReceipt(requirePersonalWorkspacePocReceipt({
-        receiptId: nextReceiptId(attempt.intentId, 'noop'),
-        intentId: attempt.intentId,
-        operation: attempt.operation,
-        status: 'noop',
-        createdAt: new Date().toISOString(),
-        scopeRef: attempt.scopeRef,
-        affectedRefs: [],
-        affectedCount: 0,
-        stateRevisionBefore: attempt.stateRevisionBefore,
-        stateRevisionAfter: attempt.stateRevisionBefore,
-        changes: [],
-        targetWriteCount: 0,
-        supportWriteCount: 0,
-        rollback: 'not-needed',
-      }));
-      setStatus({
-        kind: 'neutral',
-        message: '같은 내용이라 저장하지 않았습니다.',
-        receiptStatus: 'noop',
-      });
-    }
     planEditor.requestCommit();
   };
 
@@ -1736,11 +2177,115 @@ export function PersonalWorkspacePocSurface({
     quickEditor.requestCommit();
   };
 
+  const contextualRecovery = useRef(false);
+  const resultFacts = useCallback((raw: string | null): ResultFacts => ({
+    lane: 'workspace',
+    exactTargetRaw: raw,
+    hasUndo: Boolean(stateRef.current.undo),
+    authorityReady: isPersonalWorkspacePocEditorStateRawCurrent(stateRef.current, raw),
+    pending: pending.current,
+    editorOwner: Boolean(editorOwner.current),
+    recoveryOwner: contextualRecovery.current,
+    receiptOwnerId: planDisplayRef.current?.receiptId ?? contextualReceiptRef.current?.receiptId ?? null,
+  }), []);
+
+  useEffect(() => {
+    const observe = (event: StorageEvent) => {
+      if (event.key === null || event.key === PERSONAL_WORKSPACE_POC_SOURCE_CANDIDATE_KEY) {
+        planSourceEpoch.current += 1;
+        discardPlanDisplay();
+      } else if (event.key === PERSONAL_WORKSPACE_POC_STATE_KEY) discardPlanDisplay();
+    };
+    const inspect = () => {
+      const owner = planResultOwner.current;
+      if (!owner) return;
+      try {
+        if (!planBindingIsCurrent(owner.binding)
+          || window.localStorage.getItem(PERSONAL_WORKSPACE_POC_STATE_KEY) !== owner.exactRaw) discardPlanDisplay();
+      } catch { discardPlanDisplay(); }
+    };
+    window.addEventListener('storage', observe);
+    window.addEventListener('focus', inspect);
+    return () => { window.removeEventListener('storage', observe); window.removeEventListener('focus', inspect); };
+  }, [discardPlanDisplay]);
+
+  useEffect(() => {
+    if (planObservedSource.current !== sourceCandidateRaw) {
+      planObservedSource.current = sourceCandidateRaw;
+      planSourceEpoch.current += 1;
+      discardPlanDisplay();
+    }
+    if (planPreviousScreen.current !== planScreenKey) {
+      planPreviousScreen.current = planScreenKey;
+      discardPlanDisplay();
+    }
+    const owner = planResultOwner.current;
+    if (owner && (owner.binding.screenKey !== planScreenKey || planOverlayRef.current
+      || owner.binding.sourceRaw !== sourceCandidateRaw)) discardPlanDisplay();
+  }, [planScreenKey, sourceCandidateRaw, sourceUpdateOpen, moveTarget, quickConversionOpen, resetConfirmOpen, trashDeleteTarget, discardPlanDisplay]);
+
+  useEffect(() => {
+    const pointer = () => { lastInputWasKeyboard.current = false; };
+    const keyboard = () => { lastInputWasKeyboard.current = true; };
+    const checkRaw = (event?: StorageEvent) => {
+      if (event && event.key !== null && event.key !== PERSONAL_WORKSPACE_POC_STATE_KEY) return;
+      const owner = contextualOwnerRef.current;
+      if (!owner.lastSuccess && !owner.activeAttempt) return;
+      if (event && event.newValue !== JSON.stringify(stateRef.current)) {
+        // An observed A→B event remains invalidating even if B→A has already followed it.
+        interruptResult('observed-storage-event-drift');
+        return;
+      }
+      try {
+        const raw = window.localStorage.getItem(PERSONAL_WORKSPACE_POC_STATE_KEY);
+        if (!isPersonalWorkspacePocEditorStateRawCurrent(stateRef.current, raw)) {
+          interruptResult('observed-storage-drift');
+        }
+      } catch { interruptResult('storage-unreadable'); }
+    };
+    document.addEventListener('pointerdown', pointer, true);
+    document.addEventListener('keydown', keyboard, true);
+    window.addEventListener('storage', checkRaw);
+    const focus = () => checkRaw();
+    window.addEventListener('focus', focus);
+    return () => {
+      document.removeEventListener('pointerdown', pointer, true);
+      document.removeEventListener('keydown', keyboard, true);
+      window.removeEventListener('storage', checkRaw);
+      window.removeEventListener('focus', focus);
+    };
+  }, [interruptResult]);
+
+  useEffect(() => {
+    interruptResult('screen-or-source-owner-changed');
+  }, [section, activeFolderId, selectedFlowRef, activeItemRef, sourceUpdateOpen, sourceCandidateRaw, interruptResult]);
+
+  useEffect(() => {
+    if (planEditor.active || quickEditor.active || receipt || planDisplay) interruptResult('editor-or-receipt-owner');
+    if (quickEditor.active || receipt) discardPlanDisplay();
+  }, [Boolean(planEditor.active), Boolean(quickEditor.active), receipt, planDisplay, interruptResult, discardPlanDisplay]);
+
   const commitTransition = useCallback(async (
     transition: PersonalWorkspacePocTransition,
     storageEvidence?: PersonalWorkspacePocEditorStorageEvidence,
+    undoTicket?: ResultTicket,
+    planPresentation?: Readonly<{ isCurrent: () => boolean }>,
   ): Promise<TransitionOutcome> => {
+    const operationOwner = workspaceWriteOwner.current;
+    const operationHref = window.location.href;
+    const operationIsCurrent = () => operationOwner !== undefined
+      && workspaceWriteOwner.current === operationOwner && window.location.href === operationHref;
+    if (!operationIsCurrent()) return 'unchanged';
+    let ticket = undoTicket;
+    const finishResult = (outcome: ResultOutcome) => {
+      if (!ticket) return;
+      const settled = ticket.kind === 'undo'
+        ? settleUndo(contextualOwnerRef.current, ticket, outcome)
+        : settleAttempt(contextualOwnerRef.current, ticket, outcome);
+      setResultOwner(settled.state);
+    };
     if (editorOwner.current || planEditor.active || quickEditor.active) {
+      interruptResult('editor-owner');
       setStatus({
         kind: 'neutral',
         message: '열려 있는 편집을 먼저 저장하거나 닫아 주세요.',
@@ -1748,15 +2293,19 @@ export function PersonalWorkspacePocSurface({
       return 'unchanged';
     }
     if (pending.current) return 'unchanged';
+    if (planPresentation && !planPresentation.isCurrent()) return 'unchanged';
+    if (!planPresentation) discardPlanDisplay();
     const expectedState = stateRef.current;
     let expectedStateRaw: string | null;
     try {
       expectedStateRaw = window.localStorage.getItem(PERSONAL_WORKSPACE_POC_STATE_KEY);
     } catch {
+      interruptResult('storage-unreadable');
       setStatus({ kind: 'failure', message: '저장 상태를 읽지 못해 변경하지 않았습니다.' });
       return 'failed';
     }
     if (!isPersonalWorkspacePocEditorStateRawCurrent(expectedState, expectedStateRaw)) {
+      interruptResult('observed-storage-drift');
       setStatus({
         kind: 'failure',
         message: '다른 화면에서 저장 상태가 바뀌었습니다. 새로고침한 뒤 다시 시도해 주세요.',
@@ -1764,7 +2313,20 @@ export function PersonalWorkspacePocSurface({
       return 'failed';
     }
     const result = applyPersonalWorkspacePocTransition(expectedState, transition);
+    if (!undoTicket && !planPresentation) {
+      const intent = contextualIntent.current(transition, result.state);
+      if (intent) {
+        const started = beginAttempt(contextualOwnerRef.current, intent, resultFacts(expectedStateRaw));
+        if (started.ok) {
+          ticket = started.ticket;
+          setResultOwner(started.state);
+        } else {
+          interruptResult('unavailable-result-owner');
+        }
+      } else interruptResult('different-workspace-action');
+    }
     if (!result.changed) {
+      finishResult({ kind: transition.type === 'cancel' ? 'canceled' : 'noop' });
       setStatus({
         kind: transition.type === 'cancel' ? 'canceled' : 'neutral',
         message: result.message,
@@ -1777,6 +2339,7 @@ export function PersonalWorkspacePocSurface({
       ? validatePersonalWorkspacePocStateReferences(result.state, nextComposition.model)
       : nextComposition;
     if (!semanticPreflight.ok) {
+      finishResult({ kind: 'failed' });
       setStatus({
         kind: 'failure',
         message: '변경 결과를 안전하게 저장할 수 없어 원래 상태를 유지합니다.',
@@ -1787,7 +2350,10 @@ export function PersonalWorkspacePocSurface({
     pending.current = true;
     setStatus({ kind: 'saving', message: '변경 내용을 저장 중…' });
     await new Promise<void>((resolve) => window.requestAnimationFrame(() => resolve()));
+    if (!operationIsCurrent()) { pending.current = false; return 'unchanged'; }
     const locked = await withFlowUserDataWriteLock(() => {
+      if (!operationIsCurrent()) return { kind: 'owner-ended' as const };
+      if (planPresentation && !planPresentation.isCurrent()) return { kind: 'stale' as const };
       const currentStateRaw = window.localStorage.getItem(PERSONAL_WORKSPACE_POC_STATE_KEY);
       if (currentStateRaw !== expectedStateRaw) return { kind: 'stale' as const };
       const saved = commitPersonalWorkspacePocStorage({
@@ -1805,7 +2371,11 @@ export function PersonalWorkspacePocSurface({
         : { kind: 'save-failed' as const, rollback: saved.rollback };
     });
     pending.current = false;
+    // Do not publish status, receipt, focus, or old state into a later route.
+    // This does not undo a synchronous write already committed by its owner.
+    if (!operationIsCurrent() || locked.ok && locked.value.kind === 'owner-ended') return 'unchanged';
     if (!locked.ok) {
+      finishResult({ kind: 'failed' });
       setStatus({
         kind: 'failure',
         message: '다른 저장이 진행 중이라 변경하지 않았어요. 잠시 후 다시 시도해 주세요.',
@@ -1813,6 +2383,7 @@ export function PersonalWorkspacePocSurface({
       return 'failed';
     }
     if (locked.value.kind === 'stale') {
+      interruptResult('observed-storage-drift');
       setStatus({
         kind: 'failure',
         message: '저장 직전에 다른 변경을 발견해 원래 상태를 유지했습니다. 새로고침해 주세요.',
@@ -1820,6 +2391,8 @@ export function PersonalWorkspacePocSurface({
       return 'failed';
     }
     if (locked.value.kind === 'save-failed') {
+      contextualRecovery.current = locked.value.rollback === 'recovery-required';
+      finishResult({ kind: contextualRecovery.current ? 'recovery-required' : 'failed' });
       setStatus({
         kind: 'failure',
         message: locked.value.rollback === 'recovery-required'
@@ -1832,6 +2405,8 @@ export function PersonalWorkspacePocSurface({
     try {
       confirmedStateRaw = window.localStorage.getItem(PERSONAL_WORKSPACE_POC_STATE_KEY);
     } catch {
+      contextualRecovery.current = true;
+      finishResult({ kind: 'recovery-required' });
       setStatus({
         kind: 'failure',
         message: '저장 뒤 상태를 확인하지 못했습니다. 새로고침해 실제 상태를 확인해 주세요.',
@@ -1839,6 +2414,7 @@ export function PersonalWorkspacePocSurface({
       return 'failed';
     }
     if (confirmedStateRaw !== JSON.stringify(result.state)) {
+      interruptResult('observed-storage-drift');
       setStatus({
         kind: 'failure',
         message: '저장 직후 다른 변경을 발견했습니다. 새로고침해 최신 상태를 확인해 주세요.',
@@ -1847,10 +2423,312 @@ export function PersonalWorkspacePocSurface({
     }
     stateRef.current = result.state;
     setState(result.state);
-    setReceipt(undefined);
-    setStatus({ kind: 'success', message: result.message });
+    finishResult({ kind: 'success', exactTargetRaw: confirmedStateRaw, hasUndo: Boolean(result.state.undo), authorityReady: true });
+    if (!planPresentation && (!ticket || contextualOwnerRef.current.epoch === ticket.epoch)) {
+      setReceipt(undefined);
+      contextualReceiptRef.current = undefined;
+      setStatus({ kind: 'success', message: result.message });
+    }
     return 'changed';
-  }, [initialModel, planEditor.active, quickEditor.active]);
+  }, [initialModel, planEditor.active, quickEditor.active, interruptResult, resultFacts, setResultOwner, discardPlanDisplay]);
+
+  const restorePlanResultFocus = (binding: Pick<PlanDisplayBinding, 'screenKey' | 'returnFocusSelector'> | undefined) => {
+    if (!binding) return;
+    window.requestAnimationFrame(() => {
+      if (editorOwner.current || planOverlayRef.current || binding.screenKey !== planScreenRef.current) return;
+      const opener = document.querySelector<HTMLElement>(binding.returnFocusSelector);
+      const target = opener?.getClientRects().length ? opener : document.getElementById('personal-workspace-poc-main');
+      if (target) {
+        if (!target.matches('button,a[href],input,select,textarea,[tabindex]')) target.tabIndex = -1;
+        target.focus({ preventScroll: true });
+        const rect = target.getBoundingClientRect();
+        if (rect.top < 0 || rect.bottom > window.innerHeight) target.scrollIntoView({ block: 'nearest' });
+      }
+    });
+  };
+
+  const dismissPlanResult = () => {
+    const binding = planResultOwner.current?.binding ?? planDisplayReturnPoint.current;
+    discardPlanDisplay();
+    restorePlanResultFocus(binding);
+  };
+
+  const undoPlanDisplay = async () => {
+    const owner = planResultOwner.current;
+    if (!owner || owner.display.status !== 'success' || owner.consumed || pending.current) return;
+    const isCurrent = () => {
+      try {
+        return planResultOwner.current === owner && planDisplayRef.current === owner.display
+          && planBindingIsCurrent(owner.binding) && !editorOwner.current && !planOverlayRef.current
+          && !contextualRecovery.current && stateRef.current.revision === owner.display.stateRevisionAfter
+          && Boolean(stateRef.current.undo)
+          && window.localStorage.getItem(PERSONAL_WORKSPACE_POC_STATE_KEY) === owner.exactRaw;
+      } catch { return false; }
+    };
+    if (!isCurrent()) { discardPlanDisplay(); return; }
+    owner.consumed = true;
+    const evidence = createPersonalWorkspacePocEditorStorageEvidence();
+    const outcome = await commitTransition({ type: 'undo', now: new Date().toISOString() }, evidence, undefined, { isCurrent });
+    if (outcome !== 'changed') { discardPlanDisplay(); return; }
+    // The same private owner must survive through the lock and the final read.
+    // A stale result is not restored even if another tab later restores its bytes.
+    if (planResultOwner.current !== owner || !planBindingIsCurrent(owner.binding) || planOverlayRef.current) {
+      discardPlanDisplay();
+      setStatus({ kind: 'success', message: '되돌리기는 저장했지만 화면 기준이 바뀌어 변경 목록을 표시하지 않았어요.' });
+      return;
+    }
+    const shown = publishPlanDisplay({
+      receiptId: nextReceiptId(owner.display.intentId, 'undone'), intentId: owner.display.intentId,
+      operation: 'commit-personal-plan', status: 'undone', createdAt: new Date().toISOString(),
+      scopeRef: owner.display.scopeRef, affectedRefs: owner.display.affectedRefs, affectedCount: owner.display.affectedCount,
+      changes: owner.display.changes.map(change => ({ ...change, before: change.after, after: change.before })),
+      stateRevisionBefore: owner.display.stateRevisionAfter, stateRevisionAfter: stateRef.current.revision,
+      targetWriteCount: evidence.successfulTargetMutationCount, supportWriteCount: evidence.successfulSupportMutationCount,
+      rollback: 'not-needed', undoLabel: '이 변경 되돌리기', undoOfReceiptId: owner.display.receiptId,
+    }, owner.binding.sourceFlow);
+    planResultOwner.current = shown ? { ...owner, display: shown, exactRaw: JSON.stringify(stateRef.current), consumed: true } : undefined;
+    setStatus({ kind: 'success', message: shown ? '이 개인 계획 변경을 되돌렸어요.' : '되돌리기는 완료했지만 변경 목록을 표시하지 못했어요.', ...(shown ? { receiptStatus: 'undone' as const } : {}) });
+    restorePlanResultFocus(owner.binding);
+  };
+
+  const undoContextualResult = async (ownerId: string) => {
+    let raw: string | null;
+    try { raw = window.localStorage.getItem(PERSONAL_WORKSPACE_POC_STATE_KEY); }
+    catch {
+      interruptResult('storage-unreadable');
+      setStatus({ kind: 'failure', message: '저장 상태를 읽지 못해 되돌리지 않았어요.' });
+      return;
+    }
+    if (!isPersonalWorkspacePocEditorStateRawCurrent(stateRef.current, raw)) {
+      interruptResult('observed-storage-drift');
+      setStatus({ kind: 'failure', message: '다른 변경을 발견해 되돌리지 않았어요. 새로고침해 주세요.' });
+      return;
+    }
+    const started = beginContextualUndo(contextualOwnerRef.current, ownerId, resultFacts(raw));
+    if (!started.ok) return;
+    setResultOwner(started.state);
+    const origin = resultOrigin.current;
+    const restoreKeyboardFocus = lastInputWasKeyboard.current;
+    const outcome = await commitTransition({ type: 'undo', now: new Date().toISOString() }, undefined, started.ticket);
+    if (outcome === 'changed' && origin) {
+      window.requestAnimationFrame(() => {
+        if (contextualOwnerRef.current.lastSuccess?.status !== 'undone' || resultOrigin.current !== origin) return;
+        window.scrollTo({ top: origin.scrollTop, behavior: 'instant' });
+        const opener = document.querySelector<HTMLElement>(origin.returnSelector);
+        if (restoreKeyboardFocus && opener?.getClientRects().length) opener.focus({ preventScroll: true });
+      });
+    }
+  };
+
+  const commitQuickItemConversion = async (
+    quickItemRef: string,
+    requestedFlowTitle: string,
+    priorAttempt?: PersonalWorkspacePocQuickConversionAttempt,
+  ) => {
+    const expectedState = stateRef.current;
+    const quickItem = expectedState.quickItems.find(
+      (item) => toPersonalWorkspacePocQuickItemRef(item.quickItemId) === quickItemRef,
+    );
+    if (!quickItem) {
+      setStatus({ kind: 'failure', message: '정리할 빠른 할 일을 찾을 수 없어요.' });
+      return;
+    }
+    const existingReceipt = (expectedState.quickConversionReceipts ?? []).find(
+      (candidate) => candidate.sourceQuickItemRef === quickItemRef,
+    );
+    if (existingReceipt) {
+      setMoveTarget(undefined);
+      setQuickConversionOpen(false);
+      setQuickConversionTitle('');
+      setSection('folder');
+      setActiveItemRef(undefined);
+      setSelectedFlowRef(existingReceipt.flowRef);
+      setStatus({ kind: 'neutral', message: '이미 정리한 Flow를 열었어요.' });
+      return;
+    }
+
+    const flowTitle = requestedFlowTitle.trim();
+    const preview = materializePersonalWorkspacePocQuickConversion({
+      quickItem,
+      quickItemRef,
+      flowTitle,
+      stateRevision: expectedState.revision,
+      committedAt: new Date().toISOString(),
+    });
+    if (!preview.ok) {
+      setStatus({ kind: 'neutral', message: '새 Flow 이름을 한 줄로 입력해 주세요.' });
+      return;
+    }
+    const folderId = getPersonalWorkspacePocFolderId(expectedState, quickItemRef);
+    const folderLabel = compactPersonalWorkspacePocReceiptValue(
+      getPersonalWorkspacePocFolderPath(expectedState, folderId),
+    );
+    const date = getPersonalWorkspacePocEffectiveDate(expectedState, quickItemRef);
+    const changes: readonly PersonalWorkspacePocReceiptChange[] = [
+      {
+        owner: 'poc-personal-plan',
+        field: 'new-flow',
+        label: '새 Flow',
+        before: null,
+        after: compactPersonalWorkspacePocReceiptValue(flowTitle),
+      },
+      {
+        owner: 'poc-personal-plan',
+        field: 'new-item',
+        label: '첫 할 일',
+        before: null,
+        after: compactPersonalWorkspacePocReceiptValue(quickItem.title),
+      },
+      {
+        owner: 'organization',
+        field: 'copied-folder',
+        label: '복사한 폴더',
+        before: null,
+        after: folderLabel,
+      },
+      {
+        owner: 'execution',
+        field: 'copied-date',
+        label: '복사한 실행일',
+        before: null,
+        after: date ?? '날짜 미정',
+      },
+      {
+        owner: 'poc-personal-plan',
+        field: 'copied-item-memo',
+        label: '개인 메모 복사',
+        before: false,
+        after: quickItem.memo !== '',
+      },
+    ];
+    const affectedRefs = [quickItemRef, preview.flow.ref, preview.itemRef] as const;
+    const attempt: PersonalWorkspacePocQuickConversionAttempt = priorAttempt ?? {
+      intentId: `quick-conversion-intent:${encodeURIComponent(quickItem.quickItemId)}:${Date.now()}`,
+      quickItemRef,
+      flowTitle,
+      stateRevisionBefore: expectedState.revision,
+      affectedRefs,
+      changes,
+    };
+    if (priorAttempt && (
+      priorAttempt.quickItemRef !== quickItemRef
+      || priorAttempt.flowTitle !== flowTitle
+      || priorAttempt.stateRevisionBefore !== expectedState.revision
+      || JSON.stringify(priorAttempt.affectedRefs) !== JSON.stringify(affectedRefs)
+      || JSON.stringify(priorAttempt.changes) !== JSON.stringify(changes)
+    )) {
+      setStatus({
+        kind: 'neutral',
+        message: '빠른 할 일의 내용이 바뀌었어요. 다시 열어 새 Flow를 확인해 주세요.',
+      });
+      return;
+    }
+    quickConversionAttempt.current = attempt;
+    const storageEvidence = createPersonalWorkspacePocEditorStorageEvidence();
+    const outcome = await commitTransition({
+      type: 'convert-quick-item-to-flow',
+      quickItemRef,
+      expectedRevision: expectedState.revision,
+      flowTitle,
+      existingFlowRefs: model.flows.map((flow) => flow.ref),
+      now: preview.flow.authoring.committedAt,
+    }, storageEvidence);
+
+    if (outcome === 'changed') {
+      const verifiedState = stateRef.current;
+      const conversion = (verifiedState.quickConversionReceipts ?? []).find(
+        (candidate) => candidate.conversionId === preview.conversionId,
+      );
+      if (!conversion
+        || storageEvidence.successfulTargetMutationCount !== 1
+        || verifiedState.revision !== attempt.stateRevisionBefore + 1) {
+        setStatus({
+          kind: 'failure',
+          message: '정리한 Flow를 확인하지 못했어요. 새로고침해 상태를 확인해 주세요.',
+        });
+        return;
+      }
+      setReceipt(requirePersonalWorkspacePocReceipt({
+        receiptId: nextReceiptId(attempt.intentId, 'success'),
+        intentId: attempt.intentId,
+        operation: 'convert-quick-item-to-flow',
+        status: 'success',
+        createdAt: new Date().toISOString(),
+        scopeRef: quickItemRef,
+        affectedRefs: attempt.affectedRefs,
+        affectedCount: attempt.affectedRefs.length,
+        stateRevisionBefore: attempt.stateRevisionBefore,
+        stateRevisionAfter: verifiedState.revision,
+        changes: attempt.changes,
+        targetWriteCount: storageEvidence.successfulTargetMutationCount,
+        supportWriteCount: storageEvidence.successfulSupportMutationCount,
+        rollback: 'not-needed',
+        undoLabel: 'Flow 정리 되돌리기',
+      }));
+      quickConversionAttempt.current = undefined;
+      setMoveTarget(undefined);
+      setQuickConversionOpen(false);
+      setQuickConversionTitle('');
+      setSection('folder');
+      setActiveItemRef(undefined);
+      setSelectedFlowRef(conversion.flowRef);
+      setStatus({
+        kind: 'success',
+        message: '빠른 할 일은 그대로 두고 새 Flow를 열었어요.',
+        receiptStatus: 'success',
+      });
+      return;
+    }
+
+    if (outcome === 'failed') {
+      const failureEvidence = resolvePersonalWorkspacePocEditorFailureEvidence(
+        storageEvidence,
+        storageEvidence.rollback === 'recovery-required',
+      );
+      setReceipt(requirePersonalWorkspacePocReceipt({
+        receiptId: nextReceiptId(attempt.intentId, 'failure'),
+        intentId: attempt.intentId,
+        operation: 'convert-quick-item-to-flow',
+        status: 'failure',
+        createdAt: new Date().toISOString(),
+        scopeRef: quickItemRef,
+        affectedRefs: attempt.affectedRefs,
+        affectedCount: attempt.affectedRefs.length,
+        stateRevisionBefore: attempt.stateRevisionBefore,
+        stateRevisionAfter: attempt.stateRevisionBefore,
+        changes: attempt.changes,
+        targetWriteCount: 0,
+        supportWriteCount: failureEvidence.supportWriteCount,
+        rollback: failureEvidence.rollback,
+        retryIntent: {
+          kind: 'convert-quick-item-to-flow',
+          parameters: { quickItemRef, flowTitle, expectedRevision: attempt.stateRevisionBefore },
+        },
+        errorCode: 'quick-conversion-storage-failed',
+      }));
+      setStatus({
+        kind: 'failure',
+        message: 'Flow로 정리하지 못해 빠른 할 일과 이전 상태를 유지했어요.',
+        receiptStatus: 'failure',
+      });
+    }
+  };
+
+  const retryQuickItemConversion = () => {
+    const attempt = quickConversionAttempt.current;
+    if (!attempt) {
+      setStatus({ kind: 'neutral', message: '다시 시도할 Flow 정리 요청이 없어요.' });
+      return;
+    }
+    if (stateRef.current.revision !== attempt.stateRevisionBefore) {
+      setStatus({
+        kind: 'neutral',
+        message: '그 뒤 다른 변경이 저장됐어요. 빠른 할 일을 다시 열어 확인해 주세요.',
+      });
+      return;
+    }
+    void commitQuickItemConversion(attempt.quickItemRef, attempt.flowTitle, attempt);
+  };
 
   const undoReceiptChange = async () => {
     if (!receipt || receipt.status !== 'success' || planEditor.active || quickEditor.active) return;
@@ -1870,6 +2748,14 @@ export function PersonalWorkspacePocSurface({
         message: '되돌린 내용을 확인하지 못했어요. 새로고침해 상태를 확인해 주세요.',
       });
       return;
+    }
+    if (receipt.operation === 'convert-quick-item-to-flow') {
+      const convertedFlowRef = receipt.affectedRefs.find((ref) => ref.startsWith('saved-flow:'));
+      if (convertedFlowRef && selectedFlowRef === convertedFlowRef) {
+        setSelectedFlowRef(undefined);
+        setActiveItemRef(undefined);
+        setSection('folder');
+      }
     }
     const next = transitionPersonalWorkspacePocReceipt(receipt, {
       receiptId: nextReceiptId(receipt.intentId, 'undone'),
@@ -1926,6 +2812,7 @@ export function PersonalWorkspacePocSurface({
   const resetMoveInteraction = useCallback(() => {
     stopAutoScroll();
     activeMoveSession.current = undefined;
+    setNativeStatusBox(undefined);
     setReorderPreview(undefined);
     setMoveDropFeedback(undefined);
   }, [stopAutoScroll]);
@@ -1970,7 +2857,10 @@ export function PersonalWorkspacePocSurface({
     }
 
     const emptyState = createPersonalWorkspacePocState();
+    const emptySourceCandidateStore = createPersonalWorkspacePocSourceCandidateStore();
     stateRef.current = emptyState;
+    sourceCandidateStoreRef.current = emptySourceCandidateStore;
+    sourceCandidateRawRef.current = null;
     flowReturnFocusSelector.current = undefined;
     postMoveFocusSelector.current = undefined;
     planGuard.current = undefined;
@@ -1980,8 +2870,16 @@ export function PersonalWorkspacePocSurface({
     quickEditorBaseline.current = undefined;
     quickEditorAttempt.current = undefined;
     quickStorageEvidence.current = undefined;
+    quickConversionAttempt.current = undefined;
     resetMoveInteraction();
     setState(emptyState);
+    setSourceCandidateStore(emptySourceCandidateStore);
+    setSourceCandidateRaw(null);
+    setSourceUpdateOpen(false);
+    setSourceUpdateSelectedChangeId(undefined);
+    setSourceUpdateLaterChangeIds({});
+    setSourceUpdateStatus('pending');
+    setSourceUpdateError(undefined);
     setSection('folder');
     setActiveFolderId(undefined);
     setSelectedFlowRef(undefined);
@@ -1997,6 +2895,8 @@ export function PersonalWorkspacePocSurface({
     setFolderTitle('');
     setFolderParentId('');
     setMoveDateDraft(today);
+    setQuickConversionOpen(false);
+    setQuickConversionTitle('');
     setShowEmptyMonthDates(false);
     setReceipt(undefined);
     setResetConfirmOpen(false);
@@ -2007,16 +2907,24 @@ export function PersonalWorkspacePocSurface({
     resetMoveInteraction();
     postMoveFocusSelector.current = moveReturnFocusSelector;
     setMoveTarget(undefined);
+    setQuickConversionOpen(false);
+    setQuickConversionTitle('');
     setStatus({ kind: 'canceled', message });
   }, [moveReturnFocusSelector, resetMoveInteraction]);
 
   useEffect(() => {
     if (!moveTarget) return;
+    const viewport = window.visualViewport;
     const onWindowBlur = () => {
       if (!pending.current) cancelMove('창을 벗어나 이동을 취소했어요.');
     };
     const onWindowResize = () => {
       if (!pending.current) cancelMove('화면 크기가 바뀌어 이동을 취소했어요.');
+    };
+    const onVisualViewportResize = () => {
+      if (!pending.current && activeMoveSession.current) {
+        cancelMove('화면의 보이는 영역이 바뀌어 이동을 취소했어요.');
+      }
     };
     const onVisibilityChange = () => {
       if (document.hidden && !pending.current) cancelMove('이동을 취소했어요.');
@@ -2028,11 +2936,13 @@ export function PersonalWorkspacePocSurface({
     };
     window.addEventListener('blur', onWindowBlur);
     window.addEventListener('resize', onWindowResize);
+    viewport?.addEventListener('resize', onVisualViewportResize);
     window.addEventListener('keydown', onEscape);
     document.addEventListener('visibilitychange', onVisibilityChange);
     return () => {
       window.removeEventListener('blur', onWindowBlur);
       window.removeEventListener('resize', onWindowResize);
+      viewport?.removeEventListener('resize', onVisualViewportResize);
       window.removeEventListener('keydown', onEscape);
       document.removeEventListener('visibilitychange', onVisibilityChange);
     };
@@ -2074,6 +2984,19 @@ export function PersonalWorkspacePocSurface({
     if (moveTarget || !postMoveFocusSelector.current) return;
     const selector = postMoveFocusSelector.current;
     postMoveFocusSelector.current = undefined;
+    if (['success', 'undone'].includes(contextualOwnerRef.current.presentation) && resultOrigin.current) {
+      window.requestAnimationFrame(() => {
+        const requested = document.querySelector<HTMLElement>(selector);
+        const anchor = document.querySelector<HTMLElement>('#personal-workspace-contextual-result');
+        const origin = resultOrigin.current;
+        if (!anchor || !origin) return;
+        if (origin.keyboard) {
+          (requested?.getClientRects().length ? requested : anchor).focus({ preventScroll: true });
+        }
+        anchor.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+      });
+      return;
+    }
     focusAfterRender(
       selector,
       selectedFlowRef ? '#personal-workspace-flow-detail-heading' : '#personal-workspace-view-heading',
@@ -2102,22 +3025,48 @@ export function PersonalWorkspacePocSurface({
     group?: PersonalWorkspacePocTaskGroup,
     returnFocusSelector = getPersonalWorkspacePocMoveTriggerSelector(task.ref, 'task-more'),
   ) => {
+    moveOrigin.current = captureResultOrigin.current(task.ref, group);
+    interruptResult('new-move-preview');
     stopAutoScroll();
     setReorderPreview(undefined);
     setMoveDropFeedback(undefined);
     setMoveDateDraft(task.date ?? today);
+    setQuickConversionOpen(false);
+    setQuickConversionTitle(task.kind === 'quick_item' ? task.title : '');
     setMoveReturnFocusSelector(returnFocusSelector);
     setStatus({ kind: 'ready', message: '이동할 위치를 선택해 주세요.' });
     setMoveTarget({ kind: 'task', task, ...(group ? { group } : {}) });
+  };
+
+  // Native DnD is canceled by Chromium if collapsing this preceding status
+  // shifts its source during dragstart. Preserve only that already visible box.
+  const preserveNativeStatusBox = () => {
+    const element = transactionStatusRef.current;
+    if (!element || element.getAttribute('aria-hidden') === 'true' || element.dataset.status === 'ready') return;
+    const rect = element.getBoundingClientRect();
+    if (rect.width <= 1 || rect.height <= 1) return;
+    const computed = window.getComputedStyle(element);
+    setNativeStatusBox({
+      position: 'static', display: 'block', boxSizing: 'border-box',
+      width: rect.width, height: rect.height, minHeight: rect.height, maxHeight: rect.height,
+      marginTop: computed.marginTop, marginBottom: computed.marginBottom,
+      marginLeft: computed.marginLeft, marginRight: computed.marginRight,
+      padding: 0, border: 0, clip: 'auto', clipPath: 'none', overflow: 'hidden',
+      visibility: 'hidden', pointerEvents: 'none',
+    });
   };
 
   const openFlowMove = (
     flow: PersonalWorkspacePocFlow,
     source: Extract<MoveTriggerSource, 'flow-handle' | 'flow-card' | 'flow-detail'>,
   ) => {
+    moveOrigin.current = captureResultOrigin.current(flow.ref);
+    interruptResult('new-move-preview');
     stopAutoScroll();
     setReorderPreview(undefined);
     setMoveDropFeedback(undefined);
+    setQuickConversionOpen(false);
+    setQuickConversionTitle('');
     setMoveReturnFocusSelector(getPersonalWorkspacePocMoveTriggerSelector(flow.ref, source));
     setStatus({ kind: 'ready', message: '이동할 폴더를 선택해 주세요.' });
     setMoveTarget({ kind: 'flow', flow });
@@ -2253,6 +3202,143 @@ export function PersonalWorkspacePocSurface({
   const sortedFolders = [...state.folders].sort((left, right) => left.orderKey - right.orderKey);
   const rootFolders = sortedFolders.filter((folder) => !folder.parentFolderId);
 
+  captureResultOrigin.current = (ref, group) => {
+    const flow = model.flows.find((candidate) => candidate.ref === ref);
+    const currentGroup = group ?? groups.find((candidate) => candidate.tasks.some((task) => task.ref === ref));
+    const active = document.activeElement;
+    const itemDetailRef = active?.closest('[data-testid="personal-workspace-flow-item-detail"]')
+      ? activeItemRef : undefined;
+    const rows = selectedFlowRef
+      ? tasks.filter((task) => task.flowRef === selectedFlowRef).map((task) => task.ref)
+      : currentGroup ? currentGroup.tasks.map((task) => task.ref)
+        : flow ? folderFlows.map((candidate) => candidate.ref) : folderQuickItems.map((task) => task.ref);
+    return {
+      section, folderId: activeFolderId, flowRef: selectedFlowRef, itemDetailRef,
+      kind: flow ? 'flow' : 'task', ref, group: currentGroup,
+      groupIndex: Math.max(0, groups.indexOf(currentGroup!)),
+      rowIndex: Math.max(0, rows.indexOf(ref)),
+      returnSelector: selectedFlowRef
+        ? `[data-todo-detail-link="${ref}"]`
+        : flow ? getPersonalWorkspacePocFlowOpenSelector(ref) : getPersonalWorkspacePocTaskOpenSelector(ref),
+      keyboard: lastInputWasKeyboard.current,
+      scrollTop: window.scrollY,
+    };
+  };
+
+  contextualIntent.current = (transition, next) => {
+    const supported = ['move-date', 'move-folder', 'reorder', 'reset-order', 'complete'];
+    if (!supported.includes(transition.type)) return undefined;
+    const orderGroup = transition.type === 'reorder' || transition.type === 'reset-order'
+      ? groups.find((group) => group.context === transition.context && group.contextKey === transition.contextKey)
+      : undefined;
+    const refs = transition.type === 'move-date' || transition.type === 'complete' ? [transition.itemRef]
+      : transition.type === 'move-folder' ? [transition.memberRef]
+        : orderGroup?.tasks.map((task) => task.ref) ?? [];
+    const ref = moveTarget?.kind === 'task' && refs.includes(moveTarget.task.ref)
+      ? moveTarget.task.ref : refs[0];
+    if (!ref) return undefined;
+    const sourceTask = taskByRef.get(ref);
+    const sourceFlow = model.flows.find((flow) => flow.ref === ref);
+    const title = sourceTask?.title ?? (sourceFlow ? flowDisplayTitle(sourceFlow) : '이 목록');
+    const origin = moveOrigin.current?.ref === ref && Boolean(moveTarget)
+      ? moveOrigin.current : captureResultOrigin.current(ref, orderGroup);
+    if (!origin) return undefined;
+    resultOrigin.current = origin;
+    const context: ResultIntent['context'] = origin.flowRef ? { kind: 'flow', key: origin.flowRef }
+      : origin.group ? { kind: origin.group.context, key: origin.group.contextKey }
+        : { kind: 'folder', key: origin.folderId ?? 'unfiled' };
+    const afterTask = sourceReadValid && sourceRead.ok
+      ? buildPersonalWorkspacePocTasks(model, next, sourceRead.index).find((task) => task.ref === ref)
+      : undefined;
+    if (transition.type === 'move-date') {
+      return { operation: 'move-date', refs, summary: `${title} · 실행 날짜를 바꿨어요.`,
+        changes: [{ label: '실행 날짜', before: sourceTask?.date ?? '날짜 미정', after: afterTask?.date ?? '날짜 미정' }], context };
+    }
+    if (transition.type === 'move-folder') {
+      const before = getPersonalWorkspacePocFolderPath(state, getPersonalWorkspacePocFolderId(state, ref));
+      const after = getPersonalWorkspacePocFolderPath(next, getPersonalWorkspacePocFolderId(next, ref));
+      return { operation: 'move-folder', refs, summary: `${title} · 정리 폴더를 바꿨어요.`, changes: [{ label: '폴더', before, after }], context };
+    }
+    if (transition.type === 'complete') {
+      return { operation: transition.completed ? 'complete' : 'reopen', refs,
+        summary: `${title} · ${transition.completed ? '완료했어요.' : '다시 열었어요.'}`,
+        changes: [{ label: '개인 실행', before: sourceTask?.completed ? '완료' : '진행 중', after: afterTask?.completed ? '완료' : '진행 중' }], context };
+    }
+    return { operation: 'move-order', refs, summary: transition.type === 'reset-order'
+      ? `${orderGroup?.label ?? '이 목록'} · 시간순으로 돌렸어요.` : `${title} · 이 목록의 순서를 바꿨어요.`, context };
+  };
+
+  const contextualSelection = selectResult(contextualOwner, resultFacts(JSON.stringify(state)));
+  const visibleContextualResult = contextualSelection.result;
+  const visibleOrigin = visibleContextualResult ? resultOrigin.current : undefined;
+  useEffect(() => {
+    if (!visibleContextualResult || visibleContextualResult.status !== 'success' || moveTarget) return;
+    const ownerId = visibleContextualResult.ownerId;
+    const frame = window.requestAnimationFrame(() => {
+      if (contextualOwnerRef.current.lastSuccess?.ownerId !== ownerId
+        || contextualOwnerRef.current.presentation !== 'success') return;
+      // In-flow feedback respects the existing mobile navigation clearance; no focus theft.
+      document.querySelector<HTMLElement>('#personal-workspace-contextual-result')
+        ?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [visibleContextualResult?.ownerId, visibleContextualResult?.status, Boolean(moveTarget)]);
+  const resultIsInFolder = Boolean(visibleOrigin && !visibleOrigin.flowRef && section === 'folder'
+    && visibleOrigin.section === section && visibleOrigin.folderId === activeFolderId);
+  const timelineDisplayGroups = [...groups];
+  if (visibleOrigin?.group && !visibleOrigin.flowRef && visibleOrigin.section === section
+    && !timelineDisplayGroups.some((group) => group.context === visibleOrigin.group?.context && group.contextKey === visibleOrigin.group.contextKey)) {
+    timelineDisplayGroups.splice(Math.min(visibleOrigin.groupIndex, groups.length), 0, {
+      ...visibleOrigin.group, tasks: [], manualOrder: false,
+    });
+  }
+  const renderContextualResult = () => visibleContextualResult ? (
+    <div id="personal-workspace-contextual-result" data-testid="personal-workspace-contextual-result"
+      data-result-owner={visibleContextualResult.ownerId} data-result-operation={visibleContextualResult.operation}
+      data-result-status={visibleContextualResult.status} data-result-ref={visibleOrigin?.ref}
+      tabIndex={-1} className="my-2 min-w-0 rounded-md border border-[var(--flowme-workspace-accent)] bg-[var(--flowme-workspace-accent-soft)] p-3 [overflow-wrap:anywhere] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">
+      <div role="status" aria-live="polite" aria-atomic="true" data-testid="personal-workspace-contextual-announcement">
+        <p className="text-sm font-semibold text-[var(--flowme-text)]">{visibleContextualResult.summary}</p>
+        {visibleContextualResult.changes.map((change) => <p key={change.label} className="mt-1 text-sm text-[var(--flowme-text-secondary)]">{change.label}: {change.before} → {change.after}</p>)}
+      </div>
+      <div className="mt-2 flex flex-wrap gap-2">
+        {contextualSelection.canUndo ? <button type="button" data-testid="personal-workspace-contextual-undo" className={SECONDARY_CLASS}
+          onClick={() => void undoContextualResult(visibleContextualResult.ownerId)}>되돌리기</button> : null}
+        <button type="button" data-testid="personal-workspace-contextual-close" aria-label="변경 결과 닫기" className={SECONDARY_CLASS}
+          onClick={() => {
+            const origin = resultOrigin.current;
+            const next = dismissResult(contextualOwnerRef.current, visibleContextualResult.ownerId);
+            setResultOwner(next);
+            setStatus({ kind: 'ready', message: '변경 결과를 닫았어요.' });
+            if (lastInputWasKeyboard.current && origin) {
+              window.requestAnimationFrame(() => {
+                if (contextualOwnerRef.current.epoch !== next.epoch || resultOrigin.current !== origin) return;
+                const opener = document.querySelector<HTMLElement>(origin.returnSelector);
+                const fallback = document.querySelector<HTMLElement>(origin.flowRef
+                  ? '#personal-workspace-flow-detail-heading' : '#personal-workspace-view-heading');
+                const target = opener?.getClientRects().length ? opener : fallback;
+                target?.focus({ preventScroll: true });
+                target?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+              });
+            }
+          }}>닫기</button>
+      </div>
+    </div>
+  ) : null;
+
+  const renderResultInRows = (rows: readonly PersonalWorkspacePocTask[], group?: PersonalWorkspacePocTaskGroup) => {
+    const owns = Boolean(visibleOrigin && !visibleOrigin.flowRef && visibleOrigin.section === section
+      && (group ? visibleOrigin.group?.context === group.context && visibleOrigin.group.contextKey === group.contextKey
+        : resultIsInFolder && visibleOrigin.kind === 'task'));
+    const nodes = rows.map((task) => renderTaskRow(task, group));
+    if (owns) {
+      const offset = rows.some((task) => task.ref === visibleOrigin?.ref) ? 1 : 0;
+      nodes.splice(Math.min((visibleOrigin?.rowIndex ?? 0) + offset, rows.length), 0,
+        <React.Fragment key="contextual-result">{renderContextualResult()}</React.Fragment>);
+    }
+    return nodes;
+  };
+
   const sectionTitle = section === 'folder'
     ? getPersonalWorkspacePocFolderPath(state, activeFolderId)
     : section === 'trash'
@@ -2284,7 +3370,7 @@ export function PersonalWorkspacePocSurface({
       });
       return 'unchanged';
     }
-    return commitTransition({
+    const outcome = await commitTransition({
       type: 'reorder',
       context: group.context,
       contextKey: group.contextKey,
@@ -2292,6 +3378,10 @@ export function PersonalWorkspacePocSurface({
       orderedRefKeys: resolution.orderedRefKeys,
       now: new Date().toISOString(),
     });
+    if (outcome === 'changed' && !moveTarget) {
+      focusAfterRender(getPersonalWorkspacePocMoveTriggerSelector(task.ref, 'task-handle'));
+    }
+    return outcome;
   };
 
   const beginActiveMoveSession = (
@@ -2539,6 +3629,7 @@ export function PersonalWorkspacePocSurface({
       : undefined;
     stopAutoScroll();
     activeMoveSession.current = undefined;
+    setNativeStatusBox(undefined);
     setReorderPreview(undefined);
     if (!moved) {
       setStatus({ kind: 'ready', message: '이동할 위치를 선택해 주세요.' });
@@ -2632,6 +3723,11 @@ export function PersonalWorkspacePocSurface({
         : targetTask?.flowRef
           ? getPersonalWorkspacePocFolderId(state, targetTask.flowRef)
           : undefined;
+    const existingQuickConversion = targetTask?.kind === 'quick_item'
+      ? (state.quickConversionReceipts ?? []).find(
+          (receiptEntry) => receiptEntry.sourceQuickItemRef === targetTask.ref,
+        )
+      : undefined;
 
     const moveFolder = async (folderId?: string) => {
       let outcome: TransitionOutcome = 'unchanged';
@@ -2725,7 +3821,7 @@ export function PersonalWorkspacePocSurface({
       const outcome = dropTargetOutcome(kind, targetKey, current);
       return `${SECONDARY_CLASS} ${
         outcome === 'valid'
-          ? '!border-[var(--flowme-action)] !bg-[var(--flowme-action-soft)] !text-[var(--flowme-action)] ring-2 ring-[var(--flowme-action)]'
+          ? '!border-[var(--flowme-workspace-accent)] !bg-[var(--flowme-workspace-accent-soft)] !text-[var(--flowme-workspace-accent-strong)] ring-2 ring-[var(--flowme-workspace-accent)]'
           : outcome === 'current'
             ? '!border-slate-400 !bg-slate-50 !text-slate-700'
             : outcome === 'invalid'
@@ -2750,10 +3846,10 @@ export function PersonalWorkspacePocSurface({
             : 'border-[var(--flowme-border-strong)]'
         }`}
         style={{
-          top: 'calc(max(0.5rem, var(--personal-workspace-safe-top)) + 4.5rem)',
-          bottom: 'max(0.5rem, var(--personal-workspace-safe-bottom))',
-          left: 'max(0px, var(--personal-workspace-safe-left))',
-          width: 'min(18.75rem, max(8rem, calc(100vw - 10.5rem - var(--personal-workspace-safe-left) - var(--personal-workspace-safe-right))))',
+          top: 'calc(var(--personal-workspace-visual-viewport-top, 0px) + max(0.5rem, var(--personal-workspace-safe-top)) + 4.5rem)',
+          bottom: 'calc(var(--personal-workspace-visual-viewport-bottom, 0px) + max(0.5rem, var(--personal-workspace-safe-bottom)))',
+          left: 'calc(var(--personal-workspace-visual-viewport-left, 0px) + max(0px, var(--personal-workspace-safe-left)))',
+          width: 'min(18.75rem, max(8rem, calc(var(--personal-workspace-visual-viewport-width, 100vw) - 10.5rem - var(--personal-workspace-safe-left) - var(--personal-workspace-safe-right))))',
         }}
         onDragOver={(event) => {
           event.preventDefault();
@@ -2768,7 +3864,7 @@ export function PersonalWorkspacePocSurface({
         <div className="sticky top-0 z-20 -mx-4 -mt-4 bg-white px-4 pb-3 pt-4 sm:-mx-5 sm:px-5">
         <div className="flex items-start justify-between gap-3 border-b border-[var(--flowme-border)] pb-3">
           <div className="min-w-0">
-            <p className="text-xs font-semibold text-[var(--flowme-action)]">이동할 곳</p>
+            <p className="text-xs font-semibold text-[var(--flowme-workspace-accent-strong)]">이동할 곳</p>
             <h2 id="personal-workspace-move-title" className="mt-1 break-words text-lg font-semibold text-[var(--flowme-text)]">{title}</h2>
           </div>
           <button
@@ -3060,6 +4156,82 @@ export function PersonalWorkspacePocSurface({
               </div>
             </section>
           ) : null}
+          {targetTask?.kind === 'quick_item' ? (
+            <section
+              aria-labelledby="quick-conversion-heading"
+              className="border-t border-[var(--flowme-border)] pt-4"
+              data-testid="personal-workspace-quick-conversion"
+            >
+              <h3 id="quick-conversion-heading" className="text-sm font-semibold text-[var(--flowme-text)]">
+                Flow로 정리
+              </h3>
+              <p className="mt-2 text-sm leading-6 text-[var(--flowme-text-secondary)]">
+                빠른 할 일은 그대로 두고, 같은 폴더와 실행일을 가진 새 Flow와 첫 할 일을 만듭니다.
+              </p>
+              {existingQuickConversion ? (
+                <button
+                  type="button"
+                  data-testid="personal-workspace-quick-conversion-open-existing"
+                  className={`${SECONDARY_CLASS} mt-3 w-full`}
+                  disabled={mutationPending}
+                  onClick={() => void commitQuickItemConversion(targetTask.ref, existingQuickConversion.flowTitle)}
+                >정리한 Flow 열기</button>
+              ) : quickConversionOpen ? (
+                <form
+                  className="mt-3 grid gap-3 rounded-md bg-[var(--flowme-surface-subtle)] p-3"
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    void commitQuickItemConversion(targetTask.ref, quickConversionTitle);
+                  }}
+                >
+                  <label className="grid gap-1 text-sm font-semibold text-[var(--flowme-text-secondary)]">
+                    새 Flow 이름
+                    <input
+                      type="text"
+                      data-testid="personal-workspace-quick-conversion-title"
+                      value={quickConversionTitle}
+                      disabled={mutationPending}
+                      autoComplete="off"
+                      maxLength={120}
+                      className="min-h-12 min-w-0 rounded-md border border-[var(--flowme-border-strong)] bg-white px-3 text-base text-[var(--flowme-text)]"
+                      onChange={(event) => setQuickConversionTitle(event.target.value)}
+                    />
+                  </label>
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    <button
+                      type="submit"
+                      data-testid="personal-workspace-quick-conversion-commit"
+                      className={PRIMARY_CLASS}
+                      disabled={mutationPending || !quickConversionTitle.trim()}
+                    >새 Flow 만들기</button>
+                    <button
+                      type="button"
+                      data-testid="personal-workspace-quick-conversion-cancel"
+                      className={SECONDARY_CLASS}
+                      disabled={mutationPending}
+                      onClick={() => {
+                        setQuickConversionOpen(false);
+                        setQuickConversionTitle(targetTask.title);
+                        setStatus({ kind: 'canceled', message: 'Flow로 정리하기를 취소했어요. 바뀐 내용은 없습니다.' });
+                      }}
+                    >취소</button>
+                  </div>
+                </form>
+              ) : (
+                <button
+                  type="button"
+                  data-testid="personal-workspace-quick-conversion-open"
+                  className={`${SECONDARY_CLASS} mt-3 w-full`}
+                  disabled={mutationPending}
+                  onClick={() => {
+                    setQuickConversionTitle(targetTask.title);
+                    setQuickConversionOpen(true);
+                    setStatus({ kind: 'ready', message: '새 Flow 이름을 확인해 주세요.' });
+                  }}
+                >Flow로 정리</button>
+              )}
+            </section>
+          ) : null}
           {moveTarget.kind === 'flow' || targetTask?.kind === 'quick_item' ? (
             <section className="border-t border-[var(--flowme-border)] pt-4">
               <button
@@ -3132,10 +4304,10 @@ export function PersonalWorkspacePocSurface({
         void finishActiveMove(clientX, clientY, moved);
       }}
       onCancel={(message) => cancelMove(message)}
-      onReorder={(direction) => group ? void moveByControl(
+      onReorder={(control) => group ? void moveByControl(
         task,
         group,
-        direction === -1 ? 'previous' : 'next',
+        control,
       ) : undefined}
       onCorridorDragOver={(event) => {
         event.preventDefault();
@@ -3147,6 +4319,7 @@ export function PersonalWorkspacePocSurface({
         void finishActiveMove(event.clientX, event.clientY, true);
       }}
       onDragStart={(event) => {
+        preserveNativeStatusBox();
         dragDropHandled.current = false;
         event.dataTransfer.effectAllowed = 'move';
         event.dataTransfer.setData('text/personal-workspace-ref', task.ref);
@@ -3252,23 +4425,26 @@ export function PersonalWorkspacePocSurface({
         </div>
       ) : null}
 
-      {folderFlows.length > 0 ? (
+      {folderFlows.length > 0 || (resultIsInFolder && visibleOrigin?.kind === 'flow') ? (
         <section aria-labelledby="folder-flow-heading">
           <h3 id="folder-flow-heading" className="text-sm font-semibold text-[var(--flowme-text)]">Flow</h3>
-          <div className="mt-2 grid gap-2">
-            {folderFlows.map((flow) => {
+          <div className="mt-2 divide-y divide-[var(--flowme-workspace-line)] border-y border-[var(--flowme-workspace-line)]">
+            {folderFlows.map((flow, flowIndex) => {
               const completed = flow.items.filter((item) => isPersonalWorkspacePocCompleted(state, item.ref)).length;
               const flowMoveActive = moveTarget?.kind === 'flow' && moveTarget.flow.ref === flow.ref;
               const displayTitle = flowDisplayTitle(flow);
               return (
+                <React.Fragment key={flow.ref}>
+                {resultIsInFolder && visibleOrigin?.kind === 'flow' && !folderFlows.some((candidate) => candidate.ref === visibleOrigin.ref)
+                  && flowIndex === Math.min(visibleOrigin.rowIndex, folderFlows.length - 1) ? renderContextualResult() : null}
                 <article
-                  key={flow.ref}
                   data-testid="personal-workspace-flow-card"
                   data-personal-workspace-flow-ref={flow.ref}
                   data-origin={flow.origin}
+                  data-product-row-style="flat"
                   data-personal-workspace-move-source={flowMoveActive ? 'true' : undefined}
-                  className={`min-w-0 rounded-md border border-[var(--flowme-border)] bg-white p-4 ${
-                    flowMoveActive ? 'bg-[var(--flowme-surface-subtle)]' : ''
+                  className={`min-w-0 py-2 ${
+                    flowMoveActive ? 'bg-[var(--flowme-workspace-accent-soft)]' : ''
                   }`}
                 >
                   <div className="grid grid-cols-[minmax(0,1fr)_48px_48px] items-start gap-1">
@@ -3306,6 +4482,7 @@ export function PersonalWorkspacePocSurface({
                       }}
                       onCancel={(message) => cancelMove(message)}
                       onDragStart={(event) => {
+                        preserveNativeStatusBox();
                         dragDropHandled.current = false;
                         event.dataTransfer.effectAllowed = 'move';
                         event.dataTransfer.setData('text/personal-workspace-ref', flow.ref);
@@ -3335,17 +4512,20 @@ export function PersonalWorkspacePocSurface({
                     >…</button>
                   </div>
                 </article>
+                {resultIsInFolder && visibleOrigin?.kind === 'flow' && flow.ref === visibleOrigin.ref ? renderContextualResult() : null}
+                </React.Fragment>
               );
             })}
+            {folderFlows.length === 0 && resultIsInFolder && visibleOrigin?.kind === 'flow' ? renderContextualResult() : null}
           </div>
         </section>
       ) : null}
 
-      {folderQuickItems.length > 0 ? (
+      {folderQuickItems.length > 0 || (resultIsInFolder && visibleOrigin?.kind === 'task') ? (
         <section aria-labelledby="folder-quick-heading">
           <h3 id="folder-quick-heading" className="text-sm font-semibold text-[var(--flowme-text)]">빠른 할 일</h3>
           <div className="mt-2 divide-y divide-[var(--flowme-border)] border-y border-[var(--flowme-border)]">
-            {folderQuickItems.map((task) => renderTaskRow(task))}
+            {renderResultInRows(folderQuickItems)}
           </div>
         </section>
       ) : null}
@@ -3433,10 +4613,11 @@ export function PersonalWorkspacePocSurface({
           </div>
         </form>
       ) : null}
-      {groups.length === 0 ? (
+      {timelineDisplayGroups.length === 0 ? (
         <div className="rounded-md border border-dashed border-[var(--flowme-border-strong)] px-4 py-8 text-center text-sm text-[var(--flowme-text-secondary)]">이 기간에 표시할 할 일이 없습니다.</div>
-      ) : groups.map((group) => (
-        <section key={`${group.context}:${group.contextKey}`} data-testid="personal-workspace-task-group" data-context={group.context} className="min-w-0">
+      ) : timelineDisplayGroups.map((group) => (
+        <section key={`${group.context}:${group.contextKey}`} data-testid="personal-workspace-task-group" data-context={group.context} data-context-key={group.contextKey}
+          data-result-placeholder={group.tasks.length === 0 ? 'true' : undefined} className="min-w-0">
           <div className="flex items-center justify-between gap-3 border-b border-[var(--flowme-border-strong)] pb-2">
             <div>
               <h3 className="text-base font-semibold text-[var(--flowme-text)]">{group.label}</h3>
@@ -3456,7 +4637,7 @@ export function PersonalWorkspacePocSurface({
               ) : null}
             </div>
           </div>
-          <div className="divide-y divide-[var(--flowme-border)]">{group.tasks.map((task) => renderTaskRow(task, group))}</div>
+          <div className="divide-y divide-[var(--flowme-border)]">{renderResultInRows(group.tasks, group)}</div>
         </section>
       ))}
       {section === 'month' && emptyMonthDates.length > 0 ? (
@@ -3512,6 +4693,17 @@ export function PersonalWorkspacePocSurface({
     const activePlanEditor = planEditor.active;
     const sourceFlow = planSourceFlow.current;
     if (activePlanEditor && sourceFlow) {
+      const displayPreview = (summary: Readonly<{ affectedRefs: readonly string[]; changes: readonly PersonalWorkspacePocReceiptChange[] }>, scopeRef = sourceFlow.ref) => {
+        const made = createPersonalWorkspacePocPlanDisplay({
+          receiptId: `plan-preview:${activePlanEditor.id}`, intentId: `plan-preview:${activePlanEditor.id}`,
+          operation: activePlanEditor.level === 'item' ? 'apply-item-to-parent-personal-draft' : 'commit-personal-plan',
+          status: 'preview', createdAt: new Date().toISOString(), scopeRef,
+          changes: summary.changes, affectedRefs: summary.affectedRefs, affectedCount: summary.affectedRefs.length,
+          stateRevisionBefore: stateRef.current.revision, stateRevisionAfter: stateRef.current.revision,
+          targetWriteCount: 0, supportWriteCount: 0, rollback: 'not-needed',
+        }, sourceFlow);
+        return made.ok ? made.display : undefined;
+      };
       const commonActions = {
         onRequestClose: planEditor.requestClose,
         onContinueEditing: planEditor.continueEditing,
@@ -3586,6 +4778,7 @@ export function PersonalWorkspacePocSurface({
               affectedCount: summary.affectedRefs.length,
               includedCount: activePlanEditor.draft.orderedItemRefs.length,
               excludedCount: 0,
+              planDisplay: displayPreview(summary),
               changes: editablePersonalWorkspacePocChanges(summary.changes),
               warning: '개인 소유 구간과 Flow·할 일의 제목·메모·계획 날짜·순서만 바꿉니다. 작성 원문과 원본 데이터는 그대로입니다.',
             }}
@@ -3635,6 +4828,7 @@ export function PersonalWorkspacePocSurface({
       const parentTitle = parentDraft.title.mode === 'override'
         ? parentDraft.title.value
         : sourceFlow.title;
+      const sourceDetails = getPersonalWorkspacePocItemDetails(sourceFlow, sourceItem);
       return (
         <PersonalWorkspacePocItemEditorSurface
           adapter="plan-item"
@@ -3644,7 +4838,9 @@ export function PersonalWorkspacePocSurface({
           source={{
             ownerLabel: originLabel(sourceFlow.origin),
             title: sourceItem.title,
-            ...(sourceItem.description ? { description: sourceItem.description } : {}),
+            inheritedPersonalMemo: getPersonalWorkspacePocInheritedMemo(sourceItem),
+            ...(sourceDetails.description ? { description: sourceDetails.description } : {}),
+            ...(sourceDetails.completionCriterion ? { completionCriterion: sourceDetails.completionCriterion } : {}),
             originalScheduleLabel: sourceItem.sourceTimingLabel
               ?? sourceItem.sourceDate
               ?? '날짜 미정',
@@ -3660,6 +4856,7 @@ export function PersonalWorkspacePocSurface({
           impact={{
             targetLabel: '저장 전 Flow 계획',
             affectedCount: summary.affectedRefs.length,
+            planDisplay: displayPreview(summary, sourceItem.ref),
             changes: editablePersonalWorkspacePocChanges(summary.changes),
           }}
           parentFlowRef={parentDraft.flowRef}
@@ -3723,9 +4920,401 @@ export function PersonalWorkspacePocSurface({
     );
   };
 
+  const quickConversionByFlowRef = useMemo(
+    () => new Map(
+      (state.quickConversionReceipts ?? []).map((conversion) => [conversion.flowRef, conversion]),
+    ),
+    [state.quickConversionReceipts],
+  );
+  const inspectSourcePractice = useCallback((store: PersonalWorkspacePocSourceCandidateStore, flowRef: string | undefined) => {
+    const base = stateRef.current.authoredFlows?.find(flow => flow.ref === flowRef);
+    if (!base || stateRef.current.quickConversionReceipts?.some(entry => entry.flowRef === base.ref)
+      || isPersonalWorkspacePocMemberInactive(stateRef.current, base.ref)) return undefined;
+    const effective = getPersonalWorkspacePocEffectiveSourceFlow(base, store);
+    if (!effective.ok || effective.flow.origin !== 'authoring-handoff') return undefined;
+    const current = createPersonalWorkspacePocCurrentSourceFromAuthoredFlow(effective.flow as PersonalWorkspacePocAuthoredFlow);
+    if (!current) return undefined;
+    const target = { origin: 'authoring-handoff' as const, flowRef: base.ref, savedCopyId: base.savedCopyId,
+      flowId: base.flowId, handoffId: base.authoring.handoffId };
+    const catalog = inspectPersonalWorkspacePocSourceCandidateCatalog({ target, current, store });
+    return catalog.ok ? { base, current, target, catalog } : undefined;
+  }, []);
+  // Read-only: no incoming generator, stage, merge, clock or storage access here.
+  const sourcePracticeRead = useMemo(() => inspectSourcePractice(sourceCandidateStore, selectedFlowRef),
+    [inspectSourcePractice, selectedFlowRef, sourceCandidateStore, state]);
+  const selectedSourceCandidateId = selectedFlowRef ? sourcePracticeSelections[selectedFlowRef] : undefined;
+  const sourceUpdateEnvelope = selectedSourceCandidateId
+    && sourcePracticeRead?.catalog.candidates.some(row => row.candidateId === selectedSourceCandidateId)
+    ? sourceCandidateStore.envelopes[selectedSourceCandidateId] : undefined;
+  const sourceUpdateReview = sourceUpdateEnvelope
+    ? sourceCandidateStore.reviews[sourceUpdateEnvelope.candidateId]
+    : undefined;
+  sourcePracticeFlowRef.current = selectedFlowRef;
+  useEffect(() => {
+    const raw = JSON.stringify(state);
+    if (sourcePracticeObservedState.current === raw) return;
+    sourcePracticeObservedState.current = raw;
+    sourcePracticeWorkspaceEpoch.current += 1;
+    Object.keys(sourceCandidateStoreRef.current.envelopes).forEach(id => sourcePracticeStaleCandidates.current.add(id));
+    const owner = sourcePracticeOwner.current;
+    if (owner) {
+      owner.stale = true;
+      setSourceUpdateStatus('stale');
+      setSourceUpdateError('비교 뒤 개인공간이 달라졌어요. 현재 원문으로 다시 비교해 주세요.');
+    }
+  }, [state]);
+  useEffect(() => {
+    const owner = sourcePracticeOwner.current;
+    if (owner && owner.screenKey === planScreenKey) return;
+    sourcePracticeOwner.current = undefined;
+    setSourceUpdateOpen(false);
+    setSourceUpdateSelectedChangeId(undefined);
+    setSourceUpdateStatus('pending');
+    setSourceUpdateError(undefined);
+  }, [planScreenKey]);
+  useEffect(() => {
+    const observe = (event: StorageEvent) => {
+      if (event.storageArea && event.storageArea !== window.localStorage) return;
+      if (event.key !== null && event.key !== PERSONAL_WORKSPACE_POC_STATE_KEY
+        && event.key !== PERSONAL_WORKSPACE_POC_SOURCE_CANDIDATE_KEY) return;
+      sourcePracticeWorkspaceEpoch.current += 1;
+      Object.keys(sourceCandidateStoreRef.current.envelopes).forEach(id => sourcePracticeStaleCandidates.current.add(id));
+      const owner = sourcePracticeOwner.current;
+      if (owner) { owner.stale = true; sourcePracticeStaleCandidates.current.add(owner.candidateId); }
+      if (owner) {
+        setSourceUpdateStatus('stale');
+        setSourceUpdateError('비교 뒤 저장 상태가 달라졌어요. 기존 선택을 확인한 뒤 현재 원문으로 다시 비교해 주세요.');
+      }
+    };
+    window.addEventListener('storage', observe);
+    return () => window.removeEventListener('storage', observe);
+  }, []);
+  const sourceUpdateChanges = useMemo(
+    () => sourceUpdateEnvelope
+      ? buildPersonalWorkspacePocSourceUpdateChanges(sourceUpdateEnvelope)
+      : [],
+    [sourceUpdateEnvelope],
+  );
+  const sourceUpdateResolutions = useMemo<Readonly<Record<
+    string,
+    PersonalWorkspacePocSourceUpdateResolution | undefined
+  >>>(() => Object.fromEntries(sourceUpdateChanges.map((change) => {
+    if (sourceUpdateLaterChangeIds[(sourceUpdateEnvelope?.candidateId ?? '') + ':' + change.changeId]) return [change.changeId, 'later'];
+    const resolution = sourceUpdateReview?.resolutions[change.changeId];
+    return [
+      change.changeId,
+      resolution === 'keep-mine'
+        ? 'keep-working'
+        : resolution === 'use-incoming'
+          ? 'use-incoming'
+          : undefined,
+    ];
+  })), [sourceUpdateChanges, sourceUpdateEnvelope?.candidateId, sourceUpdateLaterChangeIds, sourceUpdateReview?.resolutions]);
+  const effectiveSourceUpdateStatus: PersonalWorkspacePocSourceUpdateStatus =
+    sourceUpdateStatus === 'failed' || sourceUpdateStatus === 'stale' || sourceUpdateStatus === 'undoing'
+      ? sourceUpdateStatus : sourceUpdateReview?.status === 'applied' ? 'applied' : sourceUpdateStatus;
+
+  const sourcePracticeAllowed = () => Boolean(workspaceWriteOwner.current) && !pending.current
+    && !editorOwner.current && !contextualRecovery.current && !sourcePracticeRecovery.current
+    && !planDisplayRef.current && !contextualReceiptRef.current;
+
+  const rejectSourcePractice = (message: string, owner?: SourcePracticeOwner) => {
+    if (owner && (sourcePracticeOwner.current !== owner || workspaceWriteOwner.current !== owner.routeOwner)) return false;
+    if (owner) { owner.stale = true; sourcePracticeStaleCandidates.current.add(owner.candidateId); }
+    setSourceUpdateStatus(owner ? 'stale' : 'failed');
+    setSourceUpdateError(message);
+    setStatus({ kind: 'failure', message });
+    return false;
+  };
+
+  const sourcePracticeOwnerCurrent = (owner: SourcePracticeOwner, expectedSourceRaw = owner.sourceRaw) => {
+    try {
+      const current = inspectSourcePractice(owner.store, owner.flowRef);
+      const valid = sourcePracticeOwner.current === owner && !owner.stale
+        && workspaceWriteOwner.current === owner.routeOwner && window.location.href === owner.href
+        && sourcePracticeFlowRef.current === owner.flowRef && planScreenRef.current === owner.screenKey
+        && planSourceEpoch.current === owner.sourceEpoch
+        && sourcePracticeWorkspaceEpoch.current === owner.workspaceEpoch
+        && !editorOwner.current && !contextualRecovery.current && !sourcePracticeRecovery.current
+        && window.localStorage.getItem(PERSONAL_WORKSPACE_POC_SOURCE_CANDIDATE_KEY) === expectedSourceRaw
+        && window.localStorage.getItem(PERSONAL_WORKSPACE_POC_STATE_KEY) === owner.workspaceRaw
+        && isPersonalWorkspacePocEditorStateRawCurrent(stateRef.current, owner.workspaceRaw)
+        && current && JSON.stringify(current.current) === JSON.stringify(owner.current);
+      if (!valid) { owner.stale = true; sourcePracticeStaleCandidates.current.add(owner.candidateId); }
+      return Boolean(valid);
+    } catch { owner.stale = true; sourcePracticeStaleCandidates.current.add(owner.candidateId); return false; }
+  };
+
+  const captureSourcePractice = (refresh = false) => {
+    if (!sourcePracticeAllowed()) { rejectSourcePractice('열린 편집이나 결과를 먼저 닫아 주세요. 저장 상태 확인이 필요하면 새로고침해 주세요.'); return undefined; }
+    const routeOwner = workspaceWriteOwner.current!, sourceEpoch = planSourceEpoch.current;
+    const workspaceEpoch = sourcePracticeWorkspaceEpoch.current;
+    try {
+      const workspaceRaw = window.localStorage.getItem(PERSONAL_WORKSPACE_POC_STATE_KEY);
+      if (!isPersonalWorkspacePocEditorStateRawCurrent(stateRef.current, workspaceRaw)) {
+        rejectSourcePractice('개인공간 저장 상태가 달라졌어요. 현재 내용을 다시 연 뒤 비교해 주세요.'); return undefined;
+      }
+      const loaded = loadPersonalWorkspacePocSourceCandidateStore(window.localStorage);
+      if (loaded.kind === 'corrupt') { rejectSourcePractice('원문 저장 영역을 읽지 못했어요. 기존 내용과 선택을 유지합니다.'); return undefined; }
+      const durable = loaded.kind === 'ready' ? loaded.store : createPersonalWorkspacePocSourceCandidateStore();
+      if (!refresh && loaded.raw !== sourceCandidateRawRef.current) {
+        rejectSourcePractice('원문 저장 상태가 달라졌어요. 기존 비교에서 현재 원문으로 다시 비교해 주세요.'); return undefined;
+      }
+      const working = loaded.raw === sourceCandidateRawRef.current ? sourceCandidateStoreRef.current
+        : mergePersonalWorkspacePocSourcePracticeMemory(durable, sourceCandidateStoreRef.current, sourcePracticeBaseStore.current);
+      if (!working) { rejectSourcePractice('같은 비교 기록의 결정이 달라 자동으로 합치지 않았어요. 기존 선택을 확인해 주세요.'); return undefined; }
+      const read = inspectSourcePractice(working, sourcePracticeFlowRef.current);
+      const durableRead = inspectSourcePractice(durable, sourcePracticeFlowRef.current);
+      if (!read || !durableRead || JSON.stringify(read.current) !== JSON.stringify(durableRead.current)) {
+        rejectSourcePractice('이 Flow의 원문을 안전하게 확인할 수 없어 연습을 시작하지 않았어요.'); return undefined;
+      }
+      const composed = composePersonalWorkspacePocReadModel(initialModel, stateRef.current, working);
+      if (!composed.ok || !validatePersonalWorkspacePocStateReferences(stateRef.current, composed.model).ok
+        || sourceEpoch !== planSourceEpoch.current || workspaceEpoch !== sourcePracticeWorkspaceEpoch.current
+        || routeOwner !== workspaceWriteOwner.current
+        || window.localStorage.getItem(PERSONAL_WORKSPACE_POC_SOURCE_CANDIDATE_KEY) !== loaded.raw
+        || window.localStorage.getItem(PERSONAL_WORKSPACE_POC_STATE_KEY) !== workspaceRaw) {
+        rejectSourcePractice('현재 개인 기록과 맞지 않아 비교를 바꾸지 않았어요.'); return undefined;
+      }
+      return { read, working, durable, sourceRaw: loaded.raw, workspaceRaw, sourceEpoch, workspaceEpoch, routeOwner };
+    } catch { rejectSourcePractice('저장 상태를 확인하지 못했어요. 기존 내용과 선택을 유지합니다.'); return undefined; }
+  };
+
+  const adoptSourcePractice = (
+    capture: NonNullable<ReturnType<typeof captureSourcePractice>>,
+    store: PersonalWorkspacePocSourceCandidateStore,
+    candidateId: string,
+    refreshed: boolean,
+  ) => {
+    const candidate = store.envelopes[candidateId], review = store.reviews[candidateId];
+    if (!candidate || candidate.target.flowRef !== capture.read.target.flowRef) return false;
+    sourcePracticeBaseStore.current = capture.durable;
+    if (planObservedSource.current !== capture.sourceRaw) {
+      planObservedSource.current = capture.sourceRaw; planSourceEpoch.current += 1;
+    }
+    sourceCandidateRawRef.current = capture.sourceRaw;
+    sourceCandidateStoreRef.current = store;
+    setSourceCandidateRaw(capture.sourceRaw); setSourceCandidateStore(store);
+    if (refreshed) sourcePracticeStaleCandidates.current.delete(candidateId);
+    const stale = sourcePracticeStaleCandidates.current.has(candidateId)
+      || capture.read.catalog.candidates.find(row => row.candidateId === candidateId)?.stale === true;
+    sourcePracticeOwner.current = {
+      routeOwner: capture.routeOwner, flowRef: capture.read.target.flowRef, candidateId,
+      screenKey: planScreenRef.current, href: window.location.href, sourceRaw: capture.sourceRaw,
+      workspaceRaw: capture.workspaceRaw, sourceEpoch: planSourceEpoch.current,
+      workspaceEpoch: capture.workspaceEpoch, current: capture.read.current, store, stale,
+    };
+    setSourcePracticeSelections(previous => ({ ...previous, [capture.read.target.flowRef]: candidateId }));
+    const first = candidate.changes.find(change => !review?.resolutions[change.changeId]) ?? candidate.changes[0];
+    setSourceUpdateSelectedChangeId(first?.changeId);
+    setSourceUpdateStatus(stale ? 'stale' : review?.status === 'applied' ? 'applied' : 'pending');
+    setSourceUpdateError(stale ? '기존 비교와 선택은 그대로입니다. 현재 원문으로 다시 비교해 주세요.' : undefined);
+    setSourceUpdateOpen(review?.status !== 'applied');
+    return true;
+  };
+
+  // Only explicit start/refresh calls the existing local generator.
+  const startSourcePractice = (refresh = false) => {
+    const selected = sourcePracticeFlowRef.current && sourcePracticeSelections[sourcePracticeFlowRef.current];
+    if (!refresh && selected && sourcePracticeStaleCandidates.current.has(selected)) {
+      return rejectSourcePractice('기존 비교에서 현재 원문으로 다시 비교를 선택해 주세요.');
+    }
+    const capture = captureSourcePractice(refresh); if (!capture) return false;
+    const made = createPersonalWorkspacePocLocalFixtureEnvelope(capture.read.base, {
+      current: capture.read.current,
+      incomingRawText: buildPersonalWorkspacePocSourceUpdateFixtureRaw(capture.read.current.rawText),
+      incomingRevisionId: capture.read.current.revisionId + ':local-update-v1',
+      fixtureId: 'personal-workspace-p3d-local-update-v1',
+      createdAt: '2026-09-04T00:00:00.000Z',
+    });
+    if (!made.ok) return rejectSourcePractice('현재 원문으로 연습용 비교를 만들지 못했어요. 기존 비교를 유지합니다.');
+    const existing = capture.working.envelopes[made.envelope.candidateId];
+    if (existing && JSON.stringify(existing) !== JSON.stringify(made.envelope)) {
+      return rejectSourcePractice('같은 비교 기록과 내용이 달라 기존 결정을 덮지 않았어요.');
+    }
+    const staged = stagePersonalWorkspacePocSourceCandidate(capture.working, made.envelope, capture.read.current, new Date().toISOString());
+    if (!['staged', 'resumed', 'already-staged', 'already-applied'].includes(staged.code)) {
+      return rejectSourcePractice('현재 원문과 기존 비교를 안전하게 연결하지 못했어요.');
+    }
+    return adoptSourcePractice(capture, staged.store, made.envelope.candidateId, refresh);
+  };
+
+  const openSourceUpdateReview = (candidateId = sourceUpdateEnvelope?.candidateId) => {
+    if (!candidateId || !sourcePracticeAllowed()) return;
+    const capture = captureSourcePractice();
+    const candidate = sourceCandidateStoreRef.current.envelopes[candidateId];
+    if (!capture || sourcePracticeStaleCandidates.current.has(candidateId)) {
+      if (candidate?.target.flowRef !== sourcePracticeFlowRef.current) return;
+      sourcePracticeOwner.current = undefined;
+      setSourcePracticeSelections(previous => ({ ...previous, [candidate.target.flowRef]: candidateId }));
+      setSourceUpdateStatus('stale'); setSourceUpdateOpen(true);
+      return;
+    }
+    const row = capture.read.catalog.candidates.find(entry => entry.candidateId === candidateId);
+    if (!row || !candidate) return;
+    if (row.stale || row.status === 'applied') {
+      if (adoptSourcePractice(capture, capture.working, candidateId, false)) setSourceUpdateOpen(true);
+      return;
+    }
+    const resumed = stagePersonalWorkspacePocSourceCandidate(capture.working, candidate, capture.read.current, new Date().toISOString());
+    if (!['staged', 'resumed', 'already-staged', 'already-applied'].includes(resumed.code)) return;
+    adoptSourcePractice(capture, resumed.store, candidateId, false);
+  };
+
+  const deferSourceUpdateReview = () => {
+    if (pending.current) return;
+    const owner = sourcePracticeOwner.current;
+    if (owner && !owner.stale && sourcePracticeOwnerCurrent(owner)) {
+      const deferred = deferPersonalWorkspacePocSourceCandidate(owner.store, { candidateId: owner.candidateId, now: new Date().toISOString() });
+      if (deferred.changed) {
+        owner.store = deferred.store;
+        sourceCandidateStoreRef.current = deferred.store; setSourceCandidateStore(deferred.store);
+      }
+    }
+    sourcePracticeOwner.current = undefined; setSourceUpdateOpen(false);
+    setStatus({ kind: 'neutral', message: '적용 전 선택은 이 실행 중에만 유지됩니다.' });
+  };
+
+  const resolveSourceUpdateChange = (changeId: string, resolution: PersonalWorkspacePocSourceUpdateResolution) => {
+    const owner = sourcePracticeOwner.current;
+    if (pending.current || !owner) return;
+    if (!sourcePracticeOwnerCurrent(owner)) { rejectSourcePractice('저장 상태가 달라 선택을 바꾸지 않았어요.', owner); return; }
+    const input = { candidateId: owner.candidateId, changeId, now: new Date().toISOString() };
+    const transitioned = resolution === 'later'
+      ? clearPersonalWorkspacePocSourceCandidateChangeResolution(owner.store, input)
+      : resolvePersonalWorkspacePocSourceCandidateChange(owner.store, { ...input, resolution: resolution === 'keep-working' ? 'keep-mine' : 'use-incoming' });
+    if (transitioned.changed || transitioned.code === 'no-op') {
+      owner.store = transitioned.store;
+      sourceCandidateStoreRef.current = transitioned.store; setSourceCandidateStore(transitioned.store);
+      setSourceUpdateLaterChangeIds(previous => {
+        const next = { ...previous }; const key = owner.candidateId + ':' + changeId;
+        if (resolution === 'later') next[key] = true; else delete next[key]; return next;
+      });
+      setSourceUpdateStatus('pending'); setSourceUpdateError(undefined);
+    }
+  };
+
+  // The selected DTO never authorizes I/O. Revalidate the captured private owner
+  // inside the shared user-data lock, including after the queued frame.
+  const runSourcePracticeWrite = async (owner: SourcePracticeOwner, operation: 'apply' | 'undo') => {
+    if (pending.current || !sourcePracticeOwnerCurrent(owner)) return;
+    const request = {};
+    sourcePracticePending.current = request; pending.current = true;
+    setSourceUpdateStatus(operation === 'apply' ? 'applying' : 'undoing');
+    setSourceUpdateError(undefined);
+    await new Promise<void>(resolve => window.requestAnimationFrame(() => resolve()));
+    const locked = await withFlowUserDataWriteLock(() => {
+      if (sourcePracticePending.current !== request || !sourcePracticeOwnerCurrent(owner)) return { kind: 'stale' as const };
+      const transitioned = operation === 'apply'
+        ? applyPersonalWorkspacePocSourceCandidate(owner.store, {
+          candidateId: owner.candidateId, current: owner.current, now: new Date().toISOString(),
+        })
+        : undoPersonalWorkspacePocSourceCandidate(owner.store, new Date().toISOString());
+      if (!transitioned.changed) return { kind: 'transition' as const, code: transitioned.code };
+      const composed = composePersonalWorkspacePocReadModel(initialModel, stateRef.current, transitioned.store);
+      if (!composed.ok || !validatePersonalWorkspacePocStateReferences(stateRef.current, composed.model).ok) {
+        return { kind: 'invalid' as const };
+      }
+      if (sourcePracticePending.current !== request || !sourcePracticeOwnerCurrent(owner)) return { kind: 'stale' as const };
+      const saved = savePersonalWorkspacePocSourceCandidateStore({
+        storage: window.localStorage, expectedRawValue: owner.sourceRaw, store: transitioned.store,
+      });
+      return { kind: 'saved' as const, saved, store: transitioned.store };
+    });
+    if (sourcePracticePending.current !== request) return;
+    sourcePracticePending.current = undefined; pending.current = false;
+    // A completed write is never rolled back merely because its presentation
+    // owner ended. Do not deliver success or a new Undo to another screen.
+    const sameOwner = sourcePracticeOwner.current === owner
+      && workspaceWriteOwner.current === owner.routeOwner
+      && window.location.href === owner.href && planScreenRef.current === owner.screenKey;
+    if (!sameOwner) return;
+    if (!locked.ok) {
+      setSourceUpdateStatus('failed');
+      setSourceUpdateError('저장 잠금을 확인하지 못해 적용하지 않았어요. 기존 선택을 유지합니다.');
+      return;
+    }
+    const outcome = locked.value;
+    if (outcome.kind === 'stale') {
+      rejectSourcePractice('비교 뒤 저장 상태가 달라 적용하지 않았어요. 현재 원문으로 다시 비교해 주세요.', owner);
+      return;
+    }
+    if (outcome.kind !== 'saved') {
+      setSourceUpdateStatus('failed');
+      setSourceUpdateError(outcome.kind === 'transition' && outcome.code === 'unresolved'
+        ? '아직 결정하지 않은 곳이 있어 적용하지 않았어요.'
+        : '현재 개인 기록과 맞지 않아 원문을 바꾸지 않았어요.');
+      return;
+    }
+    if (!outcome.saved.ok) {
+      if (outcome.saved.rollback === 'recovery-required') {
+        sourcePracticeRecovery.current = true;
+        owner.stale = true; sourcePracticeStaleCandidates.current.add(owner.candidateId);
+      }
+      setSourceUpdateStatus('failed');
+      setSourceUpdateError(outcome.saved.rollback === 'recovery-required'
+        ? '원문 저장 상태를 확정하지 못했어요. 기존 선택을 확인하고 새로고침해 주세요. 추가 적용과 되돌리기는 잠겼습니다.'
+        : outcome.saved.rollback === 'complete'
+          ? '저장하지 못해 이 적용의 변경을 복구했어요. 기존 선택으로 다시 시도할 수 있습니다.'
+          : '저장하지 못했어요. 적용 전 저장값과 기존 선택을 유지합니다.');
+      return;
+    }
+    if (!sourcePracticeOwnerCurrent(owner, outcome.saved.serialized)) {
+      sourcePracticeRecovery.current = true;
+      setSourceUpdateStatus('stale');
+      setSourceUpdateError('원문은 저장됐지만 이후 상태가 달라 결과를 연결하지 않았어요. 새로고침해 현재 내용을 확인해 주세요.');
+      return;
+    }
+    sourceCandidateRawRef.current = outcome.saved.serialized;
+    sourceCandidateStoreRef.current = outcome.store;
+    sourcePracticeBaseStore.current = outcome.store;
+    if (planObservedSource.current !== outcome.saved.serialized) {
+      planObservedSource.current = outcome.saved.serialized; planSourceEpoch.current += 1;
+    }
+    sourcePracticeOwner.current = undefined;
+    setSourceCandidateRaw(outcome.saved.serialized); setSourceCandidateStore(outcome.store);
+    setSourceUpdateStatus(operation === 'apply' ? 'applied' : 'pending');
+    setSourceUpdateOpen(false); setSourceUpdateError(undefined);
+    setStatus({ kind: 'success', message: operation === 'apply'
+      ? '로컬 연습의 원문 변경을 적용했어요. 개인 날짜와 완료 기록은 그대로예요.'
+      : '마지막 로컬 원문 적용을 되돌렸어요.' });
+  };
+
+  const applySourceUpdate = async () => {
+    const owner = sourcePracticeOwner.current;
+    if (!owner || owner.candidateId !== sourceUpdateEnvelope?.candidateId) return;
+    await runSourcePracticeWrite(owner, 'apply');
+  };
+
+  const undoSourceUpdate = async (candidateId: string | undefined) => {
+    if (!candidateId || !sourcePracticeAllowed()) return;
+    if (sourcePracticeStaleCandidates.current.has(candidateId)) {
+      rejectSourcePractice('비교 뒤 저장 상태가 달라 원문 적용을 되돌리지 않았어요. 새로고침해 현재 기록을 확인해 주세요.');
+      return;
+    }
+    const capture = captureSourcePractice(); if (!capture) return;
+    const undo = capture.read.catalog.undo;
+    if (!undo.available || undo.candidateId !== candidateId
+      || capture.working.undo?.candidateId !== candidateId
+      || capture.working.undo.flowRef !== capture.read.target.flowRef) return;
+    const owner: SourcePracticeOwner = {
+      routeOwner: capture.routeOwner, flowRef: capture.read.target.flowRef, candidateId,
+      screenKey: planScreenRef.current, href: window.location.href,
+      sourceRaw: capture.sourceRaw, workspaceRaw: capture.workspaceRaw,
+      sourceEpoch: capture.sourceEpoch, workspaceEpoch: capture.workspaceEpoch,
+      current: capture.read.current, store: capture.working, stale: false,
+    };
+    sourcePracticeOwner.current = owner;
+    await runSourcePracticeWrite(owner, 'undo');
+  };
+
   const renderFlowDetail = (flow: PersonalWorkspacePocFlow) => {
     const displayTitle = flowDisplayTitle(flow);
     const authoring = state.authoredFlows?.find((candidate) => candidate.ref === flow.ref)?.authoring;
+    const quickConversion = quickConversionByFlowRef.get(flow.ref);
+    const effectiveSourceVersion = sourceCandidateStore.effectiveVersions[flow.ref];
+    const authoredRawText = effectiveSourceVersion?.sourceRevision.rawText
+      ?? authoring?.rawText;
     const flowTasks = flow.items.flatMap((item) => {
       const task = taskByRef.get(item.ref);
       return task ? [task] : [];
@@ -3748,6 +5337,8 @@ export function PersonalWorkspacePocSurface({
     const completedCount = flowTasks.filter((task) => task.completed).length;
     const result = buildPersonalWorkspacePocResultProjection({
       model: resultBaseModel,
+      sourceIndex: sourceRead.ok ? sourceRead.index : undefined,
+      purpose: 'personal-execution',
       state,
       flowRef: flow.ref,
       localToday: today,
@@ -3760,7 +5351,7 @@ export function PersonalWorkspacePocSurface({
         data-testid="personal-workspace-flow-item-detail"
         tabIndex={-1}
         aria-labelledby="personal-workspace-flow-item-detail-title"
-        className="rounded-md bg-[var(--flowme-surface-subtle)] p-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+        className="min-w-0 rounded-md bg-[var(--flowme-surface-subtle)] p-4 [overflow-wrap:anywhere] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
       >
         {!inSheet ? (
           <>
@@ -3768,7 +5359,7 @@ export function PersonalWorkspacePocSurface({
             <h4 id="personal-workspace-flow-item-detail-title" className="mt-1 text-lg font-semibold text-[var(--flowme-text)]">{activeTask.title}</h4>
           </>
         ) : <span id="personal-workspace-flow-item-detail-title" className="sr-only">{activeTask.title} 상세</span>}
-        <dl className="mt-3 grid gap-2 text-sm">
+        <dl className="mt-3 grid min-w-0 grid-cols-[minmax(0,1fr)] gap-2 text-sm">
           <div><dt className="font-semibold text-[var(--flowme-text-secondary)]">실행 위치</dt><dd>{activeTask.date ?? '날짜 미정'}</dd></div>
           <div><dt className="font-semibold text-[var(--flowme-text-secondary)]">폴더</dt><dd>{getPersonalWorkspacePocFolderPath(state, activeTask.folderId)} · Flow에서 상속</dd></div>
           <PersonalWorkspacePocTaskReadOnlyDetails task={activeTask} />
@@ -3804,11 +5395,68 @@ export function PersonalWorkspacePocSurface({
           >이동</button>
           <button type="button" className={SECONDARY_CLASS} onClick={() => void commitTransition({ type: 'complete', itemRef: activeTask.ref, completed: !activeTask.completed, now: new Date().toISOString() })}>{activeTask.completed ? '다시 열기' : '완료'}</button>
         </div>
+        {visibleOrigin?.flowRef === flow.ref && visibleOrigin.itemDetailRef === activeTask.ref ? renderContextualResult() : null}
       </div>
     ) : null;
 
     return (
       <div data-testid="personal-workspace-flow-detail" data-product-plan-item-grammar="v1" data-product-origin={flow.origin} className="min-w-0">
+        {sourcePracticeRead && sourcePracticeRead.catalog.candidates.length > 0 ? (
+          <section data-testid="personal-workspace-source-practice-records" className="mb-4 rounded-md border border-[var(--flowme-border)] p-3">
+            <h2 className="text-sm font-semibold">보관된 로컬 비교</h2>
+            <p className="mt-1 text-xs leading-5">운영 원문을 가져오지 않는 연습 기록입니다. 비교할 기록을 직접 선택해 주세요.</p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {sourcePracticeRead.catalog.candidates.map((row, index) => (
+                <button type="button" key={row.candidateId}
+                  data-testid="personal-workspace-source-practice-record" data-candidate-id={row.candidateId}
+                  disabled={pending.current || Boolean(planEditor.active) || Boolean(quickEditor.active)}
+                  className={SECONDARY_CLASS} onClick={() => openSourceUpdateReview(row.candidateId)}>
+                  비교 {index + 1} · {row.status === 'applied' ? '적용됨' : row.status === 'deferred' ? '보류' : '검토 중'} · 결정 {row.resolvedCount}/{row.changeCount}
+                </button>
+              ))}
+              {sourcePracticeRead.catalog.undo.available ? (
+                <button type="button" data-testid="personal-workspace-source-practice-undo"
+                  data-candidate-id={sourcePracticeRead.catalog.undo.candidateId}
+                  disabled={pending.current || sourcePracticeRecovery.current || Boolean(planEditor.active) || Boolean(quickEditor.active)}
+                  className={SECONDARY_CLASS}
+                  onClick={() => { const undo = sourcePracticeRead.catalog.undo; if (undo.available) void undoSourceUpdate(undo.candidateId); }}>
+                  마지막 원문 적용 되돌리기
+                </button>
+              ) : null}
+            </div>
+          </section>
+        ) : null}
+        {sourceUpdateEnvelope
+          && sourceUpdateEnvelope.target.flowRef === flow.ref ? (
+            <div className="mb-4" data-source-update-owner="poc-source-candidate-store">
+              <PersonalWorkspacePocSourceUpdateReview
+                practice={{ recordEntryOnly: true, locked: sourcePracticeRecovery.current, canUndo: false, returnFocusSelector: '#personal-workspace-flow-detail-heading' }}
+                announceBanner={!planEditor.active && !quickEditor.active && !planDisplay && !receipt}
+                candidate={{
+                  changeCount: sourceUpdateEnvelope.changes.length,
+                  userCorrectionCount: Object.keys(
+                    state.personalPlanOverlays?.[flow.ref]?.items ?? {},
+                  ).length,
+                  sourceLabel: 'PoC 로컬 검증 후보',
+                  detectedAtLabel: '운영 원문과 동기화하지 않음',
+                }}
+                changes={sourceUpdateChanges}
+                resolutions={sourceUpdateResolutions}
+                selectedChangeId={sourceUpdateSelectedChangeId}
+                status={effectiveSourceUpdateStatus}
+                open={sourceUpdateOpen}
+                errorMessage={sourceUpdateError}
+                onOpen={() => openSourceUpdateReview()}
+                onDefer={() => deferSourceUpdateReview()}
+                onSelectChange={setSourceUpdateSelectedChangeId}
+                onResolve={resolveSourceUpdateChange}
+                onApply={() => void applySourceUpdate()}
+                onRetry={() => void applySourceUpdate()}
+                onRefreshCandidate={() => { startSourcePractice(true); }}
+                onUndo={() => void undoSourceUpdate(sourceUpdateEnvelope.candidateId)}
+              />
+            </div>
+          ) : null}
         <MyPlanExecutionSurface<PersonalWorkspacePocTask>
           model={{
             flowSlug: flow.ref,
@@ -3841,13 +5489,18 @@ export function PersonalWorkspacePocSurface({
             onCloseTransfer: () => undefined,
           }}
           renderers={{
+            renderAfterItem: (itemId) => visibleOrigin?.flowRef === flow.ref && visibleOrigin.ref === itemId
+              && (!visibleOrigin.itemDetailRef || !activeTask) ? renderContextualResult() : null,
             renderManagementMenu: () => (
+              <div className="min-w-0">
               <button
                 type="button"
                 data-personal-workspace-move-trigger={getPersonalWorkspacePocMoveTriggerToken(flow.ref, 'flow-detail')}
                 className={SECONDARY_CLASS}
                 onClick={() => openFlowMove(flow, 'flow-detail')}
               >폴더 이동</button>
+              {visibleOrigin?.flowRef === flow.ref && visibleOrigin.kind === 'flow' ? renderContextualResult() : null}
+              </div>
             ),
             renderTransferPanel: () => null,
             renderItemDetail: renderDetail,
@@ -3934,12 +5587,22 @@ export function PersonalWorkspacePocSurface({
             이 Flow의 다른 보기를 열 수 없어요. 할 일 목록은 그대로 사용할 수 있습니다.
           </p>
         )}
-        {authoring ? (
+        {authoring && authoredRawText !== undefined ? (
           <details data-testid="personal-workspace-authored-source" className="mt-4 rounded-md border border-[var(--flowme-border)] bg-white p-4">
-            <summary className="min-h-12 cursor-pointer py-3 text-sm font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">작성 원문 보기</summary>
-            <p className="mt-2 text-xs text-[var(--flowme-text-secondary)]">저장할 때 확인한 원문을 그대로 보관하고 있습니다.</p>
-            <pre className="mt-3 max-h-80 overflow-auto whitespace-pre-wrap break-words rounded-md bg-[var(--flowme-surface-subtle)] p-3 text-sm leading-6 text-[var(--flowme-text)]">{authoring.rawText}</pre>
-            <a href="/flows/new?personalWorkspacePoc=v1" className={`${SECONDARY_CLASS} mt-3 inline-flex items-center`}>새 Flow 만들기</a>
+            <summary className="min-h-12 cursor-pointer py-3 text-sm font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">
+              {quickConversion ? '빠른 할 일 전환 기록 보기' : '작성 원문 보기'}
+            </summary>
+            <p className="mt-2 text-xs text-[var(--flowme-text-secondary)]">
+              {quickConversion
+                ? '전환할 때의 제목을 보관합니다. 원래 빠른 할 일은 그대로 남고, 이후 두 항목은 서로 독립적으로 바꿀 수 있습니다.'
+                : effectiveSourceVersion
+                  ? '비교 후 적용한 새 원문입니다. 개인 날짜와 완료 기록은 이 원문과 별도로 보관합니다.'
+                  : '저장할 때 확인한 원문을 그대로 보관하고 있습니다.'}
+            </p>
+            <pre className="mt-3 max-h-80 overflow-auto whitespace-pre-wrap break-words rounded-md bg-[var(--flowme-surface-subtle)] p-3 text-sm leading-6 text-[var(--flowme-text)]">{authoredRawText}</pre>
+            {!quickConversion ? (
+              <a href="/flows/new?personalWorkspacePoc=v1" className={`${SECONDARY_CLASS} mt-3 inline-flex items-center`}>새 Flow 만들기</a>
+            ) : null}
           </details>
         ) : null}
         {itemUsesSheet && activeTask ? (
@@ -3963,62 +5626,42 @@ export function PersonalWorkspacePocSurface({
   };
 
   const receiptOwnsTransactionStatus = Boolean(
-    receipt && status.receiptStatus === receipt.status,
+    (receipt && status.receiptStatus === receipt.status) || (planDisplay && status.receiptStatus === planDisplay.status),
   );
+  const contextualOwnsTransactionStatus = Boolean(visibleContextualResult && status.kind === 'success');
+  const resultOwnsTransactionStatus = receiptOwnsTransactionStatus || contextualOwnsTransactionStatus;
   const editorOwnsFailureAlert = Boolean(
-    receipt?.status === 'failure'
+    (receipt?.status === 'failure' || planDisplay?.status === 'failure')
       && (planEditor.active?.failure || quickEditor.active?.failure),
   );
 
+  // A failed source join is not an empty successful workspace. No controls or
+  // partial task model are exposed while returning through the existing gate.
+  if (!sourceReadValid) {
+    return <main data-testid="personal-workspace-source-read-fail-closed" aria-busy="true" className="p-6">
+      <p>원문을 안전하게 확인할 수 없어 기존 내 계획으로 돌아갑니다.</p>
+    </main>;
+  }
+
   return (
-    <main
-      id="personal-workspace-poc-main"
-      data-flow-editor-scroll-key="personal-workspace-main"
-      data-testid="personal-workspace-poc-shell"
-      data-poc-storage-prefix="flow:poc:personal-workspace:v1:"
-      className="mx-auto min-h-dvh max-w-[1240px] overflow-x-clip bg-white px-4 pb-[var(--flowme-mobile-tab-clearance)] pt-3 sm:px-5 sm:py-6 lg:pb-8"
-      style={{
-        '--personal-workspace-safe-top': 'env(safe-area-inset-top, 0px)',
-        '--personal-workspace-safe-right': 'env(safe-area-inset-right, 0px)',
-        '--personal-workspace-safe-bottom': 'env(safe-area-inset-bottom, 0px)',
-        '--personal-workspace-safe-left': 'env(safe-area-inset-left, 0px)',
-        paddingTop: 'max(.75rem, var(--personal-workspace-safe-top))',
-        paddingRight: 'max(1rem, var(--personal-workspace-safe-right))',
-        paddingBottom: 'max(var(--flowme-mobile-tab-clearance), calc(var(--personal-workspace-safe-bottom) + 1rem))',
-        paddingLeft: 'max(1rem, var(--personal-workspace-safe-left))',
-        '--flowme-action': '#087f73',
-        '--flowme-action-hover': '#066a61',
-        '--flowme-action-strong': '#066a61',
-        '--flowme-action-soft': '#e5f2ef',
-        '--flowme-action-border': '#b8dcd6',
-        '--flowme-focus': '#1268b1',
-        '--flowme-text': '#1c2931',
-        '--flowme-text-secondary': '#52636c',
-        '--flowme-text-tertiary': '#64757d',
-        '--flowme-border': '#dce3e6',
-        '--flowme-border-strong': '#aab9bf',
-        '--flowme-surface-subtle': '#f5f7f8',
-      } as CSSProperties}
+    <PersonalWorkspacePocProductShell
+      mainId="personal-workspace-poc-main"
+      mainTestId="personal-workspace-poc-shell"
+      storagePrefix="flow:poc:personal-workspace:v1:"
+      flowEditorScrollKey="personal-workspace-main"
+      variant="workspace"
+      href="#personal-workspace-view-heading"
+      skipLabel="개인공간 본문으로 건너뛰기"
+      onSkip={() => focusAfterRender('#personal-workspace-view-heading')}
     >
       <style>{`
         [data-testid="personal-workspace-poc-shell"] {
-          padding-top: max(.75rem, var(--personal-workspace-safe-top));
+          --personal-workspace-safe-top: env(safe-area-inset-top, 0px);
+          --personal-workspace-safe-right: env(safe-area-inset-right, 0px);
+          --personal-workspace-safe-bottom: env(safe-area-inset-bottom, 0px);
+          --personal-workspace-safe-left: env(safe-area-inset-left, 0px);
           padding-right: max(1rem, var(--personal-workspace-safe-right));
-          padding-bottom: max(var(--flowme-mobile-tab-clearance), calc(var(--personal-workspace-safe-bottom) + 1rem));
           padding-left: max(1rem, var(--personal-workspace-safe-left));
-          scroll-padding-top: calc(var(--personal-workspace-safe-top) + 4rem);
-          scroll-padding-bottom: calc(var(--personal-workspace-safe-bottom) + 4rem);
-        }
-        @media (min-width: 640px) {
-          [data-testid="personal-workspace-poc-shell"] {
-            padding-right: max(1.25rem, var(--personal-workspace-safe-right));
-            padding-left: max(1.25rem, var(--personal-workspace-safe-left));
-          }
-        }
-        @media (min-width: 1024px) {
-          [data-testid="personal-workspace-poc-shell"] {
-            padding-bottom: max(2rem, var(--personal-workspace-safe-bottom));
-          }
         }
         @media (max-width: 900px) {
           [data-testid="personal-workspace-poc-shell"] input:not([type="checkbox"]):not([type="radio"]),
@@ -4027,20 +5670,28 @@ export function PersonalWorkspacePocSurface({
             font-size: 16px !important;
           }
         }
+        [data-testid="personal-workspace-contextual-result"] {
+          scroll-margin-top: calc(var(--personal-workspace-visual-viewport-top, 0px) + 1rem);
+          scroll-margin-bottom: calc(var(--personal-workspace-visual-viewport-bottom, 0px) + 1rem);
+        }
+        @media (max-width: 639px) {
+          [data-testid="personal-workspace-contextual-result"] {
+            scroll-margin-bottom: calc(var(--flowme-mobile-tab-clearance) + var(--personal-workspace-visual-viewport-bottom, 0px));
+          }
+        }
         @media (orientation: landscape) and (max-height: 500px) and (max-width: 1023px) {
           [data-testid="personal-workspace-poc-shell"] {
             padding-top: max(.25rem, var(--personal-workspace-safe-top)) !important;
-          }
-          [data-testid="personal-workspace-poc-shell"] [data-testid="platform-nav"] {
-            margin-bottom: .25rem !important;
-            padding-bottom: .25rem !important;
           }
           [data-testid="personal-workspace-poc-shell"] > header {
             margin-top: .25rem !important;
             align-items: center;
             padding-bottom: .25rem !important;
           }
-          [data-testid="personal-workspace-poc-shell"] > header h1 { display: none; }
+          [data-testid="personal-workspace-poc-shell"] > header h1 {
+            font-size: 1rem;
+            line-height: 1.5rem;
+          }
           [data-testid="personal-workspace-transaction-status"] {
             margin: .25rem 0 !important;
             overflow: hidden;
@@ -4060,18 +5711,12 @@ export function PersonalWorkspacePocSurface({
           [data-testid="personal-workspace-task-group"] > div:first-child { padding-bottom: .25rem !important; }
         }
       `}</style>
-      <a
-        href="#personal-workspace-view-heading"
-        className="sr-only z-[100] rounded-md bg-white px-4 py-3 font-semibold text-[var(--flowme-action)] shadow-lg focus:not-sr-only focus:fixed focus:left-[max(1rem,var(--personal-workspace-safe-left))] focus:top-[max(1rem,var(--personal-workspace-safe-top))]"
-        onClick={() => focusAfterRender('#personal-workspace-view-heading')}
-      >개인공간 본문으로 건너뛰기</a>
       <p id="personal-workspace-move-handle-instructions" className="sr-only">
         항목 오른쪽 재정렬 통로의 전용 손잡이를 짧게 누르거나 350밀리초 동안 길게 누르면 이동할 곳을 엽니다. 날짜와 폴더는 화면 왼쪽의 이동 패널에서 선택하고, 같은 목록의 순서는 오른쪽 전용 손잡이에서 위쪽 또는 아래쪽 화살표 키로 바꿉니다. 길게 누르기 시작 전에 손가락이 8픽셀 이상 움직이거나, 이동 중 목록 밖에 놓거나, 포인터 동작이 취소되거나, Escape 키를 누르거나 이동 창을 닫으면 변경 없이 취소됩니다.
       </p>
       <p id="personal-workspace-flow-move-handle-instructions" className="sr-only">
         Flow 이동 손잡이를 짧게 누르거나 350밀리초 동안 길게 누르면 이동할 곳을 엽니다. 화면 왼쪽 이동 패널에서 정리 폴더를 선택할 수 있습니다. Flow 전체의 폴더만 바뀌며 원본 일정과 안의 할 일 실행 위치는 그대로 유지됩니다. 길게 누르기 시작 전에 손가락이 8픽셀 이상 움직이거나, 이동 중 대상 밖에 놓거나, 포인터 동작이 취소되거나, Escape 키를 누르거나 이동 창을 닫으면 변경 없이 취소됩니다.
       </p>
-      <PlatformNav includeMobileTabs={false} />
       <header className="mt-3 flex flex-nowrap items-center justify-between gap-2 border-b border-[var(--flowme-border)] pb-4 sm:items-end sm:gap-3">
         <div className="min-w-0">
           <h1 className="truncate text-xl font-semibold tracking-[-0.02em] text-[var(--flowme-text)] sm:text-3xl">개인공간</h1>
@@ -4084,8 +5729,13 @@ export function PersonalWorkspacePocSurface({
             disabled={!state.undo || pending.current || Boolean(planEditor.active) || Boolean(quickEditor.active)}
             className={`${SECONDARY_CLASS} hidden disabled:cursor-not-allowed disabled:opacity-40 sm:inline-flex`}
             onClick={() => {
+              if (planResultOwner.current?.display.status === 'success') { void undoPlanDisplay(); return; }
               if (receipt?.status === 'success' && state.revision === receipt.stateRevisionAfter) {
                 void undoReceiptChange();
+                return;
+              }
+              if (contextualSelection.canUndo && visibleContextualResult) {
+                void undoContextualResult(visibleContextualResult.ownerId);
                 return;
               }
               void commitTransition({ type: 'undo', now: new Date().toISOString() });
@@ -4095,14 +5745,35 @@ export function PersonalWorkspacePocSurface({
             <summary data-testid="personal-workspace-poc-manage" className={`${SECONDARY_CLASS} flex cursor-pointer items-center`}>설정</summary>
             <div className="absolute right-0 z-30 mt-2 w-64 rounded-md border border-[var(--flowme-border)] bg-white p-3 shadow-lg">
               <p className="text-xs leading-5 text-[var(--flowme-text-secondary)]">이 화면에서 만든 내용은 이 기기에만 저장됩니다.</p>
+              <details data-testid="personal-workspace-source-practice-guide" className="mt-3 border-t border-[var(--flowme-border)] pt-2">
+                <summary className="min-h-12 cursor-pointer py-3 text-sm font-semibold">사용 안내</summary>
+                <p className="text-xs leading-5">현재 원문과 로컬 예시를 비교하는 연습입니다. 서버 원문을 가져오거나 자동으로 갱신하지 않습니다. 적용 전 선택은 이 실행 중에만 유지됩니다.</p>
+                {!sourcePracticeRead ? <p className="mt-2 text-xs leading-5">작성해 저장한 Flow를 먼저 열어 주세요. 빠른 할 일에서 만든 Flow는 이 연습 대상이 아닙니다.</p> : null}
+                {sourceUpdateError ? <p className="mt-2 text-xs leading-5">{sourceUpdateError}</p> : null}
+                <button type="button" data-testid="personal-workspace-source-practice-start"
+                  disabled={!sourcePracticeRead || pending.current || sourcePracticeRecovery.current || Boolean(planEditor.active) || Boolean(quickEditor.active)}
+                  className={`${SECONDARY_CLASS} mt-2 w-full`}
+                  onClick={event => {
+                    if (!startSourcePractice()) return;
+                    const guide = event.currentTarget.closest('details');
+                    const settings = guide?.parentElement?.closest('details');
+                    if (guide) guide.open = false;
+                    if (settings) settings.open = false;
+                  }}>로컬 비교 연습 시작</button>
+              </details>
               <button
                 type="button"
                 data-testid="personal-workspace-undo-mobile"
                 disabled={!state.undo || pending.current || Boolean(planEditor.active) || Boolean(quickEditor.active)}
                 className={`${SECONDARY_CLASS} mt-3 w-full disabled:cursor-not-allowed disabled:opacity-40 sm:hidden`}
                 onClick={() => {
+                  if (planResultOwner.current?.display.status === 'success') { void undoPlanDisplay(); return; }
                   if (receipt?.status === 'success' && state.revision === receipt.stateRevisionAfter) {
                     void undoReceiptChange();
+                    return;
+                  }
+                  if (contextualSelection.canUndo && visibleContextualResult) {
+                    void undoContextualResult(visibleContextualResult.ownerId);
                     return;
                   }
                   void commitTransition({ type: 'undo', now: new Date().toISOString() });
@@ -4123,12 +5794,16 @@ export function PersonalWorkspacePocSurface({
       </header>
 
       <div
+        ref={transactionStatusRef}
         data-testid="personal-workspace-transaction-status"
-        role={receiptOwnsTransactionStatus ? undefined : status.kind === 'failure' ? 'alert' : 'status'}
-        aria-live={receiptOwnsTransactionStatus ? 'off' : status.kind === 'failure' ? 'assertive' : 'polite'}
-        aria-hidden={receiptOwnsTransactionStatus ? true : undefined}
+        data-native-status-box={nativeStatusBox ? 'preserved' : undefined}
+        inert={nativeStatusBox ? true : undefined}
+        style={nativeStatusBox}
+        role={nativeStatusBox || resultOwnsTransactionStatus ? undefined : status.kind === 'failure' ? 'alert' : 'status'}
+        aria-live={nativeStatusBox || resultOwnsTransactionStatus ? 'off' : status.kind === 'failure' ? 'assertive' : 'polite'}
+        aria-hidden={nativeStatusBox || resultOwnsTransactionStatus ? true : undefined}
         data-status={status.kind}
-        className={status.kind === 'ready' || receiptOwnsTransactionStatus ? 'sr-only' : `my-3 border-l-2 px-3 py-2 text-sm font-semibold ${
+        className={status.kind === 'ready' || resultOwnsTransactionStatus ? 'sr-only' : `my-3 border-l-2 px-3 py-2 text-sm font-semibold ${
           status.kind === 'failure'
             ? 'border-rose-600 bg-rose-50 text-rose-800'
             : status.kind === 'saving'
@@ -4139,6 +5814,16 @@ export function PersonalWorkspacePocSurface({
         }`}
       >{status.message}</div>
 
+      {planDisplay && !planEditor.active && !quickEditor.active && !planOverlayRef.current ? (
+        <PersonalWorkspacePocPlanResultSurface
+          key={planDisplay.receiptId}
+          display={planDisplay}
+          announce={!editorOwnsFailureAlert}
+          onUndo={planDisplay.status === 'success' && Boolean(state.undo) && !pending.current
+            && state.revision === planDisplay.stateRevisionAfter ? () => void undoPlanDisplay() : undefined}
+          onDismiss={dismissPlanResult}
+        />
+      ) : null}
       {receipt ? (
         <PersonalWorkspacePocReceiptSurface
           receipt={receipt}
@@ -4146,7 +5831,9 @@ export function PersonalWorkspacePocSurface({
           onRetry={receipt.status === 'failure' && receipt.rollback !== 'recovery-required'
             ? receipt.operation === 'commit-quick-item-root'
               ? retryQuickEditorCommit
-              : retryPlanEditorCommit
+              : receipt.operation === 'convert-quick-item-to-flow'
+                ? retryQuickItemConversion
+                : retryPlanEditorCommit
             : undefined}
           onUndo={receipt.status === 'success'
             && Boolean(state.undo)
@@ -4156,36 +5843,36 @@ export function PersonalWorkspacePocSurface({
         />
       ) : null}
 
-      <nav aria-label="개인공간 보기" className="mb-4 flex max-w-full gap-2 overflow-x-auto pb-1 lg:hidden">
+      <nav aria-label="개인공간 보기" className="mb-4 flex max-w-full overflow-x-auto border-b border-[var(--flowme-workspace-line)] min-[1280px]:hidden">
         {([
           ['folder', '폴더'], ['today', '오늘'], ['week', '주간'], ['month', '월간'], ['undated', '날짜 미정'], ['trash', `휴지통 ${trashRows.length}`],
         ] as const).map(([id, label]) => (
-          <button key={id} type="button" aria-current={section === id ? 'page' : undefined} className={`${SECONDARY_CLASS} shrink-0 ${section === id ? '!border-[var(--flowme-action)] !bg-[var(--flowme-action-soft)]' : ''}`} onClick={() => selectSection(id)}>{label}</button>
+          <button key={id} type="button" aria-label={`개인공간 모바일 보기: ${label}`} aria-current={section === id ? 'page' : undefined} className={`min-h-12 shrink-0 border-b-2 px-3 text-sm font-semibold ${section === id ? 'border-[var(--flowme-workspace-accent)] text-[var(--flowme-workspace-accent-strong)]' : 'border-transparent text-[var(--flowme-text-secondary)]'}`} onClick={() => selectSection(id)}>{label}</button>
         ))}
       </nav>
       {section === 'folder' ? (
-        <nav aria-label="모바일 폴더" className="mb-4 flex max-w-full gap-2 overflow-x-auto pb-1 lg:hidden">
-          <button type="button" aria-current={!activeFolderId ? 'page' : undefined} className={`${SECONDARY_CLASS} shrink-0 ${!activeFolderId ? '!border-[var(--flowme-action)] !bg-[var(--flowme-action-soft)]' : ''}`} onClick={() => selectSection('folder')}>미분류</button>
+        <nav aria-label="모바일 폴더" className="mb-4 flex max-w-full overflow-x-auto border-b border-[var(--flowme-workspace-line)] min-[1280px]:hidden">
+          <button type="button" aria-label="폴더 탐색: 미분류" aria-current={!activeFolderId ? 'page' : undefined} className={`min-h-12 shrink-0 border-b-2 px-3 text-sm font-semibold ${!activeFolderId ? 'border-[var(--flowme-workspace-accent)] text-[var(--flowme-workspace-accent-strong)]' : 'border-transparent text-[var(--flowme-text-secondary)]'}`} onClick={() => selectSection('folder')}>미분류</button>
           {sortedFolders.map((folder) => (
-            <button key={folder.folderId} type="button" aria-current={activeFolderId === folder.folderId ? 'page' : undefined} className={`${SECONDARY_CLASS} shrink-0 ${activeFolderId === folder.folderId ? '!border-[var(--flowme-action)] !bg-[var(--flowme-action-soft)]' : ''}`} onClick={() => selectSection('folder', folder.folderId)}>{getPersonalWorkspacePocFolderPath(state, folder.folderId)}</button>
+            <button key={folder.folderId} type="button" aria-label={`폴더 탐색: ${getPersonalWorkspacePocFolderPath(state, folder.folderId)}`} aria-current={activeFolderId === folder.folderId ? 'page' : undefined} className={`min-h-12 shrink-0 border-b-2 px-3 text-sm font-semibold ${activeFolderId === folder.folderId ? 'border-[var(--flowme-workspace-accent)] text-[var(--flowme-workspace-accent-strong)]' : 'border-transparent text-[var(--flowme-text-secondary)]'}`} onClick={() => selectSection('folder', folder.folderId)}>{getPersonalWorkspacePocFolderPath(state, folder.folderId)}</button>
           ))}
         </nav>
       ) : null}
 
-      <div className="grid min-w-0 gap-5 lg:grid-cols-[240px_minmax(0,920px)]">
-        <aside className="hidden min-w-0 rounded-md bg-[#f5f7f8] p-3 lg:block" aria-label="개인공간 탐색">
+      <div data-testid="personal-workspace-shell-layout" className="grid min-w-0 gap-5 lg:grid-cols-[240px_minmax(0,920px)] min-[1280px]:grid-cols-[240px_minmax(0,1fr)]">
+        <aside className="hidden min-w-0 bg-[var(--flowme-workspace-rail)] p-3 min-[1280px]:block" aria-label="개인공간 탐색">
           <div className="grid gap-1">
             {([
               ['today', '오늘'], ['week', '주간'], ['month', '월간'], ['undated', '날짜 미정'], ['trash', `휴지통 ${trashRows.length}`],
-            ] as const).map(([id, label]) => <button key={id} type="button" aria-current={section === id ? 'page' : undefined} className={`min-h-12 rounded-md px-3 text-left text-sm font-semibold ${section === id ? 'bg-[var(--flowme-action-soft)] text-[var(--flowme-action)]' : 'text-[var(--flowme-text)] hover:bg-white'}`} onClick={() => selectSection(id)}>{label}</button>)}
+            ] as const).map(([id, label]) => <button key={id} type="button" aria-current={section === id ? 'page' : undefined} className={`min-h-12 rounded-md px-3 text-left text-sm font-semibold ${section === id ? 'bg-[var(--flowme-workspace-accent-soft)] text-[var(--flowme-workspace-accent-strong)]' : 'text-[var(--flowme-text)] hover:bg-white'}`} onClick={() => selectSection(id)}>{label}</button>)}
           </div>
           <div className="mt-4 border-t border-[var(--flowme-border)] pt-3">
             <p className="px-3 text-xs font-semibold text-[var(--flowme-text-tertiary)]">폴더</p>
-            <button type="button" aria-current={section === 'folder' && !activeFolderId ? 'page' : undefined} className={`mt-1 min-h-12 w-full rounded-md px-3 text-left text-sm font-semibold ${section === 'folder' && !activeFolderId ? 'bg-[var(--flowme-action-soft)] text-[var(--flowme-action)]' : ''}`} onClick={() => selectSection('folder')}>미분류</button>
+            <button type="button" aria-current={section === 'folder' && !activeFolderId ? 'page' : undefined} className={`mt-1 min-h-12 w-full rounded-md px-3 text-left text-sm font-semibold ${section === 'folder' && !activeFolderId ? 'bg-[var(--flowme-workspace-accent-soft)] text-[var(--flowme-workspace-accent-strong)]' : ''}`} onClick={() => selectSection('folder')}>미분류</button>
             {rootFolders.map((folder) => (
               <div key={folder.folderId}>
-                <button type="button" aria-current={section === 'folder' && activeFolderId === folder.folderId ? 'page' : undefined} className={`min-h-12 w-full rounded-md px-3 text-left text-sm font-semibold ${section === 'folder' && activeFolderId === folder.folderId ? 'bg-[var(--flowme-action-soft)] text-[var(--flowme-action)]' : ''}`} onClick={() => selectSection('folder', folder.folderId)}>{folder.title}</button>
-                {sortedFolders.filter((child) => child.parentFolderId === folder.folderId).map((child) => <button key={child.folderId} type="button" aria-current={section === 'folder' && activeFolderId === child.folderId ? 'page' : undefined} className={`min-h-12 w-full rounded-md pl-7 pr-3 text-left text-sm ${section === 'folder' && activeFolderId === child.folderId ? 'bg-[var(--flowme-action-soft)] font-semibold text-[var(--flowme-action)]' : ''}`} onClick={() => selectSection('folder', child.folderId)}>↳ {child.title}</button>)}
+                <button type="button" aria-current={section === 'folder' && activeFolderId === folder.folderId ? 'page' : undefined} className={`min-h-12 w-full rounded-md px-3 text-left text-sm font-semibold ${section === 'folder' && activeFolderId === folder.folderId ? 'bg-[var(--flowme-workspace-accent-soft)] text-[var(--flowme-workspace-accent-strong)]' : ''}`} onClick={() => selectSection('folder', folder.folderId)}>{folder.title}</button>
+                {sortedFolders.filter((child) => child.parentFolderId === folder.folderId).map((child) => <button key={child.folderId} type="button" aria-current={section === 'folder' && activeFolderId === child.folderId ? 'page' : undefined} className={`min-h-12 w-full rounded-md pl-7 pr-3 text-left text-sm ${section === 'folder' && activeFolderId === child.folderId ? 'bg-[var(--flowme-workspace-accent-soft)] font-semibold text-[var(--flowme-workspace-accent-strong)]' : ''}`} onClick={() => selectSection('folder', child.folderId)}>↳ {child.title}</button>)}
               </div>
             ))}
           </div>
@@ -4304,7 +5991,7 @@ export function PersonalWorkspacePocSurface({
         </FlowBottomSheet>
       ) : null}
       {renderActiveEditor()}
-    </main>
+    </PersonalWorkspacePocProductShell>
   );
 }
 
@@ -4322,7 +6009,7 @@ type WorkspaceTaskRowProps = Readonly<{
   onPointerSessionMove: (point: Readonly<{ clientX: number; clientY: number }>) => void;
   onPointerSessionEnd: (result: Readonly<{ clientX: number; clientY: number; moved: boolean }>) => void;
   onCancel: (message: string) => void;
-  onReorder: (direction: -1 | 1) => void;
+  onReorder: (control: PersonalWorkspacePocReorderControl) => void;
   onCorridorDragOver: (event: DragEvent<HTMLElement>) => void;
   onCorridorDrop: (event: DragEvent<HTMLElement>) => void;
   onDragStart: (event: DragEvent<HTMLButtonElement>) => void;
@@ -4351,7 +6038,7 @@ type WorkspaceMoveHandleProps = Readonly<{
   onPointerSessionMove: (point: Readonly<{ clientX: number; clientY: number }>) => void;
   onPointerSessionEnd: (result: Readonly<{ clientX: number; clientY: number; moved: boolean }>) => void;
   onCancel: (message: string) => void;
-  onReorder?: (direction: -1 | 1) => void;
+  onReorder?: (control: PersonalWorkspacePocReorderControl) => void;
   onDragStart: (event: DragEvent<HTMLButtonElement>) => void;
   onDragEnd: () => void;
 }>;
@@ -4399,6 +6086,7 @@ function WorkspaceMoveHandle({
   };
 
   useEffect(() => {
+    const viewport = window.visualViewport;
     const cancelPendingPress = () => {
       if (!pointerSession.current && pressTimer.current === undefined) return;
       suppressSyntheticClick();
@@ -4409,10 +6097,12 @@ function WorkspaceMoveHandle({
     };
     window.addEventListener('blur', cancelPendingPress);
     window.addEventListener('resize', cancelPendingPress);
+    viewport?.addEventListener('resize', cancelPendingPress);
     document.addEventListener('visibilitychange', cancelPendingPressWhenHidden);
     return () => {
       window.removeEventListener('blur', cancelPendingPress);
       window.removeEventListener('resize', cancelPendingPress);
+      viewport?.removeEventListener('resize', cancelPendingPress);
       document.removeEventListener('visibilitychange', cancelPendingPressWhenHidden);
       clearPointerSession();
     };
@@ -4492,12 +6182,22 @@ function WorkspaceMoveHandle({
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       onOpen();
-    } else if (event.key === 'ArrowUp' && onReorder) {
+    } else if (onReorder && (
+      event.key === 'ArrowUp'
+      || event.key === 'ArrowDown'
+      || event.key === 'Home'
+      || event.key === 'End'
+    )) {
       event.preventDefault();
-      onReorder(-1);
-    } else if (event.key === 'ArrowDown' && onReorder) {
-      event.preventDefault();
-      onReorder(1);
+      onReorder(
+        event.key === 'ArrowUp'
+          ? 'previous'
+          : event.key === 'ArrowDown'
+            ? 'next'
+            : event.key === 'Home'
+              ? 'top'
+              : 'bottom',
+      );
     } else if (event.key === 'Escape') {
       event.preventDefault();
       clearPointerSession();
@@ -4512,11 +6212,14 @@ function WorkspaceMoveHandle({
       data-testid={testId}
       data-personal-workspace-move-trigger={triggerToken}
       aria-label={ariaLabel}
+      aria-keyshortcuts={onReorder
+        ? 'Enter Space ArrowUp ArrowDown Home End Escape'
+        : 'Enter Space Escape'}
       aria-describedby={describedBy}
       aria-controls="personal-workspace-move-panel"
       aria-expanded={expanded}
       className={`flex min-h-12 min-w-12 touch-none select-none items-center justify-center rounded-md text-xl [-webkit-touch-callout:none] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${
-        expanded ? 'bg-[var(--flowme-action-soft)] text-[var(--flowme-action)]' : 'text-slate-600'
+        expanded ? 'bg-[var(--flowme-workspace-accent-soft)] text-[var(--flowme-workspace-accent-strong)]' : 'text-slate-600'
       }`}
       onClick={() => {
         if (Date.now() <= suppressClickUntil.current) {
@@ -4605,7 +6308,7 @@ function WorkspaceTaskRow({
           data-testid="personal-workspace-reorder-insertion-line"
           data-position={reorderPreviewPosition}
           aria-hidden="true"
-          className={`pointer-events-none absolute inset-x-0 z-20 h-[3px] bg-[var(--flowme-action)] ${
+          className={`pointer-events-none absolute inset-x-0 z-20 h-[3px] bg-[var(--flowme-workspace-accent)] ${
             reorderPreviewPosition === 'before' ? 'top-[-2px]' : 'bottom-[-2px]'
           }`}
         />
@@ -4628,7 +6331,7 @@ function WorkspaceTaskRow({
       <WorkspaceMoveHandle
         testId="personal-workspace-move-handle"
         triggerToken={getPersonalWorkspacePocMoveTriggerToken(task.ref, 'task-handle')}
-        ariaLabel={`${task.title} 이동 옵션. Enter로 열고, 위아래 화살표로 순서를 바꿉니다.`}
+        ariaLabel={`${task.title} 이동 옵션. Enter로 열고, 위아래 화살표 또는 Home과 End로 순서를 바꿉니다.`}
         describedBy="personal-workspace-move-handle-instructions"
         expanded={sourceActive}
         onOpen={() => onOpenMove('task-handle')}

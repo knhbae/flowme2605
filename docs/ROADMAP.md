@@ -1,5 +1,13 @@
 # Roadmap
 
+<!-- alpha-transition-20260920:start -->
+## 격리 PoC 이후의 현재 경로 (2026-09-20)
+
+[실사용 알파 전환 원장](./specs/2026-09-12-flowme-integrated-product-poc-program/alpha-transition.md)의 M0–M7을 현재 격리 작업 순서로 삼는다. 다음 구현 묶음은 M1 저장·권한·복구 계약과 무손실 fixture 검증이다. 실제 인증/개발 DB 연결, 개인 동기화, 제작·공유·커뮤니티, 보존/복원, 실사용 gate를 차례로 검증한다. 외부 변경·유료 설정·발행은 단계별 승인 경계를 따른다.
+
+아래 8월 운영 roadmap은 보존된 이력이며 이 알파의 현재 gate나 발행 승인을 대신하지 않는다. 상태 체크리스트는 여기 복제하지 않는다.
+<!-- alpha-transition-20260920:end -->
+
 **Last Updated:** 2026-08-23<br>
 **Current Version:** v0.1.0 (released product PoC)<br>
 **Current Validation Stage:** internal alpha / PR #194 visual refresh released and Production verified / PR #195 release authorized / reconciled exact-head CI and post-merge Production verification pending / observed users 0<br>

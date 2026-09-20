@@ -4,6 +4,9 @@ import type {
   PersonalWorkspacePocTimelineOrder,
 } from './personal-workspace-poc-contract';
 import { toPersonalWorkspacePocQuickItemRef } from './personal-workspace-poc-contract';
+import { getPersonalWorkspacePocItemDetails } from './personal-workspace-poc-item-details';
+import { readPersonalWorkspacePocTaskSourceContext } from './personal-workspace-poc-source-attributes';
+import type { PersonalWorkspacePocSourceReadIndex } from './personal-workspace-poc-source-attributes-contract';
 import {
   applyPersonalWorkspacePocTimelineOrder,
   getPersonalWorkspacePocEffectiveDate,
@@ -20,6 +23,7 @@ export type PersonalWorkspacePocTask = Readonly<{
   kind: 'flow_item' | 'quick_item';
   title: string;
   description?: string;
+  completionCriterion?: string;
   memo?: string;
   sourceTimingLabel?: string;
   flowRef?: string;
@@ -78,10 +82,19 @@ function formatDateLabel(date: string, today: string): string {
 export function buildPersonalWorkspacePocTasks(
   model: PersonalWorkspacePocReadModel,
   state: PersonalWorkspacePocState,
+  sourceIndex?: PersonalWorkspacePocSourceReadIndex,
 ): PersonalWorkspacePocTask[] {
   const tasks: PersonalWorkspacePocTask[] = [];
+  let sourceReadFailed = false;
   model.flows.forEach((flow) => {
     if (isPersonalWorkspacePocMemberInactive(state, flow.ref)) return;
+    const sourceContext = sourceIndex === undefined
+      ? undefined
+      : readPersonalWorkspacePocTaskSourceContext(sourceIndex, flow);
+    if (sourceContext && !sourceContext.ok) {
+      sourceReadFailed = true;
+      return;
+    }
     const folderId = getPersonalWorkspacePocFolderId(state, flow.ref);
     flow.items.forEach((item) => {
       const placement = state.placements[item.ref];
@@ -89,7 +102,7 @@ export function buildPersonalWorkspacePocTasks(
         ref: item.ref,
         kind: 'flow_item',
         title: item.title,
-        ...(item.description ? { description: item.description } : {}),
+        ...getPersonalWorkspacePocItemDetails(flow, item),
         ...(item.sourceTimingLabel ? { sourceTimingLabel: item.sourceTimingLabel } : {}),
         flowRef: flow.ref,
         flowTitle: flow.title,
@@ -97,13 +110,17 @@ export function buildPersonalWorkspacePocTasks(
         ...(getPersonalWorkspacePocEffectiveDate(state, item.ref, item.sourceDate)
           ? { date: getPersonalWorkspacePocEffectiveDate(state, item.ref, item.sourceDate) }
           : {}),
-        ...(placement?.time ? { time: placement.time } : {}),
+        ...(placement?.time ?? sourceContext?.itemContextByRef.get(item.ref)?.attributes.time
+          ? { time: placement?.time ?? sourceContext?.itemContextByRef.get(item.ref)?.attributes.time }
+          : {}),
         completed: isPersonalWorkspacePocCompleted(state, item.ref),
         timelinePolicy: placement?.timelinePolicy ?? 'auto',
         sourceOrder: item.sourceOrder,
       });
     });
   });
+  // A supplied but stale/foreign context must not expose a partial time model.
+  if (sourceReadFailed) return [];
   state.quickItems.forEach((item, index) => {
     const ref = toPersonalWorkspacePocQuickItemRef(item.quickItemId);
     if (isPersonalWorkspacePocMemberInactive(state, ref)) return;

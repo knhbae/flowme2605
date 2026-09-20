@@ -33,6 +33,8 @@ import {
   preparePersonalWorkspacePocStorageCommit,
 } from './personal-workspace-poc-storage-transaction';
 import type { PersonalWorkspacePocStorage } from './personal-workspace-poc-storage';
+import { getPersonalWorkspacePocInheritedMemo } from './personal-workspace-poc-plan-memo-baseline';
+import { resolvePersonalWorkspacePocPlanTextIntent } from './personal-workspace-poc-plan-text-intent';
 
 export const PERSONAL_WORKSPACE_POC_PLAN_EDITOR_VERSION = 1 as const;
 
@@ -881,21 +883,44 @@ export function applyPersonalWorkspacePocPlanItemDraft(input: Readonly<{
   return { draft, validation };
 }
 
-function textOverrideValue(
-  draft: PersonalWorkspacePocPlanTextDraft,
-  inherited: string | undefined,
-): string | undefined {
-  if (draft.mode === 'inherit' || draft.value === inherited) return undefined;
-  return draft.value;
+function capturedPersonalPlanOverlay(
+  guard: PersonalWorkspacePocPlanTrustedOpenGuard,
+  sourceFlow: PersonalWorkspacePocFlow,
+  capturedState?: PersonalWorkspacePocState,
+): PersonalWorkspacePocPersonalPlanOverlay | undefined {
+  const guardFailure = validateGuardIntegrity(guard);
+  if (guardFailure) throwFailure(guardFailure);
+  let opened: unknown;
+  try {
+    // Canonical bytes are an equality key, not an order-preserving source DTO.
+    // Authored lineage validators retain their existing exact JSON contracts.
+    opened = capturedState ?? JSON.parse(guard.openedStateRaw ?? guard.openedStateCanonicalBytes);
+  } catch {
+    throwFailure(failure('invalid-opened-state', '편집을 열 때의 개인공간 상태를 확인할 수 없습니다.'));
+  }
+  if (!isPersonalWorkspacePocState(opened)
+    || canonicalPersonalWorkspacePocPlanEditorBytes(opened) !== guard.openedStateCanonicalBytes
+    || opened.revision !== guard.openedStateRevision) {
+    throwFailure(failure('invalid-opened-state', '편집을 열 때의 개인공간 상태가 맞지 않습니다.'));
+  }
+  const rawFailure = validateRawStateMatches(opened, guard.openedStateRaw);
+  if (rawFailure) throwFailure(rawFailure);
+  if (canonicalPersonalWorkspacePocPlanEditorBytes(sourceFlow) !== guard.canonicalSourceBytes) {
+    throwFailure(failure('stale-source-bytes', '원본 Flow가 바뀌어 편집 내용을 다시 확인해야 합니다.'));
+  }
+  return opened.personalPlanOverlays?.[guard.flowRef];
 }
 
 export function normalizePersonalWorkspacePocPlanOverlay(input: Readonly<{
   draft: PersonalWorkspacePocPlanDraft;
   guard: PersonalWorkspacePocPlanTrustedOpenGuard;
   sourceFlow: PersonalWorkspacePocFlow;
+  /** Required by the live preflight when no original persisted raw exists. */
+  capturedState?: PersonalWorkspacePocState;
 }>): PersonalWorkspacePocPersonalPlanOverlay {
   const draftFailure = validatePlanDraftShape(input.draft, input.guard);
   if (draftFailure) throwFailure(draftFailure);
+  const captured = capturedPersonalPlanOverlay(input.guard, input.sourceFlow, input.capturedState);
   const sourceRefs = input.sourceFlow.items.map((item) => item.ref);
   const sourceByRef = new Map(input.sourceFlow.items.map((item) => [item.ref, item]));
   const items: Record<string, PersonalWorkspacePocPersonalPlanItemOverlay> = {};
@@ -906,8 +931,12 @@ export function normalizePersonalWorkspacePocPlanOverlay(input: Readonly<{
     if (!source || !draft) {
       throwFailure(failure('missing-source-item', '원본 할 일을 다시 불러와 주세요.'));
     }
-    const title = textOverrideValue(draft.title, source.title);
-    const memo = textOverrideValue(draft.memo, source.description);
+    const title = resolvePersonalWorkspacePocPlanTextIntent({
+      draft: draft.title, inherited: source.title, capturedOverride: captured?.items[itemRef]?.title,
+    });
+    const memo = resolvePersonalWorkspacePocPlanTextIntent({
+      draft: draft.memo, inherited: getPersonalWorkspacePocInheritedMemo(source), capturedOverride: captured?.items[itemRef]?.memo,
+    });
     const schedule = draft.schedule.mode === 'inherit'
       ? undefined
       : draft.schedule.mode === 'fixed_date'
@@ -935,11 +964,15 @@ export function normalizePersonalWorkspacePocPlanOverlay(input: Readonly<{
         PLAN_SECTION_TITLE_FOCUS,
       ));
     }
-    const title = textOverrideValue(sectionDraft, section.title);
+    const title = resolvePersonalWorkspacePocPlanTextIntent({
+      draft: sectionDraft, inherited: section.title, capturedOverride: captured?.sectionTitles?.[section.sectionId],
+    });
     if (title !== undefined) sectionTitles[section.sectionId] = title;
   }
 
-  const title = textOverrideValue(input.draft.title, input.sourceFlow.title);
+  const title = resolvePersonalWorkspacePocPlanTextIntent({
+    draft: input.draft.title, inherited: input.sourceFlow.title, capturedOverride: captured?.title,
+  });
   const orderChanged = sourceRefs.length !== input.draft.orderedItemRefs.length
     || sourceRefs.some((ref, index) => ref !== input.draft.orderedItemRefs[index]);
   return {
@@ -1045,6 +1078,7 @@ export function preflightPersonalWorkspacePocPlanCommit(input: Readonly<{
       draft: input.draft,
       guard: input.guard,
       sourceFlow: fresh.located.flow,
+      capturedState: input.currentState,
     });
   } catch (error) {
     const normalized = isRecord(error) && typeof error.code === 'string'
@@ -1100,11 +1134,20 @@ export function preflightPersonalWorkspacePocPlanCommit(input: Readonly<{
   };
 }
 
+const noOpPreparedCommits = new WeakSet<object>();
+
+/** Classification only; callers must still check current bytes and owner before accepting a no-op. */
+export function isPersonalWorkspacePocPlanNoopPreparedCommit(operation: unknown): boolean {
+  return typeof operation === 'object' && operation !== null && noOpPreparedCommits.has(operation);
+}
+
 function noOpPreparedCommit(): PreparedFlowEditorPlanCommit {
-  return {
+  const operation: PreparedFlowEditorPlanCommit = Object.freeze({
     commit: () => undefined,
     rollbackAndVerify: () => true,
-  };
+  });
+  noOpPreparedCommits.add(operation);
+  return operation;
 }
 
 export function createPersonalWorkspacePocPlanEditorHandlers(

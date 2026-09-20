@@ -36,7 +36,7 @@ test('React and standalone expose the same Plan to Item detail grammar marker', 
 test('authoring success replaces the save form with a single open action', () => {
   assert.match(authoring, /const renderAuthoringReceipt = \(\) =>/u);
   assert.match(authoring, /data-product-receipt-only="true"/u);
-  assert.match(authoring, /\{receipt \? \([\s\S]*\{renderAuthoringReceipt\(\)\}[\s\S]*\) : \(/u);
+  assert.match(authoring, /\) : receipt \? \([\s\S]*\{renderAuthoringReceipt\(\)\}[\s\S]*\) : \(/u);
   assert.match(authoring, /const showMobileStageNav = !receipt/u);
   assert.match(authoring, /data-product-primary="authoring-open-workspace"/u);
 });
@@ -62,5 +62,6 @@ test('one receipt owns matching workspace feedback without hiding later unrelate
   assert.match(workspace, /receiptStatus: 'noop'/u);
   assert.match(workspace, /receiptStatus: 'undone'/u);
   assert.match(workspace, /setStatus\(\{ kind: 'ready', message: '이동할 위치를 선택해 주세요\.' \}\)/u);
-  assert.match(workspace, /aria-hidden=\{receiptOwnsTransactionStatus \? true : undefined\}/u);
+  assert.match(workspace, /const resultOwnsTransactionStatus = receiptOwnsTransactionStatus \|\| contextualOwnsTransactionStatus/u);
+  assert.match(workspace, /aria-hidden=\{nativeStatusBox \|\| resultOwnsTransactionStatus \? true : undefined\}/u);
 });

@@ -105,6 +105,10 @@ export type PersonalWorkspacePocResultPresenterProps = Readonly<{
   onMoveOccurrenceDate?: (item: PersonalWorkspacePocResultItem, date?: string) => void;
   onRestoreOccurrenceDate?: (item: PersonalWorkspacePocResultItem) => void;
   headingId?: string;
+  /** Reading an existing copy must not expose inert execution controls. Default execution UI is unchanged. */
+  readOnly?: boolean;
+  /** Optional presentation port; omitted callers retain all original views. */
+  availableViews?: readonly PersonalWorkspacePocResultView[];
 }>;
 
 function CheckIcon() {
@@ -236,7 +240,7 @@ function renderResultItemButton(
         </span>
       </span>
     </button>
-    {item.occurrenceId ? (
+    {item.occurrenceId && !props.readOnly ? (
       <div className="ml-8 flex min-w-0 flex-wrap items-end gap-2 px-2 pb-2" data-testid="personal-workspace-result-occurrence-actions">
         <label className="grid min-w-[9.5rem] flex-1 gap-1 text-xs font-semibold text-slate-600">
           이 회차 실행일
@@ -279,7 +283,7 @@ function renderTextResult(props: PersonalWorkspacePocResultPresenterProps) {
   return (
     <div data-testid="personal-workspace-result-text-panel" className="min-w-0">
       <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-        <p className="text-sm leading-6 text-slate-600">복사 가능한 개인 실행 결과입니다. 여기서 바꾼 개인 계획은 작성 원문을 수정하지 않습니다.</p>
+        <p className="text-sm leading-6 text-slate-600">{props.readOnly ? '내 사본의 실행 결과를 읽기 전용으로 확인합니다.' : '복사 가능한 개인 실행 결과입니다. 여기서 바꾼 개인 계획은 작성 원문을 수정하지 않습니다.'}</p>
         <div className="flex flex-wrap justify-end gap-2">
           <button
             type="button"
@@ -628,16 +632,17 @@ function handleTabKeyDown(
   event: KeyboardEvent<HTMLButtonElement>,
   currentView: PersonalWorkspacePocResultView,
   onResultViewChange: (view: PersonalWorkspacePocResultView) => void,
+  views: typeof RESULT_VIEWS,
 ): void {
-  const currentIndex = RESULT_VIEWS.findIndex((entry) => entry.view === currentView);
+  const currentIndex = views.findIndex((entry) => entry.view === currentView);
   let nextIndex: number | undefined;
-  if (event.key === 'ArrowRight') nextIndex = (currentIndex + 1) % RESULT_VIEWS.length;
-  if (event.key === 'ArrowLeft') nextIndex = (currentIndex - 1 + RESULT_VIEWS.length) % RESULT_VIEWS.length;
+  if (event.key === 'ArrowRight') nextIndex = (currentIndex + 1) % views.length;
+  if (event.key === 'ArrowLeft') nextIndex = (currentIndex - 1 + views.length) % views.length;
   if (event.key === 'Home') nextIndex = 0;
-  if (event.key === 'End') nextIndex = RESULT_VIEWS.length - 1;
+  if (event.key === 'End') nextIndex = views.length - 1;
   if (nextIndex === undefined) return;
   event.preventDefault();
-  const next = RESULT_VIEWS[nextIndex];
+  const next = views[nextIndex];
   onResultViewChange(next.view);
   const tabs = event.currentTarget.closest('[role="tablist"]')?.querySelectorAll<HTMLButtonElement>('[role="tab"]');
   tabs?.[nextIndex]?.focus();
@@ -646,7 +651,9 @@ function handleTabKeyDown(
 export function PersonalWorkspacePocResultPresenter(
   props: PersonalWorkspacePocResultPresenterProps,
 ) {
-  const activeView = props.navigation.resultView;
+  const requested = props.availableViews === undefined ? RESULT_VIEWS : [...new Set(props.availableViews)].flatMap(view => RESULT_VIEWS.filter(entry => entry.view === view));
+  const views = requested.length ? requested : RESULT_VIEWS.filter(entry => entry.view === 'text');
+  const activeView = props.availableViews === undefined || views.some(entry => entry.view === props.navigation.resultView) ? props.navigation.resultView : views[0].view;
   const headingId = props.headingId ?? 'personal-workspace-result-heading';
   return (
     <section
@@ -664,9 +671,9 @@ export function PersonalWorkspacePocResultPresenter(
       <div
         role="tablist"
         aria-label="결과 보기"
-        className="grid min-w-0 grid-cols-2 gap-1 rounded-lg bg-slate-100 p-1 sm:grid-cols-4"
+        className={`grid min-w-0 gap-1 rounded-lg bg-slate-100 p-1 ${views.length === 4 ? 'grid-cols-2 sm:grid-cols-4' : views.length === 3 ? 'grid-cols-3' : views.length === 2 ? 'grid-cols-2' : 'grid-cols-1'}`}
       >
-        {RESULT_VIEWS.map(({ view, label }) => (
+        {views.map(({ view, label }) => (
           <button
             key={view}
             id={`personal-workspace-result-tab-${view}`}
@@ -680,7 +687,7 @@ export function PersonalWorkspacePocResultPresenter(
             onClick={() => {
               if (activeView !== view) props.onResultViewChange(view);
             }}
-            onKeyDown={(event) => handleTabKeyDown(event, view, props.onResultViewChange)}
+            onKeyDown={(event) => handleTabKeyDown(event, view, props.onResultViewChange, views)}
           >
             {label}
           </button>

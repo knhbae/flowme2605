@@ -16,6 +16,10 @@ const componentSource = readFileSync(
   new URL('./PersonalWorkspacePocLiveEditor.tsx', import.meta.url),
   'utf8',
 );
+const presentationSource = readFileSync(
+  new URL('../../../lib/flow/personal-workspace-poc-editor-presentation.ts', import.meta.url),
+  'utf8',
+);
 
 const guides: readonly PersonalWorkspacePocLiveEditorLineGuide[] = [
   {
@@ -270,7 +274,7 @@ test('component has one accessible native textarea and an inert decorative Flow 
   assert.match(markup, /aria-pressed="true"/u);
   assert.match(markup, />순수 텍스트</u);
   assert.match(markup, />Flow 편집</u);
-  assert.match(markup, />입력 예시</u);
+  assert.match(markup, />빈칸 힌트</u);
 });
 
 test('imperative edit path is strict, native, one logical dispatch, and has no value fallback', () => {
@@ -388,9 +392,19 @@ test('context helper and one-level hierarchy stay presentation-only and geometry
   assert.match(componentSource, /data-owner=\{contextAction\.owner\}/u);
   assert.match(componentSource, /aria-controls=\{contextAction\.controlsId\}/u);
   assert.match(componentSource, /className="absolute right-2[^"]+h-12 w-12/u);
-  assert.match(componentSource, /showHierarchyGuide: Boolean\(canPresent && guide\?\.showHierarchyGuide\)/u);
+  assert.match(presentationSource, /showHierarchyGuide: Boolean\(canPresent && guide\?\.showHierarchyGuide\)/u);
   assert.match(componentSource, /data-hierarchy-depth=\{line\.hierarchyDepth\}/u);
   assert.match(componentSource, /data-hierarchy-guide=\{line\.showHierarchyGuide \? 'true' : 'false'\}/u);
   assert.match(componentSource, /data-hanging-indent=\{line\.showHierarchyGuide \? '2ch' : '0'\}/u);
-  assert.match(componentSource, /isSameLengthSingleLine\(rawText, guide\.presentationText\)/u);
+  assert.match(presentationSource, /isSameLengthSingleLine\(rawText, guide\.presentationText\)/u);
+});
+
+test('K3-A text mode hides ghost controls without removing or replacing the one native editor', () => {
+  const markup = renderToStaticMarkup(<PersonalWorkspacePocLiveEditor
+    editorId="text-only" documentId="same-document" initialValue="# " defaultFlowViewVisible={false} />);
+  assert.match(markup, /data-testid="personal-workspace-live-editor-ghost-toggle"[^>]+hidden=""/u);
+  assert.doesNotMatch(markup, /data-testid="personal-workspace-live-editor-presentation-overlay"/u);
+  assert.equal(markup.match(/<textarea\b/gu)?.length, 1);
+  assert.match(componentSource, /export \{ buildPersonalWorkspacePocLiveEditorPresentation \}/u);
+  assert.match(componentSource, /from '@\/lib\/flow\/personal-workspace-poc-editor-presentation'/u);
 });

@@ -36,7 +36,9 @@ export type PersonalWorkspacePocSourceEditorSnapshot = Readonly<{
 
 export type PersonalWorkspacePocSourceEditorTransactionKind =
   | 'template'
-  | 'helper';
+  | 'helper'
+  | 'validation-example'
+  | 'structure-materialization';
 
 export type PersonalWorkspacePocSourceEditorTicket = Readonly<{
   version: typeof PERSONAL_WORKSPACE_POC_SOURCE_EDITOR_VERSION;
