@@ -17,8 +17,8 @@
 | 1 | 기준점/소유권/양쪽 변경과 충돌 영향 조사 | clean worktree, 충돌5파일 확인 |
 | 2 | v4.1·개발1·개발2 원 요구→현재 UI/owner→회귀 대응 | [독립 요구 감사](merge-readiness-requirements-2026-09-20.md), 구체 브라우저 근거 추가 중 |
 | 3 | 유효한 main 변경·PoC 계약을 함께 보존하며 충돌/실제 결함 해결 | 파일 충돌0; source·docs·lock 해결. 회귀 실행 결과에 따른 후속 수정 중 |
-| 4 | 현재 production·역사 UI 검증을 분리하되 모두 실행, 전체 unit/type/audit/build/E2E와 새 checkout 검증 | 미완료 |
-| 5 | 안전한 작업 branch push, 기존 Draft PR 갱신, exact-head CI/충돌/배포 확인과 보고 | 미실행 |
+| 4 | 현재 production·역사 UI 검증을 분리하되 모두 실행, 전체 unit/type/audit/build/E2E와 새 checkout 검증 | 로컬 분할 검증·새 checkout 완료. 운영 단일run 실패 이력은 유지; 원격 CI 대기 |
+| 5 | 안전한 작업 branch push, 기존 Draft PR 갱신, exact-head CI/충돌/배포 확인과 보고 | code commit7dc80640 완료, push/CI 예정 |
 
 ## 충돌 및 자동 병합 영향
 
@@ -84,10 +84,22 @@ React 검토에서는 native drag의 임시 identity만 ref에 두고 화면 상
 
 ## 현재 발행/제약
 
-이번 목표 commit0/push0, 기존 Draft PR203 유지, main merge0/Preview0/Production0, DB/Auth/외부 설정 변경0. 자동배포 차단은 기존 PR head branch에 적용되어 있으며 main에는 적용되어 있지 않다. main 머지 전 별도 승인 및 배포 안전 확인이 필요하다. 모든 후속 수치는 실제 실행 뒤 이 원장에 기록한다.
+코드 통합 commit `7dc8064019d17f8bbb87f2e22760b37b4a458d1a` 완료. 부모는 PoC `160fbf93`와 main `b4a25a4f`다. main 브랜치 자체를 머지한 것은 아니다. 이 기록 시점 push0, 기존 Draft PR203 유지, main merge0/Preview0/Production0, DB/Auth/외부 설정 변경0. 자동배포 차단은 기존 PR head branch에 적용되어 있으며 main에는 적용되어 있지 않다. main 머지 전 별도 승인 및 배포 안전 확인이 필요하다. 최종 원격 검사·발행 결과는 [PR203](https://github.com/knhbae/flowme2605/pull/203)의 exact-head 상태와 대조한다.
 
 push 전 Vercel 대시보드 읽기 재확인: 이 저장소 연결 프로젝트 목록은 `flowme2605` 하나, Root Directory 빈 값(저장소 루트), deploy hooks0, Ignored Build Step Automatic, Node24.x다. Production Branch Tracking은 명시적으로 `main`의 모든 commit에 Production Deployment를 생성하며 도메인 자동 연결도 켜져 있다. 설정 변경/Save/Apply/Deploy는 실행하지 않았다. 연결 도구의 project 설정 조회는 schema 불일치로 실패해 이 UI 관찰을 사용했고, deployment 목록에서는 목표 시작 이후0건을 확인했다. 기존 PR branch의 `git.deploymentEnabled=false`는 그대로 유지한다. 향후 main 머지는 자동배포 차단 변경 승인을 먼저 받거나 배포 자체를 별도 승인받은 뒤에만 가능하다.
 
 최종 보존 검토: 추가 코드의 제한된 credential 패턴 검색0, 새 test.skip/fixme0, output/env/trace zip의 stage0. 이번 수정 diff whitespace 검사 PASS. main에서 가져온4개 Markdown 파일의 명시적 줄바꿈 공백11개는 main과 동일하므로 정리하지 않았다. 이전 PoC vendor의 CRLF/기존공백도 이번 범위에서 바꾸지 않는다.
 
 검사에서 생성된 PNG125개(기존 tracked122개·새3개)를 `output/merge-generated-screenshots-20260920/`에 exact path로 복사하고 SHA256을 검증했다. 과거 tracked 이미지는 HEAD 원본으로 복원했고 새3개는 해당 로컬 보관본으로 옮겼다. manifest는 `output/merge-generated-screenshots-20260920.json`이다. 새 검사 화면은 commit하지 않는다. main에서 이미 공개한9/7 wireframe 이미지20개는 main 그대로 병합하며 이 새 증거와 구별한다. 다른 worktree의 dirty/미추적 파일은 처리하지 않았다.
+
+## 공개 파일만 사용한 새 checkout 재현
+
+별도 `D:/flowme2605/flow-poc-merge-repro-20260920`에 tracked 파일만 checkout했다. dirty 자료나 기존 node_modules·output·환경 파일은 복사하지 않았다. `npm ci`로212개 설치·audit0 후 lockfile이 같은 코드 commit7dc80640으로 이동했다. 실행 전후 tracked/untracked dirty0이며 아래 결과를 확인했다.
+
+- docs16필수/6332링크 PASS; owner105spec/755tests 누락·중복0.
+- npm test2255/2255, 별도PlanDisplay SSR10/10, strict392entry/424source/진단0.
+- 정상 production18페이지와 역사 test-app9페이지 build PASS. 두 build 모두 배포 아님.
+- 현행14/14(88.540초)와 portable3/3(34.241초), 실패·skip·flaky0. exact-query/corrupt fallback, 네 origin, 작성·복구·이동·기간·원본/운영 경계 포함.
+- 새 checkout에서는 통합1749개 전체와 역사58/보고서51/운영629개를 다시 실행하지 않았다. 이들은 위 작업본 결과와 후속 Linux CI를 구별한다.
+
+새 checkout의 증거는 그 checkout의 `output/integrated-product-poc/` 및 `output/playwright/repro-current-14.json`, `repro-portable-3.json`에 있다. 로컬 전용 근거이며 실제 기기·관찰 사용자·운영 DB 검증으로 확대하지 않는다.
