@@ -3131,6 +3131,7 @@ test('source-backed flow map public page saves into the real My Flow path', asyn
   await detailSection.getByTestId('my-flow-detail-date-input').fill('2026-06-29');
   await expect(detailSection.getByTestId('my-flow-progress-schedule-note')).toContainText('날짜를 넣으면');
   await detailSection.getByTestId('my-flow-detail-save-changes').click();
+  await expect(detailSection.getByTestId('my-flow-item-detail')).not.toBeVisible();
   await gotoLegacySavedPlanLibraryRoute(page, '/calendar');
   await page.getByTestId('my-flow-month-picker').fill('2026-06');
   await page.locator('.fc-daygrid-day[data-date="2026-06-29"]').getByTestId('my-flow-calendar-date-button').click();
@@ -3843,6 +3844,8 @@ test('source-backed undated checklist can add and remove a personal date', async
   const dateControl = detail.getByTestId('my-flow-undated-item-date-control');
   await expect(dateControl).toBeVisible();
   await expect(dateControl).toContainText('날짜를 정하면 캘린더에도 함께 보여요.');
+  const dateOverrideKey = await detail.getAttribute('data-row-key');
+  expect(dateOverrideKey).toMatch(/^travel-packing-list::.+::none$/);
   await detail.getByTestId('my-flow-detail-date-input').fill('2026-07-24');
   await expect(detail.getByTestId('my-flow-undated-item-date-clear')).toHaveAccessibleName(/날짜 없애기$/);
   if (evidenceDir) {
@@ -3850,6 +3853,12 @@ test('source-backed undated checklist can add and remove a personal date', async
   }
   expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
   await detail.getByTestId('my-flow-detail-save-changes').click();
+  // Saving awaits the shared browser write lock. A click completing is not a
+  // persistence receipt: do not unload this document before its commit finishes.
+  await expect.poll(() => page.evaluate((key) => (
+    JSON.parse(localStorage.getItem('flow:my-flow:date-overrides') || '{}')[key!] ?? null
+  ), dateOverrideKey)).toBe('2026-07-24');
+  await expect(detail).not.toBeVisible();
 
   await gotoLegacySavedPlanLibraryRoute(page, '/calendar');
   await page.getByTestId('my-flow-month-picker').fill('2026-07');
@@ -3930,6 +3939,10 @@ test('source-backed undated checklist can add and remove a personal date', async
   await wideDetail.getByTestId('my-flow-detail-date-input').fill('');
   await expect(wideDetail.getByTestId('my-flow-detail-date-input')).toHaveValue('');
   await wideDetail.getByTestId('my-flow-detail-save-changes').click();
+  await expect.poll(() => page.evaluate((key) => (
+    JSON.parse(localStorage.getItem('flow:my-flow:date-overrides') || '{}')[key!] ?? null
+  ), dateOverrideKey)).toBeNull();
+  await expect(wideDetail).not.toBeVisible();
 
   await page.setViewportSize({ width: 390, height: 844 });
   await gotoLegacySavedPlanLibraryRoute(page, '/calendar');

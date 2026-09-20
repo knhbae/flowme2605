@@ -864,6 +864,25 @@ test.describe('개인공간 통합 PoC Stage 3 런타임', () => {
     await page.locator('[name="quick-title"]').fill('stale guard seed');
     await page.getByTestId('personal-workspace-quick-form')
       .getByRole('button', { name: '추가', exact: true }).click();
+    // click dispatches an async transition; establish the completed fixture
+    // transaction before starting the stale-editor zero-write audit window.
+    await expect(page.getByTestId('personal-workspace-task-row')
+      .filter({ hasText: 'stale guard seed' })).toHaveCount(1);
+    await expect(page.getByTestId('personal-workspace-quick-form')).toHaveCount(0);
+    const seedMutations = await readStorageMutations(page);
+    expect(seedMutations.map(({ method, key, outcome }) => ({ method, key, outcome })))
+      .toEqual([
+        { method: 'setItem', key: POC_RECOVERY_KEY, outcome: 'success' },
+        { method: 'setItem', key: POC_STATE_KEY, outcome: 'success' },
+        { method: 'setItem', key: `${POC_PREFIX}editor-storage-commit-marker:v1`, outcome: 'success' },
+        { method: 'removeItem', key: POC_RECOVERY_KEY, outcome: 'success' },
+        { method: 'removeItem', key: `${POC_PREFIX}editor-storage-commit-marker:v1`, outcome: 'success' },
+      ]);
+    expect(successfulStateWrites(seedMutations)).toHaveLength(1);
+    expect((await readPocState(page))?.quickItems.map(({ title }) => title))
+      .toEqual(['stale guard seed']);
+    expect(await readRawStorage(page, POC_RECOVERY_KEY)).toBeNull();
+    await assertOperatingBoundary(page, operatingBefore);
     await resetStorageMutations(page);
     await openFlowByOrigin(page, 'legacy-saved-plan');
     await openPlanEditor(page);

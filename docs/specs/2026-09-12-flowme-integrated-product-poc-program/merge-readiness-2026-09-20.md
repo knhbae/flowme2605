@@ -175,3 +175,17 @@ React/UX 검토에서는 새 네트워크·state/effect·저장 경로가 없고
 최종 수정 후 Stage2 전체12/12 PASS(71.295초, 실패/skip/flaky/retry0), Stage4 전체5개와 인접3개는8/8 PASS(63.471초, 실패/skip/flaky/retry0)했다. Stage2는 기존6화면·200% reflow·원문이 있는 상태의 틀 재열기/취소·native Undo를 모두 유지했다. 새320×700 검사의 실제 가림 제외 editor 높이는 sans-serif139px, monospace121px였다. Stage4는320px fallback font에서도 스크롤 후 닫기/status와 마지막 행동의 실제 hit 검사를 통과했다. 결과 JSON은 `output/playwright/stage2-portrait-complete/results.json`, `output/playwright/stage4-linux-final-summary.json`이다. 중단된 옛 `stage2-portrait-final/results.json`은 `--list` 수집 결과이지 실행 결과가 아니므로 성공 수에 포함하지 않는다.
 
 관련 authoring SSR57/57과 Surface/Product UX38/38, 역사 test build와 최종 product production build도 통과했다. 이는 서로 다른 표적 실행이며 앞선 전체 검증과 중복 합산하지 않는다. 최종 로컬 수정의 전체 Linux CI는 아직 후속 push 뒤 확인해야 한다. PR Draft·main merge0·배포0의 경계는 그대로다.
+
+### 두 번째 Linux 전체 완주: 비동기 완료 전제 보강
+
+`085f77c4`의 [CI](https://github.com/knhbae/flowme2605/actions/runs/35522815580)는 core 전부 PASS, E2E760개 중757 PASS/1 FAIL/2 flaky/skip0이었다. 앞선 작성 높이·invalid drop·좁은 이동창 실패3개는 모두 통과했다. core의 실제 로그·artifact에서 npm2255/2255, Plan SSR10/10, 검사기8/8, 모델181파일1749/1749, strict392entry/424source/진단0, portable4/4(34.8초), docs6333링크, audit0·production build를 확인했다. 모델 종료 검증0, failed/skip/cancel/source변경0이다. 로그·report·trace는 `output/ci-e2e-35522815580/`와 `output/ci-e2e-35522815580.log`, core JSON은 `output/ci-core-35522815580/`에 남겼다.
+
+같은 커밋의 별도 Windows clean checkout에서도 historical build·owner manifest105 및 Stage2 12+Stage4 5+인접3을 한 번에 실행해20/20 PASS(115.670초, 실패/skip/flaky/retry0)했다. 최종 tracked 변경0을 확인했다. 이 결과가 Linux 실패를 대체하지는 않는다.
+
+- Stage3 stale 실패: 클릭 종료 후0.705ms에 사전 QuickItem 생성 audit를 초기화했다. 저장 recorder는 동기식이지만 제품 commit은 rAF·write lock을 기다리므로 아직 사전 저장이 끝나지 않았다. CI에 잡힌5회는 모두 `workspace:create-quick-item:1`의 저널/target/marker/정리였다. 생성 행·폼 종료, 정확한5호출/target1·운영 불변을 확인한 후 stale 구간의 audit를 시작하도록 했다. 기존 stale0쓰기·외부 raw bytes·draft·오류 focus 조건은 보존했다. Stage3 전체13/13(80.533초), 문제 구간10회 반복10/10(57.296초)이 통과했다.
+- Stage4 focus flaky: opener Enter 뒤 약12ms 만에 목적지 focus, 이어6ms 뒤 Enter를 실행해 초기 rAF focus와 경합했다. 실패 화면은 ‘내일’이 아니라 초기 ‘오늘’에 focus가 있고 정상 no-op 안내였다. row/Item/Flow의 기존 keyboard 경로에 초기 focus 인계와 목표 focus 확인을 추가했다. 같은 위치를 성공으로 바꾸지 않았다. 문제 구간3회 반복3/3(31.146초), Stage4전체5+인접3=8/8(88.004초)이 통과했다.
+- 운영 개인 날짜 flaky: save click 완료1.924ms 뒤 문서를 `/calendar`로 교체했다. 해당 저장은 shared browser write lock을 await한다. 원래 날짜 추가/삭제 여정에 대상의 exact override 값과 편집 종료 확인을 추가하고 기존 calendar event·TXT/Sheet/ICS·reload/삭제 검사를 모두 유지했다.5회 반복5/5(54.3초)이 통과했다. 같은 파일의 인접 Flow Map save→calendar도 편집 종료를 먼저 확인하도록 보강했다. hard navigation 전에 저장 완료를 기다리는 검사이며, 저장 중 페이지 강제 종료의 데이터 보호를 입증하는 것으로 확대하지 않는다.
+
+위 보강은 test-only이며 제품 코드·writer·schema·timeout·skip은 바꾸지 않았다. 반복 검사 수는 독립 요구나 새 시나리오로 합산하지 않는다. 전체 수집은 여전히105파일760개이며 다음 전체 CI로 최종 판정한다.
+
+같은 준비 경계의 인접 검사도 확인했다. Stage4 QuickItem keyboard 경로1곳에 같은 focus2개를 추가해3회 반복3/3(21.6초) 통과했다. 운영 날짜+Flow Map 두 여정은2회씩 총4/4(24.550초) 통과했다. 인접 Flow Map에 처음 추가한 완료 확인은 실제 editor가 아닌 계속 표시되는 inspector 컨테이너를 대상으로 잡아2회 실패했다. 새 assertion의 대상을 내부 Item editor로 바로잡았으며 기존 calendar 기대는 바꾸지 않았다. 최초 결과는 `output/playwright/calendar-commit-neighbors/`, 최종은 `output/playwright/calendar-commit-neighbors-final/`로 분리했다. 이 묶음의 최종 diff는 검사3파일40줄 추가·삭제0 및 원장 갱신이다.

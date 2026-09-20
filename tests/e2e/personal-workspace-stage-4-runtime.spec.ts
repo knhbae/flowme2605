@@ -446,7 +446,9 @@ test.describe('FlowMe 개인공간 Stage 4 이동·반응형 runtime 계약', ()
 
     await rowMore.focus();
     await page.keyboard.press('Enter');
+    await expect(page.getByTestId('personal-workspace-date-target-0')).toBeFocused();
     await folderTarget(page, targetFolderId).focus();
+    await expect(folderTarget(page, targetFolderId)).toBeFocused();
     await page.keyboard.press('Enter');
     await expectSaved(page);
     row = taskRow(page, 'Stage 4 포커스 빠른 할 일');
@@ -494,7 +496,9 @@ test.describe('FlowMe 개인공간 Stage 4 이동·반응형 runtime 계약', ()
       .getByRole('button', { name: '이동', exact: true })
       .focus();
     await page.keyboard.press('Enter');
+    await expect(page.getByTestId('personal-workspace-date-target-0')).toBeFocused();
     await page.getByTestId('personal-workspace-date-target-1').focus();
+    await expect(page.getByTestId('personal-workspace-date-target-1')).toBeFocused();
     await page.keyboard.press('Enter');
     await expectSaved(page);
     itemOpener = page.locator(`[data-todo-detail-link="${itemRef}"]`);
@@ -507,7 +511,9 @@ test.describe('FlowMe 개인공간 Stage 4 이동·반응형 runtime 계약', ()
 
     await flowMove.focus();
     await page.keyboard.press('Enter');
+    await expect(page.getByTestId('personal-workspace-folder-target-unfiled')).toBeFocused();
     await folderTarget(page, targetFolderId).focus();
+    await expect(folderTarget(page, targetFolderId)).toBeFocused();
     await page.keyboard.press('Enter');
     await expectSaved(page);
     flowMove = page.getByRole('button', { name: '폴더 이동', exact: true });
@@ -558,8 +564,10 @@ test.describe('FlowMe 개인공간 Stage 4 이동·반응형 runtime 계약', ()
     handle = row.getByTestId('personal-workspace-move-handle');
     await handle.focus();
     await page.keyboard.press('Enter');
+    await expect(page.getByTestId('personal-workspace-date-target-0')).toBeFocused();
     target = folderTarget(page, targetFolderId);
     await target.focus();
+    await expect(target).toBeFocused();
     await page.keyboard.press('Enter');
     await expectSaved(page);
     const keyboardResult = quickMoveSignature(await readPocState(page), itemRef);
