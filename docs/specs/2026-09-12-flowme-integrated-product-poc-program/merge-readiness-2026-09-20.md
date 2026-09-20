@@ -103,3 +103,11 @@ push 전 Vercel 대시보드 읽기 재확인: 이 저장소 연결 프로젝트
 - 새 checkout에서는 통합1749개 전체와 역사58/보고서51/운영629개를 다시 실행하지 않았다. 이들은 위 작업본 결과와 후속 Linux CI를 구별한다.
 
 새 checkout의 증거는 그 checkout의 `output/integrated-product-poc/` 및 `output/playwright/repro-current-14.json`, `repro-portable-3.json`에 있다. 로컬 전용 근거이며 실제 기기·관찰 사용자·운영 DB 검증으로 확대하지 않는다.
+
+## 원격 첫 검사와 문서 이식성 수정
+
+`9dba2b05`를 기존 PR branch에 정상 fast-forward push했다. pre-push의 docs/npm2255/build는 우회 없이 통과했다. 원격 PR은 `MERGEABLE`로 바뀌었고 main은 `b4a25a4f` 그대로다. push 후 Vercel 목표 시작 이후 배포0건을 재확인했다.
+
+[첫 Linux CI](https://github.com/knhbae/flowme2605/actions/runs/35517963964)의 core는 docs 단계에서 실패했다. `d2-audit.md`의 P2-C와 parity 링크2개가 저장소 내부 정본 대신 이전 `D:/...` worktree를 가리켰다. Windows clean checkout에도 그 외부 폴더가 존재해 옛 검사기가 이를 허용했다. 따라서 앞선 Windows PASS는 Linux 문서 이식성까지 보증하지 못했다.
+
+두 링크만 같은 저장소의 상대경로로 고쳤고 감사 내용·판정은 그대로다. 문서 검사기는 OS와 무관하게 Windows/UNC/절대/file 링크와 저장소 밖 상대경로를 거부하도록 보강했다. 정본 상대경로 통과, 없는 문서 실패, 실제 존재하는 절대·Windows·UNC·file 경로 실패, 실제 존재하는 이웃 파일 실패의4개 회귀를 docs:check에 추가해4/4 PASS, 실제6332링크 PASS다. 최초 실패 로그는 `output/ci-core-35517963964.log`에 보존한다. 이후 원격 결과는 새 head에서 다시 확인한다.

@@ -29,7 +29,7 @@ form을 여는 순간 editor/document/source fingerprint·dispatch epoch·owner 
 
 ### 정보 메뉴
 
-원본 팔레트 (로컬 전용 근거: `D:/flowme2605/flow-text-authoring-flow-view-poc-20260824/docs/specs/2026-08-26-flowme-text-authoring-contextual-item-palette/spec.md`)와 [P2-C 계약](D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-personal-editing-closure-v1/spec.md)은 처음에 네 범주만 보여 주도록 한다. 현재 React는 전체 16개 속성을 동시에 표시한다. standalone은 네 범주 버튼을 선택한 후 해당 목록만 연다.
+원본 팔레트 (로컬 전용 근거: `D:/flowme2605/flow-text-authoring-flow-view-poc-20260824/docs/specs/2026-08-26-flowme-text-authoring-contextual-item-palette/spec.md`)와 [P2-C 계약](../2026-09-03-flowme-integrated-poc-personal-editing-closure-v1/spec.md)은 처음에 네 범주만 보여 주도록 한다. 현재 React는 전체 16개 속성을 동시에 표시한다. standalone은 네 범주 버튼을 선택한 후 해당 목록만 연다.
 
 수정 제안은 다음과 같다.
 
@@ -55,7 +55,7 @@ P3-C가 완성 검증 예시와 명시적인 글 만들기를 후속 허용했�
 
 React에는 순수 텍스트/Flow 표현 전환, 현재 줄의 raw 문법, 문서형 나머지 줄, 문맥 +, 한 단계 계층 가이드가 있다. standalone은 textarea와 ghost를 제공하고, 속성은 결과의 항목 검토에서 연다. 같은 데이터·결과가 나온다고 같은 UX인 것은 아니다.
 
-[이전 parity 범위](D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-03-flowme-integrated-poc-authoring-workspace-parity-v1/requirements.md)가 standalone의 일부 차이를 P1로 미뤘으므로 이 차이를 모두 “미승인 퇴행”으로 부르지는 않는다. 그러나 현재 parent 충족을 두 런타임 모두의 UX 완성으로 보고할 수 없다. 다음 묶음은 한 source·한 editor·한 Undo owner를 유지하며 문서형 표현과 문맥 명령을 공유하는 설계다. 두 번째 편집기나 운영 writer를 만드는 일은 아니다.
+[이전 parity 범위](../2026-09-03-flowme-integrated-poc-authoring-workspace-parity-v1/requirements.md)가 standalone의 일부 차이를 P1로 미뤘으므로 이 차이를 모두 “미승인 퇴행”으로 부르지는 않는다. 그러나 현재 parent 충족을 두 런타임 모두의 UX 완성으로 보고할 수 없다. 다음 묶음은 한 source·한 editor·한 Undo owner를 유지하며 문서형 표현과 문맥 명령을 공유하는 설계다. 두 번째 편집기나 운영 writer를 만드는 일은 아니다.
 
 ### 원문 정렬과 개인 순서
 

@@ -26,7 +26,7 @@
     "hooks:install": "node scripts/install-git-hooks.mjs",
     "workflow:session-start": "node scripts/workflows/repo-workflow.mjs session-start",
     "workflow:closeout": "node scripts/workflows/repo-workflow.mjs work-closeout",
-    "docs:check": "node scripts/sync-skills.mjs --check && node scripts/check-docs.mjs",
+    "docs:check": "node scripts/sync-skills.mjs --check && node --test scripts/check-docs.test.mjs && node scripts/check-docs.mjs",
     "security:audit": "npm audit --audit-level=high",
     "audit:p26:journeys": "node scripts/content-audit/run-p26-six-shape-journey-gate.mjs",
     "verify": "npm run docs:check && npm test && npm run build",

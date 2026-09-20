@@ -88,7 +88,16 @@ for (const file of markdownFiles) {
     if (!target) continue;
 
     checkedLinks += 1;
+    if (path.isAbsolute(target) || path.win32.isAbsolute(target) || /^file:/i.test(target)) {
+      errors.push(`${relativeFile}: non-portable absolute local link -> ${match[1]}`);
+      continue;
+    }
     const resolved = path.resolve(path.dirname(file), target);
+    const repoRelative = path.relative(root, resolved);
+    if (repoRelative === '..' || repoRelative.startsWith(`..${path.sep}`)) {
+      errors.push(`${relativeFile}: local link escapes repository -> ${match[1]}`);
+      continue;
+    }
     if (!existsSync(resolved)) {
       errors.push(`${relativeFile}: broken local link -> ${match[1]}`);
     }
