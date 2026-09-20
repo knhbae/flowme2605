@@ -1,0 +1,1131 @@
+{
+  "product": "D1",
+  "sources": [
+    {
+      "path": "D:/flowme2605/flow-mvp/docs/content-audit/2026-08-19-flowme-after-end-to-end-ui-scenarios-ko.html",
+      "anchor": "L743,L750-L952,L1003-L1128,L1332-L1466",
+      "decision": "원본 UI는 구조적 제안이며 당시 Production 캡처/배포/사용자검증이 아님. 출처→기준일/결과→편집→한번저장→실행→복구의 기대 UX.",
+      "scope": "D1 원본 화면·행동 비교"
+    },
+    {
+      "path": "D:/flowme2605/flow-mvp/docs/specs/2026-08-12-my-plan-edit-lifecycle-unification/spec.md",
+      "anchor": "Product contract; Acceptance criteria",
+      "decision": "공통 Plan/Item staged 저장·dirty 이탈·identity 보호·관리 entry. 운영 writer는 후속 A0-2로 PoC 범위에서 대체.",
+      "scope": "D1 공통 편집/lifecycle"
+    },
+    {
+      "path": "D:/flowme2605/flow-mvp/docs/pr-history/2026-08-13-flow-map-item-date-parity.md",
+      "anchor": "L25-L49",
+      "decision": "source-equal fixed pin 보존, 명시 reset은 source projection, in-session anchor 즉시 재투영. 과거 release 숫자는 이번 실행 근거 아님.",
+      "scope": "D1 날짜 의미"
+    },
+    {
+      "path": "codex thread 019ff3f6-dd52-7061-a5e2-a97c5500f2a9",
+      "anchor": "turn 01a01df3-beb0-7502-adcc-7905a7b7a072 / item-1272,1278; turn 01a01da6-0200-70a1-b570-771cffcf5f66 / item-1252",
+      "decision": "직접 최근2턴 읽기: 최소 완료→회고→지난실행도 IDEAS 보류, active 개발 아님. 반응형1023적층/1024·1280 구조는 해당 원본 시안 교정 맥락.",
+      "scope": "후속 보류 경계; 대화 전체 직접 전수회수 아님"
+    },
+    {
+      "path": "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-poc-requirements-traceability-ko.html#trace-data",
+      "anchor": "script#trace-data → D1-001..026 (부모26, 기존subchecks59)",
+      "decision": "생성 HTML 현재값이 이번 inventory 기준. 원본 JSON은 현재 충족표로 사용하지 않음. 부모충족을59조건 새PASS로 환산하지 않음.",
+      "scope": "ID/요구/대화 회수 메타/역사판정 보존"
+    },
+    {
+      "path": "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md",
+      "anchor": "§1, A0-2, A0-3, A0-6",
+      "decision": "사용자 보호→통합→범위별후속결정 우선. React 정본/standalone fixture 동반물; 핵심 UX와 receipt 의미는 동일, live/route/운영 차이는 허용.",
+      "scope": "PoC 운영/제품표면 경계"
+    },
+    {
+      "path": "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/stage-3-contract.md",
+      "anchor": "§5-8",
+      "decision": "Plan-level 설명·메모·anchor owner는 추정하지 않아 부분. Item 3상태/readonly source, staged/dirty/receipt 계약. 후속 P2/P3가 section/4슬롯 일부 대체.",
+      "scope": "세부 미구현과 이후 대체범위 분리"
+    },
+    {
+      "path": "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-04-flowme-integrated-poc-production-candidate-v1/decision-contract.md",
+      "anchor": "L16,L47-L53",
+      "decision": "전역 ink/cobalt와 exact-query local white/gray/teal owner 분리. 전체 token 재선택/운영 변경 금지.",
+      "scope": "현재 local UX/UI 기준"
+    },
+    {
+      "path": "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-05-flowme-integrated-poc-execution-detail-gap-v1/spec.md",
+      "anchor": "D1-017 실행 상세·readonly field·exact metadata 범위",
+      "decision": "source description/criteria와 personal memo 분리. 발견/선택 전 출처 및 Plan anchor까지 완성한 목표 아님.",
+      "scope": "현재 실행 상세 보강 한계"
+    },
+    {
+      "path": "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-poc-requirements-traceability-assets/requirements-d1-history.json",
+      "anchor": "R1-R9",
+      "decision": "Text default가 Todo 제안 대체, 단일input 후속승인, richMap 폐기, XP/회고/지난실행 보류. 현재판정이 아니라 과거결정 회수자료.",
+      "scope": "후속 대체/보류 결정의 2차 추적 근거"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "D1-001",
+      "journey": "J6",
+      "requirement": "네 saved-plan origin이 같은 Plan→Item 화면과 필드 순서를 사용하고 origin 차이는 adapter에만 남는다.",
+      "originalEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-poc-requirements-traceability-ko.html#trace-data → D1-001 원 요구·turn D1-conversation-001 · 일반 Flow, Flow Map, 개인 메모·URL 초안, 이전 저장본이 동일한 계획 편집 화면 (회수된 추적 자료; 직접 대화 전수 재열람 아님)",
+        "원 trace의 sourceArtifact: docs/specs/2026-08-12-my-plan-edit-lifecycle-unification/spec.md (해당 부모의 역사 출처 포인터; 직접 읽기 범위/부재 여부는 sources·limitations 참고)"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:83 (운영 writer 대신 PoC shadow)",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:265 (React 정본/fixture 동반물의 핵심 UX 의미)"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:1577",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocEditorSurface.tsx:623",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/tests/e2e/personal-workspace-stage-3-runtime.spec.ts:674"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:936",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:1030",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:1064"
+      ],
+      "functionality": "React 네 origin 공통 Plan→Item 진입과 저장 owner를 코드 확인. standalone도 공통 화면은 있으나 필드·이탈 의미는 동일하지 않음.",
+      "ux": "부분: 공통 껍데기와 staged 저장은 있으나 standalone 날짜·dirty·receipt 차이가 남음.",
+      "ui": "이번 담당은 화면을 새로 렌더하지 않음. 레이아웃·가림·시인성 현재 판정은 상위 담당 P3-K 브라우저 증거와 결합해야 함.",
+      "evidence": "현재 코드·계약 읽기 확인; D1-001 역사 부모=충족, 원자조건 0개 보존. 테스트 파일은 과거/선행 증거 포인터이며 이번 재실행 0.",
+      "disposition": "actual-gap",
+      "gap": "공통 화면 존재를 모든 필드/취소/복귀까지 동일하다고 확대할 수 없음.",
+      "proposal": "K-D1-01/02/06 묶음으로 공통 intent와 상태표를 먼저 맞추고 표면별 adapter만 구분.",
+      "doneWhen": "네 origin과 authored fixture 각각 Plan→Item→부모 반영→최종 저장→reload; apply write 0·commit 성공 1·원본 불변을 양쪽에서 확인."
+    },
+    {
+      "id": "D1-002",
+      "journey": "J6",
+      "requirement": "selected Plan, 실행 상세, Calendar, Quick Item, 여러 항목 조정의 Item 행동이 같은 transition과 거래로 수렴한다.",
+      "originalEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-poc-requirements-traceability-ko.html#trace-data → D1-002 원 요구·turn D1-conversation-002 · 다른 경로의 단일 Step 수정 UX가 따로 있지 않나 (회수된 추적 자료; 직접 대화 전수 재열람 아님)",
+        "원 trace의 sourceArtifact: docs/specs/2026-08-13-plan-edit-trash-structure-unification/spec.md (해당 부모의 역사 출처 포인터; 직접 읽기 범위/부재 여부는 sources·limitations 참고)"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:83 (운영 writer 대신 PoC shadow)",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:265 (React 정본/fixture 동반물의 핵심 UX 의미)"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:1642",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:1672",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:4687",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/tests/e2e/personal-workspace-p3j-execution-detail.spec.ts:360"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:975",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:1038",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:2990",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:3106",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/tests/e2e/personal-workspace-p3j-standalone-detail.spec.ts:238"
+      ],
+      "functionality": "현재 지원 opener는 같은 Item identity를 유지. React 네 결과는 Item 편집, standalone Todo/Calendar는 읽기 상세 후 Plan 편집.",
+      "ux": "의도적 경로 차이를 구분해야 함. standalone TXT/Sheet에는 Item opener가 없음.",
+      "ui": "이번 담당은 화면을 새로 렌더하지 않음. 레이아웃·가림·시인성 현재 판정은 상위 담당 P3-K 브라우저 증거와 결합해야 함.",
+      "evidence": "현재 코드·계약 읽기 확인; D1-002 역사 부모=충족, 원자조건 0개 보존. 테스트 파일은 과거/선행 증거 포인터이며 이번 재실행 0.",
+      "disposition": "intentional",
+      "gap": "운영 /calendar·public route까지 PoC 연결 완료로 주장하면 범위 과장. TXT/Sheet opener 부재를 무조건 새 결함으로 세지 않음.",
+      "proposal": "경로별 '결과→읽기 상세→수정'과 '결과→Item 편집'을 따로 명명하고 정확한 복귀/메모 보존 조건을 공유.",
+      "doneWhen": "지원 경로별 exact itemRef, 개인 메모/원문 기준, 취소 write 0, 원래 result tab·선택 날짜·초점을 직접 대조. 제외 경로는 명시."
+    },
+    {
+      "id": "D1-003",
+      "journey": "J4",
+      "requirement": "Item 적용은 부모 draft만 갱신하고 Plan의 최종 단일 저장 전에는 운영 storage mutation이 없다.",
+      "originalEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-poc-requirements-traceability-ko.html#trace-data → D1-003 원 요구·turn D1-conversation-003 · Item 계획에 반영, Plan 변경 적용, 내 계획에 저장 (회수된 추적 자료; 직접 대화 전수 재열람 아님)",
+        "원 trace의 sourceArtifact: docs/specs/2026-08-12-public-plan-edit-surface-unification/qa.md (해당 부모의 역사 출처 포인터; 직접 읽기 범위/부재 여부는 sources·limitations 참고)"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:83 (운영 writer 대신 PoC shadow)",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:265 (React 정본/fixture 동반물의 핵심 UX 의미)"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:4078",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-plan-editor.ts",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/tests/e2e/personal-workspace-stage-3-runtime.spec.ts:728"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:3002",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:3038",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js:2079"
+      ],
+      "functionality": "Item 반영은 부모 draft, Plan 최종 저장은 별도 transaction이라는 구조를 양쪽 코드에서 확인.",
+      "ux": "저장 시점 구분 구현 확인. 성공/실패 후 설명 차이는 D1-011 별도.",
+      "ui": "이번 담당은 화면을 새로 렌더하지 않음. 레이아웃·가림·시인성 현재 판정은 상위 담당 P3-K 브라우저 증거와 결합해야 함.",
+      "evidence": "현재 코드·계약 읽기 확인; D1-003 역사 부모=충족, 원자조건 0개 보존. 테스트 파일은 과거/선행 증거 포인터이며 이번 재실행 0.",
+      "disposition": "code-confirmed",
+      "gap": "현재 코드에 대한 신규 실행 증거는 없음. 과거 '모델만 있고 UI 없음' 사유는 미갱신.",
+      "proposal": "현재 구현을 재개발하지 말고 기존 저장 시점 증거를 갱신하고 K-D1-06 피드백 보강만 분리.",
+      "doneWhen": "서로 다른 두 Item 변경 후 부모에 모이는 값과 최종 성공 write 1을 검증; 실패/취소는 마지막 성공 상태 유지."
+    },
+    {
+      "id": "D1-004",
+      "journey": "J7",
+      "requirement": "취소·Escape·Back이 같은 discard 규칙을 따르고 닫은 뒤 정확한 opener focus와 scroll 위치로 돌아간다.",
+      "originalEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-poc-requirements-traceability-ko.html#trace-data → D1-004 원 요구·turn D1-conversation-003 · dirty 취소·Escape·browser Back은 같은 버리기 확인 (회수된 추적 자료; 직접 대화 전수 재열람 아님)",
+        "원 trace의 sourceArtifact: docs/specs/2026-08-12-my-plan-edit-lifecycle-unification/qa.md (해당 부모의 역사 출처 포인터; 직접 읽기 범위/부재 여부는 sources·limitations 참고)"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:83 (운영 writer 대신 PoC shadow)",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:265 (React 정본/fixture 동반물의 핵심 UX 의미)"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/stage-3-contract.md:119",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/tests/e2e/personal-workspace-stage-3-runtime.spec.ts:976"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:1083",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:3037",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:3627",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/output/p3k/browser-audit.json#K-J7-standalone-dirty",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/output/playwright/p3k/standalone-dirty-escape-390x844.png"
+      ],
+      "functionality": "React 공통 dirty controller와 회귀 test 존재. standalone 취소·Escape는 dirty 구분 없이 draft를 버림.",
+      "ux": "실제 재현: 상위 담당 Chromium에서 개인편집→Flow 제목 변경→Escape로 확인창 없이 닫힘(visibleConfirmation 0, titleFieldCount 0). storage mutation 0은 유지되어 데이터 안전과 dirty UX 결함을 분리.",
+      "ui": "이번 담당은 화면을 새로 렌더하지 않음. 레이아웃·가림·시인성 현재 판정은 상위 담당 P3-K 브라우저 증거와 결합해야 함.",
+      "evidence": "현재 코드 + 상위 담당 P3-K K-J7-standalone-dirty의 FAIL reproduced 로그를 직접 읽음. 현재 담당 테스트 재실행0; 상위 담당의 동일 시나리오를 중복합산하지 않음.",
+      "disposition": "actual-gap",
+      "gap": "K-D1-01. 기존 D1-004 부모 충족은 양쪽 dirty parity 증거가 아님.",
+      "proposal": "clean close/dirty confirm/계속 편집/버리기/저장 중 차단을 한 close intent로 모으고 opener·scroll을 보존.",
+      "doneWhen": "Plan/Item 각각 버튼취소·Escape·Back; clean 0write, dirty 계속편집 draft/selection/scroll 보존, discard 0write 및 정확 opener 복귀."
+    },
+    {
+      "id": "D1-005",
+      "journey": "J6",
+      "requirement": "개인 제목·날짜·메모는 편집하고 원문 설명·완료 기준·출처는 구분된 읽기 전용 정보로 본다.",
+      "originalEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-poc-requirements-traceability-ko.html#trace-data → D1-005 원 요구·turn D1-conversation-002 · 할 일 이름·날짜·개인 메모, 원문 설명·완료 기준·출처는 읽기 전용 (회수된 추적 자료; 직접 대화 전수 재열람 아님)",
+        "D:/flowme2605/flow-mvp/docs/content-audit/2026-08-19-flowme-after-end-to-end-ui-scenarios-ko.html:874",
+        "D:/flowme2605/flow-mvp/docs/content-audit/2026-08-19-flowme-after-end-to-end-ui-scenarios-ko.html:876",
+        "D:/flowme2605/flow-mvp/docs/content-audit/2026-08-19-flowme-after-end-to-end-ui-scenarios-ko.html:881",
+        "원 trace의 sourceArtifact: D1 baseline session#D1-conversation-002 (해당 부모의 역사 출처 포인터; 직접 읽기 범위/부재 여부는 sources·limitations 참고)"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:83 (운영 writer 대신 PoC shadow)",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:265 (React 정본/fixture 동반물의 핵심 UX 의미)",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-05-flowme-integrated-poc-execution-detail-gap-v1/spec.md"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocEditorSurface.tsx:233",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:511",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-item-details.ts",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/tests/e2e/personal-workspace-p3j-execution-detail.spec.ts"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:1093",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:1105",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/tests/e2e/personal-workspace-p3j-standalone-detail.spec.ts"
+      ],
+      "functionality": "원문 설명·완료 기준·개인 메모 분리 및 exact source join은 P3-J 후 코드 확인. 실제 값 없는 완료 기준은 만들지 않음.",
+      "ux": "읽기/개인 편집 소유권 표시 구현 확인. 검색 미리보기는 같은 renderer가 아니므로 D1-017에 별도 차이.",
+      "ui": "이번 담당은 화면을 새로 렌더하지 않음. 레이아웃·가림·시인성 현재 판정은 상위 담당 P3-K 브라우저 증거와 결합해야 함.",
+      "evidence": "현재 코드·계약 읽기 확인; D1-005 역사 부모=충족, 원자조건 6개 보존. 테스트 파일은 과거/선행 증거 포인터이며 이번 재실행 0.",
+      "disposition": "code-confirmed",
+      "gap": "부모 전체 새 재시험 아님. Flow-level 메모/설명 owner 부재는 Item 메모로 대체해서 닫을 수 없음.",
+      "proposal": "P3-J 동작 보존. source completion_criteria와 personal memo를 읽기 상세·편집·결과 왕복에서 독립 유지.",
+      "doneWhen": "메모 변경/비움, 날짜 이동, 완료/다시 열기, Undo/reload 뒤 원문 description/criteria byte 유지; criterion 없는 source는 표시 창작 0."
+    },
+    {
+      "id": "D1-006",
+      "journey": "J6",
+      "requirement": "날짜는 inherit·fixed·unscheduled를 명시하고 기준일 변경 시 preview를 즉시 재계산하되 source 일정과 Flow 소속은 바꾸지 않는다.",
+      "originalEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-poc-requirements-traceability-ko.html#trace-data → D1-006 원 요구·turn D1-conversation-002 · 원본 일정 사용, 특정 날짜로 고정, 날짜 없음 (회수된 추적 자료; 직접 대화 전수 재열람 아님)",
+        "D:/flowme2605/flow-mvp/docs/pr-history/2026-08-13-flow-map-item-date-parity.md:25",
+        "원 trace의 sourceArtifact: docs/pr-history/2026-08-13-flow-map-item-date-parity.md (해당 부모의 역사 출처 포인터; 직접 읽기 범위/부재 여부는 sources·limitations 참고)"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:83 (운영 writer 대신 PoC shadow)",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:265 (React 정본/fixture 동반물의 핵심 UX 의미)",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/stage-3-contract.md:90 (Plan-level 일정 owner 부재)",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/stage-3-contract.md:158 (탐색 baseDate/selectedDate)"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocEditorSurface.tsx:455",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-plan-editor.ts:360",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocResultPresenter.tsx:482"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:936",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:1118",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js:2091"
+      ],
+      "functionality": "React Item inherit/fixed_date/unscheduled 구현. standalone은 nullable planDate 입력 하나. Plan anchor 재계산은 두 표면 모두 확인되지 않음.",
+      "ux": "실제 차이 + 범위 보류: 원본 따르기와 원본과 같은 날짜 고정의 의미를 standalone에서 구분할 수 없음.",
+      "ui": "이번 담당은 화면을 새로 렌더하지 않음. 레이아웃·가림·시인성 현재 판정은 상위 담당 P3-K 브라우저 증거와 결합해야 함.",
+      "evidence": "현재 코드·계약 읽기 확인; D1-006 역사 부모=충족, 원자조건 5개 보존. 테스트 파일은 과거/선행 증거 포인터이며 이번 재실행 0.",
+      "disposition": "actual-gap",
+      "gap": "K-D1-02/03. stage-3 계약이 Plan-level 일정 owner 부재를 명시했지만 부모 충족 표기가 이를 가림.",
+      "proposal": "기존 source/개인계획/실행 owner를 분리한 상태표부터 작성. Item 날짜 3상태 parity는 독립 구현; anchor는 기존 DTO capability를 먼저 조사하고 versioned PoC 계약을 승인 후 구현.",
+      "doneWhen": "source-dated/undated 각 3상태 전환, source-equal pin 및 명시 reset, anchor preview의 draft 0write, fixed/unscheduled/실행일 불변을 별도 검사."
+    },
+    {
+      "id": "D1-007",
+      "journey": "J1/J7",
+      "requirement": "미지원 capability는 숨김 또는 이유 있는 차단으로 처리하고 malformed·unsupported origin은 fail closed한다.",
+      "originalEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-poc-requirements-traceability-ko.html#trace-data → D1-007 원 요구·turn D1-conversation-004 · 지원 불가능한 수정 동작은 무반응 대신 숨김·차단 (회수된 추적 자료; 직접 대화 전수 재열람 아님)",
+        "원 trace의 sourceArtifact: docs/specs/2026-08-12-my-plan-edit-lifecycle-unification/spec.md (해당 부모의 역사 출처 포인터; 직접 읽기 범위/부재 여부는 sources·limitations 참고)"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:83 (운영 writer 대신 PoC shadow)",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:265 (React 정본/fixture 동반물의 핵심 UX 의미)"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-read-model.ts",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/tests/e2e/personal-workspace-p3j-execution-detail.spec.ts",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/tests/e2e/personal-workspace-stage-3-runtime.spec.ts:1156"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:613"
+      ],
+      "functionality": "React query/origin/payload guard 및 standalone 손상 payload guard 코드 존재. live 네 origin 판정은 React 영역.",
+      "ux": "지원되지 않는 기능을 보이는 무반응 버튼으로 만들지 않는 경계 유지.",
+      "ui": "이번 담당은 화면을 새로 렌더하지 않음. 레이아웃·가림·시인성 현재 판정은 상위 담당 P3-K 브라우저 증거와 결합해야 함.",
+      "evidence": "현재 코드·계약 읽기 확인; D1-007 역사 부모=충족, 원자조건 0개 보존. 테스트 파일은 과거/선행 증거 포인터이며 이번 재실행 0.",
+      "disposition": "code-confirmed",
+      "gap": "standalone fixture guard를 실제 운영 origin adapter 검증으로 대체하지 않음.",
+      "proposal": "기존 fail-closed 회귀 유지. 새로운 날짜/포함 owner를 열 때 unsupported capability 안내를 먼저 설계.",
+      "doneWhen": "invalid query·unsupported origin·corrupt payload의 default /my fallback 및 prefix 밖 호출 0을 React에서, fixture corruption 안전 화면을 standalone에서 분리 검증."
+    },
+    {
+      "id": "D1-008",
+      "journey": "J4/J7",
+      "requirement": "Map ID/version, child·Item identity, source/personal/execution/export ownership과 운영 key/schema가 바뀌지 않는다.",
+      "originalEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-poc-requirements-traceability-ko.html#trace-data → D1-008 원 요구·turn D1-conversation-005 · 기존 Map ID·저장 키·스키마는 변경하지 않음 (회수된 추적 자료; 직접 대화 전수 재열람 아님)",
+        "원 trace의 sourceArtifact: D1 baseline session#D1-conversation-005 (해당 부모의 역사 출처 포인터; 직접 읽기 범위/부재 여부는 sources·limitations 참고)"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:83 (운영 writer 대신 PoC shadow)",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:265 (React 정본/fixture 동반물의 핵심 UX 의미)"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-read-model.ts",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-storage-transaction.ts",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/tests/e2e/personal-workspace-stage-3-runtime.spec.ts:659"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/tests/e2e/personal-workspace-integrated-standalone.spec.ts:188"
+      ],
+      "functionality": "PoC prefix·composite identity·read projection 경계 코드 확인.",
+      "ux": "사용자의 원본 데이터 보호에 관한 표시/범위를 유지.",
+      "ui": "이번 담당은 화면을 새로 렌더하지 않음. 레이아웃·가림·시인성 현재 판정은 상위 담당 P3-K 브라우저 증거와 결합해야 함.",
+      "evidence": "현재 코드·계약 읽기 확인; D1-008 역사 부모=충족, 원자조건 0개 보존. 테스트 파일은 과거/선행 증거 포인터이며 이번 재실행 0.",
+      "disposition": "intentional",
+      "gap": "기존 D1 운영 writer 재사용 요구는 A0-2로 PoC shadow owner로 대체됨. 실사용 브라우저 운영 데이터 전수 검사는 아님.",
+      "proposal": "새 UX를 붙여도 source와 운영 writer는 호출하지 않고 PoC 전용 storage audit를 유지.",
+      "doneWhen": "격리 fixture의 운영 key/value byte parity와 허용 prefix 밖 setItem/removeItem/clear 0; 실운영 프로필 검증과 별도 표기."
+    },
+    {
+      "id": "D1-009",
+      "journey": "J1",
+      "requirement": "single-child Map은 일반 Flow로 보이고 multi-child만 choose_child를 제공하며 review_hold는 미노출한다. Map은 내부 출처·복구 경계로만 남는다.",
+      "originalEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-poc-requirements-traceability-ko.html#trace-data → D1-009 원 요구·turn D1-conversation-006 · 현재 컨텐츠에선 flowmap이 사실 의미없지 않아 (회수된 추적 자료; 직접 대화 전수 재열람 아님)",
+        "원 trace의 sourceArtifact: docs/content-audit/2026-08-12-public-plan-edit-surface-unification-ui-review-ko.html (해당 부모의 역사 출처 포인터; 직접 읽기 범위/부재 여부는 sources·limitations 참고)"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:83 (운영 writer 대신 PoC shadow)",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:265 (React 정본/fixture 동반물의 핵심 UX 의미)"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-map-selection.ts",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx:2400",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/tests/e2e/personal-workspace-stage-2-runtime.spec.ts:456"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js:589",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:899"
+      ],
+      "functionality": "React single-child 평탄화·multi-child selector·exact hit preselection 구현 확인. standalone은 읽어온 live Map이 아닌 평탄 fixture.",
+      "ux": "React 구현 확인; standalone multi-child UX 직접 확인은 현재 fixture로 불가.",
+      "ui": "이번 담당은 화면을 새로 렌더하지 않음. 레이아웃·가림·시인성 현재 판정은 상위 담당 P3-K 브라우저 증거와 결합해야 함.",
+      "evidence": "현재 코드·계약 읽기 확인; D1-009 역사 부모=충족, 원자조건 0개 보존. 테스트 파일은 과거/선행 증거 포인터이며 이번 재실행 0.",
+      "disposition": "unverified",
+      "gap": "live origin 차이는 허용되나 fixture만으로 choose_child/review_hold UX까지 검증 완료라고 말할 수 없음.",
+      "proposal": "React 기존 선택 전환을 보존하고 standalone에서 multi-child를 검토할 필요가 있으면 deterministic multi-child fixture를 같은 presentation 계약으로 추가.",
+      "doneWhen": "single/multi/review_hold fixture 별 중복 0·기술 Map ID 미노출·child 변경 Text reset/detail close/focus·write 0."
+    },
+    {
+      "id": "D1-010",
+      "journey": "J7",
+      "requirement": "휴지통으로 이동·휴지통·복원·이 기기에서 영구 삭제를 제공하고 내부 archive 호환과 진행 기록을 영구 삭제 전까지 보존한다. 자동 삭제는 없다.",
+      "originalEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-poc-requirements-traceability-ko.html#trace-data → D1-010 원 요구·turn D1-conversation-007 · 보관이 아니라 휴지통 같은 의미로 변경하는 거 아니었어 (회수된 추적 자료; 직접 대화 전수 재열람 아님)",
+        "D:/flowme2605/flow-mvp/docs/content-audit/2026-08-19-flowme-after-end-to-end-ui-scenarios-ko.html:944",
+        "D:/flowme2605/flow-mvp/docs/content-audit/2026-08-19-flowme-after-end-to-end-ui-scenarios-ko.html:948",
+        "D:/flowme2605/flow-mvp/docs/content-audit/2026-08-19-flowme-after-end-to-end-ui-scenarios-ko.html:1124",
+        "원 trace의 sourceArtifact: docs/specs/2026-08-13-plan-edit-trash-structure-unification/spec.md (해당 부모의 역사 출처 포인터; 직접 읽기 범위/부재 여부는 sources·limitations 참고)"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:83 (운영 writer 대신 PoC shadow)",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:265 (React 정본/fixture 동반물의 핵심 UX 의미)"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:3850",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:4956"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:928",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:3125",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/tests/e2e/personal-workspace-integrated-standalone.spec.ts:488"
+      ],
+      "functionality": "휴지통 이동·목록·복원·확인 후 영구 삭제 코드가 양쪽에 존재. 원본은 유지하며 PoC 사본만 정리.",
+      "ux": "기존 trace subcheck의 휴지통 UI 없음은 미갱신. 자동삭제·운영 cleanup은 범위 밖.",
+      "ui": "이번 담당은 화면을 새로 렌더하지 않음. 레이아웃·가림·시인성 현재 판정은 상위 담당 P3-K 브라우저 증거와 결합해야 함.",
+      "evidence": "현재 코드·계약 읽기 확인; D1-010 역사 부모=충족, 원자조건 5개 보존. 테스트 파일은 과거/선행 증거 포인터이며 이번 재실행 0.",
+      "disposition": "stale-evidence",
+      "gap": "현재 경로가 있는데 재구현 필요로 읽히는 과거 사유와 현 부모 충족이 혼재.",
+      "proposal": "현재 쓰기 owner와 실제 UI 경로를 새 원장에 정리. 삭제 경고의 범위/복구불가·정확 개수는 별도 위험 점검.",
+      "doneWhen": "Flow·Quick 각각 이동→Undo→이동→reload→복원→영구삭제 취소/확정; 원본/이웃 사본/완료 기록 범위를 검사."
+    },
+    {
+      "id": "D1-011",
+      "journey": "J7",
+      "requirement": "저장 직후 Undo, 실패 복구, 중복 조작 방지, 정확한 결과 count와 aria-live 성공·오류 알림을 제공한다.",
+      "originalEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-poc-requirements-traceability-ko.html#trace-data → D1-011 원 요구·turn D1-conversation-008 · Undo, 결과 개수, 삭제 실패 복구, 이중 탭 방지와 알림 접근성 (회수된 추적 자료; 직접 대화 전수 재열람 아님)",
+        "D:/flowme2605/flow-mvp/docs/content-audit/2026-08-19-flowme-after-end-to-end-ui-scenarios-ko.html:919",
+        "D:/flowme2605/flow-mvp/docs/content-audit/2026-08-19-flowme-after-end-to-end-ui-scenarios-ko.html:944",
+        "원 trace의 sourceArtifact: docs/specs/2026-08-13-plan-edit-trash-structure-unification/qa.md (해당 부모의 역사 출처 포인터; 직접 읽기 범위/부재 여부는 sources·limitations 참고)"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:83 (운영 writer 대신 PoC shadow)",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:265 (React 정본/fixture 동반물의 핵심 UX 의미)"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocReceiptSurface.tsx:39",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:4890",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/tests/e2e/personal-workspace-stage-3-runtime.spec.ts:1049"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:343",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:415",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:609",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js:2105"
+      ],
+      "functionality": "React owner별 before→after/정확 affected count/retry receipt 구현. standalone 저장은 문자열 toast+누적 성공 수와 retry closure.",
+      "ux": "실제 차이: 같은 Plan 저장의 변경 내용·정확 범위·상태 설명이 표면마다 다름. toast와 status 두 live 영역의 중복 낭독은 미검사.",
+      "ui": "이번 담당은 화면을 새로 렌더하지 않음. 레이아웃·가림·시인성 현재 판정은 상위 담당 P3-K 브라우저 증거와 결합해야 함.",
+      "evidence": "현재 코드·계약 읽기 확인; D1-011 역사 부모=충족, 원자조건 5개 보존. 테스트 파일은 과거/선행 증거 포인터이며 이번 재실행 0.",
+      "disposition": "actual-gap",
+      "gap": "K-D1-06. standalone authoring 저장 receipt는 있으나 Plan 변경 receipt의 대체 증거가 아님.",
+      "proposal": "공통 receipt view model로 저장 중/성공/no-op/취소/실패/Undo 의미 통일; 실패 안내 소유자는 한 곳.",
+      "doneWhen": "두 필드 변경이 정확 2개·대상/전후 값으로 보임; noop/cancel0write, 실패 원상복구, 동일 intent retry, Undo 복원. 접근성 자동/실보조기술은 분리."
+    },
+    {
+      "id": "D1-012",
+      "journey": "J6",
+      "requirement": "개인 소유 memo·URL draft의 실제 구간 제목만 편집·reload·projection에 반영하고 source-owned group은 읽기 전용으로 둔다.",
+      "originalEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-poc-requirements-traceability-ko.html#trace-data → D1-012 원 요구·turn D1-conversation-009 · 큰 일정, D-30 큰 준비 같은 그룹명 수정 요구 (회수된 추적 자료; 직접 대화 전수 재열람 아님)",
+        "원 trace의 sourceArtifact: docs/specs/2026-08-13-plan-edit-trash-structure-unification/spec.md (해당 부모의 역사 출처 포인터; 직접 읽기 범위/부재 여부는 sources·limitations 참고)"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:83 (운영 writer 대신 PoC shadow)",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:265 (React 정본/fixture 동반물의 핵심 UX 의미)"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocEditorSurface.tsx:685",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-plan-editor.ts:618",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/tests/e2e/personal-workspace-integration-poc.spec.ts:373"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:936",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:1036",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js:2079"
+      ],
+      "functionality": "React stable personal sectionTitles shadow 편집/저장 투영 구현. standalone Plan draft/commit에는 section title 필드가 없음.",
+      "ux": "실제 차이: 같은 개인 초안 구간 제목을 React에서는 바꾸지만 검토용 HTML에서는 조작할 수 없음.",
+      "ui": "이번 담당은 화면을 새로 렌더하지 않음. 레이아웃·가림·시인성 현재 판정은 상위 담당 P3-K 브라우저 증거와 결합해야 함.",
+      "evidence": "현재 코드·계약 읽기 확인; D1-012 역사 부모=충족, 원자조건 0개 보존. 테스트 파일은 과거/선행 증거 포인터이며 이번 재실행 0.",
+      "disposition": "actual-gap",
+      "gap": "K-D1-02. source-owned/derived 구간 비편집은 의도적 제한, 개인 stable 구간 부재는 별도.",
+      "proposal": "standalone deterministic fixture에 stable section identity/개인 owner를 유지한 title override를 연결. 제목 문자열로 owner 추정 금지.",
+      "doneWhen": "개인 구간 제목→같은 구간 모든 Item/네 결과→저장/reload/Undo 반영; Map/canonical/legacy/source-owned는 편집 affordance 0."
+    },
+    {
+      "id": "D1-013",
+      "journey": "J1/J6",
+      "requirement": "따뜻한 미색·흰 카드·잉크·코발트·semantic color와 공통 token을 유지하며 시각 수정이 기능·route·storage를 바꾸지 않는다.",
+      "originalEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-poc-requirements-traceability-ko.html#trace-data → D1-013 원 요구·turn D1-conversation-010 · 디자인만 개선 목표를 잡아서 main 앱 디자인 개선 (회수된 추적 자료; 직접 대화 전수 재열람 아님)",
+        "원 trace의 sourceArtifact: docs/specs/2026-08-20-production-visual-only-refresh/qa.md (해당 부모의 역사 출처 포인터; 직접 읽기 범위/부재 여부는 sources·limitations 참고)"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:83 (운영 writer 대신 PoC shadow)",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:265 (React 정본/fixture 동반물의 핵심 UX 의미)",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-04-flowme-integrated-poc-production-candidate-v1/decision-contract.md:16",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-04-flowme-integrated-poc-production-candidate-v1/decision-contract.md:47"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:269",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocProductShell.module.css:37",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/app/globals.css:17"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:3",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css:10"
+      ],
+      "functionality": "전역 shell/운영 token 미변경 원칙을 유지하는 코드.",
+      "ux": "동일 행동의 컬러 owner 해석이 local teal 계약과 다름.",
+      "ui": "상위 담당이 390×844에서 local Quick primary/계획 편집의 rgb(49,94,231)를 관측. 이 담당은 코드 원인만 확인.",
+      "evidence": "코드 확인 + 상위 담당의 현재 브라우저 관측(독립 신규 시험 수로 합산하지 않음).",
+      "disposition": "actual-gap",
+      "gap": "K-D1-07. PRIMARY_CLASS가 global --flowme-action을 사용하여 exact-query 로컬 행동도 cobalt.",
+      "proposal": "global PlatformNav/운영 token은 그대로 두고 local action/focus/selection 의미표를 확정하여 PoC presenter에만 local token 적용.",
+      "doneWhen": "전역 shell은 ink/cobalt 유지, local CTA/선택 상태는 승인 contract와 일치; React/HTML 같은 상태의 computed color·contrast·focus 비교."
+    },
+    {
+      "id": "D1-014",
+      "journey": "J5/J6",
+      "requirement": "주 CTA는 48px, 보조 행동은 44px 이상이며 명확한 focus와 한 화면 한 primary 위계를 갖는다.",
+      "originalEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-poc-requirements-traceability-ko.html#trace-data → D1-014 원 요구·turn D1-conversation-010 · main 앱을 기능·route·storage 변경 없이 디자인-only로 개선 승인. 48/44px은 승인된 구현 계약 (회수된 추적 자료; 직접 대화 전수 재열람 아님)",
+        "원 trace의 sourceArtifact: docs/content-audit/2026-08-19-flowme-production-ux-visual-only-refresh-ko.html (해당 부모의 역사 출처 포인터; 직접 읽기 범위/부재 여부는 sources·limitations 참고)"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:83 (운영 writer 대신 PoC shadow)",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:265 (React 정본/fixture 동반물의 핵심 UX 의미)"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:269",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocEditorSurface.tsx:623"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:1118"
+      ],
+      "functionality": "React shared editor enforce48pxTargets 및 min-h-12, standalone button 규칙 존재.",
+      "ux": "코드 최소높이와 실제 모든 핵심 행동의 hit target/가림은 같은 증거가 아님.",
+      "ui": "이번 담당은 화면을 새로 렌더하지 않음. 레이아웃·가림·시인성 현재 판정은 상위 담당 P3-K 브라우저 증거와 결합해야 함.",
+      "evidence": "현재 코드·계약 읽기 확인; D1-014 역사 부모=충족, 원자조건 0개 보존. 테스트 파일은 과거/선행 증거 포인터이며 이번 재실행 0.",
+      "disposition": "unverified",
+      "gap": "동일 맥락에 중복 Plan 편집과 내부 설명이 남아 단일 primary 위계는 추가 비교 필요.",
+      "proposal": "기능 제거 없이 동일 편집 진입을 한 owner로 정리하고 viewport별 primary·secondary·overflow panel 상태를 명시.",
+      "doneWhen": "지정 5 viewport에서 실제 button bounds≥계약치, 한 local decision의 primary1, 키보드와 scroll 후 CTA 접근 확인."
+    },
+    {
+      "id": "D1-015",
+      "journey": "J5/J6",
+      "requirement": "390 mobile과 844 landscape는 compact, 1023까지 stacked, 1024는 list+execution, 1280 이상은 inspector 3-pane이며 overflow와 핵심 CTA 가림이 없다.",
+      "originalEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-poc-requirements-traceability-ko.html#trace-data → D1-015 원 요구·turn D1-conversation-011 · 1023까지 적층, 1024 목록+실행, 1280 이상 3열 (회수된 추적 자료; 직접 대화 전수 재열람 아님)",
+        "원 trace의 sourceArtifact: docs/content-audit/2026-08-20-flowme-now-completion-reflection-history-before-after-ko.html (해당 부모의 역사 출처 포인터; 직접 읽기 범위/부재 여부는 sources·limitations 참고)"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:83 (운영 writer 대신 PoC shadow)",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:265 (React 정본/fixture 동반물의 핵심 UX 의미)"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocProductShell.module.css:89",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:4488",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/tests/e2e/personal-workspace-stage-3-runtime.spec.ts:1214"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/style.css",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/tests/e2e/personal-workspace-p3j-standalone-detail.spec.ts"
+      ],
+      "functionality": "1024/1280 반응형 조건과 화면 구성 코드 존재. P3-J 실행 상세 5 viewport는 과거 증거.",
+      "ux": "화면별 정보순서·왕복 상태를 폭별로 모두 재검사한 것은 아님.",
+      "ui": "이번 담당은 화면을 새로 렌더하지 않음. 레이아웃·가림·시인성 현재 판정은 상위 담당 P3-K 브라우저 증거와 결합해야 함.",
+      "evidence": "현재 코드·계약 읽기 확인; D1-015 역사 부모=충족, 원자조건 7개 보존. 테스트 파일은 과거/선행 증거 포인터이며 이번 재실행 0.",
+      "disposition": "unverified",
+      "gap": "1023/1024 및1279/1280 경계, 전체 3열 정보순서, 내부 clipping은 이번 담당이 실행하지 않음.",
+      "proposal": "기존 breakpoint를 새 제품 정책으로 바꾸지 않고 같은 Item/Plan을 stacked→dual→inspector 구조로 비교.",
+      "doneWhen": "375/390/844landscape/1024/1440+경계폭에서 목록→Item 초점/scroll/CTA 가림·내부 overflow와 정보순서를 확인."
+    },
+    {
+      "id": "D1-016",
+      "journey": "J1/J4/J6/J7",
+      "requirement": "계획 찾기→쓸모·자연 결과 확인→결과·기준일 결정→조정→저장→실행·이동→복구가 한 화면 한 결정과 한 문법으로 연결된다.",
+      "originalEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-poc-requirements-traceability-ko.html#trace-data → D1-016 원 요구·turn D1-conversation-012 · 전체적으로 어떻게 변경되는지 잘 이해가 안 된다 (회수된 추적 자료; 직접 대화 전수 재열람 아님)",
+        "D:/flowme2605/flow-mvp/docs/content-audit/2026-08-19-flowme-after-end-to-end-ui-scenarios-ko.html:750",
+        "D:/flowme2605/flow-mvp/docs/content-audit/2026-08-19-flowme-after-end-to-end-ui-scenarios-ko.html:783",
+        "D:/flowme2605/flow-mvp/docs/content-audit/2026-08-19-flowme-after-end-to-end-ui-scenarios-ko.html:1463",
+        "원 trace의 sourceArtifact: docs/content-audit/2026-08-19-production-ux-coherence-before-after-review-ko.html (해당 부모의 역사 출처 포인터; 직접 읽기 범위/부재 여부는 sources·limitations 참고)"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:83 (운영 writer 대신 PoC shadow)",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:265 (React 정본/fixture 동반물의 핵심 UX 의미)"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx:2074",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx:2455",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:4498"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:1909",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:2285",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:2977",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:3037"
+      ],
+      "functionality": "작성→명시 저장→개인공간 재진입→실행→복구의 연결 코드 존재.",
+      "ux": "부분: source preselection·기준일·포함 범위·standalone dirty/receipt를 포함하면 한 여정의 문법이 완전히 닫히지 않음.",
+      "ui": "이번 담당은 화면을 새로 렌더하지 않음. 레이아웃·가림·시인성 현재 판정은 상위 담당 P3-K 브라우저 증거와 결합해야 함.",
+      "evidence": "현재 코드·계약 읽기 확인; D1-016 역사 부모=충족, 원자조건 7개 보존. 테스트 파일은 과거/선행 증거 포인터이며 이번 재실행 0.",
+      "disposition": "actual-gap",
+      "gap": "화면 단위 '있음'을 사용자 여정 전체 충족으로 환산할 수 없음.",
+      "proposal": "J1→J4→J6→J7 한 fixture의 제목/날짜/메모/criteria/선택/변경영향을 원장 ID로 잇고 K-D1-01~06 선행 후 통합 왕복.",
+      "doneWhen": "검색/작성 각각 시작해 저장 후 다시 찾기→수정/완료→Undo/reload까지 동일 사본·source 경계와 최소 행동 수를 확인."
+    },
+    {
+      "id": "D1-017",
+      "journey": "J1/J6",
+      "requirement": "선택 전 출처명·원문 링크와 상세의 원문 기준·바로 할 일·완료 기준·개인 메모를 구분하고 공유 계획 미리보기와 내 계획 상태를 명시한다.",
+      "originalEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-poc-requirements-traceability-ko.html#trace-data → D1-017 원 요구·turn D1-conversation-013 · Production의 출처·원문 기준·완료 기준이 빠짐 (회수된 추적 자료; 직접 대화 전수 재열람 아님)",
+        "D:/flowme2605/flow-mvp/docs/content-audit/2026-08-19-flowme-after-end-to-end-ui-scenarios-ko.html:809",
+        "D:/flowme2605/flow-mvp/docs/content-audit/2026-08-19-flowme-after-end-to-end-ui-scenarios-ko.html:829",
+        "D:/flowme2605/flow-mvp/docs/content-audit/2026-08-19-flowme-after-end-to-end-ui-scenarios-ko.html:876",
+        "D:/flowme2605/flow-mvp/docs/content-audit/2026-08-19-flowme-after-end-to-end-ui-scenarios-ko.html:881",
+        "D:/flowme2605/flow-mvp/docs/content-audit/2026-08-19-flowme-after-end-to-end-ui-scenarios-ko.html:1337",
+        "원 trace의 sourceArtifact: docs/content-audit/2026-08-19-flowme-after-end-to-end-ui-scenarios-ko.html (해당 부모의 역사 출처 포인터; 직접 읽기 범위/부재 여부는 sources·limitations 참고)"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:83 (운영 writer 대신 PoC shadow)",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:265 (React 정본/fixture 동반물의 핵심 UX 의미)",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-05-flowme-integrated-poc-execution-detail-gap-v1/spec.md"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx:2120",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx:2448",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocEditorSurface.tsx:233",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:511"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:899",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:1031",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:1093",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:1197"
+      ],
+      "functionality": "P3-J 이후 개인공간 실행 상세 원문/criteria/memo는 분리됨. 검색 카드 출처명·링크, 선택 미리보기 criteria는 별개 경로로 미표시.",
+      "ux": "실제 차이: 출처를 보고 고르는 원본 요구가 '편집을 열어야 source 확인'으로 늦어짐.",
+      "ui": "이번 담당은 화면을 새로 렌더하지 않음. 레이아웃·가림·시인성 현재 판정은 상위 담당 P3-K 브라우저 증거와 결합해야 함.",
+      "evidence": "현재 코드·계약 읽기 확인; D1-017 역사 부모=충족, 원자조건 7개 보존. 테스트 파일은 과거/선행 증거 포인터이며 이번 재실행 0.",
+      "disposition": "actual-gap",
+      "gap": "K-D1-04. description만 있는 entry preview를 P3-J 상세 동일성 PASS로 대체할 수 없음.",
+      "proposal": "기존 safe source DTO를 카드/선택 요약/상세로 전달. 선택 전 출처명+허용URL, 선택 후 source/개인 사본 상태를 보여주고 criteria renderer 재사용.",
+      "doneWhen": "4origin+authored의 source 있는/없는 fixture에서 선택 전 safe link 확인, 클릭 전후 write0; 선택미리보기·workspace 상세·editor source 일치/창작0."
+    },
+    {
+      "id": "D1-018",
+      "journey": "J4/J6/J7",
+      "requirement": "변경 영향과 제외 항목을 확인·복원하고 dirty 이탈, duplicate copy, 저장 성공·실패·Undo를 명시한다.",
+      "originalEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-poc-requirements-traceability-ko.html#trace-data → D1-018 원 요구·turn D1-conversation-013 · 선택 n/전체 n, 제외 확인·복원, 기존 사본 충돌, 저장·Undo가 빠짐 (회수된 추적 자료; 직접 대화 전수 재열람 아님)",
+        "D:/flowme2605/flow-mvp/docs/content-audit/2026-08-19-flowme-after-end-to-end-ui-scenarios-ko.html:856",
+        "D:/flowme2605/flow-mvp/docs/content-audit/2026-08-19-flowme-after-end-to-end-ui-scenarios-ko.html:898",
+        "D:/flowme2605/flow-mvp/docs/content-audit/2026-08-19-flowme-after-end-to-end-ui-scenarios-ko.html:904",
+        "D:/flowme2605/flow-mvp/docs/content-audit/2026-08-19-flowme-after-end-to-end-ui-scenarios-ko.html:1031",
+        "원 trace의 sourceArtifact: docs/content-audit/2026-08-19-flowme-after-end-to-end-ui-scenarios-ko.html (해당 부모의 역사 출처 포인터; 직접 읽기 범위/부재 여부는 sources·limitations 참고)"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:83 (운영 writer 대신 PoC shadow)",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:265 (React 정본/fixture 동반물의 핵심 UX 의미)"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:4072",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-plan-editor.ts:796",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocEditorSurface.tsx:313"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:1036",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js:2084"
+      ],
+      "functionality": "before→after 영향·stale collision guard는 React에 존재. 양쪽 Plan은 전체 Item 고정이며 포함/제외 선택·제외복원 affordance 없음.",
+      "ux": "실제 차이: excludedCount:0 표시는 항목 제외/복원 요구가 충족됐다는 뜻이 아님.",
+      "ui": "이번 담당은 화면을 새로 렌더하지 않음. 레이아웃·가림·시인성 현재 판정은 상위 담당 P3-K 브라우저 증거와 결합해야 함.",
+      "evidence": "현재 코드·계약 읽기 확인; D1-018 역사 부모=충족, 원자조건 5개 보존. 테스트 파일은 과거/선행 증거 포인터이며 이번 재실행 0.",
+      "disposition": "actual-gap",
+      "gap": "K-D1-05. 사본 충돌 차단과 사용자의 명시 충돌 선택 해결 UI도 구분 필요.",
+      "proposal": "기존 authoring source 삭제나 timeline 숨김을 재사용하지 말고 personal Plan membership owner를 먼저 좁게 설계. 구현 전까지 요약 문구는 현재 실제 전체반영 의미로 한정.",
+      "doneWhen": "선택n/전체n·제외목록 확인·복원·날짜/기준보존·staged0write·최종1write·Undo를 검사; collision은 자동병합/사본생성 없이 차단."
+    },
+    {
+      "id": "D1-019",
+      "journey": "J1",
+      "requirement": "하나의 입력이 준비된 Flow query는 filter, URL은 lookup, 일반 문장은 memo draft로 분기하며 기존 기능을 잃지 않는다.",
+      "originalEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-poc-requirements-traceability-ko.html#trace-data → D1-019 원 요구·turn D1-conversation-014 · 두 입력의 필요성을 문제 제기했고 후속 묶음 구현 승인 아래 단일 intent-routing 입력을 채택 (회수된 추적 자료; 직접 대화 전수 재열람 아님)",
+        "원 trace의 sourceArtifact: PR #195 (해당 부모의 역사 출처 포인터; 직접 읽기 범위/부재 여부는 sources·limitations 참고)"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:83 (운영 writer 대신 PoC shadow)",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:265 (React 정본/fixture 동반물의 핵심 UX 의미)"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-entry.ts",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx:2074",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/tests/e2e/personal-workspace-stage-2-runtime.spec.ts:388"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:1909",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:899"
+      ],
+      "functionality": "React 단일 intent-routing input과 local query/URL hit·miss/invalid/memo 분기 구현.",
+      "ux": "standalone은 작성 화면/fixture 목록이 분리되어 동일 discovery 입력을 검토할 수 없음. live lookup 차이는 A0-6 허용.",
+      "ui": "이번 담당은 화면을 새로 렌더하지 않음. 레이아웃·가림·시인성 현재 판정은 상위 담당 P3-K 브라우저 증거와 결합해야 함.",
+      "evidence": "현재 코드·계약 읽기 확인; D1-019 역사 부모=충족, 원자조건 0개 보존. 테스트 파일은 과거/선행 증거 포인터이며 이번 재실행 0.",
+      "disposition": "code-confirmed",
+      "gap": "React 구현은 확인; offline fixture용 discovery 조작 증거는 별도 미검사. 사용자가 그대로 말한 완성 설계가 아니라 후속 승인된 구현 결정.",
+      "proposal": "React routing 유지. offline 검토 범위를 화면에 명시하고 full J1 동등성 검토가 필요하면 fixture-only 검색 adapter를 설계.",
+      "doneWhen": "query/knownURL/invalidURL/miss/memo에서 선택 전0write, exact input 보존, 기존사본 ref와 새 작성 lane 혼동0."
+    },
+    {
+      "id": "D1-020",
+      "journey": "J1/J4",
+      "requirement": "사본이 하나면 번호를 숨기고 둘 이상일 때만 사본 1·2를 표시하며 identity와 진행 기록은 유지한다.",
+      "originalEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-poc-requirements-traceability-ko.html#trace-data → D1-020 원 요구·turn D1-conversation-015 · 하나의 flow에는 사본 1을 안 붙여도 될 듯 (회수된 추적 자료; 직접 대화 전수 재열람 아님)",
+        "원 trace의 sourceArtifact: PR #195 (해당 부모의 역사 출처 포인터; 직접 읽기 범위/부재 여부는 sources·limitations 참고)"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:83 (운영 writer 대신 PoC shadow)",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:265 (React 정본/fixture 동반물의 핵심 UX 의미)"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-copy-disambiguation.ts:51",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/tests/e2e/personal-workspace-integration-poc.spec.ts:1053"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:899",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/tests/e2e/personal-workspace-integrated-standalone.spec.ts:2403"
+      ],
+      "functionality": "단일 사본 번호 숨김·동일 원본 복수 사본만 표시하는 display-title helper 사용을 확인.",
+      "ux": "source metadata와 사본label를 같은 것으로 쓰지 않도록 J1 source 개선과 연결.",
+      "ui": "이번 담당은 화면을 새로 렌더하지 않음. 레이아웃·가림·시인성 현재 판정은 상위 담당 P3-K 브라우저 증거와 결합해야 함.",
+      "evidence": "현재 코드·계약 읽기 확인; D1-020 역사 부모=충족, 원자조건 0개 보존. 테스트 파일은 과거/선행 증거 포인터이며 이번 재실행 0.",
+      "disposition": "code-confirmed",
+      "gap": "반복 회차 번호와 별도 사본 라벨의 개념을 혼합하지 않음. 이번 담당은 helper 코드 확인이며 새 브라우저 재시험은 아님.",
+      "proposal": "동일 원본/다른 savedCopyId fixture의 번호 노출만 회귀 유지; 원본 이름/개인제목 변경과 사본번호 안정성 확인.",
+      "doneWhen": "active1/active2/휴지통이동/복원에서 라벨만 바뀌고 savedCopy/Flow/Item identity·운영 bytes 불변."
+    },
+    {
+      "id": "D1-021",
+      "journey": "J3/J6",
+      "requirement": "Flow 선택·변경 시 Text로 초기화하고 개인 조정이 반영된 title·order·date를 전체 Flow 문법으로 보여주며 raw source나 내부 trace를 가장하지 않는다.",
+      "originalEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-poc-requirements-traceability-ko.html#trace-data → D1-021 원 요구·turn D1-conversation-016 · 첫 화면 txt는 flow 만드는 문법 형태 text (회수된 추적 자료; 직접 대화 전수 재열람 아님)",
+        "원 trace의 sourceArtifact: PR #195 (해당 부모의 역사 출처 포인터; 직접 읽기 범위/부재 여부는 sources·limitations 참고)"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:83 (운영 writer 대신 PoC shadow)",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:265 (React 정본/fixture 동반물의 핵심 UX 의미)"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocResultPresenter.tsx:300",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx:2400",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-result-projection.ts"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:1008",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js:1335"
+      ],
+      "functionality": "저장 Flow 결과는 effective projection의 Text/TXT 기본. React entry 미리보기는 별도의 source item title/date 목록.",
+      "ux": "부분: 같은 'Text'라 해도 발견 미리보기와 저장 뒤 결과가 같은 문법/개인 적용값을 쓰는지 다름.",
+      "ui": "이번 담당은 화면을 새로 렌더하지 않음. 레이아웃·가림·시인성 현재 판정은 상위 담당 P3-K 브라우저 증거와 결합해야 함.",
+      "evidence": "현재 코드·계약 읽기 확인; D1-021 역사 부모=충족, 원자조건 5개 보존. 테스트 파일은 과거/선행 증거 포인터이며 이번 재실행 0.",
+      "disposition": "actual-gap",
+      "gap": "K-D1-10. 원본 시안의 콘텐츠별 자연결과 기본은 이후 Text-default로 대체됐으므로 과거 기본을 재도입하지 않음.",
+      "proposal": "발견 preview와 저장 Flow 결과의 data owner를 라벨로 구분하고 Text 표현이 필요한 곳은 기존 effective presenter를 재사용.",
+      "doneWhen": "개인제목/순서/날짜 변경 뒤 재검색→preview→개인공간 결과의 expected owner와 Text문법을 비교; 내부 trace/원문 역쓰기0."
+    },
+    {
+      "id": "D1-022",
+      "journey": "J3/J6",
+      "requirement": "Todo·Calendar는 임의 3개 접기 없이 전체 표시하고 Step·날짜 그룹을 유지한다.",
+      "originalEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-poc-requirements-traceability-ko.html#trace-data → D1-022 원 요구·turn D1-conversation-016 · 3개 초과 아이템이라고 접어두지 않아도 될 듯 (회수된 추적 자료; 직접 대화 전수 재열람 아님)",
+        "원 trace의 sourceArtifact: PR #195 (해당 부모의 역사 출처 포인터; 직접 읽기 범위/부재 여부는 sources·limitations 참고)"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:83 (운영 writer 대신 PoC shadow)",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:265 (React 정본/fixture 동반물의 핵심 UX 의미)"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocResultPresenter.tsx:440",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocResultPresenter.tsx:478"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:975",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:1008",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/tests/e2e/personal-workspace-integrated-standalone.spec.ts:488"
+      ],
+      "functionality": "Todo 전체 및 Calendar의 월/선택날짜 전체·미정 목록 렌더 코드 확인. 3개 제한으로 자르는 경로는 해당 presenter에 없음.",
+      "ux": "월 탐색/선택일 목록과 '원본 전체계획 한눈에' 요구를 구분해야 함.",
+      "ui": "이번 담당은 화면을 새로 렌더하지 않음. 레이아웃·가림·시인성 현재 판정은 상위 담당 P3-K 브라우저 증거와 결합해야 함.",
+      "evidence": "현재 코드·계약 읽기 확인; D1-022 역사 부모=충족, 원자조건 0개 보존. 테스트 파일은 과거/선행 증거 포인터이며 이번 재실행 0.",
+      "disposition": "stale-evidence",
+      "gap": "과거 Calendar 미노출 사유는 현 코드와 맞지 않음. 실제 운영 /calendar는 제외.",
+      "proposal": "현 PoC Calendar를 재개발하지 않고 4개 이상/다중구간/미정/반복 fixture의 전체 ref manifest와 포커스만 회귀 유지.",
+      "doneWhen": "Todo전체 refs, 날짜별 Calendar refs 합집합+미정이 effective 대상과 일치; 날짜 중복 낭독과 숨은 Item 손실0."
+    },
+    {
+      "id": "D1-023",
+      "journey": "J1/J6",
+      "requirement": "Calendar 기준일은 전체 목록 위에 있고 보고 있는 Text·Todo·Calendar와 저장되는 날짜 의미는 분리된다.",
+      "originalEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-poc-requirements-traceability-ko.html#trace-data → D1-023 원 요구·turn D1-conversation-016 · 이사일 선택 후 계산된 일정 전체 확인 (회수된 추적 자료; 직접 대화 전수 재열람 아님)",
+        "D:/flowme2605/flow-mvp/docs/content-audit/2026-08-19-flowme-after-end-to-end-ui-scenarios-ko.html:821",
+        "D:/flowme2605/flow-mvp/docs/content-audit/2026-08-19-flowme-after-end-to-end-ui-scenarios-ko.html:831",
+        "D:/flowme2605/flow-mvp/docs/content-audit/2026-08-19-flowme-after-end-to-end-ui-scenarios-ko.html:841",
+        "원 trace의 sourceArtifact: PR #195 (해당 부모의 역사 출처 포인터; 직접 읽기 범위/부재 여부는 sources·limitations 참고)"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:83 (운영 writer 대신 PoC shadow)",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:265 (React 정본/fixture 동반물의 핵심 UX 의미)",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/stage-3-contract.md:90 (Plan-level 일정 owner 부재)",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/stage-3-contract.md:158 (탐색 baseDate/selectedDate)"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocResultPresenter.tsx:482",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:4490",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/tests/e2e/personal-workspace-stage-3-runtime.spec.ts:728"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:989",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:2975",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:3045"
+      ],
+      "functionality": "Calendar baseDate 월 탐색·selectedDate·resultView는 무저장 navigation. 이사일/시작 anchor 입력과 상대일 재계산 UI는 아님.",
+      "ux": "실제 의미 차이: 기준일이라는 이름으로 탐색 기준 월을 일정 계산 anchor와 혼동.",
+      "ui": "이번 담당은 화면을 새로 렌더하지 않음. 레이아웃·가림·시인성 현재 판정은 상위 담당 P3-K 브라우저 증거와 결합해야 함.",
+      "evidence": "현재 코드·계약 읽기 확인; D1-023 역사 부모=충족, 원자조건 0개 보존. 테스트 파일은 과거/선행 증거 포인터이며 이번 재실행 0.",
+      "disposition": "actual-gap",
+      "gap": "K-D1-03. 기존 P3-J 회귀는 result/selected-date 복귀를 입증하지만 전체 anchor 요구를 새로 닫지 않음.",
+      "proposal": "navigation month/선택일과 source anchor/개인 Plan anchor를 UI·type·보고서에서 분리. anchor owner 미지원은 capability로 명시.",
+      "doneWhen": "보기/월/선택일 변경0write 및 계획/실행일 불변을 유지; 별도 anchorpreview 계약 테스트가 있을 때만 anchor 충족 판정."
+    },
+    {
+      "id": "D1-024",
+      "journey": "J1",
+      "requirement": "child selector는 전체 결과 위에 있고 child 변경 시 Text로 초기화하며 열린 Item detail을 닫는다.",
+      "originalEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-poc-requirements-traceability-ko.html#trace-data → D1-024 원 요구·turn D1-conversation-017 · Flow Map에서도 계획 선택 후 전체 결과 확인 (회수된 추적 자료; 직접 대화 전수 재열람 아님)",
+        "원 trace의 sourceArtifact: PR #195 (해당 부모의 역사 출처 포인터; 직접 읽기 범위/부재 여부는 sources·limitations 참고)"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:83 (운영 writer 대신 PoC shadow)",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:265 (React 정본/fixture 동반물의 핵심 UX 의미)"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx:2404",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-map-selection.ts",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/tests/e2e/personal-workspace-stage-2-runtime.spec.ts:456"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js:589",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:899"
+      ],
+      "functionality": "React multi-child selector가 결과 위에 있으며 exact hit child preselection·변경 Text reset 구현.",
+      "ux": "React 코드/과거 시험 확인. standalone은 multi-child 결정 시나리오 미검사.",
+      "ui": "이번 담당은 화면을 새로 렌더하지 않음. 레이아웃·가림·시인성 현재 판정은 상위 담당 P3-K 브라우저 증거와 결합해야 함.",
+      "evidence": "현재 코드·계약 읽기 확인; D1-024 역사 부모=충족, 원자조건 0개 보존. 테스트 파일은 과거/선행 증거 포인터이며 이번 재실행 0.",
+      "disposition": "code-confirmed",
+      "gap": "P3-J 기존 충족 회귀를 새 갭 해결 수로 더하지 않음. offline fixture 선택 UX는 D1-009와 동일 제한.",
+      "proposal": "이미 동작하는 child reducer는 유지. child 동일/foreign/stale no-op와 source label 변경만 신규 source 노출에 연결.",
+      "doneWhen": "child A/B에서 전체결과refs·headingfocus·openItemclose·Textreset·write0; same/foreign/stale 선택에서0mutation."
+    },
+    {
+      "id": "D1-025",
+      "journey": "J1/J3/J6",
+      "requirement": "내부 sourceTrace·source 식별자를 사용자 Text에서 감추고 사용자용 출처명을 쓰며 날짜 rail을 중복 낭독하지 않는다.",
+      "originalEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-poc-requirements-traceability-ko.html#trace-data → D1-025 원 요구·turn D1-conversation-017 · sourceTrace 노출과 Calendar 날짜 중복 낭독 회귀 수정 (회수된 추적 자료; 직접 대화 전수 재열람 아님)",
+        "원 trace의 sourceArtifact: PR #195 (해당 부모의 역사 출처 포인터; 직접 읽기 범위/부재 여부는 sources·limitations 참고)"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:83 (운영 writer 대신 PoC shadow)",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:265 (React 정본/fixture 동반물의 핵심 UX 의미)"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocResultPresenter.tsx:511",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocReceiptSurface.tsx:26"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:1026",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:1236",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:1197"
+      ],
+      "functionality": "DOM data-ref가 사용자 화면에 직접 노출되지 않는 것은 확인. Calendar 날짜 aria-label은 렌더되어 있음.",
+      "ux": "실제 차이: standalone에 WorkingSource/원본 Item/회차 식별자/shadow 같은 내부 설명이 기본 화면에 노출. Plan 편집 진입도 header/result에 중복.",
+      "ui": "이번 담당은 화면을 새로 렌더하지 않음. 레이아웃·가림·시인성 현재 판정은 상위 담당 P3-K 브라우저 증거와 결합해야 함.",
+      "evidence": "현재 코드·계약 읽기 확인; D1-025 역사 부모=충족, 원자조건 0개 보존. 테스트 파일은 과거/선행 증거 포인터이며 이번 재실행 0.",
+      "disposition": "actual-gap",
+      "gap": "K-D1-08. 정확 raw ID 미노출과 내부 전문용어 미노출은 다른 조건. 실제 보조기술 중복낭독은 미검사.",
+      "proposal": "결과 제목·설명을 사용자 목적 언어로 교체하고 기술자료는 검증 도구로 내려야 한다. 원문·개인정보 경계는 삭제하지 않음.",
+      "doneWhen": "주 화면에 내부 ref/WorkingSource/shadow 설명0, 원문/내변경 경계는 보존, Calendar 의미중복·동일편집entry중복 확인."
+    },
+    {
+      "id": "D1-026",
+      "journey": "J7",
+      "requirement": "자동 테스트·스크린샷·Preview·배포와 실제 기기·관찰 사용자 검증을 구분하고 0명을 그대로 보고한다.",
+      "originalEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-poc-requirements-traceability-ko.html#trace-data → D1-026 원 요구·turn D1-conversation-009 · observed users는 여전히 0 (회수된 추적 자료; 직접 대화 전수 재열람 아님)",
+        "원 trace의 sourceArtifact: D1 baseline session (해당 부모의 역사 출처 포인터; 직접 읽기 범위/부재 여부는 sources·limitations 참고)"
+      ],
+      "decisionEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:83 (운영 writer 대신 PoC shadow)",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:265 (React 정본/fixture 동반물의 핵심 UX 의미)"
+      ],
+      "reactEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-05-flowme-integrated-poc-execution-detail-gap-v1/qa.md",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-05-flowme-integrated-poc-execution-detail-gap-v1/handoff.md"
+      ],
+      "standaloneEvidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/tests/e2e/personal-workspace-p3j-standalone-detail.spec.ts",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-05-flowme-integrated-poc-execution-detail-gap-v1/qa.md"
+      ],
+      "functionality": "증거 분리 문서 존재. 현재 담당은 코드/문서 읽기만 수행.",
+      "ux": "이 보고서를 전체 제품 완성이나 관찰 사용자 검증으로 표현하지 않음.",
+      "ui": "이번 담당은 화면을 새로 렌더하지 않음. 레이아웃·가림·시인성 현재 판정은 상위 담당 P3-K 브라우저 증거와 결합해야 함.",
+      "evidence": "현재 코드·계약 읽기 확인; D1-026 역사 부모=충족, 원자조건 4개 보존. 테스트 파일은 과거/선행 증거 포인터이며 이번 재실행 0.",
+      "disposition": "code-confirmed",
+      "gap": "원문 세션의 과거 deploy/QA 수를 현재 PoC 실행 수에 합산하지 않음.",
+      "proposal": "P3-K 현재 실행은 주 담당 로그만 사용; 코드 확인·과거 테스트·현재브라우저·실기기·실사용자를 열로 분리.",
+      "doneWhen": "고유 시나리오/재실행/참고캡처를 중복합산하지 않음. 실 Android/iOS/보조기술 NOT_RUN, 사용자0, publish없음 명시."
+    }
+  ],
+  "findings": [
+    {
+      "id": "K-D1-01",
+      "title": "단일 HTML Plan/Item 편집이 dirty 확인 없이 취소된다",
+      "severity": "high",
+      "requirementIds": [
+        "D1-001",
+        "D1-004",
+        "D1-016"
+      ],
+      "original": "clean 취소는 즉시, dirty 취소·Escape·Back은 동일 버리기 확인과 초점/스크롤 복귀.",
+      "current": "app.js closeItemEditor와 close-plan-editor/Escape는 조건 없이 draft=null. 상위 담당 현재 Chromium K-J7-standalone-dirty에서 개인편집→Flow제목변경→Escape가 확인창0·편집필드0으로 닫히며 mutationCount0인 것을 재현했다. UX 확인 누락이며 운영 데이터 mutation 사고로 표현하지 않는다.",
+      "proposal": "공통 close intent와 상태표를 두고 clean/dirty/submitting/recovery를 판별. 계속 편집은 draft/selection/scroll 유지, 버리기는 해당 draft 범위만 제거.",
+      "doneWhen": "양쪽 Plan/Item 취소·Escape·Back·계속편집·버리기 fixture 실행; 성공 저장 외0write·정확 opener복귀·중첩 부모 draft 보존.",
+      "evidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-08-12-my-plan-edit-lifecycle-unification/spec.md:25",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/stage-3-contract.md:119",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:1083",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:3037",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:3627",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/output/p3k/browser-audit.json#K-J7-standalone-dirty",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/output/playwright/p3k/standalone-dirty-escape-390x844.png"
+      ]
+    },
+    {
+      "id": "K-D1-02",
+      "title": "standalone 개인 Plan 편집이 날짜 3상태·개인 구간 제목·상속/순서를 축약한다",
+      "severity": "high",
+      "requirementIds": [
+        "D1-001",
+        "D1-006",
+        "D1-012"
+      ],
+      "original": "원본 따르기/고정/미정 의미 구분, stable 개인 구간 제목, Item 개인순서. source owner는 읽기 전용.",
+      "current": "React는 mode/sectionTitles/orderedItemRefs를 사용하지만 standalone draft는 title/items[{title,memo,planDate}]이며 native date 입력 하나. 구간 제목/상속 복귀/Plan 순서 컨트롤이 없음.",
+      "proposal": "기존 React의 pure personal-plan contract를 기준으로 fixture adapter의 동등 필드·transition 정의. 출처별 실제 capability 밖은 숨기고 owner를 문자열로 추정하지 않음.",
+      "doneWhen": "원본과 같은 fixed pin/명시 inherit reset/unscheduled, stable 개인 구간만 변경, 동일구간 전 Item 투영, 순서→저장/reload/Undo, source raw 불변을 양쪽 검증.",
+      "evidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocEditorSurface.tsx:455",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocEditorSurface.tsx:685",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:936",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:1118",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js:2079",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:267"
+      ]
+    },
+    {
+      "id": "K-D1-03",
+      "title": "Calendar 월 탐색 기준을 Plan 일정 anchor 완료로 세었다",
+      "severity": "high",
+      "requirementIds": [
+        "D1-006",
+        "D1-023",
+        "D1-016"
+      ],
+      "original": "이사일 등 기준일을 먼저 고르고 상대 일정 전체를 즉시 재계산. 보기 상태와 저장 날짜를 분리.",
+      "current": "React previous/next는 calendar.baseDate로 월 이동. Plan-level 일정 owner는 stage-3에서 부분으로 남겨 두었다. standalone도 M.TODAY와 month shift.",
+      "proposal": "month cursor/selected day/source anchor/personal anchor를 계약표로 분리. 기존 DTO가 anchor를 보유한 경우만 no-write preview부터 설계하고, 필요한 shadow 확장은 버전 계약으로 별도 승인. 임의 날짜 추정 금지.",
+      "doneWhen": "월/선택일 전환0write와 원래 날짜 유지, anchor preview0write와 상대 일정 정확 재계산, fixed/unscheduled/실행일 보존을 서로 다른 시나리오로 입증.",
+      "evidence": [
+        "D:/flowme2605/flow-mvp/docs/content-audit/2026-08-19-flowme-after-end-to-end-ui-scenarios-ko.html:821",
+        "D:/flowme2605/flow-mvp/docs/content-audit/2026-08-19-flowme-after-end-to-end-ui-scenarios-ko.html:831",
+        "D:/flowme2605/flow-mvp/docs/pr-history/2026-08-13-flow-map-item-date-parity.md:25",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/stage-3-contract.md:90",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocResultPresenter.tsx:482",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:2975"
+      ]
+    },
+    {
+      "id": "K-D1-04",
+      "title": "출처를 보고 고르는 입구가 개인공간 상세 보강에서 빠졌다",
+      "severity": "high",
+      "requirementIds": [
+        "D1-017",
+        "D1-016",
+        "D1-019"
+      ],
+      "original": "선택 전 출처명·원문 링크, 선택 후 공유 원문/개인 사본 상태, 원문 실행 기준·완료 기준.",
+      "current": "React entry 카드에는 제목/child수만 있으며 Item preview는 description만 렌더한다. 원문 source URL은 editor DTO에 존재하는 경로가 있으나 입구에 전달되지 않는다. standalone 카드도 originLabel로 그침.",
+      "proposal": "기존 safe source metadata를 discovery 카드→선택 요약→읽기 상세로 전달하고 P3-J criteria renderer/empty 규칙을 재사용. 출처 없는 경우 사실대로 표시하며 추정 링크 생성 금지.",
+      "doneWhen": "source 있는/없는 4origin+authored fixture에서 선택 전 safe link, no-write lookup/선택, 선택 후 source/개인경계와 criteria exact value/창작0 검사.",
+      "evidence": [
+        "D:/flowme2605/flow-mvp/docs/content-audit/2026-08-19-flowme-after-end-to-end-ui-scenarios-ko.html:809",
+        "D:/flowme2605/flow-mvp/docs/content-audit/2026-08-19-flowme-after-end-to-end-ui-scenarios-ko.html:829",
+        "D:/flowme2605/flow-mvp/docs/content-audit/2026-08-19-flowme-after-end-to-end-ui-scenarios-ko.html:876",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx:2120",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx:2448",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:3992",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:899"
+      ]
+    },
+    {
+      "id": "K-D1-05",
+      "title": "변경 영향 요약에 포함/제외 선택·확인·복원 의미가 없다",
+      "severity": "high",
+      "requirementIds": [
+        "D1-018",
+        "D1-016"
+      ],
+      "original": "선택n/전체n·제외 확인과 복원·저장 영향 확인.",
+      "current": "React includedCount는 전체 orderedItemRefs 길이, excludedCount는0고정. validate는 guard의 모든 Item 보존을 요구. standalone도 action.items.length가 전체와 같아야 한다.",
+      "proposal": "timeline 숨김·원문 삭제를 Plan 제외로 재사용하지 않는다. 기존 원본 capability와 personal membership owner의 상태표를 먼저 설계하고 승인 후 versioned shadow에만 연결. 그 전에는 현재 전체반영 요약으로 정직하게 표시.",
+      "doneWhen": "include/exclude/restore의 대상·개수·날짜·criteria 보존, staged apply0write, 최종1write/Undo, 다른사본/원문불변. collision은 자동합치기 없이 차단.",
+      "evidence": [
+        "D:/flowme2605/flow-mvp/docs/content-audit/2026-08-19-flowme-after-end-to-end-ui-scenarios-ko.html:856",
+        "D:/flowme2605/flow-mvp/docs/content-audit/2026-08-19-flowme-after-end-to-end-ui-scenarios-ko.html:898",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:4072",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/lib/flow/personal-workspace-poc-plan-editor.ts:796",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js:2084"
+      ]
+    },
+    {
+      "id": "K-D1-06",
+      "title": "단일 HTML의 Plan 저장 피드백이 구조화 receipt와 다르다",
+      "severity": "medium",
+      "requirementIds": [
+        "D1-003",
+        "D1-011",
+        "D1-018"
+      ],
+      "original": "한 번 저장한 범위·전후 값·결과 개수·Undo/실패 복구가 이해돼야 함. A0-6은 같은 intent의 receipt 의미를 요구.",
+      "current": "React ReceiptSurface는 owner별 before/after/affectedCount. standalone은 toast text와 누적 성공 수, Plan lastReceipt는 flowId/title/itemCount만 기록. authoring 완료 화면은 별도이므로 대체 근거가 아님.",
+      "proposal": "공통 receipt DTO/view 의미를 재사용해 정확 변경 수·전후 값·취소 범위·same intent retry를 연결. 발표 live region은 하나의 owner로 조정.",
+      "doneWhen": "같은2필드 변경/0변경/취소/강제실패/재시도/Undo에서 양쪽 receipt 의미 동일; 성공 전 오류 상태·prefix불변, actual screen-reader는 별도 NOT_RUN.",
+      "evidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/stage-3-contract.md:135",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/a0-decision-record.md:301",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocReceiptSurface.tsx:39",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:343",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:415",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js:2105"
+      ]
+    },
+    {
+      "id": "K-D1-07",
+      "title": "PoC 내부 주 행동도 전역 cobalt token을 사용한다",
+      "severity": "medium",
+      "requirementIds": [
+        "D1-013",
+        "D1-014"
+      ],
+      "original": "P3F는 전역 FlowMe ink/cobalt와 exact-query local white/gray/teal owner를 분리.",
+      "current": "Surface PRIMARY_CLASS가 --flowme-action을 직접 사용하고 localMain은 workspace-accent만 선언. 상위 담당 current Chromium에서 Quick/계획편집 rgb(49,94,231) 관측.",
+      "proposal": "전역token/PlatformNav를 손대지 말고 local action·selection·focus 의미표를 확정한 후 PoC presenter에만 명시 local token 적용. 기존 CSS 주석과 계약도 같은 owner 의미로 정리.",
+      "doneWhen": "global shell과 local 주행동을 다른 test target으로 측정; 5폭에서 focus/disabled/danger 포함 색상·contrast·원본대비 확인.",
+      "evidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-04-flowme-integrated-poc-production-candidate-v1/decision-contract.md:16",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-04-flowme-integrated-poc-production-candidate-v1/decision-contract.md:47",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocProductShell.module.css:37",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx:269",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/app/globals.css:17",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/output/playwright/p3k/react-execution-detail-390x844.png (상위 담당 관측)"
+      ]
+    },
+    {
+      "id": "K-D1-08",
+      "title": "검토용 기술 설명과 중복 편집 entry가 제품 흐름에 남아 있다",
+      "severity": "medium",
+      "requirementIds": [
+        "D1-014",
+        "D1-025",
+        "D1-016"
+      ],
+      "original": "원문/개인경계는 보존하면서 내부 trace를 숨기고 한 맥락의 주행동/편집 entry를 명확히 함.",
+      "current": "standalone 결과 기본 제목에 원본 Item·회차 식별자, summary WorkingSource, 본문 shadow가 노출. Flow header 개인편집과 아래 결과 Plan 편집이 같은 editor를 연다.",
+      "proposal": "기본 화면은 '원문/내 계획/다른 방식으로 보기/계획 편집'처럼 목적 중심으로 정리. 기술설명은 검증 도구로 이동하고 source/privacy/recovery 문구는 유지.",
+      "doneWhen": "같은 editor 중복 entry를 정리한 뒤 클릭 수/복귀 동일; 화면 기본낭독에서 내부어휘/추적값0, 핵심 source보호 안내 유지.",
+      "evidence": [
+        "D:/flowme2605/flow-mvp/docs/specs/2026-08-12-my-plan-edit-lifecycle-unification/spec.md:40",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:1026",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:1197",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:1236"
+      ]
+    },
+    {
+      "id": "K-D1-09",
+      "title": "부모 충족·오래된 세부 사유·실제 capability 제한을 한 숫자로 읽으면 안 된다",
+      "severity": "medium",
+      "requirementIds": [
+        "D1-003",
+        "D1-004",
+        "D1-006",
+        "D1-010",
+        "D1-018",
+        "D1-022",
+        "D1-023",
+        "D1-026"
+      ],
+      "original": "원래 요구·후속 대체 결정·현재 적용 여부를 하나하나 연결해 보고해야 함.",
+      "current": "생성 trace의 D1 부모26은 충족이지만 일부 subcheck는 UI없음 등 과거 문구. 현재 UI가 있는 경우와 anchor/포함 owner 부재, offline parity 차이가 섞여 있다. Aug13 trash spec 직접 경로는 main/현재 worktree 양쪽에 없음.",
+      "proposal": "역사 trace를 덮지 말고 이번 audit를 별도 층으로 둔다. 코드확인/실제차이/의도변경/과거미갱신/미검사를 분리하고 원본 primary 부재를 표시.",
+      "doneWhen": "D1 26부모·59기존 세부조건 ID를 보존하며 현재 조회 범위와 새 실행범위를 구분; unavailable source/전체 UX 미검사를 명시.",
+      "evidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-poc-requirements-traceability-ko.html#trace-data",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/specs/2026-09-02-flowme-integrated-poc-gap-closure-v1/stage-3-contract.md:90",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-poc-requirements-traceability-assets/requirements-d1-history.json",
+        "D:/flowme2605/flow-mvp/docs/specs/2026-08-13-plan-edit-trash-structure-unification/spec.md (Test-Path/읽기 실패: 없음)"
+      ]
+    },
+    {
+      "id": "K-D1-10",
+      "title": "찾은 Flow 미리보기와 저장 Flow 결과가 다른 표현·data owner를 사용한다",
+      "severity": "medium",
+      "requirementIds": [
+        "D1-021",
+        "D1-022",
+        "D1-023",
+        "D1-024"
+      ],
+      "original": "후속 Text-default 결정과 개인 적용값을 반영한 전체 결과, child 선택 후 결과 확인.",
+      "current": "workspace는 effective ResultPresenter와4슬롯을 사용. entry의 Text/Todo/날짜는 selectedFlow 원본 item title/section/sourceDate 목록을 공유하며 description만 펼친다.",
+      "proposal": "공유 원문 preview와 내 사본 effective preview를 명시적으로 구분하고 동일 목적에는 기존 presenter를 재사용. 기본Text를 과거 콘텐츠별추천결과로 되돌리지 않음.",
+      "doneWhen": "개인 제목/순서/날짜 수정 뒤 재검색·child변경·preview·개인공간왕복에서 expected owner와 결과fullrefs를 비교; source역쓰기/추정값0.",
+      "evidence": [
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx:2400",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocAuthoringSurface.tsx:2448",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/components/flow/personal-workspace-poc/PersonalWorkspacePocResultPresenter.tsx:300",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js:1008",
+        "D:/flowme2605/flow-personal-workspace-v4-1-poc-20260901/docs/content-audit/2026-09-02-flowme-integrated-poc-requirements-traceability-ko.html#trace-data"
+      ]
+    }
+  ],
+  "limitations": [
+    "이번 담당의 작업은 문서·현재 코드·기존 테스트 정의·상위 담당의 제공 로그 읽기 감사다. 제품 수정, 브라우저 조작, npm/test/build 재실행은 0이다. 상위 담당 현재 Chromium K-J7-standalone-dirty 결과를 직접 읽어 기존 코드 의심을 재현 결함으로 갱신했으며 별도 실행 수로 더하지 않았다.",
+    "D1 26개 부모를 빠짐없이 매칭했고 생성 trace 안59개 기존 세부조건 수를 보존한다. 59개를 모두 현재 코드로 독립 분해·재실행한 전수 합격 주장이 아니다.",
+    "전체 trace의 424개 세부조건/다른 제품 228개 부모와 합산하는 coverage는 주 담당 inventory가 담당한다. 이 원장은 D1 범위만 판정한다.",
+    "원본 D1 HTML은 L743에 구조적 UI 제안이라 명시한다. 실제 기존 제품 화면 캡처/배포/관찰 사용자 증거로 표현하지 않는다.",
+    "개발1 실제 작업은 최근2턴만 직접 다시 읽었다. 나머지 원 대화는 생성 trace의 D1-conversation 앵커와 원본 문서/후속 계약을 대조했으며 대화 전체 직접 검토 완료라 주장하지 않는다.",
+    "기존 trace가 가리키는 docs/specs/2026-08-13-plan-edit-trash-structure-unification/spec.md 및 qa.md는 현재 worktree와 main의 예상 경로에서 찾지 못했다. 요구 자체는 원본 Aug12명세·Aug19 UI·회수 trace로 교차 확인했으나 이 primary 문서 복원은 미완료다.",
+    "PR #195는 live 원격 조회하지 않았다. 사용자의 요구상 현재 저장소/문서만 조사했으며 해당 후속 결정은 trace의 회수자료로 표시했다.",
+    "standalone은 deterministic fixture-only 동반물이다. live origin/production route/operating writer 차이는 허용되나 사용자에게 보이는 dirty·date·receipt 핵심 의미 차이는 의도적이라고 가정하지 않았다.",
+    "검색 entry preview의 원문과 개인 사본 preview를 어디까지 동일 presenter로 만들지는 현 계약 대조 후 좁게 설계해야 한다. 새 source policy/anchor schema/membership schema를 이번 감사에서 확정하지 않았다.",
+    "현재 실제 Android Chrome/iOS Safari·실 screen reader·관찰 사용자 검사는 하지 않았다. 관찰 사용자0. 운영 실사용 프로필 전수 byte 검증이 아니라 격리fixture 경계가 기존 자동증거의 범위다.",
+    "운영 /my, 운영 storage/writer, 기존 dirty·미추적 파일, 과거 trace, P3-I 접근 거부 보고서는 읽기/수정 확대 대상으로 삼지 않았다. 목표등록/commit/push/PR/Preview/Production 작업 없음."
+  ]
+}

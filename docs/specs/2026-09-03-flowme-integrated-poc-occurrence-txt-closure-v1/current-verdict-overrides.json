@@ -1,0 +1,132 @@
+{
+  "version": 1,
+  "stage": "P2-B",
+  "asOf": "2026-09-03",
+  "inherits": "docs/specs/2026-09-03-flowme-integrated-poc-lossless-result-closure-v1/current-verdict-overrides.json",
+  "beforeP2B": {
+    "V41": { "total": 78, "satisfied": 60, "partial": 3, "missing": 3, "intentionalChange": 6, "excluded": 6 },
+    "D1": { "total": 26, "satisfied": 25, "partial": 1, "missing": 0, "intentionalChange": 0, "excluded": 0 },
+    "D2": { "total": 64, "satisfied": 37, "partial": 16, "missing": 1, "intentionalChange": 4, "excluded": 6 },
+    "total": { "total": 168, "satisfied": 122, "partial": 20, "missing": 4, "intentionalChange": 10, "excluded": 12 }
+  },
+  "afterP2B": {
+    "V41": { "total": 78, "satisfied": 60, "partial": 3, "missing": 3, "intentionalChange": 6, "excluded": 6 },
+    "D1": { "total": 26, "satisfied": 25, "partial": 1, "missing": 0, "intentionalChange": 0, "excluded": 0 },
+    "D2": { "total": 64, "satisfied": 39, "partial": 14, "missing": 1, "intentionalChange": 4, "excluded": 6 },
+    "total": { "total": 168, "satisfied": 124, "partial": 18, "missing": 4, "intentionalChange": 10, "excluded": 12 }
+  },
+  "overrides": [
+    {
+      "id": "D2-017",
+      "from": "부분",
+      "to": "충족",
+      "evidence": "P2-B shared occurrence v1 manifest across React and standalone Todo, Calendar, Sheet and TXT with per-occurrence shadow transitions",
+      "evidenceLevel": "E4",
+      "currentEvidence": [
+        "lib/flow/personal-workspace-poc-occurrence.ts",
+        "lib/flow/personal-workspace-poc-result-projection.ts",
+        "lib/flow/personal-workspace-poc-state.ts",
+        "components/flow/personal-workspace-poc/PersonalWorkspacePocResultPresenter.tsx",
+        "components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx",
+        "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js",
+        "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js",
+        "lib/flow/personal-workspace-poc-occurrence.test.ts",
+        "lib/flow/personal-workspace-poc-result-projection.test.ts",
+        "lib/flow/personal-workspace-poc-state.test.ts",
+        "components/flow/personal-workspace-poc/PersonalWorkspacePocResultPresenter.test.tsx",
+        "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/standalone.test.cjs",
+        "tests/e2e/personal-workspace-integration-poc.spec.ts",
+        "tests/e2e/personal-workspace-integrated-standalone.spec.ts"
+      ],
+      "implementationEvidence": [
+        "lib/flow/personal-workspace-poc-occurrence.ts",
+        "lib/flow/personal-workspace-poc-result-projection.ts",
+        "lib/flow/personal-workspace-poc-state.ts",
+        "components/flow/personal-workspace-poc/PersonalWorkspacePocResultPresenter.tsx",
+        "components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx",
+        "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js",
+        "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js"
+      ],
+      "testEvidence": [
+        "lib/flow/personal-workspace-poc-occurrence.test.ts",
+        "lib/flow/personal-workspace-poc-result-projection.test.ts",
+        "lib/flow/personal-workspace-poc-state.test.ts",
+        "components/flow/personal-workspace-poc/PersonalWorkspacePocResultPresenter.test.tsx",
+        "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/standalone.test.cjs",
+        "tests/e2e/personal-workspace-integration-poc.spec.ts",
+        "tests/e2e/personal-workspace-integrated-standalone.spec.ts"
+      ],
+      "verificationRunIds": [
+        "p2b-personal-workspace-poc-suite",
+        "p2b-occurrence-txt-model",
+        "p2b-standalone-model",
+        "p2b-cross-surface-contract",
+        "p2b-browser-focused",
+        "p2b-standalone-browser-focused",
+        "p2b-result-six-viewport-browser",
+        "p2b-standalone-six-viewport-browser",
+        "p2b-production-build"
+      ],
+      "reason": "원본 Item 1개와 파생 회차를 분리하고 exact D2 문법·종료·bounded horizon으로 만든 stable manifest를 네 결과가 공유한다. 회차 이동·완료·다시 열기·Undo·reload는 occurrenceId 기준 PoC shadow state에만 기록되며 원 일정·Item·Flow 소속은 불변이다.",
+      "action": "반복 규칙 편집, 이번 이후 일괄 변경, 예외일은 별도 versioned 계약에서 다룬다."
+    },
+    {
+      "id": "D2-020",
+      "from": "부분",
+      "to": "충족",
+      "evidence": "P2-B complete TXT v2 serializer with byte-identical screen, clipboard and local download payloads in React and standalone",
+      "evidenceLevel": "E4",
+      "currentEvidence": [
+        "lib/flow/personal-workspace-poc-authoring.ts",
+        "lib/flow/personal-workspace-poc-authoring-fidelity.ts",
+        "lib/flow/personal-workspace-poc-contract.ts",
+        "lib/flow/personal-workspace-poc-result-projection.ts",
+        "components/flow/personal-workspace-poc/PersonalWorkspacePocResultPresenter.tsx",
+        "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js",
+        "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js",
+        "lib/flow/personal-workspace-poc-authoring.test.ts",
+        "lib/flow/personal-workspace-poc-authoring-fidelity.test.ts",
+        "lib/flow/personal-workspace-poc-result-projection.test.ts",
+        "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/standalone.test.cjs",
+        "tests/e2e/personal-workspace-integration-poc.spec.ts",
+        "tests/e2e/personal-workspace-integrated-standalone.spec.ts"
+      ],
+      "implementationEvidence": [
+        "lib/flow/personal-workspace-poc-authoring.ts",
+        "lib/flow/personal-workspace-poc-authoring-fidelity.ts",
+        "lib/flow/personal-workspace-poc-contract.ts",
+        "lib/flow/personal-workspace-poc-result-projection.ts",
+        "components/flow/personal-workspace-poc/PersonalWorkspacePocResultPresenter.tsx",
+        "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/model.js",
+        "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/app.js"
+      ],
+      "testEvidence": [
+        "lib/flow/personal-workspace-poc-authoring.test.ts",
+        "lib/flow/personal-workspace-poc-authoring-fidelity.test.ts",
+        "lib/flow/personal-workspace-poc-result-projection.test.ts",
+        "docs/content-audit/2026-09-02-flowme-integrated-flow-poc-standalone-ko-assets/standalone.test.cjs",
+        "tests/e2e/personal-workspace-integration-poc.spec.ts",
+        "tests/e2e/personal-workspace-integrated-standalone.spec.ts"
+      ],
+      "verificationRunIds": [
+        "p2b-personal-workspace-poc-suite",
+        "p2b-occurrence-txt-model",
+        "p2b-standalone-model",
+        "p2b-cross-surface-contract",
+        "p2b-browser-focused",
+        "p2b-standalone-browser-focused",
+        "p2b-result-six-viewport-browser",
+        "p2b-standalone-six-viewport-browser",
+        "p2b-production-build"
+      ],
+      "reason": "작성 원문과 별도인 complete TXT v2가 단계별 자동 번호와 supported 전용 속성·하위 체크·반복 회차·원문 메모를 고정 순서로 직렬화한다. 화면·clipboard·다운로드는 UTF-8 BOM 없음, LF, 마지막 개행 1개의 동일 payload를 공유한다.",
+      "action": "외부 전송과 운영 export writer 연결은 승인된 별도 migration에서만 다룬다."
+    }
+  ],
+  "knownBoundaries": [
+    "P2-A requirements-this-run-p2a.json and its version 2 override remain immutable snapshots.",
+    "D1-012, D2-023, D2-026 and the other pre-existing gaps are not reclassified by P2-B.",
+    "Deep nested subchecks and ambiguous properties remain fail-closed; execution conditions are display-only.",
+    "Actual-device, assistive-technology, observed-user and publishing evidence remain separate."
+  ]
+}

@@ -1,11 +1,33 @@
 # Project Status
 
+<!-- alpha-transition-20260920:start -->
+## 현재 — 실사용 알파 전환 (2026-09-20)
+
+현재 작업의 정본은 [실사용 알파 전환 원장](./specs/2026-09-12-flowme-integrated-product-poc-program/alpha-transition.md)이다. M1에 앞서 [PR #203 머지 준비](./specs/2026-09-12-flowme-integrated-product-poc-program/merge-readiness-2026-09-20.md)에서 충돌·요구·회귀를 정합화한다. 과거 PoC 완료와 실제 서비스 준비를 구분한다. 인증·서버 저장·다기기 동기화는 아직 연결하지 않았다. 개발 Supabase `flowme-dev` 생성은 앞선 승인 작업이며 이번에는 DB/Auth 설정을 변경하지 않는다.
+
+아래 PoC 평가의 DB/계정/발행0과 테스트 수는 해당 평가 시점의 기록이다. 후속 Git 보존 commit/push·Draft PR과 npm2253/통합1749 통과·audit0은 [보존 보고서](./specs/2026-09-12-flowme-integrated-product-poc-program/git-preservation-2026-09-20.md)를 따른다. 아래 9/7 운영 release 상태 역시 이번에 다시 확인한 상태가 아니다.
+<!-- alpha-transition-20260920:end -->
+
+## Isolated whole-product PoC — 2026-09-14
+
+2026-09-20 완료. 이 worktree의 격리 기능형 통합 PoC는 [현재 체크포인트](./specs/2026-09-12-flowme-integrated-product-poc-program/current-checkpoint.md), [요구별 최종 평가](./specs/2026-09-12-flowme-integrated-product-poc-program/final-evaluation-2026-09-20.md), [시나리오 원장](./specs/2026-09-12-flowme-integrated-product-poc-program/final-scenario-ledger-2026-09-20.md)을 최신 판정으로 삼는다. 세 산출물의 연결과 서로 다른 두 평가·개선 루프, 복구 버튼/원문 Redo/파일 복귀 포커스 수정 및 F-note 철회 후 기록 보존을 마쳤다. 최종 gdvy 빌드·통합1749/1749·strict390진입점 진단0이며 421소스와 실행 근거를 대조했다. npm 기존 출처기한1실패·의존성 취약점5개와 사용성 개선·실기기/관찰 검증은 남아 있어 출시·상시 실사용 준비 완료는 아니다. 원래 운영 저장소와 아래 운영 release 본문은 변경하지 않았고 DB·계정·commit/push/PR/배포·원격 CI·실기기/관찰 사용자 검증은 하지 않았다.
+
+## 운영 상태의 보존 기준 — 2026-09-07
+
 **Last Updated:** 2026-09-07 (release, source/security maintenance, UX review publication, and preservation state reconciled)
 **Status:** v0.1.0 RELEASED / PR #200 VERIFICATION MAINTENANCE INTEGRATED / PR #201 CORE-JOURNEY REVIEW PACKAGE PUBLISHED / PR #202 STATUS RECONCILIATION PUBLISHED / CANONICAL PRODUCTION SMOKE NOT RUN / NO ACTIVE PRODUCT GATE / OBSERVED USERS 0
 **Current Version:** v0.1.0  
 **Primary Focus:** Preserve the released baseline while Development 3 continues only its recorded Personal Workspace K4-A1 slice and the Owner reviews the two core-journey UX candidates before choosing a Production gate.
 
 ## Current Control Panel
+
+### Isolated P3-K checkpoint — 2026-09-06, C3 implementation / K4-D design package complete
+
+이 격리 worktree에서는 [단계별 갭 구현 원장](./specs/2026-09-05-flowme-integrated-poc-gap-implementation-v1/progress.md)을 현재 PoC 상태의 기준으로 사용한다. 아래 운영 release 이력과 기존 P3-J 기록은 보존하며 이번에 외부 상태를 재검증한 것은 아니다. C3 로컬 색상·48px·중복 진입의 [요구별 QA](./specs/2026-09-05-flowme-integrated-poc-gap-implementation-v1/k3c-c3-local-ui-qa.md) 한정 범위를 마쳤다. 최종 React UI/복귀8/8·기존gate/실행/작성33/33, standalone4/4·제공file/host12/12 PASS다. 관련113/135, production build PASS이며 전체npm은2,031실행/2,030PASS/기존출처기한1FAIL로 전체green이 아니다. 현재 조작용 HTML은55C57D51/각1,925,497bytes다. K4-D는 [구체 화면·소유·버전·후속 gate](./specs/2026-09-05-flowme-integrated-poc-gap-implementation-v1/k4-implementation-gates.md)와 순수34/34·strict0, 보고서5/5로 설계 패키지를 마쳤다. 실제 K4 필드는 미구현이며 다음은 K4-A1 read-preview다. 전체254부모/424원자 판정은 다시 올리지 않았다. 보호551의 승인 밖 변경0·격리 운영 sentinel bytes 불변, 실기기/보조기술NOT_RUN, 관찰사용자0명, commit/push/PR/Preview/Production미실행이다.
+
+### Isolated PoC checkpoint — 2026-09-05 P3-J
+
+This worktree's [execution-detail spec](./specs/2026-09-05-flowme-integrated-poc-execution-detail-gap-v1/spec.md) and validation report (로컬 전용 근거: `./content-audit/2026-09-05-flowme-integrated-poc-execution-detail-validation-ko.html`) record a local-only requirement repair, not a release-state update. Source description, completion criteria and personal memo are distinct in React and the standalone HTML, including long-content wrapping. Focused checks `58/58`, standalone `96/96`, full `npm test` `2,210/2,210`, production build `18` static pages and selected product browser scenarios `26/26` passed. The trace repairs three subchecks and refreshes two evidence records without increasing parent requirement counts. Exact-query and PoC-prefix boundaries remain; operating fixture bytes are unchanged. Real-device/assistive-technology tests remain `NOT_RUN` and are outside this goal's completion conditions. Observed users `0`; no commit, push, PR, Preview or Production action. The release history below is inherited and was not revalidated by this PoC task.
 
 Start from [PROJECT_CONTROL.md](./PROJECT_CONTROL.md). Dated HTML boards remain evidence snapshots; this file, [ROADMAP.md](./ROADMAP.md), and [specs/README.md](./specs/README.md) carry current truth.
 

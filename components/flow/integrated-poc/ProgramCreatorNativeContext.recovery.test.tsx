@@ -1,0 +1,20 @@
+import assert from 'node:assert/strict';import test from 'node:test';import React from 'react';import {renderToStaticMarkup} from 'react-dom/server';
+import {createRequire} from 'node:module';import {readFileSync} from 'node:fs';import {dirname,resolve} from 'node:path';import {fileURLToPath} from 'node:url';import vm from 'node:vm';import ts from 'typescript';
+import {createMemoryTextAuthoringStorage,createTextAuthoringDraftRepository} from '../../../lib/flow/integrated-poc/native-creator-vendor/text-authoring/storage';
+import {createTextAuthoringServiceState} from '../../../lib/flow/integrated-poc/native-creator-vendor/text-authoring/service-state';
+import {decodeLegacyCreatorRecoveries,LEGACY_CREATOR_RECOVERY_KEY} from '../../../lib/flow/integrated-poc/legacy-creator-recovery-codec';
+import {createNativeCreatorRecoverySource} from '../../../lib/flow/integrated-poc/native-creator-recovery-source';
+import {createNativeCreatorDocumentOwner} from '../../../lib/flow/integrated-poc/native-creator-document';
+import type {ProgramCreatorNativeContextProps} from './ProgramCreatorNativeContext';
+const NOW='2026-09-20T01:01:00.000Z';
+test('NRCUI01 actual recovery source is labeled as recovery and never offers a saved-version restore callback',()=>{
+ const storage=createMemoryTextAuthoringStorage(),repo=createTextAuthoringDraftRepository(storage,{now:()=>NOW,idFactory:prefix=>`${prefix}-actual-ui`});
+ repo.saveCoherentRecovery(createTextAuthoringServiceState('# 실제 임시복구\n- [ ] 미저장 항목',{ownership:'creator',draftId:'original',documentId:'actual',now:NOW}));
+ const read=decodeLegacyCreatorRecoveries(storage.getItem(LEGACY_CREATOR_RECOVERY_KEY));assert(read.kind==='ready');const source=createNativeCreatorRecoverySource(read.candidates[0]);assert(source);const owner=createNativeCreatorDocumentOwner({id:'program-recovery',source},NOW);assert(owner.ok);
+ const url=new URL('./ProgramCreatorNativeContext.tsx',import.meta.url),require=createRequire(url),root=resolve(dirname(fileURLToPath(url)),'../../..'),loaded={exports:{} as {ProgramCreatorNativeContext:React.ComponentType<ProgramCreatorNativeContextProps>}};
+ const code=ts.transpileModule(readFileSync(url,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true}}).outputText;
+ vm.runInThisContext(`(function(module,exports,require){${code}\n})`)(loaded,loaded.exports,(id:string)=>id.endsWith('.css')?{__esModule:true,default:{}}:require(id.startsWith('@/')?resolve(root,id.slice(2)):id));
+ let callbacks=0;const result=async()=>{callbacks++;return{ok:true} as const;};
+ const html=renderToStaticMarkup(React.createElement(loaded.exports.ProgramCreatorNativeContext,{owner:owner.owner,onOperation:result,onRestore:result}));
+ assert(html.includes('기존 임시복구본'));assert(html.includes(source.recoveryId));assert(!html.includes('처음 가져온 전체 저장본으로 복구 비교'));assert(!html.includes('기존 저장본 undefined'));assert.equal(callbacks,0);assert.equal(owner.owner.actions.length,0);
+});

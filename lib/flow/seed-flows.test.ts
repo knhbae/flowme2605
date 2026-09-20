@@ -1309,6 +1309,16 @@ test('reviewed source mismatches stay in preview while corrected routes use curr
     assert.equal(classifyFlowSourceFreshness(bundle, asOf).bucket, 'preview_or_hidden', slug);
   }
 
+  const dogAdoption = bySlug.get('dog-adoption-first-week');
+  assert.ok(dogAdoption);
+  assert.equal(dogAdoption.flow.source_checked_at, '2026-06-04');
+  assert.equal(getSourceFitAudit('dog-adoption-first-week')?.checkedAt, '2026-09-04');
+  assert.equal(getSourceFitAudit('dog-adoption-first-week')?.decision, 'catalog_preview_only');
+  assert.equal(
+    classifyFlowSourceFreshness(dogAdoption, new Date('2026-09-04T12:00:00+09:00')).bucket,
+    'preview_or_hidden',
+  );
+
   const qnet = bySlug.get('qnet-exam-application-prep');
   const business = bySlug.get('business-registration-basic');
   const license = bySlug.get('driver-license-renewal-check');
@@ -1368,6 +1378,39 @@ test('reviewed source mismatches stay in preview while corrected routes use curr
     bySlug.get('real-thankyou-bubu-video-daily-stretch-9min')?.flow.updated_at,
     '2026-05-21T00:00:00.000Z',
   );
+});
+
+test('September 7 reviewed metadata is reused only for the eight matching source routes', () => {
+  const slugs = ['alt-phone-sk7-self-activation', 'chiangmai-solo-trip-packing',
+    'jeonse-contract-precheck-docs', 'banana-peanut-recipe-video', 'elementary-school-entry-d30',
+    'monstera-care-routine', 'water-purifier-filter-cycle', 'plank-30-day-challenge'];
+  for (const slug of slugs) {
+    const bundle = seedBundles.find((entry) => entry.flow.slug === slug);
+    assert.ok(bundle, slug);
+    assert.equal(bundle.flow.source_checked_at, '2026-09-07', slug);
+    assert.equal(getSourceFitAudit(slug)?.checkedAt, '2026-09-07', slug);
+    assert.equal(classifyFlowSourceFreshness(bundle, new Date('2026-09-20T12:00:00+09:00')).bucket, 'current', slug);
+  }
+  assert.equal(getSourceFitAudit('banana-peanut-recipe-video')?.sourceTitle, '노밀가루 바나나 땅콩버터 빵 (with 계란)');
+  assert.equal(getSourceFitAudit('elementary-school-entry-d30')?.sourceTitle, '2026학년도 초등학교 취학통지 및 예비소집 실시');
+});
+
+test('squishy source row mismatch is a real preview hold without refreshing seed freshness', () => {
+  const bundle = seedBundles.find((entry) => entry.flow.slug === 'kids-printable-squishy-craft');
+  assert.ok(bundle);
+  const audit = getSourceFitAudit(bundle.flow.slug);
+  assert.equal(bundle.flow.source_checked_at, '2026-06-10');
+  assert.equal(audit?.checkedAt, '2026-09-20');
+  assert.equal(audit?.sourcePrecision, 'mismatch');
+  assert.equal(audit?.decision, 'catalog_preview_only');
+  assert.match(audit?.currentGap ?? '', /원문 행/);
+  assert.equal(normalizeExecutionModel(bundle).exposureStatus, 'catalog_preview');
+  assert.equal(classifyFlowSourceFreshness(bundle, new Date('2026-09-20T12:00:00+09:00')).bucket, 'preview_or_hidden');
+  const dog = seedBundles.find((entry) => entry.flow.slug === 'dog-adoption-first-week');
+  assert.ok(dog);
+  assert.equal(dog.flow.source_checked_at, '2026-06-04');
+  assert.equal(getSourceFitAudit(dog.flow.slug)?.checkedAt, '2026-09-04');
+  assert.equal(getSourceFitAudit(dog.flow.slug)?.decision, 'catalog_preview_only');
 });
 
 test('standard source freshness gate rejects future and malformed review metadata', () => {
@@ -1593,8 +1636,9 @@ test('published user routes record source freshness while preview library stays 
     return exposure === 'catalog_preview' || exposure === 'hidden';
   });
 
-  assert.ok(userRoutes.length >= 123);
-  assert.ok(previewOrHidden.length >= 25);
+  // Dated source reviews hold dog adoption (09-04) and unsupported squishy timeline rows (09-20).
+  assert.ok(userRoutes.length >= 121);
+  assert.ok(previewOrHidden.length >= 32);
 
   const demotedPreviewSlugs = [
     'digital-detox-weekly',
@@ -1608,6 +1652,8 @@ test('published user routes record source freshness while preview library stays 
     'diet-habit-2week',
     'diet-meal-exercise-log',
     'diet-reset-2week',
+    'dog-adoption-first-week',
+    'kids-printable-squishy-craft',
   ];
   for (const slug of demotedPreviewSlugs) {
     const bundle = published.find((entry) => entry.flow.slug === slug);

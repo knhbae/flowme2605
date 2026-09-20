@@ -1,0 +1,19 @@
+.pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;align-items:start;margin:8px 0}
+.item,.choice{min-width:0;max-width:100%;overflow-wrap:anywhere}
+.item{background:#fff;border:1px solid #dce7e5;border-radius:8px;padding:12px;box-sizing:border-box}
+.item h4{margin:4px 0 12px;font-size:1rem;line-height:1.5;overflow-wrap:anywhere}
+.item .eyebrow{margin:0;color:#4c6861;font-size:.85rem;line-height:1.5}
+.facts{display:grid;grid-template-columns:minmax(72px,auto) minmax(0,1fr);gap:8px 12px;margin:0}
+.facts dt{font-size:.875rem;color:#4c6861}
+.facts dd{margin:0;min-width:0;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.6}
+.choice{display:flex;flex-direction:column;gap:12px}
+.choice>label{font-weight:600}
+.choice select{font-weight:400}
+.choice .outcome{margin:0;line-height:1.6}
+.more,.candidates{margin-top:8px;min-width:0}
+.more summary,.candidates summary{min-height:44px;cursor:pointer;font-size:.875rem}
+.more summary:focus-visible,.candidates summary:focus-visible{outline:3px solid #42ab98;outline-offset:3px}
+.more pre{max-height:320px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;font-size:.8125rem}
+.more ul{padding-left:20px;white-space:pre-wrap}
+.candidates>.item{margin-top:8px}
+@media(max-width:800px){.pair{grid-template-columns:minmax(0,1fr);gap:12px}.facts{grid-template-columns:minmax(64px,auto) minmax(0,1fr)}}

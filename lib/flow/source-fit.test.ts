@@ -99,9 +99,54 @@ test('source-fit summary captures keep, reshape, and preview decisions', () => {
   assert.equal(summary.auditedCount, 141);
   assert.ok(summary.averageScore >= 70);
   assert.equal(summary.decisionCounts.keep_representative, 52);
-  assert.equal(summary.decisionCounts.reshape_before_featured, 69);
-  assert.equal(summary.decisionCounts.catalog_preview_only, 19);
+  assert.equal(summary.decisionCounts.reshape_before_featured, 67);
+  assert.equal(summary.decisionCounts.catalog_preview_only, 21);
   assert.equal(summary.decisionCounts.hide_from_public_catalog, 1);
+});
+
+test('dog adoption source review records a dated preview hold without refreshing stale source metadata', () => {
+  const audit = getSourceFitAudit('dog-adoption-first-week');
+  const bundle = seedBundles.find((entry) => entry.flow.slug === 'dog-adoption-first-week');
+
+  assert.ok(audit);
+  assert.ok(bundle);
+  assert.equal(audit.checkedAt, '2026-09-04');
+  assert.equal(audit.sourcePrecision, 'mismatch');
+  assert.equal(audit.decision, 'catalog_preview_only');
+  assert.equal(bundle.flow.source_checked_at, '2026-06-04');
+  assert.match(audit.currentGap, /D\+7|30일/u);
+});
+
+test('main official link repair coexists with independently dated dog and printable holds', () => {
+  const ev = seedBundles.find((entry) => entry.flow.slug === 'ev-subsidy-apply');
+  const evAudit = getSourceFitAudit('ev-subsidy-apply');
+  assert.ok(ev);
+  assert.ok(evAudit);
+  assert.equal(ev.flow.source_checked_at, '2026-09-07');
+  assert.equal(evAudit.checkedAt, '2026-09-07');
+  assert.equal(ev.flow.source_url, 'https://ev.or.kr/nportal/buySupprt/initSubsiGuideAction.do');
+  assert.equal(evAudit.sourceUrl, ev.flow.source_url);
+  assert.equal(evAudit.sourcePrecision, 'exact');
+  assert.notEqual(evAudit.decision, 'catalog_preview_only');
+
+  const heldSources = [
+    ['dog-adoption-first-week', '2026-06-04', '2026-09-04'],
+    ['kids-printable-squishy-craft', '2026-06-10', '2026-09-20'],
+  ] as const;
+  for (const [slug, sourceDate, auditDate] of heldSources) {
+    const bundle = seedBundles.find((entry) => entry.flow.slug === slug);
+    const audit = getSourceFitAudit(slug);
+    assert.ok(bundle, slug);
+    assert.ok(audit, slug);
+    assert.equal(bundle.flow.source_checked_at, sourceDate, slug);
+    assert.equal(audit.checkedAt, auditDate, slug);
+    assert.equal(audit.sourcePrecision, 'mismatch', slug);
+    assert.equal(audit.decision, 'catalog_preview_only', slug);
+  }
+  assert.equal(
+    seedBundles.find((entry) => entry.flow.slug === 'dog-adoption-first-week')?.flow.source_title,
+    '강아지 입양 전 완전 가이드 - 보호소·브리더·동물등록·예방접종 총정리',
+  );
 });
 
 test('current Allblanc source fit separates old video publication dates from current link checks and personal schedules', () => {

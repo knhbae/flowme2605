@@ -1411,6 +1411,17 @@ test.describe('P24 execution trust regressions', () => {
       .filter((key) => key.startsWith('flow:my-flow:structural-overlay:'))
       .some((key) => window.localStorage.getItem(key)?.includes('"date":"2026-07-21"'))))
       .toBe(true);
+    const scheduledItem = await page.evaluate(() => {
+      for (const key of Object.keys(window.localStorage)
+        .filter((key) => key.startsWith('flow:my-flow:structural-overlay:'))) {
+        const overlay = JSON.parse(window.localStorage.getItem(key)!);
+        const item = overlay.userItems.find((entry: { itemId: string; title: string; schedule?: { date?: string } }) =>
+          entry.title === '충전기 챙기기' && entry.schedule?.date === '2026-07-21');
+        if (item) return { key, itemId: item.itemId as string };
+      }
+      return null;
+    });
+    expect(scheduledItem).not.toBeNull();
 
     if (evidenceDir) {
       fs.mkdirSync(`${evidenceDir}/screenshots`, { recursive: true });
@@ -1459,6 +1470,16 @@ test.describe('P24 execution trust regressions', () => {
     await enterMyFlowDetailEditMode(detail);
     await detail.getByTestId('personal-draft-date-mode-none').click();
     await detail.getByTestId('my-flow-detail-save-changes').click();
+    // A click does not await the shared write lock. Confirm this exact Item's
+    // successful save before hard navigation destroys the current document.
+    await expect.poll(() => page.evaluate((target) => {
+      if (!target) return null;
+      const raw = window.localStorage.getItem(target.key);
+      if (!raw) return null;
+      const item = JSON.parse(raw).userItems.find((entry: { itemId: string }) => entry.itemId === target.itemId);
+      return item ? { title: item.title, schedule: item.schedule ?? null } : null;
+    }, scheduledItem)).toEqual({ title: '충전기 챙기기', schedule: null });
+    await expect(detail.getByTestId('my-flow-detail-save-changes')).toHaveCount(0);
 
     await page.goto('/calendar');
     await page.getByTestId('my-flow-month-picker').fill('2026-07');

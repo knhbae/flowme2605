@@ -1,0 +1,12 @@
+[
+  {
+    "id": "D2-017",
+    "status": "P2-B 충족",
+    "detail": "canonical Item은 하나로 유지하면서 sourceItemRef와 분리된 stable occurrenceId를 만든다. exact 반복 문법, N회·ISO 종료, 유한 30회·종료 없음 4주 경계를 한 manifest로 계산하고 Todo·42칸 월간 Calendar·Sheet·TXT가 같은 회차 ID·순서·원 발생일을 쓴다. 한 회차의 실행일 이동·완료·다시 열기·Undo·reload는 PoC shadow state만 바꾸며 React와 standalone에서 같은 계약을 검증했다."
+  },
+  {
+    "id": "D2-020",
+    "status": "P2-B 충족",
+    "detail": "WorkingSource와 분리된 complete TXT v2 serializer가 제목·구분선·단계별 자동 번호와 지원 전용 속성·한 단계 하위 체크·반복 회차·원문 메모를 고정 순서로 보존한다. UTF-8 BOM 없음·LF·마지막 개행 1개·행 끝 공백 없음 계약을 적용하고, 화면·clipboard·로컬 .txt 다운로드가 같은 바이트를 사용하도록 React와 standalone에서 검증했다."
+  }
+]

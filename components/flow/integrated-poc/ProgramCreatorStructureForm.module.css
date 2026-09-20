@@ -1,0 +1,54 @@
+.root { min-width:0; color:#173d40; margin-block:12px; }
+.mobileTrigger,.drawerHeader { display:none; }
+.drawer { position:static; width:auto; max-width:none; max-height:none; margin:0; padding:0; border:0; color:inherit; font:inherit; background:transparent; overflow:visible; }
+.drawerBody { min-width:0; }
+.drawer:modal { position:fixed; inset:0; width:100%; max-width:100%; height:100dvh; max-height:100dvh; margin:0; padding:0; display:flex; flex-direction:column; box-sizing:border-box; background:#fff; overflow:hidden; }
+.drawer::backdrop { background:rgb(18 53 57 / .4); }
+.drawer:modal .drawerHeader { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-shrink:0; padding:12px max(16px,env(safe-area-inset-right)) 12px max(16px,env(safe-area-inset-left)); border-bottom:1px solid #d7e8e4; }
+.drawer:modal .drawerBody { overflow:auto; min-height:0; padding:12px max(16px,env(safe-area-inset-right)) max(20px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left)); }
+.root summary { min-height:44px; cursor:pointer; padding:10px 0; }
+.root button,.root input,.root select,.root textarea { font:inherit; box-sizing:border-box; }
+.root button { min-height:44px; padding:10px 14px; border:1px solid #c8dcda; border-radius:7px; background:#fff; color:#125257; cursor:pointer; flex-shrink:0; }
+.root button:disabled { cursor:default; opacity:.55; }
+.root input:not([type=checkbox]),.root select,.root textarea { min-height:44px; width:100%; min-width:0; border:1px solid #c0d4d1; border-radius:6px; padding:9px; background:white; color:inherit; }
+.root textarea { resize:vertical; }
+.root button:focus-visible,.root input:focus-visible,.root select:focus-visible,.root textarea:focus-visible,.root summary:focus-visible { outline:3px solid #117e77; outline-offset:2px; }
+.picker { display:grid; gap:6px; max-width:560px; }
+.fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+.field { min-width:0; display:flex; flex-direction:column; gap:6px; }
+.field small { color:#52716f; }
+.group { margin:14px 0; border:0; border-left:2px solid #d7e8e4; padding:6px 0 6px 14px; min-width:0; }
+.group legend { font-weight:600; padding:4px; }
+.group > button { margin:8px 8px 0 0; }
+.weekdays { display:flex; flex-wrap:wrap; gap:4px; }
+.weekdays label { display:flex; align-items:center; gap:5px; min-height:44px; padding:0 8px; }
+.subtle { align-self:flex-start; border:0!important; padding:4px 0!important; font-size:.9rem!important; }
+.actions { display:flex; flex-wrap:wrap; gap:8px; margin-block:16px; }
+.actions > button:first-child { background:#087c75; color:#fff; border-color:#087c75; }
+.errors { color:#a32a21; margin:6px 0; padding-left:20px; }
+.errorSummary { border-left:3px solid #a32a21; padding:8px 12px; margin-block:12px; overflow-wrap:anywhere; }
+.errorSummary ul { padding-left:20px; }
+.errorSummary button { border:0; padding:8px 0; text-align:left; text-decoration:underline; white-space:normal; }
+.errorSummary:focus,.weekdays:focus { outline:3px solid #117e77; outline-offset:2px; }
+.preview { border-top:1px solid #c8dcda; margin-top:16px; padding-top:12px; }
+.example { margin-bottom:16px; border-block:1px solid #d7e8e4; }
+.example p { margin:8px 0; }
+.example dl { margin:12px 0; }
+.example dl > div { display:grid; grid-template-columns:minmax(80px,1fr) minmax(0,3fr); gap:12px; margin:8px 0; }
+.example dt { font-weight:600; }
+.example dd { margin:0; overflow-wrap:anywhere; }
+.calculations { overflow-wrap:anywhere; }
+.calculations ul { padding-left:20px; }
+.calculations li { margin-block:6px; }
+.root pre:focus-visible { outline:3px solid #117e77; outline-offset:2px; }
+.root pre { white-space:pre-wrap; overflow-wrap:anywhere; max-height:340px; overflow:auto; padding:12px; background:#f4f8f6; font-size:.9rem; }
+@media(max-width:600px) { .fields { grid-template-columns:minmax(0,1fr); } .group { padding-left:10px; } .actions { align-items:stretch; } .actions button { max-width:100%; } }
+@media(max-width:600px) {
+  .mobileTrigger { display:inline-flex; }
+  .mobileTrigger[hidden] { display:none; }
+  .drawer:not(:modal) { display:none; }
+  .drawerBody > details > summary { display:none; }
+  .inlineFallback { display:block!important; }
+  .inlineFallback .drawerHeader { display:none; }
+  .inlineFallback .drawerBody > details > summary { display:list-item; }
+}

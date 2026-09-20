@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23315ee7'/%3E%3Cpath d='M18 17h30v9H28v7h17v9H28v15H18z' fill='white'/%3E%3C/svg%3E">
+  <title>FlowMe 개인공간 v4.1 기능형 PoC 로컬 검증</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f3ec;
+      --surface: #ffffff;
+      --surface-soft: #f8f9fc;
+      --text: #171813;
+      --muted: #64685f;
+      --border: #dfe2da;
+      --border-strong: #b9beb3;
+      --action: #315ee7;
+      --action-strong: #2145ba;
+      --action-soft: #edf1ff;
+      --positive: #237a4b;
+      --positive-soft: #eaf7ef;
+      --warning: #986209;
+      --warning-soft: #fff5d8;
+      --danger: #b42318;
+      --radius: 14px;
+      --shadow: 0 14px 40px rgba(23, 24, 19, .08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+    button, textarea { font: inherit; }
+    a { color: inherit; }
+    :focus-visible { outline: 3px solid var(--action-strong); outline-offset: 3px; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      min-height: 64px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255, 255, 255, .94);
+      padding: 10px clamp(16px, 4vw, 48px);
+      backdrop-filter: blur(12px);
+    }
+    .brand { font-size: 18px; font-weight: 900; letter-spacing: -.02em; }
+    .top-status { display: flex; align-items: center; gap: 9px; color: var(--muted); font-size: 13px; font-weight: 750; }
+    .status-dot { width: 9px; height: 9px; border-radius: 999px; background: var(--positive); box-shadow: 0 0 0 4px var(--positive-soft); }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      max-width: 1500px;
+      margin: 0 auto;
+    }
+    .rail { display: none; }
+    main { min-width: 0; padding: clamp(24px, 5vw, 72px) clamp(16px, 4vw, 56px) 96px; }
+
+    .intro { max-width: 860px; margin-bottom: 34px; }
+    .intro h1 { margin: 0; font-size: clamp(32px, 5vw, 58px); line-height: 1.08; letter-spacing: -.045em; }
+    .intro p { margin: 18px 0 0; max-width: 720px; color: var(--muted); font-size: clamp(16px, 2vw, 20px); }
+    .summary-strip { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+    .summary-strip span { border: 1px solid var(--border); border-radius: 8px; background: var(--surface); padding: 8px 11px; color: var(--muted); font-size: 13px; font-weight: 800; }
+
+    .section { margin-top: 56px; scroll-margin-top: 84px; }
+    .section-head { display: flex; align-items: end; justify-content: space-between; gap: 18px; margin-bottom: 18px; }
+    .section-head h2 { margin: 0; font-size: clamp(24px, 3vw, 34px); letter-spacing: -.035em; }
+    .section-head p { margin: 6px 0 0; color: var(--muted); }
+
+    .live-card { overflow: hidden; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); }
+    .live-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--border); padding: 14px; }
+    .viewports { display: flex; flex-wrap: wrap; gap: 7px; }
+    .viewport-button, .action-button, .decision-button {
+      min-height: 44px;
+      border: 1px solid var(--border-strong);
+      border-radius: 9px;
+      background: var(--surface);
+      color: var(--action-strong);
+      padding: 9px 13px;
+      font-weight: 850;
+      cursor: pointer;
+    }
+    .viewport-button[aria-pressed="true"], .decision-button[aria-pressed="true"] { border-color: var(--action); background: var(--action-soft); box-shadow: inset 0 0 0 1px var(--action); }
+    .action-button.primary { border-color: var(--action); background: var(--action); color: #fff; text-decoration: none; }
+    .action-button:hover, .viewport-button:hover, .decision-button:hover { border-color: var(--action); }
+    .live-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .device-scroller { overflow: auto; max-width: 100%; background: #e8e8e2; padding: 18px; }
+    .device-stage { position: relative; width: 390px; height: 844px; margin: 0 auto; border: 1px solid #969b92; border-radius: 16px; background: #fff; box-shadow: 0 10px 28px rgba(23, 24, 19, .16); overflow: hidden; transition: width .2s ease, height .2s ease; }
+    .device-stage iframe { display: block; width: 100%; height: 100%; border: 0; background: #fff; }
+    .live-note { display: grid; gap: 7px; border-top: 1px solid var(--border); padding: 14px 16px; color: var(--muted); font-size: 13px; }
+    .live-note strong { color: var(--text); }
+
+    .scenario-progress { display: grid; grid-template-columns: auto minmax(120px, 320px); align-items: center; gap: 14px; }
+    .progress-track { height: 10px; overflow: hidden; border-radius: 999px; background: var(--border); }
+    .progress-fill { width: 0; height: 100%; background: var(--positive); transition: width .2s ease; }
+    .scenario-list { display: grid; gap: 10px; }
+    .scenario {
+      display: grid;
+      grid-template-columns: 52px minmax(0, 1fr);
+      gap: 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface);
+      padding: 17px;
+    }
+    .scenario-index { display: grid; width: 44px; height: 44px; place-items: center; border-radius: 10px; background: var(--action-soft); color: var(--action-strong); font-weight: 950; }
+    .scenario h3 { margin: 0; font-size: 17px; }
+    .scenario p { margin: 6px 0 0; color: var(--muted); }
+    .scenario-result { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 13px; }
+    .result-choice { position: relative; display: inline-flex; min-height: 42px; align-items: center; gap: 7px; border: 1px solid var(--border); border-radius: 8px; padding: 8px 11px; cursor: pointer; font-size: 14px; font-weight: 800; }
+    .result-choice:has(input:checked) { border-color: var(--positive); background: var(--positive-soft); color: var(--positive); }
+    .result-choice input { width: 17px; height: 17px; accent-color: var(--positive); }
+
+    .gallery { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 14px; }
+    figure { min-width: 0; margin: 0; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); overflow: hidden; }
+    figure.wide { grid-column: span 12; }
+    figure.mobile { grid-column: span 6; }
+    figure img { display: block; width: 100%; height: auto; background: #fff; }
+    figure.mobile img { max-height: 700px; object-fit: contain; object-position: top; }
+    figcaption { border-top: 1px solid var(--border); padding: 11px 13px; color: var(--muted); font-size: 13px; font-weight: 750; }
+    .reference-pair { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(220px, .6fr); gap: 14px; }
+    .review-callout { display: grid; gap: 12px; margin-top: 16px; border-left: 4px solid var(--warning); border-radius: 0 12px 12px 0; background: var(--warning-soft); padding: 18px 20px; }
+    .review-callout h3 { margin: 0; font-size: 18px; }
+    .review-callout ul { display: grid; gap: 7px; margin: 0; padding-left: 20px; color: #5d4514; }
+
+    .boundary-table-wrap { overflow: auto; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+    table { width: 100%; min-width: 680px; border-collapse: collapse; }
+    th, td { border-bottom: 1px solid var(--border); padding: 14px; text-align: left; vertical-align: top; }
+    th { background: var(--surface-soft); color: var(--muted); font-size: 13px; }
+    tr:last-child td { border-bottom: 0; }
+    .state { display: inline-flex; border-radius: 7px; padding: 4px 7px; font-size: 12px; font-weight: 900; }
+    .state.pass { background: var(--positive-soft); color: var(--positive); }
+    .state.pending { background: var(--warning-soft); color: var(--warning); }
+    .state.none { background: #f2f2ee; color: var(--muted); }
+
+    .review-panel { display: grid; gap: 14px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); padding: clamp(18px, 3vw, 30px); }
+    .decision-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    textarea { width: 100%; min-height: 140px; resize: vertical; border: 1px solid var(--border-strong); border-radius: 10px; background: #fff; padding: 13px; color: var(--text); }
+    .review-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .copy-feedback { min-height: 24px; color: var(--positive); font-size: 13px; font-weight: 800; }
+
+    .footnote { margin-top: 32px; color: var(--muted); font-size: 13px; }
+    .mobile-only { display: none; }
+
+    @media (min-width: 1120px) {
+      .layout { grid-template-columns: 254px minmax(0, 1fr); }
+      .rail { display: block; position: sticky; top: 64px; height: calc(100vh - 64px); border-right: 1px solid var(--border); padding: 36px 22px; }
+      .rail nav { display: grid; gap: 7px; }
+      .rail a { border-radius: 8px; padding: 10px 12px; color: var(--muted); font-weight: 800; text-decoration: none; }
+      .rail a:hover { background: var(--surface); color: var(--text); }
+      .rail .rail-note { margin-top: 28px; border-top: 1px solid var(--border); padding-top: 20px; color: var(--muted); font-size: 12px; }
+    }
+    @media (max-width: 760px) {
+      .top-status span:last-child { display: none; }
+      main { padding-bottom: 64px; }
+      .live-toolbar, .section-head { align-items: stretch; flex-direction: column; }
+      .device-scroller { padding: 8px; }
+      .device-stage { max-width: 100%; }
+      .scenario { grid-template-columns: 40px minmax(0, 1fr); padding: 14px; }
+      .scenario-index { width: 36px; height: 36px; }
+      .scenario-progress { grid-template-columns: 1fr; }
+      figure.mobile, figure.wide { grid-column: span 12; }
+      .reference-pair { grid-template-columns: 1fr; }
+      .mobile-only { display: inline; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">FlowMe 개인공간 v4.1</div>
+    <div class="top-status"><i class="status-dot" aria-hidden="true"></i><span>로컬 기능형 PoC 검증</span><span>운영 데이터 쓰기 없음</span></div>
+  </header>
+
+  <div class="layout">
+    <aside class="rail" aria-label="검증 문서 목차">
+      <nav>
+        <a href="#live">실제 화면 조작</a>
+        <a href="#scenarios">S1–S8 검증</a>
+        <a href="#screens">화면별 결과</a>
+        <a href="#boundaries">데이터 경계</a>
+        <a href="#decision">검토 의견</a>
+      </nav>
+      <p class="rail-note">이 문서는 검증 허브입니다. 체크와 메모는 이 문서 안에서만 유지되며 저장소나 운영 데이터에 기록하지 않습니다.</p>
+    </aside>
+
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <h1 id="page-title">직접 눌러 보고,<br>통합 여부를 판단하세요.</h1>
+        <p>실제 구현 화면, 필수 시나리오, 다섯 화면 크기의 자동 검사 결과를 한 문서에 모았습니다. 기능 검증과 제품 정책 승인은 분리해서 기록합니다.</p>
+        <div class="summary-strip" aria-label="검증 상태 요약">
+          <span>테스트 1,522 / 1,522</span>
+          <span>빌드 18 / 18</span>
+          <span>브라우저 자동화 4 / 4 · S1–S8</span>
+          <span>PoC 밖 저장값 byte 동일</span>
+          <span>실제 기기 미실행</span>
+          <span>관찰 사용자 0명</span>
+        </div>
+      </section>
+
+      <section class="section" id="live" aria-labelledby="live-title">
+        <div class="section-head">
+          <div><h2 id="live-title">실제 PoC 화면 조작</h2><p>화면 크기를 고른 뒤 iframe 안에서 기능을 직접 확인합니다.</p></div>
+        </div>
+        <div class="live-card">
+          <div class="live-toolbar">
+            <div class="viewports" role="group" aria-label="미리보기 화면 크기">
+              <button class="viewport-button" type="button" data-width="390" data-height="844" aria-pressed="true">390 × 844</button>
+              <button class="viewport-button" type="button" data-width="375" data-height="812" aria-pressed="false">375 × 812</button>
+              <button class="viewport-button" type="button" data-width="844" data-height="390" aria-pressed="false">844 × 390</button>
+              <button class="viewport-button" type="button" data-width="1024" data-height="768" aria-pressed="false">1024 × 768</button>
+              <button class="viewport-button" type="button" data-width="1440" data-height="900" aria-pressed="false">1440 × 900</button>
+            </div>
+            <div class="live-actions">
+              <button class="action-button" type="button" id="reload-poc">화면 다시 불러오기</button>
+              <a class="action-button" href="2026-09-01-flowme-personal-workspace-v4-1-standalone-demo-ko.html" target="_blank" rel="noreferrer">서버 없는 독립 HTML 열기</a>
+              <a class="action-button primary" href="http://127.0.0.1:3107/my?personalWorkspacePoc=v1" target="_blank" rel="noreferrer">새 창에서 실제 PoC 열기</a>
+            </div>
+          </div>
+          <div class="device-scroller" id="device-scroller">
+            <div class="device-stage" id="device-stage" aria-label="선택한 화면 크기의 실제 PoC">
+              <iframe id="poc-frame" title="FlowMe 개인공간 v4.1 기능형 PoC" src="http://127.0.0.1:3107/my?personalWorkspacePoc=v1"></iframe>
+            </div>
+          </div>
+          <div class="live-note">
+            <strong>화면이 비어 있으면 오류가 아닙니다.</strong>
+            <span>실제 화면은 현재 브라우저에 이미 저장된 Flow만 읽습니다. 검증용 Flow를 만들기 위해 운영 <code>flow:*</code> 키를 임의로 추가하지 않습니다. 자동 시나리오의 네 origin 결과는 아래 캡처에서 확인할 수 있습니다.</span>
+            <span><strong>서버 없는 독립 HTML</strong>은 파일을 바로 열어 네 origin과 모든 조작을 확인할 수 있습니다. 저장은 <code>flow:poc:personal-workspace:v1:standalone-demo</code> 한 키에만 남습니다.</span>
+            <span>서버가 꺼져 있으면 새 창 링크와 iframe이 열리지 않습니다. 해당 PoC worktree에서 <code>npm.cmd run dev -- -p 3107</code>을 실행하면 다시 열립니다.</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="scenarios" aria-labelledby="scenario-title">
+        <div class="section-head">
+          <div><h2 id="scenario-title">S1–S8 수동 판정표</h2><p>자동화 통과 여부와 별개로 직접 이해하고 조작할 수 있는지 표시합니다.</p></div>
+          <div class="scenario-progress" aria-live="polite"><strong id="progress-label">0 / 8 직접 확인</strong><div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div></div>
+        </div>
+        <div class="scenario-list">
+          <article class="scenario"><div class="scenario-index">S1</div><div><h3>네 origin이 한 번씩 보이고 상세가 열린다</h3><p>미분류에서 Flow를 골라 제목·origin·Item 목록을 확인합니다.</p><div class="scenario-result"><label class="result-choice"><input type="checkbox" data-scenario="S1">직접 확인</label></div></div></article>
+          <article class="scenario"><div class="scenario-index">S2</div><div><h3>빠른 할 일을 만들고 이동한 뒤 Undo한다</h3><p>날짜와 폴더를 바꿔도 마지막 한 번의 Undo로 원래 상태가 복구되는지 봅니다.</p><div class="scenario-result"><label class="result-choice"><input type="checkbox" data-scenario="S2">직접 확인</label></div></div></article>
+          <article class="scenario"><div class="scenario-index">S3</div><div><h3>Flow 폴더와 Item 실행 날짜가 독립적으로 움직인다</h3><p>Flow의 폴더를 옮긴 뒤 Item 하나의 날짜만 바뀌고 Flow 소속은 유지되는지 봅니다.</p><div class="scenario-result"><label class="result-choice"><input type="checkbox" data-scenario="S3">직접 확인</label></div></div></article>
+          <article class="scenario"><div class="scenario-index">S4</div><div><h3>완료와 다시 열기가 모든 보기에서 일치한다</h3><p>오늘에서 완료한 뒤 Flow 상세와 기간 목록을 확인하고 다시 엽니다.</p><div class="scenario-result"><label class="result-choice"><input type="checkbox" data-scenario="S4">직접 확인</label></div></div></article>
+          <article class="scenario"><div class="scenario-index">S5</div><div><h3>드래그·길게 누르기·메뉴·키보드가 같은 결과를 낸다</h3><p>사용 방식이 달라도 동일한 이동 규칙과 안내가 적용되는지 봅니다.</p><div class="scenario-result"><label class="result-choice"><input type="checkbox" data-scenario="S5">직접 확인</label></div></div></article>
+          <article class="scenario"><div class="scenario-index">S6</div><div><h3>같은 위치와 취소에서는 아무것도 바뀌지 않는다</h3><p>Escape·pointer cancel·저장 실패도 원래 상태를 유지하는지 확인합니다.</p><div class="scenario-result"><label class="result-choice"><input type="checkbox" data-scenario="S6">직접 확인</label></div></div></article>
+          <article class="scenario"><div class="scenario-index">S7</div><div><h3>새로고침 복구와 손상 데이터 차단이 동작한다</h3><p>마지막 성공 상태는 복원되고 손상 payload는 기존 /my로 닫히는지 확인합니다.</p><div class="scenario-result"><label class="result-choice"><input type="checkbox" data-scenario="S7">직접 확인</label></div></div></article>
+          <article class="scenario"><div class="scenario-index">S8</div><div><h3>운영 데이터가 전후 동일하다</h3><p>PoC 조작은 전용 prefix에만 기록되고 기존 flow:* 값은 byte 단위로 같아야 합니다.</p><div class="scenario-result"><label class="result-choice"><input type="checkbox" data-scenario="S8">직접 확인</label></div></div></article>
+        </div>
+      </section>
+
+      <section class="section" id="screens" aria-labelledby="screens-title">
+        <div class="section-head"><div><h2 id="screens-title">화면별 자동 검사 결과</h2><p>모든 캡처는 production build를 브라우저로 연 결과입니다. 실제 기기 사진이나 관찰 사용자 검증은 아닙니다.</p></div></div>
+        <div class="gallery">
+          <figure class="mobile"><img src="2026-09-01-flowme-personal-workspace-v4-1-poc-local-validation-assets/implementation-390x844.png" alt="390 곱하기 844 개인공간 구현 화면"><figcaption>390 × 844 · 모바일 세로 · 넘침과 가려진 핵심 행동 0건</figcaption></figure>
+          <figure class="mobile"><img src="2026-09-01-flowme-personal-workspace-v4-1-poc-local-validation-assets/implementation-375x812.png" alt="375 곱하기 812 개인공간 구현 화면"><figcaption>375 × 812 · 작은 모바일 세로 · 콘솔·페이지 오류 0건</figcaption></figure>
+          <figure class="wide"><img src="2026-09-01-flowme-personal-workspace-v4-1-poc-local-validation-assets/implementation-844x390.png" alt="844 곱하기 390 개인공간 구현 화면"><figcaption>844 × 390 · 모바일 가로 · 핵심 행동 접근 가능</figcaption></figure>
+          <figure class="wide"><img src="2026-09-01-flowme-personal-workspace-v4-1-poc-local-validation-assets/implementation-1024x768.png" alt="1024 곱하기 768 개인공간 구현 화면"><figcaption>1024 × 768 · 태블릿 · 폴더와 실행 목록 전환 확인</figcaption></figure>
+          <figure class="wide"><img src="2026-09-01-flowme-personal-workspace-v4-1-poc-local-validation-assets/implementation-1440x900.png" alt="1440 곱하기 900 개인공간 구현 화면"><figcaption>1440 × 900 · 데스크톱 · Flow 상세와 Item 패널 동시 확인</figcaption></figure>
+          <figure class="mobile"><img src="2026-09-01-flowme-personal-workspace-v4-1-poc-local-validation-assets/implementation-move-390x844.png" alt="390 곱하기 844 왼쪽 비모달 이동 패널"><figcaption>390 × 844 · 왼쪽 비모달 이동 패널 · 오른쪽 조작 통로 유지</figcaption></figure>
+          <figure class="wide"><img src="2026-09-01-flowme-personal-workspace-v4-1-poc-local-validation-assets/implementation-move-844x390.png" alt="844 곱하기 390 왼쪽 비모달 이동 패널"><figcaption>844 × 390 · 패널 내부 스크롤로 날짜·폴더·순서 접근</figcaption></figure>
+          <figure class="mobile"><img src="2026-09-01-flowme-personal-workspace-v4-1-poc-local-validation-assets/standalone-390x844.png" alt="390 곱하기 844 독립 실행형 HTML"><figcaption>독립 HTML · 서버 없이 조작·저장·새로고침 복구</figcaption></figure>
+        </div>
+
+        <div class="section-head" style="margin-top:34px"><div><h2>v4.1 시각 기준과 비교</h2><p>정적 UI 기준의 정보 구조는 유지하되, 실제 서비스 토큰과 접근 가능한 조작 상태를 적용했습니다.</p></div></div>
+        <div class="reference-pair">
+          <figure><img src="2026-09-01-flowme-personal-workspace-v4-1-poc-local-validation-assets/reference-desktop-month.png" alt="v4.1 정적 UI 데스크톱 기준"><figcaption>기존 v4.1 정적 기준 · 월간 목록과 폴더 구조</figcaption></figure>
+          <figure><img src="2026-09-01-flowme-personal-workspace-v4-1-poc-local-validation-assets/reference-mobile-folder.png" alt="v4.1 정적 UI 모바일 기준"><figcaption>기존 v4.1 정적 기준 · 모바일 폴더 화면</figcaption></figure>
+        </div>
+        <div class="review-callout">
+          <h3>기능 승인과 시각 승인을 따로 판단해 주세요</h3>
+          <ul>
+            <li>정적 시안은 청록색·평면 목록·흰 배경이고, 현재 PoC는 기존 서비스의 파랑·카드형·베이지 배경을 사용합니다.</li>
+            <li>모바일은 서비스 헤더, PoC 제목·관리, 상태 안내, 보기 탭이 이어져 첫 Flow나 할 일이 시안보다 아래에 나타납니다.</li>
+            <li><code>FlowMe / FLOW</code>, <code>할 일 / 개인공간 / 내 계획</code>, <code>이번 주 / 주간</code> 명칭이 섞여 있습니다.</li>
+            <li>844 × 390의 이동 패널 내부 스크롤과 마지막 대상 접근은 자동화로 확인했습니다. 실제 터치 감각은 기기에서 별도로 봐야 합니다.</li>
+            <li>통합 정본의 <code>/calendar</code> parity는 이번 직접 범위의 오늘·주간·월간·날짜 미정에는 포함되지 않았습니다. 다음 통합 단계에서 포함 여부를 결정해야 합니다.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section" id="boundaries" aria-labelledby="boundary-title">
+        <div class="section-head"><div><h2 id="boundary-title">완료와 미실행을 분리합니다</h2><p>PoC 통과를 제품 출시나 사용자 검증으로 확대 해석하지 않습니다.</p></div></div>
+        <div class="boundary-table-wrap">
+          <table>
+            <thead><tr><th>검증 층</th><th>현재 상태</th><th>확인된 범위</th></tr></thead>
+            <tbody>
+              <tr><td>구현</td><td><span class="state pass">완료</span></td><td>read model, PoC store, 폴더·기간·이동·완료·Undo·reload</td></tr>
+              <tr><td>자동 테스트</td><td><span class="state pass">1,522 / 1,522</span></td><td>순수 모델, identity, 저장 경계, transition, 기존 회귀</td></tr>
+              <tr><td>브라우저 시뮬레이션</td><td><span class="state pass">4 / 4</span></td><td>S1–S8, 독립 HTML, 다섯 화면 크기, 가로 넘침·콘솔·page error 0건</td></tr>
+              <tr><td>운영 데이터 불변</td><td><span class="state pass">동일</span></td><td>시나리오 전후 허용 prefix 밖 모든 localStorage key/value byte 동일</td></tr>
+              <tr><td>Android Chrome</td><td><span class="state pending">미실행</span></td><td>실제 기기 확인 필요</td></tr>
+              <tr><td>iOS Safari</td><td><span class="state pending">미실행</span></td><td>실제 기기 확인 필요</td></tr>
+              <tr><td>관찰 사용자</td><td><span class="state none">0명</span></td><td>자동화·캡처는 관찰 사용자 증거가 아님</td></tr>
+              <tr><td>commit / push / PR</td><td><span class="state none">미진행</span></td><td>별도 승인 전 로컬 격리 worktree에만 유지</td></tr>
+              <tr><td>Preview / Production</td><td><span class="state none">미진행</span></td><td>운영 통합과 배포는 이번 PoC 범위 밖</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" id="decision" aria-labelledby="decision-title">
+        <div class="section-head"><div><h2 id="decision-title">검토 의견 남기기</h2><p>입력 내용은 저장하지 않습니다. 복사해서 이 Codex 작업에 붙여 주세요.</p></div></div>
+        <div class="review-panel">
+          <div class="decision-row" role="group" aria-label="검토 결론">
+            <button type="button" class="decision-button" data-decision="승인" aria-pressed="false">PoC 승인</button>
+            <button type="button" class="decision-button" data-decision="수정 필요" aria-pressed="false">수정 필요</button>
+            <button type="button" class="decision-button" data-decision="보류" aria-pressed="false">판단 보류</button>
+          </div>
+          <label for="review-note"><strong>보고 싶은 변경이나 막힌 행동</strong></label>
+          <textarea id="review-note" placeholder="예: 오늘 보기에서 완료 후 Flow 상세로 돌아가는 경로가 눈에 띄지 않습니다."></textarea>
+          <div class="review-actions"><button type="button" class="action-button primary" id="copy-review">검증 결과 복사</button><button type="button" class="action-button" id="reset-review">표시 초기화</button></div>
+          <div class="copy-feedback" id="copy-feedback" aria-live="polite"></div>
+        </div>
+        <p class="footnote">작성일 2026-09-01 · 근거: 격리 worktree의 현재 구현과 자동 브라우저 검사 · 실제 기기 및 관찰 사용자 검증은 별도입니다.</p>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (() => {
+      const stage = document.querySelector('#device-stage');
+      const frame = document.querySelector('#poc-frame');
+      const viewportButtons = [...document.querySelectorAll('.viewport-button')];
+      const scenarioInputs = [...document.querySelectorAll('[data-scenario]')];
+      const progressLabel = document.querySelector('#progress-label');
+      const progressFill = document.querySelector('#progress-fill');
+      const decisionButtons = [...document.querySelectorAll('[data-decision]')];
+      const reviewNote = document.querySelector('#review-note');
+      const copyFeedback = document.querySelector('#copy-feedback');
+      let decision = '선택 안 함';
+
+      const updateProgress = () => {
+        const count = scenarioInputs.filter((input) => input.checked).length;
+        progressLabel.textContent = `${count} / ${scenarioInputs.length} 직접 확인`;
+        progressFill.style.width = `${(count / scenarioInputs.length) * 100}%`;
+      };
+
+      viewportButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          viewportButtons.forEach((candidate) => candidate.setAttribute('aria-pressed', String(candidate === button)));
+          stage.style.width = `${button.dataset.width}px`;
+          stage.style.height = `${button.dataset.height}px`;
+          document.querySelector('#device-scroller').scrollTo({ left: 0, top: 0, behavior: 'smooth' });
+        });
+      });
+
+      document.querySelector('#reload-poc').addEventListener('click', () => {
+        frame.src = frame.src;
+      });
+
+      scenarioInputs.forEach((input) => input.addEventListener('change', updateProgress));
+
+      decisionButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          decision = button.dataset.decision;
+          decisionButtons.forEach((candidate) => candidate.setAttribute('aria-pressed', String(candidate === button)));
+        });
+      });
+
+      const buildReviewText = () => {
+        const checks = scenarioInputs.map((input) => `${input.dataset.scenario}: ${input.checked ? '직접 확인' : '미확인'}`);
+        return [
+          'FlowMe 개인공간 v4.1 기능형 PoC 검토',
+          `결론: ${decision}`,
+          `검토 시각: ${new Date().toLocaleString('ko-KR')}`,
+          '',
+          ...checks,
+          '',
+          '의견:',
+          reviewNote.value.trim() || '(없음)',
+          '',
+          '주의: 이 결과는 로컬 수동 검토이며 실제 기기·관찰 사용자 검증과 별도입니다.',
+        ].join('\n');
+      };
+
+      document.querySelector('#copy-review').addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(buildReviewText());
+          copyFeedback.textContent = '검증 결과를 복사했습니다. Codex 작업에 붙여 주세요.';
+        } catch {
+          copyFeedback.textContent = '자동 복사가 막혔습니다. 메모를 직접 선택해 복사해 주세요.';
+        }
+      });
+
+      document.querySelector('#reset-review').addEventListener('click', () => {
+        scenarioInputs.forEach((input) => { input.checked = false; });
+        decisionButtons.forEach((button) => button.setAttribute('aria-pressed', 'false'));
+        reviewNote.value = '';
+        decision = '선택 안 함';
+        copyFeedback.textContent = '';
+        updateProgress();
+      });
+    })();
+  </script>
+</body>
+</html>

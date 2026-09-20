@@ -1,0 +1,145 @@
+{
+  "version": 1,
+  "contract": "program-native-creator-d2-pure-v1",
+  "sourceRoot": "D:/flowme2605/flow-text-authoring-structure-template-p0-baseline-20260829",
+  "sourceReadOnly": true,
+  "byteRewrites": 0,
+  "entrypoints": [
+    "text-authoring/parser.ts",
+    "text-authoring/operations.ts",
+    "text-authoring/artifact-projection.ts",
+    "text-authoring/validation.ts"
+  ],
+  "files": [
+    {
+      "path": "artifact-plan.ts",
+      "sha256": "a6eea592f59dc3d027619babbc72e0efe9cef9f2ace10a8a90d8ff64b532e661",
+      "bytes": 12569
+    },
+    {
+      "path": "completion-criterion.ts",
+      "sha256": "507761aa1ed40cddce28a1e1a8cf0184376e0655b2690a58910c3f66ee0364b5",
+      "bytes": 1198
+    },
+    {
+      "path": "curated-source-app-seed-meta.ts",
+      "sha256": "f05548e3d06c1497fb0c652a7555a539a932a2d788bdefc7b62d76878263566e",
+      "bytes": 289
+    },
+    {
+      "path": "date.ts",
+      "sha256": "d95c468c6cca3f61abc4131f1ad44972a553a1d3b5c328657707a6dc015c6aac",
+      "bytes": 2383
+    },
+    {
+      "path": "execution-detail-content.ts",
+      "sha256": "8f09cb4ec0b748b9b72021a3ca78c84f7f755ac8954a2f27528705988b4c3655",
+      "bytes": 1919
+    },
+    {
+      "path": "execution-model.ts",
+      "sha256": "0013d9344b0f6e5a5b1381e02be0c2e4244a7b5d518a5530cb8ba09eb8f8a40f",
+      "bytes": 6739
+    },
+    {
+      "path": "final-promotion-qa.ts",
+      "sha256": "1a793804b6adcdd79709708d91610a49f2aeefb5095048a01f12ae376801b374",
+      "bytes": 946
+    },
+    {
+      "path": "flow-experience-projection.ts",
+      "sha256": "7c25c4e23de75ac02361b794cf5662c5e16be5f7cfd09e267100c85e7a0dc810",
+      "bytes": 11141
+    },
+    {
+      "path": "flow-item-state.ts",
+      "sha256": "6cd3f122736063f2d7e08c50c1ba5e9d8eeb040d160501e5d3835533fe133f0d",
+      "bytes": 1255
+    },
+    {
+      "path": "natural-artifact-audit.ts",
+      "sha256": "cfd25434925f549fb741d3264753eacf0e94b1dee8255c536523c7847121a067",
+      "bytes": 120084
+    },
+    {
+      "path": "source-fit.ts",
+      "sha256": "ff4c59312b19709ec8bef82eab86f5a0c1ade0b9449ae180564eaab5e5aca4e5",
+      "bytes": 226894
+    },
+    {
+      "path": "text-authoring/artifact-projection.ts",
+      "sha256": "3867ffece55aae7c24dc959b5538aa69548cba0774b1b25dd0271a5b466b41f0",
+      "bytes": 56233
+    },
+    {
+      "path": "text-authoring/authoring-grammar.ts",
+      "sha256": "123bb1d1093556324b2a20d63eb17eb950cd3963283af1f9c57e783edeaaedb9",
+      "bytes": 4308
+    },
+    {
+      "path": "text-authoring/flow-bundle-adapter.ts",
+      "sha256": "09d4ae42534f71480b0703b9f11b270451ed5bdfff1a47ba9d11b33488919d82",
+      "bytes": 18318
+    },
+    {
+      "path": "text-authoring/identity.ts",
+      "sha256": "b728dd8bf3a4f615f5905273df817adb61d854ed6fc39522db9eebfe331c8d97",
+      "bytes": 1688
+    },
+    {
+      "path": "text-authoring/issue-state.ts",
+      "sha256": "07c57bdd6efa320892feb26c7dda15b6468e95116d5376a99e2619d5f7402a7a",
+      "bytes": 1482
+    },
+    {
+      "path": "text-authoring/long-document-table.ts",
+      "sha256": "575f245b8fa42eb82f4497fcfa19f13a55b785cd0156bd9c574f97f241845edd",
+      "bytes": 43532
+    },
+    {
+      "path": "text-authoring/operations.ts",
+      "sha256": "c143cafdb311940a0bb09cbbb9866948e613efdad01e15149bc80edd41ec79bc",
+      "bytes": 98368
+    },
+    {
+      "path": "text-authoring/parser.ts",
+      "sha256": "e969c3e8c71ced2d52bb6513d3671e3ff8def4d65ee0850d7f2a1cbf798d67a0",
+      "bytes": 72494
+    },
+    {
+      "path": "text-authoring/recurrence.ts",
+      "sha256": "a65cbce840c16d0ea3e37d4062ad178c45b6132781be84abe8297165518b979e",
+      "bytes": 12684
+    },
+    {
+      "path": "text-authoring/review-policy.ts",
+      "sha256": "4d37618bb48eb6f3a446a5d99015995c8a34bb3e990ff57c7e4c428ce4ff4506",
+      "bytes": 8301
+    },
+    {
+      "path": "text-authoring/source-update.ts",
+      "sha256": "3ce71d7fe58f153d82435ea2103a0582a46e15a36feffc40dcdc8006cfb8edec",
+      "bytes": 53013
+    },
+    {
+      "path": "text-authoring/text-authoring-feature-flags.ts",
+      "sha256": "ceb0aa545525ab893005614c1f8ad39a72cbaa4fca0f6fb605a615e83768be7a",
+      "bytes": 2757
+    },
+    {
+      "path": "text-authoring/types.ts",
+      "sha256": "b0008d9a25c43a1034bc14b2d1deb09f05accd043411de5ec9ac07b001bd1c25",
+      "bytes": 27314
+    },
+    {
+      "path": "text-authoring/validation.ts",
+      "sha256": "014178b0680528f2dc7c98f2741c45d47079fde5c2b27a20d2a0277c38a0055c",
+      "bytes": 27769
+    },
+    {
+      "path": "types.ts",
+      "sha256": "d65da5d2c09862d2c041f9e643f3ff99371733b48290032a8185a0dda725f305",
+      "bytes": 5745
+    }
+  ]
+}

@@ -2012,43 +2012,44 @@ export const sourceFitAudits: SourceFitAudit[] = [
   }),
   defineAudit({
     slug: 'dog-adoption-first-week',
-    checkedAt: '2026-09-07',
-    sourceTitle: '강아지 입양 전 완전 가이드 - 보호소·브리더·동물등록·예방접종 총정리',
+    // The September 7 source review does not resolve this dated
+    // source-row and conditional registration/health mismatch. Keep the hold.
+    checkedAt: '2026-09-04',
+    sourceTitle: 'LIFE FLOW – 강아지 입양 전 완전 가이드',
     sourceUrl: 'https://www.gomin77.co.kr/blog/dog-puppy-pet-adoption',
-    sourcePrecision: 'exact',
+    sourcePrecision: 'mismatch',
     sourceUsefulness:
-      '입양 첫 주는 준비물, 안정 공간, 병원 예약, 등록 확인처럼 사용자가 따라할 행동이 있지만 건강 판단처럼 보이지 않도록 경계가 필요하다.',
+      '준비물, 기존 접종 기록 확인, 첫날 안정 공간과 입양 직후 병원 확인 행동은 제공하지만 민간 원문이며 법정 등록 기한과 수의학 판단의 정본은 아니다.',
     idealReconstruction:
-      '입양일을 기준으로 D-1 준비물/공간, D+1 적응 확인, D+3 병원 예약, D+7 등록/생활 루틴 확인을 만들고 건강 판단은 병원 상담 메모로 분리한다.',
+      '입양 전 준비물, 첫날 적응, 기존 기록 확인을 체크하고 등록 시점은 현행 법령, 건강검진·산책·목욕 시점은 수의사 확인 행동으로 분리한다.',
     naturalArtifacts: [
       {
-        kind: 'monthly_calendar',
-        artifactTitle: '강아지 입양 첫 주 체크 캘린더',
-        simulatedInputs: ['입양일=2026-06-05', '반려견=강아지', '첫 병원=미정', '등록상태=미정'],
+        kind: 'checklist',
+        artifactTitle: '반려견 입양 전후 확인표',
+        simulatedInputs: ['입양일=2026-09-10', '월령=사용자 확인', '기존 접종·진료 기록=미확인', '동물등록=미확인'],
         expectedOutput: [
-          'D-1 밥그릇/배변패드/이동장 준비',
-          'D-Day 안정 공간 마련',
-          'D+3 동물병원 예약 메모',
-          'D+7 동물등록 확인',
+          '첫날 준비물과 안정 공간 확인',
+          '기존 접종·진료 기록 확인',
+          '동물병원 상담 일정 메모',
+          '현재 법령 기준 등록 기한 확인',
         ],
-        currentFlowMatch: '입양일 기준 timeline으로 맞지만 민감한 건강 판단은 Flow가 결론내리면 안 된다.',
-        currentUxSupport: '경고 문구와 상세 메모로 병원 상담 필요 항목을 분리할 수 있다.',
-        gap: '증상 기록이나 판단 로직을 넣으면 앱이 무거워지므로 첫 주 실행 체크에 제한해야 한다.',
+        currentFlowMatch: '준비물과 기록 확인은 원문 범위 안이지만 D+7 동물등록과 일률적인 산책·목욕 시점은 현재 공식 근거로 고정할 수 없다.',
+        currentUxSupport: '카탈로그 검토 상태에서는 직접 실행을 열지 않고 불일치 이유를 확인할 수 있다.',
+        gap: '민간 원문의 권고와 현행 동물보호법 시행령의 조건부 30일 등록 기한을 D+7 타임라인으로 합쳤다.',
       },
     ],
     userJourney: [
-      '입양 준비 글을 보고 입양일을 입력한다.',
-      '첫 주 준비물과 생활 공간 체크만 완료한다.',
-      '병원 상담이 필요한 내용은 메모에 적고 판단은 하지 않는다.',
-      '등록/예약처럼 명확한 완료 기준만 체크한다.',
+      '사용자가 입양 전 준비물과 기존 기록을 확인한다.',
+      '건강검진·산책·목욕 시점은 반려견 상태에 따라 수의사에게 확인한다.',
+      '등록 대상과 기한은 현행 공식 법령에서 다시 확인한다.',
     ],
     currentGap:
-      '현재 UX12는 hybrid Flow를 보여줄 수 있지만, 건강/훈련 조언까지 확장하면 입력 복잡도와 위험이 커진다.',
+      '현재 Flow는 민간 원문의 권고와 현행 동물보호법 시행령의 30일 등록 기한을 분리하지 않고 D+7 타임라인으로 합쳤다.',
     contentAction:
-      '원문 수동 확인 뒤 준비물, 공간, 병원 예약, 등록 확인만 남기고 건강 판단/훈련 조언은 주의 메모로 낮춘다.',
+      '기존 source_checked_at은 갱신하지 않는다. 등록 기한과 건강·생활 시점을 근거별로 다시 설계하기 전까지 카탈로그 검토용으로만 유지한다.',
     uxAction:
-      '반려동물 Flow는 루틴 앱처럼 확장하지 말고 첫 주 일정과 체크 중심으로 유지한다.',
-    decision: 'reshape_before_featured',
+      '일반 실행을 열지 않고 검토 사유를 표시하며, 재설계 후에는 체크리스트와 조건부 공식 확인을 분리한다.',
+    decision: 'catalog_preview_only',
     scores: {
       actionDensity: 12,
       temporalStructure: 13,
@@ -2261,12 +2262,12 @@ export const sourceFitAudits: SourceFitAudit[] = [
 const promotedNeedsReviewManualAudits: SourceFitAudit[] = [
   defineAudit({
     slug: 'kids-printable-squishy-craft',
-    checkedAt: '2026-06-18',
+    checkedAt: '2026-09-20',
     sourceTitle: 'Makeit DIY printable squishy craft post',
     sourceUrl: 'https://blog.naver.com/PostView.naver?blogId=makeitdiy&logNo=223260911491',
-    sourcePrecision: 'exact',
+    sourcePrecision: 'mismatch',
     sourceUsefulness:
-      'The creator post gives a concrete printable-craft premise, but FLOW should only preserve the source link, preparation checklist, and lightweight execution steps without copying downloadable assets.',
+      '원문 본문은 겨울 간식꾸러미 도안과 A4 인쇄, 제작자 저작권·무단 사용 및 배포 금지 안내를 제공한다. 현재 Flow의 날짜별 준비·보호자 작업·사진 메모·정리 단계 전체를 뒷받침하는 행은 확인되지 않았다.',
     idealReconstruction:
       'The user confirms the original post and usage conditions, prepares paper/coating materials, completes one craft session, and leaves only a short next-craft memo.',
     naturalArtifacts: [
@@ -2281,11 +2282,11 @@ const promotedNeedsReviewManualAudits: SourceFitAudit[] = [
           'Leave next-craft memo without storing child photos or files',
         ],
         currentFlowMatch:
-          'The public route already keeps the source as a link and frames the craft as preparation plus execution checks.',
+          '원문 링크는 보존하지만 현재 일곱 실행 항목과 날짜 오프셋 전체의 원문 근거가 부족해 일반 실행을 보류한다.',
         currentUxSupport:
-          'Warnings separate source-file access from FLOW state and keep photos or child-development notes out of the default record.',
+          'catalog_preview는 검토 이유와 원문 경계를 표시하고 저장·일반 실행을 제공하지 않는다.',
         gap:
-          'It still needs review wording so the route cannot be read as redistributing printable assets or evaluating a child activity outcome.',
+          '도안 링크·A4 인쇄 안내 외 행의 근거와 이용 조건을 확인한 뒤 선택 날짜의 자료 항목으로 재설계해야 한다.',
       },
     ],
     userJourney: [
@@ -2294,12 +2295,12 @@ const promotedNeedsReviewManualAudits: SourceFitAudit[] = [
       'The result is recorded only as a lightweight next-craft memo, not copied files or child records.',
     ],
     currentGap:
-      'Good as a public craft-prep flow, but the source boundary and no-file-storage rule must remain visible before any featured promotion.',
+      '2026-09-20 정확한 원문 본문을 확인했으나 현재 D-1/당일/후속 timeline과 일곱 실행 항목을 원문 행에 모두 연결할 수 없다. 도안의 이용 허락을 재배포 허락으로 확대할 수도 없어 일반 실행을 보류한다.',
     contentAction:
-      'Keep the source link, material prep, cleanup, and next-craft memo. Do not copy images, PDFs, passwords, child photos, or educational assessment records into FLOW.',
+      '기존 source_checked_at과 Flow 본문은 그대로 둔다. 원문 링크·선택 놀이 날짜 중심으로 재설계하고 원문 행·이용 조건을 대조하기 전까지 catalog_preview로 유지한다. 도안·PDF·비밀번호·아이 사진은 복제하거나 저장하지 않는다.',
     uxAction:
-      'Keep source confirmation near the first action and make optional memo/photo behavior clearly non-default.',
-    decision: 'reshape_before_featured',
+      '원문 대조 보류 이유를 표시하고 일반 실행·저장 진입은 열지 않는다. 검토일 갱신을 콘텐츠 최신성 승인으로 표시하지 않는다.',
+    decision: 'catalog_preview_only',
     scores: {
       actionDensity: 12,
       temporalStructure: 8,

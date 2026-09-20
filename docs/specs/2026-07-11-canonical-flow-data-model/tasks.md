@@ -1,5 +1,11 @@
 # Canonical Flow Data Model v1 Tasks
 
+<!-- alpha-transition-20260920:start -->
+## 2026-09-20 연결 — 통합 PoC 이후 실사용 전환
+
+현재 서버 전환 상태는 [실사용 알파 전환 원장](../2026-09-12-flowme-integrated-product-poc-program/alpha-transition.md)에서 관리한다. 이 문서의 완료 항목은 당시 계약 작업이며 실제 DB/Auth 완료가 아니다. Future Runtime 체크박스는 일괄 변경하지 않는다. 저장·권한·identity·이관/복구는 A01–A24에 연결하고, 자동 URL 수집·AI provider는 별도 보류로 구분한다. 기존 체크 상태와 원문은 보존한다.
+<!-- alpha-transition-20260920:end -->
+
 ## Contract Slice
 
 - [x] 현재 Flow/Section/Item/Detail, source bridge, overlay, run, export 구조를 인벤토리한다.

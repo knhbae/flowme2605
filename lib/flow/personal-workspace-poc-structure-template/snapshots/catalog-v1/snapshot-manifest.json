@@ -1,0 +1,48 @@
+{
+  "snapshotVersion": "flow-structure-template-catalog-snapshot-v1",
+  "catalogVersion": "1.1.0-p0",
+  "templateContractVersion": "p0.2",
+  "sourcePackageRelativeRoot": "docs/specs/2026-08-29-flowme-p0-structure-template-development-starter",
+  "files": [
+    {
+      "path": "flow-structure-template-catalog-v1.json",
+      "byteLength": 56769,
+      "sha256": "b9399b878df740b46bf8838ffa394ac95a1b04c66b41de0c3fc5273fb4e0b7c0"
+    },
+    {
+      "path": "fixtures/exam-dday-study.json",
+      "byteLength": 3683,
+      "sha256": "bd8cfeeb79cad055b4a6c99c455fb3aba4e419af0f57f088d96d8fe3ac2247b6"
+    },
+    {
+      "path": "fixtures/exercise-phased.json",
+      "byteLength": 4246,
+      "sha256": "69ac613640c0a96b5bd8c1c750b89682e0e847dbfd16c11d8b0a0a83f122225f"
+    },
+    {
+      "path": "fixtures/exercise-weekly.json",
+      "byteLength": 2836,
+      "sha256": "fb778f6d935a2cef919a542f56bced3a58d3fe5f5e364c744acdc5d22a6ef703"
+    },
+    {
+      "path": "fixtures/moving-dday.json",
+      "byteLength": 4090,
+      "sha256": "2a30864297c34b728e078ddad565c8cd14e23b87161de27cc46933552cca3495"
+    },
+    {
+      "path": "fixtures/negative-cases.json",
+      "byteLength": 13908,
+      "sha256": "d450a4c9fb19782b3379ae19c3b416b4af415750a5b580ddde1d25b69adb583e"
+    },
+    {
+      "path": "fixtures/travel-itinerary.json",
+      "byteLength": 4661,
+      "sha256": "66f15dc592b97e3e6275e5cd91babcd99a977ade2ce0c3851f07f7d4bcdb3a3f"
+    },
+    {
+      "path": "fixtures/wedding-dday.json",
+      "byteLength": 4511,
+      "sha256": "be7d7e85cd38783566aece5e774777078971e3cd1dfcbe9a927192e387494556"
+    }
+  ]
+}

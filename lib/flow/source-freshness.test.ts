@@ -67,8 +67,9 @@ test('current canonical seed has no missing or overdue normal user source checks
   const runtimeBundles = seedBundles.filter((bundle) => !isRuntimeExcludedBundle(bundle));
   const summary = summarizeFlowSourceFreshness(runtimeBundles, new Date());
 
-  assert.ok(summary.normalUserRouteCount >= 120);
-  assert.ok(summary.previewOrHiddenCount >= 15);
+  // This floor follows the reviewed runtime inventory, including the 2026-09-04 dog-adoption hold.
+  assert.ok(summary.normalUserRouteCount >= 112);
+  assert.ok(summary.previewOrHiddenCount >= 20);
   assert.equal(summary.missingMetadataCount, 0);
   assert.equal(summary.reviewDueCount, 0);
   assert.equal(summary.staleCount, 0);

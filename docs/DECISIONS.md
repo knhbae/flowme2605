@@ -35,6 +35,20 @@ Do not use this for:
 
 ## Decisions
 
+### 2026-09-20 - 실사용 알파 인증·가입·무료 검증과 발행 권한
+
+**Decision:** Google 로그인을 우선 검토·구현한다. 설정이나 구현이 복잡하면 이메일 로그인을 초기 대안으로 사용할 수 있다. 초기 서비스는 초대 전용이 아니라 누구나 가입 가능한 방향이다. 처음에는 무료 범위에서 검증하고 유료 플랜·유료 서비스로 자동 전환하지 않는다. 작업에 필요한 코드 commit/push는 진행할 수 있지만 배포는 별도 승인이 필요하다. 현재 승인된 Git 보존 작업은 검토용 Draft PR까지이며 main 병합이나 Preview/Production 배포 승인이 아니다. 기존 공개 저장소의 visibility를 바꾸는 작업도 포함하지 않는다.
+
+**Reason:** 사용자가 2026-09-20 다기기 실사용 준비의 미결 질문에 직접 답했다. 기존 ‘초대 대상만 권장’은 채택되지 않았고, 무료 검증과 배포 승인 경계를 유지하면서 개발 이력을 보존하려는 요청이다.
+
+**Applies to:** 알파 M2 인증/가입·계정 전환 UX, M5 공개/커뮤니티 접근, M6 백업 비용, M7 발행 계획과 현재 Git 보존 작업. 누구나 가입할 수 있다는 결정은 타인의 개인 자료 열람·무인 게시·익명 쓰기 허용이 아니다. 실제 OAuth/SMTP·redirect·이메일 확인·요청 제한·권한 검증과 공개 운영 정책은 해당 구현 단계에서 검증한다. 무료 검증은 운영 전체 비용이나 자동 백업 제공을 보장하지 않는다.
+
+**Reopen when:** Google 설정에 사용자 외부 작업/유료 서비스가 필요하거나 이메일 전달·복구 요구와 충돌할 때, 공개 가입의 남용·비용 상한·보존 요구가 무료 범위를 넘을 때, 또는 배포·merge·공개 범위 변경이 필요할 때. 검증·보안 gate를 생략하라는 승인은 아니다. 사용자는 이어서 기존 출처 검증 실패와 취약점의 실제 수정·재검증을 이번 보존 목표에 포함하도록 승인했다.
+
+**공개 범위 후속 승인:** 코드·테스트·설계·검증 요약은 공개 Git에 보존하고, 기존 화면 캡처·상태 JSON·trace 원본은 로컬에 그대로 둔다. 과거 판정과 숫자는 바꾸지 않고 비공개 근거 참조만 ‘로컬 전용 근거’로 명시한다. 원문 byte 백업·SHA·원래 링크 원장으로 표현 변경을 추적한다. 원본 증거의 일괄 업로드 승인은 아니다.
+
+**Related docs:** [실사용 알파 전환 원장](./specs/2026-09-12-flowme-integrated-product-poc-program/alpha-transition.md), [Git 보존 사전 검사](./specs/2026-09-12-flowme-integrated-product-poc-program/git-preservation-2026-09-20.md).
+
 ### 2026-08-12 - Flow Map stays an internal source boundary, not a separate public plan type
 
 **Decision:** User-facing public plan editing uses one Plan/Item grammar regardless of whether the content is backed by a single Flow or a Flow Map. Executable single-plan `save_all` Maps render and edit like an ordinary Flow while retaining their Map ID, version, child Flow and Item identities, snapshot, bridge, and atomic save transaction internally. Content that represents mutually exclusive alternatives uses `choose_child` and enters the selected canonical `/f/[slug]` before editing; OPIc 2-week versus 1-month joins wedding and Allblanc in this selector model. `review_hold` content exposes no edit or save affordance. Do not add a generic rich Map editor merely because internal persistence uses a Map.

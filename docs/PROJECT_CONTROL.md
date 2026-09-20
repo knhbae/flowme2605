@@ -1,6 +1,14 @@
 # FlowMe Project Control
 
-**Last Updated:** 2026-09-07
+<!-- alpha-transition-20260920:start -->
+## 현재 격리 작업 — 실사용 알파 전환 (2026-09-20)
+
+기능형 통합 PoC 이후의 현재 실행 계획은 [실사용 알파 전환 원장](./specs/2026-09-12-flowme-integrated-product-poc-program/alpha-transition.md)에서 관리한다. v4.1·개발1·개발2 요구 연결, 단계별 완료 조건, 결정 대기와 다음 M1 개발 묶음이 정본이다. 개발 DB 자원은 준비됐지만 실제 인증·서버 저장·다기기 동기화·알파 배포는 미구현이다.
+
+현재는 M1 전에 [PR #203 머지 준비](./specs/2026-09-12-flowme-integrated-product-poc-program/merge-readiness-2026-09-20.md)를 진행한다. 아래 운영 release·9/7 정리 정보는 기존 이력이며, 새 main 머지·배포 승인으로 해석하지 않는다.
+<!-- alpha-transition-20260920:end -->
+
+**Last Updated:** 2026-09-20 (9/7 main 정리와 격리 PoC/알파 원장 연결; main 머지·배포 미실행)
 
 **Purpose:** Stable entry point for the current FlowMe stage, evidence boundary, and next owner decision.
 

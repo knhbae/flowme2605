@@ -1,5 +1,11 @@
 # Canonical Flow Storage and Backend API Contract v1
 
+<!-- alpha-transition-20260920:start -->
+## 2026-09-20 적용 경계
+
+이 7월 계약의 현재 적용·보완 사항은 [실사용 알파 전환 원장](../2026-09-12-flowme-integrated-product-poc-program/alpha-transition.md)의 ‘기존 설계와 현재 코드의 충돌 조정’을 따른다. 독립 원문/행·native pending/recovery·누적 실행·공개/개인 소유권·전체 파일 백업과 최신 서버 자료를 보존하는 rollback을 추가 검토한다. 옛 local 복귀 flag만으로 서버 자료 복원이 된다고 간주하지 않는다. 아래 승인/상태는 7월 계약 시점이며 실제 서버 구현 완료가 아니다. 상세 DDL·Auth·서비스 설정은 아직 적용하지 않았다.
+<!-- alpha-transition-20260920:end -->
+
 **Date:** 2026-07-11<br>
 **Status:** Approved implementation contract; runtime and database not started<br>
 **Schema:** `flowme-canonical-flow-v1`<br>

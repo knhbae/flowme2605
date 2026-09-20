@@ -1,10 +1,18 @@
 # FLOW Spec Layer
 
+<!-- alpha-transition-20260920:start -->
+## 현재 격리 프로그램 진입점 (2026-09-20)
+
+[실사용 알파 전환 원장](./2026-09-12-flowme-integrated-product-poc-program/alpha-transition.md)이 통합 PoC 이후의 현재 단계·요구 연결·검증 조건을 관리한다. 기존 7월 서버 계약과 v4.1·개발1·개발2 감사, 9월 프로그램의 과거 완료 근거를 연결하며 새 중복 요구 목록을 만들지 않는다. 아래 예전 PoC checkpoint와 운영 release gate는 당시 범위의 기록이다. 전환 계획은 구현·배포 승인이나 서버 기능 완료가 아니다.
+<!-- alpha-transition-20260920:end -->
+
 Use this folder for durable, tool-agnostic specs that should outlive a single agent session. A spec starts when an idea becomes committed work, but before implementation details harden in code.
 
 `docs/superpowers/` remains a useful archive for skill-generated designs and implementation plans. New FlowMe-owned specs should live here unless a user explicitly asks for a tool-specific location. When a skill writes to `docs/superpowers/`, link that artifact from the matching `docs/specs/` folder instead of duplicating it.
 
 ## When To Create A Spec
+
+Local isolated PoC checkpoint: [P3-J execution-detail requirement repair](./2026-09-05-flowme-integrated-poc-execution-detail-gap-v1/spec.md) / [current QA](./2026-09-05-flowme-integrated-poc-execution-detail-gap-v1/qa.md). This worktree-only checkpoint does not replace the product release gate or authorize deployment. Real-device tests stay recorded as not run, outside the P3-J completion conditions.
 
 Create a spec folder for:
 

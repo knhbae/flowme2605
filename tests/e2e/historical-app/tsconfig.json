@@ -1,0 +1,10 @@
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "paths": { "@/*": ["../../../*"] },
+    "incremental": true,
+    "tsBuildInfoFile": ".next-history/tsconfig.tsbuildinfo"
+  },
+  "include": ["next-env.d.ts", "app/**/*.ts", "app/**/*.tsx", "LegacySurfaceAdapter.tsx", ".next-history/types/**/*.ts"],
+  "exclude": ["../../../node_modules"]
+}

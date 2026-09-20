@@ -1,0 +1,82 @@
+[
+  {
+    "id": "V41-H01",
+    "product": "V41",
+    "status": "범위 확장",
+    "meaning": "v4.1 정적 시안은 실서비스 route를 건드리지 않았지만, 후속 통합 계약은 기본 /my를 보존한 채 exact-query gate인 /my?personalWorkspacePoc=v1에서 기능형 PoC를 열도록 범위를 확장했다. 운영 route 교체 승인은 아니다.",
+    "source": "docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §범위 밖 L34 → docs/specs/2026-09-01-flowme-integration-blueprint-v0/spec.md §8 L230-236; handoff.md §목표 L17-18",
+    "replacedBy": "V41-072,BP-047"
+  },
+  {
+    "id": "V41-H02",
+    "product": "V41",
+    "status": "대체",
+    "meaning": "정적 시안의 새로고침 초기화와 저장 계약 없음은 후속 기능형 PoC의 versioned shadow state, 마지막 성공 상태 reload 복구, 손상 payload fail-closed 계약으로 대체됐다. 이 저장소는 운영 schema가 아니라 PoC 전용 계약이다.",
+    "source": "docs/content-audit/2026-09-01-flowme-personal-workspace-v4-1-ui-ko.html L16; v4.1-assets/qa.md L74 → docs/specs/2026-09-01-flowme-integration-blueprint-v0/spec.md §8 L239-246; plan.md §화면과 상태 L39; handoff.md §핵심 시나리오 L67",
+    "replacedBy": "V41-040,V41-073,BP-050,BP-051,BP-052,BP-064"
+  },
+  {
+    "id": "V41-H03",
+    "product": "V41",
+    "status": "의도적 변경·승인 필요",
+    "meaning": "정적 검토용 상단의 개인 공간 v4.1·되돌리기·검토 테스트와 모바일 탐색·FlowMe·검토 한 줄은 통합 PoC에서 개인공간·새 Flow 만들기·되돌리기·PoC 관리 제품 shell과 별도 검증 보고서로 분리됐다. 기능 연결을 위한 변경이지만 운영 shell 결정으로 승인된 기록은 없다.",
+    "source": "docs/content-audit/2026-09-01-flowme-personal-workspace-v4-1-ui-ko.html L10,L12; docs/specs/2026-09-01-personal-workspace-v4-1-prototype/spec.md §표시 계약 L22 → components/flow/personal-workspace-poc/PersonalWorkspacePocSurface.tsx L1233-1239",
+    "replacedBy": "V41-029,V41-035"
+  },
+  {
+    "id": "V41-H04",
+    "product": "V41",
+    "status": "검토 도구 분리",
+    "meaning": "v4.1 정적 화면 안의 검토·테스트와 따라보기 상태 복원은 후속 통합에서 조작용 standalone HTML, 자동 브라우저 시나리오, 별도 검증 보고서로 분리됐다. 내장 따라보기를 제품 기능으로 간주하지 않는 변경이다.",
+    "source": "docs/content-audit/2026-09-01-flowme-personal-workspace-v4-1-ui-ko.html L10,L12; v4.1-assets/qa.md §브라우저 시나리오 L28 → docs/specs/2026-09-01-flowme-integration-blueprint-v0/spec.md §10-11 L287-324",
+    "replacedBy": "V41-035,V41-069,BP-072,BP-082"
+  },
+  {
+    "id": "V41-H05",
+    "product": "V41",
+    "status": "PoC 임시",
+    "meaning": "폴더 UI 최대 2단계, 한 항목 한 폴더, 기존 Flow 최초 미분류, 날짜 Item 자동 노출과 사용자 숨김, QuickItem status/completedAt, 폴더 삭제 시 미분류 이동은 기능 검증을 위한 교체 가능한 임시값이다. 영구 제품 정책이나 운영 저장 schema로 승격되지 않았다.",
+    "source": "docs/specs/2026-09-01-flowme-integration-blueprint-v0/spec.md §12 L332-344; plan.md §임시 기본값 L48-55; handoff.md §PoC 임시 기본값 L37-46",
+    "replacedBy": "BP-065,BP-084,BP-085"
+  },
+  {
+    "id": "D2-H01",
+    "product": "D2",
+    "status": "대체",
+    "meaning": "항상 거치는 3영역 구조 검토 흐름은 정상 문서가 입력에서 결과로 바로 가고, 모호하거나 수정이 필요한 때만 drawer 또는 bottom sheet로 구조 검토를 여는 선택형 보정 흐름으로 바뀌었다.",
+    "source": "turn D2-conversation-008; docs/specs/2026-07-28-flowme-text-authoring-ux-v1/current-authoring-audit.md L6 → turns D2-conversation-018, D2-conversation-019; interaction-spec.md L29",
+    "replacedBy": "D2-022"
+  },
+  {
+    "id": "D2-H02",
+    "product": "D2",
+    "status": "부분 대체·계약 병존",
+    "meaning": "앞선 고정 TXT·할 일·Calendar·Sheet 결과 슬롯 계약 뒤에, 한 편집기에서 6개 구조 틀을 골라 미완성 TXT scaffold를 한 번 삽입하는 Unified Editor가 작성 UX의 후속 정본이 됐다. 후속 결정은 별도 template form을 없앴지만 네 결과 projection 자체를 폐기한다고 결정하지 않았으므로 D2-019는 역사적 출력 계약으로 남는다.",
+    "source": "turns D2-conversation-012, D2-conversation-003 → turns D2-conversation-047 through D2-conversation-048; D2-conversation-049",
+    "replacedBy": "D2-045,D2-046,D2-047"
+  },
+  {
+    "id": "D2-H03",
+    "product": "D2",
+    "status": "대체",
+    "meaning": "template를 둘러보는 동안 rawText를 0으로 유지한 뒤 별도 materialize를 요구하던 안은, picker 열기·닫기·취소는 write 0으로 두되 사용자가 template를 고른 행위 자체를 명시적 1회 TXT insertion으로 보는 계약으로 바뀌었다.",
+    "source": "turn D2-conversation-049에서 이전 rawText 0+별도 materialize 계약을 명시적으로 대체",
+    "replacedBy": "D2-049"
+  },
+  {
+    "id": "D2-H04",
+    "product": "D2",
+    "status": "충돌·결정 필요",
+    "meaning": "개발 2의 제작자 문맥은 결과를 CreatorDraft 또는 검토 준비 상태로 저장하고 Personal Flow는 별도 handoff로 두었다. 9월 통합 blueprint는 개인 Flow 저장을 새로 선택했으나 개발 2 합의를 대체한 후속 승인 근거가 없어 두 owner 계약이 충돌한다.",
+    "source": "turn D2-conversation-006 → docs/specs/2026-09-01-flowme-integration-blueprint-v0/spec.md §3 L38-42, §4 L69, §5.5 L174-193",
+    "replacedBy": "D2-005,D2-057,BP-003,BP-027"
+  },
+  {
+    "id": "D2-H05",
+    "product": "D2",
+    "status": "대체",
+    "meaning": "main-stack PR 후보 #184~#187을 현재 정본처럼 잇는 방향은 중단되고, #197·#198의 live-editor 증거와 #199 Unified Editor successor를 격리 PoC 계보로 보는 방향으로 바뀌었다. #199는 PoC branch merge이며 main·Preview·Production 반영 증거가 아니다.",
+    "source": "turn D2-conversation-058 → turn D2-conversation-007; turns D2-conversation-056, D2-conversation-057",
+    "replacedBy": "D2-059,D2-060"
+  }
+]

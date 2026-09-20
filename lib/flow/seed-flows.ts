@@ -4982,7 +4982,7 @@ const baseSeedBundles: FlowBundle[] = [
         source_url: 'https://www.gomin77.co.kr/blog/dog-puppy-pet-adoption',
         source_status: 'needs_review',
         source_precision: 'exact',
-        source_checked_at: '2026-09-07',
+        source_checked_at: '2026-06-04',
         conversion_note: '입양 전후 준비와 첫 주 체크만 남기고 건강 판단은 동물병원 확인 메모로 분리했습니다.',
         primary_destination: 'hybrid',
         warning: '이 Flow는 반려견 건강 판단을 대신하지 않습니다. 이상 증상이 있으면 동물병원 상담을 우선합니다.',

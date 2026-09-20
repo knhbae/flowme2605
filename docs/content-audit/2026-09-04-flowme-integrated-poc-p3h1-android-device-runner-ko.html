@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <title>FlowMe 통합 PoC P3-H1 Android 실기 검증</title>
+  <link rel="stylesheet" href="2026-09-04-flowme-integrated-poc-p3h1-android-device-runner-ko-assets/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#identity">검증 입력으로 건너뛰기</a>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark">F</span><span>Android 실기 검증</span></div>
+    <small>FlowMe 통합 PoC · P3-H1 · 로컬 LAN</small>
+  </header>
+  <main>
+    <section class="hero" aria-labelledby="page-title">
+      <div>
+        <span class="eyebrow">E5-D actual Android Chrome</span>
+        <h1 id="page-title">휴대폰에서 직접 확인하고 근거를 남깁니다</h1>
+        <p>이 기록기는 자동화 결과를 실제 기기 판정으로 바꾸지 않습니다. 같은 Wi-Fi의 Android Chrome에서 고정된 후보를 직접 조작하고, A1~A6과 운영 저장 데이터 불변을 모두 기록해야 E5-D가 통과합니다.</p>
+      </div>
+      <aside class="verdict" id="verdict" data-status="NOT_RUN" aria-live="polite">
+        <span>현재 E5-D 판정</span>
+        <strong id="verdict-status">NOT_RUN</strong>
+        <p id="verdict-copy">실제 기기 시나리오를 아직 기록하지 않았습니다.</p>
+      </aside>
+    </section>
+
+    <p class="notice"><strong>경계:</strong> 후보는 읽기 원본이며, 후보의 변경은 <code>flow:poc:personal-workspace:v1:*</code>에만 저장됩니다. 기록기는 서버나 운영 저장소에 결과를 쓰지 않고 JSON 파일만 내려받습니다.</p>
+
+    <section class="section" id="identity">
+      <div class="section-head">
+        <div><span class="eyebrow">01 · Environment</span><h2>실행 환경과 후보 고정</h2></div>
+        <p>메신저 미리보기·앱 내 WebView·시뮬레이터는 인정하지 않습니다. 지원되는 Chrome에서는 기기 모델·Android·Chrome 버전을 자동으로 채우며, 실제 값과 다르면 직접 고칠 수 있습니다. 빌드 정보는 직접 입력합니다.</p>
+      </div>
+      <form id="evidence-form" novalidate>
+        <div class="grid">
+          <label class="field"><span>검증자</span><input id="inspector" name="inspector" autocomplete="name" required placeholder="이름 또는 식별자"></label>
+          <label class="field"><span>기기 모델</span><input id="device-model" name="deviceModel" required placeholder="예: Galaxy S24"></label>
+          <label class="field"><span>Android 버전</span><input id="os-version" name="osVersion" required placeholder="예: Android 16"></label>
+          <label class="field"><span>Chrome 버전</span><input id="browser-version" name="browserVersion" required placeholder="Chrome 설정 > Chrome 정보"></label>
+          <label class="field"><span>빌드 지문 / 빌드 번호</span><input id="build-fingerprint" name="buildFingerprint" required placeholder="설정 > 휴대전화 정보"></label>
+          <label class="field"><span>실제 주소</span><input id="browser-address" name="browserAddress" readonly></label>
+        </div>
+        <label class="check card" style="margin-top:.8rem"><input id="physical-device" name="physicalDevice" type="checkbox"><span>지금 이 페이지를 <strong>실제 Android 기기의 Google Chrome</strong>에서 열었습니다. PC 자동화, 에뮬레이터, 메신저·앱 내 브라우저가 아닙니다.</span></label>
+        <div class="grid" style="margin-top:.8rem">
+          <label class="check card"><input id="address-bar" type="checkbox"><span>링크 미리보기가 아니라 <strong>Chrome 주소창</strong>에 표시된 주소를 확인했습니다.</span></label>
+          <label class="check card"><input id="same-lan" type="checkbox"><span>이 기기와 검증 PC가 <strong>같은 Wi-Fi/LAN</strong>에 연결되어 있습니다.</span></label>
+        </div>
+        <div class="fingerprint" aria-label="자동 확인 값">
+          <dl>
+            <dt>후보 SHA-256</dt><dd id="artifact-sha">확인 중…</dd>
+            <dt>후보 크기</dt><dd id="artifact-bytes">확인 중…</dd>
+            <dt>휴대폰 본문 검증</dt><dd id="candidate-body-verification">확인 중…</dd>
+            <dt>호스트 실행 ID</dt><dd id="host-run-id">확인 중…</dd>
+            <dt>실행 바인딩</dt><dd id="binding-fingerprint">확인 중…</dd>
+            <dt>User-Agent</dt><dd id="user-agent"></dd>
+            <dt>Android Chrome</dt><dd id="ua-verdict">확인 중…</dd>
+            <dt>Secure context</dt><dd id="secure-context"></dd>
+            <dt>visualViewport</dt><dd id="visual-viewport"></dd>
+            <dt>VirtualKeyboard API</dt><dd id="virtual-keyboard"></dd>
+          </dl>
+        </div>
+        <div class="actions">
+          <button class="primary" id="launch-candidate" type="button">고정 후보 탭 열기</button>
+          <button id="start-over" class="danger" type="button">이 기록만 초기화</button>
+        </div>
+        <p class="observer-status" id="observer-status" data-status="waiting" aria-live="polite">후보 본문 검증을 마친 뒤 각 시나리오의 ‘측정 시작’을 누르세요.</p>
+      </form>
+    </section>
+
+    <section class="section" id="scenarios">
+      <div class="section-head">
+        <div><span class="eyebrow">02 · Scenarios</span><h2>A1~A6 실제 조작</h2></div>
+        <p>각 카드의 ‘측정 시작’을 눌러 별도 후보 탭에서 조작하고, 기록기 탭으로 돌아와 ‘측정 종료’ 후 판정과 근거를 적습니다. 추정으로 PASS를 선택하지 않습니다.</p>
+      </div>
+      <div class="scenario-list" id="scenario-list">
+        <article class="scenario" data-scenario="A1"><span class="scenario-id">A1</span><div><h3>짧은 이동은 길게 누르기로 오인하지 않음</h3><p>누른 뒤 350ms 전에 8px보다 크게 이동합니다. 이동 패널이 열리지 않고 저장도 일어나지 않아야 합니다.</p><div class="scenario-fields"><label class="field"><span>판정</span><select data-result><option value="NOT_RUN">NOT_RUN</option><option value="PASS">PASS</option><option value="FAIL">FAIL</option></select></label><label class="field"><span>근거 파일</span><input data-artifact placeholder="A1-screenrecord.mp4"></label><label class="field"><span>관찰</span><textarea data-note placeholder="패널 상태, 저장 횟수, 화면 녹화 시각"></textarea></label></div></div></article>
+        <article class="scenario" data-scenario="A2"><span class="scenario-id">A2</span><div><h3>길게 눌러 날짜 이동</h3><p>항목을 길게 눌러 날짜 목적지를 선택합니다. 기본 컨텍스트 메뉴 없이 같은 transition으로 정확히 한 번 저장되어야 합니다.</p><div class="scenario-fields"><label class="field"><span>판정</span><select data-result><option value="NOT_RUN">NOT_RUN</option><option value="PASS">PASS</option><option value="FAIL">FAIL</option></select></label><label class="field"><span>근거 파일</span><input data-artifact placeholder="A2-screenrecord.mp4"></label><label class="field"><span>관찰</span><textarea data-note placeholder="선택 항목·목적지·저장 1회"></textarea></label></div></div></article>
+        <article class="scenario" data-scenario="A3"><span class="scenario-id">A3</span><div><h3>드래그 중단은 취소</h3><p>드래그 중 스크롤하거나 앱을 전환해 포인터를 끊습니다. 패널이 닫히고 이동·저장이 0건이어야 합니다.</p><div class="scenario-fields"><label class="field"><span>판정</span><select data-result><option value="NOT_RUN">NOT_RUN</option><option value="PASS">PASS</option><option value="FAIL">FAIL</option></select></label><label class="field"><span>근거 파일</span><input data-artifact placeholder="A3-screenrecord.mp4"></label><label class="field"><span>관찰</span><textarea data-note placeholder="pointer cancel 관찰, 저장 0건"></textarea></label></div></div></article>
+        <article class="scenario" data-scenario="A4"><span class="scenario-id">A4</span><div><h3>메뉴·비드래그 이동과 데스크톱 키보드 근거의 동등성</h3><p>Android에서는 더보기 메뉴로 폴더 이동과 화면 안의 순서 버튼 이동을 실행합니다. 같은 SHA 후보의 P3-G 데스크톱 키보드 회귀 ID를 함께 적어 세 경로가 같은 transition·저장 규칙을 따르는지 확인합니다.</p><div class="scenario-fields"><label class="field"><span>판정</span><select data-result><option value="NOT_RUN">NOT_RUN</option><option value="PASS">PASS</option><option value="FAIL">FAIL</option></select></label><label class="field"><span>근거 파일</span><input data-artifact placeholder="A4-screenrecord.mp4"></label><label class="field"><span>관찰</span><textarea data-note placeholder="폴더·순서 이동 전후와 각 저장 횟수"></textarea></label></div></div></article>
+        <article class="scenario" data-scenario="A5"><span class="scenario-id">A5</span><div><h3>작성 결과의 소유 화면과 닫기/적용</h3><p>작성 → Result → 항목 검토 → <strong>속성 편집</strong>을 열고 키보드·스크롤로 마지막 행까지 확인합니다. 닫기는 저장 0회와 초점 복귀, 적용은 1회 저장이어야 합니다.</p><div class="mapping">후보 SHA를 유지하기 위한 현재 조작 대응: 과거 문서의 고정 ‘+’ 대신 <code>[data-action=&quot;open-authoring-properties&quot;][data-line]</code>과 <code>[data-owner-line]</code> 트레이를 사용합니다.</div><label class="field" style="margin:.7rem 0"><span>A5 조작 대응 판정</span><select id="a5-decision"><option value="NOT_RUN">NOT_RUN</option><option value="EQUIVALENT">EQUIVALENT</option><option value="NOT_EQUIVALENT">NOT_EQUIVALENT</option></select></label><div class="scenario-fields"><label class="field"><span>판정</span><select data-result><option value="NOT_RUN">NOT_RUN</option><option value="PASS">PASS</option><option value="FAIL">FAIL</option></select></label><label class="field"><span>근거 파일</span><input data-artifact placeholder="A5-screenrecord.mp4"></label><label class="field"><span>관찰</span><textarea data-note placeholder="마지막 행 노출·닫기 0회·적용 1회·초점"></textarea></label></div></div></article>
+        <article class="scenario" data-scenario="A6"><span class="scenario-id">A6</span><div><h3>키보드와 새로고침 복구</h3><p>마지막 입력과 저장 CTA가 키보드 위에 보이는지 확인하고 저장합니다. 키보드를 닫고 새로고침해 마지막 성공 상태가 복원되는지 확인합니다.</p><div class="scenario-fields"><label class="field"><span>판정</span><select data-result><option value="NOT_RUN">NOT_RUN</option><option value="PASS">PASS</option><option value="FAIL">FAIL</option></select></label><label class="field"><span>근거 파일</span><input data-artifact placeholder="A6-screenrecord.mp4"></label><label class="field"><span>관찰</span><textarea data-note placeholder="CTA 가시성·복원 값"></textarea></label></div></div></article>
+      </div>
+    </section>
+
+    <section class="section" id="storage">
+      <div class="section-head">
+        <div><span class="eyebrow">03 · Boundary</span><h2>운영 저장 데이터 불변</h2></div>
+        <p>최초 진입 때와 현재의 PoC prefix 밖 key/value를 브라우저 안에서 직접 비교합니다. 원문 값은 결과 JSON에 넣지 않습니다.</p>
+      </div>
+      <div class="storage-result">
+        <article><span>최초 key 수</span><strong id="storage-before-count">—</strong></article>
+        <article><span>현재 key 수</span><strong id="storage-after-count">—</strong></article>
+        <article><span>byte-for-byte 비교</span><strong id="storage-parity">확인 전</strong></article>
+      </div>
+      <div class="storage-result" style="margin-top:.8rem" aria-label="실제 후보 observer의 금지 호출">
+        <article><span>prefix 밖 setItem</span><strong id="observer-set-count">—</strong></article>
+        <article><span>prefix 밖 removeItem</span><strong id="observer-remove-count">—</strong></article>
+        <article><span>localStorage.clear</span><strong id="observer-clear-count">—</strong></article>
+      </div>
+      <div class="actions"><button id="compare-storage" type="button">현재 상태 다시 비교</button></div>
+    </section>
+
+    <section class="section" id="evidence">
+      <div class="section-head">
+        <div><span class="eyebrow">04 · Evidence</span><h2>근거 파일과 판정 내보내기</h2></div>
+        <p>화면 녹화·스크린샷의 상대 파일명을 적습니다. 내려받은 JSON과 실제 파일을 PC로 옮긴 뒤 SHA-256·bytes 검증과 사람의 내용 검토를 마쳐야 E5-D가 가능합니다.</p>
+      </div>
+      <div class="grid supporting-artifacts" aria-label="환경과 저장 경계 근거 파일">
+        <label class="field"><span>기기 정보 화면</span><input id="device-identity-artifact" placeholder="device-settings.png"></label>
+        <label class="field"><span>Chrome 버전 화면</span><input id="browser-version-artifact" placeholder="chrome-version.png"></label>
+        <label class="field"><span>Chrome 주소창 화면</span><input id="address-bar-artifact" placeholder="address-bar.png"></label>
+        <label class="field"><span>저장 경계 전후 화면</span><input id="storage-parity-artifact" placeholder="storage-parity.png"></label>
+      </div>
+      <label class="field" style="margin-top:.8rem"><span>전체 메모</span><textarea id="overall-notes" placeholder="HTTP에서 제한된 API, 기기 특이사항, 재현 단계"></textarea></label>
+      <ul class="error-list" id="missing-list" aria-live="polite"></ul>
+      <div class="actions">
+        <button class="primary" id="download-evidence" type="button">검증 대기 JSON 내려받기</button>
+        <button id="copy-summary" type="button">판정 요약 복사</button>
+      </div>
+    </section>
+  </main>
+  <footer><p>실제 Android Chrome에서 사람의 조작을 기록하는 도구입니다. 자동 브라우저 검사와 실제 기기 검증은 별도 근거로 유지합니다.</p></footer>
+  <script src="2026-09-04-flowme-integrated-poc-p3h1-android-device-runner-ko-assets/model.js"></script>
+  <script src="2026-09-04-flowme-integrated-poc-p3h1-android-device-runner-ko-assets/app.js"></script>
+</body>
+</html>
