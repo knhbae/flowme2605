@@ -123,3 +123,21 @@ push 전 Vercel 대시보드 읽기 재확인: 이 저장소 연결 프로젝트
 검사기 추가 검토에서는 child가 signal로 종료해 `code=null`인 경우 기존 `code || 0`이 성공으로 종료할 수 있음을 확인했다. 종료 판정을 순수 계약으로 분리하여 nonzero/null·signal·실행 오류·검사 중 source 변경을 실패로 처리한다. `new-tests`만 실행 수가 양의 정수이고 pass=실행 수, fail/skip/cancel=0일 때 통과한다. build/docs/audit에는 TAP 개수 조건을 강제하지 않는다. 이4개 회귀를 앞 수집기4개와 함께 실행해8/8 PASS이며, JSON은 raw child exit/signal/error와 최종 verifiedExitCode를 구분한다. 실행 중인 로컬 모델 재검사에는 새 종료 코드를 소급 적용했다고 주장하지 않으며 수정 후 Linux 전체 실행으로 확인한다. 독립 코드 리뷰도 같은 위험과 경계를 확인했다.
 
 Node 수집기를 사용한 로컬 모델 재검사는181파일1749/1749 PASS, fail/skip0, sourceChanged0으로 끝났다(2worker/256MiB,464.607초). 증거는 `output/integrated-product-poc/new-tests-2026-09-20T15-08-46-142Z.json`이다. 위 종료 판정 수정 전에 시작한 실행이므로 이 결과로 signal 처리의 실제 통합 실행까지 주장하지 않는다. clean repro checkout의 수집기4/4 및 strict392/424/0도 통과했다. 최종 원격 exact-head 실행 결과는 PR의 CI 결과와 별도로 대조한다.
+
+### Linux 핵심 검사 통과와 역사 보고서의 글꼴 의존 레이아웃
+
+`340c6237`까지 같은 PR에 정상 push했고 [세 번째 CI](https://github.com/knhbae/flowme2605/actions/runs/35519361180)의 core가 통과했다. 실제 Linux에서 docs4/4·6332링크, npm2255/2255, 별도 SSR10/10, 검사기8/8, strict392entry/424source/진단0, 통합181파일1749/1749·실패/skip/cancel/source변경0·verifiedExitCode0, portable3/3(30.9초), security audit·production build를 확인했다. core 로그와 원격 artifact 사본은 `output/ci-core-pass-35519361180.log`, `output/ci-core-35519361180/`에 보존한다. 작업본과 clean repro는 검사기8/8·strict도 재통과했다.
+
+직전 취소 run의 E2E 로그에서는 취소 전에 역사 HTML3개의 실제 레이아웃 실패가 확인됐다. gap-closure 보고서375px 넘침, validation 보고서375px에서14px 넘침, P2-A 보고서320px에서40px 넘침이다. 취소 상태가 이 실패를 없애지 않는다. 로컬 기본 글꼴에서 통과한51개 결과를 Linux PASS로 확대할 수 없었다.
+
+Windows에서 Arial/Noto/monospace 대체 글꼴로 gap6px, validation44px(375px)·13px(320px), P2-A8~19px 넘침을 별도 재현했다. Linux와 동일 환경 또는 동일 수치의 재현이라고 주장하지 않는다. 근거에 따라 CSS만 수정했다.
+
+- gap: `saving·success·same·failure·cancel·Undo`가 표 밖으로 나가므로 cell에 자연 줄바꿈을 허용. 화면 확인에서 발견한 모바일 caption의 한 글자 세로 접힘도 block·전체 너비로 수정하고 caption 너비 assertion을 추가했다.
+- validation: `identity·schema·migration·rollback` 등 비분절 문자열과 grid의 auto min-content로 decision/backlog가 넓어져 두 owner에 min-width0/overflow-wrap을 적용했다.
+- P2-A: corpus grid를 minmax0로 바꾸고 자식의 min-width0/overflow-wrap을 적용했다. 빌더용 style.css에도 같은 국소 수정만 적용하며 과거 manifest를 재생성하지 않았다.
+
+내용을 숨기는 overflow clipping, 문구 삭제, assertion 완화는 없다. 세 HTML의 `<style>` 밖 전체 내용은 Git LF 정규화 후 HEAD와 같음을 확인했다. 과거 본문·script·수치·판정·동결 JSON은 바꾸지 않았다. 이는 앞선 'HTML 수정0' 실행 이후의 CSS-only 후속 변경이며 과거 결과를 소급 수정한 것이 아니다.
+
+기존 보고서6개 검사와 신규 글꼴3개 검사를 같은 실행에서9/9 PASS(27.5초)했다. `output/playwright/report-font-all-final2/results.json` 및 해당 화면을 보존하고375/1440 gap과320/1440 corpus, validation 기본390 및 대체375/1440 화면을 실제 열어 확인했다. 최초 글꼴2FAIL·중간 캡처 selector1FAIL도 경로를 나눠 보존한다. 새 화면은 output에만 썼다. 전체 수집은105spec/758tests(기존741+현행14+보고서글꼴3)이며, 글꼴3개를 제품 기능 충족률에 더하지 않는다. 수정판 Linux 전체 결과는 이후 exact-head에서 확인한다.
+
+`flow-report-artifact`의 실제 HTML 검수와 `flow-ux-review`의 내용 보존·조작성 기준을 적용했다. 이번에는 UI/카드/설명을 추가하거나 제품 정책을 정하지 않고 읽기 가능한 너비만 복구했다. 실제 기기·보조기술·관찰 사용자 검증은 여전히 미실행/0명이다.

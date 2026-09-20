@@ -310,11 +310,11 @@
     .device-step p { margin: 7px 0 0; color: var(--muted); font-size: 14px; }
 
     .decision-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
-    .decision-item { border-top: 3px solid var(--teal); background: var(--soft); padding: 18px; }
+    .decision-item { min-width: 0; overflow-wrap: anywhere; border-top: 3px solid var(--teal); background: var(--soft); padding: 18px; }
     .decision-item h3 { margin: 0; font-size: 17px; }
     .decision-item p { margin: 7px 0 0; color: var(--muted); font-size: 14px; }
     .backlog { display: grid; border-top: 1px solid var(--line); }
-    .backlog-item { display: grid; grid-template-columns: 58px minmax(190px, .8fr) minmax(260px, 1.4fr) 140px; gap: 14px; border-bottom: 1px solid var(--line); padding: 16px 0; align-items: start; }
+    .backlog-item { min-width: 0; overflow-wrap: anywhere; display: grid; grid-template-columns: 58px minmax(190px, .8fr) minmax(260px, 1.4fr) 140px; gap: 14px; border-bottom: 1px solid var(--line); padding: 16px 0; align-items: start; }
     .backlog-item > b { color: var(--teal-dark); }
     .backlog-item strong { line-height: 1.45; }
     .backlog-item p { margin: 0; color: var(--muted); font-size: 14px; }

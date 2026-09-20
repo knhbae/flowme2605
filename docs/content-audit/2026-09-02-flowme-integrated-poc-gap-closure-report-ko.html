@@ -75,6 +75,7 @@
     .matrix caption { padding:0 0 10px; color:var(--muted); font-size:13px; text-align:left; }
     .matrix th,.matrix td { border-bottom:1px solid var(--line); padding:13px 11px; text-align:left; vertical-align:top; }
     .matrix th { color:var(--muted); font-size:12px; }
+    .matrix td { overflow-wrap:anywhere; }
     .matrix td:first-child { width:90px; font-weight:950; }
     .matrix td:nth-child(2) { width:19%; font-weight:850; }
     .matrix small { display:block; margin-top:5px; color:var(--muted); }
@@ -107,6 +108,7 @@
       .stage { grid-template-columns:54px minmax(0,1fr); }
       .stage>.status { grid-column:2; justify-self:start; }
       .matrix,.matrix tbody,.matrix tr,.matrix td { display:block; }
+      .matrix caption { display:block; width:100%; }
       .matrix thead { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
       .matrix tr { border-bottom:1px solid var(--line); padding:12px 0; }
       .matrix td { width:auto!important; border:0; padding:4px 0; }

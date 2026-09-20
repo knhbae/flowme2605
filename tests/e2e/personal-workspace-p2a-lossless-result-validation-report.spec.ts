@@ -79,6 +79,37 @@ const viewports = (manifest.browser?.viewports ?? []).map((label) => {
   return { label, width: Number(match[1]), height: Number(match[2]) };
 });
 
+test('fallback fonts preserve the full corpus explanation without horizontal overflow', async ({ page }, testInfo) => {
+  test.setTimeout(60_000);
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
+  await installReadOnlyStorageLedger(page);
+  for (const viewport of viewports) {
+    for (const family of ['Arial, sans-serif', '"Noto Sans KR", sans-serif']) {
+      await page.setViewportSize({ width: viewport.width, height: viewport.height });
+      await page.goto(reportUrl);
+      await page.addStyleTag({ content: `body { font-family: ${family} !important; }` });
+      await page.evaluate(async () => { await document.fonts.ready; });
+      const geometry = await page.evaluate(() => ({ width: document.documentElement.clientWidth,
+        scrollWidth: document.documentElement.scrollWidth,
+        corpus: Array.from(document.querySelectorAll('.corpus-line, .corpus-line > *')).map(element => ({
+          tag: element.tagName, width: element.getBoundingClientRect().width, right: element.getBoundingClientRect().right })) }));
+      expect(geometry.scrollWidth, JSON.stringify({ viewport, family, geometry })).toBeLessThanOrEqual(geometry.width + 1);
+      await expect(page.locator('.corpus-line strong')).toHaveText('31개 canonical corpus');
+      await expect(page.locator('.corpus-line span')).toContainText('D2-023은 부분으로 남습니다.');
+      const action = page.locator('#open-standalone');
+      await action.scrollIntoViewIfNeeded();
+      await action.click({ trial: true });
+      expect(await page.evaluate(() => (window as ReportWindow).__p2aReportStorageCalls)).toEqual([]);
+      if (family.startsWith('Arial') && (viewport.width === 320 || viewport.width === 1440)) {
+        await page.locator('.corpus-line').screenshot({ path: testInfo.outputPath(`corpus-${viewport.width}.png`) });
+      }
+    }
+  }
+  expect(errors).toEqual([]);
+});
+
 type ReportWindow = Window & typeof globalThis & {
   __p2aReportStorageCalls: string[];
 };

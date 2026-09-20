@@ -767,13 +767,15 @@ code {
 
 .corpus-line {
   display: grid;
-  grid-template-columns: 170px 1fr;
+  grid-template-columns: 170px minmax(0, 1fr);
   margin-top: 14px;
   border: 1px solid var(--line);
 }
 
 .corpus-line strong,
 .corpus-line span {
+  min-width: 0;
+  overflow-wrap: anywhere;
   padding: 15px 17px;
 }
 
@@ -1128,7 +1130,7 @@ code {
   }
 
   .corpus-line {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 

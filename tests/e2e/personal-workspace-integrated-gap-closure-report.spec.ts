@@ -91,3 +91,47 @@ test.describe('통합 PoC 단계별 구현·검증 보고서', () => {
     expect(errors).toEqual([]);
   });
 });
+
+test('fallback fonts keep report content and actions within every viewport', async ({ page }, testInfo) => {
+  test.setTimeout(60_000);
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
+  for (const viewport of [{ width: 375, height: 812 }, { width: 390, height: 844 },
+    { width: 844, height: 390 }, { width: 1024, height: 768 }, { width: 1440, height: 900 }]) {
+    for (const family of ['Arial, sans-serif', '"Noto Sans KR", sans-serif']) {
+      await page.setViewportSize(viewport);
+      await page.goto(reportUrl);
+      await page.addStyleTag({ content: `body { font-family: ${family} !important; }` });
+      await page.evaluate(async () => { await document.fonts.ready; });
+      const geometry = await page.evaluate(() => ({ width: document.documentElement.clientWidth,
+        scrollWidth: document.documentElement.scrollWidth,
+        textOutside: Array.from(document.querySelectorAll('body *')).flatMap(element => Array.from(element.childNodes)
+          .filter(node => node.nodeType === Node.TEXT_NODE && node.textContent?.trim()).flatMap(node => {
+            const range = document.createRange(); range.selectNodeContents(node);
+            return Array.from(range.getClientRects()).filter(box => box.right > innerWidth + 1).map(box => ({
+              parent: element.className, text: node.textContent?.slice(0, 90), right: box.right }));
+          })).slice(0, 8),
+        outside: Array.from(document.querySelectorAll('body *')).filter(element => {
+          const box = element.getBoundingClientRect();
+          return box.width > 0 && box.right > window.innerWidth + 1;
+        }).slice(0, 8).map(element => ({ element: element.tagName, class: element.className,
+          text: element.textContent?.slice(0, 80), right: element.getBoundingClientRect().right })) }));
+      expect(geometry.scrollWidth, JSON.stringify({ viewport, family, geometry })).toBeLessThanOrEqual(geometry.width);
+      const action = page.getByRole('link', { name: '직접 조작하는 HTML' });
+      await action.scrollIntoViewIfNeeded();
+      await action.click({ trial: true });
+      const matrix = page.getByRole('table', { name: '세 결과물과 통합 계약의 핵심 요구 충족 현황', exact: true });
+      const caption = await matrix.locator('caption').boundingBox();
+      const table = await matrix.boundingBox();
+      expect(caption).not.toBeNull();
+      expect(table).not.toBeNull();
+      expect(caption!.width).toBeGreaterThanOrEqual(table!.width - 1);
+      if (family.startsWith('Arial') && (viewport.width === 375 || viewport.width === 1440)) {
+        await matrix.evaluate(element => element.closest('section')?.scrollIntoView({ behavior: 'instant', block: 'start' }));
+        await page.screenshot({ path: testInfo.outputPath(`matrix-${viewport.width}.png`) });
+      }
+    }
+  }
+  expect(errors).toEqual([]);
+});

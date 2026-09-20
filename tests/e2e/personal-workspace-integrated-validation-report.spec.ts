@@ -96,8 +96,9 @@ test('integrated validation report has no overflow, browser errors, or covered p
   const errors: string[] = [];
   const screenshotDir = path.join(
     process.cwd(),
-    'docs',
-    'content-audit',
+    'output',
+    'playwright',
+    'historical-current',
     '2026-09-02-flowme-integrated-flow-poc-validation-report-assets',
   );
   fs.mkdirSync(screenshotDir, { recursive: true });
@@ -133,5 +134,26 @@ test('integrated validation report has no overflow, browser errors, or covered p
     });
   }
 
+  expect(errors).toEqual([]);
+});
+
+test('integration validation report wraps decision identifiers under wider font fallback', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
+  for (const width of [320, 375, 390, 844, 1024, 1440]) {
+    await page.setViewportSize({ width, height: width === 844 ? 390 : 844 });
+    await page.goto(REPORT_URL);
+    const originalText = await page.locator('body').innerText();
+    // A deliberate wide local fallback, not a claim of Linux font equivalence.
+    await page.addStyleTag({ content: 'body,button,input,select,textarea { font-family: monospace !important; }' });
+    expect(await page.locator('body').innerText()).toBe(originalText);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth), `${width}px fallback overflow`).toBeLessThanOrEqual(1);
+    for (const card of await page.locator('.decision-item').all()) {
+      const sizes = await card.evaluate(element => ({ width: element.clientWidth, scroll: element.scrollWidth, overflow: getComputedStyle(element).overflowX }));
+      expect(sizes.scroll).toBeLessThanOrEqual(sizes.width + 1);
+      expect(sizes.overflow).toBe('visible');
+    }
+  }
   expect(errors).toEqual([]);
 });
