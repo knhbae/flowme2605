@@ -15,10 +15,10 @@
 | 단계 | 계획·설계·구현·검증 | 상태 |
 | --- | --- | --- |
 | 1 | 기준점/소유권/양쪽 변경과 충돌 영향 조사 | clean worktree, 충돌5파일 확인 |
-| 2 | v4.1·개발1·개발2 원 요구→현재 UI/owner→회귀 대응 | [독립 요구 감사](merge-readiness-requirements-2026-09-20.md), 구체 브라우저 근거 추가 중 |
-| 3 | 유효한 main 변경·PoC 계약을 함께 보존하며 충돌/실제 결함 해결 | 파일 충돌0; source·docs·lock 해결. 회귀 실행 결과에 따른 후속 수정 중 |
-| 4 | 현재 production·역사 UI 검증을 분리하되 모두 실행, 전체 unit/type/audit/build/E2E와 새 checkout 검증 | 로컬 분할 검증·새 checkout 완료. 운영 단일run 실패 이력은 유지; 원격 CI 대기 |
-| 5 | 안전한 작업 branch push, 기존 Draft PR 갱신, exact-head CI/충돌/배포 확인과 보고 | code commit7dc80640 완료, push/CI 예정 |
+| 2 | v4.1·개발1·개발2 원 요구→현재 UI/owner→회귀 대응 | [독립 요구 감사](merge-readiness-requirements-2026-09-20.md)와 현행14개 신규 회귀로 보완. M4의 원 D2 전체 동등성 등 미결 조건은 유지 |
+| 3 | 유효한 main 변경·PoC 계약을 함께 보존하며 충돌/실제 결함 해결 | 파일 충돌0; source·docs·lock 및 native drag·역사 geometry/focus 실제 결함 해결. Linux 검사 도구 의존성 후속 수정 |
+| 4 | 현재 production·역사 UI 검증을 분리하되 모두 실행, 전체 unit/type/audit/build/E2E와 새 checkout 검증 | 로컬 분할 검증·새 checkout 완료. 운영 단일run 실패 이력은 유지; Linux CI 실패와 수정판 재검증을 아래에 별도 기록 |
+| 5 | 안전한 작업 branch push, 기존 Draft PR 갱신, exact-head CI/충돌/배포 확인과 보고 | 8b32c5b8까지 push, PR203 MERGEABLE·Draft. CI 미완료. main merge·배포0 |
 
 ## 충돌 및 자동 병합 영향
 
@@ -36,7 +36,7 @@
 
 ## 검증 설계
 
-현재 수집 기준은100 spec/741 tests다: 운영629, 옛 runtime58, 정적 보고서24, standalone27, 현행 Program3. 이는 기능 충족률이 아니다. 실제 수집 결과를 기준으로 하며 정적 test 선언 수667과 구분한다.
+초기 수집 기준은100 spec/741 tests였다: 운영629, 옛 runtime58, 정적 보고서24, standalone27, 현행 Program3. 현행14개 추가 후105 spec/755 tests이며 기존741개를 제외하지 않았다. 이는 기능 충족률이 아니다. 실제 수집 결과를 기준으로 하며 정적 test 선언 수667과 구분한다.
 
 기존 runtime58은 Surface의 저장 owner/동작을 검사하지만 현행 route는 Program을 연다. 단순 selector 교체나 skip으로 해결하지 않는다. 제품 route·exact-query gate를 바꾸지 않는 CI 전용 별도 Next harness에서 실제 Surface/Authoring을 재사용하고, 정상 production에서는 현행 Program의 원 요구 대응 회귀를 추가한다. 기존 테스트는 그대로 보존하며 파일 집합의 누락·중복0을 기계 검사한다. 역사 harness PASS는 현행 UX PASS로 집계하지 않는다. 9/10 금지된 UX 원본·미러·v11 wrapper는 실행하지 않는다.
 
@@ -68,7 +68,7 @@
 | PlanDisplay SSR | 별도10/10 PASS | npm test의2255개에 미포함인 검사. CI에 명시 실행을 추가해 로컬만 검사되는 누락을 막음. core의 type/model JSON도 별도 artifact로 수집 |
 | standalone 월간28개 빈 날짜 | 1/1 PASS,8.6초 | 검증된 legacy 입력의 실제 v2 boot,30일/28빈날짜/30추가버튼, 날짜별 순서, 취소0, 실패의 명시 복구, 성공·Undo 각각 정확 journal4/target1, reload0/운영 bytes 불변. `output/playwright/standalone-month-r3` |
 
-새 브라우저 검사는 실제 UI 입력으로 상태를 만들며 초기 운영 fixture와 quota 오류만 합성한다. 첫 locator의 label/combobox 차이, React 렌더 완료 전 읽기, 성공 draft 저장 전 reload는 검사 전제 문제로 보정했고 초기 실패 evidence를 로컬에 남겼다. 실제 요구 위반이나 미해결 실패는 PASS로 바꾸지 않는다. 순서 drag와 역사 UI 검사 실패는 별도로 조사 중이다.
+새 브라우저 검사는 실제 UI 입력으로 상태를 만들며 초기 운영 fixture와 quota 오류만 합성한다. 첫 locator의 label/combobox 차이, React 렌더 완료 전 읽기, 성공 draft 저장 전 reload는 검사 전제 문제로 보정했고 초기 실패 evidence를 로컬에 남겼다. 실제 요구 위반이나 미해결 실패는 PASS로 바꾸지 않는다. 순서 drag와 역사 UI의 실제 결함·승인 계약 이식은 다음 절과 요구 원장에 구분해 기록했다.
 
 ### 이번에 발견한 실제 조작 결함
 
@@ -111,3 +111,11 @@ push 전 Vercel 대시보드 읽기 재확인: 이 저장소 연결 프로젝트
 [첫 Linux CI](https://github.com/knhbae/flowme2605/actions/runs/35517963964)의 core는 docs 단계에서 실패했다. `d2-audit.md`의 P2-C와 parity 링크2개가 저장소 내부 정본 대신 이전 `D:/...` worktree를 가리켰다. Windows clean checkout에도 그 외부 폴더가 존재해 옛 검사기가 이를 허용했다. 따라서 앞선 Windows PASS는 Linux 문서 이식성까지 보증하지 못했다.
 
 두 링크만 같은 저장소의 상대경로로 고쳤고 감사 내용·판정은 그대로다. 문서 검사기는 OS와 무관하게 Windows/UNC/절대/file 링크와 저장소 밖 상대경로를 거부하도록 보강했다. 정본 상대경로 통과, 없는 문서 실패, 실제 존재하는 절대·Windows·UNC·file 경로 실패, 실제 존재하는 이웃 파일 실패의4개 회귀를 docs:check에 추가해4/4 PASS, 실제6332링크 PASS다. 최초 실패 로그는 `output/ci-core-35517963964.log`에 보존한다. 이후 원격 결과는 새 head에서 다시 확인한다.
+
+### Linux의 누락 실행 도구 의존성
+
+문서 수정 `8b32c5b8`은 정상 hook을 거쳐 같은 PR branch에 push했다. [두 번째 Linux CI](https://github.com/knhbae/flowme2605/actions/runs/35518329550)에서 docs/npm/build/별도 SSR은 통과했으나 통합 타입 검사는 `spawnSync rg ENOENT`로 시작 전에 실패했다. 로컬에만 설치된 ripgrep을 검사 스크립트의 파일 수집기가 암묵적으로 요구했다. 제품 타입 실패나 검사 PASS로 계산하지 않는다. 첫 실행의 E2E는 새 push로 자동 취소됐으며 전수 통과로 세지 않는다.
+
+타입·통합 테스트 검사기 양쪽이 Node 표준 파일 탐색을 공유하도록 수정했다. 실제 작업본에서 기존 rg 수집과 새 수집의 경로 전체가 정확히 같음(소스424개/테스트 파일181개)을 assert했다. 경로는 정렬된 저장소 상대경로이며 하위 파일·두 route seam을 보존한다. 범위 밖 파일은 수집하지 않고 루트 누락·지원하지 않는 파일 유형은 오류로 중단한다. 이후 추가되는 숨김 파일도 조용히 제외하지 않는다.
+
+새 수집기 회귀4/4(빈 PATH 포함), 통합 strict392entry/424source/진단0/실행 중 변경0, recorder를 통한 docs4/4 및6332링크 PASS다. 이4개는 npm2255 및 제품 모델1749개와 별도의 검사기 테스트다. 전체 모델 재검사와 수정판 Linux CI는 별도로 확인한다. 두 번째 core 실패 로그는 `output/ci-core-35518329550.log`에 보존한다. 검사 skip·CI hook 우회·제품 코드 변경은 없다.

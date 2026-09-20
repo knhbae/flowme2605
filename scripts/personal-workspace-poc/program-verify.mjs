@@ -1,13 +1,14 @@
-import { spawn, execFileSync } from 'node:child_process';
+import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync, mkdirSync, createWriteStream, existsSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { listProgramSourcePaths } from './program-source-files.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const kind = process.argv[2];
 if (!['new-tests', 'npm-test', 'approved-tests', 'public-tests', 'build', 'docs', 'audit'].includes(kind)) throw Error('choose new-tests/npm-test/approved-tests/public-tests/build/docs/audit');
-const listPaths = () => [...execFileSync('rg', ['--files', 'lib/flow/integrated-poc', 'components/flow/integrated-poc'], { cwd: root, encoding: 'utf8' }).trim().split(/\r?\n/), 'components/flow/personal-workspace-poc/PersonalWorkspacePocRoute.tsx', 'components/flow/personal-workspace-poc/PersonalWorkspacePocResultPresenter.tsx'].sort();
+const listPaths = () => listProgramSourcePaths(root);
 const paths = listPaths();
 const hashes = selected => selected.map(path => ({ path, sha256: existsSync(resolve(root, path)) ? createHash('sha256').update(readFileSync(resolve(root, path))).digest('hex') : null }));
 const before = hashes(paths), started = new Date().toISOString();

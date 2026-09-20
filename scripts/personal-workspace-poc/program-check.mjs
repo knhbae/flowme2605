@@ -3,13 +3,12 @@ import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { mkdirSync, writeFileSync, readFileSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
-import { execFileSync } from 'node:child_process';
+import { listProgramSourcePaths } from './program-source-files.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 // Match the build/test recorder's Program source scope. This proves which
 // integration sources were checked, not the bytes of every transitive package.
-const sourceHashes = () => [...execFileSync('rg', ['--files', 'lib/flow/integrated-poc', 'components/flow/integrated-poc'], { cwd: root, encoding: 'utf8' }).trim().split(/\r?\n/),
-  'components/flow/personal-workspace-poc/PersonalWorkspacePocRoute.tsx', 'components/flow/personal-workspace-poc/PersonalWorkspacePocResultPresenter.tsx'].sort()
+const sourceHashes = () => listProgramSourcePaths(root)
   .map(path => ({ path, sha256: existsSync(resolve(root, path)) ? createHash('sha256').update(readFileSync(resolve(root, path))).digest('hex') : null }));
 const started = new Date().toISOString(), before = sourceHashes();
 const config = ts.readConfigFile(resolve(root, 'tsconfig.json'), ts.sys.readFile);
