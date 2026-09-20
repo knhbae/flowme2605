@@ -141,3 +141,17 @@ Windows에서 Arial/Noto/monospace 대체 글꼴로 gap6px, validation44px(375px
 기존 보고서6개 검사와 신규 글꼴3개 검사를 같은 실행에서9/9 PASS(27.5초)했다. `output/playwright/report-font-all-final2/results.json` 및 해당 화면을 보존하고375/1440 gap과320/1440 corpus, validation 기본390 및 대체375/1440 화면을 실제 열어 확인했다. 최초 글꼴2FAIL·중간 캡처 selector1FAIL도 경로를 나눠 보존한다. 새 화면은 output에만 썼다. 전체 수집은105spec/758tests(기존741+현행14+보고서글꼴3)이며, 글꼴3개를 제품 기능 충족률에 더하지 않는다. 수정판 Linux 전체 결과는 이후 exact-head에서 확인한다.
 
 `flow-report-artifact`의 실제 HTML 검수와 `flow-ux-review`의 내용 보존·조작성 기준을 적용했다. 이번에는 UI/카드/설명을 추가하거나 제품 정책을 정하지 않고 읽기 가능한 너비만 복구했다. 실제 기기·보조기술·관찰 사용자 검증은 여전히 미실행/0명이다.
+
+### Portable 전체 교체와 일반 메모 추가의 구분
+
+취소된 세 번째 run의 전체 E2E에는 위 보고서3개 외에도 portable discovery의30초 timeout이 있었다. 최초와 retry2회 모두 timeout이며 이를 PASS나 단순 flaky로 바꾸지 않는다. 같은 head의 독립 portable lane은60초 제한으로3/3 PASS였다. 후속 `3a06e24f`의 core도 docs/npm2255/SSR10/검사기8/strict/통합1749/portable3/audit/build를 통과했고, 전체 E2E는 별도 결과로 확인한다. 앞선 취소 로그 `output/ci-third-e2e-cancelled-35519361180.log`를 보존한다.
+
+실제 원인은 구간별로 측정했다. 기존 공개 사본7239자에 메모를 붙인7266자 전체를 `fill`하는 구간이 Windows managed Chromium에서19.9–24.8초였다. 2worker·30초 제한 재실행2개는 각각29.098/29.121초에 통과했으므로 CI의30초 제한과 여유가 거의 없었다. 별도 input 계측에서는 전체 교체가 beforeinput1회/input435회를 발생시켜20.859초 걸렸고, 이후 native 한 줄 추가는 input2회·337ms였다. CPU sampling의 큰 비중은 geometry 측정과 전체 editor render에 있었다. 이는 Windows의 해당 자료·자동화 입력 계측이며 Linux/실제 붙여넣기/실제 기기 지연과 같다고 주장하지 않는다.
+
+기존 전체 교체 시나리오와 assertion은 그대로 유지하고, 그 검사 하나에만 기존 독립 portable lane과 같은60초 제한을 적용했다. 다른 전체 suite의30초 제한이나 retry 정책은 바꾸지 않았다. 정확한 최종 원문 전체와 copy metadata 동일 assertion을 추가했다. 별도 native append 시나리오는 실제 focus→문서 끝→키보드 삽입→Tab으로 실행하며, 같은 저장·공개자료·다른 actor·reload·운영 bytes/prefix 검사에 더해 기존 모든 줄의 ID와 text 불변을 확인한다. DOM value/state 주입이나 검사 skip은 없다. 기존 전체 교체를 빠른 경로로 대체하지 않았으며 제품 runtime 수정도 없다.
+
+두 편집 경로를2회씩 병렬 실행해4/4 PASS(36.4초, 실패/skip/retry0)했다. 전체 교체26.945/27.383초, 일반 추가5.715/5.554초는 각 시나리오 전체 시간이다. 증거는 `output/playwright/portable-input-contract/results.json` 및 분리한 artifacts, 최초30초 실행의 `portable-timeout-probe/before-results.json`과 trace, 계측의 `portable-input-events/artifacts`에 있다. 신규1개를 더한 전체 수집은105spec/759tests이며 일반 편집 성능이나 제품 요구 전체 완료로 환산하지 않는다.
+
+이어 gate·개인 실행·전체 교체·일반 추가를 한 번에 실행해4/4 PASS(34.228초, 실패/skip/flaky/retry0)했다. 전체 교체20.801초, 일반 추가3.803초였으며 `output/playwright/portable-contract-final/results.json`에 보존한다. 앞의 반복4회와 합쳐8개 신규 기능으로 계산하지 않는다.
+
+긴 문서 전체 교체의 반복 렌더 비용은 **해결하지 않은 성능 위험**이다. 기존 [알파 계획](alpha-transition.md)의 A23/D07·T06/T12에서 실사용 전 재검토한다. 재개 시 실제 paste·IME·대량 선택 편집을 각각 계측하고 승인된 성능 예산을 세운다. 검증/보호 경계나 native Undo를 제거해서 빠르게 만들지 않는다. 이번60초는 검사 실행 예산이며 사용자에게 허용할 편집 지연 기준이 아니다.

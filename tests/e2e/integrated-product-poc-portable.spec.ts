@@ -89,7 +89,7 @@ test('portable private journey: document, task date, completion, Undo and reload
   await verify();
 });
 
-test('portable discovery: public version becomes a private copy without mutating public content', async ({ page }) => {
+async function verifyPrivateCopyEditing(page: Page, inputMode: 'replace' | 'append') {
   const verify = await audit(page);
   await page.goto(URL + '#flowme/discover');
   await expect(page.getByTestId('program-discovery')).toBeVisible();
@@ -102,13 +102,21 @@ test('portable discovery: public version becomes a private copy without mutating
   expect(before.data.public.versions.some(version => version.id === copy.baseVersionId)).toBe(true);
   const editor = page.getByRole('region', { name: '개인 문서 편집', exact: true });
   const input = editor.locator('textarea');
-  await input.fill((await input.inputValue()) + '\nPortable private note only');
+  const originalRaw = await input.inputValue();
+  const originalDocument = M.getDocument(before.data.spaces['local-user'].text, copy.documentId)!;
+  if (inputMode === 'replace') await input.fill(originalRaw + '\nPortable private note only');
+  else {
+    await input.focus();
+    await input.press('ControlOrMeta+End');
+    await page.keyboard.insertText('\nPortable private note only');
+  }
   await input.press('Tab');
   // Tab is the native editor's two-space indent command, not blur. Wait for
   // that final command's raw and position, not an earlier fill-only save.
   const finalInput = await input.evaluate((element: HTMLTextAreaElement) => ({
     raw: element.value, start: element.selectionStart, end: element.selectionEnd, scrollTop: element.scrollTop,
   }));
+  expect(finalInput.raw).toBe(originalRaw + '\n  Portable private note only');
   expect(finalInput.raw.split('\n').at(-1)).toBe('  Portable private note only');
   await expect.poll(async () => {
     const saved = (await state(page)).data.spaces['local-user'];
@@ -117,6 +125,12 @@ test('portable discovery: public version becomes a private copy without mutating
       end: saved.position.end, scrollTop: saved.position.scrollTop };
   }).toEqual({ ...finalInput, documentId: copy.documentId });
   const after = await state(page);
+  expect(after.data.spaces['local-user'].copies).toEqual(before.data.spaces['local-user'].copies);
+  if (inputMode === 'append') {
+    const editedDocument = M.getDocument(after.data.spaces['local-user'].text, copy.documentId)!;
+    // Appending a personal note must preserve all existing line identities/text.
+    expect(editedDocument.lines.slice(0, originalDocument.lines.length)).toEqual(originalDocument.lines);
+  }
   expect(after.data.public).toEqual(before.data.public);
   expect(JSON.stringify(after.data.public)).not.toContain('Portable private note only');
   for (const actor of before.data.actors.filter(actor => actor.id !== 'local-user')) expect(after.data.spaces[actor.id]).toEqual(before.data.spaces[actor.id]);
@@ -124,4 +138,16 @@ test('portable discovery: public version becomes a private copy without mutating
   await expect(page.getByTestId('integrated-program-app')).toBeVisible();
   expect((await state(page)).data).toEqual(after.data);
   await verify();
+}
+
+test('portable discovery: public version becomes a private copy without mutating public content', async ({ page }) => {
+  // Retain the original whole-document replacement regression. Chromium emits
+  // hundreds of native input events for this 7k multiline fill; use the same
+  // bounded budget as the dedicated portable lane, not a latency acceptance bar.
+  test.setTimeout(60_000);
+  await verifyPrivateCopyEditing(page, 'replace');
+});
+
+test('portable discovery: native note append retains source lines and private-copy identity', async ({ page }) => {
+  await verifyPrivateCopyEditing(page, 'append');
 });
