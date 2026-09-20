@@ -679,7 +679,8 @@ test.describe('FlowMe Text Authoring -> 개인공간 통합 흐름 PoC', () => {
     await expect(page.getByTestId('personal-workspace-authoring-property-duration')).toHaveAttribute('data-property-support', 'editable');
     await page.getByTestId('personal-workspace-authoring-property-focus-date').click();
     await expect(page.getByTestId('personal-workspace-authoring-helper-menu')).toHaveCount(0);
-    expect(await source.evaluate((element) => {
+    await expect(source).toBeFocused();
+    await expect.poll(() => source.evaluate((element) => {
       const textarea = element as HTMLTextAreaElement;
       return textarea.value.slice(textarea.selectionStart, textarea.selectionEnd);
     })).toBe('2026-09-10');
@@ -722,7 +723,9 @@ test.describe('FlowMe Text Authoring -> 개인공간 통합 흐름 PoC', () => {
     await expect(source).toHaveValue(/  - \[ \] 표 확인하기/u);
     await openRootHelper('execution');
     await page.getByTestId('personal-workspace-authoring-subcheck-focus-4').click();
-    expect(await source.evaluate((element) => {
+    // Source focus/selection is applied on the next animation frame.
+    await expect(source).toBeFocused();
+    await expect.poll(() => source.evaluate((element) => {
       const textarea = element as HTMLTextAreaElement;
       return textarea.value.slice(textarea.selectionStart, textarea.selectionEnd);
     })).toBe('표 확인하기');

@@ -1,5 +1,21 @@
 # PR #203 머지 준비 — 충돌·요구·회귀 실행 원장
 
+## 2026-09-21 후속 승인 — 자동배포 차단 후 코드 병합
+
+사용자가 PR #203의 자동배포를 먼저 차단한 뒤 main에 코드만 병합하는 권고를 승인했다. 아래 '머지 미승인' 기록은 그 이전 준비 목표의 범위다. Preview/Production 배포, DB/Auth/환경변수/유료 설정, M1 기능 구현은 이번에도 하지 않는다.
+
+- 준비 목표는 `4be9878b`의 [CI 35524317591](https://github.com/knhbae/flowme2605/actions/runs/35524317591)에서 core와 E2E 760/760, 실패/skip/flaky0으로 완료했다. 이는 요구사항 전체 완료나 실제 사용자 검증이 아니다.
+- `8e28bf0e`에서 `vercel.json`의 `git.deploymentEnabled`를 `false`로 바꾸고 승인 범위를 alpha 원장에 기록했다. 이 설정을 포함한 revision의 모든 Git-triggered 배포를 차단한다. Git 연결·도메인·기존 배포는 유지하며, 예전 설정을 가진 다른 branch까지 소급 차단했다고 주장하지 않는다. 차단 해제와 실제 배포는 별도 승인이다. [Vercel 공식 계약](https://vercel.com/docs/project-configuration/git-configuration#turning-off-all-automatic-deployments)을 확인했고 원격 설정 blob과 로컬 hash도 동일하다.
+- 정상 pre-commit/pre-push를 거쳐 docs6334링크·npm lifecycle 포함2255/2255·production build를 통과했다. 별도 audit 취약점0, 다른 Vercel 설정 불변, 제품/저장/테스트 변경0을 확인했다. 기존 PR을 ready로 전환했지만 main은 아직 병합하지 않았다.
+- [CI 35536950422](https://github.com/knhbae/flowme2605/actions/runs/35536950422)는 core PASS(7분38초), E2E는 **758 PASS + 2 flaky**, 최종 실패/skip0(17분38초, 테스트15.1분)이었다. GitHub 성공 상태만으로 760개 최초 통과로 기록하지 않았다. 원격 report의 total760/expected758/flaky2/ok=false를 직접 읽고 병합을 보류했다. core는 모델181파일1749/1749·종료0·skip/cancel/source변경0, strict392/424/진단0, portable4/4(27.4초)를 확인했다.
+- 운영 P24 날짜 삭제 시나리오는 저장 클릭 직후 hard navigation을 실행했다. 이미 같은 여정의 날짜 추가에는 durable 저장 대기가 있었지만 삭제에는 없었다. 해당 저장 key와 Item ID를 먼저 확보하고, 동일 Item의 제목 보존·schedule 없음 및 저장 editor 종료를 확인한 뒤 이동하도록 assertion을 추가했다. 삭제 후 Calendar0건·reload 등 원래 기대는 유지한다. 저장 도중 강제 종료의 데이터 보호를 새로 증명하는 것은 아니다.
+- 역사 P2-C 원문 값 선택은 effect의 다음 animation frame에서 적용되지만 테스트가 클릭 직후 selection을 읽었다. 실패 후 캡처에는 정확한 '표 확인하기'가 선택돼 있었다. 날짜와 하위 체크 값 선택 두 곳에서 실제 focus와 정확한 selection을 polling으로 확인한다. 원래 기대값·속성16개·Undo·저장 bytes 검사는 바꾸지 않았다.
+- Windows Chrome에서 두 시나리오를 각각5회, workers2/retries0으로 실행해 **10/10 PASS**(1.5분)했다. 제품 코드·writer·schema·timeout·retry 정책은 변경하지 않았고 test skip 추가0이다. 서로 다른 두 시나리오의 반복 실행이며 10개 신규 요구로 세지 않는다. 최종 수정 head의 전체 CI는 이후 별도 확인한다.
+- 로컬 근거: `output/ci-core-35536950422/`, `output/ci-core-35536950422.log`, `output/ci-e2e-35536950422/`, `output/ci-e2e-35536950422.log`, `output/merge-guard-targeted-20260921.log`, `output/playwright/merge-guard-async-20260921/`. 공개 Git에는 원본 trace/화면을 추가하지 않는다.
+- 배포 조회에서 이전 목표 시작 이후 새 배포0을 확인했다. 현재 Production은 `b4a25a4f`의 `dpl_Hnh3hTu8KgyRJEUe128Uqn5hgxtC`이며, 병합 전 운영 `/`와 `/my`의 HTTP200·응답 hash를 `output/production-before-merge-20260921.json`에 기록했다. 실제 병합 결과·병합 SHA·최종 배포 조회는 PR의 실행 결과로 연결한다. 실제 Android/iOS·IME·보조기술 검사는 미실행, 관찰 사용자0이다.
+
+## 아래는 2026-09-20 머지 준비 당시의 기록
+
 2026-09-20. 상태: 진행 중. [알파 전환](alpha-transition.md)의 M1 전에, [보존 PR #203](https://github.com/knhbae/flowme2605/pull/203)을 머지 가능한 상태로 만든다. 실제 main 머지·배포 완료를 뜻하지 않는다.
 
 ## 범위와 기준점
