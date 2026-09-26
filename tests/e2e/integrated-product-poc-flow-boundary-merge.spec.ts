@@ -68,6 +68,10 @@ test('canonical Flow folder is inherited; one Item date/completion moves only it
   await page.getByText('폴더 정리', { exact: true }).click();
   await page.getByLabel('새 폴더 이름', { exact: true }).fill('Parent folder');
   await page.getByRole('button', { name: '폴더 만들기', exact: true }).click();
+  // The first async commit creates the envelope. Do not dereference null in a
+  // poll callback: callback exceptions abort expect.poll instead of retrying.
+  await expect(page.getByRole('status').filter({ hasText: '폴더 만들기 · 저장됨' })).toBeVisible();
+  await expect.poll(() => wire(page)).not.toBeNull();
   await expect.poll(async () => (await space(page)).savedBindings.length).toBe(1);
   const binding = (await space(page)).savedBindings[0];
   expect(binding.flowRef).toBe(flow.ref);

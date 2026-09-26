@@ -30,6 +30,10 @@ export type ProgramCreatorWorkspaceState = {
   /** Last explicit source handoff baseline. Never the latest personal raw. */
   handoffs: Record<string, { documentId: string; recordRevision: number; raw: string; title: string }>;
   working: ProgramCreatorWorking | null;
+  /** Imported unsaved alternatives. Immutable source bytes are not explicit saved revisions. */
+  importedWorkingCandidates?: { version: 1; sources: Record<string, string>; candidates: Record<string, {
+    sourceKey: string; kind: 'authoring' | 'recovery'; readOnly: boolean; working: ProgramCreatorWorking;
+  }> };
   executionSources?: ProgramCreatorExecutionSources;
   nativeExecutionSources?: ProgramNativeExecutionSources;
   /** Private candidate decisions; never a published source or implicit saved draft. */

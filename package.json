@@ -6,6 +6,10 @@
     "node": "24.x"
   },
   "scripts": {
+    "postinstall": "node scripts/alpha/patch-auth-debug-probe.mjs",
+    "alpha:dev": "tsx scripts/alpha/dev.ts",
+    "test:alpha-auth": "tsx --test lib/flow/integrated-poc/alpha-auth/auth.test.ts scripts/alpha/m2-schema.test.ts scripts/alpha/m2-expiry-contract.test.ts && node --test scripts/alpha/patch-auth-debug-probe.test.mjs",
+    "test:e2e:alpha-auth": "playwright test --config tests/e2e/alpha-auth.config.ts",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -56,10 +60,12 @@
     "@fullcalendar/daygrid": "^6.1.21",
     "@fullcalendar/interaction": "^6.1.21",
     "@fullcalendar/react": "^6.1.21",
+    "@supabase/supabase-js": "2.116.0",
     "exceljs": "4.4.0",
     "next": "15.5.25",
     "react": "19.0.0",
-    "react-dom": "19.0.0"
+    "react-dom": "19.0.0",
+    "sharp": "0.35.4"
   },
   "devDependencies": {
     "@playwright/test": "1.61.1",

@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import type { ProgramEnvelope } from '../../lib/flow/integrated-poc/contract';
+import { PERSONAL_WORKSPACE_POC_AUTHORING_TEMPLATES } from '../../lib/flow/personal-workspace-poc-authoring';
 
 const KEY = 'flow:poc:personal-workspace:v1:program:state';
 const PREFIX = 'flow:poc:personal-workspace:v1:';
@@ -54,12 +55,17 @@ test('D2 current creator: empty template preview, explicit insertion, native Und
   await preview.getByRole('button', { name: '취소', exact: true }).click();
   await expect(preview).toHaveCount(0);
   await expect(source).toHaveValue('');
-  await surface.getByRole('button', { name: '빈 틀 확인', exact: true }).first().click();
-  const scaffold = await preview.locator('pre').innerText();
-  await preview.getByRole('button', { name: '확인한 내용으로 원문 바꾸기', exact: true }).click();
+  // A12/D2-049: a blank scaffold is inserted once, directly into empty source.
+  // It is not the separate, confirmation-gated populated structure example.
+  const scaffold = PERSONAL_WORKSPACE_POC_AUTHORING_TEMPLATES[0].scaffold;
+  const insert = surface.getByRole('button', { name: '빈 틀 넣기', exact: true }).first();
+  await insert.click();
   await expect(source).toHaveValue(scaffold);
+  await expect(preview).toHaveCount(0);
+  await expect(insert).toBeDisabled();
   await source.press('Control+z');
   await expect(source).toHaveValue('');
+  await expect(insert).toBeEnabled();
   await source.press('Control+Shift+z');
   await expect(source).toHaveValue(scaffold);
   await surface.getByRole('button', { name: 'Flow 편집', exact: true }).click();

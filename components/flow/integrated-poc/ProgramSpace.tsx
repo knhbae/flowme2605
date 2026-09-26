@@ -29,13 +29,22 @@ import { programDocumentContentLock, programPreservesLockedDocumentContent, prog
 import styles from './ProgramSpace.module.css';
 import { programRecurrenceFocusId, resolveProgramRecurrencePlanFocus, type ProgramRecurrencePlanFocusRequest } from '@/lib/flow/integrated-poc/recurrence-plan-focus';
 
+export type ProgramSpaceCapabilities = {
+  discovery?: boolean;
+  publication?: boolean;
+  copyInspection?: boolean;
+  revisionHistory?: boolean;
+  creatorNavigation?: boolean;
+};
 export type ProgramSpaceProps = {
   data: ProgramData; mutate: ProgramMutate; navigate: ProgramNavigate; today: string;
+  /** Omitted capabilities preserve the local PoC. Authenticated shells opt in to their available routes. */
+  capabilities?: ProgramSpaceCapabilities;
   selectedDocumentId?: string; onUndo: () => Promise<void>; onRedo: () => Promise<void>;
   outputReturn?: ProgramDestination;
-  onPublishDocument: (documentId: string) => void;
-  onInspectCopy: (copyId: string) => void;
-  onRevisionHistory: (documentId: string) => void;
+  onPublishDocument?: (documentId: string) => void;
+  onInspectCopy?: (copyId: string) => void;
+  onRevisionHistory?: (documentId: string) => void;
   onOutputDocument?: (documentId: string) => void;
   onRegisterEditors?: (editors: ProgramEditorFlush | null) => void;
   onRegisterNavigation?: (navigation: ProgramSpaceNavigation | null) => void;
@@ -43,6 +52,8 @@ export type ProgramSpaceProps = {
 type Detail = { kind: 'task'; id: string } | { kind: 'folder'; id: string } | { kind: 'connect'; docId: string; lineId: string } | null;
 const periods: [ProgramPeriod, string][] = [['documents', '문서'], ['today', '오늘'], ['week', '주간'], ['month', '월간'], ['all', '전체 할 일'], ['undated', '날짜 미정']];
 export const PROGRAM_EMPTY_EXAMPLE = '이번 주 준비\n- [ ] 확인할 일\n  - [ ] 먼저 확인할 내용\n자유롭게 적는 메모';
+// A06 / V41-004–005: restore the approved v4.1 touch thresholds, not a new policy.
+export const PROGRAM_MOVE_GESTURE_V1 = Object.freeze({ version: 1, holdMs: 350, cancelDistancePx: 8 });
 
 export function ProgramSpace(props: ProgramSpaceProps) {
   const { data, mutate, today } = props, actorId = data.activeActorId, space = data.spaces[actorId];
@@ -155,7 +166,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       hasPendingInput: () => Object.values(dirty.current).some(Boolean) || Object.values(recurrencePorts.current).some(port => port?.hasPendingInput?.()),
       blocksExternalSnapshot: (before, next) => Object.values(recurrencePorts.current).some(port => port?.blocksExternalSnapshot?.(before, next)),
       pendingDocumentIds: () => Object.keys(dirty.current).filter(id => dirty.current[id]),
-      captureDrafts: () => [...Object.keys(dirty.current).filter(id => dirty.current[id]).map(id => ({ title: documentsRef.current.find(doc => doc.id === id)?.title ?? '작성 중 문서', raw: draftReaders.current[id]?.() ?? '' })), ...Object.values(recurrencePorts.current).flatMap(port => port?.captureDrafts?.() ?? [])],
+      captureDrafts: () => [...Object.keys(dirty.current).filter(id => dirty.current[id]).map(id => ({ documentId: id, title: documentsRef.current.find(doc => doc.id === id)?.title ?? '작성 중 문서', raw: draftReaders.current[id]?.() ?? '' })), ...Object.values(recurrencePorts.current).flatMap(port => port?.captureDrafts?.() ?? [])],
       flushAll: flushAllEditors });
     return () => props.onRegisterEditors?.(null);
   }, [actorId]);
@@ -188,7 +199,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     });
     return () => props.onRegisterNavigation?.(null);
   }, [actorId]);
-  async function openDocumentAction(action: (documentId: string) => void | Promise<void>, options: { closeMenu?: boolean } = {}) {
+  async function openDocumentAction(action: (documentId: string) => void | Promise<void>, options: { closeMenu?: boolean; modalReturnFocus?: boolean } = {}) {
     if (!selectedDoc || preparing.current || retentionSource) return;
     const id = selectedDoc.id;
     const releaseInput = lockInput();
@@ -197,9 +208,14 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       if (!await flushRecurrenceEditors()) { setMessage('회차 날짜를 적용하거나 취소한 뒤 문서 작업을 다시 열어 주세요.'); return; }
       const result = await prepareProgramDocumentAction({ dirty: () => !!dirty.current[id], save: saveRequests.current[id] ?? undefined, stillSelected: () => selectedRef.current === id });
       if (result === 'ready') {
-        // The next surface owns focus. Closing the retained menu must neither
-        // focus its summary nor discard an unsubmitted native title input.
-        if (options.closeMenu !== false && documentMenu.current) documentMenu.current.open = false;
+        // Ordinary navigation retains its focus behavior. A modal needs a visible
+        // return target: the preparing action button is disabled and about to be
+        // hidden, so establish the menu summary before the child captures focus.
+        // Never reset the native title field or its compare-and-swap baseline.
+        if (options.closeMenu !== false && documentMenu.current) {
+          documentMenu.current.open = false;
+          if (options.modalReturnFocus) documentMenu.current.querySelector<HTMLElement>(':scope > summary')?.focus({ preventScroll: true });
+        }
         await action(id);
       }
       else if (result === 'save-failed') setMessage('현재 입력을 저장하지 못했습니다. 본문의 저장 오류를 해결한 뒤 다시 열어 주세요.');
@@ -227,7 +243,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     let committedSpace: typeof space | null = null;
     const result = await mutate(label, current => { const next = build(current); if (next.ok) committedSpace = next.data.spaces[actorId]; return next; }, { history });
     if (result.ok) { formExpected.current = null; if (detailExpected.current && committedSpace) detailExpected.current = committedSpace; }
-    setMessage(result.ok ? '' : programErrorMessage(result.reason)); return result;
+    // AlphaWorkspace owns the transient busy notice and clears it on settlement.
+    // Keep this form's prior failure/input state instead of persisting a duplicate.
+    if (result.ok || result.reason !== 'busy') setMessage(result.ok ? '' : programErrorMessage(result.reason)); return result;
   };
   function cancelHold() { if (hold.current) clearTimeout(hold.current); hold.current = null; holdPoint.current = null; }
   function close() { dialog.current?.close(); detailExpected.current = null; setDetail(null); setMessage(''); previousFocus.current?.focus(); }
@@ -359,17 +377,17 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       {message && <p role="alert" className={styles.error}>{message}</p>}
       <div hidden={period !== 'documents'}>
         <ProgramRecurrencePlanRecovery data={data} today={today} documentId={selected || undefined} disabled={preparingDocumentAction} onOpenSource={(id, line) => void openDocument(id, line)} />
-        {!selectedDoc ? selected ? <div className={styles.empty}><h1>문서를 찾을 수 없습니다</h1><p>이 문서가 삭제되었거나 현재 인물의 문서가 아닐 수 있습니다. 다른 문서로 자동 이동하지 않았습니다. 내 문서 목록이나 보관함에서 다시 선택해 주세요.</p><button onClick={() => { setShowArchived(false); setLibraryOpen(true); }}>내 문서 목록</button><button onClick={() => { setShowArchived(true); setLibraryOpen(true); }}>보관함 확인</button></div> : <div className={styles.empty}><h1>필요한 내용을 먼저 적으세요</h1><p>메모로 두어도 좋고, 체크할 일에 날짜를 붙여도 됩니다.</p><button onClick={() => document.getElementById('program-document-title')?.focus()}>문서 만들기</button><button onClick={() => props.navigate({ view: 'discover' })}>다른 사람의 Flow 둘러보기</button></div> : <>
+        {!selectedDoc ? selected ? <div className={styles.empty}><h1>문서를 찾을 수 없습니다</h1><p>이 문서가 삭제되었거나 현재 인물의 문서가 아닐 수 있습니다. 다른 문서로 자동 이동하지 않았습니다. 내 문서 목록이나 보관함에서 다시 선택해 주세요.</p><button onClick={() => { setShowArchived(false); setLibraryOpen(true); }}>내 문서 목록</button><button onClick={() => { setShowArchived(true); setLibraryOpen(true); }}>보관함 확인</button></div> : <div className={styles.empty}><h1>필요한 내용을 먼저 적으세요</h1><p>메모로 두어도 좋고, 체크할 일에 날짜를 붙여도 됩니다.</p><button onClick={() => document.getElementById('program-document-title')?.focus()}>문서 만들기</button>{props.capabilities?.discovery !== false && <button onClick={() => props.navigate({ view: 'discover' })}>다른 사람의 Flow 둘러보기</button>}</div> : <>
           <div className={styles.docHeading}><h1>{selectedDoc.title}</h1>{!retentionSource && !selectedTrashed && <details key={selectedDoc.id} ref={documentMenu} onToggle={event => {
             const title = event.currentTarget.querySelector<HTMLInputElement>('input[name="title"]');
             if (!event.currentTarget.open && (!title || title.value === title.defaultValue)) formExpected.current = null;
           }}><summary>문서 작업</summary><div className={styles.documentTools} onInputCapture={() => { formExpected.current ??= space; }}>
             <form onSubmit={async event => { event.preventDefault(); const title = String(new FormData(event.currentTarget).get('title') ?? ''); await run('문서 이름 변경', current => renameProgramDocument(current, { ...base(current), documentId: selectedDoc.id, title })); }}><label>문서 이름<input key={selectedDoc.id + selectedDoc.title} name="title" defaultValue={selectedDoc.title} required /></label><button>이름 변경</button></form>
             <label>문서 폴더<select value={selectedDoc.folderId} onChange={event => { const value = event.target.value; void run('폴더 이동', current => setProgramDocumentFolder(current, { ...base(current), documentId: selectedDoc.id, folderId: value })); }}>{folderOptions.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</select></label>
-            <button disabled={preparingDocumentAction} onClick={() => void openDocumentAction(props.onPublishDocument)}>선택해서 공개</button>
-            <button disabled={preparingDocumentAction} onClick={() => void openDocumentAction(props.onRevisionHistory)}>저장판본·복구</button>
+            {props.capabilities?.publication !== false && props.onPublishDocument && <button disabled={preparingDocumentAction} onClick={() => void openDocumentAction(props.onPublishDocument!, { modalReturnFocus: true })}>선택해서 공개</button>}
+            {props.capabilities?.revisionHistory !== false && props.onRevisionHistory && <button disabled={preparingDocumentAction} onClick={() => void openDocumentAction(props.onRevisionHistory!)}>저장판본·복구</button>}
             {props.onOutputDocument && <button disabled={preparingDocumentAction} onClick={() => void openDocumentAction(props.onOutputDocument!)}>내 도구로 가져가기</button>}
-            {space.copies.filter(copy => copy.documentId === selectedDoc.id).map(copy => <button key={copy.id} disabled={preparingDocumentAction} onClick={() => void openDocumentAction(() => props.onInspectCopy(copy.id))}>내 계획·원본 변경 확인</button>)}
+            {props.capabilities?.copyInspection !== false && props.onInspectCopy && space.copies.filter(copy => copy.documentId === selectedDoc.id).map(copy => <button key={copy.id} disabled={preparingDocumentAction} onClick={() => void openDocumentAction(() => props.onInspectCopy!(copy.id), { modalReturnFocus: true })}>내 계획·원본 변경 확인</button>)}
             {space.savedBindings.filter(binding => binding.documentId === selectedDoc.id).map(binding => <button key={binding.flowRef} disabled={preparingDocumentAction} onClick={() => void openDocumentAction(() => props.navigate({ view: 'legacy', id: binding.flowRef }))}>원본·개인 계획 확인</button>)}
             {space.retentionDocuments?.[selectedDoc.id] && <button onClick={() => void openDocument(space.retentionDocuments![selectedDoc.id])}>복구 중 보관된 내용</button>}
             <button disabled={preparingDocumentAction} onClick={() => void openDocumentAction(async id => {
@@ -379,7 +397,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             <ProgramDocumentTrashAction key={selectedDoc.id} space={space} documentId={selectedDoc.id} disabled={preparingDocumentAction} onChange={changeDocumentTrash} />
           </div></details>}</div>
           {selectedTrashed && <ProgramDocumentTrashAction key={selectedDoc.id} space={space} documentId={selectedDoc.id} disabled={preparingDocumentAction} onChange={changeDocumentTrash} />}
-          <ProgramDocumentProvenance data={data} documentId={selectedDoc.id} disabled={preparingDocumentAction || selectedTrashed} onOpenRevisions={() => void openDocumentAction(props.onRevisionHistory)} onOpenCreatorDraft={draftId => void openDocumentAction(() => props.navigate({ view: 'creator', id: draftId }))} />
+          <ProgramDocumentProvenance data={data} documentId={selectedDoc.id} disabled={preparingDocumentAction || selectedTrashed} onOpenRevisions={props.capabilities?.revisionHistory !== false && props.onRevisionHistory ? () => void openDocumentAction(props.onRevisionHistory!) : undefined} onOpenCreatorDraft={props.capabilities?.creatorNavigation !== false ? draftId => void openDocumentAction(() => props.navigate({ view: 'creator', id: draftId })) : undefined} />
           {selectedQualityHold && <p role="status" className={styles.muted}>{selectedQualityHold} 해당 원본 항목과 실행 기록은 읽기 전용으로 남깁니다. 다른 자유 메모는 계속 쓸 수 있습니다.</p>}
           {retentionSource && <p className={styles.muted}>판본 복구 중 빠진 내용을 보관한 곳입니다. <button onClick={() => void openDocument(retentionSource)}>원래 문서로 돌아가기</button></p>}
           {!selectedArchived && !M.raw(selectedDoc).trim() && <details className={styles.example}><summary>빈 문서에서 시작할 작성 예시</summary><pre>{PROGRAM_EMPTY_EXAMPLE}</pre><button onClick={() => void editorCommit(selectedDoc.id, M.editText(space.text, selectedDoc.id, PROGRAM_EMPTY_EXAMPLE), '작성 예시 넣기', { expectedWorkspace: space.text })}>이 예시를 문서에 넣기</button></details>}
@@ -436,8 +454,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             <button className={styles.check} aria-label={`${task.title} ${value === 100 ? '다시 열기' : '완료'}`} aria-pressed={value === 100} onClick={() => void run(value === 100 ? '다시 열기' : '완료', current => completeProgramTask(current, { ...base(current), taskId: task.id, date: today, done: value !== 100 }))}>{value === 100 ? '✓' : value ? `${value}%` : '○'}</button>
             <button className={styles.taskTitle} onClick={() => moving ? void moveBefore(moving, entry.key) : void openDocument(task.docId, task.id)}>{task.title}<small>{period === 'today' && programIsContinuingTask(task, date) ? '계속할 일 · ' : ''}{task.date ?? '날짜 미정'} · {task.docTitle}</small></button>
             <button aria-label={`${task.title} 작업`} onClick={event => { if (suppressPointerClick.current === task.id && event.detail !== 0) { suppressPointerClick.current = null; return; } setRecordDate(today); setPercent(String(value)); openDetail({ kind: 'task', id: task.id }); }}
-              onPointerDown={event => { suppressPointerClick.current = null; if (event.pointerType !== 'touch') return; cancelHold(); holdPoint.current = { x: event.clientX, y: event.clientY }; hold.current = setTimeout(() => { setMoving(entry.key); suppressPointerClick.current = task.id; hold.current = null; }, 500); }}
-              onPointerUp={cancelHold} onPointerCancel={() => { cancelHold(); suppressPointerClick.current = task.id; setMoving(null); }} onPointerMove={event => { if (holdPoint.current && Math.hypot(event.clientX - holdPoint.current.x, event.clientY - holdPoint.current.y) > 10) { cancelHold(); suppressPointerClick.current = task.id; } }}>…</button>
+              onPointerDown={event => { suppressPointerClick.current = null; if (event.pointerType !== 'touch') return; cancelHold(); holdPoint.current = { x: event.clientX, y: event.clientY }; hold.current = setTimeout(() => { setMoving(entry.key); suppressPointerClick.current = task.id; hold.current = null; }, PROGRAM_MOVE_GESTURE_V1.holdMs); }}
+              onPointerUp={cancelHold} onPointerCancel={() => { cancelHold(); suppressPointerClick.current = task.id; setMoving(null); }} onPointerMove={event => { if (holdPoint.current && Math.hypot(event.clientX - holdPoint.current.x, event.clientY - holdPoint.current.y) >= PROGRAM_MOVE_GESTURE_V1.cancelDistancePx) { cancelHold(); suppressPointerClick.current = task.id; } }}>…</button>
           </li>;
         })}</ul>
       </div>

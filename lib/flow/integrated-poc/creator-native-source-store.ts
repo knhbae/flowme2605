@@ -17,7 +17,7 @@ function current(data:ProgramData,actorId:string,draftId:string){
  return{workspace,working,record,owner:working.nativeDocument,entry:workspace.sourceUpdateSessions?.[draftId]??null,session:workspace.sourceUpdateSessions?.[draftId]?.session??null,authority};
 }
 function failure(data:ProgramData,reason:CreatorNativeSourceFailure):ProgramTransition<string>{
- return programFailure(data,reason==='forbidden'?'forbidden':reason==='conflict'||reason==='stale-candidate'?'conflict':reason==='history-capacity'?'limit':'unresolved');
+ return programFailure(data,reason==='forbidden'?'forbidden':reason==='conflict'||reason==='stale-candidate'?'conflict':reason==='history-capacity'||reason==='document-capacity'?'limit':'unresolved');
 }
 function check(data:ProgramData,input:Head,now:string,replayRequestId?:string){
  if(!validateProgramData(data)||!validNow(now)||!programIdentifier(input.actorId)||!programIdentifier(input.draftId)||data.activeActorId!==input.actorId)return null;
@@ -65,7 +65,7 @@ export function readProgramNativeSourceUpdate(data:ProgramData,actorId:string,dr
 export function upgradeProgramNativeSourceAbsences(data:ProgramData,input:Head&{requestId:string},now:string):ProgramTransition<string>{
  const head=check(data,input,now);if(!head||!programIdentifier(input.requestId))return programFailure(data,'conflict');
  const result=upgradeNativeCreatorAbsences(head.owner,{expectedOwner:input.expectedWorking!.nativeDocument!,requestId:input.requestId},now);
- if(!result.ok)return programFailure(data,result.reason==='history-capacity'?'limit':'conflict');
+ if(!result.ok)return programFailure(data,result.reason==='history-capacity'||result.reason==='document-capacity'?'limit':'conflict');
  if(!result.changed)return programResult(data,data,input.draftId);
  const next=programClone(data);next.spaces[input.actorId].creatorWorkspace!.working!.nativeDocument=result.owner;
  return validateProgramData(next)?programResult(data,next,input.draftId):programFailure(data,'invalid');

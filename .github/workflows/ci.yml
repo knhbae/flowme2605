@@ -34,8 +34,19 @@ jobs:
       - name: Audit high-severity dependencies
         run: npm run security:audit
 
+      - name: Check private catalog publication boundaries (no source content)
+        run: |
+          node --test scripts/alpha/check-private-catalog-imports.test.mjs scripts/alpha/render-release-inventory.test.mjs
+          node scripts/alpha/check-private-catalog-imports.mjs
+          node scripts/alpha/render-release-inventory.mjs --tracked-catalog
+          node --test scripts/personal-workspace-poc/program-verification-output.test.mjs
+          node --test scripts/alpha/catalog-ci-source.test.mjs
+
       - name: Run core verification
         run: npm run verify
+
+      - name: Test alpha auth and development schema boundaries (offline)
+        run: npm run test:alpha-auth
 
       - name: Test Plan display result contract
         run: npx tsx --test components/flow/personal-workspace-poc/PersonalWorkspacePocPlanResultSurface.test.tsx
@@ -43,23 +54,91 @@ jobs:
       - name: Check integrated PoC types
         run: npm run typecheck:integrated-product-poc
 
-      - name: Test integrated PoC contracts
-        run: npm run test:integrated-product-poc
-
       - name: Install integrated PoC browser
         run: npx playwright install --with-deps chromium
 
       - name: Test portable integrated PoC journeys
         run: npm run test:e2e:integrated-product-poc
 
+      - name: Test alpha auth UI with mocked APIs (no live credentials)
+        run: npm run test:e2e:alpha-auth
+
       - name: Upload integrated PoC verification evidence
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v7
         with:
           name: integrated-poc-verification
-          path: output/integrated-product-poc/
+          path: |
+            output/integrated-product-poc/*.public.json
+            output/integrated-product-poc/targeted-types-*.json
+            output/playwright/alpha-m2/
           if-no-files-found: ignore
           retention-days: 14
+
+  catalog-contracts:
+    name: Integrated contracts (reviewed private source)
+    needs: core
+    # Never use a privileged event to execute untrusted PR code with secrets.
+    if: >-
+      github.repository == 'knhbae/flowme2605' &&
+      github.actor != 'dependabot[bot]' &&
+      (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    environment:
+      name: flowme-catalog-ci
+      deployment: false
+    steps:
+      - name: Check out the reviewed workflow commit
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Node without a private-job cache
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      - name: Install dependencies before source materialization
+        run: npm ci
+
+      - name: Prepare sealed catalog from environment secrets
+        run: node scripts/alpha/catalog-ci-source.mjs prepare
+        env:
+          FLOWME_CATALOG_PART_1: ${{ secrets.FLOWME_CATALOG_PART_1 }}
+          FLOWME_CATALOG_PART_2: ${{ secrets.FLOWME_CATALOG_PART_2 }}
+          FLOWME_CATALOG_PART_3: ${{ secrets.FLOWME_CATALOG_PART_3 }}
+          FLOWME_CATALOG_PART_4: ${{ secrets.FLOWME_CATALOG_PART_4 }}
+          FLOWME_CATALOG_PART_5: ${{ secrets.FLOWME_CATALOG_PART_5 }}
+          FLOWME_CATALOG_PART_6: ${{ secrets.FLOWME_CATALOG_PART_6 }}
+
+      - name: Test integrated PoC contracts
+        run: npm run test:integrated-product-poc
+
+      - name: Remove only this job's materialized catalog
+        if: ${{ always() }}
+        run: node scripts/alpha/catalog-ci-source.mjs cleanup
+
+      - name: Upload allowlisted test summary only
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: catalog-contract-summary
+          path: output/integrated-product-poc/new-tests-*.public.json
+          if-no-files-found: error
+          retention-days: 14
+
+  integration-required:
+    name: Integrated contract gate
+    needs: catalog-contracts
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Missing, skipped or failed private verification is not a pass
+        env:
+          CATALOG_RESULT: ${{ needs.catalog-contracts.result }}
+        run: test "$CATALOG_RESULT" = success
 
   e2e:
     name: Playwright E2E

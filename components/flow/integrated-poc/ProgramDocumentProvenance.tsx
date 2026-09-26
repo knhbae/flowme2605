@@ -3,6 +3,8 @@
 import type { ProgramData } from '../../../lib/flow/integrated-poc/contract';
 import { programDocumentCreatorDestination, readProgramDocumentCreatorLink } from '../../../lib/flow/integrated-poc/document-creator-provenance';
 import styles from './ProgramDocumentProvenance.module.css';
+import { CatalogContentOriginal } from './CatalogContentOriginal';
+import { isNativeCreatorCatalogContentSource } from '../../../lib/flow/integrated-poc/native-creator-document-contract';
 
 export type ProgramDocumentProvenanceProps = { data: ProgramData; documentId: string; onOpenRevisions?: () => void;
   onOpenCreatorDraft?: (draftId: string) => void; disabled?: boolean };
@@ -15,6 +17,9 @@ export function ProgramDocumentProvenance({ data, documentId, onOpenRevisions, o
   const imported = space?.creatorDraftImports?.find(entry => entry.documentId === documentId);
   if (!imported && link.status === 'unlinked') return null;
   const destination = programDocumentCreatorDestination(link);
+  const nativeOwners = Object.values(space?.creatorWorkspace?.nativeExecutionSources ?? {}).filter(owner => owner.documentId === documentId);
+  const nativeOwner = nativeOwners.length === 1 ? nativeOwners[0] : undefined;
+  const capturedSource = nativeOwner?.revisions.find(revision => revision.id === nativeOwner.currentRevisionId)?.nativeDocument.source;
   return <>
     {link.status === 'ambiguous' ? <section className={styles.provenance} aria-label="제작 초안 연결 확인"><p>이 문서에 연결된 제작 초안을 하나로 확인할 수 없습니다. 다른 초안으로 이동하거나 새 초안을 만들지 않았습니다.</p></section>
       : link.status !== 'unlinked' && <details className={styles.provenance}>
@@ -28,6 +33,7 @@ export function ProgramDocumentProvenance({ data, documentId, onOpenRevisions, o
         {destination && onOpenCreatorDraft && <button type="button" disabled={disabled} onClick={() => onOpenCreatorDraft(destination.id)}>{link.status === 'archived' ? '보관한 제작 초안 열기' : '제작 계속하기'}</button>}
         <details><summary>마지막으로 인계한 내용</summary><p>개인 문서에 마지막으로 인계한 제목·본문입니다. 제작 원문의 전체 판본 이력은 아닙니다.</p><p>{link.handoffTitle}</p><pre>{link.handoffRaw || '(빈 본문)'}</pre></details>
       </details>}
+    {capturedSource && isNativeCreatorCatalogContentSource(capturedSource) && <section className={styles.provenance} aria-label="실행에 연결된 Flow 원본 안내"><CatalogContentOriginal source={capturedSource} /></section>}
     {imported && <details className={styles.provenance}>
     <summary>가져온 제작 초안 확인</summary>
     <p>{imported.source.current.title} · 원래 초안의 저장 상태 {imported.source.current.recordRevision}</p>
