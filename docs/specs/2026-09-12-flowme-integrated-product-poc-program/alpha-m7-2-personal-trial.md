@@ -282,6 +282,45 @@ Vercel 상세 조회의 기존 연결 오류를 같은 인수로 반복하지 �
 
 다음 실행 범위로 **304개 후보만 현재 작업 브랜치에 commit·push하고 Draft PR 작성**하는 승인을 요청했다. 127개 보류 파일과 원시 증거·계정정보는 제외하며, main merge·Render 서비스 생성/첫 배포·비밀 원본의 Render 전송·유료 설정·DEV Auth 변경은 포함하지 않는다. 승인 전에는 stage하지 않는다. 실제 게시 직전 문서2개를 포함한 최종 파일 hash를 갱신하고 검증된 소스와 다시 대조한다. 이번에는 코드 게시·배포·DB/Auth/실자료 변경이 없고 M7-2는 진행 중이다.
 
+### 9/26 후속 — 승인한 304개 commit·push·Draft PR
+
+사용자가 "304개 commit·push·Draft PR 승인, 재개해"라고 명시했다. 직전 최종 후보 `4b862a7f164767123e988a6799b4407dbf78a6a60c7be47c5d69e0e13ff2a35d`의 경로와 파일을 대조하고, **304개 경로만** 선별 stage했다. 실제 staged blob 304개도 대조했고 제한된 비밀값/비공개 카탈로그 패턴 검출은0이었다. 일반적인 모든 비밀의 부재 보증으로 확대하지 않는다.
+
+첫 `git diff --cached --check`는 `participation-editor.ts` 끝의 빈 줄1개 때문에 실패했다. 그 빈 줄만 제거한 뒤 재stage하고, 저장된 검증 사본과 `trimEnd()` 내용이 동일한 것을 확인했다. 두 번째 검사는 통과했으며 나머지303개 파일은 승인된 최종 snapshot과 같았다. 보류127개는 모두 기존 hash를 유지했다. 공개 대상 확대·보류 자료 삭제·비공개 원본/계정정보 반입은 없다.
+
+| 항목 | 이번 실제 결과 |
+| --- | --- |
+| commit | `7eb9eaa1cbdf85ca588def294cca7f03ee9e13ea`, `feat: preserve integrated FlowMe alpha for M7-2 trial`; 304개·28,238줄 추가·630줄 삭제 |
+| push | `origin/agent/alpha-m1-persistence-20260921`에 동일 SHA 확인·upstream 설정. 원격 main은 기존 `efd8b642707b5c8e67b727f23169ae41c43cb5e8` 그대로 |
+| PR | [#204](https://github.com/knhbae/flowme2605/pull/204), `OPEN`, **Draft=true**, base `main`, changedFiles304. 현재 채팅에 첨부 완료 |
+| 로컬 게시 관문 | Node24.17.0, audit 취약점0. commit hook 문서4/4. push hook `npm run verify` 문서4/4 + `npm test`2,255/2,255 + production build 성공. hook 우회0 |
+| 원격 CI | [실행36231631419](https://github.com/knhbae/flowme2605/actions/runs/36231631419), PR 이벤트·동일 head SHA. core 성공. 전체 E2E는 **758통과·2실패**. 별도 승인한 비공개 통합 검사는 **2,489/2,489**·정리·필수 gate 성공. 전체 실행은 failure이며 완료됨 |
+| Vercel | 09:00 UTC 이후의 현재 프로젝트 배포 목록을 push/PR 생성 뒤 조회해0개. 수동/미래/다른 프로젝트 배포의 부재 증명은 아님 |
+| 미실행 | main merge, Render 생성/배포, Preview/Production 배포, DB/Auth 변경, 실제 기기 검사, 관찰 사용자 검증 |
+
+이번에 새로 실행한 로컬 통합 전체/실계정 브라우저 검사는 없다. 직전 로컬 통합2,489·브라우저51 결과를 이번 원격 실행이나 아래 합성 브라우저 실행 수에 합산하지 않는다. 로컬 전용 근거는 `output/alpha-m7/m72-approved-publication-stage-20260926.json`, `m72-commit-latest.json`, `m72-push-latest.json`과 해당 `.log`다. 게시 뒤 이 원장과 STATUS의 결과 기록2개는 최초 `7eb9eaa1`에 들어 있지 않으며 승인된 후속 변경으로 관리한다.
+
+완료된 원격 core job `108375763277`의 로그를 직접 읽었다. Linux에서 문서4/4·회귀2,255/2,255·build·인증29/29·Plan 표시 계약10/10·타입 도구10/10/진단0, 공개 경계/CI 도구17/17, portable 브라우저4/4·모의 인증 브라우저30/30이 통과했다. 로컬 결과를 원격 실행 수로 대신 쓰지 않았다. 이 브라우저34개도 실제 기기·실계정·관찰 사용자 검증은 아니다.
+
+비공개 검사 job `108376517222`는 처음에 `flowme-catalog-ci` 환경(ID `22800213978`)에서 `waiting`이었다. 사용자가 "이 커밋의 비공개 CI 검사 승인"이라고 답한 뒤 PR head와 실행 SHA가 모두 `7eb9eaa1cbdf85ca588def294cca7f03ee9e13ea`임을 재확인하고 해당 실행의 해당 환경만 승인했다. 09:16:50 UTC에 job이 시작됐고 재조회에서 대기 환경0개·사본 준비 단계 성공·통합 계약 검사 실행 중을 확인했다. 이미 등록한 secret을 사용하는 검사이며 신규 원본/secret 등록·환경 보호 변경·승인 우회는 없다. 전체 E2E job `108375763151`도 별도로 계속 실행 중이며 같은 실행을 취소하거나 다시 시작하지 않았다.
+
+전체 E2E는 09:21:32 UTC에 실패로 끝났고 검사760개 중758개가 통과했다. 최초 실행과 자동 retry2회 모두 같은2개 검사에서 실패했다. 같은 job의 로그와 보존된 HTML 보고서의 화면 문맥을 읽고 현재 요구/코드와 대조했다. 로컬 내려받은 근거는 `output/alpha-m7/m72-ci-run-36231631419/playwright-report/`이며 공개 소스나 새 사용자 자료가 아니다.
+
+| 실패 검사 | 확인한 원인과 수정 제안 |
+| --- | --- |
+| `integrated-product-poc-authoring-merge.spec.ts:57` | 현재 없는 `빈 틀 확인` 버튼과 옛 전체교체 확인 단계를 기다렸다. [M4 확정 요구](alpha-m4-authoring.md#요구-대조와-구현-순서)의 A12/D2-049는 빈 원문에 `빈 틀 넣기` 1회로 삽입하는 방식이고 실제 코드·실패 화면도 일치한다. 테스트를 현재 조작에 맞추되 예시 미리보기/취소의 무변경, 정확 scaffold, native Undo/Redo, 명시 저장·재진입·reload 검사는 유지한다. 제품을 옛 동작으로 되돌리지 않는다. |
+| `integrated-product-poc-flow-boundary-merge.spec.ts:71` | 폴더 생성 직후 poll callback이 아직 null인 최초 저장값의 `.data`를 읽어 즉시 TypeError로 종료했다. 실패 화면에는 이후 `폴더 만들기 · 저장됨`과 `Parent folder`가 있다. 먼저 첫 성공 저장을 기다린 뒤 기존 엄격한 binding/부모 폴더 상속/Item 실행일/완료/Undo/reload/운영 bytes 불변 검사를 그대로 이어가도록 제안한다. 임의 sleep·예외 무시·검사 제외로 통과시키지 않는다. |
+
+`gh-fix-ci` 절차에 따라 원인과 테스트2개 수정·표적 검증·후속 commit/push 범위 승인을 요청했고 사용자가 "수정·검증·후속 커밋·푸시 승인"이라고 답했다. 승인 후 작성 틀의 직접 삽입을 정확 scaffold와 비교하고 비어 있지 않을 때의 재삽입 잠금도 검사하도록 수정했다. 첫 폴더 저장은 성공 UI와 저장 envelope 존재를 먼저 기다린 뒤 기존 엄격한 상태 검사를 이어간다. 원문/운영 bytes·저장 prefix·Undo/Redo·Flow 소속·Item 실행일·reload assertion은 유지했다. 제품 소스/timeout/retry/검사 제외 규칙은 바꾸지 않았다.
+
+로컬에서 `npm run test:e2e`의 기존 준비 절차(소유자 manifest105개·격리 historical build)를 거쳐 수정한 두 파일의4시나리오를 `--project=current-and-artifacts --workers=2 --repeat-each=3`으로 실행했다. **12/12 통과·실패0**, 실제 브라우저 실행25.0초, retry0이다. 12개 고유 시나리오나 Linux/실기기 검증으로 표현하지 않는다. 기본 앱은 최초 push hook에서 빌드한 동일 제품 코드이며 이번에는 테스트/문서만 수정했다. 출력은 `output/playwright/m72-ci-e2e-fix-20260926/`의 로컬 전용 경로다.
+
+원격 비공개 검사 job은 09:26:47 UTC에 success로 끝났다. 허용된 공개 요약 `catalog-contract-summary/new-tests-latest.public.json`에서 **252개 테스트 파일·2,489실행/통과·실패/skip/cancel0·검사 중 소스 변경0**, 원시 로그 미보존을 확인했다. source614개의 snapshot hash는 `a0fa44efb366e82b36b6925018ea06854391e52e6e7724550fad91adf6aa6e45`다. 사본 준비·이 job의 임시 원본 정리·요약만 업로드가 각각 success이며 후속 필수 gate `108378995941`도 success다. 전체 실행은 E2E2건 때문에 **failure**로 보존하고 취소/재실행하지 않았다. 로컬로 받은 위 요약은 `output/alpha-m7/m72-ci-run-36231631419/catalog-summary/` 아래에 있다.
+
+Render 준비를 병행 조회한 결과 기존 `My Workspace`를 재확인했으나 서비스 목록 응답은 여전히 null이라 서비스 부재로 단정하지 않는다. 연결 도구의 생성 계약에는 자동배포 Off 설정은 있지만 비밀 파일/health path 설정 인수가 없어, 추후 승인된 생성 때 Dashboard/API 보완이 필요하다. 서비스나 요금제 설정은 바꾸지 않았다.
+
+다음은 승인된 테스트2개와 결과 원장2개의 diff/보류 파일 불변을 확인하고 필수 hook을 거쳐 후속 commit·push한 뒤 새 원격 CI를 확인하는 것이다. 이전 커밋에만 승인한 비공개 환경 검토를 새 커밋의 자동 승인으로 확장하지 않는다. 그 뒤에도 Render 서비스/정확한 주소/DEV callback/최초 배포 승인은 별도다. M7-2 실제 다기기 시험 목표는 완료가 아니다.
+
 ## 9/24 현재 — 제한 PC 사용을 먼저 시작
 
 사용자가 과도한 검증 반복을 지적한 뒤, 필수 확인과 후속 개선을 나누어 진행하는 안을 승인했다. **현재 PC에서 소량의 개인 일정·메모와 지원 콘텐츠 사본을 써보는 준비는 갖춰졌다.** 폰·태블릿의 상시 사용이나 일반 공개 서비스가 준비됐다는 뜻은 아니다. 실제 계정의 전체 복원 시험은 후속으로 분리하며 그 승인 대기를 PC 사용 시작의 차단 조건으로 삼지 않는다. 미실행 항목을 통과로 바꾸거나 기존 자료를 복원·삭제하지 않는다.
