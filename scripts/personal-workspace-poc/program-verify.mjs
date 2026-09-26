@@ -5,6 +5,7 @@ import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { listProgramSourcePaths } from './program-source-files.mjs';
 import { verificationExitCode } from './program-verification-result.mjs';
+import { publicVerificationResult, usesPublicVerificationOutput } from './program-verification-output.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const kind = process.argv[2];
@@ -17,7 +18,8 @@ const hashes = selected => selected.map(path => ({ path, sha256: existsSync(reso
 const before = hashes(paths), started = new Date().toISOString();
 const directory = resolve(root, 'output/integrated-product-poc'); mkdirSync(directory, { recursive: true });
 const stamp = started.replace(/[:.]/g, '-'), name = `${kind}-${stamp}`;
-const log = createWriteStream(resolve(directory, `${name}.log`));
+const publicOutput = usesPublicVerificationOutput(process.env);
+const log = publicOutput ? null : createWriteStream(resolve(directory, `${name}.log`));
 const commands = { 'npm-test': ['test'], 'approved-tests': ['run', 'test:approved-plan-execution'], 'public-tests': ['run', 'test:public-plan-surface'], build: ['run', 'build'], docs: ['run', 'docs:check'], audit: ['run', 'security:audit'] };
 const windows = process.platform === 'win32';
 const command = kind === 'new-tests' ? process.execPath : windows ? process.env.ComSpec || 'cmd.exe' : 'npm';
@@ -41,17 +43,19 @@ const args = kind === 'new-tests' ? [`--max-old-space-size=${testMaxOldSpaceMb}`
 let output = '';
 let launchError = null;
 const child = spawn(command, args, { cwd: root, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
-for (const stream of [child.stdout, child.stderr]) stream.on('data', bytes => { const text = bytes.toString(); output += text; log.write(bytes); });
-child.on('error', error => { launchError = String(error); output += launchError; log.write(launchError); });
+for (const stream of [child.stdout, child.stderr]) stream.on('data', bytes => { const text = bytes.toString(); output += text; log?.write(bytes); });
+child.on('error', error => { launchError = String(error); output += launchError; log?.write(launchError); });
 child.on('close', (code, signal) => {
-  log.end();
+  log?.end();
   const total = label => [...output.matchAll(new RegExp(`^(?:# |ℹ )?${label} (\\d+)\\s*$`, 'gm'))].reduce((sum, item) => sum + Number(item[1]), 0);
   const after = hashes(listPaths()), prior = new Map(before.map(file => [file.path, file.sha256])), final = new Map(after.map(file => [file.path, file.sha256]));
   const changed = [...new Set([...prior.keys(), ...final.keys()])].filter(path => prior.get(path) !== final.get(path));
   const result = { kind, started, ended: new Date().toISOString(), exitCode: code, signal, launchError, nodeOptions: process.env.NODE_OPTIONS ?? null, testConcurrency, testMaxOldSpaceMb, testMaxSemiSpaceMb, testFileCount: kind === 'new-tests' ? testPaths.length : null, testExecutions: total('tests'), passed: total('pass'), failed: total('fail'), skipped: total('skipped'), cancelled: total('cancelled'), sourceChangedDuringRun: changed, log: `${name}.log`, sourceHashes: after };
   const verifiedExitCode = verificationExitCode(result);
-  writeFileSync(resolve(directory, `${name}.json`), JSON.stringify({ ...result, verifiedExitCode }, null, 2));
-  writeFileSync(resolve(directory, `${kind}-latest.json`), JSON.stringify({ ...result, verifiedExitCode }, null, 2));
-  console.log(JSON.stringify({ ...result, verifiedExitCode, sourceHashes: `${name}.json` }, null, 2));
+  const report = publicOutput ? publicVerificationResult(result) : { ...result, verifiedExitCode };
+  const suffix = publicOutput ? '.public.json' : '.json';
+  writeFileSync(resolve(directory, `${name}${suffix}`), JSON.stringify(report, null, 2));
+  writeFileSync(resolve(directory, `${kind}-latest${suffix}`), JSON.stringify(report, null, 2));
+  console.log(JSON.stringify(publicOutput ? report : { ...report, sourceHashes: `${name}.json` }, null, 2));
   process.exitCode = verifiedExitCode;
 });

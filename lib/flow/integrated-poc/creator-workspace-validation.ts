@@ -28,9 +28,19 @@ export function validateProgramCreatorWorking(value: unknown): value is ProgramC
 /** No Program-data import: safe for the envelope validator to call. */
 export function validateProgramCreatorWorkspace(value: unknown, space: { text: { documents: readonly { id: string }[]; flows: readonly { id: string }[] } }): value is ProgramCreatorWorkspaceState {
   try {
-    if (!isProgramCreatorDraftJson(value) || !obj(value) || !shape(value, ['version', 'library', 'origins', 'handoffs', 'working'], ['executionSources', 'nativeExecutionSources', 'sourceUpdateSessions', 'sourceIdentities', 'savedHistory', 'structureDrafts']) || value.version !== 1
+    if (!isProgramCreatorDraftJson(value) || !obj(value) || !shape(value, ['version', 'library', 'origins', 'handoffs', 'working'], ['executionSources', 'nativeExecutionSources', 'sourceUpdateSessions', 'sourceIdentities', 'savedHistory', 'structureDrafts', 'importedWorkingCandidates']) || value.version !== 1
       || !isPersonalWorkspacePocCreatorDraftLibrary(value.library) || !obj(value.origins) || !obj(value.handoffs)
       || Object.keys(value.library.records).length > 200 || Object.values(value.library.records).some(r => r.rawText.length > 100000 || /[\r\n]/u.test(r.title))) return false;
+    if(value.importedWorkingCandidates!==undefined){
+      const imported=value.importedWorkingCandidates;
+      if(!obj(imported)||!shape(imported,['version','sources','candidates'])||imported.version!==1||!obj(imported.sources)||!obj(imported.candidates)
+        ||Object.keys(imported.sources).length>2||Object.values(imported.sources).some(raw=>typeof raw!=='string'||raw.length>10000000)
+        ||Object.keys(imported.sources).some(key=>!['flow:text-authoring:drafts:v1','flow:poc:personal-workspace:v1:authoring-draft'].includes(key))
+        ||Object.keys(imported.candidates).length>201)return false;
+      for(const [id,candidate] of Object.entries(imported.candidates))if(!isPersonalWorkspacePocCreatorDraftId(id)||!obj(candidate)
+        ||!shape(candidate,['sourceKey','kind','readOnly','working'])||typeof candidate.sourceKey!=='string'||!Object.hasOwn(imported.sources,candidate.sourceKey)
+        ||!['authoring','recovery'].includes(String(candidate.kind))||typeof candidate.readOnly!=='boolean'||!validateProgramCreatorWorking(candidate.working))return false;
+    }
     const ids = new Set([...space.text.documents, ...space.text.flows].map(d => d.id));
     const sourceIds = new Set<string>(), documentIds = new Set<string>();
     for (const [id, origin] of Object.entries(value.origins)) {

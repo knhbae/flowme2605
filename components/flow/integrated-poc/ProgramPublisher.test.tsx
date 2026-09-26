@@ -24,6 +24,12 @@ import { ProgramPublicationSourceReviewPanel } from './ProgramPublicationSourceR
 import { ProgramPublicationTiming } from './ProgramPublicationTiming';
 
 const componentUrl = new URL('./ProgramPublisher.tsx', import.meta.url), require = createRequire(componentUrl);
+test('publisher return paths share the collapsed-menu-safe focus helper', () => {
+  const source = readFileSync(componentUrl, 'utf8');
+  assert(source.includes("from '@/lib/flow/integrated-poc/dialog-return-focus'"));
+  assert.equal((source.match(/restoreProgramDialogFocus\(opener.current\)/g) ?? []).length, 3);
+  assert(!source.includes('opener.current?.focus()'));
+});
 const root = resolve(dirname(fileURLToPath(componentUrl)), '../../..');
 const compiled = ts.transpileModule(readFileSync(componentUrl, 'utf8'), { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true } });
 const loaded = { exports: {} as typeof Publisher };
@@ -129,6 +135,27 @@ function selected() {
   const saved = ok(saveProgramPublicationDraft(fixtureData.data, fixtureData.actorId, draft, null));
   return { ...fixtureData, data: saved.data };
 }
+
+test('account publisher describes shared development publication and account draft storage without local PoC claims', () => {
+  const { data, documentId } = selected();
+  const html = renderToStaticMarkup(<ProgramPublisher data={data} documentId={documentId} today="2026-09-21" storageScope="account"
+    mutate={async () => { throw Error('SSR must not write'); }} navigate={() => { throw Error('SSR must not navigate'); }} onClose={() => {}} />);
+  assert.match(html, /개발계의 다른 사용자에게 선택한 내용을 공개합니다/);
+  assert.match(html, /계정에 초안 저장됨/);
+  assert.doesNotMatch(html, /이 기기의 로컬 PoC 목록|이 기기에 초안 저장됨/);
+});
+
+test('social recovery captures the full publication draft separately without aliasing or publishing it', () => {
+  const { draft, actorId, documentId } = selected(); const before = programClone(draft);
+  const port = createProgramPublicationEditorPort({ actorId, documentId, read: () => draft, saved: () => null, composing: () => true,
+    busy: () => false, save: async () => { throw Error('capture cannot save'); }, lock: () => () => {} });
+  const captured = port.captureSocialDrafts!();
+  assert.deepEqual(captured, [{ kind: 'publication', value: draft }]);
+  assert(captured[0].kind === 'publication'); captured[0].value.title = '복구 사본만 수정';
+  assert.deepEqual(draft, before); assert(port.hasPendingInput!());
+  assert.equal(createProgramPublicationEditorPort({ actorId, documentId, read: () => null, saved: () => null, composing: () => false,
+    busy: () => false, save: async () => true, lock: () => () => {} }).captureSocialDrafts!().length, 0);
+});
 
 for (const kind of ['creator', 'native'] as const) test(`publisher ${kind} ordinary time: explicit source selection, invalid draft recovery, new version and input restore`, () => {
   const f = ordinaryPublicationSourceFixture(kind, ORDINARY_SOURCE_RAW.replace('  - 날짜: 2026-10-02', '  - 날짜: 2026-10-02\n  - 시간: 15:00\n  - 시간대: Asia/Tokyo'));

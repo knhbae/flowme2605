@@ -8,6 +8,10 @@ This document turns the current tool and plugin review into day-to-day routing r
 
 ## Operating Principle
 
+### Alpha development authentication (2026-09-21)
+
+[M2](./specs/2026-09-12-flowme-integrated-product-poc-program/alpha-m2-auth.md) opens the previously held Supabase lane for the allowlisted development project only. `@supabase/supabase-js` is pinned to `2.116.0`. Its `auth-js` legacy lock-debug module probes global localStorage at import time despite custom storage. `scripts/alpha/patch-auth-debug-probe.mjs` disables only that deprecated debug initializer in the pinned ESM/CJS artifacts during `postinstall`; it does not change authentication, crypto, session refresh, or lock algorithms. Unexpected versions/source fail installation for review. `npm run test:alpha-auth` and mocked browser storage-write instrumentation verify this compatibility boundary. Do not remove the patch without reproducing zero writes outside the PoC prefix. Live account tests and migration application are explicit development commands, never automatic build/CI steps.
+
 Use the smallest tool set that proves the work. Treat user comments as evidence and direction, not automatic commands. When a task touches product direction, UX, source conversion, frontend behavior, or release risk, route it through the relevant P0 lane below and record the outcome in the durable document graph.
 
 ## P0 Tool Lanes

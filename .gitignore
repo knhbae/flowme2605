@@ -51,3 +51,6 @@ public/content-audit/.vercel/
 
 .vercel
 *.tsbuildinfo
+
+# Supabase CLI machine-local metadata (migrations remain tracked)
+/supabase/.temp/

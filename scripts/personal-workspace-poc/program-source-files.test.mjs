@@ -4,7 +4,21 @@ import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { listProgramSourcePaths } from './program-source-files.mjs';
+import { listProgramSourcePaths, isProgramTypecheckEntry } from './program-source-files.mjs';
+
+test('typecheck excludes historical output on mixed Windows and POSIX paths', () => {
+  for (const root of ['D:\\FlowMe\\repo', 'D:/FlowMe/repo', '/workspace/repo']) {
+    const prefix = root.replaceAll('\\', '/');
+    for (const tail of ['lib/flow/integrated-poc/model.ts', 'components/flow/integrated-poc/View.test.tsx']) {
+      assert(isProgramTypecheckEntry(root, `${prefix}/${tail}`));
+      assert(isProgramTypecheckEntry(root.replaceAll('/', '\\'), `${prefix}/${tail}`.replaceAll('/', '\\')));
+      assert(!isProgramTypecheckEntry(root, `${prefix}/output/alpha-m6/historical/${tail}`));
+      assert(!isProgramTypecheckEntry(root, `${prefix}-other/${tail}`));
+    }
+    assert(!isProgramTypecheckEntry(root, `${prefix}/lib/flow/integrated-poc/style.css`));
+    assert(!isProgramTypecheckEntry(root, `${prefix}/lib/flow/other.ts`));
+  }
+});
 
 const seams = [
   'components/flow/personal-workspace-poc/PersonalWorkspacePocRoute.tsx',
@@ -42,6 +56,13 @@ test('new and hidden scoped files cannot silently disappear from the inventory',
 }));
 test('a missing source root fails closed instead of collecting no tests', () => fixture(({ root }) => {
   assert.throws(() => listProgramSourcePaths(path.join(root, 'missing')), { code: 'ENOENT' });
+}));
+test('alpha service includes its routes and migrations and refuses missing service roots', () => fixture(({ root, add }) => {
+  add('components/flow/integrated-poc/AlphaWorkspace.tsx');
+  assert.throws(() => listProgramSourcePaths(root), { code: 'ENOENT' });
+  const scoped = ['app/alpha/page.tsx','app/auth/callback/page.tsx','app/api/alpha/social/route.ts','supabase/migrations/alpha.sql'];
+  scoped.forEach(add);
+  assert(scoped.every(file => listProgramSourcePaths(root).includes(file)));
 }));
 test('inventory runs with an empty PATH and no rg or shell dependency', () => fixture(({ root, add }) => {
   add('lib/flow/integrated-poc/contract.test.ts');

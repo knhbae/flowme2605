@@ -12,6 +12,9 @@ import { fingerprintPersonalWorkspacePocAuthoringSource } from '../../../lib/flo
 import { createPersonalWorkspacePocCreatorDraftLibrary, transitionPersonalWorkspacePocCreatorDraftLibrary } from '../../../lib/flow/personal-workspace-poc-creator-drafts';
 import { programClone } from '../../../lib/flow/integrated-poc/contract';
 import { continueProgramCreatorDraft } from '../../../lib/flow/integrated-poc/creator-workspace';
+import { executeAlphaCreatorIntent } from '../../../lib/flow/integrated-poc/alpha-creator/dispatch-source';
+import { buildCatalogContent } from '../../../lib/flow/integrated-poc/catalog-content-source';
+import { inspectProgramNativeCreatorHandoff, applyProgramNativeCreatorHandoff } from '../../../lib/flow/integrated-poc/creator-native-execution-adapter';
 import type * as ComponentModule from './ProgramDocumentProvenance';
 
 const url = new URL('./ProgramDocumentProvenance.tsx', import.meta.url), source = readFileSync(url, 'utf8'), require = createRequire(url);
@@ -20,6 +23,20 @@ const loaded = { exports: {} as typeof ComponentModule };
 vm.runInThisContext(`(function(module, exports, require) { ${compiled.outputText}\n})`)(loaded, loaded.exports, (id: string) => id.endsWith('.module.css')
   ? { __esModule: true, default: new Proxy({}, { get: (_target, key) => String(key) }) } : require(id));
 const { ProgramDocumentProvenance } = loaded.exports;
+test('personal execution exposes its captured catalog original including Flow and section guidance, not another actor', () => {
+  const now='2026-09-23T07:00:00.000Z', source=buildCatalogContent('portfolio-4week'); assert(source.ok);
+  const data=createProgramData(), actorId=data.activeActorId;
+  const imported=executeAlphaCreatorIntent(data,actorId,{type:'catalog-content-import',draftId:'catalog-proof',sourceSlug:source.content.sourceSlug,sourceVersionId:source.content.versionId,now},'catalog-import-proof'); assert(imported.ok);
+  const preview=inspectProgramNativeCreatorHandoff(imported.data,{actorId,draftId:'catalog-proof',anchor:'2026-10-01'},now); assert(preview.ok);
+  const applied=applyProgramNativeCreatorHandoff(imported.data,{actorId,requestId:'catalog-handoff-proof',preview:preview.preview,choices:Object.fromEntries(preview.preview.rows.map(row=>[row.itemId,{source:'incoming',date:'incoming',time:'incoming',children:'incoming'} as const]))},now); assert(applied.ok);
+  const before=JSON.stringify(applied.data), html=renderToStaticMarkup(<ProgramDocumentProvenance data={applied.data} documentId={applied.result} />);
+  assert.match(html,/실행에 연결된 Flow 원본 안내/); assert.match(html,/가져올 때의 전체 원본 구조·안내/);
+  assert(html.includes(source.content.bundle.flow.description!));
+  for(const section of source.content.bundle.sections)if(section.description)assert(html.includes(section.description));
+  assert.equal(JSON.stringify(applied.data),before);
+  const other=programClone(applied.data); other.activeActorId='participant-jihun';
+  assert.equal(renderToStaticMarkup(<ProgramDocumentProvenance data={other} documentId={applied.result} />),'');
+});
 function fixture(previous = true) {
   let library = createPersonalWorkspacePocCreatorDraftLibrary('2026-09-12T00:00:00.000Z');
   for (const [index, rawText] of (previous ? ['# 이전 초안\n이전 개인 원문', '# 가져온 초안\n가져온 개인 원문'] : ['# 가져온 초안\n가져온 개인 원문']).entries()) {
@@ -94,5 +111,28 @@ test('SSR archived, missing and ambiguous links guide recovery without replaceme
 
 test('Space return passes through existing save-before-navigation gate using the same creator route', () => {
   const space = readFileSync(new URL('./ProgramSpace.tsx', import.meta.url), 'utf8');
-  assert.match(space, /onOpenCreatorDraft=\{draftId => void openDocumentAction\(\(\) => props\.navigate\(\{ view: 'creator', id: draftId \}\)\)\}/);
+  const tree = ts.createSourceFile('ProgramSpace.tsx', space, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+  const expressions: ts.Expression[] = [];
+  function visit(node: ts.Node) {
+    if (ts.isJsxAttribute(node) && node.name.getText(tree) === 'onOpenCreatorDraft' && node.initializer && ts.isJsxExpression(node.initializer) && node.initializer.expression) expressions.push(node.initializer.expression);
+    ts.forEachChild(node, visit);
+  }
+  visit(tree); assert.equal(expressions.length, 1, 'Provenance receives one explicit creator route capability');
+  const expression = expressions[0];
+  const callbackFor = vm.runInNewContext(`(props, openDocumentAction) => (${expression.getText(tree)})`) as (
+    props: { capabilities?: { creatorNavigation?: boolean }; navigate: (destination: { view: string; id: string }) => void },
+    gate: (action: () => void) => void,
+  ) => ((draftId: string) => void) | undefined;
+  for (const capabilities of [undefined, {}, { creatorNavigation: true }]) {
+    const queued: (() => void)[] = [], destinations: { view: string; id: string }[] = [];
+    const callback = callbackFor({ capabilities, navigate: destination => destinations.push(destination) }, action => { queued.push(action); });
+    assert.equal(typeof callback, 'function', 'PoC default retains creator navigation');
+    callback!('same-creator-draft');
+    assert.equal(queued.length, 1, 'Navigation must enter the existing save-before-navigation gate');
+    assert.equal(destinations.length, 0, 'Creator route cannot bypass a pending or failed save');
+    queued[0]();
+    assert.equal(destinations.length, 1); assert.equal(destinations[0].view, 'creator'); assert.equal(destinations[0].id, 'same-creator-draft');
+  }
+  const forbidden = () => { throw Error('Restricted alpha capability must not navigate or flush'); };
+  assert.equal(callbackFor({ capabilities: { creatorNavigation: false }, navigate: forbidden }, forbidden), undefined);
 });

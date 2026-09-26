@@ -186,6 +186,60 @@ test('invalid text remains visible without calling storage and can recover throu
   assert(await draft.save()); assert.equal(writes, 1);
 });
 
+test('M7-2 ambiguous parent rename plus child outdent keeps input and identities, then accepts split edits', async () => {
+  let workspace = M.addDocument(createEmptyTextWorkspace(), { title: '격리 편집 시험' });
+  const docId = workspace.documents[0].id;
+  const initial = '검증용 메모\n- [ ] 부모 @2026-09-24\n  - [ ] 자식';
+  workspace = M.editText(workspace, docId, initial);
+  const before = JSON.stringify(workspace), ids = workspace.documents[0].lines.map(line => line.id);
+  const combined = '검증용 메모\n- [ ] 부모\n- [ ] 자식';
+  const result = M.editTextResult(workspace, docId, combined, { progressDate: '2026-09-24' });
+  assert.equal(result.reason, 'identity-ambiguous'); assert.equal(result.state, workspace);
+  assert.equal(M.editText(workspace, docId, combined), workspace);
+  let writes = 0;
+  const draft = createProgramTextDraft(workspace, docId, async () => { writes++; return true; }, () => {});
+  assert.equal(draft.updateRaw(combined, '2026-09-24'), false); assert.equal(await draft.save(), false);
+  assert.equal(writes, 0); assert.equal(draft.getState().raw, combined);
+  assert.equal(draft.getState().working, workspace); assert.equal(JSON.stringify(workspace), before);
+  assert.match(draft.getState().error, /기존 항목과 연결하지 못해/);
+  assert.match(draft.getState().error, /제목 수정과 줄 이동은 나누고/);
+  assert.doesNotMatch(draft.getState().error, /날짜·진행률/);
+  assert(draft.updateRaw(initial.replace(' @2026-09-24', ''), '2026-09-24'));
+  assert(await draft.save()); assert.equal(draft.getState().error, '');
+  assert(draft.updateRaw(combined, '2026-09-24')); assert(await draft.save());
+  assert.equal(writes, 2); assert.equal(draft.getState().dirty, false);
+  assert.deepEqual(draft.getState().committed.documents[0].lines.map(line => line.id), ids);
+  assert.equal(draft.getState().raw, combined);
+});
+
+test('M7-2 diagnostic distinguishes format, unchanged and generic blocked edits without persisting reasons', async () => {
+  const { workspace, docId } = fixture(); let writes = 0;
+  const initial = M.raw(workspace.documents[0]);
+  assert.deepEqual(M.editTextResult(workspace, docId, initial), { state: workspace, reason: null });
+  assert.deepEqual(M.editTextResult(workspace, 'missing', initial), { state: workspace, reason: 'blocked' });
+  assert.deepEqual(M.editTextResult(workspace, docId, 'x'.repeat(100001)), { state: workspace, reason: 'blocked' });
+  const draft = createProgramTextDraft(workspace, docId, async () => { writes++; return true; }, () => {});
+  for (const input of ['- [101%] 준비', '- [ ] 준비\n  [2026-09-24]', ' - [ ] 준비']) {
+    assert.equal(M.editTextResult(workspace, docId, input).reason, 'invalid-format');
+    assert.equal(draft.updateRaw(input, '2026-09-24'), false); assert.equal(await draft.save(), false);
+    assert.match(draft.getState().error, /날짜·진행률·들여쓰기 형식/);
+    assert.doesNotMatch(draft.getState().error, /기존 항목과 연결/);
+    assert.equal(draft.getState().raw, input); assert.equal(writes, 0);
+  }
+  assert.equal(draft.updateRaw('x'.repeat(100001), '2026-09-24'), false);
+  assert.match(draft.getState().error, /안전하게 반영하지 못했습니다/);
+  assert.doesNotMatch(draft.getState().error, /날짜·진행률|기존 항목과 연결/);
+  assert(draft.updateRaw(initial, '2026-09-24')); assert.equal(draft.getState().error, '');
+  const accepted = M.editTextResult(workspace, docId, '- [ ] 정상 수정');
+  assert.equal(accepted.reason, null); assert(M.validate(accepted.state));
+  // An invalid date value was already a nonblocking source warning; do not tighten that policy.
+  const warning = M.editTextResult(workspace, docId, '[2026-02-30]\n- [ ] 준비');
+  assert.equal(warning.reason, null);
+  assert(M.parseDocument(warning.state.documents[0], warning.state).issues.some(issue => issue.code === 'invalid-date' && !issue.blocking));
+  assert.equal('reason' in accepted.state, false); assert.equal('reason' in workspace, false);
+  assert.equal(writes, 0);
+});
+
 test('typing while a commit is pending is serialized and neither draft nor ID is lost', async () => {
   const { workspace, docId } = fixture();
   const writes: TextWorkspaceState[] = [];
