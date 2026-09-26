@@ -7,11 +7,11 @@ import { executeCapacityM3, readCapacityM3Response } from './capacity-m3';
 import { alphaInternalMediaRequest } from './request-origin';
 import type { AlphaServerCall } from './social-context';
 
-/** Explicit coordinated rollout only. A missing RPC/error NEVER falls back to
- * the unguarded writer. No environment file or remote setting is changed here. */
-export function alphaCapacityMode(env: Record<string, string | undefined>): 'legacy' | 'checkpoint-v1' | null {
+/** Select before requests, never in response to RPC errors. On-demand keeps the
+ * existing signed writer/explicit backup; checkpoint is a separate local opt-in. */
+export function alphaCapacityMode(env: Record<string, string | undefined>): 'legacy' | 'on-demand-v1' | 'checkpoint-v1' | null {
   const value = env.FLOWME_ALPHA_M3_CAPACITY;
-  return value === undefined ? 'legacy' : value === 'checkpoint-v1' ? value : null;
+  return value === undefined ? 'legacy' : value === 'on-demand-v1' || value === 'checkpoint-v1' ? value : null;
 }
 
 /** Called only AFTER the existing command handler authenticates and validates

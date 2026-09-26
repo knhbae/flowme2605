@@ -28,7 +28,9 @@ const env = { FLOWME_ALPHA_ENABLED:'development-only',FLOWME_ALPHA_STAGE:'develo
   FLOWME_ALPHA_REDIRECT_URL:`${origin}/auth/callback`,FLOWME_ALPHA_M3_SIGNING_KEY:key };
 type Operation = {owner_id:string;request_id:string;command:PreservationCommand;receipt:Record<string,unknown>;inverse:unknown[];undone:boolean};
 type Archive = {owner_id:string;source_sha256:string;source_raw:string;source_actor_id:string;receipt:Record<string,unknown>;created_at:string};
-function fixture() {
+function fixture(overrides: Record<string,string> = {}) {
+  const configuration = { ...env, ...overrides };
+  const requestOrigin = new URL(configuration.FLOWME_ALPHA_REDIRECT_URL).origin;
   const account:AlphaAccount = {schema:'flowme-alpha-account/1',ownerId:owner,revision:0,
     source:{schema:'flowme-integrated-product-poc/1',actorId:owner,revision:0},space:createProgramPrivateSpace(),legacyUndo:[],legacyReceipts:[]};
   const context:AlphaSocialContext = {schema:'flowme-alpha-social-context/1',revision:0,ownActorId:alias,
@@ -89,8 +91,9 @@ function fixture() {
     }
     throw Error(`Unexpected external path: ${path}`);
   };
-  const handler=createAlphaPreservationHandler(env,fetcher);
-  const request=(payload:unknown)=>new Request(`${origin}/api/alpha/preservation`,{method:'POST',headers:{Origin:origin,Authorization:`Bearer ${token}`,'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  const handler=createAlphaPreservationHandler(configuration,fetcher);
+  const proxyHeaders: Record<string,string> = overrides.FLOWME_ALPHA_HOSTING ? { Host: new URL(requestOrigin).host, 'X-Forwarded-Proto': 'https' } : {};
+  const request=(payload:unknown)=>new Request(`${requestOrigin}/api/alpha/preservation`,{method:'POST',headers:{Origin:requestOrigin,Authorization:`Bearer ${token}`,'Content-Type':'application/json',...proxyHeaders},body:JSON.stringify(payload)});
   const send=async(payload:Record<string,unknown>)=>{const response=await handler(request({client:PRESERVATION_PROTOCOL.client,...payload}));return {status:response.status,...await response.json()};};
   return {state,handler,request,send};
 }
@@ -101,6 +104,31 @@ async function source(f:ReturnType<typeof fixture>){
 function command(hash:string,requestId='import-1',mode:'import'|'restore'='import',revision=0):PreservationCommand{
   return {schema:PRESERVATION_PROTOCOL.schema,kind:'preservation',requestId,mode,sourceSha256:hash,expectedRevision:revision,expectedPublicRevision:0};
 }
+
+const hostedOnDemand = { FLOWME_ALPHA_STAGE:'preview', FLOWME_ALPHA_HOSTING:'render-trial-v1',
+  FLOWME_ALPHA_REDIRECT_URL:'https://flowme-trial-1.onrender.com/auth/callback', FLOWME_ALPHA_M3_CAPACITY:'on-demand-v1' };
+
+test('Render on-demand backup and sealed same-state preview use only existing DEV reads', async () => {
+  const f = fixture(hostedOnDemand), before = canonicalJson(f.state.account);
+  const backup = await f.send({kind:'backup',format:BACKUP_DOWNLOAD_FORMAT});
+  assert(backup.ok); assert.equal(backup.value.schema,BACKUP_DOWNLOAD_SCHEMA);
+  const preview = await f.send({kind:'preview',mode:'restore',sourceFile:backup.value.file,actorId:owner});
+  assert(preview.ok); assert(preview.value.same); assert.equal(preview.value.canApply,false);
+  assert.equal(f.state.reads,3); assert.equal(f.state.writes,0); assert.equal(canonicalJson(f.state.account),before);
+  assert(f.state.calls.every(path => ['/auth/v1/user','/rest/v1/rpc/flowme_alpha_preservation_read_v1'].includes(path)));
+  assert(!JSON.stringify(backup).includes(key));
+});
+
+test('Render on-demand backup keeps revision protection and rejects the unapplied checkpoint configuration', async () => {
+  const changing = fixture(hostedOnDemand); changing.state.changeOnSecondRead = true;
+  assert.equal((await changing.send({kind:'backup',format:BACKUP_DOWNLOAD_FORMAT})).reason,'revision-conflict');
+  assert.equal(changing.state.writes,0);
+  for (const mode of ['checkpoint-v1','legacy','','on-demand-v1 ']) {
+    const f = fixture({...hostedOnDemand,FLOWME_ALPHA_M3_CAPACITY:mode});
+    assert.equal((await f.send({kind:'backup',format:BACKUP_DOWNLOAD_FORMAT})).status,503);
+    assert.equal(f.state.calls.length,0); assert.equal(f.state.writes,0);
+  }
+});
 
 test('preservation backup and import preview are zero-write, owner-scoped and sealed',async()=>{
   const f=fixture(),raw=await source(f),before=canonicalJson(f.state.account);

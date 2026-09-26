@@ -13,7 +13,7 @@ const fixtureEnv = {
   FLOWME_ALPHA_SUPABASE_URL: 'https://wkmzcxpnojobxrgebapw.supabase.co',
   FLOWME_ALPHA_PUBLISHABLE_KEY: 'sb_publishable_render_proxy_fixture',
   FLOWME_ALPHA_REDIRECT_URL: `${origin}/auth/callback`,
-  FLOWME_ALPHA_M3_CAPACITY: 'checkpoint-v1', FLOWME_ALPHA_M3_SIGNING_KEY: 'a'.repeat(64),
+  FLOWME_ALPHA_M3_CAPACITY: 'on-demand-v1', FLOWME_ALPHA_M3_SIGNING_KEY: 'a'.repeat(64),
 };
 
 async function availablePort() {

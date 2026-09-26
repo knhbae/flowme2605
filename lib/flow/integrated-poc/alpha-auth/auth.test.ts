@@ -92,9 +92,9 @@ test('M2 callback rejects implicit tokens, external next, duplicate and unsuppor
 test('M7 Render trial accepts only one configured HTTPS host and the development Supabase project', () => {
   const origin = 'https://flowme-trial-1.onrender.com';
   const renderEnv = { ...env, FLOWME_ALPHA_STAGE: 'preview', FLOWME_ALPHA_HOSTING: 'render-trial-v1',
-    FLOWME_ALPHA_REDIRECT_URL: `${origin}/auth/callback`, FLOWME_ALPHA_M3_CAPACITY: 'checkpoint-v1', NODE_ENV: 'production' };
+    FLOWME_ALPHA_REDIRECT_URL: `${origin}/auth/callback`, FLOWME_ALPHA_M3_CAPACITY: 'on-demand-v1', NODE_ENV: 'production' };
   const hosted = readAlphaAuthConfig(renderEnv);
-  assert(hosted); assert.equal(hosted.hosting, 'render-trial-v1');
+  assert(hosted); assert.equal(hosted.hosting, 'render-trial-v1'); assert.equal(hosted.capacity, 'on-demand-v1');
   assert(isAlphaBrowserOrigin(hosted, origin));
   for (const wrong of ['http://localhost:3104', 'https://other.onrender.com', 'http://flowme-trial-1.onrender.com',
     'https://flowme-trial-1.onrender.com.evil.example']) assert(!isAlphaBrowserOrigin(hosted, wrong));
@@ -105,6 +105,7 @@ test('M7 Render trial accepts only one configured HTTPS host and the development
   for (const override of [
     { FLOWME_ALPHA_HOSTING: undefined }, { FLOWME_ALPHA_HOSTING: 'render-production' }, { FLOWME_ALPHA_STAGE: 'development' },
     { FLOWME_ALPHA_M3_CAPACITY: undefined }, { FLOWME_ALPHA_M3_CAPACITY: 'legacy' },
+    { FLOWME_ALPHA_M3_CAPACITY: 'checkpoint-v1' }, { FLOWME_ALPHA_M3_CAPACITY: 'on-demand-v1 ' },
     { FLOWME_ALPHA_STAGE: 'production' }, { VERCEL_ENV: 'production' }, { FLOWME_ALPHA_ENABLED: 'production' },
     { FLOWME_ALPHA_PROJECT_REF: 'ldellkztijrijbpwthjl' },
     { FLOWME_ALPHA_REDIRECT_URL: 'http://flowme-trial-1.onrender.com/auth/callback' },

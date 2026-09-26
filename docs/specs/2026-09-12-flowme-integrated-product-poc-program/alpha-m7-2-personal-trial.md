@@ -1,6 +1,103 @@
 # M7-2 제한 실자료 시험
 
-## 9/26 현재 — Render 다기기 시험 경로 선택·배포 전 코드 준비
+## 9/26 승인 후 — Render 저장 계약 수정과 재배포
+
+사용자 “승인”은 직전 수정·검증·선별 후속 commit/push·같은 무료 Render 시험 재배포 묶음에 대한 승인이다. 목표는 active로 재개했다. DB 구조 변경·후보 SQL 활성화·main merge·운영계·유료 전환은 제외한다. 이 원장 안에서 범위·계획·검증을 관리하며 중복 spec 묶음을 만들지 않는다.
+
+1. [x] 현재 branch/head `2c607846`·upstream 일치, tracked 원장2개 및 보류127개 hash 기준 확보. Render 서비스/이전 live head·free·자동 배포 Off 재확인.
+2. [x] 명시 `on-demand-v1` 계약: hosted 환경은 이 값만 허용하며 기존 DEV 서명 writer와 요청 시 백업을 사용한다. 로컬 미설정/명시 checkpoint 실험의 기존 의미는 유지한다. 설정 누락/오류/hosted checkpoint는 거절, 실패 RPC에 따른 자동 fallback은 없음.
+3. [x] 관련 표적63/63 통과. 실제 hosted proxy 모양의 명령→기존 서명 RPC 및 백업→seal 검증→같은 상태 preview를 합성 fixture로 확인. 새 hosted 정상/실패3개 추가. 계정/권한/한도·체크포인트 음성 검사는 유지.
+4. [x] 전체 통합2,492/2,492·타입·회귀·production build·모의 프록시·관련 브라우저34/34·독립 diff 검토 완료. 상세 범위는 아래 표를 따른다.
+5. [ ] 선택한 코드/테스트/문서만 commit·push. 보류127개 bytes/미포함 및 Vercel 자동 배포 차단 유지 확인. 기존 Draft PR #204에 반영, main merge 없음.
+6. [ ] Render 환경값1개만 `on-demand-v1`로 병합 갱신하고 승인한 head 재배포. 기존 key/secret file/DEV project/callback/free/자동 배포 Off 유지.
+7. [ ] 실제 HTTPS 로그인·열람·기존 검증용 자료의 대표 저장/Undo·새로고침·백업/같은 상태 preview 확인. 실제 기기·독립 사본·실자료 명시 복원과 혼동하지 않음.
+
+환경 정책 상수 version3으로 이 시험 계약을 구분한다. 저장 시점마다 검사한 전체 백업 사본을 서버에 원자적으로 보관한다는 새 보장은 이번 계약에 없다. 사용자 요청 시 현재 자료를 생성/검사하는 기존 백업이며, 기존자료/이력 삭제·한도 확대·보관 정책 변경은 하지 않는다. `/api/alpha/health`는 계속 설정 형식 검사일 뿐이며 배포 수락에는 실제 DB/앱 왕복을 별도로 요구한다.
+
+### 수정 후 로컬 검증
+
+| 검사 | 이번 실행 결과 | 범위·한계 |
+| --- | --- | --- |
+| 표적 모델/서버 |63/63, 실패·skip·cancel0| 아래 전체 통합 수와 중복되므로 합산하지 않음 |
+| 전체 통합 |252파일·2,492/2,492, 실패·skip·cancel0, 실행 중 소스 변경0| 동시성2, 약9분55초. 기존2,489개에 hosted 계약3개 추가 |
+| `npm test` |2,255/2,255, 실패·skip·cancel0, 실행 중 소스 변경0| 기존 회귀 |
+| 타입 |544진입점·615소스, 진단0·소스 변경0, 검사 도구10/10| 현재 통합 PoC와 연결부 |
+| production build |exit0, 실행 중 소스 변경0| 로컬 산출물이며 배포 성공과 별개 |
+| 프록시 |4/4: health200, 허용 origin401, 다른 origin400, 잘못된 protocol400| 실제 DB 대신 구성·요청 경계 확인 |
+| 인증 브라우저 |30/30, 재시도0| 합성 HTTP/계정. 5크기(390×844,375×812,844×390,1024×768,1440×900)의 로그인·가입·복구·빈 상태·공간·callback/계정 변경 화면 포함. 가로 넘침·가려진 행동·키보드 경로 assertion 통과 |
+| 통합 브라우저 |4/4, 재시도0| exact gate·손상 payload·문서/날짜/완료/Undo/reload·공개 판본의 개인 사본·원문 추가, 운영 저장 bytes 보호 |
+| 공개 경계 |client진입105·source540의 금지 경로0, 추적10,666개에서 비공개 pack0| 카탈로그 원본은 기존 외부 공급 유지 |
+| 보안·문서 |의존성 취약점0, 문서4/4·필수16·링크6,630·skill sync 통과| 문서 최종 편집 뒤 재검사 필요 |
+| 독립 diff 검토 |actionable finding0| 실제 DEV writer/서명 일치·Render 백업 지연은 재배포 후 확인 필요 |
+
+보류127개는 실행 전후 경로·SHA-256이 모두 같고, 새 게시 후보는 tracked14개뿐이다. 로컬 전용 근거: `output/integrated-product-poc/`의 `new-tests-2026-09-26T12-59-04-184Z.json`, `npm-test-2026-09-26T12-59-24-675Z.json`, `targeted-types-2026-09-26T12-59-42-835Z.json`, `build-2026-09-26T13-00-18-528Z.json`, `output/playwright/alpha-m2/results.json`과 화면 캡처. 실제 Android/iOS·관찰 사용자 검증은 미실행·0명이다.
+
+## 9/26 이전 — 연결 완료·저장 경로와 DEV DB 불일치
+
+사용자 “다 완료함”에 따라 Render 비밀 파일 저장과 Supabase 로그인 상태를 확인하고 승인된 연결을 마쳤다. 앞선 입력 대기는 해소됐고 당시 목표를 active로 재개했다. **로그인·열람은 성공했지만 백업이 실패해 Render 실자료 저장 시험은 보류한다. M7-2 전체는 미완료다.** 현재 자동 실행 상태는 아래 수정 승인 대기에 따른 blocked이며 목표 범위는 유지한다.
+
+### 실행 대기와 재개 조건
+
+저장 경로 불일치 발견 차례와 기존 백업 사전 대조, 이번 상태 확인까지 같은 수정·게시·재배포 승인 부재가 세 차례 유지됐다. 직전6/6 읽기 전용 실행은 권고안의 근거를 보강한 진척이고, 이번 Git/결과 파일 대조는 상태 재확인이다. 권한 없이 할 수 있는 원인 조사와 대안 확인은 마쳤다. 같은 실패 API·로그인·전체 검사를 반복하지 않으며 자동 목표 실행은 **blocked**로 전환했다. 새 사용자 승인이 없는 자동 계속 요청을 저장 계약 변경·commit/push·배포 승인으로 해석하지 않는다.
+
+재개하려면 앞서 요청한 **기존에 검증한 저장·요청 시 백업 방식으로 Render 계약 수정 → 검증 → 선별 후속 commit/push → 같은 무료 Render 서비스 시험 재배포** 범위의 승인이 필요하다. 승인 뒤에도 인증·소유자·서명·한도를 유지하고, 새 checkpoint 실패 시 legacy 자동 우회는 넣지 않는다. DB 구조 변경·보류 후보 SQL 활성화·main merge·운영계·유료 전환은 제외한다. 이 승인은 M7-2 완료 판정이 아니며 원격 저장/백업·기기 사용 등 원래 남은 완료 조건을 계속 확인해야 한다.
+
+현재 HEAD/upstream `2c607846`, tracked 변경은 실행 원장2개뿐이다. 이번 재확인에서 제품 코드/서버/DB/자료 변경·신규 commit/push/PR/merge/배포는0이며 live 서비스를 중지하지 않았다. 수정 승인이 확인되면 이 기록과 실제 Git/배포 상태부터 대조해 재개한다.
+
+### 이번에 완료한 연결
+
+- Render Secret Files에 `flowme-catalog.txt`가 저장된 것을 확인했다. 내용은 브라우저에서 다시 읽거나 로컬 파일 접근 제한을 우회하지 않았다. 원격 branch head가 `2c607846b2ef7ae326429ace4f7786051986c336`인 것을 확인한 뒤 배포를 1회 실행했다. 배포 `dep-darrmst9fdbs73aq9b4g`는 12:32:51 UTC에 시작해 12:36:47에 완료됐고 live다. 기존 free·Singapore·자동 배포 Off·DEV 연결은 유지했다.
+- Supabase `flowme-dev` 허용 Redirect URL에 `https://flowme-alpha-trial.onrender.com/auth/callback`만 추가했다. 새로고침 후 기존 localhost3104/3000의 callback과 새 주소, 총3개를 확인했다. Site URL은 `http://localhost:3104/auth/callback` 그대로다. 메일 발송·비밀번호 변경·운영 Auth 변경은 하지 않았다.
+- 실제001 계정으로 Render `/alpha`에 브라우저 로그인했다. 개인공간의 판본441과 기존 검증용 문서2개·할 일3개를 확인했다. 새 문서 생성·완료·편집·복원은 실행하지 않았다.
+- 인증된 카탈로그 API의 200·`private, no-store`와 정본 전체 대조를 통과했다. 177Flow·26Map·명시 판본2개가 원본 묶음과 일치한다. 이는 API 응답 대조이며 전체 콘텐츠의 UI/편집 지원을 보증하지 않는다.
+
+### 실패 원인과 수정 방향
+
+현재 Render 계약은 `FLOWME_ALPHA_M3_CAPACITY=checkpoint-v1`을 필수로 요구한다. 하지만 DEV에 `flowme_alpha_capacity_checkpoint_read_v1` 및 capacity/checkpoint 함수가 없다. 실제 RPC는 **404·PGRST202**였고, `public`/`flowme_private`의 관련 함수 목록도0건이었다. 같은 설정의 로컬 백업 handler에서도 `{ok:false,reason:"unavailable"}`를 재현했다. 단순한 비밀 파일 업로드 실패나 브라우저 로그인 문제는 아니다. 개인공간 저장 경로 역시 새 capacity RPC를 요구하므로 쓰기를 시도하지 않았다.
+
+원인은 **배포 필수 설정과 실제 DEV 계약을 대조하지 않은 선행 점검 누락**이다. `/api/alpha/health`의 성공은 설정 형식 검사에 한정되며 DB 기능 준비를 증명하지 않는다. 기존 CI의 fixture·로컬 후보 SQL 검사를 실제 DEV 적용 증거로 볼 수 없다.
+
+로컬 전용 `supabase/candidates/flowme_alpha_m72_capacity_m3.sql`은 테이블1개·함수4개를 만들고 기존 M3 실행 권한을 회수한다. [저장 비용 검토](alpha-m7-2-compact-inverse.md#924-후속--최신-사본-한-개의-실제-저장-비용)에서 전체 파일 반복 저장 비용 때문에 활성화를 보류했고, 사진 사본 보관 의미와 다른 writer 경계도 미결정이다. **이 후보를 빠진 migration처럼 적용하지 않는다.** 이번 배포 승인은 DB schema/자료 변경도 제외한다.
+
+권고안은 **Render의 저장 계약을 이미 DEV에서 사용하는 저장·요청 시 백업 경로에 명시적으로 맞추는 수정**이다. 새 checkpoint RPC 오류를 잡아 기존 writer로 자동 우회하는 fallback은 추가하지 않는다. 기존 인증·소유자·서명·한도·Undo·명시 복원 검사는 유지하고, 매 저장 때 검사한 백업 파일의 서버 사본을 함께 확정한다는 새 보장을 주장하지 않는다. 이 계약 조정은 아직 승인·구현하지 않았다. 수정·검증·선별 후속 commit/push와 같은 무료 Render 서비스 재배포를 묶어 승인을 요청한다. 기존 DB 변경·main merge·운영 배포·유료 전환은 제외한다.
+
+### 이번 실행 결과와 한계
+
+| 검사 | 실제 결과 | 한계 |
+| --- | --- | --- |
+| 연결 후 읽기·백업 probe | 2회 실행, **각각 전체 실패**. 두 실행 모두 로그인/본인 자료/카탈로그/검사 세션 종료의 완료 항목5개 통과 후 백업 실패 | 중복10개를 고유 통과 수로 합산하지 않음.002·서버 preview·전후 계정 hash 대조에는 도달하지 않음 |
+| 원인 진단 | 직접 RPC404·PGRST202, 같은 로컬 handler 실패 재현, DEV 관련 함수0개 | 읽기 전용. 새 SQL·자료 쓰기0 |
+| 브라우저 |001 로그인·r441 열람, 실제 DOM viewport1280×720에서 가로 넘침0, 수집 console error0 | 지정5크기를 요청했지만 실제 viewport가 모두1280×720으로 남아 **다섯 크기 검증은 미실행**으로 판정. page-error 이벤트는 별도 수집하지 않음 |
+| 전체 자동 검사·production build | 이번 연결 후 작업에서는 재실행하지 않음 | 제품 코드 변경0. 기존 CI 결과를 이번 실행 수에 합산하지 않음 |
+| 실제 기기·관찰 사용자 | 미실행·0명 | 자동 브라우저 로그인은 관찰 사용자 검증 아님 |
+
+로컬 전용 근거는 `output/alpha-m7/m72-render-first-deploy-20260926/`의 `connected-readonly-2026-09-26T12-37-46-383Z.json`, `connected-readonly-2026-09-26T12-38-13-500Z.json`, `connected-readonly.ts`, `diagnose-backup.ts`, `space-actual-1280x720.png`다. 앞서 만든 `space-<요청크기>.png` 5개도 실제1280×720 화면이므로 파일명으로 기기 크기 통과를 판단하지 않는다. 진단 도구는 비밀번호·토큰·원문을 출력하지 않았다.
+
+이번 앱 mutation 요청0이며 DB schema/자료 수정도 하지 않았다. 로그인 세션 기록과 DEV callback 설정·Render 배포는 실제 변경이므로 전체 외부 상태 불변으로 표현하지 않는다. 프로브가 실패 전에 멈춰 계정 전후 bytes 대조도 완료되지 않았다. 원본·미소유 파일·기존 운영 `/my`는 수정하지 않았다. 로컬 변경은 실행 원장2개와 ignored 진단 도구/근거다. 신규 commit·push·PR·merge·Vercel Preview/Production 배포는0, 기존 Draft PR #204 유지, **Render DEV 시험 재배포1회**다.
+
+### 수정 승인 전 — 현재 DEV의 기존 백업 경로 대조
+
+직전 차례는 연결 완료와 실제 실패 원인 발견이라는 진척이었다. 새 수정·게시·재배포 승인은 아직 없으므로 기존 handler와 DEV를 읽기 전용으로 연결해 권고안의 근거를 보강했다. 제품 코드·환경 파일·Render 설정은 수정하지 않았다. `localhost:3104`의 기존 개발 계약을 프로세스 안에서 명시해 unchanged handler를 호출했으며, 서버를 열거나 hosted 필수 검사를 우회하지 않았다. 네트워크는 DEV의 인증/검사 세션 종료·본인 계정 읽기·기존 보존 읽기 RPC만 허용했다. import/commit·M3 실행·사진 쓰기 경로는 허용하지 않았다.
+
+**실제 1회 실행, 6/6 PASS**:001 비익명 신원, RLS 본인 계정1개, 백업 owner/내용 무결성·현재 계정 일치, 서버 seal 검증과 같은 상태 preview(`same=true`, `canApply=false`), 전후 계정 동일, 검사 세션만 종료. 계정 revision441→441이며 canonical JSON SHA-256은 양쪽 `70ee9e63a1c415910e015f86cb44413675fcb2652a4dc0b1de1f2134572ae67e`다. 메모리 안에서 생성·해석한 백업 파일은107,918bytes, SHA-256 `a7801cdd874f69ecdd9616355c72975f1dd1a49ab5240d514ecb7a5d872b2fa1`이었다. 백업 생성/클라이언트 검증 구간은2,949ms이며 단일 자료/단일 실행 관찰값이지 Render·장기 지연 보증이 아니다. 백업 원문은 파일로 남기지 않았으므로 독립 사본 보관 완료로 세지 않는다.
+
+별도 읽기 전용 SQL로 아래3범위의 `to_jsonb(row)::text`를 정렬·줄바꿈 연결한 MD5와 행 수를 실행 전후 대조했다. Auth 세션 기록은 이 범위에서 제외된다.
+
+| 범위 | 행 수 | 전후 동일 digest |
+| --- | ---: | --- |
+| 개인 계정 |3| `ca25a39cdddac8f425aabc79f35c4cfd` |
+| 저장 이력 |542| `29598bc38631ae919eb80a9bc590e4c3` |
+| 공유 상태 |1| `3b05be446fb5882aa3d3f5a1f18321bf` |
+
+기존 개인공간 실행/보존 읽기 함수의 public/private 쌍은 DEV에 존재하며 authenticated 실행 허용·anon 거절을 확인했다. 새 capacity/checkpoint 함수는 없었다. **이 검사는 Render 저장 성공이나 기존 writer의 새 쓰기 검증이 아니다.** 실제002 백업·새 자료 쓰기·복원 적용·실기기는 실행하지 않았다. 원본/자료 변경0, commit/push/PR/merge/재배포0이며 M7-2 전체는 active·미완료다. 다음 작업은 위 수정·검증·후속 게시·시험 재배포 묶음 승인 이후에 진행한다. 승인 질문·같은 실패 API 호출은 반복하지 않는다.
+
+로컬 전용 근거: `output/alpha-m7/m72-render-first-deploy-20260926/existing-backup-readonly.ts`, `existing-backup-readonly-2026-09-26T12-49-45-006Z.json`. 보고서에는 수치·판정·hash만 남기며 비밀번호·토큰·자료 원문은 기록하지 않았다.
+
+## 9/26 이전 — Render 시험 배포 완료·콘텐츠와 callback 연결 대기
+
+[첫 HTTPS 배포와 연결 잔여](#926-render-승인-후--첫-https-배포와-연결-잔여)가 현재 상태다. `https://flowme-alpha-trial.onrender.com/alpha`에 head `2c607846`가 무료·자동 배포 Off로 live이며, 비로그인/상태 검사8/8과 실제001 계정의 읽기 전용 API 검사6/6을 통과했다. 콘텐츠 비밀 파일 등록과 Supabase DEV callback 추가는 아직 완료되지 않았다. 같은 사용자 작업 대기가 재개 뒤 세 차례 유지되어 자동 목표 실행은 blocked다. 실제 웹 로그인·저장·폰 왕복 완료나 M7-2 완료로 판정하지 않는다. 아래 배포 전 코드 준비/승인 대기 기록은 당시 이력이다.
+
+## 9/26 이전 — Render 다기기 시험 경로 선택·배포 전 코드 준비
 
 사용자가 Render를 다음 시험 호스트로 선택했다. 기존 개발용 Supabase를 그대로 사용하고, Render의 **Node Web Service**로 `/alpha`와 서버 API를 함께 제공하는 경로다. 이 선택은 테스트 호스트에 관한 현재 작업 결정이며 장기 운영 플랫폼·요금제·공개 출시 결정이 아니다. 연결된 Render workspace를 읽기 전용으로 조회했고 웹서비스 항목은 반환되지 않았다. 아직 서비스 이름·실제 URL·요금제를 정하거나 생성하지 않았다.
 
@@ -319,7 +416,76 @@ Vercel 상세 조회의 기존 연결 오류를 같은 인수로 반복하지 �
 
 Render 준비를 병행 조회한 결과 기존 `My Workspace`를 재확인했으나 서비스 목록 응답은 여전히 null이라 서비스 부재로 단정하지 않는다. 연결 도구의 생성 계약에는 자동배포 Off 설정은 있지만 비밀 파일/health path 설정 인수가 없어, 추후 승인된 생성 때 Dashboard/API 보완이 필요하다. 서비스나 요금제 설정은 바꾸지 않았다.
 
-다음은 승인된 테스트2개와 결과 원장2개의 diff/보류 파일 불변을 확인하고 필수 hook을 거쳐 후속 commit·push한 뒤 새 원격 CI를 확인하는 것이다. 이전 커밋에만 승인한 비공개 환경 검토를 새 커밋의 자동 승인으로 확장하지 않는다. 그 뒤에도 Render 서비스/정확한 주소/DEV callback/최초 배포 승인은 별도다. M7-2 실제 다기기 시험 목표는 완료가 아니다.
+후속 게시도 승인 범위대로 완료했다. 커밋 `2c607846b2ef7ae326429ace4f7786051986c336`은 테스트2개+이 원장/STATUS2개, 총4파일·54줄 추가·3줄 삭제다. commit hook 문서4/4·6,622링크와 push hook `npm run verify`의 문서/회귀/production build가 모두 종료0이며 우회하지 않았다. 원격 브랜치와 PR head에서 동일 SHA를 확인했다. 원격 main은 `efd8b642` 그대로다. GitHub PR 파일 목록을 페이지 끝까지 읽어 기존304개에 위 E2E2개만 추가된 **306개**임을 확인했고, 보류127개 포함0·로컬 hash 변경0이다. PR은 OPEN/Draft 유지, 이후 조회한 Vercel 배포 목록(09:30 UTC 이후)은0개다.
+
+새 CI는 [36233076265](https://github.com/knhbae/flowme2605/actions/runs/36233076265), 09:32:11 UTC 시작·head `2c607846`이다. core `108379781282`는 success로 끝났으며 해당 로그에서 회귀2,255/2,255·문서4/4/6,622링크·build·인증29/29·Plan10/10·타입 도구10/10·공개 경계/CI 도구17/17·portable 브라우저4/4·모의 인증 브라우저30/30을 확인했다. 전체 E2E `108379781191`도 09:49:54 UTC에 success로 끝났으나 **760개 중758개 첫 실행 통과·2개는 첫 실패 뒤 자동 retry1회에서 통과**, 총762회 실행이다. Playwright가 보고한 `758 passed, 2 flaky`를 모두 첫 실행 성공으로 바꾸지 않는다. 수정한 제작·Flow 경계2개는 이번 flaky 목록에 없고 최종 실패/skip0이다.
+
+| 원격 E2E 잔여2건 | 첫 실행에서 관찰한 결과 | 판정 |
+| --- | --- | --- |
+| `personal-workspace-integrated-standalone.spec.ts:2232` | 반복 Item 이동/완료 뒤 reload한 checkpoint bytes가 기대 JSON 대신 null | owner는 historical-standalone. retry1회 통과. 정확한 원인과 현재 알파에서의 재현 여부는 미확정 |
+| `personal-workspace-stage-4-runtime.spec.ts:499` | Item 이동 버튼을 키보드로 실행한 뒤 첫 날짜 target 요소를 찾지 못해 focus 검사 실패 | owner는 historical-surface. retry1회 통과. 정확한 원인과 현재 알파에서의 재현 여부는 미확정 |
+
+최초 실패 로그와 보존된 보고서를 확인했으며 새 원시 근거는 로컬 `output/alpha-m7/m72-ci-run-36233076265/playwright-report/`에 내려받았다. 이번에 승인한 수정2건과 별개의 이력 검사2건이므로 원인을 단정하거나 임의 코드 수정/추가 push를 하지 않았다. flaky를 숨기거나 검사에서 제외하지 않았다.
+
+이제 비공개 job `108380582027`만 `flowme-catalog-ci` 환경(ID `22800213978`)의 승인 대기다. 원격 실행을 취소하지 않았고, 실행 중 검사가 없어 반복 조회용 로컬 watch만 종료했다. GitHub API 재조회에서도 core/E2E success·비공개 waiting을 확인했다. 이전 `7eb9eaa1`의 비공개2,489개 통과와 사용자 승인을 새 커밋의 결과/자동 승인으로 확장하지 않는다. 해당 커밋의 검사 승인은 이미 사용자에게 요청했다. 게시 결과를 덧붙인 원장2개는 **로컬 후속 변경**으로 남기며 자동 재게시하지 않는다.
+
+다음은 해당 커밋의 명시 승인이 확인되면 비공개 계약 검사와 필수 gate 결과를 확인하는 것이다. 그 뒤에도 Render 서비스/정확한 주소/DEV callback/최초 배포 승인은 별도다. M7-2 실제 다기기 시험 목표는 완료가 아니다.
+
+동일한 새 커밋 승인 대기가 세 차례 연속 목표 실행에서 유지됐다. 마지막 재조회에서도 head `2c607846`·core/E2E success·비공개 job waiting·대기 환경 `22800213978`을 확인했다. 직전 상태 재확인은 새 진척이나 실행 중 검사의 대기로 세지 않는다. 승인 없이 가능한 준비를 소진했으므로 자동 목표 실행을 `blocked`로 정리한다. 사용자가 `2c607846 비공개 CI 검사 승인`이라고 답하면 기존 실행36233076265의 head와 대기 환경을 다시 확인한 뒤 이어간다. 질문을 중복 발송하지 않으며 원격 CI 취소/재실행·추가 push·merge·배포·DB 변경은 하지 않는다. 목표와 완료 기준은 유지한다.
+
+사용자가 후속으로 "승인!"이라고 답했다. PR204와 실행36233076265의 head가 모두 `2c607846b2ef7ae326429ace4f7786051986c336`이며 대기 환경이 `flowme-catalog-ci`/`22800213978`인 것을 다시 확인한 뒤 해당 환경만 승인했다. API 재조회에서 대기0개·job108380582027 queued를 확인했고, 이후11:13:29 UTC 시작·의존성 설치/사본 준비 success·통합 계약 검사 in_progress를 확인했다. 기존 차단 조건은 해소됐으며 목표 상태도 active다. 아직 통과·사본 정리 완료·필수 gate 성공으로 판정하지 않는다. 같은 실행을 취소/재실행하지 않았고 신규 원본/secret 등록·보호 규칙 변경·추가 게시·merge·Render/Preview/Production 배포·DB/Auth 변경은 없다.
+
+후속 비공개 검사는11:23:30 UTC에 success로 끝났고, 필수 gate108395015589도11:23:36 UTC에 success로 완료됐다. 실행36233076265의 최종 상태는 **completed/success**, PR204의4개 check도 모두 SUCCESS이며 head `2c607846`·OPEN/Draft를 재확인했다. 동일 실행을 취소하거나 다시 시작하지 않았고 로컬 watcher도 종료0으로 끝났다.
+
+공개 허용 요약 artifact10905047959(`catalog-contract-summary`,1,034bytes)를 새 로컬 폴더 `output/alpha-m7/m72-ci-run-36233076265/catalog-summary/`에 받았다. `new-tests-latest.public.json`의 실제 값은252파일·**2,489실행/통과·실패/skip/cancel0**, 검증 종료0·소스614개·검사 중 변경0이다. 소스 snapshot hash는 `a0fa44efb366e82b36b6925018ea06854391e52e6e7724550fad91adf6aa6e45`로 이전 실행과 같지만 이전 결과를 복제해 판정한 것이 아니다. 이번 실행 시각은11:14:03.638–11:23:25.848 UTC이며 `rawOutputRetained=false`, `log=null`이다. job의 비공개 사본 준비·정리·허용 요약 업로드도 각각 success로 확인했다. 원격 runner의 이 사본 정리와 로컬 원본/보류 자료 보존은 별개이며 로컬 원본은 삭제하지 않았다.
+
+이로써 새 커밋의 CI 관문은 통과했다. E2E의 historical-owner 재시도2건·실제 Render HTTPS/로그인/저장·실기기 왕복·실사용 관찰은 이 결과로 해결되거나 검증된 것으로 바꾸지 않는다. 전체 M7-2 목표는 미완료이며 Render 승인 질문은 이미 보냈다. 이번 변경은 원장/STATUS2개와 Git 밖 공개 요약 사본뿐이다. 추가 commit/push·merge·Render/Preview/Production 배포·DB/Auth/계정 자료 변경은 없다.
+
+#### Render 첫 시험 배포 승인안 — 아직 실행하지 않음
+
+CI 진행 중 `render-deploy` 절차로 현재 코드/연결 도구/공식 안내를 다시 대조했다. 제안은 기존 My Workspace(`tea-dark3i7avr4c73f11k6g`)에 Singapore·무료 Node Web Service 하나, 서비스명 후보 `flowme-alpha-trial`, 현재 검증 브랜치와 head `2c607846`, 자동 배포 Off다. 실제 서비스명/URL 확보나 예약을 뜻하지 않는다. 연결 도구의 서비스 목록은 여전히 null이므로 서비스 부재로 단정하지 않는다. 생성 직전 중복 확인을 마치며, 생성·비밀 파일 설정은 첫 시험 배포를 포함하는 외부 변경으로 다룬다.
+
+승인 범위는 위 서버 생성/시험 배포, 기존 DEV 연결 설정·서버 서명키의 Render 비밀 설정, 기존 카탈로그 사본의 비밀 파일 공급, 실제 발급한 단일 HTTPS 주소의 `/auth/callback`만 DEV 허용 목록에 추가하는 것이다. main merge·운영계·기존 localhost/Site URL·DB schema/자료·신규 유료 설정 변경은 포함하지 않는다. CI 전체 통과를 실행 조건으로 이 묶음을 사용자에게 질문했으며, 답변 전에는 실행하지 않는다. Render 생성 도구에 없는 비밀 파일/health path는 승인 후 Dashboard/API로 설정하고, 값·원문은 공개 로그에 남기지 않는다.
+
+[Render 무료 안내](https://render.com/docs/free)는 15분 무접속 후 중지·재접속 시 약1분 기동, 사용량 한도와 결제수단이 있을 때의 초과요금을 설명한다. 무료 instance 선택이 계정 전체 비용0 보증은 아니다. 배포 전 계정 사용량/결제 설정을 확인하고 유료 전환이나 초과요금 위험이 있으면 사용자에게 먼저 알린다. [비밀 파일 안내](https://render.com/docs/configure-environment-variables#secret-files)의 합계1MB 제한과 `/etc/secrets/` 경로도 재확인했다. 개인 데이터의 영속 저장소는 기존 DEV Supabase이며 Render 로컬 파일에 새 사용자 자료를 저장하는 계획이 아니다. [Supabase Redirect URL 안내](https://supabase.com/docs/guides/auth/redirect-urls)에 따라 전체 도메인 wildcard 대신 실제 callback 하나만 추가한다. 이번에는 원격 서비스 생성·키 전송·Auth/DB 변경·실기기 검사를 하지 않았다.
+
+CI 완료 뒤 중복 서비스와 실제 요금 설정을 확인하기 위해 Render 대시보드를 읽기 전용으로 열었으나 `https://dashboard.render.com/login`의 로그인 화면이었다. 현재 제어 가능한 브라우저는 Codex 내장 브라우저이며 Render 설정 화면에 접근하지 못했다. 플러그인의 workspace 응답만으로 브라우저 로그인이나 요금 설정을 확인했다고 판정하지 않는다. 사용자에게 이 탭의 로그인을 요청했고 비밀번호/토큰 입력·로그인 방식 선택·설정 저장은 하지 않았다. 배포 승인과 대시보드 로그인이 확인되면 중복/비용부터 확인하며, 확인 전에는 서비스 생성·첫 배포를 실행하지 않는다.
+
+CI 완료 차례와 다음 두 차례까지 Render 첫 시험 배포 승인이 미확인인 조건이 유지됐다. 마지막 재조회에서 CI36233076265는 completed/success였고, 현재 제어 가능한 브라우저 목록에는 열린 Render 탭이 없어 로그인 완료 여부도 확인하지 못했다. 앞선 승인 전 조사에서 코드/명령/안전 경계/비용 제약/비밀 파일 공급안을 정리하고 로그인 화면까지 확인했으며, 그 이상은 사용자 승인과 로그인 상태 없이는 진행할 수 없다. 상태 재확인을 새 진척이나 실행 중 작업의 대기로 세지 않는다. 자동 목표 실행은 `blocked`로 정리하되 목표와 완료 기준은 유지한다. 재개 조건은 이미 보낸 Render 배포 범위에 대한 승인 답변과 대시보드 로그인 확인이다. 둘 중 로그인부터 확인되면 읽기 전용 중복/비용 조회를 먼저 할 수 있으나 승인 없이 서비스를 생성하지 않는다. 질문/로그인 탭을 반복 생성하지 않으며 새 시험·push·merge·배포·DB 변경은 없다.
+
+#### 9/26 Render 승인 후 — 첫 HTTPS 배포와 연결 잔여
+
+사용자 “1. 승인 / 2. 로긴함”은 직전 Render 첫 시험 배포 묶음 승인과 대시보드 로그인 완료 답변으로 확인했다. 목표 상태는 active로 재개됐다. 세션 시작 검사에서 branch `agent/alpha-m1-persistence-20260921`·head/upstream `2c607846b2ef7ae326429ace4f7786051986c336`·ahead/behind0을 확인했다. 원격 main은 `efd8b642707b5c8e67b727f23169ae41c43cb5e8`, CI36233076265는 completed/success다. 미추적 보류127개와 기존 원본은 수정·stage하지 않았다.
+
+**실행 범위와 비용 확인.** 로그인된 My Workspace(`tea-dark3i7avr4c73f11k6g`)의 대시보드에서 기존 서비스 없음, Hobby, 카드 미등록, 대기 청구/과거 청구 없음, 잔액0, 무료 사용0/750시간·서비스0/25·대역폭0/5GB·빌드0/500분을 생성 전에 확인했다. 결제수단·요금제·유료 옵션은 변경하지 않았다. 무료 서비스의 중지/재기동과 사용량 제한은 남으며 상시 가동이나 미래 비용0을 보증하지 않는다.
+
+| 항목 | 실제 실행·확인 결과 |
+| --- | --- |
+| 서비스 | `flowme-alpha-trial` / `srv-darqup0jo6nc73938v20`, 11:41:24 UTC 생성 |
+| 위치·등급 | Singapore / Node Web Service / free / 1 instance |
+| 주소 | [시험 로그인 화면](https://flowme-alpha-trial.onrender.com/alpha), [Render 관리](https://dashboard.render.com/web/srv-darqup0jo6nc73938v20) |
+| 코드 | 위 검증 브랜치·head `2c607846` 그대로. main merge 없음 |
+| 빌드·시작 | `npm ci && npm run build` / `npm run start -- -H 0.0.0.0 -p $PORT`; Node24.17.0, 빌드용 devDependencies 포함 |
+| 자동 배포 | `autoDeploy=no`·trigger Off·PR preview Off 확인 |
+| 첫 배포 | `dep-darqupojo6nc739391gg`, 11:45:30 UTC live 후 후속 배포로 deactivated |
+| DEV 설정 반영 배포 | `dep-darqvmip8jac73ajqh50`, 환경 설정 API가 유발한 후속 빌드, 11:49:04 UTC live. 별도 반복 deploy 요청/취소 없음 |
+| 상태 경로 | `/api/alpha/health` 저장 후 Render 조회에서 값 확인 |
+
+기존 DEV project/URL/publishable key와 기존 서버 signing key를 승인된 Render 환경 설정으로 전송했다. `development-only`·stage `preview`·hosting `render-trial-v1`·capacity `checkpoint-v1`, 정확한 새 HTTPS callback, `/etc/secrets/flowme-catalog.txt` 경로를 설정했다. 기존 key를 재발급하지 않았고 값·원문은 공개 출력/문서에 넣지 않았다. Node 설정2개와 앱 설정10개가 마스킹된 환경 목록에 존재함을 확인했다. 운영 프로젝트·로컬 설정 파일·DB schema/자료는 바꾸지 않았다.
+
+**이번 실제 HTTPS 검사: 8요청/8통과**(11:50:35 UTC, 자동 요청 검사). health200·로그인 화면200, 비로그인 catalog401, 외부 Origin catalog400, 비로그인 account/creator/social/preservation 각401. 모든 응답의 no-store를 확인했으며 인증정보나 실제 자료를 보내지 않았다. 요청 차단 검사는 사용자 자료 쓰기 성공이나 DB 자료 전체 hash 대조를 뜻하지 않는다. 브라우저에서는 1280×720 로그인 입력2개·가로 넘침0·콘솔 error0을 확인했다. 다섯 화면 크기 전체·pageerror 수집·실제 Android/iOS·실제 로그인/저장은 이번 차례에 실행하지 않았다. 관찰 사용자0명이다. health200은 설정 준비 검사이며 콘텐츠 파일·DB·인증 왕복 성공을 보증하지 않는다.
+
+**남은 연결과 사용자 요청.** Render Secret Files는 파일 선택기가 아닌 Contents 텍스트 입력 방식이었다. 브라우저의 로컬 `file:` 접근은 보안 정책으로 거절됐으며 다른 프로토콜/브라우저/우회 전송을 시도하지 않았다. 파일명 `flowme-catalog.txt`와 빈 Contents 창만 준비했고 저장하지 않았다. 기존 로컬 `flowme-catalog-runtime-qR7DEj/catalog.txt`의 내용을 사용자가 붙여넣고 Done→Save only 하도록 요청했다. 원본 사본이 실제 서버에 설치됐다고 판정하지 않는다. Supabase DEV URL Configuration은 로그인 화면으로 이동해 사용자 로그인을 별도 요청했다. 승인된 callback1개 추가도 아직 실행하지 않았고 기존 localhost/Site URL·운영 Auth를 변경하지 않았다.
+
+다음은 파일 등록/로그인 확인→DEV 정확한 callback1개 추가 및 기존 값 보존 대조→필요한 설정 반영 배포→HTTPS 로그인·대표 저장/다시 읽기 확인이다. 실제 PC↔폰 왕복은 그 뒤 사용자와 확인하며 자동 브라우저를 실제 기기로 세지 않는다. 같은 두 요청을 반복 발송하거나 목표를 완료로 처리하지 않는다. 새 commit/push/PR/merge·Vercel 배포·Production 배포는 없고 기존 Draft PR204를 유지한다. 이번 후속 원장/STATUS는 로컬 변경으로만 남긴다. 배포 전 대기 기록은 위에 이력으로 보존한다.
+
+로컬 전용 화면 근거는 `output/alpha-m7/m72-render-first-deploy-20260926/https-login.png`다. 공개 코드/보고서에 원시 화면·파일·계정정보를 추가하지 않는다.
+
+**11:54 UTC 읽기 전용 후속.** 직전 차례는 서비스 생성·설정·배포·8개 실제 요청 증거를 만든 progress로 분류했다. 이번 재확인에서 Render는 빈 비밀 파일 modal/Save only 단계, Supabase는 sign-in 화면이어서 두 사용자 작업은 아직 완료 확인되지 않았다. 브라우저 접근 제한을 우회하거나 같은 질문을 다시 발송하지 않았다. 이전에 선택한001 계정의 기존 로컬 인증정보로 DEV에 새 검사 세션을 만들고, 그 세션으로 정확한 Render 주소의 조회 전용 경로를 확인했다. **6검사/6통과**: 선택 계정 password 인증, RLS 자기 계정1건 읽기, HTTPS account/creator 각각 임의 미존재 requestId의 lookup200·ok·value null, 검사 전후 account 응답 bytes hash 동일, 새 검사 세션만 scope=local 로그아웃. 앱 mutation 요청0·원본/사용자 내용 출력0·추가 배포0이다. Auth 로그인/로그아웃 기록은 발생하므로 원격 변경 전체0으로 표현하지 않는다.
+
+동일 세션의 catalog 요청은 **503**이었다. 로컬 파일 공급 미완료와 일치하는 관찰이지만 HTTP 상태만으로 내부 원인을 확정하지 않으며 콘텐츠 열람 성공으로 세지 않는다. 브라우저 로그인·메일 callback·서명된 저장 명령·전체 DB hash·기존002 계정·실기기 검사는 이번6개에 포함되지 않는다. 서명키의 DB 일치나 쓰기 성공도 lookup 성공으로 판정하지 않는다. 원시 자료 없이 재현 가능한 검사 코드는 로컬 전용 `output/alpha-m7/m72-render-first-deploy-20260926/readonly-live.mjs`이며 Git 밖에 둔다. 목표는 active·전체 미완료로 유지하고, 기존 요청의 파일 등록/로그인 완료 뒤에 다음 연결 작업을 진행한다.
+
+**연결 대기 감사.** 재개한 첫 배포 차례와 다음 읽기 검사 차례, 이번 상태 확인 차례까지 콘텐츠 파일 등록과 Supabase 대시보드 로그인 미완료 조건이 유지됐다. 직전 차례의6개 검사는 새 인증/조회 증거를 만든 progress였으나 이번에는 상태 재확인뿐이므로 새 진척이나 실행 중 작업의 대기로 세지 않는다. Render 비밀 파일 modal/Save only가 계속 열려 있고 Supabase는 해당 DEV 설정으로 돌아가는 sign-in URL이다. 파일 내용은 읽거나 출력하지 않았다. Render 최신 배포 `dep-darqvmip8jac73ajqh50`는 live, 앞선 배포는 deactivated이며 실행 중 빌드는 없다. 자동 반복 검사로 해소되는 조건이 아니므로 목표를 blocked로 정리한다. 서버 중지·새 배포·인증 재시도·비밀 파일 전송 우회·추가 질문은 하지 않는다. 이미 요청한 파일 저장 또는 Supabase 로그인 완료가 확인되면 그에 해당하는 연결부터 이어가며 목표/완료 기준을 유지한다.
 
 ## 9/24 현재 — 제한 PC 사용을 먼저 시작
 

@@ -13,7 +13,7 @@ const base = { FLOWME_ALPHA_ENABLED: 'development-only', FLOWME_ALPHA_STAGE: 'pr
   FLOWME_ALPHA_HOSTING: 'render-trial-v1', FLOWME_ALPHA_PROJECT_REF: 'wkmzcxpnojobxrgebapw',
   FLOWME_ALPHA_SUPABASE_URL: 'https://wkmzcxpnojobxrgebapw.supabase.co',
   FLOWME_ALPHA_PUBLISHABLE_KEY: 'sb_publishable_fixture',
-  FLOWME_ALPHA_REDIRECT_URL: `${publicOrigin}/auth/callback`, FLOWME_ALPHA_M3_CAPACITY: 'checkpoint-v1' };
+  FLOWME_ALPHA_REDIRECT_URL: `${publicOrigin}/auth/callback`, FLOWME_ALPHA_M3_CAPACITY: 'on-demand-v1' };
 const hosted = readAlphaAuthConfig(base);
 assert(hosted);
 

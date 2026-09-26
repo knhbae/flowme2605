@@ -89,7 +89,7 @@ test('production/missing signing configuration performs zero network calls', asy
 test('M7 Render trial accepts only its exact public request origin before any upstream call', async () => {
   const f = fixture(), origin = 'https://flowme-trial-1.onrender.com';
   const hostedEnv = { ...env, FLOWME_ALPHA_STAGE: 'preview', FLOWME_ALPHA_HOSTING: 'render-trial-v1',
-    FLOWME_ALPHA_REDIRECT_URL: `${origin}/auth/callback`, FLOWME_ALPHA_M3_CAPACITY: 'checkpoint-v1' };
+    FLOWME_ALPHA_REDIRECT_URL: `${origin}/auth/callback`, FLOWME_ALPHA_M3_CAPACITY: 'on-demand-v1' };
   const request = (overrides: Record<string, string> = {}) => new Request('http://127.0.0.1:3105/api/alpha/account', {
     method: 'POST', headers: { 'Content-Type': 'application/json', Host: new URL(origin).host,
       'X-Forwarded-Host': new URL(origin).host, 'X-Forwarded-Proto': 'https', Origin: origin,
@@ -113,6 +113,25 @@ test('same state is zero write; response loss is unavailable, never claimed canc
   assert.ok(f.calls.every(c => !c.path.endsWith('execute_v1')));
   f.state.loseCommit = true;
   assert.equal((await (await f.handler(f.request({ kind: 'execute', command: f.command }))).json()).reason, 'unavailable');
+});
+
+test('Render on-demand trial uses the existing signed writer, never a checkpoint RPC or error fallback', async () => {
+  for (const failure of [false, true]) {
+    const f = fixture(), origin = 'https://flowme-trial-1.onrender.com';
+    const hostedEnv = { ...env, FLOWME_ALPHA_STAGE: 'preview', FLOWME_ALPHA_HOSTING: 'render-trial-v1',
+      FLOWME_ALPHA_REDIRECT_URL: `${origin}/auth/callback`, FLOWME_ALPHA_M3_CAPACITY: 'on-demand-v1' };
+    f.state.loseCommit = failure;
+    const response = await createAlphaCommandHandler(hostedEnv, f.fetcher)(new Request('http://127.0.0.1:3105/api/alpha/account', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Host: new URL(origin).host,
+        'X-Forwarded-Proto': 'https', Origin: origin, Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ kind: 'execute', command: f.command }),
+    }));
+    const body = await response.json(); assert.equal(body.ok, !failure);
+    if (failure) assert.equal(body.reason, 'unavailable');
+    assert.deepEqual(f.calls.map(c => c.path), ['/auth/v1/user', '/rest/v1/flowme_alpha_accounts', '/rest/v1/rpc/flowme_alpha_execute_v1']);
+    assert(f.calls.every(c => c.authorization === `Bearer ${token}`));
+    assert(!JSON.stringify(body).includes(key));
+  }
 });
 test('stale command goes to authoritative idempotency/CAS without reapplying onto latest content', async () => {
   const f = fixture(); f.state.account.revision = 3;

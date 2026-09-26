@@ -132,7 +132,8 @@ test('opt-in cannot bypass domain, owner, anonymous, expired, future revision or
 });
 test('only exact rollout value is accepted and production remains disabled before network access', async () => {
   assert.equal(alphaCapacityMode({}), 'legacy'); assert.equal(alphaCapacityMode(env), 'checkpoint-v1');
-  for (const value of ['', 'true', 'checkpoint-v1 ', 'checkpoint-v2']) {
+  assert.equal(alphaCapacityMode({ FLOWME_ALPHA_M3_CAPACITY: 'on-demand-v1' }), 'on-demand-v1');
+  for (const value of ['', 'true', 'checkpoint-v1 ', 'checkpoint-v2', 'on-demand-v1 ', 'on-demand-v2']) {
     const f = fixture(), invalid = { ...env, FLOWME_ALPHA_M3_CAPACITY: value };
     assert.equal((await createAlphaCommandHandler(invalid, f.upstream)(request({ kind: 'execute', command: f.command }))).status, 503);
     assert.equal((await createAlphaPreservationHandler(invalid, f.upstream)(request({ kind: 'backup', client: PRESERVATION_PROTOCOL.client }, 'preservation'))).status, 503);

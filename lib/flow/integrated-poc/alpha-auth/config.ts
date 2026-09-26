@@ -1,7 +1,7 @@
 import { ALPHA_ENVIRONMENT_POLICY, validateAlphaDevelopmentEnvironment } from '../alpha-persistence/environment';
 
 export type AlphaAuthConfig = { stage: 'development' | 'test' | 'preview'; url: string; publishableKey: string; redirectUrl: string;
-  hosting?: typeof ALPHA_ENVIRONMENT_POLICY.renderTrialHosting; capacity?: 'checkpoint-v1' };
+  hosting?: typeof ALPHA_ENVIRONMENT_POLICY.renderTrialHosting; capacity?: typeof ALPHA_ENVIRONMENT_POLICY.renderTrialCapacity };
 export const ALPHA_AUTH_STORAGE_KEY = 'flow:poc:personal-workspace:v1:alpha-auth:session';
 export const ALPHA_PRIVATE_BUCKET = 'flowme-alpha-private';
 
@@ -12,11 +12,13 @@ export function readAlphaAuthConfig(env: Record<string, string | undefined>): Al
   const publishableKey = env.FLOWME_ALPHA_PUBLISHABLE_KEY, redirectUrl = env.FLOWME_ALPHA_REDIRECT_URL, hosting = env.FLOWME_ALPHA_HOSTING;
   if (!publishableKey || !/^sb_publishable_[A-Za-z0-9_-]+$/.test(publishableKey) || !url || !redirectUrl) return null;
   if (hosting !== undefined && hosting !== ALPHA_ENVIRONMENT_POLICY.renderTrialHosting) return null;
-  if (hosting && env.FLOWME_ALPHA_M3_CAPACITY !== 'checkpoint-v1') return null;
+  // Hosted trial uses the deployed DEV writer and explicit on-demand backups.
+  // The unapplied checkpoint experiment must not become a hosting prerequisite.
+  if (hosting && env.FLOWME_ALPHA_M3_CAPACITY !== ALPHA_ENVIRONMENT_POLICY.renderTrialCapacity) return null;
   if (!validateAlphaDevelopmentEnvironment({ stage, projectRef: env.FLOWME_ALPHA_PROJECT_REF,
     databaseUrl: url, authUrl: url, storageUrl: url, redirectUrl, ...(hosting ? { hosting } : {}) })) return null;
   return { stage: stage as AlphaAuthConfig['stage'], url, publishableKey, redirectUrl,
-    ...(hosting ? { hosting, capacity: 'checkpoint-v1' as const } : {}) };
+    ...(hosting ? { hosting, capacity: ALPHA_ENVIRONMENT_POLICY.renderTrialCapacity } : {}) };
 }
 
 export function isAlphaBrowserOrigin(config: AlphaAuthConfig, origin: string): boolean {

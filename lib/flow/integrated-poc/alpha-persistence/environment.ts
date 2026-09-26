@@ -1,9 +1,10 @@
 import { programShape } from '../program-data';
 
-export const ALPHA_ENVIRONMENT_POLICY = Object.freeze({ version: 2,
+export const ALPHA_ENVIRONMENT_POLICY = Object.freeze({ version: 3,
   developmentProject: 'wkmzcxpnojobxrgebapw', productionProjects: ['ldellkztijrijbpwthjl'] as readonly string[],
   redirectOrigins: ['http://localhost:3000', 'http://localhost:3104'] as readonly string[],
   renderTrialHosting: 'render-trial-v1',
+  renderTrialCapacity: 'on-demand-v1',
 });
 const ENVIRONMENT_FIELDS = ['stage', 'projectRef', 'databaseUrl', 'authUrl', 'storageUrl', 'redirectUrl'];
 function isRenderTrialOrigin(origin: string): boolean {
