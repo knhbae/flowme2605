@@ -30,17 +30,19 @@ vm.runInThisContext(`(function(module, exports, require) { ${compiled.outputText
 const { createProgramTextDraft, ProgramTextEditor, ProgramReferencePanel } = loaded.exports;
 
 // Run the component's native action and React callbacks without a browser or store.
-function referenceMenuHarness() {
+function referenceMenuHarness(raw?: string) {
   const f = fixture(), space = createProgramData().spaces['local-user'];
-  space.text = M.addDocument(f.workspace, { title: '한 줄 참조' });
-  const docId = space.text.documents.at(-1)!.id, taskId = M.tasks(space.text)[0].id;
-  space.text = M.linkTask(space.text, docId, 0, taskId);
+  space.text = raw === undefined ? M.addDocument(f.workspace, { title: '한 줄 참조' }) : M.editText(f.workspace, f.docId, raw);
+  const docId = raw === undefined ? space.text.documents.at(-1)!.id : f.docId, taskId = M.tasks(space.text)[0]?.id;
+  if (raw === undefined) space.text = M.linkTask(space.text, docId, 0, taskId!);
   const states: any[] = [], refs: any[] = [], effects: (() => unknown)[] = [];
   let si = 0, ri = 0, writes = 0, focus = 0, accept = true, config: any;
+  let confirmedSave: ((before: TextWorkspaceState, next: TextWorkspaceState) => boolean) | null = null;
   const origins: unknown[] = [], events: Record<string, () => void> = {};
+  const commits: TextWorkspaceState[] = [];
   const textarea = { value: M.raw(M.getDocument(space.text, docId)), selectionStart: 0, selectionEnd: 0, scrollTop: 0, addEventListener() {}, removeEventListener() {} };
   const host = { querySelector: () => textarea, addEventListener: (name: string, fn: () => void) => { events[name] = fn; }, removeEventListener() {} };
-  const native = { create: (_host: unknown, options: unknown) => { config = options; return { refresh() {}, focus() { focus++; }, setMoveState() {}, destroy() {}, setMode() {} }; } };
+  const native = { create: (_host: unknown, options: unknown) => { config = options; return { refresh() {}, focus() { focus++; }, setMoveState() {}, destroy() {}, setMode() {}, setValue(value: string) { textarea.value = value; return true; } }; } };
   const mockedReact = { ...React, useId: () => 'reference-test', useRef: (value: unknown) => refs[ri++] ?? (refs[ri - 1] = { current: value }),
     useState: (value: any) => { const i = si++; if (!(i in states)) states[i] = typeof value === 'function' ? value() : value; return [states[i], (next: any) => { states[i] = typeof next === 'function' ? next(states[i]) : next; }]; },
     useEffect: (effect: () => unknown) => { effects.push(effect); } };
@@ -51,19 +53,158 @@ function referenceMenuHarness() {
     if (id.endsWith('.css')) return {};
     return require(id.startsWith('@/') ? resolve(root, id.slice(2)) : id);
   }, { addEventListener() {}, removeEventListener() {} });
-  const props: any = { workspace: space.text, docId, onCommit: async () => { writes++; return accept; }, taskAccess: (id: string) => programReferenceExecutionAccess(space, id), onOpenTaskOrigin: (...args: unknown[]) => origins.push(args) };
+  const props: any = { workspace: space.text, docId, onRegisterConfirmedSave: (port: typeof confirmedSave) => { confirmedSave = port; }, onCommit: async (next: TextWorkspaceState) => { writes++; commits.push(next); return accept; }, taskAccess: (id: string) => programReferenceExecutionAccess(space, id), onOpenTaskOrigin: (...args: unknown[]) => origins.push(args) };
   const render = () => { si = 0; ri = 0; effects.length = 0; return mod.exports.ProgramTextEditor(props); };
   render(); refs[1].current = host;
   // Only the editor-mount effect is needed; no timers or DOM are installed globally.
   effects[1]();
   const nodes = (tree: any): any[] => !tree || typeof tree !== 'object' ? [] : Array.isArray(tree) ? tree.flatMap(nodes) : [tree, ...nodes(tree.props?.children)];
   const button = (label: string) => nodes(render()).find(n => n.type === 'button' && (n.props.children === label || n.props['aria-label'] === label));
-  return { props, space, docId, taskId, refs, events, render, nodes, button, origins,
+  return { props, space, docId, taskId, refs, events, render, nodes, button, origins, commits, textarea,
+    confirmSave: (before: TextWorkspaceState, next: TextWorkspaceState) => confirmedSave?.(before, next),
+    action: (type: string, lineIndex = 0) => config.onAction({ type, lineIndex }),
     menu: () => { config.onAction({ type: 'row-menu', lineIndex: 0 }); },
     panel: () => nodes(render()).find(n => n.type === mod.exports.ProgramReferencePanel),
     draft: () => refs[3].current as ReturnType<typeof createProgramTextDraft>,
-    writes: () => writes, focus: () => focus, reject: () => { accept = false; } };
+    writes: () => writes, focus: () => focus, reject: () => { accept = false; }, accept: () => { accept = true; } };
 }
+
+const settleEditor = () => new Promise(resolve => setImmediate(resolve));
+test('same-request acknowledgment clears only exact submitted input without replacing textarea or selection', async () => {
+  const h = referenceMenuHarness('원래 메모'); h.reject();
+  const draft = h.draft(), before = draft.getState().committed;
+  draft.updateRaw('저장할 메모', '2026-09-30'); h.textarea.value = draft.getState().raw;
+  const next = draft.getState().working;
+  assert.equal(await draft.save(), false); assert(draft.getState().dirty);
+  h.textarea.selectionStart = 2; h.textarea.selectionEnd = 5; h.textarea.scrollTop = 24;
+  assert.equal(h.confirmSave(before, structuredClone(next)), true);
+  assert.equal(draft.getState().dirty, false); assert.equal(draft.getState().error, '');
+  assert.equal(h.textarea.value, '저장할 메모');
+  assert.deepEqual([h.textarea.selectionStart, h.textarea.selectionEnd, h.textarea.scrollTop], [2, 5, 24]);
+  assert.equal(h.writes(), 1); assert.equal(h.confirmSave(before, next), false);
+  h.accept(); draft.updateRaw('다음 입력', '2026-09-30'); assert(await draft.save());
+  assert.equal(h.writes(), 2); assert.equal(draft.getState().raw, '다음 입력');
+});
+
+test('newer typing including a return to the submitted raw never gains acknowledgment authority', async () => {
+  for (const returnToSubmitted of [false, true]) {
+    const h = referenceMenuHarness('원래 메모'); h.reject(); const draft = h.draft(), before = draft.getState().committed;
+    draft.updateRaw('제출한 메모', '2026-09-30'); const next = draft.getState().working; await draft.save();
+    draft.updateRaw('새 입력', '2026-09-30');
+    if (returnToSubmitted) draft.updateRaw('제출한 메모', '2026-09-30');
+    h.textarea.value = draft.getState().raw;
+    assert.equal(h.confirmSave(before, next), false); assert(draft.getState().dirty); assert.equal(h.writes(), 1);
+  }
+});
+
+test('acknowledgment refuses composition, native-only input, invalid input and changed line identity', async () => {
+  for (const mode of ['composition', 'native', 'invalid', 'identity', 'baseline']) {
+    const h = referenceMenuHarness('원래 메모'); h.reject(); const draft = h.draft(), before = draft.getState().committed;
+    draft.updateRaw('제출한 메모', '2026-09-30'); h.textarea.value = draft.getState().raw;
+    const next = structuredClone(draft.getState().working); await draft.save();
+    let expected = before;
+    if (mode === 'composition') h.events.compositionstart();
+    if (mode === 'native') h.textarea.value += '조합 입력';
+    if (mode === 'invalid') draft.rejectRaw('잘못된 입력');
+    if (mode === 'identity') next.documents[0].lines[0].id = 'different-line';
+    if (mode === 'baseline') { expected = structuredClone(before); expected.documents[0].title = '다른 문서'; }
+    assert.equal(h.confirmSave(expected, next), false, mode); assert(draft.getState().dirty, mode); assert.equal(h.writes(), 1);
+  }
+});
+
+test('in-flight, unsubmitted and discarded input cannot accept a recovered confirmation', async () => {
+  const h = referenceMenuHarness('원래 메모'), draft = h.draft(), before = draft.getState().committed;
+  draft.updateRaw('새 메모', '2026-09-30'); h.textarea.value = draft.getState().raw;
+  const next = draft.getState().working; assert.equal(h.confirmSave(before, next), false);
+  let finish: (value: boolean) => void = () => {}; h.props.onCommit = () => new Promise<boolean>(resolve => { finish = resolve; });
+  const flight = draft.save(); assert(draft.getState().saving); assert.equal(h.confirmSave(before, next), false);
+  finish(false); await flight; assert(draft.discard(before)); assert.equal(h.confirmSave(before, next), false);
+});
+
+function editorField(h: ReturnType<typeof referenceMenuHarness>, type: string) {
+  const field = h.nodes(h.render()).find(node => node.type === 'input' && node.props.type === type);
+  assert(field, `missing ${type} field`); return field;
+}
+function submitEditorPanel(h: ReturnType<typeof referenceMenuHarness>) {
+  const form = h.nodes(h.render()).find(node => node.type === 'form'); assert(form);
+  form.props.onSubmit({ preventDefault() {} });
+}
+
+test('native date action loads time and commits date/time to the same task while retaining its memo', async () => {
+  const h = referenceMenuHarness('- [ ] 준비\n  - 날짜: 2026-09-30\n  - 시간: 09:30\n  - 메모: 남길 메모');
+  const before = h.space.text.documents[0], note = before.lines.find(line => line.text.includes('메모:'))!;
+  h.action('task-date');
+  assert.equal(editorField(h, 'time').props.value, '09:30');
+  assert.equal(editorField(h, 'date').props.value, '2026-09-30');
+  editorField(h, 'time').props.onChange({ target: { value: '11:45' } });
+  editorField(h, 'date').props.onChange({ target: { value: '2026-10-02' } });
+  submitEditorPanel(h); await settleEditor();
+  assert.equal(h.writes(), 1);
+  const saved = h.draft().getState().committed, task = M.tasks(saved)[0];
+  assert.equal(task.id, h.taskId); assert.equal(task.date, '2026-10-02'); assert.equal(task.time, '11:45'); assert.equal(task.note, '남길 메모');
+  assert.equal(saved.documents[0].lines[0].id, before.lines[0].id);
+  assert.deepEqual(saved.documents[0].lines.find(line => line.id === note.id), note);
+  h.action('task-date'); editorField(h, 'time').props.onChange({ target: { value: '' } });
+  submitEditorPanel(h); await settleEditor();
+  const cleared = M.tasks(h.draft().getState().committed)[0];
+  assert.equal(h.writes(), 2); assert.equal(cleared.id, h.taskId); assert.equal(cleared.time, null);
+  assert.equal(cleared.date, '2026-10-02'); assert.equal(cleared.note, '남길 메모');
+  assert(!h.draft().getState().raw.includes('시간:'));
+});
+
+test('date/time cancel and Escape keep original source with zero writes', () => {
+  for (const cancel of ['close', 'escape', 'native-cancel']) {
+    const h = referenceMenuHarness('- [ ] 준비\n  - 시간: 09:30'), original = h.draft().getState().raw;
+    h.action('task-date'); editorField(h, 'time').props.onChange({ target: { value: '12:00' } });
+    if (cancel === 'close') h.button('닫기').props.onClick();
+    else if (cancel === 'escape') h.render().props.onKeyDownCapture({ key: 'Escape', preventDefault() {}, stopPropagation() {} });
+    else h.nodes(h.render()).find(node => node.type === 'dialog').props.onCancel({ preventDefault() {} });
+    assert.equal(h.writes(), 0); assert.equal(h.draft().getState().raw, original);
+    assert(!h.nodes(h.render()).some(node => node.type === 'dialog'));
+  }
+});
+
+test('named-line folder action prefills the title and replaces exactly that line with one scope', async () => {
+  const h = referenceMenuHarness('- 새 폴더'), line = h.space.text.documents[0].lines[0];
+  h.action('scope-picker');
+  const field = h.nodes(h.render()).find(node => node.type === 'input' && node.props.maxLength === 100)!;
+  assert.equal(field.props.value, '새 폴더');
+  submitEditorPanel(h); await settleEditor();
+  const saved = h.draft().getState().committed;
+  assert.equal(h.writes(), 1); assert.equal(saved.documents[0].lines.length, 1);
+  assert.deepEqual(saved.documents[0].lines[0], line);
+  assert.equal(saved.bindings.length, 1); assert.equal(saved.bindings[0].lineId, line.id); assert.equal(saved.bindings[0].kind, 'scope');
+  assert.equal(M.rowMeta(saved, h.docId)[0].kind, 'scope');
+});
+
+test('folder cancel, invalid duplicate title and composition cannot write or consume the original line', async () => {
+  for (const mode of ['cancel', 'duplicate', 'composition']) {
+    const h = referenceMenuHarness('- 새 폴더'), original = JSON.stringify(h.space.text);
+    h.action('scope-picker');
+    if (mode === 'cancel') h.render().props.onKeyDownCapture({ key: 'Escape', preventDefault() {}, stopPropagation() {} });
+    else {
+      if (mode === 'duplicate') h.nodes(h.render()).find(node => node.type === 'input' && node.props.maxLength === 100).props.onChange({ target: { value: '미분류' } });
+      else h.events.compositionstart();
+      submitEditorPanel(h); await settleEditor();
+      assert(h.nodes(h.render()).some(node => node.type === 'dialog'));
+    }
+    assert.equal(h.writes(), 0); assert.equal(JSON.stringify(h.draft().getState().committed), original);
+    assert.equal(h.draft().getState().raw, '- 새 폴더');
+  }
+});
+
+test('folder save failure preserves the committed source and exact same-line draft for retry', async () => {
+  const h = referenceMenuHarness('- 새 폴더'), original = JSON.stringify(h.space.text), lineId = h.space.text.documents[0].lines[0].id;
+  h.reject(); h.action('scope-picker'); submitEditorPanel(h); await settleEditor();
+  const rejected = h.draft().getState();
+  assert.equal(h.writes(), 1); assert.equal(JSON.stringify(rejected.committed), original);
+  assert(rejected.dirty); assert(rejected.error.includes('저장하지 못했습니다'));
+  assert.equal(rejected.working.documents[0].lines.length, 1); assert.equal(rejected.working.bindings[0].lineId, lineId);
+  assert.equal(h.textarea.value, '- 새 폴더');
+  h.accept(); assert(await h.draft().save());
+  assert.equal(h.writes(), 2); assert.equal(h.draft().getState().dirty, false);
+  assert.deepEqual(h.commits[1], h.commits[0]); assert.equal(h.draft().getState().committed.bindings[0].lineId, lineId);
+});
 
 test('one-row reference native menu opens existing exact-origin panel; close and Escape do not write', async () => {
   for (const cancel of ['close', 'escape', 'native-cancel']) {

@@ -17,6 +17,14 @@ export function createAlphaClient(validate: (value: unknown, ownerId: string, re
   let lastReceipt: AlphaReceipt | null = null;
   // Transient diagnostic only: never stored in recovery or used to settle a pending request.
   let lastError: AlphaError | null = null;
+  // Only this session's definitive execute rejection permits replacing its draft.
+  // A read error or a reloaded draft is not evidence that an earlier write failed.
+  let rejectedDraftRequestId: string | null = null;
+  const retryableRejectedDraft = () => !!repository && !busy && !blocked && !state?.pending
+    && state?.draft?.kind === 'change-private' && !!state.confirmed
+    && state.draft.expectedRevision === state.confirmed.revision
+    && state.draft.requestId === rejectedDraftRequestId
+    && (lastError === 'invalid' || lastError === 'limit');
   const current = (epoch: number) => generation === epoch && !!repository && !!state;
   const persist = () => {
     try { if (state && recovery.save(detached(state))) return true; } catch { /* Preserve the last durable copy. */ }
@@ -70,7 +78,9 @@ export function createAlphaClient(validate: (value: unknown, ownerId: string, re
         // availability failure also cannot establish the original commit outcome.
         if (!replay && result.reason !== 'unauthenticated' && result.reason !== 'unavailable') state!.pending = null;
         if (!persist()) return false;
-        fail(result.reason); return false;
+        fail(result.reason);
+        if (!replay && command.kind === 'change-private' && (result.reason === 'invalid' || result.reason === 'limit')) rejectedDraftRequestId = command.requestId;
+        return false;
       }
       return await acceptReceipt(result.value, command, epoch, port);
     } catch { if (current(epoch)) status = 'checking-result'; return false; }
@@ -78,7 +88,7 @@ export function createAlphaClient(validate: (value: unknown, ownerId: string, re
   return {
     bindSession(nextOwner: string | null, port: AlphaRepository | null) {
       generation++; ownerId = nextOwner; repository = port; state = null; busy = false; blocked = false; lastReceipt = null;
-      lastError = null;
+      lastError = null; rejectedDraftRequestId = null;
       status = 'signed-out';
       if (nextOwner === null || port === null) { repository = null; ownerId = null; return; }
       try {
@@ -90,38 +100,55 @@ export function createAlphaClient(validate: (value: unknown, ownerId: string, re
         status = state.pending ? 'checking-result' : state.draft ? 'recovery-required' : 'ready';
       } catch { status = 'recovery-required'; blocked = true; }
     },
-    snapshot: () => ({ ownerId, status, state: detached(state), lastReceipt: detached(lastReceipt), lastError }),
+    snapshot: () => ({ ownerId, status, state: detached(state), lastReceipt: detached(lastReceipt), lastError, retryableRejectedDraft: retryableRejectedDraft() }),
     async refresh() {
       if (!repository || !state || busy || blocked) return false;
-      lastError = null;
+      const rejected = retryableRejectedDraft() ? { requestId: rejectedDraftRequestId, error: lastError,
+        confirmed: canonicalJson(state.confirmed), references: canonicalJson(state.references ?? null) } : null;
+      lastError = null; rejectedDraftRequestId = null;
       const epoch = generation, port = repository; busy = true;
       try {
         const ok = await readCurrent(epoch, port);
-        if (ok && current(epoch)) status = state!.pending ? 'checking-result' : state!.draft ? 'conflict' : 'ready';
+        if (ok && current(epoch)) {
+          // Polling may confirm the exact pre-rejection baseline. Preserve only
+          // the live rejection proof, never infer it from a recovered draft.
+          if (rejected && !state!.pending && state!.draft?.kind === 'change-private'
+            && state!.draft.requestId === rejected.requestId && state!.draft.expectedRevision === state!.confirmed?.revision
+            && canonicalJson(state!.confirmed) === rejected.confirmed
+            && canonicalJson(state!.references ?? null) === rejected.references) {
+            lastError = rejected.error; rejectedDraftRequestId = rejected.requestId; status = 'recovery-required';
+          } else status = state!.pending ? 'checking-result' : state!.draft ? 'conflict' : 'ready';
+        }
         return ok;
       } finally { if (current(epoch)) busy = false; }
     },
-    async execute(command: AlphaCommand, options: { cancelled?: boolean } = {}) {
+    async execute(command: AlphaCommand, options: { cancelled?: boolean; retryRejectedDraft?: boolean } = {}) {
       if (!repository || !state || busy || blocked || state.pending) return false;
-      lastError = null;
+      if (options.retryRejectedDraft && (!retryableRejectedDraft() || command.kind !== 'change-private'
+        || command.expectedRevision !== state.confirmed?.revision || command.requestId === state.draft?.requestId)) return false;
+      lastError = null; rejectedDraftRequestId = null;
       if (options.cancelled) { status = 'cancelled'; return false; }
       if (!validateAlphaCommand(command) && !isAlphaWireCommand(command)) { status = 'recovery-required'; return false; }
-      if (command.kind === 'change-private' && command.changes.length === 0) { status = 'same-location'; return false; }
-      if (command.kind === 'change-private' && state.confirmed && command.expectedRevision === state.confirmed.revision
+      if (command.kind === 'change-private' && (command.changes.length === 0 || state.confirmed && command.expectedRevision === state.confirmed.revision
         && command.changes.every(change => Object.hasOwn(state!.confirmed!.space, change.field) === change.present
-          && (!change.present || canonicalJson(state!.confirmed!.space[change.field]) === canonicalJson(change.value)))) {
+          && (!change.present || canonicalJson(state!.confirmed!.space[change.field]) === canonicalJson(change.value))))) {
+        if (options.retryRejectedDraft) {
+          const previous = state; state = { ...state, draft: null };
+          if (!persist()) { state = previous; return false; }
+        }
         status = 'same-location'; return false;
       }
       const epoch = generation, port = repository; busy = true;
       try {
+        const previous = options.retryRejectedDraft ? detached(state) : null;
         state.pending = detached(command); state.draft = detached(command);
-        if (!persist()) return false;
+        if (!persist()) { if (previous) state = previous; return false; }
         status = 'saving'; return await send(command, epoch, port);
       } finally { if (current(epoch)) busy = false; }
     },
     async resolvePending(retrySameRequest = false) {
       if (!repository || !state?.pending || busy || blocked) return false;
-      lastError = null;
+      lastError = null; rejectedDraftRequestId = null;
       const epoch = generation, port = repository, command = detached(state.pending); busy = true;
       try {
         status = 'checking-result';

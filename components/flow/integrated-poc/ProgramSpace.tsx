@@ -72,9 +72,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // editor commits can advance this chain; render props or arbitrary snapshots cannot.
   const moveFlush = useRef<{ actorId: string; expected: typeof space; conflict: boolean } | null>(null);
   const draftReaders = useRef<Record<string, (() => string) | null>>({});
+  const confirmedSaveReaders = useRef<Record<string, ((before: TextWorkspaceState, next: TextWorkspaceState) => boolean) | null>>({});
   const inputLocks = useRef<Record<string, ((locked: boolean) => void) | null>>({}), inputLockCount = useRef(0);
   const [recordDate, setRecordDate] = useState(today), [percent, setPercent] = useState('0');
   const [executionDateDraft, setExecutionDateDraft] = useState('');
+  const [executionTimeDraft, setExecutionTimeDraft] = useState('');
   const [recurrencePresentation, setRecurrencePresentation] = useState(emptyProgramRecurrencePresentation);
   const root = useRef<HTMLElement | null>(null);
   const documentMenu = useRef<HTMLDetailsElement | null>(null);
@@ -163,6 +165,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   }
   useEffect(() => {
     props.onRegisterEditors?.({ lockInput,
+      acceptConfirmedPrivateText: (before, next) => Object.values(confirmedSaveReaders.current).reduce((accepted, confirm) => !!confirm?.(before, next) || accepted, false),
       hasPendingInput: () => Object.values(dirty.current).some(Boolean) || Object.values(recurrencePorts.current).some(port => port?.hasPendingInput?.()),
       blocksExternalSnapshot: (before, next) => Object.values(recurrencePorts.current).some(port => port?.blocksExternalSnapshot?.(before, next)),
       pendingDocumentIds: () => Object.keys(dirty.current).filter(id => dirty.current[id]),
@@ -249,7 +252,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   };
   function cancelHold() { if (hold.current) clearTimeout(hold.current); hold.current = null; holdPoint.current = null; }
   function close() { dialog.current?.close(); detailExpected.current = null; setDetail(null); setMessage(''); previousFocus.current?.focus(); }
-  function openDetail(next: Detail) { previousFocus.current = document.activeElement as HTMLElement; detailExpected.current = space; setExecutionDateDraft(next?.kind === 'task' ? allTasks.find(task => task.id === next.id)?.date ?? '' : ''); setMessage(''); setDetail(next); }
+  function openDetail(next: Detail) {
+    previousFocus.current = document.activeElement as HTMLElement; detailExpected.current = space;
+    const task = next?.kind === 'task' ? allTasks.find(task => task.id === next.id) : null;
+    setExecutionDateDraft(task?.date ?? ''); setExecutionTimeDraft(task?.time ?? ''); setMessage(''); setDetail(next);
+  }
   useEffect(() => { if (detail && dialog.current && !dialog.current.open) dialog.current.showModal(); }, [detail]);
   useEffect(() => {
     const escape = (event: KeyboardEvent) => { if (event.key === 'Escape') { cancelHold(); nativeDrag.current = null; setMoving(null); } };
@@ -342,11 +349,19 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     const result = await run('실행 날짜 변경', current => updateProgramTask(current, { ...base(current), taskId, patch: { date: nextDate } }));
     if (result.ok) setExecutionDateDraft(nextDate ?? '');
   }
+  async function applySchedule(taskId: string) {
+    if (executionTimeDraft && !/^([01]\d|2[0-3]):[0-5]\d$/.test(executionTimeDraft)) { setMessage('시간을 시:분 형식으로 입력해 주세요.'); return; }
+    await run('실행 날짜·시간 변경', current => updateProgramTask(current, { ...base(current), taskId, patch: { date: executionDateDraft || null, time: executionTimeDraft } }));
+  }
   const folderOptions = space.text.folders.map(item => {
     const names = [item.title]; let parent = item.parentId;
     while (parent) { const ancestor = space.text.folders.find(row => row.id === parent); if (!ancestor) break; names.unshift(ancestor.title); parent = ancestor.parentId; }
     return { id: item.id, title: names.join(' / ') };
   });
+  const taskFolderPath = (task: TextTask) => {
+    const actualFolderId = space.text.flows.find(flow => flow.id === task.scopeId)?.folderId ?? task.folderId;
+    return folderOptions.find(item => item.id === actualFolderId)?.title ?? task.folder;
+  };
 
   const guardOccurrenceDraft = (event: React.SyntheticEvent) => {
     const pending = Object.entries(recurrencePorts.current).filter(([, port]) => port?.hasPendingInput?.());
@@ -383,7 +398,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             if (!event.currentTarget.open && (!title || title.value === title.defaultValue)) formExpected.current = null;
           }}><summary>문서 작업</summary><div className={styles.documentTools} onInputCapture={() => { formExpected.current ??= space; }}>
             <form onSubmit={async event => { event.preventDefault(); const title = String(new FormData(event.currentTarget).get('title') ?? ''); await run('문서 이름 변경', current => renameProgramDocument(current, { ...base(current), documentId: selectedDoc.id, title })); }}><label>문서 이름<input key={selectedDoc.id + selectedDoc.title} name="title" defaultValue={selectedDoc.title} required /></label><button>이름 변경</button></form>
-            <label>문서 폴더<select value={selectedDoc.folderId} onChange={event => { const value = event.target.value; void run('폴더 이동', current => setProgramDocumentFolder(current, { ...base(current), documentId: selectedDoc.id, folderId: value })); }}>{folderOptions.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</select></label>
+            <label>보관 위치<select value={selectedDoc.folderId} onChange={event => { const value = event.target.value; void run('폴더 이동', current => setProgramDocumentFolder(current, { ...base(current), documentId: selectedDoc.id, folderId: value })); }}>{folderOptions.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</select></label>
             {props.capabilities?.publication !== false && props.onPublishDocument && <button disabled={preparingDocumentAction} onClick={() => void openDocumentAction(props.onPublishDocument!, { modalReturnFocus: true })}>선택해서 공개</button>}
             {props.capabilities?.revisionHistory !== false && props.onRevisionHistory && <button disabled={preparingDocumentAction} onClick={() => void openDocumentAction(props.onRevisionHistory!)}>저장판본·복구</button>}
             {props.onOutputDocument && <button disabled={preparingDocumentAction} onClick={() => void openDocumentAction(props.onOutputDocument!)}>내 도구로 가져가기</button>}
@@ -412,6 +427,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           onDirtyChange={value => { dirty.current[id] = value; }} onUndo={props.onUndo} onRedo={props.onRedo}
           onRegisterSave={save => { saveRequests.current[id] = save; }}
           onRegisterDraft={read => { draftReaders.current[id] = read; }}
+          onRegisterConfirmedSave={accept => { confirmedSaveReaders.current[id] = accept; }}
           onRegisterInputLock={lock => { inputLocks.current[id] = lock; lock?.(inputLockCount.current > 0); }}
           onOpenScope={scopeId => { if (space.text.folders.some(item => item.id === scopeId)) { setFolderId(scopeId); setPeriod('all'); } else void openDocument(scopeId); }}
           onConnectFlow={(docId, lineId) => openDetail({ kind: 'connect', docId, lineId })}
@@ -425,6 +441,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       <div hidden={period === 'documents'}>
         <ProgramRecurrencePlanRecovery data={data} today={today} folderId={folderId || undefined} disabled={preparingDocumentAction} onOpenSource={(id, line) => void openDocument(id, line)} />
         <div className={styles.periodHeading}><h1>{periods.find(([key]) => key === period)?.[1]}{folder ? ` · ${folder.title}` : ''}</h1>{!['all', 'undated', 'documents'].includes(period) && <div className={styles.dateNav}><button aria-label="이전 기간" onClick={() => setDate((period === 'month' ? programShiftMonth(date, -1) : programShiftDate(date, period === 'week' ? -7 : -1)) || date)}>‹</button><label>조회 날짜<input id="program-query-date" type="date" value={date} onChange={event => { if (programDate(event.target.value)) setDate(event.target.value); }} /></label><button aria-label="다음 기간" onClick={() => setDate((period === 'month' ? programShiftMonth(date, 1) : programShiftDate(date, period === 'week' ? 7 : 1)) || date)}>›</button></div>}</div>
+        {(folderId || query) && <div className={styles.filterContext} aria-label="할 일 조회 범위"><p>{folderId ? `${folderOptions.find(item => item.id === folderId)?.title ?? '선택한 폴더'} · 하위 포함` : '모든 폴더'}{query && <span>검색: {query}</span>}</p><button type="button" onClick={() => { setFolderId(''); setQuery(''); }}>필터 해제</button></div>}
         {range.from && range.to !== range.from && <p className={styles.muted}>{range.from} ~ {range.to}</p>}
         <form className={styles.quick} onSubmit={quickTask}><label>빠른 할 일<input name="title" required placeholder="할 일을 적으세요" maxLength={500} /></label><label>실행 날짜<input key={period + date} type="date" name="date" defaultValue={period === 'undated' ? '' : date} /></label><button>추가</button></form>
         {moving && <p role="status">옮길 행의 앞을 선택하세요. <button onClick={() => setMoving(null)}>취소</button></p>}
@@ -452,7 +469,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); const from = event.dataTransfer.getData('text/plain'); if (from && (moving === from || nativeDrag.current === from)) void moveBefore(from, entry.key); nativeDrag.current = null; }}
             onKeyDown={event => { if (event.altKey && ['ArrowUp', 'ArrowDown'].includes(event.key)) { event.preventDefault(); moveStep(task, event.key === 'ArrowUp' ? -1 : 1); } }}>
             <button className={styles.check} aria-label={`${task.title} ${value === 100 ? '다시 열기' : '완료'}`} aria-pressed={value === 100} onClick={() => void run(value === 100 ? '다시 열기' : '완료', current => completeProgramTask(current, { ...base(current), taskId: task.id, date: today, done: value !== 100 }))}>{value === 100 ? '✓' : value ? `${value}%` : '○'}</button>
-            <button className={styles.taskTitle} onClick={() => moving ? void moveBefore(moving, entry.key) : void openDocument(task.docId, task.id)}>{task.title}<small>{period === 'today' && programIsContinuingTask(task, date) ? '계속할 일 · ' : ''}{task.date ?? '날짜 미정'} · {task.docTitle}</small></button>
+            <button className={styles.taskTitle} onClick={() => moving ? void moveBefore(moving, entry.key) : void openDocument(task.docId, task.id)}>{task.title}<small>{period === 'today' && programIsContinuingTask(task, date) ? '계속할 일 · ' : ''}{task.date ?? '날짜 미정'}{task.time ? ` · ${task.time}` : ''}<span className={styles.taskOrigin}>{taskFolderPath(task)} / {task.docTitle}</span></small></button>
             <button aria-label={`${task.title} 작업`} onClick={event => { if (suppressPointerClick.current === task.id && event.detail !== 0) { suppressPointerClick.current = null; return; } setRecordDate(today); setPercent(String(value)); openDetail({ kind: 'task', id: task.id }); }}
               onPointerDown={event => { suppressPointerClick.current = null; if (event.pointerType !== 'touch') return; cancelHold(); holdPoint.current = { x: event.clientX, y: event.clientY }; hold.current = setTimeout(() => { setMoving(entry.key); suppressPointerClick.current = task.id; hold.current = null; }, PROGRAM_MOVE_GESTURE_V1.holdMs); }}
               onPointerUp={cancelHold} onPointerCancel={() => { cancelHold(); suppressPointerClick.current = task.id; setMoving(null); }} onPointerMove={event => { if (holdPoint.current && Math.hypot(event.clientX - holdPoint.current.x, event.clientY - holdPoint.current.y) >= PROGRAM_MOVE_GESTURE_V1.cancelDistancePx) { cancelHold(); suppressPointerClick.current = task.id; } }}>…</button>
@@ -463,7 +480,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     <dialog ref={dialog} className={styles.dialog} onCancel={event => { event.preventDefault(); close(); }}><div className={styles.dialogHeading}><h2>{detail?.kind === 'task' ? detailTask?.title ?? '할 일을 찾을 수 없습니다' : detail?.kind === 'folder' ? '폴더 정리' : '기존 할 일 연결'}</h2><button onClick={close} aria-label="닫기">닫기</button></div>
       {message && <p role="alert" className={styles.error}>{message}</p>}
       {detail?.kind === 'task' && detailTask && <>
-        <form onSubmit={event => { event.preventDefault(); void dateMove(detailTask.id, executionDateDraft || null); }}><label className={styles.field}>실행 날짜<input type="date" value={executionDateDraft} onChange={event => setExecutionDateDraft(event.target.value)} /></label><button>날짜 적용</button></form><div className={styles.actions}><button onClick={() => void dateMove(detailTask.id, today)}>오늘로 이동</button><button onClick={() => void dateMove(detailTask.id, programShiftDate(today, 1))}>내일로 이어하기</button><button onClick={() => void dateMove(detailTask.id, null)}>날짜 미정으로 이동</button></div>
+        <form onSubmit={event => { event.preventDefault(); void applySchedule(detailTask.id); }}><div className={styles.scheduleFields}><label className={styles.field}>실행 날짜<input type="date" value={executionDateDraft} onChange={event => setExecutionDateDraft(event.target.value)} /></label><label className={styles.field}>시간<input type="time" step="60" value={executionTimeDraft} onChange={event => setExecutionTimeDraft(event.target.value)} /><small>비워 두면 시간 없음</small></label></div><button>날짜·시간 적용</button></form><div className={styles.actions}><button onClick={() => void dateMove(detailTask.id, today)}>오늘로 이동</button><button onClick={() => void dateMove(detailTask.id, programShiftDate(today, 1))}>내일로 이어하기</button><button onClick={() => void dateMove(detailTask.id, null)}>날짜 미정으로 이동</button></div>
         <form onSubmit={async event => { event.preventDefault(); const result = await run('진행 기록', current => recordProgramTaskProgress(current, { ...base(current), taskId: detailTask.id, date: recordDate, percent: Number(percent) })); if (result.ok) setMessage('해당 날짜의 누적 진행을 저장했습니다.'); }}><h3>날짜별 진행</h3><label>기록 날짜<input type="date" value={recordDate} onChange={event => setRecordDate(event.target.value)} required /></label><label>누적 진행 (%)<input type="number" min={0} max={100} value={percent} onChange={event => setPercent(event.target.value)} required /></label><button>진행 기록</button></form>
         <ul>{M.progressHistory(space.text, detailTask.id).map(record => <li key={record.date}><button onClick={() => { setRecordDate(record.date); setPercent(String(record.percent)); }}>{record.date} · {record.percent}%</button></li>)}</ul>
         {period !== 'documents' && <div className={styles.actions}><button onClick={() => moveStep(detailTask, -1)}>같은 날짜에서 위로</button><button onClick={() => moveStep(detailTask, 1)}>같은 날짜에서 아래로</button></div>}

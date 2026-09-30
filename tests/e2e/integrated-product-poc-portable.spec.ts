@@ -61,7 +61,7 @@ test('portable gate: exact query only; corrupt Program payload falls back withou
   await verify();
 });
 
-test('portable private journey: document, task date, completion, Undo and reload preserve operating bytes', async ({ page }) => {
+test('portable private journey: document, task date and time, completion, Undo and reload preserve operating bytes', async ({ page }) => {
   const verify = await audit(page);
   await page.goto(URL);
   await page.getByLabel('새 문서', { exact: true }).fill('Portable private document');
@@ -74,8 +74,14 @@ test('portable private journey: document, task date, completion, Undo and reload
   await page.getByRole('navigation', { name: '개인공간 보기' }).getByRole('button', { name: '전체 할 일', exact: true }).click();
   await page.getByRole('button', { name: 'Portable task 작업', exact: true }).click();
   await page.getByRole('dialog').getByLabel('실행 날짜', { exact: true }).fill('2026-10-10');
-  await page.getByRole('dialog').getByRole('button', { name: '날짜 적용', exact: true }).click();
-  await expect.poll(async () => M.tasks((await state(page)).data.spaces['local-user'].text).find(task => task.title === 'Portable task')?.date).toBe('2026-10-10');
+  const taskTime = page.getByRole('dialog').getByLabel(/^시간/);
+  await expect(taskTime).toHaveAttribute('type', 'time');
+  await taskTime.fill('09:30');
+  await page.getByRole('dialog').getByRole('button', { name: '날짜·시간 적용', exact: true }).click();
+  await expect.poll(async () => {
+    const task = M.tasks((await state(page)).data.spaces['local-user'].text).find(task => task.title === 'Portable task');
+    return { date: task?.date, time: task?.time };
+  }).toEqual({ date: '2026-10-10', time: '09:30' });
   await page.keyboard.press('Escape');
   const before = (await state(page)).data.spaces['local-user'];
   await page.getByRole('button', { name: 'Portable task 완료', exact: true }).click();

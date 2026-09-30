@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createProgramPrivateSpace } from '../program-data';
-import { ALPHA_SCHEMA, type AlphaAccount, type AlphaRepository } from '../alpha-persistence/contract';
+import { ALPHA_SCHEMA, type AlphaAccount, type AlphaCommand, type AlphaRepository } from '../alpha-persistence/contract';
 import { createAlphaFakeServer } from '../alpha-persistence/fake-server';
 import { createAlphaMemoryRecovery } from '../alpha-persistence/local-recovery';
 import { createAlphaSyncController } from './controller';
@@ -25,6 +25,113 @@ const rename = (title: string) => (data: ProgramData) => {
   data.spaces[data.activeActorId].text.folders[0].title = title;
   return { ok: true as const, data, changed: true, result: title };
 };
+
+test('definitive private invalid/limit rejection permits edited retry with a new request and one commit', async () => {
+  for (const reason of ['invalid', 'limit'] as const) {
+    const f = setup(), commands: AlphaCommand[] = []; let serial = 0;
+    const c = createAlphaSyncController({ recovery: createAlphaMemoryRecovery(), requestId: () => `retry-${++serial}` });
+    c.bindSession('a', { ...f.a, execute: async command => {
+      commands.push(command); return commands.length === 1 ? { ok: false, reason } : f.a.execute(command);
+    } });
+    assert(await c.refresh()); const before = c.snapshot().account;
+    assert.equal((await c.mutate('rejected', rename('first draft'))).ok, false);
+    assert.equal(c.snapshot().retryableRejectedDraft, true); assert.equal(c.snapshot().pending, null);
+    assert.deepEqual(c.snapshot().account, before); assert.equal(f.server.diagnostics().mutations, 0);
+    assert.equal(c.snapshot().canUndo, false);
+    assert.deepEqual(await c.mutate('corrected', rename('corrected draft')), { ok: true, result: 'corrected draft', changed: true });
+    assert.notEqual(commands[0].requestId, commands[1].requestId);
+    assert.equal(commands[1].expectedRevision, 0); assert.equal(c.snapshot().account?.revision, 1);
+    assert.equal(c.snapshot().account?.space.text.folders[0].title, 'corrected draft');
+    assert.equal(c.snapshot().draft, null); assert.equal(c.snapshot().retryableRejectedDraft, false);
+    assert.equal(f.server.diagnostics().mutations, 1); assert.equal(c.snapshot().canUndo, true);
+  }
+});
+
+test('same-location corrected retry clears rejected draft durably without dispatch and allows the next edit', async () => {
+  const f = setup(), recovery = createAlphaMemoryRecovery(); let calls = 0;
+  const c = createAlphaSyncController({ recovery });
+  c.bindSession('a', { ...f.a, execute: async command => ++calls === 1 ? { ok: false, reason: 'invalid' } : f.a.execute(command) });
+  await c.refresh(); await c.mutate('rejected', rename('draft'));
+  assert.deepEqual(await c.mutate('restore input', rename('미분류')), { ok: true, result: '미분류', changed: false });
+  assert.equal(c.snapshot().status, 'same-location'); assert.equal(c.snapshot().draft, null);
+  const stored = recovery.load('a'); assert(stored.ok); assert.equal(stored.value?.draft, null);
+  assert.equal(calls, 1); assert.equal(f.server.diagnostics().mutations, 0);
+  assert((await c.mutate('next', rename('next'))).ok); assert.equal(calls, 2);
+});
+
+test('unchanged automatic refreshes retain known rejection until explicit edited retry', async () => {
+  for (const reason of ['invalid', 'limit'] as const) {
+    const f = setup(), c = createAlphaSyncController({ recovery: createAlphaMemoryRecovery() }); let calls = 0;
+    c.bindSession('a', { ...f.a, execute: async command => ++calls === 1 ? { ok: false, reason } : f.a.execute(command) });
+    await c.refresh(); await c.mutate('rejected', rename('retained'));
+    const before = c.snapshot();
+    for (let poll = 0; poll < 3; poll++) {
+      const reading = c.refresh(); assert.equal(c.snapshot().retryableRejectedDraft, false);
+      assert(await reading); assert.equal(c.snapshot().retryableRejectedDraft, true);
+      assert.equal(c.snapshot().status, 'recovery-required'); assert.deepEqual(c.snapshot().draft, before.draft);
+      assert.deepEqual(c.snapshot().account, before.account); assert.equal(calls, 1);
+    }
+    assert.deepEqual(await c.mutate('corrected', rename('corrected')), { ok: true, result: 'corrected', changed: true });
+    assert.equal(calls, 2); assert.equal(f.server.diagnostics().mutations, 1);
+  }
+});
+
+test('revision/undo conflict and ambiguous unavailable/auth/transport failures never allow an edited request', async () => {
+  for (const reason of ['revision-conflict', 'undo-conflict', 'unavailable', 'unauthenticated', 'transport'] as const) {
+    const f = setup(); let calls = 0;
+    const c = createAlphaSyncController({ recovery: createAlphaMemoryRecovery() });
+    c.bindSession('a', { ...f.a, execute: async () => { calls++; if (reason === 'transport') throw Error('lost'); return { ok: false, reason }; } });
+    await c.refresh(); await c.mutate('draft', rename('draft'));
+    const retained = c.snapshot(); assert.equal(retained.retryableRejectedDraft, false);
+    let built = false;
+    assert.deepEqual(await c.mutate('blocked', data => { built = true; return rename('other')(data); }), { ok: false, reason: 'unresolved' });
+    assert.equal(built, false); assert.equal(calls, 1);
+    assert.deepEqual(c.snapshot().pending, retained.pending); assert.deepEqual(c.snapshot().draft, retained.draft);
+    assert.equal(f.server.diagnostics().mutations, 0);
+  }
+});
+
+test('known rejection eligibility is not persisted across reload or session bind and cannot be regained by a read error', async () => {
+  const f = setup(), recovery = createAlphaMemoryRecovery();
+  const port: AlphaRepository = { ...f.a, execute: async () => ({ ok: false, reason: 'invalid' }) };
+  const c = createAlphaSyncController({ recovery }); c.bindSession('a', port); await c.refresh();
+  await c.mutate('draft', rename('retained')); assert.equal(c.snapshot().retryableRejectedDraft, true);
+  const reboot = createAlphaSyncController({ recovery });
+  reboot.bindSession('a', { ...port, read: async () => ({ ok: false, reason: 'invalid' }) });
+  assert.equal(reboot.snapshot().retryableRejectedDraft, false); assert.equal(await reboot.refresh(), false);
+  assert.equal(reboot.snapshot().retryableRejectedDraft, false);
+  assert.deepEqual(await reboot.mutate('blocked', rename('new')), { ok: false, reason: 'unresolved' });
+  c.bindSession('b', f.b); await c.refresh(); c.bindSession('a', port);
+  assert.equal(c.snapshot().retryableRejectedDraft, false); assert(c.snapshot().draft);
+  assert.deepEqual(await c.mutate('blocked', rename('new')), { ok: false, reason: 'unresolved' });
+});
+
+test('retry recovery failure preserves the rejected draft and dispatches no corrected or no-op request', async () => {
+  for (const title of ['corrected', '미분류']) {
+    const f = setup(), memory = createAlphaMemoryRecovery(); let writable = true, calls = 0;
+    const c = createAlphaSyncController({ recovery: { load: memory.load, save: value => writable && memory.save(value) } });
+    c.bindSession('a', { ...f.a, execute: async () => { calls++; return { ok: false, reason: 'invalid' }; } });
+    await c.refresh(); await c.mutate('draft', rename('retained'));
+    const before = c.snapshot(); writable = false;
+    assert.equal((await c.mutate('retry', rename(title))).ok, false);
+    assert.equal(c.snapshot().status, 'recovery-required'); assert.equal(c.snapshot().retryableRejectedDraft, false);
+    assert.deepEqual(c.snapshot().draft, before.draft); assert.deepEqual(c.snapshot().account, before.account);
+    assert.equal(c.snapshot().pending, null); assert.equal(calls, 1); assert.equal(f.server.diagnostics().mutations, 0);
+    const stored = memory.load('a'); assert(stored.ok); assert.deepEqual(stored.value?.draft, before.draft);
+  }
+});
+
+test('private rejection retry does not permit creator/social intent or Undo', async () => {
+  const f = setup(), c = createAlphaSyncController({ recovery: createAlphaMemoryRecovery() });
+  c.bindSession('a', { ...f.a, execute: async () => ({ ok: false, reason: 'invalid' }) });
+  await c.refresh(); await c.mutate('draft', rename('draft'));
+  const intent = () => { throw Error('must not resolve an intent'); };
+  for (const options of [{ alphaCreator: intent }, { alphaSocial: intent }]) {
+    assert.deepEqual(await c.mutate('unrelated', () => { throw Error('must not build'); }, options), { ok: false, reason: 'unresolved' });
+  }
+  assert.deepEqual(await c.undo(), { ok: false, reason: 'undo-conflict' });
+  assert.equal(c.snapshot().retryableRejectedDraft, true);
+});
 test('M3 preserves transition result; receipt/read confirmed edit, undo, redo use three commits', async () => {
   const { controller: c, server } = setup(); assert(await c.refresh());
   assert.deepEqual(await c.mutate('rename', rename('name')), { ok: true, result: 'name', changed: true });

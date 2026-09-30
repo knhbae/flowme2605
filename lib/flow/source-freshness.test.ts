@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { getPreviewFlowBundles } from './creator-channel-preview';
-import { isRuntimeExcludedBundle } from './runtime-content-policy';
+import { isRuntimeExcludedBundle, RUNTIME_ARCHIVED_FLOW_SLUGS } from './runtime-content-policy';
 import { seedBundles } from './seed-flows';
 import { classifyFlowSourceFreshness, summarizeFlowSourceFreshness } from './source-freshness';
 import type { FlowBundle } from './types';
@@ -65,11 +65,22 @@ test('preview library is excluded from normal user route freshness failures', ()
 
 test('current canonical seed has no missing or overdue normal user source checks', () => {
   const runtimeBundles = seedBundles.filter((bundle) => !isRuntimeExcludedBundle(bundle));
-  const summary = summarizeFlowSourceFreshness(runtimeBundles, new Date());
-
-  // This floor follows the reviewed runtime inventory, including the 2026-09-04 dog-adoption hold.
-  assert.ok(summary.normalUserRouteCount >= 112);
-  assert.ok(summary.previewOrHiddenCount >= 20);
+  const archivedBundles = seedBundles.filter(isRuntimeExcludedBundle);
+  const asOf = new Date();
+  const summary = summarizeFlowSourceFreshness(runtimeBundles, asOf);
+  const canonical = summarizeFlowSourceFreshness(seedBundles, asOf);
+  const archived = summarizeFlowSourceFreshness(archivedBundles, asOf);
+  const inventory = (value: typeof summary) => [value.publishedCount, value.normalUserRouteCount, value.previewOrHiddenCount];
+  // Match the canonical registry and the existing archive policy, not a stale lower bound.
+  assert.deepEqual(inventory(canonical), [153, 121, 32]);
+  assert.deepEqual(inventory(archived), [21, 10, 11]);
+  assert.deepEqual(inventory(summary), [132, 111, 21]);
+  const slugs = (bundles: FlowBundle[]) => bundles.map((bundle) => bundle.flow.slug).sort();
+  assert.deepEqual(slugs(archivedBundles), [...RUNTIME_ARCHIVED_FLOW_SLUGS].sort());
+  assert.deepEqual(slugs([...runtimeBundles, ...archivedBundles]), slugs(seedBundles));
+  const runtimeSlugs = new Set(slugs(runtimeBundles));
+  assert.equal(runtimeSlugs.size, runtimeBundles.length);
+  assert.ok(archivedBundles.every((bundle) => !runtimeSlugs.has(bundle.flow.slug)));
   assert.equal(summary.missingMetadataCount, 0);
   assert.equal(summary.reviewDueCount, 0);
   assert.equal(summary.staleCount, 0);

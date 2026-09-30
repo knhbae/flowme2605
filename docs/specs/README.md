@@ -1,5 +1,9 @@
 # FLOW Spec Layer
 
+## 같은 요청의 개인 문서 저장 복구 (2026-09-30)
+
+[승인된 목표와 경계](./2026-09-30-alpha-private-save-ack/spec.md#목표와-경계)에 따라 같은 요청의 저장 결과 표시를 구현하고 합성 검증했다. [QA](./2026-09-30-alpha-private-save-ack/qa.md)·[작업 원장](./2026-09-30-alpha-private-save-ack/tasks.md)·[소유 범위와 게시 후보](./2026-09-30-alpha-private-save-ack/ownership.md)를 따른다. 후보의 승인된 최소 보안·원문 대조 보완 후 전체 gate를 통과했으며 별도 브랜치·Draft PR을 준비한다. commit/push·CI·배포 결과는 QA 후속 기록에서 실제 실행 여부를 확인한다.
+
 <!-- alpha-transition-20260920:start -->
 ## 현재 격리 프로그램 진입점 (2026-09-20)
 

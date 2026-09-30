@@ -1013,6 +1013,7 @@
       "flows": [
         {
           "flowId": "opic-2w",
+          "sourceReviewedAt": "2026-09-30",
           "slug": "opic-2w",
           "title": "오픽 2주 모의고사",
           "pattern": "study calendar",
@@ -1425,6 +1426,7 @@
         },
         {
           "flowId": "opic-1m",
+          "sourceReviewedAt": "2026-09-30",
           "slug": "opic-1m",
           "title": "오픽 1달 모의고사",
           "pattern": "study calendar",
@@ -2823,6 +2825,7 @@
       "flows": [
         {
           "flowId": "new-car-7-step",
+          "sourceReviewedAt": "2026-09-30",
           "slug": "new-car-7-step",
           "title": "신차 구매 7단계",
           "pattern": "purchase checklist",
@@ -3386,6 +3389,7 @@
       "flows": [
         {
           "flowId": "moving-dday",
+          "sourceReviewedAt": "2026-09-30",
           "slug": "moving-dday",
           "title": "이사 D-day 준비",
           "pattern": "preparation timeline",
@@ -3637,6 +3641,7 @@
       "flows": [
         {
           "flowId": "wedding-timeline",
+          "sourceReviewedAt": "2026-09-30",
           "slug": "wedding-timeline",
           "title": "결혼 준비 1년 타임라인",
           "pattern": "preparation timeline",
@@ -3822,6 +3827,7 @@
         },
         {
           "flowId": "wedding-vendor-board",
+          "sourceReviewedAt": "2026-09-30",
           "slug": "wedding-vendor-board",
           "title": "결혼 업체 후보 보드",
           "pattern": "purchase comparison",
@@ -3856,7 +3862,7 @@
               ],
               "memo": "대상: 웨딩홀, 상견례, 웨딩플래너, 스드메, 드레스 투어, 혼주 메이크업, 청첩장, 웨딩관리",
               "detail": "",
-              "sourceUrl": "https://blog.naver.com/wilklove/223518896995",
+              "sourceUrl": "https://gongysd.com/wedding-notion/?bmode=view&idx=167989966",
               "sourceTrace": "Gongysd headings / Gongysd category headings / preparation project / purchase comparison",
               "sourceRows": [],
               "exportHints": {

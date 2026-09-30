@@ -9,6 +9,7 @@ import { planProgramDateBlockOrder, type DateBlockOrderPlan, type DateOrderSelec
 import { applyProgramLinePermutation, createProgramPermutationHistory } from '@/lib/flow/integrated-poc/line-permutation';
 import { programSame } from '@/lib/flow/integrated-poc/controller';
 import type { ProgramReferenceAccess } from '@/lib/flow/integrated-poc/reference-execution-guard';
+import { linkProgramFolder, programFolderLineTitle } from '@/lib/flow/integrated-poc/folder-link-slot';
 
 export interface ProgramTextPosition { start: number; end: number; scrollTop: number }
 export interface ProgramTextEditorProps {
@@ -25,6 +26,7 @@ export interface ProgramTextEditorProps {
   onRegisterSave?: (save: (() => Promise<boolean>) | null) => void;
   onRegisterInputLock?: (lock: ((locked: boolean) => void) | null) => void;
   onRegisterDraft?: (read: (() => string) | null) => void;
+  onRegisterConfirmedSave?: (accept: ((before: TextWorkspaceState, next: TextWorkspaceState) => boolean) | null) => void;
   onUndo?: () => void | Promise<void>;
   onRedo?: () => void | Promise<void>;
   readOnly?: boolean;
@@ -54,13 +56,17 @@ export function createProgramTextDraft(
   let flight: Promise<boolean> | null = null;
   let label = '문서 편집';
   let groupId: string | undefined;
+  let inputGeneration = 0;
+  let submitted: { before: TextWorkspaceState; next: TextWorkspaceState; generation: number } | null = null;
   const report = () => notify({ ...state });
   const api = {
     getState: () => state,
     rejectRaw(raw: string) {
+      inputGeneration++;
       state = { ...state, raw, invalid: true, dirty: true, error: '문서 문맥이 바뀌어 순서를 반영하지 않았습니다. 입력은 남아 있습니다.' }; report();
     },
     updateRaw(raw: string, progressDate: string) {
+      inputGeneration++;
       const baseRaw = M.raw(M.getDocument(state.committed, docId));
       const edit = raw === baseRaw ? { state: state.committed, reason: null }
         : M.editTextResult(state.working, docId, raw, { progressDate });
@@ -80,6 +86,7 @@ export function createProgramTextDraft(
     },
     apply(next: TextWorkspaceState, nextLabel: string) {
       if (state.invalid || state.saving || !M.validate(next) || !validateWorkspace(next) || next === state.working) return false;
+      inputGeneration++;
       state = { ...state, working: next, raw: M.raw(M.getDocument(next, docId)), dirty: true, error: '' };
       label = nextLabel; groupId = undefined; report(); return true;
     },
@@ -88,8 +95,16 @@ export function createProgramTextDraft(
       state = { ...state, committed: next, working: next, raw: M.raw(M.getDocument(next, docId)), error: '' };
       report(); return true;
     },
+    acceptConfirmedSave(before: TextWorkspaceState, next: TextWorkspaceState) {
+      if (!submitted || !state.dirty || state.saving || state.invalid || inputGeneration !== submitted.generation
+        || !programSame(submitted.before, before) || !programSame(submitted.next, next)
+        || !programSame(state.working, next) || state.raw !== M.raw(M.getDocument(next, docId))) return false;
+      state = { ...state, committed: next, working: next, dirty: false, error: '' };
+      submitted = null; report(); return true;
+    },
     discard(next: TextWorkspaceState) {
       if (state.saving) return false;
+      submitted = null; inputGeneration++;
       state = { committed: next, working: next, raw: M.raw(M.getDocument(next, docId)), dirty: false, saving: false, invalid: false, error: '' };
       report(); return true;
     },
@@ -100,6 +115,7 @@ export function createProgramTextDraft(
       flight = (async () => {
         while (state.dirty && !state.invalid) {
           const next = state.working, submittedRaw = M.raw(M.getDocument(next, docId));
+          submitted = { before: state.committed, next, generation: inputGeneration };
           state = { ...state, saving: true, error: '' }; report();
           let accepted = false;
           try { accepted = await commit(next, label, { groupId, expectedWorkspace: state.committed }); } catch { accepted = false; }
@@ -108,6 +124,7 @@ export function createProgramTextDraft(
             report(); return false;
           }
           const unchanged = state.working === next && state.raw === submittedRaw;
+          submitted = null;
           state = { ...state, committed: next, saving: false, dirty: !unchanged };
           report();
         }
@@ -168,6 +185,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const [panel, setPanel] = useState<Panel>(null);
   const [moving, setMoving] = useState<Moving | null>(null);
   const [date, setDate] = useState(today);
+  const [time, setTime] = useState('');
   const [percent, setPercent] = useState('0');
   const [folderName, setFolderName] = useState('');
   const [message, setMessage] = useState('');
@@ -285,6 +303,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (accessFor(lineId)?.reason) { setMessage(''); setPanel({ kind: 'reference', lineId }); return; }
     const progress = M.latestProgress(currentState(), row.progressTargetId);
     setDate(kind === 'date' ? row.date ?? '' : today());
+    setTime(row.time ?? row.task?.time ?? '');
     setPercent(String(progress?.percent ?? (row.done ? 100 : 0)));
     setMessage(''); setPanel({ kind, lineId });
   }
@@ -302,7 +321,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       return;
     }
     if (['reference-open', 'task-origin'].includes(action.type)) { setPanel({ kind: 'reference', lineId }); return; }
-    if (action.type === 'scope-picker') { setFolderName(''); setPanel({ kind: 'folder', lineId }); return; }
+    if (action.type === 'scope-picker') { setFolderName(programFolderLineTitle(currentState(), props.docId, lineId) ?? ''); setPanel({ kind: 'folder', lineId }); return; }
     if (action.type === 'task-picker') { void connectFlow(lineId); return; }
     setMessage(''); setPanel({ kind: 'insert', lineId });
   }
@@ -318,6 +337,11 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         queueMicrotask(() => { if (alive) editorRef.current?.refresh(); });
       }, next => propsRef.current.validateWorkspace?.(next) ?? true);
     draftRef.current = controller; setDraft(controller.getState());
+    propsRef.current.onRegisterConfirmedSave?.((before, next) => {
+      if (!alive || composingRef.current || inputLockedRef.current || textArea()?.value !== controller.getState().raw) return false;
+      // Confirmation updates state only; preserve the native textarea and its selection/history.
+      return controller.acceptConfirmedSave(before, next);
+    });
     orderHistoryRef.current = createProgramPermutationHistory(props.docId); orderPositionsRef.current = []; orderEpochRef.current++; pendingOrderRef.current = null;
     movingRef.current = null; setMoving(null); setPanel(null);
     const instance = nativeEditor.create(host, {
@@ -396,6 +420,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     window.addEventListener('beforeunload', warnOnExit);
     return () => {
       alive = false; rememberPosition();
+      propsRef.current.onRegisterConfirmedSave?.(null);
       host.removeEventListener('compositionstart', compositionStart, true); host.removeEventListener('compositionend', compositionEnd, true);
       window.removeEventListener('beforeunload', warnOnExit);
       if (timerRef.current) clearTimeout(timerRef.current);
@@ -456,10 +481,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (ready) propsRef.current.onConnectFlow(propsRef.current.docId, slot.lineId);
   }
   async function attachFolder(scopeId: string | null) {
-    const slot = scopeSlot(panel?.lineId ?? null);
-    if (!slot) return;
-    const next = scopeId ? M.attachScope(slot.state, props.docId, slot.index, scopeId) : M.createFolderAt(slot.state, props.docId, slot.index, folderName.trim());
-    if (next === slot.state) { setMessage('같은 이름·위치·폴더 연결을 확인해 주세요.'); return; }
+    if (actionsDisabled() || composingRef.current) return;
+    const state = currentState();
+    const next = linkProgramFolder(state, props.docId, panel?.lineId ?? null, scopeId ? { scopeId } : { title: folderName });
+    if (next === state) { setMessage('같은 이름·위치·폴더 연결을 확인해 주세요.'); return; }
     closePanel(); await apply(next, scopeId ? '폴더 연결' : '새 폴더');
   }
   function insertDateSection() {
@@ -481,9 +506,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (accessFor(panel?.lineId ?? null)?.reason) { setPanel({ kind: 'reference', lineId: panel?.lineId ?? null }); return; }
     const target = currentRow(panel?.lineId ?? null)?.progressTargetId;
     if (!target) return;
-    const next = M.updateTask(currentState(), target, { date: date || null });
+    const next = M.updateTask(currentState(), target, { date: date || null, time });
     if (next === currentState()) { closePanel(); return; }
-    closePanel(); await apply(next, '항목 날짜');
+    closePanel(); await apply(next, '항목 날짜·시간');
   }
   function downloadDraft() {
     const blob = new Blob([draftRef.current?.getState().raw ?? draft.raw], { type: 'text/plain;charset=utf-8' });
@@ -534,7 +559,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         {insertions.map(option => <button type="button" key={`${option.kind}:${option.offset}:${option.depth}`} onClick={() => insertNative(option.offset, option.text, option.caretOffset)}>{option.label}<small>{option.relation}</small></button>)}
         {!currentDoc()?.lines.length && <><button type="button" onClick={() => insertNative(0, '- [ ] ', 6)}>할 일</button><button type="button" onClick={() => { closePanel(); editorRef.current?.focus(); }}>자유 메모</button></>}
         <button type="button" onClick={insertDateSection}>날짜 구획 · 문서 끝에</button>
-        <button type="button" onClick={() => { setFolderName(''); setPanel({ kind: 'folder', lineId: panel.lineId }); }}>폴더 연결</button>
+        <button type="button" onClick={() => { setFolderName(programFolderLineTitle(currentState(), props.docId, panel.lineId) ?? ''); setPanel({ kind: 'folder', lineId: panel.lineId }); }}>폴더 연결</button>
         {row?.isReference && panelAccess?.documentId && panelAccess.lineId === (row.progressTargetId ?? row.taskId) && !panelAccess.reason && <button type="button" disabled={disabled} onClick={() => {
           const current = currentRow(panel.lineId), access = accessFor(panel.lineId);
           if (actionsDisabled() || composingRef.current || !current?.isReference || !access?.documentId || access.lineId !== (current.progressTargetId ?? current.taskId)) return;
@@ -553,8 +578,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         <button type="submit" disabled={disabled}>진행 저장</button>
         {row?.progressTargetId && M.progressHistory(draft.working, row.progressTargetId).length > 0 && <details><summary>날짜별 기록</summary><div className={styles.choices}>{M.progressHistory(draft.working, row.progressTargetId).map(record => <button type="button" key={record.date} onClick={() => { setDate(record.date); setPercent(String(record.percent)); }}>{record.date}<span>{record.percent}%</span></button>)}</div></details>}
       </form>}
-      {panel.kind === 'date' && !protectedExecutionPanel && <form onSubmit={event => { event.preventDefault(); void applyDate(); }}><label>항목 날짜<input type="date" value={date} onChange={event => setDate(event.target.value)} /></label><button type="button" onClick={() => setDate('')}>날짜 미정</button><button type="submit" disabled={disabled}>날짜 적용</button></form>}
-      {panel.kind === 'folder' && <><div className={styles.choices}>{M.scopes(draft.working).filter(scope => scope.kind === 'folder').map(scope => <button type="button" key={scope.id} onClick={() => { void attachFolder(scope.id); }}>{scope.title}</button>)}</div><form onSubmit={event => { event.preventDefault(); void attachFolder(null); }}><label>새 폴더 이름<input value={folderName} maxLength={100} onChange={event => setFolderName(event.target.value)} /></label><button type="submit" disabled={!folderName.trim() || disabled}>만들어 연결</button></form></>}
+      {panel.kind === 'date' && !protectedExecutionPanel && <form onSubmit={event => { event.preventDefault(); void applyDate(); }}><label>항목 날짜<input type="date" value={date} onChange={event => setDate(event.target.value)} /></label><label>시간<input type="time" step={60} value={time} onChange={event => setTime(event.target.value)} /></label><button type="button" onClick={() => setDate('')}>날짜 미정</button><button type="submit" disabled={disabled}>날짜·시간 적용</button></form>}
+      {panel.kind === 'folder' && <><p>{row && (/^ *-\s*$/.test(row.text) || programFolderLineTitle(currentState(), props.docId, panel.lineId) !== null) ? '현재 줄을 선택한 폴더로 연결합니다.' : '현재 내용은 유지하고 아래 새 줄에 폴더를 연결합니다.'}</p><div className={styles.choices}>{M.scopes(draft.working).filter(scope => scope.kind === 'folder').map(scope => <button type="button" key={scope.id} onClick={() => { void attachFolder(scope.id); }}>{scope.title}</button>)}</div><form onSubmit={event => { event.preventDefault(); void attachFolder(null); }}><label>새 폴더 이름<input value={folderName} maxLength={100} onChange={event => setFolderName(event.target.value)} /></label><button type="submit" disabled={!folderName.trim() || disabled}>만들어 연결</button></form></>}
       {panel.kind === 'move' && <div className={styles.choices}>{moving?.targets.map(target => <button type="button" key={target.targetKey} onClick={() => { void finishMove(target.beforeLineId, target.depth); }}>{target.label}<small>깊이 {target.depth}</small></button>)}</div>}
       {(panel.kind === 'reference' || protectedExecutionPanel) && <ProgramReferencePanel access={panelAccess} title={row?.task?.title || row?.title || '연결된 항목'} date={row?.date ?? null}
         history={row?.progressTargetId ? M.progressHistory(draft.working, row.progressTargetId) : []}

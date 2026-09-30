@@ -166,8 +166,16 @@
 .tle-line-reference .tle-task-title { color: #3c6557; text-decoration: underline; text-decoration-color: #c4d8cc; text-underline-offset: 4px; }
 .tle-line[data-date-mismatch="true"] .tle-task-title { text-decoration-color: #c4a36e; }
 .tle-root[data-mode="text"] .tle-textarea, .tle-root.tle-composing .tle-textarea { color: #304b43; -webkit-text-fill-color: #304b43; }
-.tle-root[data-mode="text"] .tle-viewport, .tle-root.tle-composing .tle-viewport { visibility: hidden; }
-.tle-root[data-mode="text"] .tle-check-hit, .tle-root[data-mode="text"] .tle-row-open, .tle-root.tle-composing .tle-controls { display: none; }
+.tle-root[data-mode="text"] .tle-viewport { visibility: hidden; }
+.tle-root[data-mode="text"] .tle-check-hit, .tle-root[data-mode="text"] .tle-row-open { display: none; }
+/* Keep surrounding formatted rows visible while the native textarea owns IME.
+ * Masking only affects paint, so wrapping, scrolling, selection and hit targets
+ * remain those of the original textarea. Hidden mirror rows retain their size. */
+.tle-root[data-mode="live"].tle-composing .tle-textarea {
+  -webkit-mask-image: linear-gradient(to bottom, transparent var(--tle-composition-top, 0px), #000 var(--tle-composition-top, 0px), #000 var(--tle-composition-bottom, 0px), transparent var(--tle-composition-bottom, 0px));
+  mask-image: linear-gradient(to bottom, transparent var(--tle-composition-top, 0px), #000 var(--tle-composition-top, 0px), #000 var(--tle-composition-bottom, 0px), transparent var(--tle-composition-bottom, 0px));
+}
+.tle-root[data-mode="live"].tle-composing .tle-line-composition { visibility: hidden; }
 .tle-plus[hidden], .tle-row-menu[hidden], .tle-fold-toggle[hidden], .tle-check-hit[hidden], .tle-row-open[hidden] { display: none !important; }
 .tle-root.tle-folded-view .tle-textarea { visibility: hidden; pointer-events: none; }
 .tle-root.tle-folded-view .tle-viewport { visibility: visible; overflow: auto; pointer-events: auto; }

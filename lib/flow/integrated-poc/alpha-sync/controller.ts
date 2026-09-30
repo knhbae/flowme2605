@@ -2,7 +2,7 @@ import type { ProgramEnvelope } from '../contract';
 import type { ProgramMutate, ProgramMutationResult } from '../ui-contract';
 import { isAccountForOwner } from '../alpha-auth/account-access';
 import { createAlphaClient, type AlphaClientStatus } from '../alpha-persistence/client';
-import { ALPHA_COMMAND_SCHEMA, type AlphaAccount, type AlphaCommand, type AlphaRecoveryPort, type AlphaRepository, type AlphaReferenceContext } from '../alpha-persistence/contract';
+import { ALPHA_COMMAND_SCHEMA, type AlphaAccount, type AlphaCommand, type AlphaReceipt, type AlphaRecoveryPort, type AlphaRepository, type AlphaReferenceContext } from '../alpha-persistence/contract';
 import { commandFromProgramTransition, materializeAccount, privateChanges } from '../alpha-persistence/program-adapter';
 import { detached, canonicalJson } from '../alpha-persistence/json';
 import { isM3Command } from './contract';
@@ -13,7 +13,7 @@ import { alphaSocialAllowedFields } from '../alpha-social/dispatch';
 import { isAlphaCreatorIntent } from '../alpha-creator/contract';
 
 export type AlphaSyncSnapshot = { ownerId: string | null; account: AlphaAccount | null; envelope: ProgramEnvelope | null;
-  status: AlphaClientStatus; busy: boolean; draft: AlphaCommand | null; pending: AlphaCommand | null; canUndo: boolean; canRedo: boolean; publicRevision?: number; references?: AlphaReferenceContext };
+  status: AlphaClientStatus; busy: boolean; draft: AlphaCommand | null; pending: AlphaCommand | null; canUndo: boolean; canRedo: boolean; retryableRejectedDraft?: boolean; lastReceipt?: AlphaReceipt | null; publicRevision?: number; references?: AlphaReferenceContext };
 type Success = { command: AlphaCommand; before: AlphaAccount; after: AlphaAccount };
 export function createAlphaSyncController(options: { recovery: AlphaRecoveryPort; onChange?: (snapshot: AlphaSyncSnapshot) => void; requestId?: () => string }) {
   const client = createAlphaClient(isAccountForOwner, options.recovery);
@@ -28,17 +28,19 @@ export function createAlphaSyncController(options: { recovery: AlphaRecoveryPort
     const editable = !!account && !busy && !state?.pending && !state?.draft && ['ready', 'saved', 'same-location', 'cancelled'].includes(current.status);
     return { ownerId: current.ownerId, account: detached(account), envelope: account ? materializeAccount(account, references(account.ownerId)) : null,
       status: current.status, busy, draft: detached(state?.draft ?? null), pending: detached(state?.pending ?? null),
+      retryableRejectedDraft: !busy && current.retryableRejectedDraft,
+      lastReceipt: detached(current.lastReceipt),
       ...(state?.references?.social ? { publicRevision: state.references.social.revision } : {}),
       ...(account ? { references: detached(references(account.ownerId)) } : {}),
       canUndo: editable && undo?.after.revision === account?.revision, canRedo: editable && redo?.expectedRevision === account?.revision };
   }
   const emit = () => { try { options.onChange?.(snapshot()); } catch { /* Presentation cannot undo a server commit. */ } };
   const rejected = (reason: string): ProgramMutationResult => ({ ok: false, reason });
-  async function execute(command: AlphaCommand, result: string, before: AlphaAccount, mode: 'edit' | 'undo' | 'redo', recordHistory = true): Promise<ProgramMutationResult> {
+  async function execute(command: AlphaCommand, result: string, before: AlphaAccount, mode: 'edit' | 'undo' | 'redo', recordHistory = true, retryRejectedDraft = false): Promise<ProgramMutationResult> {
     if (!isAlphaWireCommand(command)) return rejected('forbidden');
     const epoch = generation; busy = true;
     try {
-      const operation = client.execute(command); emit();
+      const operation = client.execute(command, { retryRejectedDraft }); emit();
       const ok = await operation;
       if (epoch !== generation) return rejected('session-expired');
       const next = client.snapshot(), account = next.state?.confirmed;
@@ -57,8 +59,9 @@ export function createAlphaSyncController(options: { recovery: AlphaRecoveryPort
   const mutate: ProgramMutate = async (_label, build, mutationOptions) => {
     const current = snapshot();
     if (busy) return rejected('busy');
-    if (current.pending || current.draft) return rejected('unresolved');
-    if (!current.account || !['ready', 'saved', 'same-location', 'cancelled'].includes(current.status)) return rejected(current.status);
+    if (current.pending || current.draft && !current.retryableRejectedDraft) return rejected('unresolved');
+    if (current.retryableRejectedDraft && (mutationOptions?.alphaCreator || mutationOptions?.alphaSocial)) return rejected('unresolved');
+    if (!current.account || !current.retryableRejectedDraft && !['ready', 'saved', 'same-location', 'cancelled'].includes(current.status)) return rejected(current.status);
     let result = '', failure: string | null = null;
     try {
       const catalogIntent = typeof mutationOptions?.alphaCreator === 'function' ? undefined : mutationOptions?.alphaCreator;
@@ -94,7 +97,7 @@ export function createAlphaSyncController(options: { recovery: AlphaRecoveryPort
           expectedRevision: command.expectedRevision, intent }, result, current.account, 'edit', mutationOptions?.history !== false);
       }
       if (!isM3Command(command)) return rejected('forbidden');
-      return execute(command, result, current.account, 'edit', mutationOptions?.history !== false);
+      return execute(command, result, current.account, 'edit', mutationOptions?.history !== false, current.retryableRejectedDraft);
     } catch { return rejected(failure ?? 'invalid'); }
   };
   async function settle(kind: 'refresh' | 'resolve', retry = false) {

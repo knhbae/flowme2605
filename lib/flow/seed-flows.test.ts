@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import curatedSourceAppSeed from '../../docs/content-audit/2026-07-01-curated-source-app-seed-v1.json';
+import { curatedSourceAppSeedFlowBundles, curatedSourceAppSeedFlowMaps } from './curated-source-app-seed';
 import {
   getCreatorChannelSummaries,
   getPreviewFlowBundles,
@@ -104,6 +105,53 @@ test('curated source app seed bundles are part of the canonical seed pack', () =
     assert.equal(recommended.itemDetails?.length, recommended.items.length, contentBundle.bundleId);
     assert.ok(recommended.items.length >= 1, contentBundle.bundleId);
   }
+});
+
+test('curated source review refreshes only the six independently reviewed flows', () => {
+  const reviewedSlugs = ['opic-2w', 'opic-1m', 'new-car-7-step', 'moving-dday', 'wedding-timeline', 'wedding-vendor-board'];
+  const sourceFlows = curatedSourceAppSeed.contentBundles.flatMap((bundle) => bundle.flows);
+  assert.deepEqual(
+    sourceFlows.filter((flow) => 'sourceReviewedAt' in flow).map((flow) => flow.slug),
+    reviewedSlugs,
+  );
+  assert.equal(curatedSourceAppSeed.generatedAt, '2026-07-01T00:00:00+09:00');
+  for (const bundle of curatedSourceAppSeedFlowBundles) {
+    const medicalHold = bundle.flow.tags?.includes('flow-map:baby-food-map');
+    const expected = medicalHold ? '2026-07-12T00:00:00.000Z'
+      : reviewedSlugs.includes(bundle.flow.slug) ? '2026-09-30' : curatedSourceAppSeed.generatedAt;
+    assert.equal(bundle.flow.source_checked_at, expected, bundle.flow.slug);
+    assert.equal(bundle.flow.updated_at, expected, bundle.flow.slug);
+    assert.equal(bundle.flow.created_at, curatedSourceAppSeed.generatedAt, bundle.flow.slug);
+  }
+  for (const map of curatedSourceAppSeedFlowMaps.filter((map) => map.id !== 'baby-food-map')) {
+    assert.equal(map.updatedAt, curatedSourceAppSeed.generatedAt, map.id);
+    assert.equal(map.version, '2026-07-01.1', map.id);
+  }
+});
+
+test('reviewed curated source dates retain future, malformed, and 90/180 day gates', () => {
+  const bundle = curatedSourceAppSeedFlowBundles.find((entry) => entry.flow.slug === 'wedding-vendor-board');
+  assert.ok(bundle);
+  const checked = (source_checked_at: string, asOf = '2026-09-30T12:00:00+09:00') =>
+    classifyFlowSourceFreshness({ ...bundle, flow: { ...bundle.flow, source_checked_at } }, new Date(asOf));
+  assert.equal(checked('2026-09-30').bucket, 'current');
+  assert.deepEqual(checked('2026-10-01').missingFields, ['source_checked_at_future']);
+  assert.deepEqual(checked('2026-02-30').missingFields, ['source_checked_at']);
+  assert.deepEqual(checked('not-a-date').missingFields, ['source_checked_at']);
+  assert.equal(checked('2026-09-30', '2026-12-29T12:00:00+09:00').bucket, 'current');
+  assert.equal(checked('2026-09-30', '2026-12-30T12:00:00+09:00').bucket, 'review_due');
+  assert.equal(checked('2026-09-30', '2027-03-29T12:00:00+09:00').bucket, 'review_due');
+  assert.equal(checked('2026-09-30', '2027-03-30T12:00:00+09:00').bucket, 'stale');
+});
+
+test('wedding vendor board links to its own source while the timeline retains Naver', () => {
+  const board = curatedSourceAppSeedFlowBundles.find((bundle) => bundle.flow.slug === 'wedding-vendor-board');
+  const timeline = curatedSourceAppSeedFlowBundles.find((bundle) => bundle.flow.slug === 'wedding-timeline');
+  assert.ok(board);
+  assert.ok(timeline);
+  assert.equal(board.flow.source_url, 'https://gongysd.com/wedding-notion/?bmode=view&idx=167989966');
+  assert.ok(board.itemDetails?.every((detail) => detail.links?.every((link) => link.url === board.flow.source_url)));
+  assert.equal(timeline.flow.source_url, 'https://blog.naver.com/wilklove/223518896995');
 });
 
 test('runtime content policy archives unsupported public routes without deleting canonical review records', () => {

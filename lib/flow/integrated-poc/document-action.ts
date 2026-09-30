@@ -1,6 +1,7 @@
 import type { ProgramData, ProgramPublicationDraft, ProgramParticipationDraft } from './contract';
 import type { ProgramCreatorWorking } from './creator-workspace-contract';
 import type { ProgramProposalReviewDraft } from './review-drafts';
+import type { TextWorkspaceState } from './text-workspace';
 
 /** Flush the actual editor draft before opening an action based on committed text. */
 export async function prepareProgramDocumentAction(input: {
@@ -27,6 +28,8 @@ export type ProgramEditorFlush = {
   hasPendingInput?: () => boolean;
   pendingDocumentIds?: () => string[];
   captureDrafts?: () => ProgramEditorDraft[];
+  /** Called only after the shell proves an exact same-request private save. Never replace input. */
+  acceptConfirmedPrivateText?: (before: TextWorkspaceState, next: TextWorkspaceState) => boolean;
   /** Explicit private social drafts; never restore these as personal raw documents. */
   captureSocialDrafts?: () => ProgramEditorSocialDraft[];
   /** Advance only an exact confirmed private draft after a lost response; never replace input. */
