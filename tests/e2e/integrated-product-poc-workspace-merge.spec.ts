@@ -103,7 +103,7 @@ for (const [width, height] of dimensions) test(`current workspace ${width}x${hei
   for (const view of ['주간', '월간', '전체 할 일']) { await nav(page, view); await expect(row(page, 'Merge task')).toHaveCount(1); }
   await row(page, 'Merge task').getByRole('button').nth(1).click();
   await page.getByText('문서 작업', { exact: true }).click();
-  await page.getByRole('combobox', { name: '문서 폴더', exact: true }).selectOption({ label: 'Merge folder' });
+  await page.getByRole('combobox', { name: '보관 위치', exact: true }).selectOption({ label: 'Merge folder' });
   await expect.poll(async () => (await space(page)).text.documents.find(d => d.id === task.docId)?.folderId).not.toBeNull();
   const assigned = await space(page), folder = assigned.text.folders.find(f => f.title === 'Merge folder')!;
   expect(assigned.text.documents.find(d => d.id === task.docId)?.folderId).toBe(folder.id);
@@ -200,7 +200,7 @@ test('current ordering: menu, keyboard, drag and touch-hold share order; cancel/
   expect(await successfulWrites(page)).toBe(writesBeforeCancel);
   await touch.press('Enter');
   const dialog = page.getByRole('dialog');
-  await dialog.getByRole('button', { name: '날짜 적용', exact: true }).click();
+  await dialog.getByRole('button', { name: '날짜·시간 적용', exact: true }).click();
   await expect(page.getByRole('status').filter({ hasText: '이미 같은 상태입니다.' })).toBeVisible();
   expect(await raw(page)).toBe(before); // identical date is a no-op
   expect(await successfulWrites(page)).toBe(writesBeforeCancel);
@@ -210,12 +210,12 @@ test('current ordering: menu, keyboard, drag and touch-hold share order; cancel/
   await touch.click();
   await dialog.getByLabel('실행 날짜', { exact: true }).fill('2026-10-10');
   await page.evaluate(() => { (window as unknown as { __workspaceFail: boolean }).__workspaceFail = true; });
-  await dialog.getByRole('button', { name: '날짜 적용', exact: true }).click();
+  await dialog.getByRole('button', { name: '날짜·시간 적용', exact: true }).click();
   await expect(dialog.getByRole('alert')).toBeVisible();
   expect(await raw(page)).toBe(before);
   expect(await successfulWrites(page)).toBe(writesBeforeCancel);
   await page.evaluate(() => { (window as unknown as { __workspaceFail: boolean }).__workspaceFail = false; });
-  await dialog.getByRole('button', { name: '날짜 적용', exact: true }).click();
+  await dialog.getByRole('button', { name: '날짜·시간 적용', exact: true }).click();
   await expect.poll(async () => M.tasks((await space(page)).text).find(t => t.title === 'Order C')?.date).toBe('2026-10-10');
   await page.keyboard.press('Escape');
   await verify();

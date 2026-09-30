@@ -126,3 +126,17 @@ root가 마감한 ACK `qa.md`와 `tasks.md`를 후보에 동기화했다. 후보
 현재 게시 후보는 **44경로: 추적 수정 22개 + 신규 22개**다. 기존 소유 범위 35경로에 승인된 9경로를 더한 수다. 정확한 파일 목록과 파일별 SHA-256은 로컬 전용 `output/alpha-private-save-ack/publish-manifest-20260930.json`에 기록한다. 이는 캡처 시점의 manifest이며 상위 작업자가 이후 마감 문서를 수정하면 해당 hash를 다시 대조해야 한다.
 
 파일 목록에 build 산출물, `output/`, `.next*`, `.tmp/`, `.env*`, `node_modules/`, 비공개 raw catalog, 실제 계정 자료는 없다. `.github/workflows`와 `.githooks`의 HEAD diff는 0이고 staged 파일도 0이다. QA 도구 소스 2개는 게시 후보에 포함하지만 도구가 생성한 catalog·bundle·브라우저 증거는 포함하지 않는다. `.agents` 런타임 snapshot 역시 이 44경로에 포함하지 않는다. 이 기록은 scoped 게시 준비 확인이며 아직 commit/push/CI 완료를 주장하지 않는다.
+
+## 첫 게시와 승인된 테스트 후속 — 10/1
+
+첫 commit `3f2e31e065fb4c01810acdd27f40c0605858b4c8`은 앞의 manifest와 같은 44개 경로다. 실제 commit blob·SHA-256은 로컬 전용 `output/alpha-private-save-ack/commit-manifest-3f2e31e0.json`에 기록했다. 새 브랜치에 push하고 Draft PR #205를 기존 #204 head 기반으로 만들었다. 기존 #204와 main의 head는 그대로이며 workflow/hook/자동 배포 설정은 변경하지 않았다.
+
+사용자 후속 승인으로 다음 **테스트 5개**와 이번 spec/plan/tasks/qa/ownership·STATUS의 결과 기록만 추가 소유한다. 원본 mixed worktree와 운영/과거 제품 소스는 수정하지 않는다.
+
+- `tests/e2e/alpha-auth.fixture.ts`: 실제 summary 클릭으로 관리 메뉴 열기, AuthPanel→workspace 전환 중에도 같은 actor 이메일 검사 재평가.
+- `tests/e2e/alpha-auth.browser.ts`: 영향받은 다섯 경로에 관리 메뉴 열기 연결.
+- `tests/e2e/integrated-product-poc-portable.spec.ts`: 실제 날짜·시간 적용과 `09:30` 동시 저장 검증.
+- `tests/e2e/integrated-product-poc-workspace-merge.spec.ts`: `보관 위치` 선택 및 날짜·시간 적용 버튼 동기화.
+- `tests/e2e/personal-workspace-poc.spec.ts`: 과거 월간 예시 한 테스트만 9월15일 고정. 원래 28→27 날짜/복구 검사를 유지.
+
+운영 storage sentinel·정확한 namespace·계정 격리·no-op·취소·quota·Undo 검사를 삭제하거나 줄이지 않았다. force·skip·retries·전역 timeout 변경0이다. 로그인 내부 500ms 검사를 기존 8초 예산 안에서 다시 수행한다. 이 절은 후속 CI 통과를 미리 주장하지 않으며 최종 remote 판정은 PR #205 본문·checks에 기록한다. 원시 CI 로그·trace·PNG는 로컬 전용이다.

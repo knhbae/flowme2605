@@ -134,3 +134,29 @@ S2처럼 응답 유실 뒤 pending 조회가 저장 후 판본을 먼저 읽으�
 2026-09-30 UTC(한국 시각 10/1)의 읽기 조회로 Git 게시 경계를 확인했다. Render My Workspace의 연결 서비스는 `flowme-alpha-trial` 한 개이며 기존 브랜치·`autoDeploy=no`·trigger Off·PR preview Off다. Vercel 상세 조회 오류 뒤 로그인된 UI를 읽었다. `flowme2605`의 연결 저장소는 `knhbae/flowme2605`, Root Directory는 빈 값, Deploy Hooks는 없다. 팀 프로젝트 목록의 나머지 다섯 카드는 Git 미연결(`Connect Git Repository`)이고 기존 보조 head 프로젝트도 Git 미연결을 직접 확인했다. 현재 root [vercel.json](../../../vercel.json)의 `git.deploymentEnabled=false`는 그대로다. [공식 문서](https://vercel.com/docs/project-configuration/git-configuration#turning-off-all-automatic-deployments)도 이 값이 모든 브랜치 Git 자동 배포를 끈다고 설명한다. Ignored Build Step의 Automatic을 배포 차단으로 계산하지 않았다. 설정·요금제·도메인·인증 변경0이며 이 절은 push 후 실제 배포 수 관측을 대신하지 않는다.
 
 최종 문서 검사·commit/push·CI는 다음 후속 기록에서 실제 결과로 갱신한다. 새 브랜치는 `agent/alpha-core-ux-save-ack-20260930`, 별도 Draft PR의 base는 기존 #204 head `agent/alpha-m1-persistence-20260921`이다. 기존 PR을 확대하거나 main에 병합하지 않는다. 비공개 CI는 기존 reviewer gate를 유지하며 배포 승인을 대신하지 않는다.
+
+## 첫 게시·CI 실패와 승인된 회귀 보완 — 2026-10-01
+
+commit `3f2e31e065fb4c01810acdd27f40c0605858b4c8`의 44경로를 새 브랜치에 push하고 [Draft PR #205](https://github.com/knhbae/flowme2605/pull/205)를 만들었다. commit hook 문서4/4, push hook은 제품 테스트2,258회·문서4개 및 production build(compile4.3초·정적18/18)를 실제 실행해 통과했다. 제품/문서 합계2,262회는 다른 실행과 합산하지 않는다. main `efd8b642`·기존 #204 head `2b798d43`는 그대로다. push 후 Render 최신 배포는 기존9/26의 `2b798d43`이며 Vercel 새 배포 조회0이다. 호스팅·인증·DB 설정 변경0이다.
+
+### 첫 CI는 실패 — 통과로 이월하지 않음
+
+[첫 실행 36734445926](https://github.com/knhbae/flowme2605/actions/runs/36734445926)의 Docs/Unit/Build는 보안·게시 경계·전체 verify·auth 단위·타입 검사를 통과한 뒤 portable의 옛 `날짜 적용` 버튼에서 실패했다. 뒤 auth UI는 미실행, private contract는 skipped, Integrated contract gate는 이를 정확히 FAIL로 판정했다. 전체 E2E는 **760개 중751 passed·8 failed·1 flaky**였다. 실패는 portable1개·workspace6개·과거 월간1개다. flaky1개는 기존 P24 Calendar/held 회귀이며 확정 통과와 구분한다.
+
+현재 UI의 `날짜·시간 적용` 및 `보관 위치`와 관리 메뉴를 실제로 여는 동선으로 테스트를 보완했다. 과거 월간 test는 실행 날짜에 따라 두 예시 항목 중 하나가 다음 달로 넘어가 28 기대/29 실제가 됐다. 해당 제품 소스는 기준 head와 동일하며 이 예시 하나만 9월15일에 고정했다. 화면 숫자를 기대값으로 복사하거나 28을29로 바꾸지 않았다.
+
+### 후속 로컬 실행
+
+| 검사 | 실제 결과 |
+| --- | --- |
+| portable 현재 제품 | **4/4 PASS**, 날짜2026-10-10·시간09:30 동시 저장, 완료/Undo/reload·private copy·운영 bytes 검사 유지. `portable-e2e-after-ux-label-fixed.log` |
+| auth mocked HTTP | **30/30 PASS**, 로그인/만료/오류/PKCE/계정 전환/SDK cleanup·격리 및 5크기 키보드 화면. `auth-e2e-after-ux-race-fixed.log` |
+| workspace 현재 제품 | **6/6 PASS**, 다섯 크기 폴더·기간·완료/다시열기·미정·Undo/reload와 menu/keyboard/drag/touch-hold·pointercancel/Escape/취소/no-op/quota. `workspace-merge-e2e-after-ux-label-fixed.log` |
+| 과거 월간 예시 | **1/1 PASS**, 844×390·9월15일 anchor, 빈 날짜28→추가27→Undo28·저장 오류/복구·패널 내부 스크롤 검증 유지. `historical-month-e2e-followup.log`. historical build compile11.7초·정적10/10 통과. 현재 제품40개와 별도 집합 |
+| 독립 diff 검토 | 기존 운영 key/허용 prefix·격리·실패/Undo 검증 유지, force/skip/retries/global timeout/제품·권한 변경0 |
+
+로컬 보완 중 portable 시간 필드의 전체 label exact 매칭 실패2회와 auth의 일회성 메뉴 확인 race1회도 보존했다. 시간 label prefix를 type=time 검사와 함께 사용하고, 동일 actor 가시성 검사를 메뉴 확인과 함께 기존8초 안에서 다시 평가했다. workspace의 `문서 폴더` 구 label 실패를 확인한 첫 로컬 실행은 나머지 동일 대기를 중단했고, 실제 `보관 위치`로 보완 후6개 모두 통과했다. 실패 로그를 삭제하거나 완료된 실행으로 합산하지 않는다.
+
+로컬 브라우저 합계는 현재40개+과거1개=**41/41 PASS**다. 다른 실행이나 원본 worktree의 검사 수와 합산하지 않는다. 실제 계정/원격 쓰기0이며 각 시나리오의 운영 byte·허용 storage 경계를 유지했다. 로컬 QA 종료 후3104/3694/3695 listener0, 보호3105 PID5656·Tunnel20249 PID3864와 실제 BUILD_ID/설정 hash는 시작 기준 그대로다.
+
+이 문서는 후속 commit 전 검증 스냅샷이다. 최종 후속 commit·CI 판정은 PR #205 본문·checks를 최신 원장으로 사용한다. 기존 reviewer gate를 유지하고 사용자가 승인한 해당 commit의 비공개 검사만 실행한다. 배포·개발계 교체·merge·실제 기기·관찰 사용자 시험은 미실행이며 원시 로그·trace·PNG는 로컬 전용이다.

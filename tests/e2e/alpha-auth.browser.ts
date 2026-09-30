@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-import { login, mockAlpha, session, sessionKey, users, emptyAccount, accountWithDocument, invalidAccountMarker, pairedSocialAccount, isSocialReadOrInit } from './alpha-auth.fixture';
+import { login, openWorkspaceManagement, mockAlpha, session, sessionKey, users, emptyAccount, accountWithDocument, invalidAccountMarker, pairedSocialAccount, isSocialReadOrInit } from './alpha-auth.fixture';
 
 const workspaceHeading = (page: Page) => page.getByRole('heading', { name: '개인공간', exact: true });
 const workspaceStatus = (page: Page) => page.getByRole('region', { name: '서버 저장 상태', exact: true }).getByRole('status');
@@ -20,6 +20,7 @@ test('email login, empty account creation, reload and account switch preserve op
   await mock.assertBoundary();
   await page.reload();
   await expectWorkspaceReady(page);
+  await openWorkspaceManagement(page);
   await expect(page.getByText(users.a.email, { exact: true })).toBeVisible();
   await page.getByRole('button', { name: '로그아웃 · 계정 바꾸기' }).click();
   await expect(page.getByRole('heading', { name: '로그인', exact: true })).toBeVisible();
@@ -87,6 +88,7 @@ for (const failure of ['expired', 'network', 'invalid'] as const) {
     await expectWorkspaceReady(page);
     const editor = page.getByRole('region', { name: '개인 문서 편집', exact: true }).locator('textarea').first();
     await expect(editor).toHaveValue(confirmedRaw);
+    await openWorkspaceManagement(page);
     if (failure === 'expired') mock.state.userFailure = true;
     else mock.state.database = failure;
     await page.getByRole('button', { name: '서버에서 다시 확인' }).click();
@@ -248,6 +250,7 @@ test('verified A recovery replaces old B only after exchange and updates A alone
   await expect(page.getByLabel('새 비밀번호', { exact: true })).toHaveCount(0);
   expect(await page.evaluate(key => localStorage.getItem(`${key}-recovery-owner`), sessionKey)).toBeNull();
   expect(mock.state.updatedOwners).toEqual(['a']);
+  await openWorkspaceManagement(page);
   await expect(page.getByText(users.a.email, { exact: true })).toBeVisible();
   await expect(page.getByText(users.b.email, { exact: true })).toHaveCount(0); await mock.assertBoundary();
 });
@@ -319,11 +322,13 @@ test('two real app tabs close A and follow B while ignoring a late A database re
   const secondPage = await page.context().newPage(); const second = await mockAlpha(secondPage);
   second.accounts.set('a', emptyAccount('a'));
   await secondPage.goto('/alpha');
+  await openWorkspaceManagement(secondPage);
   await expect(secondPage.getByText(users.a.email, { exact: true })).toBeVisible();
   await expectWorkspaceReady(secondPage);
   second.state.holdA = true;
   await secondPage.getByRole('button', { name: '서버에서 다시 확인' }).click();
   await expect.poll(() => second.state.held !== null).toBe(true);
+  await openWorkspaceManagement(page);
   await page.getByRole('button', { name: '로그아웃 · 계정 바꾸기' }).click();
   for (const tab of [page, secondPage]) await expect(tab.getByRole('heading', { name: '로그인', exact: true })).toBeVisible();
   await login(page, 'b');

@@ -174,9 +174,26 @@ export async function mockAlpha(page: Page) {
   }
   return { state, accounts, requests, workspaceRequests, pageErrors, consoleErrors, assertBoundary };
 }
+export async function openWorkspaceManagement(page: Page) {
+  const management = page.locator('details[aria-label="계정 및 자료 관리"]');
+  await expect(management).toBeVisible();
+  if (await management.getAttribute('open') === null) {
+    await management.locator('summary').click();
+  }
+  await expect(management).toHaveAttribute('open', '');
+}
+
 export async function login(page: Page, actor: Actor = 'a') {
   await page.getByLabel('이메일', { exact: true }).fill(users[actor].email);
   await page.getByLabel('비밀번호', { exact: true }).fill('Fixture-password-123!');
   await page.getByRole('button', { name: '로그인', exact: true }).click();
-  await expect(page.getByText(users[actor].email, { exact: true })).toBeVisible();
+  const identity = page.getByText(users[actor].email, { exact: true });
+  const managementSummary = page.locator('details[aria-label="계정 및 자료 관리"] > summary');
+  // The AuthPanel identity can move into the closed workspace menu between
+  // checks. Recheck the current surface together with the exact actor identity.
+  // New-account and held-read AuthPanel screens still display it directly.
+  await expect(async () => {
+    if (await managementSummary.isVisible()) await openWorkspaceManagement(page);
+    await expect(identity).toBeVisible({ timeout: 500 });
+  }).toPass({ timeout: 8_000 });
 }

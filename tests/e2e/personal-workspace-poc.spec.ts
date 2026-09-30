@@ -1008,9 +1008,12 @@ test.describe('FlowMe 개인공간 v4.1 기능형 PoC', () => {
     await assertStorageBoundary(page, calls, operationalBefore);
   });
 
-  test('844x390 month exposes 28 empty date sections, date-specific Quick add, recovery, and panel-internal scroll', async ({ page }) => {
+  test('844x390 September 15 anchor exposes 28 empty date sections, date-specific Quick add, recovery, and panel-internal scroll', async ({ page }) => {
     test.setTimeout(120_000);
     const calls: StorageMutation[] = [];
+    // CI on September 30 correctly showed 29: the fixture's second day fell in October.
+    // Fix only this scenario's Date; keep timers running for recovery and scrolling.
+    await page.clock.setFixedTime(new Date('2026-09-15T12:00:00Z'));
     await installFixturesAndAudit(page, calls);
     await page.setViewportSize({ width: 844, height: 390 });
     await page.goto(POC_URL);
