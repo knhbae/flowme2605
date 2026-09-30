@@ -140,3 +140,9 @@ root가 마감한 ACK `qa.md`와 `tasks.md`를 후보에 동기화했다. 후보
 - `tests/e2e/personal-workspace-poc.spec.ts`: 과거 월간 예시 한 테스트만 9월15일 고정. 원래 28→27 날짜/복구 검사를 유지.
 
 운영 storage sentinel·정확한 namespace·계정 격리·no-op·취소·quota·Undo 검사를 삭제하거나 줄이지 않았다. force·skip·retries·전역 timeout 변경0이다. 로그인 내부 500ms 검사를 기존 8초 예산 안에서 다시 수행한다. 이 절은 후속 CI 통과를 미리 주장하지 않으며 최종 remote 판정은 PR #205 본문·checks에 기록한다. 원시 CI 로그·trace·PNG는 로컬 전용이다.
+
+## 고정 catalog 비교 테스트 후속 — 10/1
+
+후속 commit `6fe4290cfe5f460d49ac0e716caf55b519fc619f`은 앞의 테스트5개·문서6개, 총11경로이며 base 이후 누적49경로다. 두 번째 CI에서 현재 seed와 9월23일 고정 원본을 동일하다고 가정한 테스트1개가 실패했다. 사용자 승인 범위 안에서 `lib/flow/integrated-poc/catalog-library.test.ts` 한 파일과 기존 spec/plan/tasks/qa/ownership·STATUS·원문 대조 기록의 후속 요약만 추가 소유한다. 누적 경로는50개이며 게시 전 실제 blob manifest로 다시 대조한다.
+
+원본은 기존 문서에 명시된 local temporary catalog만 읽었다. 263,439bytes·SHA256 `6b3f02a35149c52e889f92ad7f42c2ba97298755788c272d5e01d35837ee3659`이며 표적 검사 전후 동일하다. 원본 복사·수정·공개0, 실제 계정/백업 파일 조회0이다. 생산 catalog loader/version/seal/validator·workflow·hook은 수정하지 않는다. 테스트는 승인된6slug의 정확한 old/new 날짜·URL/type을 먼저 검사하고 비교용 복제본만 역사값으로 환원한 뒤 전체 canonical hash를 대조한다. 본문·다른 Item·추가 링크·Map·variant 차이를 제거하는 포괄적 예외는 없다. 기존10개 검사와 부정 회귀3개,13/13 PASS 및 별도 read-only diff 검토를 마쳤다.

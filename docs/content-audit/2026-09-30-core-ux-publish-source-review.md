@@ -44,6 +44,8 @@
 
 업체 보드의 `sourceTrace`는 공여사들이었지만 `wedding-vendors.sourceUrl`은 Naver였다. 이 한 URL을 공여사들 원문으로 교정했다. 생성된 Flow의 기본 원문과 항목 링크가 해당 원문을 가리키며, 타임라인은 Naver를 유지한다.
 
+URL 교정에 따른 기존 생성기의 파생 값도 구분한다. 현재 업체 보드의 `flow.source_url`, 첫 Item detail link의 URL과 함께 Item `source_type`은 `creator_experience`→`reference`, link type은 `creator`→`reference`로 바뀐다. 제목·원문·항목 수·identity·순서·일정의 변경은 아니다. 9월23일 고정 private catalog는 이 교정을 자동 적용하지 않으며 원본·version·seal을 그대로 유지한다. 후속 비교 테스트는 여섯 확인일 및 이 정확한 URL/type delta만 명시적으로 검사하고 나머지 전체 내용 hash를 대조한다.
+
 이 대조는 기존 37개 요약 단계의 출처를 확인한 것이다. 모든 원문 행·시점·세부 내용이 보존됐다는 판정은 아니다. 특히 웨딩 타임라인의 기존 시점 생략과 민감 범주 메모는 별도 변환 품질 검토가 남아 있다.
 
 ## 권리·주의 경계

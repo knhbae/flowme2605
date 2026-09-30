@@ -5,11 +5,54 @@ import { seedBundles } from '../seed-flows';
 import { mergeSourceBackedMyFlowBundles, sourceBackedMyFlowMaps } from '../source-backed-my-flow';
 import { validateCatalogLibrarySnapshot, catalogLibrarySummary, CATALOG_LIBRARY_VERSION } from './catalog-library';
 import { buildCatalogLibrarySnapshot } from './catalog-library-source';
+import type { FlowBundle } from '../types';
 const NOW = '2026-09-23T12:00:00.000Z';
 const clone = <T>(v: T): T => structuredClone(v);
 const stable = (v: any): string => Array.isArray(v) ? `[${v.map(stable).join(',')}]` : v && typeof v === 'object'
   ? `{${Object.keys(v).sort().map(k => `${JSON.stringify(k)}:${stable(v[k])}`).join(',')}}` : JSON.stringify(v);
 const stripCounters = (b: any) => { const v = clone(b); delete v.flow.usage_count; delete v.flow.copy_count; return JSON.parse(JSON.stringify(v)); };
+const fingerprint = (value: unknown) => createHash('sha256').update(stable(value)).digest('hex');
+// Public review metadata only; the sealed 2026-09-23 source stays immutable.
+// Evidence: docs/content-audit/2026-09-30-core-ux-publish-source-review.md.
+const reviewedSourceDelta = Object.freeze({
+  slugs: Object.freeze(['opic-2w', 'opic-1m', 'new-car-7-step', 'moving-dday', 'wedding-timeline', 'wedding-vendor-board']),
+  oldDate: '2026-07-01T00:00:00+09:00', newDate: '2026-09-30',
+  vendor: Object.freeze({ slug: 'wedding-vendor-board',
+    oldUrl: 'https://blog.naver.com/wilklove/223518896995',
+    newUrl: 'https://gongysd.com/wedding-notion/?bmode=view&idx=167989966',
+    oldSourceType: 'creator_experience' as const, newSourceType: 'reference' as const,
+    oldLinkType: 'creator' as const, newLinkType: 'reference' as const }),
+});
+
+function assertRetainedSource(saved: FlowBundle | undefined, current: FlowBundle) {
+  const slug = current.flow.slug;
+  assert(saved, `${slug}: missing frozen source`);
+  const comparable: FlowBundle = stripCounters(current);
+  const changed = fingerprint(saved) !== fingerprint(comparable);
+  if (reviewedSourceDelta.slugs.includes(slug)) {
+    for (const field of ['source_checked_at', 'updated_at'] as const) {
+      assert.equal(saved.flow[field], reviewedSourceDelta.oldDate, `${slug}: frozen ${field}`);
+      assert.equal(comparable.flow[field], reviewedSourceDelta.newDate, `${slug}: reviewed ${field}`);
+      comparable.flow[field] = reviewedSourceDelta.oldDate;
+    }
+    const vendor = reviewedSourceDelta.vendor;
+    if (slug === vendor.slug) {
+      assert.equal(saved.flow.source_url, vendor.oldUrl); assert.equal(comparable.flow.source_url, vendor.newUrl);
+      assert.equal(saved.items[0]?.source_type, vendor.oldSourceType);
+      assert.equal(comparable.items[0]?.source_type, vendor.newSourceType);
+      const oldLink = saved.itemDetails?.[0]?.links?.[0], newLink = comparable.itemDetails?.[0]?.links?.[0];
+      assert(oldLink && newLink, `${slug}: missing retained source link`);
+      assert.equal(oldLink.url, vendor.oldUrl); assert.equal(newLink.url, vendor.newUrl);
+      assert.equal(oldLink.type, vendor.oldLinkType); assert.equal(newLink.type, vendor.newLinkType);
+      comparable.flow.source_url = vendor.oldUrl;
+      comparable.items[0].source_type = vendor.oldSourceType;
+      newLink.url = vendor.oldUrl; newLink.type = vendor.oldLinkType;
+    }
+  }
+  // Compare every retained field, but never print private nested source on failure.
+  assert.equal(fingerprint(saved), fingerprint(comparable), `${slug}: unreviewed source delta`);
+  return changed;
+}
 
 test('full source library has 177 unique bundles, 957 items, 371 sections, 26 maps and two explicit variants', () => {
   const s = buildCatalogLibrarySnapshot(NOW); assert(validateCatalogLibrarySnapshot(s));
@@ -17,17 +60,64 @@ test('full source library has 177 unique bundles, 957 items, 371 sections, 26 ma
   assert.equal(new Set(s.bundles.map(b => b.flow.id)).size, 177); assert.equal(new Set(s.bundles.map(b => b.flow.slug)).size, 177);
   assert.deepEqual(s.variants.map(v => v.slug), ['dog-adoption-first-week', 'ev-subsidy-apply']);
 });
-test('every current source field is retained in primary or explicit variant; only usage/copy counters removed', () => {
+test('frozen source retains every field except counters and the exact public review delta', () => {
   const s = buildCatalogLibrarySnapshot(NOW);
-  for (const b of mergeSourceBackedMyFlowBundles(seedBundles)) {
+  const current = mergeSourceBackedMyFlowBundles(seedBundles), changed: string[] = [];
+  const frozenBefore = fingerprint(s), currentBefore = fingerprint(current);
+  for (const b of current) {
     const saved = s.variants.find(v => v.slug === b.flow.slug)?.bundle ?? s.bundles.find(v => v.flow.slug === b.flow.slug);
-    assert.deepEqual(saved, stripCounters(b), b.flow.slug);
+    if (assertRetainedSource(saved, b)) changed.push(b.flow.slug);
   }
-  assert.deepEqual(s.maps, JSON.parse(JSON.stringify(sourceBackedMyFlowMaps)));
+  assert.deepEqual(changed.sort(), [...reviewedSourceDelta.slugs].sort());
+  assert.equal(fingerprint(s.maps), fingerprint(JSON.parse(JSON.stringify(sourceBackedMyFlowMaps))));
+  assert.equal(fingerprint(s), frozenBefore); assert.equal(fingerprint(current), currentBefore);
   for (const b of [...s.bundles, ...s.variants.map(v => v.bundle)]) {
     assert(!Object.hasOwn(b.flow, 'usage_count')); assert(!Object.hasOwn(b.flow, 'copy_count'));
     assert.equal(b.flow.status, 'published'); // original provenance, not a new publication
   }
+});
+
+test('retention rejects a review-date change on an unreviewed source', () => {
+  const s = buildCatalogLibrarySnapshot(NOW);
+  const current = clone(mergeSourceBackedMyFlowBundles(seedBundles).find(b => !reviewedSourceDelta.slugs.includes(b.flow.slug))!);
+  const saved = s.variants.find(v => v.slug === current.flow.slug)?.bundle ?? s.bundles.find(v => v.flow.slug === current.flow.slug);
+  assertRetainedSource(saved, current);
+  current.flow.source_checked_at = reviewedSourceDelta.newDate;
+  assert.throws(() => assertRetainedSource(saved, current), /unreviewed source delta/);
+});
+
+test('reviewed source allowance never admits changed title, raw text or item content', () => {
+  const s = buildCatalogLibrarySnapshot(NOW), saved = s.bundles.find(b => b.flow.slug === 'opic-2w')!;
+  const source = mergeSourceBackedMyFlowBundles(seedBundles).find(b => b.flow.slug === saved.flow.slug)!;
+  for (const mutate of [
+    (b: FlowBundle) => { b.flow.title += ' synthetic mutation'; },
+    (b: FlowBundle) => { b.flow.raw_text = `${b.flow.raw_text ?? ''}\nsynthetic mutation`; },
+    (b: FlowBundle) => { b.items[0].title += ' synthetic mutation'; },
+  ]) {
+    const changed = clone(source); mutate(changed);
+    assert.throws(() => assertRetainedSource(saved, changed), /unreviewed source delta/);
+  }
+});
+
+test('retention pins both historical and reviewed metadata while the frozen validator rejects the new date', () => {
+  const s = buildCatalogLibrarySnapshot(NOW), saved = s.bundles.find(b => b.flow.slug === reviewedSourceDelta.vendor.slug)!;
+  const source = mergeSourceBackedMyFlowBundles(seedBundles).find(b => b.flow.slug === saved.flow.slug)!;
+  for (const side of ['frozen', 'current'] as const) {
+    for (const mutate of [
+      (b: FlowBundle) => { b.flow.source_checked_at = '2026-09-29'; },
+      (b: FlowBundle) => { b.flow.updated_at = '2026-09-29'; },
+      (b: FlowBundle) => { b.flow.source_url = 'https://example.invalid/unreviewed'; },
+      (b: FlowBundle) => { b.items[0].source_type = 'official'; },
+      (b: FlowBundle) => { b.itemDetails![0].links![0].url = 'https://example.invalid/unreviewed'; },
+      (b: FlowBundle) => { b.itemDetails![0].links![0].type = 'official'; },
+    ]) {
+      const before = clone(saved), after = clone(source); mutate(side === 'frozen' ? before : after);
+      assert.throws(() => assertRetainedSource(before, after), assert.AssertionError);
+    }
+  }
+  saved.flow.source_checked_at = reviewedSourceDelta.newDate;
+  saved.flow.updated_at = reviewedSourceDelta.newDate;
+  assert.equal(validateCatalogLibrarySnapshot(s), false);
 });
 test('original previous-PoC variants remain distinct from newer source revisions', () => {
   const s = buildCatalogLibrarySnapshot(NOW); const ev = s.bundles.find(b => b.flow.slug === 'ev-subsidy-apply')!;

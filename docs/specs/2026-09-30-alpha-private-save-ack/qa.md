@@ -160,3 +160,15 @@ commit `3f2e31e065fb4c01810acdd27f40c0605858b4c8`의 44경로를 새 브랜치�
 로컬 브라우저 합계는 현재40개+과거1개=**41/41 PASS**다. 다른 실행이나 원본 worktree의 검사 수와 합산하지 않는다. 실제 계정/원격 쓰기0이며 각 시나리오의 운영 byte·허용 storage 경계를 유지했다. 로컬 QA 종료 후3104/3694/3695 listener0, 보호3105 PID5656·Tunnel20249 PID3864와 실제 BUILD_ID/설정 hash는 시작 기준 그대로다.
 
 이 문서는 후속 commit 전 검증 스냅샷이다. 최종 후속 commit·CI 판정은 PR #205 본문·checks를 최신 원장으로 사용한다. 기존 reviewer gate를 유지하고 사용자가 승인한 해당 commit의 비공개 검사만 실행한다. 배포·개발계 교체·merge·실제 기기·관찰 사용자 시험은 미실행이며 원시 로그·trace·PNG는 로컬 전용이다.
+
+## 두 번째 CI와 고정 catalog 비교 보완 — 2026-10-01
+
+[두 번째 실행36740962662](https://github.com/knhbae/flowme2605/actions/runs/36740962662)은 head `6fe4290cfe5f460d49ac0e716caf55b519fc619f`의 **FAIL**이다. Docs/Unit/Build는 verify2,258회·build·portable4/4·auth30/30을 포함해 SUCCESS, 전체 Playwright는 **760/760 PASS**였다. 비공개 통합 검사는 실제 **2,588회 중2,587 PASS·1 FAIL**, skip/cancel/sourceChanged0이며 Integrated contract gate가 이를 정확히 FAIL로 판정했다. 원래의 reviewer gate로 해당 head만 승인했고 workflow·환경 규칙·배포는 변경하지 않았다. 이전760개 통과는 다음 head의 CI 통과를 대신하지 않는다.
+
+실패1개는 `catalog-library.test.ts`의 현재 source field 비교였다. 원본 frozen version은9월23일을 보존하지만 이번 승인된 여섯 source review는9월30일이다. 문서에 명시된 같은 local sealed source를 읽어 해당 테스트 **1개 실행·1 FAIL**을 재현했다. 본문을 바꿔 해결하거나 고정 원본/검증 서명을 새로 만들지 않았다. 원시 오류 객체는 로컬 전용이며 공개 실패 요약에 포함하지 않는다.
+
+보완한 한 파일은 기존10개와 부정 회귀3개, **13/13 PASS**, fail/skip/cancel0이다. 여섯slug의 과거/현재 확인일·갱신일과 업체 URL·파생type을 양쪽 정확히 검사한 뒤 비교용 clone만 과거값으로 되돌려 전체 hash를 대조한다. 비승인slug 날짜, 승인slug 제목/원문/Item, 잘못된 날짜/URL/type을 거절하며 frozen에 새 날짜를 넣어도 validator가 거절한다. 기존 Map/variant/count/descriptor/tamper/현재seed독립성·seal 검사를 유지한다. 독립 diff 검토에서 차단 결함·포괄적 비교 제외는 발견되지 않았다.
+
+표적 실행 전후 source는263,439bytes·SHA256 `6b3f02a35149c52e889f92ad7f42c2ba97298755788c272d5e01d35837ee3659`로 동일하다. 안전 집계는 로컬 `private-catalog-retention-after-summary.json`이며 원본·개인 계정 자료를 게시하지 않는다. 전체 통합 재검사와 다음 exact-head CI는 별도 결과로 기록한다.
+
+같은 원본을 사용한 전체 통합 재검사는 `2026-09-30T16:36:22Z`→`16:44:52Z`에 실제 실행했다. **256파일·2,591/2,591 PASS**, exit/verifiedExit0, fail/skip/cancel0·sourceChanged0이다. 기존2,588회에 부정 회귀3개를 더한 집합이며 npm test·표적13개와 합산하지 않는다. 기존 concurrency2·heap512MiB를 사용했고 worker/assertion/검증 기준은 줄이지 않았다. 종료 후 원본의 크기·SHA도 위 값 그대로다. 로컬 producer 요약/로그는 `output/integrated-product-poc/new-tests-2026-09-30T16-36-22-123Z.json` 및 같은 이름 `.log`다. 다음 원격 CI 결과는 PR #205 본문·checks에 exact-head별로 기록한다.
