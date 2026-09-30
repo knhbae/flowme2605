@@ -22,6 +22,93 @@ function command(account: AlphaAccount, requestId = 'edit'): Extract<AlphaComman
 }
 function deferred<T>() { let resolve!: (value: T) => void; const promise = new Promise<T>(done => { resolve = done; }); return { promise, resolve }; }
 
+test('refresh never preserves rejection eligibility after read failure, changed baseline, or failed recovery write', async () => {
+  for (const scenario of ['invalid', 'unauthenticated', 'unavailable', 'transport', 'revision', 'same-revision-bytes', 'references', 'public-revision', 'public-bytes', 'recovery'] as const) {
+    const f = setup(), backing = createAlphaMemoryRecovery(); let changed = false, calls = 0;
+    const refs = detached(f.a.references); refs.social = { schema: 'flowme-alpha-social-projection/1', revision: 0, ownActorId: 'a', actorNames: { a: 'A' } };
+    const client = createAlphaClient(f.validate, { load: backing.load, save: value => !(changed && scenario === 'recovery') && backing.save(value) });
+    client.bindSession('a', { ...f.pa,
+      references: () => {
+        const value = detached(refs);
+        if (changed && scenario === 'references') value.social!.actorNames.a = 'Changed';
+        if (changed && scenario === 'public-revision') value.social!.revision++;
+        if (changed && scenario === 'public-bytes') value.public.posts = [{ id: 'changed' } as typeof value.public.posts[number]];
+        return value;
+      },
+      read: async () => {
+        if (changed && scenario === 'transport') throw Error('lost read');
+        if (changed && ['invalid', 'unauthenticated', 'unavailable'].includes(scenario)) return { ok: false, reason: scenario as 'invalid' | 'unauthenticated' | 'unavailable' };
+        const value = detached(f.a.account);
+        if (changed && scenario === 'revision') value.revision++;
+        if (changed && scenario === 'same-revision-bytes') value.space.text.folders[0].title = 'forged';
+        return { ok: true, value };
+      },
+      execute: async () => { calls++; return { ok: false, reason: 'invalid' }; },
+    });
+    assert(await client.refresh()); await client.execute(command(f.a.account));
+    assert.equal(client.snapshot().retryableRejectedDraft, true); const draft = client.snapshot().state?.draft;
+    changed = true; await client.refresh();
+    assert.equal(client.snapshot().retryableRejectedDraft, false, scenario); assert.deepEqual(client.snapshot().state?.draft, draft);
+    assert.equal(await client.execute(command(f.a.account, 'blocked'), { retryRejectedDraft: true }), false);
+    assert.equal(calls, 1); assert.equal(f.server.diagnostics().mutations, 0);
+    changed = false; await client.refresh(); assert.equal(client.snapshot().retryableRejectedDraft, false, `${scenario} must not regain proof`);
+  }
+});
+
+test('refresh of a rejected draft cannot restore provenance across a session change or reload', async () => {
+  const f = setup(), recovery = createAlphaMemoryRecovery(), client = createAlphaClient(f.validate, recovery);
+  const hold = deferred<AlphaResult<AlphaAccount>>(); let waiting = false;
+  const port: AlphaRepository = { ...f.pa, read: () => waiting ? hold.promise : f.pa.read(), execute: async () => ({ ok: false, reason: 'invalid' }) };
+  client.bindSession('a', port); await client.refresh(); await client.execute(command(f.a.account));
+  waiting = true; const pending = client.refresh(); assert.equal(client.snapshot().retryableRejectedDraft, false);
+  client.bindSession('b', f.pb); assert(await client.refresh()); hold.resolve({ ok: true, value: f.a.account });
+  assert.equal(await pending, false); assert.equal(client.snapshot().ownerId, 'b'); assert.equal(client.snapshot().retryableRejectedDraft, false);
+  const reboot = createAlphaClient(f.validate, recovery); reboot.bindSession('a', f.pa); assert(await reboot.refresh());
+  assert.equal(reboot.snapshot().status, 'conflict'); assert.equal(reboot.snapshot().retryableRejectedDraft, false);
+  assert(reboot.snapshot().state?.draft);
+});
+
+test('explicit rejected-draft retry requires the confirmed revision and a fresh private request ID', async () => {
+  const f = setup(), client = createAlphaClient(f.validate); let calls = 0;
+  client.bindSession('a', { ...f.pa, execute: async () => { calls++; return { ok: false, reason: 'invalid' }; } });
+  await client.refresh(); await client.execute(command(f.a.account));
+  assert.equal(client.snapshot().retryableRejectedDraft, true);
+  const before = client.snapshot();
+  for (const invalid of [command(f.a.account), { ...command(f.a.account, 'fresh'), expectedRevision: 1 },
+    { schema: ALPHA_COMMAND_SCHEMA, kind: 'undo-private' as const, requestId: 'undo', expectedRevision: 0, operationId: 'edit' }]) {
+    assert.equal(await client.execute(invalid, { retryRejectedDraft: true }), false);
+    assert.deepEqual(client.snapshot(), before);
+  }
+  assert.equal(calls, 1);
+  const stale = createAlphaClient(f.validate); stale.bindSession('a', { ...f.pa, execute: async () => ({ ok: false, reason: 'limit' }) });
+  await stale.refresh(); await stale.execute({ ...command(f.a.account), expectedRevision: 1 });
+  assert.equal(stale.snapshot().retryableRejectedDraft, false);
+});
+
+test('rejected-draft same-value field retry clears recovery without changing confirmed bytes', async () => {
+  const f = setup(), recovery = createAlphaMemoryRecovery(), client = createAlphaClient(f.validate, recovery); let calls = 0;
+  client.bindSession('a', { ...f.pa, execute: async () => { calls++; return { ok: false, reason: 'limit' }; } });
+  await client.refresh(); await client.execute(command(f.a.account));
+  const confirmed = client.snapshot().state?.confirmed;
+  const same = { ...command(f.a.account, 'restore'), changes: [{ field: 'text' as const, present: true as const, value: f.a.account.space.text }] };
+  assert.equal(await client.execute(same, { retryRejectedDraft: true }), false);
+  assert.equal(client.snapshot().status, 'same-location'); assert.equal(client.snapshot().state?.draft, null);
+  assert.deepEqual(client.snapshot().state?.confirmed, confirmed); assert.equal(calls, 1);
+  const loaded = recovery.load('a'); assert(loaded.ok); assert.equal(loaded.value?.draft, null);
+});
+
+test('ambiguous replay rejection and rejected Undo do not qualify for private draft replacement', async () => {
+  const f = setup(), client = createAlphaClient(f.validate); let calls = 0;
+  client.bindSession('a', { ...f.pa, execute: async () => { if (++calls === 1) throw Error('lost'); return { ok: false, reason: 'invalid' }; } });
+  await client.refresh(); await client.execute(command(f.a.account)); const original = client.snapshot().state?.pending;
+  await client.resolvePending(true);
+  assert.equal(client.snapshot().retryableRejectedDraft, false); assert.deepEqual(client.snapshot().state?.pending, original);
+  assert.equal(await client.execute(command(f.a.account, 'new'), { retryRejectedDraft: true }), false); assert.equal(calls, 2);
+  const undo = createAlphaClient(f.validate); undo.bindSession('a', { ...f.pa, execute: async () => ({ ok: false, reason: 'invalid' }) });
+  await undo.refresh(); await undo.execute({ schema: ALPHA_COMMAND_SCHEMA, kind: 'undo-private', requestId: 'undo', expectedRevision: 0, operationId: 'edit' });
+  assert.equal(undo.snapshot().retryableRejectedDraft, false);
+});
+
 test('limit diagnostic is transient; definitive rejection retains draft and ambiguous retry retains pending', async () => {
   const f = setup(), recovery = createAlphaMemoryRecovery(), client = createAlphaClient(f.validate, recovery);
   const port: AlphaRepository = { ...f.pa, execute: async () => ({ ok: false, reason: 'limit' }) };

@@ -2,7 +2,8 @@
 .header { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
 .brand { font-size: 24px; font-weight: 800; color: var(--flowme-action); min-height: 48px; display: inline-flex; align-items: center; }
 .header h1 { font-size: 20px; font-weight: 700; }
-.account { margin-left: auto; color: var(--flowme-text-secondary); font-size: 14px; overflow-wrap: anywhere; }
+.account { min-width: 0; color: var(--flowme-text-secondary); font-size: 14px; overflow-wrap: anywhere; }
+.development { margin-left: auto; padding: 3px 7px; border: 1px solid var(--flowme-border); border-radius: 5px; color: var(--flowme-text-secondary); font-size: 12px; }
 .page button { min-height: 48px; min-width: 48px; }
 .page summary { min-height: 48px; align-content: center; }
 .page :global(#program-document-title) + button { flex-shrink: 0; }
@@ -11,11 +12,18 @@
 .header button, .sync button, .problem > button, .recovery button, .tabs button { padding: 8px 14px; border: 1px solid var(--flowme-control-border); border-radius: 8px; background: var(--flowme-surface); color: var(--flowme-text); font-size: 14px; }
 .page button:disabled { opacity: .55; cursor: not-allowed; }
 .page button:focus-visible, .page a:focus-visible, .page summary:focus-visible { outline: var(--flowme-focus-outline); outline-offset: 3px; }
-.notice { font-size: 13px; overflow-wrap: anywhere; color: var(--flowme-text-secondary); padding-bottom: 12px; }
+.notice { font-size: 13px; overflow-wrap: anywhere; color: var(--flowme-text-secondary); padding-bottom: 4px; line-height: 1.5; }
+.notice summary { cursor: pointer; }
+.notice p { padding: 4px 0 12px; }
 .sync { display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; border-block: 1px solid var(--flowme-border); padding: 10px 0; margin-bottom: 16px; }
-.sync p { font-weight: 650; }
+.sync > p { flex: 1 1 200px; font-weight: 650; }
 .sync small { display: block; font-weight: 400; font-size: 12px; color: var(--flowme-text-secondary); }
 .sync > div, .tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+.management { min-width: 0; font-size: 14px; }
+.management > summary { cursor: pointer; color: var(--flowme-text-secondary); }
+.management[open] { flex: 1 0 100%; }
+.managementBody { display: grid; gap: 12px; padding: 12px 0 4px; border-top: 1px solid var(--flowme-border); }
+.managementActions { display: flex; flex-wrap: wrap; gap: 8px; }
 .problem, .recovery { border: 1px solid var(--flowme-control-border); background: var(--flowme-surface); border-radius: 10px; padding: 16px; margin: 12px 0; }
 .problem p, .recovery p { margin-bottom: 12px; line-height: 1.6; }
 .problem h2, .recovery h2 { font-size: 16px; font-weight: 650; margin-bottom: 8px; }
@@ -29,5 +37,5 @@
 .tabs button[aria-current="page"] { border-color: var(--flowme-action); color: var(--flowme-action); font-weight: 700; }
 .inspector { width: min(960px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); overflow: auto; margin: auto; border: 1px solid var(--flowme-control-border); border-radius: 14px; padding: 16px; color: var(--flowme-text); background: var(--flowme-surface); }
 .inspector::backdrop { background: rgb(0 0 0 / .4); }
-@media (max-width: 600px) { .page { padding-inline: 12px; } .account { flex-basis: 100%; margin: 0; } .sync > div { width: 100%; } .sync button { flex: 1 1 calc(50% - 8px); } }
+@media (max-width: 600px) { .page { padding-inline: 12px; } .sync { gap: 8px 12px; } .sync > p { flex-basis: calc(100% - 110px); } .management { flex-basis: 100%; } .managementActions button { flex: 1 1 200px; } }
 @media (max-height: 500px) { .page { padding-top: 8px; } .header { gap: 8px; margin-bottom: 4px; } }

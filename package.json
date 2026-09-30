@@ -31,7 +31,7 @@
     "workflow:session-start": "node scripts/workflows/repo-workflow.mjs session-start",
     "workflow:closeout": "node scripts/workflows/repo-workflow.mjs work-closeout",
     "docs:check": "node scripts/sync-skills.mjs --check && node --test scripts/check-docs.test.mjs && node scripts/check-docs.mjs",
-    "security:audit": "npm audit --audit-level=high",
+    "security:audit": "npm audit --audit-level=high && node --test scripts/dependency-compatibility.test.mjs",
     "audit:p26:journeys": "node scripts/content-audit/run-p26-six-shape-journey-gate.mjs",
     "verify": "npm run docs:check && npm test && npm run build",
     "test:p3b-creator-drafts": "tsx --test lib/flow/personal-workspace-poc-creator-drafts.test.ts lib/flow/personal-workspace-poc-creator-draft-storage.test.ts lib/flow/personal-workspace-poc-creator-draft-storage-transaction.test.ts components/flow/personal-workspace-poc/PersonalWorkspacePocCreatorDraftLibrary.test.tsx",
@@ -79,7 +79,12 @@
     "typescript": "5.8.3"
   },
   "overrides": {
-    "brace-expansion": "5.0.9",
+    "minimatch@3": {
+      "brace-expansion": "1.1.21"
+    },
+    "minimatch@5": {
+      "brace-expansion": "2.1.7"
+    },
     "postcss": "$postcss",
     "sharp": "0.35.4",
     "tmp": "0.2.7",

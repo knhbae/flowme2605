@@ -7,13 +7,14 @@ import { createAlphaUiRecovery, alphaUiRecoveryKey } from '../../../lib/flow/int
 import { createProgramPrivateSpace } from '../../../lib/flow/integrated-poc/program-data';
 import { ALPHA_COMMAND_SCHEMA, ALPHA_SCHEMA, type AlphaCommand } from '../../../lib/flow/integrated-poc/alpha-persistence/contract';
 import { PROGRAM_SCHEMA } from '../../../lib/flow/integrated-poc/contract';
-import { materializeAccount } from '../../../lib/flow/integrated-poc/alpha-persistence/program-adapter';
+import { materializeAccount, privateChanges } from '../../../lib/flow/integrated-poc/alpha-persistence/program-adapter';
 import { textWorkspaceModel as M } from '../../../lib/flow/integrated-poc/text-workspace';
 import { createAlphaCreatorRecovery } from '../../../lib/flow/integrated-poc/alpha-creator-recovery';
 import { canonicalJson, detached } from '../../../lib/flow/integrated-poc/alpha-persistence/json';
 import { createAlphaSocialRecovery } from '../../../lib/flow/integrated-poc/alpha-social-recovery';
 import { executeAlphaSocialIntent } from '../../../lib/flow/integrated-poc/alpha-social/dispatch';
 import { newProgramParticipationDraft } from '../../../lib/flow/integrated-poc/participation-editor';
+import { confirmedAlphaPrivateTextSave } from '../../../lib/flow/integrated-poc/alpha-private-save-ack';
 
 // Execute the actual shell callbacks/effects/JSX with bounded browser/controller
 // doubles. No product injection points, network, real account or DOM are involved.
@@ -92,6 +93,7 @@ function harness() {
     discoveryStateRef: { current: { url: '', pastedText: '', pastedTitle: '', transient: null } },
     programDiscoveryHasUnstoredInput: (state: any) => !!(state.url || state.pastedText || state.pastedTitle || state.transient),
     previousSnapshot: { current: null }, executeAlphaSocialIntent,
+    currentOwnerRef: { current: 'owner-a' }, confirmedAlphaPrivateTextSave,
     currentPublicRevision: { current: null }, publisherEditors: { current: null }, communityEditors: { current: null }, inspectorEditors: { current: null },
     socialRecovery: { current: null }, parkedSocial: { current: [] }, activeSocial: { current: [] }, socialRecoveries: null,
     createAlphaSocialRecovery, setSocialRecoveries: (value: unknown) => { context.socialRecoveries = value; },
@@ -147,6 +149,102 @@ function harness() {
     mutate: () => evaluate(initializer('mutate'), context)('edit', () => { throw Error('controller double must not build'); }),
   };
 }
+
+function lostPrivateTextSave() {
+  const h = harness(), before = snapshot();
+  before.account.space.text = M.addDocument(before.account.space.text, { title: '개인 메모' });
+  const documentId = before.account.space.text.documents[0].id;
+  before.account.space.text = M.editText(before.account.space.text, documentId, '원래 메모');
+  before.envelope = materializeAccount(before.account, { actorIds: ['owner-a'], public: before.envelope.data.public });
+  const next = structuredClone(before); next.account.revision++;
+  next.account.space.text = M.editText(next.account.space.text, documentId, '제출한 메모');
+  next.envelope = materializeAccount(next.account, { actorIds: ['owner-a'], public: before.envelope.data.public });
+  const pending = { schema: ALPHA_COMMAND_SCHEMA, kind: 'change-private' as const, requestId: 'same-private-request', expectedRevision: 1,
+    changes: privateChanges(before.account.space, next.account.space) };
+  Object.assign(h.context, { data: before.envelope.data });
+  h.context.currentData.current = before.envelope.data; h.context.currentRevision.current = 1;
+  h.context.previousSnapshot.current = { ...before, pending, draft: pending, status: 'checking-result' };
+  let dirty = true, eligible = true, acknowledgments = 0;
+  const port = { hasPendingInput: () => dirty, captureDrafts: () => dirty ? [{ documentId, title: '개인 메모', raw: '제출한 메모' }] : [],
+    acceptConfirmedPrivateText: (expected: unknown, confirmed: unknown) => {
+      acknowledgments++; assert.deepEqual(expected, before.account.space.text); assert.deepEqual(confirmed, next.account.space.text);
+      if (!eligible) return false; dirty = false; return true;
+    } };
+  h.context.editors.current = port;
+  const result = { ...next, status: 'saved', lastReceipt: { requestId: pending.requestId, kind: pending.kind, changed: true, revision: 2 } };
+  return { h, before, result, documentId, dirty: () => dirty, acknowledgments: () => acknowledgments, refuse: () => { eligible = false; } };
+}
+
+test('actual private response presentation acknowledges submitted input before conflict classification and clears only matching recovery', () => {
+  const f = lostPrivateTextSave(), { h } = f;
+  h.context.uiRecovery.current = createAlphaUiRecovery(h.sessionStorage, { ownerId: 'owner-a', slotId: 'private-ack' });
+  assert(h.context.uiRecovery.current.read().ok);
+  const saved = h.context.uiRecovery.current.save([{ documentId: f.documentId, title: '개인 메모', raw: '제출한 메모' }]); assert(saved.ok);
+  h.context.recoveries = saved.value;
+  h.present(f.result);
+  assert.equal(f.acknowledgments(), 1); assert.equal(f.dirty(), false); assert.equal(h.context.external, false);
+  assert.equal(h.context.currentRevision.current, 2); assert.equal(h.context.data, f.result.envelope.data);
+  assert.equal(h.context.recoveries, null); assert.equal(h.context.uiRecovery.current.read().value, null);
+  h.present(f.result); assert.equal(f.acknowledgments(), 1); assert(!h.calls.includes('mutation'));
+});
+
+test('private acknowledgment keeps unmatched parked recovery rather than clearing an entire record', () => {
+  const f = lostPrivateTextSave(), { h } = f;
+  h.context.uiRecovery.current = createAlphaUiRecovery(h.sessionStorage, { ownerId: 'owner-a', slotId: 'private-ack-unmatched' });
+  assert(h.context.uiRecovery.current.read().ok);
+  const saved = h.context.uiRecovery.current.save([{ documentId: f.documentId, title: '個人 메모', raw: '예전 보관 입력' }]); assert(saved.ok);
+  h.context.recoveries = saved.value; h.present(f.result);
+  assert.equal(f.dirty(), false); assert.equal(h.context.external, false); assert.deepEqual(h.context.uiRecovery.current.read().value, saved.value);
+});
+
+test('poll reading a pending write does not poison its later receipt acknowledgment or lend the read authority', () => {
+  const f = lostPrivateTextSave(), { h } = f;
+  const pending = h.context.previousSnapshot.current.pending;
+  h.present({ ...f.result, status: 'checking-result', pending, draft: pending });
+  assert.equal(f.acknowledgments(), 0); assert(f.dirty()); assert.equal(h.context.external, false);
+  assert.equal(h.context.currentRevision.current, 1); assert.equal(h.context.data, f.before.envelope.data);
+  h.present(f.result); assert.equal(f.acknowledgments(), 1); assert.equal(h.context.external, false);
+  assert.equal(h.context.currentRevision.current, 2); assert.equal(f.dirty(), false);
+});
+
+test('poll with a later foreign revision stays pending, then preserves input as a real conflict on result resolution', () => {
+  const f = lostPrivateTextSave(), { h } = f;
+  const pending = h.context.previousSnapshot.current.pending;
+  f.result.account.revision = 3;
+  h.present({ ...f.result, status: 'checking-result', pending, draft: pending });
+  assert.equal(h.context.external, false); assert.equal(h.context.currentRevision.current, 1);
+  h.present(f.result); assert.equal(f.acknowledgments(), 0); assert.equal(h.context.external, true); assert(f.dirty());
+});
+
+test('newer private input or another dirty editor remains protected after an exact server receipt', () => {
+  for (const mode of ['newer', 'other-editor']) {
+    const f = lostPrivateTextSave(), { h } = f;
+    if (mode === 'newer') f.refuse();
+    else h.context.legacyEditors.current = { hasPendingInput: () => true, captureDrafts: () => [{ title: '다른 입력', raw: '원문 보존' }] };
+    h.present(f.result); assert.equal(h.context.external, true); assert.equal(h.context.currentRevision.current, 1);
+    assert.equal(h.context.data, f.before.envelope.data); assert.equal(f.dirty(), mode === 'newer');
+  }
+});
+
+test('plain refresh, nonmatching receipt, later revision and an existing conflict never acknowledge private input', () => {
+  for (const mode of ['no-pending', 'receipt', 'revision', 'already-external', 'owner', 'modal']) {
+    const f = lostPrivateTextSave(), { h } = f;
+    if (mode === 'no-pending') h.context.previousSnapshot.current.pending = null;
+    if (mode === 'receipt') f.result.lastReceipt.requestId = 'other-request';
+    if (mode === 'revision') f.result.account.revision = 3;
+    if (mode === 'already-external') h.context.externalRef.current = true;
+    if (mode === 'owner') h.context.previousSnapshot.current.ownerId = 'owner-b';
+    if (mode === 'modal') h.context.modalRef.current = true;
+    h.present(f.result);
+    assert.equal(h.context.currentRevision.current, 1, mode); assert.equal(h.context.data, f.before.envelope.data, mode);
+    assert.equal(f.acknowledgments(), mode === 'modal' ? 1 : 0, mode);
+  }
+});
+
+test('response from an old owner closure cannot acknowledge or present a later account', () => {
+  const f = lostPrivateTextSave(); f.h.context.currentOwnerRef.current = 'owner-b';
+  f.h.present(f.result); assert.equal(f.acknowledgments(), 0); assert.equal(f.h.calls.length, 0); assert(f.dirty());
+});
 
 test('preservation lifetime defers all automatic triggers and closes with one catch-up', async () => {
   const h = harness(); h.registerEvents(); h.context.snapshot.references = {};
@@ -485,4 +583,100 @@ test('confirmed all-draft server match clears parked memory as well as the durab
   assert(h.context.captureInput()); const outcome=await h.mutate(); assert(outcome.ok,JSON.stringify({outcome,calls:h.calls,storageError:h.context.storageError}));
   assert.equal(h.context.uiRecovery.current.read().value,null);
   assert.deepEqual(h.context.parkedDrafts.current,[]); assert.deepEqual(h.context.activeDrafts.current,[]);
+});
+
+test('known rejected private input offers correction without claiming an external conflict', () => {
+  const h = harness();
+  h.context.snapshot = { ...snapshot(), status: 'recovery-required', draft: {}, retryableRejectedDraft: true };
+  const tree = h.render();
+  assert(text(tree).includes('저장 거절 · 입력 보존됨'));
+  assert(text(tree).includes('문서에서 내용을 수정한 뒤'));
+  assert.equal(nodes(tree).filter(node => node.type === 'conflict-review').length, 0);
+  assert.equal(nodes(tree).filter(node => node.props['aria-label'] === '다른 기기 변경과 입력 보호').length, 0);
+  assert.equal(evaluate(initializer('modalRecovery'), h.context), null);
+  h.context.external = true;
+  assert(nodes(h.render()).some(node => node.props['aria-label'] === '다른 기기 변경과 입력 보호'));
+});
+
+test('known rejected save notice does not direct intact input to a reload', async () => {
+  const h = harness(); h.initialize();
+  h.context.snapshot = { ...snapshot(), status: 'recovery-required', draft: {}, retryableRejectedDraft: true };
+  h.context.controller.current = { ...h.store, mutate: async () => ({ ok: false, reason: 'recovery-required' }) };
+  await h.mutate();
+  assert.equal(h.context.message, '저장되지 않았습니다. 입력을 수정한 뒤 다시 저장해 주세요.');
+  assert(!h.context.message.includes('새로고침'));
+});
+
+test('unknown save notice directs to the same-request result check instead of a reload', async () => {
+  const h = harness(); h.initialize();
+  h.context.snapshot = { ...snapshot(), status: 'recovery-required', pending: { requestId: 'still-pending' } };
+  h.context.controller.current = { ...h.store, mutate: async () => ({ ok: false, reason: 'recovery-required' }) };
+  await h.mutate();
+  assert.equal(h.context.message, 'checking-result');
+});
+
+
+test('normal shell keeps save state and undo visible while account and routine actions start collapsed', () => {
+  const h = harness(), tree = h.render();
+  const management = nodes(tree).find(node => node.type === 'details' && node.props['aria-label'] === '계정 및 자료 관리')!;
+  assert(management); assert.equal(management.props.open, undefined);
+  const managed = new Set(nodes(management));
+  assert.equal(text(nodes(management).find(node => node.type === 'summary')), '계정 · 자료 관리');
+  for (const label of ['로그아웃 · 계정 바꾸기', '서버에서 다시 확인', '다시 실행', '자료 가져오기 · 백업']) {
+    assert(nodes(tree).some(node => node.type === 'button' && text(node) === label && managed.has(node)), label);
+  }
+  assert(text(management).includes(h.context.email));
+  assert(text(management).includes('마지막 확인 판본'));
+  const undo = nodes(tree).find(node => node.type === 'button' && text(node) === '되돌리기')!;
+  const status = nodes(tree).find(node => node.props.role === 'status' && text(node) === '서버와 연결됨')!;
+  assert(undo && !managed.has(undo)); assert(status && !managed.has(status));
+  const header = nodes(tree).find(node => node.type === 'header')!;
+  assert(!text(header).includes(h.context.email)); assert(text(header).includes('개발계'));
+  const notice = nodes(tree).find(node => node.type === 'details' && node.props['aria-label'] === '개발계 안내')!;
+  const warning = text(nodes(notice).find(node => node.type === 'summary'));
+  assert(warning.includes('공개한 내용은 로그인 사용자에게 보입니다'));
+  assert(warning.includes('중요한 자료의 유일본은 넣지 마세요'));
+  assert(text(notice).includes('개발용 통합 검증판'));
+});
+
+function assertOutsideRoutineDisclosure(tree: Element, predicate: (node: Element) => boolean) {
+  const found = nodes(tree).filter(predicate); assert(found.length > 0, 'expected recovery/status must render');
+  const hiddenByRoutine = new Set(nodes(tree).filter(node => node.type === 'details' &&
+    ['계정 및 자료 관리', '개발계 안내'].includes(node.props['aria-label'])).flatMap(nodes));
+  for (const node of found) assert(!hiddenByRoutine.has(node), 'recovery/status cannot be hidden by routine disclosure');
+}
+
+test('save failure, unknown result, conflict, expiry and logout recovery stay outside routine disclosure', () => {
+  for (const state of ['saving', 'saved', 'recovery-required', 'checking-result', 'conflict', 'session-expired']) {
+    const h = harness(); h.context.snapshot.status = state;
+    h.context.labels = evaluate(initializer('labels'), {});
+    if (state === 'checking-result') h.context.snapshot.pending = { requestId: 'same-request' };
+    if (state === 'conflict') h.context.snapshot.draft = { schema: ALPHA_COMMAND_SCHEMA, requestId: 'draft', expectedRevision: 0, kind: 'change-private', changes: [] };
+    const tree = h.render();
+    assertOutsideRoutineDisclosure(tree, node => node.props.role === 'status' && text(node) === h.context.labels[state]);
+    if (state === 'checking-result') assertOutsideRoutineDisclosure(tree, node => node.props['aria-label'] === '저장 결과 복구');
+    if (state === 'conflict') assertOutsideRoutineDisclosure(tree, node => node.props['aria-label'] === '다른 기기 변경과 입력 보호');
+    if (state === 'session-expired') assertOutsideRoutineDisclosure(tree, node => node.type === 'p' && text(node).includes('계정을 다시 확인한 뒤'));
+  }
+  for (const [patch, predicate] of [
+    [{ storageError: true }, (node: Element) => node.props.role === 'alert' && text(node).includes('입력 보관 상태')],
+    [{ external: true }, (node: Element) => node.props['aria-label'] === '다른 기기 변경과 입력 보호'],
+    [{ leave: true }, (node: Element) => node.props['aria-label'] === '로그아웃 전 입력 확인'],
+    [{ message: '저장하지 못했습니다. 입력은 남아 있습니다.' }, (node: Element) => node.props.role === 'status' && text(node).includes('저장하지 못했습니다')],
+  ] as const) {
+    const h = harness(); Object.assign(h.context, patch); assertOutsideRoutineDisclosure(h.render(), predicate);
+  }
+});
+
+test('parked private, creator and social drafts remain separately discoverable outside account disclosure', () => {
+  const h = harness();
+  h.context.recoveries = { drafts: [{ title: '개인 입력', raw: '보관 원문' }] };
+  h.context.creatorRecoveries = { entries: [{ working: { title: '제작 입력', rawText: '제작 원문' } }] };
+  h.context.socialRecoveries = { entries: [{ kind: 'participation', value: { title: '참여 입력' } }] };
+  h.context.external = true;
+  const tree = h.render();
+  for (const label of ['보관한 입력', '보관한 제작 입력', '보관한 공개·참여 입력']) {
+    assertOutsideRoutineDisclosure(tree, node => node.type === 'summary' && text(node).startsWith(label));
+  }
+  for (const node of nodes(tree).filter(node => node.type === 'details' && node.props.className === 'recovery')) assert.equal(node.props.open, true);
 });

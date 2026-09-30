@@ -32,6 +32,7 @@ import { createAlphaCommunityMediaPort } from '@/lib/flow/integrated-poc/alpha-s
 import { createAlphaCreatorRecovery, type AlphaCreatorRecoveryEntry, type AlphaCreatorRecoveryRecord } from '@/lib/flow/integrated-poc/alpha-creator-recovery';
 import { setProgramCreatorWorking } from '@/lib/flow/integrated-poc/creator-workspace';
 import { canonicalJson, detached } from '@/lib/flow/integrated-poc/alpha-persistence/json';
+import { confirmedAlphaPrivateTextSave } from '@/lib/flow/integrated-poc/alpha-private-save-ack';
 import { AlphaConflictReview } from './AlphaConflictReview';
 import { AlphaCatalogPanels } from './AlphaCatalogPanels';
 import styles from './AlphaWorkspace.module.css';
@@ -90,6 +91,7 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
   const currentData = useRef<ProgramData | null>(null), currentRevision = useRef<number | null>(null);
   const currentPublicRevision = useRef<number | null>(null);
   const previousSnapshot = useRef<AlphaSyncSnapshot | null>(null);
+  const currentOwnerRef = useRef(session.userId); currentOwnerRef.current = session.userId;
   const ownMutation = useRef(0), disposed = useRef(false), externalRef = useRef(false);
   // Park only explicit context handoffs/reloads, not every intermediate keystroke.
   const parkedDrafts = useRef<AlphaUiDraft[]>([]), activeDrafts = useRef<AlphaUiDraft[]>([]);
@@ -126,7 +128,7 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
     setRecoveries(saved.value); return true;
   }
   function present(next: AlphaSyncSnapshot) {
-    if (disposed.current) return;
+    if (disposed.current || currentOwnerRef.current !== session.userId) return;
     if (next.account && next.account.ownerId !== session.userId) return;
     if (!next.busy) setMessage(value => value === PROGRAM_BUSY_NOTICE ? '' : value);
     const prior = previousSnapshot.current;
@@ -138,11 +140,28 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
       }
       return;
     }
+    // A read while our request is unresolved may already include that write.
+    // Keep the displayed preimage until its receipt proves ownership; do not
+    // turn a poll into either an acknowledgment or a permanent false conflict.
+    if (next.pending && currentData.current) return;
     // A response lookup may confirm exactly the input still mounted in the
     // creator. Advance only its matching baseline before classifying it as
     // another device's change. The port rejects newer/auxiliary/composing input.
     let exactOwnDraft = false, acceptedSocialDraft = false;
     const pendingSave = prior?.pending;
+    const privateSave = !externalRef.current && prior?.ownerId === session.userId
+      ? confirmedAlphaPrivateTextSave(session.userId, currentData.current, currentRevision.current,
+        currentPublicRevision.current, pendingSave, next) : null;
+    const acceptedPrivateSave = !!privateSave && !!editors.current?.acceptConfirmedPrivateText?.(privateSave.before, privateSave.next);
+    if (acceptedPrivateSave && privateSave && !hasInput()) {
+      const confirmedText = privateSave.next;
+      const saved = uiRecovery.current?.read();
+      if (saved?.ok && saved.value && saved.value.drafts.every(draft => draft.documentId
+        && !!M.getDocument(confirmedText, draft.documentId)
+        && M.raw(M.getDocument(confirmedText, draft.documentId)) === draft.raw)) {
+        if (uiRecovery.current?.clear(saved.value).ok) { parkedDrafts.current = []; activeDrafts.current = []; setRecoveries(null); }
+      }
+    }
     // An open modal normally freezes external revisions. Exempt only our exact
     // lost private-draft save: one owned revision, unchanged public state, and
     // the complete private result recomputed from the still-displayed baseline.
@@ -246,7 +265,9 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
       if (!outcome.ok) {
         // A blocked click may resume after the original request settles.
         // Do not reintroduce its temporary wait notice after the final snapshot.
-        if (outcome.reason !== 'busy') setMessage(programErrorMessage(outcome.reason));
+        if (outcome.reason !== 'busy') setMessage(controller.current?.snapshot().pending
+          ? programErrorMessage('checking-result') : controller.current?.snapshot().retryableRejectedDraft
+            ? '저장되지 않았습니다. 입력을 수정한 뒤 다시 저장해 주세요.' : programErrorMessage(outcome.reason));
         else if (controller.current?.snapshot().busy) setMessage(PROGRAM_BUSY_NOTICE);
       }
       else {
@@ -409,20 +430,23 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
   const browse = ['discover', 'flow', 'community'].includes(destination.view);
   const modalRecovery = pending && snapshot?.status !== 'saving'
     ? <section className={styles.problem} aria-label="저장 결과 복구"><p>응답이 끊겨도 서버에 저장됐을 수 있습니다. 입력은 유지하고 같은 요청으로 확인합니다.</p><button type="button" disabled={snapshot?.busy} onClick={async () => { if (await controller.current?.resolvePending(true)) setMessage('저장 결과를 확인했습니다.'); }}>저장 결과 확인 · 같은 요청 재시도</button></section>
-    : external || snapshot?.status === 'conflict' || snapshot?.draft && !pending ? <section className={styles.problem} aria-label="편집 중 변경 확인"><p>다른 변경이 먼저 저장되었습니다. 입력을 보관한 뒤 최신 내용을 확인해 주세요.</p><button disabled={snapshot?.busy} onClick={() => void openLatest()}>입력 보관 후 최신 내용 열기</button></section> : null;
+    : external || snapshot?.status === 'conflict' || snapshot?.draft && !pending && !snapshot.retryableRejectedDraft ? <section className={styles.problem} aria-label="편집 중 변경 확인"><p>다른 변경이 먼저 저장되었습니다. 입력을 보관한 뒤 최신 내용을 확인해 주세요.</p><button disabled={snapshot?.busy} onClick={() => void openLatest()}>입력 보관 후 최신 내용 열기</button></section> : null;
   return <main className={styles.page} onInput={() => { queueMicrotask(captureInput); }} onCompositionEnd={() => { queueMicrotask(captureInput); }}>
     <header className={styles.header}><a className={styles.brand} href="/alpha" onClick={event => { event.preventDefault(); void navigate({ view: 'space' }); }}>FlowMe</a><h1>{destination.view === 'creator' ? '제작 공간' : browse ? '둘러보기' : destination.view === 'activity' ? '내 활동' : '개인공간'}</h1>
-      <span className={styles.account}>{email}</span><button type="button" onClick={() => { captureInput(); if (hasInput() || pending) setLeave(true); else void onSignOut(); }}>로그아웃 · 계정 바꾸기</button></header>
-    <div className={styles.notice}>개발용 통합 검증판 · 공개한 내용은 개발계의 다른 로그인 사용자에게 보입니다. 중요한 자료의 유일본은 아직 넣지 마세요.</div>
+      <span className={styles.development}>개발계</span></header>
+    <details className={styles.notice} aria-label="개발계 안내"><summary>공개한 내용은 로그인 사용자에게 보입니다. 중요한 자료의 유일본은 넣지 마세요.</summary>
+      <p>개발용 통합 검증판 · 공개한 내용은 개발계의 다른 로그인 사용자에게 보입니다. 중요한 자료의 유일본은 아직 넣지 마세요.</p></details>
     <section className={styles.sync} aria-label="서버 저장 상태">
-      <p role="status" aria-live="polite">{pending && snapshot?.status !== 'saving' ? '저장 결과 확인이 필요합니다' : snapshot ? labels[snapshot.status] : '개인공간을 여는 중…'}
-        {snapshot?.account && <small>마지막 확인 판본 {snapshot.account.revision}</small>}</p>
-      <div><button type="button" onClick={() => void controller.current?.refresh()} disabled={snapshot?.busy}>서버에서 다시 확인</button>
-        <button type="button" title="마지막으로 서버 저장에 성공한 변경을 되돌립니다" onClick={() => void history('undo')} disabled={!snapshot?.canUndo || external}>되돌리기</button>
+      <p role="status" aria-live="polite">{pending && snapshot?.status !== 'saving' ? '저장 결과 확인이 필요합니다' : snapshot?.retryableRejectedDraft ? '저장 거절 · 입력 보존됨' : snapshot ? labels[snapshot.status] : '개인공간을 여는 중…'}</p>
+      <button type="button" title="마지막으로 서버 저장에 성공한 변경을 되돌립니다" onClick={() => void history('undo')} disabled={!snapshot?.canUndo || external}>되돌리기</button>
+      <details className={styles.management} aria-label="계정 및 자료 관리"><summary>계정 · 자료 관리</summary><div className={styles.managementBody}>
+        <div className={styles.account}><p>{email}</p>{snapshot?.account && <small>마지막 확인 판본 {snapshot.account.revision}</small>}</div>
+        <div className={styles.managementActions}><button type="button" onClick={() => { captureInput(); if (hasInput() || pending) setLeave(true); else void onSignOut(); }}>로그아웃 · 계정 바꾸기</button>
+        <button type="button" onClick={() => void controller.current?.refresh()} disabled={snapshot?.busy}>서버에서 다시 확인</button>
         <button type="button" onClick={() => void history('redo')} disabled={!snapshot?.canRedo || external}>다시 실행</button>
         <button type="button" disabled={unavailable || pending || external || !!snapshot?.busy || !!snapshot?.draft || storageError} onClick={() => {
           void (async () => { const openingController = controller.current; if (!captureInput()) return; for (const port of allEditors()) if (port && !await port.flushAll()) return; if (disposed.current || controller.current !== openingController) return; preservationRef.current = true; setPreservation(true); })();
-        }}>자료 가져오기 · 백업</button></div>
+        }}>자료 가져오기 · 백업</button></div></div></details>
     </section>
     {preservation && snapshot?.account && snapshot.references && <AlphaPreservationPanel key={session.userId} account={snapshot.account} references={snapshot.references}
       email={email} accessToken={session.accessToken} onClose={closePreservation} onSaved={async () => {
@@ -431,7 +455,8 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
     {storageError && <p className={styles.problem} role="alert">브라우저의 입력 보관 상태를 확인하지 못했습니다. 쓰기를 멈췄습니다. 작성 중인 내용을 파일로 보관해 주세요.</p>}
     {pending && snapshot?.status !== 'saving' && <section className={styles.problem} aria-label="저장 결과 복구"><p>응답이 끊겨도 서버에 저장됐을 수 있습니다. 같은 요청으로 확인합니다.</p>
       <button type="button" disabled={snapshot?.busy} onClick={async () => { if (await controller.current?.resolvePending(true)) setMessage('저장 결과를 확인했습니다.'); }}>저장 결과 확인 · 같은 요청 재시도</button></section>}
-    {(external || snapshot?.status === 'conflict' || snapshot?.draft && !pending) && <section className={styles.problem} aria-label="다른 기기 변경과 입력 보호">
+    {snapshot?.retryableRejectedDraft && !external && <section className={styles.problem} aria-label="거절된 저장과 입력 보호"><p>저장되지 않았습니다. 입력은 남아 있습니다. 문서에서 내용을 수정한 뒤 ‘다시 저장’을 눌러 주세요.</p></section>}
+    {(external || snapshot?.status === 'conflict' || snapshot?.draft && !pending && !snapshot.retryableRejectedDraft) && <section className={styles.problem} aria-label="다른 기기 변경과 입력 보호">
       <h2>내 입력과 서버의 변경을 확인해 주세요</h2><p>내 입력은 이 탭에 보관합니다. 최신 내용을 연 뒤 필요한 원문을 복구할 수 있습니다.</p>
       {snapshot?.busy && <p role="status">서버 확인 중… 입력은 그대로 보관합니다.</p>}
       <button type="button" disabled={snapshot?.busy} onClick={() => void openLatest()}>입력 보관 후 최신 내용 열기</button>
