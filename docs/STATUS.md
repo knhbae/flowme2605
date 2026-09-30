@@ -1,5 +1,11 @@
 # Project Status
 
+## 현재 — 핵심 UX·저장 복구의 Cloudflare 개발계 반영 (2026-10-01)
+
+[승인된 선별 반영 목표](./specs/2026-10-01-alpha-cloudflare-core-ux/spec.md)를 완료했다. 10/1 05:23 KST에 `alpha.wikiplans.com/alpha`의 노트북 앱을 905c4c31 핵심 UX·저장 복구와 독립 구현한 호스트/legacy 백업 호환 build `F9QqWgnGf7n_PaVUEavrK`로 교체했다. npm test 2,258회·전체 통합 2,615/2,615·보안 취약점0·production build·최종 로컬/원격 브라우저 각각10/10·정적 파일24개 hash 일치·외부 HTTPS10/10을 확인했다. 초기 실패/보완 이력과 각 경우의 예상 합성 telemetry SRI 오류2건은 [QA](./specs/2026-10-01-alpha-cloudflare-core-ux/qa.md)에 분리했다. 임시 QA 서버만 종료했고 공개 앱과 기존 Tunnel은 유지한다.
+
+mixed dirty 복제/수정0·기존 파일6개 hash 동일·실제 계정 요청/쓰기0·DB/Auth/Tunnel 설정 변경0, 새 백업 경로는 off다. main/PR204/PR205 원격 ref는 그대로이며 이번 추가 push/새PR/merge·Render/Preview/Production은0이다. 이전 build는 [복귀 절차](./specs/2026-10-01-alpha-cloudflare-core-ux/runbook.md)대로 다시 실행할 수 있다. 모바일 밀도·구조 키보드 계약·복구 저장의 첫 Undo·자동 시작/장시간 탭·원래6~9·5D는 별도 후속이며 이 목표의 실기기/관찰 사용자 검사는0이다. 아래 이전 목표의 배포0/CI 대기는 당시 기록이다.
+
 ## 현재 — 같은 요청의 개인 문서 저장 복구 표시 (2026-09-30 후속)
 
 [같은 요청 저장 복구 목표](./specs/2026-09-30-alpha-private-save-ack/spec.md)의 구현·합성 검증을 마쳤고 [최종 QA](./specs/2026-09-30-alpha-private-save-ack/qa.md)에 실패 재현→보완→재검사를 기록했다. 요청·계정·receipt 판본과 전체 변경을 대조하고 submitted 입력과 같은 mounted editor만 저장됨으로 확인한다. pending 조회가 이미 반영된 자기 저장을 외부 변경으로 먼저 분류하는 문제도 수정했다. 추가 입력·조합 중 입력·실제 외부 판본·계정 전환 보호는 유지한다. 표적187/187·독립 검토141/141·최종 npm test 2,632회(중복 실행 포함)·격리 production build 통과, 저장/재진입과 5크기 버튼 접근을 합성 브라우저로 확인했다. 아래 core UX 원장의 이전 결과 미확정 실패는 당시 이력이며 이번 성공으로 삭제하지 않는다.

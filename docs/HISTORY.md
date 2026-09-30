@@ -4,6 +4,12 @@ The repository's current semantic-version tag is `v0.1.0` at
 `d18f4218de48e23f894c7615945e37339a4a0153` (`2026-06-11`). Later entries
 below are deployment milestones unless they explicitly name another tag.
 
+## 2026-10-01 - Core Workspace UX On Cloudflare Development Host
+
+- The laptop app behind `https://alpha.wikiplans.com/alpha` now serves build `F9QqWgnGf7n_PaVUEavrK`: base `905c4c31` plus the independently owned Cloudflare host and legacy-backup compatibility changes. The app process was replaced at `2026-09-30T20:23:06Z`; the existing Tunnel, settings, catalog source, DB/Auth and prior build were preserved.
+- Post-switch external HTTPS checks passed10/10 without credentials or account writes. Final deployed-bundle browser evidence, exact limitations and rollback are recorded in the [deployment QA ledger](./specs/2026-10-01-alpha-cloudflare-core-ux/qa.md).
+- This is a development-host update, not a main merge, Render/Vercel deployment, Production release, semantic-version tag or observed-user validation. New5D backup jobs remainoff; current-goal actual account/device/user testing was not run.
+
 ## 2026-09-07 - Verification Maintenance And Core-Journey Review
 
 - [PR #200](https://github.com/knhbae/flowme2605/pull/200) restored the current source and security verification gates: nine due source reviews were checked against their real pages, one retired official EV URL was replaced, audited transitive dependencies were patched, and one historical recurrence E2E received the existing fixed clock after its hard-coded dates crossed the 31-day lookback boundary.

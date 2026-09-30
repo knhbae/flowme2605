@@ -95,7 +95,7 @@ function fixture(overrides: Record<string,string> = {}) {
   const proxyHeaders: Record<string,string> = overrides.FLOWME_ALPHA_HOSTING ? { Host: new URL(requestOrigin).host, 'X-Forwarded-Proto': 'https' } : {};
   const request=(payload:unknown)=>new Request(`${requestOrigin}/api/alpha/preservation`,{method:'POST',headers:{Origin:requestOrigin,Authorization:`Bearer ${token}`,'Content-Type':'application/json',...proxyHeaders},body:JSON.stringify(payload)});
   const send=async(payload:Record<string,unknown>)=>{const response=await handler(request({client:PRESERVATION_PROTOCOL.client,...payload}));return {status:response.status,...await response.json()};};
-  return {state,handler,request,send};
+  return {state,handler,request,send,fetcher};
 }
 async function source(f:ReturnType<typeof fixture>){
   const input=createAlphaSyntheticFixtures()[0],prepared=await prepareLocalImport(canonicalJson(input.envelope),input.actorId,f.state.account,alphaSocialReferences(f.state.context,owner));
@@ -342,4 +342,65 @@ test('preservation old client, revoked session and oversized request are fail-cl
 test('preservation refuses oversized upstream snapshots without partial backup',async()=>{
   const f=fixture();f.state.oversizedRead=true;const response=await f.send({kind:'backup'});
   assert.equal(response.ok,false);assert(!('value' in response));assert.equal(f.state.writes,0);assert.equal(f.state.reads,1);
+});
+
+test('legacy backup permits a slow 35-second read within its 120-second total budget',async t=>{
+  const f=fixture();let entered!:()=>void;const started=new Promise<void>(resolve=>{entered=resolve;});
+  t.mock.timers.enable({apis:['Date','setTimeout']});
+  const handler=createAlphaPreservationHandler(env,async(url,init)=>{
+    if(String(url).endsWith('/auth/v1/user')){entered();await new Promise(resolve=>setTimeout(resolve,35_000));}
+    assert(!init?.signal?.aborted);return f.fetcher(url,init);
+  });
+  const pending=handler(f.request({kind:'backup',client:1,format:BACKUP_DOWNLOAD_FORMAT}));
+  await started;t.mock.timers.tick(35_000);
+  const result=await(await pending).json();assert(result.ok);assert.equal(f.state.reads,2);assert.equal(f.state.writes,0);
+});
+
+test('legacy backup shares one deadline across auth and snapshot instead of renewing per RPC',async t=>{
+  const f=fixture();let auth!:()=>void,read!:()=>void;
+  const authStarted=new Promise<void>(resolve=>{auth=resolve;}),readStarted=new Promise<void>(resolve=>{read=resolve;});
+  const signals:AbortSignal[]=[];t.mock.timers.enable({apis:['Date','setTimeout']});
+  const handler=createAlphaPreservationHandler(env,async(url,init)=>{
+    signals.push(init!.signal!);
+    if(String(url).endsWith('/auth/v1/user')){auth();await new Promise(resolve=>setTimeout(resolve,70_000));return f.fetcher(url,init);}
+    read();return new Promise<Response>(()=>{});
+  });
+  const pending=handler(f.request({kind:'backup',client:1,format:BACKUP_DOWNLOAD_FORMAT}));
+  await authStarted;t.mock.timers.tick(70_000);await readStarted;t.mock.timers.tick(50_000);
+  const result=await(await pending).json();assert.deepEqual(result,{ok:false,reason:'unavailable'});
+  assert(signals.every(signal=>signal.aborted));assert.equal(f.state.writes,0);assert.equal(f.state.reads,0);
+});
+
+test('legacy backup request cancellation aborts upstream and returns no partial download',async()=>{
+  const f=fixture(),controller=new AbortController();let started!:()=>void;
+  const waiting=new Promise<void>(resolve=>{started=resolve;});let upstream:AbortSignal|undefined;
+  const handler=createAlphaPreservationHandler(env,async(_url,init)=>{
+    upstream=init!.signal!;started();return new Promise<Response>(()=>{});
+  });
+  const request=new Request(f.request({kind:'backup',client:1,format:BACKUP_DOWNLOAD_FORMAT}),{signal:controller.signal});
+  const pending=handler(request);await waiting;controller.abort();
+  assert.deepEqual(await(await pending).json(),{ok:false,reason:'unavailable'});assert(upstream?.aborted);assert.equal(f.state.writes,0);
+});
+
+test('legacy backup truncated upstream JSON fails without a signed or encoded result',async()=>{
+  const f=fixture();const handler=createAlphaPreservationHandler(env,async(url,init)=>
+    String(url).endsWith('/auth/v1/user')?f.fetcher(url,init):new Response('{"ok":true,"value":'));
+  const response=await handler(f.request({kind:'backup',client:1,format:BACKUP_DOWNLOAD_FORMAT}));
+  assert.deepEqual(await response.json(),{ok:false,reason:'unavailable'});assert.equal(f.state.writes,0);
+});
+
+test('legacy checkpoint rejects unsafe outer JSON properties without a fresh-backup fallback',async()=>{
+  for(const property of ['__proto__','constructor','prototype']){
+    const f=fixture(),calls:string[]=[];
+    const handler=createAlphaPreservationHandler({...env,FLOWME_ALPHA_M3_CAPACITY:'checkpoint-v1'},async(url,init)=>{
+      const path=new URL(String(url)).pathname;calls.push(path);
+      if(path==='/auth/v1/user')return f.fetcher(url,init);
+      assert.equal(path,'/rest/v1/rpc/flowme_alpha_capacity_checkpoint_read_v1');
+      return new Response(`{"ok":true,"value":null,"${property}":{"polluted":true}}`);
+    });
+    const response=await handler(f.request({kind:'backup',client:1,format:BACKUP_DOWNLOAD_FORMAT}));
+    assert.deepEqual(await response.json(),{ok:false,reason:'unavailable'});
+    assert.equal(calls.length,2);assert.equal(f.state.reads,0);assert.equal(f.state.writes,0);
+    assert.equal(Object.hasOwn(Object.prototype,'polluted'),false);
+  }
 });

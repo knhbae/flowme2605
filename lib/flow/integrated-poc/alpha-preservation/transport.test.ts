@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { accountBackupRestoreRequestBytes, PRESERVATION_PROTOCOL } from './contract';
 import { decodeBackupFile } from './file-codec';
-import { accountBackupRestoreTransportBytes, preparePreservationWireRequest } from './transport';
+import { accountBackupRestoreTransportBytes, preparePreservationWireRequest, prepareAccountBackupFile } from './transport';
 
 test('small legacy preservation requests retain identity and exact reserved byte count', async () => {
   const sourceRaw = JSON.stringify({ schema: 'flowme-alpha-sealed-account-backup/1', backup: { text: '작은 원문\r\n' }, proof: 'a'.repeat(64) });
@@ -33,6 +33,17 @@ test('escape-heavy bounded restore uses exact compressed transport without raisi
       expectedRevision: Number.MAX_SAFE_INTEGER, expectedPublicRevision: Number.MAX_SAFE_INTEGER,
       mode: 'restore', sourceSha256: 'a'.repeat(64) }, sourceFile: compressed.sourceFile, actorId: 'a'.repeat(36) };
   assert.equal(budget.bytes, Buffer.byteLength(JSON.stringify(reserved)));
+  const compressionDescriptor = Object.getOwnPropertyDescriptor(globalThis, 'CompressionStream')!;
+  let compressions = 0;
+  Object.defineProperty(globalThis, 'CompressionStream', { configurable: true, value: new Proxy(CompressionStream, {
+    construct(target, args) { compressions++; return Reflect.construct(target, args); },
+  }) });
+  let preparedDownload: Awaited<ReturnType<typeof prepareAccountBackupFile>>;
+  try { preparedDownload = await prepareAccountBackupFile(raw); }
+  finally { Object.defineProperty(globalThis, 'CompressionStream', compressionDescriptor); }
+  assert.equal(compressions, 1);
+  assert.equal(await decodeBackupFile(preparedDownload.file), raw);
+  assert.equal(preparedDownload.restoreBytes, budget.bytes);
   await assert.rejects(preparePreservationWireRequest({ ...input, mode: 'import' }), /preservation-request-limit/);
   await assert.rejects(preparePreservationWireRequest({ ...input, kind: 'unknown' }), /preservation-request-limit/);
   await assert.rejects(preparePreservationWireRequest({ ...input, sourceFile: compressed.sourceFile }), /preservation-request-limit/);

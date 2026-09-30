@@ -3,6 +3,7 @@ import { encodeBackupFile, decodeBackupFile } from '../../../lib/flow/integrated
 import { createAccountBackup } from '../../../lib/flow/integrated-poc/alpha-preservation/backup';
 import { readBackupDownload, BACKUP_DOWNLOAD_FORMAT, BACKUP_DOWNLOAD_SCHEMA } from '../../../lib/flow/integrated-poc/alpha-preservation/backup-download';
 import { preparePreservationWireRequest } from '../../../lib/flow/integrated-poc/alpha-preservation/transport';
+import { createBackupRequestBudget, LEGACY_BACKUP_REQUEST, readBackupResponse } from '../../../lib/flow/integrated-poc/alpha-preservation/backup-request';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createRequire} from 'node:module';
@@ -29,13 +30,13 @@ function harness(){
   class Element{}const opener=new Element();
   const context:Record<string,any>={account:{schema:'flowme-alpha-account/1',ownerId:owner,revision:0,source:{schema:'flowme-integrated-product-poc/1',actorId:owner,revision:0},space:createProgramPrivateSpace(),legacyUndo:[],legacyReceipts:[]},
     references:{actorIds:[owner],public:{flows:[],versions:[],posts:[],replies:[],reactions:[],proposals:[]}},email:'a@example.invalid',accessToken:'secret-fixture-token',
-    dialog:{current:{showModal:()=>calls.push('modal-open'),close:()=>calls.push('modal-close')}},alive:{current:true},selectionGeneration:{current:0},busy:false,recoveryReady:true,status:'',raw:'',actors:[],actorId:'',selection:null,preview:null,confirmed:false,pending:null,download:null,
+    dialog:{current:{showModal:()=>calls.push('modal-open'),close:()=>calls.push('modal-close')}},alive:{current:true},selectionGeneration:{current:0},activeBackup:{current:null},backupActive:false,busy:false,recoveryReady:true,status:'',raw:'',actors:[],actorId:'',selection:null,preview:null,confirmed:false,pending:null,download:null,
     recoveryKey:`flow:poc:personal-workspace:v1:alpha-m6:pending:${owner}`,messages:evaluate((find(n=>ts.isVariableDeclaration(n)&&n.name.getText(ast)==='messages') as ts.VariableDeclaration).initializer!.getText(ast),{}),canonicalJson,detached,parseAlphaJson,createProgramPrivateSpace,prepareLocalImport,inspectLocalImportActors,PRESERVATION_PROTOCOL,SEALED_BACKUP_SCHEMA,isPreservationCommand,
     sessionStorage:{getItem:(key:string)=>values.get(key)??null,setItem:(key:string,value:string)=>{calls.push('persist');values.set(key,value);},removeItem:(key:string)=>{calls.push('remove-pending');values.delete(key);}},
     crypto:{randomUUID:()=>{calls.push('new-id');return 'fixed-preservation-request';}},
     onClose:()=>calls.push('close'),onSaved:async()=>{calls.push('saved');},HTMLElement:Element,document:{activeElement:opener},restoreProgramDialogFocus:(value:unknown)=>{assert.equal(value,opener);calls.push('focus');},
-    encodeBackupFile,decodeBackupFile,readBackupDownload,BACKUP_DOWNLOAD_FORMAT,preparePreservationWireRequest,styles:new Proxy({},{get:(_,key)=>String(key)}),URL:{createObjectURL:()=>{calls.push('blob');return 'blob:fixture';},revokeObjectURL:()=>calls.push('revoke')},Blob,
-    fetch:async(_url:string,init:RequestInit)=>{calls.push('fetch');assert.equal(new Headers(init.headers).get('authorization'),'Bearer secret-fixture-token');const body=JSON.parse(String(init.body));payloads.push(body);return {json:()=>respond(body)};},
+    encodeBackupFile,decodeBackupFile,readBackupDownload,BACKUP_DOWNLOAD_FORMAT,preparePreservationWireRequest,createBackupRequestBudget,LEGACY_BACKUP_REQUEST,readBackupResponse,styles:new Proxy({},{get:(_,key)=>String(key)}),URL:{createObjectURL:()=>{calls.push('blob');return 'blob:fixture';},revokeObjectURL:()=>calls.push('revoke')},Blob,
+    fetch:async(_url:string,init:RequestInit)=>{calls.push('fetch');assert.equal(new Headers(init.headers).get('authorization'),'Bearer secret-fixture-token');const body=JSON.parse(String(init.body));payloads.push(body);return Response.json(await respond(body));},
   };
   context.browserPreservationPendingStore=()=>({
     load:async()=>{const raw=context.sessionStorage.getItem(context.recoveryKey);return raw?JSON.parse(raw):null;},
@@ -45,7 +46,7 @@ function harness(){
   context.isPreservationContentSummary=isPreservationContentSummary;
   context.hasContentSummary=evaluate(`(${declaration('hasContentSummary')})`,context);
   context.contentLabels=evaluate((find(n=>ts.isVariableDeclaration(n)&&n.name.getText(ast)==='contentLabels') as ts.VariableDeclaration).initializer!.getText(ast),{});
-  for(const field of ['busy','status','raw','actors','actorId','selection','preview','confirmed','pending','download','recoveryReady'])context[`set${field[0].toUpperCase()+field.slice(1)}`]=(value:unknown)=>{calls.push(`set:${field}`);context[field]=value;};
+  for(const field of ['busy','status','raw','actors','actorId','selection','preview','confirmed','pending','download','recoveryReady','backupActive'])context[`set${field[0].toUpperCase()+field.slice(1)}`]=(value:unknown)=>{calls.push(`set:${field}`);context[field]=value;};
   const run=(name:string,...args:any[])=>evaluate(`(${declaration(name)})`,context)(...args);
   for(const name of ['request','finish','commit','resolve','selectRaw','selectFile','inspect','backup','loadPending'])context[name]=(...args:any[])=>run(name,...args);
   const render=()=>evaluate(renderExpression,context);
@@ -271,4 +272,47 @@ test('preservation unreadable and oversized file selections clear the previous a
   assert.equal(h.context.selection,null);assert.equal(h.context.preview,null);assert.match(h.context.status,/읽지 못했습니다/);
   await h.run('selectFile',{size:PRESERVATION_PROTOCOL.bytes+1,text:async()=>{throw Error('must-not-read');}});
   assert.match(h.context.status,/30MB/);assert.equal(h.context.selection,null);
+});
+
+test('backup takes a synchronous lock, hides the previous download, and releases only after completion',async()=>{
+  const h=harness(),sealed=await validBackup(h);let release!:(value:unknown)=>void,started!:()=>void;
+  const sent=new Promise<void>(resolve=>{started=resolve;});h.respond(()=>new Promise(resolve=>{release=resolve;started();}));
+  h.context.download={url:'blob:previous',name:'previous.json'};
+  // Simulate two clicks before React commits its disabled/busy render.
+  const work=h.run('backup');h.context.busy=false;const duplicate=h.run('backup');await sent;await duplicate;
+  assert.equal(h.payloads.length,1);assert.equal(h.context.download,null);assert(h.context.activeBackup.current);
+  assert(h.button('백업 요청 취소'));release({ok:true,value:sealed});await work;
+  assert.equal(h.context.activeBackup.current,null);assert.equal(h.context.backupActive,false);assert(h.context.download);
+});
+
+test('backup cancellation ends waiting and a late success cannot recreate the old download',async()=>{
+  const h=harness(),sealed=await validBackup(h);let release!:(value:unknown)=>void,started!:()=>void;
+  const sent=new Promise<void>(resolve=>{started=resolve;});h.respond(()=>new Promise(resolve=>{release=resolve;started();}));
+  h.context.download={url:'blob:previous',name:'previous.json'};
+  const work=h.run('backup');await sent;h.button('백업 요청 취소').props.onClick();await work;
+  assert.equal(h.context.busy,false);assert.equal(h.context.download,null);assert.match(h.context.status,/취소/);
+  release({ok:true,value:sealed});await Promise.resolve();await Promise.resolve();
+  assert(!h.calls.includes('blob'));assert.equal(h.context.download,null);assert(!h.calls.includes('persist'));
+});
+
+test('backup shows slow progress, times out at 180 seconds, and keeps restore recovery untouched',async t=>{
+  const h=harness();let started!:()=>void;const sent=new Promise<void>(resolve=>{started=resolve;});
+  h.respond(()=>{started();return new Promise(()=>{});});t.mock.timers.enable({apis:['Date','setTimeout']});
+  const work=h.run('backup');await sent;t.mock.timers.tick(10_000);assert.match(h.context.status,/계속 만들고/);
+  t.mock.timers.tick(170_000);await work;assert.match(h.context.status,/대기 시간/);
+  assert.equal(h.context.download,null);assert.equal(h.context.pending,null);assert.equal(h.context.busy,false);
+  assert(!h.calls.includes('persist'));assert(!h.calls.includes('blob'));
+});
+
+test('unmount aborts an active backup without late decoding or download state',async()=>{
+  const h=harness(),cleanup=h.mount();await h.run('loadPending');let started!:()=>void;
+  const sent=new Promise<void>(resolve=>{started=resolve;});h.respond(()=>{started();return new Promise(()=>{});});
+  const work=h.run('backup');await sent;const operation=h.context.activeBackup.current;cleanup();const count=h.calls.length;await work;
+  assert(operation.signal.aborted);assert.equal(h.calls.length,count);assert(!h.calls.includes('blob'));
+});
+
+test('truncated backup body removes an earlier download and never creates a replacement Blob',async()=>{
+  const h=harness();h.context.download={url:'blob:previous',name:'previous.json'};
+  h.context.fetch=async()=>new Response('{"ok":true,"value":');await h.run('backup');
+  assert.match(h.context.status,/응답이 끊겼거나/);assert.equal(h.context.download,null);assert(!h.calls.includes('blob'));
 });

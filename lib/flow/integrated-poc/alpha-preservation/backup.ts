@@ -72,7 +72,12 @@ async function referencedFiles(value: unknown): Promise<Map<string, { mime: stri
   await visit(value); need(result.size <= ACCOUNT_BACKUP_LIMITS.files); return result;
 }
 export async function createAccountBackup(input: AccountBackupInput, resolveMedia: AccountBackupMediaResolver): Promise<AccountBackup> {
-  const copy = detached(input); validateDetachedInput(copy);
+  return buildOwnedBackup(detached(input), resolveMedia);
+}
+/** Input is either freshly detached or freshly parsed JSON owned by this call.
+ * Both paths still run every domain, attachment and final envelope check. */
+async function buildOwnedBackup(copy: AccountBackupInput, resolveMedia: AccountBackupMediaResolver): Promise<AccountBackup> {
+  validateDetachedInput(copy);
   // Journal inverses retain historical evidence but never resurrect deleted files.
   const referenced = await referencedFiles({ account: copy.account, references: copy.references, importArchives: copy.importArchives }), files: AccountBackupFile[] = [];
   // Archive source strings remain byte-exact. Opaque remote references inside
@@ -106,7 +111,7 @@ export async function validateAccountBackup(raw: string, ownerId: string): Promi
       const bytes = decode(file.base64); need(bytes.length === file.bytes && await sha256(bytes) === file.sha256); supplied.set(file.id, file);
     }
     const { account, references, operations, importArchives, createdAt } = backup;
-    const expected = await createAccountBackup({ account, references, operations, importArchives, createdAt }, async id => {
+    const expected = await buildOwnedBackup({ account, references, operations, importArchives, createdAt }, async id => {
       const file = supplied.get(id); need(file); return { mime: file!.mime, bytes: decode(file!.base64) };
     });
     need(canonicalJson(expected) === canonicalJson(backup)); return { ok: true, value: expected };

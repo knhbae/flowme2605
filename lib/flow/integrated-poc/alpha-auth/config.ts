@@ -1,7 +1,8 @@
 import { ALPHA_ENVIRONMENT_POLICY, validateAlphaDevelopmentEnvironment } from '../alpha-persistence/environment';
 
 export type AlphaAuthConfig = { stage: 'development' | 'test' | 'preview'; url: string; publishableKey: string; redirectUrl: string;
-  hosting?: typeof ALPHA_ENVIRONMENT_POLICY.renderTrialHosting; capacity?: typeof ALPHA_ENVIRONMENT_POLICY.renderTrialCapacity };
+  hosting?: typeof ALPHA_ENVIRONMENT_POLICY.renderTrialHosting | typeof ALPHA_ENVIRONMENT_POLICY.cloudflareLaptopHosting;
+  tunnelOrigin?: string; capacity?: typeof ALPHA_ENVIRONMENT_POLICY.renderTrialCapacity };
 export const ALPHA_AUTH_STORAGE_KEY = 'flow:poc:personal-workspace:v1:alpha-auth:session';
 export const ALPHA_PRIVATE_BUCKET = 'flowme-alpha-private';
 
@@ -11,14 +12,19 @@ export function readAlphaAuthConfig(env: Record<string, string | undefined>): Al
   const stage = env.FLOWME_ALPHA_STAGE, url = env.FLOWME_ALPHA_SUPABASE_URL;
   const publishableKey = env.FLOWME_ALPHA_PUBLISHABLE_KEY, redirectUrl = env.FLOWME_ALPHA_REDIRECT_URL, hosting = env.FLOWME_ALPHA_HOSTING;
   if (!publishableKey || !/^sb_publishable_[A-Za-z0-9_-]+$/.test(publishableKey) || !url || !redirectUrl) return null;
-  if (hosting !== undefined && hosting !== ALPHA_ENVIRONMENT_POLICY.renderTrialHosting) return null;
+  const tunnelOrigin = env.FLOWME_ALPHA_TUNNEL_ORIGIN;
+  const cloudflare = hosting === ALPHA_ENVIRONMENT_POLICY.cloudflareLaptopHosting;
+  if (hosting !== undefined && hosting !== ALPHA_ENVIRONMENT_POLICY.renderTrialHosting && !cloudflare) return null;
+  if (!cloudflare && tunnelOrigin !== undefined) return null;
   // Hosted trial uses the deployed DEV writer and explicit on-demand backups.
   // The unapplied checkpoint experiment must not become a hosting prerequisite.
   if (hosting && env.FLOWME_ALPHA_M3_CAPACITY !== ALPHA_ENVIRONMENT_POLICY.renderTrialCapacity) return null;
   if (!validateAlphaDevelopmentEnvironment({ stage, projectRef: env.FLOWME_ALPHA_PROJECT_REF,
-    databaseUrl: url, authUrl: url, storageUrl: url, redirectUrl, ...(hosting ? { hosting } : {}) })) return null;
+    databaseUrl: url, authUrl: url, storageUrl: url, redirectUrl, ...(hosting ? { hosting } : {}),
+    ...(cloudflare ? { tunnelOrigin } : {}) })) return null;
   return { stage: stage as AlphaAuthConfig['stage'], url, publishableKey, redirectUrl,
-    ...(hosting ? { hosting, capacity: ALPHA_ENVIRONMENT_POLICY.renderTrialCapacity } : {}) };
+    ...(hosting ? { hosting: hosting as AlphaAuthConfig['hosting'], capacity: ALPHA_ENVIRONMENT_POLICY.renderTrialCapacity } : {}),
+    ...(cloudflare ? { tunnelOrigin } : {}) };
 }
 
 export function isAlphaBrowserOrigin(config: AlphaAuthConfig, origin: string): boolean {
@@ -29,7 +35,8 @@ export function isAlphaAuthConfig(config: AlphaAuthConfig): boolean {
   return readAlphaAuthConfig({ FLOWME_ALPHA_ENABLED: 'development-only', FLOWME_ALPHA_STAGE: config.stage,
     FLOWME_ALPHA_PROJECT_REF: ALPHA_ENVIRONMENT_POLICY.developmentProject, FLOWME_ALPHA_SUPABASE_URL: config.url,
     FLOWME_ALPHA_PUBLISHABLE_KEY: config.publishableKey, FLOWME_ALPHA_REDIRECT_URL: config.redirectUrl,
-    FLOWME_ALPHA_HOSTING: config.hosting, FLOWME_ALPHA_M3_CAPACITY: config.capacity }) !== null;
+    FLOWME_ALPHA_HOSTING: config.hosting, FLOWME_ALPHA_M3_CAPACITY: config.capacity,
+    FLOWME_ALPHA_TUNNEL_ORIGIN: config.tunnelOrigin }) !== null;
 }
 
 export function alphaAuthStorage(storage: Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>) {

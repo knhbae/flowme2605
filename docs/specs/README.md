@@ -1,5 +1,9 @@
 # FLOW Spec Layer
 
+## 핵심 UX·저장 복구의 개발계 반영 (2026-10-01)
+
+[목표·경계](./2026-10-01-alpha-cloudflare-core-ux/spec.md), [계획](./2026-10-01-alpha-cloudflare-core-ux/plan.md), [작업](./2026-10-01-alpha-cloudflare-core-ux/tasks.md), [검증](./2026-10-01-alpha-cloudflare-core-ux/qa.md), [실행·복귀](./2026-10-01-alpha-cloudflare-core-ux/runbook.md). 905 기반 독립 후보의 노트북·Cloudflare 개발계 선별 반영이며 main 병합이나 새 백업 경로 활성화가 아니다.
+
 ## 같은 요청의 개인 문서 저장 복구 (2026-09-30)
 
 [승인된 목표와 경계](./2026-09-30-alpha-private-save-ack/spec.md#목표와-경계)에 따라 같은 요청의 저장 결과 표시를 구현하고 합성 검증했다. [QA](./2026-09-30-alpha-private-save-ack/qa.md)·[작업 원장](./2026-09-30-alpha-private-save-ack/tasks.md)·[소유 범위와 게시 후보](./2026-09-30-alpha-private-save-ack/ownership.md)를 따른다. 후보의 승인된 최소 보안·원문 대조 보완 후 전체 gate를 통과했으며 별도 브랜치·Draft PR을 준비한다. commit/push·CI·배포 결과는 QA 후속 기록에서 실제 실행 여부를 확인한다.
