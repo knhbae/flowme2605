@@ -11,7 +11,7 @@ import { programSame } from '@/lib/flow/integrated-poc/controller';
 import type { ProgramReferenceAccess } from '@/lib/flow/integrated-poc/reference-execution-guard';
 import { linkProgramFolder, programFolderLineTitle } from '@/lib/flow/integrated-poc/folder-link-slot';
 import { isProgramFolderViewCurrent, readProgramFolderRegions } from '@/lib/flow/integrated-poc/folder-document-regions';
-import { programFolderSuggestions } from '@/lib/flow/integrated-poc/folder-link-suggestions';
+import { programFolderCreationLocation, programFolderInputSuggestion, programFolderPath, programFolderSuggestionPreservesSource } from '@/lib/flow/integrated-poc/folder-link-suggestions';
 import { ProgramFolderRegionEditor, type ProgramFolderRegionPort, type ProgramFolderRegionSnapshot } from './ProgramFolderRegionEditor';
 import regionStyles from './ProgramFolderRegionEditor.module.css';
 
@@ -178,7 +178,7 @@ export function stageProgramRegionInput(controller: ReturnType<typeof createProg
   return controller.getState().raw === capture.raw;
 }
 
-type Panel = { kind: 'insert' | 'progress' | 'date' | 'folder' | 'move' | 'reference' | 'order'; lineId: string | null } | null;
+type Panel = { kind: 'insert' | 'progress' | 'date' | 'folder' | 'move' | 'reference' | 'order'; lineId: string | null; folderSuggestionTitle?: string } | null;
 type Moving = TextMoveSelection & { targets: TextMoveTarget[] };
 
 export function programTextProtectionMessage(access?: ProgramReferenceAccess): string {
@@ -235,6 +235,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const [percent, setPercent] = useState('0');
   const [folderName, setFolderName] = useState('');
   const [message, setMessage] = useState('');
+  const [composing, setComposing] = useState(false);
   const disabled = inputLocked || !!props.readOnly || draft.invalid || draft.saving;
 
   const currentState = () => draftRef.current?.getState().working ?? propsRef.current.workspace;
@@ -249,7 +250,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const textarea = textArea();
     if (!textarea) return;
     const index = textarea.value.slice(0, textarea.selectionStart).split('\n').length - 1;
-    const lineId = currentDoc()?.lines[index]?.id ?? null;
+    const lineId = textarea.selectionStart === textarea.selectionEnd ? currentDoc()?.lines[index]?.id ?? null : null;
     if (suggestionLineRef.current !== lineId) { suggestionLineRef.current = lineId; setSuggestionLineId(lineId); setDismissedSuggestion(''); }
     propsRef.current.onPosition?.({ start: textarea.selectionStart, end: textarea.selectionEnd, scrollTop: textarea.scrollTop }, currentDoc()?.lines[index]?.id ?? null);
   }
@@ -481,8 +482,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     });
     editorRef.current = instance;
     const textarea = host.querySelector<HTMLTextAreaElement>('textarea');
-    const compositionStart = () => { composingRef.current = true; orderEpochRef.current++; setOrderPreview(null); propsRef.current.onDirtyChange?.(true); };
-    const compositionEnd = () => { composingRef.current = false; };
+    const compositionStart = () => { composingRef.current = true; setComposing(true); orderEpochRef.current++; setOrderPreview(null); propsRef.current.onDirtyChange?.(true); };
+    const compositionEnd = () => { composingRef.current = false; setComposing(false); };
     host.addEventListener('compositionstart', compositionStart, true);
     host.addEventListener('compositionend', compositionEnd, true);
     const preventLockedInput = (event: Event) => {
@@ -564,6 +565,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   }, [panel]);
 
   const row = panel ? currentRow(panel.lineId) : undefined;
+  const creationLocation = panel?.kind === 'folder' ? programFolderCreationLocation(draft.working, props.docId, panel.lineId) : null;
   const panelAccess = panel ? accessFor(panel.lineId) : undefined;
   const protectedExecutionPanel = !!panelAccess?.reason && !!panel && ['progress', 'date'].includes(panel.kind);
   const insertions = panel?.lineId ? M.insertionOptions(draft.working, props.docId, panel.lineId) : [];
@@ -598,8 +600,17 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   async function attachFolder(scopeId: string | null) {
     if (actionsDisabled() || composingRef.current) return;
     const state = currentState();
+    if (panel?.folderSuggestionTitle !== undefined
+      && (propsRef.current.folderId || textArea()?.value !== draftRef.current?.getState().raw
+        || !programSame(propsRef.current.workspace, draftRef.current?.getState().committed)
+        || programFolderLineTitle(state, propsRef.current.docId, panel.lineId) !== panel.folderSuggestionTitle)) {
+      setMessage('현재 줄이 바뀌었습니다. 닫고 다시 폴더를 선택해 주세요.'); return;
+    }
     const next = linkProgramFolder(state, props.docId, panel?.lineId ?? null, scopeId ? { scopeId } : { title: folderName });
     if (next === state) { setMessage('같은 이름·위치·폴더 연결을 확인해 주세요.'); return; }
+    if (panel?.folderSuggestionTitle !== undefined && !programFolderSuggestionPreservesSource(state, next)) {
+      setMessage('원문을 바꾸는 연결은 적용하지 않았습니다. 현재 입력을 유지했습니다.'); return;
+    }
     closePanel(); await apply(next, scopeId ? '폴더 연결' : '새 폴더');
   }
   function insertDateSection() {
@@ -635,16 +646,41 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const title = protectedExecutionPanel ? '연결된 항목' : panel?.kind === 'order' ? '같은 구간 날짜순 정렬' : panel?.kind === 'progress' ? '누적 진행률' : panel?.kind === 'date' ? '항목 날짜' : panel?.kind === 'folder' ? '폴더 연결' : panel?.kind === 'move' ? '이동할 위치' : panel?.kind === 'reference' ? '연결된 항목' : '이 위치에 추가';
   const folderView = props.folderId ? readProgramFolderRegions(draft.working, props.docId, props.folderId) : null;
   const suggestionKey = `${suggestionLineId}:${currentRow(suggestionLineId)?.text ?? ''}`;
-  const suggestions = props.folderId || composingRef.current || dismissedSuggestion === suggestionKey ? [] : programFolderSuggestions(draft.working, props.docId, suggestionLineId);
+  const suggestion = props.folderId || props.readOnly || inputLocked || draft.invalid || composing || panel || dismissedSuggestion === suggestionKey
+    ? null : programFolderInputSuggestion(draft.working, props.docId, suggestionLineId);
+  function currentSuggestion(savedFrom?: TextWorkspaceState) {
+    const state = draftRef.current?.getState(), area = textArea();
+    if (!suggestion || !state || !area || actionsDisabled() || composingRef.current || propsRef.current.folderId
+      || suggestionLineRef.current !== suggestion.lineId || area.value !== state.raw || area.selectionStart !== area.selectionEnd
+      || (!programSame(propsRef.current.workspace, state.committed)
+        && (!savedFrom || !programSame(propsRef.current.workspace, savedFrom)))) return null;
+    const index = area.value.slice(0, area.selectionStart).split('\n').length - 1;
+    if (currentDoc()?.lines[index]?.id !== suggestion.lineId) return null;
+    const latest = programFolderInputSuggestion(state.working, propsRef.current.docId, suggestion.lineId);
+    return latest?.title === suggestion.title ? latest : null;
+  }
   async function chooseSuggestion(folderId: string) {
-    const lineId = suggestionLineId;
-    if (actionsDisabled() || composingRef.current || !lineId || !await saveNow()
-      || !programFolderSuggestions(currentState(), propsRef.current.docId, lineId).some(entry => entry.id === folderId)) return;
-    await apply(linkProgramFolder(currentState(), propsRef.current.docId, lineId, { scopeId: folderId }), '기존 폴더 연결');
+    const savedFrom = draftRef.current?.getState().committed;
+    // A successful local flush may settle before the parent rerenders. Only its
+    // captured baseline can bridge that interval; foreign authority still fails.
+    if (!currentSuggestion()?.folders.some(entry => entry.id === folderId) || !await saveNow()
+      || !currentSuggestion(savedFrom)?.folders.some(entry => entry.id === folderId)) return;
+    const state = currentState(), next = linkProgramFolder(state, propsRef.current.docId, suggestion!.lineId, { scopeId: folderId });
+    if (!programFolderSuggestionPreservesSource(state, next)) {
+      setMessage('원문을 바꾸는 연결은 적용하지 않았습니다. 현재 입력을 유지했습니다.'); return;
+    }
+    await apply(next, '기존 폴더 연결');
+  }
+  function createSuggestion() {
+    const current = currentSuggestion();
+    if (!current || current.folders.length) return;
+    setFolderName(current.title); setMessage('');
+    setPanel({ kind: 'folder', lineId: current.lineId, folderSuggestionTitle: current.title });
   }
   return <section className={styles.editor} aria-label="개인 문서 편집" data-dirty={draft.dirty ? 'true' : 'false'} onKeyDownCapture={event => {
     if ((event.ctrlKey || event.metaKey) && ['z', 'y'].includes(event.key.toLowerCase()) && (inputLockedRef.current || draftRef.current?.getState().saving)) { event.preventDefault(); event.stopPropagation(); }
     if (event.key === 'Escape' && (panel || movingRef.current)) { event.preventDefault(); event.stopPropagation(); closePanel(); cancelMove(); }
+    else if (event.key === 'Escape' && suggestion && !event.nativeEvent?.isComposing && !composingRef.current) { event.preventDefault(); event.stopPropagation(); setDismissedSuggestion(suggestionKey); }
   }}>
     <div className={styles.toolbar}>
       <div className={styles.mode} aria-label="문서 표시 방식">
@@ -672,7 +708,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     </div></div>}
     {moving && <div className={styles.moveNotice} role="status"><span>{moving.label} · 하위 {moving.descendantCount}줄</span><button type="button" onClick={() => setPanel({ kind: 'move', lineId: moving.lineId })}>위치 선택</button><button type="button" onClick={cancelMove}>이동 취소</button></div>}
     {message && !panel && <p className={styles.message} role="status">{message}</p>}
-    {suggestions.length > 0 && <div className={regionStyles.actions} role="region" aria-label="기존 폴더 연결 제안"><span>같은 이름의 기존 폴더</span>{suggestions.map(entry => <button type="button" key={entry.id} disabled={disabled} onClick={() => { void chooseSuggestion(entry.id); }}>{entry.path} 연결</button>)}<button type="button" onClick={() => setDismissedSuggestion(suggestionKey)}>제안 닫기</button></div>}
+    {suggestion && <div className={regionStyles.actions} role="region" aria-label="폴더 연결 제안">{suggestion.folders.length > 0
+      ? suggestion.folders.map(entry => <button type="button" key={entry.id} disabled={disabled} onClick={() => { void chooseSuggestion(entry.id); }}>{entry.path} 연결</button>)
+      : <button type="button" disabled={disabled} onClick={createSuggestion}>새 폴더로 연결…</button>}<button type="button" onClick={() => setDismissedSuggestion(suggestionKey)}>제안 닫기</button></div>}
     {props.folderId && <div className={regionStyles.actions} aria-label="문서 조회 범위"><p>{folderView?.folderPath ?? '선택한 폴더'} · 현재 문서 · 하위 폴더 포함</p>
       <button type="button" disabled={inputLocked || !!props.readOnly || draft.saving || composingRef.current} onClick={props.onContinueWholeDocument ? continueWholeDocument : props.onShowWholeDocument}>전체 문서 보기</button><button type="button" onClick={props.onShowFolderTasks}>폴더 전체 할 일</button>
       {!folderView?.regions.length && <p>현재 문서에는 이 폴더의 연결 영역이나 할 일이 없습니다.</p>}
@@ -722,7 +760,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         {row?.progressTargetId && M.progressHistory(draft.working, row.progressTargetId).length > 0 && <details><summary>날짜별 기록</summary><div className={styles.choices}>{M.progressHistory(draft.working, row.progressTargetId).map(record => <button type="button" key={record.date} onClick={() => { setDate(record.date); setPercent(String(record.percent)); }}>{record.date}<span>{record.percent}%</span></button>)}</div></details>}
       </form>}
       {panel.kind === 'date' && !protectedExecutionPanel && <form onSubmit={event => { event.preventDefault(); void applyDate(); }}><p className={styles.dateTarget}>{row?.title || row?.task?.title}</p><label>항목 날짜<input type="date" value={date} onChange={event => setDate(event.target.value)} /></label><label>시간<input type="time" step={60} value={time} onChange={event => setTime(event.target.value)} /></label><button type="button" onClick={() => setDate('')}>날짜 미정</button><button type="submit" disabled={disabled}>날짜·시간 적용</button></form>}
-      {panel.kind === 'folder' && <><p>{row && (/^ *-\s*$/.test(row.text) || programFolderLineTitle(currentState(), props.docId, panel.lineId) !== null) ? '현재 줄을 선택한 폴더로 연결합니다.' : '현재 내용은 유지하고 아래 새 줄에 폴더를 연결합니다.'}</p><div className={styles.choices}>{M.scopes(draft.working).filter(scope => scope.kind === 'folder').map(scope => <button type="button" key={scope.id} onClick={() => { void attachFolder(scope.id); }}>{scope.title}</button>)}</div><form onSubmit={event => { event.preventDefault(); void attachFolder(null); }}><label>새 폴더 이름<input value={folderName} maxLength={100} onChange={event => setFolderName(event.target.value)} /></label><button type="submit" disabled={!folderName.trim() || disabled}>만들어 연결</button></form></>}
+      {panel.kind === 'folder' && <><p>{row && (/^ *-\s*$/.test(row.text) || programFolderLineTitle(currentState(), props.docId, panel.lineId) !== null) ? '현재 줄을 선택한 폴더로 연결합니다.' : '현재 내용은 유지하고 아래 새 줄에 폴더를 연결합니다.'}</p><div className={styles.choices}>{M.scopes(draft.working).filter(scope => scope.kind === 'folder').map(scope => <button type="button" key={scope.id} disabled={disabled} onClick={() => { void attachFolder(scope.id); }}>{programFolderPath(draft.working, scope.id)}</button>)}</div><form onSubmit={event => { event.preventDefault(); void attachFolder(null); }}>{creationLocation !== null && <small>생성 위치: {creationLocation}</small>}<label>새 폴더 이름<input value={folderName} maxLength={100} onChange={event => setFolderName(event.target.value)} /></label><button type="submit" disabled={!folderName.trim() || disabled}>만들어 연결</button></form></>}
       {panel.kind === 'move' && <div className={styles.choices}>{moving?.targets.map(target => <button type="button" key={target.targetKey} onClick={() => { void finishMove(target.beforeLineId, target.depth); }}>{target.label}<small>깊이 {target.depth}</small></button>)}</div>}
       {(panel.kind === 'reference' || protectedExecutionPanel) && <ProgramReferencePanel access={panelAccess} title={row?.task?.title || row?.title || '연결된 항목'} date={row?.date ?? null}
         history={row?.progressTargetId ? M.progressHistory(draft.working, row.progressTargetId) : []}

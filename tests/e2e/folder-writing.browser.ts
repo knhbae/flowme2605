@@ -188,7 +188,7 @@ test('exact-name suggestions are dismissible without writes and explicitly conne
   const mock = await boot(page), before = await mock.current(), doc = before.space.text.documents[0];
   const lineId = doc.lines.at(-1)!.id;
   await fullArea(page).focus(); await fullArea(page).press('Control+End');
-  const suggestions = editor(page).getByRole('region', { name: '기존 폴더 연결 제안' });
+  const suggestions = editor(page).getByRole('region', { name: '폴더 연결 제안' });
   await expect(suggestions).toBeVisible();
   await expect(suggestions.getByRole('button', { name: '회사 / 업무 연결', exact: true })).toBeVisible();
   await expect(suggestions.getByRole('button', { name: '개인 / 업무 연결', exact: true })).toBeVisible();

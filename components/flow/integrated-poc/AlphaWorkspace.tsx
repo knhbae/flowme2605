@@ -493,10 +493,10 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
     {message && <p className={styles.message} role="status">{message}</p>}
     {unavailable ? <section className={styles.empty}><p>{snapshot?.status === 'session-expired' ? '계정을 다시 확인한 뒤 개인공간을 열 수 있습니다.' : '서버에서 개인공간을 확인하고 있습니다.'}</p></section> : <>
       <nav className={styles.tabs} aria-label="작업 공간"><button aria-current={destination.view === 'space' ? 'page' : undefined} onClick={() => void navigate({ view: 'space' })}>내 공간</button>
-        <button aria-current={browse ? 'page' : undefined} onClick={() => void navigate({ view: data.public.posts.length ? 'community' : 'discover' })}>둘러보기</button>
+        <button aria-current={browse ? 'page' : undefined} onClick={() => void navigate({ view: 'discover' })}>둘러보기</button>
         <button aria-current={['activity', 'creator'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigate({ view: 'activity' })}>내 활동</button>
         {data.spaces[session.userId].savedBindings.length > 0 && <button onClick={() => void navigate({ view: 'legacy' })}>개인 Flow 상세</button>}</nav>
-      {browse && <nav className={styles.tabs} aria-label="둘러보기 종류"><button aria-current={destination.view === 'community' ? 'page' : undefined} onClick={() => void navigate({ view: 'community' })}>경험·질문·지식</button><button aria-current={['discover', 'flow'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigate({ view: 'discover' })}>Flow 찾기</button></nav>}
+      {browse && <nav className={styles.tabs} aria-label="둘러보기 종류"><button aria-current={['discover', 'flow'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigate({ view: 'discover' })}>Flow 찾기</button><button aria-current={destination.view === 'community' ? 'page' : undefined} onClick={() => void navigate({ view: 'community' })}>경험·질문·지식</button></nav>}
       {['activity', 'creator'].includes(destination.view) && <nav className={styles.tabs} aria-label="내 활동 종류"><button aria-current={destination.view === 'activity' ? 'page' : undefined} onClick={() => void navigate({ view: 'activity' })}>활동·공개 관리</button><button aria-current={destination.view === 'creator' ? 'page' : undefined} onClick={() => void navigate({ view: 'creator', id: creatorSelection })}>Flow 만들기</button></nav>}
       <div hidden={destination.view !== 'space'}><ProgramSpace key={`space:${session.userId}:${presentation}`} data={data} today={programLocalDate()} mutate={mutate}
         navigate={next => { void navigate(next); }} capabilities={capability}
@@ -506,9 +506,9 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
         }}
         selectedDocumentId={destination.view === 'space' ? destination.id : undefined} onUndo={() => history('undo')} onRedo={() => history('redo')}
         onOutputDocument={setOutput} onPublishDocument={setPublisher} onInspectCopy={setInspector} onRegisterEditors={port => { editors.current = port; }} /></div>
-      {seen.discovery && <div hidden={!['discover', 'flow'].includes(destination.view)}><ProgramDiscovery key={`discover:${session.userId}:${presentation}`} data={data} mutate={mutate} navigate={next => { void navigate(next); }} today={programLocalDate()}
+      {seen.discovery && <div hidden={!['discover', 'flow'].includes(destination.view)}><ProgramDiscovery key={`discover:${session.userId}:${presentation}`} data={data} mutate={mutate} navigate={next => { void navigate(next); }} today={programLocalDate()} storageScope="account"
         selectedFlowId={discoverySelection} selectedVersionId={destination.view === 'flow' ? destination.versionId : undefined} selectedItemId={destination.view === 'flow' ? destination.itemId : undefined}
-        selectedOutputReturn={destination.view === 'flow' ? destination.publicOutputReturn : undefined} onUseVersion={useVersion} onStartText={startText} navigationState={discoveryState} onNavigationStateChange={setDiscoveryState} /></div>}
+        selectedOutputReturn={destination.view === 'flow' ? destination.publicOutputReturn : undefined} onUseVersion={useVersion} onStartText={startText} onCreateFlow={() => { void navigate({ view: 'creator', id: creatorSelection }); }} navigationState={discoveryState} onNavigationStateChange={setDiscoveryState} /></div>}
       {seen.community && <div hidden={!['community', 'activity'].includes(destination.view)}><ProgramCommunity key={`community:${session.userId}:${presentation}`} data={data} mutate={mutate} navigate={next => { void navigate(next); }} today={programLocalDate()}
         view={communityView} selectedPostId={communitySelection} selectedReplyId={destination.view === 'community' ? destination.replyId : undefined} presentation={communityState} onPresentationChange={setCommunityState}
         storageScope="account" mediaPort={mediaPort} onRegisterEditors={port => { communityEditors.current = port; }} /></div>}

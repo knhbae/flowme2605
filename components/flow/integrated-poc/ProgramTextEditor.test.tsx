@@ -138,9 +138,12 @@ function referenceMenuHarness(raw?: string, region?: ReturnType<typeof regionHan
   const states: any[] = [], refs: any[] = [], effects: (() => unknown)[] = [];
   let si = 0, ri = 0, writes = 0, focus = 0, accept = true, install = true, config: any;
   let confirmedSave: ((before: TextWorkspaceState, next: TextWorkspaceState) => boolean) | null = null;
+  let inputLock: ((locked: boolean) => void) | null = null;
   const origins: unknown[] = [], events: Record<string, () => void> = {};
   const commits: TextWorkspaceState[] = [];
-  const textarea = { value: M.raw(M.getDocument(space.text, docId)), selectionStart: 0, selectionEnd: 0, scrollTop: 0, addEventListener() {}, removeEventListener() {} };
+  const textareaEvents: Record<string, (event?: unknown) => void> = {};
+  const textarea = { value: M.raw(M.getDocument(space.text, docId)), selectionStart: 0, selectionEnd: 0, scrollTop: 0,
+    addEventListener(name: string, fn: (event?: unknown) => void) { textareaEvents[name] = fn; }, removeEventListener() {} };
   const host = { querySelector: () => textarea, addEventListener: (name: string, fn: () => void) => { events[name] = fn; }, removeEventListener() {} };
   const native = { create: (_host: unknown, options: unknown) => { config = options; return { refresh() {}, focus() { focus++; }, setMoveState() {}, destroy() {}, setMode() {}, getValue() { return textarea.value; }, setValue(value: string) { if (!install) return false; textarea.value = value; return true; } }; } };
   const mockedReact = { ...React, useId: () => 'reference-test', useRef: (value: unknown) => refs[ri++] ?? (refs[ri - 1] = { current: value }),
@@ -153,22 +156,296 @@ function referenceMenuHarness(raw?: string, region?: ReturnType<typeof regionHan
     if (id.endsWith('.css')) return {};
     return require(id.startsWith('@/') ? resolve(root, id.slice(2)) : id);
   }, { addEventListener() {}, removeEventListener() {} });
-  const props: any = { workspace: space.text, docId, onRegisterConfirmedSave: (port: typeof confirmedSave) => { confirmedSave = port; }, onCommit: async (next: TextWorkspaceState) => { writes++; commits.push(next); return accept; }, taskAccess: (id: string) => programReferenceExecutionAccess(space, id), onOpenTaskOrigin: (...args: unknown[]) => origins.push(args) };
+  const props: any = { workspace: space.text, docId, onRegisterInputLock: (port: typeof inputLock) => { inputLock = port; },
+    onRegisterConfirmedSave: (port: typeof confirmedSave) => { confirmedSave = port; }, onCommit: async (next: TextWorkspaceState) => { writes++; commits.push(next); return accept; }, taskAccess: (id: string) => programReferenceExecutionAccess(space, id), onOpenTaskOrigin: (...args: unknown[]) => origins.push(args) };
   const render = () => { si = 0; ri = 0; effects.length = 0; return mod.exports.ProgramTextEditor(props); };
   render(); refs[1].current = host;
   // Only the editor-mount effect is needed; no timers or DOM are installed globally.
-  effects[1]();
+  const unregister = effects[0]() as () => void, destroy = effects[1]() as () => void;
+  const unmount = () => { unregister(); destroy(); };
   const nodes = (tree: any): any[] => !tree || typeof tree !== 'object' ? [] : Array.isArray(tree) ? tree.flatMap(nodes) : [tree, ...nodes(tree.props?.children)];
-  const button = (label: string) => nodes(render()).find(n => n.type === 'button' && (n.props.children === label || n.props['aria-label'] === label));
-  return { props, space, docId, taskId, refs, events, render, nodes, button, origins, commits, textarea,
+  const nodeText = (node: any): string => typeof node === 'string' || typeof node === 'number' ? String(node)
+    : Array.isArray(node) ? node.map(nodeText).join('') : node && typeof node === 'object' ? nodeText(node.props?.children) : '';
+  const button = (label: string) => nodes(render()).find(n => n.type === 'button' && (nodeText(n.props.children) === label || n.props['aria-label'] === label));
+  return { props, space, docId, taskId, refs, events, render, nodes, button, origins, commits, textarea, textareaEvents, unmount,
     confirmSave: (before: TextWorkspaceState, next: TextWorkspaceState) => confirmedSave?.(before, next),
+    lock: (locked: boolean) => inputLock?.(locked),
     action: (type: string, lineIndex = 0) => config.onAction({ type, lineIndex }),
+    input: (raw: string, inputType = 'insertText', caret = raw.length) => {
+      textarea.value = raw; textarea.selectionStart = textarea.selectionEnd = caret;
+      textareaEvents.input?.({ inputType }); config.onChange(raw);
+    },
+    caret: (start: number, end = start) => { textarea.selectionStart = start; textarea.selectionEnd = end; textareaEvents.select?.(); },
     menu: () => { config.onAction({ type: 'row-menu', lineIndex: 0 }); },
     panel: () => nodes(render()).find(n => n.type === mod.exports.ProgramReferencePanel),
     draft: () => refs[3].current as ReturnType<typeof createProgramTextDraft>,
     writes: () => writes, focus: () => focus, reject: () => { accept = false; }, accept: () => { accept = true; },
     rejectInstall: () => { install = false; }, acceptInstall: () => { install = true; } };
 }
+
+test('native typing and paste already offer an exact existing folder at the current row', () => {
+  for (const inputType of ['insertText', 'insertFromPaste']) {
+    const h = referenceMenuHarness('');
+    h.input('- 미분류', inputType);
+    assert(h.button('미분류 연결'), inputType);
+    assert.equal(h.writes(), 0);
+    assert.equal(h.draft().getState().working.bindings.length, 0);
+    h.unmount();
+  }
+});
+
+test('typed and pasted unknown names only open a prefilled folder panel until explicit confirmation', async () => {
+  for (const inputType of ['insertText', 'insertFromPaste']) {
+    const h = referenceMenuHarness('');
+    h.input('- 새 프로젝트', inputType);
+    const lineId = h.draft().getState().working.documents[0].lines[0].id;
+    const before = JSON.stringify(h.draft().getState().working);
+    h.button('새 폴더로 연결…').props.onClick();
+    assert.equal(h.writes(), 0); assert.equal(JSON.stringify(h.draft().getState().working), before);
+    const field = h.nodes(h.render()).find(node => node.type === 'input' && node.props.maxLength === 100)!;
+    assert.equal(field.props.value, '새 프로젝트');
+    assert.equal(h.button('새 폴더로 연결…'), undefined);
+    submitEditorPanel(h); await settleEditor();
+    const saved = h.draft().getState().committed;
+    assert.equal(h.writes(), 1); assert.equal(saved.documents[0].lines.length, 1);
+    assert.equal(saved.documents[0].lines[0].id, lineId);
+    assert.equal(saved.bindings[0].lineId, lineId);
+    const binding = saved.bindings[0]; assert.equal(binding.kind, 'scope');
+    assert.equal(saved.folders.find(folder => folder.id === (binding.kind === 'scope' ? binding.scopeId : null))?.title, '새 프로젝트');
+    h.unmount();
+  }
+});
+
+test('suggestion dismissal and Escape preserve the same line with zero commands', () => {
+  for (const raw of ['- 미분류', '- 새 프로젝트']) for (const dismiss of ['button', 'escape', 'panel-close', 'panel-escape']) {
+    if (raw === '- 미분류' && dismiss.startsWith('panel')) continue;
+    const h = referenceMenuHarness(raw), before = JSON.stringify(h.draft().getState().working);
+    h.caret(raw.length);
+    if (dismiss === 'button') h.button('제안 닫기').props.onClick();
+    else if (dismiss === 'escape') h.render().props.onKeyDownCapture({ key: 'Escape', preventDefault() {}, stopPropagation() {} });
+    else {
+      h.button('새 폴더로 연결…').props.onClick();
+      if (dismiss === 'panel-close') h.button('닫기').props.onClick();
+      else h.render().props.onKeyDownCapture({ key: 'Escape', preventDefault() {}, stopPropagation() {} });
+    }
+    assert.equal(h.writes(), 0); assert.equal(JSON.stringify(h.draft().getState().working), before);
+    assert.equal(h.draft().getState().dirty, false);
+    if (!dismiss.startsWith('panel')) assert.equal(h.button('제안 닫기'), undefined);
+    h.unmount();
+  }
+});
+
+test('proposal follows only the current collapsed caret and resets after a name change', () => {
+  const h = referenceMenuHarness('- 새 프로젝트\n그냥 메모');
+  h.caret(4); assert(h.button('새 폴더로 연결…'));
+  h.button('제안 닫기').props.onClick(); assert.equal(h.button('새 폴더로 연결…'), undefined);
+  h.input('- 다른 프로젝트\n그냥 메모', 'insertText', 6); assert(h.button('새 폴더로 연결…'));
+  h.caret(h.textarea.value.length); assert.equal(h.button('새 폴더로 연결…'), undefined);
+  h.caret(2, 4); assert.equal(h.button('새 폴더로 연결…'), undefined);
+  h.caret(6); assert(h.button('새 폴더로 연결…'));
+  assert.equal(h.writes(), 0); assert.equal(h.draft().getState().working.folders.length, 1);
+  h.unmount();
+});
+
+test('composition start and read-only rerenders hide the proposal and stale handlers cannot write', async () => {
+  for (const mode of ['composition', 'readonly', 'locked', 'folder']) {
+    const h = referenceMenuHarness('- 새 프로젝트'); h.caret(h.textarea.value.length);
+    const create = h.button('새 폴더로 연결…'); assert(create);
+    if (mode === 'composition') h.events.compositionstart();
+    if (mode === 'readonly') h.props.readOnly = true;
+    if (mode === 'locked') h.lock(true);
+    if (mode === 'folder') h.props.folderId = 'folder-unfiled';
+    assert.equal(h.button('새 폴더로 연결…'), undefined, mode);
+    create.props.onClick(); await settleEditor();
+    assert.equal(h.writes(), 0); assert(!h.nodes(h.render()).some(node => node.type === 'dialog'));
+    if (mode === 'composition') { h.events.compositionend(); assert(h.button('새 폴더로 연결…')); }
+    h.unmount();
+  }
+});
+
+test('stale title, caret and authority cannot apply a previously offered existing folder', async () => {
+  for (const mode of ['title', 'caret', 'authority']) {
+    const h = referenceMenuHarness('- 미분류\n메모'); h.caret(3);
+    const choice = h.button('미분류 연결'); assert(choice);
+    if (mode === 'title') h.input('- 다른 폴더\n메모', 'insertText', 3);
+    if (mode === 'caret') h.caret(h.textarea.value.length);
+    if (mode === 'authority') h.props.workspace = M.addDocument(h.props.workspace, { title: '외부 문서' });
+    choice.props.onClick(); await settleEditor();
+    assert.equal(h.writes(), 0, mode); assert.equal(h.draft().getState().working.bindings.length, 0);
+    h.unmount();
+  }
+});
+
+test('unknown-name panel refuses a changed row or authority and preserves the source', async () => {
+  for (const mode of ['title', 'authority', 'native', 'folder']) {
+    const h = referenceMenuHarness('- 새 프로젝트'); h.caret(4); h.button('새 폴더로 연결…').props.onClick();
+    if (mode === 'title') { h.draft().updateRaw('- 바뀐 제목', '2026-10-01'); h.textarea.value = h.draft().getState().raw; }
+    if (mode === 'authority') h.props.workspace = M.addDocument(h.props.workspace, { title: '외부 문서' });
+    if (mode === 'native') h.textarea.value = '- 아직 반영되지 않은 입력';
+    if (mode === 'folder') h.props.folderId = 'folder-unfiled';
+    const before = JSON.stringify(h.draft().getState().working);
+    submitEditorPanel(h); await settleEditor();
+    assert.equal(h.writes(), 0); assert.equal(JSON.stringify(h.draft().getState().working), before);
+    assert(h.nodes(h.render()).some(node => node.type === 'dialog'));
+    h.unmount();
+  }
+});
+
+test('explicit existing choice preserves its ID and same-line identity after a typed draft save', async () => {
+  const h = referenceMenuHarness(''); h.input('- 미분류');
+  const lineId = h.draft().getState().working.documents[0].lines[0].id;
+  h.button('미분류 연결').props.onClick(); await settleEditor();
+  const saved = h.draft().getState().committed;
+  assert.equal(h.writes(), 2); assert.equal(saved.documents[0].lines[0].id, lineId);
+  const binding = saved.bindings[0]; assert.equal(binding.kind, 'scope');
+  assert.equal(binding.kind === 'scope' ? binding.scopeId : null, 'folder-unfiled'); assert.equal(saved.folders.length, 1);
+  assert.equal(h.button('미분류 연결'), undefined); h.unmount();
+});
+
+test('homonym proposals and the folder panel use full paths while choosing the exact existing ID', async () => {
+  const f = regionHandoffFixture();
+  f.workspace = { ...f.workspace, folders: [...f.workspace.folders,
+    { id: 'company', title: '회사', parentId: null }, { id: 'personal', title: '개인', parentId: null },
+    { id: 'company-work', title: '업무', parentId: 'company' }, { id: 'personal-work', title: '업무', parentId: 'personal' }] };
+  f.workspace = M.editText(f.workspace, f.docId, '- 업무');
+  // Replace the old region scope fixture with an eligible, unbound source row.
+  f.workspace = { ...f.workspace, bindings: [] };
+  const h = referenceMenuHarness(undefined, f), lineId = h.draft().getState().working.documents[0].lines[0].id;
+  h.caret(4);
+  assert(h.button('회사 / 업무 연결')); assert(h.button('개인 / 업무 연결'));
+  h.button('개인 / 업무 연결').props.onClick(); await settleEditor();
+  const saved = h.draft().getState().committed, binding = saved.bindings[0];
+  assert.equal(h.writes(), 1); assert.equal(binding.kind, 'scope');
+  assert.equal(binding.kind === 'scope' ? binding.scopeId : null, 'personal-work');
+  assert.equal(saved.documents[0].lines[0].id, lineId);
+  h.action('scope-picker'); assert(h.button('회사 / 업무')); assert(h.button('개인 / 업무'));
+  assert.equal(h.writes(), 1); h.unmount();
+});
+
+test('ordinary memo, task, property and child-bearing current rows never show folder proposals', () => {
+  for (const [raw, caret] of [['그냥 메모', 4], ['- [ ] 새 프로젝트', 6], ['- 새 프로젝트\n  - 자식', 5],
+    ['- [ ] 할 일\n  - 메모: 새 프로젝트', 23], ['- [ ] 할 일\n  - 시간: 09:30', 22]] as const) {
+    const h = referenceMenuHarness(raw); h.caret(Math.min(caret, raw.length));
+    assert.equal(h.button('새 폴더로 연결…'), undefined, raw); assert.equal(h.button('제안 닫기'), undefined, raw);
+    assert.equal(h.writes(), 0); h.unmount();
+  }
+});
+
+test('a nested note cannot offer folder creation but can explicitly connect an existing folder', async () => {
+  const h = referenceMenuHarness('- 부모 메모\n  - 새 프로젝트'); h.caret(h.textarea.value.length);
+  assert.equal(h.button('새 폴더로 연결…'), undefined); assert.equal(h.writes(), 0);
+  h.input('- 부모 메모\n  - 미분류'); assert(h.button('미분류 연결'));
+  const lineId = h.draft().getState().working.documents[0].lines[1].id;
+  h.button('미분류 연결').props.onClick(); await settleEditor();
+  assert.equal(h.writes(), 2); assert.equal(h.draft().getState().committed.bindings[0].lineId, lineId);
+  h.unmount();
+});
+
+test('folder confirmation shows top-level or the actual parent path before any write', () => {
+  const rootFolder = referenceMenuHarness('- 새 프로젝트'); rootFolder.caret(rootFolder.textarea.value.length);
+  rootFolder.button('새 폴더로 연결…').props.onClick();
+  assert.match(renderToStaticMarkup(rootFolder.render()), /생성 위치: 최상위/);
+  assert.equal(rootFolder.writes(), 0); rootFolder.unmount();
+  const f = regionHandoffFixture();
+  f.workspace = { ...f.workspace, folders: [...f.workspace.folders, { id: 'company', title: '회사', parentId: null }] };
+  f.workspace = { ...f.workspace, folders: f.workspace.folders.map(folder => folder.id === 'work' ? { ...folder, parentId: 'company' } : folder) };
+  f.workspace = M.editText(f.workspace, f.docId, '숨은 앞  \n- 업무\n  - 새 프로젝트\n숨은 뒤  ');
+  const child = referenceMenuHarness(undefined, f); child.caret(child.textarea.value.indexOf('새 프로젝트') + '새 프로젝트'.length);
+  child.button('새 폴더로 연결…').props.onClick();
+  assert.match(renderToStaticMarkup(child.render()), /생성 위치: 회사 \/ 업무/);
+  assert.equal(child.writes(), 0);
+  const field = child.nodes(child.render()).find(node => node.type === 'input' && node.props.maxLength === 100)!;
+  field.props.onChange({ target: { value: '편집한 이름' } });
+  assert.match(renderToStaticMarkup(child.render()), /생성 위치: 회사 \/ 업무/);
+  assert.equal(child.writes(), 0); child.unmount();
+});
+
+function folderProposalReferenceFixture(owner: 'document' | 'flow', title: string, uppercase: boolean) {
+  const f = regionHandoffFixture();
+  let workspace = M.addDocument(createEmptyTextWorkspace(), { title: '기존 항목' });
+  const sourceDocId = workspace.documents[0].id;
+  workspace = M.addTask(workspace, { docId: sourceDocId, title: '원문 항목' });
+  const taskId = M.tasks(workspace)[0].id;
+  workspace = M.recordProgress(workspace, taskId, '2026-10-01', 100);
+  workspace = M.addDocument(workspace, { title: '별도 참조' });
+  const referenceDocId = workspace.documents.at(-1)!.id;
+  workspace = M.linkTask(workspace, referenceDocId, 0, taskId);
+  workspace = M.addDocument(workspace, { title: '제안 문서' });
+  const docId = workspace.documents.at(-1)!.id;
+  workspace = M.editText(workspace, docId, `앞 메모  \n- ${title}\n뒤 메모  `);
+  const reference = workspace.documents.find(doc => doc.id === referenceDocId)!;
+  const referenceLines = reference.lines.map(line => uppercase ? { ...line, text: line.text.replace('[x]', '[X]') } : line);
+  workspace = owner === 'flow'
+    ? { ...workspace, documents: workspace.documents.filter(doc => doc.id !== referenceDocId),
+      flows: [{ ...reference, lines: referenceLines, private: true, sourceVersion: 'v1' }] }
+    : { ...workspace, documents: workspace.documents.map(doc => doc.id === referenceDocId ? { ...doc, lines: referenceLines } : doc) };
+  assert(M.validate(workspace));
+  return { ...f, workspace, docId };
+}
+
+test('typed and pasted noncanonical folder lines keep their exact input without a proposal', () => {
+  for (const inputType of ['insertText', 'insertFromPaste']) for (const raw of ['-  미분류', '- 미분류 ', '-  새 폴더', '- 새 폴더 ']) {
+    const h = referenceMenuHarness(''); h.input(raw, inputType);
+    assert.equal(h.button('제안 닫기'), undefined); assert.equal(h.button('새 폴더로 연결…'), undefined);
+    assert.equal(h.button('미분류 연결'), undefined); assert.equal(h.draft().getState().raw, raw);
+    assert.equal(h.textarea.value, raw); assert.equal(h.writes(), 0); h.unmount();
+  }
+});
+
+test('folder proposals reject normalization of another document or Flow before apply or commit', async () => {
+  for (const owner of ['document', 'flow'] as const) for (const title of ['미분류', '새 폴더']) {
+    const f = folderProposalReferenceFixture(owner, title, true), h = referenceMenuHarness(undefined, f);
+    h.caret(h.textarea.value.indexOf(title) + title.length);
+    const before = h.draft().getState(), raw = h.textarea.value;
+    if (title === '미분류') h.button('미분류 연결').props.onClick();
+    else { h.button('새 폴더로 연결…').props.onClick(); submitEditorPanel(h); }
+    await settleEditor();
+    assert.equal(h.writes(), 0); assert.deepEqual(h.commits, []); assert.equal(h.draft().getState(), before);
+    assert.equal(h.textarea.value, raw); assert.equal(JSON.stringify(h.draft().getState().working), JSON.stringify(f.workspace));
+    assert.match(renderToStaticMarkup(h.render()), /원문을 바꾸는 연결은 적용하지 않았습니다.*현재 입력을 유지했습니다/);
+    if (title === '새 폴더') assert(h.nodes(h.render()).some(node => node.type === 'dialog'));
+    h.unmount();
+  }
+});
+
+test('folder proposals with stable document and Flow raw still commit one same-line connection', async () => {
+  for (const owner of ['document', 'flow'] as const) for (const title of ['미분류', '새 폴더']) {
+    const f = folderProposalReferenceFixture(owner, title, false), h = referenceMenuHarness(undefined, f);
+    h.caret(h.textarea.value.indexOf(title) + title.length);
+    const lineId = M.getDocument(f.workspace, f.docId)!.lines[1].id;
+    if (title === '미분류') h.button('미분류 연결').props.onClick();
+    else { h.button('새 폴더로 연결…').props.onClick(); submitEditorPanel(h); }
+    await settleEditor();
+    const saved = h.draft().getState().committed;
+    assert.equal(h.writes(), 1); assert.deepEqual(saved.documents, f.workspace.documents); assert.deepEqual(saved.flows, f.workspace.flows);
+    assert.deepEqual(saved.taskScopes, f.workspace.taskScopes); assert.deepEqual(saved.itemScopes, f.workspace.itemScopes);
+    assert.deepEqual(saved.progressRecords, f.workspace.progressRecords); assert(saved.bindings.some(binding => binding.lineId === lineId));
+    assert.equal(h.draft().getState().dirty, false); h.unmount();
+  }
+});
+
+test('editing a proposed creation name cannot rewrite the source, while the direct folder menu keeps its serializer', async () => {
+  const proposed = referenceMenuHarness('- 새 폴더'); proposed.caret(proposed.textarea.value.length);
+  proposed.button('새 폴더로 연결…').props.onClick();
+  proposed.nodes(proposed.render()).find(node => node.type === 'input' && node.props.maxLength === 100)!.props.onChange({ target: { value: '다른 이름' } });
+  const original = proposed.draft().getState(); submitEditorPanel(proposed); await settleEditor();
+  assert.equal(proposed.writes(), 0); assert.equal(proposed.draft().getState(), original);
+  assert.equal(proposed.textarea.value, '- 새 폴더'); assert.match(renderToStaticMarkup(proposed.render()), /현재 입력을 유지했습니다/);
+  proposed.unmount();
+  for (const target of ['existing', 'create']) {
+    const f = folderProposalReferenceFixture('flow', '새 폴더', true), h = referenceMenuHarness(undefined, f);
+    h.action('scope-picker', 1);
+    if (target === 'existing') h.button('미분류').props.onClick();
+    else {
+      h.nodes(h.render()).find(node => node.type === 'input' && node.props.maxLength === 100)!.props.onChange({ target: { value: '다른 이름' } });
+      submitEditorPanel(h);
+    }
+    await settleEditor();
+    const saved = h.draft().getState().committed;
+    assert.equal(h.writes(), 1); assert.equal(M.getDocument(saved, f.docId)!.lines[1].text, target === 'existing' ? '- 미분류' : '- 다른 이름');
+    assert.match(M.raw(saved.flows[0]), /\[x\]/); assert(M.validate(saved)); h.unmount();
+  }
+});
 
 test('actual component only discards a fragment and changes presentation after native destination confirmation', () => {
   const f = regionHandoffFixture(), capture = f.capture(f.region.raw + '\n  개인 입력'), h = referenceMenuHarness(undefined, f);
