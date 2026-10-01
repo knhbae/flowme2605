@@ -24,6 +24,14 @@
 - 보완후publication경계9/9·backupoff1/1·CI출력/원문보호8/8로실행18회통과,privateclient금지0·trackedcatalog발견0이다. 마지막후크build `zEY9jP0Mcmqs90L0HCPvB`에서별도표적로컬작성25/25·핵심10/10을다시완료했다. 이35회는앞155회와겹치며마지막build검사로분리한다.
 - 깨끗한게시worktree의pre-commit문서검사는로컬원시근거를가리키는과거폴더QA링크9개에서실패해commit을만들지않았다. 원시파일은복사/게시하지않고해당9개를명시적인‘로컬전용근거’경로표기로바꿨다. 과거판정·수치·실패이력은변경0이다. 로컬출력이없는작업본에서후크를그대로재실행한다.
 
+## 전체 CI의 날짜 경계·재읽기 보완
+
+- [두 번째 CI36821584084](https://github.com/knhbae/flowme2605/actions/runs/36821584084), head `3efea905`: 기본·비공개 통합·통합 gate는 통과했다. 전체 브라우저는760개 시나리오에서758pass·1flaky·1fail(재시도 포함763회)이므로 전체 통과가 아니다. 개발계 교체는 하지 않았다.
+- 월간 실패는9월2/3일 고정 fixture를 실제10월 화면에서 검사하여 예상28빈날짜 대신31빈날짜가 나온 것이었다. 깨끗한 작업본에서도 동일하게 재현했다(2개 표적 중 월간1fail·반복1pass). 기존 인접 테스트와 같은 `page.clock.setFixedTime('2026-09-02T03:00:00Z')`를 해당 월간 테스트에만 적용한다. 실제 timer·30/28일 기대값·저장 오류/취소/Undo/byte 비교는 유지한다. 날짜 고정 뒤 두 표적을5번씩 실행해10/10통과했다.
+- 반복 Item 재읽기의CI 첫 시도는checkpoint byte가null이었고재시도는통과했다. 직접 원인을 확정하지 않았다. init helper는legacy/draft만 지우고checkpoint를 지우지 않으며일반boot reader는read-only임을대조했다. 재읽기 직후실제reader의`ready/checkpoint`와‘마지막 성공 checkpoint 복원’상태를추가로기다리도록검사를강화한다. 기존exact byte/source/occurrence/Undo/저장호출검사는그대로이며재시드·복구쓰기·기대값완화는없다. 보완후전체해당spec와새head CI로확인한다.
+- 추가 소유 경로는 `tests/e2e/personal-workspace-integrated-standalone.spec.ts` 1개다. 제품source·고정HTML·DB/Auth·운영저장구현변경0이며기존105path와합쳐106path다. 실패/불안정이력은유지한다.
+- 마지막해당standalone spec은26/26·재시도/skip/실패0으로통과했다(`output/alpha-writing-ux-dev-release/standalone-final-clock-ready/results.json`,로컬전용). 정확한checkpoint/source/회차/Undo/운영sentinel byte검사는유지했다. 이검사는역사보고서캡처를생성하는기존경로도실행했으므로게시worktree에서생긴PNG2개는stage/게시하지않는다. 원본작업본과기존Git캡처는유지한다. 후속commit은test/manifest/이QA3경로만stage한다.
+
 ## 시작 기준 이력
 
 - 작업본 `D:/flowme2605/flow-ux-journey-20261001`, branch `agent/flow-ux-journey-20261001`, HEAD `1eb9be68835b71d234995e932d791b4058571fd5`.

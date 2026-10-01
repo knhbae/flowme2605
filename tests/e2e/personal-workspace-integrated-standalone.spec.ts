@@ -1459,6 +1459,8 @@ test('active drag pointer cancel clears insertion state, RAF scrolling and one s
 });
 
 test('844x390 month expands exactly 28 empty dates and every date can create a dated QuickItem', async ({ page }) => {
+  // The fixture below is September 2026; freeze Date only, not real timers.
+  await page.clock.setFixedTime(new Date('2026-09-02T03:00:00Z'));
   test.setTimeout(45_000);
   const operatingBytes = '  keep A9 month operating bytes  ';
   const calls: StandaloneStorageMutation[] = [];
@@ -2228,6 +2230,11 @@ test('P2-B standalone restores one recurring Item and three occurrence rows afte
   );
 
   await page.reload();
+  // Assert the real reader has restored the checkpoint before inspecting bytes.
+  // Never re-seed or repair a missing checkpoint to make reload pass.
+  await expect(page.locator('#app')).toHaveAttribute('data-workspace-status', 'ready');
+  await expect(page.locator('#app')).toHaveAttribute('data-workspace-origin', 'checkpoint');
+  await expectSaveStatus(page, '마지막 성공 checkpoint 복원', 'saved');
   await expectSuccessfulMutationCount(page, 0);
   expect(await page.evaluate((key) => window.localStorage.getItem(key), WORKSPACE_STORAGE_KEY)).toBe(
     stateAfterMoveAndCompletion,
