@@ -32,7 +32,7 @@ export function prepareEntryText(initial: TextWorkspaceState): TextWorkspaceStat
  * ALL Auth, unrecognized API/network denial, WS denial, operating sentinels,
  * console errors, viewport overflow and production static-asset SHA256 checks.
  * No catalog source pack, signed BFF or real Supabase call is used here. */
-export async function mockFolderContentEntry(page: Page, options: { catalog?: boolean; community?: boolean } = {}) {
+export async function mockFolderContentEntry(page: Page, options: { catalog?: boolean; community?: boolean; holdFirstCreatorSaveReceipt?: boolean } = {}) {
   const base = await mockCloudflareRelease(page, { document: { title: '합성 연결 문서', raw: '' }, prepareText: prepareEntryText });
   const seed = await base.current();
   const context = pairedSocialAccount('a', seed).value.context as AlphaSocialContext;
@@ -58,6 +58,8 @@ export async function mockFolderContentEntry(page: Page, options: { catalog?: bo
   const receipts = new Map<string, { fingerprint: string; receipt: AlphaReceipt }>();
   const publicHash = createHash('sha256').update(canonicalJson(context.public)).digest('hex');
   let intercepted = 0;
+  let heldCreatorSaveReceipt: (() => void) | null = null;
+  let creatorSaveReceiptHeld = false;
   async function current() { const result = await repository.read(); if (!result.ok) throw Error('entry-account-unavailable'); return result.value; }
   const json = (route: Route, value: unknown) => route.fulfill({ status: 200, contentType: 'application/json',
     headers: { 'Access-Control-Allow-Origin': RELEASE_ORIGIN, 'Access-Control-Allow-Headers': '*',
@@ -128,11 +130,20 @@ export async function mockFolderContentEntry(page: Page, options: { catalog?: bo
     const receipt: AlphaReceipt = { ...result.value, kind: command.kind, ...(resultId ? { resultId } : {}),
       ...(socialCommand ? { publicRevision: context.revision } : {}) };
     receipts.set(command.requestId, { fingerprint, receipt });
+    // Repository bytes precede the client's receipt/unlock. A deterministic
+    // barrier tests that distinction without a sleep or live backend request.
+    if (options.holdFirstCreatorSaveReceipt && !creatorSaveReceiptHeld && creatorCommand
+      && command.intent.type === 'library-action' && command.intent.action.type === 'save') {
+      creatorSaveReceiptHeld = true;
+      await new Promise<void>(resolveReceipt => { heldCreatorSaveReceipt = resolveReceipt; });
+      heldCreatorSaveReceipt = null;
+    }
     if (base.state.loseNextReceipt) { base.state.loseNextReceipt = false; base.state.lostRequestId = command.requestId;
       return json(route, { ok: false, reason: 'unavailable' }); }
     return json(route, { ok: true, value: receipt });
   });
   return { state: base.state, current, commands, lookups, reads, context, diagnostics: server.diagnostics,
+    releaseHeldCreatorSaveReceipt() { heldCreatorSaveReceipt?.(); },
     async assertBoundary(info: TestInfo) {
       expect(blocked, 'Unexpected semantic command is denied, never forwarded').toEqual([]);
       expect(createHash('sha256').update(canonicalJson(context.public)).digest('hex')).toBe(publicHash);

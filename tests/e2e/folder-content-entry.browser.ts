@@ -276,7 +276,7 @@ for (const community of [false, true]) test(`C2 Browse with community=${communit
 });
 
 test('C3 discovery Flow creation entry is zero-write; Creator private create/edit/save/activity navigation stays separate', async ({ page }, info) => {
-  const mock = await boot(page, { catalog: true }), initial = await mock.current();
+  const mock = await boot(page, { catalog: true, holdFirstCreatorSaveReceipt: true }), initial = await mock.current();
   const entry = await noChange(page, mock);
   await click(mainNav(page).getByRole('button', { name: '둘러보기', exact: true }));
   await click(discovery(page).getByRole('button', { name: 'Flow 만들기', exact: true }));
@@ -290,9 +290,18 @@ test('C3 discovery Flow creation entry is zero-write; Creator private create/edi
   const raw = '# 합성 비공개 제작\n## 준비\n- [ ] 첫 제작 작업';
   const source = creator(page).getByRole('textbox', { name: '제작 원문', exact: true });
   await source.fill(raw); await click(creator(page).getByRole('button', { name: '제작 초안 저장', exact: true }));
-  await expect.poll(async () => Object.values((await mock.current()).space.creatorWorkspace?.library.records ?? {}).some(record => record.title === '합성 비공개 제작' && record.rawText === raw)).toBe(true);
+  try {
+    await expect.poll(async () => Object.values((await mock.current()).space.creatorWorkspace?.library.records ?? {}).some(record => record.title === '합성 비공개 제작' && record.rawText === raw)).toBe(true);
+    await expect(creator(page)).toHaveAttribute('aria-busy', 'true');
+    await expect(source).not.toBeEditable();
+    await expect(source).toHaveValue(raw);
+  } finally { mock.releaseHeldCreatorSaveReceipt(); }
+  await expect(creator(page)).toHaveAttribute('aria-busy', 'false');
+  await expect(source).toBeEditable();
+  await expect(source).toHaveValue(raw);
   const saved = await mock.current(), draftId = saved.space.creatorWorkspace!.working!.draftId;
   await source.press('Control+End'); await source.pressSequentially(' 수정');
+  await expect(source).toHaveValue(`${raw} 수정`);
   await click(creator(page).getByRole('button', { name: '제작 초안 저장', exact: true }));
   await expect.poll(async () => (await mock.current()).space.creatorWorkspace?.library.records[draftId]?.rawText).toBe(`${raw} 수정`);
   const edited = await mock.current(), record = edited.space.creatorWorkspace!.library.records[draftId];

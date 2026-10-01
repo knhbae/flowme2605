@@ -13,7 +13,13 @@
 3. 기존 승인 launcher의 `--check`를 후보에서 실행한다. 기존 설정의 secret은 launcher 내부에서만 읽고 복사/출력하지 않는다. 이것만으로 source/build provenance를 보장한다고 쓰지 않는다.
 4. 보호hash·기존 앱 process/3105·Tunnel을 다시 확인한 후 기존 child/parent만 종료한다. 같은 launcher로 후보의3105를 시작하고 로컬 health·외부 무인증10검사·remote-readonly 합성 브라우저·자산 exact path/hash를 대조한다.
 5. 오류면 후보 앱의 정확한 child/parent만 종료하고 기존 `flow-ux-journey-20261001`의 변경하지 않은 build를 같은 launcher로 재시작한다. Tunnel·DNS·호스트·DB/Auth·설정은 손대지 않는다. 복귀 시 새 PID/health/자산을 확인하고 실패를 원장에 남긴다.
-6. 마감 문서는 제품 commit에서 만든 별도 깨끗한 작업본으로 게시한다. 문서 head와 실행 제품 commit/build를 분리하고 실행 판본이 최신 문서 commit에서 다시 build됐다고 주장하지 않는다.
+6. 마감 문서와 검사 driver 보완은 제품 commit에서 만든 별도 깨끗한 작업본으로 게시한다. 실행 제품 commit/build와 마감 head를 분리하고 실행 판본이 최신 마감 commit에서 다시 build됐다고 주장하지 않는다. 실제 실행 작업본에서 install/build/hooks를 실행하지 않는다. 마감 head CI는 Draft PR207 최신 checks로 확인한다.
+
+## 교체 후 실행 기록
+
+2026-10-01T10:35:11Z 제품6d534a97/build667DI4JldqTDckfQ16wB5로 교체했다. child10732/launcher26640이며 생성시각은10:35:11.312541Z/10:35:10.832586Z, loopback127.0.0.1:3105다. localhealth200/0bytes/no-store·새외부HTTPS10/10·보완driver 외부60/60·정적 JS/CSS24 exact path/hash일치를 확인했다. Tunnel3864는 그대로다. 초기 외부49PASS/1FAIL과검사gate 보완 근거는 QA에 보존하며 제품source/build변경0이다.
+
+복귀가 필요하면 현재PID만 믿지 말고 새child의 절대 next 실행경로 `D:/flowme2605/flow-folder-content-ux-20261001/node_modules/next/dist/bin/next`와 parent·생성시각·3105 소유를 다시 확인한다. 일치한 앱만 종료한 후 이전 `flow-ux-journey-20261001`의 보존 build zEY9jP0Mcmqs90L0HCPvB를 기존 launcher로 시작한다. 설정 재작성·이전 build 재생성·Tunnel 변경은 하지 않는다. 현재 PID가 달라졌다면 자동으로 추측해 종료하지 않는다.
 
 ## 변경하지 않는 것
 

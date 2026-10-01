@@ -1,10 +1,12 @@
 # Project Status
 
-## 현재 — 폴더 입력·Flow 진입 후보의 선별 게시·개발계 반영 진행 (2026-10-01)
+## 현재 — 폴더 입력·Flow 진입 UX 개발계 반영·마감 게시 (2026-10-01)
 
-[승인 목표](./specs/2026-10-01-alpha-folder-content-dev-release/spec.md)·[단계 계획](./specs/2026-10-01-alpha-folder-content-dev-release/plan.md)·[작업 원장](./specs/2026-10-01-alpha-folder-content-dev-release/tasks.md)에 따라 직전 소유24파일을 선별 게시하고 필수 CI·마지막 build 검증 후 기존 Cloudflare 개발계 앱만 교체한다. 독립 게시 검토에서 제안 연결 시 공백/다른 문서 참조의 정규화와 기존 모델 용량 한도의 불가능한 제안을 발견해 같은 소유 helper/editor·회귀 안에서 보완한다. 새 판본으로 검증하며 직전 검사로 이 예외까지 충족했다고 표시하지 않는다.
+[승인 목표](./specs/2026-10-01-alpha-folder-content-dev-release/spec.md)·[단계 계획](./specs/2026-10-01-alpha-folder-content-dev-release/plan.md)에 따라 원문 보존·기존 모델 용량 경계를 보완하고 소유33파일을 `6d534a97`로 게시했다. [Draft PR207](https://github.com/knhbae/flowme2605/pull/207) 제품 CI 필수4개 통과 후 2026-10-01T10:35:11Z 기존3105 앱만 교체했다. 실행 build는 `667DI4JldqTDckfQ16wB5`이며 Tunnel·설정·이전 복귀 build·privatepack·원본 피드백 보호7개 hash는 같다. [짧은 HTML 보고서](./content-audit/2026-10-01-flowme-folder-content-dev-release-ko.html)·[결과/잔여](./specs/2026-10-01-alpha-folder-content-dev-release/results.md)·[QA](./specs/2026-10-01-alpha-folder-content-dev-release/qa.md)·[반영/복귀](./specs/2026-10-01-alpha-folder-content-dev-release/runbook.md)를 연결한다.
 
-현재 기존3105 앱·Tunnel은 유지하며 아직 새 후보를 반영하지 않았다. 최신 피드백 delta0·#20 실제환경 미확인·기존 잔여 범위는 유지한다. main 병합·DB/Auth/실제 계정 자료·5D 활성·호스트 정책·Render/Vercel/Production은 제외한다. 아래 완료/미반영은 각 시점의 이력이며 이번 실행은 [QA](./specs/2026-10-01-alpha-folder-content-dev-release/qa.md)에 분리한다.
+표적72/72·통합267파일2,780/2,780·npm2,258/2,258·문서4/4·타입564entry 진단0·build·보안0을 확인했다. 전체 CI E2E760시나리오는759첫회통과·구형 이동1재시도통과(761회)다. 외부 최초 신규검사49PASS/1FAIL은 보존하며 저장 응답 전 입력을 시작할 수 있는 검사 조건을 보완했다. 실행 제품은 그대로 두고 별도 게시본의 fixture/browser2만 gate·UI 잠금 해제·정확한 입력 확인으로 강화했다. 보완 검사 로컬65/65·외부60/60은재시도0, HTTPS10/10·실제JS/CSS24 path/hash일치·source639/static81/build변경0이다. 외부의 합성 telemetry 기대오류95건은 의도적 차단 예외이며 telemetry 품질은 검증하지 않았다.
+
+마감은 실행 작업본과 분리한 게시본에서 문서·검사driver 보완을 게시한다. 실행제품6d/build667과 마감 head를 구분하고 최신head CI는 PR207 checks로 확인한다. 최신 피드백 delta0·#20 실제환경 원인 미확정·하위목록 전체 전환/J13 제작→개인실행/Flow·Map 전수품질/공개운영/5D/장시간탭·자동시작 후속은 유지한다. 실제 계정·DB/Auth·운영 저장·main 병합·Tunnel/DNS·Render/Vercel/Production 변경0, 실기기/OS IME/AT NOT_RUN·이번 관찰 사용자0이다. 아래 완료·미반영·진행은 각 시점의 이력이다.
 
 ## 현재 — 폴더 입력·Flow 진입 UX, 격리 후보 검증 완료·미반영 (2026-10-01)
 
