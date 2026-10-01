@@ -13,6 +13,12 @@
 
 원시 JSON·로그·PNG·trace는 로컬에 보존하고 공개 Git에는 코드·설계·테스트·요약만 게시합니다. 실제 계정/DB가 아닌 합성 Auth/API를 이용합니다. 기존 reviewed private catalog CI의 허용 summary만 보존하며 원문이나 secrets를 artifact로 공개하지 않습니다.
 
+## 실제 개발계 반영
+
+제품 head ae5a97f0의 CI36824430918 필수4job 통과 후2026-10-01T06:39:23Z 기존3105 앱만교체했습니다. 실행 build zEY9jP0Mcmqs90L0HCPvB에서 마지막 로컬35/35와 반영후 합성35/35, HTTPS보호10/10, 정적자산24개path/hash일치를확인했습니다. source639와이전build/config·설정2개·privatepack 등보호대상전체6개hash는유지했고Tunnel/DB/Auth/실계정자료변경0입니다. 위‘후속확정’문구는초기PR작성시점의이력입니다. 최신마감문서head CI는이PR checks에서따로확인합니다.
+
+전체CI브라우저760시나리오/762회는758첫회통과·기존P24 Calendar/구형PoC이동2재시도통과이며760무재시도통과가아닙니다. 합성브라우저에서는예상밖console/page error·가로넘침·허용prefix밖Storage·실API전달0을검사했습니다. 합성telemetry SRI표시는별도분류하므로전체console error0/telemetry검증이아닙니다. 실기기/OS IME/AT 미실행·관찰사용자0입니다.
+
 ## 제외
 
 main 병합·DB/Auth·실계정 자료·Tunnel/DNS·유료 서비스·새5D·Render/Vercel/Production 배포·관찰 사용자 시험은 제외합니다. Draft PR은 검토를 위한 것이며 자동 병합하지 않습니다. Cloudflare 앱 교체는 해당 게시 commit CI 통과 뒤 별도 QA 기록으로 확인합니다.

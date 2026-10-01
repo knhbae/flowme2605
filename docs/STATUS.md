@@ -1,5 +1,11 @@
 # Project Status
 
+## 현재 — 세 작성 UX 후보 개발계 반영·마감 게시 (2026-10-01)
+
+작성 여정·폴더 작성·부분/전체 입력과 좁은 모바일 목록→작성 동선을 `https://alpha.wikiplans.com/alpha`에 반영했다. 제품 commit `ae5a97f0`의 [CI36824430918](https://github.com/knhbae/flowme2605/actions/runs/36824430918) 필수4개 통과 후2026-10-01T06:39:23Z 기존3105 앱만 교체했다. 실행 build는`zEY9jP0Mcmqs90L0HCPvB`이며639source·이전build/config·설정2개·privatepack hash불변이다. 최종 로컬155/155, 마지막build로컬35/35·외부합성35/35·HTTPS보호10/10·정적자산24개path/hash일치를 확인했다. [짧은 HTML 보고서](./content-audit/2026-10-01-flowme-writing-ux-dev-release-ko.html)·[QA](./specs/2026-10-01-alpha-writing-ux-dev-release/qa.md)·[반영 이력](./pr-history/2026-10-01-alpha-writing-ux-dev-release.md)을 연결한다.
+
+전체 CI 브라우저760시나리오는758첫회통과·P24 Calendar/구형PoC 이동2재시도통과(총762회)다. 이를760무재시도통과로 표시하지 않는다. 이번 작성/폴더/여정/모바일 및 반영후35건은실패/재시도0이다. 기존단발recurrence재읽기 원인은미확정이며강화한해당검사는이번CI첫회통과다. 큰집중모드·Creator/Flow Map/공개/커뮤니티·5D·장시간탭/자동시작·원래F6~F10·실기기/OS IME/AT는별도후속이다. main병합·DB/Auth/실계정자료·Tunnel/DNS·Render/Vercel/Production변경0·관찰사용자0을유지했다. 최종 마감 문서는 실행앱과 분리해 게시하고 최신 head CI는[Draft PR206](https://github.com/knhbae/flowme2605/pull/206)의checks로확인한다. 아래‘미반영/진행’은각시점의이력이다.
+
 ## 현재 — 세 작성 UX 후보의 개발계 반영 진행 (2026-10-01)
 
 [승인 범위](./specs/2026-10-01-alpha-writing-ux-dev-release/spec.md)와 [단계 계획](./specs/2026-10-01-alpha-writing-ux-dev-release/plan.md)에 따라 작성 여정·폴더·입력 세 격리 후보의 소유 변경을 묶어 게시 검사·Draft PR/CI·기존 Cloudflare 개발계 앱 교체까지 진행한다. 좁은 모바일 목록→작성 접근 보완은 검토하지만 Creator/공개·커뮤니티/5D 후속을 반영 선행 조건으로 붙이지 않는다. 현재는 교체 전이며 아래 격리 완료를 배포 완료로 읽지 않는다. main 병합·DB/Auth/실계정·Tunnel/DNS·Render/Vercel/Production 배포는 제외한다. 실제 실행과 반영 판본은 [QA](./specs/2026-10-01-alpha-writing-ux-dev-release/qa.md)에 기록한다.

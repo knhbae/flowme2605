@@ -9,4 +9,6 @@
 
 감사: private client roots106·source546·금지 경로0, 새HTML7개의비공개원문/credential발견0, diff공백오류0. 이는 게시/소유 감사이며 이번 회귀/CI/실기기 검증을 대신하지 않는다.
 
+최종 게시 범위는 최초104개+CI 보완 테스트2개+마감 이력 문서2개로108개 distinct path다. 최초 독립 감사104와후속3ef의4경로·ae5의3경로·마감문서변경은중복파일을포함하므로commit별개수를단순합산하지않는다. 정확한Git누적diff/manifest와마감stage를별도로대조한다. 최종문서게시worktree는제품ae5기준의깨끗한사본이며실행앱의`.next`를빌드하지않는다. standalone검사생성PNG19개는로컬보존하고역사사본을Git원래바이트로복원했으며stage/게시0·다른작업본변경0이다.
+
 최신 독립 검사2026-10-01T05:28:24.486~05:28:24.975Z: manifest104개와실제dirty/untracked104개가정확히일치했고staged/누락/미등록/검사중drift0이다. secret/privatepayload발견0·trackedcatalog0·Alpha importclosure미해결0이다. manifestSHA256 `ec45f48396c2271c9861777534478008ea30389feb4bd3c27f22690ad6ffb50a`, 제품/테스트/스크립트digest `154a2af1f934ca43a120ee6bb50221cf69ee967e75cfdc008ba0b93aa1f43e4a`를기록했다. 이후부모가검증수치문서만갱신했으므로stage직전목록·diff·source를다시대조한다. raw104hash/JSON은로컬전용이다.

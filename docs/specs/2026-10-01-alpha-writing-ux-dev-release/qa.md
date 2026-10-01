@@ -1,6 +1,17 @@
 # 검증·반영 원장
 
-상태: 게시 전 로컬 검증 완료·CI/개발계 반영 대기. 실행/합성/개발계 반영/실기기를 구분한다.
+상태: 제품 판본 CI4개 통과·개발계 앱 반영·외부 판본 검사 완료. 최종 마감 문서의 최신 head CI는 PR checks로 따로 확인한다. 아래 진행/대기/실패 문구는 각 시점의 이력이다.
+
+## 최종 제품 판본·개발계 반영
+
+- 최종HTML은실제Chrome의다섯요청크기와720×450축소viewport에서70/70통과했다. 가로넘침·범위밖element·예상밖console/page error·추가네트워크0,상세설명Tab/Enter열기·닫기와로컬링크6개존재를확인했다. 390/1440캡처를직접열어상단배치·본문·표를검토했다. HTML SHA256 `fc5dbdeefa3478fcddc207b336f70a04db744fa77bac7360b5b2779e6de428ee`는검사중동일했고이후HTML은수정하지않는다. 결과`output/alpha-writing-ux-dev-release/report-deployed-final/results.json`은로컬전용이다. 축소viewport는실제200%zoom/실기기/접근성인증/사용자시험이아니다.
+
+- 제품 head `ae5a97f09b4ea9284ec37ba912fc5515af838823`의 [CI36824430918](https://github.com/knhbae/flowme2605/actions/runs/36824430918)은필수4job모두success다. private허용summary는267파일·2,744/2,744·fail/skip/cancel0·source639 drift0·rawOutputRetained:false다. 전체E2E의실제job로그는760시나리오/762회·758첫회pass·2retry-pass를기록한다. 이를760무재시도통과로표시하지않는다. `p24-journey-frame-reset.spec.ts:176` Calendar와구형`personal-workspace-poc.spec.ts:636` 이동시나리오는불안정후속이다. 보완한월간/반복재읽기는이번CI첫회통과했다. 이전단발재읽기의직접원인은미확정이다. 일반run로그조회의stream/EOF·단발job503은직접공개E2Ejob로그조회로보완했으며비공개원시로그를 새 근거로 사용하지 않았다.
+- 2026-10-01T06:39:23Z에3105의기존child2184/launcher10020을이름·생성시각·부모·절대앱경로·loopback포트소유로재확인하고그두소유프로세스만종료했다. 기존Tunnel3864는유지했다. 후보`flow-ux-journey-20261001`의launcher5728/child11220이같은127.0.0.1:3105에서build `zEY9jP0Mcmqs90L0HCPvB`를실행한다. 기존F9build/config와설정원본을건드리지않았고실제복귀실행은하지않았다.
+- 반영후외부HTTPS10/10:health200빈body/no-store·alpha/callback200·무인증보호API401·backup-jobs503/off. 실제쿠키·credential·계정쓰기0이다. 로컬전용`after-dev-swap.json`과`before-dev-swap.json`은639source의위e088snapshot·build불변및보호대상6개hash동일을확인한다. 실제운영DB byte전체대조가아니다.
+- 마지막원격합성작성25/25·기존핵심10/10·fail/skip/retry0이다. 로컬전용`output/playwright/writing-ux-release-remote-readonly-live-v1/results.json`과`output/alpha-writing-ux-dev-release/core-remote-readonly-live-v1/results.json`에각실행을보존한다. 5viewport각7건이며로컬전체155와겹치므로고유요구수로합산하지않는다. fixed HTTPS문서/static GET만실전달,전체Auth/API·외부telemetry는합성/차단한다.
+- `assets-postpush-v1-live-v1.json`에서최종build의로컬35와원격35를35쌍·40경계기록으로대조했다. 정적자산24개모두exact path/hash와실제built파일이일치하며manifestSHA256은`da8222c9a636ae0bf3f40e5a532a61e27df2a325c42671b4acabd06ea9ad57ef`다. 모든경계에서예상밖console/page error·document/body overflow·허용prefix밖Storage호출·실API/Supabase/telemetry전달0,synthetic sentinel byte동일이다. 합성telemetry script의예상SRI console표시는문서load횟수와exact대조하여분리하므로전체console error0/telemetry검증으로표현하지않는다.
+- 마감정본은별도`flow-writing-release-records-20261001`에서검사/게시한다. 실행앱에build/install0이며최종문서commit은제품source변경0을확인한다. 최신문서head CI는[Draft PR206 checks](https://github.com/knhbae/flowme2605/pull/206/checks)로분리하며이문서작성시점에미실행된CI를미리success로표시하지않는다. main병합·Render/Vercel신규Preview·Production·DB/Auth·Tunnel/DNS변경0,이번실기기/OS IME/AT NOT_RUN·관찰사용자0이다.
 
 ## 최종 후보 보완 상태
 
@@ -31,6 +42,8 @@
 - 반복 Item 재읽기의CI 첫 시도는checkpoint byte가null이었고재시도는통과했다. 직접 원인을 확정하지 않았다. init helper는legacy/draft만 지우고checkpoint를 지우지 않으며일반boot reader는read-only임을대조했다. 재읽기 직후실제reader의`ready/checkpoint`와‘마지막 성공 checkpoint 복원’상태를추가로기다리도록검사를강화한다. 기존exact byte/source/occurrence/Undo/저장호출검사는그대로이며재시드·복구쓰기·기대값완화는없다. 보완후전체해당spec와새head CI로확인한다.
 - 추가 소유 경로는 `tests/e2e/personal-workspace-integrated-standalone.spec.ts` 1개다. 제품source·고정HTML·DB/Auth·운영저장구현변경0이며기존105path와합쳐106path다. 실패/불안정이력은유지한다.
 - 마지막해당standalone spec은26/26·재시도/skip/실패0으로통과했다(`output/alpha-writing-ux-dev-release/standalone-final-clock-ready/results.json`,로컬전용). 정확한checkpoint/source/회차/Undo/운영sentinel byte검사는유지했다. 이검사는역사보고서캡처를생성하는기존경로도실행했으므로게시worktree에서생긴PNG2개는stage/게시하지않는다. 원본작업본과기존Git캡처는유지한다. 후속commit은test/manifest/이QA3경로만stage한다.
+- 위PNG2개는초기확인수이며전체26건완료후의최종수는19개였다. 새캡처19개를로컬전용`output/alpha-writing-ux-dev-release/generated-standalone-captures/`에hash와함께보존하고,깨끗한게시작업본에서해당검사만생성한19개역사캡처사본을Git기준과byte-for-byte동일하게복원했다. 다른작업본/사용자파일변경0·이미지게시0이다. 커밋 `ae5a97f09b4ea9284ec37ba912fc5515af838823`은정확히3경로이며후크docs/npm/build를우회하지않고push했다. 새[CI36824430918](https://github.com/knhbae/flowme2605/actions/runs/36824430918)은진행중이다. 실행앱후보의639source·build `zEY9jP0Mcmqs90L0HCPvB`는이테스트/문서전용보완과동일제품판본을유지한다.
+- 두 번째CI의허용public summary를별도읽어비공개통합267파일·2,744/2,744·실패/skip/cancel0·source639실행중drift0·rawOutputRetained:false를확인했다. Linux checkout의LF snapshot은`479e26c0ec7e7e4c40d752bc83bf341ae0073c511c86e904533541473d10ddb8`이며Windows작업본의CRLF byte snapshot과직접같다고표시하지않는다. Git제품source변경0을별도로대조한다. 원시private job로그는다운로드하지않았다.
 
 ## 시작 기준 이력
 

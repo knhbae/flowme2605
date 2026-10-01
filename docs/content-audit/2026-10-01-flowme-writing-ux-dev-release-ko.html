@@ -1,8 +1,9 @@
 <!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FlowMe 작성 UX 개발계 반영</title><style>
 :root{color-scheme:light;background:#f5f7f5;color:#183b35;font:16px/1.65 system-ui,-apple-system,'Malgun Gothic',sans-serif}*{box-sizing:border-box}body{margin:0}main{max-width:1100px;margin:auto;padding:28px clamp(14px,3vw,32px) 52px}h1{font-size:clamp(25px,4vw,34px);line-height:1.25;margin:0 0 12px}h2{font-size:22px;margin:32px 0 12px}p{max-width:78ch;margin:8px 0}a{color:#096f60;text-underline-offset:3px}.links{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}.links a{display:flex;align-items:center;min-height:48px;padding:9px 14px;border:1px solid #cad8d1;border-radius:6px;background:white}.links a.primary{background:#096f60;color:white}table{width:100%;border-collapse:collapse;background:white}th,td{border-bottom:1px solid #cad8d1;text-align:left;vertical-align:top;padding:12px}th{font-weight:650;background:#edf3ef}td:first-child{font-weight:600}small,.muted{color:#52665f}details{margin-top:18px;border-top:1px solid #cad8d1;padding-top:8px}summary{cursor:pointer;min-height:48px;display:flex;align-items:center;font-weight:600}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:14px/1.7 ui-monospace,'Malgun Gothic',monospace}.flow{display:grid;grid-template-columns:repeat(4,1fr);border-block:1px solid #cad8d1;margin:16px 0}.flow div{padding:14px 10px}.flow div+div{border-left:1px solid #cad8d1}.flow strong{display:block}.flow span{font-size:14px;color:#52665f}footer{border-top:1px solid #cad8d1;margin-top:28px;padding-top:12px;color:#52665f;font-size:14px}@media(max-width:650px){thead{display:none}table,tbody,tr,td{display:block}tr{padding:8px 0;border-bottom:1px solid #cad8d1}td{border:none;padding:6px 12px}td::before{content:attr(data-label);display:block;color:#52665f;font-size:12px;font-weight:500}.flow{grid-template-columns:1fr 1fr}.flow div+div{border-left:0}.flow div:nth-child(even){border-left:1px solid #cad8d1}.flow div:nth-child(n+3){border-top:1px solid #cad8d1}}
 </style></head><body><main>
+<style>th,td,code{overflow-wrap:anywhere}h3{font-size:18px;margin:24px 0 10px}</style>
 <h1>작성 UX 세 후보의 개발계 반영</h1>
-<p id="verdict">작성 여정·폴더 작성·부분/전체 입력 세 후보를 묶어 검증하고 있습니다. 아직 이번 후보로 개발계 앱을 교체하지 않았습니다.</p>
+<p id="verdict">작성 여정·폴더 작성·부분/전체 입력 세 후보와 모바일 작성 접근을 개발계에 반영했습니다. 같은 주소에서 새 빌드를 사용할 수 있습니다. 입력 저장 상태를 확인한 뒤 새로고침해 주세요.</p>
 <div class="links"><a class="primary" href="https://alpha.wikiplans.com/alpha">개발계 열기</a><a href="2026-10-01-flowme-writing-interactions-lab-ko.html">직접 조작 HTML</a><a href="../specs/2026-10-01-alpha-writing-ux-dev-release/qa.md">이번 검사 원장</a></div>
 <h2>방향과 이번 범위</h2><p>개인 텍스트 계획 관리, 공유 경험·지식, 선택적 기여를 이어 갑니다. 이번에는 개인공간의 작성·폴더·기간 연결을 개선합니다. 공개 탐색·Creator·Flow Map·커뮤니티 전체를 완성했다는 뜻은 아닙니다.</p>
 <table><thead><tr><th>묶음</th><th>반영할 동작</th><th>상세 근거</th></tr></thead><tbody>
@@ -11,29 +12,50 @@
 <tr><td data-label="묶음">부분·전체 입력</td><td data-label="반영할 동작">같은 입력 엔진·메모 줄바꿈·형제 Enter·즉시 들여쓰기 복귀. 제한된 부분 입력을 지우지 않고 전체에서 계속 편집</td><td data-label="상세 근거"><a href="2026-10-01-flowme-writing-interactions-review-ko.html">입력 요구9개와 보호 경계</a></td></tr>
 <tr><td data-label="묶음">이번 모바일 보완</td><td data-label="반영할 동작">작성 영역이 있는 폴더 선택에 성공하면 목록을 접고 기존 열기 버튼에 포커스. 입력창 자동 포커스·커서 변경·추가 저장 없음</td><td data-label="상세 근거">빈 결과·읽기 전용·조합 중·저장 실패·잠금·기간 화면은 유지</td></tr>
 </tbody></table>
+<h3>변경한 파일</h3><p id="changed-file-count">처음 게시한 104개 파일, CI 보완 테스트 2개, 마감 이력 문서 2개로 총 108개 경로를 관리합니다. <a href="../specs/2026-10-01-alpha-writing-ux-dev-release/publication-files.json">전체 게시 파일 목록</a>에서 정확한 경로를 확인할 수 있습니다. 이미 사용 중인 호스트 기반 36개 파일은 별도 의존성이고, 중복을 무시해 합산하지 않습니다.</p>
+<table><thead><tr><th>구분</th><th>주요 파일과 변경</th></tr></thead><tbody>
+<tr><td data-label="구분">작성 화면</td><td data-label="주요 파일과 변경"><code>ProgramSpace.tsx</code>, <code>ProgramTextEditor.tsx</code>, <code>ProgramFolderRegionEditor.tsx</code>, <code>AlphaWorkspace.tsx</code> — 작성·부분 보기·폴더·기간 복귀 연결</td></tr>
+<tr><td data-label="구분">입력·폴더 모델</td><td data-label="주요 파일과 변경"><code>folder-document-regions.ts</code>, <code>folder-link-suggestions.ts</code>, <code>text-input-plan.cjs</code>, 기존 vendor 입력 엔진과 타입 — 숨은 원문·ID·부분 입력 인계 보호</td></tr>
+<tr><td data-label="구분">레이아웃</td><td data-label="주요 파일과 변경">작성 화면의 CSS 파일 — 도구 접기·낮은 가로 화면·영역 입력 배치</td></tr>
+<tr><td data-label="구분">검사</td><td data-label="주요 파일과 변경">순수/컴포넌트 테스트, 여정·폴더·입력 브라우저 runner, 합성 요청 fixture, <code>render-release-inventory.test.mjs</code> — 데이터 경계와 기존 회귀 확인</td></tr>
+<tr><td data-label="구분">문서·도구</td><td data-label="주요 파일과 변경">세 후보의 설계·요구 대조·조작 HTML·검증 원장, 이번 반영 계획·복귀 절차·hash 기록 도구. 원시 JSON·로그·캡처는 로컬에만 보존</td></tr>
+</tbody></table>
 <h2>반영 단계</h2><div class="flow"><div><strong>소유 범위</strong><span>정확한 파일·비공개 자료 제외</span></div><div><strong>고정 소스 검증</strong><span>자동·빌드·합성 브라우저</span></div><div><strong>게시·CI</strong><span>검토용 Draft PR, 병합 없음</span></div><div><strong>개발계 앱 교체</strong><span>이전 앱 복귀본 유지</span></div></div>
 <h2>이번 실행 결과</h2><table><thead><tr><th>검사</th><th>실제 결과</th><th>증거의 범위</th></tr></thead><tbody>
 <tr><td data-label="검사">표적·경계</td><td data-label="실제 결과" id="target-result">모바일38/38 · 외부 요청 허용 경계7/7</td><td data-label="증거의 범위">실제 callback·순수 경계. 넓은 검사와 중복이므로 고유 요구 충족률로 합산하지 않음</td></tr>
-<tr><td data-label="검사">보안·출처</td><td data-label="실제 결과" id="security-result">초기 취약점0 · 소비자 호환4/4 · docs4/4</td><td data-label="증거의 범위">날짜만 바꾸거나 검사를 우회하지 않음. 비공개 원문은 기존 명시 파일을 읽기만 함</td></tr>
-<tr><td data-label="검사">최종 자동</td><td data-label="실제 결과" id="automatic-result">npm2,258/2,258 · 통합2,744/2,744(267파일) · 타입564entry 오류0 · production build 통과</td><td data-label="증거의 범위">639개 source 실행 중 변경0. 마지막 게시 hook의 build와 다시 결합해 검사 예정</td></tr>
-<tr><td data-label="검사">후보 앱</td><td data-label="실제 결과" id="local-result">작성80/80 · 폴더50/50 · 여정15/15 · 핵심10/10</td><td data-label="증거의 범위">실행155회, 고유 요구 충족률 아님. 실제 production 자산 + 합성 Auth/API. 실제 계정이나 DB에 전달하지 않음</td></tr>
-<tr><td data-label="검사">개발계 화면</td><td data-label="실제 결과" id="remote-result">반영 후 검사 예정</td><td data-label="증거의 범위">고정 HTTPS의 문서·정적 GET만 실제 전달, Auth/API·telemetry는 합성</td></tr>
+<tr><td data-label="검사">보안·출처</td><td data-label="실제 결과" id="security-result">의존성 취약점 0 · 소비자 호환 4/4 · 문서 검사 4/4</td><td data-label="증거의 범위">출처 날짜만 바꾸거나 검사를 우회하지 않음. 비공개 원문은 기존 명시 파일을 읽기만 함</td></tr>
+<tr><td data-label="검사">최종 자동</td><td data-label="실제 결과" id="automatic-result">npm 2,258/2,258 · 통합 2,744/2,744(267파일) · 타입 검사 564 entry 오류 0 · production build 통과</td><td data-label="증거의 범위">639개 source 실행 중 변경 0. 마지막 게시 hook의 build에서 로컬 핵심 35건을 별도로 재검사함</td></tr>
+<tr><td data-label="검사">후보 앱</td><td data-label="실제 결과" id="local-result">작성 80/80 · 폴더 50/50 · 여정 15/15 · 핵심 10/10</td><td data-label="증거의 범위">실행 155회, 고유 요구 충족률 아님. 실제 production 자산 + 합성 Auth/API. 실제 계정이나 DB에 전달하지 않음</td></tr>
+<tr><td data-label="검사">개발계 화면</td><td data-label="실제 결과" id="remote-result">작성 25/25 · 핵심 10/10 · HTTPS 보호 10/10 · 정적 자산 24개 path/hash 일치</td><td data-label="증거의 범위">고정 HTTPS의 문서·정적 GET만 실제 전달, Auth/API·telemetry는 합성. 예상된 합성 telemetry SRI 오류는 별도 분류하며, 모든 콘솔 오류가 0이라는 뜻은 아님</td></tr>
 </tbody></table>
+<h3>시나리오별 결과</h3><table><thead><tr><th>동선</th><th>판정과 확인한 경계</th></tr></thead><tbody>
+<tr><td data-label="동선">문서 → 기간 → 원문</td><td data-label="판정과 확인한 경계">통과. 같은 Item의 원문 줄로 복귀하며 보기 전환만으로 저장하지 않음. 작성 여정 15건</td></tr>
+<tr><td data-label="동선">기존 폴더 연결 → 영역 작성 → 새 문서</td><td data-label="판정과 확인한 경계">통과. 동명 후보를 명시 선택하고 비연속 영역·숨은 줄·기존 ID를 보존. 폴더 50건</td></tr>
+<tr><td data-label="동선">전체·부분 입력 → 메모/형제 줄 → 구조 키보드</td><td data-label="판정과 확인한 경계">통과. 지원 키는 같은 입력 엔진으로 처리하고 지원하지 않는 부분 입력은 원문을 지우지 않고 전체 draft로 인계. 작성 80건에 포함</td></tr>
+<tr><td data-label="동선">모바일 폴더 선택 → 작성</td><td data-label="판정과 확인한 경계">통과. 성공한 작성 영역 선택만 목록을 접음. 빈 결과·읽기 전용·조합 중·실패·잠금은 유지. 추가 저장 0건, textarea 자동 포커스 없음</td></tr>
+<tr><td data-label="동선">저장 거절/결과 불명 → 복구 → Undo → reload</td><td data-label="판정과 확인한 경계">통과. 같은 요청 receipt와 CAS 판본을 확인하고 입력·숨은 원문·ID를 보존. 핵심 10건과 작성 검사에 포함</td></tr>
+<tr><td data-label="동선">게시 빌드 → 실제 개발계</td><td data-label="판정과 확인한 경계">로컬 35/35와 반영 후 원격 35/35 통과. 35쌍·40개 경계 기록과 정적 자산 24개를 검사해 실행 빌드와 path/hash가 일치함을 확인. 같은 검사의 반복이므로 고유 요구 수로 합산하지 않음</td></tr>
+</tbody></table><p class="muted">시나리오가 서로 겹치므로 위 수를 합쳐 고유 요구 충족률을 만들지 않습니다. 조합 이벤트 자동 검사는 실제 Android/iOS 키보드 시험이 아닙니다.</p>
 <details><summary>초기 검사·원시 증거의 한계</summary><p>04:27 시작한 npm/build/type은 실행 결과가 통과했으나 도중 소스가 바뀌어 최종 판정에서 제외했습니다. 통합도 그 배치의 소유 프로세스만 종료한 뒤 재실행합니다. 원시 로그·JSON·화면은 로컬 전용 근거로 보존하며 Git에는 요약만 게시합니다. 이전 세 보고서의 수치는 각각 마감 당시의 이력입니다.</p></details>
 <h2>다섯 화면 평가</h2><table><thead><tr><th>크기</th><th>평가</th></tr></thead><tbody>
-<tr><td data-label="크기">390×844</td><td data-label="평가" data-viewport="390x844">로컬31/31. 폴더 선택 후 목록 접기·본문 접근·원문/ID/커서 보존 확인</td></tr>
-<tr><td data-label="크기">375×812</td><td data-label="평가" data-viewport="375x812">로컬31/31. 좁은 세로 화면의 같은 동선과 no-write 전환 확인</td></tr>
-<tr><td data-label="크기">844×390</td><td data-label="평가" data-viewport="844x390">로컬31/31. 낮은 가로 화면의 본문·미저장 입력·구조 키보드 확인</td></tr>
-<tr><td data-label="크기">1024×768</td><td data-label="평가" data-viewport="1024x768">로컬31/31. 데스크톱 목록 유지·부분/전체·기간 복귀 확인</td></tr>
-<tr><td data-label="크기">1440×900</td><td data-label="평가" data-viewport="1440x900">로컬31/31. 데스크톱 배치·저장/Undo/reload·숨은 줄 보존 확인</td></tr>
+<tr><td data-label="크기">390×844</td><td data-label="평가" data-viewport="390x844">로컬 31/31 · 반영 후 7/7. 폴더 선택 후 목록 접기·본문 접근·원문/ID/커서 보존 확인</td></tr>
+<tr><td data-label="크기">375×812</td><td data-label="평가" data-viewport="375x812">로컬 31/31 · 반영 후 7/7. 좁은 세로 화면의 같은 동선과 no-write 전환 확인. 기간 탭의 두 줄 배치는 남아 있음</td></tr>
+<tr><td data-label="크기">844×390</td><td data-label="평가" data-viewport="844x390">로컬 31/31 · 반영 후 7/7. 낮은 가로 화면의 본문·미저장 입력·구조 키보드 확인. 긴 부분 영역은 세로 스크롤 필요</td></tr>
+<tr><td data-label="크기">1024×768</td><td data-label="평가" data-viewport="1024x768">로컬 31/31 · 반영 후 7/7. 데스크톱 목록 유지·부분/전체·기간 복귀 확인</td></tr>
+<tr><td data-label="크기">1440×900</td><td data-label="평가" data-viewport="1440x900">로컬 31/31 · 반영 후 7/7. 데스크톱 배치·저장/Undo/reload·숨은 줄 보존 확인</td></tr>
 </tbody></table>
 <h2>게시와 반영</h2><table><thead><tr><th>항목</th><th>상태</th></tr></thead><tbody>
-<tr><td data-label="항목">commit / push / Draft PR / CI</td><td data-label="상태" id="publication-result">진행 전. main 병합·자동 병합은 하지 않음</td></tr>
-<tr><td data-label="항목">Cloudflare 개발계</td><td data-label="상태" id="deployment-result">기존 앱 유지. 이전 core-ux build F9QqWgnGf7n_PaVUEavrK와 설정을 복귀 기준으로 보존</td></tr>
-<tr><td data-label="항목">Preview / Production</td><td data-label="상태">Render/Vercel 신규 배포·Production 반영 없음</td></tr>
-<tr><td data-label="항목">실기기 / 관찰 사용자</td><td data-label="상태">이번 Android Chrome·iOS Safari·OS IME·AT 미실행 / 관찰 사용자0명</td></tr>
+<tr><td data-label="항목">commit</td><td data-label="상태">db47835b: 소유 104개 파일. 3efea905·ae5a97f0: CI 테스트·원장 보완. 제품 source 변경 없음</td></tr>
+<tr><td data-label="항목">push</td><td data-label="상태">승인한 범위를 agent/flow-ux-journey-20261001에 게시. 기존 문서·테스트·빌드 hook 우회 없음</td></tr>
+<tr><td data-label="항목">PR</td><td data-label="상태"><a href="https://github.com/knhbae/flowme2605/pull/206">Draft PR #206</a>. 기존 호스트 기반 위의 검토용 PR이며 main 병합·자동 병합 없음</td></tr>
+<tr><td data-label="항목">CI</td><td data-label="상태" id="publication-result">제품 판본 ae5a97f0의 <a href="https://github.com/knhbae/flowme2605/actions/runs/36824430918">필수 CI 4개 통과</a>. 전체 브라우저 760건 중 758건 첫회 통과·2건 재시도 통과(총 762회). 최종 마감 문서의 게시 head 검사는 PR checks에서 별도 확인</td></tr>
+<tr><td data-label="항목">Cloudflare 개발계</td><td data-label="상태" id="deployment-result">2026-10-01 15:39 KST 앱 교체. 실행 build zEY9jP0Mcmqs90L0HCPvB, 새 5D off. 이전 core-ux build F9QqWgnGf7n_PaVUEavrK와 설정을 복귀 기준으로 보존. 실제 복귀 실행은 하지 않음</td></tr>
+<tr><td data-label="항목">Preview</td><td data-label="상태">Render/Vercel 신규 Preview 배포 없음</td></tr>
+<tr><td data-label="항목">Production</td><td data-label="상태">반영 없음. 기존 Cloudflare 개발계만 이번 대상</td></tr>
+<tr><td data-label="항목">실기기 검사</td><td data-label="상태">이번 Android Chrome·iOS Safari·OS IME·AT 미실행. 다섯 화면은 데스크톱 Chrome의 크기 시뮬레이션</td></tr>
+<tr><td data-label="항목">관찰 사용자</td><td data-label="상태">이번 목표 0명. 기존 사용자의 과거 피드백·폰 검사를 새 검사로 합산하지 않음</td></tr>
 </tbody></table>
-<h2>데이터 경계와 남은 일</h2><p id="preservation-result">원래 /my와 운영 저장 경로를 바꾸지 않습니다. 화면 전환은 저장하지 않고 실제 편집은 기존 CAS·receipt·Undo를 거칩니다. 이전 앱·설정·비공개 pack hash는 교체 전후 대조할 예정입니다. 합성 sentinel 검사는 실제 운영 DB의 byte 대조가 아닙니다.</p><p>큰 집중 모드, Creator·공개 탐색·Flow Map·커뮤니티 전면 개선, 반복/상대 날짜, 5D 대용량 백업, 장시간 탭·자동 시작, 요청량·비용, 실제 기기·IME·보조기술은 후속입니다. 기존21피드백과424요구 전체의 해결률을 새로 산정하지 않습니다.</p>
-<p id="tool-result" class="muted">flow-ux-review의 감산 기준으로 새 UI 없이 모바일 작성 접근을 보완했습니다. 게시 manifest와 hash 증거는 비공개 원문·설정·원시 증거를 Git에서 제외하고, 실제 Chrome 검사로 구현 동작을 확인하는 데 사용합니다.</p>
-<footer>2026-10-01 · 승인된 개발계 반영 목표의 진행 보고. 브라우저 크기 시뮬레이션은 실제 기기·사용자 관찰 시험이 아닙니다.</footer>
+<h2>데이터 경계와 남은 일</h2><p id="preservation-result">원래 /my와 운영 저장 경로를 바꾸지 않습니다. 화면 전환은 저장하지 않고 실제 편집은 기존 CAS·receipt·Undo를 거칩니다. 교체 전후 이전 build/config·설정 2개·비공개 pack 등 6개 hash가 동일했고, 실행 source 639개와 build도 유지했습니다. 합성 경계에서 허용 prefix 밖 Storage 호출·실제 계정/API 전달·예상 밖 console/page error·가로 넘침은 0입니다. 합성 sentinel 검사는 실제 운영 DB의 byte 대조가 아닙니다.</p><p>기존 CI의 P24 Calendar·구형 PoC 이동 검사 2건은 재시도 통과이므로 불안정 항목으로 남깁니다. 반복 Item 재읽기의 앞선 단발 실패 원인은 확정하지 않았으며, 강화한 해당 검사와 월간 검사는 이번 CI에서 첫회 통과했습니다. 큰 집중 모드, Creator·공개 탐색·Flow Map·커뮤니티 전면 개선, 반복/상대 날짜, 5D 대용량 백업, 장시간 탭·자동 시작, 요청량·비용, 실제 기기·IME·보조기술은 후속입니다. 기존 21피드백과 424요구 전체의 해결률을 새로 산정하지 않습니다.</p>
+<p id="tool-result" class="muted">flow-ux-review의 감산 기준으로 새 UI 없이 모바일 작성 접근을 보완했습니다. 게시 manifest와 hash 증거는 비공개 원문·설정·원시 증거를 Git에서 제외하고 실제 Chrome 검사로 구현 동작을 확인하는 데 사용합니다.</p><p class="muted">gh-fix-ci로 오래된 진입점 기대값을 찾아 검사 규칙을 유지한 채 보완했습니다. humanize-korean 문구 점검은 불필요한 쉼표 1개만 제거했습니다. 설치본에 변경률 검사 도구가 없어 정량 윤문 등급은 내리지 않았으며 수치·판정은 그대로 유지했습니다.</p>
+<footer>2026-10-01 · 개발계 앱 반영 및 외부 판본 검사 완료. 브라우저 크기 시뮬레이션은 실제 기기·사용자 관찰 시험이 아닙니다.</footer>
 </main></body></html>

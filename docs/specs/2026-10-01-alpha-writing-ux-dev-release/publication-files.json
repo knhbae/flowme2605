@@ -95,6 +95,8 @@
     "tests/e2e/writing-interactions.config.ts"
   ],
   "releaseOwnedFiles": [
+    "docs/HISTORY.md",
+    "docs/pr-history/2026-10-01-alpha-writing-ux-dev-release.md",
     "docs/content-audit/2026-10-01-flowme-writing-ux-dev-release-ko.html",
     "docs/specs/2026-10-01-alpha-writing-ux-dev-release/ownership.md",
     "docs/specs/2026-10-01-alpha-writing-ux-dev-release/plan.md",
