@@ -1,5 +1,13 @@
 # 검증·반영 원장
 
+## 최종 문서 CI의 trusted 입력 경계 보완
+
+- 문서 전용 head `97ccdd0f7cb8ef6bd917b3c697f7e3a8e9a20c88`의 [CI36827429026](https://github.com/knhbae/flowme2605/actions/runs/36827429026)은 core·private·gate 3개가 통과했지만 전체 E2E는 760시나리오 중 759pass·1fail(재시도 포함762회)로 실패했다. 제품 코드 변경0이며 이 실행을 전체 통과로 표시하지 않는다. private 허용 요약은267파일·2,744/2,744·fail/skip/cancel0·source639 drift0·rawOutputRetained:false다.
+- 실패한 기존 standalone trusted-touch 시나리오는 터치 스크롤 후 mouse reorder다. 공개 trace3개를 읽어 초기/최종 순서가 모두 `meeting → contract`이며 기대순서가 그 역순임을 확인했다. 캡처만 보고 늦은 렌더라고 해석한 초기 가설은 철회했다. 실제 trace의 down→up 사이 scrollTop609→318, 실제 드래그 class·패널·drop표시 부재는 입력 활성화/viewport 준비 경계를 지지한다. Chromium raw drag 이벤트가 없어 내부 단일 원인은 확정하지 않는다.
+- 수정 전 로컬 system Chrome10/10·managed Chromium10/10이었다. 결과 대기만 추가한 탐색 판본도20/20이었으나 원인 근거가 부족해 철회했고 최종 보완 판정으로 사용하지 않는다. 공개 브라우저 trace·raw 근거와 탐색 JSON은 ignored output의 로컬전용 자료로 남기며 private 원시로그는 내려받지 않았다.
+- 최종 테스트 보완은 같은390×500 화면에서 두 실제 hitpoint를 준비하고 scroll 안정·hit대상·trusted mouse의 실제 dragging·before drop표시를 확인한 뒤 mouseup1회만 실행한다. 정확한 전체 순서·mutation1·touch mutation0·legacy/operating bytes검사를 유지한다. timeout·retry·skip·제품/HTML·Auth/DB·운영 저장 구현 변경0이며 synthetic drag/force/DOM 상태 주입은 없다. 독립 diff 검토 blocker0. 최종 managed Chromium10/10·system Chrome10/10·retry/skip/fail0으로 통과했다. 반복20회는 한 시나리오의 안정성 확인이며 고유 요구20개가 아니다. 해당 새head CI로 후속 확인한다.
+- 이번 후속 게시 범위는 이미 소유 manifest에 있는 테스트1파일과 QA/PR설명2파일뿐이다. 누적 게시 경로108개를 유지하며 실행 중인3105 앱의build/install/제품 코드에는 변경하지 않는다. 최신 후속 CI는 [PR206 checks](https://github.com/knhbae/flowme2605/pull/206/checks)에서 확인한 뒤 목표를 완료한다.
+
 상태: 제품 판본 CI4개 통과·개발계 앱 반영·외부 판본 검사 완료. 최종 마감 문서의 최신 head CI는 PR checks로 따로 확인한다. 아래 진행/대기/실패 문구는 각 시점의 이력이다.
 
 ## 최종 제품 판본·개발계 반영

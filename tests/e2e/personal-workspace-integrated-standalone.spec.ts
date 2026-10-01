@@ -1932,15 +1932,44 @@ test('trusted Chromium touch scroll on a row body leaves state unchanged before 
   expect(await page.evaluate((key) => window.localStorage.getItem(key), STORAGE_KEY)).toBe(stateBeforeTouch);
   expect(await page.evaluate((key) => window.localStorage.getItem(key), OPERATING_SENTINEL_KEY)).toBe(operatingBytes);
 
-  await page.evaluate(() => window.scrollTo(0, 0));
-  const firstRowBox = await rows.first().boundingBox();
-  expect(firstRowBox).not.toBeNull();
-  if (!firstRowBox) return;
-  await rows.nth(1).locator('.drag-handle').dragTo(rows.first(), {
-    targetPosition: { x: firstRowBox.width - 12, y: firstRowBox.height * 0.25 },
+  // Keep both trusted mouse hit points in one viewport. dragTo can scroll the
+  // target after mouse-down while native touch scrolling is still settling.
+  await page.evaluate(() => {
+    const target = document.querySelector('.task-row')!;
+    const source = document.querySelectorAll('.task-row')[1].querySelector('.drag-handle')!;
+    const targetBox = target.getBoundingClientRect();
+    const sourceBox = source.getBoundingClientRect();
+    const midpoint = (targetBox.top + targetBox.height * 0.25 + sourceBox.top + sourceBox.height / 2) / 2;
+    window.scrollTo({ top: Math.max(0, window.scrollY + midpoint - window.innerHeight / 2), behavior: 'instant' });
   });
-  const reordered = await rows.evaluateAll((entries) => entries.map((entry) => entry.getAttribute('data-task-id')));
-  expect(reordered).toEqual([initialOrder[1], initialOrder[0], ...initialOrder.slice(2)]);
+  await expect.poll(() => page.evaluate(async () => {
+    const before = window.scrollY;
+    await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
+    return Math.abs(window.scrollY - before) < 1;
+  })).toBe(true);
+  const points = await page.evaluate(() => {
+    const target = document.querySelector('.task-row')!;
+    const source = document.querySelectorAll('.task-row')[1].querySelector('.drag-handle')!;
+    const targetBox = target.getBoundingClientRect();
+    const sourceBox = source.getBoundingClientRect();
+    const from = { x: sourceBox.left + sourceBox.width / 2, y: sourceBox.top + sourceBox.height / 2 };
+    const to = { x: targetBox.right - 12, y: targetBox.top + targetBox.height * 0.25 };
+    const inside = [from, to].every(point => point.x > 0 && point.x < innerWidth && point.y > 72 && point.y < innerHeight - 72);
+    return { from, to, inside, sourceHit: source.contains(document.elementFromPoint(from.x, from.y)),
+      targetHit: target.contains(document.elementFromPoint(to.x, to.y)) };
+  });
+  expect(points.inside).toBe(true);
+  expect(points.sourceHit).toBe(true);
+  expect(points.targetHit).toBe(true);
+  await page.mouse.move(points.from.x, points.from.y);
+  await page.mouse.down();
+  await page.mouse.move(points.from.x, points.from.y - 12, { steps: 3 });
+  await expect(rows.nth(1)).toHaveClass(/\bdragging\b/);
+  await page.mouse.move(points.to.x, points.to.y, { steps: 10 });
+  await expect(rows.first()).toHaveAttribute('data-drop-position', 'before');
+  await page.mouse.up();
+  await expect.poll(() => rows.evaluateAll((entries) => entries.map((entry) => entry.getAttribute('data-task-id'))))
+    .toEqual([initialOrder[1], initialOrder[0], ...initialOrder.slice(2)]);
   await expectSuccessfulMutationCount(page, 1);
   expect(await page.evaluate((key) => window.localStorage.getItem(key), OPERATING_SENTINEL_KEY)).toBe(operatingBytes);
 });

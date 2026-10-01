@@ -19,7 +19,11 @@
 
 전체CI브라우저760시나리오/762회는758첫회통과·기존P24 Calendar/구형PoC이동2재시도통과이며760무재시도통과가아닙니다. 합성브라우저에서는예상밖console/page error·가로넘침·허용prefix밖Storage·실API전달0을검사했습니다. 합성telemetry SRI표시는별도분류하므로전체console error0/telemetry검증이아닙니다. 실기기/OS IME/AT 미실행·관찰사용자0입니다.
 
-## 제외
+## 최종 문서 CI와 후속 테스트 보완
+
+문서 전용97ccdd0f의 CI36827429026은 core/private/gate 통과·전체 브라우저759pass/1fail(760시나리오·762회)이었습니다. 제품 변경0인 실행에서도 기존 trusted touch→mouse 순서 이동의 입력 활성화가 확인되지 않아, 두 실제 hitpoint와 native dragging/drop-before를 검증하는 테스트 준비를 보완합니다. raw event가 없어 Chromium 내부 단일 원인은 미확정입니다. timeout/retry/skip·정확한 순서·mutation1·원문bytes와 touch 무변경 검사는 그대로입니다. 같은드래그를 재실행하거나 synthetic dispatch/force로 우회하지 않습니다. 소유 테스트/QA/이설명3경로뿐이며 누적108경로와 실행앱 판본은 유지합니다. 최신 후속head CI는 이 PR checks로 따로 확인하고 미실행 결과를 통과로 미리 표시하지 않습니다.
+
+## 제외 범위 유지
 
 main 병합·DB/Auth·실계정 자료·Tunnel/DNS·유료 서비스·새5D·Render/Vercel/Production 배포·관찰 사용자 시험은 제외합니다. Draft PR은 검토를 위한 것이며 자동 병합하지 않습니다. Cloudflare 앱 교체는 해당 게시 commit CI 통과 뒤 별도 QA 기록으로 확인합니다.
 
