@@ -15,6 +15,7 @@ import { createAlphaSocialRecovery } from '../../../lib/flow/integrated-poc/alph
 import { executeAlphaSocialIntent } from '../../../lib/flow/integrated-poc/alpha-social/dispatch';
 import { newProgramParticipationDraft } from '../../../lib/flow/integrated-poc/participation-editor';
 import { confirmedAlphaPrivateTextSave } from '../../../lib/flow/integrated-poc/alpha-private-save-ack';
+import { programLocation } from '../../../lib/flow/integrated-poc/navigation';
 
 // Execute the actual shell callbacks/effects/JSX with bounded browser/controller
 // doubles. No product injection points, network, real account or DOM are involved.
@@ -174,6 +175,73 @@ function lostPrivateTextSave() {
   const result = { ...next, status: 'saved', lastReceipt: { requestId: pending.requestId, kind: pending.kind, changed: true, revision: 2 } };
   return { h, before, result, documentId, dirty: () => dirty, acknowledgments: () => acknowledgments, refuse: () => { eligible = false; } };
 }
+
+test('browse opens the same Flow search with or without community posts', async () => {
+  for (const posts of [[], [{ id: 'visible-post' }]]) {
+    const h = harness(), destinations: unknown[] = [];
+    h.context.data.public.posts = posts;
+    h.context.navigate = async (next: unknown) => { destinations.push(next); };
+    await h.button('둘러보기').props.onClick();
+    assert.deepEqual(destinations, [{ view: 'discover' }]);
+    assert(!h.calls.includes('mutation'));
+  }
+});
+
+test('purpose tabs retain three entries and Flow search precedes optional community browsing', () => {
+  const h = harness(); h.context.browse = true; h.context.destination = { view: 'discover' };
+  const tree = h.render();
+  const purpose = nodes(tree).find(node => node.type === 'nav' && node.props['aria-label'] === '작업 공간')!;
+  assert.deepEqual(nodes(purpose.props.children).filter(node => node.type === 'button').map(node => text(node.props.children)), ['내 공간', '둘러보기', '내 활동']);
+  const browsing = nodes(tree).find(node => node.type === 'nav' && node.props['aria-label'] === '둘러보기 종류')!;
+  const entries = nodes(browsing.props.children).filter(node => node.type === 'button');
+  assert.deepEqual(entries.map(node => text(node.props.children)), ['Flow 찾기', '경험·질문·지식']);
+  assert.equal(entries[0].props['aria-current'], 'page'); assert.equal(entries[1].props['aria-current'], undefined);
+});
+
+test('alpha discovery uses account ownership copy without changing the public data', () => {
+  const h = harness(), before = JSON.stringify(h.context.data);
+  Object.assign(h.context, { seen: { discovery: true, community: false }, discoverySelection: undefined,
+    discoveryState: {}, useVersion: () => assert.fail('render must not import'), startText: () => assert.fail('render must not create'),
+    setDiscoveryState: () => assert.fail('render must not change presentation') });
+  const discovery = nodes(h.render()).find(node => node.type === 'program-discovery')!;
+  assert.equal(discovery.props.storageScope, 'account');
+  assert.equal(JSON.stringify(h.context.data), before); assert(!h.calls.includes('mutation'));
+});
+
+test('discovery creation entry only navigates to the remembered private creator draft without a write', () => {
+  const h = harness(), destinations: unknown[] = [], before = JSON.stringify(h.context.data);
+  Object.assign(h.context, { seen: { discovery: true, community: false }, discoverySelection: undefined,
+    discoveryState: {}, creatorSelection: 'remembered-private-draft',
+    useVersion: () => assert.fail('creation entry must not import'), startText: () => assert.fail('creation entry must not create a document'),
+    setDiscoveryState: () => assert.fail('creation entry must not change discovery'), navigate: (next: unknown) => { destinations.push(next); } });
+  const discovery = nodes(h.render()).find(node => node.type === 'program-discovery')!;
+  discovery.props.onCreateFlow();
+  assert.deepEqual(destinations, [{ view: 'creator', id: 'remembered-private-draft' }]);
+  assert.equal(JSON.stringify(h.context.data), before); assert.deepEqual(h.calls, []);
+});
+
+test('content navigation keeps pending input and stops before changing location until all editors flush', async () => {
+  for (const view of ['discover', 'creator'] as const) for (const block of ['pending', 'external', 'flush', 'none']) {
+    const h = harness(), routes: string[] = [], raw = { title: '작성 중인 원문', raw: '유지할 입력\n두 번째 줄' };
+    let captured = 0, locked = 0, flushed = 0;
+    h.context.captureInput = () => { captured++; return true; };
+    h.context.editors.current = { captureDrafts: () => [raw], hasPendingInput: () => true,
+      lockInput: () => { locked++; return () => { locked--; }; }, flushAll: async () => { flushed++; return block !== 'flush'; } };
+    h.context.externalRef.current = block === 'external';
+    h.context.snapshot.pending = block === 'pending' ? { requestId: 'unchanged-request' } : null;
+    Object.assign(h.context, { programLocation, setSeen: (update: (value: unknown) => unknown) => { h.context.seen = update(h.context.seen); },
+      setDiscoverySelection: (value: unknown) => { h.context.discoverySelection = value; }, setCommunityView: () => {}, setCommunitySelection: () => {} });
+    h.context.window.location = { hash: '#flowme/space' };
+    h.context.window.history = { pushState: (_state: unknown, _title: string, route: string) => { routes.push(route); } };
+    const navigate = evaluate(`(${declaration('navigate')})`, h.context);
+    const before = JSON.stringify(h.context.data); await navigate({ view });
+    assert.equal(locked, 0); assert.equal(raw.raw, '유지할 입력\n두 번째 줄'); assert.equal(JSON.stringify(h.context.data), before);
+    if (block === 'none') { assert.deepEqual(routes, [`#flowme/${view}`]); assert.equal(h.context.destination.view, view); }
+    else { assert.deepEqual(routes, []); assert.equal(h.context.destination.view, 'space'); }
+    assert.equal(captured, ['pending', 'external'].includes(block) ? 0 : 1);
+    assert.equal(flushed, ['pending', 'external'].includes(block) ? 0 : 1); assert(!h.calls.includes('mutation'));
+  }
+});
 
 test('actual private response presentation acknowledges submitted input before conflict classification and clears only matching recovery', () => {
   const f = lostPrivateTextSave(), { h } = f;

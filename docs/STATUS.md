@@ -1,5 +1,21 @@
 # Project Status
 
+## 현재 — 폴더 입력·Flow 진입 UX 개발계 반영·마감 게시 (2026-10-01)
+
+[승인 목표](./specs/2026-10-01-alpha-folder-content-dev-release/spec.md)·[단계 계획](./specs/2026-10-01-alpha-folder-content-dev-release/plan.md)에 따라 원문 보존·기존 모델 용량 경계를 보완하고 소유33파일을 `6d534a97`로 게시했다. [Draft PR207](https://github.com/knhbae/flowme2605/pull/207) 제품 CI 필수4개 통과 후 2026-10-01T10:35:11Z 기존3105 앱만 교체했다. 실행 build는 `667DI4JldqTDckfQ16wB5`이며 Tunnel·설정·이전 복귀 build·privatepack·원본 피드백 보호7개 hash는 같다. [짧은 HTML 보고서](./content-audit/2026-10-01-flowme-folder-content-dev-release-ko.html)·[결과/잔여](./specs/2026-10-01-alpha-folder-content-dev-release/results.md)·[QA](./specs/2026-10-01-alpha-folder-content-dev-release/qa.md)·[반영/복귀](./specs/2026-10-01-alpha-folder-content-dev-release/runbook.md)를 연결한다.
+
+표적72/72·통합267파일2,780/2,780·npm2,258/2,258·문서4/4·타입564entry 진단0·build·보안0을 확인했다. 전체 CI E2E760시나리오는759첫회통과·구형 이동1재시도통과(761회)다. 외부 최초 신규검사49PASS/1FAIL은 보존하며 저장 응답 전 입력을 시작할 수 있는 검사 조건을 보완했다. 실행 제품은 그대로 두고 별도 게시본의 fixture/browser2만 gate·UI 잠금 해제·정확한 입력 확인으로 강화했다. 보완 검사 로컬65/65·외부60/60은재시도0, HTTPS10/10·실제JS/CSS24 path/hash일치·source639/static81/build변경0이다. 외부의 합성 telemetry 기대오류95건은 의도적 차단 예외이며 telemetry 품질은 검증하지 않았다.
+
+마감은 실행 작업본과 분리한 게시본에서 문서·검사driver 보완을 게시한다. 실행제품6d/build667과 마감 head를 구분하고 최신head CI는 PR207 checks로 확인한다. 최신 피드백 delta0·#20 실제환경 원인 미확정·하위목록 전체 전환/J13 제작→개인실행/Flow·Map 전수품질/공개운영/5D/장시간탭·자동시작 후속은 유지한다. 실제 계정·DB/Auth·운영 저장·main 병합·Tunnel/DNS·Render/Vercel/Production 변경0, 실기기/OS IME/AT NOT_RUN·이번 관찰 사용자0이다. 아래 완료·미반영·진행은 각 시점의 이력이다.
+
+## 현재 — 폴더 입력·Flow 진입 UX, 격리 후보 검증 완료·미반영 (2026-10-01)
+
+[이번 목표](./specs/2026-10-01-alpha-folder-content-entry-ux/spec.md)에 따라 최신 #20과 v4.1·개발1·개발2의 관련 요구를 대조하고 UX2의 좁은 계약 검토를 반영했다. 기존 이름 제안은 이미 있었으며 새 이름의 명시 생성 진입·생성 위치·불가 위치 보호를 보완했다. 둘러보기 첫 화면은 Flow 찾기로 고정하고 제목 옆에서 기존 비공개 제작 공간을 연다. 공개 탐색·판본 읽기·출력·개인 사본과 같은 원문/줄ID·취소·저장 거절·재저장·Undo/reload를 합성 시나리오로 확인했다. [조작 HTML](./content-audit/2026-10-01-flowme-folder-content-entry-prototype-ko.html)·[보고서](./content-audit/2026-10-01-flowme-folder-content-entry-report-ko.html)·[요구별 적용/잔여](./specs/2026-10-01-alpha-folder-content-entry-ux/results.md)·[QA](./specs/2026-10-01-alpha-folder-content-entry-ux/qa.md)를 제공한다.
+
+최종 통합267파일·2,772/2,772, npm2,258/2,258·타입564entry 오류0·production build·보안0, 앱50/50·독립 HTML25/25·모델9/9를 확인했다. 검사 중639source변경0이며 첫99FAIL은 원본 카탈로그 경로 누락98·검사 heap부족1로 분류하고 읽기 전용 자료 경로와 시험 메모리만 보완했다. assertions/제품 용량 정책·원본 자료를 바꾸지 않았고 초기 실패를 삭제하지 않는다. 실제 계정/DB/Auth 쓰기0·보호7개 hash동일·3105/Tunnel유지다.
+
+이번은 `flow-folder-content-ux-20261001`의 로컬 후보이며 commit/push/PR/merge/개발계 교체/Preview/Production·실기기·관찰 사용자0이다. 사용자 #20의 실제 환경 원인은 미확정이고 하위 목록 전체 전환·J13 제작→개인 실행 인계의 새 end-to-end·Flow/Map 전수 충실도·공개 운영·5D·장시간 탭/자동 시작 후속은 유지한다. 이번 결과를 전체21피드백/424하위조건 해결로 환산하지 않는다. 다음은 승인된 선별 게시·개발계 반영 판단이며 아래 완료·미반영은 각 시점의 이력이다.
+
 ## 현재 — 세 작성 UX 후보 개발계 반영·마감 게시 (2026-10-01)
 
 작성 여정·폴더 작성·부분/전체 입력과 좁은 모바일 목록→작성 동선을 `https://alpha.wikiplans.com/alpha`에 반영했다. 제품 commit `ae5a97f0`의 [CI36824430918](https://github.com/knhbae/flowme2605/actions/runs/36824430918) 필수4개 통과 후2026-10-01T06:39:23Z 기존3105 앱만 교체했다. 실행 build는`zEY9jP0Mcmqs90L0HCPvB`이며639source·이전build/config·설정2개·privatepack hash불변이다. 최종 로컬155/155, 마지막build로컬35/35·외부합성35/35·HTTPS보호10/10·정적자산24개path/hash일치를 확인했다. [짧은 HTML 보고서](./content-audit/2026-10-01-flowme-writing-ux-dev-release-ko.html)·[QA](./specs/2026-10-01-alpha-writing-ux-dev-release/qa.md)·[반영 이력](./pr-history/2026-10-01-alpha-writing-ux-dev-release.md)을 연결한다.
