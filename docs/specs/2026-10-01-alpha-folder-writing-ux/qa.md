@@ -38,7 +38,7 @@
 
 기본·표적·전체 통합에는 겹치는 테스트가 있으므로 하나의 고유 합계나 제품 커버리지 퍼센트로 더하지 않는다. F1~F10/R1~R2/J1~J3은 [요구별 결과](results.md)에 연결했다. 앱 브라우저는00:33 고정 production bundle과 합성 Auth/API/CAS/receipt를 사용했다. 이후00:58 build까지 runtime 변경0임을 source hash로 대조했다. 실제 키 입력의 F10은 자기 저장→생성에서 정확히2회 mutation·연속 판본 CAS·숨은 자료/ID 보존을 확인했다. 단순 최신 snapshot으로 외부 변경을 우회하지 않는다.
 
-근거: [기존25건](../../../output/playwright/folder-writing-regression-final-v2/results.json), [폴더45건과 신규 최초 실패](../../../output/playwright/folder-writing-attempt03/results.json), [신규5건 재검사](../../../output/playwright/folder-writing-attempt04-new-document/results.json), [독립 HTML25건](../../../output/playwright/folder-writing-lab-run2/results.json). JSON·화면은 로컬 전용 근거이며 게시하지 않는다.
+로컬 전용 근거: 기존25건 `output/playwright/folder-writing-regression-final-v2/results.json`, 폴더45건과 신규 최초 실패 `output/playwright/folder-writing-attempt03/results.json`, 신규5건 재검사 `output/playwright/folder-writing-attempt04-new-document/results.json`, 독립 HTML25건 `output/playwright/folder-writing-lab-run2/results.json`. JSON·화면은 원래 작업본에 보존하며 공개 Git에는 게시하지 않는다. 따라서 아래 경로는 Git clone에서 열리는 링크가 아니다.
 
 ## 다섯 화면의 최종 앱 평가
 
@@ -75,11 +75,11 @@
 
 `workflow:closeout`의 소유/검사 lane을 실행하고 실제 root CSS/fixture/diff·helper/UI 독립 검토를 확인했다. 최종 패키지 읽기 대조에서도 정본20·21과 spec/contract/results/HTML·실행별 수의 새 확정 문제는 없었다. 해당 리뷰는 테스트 실행이 아니다. reporter 역시 검사를 실행하거나 통과 인증하지 않는다.
 
-[보고서 final-v1](../../../output/playwright/folder-writing-report-final-v1/results.json) 5/5·실패/skip/flaky0. 필터21/4/8/9·참고 링크8개·비교PNG2장, 누락/깨진 이미지·가로 넘침·viewport밖·console/page error·storage 쓰기·외부 요청·실제 Auth/API 전달0이다. 모든 request는 합성 HTML/로컬 PNG를 주입했다. 담당자가 첫 화면5장·390전체1장을 직접 봤고 root도 최종390/1440 첫 화면을 확인했다. 캡처5개의 HTML SHA256은 현재 파일 `A34AFDD77139ED9CEB5ABF17CB972A54CC8CEE9F994FA1F5948404AE41E1C85C`와 동일하며 실행 중 수정0. 사전5+최종5=보고서10회, 마지막 고유5건을 사용한다. 실제 사용자 검증이 아니다.
+로컬 보고서 final-v1 근거 `output/playwright/folder-writing-report-final-v1/results.json`: 5/5·실패/skip/flaky0. 필터21/4/8/9·참고 링크8개·비교PNG2장, 누락/깨진 이미지·가로 넘침·viewport밖·console/page error·storage 쓰기·외부 요청·실제 Auth/API 전달0이다. 모든 request는 합성 HTML/로컬 PNG를 주입했다. 담당자가 첫 화면5장·390전체1장을 직접 봤고 root도 최종390/1440 첫 화면을 확인했다. 캡처5개의 HTML SHA256은 현재 파일 `A34AFDD77139ED9CEB5ABF17CB972A54CC8CEE9F994FA1F5948404AE41E1C85C`와 동일하며 실행 중 수정0. 사전5+최종5=보고서10회, 마지막 고유5건을 사용한다. 실제 사용자 검증이 아니다.
 
 01:03:02 전용 타입562진입점/635source·진단0·실행 중 변경0, 도구10/10을 재확인했다. 최종 build/npm/type의 저장 source hash635개와 현재 파일을 대조해 각각 drift0이었다. 앱 브라우저에 사용한00:33 build와 마지막00:58 build의 source 차이는 ProgramRecurrence.interaction.test.tsx 하나뿐이다. UI/runtime/helper source 변경은0이며 마지막 전체 통합에는 그 테스트 보완을 포함한다.
 
-00:55:18→01:09:51 UTC 마지막 전체 통합265파일·2,676/2,676 통과, 실패/skip/cancel/sourceChanged0·verifiedExit0. 저장 source635개를 현재 파일과 다시 대조해 drift0이었다. [최종 통합 JSON](../../../output/integrated-product-poc/new-tests-2026-10-01T00-55-18-188Z.json), [npm JSON](../../../output/integrated-product-poc/npm-test-2026-10-01T01-00-19-878Z.json), [build JSON](../../../output/integrated-product-poc/build-2026-10-01T00-58-55-651Z.json), [전용 타입 JSON](../../../output/integrated-product-poc/targeted-types-2026-10-01T01-03-02-144Z.json)은 로컬 전용 근거다. 초기102실패·뒤의2실패·중단/실행 중 소스 변경 이력을 삭제하거나 최종 통과에 합산하지 않는다.
+00:55:18→01:09:51 UTC 마지막 전체 통합265파일·2,676/2,676 통과, 실패/skip/cancel/sourceChanged0·verifiedExit0. 저장 source635개를 현재 파일과 다시 대조해 drift0이었다. 최종 통합 `output/integrated-product-poc/new-tests-2026-10-01T00-55-18-188Z.json`, npm `output/integrated-product-poc/npm-test-2026-10-01T01-00-19-878Z.json`, build `output/integrated-product-poc/build-2026-10-01T00-58-55-651Z.json`, 전용 타입 `output/integrated-product-poc/targeted-types-2026-10-01T01-03-02-144Z.json`은 로컬 전용 근거다. 초기102실패·뒤의2실패·중단/실행 중 소스 변경 이력을 삭제하거나 최종 통과에 합산하지 않는다.
 
 피드백 정본 SHA256은 `AC58C0EFCDD65A3BF964C7BB4FCCED970E08112049352E0BFE02B93F889A9493`를 읽기 전후 유지했다. 외부 catalog pack은 `D:/flowme2605/flow-poc-merge-prep-20260920/lib/flow/integrated-poc/catalog-library-pack.v1.json`을 읽기만 하며 SHA256 `723ABEFDC26243EB1F9B4BCF21730758ECC7A300494AD2AE75293AC5C6DDE4BE`다. 복사·수정·게시0. credentials/account file/.env를 사용하지 않았다.
 

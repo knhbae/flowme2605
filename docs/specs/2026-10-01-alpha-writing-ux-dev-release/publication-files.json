@@ -105,6 +105,7 @@
     "docs/specs/2026-10-01-alpha-writing-ux-dev-release/spec.md",
     "docs/specs/2026-10-01-alpha-writing-ux-dev-release/tasks.md",
     "scripts/alpha/writing-ux-release-evidence.mjs",
+    "scripts/alpha/render-release-inventory.test.mjs",
     "tests/e2e/cloudflare-release.boundary.test.ts",
     "tests/e2e/writing-ux-release.browser.ts",
     "tests/e2e/writing-ux-release.config.ts"

@@ -16,7 +16,15 @@
 - 마지막 전체 통합05:11:52~05:31:15은267파일·2,744/2,744·실패/skip/cancel0·source639 drift0이었다. source snapshot `e088af46af01fa14f1da02bb2464d2d266da262b3106344cef79eef8571ac4cb`는 마지막 npm/타입/build와 동일하다. 원시 private 출력은 보존하지 않았고 allowlist summary만 로컬에 남겼다. 비공개 pack의SHA256 `723abefdc26243eb1f9b4bcf21730758ecc7a300494ad2ae75293ac5c6dde4be`와bytes는 전후 동일했다.
 - 최종 로컬155회에서 가로 넘침·예상 밖 console/page error·허용prefix밖 Storage호출0, 합성 운영 sentinel bytes동일을 확인했다. 화면 캡처390/375/844/1024/1440을 직접 확인했다. 이는 실제 운영 DB byte 대조·실기기·OS IME 판정이 아니다.
 
-## 시작 기준
+## 게시와 첫 CI 보완
+
+- 승인한104파일을commit `db47835bfe1bd1c76ff092c522f8ffec2e510678`로게시하고[Draft PR206](https://github.com/knhbae/flowme2605/pull/206)을만들었다. base는기존`agent/alpha-core-ux-save-ack-20260930`이며36파일host기반commit1eb9be68도stacked dependency로포함한다. main병합0이다. pre-push기존verify/docs/npm/build를우회하지않았고마지막build는`zEY9jP0Mcmqs90L0HCPvB`,source639snapshot은위e088과동일했다. PR설명원격링크3개존재와Preview/Production신규deployment0을확인했다.
+- [첫CI36820703236](https://github.com/knhbae/flowme2605/actions/runs/36820703236)의core는privatepublication경계테스트9개중1개에서실패했다. 실제entry10개에503전용`app/api/alpha/backup-jobs/route.ts`가있지만테스트expected는9개였다. Windows깨끗한게시worktree에서도8pass/1fail로재현했다. private lane은core실패로skip이고integration gate는fail이며통과로표시하지않는다.
+- `gh-fix-ci`절차로실패job을읽고승인된테스트보완범위에서정확한10entryexpected와backup경로분류를갱신했다. entry/closure/미해결/hash검사규칙을그대로유지한다. route/제품source/백업off정책/DB/Auth변경0이다. 새105번째소유파일은`render-release-inventory.test.mjs`이며기존104path와분리한다. 후속게시·exact-head CI는진행중이다.
+- 보완후publication경계9/9·backupoff1/1·CI출력/원문보호8/8로실행18회통과,privateclient금지0·trackedcatalog발견0이다. 마지막후크build `zEY9jP0Mcmqs90L0HCPvB`에서별도표적로컬작성25/25·핵심10/10을다시완료했다. 이35회는앞155회와겹치며마지막build검사로분리한다.
+- 깨끗한게시worktree의pre-commit문서검사는로컬원시근거를가리키는과거폴더QA링크9개에서실패해commit을만들지않았다. 원시파일은복사/게시하지않고해당9개를명시적인‘로컬전용근거’경로표기로바꿨다. 과거판정·수치·실패이력은변경0이다. 로컬출력이없는작업본에서후크를그대로재실행한다.
+
+## 시작 기준 이력
 
 - 작업본 `D:/flowme2605/flow-ux-journey-20261001`, branch `agent/flow-ux-journey-20261001`, HEAD `1eb9be68835b71d234995e932d791b4058571fd5`.
 - reporter2026-10-01T04:14:52.914Z:24modified·48untracked grouped entries·staged0. 세 이전 목표의 소유 근거를 대조하며 모든 dirty 파일을 자동 stage하지 않는다.
