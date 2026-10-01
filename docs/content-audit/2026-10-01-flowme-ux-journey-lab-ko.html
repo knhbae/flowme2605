@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FlowMe · 작성에서 원문 복귀까지</title>
+<style>
+:root{--ink:#163331;--accent:#08796f;--line:#d9e4e0;--muted:#617772;--wash:#f2f6f4;--paper:#fff;color-scheme:light;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--wash)}*{box-sizing:border-box}body{margin:0}button,input,textarea,select{font:inherit}button,summary,select{cursor:pointer}button{min-height:44px;border:1px solid var(--line);border-radius:8px;background:white;color:var(--ink);padding:8px 13px}button:hover{background:var(--wash)}button:disabled{opacity:.45;cursor:default}button[aria-pressed=true],button.primary{background:var(--accent);color:white;border-color:var(--accent)}:focus-visible{outline:3px solid #67b5aa;outline-offset:3px}input,textarea,select{max-width:100%;border:1px solid var(--line);border-radius:6px;color:var(--ink);padding:9px;background:white}input[type=checkbox]{width:21px;height:21px;accent-color:var(--accent)}textarea{resize:vertical;width:100%;min-height:56px;line-height:1.6}a{color:var(--accent)}small,.muted{color:var(--muted)}h1,h2,h3,p{margin:0}p{line-height:1.65}.lab{max-width:1100px;margin:auto;padding:24px}.lab-title{font-size:13px;letter-spacing:.04em;color:var(--muted);margin-bottom:8px}.lab h1{font-size:clamp(21px,3vw,29px);font-weight:650}.intro{max-width:780px;margin:10px 0 16px;font-size:14px}.compare{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.compare span{font-size:13px;color:var(--muted)}.lab details{margin-top:14px;font-size:13px}.lab summary{padding:8px 0}.lab details p{margin:9px 0}.lab-tools{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.lab-tools label{display:flex;align-items:center;gap:7px}.app{max-width:1100px;margin:0 auto 30px;background:white;border:1px solid var(--line);border-radius:14px;overflow:hidden;min-height:560px}.appbar{display:flex;align-items:center;flex-wrap:wrap;gap:12px;padding:14px 22px;border-bottom:1px solid var(--line)}.brand{font-weight:750;font-size:20px;margin-right:auto}.save{font-size:12px;max-width:100%;overflow-wrap:anywhere}.save.error{color:#9c3a25}.appbar button{font-size:13px}.workspace{display:grid;grid-template-columns:180px minmax(0,1fr)}nav{background:#f8faf9;padding:18px 12px;border-right:1px solid var(--line)}nav h2{font-size:12px;color:var(--muted);font-weight:500;margin:6px 9px 12px}nav button{display:block;width:100%;text-align:left;margin-bottom:5px;border-color:transparent;background:transparent}nav button[aria-current=page]{background:#e4f1ed;color:var(--accent);font-weight:650}.body{padding:28px;min-width:0}.heading{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:22px}.heading h2{font-size:23px;font-weight:650}.heading p{font-size:13px;margin-top:5px}.heading>button{margin-left:auto}.source-list{list-style:none;padding:0;margin:0}.source-row{display:grid;grid-template-columns:32px minmax(0,1fr) 44px;gap:8px;align-items:start;padding:10px 0;border-bottom:1px solid #edf1ef}.source-row>input{margin-top:16px}.source-row .memo-mark{padding:14px 6px;color:var(--muted)}.source-row textarea{border-color:transparent;background:transparent;padding:10px 7px;min-height:48px;resize:none}.source-row textarea:focus{border-color:var(--line);background:#fff}.source-meta{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--muted);padding:0 8px 4px}.source-row.done textarea{text-decoration:line-through;color:var(--muted)}.add{margin-top:24px}.add label{display:block;font-size:13px;margin-bottom:8px}.add-actions{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}.source-tools{margin:22px 0 0;font-size:13px}.source-tools summary{padding:9px 0}.source-tools p{padding-top:7px}.period-tools{display:flex;align-items:center;gap:10px;margin:0 0 18px;flex-wrap:wrap;font-size:13px}.period-list{list-style:none;margin:0;padding:0}.period-row{padding:16px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:24px minmax(0,1fr);gap:12px}.period-row input{margin-top:5px}.period-title{font-size:16px;overflow-wrap:anywhere}.period-context{font-size:12px;color:var(--muted);margin:5px 0 9px}.row-actions{display:flex;flex-wrap:wrap;gap:7px}.row-actions button{font-size:12px;min-height:36px;padding:5px 10px}.empty{padding:32px 0;color:var(--muted)}.notice{padding:12px 22px;background:#f3f8f6;font-size:13px;min-height:44px;border-top:1px solid var(--line)}.focus .workspace{display:block}.focus nav{display:none}.focus .body{max-width:820px;margin:auto}.focus .source-tools{display:none}.focus-note{font-size:12px;padding:9px 22px;background:#eef7f3}.hidden,[hidden]{display:none!important}dialog{border:1px solid var(--line);border-radius:12px;padding:24px;color:var(--ink);width:min(460px,calc(100% - 28px));max-height:90vh;overflow:auto}dialog::backdrop{background:#17383255}dialog h2{font-size:20px;margin-bottom:9px}dialog label{display:block;font-size:13px;margin:18px 0 6px}.dialog-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}.dialog-target{overflow-wrap:anywhere}.danger{color:#9c3a25}.review{max-width:1100px;margin:0 auto 36px;padding:0 24px;font-size:13px}.review summary{padding:8px 0}.review ol{padding-left:20px;line-height:1.9}.axes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:14px 0}.axes h3{font-size:14px;margin-bottom:6px}.axes p{font-size:13px}.review-links{display:flex;gap:14px;flex-wrap:wrap}.lock{padding:18px;background:#fff1eb;color:#873e28;line-height:1.6}@media(max-width:640px){.lab{padding:20px 16px}.intro{font-size:13px}.app{margin:0 8px 24px;border-radius:10px}.appbar{padding:12px;gap:8px}.brand{font-size:18px}.save{flex-basis:100%;order:4}.workspace{display:block}nav{display:flex;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line);padding:8px;gap:3px}nav h2{display:none}nav button{width:auto;white-space:nowrap;text-align:center;flex-shrink:0;margin:0;font-size:13px;padding:8px 11px}.body{padding:20px 15px}.heading{margin-bottom:14px}.heading h2{font-size:21px}.heading>button{margin-left:0}.source-row{grid-template-columns:26px minmax(0,1fr) 40px;gap:4px}.source-row>button{padding:8px}.axes{grid-template-columns:1fr;gap:14px}.review{padding:0 18px}.focus-note{padding:9px 14px}.notice{padding:12px 15px}.compare button{font-size:13px}.lab-tools{align-items:flex-start}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+.lab h1{word-break:keep-all}.source-row textarea{overflow:hidden}
+button,summary,input:not([type=checkbox]),select{min-width:48px;min-height:48px}.row-actions button{min-height:48px}.source-row{grid-template-columns:48px minmax(0,1fr) 48px}.period-row{grid-template-columns:48px minmax(0,1fr)}.check-target{display:flex;width:48px;height:48px;align-items:center;justify-content:center;cursor:pointer}.check-target input[type=checkbox]{width:21px;height:21px;margin:0;padding:0;flex:none}.lab-tools label{min-height:48px;padding:0 10px;cursor:pointer}.lab-tools input[type=checkbox]{flex:none}@media(max-width:640px){.source-row{grid-template-columns:48px minmax(0,1fr) 48px}}
+</style>
+</head>
+<body>
+<header class="lab">
+  <p class="lab-title">FLOWME · UX 비교 실험 · 2026.10.01</p>
+  <h1>쓰고, 날짜를 정하고, 원문으로 돌아오기</h1>
+  <p class="intro">합성 자료로 조작하는 독립 시뮬레이션입니다. 실제 제품 모델·계정·동기화와 연결되지 않습니다. A와 B는 같은 문서와 할 일을 사용합니다.</p>
+  <div class="compare" aria-label="비교안"><button id="variant-a" aria-pressed="true">A · 간결한 상단</button><button id="variant-b" aria-pressed="false">B · 본문 집중 선택</button><span id="variant-note">보조 도구를 필요할 때 펼칩니다.</span></div>
+  <details><summary>실험 관리 · 저장과 오류 모의</summary><p>이 파일의 합성 자료만 브라우저에 보관합니다. 오류 모의 중 입력은 화면에 남지만 새로고침하면 마지막 저장본으로 돌아갑니다. 브라우저가 파일 저장을 차단하면 재시도도 실패할 수 있습니다.</p><div class="lab-tools"><label><input id="simulate-error" type="checkbox">저장 오류 모의</label><button id="reload">저장본 다시 열기</button><button id="download">현재 원문 받기</button></div><p>실험 기준일: 2026년 10월 1일. 메뉴 열기·취소, 보기 전환, A/B 전환은 저장하지 않습니다.</p></details>
+</header>
+<main class="app" id="app">
+  <div class="appbar"><span class="brand">FlowMe</span><span class="save" id="save-state" role="status">합성 예시 · 아직 변경 없음</span><button id="undo" disabled>되돌리기</button><button id="retry" hidden>다시 저장</button><button id="focus-toggle" hidden>본문에 집중</button></div>
+  <div class="focus-note" id="focus-note" hidden>탐색을 접었습니다. 같은 보기·입력은 유지됩니다. ‘집중 끝내기’ 또는 Esc로 돌아갑니다.</div>
+  <div class="lock" id="lock" role="alert" hidden></div>
+  <div class="workspace"><nav aria-label="내 공간 보기"><h2>내 공간</h2><button data-view="document" aria-current="page">문서</button><button data-view="today">오늘</button><button data-view="week">주간</button><button data-view="month">월간</button><button data-view="undated">날짜 미정</button></nav><section class="body" id="body"></section></div>
+  <p class="notice" id="notice" role="status">메모는 그대로 두고, 할 일만 날짜를 정해 보세요.</p>
+</main>
+<section class="review"><details><summary>전체 사용 흐름과 비교할 점</summary><div class="axes"><div><h3>개인 공간</h3><p>자유 문서 → 선택한 할 일 → 날짜·기간 보기 → 원문 복귀. 이 파일에서 조작할 수 있는 범위입니다.</p></div><div><h3>공개 경험·지식</h3><p>상황에 맞는 경험 탐색 → 출처·한계 확인 → 개인 사본 또는 내 도구로 출력. 전체 방향에 유지하며 여기서는 구현하지 않습니다.</p></div><div><h3>선택적 기여</h3><p>질문·부분 경험·개선 제안 → 공개할 내용 확인. 개인 사용 뒤 반드시 참여하는 순서는 아닙니다.</p></div></div><ol><li>메모와 할 일을 적고, 한 할 일에 날짜를 배정합니다.</li><li>오늘·주간·월간에서 같은 항목을 열고 완료를 바꿉니다.</li><li>원문으로 돌아와 같은 줄을 고치고, 날짜 미정으로 돌립니다.</li><li>A/B를 바꾸고 집중을 켰다 끝냅니다. 입력과 조회 날짜가 유지되는지 봅니다.</li><li>오류 모의에서 고친 뒤 모의를 끄고 다시 저장합니다. 저장본을 다시 엽니다.</li></ol><p>이는 비교용 화면·모델 QA입니다. 사용성 개선, 실기기·IME·보조기술, 관찰 사용자 검증을 뜻하지 않습니다.</p><p class="review-links"><a href="../specs/2026-10-01-alpha-ux-journey/spec.md">이번 범위</a><a href="../specs/2026-09-12-flowme-integrated-product-poc-program/spec.md">기존 통합 계약</a></p></details></section>
+<dialog id="item-dialog" aria-labelledby="dialog-title"><h2 id="dialog-title">날짜와 할 일</h2><p class="dialog-target" id="dialog-target"></p><form id="item-form"><label for="item-date">실행 날짜</label><input id="item-date" type="date"><p class="muted" style="font-size:12px;margin-top:8px">날짜를 비워도 같은 할 일과 메모가 남습니다.</p><div class="dialog-actions"><button class="primary" type="submit">적용</button><button type="button" id="clear-date">날짜 비우기</button><button type="button" id="convert">할 일로 바꾸기</button><button type="button" id="cancel">취소</button></div></form></dialog>
+<script data-model>
+globalThis.JourneyModel = (() => {
+  const KEY = 'flow:poc:personal-workspace:v1:ux-journey';
+  const TODAY = '2026-10-01';
+  const clone = value => JSON.parse(JSON.stringify(value));
+  const raw = data => data.rows.map(row => row.kind === 'task' ? `- [${row.done ? 'x' : ' '}] ${row.text}` : row.text).join('\n');
+  const dateValid = date => typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date) && !Number.isNaN(Date.parse(date+'T00:00:00Z')) && new Date(date+'T00:00:00Z').toISOString().slice(0,10) === date;
+  function valid(data) {
+    if (!data || data.documentId !== 'synthetic-document-1' || !Array.isArray(data.rows) || data.rows.length > 300 || !Number.isInteger(data.nextId) || data.nextId < 1 || data.nextId > 1000000) return false;
+    const ids = new Set();
+    for (const row of data.rows) {
+      if (!row || typeof row.id !== 'string' || !/^line-[1-9]\d*$/.test(row.id) || ids.has(row.id) || Number(row.id.slice(5)) >= data.nextId || !['memo','task'].includes(row.kind) || typeof row.text !== 'string' || row.text.length > 10000 || /[\r\n]/.test(row.text) || typeof row.done !== 'boolean' || (row.date !== null && !dateValid(row.date)) || row.folder !== '개인 / 일상' || !Array.isArray(row.history)) return false;
+      if (row.kind === 'memo' && (row.done || row.date !== null || row.history.length)) return false;
+      if (row.history.some(record => !record || !dateValid(record.date) || ![0,100].includes(record.percent))) return false;
+      ids.add(row.id);
+    }
+    return typeof data.raw === 'string' && data.raw === raw(data);
+  }
+  function seed() {
+    const data = {documentId:'synthetic-document-1',nextId:4,rows:[
+      {id:'line-1',kind:'memo',text:'주말에는 서두르지 않고 필요한 것만 준비하자.',date:null,done:false,folder:'개인 / 일상',history:[]},
+      {id:'line-2',kind:'task',text:'도서관에서 예약한 책 찾기',date:TODAY,done:false,folder:'개인 / 일상',history:[]},
+      {id:'line-3',kind:'task',text:'여행 준비물 적기',date:null,done:false,folder:'개인 / 일상',history:[]}
+    ]};data.raw=raw(data);return data;
+  }
+  function change(data, action) {
+    if (!valid(data)) throw Error('원문과 항목 연결을 확인할 수 없습니다.');
+    const next=clone(data), row=next.rows.find(item=>item.id===action.id);
+    if (action.type==='add') {
+      if (!['memo','task'].includes(action.kind) || typeof action.text!=='string' || !action.text.trim()) throw Error('내용을 입력해 주세요.');
+      for (const text of action.text.replace(/\r\n?/g,'\n').split('\n')) next.rows.push({id:'line-'+next.nextId++,kind:action.kind,text,date:null,done:false,folder:'개인 / 일상',history:[]});
+    } else {
+      if(!row) throw Error('원문 행을 찾을 수 없습니다.');
+      if(action.type==='edit') row.text=action.text;
+      else if(action.type==='convert' && row.kind==='memo') row.kind='task';
+      else if(action.type==='date' && row.kind==='task') row.date=action.date;
+      else if(action.type==='complete' && row.kind==='task') {row.done=!row.done;row.history.push({date:TODAY,percent:row.done?100:0});}
+      else throw Error('지원하지 않는 변경입니다.');
+    }
+    next.raw=raw(next);if(!valid(next)) throw Error('입력을 적용하지 않았습니다. 한 줄 내용과 날짜를 확인해 주세요.');return next;
+  }
+  function visible(data, view, date=TODAY) {
+    if(!valid(data)||!dateValid(date)) throw Error('조회할 자료를 확인할 수 없습니다.');
+    const start=new Date(date+'T00:00:00Z'), end=new Date(start);
+    if(view==='week'){start.setUTCDate(start.getUTCDate()-((start.getUTCDay()+6)%7));end.setTime(start.getTime());end.setUTCDate(end.getUTCDate()+7);}
+    if(view==='month'){start.setUTCDate(1);end.setTime(start.getTime());end.setUTCMonth(end.getUTCMonth()+1);}
+    return data.rows.filter(row=>row.kind==='task'&&(view==='undated'?row.date===null:view==='today'?row.date===date:row.date!==null&&new Date(row.date+'T00:00:00Z')>=start&&new Date(row.date+'T00:00:00Z')<end));
+  }
+  function encode(data,undo){if(!valid(data)||!Array.isArray(undo)||undo.length>30||!undo.every(valid))throw Error('저장 자료 오류');return JSON.stringify({version:1,data,undo});}
+  function decode(wire){const value=JSON.parse(wire);if(!value||value.version!==1||!valid(value.data)||!Array.isArray(value.undo)||value.undo.length>30||!value.undo.every(valid))throw Error('저장된 원문과 항목 연결을 확인할 수 없습니다.');return value;}
+  return {KEY,TODAY,clone,raw,valid,seed,change,visible,encode,decode,dateValid};
+})();
+</script>
+<script>
+(() => {
+  'use strict';
+  const M=JourneyModel, $=id=>document.getElementById(id), app=$('app'), body=$('body'), dialog=$('item-dialog');
+  let data=M.seed(),undo=[],wire=null,blocked=false,dirty=false,view='document',queryDate=M.TODAY,variant='A',focused=false,selected=null,returnFocus=null;
+  const draft={value:''};
+  try { wire=localStorage.getItem(M.KEY);if(wire!==null){const restored=M.decode(wire);data=restored.data;undo=restored.undo;$('save-state').textContent='이 브라우저의 저장본';} } catch(error) { blocked=true;$('lock').hidden=false;$('lock').textContent='저장 자료를 안전하게 열지 못했습니다. 기존 자료를 덮어쓰지 않습니다. '+error.message; }
+  function notice(message){$('notice').textContent=message;}
+  function save(){
+    if(blocked)return false;
+    try {
+      if($('simulate-error').checked)throw Error('모의 저장 오류');
+      if(localStorage.getItem(M.KEY)!==wire){blocked=true;throw Error('다른 창에서 자료가 달라졌습니다. 현재 원문을 받은 뒤 저장본을 다시 열어 주세요.');}
+      const next=M.encode(data,undo);if(next!==wire){localStorage.setItem(M.KEY,next);if(localStorage.getItem(M.KEY)!==next){blocked=true;throw Error('저장 결과를 확인하지 못했습니다.');}wire=next;}
+      dirty=false;$('save-state').textContent='이 브라우저에 저장됨';$('save-state').classList.remove('error');$('retry').hidden=true;return true;
+    }catch(error){dirty=true;$('save-state').textContent='저장 실패 · 입력은 화면에 유지';$('save-state').classList.add('error');$('retry').hidden=blocked;notice(error.message);return false;}
+  }
+  function mutate(action,redraw=true){
+    if(blocked){notice('자료 확인이 필요합니다. 현재 원문을 받은 뒤 저장본을 다시 열어 주세요.');return false;}
+    try{const next=M.change(data,action);if(JSON.stringify(next)===JSON.stringify(data))return true;undo.push(M.clone(data));undo=undo.slice(-30);data=next;dirty=true;save();if(redraw)render();else $('undo').disabled=!undo.length||blocked;return true;}catch(error){notice(error.message);return false;}
+  }
+  function button(text,handler,className){const el=document.createElement('button');el.type='button';el.textContent=text;if(className)el.className=className;el.addEventListener('click',handler);return el;}
+  function label(tag,text,className){const el=document.createElement(tag);el.textContent=text;if(className)el.className=className;return el;}
+  function checkTarget(check){const target=label('label','','check-target');target.append(check);return target;}
+  function setView(next){view=next;render();notice(next==='document'?'원문 문서입니다.':'개인 / 일상 · 모든 할 일. 보기 전환은 내용을 바꾸지 않습니다.');}
+  function openItem(id,trigger){const row=data.rows.find(row=>row.id===id);if(!row)return;selected=id;returnFocus=trigger;$('dialog-target').textContent=row.text||'제목 없는 줄';$('item-date').value=row.date||'';$('item-date').disabled=row.kind!=='task';$('clear-date').disabled=row.kind!=='task';$('convert').hidden=row.kind==='task';$('item-form').querySelector('[type=submit]').disabled=row.kind!=='task';dialog.showModal();}
+  function closeItem(){const id=selected;dialog.close();selected=null;if(returnFocus?.isConnected)returnFocus.focus();else document.querySelector('[data-menu-id="'+id+'"]')?.focus();}
+  function origin(id){view='document';render();const el=document.querySelector('[data-source-id="'+id+'"]');if(el){el.focus();el.setSelectionRange(0,0);el.scrollIntoView({block:'center',behavior:'auto'});notice('같은 원문 행으로 돌아왔습니다.');}}
+  function render(){
+    body.replaceChildren();app.classList.toggle('focus',focused);$('focus-note').hidden=!focused;$('focus-toggle').hidden=variant==='A';$('focus-toggle').textContent=focused?'집중 끝내기':'본문에 집중';$('undo').disabled=!undo.length||blocked;
+    document.querySelectorAll('[data-view]').forEach(el=>{if(el.dataset.view===view)el.setAttribute('aria-current','page');else el.removeAttribute('aria-current');});
+    const heading=label('div','','heading'), titles={document:'일상을 적는 문서',today:'오늘',week:'주간',month:'월간',undated:'날짜 미정'};
+    const headingText=label('div','');headingText.append(label('h2',titles[view]),label('p',view==='document'?'보관 위치 · 개인 / 일상':'개인 / 일상 · 같은 문서의 할 일','muted'));heading.append(headingText);body.append(heading);
+    if(view==='document')renderDocument();else renderPeriod();growRows();
+  }
+  function growRows(){document.querySelectorAll('[data-source-id]').forEach(text=>{text.style.height='auto';text.style.height=Math.max(48,text.scrollHeight)+'px';});}
+  window.addEventListener('resize',growRows);
+  function renderDocument(){
+    const list=label('ol','','source-list');
+    data.rows.forEach(row=>{
+      const li=label('li','','source-row'+(row.done?' done':''));
+      if(row.kind==='task'){const check=document.createElement('input');check.type='checkbox';check.checked=row.done;check.disabled=blocked;check.setAttribute('aria-label',(row.done?'다시 열기: ':'완료: ')+row.text);check.addEventListener('change',()=>mutate({type:'complete',id:row.id}));li.append(checkTarget(check));}else li.append(label('span','·','memo-mark'));
+      const content=label('div',''),text=document.createElement('textarea');text.value=row.text;text.rows=1;text.maxLength=10000;text.dataset.sourceId=row.id;text.disabled=blocked;text.setAttribute('aria-label',(row.kind==='task'?'할 일 원문: ':'메모 원문: ')+row.id);
+      text.addEventListener('keydown',event=>{if(event.key==='Enter'&&!event.isComposing){event.preventDefault();notice('새 줄은 아래 입력칸에서 이어 적을 수 있습니다.');$('new-text').focus();}});
+      text.addEventListener('paste',event=>{if(/[\r\n]/.test(event.clipboardData?.getData('text')||'')){event.preventDefault();notice('여러 줄 붙여넣기는 아래 입력칸을 사용해 주세요. 기존 행은 유지했습니다.');}});
+      text.addEventListener('input',()=>{if(mutate({type:'edit',id:row.id,text:text.value},false))text.style.height=Math.max(48,text.scrollHeight)+'px';});
+      content.append(text);const meta=label('div','','source-meta');meta.append(label('span',row.kind==='task'?(row.date||'날짜 미정'):'메모'));if(row.history.length)meta.append(label('span','진행 기록 '+row.history.length+'개'));content.append(meta);li.append(content);
+      const more=button('···',()=>openItem(row.id,more));more.dataset.menuId=row.id;more.setAttribute('aria-label','항목 메뉴: '+row.text);more.disabled=blocked;li.append(more);list.append(li);
+    });body.append(list);
+    const form=label('form','','add'),hint=label('label','메모나 할 일을 이어 적기');hint.htmlFor='new-text';const text=document.createElement('textarea');text.id='new-text';text.placeholder='생각을 적거나, 할 일을 한 줄씩 적으세요';text.value=draft.value;text.disabled=blocked;text.addEventListener('input',()=>{draft.value=text.value;});form.append(hint,text);
+    const actions=label('div','','add-actions');for(const [kind,title] of [['memo','메모로 추가'],['task','할 일로 추가']]){const add=button(title,()=>{if(mutate({type:'add',kind,text:draft.value},false)){draft.value='';render();$('new-text').focus();}},kind==='task'?'primary':'');add.disabled=blocked;actions.append(add);}form.append(actions);form.addEventListener('submit',event=>event.preventDefault());body.append(form);
+    const details=label('details','','source-tools');details.append(label('summary','작성 도움말'));details.append(label('p','일반 문장은 메모로 남습니다. 할 일의 ··· 메뉴에서 날짜를 정하거나 비울 수 있습니다. 완료와 날짜를 바꿔도 같은 원문 줄을 사용합니다. 각 입력 줄은 하나의 항목이며, 여러 줄은 아래 입력칸에서 추가하세요.'));body.append(details);
+  }
+  function renderPeriod(){
+    if(view!=='undated'){const tools=label('div','','period-tools'),text=label('label','조회 날짜');text.htmlFor='query-date';const date=document.createElement('input');date.type='date';date.id='query-date';date.value=queryDate;date.addEventListener('change',()=>{if(M.dateValid(date.value)){queryDate=date.value;render();}else{date.value=queryDate;notice('올바른 조회 날짜를 선택해 주세요.');}});tools.append(text,date,button('기준일로',()=>{queryDate=M.TODAY;render();}));body.append(tools);}
+    const rows=M.visible(data,view,queryDate),list=label('ul','','period-list');if(!rows.length)body.append(label('p','이 범위에 할 일이 없습니다. 날짜 미정이나 원문에서 찾아보세요.','empty'));
+    [...rows].sort((a,b)=>(a.date||'').localeCompare(b.date||'')).forEach(row=>{const li=label('li','','period-row'),check=document.createElement('input');check.type='checkbox';check.checked=row.done;check.disabled=blocked;check.setAttribute('aria-label',(row.done?'다시 열기: ':'완료: ')+row.text);check.addEventListener('change',()=>mutate({type:'complete',id:row.id}));const content=label('div','');content.append(label('p',row.text||'제목 없는 할 일','period-title'),label('p',(row.date||'날짜 미정')+' · 개인 / 일상 / 일상을 적는 문서','period-context'));const actions=label('div','','row-actions'),date=button('날짜 바꾸기',()=>openItem(row.id,date));date.disabled=blocked;actions.append(date,button('원문에서 이어 쓰기',()=>origin(row.id)));content.append(actions);if(row.history.length)content.append(label('p',row.history.map(record=>record.date+' '+record.percent+'%').join(' → '),'period-context'));li.append(checkTarget(check),content);list.append(li);});body.append(list);
+  }
+  document.querySelectorAll('[data-view]').forEach(el=>el.addEventListener('click',()=>setView(el.dataset.view)));
+  function setVariant(next){variant=next;if(next==='A')focused=false;$('variant-a').setAttribute('aria-pressed',String(next==='A'));$('variant-b').setAttribute('aria-pressed',String(next==='B'));$('variant-note').textContent=next==='A'?'보조 도구를 필요할 때 펼칩니다.':'본문 집중을 켜도 저장 상태와 나가기는 보입니다.';render();}
+  $('variant-a').addEventListener('click',()=>setVariant('A'));$('variant-b').addEventListener('click',()=>setVariant('B'));
+  $('focus-toggle').addEventListener('click',()=>{focused=!focused;render();$('focus-toggle').focus();});
+  $('item-form').addEventListener('submit',event=>{event.preventDefault();if(mutate({type:'date',id:selected,date:$('item-date').value||null})){closeItem();notice('같은 할 일의 날짜를 적용했습니다.');}});
+  $('clear-date').addEventListener('click',()=>{$('item-date').value='';});
+  $('convert').addEventListener('click',()=>{if(mutate({type:'convert',id:selected})){closeItem();notice('이 원문 줄을 할 일로 바꿨습니다.');}});
+  $('cancel').addEventListener('click',()=>{closeItem();notice('취소했습니다. 항목은 바뀌지 않았습니다.');});dialog.addEventListener('cancel',event=>{event.preventDefault();closeItem();notice('취소했습니다. 항목은 바뀌지 않았습니다.');});
+  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!dialog.open&&focused){focused=false;render();$('focus-toggle').focus();}});
+  $('undo').addEventListener('click',()=>{if(blocked||!undo.length)return;data=undo.pop();dirty=true;save();render();notice('마지막 내용 변경을 되돌렸습니다.');});
+  $('retry').addEventListener('click',()=>{if(save()){notice('화면에 남긴 입력을 저장했습니다.');render();}});
+  $('reload').addEventListener('click',()=>{if((dirty||draft.value)&&!confirm('저장하지 못한 입력은 사라질 수 있습니다. 마지막 저장본을 다시 열까요?'))return;location.reload();});
+  $('download').addEventListener('click',()=>{const blob=new Blob([data.raw+(draft.value?'\n\n[추가 전 입력]\n'+draft.value:'')],{type:'text/plain;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='flowme-ux-synthetic-document.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);notice('현재 화면의 원문을 TXT로 받았습니다.');});
+  window.addEventListener('beforeunload',event=>{if(dirty||draft.value){event.preventDefault();event.returnValue='';}});
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,6 +1,20 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { isExpectedSyntheticTelemetryError, isSyntheticReleaseTelemetry, releaseResourceTarget, RELEASE_ORIGIN } from './cloudflare-release.fixture';
+import { expectedReleaseTelemetryCount, isExpectedSyntheticTelemetryError, isSyntheticReleaseTelemetry, releaseResourceTarget, RELEASE_ORIGIN } from './cloudflare-release.fixture';
+
+test('release telemetry expectation counts actual document navigations, not an assumed reload', () => {
+  for (const loads of [1, 2, 3]) {
+    assert.equal(expectedReleaseTelemetryCount('remote-readonly', loads), loads);
+    assert.equal(expectedReleaseTelemetryCount('local', loads), 0);
+  }
+});
+
+test('release telemetry expectation rejects missing, fractional and unsafe document counts', () => {
+  for (const loads of [0, -1, 1.5, NaN, Infinity, Number.MAX_SAFE_INTEGER + 1]) {
+    assert.throws(() => expectedReleaseTelemetryCount('remote-readonly', loads), /document-load-count-rejected/);
+    assert.throws(() => expectedReleaseTelemetryCount('local', loads), /document-load-count-rejected/);
+  }
+});
 
 test('release QA forwards only exact GET document/static resources to the chosen fixed host', () => {
   for (const path of ['/alpha', '/_next/static/chunks/app/alpha/page-abc123.js', '/icon.svg']) {

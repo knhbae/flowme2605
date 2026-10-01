@@ -5,10 +5,15 @@ import { createAlphaFakeServer, validateAlphaCommand } from '../../lib/flow/inte
 import { emptyAlphaReferences } from '../../lib/flow/integrated-poc/alpha-social/projection';
 import type { AlphaPrivateCommand } from '../../lib/flow/integrated-poc/alpha-persistence/contract';
 import { validateAlphaAccount } from '../../lib/flow/integrated-poc/alpha-persistence/program-adapter';
+import { textWorkspaceModel as M, type TextWorkspaceState } from '../../lib/flow/integrated-poc/text-workspace';
 
 export const RELEASE_ORIGIN = 'https://alpha.wikiplans.com';
 const AUTH_ORIGIN = 'https://wkmzcxpnojobxrgebapw.supabase.co';
 export type ReleaseQaMode = 'local' | 'remote-readonly';
+export function expectedReleaseTelemetryCount(mode: ReleaseQaMode, documentLoads: number): number {
+  if (!Number.isSafeInteger(documentLoads) || documentLoads < 1) throw Error('release-qa-document-load-count-rejected');
+  return mode === 'remote-readonly' ? documentLoads : 0;
+}
 const SENTINELS = { 'flow:saved-plans': '  synthetic release sentinel\r\n', 'flow:completion:v1': '{"untouched":true}', 'other-app:key': 'exact bytes  ' };
 const OBSERVED_TELEMETRY_SCRIPT = 'https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495';
 
@@ -37,10 +42,27 @@ export function releaseResourceTarget(address: string, method: string, mode: Rel
   return `${mode === 'local' ? 'http://127.0.0.1:3106' : RELEASE_ORIGIN}${path}${url.search}`;
 }
 
-export async function mockCloudflareRelease(page: Page, options: { document?: { title: string; raw: string } } = {}) {
+export async function mockCloudflareRelease(page: Page, options: {
+  document?: { title: string; raw: string; scopeAt?: number };
+  prepareText?: (text: TextWorkspaceState) => TextWorkspaceState;
+} = {}) {
   const mode = (process.env.FLOWME_CLOUDFLARE_QA_MODE ?? 'local') as ReleaseQaMode;
   if (!['local', 'remote-readonly'].includes(mode)) throw Error('cloudflare-qa-mode-rejected');
-  const account = options.document ? accountWithDocument('a', options.document.title, options.document.raw) : emptyAccount('a');
+  // Bind a synthetic scope before adding descendants: production deliberately
+  // refuses to reinterpret a nonempty subtree as a newly created folder.
+  const initialRaw = options.document?.scopeAt !== undefined
+    ? options.document.raw.split('\n').slice(0, options.document.scopeAt + 1).join('\n') : options.document?.raw;
+  const account = options.document ? accountWithDocument('a', options.document.title, initialRaw!) : emptyAccount('a');
+  if (options.document?.scopeAt !== undefined) {
+    const doc = account.space.text.documents[0], index = options.document.scopeAt;
+    if (!Number.isInteger(index) || index < 0 || index >= doc.lines.length) throw Error('synthetic-scope-row-invalid');
+    account.space.text = M.createFolderAt(account.space.text, doc.id, index, '합성 접힘 폴더');
+    if (M.rowMeta(account.space.text, doc.id)[index]?.kind !== 'scope') throw Error('synthetic-scope-not-created');
+    const descendants = options.document.raw.split('\n').slice(index + 1);
+    account.space.text = M.editText(account.space.text, doc.id,
+      [M.raw(M.getDocument(account.space.text, doc.id)), ...descendants].join('\n'));
+  }
+  if (options.prepareText) account.space.text = options.prepareText(account.space.text);
   const references = emptyAlphaReferences(users.a.id);
   if (!validateAlphaAccount(account, references, users.a.id)) throw Error('synthetic-account-invalid');
   const server = createAlphaFakeServer([{ account, references }]);
@@ -49,7 +71,8 @@ export async function mockCloudflareRelease(page: Page, options: { document?: { 
   const unexpected: string[] = [], pageErrors: string[] = [], consoleErrors: string[] = [];
   const storageCalls: { method: string; key: string | null }[] = [];
   const resources = new Map<string, string>();
-  const state = { loseNextReceipt: false, lostRequestId: null as string | null, apiIntercepted: 0, authIntercepted: 0, suppressedTelemetry: 0 };
+  const state = { loseNextReceipt: false, rejectNextExecute: null as 'limit' | 'revision-conflict' | null,
+    lostRequestId: null as string | null, apiIntercepted: 0, authIntercepted: 0, suppressedTelemetry: 0, documentLoads: 0 };
   async function current() {
     const value = await repository.read();
     if (!value.ok) throw Error('synthetic-account-unavailable');
@@ -115,6 +138,10 @@ export async function mockCloudflareRelease(page: Page, options: { document?: { 
         }
         if (body.kind === 'execute' && validateAlphaCommand(body.command)) {
           commands.push(structuredClone(body.command));
+          if (state.rejectNextExecute) {
+            const reason = state.rejectNextExecute; state.rejectNextExecute = null;
+            return json(route, { ok: false, reason });
+          }
           const result = await repository.execute(body.command);
           if (state.loseNextReceipt && result.ok) {
             state.loseNextReceipt = false; state.lostRequestId = body.command.requestId;
@@ -130,7 +157,10 @@ export async function mockCloudflareRelease(page: Page, options: { document?: { 
     }
     const target = releaseResourceTarget(request.url(), method, mode);
     if (!target) { unexpected.push(`blocked-network:${method}:${url.origin}${url.pathname}`); return route.abort('blockedbyclient'); }
-    const response = await route.fetch({ url: target, method: 'GET', maxRedirects: 0, headers: {
+    // Retry only connection resets on the fixed local document/static GET.
+    // This never retries Auth, API commands, HTTP errors or remote resources.
+    const response = await route.fetch({ url: target, method: 'GET', maxRedirects: 0,
+      maxRetries: mode === 'local' ? 2 : 0, headers: {
       Host: 'alpha.wikiplans.com', 'X-Forwarded-Host': 'alpha.wikiplans.com', 'X-Forwarded-Proto': 'https',
       Accept: request.headers().accept ?? '*/*', 'Cache-Control': 'no-cache',
     } });
@@ -139,6 +169,7 @@ export async function mockCloudflareRelease(page: Page, options: { document?: { 
       await response.dispose(); return route.abort('failed');
     }
     const body = await response.body();
+    if (url.pathname === '/alpha' && request.isNavigationRequest() && request.resourceType() === 'document') state.documentLoads++;
     // Hash actual JS/CSS, never persist HTML, configuration or source text.
     if (url.pathname.startsWith('/_next/static/')) resources.set(url.pathname, createHash('sha256').update(body).digest('hex'));
     await route.fulfill({ response, body }); await response.dispose();
@@ -146,12 +177,12 @@ export async function mockCloudflareRelease(page: Page, options: { document?: { 
 
   async function assertBoundary(info: TestInfo) {
     expect(unexpected, 'No unrecognized request may leave the fixture').toEqual([]);
-    expect(state.suppressedTelemetry, 'Exact edge script is synthetic on initial load and reload; never forwarded')
-      .toBe(mode === 'remote-readonly' ? 2 : 0);
+    expect(state.suppressedTelemetry, 'One exact synthetic edge script per successfully served document; never forwarded')
+      .toBe(expectedReleaseTelemetryCount(mode, state.documentLoads));
     expect(pageErrors, 'Uncaught page errors').toEqual([]);
     const expectedSyntheticTelemetryErrors = consoleErrors.filter(message => isExpectedSyntheticTelemetryError(message, mode));
     const unexpectedConsoleErrors = consoleErrors.filter(message => !isExpectedSyntheticTelemetryError(message, mode));
-    expect(expectedSyntheticTelemetryErrors, 'Only the exact empty-script SRI errors match the two synthetic script responses')
+    expect(expectedSyntheticTelemetryErrors, 'Only the exact empty-script SRI errors match synthetic script responses')
       .toHaveLength(state.suppressedTelemetry);
     expect(unexpectedConsoleErrors, 'Console errors other than explicitly synthesized telemetry SRI').toEqual([]);
     expect(storageCalls.filter(call => call.method === 'clear' || !call.key?.startsWith(prefix)), 'Outside-prefix storage calls').toEqual([]);
@@ -164,7 +195,7 @@ export async function mockCloudflareRelease(page: Page, options: { document?: { 
       evidence: 'Headless Chromium; real production assets with synthetic Auth/account/CAS/receipt. Not live DB or real-device QA.',
       mode, viewport: page.viewportSize(), realApiRequests: 0, forwardedSupabaseRequests: 0,
       syntheticApiRequests: state.apiIntercepted, syntheticAuthRequests: state.authIntercepted,
-      suppressedTelemetry: state.suppressedTelemetry, forwardedTelemetryRequests: 0, telemetryValidated: false,
+      documentLoads: state.documentLoads, suppressedTelemetry: state.suppressedTelemetry, forwardedTelemetryRequests: 0, telemetryValidated: false,
       mutations: server.diagnostics().mutations, operations: server.diagnostics().operations,
       outsidePrefixWrites: 0, sentinelBytesUnchanged: true, pageErrors,
       consoleErrors: unexpectedConsoleErrors, totalConsoleErrorCount: consoleErrors.length,
@@ -172,5 +203,18 @@ export async function mockCloudflareRelease(page: Page, options: { document?: { 
       assets: [...resources].map(([path, sha256]) => ({ path, sha256 })),
     }) });
   }
-  return { state, current, commands, lookups, reads, diagnostics: server.diagnostics, assertBoundary };
+  let externalSequence = 0;
+  async function externalTextEdit(docId: string, raw: string) {
+    // Test-only: mutate the in-memory fake repository, never a browser/network API.
+    const before = await current(), edited = M.editTextResult(before.space.text, docId, raw);
+    if (edited.reason) throw Error(`synthetic-external-edit:${edited.reason}`);
+    const candidate = { ...before, space: { ...before.space, text: edited.state } };
+    if (!validateAlphaAccount(candidate, references, users.a.id)) throw Error('synthetic-external-account-invalid');
+    const result = await repository.execute({ schema: 'flowme-alpha-command/1', kind: 'change-private',
+      requestId: `synthetic-external-${++externalSequence}`, expectedRevision: before.revision,
+      changes: [{ field: 'text', present: true, value: edited.state }] });
+    if (!result.ok) throw Error(`synthetic-external-save:${result.reason}`);
+    return current();
+  }
+  return { state, current, commands, lookups, reads, externalTextEdit, diagnostics: server.diagnostics, assertBoundary };
 }

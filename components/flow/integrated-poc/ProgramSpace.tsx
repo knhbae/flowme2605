@@ -12,7 +12,8 @@ import { textWorkspaceModel as M, type TextTask, type TextWorkspaceState } from 
 import { programErrorMessage, type ProgramMutate, type ProgramNavigate, type ProgramMutationResult, type ProgramDestination } from '@/lib/flow/integrated-poc/ui-contract';
 import { emptyProgramRecurrencePresentation, programNavigationMatchesDocument, type ProgramSpaceNavigation } from '@/lib/flow/integrated-poc/navigation';
 import { ProgramDocumentProvenance } from './ProgramDocumentProvenance';
-import { ProgramTextEditor } from './ProgramTextEditor';
+import { ProgramTextEditor, type ProgramSourceFocus } from './ProgramTextEditor';
+import { readProgramFolderRegions } from '@/lib/flow/integrated-poc/folder-document-regions';
 import { ProgramRecurrence } from './ProgramRecurrence';
 import { ProgramRecurrencePlanRecovery } from './ProgramRecurrencePlanRecovery';
 import { ProgramOutputReturn } from './ProgramOutputReturn';
@@ -48,8 +49,11 @@ export type ProgramSpaceProps = {
   onOutputDocument?: (documentId: string) => void;
   onRegisterEditors?: (editors: ProgramEditorFlush | null) => void;
   onRegisterNavigation?: (navigation: ProgramSpaceNavigation | null) => void;
+  /** Local view changes do not call mutate; the host must expose held authority. */
+  canContinueWholeDocument?: () => boolean;
 };
 type Detail = { kind: 'task'; id: string } | { kind: 'folder'; id: string } | { kind: 'connect'; docId: string; lineId: string } | null;
+type LibraryWritingHandoff = { epoch: number; documentId: string; folderId: string; focusOwner: Element | null };
 const periods: [ProgramPeriod, string][] = [['documents', '문서'], ['today', '오늘'], ['week', '주간'], ['month', '월간'], ['all', '전체 할 일'], ['undated', '날짜 미정']];
 export const PROGRAM_EMPTY_EXAMPLE = '이번 주 준비\n- [ ] 확인할 일\n  - [ ] 먼저 확인할 내용\n자유롭게 적는 메모';
 // A06 / V41-004–005: restore the approved v4.1 touch thresholds, not a new policy.
@@ -64,6 +68,10 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const [detail, setDetail] = useState<Detail>(null), [message, setMessage] = useState('');
   const [moving, setMoving] = useState<string | null>(null), [showArchived, setShowArchived] = useState(false);
   const [libraryOpen, setLibraryOpen] = useState(false);
+  const libraryToggle = useRef<HTMLButtonElement | null>(null);
+  const libraryReveal = useRef({ epoch: 0, frame: null as number | null,
+    request: null as LibraryWritingHandoff | null, committedRequest: null as LibraryWritingHandoff | null });
+  const [libraryHandoff, setLibraryHandoff] = useState<LibraryWritingHandoff | null>(null);
   const [preparingDocumentAction, setPreparingDocumentAction] = useState(false);
   const preparing = useRef(false), selectedRef = useRef(selected); selectedRef.current = selected;
   const saveRequests = useRef<Record<string, (() => Promise<boolean>) | null>>({});
@@ -142,12 +150,61 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const executionRows = occurrenceResult.rows;
   const allTasks = useMemo(() => programExecutionTasks(space), [space]);
   const detailTask = detail?.kind === 'task' ? allTasks.find(task => task.id === detail.id) : null;
-  const documentList = docs.filter(doc => !retainedIds.has(doc.id) && !space.documentTrash?.[doc.id] && space.archivedDocumentIds.includes(doc.id) === showArchived && (!folderId || doc.folderId === folderId)
+  const matchingDocumentIds = useMemo(() => new Set(folderId && docs[0] ? readProgramFolderRegions(space.text, docs[0].id, folderId)?.matchingDocumentIds ?? [] : []), [space.text, folderId]);
+  const documentList = docs.filter(doc => !retainedIds.has(doc.id) && !space.documentTrash?.[doc.id] && space.archivedDocumentIds.includes(doc.id) === showArchived && (!folderId || doc.folderId === folderId || matchingDocumentIds.has(doc.id))
     && (!query || `${doc.title}\n${M.raw(doc)}`.toLocaleLowerCase().includes(query.toLocaleLowerCase())));
   const range = programDateRange(period, date);
   const presentation = useRef({ period, date, folderId, query, selected, showArchived, recurrence: recurrencePresentation });
   presentation.current = { period, date, folderId, query, selected, showArchived, recurrence: recurrencePresentation };
   const documentsRef = useRef(docs); documentsRef.current = docs;
+  const workspaceRef = useRef(space.text); workspaceRef.current = space.text;
+  const sourceFocusPorts = useRef<Record<string, ProgramSourceFocus | null>>({});
+  function cancelLibraryReveal() {
+    libraryReveal.current.epoch++;
+    if (libraryReveal.current.frame !== null) cancelAnimationFrame(libraryReveal.current.frame);
+    libraryReveal.current.frame = null;
+    libraryReveal.current.request = null;
+    libraryReveal.current.committedRequest = null;
+  }
+  useEffect(() => () => cancelLibraryReveal(), []);
+  useEffect(() => {
+    const request = libraryHandoff;
+    if (!request || libraryReveal.current.request !== request) return;
+    if (libraryOpen || period !== 'documents' || selected !== request.documentId || folderId !== request.folderId) {
+      if (libraryReveal.current.committedRequest === request) libraryReveal.current.request = null;
+      return;
+    }
+    libraryReveal.current.committedRequest = request;
+    // Run only after React committed the disclosure and folder view. Child native
+    // regions mount in passive effects; the event handler can precede that work.
+    const frame = requestAnimationFrame(() => {
+      if (libraryReveal.current.request !== request || libraryReveal.current.frame !== frame) return;
+      libraryReveal.current.frame = null; libraryReveal.current.request = null; libraryReveal.current.committedRequest = null;
+      if (libraryReveal.current.epoch !== request.epoch || inputLockCount.current > 0 || Object.values(dirty.current).some(Boolean)
+        || Object.values(recurrencePorts.current).some(port => port?.hasPendingInput?.())
+        || props.canContinueWholeDocument?.() === false || !window.matchMedia('(max-width:760px)').matches
+        || selectedRef.current !== request.documentId || presentation.current.period !== 'documents'
+        || presentation.current.folderId !== request.folderId) return;
+      const button = libraryToggle.current, host = root.current;
+      const documentHost = Array.from(host?.querySelectorAll<HTMLElement>('[data-program-document]') ?? [])
+        .find(element => element.dataset.programDocument === request.documentId);
+      const editor = documentHost?.querySelector<HTMLElement>('section[aria-label="개인 문서 편집"]');
+      const area = Array.from(editor?.querySelectorAll<HTMLTextAreaElement>('textarea') ?? [])
+        .find(element => element.getClientRects().length && !element.readOnly);
+      if (!host?.getClientRects().length || !button?.getClientRects().length || !editor?.getClientRects().length || !area) return;
+      if (document.activeElement && document.activeElement !== document.body
+        && document.activeElement !== request.focusOwner && document.activeElement !== button) return;
+      // Preserve native input/caret and avoid opening the mobile keyboard.
+      button.focus({ preventScroll: true });
+      const bounds = area.getBoundingClientRect();
+      if (bounds.top >= window.innerHeight || bounds.bottom <= 0) editor.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    });
+    libraryReveal.current.frame = frame;
+    return () => {
+      cancelAnimationFrame(frame);
+      if (libraryReveal.current.frame === frame) libraryReveal.current.frame = null;
+    };
+  }, [libraryHandoff, libraryOpen, folderId, selected, period]);
   function lockInput() {
     inputLockCount.current++;
     Object.values(inputLocks.current).forEach(lock => lock?.(true));
@@ -162,6 +219,39 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   async function flushAllEditors() {
     if (!await flushRecurrenceEditors()) return false;
     return flushProgramEditorCollection(() => Object.keys(dirty.current).map(id => ({ dirty: () => !!dirty.current[id], save: saveRequests.current[id] ?? undefined })));
+  }
+  async function changeFolder(nextFolderId: string, options: { fromLibrary?: boolean } = {}) {
+    cancelLibraryReveal();
+    const epoch = libraryReveal.current.epoch, documentId = selectedRef.current;
+    const focusOwner = options.fromLibrary ? document.activeElement : null;
+    if (inputLockCount.current > 0) return;
+    const release = lockInput();
+    try {
+      if (!await flushAllEditors()) { setMessage('한글 입력을 마친 뒤 보기 범위를 바꿔 주세요. 저장되지 않은 입력도 확인해 주세요.'); return; }
+      setFolderId(nextFolderId); setMessage('');
+      // Only an explicit mobile library choice hands presentation back to writing.
+      // Empty results keep the library available for choosing another document.
+      if (options.fromLibrary && libraryReveal.current.epoch === epoch && window.matchMedia('(max-width:760px)').matches
+        && presentation.current.period === 'documents' && selectedRef.current === documentId
+        && documentsRef.current.some(doc => doc.id === documentId) && props.canContinueWholeDocument?.() !== false
+        && programDocumentContentLock(space, documentId) === 'active'
+        && (!nextFolderId || readProgramFolderRegions(workspaceRef.current, documentId, nextFolderId)?.regions.some(region => !region.readOnly))) {
+        setLibraryOpen(false);
+        const request = { epoch, documentId, folderId: nextFolderId, focusOwner };
+        libraryReveal.current.request = request; setLibraryHandoff(request);
+      }
+    } finally { release(); }
+  }
+  async function changePeriod(nextPeriod: ProgramPeriod) {
+    if (inputLockCount.current > 0) return false;
+    const release = lockInput();
+    try {
+      if (!await flushAllEditors()) { setMessage('한글 입력을 마친 뒤 보기 범위를 바꿔 주세요. 저장되지 않은 입력도 확인해 주세요.'); return false; }
+      setPeriod(nextPeriod); if (nextPeriod === 'today') setDate(today); setMessage(''); return true;
+    } finally { release(); }
+  }
+  async function showFolderTasks() {
+    return changePeriod('all');
   }
   useEffect(() => {
     props.onRegisterEditors?.({ lockInput,
@@ -269,6 +359,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   }, [props.selectedDocumentId]); // Data can arrive after navigation: retain the requested ID even before its document arrives.
 
   async function openDocument(id: string, taskId?: string) {
+    const writingBlocked = () => inputLockCount.current > 0 || Object.values(dirty.current).some(Boolean)
+      || Object.values(recurrencePorts.current).some(port => port?.hasPendingInput?.());
+    if (taskId && writingBlocked()) { setMessage('작성 중인 입력을 저장하거나 취소한 뒤 원래 항목을 열어 주세요.'); return; }
     let targetPosition: ProgramWritingPosition | null = null;
     const remembered = await run('작성 위치 기억', current => {
       if (current.activeActorId !== actorId) return programFailure(current, 'conflict');
@@ -285,15 +378,45 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       if (cached) positions.current[selected] = normalizeProgramWritingPosition(currentSpace.text, cached);
       return programResult(current, current, id);
     }, false);
-    if (!remembered.ok) return;
-    if (targetPosition) positions.current[id] = targetPosition;
+    if (!remembered.ok || taskId && writingBlocked()) return;
+    if (targetPosition) { positions.current[id] = targetPosition; setFolderId(''); }
     setSelected(id); setLibraryOpen(false); setOpened(previous => previous.includes(id) ? previous : [...previous, id]); setPeriod('documents');
     props.navigate({ view: 'space', id }, taskId ? { writingLineId: taskId } : undefined);
+    // The full App owns history/checkpoint focus. Alpha has no navigation port
+    // and needs its retained editor restored directly after revealing it.
+    if (targetPosition && !props.onRegisterNavigation) {
+      const requested = positions.current[id];
+      // Retained editors read initialPosition only when mounted. Restore the
+      // exact source row after revealing an already-mounted document as well.
+      requestAnimationFrame(() => {
+        if (writingBlocked() || selectedRef.current !== id || presentation.current.period !== 'documents'
+          || positions.current[id] !== requested) return;
+        const doc = documentsRef.current.find(entry => entry.id === id);
+        const index = doc?.lines.findIndex(line => line.id === taskId) ?? -1;
+        const textarea = document.getElementById(`program-text-${encodeURIComponent(id)}`) as HTMLTextAreaElement | null;
+        if (!doc || index < 0 || !textarea || !root.current?.contains(textarea) || !textarea.getClientRects().length
+          || textarea.readOnly || textarea.value !== M.raw(doc)) return;
+        if (!sourceFocusPorts.current[id]?.({ documentId: id, lineId: taskId!, raw: M.raw(doc) })) return;
+        const offset = doc.lines.slice(0, index).reduce((sum, line) => sum + line.text.length + 1, 0);
+        textarea.setSelectionRange(offset, offset);
+        const renderedLine = textarea.closest('.tle-root')?.querySelectorAll<HTMLElement>('.tle-line')[index];
+        textarea.scrollTop = renderedLine ? Math.max(0, renderedLine.offsetTop - renderedLine.offsetHeight) : requested.scrollTop;
+        textarea.scrollIntoView({ block: 'nearest' });
+      });
+    }
   }
   async function newDocument(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault(); const form = event.currentTarget, title = String(new FormData(form).get('title') ?? '').trim();
-    const result = await run('문서 만들기', current => createProgramDocument(current, { ...base(current), title, folderId: folderId || 'folder-unfiled' }));
-    if (result.ok) { form.reset(); setLibraryOpen(false); setSelected(result.result); setOpened(previous => [...previous, result.result]); setPeriod('documents'); props.navigate({ view: 'space', id: result.result }); }
+    if (preparing.current || inputLockCount.current > 0) return;
+    const authority = { actorId, expected: formExpected.current ?? space, conflict: false };
+    const release = lockInput(); preparing.current = true; setPreparingDocumentAction(true); moveFlush.current = authority;
+    try {
+      if (!await flushAllEditors()) { setMessage('작성 중인 입력을 저장하거나 취소한 뒤 새 문서를 만들어 주세요.'); return; }
+      if (authority.conflict) { setMessage('문서가 바뀌어 새 문서를 만들지 않았습니다. 현재 내용을 확인한 뒤 다시 시도해 주세요.'); return; }
+      const result = await run('문서 만들기', current => current.activeActorId !== actorId ? programFailure(current, 'conflict') : createProgramDocument(current, {
+        actorId, requestId: programId('request'), expectedSpace: authority.expected, title, folderId: folderId || 'folder-unfiled' }));
+      if (result.ok) { form.reset(); setLibraryOpen(false); setSelected(result.result); setOpened(previous => [...previous, result.result]); setFolderId(''); setPeriod('documents'); props.navigate({ view: 'space', id: result.result }); }
+    } finally { if (moveFlush.current === authority) moveFlush.current = null; preparing.current = false; setPreparingDocumentAction(false); release(); }
   }
   async function quickTask(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault(); const form = event.currentTarget, input = new FormData(form), title = String(input.get('title') ?? ''), pickedDate = String(input.get('date') ?? '') || null;
@@ -325,7 +448,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     const authority = moveFlush.current;
     if (authority) {
       // Foreign private writes between local saves break the chain.
-      // A failed save never lends its proposed state authority to the move.
+      // A failed save never lends its proposed state authority to a document action.
       const committed = receipt as { before: typeof space; after: typeof space } | null;
       if (!result.ok || !committed || authority.actorId !== actorId || !programSame(authority.expected, committed.before)) authority.conflict = true;
       else authority.expected = committed.after;
@@ -371,11 +494,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     }
   };
   return <section ref={root} className={styles.space} aria-label="내 공간" onClickCapture={guardOccurrenceDraft} onKeyDownCapture={event => { if (!['Tab', 'Shift', 'Escape'].includes(event.key)) guardOccurrenceDraft(event); }}>
-    {selectedDoc && <button className={styles.libraryToggle} aria-expanded={libraryOpen} aria-controls="program-library" onClick={() => setLibraryOpen(value => !value)}>문서·폴더 {libraryOpen ? '접기' : '열기'}{folder ? ` · ${folder.title}` : ''}</button>}
+    {selectedDoc && <button ref={libraryToggle} className={styles.libraryToggle} aria-expanded={libraryOpen} aria-controls="program-library" onClick={() => { cancelLibraryReveal(); setLibraryOpen(value => !value); }}>문서·폴더 {libraryOpen ? '접기' : '열기'}{folder ? ` · ${folder.title}` : ''}</button>}
     <aside id="program-library" className={styles.sidebar} data-open={libraryOpen || !selectedDoc}>
       <form className={styles.newDoc} onSubmit={newDocument}><label htmlFor="program-document-title">새 문서</label><div><input id="program-document-title" name="title" placeholder="문서 제목" required maxLength={240} /><button type="submit">만들기</button></div></form>
       <label className={styles.field}>내 문서·할 일 찾기<input id="program-private-search" type="search" value={query} onChange={event => setQuery(event.target.value)} /></label>
-      <label className={styles.field}>폴더<select value={folderId} onChange={event => setFolderId(event.target.value)}><option value="">모든 폴더</option>{folderOptions.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</select></label>
+      <label className={styles.field}>폴더<select value={folderId} onChange={event => { void changeFolder(event.target.value, { fromLibrary: true }); }}><option value="">모든 폴더</option>{folderOptions.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</select></label>
       <details className={styles.folderTools}><summary>폴더 정리</summary><form onSubmit={async event => {
         event.preventDefault(); const form = event.currentTarget, title = String(new FormData(form).get('title') ?? '');
         const result = await run('폴더 만들기', current => createProgramFolder(current, { ...base(current), title, parentId: folderId || null })); if (result.ok) form.reset();
@@ -388,7 +511,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     <div className={styles.content}>
       {props.outputReturn && <ProgramOutputReturn key={`${actorId}:${props.outputReturn.executionKey}`} data={data} destination={props.outputReturn} today={today} mutate={mutate}
         onOpenSource={(id, line) => void openDocument(id, line)} onRegisterEditors={(port, key) => { recurrencePorts.current[key] = port; }} onUndo={props.onUndo} onRedo={props.onRedo} />}
-      <nav className={styles.periods} aria-label="개인공간 보기">{periods.map(([key, label]) => <button key={key} aria-current={period === key ? 'page' : undefined} onClick={() => { setPeriod(key); if (key === 'today') setDate(today); }}>{label}</button>)}</nav>
+      <nav className={styles.periods} aria-label="개인공간 보기">{periods.map(([key, label]) => <button key={key} aria-current={period === key ? 'page' : undefined} onClick={() => { void changePeriod(key); }}>{label}</button>)}</nav>
       {message && <p role="alert" className={styles.error}>{message}</p>}
       <div hidden={period !== 'documents'}>
         <ProgramRecurrencePlanRecovery data={data} today={today} documentId={selected || undefined} disabled={preparingDocumentAction} onOpenSource={(id, line) => void openDocument(id, line)} />
@@ -419,6 +542,17 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         </>}
         {opened.filter(id => docs.some(doc => doc.id === id)).map(id => <div key={id} hidden={selected !== id} data-program-document={id}><ProgramTextEditor
           docId={id} workspace={space.text} initialPosition={positions.current[id] ?? (space.position.documentId === id ? space.position : undefined)}
+          folderId={folderId} onShowWholeDocument={() => { void changeFolder(''); }} onShowFolderTasks={() => { void showFolderTasks(); }}
+          onContinueWholeDocument={stage => {
+            // folderId controls every retained editor. Never unmount another pending region.
+            if (props.canContinueWholeDocument?.() === false || inputLockCount.current > 0 || selected !== id || period !== 'documents'
+              || Object.entries(dirty.current).some(([otherId, pending]) => otherId !== id && pending)
+              || Object.values(recurrencePorts.current).some(port => port?.hasPendingInput?.())) {
+              setMessage('다른 변경이나 저장 중인 입력을 확인한 뒤 전체 문서로 이어서 편집해 주세요.'); return false;
+            }
+            if (!stage()) return false;
+            setFolderId(''); setMessage(''); return true;
+          }}
           onCommit={(next, label, options) => editorCommit(id, next, label, options)}
           validateWorkspace={next => programPreservesLockedDocumentContent(space, next) && programPreservesSeriesMetadata(space, next) && programPreservesLegacyQualityHold(space, next) && programPreservesLegacyPlanExcluded(space, next)}
           taskAccess={taskId => programReferenceExecutionAccess(space, taskId)}
@@ -426,6 +560,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           onPosition={(position, lineId) => { positions.current[id] = { ...position, documentId: id, lineId }; }}
           onDirtyChange={value => { dirty.current[id] = value; }} onUndo={props.onUndo} onRedo={props.onRedo}
           onRegisterSave={save => { saveRequests.current[id] = save; }}
+          onRegisterSourceFocus={focus => { sourceFocusPorts.current[id] = focus; }}
           onRegisterDraft={read => { draftReaders.current[id] = read; }}
           onRegisterConfirmedSave={accept => { confirmedSaveReaders.current[id] = accept; }}
           onRegisterInputLock={lock => { inputLocks.current[id] = lock; lock?.(inputLockCount.current > 0); }}
@@ -441,7 +576,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       <div hidden={period === 'documents'}>
         <ProgramRecurrencePlanRecovery data={data} today={today} folderId={folderId || undefined} disabled={preparingDocumentAction} onOpenSource={(id, line) => void openDocument(id, line)} />
         <div className={styles.periodHeading}><h1>{periods.find(([key]) => key === period)?.[1]}{folder ? ` · ${folder.title}` : ''}</h1>{!['all', 'undated', 'documents'].includes(period) && <div className={styles.dateNav}><button aria-label="이전 기간" onClick={() => setDate((period === 'month' ? programShiftMonth(date, -1) : programShiftDate(date, period === 'week' ? -7 : -1)) || date)}>‹</button><label>조회 날짜<input id="program-query-date" type="date" value={date} onChange={event => { if (programDate(event.target.value)) setDate(event.target.value); }} /></label><button aria-label="다음 기간" onClick={() => setDate((period === 'month' ? programShiftMonth(date, 1) : programShiftDate(date, period === 'week' ? 7 : 1)) || date)}>›</button></div>}</div>
-        {(folderId || query) && <div className={styles.filterContext} aria-label="할 일 조회 범위"><p>{folderId ? `${folderOptions.find(item => item.id === folderId)?.title ?? '선택한 폴더'} · 하위 포함` : '모든 폴더'}{query && <span>검색: {query}</span>}</p><button type="button" onClick={() => { setFolderId(''); setQuery(''); }}>필터 해제</button></div>}
+        {(folderId || query) && <div className={styles.filterContext} aria-label="할 일 조회 범위"><p>{folderId ? `${folderOptions.find(item => item.id === folderId)?.title ?? '선택한 폴더'} · 하위 포함` : '모든 폴더'}{query && <span>검색: {query}</span>}</p><button type="button" onClick={() => { void changeFolder(''); setQuery(''); }}>필터 해제</button></div>}
         {range.from && range.to !== range.from && <p className={styles.muted}>{range.from} ~ {range.to}</p>}
         <form className={styles.quick} onSubmit={quickTask}><label>빠른 할 일<input name="title" required placeholder="할 일을 적으세요" maxLength={500} /></label><label>실행 날짜<input key={period + date} type="date" name="date" defaultValue={period === 'undated' ? '' : date} /></label><button>추가</button></form>
         {moving && <p role="status">옮길 행의 앞을 선택하세요. <button onClick={() => setMoving(null)}>취소</button></p>}

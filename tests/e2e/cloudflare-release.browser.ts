@@ -6,7 +6,7 @@ import { textWorkspaceModel as M } from '../../lib/flow/integrated-poc/text-work
 const editor = (page: Page) => page.getByRole('region', { name: '개인 문서 편집', exact: true });
 // The editor also has a separate empty live region for line-move announcements.
 const editorStatus = (page: Page) => editor(page).locator(':scope > div')
-  .filter({ has: page.getByRole('button', { name: '날짜순 정렬', exact: true }) }).getByRole('status');
+  .filter({ has: page.locator('[aria-label="문서 표시 방식"]') }).getByRole('status');
 const sync = (page: Page) => page.getByRole('region', { name: '서버 저장 상태', exact: true }).getByRole('status');
 async function clickTarget(target: Locator) {
   await expect(target).toBeVisible();

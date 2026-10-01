@@ -11,3 +11,4 @@
 @media(min-width:761px){.sidebar{position:sticky;top:12px;align-self:start;box-sizing:border-box;max-height:calc(100dvh - 24px);overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;padding:8px 20px 8px 8px}}
 @media(max-width:760px){.libraryToggle{display:block;width:100%;text-align:left}.sidebar[data-open=false]{display:none}.space{gap:12px}.space input,.space select{font-size:16px}.documents{max-height:240px}.periods{margin-bottom:12px}.docHeading{margin-bottom:8px}}
 @media(prefers-reduced-motion:reduce){.space *{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+@media(min-width:761px) and (max-height:500px){.periods{margin-bottom:4px;padding-bottom:0}.docHeading,.periodHeading{margin-bottom:4px}.space{gap:20px}}

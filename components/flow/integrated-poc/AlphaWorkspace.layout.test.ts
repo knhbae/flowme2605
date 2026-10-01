@@ -36,3 +36,31 @@ test('alpha shell does not override the appearance of reused workspace primary b
   });
   assert.deepEqual(violations, []);
 });
+
+test('closed mobile management shares a row while expanded management keeps full width', () => {
+  const closed: string[] = [], open: string[] = [], forced: string[] = [];
+  css.walkRules(rule => {
+    if (rule.selector === '.management:not([open])') rule.walkDecls('flex', d => { closed.push(d.value); });
+    if (rule.selector === '.management[open]') rule.walkDecls('flex', d => { open.push(d.value); });
+    if (rule.selector === '.management') rule.walkDecls('flex-basis', d => { forced.push(d.value); });
+  });
+  assert.deepEqual(closed, ['1 1 auto']);
+  assert.deepEqual(open, ['1 0 100%']);
+  assert.deepEqual(forced, []);
+});
+
+test('short wide shell keeps warning visible in normal grid flow without shrinking action targets', () => {
+  const short = css.nodes.find(node => node.type === 'atrule' && node.name === 'media' && node.params === '(min-width: 761px) and (max-height: 500px)') as postcss.AtRule;
+  assert.ok(short);
+  const declarations = new Map<string, string[]>();
+  short.walkRules(rule => rule.walkDecls(d => {
+    const key = `${rule.selector}:${d.prop}`;
+    declarations.set(key, [...(declarations.get(key) ?? []), d.value]);
+    if (rule.selector === '.notice' && d.prop === 'display') assert.notEqual(d.value, 'none');
+    assert.notEqual(d.prop, 'position');
+  }));
+  assert.deepEqual(declarations.get('.page:display'), ['grid']);
+  assert.deepEqual(declarations.get('.page > :not(.header):not(.notice):grid-column'), ['1 / -1']);
+  assert.deepEqual(declarations.get('.notice summary:min-height'), ['48px']);
+  assert.equal(declarations.has('.page button:min-height'), false);
+});

@@ -33,6 +33,37 @@ function actualVariable(name: string, context: Record<string, unknown>) {
   return evaluate(node.initializer!.getText(ast), context);
 }
 const styles = new Proxy({}, { get: (_, key) => String(key) });
+
+test('actual local continuation checks held host authority before consuming a fragment or changing folder scope', () => {
+  const attribute = find(node => ts.isJsxAttribute(node) && node.name.getText(ast) === 'onContinueWholeDocument') as ts.JsxAttribute;
+  const callback = (attribute.initializer as ts.JsxExpression).expression!.getText(ast);
+  let allowed = false, stages = 0, folders = 0;
+  const stage = () => { stages++; return true; };
+  const invoke = evaluate(callback, { props: { canContinueWholeDocument: () => allowed }, inputLockCount: { current: 0 },
+    selected: 'doc', id: 'doc', period: 'documents', dirty: { current: {} }, recurrencePorts: { current: {} },
+    setMessage() {}, setFolderId() { folders++; } });
+  assert.equal(invoke(stage), false); assert.equal(stages, 0); assert.equal(folders, 0);
+  allowed = true; assert.equal(invoke(stage), true); assert.equal(stages, 1); assert.equal(folders, 1);
+});
+
+test('actual authenticated host exposes live external, disposed, conflict and pending authority to local continuation', () => {
+  const hostSource = readFileSync(new URL('./AlphaWorkspace.tsx', import.meta.url), 'utf8');
+  const host = ts.createSourceFile('AlphaWorkspace.tsx', hostSource, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+  let attribute: ts.JsxAttribute | undefined;
+  const visit = (node: ts.Node) => { if (ts.isJsxAttribute(node) && node.name.getText(host) === 'canContinueWholeDocument') attribute = node; ts.forEachChild(node, visit); };
+  visit(host); assert(attribute);
+  const expression = (attribute.initializer as ts.JsxExpression).expression!.getText(host);
+  const externalRef = { current: false }, disposed = { current: false };
+  let authority: any = { status: 'ready', pending: false, busy: false };
+  const check = evaluate(expression, { externalRef, disposed, controller: { current: { snapshot: () => authority } } });
+  assert.equal(check(), true);
+  externalRef.current = true; assert.equal(check(), false); externalRef.current = false;
+  disposed.current = true; assert.equal(check(), false); disposed.current = false;
+  for (const blocked of [null, { status: 'conflict' }, { status: 'ready', pending: true }, { status: 'ready', busy: true }]) {
+    authority = blocked; assert.equal(check(), false);
+  }
+  authority = { status: 'ready', pending: false, busy: false }; assert.equal(check(), true);
+});
 function fixture() {
   const data = createProgramData(), space = data.spaces[data.activeActorId];
   space.text.folders.push({ id: 'parent', title: '생활', parentId: null }, { id: 'child', title: '준비', parentId: 'parent' });
@@ -106,7 +137,7 @@ test('actual filter context shows the nested folder and query; reset only change
   const expression = find(node => ts.isJsxExpression(node) && node.expression?.getText(ast).startsWith('(folderId || query) &&') === true) as ts.JsxExpression;
   const values = { folderId: 'child', query: '짐', period: 'week', date: '2026-09-30' };
   const context = { ...values, styles, folderOptions: [{ id: 'child', title: '생활 / 준비' }],
-    setFolderId: (value: string) => { values.folderId = value; }, setQuery: (value: string) => { values.query = value; } };
+    changeFolder: async (value: string) => { values.folderId = value; }, setQuery: (value: string) => { values.query = value; } };
   const element = evaluate(expression.expression!.getText(ast), context);
   const html = renderToStaticMarkup(element); assert.match(html, /생활 \/ 준비 · 하위 포함/); assert.match(html, /검색: 짐/);
   const button = element.props.children[1]; button.props.onClick();

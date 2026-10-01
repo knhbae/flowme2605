@@ -1,5 +1,25 @@
 # FLOW Spec Layer
 
+## 세 작성 UX 후보의 개발계 반영 (2026-10-01)
+
+[승인 범위](./2026-10-01-alpha-writing-ux-dev-release/spec.md), [단계 계획](./2026-10-01-alpha-writing-ux-dev-release/plan.md), [작업](./2026-10-01-alpha-writing-ux-dev-release/tasks.md), [QA/반영 원장](./2026-10-01-alpha-writing-ux-dev-release/qa.md). 여정·폴더·입력 후보의 소유 통합과 게시/CI·기존 Cloudflare 앱 선별 교체이며 main 병합·DB/Auth/Tunnel·새5D·Production 배포는 제외한다. 실제 반영 완료는 QA의 후속 기록을 따른다.
+
+## 부분·전체 작성 입력 일관성 (2026-10-01)
+
+[승인 범위](./2026-10-01-alpha-writing-interactions/spec.md), [단계 계획](./2026-10-01-alpha-writing-interactions/plan.md), [요구별 결과](./2026-10-01-alpha-writing-interactions/results.md), [작업](./2026-10-01-alpha-writing-interactions/tasks.md), [QA](./2026-10-01-alpha-writing-interactions/qa.md), [조작 HTML](../content-audit/2026-10-01-flowme-writing-interactions-lab-ko.html), [검토 보고서](../content-audit/2026-10-01-flowme-writing-interactions-review-ko.html). 같은 native 입력·메모/형제 Enter·즉시 Tab 역연산·안전한 local 전체 인계의 격리 후보를 완료했다. 최종 전체 통합2,735/2,735·npm2,258/2,258·앱75/HTML40/기존25를 확인했으며 개발계·실기기·사용자 관찰·게시/배포와는 별개다.
+
+## 방향·완료/잔여 점검과 다음 UX 목표 제안 (2026-10-01)
+
+[방향·완료 근거·잔여/우선순위·다음 목표](./2026-10-01-direction-and-next-goal/spec.md), [이번 점검 QA](./2026-10-01-direction-and-next-goal/qa.md), [짧은 HTML](../content-audit/2026-10-01-flowme-direction-workboard-ko.html). 조사·정리 목표이며 다음 제품 구현은 아직 시작하지 않았다. 앞으로 목표 전 점검 순서를 결정/세션 시작 절차에 기록했다. 3축과 세 결과물, 후보/개발계·5D/원래6~9/운영 후속을 함께 보존한다.
+
+## 문서·폴더·기간 보기의 일관된 작성 UX (2026-10-01)
+
+[목표·경계](./2026-10-01-alpha-folder-writing-ux/spec.md), [단계별 계획](./2026-10-01-alpha-folder-writing-ux/plan.md), [피드백1~21 처리 범위](./2026-10-01-alpha-folder-writing-ux/feedback-map.md), [계약](./2026-10-01-alpha-folder-writing-ux/contracts.md), [요구별 적용/후속](./2026-10-01-alpha-folder-writing-ux/results.md), [작업](./2026-10-01-alpha-folder-writing-ux/tasks.md), [QA](./2026-10-01-alpha-folder-writing-ux/qa.md). 20·21의 비강제 폴더 제안·문서 영역 안전 편집과 낮은 가로 본문을 격리 후보에 구현·검증·보고했다. 최종 전체 통합2,676/2,676·기본2,258/2,258·앱45+5+25와 보고서5크기를 확인했다. 조작 HTML과 실제 앱의 지원 제한·합성 검증을 구분한다. 새 영구 문법·소속 정책·공개 반영 승인이 아니다.
+
+## 핵심 작성 여정 UX 탐색·비교와 1차 개선 (2026-10-01)
+
+[목표·경계](./2026-10-01-alpha-ux-journey/spec.md), [계획](./2026-10-01-alpha-ux-journey/plan.md), [요구 대조](./2026-10-01-alpha-ux-journey/requirements.md), [UX1/UX2 제안 처리](./2026-10-01-alpha-ux-journey/ux-source-adoption.md), [작업](./2026-10-01-alpha-ux-journey/tasks.md), [검증](./2026-10-01-alpha-ux-journey/qa.md), [소유·반영 상태](./2026-10-01-alpha-ux-journey/ownership.md). 3축 전체 맵을 보존하고 개인 작성→날짜→기간→원문 복귀를 좁게 개선한 격리 후보다. 공개 주소 교체·관찰 사용자 시험은 아니다. 당시 남았던 전체 통합 최종 재실행과 짧은 가로 본문 확보는 위 폴더 작성 목표에서 후속 검증했다.
+
 ## 핵심 UX·저장 복구의 개발계 반영 (2026-10-01)
 
 [목표·경계](./2026-10-01-alpha-cloudflare-core-ux/spec.md), [계획](./2026-10-01-alpha-cloudflare-core-ux/plan.md), [작업](./2026-10-01-alpha-cloudflare-core-ux/tasks.md), [검증](./2026-10-01-alpha-cloudflare-core-ux/qa.md), [실행·복귀](./2026-10-01-alpha-cloudflare-core-ux/runbook.md). 905 기반 독립 후보의 노트북·Cloudflare 개발계 선별 반영이며 main 병합이나 새 백업 경로 활성화가 아니다.

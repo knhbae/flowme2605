@@ -77,10 +77,11 @@ function request(path: string, method: string, overrides: Record<string, string>
 
 test('Cloudflare proxy keeps exact Host, forwarded HTTPS and browser Origin gates', () => {
   assert.equal(alphaRequestOrigin(config, request('account', 'POST')), origin);
-  for (const bad of [{ Host: 'other.wikiplans.com' }, { Host: 'alpha.wikiplans.com:443' },
+  const badHeaders: Record<string, string>[] = [{ Host: 'other.wikiplans.com' }, { Host: 'alpha.wikiplans.com:443' },
     { 'X-Forwarded-Host': 'other.wikiplans.com' }, { 'X-Forwarded-Host': 'alpha.wikiplans.com,other.example' },
     { 'X-Forwarded-Proto': 'http' }, { 'X-Forwarded-Proto': 'https,http' },
-    { Origin: 'https://other.wikiplans.com' }, { Origin: `${origin}:443` }, { Origin: 'null' }])
+    { Origin: 'https://other.wikiplans.com' }, { Origin: `${origin}:443` }, { Origin: 'null' }];
+  for (const bad of badHeaders)
     assert.equal(alphaRequestOrigin(config, request('account', 'POST', bad)), null, JSON.stringify(bad));
   assert.equal(alphaRequestOrigin(config, new Request('http://127.0.0.1:3105/api/alpha/account')), null);
   assert.equal(alphaRequestOrigin(config, alphaInternalMediaRequest(origin, 'synthetic photo', 'Bearer fixture', true)), origin);
