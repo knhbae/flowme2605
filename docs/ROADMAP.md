@@ -1,5 +1,9 @@
 # Roadmap
 
+## 2026-10-01 direction/UX checkpoint — private candidate review
+
+The current direction and proposed next slice are in [the direction/next-goal checkpoint](./specs/2026-10-01-direction-and-next-goal/spec.md) and [current STATUS](./STATUS.md). Prioritize scoped authoring interaction contracts and UX comparison; preserve the original5D/F6~F10 and runtime follow-ups with their resumption conditions. This is planning, not a newly implemented/released product gate. The dated sequences below remain history; do not treat their earlier “next” steps as current.
+
 <!-- alpha-transition-20260920:start -->
 ## 격리 PoC 이후의 현재 경로 (2026-09-20)
 

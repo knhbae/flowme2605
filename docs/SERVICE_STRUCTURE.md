@@ -1,6 +1,6 @@
 # FLOW Service Structure
 
-Last updated: 2026-09-26
+Last updated: 2026-10-01
 Status: Living PR #194 Production baseline plus the authorized, unmerged PR #195 delta; observed users remain `0`.
 
 This document is the canonical map of the current app surface, screen feature tree, and service architecture. It is not validation evidence by itself. Use it to keep product PoCs, research surfaces, creator tools, public routes, My Flow execution, and shared domain modules from drifting apart.
@@ -20,7 +20,19 @@ completed FPC-11, but the reconciled exact head must still pass CI before merge
 and its resulting Production deployment must be verified afterward. Until then,
 the delta is not current Production behavior; observed users remain `0`.
 
+## Isolated writing-interaction candidate — 2026-10-01
+
+The [writing-interaction follow-up](./specs/2026-10-01-alpha-writing-interactions/spec.md) shares the existing native textarea/mirror engine between whole documents and editable folder regions. Pure transient plans preserve memo-property continuation, sibling insertion after an Item subtree, and an immediate indent inverse. The region planner still reconstructs and validates the full model before automated keys execute; ordinary notes do not acquire Item authority. A fragment can continue in the retained whole local draft only after source capability and host authority checks plus exact native destination installation. External/pending/conflicted authenticated authority cannot bypass its host through a no-write view transition. Caret restoration uses an explicit one-use continuation lease so it cannot overwrite period-to-source Item focus. No API, Auth, storage schema, database, server writer, deployment or active development bundle changes are implied.
+
+## Isolated folder-writing UX candidate — 2026-10-01
+
+The [folder-writing candidate](./specs/2026-10-01-alpha-folder-writing-ux/spec.md) adds non-forcing exact-name suggestions and document folder-region editing to the existing `ProgramSpace`/`ProgramTextEditor` path. `folder-document-regions` captures an in-memory workspace capability, reconstructs the full raw document through the existing text model and rejects changed hidden lines, identity, ownership, date/progress tokens or other documents. `ProgramFolderRegionEditor` retains unsaved/composition input and delegates accepted saves to the existing whole-editor expected-workspace contract. Partial structure/date/progress/deletion and cross-document reference synchronization remain unsupported; the whole-document path is explicit. No new storage schema, parser, API route or server writer is introduced.
+
+Document storage folder, actual Item/parent-Flow ownership and viewing scope remain separate. Period/folder changes and new-document creation await the existing input/save barrier. Creation advances its expected authority only through its own successful receipt chain, retaining the storage folder while clearing viewing scope to expose the new native editor. Short-wide CSS keeps warning and error controls visible in normal flow. This is an isolated local candidate, not behavior deployed to the current public development address; actual checks, limits and failed-run history belong to its QA ledger.
+
 ## Isolated alpha Render trial preparation — 2026-09-26
+
+The [10/1 selective development deployment](./specs/2026-10-01-alpha-cloudflare-core-ux/spec.md) additionally recognizes explicit `cloudflare-laptop-v1` only at exact `https://alpha.wikiplans.com`, preview stage, the existing DEV project and on-demand capacity. The existing request-origin checks remain unchanged. The new off-only launcher references existing settings/catalog read-only and does not forward ambient app flags, proxy settings or `NODE_OPTIONS`. `/api/alpha/backup-jobs` is a permanently unavailable 503 stub; there are no job, worker, lease or migration implementations in this candidate. Legacy preservation retains bounded/cancellable backup handling. Actual deployment and checks are recorded in the linked QA, not inferred from this architecture entry.
 
 The [M7-2 Render correction](./specs/2026-09-12-flowme-integrated-product-poc-program/alpha-m7-2-personal-trial.md#926-승인-후--render-저장-계약-수정과-재배포) keeps the local `/alpha` and `/auth/callback` paths while allowing one configured `https://<service>.onrender.com` origin only with `FLOWME_ALPHA_HOSTING=render-trial-v1`, `preview` stage, the existing development Supabase project, and explicit `FLOWME_ALPHA_M3_CAPACITY=on-demand-v1`. This mode uses the already deployed signed writer and request-time backup, not the unapplied checkpoint experiment; missing, invalid, or checkpoint values fail closed for the hosted trial. The [proxy follow-up](./specs/2026-09-12-flowme-integrated-product-poc-program/alpha-m7-2-personal-trial.md#926-후속--render-https-전달-경계-재현과-발행-범위) requires the exact configured external Host, HTTPS forwarded protocol, matching forwarded host when present, and matching browser Origin when present. All alpha BFF endpoints reuse that check before upstream work; server-internal media reads carry the same fixed public origin. `GET /api/alpha/health` checks configuration and signing-key shape only, not DB availability or successful writes. The free DEV trial service and its exact Auth callback exist; deployment/check results belong to the linked ledger. Production `/my` and its storage remain separate.
 

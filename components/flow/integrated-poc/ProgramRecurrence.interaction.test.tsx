@@ -188,7 +188,18 @@ function spaceActionHarness(data: ProgramSpaceProps['data'], port: ProgramEditor
   const view = render(); if (port) view.child('ProgramRecurrence').props.onRegisterEditors(port);
   const editor = view.child('ProgramTextEditor').props; editor.onDirtyChange(true); editor.onRegisterSave(async () => { saves++; editor.onDirtyChange(false); return true; });
   return { render, get data() { return currentData; }, setData(next: typeof data) { currentData = next; }, get counts() { return { saves, writes, publishes, revisions }; },
-    openTask(title: string) { render().button('오늘').props.onClick(); const view = render(); view.nodes.find(node => node.props['aria-label'] === `${title} 작업`).props.onClick({ detail: 0 }); return render().child('ProgramTaskDocumentMove').props; } };
+    async openTask(title: string) {
+      // Open the period before marking the text draft that the move must flush.
+      // Period navigation now awaits its own save barrier.
+      editor.onDirtyChange(false); const before = { saves, writes };
+      render().button('오늘').props.onClick();
+      for (let i = 0; i < 12 && render().button('오늘').props['aria-current'] !== 'page'; i++) await Promise.resolve();
+      const view = render(); assert.equal(view.button('오늘').props['aria-current'], 'page');
+      assert.deepEqual({ saves, writes }, before, 'clean period navigation performs no save or mutation');
+      const task = view.nodes.find(node => node.props['aria-label'] === `${title} 작업`); assert(task, 'period exposes the requested task');
+      task.props.onClick({ detail: 0 }); editor.onDirtyChange(true);
+      const move = render().child('ProgramTaskDocumentMove'); assert(move, 'task action opens the move component'); return move.props;
+    } };
 }
 test('Space archive/trash/publish/revision handlers refuse a real unapplied occurrence port before text save or action', async () => {
   const occurrence = harness(); let detail = occurrence.open(); detail.input().props.onChange({ target: { value: '2026-09-13' } }); occurrence.render();
@@ -210,7 +221,7 @@ function moveFixture() {
   return { data, actorId, task, from: a.result, to: b.result };
 }
 test('one Space move rebases only its successful text flush and retains IDs, memo and records', async () => {
-  const f = moveFixture(), h = spaceActionHarness(f.data, null, true), move = h.openTask('옮길 일'), expected = h.data.spaces[f.actorId];
+  const f = moveFixture(), h = spaceActionHarness(f.data, null, true), move = await h.openTask('옮길 일'), expected = h.data.spaces[f.actorId];
   const editor = h.render().child('ProgramTextEditor').props, locks: boolean[] = []; editor.onRegisterInputLock((locked: boolean) => locks.push(locked));
   const edited = M.editText(expected.text, f.from, M.raw(M.getDocument(expected.text, f.from)).replace('원래 메모', '미저장 수정 메모'));
   editor.onRegisterSave(async () => { const saved = await editor.onCommit(edited, '본문 flush', { expectedWorkspace: expected.text }); if (saved) editor.onDirtyChange(false); return saved; });
@@ -220,7 +231,7 @@ test('one Space move rebases only its successful text flush and retains IDs, mem
 });
 test('foreign space or actor during flush is not adopted as move authority; failures and duplicate calls release locks', async () => {
   for (const mode of ['foreign', 'actor', 'failed', 'duplicate'] as const) {
-    const f = moveFixture(), h = spaceActionHarness(f.data, null, true), move = h.openTask('옮길 일'), expected = h.data.spaces[f.actorId], editor = h.render().child('ProgramTextEditor').props, locks: boolean[] = [];
+    const f = moveFixture(), h = spaceActionHarness(f.data, null, true), move = await h.openTask('옮길 일'), expected = h.data.spaces[f.actorId], editor = h.render().child('ProgramTextEditor').props, locks: boolean[] = [];
     editor.onRegisterInputLock((locked: boolean) => locks.push(locked));
     const edited = M.editText(expected.text, f.from, M.raw(M.getDocument(expected.text, f.from)).replace('원래 메모', '미저장 수정 메모'));
     let resume: (() => void) | null = null;

@@ -500,6 +500,10 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
       {['activity', 'creator'].includes(destination.view) && <nav className={styles.tabs} aria-label="내 활동 종류"><button aria-current={destination.view === 'activity' ? 'page' : undefined} onClick={() => void navigate({ view: 'activity' })}>활동·공개 관리</button><button aria-current={destination.view === 'creator' ? 'page' : undefined} onClick={() => void navigate({ view: 'creator', id: creatorSelection })}>Flow 만들기</button></nav>}
       <div hidden={destination.view !== 'space'}><ProgramSpace key={`space:${session.userId}:${presentation}`} data={data} today={programLocalDate()} mutate={mutate}
         navigate={next => { void navigate(next); }} capabilities={capability}
+        canContinueWholeDocument={() => {
+          const authority = controller.current?.snapshot();
+          return !disposed.current && !externalRef.current && !!authority && !authority.pending && !authority.busy && authority.status !== 'conflict';
+        }}
         selectedDocumentId={destination.view === 'space' ? destination.id : undefined} onUndo={() => history('undo')} onRedo={() => history('redo')}
         onOutputDocument={setOutput} onPublishDocument={setPublisher} onInspectCopy={setInspector} onRegisterEditors={port => { editors.current = port; }} /></div>
       {seen.discovery && <div hidden={!['discover', 'flow'].includes(destination.view)}><ProgramDiscovery key={`discover:${session.userId}:${presentation}`} data={data} mutate={mutate} navigate={next => { void navigate(next); }} today={programLocalDate()}

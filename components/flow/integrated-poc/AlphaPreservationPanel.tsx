@@ -2,6 +2,7 @@
 import { decodeBackupFile } from '@/lib/flow/integrated-poc/alpha-preservation/file-codec';
 import { BACKUP_DOWNLOAD_FORMAT, readBackupDownload } from '@/lib/flow/integrated-poc/alpha-preservation/backup-download';
 import { preparePreservationWireRequest } from '@/lib/flow/integrated-poc/alpha-preservation/transport';
+import { createBackupRequestBudget, LEGACY_BACKUP_REQUEST, readBackupResponse } from '@/lib/flow/integrated-poc/alpha-preservation/backup-request';
 import React, { useEffect, useRef, useState } from 'react';
 import type { AlphaAccount, AlphaReferenceContext } from '@/lib/flow/integrated-poc/alpha-persistence/contract';
 import { detached, canonicalJson, parseAlphaJson } from '@/lib/flow/integrated-poc/alpha-persistence/json';
@@ -15,6 +16,10 @@ import styles from './AlphaPreservationPanel.module.css';
 import { browserPreservationPendingStore, type PreservationPending } from '@/lib/flow/integrated-poc/alpha-preservation/pending-store';
 
 const messages: Record<string, string> = {
+  'backup-timeout': '백업 대기 시간이 지났습니다. 새 파일은 만들지 않았습니다. 잠시 후 다시 시도해 주세요.',
+  'backup-cancelled': '백업 요청을 취소했습니다. 새 파일은 만들지 않았습니다.',
+  'backup-response-limit': '백업 응답의 크기 제한을 넘었습니다. 새 파일은 만들지 않았습니다.',
+  'backup-response-invalid': '백업 응답이 끊겼거나 올바르지 않습니다. 새 파일은 만들지 않았습니다.',
   'preservation-request-limit': '복원 요청이 30MB 한도를 넘어 전송하지 않았습니다. 원본 파일을 보관해 주세요.',
   'invalid-backup-file': '백업 파일을 확인하지 못해 전송하지 않았습니다. 원본 파일을 보관해 주세요.',
   'backup-codec-unavailable': '이 브라우저는 압축 백업을 지원하지 않습니다. 최신 Chrome·Edge·Safari·Firefox에서 다시 시도해 주세요.',
@@ -46,6 +51,8 @@ export function AlphaPreservationPanel({ account, references, email, accessToken
   account: AlphaAccount; references: AlphaReferenceContext; email: string; accessToken: string; onClose: () => void; onSaved: () => Promise<void>;
 }) {
   const dialog = useRef<HTMLDialogElement>(null), alive = useRef(true), selectionGeneration = useRef(0);
+  const activeBackup = useRef<ReturnType<typeof createBackupRequestBudget> | null>(null);
+  const [backupActive, setBackupActive] = useState(false);
   const [busy, setBusy] = useState(false), [status, setStatus] = useState(''), [raw, setRaw] = useState('');
   const [actors, setActors] = useState<{ id: string; name: string }[]>([]), [actorId, setActorId] = useState('');
   const [selection, setSelection] = useState<Selection | null>(null), [preview, setPreview] = useState<PreservationPreview | null>(null);
@@ -66,28 +73,41 @@ export function AlphaPreservationPanel({ account, references, email, accessToken
     alive.current = true; const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null, element = dialog.current;
     element?.showModal();
     void loadPending();
-    return () => { alive.current = false; element?.close(); restoreProgramDialogFocus(opener); };
+    return () => { alive.current = false; activeBackup.current?.cancel(); element?.close(); restoreProgramDialogFocus(opener); };
   }, []);
   useEffect(() => () => { if (download) URL.revokeObjectURL(download.url); }, [download]);
-  async function request(payload: unknown) {
+  async function request(payload: unknown, signal?: AbortSignal) {
     const wire = await preparePreservationWireRequest({ ...payload as object, client: PRESERVATION_PROTOCOL.client });
     if (!alive.current) throw Error('disposed');
     const response = await fetch('/api/alpha/preservation', { method: 'POST', headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify(wire), cache: 'no-store' });
-    const value = await response.json();
+      body: JSON.stringify(wire), cache: 'no-store', ...(signal ? { signal } : {}) });
+    if (signal && !response.ok) throw Error(response.status === 401 || response.status === 403 ? 'unauthenticated' : 'unavailable');
+    const value = signal ? await readBackupResponse(response, signal) as { ok: boolean; reason?: string; value: unknown } : await response.json();
     if (!alive.current) throw Error('disposed');
     if (!value.ok) throw Error(value.reason || 'unavailable');
     return value.value;
   }
   async function backup() {
+    // React's disabled state arrives after this handler: lock before the first await.
+    if (activeBackup.current || busy || !recoveryReady || pending || !alive.current) return;
+    const operation = createBackupRequestBudget(LEGACY_BACKUP_REQUEST.clientMs); activeBackup.current = operation;
+    setBackupActive(true); setDownload(null);
     setBusy(true); setStatus('사진과 저장 기록을 포함해 백업을 만들고 있습니다.');
-    try { const value = await request({ kind: 'backup', format: BACKUP_DOWNLOAD_FORMAT });
-      const { file, createdAt } = await readBackupDownload(value, account.ownerId);
+    const slow = setTimeout(() => { if (alive.current && activeBackup.current === operation && !operation.signal.aborted)
+      setStatus('백업을 계속 만들고 있습니다. 자료가 많으면 시간이 걸릴 수 있습니다. 기다리거나 백업 요청을 취소할 수 있습니다.'); }, LEGACY_BACKUP_REQUEST.slowMs);
+    try { const { file, createdAt } = await operation.run(async () => {
+      const value = await request({ kind: 'backup', format: BACKUP_DOWNLOAD_FORMAT }, operation.signal);
+      operation.check();
+      return readBackupDownload(value, account.ownerId);
+    });
       if (!alive.current) return;
       const url = URL.createObjectURL(new Blob([file], { type: 'application/json' }));
       setDownload({ url, name: `flowme-account-${createdAt.slice(0, 10)}.json` }); setStatus('백업 파일이 준비됐습니다. 아래에서 내려받아 보관해 주세요.');
-    } catch (error) { if (alive.current) setStatus(messages[(error as Error).message] ?? '백업을 만들지 못했습니다. 완전한 파일은 생성되지 않았습니다.'); }
-    finally { if (alive.current) setBusy(false); }
+    } catch (error) { if (alive.current) setStatus((error as Error).message === 'unavailable'
+      ? '백업 응답을 확인하지 못했습니다. 새 파일은 만들지 않았습니다. 다시 시도해 주세요.'
+      : messages[(error as Error).message] ?? '백업을 만들지 못했습니다. 완전한 파일은 생성되지 않았습니다.'); }
+    finally { clearTimeout(slow); operation.dispose(); if (activeBackup.current === operation) activeBackup.current = null;
+      if (alive.current) { setBusy(false); setBackupActive(false); } }
   }
   async function selectRaw(sourceRaw: string, generation = ++selectionGeneration.current) {
     if (!alive.current || generation !== selectionGeneration.current) return;
@@ -196,6 +216,7 @@ export function AlphaPreservationPanel({ account, references, email, accessToken
     <p className={styles.owner}>적용할 계정: {email}</p>
     <section><h3>내 계정 백업</h3><p>현재 개인 자료·원문·기록과 연결된 사진을 파일로 보관합니다. 공개 자료를 되돌리는 서비스 전체 복원은 아닙니다.</p>
       <button type="button" disabled={busy || !recoveryReady || !!pending} onClick={() => void backup()}>사진 포함 백업 만들기</button>
+      {backupActive && <button type="button" onClick={() => activeBackup.current?.cancel()}>백업 요청 취소</button>}
       {download && <a href={download.url} download={download.name}>백업 파일 내려받기</a>}
       <small>암호화되지 않은 개인 자료입니다. 안전한 곳에 보관하세요. 이미 삭제된 과거 첨부는 복원 대상이 아닙니다.</small></section>
     <section><h3>자료 선택</h3><p>기존 통합 PoC 자료를 가져오거나 이 계정의 백업으로 복원합니다. 원본 파일·브라우저 저장값은 수정하지 않습니다.</p>

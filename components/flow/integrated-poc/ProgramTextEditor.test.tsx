@@ -14,6 +14,9 @@ import { applyProgramLinePermutation, createProgramPermutationHistory } from '..
 import type { createProgramTextDraft as DraftFactory, ProgramTextEditor as Component, ProgramReferencePanel as ReferencePanel, programTextProtectionMessage as ProtectionMessage, ProgramTextDraftState } from './ProgramTextEditor';
 import { createProgramData } from '../../../lib/flow/integrated-poc/program-data';
 import { programPreservesLockedDocumentContent, programReferenceExecutionAccess } from '../../../lib/flow/integrated-poc/reference-execution-guard';
+import { readProgramFolderRegions, planProgramRegionEdit } from '../../../lib/flow/integrated-poc/folder-document-regions';
+import type { ProgramFolderRegionSnapshot } from './ProgramFolderRegionEditor';
+import type { stageProgramRegionInput as StageRegionInput } from './ProgramTextEditor';
 
 const componentUrl = new URL('./ProgramTextEditor.tsx', import.meta.url);
 const source = readFileSync(componentUrl, 'utf8');
@@ -22,27 +25,124 @@ const root = resolve(dirname(fileURLToPath(componentUrl)), '../../..');
 const compiled = ts.transpileModule(source, { compilerOptions: {
   target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true,
 } });
-const loaded = { exports: {} as { createProgramTextDraft: typeof DraftFactory; ProgramTextEditor: typeof Component; ProgramReferencePanel: typeof ReferencePanel; programTextProtectionMessage: typeof ProtectionMessage } };
+const loaded = { exports: {} as { createProgramTextDraft: typeof DraftFactory; ProgramTextEditor: typeof Component; ProgramReferencePanel: typeof ReferencePanel; programTextProtectionMessage: typeof ProtectionMessage; stageProgramRegionInput: typeof StageRegionInput } };
 vm.runInThisContext(`(function(module, exports, require) { ${compiled.outputText}\n})`, { filename: 'ProgramTextEditor.compiled.cjs' })(loaded, loaded.exports, (id: string) => {
   if (id.endsWith('.css')) return id.endsWith('.module.css') ? { __esModule: true, default: new Proxy({}, { get: (_target, key) => String(key) }) } : {};
   return require(id.startsWith('@/') ? resolve(root, id.slice(2)) : id);
 });
 const { createProgramTextDraft, ProgramTextEditor, ProgramReferencePanel } = loaded.exports;
 
+function regionHandoffFixture() {
+  let workspace = M.addDocument(createEmptyTextWorkspace(), { title: '전체 인계' });
+  workspace = { ...workspace, folders: [...workspace.folders, { id: 'work', title: '업무', parentId: null }] };
+  const docId = workspace.documents[0].id;
+  workspace = M.editText(workspace, docId, '숨은 앞  \n- 업무\n숨은 뒤  ');
+  workspace = M.attachScope(workspace, docId, 1, 'work');
+  const scoped = M.raw(M.getDocument(workspace, docId)).split('\n');
+  scoped.splice(2, 0, '  - [ ] 작성', '    - 메모: 설명');
+  workspace = M.editText(workspace, docId, scoped.join('\n'));
+  const view = readProgramFolderRegions(workspace, docId, 'work')!, region = view.regions[0];
+  function capture(regionRaw: string): ProgramFolderRegionSnapshot {
+    const lines = view.fullRaw.split('\n');
+    lines.splice(region.startIndex, region.endIndex - region.startIndex, ...regionRaw.split('\n'));
+    const raw = lines.join('\n'), start = raw.indexOf(regionRaw);
+    return { view, raw, regionRaw, regionKey: region.key, start, end: start, lineId: region.lineIds[0] };
+  }
+  return { workspace, docId, view, region, capture };
+}
+
+test('partial-to-whole local handoff stages rejected structure at the exact raw without a writer', () => {
+  const f = regionHandoffFixture(), before = JSON.stringify(f.workspace); let writes = 0;
+  const controller = createProgramTextDraft(f.workspace, f.docId, async () => { writes++; return true; }, () => {});
+  const capture = f.capture(f.region.raw.replace('  - [ ] 작성', '    - [ ] 작성'));
+  assert.equal(planProgramRegionEdit(f.workspace, f.view, f.region.key, capture.regionRaw!).ok, false);
+  assert.equal(loaded.exports.stageProgramRegionInput(controller, f.docId, capture), true);
+  assert.equal(controller.getState().raw, capture.raw); assert(controller.getState().dirty);
+  assert.equal(writes, 0); assert.equal(JSON.stringify(f.workspace), before);
+  assert.match(controller.getState().raw, /^숨은 앞  \n/); assert.match(controller.getState().raw, /\n숨은 뒤  $/);
+});
+
+test('whole handoff preserves invalid raw while normal whole save guard still refuses it', async () => {
+  const f = regionHandoffFixture(); let writes = 0;
+  const controller = createProgramTextDraft(f.workspace, f.docId, async () => { writes++; return true; }, () => {}, () => false);
+  const capture = f.capture(f.region.raw + '\n  - 개인 입력');
+  assert(loaded.exports.stageProgramRegionInput(controller, f.docId, capture));
+  assert.equal(controller.getState().raw, capture.raw); assert(controller.getState().invalid);
+  assert.equal(await controller.save(), false); assert.equal(writes, 0);
+});
+
+test('whole handoff cannot consume a stale or fabricated region capability', () => {
+  const f = regionHandoffFixture(), capture = f.capture(f.region.raw + '\n  - 입력');
+  const newer = M.editText(f.workspace, f.docId, f.view.fullRaw + '\n외부 변경');
+  for (const [workspace, candidate] of [[newer, capture], [f.workspace, { ...capture, view: structuredClone(f.view) }]] as const) {
+    const controller = createProgramTextDraft(workspace, f.docId, async () => { throw Error('writer must not run'); }, () => {});
+    const before = controller.getState();
+    assert.equal(loaded.exports.stageProgramRegionInput(controller, f.docId, candidate), false);
+    assert.equal(controller.getState(), before);
+  }
+});
+
+test('whole handoff refuses composition, input lock, read-only, another document and hidden text injection', () => {
+  const f = regionHandoffFixture(), capture = f.capture(f.region.raw + '\n  - 입력');
+  for (const guard of [{ composing: true }, { locked: true }, { readOnly: true }]) {
+    const controller = createProgramTextDraft(f.workspace, f.docId, async () => { throw Error('writer must not run'); }, () => {});
+    assert.equal(loaded.exports.stageProgramRegionInput(controller, f.docId, capture, guard), false);
+    assert.equal(controller.getState().raw, f.view.fullRaw);
+  }
+  for (const candidate of [{ ...capture, raw: capture.raw.replace('숨은 앞', '감춘 변경') }, { ...capture, end: capture.raw.length + 1 }, { ...capture, regionKey: 'fabricated' }]) {
+    const controller = createProgramTextDraft(f.workspace, f.docId, async () => { throw Error('writer must not run'); }, () => {});
+    assert.equal(loaded.exports.stageProgramRegionInput(controller, f.docId, candidate), false);
+  }
+  const controller = createProgramTextDraft(f.workspace, f.docId, async () => true, () => {});
+  assert.equal(loaded.exports.stageProgramRegionInput(controller, 'other-document', capture), false);
+});
+
+test('a clean whole handoff is no-op and a saving draft cannot be replaced', async () => {
+  const f = regionHandoffFixture(); let release!: (accepted: boolean) => void, writes = 0;
+  const controller = createProgramTextDraft(f.workspace, f.docId, () => { writes++; return new Promise(resolve => { release = resolve; }); }, () => {});
+  assert(loaded.exports.stageProgramRegionInput(controller, f.docId, f.capture(f.region.raw)));
+  assert.equal(controller.getState().dirty, false); assert.equal(writes, 0);
+  controller.updateRaw(f.view.fullRaw + '\n새 원문', '2026-10-01');
+  const saving = controller.save(), currentRaw = controller.getState().raw;
+  assert.equal(loaded.exports.stageProgramRegionInput(controller, f.docId, f.capture(f.region.raw + '\n  - 새 입력')), false);
+  assert.equal(controller.getState().raw, currentRaw); release(false); assert.equal(await saving, false);
+});
+
+test('refused destination installation cannot stage or consume partial input', () => {
+  const f = regionHandoffFixture(), capture = f.capture(f.region.raw + '\n  개인 입력');
+  const controller = createProgramTextDraft(f.workspace, f.docId, async () => { throw Error('writer must not run'); }, () => {});
+  const before = controller.getState(); let installations = 0;
+  assert.equal(loaded.exports.stageProgramRegionInput(controller, f.docId, capture,
+    { install: raw => { assert.equal(raw, capture.raw); installations++; return false; } }), false);
+  assert.equal(installations, 1); assert.equal(controller.getState(), before);
+  // The same capability remains current and can be retried after the destination recovers.
+  assert(loaded.exports.stageProgramRegionInput(controller, f.docId, capture, { install: () => true }));
+  assert.equal(controller.getState().raw, capture.raw);
+});
+
+test('shared folder presentation stages only after checking all other mounted editor drafts', () => {
+  const spaceSource = readFileSync(new URL('./ProgramSpace.tsx', import.meta.url), 'utf8');
+  const callback = spaceSource.slice(spaceSource.indexOf('onContinueWholeDocument={stage =>'), spaceSource.indexOf('onContinueWholeDocument={stage =>') + 1100);
+  assert.match(callback, /otherId !== id && pending/); assert.match(callback, /hasPendingInput/);
+  assert(callback.indexOf('inputLockCount.current') < callback.indexOf('if (!stage())'));
+  assert(callback.indexOf('if (!stage())') < callback.indexOf("setFolderId('')"));
+  assert.doesNotMatch(callback.slice(0, callback.indexOf("setFolderId('')") + 18), /flushAllEditors|onCommit|saveNow/);
+});
+
 // Run the component's native action and React callbacks without a browser or store.
-function referenceMenuHarness(raw?: string) {
+function referenceMenuHarness(raw?: string, region?: ReturnType<typeof regionHandoffFixture>) {
   const f = fixture(), space = createProgramData().spaces['local-user'];
-  space.text = raw === undefined ? M.addDocument(f.workspace, { title: '한 줄 참조' }) : M.editText(f.workspace, f.docId, raw);
-  const docId = raw === undefined ? space.text.documents.at(-1)!.id : f.docId, taskId = M.tasks(space.text)[0]?.id;
-  if (raw === undefined) space.text = M.linkTask(space.text, docId, 0, taskId!);
+  space.text = region?.workspace ?? (raw === undefined ? M.addDocument(f.workspace, { title: '한 줄 참조' }) : M.editText(f.workspace, f.docId, raw));
+  const docId = region?.docId ?? (raw === undefined ? space.text.documents.at(-1)!.id : f.docId), taskId = M.tasks(space.text)[0]?.id;
+  if (raw === undefined && !region) space.text = M.linkTask(space.text, docId, 0, taskId!);
   const states: any[] = [], refs: any[] = [], effects: (() => unknown)[] = [];
-  let si = 0, ri = 0, writes = 0, focus = 0, accept = true, config: any;
+  let si = 0, ri = 0, writes = 0, focus = 0, accept = true, install = true, config: any;
   let confirmedSave: ((before: TextWorkspaceState, next: TextWorkspaceState) => boolean) | null = null;
   const origins: unknown[] = [], events: Record<string, () => void> = {};
   const commits: TextWorkspaceState[] = [];
   const textarea = { value: M.raw(M.getDocument(space.text, docId)), selectionStart: 0, selectionEnd: 0, scrollTop: 0, addEventListener() {}, removeEventListener() {} };
   const host = { querySelector: () => textarea, addEventListener: (name: string, fn: () => void) => { events[name] = fn; }, removeEventListener() {} };
-  const native = { create: (_host: unknown, options: unknown) => { config = options; return { refresh() {}, focus() { focus++; }, setMoveState() {}, destroy() {}, setMode() {}, setValue(value: string) { textarea.value = value; return true; } }; } };
+  const native = { create: (_host: unknown, options: unknown) => { config = options; return { refresh() {}, focus() { focus++; }, setMoveState() {}, destroy() {}, setMode() {}, getValue() { return textarea.value; }, setValue(value: string) { if (!install) return false; textarea.value = value; return true; } }; } };
   const mockedReact = { ...React, useId: () => 'reference-test', useRef: (value: unknown) => refs[ri++] ?? (refs[ri - 1] = { current: value }),
     useState: (value: any) => { const i = si++; if (!(i in states)) states[i] = typeof value === 'function' ? value() : value; return [states[i], (next: any) => { states[i] = typeof next === 'function' ? next(states[i]) : next; }]; },
     useEffect: (effect: () => unknown) => { effects.push(effect); } };
@@ -66,8 +166,47 @@ function referenceMenuHarness(raw?: string) {
     menu: () => { config.onAction({ type: 'row-menu', lineIndex: 0 }); },
     panel: () => nodes(render()).find(n => n.type === mod.exports.ProgramReferencePanel),
     draft: () => refs[3].current as ReturnType<typeof createProgramTextDraft>,
-    writes: () => writes, focus: () => focus, reject: () => { accept = false; }, accept: () => { accept = true; } };
+    writes: () => writes, focus: () => focus, reject: () => { accept = false; }, accept: () => { accept = true; },
+    rejectInstall: () => { install = false; }, acceptInstall: () => { install = true; } };
 }
+
+test('actual component only discards a fragment and changes presentation after native destination confirmation', () => {
+  const f = regionHandoffFixture(), capture = f.capture(f.region.raw + '\n  개인 입력'), h = referenceMenuHarness(undefined, f);
+  let switched = false, discarded = 0;
+  h.props.folderId = 'work'; h.props.onContinueWholeDocument = (stage: () => boolean) => { switched = stage(); return switched; };
+  const partial = h.nodes(h.render()).find(node => node.props?.view?.folderId === 'work' && node.props.onRegister);
+  assert(partial, 'region component must expose the actual continuation callback');
+  partial.props.onRegister({ takeSnapshot: () => capture, discard: () => { discarded++; } });
+  const before = h.draft().getState(); h.rejectInstall(); partial.props.onContinueWholeDocument();
+  assert.equal(switched, false); assert.equal(discarded, 0); assert.equal(h.draft().getState(), before);
+  assert.equal(h.textarea.value, f.view.fullRaw); assert.equal(h.writes(), 0);
+  h.acceptInstall(); partial.props.onContinueWholeDocument();
+  assert.equal(switched, true); assert.equal(discarded, 1); assert.equal(h.textarea.value, capture.raw);
+  assert.equal(h.draft().getState().raw, capture.raw); assert.equal(h.writes(), 0);
+});
+
+test('ordinary folder-clear cannot overwrite an Item source-focus request; explicit handoff restores its caret once', () => {
+  const ast = ts.createSourceFile('ProgramTextEditor.tsx', source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+  let effect: ts.ArrowFunction | undefined;
+  const visit = (node: ts.Node) => {
+    if (ts.isCallExpression(node) && node.expression.getText(ast) === 'useEffect' && node.arguments[0]?.getText(ast).includes('const previous = previousFolderRef.current')) effect = node.arguments[0] as ts.ArrowFunction;
+    ts.forEachChild(node, visit);
+  }; visit(ast); assert(effect);
+  const code = ts.transpileModule(`const callback = ${effect.getText(ast)};`, { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText;
+  const previousFolderRef = { current: 'work' }, wholeContinuationRef: { current: { start: number; end: number; raw: string } | null } = { current: null };
+  const area = { value: '전체 원문', start: 6, end: 6, setSelectionRange(start: number, end: number) { this.start = start; this.end = end; } };
+  let focus = 0, remembered = 0;
+  const context = { previousFolderRef, wholeContinuationRef, props: { folderId: '' }, textArea: () => area,
+    hostRef: { current: { getClientRects: () => [1] } }, composingRef: { current: false }, editorRef: { current: { focus() { focus++; } } },
+    rememberPosition() { remembered++; } };
+  const callback = new Function(...Object.keys(context), `${code};return callback;`)(...Object.values(context));
+  callback(); assert.equal(area.start, 6); assert.equal(remembered, 0); assert.equal(focus, 0);
+  previousFolderRef.current = 'work'; wholeContinuationRef.current = { start: 3, end: 3, raw: area.value };
+  callback(); assert.equal(area.start, 3); assert.equal(remembered, 1); assert.equal(focus, 1); assert.equal(wholeContinuationRef.current, null);
+  previousFolderRef.current = 'work'; callback(); assert.equal(remembered, 1);
+  previousFolderRef.current = 'work'; wholeContinuationRef.current = { start: 1, end: 1, raw: '이전 판본' };
+  callback(); assert.equal(area.start, 3); assert.equal(remembered, 1); assert.equal(wholeContinuationRef.current, null);
+});
 
 const settleEditor = () => new Promise(resolve => setImmediate(resolve));
 test('same-request acknowledgment clears only exact submitted input without replacing textarea or selection', async () => {
@@ -449,7 +588,7 @@ test('component keeps mount lifetime on document identity and restores source po
   assert.match(source, /\}, \[props\.docId\]\);/);
   assert.match(source, /textarea\.setSelectionRange\(Math\.min\(position\.start/);
   assert.match(source, /textarea\.scrollTop = position\.scrollTop/);
-  assert.match(source, /if \(draftRef\.current\?\.synchronize\(props\.workspace\)\)/);
+  assert.match(source, /if \(!regionPendingRef\.current && draftRef\.current\?\.synchronize\(props\.workspace\)\)/);
   assert.doesNotMatch(source, /localStorage|localStorage\.clear|flowme-text-workspace-v11\.html/);
 });
 

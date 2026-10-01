@@ -7,6 +7,13 @@
 .mode { display: flex; gap: 2px; }
 .mode button { border-color: transparent; }
 .mode button[aria-pressed='true'] { background: #e5f1ea; color: #124c35; }
+.editorTools { position: relative; flex: 0 0 auto; }
+.editorTools > summary { box-sizing: border-box; display: flex; align-items: center; justify-content: center; min-width: 48px; min-height: 48px; padding: 8px; border: 1px solid #cbd8d1; border-radius: 8px; background: #fff; color: #214c3d; list-style: none; cursor: pointer; }
+.editorTools > summary::-webkit-details-marker { display: none; }
+.editorTools > summary:focus-visible { outline: 2px solid #187952; outline-offset: 2px; }
+.editorTools[open] > summary { background: #edf5f0; }
+.editorToolActions { position: absolute; z-index: 10; right: 0; top: calc(100% + 4px); display: grid; gap: 6px; box-sizing: border-box; width: 180px; max-width: calc(100vw - 32px); padding: 8px; border: 1px solid #cbd8d1; border-radius: 8px; background: #fff; box-shadow: 0 8px 24px #15342620; }
+.editorToolActions button { text-align: left; white-space: nowrap; }
 .status { margin-left: auto; padding: 6px; font-size: 12px; color: #64766d; }
 .host { flex: 1; min-height: 390px; height: min(72dvh, 760px); position: relative; }
 .host :global(.tle-root) { min-height: 390px; border-radius: 0; }
@@ -22,6 +29,7 @@
 .dialog::backdrop { background: #17372b44; }
 .dialog header { position: sticky; top: -16px; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 12px; background: #fff; padding: 0 0 8px; }
 .dialog h3 { margin: 0; font-size: 17px; font-weight: 650; }
+.dateTarget { margin: 0; font-size: 14px; font-weight: 650; overflow-wrap: anywhere; }
 .dialog form, .choices { display: grid; gap: 8px; }
 .dialog form { margin-top: 14px; }
 .dialog label { display: grid; gap: 6px; font-size: 14px; }
@@ -39,9 +47,18 @@
 @media (max-width: 600px) {
   .editor { min-height: 420px; }
   .toolbar { gap: 3px; padding: 6px; }
-  .toolbar button { padding-inline: 9px; }
-  .status { font-size: 11px; padding: 4px; }
+  .toolbar button { min-width: 48px; min-height: 48px; padding-inline: 9px; }
+  .status { flex-basis: 100%; margin-left: 0; font-size: 11px; padding: 0 4px; }
   .host { height: 66dvh; min-height: 350px; }
   .host :global(.tle-root) { min-height: 350px; }
   .dialog { margin: auto auto 12px; max-height: 76dvh; }
+}
+@media (max-height: 500px) {
+  .editor { min-height: 260px; }
+  .host { height: 62dvh; min-height: 200px; }
+  .host :global(.tle-root) { min-height: 200px; }
+}
+@media (min-width: 761px) and (max-height: 500px) {
+  .toolbar { padding: 4px; gap: 4px; }
+  .status { padding: 4px; }
 }

@@ -10,6 +10,7 @@ import { alphaRuntimeClosure, classifyRenderReleasePath, inspectReleaseBytes, sa
 
 test('release paths are review categories, not an implicit publication allowlist', () => {
   assert.equal(classifyRenderReleasePath('app/alpha/page.tsx'), 'runtime-review');
+  assert.equal(classifyRenderReleasePath('app/api/alpha/backup-jobs/route.ts'), 'runtime-review');
   assert.equal(classifyRenderReleasePath('lib/flow/integrated-poc/alpha-server/command-handler.ts'), 'runtime-review');
   assert.equal(classifyRenderReleasePath('lib/flow/integrated-poc/alpha-server/command-handler.test.ts'), 'verification-review');
   assert.equal(classifyRenderReleasePath('supabase/migrations/20260920.sql'), 'schema-review');
@@ -67,8 +68,10 @@ test('source import scan includes static, type, and dynamic imports', () => {
 
 test('alpha entry closure resolves every local import without treating it as the entire app', () => {
   const closure = alphaRuntimeClosure(process.cwd());
+  // The fail-closed 503 backup endpoint is still a real entry to inventory;
+  // including it does not enable the deferred backup job implementation.
   assert.deepEqual(closure.entries, [
-    'app/alpha/page.tsx', 'app/api/alpha/account/route.ts', 'app/api/alpha/catalog/route.ts',
+    'app/alpha/page.tsx', 'app/api/alpha/account/route.ts', 'app/api/alpha/backup-jobs/route.ts', 'app/api/alpha/catalog/route.ts',
     'app/api/alpha/creator/route.ts', 'app/api/alpha/health/route.ts', 'app/api/alpha/media/route.ts',
     'app/api/alpha/preservation/route.ts', 'app/api/alpha/social/route.ts', 'app/auth/callback/page.tsx',
   ]);

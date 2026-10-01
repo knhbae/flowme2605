@@ -1,9 +1,11 @@
 import { programShape } from '../program-data';
 
-export const ALPHA_ENVIRONMENT_POLICY = Object.freeze({ version: 3,
+export const ALPHA_ENVIRONMENT_POLICY = Object.freeze({ version: 4,
   developmentProject: 'wkmzcxpnojobxrgebapw', productionProjects: ['ldellkztijrijbpwthjl'] as readonly string[],
   redirectOrigins: ['http://localhost:3000', 'http://localhost:3104'] as readonly string[],
   renderTrialHosting: 'render-trial-v1',
+  cloudflareLaptopHosting: 'cloudflare-laptop-v1',
+  cloudflareLaptopOrigin: 'https://alpha.wikiplans.com',
   renderTrialCapacity: 'on-demand-v1',
 });
 const ENVIRONMENT_FIELDS = ['stage', 'projectRef', 'databaseUrl', 'authUrl', 'storageUrl', 'redirectUrl'];
@@ -14,12 +16,15 @@ function isRenderTrialOrigin(origin: string): boolean {
 /** Pure preflight only. M1 does not construct a network client or perform migrations. */
 export function validateAlphaDevelopmentEnvironment(value: unknown): boolean {
   try {
-    if ((!programShape(value, ENVIRONMENT_FIELDS) && !programShape(value, [...ENVIRONMENT_FIELDS, 'hosting']))
+    const cloudflare = programShape(value, [...ENVIRONMENT_FIELDS, 'hosting', 'tunnelOrigin'])
+      && value.hosting === ALPHA_ENVIRONMENT_POLICY.cloudflareLaptopHosting
+      && value.tunnelOrigin === ALPHA_ENVIRONMENT_POLICY.cloudflareLaptopOrigin;
+    if ((!cloudflare && !programShape(value, ENVIRONMENT_FIELDS) && !programShape(value, [...ENVIRONMENT_FIELDS, 'hosting']))
       || !['development', 'test', 'preview'].includes(value.stage as string)
       || ALPHA_ENVIRONMENT_POLICY.productionProjects.includes(value.projectRef as string)
       || value.projectRef !== ALPHA_ENVIRONMENT_POLICY.developmentProject) return false;
     const hosted = Object.hasOwn(value, 'hosting');
-    if (hosted && (value.hosting !== ALPHA_ENVIRONMENT_POLICY.renderTrialHosting || value.stage !== 'preview')) return false;
+    if (hosted && ((!cloudflare && value.hosting !== ALPHA_ENVIRONMENT_POLICY.renderTrialHosting) || value.stage !== 'preview')) return false;
     const expected = `https://${ALPHA_ENVIRONMENT_POLICY.developmentProject}.supabase.co`;
     for (const field of ['databaseUrl', 'authUrl', 'storageUrl']) {
       if (value[field] !== expected) return false;
@@ -28,6 +33,7 @@ export function validateAlphaDevelopmentEnvironment(value: unknown): boolean {
     const redirect = new URL(value.redirectUrl);
     return !redirect.username && !redirect.password && !redirect.hash && !redirect.search
       && value.redirectUrl === `${redirect.origin}/auth/callback`
-      && (hosted ? isRenderTrialOrigin(redirect.origin) : ALPHA_ENVIRONMENT_POLICY.redirectOrigins.includes(redirect.origin));
+      && (cloudflare ? redirect.origin === ALPHA_ENVIRONMENT_POLICY.cloudflareLaptopOrigin
+        : hosted ? isRenderTrialOrigin(redirect.origin) : ALPHA_ENVIRONMENT_POLICY.redirectOrigins.includes(redirect.origin));
   } catch { return false; }
 }

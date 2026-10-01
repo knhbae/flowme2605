@@ -26,6 +26,8 @@ This file is an index, not a second source of product truth. Update its links af
 
 ## Current View
 
+- [2026-10-01 writing interaction candidate](./content-audit/2026-10-01-flowme-writing-interactions-review-ko.html) — [approved scope and QA](./specs/2026-10-01-alpha-writing-interactions/spec.md); shared native input, memo/Item Enter and guarded local continuation. This extends the direction checkpoint below; no publication, live health or development replacement is implied.
+- [2026-10-01 direction, completed/remaining work, and proposed next UX goal](./content-audit/2026-10-01-flowme-direction-workboard-ko.html) — private-worktree review; see [the scoped checkpoint](./specs/2026-10-01-direction-and-next-goal/spec.md). The 9/26 and older stage paragraphs above are historical and do not supersede current STATUS/specs. This link does not certify current live health or a new release.
 - [Current status and owner action](./STATUS.md)
 - [Current roadmap and inactive shelves](./ROADMAP.md)
 - [Released Flow Entry And Preview Clarity](./specs/2026-08-20-flow-entry-preview-clarity/spec.md)

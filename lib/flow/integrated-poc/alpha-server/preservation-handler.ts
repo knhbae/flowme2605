@@ -5,7 +5,8 @@ import { createAccountBackup, validateAccountBackup, type AccountBackup } from '
 import { prepareLocalImport } from '../alpha-preservation/import';
 import { PRESERVATION_PROTOCOL, SEALED_BACKUP_SCHEMA, isPreservationCommand, type PreservationPreview } from '../alpha-preservation/contract';
 import { BACKUP_FILE_SCHEMA, decodeBackupFile } from '../alpha-preservation/file-codec';
-import { accountBackupRestoreTransportBytes } from '../alpha-preservation/transport';
+import { accountBackupRestoreTransportBytes, prepareAccountBackupFile } from '../alpha-preservation/transport';
+import { createBackupRequestBudget, LEGACY_BACKUP_REQUEST, readBackupResponse } from '../alpha-preservation/backup-request';
 import { alphaSocialReferences, readAlphaSocialResponse } from '../alpha-social/projection';
 import { canonicalJson, hashJson, parseAlphaJson, sha256, detached } from '../alpha-persistence/json';
 import { validateAlphaAccount } from '../alpha-persistence/program-adapter';
@@ -16,9 +17,7 @@ import { privateMediaIds } from '../alpha-preservation/private-media';
 import { summarizePreservationContent } from '../alpha-preservation/content-summary';
 import type { AccountBackupFile } from '../alpha-preservation/backup';
 import { BACKUP_DOWNLOAD_FORMAT, BACKUP_DOWNLOAD_SCHEMA, readBackupDownload } from '../alpha-preservation/backup-download';
-import { encodeBackupFile } from '../alpha-preservation/file-codec';
 import { alphaCapacityMode } from './capacity-adapter';
-import { readCapacityM3Response } from './capacity-m3';
 
 const headers = { 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', Vary: 'Authorization' };
 const result = (value: unknown) => Response.json(value, { headers });
@@ -61,11 +60,17 @@ export function createAlphaPreservationHandler(env: Record<string, string | unde
     const commitRequest = programShape(input, ['kind', 'client', 'command', sourceKey, 'actorId']) && input.kind === 'commit' && isPreservationCommand(input.command)
       && (!packed || input.command.mode === 'restore');
     if (!backupRequest && !lookupRequest && !previewRequest && !commitRequest) return failure('invalid', 400);
+    // One deadline spans authentication, snapshot, attachments, freshness and encoding.
+    // Only legacy backup uses it; import/restore keep their existing recovery semantics.
+    const backupBudget = backupRequest ? createBackupRequestBudget(LEGACY_BACKUP_REQUEST.serverMs, request.signal) : null;
+    const backupFetch: typeof fetch = backupBudget ? (url, init) => backupBudget.run(() => fetcher(url, { ...init,
+      signal: init?.signal ? AbortSignal.any([backupBudget.signal, init.signal]) : backupBudget.signal })) : fetcher;
     const call = async (path: string, payload?: unknown) => {
-      const response = await fetcher(`${config.url}${path}`, { method: payload === undefined ? 'GET' : 'POST',
+      const response = await backupFetch(`${config.url}${path}`, { method: payload === undefined ? 'GET' : 'POST',
         headers: { apikey: config.publishableKey, Authorization: authorization, 'Content-Type': 'application/json' },
-        ...(payload === undefined ? {} : { body: JSON.stringify(payload) }), cache: 'no-store', redirect: 'error', signal: AbortSignal.timeout(30_000) });
+        ...(payload === undefined ? {} : { body: JSON.stringify(payload) }), cache: 'no-store', redirect: 'error', signal: backupBudget?.signal ?? AbortSignal.timeout(30_000) });
       if (!response.ok) throw Error(response.status === 401 || response.status === 403 ? 'unauthenticated' : 'unavailable');
+      if (backupBudget) return backupBudget.run(() => readBackupResponse(response, backupBudget.signal, PRESERVATION_PROTOCOL.bytes, parseAlphaJson));
       const reader = response.body?.getReader(); if (!reader) throw Error('unavailable');
       const chunks: Uint8Array[] = []; let bytes = 0;
       try { for (;;) { const next = await reader.read(); if (next.done) break;
@@ -87,17 +92,20 @@ export function createAlphaPreservationHandler(env: Record<string, string | unde
         // One signed DB read checks the entire current snapshot and checkpoint
         // under the same locks. Do not split its freshness check across RPCs.
         const readText = canonicalJson({ schema: 'flowme-alpha-capacity-checkpoint-read/1' });
-        const checkpointResponse = await fetcher(`${config.url}/rest/v1/rpc/flowme_alpha_capacity_checkpoint_read_v1`, {
+        const checkpointResponse = await backupFetch(`${config.url}/rest/v1/rpc/flowme_alpha_capacity_checkpoint_read_v1`, {
           method: 'POST', headers: { apikey: config.publishableKey, Authorization: authorization, 'Content-Type': 'application/json' },
           body: JSON.stringify({ read_text: readText, proof: signAlphaCommand(owner, readText, key) }),
-          cache: 'no-store', redirect: 'error', signal: AbortSignal.timeout(30_000),
+          cache: 'no-store', redirect: 'error', signal: backupBudget!.signal,
         });
         if (!checkpointResponse.ok) throw Error(checkpointResponse.status === 401 || checkpointResponse.status === 403 ? 'unauthenticated' : 'unavailable');
-        // The 30 MB file is JSON-string escaped; use its separate wire bound.
-        const checkpoint = await readCapacityM3Response(checkpointResponse);
+        // Match readCapacityM3Response: this JSON-string envelope has a 60 MB
+        // wire bound. parseAlphaJson here would shrink it to the 30 MB domain cap.
+        // Exact wrapper, decoded owner/integrity and authenticated seal checks follow.
+        const checkpoint = await backupBudget!.run(() => readBackupResponse(checkpointResponse, backupBudget!.signal,
+          LEGACY_BACKUP_REQUEST.responseBytes, JSON.parse));
         if (!programShape(checkpoint, ['ok', 'value']) || checkpoint.ok !== true) throw Error('unavailable');
         if (checkpoint.value !== null) {
-          const checked = await readBackupDownload(checkpoint.value, owner);
+          const checked = await backupBudget!.run(() => readBackupDownload(checkpoint.value, owner));
           if (!validProof(checked.proof, signAlphaCommand(owner, sealText(owner, checked.backup.integrity.payloadSha256), key))) throw Error('invalid-backup');
           return result({ ok: true, value: { schema: BACKUP_DOWNLOAD_SCHEMA, file: checked.file } });
         }
@@ -125,13 +133,14 @@ export function createAlphaPreservationHandler(env: Record<string, string | unde
         return { ...parsed, operations: value.operations, importArchives: value.importArchives };
       };
       const current = await read(), references = alphaSocialReferences(current.context, owner);
-      const mediaHandler = createAlphaMediaHandler(env, fetcher);
+      const mediaHandler = createAlphaMediaHandler(env, backupFetch);
       const media = async (id: string) => {
         const response = await mediaHandler(alphaInternalMediaRequest(publicOrigin, id, authorization, !!config.hosting));
         if (!response.ok) throw Error(response.status === 404 || response.status === 400 ? 'missing-file' : response.status === 401 || response.status === 403 ? 'unauthenticated' : 'unavailable');
         return { mime: response.headers.get('content-type') ?? '', bytes: new Uint8Array(await response.arrayBuffer()) };
       };
       if (backupRequest) {
+        return await backupBudget!.run(async () => {
         const backup = await createAccountBackup({ account: current.account, references, operations: current.operations,
           importArchives: current.importArchives, createdAt: new Date().toISOString() }, media);
         // Account/public/archive/journal changes while bytes are read invalidate the whole download.
@@ -141,9 +150,15 @@ export function createAlphaPreservationHandler(env: Record<string, string | unde
           proof: signAlphaCommand(owner, sealText(owner, backup.integrity.payloadSha256), key) };
         // Request-local bytes only; never cache across owners or snapshots.
         const sealedRaw = canonicalJson(sealed);
+        if (fileRequest) {
+          const { file } = await prepareAccountBackupFile(sealedRaw);
+          backupBudget!.check();
+          return result({ ok: true, value: { schema: BACKUP_DOWNLOAD_SCHEMA, file } });
+        }
         if ((await accountBackupRestoreTransportBytes(sealedRaw)).bytes > PRESERVATION_PROTOCOL.bytes) return failure('limit');
-        if (fileRequest) return result({ ok: true, value: { schema: BACKUP_DOWNLOAD_SCHEMA, file: await encodeBackupFile(sealedRaw) } });
+        backupBudget!.check();
         return result({ ok: true, value: sealed });
+        });
       }
       const source = input as { sourceRaw: unknown; actorId: unknown; mode?: unknown; command?: unknown };
       if (typeof source.sourceRaw !== 'string' || typeof source.actorId !== 'string') return failure('invalid', 400);
@@ -226,8 +241,8 @@ export function createAlphaPreservationHandler(env: Record<string, string | unde
         command, space: next.space, archive, ...(files.length ? { files } : {}) });
       return result(await call(`/rest/v1/rpc/flowme_alpha_preservation_execute_v${files.length ? 2 : 1}`, { commit_text: commitText, proof: signAlphaCommand(owner, commitText, key) }));
     } catch (error) {
-      const reason = error instanceof Error ? ['alpha-too-large', 'backup-file-limit', 'preservation-request-limit'].includes(error.message) ? 'limit' : error.message : '';
+      const reason = error instanceof Error ? ['alpha-too-large', 'backup-file-limit', 'preservation-request-limit', 'backup-response-limit'].includes(error.message) ? 'limit' : error.message : '';
       return failure(['invalid', 'unauthenticated', 'not-found', 'revision-conflict', 'idempotency-conflict', 'no-change', 'missing-file', 'limit'].includes(reason) ? reason : 'unavailable');
-    }
+    } finally { backupBudget?.dispose(); }
   };
 }

@@ -8,12 +8,13 @@ const SOURCE_LIMIT = 3_000_000;
 const ARMORED_GZIP = 'FLOWME-CATALOG-GZIP-BASE64-V1\n';
 let cached: { path: string; payload: Omit<CatalogLibrarySnapshot, 'schema' | 'importedAt'> } | null = null;
 
-/** Render receives a compressed secret file at runtime. Local tests use the
+/** Hosted trials receive an explicit source file at runtime. Local tests use the
  * untracked source pack. Neither path is imported into the build graph. */
 function sourcePath(): string {
   const configured = process.env.FLOWME_ALPHA_CATALOG_PACK_FILE;
   if (configured) return configured;
-  if (process.env.FLOWME_ALPHA_HOSTING === 'render-trial-v1') throw Error('catalog-library-secret-file-required');
+  if (['render-trial-v1', 'cloudflare-laptop-v1'].includes(process.env.FLOWME_ALPHA_HOSTING ?? ''))
+    throw Error('catalog-library-secret-file-required');
   return join(process.cwd(), 'lib', 'flow', 'integrated-poc', 'catalog-library-pack.v1.json');
 }
 

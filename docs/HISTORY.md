@@ -4,6 +4,18 @@ The repository's current semantic-version tag is `v0.1.0` at
 `d18f4218de48e23f894c7615945e37339a4a0153` (`2026-06-11`). Later entries
 below are deployment milestones unless they explicitly name another tag.
 
+## 2026-10-01 - Writing Journey, Folder Regions And Shared Input On Development Host
+
+- The existing laptop app behind `https://alpha.wikiplans.com/alpha` was replaced at `2026-10-01T06:39:23Z` with build `zEY9jP0Mcmqs90L0HCPvB`. Product head `ae5a97f0` passed all four required jobs in [CI36824430918](https://github.com/knhbae/flowme2605/actions/runs/36824430918) before the switch. Its full browser lane had758 first-attempt passes and2 retry passes across760 scenarios/762 attempts, not760 retry-free passes.
+- The release integrates writing-journey clarity, explicit folder linking and lossless folder-region editing, shared whole/partial input, and a narrow mobile library-to-writing handoff. Local155/155 and final served-build local35/35, deployed synthetic35/35, unauthenticated HTTPS10/10, and24 exact static asset path/hash matches were verified. Source639 and six rollback/config/private-source hashes remained unchanged.
+- [Draft PR206](https://github.com/knhbae/flowme2605/pull/206) remains unmerged. Final summary publication uses a separate worktree so its build hook cannot overwrite the live build. This is not a main merge, new semantic version, Render/Vercel/Production release, DB/Auth/data migration, Tunnel/DNS change, new5D enablement, device/OS-IME/accessibility certification or observed-user validation. See the [release record](./pr-history/2026-10-01-alpha-writing-ux-dev-release.md).
+
+## 2026-10-01 - Core Workspace UX On Cloudflare Development Host
+
+- The laptop app behind `https://alpha.wikiplans.com/alpha` now serves build `F9QqWgnGf7n_PaVUEavrK`: base `905c4c31` plus the independently owned Cloudflare host and legacy-backup compatibility changes. The app process was replaced at `2026-09-30T20:23:06Z`; the existing Tunnel, settings, catalog source, DB/Auth and prior build were preserved.
+- Post-switch external HTTPS checks passed10/10 without credentials or account writes. Final deployed-bundle browser evidence, exact limitations and rollback are recorded in the [deployment QA ledger](./specs/2026-10-01-alpha-cloudflare-core-ux/qa.md).
+- This is a development-host update, not a main merge, Render/Vercel deployment, Production release, semantic-version tag or observed-user validation. New5D backup jobs remainoff; current-goal actual account/device/user testing was not run.
+
 ## 2026-09-07 - Verification Maintenance And Core-Journey Review
 
 - [PR #200](https://github.com/knhbae/flowme2605/pull/200) restored the current source and security verification gates: nine due source reviews were checked against their real pages, one retired official EV URL was replaced, audited transitive dependencies were patched, and one historical recurrence E2E received the existing fixed clock after its hard-coded dates crossed the 31-day lookback boundary.

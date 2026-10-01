@@ -1,5 +1,49 @@
 # Project Status
 
+## 현재 — 세 작성 UX 후보 개발계 반영·마감 게시 (2026-10-01)
+
+작성 여정·폴더 작성·부분/전체 입력과 좁은 모바일 목록→작성 동선을 `https://alpha.wikiplans.com/alpha`에 반영했다. 제품 commit `ae5a97f0`의 [CI36824430918](https://github.com/knhbae/flowme2605/actions/runs/36824430918) 필수4개 통과 후2026-10-01T06:39:23Z 기존3105 앱만 교체했다. 실행 build는`zEY9jP0Mcmqs90L0HCPvB`이며639source·이전build/config·설정2개·privatepack hash불변이다. 최종 로컬155/155, 마지막build로컬35/35·외부합성35/35·HTTPS보호10/10·정적자산24개path/hash일치를 확인했다. [짧은 HTML 보고서](./content-audit/2026-10-01-flowme-writing-ux-dev-release-ko.html)·[QA](./specs/2026-10-01-alpha-writing-ux-dev-release/qa.md)·[반영 이력](./pr-history/2026-10-01-alpha-writing-ux-dev-release.md)을 연결한다.
+
+전체 CI 브라우저760시나리오는758첫회통과·P24 Calendar/구형PoC 이동2재시도통과(총762회)다. 이를760무재시도통과로 표시하지 않는다. 이번 작성/폴더/여정/모바일 및 반영후35건은실패/재시도0이다. 기존단발recurrence재읽기 원인은미확정이며강화한해당검사는이번CI첫회통과다. 큰집중모드·Creator/Flow Map/공개/커뮤니티·5D·장시간탭/자동시작·원래F6~F10·실기기/OS IME/AT는별도후속이다. main병합·DB/Auth/실계정자료·Tunnel/DNS·Render/Vercel/Production변경0·관찰사용자0을유지했다. 최종 마감 문서는 실행앱과 분리해 게시하고 최신 head CI는[Draft PR206](https://github.com/knhbae/flowme2605/pull/206)의checks로확인한다. 아래‘미반영/진행’은각시점의이력이다.
+
+## 현재 — 세 작성 UX 후보의 개발계 반영 진행 (2026-10-01)
+
+[승인 범위](./specs/2026-10-01-alpha-writing-ux-dev-release/spec.md)와 [단계 계획](./specs/2026-10-01-alpha-writing-ux-dev-release/plan.md)에 따라 작성 여정·폴더·입력 세 격리 후보의 소유 변경을 묶어 게시 검사·Draft PR/CI·기존 Cloudflare 개발계 앱 교체까지 진행한다. 좁은 모바일 목록→작성 접근 보완은 검토하지만 Creator/공개·커뮤니티/5D 후속을 반영 선행 조건으로 붙이지 않는다. 현재는 교체 전이며 아래 격리 완료를 배포 완료로 읽지 않는다. main 병합·DB/Auth/실계정·Tunnel/DNS·Render/Vercel/Production 배포는 제외한다. 실제 실행과 반영 판본은 [QA](./specs/2026-10-01-alpha-writing-ux-dev-release/qa.md)에 기록한다.
+
+## 현재 — 부분·전체 작성 입력 일관성, 격리 후보 완료·미반영 (2026-10-01)
+
+[승인 목표](./specs/2026-10-01-alpha-writing-interactions/spec.md)의 설계·구현·직접 조작 HTML·순수/컴포넌트·합성 브라우저 검증을 마쳤다. 부분·전체 같은 native 입력, 메모/형제 Enter, 즉시 Tab 역연산, 권한/원문/설치 확인을 거친 no-write 전체 인계를 연결했다. 기간 원문 focus 경쟁·held external 우회·saved blank ID·마지막 행13px 잘림을 보완했다. 최종 표적118/118·전체 통합2,735/2,735(267파일)·npm2,258/2,258·범위 타입564entry 오류0·production build, 앱75/75·HTML40/40·기존 회귀25/25를 확인했고639source실행 중 변경0이다. 초기 source 경로 누락·fixture 오류·작은 검사 heap 실패/중단을 [QA](./specs/2026-10-01-alpha-writing-interactions/qa.md)에 분리했다. [조작 HTML](./content-audit/2026-10-01-flowme-writing-interactions-lab-ko.html)·[결과 보고서](./content-audit/2026-10-01-flowme-writing-interactions-review-ko.html)·[요구별 처리/잔여](./specs/2026-10-01-alpha-writing-interactions/results.md)를 제공한다.
+
+모바일의 열린 폴더 목록 상태는 부분 본문이 첫 화면 아래에 있어 후속 UX로 남긴다. 큰 집중 모드·Creator 전체 입력·반복/상대 날짜·Flow Map/공개/기여·F5~F10·장시간 운영·실기기/OS IME/AT는 이번 완료에 포함하지 않는다. 전체21피드백/424요구/전체UX 충족을 주장하지 않는다. 다음은 직전 폴더+이번 입력 후보의 채택/소유 분리·CI·선별 개발계 반영 판단이며 별도 목표다. 실제 계정/DB/5D·commit/push/PR/merge·배포·개발계 교체·관찰 사용자0을 유지했고 공개3105와 기존 Tunnel/작업본은 변경하지 않았다. 아래 제안/완료 기록은 각 시점의 이력이다.
+
+## 현재 — 방향·완료/잔여 점검과 다음 UX 목표 제안 (2026-10-01)
+
+[방향·작업·다음 목표](./specs/2026-10-01-direction-and-next-goal/spec.md)와 [짧은 HTML](./content-audit/2026-10-01-flowme-direction-workboard-ko.html)에 3축 방향·v4.1/개발1/개발2 연결, 완료 근거·개발계 반영·격리 후보를 분리했다. 최신 피드백1~21은 직전과 동일하고 신규 delta0이다. 직전 npm/build/전체 통합 JSON의635개 source 일치도 확인했으며 이번에 해당 검사를 재실행한 것은 아니다. 가로 본문0·통합 최종 재실행 대기는 후속 폴더 목표에서 해결된 이력이다.
+
+다음 제안은 **부분/전체 작성 조작·구조 키보드·Enter·메모 줄바꿈의 계약과 좁은 개선**이다. 설계→조작 비교→지원 범위 최소 구현→회귀/5크기→별도 반영 판단으로 진행할 계획이며 이번에는 제품 구현을 시작하지 않았다. 원래5D/F6~F10·자동 시작/장시간 탭·요청량·콘텐츠/공개/기기 후속도 빠뜨리지 않고 로컬 전용 원장·재개 조건으로 연결했다. 사용자 관찰 시험은 보류를 유지한다. [앞으로의 목표 점검 절차](./workflows/session-start.md#goal-setting-checkpoint)를 기록했고 제품/서비스·실제 데이터·게시/배포 변경0이다. 아래의 ‘현재’는 각 작업 시점의 기록이다.
+
+## 현재 — 추가 피드백 기반 문서·폴더 작성 UX, 격리 후보 완료·미반영 (2026-10-01)
+
+[새 목표·경계](./specs/2026-10-01-alpha-folder-writing-ux/spec.md)를 등록하고 추가20·21을 포함한 [피드백1~21 처리 범위](./specs/2026-10-01-alpha-folder-writing-ux/feedback-map.md)를 현재 Alpha/구형 v11/이전 U·J 보완과 대조했다. 기존 이름 줄의 폴더 연결 제안, 문서 내 폴더 영역 보기, 보관 위치·Item 소속·조회 범위 구분과 낮은 화면 본문을 한 묶음으로 다룬다. [단계별 계획](./specs/2026-10-01-alpha-folder-writing-ux/plan.md)·[작업 원장](./specs/2026-10-01-alpha-folder-writing-ux/tasks.md)을 따른다.
+
+조작 HTML·안전 계약·제안/영역 편집·낮은 가로 배치를 격리 후보에 구현했다. 마지막 전체 통합2,676/2,676·npm2,258/2,258·전용 타입/production build, 앱 폴더45/45·미저장 입력 뒤 생성5/5(별도 실행)·기존 회귀25/25·UI67/67을 확인했다. 실패/skip/실행 중 변경0·635소스drift0이다. 새문서 작성란 숨김과 자기 성공 receipt 판본 연결을 보완했고 비동기 기간 회귀 harness2실패도12/12→전체 통과로 확인했다. [검사 이력](./specs/2026-10-01-alpha-folder-writing-ux/qa.md)과 [요구별 후속](./specs/2026-10-01-alpha-folder-writing-ux/results.md)을 따르며 [HTML 보고서](./content-audit/2026-10-01-flowme-folder-writing-review-ko.html)·[직접 조작 HTML](./content-audit/2026-10-01-flowme-folder-writing-lab-ko.html)을 제공한다. 구조 문법·대용량 백업·장시간 운영·큰 집중 모드·공개/제작/커뮤니티 전면 개선·실기기/관찰 사용자·게시/배포/개발계 교체는 별도다. 전체21개 해결이나 UX 완성으로 판정하지 않으며 이전 후보와 공개 앱을 유지한다.
+
+## 현재 — 핵심 작성 여정 UX 비교·1차 개선, 격리 후보 (2026-10-01)
+
+[승인 목표](./specs/2026-10-01-alpha-ux-journey/spec.md)의 요구 대조·A/B 조작 비교·좁은 A 구현·내부 검증을 완료했다. v4.1·개발1·개발2를 14개 요구군에 연결하고 UX1/UX2 제안별 유지·부분 채택·개선·보류를 구분했다. 관리행·보조 도구 밀도와 날짜 대상 표시를 개선했으며 Alpha retained editor의 정확한 원문 복귀를 고쳤다. ProgramApp의 기존 checkpoint 복원에는 개입하지 않는다. [검토 보고서](./content-audit/2026-10-01-flowme-ux-journey-review-ko.html), [직접 조작 HTML](./content-audit/2026-10-01-flowme-ux-journey-lab-ko.html), [현재 QA](./specs/2026-10-01-alpha-ux-journey/qa.md)를 따른다.
+
+최종 기본 테스트2,258/2,258·표적99/99·별도 App race3/3·타입/production build·앱 합성 브라우저25/25·prototype9/9·보고서5크기를 검사했다. 전체 통합 초기2,630 중2실패와 실행 중 소스4개 변경은 그대로 기록했고 관련 결함/fixture를 보완했다. 최종 고정 소스 전체 통합 재실행은 게시 전 남은 관문이다. 모바일 세로 첫 본문은 약81px 늘었지만844×390의 첫 본문 확보는 미개선이다. B 집중은 독립 시뮬레이션뿐이며 실기기/IME/보조기술·관찰 사용자0이다.
+
+위 수치와 한계는 이전 목표 마감 시점이다. 이번 폴더 작성 후속에서 전체 통합2,676/2,676와844×390 첫 일반 메모 노출을 확인했다. B 전체 집중과 실기기/관찰 사용자·공개 반영은 여전히 완료가 아니다.
+
+작업은 별도 `flow-ux-journey-20261001` 후보다. commit/push/PR/merge·배포·개발계 교체0, 실제 계정/API/DB/설정 변경0, 기존 공개 앱·Tunnel은 유지했다. 아래 개발계 반영 기록은 기존 코드의 반영이며 이번 후보가 공개 주소에 올라갔다는 뜻이 아니다.
+
+## 현재 — 핵심 UX·저장 복구의 Cloudflare 개발계 반영 (2026-10-01)
+
+[승인된 선별 반영 목표](./specs/2026-10-01-alpha-cloudflare-core-ux/spec.md)를 완료했다. 10/1 05:23 KST에 `alpha.wikiplans.com/alpha`의 노트북 앱을 905c4c31 핵심 UX·저장 복구와 독립 구현한 호스트/legacy 백업 호환 build `F9QqWgnGf7n_PaVUEavrK`로 교체했다. npm test 2,258회·전체 통합 2,615/2,615·보안 취약점0·production build·최종 로컬/원격 브라우저 각각10/10·정적 파일24개 hash 일치·외부 HTTPS10/10을 확인했다. 초기 실패/보완 이력과 각 경우의 예상 합성 telemetry SRI 오류2건은 [QA](./specs/2026-10-01-alpha-cloudflare-core-ux/qa.md)에 분리했다. 임시 QA 서버만 종료했고 공개 앱과 기존 Tunnel은 유지한다.
+
+mixed dirty 복제/수정0·기존 파일6개 hash 동일·실제 계정 요청/쓰기0·DB/Auth/Tunnel 설정 변경0, 새 백업 경로는 off다. main/PR204/PR205 원격 ref는 그대로이며 이번 추가 push/새PR/merge·Render/Preview/Production은0이다. 이전 build는 [복귀 절차](./specs/2026-10-01-alpha-cloudflare-core-ux/runbook.md)대로 다시 실행할 수 있다. 모바일 밀도·구조 키보드 계약·복구 저장의 첫 Undo·자동 시작/장시간 탭·원래6~9·5D는 별도 후속이며 이 목표의 실기기/관찰 사용자 검사는0이다. 아래 이전 목표의 배포0/CI 대기는 당시 기록이다.
+
 ## 현재 — 같은 요청의 개인 문서 저장 복구 표시 (2026-09-30 후속)
 
 [같은 요청 저장 복구 목표](./specs/2026-09-30-alpha-private-save-ack/spec.md)의 구현·합성 검증을 마쳤고 [최종 QA](./specs/2026-09-30-alpha-private-save-ack/qa.md)에 실패 재현→보완→재검사를 기록했다. 요청·계정·receipt 판본과 전체 변경을 대조하고 submitted 입력과 같은 mounted editor만 저장됨으로 확인한다. pending 조회가 이미 반영된 자기 저장을 외부 변경으로 먼저 분류하는 문제도 수정했다. 추가 입력·조합 중 입력·실제 외부 판본·계정 전환 보호는 유지한다. 표적187/187·독립 검토141/141·최종 npm test 2,632회(중복 실행 포함)·격리 production build 통과, 저장/재진입과 5크기 버튼 접근을 합성 브라우저로 확인했다. 아래 core UX 원장의 이전 결과 미확정 실패는 당시 이력이며 이번 성공으로 삭제하지 않는다.
