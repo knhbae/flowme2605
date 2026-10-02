@@ -1,5 +1,59 @@
 # Project Status
 
+## 승인 재개 — 검증한 두 UX 묶음의 개발계 선별 반영 (2026-10-02)
+
+사용자의 ‘다음 목표 잡고 ㄱㄱ’에 따라 [목표·경계](./specs/2026-10-02-alpha-two-ux-dev-release/spec.md)와 [단계 계획](./specs/2026-10-02-alpha-two-ux-dev-release/plan.md)을 시작했다. 소유74+새정본5=79개를 별도 `flow-two-ux-dev-release-20261002` 작업본으로 선별했다. 현재 npm2,258/2,258·표적151/151·타입578entry진단0·게시 전 별도build/source drift0, audit취약점0·출처metadata due/stale/missing0·private payload0·문서검사를 확인했다. 로컬 원근거 링크/화면은 공개판에서 로컬 전용 경로로 명시하고 원 결과를 보존했다. [현재 QA/남은 실행](./specs/2026-10-02-alpha-two-ux-dev-release/qa.md)에 판본과 최초 실패/보완을 구별한다. 승인 경계가 세 goal turn에서 유지돼 blocked로 기록했으나, 사용자가 ‘79개 파일 선별 commit·push·Draft PR·해당 비공개 CI·개발계 교체 허용, 재개해’라고 답해 같은 전체 목표를 active로 재개했다. 현재 게시·CI·최종 제공 판본 검사를 진행하며 실제 개발계 교체 완료로 표현하지 않는다. 개인 자료·원본 dirty·기존 build를 보존하고 새 정책·main merge·DB/Auth/Tunnel/DNS·Production·관찰 사용자 시험은 제외한다. 아래 완료 수와 기존 서비스 상태는 각 시점의 기록이며 새 후보 반영 근거로 대신하지 않는다.
+
+## 격리 후보 검증 완료 — 폴더 연결·작성·날짜 UX 갭 묶음 (2026-10-02, 개발계 미반영)
+
+사용자의 다음 목표 진행 승인으로 [목표·경계](./specs/2026-10-02-alpha-feedback-ux-bundle/spec.md)·[단계 계획](./specs/2026-10-02-alpha-feedback-ux-bundle/plan.md)을 시작했다. 최신26항목의 직접 폴더 연결 위치와 중간 정정/보충을 대조했다. 실제 위치 snapshot·stale 거절과 오늘의 지난 미완료/날짜 출처 표현을 구현했고, Enter·메모·들여쓰기·부분 원문 보호는 회귀와 기존 제한을 구별했다. 새 날짜/반복/마감/문법 정책은 [독립 조작 시안](./content-audit/2026-10-02-flowme-feedback-ux-bundle-lab-ko.html)의 제안이며 제품 schema로 확정하지 않았다.
+
+표적45/45·npm2,258/2,258·통합278파일2,901/2,901·타입578entry진단0·source변경0, 정확 사본 build1,193입력 drift0을 확인했다. 첫 통합1FAIL은 이전 내부 변수명을 요구하던 source-text 검사였고 현행 행·키·이동 경로 확인으로 보완해 전체 재실행했다. 원 실패와 변경 중 실행은 보존한다. [완료 전 감사](./specs/2026-10-02-alpha-feedback-ux-bundle/completion-audit.md)에서 작성·날짜 실제 조작의 누락을 찾아 앱35+기존60, 총95개 경로/크기 조합으로 확장해 PASS를 확인했다. 날짜 seed5·엄격 회귀 판정10·순수 매개변수 계약은 앱 실행 수와 별도다. 독립 HTML/보고도 판본별 다섯 크기 검사로 구별한다.
+
+초기 실행 이력: 사용자 Ready 후3107의 정확 build/200을 확인했으나 Codex [실행 안내](./specs/2026-10-02-alpha-feedback-ux-bundle/qa-start.md)의 로그인 활성화 설정 누락으로 신규2FAIL·나머지5NOT_RUN, 기존 회귀는 최종 reporter 없이 중단했다. 사용자 실행 오류나 기능 결함으로 분류하지 않는다. 사용자 설정 보완 후 실제 검사를 재개했고 드라이버도 활성화된 시험용 설정을 사전 확인하도록 보완했다. 실행 도구 거절을 다른 shell/앱 창으로 우회하지 않았다. [요구별 보고](./content-audit/2026-10-02-flowme-feedback-ux-bundle-report-ko.html)에 최초 실패와 최종 결과를 분리한다.
+
+실제 개발계 source639·static81·보호 파일7 및 원본/실행 Git 상태는 전후 같다. 이는 로컬 hash 증거이며 실제 DB 전수 snapshot은 아니다. 실제 계정·DB/Auth·설정·commit/push/PR/merge·서비스 교체·배포·실기기·관찰 시험은 변경/실행하지 않았다. 직전 제작→개인 실행 후보도 보존했다.
+
+선행조건 해소 후 엄격 기존60/60 PASS·exit0·retry0, 신규 최종35/35 PASS·exit0·fullMatrix true·runtimeFailureStatus NONE을 확인했다. 최초 전체35PASS는 metadata 오류 전 checkpoint, 수정 뒤34PASS/1FAIL은 별도 보존했다. 서버 postimage와 화면 ACK를 구별하는 QA 보완 후 단일1PASS와 전체35PASS를 확인했으며 제품·seed·timeout·복귀 클릭 수는 바꾸지 않았다. 신규 반복 이력131회는121PASS/10FAIL이고 마지막95개 경로의 유일 수와 합산하지 않는다. 앱 자산24개·입력1,193개 일치, 최종 보호 다섯 범위 불변이다. 최종 보고5/5·20checks·소스/응답hash 일치와 문서4/4·scoped closeout·실제 diff·독립 요구/경계 감사를 확인해 이번 목표의 MUST를 완료 판정했다. 전체26개 피드백/424개 요구·전체 UX 완료나 실제 사용자 검증으로 확대하지 않는다. 운영 원본/실계정·게시·서비스 교체 경계는 유지한다.
+
+## 실행 상태 — 기존 Cloudflare 개발계 재시작 확인 (2026-10-02 08:00 KST)
+
+사용자가 기존 앱과 연결 프로그램의 재시작을 승인했다. 조사 시3105 listener와 cloudflared 프로세스가 없었으며, 중단 원인은 아직 확인하지 않았다. clean `flow-folder-content-ux-20261001@6d534a97`의 기존 build `667DI4JldqTDckfQ16wB5`를 기존 승인 launcher로 다시 실행했다. 앱 child12388/launcher27652, 기존 named Tunnel20920이며3106 시험 서버2036은 유지했다. [기존 실행 경계](./specs/2026-10-01-alpha-folder-content-dev-release/runbook.md)를 따르고 build/install·새 후보 반영·DNS/설정·DB/Auth/migration·5D 활성·자동 시작 등록은 하지 않았다.
+
+2026-10-02 08:00:31 KST 외부 `https://alpha.wikiplans.com/alpha`는200·FlowMe 로그인 화면, `/api/alpha/health`는200·본문0bytes·no-store로 확인했다. 로컬 앱 health와 Tunnel ready도200이며 빌드ID/config/host·signing 설정/Tunnel exe·config의7개 hash가 전후 동일하다. 쿠키·로그인·실계정 writer를 호출한 검사가 아니며, 전체 저장/UX QA나 상시 가용성 증거로 확대하지 않는다. 루트 `wikiplans.com`은 현재 A 주소 해석이 되지 않아 별도 연결 작업으로 남는다. 재부팅·통신 단절 또는 접속 실패가 다시 생기면 실행 상태부터 재확인한다. 아래 제작→개인 실행 후보는 여전히 개발계 미반영이다.
+
+## 현재 — 제작→개인 실행 연결, 격리 후보 검증 마감·개발계 미반영 (2026-10-02)
+
+사용자의 ‘승인!’ 범위에서 전용 `private-task-schedule`과 정확한 개인 locator 검증, 본문/목록 폼을 연결했다. 최초 날짜·시간 속성 생성의 ID baseline, 저장 중 계속 입력, 성공응답 전 화면 종료도 보완했다. 서버60·화면105·fixture26 PASS, 최종 통합273파일2,856/2,856·npm2,258/2,258·타입571entry 진단0·646source변경0과 동일 소스 사본 build1,191입력 hash변경0을 확인했다. 새 build는 `AZOaOeOD-Qc5dJ0p8lgoO`이며 기존 QA3106을 바꾸지 않았다.
+
+사용자가 켠 loopback3107/PID23592에서 정확한 새 build·가짜 key를 확인하고 핵심4경로×5크기20/20과 관련12×5=60/60 PASS·CLI exit0을 완주했다. 실패/skip/retry0이며 실제 asset24개가 새 사본 hash와 같다. 새 검사80개 모두 page/console error·가로 넘침·prefix 밖 writer0·운영 sentinel 불변이다. 최종 보고서5/5 렌더·키보드/이미지/오류 검사도 통과하고390/1440화면을 직접 보았다. 시작 제한은 해소됐으며 아래 blocked는 이전 이력이다.
+
+기존 QA3106/PID2036·실제 개발계 source/assets/settings를 교체하지 않았다. 원본/개발계 Git·639source/81assets·보호6항목과 실제 설정2개·피드백21개 전후 hash 불변을 다시 확인했다. 이는 로컬 파일/Git 증거이며 실제 DB 전수 snapshot이 아니다. 합성 Auth/API/CAS로 새 bundle만 검사했고 실제 DB/Auth/migration·배포·실기기·관찰 범위는 추가하지 않았다. [QA](./specs/2026-10-01-alpha-flow-execution-journey/qa.md)·[결과/후속](./specs/2026-10-01-alpha-flow-execution-journey/results.md)·[HTML 보고서](./content-audit/2026-10-01-flowme-flow-execution-journey-report-ko.html)·[조작 HTML](./content-audit/2026-10-01-flowme-flow-execution-journey-lab-ko.html)에 이전 실패와 최종20+60을 구별했다.
+
+일반 M3 copies 권한·공개 원본·실제 DB/Auth/migration·실제 개발계·게시/배포 변경0을 유지한다. 일반 social의 명확 거절 후 직접 재저장은 후속이며 native 최초 인계의 좁은 직접 retry만 보완했다. Git-visible 소유 변경은47개(제품/검사/문서39+문장 작업본8), stage·commit·push·PR·서비스 교체0이다.
+
+### 이력 — 승인 전 후보와 검증
+
+사용자가 합성 QA3106서버를 시작해 같은 목표를 active로 재개했다. 후보 build `HKQskKOfsua9OFY5DDJGG`의 실제 앱4시나리오×5크기는 **10PASS/10FAIL·재시도0**이다. raw 최초 인계와 native 기존 개인 문서 직접 열기는5크기 모두 통과했고, 공개 사본의 날짜·시간 적용과 명확native limit 후 직접 재저장은5크기 모두 미충족이다. 관련 기존 browser 회귀는CLI **60/60 PASS·exit0**을 확인했다. driver의 Undo 버튼명·plain browser init을 보완했고 fixture/matrix/기존 boundary는JF12포함22/22이다. 직접 handler 검사는 controller를 우회하므로 실제 앱 충족과 구별한다.
+
+F08 직접 재시도는 기존 계약 안에서 좁게 구현했다. 신규18경계/3안내를 포함한 표적147/147·통합타입567entry 진단0에 이어 통합270파일2,809/2,809·npm2,258/2,258과 동일 소스 사본의 production build도 통과했다. 입력1,190파일의 원본/사본 전후 hash 변경0이며 기존 QA3106의 자산24개도 그대로다. 새 bundle 앱 검사는 남았다. 공개 사본의 전용 개인 일정 intent는 사용자 승인 대기다. 일반M3 `copies` writer와 공개 원본·운영 저장 경계를 넓히지 않는다. 보완 전 결과와 새 검사는 [현재 QA](./specs/2026-10-01-alpha-flow-execution-journey/qa.md)·[처리 순서](./specs/2026-10-01-alpha-flow-execution-journey/results.md)에 구별했다. 목표는 아직 완료하지 않았다.
+
+원본/실행 Git·개발계 source639/assets81·보호6항목과 실제host/signing설정2개 hash는 같다. 다만 기존3105 listener·이전 앱/launcher/Tunnel PID가 이번 재개에서는 없었다. 실행 프로세스 유지로 표현하지 않으며 이번 목표에서 실제 서비스를 켜거나 교체하지 않았다. QA 시작은 후보 시험용이며 commit/push/PR/merge·개발계 교체·배포·실제DB/Auth·실기기·관찰 사용자0을 유지한다. 아래 blocked는 이전 실행 시점의 기록이다.
+
+재개 후 세 goal turn에서 F06의 좁은 개인 일정 요청 승인 경계가 유지됐다. 안전한 회귀·빌드·보고서·보호 검증을 끝냈고 현재 기다릴 검증 job은 없어 목표를 blocked로 기록한다. 완료 처리가 아니다. 원본/공개 데이터 불변의 개인 일정 요청 보완 허용 또는 사용자에 의한 별도 목표 이관 결정을 받으면 같은 목표를 재개한다. 새 bundle 앱 검증도 남으며 실제 DB/Auth/migration·배포 허용을 함께 추정하지 않는다. [마감 감사](./specs/2026-10-01-alpha-flow-execution-journey/qa.md)에 근거와 재개 조건을 기록했다.
+
+## 이력 — 제작→개인 실행 연결 후보, 사용자 허용 후 QA 실행 도구 차단 blocked (2026-10-01)
+
+[이번 목표](./specs/2026-10-01-alpha-flow-execution-journey/spec.md)에서 피드백21개 현재 본문과 v4.1·개발1·개발2를 [10개 연결 요구군](./specs/2026-10-01-alpha-flow-execution-journey/requirements.md)에 대조했다. 항목 수는 같지만 피드백 hash는 직전 기준과 달라졌으므로 현재 hash를 새 baseline으로 기록했고 원문은 수정하지 않았다. native 제작 결과에 기존 ‘개인 문서 열기’를 추가해 같은 실제 연결로 저장 없이 재진입한다. 미저장/IME/소유/손상 guard와 기존 raw/native 인계는 유지한다.
+
+표적8·관련57, 통합268파일2,788/2,788·npm2,258/2,258·production build·보안0을 실행했다. 새 테스트의 readonly 표현 오류2단계를 보완해 최종565entry 진단0이며 제품 오류와 구분했다. [독립 조작 HTML](./content-audit/2026-10-01-flowme-flow-execution-journey-lab-ko.html)은 모델/정적24·다섯 화면5/5를 확인했지만 실제 앱/Auth/DB 증거가 아니다. 새 production 앱은 합성 로그인 미설정으로 smoke4FAIL, 가짜 key의 QA 활성화 command는 환경 정책 거절을 받아 사용자에게3106합성설정 범위만 요청했다. 실제 설정 복사나 우회는 하지 않았다. [보고서](./content-audit/2026-10-01-flowme-flow-execution-journey-report-ko.html)·[QA](./specs/2026-10-01-alpha-flow-execution-journey/qa.md)·[다음 처리](./specs/2026-10-01-alpha-flow-execution-journey/results.md)를 연결한다.
+
+현재 목표는 앱의4시나리오×5크기·관련60회귀가 남아 완료되지 않았다. 사용자의 ‘허용! 재개해!’로 같은 목표를 active로 재개했고 합성 QA3106설정의 허용은 확인됐다. 그러나 가짜 값만 넣은 동일 명령의 재시도도 실행 도구가 `blocked by policy`로 거절했다. QA 서버는 시작되지 않았고 다른 도구·shell·encoding으로 우회하지 않았다. 추가 승인을 요구하지 않으며 사용자가 별도 터미널에서 해당 로컬 서버를 켜면 이어서 검사한다. 실행 방법과 이전 blocked 이력은 위 QA·보고서에 남겼다. 재개 첫 실행에서는 목표를 바로 blocked나 complete로 바꾸지 않았다. 실행개발계6d/build667·3105/Tunnel은 그대로이며 commit/push/PR/merge·개발계 교체·Preview/Production·실기기·관찰 사용자0이다. 아래 내용은 각 시점의 이력이다.
+
+이후 자동 이어가기 두 번에서도 QA3106 listener가 없는 것을 직접 확인했다. 허용 후 같은 실행 차단이 세 목표 turn에 연속 남았고 진행 중인 QA job handle도 없다. 안전한 조사·검사·감사를 이미 소진했으며 HTML/순수 모델을 앱 검증으로 대체할 수 없어13:38Z 재감사에서 목표를 blocked로 기록한다. 이는 완료·취소·사용자 요청에 따른 pause가 아니다. 합성 QA 서버가 준비되고 사용자가 재개하면 같은20+60검사를 이어간다. 더 이상의 승인은 요구하지 않는다.
+
+허용 답변을 기다리는 동안 실제 문서ID·matrix 완결성·nonexact 요청 거절·개인 날짜 override와 source identity 분리 등 검사 공백을 보완했다. 서버/브라우저/설정 없이 fixture14·기존 boundary7, 총21/21과 관련 타입 진단0을 확인했다. 새 앱의20개 시나리오를 PASS로 바꾸지 않았으며 상세 보완·초기 실패는 위 QA에 남겼다.
+
 ## 현재 — 폴더 입력·Flow 진입 UX 개발계 반영·마감 게시 (2026-10-01)
 
 [승인 목표](./specs/2026-10-01-alpha-folder-content-dev-release/spec.md)·[단계 계획](./specs/2026-10-01-alpha-folder-content-dev-release/plan.md)에 따라 원문 보존·기존 모델 용량 경계를 보완하고 소유33파일을 `6d534a97`로 게시했다. [Draft PR207](https://github.com/knhbae/flowme2605/pull/207) 제품 CI 필수4개 통과 후 2026-10-01T10:35:11Z 기존3105 앱만 교체했다. 실행 build는 `667DI4JldqTDckfQ16wB5`이며 Tunnel·설정·이전 복귀 build·privatepack·원본 피드백 보호7개 hash는 같다. [짧은 HTML 보고서](./content-audit/2026-10-01-flowme-folder-content-dev-release-ko.html)·[결과/잔여](./specs/2026-10-01-alpha-folder-content-dev-release/results.md)·[QA](./specs/2026-10-01-alpha-folder-content-dev-release/qa.md)·[반영/복귀](./specs/2026-10-01-alpha-folder-content-dev-release/runbook.md)를 연결한다.

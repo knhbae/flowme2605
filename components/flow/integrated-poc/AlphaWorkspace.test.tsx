@@ -675,6 +675,45 @@ test('known rejected save notice does not direct intact input to a reload', asyn
   assert(!h.context.message.includes('새로고침'));
 });
 
+test('NHUI01 definitive native handoff rejection keeps the existing comparison without generic private correction or conflict actions', () => {
+  const h = harness();
+  h.context.snapshot = { ...snapshot(), status: 'recovery-required', draft: { kind: 'creator' }, retryableNativeHandoff: true };
+  const tree = h.render();
+  assert(text(tree).includes('저장 거절 · 입력 보존됨'));
+  assert(text(tree).includes('비교와 선택은 유지했습니다. 같은 선택으로 다시 적용해 주세요.'));
+  assert(!text(tree).includes('문서에서 내용을 수정한 뒤'));
+  assert.equal(nodes(tree).filter(node => node.type === 'conflict-review').length, 0);
+  assert.equal(nodes(tree).filter(node => node.props['aria-label'] === '다른 기기 변경과 입력 보호').length, 0);
+  assert.equal(evaluate(initializer('modalRecovery'), h.context), null);
+  assert(!h.calls.includes('mutation')); assert(!h.calls.includes('discard'));
+  h.context.external = true;
+  assert(nodes(h.render()).some(node => node.props['aria-label'] === '다른 기기 변경과 입력 보호'));
+});
+
+test('NHUI02 native retry guidance requires live eligibility and unknown pending still directs to the same request', async () => {
+  const h = harness(); h.initialize();
+  h.context.snapshot = { ...snapshot(), status: 'recovery-required', draft: { kind: 'creator' }, retryableNativeHandoff: true };
+  h.context.controller.current = { ...h.store, mutate: async () => ({ ok: false, reason: 'limit' }) };
+  await h.mutate();
+  assert.equal(h.context.message, '저장되지 않았습니다. 비교와 선택은 유지했습니다. 같은 선택으로 다시 적용해 주세요.');
+  h.context.snapshot.pending = { requestId: 'unknown-handoff' };
+  await h.mutate(); assert.equal(h.context.message, 'checking-result');
+  h.render();
+  const pendingRecovery = evaluate(initializer('modalRecovery'), h.context);
+  assert.equal(pendingRecovery.props['aria-label'], '저장 결과 복구');
+  assert.equal(h.calls.includes('resolve:true'), false);
+});
+
+test('NHUI03 a recovered or invalidated native draft retains the latest-comparison recovery path, not direct retry guidance', () => {
+  const h = harness();
+  h.context.snapshot = { ...snapshot(), status: 'recovery-required', draft: { kind: 'creator' }, retryableNativeHandoff: false };
+  const tree = h.render();
+  assert(!text(tree).includes('같은 선택으로 다시 적용해 주세요.'));
+  assert(nodes(tree).some(node => node.props['aria-label'] === '다른 기기 변경과 입력 보호'));
+  assert.equal(nodes(evaluate(initializer('modalRecovery'), h.context)).filter(node => node.type === 'button').length, 1);
+  assert(!h.calls.includes('mutation')); assert(!h.calls.includes('discard'));
+});
+
 test('unknown save notice directs to the same-request result check instead of a reload', async () => {
   const h = harness(); h.initialize();
   h.context.snapshot = { ...snapshot(), status: 'recovery-required', pending: { requestId: 'still-pending' } };

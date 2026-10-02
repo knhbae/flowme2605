@@ -1,5 +1,13 @@
 # FLOW Spec Layer
 
+## 검증한 두 UX 묶음의 개발계 선별 반영 (2026-10-02)
+
+[목표·경계](./2026-10-02-alpha-two-ux-dev-release/spec.md)·[계획](./2026-10-02-alpha-two-ux-dev-release/plan.md)·[작업](./2026-10-02-alpha-two-ux-dev-release/tasks.md)·[QA](./2026-10-02-alpha-two-ux-dev-release/qa.md)·[교체/복귀](./2026-10-02-alpha-two-ux-dev-release/runbook.md). 제작→개인 실행과 폴더·작성·날짜 검증 후보의 소유 통합·게시/CI·개발계 판본 정렬 목표다. 정확한 게시·비공개 CI·앱 교체 범위를 확인한 뒤 실행하며 새 정책·main merge·DB/Auth/Tunnel·Production·사용자 관찰은 제외한다.
+
+## 폴더 연결·작성·날짜 UX 갭 묶음 (2026-10-02)
+
+[목표·경계](./2026-10-02-alpha-feedback-ux-bundle/spec.md)·[단계 계획](./2026-10-02-alpha-feedback-ux-bundle/plan.md)·[작업](./2026-10-02-alpha-feedback-ux-bundle/tasks.md)·[검증](./2026-10-02-alpha-feedback-ux-bundle/qa.md). 최신26항목과 중간 보완을 대조해 같은 격리 후보를 이어간다. 구현/합성 QA/시안/미결 정책/개발계 반영을 구분하며 실제 서비스 교체·게시·관찰 시험은 제외한다. 아래 날짜별 범위는 이전 기록이다.
+
 ## 세 작성 UX 후보의 개발계 반영 (2026-10-01)
 
 [승인 범위](./2026-10-01-alpha-writing-ux-dev-release/spec.md), [단계 계획](./2026-10-01-alpha-writing-ux-dev-release/plan.md), [작업](./2026-10-01-alpha-writing-ux-dev-release/tasks.md), [QA/반영 원장](./2026-10-01-alpha-writing-ux-dev-release/qa.md). 여정·폴더·입력 후보의 소유 통합과 게시/CI·기존 Cloudflare 앱 선별 교체이며 main 병합·DB/Auth/Tunnel·새5D·Production 배포는 제외한다. 실제 반영 완료는 QA의 후속 기록을 따른다.

@@ -62,3 +62,5 @@
   .toolbar { padding: 4px; gap: 4px; }
   .status { padding: 4px; }
 }
+.folderPreview { display: grid; gap: 6px; margin: 8px 0 16px; padding: 10px 12px; border-left: 3px solid #237b70; background: #f1f6f3; overflow-wrap: anywhere; }
+.folderPreview small { color: #536c64; white-space: pre-wrap; }

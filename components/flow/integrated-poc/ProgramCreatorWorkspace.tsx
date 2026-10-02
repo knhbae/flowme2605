@@ -41,6 +41,9 @@ import { ProgramCreatorNativeLineage, defaultProgramNativeLineageMappings } from
 import { programRawTemplateResultPolicy, programCreatorResultScope, programCreatorResultNavigation, programTemplateResultViews } from '@/lib/flow/integrated-poc/creator-template-result';
 import { normalizeAlphaCreatorRawUpdateChoices, type AlphaCreatorIntent } from '@/lib/flow/integrated-poc/alpha-creator/contract';
 import { executeAlphaCreatorIntent, previewAlphaCreatorSavedRestore } from '@/lib/flow/integrated-poc/alpha-creator/dispatch';
+import { validateProgramNativeExecutionSources } from '@/lib/flow/integrated-poc/creator-native-execution-validation';
+import { textWorkspaceModel as M } from '@/lib/flow/integrated-poc/text-workspace';
+import { programDocumentContentLock } from '@/lib/flow/integrated-poc/reference-execution-guard';
 
 export type ProgramCreatorWorkspaceProps = { data: ProgramData; mutate: ProgramMutate; navigate: ProgramNavigate; today: string;
   storageScope?: 'local' | 'account';
@@ -56,6 +59,21 @@ export function programCreatorWithEditorText(working:ProgramCreatorWorking,rawTe
 export function programCreatorNeedsSave(data: ProgramData, actorId: string, working: ProgramCreatorWorking | null): boolean {
   const workspace = data.spaces[actorId]?.creatorWorkspace;
   return !!working && (!workspace || !programSame(working, creatorWorkingFromRecord(workspace, working.draftId)));
+}
+/** Read an existing native binding; never infer a document from its title or text. */
+export function programCreatorExecutionDocument(data: ProgramData, actorId: string, draftId: string): string | null {
+  if (data.activeActorId !== actorId) return null;
+  const space = data.spaces[actorId], workspace = space?.creatorWorkspace;
+  const owner = workspace?.nativeExecutionSources?.[draftId], handoff = workspace?.handoffs[draftId];
+  const savedNative = workspace?.structureDrafts?.[draftId]?.nativeDocument, acceptedNative = owner?.revisions.at(-1)?.nativeDocument;
+  if (!space || !workspace || !owner || workspace.library.records[draftId]?.status !== 'active'
+    || !savedNative || !acceptedNative || savedNative.id !== acceptedNative.id
+    || savedNative.source.storageKey !== acceptedNative.source.storageKey || savedNative.source.draftId !== acceptedNative.source.draftId
+    || savedNative.document.documentId !== acceptedNative.document.documentId || handoff?.documentId !== owner.documentId
+    || handoff.recordRevision !== owner.revisions.at(-1)?.recordRevision
+    || !M.getDocument(space.text, owner.documentId) || programDocumentContentLock(space, owner.documentId) !== 'active'
+    || !validateProgramNativeExecutionSources({ [draftId]: owner }, space, workspace.library.records)) return null;
+  return owner.documentId;
 }
 export function ProgramCreatorHandoffComparison({ previous, personal, next, source }: { previous: string | null; personal: string | null; next: string | null; source: string }) {
   return <section aria-label="제작물과 개인 문서 비교" className={styles.comparison}><p>개인 문서의 수정은 자동으로 덮어쓰지 않습니다. 개인 문서를 먼저 확인하거나 제작 원문을 다시 조정하세요.</p>
@@ -170,6 +188,8 @@ export function ProgramCreatorWorkspace(props: ProgramCreatorWorkspaceProps) {
   const preview = useMemo(() => buffer ? previewProgramCreatorSource(buffer, today, clock, { baseDate: navigation.baseDate, selectedDate: navigation.selectedDate }) : null, [buffer, today, clock, navigation.baseDate, navigation.selectedDate]);
   const record = buffer ? workspace?.library.records[buffer.draftId] : undefined;
   const needsSave = programCreatorNeedsSave(data, actorId, buffer);
+  const executionDocumentId = useMemo(() => buffer?.nativeDocument
+    ? programCreatorExecutionDocument(data, actorId, buffer.draftId) : null, [data, actorId, buffer?.draftId, !!buffer?.nativeDocument]);
   const rows = workspace ? listPersonalWorkspacePocCreatorDrafts(workspace.library, { query, status: archived ? 'archived' : 'active' }) : [];
   const guides = useMemo(() => buffer ? buildPersonalWorkspacePocEditorLineGuides({ rawText: buffer.rawText, sourceFingerprint: fingerprint(buffer.rawText), view: 'flow', selectionStart: 0, selectionEnd: 0, ghostEnabled: false }) : [], [buffer?.rawText]);
   function report(ok: boolean, text: string) { setError(!ok); setMessage(text); }
@@ -413,6 +433,20 @@ export function ProgramCreatorWorkspace(props: ProgramCreatorWorkspaceProps) {
     report(true,'개인 실행은 바꾸지 않았습니다.');
     synchronizeCreatorWorking();
     if(typeof window!=='undefined')window.requestAnimationFrame(()=>{if(!nativeHandoffRef.current&&!composing.current)nativeHandoffTrigger.current?.focus();});
+  }
+  function openExecutionDocument(documentId: string) {
+    const working = nativeBuffer(), current = dataRef.current;
+    if (!working?.nativeDocument || current.activeActorId !== actorId
+      || programCreatorExecutionDocument(current, actorId, working.draftId) !== documentId) {
+      report(false, '연결한 개인 문서를 확인하지 못했습니다. 최신 제작 초안과 개인 문서를 확인해 주세요.'); return;
+    }
+    if (pending.current || saving.current || lockCount.current || port.hasPendingInput?.()
+      || programCreatorNeedsSave(current, actorId, working)
+      || !programSame(current.spaces[actorId].creatorWorkspace?.working ?? null, baseline.current)) {
+      report(false, '작성 중인 입력과 비교를 저장하거나 취소한 뒤 개인 문서를 열어 주세요. 입력은 유지했습니다.'); return;
+    }
+    try { navigate({ view: 'space', id: documentId }); }
+    catch { report(false, '개인 문서를 열지 못했습니다. 현재 입력과 기록은 유지했습니다.'); }
   }
   function prepareNativeHandoff() {
     const working=nativeBuffer();
@@ -846,6 +880,7 @@ export function ProgramCreatorWorkspace(props: ProgramCreatorWorkspaceProps) {
           onCalendarSelectedDateChange={selectedDate => chooseResult({ selectedDate })} onOpenItem={intent => { const sourceLine = preview.result?.ok ? preview.result.projection.items.find(item => item.ref === intent.itemRef)?.sourceLine : undefined; if (sourceLine) { setTab('input'); window.setTimeout(() => { const offset = buffer.rawText.split('\n').slice(0,sourceLine-1).join('\n').length + (sourceLine > 1 ? 1 : 0); editor.current?.focusRange(offset); },0); } }} />
           : <p role="status">원문의 확인 항목을 해결하면 결과를 볼 수 있습니다.</p>}
         {buffer.nativeDocument?<button ref={nativeHandoffTrigger} disabled={blocked||needsSave||buffer.nativePendingRawText!==undefined||!!nativeHandoff||!!nativeLineage} onClick={prepareNativeHandoff}>제작 설정을 개인 실행과 비교</button>:<button disabled={blocked || needsSave || !preview?.materialized?.ok} onClick={() => void handoff()}>{workspace?.handoffs[buffer.draftId] ? '같은 개인 문서에 인계' : '확인한 제작물을 개인 문서로 인계'}</button>}{needsSave && <p>인계 전에 제작 초안을 명시 저장해 주세요.</p>}
+        {executionDocumentId && <button disabled={blocked || needsSave || buffer.nativePendingRawText !== undefined || !!nativeHandoff || !!nativeLineage} onClick={() => openExecutionDocument(executionDocumentId)}>개인 문서 열기</button>}
         {nativeHandoff&&<div ref={nativeHandoffFrame}><ProgramCreatorNativeHandoff preview={nativeHandoff} choices={nativeHandoffChoices} busy={busy||locked} feedback={{error,text:message}} onChange={changeNativeHandoff} onApply={()=>void acceptNativeHandoff()} onCancel={cancelNativeHandoff} onRefresh={prepareNativeHandoff}/></div>}
         {nativeLineage&&<div ref={lineageFrame}><ProgramCreatorNativeLineage preview={nativeLineage} mapping={lineageMapping} busy={busy||locked} feedback={{error,text:message}}
           onChange={next=>{if(pending.current||lockCount.current)return;lineageMappingRef.current=next;setLineageMapping(next);lineageRequest.current={id:programId('native-lineage'),now:null};}} onApply={()=>void acceptNativeLineage()} onCancel={cancelNativeLineage} onRefresh={prepareNativeHandoff}/></div>}

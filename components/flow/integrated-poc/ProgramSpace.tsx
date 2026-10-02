@@ -1,18 +1,19 @@
 'use client';
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { programClone, programFailure, programId, programResult, type ProgramData, type ProgramTransition, type ProgramWritingPosition } from '@/lib/flow/integrated-poc/contract';
+import { programClone, programFailure, programId, programResult, type ProgramData, type ProgramPrivateSpace, type ProgramTransition, type ProgramWritingPosition } from '@/lib/flow/integrated-poc/contract';
 import { programDate } from '@/lib/flow/integrated-poc/program-data';
 import { addProgramQuickTask, archiveProgramDocument, completeProgramTask, createProgramDocument, createProgramFolder, deleteProgramFolder, linkProgramTask, moveProgramFolder, recordProgramTaskProgress, renameProgramDocument, renameProgramFolder, setProgramDocumentFolder, updateProgramTask } from '@/lib/flow/integrated-poc/private-space';
-import { programDateRange, programExecutionTasks, programIsContinuingTask, programShiftDate, programShiftMonth, type ProgramPeriod } from '@/lib/flow/integrated-poc/execution';
+import { programDateRange, programExecutionTasks, programShiftDate, programShiftMonth, type ProgramPeriod } from '@/lib/flow/integrated-poc/execution';
 import { programOrderedExecutionRows, programTextExecutionKey, reorderProgramExecutionTimeline } from '@/lib/flow/integrated-poc/recurrence-order';
+import { programExecutionDayPresentation, readProgramTaskDatePresentation } from '@/lib/flow/integrated-poc/execution-presentation';
 import { mergeProgramTextWorkspace } from '@/lib/flow/integrated-poc/text-merge';
 import { flushProgramEditorCollection, prepareProgramDocumentAction, type ProgramEditorFlush } from '@/lib/flow/integrated-poc/document-action';
 import { textWorkspaceModel as M, type TextTask, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
 import { programErrorMessage, type ProgramMutate, type ProgramNavigate, type ProgramMutationResult, type ProgramDestination } from '@/lib/flow/integrated-poc/ui-contract';
 import { emptyProgramRecurrencePresentation, programNavigationMatchesDocument, type ProgramSpaceNavigation } from '@/lib/flow/integrated-poc/navigation';
 import { ProgramDocumentProvenance } from './ProgramDocumentProvenance';
-import { ProgramTextEditor, type ProgramSourceFocus } from './ProgramTextEditor';
+import { ProgramTextEditor, type ProgramSourceFocus, type ProgramTextCommitOptions } from './ProgramTextEditor';
 import { readProgramFolderRegions } from '@/lib/flow/integrated-poc/folder-document-regions';
 import { ProgramRecurrence } from './ProgramRecurrence';
 import { ProgramRecurrencePlanRecovery } from './ProgramRecurrencePlanRecovery';
@@ -27,6 +28,7 @@ import { programLegacyTaskQualityHold, programPreservesLegacyQualityHold } from 
 import { programPreservesLegacyPlanExcluded } from '@/lib/flow/integrated-poc/program-legacy-plan-target';
 import { programPreservesSeriesMetadata, programSeriesMetadata } from '@/lib/flow/integrated-poc/recurrence-target';
 import { programDocumentContentLock, programPreservesLockedDocumentContent, programReferenceExecutionAccess } from '@/lib/flow/integrated-poc/reference-execution-guard';
+import { resolveAlphaPrivateTaskSchedule } from '@/lib/flow/integrated-poc/alpha-social/private-task-schedule';
 import styles from './ProgramSpace.module.css';
 import { programRecurrenceFocusId, resolveProgramRecurrencePlanFocus, type ProgramRecurrencePlanFocusRequest } from '@/lib/flow/integrated-poc/recurrence-plan-focus';
 
@@ -59,8 +61,30 @@ export const PROGRAM_EMPTY_EXAMPLE = '이번 주 준비\n- [ ] 확인할 일\n  
 // A06 / V41-004–005: restore the approved v4.1 touch thresholds, not a new policy.
 export const PROGRAM_MOVE_GESTURE_V1 = Object.freeze({ version: 1, holdMs: 350, cancelDistancePx: 8 });
 
+function sameScheduleWorkspace(before: TextWorkspaceState, expected: TextWorkspaceState, actual: TextWorkspaceState) {
+  if (!M.validate(actual)) return false;
+  const comparable = programClone(expected);
+  const priorIds = new Set([...before.documents, ...before.flows].flatMap(doc => doc.lines.map(line => line.id)));
+  // The existing serializer gives new date/time properties fresh IDs. Every
+  // original row ID and every other workspace field must still match exactly.
+  for (const doc of [...comparable.documents, ...comparable.flows]) {
+    const incoming = M.getDocument(actual, doc.id); if (!incoming) return false;
+    for (let index = 0; index < doc.lines.length; index++) {
+      const line = doc.lines[index]; if (priorIds.has(line.id)) continue;
+      const row = incoming.lines[index]; if (!row || priorIds.has(row.id)) return false;
+      line.id = row.id;
+    }
+  }
+  return programSame(comparable, actual);
+}
+
 export function ProgramSpace(props: ProgramSpaceProps) {
   const { data, mutate, today } = props, actorId = data.activeActorId, space = data.spaces[actorId];
+  const dataRef = useRef(data); dataRef.current = data;
+  const scheduleMounted = useRef(true);
+  const scheduleAcknowledgment = useRef<{ actorId: string; before: ProgramPrivateSpace; after: ProgramPrivateSpace;
+    beforeData: ProgramData; afterData: ProgramData; detail: boolean;
+    accept?: (workspace: TextWorkspaceState | null) => void; timeout?: ReturnType<typeof setTimeout> } | null>(null);
   const [period, setPeriod] = useState<ProgramPeriod>('documents');
   const [date, setDate] = useState(today), [folderId, setFolderId] = useState(''), [query, setQuery] = useState('');
   const [selected, setSelected] = useState(props.selectedDocumentId ?? space.position.documentId ?? '');
@@ -128,6 +152,34 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const setIncludeHeldOccurrences = (value: boolean) => setRecurrencePresentation(previous => ({ ...previous, includeHeld: value }));
   const setIncludeExcludedOccurrences = (value: boolean) => setRecurrencePresentation(previous => ({ ...previous, includeExcluded: value }));
   const detailExpected = useRef<typeof space | null>(null), formExpected = useRef<typeof space | null>(null);
+  function clearScheduleAcknowledgment(workspace: TextWorkspaceState | null = null) {
+    const acknowledgment = scheduleAcknowledgment.current; scheduleAcknowledgment.current = null;
+    if (acknowledgment?.timeout) clearTimeout(acknowledgment.timeout);
+    acknowledgment?.accept?.(workspace);
+  }
+  function reconcileScheduleAcknowledgment() {
+    const acknowledgment = scheduleAcknowledgment.current;
+    if (!acknowledgment) return;
+    if (!scheduleMounted.current) { clearScheduleAcknowledgment(); return; }
+    const current = dataRef.current, authoritative = current.spaces[acknowledgment.actorId];
+    if (current.activeActorId !== acknowledgment.actorId || !authoritative || acknowledgment.detail && detailExpected.current !== acknowledgment.after) { clearScheduleAcknowledgment(); return; }
+    const comparable = programClone(acknowledgment.after); comparable.text = authoritative.text;
+    const whole = programClone(acknowledgment.afterData); whole.spaces[acknowledgment.actorId].text = authoritative.text;
+    // Request receipts belong to the host protocol, not this semantic text/owner proof.
+    whole.receipts = current.receipts;
+    if (programSame(comparable, authoritative) && (!acknowledgment.accept || programSame(whole, current))
+      && sameScheduleWorkspace(acknowledgment.before.text, acknowledgment.after.text, authoritative.text)) {
+      if (acknowledgment.detail) detailExpected.current = authoritative;
+      clearScheduleAcknowledgment(authoritative.text); return;
+    }
+    if (programSame(current, acknowledgment.beforeData)) return;
+    clearScheduleAcknowledgment();
+  }
+  useEffect(() => { reconcileScheduleAcknowledgment(); }, [data]);
+  useEffect(() => {
+    scheduleMounted.current = true;
+    return () => { scheduleMounted.current = false; clearScheduleAcknowledgment(); };
+  }, []);
   const dialog = useRef<HTMLDialogElement>(null), previousFocus = useRef<HTMLElement | null>(null);
   const hold = useRef<ReturnType<typeof setTimeout> | null>(null), holdPoint = useRef<{ x: number; y: number } | null>(null);
   const suppressPointerClick = useRef<string | null>(null);
@@ -148,8 +200,10 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const executionQuery = { period, date, today, folderId, query, includeHeld: includeHeldOccurrences, includeExcluded: includeExcludedOccurrences, page: occurrencePage };
   const occurrenceResult = useMemo(() => period === 'documents' ? { rows: [], issues: [], hasMore: false, pendingStarts: [] } : programOrderedExecutionRows(data, executionQuery), [data, period, date, today, folderId, query, includeHeldOccurrences, includeExcludedOccurrences, occurrencePage]);
   const executionRows = occurrenceResult.rows;
+  const executionDayRows = programExecutionDayPresentation(executionRows, period, date, today);
   const allTasks = useMemo(() => programExecutionTasks(space), [space]);
   const detailTask = detail?.kind === 'task' ? allTasks.find(task => task.id === detail.id) : null;
+  const detailDatePresentation = useMemo(() => detailTask ? readProgramTaskDatePresentation(space.text, detailTask) : null, [space.text, detailTask]);
   const matchingDocumentIds = useMemo(() => new Set(folderId && docs[0] ? readProgramFolderRegions(space.text, docs[0].id, folderId)?.matchingDocumentIds ?? [] : []), [space.text, folderId]);
   const documentList = docs.filter(doc => !retainedIds.has(doc.id) && !space.documentTrash?.[doc.id] && space.archivedDocumentIds.includes(doc.id) === showArchived && (!folderId || doc.folderId === folderId || matchingDocumentIds.has(doc.id))
     && (!query || `${doc.title}\n${M.raw(doc)}`.toLocaleLowerCase().includes(query.toLocaleLowerCase())));
@@ -332,16 +386,41 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   }
   // User intent is based on the displayed state, not whatever happens to be on disk at commit time.
   const base = (_current: ProgramData) => ({ actorId, requestId: programId('request'), expectedSpace: detailExpected.current ?? formExpected.current ?? space });
-  const run = async (label: string, build: (current: ProgramData) => ProgramTransition<string>, history = true) => {
+  const run = async (label: string, build: (current: ProgramData) => ProgramTransition<string>, history = true,
+    schedule?: { taskId: string; date: string | null; time?: string; onAcknowledged?: (workspace: TextWorkspaceState | null) => void }) => {
     let committedSpace: typeof space | null = null;
-    const result = await mutate(label, current => { const next = build(current); if (next.ok) committedSpace = next.data.spaces[actorId]; return next; }, { history });
-    if (result.ok) { formExpected.current = null; if (detailExpected.current && committedSpace) detailExpected.current = committedSpace; }
+    let beforeSchedule: typeof space | null = null;
+    let beforeScheduleData: ProgramData | null = null, committedScheduleData: ProgramData | null = null;
+    const target = schedule ? resolveAlphaPrivateTaskSchedule(data, actorId, schedule.taskId) : null;
+    const task = target ? allTasks.find(item => item.id === target.taskId) : null;
+    const alphaSocial = target && task && schedule ? { type: 'private-task-schedule' as const, ...target,
+      date: schedule.date, time: schedule.time ?? task.time ?? '' } : undefined;
+    const result = await mutate(label, current => { const next = build(current); if (next.ok) { if (schedule) { beforeSchedule = current.spaces[actorId]; beforeScheduleData = current; committedScheduleData = next.data; } committedSpace = next.data.spaces[actorId]; } return next; },
+      { history, ...(alphaSocial ? { alphaSocial } : {}) });
+    if (result.ok) {
+      formExpected.current = null;
+      if (detailExpected.current && committedSpace) {
+        detailExpected.current = committedSpace;
+      }
+      if (schedule && beforeSchedule && committedSpace && beforeScheduleData && committedScheduleData) {
+        clearScheduleAcknowledgment();
+        const acknowledgment = { actorId, before: beforeSchedule, after: committedSpace, beforeData: beforeScheduleData,
+          afterData: committedScheduleData, detail: detailExpected.current === committedSpace,
+          accept: schedule.onAcknowledged, timeout: undefined as ReturnType<typeof setTimeout> | undefined };
+        scheduleAcknowledgment.current = acknowledgment;
+        // A missing render cannot leave the draft permanently saving or certify an unseen response.
+        if (acknowledgment.accept) acknowledgment.timeout = setTimeout(() => {
+          if (scheduleAcknowledgment.current === acknowledgment) clearScheduleAcknowledgment();
+        }, 3000);
+        reconcileScheduleAcknowledgment();
+      }
+    }
     // AlphaWorkspace owns the transient busy notice and clears it on settlement.
     // Keep this form's prior failure/input state instead of persisting a duplicate.
     if (result.ok || result.reason !== 'busy') setMessage(result.ok ? '' : programErrorMessage(result.reason)); return result;
   };
   function cancelHold() { if (hold.current) clearTimeout(hold.current); hold.current = null; holdPoint.current = null; }
-  function close() { dialog.current?.close(); detailExpected.current = null; setDetail(null); setMessage(''); previousFocus.current?.focus(); }
+  function close() { dialog.current?.close(); detailExpected.current = null; clearScheduleAcknowledgment(); setDetail(null); setMessage(''); previousFocus.current?.focus(); }
   function openDetail(next: Detail) {
     previousFocus.current = document.activeElement as HTMLElement; detailExpected.current = space;
     const task = next?.kind === 'task' ? allTasks.find(task => task.id === next.id) : null;
@@ -428,7 +507,32 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     });
     if (result.ok) form.reset();
   }
-  async function editorCommit(docId: string, nextText: TextWorkspaceState, label: string, options?: { groupId?: string; expectedWorkspace?: TextWorkspaceState }) {
+  async function editorCommit(docId: string, nextText: TextWorkspaceState, label: string, options?: ProgramTextCommitOptions) {
+    const schedule = options?.privateTaskSchedule;
+    if (schedule) {
+      const before = options.expectedWorkspace ?? space.text;
+      const task = M.tasks(before).find(item => item.id === schedule.taskId);
+      if (!task || !M.rowMeta(before, docId).some(row => row.progressTargetId === task.id || row.taskId === task.id)
+        || !M.validate(nextText) || !programSame(before, space.text)
+        || schedule.date !== null && !programDate(schedule.date)
+        || schedule.time !== '' && !/^([01]\d|2[0-3]):[0-5]\d$/.test(schedule.time)
+        || preparing.current || inputLockCount.current > 0
+        || Object.entries(dirty.current).some(([id, pending]) => id !== docId && pending)
+        || Object.values(recurrencePorts.current).some(port => port?.hasPendingInput?.())) return false;
+      const expected = M.updateTask(before, task.id, { date: schedule.date, time: schedule.time });
+      if (!sameScheduleWorkspace(before, expected, nextText)) return false;
+      const target = resolveAlphaPrivateTaskSchedule(data, actorId, schedule.taskId);
+      if (!target && space.copies.some(copy => Object.values(copy.itemLines).includes(schedule.taskId))) return false;
+      if (target) {
+        let accept: ((workspace: TextWorkspaceState | null) => void) | undefined;
+        const confirmation = options.onPrivateTaskScheduleAcknowledged
+          ? new Promise<TextWorkspaceState | null>(resolve => { accept = resolve; }) : undefined;
+        const result = await run(label, current => updateProgramTask(current, { actorId, requestId: programId('schedule'),
+          expectedSpace: space, taskId: task.id, patch: { date: schedule.date, time: schedule.time } }), true, { ...schedule, onAcknowledged: accept });
+        if (result.ok && confirmation) options.onPrivateTaskScheduleAcknowledged!(confirmation);
+        return result.ok;
+      }
+    }
     let receipt: { before: typeof space; after: typeof space } | null = null;
     const result = await mutate(label, current => {
       if (current.activeActorId !== actorId) return programFailure(current, 'conflict');
@@ -469,12 +573,13 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   }
   const moveStep = (task: TextTask, direction: -1 | 1) => moveExecutionStep(programTextExecutionKey(task), direction);
   async function dateMove(taskId: string, nextDate: string | null) {
-    const result = await run('실행 날짜 변경', current => updateProgramTask(current, { ...base(current), taskId, patch: { date: nextDate } }));
+    const result = await run('실행 날짜 변경', current => updateProgramTask(current, { ...base(current), taskId, patch: { date: nextDate } }), true, { taskId, date: nextDate });
     if (result.ok) setExecutionDateDraft(nextDate ?? '');
   }
   async function applySchedule(taskId: string) {
     if (executionTimeDraft && !/^([01]\d|2[0-3]):[0-5]\d$/.test(executionTimeDraft)) { setMessage('시간을 시:분 형식으로 입력해 주세요.'); return; }
-    await run('실행 날짜·시간 변경', current => updateProgramTask(current, { ...base(current), taskId, patch: { date: executionDateDraft || null, time: executionTimeDraft } }));
+    await run('실행 날짜·시간 변경', current => updateProgramTask(current, { ...base(current), taskId, patch: { date: executionDateDraft || null, time: executionTimeDraft } }),
+      true, { taskId, date: executionDateDraft || null, time: executionTimeDraft });
   }
   const folderOptions = space.text.folders.map(item => {
     const names = [item.title]; let parent = item.parentId;
@@ -592,8 +697,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         {occurrenceResult.pendingStarts.map(entry => <p role="status" key={entry.itemRef}>{entry.title} · {entry.reason === 'anchor-required' ? '내 기준일' : '내 시작일'} 미정
           <button type="button" onClick={() => void openDocument(entry.documentId, entry.lineId)}>사본에서 날짜 정하기</button></p>)}
         {!executionRows.length && <p className={styles.empty}>이 보기에 할 일이 없습니다. 날짜나 폴더를 바꾸거나 새 할 일을 적어보세요.</p>}
-        <ul className={styles.tasks}>{executionRows.map(entry => {
+        <ul className={styles.tasks}>{executionDayRows.map(({ entry, heading }) => {
           if (entry.kind === 'occurrence') return <li key={entry.key} onKeyDown={event => { if (event.altKey && ['ArrowUp', 'ArrowDown'].includes(event.key)) { event.preventDefault(); moveExecutionStep(entry.key, event.key === 'ArrowUp' ? -1 : 1); } }} onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); const from = event.dataTransfer.getData('text/plain'); if (from && (moving === from || nativeDrag.current === from)) void moveBefore(from, entry.key); nativeDrag.current = null; }}>
+            {heading && <h2 className={styles.executionGroup}>{heading}</h2>}
             {period === 'today' && entry.row.executionDate && entry.row.executionDate < date && <small>계속할 회차</small>}
             <div className={styles.actions}><button onClick={() => moveExecutionStep(entry.key, -1)}>같은 날짜에서 위로</button><button onClick={() => moveExecutionStep(entry.key, 1)}>같은 날짜에서 아래로</button>{moving && <button onClick={() => void moveBefore(moving, entry.key)}>이 회차 앞에 놓기</button>}</div>
             <ProgramRecurrence data={data} mutate={mutate} today={today} period={period} date={date} row={entry.row} onPlanApplied={focusAppliedPlan} onRegisterEditors={port => { recurrencePorts.current[entry.row.key] = port; }}
@@ -603,8 +709,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           return <li key={entry.key} className={styles.task} data-task-id={task.id} draggable onDragStart={event => { event.dataTransfer.setData('text/plain', entry.key); nativeDrag.current = entry.key; }} onDragEnd={() => { nativeDrag.current = null; setMoving(null); }}
             onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); const from = event.dataTransfer.getData('text/plain'); if (from && (moving === from || nativeDrag.current === from)) void moveBefore(from, entry.key); nativeDrag.current = null; }}
             onKeyDown={event => { if (event.altKey && ['ArrowUp', 'ArrowDown'].includes(event.key)) { event.preventDefault(); moveStep(task, event.key === 'ArrowUp' ? -1 : 1); } }}>
+            {heading && <h2 className={styles.executionGroup}>{heading}</h2>}
             <button className={styles.check} aria-label={`${task.title} ${value === 100 ? '다시 열기' : '완료'}`} aria-pressed={value === 100} onClick={() => void run(value === 100 ? '다시 열기' : '완료', current => completeProgramTask(current, { ...base(current), taskId: task.id, date: today, done: value !== 100 }))}>{value === 100 ? '✓' : value ? `${value}%` : '○'}</button>
-            <button className={styles.taskTitle} onClick={() => moving ? void moveBefore(moving, entry.key) : void openDocument(task.docId, task.id)}>{task.title}<small>{period === 'today' && programIsContinuingTask(task, date) ? '계속할 일 · ' : ''}{task.date ?? '날짜 미정'}{task.time ? ` · ${task.time}` : ''}<span className={styles.taskOrigin}>{taskFolderPath(task)} / {task.docTitle}</span></small></button>
+            <button className={styles.taskTitle} onClick={() => moving ? void moveBefore(moving, entry.key) : void openDocument(task.docId, task.id)}>{task.title}<small>{task.date ?? '날짜 미정'}{task.time ? ` · ${task.time}` : ''}<span className={styles.taskOrigin}>{taskFolderPath(task)} / {task.docTitle}</span></small></button>
             <button aria-label={`${task.title} 작업`} onClick={event => { if (suppressPointerClick.current === task.id && event.detail !== 0) { suppressPointerClick.current = null; return; } setRecordDate(today); setPercent(String(value)); openDetail({ kind: 'task', id: task.id }); }}
               onPointerDown={event => { suppressPointerClick.current = null; if (event.pointerType !== 'touch') return; cancelHold(); holdPoint.current = { x: event.clientX, y: event.clientY }; hold.current = setTimeout(() => { setMoving(entry.key); suppressPointerClick.current = task.id; hold.current = null; }, PROGRAM_MOVE_GESTURE_V1.holdMs); }}
               onPointerUp={cancelHold} onPointerCancel={() => { cancelHold(); suppressPointerClick.current = task.id; setMoving(null); }} onPointerMove={event => { if (holdPoint.current && Math.hypot(event.clientX - holdPoint.current.x, event.clientY - holdPoint.current.y) >= PROGRAM_MOVE_GESTURE_V1.cancelDistancePx) { cancelHold(); suppressPointerClick.current = task.id; } }}>…</button>
@@ -615,6 +722,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     <dialog ref={dialog} className={styles.dialog} onCancel={event => { event.preventDefault(); close(); }}><div className={styles.dialogHeading}><h2>{detail?.kind === 'task' ? detailTask?.title ?? '할 일을 찾을 수 없습니다' : detail?.kind === 'folder' ? '폴더 정리' : '기존 할 일 연결'}</h2><button onClick={close} aria-label="닫기">닫기</button></div>
       {message && <p role="alert" className={styles.error}>{message}</p>}
       {detail?.kind === 'task' && detailTask && <>
+        {detailDatePresentation && <p className={styles.muted} aria-label="날짜 출처">{detailDatePresentation.label}{detailDatePresentation.context && <small>{detailDatePresentation.context}</small>}</p>}
         <form onSubmit={event => { event.preventDefault(); void applySchedule(detailTask.id); }}><div className={styles.scheduleFields}><label className={styles.field}>실행 날짜<input type="date" value={executionDateDraft} onChange={event => setExecutionDateDraft(event.target.value)} /></label><label className={styles.field}>시간<input type="time" step="60" value={executionTimeDraft} onChange={event => setExecutionTimeDraft(event.target.value)} /><small>비워 두면 시간 없음</small></label></div><button>날짜·시간 적용</button></form><div className={styles.actions}><button onClick={() => void dateMove(detailTask.id, today)}>오늘로 이동</button><button onClick={() => void dateMove(detailTask.id, programShiftDate(today, 1))}>내일로 이어하기</button><button onClick={() => void dateMove(detailTask.id, null)}>날짜 미정으로 이동</button></div>
         <form onSubmit={async event => { event.preventDefault(); const result = await run('진행 기록', current => recordProgramTaskProgress(current, { ...base(current), taskId: detailTask.id, date: recordDate, percent: Number(percent) })); if (result.ok) setMessage('해당 날짜의 누적 진행을 저장했습니다.'); }}><h3>날짜별 진행</h3><label>기록 날짜<input type="date" value={recordDate} onChange={event => setRecordDate(event.target.value)} required /></label><label>누적 진행 (%)<input type="number" min={0} max={100} value={percent} onChange={event => setPercent(event.target.value)} required /></label><button>진행 기록</button></form>
         <ul>{M.progressHistory(space.text, detailTask.id).map(record => <li key={record.date}><button onClick={() => { setRecordDate(record.date); setPercent(String(record.percent)); }}>{record.date} · {record.percent}%</button></li>)}</ul>

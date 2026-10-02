@@ -9,6 +9,7 @@ import { saveProgramProposalReviewDraft, discardProgramProposalReviewDraft, subm
 import { submitProgramCopyProposal } from '../copy-proposal';
 import { deleteProgramPost, deleteProgramReply, toggleProgramReaction } from '../community';
 import { isAlphaSocialIntent, type AlphaSocialIntent } from './contract';
+import { applyAlphaPrivateTaskSchedule } from './private-task-schedule';
 
 export function alphaSocialAllowedFields(intent:AlphaSocialIntent):{private:readonly (keyof ProgramPrivateSpace)[];public:readonly (keyof ProgramPublicRepository)[]} {
  switch(intent.type){
@@ -28,6 +29,7 @@ export function alphaSocialAllowedFields(intent:AlphaSocialIntent):{private:read
   case 'copy-update':case 'copy-resolve':return {private:['text','copies','position'],public:[]};
   case 'copy-anchor':case 'copy-inclusion':case 'copy-series-link':case 'copy-series-unlink':return {private:['text','copies'],public:[]};
   case 'copy-series-start':return {private:['copies'],public:[]};
+  case 'private-task-schedule':return {private:['text','copies'],public:[]};
  }
 }
 /** The server supplies actor/request identity and current state. No client callback,
@@ -51,6 +53,7 @@ export function executeAlphaSocialIntent(data:ProgramData,actorId:string,intent:
    case 'publication-archive':return archiveProgramPublication(data,actorId,intent.documentId,intent.flowId,intent.expectedVersionId);
    case 'copy-import':return P.importProgramPublicVersion(data,{...intent,...base});
    case 'copy-anchor':return P.setProgramCopyAnchor(data,{...intent,...base});
+   case 'private-task-schedule':return applyAlphaPrivateTaskSchedule(data,{...intent,...base});
    case 'copy-inclusion':return P.setProgramCopyInclusion(data,{...intent,...base});
    case 'copy-series-start':return P.setProgramCopySeriesStart(data,{...intent,...base});
    case 'copy-series-link':return P.linkProgramCopySeries(data,{...intent,...base});

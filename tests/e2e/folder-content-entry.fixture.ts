@@ -5,13 +5,15 @@ import { pairedSocialAccount, users } from './alpha-auth.fixture';
 import { createAlphaFakeServer, validateAlphaCommand } from '../../lib/flow/integrated-poc/alpha-persistence/fake-server';
 import { materializeAccount, privateChanges } from '../../lib/flow/integrated-poc/alpha-persistence/program-adapter';
 import { canonicalJson } from '../../lib/flow/integrated-poc/alpha-persistence/json';
-import type { AlphaCommand, AlphaReceipt, AlphaPrivateCommand } from '../../lib/flow/integrated-poc/alpha-persistence/contract';
+import type { AlphaAccount, AlphaCommand, AlphaReceipt, AlphaPrivateCommand, AlphaChange } from '../../lib/flow/integrated-poc/alpha-persistence/contract';
 import { alphaSocialReferences, isAlphaSocialContext, type AlphaSocialContext } from '../../lib/flow/integrated-poc/alpha-social/projection';
 import { isAlphaSocialCommand } from '../../lib/flow/integrated-poc/alpha-social/contract';
 import { executeAlphaSocialIntent } from '../../lib/flow/integrated-poc/alpha-social/dispatch';
+import { isAlphaWireCommand } from '../../lib/flow/integrated-poc/alpha-sync/wire';
 import { isAlphaCreatorCommand } from '../../lib/flow/integrated-poc/alpha-creator/contract';
 import { dispatchAlphaCreatorCommand } from '../../lib/flow/integrated-poc/alpha-creator/dispatch';
 import { textWorkspaceModel as M, type TextWorkspaceState } from '../../lib/flow/integrated-poc/text-workspace';
+import { journeyCopySourceIdentity } from '../../scripts/alpha/flow-execution-journey-contract';
 
 export const folderIds = { company: 'entry-company', work: 'entry-work', personal: 'entry-personal', homonym: 'entry-homonym' };
 export const publicIds = { flow: 'entry-public-flow', version: 'entry-public-v1', item: 'entry-public-item', post: 'entry-public-post' };
@@ -32,9 +34,11 @@ export function prepareEntryText(initial: TextWorkspaceState): TextWorkspaceStat
  * ALL Auth, unrecognized API/network denial, WS denial, operating sentinels,
  * console errors, viewport overflow and production static-asset SHA256 checks.
  * No catalog source pack, signed BFF or real Supabase call is used here. */
-export async function mockFolderContentEntry(page: Page, options: { catalog?: boolean; community?: boolean; holdFirstCreatorSaveReceipt?: boolean } = {}) {
+export async function mockFolderContentEntry(page: Page, options: { catalog?: boolean; community?: boolean; holdFirstCreatorSaveReceipt?: boolean;
+  holdFirstPrivateScheduleReceipt?: boolean; prepareAccount?: (account: AlphaAccount) => AlphaAccount; creatorExecution?: boolean } = {}) {
   const base = await mockCloudflareRelease(page, { document: { title: '합성 연결 문서', raw: '' }, prepareText: prepareEntryText });
-  const seed = await base.current();
+  const initialAccount = await base.current();
+  const seed = options.prepareAccount ? options.prepareAccount(initialAccount) : initialAccount;
   const context = pairedSocialAccount('a', seed).value.context as AlphaSocialContext;
   const other = context.actors[1].id, stamp = '2026-10-01T00:00:00Z';
   if (options.catalog) {
@@ -56,27 +60,39 @@ export async function mockFolderContentEntry(page: Page, options: { catalog?: bo
   const repository = server.connect(server.issueSession(users.a.id));
   const commands: AlphaCommand[] = [], lookups: string[] = [], blocked: string[] = [], reads: number[] = [];
   const receipts = new Map<string, { fingerprint: string; receipt: AlphaReceipt }>();
+  const journeyPrivateUndoTargets = new Set<string>();
+  const journeySocialInverses = new Map<string, { revision: number; changes: AlphaChange[] }>();
   const publicHash = createHash('sha256').update(canonicalJson(context.public)).digest('hex');
   let intercepted = 0;
   let heldCreatorSaveReceipt: (() => void) | null = null;
   let creatorSaveReceiptHeld = false;
+  let heldPrivateScheduleReceipt: (() => void) | null = null;
+  let privateScheduleReceiptHeld = false;
   async function current() { const result = await repository.read(); if (!result.ok) throw Error('entry-account-unavailable'); return result.value; }
   const json = (route: Route, value: unknown) => route.fulfill({ status: 200, contentType: 'application/json',
     headers: { 'Access-Control-Allow-Origin': RELEASE_ORIGIN, 'Access-Control-Allow-Headers': '*',
       'Access-Control-Allow-Methods': 'GET,POST,OPTIONS' }, body: JSON.stringify(value) });
-  await page.addInitScript(() => {
+  await page.addInitScript(`(() => {
     const audit = { calls: 0 }; Object.defineProperty(window, '__folderContentStorage', { value: audit });
-    for (const name of ['setItem', 'removeItem', 'clear'] as const) {
+    for (const name of ['setItem', 'removeItem', 'clear']) {
       const original = Storage.prototype[name];
-      Object.defineProperty(Storage.prototype, name, { configurable: true, value: function(this: Storage, ...args: string[]) {
+      Object.defineProperty(Storage.prototype, name, { configurable: true, value: function(...args) {
         audit.calls++; return Reflect.apply(original, this, args);
       } });
     }
-  });
+  })()`);
   // Page routes run before the shared context boundary. Every nonexact match
   // falls through to that deny-by-default boundary, never route.continue().
   await page.route('**/*', async route => {
     const request = route.request(), url = new URL(request.url()), method = request.method();
+    // Nonexact requests for overlay-owned ports must not fall into the base
+    // fixture's broader synthetic handler, even though that handler is offline.
+    const ownApi = url.origin === RELEASE_ORIGIN && ['/api/alpha/account', '/api/alpha/creator', '/api/alpha/social'].includes(url.pathname);
+    const ownRpc = url.origin === 'https://wkmzcxpnojobxrgebapw.supabase.co' && url.pathname === '/rest/v1/rpc/flowme_alpha_social_read_v1';
+    if ((ownApi && (method !== 'POST' || url.search || url.username || url.password))
+      || (ownRpc && (url.search || url.username || url.password || !['POST', 'OPTIONS'].includes(method)))) {
+      intercepted++; blocked.push(`${method}:${url.pathname}:nonexact`); return json(route, { ok: false, reason: 'invalid' });
+    }
     if (url.origin === 'https://wkmzcxpnojobxrgebapw.supabase.co' && method === 'POST'
       && url.pathname === '/rest/v1/rpc/flowme_alpha_social_read_v1' && !url.search) {
       intercepted++; expect(request.postDataJSON()).toEqual({}); const account = await current(); reads.push(account.revision);
@@ -96,11 +112,19 @@ export async function mockFolderContentEntry(page: Page, options: { catalog?: bo
       lookups.push(body.requestId); return json(route, { ok: true, value: receipts.get(body.requestId)?.receipt ?? null });
     }
     const command = body.command;
-    const privateCommand = url.pathname === '/api/alpha/account' && validateAlphaCommand(command);
+    const privateCommand = url.pathname === '/api/alpha/account' && validateAlphaCommand(command)
+      && (!options.creatorExecution || (command.kind === 'change-private'
+        ? command.changes.every(change => ['text', 'position'].includes(change.field))
+        : command.kind === 'undo-private' && journeyPrivateUndoTargets.has(command.operationId)));
     const creatorCommand = url.pathname === '/api/alpha/creator' && isAlphaCreatorCommand(command)
-      && ['working', 'library-action'].includes(command.intent.type);
-    const socialCommand = url.pathname === '/api/alpha/social' && isAlphaSocialCommand(command) && command.intent.type === 'copy-import';
-    if (body.kind !== 'execute' || !privateCommand && !creatorCommand && !socialCommand) {
+      && (options.creatorExecution ? ['working', 'library-action', 'raw-handoff', 'native-handoff']
+        : ['working', 'library-action']).includes(command.intent.type)
+      && (!options.creatorExecution || command.intent.type !== 'library-action' || command.intent.action.type === 'save');
+    const socialCommand = url.pathname === '/api/alpha/social' && isAlphaSocialCommand(command)
+      && (command.intent.type === 'copy-import' || options.creatorExecution && command.intent.type === 'private-task-schedule');
+    const socialUndo = url.pathname === '/api/alpha/social' && options.creatorExecution && isAlphaWireCommand(command)
+      && command.kind === 'undo-social' && journeySocialInverses.has(command.operationId);
+    if (body.kind !== 'execute' || !privateCommand && !creatorCommand && !socialCommand && !socialUndo) {
       blocked.push(`${method}:${url.pathname}`); return json(route, { ok: false, reason: 'invalid' });
     }
     commands.push(structuredClone(command));
@@ -108,10 +132,25 @@ export async function mockFolderContentEntry(page: Page, options: { catalog?: bo
     if (old) return json(route, old.fingerprint === fingerprint ? { ok: true, value: old.receipt } : { ok: false, reason: 'idempotency-conflict' });
     if (base.state.rejectNextExecute) { const reason = base.state.rejectNextExecute; base.state.rejectNextExecute = null; return json(route, { ok: false, reason }); }
     const account = await current();
-    if (command.expectedRevision !== account.revision || socialCommand && command.expectedPublicRevision !== context.revision)
+    if (options.creatorExecution && privateCommand && command.kind === 'change-private') {
+      const copyChange = command.changes.find(change => change.field === 'copies');
+      if (copyChange) {
+        try {
+          if (!copyChange.present || !Array.isArray(copyChange.value)
+            || canonicalJson(journeyCopySourceIdentity(copyChange.value)) !== canonicalJson(journeyCopySourceIdentity(account.space.copies)))
+            return json(route, { ok: false, reason: 'invalid' });
+        } catch { return json(route, { ok: false, reason: 'invalid' }); }
+      }
+    }
+    if (command.expectedRevision !== account.revision || (socialCommand || socialUndo) && command.expectedPublicRevision !== context.revision)
       return json(route, { ok: false, reason: 'revision-conflict' });
     let compiled: AlphaPrivateCommand | null = privateCommand ? command : null, resultId: string | undefined;
-    if (creatorCommand) {
+    if (socialUndo) {
+      const inverse = journeySocialInverses.get(command.operationId)!;
+      if (inverse.revision !== account.revision) return json(route, { ok: false, reason: 'undo-conflict' });
+      compiled = { schema: 'flowme-alpha-command/1', kind: 'change-private', requestId: command.requestId,
+        expectedRevision: command.expectedRevision, changes: structuredClone(inverse.changes) };
+    } else if (creatorCommand) {
       const result = dispatchAlphaCreatorCommand(account, command, references);
       if (!result.ok || !result.changed) return json(route, { ok: false, reason: result.ok ? 'no-change' : 'invalid' });
       compiled = { schema: 'flowme-alpha-command/1', kind: 'change-private', requestId: command.requestId,
@@ -127,9 +166,23 @@ export async function mockFolderContentEntry(page: Page, options: { catalog?: bo
     if (!compiled) return json(route, { ok: false, reason: 'invalid' });
     const result = await repository.execute(compiled);
     if (!result.ok) return json(route, result);
+    if (result.value.changed && (socialUndo || socialCommand && command.intent.type === 'private-task-schedule')) {
+      // Read the exact committed ledger entry, not the latest account postimage:
+      // another transaction may already have advanced the account after await.
+      const operation = server.exportForBackup(account.ownerId).operations.find(entry => entry.receipt.requestId === command.requestId);
+      if (!operation || operation.receipt.revision !== result.value.revision) throw Error('entry-schedule-ledger-mismatch');
+      journeySocialInverses.set(command.requestId, { revision: operation.receipt.revision, changes: structuredClone(operation.inverse) });
+    }
+    if (options.creatorExecution && privateCommand && command.kind === 'change-private') journeyPrivateUndoTargets.add(command.requestId);
     const receipt: AlphaReceipt = { ...result.value, kind: command.kind, ...(resultId ? { resultId } : {}),
-      ...(socialCommand ? { publicRevision: context.revision } : {}) };
+      ...(socialCommand || socialUndo ? { publicRevision: context.revision } : {}) };
     receipts.set(command.requestId, { fingerprint, receipt });
+    if (options.creatorExecution && options.holdFirstPrivateScheduleReceipt && !privateScheduleReceiptHeld
+      && socialCommand && command.intent.type === 'private-task-schedule') {
+      privateScheduleReceiptHeld = true;
+      await new Promise<void>(resolveReceipt => { heldPrivateScheduleReceipt = resolveReceipt; });
+      heldPrivateScheduleReceipt = null;
+    }
     // Repository bytes precede the client's receipt/unlock. A deterministic
     // barrier tests that distinction without a sleep or live backend request.
     if (options.holdFirstCreatorSaveReceipt && !creatorSaveReceiptHeld && creatorCommand
@@ -144,6 +197,8 @@ export async function mockFolderContentEntry(page: Page, options: { catalog?: bo
   });
   return { state: base.state, current, commands, lookups, reads, context, diagnostics: server.diagnostics,
     releaseHeldCreatorSaveReceipt() { heldCreatorSaveReceipt?.(); },
+    isPrivateScheduleReceiptHeld: () => heldPrivateScheduleReceipt !== null,
+    releaseHeldPrivateScheduleReceipt() { heldPrivateScheduleReceipt?.(); },
     async assertBoundary(info: TestInfo) {
       expect(blocked, 'Unexpected semantic command is denied, never forwarded').toEqual([]);
       expect(createHash('sha256').update(canonicalJson(context.public)).digest('hex')).toBe(publicHash);

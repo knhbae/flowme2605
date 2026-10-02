@@ -39,6 +39,16 @@ Capture the idea during the same session when it could influence future product 
 
 ## Ideas
 
+### 2026-10-02 - 폴더 위치와 날짜 역할의 미결 UX 계약
+
+**Idea:** 피드백 #17·22~26을 후속 설계에서 함께 비교한다. 폴더 기준 줄의 같은 줄/묶음 뒤 위치, @/#·중복 이름/경로, 구획 날짜와 개별/미정, 같은 Item 이동과 새 Item 복제, 공통/회차 메모, 실행 날짜와 독립 마감일을 구별한다. [현재 요구 대조](./specs/2026-10-02-alpha-feedback-ux-bundle/requirements.md)와 [독립 조작 시안](./content-audit/2026-10-02-flowme-feedback-ux-bundle-lab-ko.html)을 근거로 삼는다.
+
+**Why not now:** 이번 구현은 기존 연결 transition·날짜 parser와 순서를 보존하는 표현/안전 보완이다. HTML의 복제·구획 이동·due는 제안이며 실제 writer가 아니다. 제목 중간 Enter의 identity-ambiguous 거절도 입력 보존 회귀이지 새 항목 저장 성공이 아니다. 실제 키보드/IME와 원 #26 환경이 확인되지 않았다.
+
+**Revisit when:** 이번 후보의 실제 앱 QA와 사용성 검토를 마친 후 원사례 또는 조작 시안에서 필요한 동선을 좁힐 때, 해당 정책의 설계·schema·migration 영향과 같은 ID/원문/Undo 보호를 먼저 검토한다. 명시 승인 전 새 문법이나 영구 정책으로 확정하지 않는다.
+
+**Source context:** 2026-10-02 사용자의 통합 갭 묶음 목표 진행 요청과 기존 피드백 원장 전체/중간 보완 대조. [상호작용 계약](./specs/2026-10-02-alpha-feedback-ux-bundle/interaction-contract.md).
+
 ### 2026-07-30 - 작성부터 제안·새 버전까지 하나로 이어지는 canonical 경로
 
 **Idea:** 다음 UX 기획·개발이 `/flows/new`, 공개 Flow/Flow Map, My Flow, 원본 내용 알릴 점, 제작자 검토, 발행, 버전 업데이트 중 하나라도 건드리면 범위를 정하기 전에 이 항목을 반드시 다시 꺼낸다. 새 기능을 각각 만들기보다 안정적인 ID와 버전을 공유하는 `TextAuthoringDocument -> 발행 후보 -> 변경 불가능한 PublishedVersion -> UserFlowCopy -> ExecutionRun/내보내기 -> 범위가 제한된 ChangeProposal(J4) -> maintainer 검토와 새 PublishedVersion(J4.5) -> 기존 사용자 버전 검토(J5)` 경로로 연결한다. 현재 J5의 추가·변경·삭제 비교, 개인 수정 충돌 처리, 완료 이력 보존 UX는 재사용하고, 현재 J4의 전송 전 메모에는 근거 URL·확인 시각, 변경점 미리보기, 개인정보 제거, 실제 제출 상태, 검토 결과와 알림을 보완한다. 사용자 화면에서는 GitHub 용어를 그대로 노출하지 않는다.

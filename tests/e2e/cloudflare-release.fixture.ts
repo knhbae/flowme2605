@@ -10,6 +10,11 @@ import { textWorkspaceModel as M, type TextWorkspaceState } from '../../lib/flow
 export const RELEASE_ORIGIN = 'https://alpha.wikiplans.com';
 const AUTH_ORIGIN = 'https://wkmzcxpnojobxrgebapw.supabase.co';
 export type ReleaseQaMode = 'local' | 'remote-readonly';
+export function releaseQaLocalPort(value?: string): 3106 | 3107 {
+  if (value === undefined || value === '3106') return 3106;
+  if (value === '3107') return 3107;
+  throw Error('release-qa-local-port-rejected');
+}
 export function expectedReleaseTelemetryCount(mode: ReleaseQaMode, documentLoads: number): number {
   if (!Number.isSafeInteger(documentLoads) || documentLoads < 1) throw Error('release-qa-document-load-count-rejected');
   return mode === 'remote-readonly' ? documentLoads : 0;
@@ -31,15 +36,16 @@ export function isExpectedSyntheticTelemetryError(message: string, mode: Release
 /** The only real network capability in this fixture: a fixed origin's GET
  * document/static files. APIs, redirects, credentials and arbitrary hosts are
  * never delegated, including when checking the already-serving bundle. */
-export function releaseResourceTarget(address: string, method: string, mode: ReleaseQaMode): string | null {
+export function releaseResourceTarget(address: string, method: string, mode: ReleaseQaMode, localPort: 3106 | 3107 = 3106): string | null {
   if (method !== 'GET' || !['local', 'remote-readonly'].includes(mode)) return null;
+  if (localPort !== 3106 && localPort !== 3107) return null;
   const url = new URL(address);
   if (url.origin !== RELEASE_ORIGIN || url.username || url.password) return null;
   const path = url.pathname;
   if (path !== '/alpha' && path !== '/icon.svg' && path !== '/favicon.ico'
     && !/^\/_next\/static\/[A-Za-z0-9_./%-]+$/.test(path)) return null;
   if (/%2f|%5c|%2e/i.test(path) || path.includes('..') || path.includes('\\')) return null;
-  return `${mode === 'local' ? 'http://127.0.0.1:3106' : RELEASE_ORIGIN}${path}${url.search}`;
+  return `${mode === 'local' ? `http://127.0.0.1:${localPort}` : RELEASE_ORIGIN}${path}${url.search}`;
 }
 
 export async function mockCloudflareRelease(page: Page, options: {
@@ -48,6 +54,7 @@ export async function mockCloudflareRelease(page: Page, options: {
 } = {}) {
   const mode = (process.env.FLOWME_CLOUDFLARE_QA_MODE ?? 'local') as ReleaseQaMode;
   if (!['local', 'remote-readonly'].includes(mode)) throw Error('cloudflare-qa-mode-rejected');
+  const localPort = releaseQaLocalPort(process.env.FLOWME_CLOUDFLARE_QA_LOCAL_PORT);
   // Bind a synthetic scope before adding descendants: production deliberately
   // refuses to reinterpret a nonempty subtree as a newly created folder.
   const initialRaw = options.document?.scopeAt !== undefined
@@ -83,22 +90,22 @@ export async function mockCloudflareRelease(page: Page, options: {
       'Access-Control-Allow-Methods': 'GET,POST,PUT,OPTIONS', 'X-Supabase-Api-Version': '2024-01-01' }, body: JSON.stringify(value) });
 
   await page.exposeBinding('__cloudflareReleaseStorageCall', (_source, call) => storageCalls.push(call));
-  await page.addInitScript(({ origin, prefix, sentinels }) => {
+  await page.addInitScript(`(() => {
+    const {origin, prefix, sentinels} = ${JSON.stringify({origin:RELEASE_ORIGIN,prefix,sentinels:SENTINELS})};
     if (location.origin !== origin) return;
     // Seed once, before instrumentation. Reload must never repair changed bytes.
-    if (!sessionStorage.getItem(`${prefix}cloudflare-release-fixture-seeded`)) {
+    if (!sessionStorage.getItem(prefix + 'cloudflare-release-fixture-seeded')) {
       for (const [key, value] of Object.entries(sentinels)) localStorage.setItem(key, value);
-      sessionStorage.setItem(`${prefix}cloudflare-release-fixture-seeded`, '1');
+      sessionStorage.setItem(prefix + 'cloudflare-release-fixture-seeded', '1');
     }
-    for (const method of ['setItem', 'removeItem', 'clear'] as const) {
+    for (const method of ['setItem', 'removeItem', 'clear']) {
       const original = Storage.prototype[method];
-      Object.defineProperty(Storage.prototype, method, { configurable: true, value: function(this: Storage, ...args: string[]) {
-        void (window as unknown as { __cloudflareReleaseStorageCall: (call: unknown) => Promise<void> })
-          .__cloudflareReleaseStorageCall({ method, key: args[0] ?? null });
+      Object.defineProperty(Storage.prototype, method, { configurable: true, value: function(...args) {
+        void window.__cloudflareReleaseStorageCall({ method, key: args[0] ?? null });
         return Reflect.apply(original, this, args);
       } });
     }
-  }, { origin: RELEASE_ORIGIN, prefix, sentinels: SENTINELS });
+  })()`);
   page.on('pageerror', error => pageErrors.push(error.message));
   page.on('console', message => { if (message.type() === 'error') consoleErrors.push(message.text()); });
   await page.context().routeWebSocket('**/*', socket => { unexpected.push('websocket'); socket.close(); });
@@ -155,7 +162,7 @@ export async function mockCloudflareRelease(page: Page, options: {
       unexpected.push(`blocked-synthetic-api:${method}:${url.pathname}`);
       return json(route, { ok: false, reason: 'unavailable' });
     }
-    const target = releaseResourceTarget(request.url(), method, mode);
+    const target = releaseResourceTarget(request.url(), method, mode, localPort);
     if (!target) { unexpected.push(`blocked-network:${method}:${url.origin}${url.pathname}`); return route.abort('blockedbyclient'); }
     // Retry only connection resets on the fixed local document/static GET.
     // This never retries Auth, API commands, HTTP errors or remote resources.

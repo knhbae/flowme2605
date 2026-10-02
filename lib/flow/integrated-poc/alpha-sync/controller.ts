@@ -13,7 +13,7 @@ import { alphaSocialAllowedFields } from '../alpha-social/dispatch';
 import { isAlphaCreatorIntent } from '../alpha-creator/contract';
 
 export type AlphaSyncSnapshot = { ownerId: string | null; account: AlphaAccount | null; envelope: ProgramEnvelope | null;
-  status: AlphaClientStatus; busy: boolean; draft: AlphaCommand | null; pending: AlphaCommand | null; canUndo: boolean; canRedo: boolean; retryableRejectedDraft?: boolean; lastReceipt?: AlphaReceipt | null; publicRevision?: number; references?: AlphaReferenceContext };
+  status: AlphaClientStatus; busy: boolean; draft: AlphaCommand | null; pending: AlphaCommand | null; canUndo: boolean; canRedo: boolean; retryableRejectedDraft?: boolean; retryableNativeHandoff?: boolean; lastReceipt?: AlphaReceipt | null; publicRevision?: number; references?: AlphaReferenceContext };
 type Success = { command: AlphaCommand; before: AlphaAccount; after: AlphaAccount };
 export function createAlphaSyncController(options: { recovery: AlphaRecoveryPort; onChange?: (snapshot: AlphaSyncSnapshot) => void; requestId?: () => string }) {
   const client = createAlphaClient(isAccountForOwner, options.recovery);
@@ -29,6 +29,7 @@ export function createAlphaSyncController(options: { recovery: AlphaRecoveryPort
     return { ownerId: current.ownerId, account: detached(account), envelope: account ? materializeAccount(account, references(account.ownerId)) : null,
       status: current.status, busy, draft: detached(state?.draft ?? null), pending: detached(state?.pending ?? null),
       retryableRejectedDraft: !busy && current.retryableRejectedDraft,
+      retryableNativeHandoff: !busy && current.retryableNativeHandoff,
       lastReceipt: detached(current.lastReceipt),
       ...(state?.references?.social ? { publicRevision: state.references.social.revision } : {}),
       ...(account ? { references: detached(references(account.ownerId)) } : {}),
@@ -36,11 +37,11 @@ export function createAlphaSyncController(options: { recovery: AlphaRecoveryPort
   }
   const emit = () => { try { options.onChange?.(snapshot()); } catch { /* Presentation cannot undo a server commit. */ } };
   const rejected = (reason: string): ProgramMutationResult => ({ ok: false, reason });
-  async function execute(command: AlphaCommand, result: string, before: AlphaAccount, mode: 'edit' | 'undo' | 'redo', recordHistory = true, retryRejectedDraft = false): Promise<ProgramMutationResult> {
+  async function execute(command: AlphaCommand, result: string, before: AlphaAccount, mode: 'edit' | 'undo' | 'redo', recordHistory = true, retryRejectedDraft = false, retryNativeHandoff = false): Promise<ProgramMutationResult> {
     if (!isAlphaWireCommand(command)) return rejected('forbidden');
     const epoch = generation; busy = true;
     try {
-      const operation = client.execute(command, { retryRejectedDraft }); emit();
+      const operation = client.execute(command, { retryRejectedDraft, retryNativeHandoff }); emit();
       const ok = await operation;
       if (epoch !== generation) return rejected('session-expired');
       const next = client.snapshot(), account = next.state?.confirmed;
@@ -58,13 +59,17 @@ export function createAlphaSyncController(options: { recovery: AlphaRecoveryPort
   }
   const mutate: ProgramMutate = async (_label, build, mutationOptions) => {
     const current = snapshot();
+    const retryNative = !!current.retryableNativeHandoff;
     if (busy) return rejected('busy');
-    if (current.pending || current.draft && !current.retryableRejectedDraft) return rejected('unresolved');
+    if (current.pending || current.draft && !current.retryableRejectedDraft && !retryNative) return rejected('unresolved');
     if (current.retryableRejectedDraft && (mutationOptions?.alphaCreator || mutationOptions?.alphaSocial)) return rejected('unresolved');
-    if (!current.account || !current.retryableRejectedDraft && !['ready', 'saved', 'same-location', 'cancelled'].includes(current.status)) return rejected(current.status);
+    if (retryNative && (!mutationOptions?.alphaCreator || mutationOptions.alphaSocial)) return rejected('unresolved');
+    if (!current.account || !current.retryableRejectedDraft && !retryNative && !['ready', 'saved', 'same-location', 'cancelled'].includes(current.status)) return rejected(current.status);
     let result = '', failure: string | null = null;
     try {
       const catalogIntent = typeof mutationOptions?.alphaCreator === 'function' ? undefined : mutationOptions?.alphaCreator;
+      if (retryNative && catalogIntent && (catalogIntent.type !== 'native-handoff' || current.draft?.kind !== 'creator'
+        || canonicalJson(catalogIntent) !== canonicalJson(current.draft.intent))) return rejected('unresolved');
       if (catalogIntent && (catalogIntent.type === 'catalog-library-import' || catalogIntent.type === 'catalog-content-import')) {
         if (!isAlphaCreatorIntent(catalogIntent)) return rejected('invalid');
         // The exact source is compiled and checked on the authenticated server.
@@ -92,9 +97,11 @@ export function createAlphaSyncController(options: { recovery: AlphaRecoveryPort
         return transition;
       });
       const intent = typeof mutationOptions?.alphaCreator === 'function' ? mutationOptions.alphaCreator() : mutationOptions?.alphaCreator;
+      if (retryNative && (!intent || !isAlphaCreatorIntent(intent) || intent.type !== 'native-handoff' || current.draft?.kind !== 'creator'
+        || canonicalJson(intent) !== canonicalJson(current.draft.intent) || command.kind !== 'change-private' || !command.changes.length)) return rejected('unresolved');
       if (intent && command.kind === 'change-private' && command.changes.length) {
         return execute({ schema: 'flowme-alpha-creator-command/1', kind: 'creator', requestId: command.requestId,
-          expectedRevision: command.expectedRevision, intent }, result, current.account, 'edit', mutationOptions?.history !== false);
+          expectedRevision: command.expectedRevision, intent }, result, current.account, 'edit', mutationOptions?.history !== false, false, retryNative);
       }
       if (!isM3Command(command)) return rejected('forbidden');
       return execute(command, result, current.account, 'edit', mutationOptions?.history !== false, current.retryableRejectedDraft);
