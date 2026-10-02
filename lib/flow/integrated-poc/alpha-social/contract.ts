@@ -17,6 +17,7 @@ export type AlphaSocialIntent =
  | { type:'publication-archive'; documentId:string; flowId:string; expectedVersionId:string }
  | { type:'copy-import'; versionId:string; itemIds:string[]; anchor:string|null; targetDocumentId?:string; recurrenceStarts?:Record<string,string|null> }
  | { type:'copy-anchor'; copyId:string; anchor:string|null }
+ | { type:'private-task-schedule'; copyId:string; itemId:string; taskId:string; date:string|null; time:string }
  | { type:'copy-inclusion'; copyId:string; itemId:string; included:boolean }
  | { type:'copy-series-start'; copyId:string; itemId:string; start:string|null }
  | { type:'copy-series-link'; copyId:string; itemId:string; documentId:string }
@@ -71,6 +72,7 @@ export function isAlphaSocialIntent(v:unknown):v is AlphaSocialIntent {
    case 'publication-archive':return shape(['documentId','flowId','expectedVersionId'])&&named('documentId','flowId','expectedVersionId');
    case 'copy-import':return shape(['versionId','itemIds','anchor'],['targetDocumentId','recurrenceStarts'])&&named('versionId')&&ids(v.itemIds)&&date(v.anchor)&&(v.targetDocumentId===undefined||named('targetDocumentId'))&&(v.recurrenceStarts===undefined||programRecord(v.recurrenceStarts)&&Object.entries(v.recurrenceStarts).every(([k,x])=>programIdentifier(k)&&date(x)));
    case 'copy-anchor':return shape(['copyId','anchor'])&&named('copyId')&&date(v.anchor);
+   case 'private-task-schedule':return shape(['copyId','itemId','taskId','date','time'])&&named('copyId','itemId','taskId')&&date(v.date)&&typeof v.time==='string'&&(v.time===''||/^([01]\d|2[0-3]):[0-5]\d$/.test(v.time));
    case 'copy-inclusion':return shape(['copyId','itemId','included'])&&named('copyId','itemId')&&typeof v.included==='boolean';
    case 'copy-series-start':return shape(['copyId','itemId','start'])&&named('copyId','itemId')&&date(v.start);
    case 'copy-series-link':return shape(['copyId','itemId','documentId'])&&named('copyId','itemId','documentId');
