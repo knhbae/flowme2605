@@ -5,8 +5,8 @@
 - PR: https://github.com/knhbae/flowme2605/pull/209
 - Status: `Draft`
 - 최초 Commit: `80abc0ad3981fe8ef316d72d23c8b0d5645544f9`
-- 현재 후속 Commit: `670f1f4528c785dccd3eb422a525ee89cb68cacd`
-- 최초 Build: `Lc4K4IUc8Aw8T4aMCWLfa`. 현재 실제 CSS 적용 build: `C7MFCtrzqwqfL6t2pKtTm`.
+- 현재 후속 Commit: `a073e45c6e096fb132e85b13ae2d47db9e46017a`
+- 현재 Build: `LDuRTcvjyyJ-AIKiRZcaj`. 최초 Lc4/M cold C7은 각각 이전 판본 근거다.
 - Deploy URL: 개발계 교체 미완료. URL 존재를 새 판본 제공 증거로 쓰지 않는다.
 
 ## Why
@@ -44,6 +44,8 @@
 CI/HTTP·제공 판본·인증 없는 요청 거절·보호값 검사가 끝나기 전 사용자 시험용 새 판본이라고 안내하지 않는다. 서비스 기동은 직접 도구 거절 경계를 우회하지 않는다. 기존 교체 스크립트의 옛 PID/build/CI 고정값은 재사용하지 않는다.
 
 ## Follow-ups
+
+M CI37113646381은753PASS/5FAIL/2FLAKY/0NOT_RUN이었다. 잔여 UI 이름 참조1건·테스트 fixture/기대4건의 N 후속4파일을 정상 게시했고 총 소유는125개다. 10:18:22~10:20:46 UTC 정상 hook의 npm2261/2261·docs4/4·exit0와 새 exact compile1212/QA242/static81 drift0·실제 CSS 불변을 확인했다. [새 CI37116112872](https://github.com/knhbae/flowme2605/actions/runs/37116112872)·HTTP30·교체/복귀는 별도 완료 대상이다. 이전 flaky2 원인을 일괄 ERR_ABORTED로 확정하지 않는다. [현재 QA](../specs/2026-10-03-alpha-core-journeys-ready/qa.md#n-잔여-보완과-cp2-인수--현재)를 따른다.
 
 정확 CP1 판본을 먼저 검사·반영·동결하고 CP2의 복귀 대상으로 보존한다. CP1 실패 시 기존 d1cc 제공 사본으로 앱만 복귀한다. 실제 DB·계정 상태 복구로 확대하지 않는다.
 

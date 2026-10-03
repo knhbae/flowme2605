@@ -4,6 +4,22 @@
 
 2026-10-03 사용자 착수·게시/CI·개발계 교체 승인은 확인됐다. P/C/N/F 구현·합성 검증과 CP1/CP2 최초 선별 게시·Draft PR209/210은 완료했고, 공통 CI 실패를 보완 중이다. **정확 HTTP QA와 CP1/CP2 개발계 교체·복귀는 미완료**다. 관찰 시험은 제외 범위이며0명이다. 아래 각 실행의 head/build/실행 수를 구분한다. 직전 r6 30/30을 새 후보 실행으로 세지 않는다.
 
+## N 잔여 보완과 CP2 인수 — 현재
+
+M CP1 `670f`의 CI37113646381은753PASS/5FAIL/2FLAKY/0NOT_RUN, CP2 `f8c9703b`의 [CI37114874194](https://github.com/knhbae/flowme2605/actions/runs/37114874194)는754PASS/5FAIL/1FLAKY/0NOT_RUN이었다. 둘 다 core/catalog/integration SUCCESS·E2E FAILURE다. root의5개 identity는 아직 독립 비교 전이므로 추가 회귀0을 단정하지 않는다. 해당 root catalog 실행은281파일2988/2988PASS·source656/drift0·verifiedExit0이며 이전 실행과 합산하지 않는다.
+
+남은 CP1 P35 quality의 실패는 `aria-labelledby:my-flow-tab-flow` 미해결 참조1개였고 나머지 quality는0이었다. 앞단 source-backed0쓰기/bytes/reload는 통과했으나 missing/malformed 뒤 저장 검사는 NOT_REACHED였으므로 저장 전체 PASS로 확대하지 않는다. 빈 화면에 실제 tab이 있으면 기존 연결을 유지하고 없으면 실제 h2로 이름을 붙였다. SSR 같은7개가5PASS/2FAIL→7/7PASS, 관련3파일13/13PASS다. P35 E2E의 quality/쓰기/bytes assertion은 그대로이고 writer·저장/원본/CAS 변경0이다.
+
+flow-mvp4개는 현재 roster8·새 공급 보류 안내, demo가 소비하지 않는 savedMap query를 쓰던 성공 fixture의 보완이다. 실제 wedding factory4records를 공급한 일반 library 경로에서2child의 identity·Calendar6/Todo4·모바일2행·저장 bytes를 확인한다. 기존 demo의 math1/held-moving0·Funmom 원문/거절/noexec는 유지한다. 실제 App merge/read 소비 순수6/6PASS·전체 E2E 목록760개 유지·파싱0이다. 첫 probe의 잘못된 readBundles-only 기대는 harness 오류로 보존하며 제품 결함으로 합산하지 않는다.
+
+CP1 N `a073e45c6e096fb132e85b13ae2d47db9e46017a`는 정상4파일 후속 게시다. 10:18:22~10:20:46 UTC npm2261/2261(기존2258+SSR3)·docs4/4·build exit0·후크 우회0이며 build `LDuRTcvjyyJ-AIKiRZcaj`·exact compile1212/QA242/static81 drift0이다. 새 [CI37116112872](https://github.com/knhbae/flowme2605/actions/runs/37116112872)는 완료 전 성공으로 기록하지 않는다. 현재 emitted CSS SHA `e6a2f0b75b8fda1812f307f83cacecced2c2a00eb893d6ae75a765e303eb4669`는 correct cold CSS와 같다.
+
+CP2는 같은 N commit을 merge `93a3f40d35c1c98f4a1c6c823b51da446cbe41c4`로 인수했다. 10:22:16 UTC code/test3개 원파일 SHA·양쪽 HEAD Git blob 일치, 기존 CP2 32개 OS bytes 불변·문서 복사0·normalized Git diff0을 확인했다. 인수 후 root에서 관련13/13PASS·exit0을 실제 실행했다. 기존138경로+추가2=140개 소유다. EOL-only raw M은 정상 stage의 blob 변화0과 최종 clean으로 확인하며, CP2의 최종 후속 hook·build·exact proof·CI는 그 새로운 HEAD에서 별도 기록한다.
+
+10:13:41~10:14:09 UTC 담당자가 실제 C7 emitted asset을 사용한 독립 Nav 비교30개를 실행해 afterAllCorrect=true·exit0·network/service0을 확인했다. 앞서 tsx 등록 누락의 MODULE_NOT_FOUND로 실행 못한 probe와 구분한다. wrapper의 TAP-only count가 ℹ footer를 읽지 못해0을 출력했으므로30은 runner case 총수가 아니라 비교/각 assertion의 수다. 실제 제품 HTTP30/35·실기기 focus/AT의 PASS로 쓰지 않는다.
+
+남은 실행은 같은 HEAD의 CI 네 검사·사용자 담당이 켠 정확 합성3107에서 HTTP30/35·두 개발계 교체/복귀·시험 시작 판정이다. 승인 누락 때문에 대기하는 것이 아니다. 서버 시작의 직접 도구 거절은 우회하지 않고, 실제 Ready 뒤의 no-webServer 합성 UI 검사와 서비스 시작은 구분한다. 관찰 사용자0·main merge/Production0·실제 계정/DB 쓰기0을 유지한다.
+
 ## 공통 CI 실패와 M 후속 — 현재 보완 중
 
 | 판본 | CI와 실제 판정 | 실행 수 |
@@ -13,7 +29,7 @@
 | CP1 `670f1f45` | 정상 후속 commit/push, [37113646381](https://github.com/knhbae/flowme2605/actions/runs/37113646381) 실행 중 | 완료 전 전체 PASS 기록하지 않음 |
 | CP2 CP1 인수 | `93e25cba62dce83ec1ad24bfadc03e39dea54293` merge. 후속 문서 commit·정상 hook/build·CI 예정 | 현재 HTTP35 NOT_RUN |
 
-이전 두 CI의29FAIL identity·assertion·frame은 같았고 CP2 추가 실패0이다. 서로 다른 실행의 PASS를 합산하지 않는다. CP1의 flaky2는 별도 ERR_ABORTED이며 이번 보완으로 해결했다고 주장하지 않는다. NOT_RUN8개 개별 identity는 미확인이다. 비공개 출처 lane의 이전 실행은 CP1 279파일2960/2960PASS·CP2 281파일2988/2988PASS였다. 공개 저장소의 검토된 secret environment lane이며 원본/설정/raw 로그는 공개하지 않는다.
+이전 두 CI의29FAIL identity·assertion·frame은 같았고 CP2 추가 실패0이다. 서로 다른 실행의 PASS를 합산하지 않는다. CP1의 flaky2는 확정 실패29와 별도 이력이며 두 오류 원인을 일괄 확정하지 않는다. 이번 보완으로 해결했다고 주장하지 않는다. NOT_RUN8개 개별 identity는 미확인이다. 비공개 출처 lane의 이전 실행은 CP1 279파일2960/2960PASS·CP2 281파일2988/2988PASS였다. 공개 저장소의 검토된 secret environment lane이며 원본/설정/raw 로그는 공개하지 않는다.
 
 M은 CSS 호환2파일, 기존 E2E11파일, 기존 prerequisites manifest1파일의14파일 후속이다. Tailwind4 기본 transition에서 outline-color만 제거하며 다른 transition·명시 outline 애니메이션은 유지한다. 공식 [업그레이드 안내](https://tailwindcss.com/docs/upgrade-guide#transitioning-outline-color)와 실제 생성 CSS를 대조했다. 보류 자료를 정상 실행 fixture로 사용하지 않고 실제 실행 가능한 AJD·wedding 사본을 사용한다. 기존 URL/P35·OPIc/reading 보류·tax 기존 사본 보존 검사는 유지하며 새 공급/품질 정책은 바꾸지 않는다. tax 시험3501은 실패였고 Baby3521은 실패가 아니었다. tax의0쓰기는 보호한 세 key 범위이며 전체 storage0으로 확대하지 않는다.
 

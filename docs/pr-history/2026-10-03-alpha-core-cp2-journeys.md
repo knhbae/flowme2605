@@ -8,6 +8,7 @@
 - 최초 제품 commit: `527814b69cbe719a85cce036c241d29706a82ea1`
 - 최초 문서 후속: `217d4be4ee9135e9d9515f9a325445701854c353`
 - 공통 CI 보완 인수 merge: `93e25cba62dce83ec1ad24bfadc03e39dea54293` (CP1 exact670f)
+- 잔여 CI 보완 인수 merge: `93a3f40d35c1c98f4a1c6c823b51da446cbe41c4` (CP1 exacta073)
 - 최초 postcommit build: `xzyBRR06On2DVYqf11l8W`
 - Deploy URL: 개발계 교체 미완료.
 
@@ -47,6 +48,10 @@ CP1 위의30파일 차이로 개인 문서↔기간 실행↔원문 복귀, 필�
 공개 Git에는 코드·설계·테스트·요약만 포함한다. 비공개 출처 CI는 공개 저장소의 검토된 secret environment lane이며 저장소 전체가 private이라는 뜻이 아니다. 서버 기동 제한을 다른 도구/agent로 우회하지 않고 담당자의 정확 판본 Ready 이후 실제 화면과 자산을 검사한다.
 
 ## Follow-ups
+
+M 후속f8c의 정상 hook은 npm2258/2258·docs4/4·build `Ehz76zmpri5wj6SXcLnqB`·compile1214/QA242/static82 drift0이었다. [CI37114874194](https://github.com/knhbae/flowme2605/actions/runs/37114874194)는 core/catalog/integration SUCCESS·E2E FAILURE,754PASS/5FAIL/1FLAKY/0NOT_RUN이다. 같은 run의 catalog는 281파일2988/2988PASS·source656/drift0이다. CP1과5개 identity는 아직 비교 전이며 자동으로 추가 회귀0이라 주장하지 않는다.
+
+CP1 N exacta073을 source3개 Git blob/OS SHA·기존 CP2 32bytes 보존으로 인수해 관련13/13을 root에서 실제 실행했다. 소유140개이며 N의 최종 root hook/build/proof/CI는 그 새로운 HEAD에서 따로 기록한다. 기존f8c/C7 proof를 재사용하지 않는다. 현재 개발계·실제 계정 자료는 바꾸지 않았다. [현재 QA](../specs/2026-10-03-alpha-core-journeys-ready/qa.md#n-잔여-보완과-cp2-인수--현재)를 따른다.
 
 최종 후속 판본의 정상 hook·exact proof·새 CI를 확인한 뒤 HTTP QA와 CP1→CP2 개발계 반영/복귀를 이어간다. 검증·동결된 CP1이 CP2의 복귀 대상이다. 접속·권한·자료 조건이 맞아야 시험 시작 가능으로 판정하며 실제 관찰 시험은 별도다.
 

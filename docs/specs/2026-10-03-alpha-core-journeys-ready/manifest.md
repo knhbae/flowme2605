@@ -142,3 +142,12 @@ CP1 정상 후속 `670f1f4528c785dccd3eb422a525ee89cb68cacd`의14파일은 기�
 11. `tests/e2e/url-first-user-surface.spec.ts`
 
 정확13 code/test의 SHA는 [M 선행 표](prerequisites-manifest.md)를 따른다. 양쪽 HEAD Git blob 동일·CP1 원파일 SHA·기존 CP2 32 OS bytes 불변을 확인하고 줄바꿈 bytes만 기계적으로 인수했다. CP2 문서·런타임을 CP1으로 덮어쓰지 않았고 normalized Git diff0이다. final raw clean은 후속 정상 stage 뒤 확인한다. CSS 첫 후속 build의 stale 결과와 cold build 재검증은 [QA](qa.md#공통-ci-실패와-m-후속--현재-보완-중)에 분리 기록하며 실제 HTTP·개발계 반영 완료로 쓰지 않는다.
+
+## N — 잔여 CI 보완 인수: 140경로
+
+CP1 N exact `a073e45c6e096fb132e85b13ae2d47db9e46017a`의4파일을 같은 commit으로 merge했다. 기존 flow-mvp1·prerequisites1은 중복 집계하지 않고 다음2개 기존 tracked 경로만 새 소유로 추가해 **CP2 138+2=140 고유 경로**다. CP1의125경로와 CP2의140경로를 혼합하지 않는다.
+
+1. `components/flow/my-flow/MyFlowRouteSurface.tsx`
+2. `components/flow/my-flow/MyFlowRouteSurface.test.tsx`
+
+변경은 빈 화면의 ARIA 이름 참조와 SSR 회귀이며 writer·운영 schema·원문·사본·CAS·메뉴를 바꾸지 않는다. 정확3 code/test bytes·Git blob 일치, 기존 CP2 32 OS bytes 불변·문서 복사0·normalized Git diff0을 확인했다. hash와 실제검사/옛 실패·미실행은 [N 선행 표](prerequisites-manifest.md)·[현재 QA](qa.md#n-잔여-보완과-cp2-인수--현재)를 따른다. 이후 소유 문서6개만 갱신하며 raw/설정·private pack·계정과 다른 dirty 경로는 추가하지 않는다.

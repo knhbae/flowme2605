@@ -1,12 +1,12 @@
 # Project Status
 
-## 현재 — 승인 범위 실행 중, 공통 CI 실패 보완과 실제 빌드 확인 (2026-10-03)
+## 현재 — 잔여 CI 보완 인수, 최종 화면 검사·반영 준비 (2026-10-03)
 
 구현·합성 검증·선별 commit/push/Draft PR209/210·해당 비공개 출처 CI·개발계 교체 승인은 확인됐다. 등록 당시의 계획-only 문구 때문에 같은 승인을 다시 요청하지 않는다. P/C/N/F 좁은 구현·시험 과제 준비는 완료했고 현재는 CI 보완→정확 HTTP 화면 QA→CP1/CP2 교체·복귀 순서다. goal은 active이며 전체 완료로 처리하지 않는다.
 
-기존 CP1/CP2 CI는 각각 **721PASS/29FAIL/2FLAKY/8NOT_RUN**, **723PASS/29FAIL/0FLAKY/8NOT_RUN**이었다. 두 판본의29개 실패는 공통이며 추가 실패가 아니었다. CSS transition의 outline-color와 낡은 공개 자료 성공 fixture를 보완한 CP1 `670f1f4528c785dccd3eb422a525ee89cb68cacd`를 정상 게시했고 CP2에 같은 commit을 merge했다. code/test13개의 Git blob·원파일 SHA 일치와 기존 CP2 32개 OS bytes 보존을 확인했다. 새 소유 수는138개다. [후속 QA](./specs/2026-10-03-alpha-core-journeys-ready/qa.md#공통-ci-실패와-m-후속--현재-보완-중)를 따른다.
+최초 CI의 공통29FAIL을 보완한 M 판본은 CP1 **753PASS/5FAIL/2FLAKY/0NOT_RUN**, CP2 **754PASS/5FAIL/1FLAKY/0NOT_RUN**이었다. 남은 빈 화면의 ARIA 이름 연결 결함과 낡은 테스트4건을 보완한 N 판본 CP1 `a073e45c6e096fb132e85b13ae2d47db9e46017a`를 정상 게시했고 CP2에 같은 commit을 merge했다. N code/test3개 Git blob·원파일 SHA 일치와 기존 CP2 32개 OS bytes 불변을 확인했고 root에서 관련13/13 PASS를 재실행했다. 새 소유 수는140개다. 새 CI의 성공은 아직 확인 전이다. [현재 QA](./specs/2026-10-03-alpha-core-journeys-ready/qa.md#n-잔여-보완과-cp2-인수--현재)를 따른다.
 
-합성 CSS fixture30/30·순수 계약6/6은 실제 제품 HTTP30/35가 아니다. 첫 후속 CP1 build `rxHqgLVMfF47XqfM6s7mR`의 실제 CSS에는 이전 outline-color가 남아 있어 새 초점 보존 PASS로 쓰지 않는다. 정확한 ignored webpack 캐시만 복구 가능한 위치로 옮겨 정상 cold build `C7MFCtrzqwqfL6t2pKtTm`·npm2258/2258·docs4/4·exit0·새 exact drift0을 확인했다. 실제 CSS는 해당2토큰/28byte만 제거됐고 그 밖의 bytes가 같다. 새 CI `37113646381`과 CP2의 후속 hook/build/CI는 성공 전까지 대기다. 3105에서 응답한 `o7dgg9b72_7ai0rqQ5gXU`는 이전 제공 판본이며 후보 반영이 아니다. 현재 프로세스의 시작 근거/소유 핸들을 확인하지 않고 종료하지 않는다. 새 DB/Auth/DNS/Tunnel·실제 계정 쓰기·main merge·Production0, 관찰 사용자0명이다.
+CP1 N의 정상 hook은 npm2261/2261·docs4/4·build `LDuRTcvjyyJ-AIKiRZcaj`·exact compile1212/QA242/static81 drift0이다. M의 캐시 미반영·cold CSS 적용, CP2 M의 npm2258/2258·build `Ehz76zmpri5wj6SXcLnqB`·정확 proof는 각각 이전 판본 근거로 보존한다. 격리 CSS 비교30개와 순수 계약6개를 제품 HTTP30/35로 세지 않는다. CP2 N의 정상 후속 hook/build/proof/CI와 두 판본의 실제 HTTP QA·교체/복귀는 별도 진행한다. 기존3105 응답은 이전 제공 build이며 후보 반영이 아니다. 시작 근거/소유 핸들 없이 현재 프로세스를 종료하지 않는다. 새 DB/Auth/DNS/Tunnel·실제 계정 쓰기·main merge·Production0, 관찰 사용자0명이다.
 
 ## 직전 — 최초 구현·게시와 후속 문서 판본 (2026-10-03)
 
