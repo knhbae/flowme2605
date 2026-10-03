@@ -182,3 +182,17 @@ root의 K1 후 최종 실행은 `2026-10-03T07:46:47.762Z`~`08:04:28.650Z`에 **
 CP1의 별도 K1 후 실행은 `07:44:43.143Z`~`08:02:38.586Z`, **279파일/2960실행/2960PASS**, fail/skipped/cancelled0·exit0이었다. source654 SHA `6c14dbc1d2cc5db7f46a11cdc5e0595e26b4f40bd607e9b76b860cc83890f374` 전후 불변이며 pack/자격정보/raw 경계도 유지했다. CP1과 root 실행 개수는 합산하지 않는다. 이전35FAIL·3FAIL·부분/중단 실행은 당시 결과로 보존한다.
 
 현재 root 소유125경로/staged0이며 전체 실패 원인 조사는 끝났다. 공개 저장소에는 소유 코드·테스트·설계·요약만 게시한다. `.tmp/`·`output/`·private pack·실제 계정/환경·원본 증거는 제외한다. ‘비공개 CI’는 기존 `flowme-catalog-ci` 환경에서 원자료를 제한해 읽고 allowlisted 요약만 내보내는 lane을 뜻한다. 저장소나 GitHub 로그 전체가 비공개인 것은 아니다. 정확 새 commit의 정상 hooks·새 CI·실제 HTTP QA·CP1/CP2 반영은 별도 실행/확인 뒤 기록한다.
+
+## 실제 게시와 정상 hook — 최초 CP2 제품 commit
+
+CP1 `80abc0ad3981fe8ef316d72d23c8b0d5645544f9`·[Draft PR209](https://github.com/knhbae/flowme2605/pull/209), CP2 `527814b69cbe719a85cce036c241d29706a82ea1`·[Draft PR210](https://github.com/knhbae/flowme2605/pull/210)을 실제 게시했다. CP2의 base는 CP1이고30파일 차이이며 main merge/Production0이다. 두 PR 모두 현재 task에 연결했다.
+
+CP2의 정상 pre-push는 `08:32:17.870Z`~`08:34:48.982Z`, exit0이었다. **npm 실제2258/2258PASS**, fail/skipped/cancelled/todo0이고 docs4/4·7432links와 production build exit0을 별도로 확인했다. 마지막 subrun19개만 전체 개수로 쓰지 않는다. 실제 Auth/signing 값 대신 합성 공개 설정만 전달했고 hook bypass0·raw log 보관0이다.
+
+postcommit `before`를 실제 hook build 전에 만들고 성공 종료 뒤 `after --build-exit=0`을 실행했다. root/head/build `527814b6`/`xzyBRR06On2DVYqf11l8W`, **compile1214/QA242/static82·wholeCompileDrift0/qaDrift0**다. `.tmp/ux-exact-final-freeze-records/final-r7-cp2-20261003-postcommit.{before,exact,after}.json`은 로컬 전용 근거다. 실제 HTTP 화면 검사 결과가 아니다.
+
+CP1의 postcommit build `Lc4K4IUc8Aw8T4aMCWLfa`와 compile1212/QA242/static81·drift0은 다른 root/head 증명이다. CI run37109357657의 core SUCCESS와 catalog/E2E 진행, CP2 첫 run37110241838의 시작 상태를 각각 확인했다. CI 전체 성공은 아직 확인하지 않았다. 같은 repo/actor/head의 허가된 private-source environment만 승인하며 실제 배포 승인으로 확대하지 않는다.
+
+최종 독립 읽기 검토는 제품30파일의6TSX/2CSS와 관련 test/E2E delta·P/F/C/N 설계를 대조했고 검사 범위에서 새 blocking issue를 찾지 못했다. 별도 실행 테스트/브라우저 PASS가 아니다. 게시 이력2개와 기존 소유 문서 갱신을 추가하지만 runtime/QA scenario bytes는 바꾸지 않는다. 후속 문서 commit은 새 HEAD/build로 정상 hook·exact proof를 다시 기록한다. 527814b6의 증명을 후속 HEAD에서 실행한 근거로 쓰지 않는다.
+
+새 HTTP30/35·CP1/CP2 개발계 반영·복귀·실기기/IME/AT·관찰 사용자 시험은 여전히 미완료다. 서비스 시작 거절을 다른 도구나 agent로 우회하지 않았다. 담당자 Ready 뒤 정확 판본 검사를 이어간다.

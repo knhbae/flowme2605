@@ -1,8 +1,10 @@
 # Project Status
 
-## 현재 — 핵심 사용 여정 목표: 격리 설계·구현·검증 착수·미완료 (2026-10-03)
+## 현재 — 핵심 사용 여정 구현·게시 완료, CI·화면 검사·개발계 반영 미완료 (2026-10-03)
 
-최종 전체 통합은 CP2 **281파일/2988실행/2988PASS**, CP1 **279파일/2960실행/2960PASS**, fail/skipped/cancelled0·exit0이다. 검토일 비교·보류 자료 성공 fixture·기존 M3 보호 연결·검사 context를 보완했고 이전35FAIL·3FAIL 기록은 남겼다. CP2 source656 SHA `9e73afff6b9879535a6c5cc2fccd500497f724256af9f28c97f5f4164d467e22` 전후 변경0·봉인 pack 불변·실제 자격정보 전달0·설정 사본0이다. 소유125경로/staged0이며 source/보안 선행 보완과 P/C/N/F 구현은 완료했다. root build `HWEwfLgVrGeWPDbpumEMw`·compile1214/QA242/static82 전후 drift0·취약점0도 확인했다. 승인 범위의 정상 hook·선별 게시/새 CI 준비 단계이며 정확 HTTP QA·CP1/CP2 개발계 반영은 미완료다. 현재 빌드 증명은 게시 후 새 HEAD/후크 빌드로 대신 쓰지 않는다.
+CP1 `80abc0ad3981fe8ef316d72d23c8b0d5645544f9`를 [Draft PR209](https://github.com/knhbae/flowme2605/pull/209), CP2 `527814b69cbe719a85cce036c241d29706a82ea1`를 [Draft PR210](https://github.com/knhbae/flowme2605/pull/210)으로 정상 commit/push했다. CP2는 CP1을 base로 한30파일 차이다. 08:32:17~08:34:48 UTC 정상 pre-push hook에서 npm **2258/2258 PASS**·docs4/4·production build exit0을 확인했다. 새 build `xzyBRR06On2DVYqf11l8W`의 compile1214/QA242/static82·전후 drift0과 실제 head/root 일치를 확인했다. 위 판본은 게시 직후 증명이며 후속 문서 commit의 HEAD/build를 대신하지 않는다. 이 게시 사실과 CI·반영 미완료를 보존하는 문서만 후속으로 정리한다. [CP1 이력](./pr-history/2026-10-03-alpha-core-cp1-maintenance.md)·[CP2 이력](./pr-history/2026-10-03-alpha-core-cp2-journeys.md)을 따른다. CI 진행 중을 PASS로 바꾸지 않았고 main merge·Production·실제 계정 쓰기0이다.
+
+최종 전체 통합은 CP2 **281파일/2988실행/2988PASS**, CP1 **279파일/2960실행/2960PASS**, fail/skipped/cancelled0·exit0이다. 검토일 비교·보류 자료 성공 fixture·기존 M3 보호 연결·검사 context를 보완했고 이전35FAIL·3FAIL 기록은 남겼다. CP2 source656 SHA `9e73afff6b9879535a6c5cc2fccd500497f724256af9f28c97f5f4164d467e22` 전후 변경0·봉인 pack 불변·실제 자격정보 전달0·설정 사본0이다. 구현125경로와 게시 이력 문서2개를 합한 소유127경로이며 source/보안 선행 보완과 P/C/N/F 구현은 완료했다. 게시 전 root build `HWEwfLgVrGeWPDbpumEMw`·compile1214/QA242/static82 전후 drift0·취약점0도 확인했다. 정확 HTTP QA·CP1/CP2 개발계 반영은 미완료다. 게시 전 빌드 증명을 게시 후 새 HEAD/후크 빌드로 대신 쓰지 않는다.
 
 간접 private-parity 실패1건은 이동 자료가 보류된 뒤에도 실행 가능한 성공 fixture로 쓰던 기대값이었다. 실제 실행 가능한 AJD factory로 성공 사례를 옮기고 보류된 원본 보존·정상 transition 거절을 검사했다. 추가 crafted `change-private` 합성 시험에서 fake RPC까지1회 도달하던 보호 누락은 기존 text/progress guard를 M3 현재-revision 경계에만 연결해 수정했다. CP1 관련9파일153/153 PASS·root 인수 후 타입581 entry/진단0을 확인했다. creator/social 공용 원본 보존 의미·CAS/replay·전체 사본 삭제·다른 개인 문서 편집은 유지한다. 실제 계정/DB 시험이나 원본 snapshot 변조로 확대하지 않으며 새 정책·DB/Auth/schema 변경은 없다. 최종 전체·HTTP 검사는 별도다.
 

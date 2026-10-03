@@ -36,13 +36,13 @@
 
 - [x] P/C/N/F의 정책 불필요 연결부를 구현했다. 최종 후보 통합·화면 QA/반영 판정은 아래 미완료 체크와 구분한다.
 - [x] 표적·관련 회귀와 negative boundary를 실행했다. root 표적230/230·최종 전체281파일2988/2988 PASS, 원본/actor·receipt/CAS·held 보호·busy 구성 음성 검사를 포함한다. 실제 HTTP 화면은 아래 별도 미완료다.
-- [ ] 최종 runtime 후보의 npm·타입·production build를 실행한다.
+- [x] 최종 runtime 후보의 npm·타입·production build를 실행했다. 527814b6의 정상 pre-push는 npm2258/2258 PASS·build exit0·exact compile1214/QA242/static82 drift0이다. 후속 문서 판본은 별도 후크/증명으로 기록한다.
 - [ ] 정확 HTTP 앱 판본의 대표 시나리오·다섯 크기·키보드/비드래그·page/console/overflow를 검사한다.
 - [ ] 원본/Item/actor·expected/CAS·prefix·취소0쓰기·unknown/추가입력·Undo/reload 근거를 남긴다.
 
 ## 단계5 — CP2 개선본 반영
 
-- [ ] 최종 소유 manifest·QA·게시/CI/교체의 정확 승인 범위를 확인한다.
+- [x] 최종 소유 manifest·QA·게시/CI/교체의 정확 승인 범위를 확인했다. 제품125경로에 실제 PR209/210 이력2개만 추가하며 실제 계정·DB·설정·원본은 제외한다.
 - [ ] 선별 게시/CI·개발계 교체·반영 후 확인을 각각 기록한다.
 - [ ] 보호값·이전판 복귀와 새 판본/후속 정렬을 확인한다.
 

@@ -113,3 +113,14 @@ CP1의 관련9파일 **153/153 PASS**는 인계 근거다. root는 인수한 최
 `components/flow/integrated-poc/ProgramMutationBusy.test.ts` 1개를 추가해 **125 고유 소유 경로**다. SHA256은 `f179cc36d76766fd1fc8061fd069dd27b23987e0a37e315f97a49de3b4bb9f28`이다. 원파일 해시와 대상 HEAD 무변경·기존 해시를 확인한 뒤 정확히 인수했다. 실제 `save`가 사용하는 `setErrorNotice`를 누락한 테스트 context를 React의 direct/functional updater와 같은 형태로 보완했다. 기존 입력/기준선·commit0·명시 재시도 검사는 남겼고 실패 draft/expected의 clone·reason 및 성공 후 실패 origin 소멸도 확인한다. runtime·정책·CAS 변경0이다.
 
 root의 단독10/10 PASS는 새 실제 실행이며 기존 전체281파일/2988실행/2985PASS/3FAIL 기록을 지우지 않는다. 마지막3FAIL이 발생한 파일1개를 보완한 뒤 새 전체 검사를 실행한다. 전체 성공·화면 QA·게시·반영 여부는 각 실행 결과로 별도 판정한다.
+
+## L2 — 실제 게시 이력: 127경로
+
+K1 후 최종 전체 검사는281파일/2988실행/2988PASS였으며 제품125경로를 byte 변경 없이 CP1 위에 쌓았다. CP1은112파일 commit80abc0ad·PR209, CP2는 그 위의30파일 commit527814b6·PR210으로 정상 게시했다. staged 파일 수·합계 경로·각 commit의 diff를 혼합 집계하지 않는다.
+
+다음 실제 이력 문서2개를 추가해 소유 범위는 **127 고유 경로**다.
+
+1. `docs/pr-history/2026-10-03-alpha-core-cp1-maintenance.md`
+2. `docs/pr-history/2026-10-03-alpha-core-cp2-journeys.md`
+
+공통 STATUS·이 정본·QA·tasks의 게시 상태 갱신은 기존 소유 경로이며 추가 runtime/test/QA scenario는 없다. 원본 private pack·설정·raw 증거·다른 dirty 경로를 추가하지 않는다. 최초 CP2 정상 hook의 npm2258/2258·build xzyBRR06On2DVYqf11l8W·exact drift0과 후속 문서 commit의 HEAD/build는 별도 증명으로 기록한다. CI·HTTP·개발계 반영은 아직 전체 성공이 아니다.
