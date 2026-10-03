@@ -13,12 +13,67 @@ const root = fileURLToPath(new URL('../', import.meta.url));
 const manifest = JSON.parse(readFileSync(path.join(root, 'package.json'), 'utf8'));
 const lock = JSON.parse(readFileSync(path.join(root, 'package-lock.json'), 'utf8'));
 const fixture = '@import "tailwindcss" source(none);\n@source inline("space-y-1 space-y-2 md:space-y-3 space-y-2! space-y-reverse space-x-2 space-x-reverse divide-y divide-x divide-y-2 md:divide-y-2 divide-y-reverse divide-slate-200 divide-[#dde4e0] divide-[var(--flowme-workspace-line)] outline-hidden focus:outline-hidden shadow-xs backdrop-blur-xs rounded");';
+const transitionFixture = '@import "tailwindcss" source(none);\n@source inline("transition transition-colors hover:transition focus-visible:transition-colors md:transition-colors transition! hover:transition-colors! !transition hover:!transition-colors transition-all transition-[outline-color] [transition-property:outline-color] duration-300 ease-linear");';
+const transitionSelectors = ['.transition', '.transition-colors', '.hover\\:transition:hover', '.focus-visible\\:transition-colors:focus-visible', '.md\\:transition-colors', '.transition\\!', '.hover\\:transition-colors\\!:hover', '.\\!transition', '.hover\\:\\!transition-colors:hover'];
 
 function getRules(css) {
   const rules = [];
   postcss.parse(css).walkRules((rule) => { rules.push(rule); });
   return rules;
 }
+
+for (const optimize of [false, true]) {
+  test(`official default transitions keep immediate semantic focus optimize=${optimize}`, async () => {
+    const from = path.join(root, 'app/transition-contract.css');
+    const generated = await postcss([tailwind({ base: root, optimize })]).process(transitionFixture, { from });
+    const result = await postcss([compat()]).process(generated.css, { from: undefined });
+    const before = getRules(generated.css);
+    const after = getRules(result.css);
+    for (const selector of transitionSelectors) {
+      const original = before.find((rule) => rule.selector === selector);
+      const maintained = after.find((rule) => rule.selector === selector);
+      assert(original && maintained, selector);
+      const expected = original.nodes.filter((node) => node.type === 'decl').map((node) => ({
+        prop: node.prop,
+        value: node.prop === 'transition-property'
+          ? node.value.split(',').map((value) => value.trim()).filter((value) => value !== 'outline-color')
+          : node.value,
+        important: Boolean(node.important),
+      }));
+      const actual = maintained.nodes.filter((node) => node.type === 'decl').map((node) => ({
+        prop: node.prop,
+        value: node.prop === 'transition-property' ? node.value.split(',').map((value) => value.trim()) : node.value,
+        important: Boolean(node.important),
+      }));
+      assert.deepEqual(actual, expected, `${selector}: only the default outline-color token changes`);
+    }
+    for (const selector of ['.transition-all', '.transition-\\[outline-color\\]', '.\\[transition-property\\:outline-color\\]', '.duration-300', '.ease-linear']) {
+      assert.equal(after.find((rule) => rule.selector === selector)?.toString(), before.find((rule) => rule.selector === selector)?.toString(), selector);
+      assert(before.some((rule) => rule.selector === selector), selector);
+    }
+    const again = await postcss([compat()]).process(result.css, { from: undefined });
+    assert.equal(again.css, result.css, 'a second pass does not change transition declarations');
+  });
+}
+
+test('custom, partial, compound, list, and arbitrary transition declarations stay byte-exact', async () => {
+  const value = 'color,background-color,border-color,outline-color,text-decoration-color,fill,stroke,--tw-gradient-from,--tw-gradient-via,--tw-gradient-to';
+  const css = [
+    `.article{transition-property:${value}}`,
+    `.transition-colors-extra{transition-property:${value}}`,
+    `.transition .article{transition-property:${value}}`,
+    `.transition,.article{transition-property:${value}}`,
+    `.transition-colors.extra{transition-property:${value}}`,
+    `.transition-colors[data-custom]{transition-property:${value}}`,
+    `.transition-colors{transition-property:color,outline-color}`,
+    `.transition-all{transition-property:${value}}`,
+    `.transition-\\[outline-color\\]{transition-property:outline-color}`,
+    `.\\[transition-property\\:outline-color\\]{transition-property:outline-color}`,
+    `[data-style="transition-colors"]{transition-property:${value}}`,
+  ].join('');
+  const result = await postcss([compat()]).process(css, { from: undefined });
+  assert.equal(result.css, css);
+});
 
 test('official Tailwind 4 and PostCSS are pinned without the vulnerable v3 chain', () => {
   assert.equal(manifest.devDependencies.tailwindcss, '4.3.3');
@@ -110,4 +165,9 @@ test('actual optimized app stylesheet preserves focus and field defaults without
   assert(rules.some((rule) => rule.selector.includes(':focus-visible') && rule.nodes.some((node) => node.prop === 'outline-offset' && node.value === '3px' && node.important)));
   assert(rules.some((rule) => rule.selector === 'body' && rule.nodes.some((node) => node.prop === 'font-family' && node.value.includes('Pretendard'))));
   assert(rules.some((rule) => rule.selector.includes('input:not(:where(') && rule.selector.includes('textarea') && rule.selector.includes('select') && rule.nodes.some((node) => node.prop === 'background-color' && ['#fff', '#ffffff'].includes(node.value))));
+  for (const selector of ['.transition', '.transition-colors']) {
+    const transition = rules.find((rule) => rule.selector === selector);
+    assert(transition, selector);
+    assert(!transition.nodes.some((node) => node.prop === 'transition-property' && node.value.split(',').map((value) => value.trim()).includes('outline-color')), selector);
+  }
 });

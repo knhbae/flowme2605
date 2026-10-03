@@ -149,4 +149,62 @@ J6 뒤 전수279파일/2960실행에서2957PASS/3FAIL을 확인했다. 남은3�
 
 ## 실행 gate와 남은 경계
 
+아래 audit/호환11 및 SortMenu CSS10은 최초 게시 전 근거다. 최초 CI 브라우저 실패 이후 CSS 호환2파일과 브라우저11파일을 보완하며 새 검증·exact build·CI 결과를 별도 기록한다. 기존 수치를 수정판의 최종 결과로 재사용하지 않는다.
+
 현재 dependency gate는 audit0·compatibility11/11이다. 기존 기본 /my의 정렬버튼 실제 SSR과 native input/textarea/select·space/divide를 독립 Chrome CSS fixture에서5 viewport×forced-colors2=10검사로 비교했고 computed속성·pixel byte차이0이었다. 이는 fixture의 CSS 근거이며 실제 제품 HTTP 앱 여정·모든 /my 상태·실기기/IME/AT·사용자 관찰을 대신하지 않는다. 제품 서비스 시작은 현재 직접 실행이 거절된 경계를 그대로 지키며 다른 shell/tool/helper로 우회하지 않는다. 승인된 선별 commit/push/Draft PR·비공개 CI는 최종 local/full·보안·출처·문서·hook·소유 검사와 자동 Git 배포 차단 확인 뒤 별도로 진행할 수 있다. 이 게시 단계의 성공은 제품 HTTP QA·개발계 반영·전체 CP1 완료가 아니다. 정확 새 head/build의 제품 브라우저 gate는 NOT_RUN으로 남긴다.
+
+## M — CI 브라우저 후속 11파일의 수정 전 기준선
+
+CP1 commit `80abc0ad3981fe8ef316d72d23c8b0d5645544f9`·[Draft PR209](https://github.com/knhbae/flowme2605/pull/209)를 정상 게시한 뒤 [CI37109357657](https://github.com/knhbae/flowme2605/actions/runs/37109357657)의 실패를 확인했다. 모델·저장 계약은 **279파일/2960실행/2960PASS**, 브라우저는 **760개 중721PASS/29FAIL/2FLAKY/8NOT_RUN**이다. source654/변경0·준비/always cleanup/allowlisted 요약 업로드 성공·원본 공개0을 확인했다. 공개 CI 요약 SHA256 `7461c47844f2e1ff78031122c9c778f18e0b7362abe4a53c8070977ae1fd0ac9`는 로컬 source hash와 별개다. 기존 실패·flaky·미실행 결과를 지우지 않는다.
+
+승인된 선행 검증 해결의 후속으로 브라우저11파일을 추가 소유한다. 최초112+추가11=**CP1 123 고유 경로**다. CSS 호환2파일과 이 문서는 기존 소유이므로 다시 더하지 않는다. 공통 STATUS/QA/manifest/tasks의 판정은 CP2에서 정리하며 CP1의 게시 전 상태 기록을 현재 성공 근거로 사용하지 않는다. 새 runtime/정책/schema·출처 자료·private pack·실제 계정은 변경하지 않는다.
+
+정확 CP1 HEAD80abc0ad에서11개 모두 tracked-clean인 것을 먼저 확인했다. 아래 값은 Windows 작업본의 **수정 전 OS bytes SHA256**이다. Git의 LF blob과 CRLF 작업본을 혼용하지 않는다. 수정 후 해시는 별도 표에 추가하며 아래 이전값을 덮어쓰지 않는다. 기존 소유 CSS2파일의 이전값은 D표에 남아 있다.
+
+| repo-relative path | 수정 전 SHA256 |
+| --- | --- |
+| `tests/e2e/flow-map-preview-parity.spec.ts` | `893440b340bdda15d037287e05f78145188e82e07415887bcda2e9b465d41067` |
+| `tests/e2e/flow-mvp.spec.ts` | `ae3ed81e8faa4a32c7a604a20e0f4bd239a01cc07a4152753f810aa3a44d2b48` |
+| `tests/e2e/p24-execution-trust.spec.ts` | `f071ff2c0864b176e3a2200d605764f6cfccbeba19b1853b172a1909f0e37564` |
+| `tests/e2e/p26-discovery-save-before.spec.ts` | `5596a4d7585ba5b38b3b1292a415a2b1321218435e93b463e2280c3a8aee3e70` |
+| `tests/e2e/p26-post-save-decision-hub.spec.ts` | `178d5cbe41d4673882755bbbd2624f6267eb0ae005935e559fee2d2493f2a3c0` |
+| `tests/e2e/p26-unified-export.spec.ts` | `b0eb327931b4e796a79f2968f65d60f2f2f305f4a0d90d5946247cdc00587ac2` |
+| `tests/e2e/p29-coordinated-surface-reset.spec.ts` | `5680456d6a87f4c106be076ac3ac1e6d839a8128a9b14c11f1fece8818261e93` |
+| `tests/e2e/p35-export-scope-first.spec.ts` | `45e04a1bc393db0fd3641f4dcf09181260204cb72e5e84471380ec510272f68a` |
+| `tests/e2e/p35-p1-final-internal-gate.spec.ts` | `9d646644dfc1dac4efdd37c1529b662d78addeade279af30c3ff5dbaa2b000b7` |
+| `tests/e2e/public-plan-surface-unification.spec.ts` | `31e8da4731d41dd2a7ab548178621d8c4a3c6ba81dae9f4f04fa174bab599438` |
+| `tests/e2e/url-first-user-surface.spec.ts` | `8eb86d83e149f4f738c58f116fc34a1e0f53f8bd065874f86da0c432f001ab0f` |
+
+공개 선택의 성공 사례는 실제 eligible/direct `curated-wedding-checklist-family`의2child(Calendar6+Todo4), 이동 실행·날짜/export는 실제 eligible/direct `curated-ajd-moving-d30`의5행(-30/-10/-3/-1/0)을 사용한다. 현재 전체 공개 registry는4Map→choose-child 분리6card/curated5, canonical single2를 더한8card다. 단순 숫자 감산만 하지 않고 실제 roster/identity를 대조한다. 실행 보류된 OPIC나 moving을 quality override로 승인하지 않는다. public-plan 표의9개 원래 route는 유지하며 OPIC/reading2개는 같은4크기 루프에서 원문·새 공급0·storage byte 보호 검사로 분리한다.
+
+보류된 연말정산은 새 공개 demo seed에서 제외되어 ‘기존 사본’이 자동 생성되지 않던 문제다. 실제 원본 factory의 이전 saved record를 브라우저에 사전 seed해 기존 사본 보관·0실행·저장 byte 불변을 확인한다. Funmom은 새 공급 보류 안내와 원문 링크·실행0·가짜 일정 없음, P35는 retained/missing/malformed 사본의0쓰기·reload·raw byte 불변을 유지한다. 실패3501/3507은 연말정산이며 중간의 Baby 분류는 잘못된 것이었다. Baby3521은 실패 목록이 아니고 변경하지 않는다.
+
+포커스색9FAIL은 Tailwind4 기본 전환에 추가된 outline-color로 즉시 키보드 포커스색이 지연되는 문제였다. [공식 전환 안내](https://tailwindcss.com/docs/upgrade-guide#transitioning-outline-color)와 실제 generated stylesheet를 대조했다. CSS2파일은 공식 전체 generated shape의 해당 토큰만 제거하며 다른 속성/duration/variant/앞·뒤 important 및 임의·사용자 정의 전환을 유지한다. 기존 compiled stylesheet에서 변경은2토큰28bytes이며 독립 정적3/3·호환10/10 PASS다. 실제 PlatformNav 정적 렌더의3경로×5크기×일반/forced-colors30/30 PASS와 이전 CSS의 일반색15/15FAIL을 비교했다. 앱 서비스/HTTP30·실기기/IME/AT 검사는 아니며 전체 브라우저 CI를 대체하지 않는다.
+
+## M 최종 보완 bytes와 선별 검증
+
+main이 최종13개 실제 OS SHA256를 직접 다시 계산해 담당자 인계값과13/13 일치했다. 이 표는 후속 commit 전 CP1 작업본 bytes이며 최초 D/M 해시를 덮어쓰지 않는다. CP2 인수 시 같은 Git blob과 실제 OS bytes를 각각 확인한다. 이 manifest 자체는 재귀 hash 대상에서 제외한다.
+
+| repo-relative path | 수정 후 SHA256 |
+| --- | --- |
+| `scripts/tailwind-v3-compat.cjs` | `335d747725d2eaa34edc54186f64157b6b20f105107cd80a107f6205efb62d67` |
+| `scripts/tailwind-v3-compat.test.mjs` | `c203d408b5c7a7d876c8768bcaeaabe4614a633b045603845f700370e383ea62` |
+| `tests/e2e/flow-map-preview-parity.spec.ts` | `2c34ee9b734a7482c5ae49a96f914b5dce277ee1460661b8833168ec90fdc577` |
+| `tests/e2e/flow-mvp.spec.ts` | `7a7924d462e6bd713df25fa85306cf70c4c672e9c5d925c7b5d2f76957527265` |
+| `tests/e2e/p24-execution-trust.spec.ts` | `1e55aa3c7528933d969544aaade1d9ce3f579473a6b4c90352fc2987dba7a2dd` |
+| `tests/e2e/p26-discovery-save-before.spec.ts` | `e5cbfc2e4f34b563f55ac0dd2a06dcc1c3117c3d5977ff9a83e5827e17402a30` |
+| `tests/e2e/p26-post-save-decision-hub.spec.ts` | `070febbf671dc4c97d7f9dd1f90c13e48d0abb0d8ad0fdfc37b2db6bd966033b` |
+| `tests/e2e/p26-unified-export.spec.ts` | `d29e904263ea9b51c0c7877aada88993b4ddb61d26f60c1ac6968c598266595a` |
+| `tests/e2e/p29-coordinated-surface-reset.spec.ts` | `1dd73e3e5e3d9af34149d37afba6c202be31fa24c9f0f6d4026803d54f2532ee` |
+| `tests/e2e/p35-export-scope-first.spec.ts` | `70a828af5bc036595925995f97ac2321c951845ff8d0cb6201fce03d60864e2c` |
+| `tests/e2e/p35-p1-final-internal-gate.spec.ts` | `a3f50e8e0291bc3748f55812d68712e34687497ccfa0043c08c91939283dd024` |
+| `tests/e2e/public-plan-surface-unification.spec.ts` | `74fee11c525ffc0c7671460791702fd180584790eebb852070004c6a7f57694e` |
+| `tests/e2e/url-first-user-surface.spec.ts` | `85ab39c1375d50e191526a41f7c9e32971551e8a5692fb67d5e23f1928bbc3a0` |
+
+실제 factory/registry·SSR·Tax read-only 복구의 순수6검사는 **6/6 PASS**다. 공개 roster/2child identity·기간, AJD milestone/doneWhen, archived demo 공급0, Tax saved identity의 원 Item/Details·retired tag·fake storage0쓰기, hold3의 안내·원문 href·실행0을 확인한다. ignored harness의 첫 실행1FAIL은 stepId 잘못 참조였으며 실제 public step.id로 바로잡은 뒤6/6이다. 제품 코드를 수정한 결과가 아니고 처음 실패도 당시 결과로 유지한다.
+
+최종 브라우저 수집은 소유11spec의210case, current project701case/98file, 전체 **760case/105file**이며 exit0이다. 정상/보류 표 분리 후 원래9route·4크기와 최상위 testcase 수를 유지했다. 수집은 실제 클릭·브라우저 실행 PASS가 아니며 새 HTTP30/35는 NOT_RUN이다. `git diff --check` exit0·변경14개 외0·staged0을 확인했다. 후속 정상 hooks·새 HEAD/build proof·CI는 아직 실행 전이다.
+
+최종11개 entry의 TypeScript 대조는 source235개에서 baseline9/current9 diagnostic statement가 같고 신규0·해소0이었다. 대조 exit0이며 기존 legacy diagnostic9개는 남아 있다. 완전한 E2E 타입 PASS로 쓰지 않는다. 독립 정적 검토는 실제 registry/행/원문/receipt/export·hold/negative 경계를 대조했고 추가 결함을 찾지 못했다. 삭제·skip/fixme/only0, 파싱 오류0이며 새로운 실제 브라우저 실행을 한 결과가 아니다. Tax 브라우저의0쓰기는 보호된3키에 한정하고 전체 저장소0쓰기라고 확대하지 않는다.
+
+09:29:33.862~09:29:40.151 UTC 보완판 `security:audit`는 exit0·취약점0·호환 **14/14 PASS**(의존성4+현재 CSS10)였다. OS allowlist만 전달하고 실제 자격정보 전달0·raw 미보관을 유지했다. 최종 proof helper self-test도 통과했으며 SHA `7f9b88bcef8334605e7466c2b06caef6262807a84b8585d3acf259136a492dee`는 그대로다. Vercel 자동 Git 배포 차단 파일은 실제 Git blob/HEAD 동일·deploymentEnabled=false였다. 후속 게시·CI·HTTP·개발계 반영 성공을 이 사전 검사로 대신하지 않는다.

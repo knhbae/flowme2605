@@ -100,18 +100,20 @@ test('legacy seeded multi-Flow receipt chooses an honest Flow scope before openi
   await page.setViewportSize({ width: 1024, height: 768 });
   await gotoLegacySavedPlanLibraryRoute(
     page,
-    '/my?demo=source-backed&savedMap=curated-opic-mock-course',
+    '/my?demo=source-backed&savedMap=curated-wedding-checklist-family',
   );
 
   const hub = page.getByTestId('my-flow-post-save-panel');
   await expect(hub).toHaveAttribute('data-receipt-flow-count', '2');
+  await expect(hub).toHaveAttribute('data-receipt-total-count', '10');
+  await expect(hub).toContainText('결혼 준비');
   await expect(hub.locator('[data-action-priority="primary"]')).toHaveCount(1);
   await expect(hub.getByTestId('my-flow-post-save-open-export')).toHaveCount(0);
   await hub.getByTestId('my-flow-post-save-view-flow').click();
   await expect(hub).toHaveCount(0);
   const firstRow = page.getByTestId('my-flow-library-row').first();
   const firstSlug = await firstRow.getAttribute('data-flow-slug');
-  expect(firstSlug).toBeTruthy();
+  expect(['curated-wedding-naver-timeline', 'curated-wedding-gongysd-atoz']).toContain(firstSlug);
   const flow = await openMyFlowLibraryFlow(page, firstSlug!, 'record');
   const exportSurface = flow.getByTestId('my-flow-export-surface');
   await exportSurface.getByTestId('my-flow-export-entry').click();
