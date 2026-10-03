@@ -22,8 +22,15 @@ export type ProgramCommunityProps = {
   storageScope?: 'local' | 'account';
   mediaPort?: ProgramCommunityMediaPort;
   resolveDraftSaveError?: (draft: ProgramParticipationDraft, expected: ProgramParticipationDraft | null, reason: string) => string | undefined;
+  resolveDraftSaveRecovery?: (draft: ProgramParticipationDraft, expected: ProgramParticipationDraft | null, reason: string) => ProgramCommunityDraftSaveRecovery | undefined;
+  draftSaveRecovery?: ProgramCommunityDraftSaveRecovery & { draftId: string };
 };
-type CommunityErrorNotice = { message: string; draftSave?: {
+export type ProgramCommunityDraftSaveRecovery = {
+  state: 'rejected' | 'unknown' | 'confirmed-unsaved';
+  message: string;
+  action?: { label: string; onClick: () => void; disabled?: boolean };
+};
+type CommunityErrorNotice = { message: string; retryDraft?: boolean; draftSave?: {
   draft: ProgramParticipationDraft; expected: ProgramParticipationDraft | null; reason: string;
 } };
 const kinds = { question: '질문', experience: '경험', knowledge: '지식', reply: '답글' };
@@ -42,7 +49,7 @@ function postTitle(data: ProgramData, id: string) { return data.public.posts.fin
 export function ProgramCommunity(props: ProgramCommunityProps) {
   return <CommunityBody key={props.data.activeActorId} {...props} />;
 }
-function CommunityBody({ data, mutate, navigate, view, selectedPostId, selectedReplyId, onRegisterEditors, presentation, onPresentationChange, storageScope = 'local', mediaPort, resolveDraftSaveError }: ProgramCommunityProps) {
+function CommunityBody({ data, mutate, navigate, view, selectedPostId, selectedReplyId, onRegisterEditors, presentation, onPresentationChange, storageScope = 'local', mediaPort, resolveDraftSaveError, resolveDraftSaveRecovery, draftSaveRecovery }: ProgramCommunityProps) {
   const actorId = data.activeActorId;
   const [localPresentation, setLocalPresentation] = useState(emptyProgramCommunityPresentation);
   const currentPresentation = presentation ?? localPresentation, { query, kind } = currentPresentation;
@@ -134,6 +141,29 @@ function CommunityBody({ data, mutate, navigate, view, selectedPostId, selectedR
   }, [view, selectedPostId, selectedReply?.id]);
   const drafts = data.spaces[actorId]?.participationDrafts ?? [];
   const latestDraft = drafts.find(entry => entry.id === draft?.id) ?? null;
+  const activeDraftSave = errorNotice.draftSave && draft?.id === errorNotice.draftSave.draft.id;
+  const hostDraftRecovery = draftSaveRecovery?.draftId === draft?.id ? draftSaveRecovery
+    : activeDraftSave && errorNotice.draftSave
+    ? resolveDraftSaveRecovery?.(errorNotice.draftSave.draft, errorNotice.draftSave.expected, errorNotice.draftSave.reason)
+    : undefined;
+  const retryDraftSave = () => {
+    if (busy || readingMedia || lockCount.current || composing.current) return;
+    const value = currentDraft();
+    if (value && bodyRef.current) value.cursor = { start: bodyRef.current.selectionStart, end: bodyRef.current.selectionEnd };
+    if (value) { draftRef.current = value; setDraft(value); void save(value); }
+  };
+  const canRetryDraftSave = errorNotice.retryDraft || !!errorNotice.draftSave
+    && !['checking-result', 'conflict', 'unauthenticated', 'forbidden'].includes(errorNotice.draftSave.reason)
+    && (errorNotice.draftSave.reason !== 'recovery-required' || error !== errorNotice.message);
+  const retryDraftAction = { label: '초안 저장 다시 시도', onClick: retryDraftSave, disabled: busy || readingMedia || locked };
+  const draftRecovery: ProgramCommunityDraftSaveRecovery | undefined = hostDraftRecovery
+    ? hostDraftRecovery.state === 'rejected' && !hostDraftRecovery.action ? { ...hostDraftRecovery, action: retryDraftAction } : hostDraftRecovery
+    : (draft && !draftConflict
+    && (activeDraftSave || errorNotice.retryDraft) && error
+    ? {
+      state: errorNotice.draftSave?.reason === 'checking-result' || errorNotice.draftSave?.reason === 'recovery-required' && !canRetryDraftSave ? 'unknown' : 'rejected', message: error,
+      ...(canRetryDraftSave ? { action: retryDraftAction } : {}),
+    } : undefined);
   const activity = listProgramActivity(data, actorId);
   const publishingActivity = readProgramPublishingActivity(data, actorId);
   const posts = data.public.posts.filter(entry => !entry.deleted && (kind === 'all' || kind === entry.kind)
@@ -164,7 +194,7 @@ function CommunityBody({ data, mutate, navigate, view, selectedPostId, selectedR
           } else { setDraftConflict(false); setError(''); }
         }
         return outcome.ok;
-      } catch { if (mounted.current) { setSaveState('저장하지 못했어요'); setError('입력은 그대로입니다. 저장을 다시 시도해 주세요.'); } return false; }
+      } catch { if (mounted.current) { setSaveState('저장하지 못했어요'); setErrorNotice({ message: '입력은 그대로입니다. 저장을 다시 시도해 주세요.', retryDraft: true }); } return false; }
       finally { saveFlights.current--; }
     });
     return queue.current;
@@ -210,7 +240,7 @@ function CommunityBody({ data, mutate, navigate, view, selectedPostId, selectedR
     const snapshot = draftRef.current; if (!snapshot || busy || lockCount.current > 0 || composing.current) return;
     lockCount.current++; setLocked(true); setBusy(true); setError('');
     try {
-      if (!await queue.current) { setError('초안을 먼저 저장해 주세요. 입력은 그대로 남아 있습니다.'); return; }
+      if (!await queue.current) { setErrorNotice({ message: '초안을 먼저 저장해 주세요. 입력은 그대로 남아 있습니다.', retryDraft: true }); return; }
       const outcome = await guardedMutation(mutate, snapshot.editTargetId ? '글 수정' : '글 공개', current => submitProgramParticipation(current, actorId, snapshot, utcNow(), { expected: snapshot }), { alphaSocial: { type: 'participation-submit', draft: snapshot, expected: snapshot } });
       if (outcome.ok && outcome.presentationPending) { setError(programErrorMessage('presentation-pending')); return; }
       if (outcome.ok) { draftRef.current = null; savedDraftRef.current = null; setDraft(null); setPreview(false); setSaveState(''); navigate({ view: 'community', id: snapshot.kind === 'reply' ? snapshot.postId! : outcome.result, ...(snapshot.kind === 'reply' ? { replyId: outcome.result } : {}) }); }
@@ -289,22 +319,27 @@ function CommunityBody({ data, mutate, navigate, view, selectedPostId, selectedR
 
   return <section className={styles.community} aria-label={view === 'activity' ? '내 활동' : '이야기'}>
     <header className={styles.header}><h1>{view === 'activity' ? '내 활동' : '이야기'}</h1><button className={styles.primary} type="button" disabled={draftEntryDisabled} onClick={() => void openDraft(newProgramParticipationDraft())}>글 쓰기</button></header>
-    {error && <div role="alert" className={styles.error}>{error}{draft && <button type="button" onClick={() => save(draft)}>초안 저장 다시 시도</button>}</div>}
+    {error && !draft && <div role="alert" className={styles.error}>{error}</div>}
     {drafts.length > 0 && <details className={styles.drafts}><summary>작성 중인 글 {drafts.length}</summary>{drafts.map(entry => <button key={entry.id} type="button" disabled={draftEntryDisabled} onClick={() => void openDraft(entry)}>{entry.title || entry.body.slice(0, 40) || `새 ${kinds[entry.kind]}`} · 이어 쓰기</button>)}</details>}
     {draft && <section className={styles.composer} ref={composeRef} aria-label="글 작성"
       onCompositionStart={() => { composing.current = true; }} onCompositionEnd={() => { composing.current = false; const value = currentDraft(); if (value) { draftRef.current = value; setDraft(value); void save(value); } }}
       onBeforeInput={event => { if (lockCount.current > 0 && !composing.current) event.preventDefault(); }}>
-      <header><h2>{draft.editTargetId ? `${kinds[draft.kind]} 수정` : `${kinds[draft.kind]} 쓰기`}</h2><span role="status" className={styles.meta}>{saveState}</span></header>
-      {draftConflict && <div className={styles.notice} role="alert"><h3>다른 탭의 초안과 비교</h3>
-        {latestDraft ? <><p><strong>{latestDraft.title || kinds[latestDraft.kind]}</strong> · {kinds[latestDraft.kind]}</p><p className={styles.body}>{latestDraft.body}</p>
+      <header><h2>{draft.editTargetId ? `${kinds[draft.kind]} 수정` : `${kinds[draft.kind]} 쓰기`}</h2>{saveState && saveState !== '저장하지 못했어요' && !draftRecovery && !draftConflict && <span role="status" className={styles.meta} data-draft-save-state={saveState === '저장 중…' ? 'saving' : 'saved'}>{saveState}</span>}</header>
+      {draftRecovery && <div role={draftRecovery.state === 'confirmed-unsaved' ? 'status' : 'alert'} aria-label="초안 저장 복구" className={styles.draftRecovery} data-draft-save-state={draftRecovery.state}>
+        <span>{draftRecovery.message}</span>{draftRecovery.action && <button type="button" disabled={draftRecovery.action.disabled || busy || readingMedia || locked} onClick={draftRecovery.action.onClick}>{draftRecovery.action.label}</button>}
+      </div>}
+      {error && (!(activeDraftSave || errorNotice.retryDraft) || !draftRecovery && !draftConflict && !conflict)
+        && <div role="alert" className={styles.error}>{error}</div>}
+      {draftConflict && !draftRecovery && <div className={styles.notice} role="alert" data-draft-save-state="conflict"><h3>다른 탭의 초안과 비교</h3>
+        <p>내 입력은 아래에 남아 있습니다. 최신 초안을 확인한 뒤 저장해 주세요.</p>
+        {latestDraft ? <details className={styles.draftComparison}><summary>최신 초안 내용 보기</summary><p><strong>{latestDraft.title || kinds[latestDraft.kind]}</strong> · {kinds[latestDraft.kind]}</p><p className={styles.body}>{latestDraft.body}</p>
           <details><summary>최신 사진·연결·근거 확인</summary><p>주제: {latestDraft.topic || '없음'}</p>
             <p>관련 Flow: {data.public.versions.find(version => version.id === latestDraft.versionId)?.title || '연결하지 않음'}</p>
             <p>관련 항목: {data.public.versions.find(version => version.id === latestDraft.versionId)?.items.find(item => item.id === latestDraft.itemId)?.title || '연결하지 않음'}</p>
             {latestDraft.postId && <p>답글 대상: {postTitle(data, latestDraft.postId)}</p>}
             <ul>{latestDraft.evidencePostIds.map(id => <li key={id}>{postTitle(data, id)}</li>)}</ul>
             {latestDraft.media.map(media => <figure className={styles.attachment} key={media.id}><ProgramCommunityImage media={media} mediaPort={mediaPort} /><figcaption>{media.alt}</figcaption></figure>)}
-          </details></> : <p>다른 탭에서 초안이 삭제되었습니다.</p>}
-        <p>아래의 내 입력은 유지했습니다. 최신 초안을 확인한 뒤 선택해 주세요.</p>
+          </details></details> : <p>다른 탭에서 초안이 삭제되었습니다.</p>}
         <button type="button" disabled={busy || locked} onClick={() => { savedDraftRef.current = programClone(latestDraft); const value = currentDraft(); if (value) void save(value); }}>확인한 최신 초안 대신 내 입력 저장</button>
       </div>}
       {draft.kind === 'reply' && <p className={styles.context}>{postTitle(data, draft.postId!)}{draft.parentReplyId && ` · ${author(data, data.public.replies.find(entry => entry.id === draft.parentReplyId)?.authorId ?? '')}에게 답글`}</p>}

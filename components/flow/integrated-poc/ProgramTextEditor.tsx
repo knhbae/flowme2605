@@ -830,7 +830,12 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         <button type="button" disabled={disabled || orderPreview?.plan.status !== 'ready'} onClick={applyOrder}>원문에 날짜순 적용</button>
       </div>}
       {panel.kind === 'insert' && <div className={styles.choices}>
-        {row?.kind === 'subcheck' && row.isCanonical === true && !row.isReference && <small>이 하위 항목은 별도 할 일로 등록돼 있습니다. 들여쓰기를 바꿔도 등록과 진행 기록은 유지됩니다.</small>}
+        {row && <p className={styles.menuTarget}>{row.title || row.task?.title || row.text}</p>}
+        {row?.kind === 'subcheck' && row.isCanonical === true && !row.isReference && <small className={styles.registeredNotice}>이 하위 항목은 별도 할 일로 등록돼 있습니다. 들여쓰기를 바꿔도 등록과 진행 기록은 유지됩니다.</small>}
+        {row?.progressTargetId && <section className={styles.menuSection} aria-label="선택 항목 진행·날짜"><h4>진행·날짜</h4>
+          {accessFor(panel.lineId)?.reason ? <button type="button" onClick={() => setPanel({ kind: 'reference', lineId: panel.lineId })}>기록·원래 항목 보기</button> : <><button type="button" onClick={() => openProgress(panel.lineId)}>진행 기록</button><button type="button" onClick={() => openProgress(panel.lineId, 'date')}>날짜 바꾸기</button></>}
+        </section>}
+        <section className={styles.menuSection} aria-label="추가·연결"><h4>추가·연결</h4>
         {insertions.map(option => <button type="button" key={`${option.kind}:${option.offset}:${option.depth}`} onClick={() => insertNative(option.offset, option.text, option.caretOffset)}>{option.label}<small>{option.relation}</small></button>)}
         {!currentDoc()?.lines.length && <><button type="button" onClick={() => insertNative(0, '- [ ] ', 6)}>할 일</button><button type="button" onClick={() => { closePanel(); editorRef.current?.focus(); }}>자유 메모</button></>}
         <button type="button" onClick={insertDateSection}>날짜 구획 · 문서 끝에</button>
@@ -841,9 +846,11 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
           setPanel({ kind: 'reference', lineId: panel.lineId });
         }}>연결된 항목 보기</button>}
         {props.onConnectFlow && <button type="button" onClick={() => { void connectFlow(panel.lineId); }}>Flow 연결</button>}
-        {row?.progressTargetId && (accessFor(panel.lineId)?.reason ? <button type="button" onClick={() => setPanel({ kind: 'reference', lineId: panel.lineId })}>기록·원래 항목 보기</button> : <><button type="button" onClick={() => openProgress(panel.lineId)}>진행 기록</button><button type="button" onClick={() => openProgress(panel.lineId, 'date')}>날짜 바꾸기</button></>)}
+        </section>
+        {row && <section className={styles.menuSection} aria-label="선택 항목 문서 구조"><h4>문서 구조</h4>
         {row && ['task', 'subcheck', 'scope'].includes(row.kind) && <button type="button" onClick={() => beginMove(panel.lineId, true)}>하위 묶음 이동</button>}
         {row && <><button type="button" onClick={() => { closePanel(); editorRef.current?.focus(row.index); editorRef.current?.indent(false); }}>들여쓰기</button><button type="button" onClick={() => { closePanel(); editorRef.current?.focus(row.index); editorRef.current?.indent(true); }}>내어쓰기</button><button type="button" onClick={() => { closePanel(); editorRef.current?.toggleFold(row.index); }}>하위 내용 접기 / 펼치기</button></>}
+        </section>}
       </div>}
       {panel.kind === 'progress' && !protectedExecutionPanel && <form onSubmit={event => { event.preventDefault(); void applyProgress(); }}>
         <p>{row?.title || row?.task?.title}</p><label>기록 날짜<input type="date" required value={date} onChange={event => setDate(event.target.value)} /></label>

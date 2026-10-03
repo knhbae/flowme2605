@@ -33,6 +33,12 @@
 .composer { padding: 18px; border: 1px solid #b7ccbf; border-radius: 10px; margin-block: 18px 28px; }
 .composer > header h2 { margin: 0 0 12px; }
 .composer label { margin-bottom: 12px; }
+.draftRecovery { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; padding: 10px 12px; margin-block: 0 14px; border-radius: 8px; background: #fff1e9; color: #8b3a23; word-break: keep-all; overflow-wrap: anywhere; }
+.draftRecovery > span { flex: 1 1 220px; min-width: 0; }
+.draftRecovery > button { max-width: 100%; margin: 0; }
+.draftRecovery[data-draft-save-state='confirmed-unsaved'] { background: #f1f6f2; color: #203e35; }
+.draftComparison { margin-block: 8px; }
+.draftComparison > summary { font-weight: 500; }
 .context { padding: 12px 0; border-block: 1px solid #e0e9e4; font-size: 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
 .community .fileButton { position: relative; display: inline-flex; min-height: 44px; align-items: center; border: 1px solid #c5d5ce; border-radius: 8px; padding: 8px 14px; cursor: pointer; overflow: hidden; }
 .fileButton input { position: absolute; inset: 0; width: 100%; opacity: 0; cursor: pointer; }

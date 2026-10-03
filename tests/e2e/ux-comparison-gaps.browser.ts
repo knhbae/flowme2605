@@ -1,5 +1,5 @@
 import { test, expect, type Page, type Locator, type TestInfo } from '@playwright/test';
-import { login } from './alpha-auth.fixture';
+import { login, users } from './alpha-auth.fixture';
 import { mockParticipationDraft, mockVersionedPublicEntry, versionedPublicIds, versionedPublicTitle } from './ux-comparison-gaps.fixture';
 import { mockFolderContentEntry, folderIds } from './folder-content-entry.fixture';
 import { textWorkspaceModel as M } from '../../lib/flow/integrated-poc/text-workspace';
@@ -59,15 +59,17 @@ async function record(page: Page, info: TestInfo) {
   await page.screenshot({path:info.outputPath('final.png'),fullPage:true});
 }
 async function captureDraftRefusal(page: Page, info: TestInfo, name: string) {
-  const status = composer(page).getByText('저장하지 못했어요',{exact:true});
-  const retry = page.getByRole('button',{name:'초안 저장 다시 시도',exact:true});
-  const alert = page.getByRole('region',{name:'이야기',exact:true}).getByRole('alert').filter({has:retry});
+  const retry = composer(page).getByRole('button',{name:'초안 저장 다시 시도',exact:true});
+  const alert = composer(page).getByRole('alert',{name:'초안 저장 복구',exact:true});
   await expect(alert).toHaveText('초안을 저장하지 못했습니다. 입력은 남아 있습니다.초안 저장 다시 시도');
   await expect(alert).not.toContainText('새로고침');
-  await expect(status).toBeVisible(); await expect(retry).toBeEnabled();
+  await expect(alert).toHaveAttribute('data-draft-save-state','rejected');
+  await expect(composer(page).getByText('저장하지 못했어요',{exact:true})).toHaveCount(0);
+  await expect(page.getByRole('region',{name:'거절된 저장과 입력 보호',exact:true})).toHaveCount(0);
+  await expect(retry).toBeEnabled();
   await retry.scrollIntoViewIfNeeded();
   await retry.evaluate(node=>node.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'}));
-  for (const control of [alert,status,retry]) await expect.poll(()=>control.evaluate(node=>{
+  for (const control of [alert,retry]) await expect.poll(()=>control.evaluate(node=>{
     const r=node.getBoundingClientRect(),x=r.x+r.width/2,y=r.y+r.height/2;
     const points=[[x,y],[x,r.top+1],[x,r.bottom-1],[r.left+1,y],[r.right-1,y]];
     return r.width>0&&r.height>0&&r.left>=0&&r.top>=0&&r.right<=innerWidth&&r.bottom<=innerHeight&&points.every(([px,py])=>{
@@ -75,18 +77,40 @@ async function captureDraftRefusal(page: Page, info: TestInfo, name: string) {
   })).toBe(true);
   await page.screenshot({path:info.outputPath(`${name}.png`),fullPage:false});
   await info.attach(name,{contentType:'application/json',body:JSON.stringify({viewport:page.viewportSize(),
-    status:await status.innerText(),errorNotice:await alert.innerText(),retainedInput:await bodyField(page).inputValue(),retryEnabled:true,
-    statusAndRetryWithinViewport:true,noticeAndStatusAndRetryWithinViewport:true,sampledOcclusionPoints:5,viewportScreenshot:true,
-    noticeBounds:await alert.boundingBox(),statusBounds:await status.boundingBox(),retryBounds:await retry.boundingBox(),activationDuringCapture:false})});
+    state:'rejected',errorNotice:await alert.innerText(),retainedInput:await bodyField(page).inputValue(),retryEnabled:true,
+    duplicateFailedSaveStatus:0,duplicateGlobalRecoveryPanel:0,noticeAndRetryWithinViewport:true,sampledOcclusionPoints:5,viewportScreenshot:true,
+    noticeBounds:await alert.boundingBox(),retryBounds:await retry.boundingBox(),activationDuringCapture:false})});
+}
+async function captureDraftRecovery(page: Page, info: TestInfo, state: 'unknown' | 'confirmed-unsaved', name: string) {
+  const notice = composer(page).locator(`[data-draft-save-state="${state}"]`);
+  const action = notice.getByRole('button');
+  await expect(notice).toHaveCount(1); await expect(action).toHaveCount(1); await expect(action).toBeEnabled();
+  await expect(composer(page).getByRole('button',{name:'초안 저장 다시 시도',exact:true})).toHaveCount(0);
+  await expect(composer(page).getByText('저장하지 못했어요',{exact:true})).toHaveCount(0);
+  for (const label of ['저장 결과 복구','거절된 저장과 입력 보호','다른 기기 변경과 입력 보호'])
+    await expect(page.getByRole('region',{name:label,exact:true})).toHaveCount(0);
+  await notice.evaluate(node=>node.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'}));
+  for (const control of [notice,action]) await expect.poll(()=>control.evaluate(node=>{
+    const r=node.getBoundingClientRect(),x=r.x+r.width/2,y=r.y+r.height/2;
+    const points=[[x,y],[x,r.top+1],[x,r.bottom-1],[r.left+1,y],[r.right-1,y]];
+    return r.width>0&&r.height>0&&r.left>=0&&r.top>=0&&r.right<=innerWidth&&r.bottom<=innerHeight
+      &&points.every(([px,py])=>{const top=document.elementFromPoint(px,py);return !!top&&(top===node||node.contains(top));});
+  })).toBe(true);
+  await page.screenshot({path:info.outputPath(`${name}.png`),fullPage:false});
+  await info.attach(name,{contentType:'application/json',body:JSON.stringify({viewport:page.viewportSize(),state,
+    notice:await notice.innerText(),action:await action.innerText(),retainedInput:await bodyField(page).inputValue(),
+    selection:await bodyField(page).evaluate((node:HTMLTextAreaElement)=>({start:node.selectionStart,end:node.selectionEnd})),
+    noticeAndActionWithinViewport:true,sampledOcclusionPoints:5,duplicateGlobalRecoveryPanel:0,genericCurrentInputRetry:0,activationDuringCapture:false})});
 }
 async function verifyAssets(info: TestInfo) {
   const boundary = info.attachments.find(value => value.name === 'release-boundary');
   expect(boundary?.body).toBeDefined(); const parsed = JSON.parse(boundary!.body!.toString());
   assertUxObservedAssets(exactBuild, parsed.assets);
-  await info.attach('exact-asset-check',{contentType:'application/json',body:JSON.stringify({
-    root:exactBuild.providedRoot,head:exactBuild.head,buildId:exactBuild.buildId,
-    compileInputs:exactBuild.compileInputs.length,qaInputs:exactBuild.qaInputs.length,
-    staticAssets:exactBuild.staticAssets.length,assets:parsed.assets.length,drift:0})});
+  await info.attach('exact-asset-check',{contentType:'application/json',body:JSON.stringify({root:exactBuild.providedRoot,
+    head:exactBuild.head,qaRoot:exactBuild.qaRoot,qaHead:exactBuild.qaHead,buildId:exactBuild.buildId,
+    scenarioSourceSha256:exactBuild.qaInputs.find(file=>file.path==='tests/e2e/ux-comparison-gaps.browser.ts')!.sha256,
+    compileInputs:exactBuild.compileInputs.length,qaInputs:exactBuild.qaInputs.length,staticAssets:exactBuild.staticAssets.length,
+    assets:parsed.assets.length,drift:0})});
 }
 
 test('UC1 ordinary memo and same Item survive document→period→reload', async ({page},info) => {
@@ -116,7 +140,13 @@ test('UC1 ordinary memo and same Item survive document→period→reload', async
     const menuSelection=await area.evaluate((value:HTMLTextAreaElement)=>({start:value.selectionStart,end:value.selectionEnd,direction:value.selectionDirection}));
     await hit(editor.getByRole('button',{name:`${meta.index+1}행 메뉴`,exact:true}),'keyboard');
     const rowMenu=page.getByRole('dialog'); await expect(rowMenu).toBeVisible();
+    await expect(rowMenu.locator('p').filter({hasText:title})).toHaveText(title);
+    await expect(rowMenu.getByRole('heading',{name:'추가·연결',exact:true})).toBeVisible();
+    await expect(rowMenu.getByRole('heading',{name:'문서 구조',exact:true})).toBeVisible();
     if (registered) {
+      await expect(rowMenu.getByRole('heading',{name:'진행·날짜',exact:true})).toBeVisible();
+      const headings=await rowMenu.getByRole('heading',{level:4}).allTextContents();
+      expect(headings).toEqual(['진행·날짜','추가·연결','문서 구조']);
       await expect(rowMenu.getByText(registrationNote,{exact:true})).toBeVisible();
       const geometry=await rowMenu.evaluate(node=>({width:node.scrollWidth,height:node.scrollHeight,clientWidth:node.clientWidth,clientHeight:node.clientHeight}));
       expect(geometry.width-geometry.clientWidth).toBeLessThanOrEqual(1);
@@ -228,6 +258,19 @@ test('UC2 public selected version is found and reused without changing its sourc
   await hit(page.getByRole('navigation',{name:'작업 공간',exact:true}).getByRole('button',{name:'둘러보기',exact:true}));
   const discovery = page.getByTestId('program-discovery');
   await expect(discovery.getByRole('heading',{name:'Flow 찾기',exact:true})).toBeVisible();
+  await expect(discovery).not.toContainText(before.space.text.documents[0].title);
+  await hit(discovery.getByRole('button',{name:'내 문서 보기',exact:true}),'keyboard');
+  await expect(page.getByRole('region',{name:'개인 문서 편집',exact:true}).locator('textarea')).toHaveValue(M.raw(before.space.text.documents[0]));
+  expect(await mock.current()).toEqual(before); expect(mock.commands).toHaveLength(0); expect(mock.diagnostics()).toEqual(startCounts);
+  await hit(page.getByRole('navigation',{name:'작업 공간',exact:true}).getByRole('button',{name:'둘러보기',exact:true}));
+  await discovery.getByRole('searchbox',{name:'공개 Flow 검색',exact:true}).fill('결과 없는 합성 공개 검색어');
+  await expect(discovery.getByRole('heading',{name:'맞는 자료가 없습니다',exact:true})).toBeVisible();
+  await expect(discovery.getByRole('heading',{name:'아직 공개된 Flow가 없어요',exact:true})).toHaveCount(0);
+  await expect(discovery).not.toContainText(before.space.text.documents[0].title);
+  await page.screenshot({path:info.outputPath('uc2-public-search-empty.png'),fullPage:true});
+  await hit(discovery.getByRole('button',{name:'검색 조건 지우기',exact:true}),'keyboard');
+  await expect(discovery.getByRole('searchbox',{name:'공개 Flow 검색',exact:true})).toHaveValue('');
+  expect(await mock.current()).toEqual(before); expect(mock.commands).toHaveLength(0); expect(mock.diagnostics()).toEqual(startCounts);
   await hit(discovery.getByRole('button',{name:versionedPublicTitle,exact:true}));
   const detail = page.getByTestId('program-flow-detail'); await expect(detail).toBeVisible();
   const version = detail.getByRole('combobox',{name:'읽는 판본',exact:true});
@@ -278,7 +321,7 @@ test('UC3 definitive draft rejection→modify→second refusal→direct resave p
   mock.rejectNextBody('거절될 합성 초안');
   await bodyField(page).fill('거절될 합성 초안');
   await expect.poll(()=>mock.rejected()).not.toBeNull();
-  await expect(composer(page).getByText('저장하지 못했어요',{exact:true})).toBeVisible();
+  await expect(composer(page).locator('[data-draft-save-state="rejected"]')).toBeVisible();
   expect(await mock.current()).toEqual(before); expect(mock.diagnostics()).toEqual(counts);
   await expect(bodyField(page)).toHaveValue('거절될 합성 초안');
   await expect(page.getByRole('region',{name:'다른 기기 변경과 입력 보호',exact:true})).not.toBeVisible();
@@ -288,7 +331,7 @@ test('UC3 definitive draft rejection→modify→second refusal→direct resave p
   mock.rejectNextBody('수정해 다시 보관한 합성 초안');
   await bodyField(page).fill('수정해 다시 보관한 합성 초안');
   await expect.poll(()=>mock.rejected()?.requestId).not.toBe(firstRefusal.requestId);
-  await expect(composer(page).getByText('저장하지 못했어요',{exact:true})).toBeVisible();
+  await expect(composer(page).locator('[data-draft-save-state="rejected"]')).toBeVisible();
   await expect(bodyField(page)).toHaveValue('수정해 다시 보관한 합성 초안');
   expect(await mock.current()).toEqual(before); expect(mock.diagnostics()).toEqual(counts);
   await captureDraftRefusal(page,info,'uc3-corrected-refused-input-and-retry');
@@ -319,18 +362,26 @@ test('UC4 unknown receipt keeps modified input and settles only the original req
   mock.loseNextBody('응답이 유실될 합성 초안');
   await bodyField(page).fill('응답이 유실될 합성 초안');
   await expect.poll(()=>mock.lost()).not.toBeNull();
-  const recovery = page.getByRole('region',{name:'저장 결과 복구',exact:true}); await expect(recovery).toBeVisible();
+  const recovery = composer(page).locator('[data-draft-save-state="unknown"]'); await expect(recovery).toBeVisible();
   const before = mock.commands.length, counts = mock.diagnostics();
   await bodyField(page).fill('확인 전 추가한 입력');
-  await expect(composer(page).getByText('저장하지 못했어요',{exact:true})).toBeVisible();
+  await expect(recovery).toContainText('이전 요청이 저장됐는지 확인해야 합니다. 지금 입력은 그대로 둡니다.');
   expect(mock.commands).toHaveLength(before); expect(mock.diagnostics()).toEqual(counts);
   await expect(page.getByRole('region',{name:'이야기',exact:true}).getByRole('alert')).not.toContainText('초안을 저장하지 못했습니다. 입력은 남아 있습니다.');
   await expect(bodyField(page)).toHaveValue('확인 전 추가한 입력');
-  mock.revealReceipt(); await hit(recovery.getByRole('button',{name:'저장 결과 확인 · 같은 요청 재시도',exact:true}));
+  await captureDraftRecovery(page,info,'unknown','uc4-unknown-original-request');
+  mock.revealReceipt(); await hit(recovery.getByRole('button',{name:'이전 요청 저장 결과 확인',exact:true}),'keyboard');
   await expect(recovery).not.toBeVisible(); expect(mock.commands).toHaveLength(before);
   expect(mock.lookups.length, 'The original request receipt was actually queried').toBeGreaterThan(0);
   expect(mock.lookups.every(id=>id===mock.lost()!.requestId)).toBe(true);
   await expect(bodyField(page)).toHaveValue('확인 전 추가한 입력');
+  const confirmed = composer(page).locator('[data-draft-save-state="confirmed-unsaved"]');
+  await expect(confirmed).toContainText('이전 요청은 저장됐습니다. 그 뒤에 쓴 입력은 아직 저장되지 않았습니다.');
+  await expect(confirmed.getByRole('button',{name:'추가 입력 보관 후 저장본 열기',exact:true})).toBeVisible();
+  await expect(composer(page).getByText('계정에 초안 저장됨',{exact:true})).toHaveCount(0);
+  await captureDraftRecovery(page,info,'confirmed-unsaved','uc4-confirmed-original-new-input-unsaved');
+  expect(mock.commands).toHaveLength(before); expect(mock.diagnostics()).toEqual(counts);
+  expect((await mock.current()).space.participationDrafts[0].body).toBe('응답이 유실될 합성 초안');
   await record(page,info); await mock.assertBoundary(info); await verifyAssets(info);
 });
 
@@ -340,7 +391,7 @@ test('UC5 direct retry of a definitively refused draft saves once without publis
   mock.rejectNextBody('직접 다시 보관할 합성 초안');
   await bodyField(page).fill('직접 다시 보관할 합성 초안');
   await expect.poll(()=>mock.rejected()).not.toBeNull();
-  await expect(composer(page).getByText('저장하지 못했어요',{exact:true})).toBeVisible();
+  await expect(composer(page).locator('[data-draft-save-state="rejected"]')).toBeVisible();
   expect(await mock.current()).toEqual(before); expect(mock.diagnostics()).toEqual(counts);
   const requests = mock.commands.length;
   await captureDraftRefusal(page,info,'uc5-refused-input-and-retry');
@@ -410,7 +461,22 @@ test('UC6 Dots R05 intersects folder period and search, escapes empty results, a
       await ids([target.id,exception.id,otherPeriod.id]);
       await hit(views.getByRole('button',{name:'주간',exact:true})); await ids([target.id]);
       await search.fill('결과 없는 합성 검색어'); await ids([]);
-      await expect(page.getByText('이 보기에 할 일이 없습니다. 날짜나 폴더를 바꾸거나 새 할 일을 적어보세요.',{exact:true})).toBeVisible();
+      await expect(page.getByText('현재 조회 조건에 맞는 할 일이 없습니다.',{exact:true})).toBeVisible();
+      await hit(page.getByRole('button',{name:'전체 할 일에서 찾기',exact:true}),'keyboard');
+      await expect(views.getByRole('button',{name:'전체 할 일',exact:true})).toHaveAttribute('aria-current','page');
+      await expect(views.getByRole('button',{name:'전체 할 일',exact:true})).toBeFocused();
+      await expect(folder).toHaveValue(folderIds.work); await expect(search).toHaveValue('결과 없는 합성 검색어');
+      await ids([]);
+      await expect(page.getByRole('button',{name:'전체 할 일에서 찾기',exact:true})).toHaveCount(0);
+      expect(await mock.current()).toEqual(before); expect(mock.diagnostics()).toEqual(startCounts); expect(mock.commands).toHaveLength(0);
+      await hit(views.getByRole('button',{name:'주간',exact:true}));
+      await expect(page.getByLabel('조회 날짜',{exact:true})).toHaveValue('2026-10-02');
+      await search.fill('합성 R05 다른 기간'); await ids([]);
+      await hit(page.getByRole('button',{name:'전체 할 일에서 찾기',exact:true}),'keyboard'); await ids([otherPeriod.id]);
+      await expect(folder).toHaveValue(folderIds.work); await expect(search).toHaveValue('합성 R05 다른 기간');
+      await expect(views.getByRole('button',{name:'전체 할 일',exact:true})).toBeFocused();
+      expect(await mock.current()).toEqual(before); expect(mock.diagnostics()).toEqual(startCounts); expect(mock.commands).toHaveLength(0);
+      await hit(views.getByRole('button',{name:'주간',exact:true})); await search.fill('결과 없는 합성 검색어'); await ids([]);
       await hit(page.getByRole('button',{name:'필터 해제',exact:true}),'keyboard');
       await expect(folder).toHaveValue(''); await expect(search).toHaveValue('');
       await expect(views.getByRole('button',{name:'주간',exact:true})).toHaveAttribute('aria-current','page');
@@ -442,6 +508,7 @@ test('UC6 Dots R05 intersects folder period and search, escapes empty results, a
     await test.step('date-only undated move preserves time; explicit empty date and time clears both on the same Item',async()=>{
       await hit(row(target.id).getByRole('button',{name:`${targetTitle} 작업`,exact:true}));
       await expect(dialog.getByLabel(/^시간/)).toHaveValue('09:10');
+      await expect(dialog.getByText('날짜만 미정으로 옮기면 시간은 유지됩니다.',{exact:true})).toBeVisible();
       await hit(dialog.getByRole('button',{name:'날짜 미정으로 이동',exact:true}));
       await expect.poll(async()=>(await task(target.id)).date).toBeNull();
       expect((await task(target.id)).time).toBe('09:10');
@@ -482,4 +549,42 @@ test('UC6 Dots R05 intersects folder period and search, escapes empty results, a
       clock:await page.evaluate(()=>({timezone:Intl.DateTimeFormat().resolvedOptions().timeZone,localNow:new Date().toString()}))})});
     await mock.assertBoundary(info); await verifyAssets(info);
   }
+});
+
+test('UC7 restoration entry reopens after invalid-file cancellation and empty public list returns to private documents without a write', async ({page},info) => {
+  const mock = await mockFolderContentEntry(page,{creatorExecution:true}); await boot(page);
+  const before = await mock.current(), counts = mock.diagnostics(), commands = mock.commands.length;
+  await hit(page.getByText('계정 · 자료 관리',{exact:true}),'keyboard');
+  const entry = page.getByRole('button',{name:'백업 · 복원 · 가져오기',exact:true});
+  await hit(entry,'keyboard');
+  const dialog = page.getByRole('dialog',{name:'백업 · 복원 · 가져오기',exact:true});
+  await expect(dialog).toBeVisible(); await expect(dialog).toContainText(`적용할 계정: ${users.a.email}`);
+  await expect(dialog.getByRole('heading',{name:'복원·가져올 자료 선택',exact:true})).toBeVisible();
+  await expect(dialog.getByRole('status')).toContainText('보관한 적용 요청을 확인했습니다.');
+  await dialog.getByLabel('JSON 파일 선택',{exact:true}).setInputFiles({name:'synthetic-corrupt-backup.json',mimeType:'application/json',buffer:Buffer.from('{')});
+  await expect(dialog.getByRole('status')).toContainText('지원하지 않거나 손상된 자료입니다. 원본은 변경하지 않았습니다.');
+  await expect(dialog.getByRole('button',{name:'적용 전 미리보기',exact:true})).toBeDisabled();
+  expect(await mock.current()).toEqual(before); expect(mock.diagnostics()).toEqual(counts); expect(mock.commands).toHaveLength(commands);
+  await page.screenshot({path:info.outputPath('uc7-invalid-restoration-file.png'),fullPage:true});
+  await page.keyboard.press('Escape'); await expect(dialog).not.toBeVisible(); await expect(entry).toBeFocused();
+  await hit(entry,'keyboard'); await expect(dialog).toBeVisible();
+  await expect(dialog.getByRole('status')).toContainText('보관한 적용 요청을 확인했습니다.');
+  await expect(dialog.getByLabel('JSON 파일 선택',{exact:true})).toHaveValue('');
+  await hit(dialog.getByRole('button',{name:'닫기',exact:true}),'keyboard');
+  await expect(dialog).not.toBeVisible(); await expect(entry).toBeFocused();
+  expect(await mock.current()).toEqual(before); expect(mock.diagnostics()).toEqual(counts); expect(mock.commands).toHaveLength(commands);
+  await hit(page.getByRole('navigation',{name:'작업 공간',exact:true}).getByRole('button',{name:'둘러보기',exact:true}));
+  const discovery = page.getByTestId('program-discovery');
+  await expect(discovery.getByRole('heading',{name:'아직 공개된 Flow가 없어요',exact:true})).toBeVisible();
+  await expect(discovery.getByRole('heading',{name:'맞는 자료가 없습니다',exact:true})).toHaveCount(0);
+  await expect(discovery.getByRole('button',{name:'검색 조건 지우기',exact:true})).toHaveCount(0);
+  await expect(discovery).not.toContainText(before.space.text.documents[0].title);
+  await hit(discovery.getByRole('button',{name:'내 문서 보기',exact:true}),'keyboard');
+  await expect(page.getByRole('region',{name:'개인 문서 편집',exact:true}).locator('textarea')).toHaveValue(M.raw(before.space.text.documents[0]));
+  expect(await mock.current()).toEqual(before); expect(mock.diagnostics()).toEqual(counts); expect(mock.commands).toHaveLength(commands);
+  await info.attach('uc7-bounded-restoration-public-empty',{contentType:'application/json',body:JSON.stringify({
+    restorationEntryNamed:true,selectedOwner:users.a.id,invalidFileNotSent:true,escapeAndCloseZeroWrite:true,
+    reentryFileSelectionReset:true,focusReturnedToEntry:true,publicEmptyDistinguished:true,privateTitleNotExposed:true,
+    privateDocumentNavigationZeroWrite:true,largeOrPendingBackupNotRun:true})});
+  await record(page,info); await mock.assertBoundary(info); await verifyAssets(info);
 });

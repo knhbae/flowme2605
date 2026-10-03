@@ -6,6 +6,7 @@ import { restoreProgramDialogFocus } from '@/lib/flow/integrated-poc/dialog-retu
 import type { AlphaAuthConfig } from '@/lib/flow/integrated-poc/alpha-auth/config';
 import type { VerifiedAlphaSession } from '@/lib/flow/integrated-poc/alpha-auth/account-access';
 import { createAlphaSyncController, type AlphaSyncSnapshot } from '@/lib/flow/integrated-poc/alpha-sync/controller';
+import type { AlphaCommand } from '@/lib/flow/integrated-poc/alpha-persistence/contract';
 import { createAlphaHttpRepository } from '@/lib/flow/integrated-poc/alpha-sync/http-repository';
 import { createAlphaTabRecovery } from '@/lib/flow/integrated-poc/alpha-sync/recovery';
 import { createAlphaUiRecovery, type AlphaUiDraft, type AlphaUiRecoveryRecord } from '@/lib/flow/integrated-poc/alpha-ui-recovery';
@@ -21,7 +22,7 @@ import { ProgramLegacyWorkspace } from './ProgramLegacyWorkspace';
 import { ProgramPrivateOutput } from './ProgramPrivateOutput';
 import { ProgramCreatorWorkspace } from './ProgramCreatorWorkspace';
 import { ProgramDiscovery, createProgramDiscoveryNavigationState, programDiscoveryHasUnstoredInput } from './ProgramDiscovery';
-import { ProgramCommunity } from './ProgramCommunity';
+import { ProgramCommunity, type ProgramCommunityDraftSaveRecovery } from './ProgramCommunity';
 import { ProgramPublisher } from './ProgramPublisher';
 import { ProgramCopyInspector } from './ProgramCopyInspector';
 import { emptyProgramCommunityPresentation, parseProgramLocation, programLocation } from '@/lib/flow/integrated-poc/navigation';
@@ -91,6 +92,8 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
   const currentData = useRef<ProgramData | null>(null), currentRevision = useRef<number | null>(null);
   const currentPublicRevision = useRef<number | null>(null);
   const previousSnapshot = useRef<AlphaSyncSnapshot | null>(null);
+  // Presentation proof only: newer input gains no retry or baseline authority.
+  const confirmedParticipation = useRef<{ ownerId: string; command: Extract<AlphaCommand, { kind: 'social' }>; revision: number; publicRevision: number | undefined; privateBytes: string } | null>(null);
   const currentOwnerRef = useRef(session.userId); currentOwnerRef.current = session.userId;
   const ownMutation = useRef(0), disposed = useRef(false), externalRef = useRef(false);
   // Park only explicit context handoffs/reloads, not every intermediate keystroke.
@@ -175,6 +178,12 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
       const expected = executeAlphaSocialIntent(currentData.current, session.userId, pendingSave.intent, pendingSave.requestId);
       exactOwnDraft = expected.ok && expected.changed
         && canonicalJson(expected.data.spaces[session.userId]) === canonicalJson(next.account.space);
+      if (!externalRef.current && prior?.ownerId === session.userId && exactOwnDraft && pendingSave.intent.type === 'participation-save'
+        && !next.pending && next.lastReceipt?.requestId === pendingSave.requestId
+        && next.lastReceipt.kind === 'social' && next.lastReceipt.changed && next.lastReceipt.revision === next.account.revision) {
+        confirmedParticipation.current = { ownerId: session.userId, command: detached(pendingSave), revision: next.account.revision,
+          publicRevision: next.publicRevision, privateBytes: canonicalJson(next.account.space) };
+      }
     }
     if (!next.pending && !next.draft && ['ready', 'saved', 'same-location'].includes(next.status)) {
       creatorEditors.current?.acceptConfirmedCreatorWorking?.(next.account.space.creatorWorkspace?.working ?? null);
@@ -191,6 +200,7 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
   }
   useEffect(() => {
     disposed.current = false;
+    confirmedParticipation.current = null;
     preservationRef.current = false; setPreservation(false);
     try {
       let slot = sessionStorage.getItem(SLOT_KEY);
@@ -429,6 +439,72 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
       destinationRef.current = next; setDestination(next); setCreatorSelection(id); return true;
     };
   }
+  function readParticipationRecovery(failedDraft: ProgramParticipationDraft, expected: ProgramParticipationDraft | null): ProgramCommunityDraftSaveRecovery | undefined {
+    const authority = controller.current?.snapshot();
+    if (disposed.current || storageError || !authority || authority.ownerId !== session.userId
+      || authority.account?.ownerId !== session.userId || authority.envelope?.data.activeActorId !== session.userId) return;
+    const command = authority.pending ?? authority.draft;
+    try {
+      if (command?.kind === 'social' && command.intent.type === 'participation-save'
+        && canonicalJson(command.intent.draft) === canonicalJson(failedDraft)
+        && canonicalJson(command.intent.expected) === canonicalJson(expected)) {
+        if (authority.pending && authority.status !== 'saving' && !externalRef.current) return {
+          state: 'unknown', message: '이전 요청이 저장됐는지 확인해야 합니다. 지금 입력은 그대로 둡니다.',
+          action: { label: '이전 요청 저장 결과 확인', disabled: authority.busy, onClick: () => {
+            const live = controller.current?.snapshot();
+            if (readParticipationRecovery(failedDraft, expected)?.state !== 'unknown'
+              || disposed.current || storageError || externalRef.current || live?.ownerId !== session.userId || live.busy
+              || canonicalJson(live.pending) !== canonicalJson(command)) return;
+            void controller.current?.resolvePending(true);
+          } },
+        };
+        if (authority.retryableRejectedSocialDraft && !authority.pending && !authority.busy && !externalRef.current) return {
+          state: 'rejected', message: '초안을 저장하지 못했습니다. 입력은 남아 있습니다.',
+        };
+      }
+      const proof = confirmedParticipation.current;
+      const port = communityEditors.current, captured = port?.captureSocialDrafts?.() ?? [];
+      const onlyNewParticipationInput = !!proof && proof.command.intent.type === 'participation-save'
+        && port?.hasPendingInput?.() === true && captured.length === 1 && captured[0].kind === 'participation'
+        && (captured[0].value as ProgramParticipationDraft).id === proof.command.intent.draft.id
+        && canonicalJson(captured[0].value) !== canonicalJson(proof.command.intent.draft)
+        && !allEditors().some(editor => editor && editor !== port && editor.hasPendingInput?.())
+        && !programDiscoveryHasUnstoredInput(discoveryStateRef.current);
+      if (proof?.ownerId === session.userId && proof.command.intent.type === 'participation-save'
+        && onlyNewParticipationInput && !authority.pending && !authority.draft && externalRef.current
+        && authority.account?.revision === proof.revision
+        && authority.publicRevision === proof.publicRevision && canonicalJson(authority.account.space) === proof.privateBytes
+        && authority.lastReceipt?.requestId === proof.command.requestId
+        && authority.lastReceipt.kind === 'social' && authority.lastReceipt.changed && authority.lastReceipt.revision === proof.revision
+        && canonicalJson(proof.command.intent.draft) === canonicalJson(failedDraft)
+        && canonicalJson(proof.command.intent.expected) === canonicalJson(expected)) return {
+          state: 'confirmed-unsaved', message: '이전 요청은 저장됐습니다. 그 뒤에 쓴 입력은 아직 저장되지 않았습니다.',
+          action: { label: '추가 입력 보관 후 저장본 열기', disabled: authority.busy, onClick: () => {
+            const live = controller.current?.snapshot();
+            if (readParticipationRecovery(failedDraft, expected)?.state !== 'confirmed-unsaved'
+              || disposed.current || storageError || live?.ownerId !== session.userId || live.busy || live.pending || live.draft
+              || live.account?.revision !== proof.revision || live.lastReceipt?.requestId !== proof.command.requestId
+              || live.publicRevision !== proof.publicRevision || canonicalJson(live.account.space) !== proof.privateBytes) return;
+            void openLatest();
+          } },
+        };
+    } catch { /* Invalid/cyclic input cannot borrow presentation proof. */ }
+  }
+  function activeParticipationRecovery(): (ProgramCommunityDraftSaveRecovery & { draftId: string }) | undefined {
+    if (!seen.community || publisher || inspector || !['community', 'activity'].includes(destination.view)) return;
+    const authority = controller.current?.snapshot(), proof = confirmedParticipation.current;
+    const command = authority?.pending ?? authority?.draft ?? proof?.command;
+    if (command?.kind !== 'social' || command.intent.type !== 'participation-save') return;
+    const intent = command.intent;
+    const active = communityEditors.current?.captureSocialDrafts?.().find(entry => entry.kind === 'participation'
+      && (entry.value as ProgramParticipationDraft).id === intent.draft.id);
+    if (!active) return;
+    const recovery = readParticipationRecovery(intent.draft, intent.expected);
+    return recovery ? { ...recovery, draftId: intent.draft.id } : undefined;
+  }
+  const localParticipationRecovery = activeParticipationRecovery();
+  const participationMessage = !!localParticipationRecovery && [programErrorMessage('checking-result'), '저장 결과를 확인했습니다.',
+    '글 입력은 남아 있습니다. 내용을 수정하거나 ‘나중에 이어 쓰기’를 눌러 다시 보관해 주세요.'].includes(message);
   const pending = !!snapshot?.pending;
   const unavailable = snapshot?.status === 'session-expired' || !data;
   const browse = ['discover', 'flow', 'community'].includes(destination.view);
@@ -441,7 +517,7 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
     <details className={styles.notice} aria-label="개발계 안내"><summary>공개한 내용은 로그인 사용자에게 보입니다. 중요한 자료의 유일본은 넣지 마세요.</summary>
       <p>개발용 통합 검증판 · 공개한 내용은 개발계의 다른 로그인 사용자에게 보입니다. 중요한 자료의 유일본은 아직 넣지 마세요.</p></details>
     <section className={styles.sync} aria-label="서버 저장 상태">
-      <p role="status" aria-live="polite">{pending && snapshot?.status !== 'saving' ? '저장 결과 확인이 필요합니다' : snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft ? '저장 거절 · 입력 보존됨' : snapshot ? labels[snapshot.status] : '개인공간을 여는 중…'}</p>
+      {!localParticipationRecovery && <p role="status" aria-live="polite">{pending && snapshot?.status !== 'saving' ? '저장 결과 확인이 필요합니다' : snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft ? '저장 거절 · 입력 보존됨' : snapshot ? labels[snapshot.status] : '개인공간을 여는 중…'}</p>}
       <button type="button" title="마지막으로 서버 저장에 성공한 변경을 되돌립니다" onClick={() => void history('undo')} disabled={!snapshot?.canUndo || external}>되돌리기</button>
       <details className={styles.management} aria-label="계정 및 자료 관리"><summary>계정 · 자료 관리</summary><div className={styles.managementBody}>
         <div className={styles.account}><p>{email}</p>{snapshot?.account && <small>마지막 확인 판본 {snapshot.account.revision}</small>}</div>
@@ -450,27 +526,27 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
         <button type="button" onClick={() => void history('redo')} disabled={!snapshot?.canRedo || external}>다시 실행</button>
         <button type="button" disabled={unavailable || pending || external || !!snapshot?.busy || !!snapshot?.draft || storageError} onClick={() => {
           void (async () => { const openingController = controller.current; if (!captureInput()) return; for (const port of allEditors()) if (port && !await port.flushAll()) return; if (disposed.current || controller.current !== openingController) return; preservationRef.current = true; setPreservation(true); })();
-        }}>자료 가져오기 · 백업</button></div></div></details>
+        }}>백업 · 복원 · 가져오기</button></div></div></details>
     </section>
     {preservation && snapshot?.account && snapshot.references && <AlphaPreservationPanel key={session.userId} account={snapshot.account} references={snapshot.references}
       email={email} accessToken={session.accessToken} onClose={closePreservation} onSaved={async () => {
         ownMutation.current++; try { await controller.current?.refresh(); setPresentation(value => value + 1); } finally { ownMutation.current--; }
       }} />}
     {storageError && <p className={styles.problem} role="alert">브라우저의 입력 보관 상태를 확인하지 못했습니다. 쓰기를 멈췄습니다. 작성 중인 내용을 파일로 보관해 주세요.</p>}
-    {pending && snapshot?.status !== 'saving' && <section className={styles.problem} aria-label="저장 결과 복구"><p>응답이 끊겨도 서버에 저장됐을 수 있습니다. 같은 요청으로 확인합니다.</p>
+    {pending && snapshot?.status !== 'saving' && !localParticipationRecovery && <section className={styles.problem} aria-label="저장 결과 복구"><p>응답이 끊겨도 서버에 저장됐을 수 있습니다. 같은 요청으로 확인합니다.</p>
       <button type="button" disabled={snapshot?.busy} onClick={async () => { if (await controller.current?.resolvePending(true)) setMessage('저장 결과를 확인했습니다.'); }}>저장 결과 확인 · 같은 요청 재시도</button></section>}
-    {(snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft) && !external && !pending && <section className={styles.problem} aria-label="거절된 저장과 입력 보호"><p>{snapshot?.retryableNativeHandoff
+    {(snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft) && !external && !pending && !localParticipationRecovery && <section className={styles.problem} aria-label="거절된 저장과 입력 보호"><p>{snapshot?.retryableNativeHandoff
       ? '저장되지 않았습니다. 비교와 선택은 유지했습니다. 같은 선택으로 다시 적용해 주세요.'
       : snapshot?.retryableRejectedSocialDraft ? '글 입력은 남아 있습니다. 내용을 수정하거나 ‘나중에 이어 쓰기’를 눌러 다시 보관해 주세요.'
       : '저장되지 않았습니다. 입력은 남아 있습니다. 문서에서 내용을 수정한 뒤 ‘다시 저장’을 눌러 주세요.'}</p></section>}
-    {(external || snapshot?.status === 'conflict' || snapshot?.draft && !pending && !snapshot.retryableRejectedDraft && !snapshot.retryableNativeHandoff && !snapshot.retryableRejectedSocialDraft) && <section className={styles.problem} aria-label="다른 기기 변경과 입력 보호">
+    {(external || snapshot?.status === 'conflict' || snapshot?.draft && !pending && !snapshot.retryableRejectedDraft && !snapshot.retryableNativeHandoff && !snapshot.retryableRejectedSocialDraft) && !localParticipationRecovery && <section className={styles.problem} aria-label="다른 기기 변경과 입력 보호">
       <h2>내 입력과 서버의 변경을 확인해 주세요</h2><p>내 입력은 이 탭에 보관합니다. 최신 내용을 연 뒤 필요한 원문을 복구할 수 있습니다.</p>
       {snapshot?.busy && <p role="status">서버 확인 중… 입력은 그대로 보관합니다.</p>}
       <button type="button" disabled={snapshot?.busy} onClick={() => void openLatest()}>입력 보관 후 최신 내용 열기</button>
       {snapshot?.draft && <AlphaConflictReview draft={snapshot.draft} account={snapshot.account}
         onCopy={raw => navigator.clipboard.writeText(raw).then(() => setMessage('원문을 복사했습니다.'), () => setMessage('복사하지 못했습니다. 원문을 직접 선택해 주세요.'))} />}
     </section>}
-    {recoveries && <details className={styles.recovery} open={unavailable || external || snapshot?.status === 'conflict'}>
+    {recoveries && <details className={styles.recovery} open={unavailable || !localParticipationRecovery && (external || snapshot?.status === 'conflict')}>
       <summary>보관한 입력 {recoveries.drafts.length}개</summary>
       {recoveries.drafts.map((draft, index) => <section key={index}><h2>{draft.title}</h2><textarea aria-label={`보관한 입력 ${index + 1}`} value={draft.raw} readOnly rows={5} />
         <button type="button" onClick={() => void navigator.clipboard.writeText(draft.raw).then(() => setMessage('원문을 복사했습니다.'), () => setMessage('복사하지 못했습니다. 원문을 직접 선택해 주세요.'))}>원문 복사</button>
@@ -487,7 +563,7 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
       </section>)}
       <button onClick={() => { const cleared = creatorRecovery.current?.clear(); if (cleared?.ok) { parkedCreator.current = []; activeCreator.current = null; setCreatorRecoveries(null); } else setStorageError(true); }}>보관 제작 입력 버리기</button>
     </details>}
-    {socialRecoveries && <details className={styles.recovery} open={unavailable || external || snapshot?.status === 'conflict'}>
+    {socialRecoveries && <details className={styles.recovery} open={unavailable || !localParticipationRecovery && (external || snapshot?.status === 'conflict')}>
       <summary>보관한 공개·참여 입력 {socialRecoveries.entries.length}개</summary>
       <p>선택한 항목·사진 연결·검토 문맥을 함께 보관했습니다. 복구해도 자동으로 게시하지 않습니다.</p>
       {socialRecoveries.entries.map((entry, index) => <section key={index}><h2>{entry.kind === 'publication' ? '공개 초안' : entry.kind === 'participation' ? '참여 초안' : '제안 검토 초안'}</h2>
@@ -497,7 +573,7 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
     </details>}
     {leave && <section className={styles.problem} aria-label="로그아웃 전 입력 확인"><p>저장하지 않은 입력을 이 탭에 보관한 뒤 로그아웃할 수 있습니다. 같은 계정으로 돌아와 복구하세요.</p>
       <button type="button" onClick={() => { if (captureInput()) void onSignOut(); }}>입력 보관 후 로그아웃</button><button type="button" onClick={() => setLeave(false)}>계속 작성</button></section>}
-    {message && <p className={styles.message} role="status">{message}</p>}
+    {message && !participationMessage && <p className={styles.message} role="status">{message}</p>}
     {unavailable ? <section className={styles.empty}><p>{snapshot?.status === 'session-expired' ? '계정을 다시 확인한 뒤 개인공간을 열 수 있습니다.' : '서버에서 개인공간을 확인하고 있습니다.'}</p></section> : <>
       <nav className={styles.tabs} aria-label="작업 공간"><button aria-current={destination.view === 'space' ? 'page' : undefined} onClick={() => void navigate({ view: 'space' })}>내 공간</button>
         <button aria-current={browse ? 'page' : undefined} onClick={() => void navigate({ view: 'discover' })}>둘러보기</button>
@@ -518,7 +594,8 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
         selectedOutputReturn={destination.view === 'flow' ? destination.publicOutputReturn : undefined} onUseVersion={useVersion} onStartText={startText} onCreateFlow={() => { void navigate({ view: 'creator', id: creatorSelection }); }} navigationState={discoveryState} onNavigationStateChange={setDiscoveryState} /></div>}
       {seen.community && <div hidden={!['community', 'activity'].includes(destination.view)}><ProgramCommunity key={`community:${session.userId}:${presentation}`} data={data} mutate={mutate} navigate={next => { void navigate(next); }} today={programLocalDate()}
         view={communityView} selectedPostId={communitySelection} selectedReplyId={destination.view === 'community' ? destination.replyId : undefined} presentation={communityState} onPresentationChange={setCommunityState}
-        storageScope="account" mediaPort={mediaPort}
+        storageScope="account" mediaPort={mediaPort} draftSaveRecovery={localParticipationRecovery}
+        resolveDraftSaveRecovery={(failedDraft, expected) => readParticipationRecovery(failedDraft, expected)}
         resolveDraftSaveError={(next, expected, reason) => {
           const authority = controller.current?.snapshot();
           if (reason !== 'recovery-required' || disposed.current || storageError || externalRef.current

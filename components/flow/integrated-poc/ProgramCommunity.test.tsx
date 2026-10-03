@@ -55,6 +55,120 @@ vm.runInThisContext(`(function(module, exports, require) { ${compiled.outputText
   componentRequire(id));
 const { ProgramCommunity, newProgramParticipationDraft, saveProgramParticipationDraft, discardProgramParticipationDraft, submitProgramParticipation } = loaded.exports;
 
+function composerMarkup(input: {
+  saveState?: string; reason?: string; draftConflict?: boolean; differentOrigin?: boolean;
+  recovery?: ComponentModule.ProgramCommunityDraftSaveRecovery & { draftId?: string };
+  resolver?: ComponentModule.ProgramCommunityProps['resolveDraftSaveRecovery']; noFailureOrigin?: boolean; unrelatedError?: string;
+}) {
+  const draft = { ...newProgramParticipationDraft(), title: '보존할 질문', body: '현재 입력\n추가 내용', cursor: { start: 2, end: 5 } };
+  const data = createProgramData();
+  if (input.draftConflict) data.spaces[data.activeActorId].participationDrafts.push({ ...draft, body: '다른 탭의 최신 초안' });
+  const reason = input.reason ?? 'recovery-required';
+  const failure = input.unrelatedError ? { message: input.unrelatedError } : input.noFailureOrigin ? { message: '' } : { message: programErrorMessage(reason), draftSave: {
+    draft: input.differentOrigin ? { ...draft, id: 'other-draft' } : draft, expected: null, reason,
+  } };
+  const overrides = new Map<number, unknown>([[1, draft], [4, failure], [5, input.saveState ?? '저장하지 못했어요'], [8, !!input.draftConflict]]);
+  let state = 0, writes = 0;
+  const mockedReact = { ...React, useState: (initial: unknown) => {
+    const index = state++;
+    return React.useState(overrides.has(index) ? overrides.get(index) : initial);
+  } };
+  const module = { exports: {} as typeof ComponentModule };
+  vm.runInThisContext(`(function(module, exports, require) { ${compiled.outputText}\n})`, { filename: 'ProgramCommunity.composer.cjs' })(module, module.exports,
+    (id: string) => id === 'react' ? mockedReact : componentRequire(id));
+  const markup = renderToStaticMarkup(<module.exports.ProgramCommunity data={data} view="community" today="2026-10-03" storageScope="account"
+    mutate={async () => { writes++; return { ok: false, reason: 'not-called-during-render' }; }} navigate={() => {}}
+    resolveDraftSaveError={() => input.reason === 'checking-result' ? undefined : '초안을 저장하지 못했습니다. 입력은 남아 있습니다.'}
+    resolveDraftSaveRecovery={input.resolver}
+    draftSaveRecovery={input.recovery ? { ...input.recovery, draftId: input.recovery.draftId ?? draft.id } : undefined} />);
+  return { markup, writes, draft };
+}
+
+test('six recovery states show one next action beside the composer and preserve current input', () => {
+  const action = (label: string) => ({ label, onClick: () => { throw Error('render must not dispatch a recovery action'); } });
+  const cases = [
+    { input: {}, state: 'rejected', text: '초안을 저장하지 못했습니다. 입력은 남아 있습니다.', action: '초안 저장 다시 시도' },
+    { input: { noFailureOrigin: true, saveState: '저장 중…' }, state: 'saving', text: '저장 중…', action: undefined },
+    { input: { noFailureOrigin: true, saveState: '계정에 초안 저장됨' }, state: 'saved', text: '계정에 초안 저장됨', action: undefined },
+    { input: { reason: 'checking-result', recovery: { state: 'unknown' as const, message: '원 요청의 저장 여부를 확인해 주세요. 현재 입력은 남아 있습니다.', action: action('저장 결과 확인 · 같은 요청 재시도') } }, state: 'unknown', text: '원 요청의 저장 여부를 확인해 주세요.', action: '저장 결과 확인 · 같은 요청 재시도' },
+    { input: { recovery: { state: 'confirmed-unsaved' as const, message: '원 요청은 저장됐습니다. 그 뒤에 쓴 내용은 아직 저장되지 않았습니다.', action: action('입력 보관 후 최신 내용 열기') } }, state: 'confirmed-unsaved', text: '그 뒤에 쓴 내용은 아직 저장되지 않았습니다.', action: '입력 보관 후 최신 내용 열기' },
+    { input: { reason: 'conflict', draftConflict: true }, state: 'conflict', text: '다른 탭의 초안과 비교', action: '확인한 최신 초안 대신 내 입력 저장' },
+  ];
+  for (const entry of cases) {
+    const { markup, writes } = composerMarkup(entry.input);
+    assert.match(markup, new RegExp(`data-draft-save-state="${entry.state}"`));
+    assert(markup.includes(entry.text)); assert.equal(writes, 0);
+    assert(markup.includes('value="보존할 질문"')); assert(markup.includes('현재 입력\n추가 내용'));
+    assert.doesNotMatch(markup, /저장하지 못했어요/);
+    if (entry.action) assert.equal(markup.split(`>${entry.action}</button>`).length - 1, 1);
+    if (entry.state !== 'rejected') assert.doesNotMatch(markup, />초안 저장 다시 시도<\/button>/);
+    assert(markup.indexOf(entry.text) > markup.indexOf('aria-label="글 작성"'), 'recovery must belong to the current composer');
+  }
+});
+
+test('unknown recovery never offers a current-input retry without an authoritative host action', () => {
+  const { markup, writes } = composerMarkup({ reason: 'checking-result' });
+  assert.match(markup, /data-draft-save-state="unknown"/); assert.doesNotMatch(markup, />초안 저장 다시 시도<\/button>/);
+  assert.equal(writes, 0);
+});
+
+test('a matching save recovery never hides an unrelated photo or other composer error', () => {
+  for (const state of ['unknown', 'confirmed-unsaved', 'rejected'] as const) {
+    const { markup, writes } = composerMarkup({ unrelatedError: '사진을 읽지 못했어요.',
+      recovery: { state, message: '확인할 초안 저장 상태' } });
+    assert.match(markup, /확인할 초안 저장 상태/); assert.match(markup, /사진을 읽지 못했어요\./);
+    assert.equal(writes, 0); assert(markup.includes('현재 입력\n추가 내용'));
+  }
+});
+
+test('a host recovery stays visible before the local save failure callback and ignores another composer', () => {
+  const recovery = { state: 'unknown' as const, message: '원 요청 확인', action: { label: '같은 요청 확인', onClick: () => {} } };
+  const current = composerMarkup({ noFailureOrigin: true, saveState: '저장 중…', recovery });
+  assert.match(current.markup, /data-draft-save-state="unknown"/); assert.equal(current.markup.split('>같은 요청 확인</button>').length - 1, 1);
+  assert.doesNotMatch(current.markup, />저장 중…</);
+  const other = composerMarkup({ noFailureOrigin: true, saveState: '계정에 초안 저장됨', recovery: { ...recovery, draftId: 'other-draft' } });
+  assert.doesNotMatch(other.markup, /원 요청 확인|같은 요청 확인/); assert.match(other.markup, /data-draft-save-state="saved"/);
+  const rejected = composerMarkup({ noFailureOrigin: true, recovery: { state: 'rejected', message: '요청은 저장되지 않았습니다.' } });
+  assert.equal(rejected.markup.split('>초안 저장 다시 시도</button>').length - 1, 1, 'verified rejection uses the local current-input save');
+});
+
+test('explicit retry captures the current input and selection without replacing them or bypassing guards', () => {
+  const ast = ts.createSourceFile('ProgramCommunity.tsx', source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+  let callback: ts.Expression | undefined;
+  function visit(node: ts.Node) {
+    if (ts.isVariableDeclaration(node) && node.name.getText(ast) === 'retryDraftSave') callback = node.initializer;
+    ts.forEachChild(node, visit);
+  }
+  visit(ast); assert(callback);
+  const code = ts.transpileModule(`const retry = ${callback.getText(ast)};`, { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText;
+  const latest = { ...newProgramParticipationDraft(), title: '현재 제목', body: '원 요청 후 추가 입력', cursor: { start: 0, end: 0 } };
+  const stale = { ...latest, body: '원 요청 내용', cursor: { start: 0, end: 0 } };
+  for (const guard of ['none', 'busy', 'readingMedia', 'locked', 'composing']) {
+    const saved: unknown[] = [], displayed: unknown[] = [], ref = { current: stale };
+    const retry = new Function('busy', 'readingMedia', 'lockCount', 'composing', 'currentDraft', 'bodyRef', 'draftRef', 'setDraft', 'save',
+      `${code}; return retry;`)(guard === 'busy', guard === 'readingMedia', { current: guard === 'locked' ? 1 : 0 }, { current: guard === 'composing' },
+      () => latest, { current: { selectionStart: 3, selectionEnd: 8 } }, ref, (value: unknown) => displayed.push(value), (value: unknown) => saved.push(value));
+    retry();
+    assert.equal(saved.length, guard === 'none' ? 1 : 0);
+    if (guard === 'none') {
+      assert.equal(saved[0], latest); assert.equal(displayed[0], latest); assert.equal(ref.current, latest);
+      assert.deepEqual(ref.current.cursor, { start: 3, end: 8 }); assert.equal(ref.current.body, '원 요청 후 추가 입력');
+    } else { assert.equal(ref.current, stale); assert.equal(displayed.length, 0); }
+  }
+});
+
+test('origin-scoped recovery resolver cannot show another draft result or dispatch while rendering', () => {
+  let resolutions = 0;
+  const resolver: ComponentModule.ProgramCommunityProps['resolveDraftSaveRecovery'] = (draft, expected, reason) => {
+    resolutions++; assert.equal(draft.title, '보존할 질문'); assert.deepEqual(draft.cursor, { start: 2, end: 5 });
+    assert.equal(expected, null); assert.equal(reason, 'recovery-required');
+    return { state: 'confirmed-unsaved', message: '원 요청 확인 · 추가 입력 미저장', action: { label: '입력 보관 후 최신 내용 열기', onClick: () => { throw Error('render is read-only'); } } };
+  };
+  assert.match(composerMarkup({ resolver }).markup, /원 요청 확인 · 추가 입력 미저장/); assert.equal(resolutions, 1);
+  assert.doesNotMatch(composerMarkup({ resolver, differentOrigin: true }).markup, /원 요청 확인 · 추가 입력 미저장/);
+  assert.equal(resolutions, 1);
+});
+
 // Run the actual queued save callback and notice expression, without React hooks,
 // browser/network or a new product-only injection point.
 function draftSaveNoticeHarness(outcome: { ok: boolean; reason?: string }, rejects = false) {

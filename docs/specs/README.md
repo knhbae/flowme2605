@@ -1,10 +1,6 @@
 # FLOW Spec Layer
 
-## 현재 — 승인된 CP1 게시 준비 (2026-10-03)
-
-[목표·경계](./2026-10-03-alpha-core-journeys-ready/spec.md)·[선별 목록](./2026-10-03-alpha-core-journeys-ready/manifest.md)·[현재 QA](./2026-10-03-alpha-core-journeys-ready/qa.md)를 따른다. 현재 목표의 구현·선별 게시/CI·개발계 앱 교체/복귀가 승인됐으며 이 작업본은 보존된 r6의 CP1 전용이다. CP2 새 런타임/설계는 포함하지 않는다. 현재 gate 실패와 실제 게시/반영 결과는 QA에 기록한다. 아래 목표 등록/승인 대기는 당시 이력이다.
-
-## 이전 계획 — 핵심 사용 여정 UX 개선·개발계 반영·시험 준비 (2026-10-03)
+## 현재 — 핵심 사용 여정 UX 개선·개발계 반영·시험 준비 (2026-10-03)
 
 [목표·경계](./2026-10-03-alpha-core-journeys-ready/spec.md)·[단계 계획](./2026-10-03-alpha-core-journeys-ready/plan.md)·[작업 체크](./2026-10-03-alpha-core-journeys-ready/tasks.md)·[검증/반영 원장](./2026-10-03-alpha-core-journeys-ready/qa.md). 직전 검증 후보 CP1 반영, 개인 문서↔기간·UX-N1 6상태·UX-N2 메뉴/등록/복원·공개 판본/사본/복귀의 좁은 설계/구현/검증, 개선본 CP2 반영, 소수 사용자 시험 준비를 묶은 목표다. 현재는 목표 등록/계획만 완료했으며 구현/게시/교체는 미착수다. 실제 관찰 시험·미결 정책·대형5D/F6~F10 전체·독립 HTML NOT_RUN2건·main merge/Production은 별도 후속이다.
 

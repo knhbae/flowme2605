@@ -56,6 +56,15 @@ function harness(){
 }
 async function selected(h:ReturnType<typeof harness>){const fixture=createAlphaSyntheticFixtures()[0];await h.run('selectRaw',canonicalJson(fixture.envelope));h.context.actorId=fixture.actorId;const current=summarizePreservationContent(h.context.account.space);h.respond(async()=>({ok:true,value:{ownerId:owner,mode:'import',sourceSha256:'a'.repeat(64),expectedRevision:0,expectedPublicRevision:0,canApply:true,same:false,documents:3,savedFlows:0,warnings:[],details:[],createdAt:null,content:{current,next:{...current,documents:3}}}}));await h.run('inspect');}
 
+test('CJ-N preservation title exposes restore and keeps its exact account and existing close action', () => {
+  const h = harness(), nodesInPanel = nodes(h.render());
+  assert(nodesInPanel.some(node => node.type === 'h2' && text(node.props.children) === '백업 · 복원 · 가져오기'));
+  assert(nodesInPanel.some(node => node.type === 'h3' && text(node.props.children) === '복원·가져올 자료 선택'));
+  assert(nodesInPanel.some(node => node.type === 'p' && text(node.props.children) === '적용할 계정: a@example.invalid'));
+  h.button('닫기').props.onClick(); assert.deepEqual(h.calls, ['close']);
+  assert.equal(h.payloads.length, 0);
+});
+
 test('preview separates current catalog content from selected replacement and warns about private records',async()=>{
   const h=harness();await selected(h);h.context.preview.mode='restore';
   Object.assign(h.context.preview.content.current,{catalogFlows:177,catalogItems:957,catalogSections:371,catalogMaps:26,catalogVariants:2,creatorDrafts:2});
