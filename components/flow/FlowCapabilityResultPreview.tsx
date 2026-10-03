@@ -154,7 +154,7 @@ function CandidateChoice({
       data-capability-output-count={candidate.outputCount}
       data-capability-expected-output-count={candidate.expectedOutputCount}
       data-public-format-tab={compact ? 'true' : undefined}
-      className={`${compact ? 'min-h-12' : 'min-h-[var(--flowme-control-height)]'} rounded-[var(--flowme-radius-control)] border px-3 py-2 text-left text-xs font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${
+      className={`${compact ? 'min-h-12' : 'min-h-[var(--flowme-control-height)]'} rounded-[var(--flowme-radius-control)] border px-3 py-2 text-left text-xs font-semibold transition focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${
         selected
           ? 'border-[var(--flowme-action)] bg-[var(--flowme-action-soft)] text-[var(--flowme-action-strong)]'
           : 'border-[var(--flowme-border)] bg-[var(--flowme-surface)] text-[var(--flowme-text-secondary)] hover:border-[var(--flowme-action)]'
@@ -216,7 +216,7 @@ function ConditionalResult({
             data-testid="flow-capability-conditional-edit"
             data-condition-action={candidate.conditionAction}
             data-capability-destination={candidate.destination}
-            className="min-h-[var(--flowme-control-height)] shrink-0 rounded-[var(--flowme-radius-control)] border border-[var(--flowme-border)] px-3 text-xs font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+            className="min-h-[var(--flowme-control-height)] shrink-0 rounded-[var(--flowme-radius-control)] border border-[var(--flowme-border)] px-3 text-xs font-semibold text-[var(--flowme-action)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
             onClick={() => onEdit(candidate)}
           >
             설정
@@ -237,7 +237,7 @@ function MissingMemoDetails({ candidate }: { candidate: FlowCapabilityResultCand
       data-testid="flow-capability-preserved-memo"
       className="border-t border-[var(--flowme-border)] px-2 py-2"
     >
-      <summary className="min-h-[var(--flowme-control-height)] cursor-pointer list-none py-3 text-xs font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">
+      <summary className="min-h-[var(--flowme-control-height)] cursor-pointer list-none py-3 text-xs font-semibold text-[var(--flowme-action)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">
         함께 담긴 메모 {rowsWithMemo.length}개
       </summary>
       <ul className="space-y-2 pb-2">
@@ -408,7 +408,7 @@ export function FlowCapabilityResultPreview({
 
       {additionalAvailable.length > 0 ? (
         <details className="border-t border-[var(--flowme-border)] px-3 py-2">
-          <summary className="min-h-[var(--flowme-control-height)] cursor-pointer list-none py-3 text-xs font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">
+          <summary className="min-h-[var(--flowme-control-height)] cursor-pointer list-none py-3 text-xs font-semibold text-[var(--flowme-action)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">
             형식 {viewModel.selectable.length}개 중 {additionalAvailable.length}개 더
           </summary>
           <div className="flex flex-wrap gap-1.5 pb-2">
@@ -486,7 +486,7 @@ export function FlowCapabilityResultPreview({
           data-testid="flow-capability-unavailable-results"
           className="border-t border-[var(--flowme-border)] px-3 py-2"
         >
-          <summary className="min-h-[var(--flowme-control-height)] cursor-pointer list-none py-3 text-xs font-semibold text-[var(--flowme-text-secondary)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">
+          <summary className="min-h-[var(--flowme-control-height)] cursor-pointer list-none py-3 text-xs font-semibold text-[var(--flowme-text-secondary)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">
             현재 만들 수 없는 형식 {unavailableCandidates.length}개
           </summary>
           <ul className="space-y-2 pb-3">
@@ -525,7 +525,7 @@ export function FlowCapabilityResultPreview({
               data-action-priority={action.priority}
               data-action-owner={action.owner}
               data-action-persistence={action.persistence}
-              className={`min-h-[var(--flowme-control-height)] rounded-[var(--flowme-radius-control)] px-3 text-xs font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${
+              className={`min-h-[var(--flowme-control-height)] rounded-[var(--flowme-radius-control)] px-3 text-xs font-semibold focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${
                 action.priority === 'primary'
                   ? 'bg-[var(--flowme-action)] text-white'
                   : 'border border-[var(--flowme-border)] bg-[var(--flowme-surface)] text-[var(--flowme-text)]'

@@ -19,14 +19,14 @@ const now = '2026-09-13T14:00:00.000Z', actorId = 'local-user';
  * known row models an earlier/later catalog; it is not a real upstream release,
  * a browser action, or permission to alter operating saved keys. */
 function fixture(earlierSubset = false) {
-  const mapId = 'curated-opic-mock-course';
+  const mapId = 'opic-plan-map';
   const entries: Record<string, string> = {
     [`flow:map:saved:${mapId}`]: JSON.stringify(buildSourceBackedFlowMapSavedSnapshot(mapId, { savedAt: now, anchor: '2026-09-30' })),
     [`flow:map:persistence:${mapId}`]: JSON.stringify(buildSourceBackedFlowMapPersistenceRecord(mapId, { savedAt: now, anchor: '2026-09-30' })),
   };
   const read = buildPersonalWorkspacePocReadModel({ length: 2, key: i => Object.keys(entries)[i] ?? null, getItem: key => entries[key] ?? null }, sourceBackedMyFlowBundles);
   assert.ok(read.ok);
-  const original = programClone(read.model), child = read.model.flows.find(flow => flow.title === '오픽 모의고사 2주 계획표')!;
+  const original = programClone(read.model), child = read.model.flows.find(flow => flow.flowId === 'flow-curated-source-app-opic-2w')!;
   const target = child.items.at(-1)!;
   const model = earlierSubset ? { ...read.model, flows: read.model.flows.map(flow => flow.ref === child.ref ? { ...flow, items: flow.items.filter(item => item.ref !== target.ref) } : flow) } : read.model;
   const state = createPersonalWorkspacePocState(now);

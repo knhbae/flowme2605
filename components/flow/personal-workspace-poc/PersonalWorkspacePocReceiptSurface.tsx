@@ -80,7 +80,7 @@ export function PersonalWorkspacePocReceiptSurface({
       role={announce ? receipt.status === 'failure' ? 'alert' : 'status' : undefined}
       aria-live={announce ? receipt.status === 'failure' ? 'assertive' : 'polite' : 'off'}
       aria-labelledby="personal-workspace-editor-receipt-heading"
-      className="my-3 rounded-md border border-[var(--flowme-border)] bg-white p-3 shadow-sm"
+      className="my-3 rounded-md border border-[var(--flowme-border)] bg-white p-3 shadow-xs"
     >
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="min-w-0">
@@ -123,7 +123,7 @@ export function PersonalWorkspacePocReceiptSurface({
           <button
             type="button"
             data-testid="personal-workspace-editor-receipt-retry"
-            className="min-h-12 rounded-md border border-[var(--flowme-border-strong)] bg-white px-3 py-2 text-sm font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+            className="min-h-12 rounded-md border border-[var(--flowme-border-strong)] bg-white px-3 py-2 text-sm font-semibold text-[var(--flowme-action)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
             onClick={onRetry}
           >
             다시 시도
@@ -133,7 +133,7 @@ export function PersonalWorkspacePocReceiptSurface({
           <button
             type="button"
             data-testid="personal-workspace-editor-receipt-undo"
-            className="min-h-12 rounded-md border border-[var(--flowme-border-strong)] bg-white px-3 py-2 text-sm font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+            className="min-h-12 rounded-md border border-[var(--flowme-border-strong)] bg-white px-3 py-2 text-sm font-semibold text-[var(--flowme-action)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
             onClick={onUndo}
           >
             {receipt.undoLabel}

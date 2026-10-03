@@ -40,7 +40,7 @@ function choices(data: ProgramData, groupRef: string, reviewId: string) {
 /** Actual source factory IDs. Only the test worker's Map declaration changes;
  * deletion/restoration are simulated packages, not published new releases. */
 function fixture(t: TestContext, recurring = false) {
-  const mapId = recurring ? 'curated-allblanc-workout-park' : 'curated-opic-mock-course';
+  const mapId = recurring ? 'curated-allblanc-workout-park' : 'curated-wedding-checklist-family';
   const index = sourceBackedMyFlowMaps.findIndex(map => map.id === mapId), originalMap = sourceBackedMyFlowMaps[index]; assert.ok(originalMap);
   const bytes = JSON.stringify(originalMap);
   t.after(() => { sourceBackedMyFlowMaps[index] = originalMap; assert.equal(JSON.stringify(originalMap), bytes); });
@@ -51,7 +51,7 @@ function fixture(t: TestContext, recurring = false) {
   };
   const keys = Object.keys(entries), read = buildPersonalWorkspacePocReadModel({ length: keys.length, key: i => keys[i] ?? null, getItem: key => entries[key] ?? null }, sourceBackedMyFlowBundles);
   assert.ok(read.ok);
-  const original = programClone(read.model), flow = original.flows.find(flow => recurring ? flow.flowId === 'flow-curated-allblanc-no-jump-cardio' : flow.title === '오픽 모의고사 2주 계획표')!;
+  const original = programClone(read.model), flow = original.flows.find(flow => recurring ? flow.flowId === 'flow-curated-allblanc-no-jump-cardio' : flow.flowId === 'flow-curated-wedding-naver-timeline')!;
   assert.ok(flow);
   const groupRef = flow.presentation!.mapGroup!.groupRef;
   const hydrated = hydrateProgramLegacy(createProgramData(), original, createPersonalWorkspacePocState(now), { actorId, preserveUnsupported: true }); assert.ok(hydrated.ok);

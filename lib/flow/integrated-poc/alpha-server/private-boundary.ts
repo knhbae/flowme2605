@@ -2,6 +2,7 @@ import type { AlphaAccount, AlphaReferenceContext } from '../alpha-persistence/c
 import { canonicalJson, parseAlphaJson } from '../alpha-persistence/json';
 import { isAccountForOwner } from '../alpha-auth/account-access';
 import type { ProgramLegacySnapshotPayload } from '../legacy-snapshot';
+import { programPreservesLegacyQualityHold } from '../legacy-map-review';
 
 /** M3 execution edits are not a source-import/source-update authorization.
  * These are the immutable inputs identified by legacy-source-lifecycle-contract.
@@ -45,5 +46,20 @@ export function preservesAlphaPrivateSources(before: AlphaAccount, after: AlphaA
     for (const binding of before.space.savedBindings) if (!nextBindings.has(binding.flowRef)
       && [...after.space.text.documents, ...after.space.text.flows].some(doc => doc.id === binding.documentId)) return false;
     return true;
+  } catch { return false; }
+}
+
+/** M3 current-revision execution preflight, after full owner/source validation.
+ * Reuse the existing held text/block/scope/progress guard only for retained
+ * saved Flows. Whole-copy removal stays allowed. This does not add a policy
+ * for raw legacy-state changes or alter the shared creator/social source gate. */
+export function preservesAlphaPrivateExecutionHolds(before: AlphaAccount, after: AlphaAccount): boolean {
+  try {
+    const retained = new Set(after.space.savedBindings.map(binding => binding.flowRef));
+    return programPreservesLegacyQualityHold({
+      legacySnapshot: before.space.legacySnapshot,
+      savedBindings: before.space.savedBindings.filter(binding => retained.has(binding.flowRef)),
+      text: before.space.text,
+    }, after.space.text);
   } catch { return false; }
 }

@@ -230,7 +230,7 @@ export function SourceBackedFlowMapChooseChildExperience({
             ) : null}
             <Link
               data-testid="flow-map-open-selected-child"
-              className="inline-flex min-h-12 items-center justify-center rounded-md bg-[var(--flowme-action)] px-4 py-3 text-sm font-semibold text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+              className="inline-flex min-h-12 items-center justify-center rounded-md bg-[var(--flowme-action)] px-4 py-3 text-sm font-semibold text-white focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
               href={`/f/${selectedChild.slug}`}
             >
               {choiceCopy.childCtaLabel}

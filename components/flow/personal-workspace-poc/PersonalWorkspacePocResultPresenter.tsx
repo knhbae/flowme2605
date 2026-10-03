@@ -220,7 +220,7 @@ function renderResultItemButton(
       type="button"
       data-result-open-item={item.sourceItemRef ?? item.ref}
       data-result-occurrence-id={item.occurrenceId ?? ''}
-      className="flex min-h-12 w-full min-w-0 items-start gap-3 rounded-md px-2 py-2 text-left outline-none transition-colors hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-teal-700 active:bg-slate-100 motion-reduce:transition-none"
+      className="flex min-h-12 w-full min-w-0 items-start gap-3 rounded-md px-2 py-2 text-left outline-hidden transition-colors hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-teal-700 active:bg-slate-100 motion-reduce:transition-none"
       aria-label={`${item.title} 열기, ${itemDateLabel(item)}, ${status}`}
       onClick={() => openItem(props, item, view)}
     >
@@ -248,19 +248,19 @@ function renderResultItemButton(
             type="date"
             aria-label={`${item.title} ${item.occurrenceIndex ?? ''}회차 실행일`}
             value={item.effectiveDate ?? ''}
-            className="min-h-11 min-w-0 rounded-md border border-slate-300 bg-white px-2 text-sm text-slate-900 outline-none focus-visible:ring-2 focus-visible:ring-teal-700"
+            className="min-h-11 min-w-0 rounded-md border border-slate-300 bg-white px-2 text-sm text-slate-900 outline-hidden focus-visible:ring-2 focus-visible:ring-teal-700"
             onChange={(event) => props.onMoveOccurrenceDate?.(item, event.currentTarget.value || undefined)}
           />
         </label>
         <button
           type="button"
-          className="min-h-11 rounded-md border border-teal-700 bg-white px-3 text-xs font-semibold text-teal-900 outline-none focus-visible:ring-2 focus-visible:ring-teal-700"
+          className="min-h-11 rounded-md border border-teal-700 bg-white px-3 text-xs font-semibold text-teal-900 outline-hidden focus-visible:ring-2 focus-visible:ring-teal-700"
           onClick={() => props.onToggleOccurrence?.(item)}
         >{item.completed ? '이 회차 다시 열기' : '이 회차 완료'}</button>
         {item.effectiveDate !== item.originalOccurrenceDate ? (
           <button
             type="button"
-            className="min-h-11 rounded-md border border-slate-300 bg-white px-3 text-xs font-semibold text-slate-700 outline-none focus-visible:ring-2 focus-visible:ring-teal-700"
+            className="min-h-11 rounded-md border border-slate-300 bg-white px-3 text-xs font-semibold text-slate-700 outline-hidden focus-visible:ring-2 focus-visible:ring-teal-700"
             onClick={() => props.onRestoreOccurrenceDate?.(item)}
           >원래 날짜</button>
         ) : null}
@@ -288,7 +288,7 @@ function renderTextResult(props: PersonalWorkspacePocResultPresenterProps) {
           <button
             type="button"
             data-testid="personal-workspace-result-txt-copy"
-            className="min-h-11 rounded-md border border-slate-300 bg-white px-3 text-sm font-semibold text-slate-800 outline-none hover:border-teal-700 focus-visible:ring-2 focus-visible:ring-teal-700"
+            className="min-h-11 rounded-md border border-slate-300 bg-white px-3 text-sm font-semibold text-slate-800 outline-hidden hover:border-teal-700 focus-visible:ring-2 focus-visible:ring-teal-700"
             onClick={async () => {
               const status = document.getElementById('personal-workspace-result-txt-copy-status');
               try {
@@ -307,7 +307,7 @@ function renderTextResult(props: PersonalWorkspacePocResultPresenterProps) {
             <button
               type="button"
               data-testid="personal-workspace-result-txt-download"
-              className="min-h-11 rounded-md border border-teal-700 bg-white px-3 text-sm font-semibold text-teal-900 outline-none hover:bg-teal-50 focus-visible:ring-2 focus-visible:ring-teal-700"
+              className="min-h-11 rounded-md border border-teal-700 bg-white px-3 text-sm font-semibold text-teal-900 outline-hidden hover:bg-teal-50 focus-visible:ring-2 focus-visible:ring-teal-700"
               onClick={() => downloadResultFile(
                 txtDownload,
                 'personal-workspace-result-txt-copy-status',
@@ -336,7 +336,7 @@ function renderTextResult(props: PersonalWorkspacePocResultPresenterProps) {
                     id={itemButtonId('text', item)}
                     type="button"
                     data-result-open-item={item.ref}
-                    className="min-h-11 w-full whitespace-pre-wrap rounded px-1 text-left font-mono outline-none hover:bg-white focus-visible:ring-2 focus-visible:ring-teal-700 active:bg-slate-100"
+                    className="min-h-11 w-full whitespace-pre-wrap rounded px-1 text-left font-mono outline-hidden hover:bg-white focus-visible:ring-2 focus-visible:ring-teal-700 active:bg-slate-100"
                     aria-label={`${item.title} 열기, ${itemDateLabel(item)}, ${item.completed ? '완료' : '진행 중'}`}
                     onClick={() => openItem(props, item, 'text')}
                   >
@@ -370,7 +370,7 @@ function renderSheetResult(props: PersonalWorkspacePocResultPresenterProps) {
             <button
               type="button"
               data-testid="personal-workspace-result-csv-download"
-              className="min-h-11 rounded-md border border-teal-700 bg-white px-3 text-sm font-semibold text-teal-900 outline-none hover:bg-teal-50 focus-visible:ring-2 focus-visible:ring-teal-700"
+              className="min-h-11 rounded-md border border-teal-700 bg-white px-3 text-sm font-semibold text-teal-900 outline-hidden hover:bg-teal-50 focus-visible:ring-2 focus-visible:ring-teal-700"
               onClick={() => downloadResultFile(
                 csvDownload,
                 'personal-workspace-result-csv-download-status',
@@ -402,7 +402,7 @@ function renderSheetResult(props: PersonalWorkspacePocResultPresenterProps) {
                           id={itemButtonId('sheet', row.item)}
                           type="button"
                           data-result-open-item={row.itemRef}
-                          className="min-h-11 rounded px-1 text-left font-semibold text-slate-950 outline-none hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-teal-700"
+                          className="min-h-11 rounded px-1 text-left font-semibold text-slate-950 outline-hidden hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-teal-700"
                           onClick={() => openItem(props, row.item, 'sheet')}
                         >
                           {content}
@@ -500,7 +500,7 @@ function renderCalendarResult(props: PersonalWorkspacePocResultPresenterProps) {
             type="button"
             aria-label="이전 달"
             disabled={!previous}
-            className="min-h-12 rounded-md border border-slate-300 text-lg text-slate-700 outline-none hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-teal-700 active:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+            className="min-h-12 rounded-md border border-slate-300 text-lg text-slate-700 outline-hidden hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-teal-700 active:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
             onClick={() => { if (previous) props.onCalendarBaseDateChange(previous); }}
           >
             <ChevronIcon direction="previous" />
@@ -512,7 +512,7 @@ function renderCalendarResult(props: PersonalWorkspacePocResultPresenterProps) {
             type="button"
             aria-label="다음 달"
             disabled={!next}
-            className="min-h-12 rounded-md border border-slate-300 text-lg text-slate-700 outline-none hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-teal-700 active:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+            className="min-h-12 rounded-md border border-slate-300 text-lg text-slate-700 outline-hidden hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-teal-700 active:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
             onClick={() => { if (next) props.onCalendarBaseDateChange(next); }}
           >
             <ChevronIcon direction="next" />
@@ -531,7 +531,7 @@ function renderCalendarResult(props: PersonalWorkspacePocResultPresenterProps) {
               data-completed-count={String(cell.completedCount)}
               aria-pressed={cell.selected}
               aria-label={`${formatPlainDate(cell.date)}, 항목 ${cell.itemRefs.length}개, 완료 ${cell.completedCount}개`}
-              className={`relative min-h-11 min-w-0 rounded-md border px-0.5 py-1 text-sm font-semibold outline-none focus-visible:ring-2 focus-visible:ring-teal-700 ${cell.selected ? 'border-teal-700 bg-teal-50 text-teal-950' : 'border-transparent text-slate-700 hover:border-slate-300 hover:bg-slate-50 active:bg-slate-100'}`}
+              className={`relative min-h-11 min-w-0 rounded-md border px-0.5 py-1 text-sm font-semibold outline-hidden focus-visible:ring-2 focus-visible:ring-teal-700 ${cell.selected ? 'border-teal-700 bg-teal-50 text-teal-950' : 'border-transparent text-slate-700 hover:border-slate-300 hover:bg-slate-50 active:bg-slate-100'}`}
               onClick={() => {
                 if (cell.date !== calendar.selectedDate) {
                   props.onCalendarSelectedDateChange(cell.date as string);
@@ -559,7 +559,7 @@ function renderCalendarResult(props: PersonalWorkspacePocResultPresenterProps) {
 
       {undated.length > 0 ? (
         <details className="rounded-lg border border-slate-200 px-3 py-2">
-          <summary className="min-h-11 cursor-pointer py-2 text-sm font-semibold text-slate-800 outline-none focus-visible:ring-2 focus-visible:ring-teal-700">
+          <summary className="min-h-11 cursor-pointer py-2 text-sm font-semibold text-slate-800 outline-hidden focus-visible:ring-2 focus-visible:ring-teal-700">
             날짜 미정 {undated.length}개
           </summary>
           {renderCalendarItems(props, undated, '날짜 미정 항목이 없습니다.')}
@@ -612,7 +612,7 @@ function renderTxtResult(props: PersonalWorkspacePocResultPresenterProps) {
                   id={itemButtonId('txt', item)}
                   type="button"
                   data-result-open-item={item.ref}
-                  className="whitespace-pre-wrap rounded text-left font-mono text-inherit outline-none hover:bg-slate-800 focus-visible:ring-2 focus-visible:ring-teal-300 active:bg-slate-700"
+                  className="whitespace-pre-wrap rounded text-left font-mono text-inherit outline-hidden hover:bg-slate-800 focus-visible:ring-2 focus-visible:ring-teal-300 active:bg-slate-700"
                   aria-label={`${item.title} 열기, ${itemDateLabel(item)}, ${item.completed ? '완료' : '진행 중'}`}
                   onClick={() => openItem(props, item, 'txt')}
                 >
@@ -683,7 +683,7 @@ export function PersonalWorkspacePocResultPresenter(
             aria-selected={activeView === view}
             aria-controls={RESULT_PANEL_ID}
             tabIndex={activeView === view ? 0 : -1}
-            className={`min-h-12 rounded-md px-2 text-sm font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-teal-700 motion-reduce:transition-none ${activeView === view ? 'bg-white text-teal-900 shadow-sm' : 'text-slate-600 hover:bg-white/70 hover:text-slate-950 active:bg-slate-200'}`}
+            className={`min-h-12 rounded-md px-2 text-sm font-semibold outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-teal-700 motion-reduce:transition-none ${activeView === view ? 'bg-white text-teal-900 shadow-xs' : 'text-slate-600 hover:bg-white/70 hover:text-slate-950 active:bg-slate-200'}`}
             onClick={() => {
               if (activeView !== view) props.onResultViewChange(view);
             }}
@@ -705,7 +705,7 @@ export function PersonalWorkspacePocResultPresenter(
         tabIndex={0}
         data-testid={`personal-workspace-result-panel-${activeView}`}
         data-item-refs={JSON.stringify(props.projection.itemRefs)}
-        className="mt-4 min-w-0 max-w-full outline-none focus-visible:ring-2 focus-visible:ring-teal-700"
+        className="mt-4 min-w-0 max-w-full outline-hidden focus-visible:ring-2 focus-visible:ring-teal-700"
       >
         {activeView === 'text'
           ? renderTextResult(props)

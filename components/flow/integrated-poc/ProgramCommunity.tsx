@@ -21,7 +21,11 @@ export type ProgramCommunityProps = {
   onPresentationChange?: (value: ProgramCommunityPresentation) => void;
   storageScope?: 'local' | 'account';
   mediaPort?: ProgramCommunityMediaPort;
+  resolveDraftSaveError?: (draft: ProgramParticipationDraft, expected: ProgramParticipationDraft | null, reason: string) => string | undefined;
 };
+type CommunityErrorNotice = { message: string; draftSave?: {
+  draft: ProgramParticipationDraft; expected: ProgramParticipationDraft | null; reason: string;
+} };
 const kinds = { question: '질문', experience: '경험', knowledge: '지식', reply: '답글' };
 const utcNow = () => new Date().toISOString();
 async function guardedMutation(mutate: ProgramMutate, ...args: Parameters<ProgramMutate>) {
@@ -38,7 +42,7 @@ function postTitle(data: ProgramData, id: string) { return data.public.posts.fin
 export function ProgramCommunity(props: ProgramCommunityProps) {
   return <CommunityBody key={props.data.activeActorId} {...props} />;
 }
-function CommunityBody({ data, mutate, navigate, view, selectedPostId, selectedReplyId, onRegisterEditors, presentation, onPresentationChange, storageScope = 'local', mediaPort }: ProgramCommunityProps) {
+function CommunityBody({ data, mutate, navigate, view, selectedPostId, selectedReplyId, onRegisterEditors, presentation, onPresentationChange, storageScope = 'local', mediaPort, resolveDraftSaveError }: ProgramCommunityProps) {
   const actorId = data.activeActorId;
   const [localPresentation, setLocalPresentation] = useState(emptyProgramCommunityPresentation);
   const currentPresentation = presentation ?? localPresentation, { query, kind } = currentPresentation;
@@ -46,7 +50,11 @@ function CommunityBody({ data, mutate, navigate, view, selectedPostId, selectedR
   const setQuery = (query: string) => changePresentation({ query: query.slice(0, 3000) });
   const setKind = (kind: string) => changePresentation({ kind: kind as ProgramCommunityPresentation['kind'] });
   const [draft, setDraft] = useState<ProgramParticipationDraft | null>(null), [preview, setPreview] = useState(false);
-  const [busy, setBusy] = useState(false), [error, setError] = useState(''), [saveState, setSaveState] = useState('');
+  const [busy, setBusy] = useState(false), [errorNotice, setErrorNotice] = useState<CommunityErrorNotice>({ message: '' }), [saveState, setSaveState] = useState('');
+  function setError(message: string) { setErrorNotice({ message }); }
+  const error = errorNotice.draftSave && draft?.id === errorNotice.draftSave.draft.id
+    ? resolveDraftSaveError?.(errorNotice.draftSave.draft, errorNotice.draftSave.expected, errorNotice.draftSave.reason) ?? errorNotice.message
+    : errorNotice.message;
   const [readingMedia, setReadingMedia] = useState(false);
   const [locked, setLocked] = useState(false), [draftConflict, setDraftConflict] = useState(false);
   const draftEntryDisabled = busy || readingMedia || locked;
@@ -133,14 +141,28 @@ function CommunityBody({ data, mutate, navigate, view, selectedPostId, selectedR
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 
   function save(next: ProgramParticipationDraft) {
+    // A queued retry must not keep a previous failed-save action on screen.
+    // Other composer errors retain their existing lifetime and recovery copy.
+    setErrorNotice(current => current.draftSave ? { message: '' } : current);
     setSaveState('저장 중…');
     saveFlights.current++;
     queue.current = queue.current.catch(() => false).then(async () => {
+      // The preceding queued save may have failed after this save was queued.
+      setErrorNotice(current => current.draftSave ? { message: '' } : current);
+      setSaveState('저장 중…');
       try {
         const expected = savedDraftRef.current;
         const outcome = await mutate('작성 중인 글 저장', current => saveProgramParticipationDraft(current, actorId, next, { expected }), { groupId: next.id, history: false, alphaSocial: { type: 'participation-save', draft: next, expected } });
         if (outcome.ok) savedDraftRef.current = programClone(next);
-        if (mounted.current) { setSaveState(outcome.ok ? storageScope === 'account' ? '계정에 초안 저장됨' : '이 기기에 저장됨' : '저장하지 못했어요'); if (!outcome.ok) { setError(programErrorMessage(outcome.reason)); setDraftConflict(outcome.reason === 'conflict'); } else { setDraftConflict(false); setError(''); } }
+        if (mounted.current) {
+          setSaveState(outcome.ok ? storageScope === 'account' ? '계정에 초안 저장됨' : '이 기기에 저장됨' : '저장하지 못했어요');
+          if (!outcome.ok) {
+            setErrorNotice({ message: programErrorMessage(outcome.reason), draftSave: {
+              draft: programClone(next), expected: programClone(expected), reason: outcome.reason,
+            } });
+            setDraftConflict(outcome.reason === 'conflict');
+          } else { setDraftConflict(false); setError(''); }
+        }
         return outcome.ok;
       } catch { if (mounted.current) { setSaveState('저장하지 못했어요'); setError('입력은 그대로입니다. 저장을 다시 시도해 주세요.'); } return false; }
       finally { saveFlights.current--; }

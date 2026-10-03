@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createAlphaSyntheticFixtures } from './synthetic-fixtures';
+import { createAlphaHeldMovingFixture, createAlphaSyntheticFixtures } from './synthetic-fixtures';
 import { validateProgramEnvelope } from '../program-data';
 import { textWorkspaceModel as M } from '../text-workspace';
 
@@ -9,6 +9,7 @@ function fixture(name: string) { const result = fixtures.find(f => f.name === na
 function space(name: string) { const f = fixture(name); return f.envelope.data.spaces[f.actorId]; }
 
 test('all synthetic envelopes survive exact JSON data roundtrip and preserve independent actor isolation', () => {
+  assert.equal(fixtures.length, 9);
   for (const f of fixtures) {
     const wire = JSON.stringify(f.envelope), reloaded = JSON.parse(wire);
     assert(validateProgramEnvelope(reloaded), f.name);
@@ -44,6 +45,25 @@ test('four origins preserve colliding source IDs as distinct saved copies and qu
   const map = space('actual-structured-map-factory'); const source = JSON.parse(map.legacySnapshot!.raw);
   assert(source.model.flows.some((flow: { presentation?: { mapGroup?: unknown } }) => flow.presentation?.mapGroup));
   assert(map.savedBindings.length > 0);
+  assert(source.model.flows.every((flow: { presentation: { mapGroup: { ownerId: string } } }) => flow.presentation.mapGroup.ownerId === 'curated-ajd-moving-d30'));
+  const items = source.model.flows.flatMap((flow: { items: unknown[] }) => flow.items);
+  assert(items.length > 0); assert.equal(M.tasks(map.text).length, items.length);
+});
+
+test('actual held moving factory preserves saved source and item identities without manufacturing execution', () => {
+  const held = createAlphaHeldMovingFixture(), raw = JSON.stringify(held.envelope);
+  const s = held.envelope.data.spaces[held.actorId], source = JSON.parse(s.legacySnapshot!.raw);
+  assert(validateProgramEnvelope(held.envelope)); assert(s.savedBindings.length > 0);
+  assert(source.model.flows.every((flow: { presentation: { mapGroup: { ownerId: string } } }) => flow.presentation.mapGroup.ownerId === 'moving-d30'));
+  for (const binding of s.savedBindings) {
+    const document = M.getDocument(s.text, binding.documentId); assert(document);
+    const flow = source.model.flows.find((row: { ref: string }) => row.ref === binding.flowRef); assert(flow);
+    assert.deepEqual(Object.keys(binding.itemLines), flow.items.map((item: { ref: string }) => item.ref));
+    for (const lineId of Object.values(binding.itemLines)) assert(document.lines.some(line => line.id === lineId));
+  }
+  assert.equal(M.tasks(s.text).length, 0);
+  assert.equal(JSON.stringify(createAlphaHeldMovingFixture().envelope), raw);
+  assert.equal(JSON.stringify(held.envelope), raw);
 });
 
 test('recurring completion and scheduling preserve original occurrence identity separately', () => {
