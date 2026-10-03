@@ -1,5 +1,17 @@
 # Roadmap
 
+## 2026-10-03 현재 — 승인된 CP1 게시 준비
+
+[목표](./specs/2026-10-03-alpha-core-journeys-ready/spec.md)·[QA](./specs/2026-10-03-alpha-core-journeys-ready/qa.md): 보존된 r6의 CP1 선별 게시/CI와 개발계 앱 교체/복귀가 승인됐다. 이 작업본은 CP1 전용이고 새 UX 개선의 CP2 변경은 별도 후보에 남는다. 게시 gate와 실제 반영 결과를 단계별로 기록하며 시험 준비·관찰 시험·Production을 같은 완료로 합치지 않는다.
+
+## 2026-10-03 이전 계획 — 핵심 사용 여정·개발계 반영·시험 준비 묶음
+
+[새 큰 목표](./specs/2026-10-03-alpha-core-journeys-ready/spec.md)와 [단계 계획](./specs/2026-10-03-alpha-core-journeys-ready/plan.md): 기존 검증 후보의 CP1 반영→개인 경로/UX-N1/N2/공개 연결부의 설계·구현·검증→개선본 CP2 반영→1~2명 시험 시작 준비. 첫 반영은 모든 새 개선을 기다리지 않는 체크포인트다. 현재는 목표 등록·계획만 완료했고 구현/게시/교체는 미착수다. 실제 관찰 시험은 보류하며 미결 정책·대형5D/F6~F10·독립 HTML2건을 숨은 선행 조건으로 붙이지 않는다. 상세 상태는 새 작업 체크/QA 정본에만 둔다.
+
+## 2026-10-03 직전 — UX 비교·저장 보완 마감과 다음 UX-N1
+
+[현재 격리 목표](./specs/2026-10-02-alpha-ux-comparison-gaps/spec.md)의 요구/시안·Dots 대조, 정책 불필요 보완과 r6 앱30/30 검사·기획 인수·보고를 마쳤다. 10/3 사용자 승인으로 독립 HTML2검사는 NOT_RUN 후속이며 필수 조건에서 제외했다. [마감 결과와 잔여](./specs/2026-10-02-alpha-ux-comparison-gaps/results.md)를 따른다. 다음은 확정한 UX-N1 초안 복구 화면 범위이며 아직 새 목표/구현으로 착수하지 않았다. 5D/F6~F10·운영·실기기 후속은 유지하며 관찰 시험·게시·서비스 교체는 이번 범위가 아니다. 아래의 이전 ‘다음’ 순서는 현재 목표를 대체하지 않는다.
+
 ## 2026-10-01 direction/UX checkpoint — private candidate review
 
 The current direction and proposed next slice are in [the direction/next-goal checkpoint](./specs/2026-10-01-direction-and-next-goal/spec.md) and [current STATUS](./STATUS.md). Prioritize scoped authoring interaction contracts and UX comparison; preserve the original5D/F6~F10 and runtime follow-ups with their resumption conditions. This is planning, not a newly implemented/released product gate. The dated sequences below remain history; do not treat their earlier “next” steps as current.

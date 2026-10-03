@@ -720,12 +720,21 @@ test.describe('P35 P1-04 final internal extremes and accessibility gate', () => 
       window.sessionStorage.setItem('flow:p1-04:legacy-matrix-session', '  session exact bytes  ');
     }, { fixtures: records });
     const before = await rawStorageSnapshot(page);
+    await installStorageWriteCapture(page);
 
     await page.goto('/my?flow=source-backed-moving-d30');
     await expect(page.getByTestId('my-flow-saved-library-shell')).toBeVisible();
+    // The current source review holds this canonical map. Keep its exact saved
+    // bytes, but never promote the retained record into ordinary execution.
     await expect(page.locator(
       '[data-flow-slug="source-backed-moving-d30"]:visible',
-    ).first()).toBeVisible();
+    )).toHaveCount(0);
+    expect(await storageWrites(page)).toEqual([]);
+    expect(await rawStorageSnapshot(page)).toEqual(before);
+    await page.reload();
+    await expect(page.getByTestId('my-flow-saved-library-shell')).toBeVisible();
+    await expect(page.locator('[data-flow-slug="source-backed-moving-d30"]:visible')).toHaveCount(0);
+    expect(await storageWrites(page)).toEqual([]);
     expect(await rawStorageSnapshot(page)).toEqual(before);
 
     for (const flowSlug of ['p1-04-missing-base', 'p1-04-malformed']) {
@@ -734,6 +743,7 @@ test.describe('P35 P1-04 final internal extremes and accessibility gate', () => 
       await expect(page.locator(`[data-flow-slug="${flowSlug}"]`)).toHaveCount(0);
       await expect(page.locator('main').first()).toBeVisible();
       await expectCleanVisiblePage(page);
+      expect(await storageWrites(page)).toEqual([]);
       expect(await rawStorageSnapshot(page), `${flowSlug} storage drift`).toEqual(before);
     }
     await capture(page, '07-legacy-read-only-fail-safe-390x844.png');

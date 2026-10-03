@@ -10,7 +10,7 @@ import { alphaSocialReferences } from '../alpha-social/projection';
 import { ALPHA_M3_FIELDS, isM3Command } from '../alpha-sync/contract';
 import { canonicalJson, detached, parseAlphaJson } from '../alpha-persistence/json';
 import { programIdentifier, programShape } from '../program-data';
-import { preservesAlphaPrivateSources } from './private-boundary';
+import { preservesAlphaPrivateExecutionHolds, preservesAlphaPrivateSources } from './private-boundary';
 import { isAlphaWireReceipt } from '../alpha-sync/wire';
 
 // A server-only module. The browser never receives the signing key or a signed command.
@@ -103,6 +103,7 @@ export function createAlphaCommandHandler(env: Record<string, string | undefined
         }
         if (!isAccountForOwner(next, owner, references)) return failure('invalid');
         if (!preservesAlphaPrivateSources(account, next, references)) return failure('invalid');
+        if (!preservesAlphaPrivateExecutionHolds(account, next)) return failure('invalid');
         if (canonicalJson(account.space) === canonicalJson(next.space)) return failure('no-change');
       } else if (command.expectedRevision > account.revision) return failure('revision-conflict');
       if (capacityMode === 'checkpoint-v1') return result(await executeAlphaCapacityCommand({

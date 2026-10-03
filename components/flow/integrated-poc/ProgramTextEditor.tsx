@@ -64,6 +64,27 @@ export interface ProgramTextDraftState {
   error: string;
 }
 
+/** Wrap only modal endpoints; intermediate controls retain their native Tab behavior. */
+export function trapProgramDialogTab(
+  dialog: HTMLDialogElement,
+  event: Pick<React.KeyboardEvent<HTMLDialogElement>, 'key' | 'shiftKey' | 'ctrlKey' | 'altKey' | 'metaKey' | 'preventDefault' | 'stopPropagation'>
+    & { nativeEvent?: { isComposing?: boolean }; defaultPrevented?: boolean },
+) {
+  if (!dialog.open || event.key !== 'Tab' || event.ctrlKey || event.altKey || event.metaKey
+    || event.nativeEvent?.isComposing || event.defaultPrevented) return false;
+  const active = dialog.ownerDocument.activeElement, view = dialog.ownerDocument.defaultView;
+  if (!active || !dialog.contains(active) || !view) return false;
+  const controls = Array.from(dialog.querySelectorAll<HTMLElement>('button, input, select, textarea, a[href], summary, [tabindex]'))
+    .filter(node => node.tabIndex >= 0 && !node.matches(':disabled') && !node.closest('[hidden], [inert]')
+      && !(node.tagName === 'INPUT' && (node as HTMLInputElement).type === 'hidden') && node.getClientRects().length > 0
+      && !['hidden', 'collapse'].includes(view.getComputedStyle(node).visibility));
+  if (!controls.length) return false;
+  const first = controls[0], last = controls[controls.length - 1];
+  const destination = event.shiftKey ? active === first ? last : null : active === last ? first : null;
+  if (!destination) return false;
+  event.preventDefault(); event.stopPropagation(); destination.focus(); return true;
+}
+
 /** Serializes draft commits while preserving newer typing and rejected raw input. */
 export function createProgramTextDraft(
   workspace: TextWorkspaceState,
@@ -794,7 +815,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       onPosition={(start, end, lineId) => { regionPositionRef.current = { start, end }; propsRef.current.onPosition?.({ start, end, scrollTop: 0 }, lineId); }}
       onRegister={port => { regionPortRef.current = port; }}
       onPending={(pending, composing) => { regionPendingRef.current = pending; composingRef.current = composing; setRegionPending(pending); propsRef.current.onDirtyChange?.(pending || !!draftRef.current?.getState().dirty); }} />}
-    {panel && <dialog ref={dialogRef} className={styles.dialog} aria-label={title} onCancel={event => { event.preventDefault(); closePanel(); cancelMove(); }}>
+    {panel && <dialog ref={dialogRef} className={styles.dialog} aria-label={title} onKeyDown={event => { trapProgramDialogTab(event.currentTarget, event); }} onCancel={event => { event.preventDefault(); closePanel(); cancelMove(); }}>
       <header><h3>{title}</h3><button type="button" aria-label="닫기" onClick={closePanel}>×</button></header>
       {message && <p role="alert" className={styles.message}>{message}</p>}
       {panel.kind === 'order' && <div className={styles.choices}>
@@ -809,6 +830,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         <button type="button" disabled={disabled || orderPreview?.plan.status !== 'ready'} onClick={applyOrder}>원문에 날짜순 적용</button>
       </div>}
       {panel.kind === 'insert' && <div className={styles.choices}>
+        {row?.kind === 'subcheck' && row.isCanonical === true && !row.isReference && <small>이 하위 항목은 별도 할 일로 등록돼 있습니다. 들여쓰기를 바꿔도 등록과 진행 기록은 유지됩니다.</small>}
         {insertions.map(option => <button type="button" key={`${option.kind}:${option.offset}:${option.depth}`} onClick={() => insertNative(option.offset, option.text, option.caretOffset)}>{option.label}<small>{option.relation}</small></button>)}
         {!currentDoc()?.lines.length && <><button type="button" onClick={() => insertNative(0, '- [ ] ', 6)}>할 일</button><button type="button" onClick={() => { closePanel(); editorRef.current?.focus(); }}>자유 메모</button></>}
         <button type="button" onClick={insertDateSection}>날짜 구획 · 문서 끝에</button>

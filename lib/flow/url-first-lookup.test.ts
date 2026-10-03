@@ -104,15 +104,15 @@ test('broad Funmom category URL stops at source-row review without save, export,
   assert.equal(result.canonicalUrl, 'https://funmom.tistory.com/');
   assert.equal(result.flowMapId, 'curated-funmom-learning-park');
   assert.equal(result.routeHref, '/flow-maps/curated-funmom-learning-park');
-  assert.equal(result.title, '실행할 자료를 더 골라야 해요');
+  assert.equal(result.title, '원문과 실행 항목 확인이 필요해요');
   assert.match(result.summary, /개별 자료와 난이도/);
-  assert.equal(result.gate?.title, '실행할 자료를 더 골라야 해요');
+  assert.equal(result.gate?.title, '원문과 실행 항목 확인이 필요해요');
   assert.equal(result.canSaveToMyFlow, false);
   assert.equal(result.canExport, false);
   assert.equal(result.saveMode, 'blocked');
   assert.deepEqual(result.preview.calendar, []);
   assert.deepEqual(result.preview.markdown, []);
-  assert.match(result.preview.myFlow[0] ?? '', /개별 원문 자료/);
+  assert.match(result.preview.myFlow[0] ?? '', /새로 저장하거나 파일로 받지/);
   assert.equal(result.aiGeneration.enabled, false);
 });
 
@@ -137,16 +137,20 @@ test('creator infant-feeding URL stops at medical source-fit review without save
   assert.equal(result.aiGeneration.enabled, false);
 });
 
-test('duplicate opic source URL resolves to the curated source-backed representative only', () => {
+test('duplicate opic source URL resolves to the held curated package without save or export', () => {
   const result = lookupUrlFirstP0Input(
     'https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95?utm_source=duplicate',
   );
 
-  assert.equal(result.status, 'hit');
+  assert.equal(result.status, 'needs_review');
   assert.equal(result.canonicalUrl, 'https://mansour.tistory.com/entry/오픽-모의고사-공부-방법');
   assert.equal(result.flowMapId, 'curated-opic-mock-course');
   assert.equal(result.routeHref, '/flow-maps/curated-opic-mock-course');
-  assert.equal(result.canSaveToMyFlow, true);
+  assert.equal(result.canSaveToMyFlow, false);
+  assert.equal(result.canExport, false);
+  assert.equal(result.gate?.kind, 'source_rows');
+  assert.deepEqual(result.preview.calendar, []);
+  assert.deepEqual(result.preview.markdown, []);
   assert.equal(result.aiGeneration.enabled, false);
 });
 
@@ -190,17 +194,21 @@ test('baby food source URL resolves to the held source-traced map without openin
   assert.equal(result.aiGeneration.enabled, false);
 });
 
-test('reading source URL resolves to the curated monthly routine representative only', () => {
+test('reading source URL resolves to the held curated monthly package without save or export', () => {
   const result = lookupUrlFirstP0Input(
     'https://blog.naver.com/naristyle87/222978131890?utm_source=duplicate',
   );
 
-  assert.equal(result.status, 'hit');
+  assert.equal(result.status, 'needs_review');
   assert.equal(result.canonicalUrl, 'https://blog.naver.com/naristyle87/222978131890');
   assert.equal(result.flowMapId, 'curated-reading-routine-log');
   assert.equal(result.routeHref, '/flow-maps/curated-reading-routine-log');
   assert.equal(result.flowSlug, 'curated-reading-monthly-log');
-  assert.equal(result.canSaveToMyFlow, true);
+  assert.equal(result.canSaveToMyFlow, false);
+  assert.equal(result.canExport, false);
+  assert.equal(result.gate?.kind, 'source_rows');
+  assert.deepEqual(result.preview.calendar, []);
+  assert.deepEqual(result.preview.markdown, []);
   assert.equal(result.aiGeneration.enabled, false);
 });
 

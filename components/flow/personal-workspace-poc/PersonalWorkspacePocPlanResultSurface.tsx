@@ -6,7 +6,7 @@ import {
   type PersonalWorkspacePocPlanDisplay,
 } from '@/lib/flow/personal-workspace-poc-plan-display';
 
-const ACTION = 'min-h-12 rounded-md border border-[var(--flowme-border-strong)] bg-white px-3 py-2 text-sm font-semibold text-[var(--flowme-action)] disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]';
+const ACTION = 'min-h-12 rounded-md border border-[var(--flowme-border-strong)] bg-white px-3 py-2 text-sm font-semibold text-[var(--flowme-action)] disabled:opacity-40 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]';
 const LABELS = { preview: '반영 전 확인', saving: '저장 중', success: '저장 완료', noop: '같은 내용', failure: '저장 실패', canceled: '편집 취소', undone: '되돌림 완료' } as const;
 
 function message(display: PersonalWorkspacePocPlanDisplay): string {

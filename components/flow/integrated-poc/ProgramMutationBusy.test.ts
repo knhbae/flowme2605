@@ -34,10 +34,18 @@ for (const reason of ['busy', 'conflict', 'checking-result']) {
     const wanted = { ...before, body: 'unsaved\r\ninput' };
     const savedDraftRef = { current: before }, queue = { current: Promise.resolve(true) }, saveFlights = { current: 0 };
     let error = '', saveState = '', conflict = false, attempts = 0, commits = 0, reject = true;
+    type Notice = { message: string; draftSave?: { draft: typeof wanted; expected: typeof before; reason: string } };
+    let notice: Notice = { message: '' };
+    // Match the component's React setter: both direct notices and functional
+    // queue updaters must preserve the real failed-save origin until retry.
+    const setErrorNotice = (value: Notice | ((current: Notice) => Notice)) => {
+      notice = typeof value === 'function' ? value(notice) : value;
+      error = notice.message;
+    };
     const save = handler('./ProgramCommunity.tsx', 'save', {
       actorId: 'owner', storageScope: 'account', savedDraftRef, queue, saveFlights, mounted: { current: true }, programErrorMessage,
       programClone: structuredClone, setSaveState: (value: string) => { saveState = value; },
-      setError: (value: string) => { error = value; }, setDraftConflict: (value: boolean) => { conflict = value; },
+      setErrorNotice, setError: (value: string) => { setErrorNotice({ message: value }); }, setDraftConflict: (value: boolean) => { conflict = value; },
       saveProgramParticipationDraft: (_current: unknown, _actor: string, draft: unknown, options: any) => {
         assert.deepEqual(draft, wanted); assert.equal(options.expected, before); commits++; return { ok: true };
       },
@@ -46,10 +54,13 @@ for (const reason of ['busy', 'conflict', 'checking-result']) {
     assert.equal(await save(wanted), false);
     assert.equal(savedDraftRef.current, before); assert.equal(commits, 0); assert.equal(attempts, 1); assert.equal(saveFlights.current, 0);
     assert.equal(saveState, '저장하지 못했어요'); assert.equal(error, programErrorMessage(reason)); assert.equal(conflict, reason === 'conflict');
+    assert.deepEqual(notice.draftSave, { draft: wanted, expected: before, reason });
+    assert.notEqual(notice.draftSave?.draft, wanted); assert.notEqual(notice.draftSave?.expected, before);
     assert.equal(wanted.body, 'unsaved\r\ninput');
     reject = false; assert.equal(await save(wanted), true);
     assert.equal(attempts, 2); assert.equal(commits, 1); assert.deepEqual(savedDraftRef.current, wanted);
     assert.equal(error, ''); assert.equal(conflict, false); assert.equal(saveState, '계정에 초안 저장됨');
+    assert.deepEqual(notice, { message: '' }, 'a successful retry removes the previous failed-save origin');
   });
 
   test(`creator ${reason} returns false and preserves the editor baseline until retry`, async () => {

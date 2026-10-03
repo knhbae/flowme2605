@@ -68,7 +68,7 @@ function updatedLabel(value: string): string {
   }).format(parsed);
 }
 
-const ACTION_CLASS = 'min-h-12 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-800 outline-none hover:border-teal-700 focus-visible:ring-2 focus-visible:ring-teal-700 disabled:cursor-not-allowed disabled:opacity-50';
+const ACTION_CLASS = 'min-h-12 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-800 outline-hidden hover:border-teal-700 focus-visible:ring-2 focus-visible:ring-teal-700 disabled:cursor-not-allowed disabled:opacity-50';
 
 export function PersonalWorkspacePocCreatorDraftLibrary({
   drafts,
@@ -176,7 +176,7 @@ export function PersonalWorkspacePocCreatorDraftLibrary({
             ref={headingRef}
             id="creator-draft-library-heading"
             tabIndex={-1}
-            className="mt-1 text-xl font-semibold tracking-[-0.02em] outline-none focus-visible:ring-2 focus-visible:ring-teal-700"
+            className="mt-1 text-xl font-semibold tracking-[-0.02em] outline-hidden focus-visible:ring-2 focus-visible:ring-teal-700"
           >
             제작자 초안
           </h2>
@@ -208,7 +208,7 @@ export function PersonalWorkspacePocCreatorDraftLibrary({
         data-testid="creator-draft-search"
         type="search"
         value={query}
-        className="mt-2 min-h-12 w-full rounded-md border border-slate-300 bg-white px-3 text-base outline-none focus:border-teal-700 focus:ring-2 focus:ring-teal-700/20"
+        className="mt-2 min-h-12 w-full rounded-md border border-slate-300 bg-white px-3 text-base outline-hidden focus:border-teal-700 focus:ring-2 focus:ring-teal-700/20"
         placeholder="제목 또는 출처 검색"
         onChange={(event) => setQuery(event.target.value)}
       />
@@ -220,7 +220,7 @@ export function PersonalWorkspacePocCreatorDraftLibrary({
             type="button"
             data-testid={`creator-draft-filter-${nextFilter}`}
             aria-pressed={filter === nextFilter}
-            className={`min-h-12 border-b-2 px-2 text-sm font-semibold outline-none focus-visible:ring-2 focus-visible:ring-teal-700 ${filter === nextFilter ? 'border-teal-700 text-teal-900' : 'border-transparent text-slate-500'}`}
+            className={`min-h-12 border-b-2 px-2 text-sm font-semibold outline-hidden focus-visible:ring-2 focus-visible:ring-teal-700 ${filter === nextFilter ? 'border-teal-700 text-teal-900' : 'border-transparent text-slate-500'}`}
             onClick={() => {
               setFilter(nextFilter);
               setOpenActionsDraftId(undefined);
@@ -321,7 +321,7 @@ export function PersonalWorkspacePocCreatorDraftLibrary({
                           id={`creator-draft-rename-${draft.draftId}`}
                           data-testid="creator-draft-rename-input"
                           value={renameValue}
-                          className="min-h-12 rounded-md border border-slate-300 bg-white px-3 text-base outline-none focus:border-teal-700 focus:ring-2 focus:ring-teal-700/20"
+                          className="min-h-12 rounded-md border border-slate-300 bg-white px-3 text-base outline-hidden focus:border-teal-700 focus:ring-2 focus:ring-teal-700/20"
                           onChange={(event) => setRenameValue(event.target.value)}
                           onKeyDown={(event) => {
                             if (event.key !== 'Escape') return;

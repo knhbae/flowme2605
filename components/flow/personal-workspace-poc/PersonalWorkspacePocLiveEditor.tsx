@@ -525,7 +525,7 @@ export const PersonalWorkspacePocLiveEditor = forwardRef<
             type="button"
             data-testid="personal-workspace-live-editor-text-view-toggle"
             aria-pressed={!flowViewVisible}
-            className={`min-h-12 rounded-md px-3 text-xs font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 lg:min-h-11 ${!flowViewVisible ? 'bg-teal-50 text-teal-950' : 'text-slate-600 hover:bg-slate-50'}`}
+            className={`min-h-12 rounded-md px-3 text-xs font-semibold focus:outline-hidden focus-visible:ring-2 focus-visible:ring-teal-700 lg:min-h-11 ${!flowViewVisible ? 'bg-teal-50 text-teal-950' : 'text-slate-600 hover:bg-slate-50'}`}
             onPointerDown={preserveEditorSelectionOnPointerDown}
             onClick={() => setFlowViewVisible(false)}
           >
@@ -535,7 +535,7 @@ export const PersonalWorkspacePocLiveEditor = forwardRef<
             type="button"
             data-testid="personal-workspace-live-editor-flow-view-toggle"
             aria-pressed={flowViewVisible}
-            className={`min-h-12 rounded-md px-3 text-xs font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 lg:min-h-11 ${flowViewVisible ? 'bg-teal-50 text-teal-950' : 'text-slate-600 hover:bg-slate-50'}`}
+            className={`min-h-12 rounded-md px-3 text-xs font-semibold focus:outline-hidden focus-visible:ring-2 focus-visible:ring-teal-700 lg:min-h-11 ${flowViewVisible ? 'bg-teal-50 text-teal-950' : 'text-slate-600 hover:bg-slate-50'}`}
             onPointerDown={preserveEditorSelectionOnPointerDown}
             onClick={() => setFlowViewVisible(true)}
           >
@@ -546,7 +546,7 @@ export const PersonalWorkspacePocLiveEditor = forwardRef<
             data-testid="personal-workspace-live-editor-ghost-toggle"
             hidden={!flowViewVisible}
             aria-pressed={ghostVisible}
-            className={`min-h-12 rounded-md px-3 text-xs font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 lg:min-h-11 ${ghostVisible ? 'bg-teal-50 text-teal-950' : 'text-slate-600 hover:bg-slate-50'}`}
+            className={`min-h-12 rounded-md px-3 text-xs font-semibold focus:outline-hidden focus-visible:ring-2 focus-visible:ring-teal-700 lg:min-h-11 ${ghostVisible ? 'bg-teal-50 text-teal-950' : 'text-slate-600 hover:bg-slate-50'}`}
             onPointerDown={preserveEditorSelectionOnPointerDown}
             onClick={() => setGhostVisible((visible) => !visible)}
           >
@@ -557,7 +557,7 @@ export const PersonalWorkspacePocLiveEditor = forwardRef<
               type="button"
               data-testid="personal-workspace-live-editor-review-toggle"
               aria-pressed={reviewVisible}
-              className="min-h-12 rounded-md px-3 text-xs font-semibold text-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 lg:min-h-11"
+              className="min-h-12 rounded-md px-3 text-xs font-semibold text-slate-700 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-teal-700 lg:min-h-11"
               onPointerDown={preserveEditorSelectionOnPointerDown}
               onClick={() => setReviewVisible((visible) => !visible)}
             >
@@ -621,7 +621,7 @@ export const PersonalWorkspacePocLiveEditor = forwardRef<
           rows={rows}
           spellCheck="false"
           aria-labelledby={editorLabelId}
-          className={`relative z-10 block min-h-[18rem] w-full min-w-0 resize-y border-0 bg-transparent py-3 pl-4 pr-16 font-mono text-base leading-6 outline-none placeholder:text-slate-400 disabled:opacity-60 ${flowViewVisible ? 'text-transparent selection:bg-teal-200/70' : 'text-slate-950'}`}
+          className={`relative z-10 block min-h-[18rem] w-full min-w-0 resize-y border-0 bg-transparent py-3 pl-4 pr-16 font-mono text-base leading-6 outline-hidden placeholder:text-slate-400 disabled:opacity-60 ${flowViewVisible ? 'text-transparent selection:bg-teal-200/70' : 'text-slate-950'}`}
           style={{ caretColor: '#0f172a', tabSize: 2 }}
           placeholder="# 나의 Flow 제목"
           onSelect={syncSelectionAndScroll}
@@ -645,7 +645,7 @@ export const PersonalWorkspacePocLiveEditor = forwardRef<
             aria-label={`원문 ${contextAction.sourceLine}행에 내용 추가`}
             aria-expanded={contextAction.expanded}
             aria-controls={contextAction.controlsId}
-            className="absolute right-2 z-20 flex h-12 w-12 items-center justify-center rounded-md border border-teal-700 bg-white text-xl font-semibold text-teal-800 shadow-sm hover:bg-teal-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-700"
+            className="absolute right-2 z-20 flex h-12 w-12 items-center justify-center rounded-md border border-teal-700 bg-white text-xl font-semibold text-teal-800 shadow-xs hover:bg-teal-50 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-teal-700"
             style={{ top: `${contextActionTop}px` }}
             onPointerDown={preserveEditorSelectionOnPointerDown}
             onClick={(event) => contextAction.onOpen(event.currentTarget)}

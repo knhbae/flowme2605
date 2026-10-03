@@ -2,7 +2,7 @@
  * these tests do NOT prove live database permissions, migration or actual users. */
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createAlphaSyntheticFixtures } from '../alpha-persistence/synthetic-fixtures';
+import { createAlphaHeldMovingFixture, createAlphaSyntheticFixtures, type AlphaSyntheticFixture } from '../alpha-persistence/synthetic-fixtures';
 import { captureAlphaAccount, commandFromProgramTransition, materializeAccount } from '../alpha-persistence/program-adapter';
 import type { AlphaAccount, AlphaCommand } from '../alpha-persistence/contract';
 import { canonicalJson } from '../alpha-persistence/json';
@@ -12,8 +12,11 @@ import { addProgramQuickTask, completeProgramTask, createProgramDocument, create
 import { textWorkspaceModel as M } from '../text-workspace';
 import { readProgramExecutionOccurrences, updateProgramOccurrenceExecution } from '../recurrence-state';
 import { programOrderedExecutionRows, reorderProgramExecutionTimeline } from '../recurrence-order';
-import type { ProgramData, ProgramTransition } from '../contract';
+import { programResult, type ProgramData, type ProgramTransition } from '../contract';
 import { applyProgramLegacyAction, prepareProgramLegacyView } from '../legacy-transaction';
+import { programLegacyTaskQualityHold } from '../legacy-map-review';
+import { createAlphaFakeServer } from '../alpha-persistence/fake-server';
+import { createProgramPrivateSpace } from '../program-data';
 
 const owner = '11111111-1111-4111-8111-111111111111', key = 'ab'.repeat(32), NOW = '2026-09-21T02:00:00.000Z';
 const refs = { actorIds: [owner], public: { flows: [], versions: [], posts: [], replies: [], reactions: [], proposals: [] } };
@@ -23,12 +26,30 @@ const env = { FLOWME_ALPHA_ENABLED: 'development-only', FLOWME_ALPHA_STAGE: 'dev
   FLOWME_ALPHA_REDIRECT_URL: 'http://localhost:3104/auth/callback', FLOWME_ALPHA_M3_SIGNING_KEY: key };
 function accountFrom(name: string) {
   const fixture = fixtures.find(row => row.name === name); assert(fixture, name);
+  return accountFromFixture(fixture);
+}
+function accountFromFixture(fixture: AlphaSyntheticFixture) {
   const { account } = captureAlphaAccount(fixture.envelope, fixture.actorId, owner);
   // Explicit synthetic identity binding, not an approved live import/migration.
   account.source.actorId = owner;
   account.legacyReceipts = account.legacyReceipts.map(row => ({ ...row, actorId: owner }));
-  assert.equal(isAccountForOwner(account, owner), true, `${name}: owner-bound full validator`);
+  assert.equal(isAccountForOwner(account, owner), true, `${fixture.name}: owner-bound full validator`);
   return account;
+}
+function heldExecutionAccount() {
+  const account = accountFromFixture(createAlphaHeldMovingFixture()), space = account.space, raw = space.legacySnapshot!.raw;
+  // Explicit pre-hold checkbox/history reconstruction with actual saved IDs;
+  // this is not a user's profile or a mutation of the factory source snapshot.
+  const binding = space.savedBindings[0], taskId = Object.values(binding.itemLines)[0];
+  const document = M.getDocument(space.text, binding.documentId); assert(document);
+  const line = document.lines.find(row => row.id === taskId); assert(line);
+  line.text = '- [ ] Synthetic previously saved held task';
+  const childId = 'synthetic-held-old-subcheck';
+  document.lines.splice(document.lines.indexOf(line) + 1, 0, { id: childId, text: '  - [ ] Synthetic previous subcheck' });
+  for (const id of [taskId, childId]) { space.text.taskScopes[id] = binding.documentId; space.text.itemScopes[id] = binding.documentId; }
+  space.text = M.recordProgress(space.text, taskId, '2026-09-20', 37);
+  assert(isAccountForOwner(account, owner)); assert.equal(space.legacySnapshot!.raw, raw);
+  return { account, taskId, childId, documentId: binding.documentId };
 }
 function harness(initial: AlphaAccount) {
   let current = structuredClone(initial), serial = 0, writes = 0;
@@ -80,6 +101,109 @@ test('M3 pure server parity: actual structured Map preserves source factory snap
   assert.equal(M.tasks(h.account().space.text).find(row => row.id === task.id)?.date, '2026-10-05');
   assert.equal(canonicalJson(h.account().space.legacySnapshot), canonicalJson(before.space.legacySnapshot));
   assert.deepEqual(h.account().space.savedBindings, before.space.savedBindings);
+});
+test('M3 pure server parity: actual held moving source remains exact and rejects new execution before fake write RPC', async () => {
+  const fixture = createAlphaHeldMovingFixture(), sourceBefore = canonicalJson(fixture.envelope);
+  const h = harness(accountFromFixture(fixture)), before = h.account(), data = h.data(), space = data.spaces[owner];
+  assert.equal(before.space.legacySnapshot!.raw, fixture.envelope.data.spaces[fixture.actorId].legacySnapshot!.raw);
+  assert.deepEqual(before.space.savedBindings, fixture.envelope.data.spaces[fixture.actorId].savedBindings);
+  assert.equal(M.tasks(space.text).length, 0);
+  const binding = space.savedBindings[0]; assert(binding);
+  const [itemRef, taskId] = Object.entries(binding.itemLines)[0]; assert(itemRef && taskId);
+  assert(programLegacyTaskQualityHold(space, taskId));
+  for (const transition of [
+    updateProgramTask(data, { ...base(data), taskId, patch: { date: '2026-10-05' } }),
+    completeProgramTask(data, { ...base(data), taskId, date: '2026-09-21', done: true }),
+  ]) {
+    assert(!transition.ok); assert.equal(transition.reason, 'unresolved'); assert.equal(transition.data, data);
+  }
+  assert.throws(() => commandFromProgramTransition(before, refs, 'held-moving-builder', current =>
+    updateProgramTask(current, { ...base(current), taskId, patch: { date: '2026-10-05' } })), /alpha-domain-unresolved/);
+  const view = prepareProgramLegacyView(data, { actorId: owner, now: NOW, onlyFlowRef: binding.flowRef }); assert(view.ok);
+  const completed = applyProgramLegacyAction(data, { actorId: owner, expectedToken: view.token, now: NOW, executionDate: '2026-09-21',
+    action: { type: 'complete', itemRef, completed: true, now: NOW } });
+  assert.equal(completed.transition.ok, false); assert.equal(completed.transition.data, data);
+  const forged = structuredClone(before.space.text), document = M.getDocument(forged, binding.documentId); assert(document);
+  const line = document.lines.find(row => row.id === taskId); assert(line);
+  line.text = '- [ ] Synthetic held-source execution attempt';
+  forged.taskScopes[taskId] = binding.documentId; forged.itemScopes[taskId] = binding.documentId;
+  assert(M.validate(forged)); assert(M.tasks(forged).some(task => task.id === taskId));
+  const response = await h.send({ schema: 'flowme-alpha-command/1', requestId: 'held-moving-execution', expectedRevision: before.revision,
+    kind: 'change-private', changes: [{ field: 'text', present: true, value: forged }] });
+  assert.equal(response.reason, 'invalid'); assert.equal(h.writes(), 0);
+  assert.deepEqual(h.account(), before); assert.deepEqual(data.spaces[owner], before.space);
+  assert.equal(canonicalJson(fixture.envelope), sourceBefore);
+});
+for (const field of ['text', 'subcheck', 'progress', 'scope'] as const) test(`M3 pure server parity: retained held ${field} mutation never reaches fake write RPC`, async () => {
+  const f = heldExecutionAccount(), h = harness(f.account), before = h.account();
+  let text = structuredClone(before.space.text);
+  const document = M.getDocument(text, f.documentId); assert(document);
+  if (field === 'text') document.lines.find(line => line.id === f.taskId)!.text += ' changed';
+  if (field === 'subcheck') document.lines.find(line => line.id === f.childId)!.text = '  - [x] Synthetic previous subcheck';
+  if (field === 'progress') text = M.recordProgress(text, f.taskId, '2026-09-21', 100);
+  if (field === 'scope') { text.taskScopes[f.taskId] = 'folder-unfiled'; text.itemScopes[f.taskId] = 'folder-unfiled'; }
+  assert(isAccountForOwner({ ...before, space: { ...before.space, text } }, owner));
+  assert.notEqual(canonicalJson(text), canonicalJson(before.space.text));
+  const response = await h.send({ schema: 'flowme-alpha-command/1', requestId: `held-${field}`, expectedRevision: before.revision,
+    kind: 'change-private', changes: [{ field: 'text', present: true, value: text }] });
+  assert.equal(response.reason, 'invalid'); assert.equal(h.writes(), 0);
+  assert.deepEqual(h.account(), before);
+  assert.deepEqual(M.progressHistory(h.account().space.text, f.taskId), [{ date: '2026-09-20', percent: 37 }]);
+});
+test('M3 pure server parity: unchanged held account remains valid and performs no fake write RPC', async () => {
+  const h = harness(heldExecutionAccount().account), before = h.account();
+  const response = await h.send({ schema: 'flowme-alpha-command/1', requestId: 'held-unchanged', expectedRevision: before.revision, kind: 'change-private', changes: [] });
+  assert.equal(response.reason, 'no-change'); assert.equal(h.writes(), 0); assert.deepEqual(h.account(), before);
+});
+test('M3 pure server parity: held source does not block editing an unrelated private document', async () => {
+  const h = harness(heldExecutionAccount().account), before = h.account();
+  const documentId = await h.run(data => createProgramDocument(data, { ...base(data), title: 'Unrelated private document', raw: 'Original private memo' }));
+  await h.run(data => {
+    const next = structuredClone(data); next.spaces[owner].text = M.editText(next.spaces[owner].text, documentId, 'Edited private memo');
+    return programResult(data, next, documentId);
+  });
+  assert.equal(M.raw(M.getDocument(h.account().space.text, documentId)), 'Edited private memo');
+  for (const binding of before.space.savedBindings) assert.deepEqual(M.getDocument(h.account().space.text, binding.documentId), M.getDocument(before.space.text, binding.documentId));
+  assert.deepEqual(h.account().space.legacySnapshot, before.space.legacySnapshot); assert.equal(h.writes(), 2);
+});
+test('M3 pure server parity: complete held saved-copy removal does not become a retention requirement', async () => {
+  const h = harness(heldExecutionAccount().account), before = h.account(), empty = createProgramPrivateSpace();
+  const response = await h.send({ schema: 'flowme-alpha-command/1', requestId: 'remove-held-copy', expectedRevision: before.revision,
+    kind: 'change-private', changes: [{ field: 'text', present: true, value: empty.text }, { field: 'savedBindings', present: true, value: [] }, { field: 'position', present: true, value: empty.position }] });
+  assert.equal(response.ok, true); assert.equal(h.writes(), 1);
+  assert.equal(h.account().space.savedBindings.length, 0); assert.equal(h.account().space.text.documents.length, 0);
+  assert.deepEqual(h.account().space.legacySnapshot, before.space.legacySnapshot);
+});
+test('M3 pure server parity: old held-account receipt replay and stale/future CAS do not apply forged latest text', async () => {
+  const initial = heldExecutionAccount().account, server = createAlphaFakeServer([{ account: initial, references: refs }]);
+  const port = server.connect(server.issueSession(owner)); let rpcCalls = 0;
+  const handler = createAlphaCommandHandler(env, (async (url, init) => {
+    const path = new URL(String(url)).pathname;
+    if (path === '/auth/v1/user') return Response.json({ id: owner, is_anonymous: false });
+    if (path === '/rest/v1/flowme_alpha_accounts') { const read = await port.read(); assert(read.ok); return Response.json([{ account: read.value }]); }
+    assert.equal(path, '/rest/v1/rpc/flowme_alpha_execute_v1'); rpcCalls++;
+    const body = JSON.parse(String(init?.body)); assert.equal(body.proof, signAlphaCommand(owner, body.command_text, key));
+    return Response.json(await port.execute(JSON.parse(body.command_text)));
+  }) as typeof fetch);
+  const send = async (command: AlphaCommand) => (await handler(new Request('http://localhost:3104/api/alpha/account', {
+    method: 'POST', headers: { 'Content-Type': 'application/json', Origin: 'http://localhost:3104', Authorization: 'Bearer synthetic-token-not-an-actual-secret' },
+    body: JSON.stringify({ kind: 'execute', command }),
+  }))).json();
+  const command = commandFromProgramTransition(initial, refs, 'held-receipt-private-edit', data => createProgramDocument(data, { ...base(data), title: 'Unrelated receipt document' }));
+  const first = await send(command); assert.equal(first.ok, true);
+  const current = await port.read(); assert(current.ok);
+  const baseline = canonicalJson(current.value), replay = await send(command);
+  assert.deepEqual(replay, first); assert.equal(server.diagnostics().mutations, 1);
+  const text = structuredClone(current.value.space.text), binding = current.value.space.savedBindings[0], taskId = Object.values(binding.itemLines)[0];
+  M.getDocument(text, binding.documentId)!.lines.find(line => line.id === taskId)!.text += ' forged stale change';
+  const stale: AlphaCommand = { schema: 'flowme-alpha-command/1', requestId: 'held-stale-change', expectedRevision: 0, kind: 'change-private', changes: [{ field: 'text', present: true, value: text }] };
+  assert.equal((await send(stale)).reason, 'revision-conflict');
+  assert.equal((await send({ ...stale, requestId: command.requestId })).reason, 'idempotency-conflict');
+  const priorCalls = rpcCalls;
+  assert.equal((await send({ ...stale, requestId: 'held-future-change', expectedRevision: current.value.revision + 1 })).reason, 'revision-conflict');
+  assert.equal(rpcCalls, priorCalls); assert.equal(server.diagnostics().mutations, 1);
+  const after = await port.read(); assert(after.ok); assert.equal(canonicalJson(after.value), baseline);
+  assert.deepEqual(after.value.space.legacySnapshot, initial.space.legacySnapshot);
 });
 test('M3 pure server parity: recurring completion and execution date preserve recurrence source', async () => {
   const h = harness(accountFrom('recurring-occurrence-records')), before = h.account();

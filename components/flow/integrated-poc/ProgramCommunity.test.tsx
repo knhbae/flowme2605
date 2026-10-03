@@ -12,6 +12,7 @@ import { createProgramController } from '../../../lib/flow/integrated-poc/contro
 import { createProgramPost, createProgramReply, deleteProgramPost, editProgramPost, programPostEditToken } from '../../../lib/flow/integrated-poc/community';
 import { publishProgramFlow, createProgramProposal } from '../../../lib/flow/integrated-poc/publication';
 import type * as ComponentModule from './ProgramCommunity';
+import { programErrorMessage } from '../../../lib/flow/integrated-poc/ui-contract';
 
 const componentUrl = new URL('./ProgramCommunity.tsx', import.meta.url);
 const source = readFileSync(componentUrl, 'utf8'), require = createRequire(componentUrl);
@@ -53,6 +54,103 @@ function componentRequire(id: string): unknown {
 vm.runInThisContext(`(function(module, exports, require) { ${compiled.outputText}\n})`, { filename: 'ProgramCommunity.compiled.cjs' })(loaded, loaded.exports, (id: string) =>
   componentRequire(id));
 const { ProgramCommunity, newProgramParticipationDraft, saveProgramParticipationDraft, discardProgramParticipationDraft, submitProgramParticipation } = loaded.exports;
+
+// Run the actual queued save callback and notice expression, without React hooks,
+// browser/network or a new product-only injection point.
+function draftSaveNoticeHarness(outcome: { ok: boolean; reason?: string }, rejects = false) {
+  const ast = ts.createSourceFile('ProgramCommunity.tsx', source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+  function find(predicate: (node: ts.Node) => boolean): ts.Node {
+    let found: ts.Node | undefined;
+    function visit(node: ts.Node) { if (predicate(node)) found = node; else if (!found) ts.forEachChild(node, visit); }
+    visit(ast); assert(found); return found;
+  }
+  const declaration = (name: string) => (find(node => ts.isFunctionDeclaration(node) && node.name?.text === name) as ts.FunctionDeclaration).getText(ast);
+  const expression = (name: string) => (find(node => ts.isVariableDeclaration(node) && node.name.getText(ast) === name) as ts.VariableDeclaration).initializer!.getText(ast);
+  const draft = { ...newProgramParticipationDraft(), title: '합성 질문', body: '보존할 입력' };
+  const calls: string[] = [], context: Record<string, any> = {
+    draft, actorId: 'actor-synthetic', storageScope: 'account', errorNotice: { message: '' },
+    saveFlights: { current: 0 }, queue: { current: Promise.resolve(true) }, mounted: { current: true }, savedDraftRef: { current: null },
+    setSaveState: (value: string) => calls.push(`status:${value}`), setDraftConflict: (value: boolean) => calls.push(`conflict:${value}`),
+    setErrorNotice: (value: any) => { context.errorNotice = typeof value === 'function' ? value(context.errorNotice) : value; }, programErrorMessage, programClone: structuredClone,
+    saveProgramParticipationDraft,
+    mutate: async (_label: string, _build: unknown, options: any) => {
+      calls.push('mutation'); assert.equal(options.alphaSocial.type, 'participation-save');
+      assert.equal(options.alphaSocial.draft, draft); assert.equal(options.alphaSocial.expected, null);
+      if (rejects) throw Error('synthetic storage failure'); return outcome;
+    },
+    resolveDraftSaveError: (next: unknown, expected: unknown, reason: string) => {
+      calls.push(`notice:${reason}`); assert.deepEqual(next, draft); assert.equal(expected, null);
+      return reason === 'recovery-required' ? '초안을 저장하지 못했습니다. 입력은 남아 있습니다.' : undefined;
+    },
+  };
+  function evaluate(value: string) {
+    const code = ts.transpileModule(`const value = ${value};`, { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS } }).outputText;
+    return new Function(...Object.keys(context), `${code}; return value;`)(...Object.values(context));
+  }
+  context.setError = (message: string) => evaluate(`(${declaration('setError')})`)(message);
+  return { context, calls, draft, save: () => evaluate(`(${declaration('save')})`)(draft), notice: () => evaluate(expression('error')) };
+}
+
+test('draft save failure selects its current host notice while preserving the failed input and queued mutation', async () => {
+  const h = draftSaveNoticeHarness({ ok: false, reason: 'recovery-required' });
+  assert.equal(await h.save(), false); assert.equal(h.context.savedDraftRef.current, null);
+  assert.deepEqual(h.context.errorNotice.draftSave.draft, h.draft); assert.notEqual(h.context.errorNotice.draftSave.draft, h.draft);
+  assert.equal(h.context.errorNotice.draftSave.expected, null);
+  assert.equal(h.context.errorNotice.message, programErrorMessage('recovery-required'));
+  assert.equal(h.notice(), '초안을 저장하지 못했습니다. 입력은 남아 있습니다.');
+  assert.deepEqual(h.calls.filter(value => value === 'mutation'), ['mutation']); assert.equal(h.context.saveFlights.current, 0);
+  h.context.resolveDraftSaveError = () => undefined;
+  assert.equal(h.notice(), programErrorMessage('recovery-required'), 'revoked live authority falls back on the next render');
+  assert.equal(h.draft.body, '보존할 입력');
+});
+
+test('other composer errors remove save origin and cannot inherit a rejected draft notice', async () => {
+  const h = draftSaveNoticeHarness({ ok: false, reason: 'recovery-required' }); await h.save();
+  for (const message of [programErrorMessage('presentation-pending'), '사진을 올리지 못했어요.', programErrorMessage('conflict'), '']) {
+    h.context.setError(message); assert.equal(h.context.errorNotice.draftSave, undefined); assert.equal(h.notice(), message);
+  }
+  assert(!h.calls.some(value => value.startsWith('notice:')));
+});
+
+test('draft save limit and pending-result messages retain their existing recovery meaning', async () => {
+  for (const reason of ['limit', 'checking-result', 'conflict', 'unauthenticated']) {
+    const h = draftSaveNoticeHarness({ ok: false, reason }); await h.save();
+    assert.equal(h.notice(), programErrorMessage(reason)); assert.equal(h.context.savedDraftRef.current, null);
+  }
+});
+
+test('save success and thrown storage failure clear the scoped refusal origin', async () => {
+  const success = draftSaveNoticeHarness({ ok: true }); assert.equal(await success.save(), true);
+  assert.equal(success.notice(), ''); assert.deepEqual(success.context.savedDraftRef.current, success.draft);
+  const failed = draftSaveNoticeHarness({ ok: false }, true); assert.equal(await failed.save(), false);
+  assert.equal(failed.context.errorNotice.draftSave, undefined);
+  assert.equal(failed.notice(), '입력은 그대로입니다. 저장을 다시 시도해 주세요.');
+  const retry = draftSaveNoticeHarness({ ok: false, reason: 'recovery-required' }); await retry.save();
+  let release!: () => void;
+  retry.context.queue.current = new Promise<void>(resolve => { release = resolve; });
+  const saving = retry.save(); assert.equal(retry.notice(), '', 'stale failed-save guidance clears before the queued retry');
+  release(); await saving;
+});
+
+test('a notice for a different active draft cannot replace the common recovery copy', async () => {
+  const h = draftSaveNoticeHarness({ ok: false, reason: 'recovery-required' }); await h.save();
+  h.context.draft = { ...h.draft, id: 'other-draft' };
+  assert.equal(h.notice(), programErrorMessage('recovery-required'));
+  assert(!h.calls.some(value => value.startsWith('notice:')));
+});
+
+test('a queued later save clears a refusal arriving from the earlier save before dispatch', async () => {
+  const h = draftSaveNoticeHarness({ ok: false, reason: 'recovery-required' }); let mutations = 0;
+  h.context.mutate = async () => {
+    mutations++;
+    if (mutations === 1) return { ok: false, reason: 'recovery-required' };
+    assert.equal(h.context.errorNotice.draftSave, undefined, 'queued save must not display its predecessor refusal');
+    return { ok: true };
+  };
+  const first = h.save(), later = h.save();
+  assert.equal(await first, false); assert.equal(await later, true);
+  assert.equal(mutations, 2); assert.equal(h.notice(), ''); assert.equal(h.context.saveFlights.current, 0);
+});
 const now = '2026-09-12T12:00:00.000Z', actorId = 'local-user', otherId = 'participant-jihun';
 
 test('successive guarded drafts survive real controller canonical key ordering and reload', async () => {

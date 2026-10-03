@@ -615,9 +615,9 @@ test.describe('P24 execution trust regressions', () => {
     page.on('pageerror', (error) => consoleErrors.push(error.message));
     await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/my?demo=source-backed');
+    await page.goto('/my?demo=source-backed&savedMap=curated-ajd-moving-d30');
 
-    const flow = await openMyFlowLibraryFlow(page, 'source-backed-moving-d30', 'record');
+    const flow = await openMyFlowLibraryFlow(page, 'curated-ajd-moving-d30', 'record');
     const exportSurface = flow.getByTestId('my-flow-export-surface');
     await expect(exportSurface.getByTestId('my-flow-export-entry')).toContainText(/내 도구로 옮기기 · \d+개/);
     await exportSurface.getByTestId('my-flow-export-entry').click();
@@ -656,7 +656,7 @@ test.describe('P24 execution trust regressions', () => {
       );
     }
 
-    const selectedFlow = await openMyFlowLibraryFlow(page, 'source-backed-moving-d30', 'plan');
+    const selectedFlow = await openMyFlowLibraryFlow(page, 'curated-ajd-moving-d30', 'plan');
     const firstExecutionRow = selectedFlow.getByTestId('my-flow-execution-row-shell').first();
     await firstExecutionRow.getByRole('button', { name: /열기/ }).click();
     const detail = getOpenMyFlowItemDetail(page);
@@ -1321,8 +1321,8 @@ test.describe('P24 execution trust regressions', () => {
     ).toBeLessThanOrEqual(1);
     expect(consoleErrors).toEqual([]);
 
-    await page.goto('/my?demo=source-backed');
-    const sourceBackedFlow = await openMyFlowLibraryFlow(page, 'source-backed-moving-d30');
+    await page.goto('/my?demo=source-backed&savedMap=curated-ajd-moving-d30');
+    const sourceBackedFlow = await openMyFlowLibraryFlow(page, 'curated-ajd-moving-d30');
     const sourceBackedOutline = sourceBackedFlow.getByTestId('my-flow-whole-flow-outline');
     await sourceBackedOutline.getByTestId('my-flow-batch-mode-toggle').click();
     await sourceBackedOutline.getByTestId('my-flow-batch-item-checkbox').first().check();

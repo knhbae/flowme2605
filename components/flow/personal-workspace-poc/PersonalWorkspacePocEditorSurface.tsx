@@ -782,7 +782,7 @@ export function PersonalWorkspacePocPlanEditorSurface({
                     type="button"
                     data-testid="personal-workspace-plan-item-open"
                     data-item-ref={itemRef}
-                    className="min-w-0 rounded-[var(--flowme-radius-control)] px-2 py-2 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                    className="min-w-0 rounded-[var(--flowme-radius-control)] px-2 py-2 text-left focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                     onClick={() => onOpenItem({
                       parentFlowRef: draft.flowRef,
                       itemRef,

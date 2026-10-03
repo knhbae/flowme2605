@@ -55,7 +55,7 @@ export function FlowItemMultiSelect({
           >
             <input
               type="checkbox"
-              className="h-5 w-5 shrink-0 rounded border-[#A7A39A] accent-[#3654FF] focus:outline-none focus:ring-2 focus:ring-[#3654FF]/25"
+              className="h-5 w-5 shrink-0 rounded border-[#A7A39A] accent-[#3654FF] focus:outline-hidden focus:ring-2 focus:ring-[#3654FF]/25"
               checked={selectedKeySet.has(item.key)}
               aria-label={selectionAriaLabel(item)}
               onChange={() => onToggleItem(item.key)}

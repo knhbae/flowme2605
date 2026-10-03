@@ -17,7 +17,7 @@ import {
   RUNTIME_ARCHIVED_FLOW_SLUGS,
 } from './runtime-content-policy';
 import { seedBundles } from './seed-flows';
-import { mergeSourceBackedMyFlowBundles } from './source-backed-my-flow';
+import { mergeSourceBackedMyFlowBundles, sourceBackedMyFlowBundles } from './source-backed-my-flow';
 import {
   collectUserFacingClaimText,
   findLegacySourceClaimCopy,
@@ -38,6 +38,12 @@ const curatedSourceAppSeedFlowSlugs = curatedSourceAppSeed.contentBundles.flatMa
 );
 const previewFlowBundles = getPreviewFlowBundles();
 const runtimeSeedBundles = seedBundles.filter((bundle) => !isRuntimeExcludedBundle(bundle));
+const cp1QuarantinedSourceSlugs = [
+  'source-backed-moving-d30', 'source-backed-year-end-tax-submit',
+  'curated-opic-single-mock-review', 'curated-opic-course-row-import',
+  'curated-reading-monthly-log', 'curated-child-vaccination-first-year',
+  'curated-child-vaccination-booster-school-age',
+];
 
 test('seed pack contains public Korean Flow bundles across practical categories', () => {
   assert.ok(seedBundles.length >= 150);
@@ -154,15 +160,15 @@ test('wedding vendor board links to its own source while the timeline retains Na
   assert.equal(timeline.flow.source_url, 'https://blog.naver.com/wilklove/223518896995');
 });
 
-test('runtime content policy archives unsupported public routes without deleting canonical review records', () => {
+test('runtime content policy archives unsupported public routes without deleting seed or source-backed review records', () => {
   const canonicalSlugs = new Set(seedBundles.map((bundle) => bundle.flow.slug));
   const reviewInventorySlugs = new Set(
-    mergeSourceBackedMyFlowBundles(seedBundles).map((bundle) => bundle.flow.slug),
+    [...seedBundles, ...sourceBackedMyFlowBundles].map((bundle) => bundle.flow.slug),
   );
   const runtimeSlugs = new Set(runtimeSeedBundles.map((bundle) => bundle.flow.slug));
   const archiveSlugs = RUNTIME_ARCHIVED_FLOW_POLICIES.map((policy) => policy.slug);
 
-  assert.deepEqual(RUNTIME_ARCHIVED_FLOW_SLUGS.filter((slug) => !canonicalSlugs.has(slug)), []);
+  assert.deepEqual(RUNTIME_ARCHIVED_FLOW_SLUGS.filter((slug) => !canonicalSlugs.has(slug)), cp1QuarantinedSourceSlugs);
   assert.deepEqual(RUNTIME_ARCHIVED_FLOW_SLUGS.filter((slug) => runtimeSlugs.has(slug)), []);
   assert.equal(new Set(archiveSlugs).size, archiveSlugs.length);
   assert.deepEqual(
@@ -174,20 +180,28 @@ test('runtime content policy archives unsupported public routes without deleting
   assert.deepEqual(
     RUNTIME_ARCHIVED_FLOW_POLICIES.filter(
       (policy) => policy.replacementSlug && archiveSlugs.includes(policy.replacementSlug),
-    ),
-    [],
+    ).map(policy => [policy.slug, policy.replacementSlug]),
+    [
+      ['opic-2w', 'curated-opic-single-mock-review'],
+      ['opic-1m', 'curated-opic-course-row-import'],
+      ['reading-book-finish', 'curated-reading-monthly-log'],
+    ],
   );
   const runtimeReviewBundles = mergeSourceBackedMyFlowBundles(seedBundles);
   assert.deepEqual(
     RUNTIME_ARCHIVED_FLOW_POLICIES.filter((policy) => {
       if (!policy.replacementSlug) return false;
+      // These retained historical replacements are now held, not new public fallbacks.
+      if (cp1QuarantinedSourceSlugs.includes(policy.replacementSlug)) {
+        return runtimeReviewBundles.some(bundle => bundle.flow.slug === policy.replacementSlug);
+      }
       const replacement = runtimeReviewBundles.find((bundle) => bundle.flow.slug === policy.replacementSlug);
       return !replacement || !getPublicFlowIndexingPolicy(replacement).indexable;
     }),
     [],
   );
   for (const policy of RUNTIME_ARCHIVED_FLOW_POLICIES) {
-    const canonical = seedBundles.find((bundle) => bundle.flow.slug === policy.slug);
+    const canonical = [...seedBundles, ...sourceBackedMyFlowBundles].find((bundle) => bundle.flow.slug === policy.slug);
     assert.ok(canonical, policy.slug);
   }
 });
@@ -1573,10 +1587,10 @@ test('public Flow indexing exposes only source-fit approved or exact real-source
   const reviewOnly = published.filter((bundle) => !getPublicFlowIndexingPolicy(bundle).indexable);
   const bySlug = new Map(published.map((bundle) => [bundle.flow.slug, bundle]));
 
-  assert.equal(indexable.length, 68);
+  assert.equal(indexable.length, 61);
   assert.equal(reviewOnly.length, 88);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('vehicle-inspection-prep')!).indexable, true);
-  assert.equal(getPublicFlowIndexingPolicy(bySlug.get('source-backed-moving-d30')!).indexable, true);
+  assert.deepEqual(cp1QuarantinedSourceSlugs.filter(slug => bySlug.has(slug)), []);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('new-car-delivery-check')!).indexable, true);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('first-passport-issue')!).indexable, true);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('closet-organize-1day')!).indexable, true);

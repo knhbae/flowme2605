@@ -722,6 +722,97 @@ test('unknown save notice directs to the same-request result check instead of a 
   assert.equal(h.context.message, 'checking-result');
 });
 
+test('SRUI01 definitive participation draft refusal offers correction in its current composer, not a conflict or reload', async () => {
+  const h = harness(); h.initialize();
+  h.context.snapshot = { ...snapshot(), status: 'recovery-required', draft: { kind: 'social' }, retryableRejectedSocialDraft: true };
+  h.context.controller.current = { ...h.store, mutate: async () => ({ ok: false, reason: 'rate-limited' }) };
+  await h.mutate();
+  assert.equal(h.context.message, '글 입력은 남아 있습니다. 내용을 수정하거나 ‘나중에 이어 쓰기’를 눌러 다시 보관해 주세요.');
+  const tree = h.render();
+  assert(text(tree).includes('저장 거절 · 입력 보존됨'));
+  assert(text(tree).includes('나중에 이어 쓰기'));
+  assert(!text(tree).includes('문서에서 내용을 수정한 뒤'));
+  assert.equal(nodes(tree).filter(node => node.props['aria-label'] === '다른 기기 변경과 입력 보호').length, 0);
+  assert.equal(nodes(tree).filter(node => node.type === 'conflict-review').length, 0);
+  assert.equal(evaluate(initializer('modalRecovery'), h.context), null);
+});
+
+test('SRUI02 pending acknowledgment wins over a stale retry flag without claiming rejection', async () => {
+  const h = harness(); h.initialize();
+  h.context.snapshot = { ...snapshot(), status: 'recovery-required', draft: { kind: 'social' },
+    pending: { requestId: 'unknown-social' }, retryableRejectedSocialDraft: true };
+  h.context.controller.current = { ...h.store, mutate: async () => ({ ok: false, reason: 'unresolved' }) };
+  await h.mutate(); assert.equal(h.context.message, 'checking-result');
+  const tree = h.render();
+  assert.equal(nodes(tree).filter(node => node.props['aria-label'] === '거절된 저장과 입력 보호').length, 0);
+  assert.equal(evaluate(initializer('modalRecovery'), h.context).props['aria-label'], '저장 결과 복구');
+});
+
+test('SRUI03 invalidated social retry and external changes keep input protection and latest comparison', () => {
+  const h = harness(); h.context.snapshot = { ...snapshot(), status: 'recovery-required', draft: { kind: 'social' }, retryableRejectedSocialDraft: false };
+  assert(nodes(h.render()).some(node => node.props['aria-label'] === '다른 기기 변경과 입력 보호'));
+  h.context.snapshot.retryableRejectedSocialDraft = true; h.context.external = true;
+  const tree = h.render();
+  assert(nodes(tree).some(node => node.props['aria-label'] === '다른 기기 변경과 입력 보호'));
+  assert(!nodes(tree).some(node => node.props['aria-label'] === '거절된 저장과 입력 보호'));
+  assert.equal(h.calls.includes('mutation'), false); assert.equal(h.calls.includes('discard'), false);
+});
+
+function communityDraftNoticeHarness() {
+  const h = harness(); h.context.seen.community = true;
+  Object.assign(h.context, { communityView: 'community', communitySelection: undefined, communityState: {}, setCommunityState: () => {}, mediaPort: {} });
+  const draft = { ...newProgramParticipationDraft(), title: '합성 제목', body: '거절된 입력' };
+  const authority = { ...snapshot(), status: 'recovery-required', retryableRejectedSocialDraft: true,
+    draft: { kind: 'social', intent: { type: 'participation-save', draft: structuredClone(draft), expected: null } } };
+  h.context.controller.current = { ...h.store, snapshot: () => authority };
+  const notice = () => {
+    const fn = nodes(h.render()).find(node => node.type === 'program-community')!.props.resolveDraftSaveError;
+    assert.equal(typeof fn, 'function'); return fn;
+  };
+  return { ...h, draft, authority, notice };
+}
+
+test('SRUI04 child notice reads live exact rejected draft authority rather than the cached UI snapshot', () => {
+  const h = communityDraftNoticeHarness();
+  assert.equal(h.context.snapshot.retryableRejectedSocialDraft, undefined);
+  assert.equal(h.notice()(h.draft, null, 'recovery-required'), '초안을 저장하지 못했습니다. 입력은 남아 있습니다.');
+  h.authority.retryableRejectedSocialDraft = false;
+  assert.equal(h.notice()(h.draft, null, 'recovery-required'), undefined);
+  assert(!h.calls.includes('mutation')); assert(!h.calls.includes('discard'));
+});
+
+test('SRUI05 unknown, busy, external, storage and disposed states do not claim definite draft rejection', () => {
+  for (const gate of ['pending', 'busy', 'external', 'storage', 'disposed', 'proof', 'owner'] as const) {
+    const h = communityDraftNoticeHarness();
+    if (gate === 'pending') Object.assign(h.authority, { pending: { requestId: 'unknown-result' } });
+    if (gate === 'busy') h.authority.busy = true;
+    if (gate === 'external') h.context.externalRef.current = true;
+    if (gate === 'storage') h.context.storageError = true;
+    if (gate === 'disposed') h.context.disposed.current = true;
+    if (gate === 'proof') h.authority.retryableRejectedSocialDraft = false;
+    if (gate === 'owner') h.authority.ownerId = 'other-owner';
+    assert.equal(h.notice()(h.draft, null, 'recovery-required'), undefined, gate);
+    assert(!h.calls.includes('mutation')); assert(!h.calls.includes('discard'));
+  }
+});
+
+test('SRUI06 rejection notice cannot cross draft bytes, baseline, command kind or failure reason', () => {
+  const h = communityDraftNoticeHarness(), fn = h.notice();
+  for (const patch of [{ id: 'other' }, { body: 'later input' }, { flowId: 'other-flow' }, { versionId: 'other-version' },
+    { itemId: 'other-item' }, { postId: 'other-post' }, { parentReplyId: 'other-reply' }, { editTargetId: 'other-edit' },
+    { expectedUpdatedAt: 'later' }, { expectedContent: 'other-token' }, { requestId: 'other-content-request' }]) {
+    assert.equal(fn({ ...h.draft, ...patch }, null, 'recovery-required'), undefined);
+  }
+  assert.equal(fn(h.draft, { ...h.draft }, 'recovery-required'), undefined);
+  const circular = { ...h.draft } as any; circular.loop = circular;
+  assert.doesNotThrow(() => assert.equal(fn(circular, null, 'recovery-required'), undefined));
+  for (const reason of ['limit', 'conflict', 'checking-result', 'session-expired', 'presentation-pending']) assert.equal(fn(h.draft, null, reason), undefined);
+  Object.assign(h.authority.draft.intent, { type: 'participation-submit' }); assert.equal(fn(h.draft, null, 'recovery-required'), undefined);
+  Object.assign(h.authority.draft, { kind: 'creator' }); assert.equal(fn(h.draft, null, 'recovery-required'), undefined);
+  Object.assign(h.authority, { draft: null }); assert.equal(fn(h.draft, null, 'recovery-required'), undefined);
+  assert(!h.calls.includes('mutation')); assert(!h.calls.includes('discard'));
+});
+
 
 test('normal shell keeps save state and undo visible while account and routine actions start collapsed', () => {
   const h = harness(), tree = h.render();

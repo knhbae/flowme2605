@@ -11,7 +11,7 @@ import ts from 'typescript';
 import { createEmptyTextWorkspace, textWorkspaceModel as M, type TextWorkspaceState } from '../../../lib/flow/integrated-poc/text-workspace';
 import { planProgramDateBlockOrder } from '../../../lib/flow/integrated-poc/date-block-order';
 import { applyProgramLinePermutation, createProgramPermutationHistory } from '../../../lib/flow/integrated-poc/line-permutation';
-import type { createProgramTextDraft as DraftFactory, ProgramTextEditor as Component, ProgramReferencePanel as ReferencePanel, programTextProtectionMessage as ProtectionMessage, ProgramTextDraftState } from './ProgramTextEditor';
+import type { createProgramTextDraft as DraftFactory, ProgramTextEditor as Component, ProgramReferencePanel as ReferencePanel, programTextProtectionMessage as ProtectionMessage, trapProgramDialogTab as TrapDialogTab, ProgramTextDraftState } from './ProgramTextEditor';
 import { createProgramData } from '../../../lib/flow/integrated-poc/program-data';
 import { programPreservesLockedDocumentContent, programReferenceExecutionAccess } from '../../../lib/flow/integrated-poc/reference-execution-guard';
 import { readProgramFolderRegions, planProgramRegionEdit } from '../../../lib/flow/integrated-poc/folder-document-regions';
@@ -25,7 +25,7 @@ const root = resolve(dirname(fileURLToPath(componentUrl)), '../../..');
 const compiled = ts.transpileModule(source, { compilerOptions: {
   target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true,
 } });
-const loaded = { exports: {} as { createProgramTextDraft: typeof DraftFactory; ProgramTextEditor: typeof Component; ProgramReferencePanel: typeof ReferencePanel; programTextProtectionMessage: typeof ProtectionMessage; stageProgramRegionInput: typeof StageRegionInput } };
+const loaded = { exports: {} as { createProgramTextDraft: typeof DraftFactory; ProgramTextEditor: typeof Component; ProgramReferencePanel: typeof ReferencePanel; programTextProtectionMessage: typeof ProtectionMessage; stageProgramRegionInput: typeof StageRegionInput; trapProgramDialogTab: typeof TrapDialogTab } };
 vm.runInThisContext(`(function(module, exports, require) { ${compiled.outputText}\n})`, { filename: 'ProgramTextEditor.compiled.cjs' })(loaded, loaded.exports, (id: string) => {
   if (id.endsWith('.css')) return id.endsWith('.module.css') ? { __esModule: true, default: new Proxy({}, { get: (_target, key) => String(key) }) } : {};
   return require(id.startsWith('@/') ? resolve(root, id.slice(2)) : id);
@@ -130,7 +130,7 @@ test('shared folder presentation stages only after checking all other mounted ed
 });
 
 // Run the component's native action and React callbacks without a browser or store.
-function referenceMenuHarness(raw?: string, region?: ReturnType<typeof regionHandoffFixture>) {
+function referenceMenuHarness(raw?: string, region?: { workspace: TextWorkspaceState; docId: string }) {
   const f = fixture(), space = createProgramData().spaces['local-user'];
   space.text = region?.workspace ?? (raw === undefined ? M.addDocument(f.workspace, { title: '한 줄 참조' }) : M.editText(f.workspace, f.docId, raw));
   const docId = region?.docId ?? (raw === undefined ? space.text.documents.at(-1)!.id : f.docId), taskId = M.tasks(space.text)[0]?.id;
@@ -182,6 +182,153 @@ function referenceMenuHarness(raw?: string, region?: ReturnType<typeof regionHan
     writes: () => writes, focus: () => focus, reject: () => { accept = false; }, accept: () => { accept = true; },
     rejectInstall: () => { install = false; }, acceptInstall: () => { install = true; } };
 }
+
+function dialogTabFixture(specs: { name: string; tabIndex?: number; disabled?: boolean; hiddenParent?: boolean; inertParent?: boolean; rendered?: boolean; visibility?: string; tagName?: string; type?: string }[]) {
+  const document = { activeElement: null as unknown, defaultView: { getComputedStyle: (node: any) => ({ visibility: node.visibility }) } };
+  let prevented = 0, stopped = 0;
+  const controls = specs.map(spec => ({ ...spec, tabIndex: spec.tabIndex ?? 0, tagName: spec.tagName ?? 'BUTTON', type: spec.type ?? 'button',
+    visibility: spec.visibility ?? 'visible', value: `unchanged:${spec.name}`, focuses: 0,
+    matches: (selector: string) => { assert.equal(selector, ':disabled'); return !!spec.disabled; },
+    closest: (selector: string) => { assert.equal(selector, '[hidden], [inert]'); return spec.hiddenParent || spec.inertParent ? {} : null; },
+    getClientRects: () => spec.rendered === false ? [] : [{}],
+    focus() { this.focuses++; document.activeElement = this; },
+    click() { throw Error('Tab must not activate an action'); },
+  }));
+  const dialog = { open: true, ownerDocument: document, contains: (node: unknown) => controls.includes(node as typeof controls[number]),
+    querySelectorAll: (selector: string) => { assert.equal(selector, 'button, input, select, textarea, a[href], summary, [tabindex]'); return controls; } };
+  const event = (patch: Record<string, unknown> = {}) => ({ key: 'Tab', shiftKey: false, ctrlKey: false, altKey: false, metaKey: false,
+    nativeEvent: { isComposing: false }, preventDefault() { prevented++; }, stopPropagation() { stopped++; }, ...patch }) as Parameters<typeof TrapDialogTab>[1];
+  const run = (patch?: Record<string, unknown>) => loaded.exports.trapProgramDialogTab(dialog as unknown as HTMLDialogElement, event(patch));
+  return { dialog, document, controls, event, run, counts: () => ({ prevented, stopped }) };
+}
+
+test('dialog Tab wraps both endpoints without activation or input changes', () => {
+  const f = dialogTabFixture([{ name: 'close' }, { name: 'date', tagName: 'INPUT', type: 'date' }, { name: 'apply' }]);
+  f.document.activeElement = f.controls[2]; assert.equal(f.run(), true); assert.equal(f.document.activeElement, f.controls[0]);
+  assert.equal(f.run({ shiftKey: true }), true); assert.equal(f.document.activeElement, f.controls[2]);
+  assert.deepEqual(f.counts(), { prevented: 2, stopped: 2 });
+  assert.deepEqual(f.controls.map(node => node.value), ['unchanged:close', 'unchanged:date', 'unchanged:apply']);
+});
+
+test('dialog Tab leaves intermediate form controls and their internal fields native', () => {
+  const f = dialogTabFixture([{ name: 'close' }, { name: 'date', tagName: 'INPUT', type: 'date' },
+    { name: 'time', tagName: 'INPUT', type: 'time' }, { name: 'choice', tagName: 'SELECT' },
+    { name: 'raw', tagName: 'TEXTAREA' }, { name: 'more', tagName: 'SUMMARY' }, { name: 'apply' }]);
+  for (const control of f.controls.slice(1, -1)) for (const shiftKey of [false, true]) {
+    f.document.activeElement = control; assert.equal(f.run({ shiftKey }), false); assert.equal(f.document.activeElement, control);
+  }
+  assert.deepEqual(f.counts(), { prevented: 0, stopped: 0 }); assert(f.controls.every(node => node.focuses === 0));
+});
+
+test('dialog Tab excludes disabled, hidden, inert and non-rendered endpoint candidates', () => {
+  const excluded = [{ name: 'disabled fieldset child', disabled: true }, { name: 'negative', tabIndex: -1 },
+    { name: 'hidden ancestor', hiddenParent: true }, { name: 'inert ancestor', inertParent: true },
+    { name: 'closed details child', rendered: false }, { name: 'visibility hidden', visibility: 'hidden' },
+    { name: 'visibility collapsed', visibility: 'collapse' }, { name: 'hidden input', tagName: 'INPUT', type: 'hidden' }];
+  const f = dialogTabFixture([...excluded, { name: 'close' }, { name: 'apply' }, ...excluded]);
+  const first = f.controls[excluded.length], last = f.controls[excluded.length + 1];
+  f.document.activeElement = last; assert.equal(f.run(), true); assert.equal(f.document.activeElement, first);
+  assert.equal(f.run({ shiftKey: true }), true); assert.equal(f.document.activeElement, last);
+  assert(f.controls.filter(node => node !== first && node !== last).every(node => node.focuses === 0));
+});
+
+test('dialog Tab does not intercept closed dialogs, outside focus, composition or modified keys', () => {
+  const f = dialogTabFixture([{ name: 'close' }, { name: 'apply' }]);
+  f.document.activeElement = f.controls[1]; f.dialog.open = false; assert.equal(f.run(), false); f.dialog.open = true;
+  f.document.activeElement = {}; assert.equal(f.run(), false); f.document.activeElement = f.controls[1];
+  for (const patch of [{ key: 'Enter' }, { key: 'Escape' }, { ctrlKey: true }, { metaKey: true }, { altKey: true }, { nativeEvent: { isComposing: true } }]) assert.equal(f.run(patch), false);
+  assert.deepEqual(f.counts(), { prevented: 0, stopped: 0 }); assert(f.controls.every(node => node.focuses === 0));
+  const empty = dialogTabFixture([]); assert.equal(empty.run(), false); assert.deepEqual(empty.counts(), { prevented: 0, stopped: 0 });
+});
+
+test('dialog Tab retains the only eligible control in either direction', () => {
+  const f = dialogTabFixture([{ name: 'close' }]); f.document.activeElement = f.controls[0];
+  assert.equal(f.run(), true); assert.equal(f.run({ shiftKey: true }), true);
+  assert.equal(f.document.activeElement, f.controls[0]); assert.deepEqual(f.counts(), { prevented: 2, stopped: 2 });
+});
+
+test('dialog Tab callback preserves the draft and existing Escape return with zero writes', () => {
+  const h = referenceMenuHarness('- [ ] 합성 할 일\n일반 메모'), before = JSON.stringify(h.draft().getState().working), raw = h.draft().getState().raw;
+  h.menu(); const dialog = h.nodes(h.render()).find(node => node.type === 'dialog');
+  const f = dialogTabFixture([{ name: 'close' }, { name: 'apply' }]); f.document.activeElement = f.controls[1];
+  dialog.props.onKeyDown({ ...f.event(), currentTarget: f.dialog }); assert.equal(f.document.activeElement, f.controls[0]);
+  dialog.props.onKeyDown({ ...f.event({ shiftKey: true }), currentTarget: f.dialog }); assert.equal(f.document.activeElement, f.controls[1]);
+  assert.equal(h.draft().getState().raw, raw); assert.equal(JSON.stringify(h.draft().getState().working), before); assert.equal(h.writes(), 0);
+  const focusBefore = h.focus(); h.render().props.onKeyDownCapture({ key: 'Escape', preventDefault() {}, stopPropagation() {} });
+  assert(!h.nodes(h.render()).some(node => node.type === 'dialog')); assert.equal(h.focus(), focusBefore + 1);
+  assert.equal(h.draft().getState().raw, raw); assert.equal(JSON.stringify(h.draft().getState().working), before); assert.equal(h.writes(), 0); h.unmount();
+});
+
+const subcheckRegistrationNote = '이 하위 항목은 별도 할 일로 등록돼 있습니다. 들여쓰기를 바꿔도 등록과 진행 기록은 유지됩니다.';
+function subcheckMenuFixture(registered: boolean) {
+  let workspace = M.addDocument(createEmptyTextWorkspace(), { title: '합성 하위 항목 상태' });
+  const docId = workspace.documents[0].id;
+  const raw = '[2026-10-16]\n- [ ] 부모 항목\n  - [ ] 하위 항목\n- [ ] 독립 항목\n끝 메모';
+  workspace = M.editText(workspace, docId, raw);
+  const initial = workspace;
+  if (registered) {
+    workspace = M.editText(workspace, docId, raw.replace('  - [ ] 하위 항목', '루트 메모\n\n  - [ ] 하위 항목'));
+    workspace = M.editText(workspace, docId, raw);
+    const child = M.tasks(workspace).find(task => task.title === '하위 항목')!;
+    workspace = M.recordProgress(workspace, child.id, '2026-10-02', 40);
+  }
+  return { workspace, docId, initial };
+}
+function registrationNotes(h: ReturnType<typeof referenceMenuHarness>) {
+  return h.nodes(h.render()).filter(node => node.type === 'small' && node.props.children === subcheckRegistrationNote);
+}
+
+test('registered structural subcheck reveals its retained state only in its row menu without writing', () => {
+  const f = subcheckMenuFixture(true), h = referenceMenuHarness(undefined, f);
+  const row = M.rowMeta(f.workspace, f.docId)[2];
+  assert.equal(row.kind, 'subcheck'); assert.equal(row.isCanonical, true); assert.equal(row.isReference, false);
+  const before = JSON.stringify(h.draft().getState().working), raw = h.draft().getState().raw;
+  assert.equal(registrationNotes(h).length, 0);
+  h.action('row-menu', 2);
+  assert.equal(registrationNotes(h).length, 1);
+  assert(!subcheckRegistrationNote.includes('기간 목록'));
+  assert.equal(h.draft().getState().raw, raw); assert.equal(JSON.stringify(h.draft().getState().working), before);
+  assert.equal(h.writes(), 0); h.unmount();
+});
+
+test('fresh subcheck, top-level task, memo, empty input and reference never receive the registration note', () => {
+  const f = subcheckMenuFixture(false);
+  assert.equal(M.rowMeta(f.workspace, f.docId)[2].isCanonical, false);
+  for (const index of [1, 2, 4]) {
+    const h = referenceMenuHarness(undefined, f), before = JSON.stringify(h.draft().getState().working);
+    h.action('row-menu', index); assert.equal(registrationNotes(h).length, 0);
+    assert.equal(JSON.stringify(h.draft().getState().working), before); assert.equal(h.writes(), 0); h.unmount();
+  }
+  for (const raw of ['', undefined]) {
+    const h = referenceMenuHarness(raw), before = JSON.stringify(h.draft().getState().working);
+    if (raw === undefined) assert.equal(M.rowMeta(h.space.text, h.docId)[0].isReference, true);
+    h.menu(); assert.equal(registrationNotes(h).length, 0);
+    assert.equal(JSON.stringify(h.draft().getState().working), before); assert.equal(h.writes(), 0); h.unmount();
+  }
+});
+
+test('closing the registration note by button, Escape or dialog cancel preserves IDs, raw and progress', () => {
+  for (const close of ['button', 'escape', 'cancel']) {
+    const f = subcheckMenuFixture(true), h = referenceMenuHarness(undefined, f);
+    const before = JSON.stringify(h.draft().getState().working), raw = h.draft().getState().raw;
+    h.action('row-menu', 2); assert.equal(registrationNotes(h).length, 1);
+    if (close === 'button') h.button('닫기').props.onClick();
+    else if (close === 'escape') h.render().props.onKeyDownCapture({ key: 'Escape', preventDefault() {}, stopPropagation() {} });
+    else h.nodes(h.render()).find(node => node.type === 'dialog').props.onCancel({ preventDefault() {} });
+    assert.equal(registrationNotes(h).length, 0); assert.equal(h.draft().getState().raw, raw);
+    assert.equal(JSON.stringify(h.draft().getState().working), before); assert.equal(h.writes(), 0); h.unmount();
+  }
+});
+
+test('registration note reads the current workspace and does not bypass read-only action guards', () => {
+  const f = subcheckMenuFixture(true), h = referenceMenuHarness(undefined, f);
+  h.action('row-menu', 2); assert.equal(registrationNotes(h).length, 1);
+  h.props.workspace = f.initial; assert(h.draft().discard(f.initial));
+  assert.equal(registrationNotes(h).length, 0); assert.equal(h.writes(), 0); h.unmount();
+  const locked = referenceMenuHarness(undefined, f); locked.props.readOnly = true;
+  locked.action('row-menu', 2); assert.equal(registrationNotes(locked).length, 0);
+  assert(!locked.nodes(locked.render()).some(node => node.type === 'dialog')); assert.equal(locked.writes(), 0); locked.unmount();
+});
 
 test('native typing and paste already offer an exact existing folder at the current row', () => {
   for (const inputType of ['insertText', 'insertFromPaste']) {

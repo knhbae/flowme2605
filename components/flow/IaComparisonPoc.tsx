@@ -158,7 +158,7 @@ function StepDetail({ step }: { step: IaStep }) {
       </ul>
       <textarea
         aria-label={`${step.title} 메모`}
-        className="mt-3 min-h-20 w-full rounded-md border border-blue-100 bg-white px-3 py-2 text-sm outline-none focus:border-blue-400"
+        className="mt-3 min-h-20 w-full rounded-md border border-blue-100 bg-white px-3 py-2 text-sm outline-hidden focus:border-blue-400"
         placeholder="필요한 연락처, 링크, 다시 볼 내용만 짧게 남기기"
       />
     </div>
@@ -274,7 +274,7 @@ export function FourTabIaPoc() {
       </div>
       <button
         type="button"
-        className="rounded-xl border border-blue-100 bg-blue-50/70 p-4 text-left shadow-sm"
+        className="rounded-xl border border-blue-100 bg-blue-50/70 p-4 text-left shadow-xs"
         onClick={() => {
           setSelectedFlow('moving');
           setTab('find');
@@ -320,7 +320,7 @@ export function FourTabIaPoc() {
           </div>
         </div>
 
-        <article className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm md:p-5">
+        <article className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs md:p-5">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <p className="text-sm font-semibold text-blue-700">{flow.source}</p>
@@ -381,7 +381,7 @@ export function FourTabIaPoc() {
         </div>
       ) : (
         <div className="mt-5 grid gap-4 lg:grid-cols-[320px_minmax(0,1fr)]">
-          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-slate-950">2026년 6월</h2>
               <span className="rounded-md bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-700">{datedSteps.length}개 일정</span>
@@ -443,7 +443,7 @@ export function FourTabIaPoc() {
       ) : (
         <div className="mt-5 grid gap-3">
           {savedFlows.map((flow) => (
-            <article key={flow.id} className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+            <article key={flow.id} className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <div className="flex flex-wrap gap-2">
@@ -499,7 +499,7 @@ export function FourTabIaPoc() {
 export function IaComparisonReport() {
   return (
     <main className="mx-auto max-w-5xl px-5 py-10 pb-20">
-      <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-xs">
         <p className="text-sm font-semibold text-blue-700">IA 비교 설계</p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">3탭 A안과 4탭 B안 비교</h1>
         <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600">

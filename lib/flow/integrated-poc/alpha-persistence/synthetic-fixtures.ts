@@ -60,14 +60,18 @@ function savedOrigins() {
   return wrap('four-saved-origins-and-quick-item', accept(hydrateProgramLegacy(createProgramData(), model, state, { actorId: ACTOR, preserveUnsupported: true })).data);
 }
 
-function structuredMap() {
-  const id = 'moving-d30';
+function structuredMap(id: string, name: string) {
   const snapshot = buildSourceBackedFlowMapSavedSnapshot(id, { savedAt: NOW, anchor: '2026-10-01' });
   const persistence = buildSourceBackedFlowMapPersistenceRecord(id, { savedAt: NOW, anchor: '2026-10-01' });
   assert(snapshot && persistence);
   const entries: Record<string, string> = { [`flow:map:saved:${id}`]: JSON.stringify(snapshot), [`flow:map:persistence:${id}`]: JSON.stringify(persistence) };
   const read = buildPersonalWorkspacePocReadModel({ length: 2, key: i => Object.keys(entries)[i] ?? null, getItem: key => entries[key] ?? null }, sourceBackedMyFlowBundles); assert(read.ok);
-  return wrap('actual-structured-map-factory', accept(hydrateProgramLegacy(createProgramData(), read.model, createPersonalWorkspacePocState(NOW), { actorId: ACTOR, preserveUnsupported: true })).data);
+  return wrap(name, accept(hydrateProgramLegacy(createProgramData(), read.model, createPersonalWorkspacePocState(NOW), { actorId: ACTOR, preserveUnsupported: true })).data);
+}
+
+/** Actual held source for negative probes; not another generic migration case. */
+export function createAlphaHeldMovingFixture(): AlphaSyntheticFixture {
+  return structuredMap('moving-d30', 'held-moving-source-factory');
 }
 
 function recurring() {
@@ -122,5 +126,5 @@ function publicCommunity() {
 }
 
 export function createAlphaSyntheticFixtures(): AlphaSyntheticFixture[] {
-  return [documents(), savedOrigins(), structuredMap(), recurring(), ...nativeFixtures(), recovery(), publicCommunity()];
+  return [documents(), savedOrigins(), structuredMap('curated-ajd-moving-d30', 'actual-structured-map-factory'), recurring(), ...nativeFixtures(), recovery(), publicCommunity()];
 }

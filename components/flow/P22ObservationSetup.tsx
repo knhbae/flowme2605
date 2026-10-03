@@ -191,7 +191,7 @@ export function P22ObservationSetup() {
             data-testid="p22-observation-prepare-version-review"
             disabled={writing}
             onClick={() => void prepareRepeatUseScenario()}
-            className="min-h-11 rounded-md bg-blue-600 px-4 text-sm font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className="min-h-11 rounded-md bg-blue-600 px-4 text-sm font-semibold text-white hover:bg-blue-700 focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
             반복 사용 상태 준비
           </button>
@@ -200,7 +200,7 @@ export function P22ObservationSetup() {
             data-testid="p22-observation-reset"
             disabled={writing}
             onClick={() => void resetScenario()}
-            className="min-h-11 rounded-md border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-800 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2"
+            className="min-h-11 rounded-md border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-800 hover:bg-slate-50 focus:outline-hidden focus:ring-2 focus:ring-slate-400 focus:ring-offset-2"
           >
             준비 상태 지우기
           </button>

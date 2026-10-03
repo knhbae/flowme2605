@@ -76,7 +76,9 @@ test('current canonical seed has no missing or overdue normal user source checks
   assert.deepEqual(inventory(archived), [21, 10, 11]);
   assert.deepEqual(inventory(summary), [132, 111, 21]);
   const slugs = (bundles: FlowBundle[]) => bundles.map((bundle) => bundle.flow.slug).sort();
-  assert.deepEqual(slugs(archivedBundles), [...RUNTIME_ARCHIVED_FLOW_SLUGS].sort());
+  // Source-backed additions also use this policy; only canonical members belong in this inventory.
+  const canonicalSlugs = new Set(slugs(seedBundles));
+  assert.deepEqual(slugs(archivedBundles), RUNTIME_ARCHIVED_FLOW_SLUGS.filter(slug => canonicalSlugs.has(slug)).sort());
   assert.deepEqual(slugs([...runtimeBundles, ...archivedBundles]), slugs(seedBundles));
   const runtimeSlugs = new Set(slugs(runtimeBundles));
   assert.equal(runtimeSlugs.size, runtimeBundles.length);

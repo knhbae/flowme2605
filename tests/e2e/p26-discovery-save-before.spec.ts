@@ -67,7 +67,7 @@ test('entry router removes the duplicate Home surface and opens the catalog', as
   await expect(page.locator('[data-home-recommendation-card="true"]')).toHaveCount(0);
   await expect(page.getByTestId('home-usage-example')).toHaveCount(0);
   const catalogCards = page.getByTestId('flow-map-catalog-card');
-  await expect(catalogCards).toHaveCount(9, { timeout: 30_000 });
+  await expect(catalogCards).toHaveCount(6, { timeout: 30_000 });
   await expect(page.getByTestId('platform-mobile-tabs')).toHaveAttribute(
     'data-p35-marker',
     'P35-ENTRY-ROUTER-3TAB',
@@ -85,8 +85,6 @@ test('entry router removes the duplicate Home surface and opens the catalog', as
   await expect(page.getByText('인기순', { exact: true })).toHaveCount(0);
 
   for (const href of [
-    '/f/curated-opic-single-mock-review',
-    '/f/curated-opic-course-row-import',
     '/f/curated-wedding-naver-timeline',
     '/f/curated-wedding-gongysd-atoz',
     '/f/curated-allblanc-morning-workout',
@@ -95,6 +93,9 @@ test('entry router removes the duplicate Home surface and opens the catalog', as
     await expect(page.locator(`a[href="${href}"]`)).toBeVisible();
   }
   await expect(page.locator('a[href="/flow-maps/curated-opic-mock-course"]')).toHaveCount(0);
+  await expect(page.locator('a[href="/f/curated-opic-single-mock-review"]')).toHaveCount(0);
+  await expect(page.locator('a[href="/f/curated-opic-course-row-import"]')).toHaveCount(0);
+  await expect(page.locator('a[href="/flow-maps/curated-reading-routine-log"]')).toHaveCount(0);
   await expect(page.locator('a[href="/flow-maps/curated-wedding-checklist-family"]')).toHaveCount(0);
   await expect(page.locator('a[href="/flow-maps/curated-allblanc-workout-park"]')).toHaveCount(0);
   await capture(page, '02-catalog-independent-flow-entry-mobile.png');

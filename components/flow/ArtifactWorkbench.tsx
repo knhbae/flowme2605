@@ -140,7 +140,7 @@ const FLOWME_INNER_ROW_CLASS = 'rounded-md border border-[#DDE4E0] bg-white px-3
 const FLOWME_EYEBROW_CLASS = 'text-sm font-semibold text-[#3654FF]';
 const FLOWME_TITLE_CLASS = 'text-base font-semibold text-[#1B1A17]';
 const FLOWME_PROGRESS_CHIP_CLASS = 'rounded-full border border-[#E7E4DD] bg-[#FAFAF8] px-3 py-1 text-xs font-semibold text-[#6E6B64]';
-const FLOWME_BUTTON_PRIMARY_CLASS = 'rounded-md bg-[#3654FF] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#2945E8] disabled:bg-[#C9C6BE]';
+const FLOWME_BUTTON_PRIMARY_CLASS = 'rounded-md bg-[#3654FF] px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-[#2945E8] disabled:bg-[#C9C6BE]';
 const FLOWME_BUTTON_SECONDARY_CLASS = 'rounded-md border border-[#D8D5CD] bg-white px-3 py-2 text-sm font-semibold text-[#1B1A17] hover:border-[#3654FF]/40 hover:text-[#3654FF] disabled:border-[#E7E4DD] disabled:text-[#A7A39A]';
 const FLOWME_DISCLOSURE_CLASS = 'mt-2 rounded-md border border-[#DDE4E0] bg-[#F8FAF9] px-3 py-2 text-sm';
 const FLOWME_SUPPORT_CARD_CLASS = 'rounded-lg border border-[#DDE4E0] bg-[#F8FAF9] p-4';
@@ -148,8 +148,8 @@ const FLOWME_COMPACT_SUPPORT_CARD_CLASS = 'rounded-lg border border-[#DDE4E0] bg
 const FLOWME_TABLE_CARD_CLASS = 'overflow-x-auto rounded-lg border border-[#DDE4E0] bg-white shadow-[0_1px_0_rgba(27,26,23,0.03)]';
 const FLOWME_TABLE_HEADER_CLASS = 'border-b border-[#E7E4DD] px-3 py-3';
 const FLOWME_TABLE_HEAD_CLASS = 'bg-[#FAFAF8] text-xs font-semibold text-[#6E6B64]';
-const FLOWME_INPUT_CLASS = 'rounded-md border border-[#D8D5CD] bg-white px-3 py-2 text-sm text-[#1B1A17] outline-none focus:border-[#3654FF] focus:ring-2 focus:ring-[#3654FF]/15';
-const FLOWME_SMALL_INPUT_CLASS = 'rounded-md border border-[#D8D5CD] bg-white px-2 py-1.5 text-sm text-[#1B1A17] outline-none focus:border-[#3654FF] focus:ring-2 focus:ring-[#3654FF]/15';
+const FLOWME_INPUT_CLASS = 'rounded-md border border-[#D8D5CD] bg-white px-3 py-2 text-sm text-[#1B1A17] outline-hidden focus:border-[#3654FF] focus:ring-2 focus:ring-[#3654FF]/15';
+const FLOWME_SMALL_INPUT_CLASS = 'rounded-md border border-[#D8D5CD] bg-white px-2 py-1.5 text-sm text-[#1B1A17] outline-hidden focus:border-[#3654FF] focus:ring-2 focus:ring-[#3654FF]/15';
 const FLOWME_CHECKBOX_CLASS = 'h-4 w-4 rounded border-[#D8D5CD] text-[#3654FF]';
 const FLOWME_SMALL_CHECKBOX_CLASS = 'h-3 w-3 rounded border-[#D8D5CD] text-[#3654FF]';
 const FLOWME_LINK_BUTTON_CLASS = 'shrink-0 rounded-md border border-[#D8D5CD] bg-white px-3 py-1.5 text-xs font-semibold text-[#3654FF] hover:border-[#3654FF]/40';
@@ -366,7 +366,7 @@ function FlowLevelExportPanel({
     >
       <summary
         data-testid="public-flow-export-secondary-toggle"
-        className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-lg px-1 py-2 outline-none focus-visible:ring-2 focus-visible:ring-[#3654FF]/25"
+        className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-lg px-1 py-2 outline-hidden focus-visible:ring-2 focus-visible:ring-[#3654FF]/25"
       >
         <div className="min-w-0">
           <p className="text-sm font-semibold text-[#1B1A17]">
@@ -1499,7 +1499,7 @@ function ProofMemoCard({
             <span className="text-sm font-semibold text-[#1B1A17]">{field.label}</span>
             <textarea
               aria-label={field.label}
-              className="mt-1 min-h-16 w-full resize-y rounded-xl border border-[#D8D5CD] bg-white px-3 py-2 text-sm text-[#1B1A17] outline-none focus:border-[#3654FF] focus:ring-2 focus:ring-[#3654FF]/15"
+              className="mt-1 min-h-16 w-full resize-y rounded-xl border border-[#D8D5CD] bg-white px-3 py-2 text-sm text-[#1B1A17] outline-hidden focus:border-[#3654FF] focus:ring-2 focus:ring-[#3654FF]/15"
               placeholder={field.placeholder}
               value={workbenchState.memoCards?.[field.id] ?? ''}
               onChange={(event) => onWorkbenchChange(updateMemoCard(workbenchState, field.id, event.currentTarget.value))}
@@ -1580,7 +1580,7 @@ function LogTableCard({
                     ) : (
                       <input
                         aria-label={`${row.label} / ${column.label}`}
-                        className="w-full min-w-28 rounded-xl border border-[#D8D5CD] px-2 py-1.5 text-sm text-[#1B1A17] outline-none focus:border-[#3654FF] focus:ring-2 focus:ring-[#3654FF]/15"
+                        className="w-full min-w-28 rounded-xl border border-[#D8D5CD] px-2 py-1.5 text-sm text-[#1B1A17] outline-hidden focus:border-[#3654FF] focus:ring-2 focus:ring-[#3654FF]/15"
                         placeholder={column.placeholder}
                         value={value}
                         onChange={(event) => onWorkbenchChange(updateLogField(workbenchState, row.id, column.id, event.currentTarget.value))}
@@ -1834,7 +1834,7 @@ function HoldSectionCard({
         <details data-testid="flow-hold-memo-card" className="group mt-3 border-t border-[#E9CFC8] pt-2">
           <summary
             data-testid="flow-hold-memo-toggle"
-            className="flex min-h-10 cursor-pointer list-none items-center justify-between gap-3 rounded-md px-1 text-sm font-semibold text-[#A13E2E] outline-none focus-visible:ring-2 focus-visible:ring-[#A13E2E]/20"
+            className="flex min-h-10 cursor-pointer list-none items-center justify-between gap-3 rounded-md px-1 text-sm font-semibold text-[#A13E2E] outline-hidden focus-visible:ring-2 focus-visible:ring-[#A13E2E]/20"
           >
             <span>보류 기록 남기기</span>
             <span className="text-xs font-medium text-[#8A5A50] group-open:hidden">필요할 때 열기</span>
@@ -1847,7 +1847,7 @@ function HoldSectionCard({
                 <textarea
                   data-testid={`flow-hold-field-${field.id}`}
                   aria-label={field.label}
-                  className="min-h-20 rounded-md border border-[#D8D5CD] bg-white px-3 py-2 text-sm font-normal text-[#1B1A17] outline-none focus:border-[#3654FF] focus:ring-2 focus:ring-[#3654FF]/15"
+                  className="min-h-20 rounded-md border border-[#D8D5CD] bg-white px-3 py-2 text-sm font-normal text-[#1B1A17] outline-hidden focus:border-[#3654FF] focus:ring-2 focus:ring-[#3654FF]/15"
                   placeholder={field.placeholder}
                   value={workbenchState.memoCards?.[field.id] ?? ''}
                   onChange={(event) => onWorkbenchChange(updateMemoCard(workbenchState, field.id, event.currentTarget.value))}
@@ -2913,7 +2913,7 @@ function JeonseContractWorkbench({
             <p className="text-sm font-semibold text-blue-900">이 3개 일정을 캘린더에 넣습니다.</p>
             <button
               type="button"
-              className="rounded-md bg-blue-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-800 disabled:bg-slate-300"
+              className="rounded-md bg-blue-700 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-blue-800 disabled:bg-slate-300"
               disabled={!exportActions?.canExportCalendar}
               onClick={exportActions?.onDownloadCalendar}
             >
@@ -3007,7 +3007,7 @@ function JeonseCalendarPreview({
                 if (day) onSelectDate(day.date);
               }}
               className={`min-h-20 border-r border-slate-200 p-1 text-left last:border-r-0 md:min-h-24 ${day ? 'bg-white' : 'bg-slate-50'} ${isActive ? 'bg-blue-50 ring-2 ring-inset ring-blue-700' : ''} ${
-                row ? 'cursor-pointer hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-700' : 'cursor-default'
+                row ? 'cursor-pointer hover:bg-blue-50 focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-blue-700' : 'cursor-default'
               }`}
             >
               {day ? <p className="font-semibold text-slate-700">{day.day}</p> : null}
@@ -3046,7 +3046,7 @@ function JeonseViewTab({ active, label, onClick }: { active: boolean; label: str
       type="button"
       role="tab"
       aria-selected={active}
-      className={`min-h-10 rounded-md px-3 text-sm font-semibold ${active ? 'bg-white text-slate-950 shadow-sm' : 'text-slate-600 hover:bg-white/70 hover:text-slate-950'}`}
+      className={`min-h-10 rounded-md px-3 text-sm font-semibold ${active ? 'bg-white text-slate-950 shadow-xs' : 'text-slate-600 hover:bg-white/70 hover:text-slate-950'}`}
       onClick={onClick}
     >
       {label}
@@ -3108,7 +3108,7 @@ function JeonseSelectedEventCard({
             확인이 남은 이유
             <textarea
               aria-label="보류 사유 메모"
-              className="min-h-20 rounded-md border border-amber-200 bg-white px-3 py-2 text-sm font-normal text-slate-900 outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100"
+              className="min-h-20 rounded-md border border-amber-200 bg-white px-3 py-2 text-sm font-normal text-slate-900 outline-hidden focus:border-amber-400 focus:ring-2 focus:ring-amber-100"
               placeholder="예: 보증보험 가능 여부를 보증기관에 다시 확인하기"
               value={holdMemo}
               onChange={(event) => onWorkbenchChange(updateMemoCard(workbenchState, holdMemoField, event.currentTarget.value))}

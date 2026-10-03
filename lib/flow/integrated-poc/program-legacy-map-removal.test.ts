@@ -43,7 +43,7 @@ function choose(data: ProgramData, flowRef: string, reviewId: string) {
  * browser state and operating storage are never changed. Every test restores
  * the exact original object even when an assertion fails. */
 function fixture(t: TestContext) {
-  const mapId = 'curated-opic-mock-course';
+  const mapId = 'opic-plan-map';
   const entries: Record<string, string> = {
     [`flow:map:saved:${mapId}`]: JSON.stringify(buildSourceBackedFlowMapSavedSnapshot(mapId, { savedAt: now, anchor: '2026-09-30' })),
     [`flow:map:persistence:${mapId}`]: JSON.stringify(buildSourceBackedFlowMapPersistenceRecord(mapId, { savedAt: now, anchor: '2026-09-30' })),
@@ -52,7 +52,7 @@ function fixture(t: TestContext) {
   const keys = Object.keys(entries);
   const read = buildPersonalWorkspacePocReadModel({ length: keys.length, key: index => keys[index] ?? null, getItem: key => entries[key] ?? null }, sourceBackedMyFlowBundles);
   assert.ok(read.ok, JSON.stringify(read));
-  const original = programClone(read.model), flow = original.flows.find(row => row.title === '오픽 모의고사 2주 계획표')!;
+  const original = programClone(read.model), flow = original.flows.find(row => row.flowId === 'flow-curated-source-app-opic-2w')!;
   assert.ok(flow);
   const target = flow.items.at(-1)!;
   const index = sourceBackedMyFlowBundles.findIndex(bundle => bundle.flow.id === flow.flowId);

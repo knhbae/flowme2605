@@ -944,7 +944,7 @@ function SourceContentCard({
   ].filter(Boolean);
 
   return (
-    <section data-testid={testId} className={`${className} rounded-lg border border-slate-200 bg-white p-4 shadow-sm`}>
+    <section data-testid={testId} className={`${className} rounded-lg border border-slate-200 bg-white p-4 shadow-xs`}>
       <details>
         <summary className="cursor-pointer list-none">
           <div className="flex flex-wrap items-start justify-between gap-3">
@@ -977,7 +977,7 @@ function FlowWarningCard({ bundle, className = 'mt-5' }: { bundle: FlowBundle; c
   if (!bundle.flow.warning) return null;
 
   return (
-    <div data-testid="flow-warning-card" className={`${className} rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950 shadow-sm`}>
+    <div data-testid="flow-warning-card" className={`${className} rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950 shadow-xs`}>
       {bundle.flow.warning}
     </div>
   );
@@ -1371,7 +1371,7 @@ function FlowCard({
   const cardPrimaryLabel = primaryLabel ?? '시작하기';
 
   return (
-    <article className={`flex h-full flex-col justify-between rounded-lg border border-gray-200 bg-white shadow-sm ${isProfileVariant ? 'p-4' : 'p-5'}`}>
+    <article className={`flex h-full flex-col justify-between rounded-lg border border-gray-200 bg-white shadow-xs ${isProfileVariant ? 'p-4' : 'p-5'}`}>
       <div className={isProfileVariant ? 'space-y-3' : 'space-y-4'}>
         <div className="flex flex-wrap items-center gap-2">
           <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: color }} />
@@ -2131,7 +2131,7 @@ function DraftItemAcceptanceList({
                   <label className="block">
                     <span className="sr-only">{index + 1}번째 할 일 제목</span>
                     <input
-                      className="min-h-9 w-full rounded-md border border-[#DDD9D0] bg-white px-2.5 py-1.5 text-xs font-semibold leading-5 text-[#1B1A17] outline-none focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10 disabled:bg-transparent"
+                      className="min-h-9 w-full rounded-md border border-[#DDD9D0] bg-white px-2.5 py-1.5 text-xs font-semibold leading-5 text-[#1B1A17] outline-hidden focus:border-[#176D5D] focus:ring-2 focus:ring-[#176D5D]/10 disabled:bg-transparent"
                       aria-label={`${index + 1}번째 할 일 제목`}
                       value={item.title}
                       maxLength={100}
@@ -2192,7 +2192,7 @@ function DraftItemAcceptanceList({
                       <label className="grid gap-1 text-[11px] font-semibold text-[#514D46]">
                         한 줄에 할 일 하나
                         <textarea
-                          className="min-h-20 w-full rounded-md border border-[#DDD9D0] bg-white px-2.5 py-2 text-xs leading-5 text-[#1B1A17] outline-none focus:border-[#176D5D]"
+                          className="min-h-20 w-full rounded-md border border-[#DDD9D0] bg-white px-2.5 py-2 text-xs leading-5 text-[#1B1A17] outline-hidden focus:border-[#176D5D]"
                           aria-label={`${item.title} 나눌 할 일`}
                           value={splitText}
                           onChange={(event) => setSplitText(event.target.value)}
@@ -2372,7 +2372,7 @@ function FlowMemoDraftPanel({
           data-testid="flow-memo-draft-structure-disclosure"
           className="overflow-hidden rounded-[var(--flowme-radius-card)] border border-[var(--flowme-border)] bg-[var(--flowme-surface)]"
         >
-          <summary className="min-h-11 cursor-pointer content-center px-3 py-3 text-sm font-semibold text-[var(--flowme-text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]">
+          <summary className="min-h-11 cursor-pointer content-center px-3 py-3 text-sm font-semibold text-[var(--flowme-text)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]">
             항목 포함·순서 조정
           </summary>
           <div className="border-t border-[var(--flowme-border)] p-2">
@@ -2751,7 +2751,7 @@ function FlowUrlLookupResult({
 
       {canStart ? (
         <details data-testid="flow-url-quick-start" className="mt-3 border-y border-[var(--flowme-border)] bg-[var(--flowme-surface)]">
-          <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 px-2 text-sm font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]">
+          <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 px-2 text-sm font-semibold text-[var(--flowme-action)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]">
             <span>바로 저장</span>
             <span className="text-xs font-medium text-[var(--flowme-text-secondary)]">시작일과 결과 형식 선택</span>
           </summary>
@@ -2766,7 +2766,7 @@ function FlowUrlLookupResult({
                 type="button"
                 data-testid={`flow-url-start-mode-${item.mode}`}
                 aria-pressed={startMode === item.mode}
-                className={`min-h-11 rounded-[var(--flowme-radius-control)] px-2 py-1.5 text-xs font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${
+                className={`min-h-11 rounded-[var(--flowme-radius-control)] px-2 py-1.5 text-xs font-semibold transition focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${
                   startMode === item.mode ? 'bg-[var(--flowme-text)] text-white' : 'text-[var(--flowme-text-secondary)] hover:bg-[var(--flowme-surface)]'
                 }`}
                 onClick={() => {
@@ -3022,7 +3022,7 @@ function FlowUrlLookupEntry({
           <button
             type="button"
             data-testid="flow-discovery-use-as-memo"
-            className="min-h-11 rounded-[var(--flowme-radius-control)] font-semibold text-[var(--flowme-action)] underline underline-offset-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+            className="min-h-11 rounded-[var(--flowme-radius-control)] font-semibold text-[var(--flowme-action)] underline underline-offset-4 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
             onClick={onUseAsMemoDraft}
           >
             검색 대신 이 내용으로 메모 초안 만들기
@@ -3748,7 +3748,7 @@ export function FlowList() {
             <button
               type="button"
               data-testid="flow-catalog-after-lookup-toggle"
-              className="flex min-h-11 w-full items-center justify-between gap-3 rounded-[var(--flowme-radius-control)] text-left text-sm font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+              className="flex min-h-11 w-full items-center justify-between gap-3 rounded-[var(--flowme-radius-control)] text-left text-sm font-semibold text-[var(--flowme-action)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
               aria-expanded={catalogBrowseOpenAfterLookup}
               onClick={handleCatalogBrowseAfterLookupToggle}
             >
@@ -3767,7 +3767,7 @@ export function FlowList() {
               <button
                 key={item.id}
                 type="button"
-                className={`min-h-11 shrink-0 rounded-full border px-3 py-1.5 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${
+                className={`min-h-11 shrink-0 rounded-full border px-3 py-1.5 text-sm font-semibold transition focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${
                   catalogIntent === item.id ? 'border-[var(--flowme-text)] bg-[var(--flowme-text)] text-white' : 'border-[var(--flowme-border-strong)] bg-[var(--flowme-surface)] text-[var(--flowme-text-secondary)] hover:bg-[var(--flowme-surface-subtle)]'
                 }`}
                 aria-pressed={catalogIntent === item.id}
@@ -3781,7 +3781,7 @@ export function FlowList() {
         {showCatalogFilters && !catalogBrowseHiddenAfterLookup ? (
           <div className="mb-4 rounded-[var(--flowme-radius-card)] border border-[var(--flowme-border)] bg-[var(--flowme-surface)] p-4">
             <details className="rounded-[var(--flowme-radius-control)] border border-[var(--flowme-border)] bg-[var(--flowme-surface-subtle)] px-3 py-2">
-              <summary className="min-h-11 cursor-pointer content-center text-sm font-semibold text-[var(--flowme-text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">필터 열기</summary>
+              <summary className="min-h-11 cursor-pointer content-center text-sm font-semibold text-[var(--flowme-text)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">필터 열기</summary>
               <div className="mt-4 grid gap-4 md:grid-cols-3">
                 <label className="space-y-2">
                   <span className="text-sm font-semibold text-[var(--flowme-text-secondary)]">태그</span>
@@ -11179,7 +11179,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
         <input
           data-testid="my-flow-task-complete-control"
           aria-label={ariaLabel}
-          className={`${plain ? 'h-5 w-5' : 'h-4 w-4'} rounded border-slate-300 accent-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-200`}
+          className={`${plain ? 'h-5 w-5' : 'h-4 w-4'} rounded border-slate-300 accent-blue-700 focus:outline-hidden focus:ring-2 focus:ring-blue-200`}
           type="checkbox"
           checked={checked}
           disabled={disabled}
@@ -15359,8 +15359,8 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
       ? 'flex min-w-0 items-stretch gap-0'
       : `flex min-w-0 items-center gap-2 ${options.compact ? '' : 'px-2.5'}`;
     const rowButtonClassName = isTimelinePresentation
-      ? 'flex min-h-14 min-w-0 flex-1 items-start gap-2 px-3 py-2.5 text-left transition hover:bg-[var(--flowme-surface-subtle)] hover:text-[var(--flowme-text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]'
-      : 'flex min-h-11 min-w-0 flex-1 items-start gap-2 rounded-md px-1 py-1.5 text-left transition hover:bg-[var(--flowme-surface-subtle)] hover:text-[var(--flowme-text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]';
+      ? 'flex min-h-14 min-w-0 flex-1 items-start gap-2 px-3 py-2.5 text-left transition hover:bg-[var(--flowme-surface-subtle)] hover:text-[var(--flowme-text)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]'
+      : 'flex min-h-11 min-w-0 flex-1 items-start gap-2 rounded-md px-1 py-1.5 text-left transition hover:bg-[var(--flowme-surface-subtle)] hover:text-[var(--flowme-text)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]';
     const rowDotClassName = `mt-1 shrink-0 rounded-full ${options.compact ? 'h-1.5 w-1.5 sm:h-2 sm:w-2' : 'h-2.5 w-2.5'}`;
     const canDrag = isRoutineExecution && options.draggable !== false;
     const startRoutineRowDrag = (dataTransfer?: DataTransfer) => {
@@ -15667,7 +15667,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
               data-testid="my-flow-routine-icon"
               data-routine-icon-kind={routine.iconKind}
               data-routine-extra={routineIndex > 0 ? 'true' : undefined}
-              className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-transparent leading-none shadow-none ring-0 hover:bg-[var(--flowme-surface-subtle)] hover:ring-1 hover:ring-[var(--flowme-border)] focus:outline-none focus:ring-2 focus:ring-[var(--flowme-focus)] ${routine.key === myFlowActiveRowKey ? 'my-flow-calendar-active-routine bg-[var(--flowme-action-soft)] ring-2 ring-[var(--flowme-action)]' : ''}`}
+              className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-transparent leading-none shadow-none ring-0 hover:bg-[var(--flowme-surface-subtle)] hover:ring-1 hover:ring-[var(--flowme-border)] focus:outline-hidden focus:ring-2 focus:ring-[var(--flowme-focus)] ${routine.key === myFlowActiveRowKey ? 'my-flow-calendar-active-routine bg-[var(--flowme-action-soft)] ring-2 ring-[var(--flowme-action)]' : ''}`}
               style={{ color: routine.color }}
               onClick={(event) => {
                 event.stopPropagation();
@@ -15681,7 +15681,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
             <button
               type="button"
               aria-label={`${info.event.startStr} 루틴 ${hiddenCount}개 더 보기`}
-              className="inline-flex h-7 w-4 min-w-0 shrink-0 items-center justify-center overflow-hidden rounded-[var(--flowme-radius-compact)] bg-[var(--flowme-surface-subtle)] px-0 text-xs font-black leading-none tracking-[-0.08em] text-[var(--flowme-text-secondary)] ring-1 ring-[var(--flowme-border)] hover:ring-[var(--flowme-action)] focus:outline-none focus:ring-2 focus:ring-[var(--flowme-focus)] sm:w-auto sm:min-w-7 sm:px-0.5 sm:tracking-normal"
+              className="inline-flex h-7 w-4 min-w-0 shrink-0 items-center justify-center overflow-hidden rounded-[var(--flowme-radius-compact)] bg-[var(--flowme-surface-subtle)] px-0 text-xs font-black leading-none tracking-[-0.08em] text-[var(--flowme-text-secondary)] ring-1 ring-[var(--flowme-border)] hover:ring-[var(--flowme-action)] focus:outline-hidden focus:ring-2 focus:ring-[var(--flowme-focus)] sm:w-auto sm:min-w-7 sm:px-0.5 sm:tracking-normal"
               data-testid="my-flow-routine-overflow"
               data-hidden-count={hiddenCount}
               onClick={(event) => {
@@ -15708,7 +15708,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
           role="button"
           tabIndex={0}
           aria-label={`${eventDate} 일정 ${hiddenCount}개 더 보기`}
-          className="block rounded-[var(--flowme-radius-compact)] bg-[var(--flowme-surface-subtle)] px-0.5 py-0.5 text-xs font-black text-[var(--flowme-text-secondary)] hover:bg-[var(--flowme-action-soft)] hover:text-[var(--flowme-action-strong)] focus:outline-none focus:ring-2 focus:ring-[var(--flowme-focus)]"
+          className="block rounded-[var(--flowme-radius-compact)] bg-[var(--flowme-surface-subtle)] px-0.5 py-0.5 text-xs font-black text-[var(--flowme-text-secondary)] hover:bg-[var(--flowme-action-soft)] hover:text-[var(--flowme-action-strong)] focus:outline-hidden focus:ring-2 focus:ring-[var(--flowme-focus)]"
           onClick={(event) => {
             event.stopPropagation();
             selectOverflowDate();
@@ -15741,7 +15741,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
           role="button"
           tabIndex={0}
           aria-label={`${eventDate} Flow ${totalFlowCount}개 중 ${hiddenCount}개 더 보기${hiddenFlowTitles ? `: ${hiddenFlowTitles}` : ''}`}
-          className="block rounded-[var(--flowme-radius-compact)] bg-[var(--flowme-surface-subtle)] px-0.5 py-0.5 text-xs font-black text-[var(--flowme-text-secondary)] hover:bg-[var(--flowme-action-soft)] hover:text-[var(--flowme-action-strong)] focus:outline-none focus:ring-2 focus:ring-[var(--flowme-focus)]"
+          className="block rounded-[var(--flowme-radius-compact)] bg-[var(--flowme-surface-subtle)] px-0.5 py-0.5 text-xs font-black text-[var(--flowme-text-secondary)] hover:bg-[var(--flowme-action-soft)] hover:text-[var(--flowme-action-strong)] focus:outline-hidden focus:ring-2 focus:ring-[var(--flowme-focus)]"
           onClick={(event) => {
             event.stopPropagation();
             selectOverflowDate();
@@ -15803,7 +15803,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
         tabIndex={selected ? 0 : -1}
         aria-pressed={selected}
         aria-label={`${formatMyFlowDisplayDate(dateStr, { includeWeekday: true })} 선택`}
-        className={`rounded px-0.5 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-[var(--flowme-focus)] ${selected ? 'bg-[var(--flowme-action)] text-white' : 'text-[var(--flowme-text)] hover:bg-[var(--flowme-action-soft)] hover:text-[var(--flowme-action-strong)]'}`}
+        className={`rounded px-0.5 text-xs font-bold focus:outline-hidden focus:ring-2 focus:ring-[var(--flowme-focus)] ${selected ? 'bg-[var(--flowme-action)] text-white' : 'text-[var(--flowme-text)] hover:bg-[var(--flowme-action-soft)] hover:text-[var(--flowme-action-strong)]'}`}
         onClick={(event) => {
           event.stopPropagation();
           myFlowCalendarController.selectDateButton(dateStr);
@@ -16550,7 +16550,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
                 aria-pressed={!editorDraft.date}
                 className={`min-h-9 rounded px-3 py-2 text-xs font-semibold ${
                   !editorDraft.date
-                    ? 'bg-white text-slate-950 shadow-sm'
+                    ? 'bg-white text-slate-950 shadow-xs'
                     : 'text-slate-600 hover:bg-white/70'
                 }`}
                 onClick={() => updateMyFlowEditingDraft(row, {
@@ -16571,7 +16571,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
                 aria-pressed={Boolean(editorDraft.date)}
                 className={`min-h-9 rounded px-3 py-2 text-xs font-semibold ${
                   editorDraft.date
-                    ? 'bg-white text-blue-700 shadow-sm'
+                    ? 'bg-white text-blue-700 shadow-xs'
                     : 'text-slate-600 hover:bg-white/70'
                 }`}
                 onClick={() => {
@@ -16633,7 +16633,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
                     aria-pressed={editorDraft.scheduleMode === 'all_day'}
                     className={`min-h-9 rounded px-3 py-2 text-xs font-semibold ${
                       editorDraft.scheduleMode === 'all_day'
-                        ? 'bg-white text-blue-700 shadow-sm'
+                        ? 'bg-white text-blue-700 shadow-xs'
                         : 'text-slate-600 hover:bg-white/70'
                     }`}
                     onClick={() => updateMyFlowEditingDraft(row, {
@@ -16650,7 +16650,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
                     aria-pressed={editorDraft.scheduleMode === 'timed'}
                     className={`min-h-9 rounded px-3 py-2 text-xs font-semibold ${
                       editorDraft.scheduleMode === 'timed'
-                        ? 'bg-white text-blue-700 shadow-sm'
+                        ? 'bg-white text-blue-700 shadow-xs'
                         : 'text-slate-600 hover:bg-white/70'
                     }`}
                     onClick={() => updateMyFlowEditingDraft(row, {
@@ -16703,7 +16703,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
                       aria-label={`${editorDraft.title} 예상 소요 시간`}
                       aria-invalid={personalDraftDurationInvalid || undefined}
                       aria-describedby={personalDraftDurationInvalid ? 'personal-draft-duration-validation' : undefined}
-                      className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 pr-10 text-sm font-semibold text-slate-950 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                      className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 pr-10 text-sm font-semibold text-slate-950 outline-hidden focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                       type="number"
                       min={PERSONAL_STRUCTURAL_MIN_DURATION_MINUTES}
                       max={PERSONAL_STRUCTURAL_MAX_DURATION_MINUTES}
@@ -16752,7 +16752,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
                       aria-pressed={personalDraftRecurrenceMode === mode}
                       className={`min-h-9 rounded px-2 py-2 text-xs font-semibold ${
                         personalDraftRecurrenceMode === mode
-                          ? 'bg-white text-blue-700 shadow-sm'
+                          ? 'bg-white text-blue-700 shadow-xs'
                           : 'text-slate-600 hover:bg-white/70'
                       }`}
                       onClick={() => updateMyFlowEditingDraft(row, {
@@ -16780,7 +16780,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
                           data-testid="personal-draft-recurrence-interval"
                           aria-label={`${editorDraft.title} 반복 간격`}
                           aria-invalid={personalDraftRecurrenceInvalid || undefined}
-                          className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 pr-14 text-sm font-semibold text-slate-950 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                          className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 pr-14 text-sm font-semibold text-slate-950 outline-hidden focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                           type="number"
                           min={1}
                           max={PERSONAL_STRUCTURAL_RECURRENCE_MAX_INTERVAL}
@@ -16878,7 +16878,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
                           <input
                             data-testid="personal-draft-recurrence-count"
                             aria-label={`${editorDraft.title} 반복 횟수`}
-                            className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 pr-10 text-sm font-semibold text-slate-950 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                            className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 pr-10 text-sm font-semibold text-slate-950 outline-hidden focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                             type="number"
                             min={1}
                             max={PERSONAL_STRUCTURAL_RECURRENCE_MAX_COUNT}
@@ -17107,7 +17107,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
         onKeyDown={handleMyFlowEditorKeyDown}
       >
         {isDetailEditing ? (
-          <header className="sticky top-0 z-10 -mx-1 mb-3 flex items-start justify-between gap-3 border-b border-slate-200 bg-[#F7F8F5]/95 px-1 pb-3 pt-1 backdrop-blur-sm">
+          <header className="sticky top-0 z-10 -mx-1 mb-3 flex items-start justify-between gap-3 border-b border-slate-200 bg-[#F7F8F5]/95 px-1 pb-3 pt-1 backdrop-blur-xs">
             <div className="min-w-0">
               <p className="text-xs font-semibold text-blue-700">빠른 조정</p>
               <h3 id={editorDialogTitleId} className="mt-0.5 truncate text-base font-semibold text-slate-950">{itemEditButtonLabel}</h3>
@@ -17220,7 +17220,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
                 aria-label={itemEditButtonAriaLabel}
                 className={myFlowVisualSubtractionEnabled
                   ? FLOW_UI_SECONDARY_ACTION_CLASS
-                  : 'min-h-9 rounded-md border border-blue-200 bg-white px-3 py-2 text-xs font-semibold text-blue-700 hover:border-blue-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]'}
+                  : 'min-h-9 rounded-md border border-blue-200 bg-white px-3 py-2 text-xs font-semibold text-blue-700 hover:border-blue-300 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]'}
                 onClick={openMyFlowItemQuickEdit}
               >
                 {itemEditButtonLabel}
@@ -17817,7 +17817,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
                 <button
                   type="button"
                   data-testid="my-flow-editor-confirm-discard"
-                  className="min-h-12 rounded-[var(--flowme-radius-control)] bg-slate-950 px-3 py-2 text-sm font-semibold text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                  className="min-h-12 rounded-[var(--flowme-radius-control)] bg-slate-950 px-3 py-2 text-sm font-semibold text-white focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                   onClick={() => confirmMyFlowLibraryTransitionAfterDiscard(row)}
                 >
                   변경 버리기
@@ -18127,7 +18127,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
                 data-testid="my-flow-batch-mode-toggle"
                 data-structure-edit-toggle={isPersonalDraftStructuralEditEligible(flow.bundle) ? 'true' : 'false'}
                 aria-pressed={batchActive}
-                className={`min-h-11 shrink-0 rounded-md px-3 py-2 text-xs font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${batchActive ? 'border border-slate-300 bg-white text-slate-700' : 'border border-blue-200 bg-blue-50 text-blue-700'}`}
+                className={`min-h-11 shrink-0 rounded-md px-3 py-2 text-xs font-semibold focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${batchActive ? 'border border-slate-300 bg-white text-slate-700' : 'border border-blue-200 bg-blue-50 text-blue-700'}`}
                 onClick={() => batchActive ? closeMyFlowBatchAdjustment() : openMyFlowBatchAdjustment(flow)}
               >
                 {structuralEditMode
@@ -18163,7 +18163,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
             <button
               type="button"
               data-testid="my-flow-whole-flow-toggle-all-groups"
-              className="min-h-11 shrink-0 rounded-md px-2.5 py-1 text-xs font-semibold text-blue-700 hover:bg-blue-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+              className="min-h-11 shrink-0 rounded-md px-2.5 py-1 text-xs font-semibold text-blue-700 hover:bg-blue-50 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
               onClick={() => setMyFlowWholeFlowOpenGroups((current) => ({
                 ...current,
                 [flow.progress.slug]: allReadingGroupsOpen
@@ -18336,7 +18336,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
             data-toolbar-layout={isMyFlowMobileViewport ? 'fixed-above-nav' : 'inline'}
             aria-label={structuralEditMode ? '구성 편집 도구' : '여러 할 일 조정 도구'}
             data-layer-priority="workbar"
-            className="fixed inset-x-3 bottom-[var(--flowme-mobile-workbar-bottom)] z-[50] max-h-[calc(100dvh-var(--flowme-mobile-tab-clearance)-4rem)] overflow-y-auto overscroll-contain rounded-lg border border-blue-200 bg-white p-3 shadow-[0_12px_32px_rgba(15,23,42,0.18)] md:static md:mt-3 md:max-h-none md:overflow-visible md:shadow-sm"
+            className="fixed inset-x-3 bottom-[var(--flowme-mobile-workbar-bottom)] z-[50] max-h-[calc(100dvh-var(--flowme-mobile-tab-clearance)-4rem)] overflow-y-auto overscroll-contain rounded-lg border border-blue-200 bg-white p-3 shadow-[0_12px_32px_rgba(15,23,42,0.18)] md:static md:mt-3 md:max-h-none md:overflow-visible md:shadow-xs"
           >
             <div className="flex items-center justify-between gap-3">
               <p className="text-sm font-semibold text-slate-950">
@@ -18353,7 +18353,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
               <button
                 type="button"
                 data-testid="my-flow-batch-select-all"
-                className="min-h-11 rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                className="min-h-11 rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                 onClick={() => updateMyFlowBatchAdjustment({ selectedKeys: batchAllSelected ? [] : batchRowKeys })}
               >
                 {batchAllSelected ? '전체 해제' : '전체 선택'}
@@ -18366,7 +18366,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
                     type="button"
                     data-testid="my-flow-batch-operation-set-date"
                     aria-pressed={myFlowBatchAdjustment.operation === 'set_date'}
-                    className={`min-h-11 rounded-md px-2 py-1.5 text-xs font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${myFlowBatchAdjustment.operation === 'set_date' ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-600'}`}
+                    className={`min-h-11 rounded-md px-2 py-1.5 text-xs font-semibold focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${myFlowBatchAdjustment.operation === 'set_date' ? 'bg-white text-blue-700 shadow-xs' : 'text-slate-600'}`}
                     onClick={() => updateMyFlowBatchAdjustment({ operation: 'set_date' })}
                   >
                     날짜 지정
@@ -18375,7 +18375,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
                     type="button"
                     data-testid="my-flow-batch-operation-remove-date"
                     aria-pressed={myFlowBatchAdjustment.operation === 'remove_date'}
-                    className={`min-h-11 rounded-md px-2 py-1.5 text-xs font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${myFlowBatchAdjustment.operation === 'remove_date' ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-600'}`}
+                    className={`min-h-11 rounded-md px-2 py-1.5 text-xs font-semibold focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${myFlowBatchAdjustment.operation === 'remove_date' ? 'bg-white text-blue-700 shadow-xs' : 'text-slate-600'}`}
                     onClick={() => updateMyFlowBatchAdjustment({ operation: 'remove_date' })}
                   >
                     날짜 없애기
@@ -18388,7 +18388,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
                       data-testid="my-flow-batch-target-date"
                       type="date"
                       value={myFlowBatchAdjustment.targetDate}
-                      className="mt-1 min-h-11 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-base font-semibold text-slate-950 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 sm:text-sm"
+                      className="mt-1 min-h-11 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-base font-semibold text-slate-950 outline-hidden focus:border-blue-500 focus:ring-2 focus:ring-blue-100 sm:text-sm"
                       onChange={(event) => updateMyFlowBatchAdjustment({ targetDate: event.target.value })}
                     />
                   </label>
@@ -18409,7 +18409,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
                   <button
                     type="button"
                     data-testid="my-flow-batch-date-tool-back"
-                    className="min-h-11 rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                    className="min-h-11 rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                     onClick={() => updateMyFlowBatchAdjustment({ activeTool: 'none' })}
                   >
                     이전
@@ -18418,7 +18418,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
                     type="button"
                     data-testid="my-flow-batch-apply-date"
                     disabled={!batchDatePlan?.canApply || batchRecurringSelectionBlocked}
-                    className="min-h-11 rounded-md bg-blue-700 px-3 py-2 text-xs font-semibold text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-500"
+                    className="min-h-11 rounded-md bg-blue-700 px-3 py-2 text-xs font-semibold text-white focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-500"
                     onClick={() => applyMyFlowBatchDateAdjustment(flow)}
                   >
                     날짜 적용
@@ -18435,7 +18435,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
                     type="button"
                     data-testid="my-flow-batch-open-date-tool"
                     disabled={batchSelectedKeySet.size === 0}
-                    className="min-h-11 rounded-md border border-blue-200 bg-white px-2 py-2 text-xs font-semibold text-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
+                    className="min-h-11 rounded-md border border-blue-200 bg-white px-2 py-2 text-xs font-semibold text-blue-700 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
                     onClick={() => updateMyFlowBatchAdjustment({ activeTool: 'date' })}
                   >
                     날짜
@@ -18444,7 +18444,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
                 type="button"
                 data-testid="my-flow-batch-export-selected"
                 disabled={batchSelectedKeySet.size === 0}
-                className="min-h-11 rounded-md border border-blue-200 bg-white px-3 py-2 text-xs font-semibold text-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
+                className="min-h-11 rounded-md border border-blue-200 bg-white px-3 py-2 text-xs font-semibold text-blue-700 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
                 onClick={() => {
                   setMyFlowExportPanel({
                     flowSlug: flow.progress.slug,
@@ -18461,7 +18461,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
                   type="button"
                   data-testid="my-flow-batch-remove-selected"
                   disabled={batchSelectedKeySet.size === 0}
-                className="min-h-11 rounded-md border border-rose-200 bg-white px-2 py-2 text-xs font-semibold text-rose-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-danger-focus)] disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
+                className="min-h-11 rounded-md border border-rose-200 bg-white px-2 py-2 text-xs font-semibold text-rose-700 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-danger-focus)] disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
                 onClick={() => removeMyFlowBatchItems(flow)}
               >
                   {getStructuralItemCommandLabels(
@@ -18497,7 +18497,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
           data-testid="my-flow-save-undo"
           type="button"
           aria-label="방금 저장한 계획 취소"
-          className="min-h-10 rounded-lg border border-emerald-300 bg-white px-3 py-2 text-xs font-semibold text-emerald-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+          className="min-h-10 rounded-lg border border-emerald-300 bg-white px-3 py-2 text-xs font-semibold text-emerald-900 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
           onClick={undoMyFlowSave}
         >
           방금 저장 취소
@@ -18506,7 +18506,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
           data-testid="my-flow-save-banner-dismiss"
           type="button"
           aria-label="저장 알림 닫기"
-          className="min-h-10 rounded-lg px-3 py-2 text-xs font-semibold text-emerald-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+          className="min-h-10 rounded-lg px-3 py-2 text-xs font-semibold text-emerald-900 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
           onClick={() => setMyFlowSaveBanner(null)}
         >
           닫기
@@ -18622,7 +18622,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
               aria-label={isDraftFlow
                 ? myFlowQ3CopyEnabled ? '계획 이름' : 'Flow 이름'
                 : '저장 이름'}
-              className="min-h-10 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-950 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+              className="min-h-10 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-950 outline-hidden focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
               value={myFlowPersonalCopySettingsDraft.title}
               maxLength={80}
               onChange={(event) => updateMyFlowPersonalCopySettingsDraft({ title: event.target.value })}
@@ -18634,7 +18634,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
               id={anchorInputId}
               data-testid="my-flow-personal-copy-start-date-input"
               aria-label={dateAnchorCopy.label}
-              className="min-h-10 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-950 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+              className="min-h-10 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-950 outline-hidden focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
               type="date"
               value={myFlowPersonalCopySettingsDraft.anchor}
               onChange={(event) => updateMyFlowPersonalCopySettingsDraft({ anchor: event.target.value })}
@@ -18714,7 +18714,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
           <input
             data-testid="my-flow-direct-anchor-input"
             aria-label={dateAnchorCopy.label}
-            className="min-h-10 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-950 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+            className="min-h-10 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-950 outline-hidden focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
             type="date"
             value={myFlowDirectAnchorSettingsDraft.anchor}
             onChange={(event) => setMyFlowDirectAnchorSettingsDraft((current) => current ? {
@@ -18750,7 +18750,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     if (flow.excludedRows.length === 0 || isPersonalDraftStructuralEditEligible(flow.bundle)) return null;
     return (
       <details data-testid="my-flow-excluded-steps" className="mt-3 rounded-md bg-slate-50 px-3 py-2 text-sm">
-        <summary className="cursor-pointer text-xs font-semibold text-slate-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-200">
+        <summary className="cursor-pointer text-xs font-semibold text-slate-600 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-blue-200">
           {myFlowQ3CopyEnabled ? '계획' : 'Flow'}에서 제외한 할 일 · {flow.excludedRows.length}개
         </summary>
         <ul className="mt-2 grid gap-2 border-t border-slate-200 pt-2 text-xs font-semibold text-slate-600">
@@ -18833,7 +18833,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
             return (
               <li key={run.runId} data-testid="my-flow-past-run" data-run-id={run.runId}>
                 <details className="group py-2">
-                  <summary className="flex cursor-pointer list-none items-start justify-between gap-3 rounded px-1 py-1 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-200">
+                  <summary className="flex cursor-pointer list-none items-start justify-between gap-3 rounded px-1 py-1 text-left focus:outline-hidden focus-visible:ring-2 focus-visible:ring-blue-200">
                     <span className="min-w-0 text-xs font-semibold leading-5 text-slate-600">
                       <span className="block text-sm text-slate-900">
                         {completedDate ? `${formatMyFlowDisplayDate(completedDate)} 완료` : '완료한 실행'}
@@ -19102,7 +19102,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
               내 메모 <span className="font-medium text-slate-500">(선택)</span>
               <textarea
                 data-testid="my-flow-reflection-note"
-                className="mt-1 min-h-24 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-normal text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                className="mt-1 min-h-24 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-normal text-slate-900 outline-hidden focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                 value={activeDraft.reflectionNote}
                 placeholder="다음에 다시 쓸 때 기억할 점"
                 onChange={(event) => updateMyFlowCompletionFeedbackDraft({ reflectionNote: event.target.value })}
@@ -19138,7 +19138,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
               어디를 고칠까요?
               <select
                 data-testid="my-flow-source-correction-scope"
-                className="mt-1 min-h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-normal text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                className="mt-1 min-h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-normal text-slate-900 outline-hidden focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                 value={activeDraft.correctionScope}
                 onChange={(event) => updateMyFlowCompletionFeedbackDraft({ correctionScope: event.target.value })}
               >
@@ -19154,7 +19154,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
               알릴 내용
               <textarea
                 data-testid="my-flow-source-correction-note"
-                className="mt-1 min-h-24 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-normal text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                className="mt-1 min-h-24 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-normal text-slate-900 outline-hidden focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                 value={activeDraft.correctionNote}
                 placeholder="빠진 내용이나 잘못된 순서·날짜를 적어 주세요"
                 onChange={(event) => updateMyFlowCompletionFeedbackDraft({ correctionNote: event.target.value })}
@@ -19312,7 +19312,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
                   <input
                     data-testid="my-flow-reuse-anchor-input"
                     aria-label={newAnchorLabel}
-                    className="min-h-11 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-950 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                    className="min-h-11 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-950 outline-hidden focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                     type="date"
                     value={activeReuseDraft.anchor}
                     onChange={(event) => updateMyFlowReuseDraft({ anchor: event.target.value })}
@@ -19472,7 +19472,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
             disabled={disabled}
             aria-label={`${displayTitle} ${label}`}
             title={`${displayTitle} ${label}`}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-slate-200 bg-white text-sm font-semibold text-slate-700 hover:border-blue-300 hover:bg-blue-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-300"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-slate-200 bg-white text-sm font-semibold text-slate-700 hover:border-blue-300 hover:bg-blue-50 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-300"
             onClick={() => moveMyFlowPersonalDraftItem(flow, row.id, direction)}
           >
             <span aria-hidden="true">{icon}</span>
@@ -19766,7 +19766,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
           >
             <summary
               data-testid="personal-draft-persistent-recovery-entry"
-              className="cursor-pointer text-sm font-semibold text-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-200"
+              className="cursor-pointer text-sm font-semibold text-slate-700 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-blue-200"
             >
               삭제한 항목 · {removedItems.length}개
             </summary>
@@ -19815,7 +19815,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
               <input
                 id={inputId}
                 data-testid="personal-draft-add-title"
-                className="min-h-10 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-950 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                className="min-h-10 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-950 outline-hidden focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
                 value={myFlowStructuralAddTitle}
                 maxLength={120}
                 autoFocus
@@ -19909,7 +19909,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
         key={`compact-${flow.progress.slug}`}
         data-testid="my-flow-mobile-structure-row"
         data-flow-slug={flow.progress.slug}
-        className={`rounded-lg border p-3 shadow-sm ${retiredPersonalCopy ? 'border-amber-200 bg-amber-50/70' : flowExpanded ? 'border-blue-200 bg-blue-50/70' : 'border-slate-200 bg-white'}`}
+        className={`rounded-lg border p-3 shadow-xs ${retiredPersonalCopy ? 'border-amber-200 bg-amber-50/70' : flowExpanded ? 'border-blue-200 bg-blue-50/70' : 'border-slate-200 bg-white'}`}
       >
         <button
           type="button"
@@ -20278,7 +20278,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
               type="button"
               data-testid="my-flow-archived-direct-restore"
               aria-label={`${flowTitle} 복구`}
-              className="min-h-12 rounded-md border border-blue-200 bg-white px-3 py-2 text-xs font-semibold text-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+              className="min-h-12 rounded-md border border-blue-200 bg-white px-3 py-2 text-xs font-semibold text-blue-700 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
               onClick={() => updateMyFlowArchiveState(flow, 'restore')}
             >
               복구
@@ -20311,7 +20311,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
           type="button"
           data-testid="my-flow-mobile-structure-open"
           aria-label={`${flowTitle} 열기`}
-          className="grid min-h-16 w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-2 py-1.5 text-left transition hover:bg-[var(--flowme-surface-subtle)] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]"
+          className="grid min-h-16 w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-2 py-1.5 text-left transition hover:bg-[var(--flowme-surface-subtle)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]"
           onClick={() => {
             if (!openMyFlowLibraryPlanRoute(flow.progress.slug)) return;
             setMyFlowWorkspaceSection('execute');
@@ -20356,7 +20356,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
               type="button"
               data-testid="my-flow-archived-direct-restore"
               aria-label={`${flowTitle} 복구`}
-              className="min-h-12 rounded-md border border-blue-200 bg-white px-3 py-2 text-xs font-semibold text-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+              className="min-h-12 rounded-md border border-blue-200 bg-white px-3 py-2 text-xs font-semibold text-blue-700 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
               onClick={() => updateMyFlowArchiveState(flow, 'restore')}
             >
               복구
@@ -20385,7 +20385,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
         data-flow-anatomy="flow-library-row"
         aria-pressed={selected}
         aria-label={`${getMyFlowLibraryDisplayTitle(flow)} 열기`}
-        className={`w-full min-w-0 border-b border-[var(--flowme-border)] px-2 py-3 text-left transition focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)] ${selected ? 'bg-[var(--flowme-action-soft)]' : 'bg-white hover:bg-[var(--flowme-surface-subtle)]'}`}
+        className={`w-full min-w-0 border-b border-[var(--flowme-border)] px-2 py-3 text-left transition focus:outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)] ${selected ? 'bg-[var(--flowme-action-soft)]' : 'bg-white hover:bg-[var(--flowme-surface-subtle)]'}`}
         onClick={() => {
           if (!openMyFlowLibraryPlanRoute(flow.progress.slug)) return;
           setMyFlowWorkspaceSection('execute');
@@ -20413,7 +20413,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
         data-testid="my-flow-held-recovery"
         className={`${FLOW_UI_SURFACE_CLASS} overflow-hidden`}
       >
-        <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-3 py-2 text-sm font-semibold text-[#1B1A17] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#3654FF]/20">
+        <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-3 py-2 text-sm font-semibold text-[#1B1A17] focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-[#3654FF]/20">
           <span>보류한 일정</span>
           <span className="rounded-md bg-[#F3F1EC] px-2 py-1 text-xs text-[#5C5952]">
             {rows.length}개
@@ -20668,7 +20668,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
                 data-item-id={entry.stableItemId}
                 data-cross-flow-key={entry.key}
                 data-time-state={overdue ? 'overdue' : 'today'}
-                className="grid min-h-14 w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-3 py-2 text-left hover:bg-[var(--flowme-surface-subtle)] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]"
+                className="grid min-h-14 w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-3 py-2 text-left hover:bg-[var(--flowme-surface-subtle)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]"
                 aria-label={`${overdue ? '지난 할 일 · ' : ''}${entry.flowTitle} · ${entry.title} 열기`}
                 onClick={() => {
                   setMyFlowWorkspaceSection('execute');
@@ -20804,9 +20804,9 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
               role="tab"
               data-testid={`my-flow-todo-experiment-view-${view}`}
               aria-selected={myFlowTodoExperimentView === view}
-              className={`min-h-10 rounded-md px-3 text-sm font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${
+              className={`min-h-10 rounded-md px-3 text-sm font-semibold focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${
                 myFlowTodoExperimentView === view
-                  ? 'bg-white text-[var(--flowme-action)] shadow-sm'
+                  ? 'bg-white text-[var(--flowme-action)] shadow-xs'
                   : 'text-[var(--flowme-text-secondary)]'
               }`}
               onClick={() => selectMyFlowTodoExperimentView(view)}
@@ -20905,7 +20905,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
                     <button
                       type="button"
                       data-testid="my-flow-cross-flow-open-flow"
-                      className="min-h-10 rounded-md border border-[var(--flowme-border-strong)] bg-white px-3 text-sm font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                      className="min-h-10 rounded-md border border-[var(--flowme-border-strong)] bg-white px-3 text-sm font-semibold text-[var(--flowme-action)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                       onClick={() => openMyFlowFromTodoExperiment(
                         myFlowCrossFlowTodoActiveEntry.flowSlug,
                       )}
@@ -20996,7 +20996,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
               data-p35-marker="P35-R0-PAST-ITEMS-DISCLOSURE"
               className="mt-3 overflow-hidden rounded-md border border-[var(--flowme-border)] bg-[var(--flowme-surface)]"
             >
-              <summary className="flex min-h-11 cursor-pointer list-none items-center px-3 py-2 text-xs font-semibold text-[var(--flowme-text-secondary)] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]">
+              <summary className="flex min-h-11 cursor-pointer list-none items-center px-3 py-2 text-xs font-semibold text-[var(--flowme-text-secondary)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]">
                 저장된 지난 할 일 {pastDisclosureRows.length}개 보기
               </summary>
               <div className="border-t border-[var(--flowme-border)]">
@@ -21329,7 +21329,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
         : null;
     const cardToneClass = showContentReadinessBadge
       ? 'border-amber-200 bg-amber-50/70 shadow-none'
-      : 'border-slate-200 bg-white shadow-sm';
+      : 'border-slate-200 bg-white shadow-xs';
     const nextActionToneClass = showContentReadinessBadge
       ? 'border-amber-100 bg-white'
       : 'border-blue-100 bg-blue-50';
@@ -21413,7 +21413,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
                       data-action-priority="secondary"
                       data-action-role="edit-saved-plan"
                       aria-label={`${flowTitle} ${personalCopySettingsLabel}`}
-                      className="inline-flex min-h-11 items-center justify-center rounded-md border border-blue-100 bg-white px-3 py-2 text-sm font-semibold text-blue-700 hover:border-blue-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                      className="inline-flex min-h-11 items-center justify-center rounded-md border border-blue-100 bg-white px-3 py-2 text-sm font-semibold text-blue-700 hover:border-blue-300 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                       onClick={() => openMyFlowPersonalCopySettingsEntry(flow)}
                     >
                       {personalCopySettingsLabel}
@@ -21426,7 +21426,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
                       data-action-priority="secondary"
                       data-action-role="edit-saved-plan"
                       aria-label={`${flowTitle} ${directAnchorCopy.editLabel}`}
-                      className="inline-flex min-h-11 items-center justify-center rounded-md border border-blue-100 bg-white px-3 py-2 text-sm font-semibold text-blue-700 hover:border-blue-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                      className="inline-flex min-h-11 items-center justify-center rounded-md border border-blue-100 bg-white px-3 py-2 text-sm font-semibold text-blue-700 hover:border-blue-300 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                       onClick={() => openMyFlowDirectAnchorSettingsEntry(flow)}
                     >
                       {directAnchorCopy.editLabel}
@@ -21619,7 +21619,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
                 data-action-priority="secondary"
                 data-action-role="edit-saved-plan"
                 aria-label={`${flowTitle} ${personalCopySettingsLabel}`}
-                className="mt-3 inline-flex min-h-11 items-center justify-center rounded-md border border-blue-100 bg-white px-3 py-2 text-sm font-semibold text-blue-700 hover:border-blue-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                className="mt-3 inline-flex min-h-11 items-center justify-center rounded-md border border-blue-100 bg-white px-3 py-2 text-sm font-semibold text-blue-700 hover:border-blue-300 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                 onClick={() => openMyFlowPersonalCopySettingsEntry(flow)}
               >
                 {personalCopySettingsLabel}
@@ -21632,7 +21632,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
                 data-action-priority="secondary"
                 data-action-role="edit-saved-plan"
                 aria-label={`${flowTitle} ${directAnchorCopy.editLabel}`}
-                className="mt-3 inline-flex min-h-11 items-center justify-center rounded-md border border-blue-100 bg-white px-3 py-2 text-sm font-semibold text-blue-700 hover:border-blue-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                className="mt-3 inline-flex min-h-11 items-center justify-center rounded-md border border-blue-100 bg-white px-3 py-2 text-sm font-semibold text-blue-700 hover:border-blue-300 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                 onClick={() => openMyFlowDirectAnchorSettingsEntry(flow)}
               >
                 {directAnchorCopy.editLabel}
@@ -21670,7 +21670,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
                   data-testid="my-flow-next-action-open"
                   data-action-priority="primary"
                   data-action-role="execute-saved-result"
-                  className={`min-h-11 shrink-0 rounded-md px-3 py-2 text-xs font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${showContentReadinessBadge ? 'border border-slate-200 bg-white text-slate-800' : 'bg-blue-700 text-white'}`}
+                  className={`min-h-11 shrink-0 rounded-md px-3 py-2 text-xs font-semibold focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${showContentReadinessBadge ? 'border border-slate-200 bg-white text-slate-800' : 'bg-blue-700 text-white'}`}
                   aria-label={getMyFlowOpenActionAriaLabel(nextRow.title, nextActionLabel)}
                   onClick={() => openMyFlowRowFromFlowTab(flow, nextRow)}
                 >
@@ -21821,7 +21821,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
               type="button"
               data-testid="my-flow-mobile-library-back"
               aria-label={myFlowQ3CopyEnabled ? '저장한 계획 목록으로 돌아가기' : '저장한 Flow 목록으로 돌아가기'}
-              className="inline-flex h-11 w-11 items-center justify-center rounded-md text-xl font-semibold text-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-md text-xl font-semibold text-blue-700 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
               onClick={returnToMyFlowLibrary}
             >
               <span aria-hidden="true">‹</span>
@@ -21866,7 +21866,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
             data-testid="my-flow-workspace-plan-toggle"
             aria-expanded={wholePlanOpen}
             aria-controls={`my-flow-workspace-plan-content-${flow.progress.slug}`}
-            className="flex min-h-11 w-full items-center justify-between gap-3 border-y border-slate-200 py-3 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+            className="flex min-h-11 w-full items-center justify-between gap-3 border-y border-slate-200 py-3 text-left focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
             onClick={() => {
               if (wholePlanOpen) {
                 closeMyFlowBatchAdjustment();
@@ -21899,7 +21899,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
                     data-testid="my-flow-batch-mode-toggle"
                     data-structure-edit-toggle={structuralEditEligible ? 'true' : 'false'}
                     aria-pressed={batchActive}
-                    className={`min-h-9 rounded-md px-3 py-2 text-xs font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${
+                    className={`min-h-9 rounded-md px-3 py-2 text-xs font-semibold focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${
                       batchActive
                         ? 'border border-slate-300 bg-white text-slate-700'
                         : 'border border-blue-200 bg-blue-50 text-blue-700'
@@ -22888,7 +22888,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
             <button
               type="button"
               data-testid="my-flow-permanent-delete-backup"
-              className="min-h-11 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+              className="min-h-11 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
               onClick={() => {
                 downloadCurrentFlowMeLocalBackup(window.localStorage);
                 setMyFlowPermanentDeleteBackupReady(true);
@@ -22918,7 +22918,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
               <button
                 type="button"
                 data-testid="my-flow-permanent-delete-cancel"
-                className="min-h-11 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                className="min-h-11 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                 onClick={() => {
                   setMyFlowPermanentDeleteDialog(null);
                   setMyFlowPermanentDeleteError('');
@@ -22929,7 +22929,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
               <button
                 type="button"
                 data-testid="my-flow-permanent-delete-confirm"
-                className="min-h-11 rounded-md bg-rose-700 px-3 py-2 text-sm font-semibold text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-danger-focus)]"
+                className="min-h-11 rounded-md bg-rose-700 px-3 py-2 text-sm font-semibold text-white focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-danger-focus)]"
                 onClick={removeSavedFlow}
               >
                 영구 삭제
@@ -23025,7 +23025,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
             ref={myFlowLifecycleNoticeActionRef}
             type="button"
             data-testid="my-flow-lifecycle-undo"
-            className="min-h-11 shrink-0 rounded-md px-3 text-sm font-semibold text-blue-200 hover:bg-white/10 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-300"
+            className="min-h-11 shrink-0 rounded-md px-3 text-sm font-semibold text-blue-200 hover:bg-white/10 hover:text-white focus:outline-hidden focus:ring-2 focus:ring-blue-300"
             onClick={() => undoMyFlowLifecycleChange(myFlowLifecycleUndo)}
           >
             되돌리기
@@ -23072,7 +23072,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
             data-testid={myFlowCompletionUndo.result === 'completed'
               ? 'my-flow-completion-undo'
               : 'my-flow-completion-open'}
-            className="min-h-11 shrink-0 rounded-md px-3 text-sm font-semibold text-blue-200 hover:bg-white/10 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-300"
+            className="min-h-11 shrink-0 rounded-md px-3 text-sm font-semibold text-blue-200 hover:bg-white/10 hover:text-white focus:outline-hidden focus:ring-2 focus:ring-blue-300"
             onClick={() => myFlowCompletionUndo.result === 'completed'
               ? undoMyFlowCompletion(myFlowCompletionUndo)
               : openMyFlowCompletionNoticeItem(myFlowCompletionUndo)}
@@ -26674,7 +26674,7 @@ export function PublicFlow({ slug }: { slug: string }) {
             type="button"
             data-testid="public-flow-save-undated"
             data-action-priority="tertiary"
-            className="min-h-11 rounded-xl px-3 text-sm font-semibold text-[var(--flowme-text-secondary)] underline-offset-4 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+            className="min-h-11 rounded-xl px-3 text-sm font-semibold text-[var(--flowme-text-secondary)] underline-offset-4 hover:underline focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
             onClick={saveUndatedToMyFlow}
             disabled={publicSaveLocked}
           >
@@ -26746,7 +26746,7 @@ export function PublicFlow({ slug }: { slug: string }) {
             <button
               data-testid="public-flow-save-undated-mobile"
               data-action-priority="tertiary"
-              className="col-span-2 min-h-9 rounded-lg px-3 text-xs font-semibold text-[var(--flowme-text-secondary)] underline-offset-4 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+              className="col-span-2 min-h-9 rounded-lg px-3 text-xs font-semibold text-[var(--flowme-text-secondary)] underline-offset-4 hover:underline focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
               type="button"
               onClick={saveUndatedToMyFlow}
               disabled={publicSaveLocked}
@@ -27029,7 +27029,7 @@ export function PublicFlow({ slug }: { slug: string }) {
         type="button"
         data-testid="public-flow-export-secondary-toggle"
         data-action-priority="secondary"
-        className="flex min-h-12 w-full items-center justify-between gap-3 px-2 text-left text-sm font-semibold text-[var(--flowme-text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]"
+        className="flex min-h-12 w-full items-center justify-between gap-3 px-2 text-left text-sm font-semibold text-[var(--flowme-text)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]"
         onClick={openPublicExport}
       >
         <span>내 도구로 옮기기</span>
@@ -27055,7 +27055,7 @@ export function PublicFlow({ slug }: { slug: string }) {
     !showTodayExecution && !showPublicHeroSetup ? (
       <section
         data-testid="public-flow-primary-setup"
-        className={compactJeonsePage ? 'my-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm md:p-4' : 'my-6 rounded-lg border border-slate-200 bg-white p-4 shadow-sm md:p-5'}
+        className={compactJeonsePage ? 'my-4 rounded-lg border border-slate-200 bg-white p-4 shadow-xs md:p-4' : 'my-6 rounded-lg border border-slate-200 bg-white p-4 shadow-xs md:p-5'}
       >
         <div className={compactJeonsePage ? 'grid gap-3' : 'grid gap-4'}>
           <div className={compactJeonsePage ? '' : 'rounded-[var(--flowme-radius-card)] border border-[var(--flowme-border)] bg-[var(--flowme-surface-subtle)] p-4'}>
@@ -27127,7 +27127,7 @@ export function PublicFlow({ slug }: { slug: string }) {
                   <h2 className="text-base font-semibold text-[var(--flowme-text)]">계획 찾기</h2>
                   <Link
                     href="/flows"
-                    className="mt-2 inline-flex min-h-12 items-center rounded-md text-sm font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                    className="mt-2 inline-flex min-h-12 items-center rounded-md text-sm font-semibold text-[var(--flowme-action)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                   >
                     다른 계획 찾기
                   </Link>
@@ -27141,7 +27141,7 @@ export function PublicFlow({ slug }: { slug: string }) {
                         key={candidate.flow.slug}
                         href={`/f/${candidate.flow.slug}`}
                         aria-current={selected ? 'page' : undefined}
-                        className={`block min-h-12 rounded-md border px-3 py-3 text-sm font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${
+                        className={`block min-h-12 rounded-md border px-3 py-3 text-sm font-semibold focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${
                           selected
                             ? 'border-[var(--flowme-action)] bg-[var(--flowme-action-soft)] text-[var(--flowme-action)]'
                             : 'border-[var(--flowme-border)] bg-white text-[var(--flowme-text)]'
@@ -27548,13 +27548,13 @@ function AnchorInput({
   if (isJeonsePrecheckFlow(bundle)) {
     const secondaryActions = (
       <div data-testid="public-flow-date-intent" className="grid grid-cols-3 gap-2" role="group" aria-label="날짜 저장 방식">
-        <button data-testid="public-flow-date-intent-custom" aria-pressed={mode === 'custom'} className={`min-h-[var(--flowme-control-height)] rounded-[var(--flowme-radius-control)] border px-2 py-2 text-center text-xs font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${mode === 'custom' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-slate-200 bg-white text-slate-700'}`} type="button" onClick={() => onModeChange('custom')}>
+        <button data-testid="public-flow-date-intent-custom" aria-pressed={mode === 'custom'} className={`min-h-[var(--flowme-control-height)] rounded-[var(--flowme-radius-control)] border px-2 py-2 text-center text-xs font-semibold focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${mode === 'custom' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-slate-200 bg-white text-slate-700'}`} type="button" onClick={() => onModeChange('custom')}>
           날짜 정하기
         </button>
-        <button data-testid="public-flow-date-intent-undated" aria-pressed={mode === 'undated'} className={`min-h-[var(--flowme-control-height)] rounded-[var(--flowme-radius-control)] border px-2 py-2 text-center text-xs font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${mode === 'undated' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-slate-200 bg-white text-slate-700'}`} type="button" onClick={() => onModeChange('undated')}>
+        <button data-testid="public-flow-date-intent-undated" aria-pressed={mode === 'undated'} className={`min-h-[var(--flowme-control-height)] rounded-[var(--flowme-radius-control)] border px-2 py-2 text-center text-xs font-semibold focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${mode === 'undated' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-slate-200 bg-white text-slate-700'}`} type="button" onClick={() => onModeChange('undated')}>
           날짜 없이
         </button>
-        <button data-testid="public-flow-date-intent-example" aria-pressed={mode === 'example'} className={`min-h-[var(--flowme-control-height)] rounded-[var(--flowme-radius-control)] border px-2 py-2 text-center text-xs font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${mode === 'example' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-slate-200 bg-white text-slate-700'}`} type="button" onClick={() => onModeChange('example')}>
+        <button data-testid="public-flow-date-intent-example" aria-pressed={mode === 'example'} className={`min-h-[var(--flowme-control-height)] rounded-[var(--flowme-radius-control)] border px-2 py-2 text-center text-xs font-semibold focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${mode === 'example' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-slate-200 bg-white text-slate-700'}`} type="button" onClick={() => onModeChange('example')}>
           예시만 보기
         </button>
       </div>
@@ -27611,13 +27611,13 @@ function AnchorInput({
 
   const secondaryActions = (
     <div data-testid="public-flow-date-intent" className="grid grid-cols-3 gap-2" role="group" aria-label="날짜 저장 방식">
-      <button data-testid="public-flow-date-intent-custom" aria-pressed={mode === 'custom'} className={`min-h-[var(--flowme-control-height)] rounded-[var(--flowme-radius-control)] border px-2 py-2 text-center text-xs font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${mode === 'custom' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-gray-200 bg-white text-gray-700'}`} type="button" onClick={() => onModeChange('custom')}>
+      <button data-testid="public-flow-date-intent-custom" aria-pressed={mode === 'custom'} className={`min-h-[var(--flowme-control-height)] rounded-[var(--flowme-radius-control)] border px-2 py-2 text-center text-xs font-semibold focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${mode === 'custom' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-gray-200 bg-white text-gray-700'}`} type="button" onClick={() => onModeChange('custom')}>
         날짜 정하기
       </button>
-      <button data-testid="public-flow-date-intent-undated" aria-pressed={mode === 'undated'} className={`min-h-[var(--flowme-control-height)] rounded-[var(--flowme-radius-control)] border px-2 py-2 text-center text-xs font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${mode === 'undated' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-gray-200 bg-white text-gray-700'}`} type="button" onClick={() => onModeChange('undated')}>
+      <button data-testid="public-flow-date-intent-undated" aria-pressed={mode === 'undated'} className={`min-h-[var(--flowme-control-height)] rounded-[var(--flowme-radius-control)] border px-2 py-2 text-center text-xs font-semibold focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${mode === 'undated' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-gray-200 bg-white text-gray-700'}`} type="button" onClick={() => onModeChange('undated')}>
         날짜 없이
       </button>
-      <button data-testid="public-flow-date-intent-example" aria-pressed={mode === 'example'} className={`min-h-[var(--flowme-control-height)] rounded-[var(--flowme-radius-control)] border px-2 py-2 text-center text-xs font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${mode === 'example' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-gray-200 bg-white text-gray-700'}`} type="button" onClick={() => onModeChange('example')}>
+      <button data-testid="public-flow-date-intent-example" aria-pressed={mode === 'example'} className={`min-h-[var(--flowme-control-height)] rounded-[var(--flowme-radius-control)] border px-2 py-2 text-center text-xs font-semibold focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${mode === 'example' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-gray-200 bg-white text-gray-700'}`} type="button" onClick={() => onModeChange('example')}>
         예시만 보기
       </button>
     </div>
@@ -28869,7 +28869,7 @@ function FlowItemCard({
             <span className="font-semibold text-gray-700">메모</span>
             <textarea
               aria-label={`${item.title} 메모`}
-              className="min-h-20 w-full resize-y rounded-md border border-gray-300 bg-white px-3 py-2 text-sm leading-5 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+              className="min-h-20 w-full resize-y rounded-md border border-gray-300 bg-white px-3 py-2 text-sm leading-5 focus:border-blue-500 focus:outline-hidden focus:ring-2 focus:ring-blue-100"
               placeholder="예) 우리는 포장이사로 결정됨, 견적은 다음 주 비교"
               value={getFlowItemUserNote(state) ?? ''}
               onChange={(event) => onNoteChange(item.id, event.target.value)}
@@ -29126,7 +29126,7 @@ function FlowOverview({
   return (
     <section className={`mb-5 grid items-start gap-4 ${showNext ? 'lg:grid-cols-[minmax(320px,0.75fr)_minmax(0,1.25fr)]' : ''}`}>
       {showNext ? (
-      <div className="min-w-0 rounded-xl border border-blue-200 bg-blue-50 p-5 shadow-sm">
+      <div className="min-w-0 rounded-xl border border-blue-200 bg-blue-50 p-5 shadow-xs">
         <p className="text-sm font-semibold text-blue-700">다음 행동</p>
         <h2 className="mt-1 text-2xl font-semibold">지금 먼저 체크할 일</h2>
         <p className="mt-1 text-sm text-blue-900/70">가까운 항목을 먼저 처리하고, 날짜 고정·주의 항목은 놓치지 않게 따로 확인하세요.</p>
@@ -29369,7 +29369,7 @@ function ExactVideoToolPreview({
   const preview = item ? getExactToolPreview(displayAnchor, weekdays, item.title, destination, copy.scheduleLabel) : [];
 
   return (
-    <section aria-label="영상 반복 캘린더 설정" className="my-6 rounded-xl border border-blue-100 bg-white p-5 shadow-sm">
+    <section aria-label="영상 반복 캘린더 설정" className="my-6 rounded-xl border border-blue-100 bg-white p-5 shadow-xs">
       <div className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
         <div>
           <h2 className="text-sm font-semibold text-blue-700">운동 캘린더</h2>

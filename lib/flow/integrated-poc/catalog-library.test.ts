@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { seedBundles } from '../seed-flows';
-import { mergeSourceBackedMyFlowBundles, sourceBackedMyFlowMaps } from '../source-backed-my-flow';
+import { mergeSourceBackedMyFlowBundles, sourceBackedMyFlowMaps, sourceBackedMyFlowBundles } from '../source-backed-my-flow';
 import { validateCatalogLibrarySnapshot, catalogLibrarySummary, CATALOG_LIBRARY_VERSION } from './catalog-library';
 import { buildCatalogLibrarySnapshot } from './catalog-library-source';
 import type { FlowBundle } from '../types';
@@ -22,6 +22,26 @@ const reviewedSourceDelta = Object.freeze({
     newUrl: 'https://gongysd.com/wedding-notion/?bmode=view&idx=167989966',
     oldSourceType: 'creator_experience' as const, newSourceType: 'reference' as const,
     oldLinkType: 'creator' as const, newLinkType: 'reference' as const }),
+});
+// Actual CP1 review changes only these seven public review dates, not the pack.
+// Evidence: docs/content-audit/2026-10-03-core-journeys-cp1-source-review.md.
+const cp1ReviewedSourceDelta = Object.freeze({
+  newDate: '2026-10-03',
+  oldDates: Object.freeze<Record<string, string>>({
+    'source-backed-middle-school-math-1': '2026-06-23',
+    'source-backed-baby-health-checkups': '2026-06-23',
+    'source-backed-baby-vaccination-schedule': '2026-06-23',
+    'source-backed-smishing-response': '2026-06-25',
+    'source-backed-picnic-food-safety': '2026-06-25',
+    'curated-baby-food-daily-meal-row': '2026-06-29',
+    'curated-baby-food-cube-stock': '2026-06-29',
+  }),
+  heldSlugs: Object.freeze([
+    'source-backed-moving-d30', 'source-backed-year-end-tax-submit',
+    'curated-opic-single-mock-review', 'curated-opic-course-row-import',
+    'curated-reading-monthly-log', 'curated-child-vaccination-first-year',
+    'curated-child-vaccination-booster-school-age',
+  ]),
 });
 
 function assertRetainedSource(saved: FlowBundle | undefined, current: FlowBundle) {
@@ -49,6 +69,12 @@ function assertRetainedSource(saved: FlowBundle | undefined, current: FlowBundle
       newLink.url = vendor.oldUrl; newLink.type = vendor.oldLinkType;
     }
   }
+  if (Object.hasOwn(cp1ReviewedSourceDelta.oldDates, slug)) {
+    const oldDate = cp1ReviewedSourceDelta.oldDates[slug];
+    assert.equal(saved.flow.source_checked_at, oldDate, `${slug}: frozen source_checked_at`);
+    assert.equal(comparable.flow.source_checked_at, cp1ReviewedSourceDelta.newDate, `${slug}: reviewed source_checked_at`);
+    comparable.flow.source_checked_at = oldDate;
+  }
   // Compare every retained field, but never print private nested source on failure.
   assert.equal(fingerprint(saved), fingerprint(comparable), `${slug}: unreviewed source delta`);
   return changed;
@@ -68,7 +94,8 @@ test('frozen source retains every field except counters and the exact public rev
     const saved = s.variants.find(v => v.slug === b.flow.slug)?.bundle ?? s.bundles.find(v => v.flow.slug === b.flow.slug);
     if (assertRetainedSource(saved, b)) changed.push(b.flow.slug);
   }
-  assert.deepEqual(changed.sort(), [...reviewedSourceDelta.slugs].sort());
+  assert.deepEqual(changed.sort(), [...reviewedSourceDelta.slugs, ...Object.keys(cp1ReviewedSourceDelta.oldDates)].sort());
+  assert.equal(changed.length, 13);
   assert.equal(fingerprint(s.maps), fingerprint(JSON.parse(JSON.stringify(sourceBackedMyFlowMaps))));
   assert.equal(fingerprint(s), frozenBefore); assert.equal(fingerprint(current), currentBefore);
   for (const b of [...s.bundles, ...s.variants.map(v => v.bundle)]) {
@@ -77,9 +104,60 @@ test('frozen source retains every field except counters and the exact public rev
   }
 });
 
+test('CP1 exact review-date allowance rejects other slugs, dates, updated_at, content and source policy', () => {
+  const s = buildCatalogLibrarySnapshot(NOW), current = mergeSourceBackedMyFlowBundles(seedBundles);
+  const frozenBefore = fingerprint(s), currentBefore = fingerprint(current);
+  assert.equal(Object.keys(cp1ReviewedSourceDelta.oldDates).length, 7);
+  for (const slug of Object.keys(cp1ReviewedSourceDelta.oldDates)) {
+    const saved = s.bundles.find(b => b.flow.slug === slug)!, source = current.find(b => b.flow.slug === slug)!;
+    assert(saved && source, `${slug}: missing review pair`);
+    assert.equal(assertRetainedSource(saved, source), true);
+    for (const side of ['frozen', 'current'] as const) {
+      for (const mutate of [
+        (b: FlowBundle) => { b.flow.slug = 'source-backed-unreviewed-date'; },
+        (b: FlowBundle) => { b.flow.source_checked_at = '2026-10-02'; },
+        (b: FlowBundle) => { b.flow.updated_at = '2026-10-03'; },
+        (b: FlowBundle) => { b.flow.title += ' synthetic mutation'; },
+        (b: FlowBundle) => { b.flow.raw_text = `${b.flow.raw_text ?? ''}\nsynthetic mutation`; },
+        (b: FlowBundle) => { b.items[0].title += ' synthetic mutation'; },
+        (b: FlowBundle) => { b.flow.source_status = 'preview'; },
+      ]) {
+        const before = clone(saved), after = clone(source);
+        mutate(side === 'frozen' ? before : after);
+        assert.throws(() => assertRetainedSource(before, after), assert.AssertionError);
+      }
+    }
+    const tamperedPack = clone(s);
+    tamperedPack.bundles.find(b => b.flow.slug === slug)!.flow.source_checked_at = cp1ReviewedSourceDelta.newDate;
+    assert.equal(validateCatalogLibrarySnapshot(tamperedPack), false);
+  }
+  assert.equal(fingerprint(s), frozenBefore); assert.equal(fingerprint(current), currentBefore);
+});
+
+test('CP1 held source content and dates remain frozen while only new live supply is excluded', () => {
+  const s = buildCatalogLibrarySnapshot(NOW), current = mergeSourceBackedMyFlowBundles(seedBundles);
+  const frozenBefore = fingerprint(s), originalsBefore = fingerprint(sourceBackedMyFlowBundles);
+  assert.equal(cp1ReviewedSourceDelta.heldSlugs.length, 7);
+  for (const slug of cp1ReviewedSourceDelta.heldSlugs) {
+    const saved = s.bundles.find(b => b.flow.slug === slug)!, original = sourceBackedMyFlowBundles.find(b => b.flow.slug === slug)!;
+    assert(saved && original, `${slug}: missing held original`);
+    assert.equal(assertRetainedSource(saved, original), false);
+    assert.equal(current.some(b => b.flow.slug === slug), false);
+    assert.equal(s.policies.flows.find(p => p.slug === slug)?.runtimeExcluded, false);
+    const tamperedPack = clone(s), policy = tamperedPack.policies.flows.find(p => p.slug === slug)!;
+    policy.runtimeExcluded = true;
+    assert.equal(validateCatalogLibrarySnapshot(tamperedPack), false);
+  }
+  assert.equal(catalogLibrarySummary(s).runtimeIncluded, 156);
+  assert.equal(catalogLibrarySummary(s).runtimeExcluded, 21);
+  assert.equal(validateCatalogLibrarySnapshot(s), true);
+  assert.equal(fingerprint(s), frozenBefore); assert.equal(fingerprint(sourceBackedMyFlowBundles), originalsBefore);
+});
+
 test('retention rejects a review-date change on an unreviewed source', () => {
   const s = buildCatalogLibrarySnapshot(NOW);
-  const current = clone(mergeSourceBackedMyFlowBundles(seedBundles).find(b => !reviewedSourceDelta.slugs.includes(b.flow.slug))!);
+  const current = clone(mergeSourceBackedMyFlowBundles(seedBundles).find(b => !reviewedSourceDelta.slugs.includes(b.flow.slug)
+    && !Object.hasOwn(cp1ReviewedSourceDelta.oldDates, b.flow.slug))!);
   const saved = s.variants.find(v => v.slug === current.flow.slug)?.bundle ?? s.bundles.find(v => v.flow.slug === current.flow.slug);
   assertRetainedSource(saved, current);
   current.flow.source_checked_at = reviewedSourceDelta.newDate;

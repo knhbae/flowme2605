@@ -2113,7 +2113,7 @@ export function KoreanFlowContentStudio() {
   return (
     <main className="min-h-screen bg-slate-100 text-slate-950">
       <section className="mx-auto max-w-[1440px] px-3 py-2 sm:px-5 sm:py-4 lg:px-8">
-        <header className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <header className="rounded-2xl border border-slate-200 bg-white shadow-xs">
           <div className="grid gap-4 p-2.5 sm:p-5 lg:grid-cols-[minmax(0,1fr)_420px] lg:p-7">
             <div>
               <p className="text-sm font-black text-blue-700">Flow 콘텐츠 스튜디오</p>
@@ -2135,7 +2135,7 @@ export function KoreanFlowContentStudio() {
           </div>
           <div className="hidden grid-cols-2 gap-1.5 border-t border-slate-200 p-1.5 sm:grid sm:gap-2 sm:p-3 lg:grid-cols-[minmax(0,1fr)_170px_170px_170px]">
             <input
-              className="col-span-2 min-h-9 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm outline-none focus:border-blue-500 focus:bg-white sm:min-h-10 lg:col-span-1"
+              className="col-span-2 min-h-9 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm outline-hidden focus:border-blue-500 focus:bg-white sm:min-h-10 lg:col-span-1"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="세탁기, 결혼, 식물, 중고차, 공부처럼 검색"
@@ -2227,7 +2227,7 @@ export function KoreanFlowContentStudio() {
                       setSelectedId(primaryId);
                       setSaveMessage('');
                     }}
-                    className={`min-w-[190px] snap-start rounded-xl border bg-white p-3 text-left shadow-sm transition hover:border-blue-300 lg:min-w-0 ${
+                    className={`min-w-[190px] snap-start rounded-xl border bg-white p-3 text-left shadow-xs transition hover:border-blue-300 lg:min-w-0 ${
                       group.candidateIds.includes(selected.id) ? 'border-blue-600 ring-2 ring-blue-100' : 'border-slate-200'
                     }`}
                   >
@@ -2256,7 +2256,7 @@ export function KoreanFlowContentStudio() {
           />
 
           <section ref={selectedPreviewRef} className="scroll-mt-3 grid gap-4 2xl:grid-cols-[minmax(0,1fr)_330px]">
-            <article className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <article className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xs">
               <CandidateHeader candidate={selected} audit={selectedAudit} />
               {selectedExperienceSpec ? (
                 <HighFidelityExperience
@@ -2345,7 +2345,7 @@ function CandidateRail({
             data-pattern={audit.pattern}
             aria-pressed={active}
             onClick={() => onSelect(candidate.id)}
-            className={`min-w-[168px] snap-start touch-manipulation rounded-xl border bg-white p-2 text-left shadow-sm transition hover:border-blue-300 active:scale-[0.99] sm:min-w-[230px] sm:p-3 lg:min-w-0 ${
+            className={`min-w-[168px] snap-start touch-manipulation rounded-xl border bg-white p-2 text-left shadow-xs transition hover:border-blue-300 active:scale-[0.99] sm:min-w-[230px] sm:p-3 lg:min-w-0 ${
               active ? 'border-blue-600 ring-2 ring-blue-100' : 'border-slate-200'
             }`}
           >
@@ -2549,7 +2549,7 @@ function SaveSetupView({ candidate, audit, spec }: { candidate: KoreanFlowConten
         </div>
       </section>
 
-      <aside className="rounded-[28px] border border-slate-300 bg-slate-950 p-3 shadow-sm">
+      <aside className="rounded-[28px] border border-slate-300 bg-slate-950 p-3 shadow-xs">
         <div className="rounded-[22px] bg-white p-4">
           <div className="flex items-center justify-between gap-2">
             <span className="text-xs font-black text-blue-700">{traceStrength === 'needs_review' ? '조건 확인 후 저장 미리보기' : '저장 미리보기'}</span>
@@ -2962,7 +2962,7 @@ function ExecutionView({ candidate, audit, spec }: { candidate: KoreanFlowConten
       </div>
 
       <div className="grid gap-4 p-4 xl:grid-cols-[minmax(0,1fr)_360px]">
-        <div className="rounded-2xl border border-slate-200 bg-white p-0 shadow-sm md:rounded-[28px] md:border-slate-300 md:bg-slate-950 md:p-2">
+        <div className="rounded-2xl border border-slate-200 bg-white p-0 shadow-xs md:rounded-[28px] md:border-slate-300 md:bg-slate-950 md:p-2">
           <div className="overflow-hidden rounded-2xl bg-white md:rounded-[22px]">
             <div className="hidden border-b border-slate-200 p-4 sm:block">
               <p className="text-xs font-black text-slate-500">내 실행 공간</p>
@@ -2975,7 +2975,7 @@ function ExecutionView({ candidate, audit, spec }: { candidate: KoreanFlowConten
               </div>
               <div className="mt-3 grid grid-cols-4 gap-1 rounded-xl bg-slate-100 p-1 text-center text-xs font-black">
                 {['오늘', '캘린더', 'Flow', '루틴'].map((tab) => (
-                  <span key={tab} className={`rounded-lg px-2 py-2 ${tab === '캘린더' ? 'bg-blue-700 text-white shadow-sm' : 'text-slate-600'}`}>
+                  <span key={tab} className={`rounded-lg px-2 py-2 ${tab === '캘린더' ? 'bg-blue-700 text-white shadow-xs' : 'text-slate-600'}`}>
                     {tab}
                   </span>
                 ))}
@@ -3019,7 +3019,7 @@ function ExecutionView({ candidate, audit, spec }: { candidate: KoreanFlowConten
                 </div>
                 <div className="mt-3 grid gap-2">
                   {simulation.selectedItems.map((item) => (
-                    <div key={item.title} className="rounded-xl border border-blue-200 bg-white p-3 shadow-sm">
+                    <div key={item.title} className="rounded-xl border border-blue-200 bg-white p-3 shadow-xs">
                       <div className="flex items-start justify-between gap-3">
                         <div>
                           <p className="text-xs font-black text-blue-700">{item.meta}</p>
@@ -3067,7 +3067,7 @@ function ExecutionView({ candidate, audit, spec }: { candidate: KoreanFlowConten
           </div>
         </div>
 
-        <aside className="self-start rounded-2xl border border-slate-200 bg-white p-4 shadow-sm" data-testid="content-flow-detail-sheet-preview">
+        <aside className="self-start rounded-2xl border border-slate-200 bg-white p-4 shadow-xs" data-testid="content-flow-detail-sheet-preview">
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-xs font-black text-blue-700">날짜 item 상세</p>
@@ -3271,7 +3271,7 @@ function DetailSheetView({ candidate, audit, spec }: { candidate: KoreanFlowCont
   return (
     <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
       <section className="rounded-2xl border border-slate-200 bg-white p-4">
-        <div className="mx-auto max-w-xl overflow-hidden rounded-[28px] border border-slate-300 bg-slate-950 p-3 shadow-sm">
+        <div className="mx-auto max-w-xl overflow-hidden rounded-[28px] border border-slate-300 bg-slate-950 p-3 shadow-xs">
           <div className="rounded-[22px] bg-white">
             <div className="border-b border-slate-200 p-4">
               <div className="flex items-start justify-between gap-3">
@@ -3336,7 +3336,7 @@ function EvidencePanel({ title, items, tone = 'slate' }: { title: string; items:
       <h4 className="text-sm font-black">{title}</h4>
       <div className="mt-3 grid gap-2">
         {items.map((item) => (
-          <div key={item} className="rounded-xl bg-white p-3 text-sm font-semibold leading-6 text-slate-700 shadow-sm">
+          <div key={item} className="rounded-xl bg-white p-3 text-sm font-semibold leading-6 text-slate-700 shadow-xs">
             {item}
           </div>
         ))}
@@ -3543,7 +3543,7 @@ function FlowPreview({ candidate, audit }: { candidate: KoreanFlowContentCandida
           <p className="text-xs font-black text-blue-700">적용 UI</p>
           <h3 className="text-lg font-black">{patternLabel[audit.pattern]}</h3>
         </div>
-        <span className="rounded-full bg-white px-3 py-1 text-xs font-bold text-slate-600 shadow-sm">{audit.exportTarget}</span>
+        <span className="rounded-full bg-white px-3 py-1 text-xs font-bold text-slate-600 shadow-xs">{audit.exportTarget}</span>
       </div>
       {audit.pattern === 'timeline' ? <TimelinePreview candidate={candidate} /> : null}
       {audit.pattern === 'routine' ? <RoutinePreview candidate={candidate} audit={audit} /> : null}
@@ -3758,7 +3758,7 @@ function ReviewPanel({
   const traceStrength = traceStrengthFor(candidate);
   const userReview = userReviewFor(candidate);
   return (
-    <aside className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm xl:sticky xl:top-4 xl:self-start">
+    <aside className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs xl:sticky xl:top-4 xl:self-start">
       <h3 className="text-lg font-black">활용 가능성 평가</h3>
       <p className="mt-1 text-xs leading-5 text-slate-500">원문을 본 사용자가 이 Flow를 저장하고 실제로 실행할 수 있는지 남깁니다.</p>
       {traceStrength === 'weak' ? (
@@ -3824,7 +3824,7 @@ function ReviewPanel({
         </label>
       </div>
       <textarea
-        className="mt-3 min-h-32 w-full rounded-xl border border-slate-200 p-3 text-sm outline-none focus:border-blue-500"
+        className="mt-3 min-h-32 w-full rounded-xl border border-slate-200 p-3 text-sm outline-hidden focus:border-blue-500"
         value={review.memo ?? ''}
         onChange={(event) => onChange({ memo: event.target.value })}
         placeholder="원문에서 빠진 실행 단서, 생성된 캘린더/체크리스트/시트/메모에서 막히는 지점, 줄여야 할 입력"

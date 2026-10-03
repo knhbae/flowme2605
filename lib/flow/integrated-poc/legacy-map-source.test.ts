@@ -23,7 +23,7 @@ import { updateProgramTask, recordProgramTaskProgress } from './private-space';
 const NOW = '2026-09-12T13:20:00.000Z', actorId = 'local-user';
 /** Real map factory with an explicitly simulated older saved Step title and
  * absent discovery link, not a fictitious published catalog version. */
-export function structuredMapFixture(mapId = 'moving-d30', older = true) {
+export function structuredMapFixture(mapId = 'curated-ajd-moving-d30', older = true) {
   const snapshot = buildSourceBackedFlowMapSavedSnapshot(mapId, { savedAt: NOW, anchor: '2026-09-30' })!;
   const persistence = buildSourceBackedFlowMapPersistenceRecord(mapId, { savedAt: NOW, anchor: '2026-09-30' })!;
   const entries: Record<string, string> = { [`flow:map:saved:${mapId}`]: JSON.stringify(snapshot), [`flow:map:persistence:${mapId}`]: JSON.stringify(persistence) };
@@ -104,7 +104,7 @@ test('MS04 five genuine quality-held factories remain held after structured conn
   }
 });
 test('MS05 changed effective structured source invalidates old personal Map approval; source Undo restores its exact source token', () => {
-  const f = structuredMapFixture('moving-d30', false);
+  const f = structuredMapFixture('curated-ajd-moving-d30', false);
   f.payload.model = { ...f.payload.model, flows: f.payload.model.flows.map(flow => ({ ...flow, presentation: { ...flow.presentation, mapGroup: { ...flow.presentation!.mapGroup!, executionState: 'review-hold', reviewReasons: ['원문 링크 개인 확인'] } } })) };
   const original = f.payload.model.flows[0], groupRef = original.presentation!.mapGroup!.groupRef;
   const old = readProgramLegacyMapReview(f.payload.model.flows, groupRef)!;
@@ -169,7 +169,7 @@ test('MS07 genuine structured evidence validation uses only the supplied memory 
   } finally { for (const key of properties) { const descriptor = prior.get(key); if (descriptor) Object.defineProperty(globalThis, key, descriptor); else Reflect.deleteProperty(globalThis, key); } }
 });
 test('MS08 real newly supplied Step uses its exact ID; explicit source Undo retains its later execution record without deleting original siblings', () => {
-  const f = structuredMapFixture('moving-d30', false), removed = f.flow.items.at(-1)!; assert.ok(f.flow.items.length > 1);
+  const f = structuredMapFixture('curated-ajd-moving-d30', false), removed = f.flow.items.at(-1)!; assert.ok(f.flow.items.length > 1);
   // Explicit simulated older snapshot omitted this actual catalog Step. No
   // new title or index is used to identify the subsequently supplied Step.
   const model = { ...f.payload.model, flows: f.payload.model.flows.map(flow => flow.ref === f.flow.ref ? { ...flow, items: flow.items.filter(item => item.ref !== removed.ref) } : flow) };
@@ -192,7 +192,7 @@ test('MS08 real newly supplied Step uses its exact ID; explicit source Undo reta
   assert.equal(checked.model.flows.find(flow => flow.ref === f.flow.ref)!.items.length, f.flow.items.length); assert.ok(inspectProgramLegacySnapshotPayload(JSON.parse(JSON.stringify(checked.payload))).ok);
 });
 for (const mode of ['all', 'mixed'] as const) test(`MS09 ${mode}: executed Map -> changed provenance -> hold keeps canonical records and references, blocks every writer, then explicit re-review and source Undo/reload`, async () => {
-  const f = structuredMapFixture('moving-d30', false);
+  const f = structuredMapFixture('curated-ajd-moving-d30', false);
   // Explicitly simulated readiness hold on actual normal source content.
   const model = { ...f.payload.model, flows: f.payload.model.flows.map(flow => ({ ...flow, presentation: { ...flow.presentation, mapGroup: { ...flow.presentation!.mapGroup!, executionState: 'review-hold' as const, reviewReasons: ['원문 링크 개인 확인'] } } })) };
   const h = hydrateProgramLegacy(createProgramData(), model, f.payload.state, { actorId, preserveUnsupported: true }); assert.ok(h.ok);
@@ -230,7 +230,7 @@ for (const mode of ['all', 'mixed'] as const) test(`MS09 ${mode}: executed Map -
   const loaded = createProgramController({ initialData: createProgramData(), storage, exclusive: async work => work() }); assert.ok(loaded.ok); assert.deepEqual(loaded.snapshot().envelope.data, data()); assert.deepEqual(JSON.parse(undone.legacySnapshot!.raw).model, model); assert.equal(values.get('flow:operating-sentinel'), ' original\r\n');
 });
 test('MS10 empty saved Map Step structure stays blocked until actual same-Flow factory Steps are explicitly accepted', () => {
-  const f = structuredMapFixture('moving-d30', false), model = { ...f.payload.model, flows: f.payload.model.flows.map(flow => ({ ...flow, items: [], presentation: { ...flow.presentation, mapGroup: { ...flow.presentation!.mapGroup!, executionState: 'review-hold' as const, reviewReasons: ['Step이 없는 Flow: 저장 당시 누락'] } } })) };
+  const f = structuredMapFixture('curated-ajd-moving-d30', false), model = { ...f.payload.model, flows: f.payload.model.flows.map(flow => ({ ...flow, items: [], presentation: { ...flow.presentation, mapGroup: { ...flow.presentation!.mapGroup!, executionState: 'review-hold' as const, reviewReasons: ['Step이 없는 Flow: 저장 당시 누락'] } } })) };
   const h = hydrateProgramLegacy(createProgramData(), model, f.payload.state, { actorId, preserveUnsupported: true }); assert.ok(h.ok); let data = h.data;
   const commit = (action: ProgramLegacySourceAction) => { const view = prepareProgramLegacyView(data, { actorId, now: NOW, onlyFlowRef: action.flowRef, sourceReview: true }); assert.ok(view.ok, JSON.stringify(view)); const result = applyProgramLegacySourceAction(data, { actorId, expectedToken: view.token, action }); assert.ok(result.transition.ok, JSON.stringify({ issues: result.issues, conflicts: result.conflicts })); data = result.transition.data; };
   for (const flow of model.flows) {
