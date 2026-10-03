@@ -208,3 +208,26 @@ main이 최종13개 실제 OS SHA256를 직접 다시 계산해 담당자 인계
 최종11개 entry의 TypeScript 대조는 source235개에서 baseline9/current9 diagnostic statement가 같고 신규0·해소0이었다. 대조 exit0이며 기존 legacy diagnostic9개는 남아 있다. 완전한 E2E 타입 PASS로 쓰지 않는다. 독립 정적 검토는 실제 registry/행/원문/receipt/export·hold/negative 경계를 대조했고 추가 결함을 찾지 못했다. 삭제·skip/fixme/only0, 파싱 오류0이며 새로운 실제 브라우저 실행을 한 결과가 아니다. Tax 브라우저의0쓰기는 보호된3키에 한정하고 전체 저장소0쓰기라고 확대하지 않는다.
 
 09:29:33.862~09:29:40.151 UTC 보완판 `security:audit`는 exit0·취약점0·호환 **14/14 PASS**(의존성4+현재 CSS10)였다. OS allowlist만 전달하고 실제 자격정보 전달0·raw 미보관을 유지했다. 최종 proof helper self-test도 통과했으며 SHA `7f9b88bcef8334605e7466c2b06caef6262807a84b8585d3acf259136a492dee`는 그대로다. Vercel 자동 Git 배포 차단 파일은 실제 Git blob/HEAD 동일·deploymentEnabled=false였다. 후속 게시·CI·HTTP·개발계 반영 성공을 이 사전 검사로 대신하지 않는다.
+
+## N — M 후속의 잔여5건과 빈 화면 이름 연결
+
+정상 후속 commit `670f1f4528c785dccd3eb422a525ee89cb68cacd`의 [CI37113646381](https://github.com/knhbae/flowme2605/actions/runs/37113646381)은 core/catalog/integration SUCCESS·E2E FAILURE였다. 실제760개 중 **753PASS/5FAIL/2FLAKY/0NOT_RUN**이다. 이전29개 중24개가 복구됐고 남은5개를 새 runtime 결함5개로 단정하지 않는다. flaky2는 approved-plan-execution-ux915·personal-workspace-integrated-standalone2065로 이전 run과 대상이 다르며 두 오류 원인을 일괄 ERR_ABORTED로 확정하지 않는다.
+
+CSS 첫 후속 build `rxHqgLVMfF47XqfM6s7mR`에는 outline-color가 남았다. 정확 ignored webpack cache를 reparse/루트 확인 뒤 recoverable 이동했고 정상 hook을09:47:19~09:50:13 UTC 다시 실행해 npm2258/2258·docs4/4·exit0을 확인했다. cold build `C7MFCtrzqwqfL6t2pKtTm`·exact compile1212/QA242/static81 drift0이다. 실제 layout manifest가 참조한 CSS `360131c5fecb58a5.css` SHA `e6a2f0b75b8fda1812f307f83cacecced2c2a00eb893d6ae75a765e303eb4669`는 기존 CSS에서 정확2토큰/28byte만 제거한 bytes와 같다. 이전 CSS 미반영을 성공으로 덮어쓰지 않으며 실제 HTTP30·실기기/AT 결과는 아니다.
+
+P35 잔여 실패는 `expectCleanVisiblePage`가 발견한 `aria-labelledby:my-flow-tab-flow` 미해결 참조1개였다. 나머지 overflow/가림/이름 누락/중복ID/replacement 값은0이었다. 이것을 저장0쓰기 실패로 처음 분류한 것은 잘못됐고 정정한다. source-backed의 앞단0노출·0쓰기·bytes/reload 검사는 지났으나 missing/malformed 뒤 저장 assertion은 quality 실패 때문에 NOT_REACHED였다. 이 부분은 수정 후 실제 E2E 실행에서 다시 확인해야 한다.
+
+빈 화면은 navigation이 없는데도 tabpanel이 렌더되지 않은 tab을 참조했다. 실제 active tab이 렌더되는 경우의 role/label은 보존하고, 없는 경우에만 region과 실제 빈 화면 h2를 연결했다. 저장 writer·원본·사본·메뉴·등록·source hold·CAS/schema/운영 데이터 변경0이다. 다음2개 기존 tracked 경로를 추가 소유해 **CP1 123+2=125 고유 경로**로 관리한다. P35의 quality/쓰기/byte 검사는 낮추거나 제거하지 않았다.
+
+| 추가 소유 경로 | N 수정 후 OS bytes SHA256 |
+| --- | --- |
+| `components/flow/my-flow/MyFlowRouteSurface.tsx` | `b157c140174309d4025d54528699cdcff2ae988f4b21b25f760625268f74b8c8` |
+| `components/flow/my-flow/MyFlowRouteSurface.test.tsx` | `3d299dc704bbcd7a00f8331e9a99d5031949e7ac5f51a30f6654621526cf451f` |
+
+SSR 회귀는 숨은 navigation·활성 tab 누락·활성 tab 존재3상태를 추가했다. 같은7개 실행의 red **5PASS/2FAIL**→green **7/7PASS**, 인접 host/sort를 포함한3파일 **13/13PASS**다. 기존 보관 액션·문구·탐색 링크·활성 tab 의미를 보존한다. 정적/SSR 근거이며 실제 P35 E2E·스크린리더·새 HTTP30 PASS로 바꾸지 않는다. 정상 hook·후속 CI는 완료 전 성공으로 기록하지 않는다.
+
+flow-mvp의 남은4개는 중복된 공개 count11·옛 Funmom 문구, 그리고 demo가 소비하지 않는 savedMap query를 성공 fixture로 쓰던 두 검사였다. 승인된 현재 roster8·원문 대조/새 저장 거절 안내를 확인한다. demo의 math1·보류 moving0 검사는 유지하며, 공식 wedding snapshot/persistence/child saved record4개를 사전 공급한 실제 legacy library 경로에서2child의 Calendar6/Todo4·identity·목록/모바일2행·저장 bytes 불변을 확인한다. production seed·source hold·새 public 공급·writer는 변경하지 않는다.
+
+`tests/e2e/flow-mvp.spec.ts` N 최종 OS SHA256은 `3bf597944364ebc56fa817348ecb06ea0741dad0fad62ad476122be7ba465bb9`다. 실제 helper AST와 App의 `mergeSourceBackedMyFlowBundles(readBundles())`·saved record·map index 소비를 대조한 순수6개는 **6/6PASS**다. 첫 probe에서 readBundles만으로 curated bundle을 기대한 harness 오류1개를 실제 App merge 경로로 바로잡았으며 그 실패도 보존한다. 10:12:43 UTC flow spec132/1파일·전체760/105파일 수집 유지·파싱0·exit0이다. 실제 UI 클릭이 아니고 새 CI의5개가 통과했다고 미리 판정하지 않는다.
+
+현재 emitted CSS를 사용한 별도 Nav probe는 tsx 등록 누락의 MODULE_NOT_FOUND 때문에30개 화면을 실행하지 못했다. 이를 제품CSS 결함30개나 PASS로 세지 않는다. M의 inline fixture30/30·cold actual CSS bytes 일치·새 CI에서 기존CSS9실패가 소멸한 근거와 이 별도 harness 미실행을 구분한다.

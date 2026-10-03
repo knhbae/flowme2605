@@ -176,6 +176,8 @@ export function MyFlowRouteSurface<TFlow>({
 }: MyFlowRouteSurfaceProps<TFlow>) {
   const { copy, header, reconciliation, navigation, empty, workspace } = model;
   const { library, panel } = workspace;
+  const emptyHasActiveTab = navigation.visible
+    && navigation.tabs.some((tab) => tab.id === navigation.activeView);
 
   return (
     <>
@@ -321,13 +323,15 @@ export function MyFlowRouteSurface<TFlow>({
       {empty.visible ? (
         <section
           id={`my-flow-panel-${navigation.activeView}`}
-          role="tabpanel"
-          aria-labelledby={`my-flow-tab-${navigation.activeView}`}
+          role={emptyHasActiveTab ? 'tabpanel' : 'region'}
+          aria-labelledby={emptyHasActiveTab
+            ? `my-flow-tab-${navigation.activeView}`
+            : 'my-flow-empty-state-heading'}
           data-testid="my-flow-empty-state"
           className="rounded-[var(--flowme-radius-surface)] border border-[var(--flowme-border)] bg-[var(--flowme-surface)] px-4 py-8 sm:px-6 sm:py-10"
         >
           <p className="text-sm font-semibold text-[var(--flowme-action)]">{copy.listTitle}</p>
-          <h2 className="mt-2 break-keep text-2xl font-semibold text-[var(--flowme-text)]">{empty.title}</h2>
+          <h2 id="my-flow-empty-state-heading" className="mt-2 break-keep text-2xl font-semibold text-[var(--flowme-text)]">{empty.title}</h2>
           <p className="mt-2 max-w-xl break-keep text-sm leading-6 text-[var(--flowme-text-secondary)]">{empty.description}</p>
           <div className="mt-5 flex flex-wrap gap-2">
             <Link
