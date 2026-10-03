@@ -97,9 +97,9 @@ test.describe('P35-07 export scope first and count parity', () => {
     const errors = collectBrowserErrors(page);
     await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
     await page.setViewportSize({ width: 390, height: 844 });
-    await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=source-backed&view=flows');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=source-backed&savedMap=curated-ajd-moving-d30&view=flows');
 
-    const flow = await openMyFlowLibraryFlow(page, 'source-backed-moving-d30', 'record');
+    const flow = await openMyFlowLibraryFlow(page, 'curated-ajd-moving-d30', 'record');
     const surface = flow.getByTestId('my-flow-export-surface');
     await surface.getByTestId('my-flow-export-entry').click();
     const panel = surface.getByTestId('my-flow-export-panel');
@@ -128,13 +128,13 @@ test.describe('P35-07 export scope first and count parity', () => {
     const ics = fs.readFileSync(downloadPath!, 'utf8');
     const unfoldedIcs = ics.replace(/\r?\n[ \t]/g, '');
     expect((ics.match(/BEGIN:VEVENT/g) ?? []).length).toBe(calendarCount);
-    expect(unfoldedIcs).toContain('완료 기준: 견적 후보 2-3곳과 연락처\\, 비용 범위가 메모됐습니다.');
+    expect(unfoldedIcs).toContain('완료 기준: D-30: 이사 방식과 견적 예약 상태가 기록되었습니다.');
     let receipt = panel.getByTestId('my-flow-transfer-receipt');
     await expect(receipt).toHaveAttribute('data-output-count', String(calendarCount));
     await expect(receipt).toHaveAttribute('data-scope', 'flow');
     await expect(receipt).toHaveAttribute(
       'data-transfer-saved-plan-id',
-      'source-backed-moving-d30',
+      'curated-ajd-moving-d30',
     );
     await acknowledgeSavedTransfer(receipt);
 
@@ -142,8 +142,8 @@ test.describe('P35-07 export scope first and count parity', () => {
     await makeVisible(panel, wholeChecklist);
     receipt = await confirmSavedClipboardTransfer(panel, wholeChecklist);
     const wholeChecklistText = await page.evaluate(() => navigator.clipboard.readText());
-    expect(wholeChecklistText).toContain('완료 기준: 견적 후보 2-3곳과 연락처, 비용 범위가 메모됐습니다.');
-    expect(wholeChecklistText).toContain('완료 기준: 정산 메모와 행정 확인 결과가 남았습니다.');
+    expect(wholeChecklistText).toContain('완료 기준: D-30: 이사 방식과 견적 예약 상태가 기록되었습니다.');
+    expect(wholeChecklistText).toContain('완료 기준: D-Day: 정산과 전입 관련 확인 상태가 기록되었습니다.');
     await acknowledgeSavedTransfer(receipt);
 
     await panel.getByTestId('my-flow-export-scope-selected').click();
@@ -160,9 +160,9 @@ test.describe('P35-07 export scope first and count parity', () => {
     receipt = await confirmSavedClipboardTransfer(panel, checklist);
     const checklistText = await page.evaluate(() => navigator.clipboard.readText());
     expect((checklistText.match(/^- \[[ x]\] /gmu) ?? []).length).toBe(2);
-    expect(checklistText).toContain('완료 기준: 견적 후보 2-3곳과 연락처, 비용 범위가 메모됐습니다.');
-    expect(checklistText).toContain('완료 기준: 예약일, 수거일, 신고 번호가 메모됐습니다.');
-    expect(checklistText).not.toContain('완료 기준: 관리사무소 공유와 주소 변경 대상 메모가 끝났습니다.');
+    expect(checklistText).toContain('완료 기준: D-30: 이사 방식과 견적 예약 상태가 기록되었습니다.');
+    expect(checklistText).toContain('완료 기준: D-10: 주소 변경과 예약 상태 확인 상태가 기록되었습니다.');
+    expect(checklistText).not.toContain('완료 기준: D-3: 장비와 서류 확인 상태가 기록되었습니다.');
     await expect(receipt).toHaveAttribute('data-output-count', '2');
     await expect(receipt).toHaveAttribute('data-scope', 'selected');
     await acknowledgeSavedTransfer(receipt);

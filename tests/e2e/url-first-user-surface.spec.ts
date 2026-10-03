@@ -503,7 +503,8 @@ test('broad worksheet category URL stops before an invented weekly schedule or d
   await lookupUrl(page, 'https://funmom.tistory.com/?utm_source=review');
 
   const result = page.getByTestId('flow-url-lookup-result');
-  await expect(result).toContainText('실행할 자료를 더 골라야 해요');
+  await expect(result).toContainText('원문과 실행 항목 확인이 필요해요');
+  await expect(result).toContainText('실행 항목의 일정과 조건을 원문과 대조 중');
   await expect(result).toContainText('개별 자료와 난이도를 더 확인해야 해요');
   await expect(result).toContainText('새 저장 중지');
   await expect(result.getByRole('link', { name: '원문 자료 보기' })).toHaveAttribute(

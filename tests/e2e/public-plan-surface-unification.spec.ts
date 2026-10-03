@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { sourceBackedMyFlowMaps } from '../../lib/flow/source-backed-my-flow';
 
 type PublicSurfaceCase = Readonly<{
   label: string;
@@ -16,18 +17,6 @@ const PUBLIC_SURFACE_CASES: readonly PublicSurfaceCase[] = [
   {
     label: 'middle-school math',
     route: '/flow-maps/middle-school-math-1',
-    planKind: 'map',
-    saveMode: 'save_all',
-  },
-  {
-    label: 'OPIc mock course',
-    route: '/flow-maps/curated-opic-mock-course',
-    planKind: 'map',
-    saveMode: 'choose_child',
-  },
-  {
-    label: 'reading routine',
-    route: '/flow-maps/curated-reading-routine-log',
     planKind: 'map',
     saveMode: 'save_all',
   },
@@ -62,6 +51,8 @@ const PUBLIC_SURFACE_CASES: readonly PublicSurfaceCase[] = [
     saveMode: 'choose_child',
   },
 ] as const;
+
+const HELD_SOURCE_ROW_MAP_IDS = ['curated-opic-mock-course', 'curated-reading-routine-log'] as const;
 
 const CHOOSE_CHILD_CASES = PUBLIC_SURFACE_CASES.filter(
   (surface): surface is PublicSurfaceCase & { saveMode: 'choose_child' } => (
@@ -258,6 +249,32 @@ test.describe('public plan surface unification', () => {
           await expect(page).toHaveURL(surface.route);
           await expectApprovedPublicSurface(page, surface);
           expect(await readRawStorage(page)).toEqual(storageBefore);
+          expect(runtimeFailures).toEqual([]);
+        });
+      }
+      // The same source routes remain covered, but reviewed source holds are
+      // not positive executable fixtures. Do not recreate their derived rows.
+      for (const mapId of HELD_SOURCE_ROW_MAP_IDS) {
+        await test.step(`${mapId} retains its source without new execution`, async () => {
+          const storageBefore = await readRawStorage(page);
+          await page.goto(`/flow-maps/${mapId}`);
+          const hold = page.getByTestId('flow-map-review-hold');
+          await expect(hold).toBeVisible();
+          await expect(hold).toHaveAttribute('data-map-execution-state', 'review_hold');
+          await expect(hold).toHaveAttribute('data-map-save-capability', 'hidden');
+          await expect(hold).toHaveAttribute('data-map-edit-capability', 'hidden');
+          await expect(hold).toContainText('새로 저장하거나 파일로 받을 수 없습니다');
+          const source = sourceBackedMyFlowMaps.find((map) => map.id === mapId);
+          expect(source?.sourceUrl).toBeTruthy();
+          await expect(hold.getByTestId('flow-map-source-link')).toHaveAttribute('href', source!.sourceUrl!);
+          await expect(page.getByTestId('public-flow-capability-result')).toHaveCount(0);
+          await expect(page.getByTestId('flow-map-save-all')).toHaveCount(0);
+          await expect(page.getByTestId('flow-map-save-all-mobile')).toHaveCount(0);
+          await expect(page.getByTestId('flow-map-choose-child')).toHaveCount(0);
+          await expect(page.getByTestId('flow-map-open-selected-child')).toHaveCount(0);
+          expect(await readRawStorage(page)).toEqual(storageBefore);
+          await expectNoHorizontalOverflow(page);
+          await expectPublicSurfaceQuality(page);
           expect(runtimeFailures).toEqual([]);
         });
       }

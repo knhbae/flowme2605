@@ -7,7 +7,13 @@ import {
   RUNTIME_ARCHIVED_FLOW_SLUGS,
 } from '../../lib/flow/runtime-content-policy';
 import { seedBundles } from '../../lib/flow/seed-flows';
-import { getCuratedSourceAppSeedFlowMaps, getSourceBackedHomepageFlowMaps } from '../../lib/flow/source-backed-my-flow';
+import {
+  buildSourceBackedFlowMapPersistenceRecord,
+  buildSourceBackedFlowMapSavedSnapshot,
+  getCuratedSourceAppSeedFlowMaps,
+  getSourceBackedHomepageFlowMaps,
+  sourceBackedMyFlowBundles,
+} from '../../lib/flow/source-backed-my-flow';
 import {
   collectSourceSlugSignals,
   findFirstTaskRepetitionHits,
@@ -521,7 +527,7 @@ test('wide discovery and My Flow keep action columns purposeful', async ({ page 
   await page.reload();
   await expect(page).toHaveURL('/flows');
   await expect(page.getByTestId('platform-primary-tabs').getByRole('link')).toHaveCount(3);
-  await expect(page.getByTestId('flow-map-catalog-card')).toHaveCount(9);
+  await expect(page.getByTestId('flow-map-catalog-card')).toHaveCount(6);
   await expectNoHorizontalOverflow(page);
 
   await page.goto('/f/vehicle-inspection-prep');
@@ -568,8 +574,8 @@ test('flow list exposes the seed and online-sourced flows', async ({ page }) => 
   await expect(flowMapCatalog.getByTestId('flow-url-lookup-input')).toBeVisible();
   await expect(flowMapCatalog.getByTestId('flow-catalog-search')).toHaveCount(0);
   await expect(flowMapCatalog.getByRole('heading', { name: '내 상황에 맞는 콘텐츠 고르기' })).toHaveCount(0);
-  await expect(flowMapCatalog.getByTestId('flow-map-catalog-card')).toHaveCount(9);
-  await expect(flowMapCatalog.locator('[data-testid="flow-map-catalog-card"][data-source-kind="curated-source"]')).toHaveCount(8);
+  await expect(flowMapCatalog.getByTestId('flow-map-catalog-card')).toHaveCount(6);
+  await expect(flowMapCatalog.locator('[data-testid="flow-map-catalog-card"][data-source-kind="curated-source"]')).toHaveCount(5);
   await expect(flowMapCatalog.getByTestId('single-flow-catalog-card')).toHaveCount(2);
   const firstCatalogCard = flowMapCatalog.getByTestId('flow-map-catalog-card').first();
   const firstCatalogCardTop = await firstCatalogCard.evaluate((element) => element.getBoundingClientRect().top);
@@ -584,8 +590,9 @@ test('flow list exposes the seed and online-sourced flows', async ({ page }) => 
   await expect(flowMapCatalog.locator('a[href="/f/curated-wedding-gongysd-atoz"]')).toBeVisible();
   await expect(flowMapCatalog.locator('a[href="/f/curated-allblanc-morning-workout"]')).toBeVisible();
   await expect(flowMapCatalog.locator('a[href="/f/curated-allblanc-no-jump-cardio"]')).toBeVisible();
-  await expect(flowMapCatalog.locator('a[href="/f/curated-opic-single-mock-review"]')).toBeVisible();
-  await expect(flowMapCatalog.locator('a[href="/f/curated-opic-course-row-import"]')).toBeVisible();
+  await expect(flowMapCatalog.locator('a[href="/f/curated-opic-single-mock-review"]')).toHaveCount(0);
+  await expect(flowMapCatalog.locator('a[href="/f/curated-opic-course-row-import"]')).toHaveCount(0);
+  await expect(flowMapCatalog.locator('a[href="/flow-maps/curated-reading-routine-log"]')).toHaveCount(0);
   await expect(flowMapCatalog.locator('a[href="/flow-maps/curated-wedding-checklist-family"]')).toHaveCount(0);
   await expect(flowMapCatalog.locator('a[href="/flow-maps/curated-allblanc-workout-park"]')).toHaveCount(0);
   await expect(flowMapCatalog.locator('a[href="/flow-maps/curated-ajd-moving-d30"]')).toHaveCount(0);
@@ -1532,58 +1539,58 @@ test('post-save moving item edits keep completion criterion in UI promise and ch
 
 
 
-test('curated source cards are integrated into Flow finding and open the OPIc child selector', async ({ page }) => {
+test('eligible curated source cards open the wedding child selector without supplying held OPIc plans', async ({ page }) => {
   await page.goto('/flows');
 
   const catalog = page.getByTestId('flow-map-catalog-section');
   const curatedCards = catalog.locator('[data-testid="flow-map-catalog-card"][data-source-kind="curated-source"]');
   await expect(page.getByTestId('curated-source-catalog-section')).toHaveCount(0);
-  await expect(curatedCards).toHaveCount(8);
-  await expect(catalog).toContainText('오픽 모의고사 2주 계획표');
-  await expect(catalog).toContainText('오픽 모의고사 1달 반복 계획');
+  await expect(curatedCards).toHaveCount(5);
+  await expect(catalog).not.toContainText('오픽 모의고사 2주 계획표');
+  await expect(catalog).not.toContainText('오픽 모의고사 1달 반복 계획');
   await expect(catalog).not.toContainText('펀맘 공부 루틴');
   await expect(catalog).not.toContainText('확인하며 사용');
   await expect(catalog).not.toContainText('자료 보강 후 시작');
   await expect(curatedCards.first().getByRole('list', { name: '대표 할 일' })).toBeVisible();
 
-  const opicTwoWeekCard = curatedCards.filter({ hasText: '오픽 모의고사 2주 계획표' });
-  const opicOneMonthCard = curatedCards.filter({ hasText: '오픽 모의고사 1달 반복 계획' });
-  await expect(opicTwoWeekCard.getByRole('link', { name: '오픽 모의고사 2주 계획표 더보기' }))
-    .toHaveAttribute('href', '/f/curated-opic-single-mock-review');
-  await expect(opicOneMonthCard.getByRole('link', { name: '오픽 모의고사 1달 반복 계획 더보기' }))
-    .toHaveAttribute('href', '/f/curated-opic-course-row-import');
-  await expect(opicTwoWeekCard.getByTestId('flow-card-primary-action')).toHaveText('더보기');
+  const timelineCard = curatedCards.filter({ hasText: '결혼 준비 1년 참고 타임라인' });
+  const checklistCard = curatedCards.filter({ hasText: '결혼 준비 핵심 4가지 시작표' });
+  await expect(timelineCard.getByRole('link', { name: '결혼 준비 1년 참고 타임라인 더보기' }))
+    .toHaveAttribute('href', '/f/curated-wedding-naver-timeline');
+  await expect(checklistCard.getByRole('link', { name: '결혼 준비 핵심 4가지 시작표 더보기' }))
+    .toHaveAttribute('href', '/f/curated-wedding-gongysd-atoz');
+  await expect(timelineCard.getByTestId('flow-card-primary-action')).toHaveText('더보기');
   await expectCompactCatalogAction(
-    opicTwoWeekCard,
-    opicTwoWeekCard.getByTestId('flow-map-detail-link'),
+    timelineCard,
+    timelineCard.getByTestId('flow-map-detail-link'),
   );
-  await expect(opicTwoWeekCard.getByTestId('flow-map-recommended-flow-link')).toHaveCount(0);
-  await expect(opicTwoWeekCard.getByTestId('flow-card-source-link')).toHaveCount(1);
+  await expect(timelineCard.getByTestId('flow-map-recommended-flow-link')).toHaveCount(0);
+  await expect(timelineCard.getByTestId('flow-card-source-link')).toHaveCount(1);
 
-  await page.goto('/flow-maps/curated-opic-mock-course');
+  await page.goto('/flow-maps/curated-wedding-checklist-family');
   const publicMap = page.getByTestId('flow-map-public');
   await expect(publicMap).toBeVisible();
   await expect(publicMap).toHaveAttribute('data-map-save-mode', 'choose_child');
   const choices = publicMap.getByTestId('flow-map-child-choice');
   await expect(choices).toHaveCount(2);
-  await expect(choices.nth(0)).toHaveAttribute('data-flow-slug', 'curated-opic-single-mock-review');
-  await expect(choices.nth(1)).toHaveAttribute('data-flow-slug', 'curated-opic-course-row-import');
+  await expect(choices.nth(0)).toHaveAttribute('data-flow-slug', 'curated-wedding-naver-timeline');
+  await expect(choices.nth(1)).toHaveAttribute('data-flow-slug', 'curated-wedding-gongysd-atoz');
   await expect(choices.nth(0).getByRole('radio')).toBeChecked();
   await expect(publicMap.getByTestId('flow-map-open-selected-child')).toHaveAttribute(
     'href',
-    '/f/curated-opic-single-mock-review',
+    '/f/curated-wedding-naver-timeline',
   );
   await expectApprovedPublicMapResult(publicMap, {
-    mapId: 'curated-opic-mock-course',
-    outputCount: 14,
-    firstItemId: 'curated-opic-single-mock-review::opic-2w-d01',
-    firstItemTitle: '1일차: 1회차 연습',
+    mapId: 'curated-wedding-checklist-family',
+    outputCount: 6,
+    firstItemId: 'curated-wedding-naver-timeline::wedding-naver-d12',
+    firstItemTitle: 'D-12개월: 예산과 웨딩홀 후보 정하기',
   });
   await choices.nth(1).click();
   await expect(choices.nth(1).getByRole('radio')).toBeChecked();
   await expect(publicMap.getByTestId('flow-map-open-selected-child')).toHaveAttribute(
     'href',
-    '/f/curated-opic-course-row-import',
+    '/f/curated-wedding-gongysd-atoz',
   );
 
   const staleMapResponse = await page.goto('/flow-maps/moving-map');
@@ -1618,8 +1625,8 @@ test('flow finding search and intent chips narrow commercial catalog cards', asy
   await sharedInput.fill('');
   await catalog.getByRole('button', { name: '공부' }).click();
   await expect(catalog).toContainText('중1 수학 목차 진도');
-  await expect(catalog).toContainText('오픽 모의고사 2주 계획표');
-  await expect(catalog).toContainText('오픽 모의고사 1달 반복 계획');
+  await expect(catalog).not.toContainText('오픽 모의고사 2주 계획표');
+  await expect(catalog).not.toContainText('오픽 모의고사 1달 반복 계획');
   await expect(catalog).not.toContainText('신차 구매');
 });
 
@@ -1666,14 +1673,15 @@ test('flow finding lookup can reveal the full catalog and editing the shared inp
   await expect(catalog.getByRole('button', { name: '공부' })).toHaveAttribute('aria-pressed', 'false');
   await expect(browseResults.locator(
     '[data-testid="flow-map-catalog-card"], [data-testid="single-flow-catalog-card"]',
-  )).toHaveCount(11);
-  await expect(catalog.getByTestId('flow-catalog-count')).toContainText('계획 11개');
+  )).toHaveCount(8);
+  await expect(catalog.getByTestId('flow-catalog-count')).toContainText('계획 8개');
 
-  await sharedInput.fill('오픽');
+  await sharedInput.fill('결혼');
   await expect(lookupResult).toHaveCount(0);
   await expect(browseToggle).toHaveCount(0);
   await expect(browseResults).toBeVisible();
-  await expect(browseResults).toContainText('오픽 모의고사 2주 계획표');
+  await expect(browseResults).toContainText('결혼 준비 1년 참고 타임라인');
+  await expect(browseResults).not.toContainText('오픽 모의고사 2주 계획표');
   await expect(browseResults).not.toContainText('이사 D-30 준비');
 
   await sharedInput.fill('여권을 확인한다. 보험 서류를 챙긴다. 숙소 주소를 적는다.');
@@ -1687,9 +1695,9 @@ test('flow finding lookup can reveal the full catalog and editing the shared inp
   await expect(lookupResult).toContainText('메모를 실행할 초안으로 정리했어요');
   await expect(lookupResult).not.toContainText('준비된 계획이 없어요');
 
-  await sharedInput.fill('오픽');
+  await sharedInput.fill('결혼');
   await expect(lookupResult).toHaveCount(0);
-  await expect(browseResults).toContainText('오픽 모의고사 2주 계획표');
+  await expect(browseResults).toContainText('결혼 준비 1년 참고 타임라인');
 });
 
 test('legacy AJD Flow Map alias opens the canonical 24-item detail with its source', async ({ page }) => {
@@ -3018,32 +3026,36 @@ test('my flow ux12 demo renders its fixture library without legacy local views',
   await expect(overview).toHaveAttribute('data-flow-slug', 'moving-d30-basic');
   await expect(overview.getByTestId('my-flow-whole-flow-outline')).toBeVisible();
 });
-test('my flow source-backed demo renders two bridge bundles in the shared library', async ({ page }) => {
+test('my flow source-backed demo excludes archived supply and renders two eligible bridge bundles', async ({ page }) => {
   await page.goto('/my?demo=source-backed');
+  await openCurrentMyFlowLibrary(page);
+  await expect(page.locator('[data-testid="my-flow-library-row"][data-flow-slug="source-backed-moving-d30"]')).toHaveCount(0);
+  await expect(page.locator('[data-testid="my-flow-library-row"][data-flow-slug="source-backed-middle-school-math-1"]')).toHaveCount(1);
+  await page.goto('/my?demo=source-backed&savedMap=curated-wedding-checklist-family');
   await expect(page.getByTestId('my-flow-demo-badge')).toContainText('원문 기반');
   await expect(page.getByTestId('my-flow-view-today')).toHaveCount(0);
 
   await openCurrentMyFlowLibrary(page);
   const library = page.getByTestId('my-flow-library-workspace');
   await expect(library.getByTestId('my-flow-library-row')).toHaveCount(2);
-  await library.locator('[data-testid="my-flow-library-row"][data-flow-slug="source-backed-moving-d30"]').click();
+  await library.locator('[data-testid="my-flow-library-row"][data-flow-slug="curated-wedding-naver-timeline"]').click();
   await expect(library.getByTestId('my-flow-library-detail').getByTestId('my-flow-overview-card'))
-    .toHaveAttribute('data-flow-slug', 'source-backed-moving-d30');
-  await library.locator('[data-testid="my-flow-library-row"][data-flow-slug="source-backed-middle-school-math-1"]').click();
+    .toHaveAttribute('data-flow-slug', 'curated-wedding-naver-timeline');
+  await library.locator('[data-testid="my-flow-library-row"][data-flow-slug="curated-wedding-gongysd-atoz"]').click();
   await expect(library.getByTestId('my-flow-library-detail').getByTestId('my-flow-overview-card'))
-    .toHaveAttribute('data-flow-slug', 'source-backed-middle-school-math-1');
+    .toHaveAttribute('data-flow-slug', 'curated-wedding-gongysd-atoz');
 });
 test('my flow source-backed demo stays lightweight in the mobile library', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/my?demo=source-backed');
+  await page.goto('/my?demo=source-backed&savedMap=curated-wedding-checklist-family');
 
   await openCurrentMyFlowLibrary(page);
   await expect(page.getByTestId('my-flow-overview-card')).toHaveCount(0);
   const rows = page.getByTestId('my-flow-mobile-structure-row');
   await expect(rows).toHaveCount(2);
-  await expect(page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug="source-backed-moving-d30"]'))
+  await expect(page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug="curated-wedding-naver-timeline"]'))
     .toHaveCount(1);
-  await expect(page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug="source-backed-middle-school-math-1"]'))
+  await expect(page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug="curated-wedding-gongysd-atoz"]'))
     .toHaveCount(1);
   await expect(rows.getByTestId('my-flow-mobile-structure-open')).toHaveCount(2);
   await expectNoHorizontalOverflow(page);
@@ -3333,8 +3345,9 @@ test('broad Funmom category collection stays visible as a source-row hold withou
 
   const hold = page.getByTestId('flow-map-review-hold');
   await expect(hold.getByRole('heading', { name: '펀맘 주간 출력 루틴' })).toBeVisible();
-  await expect(hold).toContainText('실행 항목 준비 중');
-  await expect(hold).toContainText('원문 자료에서 실제로 실행할 항목을 고르는 중이에요');
+  await expect(hold).toContainText('원문 대조 필요');
+  await expect(hold).toContainText('새로 저장하거나 파일로 받을 수 없습니다');
+  await expect(hold).toContainText('일정과 조건을 원문에서 확인');
   await expect(hold).toContainText('개별 자료와 난이도를 확인하기 전에는');
   await expect(hold.getByRole('link', { name: '원문 자료 둘러보기' })).toHaveAttribute('href', 'https://funmom.tistory.com/');
   await expect(page.getByTestId('flow-map-save-all')).toHaveCount(0);
@@ -3502,7 +3515,43 @@ test('an existing saved year-end tax map stays out of ordinary execution surface
   const evidenceDir = process.env.FLOWME_TAX_ADMIN_EVIDENCE_DIR;
   if (evidenceDir) fs.mkdirSync(evidenceDir, { recursive: true });
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/my?demo=source-backed&savedMap=year-end-tax-submit');
+  const savedAt = '2026-05-28T03:00:00.000Z';
+  const slug = 'source-backed-year-end-tax-submit';
+  const original = sourceBackedMyFlowBundles.find((bundle) => bundle.flow.slug === slug);
+  const snapshot = buildSourceBackedFlowMapSavedSnapshot('year-end-tax-submit', { savedAt });
+  const persistence = buildSourceBackedFlowMapPersistenceRecord('year-end-tax-submit', { savedAt });
+  expect(original).toBeTruthy();
+  expect(snapshot?.flowSlugs).toEqual([slug]);
+  expect(persistence?.childFlows.map((flow) => flow.slug)).toEqual([slug]);
+  const savedRecords = {
+    [`flow:saved:${slug}`]: JSON.stringify({ slug, savedAt, selectedArtifactMode: 'calendar', sourceFlowSlug: slug, sourceFlowKey: original!.flow.id }),
+    'flow:map:saved:year-end-tax-submit': JSON.stringify(snapshot),
+    'flow:map:persistence:year-end-tax-submit': JSON.stringify(persistence),
+  };
+  // This is an already-saved original, not a fresh public or demo supply.
+  await page.addInitScript((records) => {
+    const probe = window as typeof window & { __cp1TaxProtectedWrites: string[] };
+    for (const [key, value] of Object.entries(records)) {
+      if (localStorage.getItem(key) === null) localStorage.setItem(key, value);
+    }
+    probe.__cp1TaxProtectedWrites = [];
+    const setItem = Storage.prototype.setItem;
+    const removeItem = Storage.prototype.removeItem;
+    const clear = Storage.prototype.clear;
+    Storage.prototype.setItem = function (key, value) {
+      if (this === localStorage && Object.hasOwn(records, key)) probe.__cp1TaxProtectedWrites.push(`set:${key}`);
+      return setItem.call(this, key, value);
+    };
+    Storage.prototype.removeItem = function (key) {
+      if (this === localStorage && Object.hasOwn(records, key)) probe.__cp1TaxProtectedWrites.push(`remove:${key}`);
+      return removeItem.call(this, key);
+    };
+    Storage.prototype.clear = function () {
+      if (this === localStorage) probe.__cp1TaxProtectedWrites.push('clear');
+      return clear.call(this);
+    };
+  }, savedRecords);
+  await page.goto('/my?savedMap=year-end-tax-submit');
 
   await expect(page.getByTestId('my-flow-post-save-panel')).toContainText('연말정산 간소화자료 온라인 제출');
   await expect(page.getByTestId('my-flow-post-save-panel')).toContainText('저장 기록 보관됨');
@@ -3511,6 +3560,16 @@ test('an existing saved year-end tax map stays out of ordinary execution surface
   await expect(page.getByTestId('my-flow-post-save-view-flow')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-workspace')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-map-update-review')).toHaveCount(0);
+  const retained = () => page.evaluate((keys) => ({
+    records: Object.fromEntries(keys.map((key) => [key, localStorage.getItem(key)])),
+    writes: (window as typeof window & { __cp1TaxProtectedWrites: string[] }).__cp1TaxProtectedWrites,
+  }), Object.keys(savedRecords));
+  expect(await retained()).toEqual({ records: savedRecords, writes: [] });
+  await page.reload();
+  await expect(page.getByTestId('my-flow-post-save-panel')).toContainText('저장 기록 보관됨');
+  await expect(page.getByTestId('my-flow-post-save-held-note')).toBeVisible();
+  await expect(page.getByTestId('my-flow-workspace')).toHaveCount(0);
+  expect(await retained()).toEqual({ records: savedRecords, writes: [] });
   if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/06-tax-existing-save-warning-mobile.png`, fullPage: true });
 });
 

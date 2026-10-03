@@ -208,9 +208,9 @@ test('whole, selected, and current item exports share scope language and actual 
   const errors = collectErrors(page);
   await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
   await page.setViewportSize({ width: 390, height: 844 });
-  await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=source-backed&view=flows');
+  await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=source-backed&savedMap=curated-ajd-moving-d30&view=flows');
 
-  let flow = await openMyFlowLibraryFlow(page, 'source-backed-moving-d30', 'record');
+  let flow = await openMyFlowLibraryFlow(page, 'curated-ajd-moving-d30', 'record');
   const exportSurface = flow.getByTestId('my-flow-export-surface');
   await exportSurface.getByTestId('my-flow-export-entry').click();
   const panel = exportSurface.getByTestId('my-flow-export-panel');
@@ -231,7 +231,7 @@ test('whole, selected, and current item exports share scope language and actual 
   await capture(page, panel, '02-selected-items-mobile.png');
   await acknowledgeSavedTransfer(transferReceipt);
 
-  flow = await openMyFlowLibraryFlow(page, 'source-backed-moving-d30', 'plan');
+  flow = await openMyFlowLibraryFlow(page, 'curated-ajd-moving-d30', 'plan');
   const firstRow = flow.getByTestId('my-flow-execution-row-shell').first();
   await firstRow.getByRole('button', { name: /열기/ }).click();
   const detail = getOpenMyFlowItemDetail(page);

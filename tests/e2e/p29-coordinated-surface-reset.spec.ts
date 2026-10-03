@@ -483,8 +483,8 @@ test.describe('P29-06 artifact recommendation and export scope', () => {
   test('selected and current item exports name their scope before the format', async ({ page }) => {
     await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
     await page.setViewportSize({ width: 390, height: 844 });
-    await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=source-backed&view=flows');
-    let flow = await openMyFlowLibraryFlow(page, 'source-backed-moving-d30', 'record');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=source-backed&savedMap=curated-ajd-moving-d30&view=flows');
+    let flow = await openMyFlowLibraryFlow(page, 'curated-ajd-moving-d30', 'record');
 
     const exportSurface = flow.getByTestId('my-flow-export-surface');
     await exportSurface.getByTestId('my-flow-export-entry').click();
@@ -509,7 +509,7 @@ test.describe('P29-06 artifact recommendation and export scope', () => {
     await exportSurface.getByTestId('my-flow-export-entry').click();
     await expect(panel).toHaveCount(0);
 
-    flow = await openMyFlowLibraryFlow(page, 'source-backed-moving-d30', 'plan');
+    flow = await openMyFlowLibraryFlow(page, 'curated-ajd-moving-d30', 'plan');
     const firstRow = flow.getByTestId('my-flow-execution-row-shell').first();
     await firstRow.getByRole('button', { name: /열기/ }).click();
     const itemExport = getOpenMyFlowItemDetail(page).getByTestId('my-flow-detail-portable-export');
