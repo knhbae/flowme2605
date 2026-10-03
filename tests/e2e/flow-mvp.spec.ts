@@ -282,6 +282,37 @@ async function expectTextOccurrenceAtMost(locator: Locator, text: string, maxCou
   expect(content.split(text).length - 1).toBeLessThanOrEqual(maxCount);
 }
 
+async function seedSavedEligibleWeddingMap(page: Page) {
+  const mapId = 'curated-wedding-checklist-family';
+  const savedAt = '2026-05-28T03:00:00.000Z';
+  const anchor = '2027-05-01';
+  const snapshot = buildSourceBackedFlowMapSavedSnapshot(mapId, { savedAt, anchor });
+  const persistence = buildSourceBackedFlowMapPersistenceRecord(mapId, { savedAt, anchor });
+  expect(snapshot?.flowSlugs).toEqual(['curated-wedding-naver-timeline', 'curated-wedding-gongysd-atoz']);
+  expect(snapshot?.stepCountsByFlow).toEqual({ 'curated-wedding-naver-timeline': 6, 'curated-wedding-gongysd-atoz': 4 });
+  expect(persistence?.readiness.content).toBe('ready_for_my_flow');
+  const records = {
+    [`flow:map:saved:${mapId}`]: JSON.stringify(snapshot),
+    [`flow:map:persistence:${mapId}`]: JSON.stringify(persistence),
+    ...Object.fromEntries(persistence!.childFlows.map((child) => [
+      `flow:saved:${child.slug}`,
+      JSON.stringify({
+        slug: child.slug, savedAt, anchor,
+        selectedArtifactMode: child.primaryDestination === 'calendar' ? 'calendar' : 'checklist',
+        sourceFlowSlug: child.slug, sourceFlowKey: child.flowId,
+      }),
+    ])),
+  };
+  // The demo registry does not consume savedMap query IDs. These are existing
+  // saved records from the actual eligible factory, not invented demo supply.
+  await page.addInitScript((saved) => {
+    for (const [key, value] of Object.entries(saved)) {
+      if (localStorage.getItem(key) === null) localStorage.setItem(key, value);
+    }
+  }, records);
+  return records;
+}
+
 async function getLocatorLines(locator: Locator) {
   const visibleText = await locator.innerText();
   return normalizeGuardrailLines(visibleText.split(/\n+/));
@@ -603,7 +634,7 @@ test('flow list exposes the seed and online-sourced flows', async ({ page }) => 
   await expect(page.getByTestId('curated-source-catalog-section')).toHaveCount(0);
   await expect(page.getByTestId('single-flow-catalog-section')).toHaveCount(0);
   const catalogCount = flowMapCatalog.getByTestId('flow-catalog-count');
-  await expect(catalogCount).toContainText('계획 11개');
+  await expect(catalogCount).toContainText('계획 8개');
   await expect(catalogCount).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
   await expect(page.getByText('필터 조정')).toHaveCount(0);
   await expect(page.getByRole('heading', { name: '이사 D-30 준비 Flow' })).toHaveCount(0);
@@ -3026,13 +3057,15 @@ test('my flow ux12 demo renders its fixture library without legacy local views',
   await expect(overview).toHaveAttribute('data-flow-slug', 'moving-d30-basic');
   await expect(overview.getByTestId('my-flow-whole-flow-outline')).toBeVisible();
 });
-test('my flow source-backed demo excludes archived supply and renders two eligible bridge bundles', async ({ page }) => {
+test('source-backed demo excludes archived supply and an eligible saved map retains two bridge bundles', async ({ page }) => {
   await page.goto('/my?demo=source-backed');
   await openCurrentMyFlowLibrary(page);
   await expect(page.locator('[data-testid="my-flow-library-row"][data-flow-slug="source-backed-moving-d30"]')).toHaveCount(0);
   await expect(page.locator('[data-testid="my-flow-library-row"][data-flow-slug="source-backed-middle-school-math-1"]')).toHaveCount(1);
-  await page.goto('/my?demo=source-backed&savedMap=curated-wedding-checklist-family');
-  await expect(page.getByTestId('my-flow-demo-badge')).toContainText('원문 기반');
+  const savedRecords = await seedSavedEligibleWeddingMap(page);
+  await installLegacySavedPlanLibraryNavigation(page);
+  await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows');
+  await expect(page.getByTestId('my-flow-demo-badge')).toHaveCount(0);
   await expect(page.getByTestId('my-flow-view-today')).toHaveCount(0);
 
   await openCurrentMyFlowLibrary(page);
@@ -3044,10 +3077,14 @@ test('my flow source-backed demo excludes archived supply and renders two eligib
   await library.locator('[data-testid="my-flow-library-row"][data-flow-slug="curated-wedding-gongysd-atoz"]').click();
   await expect(library.getByTestId('my-flow-library-detail').getByTestId('my-flow-overview-card'))
     .toHaveAttribute('data-flow-slug', 'curated-wedding-gongysd-atoz');
+  expect(await page.evaluate((keys) => Object.fromEntries(keys.map((key) => [key, localStorage.getItem(key)])), Object.keys(savedRecords)))
+    .toEqual(savedRecords);
 });
-test('my flow source-backed demo stays lightweight in the mobile library', async ({ page }) => {
+test('an eligible saved source-backed map stays lightweight in the mobile library', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/my?demo=source-backed&savedMap=curated-wedding-checklist-family');
+  const savedRecords = await seedSavedEligibleWeddingMap(page);
+  await installLegacySavedPlanLibraryNavigation(page);
+  await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows');
 
   await openCurrentMyFlowLibrary(page);
   await expect(page.getByTestId('my-flow-overview-card')).toHaveCount(0);
@@ -3058,6 +3095,8 @@ test('my flow source-backed demo stays lightweight in the mobile library', async
   await expect(page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug="curated-wedding-gongysd-atoz"]'))
     .toHaveCount(1);
   await expect(rows.getByTestId('my-flow-mobile-structure-open')).toHaveCount(2);
+  expect(await page.evaluate((keys) => Object.fromEntries(keys.map((key) => [key, localStorage.getItem(key)])), Object.keys(savedRecords)))
+    .toEqual(savedRecords);
   await expectNoHorizontalOverflow(page);
 });
 test('source-backed flow map public page uses the approved result contract without a legacy outline', async ({ page }) => {
@@ -3348,7 +3387,7 @@ test('broad Funmom category collection stays visible as a source-row hold withou
   await expect(hold).toContainText('원문 대조 필요');
   await expect(hold).toContainText('새로 저장하거나 파일로 받을 수 없습니다');
   await expect(hold).toContainText('일정과 조건을 원문에서 확인');
-  await expect(hold).toContainText('개별 자료와 난이도를 확인하기 전에는');
+  await expect(hold).not.toContainText('개별 자료와 난이도를 확인하기 전에는');
   await expect(hold.getByRole('link', { name: '원문 자료 둘러보기' })).toHaveAttribute('href', 'https://funmom.tistory.com/');
   await expect(page.getByTestId('flow-map-save-all')).toHaveCount(0);
   await expect(page.getByTestId('flow-map-save-all-mobile')).toHaveCount(0);
