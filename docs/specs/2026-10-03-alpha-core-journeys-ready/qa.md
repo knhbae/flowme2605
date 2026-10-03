@@ -2,66 +2,67 @@
 
 ## 현재 판정
 
-2026-10-03 사용자 “승인이라고!”로 현재 목표의 선별 commit/push/Draft PR·catalog 원본 비공개 CI lane·개발계 앱 교체/복귀 승인을 확인했다. 저장소는 PUBLIC이며 코드와 허용된 요약은 공개된다. CI 원본 공급·승인 경계는 [최신 읽기 확인](baseline.md#공개-저장소와-catalog-ci-승인-경계)을 따른다. 이 작업본은 보존된 r6의 CP1 게시 준비다. CP2 새 구현·설계 문서는 포함하지 않으며 CP1/CP2 서비스 반영·관찰 사용자 시험은 아직 미실행이다. 직전 r6 30/30은 [직전 QA](../2026-10-02-alpha-ux-comparison-gaps/qa.md)의 기존 근거다. 아래 대표 시나리오 표는 전체 목표의 시험 계획이다.
+2026-10-03 사용자 착수·게시/CI·개발계 교체 승인은 확인됐다. N 판본의 필수 CI 네 검사는 CP1/CP2 모두 성공했다. 정확 CP1 HTTP30은 PASS, CP2의 첫 HTTP35는30PASS/5FAIL이다. **CP2 실패 보완 판본의 재검사와 CP1/CP2 개발계 교체·복귀는 미완료**다. 관찰 시험은 제외 범위이며0명이다. 아래 각 실행의 head/build/실행 수를 구분한다. 직전 r6 30/30을 새 후보 실행으로 세지 않는다.
 
-## CP1 현재 — 보안·출처 유지보수 후보의 검증
+## O — 실제 HTTP30·35와 UC7 초점/시작 상태 보완
 
-아래는 게시 전 검증 시점의 기록이다. 전용 branch의 HEAD/base는 `d1cc8dd1cbc1a220054f458aea369393642f71ed`이며 아직 stage/commit/push/새 PR/CI·서비스 교체는0이다. 최초 원34 + D44/E15 + 추가 정본1의94파일 범위 밖0·추가59 hash drift0을 확인한 뒤 [F2/G1/H8/J6/K1](prerequisites-manifest.md)을 더해 [현재 소유112파일](manifest.md)을 고정했다. CP2 새 기능·설계는 포함하지 않는다. F2 browser 패치 전 A12(runtime5/제품검사7)의 원 r6 직접 byte 비교 drift0은 그 시점의 근거다. 현재 browser는 정확 후보 검증을 위한 세 곳의 수정판이고 runtime5는 유지한다. 공식 alias/CSS/의존성과 출처·서버 보류 계약이 바뀌었으므로 후보 전체를 r6 byte 불변이라고 부르지 않는다.
+CP1 `a073e45c6e096fb132e85b13ae2d47db9e46017a`의 [CI37116112872](https://github.com/knhbae/flowme2605/actions/runs/37116112872)는 필수4검사 SUCCESS다. E2E760개 중 **758PASS/2FLAKY/0FAIL/0NOT_RUN**, catalog279파일2960/2960PASS다. flaky 원인은 미확정이며 단일 시도760PASS로 바꾸지 않는다. CP2 `4d19673ff8e9a15f7bb8b50b6da1b4211e0ca347`의 [CI37116942924](https://github.com/knhbae/flowme2605/actions/runs/37116942924)도 필수4검사 SUCCESS, E2E760PASS/0FAIL/0FLAKY/0NOT_RUN·catalog281파일2988/2988PASS다. 이 CI는 아래 새 소스 보완의 결과가 아니다.
 
-| 현재 작업본 검사 | 실제 결과와 범위 |
-| --- | --- |
-| 공식 의존성 보안 | Tailwind/`@tailwindcss/postcss`4.3.3 고정·v3 취약 tree 실제 제거. audit0 + compatibility11/11 PASS. 비공식 fork·보안 gate 제외 없음 |
-| 출처 재검토 | 실제14 bundle/11 URL 대조. 일치7 날짜 갱신, 불일치/삭제7 원문·날짜 보존 + 기존 archive/hold 새 공급 제외. source 소유자273/273 PASS, 별도 신규9/9 PASS. 05:37:58 UTC published149/current126/reviewDue0/stale0/missing0 |
-| 전체 기본 검사 | 05:38:47.352→05:39:58.603 UTC 2258/2258 PASS·skip0·source 변경0·raw output 미보관 |
-| J6 뒤 기본 재검 | 07:36:00.677→07:38:05.023 UTC 2258/2258 PASS·skip/cancel0·source654/c11ee587...fc3d 변경0·raw 미보관. K1 테스트 연결 보완 전 실행이며 정상 pre-push의 현재 판본 verify는 별도 |
-| 전체 비공개 검사 — 실패 이력 | 승인된 read-only catalog 공급 wrapper로 05:44:32.719→06:04:41.652 UTC 실행279파일/2940건, PASS2905/FAIL35·skip/cancel0·source654 변경0. pack SHA `723abefdc26243eb1f9b4bcf21730758ecc7a300494ad2ae75293ac5c6dde4be` 전후 동일·실제 계정 credential 전달0·설정 복사0·raw 미보관. 실패를 PASS로 바꾸거나 검사 삭제/면제하지 않음 |
-| J6 뒤 전체 비공개 검사 — 실패 이력 | 07:19:23.548→07:40:00.789 UTC 실행279파일/2960건, PASS2957/FAIL3·skip/cancel/todo0·source654/c11ee587...fc3d 변경0·pack723ab...동일. 세 실패 모두 `components/flow/integrated-poc/ProgramMutationBusy.test.ts` ERR_TEST_FAILURE·46:24였음. runtime 실패로 추정하지 않고 K의 실제 context 누락을 단독 재현·보완 |
-| K1 단독 회귀 | 수정 전10실행/7PASS/3FAIL→07:43:03.660→07:43:04.478 UTC 10/10 PASS·skip/cancel/todo0·source654/6c14dbc1...0f374 변경0·pack723ab...동일. 다른653 source byte는 J6 full과 정확 동일. 단독 결과를 전수 PASS로 바꾸지 않음 |
-| K1 뒤 최종 catalog 전수 | 07:44:43.143→08:02:38.586 UTC 실제279파일/2960실행/2960PASS·FAIL/skip/cancel/todo0·exit/verified0. 원 collector 목록 제외0, source654 SHA `6c14dbc1d2cc5db7f46a11cdc5e0595e26b4f40bd607e9b76b860cc83890f374` 전후 변경0·pack723ab...전후불변·실제 계정 credential 전달0·설정 복사0·raw 미보관. 이전35FAIL·J6 후3FAIL 이력은 유지하며 해당 최종 실행만 현재 전수 PASS 근거로 사용 |
-| 실패 선별 진단·복구 | 공개 filename/errorcode/test line·column만 추출. G1의 정확 출처7 날짜 비교15/15 PASS, H8 실제 eligible 원문 positive/보류 negative 분리 후 같은 direct21검사207/207 PASS·FAIL0. pack 전후 동일·runtime/policy/validator 수정0. 전체35 중31건만 선별 재검으로 닫았으며 잔여4 진단과 최종 full gate는 별도 |
-| 정확 QA 입력 계약 | F2 단위10/10 PASS, 실제 CP1 local import closure242개와 runner cwd/head를 제공 소스에 결합. imported Auth/folder/cloudflare fixture 누락/drift, r6 proof/r7 runner 불일치 거절. 서비스/제품 HTTP 실행0 |
-| 타입 | 05:39:11.797→05:40:03.668 UTC entry579·diagnostics0·source 변경0. 타입 범위는 Program integration과 두 route seam이며 전체 앱 타입 완료를 뜻하지 않음 |
-| H/G1 후 타입 재검 | 06:44:17.629→06:44:36.919 UTC entry579·diagnostics0·source654 변경0, SHA `78c5347ecca32e00193a95b83fb85b20764d9af207d7cff8fc021e28bd0c897f`. F helper/test/browser3개도 별도 transitive 타입 검사 diagnostics0 |
-| J6 후 CP1 최종 타입 | 07:21:03.002→07:22:16.778 UTC entry579·diagnostics0·source654 변경0/SHA `c11ee5879488ae16511e04a8eae0fb6eab45c37b4c32a94ef79636665c00fc3d`. source 담당의 별도12entry 검사와 합산하지 않음 |
-| K1 후 CP1 최종 타입 | 07:50:22.497→07:51:36.545 UTC entry579·diagnostics0·source654/6c14dbc1...0f374 변경0. 실제 notice setter·clone assertion의 타입도 포함 |
-| J6 후 CP1 production build | 07:29:24.751→07:32:34.365 UTC exit/verified0·source654 변경0/SHA `c11ee5879488ae16511e04a8eae0fb6eab45c37b4c32a94ef79636665c00fc3d`, build `N2XW22QnpmnzNfQYEyVCE`. 아직 commit 전 판본이고 최종 게시 pre-push hook build는 별도. 제품 HTTP 실행0 |
-| production build | 05:43:03.432→05:44:16.150 UTC exit0·source 변경0, build `TEl23fmCBYHnQyGupXvl3`. 아래 YAML direct devDependency 선언 전 lock의 빌드로 구분하며 최종 lock 재빌드는 별도 기록 |
-| 최종 YAML lock build — H/G1 시점 | 06:51:31.490→06:52:37.909 UTC exit0·source654 변경0/SHA `78c5347ecca32e00193a95b83fb85b207d7cff8fc021e28bd0c897f`, build `ZjAcGBRH-i-2ua-bfyJpG`. PF 후속 J6 fixture·M3 보완 전 판본이며 최종 게시 hook build와 별개. 실제 제품 HTTP 실행0 |
-| 기존 My Flow CSS 비교 | 실제 MyFlowSortMenu SSR + native input/textarea/select·space/divide·키보드 focus를 Chrome fixture에서5크기×강제색상2=10/10 PASS. computed속성·pixel byte차이0, 후보 생성CSS SHA256 `0a1304e7c0afa9c3145d8afda519bf57f64d4a2d322a95e287ad0f4ef16e5fd9`. 앱 서비스 실행 없음·HTTP route 근거 아님 |
-| production CSS 산출물 | 위 build CSS8파일에서 미처리 v4 space/divide sibling shape0. 실제 globals asset `555e9c58978978bb.css` SHA256 `570b447ae00f58357622e177b10de781f068e2248cd43cea1407cab253add493`, 기존 hidden-sibling rules14 확인 |
-| 게시 경계 | client roots106/source549/forbidden0, tracked10876/private catalog findings0. clean 설치에서 YAML 누락으로 최초13PASS/1FAIL(모듈 import 실패 때문에 실제14 실행). 같은 공식2.9.0 direct devDependency 선언 후17/17 PASS·audit0/compat11/11 PASS로 실제 복구. 검사 삭제/면제 없음 |
-| J6 후 게시·보안 재검 | client roots106/source549/forbidden0, 게시17/17 PASS·skip/cancel/todo0. 07:34:09.060→07:34:24.763 UTC security11/11 PASS/source654 변경0/c11ee587...fc3d. 별도 실제 npm audit JSON의 info/low/moderate/high/critical/total 모두0 |
-| 실제 제품 브라우저 | NOT_RUN. 현재 제품 서비스 직접 시작이 거절돼 main이 human-local Ready를 요청했다. 다른 shell/tool/helper·사용자 소유 브라우저 세션으로 우회하지 않음. 승인된 선별 게시·CI는 모든 local/full·보안·출처·문서·hook·소유 검사 및 자동 Git 배포 차단 확인 뒤 별도 진행 가능하나, exact 새 lock/build의 제품 HTTP 다섯크기·행동·키보드·overflow/error gate와 개발계 반영 완료를 대신하지 않음 |
+root가 이미 제공 중인 정확 CP1 build `LDuRTcvjyyJ-AIKiRZcaj`를 독립 관측하고 HTTP QA를 실제 실행했다. 12:18:51.977 UTC 시작·149330.54ms·exit0, **30PASS/0FAIL/0FLAKY/0SKIP**, runner errors0이다. UC1~6×390×844·375×812·844×390·1024×768·1440×900에서 각각6/6이다. compile1212/QA242/static81 drift0·preflight 참조 자산25·case별 관측 자산24를 구분한다. 30개 attachment의 공개 원본·sentinel byte 불변, prefix 밖 쓰기/실제 API·Auth 전달/page error/예상 밖 console/가로 overflow0을 확인했다. 합성 overlay operation/mutation은90개이며 전체 쓰기0이 아니다. UC6 날짜만 미정 이동은09:10 시간을 보존했고 최종 time=null은 이후 날짜·시간을 명시적으로 지운 결과다.
 
-최초 기본 검사와 최초 build의 program inventory654 hash는 `06bc206fb04adf99f23ccc829413a672d634f101c4bff36c0b654788cf33b443`로 같다. H/G1·J6·K1 뒤 판본과 구분한다. 이는 recorder가 수집한 Program 소스 범위이며 package/lock/global CSS와 출처15 전체의 동결 증명이 아니다. 추가 경로별 hash 표와 현재 소유112 집합을 병행한다. 로컬 public summary/타입 JSON·fixture 원결과/캡처는 output의 제외 자료이고 이번 stage 대상이 아니다.
+CP1 로컬 결과 `output/playwright/ux-comparison-candidate-cp1-final/results.json` SHA256은 `98fc18f84e35dbd9146071577122791c9c7382daa88089201e267412a1e19243`이다. CP1 Ready 전달은 root QA 이후 도착했으며 기동 주체는 로컬 실행 에이전트다. root가 인간 콘솔을 검증했다고 소급 기록하지 않는다.
 
-YAML 누락은 기존 CI source boundary test가 `yaml`을 직접 import하면서 Tailwind3의 전이 의존성에 기대고 있었던 문제다. 제품 import는0이고 사용 경로는 해당 CI test1개다. 기존 HEAD lock과 version/resolved/integrity가 같은 공식 [YAML2.9.0](https://github.com/eemeli/yaml/releases/tag/v2.9.0)을 direct devDependency로 고정해 검사 환경을 복구했다. 제품/CSS/source inventory는 바꾸지 않았다. package/lock 최종 byte hash는 추가 manifest를 따르며 full private suite가 종료된 뒤 clean 설치·최종 lock 빌드를 다시 기록한다.
+CP2 `4d19673`/build `ab-TBqFH19TECQ0W6KI6s`도 정확히 관측한 뒤 HTTP35를 실행했다. 12:31:22.536 UTC 시작·206988.713ms·exit1, **30PASS/5FAIL/0FLAKY/0SKIP**, runner errors0이다. 각 크기6PASS/1FAIL이고 실패는 UC7뿐이다. 390×844·1440×900은 첫 백업 진입점 not found, 나머지3개는 첫 Escape 뒤 진입점 focus inactive였다. 세 경우 손상 파일 거절·preview 비활성화·입력/명령/실행 수 불변 assertion을 지났지만, 재진입·두 번째 닫기·공개 없음→내 문서 복귀·최종 boundary/assets는5개 모두 NOT_REACHED다. UC1~6의30개 boundary만 PASS이며 UC7 전체0쓰기로 확대하지 않는다.
 
-05:50:05.668 UTC freshness diagnostic은 exit0·published149/normal126/preview23/current126/reviewDue0/stale0/missing0으로 재확인했다. 05:50:32 UTC scoped closeout reporter를 실행해 실제 diff·소유 경계를 대조했고 문서4/4·16필수파일/7398링크 PASS를 확인했다. reporter의 권장 항목은 자동 실행 결과가 아니며 실제 제품 E2E 미실행을 유지한다.
+CP2 최초 결과 SHA256은 `a3be4d6893ce2942b04c56529798c725dc5411ee9770dbd5a2429d40f55cca7a`이다. 결과와 실패 캡처5개/오류 문맥5개는 `.tmp/cp2-first-http-failed-20261003/`에 로컬 보존했고 새 검사로 덮어쓰지 않는다. compile1214/QA242/static82 drift0·preflight 참조 자산26·통과 case별 관측 자산25다. 통과30개 범위의 원본/sentinel/prefix·실제 API/인증 전달·page/console/overflow 보호도 확인했다.
 
-J6 동결 후 07:35:20.548 UTC 실제 freshness diagnostic도 published149/preview23/current126/reviewDue0/stale0/missing0·exit0이다. 새로운 원문 검토 없이 날짜를 다시 바꾸지 않았다. 새 실제 build CSS8개에 미처리 v4 space/divide sibling shape0이고 globals asset `555e9c58978978bb.css`의 SHA `570b447ae00f58357622e177b10de781f068e2248cd43cea1407cab253add493`는 앞선 관찰과 bytes가 같다. PostCSS rule 단위의 해당 hidden-sibling8개와 앞선 문자열 occurrence14는 집계 방법이 달라 증감 비교하지 않는다. F2 단위 재검10/10 PASS도 확인했으며 제품 HTTP 증거로 합산하지 않는다.
+소스에서 login fixture가 계정 확인용 메뉴를 이미 열 수 있는데 UC7이 무조건 toggle하는 시작 상태 문제와, async flush 뒤 늦은 opener 캡처·close 직후 refresh busy로 opener가 잠시 disabled인 초점 경합 경로를 확인했다. 실행 중 이벤트 타임라인으로 어느 초점 경로가 발생했는지는 확정하지 않는다. 실제 event.currentTarget을 flush 전에 캡처하고 같은 owner/controller에서 close·catch-up commit 후 사용 가능한 진입점으로 한 번만 복귀하도록 보완했다. 새 owner·disposed·pending·재열림·hidden 및 다른 사용자 선택에는 복귀하지 않는다. standalone Panel의 기존 fallback과 공용 disabled/hidden 거절은 유지한다. UC7은 닫힌 시작 상태를 확인한 뒤 키보드로 열며 기존 엄격한 focus·0쓰기 assertion은 삭제하지 않는다.
 
-현재 게시 inventory의 email/local-path 검토7건은 AlphaWorkspace의 synthetic `example.invalid`, URL negative fixture의 `example.com`, npm registry lock의 공식 maintainer contact, 과거 문서의 작업경로다. 실제 계정 자료·토큰·private payload 발견0이며 파일별 검토를 보안 gate 면제나 자동 게시 승인으로 사용하지 않는다.
+root의 보완 후 관련3파일 단독 실행은 **129/129PASS**, fail/cancelled/skipped/todo0·7474.1563ms·exit0이다. Workspace 실제 callback/effect AST87개·Panel38개·공용 focus4개를 같은 실행의129개로 센다. 첫 root 실행은 source regex가 추가 owner guard를 반영하지 못해1FAIL이었고 guard를 보존한 기대식으로 보완했다. 타입 runner 순수10/10PASS·제품581 entry/diagnostics0/source656/실행 중 변경0도 새로 확인했다. 독립 읽기 검토는 구체적 blocker를 찾지 못했지만 busy 동안 복귀 요청의 시간상한과 과거 초점 이동 이력은 보장하지 않는다. 새 후보의 정상 hook/build/exact proof/CI/HTTP35는 실행 전 PASS로 쓰지 않는다. 실제 기기/IME/AT 미실행·관찰 사용자0, 개발계 전환·복귀 미완료다.
 
-새 compile/copy freeze에는 `postcss.config.js`가 실제 require하는 `scripts/tailwind-v3-compat.cjs`를 명시적으로 포함해야 한다. 과거 post-hook-proof의 app/components/lib/public+config 수집만으로는 이 새 입력이 빠지므로 과거 PASS를 새 의존성 빌드 전체 입력 증명으로 사용하지 않는다. `app/tailwind-v3-compat.css`와 package/lock/PostCSS도 정확 bytes로 연결하고 후보별 `tests/e2e/ux-comparison-gaps.browser.ts`·config·fixture3개를 QA 입력으로 고정한다. CP1 원 UX는6과제×5크기=30, CP2 새 UX는7과제×5크기=35이며 옛 browser115 marker는 어느 새 gate도 대신하지 않는다. 새 guard 구현/실행·서버 시작/종료는 이번 CP1 준비에서 하지 않았다.
+## N 잔여 보완과 CP2 인수 — 현재
 
-### 추가 M3 보류 우회 진단 — J6 동결과 최종 전수 재검
+M CP1 `670f`의 CI37113646381은753PASS/5FAIL/2FLAKY/0NOT_RUN, CP2 `f8c9703b`의 [CI37114874194](https://github.com/knhbae/flowme2605/actions/runs/37114874194)는754PASS/5FAIL/1FLAKY/0NOT_RUN이었다. 둘 다 core/catalog/integration SUCCESS·E2E FAILURE다. root의5개 identity는 아직 독립 비교 전이므로 추가 회귀0을 단정하지 않는다. 해당 root catalog 실행은281파일2988/2988PASS·source656/drift0·verifiedExit0이며 이전 실행과 합산하지 않는다.
 
-잔여4 중 `alpha-server/private-parity.test.ts`의 정상 실행 사례가 현재 보류된 moving을 사용한 실패1건을 확인했다. source 담당이 실제 실행 가능한 AJD Map으로 성공 사례를 옮기고 moving 사본 보존·새 실행 거절을 별도 검사했다. 이 과정에서 valid-shaped held text 변경을 M3 요청으로 직접 보냈을 때 fake RPC가 실행되는 새 negative 실패를 발견했다. 18실행/17PASS/1FAIL은 이때의 진단이며 실제 계정·DB·네트워크 쓰기0이다. 실패 assertion을 삭제하거나 기대를 낮추지 않는다.
+남은 CP1 P35 quality의 실패는 `aria-labelledby:my-flow-tab-flow` 미해결 참조1개였고 나머지 quality는0이었다. 앞단 source-backed0쓰기/bytes/reload는 통과했으나 missing/malformed 뒤 저장 검사는 NOT_REACHED였으므로 저장 전체 PASS로 확대하지 않는다. 빈 화면에 실제 tab이 있으면 기존 연결을 유지하고 없으면 실제 h2로 이름을 붙였다. SSR 같은7개가5PASS/2FAIL→7/7PASS, 관련3파일13/13PASS다. P35 E2E의 quality/쓰기/bytes assertion은 그대로이고 writer·저장/원본/CAS 변경0이다.
 
-수정은 기존 `programPreservesLegacyQualityHold`를 공용 source validator와 분리한 M3 current-revision `change-private` preflight에 연결하는 범위다. 전후에 남는 saved Flow의 원 Item block·subcheck·scope·progress만 보호하며 사본 전체 삭제와 무관한 개인 문서 편집은 허용한다. `undo-private`·M6 backup restore는 별도 경로이고 private Redo는 현재 변경 요청이므로 held canonical 변경을 재실행하지 못한다. raw legacy-state 실행 정책·creator/social source 의미·owner/source/CAS/replay/origin은 넓히지 않는다. [J6 정확 경로·hash](prerequisites-manifest.md#j--정상-실행-fixture와-m3-retained-held-경계-6파일)를 동결했고 해당 pair의 추가 probes26실행/21PASS/5FAIL은 보완 후26/26 PASS, 최종 관련9파일은153/153 PASS였다. 위 H/G1 build는 이 서버 수정의 현재 증명이 아니다. CP1 최종 collector279개 전수와 새 타입/build는 이 동결 후 별도로 실행한다.
+flow-mvp4개는 현재 roster8·새 공급 보류 안내, demo가 소비하지 않는 savedMap query를 쓰던 성공 fixture의 보완이다. 실제 wedding factory4records를 공급한 일반 library 경로에서2child의 identity·Calendar6/Todo4·모바일2행·저장 bytes를 확인한다. 기존 demo의 math1/held-moving0·Funmom 원문/거절/noexec는 유지한다. 실제 App merge/read 소비 순수6/6PASS·전체 E2E 목록760개 유지·파싱0이다. 첫 probe의 잘못된 readBundles-only 기대는 harness 오류로 보존하며 제품 결함으로 합산하지 않는다.
 
-최종 전수 진단 도구는 기존 collector의279개 test를 삭제 없이 사용한다. 공개 filename allowlist에 실제 `app/api/alpha/backup-jobs/route.test.ts` exact1개를 더해 허용 누락0을 확인했다. reporter는 공개 test filename·해당 파일 line/column·중첩 ERR 코드와 count만 출력하며 문구·절대 경로·private payload/raw stack은 버린다. 독립 assertion7/7 PASS는 이 출력 경계의 검사이며 제품 검사 수에 합산하지 않는다. 도구와 public summary는 제외된 `output/`에만 남긴다.
+CP1 N `a073e45c6e096fb132e85b13ae2d47db9e46017a`는 정상4파일 후속 게시다. 10:18:22~10:20:46 UTC npm2261/2261(기존2258+SSR3)·docs4/4·build exit0·후크 우회0이며 build `LDuRTcvjyyJ-AIKiRZcaj`·exact compile1212/QA242/static81 drift0이다. 새 [CI37116112872](https://github.com/knhbae/flowme2605/actions/runs/37116112872)는 완료 전 성공으로 기록하지 않는다. 현재 emitted CSS SHA `e6a2f0b75b8fda1812f307f83cacecced2c2a00eb893d6ae75a765e303eb4669`는 correct cold CSS와 같다.
 
-## CP1 초기 준비 이력 — 원 r6와 최초 gate 실패
+CP2는 같은 N commit을 merge `93a3f40d35c1c98f4a1c6c823b51da446cbe41c4`로 인수했다. 10:22:16 UTC code/test3개 원파일 SHA·양쪽 HEAD Git blob 일치, 기존 CP2 32개 OS bytes 불변·문서 복사0·normalized Git diff0을 확인했다. 인수 후 root에서 관련13/13PASS·exit0을 실제 실행했다. 기존138경로+추가2=140개 소유다. EOL-only raw M은 정상 stage의 blob 변화0과 최종 clean으로 확인하며, CP2의 최종 후속 hook·build·exact proof·CI는 그 새로운 HEAD에서 별도 기록한다.
 
-`D:/flowme2605/flow-core-cp1-r6-snapshot-20261003`의 정확34파일을 `d1cc8dd1cbc1a220054f458aea369393642f71ed` 기반 전용 작업본으로 복사했다. 복사 byte drift0이며 branch는 `agent/alpha-core-journeys-cp1-20261003`이다. 2026-10-03 04:49:40 UTC 제품 inventory654의 r6 hash drift0, snapshot `be72fd97f22ba041e528a1a08f5eec5e6d4f007963e33e70a39b13b7de9afef9`를 확인했다. 현재 권한/게시 상태의 문서 차이는 제품 소스 변경과 별도로 기록한다. 이전 r6 build `ViQGyXzeL-q-3GEbFJGgZ`는 보존된 이전 실행이고 새 hook build·게시 head는 실행 후 기록한다.
+10:13:41~10:14:09 UTC 담당자가 실제 C7 emitted asset을 사용한 독립 Nav 비교30개를 실행해 afterAllCorrect=true·exit0·network/service0을 확인했다. 앞서 tsx 등록 누락의 MODULE_NOT_FOUND로 실행 못한 probe와 구분한다. wrapper의 TAP-only count가 ℹ footer를 읽지 못해0을 출력했으므로30은 runner case 총수가 아니라 비교/각 assertion의 수다. 실제 제품 HTTP30/35·실기기 focus/AT의 PASS로 쓰지 않는다.
 
-Node24.17.0/npm11.13.0에서 전용 작업본의 `npm ci`는223 packages·exit0, pinned auth-js postinstall patch가 정상 종료했다. 새 `npm audit --json`은 high5·exit1이며 `braces`의 [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm)과 chokidar/micromatch/fast-glob/tailwindcss 전파를 보고했다. npm의 CVSSv3는7.5, 공식 GHSA의 CVSSv4는8.7이며 서로 다른 점수다. 공식 GHSA는 `<=3.0.3`에 수정 릴리스가 없다고 기록하고 npm registry의 최신 braces도3.0.3이다. [업스트림 수정 PR72](https://github.com/micromatch/braces/pull/72)는 아직 OPEN이다. Tailwind3.4.19도 같은 취약 의존성을 사용한다. 이전 audit0을 현재 판정으로 재사용하지 않으며 자동 major upgrade·audit 우회·보안 gate 무시는 하지 않았다.
+남은 실행은 같은 HEAD의 CI 네 검사·사용자 담당이 켠 정확 합성3107에서 HTTP30/35·두 개발계 교체/복귀·시험 시작 판정이다. 승인 누락 때문에 대기하는 것이 아니다. 서버 시작의 직접 도구 거절은 우회하지 않고, 실제 Ready 뒤의 no-webServer 합성 UI 검사와 서비스 시작은 구분한다. 관찰 사용자0·main merge/Production0·실제 계정/DB 쓰기0을 유지한다.
 
-현재 시각의 출처 freshness diagnostic은 exit1, published156·일반 route133·current119·reviewDue14·stale0·missing0이다. 실제 원문/주장 재확인 없이 날짜만 갱신하지 않는다. 선행 보안·출처 검증 해결 승인은 인수했으며 실제 수정과 확장 소유 목록·후속 검사 결과는 실행 후 기록한다. 현재 commit/push/PR/새 CI·서비스 교체는 미실행이다.
+## 공통 CI 실패와 M 후속 — 현재 보완 중
 
-현재 원격 main은 `efd8b642707b5c8e67b727f23169ae41c43cb5e8`, 기존 PR208은 OPEN Draft·head d1cc8dd1·기존 CI4개 SUCCESS다. 이를 새 CP1 CI로 쓰지 않는다. 기존 제공 작업본의 read-only freeze assert는 o7 build·입력1204·산출물316 drift0이다. 과거 보호8개 중7개 hash가 같고 원 피드백 정본1개는 원 소유 세션에서 Dots 연결이 추가돼 변경됐다. 기존 switch guard의 `original-git-drift` 실패를 보존하며 baseline을 덮어 PASS로 만들지 않는다. CP1의 새 서비스 교체/복귀는 새 head/build/사본/현재 프로세스·자료 보호 근거를 사용하는 별도 실행이다. 이번 게시 작업에서는 서버를 시작·종료하지 않는다.
+| 판본 | CI와 실제 판정 | 실행 수 |
+| --- | --- | --- |
+| CP1 `80abc0ad` | [37109357657](https://github.com/knhbae/flowme2605/actions/runs/37109357657): core/catalog/gate 성공, E2E 실패 | 760개 중721PASS/29FAIL/2FLAKY/8NOT_RUN |
+| CP2 `217d4be4` | [37110606515](https://github.com/knhbae/flowme2605/actions/runs/37110606515): core/catalog/gate 성공, E2E 실패 | 760개 중723PASS/29FAIL/0FLAKY/8NOT_RUN |
+| CP1 `670f1f45` | 정상 후속 commit/push, [37113646381](https://github.com/knhbae/flowme2605/actions/runs/37113646381) 실행 중 | 완료 전 전체 PASS 기록하지 않음 |
+| CP2 CP1 인수 | `93e25cba62dce83ec1ad24bfadc03e39dea54293` merge. 후속 문서 commit·정상 hook/build·CI 예정 | 현재 HTTP35 NOT_RUN |
+
+이전 두 CI의29FAIL identity·assertion·frame은 같았고 CP2 추가 실패0이다. 서로 다른 실행의 PASS를 합산하지 않는다. CP1의 flaky2는 확정 실패29와 별도 이력이며 두 오류 원인을 일괄 확정하지 않는다. 이번 보완으로 해결했다고 주장하지 않는다. NOT_RUN8개 개별 identity는 미확인이다. 비공개 출처 lane의 이전 실행은 CP1 279파일2960/2960PASS·CP2 281파일2988/2988PASS였다. 공개 저장소의 검토된 secret environment lane이며 원본/설정/raw 로그는 공개하지 않는다.
+
+M은 CSS 호환2파일, 기존 E2E11파일, 기존 prerequisites manifest1파일의14파일 후속이다. Tailwind4 기본 transition에서 outline-color만 제거하며 다른 transition·명시 outline 애니메이션은 유지한다. 공식 [업그레이드 안내](https://tailwindcss.com/docs/upgrade-guide#transitioning-outline-color)와 실제 생성 CSS를 대조했다. 보류 자료를 정상 실행 fixture로 사용하지 않고 실제 실행 가능한 AJD·wedding 사본을 사용한다. 기존 URL/P35·OPIc/reading 보류·tax 기존 사본 보존 검사는 유지하며 새 공급/품질 정책은 바꾸지 않는다. tax 시험3501은 실패였고 Baby3521은 실패가 아니었다. tax의0쓰기는 보호한 세 key 범위이며 전체 storage0으로 확대하지 않는다.
+
+검증 범위는 다음처럼 구분한다.
+
+- CSS 순수10/10·독립 정적3/3·실제 PlatformNav의 격리 CSS fixture30/30 PASS. 이전 CSS 일반색15/15 FAIL도 보존한다. 이는 제품 HTTP30/35·실기기/AT 검사가 아니다.
+- 순수 factory/registry/SSR/storage 계약6/6 PASS. 첫 harness의 잘못된 step 참조1FAIL을 바로잡은 이력도 남긴다. 기존 E2E 선언207→207, 삭제/skip/fixme/only0이다.
+- E2E 목록: 변경11파일210개, 프로젝트 전체760개/105파일. 목록 검사는 실행 PASS가 아니다.
+- E2E 타입235 source의 기존/현재 진단9개가 같고 신규 진단0이다. 비교 exit0이지 전수 타입 오류0 판정은 아니다.
+- 09:29:33~09:29:40 UTC security audit 취약점0·호환14/14 PASS. 기존11/11을 새 숫자로 덮어쓰지 않는다.
+- CP1의 정상 후속 push 뒤 build `rxHqgLVMfF47XqfM6s7mR`·exact compile1212/QA242/static81 drift0은 기록했다. 그러나 그 실제 CSS에 outline-color가 남았으므로 이 build는 새 CSS 적용/초점 보존 PASS가 아니다. ignored webpack 캐시의 검증된 정확 경로만 새 로컬 위치로 옮겨 삭제 없이 보존한 뒤09:47:19~09:50:13 UTC 정상 hook·cold build를 다시 실행했다. npm2258/2258·docs4/4·exit0, 새 build `C7MFCtrzqwqfL6t2pKtTm`·before/after compile1212/QA242/static81 drift0이다. 실제 manifest가 참조한 CSS `360131c5fecb58a5.css` SHA `e6a2f0b75b8fda1812f307f83cacecced2c2a00eb893d6ae75a765e303eb4669`는 이전 asset에서 정확2토큰/28byte만 제거한 기대 bytes와 같다. 실제 CSS 적용은 확인했지만 제품 HTTP30·실기기 focus 결과는 아니다.
+
+CP2 merge 전에 CP1 후속14개와 기존 CP2 32개 경로의 교집합0을 확인했다. 09:47:10 UTC code/test13개 원파일 SHA·양쪽 HEAD Git blob·대상 경로를 검증한 뒤 LF bytes만 기계적으로 인수했다. 기존 CP2 32개 OS bytes 보존, 문서 복사0, normalized Git diff0이다. raw porcelain에는 EOL-only13개 M이 나타나므로 그 상태를 raw clean이라고 기록하지 않는다. 후속 정상 stage에서 Git blob 동일 여부와 최종 clean을 다시 확인한다. 기존 소유127경로(제품125+이력2)+E2E11=138개 소유이며 원본/private pack·실제 계정·설정·raw 증거는 추가하지 않는다.
+
+09:54:42 UTC CP2도 자기 작업본의 정확한 ignored `.next/cache/webpack`만 reparse/루트·대상 부재를 확인한 뒤 `.tmp`의 새 위치로 recoverable 이동했다. 삭제0·다른 작업본/제공 서버 변경0이다. 이후 최종 문서 HEAD에서 정상 pre-push hook·cold build·새 exact proof·실제 manifest/CSS를 연결하며 실행 전 결과를 미리 성공으로 쓰지 않는다.
+
+09:26 UTC 이후 3105의 실제 GET은 HTTP200·이전 build `o7dgg9b72_7ai0rqQ5gXU`였다. 이는 새 CP1/CP2 반영이 아니다. 현재 프로세스의 출생시각·실행파일·부모·리스너·시작 receipt/소유 핸들 없이 옛 스크립트의 PID/build만 바꿔 종료하지 않는다. 정확 QA 서버 Ready 이후 no-webServer 합성 HTTP 검사를 수행하고, 별도 검증된 교체/복귀 절차로 두 체크포인트를 남긴다. 새 DB/Auth/DNS/Tunnel·실제 계정 쓰기·main merge·Production·실제 관찰 시험은 실행하지 않는다.
 
 ## 대표 시나리오 계획
 
@@ -122,7 +123,7 @@ CP1과 CP2마다 날짜·파일 manifest·소유·head/build·검증 source 일�
 - manifest34경로/34고유 파일 존재를 확인했고 새 문서2개와 scoped diff를 직접 읽었다. `git diff --check` exit0이며 LF→CRLF 경고는 보존한다.
 - 자동 이어가기 전 턴은 목표/계획 등록의 진전이었다. 이번 턴은 최신 원격·서비스 불가·소유/검증 일치라는 새 근거를 남긴 단계0 진전이다. 실행 중 QA/job을 기다리는 verified wait가 아니며 같은 상태 재서술을 제품 진행으로 세지 않는다.
 
-## 이전 — 구현 착수 승인 대기·목표 미완료
+## 이력 — 구현 착수 승인 대기·목표 미완료
 
 [세 목표 턴의 권한 감사](baseline.md#구현-착수-미확인--세-목표-턴의-권한-감사)를 완료했다. 실제 사람의 최근 요청과 질문/답변 상태, 현재 goal/spec/plan/tasks·Git을 대조했으며 독립 감사도 현재 허용 범위의 추가 필수 안전작업이 없음을 확인했다. 현재의 재확인·문서 상태 갱신은 제품 진행이나 실행 중 작업의 verified wait가 아니다.
 
@@ -131,3 +132,127 @@ CP1과 CP2마다 날짜·파일 manifest·소유·head/build·검증 source 일�
 - 2026-10-03 04:40:38 UTC: goal 도구가 `blocked`를 반환했다. 목표 범위는 유지하며 완료·일시정지로 처리하지 않았다. 새 착수 답변 전 목표 업무를 중단한다.
 - 이번 문서 검증: 회귀4실행/4PASS·skill sync·16필수 파일·7,379 local links·exit0. 읽기 closeout 04:38:01.858 UTC·exit0, `git diff --check` exit0. 새 제품 검사·구현·서비스 변경·게시0이다.
 - 재개 답변: “이 목표 범위의 격리 설계·구현·합성 검증 진행”. 게시·CI·개발계 교체는 정확한 범위를 별도로 확인한다.
+
+## 현재 재개 — 승인 범위와 격리 구현
+
+사용자의 “ㄱㄱㄱㄱㄱ” 뒤 격리 설계·구현·합성 검증을 시작했고, “승인이라고!”로 이번 목표의 선별 commit·push·Draft PR·비공개 CI·개발계 교체/복귀 범위를 확인했다. 정상 구현의 작은 수정마다 다시 승인받지 않는다. 새 DB/Auth/schema·DNS/Tunnel 설정·실제 계정 쓰기·main merge/Production은 제외한다. 앞선 blocked 기록은 당시 이력이고 현재 목표는 active다.
+
+CP1의 r6 소유34파일을 로컬 snapshot에 byte 동일하게 먼저 보존했다. CP1 게시용 별도 worktree와 현재 CP2 개선본을 섞지 않는다. 현재 source inventory는 새 테스트2개가 포함된656이며 기존654 근거를 새 판본의 근거로 바꾸지 않는다.
+
+P/F 새 검사는6/6, 관련12파일 회귀123/123 PASS다. C Community는 신규5개 포함29/29 PASS다. 부모/메뉴/보존3파일은 신규10개 포함179/179 PASS를 확인한 뒤 C 보관 disclosure의 감산 신규1개를 추가했다. 이후 최종 통합·타입·build·브라우저 검사에서 정확한 새 판본을 다시 확인한다. 앞선 fixture owner 누락과 CSS 없는 테스트 selector 오류는 수정했으며 제품 결함으로 집계하지 않는다.
+
+2026-10-03T05:02:03.006Z의 npm-test는2258/2258 PASS, fail/skipped/cancelled0, exit0, source656/실행 중 변경0이다. source snapshot SHA256은 `c9ce8f7fcc28b86a775308e45d9a06de72d4cfd1a8a09a21e7e029d07bba78b0`. 이 실행 후 C disclosure 감산이 추가됐으므로 최종 runtime 전체 근거로 재사용하지 않는다. 원결과는 로컬 `output/integrated-product-poc/npm-test-2026-10-03T05-02-03-006Z.public.json`이며 raw output 보존은 꺼져 있다.
+
+게시 선행 검사에서 현재 의존성5 high와 source reviewDue14가 확인됐다. 이전 audit/출처 PASS를 새 결과로 쓰지 않고 CP1 격리 worktree에서 실제 의존성 경로 제거와 원문 대조를 수행한다. 출처 날짜만 바꿔 통과시키지 않으며 실사용 데이터·원본 내용·기존 의료/세금 hold를 변경하지 않는다. 최종 dependency/source disposition 및 새 화면 호환 검증은 결과가 생긴 뒤 기록한다.
+
+[이번 세 원천 연결](requirements-delta.md)과 [시험 준비](trial-preparation.md)를 작성했다. 준비 문서와 시험 시작 가능 판정은 다르다. actual 반영·최종 QA가 남아 현재 시작 조건은 충족되지 않았다. 실기기·IME/AT·관찰 사용자0·독립 HTML2건 NOT_RUN은 유지한다.
+
+## 독립 복구 검토 뒤 수정 — 최종 후보 동결 전
+
+독립 코드/메모리 내 callback 검토에서 세 경계 결함을 확인했다. 참여 초안 자체가 바뀌지 않아도 다른 편집기의 pending으로 confirmed-unsaved 안내가 나오던 조건, 초안 복구가 사진 검증·취소의 독립 오류까지 숨기던 조건, 이미 만든 복구 action의 재검사가 현재 notice의 검증보다 약했던 조건이다. 실제 계정 간 쓰기 취약점으로 판정하지 않는다.
+
+- confirmed-unsaved는 현재 참여 초안의 변경된 bytes·pending·단독 capture와 다른 편집기/Discovery 미저장 입력 없음까지 resolver 안에서 확인한다. 원 owner·actor·request·receipt 종류/changed/revision·private bytes·public revision과 기존 CAS를 유지한다.
+- unknown/confirmed action은 클릭 시 같은 live resolver 조건을 다시 확인한다. 오래된 action을 새 요청이나 다른 actor에게 적용하지 않는다.
+- Community는 같은 저장 origin의 중복 안내만 감산한다. 독립 사진/업로드 오류와 실제 충돌 안내는 남긴다.
+
+새 negative 검사와 기존 회귀를 포함한 AlphaWorkspace82 + Community30 = **112/112 PASS**, exit0다. 수정 전 해당 경로의 실패를 확인했고, 테스트 shell의 빠진 Community binding도 별도로 보완했다. product-check는581 entry/diagnostics0/source656/실행 중 변경0이다. 이 실행 뒤 의존성·출처 수정이 추가되므로 최종 병합 후보의 전체 검사는 다시 실행한다.
+
+이전 source SHA `460b16b8020c8456cb996a3701a56d5d9524ae1dfbd23f773d12a4f0e94ffd21`의 npm2258/2258, docs4/4 및 build `DKMkNhkPDx7F2reUyjJUd`는 이 수정 전 근거다. 현재 runtime의 최종 PASS/build로 재사용하지 않는다. 이 build의3107 시작 요청도 최종 빌드 이후 안내로 교체해야 한다.
+
+통합 첫 실행은281파일/2943실행/2841PASS/102FAIL이었다. private catalog 공급이 빠져 ENOENT가 반복되는 원인을 확인했다. 원인 확인용 순차 실행은 도중 중단했으며 전체 결과로 집계하지 않는다. 기존 승인 catalog를 읽기 전용으로 공급한 재실행도 진행 중 새 runtime 결함과 테스트 shell 오류를 발견해 해당 실행 handle의 Ctrl+C로 중단했다. 완료되지 않은 실행에 PASS 수를 만들어 붙이지 않는다. 종료 뒤 해당 테스트 프로세스가 남지 않았음을 확인했다. catalog의 bytes는 그대로이고 실제 Auth/signing 설정은 전달하지 않는다. 의존성·출처·runtime을 동결한 뒤 이 환경으로 최종 통합을 한 번 실행한다.
+
+3107 앱 시작의 직접 도구 호출은 `blocked by policy`로 거절됐다. 현재 별도 사용자 담당의 Ready 답변은 없다. 다른 shell/helper/agent로 같은 시작을 우회하지 않았으며3105/3106/3107 listener 없음의 읽기 확인을 남겼다. r7 시나리오는7개×다섯 크기35개로 준비/list 확인했고 실제 HTTP 앱 실행은 **NOT_RUN**이다. 취소0쓰기·prefix·sentinel·page/console·overflow는 실행 뒤 원결과로 판정한다. 구현 승인은 재확인하지 않으며 서비스 실행 가능성과 승인 범위를 구분한다.
+
+선행 보안44파일은 CP1의 실제 SHA25644개와 CP2의 HEAD 동일/새 경로 부재를 확인한 뒤 정확한 기계적 사본으로 인수했다. CP2 소유 runtime과 겹친 경로0, 인수 후 hash 일치44다. 공식 Tailwind4.3.3과 제한된 v3 외형 호환·공식 alias 전환이며 새 디자인 정책 확정이 아니다. `npm ci`는163 packages 설치/audited164/vulnerability0/postinstall 정상 완료했다. CP1의 source15·CSS fixture10/10·security compatibility11/11은 해당 작업본의 근거이고 현재 CP2 전체 제품 검증과 합산하지 않는다.
+
+source15도 같은 SHA256·대상 HEAD/부재 검증으로 인수했다. [출처별 근거](../../content-audit/2026-10-03-core-journeys-cp1-source-review.md)와 [D44/E15 목록](prerequisites-manifest.md)을 포함해 현재 소유107경로다. root는 saved-record-only 읽기 복구와 긍정/음성 검사 diff를 직접 읽었다. 원문14개의 review 날짜 외 자료 해시는 동일하며 기존 저장 key/schema/writer는 변경하지 않는다. CP1의273/273과 실제 원문 대조는 인계 근거이고 root의 새 최종 후보 실행은 아래 결과로 구분한다.
+
+인수한 의존성 후보에서 root가 `security:audit`를 실행해 audit0·compatibility11/11 PASS를 확인했다. 이후 clean 설치의 게시 선행 검사에서 기존 CI 검사가 직접 import하는 `yaml`의 package 미선언이 발견됐다. Tailwind3의 전이 의존을 제거하며 드러난 것으로 공식 direct devDependency를 추가한다. 테스트 삭제·승인되지 않은 fork·검증 우회는 하지 않는다. package/lock의 최종 두 해시와 새 gate 근거가 나오기 전 기존 audit0/빌드를 최종 동결로 선언하지 않는다.
+
+세 복구 결함의 수정 뒤 독립 검토에서 actual callback/JSX18개 제한 검사를 통과했다. 현재/retained action·다른 editor/Discovery pending·independent 사진 오류의 조건을 확인했고 해당3건 범위에 치명 잔여를 발견하지 못했다. 이18개는 root의112개와 다른 검사지만 전체 runner 분모에 더하지 않으며 실제 브라우저 결과로 바꾸지 않는다.
+
+## 선행 인수 뒤 현재 실행 — 최종 설치·빌드 대기
+
+- root의 명시 표적8파일 검사: **230/230 PASS**, fail/cancelled/skipped0,48008.452ms, exit0. Alpha82·Community30·TextEditor66·Preservation37·P/F6·신규 source9다. 구성별 합은 같은 명령의230이며 이전112·179·273 실행을 더한 숫자가 아니다.
+- root npm-test: `2026-10-03T05:45:51.243Z`~`05:48:20.159Z`, **2258/2258 PASS**, exit0/fail/skipped/cancelled0, program source656/실행 중 변경0. 원결과는 로컬 `output/integrated-product-poc/npm-test-2026-10-03T05-45-51-243Z.json`이다. npm의 정적 목록은 위 신규 source 두 test 파일을 포함하지 않아 별도9개를 실제 실행했다.
+- root 타입:581 entry/diagnostics0/source656/실행 중 변경0. program inventory는 integrated/personal-workspace의 지정 경로 집합이며, 별도 의존성/CSS/source15의 전수 hash는 [D44/E15](prerequisites-manifest.md)로 확인한다. 656을 저장소 전체 파일 수로 쓰지 않는다.
+- root security audit0·compatibility11/11 PASS는 YAML 선언 전 설치의 결과다. 이후 공식 YAML2.9.0은 기존 HEAD lock의 version/resolved/integrity와 같고 CI 검사만 직접 사용한다. package/lock의 두 해시와 D44/E15 전체59개 일치를 실제 확인했다. 해당 추가 의존성이 설치된 최종 gate/build 결과는 다음 기록으로 분리한다.
+- 정확 private catalog 읽기 전용 공급의 전체 통합 실행은 진행 중이다. 이 실행 동안 node_modules 교체를 하지 않았고 실제 Auth/signing 설정도 넘기지 않았다. 끝나기 전 전체 PASS 개수를 기록하지 않는다.
+
+CP1 maintained-r6의 npm2258/2258·타입579/오류0·신규 source9/9·CSS fixture10/10·prepublish17/17과 build `TEl23fmCBYHnQyGupXvl3`는 그 별도 작업본의 근거다. CP2의 새 UX나 실제 제품 HTTP 검사 결과로 대신 쓰지 않는다. CP1/CP2 commit/push/PR/CI/개발계 반영은 현재0이며 관찰 사용자0이다.
+
+## 전체 통합 결과 — 공통 실패 원인 조사 중
+
+root의 읽기 전용 catalog 공급 실행은 `2026-10-03T05:45:43.293Z`~`06:05:11.654Z`에 완료됐다. **281파일/2968실행/2933PASS/35FAIL**, skipped/cancelled0, exit1이다. source656/실행 중 변경0이며 source snapshot SHA256은 `e9c6b110c42dabef5ce486c440cf2f392693ed9d15135e368d6234608e95de66`이다. catalog SHA256 `723abefdc26243eb1f9b4bcf21730758ecc7a300494ad2ae75293ac5c6dde4be` 전후 불변, 실제 계정 정보 전달0·설정 사본0·raw output 보존0을 확인했다.
+
+별도 CP1도279파일/2940실행/2905PASS/35FAIL로 완료됐다. 두 판본의 공통 의존성·출처 비교 경계를 먼저 조사한다. 현재 실패35개를 제품 결함35개나 단순 예상값 차이로 확정하지 않는다. 봉인 catalog의 공급 수·무결성 검사를 낮추지 않으며, 원본 payload를 출력하지 않는 파일별 오류 분류로 원인을 확인한다. 수정 전 이 결과를 최종 PASS·게시/개발계 반영 완료 근거로 사용하지 않는다.
+
+공식 YAML 선언을 포함한 root의 새 `npm ci`는164 packages 설치/audited165·취약점0·postinstall 정상·exit0으로 완료됐다. 이 설치 이후의 보안/게시 선행 검사·타입·최종 build는 별도 실행 근거로 남긴다. 이전 `DKMkNhkPDx7F2reUyjJUd` 및 CP1 `TEl23fmCBYHnQyGupXvl3`를 새 최종 판본으로 취급하지 않는다.
+
+새 설치의 `security:audit`를 다시 실행해 취약점0·호환11/11 PASS, 게시 선행17/17 PASS를 확인했다. 모두 fail/skipped/cancelled0·exit0이다. 이전 설치의 결과를 재사용한 것이 아니다.
+
+실패 중 catalog 비교1건은 실제 검토된7개의 검토일과 봉인 원본의 이전 검토일 사이에 허용한 차이가 없던 것이 원인이었다. [G1](manifest.md#g1--검토일과-봉인-원본의-비교-검사-보완)의 정확한 날짜 한 필드만 허용한 뒤 단일 파일15/15 PASS를 확인했다. 보류7개의 내용/날짜와 봉인 정책·요약을 보존하며, 나머지34건은 아직 원인 조사 중이다. 이 파일별 진단은 pack hash 전후 불변·설정 읽기0·raw 출력/보관0으로 실행했다.
+
+## F2/H 후속 — 실제 실행과 인계 근거의 구분
+
+F2 정확 판본 계약을 r7에 좁게 연결하고 root에서 단위10/10 PASS를 실행했다. `playwright --list`는7개 시나리오×다섯 크기35개를 확인했으며 실제 HTTP 실행은 계속 NOT_RUN이다. 서로 다른 제공/QA 루트·HEAD·input bytes, compile closure·compat CJS·static 누락/추가/drift를 거절한다. independent review는 두 초기 누락을 수정한 뒤 새 치명 경계를 찾지 못했으나 별도 실제 브라우저 검사를 한 것은 아니다.
+
+H의 성공 사례8개 테스트는 source hold 이후 moving/OPIC를 계속 승인·실행·편집 성공 경로로 쓰던 기대값을 보완했다. CP1에서 같은 direct21 집합이173PASS/30FAIL에서207/207PASS로 바뀌었다. 기존30개 복구와 새 음성4개이며, 보류 자료의 기존 내용·기록 보존 및 새 실행/편집 거절을 유지한다. G1과 합쳐 원 실패35 중31실행의 선별 복구를 확인한 것이고 전체35FAIL을 PASS로 바꾸지 않는다. root는 정확8개 해시와 대상 HEAD를 확인해 인수했으며 자신의 전체 통합 재실행은 아직 안 했다.
+
+공식 YAML 추가 설치 이후 root의 production build는 exit0, compile·타입·static18/18·trace를 완료했고 BUILD_ID는 `vUEHEW9a2r5z1mheZ6hog`이다. 이 빌드는 실제 Auth/signing/catalog 값을 상속하지 않는 합성 환경에서 실행됐으며 시험 서버 시작은 하지 않았다. H 인수와 남은 간접 fixture의 최종 정리 후 exact compile/QA 입력을 다시 고정한다. 이전 DKMK 빌드의 서버 시작 안내는 사용하지 않는다.
+
+## 추가 M3 음성 재현 — 기존 text 보호 guard 연결 검토
+
+AJD success fixture로 변경한 private-parity positive는 통과했고, 별도 held-moving 실제 factory의 원본·사본 ID 보존과 정상 update/complete/legacy transition 거절도 통과했다. 추가 crafted text 시험은 현재 private-parity:112~114에서 full shape가 유효한 개인 text를 직접 M3 fake transport로 전송해 HTTP200/ok=true/success·fake RPC1을 재현했다. `response.reason === invalid` 음성 assertion은 실패했다. 실제 계정/DB/real fetch0, raw payload 출력·보관0, 봉인 catalog 해시 전후 불변이다. 이를 실제 DB 취약점 또는 원본 snapshot 변조로 확대하지 않는다.
+
+main은 기존 `programPreservesLegacyQualityHold`의 held canonical block/subcheck/semantics/scope/progress 보존 계약과 command-handler의 현재-revision M3 preflight를 직접 읽었다. 기존 guard가 그 경계에 연결되지 않은 범위만 보완한다. 공용 `preservesAlphaPrivateSources`의 creator/social 의미를 바꾸거나 보류 정책을 새로 정하지 않는다. 남는 saved Flow의 text/progress만 기존 guard로 보호하고 전체 사본 삭제·다른 개인 문서 편집·정상 실행 가능한 자료·원본 불변·CAS·receipt replay를 별도 검사한다. 이 제한된 보완의 red→green과 정확 source/build는 결과 이후 기록하며 현재 전체 성공으로 선언하지 않는다.
+
+## J6 인수와 최종 후보 재검사
+
+위 보호 연결은 완료했다. CP1에서 최초 pair16실행/15PASS/1FAIL, 추가 forged 요청 포함26실행/21PASS/5FAIL을 확인한 뒤 같은 pair26/26 PASS를 실행했다. 관련9파일은 `2026-10-03T07:15:31.443Z`~`07:15:56.546Z`에 **153/153 PASS**, fail/skipped/cancelled0였다. 서로 다른 실행153·26·16을 합산하지 않는다. 이는 CP1 인계 근거이고 root 전체 실행의 결과가 아니다.
+
+보호는 현재 revision의 `change-private`에만 연결했다. 기존 creator/social 공용 원본 보존 함수와 M6 백업·복원, `undo-private` 정책은 변경하지 않았다. 남아 있는 보류 사본의 text/progress 변경 요청5개는 RPC 전에 거절하고, 전체 사본/문서 삭제·무관한 개인 문서 수정·기존 receipt CAS/replay는 보존했다. raw legacy-state 등의 모든 API 경로를 해결했다고 주장하지 않는다. 합성 fake RPC 시험이며 실제 계정·DB·외부 쓰기0, 봉인 pack 전후 불변이다.
+
+root는 [J 해시 표](prerequisites-manifest.md)의6파일을 직접 읽고 소스 SHA256·대상 HEAD/부재 확인 후 byte 동일하게 인수했다. 소유124경로/staged0/private 경로0이며 인수 후 타입 **581 entry/diagnostics0**, source656/실행 중 변경0을 직접 확인했다. 최종281파일 통합은 승인된 catalog의 읽기 전용 경로만 공급하는 안전 runner로 실행 중이다. 원문·실제 계정 정보·Auth/signing 설정·raw failure payload를 출력하거나 보관하지 않는다. 끝나기 전 전체 PASS 수를 쓰지 않는다.
+
+이전 build `vUEHEW9a2r5z1mheZ6hog`와 기존 r6 화면 결과는 J6 후 최종 판본으로 재사용하지 않는다. compile/QA 입력 동결 helper에서 실제 Next 입력인 docs의 seed JSON 추가 의존을 발견했으며, 정확한 공개 tracked 경로만 포함하도록 보완한다. 첫 `a` prebuild 기록은 이 누락을 포함하므로 최종 증명에 쓰지 않고 보존하며, 완전한 입력 집합으로 새 기록·실제 빌드·후검증을 만든다. helper 검사/QA 준비와 실제 HTTP 화면 검사는 구분한다.
+
+## 최종 통합의 잔여3건 — K1 검사 구성 보완
+
+root의 J6 후 통합은 `2026-10-03T07:19:59.985Z`~`07:40:40.300Z`에 **281파일/2988실행/2985PASS/3FAIL**, fail3/skipped0/cancelled0·exit1로 완료됐다. source656/실행 중 변경0·SHA256 `f0239e37182fc27e090fc47ba3aad755e3494a876721aa43eca0fff452488b55`, 봉인 pack 전후 불변·실제 자격정보 전달0·설정 사본0·raw 결과 보존0이다. CP1의 같은 판본은279파일/2960실행/2957PASS/3FAIL이며 root 결과와 합산하지 않는다.
+
+남은3건은 `ProgramMutationBusy.test.ts`의 community busy/conflict/checking-result 경로다. 실제 save 함수가 쓰는 `setErrorNotice`의 누락을 CP1에서 ReferenceError와 binding 일치로 단독 재현했다. [K1](manifest.md#k1--실제-상태-setter를-반영한-검사-125경로)은 테스트 context만 보완했다. React의 객체/functional notice setter를 제공하고 기존 queue·입력·기준선·실패0commit·명시 재시도 검사를 유지한다. 실패 draft/expected clone·reason과 성공 재시도 뒤 이전 실패 origin 제거 assertions를 강화했으며 runtime·정책·CAS 변경0이다.
+
+CP1의 단독 red10실행/7PASS/3FAIL→green10/10 뒤, root도 원파일·대상 hash와 HEAD 무변경을 확인해 같은 파일을 인수하고 **10/10 PASS**, skipped/cancelled0·exit0을 직접 실행했다. 전체2988의3FAIL을 단독10PASS로 소급 치환하지 않는다. 소유125경로에서 최종 전체281파일 검사를 새로 실행 중이다.
+
+root proof helper의 최종 self-test는 exit0이다. 기존 bounded tree와 실제 Next include/import/re-export/importtype/literal require 의존, tracked seed JSON과 고정 @/* CSS를 포함한다. 승인 밖 docs·private pack·env·node_modules·root 밖 경로는 내용 읽기 전에 거절한다. fresh `b.before`는 **compile1214/QA242/test-only 이름512**, `buildClaim=null`을 기록했다. 512를 runtime 수로 집계하지 않는다. 실제 빌드의 종료0과 후검증 전에 새 판본 성공을 선언하지 않는다. 게시 후 HEAD나 hook 빌드가 달라지면 그 새 판본의 증명도 다시 고정한다.
+
+## K1 후 root 빌드·입력 동결의 실제 결과
+
+fresh `b.before` 이후 합성 환경의 production build를 실제 실행해 exit0·컴파일/타입·static18/18·trace 완료를 확인했다. BUILD_ID는 **`HWEwfLgVrGeWPDbpumEMw`**다. 성공 종료를 확인한 뒤 `after --build-exit=0`을 실행해 compile1214·실제 QA import closure242·static 자산82의 정확 hash와 **wholeCompileDrift0/qaDrift0**를 확인했다. HEAD는 이 단계의 실제 `d1cc8dd1cbc1a220054f458aea369393642f71ed`다. 이 기록은 이후 게시/후크 빌드·새 HEAD의 증명이 아니다.
+
+동결 helper SHA256은 `d00b576e0329fa33645122970754921b623da9de74b4c64bfe5649bced156385`다. `.tmp/ux-exact-final-freeze-records/final-r7-20261003-j6-b.before.json`·`.exact.json`·`.after.json`은 로컬 전용 근거이며 Git에 포함하지 않는다. 이전 `a.before`는 공개 seed JSON을 놓친 불완전 기록으로 유지하고 성공 증명으로 사용하지 않는다. helper self-test나 build/입력 동결은 실제 HTTP 화면 검사가 아니다.
+
+이 build 뒤 root 보안 재검사는 취약점0·호환11/11 PASS·exit0이었다. 문서 검사도4/4 PASS·skill sync·16필수 파일·7432 local links·exit0을 확인했다. root 최종 전체281파일은 계속 실행 중이다. 제품 HTTP35개·실기기·IME/AT·관찰 사용자0, CP1/CP2 게시·CI·서비스 반영은 아직 실행 결과가 없으며 준비와 완료를 구분한다.
+
+## 최종 전체 통합 PASS — 게시 전 판본
+
+root의 K1 후 최종 실행은 `2026-10-03T07:46:47.762Z`~`08:04:28.650Z`에 **281파일/2988실행/2988PASS**, fail/skipped/cancelled/todo0·exit0/verifiedExit0이었다. source656의 SHA256은 `9e73afff6b9879535a6c5cc2fccd500497f724256af9f28c97f5f4164d467e22`, 실행 중 source 변경0·selected bytes 변경0이다. catalog SHA256 `723abefdc26243eb1f9b4bcf21730758ecc7a300494ad2ae75293ac5c6dde4be` 전후 불변·실제 계정 자격정보 전달0·설정 사본0·raw 보존0이다. 승인된 읽기 전용 catalog 경로만 공급했고 OS 환경 allowlist 외 실제 Auth/signing 값은 넘기지 않았다.
+
+CP1의 별도 K1 후 실행은 `07:44:43.143Z`~`08:02:38.586Z`, **279파일/2960실행/2960PASS**, fail/skipped/cancelled0·exit0이었다. source654 SHA `6c14dbc1d2cc5db7f46a11cdc5e0595e26b4f40bd607e9b76b860cc83890f374` 전후 불변이며 pack/자격정보/raw 경계도 유지했다. CP1과 root 실행 개수는 합산하지 않는다. 이전35FAIL·3FAIL·부분/중단 실행은 당시 결과로 보존한다.
+
+현재 root 소유125경로/staged0이며 전체 실패 원인 조사는 끝났다. 공개 저장소에는 소유 코드·테스트·설계·요약만 게시한다. `.tmp/`·`output/`·private pack·실제 계정/환경·원본 증거는 제외한다. ‘비공개 CI’는 기존 `flowme-catalog-ci` 환경에서 원자료를 제한해 읽고 allowlisted 요약만 내보내는 lane을 뜻한다. 저장소나 GitHub 로그 전체가 비공개인 것은 아니다. 정확 새 commit의 정상 hooks·새 CI·실제 HTTP QA·CP1/CP2 반영은 별도 실행/확인 뒤 기록한다.
+
+## 실제 게시와 정상 hook — 최초 CP2 제품 commit
+
+CP1 `80abc0ad3981fe8ef316d72d23c8b0d5645544f9`·[Draft PR209](https://github.com/knhbae/flowme2605/pull/209), CP2 `527814b69cbe719a85cce036c241d29706a82ea1`·[Draft PR210](https://github.com/knhbae/flowme2605/pull/210)을 실제 게시했다. CP2의 base는 CP1이고30파일 차이이며 main merge/Production0이다. 두 PR 모두 현재 task에 연결했다.
+
+CP2의 정상 pre-push는 `08:32:17.870Z`~`08:34:48.982Z`, exit0이었다. **npm 실제2258/2258PASS**, fail/skipped/cancelled/todo0이고 docs4/4·7432links와 production build exit0을 별도로 확인했다. 마지막 subrun19개만 전체 개수로 쓰지 않는다. 실제 Auth/signing 값 대신 합성 공개 설정만 전달했고 hook bypass0·raw log 보관0이다.
+
+postcommit `before`를 실제 hook build 전에 만들고 성공 종료 뒤 `after --build-exit=0`을 실행했다. root/head/build `527814b6`/`xzyBRR06On2DVYqf11l8W`, **compile1214/QA242/static82·wholeCompileDrift0/qaDrift0**다. `.tmp/ux-exact-final-freeze-records/final-r7-cp2-20261003-postcommit.{before,exact,after}.json`은 로컬 전용 근거다. 실제 HTTP 화면 검사 결과가 아니다.
+
+CP1의 postcommit build `Lc4K4IUc8Aw8T4aMCWLfa`와 compile1212/QA242/static81·drift0은 다른 root/head 증명이다. CI run37109357657의 core SUCCESS와 catalog/E2E 진행, CP2 첫 run37110241838의 시작 상태를 각각 확인했다. CI 전체 성공은 아직 확인하지 않았다. 같은 repo/actor/head의 허가된 private-source environment만 승인하며 실제 배포 승인으로 확대하지 않는다.
+
+최종 독립 읽기 검토는 제품30파일의6TSX/2CSS와 관련 test/E2E delta·P/F/C/N 설계를 대조했고 검사 범위에서 새 blocking issue를 찾지 못했다. 별도 실행 테스트/브라우저 PASS가 아니다. 게시 이력2개와 기존 소유 문서 갱신을 추가하지만 runtime/QA scenario bytes는 바꾸지 않는다. 후속 문서 commit은 새 HEAD/build로 정상 hook·exact proof를 다시 기록한다. 527814b6의 증명을 후속 HEAD에서 실행한 근거로 쓰지 않는다.
+
+새 HTTP30/35·CP1/CP2 개발계 반영·복귀·실기기/IME/AT·관찰 사용자 시험은 여전히 미완료다. 서비스 시작 거절을 다른 도구나 agent로 우회하지 않았다. 담당자 Ready 뒤 정확 판본 검사를 이어간다.

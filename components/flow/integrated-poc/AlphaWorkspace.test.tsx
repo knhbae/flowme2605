@@ -89,11 +89,11 @@ function harness() {
     ProgramSpace: 'program-space', ProgramLegacyWorkspace: 'program-legacy', ProgramPrivateOutput: 'private-output', AlphaConflictReview: 'conflict-review', ProgramCreatorWorkspace: 'creator-workspace',
     AlphaCatalogPanels: 'catalog-panels',
     ProgramDiscovery: 'program-discovery', ProgramCommunity: 'program-community', ProgramPublisher: 'program-publisher', ProgramCopyInspector: 'program-inspector', AlphaPreservationPanel:'preservation-panel',
-    preservation:false,preservationRef:{current:false},setPreservation:(value:boolean)=>{context.preservation=value;},
+    preservation:false,preservationRef:{current:false},preservationOpener:{current:null},preservationReturn:{current:null},setPreservation:(value:boolean)=>{context.preservation=value;},
     seen: { discovery: false, community: false }, browse: false, modalRecovery: null, publisher: null, inspector: null, modalRef: { current: false }, inspectorDialog: { current: null },
     discoveryStateRef: { current: { url: '', pastedText: '', pastedTitle: '', transient: null } },
     programDiscoveryHasUnstoredInput: (state: any) => !!(state.url || state.pastedText || state.pastedTitle || state.transient),
-    previousSnapshot: { current: null }, executeAlphaSocialIntent,
+    previousSnapshot: { current: null }, confirmedParticipation: { current: null }, executeAlphaSocialIntent,
     currentOwnerRef: { current: 'owner-a' }, confirmedAlphaPrivateTextSave,
     currentPublicRevision: { current: null }, publisherEditors: { current: null }, communityEditors: { current: null }, inspectorEditors: { current: null },
     socialRecovery: { current: null }, parkedSocial: { current: [] }, activeSocial: { current: [] }, socialRecoveries: null,
@@ -121,10 +121,12 @@ function harness() {
     createAlphaSyncController: () => store, createAlphaHttpRepository: () => ({}), fetch: () => { throw Error('network prohibited'); },
     navigator: { clipboard: { writeText: async (raw: string) => { copies.push(raw); } } },
     window: { addEventListener: (name: string, fn: any) => events.set(name, fn), removeEventListener: (name: string) => events.delete(name), setInterval: (fn: any) => { events.set('interval', fn); return 1; } },
-    document: { visibilityState: 'visible', addEventListener: (name: string, fn: any) => events.set(name, fn), removeEventListener: (name: string) => events.delete(name) },
+    document: { visibilityState: 'visible', body: {}, activeElement: null, addEventListener: (name: string, fn: any) => events.set(name, fn), removeEventListener: (name: string) => events.delete(name) },
+    restoreProgramDialogFocus: (target: any) => { assert(!target?.disabled); calls.push('return-focus'); context.document.activeElement = target; return true; },
     clearInterval: () => { calls.push('clear-timer'); events.delete('interval'); },
     history: async () => { calls.push('history'); }, restoreDraft: async () => { calls.push('restore'); }, clearDrafts: () => { calls.push('clear-recovery'); },
   };
+  context.document.activeElement = context.document.body;
   const store = { snapshot: () => context.snapshot, mutate: async () => { calls.push('mutation'); return { ok: true, result: 'doc', changed: false }; },
     refresh: async () => { calls.push('refresh'); return true; }, resolvePending: async (retry: boolean) => { calls.push(`resolve:${retry}`); return true; },
     bindSession: () => calls.push('bind'), discardConflict: async () => { calls.push('discard'); return true; }, dispose: () => calls.push('dispose') };
@@ -136,10 +138,14 @@ function harness() {
   context.captureInput = evaluate(`(${declaration('captureInput')})`, context);
   context.refreshAutomatically = evaluate(`(${declaration('refreshAutomatically')})`, context);
   context.closePreservation = evaluate(`(${declaration('closePreservation')})`, context);
+  context.readParticipationRecovery = (...args: unknown[]) => evaluate(`(${declaration('readParticipationRecovery')})`, context)(...args);
+  context.activeParticipationRecovery = () => evaluate(`(${declaration('activeParticipationRecovery')})`, context)();
   const present = evaluate(`(${declaration('present')})`, context);
   context.present = present;
   const render = () => {
     context.pending = !!context.snapshot?.pending; context.unavailable = context.snapshot?.status === 'session-expired' || !context.data;
+    context.localParticipationRecovery = evaluate(initializer('localParticipationRecovery'), context);
+    context.participationMessage = evaluate(initializer('participationMessage'), context);
     context.mutate = evaluate(initializer('mutate'), context); context.openLatest = evaluate(`(${declaration('openLatest')})`, context);
     return evaluate(renderExpression, context);
   };
@@ -147,6 +153,7 @@ function harness() {
   return { context, calls, events, storageValues, sessionStorage, copies, store, present, render, button,
     initialize: () => evaluate(effect('createAlphaUiRecovery'), context)(),
     registerEvents: () => evaluate(effect("'beforeunload'"), context)(),
+    returnPreservationFocus: () => evaluate(effect('Defer return until'), context)(),
     mutate: () => evaluate(initializer('mutate'), context)('edit', () => { throw Error('controller double must not build'); }),
   };
 }
@@ -316,7 +323,7 @@ test('response from an old owner closure cannot acknowledge or present a later a
 
 test('preservation lifetime defers all automatic triggers and closes with one catch-up', async () => {
   const h = harness(); h.registerEvents(); h.context.snapshot.references = {};
-  h.button('자료 가져오기 · 백업').props.onClick();
+  h.button('백업 · 복원 · 가져오기').props.onClick({ currentTarget: {} });
   assert.equal(h.context.preservationRef.current, true);
   for (const name of ['interval', 'focus', 'online', 'visibilitychange']) h.events.get(name)!();
   assert(!h.calls.includes('refresh'));
@@ -361,22 +368,110 @@ test('opening preservation does not abort an existing read; teardown removes all
 });
 
 test('late editor flush cannot open preservation after logout or account replacement', async () => {
-  for (const replacement of [false, true]) {
+  for (const replacement of ['disposed', 'controller', 'owner']) {
     const h = harness(); let finish!: (ok: boolean) => void;
     h.context.editors.current = { flushAll: () => new Promise<boolean>(resolve => { finish = resolve; }) };
-    h.button('자료 가져오기 · 백업').props.onClick();
-    if (replacement) h.context.controller.current = { ...h.store }; else h.context.disposed.current = true;
+    h.button('백업 · 복원 · 가져오기').props.onClick({ currentTarget: {} });
+    if (replacement === 'controller') h.context.controller.current = { ...h.store };
+    else if (replacement === 'owner') h.context.currentOwnerRef.current = 'owner-b';
+    else h.context.disposed.current = true;
     finish(true); await Promise.resolve();
     assert.equal(h.context.preservationRef.current, false); assert.equal(h.context.preservation, false);
   }
 });
 
+test('preservation captures its actual opener before an asynchronous editor flush', async () => {
+  const h = harness(), opener = {}, event = { currentTarget: opener as unknown }; let finish!: (ok: boolean) => void;
+  h.context.snapshot.references = {};
+  h.context.preservationReturn.current = { ownerId: 'owner-a', opener: {}, controller: h.store };
+  h.context.editors.current = { flushAll: () => new Promise<boolean>(resolve => { finish = resolve; }) };
+  h.button('백업 · 복원 · 가져오기').props.onClick(event);
+  assert.equal(h.context.preservationOpener.current, opener);
+  assert.equal(h.context.preservationReturn.current, null);
+  assert.equal(h.context.preservation, false);
+  event.currentTarget = null; finish(true); await Promise.resolve();
+  assert.equal(h.context.preservation, true);
+  const panel = nodes(h.render()).find(node => node.type === 'preservation-panel')!;
+  assert.equal(panel.props.returnFocusTarget, opener);
+});
+
+test('preservation close waits for the catch-up commit before returning focus exactly once', () => {
+  const h = harness(), opener = { disabled: false };
+  h.context.snapshot.references = {}; h.context.preservation = true; h.context.preservationRef.current = true;
+  h.context.preservationOpener.current = opener;
+  h.store.refresh = async () => { h.calls.push('refresh'); h.context.snapshot.busy = true; opener.disabled = true; return true; };
+  h.context.closePreservation(); h.context.closePreservation();
+  assert.equal(h.context.preservation, false);
+  assert.equal(h.context.preservationReturn.current.opener, opener);
+  h.returnPreservationFocus(); assert.deepEqual(h.calls, ['refresh']);
+  assert.equal(h.context.document.activeElement, h.context.document.body);
+  h.context.snapshot.busy = false; opener.disabled = false;
+  h.store.snapshot = () => ({ ...h.context.snapshot, busy: true });
+  h.returnPreservationFocus(); assert.deepEqual(h.calls, ['refresh']);
+  h.store.snapshot = () => h.context.snapshot;
+  h.returnPreservationFocus(); h.returnPreservationFocus();
+  assert.deepEqual(h.calls, ['refresh', 'return-focus']);
+  assert.equal(h.context.document.activeElement, opener);
+  assert.equal(h.context.preservationReturn.current, null);
+});
+
+test('preservation return does not take focus back from another user-selected target', () => {
+  for (const active of ['other', 'opener']) {
+    const h = harness(), opener = {}, other = {};
+    h.context.snapshot.references = {}; h.context.preservationRef.current = true; h.context.preservationOpener.current = opener;
+    h.context.closePreservation(); h.context.document.activeElement = active === 'other' ? other : opener;
+    h.returnPreservationFocus();
+    assert.equal(h.context.document.activeElement, active === 'other' ? other : opener);
+    assert.deepEqual(h.calls, active === 'other' ? ['refresh'] : ['refresh', 'return-focus']);
+    assert.equal(h.context.preservationReturn.current, null);
+  }
+});
+
+test('preservation return rejects reopened, hidden, pending, stale-owner or disposed workspaces', () => {
+  for (const condition of ['reopened', 'ref-open', 'hidden', 'pending', 'live-pending', 'owner', 'snapshot-owner', 'controller', 'disposed', 'account', 'references']) {
+    const h = harness(), opener = {};
+    h.context.snapshot.references = {}; h.context.preservationRef.current = true; h.context.preservationOpener.current = opener;
+    h.context.closePreservation();
+    if (condition === 'reopened') h.context.preservation = true;
+    else if (condition === 'ref-open') h.context.preservationRef.current = true;
+    else if (condition === 'hidden') h.context.document.visibilityState = 'hidden';
+    else if (condition === 'pending') h.context.snapshot.pending = { requestId: 'unsettled' };
+    else if (condition === 'live-pending') h.store.snapshot = () => ({ ...h.context.snapshot, pending: { requestId: 'unsettled' } });
+    else if (condition === 'owner') h.context.currentOwnerRef.current = 'owner-b';
+    else if (condition === 'snapshot-owner') h.context.snapshot.ownerId = 'owner-b';
+    else if (condition === 'controller') h.context.controller.current = { ...h.store };
+    else if (condition === 'disposed') h.context.disposed.current = true;
+    else h.context.snapshot[condition] = null;
+    h.returnPreservationFocus();
+    assert.deepEqual(h.calls, ['refresh'], condition);
+    assert.equal(h.context.preservationReturn.current, null, condition);
+  }
+});
+
+test('preservation owner teardown discards opener and deferred focus authority', () => {
+  const h = harness();
+  h.context.preservationOpener.current = {};
+  h.context.preservationReturn.current = { ownerId: 'owner-a', opener: {}, controller: h.store };
+  const cleanup = h.initialize();
+  assert.equal(h.context.preservationOpener.current, null);
+  assert.equal(h.context.preservationReturn.current, null);
+  h.context.preservationOpener.current = {};
+  h.context.preservationReturn.current = { ownerId: 'owner-a', opener: {}, controller: h.store };
+  cleanup();
+  assert.equal(h.context.preservationOpener.current, null);
+  assert.equal(h.context.preservationReturn.current, null);
+  assert.equal(h.context.disposed.current, true);
+  assert.equal(h.context.controller.current, null);
+});
+
 test('an expired or missing preservation snapshot releases its polling hold without restoring private data', () => {
   for (const missing of ['account', 'references']) {
     const h = harness(); h.context.snapshot.references = {}; h.context.preservation = true; h.context.preservationRef.current = true;
+    h.context.preservationReturn.current = { ownerId: 'owner-a', opener: {}, controller: h.store };
     h.context.snapshot[missing] = null; h.context.data = null;
     evaluate(effect('Expiry/failure'), h.context)();
     assert.equal(h.context.preservationRef.current, false); assert.equal(h.context.preservation, false);
+    assert.equal(h.context.preservationReturn.current, null);
     assert.equal(h.context.data, null); assert.equal(h.calls.length, 0);
     h.context.refreshAutomatically(); assert.deepEqual(h.calls, ['refresh']);
   }
@@ -813,6 +908,178 @@ test('SRUI06 rejection notice cannot cross draft bytes, baseline, command kind o
   assert(!h.calls.includes('mutation')); assert(!h.calls.includes('discard'));
 });
 
+function activeCommunityRecoveryHarness() {
+  const h = communityDraftNoticeHarness();
+  h.context.destination = { view: 'community' };
+  h.context.communityEditors.current = { captureSocialDrafts: () => [{ kind: 'participation', value: h.draft }] };
+  return h;
+}
+
+test('CJ-C refusal moves only the active matching composer recovery out of the global stack', () => {
+  const h = activeCommunityRecoveryHarness(); h.context.snapshot = h.authority;
+  const tree = h.render(), composer = nodes(tree).find(node => node.type === 'program-community')!;
+  assert.equal(composer.props.draftSaveRecovery.state, 'rejected');
+  assert.equal(composer.props.draftSaveRecovery.draftId, h.draft.id);
+  assert(!nodes(tree).some(node => node.props['aria-label'] === '거절된 저장과 입력 보호'));
+  assert(!h.calls.includes('mutation'));
+});
+
+test('CJ-C hidden, missing or different composers keep global recovery discoverable', () => {
+  for (const mode of ['hidden', 'missing', 'other-draft', 'modal'] as const) {
+    const h = activeCommunityRecoveryHarness(); h.context.snapshot = h.authority;
+    if (mode === 'hidden') h.context.destination = { view: 'space' };
+    if (mode === 'missing') h.context.communityEditors.current = null;
+    if (mode === 'other-draft') h.context.communityEditors.current = { captureSocialDrafts: () => [{ kind: 'participation', value: { ...h.draft, id: 'other' } }] };
+    if (mode === 'modal') h.context.publisher = 'other-modal';
+    assert.equal(h.context.activeParticipationRecovery(), undefined, mode);
+    // Modal render is tested separately; fallback state must remain global.
+    if (mode !== 'modal') assert(nodes(h.render()).some(node => node.props['aria-label'] === '거절된 저장과 입력 보호'), mode);
+  }
+});
+
+test('CJ-C unknown local action resolves only its exact live request, never creates a fresh mutation', () => {
+  const h = activeCommunityRecoveryHarness();
+  const command = { ...h.authority.draft, requestId: 'original-unknown-request' };
+  Object.assign(h.authority, { pending: command, draft: command, retryableRejectedSocialDraft: false });
+  h.context.snapshot = h.authority;
+  const recovery = h.context.activeParticipationRecovery();
+  assert.equal(recovery.state, 'unknown'); assert.equal(recovery.action.label, '이전 요청 저장 결과 확인');
+  assert(!nodes(h.render()).some(node => node.props['aria-label'] === '저장 결과 복구'));
+  recovery.action.onClick(); assert(h.calls.includes('resolve:true'));
+  h.calls.length = 0; Object.assign(h.authority, { pending: { ...command, requestId: 'different-request' } });
+  recovery.action.onClick(); assert.equal(h.calls.length, 0);
+  assert(!h.calls.includes('mutation'));
+});
+
+test('CJ-C malformed origin, owner, actor/storage and saving gates cannot borrow recovery presentation', () => {
+  for (const mode of ['owner', 'storage', 'disposed', 'payload', 'expected', 'saving'] as const) {
+    const h = activeCommunityRecoveryHarness();
+    if (mode === 'owner') h.authority.ownerId = 'other-owner';
+    if (mode === 'storage') h.context.storageError = true;
+    if (mode === 'disposed') h.context.disposed.current = true;
+    if (mode === 'payload') h.authority.draft.intent.draft.body = 'different payload';
+    if (mode === 'expected') Object.assign(h.authority.draft.intent, { expected: h.draft });
+    if (mode === 'saving') Object.assign(h.authority, { pending: h.authority.draft, busy: true, status: 'saving' });
+    assert.equal(h.context.readParticipationRecovery(h.draft, null), undefined, mode);
+    assert(!h.calls.includes('mutation')); assert(!h.calls.includes('discard'));
+  }
+});
+
+function confirmedNewerParticipation() {
+  const f = lostSocialSave(), h = f.h;
+  const command = h.context.previousSnapshot.current.pending;
+  const newInput = { ...command.intent.draft, body: 'original request plus newer unsaved input' };
+  h.context.seen.community = true; h.context.destination = { view: 'community' };
+  Object.assign(h.context, { communityView: 'community', communitySelection: undefined, communityState: {}, setCommunityState: () => {}, mediaPort: {} });
+  h.context.communityEditors.current = { hasPendingInput: () => true, acceptConfirmedSocialDrafts: () => false,
+    captureSocialDrafts: () => [{ kind: 'participation', value: newInput }] };
+  Object.assign(f.next, { lastReceipt: { requestId: command.requestId, kind: 'social', changed: true, revision: 2 } });
+  h.present(f.next);
+  return { h, command, newInput };
+}
+
+test('CJ-C exact receipt plus newer input says two outcomes without adopting a new baseline or saving it', () => {
+  const { h, command, newInput } = confirmedNewerParticipation();
+  assert.equal(h.context.external, true); assert.equal(h.context.currentRevision.current, 1);
+  const recovery = h.context.activeParticipationRecovery();
+  assert.equal(recovery.state, 'confirmed-unsaved');
+  assert.match(recovery.message, /이전 요청은 저장/); assert.match(recovery.message, /그 뒤에 쓴 입력은 아직 저장되지/);
+  assert.equal(h.context.readParticipationRecovery(newInput, null), undefined);
+  assert.equal(h.context.readParticipationRecovery(command.intent.draft, null).action.label, '추가 입력 보관 후 저장본 열기');
+  assert(!h.calls.includes('mutation')); assert(!h.calls.includes('discard'));
+});
+
+test('CJ-C local confirmed recovery keeps parked input discoverable without opening a second recovery stack', () => {
+  const { h } = confirmedNewerParticipation();
+  h.context.recoveries = { drafts: [{ title: '개인 입력', raw: '보관 원문' }] };
+  h.context.socialRecoveries = { entries: [{ kind: 'participation', value: { title: '참여 입력' } }] };
+  const tree = h.render();
+  for (const label of ['보관한 입력', '보관한 공개·참여 입력']) {
+    const disclosure = nodes(tree).find(node => node.type === 'details' &&
+      nodes(node).some(child => child.type === 'summary' && text(child).startsWith(label)))!;
+    assert(disclosure, label); assert.equal(disclosure.props.open, false, label);
+    assertOutsideRoutineDisclosure(tree, node => node.type === 'summary' && text(node).startsWith(label));
+  }
+  assert(!h.calls.includes('mutation')); assert(!h.calls.includes('discard'));
+});
+
+test('CJ-C confirmed-unsaved proof expires on later revision, public change, altered private bytes or receipt', () => {
+  for (const mode of ['revision', 'public', 'private', 'receipt', 'kind', 'unchanged', 'owner'] as const) {
+    const { h, command } = confirmedNewerParticipation();
+    if (mode === 'revision') h.context.snapshot.account.revision++;
+    if (mode === 'public') h.context.snapshot.publicRevision++;
+    if (mode === 'private') h.context.snapshot.account.space.position.scrollTop = 100;
+    if (mode === 'receipt') h.context.snapshot.lastReceipt.requestId = 'other-request';
+    if (mode === 'kind') h.context.snapshot.lastReceipt.kind = 'creator';
+    if (mode === 'unchanged') h.context.snapshot.lastReceipt.changed = false;
+    if (mode === 'owner') h.context.snapshot.ownerId = 'other-owner';
+    assert.equal(h.context.readParticipationRecovery(command.intent.draft, null), undefined, mode);
+    assert.equal(h.context.activeParticipationRecovery(), undefined, mode);
+  }
+});
+
+test('CJ-C confirmed-unsaved action rechecks its live proof before preserving and opening latest', () => {
+  const { h } = confirmedNewerParticipation(), recovery = h.context.activeParticipationRecovery();
+  h.context.snapshot.publicRevision++;
+  recovery.action.onClick(); assert(!h.calls.includes('discard')); assert(!h.calls.includes('refresh'));
+});
+
+test('CJ-C an unchanged participation composer cannot hide another editor pending input', () => {
+  const { h, command } = confirmedNewerParticipation();
+  h.context.communityEditors.current = { hasPendingInput: () => false,
+    captureSocialDrafts: () => [{ kind: 'participation', value: command.intent.draft }] };
+  h.context.editors.current = { hasPendingInput: () => true };
+  assert.equal(h.context.readParticipationRecovery(command.intent.draft, null), undefined);
+  assert(nodes(h.render()).some(node => node.props['aria-label'] === '다른 기기 변경과 입력 보호'));
+  assert(!h.calls.includes('mutation')); assert(!h.calls.includes('discard'));
+});
+
+test('CJ-C newer participation input cannot borrow global recovery when another editor is also pending', () => {
+  const { h, command } = confirmedNewerParticipation();
+  h.context.creatorEditors.current = { hasPendingInput: () => true };
+  assert.equal(h.context.readParticipationRecovery(command.intent.draft, null), undefined);
+  assert(nodes(h.render()).some(node => node.props['aria-label'] === '다른 기기 변경과 입력 보호'));
+});
+
+test('CJ-C a captured review or discovery input stays protected instead of becoming participation-only recovery', () => {
+  for (const mode of ['review', 'discovery'] as const) {
+    const { h, command, newInput } = confirmedNewerParticipation();
+    if (mode === 'review') h.context.communityEditors.current = { hasPendingInput: () => true,
+      captureSocialDrafts: () => [{ kind: 'participation', value: newInput }, { kind: 'review', value: { id: 'review-input' } }] };
+    else h.context.discoveryStateRef.current.pastedText = 'unrelated private input';
+    assert.equal(h.context.readParticipationRecovery(command.intent.draft, null), undefined, mode);
+    assert(nodes(h.render()).some(node => node.props['aria-label'] === '다른 기기 변경과 입력 보호'), mode);
+  }
+});
+
+test('CJ-C unknown retained action revalidates account and actor, not only the command request', () => {
+  for (const mode of ['account', 'actor'] as const) {
+    const h = activeCommunityRecoveryHarness();
+    const command = { ...h.authority.draft, requestId: 'original-unknown-request' };
+    Object.assign(h.authority, { pending: command, draft: command, retryableRejectedSocialDraft: false });
+    const recovery = h.context.activeParticipationRecovery();
+    if (mode === 'account') h.authority.account.ownerId = 'other-account';
+    else h.authority.envelope.data.activeActorId = 'other-actor';
+    h.calls.length = 0; recovery.action.onClick(); assert.equal(h.calls.length, 0, mode);
+  }
+});
+
+test('CJ-C confirmed retained action revalidates receipt and remaining input before opening latest', () => {
+  for (const mode of ['kind', 'unchanged', 'account', 'actor', 'clean', 'other-input'] as const) {
+    const { h, command } = confirmedNewerParticipation();
+    const recovery = h.context.activeParticipationRecovery();
+    if (mode === 'kind') h.context.snapshot.lastReceipt.kind = 'creator';
+    if (mode === 'unchanged') h.context.snapshot.lastReceipt.changed = false;
+    if (mode === 'account') h.context.snapshot.account.ownerId = 'other-account';
+    if (mode === 'actor') h.context.snapshot.envelope.data.activeActorId = 'other-actor';
+    if (mode === 'clean') h.context.communityEditors.current = { hasPendingInput: () => false,
+      captureSocialDrafts: () => [{ kind: 'participation', value: command.intent.draft }] };
+    if (mode === 'other-input') h.context.editors.current = { hasPendingInput: () => true };
+    h.calls.length = 0; recovery.action.onClick();
+    assert(!h.calls.includes('discard')); assert(!h.calls.includes('refresh'), mode);
+  }
+});
+
 
 test('normal shell keeps save state and undo visible while account and routine actions start collapsed', () => {
   const h = harness(), tree = h.render();
@@ -820,7 +1087,7 @@ test('normal shell keeps save state and undo visible while account and routine a
   assert(management); assert.equal(management.props.open, undefined);
   const managed = new Set(nodes(management));
   assert.equal(text(nodes(management).find(node => node.type === 'summary')), '계정 · 자료 관리');
-  for (const label of ['로그아웃 · 계정 바꾸기', '서버에서 다시 확인', '다시 실행', '자료 가져오기 · 백업']) {
+  for (const label of ['로그아웃 · 계정 바꾸기', '서버에서 다시 확인', '다시 실행', '백업 · 복원 · 가져오기']) {
     assert(nodes(tree).some(node => node.type === 'button' && text(node) === label && managed.has(node)), label);
   }
   assert(text(management).includes(h.context.email));

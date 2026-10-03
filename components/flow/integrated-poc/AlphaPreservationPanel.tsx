@@ -47,8 +47,9 @@ function hasContentSummary(preview: PreservationPreview): boolean {
   return isPreservationContentSummary(preview.content?.current) && isPreservationContentSummary(preview.content?.next);
 }
 /** Modal lifetime is bound to one verified owner. No automatic import or public replay. */
-export function AlphaPreservationPanel({ account, references, email, accessToken, onClose, onSaved }: {
-  account: AlphaAccount; references: AlphaReferenceContext; email: string; accessToken: string; onClose: () => void; onSaved: () => Promise<void>;
+export function AlphaPreservationPanel({ account, references, email, accessToken, returnFocusTarget, onClose, onSaved }: {
+  account: AlphaAccount; references: AlphaReferenceContext; email: string; accessToken: string; returnFocusTarget?: HTMLElement | null;
+  onClose: () => void; onSaved: () => Promise<void>;
 }) {
   const dialog = useRef<HTMLDialogElement>(null), alive = useRef(true), selectionGeneration = useRef(0);
   const activeBackup = useRef<ReturnType<typeof createBackupRequestBudget> | null>(null);
@@ -70,10 +71,14 @@ export function AlphaPreservationPanel({ account, references, email, accessToken
     finally { if (alive.current) setBusy(false); }
   }
   useEffect(() => {
-    alive.current = true; const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null, element = dialog.current;
+    alive.current = true;
+    // The owner shell waits for its catch-up refresh to enable the trigger before
+    // returning focus. Standalone callers retain the native dialog fallback.
+    const managedFocus = returnFocusTarget !== undefined;
+    const opener = managedFocus ? returnFocusTarget : document.activeElement instanceof HTMLElement ? document.activeElement : null, element = dialog.current;
     element?.showModal();
     void loadPending();
-    return () => { alive.current = false; activeBackup.current?.cancel(); element?.close(); restoreProgramDialogFocus(opener); };
+    return () => { alive.current = false; activeBackup.current?.cancel(); element?.close(); if (!managedFocus) restoreProgramDialogFocus(opener); };
   }, []);
   useEffect(() => () => { if (download) URL.revokeObjectURL(download.url); }, [download]);
   async function request(payload: unknown, signal?: AbortSignal) {
@@ -212,14 +217,14 @@ export function AlphaPreservationPanel({ account, references, email, accessToken
     finally { if (alive.current) setBusy(false); }
   }
   return <dialog ref={dialog} className={styles.dialog} aria-labelledby="alpha-data-title" onCancel={event => { if (busy) event.preventDefault(); else onClose(); }}>
-    <header><h2 id="alpha-data-title">자료 가져오기 · 백업</h2><button type="button" disabled={busy} onClick={onClose}>닫기</button></header>
+    <header><h2 id="alpha-data-title">백업 · 복원 · 가져오기</h2><button type="button" disabled={busy} onClick={onClose}>닫기</button></header>
     <p className={styles.owner}>적용할 계정: {email}</p>
     <section><h3>내 계정 백업</h3><p>현재 개인 자료·원문·기록과 연결된 사진을 파일로 보관합니다. 공개 자료를 되돌리는 서비스 전체 복원은 아닙니다.</p>
       <button type="button" disabled={busy || !recoveryReady || !!pending} onClick={() => void backup()}>사진 포함 백업 만들기</button>
       {backupActive && <button type="button" onClick={() => activeBackup.current?.cancel()}>백업 요청 취소</button>}
       {download && <a href={download.url} download={download.name}>백업 파일 내려받기</a>}
       <small>암호화되지 않은 개인 자료입니다. 안전한 곳에 보관하세요. 이미 삭제된 과거 첨부는 복원 대상이 아닙니다.</small></section>
-    <section><h3>자료 선택</h3><p>기존 통합 PoC 자료를 가져오거나 이 계정의 백업으로 복원합니다. 원본 파일·브라우저 저장값은 수정하지 않습니다.</p>
+    <section><h3>복원·가져올 자료 선택</h3><p>기존 통합 PoC 자료를 가져오거나 이 계정의 백업으로 복원합니다. 원본 파일·브라우저 저장값은 수정하지 않습니다.</p>
       <label>JSON 파일 선택<input type="file" accept="application/json,.json" disabled={busy || !recoveryReady || !!pending} onChange={event => { const file = event.target.files?.[0];
         if (file) void selectFile(file); }} /></label>
       <button type="button" disabled={busy || !recoveryReady || !!pending} onClick={() => { const local = createLocalImportSource(localStorage); if (local.ok) void selectRaw(local.raw); else setStatus(local.details.join(' ')); }}>이 브라우저의 이전 자료 읽기</button>

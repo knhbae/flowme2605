@@ -1,12 +1,8 @@
 # FlowMe Project Control
 
-## 현재 — 승인된 CP1 게시 준비 (2026-10-03)
+## 현재 격리 목표 — 핵심 사용 여정 개선·개발계 반영·시험 준비 (2026-10-03)
 
-[목표·경계](./specs/2026-10-03-alpha-core-journeys-ready/spec.md)·[선별 목록](./specs/2026-10-03-alpha-core-journeys-ready/manifest.md)·[현재 QA](./specs/2026-10-03-alpha-core-journeys-ready/qa.md)를 따른다. 사용자의 “승인이라고!”로 현재 목표의 구현·선별 게시/CI·개발계 앱 교체/복귀를 인수했다. 이 작업본은 보존된 r6의 CP1 전용이며 CP2 새 런타임/설계는 포함하지 않는다. 새 보안·출처 gate와 정확 head/build·CI·실제 서비스 반영을 확인 중이다. 관찰 시험·DB/Auth·DNS/Tunnel 설정·main merge·Production은 제외한다.
-
-## 이전 — 목표 등록·계획 기준선 (2026-10-03)
-
-[목표·경계](./specs/2026-10-03-alpha-core-journeys-ready/spec.md)·[단계 계획](./specs/2026-10-03-alpha-core-journeys-ready/plan.md)·[작업 체크](./specs/2026-10-03-alpha-core-journeys-ready/tasks.md)·[검증/반영 원장](./specs/2026-10-03-alpha-core-journeys-ready/qa.md)을 따른다. 세 목적은 선택 경로이며 강제 순서/계정 모드가 아니다. 기존 후보 CP1→정책 불필요 연결부 설계/구현/QA→개선본 CP2→소수 시험 준비로 관리한다. 목표 등록/계획 수립만 완료했고 제품 실행·게시·교체는 미착수다. 직전 목표 complete와 미반영 후보, NOT_RUN·미결 정책·운영/기기 후속을 유지한다. 실제 관찰 시험과 Production은 포함하지 않는다.
+[목표·경계](./specs/2026-10-03-alpha-core-journeys-ready/spec.md)·[단계 계획](./specs/2026-10-03-alpha-core-journeys-ready/plan.md)·[작업 체크](./specs/2026-10-03-alpha-core-journeys-ready/tasks.md)·[검증/반영 원장](./specs/2026-10-03-alpha-core-journeys-ready/qa.md)을 따른다. 세 목적은 선택 경로이며 강제 순서/계정 모드가 아니다. P/C/N/F 설계·구현과 합성 검증, CP1/CP2 선별 게시·Draft PR209/210을 마쳤고 CI 실패의 공통 보완을 진행 중이다. 사용자의 착수·게시/CI·개발계 교체 승인은 확인됐으며 계획만 완료한 상태가 아니다. 정확 HTTP QA와 두 개발계 교체/복귀는 미완료다. 이전 goal 문구의 계획-only 제한은 등록 당시 이력으로 보존하고 최신 사용자 승인과 spec을 따른다. 실제 관찰 시험·독립 HTML2·미결 정책·새 DB/Auth/DNS/Tunnel·main merge·Production은 포함하지 않는다.
 
 ## 직전 격리 목표 — UX 비교·저장 갭 보완 마감 (2026-10-03)
 

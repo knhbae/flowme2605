@@ -278,6 +278,29 @@ function registrationNotes(h: ReturnType<typeof referenceMenuHarness>) {
   return h.nodes(h.render()).filter(node => node.type === 'small' && node.props.children === subcheckRegistrationNote);
 }
 
+test('CJ-N menu identifies the selected registered subcheck and places progress before additions without a write', () => {
+  const f = subcheckMenuFixture(true), h = referenceMenuHarness(undefined, f), before = JSON.stringify(f.workspace);
+  h.action('row-menu', 2);
+  const nodes = h.nodes(h.render()), target = nodes.find(node => node.type === 'p' && node.props.children === '하위 항목');
+  assert.equal(target.props.children, '하위 항목');
+  const sections = nodes.filter(node => node.type === 'section' && ['선택 항목 진행·날짜', '추가·연결', '선택 항목 문서 구조'].includes(node.props['aria-label']));
+  assert.deepEqual(sections.map(node => node.props['aria-label']), ['선택 항목 진행·날짜', '추가·연결', '선택 항목 문서 구조']);
+  assert(h.nodes(sections[0]).some(node => node.type === 'button' && node.props.children === '진행 기록'));
+  assert(h.nodes(sections[0]).some(node => node.type === 'button' && node.props.children === '날짜 바꾸기'));
+  assert.equal(registrationNotes(h).length, 1);
+  assert.equal(h.writes(), 0); assert.equal(JSON.stringify(h.draft().getState().working), before); h.unmount();
+});
+
+test('CJ-N free memo menu does not suggest progress or register the memo through grouping', () => {
+  const h = referenceMenuHarness('- [ ] 준비\n자유 메모'), before = JSON.stringify(h.draft().getState().working);
+  h.action('row-menu', 1);
+  const nodes = h.nodes(h.render());
+  assert(nodes.some(node => node.type === 'p' && node.props.children === '자유 메모'));
+  assert(!nodes.some(node => node.props['aria-label'] === '선택 항목 진행·날짜'));
+  h.button('닫기').props.onClick();
+  assert.equal(h.writes(), 0); assert.equal(JSON.stringify(h.draft().getState().working), before); h.unmount();
+});
+
 test('registered structural subcheck reveals its retained state only in its row menu without writing', () => {
   const f = subcheckMenuFixture(true), h = referenceMenuHarness(undefined, f);
   const row = M.rowMeta(f.workspace, f.docId)[2];

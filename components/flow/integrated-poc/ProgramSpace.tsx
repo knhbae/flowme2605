@@ -307,6 +307,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   async function showFolderTasks() {
     return changePeriod('all');
   }
+  async function showAllTasksFromEmpty() {
+    if (!await changePeriod('all')) return;
+    requestAnimationFrame(() => {
+      if (presentation.current.period === 'all') root.current?.querySelector<HTMLButtonElement>('[data-program-period="all"]')?.focus();
+    });
+  }
   useEffect(() => {
     props.onRegisterEditors?.({ lockInput,
       acceptConfirmedPrivateText: (before, next) => Object.values(confirmedSaveReaders.current).reduce((accepted, confirm) => !!confirm?.(before, next) || accepted, false),
@@ -616,7 +622,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     <div className={styles.content}>
       {props.outputReturn && <ProgramOutputReturn key={`${actorId}:${props.outputReturn.executionKey}`} data={data} destination={props.outputReturn} today={today} mutate={mutate}
         onOpenSource={(id, line) => void openDocument(id, line)} onRegisterEditors={(port, key) => { recurrencePorts.current[key] = port; }} onUndo={props.onUndo} onRedo={props.onRedo} />}
-      <nav className={styles.periods} aria-label="개인공간 보기">{periods.map(([key, label]) => <button key={key} aria-current={period === key ? 'page' : undefined} onClick={() => { void changePeriod(key); }}>{label}</button>)}</nav>
+      <nav className={styles.periods} aria-label="개인공간 보기">{periods.map(([key, label]) => <button key={key} data-program-period={key} aria-current={period === key ? 'page' : undefined} onClick={() => { void changePeriod(key); }}>{label}</button>)}</nav>
       {message && <p role="alert" className={styles.error}>{message}</p>}
       <div hidden={period !== 'documents'}>
         <ProgramRecurrencePlanRecovery data={data} today={today} documentId={selected || undefined} disabled={preparingDocumentAction} onOpenSource={(id, line) => void openDocument(id, line)} />
@@ -696,7 +702,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         {occurrenceResult.issues.includes('query-window-limit') && <p role="alert">조회 가능한 회차 범위를 넘었습니다. 표시된 목록이 전체는 아니며, 원문과 기존 기록은 보존했습니다.</p>}
         {occurrenceResult.pendingStarts.map(entry => <p role="status" key={entry.itemRef}>{entry.title} · {entry.reason === 'anchor-required' ? '내 기준일' : '내 시작일'} 미정
           <button type="button" onClick={() => void openDocument(entry.documentId, entry.lineId)}>사본에서 날짜 정하기</button></p>)}
-        {!executionRows.length && <p className={styles.empty}>이 보기에 할 일이 없습니다. 날짜나 폴더를 바꾸거나 새 할 일을 적어보세요.</p>}
+        {!executionRows.length && <div className={styles.empty}><p>{folderId || query ? '현재 조회 조건에 맞는 할 일이 없습니다.' : '이 보기에 할 일이 없습니다.'}</p>{period !== 'all' && period !== 'documents' && <button type="button" onClick={() => void showAllTasksFromEmpty()}>전체 할 일에서 찾기</button>}</div>}
         <ul className={styles.tasks}>{executionDayRows.map(({ entry, heading }) => {
           if (entry.kind === 'occurrence') return <li key={entry.key} onKeyDown={event => { if (event.altKey && ['ArrowUp', 'ArrowDown'].includes(event.key)) { event.preventDefault(); moveExecutionStep(entry.key, event.key === 'ArrowUp' ? -1 : 1); } }} onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); const from = event.dataTransfer.getData('text/plain'); if (from && (moving === from || nativeDrag.current === from)) void moveBefore(from, entry.key); nativeDrag.current = null; }}>
             {heading && <h2 className={styles.executionGroup}>{heading}</h2>}
@@ -724,6 +730,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       {detail?.kind === 'task' && detailTask && <>
         {detailDatePresentation && <p className={styles.muted} aria-label="날짜 출처">{detailDatePresentation.label}{detailDatePresentation.context && <small>{detailDatePresentation.context}</small>}</p>}
         <form onSubmit={event => { event.preventDefault(); void applySchedule(detailTask.id); }}><div className={styles.scheduleFields}><label className={styles.field}>실행 날짜<input type="date" value={executionDateDraft} onChange={event => setExecutionDateDraft(event.target.value)} /></label><label className={styles.field}>시간<input type="time" step="60" value={executionTimeDraft} onChange={event => setExecutionTimeDraft(event.target.value)} /><small>비워 두면 시간 없음</small></label></div><button>날짜·시간 적용</button></form><div className={styles.actions}><button onClick={() => void dateMove(detailTask.id, today)}>오늘로 이동</button><button onClick={() => void dateMove(detailTask.id, programShiftDate(today, 1))}>내일로 이어하기</button><button onClick={() => void dateMove(detailTask.id, null)}>날짜 미정으로 이동</button></div>
+        {detailTask.time && <p className={styles.muted}>날짜만 미정으로 옮기면 시간은 유지됩니다.</p>}
         <form onSubmit={async event => { event.preventDefault(); const result = await run('진행 기록', current => recordProgramTaskProgress(current, { ...base(current), taskId: detailTask.id, date: recordDate, percent: Number(percent) })); if (result.ok) setMessage('해당 날짜의 누적 진행을 저장했습니다.'); }}><h3>날짜별 진행</h3><label>기록 날짜<input type="date" value={recordDate} onChange={event => setRecordDate(event.target.value)} required /></label><label>누적 진행 (%)<input type="number" min={0} max={100} value={percent} onChange={event => setPercent(event.target.value)} required /></label><button>진행 기록</button></form>
         <ul>{M.progressHistory(space.text, detailTask.id).map(record => <li key={record.date}><button onClick={() => { setRecordDate(record.date); setPercent(String(record.percent)); }}>{record.date} · {record.percent}%</button></li>)}</ul>
         {period !== 'documents' && <div className={styles.actions}><button onClick={() => moveStep(detailTask, -1)}>같은 날짜에서 위로</button><button onClick={() => moveStep(detailTask, 1)}>같은 날짜에서 아래로</button></div>}

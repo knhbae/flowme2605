@@ -1,22 +1,8 @@
 # 단계0 읽기 기준선 — 2026-10-03
 
-정본: [목표](spec.md) · [계획](plan.md) · [선별 파일 목록](manifest.md). 아래는 승인 전 단계0의 읽기 기록이다. 그 뒤 사용자의 “ㄱㄱㄱㄱㄱ”와 “승인이라고!”로 현재 목표의 격리 설계/구현/합성 검증·선별 게시/CI·개발계 앱 교체/복귀가 승인됐다. 최신 CP1 게시 준비와 실패/미실행은 [QA](qa.md)를 따른다. 아래 승인 대기·프로세스/HTTP·원격 상태는 당시 이력이며 현재 대기 사유로 다시 사용하지 않는다.
+정본: [목표](spec.md) · [계획](plan.md) · [선별 파일 목록](manifest.md). 아래 단계0과 승인 대기 기록은 당시 이력이다. 이후 사용자의 “승인이라고!”로 구현·검증·이 목표 소유 후보의 선별 게시/CI·개발계 교체/복귀가 승인됐고 격리 구현을 진행했다. 현재 상태는 이 문서 끝의 재개 기록과 [QA](qa.md)를 따른다. 관찰 사용자 시험은 계속 보류한다.
 
-## 공개 저장소와 catalog CI 승인 경계
-
-2026-10-03 08:02:44 UTC GitHub의 저장소 조회로 `knhbae/flowme2605`는 `visibility=PUBLIC`·`isPrivate=false`임을 확인했다. 현재 승인 범위의 “비공개 CI”는 저장소나 로그 전체가 비공개라는 뜻이 아니다. 코드는 공개 저장소에 게시하고 검증 결과는 허용된 public summary만 내보낸다. 원 catalog 자료는 로컬 보존 및 environment secret 공급 범위에 남긴다.
-
-현재 `.github/workflows/ci.yml` 전체를 읽었다. catalog-contracts는 같은 저장소의 신뢰된 PR에 한해 `flowme-catalog-ci` environment·`deployment:false`로 실행하며, 의존성 설치 후 원본을 materialize하고 검사 뒤 always cleanup한다. private-job cache는 사용하지 않고 artifact는 allowlist된 test summary다. 정확 새 게시 commit·같은 저장소 PR·해당 pending environment만 승인한다. 다른 commit·environment·전역 workflow/event 설정 변경은 포함하지 않는다. 앞선 문서의 “비공개 CI” 표현도 이 제한 lane을 뜻하며 실제 실행·성공은 새 head에서 따로 기록한다.
-
-## CP1 게시 전 자동 배포 경계의 최신 읽기 확인
-
-2026-10-03 06:22:54~06:23:30 UTC source 담당의 Render connector 조회와 06:32:57 UTC Vercel 실제 연결 UI 읽기 결과를 인수했다. 설정·계정·로그인·배포·서비스 쓰기는0이다. 이 근거는 Git 자동 배포의 경계이며 수동 CLI·모든 외부 automation 중지를 보증하지 않는다.
-
-Render의 승인된 My Workspace에는 서비스1개 `flowme-alpha-trial`이 같은 `knhbae/flowme2605` 저장소를 사용한다. branch는 `agent/alpha-m1-persistence-20260921`, `autoDeploy=no`·trigger off·PR preview no다. Vercel의 실제6프로젝트 중 `flowme2605`만 같은 저장소와 연결돼 있고 나머지5개는 Git 미연결이다. 연결 프로젝트의 실제 Root Directory는 저장소 root이며 Deploy Hooks는 없다. API 목록은5개였으나 세부 조회의 projectId/idOrName 스키마 오류로 확인할 수 없어 실제 UI로 보완했다.
-
-CP1 HEAD/worktree의 `vercel.json`은 `git.deploymentEnabled=false`, 동일 Git blob `60b917bcadf4828322a8b37e5b3b42d4ca342faf`, 실제 SHA256 `62508a782ac93d86b1d1274138656087f9ca5cccc6debb64a48af0e06642ee95`다. 경쟁 root `vercel.ts/js/mjs/cjs/mts/toml`은 없다. [공식 Git configuration](https://vercel.com/docs/project-configuration/git-configuration#turning-off-all-automatic-deployments)의 false는 모든 branch 자동 Git 배포를 중지한다. [공식 설정 파일 계약](https://vercel.com/docs/project-configuration/vercel-ts)도 함께 읽었다. 이 blob을 게시 head에 유지하고 게시 직전에 다시 확인해야 현재 scoped push/Draft PR의 Git 자동 배포 차단 근거가 유지된다.
-
-## 현재 상태가 바꾸는 다음 행동 — 승인 전 이력
+## 현재 상태가 바꾸는 다음 행동
 
 1. 직전 후보의 검증 소스는 그대로다. 그 보완을 다시 만들 필요는 없다. 현재 source 일치 근거를 CP1 준비에 사용할 수 있다.
 2. 후보는 아직 원격에 없다. 이전 PR #208의 성공 CI를 새 후보의 성공 CI로 쓰지 않는다.
@@ -85,8 +71,6 @@ r6의 실제 Auth/API 전달0·prefix 밖 쓰기0·합성 sentinel 불변·오�
 
 ## 구현 착수 미확인 — 세 목표 턴의 권한 감사
 
-이 절은 04:40:38 UTC 이전의 이력이다. 이후 사람의 착수·체크포인트 승인을 받았으며 현재 권한은 spec/QA를 따른다.
-
 2026-10-03 04:35:27 UTC 이후, 같은 세션의 최근4턴·현재 goal·spec/plan/tasks와 Git 상태를 읽었다. 최근 실제 사람 요청은 목표 수립이며, 착수 질문 뒤 새로운 사람의 답변은 없다. 자동 목표 메시지를 사람의 실행 승인으로 해석하지 않는다.
 
 | 이번 새 목표 턴 | 완료/진전 | 같은 미해결 조건 |
@@ -102,3 +86,15 @@ r6의 실제 Auth/API 전달0·prefix 밖 쓰기0·합성 sentinel 불변·오�
 같은 조건이 세 목표 턴에 남았고 안전한 계획/읽기 준비를 소진했으므로 전체 목표의 `blocked` 전환 조건을 충족한다. 목표 범위·미완료 체크는 그대로이며 complete/paused로 바꾸지 않는다. 도구 반환은 QA에 기록한다.
 
 재개 요청은 **“이 목표 범위의 격리 설계·구현·합성 검증 진행”**이면 된다. 그 답변을 받으면 새 승인 범위를 확인하고 재개한다. 이 답변만으로 실제 계정 쓰기·게시/CI·서비스 교체·새 정책·Production을 함께 승인한 것으로 해석하지 않는다. CP1/CP2 외부 권한은 exact manifest·판본·교체/복귀 범위에서 별도로 확인한다.
+
+## 재개 뒤 게시 자동 배포 연결 확인 — 2026-10-03
+
+사용자의 현재 승인은 이 목표 소유 후보의 commit·push·Draft PR·비공개 CI·개발계 교체/복귀를 포함한다. 새 DB/Auth/schema·DNS/Tunnel·실제 계정 쓰기·main merge·Production은 제외한다. 앞의 세 턴 blocked 기록은 승인 전 이력이며 현재 목표는 active다.
+
+06:22:54~06:23:30 UTC에 Render의 승인된 My Workspace를 읽기 조회했다. 같은 Git 저장소의 `flowme-alpha-trial` (`srv-darqup0jo6nc73938v20`)은 `autoDeploy=no`, `autoDeployTrigger=off`, PR preview=no다. 서비스는 not_suspended이며 수동 배포까지 금지됐다는 뜻은 아니다. workspace 선택·환경·서비스·배포 설정의 변경은0이다.
+
+Vercel 연결 도구의 project 상세 조회는 인자 오류로 실패했다. 이를 자동 배포가 꺼졌다는 근거로 사용하지 않고, 06:32:57 UTC 실제 대시보드에서 팀의6개 project card와 Git/루트 설정을 읽기 확인했다. `flowme2605`만 `knhbae/flowme2605`에 연결됐고 Root Directory는 빈 값(저장소 루트), 나머지5개는 Connect Git Repository 상태다. Ignore Build Step의 Automatic·댓글/status 설정을 배포 차단으로 해석하지 않았다. Deploy Hook은 없었다.
+
+연결 project의 저장소 루트에 적용되는 현재 `vercel.json`은 `git.deploymentEnabled=false`다. Git blob `60b917bcadf4828322a8b37e5b3b42d4ca342faf`, 현재 raw SHA256 `62508a782ac93d86b1d1274138656087f9ca5cccc6debb64a48af0e06642ee95`를 확인했고 다른 루트 `vercel.*` config는 없다. [Vercel 공식 Git 설정](https://vercel.com/docs/project-configuration/git-configuration#turning-off-all-automatic-deployments)에 따르면 이 값은 모든 branch의 Git 자동 배포를 끈다. [config 파일 규칙](https://vercel.com/docs/project-configuration/vercel-ts)도 함께 확인했다. 해당 config를 유지하는 현재 후보의 Git push/PR 자동 배포 경계가 확인된 것이며 수동·외부 배포까지 모두 불가능하다는 판정은 아니다.
+
+게시 설정은 변경하지 않았다. 전체 통합 실패를 해결하고 새 hook/CI·정확 판본 HTTP 검사를 기록하기 전 게시·개발계 반영을 완료로 처리하지 않는다.
