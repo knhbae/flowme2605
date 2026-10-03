@@ -6,6 +6,8 @@
 - PR: https://github.com/knhbae/flowme2605/pull/210
 - Status: `Draft`
 - 최초 제품 commit: `527814b69cbe719a85cce036c241d29706a82ea1`
+- 최초 문서 후속: `217d4be4ee9135e9d9515f9a325445701854c353`
+- 공통 CI 보완 인수 merge: `93e25cba62dce83ec1ad24bfadc03e39dea54293` (CP1 exact670f)
 - 최초 postcommit build: `xzyBRR06On2DVYqf11l8W`
 - Deploy URL: 개발계 교체 미완료.
 
@@ -36,7 +38,9 @@ CP1 위의30파일 차이로 개인 문서↔기간 실행↔원문 복귀, 필�
 - 최초 제품 commit의 정상 pre-push: 08:32:17.870~08:34:48.982 UTC, npm test2,258/2,258 PASS·docs4/4·build exit0·후크 우회0.
 - exact proof: compile1,214/QA242/static82, drift0·root/head/build 일치. 이 증명은 후속 문서 commit의 head/build가 아니다. 그 판본도 정상 hook 뒤 새 증명을 만든다.
 - source656 SHA `9e73afff6b9879535a6c5cc2fccd500497f724256af9f28c97f5f4164d467e22`·pack 전후 불변, 실제 자격정보 전달/설정 사본/raw 공개0.
-- PR210을 실제 생성하고 현재 task에 연결했다. CI `37110241838`은 시작했으나 현재 전체 성공 근거가 아니다. 후속 commit의 새 CI와 혼용하지 않는다.
+- PR210을 실제 생성하고 현재 task에 연결했다. 최초 CI `37110241838`은 후속 workflow concurrency로 취소돼 최종 판정에 쓰지 않는다. 문서 후속217d의 CI `37110606515`은 core/catalog/gate SUCCESS·E2E FAIL이며760개 중723PASS/29FAIL/0FLAKY/8NOT_RUN이었다. CP1과 공통29개 실패이며 CP2 추가 실패0이다.
+
+공통 후속 인수의 code/test13개는 양쪽 HEAD Git blob·원파일 SHA가 같고 기존 CP2 32개 OS bytes 불변이다. 줄바꿈 bytes의 기계적 인수 후 normalized Git diff0이며 최종 raw clean은 정상 stage 뒤 확인한다. 기존127경로+E2E11=138개 소유다. 후속 문서 판본의 정상 hook·새 exact proof·CI를 실행하며 옛 build/CI로 대신하지 않는다. 실제 CSS cold 검증과 HTTP35는 완료 전 PASS 처리하지 않는다.
 
 ## Risks
 

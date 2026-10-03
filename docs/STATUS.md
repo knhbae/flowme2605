@@ -1,6 +1,14 @@
 # Project Status
 
-## 현재 — 핵심 사용 여정 구현·게시 완료, CI·화면 검사·개발계 반영 미완료 (2026-10-03)
+## 현재 — 승인 범위 실행 중, 공통 CI 실패 보완과 실제 빌드 확인 (2026-10-03)
+
+구현·합성 검증·선별 commit/push/Draft PR209/210·해당 비공개 출처 CI·개발계 교체 승인은 확인됐다. 등록 당시의 계획-only 문구 때문에 같은 승인을 다시 요청하지 않는다. P/C/N/F 좁은 구현·시험 과제 준비는 완료했고 현재는 CI 보완→정확 HTTP 화면 QA→CP1/CP2 교체·복귀 순서다. goal은 active이며 전체 완료로 처리하지 않는다.
+
+기존 CP1/CP2 CI는 각각 **721PASS/29FAIL/2FLAKY/8NOT_RUN**, **723PASS/29FAIL/0FLAKY/8NOT_RUN**이었다. 두 판본의29개 실패는 공통이며 추가 실패가 아니었다. CSS transition의 outline-color와 낡은 공개 자료 성공 fixture를 보완한 CP1 `670f1f4528c785dccd3eb422a525ee89cb68cacd`를 정상 게시했고 CP2에 같은 commit을 merge했다. code/test13개의 Git blob·원파일 SHA 일치와 기존 CP2 32개 OS bytes 보존을 확인했다. 새 소유 수는138개다. [후속 QA](./specs/2026-10-03-alpha-core-journeys-ready/qa.md#공통-ci-실패와-m-후속--현재-보완-중)를 따른다.
+
+합성 CSS fixture30/30·순수 계약6/6은 실제 제품 HTTP30/35가 아니다. 첫 후속 CP1 build `rxHqgLVMfF47XqfM6s7mR`의 실제 CSS에는 이전 outline-color가 남아 있어 새 초점 보존 PASS로 쓰지 않는다. 정확한 ignored webpack 캐시만 복구 가능한 위치로 옮겨 정상 cold build `C7MFCtrzqwqfL6t2pKtTm`·npm2258/2258·docs4/4·exit0·새 exact drift0을 확인했다. 실제 CSS는 해당2토큰/28byte만 제거됐고 그 밖의 bytes가 같다. 새 CI `37113646381`과 CP2의 후속 hook/build/CI는 성공 전까지 대기다. 3105에서 응답한 `o7dgg9b72_7ai0rqQ5gXU`는 이전 제공 판본이며 후보 반영이 아니다. 현재 프로세스의 시작 근거/소유 핸들을 확인하지 않고 종료하지 않는다. 새 DB/Auth/DNS/Tunnel·실제 계정 쓰기·main merge·Production0, 관찰 사용자0명이다.
+
+## 직전 — 최초 구현·게시와 후속 문서 판본 (2026-10-03)
 
 CP1 `80abc0ad3981fe8ef316d72d23c8b0d5645544f9`를 [Draft PR209](https://github.com/knhbae/flowme2605/pull/209), CP2 `527814b69cbe719a85cce036c241d29706a82ea1`를 [Draft PR210](https://github.com/knhbae/flowme2605/pull/210)으로 정상 commit/push했다. CP2는 CP1을 base로 한30파일 차이다. 08:32:17~08:34:48 UTC 정상 pre-push hook에서 npm **2258/2258 PASS**·docs4/4·production build exit0을 확인했다. 새 build `xzyBRR06On2DVYqf11l8W`의 compile1214/QA242/static82·전후 drift0과 실제 head/root 일치를 확인했다. 위 판본은 게시 직후 증명이며 후속 문서 commit의 HEAD/build를 대신하지 않는다. 이 게시 사실과 CI·반영 미완료를 보존하는 문서만 후속으로 정리한다. [CP1 이력](./pr-history/2026-10-03-alpha-core-cp1-maintenance.md)·[CP2 이력](./pr-history/2026-10-03-alpha-core-cp2-journeys.md)을 따른다. CI 진행 중을 PASS로 바꾸지 않았고 main merge·Production·실제 계정 쓰기0이다.
 

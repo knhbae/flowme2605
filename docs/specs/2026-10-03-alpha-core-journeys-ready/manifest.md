@@ -124,3 +124,21 @@ K1 후 최종 전체 검사는281파일/2988실행/2988PASS였으며 제품125�
 2. `docs/pr-history/2026-10-03-alpha-core-cp2-journeys.md`
 
 공통 STATUS·이 정본·QA·tasks의 게시 상태 갱신은 기존 소유 경로이며 추가 runtime/test/QA scenario는 없다. 원본 private pack·설정·raw 증거·다른 dirty 경로를 추가하지 않는다. 최초 CP2 정상 hook의 npm2258/2258·build xzyBRR06On2DVYqf11l8W·exact drift0과 후속 문서 commit의 HEAD/build는 별도 증명으로 기록한다. CI·HTTP·개발계 반영은 아직 전체 성공이 아니다.
+
+## M — 공통 CI 후속 인수: 138경로
+
+CP1 정상 후속 `670f1f4528c785dccd3eb422a525ee89cb68cacd`의14파일은 기존 CSS2·prerequisites 문서1과 아래 새 E2E11개다. CP2는 같은 commit을 no-ff merge `93e25cba62dce83ec1ad24bfadc03e39dea54293`로 인수했다. 최초 CP232개 차이와 후속14개 교집합0이다. 기존 소유127+새11=**138 고유 경로**이며 merge diff14, 후속 문서 diff, 총 소유 수는 서로 다른 숫자다.
+
+1. `tests/e2e/flow-map-preview-parity.spec.ts`
+2. `tests/e2e/flow-mvp.spec.ts`
+3. `tests/e2e/p24-execution-trust.spec.ts`
+4. `tests/e2e/p26-discovery-save-before.spec.ts`
+5. `tests/e2e/p26-post-save-decision-hub.spec.ts`
+6. `tests/e2e/p26-unified-export.spec.ts`
+7. `tests/e2e/p29-coordinated-surface-reset.spec.ts`
+8. `tests/e2e/p35-export-scope-first.spec.ts`
+9. `tests/e2e/p35-p1-final-internal-gate.spec.ts`
+10. `tests/e2e/public-plan-surface-unification.spec.ts`
+11. `tests/e2e/url-first-user-surface.spec.ts`
+
+정확13 code/test의 SHA는 [M 선행 표](prerequisites-manifest.md)를 따른다. 양쪽 HEAD Git blob 동일·CP1 원파일 SHA·기존 CP2 32 OS bytes 불변을 확인하고 줄바꿈 bytes만 기계적으로 인수했다. CP2 문서·런타임을 CP1으로 덮어쓰지 않았고 normalized Git diff0이다. final raw clean은 후속 정상 stage 뒤 확인한다. CSS 첫 후속 build의 stale 결과와 cold build 재검증은 [QA](qa.md#공통-ci-실패와-m-후속--현재-보완-중)에 분리 기록하며 실제 HTTP·개발계 반영 완료로 쓰지 않는다.

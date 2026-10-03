@@ -2,7 +2,35 @@
 
 ## 현재 판정
 
-2026-10-03 사용자 착수·게시 승인 후 격리 P/C/N/F 구현과 합성 검증을 진행 중이다. **CP1/CP2 게시·개발계 반영·관찰 사용자 시험은 아직 미완료**다. 직전 r6 30/30 및 npm·build는 [직전 QA](../2026-10-02-alpha-ux-comparison-gaps/qa.md)의 기존 근거로만 사용한다. 아래 첫 표는 시험 계획이며 이번 실행은 마지막 재개 기록과 분리한다.
+2026-10-03 사용자 착수·게시/CI·개발계 교체 승인은 확인됐다. P/C/N/F 구현·합성 검증과 CP1/CP2 최초 선별 게시·Draft PR209/210은 완료했고, 공통 CI 실패를 보완 중이다. **정확 HTTP QA와 CP1/CP2 개발계 교체·복귀는 미완료**다. 관찰 시험은 제외 범위이며0명이다. 아래 각 실행의 head/build/실행 수를 구분한다. 직전 r6 30/30을 새 후보 실행으로 세지 않는다.
+
+## 공통 CI 실패와 M 후속 — 현재 보완 중
+
+| 판본 | CI와 실제 판정 | 실행 수 |
+| --- | --- | --- |
+| CP1 `80abc0ad` | [37109357657](https://github.com/knhbae/flowme2605/actions/runs/37109357657): core/catalog/gate 성공, E2E 실패 | 760개 중721PASS/29FAIL/2FLAKY/8NOT_RUN |
+| CP2 `217d4be4` | [37110606515](https://github.com/knhbae/flowme2605/actions/runs/37110606515): core/catalog/gate 성공, E2E 실패 | 760개 중723PASS/29FAIL/0FLAKY/8NOT_RUN |
+| CP1 `670f1f45` | 정상 후속 commit/push, [37113646381](https://github.com/knhbae/flowme2605/actions/runs/37113646381) 실행 중 | 완료 전 전체 PASS 기록하지 않음 |
+| CP2 CP1 인수 | `93e25cba62dce83ec1ad24bfadc03e39dea54293` merge. 후속 문서 commit·정상 hook/build·CI 예정 | 현재 HTTP35 NOT_RUN |
+
+이전 두 CI의29FAIL identity·assertion·frame은 같았고 CP2 추가 실패0이다. 서로 다른 실행의 PASS를 합산하지 않는다. CP1의 flaky2는 별도 ERR_ABORTED이며 이번 보완으로 해결했다고 주장하지 않는다. NOT_RUN8개 개별 identity는 미확인이다. 비공개 출처 lane의 이전 실행은 CP1 279파일2960/2960PASS·CP2 281파일2988/2988PASS였다. 공개 저장소의 검토된 secret environment lane이며 원본/설정/raw 로그는 공개하지 않는다.
+
+M은 CSS 호환2파일, 기존 E2E11파일, 기존 prerequisites manifest1파일의14파일 후속이다. Tailwind4 기본 transition에서 outline-color만 제거하며 다른 transition·명시 outline 애니메이션은 유지한다. 공식 [업그레이드 안내](https://tailwindcss.com/docs/upgrade-guide#transitioning-outline-color)와 실제 생성 CSS를 대조했다. 보류 자료를 정상 실행 fixture로 사용하지 않고 실제 실행 가능한 AJD·wedding 사본을 사용한다. 기존 URL/P35·OPIc/reading 보류·tax 기존 사본 보존 검사는 유지하며 새 공급/품질 정책은 바꾸지 않는다. tax 시험3501은 실패였고 Baby3521은 실패가 아니었다. tax의0쓰기는 보호한 세 key 범위이며 전체 storage0으로 확대하지 않는다.
+
+검증 범위는 다음처럼 구분한다.
+
+- CSS 순수10/10·독립 정적3/3·실제 PlatformNav의 격리 CSS fixture30/30 PASS. 이전 CSS 일반색15/15 FAIL도 보존한다. 이는 제품 HTTP30/35·실기기/AT 검사가 아니다.
+- 순수 factory/registry/SSR/storage 계약6/6 PASS. 첫 harness의 잘못된 step 참조1FAIL을 바로잡은 이력도 남긴다. 기존 E2E 선언207→207, 삭제/skip/fixme/only0이다.
+- E2E 목록: 변경11파일210개, 프로젝트 전체760개/105파일. 목록 검사는 실행 PASS가 아니다.
+- E2E 타입235 source의 기존/현재 진단9개가 같고 신규 진단0이다. 비교 exit0이지 전수 타입 오류0 판정은 아니다.
+- 09:29:33~09:29:40 UTC security audit 취약점0·호환14/14 PASS. 기존11/11을 새 숫자로 덮어쓰지 않는다.
+- CP1의 정상 후속 push 뒤 build `rxHqgLVMfF47XqfM6s7mR`·exact compile1212/QA242/static81 drift0은 기록했다. 그러나 그 실제 CSS에 outline-color가 남았으므로 이 build는 새 CSS 적용/초점 보존 PASS가 아니다. ignored webpack 캐시의 검증된 정확 경로만 새 로컬 위치로 옮겨 삭제 없이 보존한 뒤09:47:19~09:50:13 UTC 정상 hook·cold build를 다시 실행했다. npm2258/2258·docs4/4·exit0, 새 build `C7MFCtrzqwqfL6t2pKtTm`·before/after compile1212/QA242/static81 drift0이다. 실제 manifest가 참조한 CSS `360131c5fecb58a5.css` SHA `e6a2f0b75b8fda1812f307f83cacecced2c2a00eb893d6ae75a765e303eb4669`는 이전 asset에서 정확2토큰/28byte만 제거한 기대 bytes와 같다. 실제 CSS 적용은 확인했지만 제품 HTTP30·실기기 focus 결과는 아니다.
+
+CP2 merge 전에 CP1 후속14개와 기존 CP2 32개 경로의 교집합0을 확인했다. 09:47:10 UTC code/test13개 원파일 SHA·양쪽 HEAD Git blob·대상 경로를 검증한 뒤 LF bytes만 기계적으로 인수했다. 기존 CP2 32개 OS bytes 보존, 문서 복사0, normalized Git diff0이다. raw porcelain에는 EOL-only13개 M이 나타나므로 그 상태를 raw clean이라고 기록하지 않는다. 후속 정상 stage에서 Git blob 동일 여부와 최종 clean을 다시 확인한다. 기존 소유127경로(제품125+이력2)+E2E11=138개 소유이며 원본/private pack·실제 계정·설정·raw 증거는 추가하지 않는다.
+
+09:54:42 UTC CP2도 자기 작업본의 정확한 ignored `.next/cache/webpack`만 reparse/루트·대상 부재를 확인한 뒤 `.tmp`의 새 위치로 recoverable 이동했다. 삭제0·다른 작업본/제공 서버 변경0이다. 이후 최종 문서 HEAD에서 정상 pre-push hook·cold build·새 exact proof·실제 manifest/CSS를 연결하며 실행 전 결과를 미리 성공으로 쓰지 않는다.
+
+09:26 UTC 이후 3105의 실제 GET은 HTTP200·이전 build `o7dgg9b72_7ai0rqQ5gXU`였다. 이는 새 CP1/CP2 반영이 아니다. 현재 프로세스의 출생시각·실행파일·부모·리스너·시작 receipt/소유 핸들 없이 옛 스크립트의 PID/build만 바꿔 종료하지 않는다. 정확 QA 서버 Ready 이후 no-webServer 합성 HTTP 검사를 수행하고, 별도 검증된 교체/복귀 절차로 두 체크포인트를 남긴다. 새 DB/Auth/DNS/Tunnel·실제 계정 쓰기·main merge·Production·실제 관찰 시험은 실행하지 않는다.
 
 ## 대표 시나리오 계획
 

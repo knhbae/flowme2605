@@ -2,7 +2,7 @@
 
 ## 현재 — 핵심 사용 여정 UX 개선·개발계 반영·시험 준비 (2026-10-03)
 
-[목표·경계](./2026-10-03-alpha-core-journeys-ready/spec.md)·[단계 계획](./2026-10-03-alpha-core-journeys-ready/plan.md)·[작업 체크](./2026-10-03-alpha-core-journeys-ready/tasks.md)·[검증/반영 원장](./2026-10-03-alpha-core-journeys-ready/qa.md). 직전 검증 후보 CP1 반영, 개인 문서↔기간·UX-N1 6상태·UX-N2 메뉴/등록/복원·공개 판본/사본/복귀의 좁은 설계/구현/검증, 개선본 CP2 반영, 소수 사용자 시험 준비를 묶은 목표다. 현재는 목표 등록/계획만 완료했으며 구현/게시/교체는 미착수다. 실제 관찰 시험·미결 정책·대형5D/F6~F10 전체·독립 HTML NOT_RUN2건·main merge/Production은 별도 후속이다.
+[목표·경계](./2026-10-03-alpha-core-journeys-ready/spec.md)·[단계 계획](./2026-10-03-alpha-core-journeys-ready/plan.md)·[작업 체크](./2026-10-03-alpha-core-journeys-ready/tasks.md)·[검증/반영 원장](./2026-10-03-alpha-core-journeys-ready/qa.md). 직전 후보 CP1, 개인 문서↔기간·UX-N1 6상태·UX-N2 메뉴/등록/복원·공개 판본/사본/복귀의 CP2, 소수 사용자 시험 준비를 묶은 목표다. 사용자의 승인으로 격리 구현·합성 검증과 선별 게시·Draft PR209/210은 완료했다. 공통 CI 실패를 보완 중이며 정확 HTTP QA·개발계 교체/복귀·시험 시작 판정은 미완료다. 계획-only 문구는 등록 당시 이력이고 최신 승인과 spec이 실행 범위를 정한다. 실제 관찰 시험·미결 정책·대형5D/F6~F10 전체·독립 HTML NOT_RUN2건·main merge/Production은 별도 후속이다.
 
 ## 직전 — UX 비교·저장 갭 보완 승인 범위 마감 (2026-10-03)
 

@@ -2,7 +2,7 @@
 
 2026-10-03. 사용자 요청: “다시 앞에 말한거랑 종합해서 좀 큰 목표를 세워줘봐”.
 
-상태: **격리 구현·합성 검증·게시 선행 보완 진행**. 사용자의 “ㄱㄱㄱㄱㄱ”·“승인이라고!”로 구현·검증·소유 후보 선별 commit/push/Draft PR/비공개 CI·개발계 교체를 승인했다. 실제 사용자 관찰 시험은 시작하지 않는다.
+상태: **P/C/N/F 구현·합성 검증·선별 게시 완료, 공통 CI 보완 중**. 사용자의 “ㄱㄱㄱㄱㄱ”·“승인이라고!”로 구현·검증·소유 후보 선별 commit/push/Draft PR/비공개 CI·개발계 교체를 승인했다. 같은 승인 내용을 다시 요청하지 않는다. 등록 당시 goal의 계획-only 문구보다 이 후속 사용자 승인과 현재 spec을 따른다. 정확 HTTP QA와 두 개발계 교체/복귀는 미완료이며 실제 사용자 관찰 시험은 시작하지 않는다.
 
 ## 목표와 제품 방향
 
@@ -16,7 +16,7 @@ v4.1 개인공간·개발1 공개 콘텐츠 활용·개발2 원문 작성을 통
 
 ## 시작점과 이미 한 일
 
-현재 격리 작업본은 `D:/flowme2605/flow-ux-comparison-gaps-20261002`, branch는 `agent/ux-comparison-gaps-20261002`, HEAD는 `d1cc8dd1cbc1a220054f458aea369393642f71ed`다. 직전 목표의 소유 변경 28개가 남아 있다. 새 목표 문서와 기존 변경을 구분하며 다른 작업본의 dirty/untracked 파일은 수정·복사·stage하지 않는다.
+등록 당시 격리 작업본은 `D:/flowme2605/flow-ux-comparison-gaps-20261002`, branch는 `agent/ux-comparison-gaps-20261002`, HEAD는 `d1cc8dd1cbc1a220054f458aea369393642f71ed`였고 직전 목표의 소유 변경28개가 있었다. 현재 판본·후속 게시와 정확 build는 [QA](qa.md)·[manifest](manifest.md)에서 갱신한다. 새 목표 변경과 기존 변경을 구분하며 다른 작업본의 dirty/untracked 파일은 수정·복사·stage하지 않는다.
 
 [직전 완료 결과](../2026-10-02-alpha-ux-comparison-gaps/results.md#103-승인-범위-마감)와 [QA](../2026-10-02-alpha-ux-comparison-gaps/qa.md)를 기준으로 삼는다. 확정 거절 후 명시 재저장·등록 설명·Tab·안내/큐 경합 보완, r6 앱 30/30과 같은 제품 소스의 관련 회귀·npm·타입·빌드 근거가 있다. 후보 build는 `ViQGyXzeL-q-3GEbFJGgZ`다. 이는 **기존 실행 근거**이며 이번 목표의 새 실행은 아니다.
 

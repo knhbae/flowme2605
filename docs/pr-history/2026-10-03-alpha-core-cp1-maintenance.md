@@ -4,8 +4,9 @@
 - Branch: `agent/alpha-core-journeys-cp1-20261003`
 - PR: https://github.com/knhbae/flowme2605/pull/209
 - Status: `Draft`
-- Commit: `80abc0ad3981fe8ef316d72d23c8b0d5645544f9`
-- Build: `Lc4K4IUc8Aw8T4aMCWLfa`
+- 최초 Commit: `80abc0ad3981fe8ef316d72d23c8b0d5645544f9`
+- 현재 후속 Commit: `670f1f4528c785dccd3eb422a525ee89cb68cacd`
+- 최초 Build: `Lc4K4IUc8Aw8T4aMCWLfa`. 현재 실제 CSS 적용 build: `C7MFCtrzqwqfL6t2pKtTm`.
 - Deploy URL: 개발계 교체 미완료. URL 존재를 새 판본 제공 증거로 쓰지 않는다.
 
 ## Why
@@ -33,10 +34,12 @@
 - 실제 최종 통합: 279파일/2,960실행/2,960PASS, fail/skip/cancel0.
 - 정상 commit 문서 검사와 정상 pre-push verify exit0. 후크 우회0.
 - postcommit exact proof: compile1,212/QA242/static81, drift0·해당 root/head/build 일치.
-- CI run `37109357657`은 실제 PR/head를 확인했고 core SUCCESS 이후 catalog/E2E 진행 중이다. 검토된 동일 저장소·해당 head의 `flowme-catalog-ci` 환경만 승인했다. 전체 성공은 아직 기록하지 않는다.
+- 최초 CI run `37109357657`은 core/catalog/gate SUCCESS·E2E FAIL이며760개 중721PASS/29FAIL/2FLAKY/8NOT_RUN이다. 정확 후속 head670f의 `37113646381`은 실행 중이다. 검토된 동일 저장소·해당 head의 `flowme-catalog-ci` 환경만 승인했다. 전체 성공은 아직 기록하지 않는다.
 - 원본 pack 불변·합성 검증의 실제 자격정보 전달0·raw 공개0. 로컬 원본 증거는 Git에서 제외했다.
 
 ## Risks
+
+후속14파일은 CSS2·E2E11·기존 manifest1이며 총 소유는123개다. CSS 순수10/10·격리 fixture30/30와 순수 계약6/6을 실제 제품 HTTP30으로 세지 않는다. 후속 build `rxHqgLVMfF47XqfM6s7mR`에는 이전 CSS가 남아 새 초점 보존 proof로 사용하지 않는다. 검증된 ignored 캐시의 recoverable 이동 뒤09:47:19~09:50:13 UTC 정상 hook은 npm2258/2258·docs4/4·exit0이다. cold build `C7MFCtrzqwqfL6t2pKtTm`와 새 proof compile1212/QA242/static81 drift0·실제 CSS2토큰 외 변경0을 확인했다. 실행/판본별 근거는 [현재 QA](../specs/2026-10-03-alpha-core-journeys-ready/qa.md#공통-ci-실패와-m-후속--현재-보완-중)를 따른다.
 
 CI/HTTP·제공 판본·인증 없는 요청 거절·보호값 검사가 끝나기 전 사용자 시험용 새 판본이라고 안내하지 않는다. 서비스 기동은 직접 도구 거절 경계를 우회하지 않는다. 기존 교체 스크립트의 옛 PID/build/CI 고정값은 재사용하지 않는다.
 
