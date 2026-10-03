@@ -77,6 +77,8 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
   const [publisher, setPublisher] = useState<string | null>(null), [inspector, setInspector] = useState<string | null>(null);
   const [preservation, setPreservation] = useState(false);
   const preservationRef = useRef(false);
+  const preservationOpener = useRef<HTMLElement | null>(null);
+  const preservationReturn = useRef<{ ownerId: string; controller: Controller | null; opener: HTMLElement | null } | null>(null);
   const modalRef = useRef(false); modalRef.current = !!publisher || !!inspector;
   const inspectorDialog = useRef<HTMLDialogElement | null>(null);
   const socialRecovery = useRef<ReturnType<typeof createAlphaSocialRecovery> | null>(null), parkedSocial = useRef<AlphaSocialRecoveryEntry[]>([]), activeSocial = useRef<AlphaSocialRecoveryEntry[]>([]);
@@ -202,6 +204,7 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
     disposed.current = false;
     confirmedParticipation.current = null;
     preservationRef.current = false; setPreservation(false);
+    preservationOpener.current = null; preservationReturn.current = null;
     try {
       let slot = sessionStorage.getItem(SLOT_KEY);
       if (!slot) { slot = crypto.randomUUID(); sessionStorage.setItem(SLOT_KEY, slot); }
@@ -224,7 +227,7 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
       const store = createAlphaSyncController({ recovery, onChange: present });
       controller.current = store;
     } catch { setStorageError(true); }
-    return () => { captureInput(); disposed.current = true; preservationRef.current = false; controller.current?.dispose(); controller.current = null; };
+    return () => { captureInput(); disposed.current = true; preservationRef.current = false; preservationOpener.current = null; preservationReturn.current = null; controller.current?.dispose(); controller.current = null; };
   }, [session.userId]);
   useEffect(() => {
     const store = controller.current; if (!store) return;
@@ -240,7 +243,8 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
     void store.refresh();
   }
   function closePreservation() {
-    if (!preservationRef.current) return;
+    if (!preservationRef.current || disposed.current || currentOwnerRef.current !== session.userId) return;
+    preservationReturn.current = { ownerId: session.userId, controller: controller.current, opener: preservationOpener.current };
     preservationRef.current = false; setPreservation(false);
     // Hidden/busy callers catch up through the next normal event or interval.
     refreshAutomatically();
@@ -249,9 +253,26 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
     if (preservation && (!snapshot?.account || !snapshot.references)) {
       // Expiry/failure can remove the panel without invoking its close action.
       // Release only the polling hold; do not restore hidden account data.
+      preservationReturn.current = null;
       preservationRef.current = false; setPreservation(false);
     }
   }, [preservation, snapshot?.account, snapshot?.references]);
+  useEffect(() => {
+    // Defer return until the close/catch-up commit has re-enabled its opener.
+    const returning = preservationReturn.current, store = controller.current;
+    if (!returning) return;
+    if (preservation || preservationRef.current || disposed.current || document.visibilityState === 'hidden'
+      || currentOwnerRef.current !== returning.ownerId || snapshot?.ownerId !== returning.ownerId
+      || !store || store !== returning.controller || !snapshot?.account || !snapshot.references
+      || snapshot.pending || store.snapshot().pending || !returning.opener) {
+      preservationReturn.current = null; return;
+    }
+    if (snapshot.busy || store.snapshot().busy) return;
+    preservationReturn.current = null;
+    // A user-selected target wins over this deferred return request.
+    if (document.activeElement !== document.body && document.activeElement !== returning.opener) return;
+    restoreProgramDialogFocus(returning.opener);
+  }, [preservation, snapshot?.busy, snapshot?.pending, snapshot?.ownerId, snapshot?.account, snapshot?.references, session.userId]);
   useEffect(() => {
     const refresh = refreshAutomatically;
     const beforeUnload = (event: BeforeUnloadEvent) => {
@@ -524,12 +545,15 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
         <div className={styles.managementActions}><button type="button" onClick={() => { captureInput(); if (hasInput() || pending) setLeave(true); else void onSignOut(); }}>로그아웃 · 계정 바꾸기</button>
         <button type="button" onClick={() => void controller.current?.refresh()} disabled={snapshot?.busy}>서버에서 다시 확인</button>
         <button type="button" onClick={() => void history('redo')} disabled={!snapshot?.canRedo || external}>다시 실행</button>
-        <button type="button" disabled={unavailable || pending || external || !!snapshot?.busy || !!snapshot?.draft || storageError} onClick={() => {
-          void (async () => { const openingController = controller.current; if (!captureInput()) return; for (const port of allEditors()) if (port && !await port.flushAll()) return; if (disposed.current || controller.current !== openingController) return; preservationRef.current = true; setPreservation(true); })();
+        <button type="button" disabled={unavailable || pending || external || !!snapshot?.busy || !!snapshot?.draft || storageError} onClick={event => {
+          if (disposed.current || currentOwnerRef.current !== session.userId) return;
+          const opener = event.currentTarget;
+          preservationOpener.current = opener; preservationReturn.current = null;
+          void (async () => { const openingController = controller.current; if (!captureInput()) return; for (const port of allEditors()) if (port && !await port.flushAll()) return; if (disposed.current || controller.current !== openingController || currentOwnerRef.current !== session.userId) return; preservationRef.current = true; setPreservation(true); })();
         }}>백업 · 복원 · 가져오기</button></div></div></details>
     </section>
     {preservation && snapshot?.account && snapshot.references && <AlphaPreservationPanel key={session.userId} account={snapshot.account} references={snapshot.references}
-      email={email} accessToken={session.accessToken} onClose={closePreservation} onSaved={async () => {
+      email={email} accessToken={session.accessToken} returnFocusTarget={preservationOpener.current} onClose={closePreservation} onSaved={async () => {
         ownMutation.current++; try { await controller.current?.refresh(); setPresentation(value => value + 1); } finally { ownMutation.current--; }
       }} />}
     {storageError && <p className={styles.problem} role="alert">브라우저의 입력 보관 상태를 확인하지 못했습니다. 쓰기를 멈췄습니다. 작성 중인 내용을 파일로 보관해 주세요.</p>}

@@ -1,6 +1,12 @@
 # Project Status
 
-## 현재 — 잔여 CI 보완 인수, 최종 화면 검사·반영 준비 (2026-10-03)
+## 현재 — CP1 HTTP30 통과, CP2 UC7 보완·재검사 준비 (2026-10-03)
+
+CP1 a073·CP2 4d19673의 필수 CI 네 검사는 성공했다. CP1 CI는758PASS/2FLAKY, CP2는760PASS이며 과거 실패/재시도 기록은 보존한다. 실제 정확 CP1 HTTP30은30PASS/0FAIL/0FLAKY/0SKIP, CP2 첫 HTTP35는30PASS/5FAIL/0FLAKY/0SKIP다. 다섯 크기 모두 CP2 UC7 백업 진입/취소 뒤 초점 복귀에서 실패했다. UC7의 재진입·최종 경계는 미도달이며 통과30개 보호값을35개 전체로 확대하지 않는다.
+
+기존 소유 runtime2·test2·browser1을 좁게 보완했다. async flush 전 실제 opener 보존·같은 owner/controller의 catch-up 완료 뒤 한 번 복귀·다른 사용자 선택 존중과 시험 메뉴의 명시적 시작 상태를 연결했다. root 관련129/129PASS·타입581 entry/진단0을 새로 확인했다. 소유140경로 유지, 새 후보의 정상 hook/build/exact proof·CI·HTTP35를 확인한 뒤에만 개발계 전환을 진행한다. CP1/CP2 교체·복귀는 미실행이고 실제 계정/DB·Auth/DNS/Tunnel·main merge/Production0·관찰 사용자0이다. [현재 QA](./specs/2026-10-03-alpha-core-journeys-ready/qa.md#o--실제-http3035와-uc7-초점시작-상태-보완)를 따른다. goal은 active·미완료다.
+
+## 직전 — 잔여 CI 보완 인수, 최종 화면 검사·반영 준비 (2026-10-03)
 
 구현·합성 검증·선별 commit/push/Draft PR209/210·해당 비공개 출처 CI·개발계 교체 승인은 확인됐다. 등록 당시의 계획-only 문구 때문에 같은 승인을 다시 요청하지 않는다. P/C/N/F 좁은 구현·시험 과제 준비는 완료했고 현재는 CI 보완→정확 HTTP 화면 QA→CP1/CP2 교체·복귀 순서다. goal은 active이며 전체 완료로 처리하지 않는다.
 

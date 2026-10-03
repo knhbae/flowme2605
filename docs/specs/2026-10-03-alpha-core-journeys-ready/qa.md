@@ -2,7 +2,23 @@
 
 ## 현재 판정
 
-2026-10-03 사용자 착수·게시/CI·개발계 교체 승인은 확인됐다. P/C/N/F 구현·합성 검증과 CP1/CP2 최초 선별 게시·Draft PR209/210은 완료했고, 공통 CI 실패를 보완 중이다. **정확 HTTP QA와 CP1/CP2 개발계 교체·복귀는 미완료**다. 관찰 시험은 제외 범위이며0명이다. 아래 각 실행의 head/build/실행 수를 구분한다. 직전 r6 30/30을 새 후보 실행으로 세지 않는다.
+2026-10-03 사용자 착수·게시/CI·개발계 교체 승인은 확인됐다. N 판본의 필수 CI 네 검사는 CP1/CP2 모두 성공했다. 정확 CP1 HTTP30은 PASS, CP2의 첫 HTTP35는30PASS/5FAIL이다. **CP2 실패 보완 판본의 재검사와 CP1/CP2 개발계 교체·복귀는 미완료**다. 관찰 시험은 제외 범위이며0명이다. 아래 각 실행의 head/build/실행 수를 구분한다. 직전 r6 30/30을 새 후보 실행으로 세지 않는다.
+
+## O — 실제 HTTP30·35와 UC7 초점/시작 상태 보완
+
+CP1 `a073e45c6e096fb132e85b13ae2d47db9e46017a`의 [CI37116112872](https://github.com/knhbae/flowme2605/actions/runs/37116112872)는 필수4검사 SUCCESS다. E2E760개 중 **758PASS/2FLAKY/0FAIL/0NOT_RUN**, catalog279파일2960/2960PASS다. flaky 원인은 미확정이며 단일 시도760PASS로 바꾸지 않는다. CP2 `4d19673ff8e9a15f7bb8b50b6da1b4211e0ca347`의 [CI37116942924](https://github.com/knhbae/flowme2605/actions/runs/37116942924)도 필수4검사 SUCCESS, E2E760PASS/0FAIL/0FLAKY/0NOT_RUN·catalog281파일2988/2988PASS다. 이 CI는 아래 새 소스 보완의 결과가 아니다.
+
+root가 이미 제공 중인 정확 CP1 build `LDuRTcvjyyJ-AIKiRZcaj`를 독립 관측하고 HTTP QA를 실제 실행했다. 12:18:51.977 UTC 시작·149330.54ms·exit0, **30PASS/0FAIL/0FLAKY/0SKIP**, runner errors0이다. UC1~6×390×844·375×812·844×390·1024×768·1440×900에서 각각6/6이다. compile1212/QA242/static81 drift0·preflight 참조 자산25·case별 관측 자산24를 구분한다. 30개 attachment의 공개 원본·sentinel byte 불변, prefix 밖 쓰기/실제 API·Auth 전달/page error/예상 밖 console/가로 overflow0을 확인했다. 합성 overlay operation/mutation은90개이며 전체 쓰기0이 아니다. UC6 날짜만 미정 이동은09:10 시간을 보존했고 최종 time=null은 이후 날짜·시간을 명시적으로 지운 결과다.
+
+CP1 로컬 결과 `output/playwright/ux-comparison-candidate-cp1-final/results.json` SHA256은 `98fc18f84e35dbd9146071577122791c9c7382daa88089201e267412a1e19243`이다. CP1 Ready 전달은 root QA 이후 도착했으며 기동 주체는 로컬 실행 에이전트다. root가 인간 콘솔을 검증했다고 소급 기록하지 않는다.
+
+CP2 `4d19673`/build `ab-TBqFH19TECQ0W6KI6s`도 정확히 관측한 뒤 HTTP35를 실행했다. 12:31:22.536 UTC 시작·206988.713ms·exit1, **30PASS/5FAIL/0FLAKY/0SKIP**, runner errors0이다. 각 크기6PASS/1FAIL이고 실패는 UC7뿐이다. 390×844·1440×900은 첫 백업 진입점 not found, 나머지3개는 첫 Escape 뒤 진입점 focus inactive였다. 세 경우 손상 파일 거절·preview 비활성화·입력/명령/실행 수 불변 assertion을 지났지만, 재진입·두 번째 닫기·공개 없음→내 문서 복귀·최종 boundary/assets는5개 모두 NOT_REACHED다. UC1~6의30개 boundary만 PASS이며 UC7 전체0쓰기로 확대하지 않는다.
+
+CP2 최초 결과 SHA256은 `a3be4d6893ce2942b04c56529798c725dc5411ee9770dbd5a2429d40f55cca7a`이다. 결과와 실패 캡처5개/오류 문맥5개는 `.tmp/cp2-first-http-failed-20261003/`에 로컬 보존했고 새 검사로 덮어쓰지 않는다. compile1214/QA242/static82 drift0·preflight 참조 자산26·통과 case별 관측 자산25다. 통과30개 범위의 원본/sentinel/prefix·실제 API/인증 전달·page/console/overflow 보호도 확인했다.
+
+소스에서 login fixture가 계정 확인용 메뉴를 이미 열 수 있는데 UC7이 무조건 toggle하는 시작 상태 문제와, async flush 뒤 늦은 opener 캡처·close 직후 refresh busy로 opener가 잠시 disabled인 초점 경합 경로를 확인했다. 실행 중 이벤트 타임라인으로 어느 초점 경로가 발생했는지는 확정하지 않는다. 실제 event.currentTarget을 flush 전에 캡처하고 같은 owner/controller에서 close·catch-up commit 후 사용 가능한 진입점으로 한 번만 복귀하도록 보완했다. 새 owner·disposed·pending·재열림·hidden 및 다른 사용자 선택에는 복귀하지 않는다. standalone Panel의 기존 fallback과 공용 disabled/hidden 거절은 유지한다. UC7은 닫힌 시작 상태를 확인한 뒤 키보드로 열며 기존 엄격한 focus·0쓰기 assertion은 삭제하지 않는다.
+
+root의 보완 후 관련3파일 단독 실행은 **129/129PASS**, fail/cancelled/skipped/todo0·7474.1563ms·exit0이다. Workspace 실제 callback/effect AST87개·Panel38개·공용 focus4개를 같은 실행의129개로 센다. 첫 root 실행은 source regex가 추가 owner guard를 반영하지 못해1FAIL이었고 guard를 보존한 기대식으로 보완했다. 타입 runner 순수10/10PASS·제품581 entry/diagnostics0/source656/실행 중 변경0도 새로 확인했다. 독립 읽기 검토는 구체적 blocker를 찾지 못했지만 busy 동안 복귀 요청의 시간상한과 과거 초점 이동 이력은 보장하지 않는다. 새 후보의 정상 hook/build/exact proof/CI/HTTP35는 실행 전 PASS로 쓰지 않는다. 실제 기기/IME/AT 미실행·관찰 사용자0, 개발계 전환·복귀 미완료다.
 
 ## N 잔여 보완과 CP2 인수 — 현재
 

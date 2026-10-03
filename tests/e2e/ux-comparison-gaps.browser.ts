@@ -554,7 +554,15 @@ test('UC6 Dots R05 intersects folder period and search, escapes empty results, a
 test('UC7 restoration entry reopens after invalid-file cancellation and empty public list returns to private documents without a write', async ({page},info) => {
   const mock = await mockFolderContentEntry(page,{creatorExecution:true}); await boot(page);
   const before = await mock.current(), counts = mock.diagnostics(), commands = mock.commands.length;
-  await hit(page.getByText('계정 · 자료 관리',{exact:true}),'keyboard');
+  const management = page.locator('details[aria-label="계정 및 자료 관리"]');
+  const managementSummary = management.locator(':scope > summary');
+  // login() can already open this menu while verifying the exact account.
+  // Establish a closed starting state before testing keyboard entry, rather
+  // than blindly toggling a possibly open menu shut.
+  if (await management.getAttribute('open') !== null) await hit(managementSummary,'keyboard');
+  await expect(management).not.toHaveAttribute('open','');
+  await hit(managementSummary,'keyboard');
+  await expect(management).toHaveAttribute('open','');
   const entry = page.getByRole('button',{name:'백업 · 복원 · 가져오기',exact:true});
   await hit(entry,'keyboard');
   const dialog = page.getByRole('dialog',{name:'백업 · 복원 · 가져오기',exact:true});

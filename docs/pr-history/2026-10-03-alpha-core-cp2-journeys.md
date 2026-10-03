@@ -22,7 +22,7 @@ CP1 위의30파일 차이로 개인 문서↔기간 실행↔원문 복귀, 필�
 
 ## Not Done
 
-새 HTTP 7시나리오×5크기=35개는 NOT_RUN이다. CI 전체 성공·CP2 개발계 교체/복귀·실기기/IME/AT·관찰 사용자0을 완료로 쓰지 않는다. PC01~06·대형5D/F6~F10·독립 HTML2·새 DB/Auth/schema/DNS/Tunnel·main merge/Production은 제외했다.
+CP2 4d19673의 필수 CI 네 검사는 SUCCESS·E2E760PASS·catalog2988PASS다. 첫 정확 HTTP35는30PASS/5FAIL이며 실패는 UC7뿐이다. 재진입·두 번째 닫기·공개 없음→내 문서 복귀·최종 boundary5건은 NOT_REACHED다. UC7 시작 메뉴와 초점 복귀를 보완한 새 판본의 hook/build/CI/HTTP 재검사는 아직 완료 전이다. CP2 개발계 교체/복귀·실기기/IME/AT·관찰 사용자0을 완료로 쓰지 않는다. PC01~06·대형5D/F6~F10·독립 HTML2·새 DB/Auth/schema/DNS/Tunnel·main merge/Production은 제외했다.
 
 ## Decisions
 
@@ -33,6 +33,8 @@ CP1 위의30파일 차이로 개인 문서↔기간 실행↔원문 복귀, 필�
 주요 파일은 AlphaWorkspace, ProgramSpace, ProgramDiscovery, ProgramCommunity, ProgramTextEditor, AlphaPreservationPanel과 관련 검사·HTTP scenario다. [manifest](../specs/2026-10-03-alpha-core-journeys-ready/manifest.md)가 정확 소유 범위이며 원본/설정·미소유 변경은 포함하지 않는다.
 
 ## Verification
+
+현재 UC7 보완의 root 관련3파일은129/129PASS, 타입581 entry/진단0/source656/변경0이다. 기존 소유140경로 안의 runtime2/test2/browser1이며 정상 flush·한 번 catch-up·계정/pending 보호·공용 disabled focus 거절과 엄격한 UC7 assertions를 유지한다. [새 실행과 실패 원기록](../specs/2026-10-03-alpha-core-journeys-ready/qa.md#o--실제-http3035와-uc7-초점시작-상태-보완)을 따른다. 아래 과거 실행을 새 수정 판본의 통과로 쓰지 않는다.
 
 - 최종 통합: 281파일/2,988실행/2,988PASS, fail/skip/cancel/todo0. CP1의2,960개와 합산하지 않는다.
 - 표적 검사230/230 PASS, audit 취약점0·호환11/11 PASS, 타입581 entry/진단0.

@@ -47,8 +47,9 @@ function hasContentSummary(preview: PreservationPreview): boolean {
   return isPreservationContentSummary(preview.content?.current) && isPreservationContentSummary(preview.content?.next);
 }
 /** Modal lifetime is bound to one verified owner. No automatic import or public replay. */
-export function AlphaPreservationPanel({ account, references, email, accessToken, onClose, onSaved }: {
-  account: AlphaAccount; references: AlphaReferenceContext; email: string; accessToken: string; onClose: () => void; onSaved: () => Promise<void>;
+export function AlphaPreservationPanel({ account, references, email, accessToken, returnFocusTarget, onClose, onSaved }: {
+  account: AlphaAccount; references: AlphaReferenceContext; email: string; accessToken: string; returnFocusTarget?: HTMLElement | null;
+  onClose: () => void; onSaved: () => Promise<void>;
 }) {
   const dialog = useRef<HTMLDialogElement>(null), alive = useRef(true), selectionGeneration = useRef(0);
   const activeBackup = useRef<ReturnType<typeof createBackupRequestBudget> | null>(null);
@@ -70,10 +71,14 @@ export function AlphaPreservationPanel({ account, references, email, accessToken
     finally { if (alive.current) setBusy(false); }
   }
   useEffect(() => {
-    alive.current = true; const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null, element = dialog.current;
+    alive.current = true;
+    // The owner shell waits for its catch-up refresh to enable the trigger before
+    // returning focus. Standalone callers retain the native dialog fallback.
+    const managedFocus = returnFocusTarget !== undefined;
+    const opener = managedFocus ? returnFocusTarget : document.activeElement instanceof HTMLElement ? document.activeElement : null, element = dialog.current;
     element?.showModal();
     void loadPending();
-    return () => { alive.current = false; activeBackup.current?.cancel(); element?.close(); restoreProgramDialogFocus(opener); };
+    return () => { alive.current = false; activeBackup.current?.cancel(); element?.close(); if (!managedFocus) restoreProgramDialogFocus(opener); };
   }, []);
   useEffect(() => () => { if (download) URL.revokeObjectURL(download.url); }, [download]);
   async function request(payload: unknown, signal?: AbortSignal) {

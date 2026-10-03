@@ -34,7 +34,7 @@ function harness(){
     recoveryKey:`flow:poc:personal-workspace:v1:alpha-m6:pending:${owner}`,messages:evaluate((find(n=>ts.isVariableDeclaration(n)&&n.name.getText(ast)==='messages') as ts.VariableDeclaration).initializer!.getText(ast),{}),canonicalJson,detached,parseAlphaJson,createProgramPrivateSpace,prepareLocalImport,inspectLocalImportActors,PRESERVATION_PROTOCOL,SEALED_BACKUP_SCHEMA,isPreservationCommand,
     sessionStorage:{getItem:(key:string)=>values.get(key)??null,setItem:(key:string,value:string)=>{calls.push('persist');values.set(key,value);},removeItem:(key:string)=>{calls.push('remove-pending');values.delete(key);}},
     crypto:{randomUUID:()=>{calls.push('new-id');return 'fixed-preservation-request';}},
-    onClose:()=>calls.push('close'),onSaved:async()=>{calls.push('saved');},HTMLElement:Element,document:{activeElement:opener},restoreProgramDialogFocus:(value:unknown)=>{assert.equal(value,opener);calls.push('focus');},
+    returnFocusTarget:undefined,onClose:()=>calls.push('close'),onSaved:async()=>{calls.push('saved');},HTMLElement:Element,document:{activeElement:opener},restoreProgramDialogFocus:(value:unknown)=>{assert.equal(value,opener);calls.push('focus');},
     encodeBackupFile,decodeBackupFile,readBackupDownload,BACKUP_DOWNLOAD_FORMAT,preparePreservationWireRequest,createBackupRequestBudget,LEGACY_BACKUP_REQUEST,readBackupResponse,styles:new Proxy({},{get:(_,key)=>String(key)}),URL:{createObjectURL:()=>{calls.push('blob');return 'blob:fixture';},revokeObjectURL:()=>calls.push('revoke')},Blob,
     fetch:async(_url:string,init:RequestInit)=>{calls.push('fetch');assert.equal(new Headers(init.headers).get('authorization'),'Bearer secret-fixture-token');const body=JSON.parse(String(init.body));payloads.push(body);return Response.json(await respond(body));},
   };
@@ -189,7 +189,9 @@ test('preservation unresolved local source blocks network and never uploads the 
 
 test('workspace preservation entry waits for capture and every editor flush and is account-keyed',()=>{
   const workspace=readFileSync(new URL('./AlphaWorkspace.tsx',import.meta.url),'utf8');
-  assert.match(workspace,/if \(!captureInput\(\)\) return; for \(const port of allEditors\(\)\) if \(port && !await port.flushAll\(\)\) return; if \(disposed.current \|\| controller.current !== openingController\) return; preservationRef.current = true; setPreservation\(true\)/);
+  assert.match(workspace,/if \(!captureInput\(\)\) return; for \(const port of allEditors\(\)\) if \(port && !await port.flushAll\(\)\) return; if \(disposed.current \|\| controller.current !== openingController \|\| currentOwnerRef.current !== session.userId\) return;/);
+  assert.match(workspace,/preservationOpener.current = opener/);
+  assert.match(workspace,/preservationRef.current = true; setPreservation\(true\)/);
   assert.match(workspace,/<AlphaPreservationPanel key=\{session.userId\} account=\{snapshot.account\}/);
   assert.match(workspace,/disabled=\{unavailable \|\| pending \|\| external \|\| !!snapshot\?\.busy \|\| !!snapshot\?\.draft \|\| storageError\}/);
 });
@@ -251,6 +253,15 @@ test('preservation native dialog supports Escape, protects busy work and restore
   let dialog=h.render();assert.equal(dialog.type,'dialog');assert.equal(dialog.props['aria-labelledby'],'alpha-data-title');dialog.props.onCancel({preventDefault:()=>prevented++});assert(h.calls.includes('close'));
   h.context.busy=true;dialog=h.render();const closes=h.calls.filter(v=>v==='close').length;dialog.props.onCancel({preventDefault:()=>prevented++});assert.equal(prevented,1);assert.equal(h.calls.filter(v=>v==='close').length,closes);
   cleanup();assert.deepEqual(h.calls.slice(-2),['modal-close','focus']);assert.equal(h.context.alive.current,false);
+});
+
+test('owner-managed preservation closes the dialog without racing the shell catch-up focus return',()=>{
+  const h=harness(), captured=h.context.document.activeElement;
+  h.context.returnFocusTarget=captured;
+  h.context.document.activeElement=new h.context.HTMLElement();
+  const cleanup=h.mount(); cleanup();
+  assert.equal(h.calls.at(-1),'modal-close');
+  assert(!h.calls.includes('focus'));
 });
 
 test('preservation unreadable durable pending blocks new work and offers a read retry',async()=>{

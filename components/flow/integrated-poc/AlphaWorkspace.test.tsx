@@ -89,7 +89,7 @@ function harness() {
     ProgramSpace: 'program-space', ProgramLegacyWorkspace: 'program-legacy', ProgramPrivateOutput: 'private-output', AlphaConflictReview: 'conflict-review', ProgramCreatorWorkspace: 'creator-workspace',
     AlphaCatalogPanels: 'catalog-panels',
     ProgramDiscovery: 'program-discovery', ProgramCommunity: 'program-community', ProgramPublisher: 'program-publisher', ProgramCopyInspector: 'program-inspector', AlphaPreservationPanel:'preservation-panel',
-    preservation:false,preservationRef:{current:false},setPreservation:(value:boolean)=>{context.preservation=value;},
+    preservation:false,preservationRef:{current:false},preservationOpener:{current:null},preservationReturn:{current:null},setPreservation:(value:boolean)=>{context.preservation=value;},
     seen: { discovery: false, community: false }, browse: false, modalRecovery: null, publisher: null, inspector: null, modalRef: { current: false }, inspectorDialog: { current: null },
     discoveryStateRef: { current: { url: '', pastedText: '', pastedTitle: '', transient: null } },
     programDiscoveryHasUnstoredInput: (state: any) => !!(state.url || state.pastedText || state.pastedTitle || state.transient),
@@ -121,10 +121,12 @@ function harness() {
     createAlphaSyncController: () => store, createAlphaHttpRepository: () => ({}), fetch: () => { throw Error('network prohibited'); },
     navigator: { clipboard: { writeText: async (raw: string) => { copies.push(raw); } } },
     window: { addEventListener: (name: string, fn: any) => events.set(name, fn), removeEventListener: (name: string) => events.delete(name), setInterval: (fn: any) => { events.set('interval', fn); return 1; } },
-    document: { visibilityState: 'visible', addEventListener: (name: string, fn: any) => events.set(name, fn), removeEventListener: (name: string) => events.delete(name) },
+    document: { visibilityState: 'visible', body: {}, activeElement: null, addEventListener: (name: string, fn: any) => events.set(name, fn), removeEventListener: (name: string) => events.delete(name) },
+    restoreProgramDialogFocus: (target: any) => { assert(!target?.disabled); calls.push('return-focus'); context.document.activeElement = target; return true; },
     clearInterval: () => { calls.push('clear-timer'); events.delete('interval'); },
     history: async () => { calls.push('history'); }, restoreDraft: async () => { calls.push('restore'); }, clearDrafts: () => { calls.push('clear-recovery'); },
   };
+  context.document.activeElement = context.document.body;
   const store = { snapshot: () => context.snapshot, mutate: async () => { calls.push('mutation'); return { ok: true, result: 'doc', changed: false }; },
     refresh: async () => { calls.push('refresh'); return true; }, resolvePending: async (retry: boolean) => { calls.push(`resolve:${retry}`); return true; },
     bindSession: () => calls.push('bind'), discardConflict: async () => { calls.push('discard'); return true; }, dispose: () => calls.push('dispose') };
@@ -151,6 +153,7 @@ function harness() {
   return { context, calls, events, storageValues, sessionStorage, copies, store, present, render, button,
     initialize: () => evaluate(effect('createAlphaUiRecovery'), context)(),
     registerEvents: () => evaluate(effect("'beforeunload'"), context)(),
+    returnPreservationFocus: () => evaluate(effect('Defer return until'), context)(),
     mutate: () => evaluate(initializer('mutate'), context)('edit', () => { throw Error('controller double must not build'); }),
   };
 }
@@ -320,7 +323,7 @@ test('response from an old owner closure cannot acknowledge or present a later a
 
 test('preservation lifetime defers all automatic triggers and closes with one catch-up', async () => {
   const h = harness(); h.registerEvents(); h.context.snapshot.references = {};
-  h.button('백업 · 복원 · 가져오기').props.onClick();
+  h.button('백업 · 복원 · 가져오기').props.onClick({ currentTarget: {} });
   assert.equal(h.context.preservationRef.current, true);
   for (const name of ['interval', 'focus', 'online', 'visibilitychange']) h.events.get(name)!();
   assert(!h.calls.includes('refresh'));
@@ -365,22 +368,110 @@ test('opening preservation does not abort an existing read; teardown removes all
 });
 
 test('late editor flush cannot open preservation after logout or account replacement', async () => {
-  for (const replacement of [false, true]) {
+  for (const replacement of ['disposed', 'controller', 'owner']) {
     const h = harness(); let finish!: (ok: boolean) => void;
     h.context.editors.current = { flushAll: () => new Promise<boolean>(resolve => { finish = resolve; }) };
-    h.button('백업 · 복원 · 가져오기').props.onClick();
-    if (replacement) h.context.controller.current = { ...h.store }; else h.context.disposed.current = true;
+    h.button('백업 · 복원 · 가져오기').props.onClick({ currentTarget: {} });
+    if (replacement === 'controller') h.context.controller.current = { ...h.store };
+    else if (replacement === 'owner') h.context.currentOwnerRef.current = 'owner-b';
+    else h.context.disposed.current = true;
     finish(true); await Promise.resolve();
     assert.equal(h.context.preservationRef.current, false); assert.equal(h.context.preservation, false);
   }
 });
 
+test('preservation captures its actual opener before an asynchronous editor flush', async () => {
+  const h = harness(), opener = {}, event = { currentTarget: opener as unknown }; let finish!: (ok: boolean) => void;
+  h.context.snapshot.references = {};
+  h.context.preservationReturn.current = { ownerId: 'owner-a', opener: {}, controller: h.store };
+  h.context.editors.current = { flushAll: () => new Promise<boolean>(resolve => { finish = resolve; }) };
+  h.button('백업 · 복원 · 가져오기').props.onClick(event);
+  assert.equal(h.context.preservationOpener.current, opener);
+  assert.equal(h.context.preservationReturn.current, null);
+  assert.equal(h.context.preservation, false);
+  event.currentTarget = null; finish(true); await Promise.resolve();
+  assert.equal(h.context.preservation, true);
+  const panel = nodes(h.render()).find(node => node.type === 'preservation-panel')!;
+  assert.equal(panel.props.returnFocusTarget, opener);
+});
+
+test('preservation close waits for the catch-up commit before returning focus exactly once', () => {
+  const h = harness(), opener = { disabled: false };
+  h.context.snapshot.references = {}; h.context.preservation = true; h.context.preservationRef.current = true;
+  h.context.preservationOpener.current = opener;
+  h.store.refresh = async () => { h.calls.push('refresh'); h.context.snapshot.busy = true; opener.disabled = true; return true; };
+  h.context.closePreservation(); h.context.closePreservation();
+  assert.equal(h.context.preservation, false);
+  assert.equal(h.context.preservationReturn.current.opener, opener);
+  h.returnPreservationFocus(); assert.deepEqual(h.calls, ['refresh']);
+  assert.equal(h.context.document.activeElement, h.context.document.body);
+  h.context.snapshot.busy = false; opener.disabled = false;
+  h.store.snapshot = () => ({ ...h.context.snapshot, busy: true });
+  h.returnPreservationFocus(); assert.deepEqual(h.calls, ['refresh']);
+  h.store.snapshot = () => h.context.snapshot;
+  h.returnPreservationFocus(); h.returnPreservationFocus();
+  assert.deepEqual(h.calls, ['refresh', 'return-focus']);
+  assert.equal(h.context.document.activeElement, opener);
+  assert.equal(h.context.preservationReturn.current, null);
+});
+
+test('preservation return does not take focus back from another user-selected target', () => {
+  for (const active of ['other', 'opener']) {
+    const h = harness(), opener = {}, other = {};
+    h.context.snapshot.references = {}; h.context.preservationRef.current = true; h.context.preservationOpener.current = opener;
+    h.context.closePreservation(); h.context.document.activeElement = active === 'other' ? other : opener;
+    h.returnPreservationFocus();
+    assert.equal(h.context.document.activeElement, active === 'other' ? other : opener);
+    assert.deepEqual(h.calls, active === 'other' ? ['refresh'] : ['refresh', 'return-focus']);
+    assert.equal(h.context.preservationReturn.current, null);
+  }
+});
+
+test('preservation return rejects reopened, hidden, pending, stale-owner or disposed workspaces', () => {
+  for (const condition of ['reopened', 'ref-open', 'hidden', 'pending', 'live-pending', 'owner', 'snapshot-owner', 'controller', 'disposed', 'account', 'references']) {
+    const h = harness(), opener = {};
+    h.context.snapshot.references = {}; h.context.preservationRef.current = true; h.context.preservationOpener.current = opener;
+    h.context.closePreservation();
+    if (condition === 'reopened') h.context.preservation = true;
+    else if (condition === 'ref-open') h.context.preservationRef.current = true;
+    else if (condition === 'hidden') h.context.document.visibilityState = 'hidden';
+    else if (condition === 'pending') h.context.snapshot.pending = { requestId: 'unsettled' };
+    else if (condition === 'live-pending') h.store.snapshot = () => ({ ...h.context.snapshot, pending: { requestId: 'unsettled' } });
+    else if (condition === 'owner') h.context.currentOwnerRef.current = 'owner-b';
+    else if (condition === 'snapshot-owner') h.context.snapshot.ownerId = 'owner-b';
+    else if (condition === 'controller') h.context.controller.current = { ...h.store };
+    else if (condition === 'disposed') h.context.disposed.current = true;
+    else h.context.snapshot[condition] = null;
+    h.returnPreservationFocus();
+    assert.deepEqual(h.calls, ['refresh'], condition);
+    assert.equal(h.context.preservationReturn.current, null, condition);
+  }
+});
+
+test('preservation owner teardown discards opener and deferred focus authority', () => {
+  const h = harness();
+  h.context.preservationOpener.current = {};
+  h.context.preservationReturn.current = { ownerId: 'owner-a', opener: {}, controller: h.store };
+  const cleanup = h.initialize();
+  assert.equal(h.context.preservationOpener.current, null);
+  assert.equal(h.context.preservationReturn.current, null);
+  h.context.preservationOpener.current = {};
+  h.context.preservationReturn.current = { ownerId: 'owner-a', opener: {}, controller: h.store };
+  cleanup();
+  assert.equal(h.context.preservationOpener.current, null);
+  assert.equal(h.context.preservationReturn.current, null);
+  assert.equal(h.context.disposed.current, true);
+  assert.equal(h.context.controller.current, null);
+});
+
 test('an expired or missing preservation snapshot releases its polling hold without restoring private data', () => {
   for (const missing of ['account', 'references']) {
     const h = harness(); h.context.snapshot.references = {}; h.context.preservation = true; h.context.preservationRef.current = true;
+    h.context.preservationReturn.current = { ownerId: 'owner-a', opener: {}, controller: h.store };
     h.context.snapshot[missing] = null; h.context.data = null;
     evaluate(effect('Expiry/failure'), h.context)();
     assert.equal(h.context.preservationRef.current, false); assert.equal(h.context.preservation, false);
+    assert.equal(h.context.preservationReturn.current, null);
     assert.equal(h.context.data, null); assert.equal(h.calls.length, 0);
     h.context.refreshAutomatically(); assert.deepEqual(h.calls, ['refresh']);
   }

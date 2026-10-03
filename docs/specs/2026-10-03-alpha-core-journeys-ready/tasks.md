@@ -22,7 +22,7 @@
 
 - [x] 이 목표의 소유 파일·후보별 commit·push·Draft PR·비공개 CI·개발계 교체/복귀 승인을 확인했다. 새 DB/Auth/DNS/Tunnel·main merge/Production·실제 계정 쓰기는 포함하지 않는다.
 - [x] 최초 선별 게시·CI와 보호 검사 결과를 기록했다. CP1/CP2의 공통29FAIL·새 보완과 미실행을 [QA](qa.md)에 구분했다. 결과 기록 완료이지 CI 성공 판정이 아니다.
-- [ ] 보완한 같은 HEAD에서 CI 네 검사·실제 emitted CSS와 정확 HTTP QA 성공을 확인한다.
+- [x] CP1 N 같은 HEAD a073의 CI 네 검사·emitted CSS·정확 HTTP30 PASS를 확인했다. CI flaky2는 별도 이력으로 남겼다.
 - [ ] 제공용 작업본을 보존한 새 사본으로 교체하고 정확 build·자산·가용성·보호값·복귀 가능성을 확인한다.
 
 ## 단계2 — UX·기술 설계
@@ -39,7 +39,10 @@
 - [x] 표적·관련 회귀와 negative boundary를 실행했다. root 표적230/230·최종 전체281파일2988/2988 PASS, 원본/actor·receipt/CAS·held 보호·busy 구성 음성 검사를 포함한다. 실제 HTTP 화면은 아래 별도 미완료다.
 - [x] 최종 runtime 후보의 npm·타입·production build를 실행했다. 527814b6의 정상 pre-push는 npm2258/2258 PASS·build exit0·exact compile1214/QA242/static82 drift0이다. 후속 문서 판본은 별도 후크/증명으로 기록한다.
 - [x] M CI의 잔여5건 보완을 N exact commit으로 인수하고 관련13/13을 root에서 재실행했다. 기존138+추가2=140개 소유·원 CP232 OS bytes 불변을 확인했다.
-- [ ] N 인수 뒤 최종 CP2 HEAD의 정상 hook·production build·exact proof·CI를 확인한다. CP1 N의2261PASS로 root 결과를 대신하지 않는다.
+- [x] N 인수 뒤 CP2 4d19673의 정상 hook·production build·exact proof·CI를 확인했다. 아래 첫 HTTP 실패 보완의 새 판본은 이 결과로 대신하지 않는다.
+- [x] 실제 CP1 HTTP30 PASS·CP2 첫 HTTP35의30PASS/5FAIL을 원결과로 구분하고 UC7 실패 기록을 로컬 보존했다.
+- [x] UC7 시작 메뉴 상태와 opener 캡처/refresh 뒤 초점 복귀를 보완하고 관련129/129·타입 진단0을 확인했다.
+- [ ] UC7 보완 판본의 정상 hook·새 build/exact proof·같은 HEAD CI를 확인한다.
 - [ ] 정확 HTTP 앱 판본의 대표 시나리오·다섯 크기·키보드/비드래그·page/console/overflow를 검사한다.
 - [ ] 원본/Item/actor·expected/CAS·prefix·취소0쓰기·unknown/추가입력·Undo/reload 근거를 남긴다.
 

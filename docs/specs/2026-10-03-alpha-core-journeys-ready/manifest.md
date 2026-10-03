@@ -4,6 +4,18 @@
 
 기준 repo: `D:/flowme2605/flow-ux-comparison-gaps-20261002`, HEAD `d1cc8dd1cbc1a220054f458aea369393642f71ed`. 기준선 읽기에서32파일(직전28+새 목표4)을 확인했다. 이 문서와 baseline을 더하면 **34파일**이다. 아래 경로는 repo 기준이며 output/미소유 파일을 포함하지 않는다. 실제 게시 직전에는 목록·hash·소유를 다시 고정한다.
 
+## O — HTTP UC7 보완: 소유140경로 유지
+
+CP2 `4d19673`의 첫 정확 HTTP35 결과는30PASS/5FAIL이다. [QA 원장](qa.md#o--실제-http3035와-uc7-초점시작-상태-보완)에 원결과 hash·로컬 보존 위치와 미도달 범위를 남겼다. 이번 runtime2·연결 test2·기존 browser1은 모두 이미 소유한 다음5경로다. 새 제품 정책·저장 writer·공용 focus guard·DB/Auth/계정 자료는 변경하지 않는다.
+
+1. `components/flow/integrated-poc/AlphaWorkspace.tsx`
+2. `components/flow/integrated-poc/AlphaWorkspace.test.tsx`
+3. `components/flow/integrated-poc/AlphaPreservationPanel.tsx`
+4. `components/flow/integrated-poc/AlphaPreservationPanel.test.tsx`
+5. `tests/e2e/ux-comparison-gaps.browser.ts`
+
+기존 소유 STATUS·QA·tasks·이 정본·PR 이력의 사실 갱신도 고유 경로 수를 늘리지 않는다. root 관련129/129·타입581 entry/진단0은 새 실행이며 새 정상 hook·build·exact proof·CI·HTTP35는 별도 실행한다. 원 실패와 CP1 HTTP30 PASS는 보존한다. `.tmp/`·`output/`의 원 증거/캡처·실제 설정은 공개 Git에 넣지 않는다.
+
 ## A — 제품 보완 12파일
 
 runtime5와 연결 제품 검사7의 묶음이다. 첫 개발계 반영의 기능 후보이며 기존 r6 source inventory/build와의 관계는 baseline을 따른다.
