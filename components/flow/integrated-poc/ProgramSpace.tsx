@@ -109,6 +109,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const [recordDate, setRecordDate] = useState(today), [percent, setPercent] = useState('0');
   const [executionDateDraft, setExecutionDateDraft] = useState('');
   const [executionTimeDraft, setExecutionTimeDraft] = useState('');
+  const executionDraftOwner = useRef({ dialog: 0, input: 0, taskId: null as string | null });
   const [recurrencePresentation, setRecurrencePresentation] = useState(emptyProgramRecurrencePresentation);
   const root = useRef<HTMLElement | null>(null);
   const documentMenu = useRef<HTMLDetailsElement | null>(null);
@@ -426,10 +427,11 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     if (result.ok || result.reason !== 'busy') setMessage(result.ok ? '' : programErrorMessage(result.reason)); return result;
   };
   function cancelHold() { if (hold.current) clearTimeout(hold.current); hold.current = null; holdPoint.current = null; }
-  function close() { dialog.current?.close(); detailExpected.current = null; clearScheduleAcknowledgment(); setDetail(null); setMessage(''); previousFocus.current?.focus(); }
+  function close() { executionDraftOwner.current = { dialog: executionDraftOwner.current.dialog + 1, input: 0, taskId: null }; dialog.current?.close(); detailExpected.current = null; clearScheduleAcknowledgment(); setDetail(null); setMessage(''); previousFocus.current?.focus(); }
   function openDetail(next: Detail) {
     previousFocus.current = document.activeElement as HTMLElement; detailExpected.current = space;
     const task = next?.kind === 'task' ? allTasks.find(task => task.id === next.id) : null;
+    executionDraftOwner.current = { dialog: executionDraftOwner.current.dialog + 1, input: 0, taskId: task?.id ?? null };
     setExecutionDateDraft(task?.date ?? ''); setExecutionTimeDraft(task?.time ?? ''); setMessage(''); setDetail(next);
   }
   useEffect(() => { if (detail && dialog.current && !dialog.current.open) dialog.current.showModal(); }, [detail]);
@@ -579,8 +581,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   }
   const moveStep = (task: TextTask, direction: -1 | 1) => moveExecutionStep(programTextExecutionKey(task), direction);
   async function dateMove(taskId: string, nextDate: string | null) {
+    const requested = { ...executionDraftOwner.current };
     const result = await run('실행 날짜 변경', current => updateProgramTask(current, { ...base(current), taskId, patch: { date: nextDate } }), true, { taskId, date: nextDate });
-    if (result.ok) setExecutionDateDraft(nextDate ?? '');
+    const current = executionDraftOwner.current;
+    // A saved shortcut belongs to its original dialog and input generation.
+    // It must not replace newer input or a task reopened while awaiting storage.
+    if (result.ok && current.taskId === taskId && current.dialog === requested.dialog && current.input === requested.input) setExecutionDateDraft(nextDate ?? '');
   }
   async function applySchedule(taskId: string) {
     if (executionTimeDraft && !/^([01]\d|2[0-3]):[0-5]\d$/.test(executionTimeDraft)) { setMessage('시간을 시:분 형식으로 입력해 주세요.'); return; }
@@ -729,7 +735,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       {message && <p role="alert" className={styles.error}>{message}</p>}
       {detail?.kind === 'task' && detailTask && <>
         {detailDatePresentation && <p className={styles.muted} aria-label="날짜 출처">{detailDatePresentation.label}{detailDatePresentation.context && <small>{detailDatePresentation.context}</small>}</p>}
-        <form onSubmit={event => { event.preventDefault(); void applySchedule(detailTask.id); }}><div className={styles.scheduleFields}><label className={styles.field}>실행 날짜<input type="date" value={executionDateDraft} onChange={event => setExecutionDateDraft(event.target.value)} /></label><label className={styles.field}>시간<input type="time" step="60" value={executionTimeDraft} onChange={event => setExecutionTimeDraft(event.target.value)} /><small>비워 두면 시간 없음</small></label></div><button>날짜·시간 적용</button></form><div className={styles.actions}><button onClick={() => void dateMove(detailTask.id, today)}>오늘로 이동</button><button onClick={() => void dateMove(detailTask.id, programShiftDate(today, 1))}>내일로 이어하기</button><button onClick={() => void dateMove(detailTask.id, null)}>날짜 미정으로 이동</button></div>
+        <form onSubmit={event => { event.preventDefault(); void applySchedule(detailTask.id); }}><div className={styles.scheduleFields}><label className={styles.field}>실행 날짜<input type="date" value={executionDateDraft} onChange={event => { executionDraftOwner.current.input++; setExecutionDateDraft(event.target.value); }} /></label><label className={styles.field}>시간<input type="time" step="60" value={executionTimeDraft} onChange={event => { executionDraftOwner.current.input++; setExecutionTimeDraft(event.target.value); }} /><small>비워 두면 시간 없음</small></label></div><button>날짜·시간 적용</button></form><div className={styles.actions}><button onClick={() => void dateMove(detailTask.id, today)}>오늘로 이동</button><button onClick={() => void dateMove(detailTask.id, programShiftDate(today, 1))}>내일로 이어하기</button><button onClick={() => void dateMove(detailTask.id, null)}>날짜 미정으로 이동</button></div>
         {detailTask.time && <p className={styles.muted}>날짜만 미정으로 옮기면 시간은 유지됩니다.</p>}
         <form onSubmit={async event => { event.preventDefault(); const result = await run('진행 기록', current => recordProgramTaskProgress(current, { ...base(current), taskId: detailTask.id, date: recordDate, percent: Number(percent) })); if (result.ok) setMessage('해당 날짜의 누적 진행을 저장했습니다.'); }}><h3>날짜별 진행</h3><label>기록 날짜<input type="date" value={recordDate} onChange={event => setRecordDate(event.target.value)} required /></label><label>누적 진행 (%)<input type="number" min={0} max={100} value={percent} onChange={event => setPercent(event.target.value)} required /></label><button>진행 기록</button></form>
         <ul>{M.progressHistory(space.text, detailTask.id).map(record => <li key={record.date}><button onClick={() => { setRecordDate(record.date); setPercent(String(record.percent)); }}>{record.date} · {record.percent}%</button></li>)}</ul>

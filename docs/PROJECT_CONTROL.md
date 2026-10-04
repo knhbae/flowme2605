@@ -1,6 +1,16 @@
 # FlowMe Project Control
 
-## 현재 목표 — 메모·날짜 후보 선별 게시·개발계 반영 (2026-10-04)
+## 현재 실행 — 메모·날짜 후속 갭의 안전한 선별 반영 (2026-10-04)
+
+[목표](./specs/2026-10-04-alpha-memo-date-gaps-release/spec.md)·[단계](./specs/2026-10-04-alpha-memo-date-gaps-release/plan.md)·[작업](./specs/2026-10-04-alpha-memo-date-gaps-release/tasks.md)·[QA](./specs/2026-10-04-alpha-memo-date-gaps-release/qa.md)·[32개 allowlist](./specs/2026-10-04-alpha-memo-date-gaps-release/manifest.md)·[운영 전환/복귀](./specs/2026-10-04-alpha-memo-date-gaps-release/runbook.md)를 따른다. 별도 작업본에서 원본/제공본을 보존한 채 준비·새 로컬 검증을 마쳤다. 사용자 직접 승인으로 게시·private CI·운영 협업·DEV/자동시작 전환복귀를 순서대로 재개하며 실제 성공은 QA로 확인한다. 좁은 race 수정 반영과 넓은 UX/미결 제품 정책·사람 대상 시험을 분리한다.
+
+## 현재 완료 절편 — 메모·날짜 후속 갭 검증 (2026-10-04)
+
+[목표](./specs/2026-10-04-memo-date-feedback-gaps/spec.md)·[계획](./specs/2026-10-04-memo-date-feedback-gaps/plan.md)·[작업](./specs/2026-10-04-memo-date-feedback-gaps/tasks.md)·[요구](./specs/2026-10-04-memo-date-feedback-gaps/requirements.md)·[결과](./specs/2026-10-04-memo-date-feedback-gaps/results.md). 세 원천과 최신26피드백·중간 추가를 유지하며 날짜·부분 선택의 지원 경로를 검증하고 지연 응답 입력 덮어쓰기를 수정했다. 격리 후보의 구현/합성 QA/보고까지이며 새 게시·CI·DEV 교체·실사용 시험은 제외했다. 제품 정책은 새로 확정하지 않았고 제공본/원본 dirty/계정·DB/Auth/DNS/Tunnel을 보존했다.
+
+직전 반영 목표의 완료는 제공 worktree 로컬 release-result 원장과 실제 HEAD/build를 확인했다. 아래 옛 ‘현재’는 날짜별 이력이며 새 목표나 현재 미완료 선언으로 쓰지 않는다.
+
+## 이전 목표 — 메모·날짜 후보 선별 게시·개발계 반영 (2026-10-04 등록 이력)
 
 [목표·승인 경계](./specs/2026-10-04-alpha-memo-date-release/spec.md)·[계획](./specs/2026-10-04-alpha-memo-date-release/plan.md)·[작업](./specs/2026-10-04-alpha-memo-date-release/tasks.md)·[QA](./specs/2026-10-04-alpha-memo-date-release/qa.md)·[선별 manifest](./specs/2026-10-04-alpha-memo-date-release/manifest.md)·[전환/복귀](./specs/2026-10-04-alpha-memo-date-release/runbook.md). 직전 좁은 후보를 인수해 승인된36파일 선별 게시·같은commit CI/QA·DEV/자동 시작 전환·복귀를 재개했다. 실제 성공은 QA 원장으로 판정한다. 현재 제공CP2·원본dirty·실계정/DB/Auth/DNS/Tunnel 설정·main/Production을 보호한다.
 
