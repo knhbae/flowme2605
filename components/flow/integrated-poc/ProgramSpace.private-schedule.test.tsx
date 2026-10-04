@@ -101,12 +101,16 @@ function harness(seed: ProgramData, documentId: string, host: 'local' | 'account
   const loaded = { exports: {} as { ProgramSpace: (props: ProgramSpaceProps) => React.ReactNode } };
   const compiled = ts.transpileModule(readFileSync(url, 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022,
     jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true } }).outputText;
+  const documentMock: { activeElement: any } = { activeElement: null };
+  documentMock.activeElement = { tagName: 'BUTTON', parentElement: null, isConnected: true, ownerDocument: documentMock,
+    getClientRects: () => [{}], closest: () => null, matches: () => false,
+    focus() { focused++; documentMock.activeElement = this; } };
   vm.runInThisContext(`(function(module,exports,require,document){${compiled}\n})`)(loaded, loaded.exports, (id: string) => {
     if (id === 'react') return hooks;
     if (id.endsWith('.css')) return { __esModule: true, default: new Proxy({}, { get: (_, key) => String(key) }) };
     if (id.startsWith('./Program')) return new Proxy({}, { get: (_, name) => Object.assign(() => null, { displayName: String(name) }) });
     return require(id.startsWith('@/') ? resolve(root, id.slice(2)) : id);
-  }, { activeElement: { focus: () => { focused++; } } });
+  }, documentMock);
   const mutate: ProgramMutate = async (name, build, options) => {
     const transition = build(data); calls.push({ label: name, options, transition });
     if (!transition.ok) return { ok: false, reason: transition.reason };

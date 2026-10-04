@@ -130,6 +130,7 @@ test('opening task detail takes the exact target date/time without writing', () 
   const f = fixture(), space = f.data.spaces[f.data.activeActorId], allTasks = M.tasks(space.text), draft: string[] = [];
   const open = actualFunction('openDetail', { document: { activeElement: {} }, previousFocus: { current: null }, detailExpected: { current: null },
     executionDraftOwner: { current: { dialog: 0, input: 0, taskId: null } },
+    setProgressDraftBaseline() {}, M, today: '2026-10-04', recordDate: '2026-10-04', percent: '0', setRecordDate() {}, setPercent() {},
     space, allTasks, setExecutionDateDraft: (value: string) => draft.push(value), setExecutionTimeDraft: (value: string) => draft.push(value), setMessage() {}, setDetail() {} });
   open({ kind: 'task', id: f.taskId }); assert.deepEqual(draft, ['2026-09-30', '09:10']);
 });
@@ -165,6 +166,7 @@ test('actual schedule form submits the selected task and accepts clearing the mi
   const node = find(node => ts.isJsxElement(node) && node.openingElement.tagName.getText(ast) === 'form' && node.openingElement.getText(ast).includes('applySchedule(detailTask.id)'));
   let submitted = '', time = '09:10', prevented = false;
   const element = evaluate(node.getText(ast), { styles, detailTask: { id: 'stable-task' }, executionDateDraft: '2026-09-30', executionTimeDraft: time,
+    detailDateChangeHint: null,
     executionDraftOwner: { current: { dialog: 0, input: 0, taskId: 'stable-task' } },
     setExecutionDateDraft() {}, setExecutionTimeDraft: (value: string) => { time = value; }, applySchedule: (id: string) => { submitted = id; } });
   const html = renderToStaticMarkup(element); assert.match(html, /type="time" step="60"/); assert.match(html, /비워 두면 시간 없음/);

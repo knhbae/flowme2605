@@ -1,6 +1,22 @@
 # Project Status
 
-## 현재 목표 — 메모·날짜 후속 갭 선별 게시·개발계 반영 준비 (2026-10-04)
+## 현재 작업 — 자체 작성 비공개 Flow 검증·기존 DEV 반영 (2026-10-04)
+
+[목표](./specs/2026-10-04-private-flow-pilot/spec.md)·[계획](./specs/2026-10-04-private-flow-pilot/plan.md)·[작업](./specs/2026-10-04-private-flow-pilot/tasks.md)·[QA](./specs/2026-10-04-private-flow-pilot/qa.md). 요청 `FLOWME-FINISH-PRIVATE-PILOT-20261004-1400-DEV3`의 새 승인에 따라 개발3이 단일 구현·검사·기존 DEV 반영 owner다. 날짜 상세 후보 A는 완료했고 같은 source/build의61/32 근거를 재확인했다. B는 같은 요청 ID의 자체 작성 가상 비공개 입력을 인수해 기존 제작기 저장·reload·명시 개인 인계·재열기·날짜/완료/메모·취소/지원 Undo를 검사한다. 새 run·parser·schema·공개 발행을 추가하지 않는다.
+
+정상 Chrome에서 개인공간·서버 연결 표시를 확인했다. 빈 제작 원문을 만들려 하자 기존 미저장 입력 보호가 표시돼 보존했다. 기존 초안 수정0이며 새 B 입력 저장·개인 인계는 아직 NOT_RUN이다. 기존 입력의 정상 사용자 처리 또는 별도 빈 시험계정 직접 로그인이 필요한 상태를 root에 인계했다. credentials/profile/token/session을 추출하지 않는다. 같은 요청 ID의 root 임시 가상 입력은 인수했고 원래 콘텐츠·기획 담당 정본 완료와 구분한다. 합성 runner와 운영 준비는 별도로 진행한다. 현재 제공/rollback은 a30/기존i1c이며 후보jAY는 DEV 미반영이다. 현재 관리 방식·서버 소유권·Task·manager·보호 guard·Tunnel을 유지하며 새 후보의 정확 binding을 준비한다. 별도의14:38UTC 구체 승인에 따라 기존public저장소·작업branch의 소유 코드/일반 검증 문서35경로 선별 게시를 준비한다. 개인 원문·실등록 ID·raw·캡처·인증/운영자료는 로컬 비공개로 보존하며 병합·공개 콘텐츠·main/Production/DB/Auth/schema/DNS/보안 설정 변경은 제외한다.
+
+15:35 UTC B 합성 실제 앱10시나리오/89세부판정·5크기·14캡처와 fixture14/14를 마쳤다. 제작 저장·reload→명시 개인 인계→기간/날짜/개인 메모/완료→취소·native/지원 저장본Undo→같은 계획/같은 Item 재열기를 확인했고 원 creator·동료·sentinel·public/source 보존, 실제 backend쓰기0이다. 이전 fixture/콜백 실패와 수정 이력은 새 QA에 분리했다. 정상 계정 B 쓰기·DEV 전환은 미실행이며 운영 준비의 독립 검토 결함을 수정 중이다. 합성 통과를 실제 사용자 완료로 바꾸지 않는다.
+
+## 현재 결과 — 날짜·실행 상세 조작 UX 로컬 후보 (2026-10-04)
+
+[목표·경계](./specs/2026-10-04-date-detail-ux/spec.md)·[계획](./specs/2026-10-04-date-detail-ux/plan.md)·[작업](./specs/2026-10-04-date-detail-ux/tasks.md)·[검증](./specs/2026-10-04-date-detail-ux/qa.md)·[조작 HTML](./content-audit/2026-10-04-flowme-date-detail-ux-ko.html). 제공 중인 PR212 HEAD `a30ab173...`를 기준으로 clean 격리 작업본 `flow-date-detail-ux-20261004`에서 로컬 구현·검증·결과 보고를 완료했다. 날짜·시간을 상시 표시하고 진행 기록/연결·이동·순서를 기본 접었다. 같은 Item 원문 복귀와 미적용 입력 보호를 기존 writer/parser/identity 위에 연결했다. 새 실행 결과와 발견·수정 이력은 해당 QA에서만 판정하며 과거43 PASS를 재사용하지 않았다.
+
+[결과](./specs/2026-10-04-date-detail-ux/results.md)·[요구 대조](./specs/2026-10-04-date-detail-ux/requirements.md)·[읽기용 HTML](./content-audit/2026-10-04-flowme-date-detail-ux-report-ko.html). 최종 build `jAYFY3t3SI-FCYcsQvJG_`에서 표적82/82·통합3,071/3,071·npm2,261/2,261·fixture6/6·타입 진단0·build 성공·실제 앱 합성61/61·별도 HTML32/32를 확인했다. 기본5크기와600보조·긴 제목/키보드를 검사했고 실패/수정 이력을 보존했다. 각 수는 서로 겹칠 수 있는 실행 수이며 관련 원ID50개 전체나 full424/피드백26 완료 수가 아니다. 문서4/4·scoped closeout·diff check와 소유27파일 대조를 마쳤다. 로컬 후보 목표 완료이며 개발계 반영 완료가 아니다.
+
+후보는 미커밋·미게시·DEV 미반영이다. 제공 작업본 HEAD `a30ab173...`·Git clean·3105 HTTP200/기존 build `i1cCVh7vp0aJTTKyEAtMY` 유지·후보 build 부재를 읽기 확인했다. 신규 정책·실계정/DB/Auth/DNS/Tunnel 변경, 게시/개발계 교체·외부 배포·관찰 사용자 시험은 이번에 실행하지 않았다. 다음은 별도 승인 범위의 선별 게시·정확 QA·안전한 개발계 반영이며 전체 반복/due/폴더 정책을 선행으로 붙이지 않는다. 아래 '현재' 문구는 각 기록 당시의 상태이며 이번 후보 반영/전체 UX 완성 근거가 아니다.
+
+## 이전 등록 이력 — 메모·날짜 후속 갭 선별 게시·개발계 반영 준비 (2026-10-04)
 
 [새 목표](./specs/2026-10-04-alpha-memo-date-gaps-release/spec.md)·[단계 계획](./specs/2026-10-04-alpha-memo-date-gaps-release/plan.md)·[작업](./specs/2026-10-04-alpha-memo-date-gaps-release/tasks.md)·[현재 검증](./specs/2026-10-04-alpha-memo-date-gaps-release/qa.md)·[선별32파일](./specs/2026-10-04-alpha-memo-date-gaps-release/manifest.md)·[전환/복귀](./specs/2026-10-04-alpha-memo-date-gaps-release/runbook.md). 직전 후보의26개 소유 파일과 이번6개 절차 문서를 별도 release worktree에 통합했다. 새 로컬 표적40/40·npm2,261/2,261·audit0·타입 진단0·build UW5·Chrome43/43·5viewport까지 확인했다. 사용자의 직접 ‘승인!’으로 지정 게시·해당 비공개CI·운영 협업·DEV/자동시작 전환·복귀를 허용받아 실행을 재개했다. 현재 게시·새CI·서버 교체 성공은 아직 아니며 단계별 실제 결과는 QA 원장으로 판정한다.
 

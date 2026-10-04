@@ -1,6 +1,16 @@
 # FLOW Spec Layer
 
-## 현재 목표 — 후속 메모·날짜 갭의 선별 게시·개발계 반영 (2026-10-04)
+## 자체 작성 비공개 Flow 검증·기존 DEV 반영 — 2026-10-04
+
+[목표](./2026-10-04-private-flow-pilot/spec.md)·[계획](./2026-10-04-private-flow-pilot/plan.md)·[작업](./2026-10-04-private-flow-pilot/tasks.md)·[QA](./2026-10-04-private-flow-pilot/qa.md). 요청 `FLOWME-FINISH-PRIVATE-PILOT-20261004-1400-DEV3`의 단일 개발3 owner가 직전 날짜 상세 후보를 중복 구현하지 않고, 자체 작성 가상 Flow의 기존 제작→개인 실행→재열기와 기존 DEV 반영/복귀를 검증한다. 합성·정상 로그인·실제 제공판을 분리하며 공개 발행·새 run·schema·관리 방식 변경은 제외한다.
+
+## 현재 결과 — 날짜·실행 상세 조작 UX 로컬 후보 (2026-10-04)
+
+[목표](./2026-10-04-date-detail-ux/spec.md)·[계획](./2026-10-04-date-detail-ux/plan.md)·[작업](./2026-10-04-date-detail-ux/tasks.md)·[QA](./2026-10-04-date-detail-ux/qa.md)·[조작 HTML](../content-audit/2026-10-04-flowme-date-detail-ux-ko.html). 현재 제공 판본 a30 기반 격리 로컬 후보이며 날짜 상시/진행·연결의 요청 시 조작/미적용 입력 보호/같은 Item 원문 왕복을 다룬다. 반복·마감일·폴더 정책, 실제 사용자 시험, 게시·개발계 교체·외부 배포는 이번 목표가 아니다. 아래 등록 이력을 현재 제공/완료 상태로 사용하지 않는다.
+
+[결과](./2026-10-04-date-detail-ux/results.md)·[관련 원요구50 대조](./2026-10-04-date-detail-ux/requirements.md)·[읽기용 HTML](../content-audit/2026-10-04-flowme-date-detail-ux-report-ko.html). 표적82·통합3071·npm2261·앱61·별도HTML32 PASS, 타입/build 및6크기·긴 제목/키보드 확인. 같은 정책/원문/owner를 유지한 미커밋·DEV 미반영 후보다. full424/피드백26·모든UX 완료 판정은 아니다.
+
+## 이전 등록 이력 — 후속 메모·날짜 갭의 선별 게시·개발계 반영 (2026-10-04)
 
 [목표](./2026-10-04-alpha-memo-date-gaps-release/spec.md)·[계획](./2026-10-04-alpha-memo-date-gaps-release/plan.md)·[작업](./2026-10-04-alpha-memo-date-gaps-release/tasks.md)·[QA](./2026-10-04-alpha-memo-date-gaps-release/qa.md)·[32파일 manifest](./2026-10-04-alpha-memo-date-gaps-release/manifest.md)·[전환/복귀](./2026-10-04-alpha-memo-date-gaps-release/runbook.md). 새 release 작업본 준비/로컬 검증을 마쳤고 사용자 직접 승인으로 지정 게시·비공개CI·운영 협업·DEV/자동시작 교체/복귀를 재개했다. 실제 새HEAD CI/QA/개발계 성공은 해당 근거로 판정하며 이전43PASS와 이전 개발계 반영을 대신 쓰지 않는다.
 

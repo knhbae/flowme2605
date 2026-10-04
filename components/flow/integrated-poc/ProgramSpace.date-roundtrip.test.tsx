@@ -70,12 +70,16 @@ function harness(seed: ProgramData, documentId: string) {
   const compiled = ts.transpileModule(readFileSync(url, 'utf8'), { compilerOptions: {
     module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true,
   } }).outputText;
+  const documentMock: { activeElement: any } = { activeElement: null };
+  documentMock.activeElement = { tagName: 'BUTTON', parentElement: null, isConnected: true, ownerDocument: documentMock,
+    getClientRects: () => [{}], closest: () => null, matches: () => false,
+    focus() { documentMock.activeElement = this; } };
   vm.runInThisContext(`(function(module,exports,require,document){${compiled}\n})`)(loaded, loaded.exports, (id: string) => {
     if (id === 'react') return hooks;
     if (id.endsWith('.css')) return { __esModule: true, default: new Proxy({}, { get: (_, key) => String(key) }) };
     if (id.startsWith('./Program')) return new Proxy({}, { get: (_, name) => Object.assign(() => null, { displayName: String(name) }) });
     return require(id.startsWith('@/') ? resolve(root, id.slice(2)) : id);
-  }, { activeElement: { focus() {} } });
+  }, documentMock);
   const controller = createProgramController({ initialData: seed,
     storage: { getItem: key => storageValues.get(key) ?? null, setItem: (key, value) => { storageValues.set(key, value); }, removeItem() { throw Error('unexpected remove'); } },
     exclusive: async work => { const gate = nextGate; nextGate = null; if (gate) { gate.start(); await gate.wait; } return work(); },

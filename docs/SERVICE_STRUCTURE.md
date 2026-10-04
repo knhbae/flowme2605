@@ -20,6 +20,10 @@ completed FPC-11, but the reconciled exact head must still pass CI before merge
 and its resulting Production deployment must be verified afterward. Until then,
 the delta is not current Production behavior; observed users remain `0`.
 
+## Isolated date-detail UX candidate — 2026-10-04
+
+The [date-detail candidate](./specs/2026-10-04-date-detail-ux/spec.md) keeps schedule fields outside two initially closed, mounted native disclosures in `ProgramSpace`: progress records and connections/move/order. Its explicit source return reuses `openDocument(docId, taskId)` and blocks unsaved schedule/progress input. A same-dialog/same-task progress ACK advances a transient React-state baseline, including successful no-op records; stale ACKs cannot clean a newer dialog. A detached period opener returns focus to the visible active period control. The existing ordinary/private-copy/occurrence routing, parser, writers, keys and schema remain unchanged. This is a local candidate, not a change to the currently served Alpha build or Production; synthetic browser evidence and unrun device/IME/AT tests belong to its QA ledger.
+
 ## Isolated writing-interaction candidate — 2026-10-01
 
 The [writing-interaction follow-up](./specs/2026-10-01-alpha-writing-interactions/spec.md) shares the existing native textarea/mirror engine between whole documents and editable folder regions. Pure transient plans preserve memo-property continuation, sibling insertion after an Item subtree, and an immediate indent inverse. The region planner still reconstructs and validates the full model before automated keys execute; ordinary notes do not acquire Item authority. A fragment can continue in the retained whole local draft only after source capability and host authority checks plus exact native destination installation. External/pending/conflicted authenticated authority cannot bypass its host through a no-write view transition. Caret restoration uses an explicit one-use continuation lease so it cannot overwrite period-to-source Item focus. No API, Auth, storage schema, database, server writer, deployment or active development bundle changes are implied.

@@ -13,3 +13,26 @@
 @media(prefers-reduced-motion:reduce){.space *{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
 @media(min-width:761px) and (max-height:500px){.periods{margin-bottom:4px;padding-bottom:0}.docHeading,.periodHeading{margin-bottom:4px}.space{gap:20px}}
 .executionGroup { grid-column: 1 / -1; margin: 4px 0 8px; font-size: 16px; line-height: 1.5; color: #34594f; }
+.dialog[data-task-detail] { overscroll-behavior: contain; scroll-padding-block-start: 116.5px; scroll-padding-block-end: 6px; }
+.dialog[data-task-detail] .dialogHeading { position: sticky; top: -20px; z-index: 2; margin: -20px -20px 16px; padding: 16px 20px 12px; background: white; border-bottom: 1px solid var(--pw-line); align-items: center; }
+.dialog[data-task-detail] .dialogHeading h2 { min-width: 0; max-height: 4.5em; overflow-y: auto; line-height: 1.5; }
+.dialog[data-task-detail] .dialogHeading button { flex-shrink: 0; }
+.dialog[data-task-detail] :is(button, input, select, summary) { min-height: 48px; scroll-margin-block: 0; }
+.detailSchedule h3 { margin: 0 0 8px; }
+.detailSchedule .field { margin: 0; }
+.detailSchedule p { margin: 8px 0 12px; }
+.dialog .scheduleApply { background: var(--pw-brand); border-color: var(--pw-brand); color: white; }
+.scheduleShortcuts { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.scheduleShortcuts button { flex: 1 1 auto; font-size: 14px; }
+.detailSection { border-top: 1px solid var(--pw-line); padding: 4px 0; }
+.detailSection > summary { display: flex; align-items: center; gap: 10px; list-style: none; font-weight: 650; }
+.detailSection > summary::-webkit-details-marker { display: none; }
+.detailSection > summary::before { content: ''; width: 7px; height: 7px; flex: 0 0 7px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(-45deg); margin: 0 3px; }
+.detailSection[open] > summary::before { transform: rotate(45deg); }
+.detailSection > form { padding: 4px 0 12px; }
+.detailSection h3 { margin-top: 4px; }
+.detailOrigin { border-top: 1px solid var(--pw-line); padding-top: 12px; }
+.detailOrigin p { margin: 0 0 8px; }
+.detailOrigin button:disabled { cursor: not-allowed; opacity: .55; }
+@media(max-width:760px) { .dialog[data-task-detail] .dialogHeading { top: -16px; margin: -16px -16px 16px; padding: 12px 16px; } }
+@media(max-width:480px) { .detailSchedule .scheduleFields { grid-template-columns: minmax(0,1fr); gap: 12px; } .dialog .scheduleApply { width: 100%; justify-self: stretch; } }

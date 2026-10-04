@@ -70,16 +70,18 @@ export function createMemoDateSeed(raw = SEED_RAW) {
 }
 
 /** The only forwarding capability: fixed localhost GET document/static/icon. */
-export function memoDateResourceTarget(address: string, method: string): string | null {
+export function memoDateResourceTarget(address: string, method: string, localOrigin = LOCAL_ORIGIN): string | null {
+  // Explicit synthetic QA listeners only; never turn this into an arbitrary proxy.
+  if (![LOCAL_ORIGIN, 'http://127.0.0.1:3115'].includes(localOrigin)) return null;
   try {
     if (method !== 'GET') return null;
     const url = new URL(address);
-    if (![ORIGIN, LOCAL_ORIGIN].includes(url.origin) || url.username || url.password || url.hash) return null;
+    if (![ORIGIN, localOrigin].includes(url.origin) || url.username || url.password || url.hash) return null;
     const path = url.pathname;
     if (path !== '/alpha' && path !== '/icon.svg' && path !== '/favicon.ico'
       && !/^\/_next\/static\/[A-Za-z0-9_./%-]+$/.test(path)) return null;
     if (/%2f|%5c|%2e/i.test(address) || path.includes('..') || address.includes('\\')) return null;
-    return `${LOCAL_ORIGIN}${path}${url.search}`;
+    return `${localOrigin}${path}${url.search}`;
   } catch { return null; }
 }
 
@@ -144,8 +146,10 @@ export async function memoDateFixtureSelfCheck() {
 
 /** Install in a fresh, isolated CLI browser session before opening /alpha. */
 export async function installMemoDateBrowserFixture(page: Page, options: {
-  seedRaw?: string; enableFaultControl?: boolean; expectedBuildId?: string;
+  seedRaw?: string; enableFaultControl?: boolean; expectedBuildId?: string; localOrigin?: string;
 } = {}) {
+  const localOrigin = options.localOrigin ?? LOCAL_ORIGIN;
+  if (![LOCAL_ORIGIN, 'http://127.0.0.1:3115'].includes(localOrigin)) throw Error('memo-date-rejects-unapproved-local-origin');
   const context = page.context();
   if (context.pages().length !== 1 || context.serviceWorkers().length || !['about:blank', 'chrome://newtab/'].includes(page.url()))
     throw Error('memo-date-requires-fresh-isolated-about-blank-session');
@@ -263,7 +267,7 @@ export async function installMemoDateBrowserFixture(page: Page, options: {
       }
       return deny(route, `${method}:${url.origin}${endpoint}:auth-denied`);
     }
-    if ([ORIGIN, LOCAL_ORIGIN].includes(url.origin) && url.pathname.startsWith('/api/alpha/')) {
+    if ([ORIGIN, localOrigin].includes(url.origin) && url.pathname.startsWith('/api/alpha/')) {
       apiIntercepted++;
       if (exact && method === 'GET' && url.pathname === '/api/alpha/catalog') return json(route, { ok: false, reason: 'unavailable' });
       if (exact && method === 'POST' && url.pathname === '/api/alpha/account') {
@@ -280,7 +284,7 @@ export async function installMemoDateBrowserFixture(page: Page, options: {
       // of this personal-text fixture. No API request ever reaches localhost.
       return deny(route, `${method}:${url.origin}${url.pathname}:api-or-command-denied`);
     }
-    const target = memoDateResourceTarget(request.url(), method);
+    const target = memoDateResourceTarget(request.url(), method, localOrigin);
     if (!target) return deny(route, `${method}:${url.origin}${url.pathname}:resource-denied`);
     const response = await route.fetch({ url: target, method: 'GET', maxRedirects: 0, maxRetries: 2,
       headers: { Host: 'alpha.wikiplans.com', 'X-Forwarded-Host': 'alpha.wikiplans.com', 'X-Forwarded-Proto': 'https',

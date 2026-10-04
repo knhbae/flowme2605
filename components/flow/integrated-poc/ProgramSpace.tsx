@@ -31,6 +31,8 @@ import { programDocumentContentLock, programPreservesLockedDocumentContent, prog
 import { resolveAlphaPrivateTaskSchedule } from '@/lib/flow/integrated-poc/alpha-social/private-task-schedule';
 import styles from './ProgramSpace.module.css';
 import { programRecurrenceFocusId, resolveProgramRecurrencePlanFocus, type ProgramRecurrencePlanFocusRequest } from '@/lib/flow/integrated-poc/recurrence-plan-focus';
+import { programTaskDateChangeHint } from '@/lib/flow/integrated-poc/text-context-presentation';
+import { restoreProgramDialogFocus } from '@/lib/flow/integrated-poc/dialog-return-focus';
 
 export type ProgramSpaceCapabilities = {
   discovery?: boolean;
@@ -107,6 +109,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const confirmedSaveReaders = useRef<Record<string, ((before: TextWorkspaceState, next: TextWorkspaceState) => boolean) | null>>({});
   const inputLocks = useRef<Record<string, ((locked: boolean) => void) | null>>({}), inputLockCount = useRef(0);
   const [recordDate, setRecordDate] = useState(today), [percent, setPercent] = useState('0');
+  // An ACK must render even for a no-op save or repeated success message.
+  const [progressDraftBaseline, setProgressDraftBaseline] = useState({ date: today, percent: '0' });
   const [executionDateDraft, setExecutionDateDraft] = useState('');
   const [executionTimeDraft, setExecutionTimeDraft] = useState('');
   const executionDraftOwner = useRef({ dialog: 0, input: 0, taskId: null as string | null });
@@ -205,6 +209,10 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const allTasks = useMemo(() => programExecutionTasks(space), [space]);
   const detailTask = detail?.kind === 'task' ? allTasks.find(task => task.id === detail.id) : null;
   const detailDatePresentation = useMemo(() => detailTask ? readProgramTaskDatePresentation(space.text, detailTask) : null, [space.text, detailTask]);
+  const detailDateChangeHint = programTaskDateChangeHint(detailDatePresentation, executionDateDraft,
+    { current: detailTask?.time ?? '', draft: executionTimeDraft });
+  const detailSchedulePending = !!detailTask && (executionDateDraft !== (detailTask.date ?? '') || executionTimeDraft !== (detailTask.time ?? ''));
+  const detailProgressPending = recordDate !== progressDraftBaseline.date || percent !== progressDraftBaseline.percent;
   const matchingDocumentIds = useMemo(() => new Set(folderId && docs[0] ? readProgramFolderRegions(space.text, docs[0].id, folderId)?.matchingDocumentIds ?? [] : []), [space.text, folderId]);
   const documentList = docs.filter(doc => !retainedIds.has(doc.id) && !space.documentTrash?.[doc.id] && space.archivedDocumentIds.includes(doc.id) === showArchived && (!folderId || doc.folderId === folderId || matchingDocumentIds.has(doc.id))
     && (!query || `${doc.title}\n${M.raw(doc)}`.toLocaleLowerCase().includes(query.toLocaleLowerCase())));
@@ -427,14 +435,29 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     if (result.ok || result.reason !== 'busy') setMessage(result.ok ? '' : programErrorMessage(result.reason)); return result;
   };
   function cancelHold() { if (hold.current) clearTimeout(hold.current); hold.current = null; holdPoint.current = null; }
-  function close() { executionDraftOwner.current = { dialog: executionDraftOwner.current.dialog + 1, input: 0, taskId: null }; dialog.current?.close(); detailExpected.current = null; clearScheduleAcknowledgment(); setDetail(null); setMessage(''); previousFocus.current?.focus(); }
+  function close() {
+    executionDraftOwner.current = { dialog: executionDraftOwner.current.dialog + 1, input: 0, taskId: null };
+    dialog.current?.close(); detailExpected.current = null; clearScheduleAcknowledgment(); setDetail(null); setMessage('');
+    // A scheduled row can leave this period after applying its date. Return to
+    // the visible period control instead of focusing that detached opener.
+    if (!restoreProgramDialogFocus(previousFocus.current))
+      root.current?.querySelector<HTMLElement>(`[data-program-period="${presentation.current.period}"]`)?.focus({ preventScroll: true });
+  }
   function openDetail(next: Detail) {
     previousFocus.current = document.activeElement as HTMLElement; detailExpected.current = space;
     const task = next?.kind === 'task' ? allTasks.find(task => task.id === next.id) : null;
     executionDraftOwner.current = { dialog: executionDraftOwner.current.dialog + 1, input: 0, taskId: task?.id ?? null };
+    // Row click state updates have not rendered yet. Read this exact target's
+    // initial progress here instead of capturing the previous dialog's fields.
+    const initialProgress = task ? { date: today, percent: String(M.latestProgress(space.text, task.id)?.percent ?? (task.done ? 100 : 0)) } : { date: recordDate, percent };
+    setProgressDraftBaseline(initialProgress);
+    if (task) { setRecordDate(initialProgress.date); setPercent(initialProgress.percent); }
     setExecutionDateDraft(task?.date ?? ''); setExecutionTimeDraft(task?.time ?? ''); setMessage(''); setDetail(next);
   }
-  useEffect(() => { if (detail && dialog.current && !dialog.current.open) dialog.current.showModal(); }, [detail]);
+  useEffect(() => { if (detail && dialog.current && !dialog.current.open) {
+    dialog.current.showModal();
+    if (detail.kind === 'task') dialog.current.scrollTop = 0;
+  } }, [detail]);
   useEffect(() => {
     const escape = (event: KeyboardEvent) => { if (event.key === 'Escape') { cancelHold(); nativeDrag.current = null; setMoving(null); } };
     window.addEventListener('keydown', escape); return () => { cancelHold(); window.removeEventListener('keydown', escape); };
@@ -731,17 +754,33 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         })}</ul>
       </div>
     </div>
-    <dialog ref={dialog} className={styles.dialog} onCancel={event => { event.preventDefault(); close(); }}><div className={styles.dialogHeading}><h2>{detail?.kind === 'task' ? detailTask?.title ?? '할 일을 찾을 수 없습니다' : detail?.kind === 'folder' ? '폴더 정리' : '기존 할 일 연결'}</h2><button onClick={close} aria-label="닫기">닫기</button></div>
+    <dialog ref={dialog} className={styles.dialog} data-task-detail={detail?.kind === 'task' ? true : undefined} aria-labelledby="program-detail-title" onCancel={event => { event.preventDefault(); close(); }}><div className={styles.dialogHeading}><h2 id="program-detail-title">{detail?.kind === 'task' ? detailTask?.title ?? '할 일을 찾을 수 없습니다' : detail?.kind === 'folder' ? '폴더 정리' : '기존 할 일 연결'}</h2><button onClick={close} aria-label="닫기">닫기</button></div>
       {message && <p role="alert" className={styles.error}>{message}</p>}
       {detail?.kind === 'task' && detailTask && <>
+        <section className={styles.detailSchedule} aria-labelledby="program-detail-schedule"><h3 id="program-detail-schedule">날짜·시간</h3>
         {detailDatePresentation && <p className={styles.muted} aria-label="날짜 출처">{detailDatePresentation.label}{detailDatePresentation.context && <small>{detailDatePresentation.context}</small>}</p>}
-        <form onSubmit={event => { event.preventDefault(); void applySchedule(detailTask.id); }}><div className={styles.scheduleFields}><label className={styles.field}>실행 날짜<input type="date" value={executionDateDraft} onChange={event => { executionDraftOwner.current.input++; setExecutionDateDraft(event.target.value); }} /></label><label className={styles.field}>시간<input type="time" step="60" value={executionTimeDraft} onChange={event => { executionDraftOwner.current.input++; setExecutionTimeDraft(event.target.value); }} /><small>비워 두면 시간 없음</small></label></div><button>날짜·시간 적용</button></form><div className={styles.actions}><button onClick={() => void dateMove(detailTask.id, today)}>오늘로 이동</button><button onClick={() => void dateMove(detailTask.id, programShiftDate(today, 1))}>내일로 이어하기</button><button onClick={() => void dateMove(detailTask.id, null)}>날짜 미정으로 이동</button></div>
+        <form onSubmit={event => { event.preventDefault(); void applySchedule(detailTask.id); }}><div className={styles.scheduleFields}><label className={styles.field}>실행 날짜<input type="date" value={executionDateDraft} onChange={event => { executionDraftOwner.current.input++; setExecutionDateDraft(event.target.value); }} /></label><label className={styles.field}>시간<input type="time" step="60" value={executionTimeDraft} onChange={event => { executionDraftOwner.current.input++; setExecutionTimeDraft(event.target.value); }} /><small>비워 두면 시간 없음</small></label></div>{detailDateChangeHint && <p className={styles.muted} role="status">{detailDateChangeHint}</p>}<button className={styles.scheduleApply}>날짜·시간 적용</button></form><div className={styles.scheduleShortcuts}><button onClick={() => void dateMove(detailTask.id, today)}>오늘로 이동</button><button onClick={() => void dateMove(detailTask.id, programShiftDate(today, 1))}>내일로 이어하기</button><button onClick={() => void dateMove(detailTask.id, null)}>날짜 미정으로 이동</button></div>
         {detailTask.time && <p className={styles.muted}>날짜만 미정으로 옮기면 시간은 유지됩니다.</p>}
-        <form onSubmit={async event => { event.preventDefault(); const result = await run('진행 기록', current => recordProgramTaskProgress(current, { ...base(current), taskId: detailTask.id, date: recordDate, percent: Number(percent) })); if (result.ok) setMessage('해당 날짜의 누적 진행을 저장했습니다.'); }}><h3>날짜별 진행</h3><label>기록 날짜<input type="date" value={recordDate} onChange={event => setRecordDate(event.target.value)} required /></label><label>누적 진행 (%)<input type="number" min={0} max={100} value={percent} onChange={event => setPercent(event.target.value)} required /></label><button>진행 기록</button></form>
+        </section>
+        <details key={`progress-${executionDraftOwner.current.dialog}`} className={styles.detailSection} data-detail-section="progress"><summary>진행 기록</summary>
+        <form onSubmit={async event => { event.preventDefault(); const requested = { dialog: executionDraftOwner.current.dialog, date: recordDate, percent };
+          const result = await run('진행 기록', current => recordProgramTaskProgress(current, { ...base(current), taskId: detailTask.id, date: requested.date, percent: Number(requested.percent) }));
+          if (result.ok && executionDraftOwner.current.dialog === requested.dialog && executionDraftOwner.current.taskId === detailTask.id) { setProgressDraftBaseline({ date: requested.date, percent: requested.percent }); setMessage('해당 날짜의 누적 진행을 저장했습니다.'); }
+        }}><h3>날짜별 진행</h3><label>기록 날짜<input type="date" value={recordDate} onChange={event => setRecordDate(event.target.value)} required /></label><label>누적 진행 (%)<input type="number" min={0} max={100} value={percent} onChange={event => setPercent(event.target.value)} required /></label><button>진행 기록</button></form>
         <ul>{M.progressHistory(space.text, detailTask.id).map(record => <li key={record.date}><button onClick={() => { setRecordDate(record.date); setPercent(String(record.percent)); }}>{record.date} · {record.percent}%</button></li>)}</ul>
+        </details>
+        <details key={`connections-${executionDraftOwner.current.dialog}`} className={styles.detailSection} data-detail-section="connections"><summary>연결·이동·순서</summary>
         {period !== 'documents' && <div className={styles.actions}><button onClick={() => moveStep(detailTask, -1)}>같은 날짜에서 위로</button><button onClick={() => moveStep(detailTask, 1)}>같은 날짜에서 아래로</button></div>}
         <label className={styles.field}>다른 문서에 연결<select defaultValue="" onChange={async event => { const docId = event.target.value; if (!docId) return; await run('같은 할 일 연결', current => linkProgramTask(current, { ...base(current), documentId: docId, taskId: detailTask.id })); }}><option value="">문서 선택</option>{space.text.documents.filter(doc => doc.id !== detailTask.docId && !space.archivedDocumentIds.includes(doc.id)).map(doc => <option key={doc.id} value={doc.id}>{doc.title}</option>)}</select></label>
-        <ProgramTaskDocumentMove key={detailTask.id} data={data} taskId={detailTask.id} disabled={preparingDocumentAction} onMove={(destinationId, expectedSpace) => moveTaskDocument(detailTask.id, destinationId, expectedSpace)} onOpen={(documentId, taskId) => { close(); void openDocument(documentId, taskId); }} />
+        <ProgramTaskDocumentMove key={detailTask.id} data={data} taskId={detailTask.id} disabled={preparingDocumentAction} onMove={(destinationId, expectedSpace) => moveTaskDocument(detailTask.id, destinationId, expectedSpace)} onOpen={(documentId, taskId) => {
+          if (detailSchedulePending || detailProgressPending) { setMessage('날짜·시간 또는 진행 입력을 적용하거나 취소한 뒤 원문을 열어 주세요.'); return; }
+          close(); void openDocument(documentId, taskId);
+        }} />
+        </details>
+        <div className={styles.detailOrigin}><p className={styles.muted}>원문 · {detailTask.docTitle}</p><button disabled={detailSchedulePending || detailProgressPending} onClick={() => {
+          if (detailSchedulePending || detailProgressPending) return;
+          const target = { documentId: detailTask.docId, taskId: detailTask.id }; close(); void openDocument(target.documentId, target.taskId);
+        }}>원문 열기</button>{(detailSchedulePending || detailProgressPending) && <p className={styles.muted}>날짜·시간 또는 진행 입력을 적용하거나, 닫아 취소한 뒤 원문을 열어 주세요.</p>}</div>
       </>}
       {detail?.kind === 'folder' && <>
         <form onSubmit={async event => { event.preventDefault(); const title = String(new FormData(event.currentTarget).get('title') ?? ''); await run('폴더 이름 변경', current => renameProgramFolder(current, { ...base(current), folderId: detail.id, title })); }}><label>폴더 이름<input key={detail.id} name="title" defaultValue={space.text.folders.find(item => item.id === detail.id)?.title} required /></label><button>이름 변경</button></form>
