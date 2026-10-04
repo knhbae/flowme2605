@@ -141,7 +141,14 @@ test('current ordering: menu, keyboard, drag and touch-hold share order; cancel/
   const order = () => page.locator('li[data-task-id]').evaluateAll(rows => rows.map(r => r.getAttribute('data-task-id')));
   const originalOrder = await order();
   await row(page, 'Order C').getByRole('button', { name: 'Order C 작업', exact: true }).click();
-  await page.getByRole('dialog').getByRole('button', { name: '같은 날짜에서 위로', exact: true }).click();
+  const orderingDialog = page.getByRole('dialog');
+  const connections = orderingDialog.locator('details[data-detail-section="connections"]');
+  await expect(connections).toHaveJSProperty('open', false);
+  await connections.getByText('연결·이동·순서', { exact: true }).click();
+  await expect(connections).toHaveJSProperty('open', true);
+  const moveUp = orderingDialog.getByRole('button', { name: '같은 날짜에서 위로', exact: true });
+  await reachable(moveUp);
+  await moveUp.click();
   await page.keyboard.press('Escape');
   const expected = [originalOrder[0], originalOrder[2], originalOrder[1]];
   await expect.poll(order).toEqual(expected);
