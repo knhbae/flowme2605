@@ -16,6 +16,8 @@ import { isProgramFolderViewCurrent, readProgramFolderRegions } from '@/lib/flow
 import { programFolderCreationLocation, programFolderInputSuggestion, programFolderPath, programFolderSuggestionPreservesSource } from '@/lib/flow/integrated-poc/folder-link-suggestions';
 import { ProgramFolderRegionEditor, type ProgramFolderRegionPort, type ProgramFolderRegionSnapshot } from './ProgramFolderRegionEditor';
 import regionStyles from './ProgramFolderRegionEditor.module.css';
+import { readProgramTaskDatePresentation } from '@/lib/flow/integrated-poc/execution-presentation';
+import { readProgramMemoContext, programTaskDateChangeHint } from '@/lib/flow/integrated-poc/text-context-presentation';
 
 export interface ProgramTextPosition { start: number; end: number; scrollTop: number }
 export type ProgramSourceFocus = (target: { documentId: string; lineId: string; raw: string }) => boolean;
@@ -645,6 +647,12 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const panelAccess = panel ? accessFor(panel.lineId) : undefined;
   const protectedExecutionPanel = !!panelAccess?.reason && !!panel && ['progress', 'date'].includes(panel.kind);
   const insertions = panel?.lineId ? M.insertionOptions(draft.working, props.docId, panel.lineId) : [];
+  const memoContext = panel?.kind === 'insert' ? readProgramMemoContext(draft.working, props.docId, panel.lineId) : null;
+  const dateContext = panel?.kind === 'date' && !protectedExecutionPanel && row?.progressTargetId
+    ? readProgramTaskDatePresentation(draft.working, { id: row.progressTargetId, docId: props.docId }) : null;
+  const dateChangeHint = programTaskDateChangeHint(dateContext, date, {
+    current: row?.task?.time ?? row?.time ?? '', draft: time,
+  });
   function insertNative(offset: number, text: string, caret: number) {
     if (actionsDisabled()) return;
     closePanel();
@@ -830,7 +838,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         <button type="button" disabled={disabled || orderPreview?.plan.status !== 'ready'} onClick={applyOrder}>원문에 날짜순 적용</button>
       </div>}
       {panel.kind === 'insert' && <div className={styles.choices}>
-        {row && <p className={styles.menuTarget}>{row.title || row.task?.title || row.text}</p>}
+        {row && <p className={styles.menuTarget}>{memoContext?.label || row.title || row.task?.title || row.text}</p>}
+        {memoContext && <p className={styles.contextHint}>{memoContext.continuation}</p>}
         {row?.kind === 'subcheck' && row.isCanonical === true && !row.isReference && <small className={styles.registeredNotice}>이 하위 항목은 별도 할 일로 등록돼 있습니다. 들여쓰기를 바꿔도 등록과 진행 기록은 유지됩니다.</small>}
         {row?.progressTargetId && <section className={styles.menuSection} aria-label="선택 항목 진행·날짜"><h4>진행·날짜</h4>
           {accessFor(panel.lineId)?.reason ? <button type="button" onClick={() => setPanel({ kind: 'reference', lineId: panel.lineId })}>기록·원래 항목 보기</button> : <><button type="button" onClick={() => openProgress(panel.lineId)}>진행 기록</button><button type="button" onClick={() => openProgress(panel.lineId, 'date')}>날짜 바꾸기</button></>}
@@ -860,7 +869,11 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         <button type="submit" disabled={disabled}>진행 저장</button>
         {row?.progressTargetId && M.progressHistory(draft.working, row.progressTargetId).length > 0 && <details><summary>날짜별 기록</summary><div className={styles.choices}>{M.progressHistory(draft.working, row.progressTargetId).map(record => <button type="button" key={record.date} onClick={() => { setDate(record.date); setPercent(String(record.percent)); }}>{record.date}<span>{record.percent}%</span></button>)}</div></details>}
       </form>}
-      {panel.kind === 'date' && !protectedExecutionPanel && <form onSubmit={event => { event.preventDefault(); void applyDate(); }}><p className={styles.dateTarget}>{row?.title || row?.task?.title}</p><label>항목 날짜<input type="date" value={date} onChange={event => setDate(event.target.value)} /></label><label>시간<input type="time" step={60} value={time} onChange={event => setTime(event.target.value)} /></label><button type="button" onClick={() => setDate('')}>날짜 미정</button><button type="submit" disabled={disabled}>날짜·시간 적용</button></form>}
+      {panel.kind === 'date' && !protectedExecutionPanel && <form onSubmit={event => { event.preventDefault(); void applyDate(); }}><p className={styles.dateTarget}>{row?.title || row?.task?.title}</p>
+        {dateContext && <p className={styles.contextHint} aria-label="날짜 출처">{dateContext.label}{dateContext.context && <small>{dateContext.context}</small>}</p>}
+        <label>실행 날짜<input type="date" value={date} onChange={event => setDate(event.target.value)} /></label><label>시간<input type="time" step={60} value={time} onChange={event => setTime(event.target.value)} /></label>
+        {dateChangeHint && <p className={styles.contextHint} role="status">{dateChangeHint}</p>}
+        <button type="button" onClick={() => setDate('')}>날짜 미정</button><button type="submit" disabled={disabled}>날짜·시간 적용</button></form>}
       {panel.kind === 'folder' && <><div className={styles.folderPreview} aria-label="폴더 연결 위치"><strong>{panel.folderLinkPreview?.locationLabel}</strong>{panel.folderLinkPreview?.source && <small>기준 줄: {panel.folderLinkPreview.source.text || '빈 줄'}</small>}{panel.folderLinkPreview?.destination.relation !== 'same-line' && <small>기존 내용과 하위 항목은 그대로 둡니다.</small>}</div><div className={styles.choices}>{M.scopes(draft.working).filter(scope => scope.kind === 'folder').map(scope => <button type="button" key={scope.id} disabled={disabled} onClick={() => { void attachFolder(scope.id); }}>{programFolderPath(draft.working, scope.id)}</button>)}</div><form onSubmit={event => { event.preventDefault(); void attachFolder(null); }}>{creationLocation !== null && <small>생성 위치: {creationLocation}</small>}<label>새 폴더 이름<input value={folderName} maxLength={100} onChange={event => setFolderName(event.target.value)} /></label><button type="submit" disabled={!folderName.trim() || disabled}>만들어 연결</button></form></>}
       {panel.kind === 'move' && <div className={styles.choices}>{moving?.targets.map(target => <button type="button" key={target.targetKey} onClick={() => { void finishMove(target.beforeLineId, target.depth); }}>{target.label}<small>깊이 {target.depth}</small></button>)}</div>}
       {(panel.kind === 'reference' || protectedExecutionPanel) && <ProgramReferencePanel access={panelAccess} title={row?.task?.title || row?.title || '연결된 항목'} date={row?.date ?? null}

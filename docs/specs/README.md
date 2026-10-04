@@ -1,5 +1,15 @@
 # FLOW Spec Layer
 
+## 현재 — 메모·날짜 후보 선별 게시·개발계 반영 (2026-10-04)
+
+[목표·승인](./2026-10-04-alpha-memo-date-release/spec.md)·[계획](./2026-10-04-alpha-memo-date-release/plan.md)·[작업](./2026-10-04-alpha-memo-date-release/tasks.md)·[QA](./2026-10-04-alpha-memo-date-release/qa.md)·[manifest](./2026-10-04-alpha-memo-date-release/manifest.md)·[전환/복귀](./2026-10-04-alpha-memo-date-release/runbook.md). 사용자 승인으로36파일 선별 게시·해당 비공개CI·운영 협업·개발계 전환/복귀를 재개했다. 아직 전체완료 판정은 아니며 기존소유30경로와 게시문서만 다룬다. 새 정책·실계정·DB/Auth/DNS/Tunnel 설정·main/Production을 제외한다.
+
+## 직전 — 개인 문서 메모·날짜 UX (2026-10-04)
+
+후보 검증 완료·DEV 미반영: [결과](./2026-10-04-personal-memo-date-ux/results.md)·[QA](./2026-10-04-personal-memo-date-ux/qa.md)·[파일 소유](./2026-10-04-personal-memo-date-ux/ownership.md). 미결 정책·새 인계 미검증은 다음 선택 범위로 남긴다.
+
+[목표·경계](./2026-10-04-personal-memo-date-ux/spec.md)·[단계 계획](./2026-10-04-personal-memo-date-ux/plan.md)·[요구별 대조](./2026-10-04-personal-memo-date-ux/requirements.md)·[계약 감사](./2026-10-04-personal-memo-date-ux/contract-audit.md)·[설계](./2026-10-04-personal-memo-date-ux/design.md)·[작업](./2026-10-04-personal-memo-date-ux/tasks.md)·[조작 HTML](../content-audit/2026-10-04-flowme-memo-date-ux-ko.html). CP2 기반 별도 후보에서 메모·날짜 정보를 필요한 순간에 보인다. 새 제품 정책·실제 계정/DB·게시/개발계 교체는 포함하지 않는다. 아래 10/3 완료 전 문구는 당시 이력이며 이 목표와 직전 운영 마감 증거를 대신하지 않는다.
+
 ## 현재 — 핵심 사용 여정 UX 개선·개발계 반영·시험 준비 (2026-10-03)
 
 [목표·경계](./2026-10-03-alpha-core-journeys-ready/spec.md)·[단계 계획](./2026-10-03-alpha-core-journeys-ready/plan.md)·[작업 체크](./2026-10-03-alpha-core-journeys-ready/tasks.md)·[검증/반영 원장](./2026-10-03-alpha-core-journeys-ready/qa.md). 직전 후보 CP1, 개인 문서↔기간·UX-N1 6상태·UX-N2 메뉴/등록/복원·공개 판본/사본/복귀의 CP2, 소수 사용자 시험 준비를 묶은 목표다. 사용자의 승인으로 격리 구현·합성 검증과 선별 게시·Draft PR209/210은 완료했다. 공통 CI 실패를 보완 중이며 정확 HTTP QA·개발계 교체/복귀·시험 시작 판정은 미완료다. 계획-only 문구는 등록 당시 이력이고 최신 승인과 spec이 실행 범위를 정한다. 실제 관찰 시험·미결 정책·대형5D/F6~F10 전체·독립 HTML NOT_RUN2건·main merge/Production은 별도 후속이다.
