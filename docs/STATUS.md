@@ -1,6 +1,18 @@
 # Project Status
 
-## 현재 — 메모·날짜 후보 선별 게시·개발계 반영 재개 (active·미완료, 2026-10-04)
+## 현재 목표 — 메모·날짜 후속 갭 선별 게시·개발계 반영 준비 (2026-10-04)
+
+[새 목표](./specs/2026-10-04-alpha-memo-date-gaps-release/spec.md)·[단계 계획](./specs/2026-10-04-alpha-memo-date-gaps-release/plan.md)·[작업](./specs/2026-10-04-alpha-memo-date-gaps-release/tasks.md)·[현재 검증](./specs/2026-10-04-alpha-memo-date-gaps-release/qa.md)·[선별32파일](./specs/2026-10-04-alpha-memo-date-gaps-release/manifest.md)·[전환/복귀](./specs/2026-10-04-alpha-memo-date-gaps-release/runbook.md). 직전 후보의26개 소유 파일과 이번6개 절차 문서를 별도 release worktree에 통합했다. 새 로컬 표적40/40·npm2,261/2,261·audit0·타입 진단0·build UW5·Chrome43/43·5viewport까지 확인했다. 사용자의 직접 ‘승인!’으로 지정 게시·해당 비공개CI·운영 협업·DEV/자동시작 전환·복귀를 허용받아 실행을 재개했다. 현재 게시·새CI·서버 교체 성공은 아직 아니며 단계별 실제 결과는 QA 원장으로 판정한다.
+
+현재 제공본은 `flow-personal-memo-date-20261004` / `df0670f8086977d9777952e1e5cafb42096effe8` / `h6dzC_Ix8aPXcsm-UC-Mb`, Git clean이다. 이전CP2를 새 복귀 대상으로 쓰지 않는다. 계정/DB/Auth/DNS/Tunnel 설정·main merge·Render/Vercel/Production·실사용자 시험은 제외한다. 아래 후보43PASS와 기존 반영 결과는 이전 실행 증거이며 새 HEAD/CI/DEV PASS를 대신하지 않는다.
+
+## 현재 — 메모·날짜 후속 갭 후보 검증 완료 (2026-10-04)
+
+[이번 결과](./specs/2026-10-04-memo-date-feedback-gaps/results.md)·[26개 피드백 대조](./specs/2026-10-04-memo-date-feedback-gaps/requirements.md)·[QA](./specs/2026-10-04-memo-date-feedback-gaps/qa.md)·[읽기용 HTML](./content-audit/2026-10-04-flowme-memo-date-feedback-gaps-report-ko.html). clean 격리 후보에서 늦은 날짜 shortcut 저장 응답의 새 입력/다른 dialog 덮어쓰기를 최소 수정했다. 신규31 포함 표적212/212·npm2,261/2,261·타입 진단0·production build·실제 앱43판정·5viewport를 확인했다. 원 날짜 되돌림과 같은 원인이라고 단정하지 않는다. 자유 문구 미정·반복/공통·회차 메모·독립 due는 미결이며 전체26 해결·전체 UX 완성·실기기/관찰 증거가 아니다.
+
+이번 후보는 미커밋·미게시·DEV 미반영이다. 기존 제공 worktree `flow-personal-memo-date-20261004`의 HEAD `df0670f...`·build `h6dzC_Ix8aPXcsm-UC-Mb`·Git clean·자동시작을 유지했다. 직전 반영 목표는 제공본의 로컬 `.tmp/manual-memo-date-release-20261004/release-result.public.json`이 `goalScopeComplete:true`로 기록하며 현재 제공 상태도 읽기 확인했다. 아래 active/미완료 문구는 당시 이력이다. 다음은 새 후보의 선별 게시/CI/개발계 반영 승인 범위 확정이다.
+
+## 이전 — 메모·날짜 후보 선별 게시·개발계 반영 재개 (등록 당시 active·미완료, 2026-10-04)
 
 [새 목표](./specs/2026-10-04-alpha-memo-date-release/spec.md)·[작업 체크](./specs/2026-10-04-alpha-memo-date-release/tasks.md)·[현재 QA](./specs/2026-10-04-alpha-memo-date-release/qa.md). 사용자가36파일 선별 commit/push/Draft PR/해당 비공개CI/운영 협업/DEV·자동 시작 대상 교체와 복귀를 승인해 재개했다. 05:34 fresh fetch 및 session-start로 기준58df·main관계·소유범위를 대조했다. 정상hook·같은commit CI·exact QA를 통과한 뒤에만 실제DEV를 전환한다. 직전 미커밋 후보 검증과 현재 개발계CP2를 구분한다. 아래 날짜별 ‘현재’는 당시 이력이다.
 

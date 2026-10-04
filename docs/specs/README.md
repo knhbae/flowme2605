@@ -1,6 +1,14 @@
 # FLOW Spec Layer
 
-## 현재 — 메모·날짜 후보 선별 게시·개발계 반영 (2026-10-04)
+## 현재 목표 — 후속 메모·날짜 갭의 선별 게시·개발계 반영 (2026-10-04)
+
+[목표](./2026-10-04-alpha-memo-date-gaps-release/spec.md)·[계획](./2026-10-04-alpha-memo-date-gaps-release/plan.md)·[작업](./2026-10-04-alpha-memo-date-gaps-release/tasks.md)·[QA](./2026-10-04-alpha-memo-date-gaps-release/qa.md)·[32파일 manifest](./2026-10-04-alpha-memo-date-gaps-release/manifest.md)·[전환/복귀](./2026-10-04-alpha-memo-date-gaps-release/runbook.md). 새 release 작업본 준비/로컬 검증을 마쳤고 사용자 직접 승인으로 지정 게시·비공개CI·운영 협업·DEV/자동시작 교체/복귀를 재개했다. 실제 새HEAD CI/QA/개발계 성공은 해당 근거로 판정하며 이전43PASS와 이전 개발계 반영을 대신 쓰지 않는다.
+
+## 현재 — 메모·날짜 후속 갭 후보 검증 완료 (2026-10-04)
+
+[목표](./2026-10-04-memo-date-feedback-gaps/spec.md)·[계획](./2026-10-04-memo-date-feedback-gaps/plan.md)·[작업](./2026-10-04-memo-date-feedback-gaps/tasks.md)·[26개 요구 대조](./2026-10-04-memo-date-feedback-gaps/requirements.md)·[QA](./2026-10-04-memo-date-feedback-gaps/qa.md)·[UX 검토](./2026-10-04-memo-date-feedback-gaps/ux-review.md)·[결과](./2026-10-04-memo-date-feedback-gaps/results.md)·[HTML](../content-audit/2026-10-04-flowme-memo-date-feedback-gaps-report-ko.html). clean 격리 후보의 날짜 지연 응답 보호·지원 경로 검증을 마쳤다. 새로운 게시/CI/개발계 교체·실사용자 시험은 미실행이며 기존 제공본은 유지했다. 아래 과거 active/미완료 문구를 현재 제공/완료 상태로 사용하지 않는다.
+
+## 이전 — 메모·날짜 후보 선별 게시·개발계 반영 (2026-10-04 등록 이력)
 
 [목표·승인](./2026-10-04-alpha-memo-date-release/spec.md)·[계획](./2026-10-04-alpha-memo-date-release/plan.md)·[작업](./2026-10-04-alpha-memo-date-release/tasks.md)·[QA](./2026-10-04-alpha-memo-date-release/qa.md)·[manifest](./2026-10-04-alpha-memo-date-release/manifest.md)·[전환/복귀](./2026-10-04-alpha-memo-date-release/runbook.md). 사용자 승인으로36파일 선별 게시·해당 비공개CI·운영 협업·개발계 전환/복귀를 재개했다. 아직 전체완료 판정은 아니며 기존소유30경로와 게시문서만 다룬다. 새 정책·실계정·DB/Auth/DNS/Tunnel 설정·main/Production을 제외한다.
 

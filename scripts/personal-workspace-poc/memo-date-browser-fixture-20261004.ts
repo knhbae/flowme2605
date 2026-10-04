@@ -48,7 +48,7 @@ function fixtureSession() {
 }
 
 /** Personal text only: no public copy, creator source, reference or recurrence seed. */
-export function createMemoDateSeed() {
+export function createMemoDateSeed(raw = SEED_RAW) {
   const context: AlphaSocialContext = {
     schema: 'flowme-alpha-social-context/1', revision: 0,
     ownActorId: 'member-aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
@@ -62,7 +62,7 @@ export function createMemoDateSeed() {
   };
   account.space.text = M.addDocument(account.space.text, { title: DOCUMENT_TITLE });
   const documentId = account.space.text.documents.at(-1)!.id;
-  account.space.text = M.editText(account.space.text, documentId, SEED_RAW);
+  account.space.text = M.editText(account.space.text, documentId, raw);
   account.space.position.documentId = documentId;
   const references = alphaSocialReferences(context, USER.id);
   if (!validateAlphaAccount(account, references, USER.id)) throw Error('memo-date-invalid-synthetic-seed');
@@ -143,11 +143,16 @@ export async function memoDateFixtureSelfCheck() {
 }
 
 /** Install in a fresh, isolated CLI browser session before opening /alpha. */
-export async function installMemoDateBrowserFixture(page: Page) {
+export async function installMemoDateBrowserFixture(page: Page, options: {
+  seedRaw?: string; enableFaultControl?: boolean; expectedBuildId?: string;
+} = {}) {
   const context = page.context();
   if (context.pages().length !== 1 || context.serviceWorkers().length || !['about:blank', 'chrome://newtab/'].includes(page.url()))
     throw Error('memo-date-requires-fresh-isolated-about-blank-session');
-  const seed = createMemoDateSeed();
+  const stored = await context.storageState({ indexedDB: true });
+  if (stored.cookies.length || stored.origins.length)
+    throw Error('memo-date-rejects-existing-profile-state');
+  const seed = createMemoDateSeed(options.seedRaw);
   const server = createAlphaFakeServer([{ account: seed.account, references: seed.references }]);
   const repository = server.connect(server.issueSession(USER.id));
   const commands: AlphaPrivateCommand[] = [], lookups: string[] = [], reads: number[] = [];
@@ -155,6 +160,11 @@ export async function installMemoDateBrowserFixture(page: Page) {
   const storageCalls: { method: string; key: string | null; area: string }[] = [];
   const resources: { request: string; target: string; status: number }[] = [];
   let authIntercepted = 0, apiIntercepted = 0, documentLoads = 0;
+  let rejectNext = false;
+  let holdNext = false;
+  let releaseHeld: (() => void) | null = null;
+  const rejectedCommands: string[] = [];
+  const heldCommands: string[] = [];
   async function current() {
     const result = await repository.read();
     if (!result.ok) throw Error('memo-date-synthetic-account-unavailable');
@@ -167,6 +177,12 @@ export async function installMemoDateBrowserFixture(page: Page) {
   page.on('pageerror', error => pageErrors.push(error.message));
   page.on('console', message => { if (message.type() === 'error') consoleErrors.push(message.text()); });
   await page.exposeFunction('__memoDateFixtureStorageCall', (call: typeof storageCalls[number]) => storageCalls.push(call));
+  // Opt-in synthetic failure only. This has no server/API forwarding capability.
+  if (options.enableFaultControl) {
+    await page.exposeFunction('__memoDateFixtureRejectNext', () => { rejectNext = true; });
+    await page.exposeFunction('__memoDateFixtureHoldNext', () => { holdNext = true; });
+    await page.exposeFunction('__memoDateFixtureRelease', () => { const release = releaseHeld; releaseHeld = null; release?.(); });
+  }
   await page.exposeFunction('__memoDateFixtureState', async () => {
     const account = await current(), doc = M.getDocument(account.space.text, seed.documentId);
     return {
@@ -175,7 +191,8 @@ export async function installMemoDateBrowserFixture(page: Page) {
       rows: M.rowMeta(account.space.text, seed.documentId), items: M.parseDocument(doc, account.space.text).items,
       commandCount: commands.length, commands, lookups, reads, ...server.diagnostics(),
       prohibitedRequests, deniedWebSockets, pageErrors, consoleErrors, storageCalls, resources,
-      authIntercepted, apiIntercepted, documentLoads, forwardedAuth: 0, forwardedApi: 0,
+      authIntercepted, apiIntercepted, documentLoads, rejectedCommands, heldCommands, requestHeld: !!releaseHeld,
+      expectedBuildId: options.expectedBuildId ?? null, forwardedAuth: 0, forwardedApi: 0,
       forbiddenStorageCalls: storageCalls.filter(call => call.method === 'clear' || !call.key?.startsWith(PREFIX)),
       publicUnchanged: canonicalJson(seed.context.public) === canonicalJson(seed.references.public),
     };
@@ -254,6 +271,8 @@ export async function installMemoDateBrowserFixture(page: Page) {
         if (body?.kind === 'lookup' && typeof body.requestId === 'string') { lookups.push(body.requestId); return json(route, await repository.lookup(body.requestId)); }
         if (body?.kind === 'execute' && validateAlphaCommand(body.command)
           && (body.command.kind === 'undo-private' || body.command.changes.every(change => ['text', 'position'].includes(change.field)))) {
+          if (rejectNext) { rejectNext = false; rejectedCommands.push(body.command.requestId); return json(route, { ok: false, reason: 'limit' }); }
+          if (holdNext) { holdNext = false; heldCommands.push(body.command.requestId); await new Promise<void>(resolve => { releaseHeld = resolve; }); }
           commands.push(structuredClone(body.command)); return json(route, await repository.execute(body.command));
         }
       }
@@ -268,8 +287,14 @@ export async function installMemoDateBrowserFixture(page: Page) {
         Accept: request.headers().accept ?? '*/*', 'Cache-Control': 'no-cache' } });
     resources.push({ request: request.url(), target, status: response.status() });
     if (!response.ok()) { await response.dispose(); return deny(route, `GET:${url.pathname}:local-resource-status`); }
-    if (url.pathname === '/alpha') documentLoads++;
-    try { await route.fulfill({ response, body: await response.body() }); } finally { await response.dispose(); }
+    const body = await response.body();
+    if (url.pathname === '/alpha') {
+      if (options.expectedBuildId && !body.toString('utf8').includes(options.expectedBuildId)) {
+        await response.dispose(); return deny(route, 'GET:/alpha:wrong-candidate-build');
+      }
+      documentLoads++;
+    }
+    try { await route.fulfill({ response, body }); } finally { await response.dispose(); }
   });
   await page.goto(`${ORIGIN}/alpha`, { waitUntil: 'domcontentloaded' });
   return { installed: true, documentId: seed.documentId, title: DOCUMENT_TITLE, origin: ORIGIN,
