@@ -68,3 +68,5 @@
 }
 .folderPreview { display: grid; gap: 6px; margin: 8px 0 16px; padding: 10px 12px; border-left: 3px solid #237b70; background: #f1f6f3; overflow-wrap: anywhere; }
 .folderPreview small { color: #536c64; white-space: pre-wrap; }
+.contextHint { color: var(--muted, #5e6d70); font-size: .875rem; line-height: 1.5; overflow-wrap: anywhere; }
+.contextHint small { display: block; font-size: inherit; }

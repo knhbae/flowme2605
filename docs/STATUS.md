@@ -1,5 +1,21 @@
 # Project Status
 
+## 현재 — 메모·날짜 후보 선별 게시·개발계 반영 재개 (active·미완료, 2026-10-04)
+
+[새 목표](./specs/2026-10-04-alpha-memo-date-release/spec.md)·[작업 체크](./specs/2026-10-04-alpha-memo-date-release/tasks.md)·[현재 QA](./specs/2026-10-04-alpha-memo-date-release/qa.md). 사용자가36파일 선별 commit/push/Draft PR/해당 비공개CI/운영 협업/DEV·자동 시작 대상 교체와 복귀를 승인해 재개했다. 05:34 fresh fetch 및 session-start로 기준58df·main관계·소유범위를 대조했다. 정상hook·같은commit CI·exact QA를 통과한 뒤에만 실제DEV를 전환한다. 직전 미커밋 후보 검증과 현재 개발계CP2를 구분한다. 아래 날짜별 ‘현재’는 당시 이력이다.
+
+05:07~05:10 UTC 후속 읽기 확인: Render Git 자동배포/PR preview off, Vercel 후보의 `git.deploymentEnabled:false`·실제 저장소연결 유지·deploy hook 없음. 수동 배포/모든 외부 자동화 차단을 주장하지 않으며 설정은 바꾸지 않았다. 실제allowlist36·stage0·현재DEV clean은 유지한다.
+
+05:14:31 UTC 새goal의 세 연속 턴에서 같은 구체 승인 부재를 확인했고 안전한 필수 준비가 소진돼 goal 도구가blocked를 반환했다. [감사와 재개 조건](./specs/2026-10-04-alpha-memo-date-release/tasks.md#승인-대기-감사--blocked미완료). 준비를 전체 목표 완료로 바꾸거나 게시·DEV 범위를 줄이지 않았다. 새로운 제품/CI 실행은 없으며 기존DEV·원본·계정/DB/Auth/DNS/Tunnel·main/Production을 그대로 보존했다.
+
+## 직전 — 개인 문서 메모·날짜 UX 후보 검증 완료·미반영 (2026-10-04)
+
+[목표와 경계](./specs/2026-10-04-personal-memo-date-ux/spec.md)·[단계 계획](./specs/2026-10-04-personal-memo-date-ux/plan.md)·[요구 대조](./specs/2026-10-04-personal-memo-date-ux/requirements.md)·[작업 체크](./specs/2026-10-04-personal-memo-date-ux/tasks.md)를 따른다. PC01 메모 이어쓰기와 PC02 날짜 구획·개별 날짜·이동을 중심으로 기존 의미를 보존하는 표시 개선과 조작 HTML을 검증한다. 복제·반복·due는 충돌 비교와 후속만 다루며 새 영구 문법·schema·계정/DB·개발계 교체는 포함하지 않는다.
+
+직전 개발계 전환 목표는 10/4 로컬 마감 근거에서 완료를 확인했다. CP1/CP2 전환·복귀 및 CP2 자동 시작 인계를 마쳤으며, 그 운영 증거는 동결 작업본의 ignored `.tmp/manual-core-journeys-release-20261003/approved-ops-20261004/`에만 있다. 이 작업본의 아래 10/3 ‘현재’ 표시는 당시 이력이다. 새 후보는 별도 worktree이며 기존 제공본·빌드를 수정하지 않는다. 이번 후보의 완료/실행 수는 새 작업 체크와 결과를 따른다.
+
+[이번 결과](./specs/2026-10-04-personal-memo-date-ux/results.md)·[QA](./specs/2026-10-04-personal-memo-date-ux/qa.md)·[조작 HTML](./content-audit/2026-10-04-flowme-memo-date-ux-ko.html). 메모 소속·날짜 출처·시간-only 날짜 고정 안내의 좁은 후보를 구현했다. 관련46/46·통합3029/3029·npm2261/2261·HTML 모델14/14·HTML 브라우저35/35·앱 합성32/32·타입584진단0·build 성공, 5해상도 넘침0이다. 새 인계의 날짜 되돌림은 문서 fill/키보드/reload만 확인한 부분 판정이고 PDF/ZIP·기간 해당 사례·선택기·실기기/IME/AT는 미확인이다. 새 정책·실제 계정/DB·게시/CI/DEV 교체/main/Production0·관찰 사용자0. 다음은 별도 승인 후 선별 게시·CI·개발계 반영 판단이며 반복/due 전체를 선행 조건으로 붙이지 않는다.
+
 ## 현재 — CP1 HTTP30 통과, CP2 UC7 보완·재검사 준비 (2026-10-03)
 
 CP1 a073·CP2 4d19673의 필수 CI 네 검사는 성공했다. CP1 CI는758PASS/2FLAKY, CP2는760PASS이며 과거 실패/재시도 기록은 보존한다. 실제 정확 CP1 HTTP30은30PASS/0FAIL/0FLAKY/0SKIP, CP2 첫 HTTP35는30PASS/5FAIL/0FLAKY/0SKIP다. 다섯 크기 모두 CP2 UC7 백업 진입/취소 뒤 초점 복귀에서 실패했다. UC7의 재진입·최종 경계는 미도달이며 통과30개 보호값을35개 전체로 확대하지 않는다.

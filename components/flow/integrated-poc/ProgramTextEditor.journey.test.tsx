@@ -117,7 +117,8 @@ test('folder toolbar hides whole-document actions and routes pending Undo to reg
 test('date form identifies the selected row without displaying its memo or changing date input contract', () => {
   const form = find(node => ts.isJsxElement(node) && node.openingElement.tagName.getText(ast) === 'form' && node.getText(ast).includes('styles.dateTarget'));
   const element = evaluate(form.getText(ast), { styles, row: { title: '선택한 할 일', task: { title: '다른 이름', note: '비공개 메모' } },
-    date: '2026-10-01', time: '09:00', disabled: false, setDate() {}, setTime() {}, applyDate() {} });
+    date: '2026-10-01', time: '09:00', dateContext: null, dateChangeHint: null,
+    disabled: false, setDate() {}, setTime() {}, applyDate() {} });
   const markup = renderToStaticMarkup(element);
   assert.match(markup, /<p class="dateTarget">선택한 할 일<\/p>/);
   assert.doesNotMatch(markup, /비공개 메모|다른 이름/);

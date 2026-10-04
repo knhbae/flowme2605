@@ -1,5 +1,15 @@
 # FlowMe Project Control
 
+## 현재 목표 — 메모·날짜 후보 선별 게시·개발계 반영 (2026-10-04)
+
+[목표·승인 경계](./specs/2026-10-04-alpha-memo-date-release/spec.md)·[계획](./specs/2026-10-04-alpha-memo-date-release/plan.md)·[작업](./specs/2026-10-04-alpha-memo-date-release/tasks.md)·[QA](./specs/2026-10-04-alpha-memo-date-release/qa.md)·[선별 manifest](./specs/2026-10-04-alpha-memo-date-release/manifest.md)·[전환/복귀](./specs/2026-10-04-alpha-memo-date-release/runbook.md). 직전 좁은 후보를 인수해 승인된36파일 선별 게시·같은commit CI/QA·DEV/자동 시작 전환·복귀를 재개했다. 실제 성공은 QA 원장으로 판정한다. 현재 제공CP2·원본dirty·실계정/DB/Auth/DNS/Tunnel 설정·main/Production을 보호한다.
+
+## 직전 격리 목표 — 개인 문서 메모·날짜 UX (2026-10-04)
+
+상태: 좁은 후보 검증 완료·DEV 미반영. [결과](./specs/2026-10-04-personal-memo-date-ux/results.md)·[QA](./specs/2026-10-04-personal-memo-date-ux/qa.md)·[소유 목록](./specs/2026-10-04-personal-memo-date-ux/ownership.md)을 따른다. 새 인계는 부분/NOT_RUN으로 분리했다. 다음 게시/반영 승인을 이번 완료와 합치지 않는다.
+
+[목표](./specs/2026-10-04-personal-memo-date-ux/spec.md)·[요구 대조](./specs/2026-10-04-personal-memo-date-ux/requirements.md)·[단계 계획](./specs/2026-10-04-personal-memo-date-ux/plan.md)·[작업 체크](./specs/2026-10-04-personal-memo-date-ux/tasks.md)·[조작 HTML](./content-audit/2026-10-04-flowme-memo-date-ux-ko.html). 날짜 출처와 메모 owner를 필요한 순간에 보여주는 좁은 후보이며 새로운 메모 문법·날짜 이동 의미를 확정하지 않는다. 세 목적은 계속 선택 경로다. 직전 CP2 개발계 전환 완료와 이 후보의 미반영을 구분한다. 새 게시·CI·개발계 교체는 후보 검증 뒤 별도 승인 범위다.
+
 ## 현재 격리 목표 — 핵심 사용 여정 개선·개발계 반영·시험 준비 (2026-10-03)
 
 [목표·경계](./specs/2026-10-03-alpha-core-journeys-ready/spec.md)·[단계 계획](./specs/2026-10-03-alpha-core-journeys-ready/plan.md)·[작업 체크](./specs/2026-10-03-alpha-core-journeys-ready/tasks.md)·[검증/반영 원장](./specs/2026-10-03-alpha-core-journeys-ready/qa.md)을 따른다. 세 목적은 선택 경로이며 강제 순서/계정 모드가 아니다. P/C/N/F 설계·구현과 합성 검증, CP1/CP2 선별 게시·Draft PR209/210을 마쳤고 CI 실패의 공통 보완을 진행 중이다. 사용자의 착수·게시/CI·개발계 교체 승인은 확인됐으며 계획만 완료한 상태가 아니다. 정확 HTTP QA와 두 개발계 교체/복귀는 미완료다. 이전 goal 문구의 계획-only 제한은 등록 당시 이력으로 보존하고 최신 사용자 승인과 spec을 따른다. 실제 관찰 시험·독립 HTML2·미결 정책·새 DB/Auth/DNS/Tunnel·main merge·Production은 포함하지 않는다.
