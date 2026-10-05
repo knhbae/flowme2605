@@ -163,6 +163,12 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
   }, []);
   const flows = data.public.flows.filter(flow => !flow.archived);
   const flow = selectedFlowId ? data.public.flows.find(row => row.id === selectedFlowId) : undefined;
+  // Returning to a saved copy is navigation, not another import. Read only the
+  // current actor's live documents; missing/trashed sources are not substitutes.
+  const privateSpace = data.spaces[data.activeActorId];
+  const existingCopy = flow && privateSpace?.copies.find(copy => copy.flowId === flow.id
+    && !privateSpace.documentTrash?.[copy.documentId]
+    && [...privateSpace.text.documents, ...privateSpace.text.flows].some(doc => doc.id === copy.documentId));
   const versions = flow ? data.public.versions.filter(row => row.flowId === flow.id).sort((a, b) => b.number - a.number) : [];
   const version = versions.find(row => row.id === (flow ? selectedVersionId ?? (flow.archived ? undefined : state.versionByFlow[flow.id] ?? flow.currentVersionId) : ''));
   const returnedDetail = selectedOutputReturn && outputBase ? resolveProgramPublicOutputReturn(selectedOutputReturn, outputBase, version, selectedItemId) : null;
@@ -223,8 +229,16 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
     update({ transient: result.draft, transientSource: { text: state.pastedText, title: state.pastedTitle, url: state.url } }); setFailed(false); setMessage('');
   };
 
+  const existingCopyReturn = existingCopy && <section className={styles.status} aria-label="내 실행 문서">
+    <button type="button" className={styles.primary} data-testid="program-existing-copy-return" disabled={pending}
+      onClick={() => navigate({ view: 'space', id: existingCopy.documentId })}>내 문서에서 이어보기</button>
+    <p className={styles.muted}>{privateSpace.archivedDocumentIds.includes(existingCopy.documentId)
+      ? '보관한 내 문서를 읽기 전용으로 엽니다.'
+      : '이미 가져온 내 문서를 엽니다. 날짜·진행 기록은 그대로입니다.'}
+      {version && existingCopy.baseVersionId !== version.id && ' 지금 읽는 공개 판본과 내 문서의 원본 판본은 다릅니다.'}</p>
+  </section>;
   if (selectedOutputReturn && (!outputBase || !returnedDetail)) return <section className={styles.page}><h1>출력한 공개 항목을 확인할 수 없습니다</h1><p>이 기기의 같은 주소와 저장된 판본에서만 열 수 있습니다. 다른 항목을 선택하거나 저장하지 않았습니다.</p><button onClick={() => navigate({view:'discover'})}>Flow 목록으로 돌아가기</button></section>;
-  if (selectedFlowId && (!flow || !version || !detail)) return <section className={styles.page}><h1>이 Flow를 찾을 수 없습니다</h1><p>{flow?.archived && !selectedVersionId ? '보관된 Flow는 판본이 지정된 기존 링크에서 읽을 수 있습니다.' : '연결한 Flow 또는 판본이 없습니다. 다른 판본으로 바꾸지 않았습니다.'}</p><button type="button" onClick={() => navigate({ view: 'discover' })}>Flow 목록으로 돌아가기</button></section>;
+  if (selectedFlowId && (!flow || !version || !detail)) return <section className={styles.page}><h1>이 Flow를 찾을 수 없습니다</h1><p>{flow?.archived && !selectedVersionId ? '보관된 Flow는 판본이 지정된 기존 링크에서 읽을 수 있습니다.' : '연결한 Flow 또는 판본이 없습니다. 다른 판본으로 바꾸지 않았습니다.'}</p>{existingCopyReturn}<button type="button" onClick={() => navigate({ view: 'discover' })}>Flow 목록으로 돌아가기</button></section>;
   if (flow && version && detail) {
     const related = data.public.posts.filter(post => !post.deleted && post.flowId === flow.id);
     const derived = flow.derivedFrom ? data.public.versions.find(row => row.id === flow.derivedFrom?.versionId) : undefined;
@@ -237,6 +251,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
         <h1>{version.title}</h1><p>{excerpt(version.summary)}</p>
         <div className={styles.tags}>{flow.situations.map(tag => <span key={tag}>{tag}</span>)}</div>
       </header>
+      {existingCopyReturn}
         <section className={styles.source} aria-label="출처와 판본"><div className={styles.row}><strong>{version.source.label}</strong>
           {version.source.url && <a href={version.source.url} target="_blank" rel="noreferrer noopener">원문 열기 ↗</a>}</div>
           <p className={styles.muted}>출처 확인 기록: {version.source.checkedAt ?? '없음'} · 지금 원문을 다시 확인한 결과는 아닙니다.</p>
@@ -250,8 +265,12 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
       <div className={styles.detailGrid}><div>
         <section aria-labelledby={`${uid}-items`}><div className={styles.row}><h2 id={`${uid}-items`}>{flow.archived ? '보관된 항목' : '가져갈 항목'} <span>{flow.archived ? version.items.length : `${detail.selectedItemIds.length}/${version.items.length}`}</span></h2>{!flow.archived && <button type="button" disabled={pending} onClick={() => patchDetail({ selectedItemIds: detail.selectedItemIds.length === version.items.length ? [] : version.items.map(item => item.id) })}>{detail.selectedItemIds.length === version.items.length ? '선택 해제' : '전체 선택'}</button>}</div>
           {selectedItemId && !version.items.some(item => item.id === selectedItemId) && <p className={styles.notice} role="status">이 판본에서 연결된 항목을 찾을 수 없습니다. 다른 항목으로 바꾸지 않고 지정된 판본을 표시합니다.</p>}
-          <ol className={styles.items}>{version.items.map(item => <li key={item.id} id={`program-public-item-${encodeURIComponent(version.id)}-${encodeURIComponent(item.id)}`} tabIndex={-1} aria-current={selectedItemId === item.id ? 'location' : undefined}><label className={styles.itemChoice}>{!flow.archived && <input type="checkbox" disabled={pending} checked={detail.selectedItemIds.includes(item.id)} onChange={event => patchDetail({ selectedItemIds: event.target.checked ? [...detail.selectedItemIds, item.id] : detail.selectedItemIds.filter(id => id !== item.id) })} />}<span><strong>{item.title}</strong><small>{item.schedule.kind === 'recurring' ? programRecurringScheduleLabel(item.schedule) : [item.schedule.kind === 'relative' ? `기준일 ${item.schedule.days === 0 ? '당일' : `${item.schedule.days > 0 ? '+' : ''}${item.schedule.days}일`}` : item.schedule.kind === 'fixed' ? item.schedule.date : '날짜 미정', programOrdinaryTimingLabel(item.schedule.timing)].filter(Boolean).join(' · ')}</small></span></label>
-            {(item.description || item.completionCriteria || item.subchecks.length > 0) && <details className={styles.itemDetails}><summary>방법과 완료 기준</summary>{item.description && <p className={styles.pre}>{item.description}</p>}{item.completionCriteria && <p><strong>완료 기준</strong><br />{item.completionCriteria}</p>}{item.subchecks.length > 0 && <ul>{item.subchecks.map(check => <li key={check.id}>{check.title}</li>)}</ul>}</details>}</li>)}</ol>
+          <ol className={styles.items}>{version.items.map(item => {
+            const classifiedSource = item.sourceUrl ? classifyProgramUrl(item.sourceUrl, []) : null;
+            const sourceUrl = classifiedSource && classifiedSource.kind !== 'invalid' ? item.sourceUrl!.trim() : null;
+            return <li key={item.id} id={`program-public-item-${encodeURIComponent(version.id)}-${encodeURIComponent(item.id)}`} tabIndex={-1} aria-current={selectedItemId === item.id ? 'location' : undefined}><label className={styles.itemChoice}>{!flow.archived && <input type="checkbox" disabled={pending} checked={detail.selectedItemIds.includes(item.id)} onChange={event => patchDetail({ selectedItemIds: event.target.checked ? [...detail.selectedItemIds, item.id] : detail.selectedItemIds.filter(id => id !== item.id) })} />}<span><strong>{item.title}</strong><small>{item.schedule.kind === 'recurring' ? programRecurringScheduleLabel(item.schedule) : [item.schedule.kind === 'relative' ? `기준일 ${item.schedule.days === 0 ? '당일' : `${item.schedule.days > 0 ? '+' : ''}${item.schedule.days}일`}` : item.schedule.kind === 'fixed' ? item.schedule.date : '날짜 미정', programOrdinaryTimingLabel(item.schedule.timing)].filter(Boolean).join(' · ')}</small></span></label>
+              {(item.description || item.completionCriteria || item.subchecks.length > 0 || sourceUrl) && <details className={styles.itemDetails}><summary>방법과 완료 기준</summary>{item.description && <p className={styles.pre}>{item.description}</p>}{sourceUrl && <p><a href={sourceUrl} target="_blank" rel="noreferrer noopener" aria-label={`${item.title} 원문 열기`}>항목 원문 열기 ↗</a></p>}{item.completionCriteria && <p><strong>완료 기준</strong><br />{item.completionCriteria}</p>}{item.subchecks.length > 0 && <ul>{item.subchecks.map(check => <li key={check.id}>{check.title}</li>)}</ul>}</details>}</li>;
+          })}</ol>
         </section>
         <section className={styles.related}><div className={styles.row}><h2>관련 경험과 질문</h2><button type="button" onClick={() => navigate({ view: 'community' })}>커뮤니티 보기</button></div>{related.length ? related.map(post => <button className={styles.relatedPost} type="button" key={post.id} onClick={() => navigate({ view: 'community', id: post.id })}>{post.title}<small>{storageScope === 'account' ? '공개 글' : '로컬 PoC 글'} · {data.actors.find(actor => actor.id === post.authorId)?.name ?? (storageScope === 'account' ? '작성자' : '예시 참여자')}</small></button>) : <p className={styles.muted}>아직 연결된 글이 없습니다. 경험을 쓰지 않아도 이 Flow를 사용할 수 있습니다.</p>}</section>
       </div><aside className={styles.output} aria-labelledby={`${uid}-output`}>
