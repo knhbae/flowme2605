@@ -1,6 +1,5 @@
-/* Generated from v11 20707fa0/editor.css; source SHA256 fa41f20bac8614f2d2e8b17ca191e1aa39a6e85270bcc0975fa4ab91a3852637.
- * Regenerate: node scripts/personal-workspace-poc/program-vendor-text.mjs
- * Only core source is reused; no historical application, HTML or storage adapter. */
+/* Current runtime owner: lib/flow/integrated-poc/vendor/text-editor.css.
+ * Initially adapted from v11 20707fa0, then maintained with text-editor.cjs. */
 /* Static prototype: one native textarea and a presentation-only mirror. */
 .tle-root {
   --tle-line: 44px;
@@ -177,6 +176,15 @@
 }
 .tle-root[data-mode="live"].tle-composing .tle-line-composition { visibility: hidden; }
 .tle-plus[hidden], .tle-row-menu[hidden], .tle-fold-toggle[hidden], .tle-check-hit[hidden], .tle-row-open[hidden] { display: none !important; }
+/* Reading owns formatted wrapping and height; native editing keeps the RAW
+ * ruler above. The same textarea stays focusable and retains native Undo. */
+.tle-root.tle-reading-view .tle-textarea { opacity: 0; pointer-events: none; }
+.tle-root.tle-reading-view .tle-viewport { overflow: auto; pointer-events: auto; }
+.tle-root.tle-reading-view .tle-presentation { position: relative; pointer-events: auto; }
+.tle-root:is(.tle-reading-view, .tle-folded-view) .tle-line-task { padding-left: var(--tle-task-prefix, 0px); }
+.tle-root:is(.tle-reading-view, .tle-folded-view) .tle-line-task .tle-hidden-syntax { position: absolute; top: 0; left: 0; max-width: 100%; overflow: hidden; white-space: pre; }
+.tle-root:is(.tle-reading-view, .tle-folded-view) :is(.tle-task-title, .tle-task-title-complete) { display: block; }
+.tle-root:is(.tle-reading-view, .tle-folded-view) .tle-indent-guide { height: 100%; }
 .tle-root.tle-folded-view .tle-textarea { visibility: hidden; pointer-events: none; }
 .tle-root.tle-folded-view .tle-viewport { visibility: visible; overflow: auto; pointer-events: auto; }
 .tle-root.tle-folded-view .tle-presentation { position: relative; pointer-events: auto; }
