@@ -44,16 +44,20 @@ test('closed mobile management shares a row while expanded management keeps full
     if (rule.selector === '.management[open]') rule.walkDecls('flex', d => { open.push(d.value); });
     if (rule.selector === '.management') rule.walkDecls('flex-basis', d => { forced.push(d.value); });
   });
-  assert.deepEqual(closed, ['1 1 auto']);
+  assert.deepEqual(closed, ['0 1 auto']);
   assert.deepEqual(open, ['1 0 100%']);
   assert.deepEqual(forced, []);
 });
 
 test('short wide shell keeps warning visible in normal grid flow without shrinking action targets', () => {
+  const wide = css.nodes.find(node => node.type === 'atrule' && node.name === 'media' && node.params === '(min-width: 761px)') as postcss.AtRule;
   const short = css.nodes.find(node => node.type === 'atrule' && node.name === 'media' && node.params === '(min-width: 761px) and (max-height: 500px)') as postcss.AtRule;
+  assert.ok(wide);
   assert.ok(short);
+  assert.ok(css.nodes.indexOf(wide) < css.nodes.indexOf(short));
   const declarations = new Map<string, string[]>();
-  short.walkRules(rule => rule.walkDecls(d => {
+  // Both media blocks apply to short wide screens, in this source order.
+  for (const block of [wide, short]) block.walkRules(rule => rule.walkDecls(d => {
     const key = `${rule.selector}:${d.prop}`;
     declarations.set(key, [...(declarations.get(key) ?? []), d.value]);
     if (rule.selector === '.notice' && d.prop === 'display') assert.notEqual(d.value, 'none');
