@@ -27,7 +27,7 @@ test('MX01 actual quick-task callback keeps an existing document but puts new It
   const before=M.raw(M.getDocument(data.spaces[data.activeActorId].text,doc.result)!);
   const node=find(n=>ts.isFunctionDeclaration(n)&&n.name?.text==='quickTask');let reset=0;
   const callback=evaluate(`(${node.getText(ast)})`,{FormData:class {get(key:string){return key==='title'?'생활 할 일':'2026-10-06';}},
-    actorId:data.activeActorId,folderId:b.result,base,createProgramDocument,addProgramQuickTask,
+    actorId:data.activeActorId,folderId:b.result,collectionMode:undefined,base,createProgramDocument,addProgramQuickTask,
     run:async(_label:string,build:(current:ProgramData)=>ProgramTransition<string>)=>{const result=accept(build(data));data=result.data;return{ok:true,result:result.result};}});
   await callback({preventDefault(){},currentTarget:{reset(){reset++;}}});
   const rows=programExecutionTasks(data.spaces[data.activeActorId],{period:'today',date:'2026-10-06',folderId:b.result});

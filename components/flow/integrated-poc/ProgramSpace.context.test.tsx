@@ -152,7 +152,7 @@ test('period row renders actual Flow folder path, document and time while its or
   const f = fixture(), space = f.data.spaces[f.data.activeActorId], task = { ...M.tasks(space.text)[0], scopeId: 'flow-owner' };
   space.text.flows.push({ ...space.text.documents[0], id: 'flow-owner', folderId: 'parent', private: true, sourceVersion: 'v1' });
   const folderOptions = actualVariable('folderOptions', { space });
-  const taskFolderPath = actualVariable('taskFolderPath', { space, folderOptions });
+  const taskFolderPath = actualVariable('taskFolderPath', { space, folderOptions, collectionMode: undefined });
   assert.equal(taskFolderPath(task), '생활');
   assert.equal(taskFolderPath({ ...task, scopeId: 'child' }), '생활 / 준비');
   const node = find(node => ts.isJsxElement(node) && node.openingElement.tagName.getText(ast) === 'button' && node.openingElement.attributes.properties.some(attr => ts.isJsxAttribute(attr) && attr.name.getText(ast) === 'className' && attr.initializer?.getText(ast) === '{styles.taskTitle}'));

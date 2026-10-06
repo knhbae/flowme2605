@@ -40,7 +40,7 @@ function listHarness(rows: ProgramOrderedExecutionRow[], text: ReturnType<typeof
   const opened: string[][] = [], moved: unknown[][] = [], dropped: string[][] = [], written: string[][] = [];
   const space = { text }, nativeDrag: { current: string | null } = { current: null };
   const folderOptions = actualVariable('folderOptions', { space });
-  const taskFolderPath = actualVariable('taskFolderPath', { space, folderOptions });
+  const taskFolderPath = actualVariable('taskFolderPath', { space, folderOptions, collectionMode: undefined });
   const node = find(node => ts.isJsxElement(node) && node.openingElement.tagName.getText(ast) === 'ul'
     && node.openingElement.attributes.properties.some(attr => ts.isJsxAttribute(attr) && attr.name.getText(ast) === 'className' && attr.initializer?.getText(ast) === '{styles.tasks}'));
   const element = evaluate(node.getText(ast), {

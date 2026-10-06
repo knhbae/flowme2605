@@ -38,7 +38,7 @@ function restorationHarness(owner: 'app' | 'alpha', timing: 'during-navigation' 
   const documentsRef = { current: [...data.spaces[actorId].text.documents, ...data.spaces[actorId].text.flows] };
   const doc = M.getDocument(data.spaces[actorId].text, to)!;
   const renderedLine = { offsetTop: 800, offsetHeight: 44 };
-  const textarea = { value: M.raw(doc), readOnly: false, selectionStart: 17, selectionEnd: 17, scrollTop: 123,
+  const textarea = { value: M.raw(doc), readOnly: false, selectionStart: 17, selectionEnd: 17, scrollTop: 123, clientHeight: 240,
     getClientRects: () => [{}], setSelectionRange(start: number, end: number) { this.selectionStart = start; this.selectionEnd = end; },
     closest: () => ({ querySelectorAll: () => doc.lines.map(() => renderedLine) }), scrollIntoView: () => calls.push('reveal') };
   let appRestore: (() => void) | undefined;
@@ -101,5 +101,9 @@ test('Alpha explicit origin schedules exactly one native restore without adding 
   const h = restorationHarness('alpha'); await h.open(h.to, h.task.id);
   assert.equal(h.frames.length, 1); h.flush();
   assert.deepEqual(h.calls, ['navigate', 'native-focus', 'reveal']);
-  assert.equal(h.textarea.scrollTop, 756); assert.equal(JSON.stringify(h.data), h.before);
+  // Retain context above the target while placing its row above the viewport's
+  // 44px bottom inset, using the same explicit geometry as a real textarea.
+  assert.equal(h.textarea.scrollTop, 648);
+  assert.equal(800 + 44 - h.textarea.scrollTop, h.textarea.clientHeight - 44);
+  assert.equal(JSON.stringify(h.data), h.before);
 });
