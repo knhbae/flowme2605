@@ -8,6 +8,8 @@ export interface TextScopeBinding { kind: 'scope'; docId: string; lineId: string
 export interface TextTaskBinding { kind: 'task'; docId: string; lineId: string; taskId: string; dateMode: 'keep' | 'apply' }
 export type TextBinding = TextScopeBinding | TextTaskBinding;
 export interface TextProgressRecord { taskId: string; date: string; percent: number }
+/** Ephemeral UI diagnostic; never part of the persisted workspace. */
+export interface TextProgressCheckConflict { lineId: string; targetId: string }
 export interface TextWorkspaceState {
   version: 11;
   documents: TextDocument[];
@@ -86,6 +88,7 @@ export interface TextWorkspaceModel {
   editText(state: TextWorkspaceState, docId: string, text: string, options?: { progressDate?: string }): TextWorkspaceState;
   editTextResult(state: TextWorkspaceState, docId: string, text: string, options?: { progressDate?: string }): {
     state: TextWorkspaceState; reason: 'identity-ambiguous' | 'invalid-format' | 'progress-check-conflict' | 'blocked' | null;
+    progressConflict?: TextProgressCheckConflict;
   };
   addDocument(state: TextWorkspaceState, input: { title: string; folder?: string; folderId?: string }): TextWorkspaceState;
   addTask(state: TextWorkspaceState, input: { docId: string; title: string; date?: string | null; scopeId?: string }): TextWorkspaceState;

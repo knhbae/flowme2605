@@ -38,6 +38,48 @@ const effect = (part: string) => (find(n => ts.isCallExpression(n) && n.expressi
 const shell = find(n => ts.isFunctionDeclaration(n) && n.name?.text === 'AlphaWorkspace') as ts.FunctionDeclaration;
 const renderExpression = shell.body!.statements.filter(ts.isReturnStatement).at(-1)!.expression!.getText(ast);
 
+test('Flow creator entry requests a UI choice without creating a draft and passes explicit continue/cancel callbacks', () => {
+  const h=harness(),ctx=h.context,calls:any[]=[];
+  ctx.creatorSelection='existing-draft';ctx.navigate=(...args:any[])=>{calls.push(args);};
+  ctx.openCreatorEntry=evaluate(`(${declaration('openCreatorEntry')})`,ctx);
+  ctx.seen={discovery:true,community:false};ctx.creatorSeen=true;
+  Object.assign(ctx,{discoverySelection:undefined,discoveryState:{},useVersion:()=>{},startText:()=>{},setDiscoveryState:()=>{}});
+  ctx.destination={view:'discover'};ctx.creatorEntryReturn.current={view:'discover'};
+  let tree=nodes(h.render());tree.find(node=>node.type==='program-discovery')!.props.onCreateFlow();
+  assert.deepEqual(calls,[[{view:'creator',id:'existing-draft'},true]]);
+  ctx.creatorEntryChoices=true;tree=nodes(h.render());
+  const creator=tree.find(node=>node.type==='creator-workspace')!;
+  assert.equal(creator.props.entryChoiceRequested,true);creator.props.onEntryChoiceResolved();
+  assert.equal(ctx.creatorEntryChoices,false);assert.equal(h.calls.includes('mutation'),false);
+  creator.props.onEntryChoiceCancelled();assert.deepEqual(calls.at(-1),[{view:'discover'}]);
+  ctx.destination={view:'activity'};tree=nodes(h.render());
+  tree.find(node=>node.type==='button'&&text(node.props.children)==='Flow 만들기')!.props.onClick();
+  assert.deepEqual(calls.at(-1),[{view:'creator',id:'existing-draft'},true]);
+});
+
+test('repeated creator entry while choosing keeps the original cancel destination without navigating again', () => {
+  const h=harness(),ctx=h.context;ctx.creatorEntryChoices=true;
+  ctx.creatorEntryReturn.current={view:'discover'};let navigations=0;ctx.navigate=()=>{navigations++;};
+  evaluate(`(${declaration('openCreatorEntry')})`,ctx)();
+  assert.equal(navigations,0);assert.deepEqual(ctx.creatorEntryReturn.current,{view:'discover'});
+});
+
+test('creator entry UI choices open only after existing navigation input guards succeed', async () => {
+  const h=harness(),ctx=h.context;
+  ctx.destinationRef.current={view:'discover'};ctx.creatorEntryReturn.current=null;
+  ctx.window.location={hash:''};ctx.window.history={pushState:()=>{}};ctx.programLocation=programLocation;
+  ctx.setSeen=(fn:any)=>{ctx.seen=fn(ctx.seen);};ctx.setDiscoverySelection=()=>{};
+  ctx.captureInput=()=>true;ctx.allEditors=()=>[{lockInput:()=>()=>{},flushAll:async()=>false}];
+  ctx.navigate=evaluate(`(${declaration('navigate')})`,ctx);
+  await ctx.navigate({view:'creator',id:'existing-draft'},true);
+  assert.equal(ctx.creatorEntryChoices,false);assert.equal(ctx.creatorEntryReturn.current,null);
+  ctx.allEditors=()=>[];ctx.navigate=evaluate(`(${declaration('navigate')})`,ctx);await ctx.navigate({view:'creator',id:'existing-draft'},true);
+  assert.equal(ctx.creatorEntryChoices,true);assert.equal(ctx.catalogDetailOpen,false);
+  assert.deepEqual(ctx.creatorEntryReturn.current,{view:'discover'});
+  ctx.navigate=evaluate(`(${declaration('navigate')})`,ctx);await ctx.navigate({view:'space'});assert.equal(ctx.creatorEntryChoices,false);
+  assert.equal(h.calls.includes('mutation'),false);
+});
+
 test('pending modal recovery invokes exact same-request lookup without closing or discarding input', async () => {
   const calls: string[] = [];
   const context = { pending: true, snapshot: { status: 'recovery-required', busy: false }, external: false, styles: { problem: 'problem' },
@@ -116,7 +158,8 @@ function harness() {
     creatorEditors: { current: null }, creatorRecovery: { current: null }, parkedCreator: { current: [] }, activeCreator: { current: null },
     creatorRecoveries: null, creatorSeen: false, creatorSelection: undefined, catalogDetailOpen: false, setCatalogDetailOpen: (value: boolean) => { context.catalogDetailOpen = value; }, destinationRef: { current: { view: 'space' } },
     setCreatorRecoveries: (value: unknown) => { context.creatorRecoveries = value; }, setCreatorSeen: (value: unknown) => { context.creatorSeen = value; }, setCreatorSelection: (value: unknown) => { context.creatorSelection = value; },
-    navigate: async () => {}, captureCreatorRoute: () => () => false, restoreCreator: async () => {}, canonicalJson, detached, createAlphaCreatorRecovery,
+    creatorEntryChoices:false,creatorEntryReturn:{current:null},setCreatorEntryChoices:(value:boolean)=>{context.creatorEntryChoices=value;},
+    openCreatorEntry:()=>evaluate(`(${declaration('openCreatorEntry')})`,context)(),navigate: async () => {}, captureCreatorRoute: () => () => false, restoreCreator: async () => {}, canonicalJson, detached, createAlphaCreatorRecovery,
     setSnapshot: (value: unknown) => { context.snapshot = value; calls.push('snapshot'); }, setData: (value: unknown) => { context.data = value; calls.push('data'); },
     setOutput: (value: unknown) => { context.output = value; }, setRecoveries: (value: unknown) => { context.recoveries = value; },
     setStorageError: (value: unknown) => { context.storageError = value; }, setExternal: (value: unknown) => { context.external = value; },

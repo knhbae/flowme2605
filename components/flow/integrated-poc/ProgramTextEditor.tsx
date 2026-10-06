@@ -2,7 +2,7 @@
 
 import React, { useEffect, useId, useRef, useState } from 'react';
 import nativeEditor from '@/lib/flow/integrated-poc/vendor/text-editor.cjs';
-import { textEditorRows, textWorkspaceModel as M, type TextMoveSelection, type TextMoveTarget, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
+import { textEditorRows, textWorkspaceModel as M, type TextMoveSelection, type TextMoveTarget, type TextProgressCheckConflict, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
 import '@/lib/flow/integrated-poc/vendor/text-editor.css';
 import styles from './ProgramTextEditor.module.css';
 import { planProgramDateBlockOrder, type DateBlockOrderPlan, type DateOrderSelection } from '@/lib/flow/integrated-poc/date-block-order';
@@ -66,6 +66,7 @@ export interface ProgramTextDraftState {
   saving: boolean;
   invalid: boolean;
   error: string;
+  progressConflict?: TextProgressCheckConflict;
 }
 
 /** Wrap only modal endpoints; intermediate controls retain their native Tab behavior. */
@@ -110,19 +111,20 @@ export function createProgramTextDraft(
     rejectRaw(raw: string) {
       privateTaskSchedule = undefined;
       inputGeneration++;
-      state = { ...state, raw, invalid: true, dirty: true, error: '문서 문맥이 바뀌어 순서를 반영하지 않았습니다. 입력은 남아 있습니다.' }; report();
+      state = { ...state, raw, invalid: true, dirty: true, progressConflict: undefined, error: '문서 문맥이 바뀌어 순서를 반영하지 않았습니다. 입력은 남아 있습니다.' }; report();
     },
     updateRaw(raw: string, progressDate: string) {
       privateTaskSchedule = undefined;
       inputGeneration++;
       const baseRaw = M.raw(M.getDocument(state.committed, docId));
-      const edit = raw === baseRaw ? { state: state.committed, reason: null }
+      const edit: ReturnType<typeof M.editTextResult> = raw === baseRaw ? { state: state.committed, reason: null }
         : M.editTextResult(state.working, docId, raw, { progressDate });
       const next = edit.state;
       const protectedChange = !validateWorkspace(next);
       const invalid = protectedChange || M.raw(M.getDocument(next, docId)) !== raw;
       state = { ...state, raw, working: invalid ? state.working : next, invalid,
         dirty: state.saving || raw !== baseRaw || next !== state.committed,
+        progressConflict: !protectedChange && invalid && edit.reason === 'progress-check-conflict' ? edit.progressConflict : undefined,
         error: protectedChange ? '보관·휴지통·복구 문서나 반복 규칙·보류 항목의 원문 표시는 여기서 바꿀 수 없습니다. 해당 줄을 원래대로 되돌리면 일반 할 일과 메모를 계속 편집할 수 있습니다. 입력은 보관 중입니다.'
           : !invalid ? '' : edit.reason === 'identity-ambiguous'
             ? '여러 줄의 변경을 기존 항목과 연결하지 못해 반영하지 않았습니다. 제목 수정과 줄 이동은 나누고, 여러 제목은 한 줄씩 수정해 저장해 주세요. 입력은 그대로 남아 있습니다.'
@@ -137,19 +139,19 @@ export function createProgramTextDraft(
     apply(next: TextWorkspaceState, nextLabel: string, schedule?: ProgramTextCommitOptions['privateTaskSchedule']) {
       if (state.invalid || state.saving || !M.validate(next) || !validateWorkspace(next) || next === state.working) return false;
       inputGeneration++;
-      state = { ...state, working: next, raw: M.raw(M.getDocument(next, docId)), dirty: true, error: '' };
+      state = { ...state, working: next, raw: M.raw(M.getDocument(next, docId)), dirty: true, error: '', progressConflict: undefined };
       label = nextLabel; groupId = undefined; privateTaskSchedule = schedule; report(); return true;
     },
     synchronize(next: TextWorkspaceState) {
       if (state.dirty || state.saving || state.committed === next || programSame(state.committed, next)) return false;
-      state = { ...state, committed: next, working: next, raw: M.raw(M.getDocument(next, docId)), error: '' };
+      state = { ...state, committed: next, working: next, raw: M.raw(M.getDocument(next, docId)), error: '', progressConflict: undefined };
       report(); return true;
     },
     acceptConfirmedSave(before: TextWorkspaceState, next: TextWorkspaceState) {
       if (!submitted || !state.dirty || state.saving || state.invalid || inputGeneration !== submitted.generation
         || !programSame(submitted.before, before) || !programSame(submitted.next, next)
         || !programSame(state.working, next) || state.raw !== M.raw(M.getDocument(next, docId))) return false;
-      state = { ...state, committed: next, working: next, dirty: false, error: '' };
+      state = { ...state, committed: next, working: next, dirty: false, error: '', progressConflict: undefined };
       submitted = null; report(); return true;
     },
     discard(next: TextWorkspaceState) {
@@ -171,7 +173,7 @@ export function createProgramTextDraft(
           const insertedProperty = schedule && [...next.documents, ...next.flows].some(doc => doc.lines.some(line => !oldIds.has(line.id)));
           let confirmation: Promise<TextWorkspaceState | null> | undefined;
           submitted = { before: state.committed, next, generation: inputGeneration };
-          state = { ...state, saving: true, error: '' }; report();
+          state = { ...state, saving: true, error: '', progressConflict: undefined }; report();
           let accepted = false;
           try { accepted = await commit(next, label, { groupId, expectedWorkspace: state.committed,
             ...(schedule ? { privateTaskSchedule: schedule } : {}),
@@ -494,6 +496,24 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     setPercent(String(progress?.percent ?? (row.done ? 100 : 0)));
     setMessage(''); setPanel({ kind, lineId });
   }
+  function progressConflictToView() {
+    const state = draftRef.current?.getState(), conflict = state?.progressConflict;
+    if (!state?.invalid || !conflict || state.saving || inputLockedRef.current || propsRef.current.readOnly
+      || composingRef.current || regionPendingRef.current || textArea()?.value !== state.raw) return null;
+    const row = currentRow(conflict.lineId);
+    if (!row || row.progressTargetId !== conflict.targetId) return null;
+    const access = propsRef.current.taskAccess?.(conflict.targetId);
+    if (propsRef.current.taskAccess && (!access || access.kind !== 'active' || access.reason
+      || access.lineId !== conflict.targetId || !access.documentId
+      || !M.getDocument(state.working, access.documentId)?.lines.some(line => line.id === conflict.targetId))) return null;
+    if (row.isReference && !access) return null;
+    return conflict;
+  }
+  function showProgressConflict() {
+    // Viewing never resolves invalid input, applies progress or calls a writer.
+    const conflict = progressConflictToView();
+    if (conflict) openProgress(conflict.lineId);
+  }
   function handleAction(action: nativeEditor.Action) {
     if (action.type === 'move-cancel') { cancelMove(); return; }
     if (actionsDisabled()) return false;
@@ -785,6 +805,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (!current || current.folders.length) return;
     openFolderPanel(current.lineId, current.title);
   }
+  const progressConflict = progressConflictToView();
   return <section className={styles.editor} aria-label="개인 문서 편집" data-dirty={draft.dirty ? 'true' : 'false'} onKeyDownCapture={event => {
     if ((event.ctrlKey || event.metaKey) && ['z', 'y'].includes(event.key.toLowerCase()) && (inputLockedRef.current || draftRef.current?.getState().saving)) { event.preventDefault(); event.stopPropagation(); }
     if (event.key === 'Escape' && (panel || movingRef.current)) { event.preventDefault(); event.stopPropagation(); closePanel(); cancelMove(); }
@@ -811,6 +832,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       <span className={styles.status} role="status" aria-live="polite">{props.readOnly ? props.disabledReason || '읽기 전용' : inputLocked ? '변경을 마치는 중… 입력을 잠시 보호합니다.' : draft.saving ? '저장 중…' : draft.error ? '저장되지 않은 입력' : draft.dirty || !!props.folderId && regionPending ? '편집 중' : '저장됨'}</span>
     </div>
     {draft.error && <div className={styles.error} role="alert"><p>{draft.error}</p><div>
+      {progressConflict && <button type="button" onClick={showProgressConflict}>진행 조절 보기</button>}
       <button type="button" disabled={!!props.readOnly || draft.invalid || draft.saving} onClick={() => { void saveNow(); }}>다시 저장</button>
       <button type="button" onClick={downloadDraft}>입력한 원문 받기</button>
       <button type="button" disabled={inputLocked || draft.saving} onClick={() => { if (draftRef.current?.discard(propsRef.current.workspace)) { orderHistoryRef.current.clear(); orderPositionsRef.current = []; orderEpochRef.current++; editorRef.current?.setValue(draftRef.current.getState().raw, { preserveSelection: true }); } }}>저장본으로 되돌리기</button>

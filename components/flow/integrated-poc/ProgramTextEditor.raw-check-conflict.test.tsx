@@ -33,6 +33,8 @@ for (const [percent, marker] of [[100, ' '], [20, 'x']] as const) {
     const input = M.raw(f.state.documents[0]).replace(/^(- \[)[ xX](\])/, `$1${marker}$2`);
     const edit = M.editTextResult(f.state, f.docId, input, { progressDate: TODAY });
     assert.equal(edit.reason, 'progress-check-conflict');
+    assert.deepEqual(edit.progressConflict, { lineId: f.taskId, targetId: f.taskId });
+    assert.equal('progressConflict' in edit.state, false);
     assert.equal(edit.state, f.state); assert.equal(M.editText(f.state, f.docId, input), f.state);
     assert.equal(JSON.stringify(f.state), before);
   });
@@ -40,11 +42,14 @@ for (const [percent, marker] of [[100, ' '], [20, 'x']] as const) {
 
 test('draft preserves rejected raw input, explains the supported recovery and calls no writer', async () => {
   const f = fixture(100); let writes = 0;
-  const input = M.raw(f.state.documents[0]).replace('[x]', '[ ]');
+  const input = M.raw(f.state.documents[0]).replace('[x]', '[ ]').replace('보존할 메모', '함께 입력한 메모');
+  assert.match(input, /함께 입력한 메모/);
   const draft = createDraft(f.state, f.docId, async () => { writes++; return true; }, () => {});
   assert.equal(draft.updateRaw(input, TODAY), false); assert.equal(await draft.save(), false);
   assert.equal(writes, 0); assert.equal(draft.getState().raw, input);
   assert.equal(draft.getState().working, f.state); assert.equal(draft.getState().invalid, true);
+  assert.deepEqual(draft.getState().progressConflict, { lineId: f.taskId, targetId: f.taskId });
+  assert.deepEqual(draft.getState().working.progressRecords, f.state.progressRecords);
   assert.match(draft.getState().error, /진행 기록과 다른 체크 표시/);
   assert.match(draft.getState().error, /체크 표시를 되돌린 뒤 ‘진행 조절’/);
   assert.match(draft.getState().error, /입력은 남아 있습니다/);
@@ -78,7 +83,8 @@ test('restoring only the marker preserves other typed input and allows normal pr
   assert.equal(writes, 0);
   assert(draft.updateRaw(input.replace('[ ]', '[x]'), TODAY)); assert(await draft.save());
   assert.equal(M.tasks(draft.getState().committed)[0].note, '새로 입력한 메모');
-  assert.equal(draft.getState().error, '');
+  assert.equal(draft.getState().error, ''); assert.equal(draft.getState().progressConflict, undefined);
+  assert.equal(M.tasks(draft.getState().committed)[0].id, f.taskId);
   assert(draft.apply(M.recordProgress(draft.getState().working, f.taskId, TODAY, 0), '진행 저장'));
   assert(await draft.save()); assert.equal(writes, 2);
   assert.equal(M.tasks(draft.getState().committed)[0].done, false);
@@ -90,4 +96,35 @@ test('compatible literal edit and generic rejection keep their previous meanings
   const edited = M.editTextResult(f.state, f.docId, M.raw(f.state.documents[0]).replace('격리 할 일', '제목 수정'));
   assert.equal(edited.reason, null); assert.deepEqual(edited.state.progressRecords, f.state.progressRecords);
   assert.equal(M.editTextResult(f.state, 'missing', '').reason, 'blocked');
+});
+
+test('conflict diagnostic clears on format rejection, identity ambiguity, raw rejection and discard', () => {
+  const f = fixture(100), original = M.raw(f.state.documents[0]);
+  const draft = createDraft(f.state, f.docId, async () => { throw Error('writer must not run'); }, () => {});
+  const conflict = original.replace('[x]', '[ ]');
+  for (const clear of [
+    () => draft.updateRaw(original.replace('[x]', '[101%]'), TODAY),
+    () => draft.rejectRaw(conflict),
+    () => draft.discard(f.state),
+  ]) {
+    assert.equal(draft.updateRaw(conflict, TODAY), false); assert(draft.getState().progressConflict);
+    clear(); assert.equal(draft.getState().progressConflict, undefined);
+  }
+  let ambiguous = M.addDocument(createEmptyTextWorkspace(), { title: 'Synthetic ambiguous identity' });
+  const id = ambiguous.documents[0].id;
+  ambiguous = M.editText(ambiguous, id, '- [ ] Parent @2026-09-24\n  - [ ] Child');
+  const targetId = M.tasks(ambiguous)[0].id;
+  ambiguous = M.recordProgress(ambiguous, targetId, TODAY, 100);
+  const controller = createDraft(ambiguous, id, async () => { throw Error('writer must not run'); }, () => {});
+  const raw = M.raw(ambiguous.documents[0]);
+  assert.equal(controller.updateRaw(raw.replace('[x]', '[ ]'), TODAY), false); assert(controller.getState().progressConflict);
+  const input = raw.replace(' @2026-09-24', '').replace('  - [ ] Child', '- [ ] Child');
+  assert.equal(M.editTextResult(ambiguous, id, input, { progressDate: TODAY }).reason, 'identity-ambiguous');
+  assert.equal(controller.updateRaw(input, TODAY), false); assert.equal(controller.getState().progressConflict, undefined);
+});
+
+test('a workspace protection rejection does not expose progress conflict metadata', () => {
+  const f = fixture(100), draft = createDraft(f.state, f.docId, async () => { throw Error('writer must not run'); }, () => {}, () => false);
+  assert.equal(draft.updateRaw(M.raw(f.state.documents[0]).replace('[x]', '[ ]'), TODAY), false);
+  assert.equal(draft.getState().progressConflict, undefined);
 });

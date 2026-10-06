@@ -9,6 +9,9 @@ import vm from 'node:vm';
 import React from 'react';
 import ts from 'typescript';
 import { createProgramData } from '../../../lib/flow/integrated-poc/program-data';
+import { buildProgramCatalog } from '../../../lib/flow/integrated-poc/catalog';
+import { importProgramPublicVersion } from '../../../lib/flow/integrated-poc/private-space';
+import { textWorkspaceModel as M } from '../../../lib/flow/integrated-poc/text-workspace';
 import { setProgramCreatorWorking, applyProgramCreatorAction, handoffProgramCreatorDraft } from '../../../lib/flow/integrated-poc/creator-workspace';
 import { PERSONAL_WORKSPACE_POC_AUTHORING_TEMPLATES as templates, fingerprintPersonalWorkspacePocAuthoringSource as fp } from '../../../lib/flow/personal-workspace-poc-authoring';
 import type { ProgramCreatorWorkspaceProps } from './ProgramCreatorWorkspace';
@@ -35,8 +38,8 @@ function harness(initialRaw = '', initialData?: ProgramData, scope: 'local' | 'a
   }
   const working = data.spaces[data.activeActorId].creatorWorkspace!.working!;
   let at = 0, writes = 0, nativeEdits = 0, fail = false, mutationFailure: 'conflict'|'throw'|null = null, editorNode: any, port: ProgramEditorFlush | null = null;
-  let synchronize: (() => void) | null = null;
-  const slots: any[] = [], effects: (() => void)[] = [], requests: any[] = [], intents: AlphaCreatorIntent[] = [], mutations: { label: string; options: ProgramMutationOptions | undefined }[] = [];
+  let synchronize: (() => void) | null = null, entryChoice = false, entryCancels = 0;
+  const slots: any[] = [], effects: (() => void)[] = [], requests: any[] = [], destinations: any[] = [], intents: AlphaCreatorIntent[] = [], mutations: { label: string; options: ProgramMutationOptions | undefined }[] = [];
   let snapshot = { editorId: 'alpha-creator-source', documentId: working.draftId, rawText: working.nativePendingRawText ?? working.rawText,
     sourceFingerprint: fp(working.nativePendingRawText ?? working.rawText), selectionStart: 0, selectionEnd: 0,
     selectionDirection: 'none' as const, scrollTop: 0, scrollLeft: 0, dispatchCount: 0, composing: false };
@@ -65,7 +68,9 @@ function harness(initialRaw = '', initialData?: ProgramData, scope: 'local' | 'a
   };
   function render() {
     at = 0;
-    const tree = loaded.exports.ProgramCreatorWorkspace({ data, today: '2026-09-21', storageScope: scope, navigate: () => {},
+    const tree = loaded.exports.ProgramCreatorWorkspace({ data, today: '2026-09-21', storageScope: scope, navigate: destination => { destinations.push(destination); },
+      entryChoiceRequested: entryChoice, onEntryChoiceResolved: () => { entryChoice = false; },
+      onEntryChoiceCancelled: () => { entryChoice = false; entryCancels++; },
       onRegisterEditors: next => { port = next; }, mutate: async (name, build, options) => {
         mutations.push({ label: name, options });
         const result = build(data); if (!result.ok) return { ok: false, reason: result.reason };
@@ -84,8 +89,9 @@ function harness(initialRaw = '', initialData?: ProgramData, scope: 'local' | 'a
       button: (text: string) => nodes.find(node => node.type === 'button' && label(node.props.children).startsWith(text)) };
   }
   const settle = async () => { for (let i = 0; i < 30; i++) await Promise.resolve(); };
-  return { render, settle, requests, mutations, intents, get data() { return data; }, get writes() { return writes; }, get nativeEdits() { return nativeEdits; },
+  return { render, settle, requests, destinations, mutations, intents, get data() { return data; }, get writes() { return writes; }, get nativeEdits() { return nativeEdits; },
     get snapshot() { return snapshot; }, get port() { assert(port); return port; },
+    openEntry() { entryChoice = true; }, get entryChoice() { return entryChoice; }, get entryCancels() { return entryCancels; },
     fail(value: boolean) { fail = value; }, compose(value: boolean) { snapshot = { ...snapshot, composing: value }; },
     failMutation(value:'conflict'|'throw'|null){mutationFailure=value;}, synchronize(){assert(synchronize);synchronize();},
     foreign() { data = structuredClone(data); data.spaces[data.activeActorId].creatorWorkspace!.working!.title = '다른 기기 원문'; },
@@ -93,6 +99,46 @@ function harness(initialRaw = '', initialData?: ProgramData, scope: 'local' | 'a
     input(rawText: string, inputType = 'insertText') { snapshot = { ...snapshot, rawText, sourceFingerprint: fp(rawText), dispatchCount: snapshot.dispatchCount + 1 }; editorNode.props.onNativeInput(snapshot, inputType); },
   };
 }
+
+test('creator entry continue preserves unsaved working and the mounted editor without a mutation', () => {
+  const h=harness('# Existing\n- [ ] Old task'); h.render(); h.input('# Existing\n- [ ] Unsaved task');
+  const snapshot={...h.snapshot}, working=JSON.stringify(h.data.spaces[h.data.activeActorId].creatorWorkspace!.working);
+  const before=h.render().nodes.find(node=>node.props.label==='제작 원문'); h.openEntry();
+  const entry=h.render(); assert(entry.nodes.some(node=>node.props['aria-label']==='Flow 만들기 선택'));
+  assert(entry.nodes.some(node=>node.type==='div'&&node.props.hidden===true));
+  entry.button('작성 중인 초안 이어쓰기').props.onClick(); const after=h.render().nodes.find(node=>node.props.label==='제작 원문');
+  assert.equal(h.entryChoice,false); assert.equal(before.key,after.key); assert.deepEqual(h.snapshot,snapshot);
+  assert.equal(JSON.stringify(h.data.spaces[h.data.activeActorId].creatorWorkspace!.working),working);
+  assert.equal(h.writes,0); assert.equal(h.mutations.length,0); assert.equal(h.nativeEdits,0);
+});
+
+test('creator entry cancel and other-draft lookup do not create or reconstruct working', () => {
+  const h=harness('# Keep me'),before=JSON.stringify(h.data); h.openEntry(); h.render().button('취소').props.onClick();
+  assert.equal(h.entryCancels,1); assert.equal(h.entryChoice,false); assert.equal(JSON.stringify(h.data),before);
+  h.openEntry(); h.render().button('다른 초안 찾기').props.onClick();
+  assert.equal(h.entryChoice,false); assert.equal(JSON.stringify(h.data),before); assert.equal(h.writes,0);
+  assert(h.render().button('제작 초안')?.props['aria-current']==='page');
+});
+
+test('creator entry new action reuses unsaved protection; continue editing and failed save retain original', async () => {
+  const h=harness('# Original\n- [ ] Keep task'); h.openEntry();
+  h.render().button('새 Flow 만들기').props.onClick(); assert.equal(h.entryChoice,false);
+  assert(h.render().button('계속 편집')); assert.equal(h.writes,0);
+  h.render().button('계속 편집').props.onClick(); assert.equal(h.snapshot.rawText,'# Original\n- [ ] Keep task');
+  h.openEntry(); h.render().button('새 Flow 만들기').props.onClick(); h.failMutation('conflict');
+  await h.render().button('저장하고 열기').props.onClick(); await h.settle();
+  assert.equal(h.writes,0); assert.equal(h.data.spaces[h.data.activeActorId].creatorWorkspace!.working!.draftId,DRAFT);
+  assert.equal(h.snapshot.rawText,'# Original\n- [ ] Keep task'); assert(h.render().button('계속 편집'));
+});
+
+test('creator entry explicit new creates one blank working only after the existing choice is confirmed', async () => {
+  const h=harness('# Original'); h.openEntry(); h.render().button('새 Flow 만들기').props.onClick();
+  await h.render().button('입력 버리고 열기').props.onClick(); await h.settle();
+  const working=h.data.spaces[h.data.activeActorId].creatorWorkspace!.working!;
+  assert.notEqual(working.draftId,DRAFT); assert.equal(working.rawText,''); assert.equal(working.title,'');
+  assert.equal(h.writes,1); assert.equal(h.intents.at(-1)?.type,'working');
+  assert.equal(Object.keys(h.data.spaces[h.data.activeActorId].creatorWorkspace!.library.records).length,0);
+});
 
 test('M6 imported candidates expose originals, keep older recovery read-only, and protect current input before opening',async()=>{
  const h=harness('# Current unsaved'),workspace=h.data.spaces[h.data.activeActorId].creatorWorkspace!,key='flow:poc:personal-workspace:v1:authoring-draft';
@@ -197,7 +243,7 @@ test('M4 library intent captures the actual post-flush source and leaves working
   assert.equal(h.data.spaces[h.data.activeActorId].creatorWorkspace!.library.records[DRAFT].rawText, intent.action.rawText);
 });
 
-function rawUpdateData() {
+function rawUpdateData(updated = true) {
   const source='# 준비\n## 구간\n- [ ] 한글 준비\n  - 날짜: 2026-09-24\n  - 설명: 이전 설명';
   function save(data:ProgramData,rawText:string){
     const actorId=data.activeActorId,workspace=data.spaces[actorId].creatorWorkspace,revision=workspace?.library.records[DRAFT]?.recordRevision;
@@ -206,7 +252,7 @@ function rawUpdateData() {
   }
   const first=save(createProgramData(),source);
   const handed=handoffProgramCreatorDraft(first,{actorId:first.activeActorId,requestId:'fixture-handoff',draftId:DRAFT,expectedRecordRevision:1,today:'2026-09-21'},NOW);assert(handed.ok);
-  return save(handed.data,source.replace('이전 설명','새 설명').replace('2026-09-24','2026-09-25'));
+  return updated ? save(handed.data,source.replace('이전 설명','새 설명').replace('2026-09-24','2026-09-25')) : handed.data;
 }
 function formControl(view:ReturnType<ReturnType<typeof harness>['render']>,text:string,type:'input'|'select'){
   const parent=view.nodes.find(node=>node.type==='label'&&label(node.props.children).startsWith(text));assert(parent,`label ${text}`);
@@ -322,4 +368,76 @@ test('M4 receipt acknowledgment preserves composition, locks, raw comparison cho
   const comparison=harness('',rawUpdateData());comparison.render().button('개인 수정과 새 제작 내용 비교').props.onClick();
   const context=comparison.port.captureCreatorWorking?.();assert(context);const choices=rawComparison(comparison.port);
   assert.equal(comparison.port.acceptConfirmedCreatorWorking?.(context),false);assert.deepEqual(rawComparison(comparison.port),choices);assert.equal(comparison.port.hasPendingInput?.(),true);
+});
+
+function rawRehandoffData() {
+  const data=rawUpdateData(false),actorId=data.activeActorId,catalog=buildProgramCatalog(actorId);
+  data.public.flows=catalog.flows;data.public.versions=catalog.versions;
+  const version=data.public.versions[0],item=version.items.find(row=>row.schedule.kind!=='recurring');assert(item);
+  const imported=importProgramPublicVersion(data,{actorId,requestId:'rehandoff-existing-copy',expectedSpace:data.spaces[actorId],versionId:version.id,itemIds:[item.id],anchor:null});
+  assert(imported.ok);assert.equal(imported.data.spaces[actorId].copies.length,1);return imported.data;
+}
+const creatorAlert=(view:ReturnType<ReturnType<typeof harness>['render']>)=>view.nodes.filter(node=>node.type==='p'&&node.props.role==='alert').map(node=>label(node.props.children)).join(' ');
+
+test('RH01 source changes identify the unsaved original and keep the handoff disabled without a write',()=>{
+  const h=harness('',rawRehandoffData());h.render();const before=JSON.stringify(h.data),raw=h.snapshot.rawText+'\n아직 저장하지 않은 원본 메모';
+  h.input(raw);h.render().button('결과').props.onClick();const view=h.render();
+  assert(view.nodes.some(node=>node.type==='p'&&label(node.props.children).includes('원본 Flow에 저장하지 않은 변경이 있습니다')));
+  assert.equal(view.button('같은 개인 문서에 인계').props.disabled,true);assert.equal(view.button('기존 플랜 열기'),undefined);
+  assert.equal(h.snapshot.rawText,raw);assert.equal(JSON.stringify(h.data),before);assert.equal(h.writes,0);assert.equal(h.mutations.length,0);
+});
+
+test('RH02 personal body changes open the existing comparison and closing it preserves the source, same document and one copy',async()=>{
+  const data=rawRehandoffData(),actorId=data.activeActorId,space=data.spaces[actorId],link=space.creatorWorkspace!.handoffs[DRAFT];
+  space.text=M.editText(space.text,link.documentId,M.raw(M.getDocument(space.text,link.documentId))+'\n개인 수정과 메모');
+  const h=harness('',data),before=JSON.stringify(data);h.render();const snapshot={...h.snapshot};
+  const editorKey=h.render().nodes.find(node=>node.props.label==='제작 원문').key;
+  h.render().button('결과').props.onClick();h.render().button('같은 개인 문서에 인계').props.onClick();await h.settle();
+  const view=h.render(),comparison=view.nodes.find(node=>node.type?.name==='ProgramCreatorHandoffComparison');assert(comparison);
+  assert.equal(creatorAlert(view),'가져온 플랜의 내용이 인계 당시와 달라졌습니다. 원본과 비교해 확인해 주세요.');
+  assert.equal(comparison.props.documentId,link.documentId);assert.match(comparison.props.personal,/개인 수정과 메모/u);
+  assert.equal(JSON.stringify(h.data),before);assert.equal(h.data.spaces[actorId].copies.length,1);assert.equal(h.writes,0);assert.deepEqual(h.destinations,[]);
+  view.button('비교 닫기').props.onClick();const closed=h.render();assert(!closed.nodes.some(node=>node.type?.name==='ProgramCreatorHandoffComparison'));
+  assert.equal(closed.nodes.find(node=>node.props.label==='제작 원문').key,editorKey);assert.deepEqual(h.snapshot,snapshot);
+  assert.equal(JSON.stringify(h.data),before);assert.equal(h.writes,0);assert.equal(h.nativeEdits,0);
+});
+
+test('RH03 title, archive and unclassified conflicts retain generic feedback instead of claiming personal body edits',async()=>{
+  for(const cause of ['title','archive','unknown'] as const){
+    const data=rawRehandoffData(),actorId=data.activeActorId,space=data.spaces[actorId],link=space.creatorWorkspace!.handoffs[DRAFT];
+    if(cause==='title')M.getDocument(space.text,link.documentId)!.title='개인 제목 변경';
+    if(cause==='archive')space.archivedDocumentIds.push(link.documentId);
+    const h=harness('',data),before=JSON.stringify(data);h.render();if(cause==='unknown')h.failMutation('conflict');
+    h.render().button('결과').props.onClick();h.render().button(cause==='unknown'?'기존 플랜 열기':'같은 개인 문서에 인계').props.onClick();await h.settle();
+    const alert=creatorAlert(h.render());assert.match(alert,/다른 변경이 먼저 저장되었습니다/u);assert.doesNotMatch(alert,/가져온 플랜의 내용이 인계 당시와 달라졌습니다/u);
+    assert.equal(JSON.stringify(h.data),before);assert.equal(h.writes,0);assert.deepEqual(h.destinations,[]);
+  }
+});
+
+test('RH04 an unchanged existing plan uses the same no-op handoff while a newer original still requires comparison',async()=>{
+  const h=harness('',rawRehandoffData()),actorId=h.data.activeActorId,documentId=h.data.spaces[actorId].creatorWorkspace!.handoffs[DRAFT].documentId;
+  h.render();const before=JSON.stringify(h.data),snapshot={...h.snapshot};h.render().button('결과').props.onClick();
+  for(let visit=0;visit<2;visit++){h.render().button('기존 플랜 열기').props.onClick();await h.settle();h.render();}
+  assert.deepEqual(h.destinations,[{view:'space',id:documentId},{view:'space',id:documentId}]);
+  assert.equal(JSON.stringify(h.data),before);assert.equal(h.data.spaces[actorId].copies.length,1);assert.equal(h.writes,0);assert.equal(h.nativeEdits,0);assert.deepEqual(h.snapshot,snapshot);
+  const updated=harness('',rawUpdateData()),updatedBefore=JSON.stringify(updated.data);updated.render().button('결과').props.onClick();
+  assert.equal(updated.render().button('기존 플랜 열기'),undefined);updated.render().button('같은 개인 문서에 인계').props.onClick();await updated.settle();
+  assert(updated.render().nodes.some(node=>node.type?.name==='ProgramCreatorHandoffComparison'));
+  assert.equal(JSON.stringify(updated.data),updatedBefore);assert.equal(updated.writes,0);assert.equal(updated.mutations.length,0);assert.deepEqual(updated.destinations,[]);
+});
+
+test('RH05 progress-generated check marks describe changed content without claiming direct personal editing',async()=>{
+  const data=rawRehandoffData(),actorId=data.activeActorId,space=data.spaces[actorId],link=space.creatorWorkspace!.handoffs[DRAFT];
+  const task=M.tasks(space.text).find(row=>row.docId===link.documentId);assert(task);
+  space.text=M.recordProgress(space.text,task.id,'2026-09-21',100);
+  assert.match(M.raw(M.getDocument(space.text,link.documentId)),/\[x\]/u);
+  assert.notEqual(M.raw(M.getDocument(space.text,link.documentId)),link.raw);
+  const h=harness('',data),before=JSON.stringify(data),history=JSON.stringify(space.text.progressRecords);h.render().button('결과').props.onClick();
+  h.render().button('같은 개인 문서에 인계').props.onClick();await h.settle();const view=h.render();
+  const comparison=view.nodes.find(node=>node.type?.name==='ProgramCreatorHandoffComparison');assert(comparison);
+  assert.equal(creatorAlert(view),'가져온 플랜의 내용이 인계 당시와 달라졌습니다. 원본과 비교해 확인해 주세요.');
+  assert.doesNotMatch(creatorAlert(view),/직접 수정|직접 편집/u);
+  assert.equal(comparison.props.documentId,link.documentId);assert.match(comparison.props.personal,/\[x\]/u);
+  assert.equal(JSON.stringify(h.data),before);assert.equal(JSON.stringify(h.data.spaces[actorId].text.progressRecords),history);assert.equal(h.writes,0);
+  view.button('비교 닫기').props.onClick();h.render();assert.equal(JSON.stringify(h.data),before);assert.equal(h.data.spaces[actorId].copies.length,1);
 });

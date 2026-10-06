@@ -67,6 +67,8 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
   const [destination, setDestination] = useState<ProgramDestination>({ view: 'space' });
   const destinationRef = useRef(destination); destinationRef.current = destination;
   const [creatorSeen, setCreatorSeen] = useState(false), [creatorSelection, setCreatorSelection] = useState<string | undefined>();
+  const [creatorEntryChoices, setCreatorEntryChoices] = useState(false);
+  const creatorEntryReturn = useRef<ProgramDestination | null>(null);
   const [catalogDetailOpen, setCatalogDetailOpen] = useState(false);
   const [creatorRecoveries, setCreatorRecoveries] = useState<AlphaCreatorRecoveryRecord | null>(null);
   const [socialRecoveries, setSocialRecoveries] = useState<AlphaSocialRecoveryRecord | null>(null);
@@ -469,7 +471,11 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
       setMessage(entry.auxiliaries.length ? '제작 작업본을 복구했습니다. 별도로 보관한 비교·구조 입력은 아래 원문을 확인해 다시 적용해 주세요.' : '제작 작업본을 복구했습니다. 저장 판본과 개인 실행은 그대로입니다.'); }
     else setMessage('현재 제작 구조와 안전하게 합칠 수 없습니다. 보관 원문과 구조 자료는 유지했습니다. 현재 저장본을 확인해 주세요.');
   }
-  async function navigate(next: ProgramDestination) {
+  function openCreatorEntry() {
+    if (creatorEntryChoices) return;
+    void navigate({ view: 'creator', id: creatorSelection }, true);
+  }
+  async function navigate(next: ProgramDestination, chooseCreatorEntry = false) {
     if (externalRef.current || controller.current?.snapshot().pending) { setMessage('먼저 저장 결과와 보관 입력을 확인해 주세요.'); return; }
     const visit = destinationRef.current;
     if (!captureInput()) return;
@@ -477,6 +483,8 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
     try { for (const port of allEditors()) if (port && !await port.flushAll()) return; }
     finally { releases.forEach(release => release?.()); }
     if (disposed.current || visit !== destinationRef.current) return;
+    if (chooseCreatorEntry) { creatorEntryReturn.current = visit; setCatalogDetailOpen(false); }
+    setCreatorEntryChoices(next.view === 'creator' && chooseCreatorEntry);
     if (next.view === 'creator') { setCreatorSeen(true); setCreatorSelection(next.id); }
     if (['flow', 'discover'].includes(next.view)) setDiscoverySelection(next.view === 'flow' ? next.id : undefined);
     if (next.view === 'community' || next.view === 'activity') { setCommunityView(next.view); setCommunitySelection(next.id); }
@@ -692,7 +700,7 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
         <button aria-current={['activity', 'creator'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigate({ view: 'activity' })}>내 활동</button>
         {data.spaces[session.userId].savedBindings.length > 0 && <button onClick={() => void navigate({ view: 'legacy' })}>개인 Flow 상세</button>}</nav>
       {browse && <nav className={styles.tabs} aria-label="둘러보기 종류"><button aria-current={['discover', 'flow'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigate({ view: 'discover' })}>Flow 찾기</button><button aria-current={destination.view === 'community' ? 'page' : undefined} onClick={() => void navigate({ view: 'community' })}>경험·질문·지식</button></nav>}
-      {['activity', 'creator'].includes(destination.view) && <nav className={styles.tabs} aria-label="내 활동 종류"><button aria-current={destination.view === 'activity' ? 'page' : undefined} onClick={() => void navigate({ view: 'activity' })}>활동·공개 관리</button><button aria-current={destination.view === 'creator' ? 'page' : undefined} onClick={() => void navigate({ view: 'creator', id: creatorSelection })}>Flow 만들기</button></nav>}
+      {['activity', 'creator'].includes(destination.view) && <nav className={styles.tabs} aria-label="내 활동 종류"><button aria-current={destination.view === 'activity' ? 'page' : undefined} onClick={() => void navigate({ view: 'activity' })}>활동·공개 관리</button><button aria-current={destination.view === 'creator' ? 'page' : undefined} onClick={openCreatorEntry}>Flow 만들기</button></nav>}
       <div hidden={destination.view !== 'space'}>
         <div className={styles.tabs} aria-label="문서 정리 방식">
           <button type="button" aria-pressed={collectionsMode} disabled={collectionsSwitching || collectionsSaving || pending || external || !!snapshot?.busy || !!snapshot?.draft || storageError}
@@ -711,7 +719,7 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
         onOutputDocument={setOutput} onPublishDocument={setPublisher} onInspectCopy={setInspector} onRegisterEditors={port => { editors.current = port; }} /></div>
       {seen.discovery && <div hidden={!['discover', 'flow'].includes(destination.view)}><ProgramDiscovery key={`discover:${session.userId}:${presentation}`} data={data} mutate={mutate} navigate={next => { void navigate(next); }} today={programLocalDate()} storageScope="account"
         selectedFlowId={discoverySelection} selectedVersionId={destination.view === 'flow' ? destination.versionId : undefined} selectedItemId={destination.view === 'flow' ? destination.itemId : undefined}
-        selectedOutputReturn={destination.view === 'flow' ? destination.publicOutputReturn : undefined} onUseVersion={useVersion} onStartText={startText} onCreateFlow={() => { void navigate({ view: 'creator', id: creatorSelection }); }} navigationState={discoveryState} onNavigationStateChange={setDiscoveryState} /></div>}
+        selectedOutputReturn={destination.view === 'flow' ? destination.publicOutputReturn : undefined} onUseVersion={useVersion} onStartText={startText} onCreateFlow={openCreatorEntry} navigationState={discoveryState} onNavigationStateChange={setDiscoveryState} /></div>}
       {seen.community && <div hidden={!['community', 'activity'].includes(destination.view)}><ProgramCommunity key={`community:${session.userId}:${presentation}`} data={data} mutate={mutate} navigate={next => { void navigate(next); }} today={programLocalDate()}
         view={communityView} selectedPostId={communitySelection} selectedReplyId={destination.view === 'community' ? destination.replyId : undefined} presentation={communityState} onPresentationChange={setCommunityState}
         storageScope="account" mediaPort={mediaPort} draftSaveRecovery={localParticipationRecovery}
@@ -736,11 +744,13 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
         selectedFlowId={destination.id} onUndo={() => history('undo')} onRegisterEditors={port => { legacyEditors.current = port; }} />}
       {output && <ProgramPrivateOutput data={data} documentId={output} onClose={() => setOutput(null)} />}
       {(creatorSeen || destination.view === 'creator') && <div hidden={destination.view !== 'creator'}>
-        <AlphaCatalogPanels key={`catalog-panels:${session.userId}`} data={data} accessToken={session.accessToken} mutate={mutate} navigate={next => { void navigate(next); }} onDetailChange={setCatalogDetailOpen} detailOpen={catalogDetailOpen} disabled={unavailable || pending || external || !!snapshot?.busy || !!snapshot?.draft || storageError} />
+        <div hidden={creatorEntryChoices}><AlphaCatalogPanels key={`catalog-panels:${session.userId}`} data={data} accessToken={session.accessToken} mutate={mutate} navigate={next => { void navigate(next); }} onDetailChange={setCatalogDetailOpen} detailOpen={catalogDetailOpen} disabled={unavailable || pending || external || !!snapshot?.busy || !!snapshot?.draft || storageError} /></div>
         <div hidden={catalogDetailOpen} aria-label="별도 제작 초안 작업 공간">
         <ProgramCreatorWorkspace key={`creator:${session.userId}:${presentation}`}
         data={data} mutate={mutate} navigate={next => { void navigate(next); }} today={programLocalDate()} storageScope="account"
         active={destination.view === 'creator' && !catalogDetailOpen} selectedDraftId={destination.view === 'creator' ? destination.id : creatorSelection}
+        entryChoiceRequested={creatorEntryChoices} onEntryChoiceResolved={() => setCreatorEntryChoices(false)}
+        onEntryChoiceCancelled={() => void navigate(creatorEntryReturn.current ?? { view: 'space' })}
         captureRoute={captureCreatorRoute} onRegisterEditors={port => { creatorEditors.current = port; }} /></div></div>}
       {publisher && <ProgramPublisher key={`publish:${session.userId}:${publisher}`} data={data} mutate={mutate} navigate={next => { void navigate(next); }} today={programLocalDate()} documentId={publisher}
         storageScope="account" readCurrentData={() => currentData.current} externalRecovery={modalRecovery} onClose={() => setPublisher(null)} onRegisterEditors={port => { publisherEditors.current = port; }} />}

@@ -1072,3 +1072,76 @@ test('date order UI uses one native replacement and explicitly guards compositio
   const html = renderToStaticMarkup(<ProgramTextEditor workspace={workspace} docId={docId} onCommit={async () => true} readOnly />);
   assert.match(html, /disabled=""[^>]*>날짜순 정렬/);
 });
+
+function progressConflictHarness() {
+  let workspace = M.addDocument(createEmptyTextWorkspace(), { title: 'Synthetic progress recovery' });
+  const docId = workspace.documents[0].id;
+  workspace = M.editText(workspace, docId, '- [ ] Exact item\n  - 메모: original memo\n- [ ] Peer item');
+  const taskId = M.tasks(workspace)[0].id;
+  workspace = M.recordProgress(workspace, taskId, '2026-10-06', 100);
+  const h = referenceMenuHarness(undefined, { workspace, docId });
+  const raw = M.raw(workspace.documents[0]).replace('[x]', '[ ]').replace('original memo', 'changed memo');
+  h.input(raw);
+  return { h, raw, taskId };
+}
+
+test('progress conflict viewing and all close paths preserve checkbox plus memo without a writer or history change', () => {
+  for (const cancel of ['close', 'escape', 'native-cancel']) {
+    const { h, raw, taskId } = progressConflictHarness();
+    const before = h.draft().getState(), textarea = h.textarea, history = JSON.stringify(before.working.progressRecords);
+    assert(before.invalid); assert.equal(before.raw, raw); assert.match(raw, /changed memo/);
+    assert.deepEqual(before.progressConflict, { lineId: taskId, targetId: taskId });
+    const view = h.button('진행 조절 보기'); assert(view);
+    view.props.onClick();
+    const dialog = h.nodes(h.render()).find(n => n.type === 'dialog'); assert(dialog);
+    assert.equal(dialog.props['aria-label'], '누적 진행률');
+    assert(h.nodes(dialog).some(n => n.type === 'p' && n.props.children === 'Exact item'));
+    assert.equal(h.button('진행 저장').props.disabled, true);
+    if (cancel === 'close') h.button('닫기').props.onClick();
+    else if (cancel === 'escape') h.render().props.onKeyDownCapture({ key: 'Escape', preventDefault() {}, stopPropagation() {} });
+    else dialog.props.onCancel({ preventDefault() {} });
+    assert.equal(h.nodes(h.render()).find(n => n.type === 'dialog'), undefined);
+    assert.equal(h.draft().getState(), before); assert.equal(h.textarea, textarea); assert.equal(h.textarea.value, raw);
+    assert.equal(JSON.stringify(h.draft().getState().working.progressRecords), history); assert.equal(h.writes(), 0);
+    h.unmount();
+  }
+});
+
+test('progress conflict view rechecks exact Item, access, input and IME boundaries before opening', () => {
+  for (const block of ['wrong-line', 'wrong-target', 'wrong-origin', 'missing-access', 'protected', 'readonly', 'locked', 'composition', 'changed-input', 'format']) {
+    const { h, raw } = progressConflictHarness(), view = h.button('진행 조절 보기'); assert(view);
+    const diagnostic = h.draft().getState().progressConflict!;
+    if (block === 'wrong-line') diagnostic.lineId = 'missing-line';
+    if (block === 'wrong-target') diagnostic.targetId = M.tasks(h.space.text)[1].id;
+    if (block === 'wrong-origin') h.props.taskAccess = () => ({ kind: 'active', reason: null, documentId: 'wrong-document', lineId: diagnostic.targetId });
+    if (block === 'missing-access') h.props.taskAccess = () => undefined;
+    if (block === 'protected') h.space.archivedDocumentIds = [h.docId];
+    if (block === 'readonly') h.props.readOnly = true;
+    if (block === 'locked') h.lock(true);
+    if (block === 'composition') h.events.compositionstart();
+    if (block === 'changed-input') h.textarea.value = raw + '\nnewer input';
+    if (block === 'format') h.input(raw.replace('[ ]', '[101%]'));
+    view.props.onClick();
+    assert.equal(h.button('진행 조절 보기'), undefined);
+    assert.equal(h.nodes(h.render()).find(n => n.type === 'dialog'), undefined); assert.equal(h.writes(), 0);
+    assert.deepEqual(h.draft().getState().working.progressRecords, h.space.text.progressRecords);
+    h.unmount();
+  }
+});
+
+test('marker-only recovery keeps typed memo and allows the existing progress-zero save path', async () => {
+  const { h, raw, taskId } = progressConflictHarness();
+  h.input(raw.replace('[ ]', '[x]')); assert.equal(h.draft().getState().invalid, false);
+  assert.equal(h.draft().getState().progressConflict, undefined); assert.equal(h.button('진행 조절 보기'), undefined);
+  assert(await h.draft().save()); assert.equal(h.writes(), 1);
+  h.action('progress-open', 0); assert.equal(h.button('진행 저장').props.disabled, false);
+  h.button('0%').props.onClick();
+  h.nodes(h.render()).find(n => n.type === 'form').props.onSubmit({ preventDefault() {} });
+  await new Promise(resolve => setImmediate(resolve));
+  const next = h.draft().getState().committed;
+  assert.equal(h.writes(), 2); assert.equal(M.tasks(next)[0].id, taskId);
+  assert.equal(M.tasks(next)[0].done, false); assert.equal(M.tasks(next)[0].note, 'changed memo');
+  assert.equal(M.latestProgress(next, taskId)?.percent, 0);
+  assert.deepEqual(M.tasks(next)[1], M.tasks(h.space.text)[1]);
+  h.unmount();
+});

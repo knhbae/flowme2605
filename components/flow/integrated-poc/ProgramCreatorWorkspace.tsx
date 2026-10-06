@@ -48,6 +48,7 @@ import { programDocumentContentLock } from '@/lib/flow/integrated-poc/reference-
 export type ProgramCreatorWorkspaceProps = { data: ProgramData; mutate: ProgramMutate; navigate: ProgramNavigate; today: string;
   storageScope?: 'local' | 'account';
   selectedDraftId?: string; active?: boolean; captureRoute?: () => (id: string | undefined, replace: boolean) => boolean;
+  entryChoiceRequested?: boolean; onEntryChoiceResolved?: () => void; onEntryChoiceCancelled?: () => void;
   onRegisterEditors?: (port: ProgramEditorFlush | null) => void };
 export function programCreatorEditorText(working:ProgramCreatorWorking):string { return working.nativePendingRawText??working.rawText; }
 export function programCreatorWithEditorText(working:ProgramCreatorWorking,rawText:string):ProgramCreatorWorking {
@@ -188,6 +189,13 @@ export function ProgramCreatorWorkspace(props: ProgramCreatorWorkspaceProps) {
   const preview = useMemo(() => buffer ? previewProgramCreatorSource(buffer, today, clock, { baseDate: navigation.baseDate, selectedDate: navigation.selectedDate }) : null, [buffer, today, clock, navigation.baseDate, navigation.selectedDate]);
   const record = buffer ? workspace?.library.records[buffer.draftId] : undefined;
   const needsSave = programCreatorNeedsSave(data, actorId, buffer);
+  const opensExistingPlan = useMemo(() => {
+    if (!buffer || buffer.nativeDocument || !record || needsSave
+      || workspace?.handoffs[buffer.draftId]?.recordRevision !== record.recordRevision
+      || !workspace.executionSources?.[buffer.draftId]) return false;
+    const inspection = inspectProgramCreatorHandoff(data, actorId, buffer.draftId, today, clock);
+    return !!inspection?.documentId && !inspection.conflict;
+  }, [data, actorId, buffer?.draftId, !!buffer?.nativeDocument, record?.recordRevision, needsSave, today, clock]);
   const executionDocumentId = useMemo(() => buffer?.nativeDocument
     ? programCreatorExecutionDocument(data, actorId, buffer.draftId) : null, [data, actorId, buffer?.draftId, !!buffer?.nativeDocument]);
   const rows = workspace ? listPersonalWorkspacePocCreatorDrafts(workspace.library, { query, status: archived ? 'archived' : 'active' }) : [];
@@ -814,9 +822,24 @@ export function ProgramCreatorWorkspace(props: ProgramCreatorWorkspaceProps) {
       if (!await flushDraft()) return;
       const requestId = programId('request'), now = new Date().toISOString();
       const result = await mutate('제작물 개인 문서 인계', current => handoffProgramCreatorDraft(current, { actorId, requestId, draftId: record.draftId, expectedRecordRevision: record.recordRevision, today }, now), { alphaCreator: { type: 'raw-handoff', draftId: record.draftId, expectedRecordRevision: record.recordRevision, today, now } });
-      if (!result.ok) { setComparison(inspectProgramCreatorHandoff(dataRef.current, actorId, record.draftId, today, now)); report(false, programErrorMessage(result.reason)); return; }
+      if (!result.ok) {
+        const latest = inspectProgramCreatorHandoff(dataRef.current, actorId, record.draftId, today, now);
+        setComparison(latest);
+        const personalChanged = result.reason === 'conflict' && !!latest?.documentId
+          && latest.personal !== null && latest.previous !== null && latest.personal !== latest.previous;
+        report(false, personalChanged
+          ? '가져온 플랜의 내용이 인계 당시와 달라졌습니다. 원본과 비교해 확인해 주세요.'
+          : programErrorMessage(result.reason));
+        return;
+      }
       navigate({ view: 'space', id: result.result });
     } finally { pending.current = false; setBusy(false); release(); }
+  }
+  function showTab(value: 'input' | 'result' | 'library') {
+    if(value!==tab&&blockRawAuxiliary())return;
+    if((nativeHandoffRef.current||nativeLineageRef.current)&&value!=='result'){report(false,'개인 실행 비교를 적용하거나 모두 유지하고 닫은 뒤 이동해 주세요. 선택은 유지했습니다.');return;}
+    if(sourceUpdatePort.current?.hasPendingInput?.()&&value!=='input'){report(false,'새 원문 비교 입력을 저장하거나 취소한 뒤 이동해 주세요. 입력은 유지했습니다.');return;}
+    setTab(value);
   }
   const blocked = busy || locked || record?.status === 'archived';
   return <section className={styles.workspace} aria-label="제작 작업 공간" aria-busy={busy}
@@ -825,7 +848,16 @@ export function ProgramCreatorWorkspace(props: ProgramCreatorWorkspaceProps) {
     onCompositionEndCapture={() => { composing.current = false; queueMicrotask(() => { const latest = nativeBuffer(); if (latest) { bufferRef.current = latest; setBuffer(latest); } }); }}
     onBeforeInputCapture={event => { if ((lockCount.current || orderSavingRef.current) && !composing.current && !editor.current?.readSnapshot()?.composing) event.preventDefault(); }}>
     <header className={styles.heading}><h1>제작하기</h1><button disabled={busy || locked} onClick={() => navigate({ view: 'space' })}>내 공간</button></header>
-    <nav className={styles.actions} aria-label="제작 단계">{(['input','result','library'] as const).map((value,i) => <button key={value} disabled={busy||locked} aria-current={tab === value ? 'page' : undefined} onClick={() => {if(value!==tab&&blockRawAuxiliary())return;if((nativeHandoffRef.current||nativeLineageRef.current)&&value!=='result'){report(false,'개인 실행 비교를 적용하거나 모두 유지하고 닫은 뒤 이동해 주세요. 선택은 유지했습니다.');return;}if(sourceUpdatePort.current?.hasPendingInput?.()&&value!=='input'){report(false,'새 원문 비교 입력을 저장하거나 취소한 뒤 이동해 주세요. 입력은 유지했습니다.');return;}setTab(value);}}>{['원문','결과','제작 초안'][i]}</button>)}</nav>
+    {props.entryChoiceRequested && <section className={styles.notice} aria-label="Flow 만들기 선택">
+      <div className={styles.actions}>
+        <button disabled={busy || locked} onClick={() => { props.onEntryChoiceResolved?.(); choose({ draftId: programId('creator'), rawText: '', title: '', baseRecordRevision: null }); }}>새 Flow 만들기</button>
+        {buffer && <button disabled={busy || locked} onClick={() => { props.onEntryChoiceResolved?.(); showTab('input'); }}>작성 중인 초안 이어쓰기</button>}
+        <button disabled={busy || locked} onClick={() => { props.onEntryChoiceResolved?.(); showTab('library'); }}>다른 초안 찾기</button>
+        <button disabled={busy || locked} onClick={() => { if (props.onEntryChoiceCancelled) props.onEntryChoiceCancelled(); else props.onEntryChoiceResolved?.(); }}>취소</button>
+      </div>
+    </section>}
+    <div hidden={props.entryChoiceRequested}>
+    <nav className={styles.actions} aria-label="제작 단계">{(['input','result','library'] as const).map((value,i) => <button key={value} disabled={busy||locked} aria-current={tab === value ? 'page' : undefined} onClick={() => showTab(value)}>{['원문','결과','제작 초안'][i]}</button>)}</nav>
     {message && ((!nativeHandoff&&!nativeLineage) || tab !== 'result') && <p role={error ? 'alert' : 'status'} className={error ? styles.error : styles.status}>{message}</p>}
     {choice && <section className={styles.notice} aria-label="작성 중 원문 확인"><p>명시 저장하지 않은 제작 원문이 있습니다.</p><div className={styles.actions}><button disabled={busy || locked} onClick={() => void saveChoice()}>저장하고 열기</button><button disabled={busy || locked} onClick={() => void switchWorking(choice === 'close' ? null : choice)}>입력 버리고 열기</button><button onClick={cancelChoice}>계속 편집</button></div></section>}
     <div hidden={tab !== 'library'}><section className={styles.library}><div className={styles.actions}><button disabled={busy || locked} onClick={() => choose({ draftId: programId('creator'), rawText: '', title: '', baseRecordRevision: null })}>빈 제작 원문 만들기</button><button aria-pressed={archived} onClick={() => setArchived(v => !v)}>{archived ? '사용 중 초안 보기' : '보관함 보기'}</button></div>
@@ -879,7 +911,7 @@ export function ProgramCreatorWorkspace(props: ProgramCreatorWorkspaceProps) {
           onResultViewChange={resultView => chooseResult({ resultView })} onCalendarBaseDateChange={baseDate => chooseResult({ baseDate })}
           onCalendarSelectedDateChange={selectedDate => chooseResult({ selectedDate })} onOpenItem={intent => { const sourceLine = preview.result?.ok ? preview.result.projection.items.find(item => item.ref === intent.itemRef)?.sourceLine : undefined; if (sourceLine) { setTab('input'); window.setTimeout(() => { const offset = buffer.rawText.split('\n').slice(0,sourceLine-1).join('\n').length + (sourceLine > 1 ? 1 : 0); editor.current?.focusRange(offset); },0); } }} />
           : <p role="status">원문의 확인 항목을 해결하면 결과를 볼 수 있습니다.</p>}
-        {buffer.nativeDocument?<button ref={nativeHandoffTrigger} disabled={blocked||needsSave||buffer.nativePendingRawText!==undefined||!!nativeHandoff||!!nativeLineage} onClick={prepareNativeHandoff}>제작 설정을 개인 실행과 비교</button>:<button disabled={blocked || needsSave || !preview?.materialized?.ok} onClick={() => void handoff()}>{workspace?.handoffs[buffer.draftId] ? '같은 개인 문서에 인계' : '확인한 제작물을 개인 문서로 인계'}</button>}{needsSave && <p>인계 전에 제작 초안을 명시 저장해 주세요.</p>}
+        {buffer.nativeDocument?<button ref={nativeHandoffTrigger} disabled={blocked||needsSave||buffer.nativePendingRawText!==undefined||!!nativeHandoff||!!nativeLineage} onClick={prepareNativeHandoff}>제작 설정을 개인 실행과 비교</button>:<button disabled={blocked || needsSave || !preview?.materialized?.ok} onClick={() => void handoff()}>{opensExistingPlan ? '기존 플랜 열기' : workspace?.handoffs[buffer.draftId] ? '같은 개인 문서에 인계' : '확인한 제작물을 개인 문서로 인계'}</button>}{needsSave && <p>원본 Flow에 저장하지 않은 변경이 있습니다. 제작 초안을 저장한 뒤 인계해 주세요.</p>}
         {executionDocumentId && <button disabled={blocked || needsSave || buffer.nativePendingRawText !== undefined || !!nativeHandoff || !!nativeLineage} onClick={() => openExecutionDocument(executionDocumentId)}>개인 문서 열기</button>}
         {nativeHandoff&&<div ref={nativeHandoffFrame}><ProgramCreatorNativeHandoff preview={nativeHandoff} choices={nativeHandoffChoices} busy={busy||locked} feedback={{error,text:message}} onChange={changeNativeHandoff} onApply={()=>void acceptNativeHandoff()} onCancel={cancelNativeHandoff} onRefresh={prepareNativeHandoff}/></div>}
         {nativeLineage&&<div ref={lineageFrame}><ProgramCreatorNativeLineage preview={nativeLineage} mapping={lineageMapping} busy={busy||locked} feedback={{error,text:message}}
@@ -912,5 +944,6 @@ export function ProgramCreatorWorkspace(props: ProgramCreatorWorkspaceProps) {
         <button disabled={busy||locked} onClick={()=>void acceptUpdate()}>선택한 변경만 한 번 적용</button><button disabled={busy||locked} onClick={cancelUpdate}>모두 유지하고 비교 닫기</button><button disabled={busy||locked} onClick={reviewUpdate}>최신 내용으로 다시 비교</button>
       </section>}
     </>}
+    </div>
   </section>;
 }
