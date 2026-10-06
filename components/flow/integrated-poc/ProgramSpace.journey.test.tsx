@@ -46,7 +46,7 @@ function periodHarness(composing: boolean) {
   const scan = (node: ts.Node) => { if (ts.isFunctionDeclaration(node) && node.name?.text === 'changePeriod') fn = node; ts.forEachChild(node, scan); };
   scan(ast); assert(fn);
   const code = ts.transpileModule(`const change = (${fn.getText(ast)});`, { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText;
-  const context = { inputLockCount: { current: 0 }, today: '2026-10-02',
+  const context = { inputLockCount: { current: 0 }, today: '2026-10-02', collectionMode: undefined,
     setTaskNotice: (value: unknown) => assert.equal(value, null),
     lockInput: () => { lockCount++; calls.push('lock'); return () => { lockCount--; calls.push('release'); }; },
     flushAllEditors: async () => { flushCount++; calls.push('flush'); return draft.flush(); },
@@ -253,7 +253,7 @@ test('a committed view change consumes the old handoff so returning to the sourc
 });
 
 function newDocumentHarness(options: { reject?: 'storage' | 'cas' | 'permission'; flush?: () => Promise<boolean>; locked?: boolean;
-  flushSaves?: number; foreign?: 'before' | 'between' | 'after'; actorSwitch?: 'before' | 'after'; failSave?: boolean; preparing?: boolean; concurrentMove?: boolean } = {}) {
+  flushSaves?: number; foreign?: 'before' | 'between' | 'after'; actorSwitch?: 'before' | 'after'; failSave?: boolean; preparing?: boolean; concurrentMove?: boolean; collections?: boolean } = {}) {
   const initial = createProgramData(), actorId = initial.activeActorId;
   const folder = createProgramFolder(initial, { actorId, requestId: 'new-document-folder-fixture', expectedSpace: initial.spaces[actorId], title: '선택한 보관 폴더' });
   assert(folder.ok);
@@ -274,7 +274,7 @@ function newDocumentHarness(options: { reject?: 'storage' | 'cas' | 'permission'
   const scan = (node: ts.Node) => { if (ts.isFunctionDeclaration(node) && node.name?.text === 'newDocument') fn = node; ts.forEachChild(node, scan); };
   scan(ast); assert(fn);
   const code = ts.transpileModule(`const create = (${fn.getText(ast)});`, { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText;
-  const context = { createProgramDocument, folderId, inputLockCount, preparing, moveFlush, formExpected: { current: expectedSpace }, space,
+  const context = { createProgramDocument, folderId, collectionMode: options.collections ? {} : undefined, inputLockCount, preparing, moveFlush, formExpected: { current: expectedSpace }, space,
     actorId: options.reject === 'permission' ? 'missing-actor' : actorId, programId, programFailure, programClone, programResult, programSame, M,
     mergeProgramTextWorkspace, programPreservesLockedDocumentContent, programPreservesSeriesMetadata, programPreservesLegacyQualityHold, programPreservesLegacyPlanExcluded,
     positions: { current: {} }, setPreparingDocumentAction() {},
@@ -332,6 +332,13 @@ test('creating a blank document preserves its selected storage folder and clears
   assert.equal(h.presentation.folderId, ''); assert.equal(h.presentation.period, 'documents'); assert.equal(h.presentation.libraryOpen, false);
   assert.deepEqual(h.presentation.opened, ['old-document', doc.id]); assert.equal(h.writes(), 1); assert.equal(h.inputLockCount.current, 0);
   assert.deepEqual(h.calls, ['prevent', 'lock', 'flush', 'run', 'reset', 'navigate', 'release']);
+});
+
+test('explicit collection mode creates an unfiled document without inheriting the selected legacy location', async () => {
+  const h = newDocumentHarness({ collections: true }); await h.create();
+  const doc = M.getDocument(h.data().spaces[h.actorId].text, h.presentation.selected)!;
+  assert.equal(doc.folderId, 'folder-unfiled'); assert.equal(doc.title, '새 빈 문서'); assert.equal(M.raw(doc), '');
+  assert.equal(h.writes(), 1); assert.equal(h.data().spaces[h.actorId].text.taskScopes[doc.id], undefined);
 });
 
 test('failed document creation retains folder view, selection and form through storage, CAS and authority rejection', async () => {
@@ -429,7 +436,7 @@ function harness() {
   const selectedRef = { current: id }, presentation = { current: { period: 'week', folderId: 'chosen-folder', query: '같은 제목' } };
   const documentsRef = { current: [...space.text.documents, ...space.text.flows] };
   const renderedLine = { offsetTop: 44, offsetHeight: 44 };
-  const textarea = { value: M.raw(M.getDocument(space.text, id)), selectionStart: 0, selectionEnd: 0, scrollTop: 35,
+  const textarea = { value: M.raw(M.getDocument(space.text, id)), selectionStart: 0, selectionEnd: 0, scrollTop: 35, clientHeight: 390,
     readOnly: false,
     closest: () => ({ querySelectorAll: () => [null, renderedLine] }),
     getClientRects: () => [{}], focus: () => calls.push('focus'), scrollIntoView: () => calls.push('reveal'),
@@ -524,8 +531,15 @@ test('ordinary document opening keeps its existing path without forcing a row se
   assert.equal(JSON.stringify(h.data), h.before);
 });
 
-test('source return scrolls to the selected rendered line instead of resetting a long document to the top', async () => {
+test('source return uses spare viewport height for preceding context without losing the exact target', async () => {
   const h = harness(); h.renderedLine.offsetTop = 1200;
   await h.open(h.id, h.taskId); h.flush();
-  assert.equal(h.textarea.scrollTop, 1156); assert.equal(JSON.stringify(h.data), h.before);
+  assert.equal(h.textarea.scrollTop, 898); assert.equal(JSON.stringify(h.data), h.before);
+});
+
+test('a target taller than the viewport starts at the exact row and keeps its original caret', async () => {
+  const h = harness(); h.renderedLine.offsetTop = 1200; h.renderedLine.offsetHeight = 500;
+  await h.open(h.id, h.taskId); h.flush();
+  assert.equal(h.textarea.scrollTop, 1200); assert.equal(h.textarea.selectionStart, '원래 메모\n'.length);
+  assert.equal(JSON.stringify(h.data), h.before);
 });

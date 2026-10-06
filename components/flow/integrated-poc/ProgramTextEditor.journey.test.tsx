@@ -38,7 +38,9 @@ function harness(overrides: Record<string, unknown> = {}) {
     draft: { dirty: false, saving: false, error: '' }, inputLocked: false,
     props: { onUndo: () => calls.push('server-undo'), onRedo: () => calls.push('server-redo') },
     orderHistoryRef: { current: { hasEntries: () => false } },
-    editorRef: { current: { undo: () => calls.push('native-undo') } },
+    editorRef: { current: { undo: () => calls.push('native-undo'), getSelection: () => ({ lineIndex: 1 }) } },
+    currentDoc: () => ({ lines: [{ id: 'first' }, { id: 'current-line' }] }),
+    setPanel: (panel: unknown) => calls.push(JSON.stringify(panel)),
     nativeHistory: (kind: string) => calls.push(kind), previewOrder: () => calls.push('sort-preview'),
     closeEditorTools: close, ...overrides };
   const tree = evaluate(toolbar, context) as Node;
@@ -70,6 +72,38 @@ test('secondary actions close the disclosure and keep sort, server Redo and nati
     const h = harness(overrides); h.button(label).props.onClick(h.click);
     assert.equal(h.menu.open, false); assert.deepEqual(h.calls, ['summary-focus', expected]);
   }
+});
+
+test('direct writing moves the duplicate add entry into existing tools without changing its selected row', () => {
+  const h = harness({ props: { directWriting: true } });
+  assert.equal(h.button('＋ 추가').props.hidden, true);
+  assert(nodes(h.details).includes(h.button('현재 줄에 추가')));
+  h.button('현재 줄에 추가').props.onClick(h.click);
+  assert.equal(h.menu.open, false);
+  assert.deepEqual(h.calls, ['summary-focus', JSON.stringify({ kind: 'insert', lineId: 'current-line' })]);
+  assert.equal(harness({ disabled: true, props: { directWriting: true } }).button('현재 줄에 추가').props.disabled, true);
+  assert.equal(harness().button('현재 줄에 추가'), undefined);
+  assert.equal(harness().button('＋ 추가').props.hidden, undefined);
+});
+
+test('empty writing signal is native placeholder only and removed from readonly or ordinary editors', () => {
+  const effect = find(node => ts.isCallExpression(node) && node.expression.getText(ast) === 'useEffect'
+    && node.arguments[0]?.getText(ast).includes('textarea.placeholder =')) as ts.CallExpression;
+  const area = { readOnly: false, placeholder: '' }, inputLockedRef = { current: false };
+  let refreshed = 0;
+  for (const [props, expected] of [[{ directWriting: true }, '여기에 바로 적으세요'],
+    [{ directWriting: true, readOnly: true }, ''], [{ directWriting: false }, '']] as const) {
+    const callback = evaluate(effect.arguments[0].getText(ast), { textArea: () => area, props, inputLockedRef,
+      editorRef: { current: { refresh: () => refreshed++ } } });
+    callback(); assert.equal(area.placeholder, expected); assert.equal(area.readOnly, !!('readOnly' in props && props.readOnly));
+  }
+  assert.equal(refreshed, 3);
+  assert(!effect.arguments[0].getText(ast).includes('setValue'));
+  const css = readFileSync(new URL('./ProgramTextEditor.module.css', import.meta.url), 'utf8');
+  assert.match(css, /tle-textarea::placeholder/);
+  assert.match(css, /-webkit-text-fill-color: #526966/);
+  assert.match(css, /data-mode\]:not\(\[data-move-phase\]\)/);
+  assert.match(css, /:not\(\[data-move-phase\]\):not\(\.tle-has-move-selection\)/);
 });
 
 test('tool disclosure preserves dirty, saving and readonly action gates and optional Redo', () => {

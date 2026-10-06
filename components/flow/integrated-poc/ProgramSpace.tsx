@@ -34,6 +34,7 @@ import { programRecurrenceFocusId, resolveProgramRecurrencePlanFocus, type Progr
 import { programTaskDateChangeHint } from '@/lib/flow/integrated-poc/text-context-presentation';
 import { restoreProgramDialogFocus } from '@/lib/flow/integrated-poc/dialog-return-focus';
 import { readProgramTaskOrigin } from '@/lib/flow/integrated-poc/task-origin-presentation';
+import { addDocumentCollection, collectionDocumentIds, setDocumentCollectionLink, type DocumentCollections } from '@/lib/flow/integrated-poc/document-collections';
 
 export type ProgramSpaceCapabilities = {
   discovery?: boolean;
@@ -56,6 +57,8 @@ export type ProgramSpaceProps = {
   onRegisterNavigation?: (navigation: ProgramSpaceNavigation | null) => void;
   /** Local view changes do not call mutate; the host must expose held authority. */
   canContinueWholeDocument?: () => boolean;
+  /** Optional whole-document links supplied by a local or account-owned browser host. */
+  documentCollections?: { state: DocumentCollections; onChange: (next: DocumentCollections) => Promise<boolean>; initialWritingDocumentId?: string };
 };
 type Detail = { kind: 'task'; id: string } | { kind: 'folder'; id: string } | { kind: 'connect'; docId: string; lineId: string } | null;
 type LibraryWritingHandoff = { epoch: number; documentId: string; folderId: string; focusOwner: Element | null };
@@ -63,6 +66,17 @@ const periods: [ProgramPeriod, string][] = [['documents', '문서'], ['today', '
 export const PROGRAM_EMPTY_EXAMPLE = '이번 주 준비\n- [ ] 확인할 일\n  - [ ] 먼저 확인할 내용\n자유롭게 적는 메모';
 // A06 / V41-004–005: restore the approved v4.1 touch thresholds, not a new policy.
 export const PROGRAM_MOVE_GESTURE_V1 = Object.freeze({ version: 1, holdMs: 350, cancelDistancePx: 8 });
+
+function initialProgramDocumentId(props: ProgramSpaceProps, space: ProgramPrivateSpace) {
+  const remembered = props.selectedDocumentId ?? space.position.documentId;
+  if (remembered !== null && remembered !== undefined) return remembered;
+  const initialId = props.documentCollections?.initialWritingDocumentId;
+  if (!initialId) return '';
+  const retained = new Set(Object.values(space.retentionDocuments ?? {}));
+  const document = space.text.documents.find(doc => doc.id === initialId);
+  return document && !space.archivedDocumentIds.includes(document.id) && !space.documentTrash?.[document.id]
+    && !retained.has(document.id) ? document.id : '';
+}
 
 function sameScheduleWorkspace(before: TextWorkspaceState, expected: TextWorkspaceState, actual: TextWorkspaceState) {
   if (!M.validate(actual)) return false;
@@ -90,7 +104,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     accept?: (workspace: TextWorkspaceState | null) => void; timeout?: ReturnType<typeof setTimeout> } | null>(null);
   const [period, setPeriod] = useState<ProgramPeriod>('documents');
   const [date, setDate] = useState(today), [folderId, setFolderId] = useState(''), [query, setQuery] = useState('');
-  const [selected, setSelected] = useState(props.selectedDocumentId ?? space.position.documentId ?? '');
+  const [collectionId, setCollectionId] = useState(''), [quickDocumentId, setQuickDocumentId] = useState('');
+  const collectionMode = props.documentCollections;
+  const [selected, setSelected] = useState(() => initialProgramDocumentId(props, space));
   const [opened, setOpened] = useState<string[]>(selected ? [selected] : []);
   const [detail, setDetail] = useState<Detail>(null), [message, setMessage] = useState('');
   const [taskNotice, setTaskNotice] = useState<{ taskId: string; title: string; text: string } | null>(null);
@@ -204,7 +220,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const selectedQualityHold = selectedDoc ? space.savedBindings.filter(binding => binding.documentId === selectedDoc.id)
     .flatMap(binding => Object.values(binding.itemLines)).map(id => programLegacyTaskQualityHold(space, id)).find(Boolean) : null;
   const folder = space.text.folders.find(row => row.id === folderId);
-  const executionQuery = { period, date, today, folderId, query, includeHeld: includeHeldOccurrences, includeExcluded: includeExcludedOccurrences, page: occurrencePage };
+  const executionQuery = { period, date, today, folderId: collectionMode ? '' : folderId, query, includeHeld: includeHeldOccurrences, includeExcluded: includeExcludedOccurrences, page: occurrencePage };
   const occurrenceResult = useMemo(() => period === 'documents' ? { rows: [], issues: [], hasMore: false, pendingStarts: [] } : programOrderedExecutionRows(data, executionQuery), [data, period, date, today, folderId, query, includeHeldOccurrences, includeExcludedOccurrences, occurrencePage]);
   const executionRows = occurrenceResult.rows;
   const executionDayRows = programExecutionDayPresentation(executionRows, period, date, today);
@@ -216,8 +232,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const detailSchedulePending = !!detailTask && (executionDateDraft !== (detailTask.date ?? '') || executionTimeDraft !== (detailTask.time ?? ''));
   const detailProgressPending = recordDate !== progressDraftBaseline.date || percent !== progressDraftBaseline.percent;
   const matchingDocumentIds = useMemo(() => new Set(folderId && docs[0] ? readProgramFolderRegions(space.text, docs[0].id, folderId)?.matchingDocumentIds ?? [] : []), [space.text, folderId]);
-  const documentList = docs.filter(doc => !retainedIds.has(doc.id) && !space.documentTrash?.[doc.id] && space.archivedDocumentIds.includes(doc.id) === showArchived && (!folderId || doc.folderId === folderId || matchingDocumentIds.has(doc.id))
+  const selectedCollection = collectionMode?.state.collections.find(row => row.id === collectionId);
+  const collectionIds = collectionMode ? collectionDocumentIds(collectionMode.state, collectionId ? [collectionId] : collectionMode.state.collections.map(row => row.id)) : null;
+  const documentList = docs.filter(doc => !retainedIds.has(doc.id) && !space.documentTrash?.[doc.id] && space.archivedDocumentIds.includes(doc.id) === showArchived && (collectionMode ? !collectionId || !!collectionIds?.has(doc.id) : !folderId || doc.folderId === folderId || matchingDocumentIds.has(doc.id))
     && (!query || `${doc.title}\n${M.raw(doc)}`.toLocaleLowerCase().includes(query.toLocaleLowerCase())));
+  const quickDocuments = docs.filter(doc => programDocumentContentLock(space, doc.id) === 'active');
+  const quickTarget = quickDocumentId || (selectedDoc && quickDocuments.some(doc => doc.id === selectedDoc.id) ? selectedDoc.id : '');
   const range = programDateRange(period, date);
   const presentation = useRef({ period, date, folderId, query, selected, showArchived, recurrence: recurrencePresentation });
   presentation.current = { period, date, folderId, query, selected, showArchived, recurrence: recurrencePresentation };
@@ -312,8 +332,22 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     const release = lockInput();
     try {
       if (!await flushAllEditors()) { setMessage('한글 입력을 마친 뒤 보기 범위를 바꿔 주세요. 저장되지 않은 입력도 확인해 주세요.'); return false; }
-      setPeriod(nextPeriod); if (nextPeriod === 'today') setDate(today); setMessage(''); setTaskNotice(null); return true;
+      setPeriod(nextPeriod); if (collectionMode) setLibraryOpen(false); if (nextPeriod === 'today') setDate(today); setMessage(''); setTaskNotice(null); return true;
     } finally { release(); }
+  }
+  async function changeCollection(nextId: string) {
+    if (inputLockCount.current > 0) return;
+    const release = lockInput();
+    try {
+      if (!await flushAllEditors()) { setMessage('작성 중인 입력을 저장하거나 취소한 뒤 모음을 바꿔 주세요.'); return; }
+      setCollectionId(nextId); setMessage('');
+    } finally { release(); }
+  }
+  async function writeCollections(next: DocumentCollections) {
+    if (!collectionMode) return false;
+    const saved = await collectionMode.onChange(next);
+    setMessage(saved ? '' : '모음 연결을 저장하지 못했습니다. 원문은 변경하지 않았습니다.');
+    return saved;
   }
   async function showFolderTasks() {
     return changePeriod('all');
@@ -529,7 +563,9 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         const offset = doc.lines.slice(0, index).reduce((sum, line) => sum + line.text.length + 1, 0);
         textarea.setSelectionRange(offset, offset);
         const renderedLine = textarea.closest('.tle-root')?.querySelectorAll<HTMLElement>('.tle-line')[index];
-        textarea.scrollTop = renderedLine ? Math.max(0, renderedLine.offsetTop - renderedLine.offsetHeight) : requested.scrollTop;
+        // Preserve the exact caret, using spare viewport height for nearby notes/links.
+        textarea.scrollTop = renderedLine ? Math.max(0, renderedLine.offsetTop
+          - Math.max(0, textarea.clientHeight - renderedLine.offsetHeight - 44)) : requested.scrollTop;
         textarea.scrollIntoView({ block: 'nearest' });
       });
     }
@@ -543,12 +579,19 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       if (!await flushAllEditors()) { setMessage('작성 중인 입력을 저장하거나 취소한 뒤 새 문서를 만들어 주세요.'); return; }
       if (authority.conflict) { setMessage('문서가 바뀌어 새 문서를 만들지 않았습니다. 현재 내용을 확인한 뒤 다시 시도해 주세요.'); return; }
       const result = await run('문서 만들기', current => current.activeActorId !== actorId ? programFailure(current, 'conflict') : createProgramDocument(current, {
-        actorId, requestId: programId('request'), expectedSpace: authority.expected, title, folderId: folderId || 'folder-unfiled' }));
+        actorId, requestId: programId('request'), expectedSpace: authority.expected, title, folderId: collectionMode ? 'folder-unfiled' : folderId || 'folder-unfiled' }));
       if (result.ok) { form.reset(); setLibraryOpen(false); setSelected(result.result); setOpened(previous => [...previous, result.result]); setFolderId(''); setPeriod('documents'); props.navigate({ view: 'space', id: result.result }); }
     } finally { if (moveFlush.current === authority) moveFlush.current = null; preparing.current = false; setPreparingDocumentAction(false); release(); }
   }
   async function quickTask(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault(); const form = event.currentTarget, input = new FormData(form), title = String(input.get('title') ?? ''), pickedDate = String(input.get('date') ?? '') || null;
+    if (collectionMode) {
+      const documentId = String(input.get('documentId') ?? '');
+      if (!quickDocuments.some(doc => doc.id === documentId)) { setMessage('할 일을 작성할 문서를 먼저 선택해 주세요.'); return; }
+      const result = await run('문서에 할 일 추가', current => addProgramQuickTask(current, { ...base(current), documentId, title, date: pickedDate }));
+      if (result.ok) form.reset();
+      return;
+    }
     const result = await run('빠른 할 일 추가', current => {
       const currentSpace = current.spaces[actorId];
       let updated = current, documentId = currentSpace.text.documents.find(doc => doc.title === '빠른 할 일' && !currentSpace.archivedDocumentIds.includes(doc.id))?.id;
@@ -665,6 +708,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     return { id: item.id, title: names.join(' / ') };
   });
   const taskFolderPath = (task: TextTask) => {
+    if (collectionMode) return '문서';
     const actualFolderId = space.text.flows.find(flow => flow.id === task.scopeId)?.folderId ?? task.folderId;
     return folderOptions.find(item => item.id === actualFolderId)?.title ?? task.folder;
   };
@@ -677,17 +721,20 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     }
   };
   return <section ref={root} className={styles.space} aria-label="내 공간" onClickCapture={guardOccurrenceDraft} onKeyDownCapture={event => { if (!['Tab', 'Shift', 'Escape'].includes(event.key)) guardOccurrenceDraft(event); }}>
-    {selectedDoc && <button ref={libraryToggle} className={styles.libraryToggle} aria-expanded={libraryOpen} aria-controls="program-library" onClick={() => { cancelLibraryReveal(); setLibraryOpen(value => !value); }}>문서·폴더 {libraryOpen ? '접기' : '열기'}{folder ? ` · ${folder.title}` : ''}</button>}
+    {selectedDoc && <button ref={libraryToggle} className={styles.libraryToggle} aria-expanded={libraryOpen} aria-controls="program-library" onClick={() => { cancelLibraryReveal(); setLibraryOpen(value => !value); }}>{collectionMode ? '문서·모음' : '문서·폴더'} {libraryOpen ? '접기' : '열기'}{folder ? ` · ${folder.title}` : ''}</button>}
     <aside id="program-library" className={styles.sidebar} data-open={libraryOpen || !selectedDoc}>
       <form className={styles.newDoc} onSubmit={newDocument}><label htmlFor="program-document-title">새 문서</label><div><input id="program-document-title" name="title" placeholder="문서 제목" required maxLength={240} /><button type="submit">만들기</button></div></form>
       <label className={styles.field}>내 문서·할 일 찾기<input id="program-private-search" type="search" value={query} onChange={event => { setQuery(event.target.value); setTaskNotice(null); }} /></label>
-      <label className={styles.field}>폴더<select value={folderId} onChange={event => { void changeFolder(event.target.value, { fromLibrary: true }); }}><option value="">모든 폴더</option>{folderOptions.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</select></label>
+      {collectionMode ? <><label className={styles.field}>문서 모음<select aria-label="문서 모음" value={collectionId} onChange={event => { void changeCollection(event.target.value); }}><option value="">모든 문서</option>{collectionMode.state.collections.map(row => <option key={row.id} value={row.id}>{row.title}</option>)}</select></label>
+        <details className={styles.folderTools}><summary>모음 만들기</summary><form onSubmit={async event => { event.preventDefault(); const form = event.currentTarget, title = String(new FormData(form).get('title') ?? '');
+          if (await writeCollections(addDocumentCollection(collectionMode.state, programId('collection'), title))) form.reset();
+        }}><label>새 모음 이름<input name="title" required maxLength={100} /></label><button>만들기</button></form></details></> : <><label className={styles.field}>폴더<select value={folderId} onChange={event => { void changeFolder(event.target.value, { fromLibrary: true }); }}><option value="">모든 폴더</option>{folderOptions.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</select></label>
       <details className={styles.folderTools}><summary>폴더 정리</summary><form onSubmit={async event => {
         event.preventDefault(); const form = event.currentTarget, title = String(new FormData(form).get('title') ?? '');
         const result = await run('폴더 만들기', current => createProgramFolder(current, { ...base(current), title, parentId: folderId || null })); if (result.ok) form.reset();
-      }}><label>새 폴더 이름<input name="title" required maxLength={100} /></label><button>폴더 만들기</button></form>{folder && folder.id !== 'folder-unfiled' && <button onClick={() => openDetail({ kind: 'folder', id: folder.id })}>{folder.title} 수정·이동</button>}</details>
+      }}><label>새 폴더 이름<input name="title" required maxLength={100} /></label><button>폴더 만들기</button></form>{folder && folder.id !== 'folder-unfiled' && <button onClick={() => openDetail({ kind: 'folder', id: folder.id })}>{folder.title} 수정·이동</button>}</details></>}
       <div className={styles.listHeading}><h2>{showArchived ? '보관한 문서' : '문서'}</h2><button aria-pressed={showArchived} onClick={() => setShowArchived(value => !value)}>{showArchived ? '사용 중 보기' : '보관함'}</button></div>
-      <ul className={styles.documents}>{documentList.map(doc => <li key={doc.id}><button aria-current={selected === doc.id && period === 'documents' ? 'page' : undefined} onClick={() => void openDocument(doc.id)}>{doc.title}<small>{space.text.flows.some(flow => flow.id === doc.id) ? '개인 Flow' : doc.folder}</small></button></li>)}</ul>
+      <ul className={styles.documents}>{documentList.map(doc => <li key={doc.id}><button aria-current={selected === doc.id && period === 'documents' ? 'page' : undefined} onClick={() => void openDocument(doc.id)}>{doc.title}<small>{space.text.flows.some(flow => flow.id === doc.id) ? '개인 Flow' : collectionMode ? '문서' : doc.folder}</small></button></li>)}</ul>
       {!documentList.length && <p className={styles.muted}>{query ? '찾는 문서가 없습니다.' : showArchived ? '보관한 문서가 없습니다.' : '첫 문서를 만들거나 빠른 할 일을 적어보세요.'}</p>}
       <ProgramDocumentTrash space={space} onOpen={id => void openDocument(id)} />
     </aside>
@@ -705,7 +752,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             if (!event.currentTarget.open && (!title || title.value === title.defaultValue)) formExpected.current = null;
           }}><summary>문서 작업</summary><div className={styles.documentTools} onInputCapture={() => { formExpected.current ??= space; }}>
             <form onSubmit={async event => { event.preventDefault(); const title = String(new FormData(event.currentTarget).get('title') ?? ''); await run('문서 이름 변경', current => renameProgramDocument(current, { ...base(current), documentId: selectedDoc.id, title })); }}><label>문서 이름<input key={selectedDoc.id + selectedDoc.title} name="title" defaultValue={selectedDoc.title} required /></label><button>이름 변경</button></form>
-            <label>보관 위치<select value={selectedDoc.folderId} onChange={event => { const value = event.target.value; void run('폴더 이동', current => setProgramDocumentFolder(current, { ...base(current), documentId: selectedDoc.id, folderId: value })); }}>{folderOptions.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</select></label>
+            {!collectionMode && <label>보관 위치<select value={selectedDoc.folderId} onChange={event => { const value = event.target.value; void run('폴더 이동', current => setProgramDocumentFolder(current, { ...base(current), documentId: selectedDoc.id, folderId: value })); }}>{folderOptions.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</select></label>}
             {props.capabilities?.publication !== false && props.onPublishDocument && <button disabled={preparingDocumentAction} onClick={() => void openDocumentAction(props.onPublishDocument!, { modalReturnFocus: true })}>선택해서 공개</button>}
             {props.capabilities?.revisionHistory !== false && props.onRevisionHistory && <button disabled={preparingDocumentAction} onClick={() => void openDocumentAction(props.onRevisionHistory!)}>저장판본·복구</button>}
             {props.onOutputDocument && <button disabled={preparingDocumentAction} onClick={() => void openDocumentAction(props.onOutputDocument!)}>내 도구로 가져가기</button>}
@@ -723,10 +770,18 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           {selectedQualityHold && <p role="status" className={styles.muted}>{selectedQualityHold} 해당 원본 항목과 실행 기록은 읽기 전용으로 남깁니다. 다른 자유 메모는 계속 쓸 수 있습니다.</p>}
           {retentionSource && <p className={styles.muted}>판본 복구 중 빠진 내용을 보관한 곳입니다. <button onClick={() => void openDocument(retentionSource)}>원래 문서로 돌아가기</button></p>}
           {!selectedArchived && !M.raw(selectedDoc).trim() && <details className={styles.example}><summary>빈 문서에서 시작할 작성 예시</summary><pre>{PROGRAM_EMPTY_EXAMPLE}</pre><button onClick={() => void editorCommit(selectedDoc.id, M.editText(space.text, selectedDoc.id, PROGRAM_EMPTY_EXAMPLE), '작성 예시 넣기', { expectedWorkspace: space.text })}>이 예시를 문서에 넣기</button></details>}
+          {collectionMode && !retentionSource && !selectedTrashed && <><details className={styles.collectionDisclosure}>
+            <summary>모음에 정리 · {collectionMode.state.collections.filter(row => row.documentIds.includes(selectedDoc.id)).map(row => row.title).join(', ') || '연결된 모음 없음'}</summary>
+            <fieldset className={styles.collectionMembership}><legend>문서 전체 연결</legend>
+            {collectionMode.state.collections.length ? collectionMode.state.collections.map(row => <label key={row.id}><input type="checkbox" checked={row.documentIds.includes(selectedDoc.id)} onChange={event => { void writeCollections(setDocumentCollectionLink(collectionMode.state, row.id, selectedDoc.id, event.target.checked)); }} />{row.title}</label>) : <p>모음 없이도 작성할 수 있습니다. 필요하면 문서 목록에서 모음을 만드세요.</p>}
+            <small>이 문서 전체를 연결합니다. 체크를 빼도 원문과 할 일은 남습니다.</small>
+          </fieldset></details>
+            {selectedCollection && !selectedCollection.documentIds.includes(selectedDoc.id) && <p role="status" className={styles.muted}>이 문서는 선택한 모음에 없습니다. 원문은 그대로 열려 있습니다.</p>}
+          </>}
         </>}
         {opened.filter(id => docs.some(doc => doc.id === id)).map(id => <div key={id} hidden={selected !== id} data-program-document={id}><ProgramTextEditor
           docId={id} workspace={space.text} initialPosition={positions.current[id] ?? (space.position.documentId === id ? space.position : undefined)}
-          folderId={folderId} onShowWholeDocument={() => { void changeFolder(''); }} onShowFolderTasks={() => { void showFolderTasks(); }}
+          folderId={collectionMode ? '' : folderId} directWriting={!!collectionMode} onShowWholeDocument={() => { void changeFolder(''); }} onShowFolderTasks={() => { void showFolderTasks(); }}
           onContinueWholeDocument={stage => {
             // folderId controls every retained editor. Never unmount another pending region.
             if (props.canContinueWholeDocument?.() === false || inputLockCount.current > 0 || selected !== id || period !== 'documents'
@@ -748,7 +803,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           onRegisterDraft={read => { draftReaders.current[id] = read; }}
           onRegisterConfirmedSave={accept => { confirmedSaveReaders.current[id] = accept; }}
           onRegisterInputLock={lock => { inputLocks.current[id] = lock; lock?.(inputLockCount.current > 0); }}
-          onOpenScope={scopeId => { if (space.text.folders.some(item => item.id === scopeId)) { setFolderId(scopeId); setPeriod('all'); } else void openDocument(scopeId); }}
+          onOpenScope={scopeId => { if (space.text.folders.some(item => item.id === scopeId)) { if (collectionMode) { setMessage('기존 항목 분류는 모음이 아닙니다. 전체 문서에서 계속 작성합니다.'); return; } setFolderId(scopeId); setPeriod('all'); } else void openDocument(scopeId); }}
           onConnectFlow={(docId, lineId) => openDetail({ kind: 'connect', docId, lineId })}
           readOnly={programDocumentContentLock(space, id) !== 'active'} disabledReason={space.documentTrash?.[id] ? '휴지통의 문서입니다. 복원하면 삭제 전 상태로 돌아갑니다.' : retainedIds.has(id) ? '판본 복구 중 보관된 내용 · 읽기 전용' : '보관한 문서입니다. 보관에서 꺼내면 이어서 쓸 수 있습니다.'}
         /></div>)}
@@ -760,9 +815,15 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       <div hidden={period === 'documents'}>
         <ProgramRecurrencePlanRecovery data={data} today={today} folderId={folderId || undefined} disabled={preparingDocumentAction} onOpenSource={(id, line) => void openDocument(id, line)} />
         <div className={styles.periodHeading}><h1>{periods.find(([key]) => key === period)?.[1]}{folder ? ` · ${folder.title}` : ''}</h1>{!['all', 'undated', 'documents'].includes(period) && <div className={styles.dateNav}><button aria-label="이전 기간" onClick={() => setDate((period === 'month' ? programShiftMonth(date, -1) : programShiftDate(date, period === 'week' ? -7 : -1)) || date)}>‹</button><label>조회 날짜<input id="program-query-date" type="date" value={date} onChange={event => { if (programDate(event.target.value)) setDate(event.target.value); }} /></label><button aria-label="다음 기간" onClick={() => setDate((period === 'month' ? programShiftMonth(date, 1) : programShiftDate(date, period === 'week' ? 7 : 1)) || date)}>›</button></div>}</div>
+        {collectionMode && <p className={styles.muted}>모음과 관계없이 모든 문서의 같은 할 일을 날짜별로 봅니다.</p>}
         {(folderId || query) && <div className={styles.filterContext} aria-label="할 일 조회 범위"><p>{folderId ? `${folderOptions.find(item => item.id === folderId)?.title ?? '선택한 폴더'} · 하위 포함` : '모든 폴더'}{query && <span>검색: {query}</span>}</p><button type="button" onClick={() => { void changeFolder(''); setQuery(''); }}>필터 해제</button></div>}
         {range.from && range.to !== range.from && <p className={styles.muted}>{range.from} ~ {range.to}</p>}
-        <form className={styles.quick} onSubmit={quickTask}><label>빠른 할 일<input name="title" required placeholder="할 일을 적으세요" maxLength={500} /></label><label>실행 날짜<input key={period + date} type="date" name="date" defaultValue={period === 'undated' ? '' : date} /></label><button>추가</button></form>
+        <details className={styles.quickDisclosure} data-collapsible={!!collectionMode && ['today', 'week'].includes(period)} open={!collectionMode || !['today', 'week'].includes(period)}>
+          <summary hidden={!collectionMode || !['today', 'week'].includes(period)}>할 일 추가</summary>
+          <form className={styles.quick} onSubmit={quickTask}>
+          {collectionMode && <label className={styles.quickDocument}>작성 문서<select name="documentId" aria-label="빠른 추가 작성 문서" required value={quickTarget} onChange={event => setQuickDocumentId(event.target.value)}><option value="">문서 선택</option>{quickDocuments.map(doc => <option key={doc.id} value={doc.id}>{doc.title}</option>)}</select><small>모음에 자동 연결하지 않습니다.{!quickDocuments.length && ' 문서를 먼저 만들어 주세요.'}</small></label>}
+          <label>빠른 할 일<input name="title" required placeholder="할 일을 적으세요" maxLength={500} /></label><label>실행 날짜<input key={period + date} type="date" name="date" defaultValue={period === 'undated' ? '' : date} /></label><button disabled={!!collectionMode && !quickTarget}>추가</button></form>
+        </details>
         {moving && <p role="status">옮길 행의 앞을 선택하세요. <button onClick={() => setMoving(null)}>취소</button></p>}
         {programSeriesMetadata(space).length > 0 && <div className={styles.actions}><label><input type="checkbox" checked={includeHeldOccurrences} onChange={event => setIncludeHeldOccurrences(event.target.checked)} /> 보류 회차</label><label><input type="checkbox" checked={includeExcludedOccurrences} onChange={event => setIncludeExcludedOccurrences(event.target.checked)} /> 제외 회차</label>
           <button onClick={() => void props.onUndo()}>변경 되돌리기</button><button onClick={() => void props.onRedo()}>다시 실행</button>

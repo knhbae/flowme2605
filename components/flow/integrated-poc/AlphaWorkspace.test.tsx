@@ -101,6 +101,15 @@ function harness() {
     setPublisher: (value: unknown) => { context.publisher = value; }, setInspector: (value: unknown) => { context.inspector = value; },
     snapshot: initial, data: initial.envelope.data, destination: { view: 'space' }, output: null, message: '', recoveries: null,
     storageError: false, external: false, presentation: 0, leave: false, disposed: { current: false }, ownMutation: { current: 0 }, externalRef: { current: false },
+    collectionsMode: false, collectionsState: null, collectionsMessage: '', collectionsSwitching: false, collectionsSaving: false,
+    collectionsSwitchingRef: { current: false }, collectionsPort: { current: null },
+    storageErrorRef: { current: false },
+    switchCollectionsMode: async () => {}, changeCollections: async () => false,
+    setCollectionsMode: (value: boolean | ((prior: boolean) => boolean)) => { context.collectionsMode = typeof value === 'function' ? value(context.collectionsMode) : value; },
+    setCollectionsState: (value: unknown) => { context.collectionsState = value; },
+    setCollectionsMessage: (value: string) => { context.collectionsMessage = value; },
+    setCollectionsSwitching: (value: boolean) => { context.collectionsSwitching = value; },
+    setCollectionsSaving: (value: boolean) => { context.collectionsSaving = value; },
     currentData: { current: initial.envelope.data }, currentRevision: { current: initial.account.revision },
     editors: { current: null }, legacyEditors: { current: null }, uiRecovery: { current: null }, controller: { current: null },
     parkedDrafts: { current: [] }, activeDrafts: { current: [] },
@@ -1144,4 +1153,100 @@ test('parked private, creator and social drafts remain separately discoverable o
     assertOutsideRoutineDisclosure(tree, node => node.type === 'summary' && text(node).startsWith(label));
   }
   for (const node of nodes(tree).filter(node => node.type === 'details' && node.props.className === 'recovery')) assert.equal(node.props.open, true);
+});
+
+test('collections are optional and retain the normal folder/server workspace by default', () => {
+  const h = harness(), before = JSON.stringify(h.context.data);
+  const original = nodes(h.render()).find(node => node.type === 'program-space')!;
+  assert.equal(original.props.documentCollections, undefined);
+  assert(nodes(h.render()).some(node => node.type === 'button' && text(node) === '문서·모음 시험'));
+  h.context.collectionsMode = true;
+  h.context.collectionsState = { version: 1, collections: [] };
+  const tree = h.render(), trial = nodes(tree).find(node => node.type === 'program-space')!;
+  assert.equal(trial.props.documentCollections.state, h.context.collectionsState);
+  assert(text(tree).includes('모음 연결은 이 브라우저에만 저장됩니다.'));
+  assert(nodes(tree).some(node => node.type === 'button' && text(node) === '기존 폴더로 보기'));
+  assert.equal(JSON.stringify(h.context.data), before); assert(!h.calls.includes('mutation'));
+});
+
+test('switching collections locks and flushes all mounted editors before remount, not a silent draft discard', async () => {
+  for (const block of ['none', 'save-failed', 'still-dirty', 'owner', 'controller', 'route', 'authority'] as const) {
+    const h = harness(), before = JSON.stringify(h.context.data), events: string[] = [];
+    let writable = true;
+    const value = { version: 1, collections: [] };
+    h.context.collectionsPort.current = { snapshot: () => ({ writable, value }) };
+    h.context.captureInput = () => { events.push('capture'); return true; };
+    h.context.hasInput = () => block === 'still-dirty';
+    h.context.editors.current = { lockInput: () => { events.push('lock'); return () => events.push('unlock'); }, flushAll: async () => {
+      events.push('flush');
+      if (block === 'owner') h.context.currentOwnerRef.current = 'owner-b';
+      if (block === 'controller') h.context.controller.current = {};
+      if (block === 'route') h.context.destinationRef.current = { view: 'discover' };
+      if (block === 'authority') writable = false;
+      return block !== 'save-failed';
+    } };
+    await evaluate(`(${declaration('switchCollectionsMode')})`, h.context)();
+    assert.equal(h.context.collectionsMode, block === 'none');
+    assert.deepEqual(events, ['capture', 'lock', 'flush', 'unlock']);
+    assert.equal(JSON.stringify(h.context.data), before); assert(!h.calls.includes('mutation'));
+  }
+});
+
+test('busy or duplicate mode changes are refused before capturing or saving input', async () => {
+  for (const duplicate of [false, true]) {
+    const h = harness();
+    h.context.collectionsSwitchingRef.current = duplicate;
+    h.context.collectionsPort.current = { snapshot: () => ({ writable: false }) };
+    h.context.captureInput = () => assert.fail('must not flush while unavailable');
+    await evaluate(`(${declaration('switchCollectionsMode')})`, h.context)();
+    assert.equal(h.context.collectionsMode, false); assert(!h.calls.includes('mutation'));
+  }
+});
+
+test('a failed local collection write never traps the account outside its existing folders', async () => {
+  const h = harness(); h.context.collectionsMode = true;
+  h.context.collectionsPort.current = { snapshot: () => ({ writable: false, value: { version: 1, collections: [] }, reason: 'conflict' }) };
+  h.context.hasInput = () => false;
+  await evaluate(`(${declaration('switchCollectionsMode')})`, h.context)();
+  assert.equal(h.context.collectionsMode, false); assert(!h.calls.includes('mutation'));
+});
+
+test('a queued collection write must settle before switching out of its view', async () => {
+  const h = harness(); h.context.collectionsMode = true;
+  h.context.collectionsPort.current = { snapshot: () => ({ writable: false, busy: true, value: { version: 1, collections: [] } }) };
+  h.context.captureInput = () => assert.fail('queued local change must keep its mounted view');
+  await evaluate(`(${declaration('switchCollectionsMode')})`, h.context)();
+  assert.equal(h.context.collectionsMode, true); assert(!h.calls.includes('mutation'));
+});
+
+test('collection saving uses only the account local port, never the server mutation receipt', async () => {
+  for (const outcome of ['success', 'failure', 'account-change'] as const) {
+    const h = harness(), before = JSON.stringify(h.context.data);
+    const next = { version: 1, collections: [{ id: 'collection-a', title: '가상 모음', documentIds: ['doc-a'] }] };
+    h.context.collectionsMode = true;
+    h.context.collectionsState = { version: 1, collections: [] };
+    h.context.collectionsPort.current = { snapshot: () => ({ value: next }), change: async (build: (value: unknown) => unknown) => {
+      assert.equal(build({ version: 1, collections: [] }), next);
+      if (outcome === 'account-change') h.context.currentOwnerRef.current = 'owner-b';
+      return outcome === 'failure' ? { ok: false, reason: 'conflict' } : { ok: true, changed: true };
+    } };
+    const saved = await evaluate(`(${declaration('changeCollections')})`, h.context)(next);
+    assert.equal(saved, outcome === 'success');
+    assert.deepEqual(h.context.collectionsState, outcome === 'success' ? next : { version: 1, collections: [] });
+    assert.equal(h.context.snapshot.status, 'ready'); assert.equal(JSON.stringify(h.context.data), before);
+    assert(!h.calls.includes('mutation'));
+  }
+});
+
+test('an old collection-view callback cannot overwrite a newer local relation', async () => {
+  const h = harness(); h.context.collectionsMode = true;
+  h.context.collectionsState = { version: 1, collections: [] };
+  const newer = { version: 1, collections: [{ id: 'newer', title: '이미 저장한 모음', documentIds: [] }] };
+  let writes = 0;
+  h.context.collectionsPort.current = { snapshot: () => ({ value: newer }), change: async (build: (value: unknown) => unknown) => {
+    try { build(newer); writes++; return { ok: true, changed: true }; }
+    catch { return { ok: false, reason: 'invalid' }; }
+  } };
+  assert.equal(await evaluate(`(${declaration('changeCollections')})`, h.context)({ version: 1, collections: [] }), false);
+  assert.equal(writes, 0); assert.equal(h.context.collectionsSaving, false); assert(!h.calls.includes('mutation'));
 });

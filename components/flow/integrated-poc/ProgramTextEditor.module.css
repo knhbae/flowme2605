@@ -70,3 +70,10 @@
 .folderPreview small { color: #536c64; white-space: pre-wrap; }
 .contextHint { color: var(--muted, #5e6d70); font-size: .875rem; line-height: 1.5; overflow-wrap: anywhere; }
 .contextHint small { display: block; font-size: inherit; }
+.directWriting :global(.tle-textarea::placeholder) { color: #526966; -webkit-text-fill-color: #526966; opacity: 1; }
+/* Shared textarea/mirror padding keeps native caret and presentation aligned.
+   The current-line menu retains insert/date/move actions in one 44px lane. */
+@media (max-width: 600px) {
+  .directWriting :global(.tle-root[data-mode]:not([data-move-phase]):not(.tle-has-move-selection)) { --tle-pad-right: 60px; }
+  .directWriting :global(.tle-plus) { display: none; }
+}

@@ -34,6 +34,8 @@ import { createAlphaCreatorRecovery, type AlphaCreatorRecoveryEntry, type AlphaC
 import { setProgramCreatorWorking } from '@/lib/flow/integrated-poc/creator-workspace';
 import { canonicalJson, detached } from '@/lib/flow/integrated-poc/alpha-persistence/json';
 import { confirmedAlphaPrivateTextSave } from '@/lib/flow/integrated-poc/alpha-private-save-ack';
+import { createAlphaDocumentCollections } from '@/lib/flow/integrated-poc/alpha-document-collections';
+import type { DocumentCollections } from '@/lib/flow/integrated-poc/document-collections';
 import { AlphaConflictReview } from './AlphaConflictReview';
 import { AlphaCatalogPanels } from './AlphaCatalogPanels';
 import styles from './AlphaWorkspace.module.css';
@@ -98,6 +100,14 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
   const confirmedParticipation = useRef<{ ownerId: string; command: Extract<AlphaCommand, { kind: 'social' }>; revision: number; publicRevision: number | undefined; privateBytes: string } | null>(null);
   const currentOwnerRef = useRef(session.userId); currentOwnerRef.current = session.userId;
   const ownMutation = useRef(0), disposed = useRef(false), externalRef = useRef(false);
+  const [collectionsMode, setCollectionsMode] = useState(false);
+  const [collectionsState, setCollectionsState] = useState<DocumentCollections | null>(null);
+  const [collectionsMessage, setCollectionsMessage] = useState('');
+  const [collectionsSwitching, setCollectionsSwitching] = useState(false);
+  const [collectionsSaving, setCollectionsSaving] = useState(false);
+  const collectionsSwitchingRef = useRef(false);
+  const collectionsPort = useRef<ReturnType<typeof createAlphaDocumentCollections> | null>(null);
+  const storageErrorRef = useRef(storageError); storageErrorRef.current = storageError;
   // Park only explicit context handoffs/reloads, not every intermediate keystroke.
   const parkedDrafts = useRef<AlphaUiDraft[]>([]), activeDrafts = useRef<AlphaUiDraft[]>([]);
   const allEditors = () => [editors.current, legacyEditors.current, creatorEditors.current, publisherEditors.current, communityEditors.current, inspectorEditors.current];
@@ -235,6 +245,84 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
     store.bindSession(session.userId, createAlphaHttpRepository(config, session, fetch, { social: true }));
     if (store.snapshot().pending) void store.resolvePending(false); else void store.refresh();
   }, [config, session.userId, session.accessToken]);
+  useEffect(() => {
+    let storage: Storage | null = null;
+    try { storage = window.localStorage; } catch { /* Keep server documents usable. */ }
+    const locks = navigator.locks;
+    const port = createAlphaDocumentCollections(session.userId, storage,
+      locks ? (name, work) => locks.request(name, { mode: 'exclusive' }, work) : null,
+      () => {
+        const live = controller.current?.snapshot(), current = currentData.current;
+        const owner = live?.account?.ownerId;
+        return {
+          ownerId: currentOwnerRef.current,
+          documentIds: owner === session.userId && current?.activeActorId === session.userId
+            ? [...current.spaces[session.userId].text.documents, ...current.spaces[session.userId].text.flows].map(doc => doc.id) : [],
+          busy: !!live?.busy,
+          pending: !!live?.pending,
+          blocked: storageErrorRef.current || externalRef.current || preservationRef.current || !!live?.draft
+            || !live || !['ready', 'saved', 'same-location', 'cancelled'].includes(live.status),
+          sessionValid: !disposed.current && live?.ownerId === session.userId && owner === session.userId
+            && !!live.envelope && current?.activeActorId === session.userId,
+        };
+      });
+    collectionsPort.current = port;
+    setCollectionsState(port.snapshot().value);
+    setCollectionsMode(false); setCollectionsMessage('');
+    collectionsSwitchingRef.current = false; setCollectionsSwitching(false);
+    return () => { port.dispose(); if (collectionsPort.current === port) collectionsPort.current = null; };
+  }, [session.userId]);
+  async function switchCollectionsMode() {
+    const store = controller.current, port = collectionsPort.current;
+    const owner = session.userId, visit = destinationRef.current;
+    if (collectionsSwitchingRef.current || !store || !port || disposed.current || currentOwnerRef.current !== owner) return;
+    const canSwitch = () => {
+      const live = store.snapshot();
+      return live.ownerId === owner && live.account?.ownerId === owner && !!live.envelope
+        && !live.busy && !live.pending && !live.draft && !externalRef.current && !storageErrorRef.current
+        && !preservationRef.current && ['ready', 'saved', 'same-location', 'cancelled'].includes(live.status)
+        && !port.snapshot().busy && (collectionsMode || port.snapshot().writable);
+    };
+    if (!canSwitch()) {
+      setCollectionsMessage('모음 시험 화면을 열 수 없습니다. 서버 확인과 브라우저 저장 상태를 확인해 주세요. 기존 문서는 그대로입니다.'); return;
+    }
+    if (!captureInput()) return;
+    const mounted = allEditors(), releases = mounted.map(editor => editor?.lockInput());
+    collectionsSwitchingRef.current = true; setCollectionsSwitching(true);
+    try {
+      for (const editor of mounted) if (editor && !await editor.flushAll()) return;
+      if (disposed.current || currentOwnerRef.current !== owner || controller.current !== store
+        || collectionsPort.current !== port || destinationRef.current !== visit || hasInput() || !canSwitch()) return;
+      setCollectionsState(port.snapshot().value);
+      setCollectionsMode(value => !value); setCollectionsMessage('');
+    } finally {
+      releases.forEach(release => release?.());
+      if (!disposed.current && currentOwnerRef.current === owner && collectionsPort.current === port) {
+        collectionsSwitchingRef.current = false; setCollectionsSwitching(false);
+      }
+    }
+  }
+  async function changeCollections(next: DocumentCollections) {
+    const port = collectionsPort.current, owner = session.userId;
+    if (!port || disposed.current || currentOwnerRef.current !== owner || !collectionsMode) return false;
+    setCollectionsSaving(true);
+    let result;
+    try {
+      result = await port.change(current => {
+        if (canonicalJson(current) !== canonicalJson(collectionsState)) throw Error('alpha-collections-stale-view');
+        return next;
+      });
+    } finally {
+      if (!disposed.current && currentOwnerRef.current === owner && collectionsPort.current === port) setCollectionsSaving(false);
+    }
+    if (disposed.current || currentOwnerRef.current !== owner || collectionsPort.current !== port) return false;
+    if (!result.ok) {
+      setCollectionsMessage('모음 연결을 저장하지 못했습니다. 문서는 변경하지 않았습니다. 작성 중인 내용을 저장한 뒤 화면을 새로 열어 주세요.'); return false;
+    }
+    setCollectionsState(port.snapshot().value);
+    setCollectionsMessage(result.changed ? '모음 연결을 이 브라우저에 저장했습니다.' : '모음 연결은 그대로입니다.');
+    return true;
+  }
   function refreshAutomatically() {
     const store = controller.current;
     // Preservation reads have their own fresh snapshot. Avoid unrelated polling
@@ -605,7 +693,15 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
         {data.spaces[session.userId].savedBindings.length > 0 && <button onClick={() => void navigate({ view: 'legacy' })}>개인 Flow 상세</button>}</nav>
       {browse && <nav className={styles.tabs} aria-label="둘러보기 종류"><button aria-current={['discover', 'flow'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigate({ view: 'discover' })}>Flow 찾기</button><button aria-current={destination.view === 'community' ? 'page' : undefined} onClick={() => void navigate({ view: 'community' })}>경험·질문·지식</button></nav>}
       {['activity', 'creator'].includes(destination.view) && <nav className={styles.tabs} aria-label="내 활동 종류"><button aria-current={destination.view === 'activity' ? 'page' : undefined} onClick={() => void navigate({ view: 'activity' })}>활동·공개 관리</button><button aria-current={destination.view === 'creator' ? 'page' : undefined} onClick={() => void navigate({ view: 'creator', id: creatorSelection })}>Flow 만들기</button></nav>}
-      <div hidden={destination.view !== 'space'}><ProgramSpace key={`space:${session.userId}:${presentation}`} data={data} today={programLocalDate()} mutate={mutate}
+      <div hidden={destination.view !== 'space'}>
+        <div className={styles.tabs} aria-label="문서 정리 방식">
+          <button type="button" aria-pressed={collectionsMode} disabled={collectionsSwitching || collectionsSaving || pending || external || !!snapshot?.busy || !!snapshot?.draft || storageError}
+            onClick={() => void switchCollectionsMode()}>{collectionsMode ? '기존 폴더로 보기' : '문서·모음 시험'}</button>
+        </div>
+        {collectionsMode && <p className={styles.notice}>모음 연결은 이 브라우저에만 저장됩니다. 문서·할 일은 기존 서버에 저장되며, 기존 폴더는 바뀌지 않습니다.</p>}
+        {collectionsMessage && <p className={styles.message} role="status">{collectionsMessage}</p>}
+        <ProgramSpace key={`space:${session.userId}:${presentation}:${collectionsMode ? 'collections' : 'folders'}`} data={data} today={programLocalDate()} mutate={mutate}
+        documentCollections={collectionsMode && collectionsState ? { state: collectionsState, onChange: changeCollections } : undefined}
         navigate={next => { void navigate(next); }} capabilities={capability}
         canContinueWholeDocument={() => {
           const authority = controller.current?.snapshot();

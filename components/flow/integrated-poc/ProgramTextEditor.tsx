@@ -47,6 +47,8 @@ export interface ProgramTextEditorProps {
   onUndo?: () => void | Promise<void>;
   onRedo?: () => void | Promise<void>;
   readOnly?: boolean;
+  /** Local document-collection UI: direct writing first, current-line tools secondary. */
+  directWriting?: boolean;
   disabledReason?: string;
   validateWorkspace?: (next: TextWorkspaceState) => boolean;
   folderId?: string;
@@ -625,9 +627,12 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     }
   }, [props.workspace, regionPending]);
   useEffect(() => {
-    const textarea = textArea(); if (textarea) textarea.readOnly = inputLockedRef.current || !!props.readOnly;
+    const textarea = textArea(); if (textarea) {
+      textarea.readOnly = inputLockedRef.current || !!props.readOnly;
+      textarea.placeholder = props.directWriting && !props.readOnly ? '여기에 바로 적으세요' : '';
+    }
     editorRef.current?.refresh();
-  }, [props.readOnly]);
+  }, [props.readOnly, props.directWriting, props.docId]);
   useEffect(() => { editorRef.current?.setMode(mode); }, [mode, props.docId]);
   useEffect(() => {
     const previous = previousFolderRef.current; previousFolderRef.current = props.folderId;
@@ -790,7 +795,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         <button type="button" aria-pressed={mode === 'live'} onClick={() => setMode('live')}>문서</button>
         <button type="button" aria-pressed={mode === 'text'} onClick={() => setMode('text')}>원문</button>
       </div>
-      <button type="button" hidden={!!props.folderId} disabled={disabled} onClick={() => { const index = editorRef.current?.getSelection().lineIndex ?? 0; setPanel({ kind: 'insert', lineId: currentDoc()?.lines[index]?.id ?? null }); }}>＋ 추가</button>
+      <button type="button" hidden={!!props.folderId || props.directWriting} disabled={disabled} onClick={() => { const index = editorRef.current?.getSelection().lineIndex ?? 0; setPanel({ kind: 'insert', lineId: currentDoc()?.lines[index]?.id ?? null }); }}>＋ 추가</button>
       <button type="button" disabled={inputLocked || !!props.readOnly || draft.saving || !!props.folderId && draft.dirty && !regionPending} title={props.folderId && draft.dirty ? '저장되지 않은 입력은 저장본으로 되돌리기에서 취소할 수 있습니다.' : '입력 되돌리기'} aria-label="입력 되돌리기" onClick={() => { if (props.folderId && regionPending) regionPortRef.current?.undo?.(); else if (orderHistoryRef.current.hasEntries()) nativeHistory('historyUndo'); else if (props.onUndo && !draft.dirty) void props.onUndo(); else if (!props.folderId) editorRef.current?.undo(); }}>↶</button>
       <details className={styles.editorTools} hidden={!!props.folderId} onKeyDown={event => {
         if (event.key !== 'Escape' || event.nativeEvent.isComposing || !event.currentTarget.open) return;
@@ -798,6 +803,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       }}>
         <summary aria-label="편집 도구" title="편집 도구"><span aria-hidden="true">…</span></summary>
         <div className={styles.editorToolActions}>
+          {props.directWriting && <button type="button" disabled={disabled} onClick={event => { closeEditorTools(event.currentTarget); const index = editorRef.current?.getSelection().lineIndex ?? 0; setPanel({ kind: 'insert', lineId: currentDoc()?.lines[index]?.id ?? null }); }}>현재 줄에 추가</button>}
           <button type="button" disabled={disabled || draft.dirty} onClick={event => { closeEditorTools(event.currentTarget); previewOrder(); }}>날짜순 정렬</button>
           {(props.onRedo || orderHistoryRef.current.hasEntries()) && <button type="button" disabled={disabled || draft.dirty} aria-label="다시 실행" onClick={event => { closeEditorTools(event.currentTarget); if (orderHistoryRef.current.hasEntries()) nativeHistory('historyRedo'); else void props.onRedo?.(); }}>다시 실행</button>}
         </div>
@@ -818,7 +824,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       <button type="button" disabled={inputLocked || !!props.readOnly || draft.saving || composingRef.current} onClick={props.onContinueWholeDocument ? continueWholeDocument : props.onShowWholeDocument}>전체 문서 보기</button><button type="button" onClick={props.onShowFolderTasks}>폴더 전체 할 일</button>
       {!folderView?.regions.length && <p>현재 문서에는 이 폴더의 연결 영역이나 할 일이 없습니다.</p>}
     </div>}
-    <div ref={hostRef} className={styles.host} hidden={!!props.folderId} data-native-editor="v11-core" />
+    <div ref={hostRef} className={`${styles.host}${props.directWriting ? ` ${styles.directWriting}` : ''}`} hidden={!!props.folderId} data-native-editor="v11-core" />
     {folderView && <ProgramFolderRegionEditor key={`${props.docId}:${props.folderId}`} styles={regionStyles} view={folderView} readOnly={!!props.readOnly} locked={inputLocked || draft.saving} mode={mode}
       workspace={currentState} onAccept={acceptRegion} onPersist={saveFullDraft} onDownload={downloadDraft}
       onContinueWholeDocument={continueWholeDocument}
