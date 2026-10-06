@@ -177,12 +177,12 @@ test('creator entry appears beside search only when the host supplies navigation
   assert.equal(calls, 1); assert.equal(JSON.stringify(input.data), before);
 });
 
-test('account detail keeps the public version and optional output apart from private records and public discussion', () => {
+test('account item deep-link detail keeps the public version and optional output apart from private records and public discussion', () => {
   const input = props(), version = input.data.public.versions[0];
   input.data.public.posts.push({ id: 'related-post', authorId: input.data.activeActorId, kind: 'experience', title: '연결된 경험', body: '공개 경험', topic: '',
     flowId: version.flowId, versionId: version.id, itemId: null, evidencePostIds: [], media: [], createdAt: '2026-10-01T00:00:00Z', updatedAt: '2026-10-01T00:00:00Z', deleted: false });
   const before = JSON.stringify(input.data);
-  const html = renderToStaticMarkup(<ProgramDiscovery {...input} storageScope="account" selectedFlowId={version.flowId} />);
+  const html = renderToStaticMarkup(<ProgramDiscovery {...input} storageScope="account" selectedFlowId={version.flowId} selectedItemId={version.items[0].id} />);
   assert(html.includes('← Flow 목록')); assert(html.includes('개인 사본과 실행 기록은 따로 보관됩니다')); assert(html.includes('공개 글 ·'));
   assert(!html.includes('로컬 PoC')); assert(html.includes('개인 사본을 만들지 않고 받을 수 있습니다')); assert(html.includes('내 문서에 가져오기'));
   assert.equal(JSON.stringify(input.data), before);

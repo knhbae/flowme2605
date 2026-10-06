@@ -48,7 +48,7 @@ test('P02 wider-period recovery preserves folder/query/date and follows existing
     const inputLockCount = { current: outcome === 'input-lock' ? 1 : 0 };
     const changePeriod = evaluate(`(${changeNode.getText(ast)})`, { inputLockCount, today: '2026-10-03',
       lockInput: () => () => { releases++; }, flushAllEditors: async () => { flushes++; return outcome !== 'flush-rejected'; },
-      setPeriod: (period: string) => { view.period = period; }, setDate: (date: string) => { view.date = date; }, setMessage() {},
+      setPeriod: (period: string) => { view.period = period; }, setDate: (date: string) => { view.date = date; }, setMessage() {}, setTaskNotice() {},
       mutate: () => { writes++; },
     });
     const invoke = evaluate(`(${recoveryNode.getText(ast)})`, { changePeriod,

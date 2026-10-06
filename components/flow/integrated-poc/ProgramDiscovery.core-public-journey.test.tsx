@@ -62,7 +62,8 @@ test('F02 no search results and ordinary public results retain their distinct re
   assert.equal(JSON.stringify(input.data), before);
   const version = input.data.public.versions[0];
   const detail = renderToStaticMarkup(<ProgramDiscovery {...input} selectedFlowId={version.flowId} storageScope="account" />);
-  assert.doesNotMatch(detail, /내 문서 보기/); assert.match(detail, /내 문서에 가져오기/);
+  assert.doesNotMatch(detail, /내 문서 보기/); assert.match(detail, /내 계획으로 시작/);
+  assert.match(detail, /내용 살펴보기/); assert.doesNotMatch(detail, /전체 항목으로 시작|내 문서에 가져오기/);
 });
 
 test('F03 the actual private-document return callback delegates only the existing current-actor space navigation', () => {

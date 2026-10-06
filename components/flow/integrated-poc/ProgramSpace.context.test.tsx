@@ -130,7 +130,7 @@ test('opening task detail takes the exact target date/time without writing', () 
   const f = fixture(), space = f.data.spaces[f.data.activeActorId], allTasks = M.tasks(space.text), draft: string[] = [];
   const open = actualFunction('openDetail', { document: { activeElement: {} }, previousFocus: { current: null }, detailExpected: { current: null },
     executionDraftOwner: { current: { dialog: 0, input: 0, taskId: null } },
-    setProgressDraftBaseline() {}, M, today: '2026-10-04', recordDate: '2026-10-04', percent: '0', setRecordDate() {}, setPercent() {},
+    setProgressDraftBaseline() {}, setTaskNotice() {}, M, today: '2026-10-04', recordDate: '2026-10-04', percent: '0', setRecordDate() {}, setPercent() {},
     space, allTasks, setExecutionDateDraft: (value: string) => draft.push(value), setExecutionTimeDraft: (value: string) => draft.push(value), setMessage() {}, setDetail() {} });
   open({ kind: 'task', id: f.taskId }); assert.deepEqual(draft, ['2026-09-30', '09:10']);
 });
@@ -157,7 +157,7 @@ test('period row renders actual Flow folder path, document and time while its or
   assert.equal(taskFolderPath({ ...task, scopeId: 'child' }), '생활 / 준비');
   const node = find(node => ts.isJsxElement(node) && node.openingElement.tagName.getText(ast) === 'button' && node.openingElement.attributes.properties.some(attr => ts.isJsxAttribute(attr) && attr.name.getText(ast) === 'className' && attr.initializer?.getText(ast) === '{styles.taskTitle}'));
   const opened: string[] = [];
-  const element = evaluate(node.getText(ast), { styles, task, period: 'today', date: '2026-09-30', programIsContinuingTask, taskFolderPath, moving: null, openDocument: (...args: string[]) => opened.push(...args) });
+  const element = evaluate(node.getText(ast), { styles, task, origin: { label: '문서 항목', sourceUrl: null }, period: 'today', date: '2026-09-30', programIsContinuingTask, taskFolderPath, moving: null, openDocument: (...args: string[]) => opened.push(...args) });
   const html = renderToStaticMarkup(element); assert.match(html, /09:10/); assert.match(html, /생활 \/ 준비 문서/);
   element.props.onClick(); assert.deepEqual(opened, [task.docId, task.id]);
 });

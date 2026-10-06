@@ -34,5 +34,9 @@
 .detailOrigin { border-top: 1px solid var(--pw-line); padding-top: 12px; }
 .detailOrigin p { margin: 0 0 8px; }
 .detailOrigin button:disabled { cursor: not-allowed; opacity: .55; }
+.detailOrigin a { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 10px; color: var(--pw-brand); overflow-wrap: anywhere; }
+.detailOrigin { margin-bottom: 12px; }
+.taskNotice { border-left: 3px solid var(--pw-brand); padding: 10px 12px; margin: 12px 0; background: var(--pw-soft); overflow-wrap: anywhere; }
+.taskNotice p { margin: 0 0 6px; font-size: 14px; }
 @media(max-width:760px) { .dialog[data-task-detail] .dialogHeading { top: -16px; margin: -16px -16px 16px; padding: 12px 16px; } }
 @media(max-width:480px) { .detailSchedule .scheduleFields { grid-template-columns: minmax(0,1fr); gap: 12px; } .dialog .scheduleApply { width: 100%; justify-self: stretch; } }

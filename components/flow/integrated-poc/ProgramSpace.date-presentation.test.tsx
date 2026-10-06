@@ -6,6 +6,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import ts from 'typescript';
 import { createEmptyTextWorkspace, textWorkspaceModel as M } from '../../../lib/flow/integrated-poc/text-workspace';
 import { programExecutionDayPresentation, readProgramTaskDatePresentation } from '../../../lib/flow/integrated-poc/execution-presentation';
+import { readProgramTaskOrigin } from '../../../lib/flow/integrated-poc/task-origin-presentation';
 import { programTextExecutionKey, type ProgramOrderedExecutionRow } from '../../../lib/flow/integrated-poc/recurrence-order';
 import type { ProgramExecutionOccurrenceRow } from '../../../lib/flow/integrated-poc/recurrence-state';
 import type { ProgramPeriod } from '../../../lib/flow/integrated-poc/execution';
@@ -50,7 +51,7 @@ function listHarness(rows: ProgramOrderedExecutionRow[], text: ReturnType<typeof
     setMoving() {}, run() { throw new Error('presentation must not mutate'); },
     suppressPointerClick: { current: null }, setRecordDate() {}, setPercent() {}, openDetail() {}, cancelHold() {},
     holdPoint: { current: null }, hold: { current: null }, PROGRAM_MOVE_GESTURE_V1: { holdMs: 350, cancelDistancePx: 8 },
-    data: {}, mutate() { throw new Error('presentation must not mutate'); }, props: { onUndo() {}, onRedo() {} },
+    data: {}, readProgramTaskOrigin, mutate() { throw new Error('presentation must not mutate'); }, props: { onUndo() {}, onRedo() {} },
     focusAppliedPlan() {}, recurrencePorts: { current: {} }, setDate() {}, setPeriod() {},
     ProgramRecurrence: ({ row }: { row: { executionDate: string } }) => <div data-occurrence-date={row.executionDate} />,
   });

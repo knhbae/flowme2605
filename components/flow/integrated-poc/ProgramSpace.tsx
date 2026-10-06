@@ -33,6 +33,7 @@ import styles from './ProgramSpace.module.css';
 import { programRecurrenceFocusId, resolveProgramRecurrencePlanFocus, type ProgramRecurrencePlanFocusRequest } from '@/lib/flow/integrated-poc/recurrence-plan-focus';
 import { programTaskDateChangeHint } from '@/lib/flow/integrated-poc/text-context-presentation';
 import { restoreProgramDialogFocus } from '@/lib/flow/integrated-poc/dialog-return-focus';
+import { readProgramTaskOrigin } from '@/lib/flow/integrated-poc/task-origin-presentation';
 
 export type ProgramSpaceCapabilities = {
   discovery?: boolean;
@@ -92,6 +93,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const [selected, setSelected] = useState(props.selectedDocumentId ?? space.position.documentId ?? '');
   const [opened, setOpened] = useState<string[]>(selected ? [selected] : []);
   const [detail, setDetail] = useState<Detail>(null), [message, setMessage] = useState('');
+  const [taskNotice, setTaskNotice] = useState<{ taskId: string; title: string; text: string } | null>(null);
   const [moving, setMoving] = useState<string | null>(null), [showArchived, setShowArchived] = useState(false);
   const [libraryOpen, setLibraryOpen] = useState(false);
   const libraryToggle = useRef<HTMLButtonElement | null>(null);
@@ -291,7 +293,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     const release = lockInput();
     try {
       if (!await flushAllEditors()) { setMessage('한글 입력을 마친 뒤 보기 범위를 바꿔 주세요. 저장되지 않은 입력도 확인해 주세요.'); return; }
-      setFolderId(nextFolderId); setMessage('');
+      setFolderId(nextFolderId); setMessage(''); setTaskNotice(null);
       // Only an explicit mobile library choice hands presentation back to writing.
       // Empty results keep the library available for choosing another document.
       if (options.fromLibrary && libraryReveal.current.epoch === epoch && window.matchMedia('(max-width:760px)').matches
@@ -310,7 +312,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     const release = lockInput();
     try {
       if (!await flushAllEditors()) { setMessage('한글 입력을 마친 뒤 보기 범위를 바꿔 주세요. 저장되지 않은 입력도 확인해 주세요.'); return false; }
-      setPeriod(nextPeriod); if (nextPeriod === 'today') setDate(today); setMessage(''); return true;
+      setPeriod(nextPeriod); if (nextPeriod === 'today') setDate(today); setMessage(''); setTaskNotice(null); return true;
     } finally { release(); }
   }
   async function showFolderTasks() {
@@ -403,6 +405,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const base = (_current: ProgramData) => ({ actorId, requestId: programId('request'), expectedSpace: detailExpected.current ?? formExpected.current ?? space });
   const run = async (label: string, build: (current: ProgramData) => ProgramTransition<string>, history = true,
     schedule?: { taskId: string; date: string | null; time?: string; onAcknowledged?: (workspace: TextWorkspaceState | null) => void }) => {
+    const noticeOwner = { ...executionDraftOwner.current }, noticeView = presentation.current;
     let committedSpace: typeof space | null = null;
     let beforeSchedule: typeof space | null = null;
     let beforeScheduleData: ProgramData | null = null, committedScheduleData: ProgramData | null = null;
@@ -429,6 +432,20 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         }, 3000);
         reconcileScheduleAcknowledgment();
       }
+      if (committedSpace && dataRef.current.activeActorId === actorId
+        && noticeOwner.dialog === executionDraftOwner.current.dialog && noticeOwner.input === executionDraftOwner.current.input
+        && noticeOwner.taskId === executionDraftOwner.current.taskId
+        && noticeView.period === presentation.current.period && noticeView.date === presentation.current.date
+        && noticeView.folderId === presentation.current.folderId && noticeView.query === presentation.current.query
+        && (schedule || ['완료', '다시 열기', '진행 기록'].includes(label))) {
+        const changedId = schedule?.taskId ?? result.result;
+        const changed = M.tasks((committedSpace as ProgramPrivateSpace).text).find(task => task.id === changedId);
+        if (changed) {
+          setTaskNotice({ taskId: changed.id, title: changed.title,
+            text: schedule ? `날짜 ${changed.date ?? '미정'}${changed.time ? ` · ${changed.time}` : ''}으로 저장했습니다.`
+              : label === '완료' ? '완료로 저장했습니다.' : label === '다시 열기' ? '미완료로 다시 열었습니다.' : '진행 기록을 저장했습니다.' });
+        }
+      }
     }
     // AlphaWorkspace owns the transient busy notice and clears it on settlement.
     // Keep this form's prior failure/input state instead of persisting a duplicate.
@@ -444,6 +461,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       root.current?.querySelector<HTMLElement>(`[data-program-period="${presentation.current.period}"]`)?.focus({ preventScroll: true });
   }
   function openDetail(next: Detail) {
+    setTaskNotice(null);
     previousFocus.current = document.activeElement as HTMLElement; detailExpected.current = space;
     const task = next?.kind === 'task' ? allTasks.find(task => task.id === next.id) : null;
     executionDraftOwner.current = { dialog: executionDraftOwner.current.dialog + 1, input: 0, taskId: task?.id ?? null };
@@ -489,6 +507,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       return programResult(current, current, id);
     }, false);
     if (!remembered.ok || taskId && writingBlocked()) return;
+    setTaskNotice(null);
     if (targetPosition) { positions.current[id] = targetPosition; setFolderId(''); }
     setSelected(id); setLibraryOpen(false); setOpened(previous => previous.includes(id) ? previous : [...previous, id]); setPeriod('documents');
     props.navigate({ view: 'space', id }, taskId ? { writingLineId: taskId } : undefined);
@@ -534,7 +553,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       const currentSpace = current.spaces[actorId];
       let updated = current, documentId = currentSpace.text.documents.find(doc => doc.title === '빠른 할 일' && !currentSpace.archivedDocumentIds.includes(doc.id))?.id;
       if (!documentId) { const created = createProgramDocument(current, { ...base(current), title: '빠른 할 일', folderId: folderId || 'folder-unfiled' }); if (!created.ok) return created; updated = created.data; documentId = created.result; }
-      return addProgramQuickTask(updated, { ...base(updated), expectedSpace: updated.spaces[actorId], documentId, title, date: pickedDate });
+      return addProgramQuickTask(updated, { ...base(updated), expectedSpace: updated.spaces[actorId], documentId, title, date: pickedDate,
+        ...(folderId ? { scopeId: folderId } : {}) });
     });
     if (result.ok) form.reset();
   }
@@ -616,6 +636,29 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     await run('실행 날짜·시간 변경', current => updateProgramTask(current, { ...base(current), taskId, patch: { date: executionDateDraft || null, time: executionTimeDraft } }),
       true, { taskId, date: executionDateDraft || null, time: executionTimeDraft });
   }
+  async function findChangedTask() {
+    const target = taskNotice;
+    if (!target || detailSchedulePending || detailProgressPending) return;
+    if (!programExecutionTasks(dataRef.current.spaces[actorId]).some(task => task.id === target.taskId)) {
+      setMessage('이 항목의 현재 문서·보관 상태를 확인해 주세요.'); return;
+    }
+    if (detail) close();
+    if (!await changePeriod('all')) return;
+    requestAnimationFrame(() => {
+      if (presentation.current.period !== 'all') return;
+      const row = Array.from(root.current?.querySelectorAll<HTMLElement>('[data-task-id]') ?? [])
+        .find(element => element.dataset.taskId === target.taskId);
+      const button = row?.querySelector<HTMLButtonElement>(`button.${styles.taskTitle}`);
+      button?.focus({ preventScroll: true }); row?.scrollIntoView({ block: 'center' });
+    });
+  }
+  const taskNoticeOutsideView = !!taskNotice && period !== 'documents'
+    && !executionRows.some(entry => entry.kind === 'text-task' && entry.task.id === taskNotice.taskId);
+  const taskNoticeContent = taskNotice && <div className={styles.taskNotice} role="status">
+    <p>{taskNotice.title} · {taskNotice.text}{taskNoticeOutsideView && ' 현재 보기에서는 빠졌지만 항목과 기록은 그대로 있습니다.'}</p>
+    {taskNoticeOutsideView && <button type="button" disabled={detailSchedulePending || detailProgressPending}
+      onClick={() => void findChangedTask()}>전체 할 일에서 같은 항목 찾기</button>}
+  </div>;
   const folderOptions = space.text.folders.map(item => {
     const names = [item.title]; let parent = item.parentId;
     while (parent) { const ancestor = space.text.folders.find(row => row.id === parent); if (!ancestor) break; names.unshift(ancestor.title); parent = ancestor.parentId; }
@@ -637,7 +680,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     {selectedDoc && <button ref={libraryToggle} className={styles.libraryToggle} aria-expanded={libraryOpen} aria-controls="program-library" onClick={() => { cancelLibraryReveal(); setLibraryOpen(value => !value); }}>문서·폴더 {libraryOpen ? '접기' : '열기'}{folder ? ` · ${folder.title}` : ''}</button>}
     <aside id="program-library" className={styles.sidebar} data-open={libraryOpen || !selectedDoc}>
       <form className={styles.newDoc} onSubmit={newDocument}><label htmlFor="program-document-title">새 문서</label><div><input id="program-document-title" name="title" placeholder="문서 제목" required maxLength={240} /><button type="submit">만들기</button></div></form>
-      <label className={styles.field}>내 문서·할 일 찾기<input id="program-private-search" type="search" value={query} onChange={event => setQuery(event.target.value)} /></label>
+      <label className={styles.field}>내 문서·할 일 찾기<input id="program-private-search" type="search" value={query} onChange={event => { setQuery(event.target.value); setTaskNotice(null); }} /></label>
       <label className={styles.field}>폴더<select value={folderId} onChange={event => { void changeFolder(event.target.value, { fromLibrary: true }); }}><option value="">모든 폴더</option>{folderOptions.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</select></label>
       <details className={styles.folderTools}><summary>폴더 정리</summary><form onSubmit={async event => {
         event.preventDefault(); const form = event.currentTarget, title = String(new FormData(form).get('title') ?? '');
@@ -653,6 +696,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         onOpenSource={(id, line) => void openDocument(id, line)} onRegisterEditors={(port, key) => { recurrencePorts.current[key] = port; }} onUndo={props.onUndo} onRedo={props.onRedo} />}
       <nav className={styles.periods} aria-label="개인공간 보기">{periods.map(([key, label]) => <button key={key} data-program-period={key} aria-current={period === key ? 'page' : undefined} onClick={() => { void changePeriod(key); }}>{label}</button>)}</nav>
       {message && <p role="alert" className={styles.error}>{message}</p>}
+      {!detail && taskNoticeContent}
       <div hidden={period !== 'documents'}>
         <ProgramRecurrencePlanRecovery data={data} today={today} documentId={selected || undefined} disabled={preparingDocumentAction} onOpenSource={(id, line) => void openDocument(id, line)} />
         {!selectedDoc ? selected ? <div className={styles.empty}><h1>문서를 찾을 수 없습니다</h1><p>이 문서가 삭제되었거나 현재 인물의 문서가 아닐 수 있습니다. 다른 문서로 자동 이동하지 않았습니다. 내 문서 목록이나 보관함에서 다시 선택해 주세요.</p><button onClick={() => { setShowArchived(false); setLibraryOpen(true); }}>내 문서 목록</button><button onClick={() => { setShowArchived(true); setLibraryOpen(true); }}>보관함 확인</button></div> : <div className={styles.empty}><h1>필요한 내용을 먼저 적으세요</h1><p>메모로 두어도 좋고, 체크할 일에 날짜를 붙여도 됩니다.</p><button onClick={() => document.getElementById('program-document-title')?.focus()}>문서 만들기</button>{props.capabilities?.discovery !== false && <button onClick={() => props.navigate({ view: 'discover' })}>다른 사람의 Flow 둘러보기</button>}</div> : <>
@@ -740,13 +784,14 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             <ProgramRecurrence data={data} mutate={mutate} today={today} period={period} date={date} row={entry.row} onPlanApplied={focusAppliedPlan} onRegisterEditors={port => { recurrencePorts.current[entry.row.key] = port; }}
             onOpenSource={(id, line) => void openDocument(id, line)} onShowPeriod={(nextPeriod, nextDate) => { setDate(nextDate); setPeriod(nextPeriod); }} onUndo={props.onUndo} onRedo={props.onRedo} /></li>;
           const task = entry.task;
+          const origin = readProgramTaskOrigin(data, task);
           const progress = M.latestProgress(space.text, task.id), value = progress?.percent ?? (task.done ? 100 : 0);
           return <li key={entry.key} className={styles.task} data-task-id={task.id} draggable onDragStart={event => { event.dataTransfer.setData('text/plain', entry.key); nativeDrag.current = entry.key; }} onDragEnd={() => { nativeDrag.current = null; setMoving(null); }}
             onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); const from = event.dataTransfer.getData('text/plain'); if (from && (moving === from || nativeDrag.current === from)) void moveBefore(from, entry.key); nativeDrag.current = null; }}
             onKeyDown={event => { if (event.altKey && ['ArrowUp', 'ArrowDown'].includes(event.key)) { event.preventDefault(); moveStep(task, event.key === 'ArrowUp' ? -1 : 1); } }}>
             {heading && <h2 className={styles.executionGroup}>{heading}</h2>}
             <button className={styles.check} aria-label={`${task.title} ${value === 100 ? '다시 열기' : '완료'}`} aria-pressed={value === 100} onClick={() => void run(value === 100 ? '다시 열기' : '완료', current => completeProgramTask(current, { ...base(current), taskId: task.id, date: today, done: value !== 100 }))}>{value === 100 ? '✓' : value ? `${value}%` : '○'}</button>
-            <button className={styles.taskTitle} onClick={() => moving ? void moveBefore(moving, entry.key) : void openDocument(task.docId, task.id)}>{task.title}<small>{task.date ?? '날짜 미정'}{task.time ? ` · ${task.time}` : ''}<span className={styles.taskOrigin}>{taskFolderPath(task)} / {task.docTitle}</span></small></button>
+            <button className={styles.taskTitle} aria-label={`${task.title} · ${origin.label} · ${task.docTitle} 원문 열기`} onClick={() => moving ? void moveBefore(moving, entry.key) : void openDocument(task.docId, task.id)}>{task.title}<small>{task.date ?? '날짜 미정'}{task.time ? ` · ${task.time}` : ''}<span className={styles.taskOrigin}>{origin.label} · {taskFolderPath(task)} / {task.docTitle}</span></small></button>
             <button aria-label={`${task.title} 작업`} onClick={event => { if (suppressPointerClick.current === task.id && event.detail !== 0) { suppressPointerClick.current = null; return; } setRecordDate(today); setPercent(String(value)); openDetail({ kind: 'task', id: task.id }); }}
               onPointerDown={event => { suppressPointerClick.current = null; if (event.pointerType !== 'touch') return; cancelHold(); holdPoint.current = { x: event.clientX, y: event.clientY }; hold.current = setTimeout(() => { setMoving(entry.key); suppressPointerClick.current = task.id; hold.current = null; }, PROGRAM_MOVE_GESTURE_V1.holdMs); }}
               onPointerUp={cancelHold} onPointerCancel={() => { cancelHold(); suppressPointerClick.current = task.id; setMoving(null); }} onPointerMove={event => { if (holdPoint.current && Math.hypot(event.clientX - holdPoint.current.x, event.clientY - holdPoint.current.y) >= PROGRAM_MOVE_GESTURE_V1.cancelDistancePx) { cancelHold(); suppressPointerClick.current = task.id; } }}>…</button>
@@ -757,6 +802,16 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     <dialog ref={dialog} className={styles.dialog} data-task-detail={detail?.kind === 'task' ? true : undefined} aria-labelledby="program-detail-title" onCancel={event => { event.preventDefault(); close(); }}><div className={styles.dialogHeading}><h2 id="program-detail-title">{detail?.kind === 'task' ? detailTask?.title ?? '할 일을 찾을 수 없습니다' : detail?.kind === 'folder' ? '폴더 정리' : '기존 할 일 연결'}</h2><button onClick={close} aria-label="닫기">닫기</button></div>
       {message && <p role="alert" className={styles.error}>{message}</p>}
       {detail?.kind === 'task' && detailTask && <>
+        <div className={styles.detailOrigin}>
+          <p className={styles.muted}>{readProgramTaskOrigin(data, detailTask).label} · {detailTask.docTitle}</p>
+          <button disabled={detailSchedulePending || detailProgressPending} onClick={() => {
+            if (detailSchedulePending || detailProgressPending) return;
+            const target = { documentId: detailTask.docId, taskId: detailTask.id }; close(); void openDocument(target.documentId, target.taskId);
+          }}>원문 열기</button>
+          {readProgramTaskOrigin(data, detailTask).sourceUrl && <a href={readProgramTaskOrigin(data, detailTask).sourceUrl!} target="_blank" rel="noopener noreferrer">자료 원문 열기</a>}
+          {(detailSchedulePending || detailProgressPending) && <p className={styles.muted}>날짜·시간 또는 진행 입력을 적용하거나, 닫아 취소한 뒤 원문을 열어 주세요.</p>}
+        </div>
+        {taskNoticeContent}
         <section className={styles.detailSchedule} aria-labelledby="program-detail-schedule"><h3 id="program-detail-schedule">날짜·시간</h3>
         {detailDatePresentation && <p className={styles.muted} aria-label="날짜 출처">{detailDatePresentation.label}{detailDatePresentation.context && <small>{detailDatePresentation.context}</small>}</p>}
         <form onSubmit={event => { event.preventDefault(); void applySchedule(detailTask.id); }}><div className={styles.scheduleFields}><label className={styles.field}>실행 날짜<input type="date" value={executionDateDraft} onChange={event => { executionDraftOwner.current.input++; setExecutionDateDraft(event.target.value); }} /></label><label className={styles.field}>시간<input type="time" step="60" value={executionTimeDraft} onChange={event => { executionDraftOwner.current.input++; setExecutionTimeDraft(event.target.value); }} /><small>비워 두면 시간 없음</small></label></div>{detailDateChangeHint && <p className={styles.muted} role="status">{detailDateChangeHint}</p>}<button className={styles.scheduleApply}>날짜·시간 적용</button></form><div className={styles.scheduleShortcuts}><button onClick={() => void dateMove(detailTask.id, today)}>오늘로 이동</button><button onClick={() => void dateMove(detailTask.id, programShiftDate(today, 1))}>내일로 이어하기</button><button onClick={() => void dateMove(detailTask.id, null)}>날짜 미정으로 이동</button></div>
@@ -777,10 +832,6 @@ export function ProgramSpace(props: ProgramSpaceProps) {
           close(); void openDocument(documentId, taskId);
         }} />
         </details>
-        <div className={styles.detailOrigin}><p className={styles.muted}>원문 · {detailTask.docTitle}</p><button disabled={detailSchedulePending || detailProgressPending} onClick={() => {
-          if (detailSchedulePending || detailProgressPending) return;
-          const target = { documentId: detailTask.docId, taskId: detailTask.id }; close(); void openDocument(target.documentId, target.taskId);
-        }}>원문 열기</button>{(detailSchedulePending || detailProgressPending) && <p className={styles.muted}>날짜·시간 또는 진행 입력을 적용하거나, 닫아 취소한 뒤 원문을 열어 주세요.</p>}</div>
       </>}
       {detail?.kind === 'folder' && <>
         <form onSubmit={async event => { event.preventDefault(); const title = String(new FormData(event.currentTarget).get('title') ?? ''); await run('폴더 이름 변경', current => renameProgramFolder(current, { ...base(current), folderId: detail.id, title })); }}><label>폴더 이름<input key={detail.id} name="title" defaultValue={space.text.folders.find(item => item.id === detail.id)?.title} required /></label><button>이름 변경</button></form>
