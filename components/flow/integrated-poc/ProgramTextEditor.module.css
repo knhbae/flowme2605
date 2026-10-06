@@ -1,5 +1,5 @@
 .editor { display: flex; flex-direction: column; min-width: 0; min-height: 480px; height: 100%; color: #233d36; background: #fff; }
-.toolbar { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; padding: 8px; border-bottom: 1px solid #e0e8e4; }
+.toolbar { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; padding: 4px; border-bottom: 1px solid #e0e8e4; }
 .editor :where(button) { min-width: 44px; min-height: 44px; padding: 8px 12px; border: 1px solid #cbd8d1; border-radius: 8px; background: #fff; color: #214c3d; font: inherit; cursor: pointer; }
 .editor button:hover:not(:disabled) { background: #edf5f0; }
 .editor button:disabled { opacity: .5; cursor: default; }
@@ -50,7 +50,7 @@
 .quickProgress button { flex: 1; }
 @media (max-width: 600px) {
   .editor { min-height: 420px; }
-  .toolbar { gap: 3px; padding: 6px; }
+  .toolbar { gap: 3px; padding: 4px; }
   .toolbar button { min-width: 48px; min-height: 48px; padding-inline: 9px; }
   .status { flex-basis: 100%; margin-left: 0; font-size: 11px; padding: 0 4px; }
   .host { height: 66dvh; min-height: 350px; }

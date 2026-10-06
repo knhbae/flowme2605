@@ -316,6 +316,72 @@ test('DX08 clean origin opens the exact same-title Item row and performs no prod
   } finally { h.destroy(); }
 });
 
+test('RX01 a busy source return keeps the same panel and explicitly retries the exact Item without writes', async () => {
+  const f = fixture(), h = harness(f.data, f.documentId), before = programClone(f.data);
+  try {
+    await h.open(f.taskIds[1]); const generation = h.generation(); h.reject('busy');
+    await h.render().origin.props.onClick(); await h.flush();
+    assert(h.render().origin, 'a rejected return must keep its retry button');
+    assert.deepEqual(h.generation(), generation); assert.match(label(h.render().dialog), /다시 눌러/);
+    assert.equal(h.navigation.length, 0); assert.deepEqual(h.data, before);
+    h.reject(null); await h.render().origin.props.onClick(); await h.flush();
+    assert.deepEqual(h.navigation, [[{ view: 'space', id: f.documentId }, { writingLineId: f.taskIds[1] }]]);
+    assert.equal(h.render().schedule, undefined); assert.deepEqual(h.data, before);
+  } finally { h.destroy(); }
+});
+
+test('RX02 missing or conflict source returns retain their panel and existing failure reason', async () => {
+  for (const reason of ['missing', 'conflict']) {
+    const f = fixture(), h = harness(f.data, f.documentId), before = programClone(f.data);
+    try {
+      await h.open(f.taskIds[0]); const generation = h.generation(); h.reject(reason);
+      await h.render().origin.props.onClick(); await h.flush();
+      assert(h.render().origin, reason); assert.deepEqual(h.generation(), generation);
+      assert(nodes(h.render().dialog).some(node => node.props.role === 'alert'));
+      assert.equal(h.navigation.length, 0); assert.deepEqual(h.data, before);
+    } finally { h.destroy(); }
+  }
+});
+
+test('RX03 an old source response after close cannot navigate or close a different task panel', async () => {
+  const f = fixture(), h = harness(f.data, f.documentId), before = programClone(f.data);
+  try {
+    await h.open(f.taskIds[0]); const gate = h.blockNext();
+    const pending = h.render().origin.props.onClick(); await gate.started;
+    h.close(); await h.open(f.taskIds[1]); const generation = h.generation();
+    gate.release(); await pending; await h.flush();
+    assert.deepEqual(h.generation(), generation); assert(h.render().origin);
+    assert.equal(h.input(h.render().schedule, 'date'), '2026-10-12');
+    assert.equal(h.navigation.length, 0); assert.deepEqual(h.data, before);
+  } finally { h.destroy(); }
+});
+
+test('RX04 a date draft typed while the source return waits remains in its panel without navigation', async () => {
+  const f = fixture(), h = harness(f.data, f.documentId), before = programClone(f.data);
+  try {
+    await h.open(f.taskIds[0]); const gate = h.blockNext();
+    const pending = h.render().origin.props.onClick(); await gate.started;
+    h.draftSchedule('2026-10-08', '18:20'); gate.release(); await pending; await h.flush();
+    assert.equal(h.input(h.render().schedule, 'date'), '2026-10-08');
+    assert.equal(h.input(h.render().schedule, 'time'), '18:20');
+    assert.equal(h.render().origin.props.disabled, true);
+    assert.equal(h.navigation.length, 0); assert.deepEqual(h.data, before);
+  } finally { h.destroy(); }
+});
+
+test('RX05 a progress draft typed while the source return waits remains unchanged without navigation', async () => {
+  const f = fixture(), h = harness(f.data, f.documentId), before = programClone(f.data);
+  try {
+    await h.open(f.taskIds[0]); const gate = h.blockNext();
+    const pending = h.render().origin.props.onClick(); await gate.started;
+    h.draftProgress('2026-10-03', '65'); gate.release(); await pending; await h.flush();
+    assert.equal(h.input(h.render().progress, 'date'), '2026-10-03');
+    assert.equal(h.input(h.render().progress, 'number'), '65');
+    assert.equal(h.render().origin.props.disabled, true);
+    assert.equal(h.navigation.length, 0); assert.deepEqual(h.data, before);
+  } finally { h.destroy(); }
+});
+
 test('DX09 close and Escape discard only unsubmitted detail values with zero writes and new disclosure generations', async () => {
   for (const cancel of [false, true]) {
     const f = fixture(), h = harness(f.data, f.documentId), before = programClone(f.data);

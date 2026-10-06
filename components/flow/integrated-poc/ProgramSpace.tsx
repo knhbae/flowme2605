@@ -438,7 +438,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   // User intent is based on the displayed state, not whatever happens to be on disk at commit time.
   const base = (_current: ProgramData) => ({ actorId, requestId: programId('request'), expectedSpace: detailExpected.current ?? formExpected.current ?? space });
   const run = async (label: string, build: (current: ProgramData) => ProgramTransition<string>, history = true,
-    schedule?: { taskId: string; date: string | null; time?: string; onAcknowledged?: (workspace: TextWorkspaceState | null) => void }) => {
+    schedule?: { taskId: string; date: string | null; time?: string; onAcknowledged?: (workspace: TextWorkspaceState | null) => void }, ownsPresentation?: () => boolean) => {
     const noticeOwner = { ...executionDraftOwner.current }, noticeView = presentation.current;
     let committedSpace: typeof space | null = null;
     let beforeSchedule: typeof space | null = null;
@@ -449,6 +449,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       date: schedule.date, time: schedule.time ?? task.time ?? '' } : undefined;
     const result = await mutate(label, current => { const next = build(current); if (next.ok) { if (schedule) { beforeSchedule = current.spaces[actorId]; beforeScheduleData = current; committedScheduleData = next.data; } committedSpace = next.data.spaces[actorId]; } return next; },
       { history, ...(alphaSocial ? { alphaSocial } : {}) });
+    // A read-only source return must not change a later dialog's message or baseline.
+    if (ownsPresentation && !ownsPresentation()) return result;
     if (result.ok) {
       formExpected.current = null;
       if (detailExpected.current && committedSpace) {
@@ -520,10 +522,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     }
   }, [props.selectedDocumentId]); // Data can arrive after navigation: retain the requested ID even before its document arrives.
 
-  async function openDocument(id: string, taskId?: string) {
+  async function openDocument(id: string, taskId?: string,
+    request?: { canOpen: () => boolean; onBusy: () => void }): Promise<boolean> {
+    if (request && !request.canOpen()) return false;
     const writingBlocked = () => inputLockCount.current > 0 || Object.values(dirty.current).some(Boolean)
       || Object.values(recurrencePorts.current).some(port => port?.hasPendingInput?.());
-    if (taskId && writingBlocked()) { setMessage('작성 중인 입력을 저장하거나 취소한 뒤 원래 항목을 열어 주세요.'); return; }
+    if (taskId && writingBlocked()) { setMessage('작성 중인 입력을 저장하거나 취소한 뒤 원래 항목을 열어 주세요.'); return false; }
     let targetPosition: ProgramWritingPosition | null = null;
     const remembered = await run('작성 위치 기억', current => {
       if (current.activeActorId !== actorId) return programFailure(current, 'conflict');
@@ -539,8 +543,13 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       // their writing position; history checkpoints retain read-only returns.
       if (cached) positions.current[selected] = normalizeProgramWritingPosition(currentSpace.text, cached);
       return programResult(current, current, id);
-    }, false);
-    if (!remembered.ok || taskId && writingBlocked()) return;
+    }, false, undefined, request?.canOpen);
+    if (request && !request.canOpen()) return false;
+    if (!remembered.ok) { if (remembered.reason === 'busy') request?.onBusy(); return false; }
+    if (taskId && writingBlocked()) {
+      if (request) setMessage('작성 중인 입력을 저장하거나 취소한 뒤 원래 항목을 열어 주세요.');
+      return false;
+    }
     setTaskNotice(null);
     if (targetPosition) { positions.current[id] = targetPosition; setFolderId(''); }
     setSelected(id); setLibraryOpen(false); setOpened(previous => previous.includes(id) ? previous : [...previous, id]); setPeriod('documents');
@@ -569,6 +578,18 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         textarea.scrollIntoView({ block: 'nearest' });
       });
     }
+    return true;
+  }
+  async function openDetailSource(documentId: string, taskId: string) {
+    if (detailSchedulePending || detailProgressPending) return;
+    const owner = { ...executionDraftOwner.current };
+    const ownsPanel = () => dataRef.current.activeActorId === actorId
+      && executionDraftOwner.current.dialog === owner.dialog
+      && executionDraftOwner.current.taskId === owner.taskId
+      && executionDraftOwner.current.input === owner.input;
+    const opened = await openDocument(documentId, taskId, { canOpen: ownsPanel,
+      onBusy: () => setMessage('서버 작업 중이라 원문을 열지 못했습니다. 작업이 끝나면 ‘원문 열기’를 다시 눌러 주세요.') });
+    if (opened && ownsPanel()) close();
   }
   async function newDocument(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault(); const form = event.currentTarget, title = String(new FormData(form).get('title') ?? '').trim();
@@ -865,10 +886,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       {detail?.kind === 'task' && detailTask && <>
         <div className={styles.detailOrigin}>
           <p className={styles.muted}>{readProgramTaskOrigin(data, detailTask).label} · {detailTask.docTitle}</p>
-          <button disabled={detailSchedulePending || detailProgressPending} onClick={() => {
-            if (detailSchedulePending || detailProgressPending) return;
-            const target = { documentId: detailTask.docId, taskId: detailTask.id }; close(); void openDocument(target.documentId, target.taskId);
-          }}>원문 열기</button>
+          <button disabled={detailSchedulePending || detailProgressPending} onClick={() => openDetailSource(detailTask.docId, detailTask.id)}>원문 열기</button>
           {readProgramTaskOrigin(data, detailTask).sourceUrl && <a href={readProgramTaskOrigin(data, detailTask).sourceUrl!} target="_blank" rel="noopener noreferrer">자료 원문 열기</a>}
           {(detailSchedulePending || detailProgressPending) && <p className={styles.muted}>날짜·시간 또는 진행 입력을 적용하거나, 닫아 취소한 뒤 원문을 열어 주세요.</p>}
         </div>
@@ -882,15 +900,15 @@ export function ProgramSpace(props: ProgramSpaceProps) {
         <form onSubmit={async event => { event.preventDefault(); const requested = { dialog: executionDraftOwner.current.dialog, date: recordDate, percent };
           const result = await run('진행 기록', current => recordProgramTaskProgress(current, { ...base(current), taskId: detailTask.id, date: requested.date, percent: Number(requested.percent) }));
           if (result.ok && executionDraftOwner.current.dialog === requested.dialog && executionDraftOwner.current.taskId === detailTask.id) { setProgressDraftBaseline({ date: requested.date, percent: requested.percent }); setMessage('해당 날짜의 누적 진행을 저장했습니다.'); }
-        }}><h3>날짜별 진행</h3><label>기록 날짜<input type="date" value={recordDate} onChange={event => setRecordDate(event.target.value)} required /></label><label>누적 진행 (%)<input type="number" min={0} max={100} value={percent} onChange={event => setPercent(event.target.value)} required /></label><button>진행 기록</button></form>
-        <ul>{M.progressHistory(space.text, detailTask.id).map(record => <li key={record.date}><button onClick={() => { setRecordDate(record.date); setPercent(String(record.percent)); }}>{record.date} · {record.percent}%</button></li>)}</ul>
+        }}><h3>날짜별 진행</h3><label>기록 날짜<input type="date" value={recordDate} onChange={event => { executionDraftOwner.current.input++; setRecordDate(event.target.value); }} required /></label><label>누적 진행 (%)<input type="number" min={0} max={100} value={percent} onChange={event => { executionDraftOwner.current.input++; setPercent(event.target.value); }} required /></label><button>진행 기록</button></form>
+        <ul>{M.progressHistory(space.text, detailTask.id).map(record => <li key={record.date}><button onClick={() => { executionDraftOwner.current.input++; setRecordDate(record.date); setPercent(String(record.percent)); }}>{record.date} · {record.percent}%</button></li>)}</ul>
         </details>
         <details key={`connections-${executionDraftOwner.current.dialog}`} className={styles.detailSection} data-detail-section="connections"><summary>연결·이동·순서</summary>
         {period !== 'documents' && <div className={styles.actions}><button onClick={() => moveStep(detailTask, -1)}>같은 날짜에서 위로</button><button onClick={() => moveStep(detailTask, 1)}>같은 날짜에서 아래로</button></div>}
         <label className={styles.field}>다른 문서에 연결<select defaultValue="" onChange={async event => { const docId = event.target.value; if (!docId) return; await run('같은 할 일 연결', current => linkProgramTask(current, { ...base(current), documentId: docId, taskId: detailTask.id })); }}><option value="">문서 선택</option>{space.text.documents.filter(doc => doc.id !== detailTask.docId && !space.archivedDocumentIds.includes(doc.id)).map(doc => <option key={doc.id} value={doc.id}>{doc.title}</option>)}</select></label>
         <ProgramTaskDocumentMove key={detailTask.id} data={data} taskId={detailTask.id} disabled={preparingDocumentAction} onMove={(destinationId, expectedSpace) => moveTaskDocument(detailTask.id, destinationId, expectedSpace)} onOpen={(documentId, taskId) => {
           if (detailSchedulePending || detailProgressPending) { setMessage('날짜·시간 또는 진행 입력을 적용하거나 취소한 뒤 원문을 열어 주세요.'); return; }
-          close(); void openDocument(documentId, taskId);
+          void openDetailSource(documentId, taskId);
         }} />
         </details>
       </>}
