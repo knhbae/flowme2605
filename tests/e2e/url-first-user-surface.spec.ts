@@ -214,6 +214,9 @@ async function removePersonalDraftItemInStructureMode(page: Page, flow: Locator,
   await row.getByTestId('my-flow-batch-item-checkbox').check();
   page.once('dialog', (dialog) => dialog.accept());
   await outline.getByTestId('my-flow-batch-remove-selected').click();
+  // A click does not wait for the shared async write lock. The row disappears
+  // only after the saved overlay reaches the rendered state; wait before reload.
+  await expect(row).toHaveCount(0);
 }
 
 async function expandMyFlowAdvancedEditor(detail: Locator) {
@@ -821,6 +824,8 @@ test('personal draft structural items add, complete, tombstone, and undo without
   await expect(addedItem.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
   await detailOpen.click();
   const completionDetail = getOpenMyFlowItemDetail(page);
+  // Let the sheet finish its initial-focus handoff before moving keyboard focus.
+  await expect(page.getByTestId('my-flow-item-detail-sheet-close')).toBeFocused();
   const complete = completionDetail.getByRole('checkbox', { name: '관리실에 후속 전화하기 완료 체크' });
   await complete.focus();
   await expect(complete).toBeFocused();
