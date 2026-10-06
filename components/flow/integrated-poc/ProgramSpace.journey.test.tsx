@@ -47,6 +47,7 @@ function periodHarness(composing: boolean) {
   scan(ast); assert(fn);
   const code = ts.transpileModule(`const change = (${fn.getText(ast)});`, { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText;
   const context = { inputLockCount: { current: 0 }, today: '2026-10-02',
+    setTaskNotice: (value: unknown) => assert.equal(value, null),
     lockInput: () => { lockCount++; calls.push('lock'); return () => { lockCount--; calls.push('release'); }; },
     flushAllEditors: async () => { flushCount++; calls.push('flush'); return draft.flush(); },
     setMessage: (value: string) => messages.push(value), setPeriod: (value: string) => { presentation.period = value; }, setDate: (value: string) => { presentation.date = value; } };
@@ -107,6 +108,7 @@ function libraryHarness(options: { mobile?: boolean; period?: string; pending?: 
   const documentHost = { dataset: { programDocument: id }, querySelector: () => editor };
   const focus = { body: {}, activeElement: {} as object | null };
   const context = { document: focus, readProgramFolderRegions, programDocumentContentLock, space, libraryReveal, selectedRef, presentation, dirty, recurrencePorts, inputLockCount,
+    setTaskNotice: (value: unknown) => assert.equal(value, null),
     workspaceRef: { current: space.text }, documentsRef: { current: options.missing ? [] : space.text.documents },
     libraryToggle: { current: button }, root: { current: { getClientRects: () => [{}], querySelectorAll: () => [documentHost] } },
     props: { canContinueWholeDocument: () => authority }, window: { matchMedia: () => ({ matches: mobile }), innerHeight: 844 },
@@ -438,6 +440,7 @@ function harness() {
   } } as Record<string, ((target: { documentId: string; lineId: string; raw: string }) => boolean) | null> };
   let reject = false, duringRun: (() => void) | undefined, contained = true;
   const context = { M, programFailure, programResult, normalizeProgramWritingPosition, actorId, selected: id,
+    setTaskNotice: (value: unknown) => assert.equal(value, null),
     dirty, inputLockCount, recurrencePorts, positions, selectedRef, presentation, documentsRef, sourceFocusPorts,
     root: { current: { contains: (node: unknown) => contained && node === textarea } },
     document: { getElementById: (target: string) => target === `program-text-${encodeURIComponent(id)}` ? textarea : null },

@@ -19,6 +19,7 @@ const code=ts.transpileModule(`const value=${handler.getText(ast)};`,{compilerOp
 test('actual openDocument handler normalizes moved cache without mutation and hands exact focus to App history',async()=>{
   const{data,actorId,from,to,task}=fixture();let live=data,focused:number[]|null=null,navigated:any=null;const records=programClone(data.spaces[actorId].text.progressRecords),positions={current:{[from]:{documentId:from,lineId:task.id,start:6,end:10,scrollTop:40}} as Record<string,ProgramWritingPosition>};
   const context={actorId,selected:from,positions,programClone,programFailure,programResult,programSame,normalizeProgramWritingPosition,M,
+    setTaskNotice:(value:unknown)=>assert.equal(value,null),
     inputLockCount:{current:0},dirty:{current:{}},recurrencePorts:{current:{}},setFolderId:(value:string)=>{assert.equal(value,'');},
     run:async(_label:string,build:any)=>{const result=build(live);if(result.ok){assert(validateProgramData(result.data));assert.equal(result.changed,false);assert.equal(result.data,live);live=result.data;}return result;},setSelected:()=>{},setLibraryOpen:()=>{},setOpened:()=>{},setPeriod:()=>{},props:{onRegisterNavigation:()=>{},navigate:(value:any,options:any)=>{navigated=value;const checkpoint=programCheckpointForWritingTarget(live,value,options.writingLineId,null);assert(checkpoint);assert.equal(checkpoint.focus,`program-text-${encodeURIComponent(value.id)}`);const position=checkpoint.writing![value.id];focused=[position.start,position.end];}},requestAnimationFrame:()=>{throw Error('Space must not race App focus');}};
   const open=new Function(...Object.keys(context),`${code};return value;`)(...Object.values(context));await open(to,task.id);assert.equal(navigated.id,to);assert.equal(live.spaces[actorId].position.lineId,null);assert.deepEqual(live.spaces[actorId].text.progressRecords,records);assert.deepEqual(live.spaces[actorId].text,data.spaces[actorId].text);
@@ -42,6 +43,7 @@ function restorationHarness(owner: 'app' | 'alpha', timing: 'during-navigation' 
     closest: () => ({ querySelectorAll: () => doc.lines.map(() => renderedLine) }), scrollIntoView: () => calls.push('reveal') };
   let appRestore: (() => void) | undefined;
   const context = { actorId, selected: from, positions, programFailure, programResult, normalizeProgramWritingPosition, M,
+    setTaskNotice: (value: unknown) => assert.equal(value, null),
     inputLockCount: { current: 0 }, dirty: { current: {} }, recurrencePorts: { current: {} }, setFolderId: (value: string) => { assert.equal(value, ''); },
     selectedRef, presentation, documentsRef, root: { current: { contains: (node: unknown) => node === textarea } },
     document: { getElementById: (id: string) => id === `program-text-${encodeURIComponent(to)}` ? textarea : null },
