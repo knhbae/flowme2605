@@ -46,3 +46,13 @@ CI `37570202088`의 Docs/Unit/Build 작업은 타입·build·core 검사를 통�
 좁은 로컬 검사: portable1 PASS(chunk `8c0e6f`), canonical Flow boundary1 PASS(초기7case 실행), workspace3751 PASS(`3d416b`), 나머지4 viewport와 ordering5 PASS(`51b941`). 고유8사례이며 반복 수를 합산하지 않는다. 초기 workspace375 실패는 원문 이동의 비동기 완료 전에 더보기 상태를 읽은 시험 race였다. 쓰기 목적지의 표시를 기다린 후 정상 메뉴를 열도록 수정했다. 초기 실패/중단 원자료를 보존하고 실패한 여정을 PASS로 덮어쓰지 않는다. 나머지5의 source 전후 안정과 raw는 `ci-navigation-followup/result.json`·remaining-five-output.txt에 있다.
 
 기존 사용자 Chrome은 입력값을 읽거나 쓰지 않고 정상 시험계정 일치 boolean·서버 연결·편집기 저장됨·dirty0을 관측했다(`04:18:56Z`). 새 후보 실제 저장이나 신규 접속은 아직 실행하지 않았다. 현재 제공 Alpha는 c287/eWX이며 기존 HoldCurrent 실행 전 거절 기록을 보존한다.
+
+## 비공개 계약 검사 하네스 보완
+
+후속 게시 `23b0012b34d72a5473f2d192626fc982375882c8`의 CI `37571422608`에서 Docs/Unit/Build와 일반 E2E는 통과했지만 비공개 계약 검사는3240개 중3224 PASS/16 FAIL이었다. 연동 gate의 실패는 이 결과를 올바르게 반영했다. 공개 CI에는 개별 실패 상세가 없으므로 기존 로컬 검사로 진단했다. 로컬도305파일/3240개 중3224 PASS/16 FAIL, sourceChanged0이었다. 숫자는 같지만 두 실행의 private pack 바이트 동일성을 입증하지 않았으므로 같은 실패 사례라고 확정하지 않는다.
+
+로컬16개는 기본 닫힌 추가 메뉴를 예전 open 속성으로 찾는 검사1개, 행 렌더에 필요한 progress/value 문맥 누락1개, 현재 기본 이동 callback과 맞지 않는 문자열1개, 원문 복귀에 필요한 pendingSourceFocus/dataRef/초점 소유 문맥 누락12개, 이미 값 비교로 바뀐 캐시 guard를 예전 reference 비교 문자열로 찾는 검사1개였다. 제품 코드·저장 계약·guard는 수정하지 않았다.
+
+관련 테스트5파일만 정상 화면/초점 계약에 맞췄다. collections/context/journey의48개와 writing-navigation/writing-position의9개가 각 표적 실행에서 모두 통과했다. 고유57개이며 기존50개나 CI 실행 수에 합산하지 않는다. 입력·조합·잠금·권한·Item/문서 ID·원문·진행 기록·caret·화면 위치·단일 form·쓰기 횟수·App/Alpha 초점 소유 검증을 보존했다. skip/timeout/검사 생략은 없다. 첫3파일 실행47 PASS/1 FAIL은 evaluator 임시 변수명 충돌이며 수정 후48 PASS다. 두 파일 초기4 PASS/5 FAIL도 별도 보존했다.
+
+실패와 최종 표적 raw는 ignored `output/ci-failure-37571422608/` 및 `output/playwright/writing-today-classification-persistence/focus-harness-*`에 남긴다. 이후 Git checkout 줄바꿈을 맞춘 파일은 변환 전후 SHA와 동일 clean object를 별도 연결한다. 줄바꿈 변환을 새 사용자 동작 검사로 세지 않는다. 새 정확 HEAD CI·Alpha 적용·실계정 저장/새 접속 성공은 실제 결과가 나오기 전까지 NOT_RUN이다.

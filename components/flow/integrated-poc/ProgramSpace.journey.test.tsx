@@ -48,21 +48,23 @@ function periodHarness(composing: boolean) {
   const code = ts.transpileModule(`const change = (${fn.getText(ast)});`, { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText;
   const context = { inputLockCount: { current: 0 }, today: '2026-10-02', collectionMode: undefined,
     setTaskNotice: (value: unknown) => assert.equal(value, null),
+    setQuery: () => calls.push('query'), setFolderId: () => calls.push('folder'),
     lockInput: () => { lockCount++; calls.push('lock'); return () => { lockCount--; calls.push('release'); }; },
     flushAllEditors: async () => { flushCount++; calls.push('flush'); return draft.flush(); },
     setMessage: (value: string) => messages.push(value), setPeriod: (value: string) => { presentation.period = value; }, setDate: (value: string) => { presentation.date = value; } };
-  const change = new Function(...Object.keys(context), `${code}; return change;`)(...Object.values(context)) as (period: string) => Promise<boolean>;
+  const change = new Function(...Object.keys(context), `${code}; return change;`)(...Object.values(context)) as (period: string, main?: boolean) => Promise<boolean>;
   return { presentation, messages, calls, draft, input, documentId, change, writes: () => writes, locks: () => lockCount, flushes: () => flushCount };
 }
 
 test('period navigation cannot hide a composing folder region or change its document and date', async () => {
   const h = periodHarness(true);
-  assert.equal(await h.change('today'), false);
+  assert.equal(await h.change('today', true), false);
   assert.deepEqual(h.presentation, { period: 'documents', documentId: h.documentId, date: '2026-10-01' });
   assert.equal(h.draft.getState().pending?.raw, h.input); assert(h.draft.isComposing()); assert.equal(h.writes(), 0);
   assert.deepEqual(h.calls, ['lock', 'flush', 'release']); assert.equal(h.locks(), 0); assert.equal(h.flushes(), 1);
   assert.match(h.messages.at(-1)!, /한글 입력을 마친 뒤/);
-  assert.match(source, /onClick=\{\(\) => \{ void changePeriod\(key\); \}\}/);
+  assert.match(source, /onClick=\{\(\) => void changePeriod\(key, true\)\}/);
+  assert.match(source, /onClick=\{\(\) => void changePeriod\(key\)\}/);
 });
 
 test('period navigation cannot hide rejected folder input and shares the folder-task transition', async () => {
@@ -72,7 +74,7 @@ test('period navigation cannot hide rejected folder input and shares the folder-
   assert.equal(h.draft.getState().pending?.raw, h.input); assert(h.draft.hasPending()); assert.equal(h.writes(), 0);
   assert.deepEqual(h.calls, ['lock', 'flush', 'release']); assert.equal(h.locks(), 0); assert.match(h.messages.at(-1)!, /저장되지 않은 입력/);
   assert.match(source, /async function showFolderTasks\(\) \{\s*return changePeriod\('all'\);/);
-  h.draft.discard(); assert.equal(await h.change('today'), true); assert.equal(h.presentation.period, 'today'); assert.equal(h.presentation.date, '2026-10-02');
+  h.draft.discard(); assert.equal(await h.change('today', true), true); assert.equal(h.presentation.period, 'today'); assert.equal(h.presentation.date, '2026-10-02');
 });
 
 function libraryHarness(options: { mobile?: boolean; period?: string; pending?: 'composition' | 'rejected'; locked?: boolean; authority?: boolean; missing?: boolean; readonlyRegion?: boolean; lockedDocument?: boolean } = {}) {
@@ -430,6 +432,7 @@ function harness() {
   const otherId = space.text.documents[1].id;
   space.text = M.editText(space.text, otherId, '- [ ] 같은 제목');
   const before = JSON.stringify(data), calls: string[] = [], frames: (() => void)[] = [];
+  const pendingSourceFocus = { current: null }, dataRef = { current: data }, body = {};
   const dirty = { current: {} as Record<string, boolean> }, inputLockCount = { current: 0 };
   const recurrencePorts = { current: {} as Record<string, { hasPendingInput: () => boolean }> };
   const positions = { current: {} as Record<string, ProgramWritingPosition> };
@@ -446,11 +449,11 @@ function harness() {
     textarea.focus(); return true;
   } } as Record<string, ((target: { documentId: string; lineId: string; raw: string }) => boolean) | null> };
   let reject = false, duringRun: (() => void) | undefined, contained = true;
-  const context = { M, programFailure, programResult, normalizeProgramWritingPosition, actorId, selected: id,
+  const context = { M, programFailure, programResult, programSame, normalizeProgramWritingPosition, actorId, selected: id,
     setTaskNotice: (value: unknown) => assert.equal(value, null),
-    dirty, inputLockCount, recurrencePorts, positions, selectedRef, presentation, documentsRef, sourceFocusPorts,
+    dirty, inputLockCount, recurrencePorts, positions, selectedRef, presentation, documentsRef, sourceFocusPorts, pendingSourceFocus, dataRef,
     root: { current: { contains: (node: unknown) => contained && node === textarea } },
-    document: { getElementById: (target: string) => target === `program-text-${encodeURIComponent(id)}` ? textarea : null },
+    document: { body, activeElement: body, getElementById: (target: string) => target === `program-text-${encodeURIComponent(id)}` ? textarea : null },
     requestAnimationFrame: (frame: () => void) => frames.push(frame),
     setMessage: () => calls.push('message'),
     setFolderId: (value: string) => { presentation.current.folderId = value; },

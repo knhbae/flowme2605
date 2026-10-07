@@ -45,7 +45,7 @@ test('Space delegates explicit row focus to App history and limits native restor
   assert(nativeRestore.includes('requestAnimationFrame('));
   assert(nativeRestore.includes('sourceFocusPorts.current[id]'));
   assert(nativeRestore.includes('selectedRef.current !== id'));
-  assert(nativeRestore.includes('positions.current[id] !== requested'));
+  assert(nativeRestore.includes('!programSame(positions.current[id], requested)'));
   assert(app.includes('onRegisterNavigation={registered => { spaceNavigation.current = registered; }}'));
   assert(!alpha.includes('onRegisterNavigation='));
   assert(app.includes('programCheckpointForWritingTarget(data, next, options.writingLineId, checkpoint)'));

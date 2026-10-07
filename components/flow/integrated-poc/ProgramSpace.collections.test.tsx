@@ -44,14 +44,11 @@ test('collection first entry reuses only the host-specified active document with
   assert.equal(JSON.stringify(first), original);
 });
 
-test('today/week disclosure retains one mounted quick-add form and leaves existing non-collection entry open', () => {
+test('quick-add disclosure starts closed in both modes while retaining one mounted form', () => {
   const detail = nodeWhere(node => ts.isJsxElement(node) && node.openingElement.tagName.getText(ast) === 'details'
     && node.openingElement.attributes.getText(ast).includes('styles.quickDisclosure')) as ts.JsxElement;
-  const open = detail.openingElement.attributes.properties.find(prop => ts.isJsxAttribute(prop) && prop.name.getText(ast) === 'open') as ts.JsxAttribute;
-  const expression = (open.initializer as ts.JsxExpression).expression!.getText(ast);
-  for (const period of ['today', 'week']) assert.equal(evaluate(expression, { collectionMode: {}, period }), false);
-  for (const period of ['today', 'week', 'documents', 'all', 'undated']) assert.equal(evaluate(expression, { collectionMode: undefined, period }), true);
-  for (const period of ['all', 'undated', 'month']) assert.equal(evaluate(expression, { collectionMode: {}, period }), true);
+  assert.equal(detail.openingElement.attributes.properties.some(prop => ts.isJsxAttribute(prop) && prop.name.getText(ast) === 'open'), false);
+  assert.match(detail.getText(ast), /<summary>할 일 추가<\/summary>/);
   let forms = 0;
   const visit = (node: ts.Node) => { if (ts.isJsxElement(node) && node.openingElement.tagName.getText(ast) === 'form') forms++; ts.forEachChild(node, visit); };
   visit(detail); assert.equal(forms, 1); assert.match(detail.getText(ast), /onSubmit={quickTask}/);

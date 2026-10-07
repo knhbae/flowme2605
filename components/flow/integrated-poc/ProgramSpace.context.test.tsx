@@ -20,10 +20,10 @@ function find(predicate: (node: ts.Node) => boolean): ts.Node {
   visit(ast); assert(result); return result;
 }
 function evaluate(expression: string, context: Record<string, unknown>) {
-  const code = ts.transpileModule(`const value = ${expression};`, { fileName: 'fragment.tsx', compilerOptions: {
+  const code = ts.transpileModule(`const fragment = ${expression};`, { fileName: 'fragment.tsx', compilerOptions: {
     target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.React,
   } }).outputText;
-  return new Function('React', ...Object.keys(context), `${code}; return value;`)(React, ...Object.values(context));
+  return new Function('React', ...Object.keys(context), `${code}; return fragment;`)(React, ...Object.values(context));
 }
 function actualFunction(name: string, context: Record<string, unknown>) {
   return evaluate(`(${find(node => ts.isFunctionDeclaration(node) && node.name?.text === name).getText(ast)})`, context);
@@ -157,7 +157,8 @@ test('period row renders actual Flow folder path, document and time while its or
   assert.equal(taskFolderPath({ ...task, scopeId: 'child' }), '생활 / 준비');
   const node = find(node => ts.isJsxElement(node) && node.openingElement.tagName.getText(ast) === 'button' && node.openingElement.attributes.properties.some(attr => ts.isJsxAttribute(attr) && attr.name.getText(ast) === 'className' && attr.initializer?.getText(ast) === '{styles.taskTitle}'));
   const opened: string[] = [];
-  const element = evaluate(node.getText(ast), { styles, task, origin: { label: '문서 항목', sourceUrl: null }, period: 'today', date: '2026-09-30', programIsContinuingTask, taskFolderPath, moving: null, openDocument: (...args: string[]) => opened.push(...args) });
+  const progress = M.latestProgress(space.text, task.id), value = progress?.percent ?? (task.done ? 100 : 0);
+  const element = evaluate(node.getText(ast), { styles, task, progress, value, origin: { label: '문서 항목', sourceUrl: null }, period: 'today', date: '2026-09-30', programIsContinuingTask, taskFolderPath, moving: null, openDocument: (...args: string[]) => opened.push(...args) });
   const html = renderToStaticMarkup(element); assert.match(html, /09:10/); assert.match(html, /생활 \/ 준비 문서/);
   element.props.onClick(); assert.deepEqual(opened, [task.docId, task.id]);
 });

@@ -19,6 +19,7 @@ const code=ts.transpileModule(`const value=${handler.getText(ast)};`,{compilerOp
 test('actual openDocument handler normalizes moved cache without mutation and hands exact focus to App history',async()=>{
   const{data,actorId,from,to,task}=fixture();let live=data,focused:number[]|null=null,navigated:any=null;const records=programClone(data.spaces[actorId].text.progressRecords),positions={current:{[from]:{documentId:from,lineId:task.id,start:6,end:10,scrollTop:40}} as Record<string,ProgramWritingPosition>};
   const context={actorId,selected:from,positions,programClone,programFailure,programResult,programSame,normalizeProgramWritingPosition,M,
+    pendingSourceFocus:{current:null},document:{activeElement:null},
     setTaskNotice:(value:unknown)=>assert.equal(value,null),
     inputLockCount:{current:0},dirty:{current:{}},recurrencePorts:{current:{}},setFolderId:(value:string)=>{assert.equal(value,'');},
     run:async(_label:string,build:any)=>{const result=build(live);if(result.ok){assert(validateProgramData(result.data));assert.equal(result.changed,false);assert.equal(result.data,live);live=result.data;}return result;},setSelected:()=>{},setLibraryOpen:()=>{},setOpened:()=>{},setPeriod:()=>{},props:{onRegisterNavigation:()=>{},navigate:(value:any,options:any)=>{navigated=value;const checkpoint=programCheckpointForWritingTarget(live,value,options.writingLineId,null);assert(checkpoint);assert.equal(checkpoint.focus,`program-text-${encodeURIComponent(value.id)}`);const position=checkpoint.writing![value.id];focused=[position.start,position.end];}},requestAnimationFrame:()=>{throw Error('Space must not race App focus');}};
@@ -35,6 +36,7 @@ function restorationHarness(owner: 'app' | 'alpha', timing: 'during-navigation' 
   const before = JSON.stringify(data), frames: (() => void)[] = [], calls: string[] = [];
   const positions = { current: {} as Record<string, ProgramWritingPosition> };
   const selectedRef = { current: from }, presentation = { current: { period: 'week' } };
+  const focusOwner = {};
   const documentsRef = { current: [...data.spaces[actorId].text.documents, ...data.spaces[actorId].text.flows] };
   const doc = M.getDocument(data.spaces[actorId].text, to)!;
   const renderedLine = { offsetTop: 800, offsetHeight: 44 };
@@ -42,11 +44,12 @@ function restorationHarness(owner: 'app' | 'alpha', timing: 'during-navigation' 
     getClientRects: () => [{}], setSelectionRange(start: number, end: number) { this.selectionStart = start; this.selectionEnd = end; },
     closest: () => ({ querySelectorAll: () => doc.lines.map(() => renderedLine) }), scrollIntoView: () => calls.push('reveal') };
   let appRestore: (() => void) | undefined;
-  const context = { actorId, selected: from, positions, programFailure, programResult, normalizeProgramWritingPosition, M,
+  const context = { actorId, selected: from, positions, programFailure, programResult, programSame, normalizeProgramWritingPosition, M,
+    pendingSourceFocus: { current: null }, dataRef: { current: data },
     setTaskNotice: (value: unknown) => assert.equal(value, null),
     inputLockCount: { current: 0 }, dirty: { current: {} }, recurrencePorts: { current: {} }, setFolderId: (value: string) => { assert.equal(value, ''); },
     selectedRef, presentation, documentsRef, root: { current: { contains: (node: unknown) => node === textarea } },
-    document: { getElementById: (id: string) => id === `program-text-${encodeURIComponent(to)}` ? textarea : null },
+    document: { activeElement: focusOwner, body: focusOwner, getElementById: (id: string) => id === `program-text-${encodeURIComponent(to)}` ? textarea : null },
     sourceFocusPorts: { current: { [to]: (target: { documentId: string; lineId: string; raw: string }) => {
       assert.deepEqual(target, { documentId: to, lineId: task.id, raw: textarea.value }); calls.push('native-focus'); return true;
     } } },
