@@ -695,17 +695,17 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
       <button type="button" onClick={() => { if (captureInput()) void onSignOut(); }}>입력 보관 후 로그아웃</button><button type="button" onClick={() => setLeave(false)}>계속 작성</button></section>}
     {message && !participationMessage && <p className={styles.message} role="status">{message}</p>}
     {unavailable ? <section className={styles.empty}><p>{snapshot?.status === 'session-expired' ? '계정을 다시 확인한 뒤 개인공간을 열 수 있습니다.' : '서버에서 개인공간을 확인하고 있습니다.'}</p></section> : <>
-      <nav className={styles.tabs} aria-label="작업 공간"><button aria-current={destination.view === 'space' ? 'page' : undefined} onClick={() => void navigate({ view: 'space' })}>내 공간</button>
+      <div className={styles.workspaceUtilities}><details className={styles.workspaceTools} open={destination.view !== 'space'}><summary>Flow · 다른 도구</summary><nav className={styles.tabs} aria-label="작업 공간"><button aria-current={destination.view === 'space' ? 'page' : undefined} onClick={() => void navigate({ view: 'space' })}>내 공간</button>
         <button aria-current={browse ? 'page' : undefined} onClick={() => void navigate({ view: 'discover' })}>둘러보기</button>
         <button aria-current={['activity', 'creator'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigate({ view: 'activity' })}>내 활동</button>
-        {data.spaces[session.userId].savedBindings.length > 0 && <button onClick={() => void navigate({ view: 'legacy' })}>개인 Flow 상세</button>}</nav>
+        {data.spaces[session.userId].savedBindings.length > 0 && <button onClick={() => void navigate({ view: 'legacy' })}>개인 Flow 상세</button>}</nav></details>
+        <details className={styles.workspaceTools} hidden={destination.view !== 'space'}><summary>문서 정리 방식</summary><div className={styles.tabs} aria-label="문서 정리 방식">
+          <button type="button" aria-pressed={collectionsMode} disabled={collectionsSwitching || collectionsSaving || pending || external || !!snapshot?.busy || !!snapshot?.draft || storageError}
+            onClick={() => void switchCollectionsMode()}>{collectionsMode ? '기존 폴더로 보기' : '문서·모음 시험'}</button>
+        </div></details></div>
       {browse && <nav className={styles.tabs} aria-label="둘러보기 종류"><button aria-current={['discover', 'flow'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigate({ view: 'discover' })}>Flow 찾기</button><button aria-current={destination.view === 'community' ? 'page' : undefined} onClick={() => void navigate({ view: 'community' })}>경험·질문·지식</button></nav>}
       {['activity', 'creator'].includes(destination.view) && <nav className={styles.tabs} aria-label="내 활동 종류"><button aria-current={destination.view === 'activity' ? 'page' : undefined} onClick={() => void navigate({ view: 'activity' })}>활동·공개 관리</button><button aria-current={destination.view === 'creator' ? 'page' : undefined} onClick={openCreatorEntry}>Flow 만들기</button></nav>}
       <div hidden={destination.view !== 'space'}>
-        <div className={styles.tabs} aria-label="문서 정리 방식">
-          <button type="button" aria-pressed={collectionsMode} disabled={collectionsSwitching || collectionsSaving || pending || external || !!snapshot?.busy || !!snapshot?.draft || storageError}
-            onClick={() => void switchCollectionsMode()}>{collectionsMode ? '기존 폴더로 보기' : '문서·모음 시험'}</button>
-        </div>
         {collectionsMode && <p className={styles.notice}>모음 연결은 이 브라우저에만 저장됩니다. 문서·할 일은 기존 서버에 저장되며, 기존 폴더는 바뀌지 않습니다.</p>}
         {collectionsMessage && <p className={styles.message} role="status">{collectionsMessage}</p>}
         <ProgramSpace key={`space:${session.userId}:${presentation}:${collectionsMode ? 'collections' : 'folders'}`} data={data} today={programLocalDate()} mutate={mutate}

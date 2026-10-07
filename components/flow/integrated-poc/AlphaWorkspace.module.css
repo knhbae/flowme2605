@@ -37,6 +37,44 @@
 .tabs button[aria-current="page"] { border-color: var(--flowme-action); color: var(--flowme-action); font-weight: 700; }
 .inspector { width: min(960px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); overflow: auto; margin: auto; border: 1px solid var(--flowme-control-border); border-radius: 14px; padding: 16px; color: var(--flowme-text); background: var(--flowme-surface); }
 .inspector::backdrop { background: rgb(0 0 0 / .4); }
+.page {
+  --flowme-bg: #faf9f6;
+  --flowme-surface: #fffefa;
+  --flowme-surface-subtle: #f4f5ef;
+  --flowme-surface-selected: #e8f0e8;
+  --flowme-text: #222b25;
+  --flowme-text-secondary: #59645d;
+  --flowme-action: #326449;
+  --flowme-action-hover: #254f38;
+  --flowme-action-strong: #254f38;
+  --flowme-action-soft: #e8f0e8;
+  --flowme-action-border: #b5ccb9;
+  --flowme-focus: #326449;
+  --flowme-border: #dde2d9;
+  --flowme-control-border: #a0aca0;
+  background: var(--flowme-bg);
+  font-size: 16px;
+  font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", system-ui, sans-serif;
+  line-height: 26px;
+  padding-block: 24px 32px;
+}
+.header { gap: 16px; }
+.header h1 { font-size: 16px; line-height: 26px; color: var(--flowme-text-secondary); font-weight: 500; }
+.brand { font-weight: 750; letter-spacing: 0; text-decoration: none; }
+.notice, .sync, .workspaceTools { font-size: 13px; line-height: 20px; }
+.notice { margin-block: 8px 16px; }
+.notice summary { min-height: 44px; }
+.sync { padding-block: 8px; margin-bottom: 16px; }
+.sync > p { color: var(--flowme-action-strong); font-size: 13px; line-height: 20px; }
+.sync:has(+ .problem) > p { color: var(--flowme-text); }
+.workspaceTools { margin-bottom: 16px; color: var(--flowme-text-secondary); }
+.workspaceTools > summary { cursor: pointer; width: fit-content; min-height: 44px; align-content: center; }
+.workspaceTools .tabs { padding-block: 8px; }
+.workspaceUtilities { display: flex; gap: 8px 24px; flex-wrap: wrap; margin-bottom: 8px; }
+.workspaceUtilities .workspaceTools { margin: 0; }
+.workspaceUtilities .workspaceTools[open] { flex-basis: 100%; }
+.tabs button[aria-current="page"] { background: var(--flowme-action-soft); }
+.inspector { background: var(--flowme-surface); }
 @media (max-width: 600px) {
   .page { padding-inline: 12px; }
   .header { gap: 8px; margin-bottom: 8px; }

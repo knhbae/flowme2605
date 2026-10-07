@@ -103,6 +103,8 @@ function sameScheduleWorkspace(before: TextWorkspaceState, expected: TextWorkspa
 export function ProgramSpace(props: ProgramSpaceProps) {
   const { data, mutate, today } = props, actorId = data.activeActorId, space = data.spaces[actorId];
   const dataRef = useRef(data); dataRef.current = data;
+  const classificationRequest = useRef(false);
+  const [classificationCreating, setClassificationCreating] = useState(false);
   const scheduleMounted = useRef(true);
   const scheduleAcknowledgment = useRef<{ actorId: string; before: ProgramPrivateSpace; after: ProgramPrivateSpace;
     beforeData: ProgramData; afterData: ProgramData; detail: boolean;
@@ -911,7 +913,16 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       <div hidden={period === 'documents'}>
         <ProgramRecurrencePlanRecovery data={data} today={today} folderId={folderId || undefined} disabled={preparingDocumentAction} onOpenSource={(id, line) => void openDocument(id, line)} />
         <div className={styles.periodHeading}><h1>{period === 'today' && date !== today ? '하루' : period === 'all' && collectionMode ? '전체 할 일' : periods.find(([key]) => key === period)?.[1]}{folder ? ` · ${folder.title}` : ''}</h1>{!['all', 'undated', 'documents'].includes(period) && <div className={styles.dateNav}><button aria-label="이전 기간" onClick={() => setDate((period === 'month' ? programShiftMonth(date, -1) : programShiftDate(date, period === 'week' ? -7 : -1)) || date)}>‹</button><label>조회 날짜<input id="program-query-date" type="date" value={date} onChange={event => { if (programDate(event.target.value)) setDate(event.target.value); }} /></label><button aria-label="다음 기간" onClick={() => setDate((period === 'month' ? programShiftMonth(date, 1) : programShiftDate(date, period === 'week' ? 7 : 1)) || date)}>›</button></div>}</div>
-        {period === 'all' && !collectionMode && <label className={styles.classificationPicker}>분류<select aria-label="할 일 분류 보기" value={folderId} onChange={event => { void changeFolder(event.target.value); }}><option value="">모든 분류</option>{folderOptions.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</select></label>}
+        {period === 'all' && !collectionMode && <div className={styles.classificationActions}><label className={styles.classificationPicker}>분류<select aria-label="할 일 분류 보기" value={folderId} onChange={event => { void changeFolder(event.target.value); }}><option value="">모든 분류</option>{folderOptions.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</select></label>
+          <details className={styles.classificationCreate}><summary>새 분류</summary><form onSubmit={async event => {
+            event.preventDefault(); const form = event.currentTarget, title = String(new FormData(form).get('title') ?? '');
+            if (classificationRequest.current) return;
+            classificationRequest.current = true; setClassificationCreating(true);
+            try {
+              const result = await run('분류 만들기', current => createProgramFolder(current, { ...base(current), title, parentId: null }));
+              if (result.ok) { form.reset(); form.closest('details')?.removeAttribute('open'); }
+            } finally { classificationRequest.current = false; setClassificationCreating(false); }
+          }}><label>분류 이름<input name="title" required maxLength={100} disabled={classificationCreating} /></label><button type="submit" disabled={preparingDocumentAction || classificationCreating}>{classificationCreating ? '만드는 중…' : '만들기'}</button></form></details></div>}
         {collectionMode && <p className={styles.muted}>모음과 관계없이 모든 문서의 같은 할 일을 날짜별로 봅니다.</p>}
         {(folderId || query) && <div className={styles.filterContext} aria-label="할 일 조회 범위"><p>{folderId ? `${folderOptions.find(item => item.id === folderId)?.title ?? '선택한 폴더'} · 하위 포함` : '모든 폴더'}{query && <span>검색: {query}</span>}</p><button type="button" onClick={() => { void changeFolder(''); setQuery(''); }}>필터 해제</button></div>}
         {range.from && range.to !== range.from && <p className={styles.muted}>{range.from} ~ {range.to}</p>}

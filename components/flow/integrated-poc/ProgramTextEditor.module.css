@@ -77,3 +77,22 @@
   .directWriting :global(.tle-root[data-mode]:not([data-move-phase]):not(.tle-has-move-selection)) { --tle-pad-right: 60px; }
   .directWriting :global(.tle-plus) { display: none; }
 }
+
+/* Native textarea and mirror must share metrics; keep the 44px row hit lane. */
+.editor { color: #222b25; background: #fffefa; border: 1px solid #dde2d9; border-radius: 12px; }
+.toolbar { padding: 8px; gap: 8px; border-color: #dde2d9; }
+.status { font-size: 13px; line-height: 20px; color: #59645d; }
+.host :global(.tle-root) { --tle-font: 16px; background: #fffefa; color: #222b25; }
+.host :global(.tle-root[data-mode="live"] .tle-textarea),
+.host :global(.tle-root[data-mode="live"] .tle-presentation) { font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", system-ui, sans-serif; }
+.host :global(.tle-viewport) { border-radius: 0 0 12px 12px; }
+/* Native controls keep the existing 44px row lane, not the shell's 48px. */
+.editor .host :global(.tle-root :is(.tle-check-hit,.tle-fold-toggle,.tle-row-open,.tle-plus,.tle-row-menu)) { min-height: 44px; min-width: 44px; height: 44px; }
+.mode button[aria-pressed='true'] { background: #e8f0e8; color: #254f38; }
+.editor :where(button), .editorTools > summary { color: #326449; border-color: #b5ccb9; }
+.dialog { background: #fffefa; color: #222b25; }
+.dialog header { background: #fffefa; }
+@media (max-width: 600px) {
+  .toolbar { gap: 4px; padding: 8px; }
+  .status { font-size: 13px; line-height: 20px; padding: 0 4px; }
+}
