@@ -160,7 +160,7 @@ function harness(seed: ProgramData, documentId: string, host: 'local' | 'account
       schedule: nodes.find(node => node.type === 'form' && label(node.props.children).includes('날짜·시간 적용')) };
   }
   async function open(taskId: string) {
-    await click('전체 할 일');
+    await click('분류');
     const task = M.tasks(data.spaces[data.activeActorId].text).find(row => row.id === taskId)!;
     const menu = render().taskMenu(task.title); assert(menu); menu.props.onClick({ detail: 0 }); return render();
   }

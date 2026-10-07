@@ -34,7 +34,8 @@ const styles = new Proxy({}, { get: (_, key) => String(key) });
 function harness(overrides: Record<string, unknown> = {}) {
   const calls: string[] = [];
   const menu = { open: true, querySelector: () => ({ focus: () => calls.push('summary-focus') }) };
-  const context = { styles, mode: 'live', setMode: () => calls.push('mode'), disabled: false,
+  const context = { styles, mode: 'live', setMode: () => calls.push('mode'), disabled: false, composing: false,
+    composingRef: { current: false }, inputLockedRef: { current: false }, regionPending: false,
     draft: { dirty: false, saving: false, error: '' }, inputLocked: false,
     props: { onUndo: () => calls.push('server-undo'), onRedo: () => calls.push('server-redo') },
     orderHistoryRef: { current: { hasEntries: () => false } },
@@ -50,10 +51,11 @@ function harness(overrides: Record<string, unknown> = {}) {
     click: { currentTarget: { closest: () => menu } } };
 }
 
-test('primary toolbar keeps mode, add and input Undo while sort and Redo are in closed native disclosure', () => {
+test('primary toolbar keeps add and input Undo while explicit raw, sort and Redo are in closed native disclosure', () => {
   const h = harness(), secondary = nodes(h.details);
   const primary = h.all.filter(node => node.type === 'button' && !secondary.includes(node));
-  assert.equal(primary.length, 4);
+  assert.equal(primary.length, 2);
+  assert(secondary.some(node => node.type === 'button' && node.props['aria-pressed'] === false));
   assert(secondary.includes(h.button('날짜순 정렬')));
   assert(secondary.includes(h.button('다시 실행')));
   assert(!secondary.includes(h.button('입력 되돌리기')));
@@ -72,6 +74,15 @@ test('secondary actions close the disclosure and keep sort, server Redo and nati
     const h = harness(overrides); h.button(label).props.onClick(h.click);
     assert.equal(h.menu.open, false); assert.deepEqual(h.calls, ['summary-focus', expected]);
   }
+});
+
+test('raw mode is an explicit auxiliary action and remains disabled during composition', () => {
+  const h = harness(), raw = nodes(h.details).find(node => node.type === 'button' && node.props['aria-pressed'] === false)!;
+  assert(raw); raw.props.onClick(h.click); assert.deepEqual(h.calls, ['summary-focus', 'mode']); assert.equal(h.menu.open, false);
+  const composing = harness({ composing: true });
+  assert.equal(nodes(composing.details).find(node => node.type === 'button' && node.props['aria-pressed'] === false)!.props.disabled, true);
+  const plain = harness({ mode: 'text' });
+  assert(plain.button('문서로 돌아가기')); assert(!nodes(plain.details).includes(plain.button('문서로 돌아가기')));
 });
 
 test('direct writing moves the duplicate add entry into existing tools without changing its selected row', () => {
@@ -138,14 +149,34 @@ test('input Undo retains native input, saved change and permutation paths', () =
   }
 });
 
-test('folder toolbar hides whole-document actions and routes pending Undo to region input', () => {
+test('folder toolbar retains explicit raw access, hides whole-document actions and routes pending Undo to region input', () => {
   let localUndo = 0;
   const h = harness({ props: { folderId: 'work' }, regionPending: true, regionPortRef: { current: { undo: () => { localUndo++; } } } });
   h.button('입력 되돌리기').props.onClick(); assert.equal(localUndo, 1); assert.deepEqual(h.calls, []);
-  assert.equal(h.details.props.hidden, true);
+  assert.equal(h.details.props.hidden, undefined);
+  const raw = nodes(h.details).find(node => node.type === 'button' && node.props['aria-pressed'] === false)!;
+  assert(raw); assert.equal(h.button('날짜순 정렬').props.hidden, true);
+  raw.props.onClick(h.click); assert.deepEqual(h.calls, ['summary-focus', 'mode']);
   const failed = harness({ props: { folderId: 'work' }, regionPending: false, draft: { dirty: true, saving: false } });
   assert.equal(failed.button('입력 되돌리기').props.disabled, true);
   assert.match(failed.button('입력 되돌리기').props.title, /저장본으로 되돌리기/);
+});
+
+test('explicit raw activation rechecks current composition and input locks, including region IME before state render', () => {
+  for (const overrides of [{ composingRef: { current: true } }, { inputLockedRef: { current: true } }]) {
+    const h = harness({ props: { folderId: 'work' }, ...overrides });
+    nodes(h.details).find(node => node.type === 'button' && node.props['aria-pressed'] === false)!.props.onClick(h.click);
+    assert.deepEqual(h.calls, []); assert.equal(h.menu.open, true);
+  }
+});
+
+test('display-only raw inspection stays available in read-only and invalid drafts', () => {
+  for (const overrides of [{ props: { readOnly: true } }, { draft: { dirty: true, invalid: true } }]) {
+    const h = harness(overrides);
+    const raw = nodes(h.details).find(node => node.type === 'button' && node.props['aria-pressed'] === false)!;
+    assert.equal(raw.props.disabled, false); raw.props.onClick(h.click);
+    assert.deepEqual(h.calls, ['summary-focus', 'mode']); assert.equal(h.menu.open, false);
+  }
 });
 
 test('date form identifies the selected row without displaying its memo or changing date input contract', () => {

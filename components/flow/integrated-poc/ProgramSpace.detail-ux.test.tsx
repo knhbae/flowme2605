@@ -130,6 +130,8 @@ function harness(seed: ProgramData, documentId: string, automaticStateRender = f
     const section = all.find(node => node.type === 'section' && node.props['aria-label'] === '내 공간'); assert(section);
     section.props.ref.current = { contains: () => true, getClientRects: () => [{}],
       querySelector: (selector: string) => selector.includes('data-program-period') ? periodButton : null };
+    const views = all.find(node => node.type === 'nav' && node.props['aria-label'] === '기본 이동');
+    assert(views); views.props.ref.current = { querySelector: (selector: string) => selector.includes('data-program-period') ? periodButton : null };
     reconcile?.();
     const detailNodes = nodes(dialog);
     const schedule = detailNodes.find(node => node.type === 'form' && label(node.props.children).includes('날짜·시간 적용'));
@@ -144,8 +146,9 @@ function harness(seed: ProgramData, documentId: string, automaticStateRender = f
   async function click(text: string) { const button = render().button(text); assert(button, text); button.props.onClick(); await settle(); return render(); }
   async function open(taskId: string) {
     opener.isConnected = true; dom.activeElement = opener;
-    await click('전체 할 일'); const row = render().rows.find(node => node.props['data-task-id'] === taskId); assert(row);
+    await click('분류'); const row = render().rows.find(node => node.props['data-task-id'] === taskId); assert(row);
     const button = nodes(row).find(node => node.type === 'button' && node.props['aria-label'] === '같은 제목 작업'); assert(button);
+    dom.activeElement = opener; // Native button activation focuses the row after the view summary return.
     button.props.onClick({ detail: 0 }); return render();
   }
   function draftSchedule(date: string, time?: string) {
@@ -316,6 +319,25 @@ test('DX08 clean origin opens the exact same-title Item row and performs no prod
   } finally { h.destroy(); }
 });
 
+test('PWC04 linked memo opens its exact reference line, protects pending inputs and makes no copy', async () => {
+  const f = fixture(), space = f.data.spaces[f.actorId];
+  space.text = M.addDocument(space.text, { title: '연결 비교 메모' });
+  const memo = space.text.documents.at(-1)!;
+  space.text = M.editText(space.text, memo.id, '비교 내용과 자료');
+  space.text = M.linkTask(space.text, memo.id, M.getDocument(space.text, memo.id)!.lines.length, f.taskIds[0]);
+  const binding = space.text.bindings.find(row => row.kind === 'task' && row.docId === memo.id)!;
+  assert(binding); const h = harness(f.data, f.documentId);
+  try {
+    await h.open(f.taskIds[0]); const before = programClone(h.data);
+    const target = () => h.render().button('연결 비교 메모 열기'); assert(target());
+    h.draftSchedule('2026-10-09'); assert.equal(target().props.disabled, true);
+    h.close(); await h.open(f.taskIds[0]); assert.equal(target().props.disabled, false);
+    target().props.onClick(); await h.flush();
+    assert.deepEqual(h.navigation, [[{ view: 'space', id: memo.id }, { writingLineId: binding.lineId }]]);
+    assert.deepEqual(h.data, before); assert.equal(h.results.filter(row => row.ok && row.changed).length, 0);
+  } finally { h.destroy(); }
+});
+
 test('RX01 a busy source return keeps the same panel and explicitly retries the exact Item without writes', async () => {
   const f = fixture(), h = harness(f.data, f.documentId), before = programClone(f.data);
   try {
@@ -402,8 +424,8 @@ test('DX09 close and Escape discard only unsubmitted detail values with zero wri
 test('DX10 closing after an opener disappears requests the visible period fallback without writing', async () => {
   const f = fixture(), h = harness(f.data, f.documentId);
   try {
-    await h.open(f.taskIds[0]); const before = programClone(h.data); h.opener.isConnected = false; h.close();
-    assert.equal(h.focused.opener, 0); assert.equal(h.focused.period, 1); assert.deepEqual(h.data, before); assert.equal(h.results.length, 0);
+    await h.open(f.taskIds[0]); const before = programClone(h.data), priorPeriodFocus = h.focused.period; h.opener.isConnected = false; h.close();
+    assert.equal(h.focused.opener, 0); assert.equal(h.focused.period, priorPeriodFocus + 1); assert.deepEqual(h.data, before); assert.equal(h.results.length, 0);
   } finally { h.destroy(); }
 });
 

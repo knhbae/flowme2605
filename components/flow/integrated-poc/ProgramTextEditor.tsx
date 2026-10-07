@@ -338,6 +338,16 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     const menu = button.closest('details');
     if (menu) { menu.open = false; menu.querySelector('summary')?.focus(); }
   }
+  function returnToDocumentMode(button: HTMLButtonElement) {
+    const section = button.closest('section');
+    setMode('live');
+    requestAnimationFrame(() => {
+      const area = Array.from(section?.querySelectorAll<HTMLTextAreaElement>('textarea') ?? []).find(node => !node.readOnly && node.getClientRects().length);
+      const fallback = Array.from(section?.querySelectorAll<HTMLButtonElement>('button') ?? []).find(node => !node.disabled && node.getClientRects().length);
+      const summary = Array.from(section?.querySelectorAll<HTMLElement>('summary') ?? []).find(node => node.getClientRects().length);
+      (area ?? fallback ?? summary)?.focus();
+    });
+  }
   function previewOrder(scopeLineId?: string) {
     if (actionsDisabled() || composingRef.current || draftRef.current?.getState().dirty) return;
     const state = currentState(), doc = currentDoc(), textarea = textArea(); if (!doc || !textarea) return;
@@ -625,6 +635,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       event.preventDefault(); event.returnValue = '';
     };
     window.addEventListener('beforeunload', warnOnExit);
+    // The parent may have requested this source while the retained editor was
+    // still mounting. Notify again only after native input is fully configured.
+    propsRef.current.onRegisterSourceFocus?.(focusSourceRow);
     return () => {
       alive = false; rememberPosition();
       propsRef.current.onRegisterConfirmedSave?.(null);
@@ -812,21 +825,19 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     else if (event.key === 'Escape' && suggestion && !event.nativeEvent?.isComposing && !composingRef.current) { event.preventDefault(); event.stopPropagation(); setDismissedSuggestion(suggestionKey); }
   }}>
     <div className={styles.toolbar}>
-      <div className={styles.mode} aria-label="문서 표시 방식">
-        <button type="button" aria-pressed={mode === 'live'} onClick={() => setMode('live')}>문서</button>
-        <button type="button" aria-pressed={mode === 'text'} onClick={() => setMode('text')}>원문</button>
-      </div>
+      {mode === 'text' && <button type="button" onClick={event => returnToDocumentMode(event.currentTarget)}>문서로 돌아가기</button>}
       <button type="button" hidden={!!props.folderId || props.directWriting} disabled={disabled} onClick={() => { const index = editorRef.current?.getSelection().lineIndex ?? 0; setPanel({ kind: 'insert', lineId: currentDoc()?.lines[index]?.id ?? null }); }}>＋ 추가</button>
       <button type="button" disabled={inputLocked || !!props.readOnly || draft.saving || !!props.folderId && draft.dirty && !regionPending} title={props.folderId && draft.dirty ? '저장되지 않은 입력은 저장본으로 되돌리기에서 취소할 수 있습니다.' : '입력 되돌리기'} aria-label="입력 되돌리기" onClick={() => { if (props.folderId && regionPending) regionPortRef.current?.undo?.(); else if (orderHistoryRef.current.hasEntries()) nativeHistory('historyUndo'); else if (props.onUndo && !draft.dirty) void props.onUndo(); else if (!props.folderId) editorRef.current?.undo(); }}>↶</button>
-      <details className={styles.editorTools} hidden={!!props.folderId} onKeyDown={event => {
+      <details className={styles.editorTools} onKeyDown={event => {
         if (event.key !== 'Escape' || event.nativeEvent.isComposing || !event.currentTarget.open) return;
         event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false; event.currentTarget.querySelector('summary')?.focus();
       }}>
         <summary aria-label="편집 도구" title="편집 도구"><span aria-hidden="true">…</span></summary>
         <div className={styles.editorToolActions}>
+          <button type="button" aria-pressed={mode === 'text'} disabled={inputLocked || composing} onClick={event => { if (composingRef.current || inputLockedRef.current) return; closeEditorTools(event.currentTarget); setMode(mode === 'text' ? 'live' : 'text'); }}>원문 {mode === 'text' ? '닫기' : '보기'}</button>
           {props.directWriting && <button type="button" disabled={disabled} onClick={event => { closeEditorTools(event.currentTarget); const index = editorRef.current?.getSelection().lineIndex ?? 0; setPanel({ kind: 'insert', lineId: currentDoc()?.lines[index]?.id ?? null }); }}>현재 줄에 추가</button>}
-          <button type="button" disabled={disabled || draft.dirty} onClick={event => { closeEditorTools(event.currentTarget); previewOrder(); }}>날짜순 정렬</button>
-          {(props.onRedo || orderHistoryRef.current.hasEntries()) && <button type="button" disabled={disabled || draft.dirty} aria-label="다시 실행" onClick={event => { closeEditorTools(event.currentTarget); if (orderHistoryRef.current.hasEntries()) nativeHistory('historyRedo'); else void props.onRedo?.(); }}>다시 실행</button>}
+          <button type="button" hidden={!!props.folderId} disabled={disabled || draft.dirty} onClick={event => { closeEditorTools(event.currentTarget); previewOrder(); }}>날짜순 정렬</button>
+          {(props.onRedo || orderHistoryRef.current.hasEntries()) && <button type="button" hidden={!!props.folderId} disabled={disabled || draft.dirty} aria-label="다시 실행" onClick={event => { closeEditorTools(event.currentTarget); if (orderHistoryRef.current.hasEntries()) nativeHistory('historyRedo'); else void props.onRedo?.(); }}>다시 실행</button>}
         </div>
       </details>
       <span className={styles.status} role="status" aria-live="polite">{props.readOnly ? props.disabledReason || '읽기 전용' : inputLocked ? '변경을 마치는 중… 입력을 잠시 보호합니다.' : draft.saving ? '저장 중…' : draft.error ? '저장되지 않은 입력' : draft.dirty || !!props.folderId && regionPending ? '편집 중' : '저장됨'}</span>

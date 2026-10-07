@@ -104,7 +104,7 @@ function harness(seed: ProgramData, documentId: string) {
   }
   async function click(text: string) { const button = render().button(text); assert(button, text); button.props.onClick(); await settle(); return render(); }
   async function open(taskId: string) {
-    await click('전체 할 일'); const row = render().rows.find(node => node.props['data-task-id'] === taskId); assert(row);
+    await click('분류'); const row = render().rows.find(node => node.props['data-task-id'] === taskId); assert(row);
     const button = nodes(row).find(node => node.type === 'button' && node.props['aria-label']?.endsWith(' 작업'));
     assert(button); button.props.onClick({ detail: 0 }); return render();
   }

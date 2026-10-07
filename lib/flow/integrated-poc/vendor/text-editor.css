@@ -79,6 +79,16 @@
 .tle-move-target[hidden], .tle-move-target-button[hidden], .tle-move-depth-button[hidden], .tle-move-drop[hidden] { display: none !important; }
 .tle-root[data-move-phase="dragging"] { cursor: grabbing; }
 .tle-line-raw { color: #304b43; }
+/* Active document rows keep their original first Text node and RAW geometry.
+ * The inert layer repeats that exact prefix/title flow; icons consume no space.
+ * Do not apply the reading-view title inset, weight or wrapping here. */
+.tle-line-raw.tle-line-active-paint { color: transparent; }
+.tle-active-paint { position: absolute; inset: 0; color: #304b43; pointer-events: none; }
+.tle-active-syntax { color: transparent; }
+.tle-active-scope-name { font-weight: inherit; }
+.tle-active-scope-icon { position: absolute; top: 0; left: var(--tle-indent, 0px); width: 18px; height: 44px; display: flex; align-items: center; color: #468373; pointer-events: none; }
+.tle-active-scope-icon svg { width: 18px; height: 18px; }
+.tle-active-progress { position: absolute; top: 10px; left: -13px; }
 .tle-line-prose { color: #45534d; }
 .tle-line-property { color: #87928a; }
 .tle-line-subcheck { color: #526c62; }
@@ -101,6 +111,7 @@
   color: #1d6c53;
   font-weight: 700;
 }
+.tle-property-date-label { color: #62766b; font-weight: 400; }
 .tle-check-glyph {
   position: absolute;
   display: block;
@@ -157,6 +168,9 @@
 .tle-reference-open, .tle-task-date-open, .tle-task-origin-open { right: 8px; color: #879b90; }
 .tle-date-open { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; color: #705b38; }
 .tle-row-date { max-width: 44px; font: 600 12px/16px ui-monospace, monospace; white-space: nowrap; }
+.tle-scheduled-date-open { width: 88px; }
+.tle-row-date-kind { font: 400 10px/12px system-ui, sans-serif; color: #7f7564; }
+.tle-scheduled-date-open .tle-row-date { max-width: 88px; font: 600 11px/14px system-ui, sans-serif; }
 .tle-date-open svg { width: 10px; height: 10px; }
 .tle-scope-label { position: absolute; inset: 0 0 auto clamp(0px, var(--tle-indent, 0px), calc(100% - 136px)); display: flex; align-items: baseline; gap: 14px; height: 44px; padding-left: 36px; overflow: hidden; white-space: nowrap; }
 .tle-root .tle-scope-label { padding-left: 88px; }

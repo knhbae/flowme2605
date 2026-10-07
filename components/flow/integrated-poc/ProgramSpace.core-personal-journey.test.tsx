@@ -53,6 +53,7 @@ test('P02 wider-period recovery preserves folder/query/date and follows existing
     });
     const invoke = evaluate(`(${recoveryNode.getText(ast)})`, { changePeriod,
       presentation: { current: view },
+      focusViewControl: () => { focuses++; },
       requestAnimationFrame: (callback: () => void) => { callback(); return 1; },
       root: { current: { querySelector: (selector: string) => { assert.equal(selector, '[data-program-period="all"]'); return { focus() { focuses++; } }; } } },
     });
@@ -64,13 +65,14 @@ test('P02 wider-period recovery preserves folder/query/date and follows existing
   let focusCalls = 0, frame: (() => void) | undefined;
   const view = { period: 'all' };
   const invoke = evaluate(`(${recoveryNode.getText(ast)})`, { changePeriod: async () => true, presentation: { current: view },
+    focusViewControl: () => { focusCalls++; },
     requestAnimationFrame: (callback: () => void) => { frame = callback; return 1; },
     root: { current: { querySelector: () => ({ focus() { focusCalls++; } }) } },
   });
   await invoke(); view.period = 'documents'; frame!(); assert.equal(focusCalls, 0);
   const nav = find(node => ts.isJsxElement(node) && node.openingElement.tagName.getText(ast) === 'nav'
-    && node.openingElement.getText(ast).includes('개인공간 보기'));
-  assert.match(renderToStaticMarkup(evaluate(nav.getText(ast), { styles, periods: [['all', '전체 할 일']], period: 'all', changePeriod() {} })),
+    && node.openingElement.getText(ast).includes('기본 이동'));
+  assert.match(renderToStaticMarkup(evaluate(nav.getText(ast), { styles, viewMenu: { current: null }, collectionMode: undefined, mainPeriods: [['all', '분류']], period: 'all', changePeriod() {}, requestAnimationFrame() {}, focusViewControl() {} })),
     /data-program-period="all" aria-current="page"/);
 });
 

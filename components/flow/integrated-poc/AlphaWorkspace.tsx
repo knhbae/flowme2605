@@ -43,7 +43,7 @@ import styles from './AlphaWorkspace.module.css';
 const SLOT_KEY = 'flow:poc:personal-workspace:v1:alpha-m3:tab';
 const POLL_MS = 20_000;
 const AlphaPreservationPanel = dynamic(() => import('./AlphaPreservationPanel').then(module => module.AlphaPreservationPanel), { ssr: false });
-const capability = { discovery: true, publication: true, copyInspection: true, revisionHistory: false, creatorNavigation: true };
+const capability = { discovery: true, publication: true, copyInspection: true, revisionHistory: false, creatorNavigation: true, taskClassification: true };
 type Controller = ReturnType<typeof createAlphaSyncController>;
 type UiRecovery = ReturnType<typeof createAlphaUiRecovery>;
 const labels: Record<AlphaSyncSnapshot['status'], string> = {

@@ -55,7 +55,7 @@ test('alpha empty space keeps creation and all private period views without disc
   const alpha = renderToStaticMarkup(<ProgramSpace {...base} capabilities={restricted} />);
   assert.match(local, /다른 사람의 Flow 둘러보기/);
   assert.doesNotMatch(alpha, /다른 사람의 Flow 둘러보기/);
-  for (const label of ['새 문서', '문서 만들기', '오늘', '주간', '월간', '전체 할 일', '날짜 미정', '빠른 할 일']) assert.ok(alpha.includes(label), label);
+  for (const label of ['새 글', '문서 만들기', '쓰기', '오늘', '주간', '월간', '분류', '날짜 미정', '할 일 추가']) assert.ok(alpha.includes(label), label);
   assert.equal(JSON.stringify(base.data), before);
 });
 

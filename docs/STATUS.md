@@ -1,5 +1,17 @@
 # Project Status
 
+## 진행 중 — 쓰기·오늘·분류 실제 저장 연결 (2026-10-07)
+
+사용자가 기존 로컬 후보와 필요한 정상 게시·PR213·새 CI·Alpha 반영·별도 시험계정 검증을 승인했다. [목표](./specs/2026-10-07-writing-today-classification-persistence/spec.md)·[결과](./specs/2026-10-07-writing-today-classification-persistence/results.md)·[QA](./specs/2026-10-07-writing-today-classification-persistence/qa.md). 기존 text aggregate에 일반 개인 Item 분류를 연결하고 항목 상세의 연결 메모 바로 열기를 추가했다. schema/API/권한 변경0. 관련50 PASS·타입613/진단0·build C9B61sdg-S1rMPIp0vRta, 가상 component host3134 desktop/390px 여정과 tab reload 보존을 확인했다. 합성 HTTP의 빈 controller 복원은 실제 서버 새 접속이 아니다. 새 게시/CI/Alpha/정상 계정 새 분류 저장은 진행 전이며 기존 제공판은 교체하지 않았다. 날짜 중복 시안은 미채택했다. 아래 Q2/uWm 결과와 서버 계약 미연결 문구는 당시 이력이다.
+
+## 격리 로컬 결과 — 쓰기·오늘·분류 기본 이동 (2026-10-07)
+
+`flow-writing-today-classification-local-20261007`에서 Q2 후보를 보존한 채 기본 이동과 문서 관리 메뉴, 날짜 표시를 정리했다. 쓰기는 현재 글을 이어 열고, 오늘은 글·분류에 관계없이 당일의 같은 Item을 모으며, 분류는 기존 날짜 전체 조회와 항목 분류를 사용한다. 문서 찾기·새 글·문서 작업은 더보기 아래 한곳에 있다. [결과](./specs/2026-10-07-writing-today-classification/results.md)·[QA](./specs/2026-10-07-writing-today-classification/qa.md). 새 Next build `uWmRSNxz034E_ORjuCZQ5`, 가상 component preview3133. 관련 컴포넌트74/74·날짜/native 영향51/51·표적 타입 진단0·빌드 통과. Desktop/390px에서 업무·생활 작성, 미루기/완료, 분류 재찾기, 같은 글 이어쓰기, 선택한 항목의 연결 메모, reload 보존을 확인했다. 원문 모드 왕복과 브라우저 native Undo도 확인했다. 서버 분류 저장·실물폰·OS IME·처음 쓰는 사용자 관찰·게시·Alpha 반영은 미실행이다. 아래 Q2와 이전 ‘현재’는 당시 결과로 보존한다.
+
+## 격리 로컬 결과 — TXT 바로쓰기·항목 분류·편집 표시 (2026-10-07)
+
+이 작업본은 `flow-task-first-text-local-20261007`, detached `76e833` 기준 로컬 후보다. [결과](./specs/2026-10-07-task-first-text-local/results.md)·[QA](./specs/2026-10-07-task-first-text-local/qa.md). 제목/위치 선택 없는 바로쓰기, 명시적인 한 Item 분류, 편집 중 체크박스·폴더 표시, 접힌 보조 메뉴를 구현했다. 가상 자료의 업무·생활 작성→날짜/완료→같은 글 이어쓰기→선택한 항목에 메모 연결→390px 새로고침/재진입을 확인했다. 최종 Next build `Q2iZMruizVmfUY5JpU76O`; 가상 component preview3132는 별도 탭 저장 host다. 최종 컴포넌트46/46·표적 타입 진단0·build 통과. 기존 릴리스 clean/To6 보존. 새 분류의 서버 계약·실물폰·OS IME·관찰 사용자 시험·게시·Alpha 반영은 완료에 포함하지 않는다. 아래 각 날짜의 ‘현재’는 그 시점의 역사 기록이다.
+
 ## 현재 작업 — 자체 작성 비공개 Flow 검증·기존 DEV 반영 (2026-10-04)
 
 [목표](./specs/2026-10-04-private-flow-pilot/spec.md)·[계획](./specs/2026-10-04-private-flow-pilot/plan.md)·[작업](./specs/2026-10-04-private-flow-pilot/tasks.md)·[QA](./specs/2026-10-04-private-flow-pilot/qa.md). 요청 `FLOWME-FINISH-PRIVATE-PILOT-20261004-1400-DEV3`의 새 승인에 따라 개발3이 단일 구현·검사·기존 DEV 반영 owner다. 날짜 상세 후보 A는 완료했고 같은 source/build의61/32 근거를 재확인했다. B는 같은 요청 ID의 자체 작성 가상 비공개 입력을 인수해 기존 제작기 저장·reload·명시 개인 인계·재열기·날짜/완료/메모·취소/지원 Undo를 검사한다. 새 run·parser·schema·공개 발행을 추가하지 않는다.
