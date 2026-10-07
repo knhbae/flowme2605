@@ -16,7 +16,26 @@ const successfulWrites = (page: Page) => page.evaluate(() => (window as unknown 
 const state = async (page: Page) => JSON.parse((await raw(page))!) as ProgramEnvelope;
 const space = async (page: Page) => (await state(page)).data.spaces['local-user'];
 const row = (page: Page, title: string) => page.locator('li[data-task-id]').filter({ has: page.getByRole('button', { name: `${title} 작업`, exact: true }) });
-const nav = (page: Page, name: string) => page.getByRole('navigation', { name: '개인공간 보기' }).getByRole('button', { name, exact: true }).click();
+async function openLibrary(page: Page) {
+  if (!await page.locator('#program-library').isVisible()) {
+    await page.getByRole('button', { name: '더보기 · 글 찾기와 문서 관리', exact: true }).click();
+  }
+}
+
+async function openDisclosure(page: Page, name: string) {
+  const summary = page.locator('summary').filter({ hasText: new RegExp(`^${name}$`) });
+  if (await summary.locator('..').getAttribute('open') === null) await summary.click();
+}
+
+async function nav(page: Page, name: string) {
+  const otherDate = ['주간', '월간', '날짜 미정'].includes(name);
+  if (otherDate) {
+    await openLibrary(page);
+    await openDisclosure(page, '다른 날짜 보기');
+  }
+  await page.getByRole('navigation', { name: otherDate ? '다른 날짜 보기' : '기본 이동', exact: true })
+    .getByRole('button', { name, exact: true }).click();
+}
 
 async function reachable(action: Locator) {
   await action.scrollIntoViewIfNeeded();
@@ -84,6 +103,7 @@ async function setup(page: Page) {
 }
 
 async function quick(page: Page, title: string) {
+  await openDisclosure(page, '할 일 추가');
   await reachable(page.getByRole('button', { name: '추가', exact: true }));
   await page.getByLabel('빠른 할 일', { exact: true }).fill(title);
   await page.getByRole('button', { name: '추가', exact: true }).click();
@@ -94,20 +114,27 @@ const dimensions = [[375, 812], [390, 844], [844, 390], [1024, 768], [1440, 900]
 for (const [width, height] of dimensions) test(`current workspace ${width}x${height}: quick task, folder, periods, complete/reopen, undated, Undo and reload`, async ({ page }, info) => {
   await page.setViewportSize({ width, height });
   const verify = await setup(page);
+  await openLibrary(page);
   await page.getByText('폴더 정리', { exact: true }).click();
   await page.getByLabel('새 폴더 이름', { exact: true }).fill('Merge folder');
   await page.getByRole('button', { name: '폴더 만들기', exact: true }).click();
   await nav(page, '오늘'); await quick(page, 'Merge task');
   const task = M.tasks((await space(page)).text).find(t => t.title === 'Merge task')!;
   expect(task.date).toBe(DATE);
-  for (const view of ['주간', '월간', '전체 할 일']) { await nav(page, view); await expect(row(page, 'Merge task')).toHaveCount(1); }
+  for (const view of ['주간', '월간', '분류']) { await nav(page, view); await expect(row(page, 'Merge task')).toHaveCount(1); }
   await row(page, 'Merge task').getByRole('button').nth(1).click();
+  // Opening the source waits for editor flush before closing the library.
+  // Wait for that visible destination before opening management again.
+  await expect(page.getByRole('navigation', { name: '기본 이동', exact: true })
+    .getByRole('button', { name: '쓰기', exact: true })).toHaveAttribute('aria-current', 'page');
+  await openLibrary(page);
   await page.getByText('문서 작업', { exact: true }).click();
   await page.getByRole('combobox', { name: '보관 위치', exact: true }).selectOption({ label: 'Merge folder' });
   await expect.poll(async () => (await space(page)).text.documents.find(d => d.id === task.docId)?.folderId).not.toBeNull();
   const assigned = await space(page), folder = assigned.text.folders.find(f => f.title === 'Merge folder')!;
   expect(assigned.text.documents.find(d => d.id === task.docId)?.folderId).toBe(folder.id);
   expect(M.tasks(assigned.text).find(t => t.id === task.id)?.date).toBe(DATE);
+  await openLibrary(page);
   await page.getByText('문서 작업', { exact: true }).click();
   await nav(page, '오늘');
   await row(page, 'Merge task').getByRole('button', { name: 'Merge task 완료', exact: true }).click();

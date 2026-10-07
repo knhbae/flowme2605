@@ -33,4 +33,16 @@ chunk `bb5719`: 표적 31개 중 29 PASS/2 FAIL, skip 0. 합성 HTTP 저장 3개
 
 ## 아직 수행하지 않은 범위
 
-정상 시험계정의 새 분류/메모 실제 서버 저장·탭 종료 뒤 새 접속, 새 게시/CI/Alpha 전환, 실물폰/OS 한글 IME/처음 쓰는 사용자 관찰: NOT_RUN. synthetic CAS의 새 빈 controller와 브라우저 tab reload는 실제 서버 새 접속 증명이 아니다.
+정상 시험계정의 새 분류/메모 실제 서버 저장·탭 종료 뒤 새 접속, 새 CI 성공/Alpha 전환, 실물폰/OS 한글 IME/처음 쓰는 사용자 관찰: NOT_RUN. synthetic CAS의 새 빈 controller와 브라우저 tab reload는 실제 서버 새 접속 증명이 아니다.
+
+## 정상 게시 뒤 CI 진입 경로 보완
+
+정상 commit/push로 `f592e12753fc80cf6c3150c3eda286d622db5f5e`를 기존 Draft PR213에 게시했다. 기존 pre-push hook의 docs/단위검사/build가 통과했고 해당 로컬 build는 `Y3J_Kr2YAVnnjyvZjorG5`다. 원래 C9B의 component UI 결과를 Y3J Next 화면 검사라고 바꾸지 않는다. 제품 소스 바이트는 같고 새 게시 판본과 빌드는 별도다.
+
+CI `37570202088`의 Docs/Unit/Build 작업은 타입·build·core 검사를 통과했으나 portable private journey에서 기본 닫힌 이름 생성 폼에 바로 fill하여 실패했다. first failure는 `ci-failure-37570202088/core-job-log.txt`와 classification.json에 보존한다. 실패를 일반 저장 결함으로 판정하지 않았다.
+
+현재 화면의 더보기→이름 생성·다른 날짜 보기·할 일 추가 진입을 기존 E2E3파일에 연결했다. 기존 날짜·원문·순서·no-op·quota·Undo·sentinel·geometry assertions, timeout, skip, 보안 경계는 변경하지 않았다. 실제 제품 수정은 추가하지 않았다.
+
+좁은 로컬 검사: portable1 PASS(chunk `8c0e6f`), canonical Flow boundary1 PASS(초기7case 실행), workspace3751 PASS(`3d416b`), 나머지4 viewport와 ordering5 PASS(`51b941`). 고유8사례이며 반복 수를 합산하지 않는다. 초기 workspace375 실패는 원문 이동의 비동기 완료 전에 더보기 상태를 읽은 시험 race였다. 쓰기 목적지의 표시를 기다린 후 정상 메뉴를 열도록 수정했다. 초기 실패/중단 원자료를 보존하고 실패한 여정을 PASS로 덮어쓰지 않는다. 나머지5의 source 전후 안정과 raw는 `ci-navigation-followup/result.json`·remaining-five-output.txt에 있다.
+
+기존 사용자 Chrome은 입력값을 읽거나 쓰지 않고 정상 시험계정 일치 boolean·서버 연결·편집기 저장됨·dirty0을 관측했다(`04:18:56Z`). 새 후보 실제 저장이나 신규 접속은 아직 실행하지 않았다. 현재 제공 Alpha는 c287/eWX이며 기존 HoldCurrent 실행 전 거절 기록을 보존한다.

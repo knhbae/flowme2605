@@ -64,6 +64,13 @@ test('portable gate: exact query only; corrupt Program payload falls back withou
 test('portable private journey: document, task date and time, completion, Undo and reload preserve operating bytes', async ({ page }) => {
   const verify = await audit(page);
   await page.goto(URL);
+  // Named document creation is an explicit secondary action. Preserve the
+  // original document journey, but reach its form through the visible UI.
+  const titleInput = page.getByLabel('새 문서', { exact: true });
+  await expect(titleInput).toBeHidden();
+  await page.getByRole('button', { name: '더보기 · 글 찾기와 문서 관리', exact: true }).click();
+  await page.getByText('이름을 정해 새 문서 만들기', { exact: true }).click();
+  await expect(titleInput).toBeVisible();
   await page.getByLabel('새 문서', { exact: true }).fill('Portable private document');
   await page.getByRole('button', { name: '만들기', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Portable private document', exact: true })).toBeVisible();
@@ -71,7 +78,7 @@ test('portable private journey: document, task date and time, completion, Undo a
   await editor.locator('textarea').fill('- [ ] Portable task');
   await editor.locator('textarea').press('Tab');
   await expect.poll(async () => M.tasks((await state(page)).data.spaces['local-user'].text).some(task => task.title === 'Portable task')).toBe(true);
-  await page.getByRole('navigation', { name: '개인공간 보기' }).getByRole('button', { name: '전체 할 일', exact: true }).click();
+  await page.getByRole('navigation', { name: '기본 이동', exact: true }).getByRole('button', { name: '분류', exact: true }).click();
   await page.getByRole('button', { name: 'Portable task 작업', exact: true }).click();
   await page.getByRole('dialog').getByLabel('실행 날짜', { exact: true }).fill('2026-10-10');
   const taskTime = page.getByRole('dialog').getByLabel(/^시간/);
