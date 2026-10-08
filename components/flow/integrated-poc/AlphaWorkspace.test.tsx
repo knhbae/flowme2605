@@ -199,6 +199,7 @@ function harness() {
     context.localParticipationRecovery = evaluate(initializer('localParticipationRecovery'), context);
     context.participationMessage = evaluate(initializer('participationMessage'), context);
     context.mutate = evaluate(initializer('mutate'), context); context.openLatest = evaluate(`(${declaration('openLatest')})`, context);
+    context.workspaceTools = evaluate(initializer('workspaceTools'), context);
     return evaluate(renderExpression, context);
   };
   const button = (name: string) => { const found = nodes(render()).filter(node => node.type === 'button' && text(node.props.children) === name); assert.equal(found.length, 1); return found[0]; };
@@ -1138,7 +1139,7 @@ test('normal shell keeps save state and undo visible while account and routine a
   const management = nodes(tree).find(node => node.type === 'details' && node.props['aria-label'] === '계정 및 자료 관리')!;
   assert(management); assert.equal(management.props.open, undefined);
   const managed = new Set(nodes(management));
-  assert.equal(text(nodes(management).find(node => node.type === 'summary')), '계정 · 자료 관리');
+  assert.equal(text(nodes(management).find(node => node.type === 'summary')), '더보기');
   for (const label of ['로그아웃 · 계정 바꾸기', '서버에서 다시 확인', '다시 실행', '백업 · 복원 · 가져오기']) {
     assert(nodes(tree).some(node => node.type === 'button' && text(node) === label && managed.has(node)), label);
   }

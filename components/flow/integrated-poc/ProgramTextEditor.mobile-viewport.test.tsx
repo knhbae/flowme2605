@@ -31,6 +31,16 @@ test('the sizing observer changes only a host style, not raw, focus, selection o
   assert.doesNotMatch(sizing, /setValue|setSelectionRange|\.focus\(|\.value\s*=|scrollTop\s*=/);
 });
 
+test('layout observation starts after the existing native install and synchronization effects', () => {
+  const sizingStart = hostSource.indexOf('    const host = hostRef.current, shell');
+  const nativeInstall = hostSource.indexOf('    const instance = nativeEditor.create(host, {');
+  const synchronization = hostSource.indexOf('draftRef.current?.synchronize(props.workspace)');
+  const panelEffect = hostSource.indexOf('if (panel && dialogRef.current && !dialogRef.current.open)');
+  assert(nativeInstall > 0 && nativeInstall < sizingStart);
+  assert(synchronization > nativeInstall && synchronization < sizingStart);
+  assert(panelEffect > synchronization && panelEffect < sizingStart);
+});
+
 test('compact input hides overlapping row hits but preserves reading touch rows and movement44 ruler', () => {
   const vendor = readFileSync(new URL('../../../lib/flow/integrated-poc/vendor/text-editor.css', import.meta.url), 'utf8');
   const host = readFileSync(new URL('./ProgramTextEditor.module.css', import.meta.url), 'utf8');
