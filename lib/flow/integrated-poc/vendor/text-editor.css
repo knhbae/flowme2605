@@ -210,3 +210,11 @@
   .tle-plus { right: 5px; }
 }
 @media (prefers-reduced-motion: reduce) { .tle-root * { scroll-behavior: auto !important; } }
+/* A compact native ruler must not acquire per-row heights. Only the reading
+ * surface (native textarea inert) reserves independent 44px touch rows. */
+.tle-root:is(.tle-reading-view, .tle-folded-view) :is(.tle-line-task, .tle-line-scope) { min-height: 44px; }
+.tle-root.tle-folded-view .tle-line { min-height: 44px; }
+.tle-root:not(.tle-reading-view):not(.tle-folded-view) :is(.tle-active-scope-icon, .tle-indent-guide, .tle-scope-anchor, .tle-check-anchor, .tle-fold-anchor, .tle-scope-label) { height: var(--tle-line); }
+.tle-root:not(.tle-reading-view):not(.tle-folded-view) .tle-check-glyph { top: calc((var(--tle-line) - 18px) / 2); }
+.tle-root:not(.tle-reading-view):not(.tle-folded-view) .tle-active-progress { top: 0; }
+.tle-root:not(.tle-reading-view):not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) :is(.tle-check-hit, .tle-row-open, .tle-fold-toggle) { display: none; }

@@ -101,3 +101,28 @@
   .sync { padding: 0; margin-bottom: 4px; gap: 4px 8px; }
   .tabs { margin-bottom: 4px; }
 }
+/* Compact identity/actions; warnings and save failures remain in normal flow. */
+.page { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-content: start; column-gap: 12px; padding-top: 12px; }
+.page > * { grid-column: 1 / -1; }
+.page > .header { grid-column: 1; grid-row: 1; margin: 0; gap: 8px; }
+.header h1 { margin: 0; }
+.development { margin-left: 0; }
+.sync { display: contents; }
+.sync > p { grid-column: 1; grid-row: 3; align-self: center; margin: 0; padding-block: 8px; }
+.sync > button { grid-column: 2; grid-row: 3; margin-block: 4px 12px; }
+.sync > .management { grid-column: 2; grid-row: 1; position: relative; align-self: start; }
+.management > summary { list-style: none; padding: 8px 12px; min-height: 48px; box-sizing: border-box; border: 1px solid var(--flowme-control-border); border-radius: 8px; background: var(--flowme-surface); color: var(--flowme-text); }
+.management > summary::-webkit-details-marker { display: none; }
+.management[open] { flex: none; }
+.managementBody { position: absolute; z-index: 60; right: 0; top: calc(100% + 4px); width: min(360px, calc(100vw - 24px)); box-sizing: border-box; max-height: calc(100dvh - 100px); overflow: auto; padding: 16px; border: 1px solid var(--flowme-border); border-radius: 12px; background: var(--flowme-surface); box-shadow: 0 8px 24px #222b251a; }
+.managementBody h2 { margin: 0; font-size: 16px; line-height: 26px; }
+.managementBody .workspaceUtilities { display: grid; gap: 8px; margin: 0; border-top: 1px solid var(--flowme-border); padding-top: 8px; }
+.page > .notice { grid-column: 1 / -1; grid-row: 2; margin: 0; border-bottom: 1px solid var(--flowme-border); }
+.notice summary { min-height: 44px; padding-block: 4px; box-sizing: border-box; }
+@media (max-width: 600px) {
+  .brand { font-size: 22px; }
+  .header h1 { font-size: 13px; }
+  .development { padding: 0 4px; font-size: 11px; }
+}
+.sync > p:is([data-save-state="ready"], [data-save-state="saved"], [data-save-state="same-location"]) { color: var(--flowme-text-secondary); font-weight: 400; }
+.sync > button { border-color: transparent; background: transparent; color: var(--flowme-text-secondary); }

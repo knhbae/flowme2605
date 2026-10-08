@@ -37,7 +37,7 @@ test('alpha shell does not override the appearance of reused workspace primary b
   assert.deepEqual(violations, []);
 });
 
-test('closed mobile management shares a row while expanded management keeps full width', () => {
+test('header management keeps its own lane and expanded tools have a bounded panel', () => {
   const closed: string[] = [], open: string[] = [], forced: string[] = [];
   css.walkRules(rule => {
     if (rule.selector === '.management:not([open])') rule.walkDecls('flex', d => { closed.push(d.value); });
@@ -45,8 +45,11 @@ test('closed mobile management shares a row while expanded management keeps full
     if (rule.selector === '.management') rule.walkDecls('flex-basis', d => { forced.push(d.value); });
   });
   assert.deepEqual(closed, ['0 1 auto']);
-  assert.deepEqual(open, ['1 0 100%']);
+  assert.equal(open.at(-1), 'none');
   assert.deepEqual(forced, []);
+  const source = readFileSync(new URL('./AlphaWorkspace.module.css', import.meta.url), 'utf8');
+  assert.match(source, /\.sync > \.management \{ grid-column: 2; grid-row: 1;/);
+  assert.match(source, /\.managementBody \{[^}]*width: min\(360px, calc\(100vw - 24px\)\);[^}]*overflow: auto;/);
 });
 
 test('short wide shell keeps warning visible in normal grid flow without shrinking action targets', () => {

@@ -625,6 +625,18 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
   const pending = !!snapshot?.pending;
   const unavailable = snapshot?.status === 'session-expired' || !data;
   const browse = ['discover', 'flow', 'community'].includes(destination.view);
+  const workspaceTools = !unavailable && data && <div className={styles.workspaceUtilities}>
+    <details className={styles.workspaceTools} open={destination.view !== 'space'}><summary>Flow · 다른 도구</summary><nav className={styles.tabs} aria-label="작업 공간">
+      <button aria-current={destination.view === 'space' ? 'page' : undefined} onClick={() => void navigate({ view: 'space' })}>내 공간</button>
+      <button aria-current={browse ? 'page' : undefined} onClick={() => void navigate({ view: 'discover' })}>둘러보기</button>
+      <button aria-current={['activity', 'creator'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigate({ view: 'activity' })}>내 활동</button>
+      {data.spaces[session.userId].savedBindings.length > 0 && <button onClick={() => void navigate({ view: 'legacy' })}>개인 Flow 상세</button>}
+    </nav></details>
+    <details className={styles.workspaceTools} hidden={destination.view !== 'space'}><summary>문서 정리 방식</summary><div className={styles.tabs} aria-label="문서 정리 방식">
+      <button type="button" aria-pressed={collectionsMode} disabled={collectionsSwitching || collectionsSaving || pending || external || !!snapshot?.busy || !!snapshot?.draft || storageError}
+        onClick={() => void switchCollectionsMode()}>{collectionsMode ? '기존 폴더로 보기' : '문서·모음 시험'}</button>
+    </div></details>
+  </div>;
   const modalRecovery = pending && snapshot?.status !== 'saving'
     ? <section className={styles.problem} aria-label="저장 결과 복구"><p>응답이 끊겨도 서버에 저장됐을 수 있습니다. 입력은 유지하고 같은 요청으로 확인합니다.</p><button type="button" disabled={snapshot?.busy} onClick={async () => { if (await controller.current?.resolvePending(true)) setMessage('저장 결과를 확인했습니다.'); }}>저장 결과 확인 · 같은 요청 재시도</button></section>
     : external || snapshot?.status === 'conflict' || snapshot?.draft && !pending && !snapshot.retryableRejectedDraft && !snapshot.retryableNativeHandoff && !snapshot.retryableRejectedSocialDraft ? <section className={styles.problem} aria-label="편집 중 변경 확인"><p>다른 변경이 먼저 저장되었습니다. 입력을 보관한 뒤 최신 내용을 확인해 주세요.</p><button disabled={snapshot?.busy} onClick={() => void openLatest()}>입력 보관 후 최신 내용 열기</button></section> : null;
@@ -634,9 +646,16 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
     <details className={styles.notice} aria-label="개발계 안내"><summary>공개한 내용은 로그인 사용자에게 보입니다. 중요한 자료의 유일본은 넣지 마세요.</summary>
       <p>개발용 통합 검증판 · 공개한 내용은 개발계의 다른 로그인 사용자에게 보입니다. 중요한 자료의 유일본은 아직 넣지 마세요.</p></details>
     <section className={styles.sync} aria-label="서버 저장 상태">
-      {!localParticipationRecovery && <p role="status" aria-live="polite">{pending && snapshot?.status !== 'saving' ? '저장 결과 확인이 필요합니다' : snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft ? '저장 거절 · 입력 보존됨' : snapshot ? labels[snapshot.status] : '개인공간을 여는 중…'}</p>}
+      {!localParticipationRecovery && <p role="status" aria-live="polite" data-save-state={snapshot?.status}>{pending && snapshot?.status !== 'saving' ? '저장 결과 확인이 필요합니다' : snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft ? '저장 거절 · 입력 보존됨' : snapshot ? labels[snapshot.status] : '개인공간을 여는 중…'}</p>}
       <button type="button" title="마지막으로 서버 저장에 성공한 변경을 되돌립니다" onClick={() => void history('undo')} disabled={!snapshot?.canUndo || external}>되돌리기</button>
-      <details className={styles.management} aria-label="계정 및 자료 관리"><summary>계정 · 자료 관리</summary><div className={styles.managementBody}>
+      <details className={styles.management} aria-label="계정 및 자료 관리" onKeyDown={event => {
+        if (event.key !== 'Escape' || event.nativeEvent.isComposing || !event.currentTarget.open) return;
+        event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false;
+        event.currentTarget.querySelector('summary')?.focus({ preventScroll: true });
+      }} onBlur={event => {
+        if (!preservationRef.current && event.relatedTarget && !event.currentTarget.contains(event.relatedTarget as Node)) event.currentTarget.open = false;
+      }}><summary>더보기</summary><div className={styles.managementBody}>
+        <h2>계정 · 자료 관리</h2>
         <div className={styles.account}><p>{email}</p>{snapshot?.account && <small>마지막 확인 판본 {snapshot.account.revision}</small>}</div>
         <div className={styles.managementActions}><button type="button" onClick={() => { captureInput(); if (hasInput() || pending) setLeave(true); else void onSignOut(); }}>로그아웃 · 계정 바꾸기</button>
         <button type="button" onClick={() => void controller.current?.refresh()} disabled={snapshot?.busy}>서버에서 다시 확인</button>
@@ -646,7 +665,7 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
           const opener = event.currentTarget;
           preservationOpener.current = opener; preservationReturn.current = null;
           void (async () => { const openingController = controller.current; if (!captureInput()) return; for (const port of allEditors()) if (port && !await port.flushAll()) return; if (disposed.current || controller.current !== openingController || currentOwnerRef.current !== session.userId) return; preservationRef.current = true; setPreservation(true); })();
-        }}>백업 · 복원 · 가져오기</button></div></div></details>
+        }}>백업 · 복원 · 가져오기</button></div>{workspaceTools}</div></details>
     </section>
     {preservation && snapshot?.account && snapshot.references && <AlphaPreservationPanel key={session.userId} account={snapshot.account} references={snapshot.references}
       email={email} accessToken={session.accessToken} returnFocusTarget={preservationOpener.current} onClose={closePreservation} onSaved={async () => {
@@ -695,14 +714,6 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
       <button type="button" onClick={() => { if (captureInput()) void onSignOut(); }}>입력 보관 후 로그아웃</button><button type="button" onClick={() => setLeave(false)}>계속 작성</button></section>}
     {message && !participationMessage && <p className={styles.message} role="status">{message}</p>}
     {unavailable ? <section className={styles.empty}><p>{snapshot?.status === 'session-expired' ? '계정을 다시 확인한 뒤 개인공간을 열 수 있습니다.' : '서버에서 개인공간을 확인하고 있습니다.'}</p></section> : <>
-      <div className={styles.workspaceUtilities}><details className={styles.workspaceTools} open={destination.view !== 'space'}><summary>Flow · 다른 도구</summary><nav className={styles.tabs} aria-label="작업 공간"><button aria-current={destination.view === 'space' ? 'page' : undefined} onClick={() => void navigate({ view: 'space' })}>내 공간</button>
-        <button aria-current={browse ? 'page' : undefined} onClick={() => void navigate({ view: 'discover' })}>둘러보기</button>
-        <button aria-current={['activity', 'creator'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigate({ view: 'activity' })}>내 활동</button>
-        {data.spaces[session.userId].savedBindings.length > 0 && <button onClick={() => void navigate({ view: 'legacy' })}>개인 Flow 상세</button>}</nav></details>
-        <details className={styles.workspaceTools} hidden={destination.view !== 'space'}><summary>문서 정리 방식</summary><div className={styles.tabs} aria-label="문서 정리 방식">
-          <button type="button" aria-pressed={collectionsMode} disabled={collectionsSwitching || collectionsSaving || pending || external || !!snapshot?.busy || !!snapshot?.draft || storageError}
-            onClick={() => void switchCollectionsMode()}>{collectionsMode ? '기존 폴더로 보기' : '문서·모음 시험'}</button>
-        </div></details></div>
       {browse && <nav className={styles.tabs} aria-label="둘러보기 종류"><button aria-current={['discover', 'flow'].includes(destination.view) ? 'page' : undefined} onClick={() => void navigate({ view: 'discover' })}>Flow 찾기</button><button aria-current={destination.view === 'community' ? 'page' : undefined} onClick={() => void navigate({ view: 'community' })}>경험·질문·지식</button></nav>}
       {['activity', 'creator'].includes(destination.view) && <nav className={styles.tabs} aria-label="내 활동 종류"><button aria-current={destination.view === 'activity' ? 'page' : undefined} onClick={() => void navigate({ view: 'activity' })}>활동·공개 관리</button><button aria-current={destination.view === 'creator' ? 'page' : undefined} onClick={openCreatorEntry}>Flow 만들기</button></nav>}
       <div hidden={destination.view !== 'space'}>

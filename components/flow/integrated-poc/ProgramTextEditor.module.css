@@ -96,3 +96,29 @@
   .toolbar { gap: 4px; padding: 8px; }
   .status { font-size: 13px; line-height: 20px; padding: 0 4px; }
 }
+/* Keep the native surface full width; row operations occupy a single outer rail.
+   Both native textarea and mirror use the same padding and 44px row ruler. */
+.editor { height: auto; min-height: 0; }
+.host { flex: 0 0 auto; height: max(352px, calc(100dvh - 280px)); height: calc(20px + round(down, max(352px, calc(100dvh - 300px)), 44px)); min-height: 352px; }
+.host :global(.tle-root) { min-height: 352px; }
+.host :global(.tle-root[data-mode]:not([data-move-phase]):not(.tle-has-move-selection)) { --tle-pad-right: 60px; }
+.host :global(.tle-controls) { background: linear-gradient(to left, #f4f5ef 52px, transparent 52px); }
+.host :global(.tle-plus) { display: none; }
+.host :global(.tle-scheduled-date-open) { width: 44px; }
+.host :global(.tle-scheduled-date-open .tle-row-date) { max-width: 44px; font-size: 10px; line-height: 12px; white-space: normal; word-break: keep-all; }
+.host :global(.tle-scheduled-date-open .tle-row-date-kind) { font-size: 9px; }
+.status { flex: 0 0 auto; margin-left: auto; padding: 4px; }
+@media (max-width: 760px) {
+  .host { height: max(352px, calc(100dvh - 340px)); height: calc(20px + round(down, max(352px, calc(100dvh - 360px)), 44px)); }
+}
+/* The native buffer and mirror share one 26px text ruler. Touch targets are
+   separate: reading rows and the current-line menu retain 44px controls. */
+.host { height: var(--program-editor-visible-height, calc(100dvh - 360px)); min-height: 64px; }
+.host :global(.tle-root) { min-height: 64px; --tle-line: 26px; }
+.host :global(.tle-root.tle-has-move-selection),
+.host :global(.tle-root[data-move-phase="selected"]),
+.host :global(.tle-root[data-move-phase="dragging"]) { --tle-line: 44px; }
+.host :global(.tle-root:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"])) { --tle-pad-right: 60px; }
+.toolbar > button[aria-label="입력 되돌리기"], .editorTools > summary { border-color: transparent; background: transparent; }
+.status { font-size: 12px; font-weight: 400; color: #6d756f; }
+.host :global(.tle-row-date-kind) { color: #59645d; }

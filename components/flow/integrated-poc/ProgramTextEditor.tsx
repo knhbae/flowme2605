@@ -228,6 +228,13 @@ function today() {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 }
 
+/** Size only the existing surface; warnings remain in normal document flow. */
+export function programEditorVisibleHeight(top: number, bottom: number) {
+  if (!Number.isFinite(top) || !Number.isFinite(bottom)) return null;
+  const available = Math.max(64, bottom - Math.max(0, top) - 12);
+  return Math.max(64, 20 + Math.floor((available - 20) / 26) * 26);
+}
+
 /** Promote a checked local fragment into the whole editor, never into a writer.
  * Even invalid whole input stays recoverable; it does not bypass normal save guards. */
 export function stageProgramRegionInput(controller: ReturnType<typeof createProgramTextDraft>,
@@ -278,6 +285,37 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const progressHintId = useId();
   const propsRef = useRef(props); propsRef.current = props;
   const hostRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const host = hostRef.current, shell = host?.closest('main');
+    if (!host || !shell) return;
+    const view = host.ownerDocument.defaultView;
+    if (!view) return;
+    const visual = view.visualViewport;
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      if (!host.getClientRects().length) return;
+      let bottom = Math.min(view.innerHeight, visual ? visual.offsetTop + visual.height : view.innerHeight);
+      const nav = shell.querySelector<HTMLElement>('nav[aria-label="기본 이동"]');
+      if (nav && view.getComputedStyle(nav).position === 'fixed') bottom = Math.min(bottom, nav.getBoundingClientRect().top);
+      const height = programEditorVisibleHeight(host.getBoundingClientRect().top, bottom);
+      if (height !== null && host.style.getPropertyValue('--program-editor-visible-height') !== `${height}px`)
+        host.style.setProperty('--program-editor-visible-height', `${height}px`);
+    };
+    const schedule = () => { if (!frame) frame = view.requestAnimationFrame(update); };
+    const observer = new ResizeObserver(schedule);
+    observer.observe(shell); observer.observe(host);
+    // Hidden retained editors and sibling notices can change top without changing
+    // the shell's minimum height. No input/value/selection observer is needed.
+    const mutation = new MutationObserver(schedule);
+    mutation.observe(shell, { childList: true, subtree: true, attributes: true, attributeFilter: ['hidden', 'open'] });
+    view.addEventListener('resize', schedule); view.addEventListener('scroll', schedule, { passive: true });
+    visual?.addEventListener('resize', schedule); visual?.addEventListener('scroll', schedule);
+    schedule();
+    return () => { observer.disconnect(); mutation.disconnect(); view.cancelAnimationFrame(frame);
+      view.removeEventListener('resize', schedule); view.removeEventListener('scroll', schedule);
+      visual?.removeEventListener('resize', schedule); visual?.removeEventListener('scroll', schedule); };
+  }, []);
   const editorRef = useRef<ReturnType<typeof nativeEditor.create> | null>(null);
   const draftRef = useRef<ReturnType<typeof createProgramTextDraft> | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);

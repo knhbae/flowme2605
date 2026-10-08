@@ -168,16 +168,39 @@ function endCaretFixture() {
     destroyed: false, composing: false, gesture: null, moveState: null, foldedIds: new Set(), mode: 'live', inputEpoch: 0,
     renderFrame: 0, pendingBlurReveal: null, lineAt: () => 0, remember() {}, revealBlurredProgress() {}, captureBlurReveal() {},
     syncCount: 0, syncGeometry: () => context.syncCount++, renderCount: 0, render: () => context.renderCount++,
-    global: { requestAnimationFrame: (callback: () => void) => { frame = callback; return 1; } },
+    viewportRevealPending: false, viewportCaretOwned: true, resizeRevealCount: 0,
+    revealFocusedCaret: () => context.resizeRevealCount++,
+    global: { getComputedStyle: () => ({ lineHeight: String(context.lineHeight ?? 44) + 'px' }), requestAnimationFrame: (callback: () => void) => { frame = callback; return 1; } },
     listen: (_target: unknown, name: string, handler: (event?: any) => void) => events.set(name, handler),
   });
   vm.runInContext(section('    let pendingEndCaretReveal = null;', '    function makeSpan(') +
-    section('    function scheduleRender() {', '    function captureBlurReveal(event) {') +
+    section('    let viewportRevealPending = false;', '    function captureBlurReveal(event) {') +
     section("    listen(textarea, 'keyup',", "    listen(textarea, 'scroll',"), context);
   return { context, textarea, row, events, hide: () => { visible = false; },
     keyup: (patch: Record<string, unknown> = {}) => events.get('keyup')!({ key: 'End', ctrlKey: true, ...patch }),
     frame: () => { assert(frame); const callback = frame; frame = undefined; callback(); } };
 }
+
+test('resize reveal is cancelled by manual gestures; modifier release cannot reclaim the old caret', () => {
+  for (const type of ['wheel', 'pointerdown', 'touchstart']) {
+    const f = endCaretFixture(); vm.runInContext('scheduleViewportRender()', f.context);
+    f.events.get(type)!(); f.keyup({ key: 'Control' }); f.frame();
+    assert.equal(f.context.resizeRevealCount, 0);
+    vm.runInContext('scheduleViewportRender()', f.context); f.frame();
+    assert.equal(f.context.resizeRevealCount, 0, 'later resize respects manual viewport ownership');
+    f.keyup({ key: 'ArrowRight' }); f.frame();
+    vm.runInContext('scheduleViewportRender()', f.context); f.frame();
+    assert.equal(f.context.resizeRevealCount, 1, 'actual caret key restores resize ownership');
+  }
+});
+
+test('resize reveal never overrides composition, movement or an active gesture', () => {
+  for (const patch of [{ composing: true }, { gesture: {} }, { moveState: {} }]) {
+    const f = endCaretFixture(); Object.assign(f.context, patch);
+    vm.runInContext('scheduleViewportRender()', f.context); f.frame();
+    assert.equal(f.context.resizeRevealCount, 0);
+  }
+});
 
 test('native End default is followed by only the missing 13px final-line correction without changing input or metrics', () => {
   for (const mode of ['live', 'text']) {
@@ -189,6 +212,24 @@ test('native End default is followed by only the missing 13px final-line correct
     assert.equal(f.context.syncCount, 1); assert.equal(f.context.renderCount, 1);
     f.textarea.scrollTop = 949; vm.runInContext('revealEndCaret()', f.context); assert.equal(f.textarea.scrollTop, 949, 'consumed intent never pulls the row back');
   }
+});
+
+test('compact26 single and wrapped End rows use the actual native ruler without changing raw or selection', () => {
+  for (const height of [26, 52, 78]) {
+    const f = endCaretFixture(); f.context.lineHeight = 26;
+    Object.assign(f.row, { offsetTop: 949 + 330 - height + 5, offsetHeight: height });
+    const before = { ...f.textarea }; f.keyup(); f.frame();
+    assert.equal(f.textarea.scrollTop, 954);
+    assert.deepEqual({ ...f.textarea, scrollTop: before.scrollTop }, before);
+    assert.equal(f.row.offsetTop + height, f.textarea.scrollTop + f.textarea.clientHeight);
+  }
+});
+
+test('compact26 End rejects a non-ruler row and composition rather than normalizing its geometry', () => {
+  const f = endCaretFixture(); f.context.lineHeight = 26; f.row.offsetHeight = 44;
+  f.keyup(); f.frame(); assert.equal(f.textarea.scrollTop, 949);
+  const composing = endCaretFixture(); composing.context.lineHeight = 26; composing.context.composing = true;
+  composing.keyup(); composing.frame(); assert.equal(composing.textarea.scrollTop, 949);
 });
 
 test('actual End then modifier-release keyup sequence retains its one-shot unless another caret intent or mutation intervenes', () => {
@@ -206,9 +247,29 @@ test('actual End then modifier-release keyup sequence retains its one-shot unles
   }
 });
 
-test('End reveal never navigates a distant, already-visible, wrapped, hidden or selected final row', () => {
+test('End exposes only the missing 10px of a fitting wrapped final row without changing caret, input or history', () => {
+  for (const mode of ['live', 'text']) {
+    const f = endCaretFixture(); f.context.mode = mode;
+    Object.assign(f.row, { offsetTop: 1258, offsetHeight: 88 });
+    f.textarea.clientHeight = 387;
+    const before = { ...f.textarea }, active = f.context.doc.activeElement;
+    f.keyup(); f.frame();
+    assert.equal(f.textarea.scrollTop, 959);
+    assert.equal(f.row.offsetTop + f.row.offsetHeight, f.textarea.scrollTop + f.textarea.clientHeight);
+    assert.deepEqual({ ...f.textarea, scrollTop: before.scrollTop }, before);
+    assert.equal(f.context.doc.activeElement, active); assert.equal(f.context.syncCount, 1);
+    vm.runInContext('revealEndCaret()', f.context);
+    assert.equal(f.textarea.scrollTop, 959, 'the wrapped correction is consumed once');
+  }
+});
+
+test('End reveal never navigates a distant, already-visible, oversized, non-ruler, hidden or selected final row', () => {
   for (const [top, height, hidden] of [[962, 44, false], [1292, 44, false], [1248, 88, false], [1248, 44, true]] as const) {
     const f = endCaretFixture(); Object.assign(f.row, { offsetTop: top, offsetHeight: height, hidden });
+    f.keyup(); f.frame(); assert.equal(f.textarea.scrollTop, 949); assert.equal(f.context.syncCount, 0);
+  }
+  for (const [top, height] of [[1160, 352], [1248, 45], [1300, 88], [949, 88]] as const) {
+    const f = endCaretFixture(); Object.assign(f.row, { offsetTop: top, offsetHeight: height });
     f.keyup(); f.frame(); assert.equal(f.textarea.scrollTop, 949); assert.equal(f.context.syncCount, 0);
   }
   for (const prepare of [

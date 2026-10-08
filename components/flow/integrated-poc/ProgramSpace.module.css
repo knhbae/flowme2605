@@ -132,3 +132,23 @@
   .dialog[data-task-detail] .dialogHeading { top: -16px; margin: -16px -16px 16px; padding: 16px; }
   .task { grid-template-columns: 48px minmax(0,1fr) 48px; gap: 4px; }
 }
+/* One task row, not three separate cards. Full titles stay in the detail view. */
+.task { background: #fffefa; padding: 12px 4px; align-items: start; }
+.task > button { background: transparent; border-radius: 6px; }
+.task > .check { margin-top: 0; }
+.taskTitle { min-width: 0; padding: 8px; }
+.taskTitleText { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; word-break: keep-all; overflow-wrap: anywhere; }
+.taskTitle small { margin-top: 4px; }
+.taskTitle small { color: var(--pw-muted); font-size: 12px; line-height: 20px; font-weight: 400; }
+.contextActions .libraryToggle { border-color: transparent; background: transparent; color: var(--pw-muted); font-size: 13px; }
+.taskOrigin { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.space { position: relative; }
+@media (max-width: 760px) {
+  .space[data-library-open=false] .contextActions { position: absolute; top: 0; right: 0; z-index: 2; }
+  /* A notice can precede the heading. Keep its actions in flow instead of
+     painting the document control over the warning or source-return message. */
+  .space[data-library-open=false]:has(.content > [role], .content > section, .content > div:not([hidden]) > section[aria-label="보존한 반복 계획 기록"], .taskNotice) .contextActions { position: static; }
+  .space[data-library-open=false] .docHeading h1, .space[data-library-open=false] .periodHeading h1 { padding-right: 88px; }
+  .task { grid-template-columns: 48px minmax(0,1fr) 48px; gap: 0; }
+  .task > .check { width: 48px; }
+}

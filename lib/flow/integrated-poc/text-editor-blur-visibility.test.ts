@@ -49,7 +49,7 @@ test('scroll, selection, value, viewport or mode changes before frame invalidate
 test('actual blur event wiring defers until render; intervening wheel or pointer intent cancels', () => {
   for (const interrupt of [null, 'wheel', 'pointerdown', 'touchstart']) {
     const f=fixture(), events=new Map<string,()=>void>(); let frame: (()=>void)|undefined;
-    Object.assign(f.context,{root:{},renderFrame:0,global:{requestAnimationFrame:(cb:()=>void)=>{frame=cb;return 1;}},
+    Object.assign(f.context,{root:{},renderFrame:0,viewportRevealPending:false,global:{requestAnimationFrame:(cb:()=>void)=>{frame=cb;return 1;}},
       render:()=>{assert.equal(f.textarea.scrollTop,278);},remember:()=>{},listen:(_target:unknown,name:string,handler:()=>void)=>events.set(name,handler)});
     vm.runInContext(source.slice(source.indexOf('    function scheduleRender() {'),source.indexOf('    function captureBlurReveal(event) {')),f.context);
     const wiring=source.slice(source.indexOf("    listen(textarea, 'blur',"),source.indexOf("    listen(textarea, 'scroll',"));
@@ -65,7 +65,7 @@ test('ordinary checkbox or missing control does not trigger progress correction'
 test('one-shot runs after scheduled render, only blur captures, manual gestures cancel, no API/focus writer', () => {
   assert.match(source,/render\(\); revealBlurredProgress\(\);/);
   assert.match(source,/'blur', \(event\) => \{ remember\(\); captureBlurReveal\(event\); scheduleRender\(\); \}/);
-  assert.match(source,/\['wheel', 'pointerdown', 'touchstart'\].*pendingBlurReveal = null/);
+  assert.match(source,/\['wheel', 'pointerdown', 'touchstart'\].*viewportRevealPending = false;.*pendingBlurReveal = null/);
   const code=source.slice(source.indexOf('    function captureBlurReveal(event) {'),source.indexOf('    function makeSpan('));
   assert.doesNotMatch(code,/\.focus\(|\.blur\(|setSelectionRange|publish\(|onChange|execCommand|setValue|localStorage/);
 });
