@@ -11,6 +11,12 @@ export interface ProgramFolderRegion {
   depth: number;
   readOnly?: boolean;
 }
+
+/** Keep an intentional same-document scope; don't carry an empty old scope to another writing. */
+export function programFolderAfterDocumentOpen(state: TextWorkspaceState, previousId: string, nextId: string, folderId: string): string {
+  if (!folderId || previousId === nextId) return folderId;
+  return readProgramFolderRegions(state, nextId, folderId)?.regions.length ? folderId : '';
+}
 export interface ProgramFolderDocumentView {
   documentId: string;
   folderId: string;

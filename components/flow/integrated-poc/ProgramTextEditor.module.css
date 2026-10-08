@@ -46,6 +46,10 @@
 .registeredNotice { word-break: keep-all; overflow-wrap: anywhere; }
 .menuSection { display: grid; gap: 8px; padding-block: 8px; border-top: 1px solid #e0e8e4; }
 .menuSection h4 { margin: 0; font-size: 13px; font-weight: 650; color: #5e7467; }
+.menuGroup { border-top: 1px solid #e0e8e4; }
+.menuGroup > summary { min-height: 48px; font-weight: 650; color: #326449; }
+.menuGroup > summary:focus-visible { outline: 2px solid #326449; outline-offset: 2px; border-radius: 4px; }
+.menuGroup > .choices { padding-bottom: 8px; }
 .quickProgress { display: flex; gap: 6px; flex-wrap: wrap; }
 .quickProgress button { flex: 1; }
 @media (max-width: 600px) {

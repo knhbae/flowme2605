@@ -20,6 +20,31 @@ import { readProgramTaskDatePresentation } from '@/lib/flow/integrated-poc/execu
 import { readProgramMemoContext, programTaskDateChangeHint } from '@/lib/flow/integrated-poc/text-context-presentation';
 
 export interface ProgramTextPosition { start: number; end: number; scrollTop: number }
+type WritingSelection = ProgramTextPosition & { direction: 'forward' | 'backward' | 'none'; scrollLeft: number };
+
+/** Keep the same source characters when a menu action adds properties or moves a row. */
+export function programTextSelectionAfterChange(before: TextWorkspaceState, next: TextWorkspaceState, docId: string, selection: WritingSelection): WritingSelection | null {
+  const previous = M.getDocument(before, docId), current = M.getDocument(next, docId);
+  if (!previous || !current) return null;
+  function translate(offset: number) {
+    let start = 0;
+    for (const line of previous!.lines) {
+      if (offset <= start + line.text.length) {
+        const index = current!.lines.findIndex(entry => entry.id === line.id);
+        if (index < 0) return null;
+        const text = current!.lines[index].text, oldIndent = line.text.match(/^ */)![0].length, newIndent = text.match(/^ */)![0].length;
+        const column = offset - start, adjusted = column >= oldIndent ? column + newIndent - oldIndent : column;
+        return current!.lines.slice(0, index).reduce((total, entry) => total + entry.text.length + 1, 0) + Math.max(0, Math.min(text.length, adjusted));
+      }
+      start += line.text.length + 1;
+    }
+    return null;
+  }
+  const start = translate(selection.start), end = translate(selection.end);
+  if (start === null || end === null) return null;
+  return { ...selection, start: Math.min(start, end), end: Math.max(start, end),
+    direction: start > end ? selection.direction === 'backward' ? 'forward' : 'backward' : selection.direction };
+}
 export type ProgramSourceFocus = (target: { documentId: string; lineId: string; raw: string }) => boolean;
 export type ProgramTextCommitOptions = {
   groupId?: string;
@@ -306,6 +331,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   const orderPositionsRef = useRef<{ state: TextWorkspaceState; selection: DateOrderSelection; scrollTop: number }[]>([]);
   const orderEpochRef = useRef(0);
   const pendingOrderRef = useRef<{ before: TextWorkspaceState; next: TextWorkspaceState; raw: string } | null>(null);
+  const menuReturnRef = useRef<WritingSelection | null>(null);
   const [orderPreview, setOrderPreview] = useState<{ plan: DateBlockOrderPlan; before: TextWorkspaceState; epoch: number; selection: DateOrderSelection; scrollTop: number } | null>(null);
   const [inputLocked, setInputLocked] = useState(false);
   const [draft, setDraft] = useState<ProgramTextDraftState>(() => ({ committed: props.workspace, working: props.workspace,
@@ -339,7 +365,30 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
   }
   function closePanel() {
     dialogRef.current?.close(); setPanel(null); setMessage(''); setOrderPreview(null);
+    const saved = menuReturnRef.current; menuReturnRef.current = null;
+    if (composingRef.current || inputLockedRef.current) return;
     editorRef.current?.focus();
+    if (saved) restoreWritingSelection(saved);
+  }
+  function writingSelection(): WritingSelection | null {
+    const area = textArea();
+    return area ? { start: area.selectionStart, end: area.selectionEnd, direction: area.selectionDirection,
+      scrollTop: area.scrollTop, scrollLeft: area.scrollLeft } : null;
+  }
+  function restoreWritingSelection(saved: WritingSelection) {
+    const area = textArea();
+    if (!area || composingRef.current || inputLockedRef.current || area.inert) return;
+    area.setSelectionRange(saved.start, saved.end, saved.direction);
+    area.scrollTop = saved.scrollTop; area.scrollLeft = saved.scrollLeft;
+    // Update the native editor's existing selection/viewport listeners, not its value/history.
+    area.dispatchEvent(new Event('select', { bubbles: true }));
+  }
+  function indentFromMenu(outdent: boolean) {
+    const index = currentRow(panel?.lineId ?? null)?.index;
+    closePanel();
+    const selection = editorRef.current?.getSelection();
+    if (index !== undefined && selection?.lineIndex !== index) editorRef.current?.focus(index);
+    editorRef.current?.indent(outdent);
   }
   function closeEditorTools(button: HTMLButtonElement) {
     const menu = button.closest('details');
@@ -477,10 +526,18 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     timerRef.current = setTimeout(() => { void saveNow(); }, 450);
   }
   async function apply(next: TextWorkspaceState, label: string, schedule?: ProgramTextCommitOptions['privateTaskSchedule']) {
+    const before = currentState(), selected = writingSelection();
     if (actionsDisabled() || !draftRef.current?.apply(next, label, schedule)) { setMessage('이 변경은 적용할 수 없습니다. 현재 내용은 유지했습니다.'); return false; }
     cancelMove();
     orderHistoryRef.current.clear(); orderPositionsRef.current = []; orderEpochRef.current++;
     editorRef.current?.setValue(draftRef.current.getState().raw, { preserveSelection: true });
+    const returned = selected && programTextSelectionAfterChange(before, next, propsRef.current.docId, selected);
+    if (returned) {
+      restoreWritingSelection(returned);
+      // A moved source can be outside the old scroll window; reveal only after
+      // model changes. Plain menu cancellation keeps its original scroll.
+      editorRef.current?.refreshViewport();
+    }
     editorRef.current?.refresh();
     return saveNow();
   }
@@ -498,10 +555,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (!selection) return;
     const next = M.moveSubtree(currentState(), propsRef.current.docId, selection.lineId, beforeLineId, depth);
     closePanel();
-    if (await apply(next, '하위 묶음 이동')) {
-      const index = currentDoc()?.lines.findIndex(line => line.id === selection.lineId);
-      if (index !== undefined && index >= 0) editorRef.current?.focusControl(index);
-    }
+    await apply(next, '하위 묶음 이동');
   }
   function openProgress(lineId: string | null, kind: 'progress' | 'date' = 'progress') {
     const row = currentRow(lineId);
@@ -686,7 +740,10 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     }
   }, [props.folderId]);
   useEffect(() => {
-    if (panel && dialogRef.current && !dialogRef.current.open) dialogRef.current.showModal();
+    if (panel && dialogRef.current && !dialogRef.current.open) {
+      menuReturnRef.current = writingSelection();
+      dialogRef.current.showModal();
+    }
   }, [panel]);
 
   // Keep the native install/sync lifecycle intact; observe layout after it mounts.
@@ -783,7 +840,33 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (panel?.folderSuggestionTitle !== undefined && !programFolderSuggestionPreservesSource(state, next)) {
       setMessage('원문을 바꾸는 연결은 적용하지 않았습니다. 현재 입력을 유지했습니다.'); return;
     }
-    closePanel(); await apply(next, scopeId ? '폴더 연결' : '새 폴더');
+    closePanel();
+    await saveFolderLink(state, next, scopeId ? '폴더 연결' : '새 폴더');
+  }
+  async function saveFolderLink(before: TextWorkspaceState, next: TextWorkspaceState, label: string) {
+    // apply changes the native value/selection synchronously. Only the save is
+    // pending here; a newer user action owns focus even when raw text is equal.
+    const pending = apply(next, label), area = textArea(), owner = area?.ownerDocument;
+    let interrupted = false;
+    const interrupt = () => { interrupted = true; };
+    const events = ['pointerdown', 'keydown', 'focusin', 'beforeinput', 'compositionstart'];
+    for (const event of events) owner?.addEventListener(event, interrupt, true);
+    try {
+      if (await pending && !interrupted && area === textArea()) continueAfterFolderLink(before, next);
+    } finally {
+      for (const event of events) owner?.removeEventListener(event, interrupt, true);
+    }
+  }
+  function continueAfterFolderLink(before: TextWorkspaceState, next: TextWorkspaceState) {
+    if (actionsDisabled() || composingRef.current || !programSame(currentState(), next)) return;
+    const id = propsRef.current.docId, doc = M.getDocument(next, id), area = textArea();
+    if (!doc || area?.value !== M.raw(doc)) return;
+    const linked = next.bindings.find(binding => binding.docId === id && binding.kind === 'scope'
+      && !before.bindings.some(previous => programSame(previous, binding)));
+    const index = doc.lines.findIndex(line => line.id === linked?.lineId);
+    // Only this explicit successful folder choice changes the caret target.
+    // Native focus owns selection, wrapping, viewport and composition guards.
+    if (index >= 0) editorRef.current?.focus(index);
   }
   function openFolderPanel(lineId: string | null, suggestionTitle?: string) {
     if (actionsDisabled() || composingRef.current) return;
@@ -855,7 +938,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     if (!programFolderSuggestionPreservesSource(state, next)) {
       setMessage('원문을 바꾸는 연결은 적용하지 않았습니다. 현재 입력을 유지했습니다.'); return;
     }
-    await apply(next, '기존 폴더 연결');
+    await saveFolderLink(state, next, '기존 폴더 연결');
   }
   function createSuggestion() {
     const current = currentSuggestion();
@@ -897,9 +980,9 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
     {suggestion && <div className={regionStyles.actions} role="region" aria-label="폴더 연결 제안">{suggestion.folders.length > 0
       ? suggestion.folders.map(entry => <button type="button" key={entry.id} disabled={disabled} onClick={() => { void chooseSuggestion(entry.id); }}>{entry.path} 연결</button>)
       : <button type="button" disabled={disabled} onClick={createSuggestion}>새 폴더로 연결…</button>}<button type="button" onClick={() => setDismissedSuggestion(suggestionKey)}>제안 닫기</button></div>}
-    {props.folderId && <div className={regionStyles.actions} aria-label="문서 조회 범위"><p>{folderView?.folderPath ?? '선택한 폴더'} · 현재 문서 · 하위 폴더 포함</p>
+    {props.folderId && <div className={regionStyles.actions} aria-label="문서 조회 범위"><p>{currentDoc()?.title || '현재 글'} · 분류: {folderView?.folderPath ?? '선택한 분류'} · 하위 분류 포함</p>
       <button type="button" disabled={inputLocked || !!props.readOnly || draft.saving || composingRef.current} onClick={props.onContinueWholeDocument ? continueWholeDocument : props.onShowWholeDocument}>전체 문서 보기</button><button type="button" onClick={props.onShowFolderTasks}>폴더 전체 할 일</button>
-      {!folderView?.regions.length && <p>현재 문서에는 이 폴더의 연결 영역이나 할 일이 없습니다.</p>}
+      {!folderView?.regions.length && <p>이 분류에 맞는 내용이 없습니다. 전체 문서에서 확인할 수 있습니다.</p>}
     </div>}
     <div ref={hostRef} className={`${styles.host}${props.directWriting ? ` ${styles.directWriting}` : ''}`} hidden={!!props.folderId} data-native-editor="v11-core" />
     {folderView && <ProgramFolderRegionEditor key={`${props.docId}:${props.folderId}`} styles={regionStyles} view={folderView} readOnly={!!props.readOnly} locked={inputLocked || draft.saving} mode={mode}
@@ -929,9 +1012,11 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         {row?.progressTargetId && <section className={styles.menuSection} aria-label="선택 항목 진행·날짜"><h4>진행·날짜</h4>
           {accessFor(panel.lineId)?.reason ? <button type="button" onClick={() => setPanel({ kind: 'reference', lineId: panel.lineId })}>기록·원래 항목 보기</button> : <><button type="button" onClick={() => openProgress(panel.lineId)}>진행 기록</button><button type="button" onClick={() => openProgress(panel.lineId, 'date')}>날짜 바꾸기</button></>}
         </section>}
-        <section className={styles.menuSection} aria-label="추가·연결"><h4>추가·연결</h4>
+        <section className={styles.menuSection} aria-label="이 위치에 추가"><h4>이 위치에 추가</h4>
         {insertions.map(option => <button type="button" key={`${option.kind}:${option.offset}:${option.depth}`} onClick={() => insertNative(option.offset, option.text, option.caretOffset)}>{option.label}<small>{option.relation}</small></button>)}
         {!currentDoc()?.lines.length && <><button type="button" onClick={() => insertNative(0, '- [ ] ', 6)}>할 일</button><button type="button" onClick={() => { closePanel(); editorRef.current?.focus(); }}>자유 메모</button></>}
+        </section>
+        <details className={styles.menuGroup} aria-label="추가·연결"><summary>추가·연결</summary><div className={styles.choices}>
         <button type="button" onClick={insertDateSection}>날짜 구획 · 문서 끝에</button>
         <button type="button" onClick={() => openFolderPanel(panel.lineId)}>폴더 연결</button>
         {row?.isReference && panelAccess?.documentId && panelAccess.lineId === (row.progressTargetId ?? row.taskId) && !panelAccess.reason && <button type="button" disabled={disabled} onClick={() => {
@@ -940,11 +1025,12 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
           setPanel({ kind: 'reference', lineId: panel.lineId });
         }}>연결된 항목 보기</button>}
         {props.onConnectFlow && <button type="button" onClick={() => { void connectFlow(panel.lineId); }}>Flow 연결</button>}
-        </section>
-        {row && <section className={styles.menuSection} aria-label="선택 항목 문서 구조"><h4>문서 구조</h4>
+        </div></details>
+        {row && <details className={styles.menuGroup} aria-label="선택 항목 문서 구조"><summary>문서 구조</summary><div className={styles.choices}>
+        {row?.kind === 'scope' && <small>TXT 복붙은 글자만 복사합니다. 폴더 연결과 기록을 유지해 옮기려면 하위 묶음 이동을 쓰세요.</small>}
         {row && ['task', 'subcheck', 'scope'].includes(row.kind) && <button type="button" onClick={() => beginMove(panel.lineId, true)}>하위 묶음 이동</button>}
-        {row && <><button type="button" onClick={() => { closePanel(); editorRef.current?.focus(row.index); editorRef.current?.indent(false); }}>들여쓰기</button><button type="button" onClick={() => { closePanel(); editorRef.current?.focus(row.index); editorRef.current?.indent(true); }}>내어쓰기</button><button type="button" onClick={() => { closePanel(); editorRef.current?.toggleFold(row.index); }}>하위 내용 접기 / 펼치기</button></>}
-        </section>}
+        {row && <><button type="button" onClick={() => indentFromMenu(false)}>들여쓰기</button><button type="button" onClick={() => indentFromMenu(true)}>내어쓰기</button><button type="button" onClick={() => { closePanel(); editorRef.current?.toggleFold(row.index); }}>하위 내용 접기 / 펼치기</button></>}
+        </div></details>}
       </div>}
       {panel.kind === 'progress' && !protectedExecutionPanel && <form onSubmit={event => { event.preventDefault(); void applyProgress(); }}>
         <p>{row?.title || row?.task?.title}</p><label>기록 날짜<input type="date" required value={date} onChange={event => setDate(event.target.value)} /></label>

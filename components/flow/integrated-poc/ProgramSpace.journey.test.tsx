@@ -6,7 +6,7 @@ import { createProgramData } from '../../../lib/flow/integrated-poc/program-data
 import { programClone, programFailure, programId, programResult, type ProgramData, type ProgramTransition, type ProgramWritingPosition } from '../../../lib/flow/integrated-poc/contract';
 import { textWorkspaceModel as M } from '../../../lib/flow/integrated-poc/text-workspace';
 import { normalizeProgramWritingPosition } from '../../../lib/flow/integrated-poc/writing-position';
-import { readProgramFolderRegions } from '../../../lib/flow/integrated-poc/folder-document-regions';
+import { readProgramFolderRegions, programFolderAfterDocumentOpen } from '../../../lib/flow/integrated-poc/folder-document-regions';
 import { createProgramRegionDraft } from './ProgramFolderRegionEditor';
 import { createProgramDocument, createProgramFolder } from '../../../lib/flow/integrated-poc/private-space';
 import { mergeProgramTextWorkspace } from '../../../lib/flow/integrated-poc/text-merge';
@@ -449,7 +449,7 @@ function harness() {
     textarea.focus(); return true;
   } } as Record<string, ((target: { documentId: string; lineId: string; raw: string }) => boolean) | null> };
   let reject = false, duringRun: (() => void) | undefined, contained = true;
-  const context = { M, programFailure, programResult, programSame, normalizeProgramWritingPosition, actorId, selected: id,
+  const context = { M, programFailure, programResult, programSame, normalizeProgramWritingPosition, programFolderAfterDocumentOpen, actorId, selected: id,
     setTaskNotice: (value: unknown) => assert.equal(value, null),
     dirty, inputLockCount, recurrencePorts, positions, selectedRef, presentation, documentsRef, sourceFocusPorts, pendingSourceFocus, dataRef,
     root: { current: { contains: (node: unknown) => contained && node === textarea } },
@@ -468,10 +468,20 @@ function harness() {
       duringRun?.(); return outcome;
     },
   };
+  let flushResult = true;
+  Object.assign(context, {
+    lockInput: () => { inputLockCount.current++; calls.push('lock'); return () => { inputLockCount.current--; calls.push('release'); }; },
+    flushAllEditors: async () => { calls.push('flush'); return flushResult; },
+  });
+  let preparation: ts.FunctionDeclaration | undefined;
+  const findPreparation = (node: ts.Node) => { if (ts.isFunctionDeclaration(node) && node.name?.text === 'prepareDocumentScopeChange') preparation = node; ts.forEachChild(node, findPreparation); };
+  findPreparation(ast); assert(preparation);
+  const prepareCode = ts.transpileModule(preparation.getText(ast), { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText;
+  Object.assign(context, { prepareDocumentScopeChange: new Function(...Object.keys(context), `${prepareCode};return prepareDocumentScopeChange;`)(...Object.values(context)) });
   const open = new Function(...Object.keys(context), `${compiled}; return action;`)(...Object.values(context)) as (id: string, taskId?: string) => Promise<void>;
   return { data, id, taskId, otherId, before, calls, frames, dirty, inputLockCount, recurrencePorts, positions,
     selectedRef, presentation, textarea, renderedLine, sourceFocusPorts, open, reject: () => { reject = true; },
-    duringRun: (callback: () => void) => { duringRun = callback; }, detach: () => { contained = false; },
+    duringRun: (callback: () => void) => { duringRun = callback; }, refuseFlush: () => { flushResult = false; }, detach: () => { contained = false; },
     flush: () => { frames.splice(0).forEach(frame => frame()); } };
 }
 
@@ -483,6 +493,26 @@ test('already-mounted editor clears folder scope before returning to the exact I
   assert.deepEqual(h.calls.slice(-2), ['focus', 'reveal']);
   assert.equal(JSON.stringify(h.data), h.before);
   assert.equal(h.presentation.current.folderId, ''); assert.equal(h.presentation.current.query, '같은 제목');
+});
+
+test('another writing with no content in the old classification opens whole, but intentional same-writing scope stays', async () => {
+  const h=harness();await h.open(h.otherId);
+  assert.equal(h.presentation.current.folderId,'');assert.equal(h.selectedRef.current,h.otherId);
+  assert.equal(h.presentation.current.query,'같은 제목');assert.equal(JSON.stringify(h.data),h.before);
+  const same=harness();await same.open(same.id);assert.equal(same.presentation.current.folderId,'chosen-folder');
+});
+
+test('clearing inherited scope waits for every fragment and preserves a rejected or composing draft', async () => {
+  for (const hidden of [false, true]) {
+    const h=harness();h.refuseFlush();h.recurrencePorts.current[hidden?'hidden-document-region':'visible-region']={hasPendingInput:()=>true};
+    const beforeView=structuredClone(h.presentation.current);await h.open(h.otherId);
+    assert.deepEqual(h.presentation.current,beforeView);assert.equal(h.selectedRef.current,h.id);
+    assert(!h.calls.includes('navigate'));assert.deepEqual(h.calls,['run','lock','flush','message','release']);
+    assert.equal(h.inputLockCount.current,0);assert.equal(JSON.stringify(h.data),h.before);
+    assert(h.recurrencePorts.current[hidden?'hidden-document-region':'visible-region']!.hasPendingInput());
+  }
+  const h=harness();await h.open(h.otherId);
+  assert(h.calls.indexOf('flush')<h.calls.indexOf('select'));assert.equal(h.presentation.current.folderId,'');
 });
 
 test('missing row, wrong document and rejected authority never navigate or apply a selection', async () => {

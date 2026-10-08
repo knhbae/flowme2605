@@ -142,10 +142,12 @@ function referenceMenuHarness(raw?: string, region?: { workspace: TextWorkspaceS
   const origins: unknown[] = [], events: Record<string, () => void> = {};
   const commits: TextWorkspaceState[] = [];
   const textareaEvents: Record<string, (event?: unknown) => void> = {};
-  const textarea = { value: M.raw(M.getDocument(space.text, docId)), selectionStart: 0, selectionEnd: 0, scrollTop: 0,
+  const textarea = { value: M.raw(M.getDocument(space.text, docId)), selectionStart: 0, selectionEnd: 0, selectionDirection: 'none', scrollTop: 0, scrollLeft: 0,
+    setSelectionRange(start: number, end: number, direction: string) { this.selectionStart = start; this.selectionEnd = end; this.selectionDirection = direction; },
+    dispatchEvent(event: Event) { textareaEvents[event.type]?.(event); return true; },
     addEventListener(name: string, fn: (event?: unknown) => void) { textareaEvents[name] = fn; }, removeEventListener() {} };
   const host = { querySelector: () => textarea, addEventListener: (name: string, fn: () => void) => { events[name] = fn; }, removeEventListener() {} };
-  const native = { create: (_host: unknown, options: unknown) => { config = options; return { refresh() {}, focus() { focus++; }, setMoveState() {}, destroy() {}, setMode() {}, getValue() { return textarea.value; }, setValue(value: string) { if (!install) return false; textarea.value = value; return true; } }; } };
+  const native = { create: (_host: unknown, options: unknown) => { config = options; return { refresh() {}, refreshViewport() {}, focus() { focus++; }, setMoveState() {}, destroy() {}, setMode() {}, getValue() { return textarea.value; }, setValue(value: string) { if (!install) return false; textarea.value = value; return true; } }; } };
   const mockedReact = { ...React, useId: () => 'reference-test', useRef: (value: unknown) => refs[ri++] ?? (refs[ri - 1] = { current: value }),
     useState: (value: any) => { const i = si++; if (!(i in states)) states[i] = typeof value === 'function' ? value() : value; return [states[i], (next: any) => { states[i] = typeof next === 'function' ? next(states[i]) : next; }]; },
     useEffect: (effect: () => unknown) => { effects.push(effect); } };
@@ -283,10 +285,14 @@ test('CJ-N menu identifies the selected registered subcheck and places progress 
   h.action('row-menu', 2);
   const nodes = h.nodes(h.render()), target = nodes.find(node => node.type === 'p' && node.props.children === '하위 항목');
   assert.equal(target.props.children, '하위 항목');
-  const sections = nodes.filter(node => node.type === 'section' && ['선택 항목 진행·날짜', '추가·연결', '선택 항목 문서 구조'].includes(node.props['aria-label']));
-  assert.deepEqual(sections.map(node => node.props['aria-label']), ['선택 항목 진행·날짜', '추가·연결', '선택 항목 문서 구조']);
+  const sections = nodes.filter(node => ['section', 'details'].includes(node.type) && ['선택 항목 진행·날짜', '이 위치에 추가', '추가·연결', '선택 항목 문서 구조'].includes(node.props['aria-label']));
+  assert.deepEqual(sections.map(node => node.props['aria-label']), ['선택 항목 진행·날짜', '이 위치에 추가', '추가·연결', '선택 항목 문서 구조']);
   assert(h.nodes(sections[0]).some(node => node.type === 'button' && node.props.children === '진행 기록'));
   assert(h.nodes(sections[0]).some(node => node.type === 'button' && node.props.children === '날짜 바꾸기'));
+  for (const section of sections.slice(2)) { assert.equal(section.type, 'details'); assert(!section.props.open); }
+  for (const label of ['날짜 구획 · 문서 끝에', '폴더 연결', '하위 묶음 이동', '들여쓰기', '내어쓰기', '하위 내용 접기 / 펼치기']) {
+    assert(h.button(label), label);
+  }
   assert.equal(registrationNotes(h).length, 1);
   assert.equal(h.writes(), 0); assert.equal(JSON.stringify(h.draft().getState().working), before); h.unmount();
 });

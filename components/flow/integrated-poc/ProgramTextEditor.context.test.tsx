@@ -48,6 +48,7 @@ const styles = new Proxy({}, { get: (_target, key) => String(key) });
 const same = (left: unknown, right: unknown) => JSON.stringify(left) === JSON.stringify(right);
 const clone = <T,>(value: T): T => structuredClone(value);
 const createDraft = actualFunction('createProgramTextDraft', { M, programSame: same, programClone: clone }) as typeof DraftFactory;
+const selectionAfterChange = actualFunction('programTextSelectionAfterChange', { M });
 const BASE_RAW = '[2026-10-01]\n- [ ] 선택한 할 일\n  - 메모: PRIVATE-BODY\n  - 시간: 09:00\n[2026-10-02]\n- [ ] 선택한 할 일\n  - 메모: 다른 날짜 메모';
 
 function fixture(raw = BASE_RAW) {
@@ -73,7 +74,7 @@ function harness(raw = BASE_RAW, prepare: (state: TextWorkspaceState) => TextWor
     date: '2026-10-01', time: '09:00', accept: true, closed: 0, focused: 0, refreshed: 0,
     installed: [] as string[], messages: [] as string[], previews: [] as unknown[], clearCount: 0 };
   const dialogRef = { current: { close: () => h.closed++ } };
-  const editorRef = { current: { focus: () => h.focused++, refresh: () => h.refreshed++,
+  const editorRef = { current: { focus: () => h.focused++, refresh: () => h.refreshed++, refreshViewport() {},
     setValue: (rawValue: string) => { h.installed.push(rawValue); return true; } } };
   const orderHistoryRef = { current: { clear: () => h.clearCount++ } }, orderPositionsRef = { current: [] }, orderEpochRef = { current: 0 };
   function context(extra: Record<string, unknown> = {}): Record<string, unknown> {
@@ -84,6 +85,7 @@ function harness(raw = BASE_RAW, prepare: (state: TextWorkspaceState) => TextWor
       currentDoc: () => M.getDocument(controller.getState().working, propsRef.current.docId),
       setPanel: (panel: Panel) => { h.panel = panel; }, setMessage: (value: string) => h.messages.push(value),
       setOrderPreview: (preview: unknown) => h.previews.push(preview), dialogRef, editorRef,
+      menuReturnRef: { current: null }, writingSelection: () => null, restoreWritingSelection() {}, programTextSelectionAfterChange: selectionAfterChange,
       cancelMove() {}, orderHistoryRef, orderPositionsRef, orderEpochRef, saveNow: () => controller.save(),
       setDate: (value: string) => { h.date = value; }, setTime: (value: string) => { h.time = value; },
       insertNative() {}, insertDateSection() {}, openFolderPanel() {}, beginMove() {}, connectFlow() {}, openProgress() {},
@@ -124,6 +126,29 @@ test('actual date form consumes canonical source presentation and calls the exis
   callback({ preventDefault: () => prevented++ });
   assert.equal(prevented, 1); assert.equal(applied, 1); assert.equal(h.commits.length, 0);
   assert.equal(JSON.stringify(h.workspace), before);
+});
+
+test('menu source return follows retained line identity across inserted date properties and row movement', () => {
+  const f = fixture('- [ ] 앞의 할 일\n  - 메모: 유지\n- [ ] 뒤의 할 일\n뒤의 글도 이어 씁니다.'), raw = M.raw(M.getDocument(f.workspace, f.docId));
+  const selected = { start: raw.indexOf('뒤의 글') + 2, end: raw.indexOf('뒤의 글') + 5, direction: 'backward', scrollTop: 36, scrollLeft: 0 };
+  const next = M.updateTask(f.workspace, M.tasks(f.workspace)[0].id, { date: '2026-10-12', time: '' });
+  const returned = selectionAfterChange(f.workspace, next, f.docId, selected), nextRaw = M.raw(M.getDocument(next, f.docId));
+  assert.deepEqual(returned, { ...selected, start: nextRaw.indexOf('뒤의 글') + 2, end: nextRaw.indexOf('뒤의 글') + 5 });
+  assert.equal(raw.slice(selected.start, selected.end), nextRaw.slice(returned.start, returned.end));
+  const task = M.tasks(f.workspace)[1], movingSelection = { ...selected, start: raw.indexOf('뒤의 할 일') + 1, end: raw.indexOf('뒤의 할 일') + 3 };
+  const target = M.moveTargets(f.workspace, f.docId, task.id).find(entry => entry.beforeLineId === M.tasks(f.workspace)[0].id && entry.depth === 0);
+  assert(target);
+  const moved = M.moveSubtree(f.workspace, f.docId, task.id, target.beforeLineId, target.depth), movedRaw = M.raw(M.getDocument(moved, f.docId));
+  const movedPosition = selectionAfterChange(f.workspace, moved, f.docId, movingSelection);
+  assert.equal(movedRaw.slice(movedPosition.start, movedPosition.end), raw.slice(movingSelection.start, movingSelection.end));
+  assert.equal(movedPosition.direction, 'backward');
+});
+
+test('menu source return never fabricates a position for a removed source line', () => {
+  const f = fixture('선택한 일반 글\n남은 글'), selected = { start: 2, end: 4, direction: 'backward', scrollTop: 0, scrollLeft: 0 };
+  const next = M.editText(f.workspace, f.docId, '남은 글');
+  assert.equal(selectionAfterChange(f.workspace, next, f.docId, selected), null);
+  assert.deepEqual(selectionAfterChange(f.workspace, f.workspace, f.docId, selected), selected);
 });
 
 test('actual date source and changed-date preview remain separate and hide no-op or invalid drafts', () => {

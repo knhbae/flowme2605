@@ -124,6 +124,7 @@ export function ProgramCreatorWorkspace(props: ProgramCreatorWorkspaceProps) {
   const workspace = data.spaces[actorId].creatorWorkspace;
   const initial = workspace?.working ?? (workspace && selectedDraftId ? creatorWorkingFromRecord(workspace, selectedDraftId) : null);
   const [buffer, setBuffer] = useState<ProgramCreatorWorking | null>(initial), bufferRef = useRef(buffer); bufferRef.current = buffer;
+  const [copiedDraft, setCopiedDraft] = useState<{ actorId: string; draftId: string; sourceDraftId: string } | null>(null);
   const baseline = useRef(workspace?.working ?? null), [mount, setMount] = useState(0);
   // A native property edit refreshes the raw editor, not the focused inspector.
   // Full owner/history replacement still uses `mount` to reset both surfaces.
@@ -416,19 +417,31 @@ export function ProgramCreatorWorkspace(props: ProgramCreatorWorkspaceProps) {
     const release = port.lockInput(); pending.current = true; setBusy(true);
     try {
       if (!await flushDraft()) return false;
-      const requestId = programId('request'), now = new Date().toISOString(); const captured: { working: ProgramCreatorWorking | null } = { working: null };
+      const requestId = programId('request'), now = new Date().toISOString(); const captured: { working: ProgramCreatorWorking | null; copy: typeof copiedDraft } = { working: null, copy: null };
       const expectedStructure=bufferRef.current?.structure ?? null;
       const expectedNativeDocument=bufferRef.current?.nativeDocument??null,expectedNativeSelection=bufferRef.current?.nativeSelection??null;
       let alphaCreator: AlphaCreatorIntent | null = null;
       const result = await mutate(label, current => { const action = build(current, now); alphaCreator = { type: 'library-action', action, now };
         const transition = applyProgramCreatorAction(current, { actorId, requestId, action,expectedStructure,expectedNativeDocument,expectedNativeSelection }, now);
-        if (transition.ok) captured.working = transition.data.spaces[actorId].creatorWorkspace?.working ?? null; return transition;
+        if (transition.ok) {
+          captured.working = transition.data.spaces[actorId].creatorWorkspace?.working ?? null;
+          if (action.type === 'duplicate') captured.copy = { actorId, draftId: action.newDraftId, sourceDraftId: action.sourceDraftId };
+        }
+        return transition;
       }, { alphaCreator: () => { if (!alphaCreator) throw Error('creator-action-not-captured'); return alphaCreator; } });
       if (!result.ok) { report(false, programErrorMessage(result.reason)); return false; }
       baseline.current = captured.working; if (captured.working?.draftId === bufferRef.current?.draftId) { bufferRef.current = captured.working; setBuffer(captured.working); }
-      report(true, `${label} 완료`); return true;
+      if (captured.copy) setCopiedDraft(captured.copy);
+      report(true, captured.copy ? '사본을 만들었습니다. 사본 열고 수정에서 이어갈 수 있습니다.' : `${label} 완료`); return true;
     } catch { report(false, '저장하지 못했습니다. 제작 원문은 그대로 유지했습니다.'); return false; }
     finally { pending.current = false; setBusy(false); release(); }
+  }
+  function openCopiedDraft() {
+    if (!copiedDraft || copiedDraft.actorId !== dataRef.current.activeActorId) return;
+    const own = dataRef.current.spaces[copiedDraft.actorId].creatorWorkspace;
+    const target = own && creatorWorkingFromRecord(own, copiedDraft.draftId);
+    if (!target) { report(false, '사본의 저장 상태를 확인한 뒤 다시 열어 주세요. 현재 입력은 유지했습니다.'); return; }
+    choose(target);
   }
   function saveExplicit() { return commit((current, now) => {
     const own = current.spaces[actorId].creatorWorkspace!, w = own.working!;
@@ -859,6 +872,10 @@ export function ProgramCreatorWorkspace(props: ProgramCreatorWorkspaceProps) {
     <div hidden={props.entryChoiceRequested}>
     <nav className={styles.actions} aria-label="제작 단계">{(['input','result','library'] as const).map((value,i) => <button key={value} disabled={busy||locked} aria-current={tab === value ? 'page' : undefined} onClick={() => showTab(value)}>{['원문','결과','제작 초안'][i]}</button>)}</nav>
     {message && ((!nativeHandoff&&!nativeLineage) || tab !== 'result') && <p role={error ? 'alert' : 'status'} className={error ? styles.error : styles.status}>{message}</p>}
+    {copiedDraft?.actorId === actorId && <section className={styles.notice} aria-label="복제한 초안 편집 대상">
+      {buffer?.draftId === copiedDraft.draftId ? <p>복제한 사본을 편집하고 있습니다.</p> : <><p>{buffer?.draftId === copiedDraft.sourceDraftId ? '현재 열린 초안은 원본입니다.' : '만든 사본은 아직 열지 않았습니다.'}</p>
+        <button disabled={busy || locked} onClick={openCopiedDraft}>사본 열고 수정</button></>}
+    </section>}
     {choice && <section className={styles.notice} aria-label="작성 중 원문 확인"><p>명시 저장하지 않은 제작 원문이 있습니다.</p><div className={styles.actions}><button disabled={busy || locked} onClick={() => void saveChoice()}>저장하고 열기</button><button disabled={busy || locked} onClick={() => void switchWorking(choice === 'close' ? null : choice)}>입력 버리고 열기</button><button onClick={cancelChoice}>계속 편집</button></div></section>}
     <div hidden={tab !== 'library'}><section className={styles.library}><div className={styles.actions}><button disabled={busy || locked} onClick={() => choose({ draftId: programId('creator'), rawText: '', title: '', baseRecordRevision: null })}>빈 제작 원문 만들기</button><button aria-pressed={archived} onClick={() => setArchived(v => !v)}>{archived ? '사용 중 초안 보기' : '보관함 보기'}</button></div>
       {workspace?.importedWorkingCandidates&&<section aria-label="가져온 미저장 원문"><h2>가져온 미저장 원문</h2><p>저장판과 별도로 보관한 원문입니다. 열어 확인한 뒤 직접 저장하세요.</p>

@@ -46,7 +46,7 @@ function harness(raw = '- 미분류') {
     folderName: '', invalid: false, saving: false, messages: [] as string[], applied: [] as { next: TextWorkspaceState; label: string }[],
     links: [] as unknown[][], closeCount: 0, focusCount: 0, cancelCount: 0, saveCount: 0,
     suggestion: programFolderInputSuggestion(working, docId, lineId), suggestionLineRef: { current: lineId },
-    saveNow: async () => true,
+    saveNow: async () => true, returnedFolder: [] as TextWorkspaceState[],
   };
   const draftRef = { current: { getState: () => ({ working: h.working, committed: props.workspace,
     raw: M.raw(M.getDocument(h.working, propsRef.current.docId)), invalid: h.invalid, saving: h.saving }) } };
@@ -61,10 +61,13 @@ function harness(raw = '- 미분류') {
       textArea: () => area, setFolderName: (value: string) => { h.folderName = value; },
       setPanel: (value: FolderPanel | null) => { h.panel = value; }, setMessage: (message: string) => h.messages.push(message),
       dialogRef: { current: { close: () => h.closeCount++ } }, editorRef: { current: { focus: () => h.focusCount++ } }, setOrderPreview() {},
+      menuReturnRef: { current: null },
       actionsDisabled: () => actualVariable('actionsDisabled', context())(),
       closePanel: () => actualFunction('closePanel', context())(),
       cancelMove: () => { h.cancelCount++; },
       apply: async (next: TextWorkspaceState, label: string) => { h.applied.push({ next, label }); return true; },
+      continueAfterFolderLink: (_before: TextWorkspaceState, next: TextWorkspaceState) => h.returnedFolder.push(next),
+      saveFolderLink: (before: TextWorkspaceState, next: TextWorkspaceState, label: string) => actualFunction('saveFolderLink', context())(before, next, label),
       saveNow: async () => { h.saveCount++; return h.saveNow(); },
       suggestion: h.suggestion, suggestionLineRef: h.suggestionLineRef,
       currentSuggestion: (savedFrom?: TextWorkspaceState) => actualFunction('currentSuggestion', context())(savedFrom),
@@ -200,7 +203,49 @@ test('actual existing suggestion waits for save and rechecks document, authority
       assert.equal(h.applied[0].label, '기존 폴더 연결');
       assert(programFolderSuggestionPreservesSource(h.working, h.applied[0].next));
       assert.equal(h.applied[0].next.bindings.length, 1);
+      assert.deepEqual(h.returnedFolder, [h.applied[0].next]);
     }
     assert.equal(JSON.stringify(h.working), before);
+  }
+});
+
+test('successful folder choice returns to the exact linked row, not document start or an unrelated later binding', () => {
+  const h = harness('- 미분류'), before = h.working;
+  const next = linkProgramFolder(before, h.props.docId, h.lineId, { scopeId: 'folder-unfiled' });
+  assert.notEqual(next, before);
+  const focused: number[] = [], context = h.context({ currentState: () => next,
+    textArea: () => ({ value: M.raw(M.getDocument(next, h.props.docId)) }),
+    editorRef: { current: { focus: (index: number) => focused.push(index) } } });
+  actualFunction('continueAfterFolderLink', context)(before, next);
+  assert.deepEqual(focused, [0]);
+  for (const stale of [{ currentState: () => before }, { textArea: () => ({ value: 'new typing' }) },
+    { composingRef: { current: true } }, { propsRef: { current: { ...h.props, docId: 'another' } } }]) {
+    actualFunction('continueAfterFolderLink', { ...context, ...stale })(before, next);
+    assert.deepEqual(focused, [0]);
+  }
+});
+
+test('pending folder save never takes focus from a newer input, selection or focus action and removes its listeners', async () => {
+  for (const event of ['none', 'pointerdown', 'keydown', 'focusin', 'beforeinput', 'compositionstart', 'replaced-editor', 'save-failed', 'save-rejected']) {
+    const h = harness(), owner = new EventTarget(), area = { ownerDocument: owner };
+    let settle!: (saved: boolean) => void, reject!: (reason: Error) => void;
+    let currentArea: typeof area | null = area;
+    const returned: TextWorkspaceState[] = [];
+    const pending = actualFunction('saveFolderLink', h.context({
+      textArea: () => currentArea,
+      apply: () => new Promise<boolean>((resolve, refuse) => { settle = resolve; reject = refuse; }),
+      continueAfterFolderLink: (_before: TextWorkspaceState, next: TextWorkspaceState) => returned.push(next),
+    }))(h.working, h.working, '폴더 연결') as Promise<void>;
+    if (event === 'replaced-editor') currentArea = null;
+    else if (!['none', 'save-failed', 'save-rejected'].includes(event)) owner.dispatchEvent(new Event(event));
+    if (event === 'save-rejected') { reject(new Error('fake-save-rejected')); await assert.rejects(pending, /fake-save-rejected/); }
+    else { settle(event !== 'save-failed'); await pending; }
+    assert.equal(returned.length, event === 'none' ? 1 : 0, event);
+    // A later independent folder save can proceed: no stale interruption leaks.
+    const completed: TextWorkspaceState[] = [];
+    await actualFunction('saveFolderLink', h.context({ textArea: () => area, apply: async () => true,
+      continueAfterFolderLink: (_before: TextWorkspaceState, next: TextWorkspaceState) => completed.push(next),
+    }))(h.working, h.working, '다음 폴더 연결');
+    assert.equal(completed.length, 1, event);
   }
 });

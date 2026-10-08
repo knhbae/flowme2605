@@ -14,7 +14,7 @@ import { programErrorMessage, type ProgramMutate, type ProgramNavigate, type Pro
 import { emptyProgramRecurrencePresentation, programNavigationMatchesDocument, type ProgramSpaceNavigation } from '@/lib/flow/integrated-poc/navigation';
 import { ProgramDocumentProvenance } from './ProgramDocumentProvenance';
 import { ProgramTextEditor, type ProgramSourceFocus, type ProgramTextCommitOptions } from './ProgramTextEditor';
-import { readProgramFolderRegions } from '@/lib/flow/integrated-poc/folder-document-regions';
+import { readProgramFolderRegions, programFolderAfterDocumentOpen } from '@/lib/flow/integrated-poc/folder-document-regions';
 import { ProgramRecurrence } from './ProgramRecurrence';
 import { ProgramRecurrencePlanRecovery } from './ProgramRecurrencePlanRecovery';
 import { ProgramOutputReturn } from './ProgramOutputReturn';
@@ -125,6 +125,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const [libraryHandoff, setLibraryHandoff] = useState<LibraryWritingHandoff | null>(null);
   const [preparingDocumentAction, setPreparingDocumentAction] = useState(false);
   const preparing = useRef(false), selectedRef = useRef(selected); selectedRef.current = selected;
+  const documentRouteOpening = useRef<Promise<void>>(Promise.resolve());
   const saveRequests = useRef<Record<string, (() => Promise<boolean>) | null>>({});
   const recurrencePorts = useRef<Record<string, ProgramEditorFlush | null>>({});
   // A flush may await an already-running local save. Only successfully persisted
@@ -552,10 +553,36 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     window.addEventListener('keydown', escape); return () => { cancelHold(); window.removeEventListener('keydown', escape); };
   }, []);
   useEffect(() => {
-    if (props.selectedDocumentId) {
-      setSelected(props.selectedDocumentId); setOpened(previous => previous.includes(props.selectedDocumentId!) ? previous : [...previous, props.selectedDocumentId!]); setPeriod('documents');
-    }
+    const id = props.selectedDocumentId;
+    let current = true;
+    const opening = documentRouteOpening.current.catch(() => {}).then(async () => {
+      if (!id || !current) return;
+      if (!await prepareDocumentScopeChange(id, () => current)) return;
+      if (!current || dataRef.current.activeActorId !== actorId) return;
+      setFolderId(programFolderAfterDocumentOpen(dataRef.current.spaces[actorId].text, selectedRef.current, id, presentation.current.folderId));
+      setSelected(id); setOpened(previous => previous.includes(id) ? previous : [...previous, id]); setPeriod('documents');
+    });
+    documentRouteOpening.current = opening;
+    void opening.catch(() => { if (current) setMessage('작성 중인 입력을 유지했습니다. 저장 상태를 확인한 뒤 글을 다시 열어 주세요.'); });
+    return () => { current = false; };
   }, [props.selectedDocumentId]); // Data can arrive after navigation: retain the requested ID even before its document arrives.
+
+  async function prepareDocumentScopeChange(id: string, canOpen: () => boolean = () => true): Promise<boolean> {
+    const documentId = selectedRef.current, scope = presentation.current.folderId;
+    if (programFolderAfterDocumentOpen(dataRef.current.spaces[actorId].text, documentId, id, scope) === scope) return canOpen();
+    if (inputLockCount.current > 0) return false;
+    // This shared scope controls every retained document's fragment editor.
+    // Save all fragments before removing any of them, not only the visible one.
+    const release = lockInput();
+    try {
+      if (!await flushAllEditors()) {
+        setMessage('작성 중인 입력을 저장하거나 한글 입력을 마친 뒤 다른 글을 열어 주세요. 입력은 유지했습니다.');
+        return false;
+      }
+      return canOpen() && dataRef.current.activeActorId === actorId
+        && selectedRef.current === documentId && presentation.current.folderId === scope;
+    } finally { release(); }
+  }
 
   async function openDocument(id: string, taskId?: string,
     request?: { canOpen: () => boolean; onBusy: () => void }): Promise<boolean> {
@@ -587,8 +614,12 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       if (request) setMessage('작성 중인 입력을 저장하거나 취소한 뒤 원래 항목을 열어 주세요.');
       return false;
     }
+    if (!taskId && !await prepareDocumentScopeChange(id, request?.canOpen)) return false;
+    if (request && !request.canOpen()) return false;
     setTaskNotice(null);
     if (targetPosition) { positions.current[id] = targetPosition; setFolderId(''); }
+    else setFolderId(programFolderAfterDocumentOpen(dataRef.current.spaces[actorId].text,
+      selectedRef.current, id, presentation.current.folderId));
     setSelected(id); setLibraryOpen(false); setOpened(previous => previous.includes(id) ? previous : [...previous, id]); setPeriod('documents');
     props.navigate({ view: 'space', id }, taskId ? { writingLineId: taskId } : undefined);
     // The full App owns history/checkpoint focus. Alpha has no navigation port

@@ -1,5 +1,9 @@
 # FLOW Spec Layer
 
+## 작성·정리·실행·재사용 — 2026-10-09
+
+[목표](./2026-10-09-everyday-workflow/spec.md)·[계획](./2026-10-09-everyday-workflow/plan.md)·[작업](./2026-10-09-everyday-workflow/tasks.md)·[검증](./2026-10-09-everyday-workflow/qa.md). 개발3 단일 owner가 A 입력 연속성 → B 다시 찾기 → C 제작 사본/개인 계획 재사용을 작은 단위로 진행한다. 기존 로컬 행 메뉴를 보존하며 현재 Alpha와 새 후보·실제 사용 근거를 구분한다.
+
 ## 자체 작성 비공개 Flow 검증·기존 DEV 반영 — 2026-10-04
 
 [목표](./2026-10-04-private-flow-pilot/spec.md)·[계획](./2026-10-04-private-flow-pilot/plan.md)·[작업](./2026-10-04-private-flow-pilot/tasks.md)·[QA](./2026-10-04-private-flow-pilot/qa.md). 요청 `FLOWME-FINISH-PRIVATE-PILOT-20261004-1400-DEV3`의 단일 개발3 owner가 직전 날짜 상세 후보를 중복 구현하지 않고, 자체 작성 가상 Flow의 기존 제작→개인 실행→재열기와 기존 DEV 반영/복귀를 검증한다. 합성·정상 로그인·실제 제공판을 분리하며 공개 발행·새 run·schema·관리 방식 변경은 제외한다.
