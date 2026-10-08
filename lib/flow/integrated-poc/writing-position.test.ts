@@ -7,6 +7,7 @@ import {textWorkspaceModel as M} from './text-workspace';
 import {moveProgramPersonalTaskText} from './task-document-move';
 import {normalizeProgramWritingPosition} from './writing-position';
 import {programCheckpointForWritingTarget} from './writing-navigation';
+import {programFolderAfterDocumentOpen} from './folder-document-regions';
 function fixture(){const data=createProgramData(),actorId=data.activeActorId,s=data.spaces[actorId];s.text=M.addDocument(s.text,{title:'출발'});const from=s.text.documents.at(-1)!.id;s.text=M.editText(s.text,from,'자유 메모\n- [ ] 이동할 일\n  - 메모: 개인\n  - [ ] 하위');const task=M.tasks(s.text)[0];s.text=M.recordProgress(s.text,task.id,'2026-09-12',20);s.text=M.addDocument(s.text,{title:'도착'});const to=s.text.documents.at(-1)!.id;s.text=moveProgramPersonalTaskText(s.text,task.id,to)!;return{data,actorId,from,to,task};}
 test('moved/deleted anchors normalize only presentation without following foreign documents',()=>{
   const{data,actorId,from,task}=fixture(),text=data.spaces[actorId].text,before=programClone(text);
@@ -14,16 +15,25 @@ test('moved/deleted anchors normalize only presentation without following foreig
   assert.deepEqual(normalizeProgramWritingPosition(text,{...cached,documentId:'deleted'}),{documentId:null,lineId:null,start:0,end:0,scrollTop:0});assert.deepEqual(text,before);
 });
 const source=readFileSync(new URL('../../../components/flow/integrated-poc/ProgramSpace.tsx',import.meta.url),'utf8'),ast=ts.createSourceFile('Space.tsx',source,ts.ScriptTarget.Latest,true,ts.ScriptKind.TSX);
-let handler:ts.FunctionDeclaration|undefined;function visit(node:ts.Node){if(ts.isFunctionDeclaration(node)&&node.name?.text==='openDocument')handler=node;ts.forEachChild(node,visit);}visit(ast);assert(handler);
+let handler:ts.FunctionDeclaration|undefined,preparation:ts.FunctionDeclaration|undefined;function visit(node:ts.Node){if(ts.isFunctionDeclaration(node)&&node.name?.text==='openDocument')handler=node;if(ts.isFunctionDeclaration(node)&&node.name?.text==='prepareDocumentScopeChange')preparation=node;ts.forEachChild(node,visit);}visit(ast);assert(handler);assert(preparation);
 const code=ts.transpileModule(`const value=${handler.getText(ast)};`,{compilerOptions:{target:ts.ScriptTarget.ES2022}}).outputText;
+const prepareCode=ts.transpileModule(preparation.getText(ast),{compilerOptions:{target:ts.ScriptTarget.ES2022}}).outputText;
+function actualOpenDocument(context:Record<string,unknown>){
+  const prepare=new Function(...Object.keys(context),`${prepareCode};return prepareDocumentScopeChange;`)(...Object.values(context));
+  const dependencies={...context,prepareDocumentScopeChange:prepare};
+  return new Function(...Object.keys(dependencies),`${code};return value;`)(...Object.values(dependencies));
+}
 test('actual openDocument handler normalizes moved cache without mutation and hands exact focus to App history',async()=>{
   const{data,actorId,from,to,task}=fixture();let live=data,focused:number[]|null=null,navigated:any=null;const records=programClone(data.spaces[actorId].text.progressRecords),positions={current:{[from]:{documentId:from,lineId:task.id,start:6,end:10,scrollTop:40}} as Record<string,ProgramWritingPosition>};
-  const context={actorId,selected:from,positions,programClone,programFailure,programResult,programSame,normalizeProgramWritingPosition,M,
+  const selectedRef={current:from},presentation={current:{folderId:'',period:'documents'}};
+  const context={actorId,selected:from,positions,programClone,programFailure,programResult,programSame,normalizeProgramWritingPosition,programFolderAfterDocumentOpen,M,
+    dataRef:{get current(){return live;}},selectedRef,presentation,
     pendingSourceFocus:{current:null},document:{activeElement:null},
+    lockInput:()=>{throw Error('unchanged document scope must not lock input');},flushAllEditors:async()=>{throw Error('unchanged document scope must not flush input');},
     setTaskNotice:(value:unknown)=>assert.equal(value,null),
-    inputLockCount:{current:0},dirty:{current:{}},recurrencePorts:{current:{}},setFolderId:(value:string)=>{assert.equal(value,'');},
-    run:async(_label:string,build:any)=>{const result=build(live);if(result.ok){assert(validateProgramData(result.data));assert.equal(result.changed,false);assert.equal(result.data,live);live=result.data;}return result;},setSelected:()=>{},setLibraryOpen:()=>{},setOpened:()=>{},setPeriod:()=>{},props:{onRegisterNavigation:()=>{},navigate:(value:any,options:any)=>{navigated=value;const checkpoint=programCheckpointForWritingTarget(live,value,options.writingLineId,null);assert(checkpoint);assert.equal(checkpoint.focus,`program-text-${encodeURIComponent(value.id)}`);const position=checkpoint.writing![value.id];focused=[position.start,position.end];}},requestAnimationFrame:()=>{throw Error('Space must not race App focus');}};
-  const open=new Function(...Object.keys(context),`${code};return value;`)(...Object.values(context));await open(to,task.id);assert.equal(navigated.id,to);assert.equal(live.spaces[actorId].position.lineId,null);assert.deepEqual(live.spaces[actorId].text.progressRecords,records);assert.deepEqual(live.spaces[actorId].text,data.spaces[actorId].text);
+    inputLockCount:{current:0},dirty:{current:{}},recurrencePorts:{current:{}},setFolderId:(value:string)=>{assert.equal(value,'');presentation.current.folderId=value;},
+    run:async(_label:string,build:any)=>{const result=build(live);if(result.ok){assert(validateProgramData(result.data));assert.equal(result.changed,false);assert.equal(result.data,live);live=result.data;}return result;},setSelected:(value:string)=>{selectedRef.current=value;},setLibraryOpen:()=>{},setOpened:()=>{},setPeriod:(value:string)=>{presentation.current.period=value;},props:{onRegisterNavigation:()=>{},navigate:(value:any,options:any)=>{navigated=value;const checkpoint=programCheckpointForWritingTarget(live,value,options.writingLineId,null);assert(checkpoint);assert.equal(checkpoint.focus,`program-text-${encodeURIComponent(value.id)}`);const position=checkpoint.writing![value.id];focused=[position.start,position.end];}},requestAnimationFrame:()=>{throw Error('Space must not race App focus');}};
+  const open=actualOpenDocument(context);await open(to,task.id);assert.equal(navigated.id,to);assert.equal(live.spaces[actorId].position.lineId,null);assert.deepEqual(live.spaces[actorId].text.progressRecords,records);assert.deepEqual(live.spaces[actorId].text,data.spaces[actorId].text);
   const doc=M.getDocument(live.spaces[actorId].text,to)!,index=doc.lines.findIndex(line=>line.id===task.id),offset=doc.lines.slice(0,index).reduce((sum,line)=>sum+line.text.length+1,0);assert.deepEqual(focused,[offset,offset]);
   assert.equal(live,data);assert.equal(positions.current[from].lineId,null);
   navigated=null;focused=null;const beforeMissing=programClone(live);await open(from,task.id);assert.equal(navigated,null);assert.equal(focused,null);assert.deepEqual(live,beforeMissing);
@@ -35,7 +45,7 @@ function restorationHarness(owner: 'app' | 'alpha', timing: 'during-navigation' 
   const f = fixture(), { data, actorId, from, to, task } = f;
   const before = JSON.stringify(data), frames: (() => void)[] = [], calls: string[] = [];
   const positions = { current: {} as Record<string, ProgramWritingPosition> };
-  const selectedRef = { current: from }, presentation = { current: { period: 'week' } };
+  const selectedRef = { current: from }, presentation = { current: { period: 'week', folderId: '' } };
   const focusOwner = {};
   const documentsRef = { current: [...data.spaces[actorId].text.documents, ...data.spaces[actorId].text.flows] };
   const doc = M.getDocument(data.spaces[actorId].text, to)!;
@@ -44,10 +54,12 @@ function restorationHarness(owner: 'app' | 'alpha', timing: 'during-navigation' 
     getClientRects: () => [{}], setSelectionRange(start: number, end: number) { this.selectionStart = start; this.selectionEnd = end; },
     closest: () => ({ querySelectorAll: () => doc.lines.map(() => renderedLine) }), scrollIntoView: () => calls.push('reveal') };
   let appRestore: (() => void) | undefined;
-  const context = { actorId, selected: from, positions, programFailure, programResult, programSame, normalizeProgramWritingPosition, M,
+  const context = { actorId, selected: from, positions, programFailure, programResult, programSame, normalizeProgramWritingPosition, programFolderAfterDocumentOpen, M,
     pendingSourceFocus: { current: null }, dataRef: { current: data },
+    lockInput: () => { throw Error('unchanged document scope must not lock input'); },
+    flushAllEditors: async () => { throw Error('unchanged document scope must not flush input'); },
     setTaskNotice: (value: unknown) => assert.equal(value, null),
-    inputLockCount: { current: 0 }, dirty: { current: {} }, recurrencePorts: { current: {} }, setFolderId: (value: string) => { assert.equal(value, ''); },
+    inputLockCount: { current: 0 }, dirty: { current: {} }, recurrencePorts: { current: {} }, setFolderId: (value: string) => { assert.equal(value, ''); presentation.current.folderId=value; },
     selectedRef, presentation, documentsRef, root: { current: { contains: (node: unknown) => node === textarea } },
     document: { activeElement: focusOwner, body: focusOwner, getElementById: (id: string) => id === `program-text-${encodeURIComponent(to)}` ? textarea : null },
     sourceFocusPorts: { current: { [to]: (target: { documentId: string; lineId: string; raw: string }) => {
@@ -71,7 +83,7 @@ function restorationHarness(owner: 'app' | 'alpha', timing: 'during-navigation' 
         if (timing === 'during-navigation') appRestore();
       } }, requestAnimationFrame: (callback: () => void) => { frames.push(callback); return frames.length; },
   };
-  const open = new Function(...Object.keys(context), `${code};return value;`)(...Object.values(context));
+  const open = actualOpenDocument(context);
   return { ...f, before, frames, calls, textarea, open,
     finishApp: () => { if (timing === 'after-navigation') appRestore?.(); },
     flush: () => { frames.splice(0).forEach(callback => callback()); } };
