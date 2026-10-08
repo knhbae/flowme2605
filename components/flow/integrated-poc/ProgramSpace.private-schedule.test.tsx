@@ -181,13 +181,21 @@ function harness(seed: ProgramData, documentId: string, host: 'local' | 'account
 function task(data: ProgramData, taskId: string) { return M.tasks(data.spaces[data.activeActorId].text).find(row => row.id === taskId)!; }
 
 function textEditorHarness(initial: ProgramTextEditorProps) {
-  let inputLock: ((locked: boolean) => void) | null = null;
+  let inputLock: ((locked: boolean) => void) | null = null, viewportRefreshes = 0;
   let props = { ...initial, onRegisterInputLock: (port: typeof inputLock) => { inputLock = port; initial.onRegisterInputLock?.(port); } }, si = 0, ri = 0, config: any;
   const states: any[] = [], refs: any[] = [], effects: (() => unknown)[] = [], events: Record<string, () => void> = {};
+  const selectionEvents: { type: string; bubbles: boolean; start: number; end: number }[] = [];
   const textarea = { value: M.raw(M.getDocument(props.workspace, props.docId)), selectionStart: 0, selectionEnd: 0, scrollTop: 0,
-    readOnly: false, addEventListener() {}, removeEventListener() {}, setSelectionRange(start: number, end: number) { this.selectionStart = start; this.selectionEnd = end; } };
+    readOnly: false, addEventListener() {}, removeEventListener() {}, setSelectionRange(start: number, end: number) { this.selectionStart = start; this.selectionEnd = end; },
+    // The production textarea notifies its native selection/viewport listeners.
+    // This DOM double records the event; it does not synthesize input or a save.
+    dispatchEvent(event: Event) {
+      assert.equal(event.type, 'select'); assert.equal(event.bubbles, true);
+      selectionEvents.push({ type: event.type, bubbles: event.bubbles, start: this.selectionStart, end: this.selectionEnd });
+      return true;
+    } };
   const host = { querySelector: () => textarea, addEventListener: (name: string, callback: () => void) => { events[name] = callback; }, removeEventListener() {} };
-  const native = { create: (_host: unknown, options: unknown) => { config = options; return { refresh() {}, focus() {}, setMoveState() {}, destroy() {}, setMode() {},
+  const native = { create: (_host: unknown, options: unknown) => { config = options; return { refresh() {}, refreshViewport() { viewportRefreshes++; }, focus() {}, setMoveState() {}, destroy() {}, setMode() {},
     getValue: () => textarea.value, setValue: (value: string) => { textarea.value = value; return true; } }; } };
   const hooks = { ...React, useId: () => 'schedule-editor', useRef: (initial: unknown) => refs[ri++] ?? (refs[ri - 1] = { current: initial }),
     useState: (initial: any) => { const index = si++; if (!(index in states)) states[index] = typeof initial === 'function' ? initial() : initial;
@@ -222,7 +230,7 @@ function textEditorHarness(initial: ProgramTextEditorProps) {
     inputs.find(input => input.props.type === 'time').props.onChange({ target: { value: time } }); render();
   }
   async function submit() { const form = render().form; assert(form); form.props.onSubmit({ preventDefault() {} }); await settle(); return render(); }
-  return { render, open, draft, submit, events, textarea, get controller() { return refs[3].current as ReturnType<typeof DraftFactory>; },
+  return { render, open, draft, submit, events, textarea, selectionEvents, get viewportRefreshes() { return viewportRefreshes; }, get controller() { return refs[3].current as ReturnType<typeof DraftFactory>; },
     get committed() { return props.workspace; }, lock(locked: boolean) { inputLock?.(locked); }, synchronize() { effects[2](); },
     input(raw: string) { textarea.value = raw; config.onChange(raw); },
     replace(next: ProgramTextEditorProps) { props = { ...next, onRegisterInputLock: props.onRegisterInputLock }; render(); }, unmount() { unregister(); destroy(); } };
@@ -359,6 +367,8 @@ test('PS13 actual native text date form reaches the exact public-copy schedule i
       assert.equal(h.successful, 1); assert.deepEqual(h.requests, [{ kind: 'social', intent: { type: 'private-task-schedule',
         copyId: f.copyId, itemId: 'schedule-item', taskId: f.taskId, date, time: '17:45' } }]);
       assert.equal(editor.controller.getState().dirty, false); assert.equal(task(h.data, f.taskId).date, date);
+      assert.deepEqual(editor.selectionEvents, [{ type: 'select', bubbles: true, start: 0, end: 0 }]);
+      assert.equal(editor.viewportRefreshes, 1);
       assert.deepEqual(h.data.spaces[f.actorId].copies[0].itemOverrides['schedule-item'], { date }); assert.deepEqual(h.data.public, f.data.public);
     } finally { editor.unmount(); }
   }
