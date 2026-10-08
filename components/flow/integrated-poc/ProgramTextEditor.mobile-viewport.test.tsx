@@ -20,7 +20,7 @@ test('visible height follows the actual notice top and bottom tabs rather than a
   assert.equal(programEditorVisibleHeight(295, Infinity), null);
 });
 
-test('the sizing observer changes only a host style, not raw, focus, selection or history', () => {
+test('the sizing observer changes a host style and notifies guarded viewport layout, not input ownership', () => {
   const source = readFileSync(new URL('./ProgramTextEditor.tsx', import.meta.url), 'utf8');
   const start = source.indexOf('    const host = hostRef.current, shell');
   const end = source.indexOf('  }, []);', start);
@@ -28,6 +28,7 @@ test('the sizing observer changes only a host style, not raw, focus, selection o
   assert.match(sizing, /attributeFilter: \['hidden', 'open'\]/);
   assert.match(sizing, /getClientRects\(\).length/);
   assert.match(sizing, /position === 'fixed'/);
+  assert.match(sizing, /setProperty\('--program-editor-visible-height',[\s\S]*editorRef\.current\?\.refreshViewport\(\)/);
   assert.doesNotMatch(sizing, /setValue|setSelectionRange|\.focus\(|\.value\s*=|scrollTop\s*=/);
 });
 

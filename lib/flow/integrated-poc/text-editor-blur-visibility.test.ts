@@ -79,3 +79,23 @@ test('internal control focus or active internal pointer suppresses correction, e
   vm.runInContext('captureBlurReveal({relatedTarget:{}})',f.context);f.reveal();assert.equal(f.textarea.scrollTop,290);
   assert.match(source,/pointerInsideEditorControl = event.target !== textarea && root.contains\(event.target\)/);
 });
+
+test('host height notification reuses guarded viewport reveal after an earlier frame, without renewed input intent',()=>{
+  const start=source.indexOf('    function scheduleViewportRender() {');
+  const end=source.indexOf('    function captureBlurReveal(event) {',start);
+  assert(start>=0&&end>start);assert.match(source,/refreshViewport: scheduleViewportRender/);
+  for(const patch of [{},{viewportCaretOwned:false},{composing:true},{gesture:{}},{moveState:{}}]){
+    let frame:(()=>void)|undefined,renders=0,reveals=0;
+    const context=vm.createContext({viewportCaretOwned:true,viewportRevealPending:false,renderFrame:0,
+      destroyed:false,composing:false,gesture:null,moveState:null,
+      global:{requestAnimationFrame:(callback:()=>void)=>{frame=callback;return 1;}},
+      render:()=>renders++,revealBlurredProgress:()=>{},revealEndCaret:()=>{},revealFocusedCaret:()=>reveals++,...patch});
+    vm.runInContext(source.slice(start,end),context);
+    vm.runInContext('scheduleRender()',context);frame!();
+    assert.equal(reveals,0);assert.equal(renders,1);
+    // Same function exposed to the host after it commits the smaller CSS height.
+    vm.runInContext('scheduleViewportRender()',context);frame!();
+    assert.equal(renders,2);assert.equal(reveals,Object.keys(patch).length?0:1);
+    assert.equal(context.viewportRevealPending,false);
+  }
+});

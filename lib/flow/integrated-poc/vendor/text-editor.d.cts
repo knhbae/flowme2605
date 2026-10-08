@@ -49,6 +49,7 @@ declare namespace editor {
     unfoldAll(): void;
     undo(): boolean;
     refresh(): void;
+    refreshViewport(): void;
     setMode(mode: 'live' | 'text'): void;
     destroy(): void;
   }

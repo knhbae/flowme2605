@@ -704,8 +704,12 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       const nav = shell.querySelector<HTMLElement>('nav[aria-label="기본 이동"]');
       if (nav && view.getComputedStyle(nav).position === 'fixed') bottom = Math.min(bottom, nav.getBoundingClientRect().top);
       const height = programEditorVisibleHeight(host.getBoundingClientRect().top, bottom);
-      if (height !== null && host.style.getPropertyValue('--program-editor-visible-height') !== `${height}px`)
+      if (height !== null && host.style.getPropertyValue('--program-editor-visible-height') !== `${height}px`) {
         host.style.setProperty('--program-editor-visible-height', `${height}px`);
+        // ResizeObserver ordering must not leave the caret at the previous height.
+        // Reuse its guarded reveal path without changing input or focus ownership.
+        editorRef.current?.refreshViewport();
+      }
     };
     const schedule = () => { if (!frame) frame = view.requestAnimationFrame(update); };
     const observer = new ResizeObserver(schedule);
