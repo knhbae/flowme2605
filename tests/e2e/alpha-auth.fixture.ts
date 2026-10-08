@@ -178,7 +178,7 @@ export async function openWorkspaceManagement(page: Page) {
   const management = page.locator('details[aria-label="계정 및 자료 관리"]');
   await expect(management).toBeVisible();
   if (await management.getAttribute('open') === null) {
-    await management.locator('summary').click();
+    await management.locator(':scope > summary').click();
   }
   await expect(management).toHaveAttribute('open', '');
 }
