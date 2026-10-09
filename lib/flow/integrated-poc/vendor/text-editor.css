@@ -214,6 +214,12 @@
  * surface (native textarea inert) reserves independent 44px touch rows. */
 .tle-root:is(.tle-reading-view, .tle-folded-view) :is(.tle-line-task, .tle-line-scope) { min-height: 44px; }
 .tle-root.tle-folded-view .tle-line { min-height: 44px; }
+/* Paint on the first text line, not the centre of the 44px touch lane.
+ * Only decoration moves; textarea/mirror metrics and control hit boxes stay put. */
+.tle-root:is(.tle-reading-view, .tle-folded-view) .tle-check-glyph { top: max(0px, calc((var(--tle-line) - 18px) / 2)); }
+.tle-root:is(.tle-reading-view, .tle-folded-view) .tle-scope-open { display: flex; align-items: flex-start; justify-content: center; }
+.tle-root:is(.tle-reading-view, .tle-folded-view) .tle-scope-open svg { display: block; margin-top: max(0px, calc((var(--tle-line) - 20px) / 2)); }
+.tle-root:is(.tle-reading-view, .tle-folded-view) .tle-fold-toggle { line-height: var(--tle-line); text-align: center; }
 .tle-root:not(.tle-reading-view):not(.tle-folded-view) :is(.tle-active-scope-icon, .tle-indent-guide, .tle-scope-anchor, .tle-check-anchor, .tle-fold-anchor, .tle-scope-label) { height: var(--tle-line); }
 .tle-root:not(.tle-reading-view):not(.tle-folded-view) .tle-check-glyph { top: calc((var(--tle-line) - 18px) / 2); }
 .tle-root:not(.tle-reading-view):not(.tle-folded-view) .tle-active-progress { top: 0; }

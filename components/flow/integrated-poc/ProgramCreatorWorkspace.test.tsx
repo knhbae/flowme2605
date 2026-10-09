@@ -45,6 +45,14 @@ test('creator uses existing live editor, explicit templates/properties, result p
   assert.ok(html.includes('가방 확인'));assert.ok(html.includes('지퍼 닫기'));
   assert.ok(source.includes('PersonalWorkspacePocLiveEditor'));assert.ok(source.includes('PersonalWorkspacePocResultPresenter'));
 });
+test('creator keeps save outside a closed auxiliary writing disclosure, with the same mounted editor',()=>{
+ const p=existing(),before=JSON.stringify(p.data),html=renderToStaticMarkup(<ProgramCreatorWorkspace {...p}/>);
+ assert.match(html, /class="sourceActions"><button[^>]*>제작 초안 저장<\/button><details class="sourceTools"><summary>작성 도구<\/summary>/u);
+ assert(!html.includes('<details class="sourceTools" open'));
+ for(const label of ['구간 추가','할 일 추가','작성 틀·예시 선택','구조 템플릿으로 시작'])assert(html.includes(label));
+ assert.equal((html.match(/data-testid="personal-workspace-live-editor-textarea"/gu)??[]).length,1);
+ assert.equal(JSON.stringify(p.data),before);
+});
 test('structure examples retain compiler/source gates and the new form describes its actual support',()=>{
   const html=renderToStaticMarkup(<ProgramCreatorWorkspace {...existing()}/>);
   assert.ok(html.includes('구조 템플릿 예시는 빈 제작 원문에서 시작합니다.'));

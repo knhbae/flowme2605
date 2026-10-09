@@ -893,11 +893,16 @@ export function ProgramCreatorWorkspace(props: ProgramCreatorWorkspaceProps) {
       <div hidden={tab !== 'input'}>
         <label>제작 초안 제목<input value={buffer.title} maxLength={200} readOnly={blocked && !composing.current} onChange={event => { if ((lockCount.current || pending.current) && !composing.current) return; const next = { ...bufferRef.current!, title: event.target.value }; bufferRef.current = next; setBuffer(next); }} /></label>
         {record?.status === 'archived' && <p className={styles.notice}>보관한 초안입니다. 복원한 뒤 편집할 수 있습니다.</p>}
-        <div className={styles.actions}><button disabled={blocked} onClick={() => insertSource('## ')}>구간 추가</button><button disabled={blocked} onClick={() => insertSource('- [ ] ')}>할 일 추가</button><button disabled={blocked || buffer.nativePendingRawText!==undefined || !buffer.rawText.trim() || !buffer.title.trim()} onClick={() => void saveExplicit()}>제작 초안 저장</button></div>
-        <details><summary>작성 틀·예시 선택</summary><p>빈 틀을 선택하면 원문에 바로 넣습니다. 구조 템플릿 예시는 빈 제작 원문에서 시작합니다.</p><div className={styles.templates}>{PERSONAL_WORKSPACE_POC_AUTHORING_TEMPLATES.map(template => <div key={template.templateId}><strong>{template.label}</strong><button disabled={blocked || programCreatorEditorText(buffer) !== ''} onClick={() => void insertScaffold(template.templateId)}>빈 틀 넣기</button><button disabled={blocked} onClick={() => showStructure(template.templateId)}>예시 확인</button></div>)}</div></details>
-        <ProgramCreatorStructureForm key={`${actorId}:${buffer.draftId}`} draftId={buffer.draftId} rawText={programCreatorEditorText(buffer)} sidecar={buffer.structure??null} disabled={blocked}
-          onChange={changeStructure} onMaterialize={materializeStructure} onCompositionChange={value=>{composing.current=value;}}
-          onReturnToSource={()=>{const snapshot=editor.current?.readSnapshot();if(snapshot&&!composing.current&&!snapshot.composing)editor.current?.focusRange(snapshot.selectionStart,snapshot.selectionEnd,snapshot.selectionDirection);}} />
+        <div className={styles.sourceActions}>
+          <button disabled={blocked || buffer.nativePendingRawText!==undefined || !buffer.rawText.trim() || !buffer.title.trim()} onClick={() => void saveExplicit()}>제작 초안 저장</button>
+          <details className={styles.sourceTools}><summary>작성 도구</summary><div className={styles.sourceToolBody}>
+            <div className={styles.actions}><button disabled={blocked} onClick={() => insertSource('## ')}>구간 추가</button><button disabled={blocked} onClick={() => insertSource('- [ ] ')}>할 일 추가</button></div>
+            <details><summary>작성 틀·예시 선택</summary><p>빈 틀을 선택하면 원문에 바로 넣습니다. 구조 템플릿 예시는 빈 제작 원문에서 시작합니다.</p><div className={styles.templates}>{PERSONAL_WORKSPACE_POC_AUTHORING_TEMPLATES.map(template => <div key={template.templateId}><strong>{template.label}</strong><button disabled={blocked || programCreatorEditorText(buffer) !== ''} onClick={() => void insertScaffold(template.templateId)}>빈 틀 넣기</button><button disabled={blocked} onClick={() => showStructure(template.templateId)}>예시 확인</button></div>)}</div></details>
+            <ProgramCreatorStructureForm key={`${actorId}:${buffer.draftId}`} draftId={buffer.draftId} rawText={programCreatorEditorText(buffer)} sidecar={buffer.structure??null} disabled={blocked}
+              onChange={changeStructure} onMaterialize={materializeStructure} onCompositionChange={value=>{composing.current=value;}}
+              onReturnToSource={()=>{const snapshot=editor.current?.readSnapshot();if(snapshot&&!composing.current&&!snapshot.composing)editor.current?.focusRange(snapshot.selectionStart,snapshot.selectionEnd,snapshot.selectionDirection);}} />
+          </div></details>
+        </div>
         {replacement && <section className={styles.notice} aria-label="제작 원문 적용 확인"><h2>{replacement.label}</h2><pre>{replacement.raw}</pre>
           <p>확인한 항목 {replacement.structure.itemCount}개를 빈 제작 원문에 넣습니다. 날짜와 내용은 예시이며 적용 뒤 직접 수정할 수 있습니다.</p><details><summary>구조 템플릿 검증 정보</summary><p>StructureDraft {replacement.structure.contractVersion} · 카탈로그 {replacement.structure.catalogVersion}. 원문이 바뀌면 적용하지 않습니다.</p></details>
           <button disabled={blocked} onClick={() => void applyReplacement()}>확인한 구조 예시로 시작</button><button onClick={() => setReplacement(null)}>취소</button></section>}
