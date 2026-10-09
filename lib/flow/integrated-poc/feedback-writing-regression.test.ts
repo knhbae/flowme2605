@@ -59,6 +59,7 @@ function nativeFixture(raw: string, initial?: TextWorkspaceState, documentId?: s
   });
   vm.runInContext(section('  const DATE =', '  function create(container, options) {') +
     section('    function remember() {', '    function scheduleRender() {') +
+    section('    function presentationCopyPoint(', '    function revealFocusedCaret() {') +
     section('    function getRowMeta() {', '    function icon(kind) {') +
     section('    function rejectInput(intent) {', "    listen(textarea, 'input',") +
     section("    listen(textarea, 'input',", "    listen(doc, 'selectionchange',"), context);

@@ -33,6 +33,7 @@ function fixture(raw: string, options: Record<string, unknown> = {}) {
   });
   vm.runInContext(section('  function protectedFenceLines(lines) {', '  function create(container, options) {') +
     section('    function remember() {', '    function scheduleRender() {') +
+    section('    function presentationCopyPoint(', '    function revealFocusedCaret() {') +
     section('    function rejectInput(intent) {', "    listen(doc, 'selectionchange',"), context);
   function key(key: string, patch: Record<string, unknown> = {}) {
     const event: any = { key, shiftKey: false, ctrlKey: false, altKey: false, metaKey: false, isComposing: false, keyCode: 0, defaultPrevented: false,

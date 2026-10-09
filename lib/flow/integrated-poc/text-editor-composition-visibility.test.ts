@@ -25,6 +25,7 @@ function fixture() {
     listen: (_target: unknown, name: string, handler: (event?: any) => void) => events.set(name, handler),
     renderCount: 0 });
   vm.runInContext(section('    function remember() {', '    function scheduleRender() {') +
+    section('    function presentationCopyPoint(', '    function revealFocusedCaret() {') +
     section('    function syncCompositionGeometry() {', '    function syncGeometry() {') +
     'function render() { renderCount++; syncCompositionGeometry(); }' +
     section("    listen(textarea, 'input',", "    listen(doc, 'selectionchange',"), context);

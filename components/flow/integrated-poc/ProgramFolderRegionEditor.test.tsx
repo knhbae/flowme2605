@@ -130,6 +130,7 @@ test('native Enter preflight accepts materialized saved prose plus one new blank
   });
   vm.runInContext(section('  function protectedFenceLines(lines) {', '  function create(container, options) {')
     + section('    function remember() {', '    function scheduleRender() {')
+    + section('    function presentationCopyPoint(', '    function revealFocusedCaret() {')
     + section('    function rejectInput(intent) {', "    listen(doc, 'selectionchange',"), context);
   const event: any = { key: 'Enter', shiftKey: false, ctrlKey: false, altKey: false, metaKey: false, isComposing: false, keyCode: 0, defaultPrevented: false,
     preventDefault() { this.defaultPrevented = true; } };

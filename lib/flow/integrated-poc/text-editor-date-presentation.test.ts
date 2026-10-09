@@ -43,6 +43,10 @@ class Node {
   addEventListener() {}
   remove() {}
   focus() {}
+  querySelectorAll(selector: string): Node[] {
+    const name = selector.slice(1);
+    return this.children.flatMap(node => [...(node.classes.has(name) ? [node] : []), ...node.querySelectorAll(selector)]);
+  }
   find(name: string): Node | undefined {
     return this.classes.has(name) ? this : this.children.map(node => node.find(name)).find(Boolean);
   }
@@ -87,6 +91,14 @@ function fixture(raw: string, metadata: TextEditorRowMeta[], options: { mode?: s
     doc: {
       activeElement: options.focused || options.composing ? textarea : new Node(),
       createElement: () => new Node(), createElementNS: () => new Node(), createDocumentFragment: () => new Node(11),
+      createRange() {
+        let text: Node, start = 0, end = 0;
+        return {
+          setStart(node: Node, offset: number) { assert.equal(node.nodeType, 3); text = node; start = offset; },
+          setEnd(node: Node, offset: number) { assert.equal(node, text); end = offset; },
+          getBoundingClientRect() { return { width: (end - start) * 4.5 }; },
+        };
+      },
       execCommand(command: string, _ui: unknown, text: string) {
         commands.push(command);
         if (command === 'insertText') {
@@ -97,13 +109,14 @@ function fixture(raw: string, metadata: TextEditorRowMeta[], options: { mode?: s
     },
     getRowMeta: () => metadata, protectedFenceLines: (lines: string[]) => lines.map(() => options.fenced ?? false),
     applyFoldView() {}, cancelMove() {}, unfoldAll() {}, viewAnchor: () => null, restoreViewAnchor() {},
-    syncGeometry() {}, paintMoveState() {}, addFoldButton() {}, gestureHandle() {}, maybeRequestPicker() {},
+    syncGeometry() { vm.runInContext('rows.forEach(syncRowIndent)', context); }, paintMoveState() {}, addFoldButton() {}, gestureHandle() {}, maybeRequestPicker() {},
     canApplyInput: () => true,
   });
   vm.runInContext(section('  function progressPercent(meta) {', '  function protectedFenceLines(lines) {') +
     section('    function remember() {', '    let inputEpoch =') +
-    section('    function publish(inputType) {', '    function scheduleRender() {') +
+    section('    function publish(inputType, inputSplice) {', '    function scheduleRender() {') +
     section('    function makeSpan(className, content) {', '    function scrollSurface() {') +
+    section('    function syncRowIndent(row) {', '    function syncReadingTaskInset(row) {') +
     section('    function icon(kind) {', '    function addFoldButton(') +
     section('    function render() {', '    function rejectInput(intent) {') +
     section('    function replaceRange(start, end, text, settings) {', '    function onKeydown(event) {'), context);
@@ -170,7 +183,8 @@ test('explicit raw, selected date editing, composition and protected code retain
     const f = fixture(raw, metadata, options), row = f.mirror.children[1];
     assert.equal(row.firstChild!.nodeType, 3); assert.equal(row.firstChild!.textContent, raw.split('\n')[1]);
     assert(!row.find('tle-property-date-label')); assert(!row.find('tle-active-paint'));
-    assert.equal(row.styles.get('--tle-indent'), '2ch'); assert.equal(f.assignments(), 0);
+    // The source spaces are measured from the native mirror, not a zero-glyph ch ruler.
+    assert.equal(row.styles.get('--tle-indent'), '9px'); assert.equal(f.assignments(), 0);
   }
 });
 
