@@ -46,6 +46,7 @@ test('D2 current creator: empty template preview, explicit insertion, native Und
   await page.setViewportSize({ width: 1440, height: 900 });
   const { surface, source, verify } = await start(page);
   await surface.getByLabel('제작 초안 제목', { exact: true }).fill('Merge D2 template');
+  await surface.locator('summary').filter({ hasText: /^작성 도구$/ }).click();
   await surface.getByText('작성 틀·예시 선택', { exact: true }).click();
   await surface.getByRole('button', { name: '예시 확인', exact: true }).first().click();
   const preview = surface.getByRole('region', { name: '제작 원문 적용 확인' });
@@ -68,6 +69,7 @@ test('D2 current creator: empty template preview, explicit insertion, native Und
   await expect(insert).toBeEnabled();
   await source.press('Control+Shift+z');
   await expect(source).toHaveValue(scaffold);
+  await surface.locator('summary').filter({ hasText: /^작성 도구$/ }).click();
   await surface.getByRole('button', { name: 'Flow 편집', exact: true }).click();
   const hint = surface.getByRole('button', { name: '빈칸 힌트', exact: true });
   await hint.click(); await expect(source).toHaveValue(scaffold);
@@ -116,6 +118,7 @@ test('D2 structure form: visible example and typed form values do not materializ
   await page.setViewportSize({ width: 1440, height: 900 });
   const { surface, source, verify } = await start(page);
   const form = surface.getByRole('region', { name: '구조 템플릿 작성', exact: true });
+  await surface.locator('summary').filter({ hasText: /^작성 도구$/ }).click();
   await form.locator('summary').filter({ hasText: /^구조 템플릿으로 시작$/ }).click();
   await form.getByRole('combobox', { name: '작성 틀', exact: true }).selectOption({ index: 1 });
   await form.getByText('예시 보기', { exact: true }).click();

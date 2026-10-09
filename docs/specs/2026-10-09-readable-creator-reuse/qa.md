@@ -22,3 +22,11 @@
 ## 미실행
 
 실제 휴대폰, OS 한글 입력기, 처음 쓰는 사람의 이해도, 이번 후보의 실제 계정·서버 저장은 NOT_RUN이다. 기존 실제 사용/배포 기록을 이번 변경의 새 결과로 합산하지 않는다. 외부 인증/API 전달과 실제 backend 쓰기는 0이다.
+
+## 게시 후 정상 진입 검사 보완
+
+최초 게시 `3e4634ad362d007bef9c079346624bc57b844f2f`의 정상 pre-push verify는 docs·기존 npm test·새 Next build `KG6KI-pns-g9TsLkgjCkT`까지 성공했다. 제품 3파일·검사 2파일의 바이트는 초기 로컬 검증과 같다.
+
+기존 authoring-merge E2E 두 곳은 접힌 작성 도구를 열지 않고 내부 틀을 바로 선택했다. 정상 열기 2곳과 입력 모드로 돌아가기 전 닫기 1곳만 추가했다. 기존 원문·Undo/Redo·저장·재열기·보호·외부 저장소 판정을 삭제하거나 완화하지 않았다.
+
+별도 fresh Chrome과 후보 Next 서버 3134에서 해당 3사례를 실행해 3 PASS / 0 FAIL, exit0 (`23cff1`)을 확인했다. 가상 storage·운영 sentinel만 사용한 `/my?personalWorkspacePoc=v1` 경로이며 실제 계정/Alpha 검사가 아니다. 시험 서버는 해당 Playwright가 종료했다. 첫 config 실행은 cwd 누락으로 서버 기동 전에 MODULE_NOT_FOUND가 발생했으며 raw를 보존했다. 정상 cwd를 지정한 뒤 제품 수정 없이 통과했다.
