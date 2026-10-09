@@ -2,7 +2,7 @@
 
 import React, { useEffect, useId, useRef, useState } from 'react';
 import nativeEditor from '@/lib/flow/integrated-poc/vendor/text-editor.cjs';
-import { textEditorRows, textWorkspaceModel as M, type TextMoveSelection, type TextMoveTarget, type TextProgressCheckConflict, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
+import { textEditorRows, textWorkspaceModel as M, type TextInputSplice, type TextMoveSelection, type TextMoveTarget, type TextProgressCheckConflict, type TextWorkspaceState } from '@/lib/flow/integrated-poc/text-workspace';
 import '@/lib/flow/integrated-poc/vendor/text-editor.css';
 import styles from './ProgramTextEditor.module.css';
 import { planProgramDateBlockOrder, type DateBlockOrderPlan, type DateOrderSelection } from '@/lib/flow/integrated-poc/date-block-order';
@@ -130,6 +130,7 @@ export function createProgramTextDraft(
   let privateTaskSchedule: ProgramTextCommitOptions['privateTaskSchedule'];
   let inputGeneration = 0;
   let submitted: { before: TextWorkspaceState; next: TextWorkspaceState; generation: number } | null = null;
+  const pasteHistory: { before: TextWorkspaceState; after: TextWorkspaceState }[] = [];
   const report = () => notify({ ...state });
   const api = {
     getState: () => state,
@@ -138,15 +139,28 @@ export function createProgramTextDraft(
       inputGeneration++;
       state = { ...state, raw, invalid: true, dirty: true, progressConflict: undefined, error: '문서 문맥이 바뀌어 순서를 반영하지 않았습니다. 입력은 남아 있습니다.' }; report();
     },
-    updateRaw(raw: string, progressDate: string) {
+    updateRaw(raw: string, progressDate: string, input?: { inputType: string; inputSplice?: TextInputSplice }) {
       privateTaskSchedule = undefined;
       inputGeneration++;
       const baseRaw = M.raw(M.getDocument(state.committed, docId));
-      const edit: ReturnType<typeof M.editTextResult> = raw === baseRaw ? { state: state.committed, reason: null }
-        : M.editTextResult(state.working, docId, raw, { progressDate });
+      const before = state.working;
+      const history = (input?.inputType === 'historyUndo' || input?.inputType === 'historyRedo') ? pasteHistory.slice().reverse().find(entry => {
+        const from = input.inputType === 'historyUndo' ? entry.after : entry.before;
+        const to = input.inputType === 'historyUndo' ? entry.before : entry.after;
+        return programSame(M.getDocument(before, docId), M.getDocument(from, docId)) && raw === M.raw(M.getDocument(to, docId));
+      }) : undefined;
+      const historyFrom = history && (input?.inputType === 'historyUndo' ? history.after : history.before);
+      const historyTo = history && (input?.inputType === 'historyUndo' ? history.before : history.after);
+      // Genuine native history may restore a paste snapshot only while its whole
+      // workspace still matches. Never overwrite newer records or another edit.
+      const edit: ReturnType<typeof M.editTextResult> = history
+        ? programSame(before, historyFrom) ? { state: historyTo!, reason: null } : { state: before, reason: 'identity-ambiguous' }
+        : raw === baseRaw ? { state: state.committed, reason: null }
+          : M.editTextResult(before, docId, raw, { progressDate, ...(input?.inputSplice ? { inputSplice: input.inputSplice } : {}) });
       const next = edit.state;
       const protectedChange = !validateWorkspace(next);
       const invalid = protectedChange || M.raw(M.getDocument(next, docId)) !== raw;
+      if (!invalid && input?.inputSplice && next !== before) pasteHistory.push({ before, after: next });
       state = { ...state, raw, working: invalid ? state.working : next, invalid,
         dirty: state.saving || raw !== baseRaw || next !== state.committed,
         progressConflict: !protectedChange && invalid && edit.reason === 'progress-check-conflict' ? edit.progressConflict : undefined,
@@ -627,13 +641,13 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
       getRowMeta: () => textEditorRows(controller.getState().working, props.docId),
       isActionDisabled: actionsDisabled,
       canApplyIndent: raw => !actionsDisabled() && M.raw(M.getDocument(M.editText(controller.getState().working, props.docId, raw, { progressDate: today() }), props.docId)) === raw,
-      onChange: raw => {
+      onChange: (raw, input) => {
         if (inputLockedRef.current || propsRef.current.readOnly) { editorRef.current?.setValue(controller.getState().raw, { preserveSelection: true }); return; }
         if (raw === controller.getState().raw) { historyTypeRef.current = ''; return; }
         cancelMove();
         orderEpochRef.current++;
         const pending = pendingOrderRef.current;
-        const historyType = historyTypeRef.current; historyTypeRef.current = '';
+        const historyType = input?.inputType || historyTypeRef.current; historyTypeRef.current = '';
         const restored = orderHistoryRef.current.resolve(controller.getState().working, raw, historyType);
         let accepted = false;
         if (pending) {
@@ -642,7 +656,7 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
           else controller.rejectRaw(raw);
         } else if (restored) accepted = controller.apply(restored, historyType === 'historyUndo' ? '날짜순 정렬 입력 취소' : '날짜순 정렬 다시 실행');
         else if ((historyType === 'historyUndo' || historyType === 'historyRedo') && orderHistoryRef.current.can(controller.getState().working, historyType)) controller.rejectRaw(raw);
-        else accepted = controller.updateRaw(raw, today());
+        else accepted = controller.updateRaw(raw, today(), { inputType: historyType || input?.inputType || '', inputSplice: input?.inputSplice });
         if (restored && accepted) {
           const position = orderPositionsRef.current.slice().reverse().find(entry => programSame(M.getDocument(entry.state, props.docId), M.getDocument(restored, props.docId)));
           if (position) queueMicrotask(() => { const area = textArea(); if (area && area.value === raw) { area.setSelectionRange(position.selection.start, position.selection.end, position.selection.direction); area.scrollTop = position.scrollTop; rememberPosition(); } });
@@ -669,7 +683,8 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
         else if (type === 'deleteContentBackward') { insert = ''; if (start === end) start = Math.max(0, start - 1); }
         else if (type === 'deleteContentForward') { insert = ''; if (start === end) end = Math.min(textarea.value.length, end + 1); }
         if (insert !== null) {
-          const candidate = M.editText(controller.getState().working, props.docId, textarea.value.slice(0, start) + insert + textarea.value.slice(end), { progressDate: today() });
+          const candidate = M.editText(controller.getState().working, props.docId, textarea.value.slice(0, start) + insert + textarea.value.slice(end), { progressDate: today(),
+            ...(type === 'insertFromPaste' ? { inputSplice: { start, end, text: insert } } : {}) });
           if (!propsRef.current.validateWorkspace(candidate)) {
             event.preventDefault(); event.stopImmediatePropagation();
             const index = textarea.value.slice(0, textarea.selectionStart).split('\n').length - 1;

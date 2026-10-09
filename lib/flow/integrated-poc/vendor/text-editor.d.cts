@@ -23,7 +23,7 @@ declare namespace editor {
     canApplyIndent?: (value: string, details: { outdent: boolean; startLine: number; endLine: number }) => boolean;
     canApplyInput?: (value: string, intent: InputIntent) => boolean;
     onInputRejected?: (intent: InputIntent) => void;
-    onChange?: (value: string) => void;
+    onChange?: (value: string, input?: { inputType: string; inputSplice?: { start: number; end: number; text: string } }) => void;
     onAction?: (action: Action) => unknown;
   }
   interface Instance {

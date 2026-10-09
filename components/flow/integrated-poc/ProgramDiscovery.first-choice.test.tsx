@@ -62,6 +62,19 @@ test('intro shows actual title, full summary, first item and total without writi
   assert.doesNotMatch(html, /type="checkbox"|전체 항목으로 시작|내 문서에 가져오기/);
   assert.equal(JSON.stringify(props.data), before);
 });
+test('intro shows only the first existing completion criterion and does not invent a missing criterion or personal record', () => {
+  const {props,version}=fixture();
+  version.items[0].completionCriteria='무엇을 정할지 개인 메모에 한 문장으로 적었다.';
+  version.items[1].completionCriteria='나중 항목 전용 기준';
+  const before=JSON.stringify(props.data),html=render(props);
+  assert.match(html,/첫 행동 완료 기준/);assert(html.includes(version.items[0].completionCriteria));
+  assert(!html.includes(version.items[1].completionCriteria));
+  assert.equal(JSON.stringify(props.data),before);
+  version.items[0].completionCriteria='';
+  const emptyBefore=JSON.stringify(props.data),empty=render(props);
+  assert.doesNotMatch(empty,/첫 행동 완료 기준|무엇을 정할지 개인 메모에 한 문장으로 적었다/);
+  assert.equal(JSON.stringify(props.data),emptyBefore);
+});
 test('reading contents never exposes partial controls or a final save action before confirmation', () => {
   const { props, version } = fixture(), before = JSON.stringify(props.data), html = render(props, 'contents');
   assert.match(html, /전체 내용|소개로 돌아가기|내 계획으로 시작/);

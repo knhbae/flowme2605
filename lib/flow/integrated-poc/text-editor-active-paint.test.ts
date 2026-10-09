@@ -44,6 +44,10 @@ class Node {
   find(name: string): Node | undefined {
     return this.classes.has(name) ? this : this.children.map(node => node.find(name)).find(Boolean);
   }
+  querySelectorAll(selector: string): Node[] {
+    const name=selector.slice(1);
+    return [...(this.classes.has(name)?[this]:[]),...this.children.flatMap(node=>node.querySelectorAll(selector))];
+  }
 }
 
 // Run the shipped render and input functions. This fixture proves their DOM,
@@ -76,6 +80,11 @@ function fixture(raw: string, metadata: Record<number, any>, options: { mode?: s
     doc: {
       activeElement: textarea,
       createElement: () => new Node(), createElementNS: () => new Node(), createDocumentFragment: () => new Node(11),
+      createRange() {
+        let node: Node, start=0, end=0;
+        return {setStart(next: Node,offset:number){node=next;start=offset;},setEnd(next: Node,offset:number){assert.equal(next,node);end=offset;},
+          getBoundingClientRect(){return {width:node.textContent.slice(start,end).split('').reduce((sum,c)=>sum+(c==='\t'?18:4.5),0)};}};
+      },
       execCommand(command: string, _ui: unknown, text: string) {
         commands.push(command);
         if (command === 'insertText') {
@@ -86,14 +95,15 @@ function fixture(raw: string, metadata: Record<number, any>, options: { mode?: s
     },
     getRowMeta: () => metadata, protectedFenceLines: (lines: string[]) => lines.map(() => options.fenced ?? false),
     dateLabel: () => null, applyFoldView() {}, cancelMove() {}, unfoldAll() {},
-    viewAnchor: () => null, restoreViewAnchor() {}, syncGeometry() {}, paintMoveState() {},
+    viewAnchor: () => null, restoreViewAnchor() {}, syncGeometry() {vm.runInContext('rows.forEach(syncRowIndent)',context);}, paintMoveState() {},
     addRowButton() {}, addFoldButton() {}, gestureHandle() {}, maybeRequestPicker() {},
     canApplyInput: () => true,
   });
   vm.runInContext(section('  function progressPercent(meta) {', '  function dateLabel(line) {') +
     section('    function remember() {', '    let inputEpoch =') +
-    section('    function publish(inputType) {', '    function scheduleRender() {') +
+    section('    function publish(inputType, inputSplice) {', '    function scheduleRender() {') +
     section('    function makeSpan(className, content) {', '    function scrollSurface() {') +
+    section('    function syncRowIndent(row) {', '    function syncGeometry() {') +
     section('    function icon(kind) {', '    function addRowButton(') +
     section('    function render() {', '    function rejectInput(intent) {') +
     section('    function replaceRange(start, end, text, settings) {', '    function onKeydown(event) {'), context);
@@ -112,7 +122,7 @@ test('active task paint keeps the exact first RAW Text node and original prefix/
   assert.equal(row.firstChild!.nodeType, 3); assert.equal(row.firstChild!.textContent, raw);
   assert.equal(paint.children[0].textContent, '    - [ ] ');
   assert.equal(paint.children[1].textContent, '한글😀 긴 제목');
-  assert.equal(row.styles.get('--tle-indent'), '4ch');
+  assert.equal(row.styles.get('--tle-indent'), '18px');
   assert.equal(paint.find('tle-check-glyph')!.dataset.checked, 'false');
   assert.equal(f.assignments(), 0); assert.deepEqual(f.commands, []); assert.deepEqual(f.writes, []);
 });

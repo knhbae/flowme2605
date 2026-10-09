@@ -268,6 +268,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
       </header>
       <section className={styles.choiceFacts} aria-label="시작 전 확인"><p>전체 {version.items.length}개 항목 · 판본 {version.number}</p>
         {version.items[0] && <p><strong>첫 항목</strong><br />{version.items[0].title}</p>}
+        {version.items[0]?.completionCriteria && <p><strong>첫 행동 완료 기준</strong><br />{version.items[0].completionCriteria}</p>}
         <p className={styles.muted}>{version.source.label}{version.source.url && <> · <a href={version.source.url} target="_blank" rel="noreferrer noopener">원문 열기 ↗</a></>}</p>
         {sourceMeta?.sourceNeedsReview && <p className={styles.notice}>출처 재검토가 필요한 자료입니다. 시작 전 현재 조건을 원문에서 확인해 주세요.</p>}
       </section>

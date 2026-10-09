@@ -57,7 +57,7 @@ function harness() {
       undo() {
         nativeUndos++; const snapshot = localHistory.pop(); if (!snapshot) return false;
         textarea.value = snapshot.raw; textarea.setSelectionRange(snapshot.start, snapshot.end, snapshot.direction); textarea.scrollTop = snapshot.scrollTop;
-        areaEvents.input?.({ inputType: 'historyUndo' }); config.onChange(snapshot.raw); return true;
+        areaEvents.input?.({ inputType: 'historyUndo' }); config.onChange(snapshot.raw, { inputType: 'historyUndo' }); return true;
       },
     };
   } };
@@ -112,9 +112,9 @@ function harness() {
     const next = old.raw.slice(0, old.start) + pasted + old.raw.slice(old.end);
     if (next !== old.raw) localHistory.push(old);
     textarea.value = next; textarea.setSelectionRange(old.start + pasted.length, old.start + pasted.length);
-    areaEvents.input?.({ inputType }); config.onChange(next);
+    areaEvents.input?.({ inputType }); config.onChange(next, { inputType, inputSplice: inputType === 'insertFromPaste' ? { start: old.start, end: old.end, text: pasted } : undefined });
   }
-  return { source, raw, docId, taskId, props, textarea, draft, snapshot, render, select, paste, synchronize,
+  return { source, raw, docId, taskId, props, textarea, draft, snapshot, render, select, paste, synchronize, draftFactory: mod.exports.createProgramTextDraft,
     flush: async () => { assert(savePort); const saved = await savePort(); synchronize(); return saved; },
     clickHistory: async (label: string) => { const control = button(label); assert.equal(control.props.disabled, false);
       control.props.onClick({ currentTarget: { closest: () => null } }); await historyFlight; },
@@ -130,6 +130,34 @@ function harness() {
     unmount: () => { unregister(); destroy(); },
   };
 }
+
+test('native prepend paste and its genuine Undo/Redo preserve the original identity and exact pasted IDs', () => {
+  const h = harness(); try {
+    const draft = h.draftFactory(h.source, h.docId, async () => true, () => {});
+    const inserted = `[2026-10-05]\n${block}\n`, pasted = inserted + h.raw;
+    assert(draft.updateRaw(pasted, '2026-10-09', { inputType: 'insertFromPaste', inputSplice: { start: 0, end: 0, text: inserted } }));
+    const after = draft.getState().working;
+    assert.equal(M.tasks(after).filter(t => t.title === '준비').length, 2);
+    assert(M.tasks(after).find(t => t.id === h.taskId)!.sourceIndex > M.tasks(after).find(t => t.title === '준비' && t.id !== h.taskId)!.sourceIndex);
+    assert(draft.updateRaw(h.raw, '2026-10-09', { inputType: 'historyUndo' }));
+    assert.deepEqual(draft.getState().working, h.source);
+    assert(draft.updateRaw(pasted, '2026-10-09', { inputType: 'historyRedo' }));
+    assert.deepEqual(draft.getState().working, after);
+  } finally { h.unmount(); }
+});
+
+test('paste history cannot overwrite a newer personal progress record', () => {
+  const h = harness(); try {
+    const draft = h.draftFactory(h.source, h.docId, async () => true, () => {});
+    const inserted = `[2026-10-05]\n${block}\n`, pasted = inserted + h.raw;
+    assert(draft.updateRaw(pasted, '2026-10-09', { inputType: 'insertFromPaste', inputSplice: { start: 0, end: 0, text: inserted } }));
+    const latest = M.recordProgress(draft.getState().working, h.taskId, '2026-10-09', 75);
+    assert(draft.apply(latest, '새 진행 기록'));
+    assert.equal(draft.updateRaw(h.raw, '2026-10-09', { inputType: 'historyUndo' }), false);
+    assert.equal(draft.getState().raw, h.raw); assert.equal(draft.getState().working, latest);
+    assert.equal(draft.getState().invalid, true);
+  } finally { h.unmount(); }
+});
 
 test('MD09 actual component partial title paste saves and toolbar global Undo/Redo restore the exact workspace', async () => {
   const h = harness(); try {

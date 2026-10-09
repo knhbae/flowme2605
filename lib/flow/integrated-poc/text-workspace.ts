@@ -10,6 +10,8 @@ export type TextBinding = TextScopeBinding | TextTaskBinding;
 export interface TextProgressRecord { taskId: string; date: string; percent: number }
 /** Ephemeral UI diagnostic; never part of the persisted workspace. */
 export interface TextProgressCheckConflict { lineId: string; targetId: string }
+/** Native paste range, checked against the current source before identity assignment. */
+export interface TextInputSplice { start: number; end: number; text: string }
 export interface TextWorkspaceState {
   version: 11;
   documents: TextDocument[];
@@ -85,8 +87,8 @@ export interface TextWorkspaceModel {
   contextAt(state: TextWorkspaceState, docId: string, index: number): TextContext;
   insertionContext(state: TextWorkspaceState, docId: string, index: number, depth?: number): TextContext;
   insertionOptions(state: TextWorkspaceState, docId: string, lineId: string): TextInsertion[];
-  editText(state: TextWorkspaceState, docId: string, text: string, options?: { progressDate?: string }): TextWorkspaceState;
-  editTextResult(state: TextWorkspaceState, docId: string, text: string, options?: { progressDate?: string }): {
+  editText(state: TextWorkspaceState, docId: string, text: string, options?: { progressDate?: string; inputSplice?: TextInputSplice }): TextWorkspaceState;
+  editTextResult(state: TextWorkspaceState, docId: string, text: string, options?: { progressDate?: string; inputSplice?: TextInputSplice }): {
     state: TextWorkspaceState; reason: 'identity-ambiguous' | 'invalid-format' | 'progress-check-conflict' | 'blocked' | null;
     progressConflict?: TextProgressCheckConflict;
   };
