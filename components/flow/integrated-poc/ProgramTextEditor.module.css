@@ -97,7 +97,7 @@
 .dialog { background: #fffefa; color: #222b25; }
 .dialog header { background: #fffefa; }
 @media (max-width: 600px) {
-  .toolbar { gap: 4px; padding: 8px; }
+  .toolbar { gap: 4px; padding: 4px; }
   .status { font-size: 13px; line-height: 20px; padding: 0 4px; }
 }
 /* Keep the native surface full width; row operations occupy a single outer rail.
@@ -109,8 +109,8 @@
 .host :global(.tle-controls) { background: linear-gradient(to left, #f4f5ef 52px, transparent 52px); }
 .host :global(.tle-plus) { display: none; }
 .host :global(.tle-scheduled-date-open) { width: 44px; }
-.host :global(.tle-scheduled-date-open .tle-row-date) { max-width: 44px; font-size: 10px; line-height: 12px; white-space: normal; word-break: keep-all; }
-.host :global(.tle-scheduled-date-open .tle-row-date-kind) { font-size: 9px; }
+.host :global(.tle-scheduled-date-open .tle-row-date) { max-width: 44px; font-size: 12px; line-height: 16px; white-space: nowrap; }
+.host :global(.tle-scheduled-date-open .tle-row-date-kind) { font-size: 10px; line-height: 12px; }
 .status { flex: 0 0 auto; margin-left: auto; padding: 4px; }
 @media (max-width: 760px) {
   .host { height: max(352px, calc(100dvh - 340px)); height: calc(20px + round(down, max(352px, calc(100dvh - 360px)), 44px)); }

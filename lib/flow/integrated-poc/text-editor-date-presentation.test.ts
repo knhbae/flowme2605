@@ -138,7 +138,7 @@ test('real metadata keeps scheduled date and latest progress-record date distinc
   assert.equal(metadata[1].progressDate, '2026-10-08');
   const f = fixture(raw, metadata), scheduled = f.controls.find('tle-scheduled-date-open')!;
   assert.equal(scheduled.find('tle-row-date-kind')!.textContent, '예정일');
-  assert.equal(scheduled.find('tle-row-date')!.textContent, '10월 7일');
+  assert.equal(scheduled.find('tle-row-date')!.textContent, '10/07');
   assert.match(scheduled.getAttribute('aria-label')!, /예정일 10월 7일/);
   assert.doesNotMatch(scheduled.textContent, /8일|진행/);
   assert.match(f.controls.find('tle-progress-hit')!.title, /진행 기록 10월 8일 \(목\)/);
@@ -146,6 +146,20 @@ test('real metadata keeps scheduled date and latest progress-record date distinc
   assert.equal(f.mirror.children[2].find('tle-date-source')!.textContent, raw.split('\n')[2]);
   assert.equal(f.assignments(), 0); assert.deepEqual(f.commands, []); assert.deepEqual(f.writes, []);
   assert.deepEqual(state, before); assert.equal(f.textarea.value, raw);
+});
+
+test('compact scheduled badges retain full accessible meaning and never rewrite raw or command targets', () => {
+  for (const [value, compact, spoken] of [['10.10', '10/10', '10월 10일'], ['01.02', '01/02', '1월 2일'], ['미정', '미정', '미정']] as const) {
+    const raw = '비교 메모\n- [ ] 가상 확인\n계속 메모', { state, id } = documentFixture(raw);
+    const metadata = textEditorRows(state, id).map(row => ({ ...row, dateMismatch: value }));
+    const f = fixture(raw, metadata), badge = f.controls.find('tle-scheduled-date-open')!;
+    assert.equal(badge.find('tle-row-date-kind')!.textContent, '예정일');
+    assert.equal(badge.find('tle-row-date')!.textContent, compact);
+    assert.match(badge.getAttribute('aria-label')!, new RegExp(`예정일 ${spoken}`));
+    assert.equal(badge.dataset.action, 'task-date');
+    assert.equal(f.textarea.value, raw); assert.equal(f.assignments(), 0);
+    assert.deepEqual(f.commands, []); assert.deepEqual(f.writes, []);
+  }
 });
 
 test('passive date properties format valid values and undated while invalid/orphan text stays literal', () => {

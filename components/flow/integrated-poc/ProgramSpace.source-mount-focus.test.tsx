@@ -17,8 +17,9 @@ function harness() {
   const sourceFocusPorts: { current: Record<string, any> } = { current: {} };
   const selectedRef = { current: id }, presentation = { current: { period: 'documents' } }, dataRef = { current: { activeActorId: 'actor' } };
   const positions = { current: { [id]: requested } }, doc = { id, lines: [{ id: 'memo', text: '메모' }, { id: 'item', text: '- [ ] 할 일' }] };
+  const inputLockCount = { current: 0 };
   const context = { pendingSourceFocus, sourceFocusPorts, id, taskId: 'item', requested, sourceFocusOwner, document, actorId: 'actor', dataRef,
-    selectedRef, presentation, positions, writingBlocked: () => false, viewMenu: { current: { querySelector: () => summary } },
+    selectedRef, presentation, positions, inputLockCount, writingBlocked: () => inputLockCount.current > 0, viewMenu: { current: { querySelector: () => summary } },
     documentsRef: { current: [doc] }, root: { current: { contains: () => true } }, M: { raw: () => '메모\n- [ ] 할 일' },
     programSame: (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b),
     requestAnimationFrame: (work: () => void) => { frames.push(work); return 1; } };
@@ -29,7 +30,7 @@ function harness() {
   pendingSourceFocus.current = { documentId: id, taskId: 'item', attempt: actual };
   const register = execute(find(n => ts.isFunctionDeclaration(n) && n.name?.text === 'registerSourceFocus').getText(ast), context);
   const port = () => { portCalls++; document.activeElement = area; return portReady; };
-  return { actual, register, frames, pendingSourceFocus, document, summary, selectedRef, presentation, dataRef, positions,
+  return { actual, register, frames, pendingSourceFocus, document, summary, selectedRef, presentation, dataRef, positions, inputLockCount,
     portCalls: () => portCalls,
     ready: () => { portReady = true; area = { readOnly: false, value: '메모\n- [ ] 할 일', getClientRects: () => [{}], setSelectionRange() {}, scrollIntoView() {}, closest: () => null }; register(id, port); },
     changeRaw: () => { area.value += '추가 입력'; } };
@@ -60,4 +61,18 @@ test('equivalent selection observation after cold native mount keeps the same so
 test('managed task-dialog return to the current view control remains an allowed focus owner', () => {
   const h = harness(); h.actual(); h.ready(); h.document.activeElement = h.summary; h.pendingSourceFocus.current!.managedReturnFocus = h.summary;
   h.frames[0](); assert.equal(h.portCalls(), 1);
+});
+
+test('a source RAF waits while find owns the native top layer, then uses the same request after close', () => {
+  const h = harness(); h.actual(); h.ready();
+  const request = h.pendingSourceFocus.current as any; request.findPanel = { open: true };
+  h.frames[0](); assert.equal(h.portCalls(), 0); assert.equal(h.pendingSourceFocus.current, request);
+  request.findPanel.open = false; h.frames[0](); assert.equal(h.portCalls(), 1); assert.equal(h.pendingSourceFocus.current, null);
+});
+
+test('a source RAF does not consume the request during the existing host route flush lock', () => {
+  const h = harness(); h.ready(); const request = h.pendingSourceFocus.current;
+  h.inputLockCount.current = 1; h.actual();
+  assert.equal(h.portCalls(), 0); assert.equal(h.pendingSourceFocus.current, request);
+  h.inputLockCount.current = 0; h.actual(); assert.equal(h.portCalls(), 1); assert.equal(h.pendingSourceFocus.current, null);
 });

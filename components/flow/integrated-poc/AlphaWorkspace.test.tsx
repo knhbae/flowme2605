@@ -236,26 +236,30 @@ function lostPrivateTextSave() {
   return { h, before, result, documentId, dirty: () => dirty, acknowledgments: () => acknowledgments, refuse: () => { eligible = false; } };
 }
 
-test('browse opens the same Flow search with or without community posts', async () => {
+test('direct Flow entry opens the same search with or without community posts', async () => {
   for (const posts of [[], [{ id: 'visible-post' }]]) {
     const h = harness(), destinations: unknown[] = [];
     h.context.data.public.posts = posts;
     h.context.navigate = async (next: unknown) => { destinations.push(next); };
-    await h.button('둘러보기').props.onClick();
+    await h.button('Flow').props.onClick();
     assert.deepEqual(destinations, [{ view: 'discover' }]);
     assert(!h.calls.includes('mutation'));
   }
 });
 
-test('purpose tabs retain three entries and Flow search precedes optional community browsing', () => {
+test('global entries expose personal work, Flow and stories while activity retains its named auxiliary entry', () => {
   const h = harness(); h.context.browse = true; h.context.destination = { view: 'discover' };
   const tree = h.render();
-  const purpose = nodes(tree).find(node => node.type === 'nav' && node.props['aria-label'] === '작업 공간')!;
-  assert.deepEqual(nodes(purpose.props.children).filter(node => node.type === 'button').map(node => text(node.props.children)), ['내 공간', '둘러보기', '내 활동']);
-  const browsing = nodes(tree).find(node => node.type === 'nav' && node.props['aria-label'] === '둘러보기 종류')!;
-  const entries = nodes(browsing.props.children).filter(node => node.type === 'button');
-  assert.deepEqual(entries.map(node => text(node.props.children)), ['Flow 찾기', '경험·질문·지식']);
-  assert.equal(entries[0].props['aria-current'], 'page'); assert.equal(entries[1].props['aria-current'], undefined);
+  const purpose = nodes(tree).find(node => node.type === 'nav' && node.props['aria-label'] === '주요 메뉴')!;
+  const entries = nodes(purpose.props.children).filter(node => node.type === 'button');
+  assert.deepEqual(entries.map(node => text(node.props.children)), ['내 작업', 'Flow', '이야기']);
+  assert.equal(entries[0].props['aria-current'], undefined);
+  assert.equal(entries[1].props['aria-current'], 'page'); assert.equal(entries[2].props['aria-current'], undefined);
+  const management = nodes(tree).find(node => node.type === 'details' && node.props['aria-label'] === '계정 및 자료 관리')!;
+  const managed = new Set(nodes(management));
+  assert(entries.every(node => !managed.has(node)));
+  assert(nodes(management).some(node => node.type === 'button' && text(node.props.children) === '내 활동'));
+  assert(!h.calls.includes('mutation'));
 });
 
 test('alpha discovery uses account ownership copy without changing the public data', () => {

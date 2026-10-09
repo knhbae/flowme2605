@@ -263,21 +263,30 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
     if (firstChoice && choiceStage === 'intro') return <section className={styles.page} data-testid="program-flow-intro">
       <button className={styles.back} type="button" disabled={pending} onClick={() => navigate({ view: 'discover' })}>← Flow 목록</button>
       <header className={styles.detailHeader}><p className={styles.eyebrow}>{flow.category} · {version.source.kind === 'simulated-example' ? '합성 예시' : version.source.kind === 'repository-source' ? '기존 출처 자료' : '사용자가 정리한 자료'}</p>
-        <h1 ref={choiceHeading} tabIndex={-1}>{version.title}</h1><p className={styles.pre}>{version.summary}</p>
+        <h1 ref={choiceHeading} tabIndex={-1}>{version.title}</h1><p>{excerpt(version.summary)}</p>
         <div className={styles.tags}>{flow.situations.map(tag => <span key={tag}>{tag}</span>)}</div>
       </header>
-      <section className={styles.choiceFacts} aria-label="시작 전 확인"><p>전체 {version.items.length}개 항목 · 판본 {version.number}</p>
-        {version.items[0] && <p><strong>첫 항목</strong><br />{version.items[0].title}</p>}
-        {version.items[0]?.completionCriteria && <p><strong>첫 행동 완료 기준</strong><br />{version.items[0].completionCriteria}</p>}
-        <p className={styles.muted}>{version.source.label}{version.source.url && <> · <a href={version.source.url} target="_blank" rel="noreferrer noopener">원문 열기 ↗</a></>}</p>
+      <section className={styles.choiceFacts} aria-label="시작 전 확인">
+        {version.items[0] && <div className={styles.firstAction}><h2>첫 행동</h2><p>{version.items[0].title}</p>
+          {version.items[0].completionCriteria && <p className={styles.completion}><strong>첫 행동 완료 기준</strong><br />{version.items[0].completionCriteria}</p>}
+        </div>}
+        <p className={styles.choiceMeta}>전체 {version.items.length}개 항목 · 판본 {version.number}</p>
+        <p className={styles.sourceLabel}>출처: {version.source.label}{version.source.url && <> · <a href={version.source.url} target="_blank" rel="noreferrer noopener">원문 열기 ↗</a></>}</p>
         {sourceMeta?.sourceNeedsReview && <p className={styles.notice}>출처 재검토가 필요한 자료입니다. 시작 전 현재 조건을 원문에서 확인해 주세요.</p>}
       </section>
+      <details className={styles.fullIntroduction}><summary>소개 전체 읽기</summary><p className={styles.pre}>{version.summary}</p>
+        <p className={styles.muted}>출처 확인 기록: {version.source.checkedAt ?? '없음'} · 지금 원문을 다시 확인한 결과는 아닙니다.</p>
+      </details>
       {existingCopyReturn}
       {storedCopy && !existingCopy && <section className={styles.notice} aria-label="기존 사본 확인"><p>이 Flow의 개인 사본이 있지만 지금 바로 열 수 없습니다. 내 공간에서 휴지통과 보관 상태를 확인해 주세요. 새 사본은 만들지 않습니다.</p><button type="button" disabled={pending} onClick={() => navigate({ view: 'space' })}>내 공간에서 확인</button></section>}
       <div className={styles.choiceActions}><button type="button" disabled={pending} onClick={() => showChoice('contents')}>내용 살펴보기</button>
         {!storedCopy && <button type="button" className={styles.primary} disabled={pending || !version.items.length} onClick={() => showChoice('confirm')}>내 계획으로 시작</button>}
       </div>
       {!storedCopy && <p className={styles.muted}>다음 화면에서 확인한 뒤 전체 항목을 내 문서에 가져옵니다. 공개 원본은 바꾸지 않습니다.</p>}
+      <details className={styles.related}><summary>관련 이야기 · {related.length}개</summary><p className={styles.muted}>질문이나 경험을 읽을 수 있습니다. 글을 쓰지 않아도 이 Flow를 사용할 수 있습니다.</p>
+        {related.map(post => <button className={styles.relatedPost} type="button" key={post.id} disabled={pending} onClick={() => navigate({ view: 'community', id: post.id })}>{post.title}</button>)}
+        <button type="button" className={styles.linkButton} disabled={pending} onClick={() => navigate({ view: 'community' })}>이야기 보기</button>
+      </details>
     </section>;
     return <section className={styles.page} data-testid="program-flow-detail">
       {selectedOutputReturn && returnedDetail && <p role="status">출력한 공개 판본의 같은 항목으로 돌아왔습니다. 출력 선택·기준일·반복 범위를 복원했으며 원래 일정과 개인 기록은 변경하지 않았습니다.</p>}
@@ -293,7 +302,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
           <p className={styles.muted}>출처 확인 기록: {version.source.checkedAt ?? '없음'} · 지금 원문을 다시 확인한 결과는 아닙니다.</p>
           {sourceMeta?.sourceNeedsReview && <p className={styles.notice}>이 자료는 출처 재검토가 필요합니다. 현재 조건을 원문에서 확인해 주세요.</p>}
           <label className={styles.field}>읽는 판본<select value={version.id} disabled={pending} onChange={event => { update({ versionByFlow: { ...state.versionByFlow, [flow.id]: event.target.value } }); navigate({ view: 'flow', id: flow.id, versionId: event.target.value }); }}>{versions.map(row => <option key={row.id} value={row.id}>판본 {row.number}{row.id === flow.currentVersionId ? ' · 최신 등록본' : ' · 이전 등록본'}</option>)}</select></label>
-          <details><summary>적용 범위와 주의사항</summary><p className={styles.pre}>{version.summary}</p><p className={styles.muted}>{storageScope === 'account' ? '선택한 공개 판본은 개인 설정으로 바뀌지 않습니다. 개인 사본과 실행 기록은 따로 보관됩니다.' : '선택한 등록 판본은 개인 설정으로 바뀌지 않습니다. 작성자 검토와 발행은 로컬 PoC 안에서 이루어집니다.'}</p></details>
+          <details><summary>소개 전체 읽기 · 적용 범위와 주의사항</summary><p className={styles.pre}>{version.summary}</p><p className={styles.muted}>{storageScope === 'account' ? '선택한 공개 판본은 개인 설정으로 바뀌지 않습니다. 개인 사본과 실행 기록은 따로 보관됩니다.' : '선택한 등록 판본은 개인 설정으로 바뀌지 않습니다. 작성자 검토와 발행은 로컬 PoC 안에서 이루어집니다.'}</p></details>
           {sourceMeta && <details><summary>저장소에 보관된 원문</summary><pre className={styles.raw}>{sourceMeta.originalRawText}</pre></details>}
           {derived && <button type="button" className={styles.linkButton} onClick={() => navigate({ view: 'flow', id: derived.flowId, versionId: derived.id })}>원본: {derived.title} · 판본 {derived.number}</button>}
           {children.length > 0 && <details><summary>이 Flow에서 파생된 자료 {children.length}개</summary>{children.map(child => <button type="button" className={styles.linkButton} key={child.id} onClick={() => navigate({ view: 'flow', id: child.id })}>{data.public.versions.find(row => row.id === child.currentVersionId)?.title ?? child.id}</button>)}</details>}
@@ -308,7 +317,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
               {(item.description || item.completionCriteria || item.subchecks.length > 0 || sourceUrl) && <details className={styles.itemDetails}><summary>방법과 완료 기준</summary>{item.description && <p className={styles.pre}>{item.description}</p>}{sourceUrl && <p><a href={sourceUrl} target="_blank" rel="noreferrer noopener" aria-label={`${item.title} 원문 열기`}>항목 원문 열기 ↗</a></p>}{item.completionCriteria && <p><strong>완료 기준</strong><br />{item.completionCriteria}</p>}{item.subchecks.length > 0 && <ul>{item.subchecks.map(check => <li key={check.id}>{check.title}</li>)}</ul>}</details>}</li>;
           })}</ol>
         </section>
-        <section className={styles.related}><div className={styles.row}><h2>관련 경험과 질문</h2><button type="button" onClick={() => navigate({ view: 'community' })}>커뮤니티 보기</button></div>{related.length ? related.map(post => <button className={styles.relatedPost} type="button" key={post.id} onClick={() => navigate({ view: 'community', id: post.id })}>{post.title}<small>{storageScope === 'account' ? '공개 글' : '로컬 PoC 글'} · {data.actors.find(actor => actor.id === post.authorId)?.name ?? (storageScope === 'account' ? '작성자' : '예시 참여자')}</small></button>) : <p className={styles.muted}>아직 연결된 글이 없습니다. 경험을 쓰지 않아도 이 Flow를 사용할 수 있습니다.</p>}</section>
+        <details className={styles.related}><summary>관련 이야기 · {related.length}개</summary><div className={styles.row}><h2>관련 경험과 질문</h2><button type="button" disabled={pending} onClick={() => navigate({ view: 'community' })}>이야기 보기</button></div>{related.length ? related.map(post => <button className={styles.relatedPost} type="button" key={post.id} disabled={pending} onClick={() => navigate({ view: 'community', id: post.id })}>{post.title}<small>{storageScope === 'account' ? '공개 글' : '로컬 PoC 글'} · {data.actors.find(actor => actor.id === post.authorId)?.name ?? (storageScope === 'account' ? '작성자' : '예시 참여자')}</small></button>) : <p className={styles.muted}>아직 연결된 글이 없습니다. 경험을 쓰지 않아도 이 Flow를 사용할 수 있습니다.</p>}</details>
       </div><aside className={styles.output} aria-labelledby={`${uid}-output`}>
         <h2 id={`${uid}-output`} ref={firstChoice && choiceStage === 'confirm' ? choiceHeading : undefined} tabIndex={firstChoice && choiceStage === 'confirm' ? -1 : undefined}>{flow.archived ? '읽기 전용 판본' : firstChoice ? storedCopy ? '기존 내 문서' : '내 계획으로 시작' : '내 도구에서 사용'}</h2>
         {flow.archived ? <p className={styles.muted}>공개 철회 상태는 유지됩니다. 기존 개인 문서는 내 공간에서 계속 사용할 수 있습니다.</p> : <>
@@ -364,9 +373,10 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
     <p className={styles.resultCount} role="status">{visible.length}개 자료</p>
     <div className={styles.catalog}>{visible.map(row => {
       const current = data.public.versions.find(candidate => candidate.id === row.currentVersionId)!; const meta = programCatalogMetadata(current.id);
-      return <article className={styles.card} key={row.id}><p className={styles.eyebrow}>{row.category}{current.source.kind === 'simulated-example' ? ' · 합성 예시' : ''}</p><h2><button id={`program-discovery-${row.id}`} type="button" onClick={() => openFlow(row.id)}>{current.title}</button></h2><p>{excerpt(current.summary)}</p><div className={styles.tags}>{row.situations.slice(0, 3).map(tag => <span key={tag}>{tag}</span>)}</div><footer><span>{current.items.length}개 항목 · 판본 {current.number}</span>{meta?.sourceNeedsReview && <span className={styles.review}>출처 재검토 필요</span>}</footer></article>;
+      return <article className={styles.card} key={row.id}><p className={styles.eyebrow}>{row.category}{current.source.kind === 'simulated-example' ? ' · 합성 예시' : ''}</p><h2><button id={`program-discovery-${row.id}`} type="button" onClick={() => openFlow(row.id)}>{current.title}</button></h2><p>{excerpt(current.summary)}</p><div className={styles.tags}>{row.situations.slice(0, 3).map(tag => <span key={tag}>{tag}</span>)}</div><footer><span>{current.items.length}개 항목 · 판본 {current.number}</span><span className={styles.catalogSource}>출처: {current.source.label}</span>{meta?.sourceNeedsReview && <span className={styles.review}>출처 재검토 필요</span>}</footer></article>;
     })}</div>
     {!visible.length && <div className={styles.empty}>{flows.length ? <><h2>맞는 자료가 없습니다</h2><p>검색어나 분야·상황을 바꿔 보세요.</p><button type="button" onClick={() => update({ query: '', category: '', situation: '' })}>검색 조건 지우기</button></> : <h2>아직 공개된 Flow가 없어요</h2>}</div>}
     <p className={styles.muted}>{storageScope === 'account' ? <>공개된 Flow 목록입니다. 개인 사본·실행 기록·비공개 제작 초안은 포함되지 않습니다. <button type="button" className={styles.linkButton} onClick={() => navigate({ view: 'space' })}>내 문서 보기</button></> : <>공개 목록은 이 기기의 로컬 PoC입니다. 기존에 저장한 Flow는 <button type="button" className={styles.linkButton} onClick={() => navigate({ view: 'legacy' })}>기존 내 Flow</button>에서 찾을 수 있습니다.</>}</p>
+    <nav className={styles.contextLinks} aria-label="Flow 보조 메뉴"><button type="button" className={styles.linkButton} disabled={pending} onClick={() => navigate({ view: 'community' })}>이야기 보기</button>{storageScope === 'account' && <button type="button" className={styles.linkButton} disabled={pending} onClick={() => navigate({ view: 'activity' })}>내 활동</button>}</nav>
   </section>;
 }

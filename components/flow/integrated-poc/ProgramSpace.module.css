@@ -120,7 +120,7 @@
   .space[data-library-open=false] .content { grid-row: 1; }
 }
 @media (max-width: 760px) {
-  .space { padding-bottom: calc(88px + env(safe-area-inset-bottom)); gap: 16px; }
+  .space { padding-bottom: calc(88px + env(safe-area-inset-bottom)); gap: 8px; }
   .contextActions { justify-content: flex-end; }
   .contextActions .periods { position: fixed; z-index: 30; inset: auto 0 0; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; padding: 8px 16px calc(8px + env(safe-area-inset-bottom)); background: #fffefa; border-top: 1px solid var(--pw-line); box-shadow: 0 -4px 20px #222b2508; }
   .periods button { min-height: 48px; font-size: 14px; }
@@ -128,6 +128,7 @@
   .space h1 { font-size: 28px; line-height: 36px; }
   .sidebar, .documents, .documentTools { max-height: none; overflow-y: visible; }
   .docHeading, .periodHeading { margin-bottom: 16px; }
+  .docHeading { margin-bottom: 8px; }
   .dialog { padding: 16px; }
   .dialog[data-task-detail] .dialogHeading { top: -16px; margin: -16px -16px 16px; padding: 16px; }
   .task { grid-template-columns: 48px minmax(0,1fr) 48px; gap: 4px; }
@@ -151,4 +152,49 @@
   .space[data-library-open=false] .docHeading h1, .space[data-library-open=false] .periodHeading h1 { padding-right: 88px; }
   .task { grid-template-columns: 48px minmax(0,1fr) 48px; gap: 0; }
   .task > .check { width: 48px; }
+}
+
+/* The library is a temporary surface, never another scroll column above text. */
+.space, .space[data-library-open=false] { grid-template-columns: minmax(0,1fr); --pw-ink: #20342f; --pw-muted: #5b6b66; --pw-brand: #176d59; --pw-line: #d7e1db; }
+.contextActions, .space[data-library-open=false] .contextActions { grid-column: 1; grid-row: auto; position: static; flex-direction: row; align-items: center; justify-content: space-between; gap: 8px; }
+.contextActions .periods { display: flex; gap: 8px; }
+.periods button { justify-content: center; width: auto; }
+.content, .space[data-library-open=false] .content { grid-column: 1; grid-row: auto; max-width: 860px; }
+.findActions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.contextActions .libraryToggle { width: auto; text-align: center; }
+.space[data-library-open=false] .docHeading h1, .space[data-library-open=false] .periodHeading h1 { padding-right: 0; }
+.docHeading { align-items: center; }
+.docHeading > details > summary { color: var(--pw-muted); font-size: 13px; }
+.findDialog { box-sizing: border-box; width: min(560px, calc(100vw - 32px)); max-height: calc(100dvh - 48px); padding: 24px 24px 48px; overflow-y: scroll; scrollbar-gutter: stable; scroll-padding-block: 80px 24px; overscroll-behavior: contain; border: 1px solid var(--pw-line); border-radius: 16px; background: #fafaf7; color: var(--pw-ink); }
+.findDialog::backdrop { background: #20342f55; }
+.findDialog {
+  scrollbar-width: thin;
+  scrollbar-color: #789181 #e4ebe4;
+  /* Local covers remove the edge shadows once that end is reached. */
+  background: linear-gradient(#fafaf7 30%, #fafaf700) center top / 100% 40px local,
+    linear-gradient(#fafaf700, #fafaf7 70%) center bottom / 100% 40px local,
+    linear-gradient(#20342f22, #20342f00) center top / 100% 12px scroll,
+    linear-gradient(#20342f00, #20342f22) center bottom / 100% 12px scroll, #fafaf7;
+  background-repeat: no-repeat;
+}
+.findDialog::-webkit-scrollbar { width: 8px; }
+.findDialog::-webkit-scrollbar-thumb { background: #789181; border-radius: 8px; }
+.findDialog::-webkit-scrollbar-track { background: #e4ebe4; }
+.findHeading { display: flex; justify-content: space-between; gap: 16px; align-items: center; position: sticky; top: -24px; margin: -24px -24px 16px; padding: 16px 24px; z-index: 2; background: #fafaf7; border-bottom: 1px solid var(--pw-line); }
+.findScope { font-size: 13px; line-height: 20px; color: var(--pw-muted); }
+.findTasks { border-bottom: 1px solid var(--pw-line); padding-bottom: 16px; }
+.findDialog .documents { display: grid; max-height: none; overflow: visible; gap: 0; }
+.findDialog .documents li { width: 100%; max-width: 100%; border-bottom: 1px solid var(--pw-line); }
+.findDialog .documents button { min-height: 48px; padding: 12px 8px; background: transparent; }
+.findDialog .documents button[aria-current] { background: #e8f2ed; }
+.findDialog .documents small { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 13px; line-height: 20px; }
+.periodPicker { max-width: 240px; margin-bottom: 16px; }
+@media (max-width: 1199px) {
+  .space { padding-bottom: calc(88px + env(safe-area-inset-bottom)); }
+  .contextActions .periods { position: fixed; z-index: 30; inset: auto 0 0; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; padding: 8px 16px calc(8px + env(safe-area-inset-bottom)); background: #fafaf7; border-top: 1px solid var(--pw-line); }
+  .periods button { min-height: 48px; width: 100%; }
+}
+@media (max-width: 760px) {
+  .findDialog { width: 100%; max-width: 100%; max-height: calc(100dvh - 64px); margin: auto 0 0; border-radius: 16px 16px 0 0; padding: 16px 16px calc(32px + env(safe-area-inset-bottom)); }
+  .findHeading { top: -16px; margin: -16px -16px 16px; padding: 12px 16px; }
 }

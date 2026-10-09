@@ -125,7 +125,7 @@ function harness(seed: ProgramData, documentId: string, automaticStateRender = f
     const tree = loaded.exports.ProgramSpace({ data, mutate, navigate: (...args) => navigation.push(args), today: TODAY,
       selectedDocumentId: documentId, onUndo: async () => { await controller.undo!(data.activeActorId); },
       onRedo: async () => { await controller.redo!(data.activeActorId); }, onRegisterNavigation() {} });
-    const all = nodes(tree), dialog = all.find(node => node.type === 'dialog'); assert(dialog);
+    const all = nodes(tree), dialog = all.find(node => node.type === 'dialog' && node.props['aria-labelledby'] === 'program-detail-title'); assert(dialog);
     dialog.props.ref.current = { close() {}, showModal() {}, open: true };
     const section = all.find(node => node.type === 'section' && node.props['aria-label'] === '내 공간'); assert(section);
     section.props.ref.current = { contains: () => true, getClientRects: () => [{}],
