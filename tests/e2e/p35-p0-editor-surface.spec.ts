@@ -8,8 +8,9 @@ import {
   openMyFlowLibraryFlow,
 } from './helpers/my-flow-library';
 
-const SOURCE_FLOW_SLUG = 'moving-d30-basic';
-const SOURCE_ROUTE = `/f/${SOURCE_FLOW_SLUG}`;
+const NEW_PUBLIC_FLOW_SLUG = 'computer-skills-d30-study';
+const NEW_PUBLIC_ROUTE = `/f/${NEW_PUBLIC_FLOW_SLUG}`;
+const NEW_PUBLIC_ITEM_COUNT = 9;
 const MOBILE_VIEWPORT = { width: 390, height: 844 } as const;
 const EVIDENCE_DIR = process.env.FLOWME_P0_06_EVIDENCE_DIR?.trim();
 
@@ -46,7 +47,7 @@ async function resetAndOpenSource(
 ): Promise<void> {
   await page.setViewportSize({ width: viewport.width, height: viewport.height });
   await installLegacySavedPlanLibraryNavigation(page);
-  await gotoLegacySavedPlanLibraryRoute(page, SOURCE_ROUTE);
+  await gotoLegacySavedPlanLibraryRoute(page, NEW_PUBLIC_ROUTE);
   await page.evaluate(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
@@ -188,7 +189,7 @@ test.describe('P35 P0-06 shared editor surface', () => {
 
     await planEditor.getByTestId('public-flow-adjustment-kind-items').click();
     const itemRows = planEditor.getByTestId('public-flow-adjustment-item-row');
-    await expect(itemRows).toHaveCount(24);
+    await expect(itemRows).toHaveCount(NEW_PUBLIC_ITEM_COUNT);
     const itemOpener = itemRows.nth(5).getByTestId('public-flow-adjustment-item-edit');
     const itemId = await itemOpener.getAttribute('data-item-id');
     expect(itemId).toBeTruthy();
@@ -233,7 +234,7 @@ test.describe('P35 P0-06 shared editor surface', () => {
       level: 'item',
       commitRole: 'apply-item-to-parent-public-draft',
     });
-    const savedItemTitle = '계약 전 하자 사진을 길게 확인하고 가족에게 공유하기';
+    const savedItemTitle = '시험 범위와 실기 환경을 길게 확인하고 학습 계획에 반영하기';
     const savedItemTitleInput = itemEditor.getByTestId('public-flow-item-editor-title-input');
     await savedItemTitleInput.fill('');
     await itemEditor.getByTestId('public-flow-item-editor-save').click();
@@ -242,7 +243,7 @@ test.describe('P35 P0-06 shared editor surface', () => {
     await expect(savedItemTitleInput).toBeFocused();
     await savedItemTitleInput.fill(savedItemTitle);
     await itemEditor.getByTestId('public-flow-item-editor-detail-input').fill(
-      '사진 번호와 확인한 위치를 메모하고, 필요한 수리 요청을 계약 전에 정리합니다.',
+      '교재 범위와 확인한 실기 환경을 메모하고, 필요한 보완 학습을 시험 전에 정리합니다.',
     );
     await itemEditor.getByTestId('public-flow-item-editor-date-input').fill('2031-08-01');
     await itemEditor.getByTestId('public-flow-item-editor-save').click();
@@ -256,7 +257,7 @@ test.describe('P35 P0-06 shared editor surface', () => {
     await expect(updatedParentItem.getByTestId('public-flow-adjustment-item-edit')).toBeFocused();
     expect(await rawStorageSnapshot(page)).toEqual(storageBefore);
 
-    const savedPlanTitle = '우리 가족 이사 준비 - 최종 확인본';
+    const savedPlanTitle = '내 컴활 준비 - 최종 확인본';
     await planEditor.getByTestId('public-flow-adjustment-kind-name').click();
     await planEditor.getByTestId('public-flow-adjustment-name-input').fill(savedPlanTitle);
     await planEditor.getByTestId('public-flow-adjustment-apply').click();
@@ -297,7 +298,7 @@ test.describe('P35 P0-06 shared editor surface', () => {
     await captureEvidence(page, 'saved-plan-390');
     const planItemList = planEditor.getByTestId('saved-flow-editor-item-list');
     await planItemList.evaluate((element) => { element.scrollTop = 420; });
-    const itemOpener = planEditor.getByTestId('saved-flow-editor-item-open').nth(12);
+    const itemOpener = planEditor.getByTestId('saved-flow-editor-item-open').nth(5);
     const itemId = await itemOpener.getAttribute('data-item-id');
     expect(itemId).toBeTruthy();
 
@@ -329,8 +330,8 @@ test.describe('P35 P0-06 shared editor surface', () => {
     await expectEditorGeometry(page, itemEditor, MOBILE_VIEWPORT);
     await captureEvidence(page, 'saved-item-390');
     await expect(itemEditor.getByRole('link', { name: '원문 보기' })).toBeVisible();
-    const savedItemTitle = '저장한 계획에서 계약 서류와 사진을 최종 대조하기';
-    const savedItemDetail = '원본 내용은 유지하고, 내가 확인한 서류 번호와 사진 위치만 개인 메모로 남깁니다.';
+    const savedItemTitle = '저장한 계획에서 시험 범위와 학습 일정을 최종 대조하기';
+    const savedItemDetail = '원본 내용은 유지하고, 내가 확인한 학습 범위와 준비 상태만 개인 메모로 남깁니다.';
     const savedItemDate = '2031-08-03';
     await itemEditor.getByTestId('saved-flow-editor-item-title-input').fill(savedItemTitle);
     await itemEditor.getByTestId('saved-flow-editor-item-detail-input').fill(savedItemDetail);
@@ -350,7 +351,7 @@ test.describe('P35 P0-06 shared editor surface', () => {
     )).toBe(planItemScrollTop);
     expect(await rawStorageSnapshot(page)).toEqual(storageBeforeItemApply);
 
-    const savedPlanTitle = '우리 가족 이사 준비 - 저장본 재검토';
+    const savedPlanTitle = '내 컴활 준비 - 저장본 재검토';
     await planEditor.getByTestId('saved-flow-editor-title-input').fill(savedPlanTitle);
     await planEditor.getByTestId('saved-flow-editor-save').click();
     await expect(planEditor).toHaveCount(0);
@@ -445,7 +446,7 @@ test.describe('P35 P0-06 shared editor surface', () => {
     });
     await expect(page.getByTestId('saved-flow-editor-recovery-notice')).toHaveCount(0);
 
-    await gotoLegacySavedPlanLibraryRoute(page, `${SOURCE_ROUTE}?editorTransaction=off`);
+    await gotoLegacySavedPlanLibraryRoute(page, `${NEW_PUBLIC_ROUTE}?editorTransaction=off`);
     await page.getByTestId('public-flow-adjust-entry-mobile').click();
     const legacyEditor = page.getByTestId('public-flow-personal-adjustment');
     await expect(legacyEditor).toHaveAttribute('data-editor-adapter', 'legacy');
@@ -462,7 +463,7 @@ test.describe('P35 P0-06 shared editor surface', () => {
       .getByTestId('public-flow-adjustment-item-row')
       .locator('input[type="checkbox"]');
     const count = await inclusionControls.count();
-    expect(count).toBe(24);
+    expect(count).toBe(NEW_PUBLIC_ITEM_COUNT);
     for (let index = 0; index < count; index += 1) {
       await inclusionControls.nth(index).uncheck();
     }

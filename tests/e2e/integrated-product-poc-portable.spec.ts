@@ -1,6 +1,8 @@
 import { test, expect, type Page } from '@playwright/test';
 import { textWorkspaceModel as M } from '../../lib/flow/integrated-poc/text-workspace';
 import type { ProgramEnvelope } from '../../lib/flow/integrated-poc/contract';
+import { buildProgramCatalog } from '../../lib/flow/integrated-poc/catalog';
+import { isPublicCatalogFlowOnHold } from '../../lib/flow/public-source-review-policy';
 
 const URL = '/my?personalWorkspacePoc=v1';
 const KEY = 'flow:poc:personal-workspace:v1:program:state';
@@ -61,9 +63,18 @@ test('portable gate: exact query only; corrupt Program payload falls back withou
   await verify();
 });
 
-test('portable private journey: document, task date, completion, Undo and reload preserve operating bytes', async ({ page }) => {
+test('portable private journey: document, task date and time, completion, Undo and reload preserve operating bytes', async ({ page }) => {
   const verify = await audit(page);
   await page.goto(URL);
+  // Named document creation is an explicit secondary action. Preserve the
+  // original document journey, but reach its form through the visible UI.
+  const titleInput = page.getByLabel('새 문서', { exact: true });
+  await expect(titleInput).toBeHidden();
+  await page.getByRole('button', { name: '글 찾기 · 내 문서와 할 일', exact: true }).click();
+  const find = page.getByRole('dialog', { name: '글 찾기', exact: true });
+  await expect(find).toBeVisible();
+  await find.locator('summary').filter({ hasText: /^이름을 정해 새 문서 만들기$/ }).click();
+  await expect(titleInput).toBeVisible();
   await page.getByLabel('새 문서', { exact: true }).fill('Portable private document');
   await page.getByRole('button', { name: '만들기', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Portable private document', exact: true })).toBeVisible();
@@ -71,11 +82,17 @@ test('portable private journey: document, task date, completion, Undo and reload
   await editor.locator('textarea').fill('- [ ] Portable task');
   await editor.locator('textarea').press('Tab');
   await expect.poll(async () => M.tasks((await state(page)).data.spaces['local-user'].text).some(task => task.title === 'Portable task')).toBe(true);
-  await page.getByRole('navigation', { name: '개인공간 보기' }).getByRole('button', { name: '전체 할 일', exact: true }).click();
+  await page.getByRole('navigation', { name: '기본 이동', exact: true }).getByRole('button', { name: '분류', exact: true }).click();
   await page.getByRole('button', { name: 'Portable task 작업', exact: true }).click();
   await page.getByRole('dialog').getByLabel('실행 날짜', { exact: true }).fill('2026-10-10');
-  await page.getByRole('dialog').getByRole('button', { name: '날짜 적용', exact: true }).click();
-  await expect.poll(async () => M.tasks((await state(page)).data.spaces['local-user'].text).find(task => task.title === 'Portable task')?.date).toBe('2026-10-10');
+  const taskTime = page.getByRole('dialog').getByLabel(/^시간/);
+  await expect(taskTime).toHaveAttribute('type', 'time');
+  await taskTime.fill('09:30');
+  await page.getByRole('dialog').getByRole('button', { name: '날짜·시간 적용', exact: true }).click();
+  await expect.poll(async () => {
+    const task = M.tasks((await state(page)).data.spaces['local-user'].text).find(task => task.title === 'Portable task');
+    return { date: task?.date, time: task?.time };
+  }).toEqual({ date: '2026-10-10', time: '09:30' });
   await page.keyboard.press('Escape');
   const before = (await state(page)).data.spaces['local-user'];
   await page.getByRole('button', { name: 'Portable task 완료', exact: true }).click();
@@ -93,12 +110,22 @@ async function verifyPrivateCopyEditing(page: Page, inputMode: 'replace' | 'appe
   const verify = await audit(page);
   await page.goto(URL + '#flowme/discover');
   await expect(page.getByTestId('program-discovery')).toBeVisible();
-  await page.getByTestId('program-discovery').locator('article h2 button').first().click();
-  await page.getByLabel(/^이사일/).fill('2026-10-10');
+  // Moving is review-held for NEW starts. Select the existing supported travel
+  // source explicitly, never use catalog order or bypass that hold for this QA.
+  const catalog = buildProgramCatalog('creator-minji');
+  const coverage = catalog.coverage.find(row => row.sourceSlug === 'chiangmai-solo-trip-packing')!;
+  const version = catalog.versions.find(row => row.id === coverage.versionId)!;
+  expect(isPublicCatalogFlowOnHold(coverage.flowId)).toBe(false);
+  await page.getByTestId('program-discovery').getByRole('button', { name: version.title, exact: true }).click();
+  await expect(page.getByTestId('program-flow-detail').getByRole('heading', { name: version.title, exact: true })).toBeVisible();
+  await page.getByLabel(coverage.anchorLabel, { exact: false }).fill('2026-10-10');
   await page.getByRole('button', { name: '내 문서에 가져오기', exact: true }).click();
   await expect.poll(async () => (await wire(page)) && (await state(page)).data.spaces['local-user'].copies.length).toBe(1);
   const before = await state(page);
   const copy = before.data.spaces['local-user'].copies[0];
+  expect(copy.flowId).toBe(coverage.flowId);
+  expect(copy.baseVersionId).toBe(version.id);
+  expect(copy.includedItemIds).toEqual(version.items.map(item => item.id));
   expect(before.data.public.versions.some(version => version.id === copy.baseVersionId)).toBe(true);
   const editor = page.getByRole('region', { name: '개인 문서 편집', exact: true });
   const input = editor.locator('textarea');

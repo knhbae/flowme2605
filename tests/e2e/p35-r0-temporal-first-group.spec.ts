@@ -10,6 +10,7 @@ import {
   installLegacySavedPlanLibraryNavigation,
   openMyFlowLibraryFlow,
 } from './helpers/my-flow-library';
+import { openExistingPublicPlan } from './helpers/existing-public-plan';
 import { savePublicFlow } from './helpers/public-flow-save';
 
 const evidenceRoot = process.env.FLOWME_P35_R0_EVIDENCE_DIR;
@@ -36,8 +37,10 @@ function formatCompactPlainDate(value: string): string {
 const today = formatPlainDate(new Date());
 const mixedAnchor = addPlainDateDays(today, 7);
 const nextGroupDate = addPlainDateDays(today, 4);
-const pastStartDate = addPlainDateDays(today, -23);
-const pastEndDate = addPlainDateDays(today, -3);
+const mixedStudyAnchor = addPlainDateDays(today, 8);
+const nextStudyGroupDate = addPlainDateDays(today, 1);
+const pastStudyStartDate = addPlainDateDays(today, -22);
+const pastStudyEndDate = addPlainDateDays(today, -6);
 const allPastAnchor = addPlainDateDays(today, -2);
 const nearestPastDate = addPlainDateDays(today, -1);
 
@@ -129,10 +132,14 @@ async function snapshotRows(container: Locator): Promise<RowSnapshot[]> {
   );
 }
 
-async function openSavedWorkspace(page: Page, section: 'execute' | 'plan' = 'execute') {
+async function openSavedWorkspace(
+  page: Page,
+  section: 'execute' | 'plan' = 'execute',
+  savedSlug = 'moving-d30-basic',
+) {
   const postSave = page.getByTestId('my-flow-post-save-view-flow');
   if (await postSave.isVisible().catch(() => false)) await postSave.click();
-  return openMyFlowLibraryFlow(page, 'moving-d30-basic', section);
+  return openMyFlowLibraryFlow(page, savedSlug, section);
 }
 
 async function seedSavedFlow(page: Page, slug: string, selectedArtifactMode: string, anchor?: string) {
@@ -158,24 +165,24 @@ async function seedSavedFlow(page: Page, slug: string, selectedArtifactMode: str
 }
 
 test.describe('P35-R0 temporal first group', () => {
-  test('mixed past and future dates stay truthful from pre-save through My Flow and Calendar', async ({ page }) => {
+  test('eligible NEW computer plan keeps the mixed-date warning and exact nine-item saved handoff', async ({ page }) => {
     test.setTimeout(60_000);
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
     await installLegacySavedPlanLibraryNavigation(page);
-    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/computer-skills-d30-study');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
 
-    await page.getByTestId('public-flow-anchor-input').fill(mixedAnchor);
+    await page.getByTestId('public-flow-anchor-input').fill(mixedStudyAnchor);
     const warning = page.getByTestId('public-flow-past-date-warning');
     await expect(warning).toHaveAttribute('data-p35-marker', 'P35-R0-PAST-DATE-WARNING');
-    await expect(warning).toHaveAttribute('data-past-count', '9');
+    await expect(warning).toHaveAttribute('data-past-count', '6');
     const warningTrigger = warning.getByTestId('public-flow-past-date-warning-disclosure-trigger');
     await warningTrigger.click();
     const warningDetail = page.getByTestId('public-flow-past-date-warning-disclosure-detail');
     await expect(warningDetail).toContainText(
-      `${formatCompactPlainDate(pastStartDate)}~${formatCompactPlainDate(pastEndDate)}`,
+      `${formatCompactPlainDate(pastStudyStartDate)}~${formatCompactPlainDate(pastStudyEndDate)}`,
     );
     await expect(page.getByRole('heading', { name: '지난 할 일도 함께 저장돼요' })).toBeVisible();
     await capture(page, 'p35-r0-past-date-warning-390.png', warning);
@@ -183,10 +190,66 @@ test.describe('P35-R0 temporal first group', () => {
     await expect(warningTrigger).toBeFocused();
 
     const saveBanner = await savePublicFlow(page, page.getByTestId('public-flow-save-primary-mobile'));
-    await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toHaveText('저장됨 · 24개');
+    await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toHaveText('저장됨 · 9개');
     await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
 
-    let workspace = await openSavedWorkspace(page);
+    const personalCopyKey = new URL(page.url()).searchParams.get('flow') ?? '';
+    expect(personalCopyKey).toMatch(/^personal-copy:/u);
+    const savedRecord = await page.evaluate(key => JSON.parse(
+      localStorage.getItem(`flow:saved:${key}`) ?? 'null',
+    ), personalCopyKey);
+    expect(savedRecord).toMatchObject({
+      slug: personalCopyKey, sourceFlowSlug: 'computer-skills-d30-study',
+      savedItemCount: 9, selectedArtifactMode: 'calendar', anchor: mixedStudyAnchor,
+    });
+
+    let workspace = await openSavedWorkspace(page, 'execute', personalCopyKey);
+    let group = workspace.getByTestId('my-flow-temporal-next-group');
+    await expect(group).toHaveAttribute('data-p35-marker', 'P35-R0-NEXT-DATE-GROUP');
+    await expect(group).toHaveAttribute('data-temporal-kind', 'future');
+    await expect(group).toHaveAttribute('data-temporal-date', nextStudyGroupDate);
+    await expect(group.getByTestId('my-flow-execution-row-shell')).toHaveCount(1);
+    await expect(group).toContainText('1개 먼저');
+    await expect(group.getByTestId('flow-date-rail')).toHaveCount(1);
+    await expect(group.getByTestId('my-flow-row-date-meta')).toHaveCount(0);
+    await expect(
+      group.locator('[data-p35-marker="P35-R0-SHARED-TIMELINE-ROW"]'),
+    ).toHaveCount(1);
+    const firstTimelineRow = group
+      .locator('[data-p35-marker="P35-R0-SHARED-TIMELINE-ROW"]')
+      .first();
+    await expect(firstTimelineRow.getByTestId('my-flow-row-open-label')).toHaveCount(0);
+    await expect(firstTimelineRow.locator('button').first()).toHaveAccessibleName(/열기/u);
+    expect(
+      await firstTimelineRow
+        .locator('button, input[type="checkbox"]')
+        .evaluateAll((elements) => elements.map((element) => element.tagName)),
+    ).toEqual(['BUTTON']);
+    await expect(firstTimelineRow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+    const disclosure = workspace.getByTestId('my-flow-past-items-disclosure');
+    await expect(disclosure).toContainText('저장된 지난 할 일 6개 보기');
+    await expect(disclosure).not.toHaveAttribute('open', '');
+    await capture(page, 'p35-r0-computer-next-date-group-390.png', group);
+    await expectPageQuality(page);
+
+    const initialRows = await snapshotRows(group);
+    expect(initialRows).toHaveLength(1);
+    expect(initialRows.every((row) => row.key && row.title)).toBe(true);
+
+    expect(errors).toEqual([]);
+  });
+
+  test('historical moving copy keeps completion Undo reload and Calendar mapping', async ({ page }) => {
+    test.setTimeout(60_000);
+    const errors = collectBrowserErrors(page);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await installLegacySavedPlanLibraryNavigation(page);
+    const personalCopyKey = await openExistingPublicPlan(page, 'moving-d30-basic', {
+      anchor: mixedAnchor,
+      personalCopyKey: 'personal-copy:p35-r0-existing-moving',
+      clear: true,
+    });
+    let workspace = await openSavedWorkspace(page, 'execute', personalCopyKey);
     let group = workspace.getByTestId('my-flow-temporal-next-group');
     await expect(group).toHaveAttribute('data-p35-marker', 'P35-R0-NEXT-DATE-GROUP');
     await expect(group).toHaveAttribute('data-temporal-kind', 'future');
@@ -260,7 +323,7 @@ test.describe('P35-R0 temporal first group', () => {
     await expect(group.locator(`article[data-row-key="${firstRowKey}"]`)).toHaveCount(0);
     await expect(group.getByTestId('my-flow-execution-row-shell')).toHaveCount(3);
     await page.reload();
-    workspace = await openSavedWorkspace(page);
+    workspace = await openSavedWorkspace(page, 'execute', personalCopyKey);
     group = workspace.getByTestId('my-flow-temporal-next-group');
     await expect(group.getByTestId('my-flow-execution-row-shell')).toHaveCount(3);
 
@@ -299,7 +362,7 @@ test.describe('P35-R0 temporal first group', () => {
     await expect(page.getByTestId('my-flow-selected-day-summary')).toContainText('4개 남음');
 
     await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows');
-    workspace = await openSavedWorkspace(page);
+    workspace = await openSavedWorkspace(page, 'execute', personalCopyKey);
     group = workspace.getByTestId('my-flow-temporal-next-group');
     await expect(group.getByTestId('my-flow-execution-row-shell')).toHaveCount(3);
     expect(await snapshotRows(group)).toEqual(initialRows);

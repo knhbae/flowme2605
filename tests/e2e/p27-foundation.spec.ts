@@ -4,6 +4,7 @@ import {
   gotoLegacySavedPlanLibraryRoute,
   openMyFlowLibraryFlow as openSavedFlowInLegacyLibrary,
 } from './helpers/my-flow-library';
+import { openExistingPublicPlan } from './helpers/existing-public-plan';
 
 async function openMyFlowLibraryFlow(
   page: Page,
@@ -65,18 +66,6 @@ async function setPublicCalendarAnchor(page: Page, anchor: string) {
   await adjustment.getByTestId('public-flow-adjustment-apply').click();
 }
 
-async function saveMovingFlow(page: import('@playwright/test').Page): Promise<string> {
-  await page.goto('/flow-maps/moving-d30');
-  await page.evaluate(() => window.localStorage.clear());
-  await page.reload();
-  await expect(page).toHaveURL('/f/moving-d30-basic');
-  await setPublicCalendarAnchor(page, '2030-08-15');
-  const wideSave = page.getByTestId('public-flow-save-primary');
-  if (await wideSave.isVisible()) await wideSave.click();
-  else await page.getByTestId('public-flow-save-primary-mobile').click();
-  return expectDirectSelectedPlan(page, 24);
-}
-
 test.describe('P27 server document foundation', () => {
   test('/flows exposes a meaningful entry and representative Flows before hydration', async ({ request }) => {
     const response = await request.get('/flows');
@@ -108,7 +97,7 @@ test.describe('P27 server document foundation', () => {
 test.describe('P27 reversible lifecycle foundation', () => {
   test('saved Flow archive is reversible, persistent, and excluded from active Calendar', async ({ page }) => {
     await page.setViewportSize({ width: 1024, height: 768 });
-    const personalCopyKey = await saveMovingFlow(page);
+    const personalCopyKey = await openExistingPublicPlan(page);
 
     let flowCard = await openMyFlowLibraryFlow(page, personalCopyKey);
     await expect(flowCard).toBeVisible();
@@ -150,7 +139,7 @@ test.describe('P27 reversible lifecycle foundation', () => {
 
   test('source-backed item removal persists and restores', async ({ page }) => {
     await page.setViewportSize({ width: 1024, height: 768 });
-    const personalCopyKey = await saveMovingFlow(page);
+    const personalCopyKey = await openExistingPublicPlan(page);
 
     const flowCard = await openMyFlowLibraryFlow(page, personalCopyKey, 'plan');
     const outline = await expandMyFlowWholePlan(flowCard);
@@ -212,12 +201,12 @@ test.describe('P27 reversible lifecycle foundation', () => {
 
   test('public adjustment stays personal and lands as the same My Flow outline', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/f/moving-d30-basic');
+    await page.goto('/f/curated-wedding-naver-timeline');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
     await setPublicCalendarAnchor(page, '2030-08-15');
     await page.getByTestId('public-flow-adjust-entry-mobile').click();
-    await expect(page).toHaveURL('/f/moving-d30-basic');
+    await expect(page).toHaveURL('/f/curated-wedding-naver-timeline');
 
     const adjustment = page.getByTestId('public-flow-personal-adjustment');
     await expect(adjustment).toBeVisible();
@@ -231,75 +220,75 @@ test.describe('P27 reversible lifecycle foundation', () => {
     await expect(adjustment.locator('[data-testid="public-flow-adjustment-memo"]')).toHaveCount(0);
     await expect(adjustment.getByRole('button', { name: /아래로 이동/ })).toHaveCount(0);
 
-    await adjustment.getByTestId('public-flow-adjustment-name-input').fill('내 이사 준비');
+    await adjustment.getByTestId('public-flow-adjustment-name-input').fill('내 결혼 준비');
     await adjustment.getByTestId('public-flow-adjustment-apply').click();
     await page.getByTestId('public-flow-adjust-entry-mobile').click();
     await adjustment.getByTestId('public-flow-adjustment-kind-items').click();
     const rows = adjustment.getByTestId('public-flow-adjustment-item-row');
-    await expect(rows).toHaveCount(24);
-    await rows.nth(1).getByRole('checkbox', { name: '이사할 집 하자 점검하기 계획에 포함' }).uncheck();
+    await expect(rows).toHaveCount(6);
+    await rows.nth(1).getByRole('checkbox', { name: 'D-10개월: 스드메와 촬영 후보 잡기 계획에 포함' }).uncheck();
     await adjustment.getByTestId('public-flow-adjustment-apply').click();
     await page.getByTestId('public-flow-save-primary-mobile').click();
-    const personalCopyKey = await expectDirectSelectedPlan(page, 23);
+    const personalCopyKey = await expectDirectSelectedPlan(page, 5);
     const persisted = await page.evaluate((flowSlug) => ({
       itemStates: JSON.parse(window.localStorage.getItem(`flow_builder_mvp_item_state_${flowSlug}`) || '{}'),
       saved: JSON.parse(window.localStorage.getItem(`flow:saved:${flowSlug}`) || '{}'),
     }), personalCopyKey);
-    expect(persisted.itemStates['flow-moving-item-1']).toMatchObject({ personalExcluded: true });
-    expect(persisted.itemStates['flow-moving-item-0']).toEqual({ personalOrder: 0 });
+    expect(persisted.itemStates['wedding-naver-d10']).toMatchObject({ personalExcluded: true });
+    expect(persisted.itemStates['wedding-naver-d12']).toEqual({ personalOrder: 0 });
     expect(persisted.saved.anchor).toBe('2030-08-15');
-    expect(persisted.saved.personalTitle).toBe('내 이사 준비');
+    expect(persisted.saved.personalTitle).toBe('내 결혼 준비');
     expect(persisted.saved).toMatchObject({
       schemaVersion: 2,
       slug: personalCopyKey,
       personalCopyKey,
-      sourceFlowSlug: 'moving-d30-basic',
-      savedItemCount: 23,
+      sourceFlowSlug: 'curated-wedding-naver-timeline',
+      savedItemCount: 5,
     });
 
     const flowCard = await openMyFlowLibraryFlow(page, personalCopyKey, 'plan');
     await expect(flowCard).toBeVisible();
     const outline = await expandMyFlowWholePlan(flowCard);
     const outlineRows = outline.getByTestId('my-flow-execution-row-shell');
-    await expect(outlineRows).toHaveCount(23);
-    await expect(outlineRows.nth(0)).toContainText('이사 방식 정하기');
-    await expect(outlineRows.nth(1)).toContainText('필요 없는 물건 정리하기');
+    await expect(outlineRows).toHaveCount(5);
+    await expect(outlineRows.nth(0)).toContainText('D-12개월: 예산과 웨딩홀 후보 정하기');
+    await expect(outlineRows.nth(1)).toContainText('D-7개월: 신혼여행과 예물 후보 정리');
 
     const excludedSteps = flowCard.getByTestId('my-flow-excluded-steps');
     await excludedSteps.locator('summary').click();
     const excludedRow = excludedSteps.getByTestId('my-flow-excluded-step-row').filter({
-      hasText: '이사할 집 하자 점검하기',
+      hasText: 'D-10개월: 스드메와 촬영 후보 잡기',
     });
     await excludedRow.getByTestId('my-flow-restore-excluded-item').click();
     await expect.poll(() => page.evaluate((flowSlug) => JSON.parse(
       window.localStorage.getItem(`flow_builder_mvp_item_state_${flowSlug}`) || '{}',
-    )['flow-moving-item-1']?.personalExcluded, personalCopyKey)).toBeUndefined();
+    )['wedding-naver-d10']?.personalExcluded, personalCopyKey)).toBeUndefined();
 
     await page.reload();
     const restoredAfterReload = await page.evaluate((flowSlug) => JSON.parse(
       window.localStorage.getItem(`flow_builder_mvp_item_state_${flowSlug}`) || '{}',
-    )['flow-moving-item-1'], personalCopyKey);
+    )['wedding-naver-d10'], personalCopyKey);
     expect(restoredAfterReload.personalExcluded).toBeUndefined();
     await expectNoHorizontalOverflow(page);
   });
 
   test('public adjustment keeps the same personal hierarchy on wide screens', async ({ page }) => {
     await page.setViewportSize({ width: 1024, height: 768 });
-    await page.goto('/f/moving-d30-basic');
+    await page.goto('/f/curated-wedding-naver-timeline');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
     await setPublicCalendarAnchor(page, '2030-08-15');
     await page.getByTestId('public-flow-adjust-entry').click();
 
-    await expect(page).toHaveURL('/f/moving-d30-basic');
+    await expect(page).toHaveURL('/f/curated-wedding-naver-timeline');
     const adjustment = page.getByTestId('public-flow-personal-adjustment');
     await expect(adjustment).toBeVisible();
     await adjustment.getByTestId('public-flow-adjustment-kind-items').click();
-    await expect(adjustment.getByTestId('public-flow-adjustment-item-row')).toHaveCount(24);
+    await expect(adjustment.getByTestId('public-flow-adjustment-item-row')).toHaveCount(6);
     await expect(adjustment).not.toContainText('Markdown');
     await expect(adjustment).not.toContainText('발행');
     const moveDownControls = adjustment.getByRole('button', { name: /아래로 이동/ });
-    await expect(moveDownControls).toHaveCount(24);
+    await expect(moveDownControls).toHaveCount(6);
     await expect(moveDownControls.last()).toBeDisabled();
     await expect(adjustment.locator('[data-testid="public-flow-adjustment-title"]')).toHaveCount(0);
     await expect(adjustment.locator('[data-testid="public-flow-adjustment-date"]')).toHaveCount(0);
@@ -413,16 +402,11 @@ test.describe('P27 reversible lifecycle foundation', () => {
     await expectNoHorizontalOverflow(page);
   });
 
-  test('post-save keeps the saved outline primary and export preflight compact', async ({ page }) => {
+  test('existing 24-item plan keeps its outline primary and export preflight compact', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/flow-maps/moving-d30');
-    await page.evaluate(() => window.localStorage.clear());
-    await page.reload();
-    await expect(page).toHaveURL('/f/moving-d30-basic');
-    await setPublicCalendarAnchor(page, '2030-08-15');
-    await page.getByTestId('public-flow-save-primary-mobile').click();
-    const personalCopyKey = await expectDirectSelectedPlan(page, 24);
-    await expect(page.getByTestId('my-flow-save-banner-summary')).toContainText('24');
+    const personalCopyKey = await openExistingPublicPlan(page);
+    await expect(page.getByTestId('public-flow-hero')).toHaveCount(0);
+    await expect(page.getByTestId('my-flow-save-banner')).toHaveCount(0);
 
     const flow = await openMyFlowLibraryFlow(page, personalCopyKey, 'plan');
     await expandMyFlowWholePlan(flow);

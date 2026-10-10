@@ -1,0 +1,41 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { createAlphaSyncController } from '../alpha-sync/controller';
+import { createAlphaMemoryRecovery } from '../alpha-persistence/local-recovery';
+import { ALPHA_SCHEMA, type AlphaAccount, type AlphaCommand, type AlphaReceipt, type AlphaRepository } from '../alpha-persistence/contract';
+import { PROGRAM_SCHEMA } from '../contract';
+import { createProgramPrivateSpace } from '../program-data';
+import { materializeAccount } from '../alpha-persistence/program-adapter';
+import { canonicalJson } from '../alpha-persistence/json';
+import { alphaSocialReferences, ALPHA_SOCIAL_CONTEXT_SCHEMA, type AlphaSocialContext } from './projection';
+import { executeAlphaSocialIntent } from './dispatch';
+import type { AlphaSocialIntent } from './contract';
+import { newProgramParticipationDraft } from '../participation-editor';
+import { createProgramPost } from '../community';
+const owner='11111111-1111-4111-8111-111111111111',alias='member-22222222-2222-4222-8222-222222222222',now='2026-09-21T14:00:00.000Z';
+function fixture(){
+ const account:AlphaAccount={schema:ALPHA_SCHEMA,ownerId:owner,revision:0,source:{schema:PROGRAM_SCHEMA,actorId:owner,revision:0},space:createProgramPrivateSpace(),legacyReceipts:[],legacyUndo:[]};
+ const context:AlphaSocialContext={schema:ALPHA_SOCIAL_CONTEXT_SCHEMA,revision:0,ownActorId:alias,actors:[{id:alias,name:'Member'}],public:{flows:[],versions:[],posts:[],replies:[],reactions:[],proposals:[]}};
+ const state={account,references:alphaSocialReferences(context,owner),lose:false,receiptPublicOverride:null as number|null,executions:[] as AlphaCommand[],lookups:[] as string[]};const ledger=new Map<string,AlphaReceipt>();
+ const repository:AlphaRepository={read:async()=>({ok:true,value:structuredClone(state.account)}),references:()=>structuredClone(state.references),lookup:async id=>{state.lookups.push(id);return {ok:true,value:ledger.get(id)??null};},execute:async command=>{
+  state.executions.push(structuredClone(command));const prior=ledger.get(command.requestId);if(prior)return {ok:true,value:prior};
+  if(command.kind!=='social')return {ok:false,reason:'invalid'};
+  if(command.expectedRevision!==state.account.revision||command.expectedPublicRevision!==state.references.social!.revision)return {ok:false,reason:'revision-conflict'};
+  const transition=executeAlphaSocialIntent(materializeAccount(state.account,state.references).data,owner,command.intent,command.requestId,now);if(!transition.ok)return {ok:false,reason:'invalid'};
+  if(!transition.changed)return {ok:false,reason:'no-change'};
+  const publicChanged=canonicalJson(transition.data.public)!==canonicalJson(state.references.public);
+  state.account={...state.account,revision:state.account.revision+1,space:transition.data.spaces[owner]};state.references={...state.references,public:transition.data.public,social:{...state.references.social!,revision:state.references.social!.revision+(publicChanged?1:0)}};
+  const receipt:AlphaReceipt={requestId:command.requestId,revision:state.account.revision,kind:'social',changed:true,resultId:transition.result,publicRevision:state.receiptPublicOverride??state.references.social!.revision};ledger.set(command.requestId,receipt);
+  if(state.lose){state.lose=false;return {ok:false,reason:'unavailable'};}return {ok:true,value:receipt};
+ }};
+ let sequence=0;const recovery=createAlphaMemoryRecovery();const controller=createAlphaSyncController({recovery,requestId:()=>`request-${++sequence}`});controller.bindSession(owner,repository);
+ const mutate=(intent:AlphaSocialIntent,history=true)=>controller.mutate('social',data=>executeAlphaSocialIntent(data,owner,intent,'preview',now),{alphaSocial:intent,history});
+ return {state,repository,recovery,controller,mutate};
+}
+test('social draft saves with exact dual revision and public submit removes private Undo',async()=>{const f=fixture();assert(await f.controller.refresh());const draft={...newProgramParticipationDraft(),title:'Q',body:'Body'};assert((await f.mutate({type:'participation-save',draft,expected:null})).ok);assert(f.controller.snapshot().canUndo);const result=await f.mutate({type:'participation-submit',draft,expected:draft});assert(result.ok);assert.equal(f.controller.snapshot().publicRevision,1);assert.equal(f.controller.snapshot().canUndo,false);assert.equal(f.state.executions[1].expectedRevision,1);assert.equal(f.state.executions[1].kind,'social');});
+test('social same-state preview performs zero server mutations',async()=>{const f=fixture();await f.controller.refresh();const draft={...newProgramParticipationDraft(),title:'Q',body:'Body'};await f.mutate({type:'participation-save',draft,expected:null});const count=f.state.executions.length;const result=await f.mutate({type:'participation-save',draft,expected:draft});assert(result.ok&&!result.changed);assert.equal(f.state.executions.length,count);});
+test('lost public commit restores through exact ledger receipt without duplicate or Undo',async()=>{const f=fixture();await f.controller.refresh();const draft={...newProgramParticipationDraft(),title:'Q',body:'Body'};f.state.lose=true;const intent:AlphaSocialIntent={type:'participation-submit',draft,expected:null};assert.equal((await f.mutate(intent)).ok,false);const pending=f.controller.snapshot().pending;assert(pending);const reopened=createAlphaSyncController({recovery:f.recovery});reopened.bindSession(owner,f.repository);assert(await reopened.resolvePending());assert.equal(f.state.executions.length,1);assert.deepEqual(f.state.lookups,[pending.requestId]);assert.equal(reopened.snapshot().pending,null);assert.equal(reopened.snapshot().canUndo,false);assert.equal(reopened.snapshot().envelope!.data.public.posts.length,1);});
+test('social reference revision rollback fails closed while retaining confirmed context',async()=>{const f=fixture();f.state.references.social!.revision=5;assert(await f.controller.refresh());f.state.references.social!.revision=4;assert.equal(await f.controller.refresh(),false);assert.equal(f.controller.snapshot().status,'recovery-required');assert.equal(f.controller.snapshot().publicRevision,5);});
+test('changed public bytes at the same shared revision are rejected',async()=>{const f=fixture();await f.controller.refresh();const r=createProgramPost(materializeAccount(f.state.account,f.state.references).data,{actorId:owner,requestId:'unexpected',kind:'question',title:'Unversioned',body:'Changed',topic:''},now);if(!r.ok)throw Error(r.reason);f.state.references.public=r.data.public;assert.equal(await f.controller.refresh(),false);assert.equal(f.controller.snapshot().envelope!.data.public.posts.length,0);});
+test('social receipt cannot acknowledge an older shared revision than its command',async()=>{const f=fixture();f.state.references.social!.revision=5;await f.controller.refresh();f.state.receiptPublicOverride=4;const draft={...newProgramParticipationDraft(),title:'Q',body:'B'};assert.equal((await f.mutate({type:'participation-submit',draft,expected:null})).ok,false);assert(f.controller.snapshot().pending);});
+test('account switch does not expose prior shared references or private drafts',async()=>{const f=fixture();await f.controller.refresh();const draft={...newProgramParticipationDraft(),title:'Private Q',body:'Not submitted'};await f.mutate({type:'participation-save',draft,expected:null});f.controller.bindSession(null,null);assert.equal(f.controller.snapshot().account,null);assert.equal(f.controller.snapshot().envelope,null);assert.equal(f.controller.snapshot().publicRevision,undefined);});

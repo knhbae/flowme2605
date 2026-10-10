@@ -78,21 +78,20 @@ test('mobile public save opens one selected plan before Flow-level export', asyn
 test('wide dated public save opens the selected plan with schedule, outline, and actions', async ({ page }) => {
   await installLegacySavedPlanLibraryNavigation(page);
   await page.setViewportSize({ width: 1024, height: 768 });
-  await gotoLegacySavedPlanLibraryRoute(page, '/flow-maps/moving-d30');
-  await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
+  await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-wedding-naver-timeline');
   await page.evaluate(() => localStorage.clear());
   await page.reload();
-  await expect(page).toHaveURL(/\/f\/moving-d30-basic\?savedPlanLibrary=off$/u);
+  await expect(page).toHaveURL(/\/f\/curated-wedding-naver-timeline\?savedPlanLibrary=off$/u);
   await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
   const saveBanner = await savePublicFlow(page, page.getByTestId('public-flow-save-primary'));
-  await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toContainText('24');
+  await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toContainText('6');
   await expect(page.getByTestId('public-flow-saved-receipt')).toHaveCount(0);
-  await capture(page, '02-moving-decision-hub-wide.png');
+  await capture(page, '02-wedding-timeline-decision-hub-wide.png');
 
   await openSavedPublicFlow(page, saveBanner);
   await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
-  const flow = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'plan');
-  await expect(flow.getByTestId('my-flow-whole-flow-outline')).toHaveAttribute('data-effective-row-count', '24');
+  const flow = await openMyFlowLibraryFlow(page, 'curated-wedding-naver-timeline', 'plan');
+  await expect(flow.getByTestId('my-flow-whole-flow-outline')).toHaveAttribute('data-effective-row-count', '6');
 });
 
 test('legacy seeded multi-Flow receipt chooses an honest Flow scope before opening export', async ({ page }) => {
@@ -100,18 +99,20 @@ test('legacy seeded multi-Flow receipt chooses an honest Flow scope before openi
   await page.setViewportSize({ width: 1024, height: 768 });
   await gotoLegacySavedPlanLibraryRoute(
     page,
-    '/my?demo=source-backed&savedMap=curated-opic-mock-course',
+    '/my?demo=source-backed&savedMap=curated-wedding-checklist-family',
   );
 
   const hub = page.getByTestId('my-flow-post-save-panel');
   await expect(hub).toHaveAttribute('data-receipt-flow-count', '2');
+  await expect(hub).toHaveAttribute('data-receipt-total-count', '10');
+  await expect(hub).toContainText('결혼 준비');
   await expect(hub.locator('[data-action-priority="primary"]')).toHaveCount(1);
   await expect(hub.getByTestId('my-flow-post-save-open-export')).toHaveCount(0);
   await hub.getByTestId('my-flow-post-save-view-flow').click();
   await expect(hub).toHaveCount(0);
   const firstRow = page.getByTestId('my-flow-library-row').first();
   const firstSlug = await firstRow.getAttribute('data-flow-slug');
-  expect(firstSlug).toBeTruthy();
+  expect(['curated-wedding-naver-timeline', 'curated-wedding-gongysd-atoz']).toContain(firstSlug);
   const flow = await openMyFlowLibraryFlow(page, firstSlug!, 'record');
   const exportSurface = flow.getByTestId('my-flow-export-surface');
   await exportSurface.getByTestId('my-flow-export-entry').click();

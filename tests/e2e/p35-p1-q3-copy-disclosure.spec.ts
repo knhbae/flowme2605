@@ -12,6 +12,9 @@ const viewports = [
   { name: '1440', width: 1440, height: 1000 },
 ] as const;
 
+const NEW_PUBLIC_ROUTE = '/f/computer-skills-d30-study';
+// Saved/archived moving and used-car fixtures retain their pre-review identities.
+
 const phase = process.env.FLOWME_P1_Q3_PHASE === 'before' ? 'before' : 'after';
 const captureEnabled = Boolean(process.env.FLOWME_P1_Q3_PHASE);
 const evidenceDirectory = path.resolve(
@@ -310,7 +313,7 @@ test.describe('P1-02 Q3 copy and contextual disclosure', () => {
     const errors = collectBrowserErrors(page);
     for (const viewport of viewports) {
       await page.setViewportSize(viewport);
-      await page.goto(routeForPhase('/f/moving-d30-basic'));
+      await page.goto(routeForPhase(NEW_PUBLIC_ROUTE));
       const root = page.locator('main[data-p35-q3-copy]');
       await expect(root).toHaveAttribute('data-p35-q3-copy', phase === 'before' ? 'off' : 'on');
       await expectSurfaceHealth(page, root);
@@ -334,7 +337,7 @@ test.describe('P1-02 Q3 copy and contextual disclosure', () => {
   test('public plan editor uses plan labels in visible and accessible copy', async ({ page }) => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize(viewports[0]);
-    await page.goto(routeForPhase('/f/moving-d30-basic'));
+    await page.goto(routeForPhase(NEW_PUBLIC_ROUTE));
     const editorEntry = page.locator(
       '[data-testid="public-flow-adjust-entry"]:visible, [data-testid="public-flow-adjust-entry-mobile"]:visible',
     ).first();
@@ -519,7 +522,7 @@ test.describe('P1-02 Q3 copy and contextual disclosure', () => {
     test.skip(phase === 'before', 'Q3 rollback intentionally removes the new optional disclosure icons.');
     const errors = collectBrowserErrors(page);
     await page.setViewportSize(viewports[0]);
-    await page.goto('/f/moving-d30-basic');
+    await page.goto(NEW_PUBLIC_ROUTE);
     const help = page.getByTestId('public-result-format-help-trigger');
     await expect(help).toHaveAccessibleName('결과 형식 도움말');
     await expect(help).toHaveAttribute('aria-haspopup', 'dialog');
@@ -590,7 +593,7 @@ test.describe('P1-02 Q3 copy and contextual disclosure', () => {
     await page.goto('/flow-maps/curated-wedding-checklist-family?q3Copy=off');
     await expect(page.getByTestId('flow-map-choice-help-trigger')).toHaveCount(0);
 
-    await page.goto('/f/moving-d30-basic?q3Copy=off');
+    await page.goto(`${NEW_PUBLIC_ROUTE}?q3Copy=off`);
     const publicStorageBefore = await rawStorageSnapshot(page);
     await page.getByTestId('public-flow-adjust-entry-mobile').click();
     const publicEditor = page.getByTestId('public-flow-personal-adjustment');

@@ -31,12 +31,13 @@ async function capture(page: Page, filename: string) {
   await page.screenshot({ path: path.join(screenshots, filename), fullPage: true });
 }
 
-test('an example moving schedule stays provisional until the person chooses a real date or explicit undated save', async ({ page }) => {
+test('an example public timeline stays provisional until the person chooses a real date or explicit undated save', async ({ page }) => {
   await installLegacySavedPlanLibraryNavigation(page);
   await page.setViewportSize({ width: 390, height: 844 });
-  await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
+  await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-wedding-naver-timeline');
 
   const capability = page.getByTestId('public-flow-capability-result');
+  await expect(capability).toHaveAttribute('data-public-format-mode', 'default');
   await expect(capability).toHaveAttribute('data-capability-primary-destination', 'checklist');
   await expect(capability.getByTestId('flow-capability-selected-preview')).toHaveAttribute(
     'data-capability-destination',
@@ -46,31 +47,40 @@ test('an example moving schedule stays provisional until the person chooses a re
     '[data-testid="flow-capability-conditional-result"][data-capability-destination="calendar"]',
   );
   await expect(conditionalCalendar).toHaveAttribute('data-capability-output-count', '0');
-  await expect(conditionalCalendar).toHaveAttribute('data-capability-expected-output-count', '24');
+  await expect(conditionalCalendar).toHaveAttribute('data-capability-expected-output-count', '6');
 
   const primary = page.getByTestId('public-flow-save-primary-mobile');
-  await expect(primary).toHaveText('이사일 정하기');
+  await expect(primary).toHaveText('결혼식 날짜 정하기');
+  await expect(primary).toBeEnabled();
+  const storageBefore = await page.evaluate(() => Object.fromEntries(
+    Object.keys(localStorage).sort().map(key => [key, localStorage.getItem(key)]),
+  ));
   await primary.click();
   await expect(page.getByTestId('public-flow-anchor-input')).toBeFocused();
+  expect(await page.evaluate(() => Object.fromEntries(
+    Object.keys(localStorage).sort().map(key => [key, localStorage.getItem(key)]),
+  ))).toEqual(storageBefore);
   await expect(page.getByTestId('public-flow-saved-receipt')).toHaveCount(0);
   await expect.poll(() => page.evaluate(() => (
-    window.localStorage.getItem('flow:saved:moving-d30-basic')
+    window.localStorage.getItem('flow:saved:curated-wedding-naver-timeline')
   ))).toBeNull();
 
   const saveUndated = page.getByTestId('public-flow-save-undated-mobile');
   await expect(saveUndated).toHaveText('날짜 없이 내 계획에 저장');
   await capture(page, '00-provisional-example-mobile.png');
   const saveBanner = await savePublicFlow(page, saveUndated);
-  await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toContainText('24');
+  await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toContainText('6');
   const personalCopyKey = new URL(page.url()).searchParams.get('flow') ?? '';
   expect(personalCopyKey).toMatch(/^personal-copy:/u);
 
   const state = await page.evaluate((copyKey) => ({
     saved: JSON.parse(window.localStorage.getItem(`flow:saved:${copyKey}`) || 'null'),
     anchor: JSON.parse(window.localStorage.getItem(`flow:${copyKey}:anchorDate`) || 'null'),
-    legacySourceRecord: window.localStorage.getItem('flow:saved:moving-d30-basic'),
+    legacySourceRecord: window.localStorage.getItem('flow:saved:curated-wedding-naver-timeline'),
   }), personalCopyKey);
   expect(state.saved).toMatchObject({
+    sourceFlowSlug: 'curated-wedding-naver-timeline',
+    savedItemCount: 6,
     dateIntent: 'undated',
     selectedArtifactMode: 'checklist',
   });
@@ -134,7 +144,7 @@ test('a natural undated checklist saves without a competing date mode', async ({
 
 test('a date-anchored public Flow persists its one required date and enables ICS', async ({ page }) => {
   await page.setViewportSize({ width: 1024, height: 768 });
-  await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
+  await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-wedding-naver-timeline');
 
   await page.getByTestId('public-flow-anchor-input').fill('2026-07-28');
   await expect(page.getByTestId('public-flow-date-intent')).toHaveCount(0);
@@ -149,15 +159,18 @@ test('a date-anchored public Flow persists its one required date and enables ICS
   )).toHaveCount(1);
   await capture(page, '02-custom-date-wide.png');
   const saveBanner = await savePublicFlow(page, desktopSave);
-  await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toContainText('24');
+  await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toContainText('6');
   const personalCopyKey = new URL(page.url()).searchParams.get('flow') ?? '';
   expect(personalCopyKey).toMatch(/^personal-copy:/u);
 
   const state = await page.evaluate((copyKey) => ({
     saved: JSON.parse(window.localStorage.getItem(`flow:saved:${copyKey}`) || 'null'),
     anchor: JSON.parse(window.localStorage.getItem(`flow:${copyKey}:anchorDate`) || 'null'),
-    legacySourceRecord: window.localStorage.getItem('flow:saved:moving-d30-basic'),
+    legacySourceRecord: window.localStorage.getItem('flow:saved:curated-wedding-naver-timeline'),
   }), personalCopyKey);
+  expect(state.saved).toMatchObject({
+    sourceFlowSlug: 'curated-wedding-naver-timeline', savedItemCount: 6,
+  });
   expect(state.saved.dateIntent).toBe('custom');
   expect(state.saved.anchor).toBe('2026-07-28');
   expect(state.anchor).toEqual({ mode: 'custom', anchor: '2026-07-28' });

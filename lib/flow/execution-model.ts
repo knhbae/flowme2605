@@ -1,5 +1,6 @@
 import { FlowBundle } from './types';
 import { getSourceFitAudit } from './source-fit';
+import { isPublicFlowSourceOnHold } from './public-source-review-policy';
 
 export type FlowUxType =
   | 'timeline'
@@ -73,6 +74,7 @@ const migrationCandidateSlugs = new Set([
 
 export function getRepresentativeFlowSlugs(): string[] {
   return representativeCandidateFlowSlugs.filter((slug) => {
+    if (isPublicFlowSourceOnHold(slug)) return false;
     const audit = getSourceFitAudit(slug);
     return !audit || audit.decision === 'keep_representative';
   });
@@ -115,6 +117,7 @@ function inferUxType(bundle: FlowBundle): FlowUxType {
 }
 
 function inferExposureStatus(bundle: FlowBundle, uxType: FlowUxType): FlowExposureStatus {
+  if (isPublicFlowSourceOnHold(bundle.flow.slug)) return 'catalog_preview';
   const sourceFitAudit = getSourceFitAudit(bundle.flow.slug);
   if (sourceFitAudit?.decision === 'hide_from_public_catalog') return 'hidden';
   if (sourceFitAudit?.decision === 'catalog_preview_only') return 'catalog_preview';

@@ -1,0 +1,17 @@
+.regions { display: grid; gap: 10px; min-width: 0; }
+.region { min-width: 0; border-top: 1px solid #d8dedc; padding-top: 10px; }
+.regionLabel { display: block; margin-bottom: 4px; font-size: 12px; color: #52615b; }
+.regionHost { min-width: 0; border: 1px solid #b5c8c0; border-radius: 6px; overflow: hidden; }
+.regionHost :global(.tle-root), .regionHost :global(.tle-root[data-mode]) { min-height: 0; height: 100%; --tle-font: 16px; --tle-pad-top: 12px; --tle-pad-left: 12px; --tle-pad-right: 12px; }
+.regionHost :global(.tle-textarea), .regionHost :global(.tle-presentation) { padding-bottom: 12px; }
+.regionHost[data-readonly="true"] :global(.tle-root) { background: #f3f5f4; }
+.context { min-width: 0; color: #58665e; padding: 4px 8px; border-left: 2px solid #c9d6ce; }
+.context pre { white-space: pre-wrap; overflow-wrap: anywhere; margin: 3px 0; font: inherit; }
+.context small { font-size: 11px; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.actions button, .error button, .notice button { min-height: 48px; padding: 8px 12px; border: 1px solid #b5c8c0; border-radius: 6px; background: white; color: #183b2b; }
+.notice { padding: 8px 0; color: #52615b; }
+.notice p { margin: 0 0 6px; }
+.error { padding: 10px; background: #fff3e6; color: #743c13; border-radius: 6px; }
+.error button + button { margin-left: 8px; }
+.error p { margin: 0 0 6px; }

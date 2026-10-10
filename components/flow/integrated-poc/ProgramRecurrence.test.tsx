@@ -47,7 +47,14 @@ test('real recurrence SSR displays bounded occurrence identity, not an ordinary 
 test('occurrence UI writes only its dedicated CAS transition; Space merges both target kinds by effective date', () => {
   assert(source.includes('programOccurrenceWindowFor(row.identity)')); assert(source.includes('expected: row.stored')); assert(!source.includes('M.toggle')); assert(!source.includes('recordProgramTaskProgress'));
   const space = readFileSync(new URL('./ProgramSpace.tsx', import.meta.url), 'utf8');
-  assert(space.includes("entry.kind === 'occurrence'")); assert(space.includes('executionRows.map')); assert(space.includes('programPreservesSeriesMetadata(before, merged)'));
+  assert(space.includes("entry.kind === 'occurrence'"));
+  // Presentation annotates the same ordered rows. Its headings must not replace
+  // the occurrence dispatch or the mixed-list identity with a second list.
+  assert(space.includes('const executionRows = occurrenceResult.rows'));
+  assert(space.includes('programExecutionDayPresentation(executionRows, period, date, today)'));
+  assert(space.includes('executionDayRows.map(({ entry, heading })'));
+  assert(space.includes('key={entry.key}'));
+  assert(space.includes('programPreservesSeriesMetadata(before, merged)'));
   const validation = /validateWorkspace=\{next => ([^\n]+?)\}/.exec(space)?.[1];
   assert(validation, 'the editor validates the proposed workspace before dispatch');
   for (const guard of ['programPreservesSeriesMetadata', 'programPreservesLegacyQualityHold', 'programPreservesLegacyPlanExcluded', 'programPreservesLockedDocumentContent']) {

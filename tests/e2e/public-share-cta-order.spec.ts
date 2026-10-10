@@ -15,6 +15,19 @@ type StickyPrimaryEntry = {
 
 const APPROVED_PUBLIC_SHARE_ROUTES = [
   '/f/vehicle-inspection-prep',
+  '/f/computer-skills-d30-study',
+  '/f/curated-wedding-naver-timeline',
+  '/f/source-backed-middle-school-math-1',
+];
+
+const PUBLIC_SHARE_ITEM_COUNTS: Record<string, number> = {
+  '/f/vehicle-inspection-prep': 10,
+  '/f/computer-skills-d30-study': 9,
+  '/f/curated-wedding-naver-timeline': 6,
+  '/f/source-backed-middle-school-math-1': 8,
+};
+
+const HELD_PUBLIC_SHARE_ROUTES = [
   '/f/moving-d30-basic',
   '/f/fridge-cleanout-weekly-plan',
   '/f/washer-tub-clean-monthly',
@@ -23,11 +36,12 @@ const APPROVED_PUBLIC_SHARE_ROUTES = [
 ];
 
 const CLOSED_REVIEW_FLOW_ROUTES = [
+  ...HELD_PUBLIC_SHARE_ROUTES,
   '/f/real-thankyou-bubu-home-workout-starter',
   '/f/real-fitvely-video-body-fat-6kg-method',
 ];
 
-const PUBLIC_PRIMARY_ACTION_PATTERN = /내 계획에 저장|(?:이사일|시작일|검사일) 정하기/;
+const PUBLIC_PRIMARY_ACTION_PATTERN = /내 계획에 저장|(?:이사일|시작일|검사일|시험일|결혼식 날짜) 정하기/;
 
 async function collectVisibleMobileStickyPrimaryEntries(page: Page) {
   return page.evaluate<StickyPrimaryEntry[]>(() => {
@@ -223,6 +237,7 @@ test.describe('public share shell secondary browse order', () => {
       expect(hierarchy.capabilityImmediateAvailableCount).toBeLessThanOrEqual(2);
       expect(hierarchy.capabilitySelectedPreviewCount).toBe(1);
       expect(hierarchy.capabilitySelectedOutputCount).toBeGreaterThan(0);
+      expect(hierarchy.capabilitySelectedOutputCount).toBe(PUBLIC_SHARE_ITEM_COUNTS[route]);
       expect(hierarchy.capabilitySelectedItemIds).toHaveLength(
         hierarchy.capabilitySelectedOutputCount,
       );
@@ -283,12 +298,18 @@ test.describe('public share shell secondary browse order', () => {
         hierarchy.capabilitySelectedOutputCount,
       );
       expect(hierarchy.preSavePreviewRowCount).toBeGreaterThan(0);
+      expect(hierarchy.capabilitySelectedOutputCount).toBe(PUBLIC_SHARE_ITEM_COUNTS[route]);
     });
   }
 
   for (const route of CLOSED_REVIEW_FLOW_ROUTES) {
     test(`${route} stays out of the public share shell until source-fit review is complete`, async ({ page }) => {
       await page.setViewportSize({ width: 390, height: 844 });
+      // Opening a held source cannot start a NEW plan or alter local records.
+      await gotoLegacySavedPlanLibraryRoute(page, '/');
+      const recordsBefore = await page.evaluate(() => Object.fromEntries(
+        Object.keys(localStorage).sort().map((key) => [key, localStorage.getItem(key)]),
+      ));
       const response = await gotoLegacySavedPlanLibraryRoute(page, route);
 
       expect(response?.status()).toBe(404);
@@ -299,13 +320,16 @@ test.describe('public share shell secondary browse order', () => {
       await expect(page.getByTestId('public-flow-export-secondary-entry')).toHaveCount(0);
       await expect(page.getByTestId('mobile-export-bar')).toHaveCount(0);
       await expect(page.getByRole('checkbox')).toHaveCount(0);
+      expect(await page.evaluate(() => Object.fromEntries(
+        Object.keys(localStorage).sort().map((key) => [key, localStorage.getItem(key)]),
+      ))).toEqual(recordsBefore);
     });
   }
 
   test('input-free workbench save path remains keyboard reachable and leads to My Flow', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await installLegacySavedPlanLibraryNavigation(page);
-    await gotoLegacySavedPlanLibraryRoute(page, '/f/new-car-delivery-check');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/source-backed-middle-school-math-1');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
 
@@ -321,7 +345,8 @@ test.describe('public share shell secondary browse order', () => {
     const receipt = await savePublicFlow(page, saveButton);
     await openSavedPublicFlow(page, receipt);
     await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
-    const workspace = await openMyFlowLibraryFlow(page, 'new-car-delivery-check', 'execute');
+    await expect(receipt).toHaveAttribute('data-item-count', '8');
+    const workspace = await openMyFlowLibraryFlow(page, 'source-backed-middle-school-math-1', 'execute');
 
     const execution = workspace.getByTestId('my-flow-workspace-execute');
     await expect(execution).toBeVisible();

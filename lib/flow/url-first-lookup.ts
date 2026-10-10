@@ -13,6 +13,7 @@ import {
 } from './source-backed-my-flow';
 import { toUserFacingMapTitle, toUserFacingSourceTitle } from './display-title';
 import { buildPostSaveHref } from './post-save-receipt';
+import { isPublicFlowSourceOnHold } from './public-source-review-policy';
 import type { FlowItemState } from './types';
 import {
   AJD_MOVING_CANONICAL_PUBLIC_SLUG,
@@ -192,7 +193,7 @@ const sourceRowHoldPreview: UrlFirstPreview = {
   calendar: [],
   markdown: [],
   checklist: [],
-  myFlow: ['개별 원문 자료를 확인하기 전에는 저장하지 않아요.'],
+  myFlow: ['원문과 실행 항목의 일정·조건을 확인하기 전에는 새로 저장하거나 파일로 받지 않아요.'],
 };
 
 const medicalSourceFitHoldPreview: UrlFirstPreview = {
@@ -249,8 +250,8 @@ function buildSourceBackedLookupTemplate(map: SourceBackedMyFlowMap, q3CopyEnabl
     ? needsSourceRows
       ? {
           kind: 'source_rows',
-          title: '실행할 자료를 더 골라야 해요',
-          reason: '자료 모음은 확인했지만 실제로 쓸 개별 자료와 난이도를 아직 고르는 중이에요.',
+          title: '원문과 실행 항목 확인이 필요해요',
+          reason: '실행 항목의 일정과 조건을 원문과 대조 중이라 지금은 새로 저장하거나 파일로 받을 수 없습니다.',
           requiredAction: q3CopyEnabled ? '원문 자료를 둘러보거나 다른 계획을 찾아보세요.' : '원문 자료를 둘러보거나 다른 Flow를 찾아보세요.',
         }
       : needsMedicalSourceFit
@@ -280,7 +281,7 @@ function buildSourceBackedLookupTemplate(map: SourceBackedMyFlowMap, q3CopyEnabl
       ? q3CopyEnabled ? '이미 만들어진 계획이 있어요' : '이미 만들어진 Flow가 있어요'
       : executionHeld
         ? needsSourceRows
-          ? '실행할 자료를 더 골라야 해요'
+          ? '원문과 실행 항목 확인이 필요해요'
           : needsMedicalSourceFit
             ? '아이 상태에 맞는 확인이 필요해요'
           : '최신 공식 내용 확인이 필요해요'
@@ -289,7 +290,9 @@ function buildSourceBackedLookupTemplate(map: SourceBackedMyFlowMap, q3CopyEnabl
       ? `${sourceLabel} 기준으로 저장 가능한 콘텐츠를 찾았어요. 필요한 옵션만 바꾸고 저장 전 확인할 수 있습니다.`
       : executionHeld
         ? needsSourceRows
-          ? `${sourceLabel} 자료 모음은 찾았지만 개별 자료와 난이도를 더 확인해야 해요. 지금은 저장하지 않고 원문 자료를 둘러볼 수 있어요.`
+          ? map.id === 'curated-funmom-learning-park'
+            ? `${sourceLabel}의 개별 자료와 난이도를 더 확인해야 해요. 지금은 새로 저장하거나 파일로 받지 않고 원문 자료를 둘러볼 수 있어요.`
+            : `${sourceLabel}의 실행 항목·일정·조건을 원문과 대조 중이에요. 지금은 새로 저장하거나 파일로 받지 않고 원문을 확인할 수 있어요.`
           : needsMedicalSourceFit
             ? `${sourceLabel} 식단표는 찾았지만 시작 시기와 메뉴를 아이 상태에 맞게 다시 확인해야 해요. 지금은 저장하지 않고 공식 안내와 참고 원문을 확인할 수 있어요.`
           : `${sourceLabel} 기반 콘텐츠는 최신 내용을 다시 확인 중이에요. 지금은 저장하지 않고 공식 원문을 확인해 주세요.`
@@ -500,7 +503,17 @@ export function lookupUrlFirstP0Input(input: string, q3CopyEnabled = true): UrlF
       ? q3LookupTemplatesByCanonicalUrl
       : legacyLookupTemplatesByCanonicalUrl;
     const template = lookupTemplatesByCanonicalUrl.get(canonicalUrl);
-    if (template) return withInput(template, input, canonicalUrl);
+    if (template) {
+      const result = withInput(template, input, canonicalUrl);
+      if (result.flowSlug && isPublicFlowSourceOnHold(result.flowSlug)) {
+        return { ...result, status: 'needs_review', title: '출처 재검토 중',
+          summary: '이 자료는 새 계획으로 시작할 수 없습니다. 기존 개인 계획은 내 공간에서 이어 쓸 수 있습니다.',
+          exportModes: [], canExport: false, canSaveToMyFlow: false, saveMode: 'blocked',
+          gate: { kind: 'content_review', title: '출처 재검토 중', reason: '이 자료의 신규 시작을 보류했습니다.',
+            requiredAction: '이미 저장한 개인 계획은 내 공간에서 이어 쓸 수 있습니다.' } };
+      }
+      return result;
+    }
     return buildMiss(input, canonicalUrl, q3CopyEnabled);
   } catch {
     return buildMiss(input, undefined, q3CopyEnabled);
@@ -739,6 +752,9 @@ export function buildUrlFirstStartPackage(
   const q3CopyEnabled = options.q3CopyEnabled !== false;
   const sourceBackedStartPackage = result.flowMapId ? buildSourceBackedFlowMapPublishPackage(result.flowMapId) : undefined;
   const dateAnchorLabel = getSourceBackedFlowMapDateAnchorCopy(sourceBackedStartPackage).label;
+  if (result.flowSlug && isPublicFlowSourceOnHold(result.flowSlug)) {
+    return buildUrlFirstBlockedStartPackage(result, '출처를 재검토하고 있어 새로 시작할 수 없습니다. 기존 개인 계획은 내 공간에서 이어 쓸 수 있습니다.', q3CopyEnabled);
+  }
   if (!result.canSaveToMyFlow || result.saveMode !== 'direct') {
     return buildUrlFirstBlockedStartPackage(
       result,

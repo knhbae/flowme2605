@@ -100,7 +100,10 @@ export function ProgramCopyProposal(props: ProgramCopyProposalProps) {
         try {
           const input = { context: programClone(currentDraft.context), requestId: currentDraft.requestId, reason: currentDraft.reason, patch: currentPatch };
           const now = new Date().toISOString();
-          const result = await live.current.mutate('원문 항목 개선 제안', current => submitProgramCopyProposal(current, input, now));
+          const result = await live.current.mutate('원문 항목 개선 제안', current => submitProgramCopyProposal(current, input, now), { alphaSocial: {
+            type: 'proposal-create', copyId: input.context.copyId, flowId: input.context.flowId, baseVersionId: input.context.baseVersionId,
+            itemId: input.context.item.id, reason: input.reason, patch: input.patch,
+          } });
           if (!result.ok) { setError(programErrorMessage(result.reason)); return; }
           restoreSelection.current = true; draftRef.current = null; setDraft(null); touched.current = false;
           setMessage(result.changed === false ? '이미 보낸 제안입니다. 중복으로 보내지 않았습니다.' : '개선 제안을 보냈습니다. 공개 원문은 아직 바뀌지 않았습니다.');

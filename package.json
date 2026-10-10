@@ -6,6 +6,10 @@
     "node": "24.x"
   },
   "scripts": {
+    "postinstall": "node scripts/alpha/patch-auth-debug-probe.mjs",
+    "alpha:dev": "tsx scripts/alpha/dev.ts",
+    "test:alpha-auth": "tsx --test lib/flow/integrated-poc/alpha-auth/auth.test.ts scripts/alpha/m2-schema.test.ts scripts/alpha/m2-expiry-contract.test.ts && node --test scripts/alpha/patch-auth-debug-probe.test.mjs",
+    "test:e2e:alpha-auth": "playwright test --config tests/e2e/alpha-auth.config.ts",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -27,7 +31,7 @@
     "workflow:session-start": "node scripts/workflows/repo-workflow.mjs session-start",
     "workflow:closeout": "node scripts/workflows/repo-workflow.mjs work-closeout",
     "docs:check": "node scripts/sync-skills.mjs --check && node --test scripts/check-docs.test.mjs && node scripts/check-docs.mjs",
-    "security:audit": "npm audit --audit-level=high",
+    "security:audit": "npm audit --audit-level=high && node --test scripts/dependency-compatibility.test.mjs scripts/tailwind-v3-compat.test.mjs",
     "audit:p26:journeys": "node scripts/content-audit/run-p26-six-shape-journey-gate.mjs",
     "verify": "npm run docs:check && npm test && npm run build",
     "test:p3b-creator-drafts": "tsx --test lib/flow/personal-workspace-poc-creator-drafts.test.ts lib/flow/personal-workspace-poc-creator-draft-storage.test.ts lib/flow/personal-workspace-poc-creator-draft-storage-transaction.test.ts components/flow/personal-workspace-poc/PersonalWorkspacePocCreatorDraftLibrary.test.tsx",
@@ -56,26 +60,34 @@
     "@fullcalendar/daygrid": "^6.1.21",
     "@fullcalendar/interaction": "^6.1.21",
     "@fullcalendar/react": "^6.1.21",
+    "@supabase/supabase-js": "2.116.0",
     "exceljs": "4.4.0",
     "next": "15.5.25",
     "react": "19.0.0",
-    "react-dom": "19.0.0"
+    "react-dom": "19.0.0",
+    "sharp": "0.35.5"
   },
   "devDependencies": {
     "@playwright/test": "1.61.1",
     "@types/node": "22.15.3",
     "@types/react": "19.0.10",
     "@types/react-dom": "19.0.4",
-    "autoprefixer": "10.4.21",
     "postcss": "8.5.23",
-    "tailwindcss": "3.4.17",
+    "@tailwindcss/postcss": "4.3.3",
+    "tailwindcss": "4.3.3",
     "tsx": "4.19.4",
-    "typescript": "5.8.3"
+    "typescript": "5.8.3",
+    "yaml": "2.9.0"
   },
   "overrides": {
-    "brace-expansion": "5.0.9",
+    "minimatch@3": {
+      "brace-expansion": "1.1.21"
+    },
+    "minimatch@5": {
+      "brace-expansion": "2.1.7"
+    },
     "postcss": "$postcss",
-    "sharp": "0.35.4",
+    "sharp": "0.35.5",
     "tmp": "0.2.7",
     "uuid": "11.1.1"
   }

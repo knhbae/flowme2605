@@ -175,7 +175,7 @@ test('actual review-hold and curated quality hold reject completion with zero wr
 });
 
 test('validated personal Map review closes completed disclosure without weakening source quality or showing a disabled repeat action', async () => {
-  const mapId = 'moving-d30', saved = buildSourceBackedFlowMapSavedSnapshot(mapId, { savedAt: NOW });
+  const mapId = 'curated-ajd-moving-d30', saved = buildSourceBackedFlowMapSavedSnapshot(mapId, { savedAt: NOW });
   const persistence = buildSourceBackedFlowMapPersistenceRecord(mapId, { savedAt: NOW }); assert.ok(saved); assert.ok(persistence);
   persistence.readiness = { ...persistence.readiness, content: 'needs_creator_review', reasons: ['항목별 원문 URL을 확인하세요'] };
   const keys: Record<string, string> = { [`flow:map:saved:${mapId}`]: JSON.stringify(saved), [`flow:map:persistence:${mapId}`]: JSON.stringify(persistence) };
@@ -196,7 +196,7 @@ test('validated personal Map review closes completed disclosure without weakenin
   const html = renderToStaticMarkup(<ProgramLegacyWorkspace data={after} mutate={mutate} navigate={() => undefined} onUndo={async () => undefined} today="2026-09-12" />);
   assert.match(html, /<details class="source"><summary>Map 원문·실행 조건 검토<span class="reviewState">개인 검토 완료/);
   assert.doesNotMatch(html, /조건과 출처를 확인하며 검토 시작/); assert.match(html, /role="checkbox"/);
-  assert.match(html, /0\/5개 완료/); assert.doesNotMatch(html, /실행 보류 중/);
+  assert.ok(html.includes(`0/${review.items.length}개 완료`)); assert.doesNotMatch(html, /실행 보류 중/);
   assert.equal(raw, beforeRender); assert.equal(writes, 1);
   const refreshed = port.read(NOW); assert.ok(refreshed.ok);
   const effective = programLegacyWorkspaceModel(refreshed)!.flows[0], present = loaded.exports.programLegacyMapReviewPresentation;

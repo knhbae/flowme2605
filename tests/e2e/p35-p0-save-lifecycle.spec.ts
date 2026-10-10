@@ -5,8 +5,9 @@ import {
   installLegacySavedPlanLibraryNavigation,
 } from './helpers/my-flow-library';
 
-const SOURCE_FLOW_SLUG = 'moving-d30-basic';
-const SOURCE_ROUTE = `/f/${SOURCE_FLOW_SLUG}`;
+const NEW_PUBLIC_FLOW_SLUG = 'computer-skills-d30-study';
+const NEW_PUBLIC_ROUTE = `/f/${NEW_PUBLIC_FLOW_SLUG}`;
+const NEW_PUBLIC_ITEM_COUNT = 9;
 const SAVED_RECORD_PREFIX = 'flow:saved:';
 const ITEM_DRAFTS_STORAGE_KEY = 'flow:my-flow:item-drafts';
 const DATE_OVERRIDES_STORAGE_KEY = 'flow:my-flow:date-overrides';
@@ -62,7 +63,7 @@ type BrowserRecoveryJournal = {
 async function resetAndOpenSource(page: Page): Promise<void> {
   await page.setViewportSize(MOBILE_VIEWPORT);
   await installLegacySavedPlanLibraryNavigation(page);
-  await gotoLegacySavedPlanLibraryRoute(page, SOURCE_ROUTE);
+  await gotoLegacySavedPlanLibraryRoute(page, NEW_PUBLIC_ROUTE);
   await page.evaluate(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
@@ -100,7 +101,7 @@ async function savedCopiesForSource(page: Page): Promise<BrowserSavedCopy[]> {
       }
     }
     return records.sort((left, right) => left.storageKey.localeCompare(right.storageKey));
-  }, { prefix: SAVED_RECORD_PREFIX, sourceSlug: SOURCE_FLOW_SLUG });
+  }, { prefix: SAVED_RECORD_PREFIX, sourceSlug: NEW_PUBLIC_FLOW_SLUG });
 }
 
 async function rawStorageValue(page: Page, key: string): Promise<string | null> {
@@ -211,7 +212,7 @@ async function openExistingCopyDialog(
   page: Page,
   anchor = '2031-02-10',
 ): Promise<Locator> {
-  await gotoLegacySavedPlanLibraryRoute(page, SOURCE_ROUTE);
+  await gotoLegacySavedPlanLibraryRoute(page, NEW_PUBLIC_ROUTE);
   await page.getByTestId('public-flow-anchor-input').fill(anchor);
   await page.getByTestId('public-flow-save-primary-mobile').click();
   const dialog = page.getByTestId('public-flow-existing-copy-dialog');
@@ -255,14 +256,14 @@ test.describe('P35 P0 public save lifecycle', () => {
       schemaVersion: 2,
       slug: personalCopyKey,
       personalCopyKey,
-      sourceFlowSlug: SOURCE_FLOW_SLUG,
-      savedItemCount: 24,
+      sourceFlowSlug: NEW_PUBLIC_FLOW_SLUG,
+      savedItemCount: NEW_PUBLIC_ITEM_COUNT,
       anchor: '2031-01-10',
     });
     expect(copies[0]?.record.sourceFlowKey).toMatch(/\S/u);
     expect(copies[0]?.record.sourceVersion).toMatch(/\S/u);
     expect(copies[0]?.record.lastSaveRequestId).toMatch(/^save-request:/u);
-    expect(await rawStorageValue(page, `${SAVED_RECORD_PREFIX}${SOURCE_FLOW_SLUG}`)).toBeNull();
+    expect(await rawStorageValue(page, `${SAVED_RECORD_PREFIX}${NEW_PUBLIC_FLOW_SLUG}`)).toBeNull();
 
     await page.reload();
     expect(await expectFocusedPersonalCopyRoute(page)).toBe(personalCopyKey);
@@ -271,7 +272,7 @@ test.describe('P35 P0 public save lifecycle', () => {
     await expect(selectedMobileWorkspace(page, personalCopyKey)).toBeVisible();
 
     await page.goBack();
-    await expect(page).toHaveURL(new RegExp(`${SOURCE_ROUTE}(?:\\?.*)?$`, 'u'));
+    await expect(page).toHaveURL(new RegExp(`${NEW_PUBLIC_ROUTE}(?:\\?.*)?$`, 'u'));
     const copiesAfterBack = await savedCopiesForSource(page);
     expect(copiesAfterBack.map((copy) => copy.storageKey)).toEqual([savedRecordKey]);
   });
@@ -282,7 +283,7 @@ test.describe('P35 P0 public save lifecycle', () => {
     const savedRecordRaw = await rawStorageValue(page, savedRecordKey);
 
     await page.goBack();
-    await expect(page).toHaveURL(new RegExp(`${SOURCE_ROUTE}(?:\\?.*)?$`, 'u'));
+    await expect(page).toHaveURL(new RegExp(`${NEW_PUBLIC_ROUTE}(?:\\?.*)?$`, 'u'));
     const editAction = page.getByTestId('public-flow-adjust-entry-mobile');
     const saveAction = page.getByTestId('public-flow-save-primary-mobile');
     await expect(editAction).toBeVisible();
@@ -312,7 +313,7 @@ test.describe('P35 P0 public save lifecycle', () => {
 
   test('existing-copy dialog and both cancellation paths write nothing and preserve the public draft', async ({ page }) => {
     await createFirstPersonalCopy(page);
-    await gotoLegacySavedPlanLibraryRoute(page, SOURCE_ROUTE);
+    await gotoLegacySavedPlanLibraryRoute(page, NEW_PUBLIC_ROUTE);
     const draftAnchor = '2031-03-15';
     const anchorInput = page.getByTestId('public-flow-anchor-input');
     await anchorInput.fill(draftAnchor);
@@ -585,7 +586,7 @@ test.describe('P35 P0 public save lifecycle', () => {
     const journalBeforeReload = await historyRecoveryJournal(page);
     expect(journalBeforeReload).toMatchObject({
       schemaVersion: 3,
-      sourceFlowSlug: SOURCE_FLOW_SLUG,
+      sourceFlowSlug: NEW_PUBLIC_FLOW_SLUG,
       rawBackup: {
         keys: expect.arrayContaining([
           ITEM_DRAFTS_STORAGE_KEY,
@@ -614,7 +615,7 @@ test.describe('P35 P0 public save lifecycle', () => {
 
   test('forced reload after incomplete rollback restores storage and reapplies the public title and anchor draft', async ({ page }) => {
     await resetAndOpenSource(page);
-    const titleDraft = '복구해야 할 우리 집 이사 계획';
+    const titleDraft = '복구해야 할 내 컴활 준비 계획';
     const anchorDraft = '2031-06-09';
     await page.getByTestId('public-flow-adjust-entry-mobile').click();
     const adjustment = page.getByTestId('public-flow-personal-adjustment');
@@ -752,7 +753,7 @@ test.describe('P35 P0 public save lifecycle', () => {
         return originalGetItem.call(this, key);
       };
     }, {
-      sourcePath: SOURCE_ROUTE,
+      sourcePath: NEW_PUBLIC_ROUTE,
       targetKey: savedRecordKey,
       onceKey: 'e2e:p004:committed-marker-read-failed',
     });
@@ -761,7 +762,7 @@ test.describe('P35 P0 public save lifecycle', () => {
       void dialog.accept();
     });
     await page.reload();
-    await expect(page).toHaveURL(new RegExp(`${SOURCE_ROUTE}(?:\\?.*)?$`, 'u'));
+    await expect(page).toHaveURL(new RegExp(`${NEW_PUBLIC_ROUTE}(?:\\?.*)?$`, 'u'));
     const failure = page.getByTestId('public-flow-save-error-mobile');
     await expect(failure).toContainText('저장 성공 여부를 안전하게 확인하지 못해');
     await expect(failure).toContainText('현재 저장값은 건드리지 않았습니다');
@@ -963,7 +964,9 @@ test.describe('P35 P0 public save lifecycle', () => {
     const banner = page.getByTestId('my-flow-save-banner');
     await expect(banner).toBeVisible();
     await expect(banner).toHaveAttribute('data-personal-copy-key', personalCopyKey);
-    await expect(banner.getByTestId('my-flow-save-banner-summary')).toHaveText('저장됨 · 24개');
+    await expect(banner.getByTestId('my-flow-save-banner-summary')).toHaveText(
+      `저장됨 · ${NEW_PUBLIC_ITEM_COUNT}개`,
+    );
     await page.getByTestId('my-flow-save-undo').click();
     await expect(page.getByTestId('my-flow-save-banner')).toHaveCount(0);
     expect(await rawStorageValue(page, `${SAVED_RECORD_PREFIX}${personalCopyKey}`)).toBeNull();
@@ -1020,13 +1023,13 @@ test.describe('P35 P0 public save lifecycle', () => {
       `flow_builder_mvp_item_state_${newCopyKey}`,
     )).toBeNull();
     expect(await rawStorageValue(page, originalRecordKey)).toBe(originalRaw);
-    expect(await rawStorageValue(page, `${SAVED_RECORD_PREFIX}${SOURCE_FLOW_SLUG}`)).toBeNull();
+    expect(await rawStorageValue(page, `${SAVED_RECORD_PREFIX}${NEW_PUBLIC_FLOW_SLUG}`)).toBeNull();
     const remainingCopies = await savedCopiesForSource(page);
     expect(remainingCopies.map((copy) => copy.record.personalCopyKey)).toEqual([
       originalCopyKey,
     ]);
 
-    await gotoLegacySavedPlanLibraryRoute(page, SOURCE_ROUTE);
+    await gotoLegacySavedPlanLibraryRoute(page, NEW_PUBLIC_ROUTE);
     await expect(
       page.locator('main[data-p35-p004-save-lifecycle="on"]'),
     ).toBeVisible();

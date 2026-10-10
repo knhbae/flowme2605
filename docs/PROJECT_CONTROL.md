@@ -1,14 +1,52 @@
 # FlowMe Project Control
 
+## 현재 실행 — 메모·날짜 후속 갭의 안전한 선별 반영 (2026-10-04)
+
+[목표](./specs/2026-10-04-alpha-memo-date-gaps-release/spec.md)·[단계](./specs/2026-10-04-alpha-memo-date-gaps-release/plan.md)·[작업](./specs/2026-10-04-alpha-memo-date-gaps-release/tasks.md)·[QA](./specs/2026-10-04-alpha-memo-date-gaps-release/qa.md)·[32개 allowlist](./specs/2026-10-04-alpha-memo-date-gaps-release/manifest.md)·[운영 전환/복귀](./specs/2026-10-04-alpha-memo-date-gaps-release/runbook.md)를 따른다. 별도 작업본에서 원본/제공본을 보존한 채 준비·새 로컬 검증을 마쳤다. 사용자 직접 승인으로 게시·private CI·운영 협업·DEV/자동시작 전환복귀를 순서대로 재개하며 실제 성공은 QA로 확인한다. 좁은 race 수정 반영과 넓은 UX/미결 제품 정책·사람 대상 시험을 분리한다.
+
+## 현재 완료 절편 — 메모·날짜 후속 갭 검증 (2026-10-04)
+
+[목표](./specs/2026-10-04-memo-date-feedback-gaps/spec.md)·[계획](./specs/2026-10-04-memo-date-feedback-gaps/plan.md)·[작업](./specs/2026-10-04-memo-date-feedback-gaps/tasks.md)·[요구](./specs/2026-10-04-memo-date-feedback-gaps/requirements.md)·[결과](./specs/2026-10-04-memo-date-feedback-gaps/results.md). 세 원천과 최신26피드백·중간 추가를 유지하며 날짜·부분 선택의 지원 경로를 검증하고 지연 응답 입력 덮어쓰기를 수정했다. 격리 후보의 구현/합성 QA/보고까지이며 새 게시·CI·DEV 교체·실사용 시험은 제외했다. 제품 정책은 새로 확정하지 않았고 제공본/원본 dirty/계정·DB/Auth/DNS/Tunnel을 보존했다.
+
+직전 반영 목표의 완료는 제공 worktree 로컬 release-result 원장과 실제 HEAD/build를 확인했다. 아래 옛 ‘현재’는 날짜별 이력이며 새 목표나 현재 미완료 선언으로 쓰지 않는다.
+
+## 이전 목표 — 메모·날짜 후보 선별 게시·개발계 반영 (2026-10-04 등록 이력)
+
+[목표·승인 경계](./specs/2026-10-04-alpha-memo-date-release/spec.md)·[계획](./specs/2026-10-04-alpha-memo-date-release/plan.md)·[작업](./specs/2026-10-04-alpha-memo-date-release/tasks.md)·[QA](./specs/2026-10-04-alpha-memo-date-release/qa.md)·[선별 manifest](./specs/2026-10-04-alpha-memo-date-release/manifest.md)·[전환/복귀](./specs/2026-10-04-alpha-memo-date-release/runbook.md). 직전 좁은 후보를 인수해 승인된36파일 선별 게시·같은commit CI/QA·DEV/자동 시작 전환·복귀를 재개했다. 실제 성공은 QA 원장으로 판정한다. 현재 제공CP2·원본dirty·실계정/DB/Auth/DNS/Tunnel 설정·main/Production을 보호한다.
+
+## 직전 격리 목표 — 개인 문서 메모·날짜 UX (2026-10-04)
+
+상태: 좁은 후보 검증 완료·DEV 미반영. [결과](./specs/2026-10-04-personal-memo-date-ux/results.md)·[QA](./specs/2026-10-04-personal-memo-date-ux/qa.md)·[소유 목록](./specs/2026-10-04-personal-memo-date-ux/ownership.md)을 따른다. 새 인계는 부분/NOT_RUN으로 분리했다. 다음 게시/반영 승인을 이번 완료와 합치지 않는다.
+
+[목표](./specs/2026-10-04-personal-memo-date-ux/spec.md)·[요구 대조](./specs/2026-10-04-personal-memo-date-ux/requirements.md)·[단계 계획](./specs/2026-10-04-personal-memo-date-ux/plan.md)·[작업 체크](./specs/2026-10-04-personal-memo-date-ux/tasks.md)·[조작 HTML](./content-audit/2026-10-04-flowme-memo-date-ux-ko.html). 날짜 출처와 메모 owner를 필요한 순간에 보여주는 좁은 후보이며 새로운 메모 문법·날짜 이동 의미를 확정하지 않는다. 세 목적은 계속 선택 경로다. 직전 CP2 개발계 전환 완료와 이 후보의 미반영을 구분한다. 새 게시·CI·개발계 교체는 후보 검증 뒤 별도 승인 범위다.
+
+## 현재 격리 목표 — 핵심 사용 여정 개선·개발계 반영·시험 준비 (2026-10-03)
+
+[목표·경계](./specs/2026-10-03-alpha-core-journeys-ready/spec.md)·[단계 계획](./specs/2026-10-03-alpha-core-journeys-ready/plan.md)·[작업 체크](./specs/2026-10-03-alpha-core-journeys-ready/tasks.md)·[검증/반영 원장](./specs/2026-10-03-alpha-core-journeys-ready/qa.md)을 따른다. 세 목적은 선택 경로이며 강제 순서/계정 모드가 아니다. P/C/N/F 설계·구현과 합성 검증, CP1/CP2 선별 게시·Draft PR209/210을 마쳤고 CI 실패의 공통 보완을 진행 중이다. 사용자의 착수·게시/CI·개발계 교체 승인은 확인됐으며 계획만 완료한 상태가 아니다. 정확 HTTP QA와 두 개발계 교체/복귀는 미완료다. 이전 goal 문구의 계획-only 제한은 등록 당시 이력으로 보존하고 최신 사용자 승인과 spec을 따른다. 실제 관찰 시험·독립 HTML2·미결 정책·새 DB/Auth/DNS/Tunnel·main merge·Production은 포함하지 않는다.
+
+## 직전 격리 목표 — UX 비교·저장 갭 보완 마감 (2026-10-03)
+
+[목표와 경계](./specs/2026-10-02-alpha-ux-comparison-gaps/spec.md)·[현재 결과](./specs/2026-10-02-alpha-ux-comparison-gaps/results.md)·[요구별 마감 점검](./specs/2026-10-02-alpha-ux-comparison-gaps/completion-audit.md)이 최신 진입점이다. 세 원천·UX2 네 시안·26피드백과 Dots 대조, 좁은 갭 구현·r6 앱30/30·다음 UX-N1 범위를 마쳤다. 10/3 사용자 승인으로 새 HTML/독립 시안 검사2건을 NOT_RUN 후속으로 분리했으며 이번 필수 완료 조건에서 제외했다. 최종 완료 등록은 마감 점검을 따른다. 제품 전체 완성·현재 개발계 반영·실기기 검증은 아니며 관찰 사용자는0명이다. 아래 Stage·출시·배포 문단은 해당 날짜의 이력이고 이 목표의 Production gate나 게시 승인이 아니다.
+
 <!-- alpha-transition-20260920:start -->
 ## 현재 격리 작업 — 실사용 알파 전환 (2026-09-20)
 
-기능형 통합 PoC 이후의 현재 실행 계획은 [실사용 알파 전환 원장](./specs/2026-09-12-flowme-integrated-product-poc-program/alpha-transition.md)에서 관리한다. v4.1·개발1·개발2 요구 연결, 단계별 완료 조건, 결정 대기와 다음 M1 개발 묶음이 정본이다. 개발 DB 자원은 준비됐지만 실제 인증·서버 저장·다기기 동기화·알파 배포는 미구현이다.
+9/26 현재: Render를 M7-2 다기기 시험 경로로 선택하고 [배포 전 코드 준비·검증](./specs/2026-09-12-flowme-integrated-product-poc-program/alpha-m7-2-personal-trial.md#926-현재--render-다기기-시험-경로-선택배포-전-코드-준비)을 마쳤다. 서비스·요금제·실제 URL·Auth 변경·발행/배포는 별도 승인 전 미실행이고 실제 기기/일상 사용과 M7-2 전체는 미완료다. 아래 9/24는 당시 판정 이력이다.
 
-현재는 M1 전에 [PR #203 머지 준비](./specs/2026-09-12-flowme-integrated-product-poc-program/merge-readiness-2026-09-20.md)를 진행한다. 아래 운영 release·9/7 정리 정보는 기존 이력이며, 새 main 머지·배포 승인으로 해석하지 않는다.
+9/24 최신: [제한 PC 사용 시작 판정과 다음 순서](./specs/2026-09-12-flowme-integrated-product-poc-program/alpha-m7-2-personal-trial.md#924-현재--제한-pc-사용을-먼저-시작)가 현재 진입점이다. 복원 승인은 PC 시작 조건에서 분리했다. 다음은 다기기 접속 환경 준비이며 배포는 별도 승인이다. 아래는 이전 단계 이력이다.
+
+9/23 현재: **기존 콘텐츠 전체의 비공개 보존·열람 완료, 전체 편집·실행 연결은 미완료**. [전체 반입·판정·잔여](./specs/2026-09-12-flowme-integrated-product-poc-program/alpha-m7-2-full-catalog.md): 002에 Flow177·Item957·구간371·Map26 및 현재 다른 판본2개를 원본 구조로 보존했다. 계정 r74→75 명령1건, 001·기존 제작 사본2개·개인 기록·공유 자료 불변. 표적70/70·통합2188/2188·npm2255/2255·빌드/타입 통과, 실제 브라우저34/34 및 독립 재검사37/37·다섯 해상도 확인. 반입 후 압축 백업1.67MB와 서버 preview 검증을 마쳤다. 다음은 반복·기간·표·Map 의미를 유지한 편집/개인 실행 사본 연결이며, 독립 사본·실제 복원·일상 사용·실기기와 M7-2 전체는 남는다. 공개·배포는 하지 않았다. 아래는 이전 단계 이력이다.
+
+9/23 최신: **M7-1 안전성·운영 준비 준비 목표 완료.** [현재 결과와 다음 결정](./specs/2026-09-12-flowme-integrated-product-poc-program/alpha-m7-1-readiness.md)에서 강화 QA·수정·원본/QA 경계·D03/D04/D05·실기기/배포 절차를 확인한다. M7 전체 실사용/배포 완료나 실제 자료의 유일본 투입 승인으로 확대하지 않는다. 아래 M6는 직전 완료 이력이다.
+
+9/23 현재 **M6 개발계 목표 완료**. [M6 실행 원장](./specs/2026-09-12-flowme-integrated-product-poc-program/alpha-m6-preservation.md)에 이관·백업·복원·호환·QA 정리와 종료 판정을 기록했다. 다음은 M7 실사용 준비이며 미실행 강화 검사와 정책·기기·배포 gate는 잔여 M6-R01–08로 연결한다. 보고서 HTML 시각 검사는 미검증으로 유지하되 사용자 승인 대기 사유로 삼지 않는다. 아래 M5 문단은 이전 단계의 완료 이력이다.
+
+기능형 통합 PoC 이후의 현재 실행 계획은 [실사용 알파 전환 원장](./specs/2026-09-12-flowme-integrated-product-poc-program/alpha-transition.md)에서 관리한다. v4.1·개발1·개발2의 요구 연결과 M0–M7 완료 조건을 유지한다. M1–M4에 이어 [M5 공개 탐색·공유·커뮤니티](./specs/2026-09-12-flowme-integrated-product-poc-program/alpha-m5-social.md)의 개발계 구현·실제 두 계정/브라우저 검증과 QA 자료 정리를 완료했다. 다음은 M6 기존 자료 이관·전체 백업/복원·업데이트 호환이며 M7 실사용/배포와 D05 운영 정책은 후속이다.
+
+PR #203 코드 병합과 M1 로컬 계약 이후 [M2 실제 인증·개발 환경](./specs/2026-09-12-flowme-integrated-product-poc-program/alpha-m2-auth.md)의 구현·실제 계정 권한/복구/만료 검증을 마쳤다. 개발 M2 완료와 서비스 전체 실사용 준비는 구분하며, 아래 운영 release·9/7 정리는 기존 이력이다.
 <!-- alpha-transition-20260920:end -->
 
-**Last Updated:** 2026-09-20 (9/7 main 정리와 격리 PoC/알파 원장 연결; main 머지·배포 미실행)
+**Last Updated:** 2026-09-26 (격리 알파 M7-2 Render 배포 전 코드 준비; 발행·배포 미실행)
 
 **Purpose:** Stable entry point for the current FlowMe stage, evidence boundary, and next owner decision.
 
@@ -16,6 +54,8 @@ This file is an index, not a second source of product truth. Update its links af
 
 ## Current View
 
+- [2026-10-01 writing interaction candidate](./content-audit/2026-10-01-flowme-writing-interactions-review-ko.html) — [approved scope and QA](./specs/2026-10-01-alpha-writing-interactions/spec.md); shared native input, memo/Item Enter and guarded local continuation. This extends the direction checkpoint below; no publication, live health or development replacement is implied.
+- [2026-10-01 direction, completed/remaining work, and proposed next UX goal](./content-audit/2026-10-01-flowme-direction-workboard-ko.html) — private-worktree review; see [the scoped checkpoint](./specs/2026-10-01-direction-and-next-goal/spec.md). The 9/26 and older stage paragraphs above are historical and do not supersede current STATUS/specs. This link does not certify current live health or a new release.
 - [Current status and owner action](./STATUS.md)
 - [Current roadmap and inactive shelves](./ROADMAP.md)
 - [Released Flow Entry And Preview Clarity](./specs/2026-08-20-flow-entry-preview-clarity/spec.md)

@@ -24,7 +24,9 @@ export type CreatorNativeSourceReceipt={
 export type CreatorNativeSourceEvent=({kind:'decision';changeId:string;decision:CreatorNativeSourceDecision}|{kind:'focus';selectedChangeId:string|null;scrollTop:number}|{kind:'defer'}|{kind:'reject'}|{kind:'apply';receipt:CreatorNativeSourceReceipt;applyVersion?:2}|{kind:'undo'})&{requestId:string;at:string};
 /** Versioned Program-only state. Absent owner never causes automatic migration. */
 export type CreatorNativeSourceSession={
- version:1;sessionId:string;actorId:string;draftId:string;revision:number;createdAt:string;
+ version:1|2;sessionId:string;actorId:string;draftId:string;revision:number;createdAt:string;
+ /** Explicit import binding. Historical actor, IDs and event receipts stay unchanged. */
+ ownerMapping?:{version:1;targetActorId:string;sourceRevision:number;sourceHash:string};
  authorityConstraint:'creator_required'|'denied';baseOwner:NativeCreatorDocumentOwner;
  envelope:CreatorNativeSourceEnvelope;candidateDocument:TextAuthoringDocument;matches:AuthoringSourceItemMatch[];
  projectionOptions:BuildAuthoringArtifactProjectionOptions;events:CreatorNativeSourceEvent[];
@@ -37,6 +39,6 @@ export type CreatorNativeSourceView={
  workingAbsences:{changeId:string;itemId:string;field:'completion'|'schedule';effectiveValue:null}[];
  stagedOwner:NativeCreatorDocumentOwner;resultOwner:NativeCreatorDocumentOwner;
 };
-export type CreatorNativeSourceFailure='invalid'|'invalid-envelope'|'invalid-candidate'|'forbidden'|'conflict'|'stale-candidate'|'unresolved'|'terminal-session'|'no-new-source'|'history-capacity'|'injected-failure'|'explicit-absence-upgrade-required';
+export type CreatorNativeSourceFailure='invalid'|'invalid-envelope'|'invalid-candidate'|'forbidden'|'conflict'|'stale-candidate'|'unresolved'|'terminal-session'|'no-new-source'|'history-capacity'|'document-capacity'|'injected-failure'|'explicit-absence-upgrade-required';
 export type CreatorNativeSourceResult<T>={ok:true;value:T}|{ok:false;reason:CreatorNativeSourceFailure};
 export type CreatorNativeSourceMutation={session:CreatorNativeSourceSession;owner:NativeCreatorDocumentOwner;changed:boolean;ownerChanged:boolean;replayed:boolean};

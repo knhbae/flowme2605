@@ -24,6 +24,7 @@ import type {
   FlowWorkbenchState,
   ReactionLog,
 } from './types';
+import { getReviewedPublicSourceVersion } from './public-source-editions';
 
 export const EFFECTIVE_FLOW_SNAPSHOT_SCHEMA_VERSION = 1 as const;
 
@@ -162,6 +163,8 @@ export type EffectiveFlowExecutionOverlayIdentity = {
 
 export type BuildEffectiveFlowSnapshotOptions = {
   bundle: FlowBundle;
+  /** Explicit saved edition; never encode an edition in a source date. */
+  sourceVersion?: string;
   effectiveTitle: string;
   dateIntent: PublicDateIntentResolution;
   itemStates?: Record<string, FlowItemState>;
@@ -640,7 +643,8 @@ export function buildEffectiveFlowSnapshot(
   };
 
   const sourceVersion =
-    options.bundle.flow.source_modified_at ?? options.bundle.flow.updated_at;
+    options.sourceVersion ?? getReviewedPublicSourceVersion(options.bundle)
+      ?? options.bundle.flow.source_modified_at ?? options.bundle.flow.updated_at;
   const completedItemIds = [...new Set(
     options.resolvedRows
       ? [...options.resolvedRows.included, ...options.resolvedRows.excluded]

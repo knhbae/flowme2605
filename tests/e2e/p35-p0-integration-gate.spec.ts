@@ -10,8 +10,10 @@ import {
   openMyFlowLibraryFlow,
 } from './helpers/my-flow-library';
 
-const SOURCE_FLOW_SLUG = 'moving-d30-basic';
-const SOURCE_ROUTE = `/f/${SOURCE_FLOW_SLUG}`;
+const HISTORICAL_FLOW_SLUG = 'moving-d30-basic';
+const NEW_PUBLIC_FLOW_SLUG = 'computer-skills-d30-study';
+const NEW_PUBLIC_ROUTE = `/f/${NEW_PUBLIC_FLOW_SLUG}`;
+const NEW_PUBLIC_ITEM_COUNT = 9;
 const MAP_ROUTE = '/flow-maps/middle-school-math-1';
 const MOBILE_VIEWPORT = { width: 390, height: 844 } as const;
 const TABLET_VIEWPORT = { width: 1024, height: 768 } as const;
@@ -198,7 +200,7 @@ async function clipboardState(page: Page) {
 async function resetAndOpenPublic(page: Page, search = ''): Promise<void> {
   await page.setViewportSize(MOBILE_VIEWPORT);
   await installLegacySavedPlanLibraryNavigation(page);
-  await gotoLegacySavedPlanLibraryRoute(page, `${SOURCE_ROUTE}${search ? `?${search}` : ''}`);
+  await gotoLegacySavedPlanLibraryRoute(page, `${NEW_PUBLIC_ROUTE}${search ? `?${search}` : ''}`);
   await page.evaluate(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
@@ -359,13 +361,13 @@ test.describe('P35 P0-10 no-new-feature integration gate', () => {
     await publicItemOpener.click();
 
     const itemEditor = page.getByTestId('public-flow-item-editor');
-    const editedItemTitle = '계약 서류와 하자 사진을 저장 전 다시 대조하기';
+    const editedItemTitle = '시험 범위와 학습 계획을 저장 전 다시 대조하기';
     await itemEditor.getByTestId('public-flow-item-editor-title-input').fill(editedItemTitle);
     await itemEditor.getByTestId('public-flow-item-editor-save').click();
     await expect(itemEditor).toHaveCount(0);
     await expect(publicItemRow).toContainText(editedItemTitle);
 
-    const editedPlanTitle = '우리 가족 이사 준비 통합 검증 계획';
+    const editedPlanTitle = '내 컴활 준비 통합 검증 계획';
     await planEditor.getByTestId('public-flow-adjustment-kind-name').click();
     await planEditor.getByTestId('public-flow-adjustment-name-input').fill(editedPlanTitle);
     await planEditor.getByTestId('public-flow-adjustment-apply').click();
@@ -422,7 +424,7 @@ test.describe('P35 P0-10 no-new-feature integration gate', () => {
     const capability = transferPanel.getByTestId('my-flow-capability-result');
     const manifest = await readTransferManifest(capability, 'checklist');
     expect(manifest.itemIds.split(',').filter(Boolean)).toContain(itemId);
-    expect(manifest.outputCount).toBe('24');
+    expect(manifest.outputCount).toBe(String(NEW_PUBLIC_ITEM_COUNT));
     const storageBeforeTransfer = await rawStorageSnapshot(page);
     await installClipboardCapture(page);
 
@@ -444,7 +446,7 @@ test.describe('P35 P0-10 no-new-feature integration gate', () => {
     await expect(page.getByTestId('my-flow-save-banner')).toHaveCount(0);
     const clipboard = await clipboardState(page);
     expect(clipboard.writes).toBe(1);
-    expect((clipboard.text.match(/^- \[[ x]\] /gmu) ?? []).length).toBe(24);
+    expect((clipboard.text.match(/^- \[[ x]\] /gmu) ?? []).length).toBe(NEW_PUBLIC_ITEM_COUNT);
     expect(clipboard.text).toContain(editedItemTitle);
 
     const storageAfterTransfer = await rawStorageSnapshot(page);
@@ -499,7 +501,7 @@ test.describe('P35 P0-10 no-new-feature integration gate', () => {
     const capability = page.getByTestId('public-flow-capability-result');
     const manifest = await readTransferManifest(capability);
     expect(manifest.destination).toBe('checklist');
-    expect(manifest.outputCount).toBe('24');
+    expect(manifest.outputCount).toBe(String(NEW_PUBLIC_ITEM_COUNT));
 
     const storageBefore = await rawStorageSnapshot(page);
     const historyBefore = await historySnapshot(page);
@@ -535,7 +537,7 @@ test.describe('P35 P0-10 no-new-feature integration gate', () => {
     });
     const errors = collectBrowserErrors(page);
     await page.setViewportSize(MOBILE_VIEWPORT);
-    await page.goto(SOURCE_ROUTE);
+    await page.goto(NEW_PUBLIC_ROUTE);
     await page.evaluate(() => {
       window.localStorage.clear();
       window.sessionStorage.clear();
@@ -559,7 +561,7 @@ test.describe('P35 P0-10 no-new-feature integration gate', () => {
       );
       window.localStorage.setItem('flow:p0-10:legacy-sentinel', '  byte-for-byte sentinel  ');
       window.sessionStorage.setItem('flow:p0-10:session-sentinel', '  session byte sentinel  ');
-    }, { sourceFlowSlug: SOURCE_FLOW_SLUG });
+    }, { sourceFlowSlug: HISTORICAL_FLOW_SLUG });
     const before = await rawStorageSnapshot(page);
     const checksumBefore = rawStorageChecksum(before);
     await installNavigationStorageMutationLog(page);
@@ -567,7 +569,7 @@ test.describe('P35 P0-10 no-new-feature integration gate', () => {
     const rows = [
       {
         label: 'Q1 quick exact off',
-        route: `${SOURCE_ROUTE}?quickLocalResult=off`,
+        route: `${NEW_PUBLIC_ROUTE}?quickLocalResult=off`,
         assertSurface: async () => {
           await expect(page.locator('main[data-p35-q1-quick-local="off"]')).toBeVisible();
           await expect(page.getByTestId('public-flow-quick-result-entry')).toHaveCount(0);
@@ -575,7 +577,7 @@ test.describe('P35 P0-10 no-new-feature integration gate', () => {
       },
       {
         label: 'Q1 quick uppercase control',
-        route: `${SOURCE_ROUTE}?quickLocalResult=OFF`,
+        route: `${NEW_PUBLIC_ROUTE}?quickLocalResult=OFF`,
         assertSurface: async () => {
           await expect(page.locator('main[data-p35-q1-quick-local="on"]')).toBeVisible();
           await expect(page.getByTestId('public-flow-capability-result')).toBeVisible();
@@ -583,14 +585,14 @@ test.describe('P35 P0-10 no-new-feature integration gate', () => {
       },
       {
         label: 'Q1 saved transfer exact off',
-        route: `/my?flow=${SOURCE_FLOW_SLUG}&savedTransfer=off`,
+        route: `/my?flow=${HISTORICAL_FLOW_SLUG}&savedTransfer=off`,
         assertSurface: async () => {
           await expect(page.locator('main[data-p35-q1-saved-transfer="off"]')).toBeVisible();
         },
       },
       {
         label: 'Q1 saved transfer uppercase control',
-        route: `/my?flow=${SOURCE_FLOW_SLUG}&savedTransfer=OFF`,
+        route: `/my?flow=${HISTORICAL_FLOW_SLUG}&savedTransfer=OFF`,
         assertSurface: async () => {
           await expect(page.locator('main[data-p35-q1-saved-transfer="on"]')).toBeVisible();
         },
@@ -631,7 +633,7 @@ test.describe('P35 P0-10 no-new-feature integration gate', () => {
   const diagnosticRoutes = [
     {
       label: 'public',
-      route: `${SOURCE_ROUTE}?quickLocalResult=on`,
+      route: `${NEW_PUBLIC_ROUTE}?quickLocalResult=on`,
       ready: (page: Page) => page.getByTestId('public-flow-capability-result'),
     },
     {

@@ -214,6 +214,9 @@ async function removePersonalDraftItemInStructureMode(page: Page, flow: Locator,
   await row.getByTestId('my-flow-batch-item-checkbox').check();
   page.once('dialog', (dialog) => dialog.accept());
   await outline.getByTestId('my-flow-batch-remove-selected').click();
+  // A click does not wait for the shared async write lock. The row disappears
+  // only after the saved overlay reaches the rendered state; wait before reload.
+  await expect(row).toHaveCount(0);
 }
 
 async function expandMyFlowAdvancedEditor(detail: Locator) {
@@ -503,7 +506,8 @@ test('broad worksheet category URL stops before an invented weekly schedule or d
   await lookupUrl(page, 'https://funmom.tistory.com/?utm_source=review');
 
   const result = page.getByTestId('flow-url-lookup-result');
-  await expect(result).toContainText('실행할 자료를 더 골라야 해요');
+  await expect(result).toContainText('원문과 실행 항목 확인이 필요해요');
+  await expect(result).toContainText('실행 항목의 일정과 조건을 원문과 대조 중');
   await expect(result).toContainText('개별 자료와 난이도를 더 확인해야 해요');
   await expect(result).toContainText('새 저장 중지');
   await expect(result.getByRole('link', { name: '원문 자료 보기' })).toHaveAttribute(
@@ -820,6 +824,8 @@ test('personal draft structural items add, complete, tombstone, and undo without
   await expect(addedItem.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
   await detailOpen.click();
   const completionDetail = getOpenMyFlowItemDetail(page);
+  // Let the sheet finish its initial-focus handoff before moving keyboard focus.
+  await expect(page.getByTestId('my-flow-item-detail-sheet-close')).toBeFocused();
   const complete = completionDetail.getByRole('checkbox', { name: '관리실에 후속 전화하기 완료 체크' });
   await complete.focus();
   await expect(complete).toBeFocused();
@@ -3157,7 +3163,7 @@ test('old review and stateful workspace routes stay out of indexing and public n
     '/',
     '/flows',
     '/f/vehicle-inspection-prep',
-    '/flow-maps/moving-d30',
+    '/flow-maps/middle-school-math-1',
     '/my',
     '/calendar',
   ];
@@ -3203,19 +3209,25 @@ test('old review and stateful workspace routes stay out of indexing and public n
     '/ia-compare/b',
     '/restart/moving-d30',
     '/flow-lab',
+    '/f/moving-d30-basic',
+    '/flow-maps/moving-d30',
   ];
 
   await page.setViewportSize({ width: 390, height: 844 });
   for (const route of noindexRoutes) {
     await page.goto(route);
-    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/i);
+    const robotsTags = page.locator('meta[name="robots"]');
+    await expect(robotsTags).not.toHaveCount(0);
+    for (const tag of await robotsTags.all()) {
+      await expect(tag).toHaveAttribute('content', /noindex/i);
+    }
   }
 
   for (const route of [
     '/',
     '/flows',
     '/f/vehicle-inspection-prep',
-    '/flow-maps/moving-d30',
+    '/flow-maps/middle-school-math-1',
     '/u/flow-curation-team',
   ]) {
     await page.goto(route);
@@ -3234,7 +3246,7 @@ test('URL-first lab stays prototype-gated and absent from user navigation', asyn
     '/my',
     '/calendar',
     '/f/vehicle-inspection-prep',
-    '/flow-maps/moving-d30',
+    '/flow-maps/middle-school-math-1',
   ];
   const userRouteViewports = [
     { width: 390, height: 844 },
@@ -3253,9 +3265,26 @@ test('URL-first lab stays prototype-gated and absent from user navigation', asyn
   }
 
   await page.setViewportSize({ width: 1024, height: 768 });
-  await page.goto('/flow-maps/moving-d30');
+  // The held alias keeps canonical identity but cannot start a NEW plan.
+  const savedBeforeAlias = await page.evaluate(() => Object.fromEntries(
+    Object.keys(localStorage).sort().map((key) => [key, localStorage.getItem(key)]),
+  ));
+  const heldAliasResponse = await page.goto('/flow-maps/moving-d30');
   await expect(page).toHaveURL('/f/moving-d30-basic');
-  await page.goto('/f/moving-d30-basic?savedPlanLibrary=off');
+  expect(heldAliasResponse?.status()).toBe(404);
+  const heldRobotsTags = page.locator('meta[name="robots"]');
+  await expect(heldRobotsTags).not.toHaveCount(0);
+  for (const tag of await heldRobotsTags.all()) {
+    await expect(tag).toHaveAttribute('content', /noindex/i);
+  }
+  await expect(page.getByTestId('public-flow-save-primary')).toHaveCount(0);
+  await expect(page.getByTestId('public-flow-save-primary-mobile')).toHaveCount(0);
+  expect(await page.evaluate(() => Object.fromEntries(
+    Object.keys(localStorage).sort().map((key) => [key, localStorage.getItem(key)]),
+  ))).toEqual(savedBeforeAlias);
+
+  // Keep the original legacy lane and post-save card contract; only NEW source changes.
+  await page.goto('/f/computer-skills-d30-study?savedPlanLibrary=off');
   await page.getByTestId('public-flow-anchor-input').fill('2026-07-22');
   await page.getByTestId('public-flow-save-primary').click();
   await expect.poll(() => {
@@ -3278,7 +3307,7 @@ test('URL-first lab stays prototype-gated and absent from user navigation', asyn
     'data-personal-copy-key',
     personalCopyKey,
   );
-  await expect(page.getByTestId('my-flow-save-banner')).toHaveAttribute('data-item-count', '24');
+  await expect(page.getByTestId('my-flow-save-banner')).toHaveAttribute('data-item-count', '9');
   await expect(page.locator(
     `[data-testid="my-flow-overview-card"][data-flow-slug="${personalCopyKey}"]`,
   )).toBeVisible();

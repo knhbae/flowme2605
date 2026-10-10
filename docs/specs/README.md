@@ -1,5 +1,81 @@
 # FLOW Spec Layer
 
+## 작성·정리·실행·재사용 — 2026-10-09
+
+[목표](./2026-10-09-everyday-workflow/spec.md)·[계획](./2026-10-09-everyday-workflow/plan.md)·[작업](./2026-10-09-everyday-workflow/tasks.md)·[검증](./2026-10-09-everyday-workflow/qa.md). 개발3 단일 owner가 A 입력 연속성 → B 다시 찾기 → C 제작 사본/개인 계획 재사용을 작은 단위로 진행한다. 기존 로컬 행 메뉴를 보존하며 현재 Alpha와 새 후보·실제 사용 근거를 구분한다.
+
+## 자체 작성 비공개 Flow 검증·기존 DEV 반영 — 2026-10-04
+
+[목표](./2026-10-04-private-flow-pilot/spec.md)·[계획](./2026-10-04-private-flow-pilot/plan.md)·[작업](./2026-10-04-private-flow-pilot/tasks.md)·[QA](./2026-10-04-private-flow-pilot/qa.md). 요청 `FLOWME-FINISH-PRIVATE-PILOT-20261004-1400-DEV3`의 단일 개발3 owner가 직전 날짜 상세 후보를 중복 구현하지 않고, 자체 작성 가상 Flow의 기존 제작→개인 실행→재열기와 기존 DEV 반영/복귀를 검증한다. 합성·정상 로그인·실제 제공판을 분리하며 공개 발행·새 run·schema·관리 방식 변경은 제외한다.
+
+## 현재 결과 — 날짜·실행 상세 조작 UX 로컬 후보 (2026-10-04)
+
+[목표](./2026-10-04-date-detail-ux/spec.md)·[계획](./2026-10-04-date-detail-ux/plan.md)·[작업](./2026-10-04-date-detail-ux/tasks.md)·[QA](./2026-10-04-date-detail-ux/qa.md)·[조작 HTML](../content-audit/2026-10-04-flowme-date-detail-ux-ko.html). 현재 제공 판본 a30 기반 격리 로컬 후보이며 날짜 상시/진행·연결의 요청 시 조작/미적용 입력 보호/같은 Item 원문 왕복을 다룬다. 반복·마감일·폴더 정책, 실제 사용자 시험, 게시·개발계 교체·외부 배포는 이번 목표가 아니다. 아래 등록 이력을 현재 제공/완료 상태로 사용하지 않는다.
+
+[결과](./2026-10-04-date-detail-ux/results.md)·[관련 원요구50 대조](./2026-10-04-date-detail-ux/requirements.md)·[읽기용 HTML](../content-audit/2026-10-04-flowme-date-detail-ux-report-ko.html). 표적82·통합3071·npm2261·앱61·별도HTML32 PASS, 타입/build 및6크기·긴 제목/키보드 확인. 같은 정책/원문/owner를 유지한 미커밋·DEV 미반영 후보다. full424/피드백26·모든UX 완료 판정은 아니다.
+
+## 이전 등록 이력 — 후속 메모·날짜 갭의 선별 게시·개발계 반영 (2026-10-04)
+
+[목표](./2026-10-04-alpha-memo-date-gaps-release/spec.md)·[계획](./2026-10-04-alpha-memo-date-gaps-release/plan.md)·[작업](./2026-10-04-alpha-memo-date-gaps-release/tasks.md)·[QA](./2026-10-04-alpha-memo-date-gaps-release/qa.md)·[32파일 manifest](./2026-10-04-alpha-memo-date-gaps-release/manifest.md)·[전환/복귀](./2026-10-04-alpha-memo-date-gaps-release/runbook.md). 새 release 작업본 준비/로컬 검증을 마쳤고 사용자 직접 승인으로 지정 게시·비공개CI·운영 협업·DEV/자동시작 교체/복귀를 재개했다. 실제 새HEAD CI/QA/개발계 성공은 해당 근거로 판정하며 이전43PASS와 이전 개발계 반영을 대신 쓰지 않는다.
+
+## 현재 — 메모·날짜 후속 갭 후보 검증 완료 (2026-10-04)
+
+[목표](./2026-10-04-memo-date-feedback-gaps/spec.md)·[계획](./2026-10-04-memo-date-feedback-gaps/plan.md)·[작업](./2026-10-04-memo-date-feedback-gaps/tasks.md)·[26개 요구 대조](./2026-10-04-memo-date-feedback-gaps/requirements.md)·[QA](./2026-10-04-memo-date-feedback-gaps/qa.md)·[UX 검토](./2026-10-04-memo-date-feedback-gaps/ux-review.md)·[결과](./2026-10-04-memo-date-feedback-gaps/results.md)·[HTML](../content-audit/2026-10-04-flowme-memo-date-feedback-gaps-report-ko.html). clean 격리 후보의 날짜 지연 응답 보호·지원 경로 검증을 마쳤다. 새로운 게시/CI/개발계 교체·실사용자 시험은 미실행이며 기존 제공본은 유지했다. 아래 과거 active/미완료 문구를 현재 제공/완료 상태로 사용하지 않는다.
+
+## 이전 — 메모·날짜 후보 선별 게시·개발계 반영 (2026-10-04 등록 이력)
+
+[목표·승인](./2026-10-04-alpha-memo-date-release/spec.md)·[계획](./2026-10-04-alpha-memo-date-release/plan.md)·[작업](./2026-10-04-alpha-memo-date-release/tasks.md)·[QA](./2026-10-04-alpha-memo-date-release/qa.md)·[manifest](./2026-10-04-alpha-memo-date-release/manifest.md)·[전환/복귀](./2026-10-04-alpha-memo-date-release/runbook.md). 사용자 승인으로36파일 선별 게시·해당 비공개CI·운영 협업·개발계 전환/복귀를 재개했다. 아직 전체완료 판정은 아니며 기존소유30경로와 게시문서만 다룬다. 새 정책·실계정·DB/Auth/DNS/Tunnel 설정·main/Production을 제외한다.
+
+## 직전 — 개인 문서 메모·날짜 UX (2026-10-04)
+
+후보 검증 완료·DEV 미반영: [결과](./2026-10-04-personal-memo-date-ux/results.md)·[QA](./2026-10-04-personal-memo-date-ux/qa.md)·[파일 소유](./2026-10-04-personal-memo-date-ux/ownership.md). 미결 정책·새 인계 미검증은 다음 선택 범위로 남긴다.
+
+[목표·경계](./2026-10-04-personal-memo-date-ux/spec.md)·[단계 계획](./2026-10-04-personal-memo-date-ux/plan.md)·[요구별 대조](./2026-10-04-personal-memo-date-ux/requirements.md)·[계약 감사](./2026-10-04-personal-memo-date-ux/contract-audit.md)·[설계](./2026-10-04-personal-memo-date-ux/design.md)·[작업](./2026-10-04-personal-memo-date-ux/tasks.md)·[조작 HTML](../content-audit/2026-10-04-flowme-memo-date-ux-ko.html). CP2 기반 별도 후보에서 메모·날짜 정보를 필요한 순간에 보인다. 새 제품 정책·실제 계정/DB·게시/개발계 교체는 포함하지 않는다. 아래 10/3 완료 전 문구는 당시 이력이며 이 목표와 직전 운영 마감 증거를 대신하지 않는다.
+
+## 현재 — 핵심 사용 여정 UX 개선·개발계 반영·시험 준비 (2026-10-03)
+
+[목표·경계](./2026-10-03-alpha-core-journeys-ready/spec.md)·[단계 계획](./2026-10-03-alpha-core-journeys-ready/plan.md)·[작업 체크](./2026-10-03-alpha-core-journeys-ready/tasks.md)·[검증/반영 원장](./2026-10-03-alpha-core-journeys-ready/qa.md). 직전 후보 CP1, 개인 문서↔기간·UX-N1 6상태·UX-N2 메뉴/등록/복원·공개 판본/사본/복귀의 CP2, 소수 사용자 시험 준비를 묶은 목표다. 사용자의 승인으로 격리 구현·합성 검증과 선별 게시·Draft PR209/210은 완료했다. 공통 CI 실패를 보완 중이며 정확 HTTP QA·개발계 교체/복귀·시험 시작 판정은 미완료다. 계획-only 문구는 등록 당시 이력이고 최신 승인과 spec이 실행 범위를 정한다. 실제 관찰 시험·미결 정책·대형5D/F6~F10 전체·독립 HTML NOT_RUN2건·main merge/Production은 별도 후속이다.
+
+## 직전 — UX 비교·저장 갭 보완 승인 범위 마감 (2026-10-03)
+
+[목표·경계](./2026-10-02-alpha-ux-comparison-gaps/spec.md)·[단계 계획](./2026-10-02-alpha-ux-comparison-gaps/plan.md)·[요구 대조](./2026-10-02-alpha-ux-comparison-gaps/requirements.md)·[Dots 검토](./2026-10-02-alpha-ux-comparison-gaps/dots-review.md)·[QA](./2026-10-02-alpha-ux-comparison-gaps/qa.md)·[결과](./2026-10-02-alpha-ux-comparison-gaps/results.md)·[마감 점검](./2026-10-02-alpha-ux-comparison-gaps/completion-audit.md). 기준d1cc의 격리 작업에서 참여 초안 확정 거절·등록 설명·Tab·안내/큐 경합을 좁게 보완했다. r6 앱30/30와 요구 대조·기획 인수·보고·다음 UX-N1 범위 확정은 완료했다. 10/3 사용자 승인으로 독립 HTML2검사는 NOT_RUN 후속으로 분리했으며 필수 완료 조건에서 제외했다. 최종 도구 상태는 마감 점검을 따른다. 기존 검사·외부 Dots/UX2 근거를 새 실행이나 관찰 사용자로 합산하지 않는다. 현재 개발계·DB/Auth·Tunnel/DNS·게시/배포는 변경하지 않는다.
+
+## 검증한 두 UX 묶음의 개발계 선별 반영 (2026-10-02)
+
+[목표·경계](./2026-10-02-alpha-two-ux-dev-release/spec.md)·[계획](./2026-10-02-alpha-two-ux-dev-release/plan.md)·[작업](./2026-10-02-alpha-two-ux-dev-release/tasks.md)·[QA](./2026-10-02-alpha-two-ux-dev-release/qa.md)·[교체/복귀](./2026-10-02-alpha-two-ux-dev-release/runbook.md). 제작→개인 실행과 폴더·작성·날짜 검증 후보의 소유 통합·게시/CI·개발계 판본 정렬 목표다. 정확한 게시·비공개 CI·앱 교체 범위를 확인한 뒤 실행하며 새 정책·main merge·DB/Auth/Tunnel·Production·사용자 관찰은 제외한다.
+
+## 폴더 연결·작성·날짜 UX 갭 묶음 (2026-10-02)
+
+[목표·경계](./2026-10-02-alpha-feedback-ux-bundle/spec.md)·[단계 계획](./2026-10-02-alpha-feedback-ux-bundle/plan.md)·[작업](./2026-10-02-alpha-feedback-ux-bundle/tasks.md)·[검증](./2026-10-02-alpha-feedback-ux-bundle/qa.md). 최신26항목과 중간 보완을 대조해 같은 격리 후보를 이어간다. 구현/합성 QA/시안/미결 정책/개발계 반영을 구분하며 실제 서비스 교체·게시·관찰 시험은 제외한다. 아래 날짜별 범위는 이전 기록이다.
+
+## 세 작성 UX 후보의 개발계 반영 (2026-10-01)
+
+[승인 범위](./2026-10-01-alpha-writing-ux-dev-release/spec.md), [단계 계획](./2026-10-01-alpha-writing-ux-dev-release/plan.md), [작업](./2026-10-01-alpha-writing-ux-dev-release/tasks.md), [QA/반영 원장](./2026-10-01-alpha-writing-ux-dev-release/qa.md). 여정·폴더·입력 후보의 소유 통합과 게시/CI·기존 Cloudflare 앱 선별 교체이며 main 병합·DB/Auth/Tunnel·새5D·Production 배포는 제외한다. 실제 반영 완료는 QA의 후속 기록을 따른다.
+
+## 부분·전체 작성 입력 일관성 (2026-10-01)
+
+[승인 범위](./2026-10-01-alpha-writing-interactions/spec.md), [단계 계획](./2026-10-01-alpha-writing-interactions/plan.md), [요구별 결과](./2026-10-01-alpha-writing-interactions/results.md), [작업](./2026-10-01-alpha-writing-interactions/tasks.md), [QA](./2026-10-01-alpha-writing-interactions/qa.md), [조작 HTML](../content-audit/2026-10-01-flowme-writing-interactions-lab-ko.html), [검토 보고서](../content-audit/2026-10-01-flowme-writing-interactions-review-ko.html). 같은 native 입력·메모/형제 Enter·즉시 Tab 역연산·안전한 local 전체 인계의 격리 후보를 완료했다. 최종 전체 통합2,735/2,735·npm2,258/2,258·앱75/HTML40/기존25를 확인했으며 개발계·실기기·사용자 관찰·게시/배포와는 별개다.
+
+## 방향·완료/잔여 점검과 다음 UX 목표 제안 (2026-10-01)
+
+[방향·완료 근거·잔여/우선순위·다음 목표](./2026-10-01-direction-and-next-goal/spec.md), [이번 점검 QA](./2026-10-01-direction-and-next-goal/qa.md), [짧은 HTML](../content-audit/2026-10-01-flowme-direction-workboard-ko.html). 조사·정리 목표이며 다음 제품 구현은 아직 시작하지 않았다. 앞으로 목표 전 점검 순서를 결정/세션 시작 절차에 기록했다. 3축과 세 결과물, 후보/개발계·5D/원래6~9/운영 후속을 함께 보존한다.
+
+## 문서·폴더·기간 보기의 일관된 작성 UX (2026-10-01)
+
+[목표·경계](./2026-10-01-alpha-folder-writing-ux/spec.md), [단계별 계획](./2026-10-01-alpha-folder-writing-ux/plan.md), [피드백1~21 처리 범위](./2026-10-01-alpha-folder-writing-ux/feedback-map.md), [계약](./2026-10-01-alpha-folder-writing-ux/contracts.md), [요구별 적용/후속](./2026-10-01-alpha-folder-writing-ux/results.md), [작업](./2026-10-01-alpha-folder-writing-ux/tasks.md), [QA](./2026-10-01-alpha-folder-writing-ux/qa.md). 20·21의 비강제 폴더 제안·문서 영역 안전 편집과 낮은 가로 본문을 격리 후보에 구현·검증·보고했다. 최종 전체 통합2,676/2,676·기본2,258/2,258·앱45+5+25와 보고서5크기를 확인했다. 조작 HTML과 실제 앱의 지원 제한·합성 검증을 구분한다. 새 영구 문법·소속 정책·공개 반영 승인이 아니다.
+
+## 핵심 작성 여정 UX 탐색·비교와 1차 개선 (2026-10-01)
+
+[목표·경계](./2026-10-01-alpha-ux-journey/spec.md), [계획](./2026-10-01-alpha-ux-journey/plan.md), [요구 대조](./2026-10-01-alpha-ux-journey/requirements.md), [UX1/UX2 제안 처리](./2026-10-01-alpha-ux-journey/ux-source-adoption.md), [작업](./2026-10-01-alpha-ux-journey/tasks.md), [검증](./2026-10-01-alpha-ux-journey/qa.md), [소유·반영 상태](./2026-10-01-alpha-ux-journey/ownership.md). 3축 전체 맵을 보존하고 개인 작성→날짜→기간→원문 복귀를 좁게 개선한 격리 후보다. 공개 주소 교체·관찰 사용자 시험은 아니다. 당시 남았던 전체 통합 최종 재실행과 짧은 가로 본문 확보는 위 폴더 작성 목표에서 후속 검증했다.
+
+## 핵심 UX·저장 복구의 개발계 반영 (2026-10-01)
+
+[목표·경계](./2026-10-01-alpha-cloudflare-core-ux/spec.md), [계획](./2026-10-01-alpha-cloudflare-core-ux/plan.md), [작업](./2026-10-01-alpha-cloudflare-core-ux/tasks.md), [검증](./2026-10-01-alpha-cloudflare-core-ux/qa.md), [실행·복귀](./2026-10-01-alpha-cloudflare-core-ux/runbook.md). 905 기반 독립 후보의 노트북·Cloudflare 개발계 선별 반영이며 main 병합이나 새 백업 경로 활성화가 아니다.
+
+## 같은 요청의 개인 문서 저장 복구 (2026-09-30)
+
+[승인된 목표와 경계](./2026-09-30-alpha-private-save-ack/spec.md#목표와-경계)에 따라 같은 요청의 저장 결과 표시를 구현하고 합성 검증했다. [QA](./2026-09-30-alpha-private-save-ack/qa.md)·[작업 원장](./2026-09-30-alpha-private-save-ack/tasks.md)·[소유 범위와 게시 후보](./2026-09-30-alpha-private-save-ack/ownership.md)를 따른다. 후보의 승인된 최소 보안·원문 대조 보완 후 전체 gate를 통과했으며 별도 브랜치·Draft PR을 준비한다. commit/push·CI·배포 결과는 QA 후속 기록에서 실제 실행 여부를 확인한다.
+
 <!-- alpha-transition-20260920:start -->
 ## 현재 격리 프로그램 진입점 (2026-09-20)
 

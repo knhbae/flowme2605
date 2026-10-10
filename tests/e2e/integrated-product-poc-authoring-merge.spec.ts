@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import type { ProgramEnvelope } from '../../lib/flow/integrated-poc/contract';
+import { PERSONAL_WORKSPACE_POC_AUTHORING_TEMPLATES } from '../../lib/flow/personal-workspace-poc-authoring';
 
 const KEY = 'flow:poc:personal-workspace:v1:program:state';
 const PREFIX = 'flow:poc:personal-workspace:v1:';
@@ -45,6 +46,7 @@ test('D2 current creator: empty template preview, explicit insertion, native Und
   await page.setViewportSize({ width: 1440, height: 900 });
   const { surface, source, verify } = await start(page);
   await surface.getByLabel('제작 초안 제목', { exact: true }).fill('Merge D2 template');
+  await surface.locator('summary').filter({ hasText: /^작성 도구$/ }).click();
   await surface.getByText('작성 틀·예시 선택', { exact: true }).click();
   await surface.getByRole('button', { name: '예시 확인', exact: true }).first().click();
   const preview = surface.getByRole('region', { name: '제작 원문 적용 확인' });
@@ -54,14 +56,20 @@ test('D2 current creator: empty template preview, explicit insertion, native Und
   await preview.getByRole('button', { name: '취소', exact: true }).click();
   await expect(preview).toHaveCount(0);
   await expect(source).toHaveValue('');
-  await surface.getByRole('button', { name: '빈 틀 확인', exact: true }).first().click();
-  const scaffold = await preview.locator('pre').innerText();
-  await preview.getByRole('button', { name: '확인한 내용으로 원문 바꾸기', exact: true }).click();
+  // A12/D2-049: a blank scaffold is inserted once, directly into empty source.
+  // It is not the separate, confirmation-gated populated structure example.
+  const scaffold = PERSONAL_WORKSPACE_POC_AUTHORING_TEMPLATES[0].scaffold;
+  const insert = surface.getByRole('button', { name: '빈 틀 넣기', exact: true }).first();
+  await insert.click();
   await expect(source).toHaveValue(scaffold);
+  await expect(preview).toHaveCount(0);
+  await expect(insert).toBeDisabled();
   await source.press('Control+z');
   await expect(source).toHaveValue('');
+  await expect(insert).toBeEnabled();
   await source.press('Control+Shift+z');
   await expect(source).toHaveValue(scaffold);
+  await surface.locator('summary').filter({ hasText: /^작성 도구$/ }).click();
   await surface.getByRole('button', { name: 'Flow 편집', exact: true }).click();
   const hint = surface.getByRole('button', { name: '빈칸 힌트', exact: true });
   await hint.click(); await expect(source).toHaveValue(scaffold);
@@ -110,6 +118,7 @@ test('D2 structure form: visible example and typed form values do not materializ
   await page.setViewportSize({ width: 1440, height: 900 });
   const { surface, source, verify } = await start(page);
   const form = surface.getByRole('region', { name: '구조 템플릿 작성', exact: true });
+  await surface.locator('summary').filter({ hasText: /^작성 도구$/ }).click();
   await form.locator('summary').filter({ hasText: /^구조 템플릿으로 시작$/ }).click();
   await form.getByRole('combobox', { name: '작성 틀', exact: true }).selectOption({ index: 1 });
   await form.getByText('예시 보기', { exact: true }).click();

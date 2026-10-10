@@ -79,7 +79,7 @@ export function SavedFlowReceiptFrame({
         </Link>
         <Link
           data-testid="public-flow-saved-receipt-browse"
-          className="mt-2 inline-flex min-h-9 w-full items-center justify-center text-sm font-semibold text-[var(--flowme-text-secondary)] underline-offset-4 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+          className="mt-2 inline-flex min-h-9 w-full items-center justify-center text-sm font-semibold text-[var(--flowme-text-secondary)] underline-offset-4 hover:underline focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
           href="/flows"
         >
           {q3Copy.receipt.returnToDiscovery}

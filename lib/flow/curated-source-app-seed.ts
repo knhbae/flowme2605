@@ -53,6 +53,7 @@ type SeedStep = {
 
 type SeedFlow = {
   flowId: string;
+  sourceReviewedAt?: string;
   slug: string;
   title: string;
   pattern: string;
@@ -427,7 +428,8 @@ function buildFlowBundle(bundle: SeedBundle, flow: SeedFlow): FlowBundle {
   const sourceType = getSourceType(bundle, flowSourceUrl);
   const hasWeekdaySetup = setupFields.some((field) => field.key === 'targetWeekdays');
   const executionHold = curatedSourceExecutionHolds[bundle.bundleId];
-  const sourceCheckedAt = executionHold?.checkedAt ?? generatedAt;
+  // Per-flow review evidence must not refresh unreviewed siblings or execution holds.
+  const sourceCheckedAt = executionHold?.checkedAt ?? flow.sourceReviewedAt ?? generatedAt;
 
   return {
     flow: {

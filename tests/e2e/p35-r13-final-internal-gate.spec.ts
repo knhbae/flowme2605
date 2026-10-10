@@ -54,9 +54,9 @@ async function expectPageQuality(page: Page) {
   });
 }
 
-async function saveMovingFlow(page: Page) {
+async function saveStudyFlow(page: Page) {
   await installLegacySavedPlanLibraryNavigation(page);
-  await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
+  await gotoLegacySavedPlanLibraryRoute(page, '/f/computer-skills-d30-study');
   await page.evaluate(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
@@ -135,7 +135,7 @@ test.describe('P35-R13 final internal gate', () => {
   test('390 keeps the whole plan collapsed after save, reload, and library re-entry', async ({ page }) => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
-    await saveMovingFlow(page);
+    await saveStudyFlow(page);
 
     await expect.poll(() => new URL(page.url()).searchParams.get('flow')).toMatch(/^personal-copy:/u);
     const personalCopyKey = new URL(page.url()).searchParams.get('flow') ?? '';
@@ -159,8 +159,9 @@ test.describe('P35-R13 final internal gate', () => {
     const firstEntry = workspace.getByTestId('my-flow-shape-aware-execution');
     await expect(firstEntry).toHaveAttribute('data-execution-kind', 'nearest_date_group');
     const nextGroup = firstEntry.getByTestId('my-flow-temporal-next-group');
-    await expect(nextGroup.getByTestId('my-flow-execution-row-shell')).toHaveCount(3);
-    await expect(nextGroup).toContainText('3개 먼저');
+    await expect(nextGroup).toHaveAttribute('data-temporal-date', '2030-08-02');
+    await expect(nextGroup.getByTestId('my-flow-execution-row-shell')).toHaveCount(2);
+    await expect(nextGroup).toContainText('2개 먼저');
     await capture(page, 'p35-r13-first-entry-plan-collapsed-390.png', workspace);
 
     await page.reload();

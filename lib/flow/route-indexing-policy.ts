@@ -1,4 +1,5 @@
 import { getSourceFitAudit } from './source-fit';
+import { isPublicFlowSourceOnHold } from './public-source-review-policy';
 import type { FlowBundle } from './types';
 
 export const NON_INDEXABLE_ROUTE_ROBOTS = {
@@ -27,6 +28,10 @@ export type PublicFlowIndexingPolicy = {
 export function getPublicFlowIndexingPolicy(bundle: FlowBundle): PublicFlowIndexingPolicy {
   if (bundle.flow.status !== 'published') {
     return { indexable: false, reason: 'not_published' };
+  }
+
+  if (isPublicFlowSourceOnHold(bundle.flow.slug)) {
+    return { indexable: false, reason: 'source_review_pending' };
   }
 
   const audit = getSourceFitAudit(bundle.flow.slug);

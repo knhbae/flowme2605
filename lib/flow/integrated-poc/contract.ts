@@ -55,6 +55,7 @@ export type ProgramPublicFlow = {
   derivedFrom: { flowId: string; versionId: string } | null;
   archived: boolean;
 };
+/** dataUrl is inline local imagery or an opaque flowme-media: registry reference. */
 export type ProgramMedia = { id: string; dataUrl: string; alt: string; synthetic: boolean };
 export type ProgramPost = {
   id: string;
@@ -197,6 +198,8 @@ export type ProgramPrivateSpace = {
   creatorDraftImports?: ProgramCreatorDraftImport[];
   /** Optional Program-owned authoring; never writes back to the imported library. */
   creatorWorkspace?: ProgramCreatorWorkspaceState;
+  /** Private immutable source collection; no execution state or public grant. */
+  catalogLibrary?: import('./catalog-library').CatalogLibrarySnapshot;
   /** Private reviewer input; only an explicit decision exposes its note. */
   proposalReviewDrafts?: Record<string, { note: string; expectedProposalToken: string }>;
   recurrenceExecution?: ProgramRecurrenceExecutionState;
@@ -204,6 +207,8 @@ export type ProgramPrivateSpace = {
 };
 export type ProgramRequestReceipt = { id: string; actorId: string; fingerprint: string; resultId: string; kind: string };
 export type ProgramData = {
+  /** Ephemeral Alpha adapter marker; the local PoC envelope never persists it. */
+  projection?: 'alpha-social-v1';
   actors: ProgramActor[];
   activeActorId: string;
   spaces: Record<string, ProgramPrivateSpace>;

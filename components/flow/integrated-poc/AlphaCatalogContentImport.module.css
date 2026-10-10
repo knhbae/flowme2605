@@ -1,0 +1,14 @@
+.panel { margin-block: 1rem; padding: 1rem; border: 1px solid #cbd5e1; border-radius: 12px; background: #fff; color: #172033; overflow-wrap: anywhere; }
+.panel summary { cursor: pointer; padding-block: .75rem; font-weight: 700; }
+.panel p { line-height: 1.6; }
+.panel ul { list-style: none; padding: 0; }
+.panel li { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .75rem; padding-block: .75rem; border-bottom: 1px solid #e2e8f0; }
+.panel li span { flex: 1 1 14rem; }
+.panel small { display: block; margin-top: .35rem; color: #475569; }
+.panel button { min-height: 48px; max-width: 100%; padding: .65rem 1rem; border: 1px solid #94a3b8; border-radius: 8px; background: #fff; color: #1d4ed8; font: inherit; cursor: pointer; }
+.panel button:disabled { color: #475569; cursor: default; }
+.panel button:focus-visible, .panel summary:focus-visible, .panel a:focus-visible { outline: 3px solid #2563eb; outline-offset: 3px; }
+.panel pre { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; line-height: 1.6; }
+.panel section { padding-top: .5rem; }
+.panel h2 { font-size: 1.15rem; }
+.actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1rem; }

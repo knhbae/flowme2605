@@ -122,11 +122,11 @@ test.describe('P35-08 final MECE gate', () => {
 
     const cases = [
       {
-        slug: 'moving-d30-basic',
+        slug: 'computer-skills-d30-study',
         destination: 'checklist',
         shape: 'checklist',
-        outputCount: 24,
-        screenshot: 'p35-08-moving-result-390.png',
+        outputCount: 9,
+        screenshot: 'p35-08-computer-result-390.png',
       },
       {
         slug: 'vehicle-inspection-prep',
@@ -150,11 +150,11 @@ test.describe('P35-08 final MECE gate', () => {
         screenshot: 'p35-08-study-result-390.png',
       },
       {
-        slug: 'overseas-safety-register',
+        slug: 'curated-wedding-naver-timeline',
         destination: 'checklist',
         shape: 'checklist',
-        outputCount: 4,
-        screenshot: 'p35-08-safety-checklist-result-390.png',
+        outputCount: 6,
+        screenshot: 'p35-08-wedding-checklist-result-390.png',
       },
     ] as const;
 

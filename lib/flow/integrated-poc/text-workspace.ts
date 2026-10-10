@@ -8,6 +8,10 @@ export interface TextScopeBinding { kind: 'scope'; docId: string; lineId: string
 export interface TextTaskBinding { kind: 'task'; docId: string; lineId: string; taskId: string; dateMode: 'keep' | 'apply' }
 export type TextBinding = TextScopeBinding | TextTaskBinding;
 export interface TextProgressRecord { taskId: string; date: string; percent: number }
+/** Ephemeral UI diagnostic; never part of the persisted workspace. */
+export interface TextProgressCheckConflict { lineId: string; targetId: string }
+/** Native paste range, checked against the current source before identity assignment. */
+export interface TextInputSplice { start: number; end: number; text: string }
 export interface TextWorkspaceState {
   version: 11;
   documents: TextDocument[];
@@ -83,7 +87,11 @@ export interface TextWorkspaceModel {
   contextAt(state: TextWorkspaceState, docId: string, index: number): TextContext;
   insertionContext(state: TextWorkspaceState, docId: string, index: number, depth?: number): TextContext;
   insertionOptions(state: TextWorkspaceState, docId: string, lineId: string): TextInsertion[];
-  editText(state: TextWorkspaceState, docId: string, text: string, options?: { progressDate?: string }): TextWorkspaceState;
+  editText(state: TextWorkspaceState, docId: string, text: string, options?: { progressDate?: string; inputSplice?: TextInputSplice }): TextWorkspaceState;
+  editTextResult(state: TextWorkspaceState, docId: string, text: string, options?: { progressDate?: string; inputSplice?: TextInputSplice }): {
+    state: TextWorkspaceState; reason: 'identity-ambiguous' | 'invalid-format' | 'progress-check-conflict' | 'blocked' | null;
+    progressConflict?: TextProgressCheckConflict;
+  };
   addDocument(state: TextWorkspaceState, input: { title: string; folder?: string; folderId?: string }): TextWorkspaceState;
   addTask(state: TextWorkspaceState, input: { docId: string; title: string; date?: string | null; scopeId?: string }): TextWorkspaceState;
   updateTask(state: TextWorkspaceState, taskId: string, patch: { title?: string; done?: boolean; date?: string | null; note?: string; time?: string }): TextWorkspaceState;

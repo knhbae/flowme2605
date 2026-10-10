@@ -49,62 +49,91 @@ async function expectNoOverflow(page: Page) {
   expect(result).toEqual({ horizontal: 0, fixedOverlap: 0 });
 }
 
-async function seedSavedFlow(page: Page, slug: string, anchor: string) {
+async function seedSavedFlow(
+  page: Page,
+  slug: string,
+  anchor?: string,
+  selectedArtifactMode: 'calendar' | 'checklist' = 'calendar',
+) {
   await gotoLegacySavedPlanLibraryRoute(page, '/flows');
-  await page.evaluate(({ flowSlug, flowAnchor }) => {
+  await page.evaluate(({ flowSlug, flowAnchor, artifactMode }) => {
     window.localStorage.clear();
     window.localStorage.setItem(`flow:saved:${flowSlug}`, JSON.stringify({
       slug: flowSlug,
       savedAt: '2030-08-01T00:00:00.000Z',
-      selectedArtifactMode: 'calendar',
-      anchor: flowAnchor,
-      dateIntent: 'custom',
+      selectedArtifactMode: artifactMode,
+      ...(flowAnchor ? { anchor: flowAnchor, dateIntent: 'custom' } : {}),
     }));
-    window.localStorage.setItem(
-      `flow:${flowSlug}:anchorDate`,
-      JSON.stringify({ mode: 'custom', anchor: flowAnchor }),
-    );
-  }, { flowSlug: slug, flowAnchor: anchor });
+    if (flowAnchor) {
+      window.localStorage.setItem(
+        `flow:${flowSlug}:anchorDate`,
+        JSON.stringify({ mode: 'custom', anchor: flowAnchor }),
+      );
+    }
+  }, { flowSlug: slug, flowAnchor: anchor, artifactMode: selectedArtifactMode });
 }
 
 test.describe('P35-R8 semantic and execution continuity', () => {
-  test('overseas safety stays checklist-primary from public preview through saved execution', async ({ page }) => {
+  test('held overseas safety has no NEW public start or storage mutation', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await gotoLegacySavedPlanLibraryRoute(page, '/flows');
+    await page.evaluate(() => { localStorage.clear(); sessionStorage.clear(); });
+    const before = await page.evaluate(() => ({
+      local: JSON.stringify(Object.keys(localStorage).sort().map(key => [key, localStorage.getItem(key)])),
+      session: JSON.stringify(Object.keys(sessionStorage).sort().map(key => [key, sessionStorage.getItem(key)])),
+    }));
+    await page.addInitScript(() => {
+      const audit = window as Window & { __p35R8HeldWriteCalls: number };
+      audit.__p35R8HeldWriteCalls = 0;
+      const originalSet = Storage.prototype.setItem;
+      const originalRemove = Storage.prototype.removeItem;
+      const originalClear = Storage.prototype.clear;
+      Storage.prototype.setItem = function (key: string, value: string) {
+        audit.__p35R8HeldWriteCalls += 1;
+        return originalSet.call(this, key, value);
+      };
+      Storage.prototype.removeItem = function (key: string) {
+        audit.__p35R8HeldWriteCalls += 1;
+        return originalRemove.call(this, key);
+      };
+      Storage.prototype.clear = function () {
+        audit.__p35R8HeldWriteCalls += 1;
+        return originalClear.call(this);
+      };
+    });
+    const response = await gotoLegacySavedPlanLibraryRoute(page, '/f/overseas-safety-register');
+    expect(response?.status()).toBe(404);
+    await expect(page.getByTestId('public-flow-capability-result')).toHaveCount(0);
+    await expect(page.getByTestId('public-flow-save-primary-mobile')).toHaveCount(0);
+    await expect(page.getByTestId('public-flow-save-primary')).toHaveCount(0);
+    const after = await page.evaluate(() => ({
+      local: JSON.stringify(Object.keys(localStorage).sort().map(key => [key, localStorage.getItem(key)])),
+      session: JSON.stringify(Object.keys(sessionStorage).sort().map(key => [key, sessionStorage.getItem(key)])),
+    }));
+    expect(after).toEqual(before);
+    expect(await page.evaluate(() => (
+      window as Window & { __p35R8HeldWriteCalls?: number }
+    ).__p35R8HeldWriteCalls)).toBe(0);
+  });
+
+  test('pre-review saved overseas safety preserves its checklist execution continuity', async ({ page }) => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
     await installLegacySavedPlanLibraryNavigation(page);
-    await gotoLegacySavedPlanLibraryRoute(page, '/f/overseas-safety-register');
-    await page.evaluate(() => window.localStorage.clear());
-    await page.reload();
-
-    const publicRoot = page.locator('main[data-p35-r8-marker="P35-R8B-ARTIFACT-SEMANTIC-CONTINUITY"]');
-    await expect(publicRoot).toHaveAttribute(
-      'data-p35-r8-resource-marker',
-      'P35-R8B-RESOURCE-NOT-EXECUTION',
-    );
-    const preview = page.getByTestId('public-flow-capability-result');
-    await expect(preview).toHaveAttribute('data-capability-primary-destination', 'checklist');
-    await preview.getByTestId('flow-capability-artifact-preview-expand').click();
-    await expect(preview.getByTestId('flow-capability-artifact-preview-row')).toHaveCount(4);
-    await expect(preview.getByRole('checkbox')).toHaveCount(0);
-
-    await expect(page.getByTestId('public-flow-detail-workspace')).toHaveCount(0);
-    const primary = preview.locator(
-      '[data-testid="flow-capability-result-choice"][data-capability-destination="checklist"]',
-    );
-    await expect(primary).toHaveAttribute('data-capability-candidate-role', 'primary');
-    const memo = preview.locator(
-      '[data-testid="flow-capability-result-choice"][data-capability-destination="memo"]',
-    );
-    await expect(memo).toHaveAttribute('data-capability-candidate-role', 'available');
-    await capture(page, 'p35-r8b-safety-public-checklist-390.png', preview);
-
-    await page.getByTestId('public-flow-save-primary-mobile').click();
-    await expect(page).toHaveURL(/\/my\?view=flows&flow=personal-copy%3A/u);
-    const copySlug = new URL(page.url()).searchParams.get('flow') ?? '';
+    // Synthetic existing legacy record, not source approval or a NEW public save.
+    await seedSavedFlow(page, 'overseas-safety-register', undefined, 'checklist');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?view=flows&flow=overseas-safety-register');
+    const savedRaw = await page.evaluate(() => localStorage.getItem('flow:saved:overseas-safety-register'));
+    expect(savedRaw).toBe(JSON.stringify({
+      slug: 'overseas-safety-register',
+      savedAt: '2030-08-01T00:00:00.000Z',
+      selectedArtifactMode: 'checklist',
+    }));
     await expect(page.getByTestId('public-flow-saved-receipt')).toHaveCount(0);
-    await expect(page.getByTestId('my-flow-save-banner')).toBeVisible();
-
+    const copySlug = 'overseas-safety-register';
     const workspace = await openMyFlowLibraryFlow(page, copySlug);
+    await expect(workspace.getByTestId('my-flow-whole-flow-outline'))
+      .toHaveAttribute('data-effective-row-count', '4');
     const execution = workspace.getByTestId('my-flow-shape-aware-execution');
     await expect(execution).toHaveAttribute(
       'data-p35-r8-marker',

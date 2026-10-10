@@ -20,7 +20,7 @@ export type LegacyCreatorRecoveryHandoffPrepared={ok:true;request:LegacyCreatorR
 const stamp=(value:string)=>Number.isFinite(Date.parse(value))&&new Date(value).toISOString()===value;
 const fail=(reason:Extract<LegacyCreatorRecoveryHandoffPrepared,{ok:false}>['reason']):LegacyCreatorRecoveryHandoffPrepared=>({ok:false,reason});
 const sourceOf=(candidate:LegacyCreatorRecoveryCandidate):NativeCreatorRecoverySource=>({kind:'legacy-recovery',version:1,storageKey:candidate.storageKey,draftId:candidate.draftId,recoveryId:candidate.recoveryId,revisionId:candidate.revisionId,recoveredAt:candidate.recoveredAt,documentJson:candidate.documentJson,recoveryJson:candidate.recoveryJson,durableRecordJson:candidate.durableRecordJson});
-function mappedWorking(candidate:LegacyCreatorRecoveryCandidate,targetDraftId:string,now:string):{working:ProgramCreatorWorking;contextWarnings:string[]}|null{
+export function mapLegacyCreatorRecoveryWorking(candidate:LegacyCreatorRecoveryCandidate,targetDraftId:string,now:string):{working:ProgramCreatorWorking;contextWarnings:string[]}|null{
  const warnings:string[]=[],pending=candidate.workingRawText!==candidate.canonicalRawText;
  const ui:NativeCreatorRecordUi={activeStage:pending?'input':candidate.activeStage};
  if(pending&&candidate.activeStage!=='input')warnings.push('미반영 원문을 먼저 확인하도록 원문 단계로 엽니다. 원래 단계는 복구 출처에 보존합니다.');
@@ -32,6 +32,7 @@ function mappedWorking(candidate:LegacyCreatorRecoveryCandidate,targetDraftId:st
  const working:ProgramCreatorWorking={draftId:targetDraftId,title:candidate.title,rawText:candidate.canonicalRawText,baseRecordRevision:null,nativeDocument:owner.owner,nativeSelection:source,...(pending?{nativePendingRawText:candidate.workingRawText}:{})};
  return validateProgramCreatorWorking(working)?{working,contextWarnings:warnings}:null;
 }
+const mappedWorking=mapLegacyCreatorRecoveryWorking;
 function existingCandidate(data:ProgramData,actorId:string,candidate:LegacyCreatorRecoveryCandidate):{kind:'none'}|{kind:'changed'}|{kind:'exact';working:ProgramCreatorWorking}{
  const workspace=data.spaces[actorId].creatorWorkspace;
  const matches=(working:ProgramCreatorWorking|null|undefined)=>!!working?.nativeDocument&&isNativeCreatorRecoverySource(working.nativeDocument.source)&&working.nativeDocument.source.storageKey===candidate.storageKey&&working.nativeDocument.source.draftId===candidate.draftId&&working.nativeDocument.source.recoveryId===candidate.recoveryId;

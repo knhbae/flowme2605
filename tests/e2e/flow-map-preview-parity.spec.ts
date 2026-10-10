@@ -38,28 +38,28 @@ test.describe('Flow Map approved preview parity', () => {
   });
 
   test('choose-child Map shows Calendar context first and resets a child switch to Text', async ({ page }) => {
-    await page.goto('/flow-maps/curated-opic-mock-course');
+    await page.goto('/flow-maps/curated-wedding-checklist-family');
 
     const result = page.getByTestId('public-flow-capability-result');
     await expect(result).toHaveAttribute('data-capability-selected-destination', 'memo');
     await expect(result.getByTestId('flow-artifact-text-syntax-preview'))
-      .toContainText('# 오픽 모의고사 2주 계획표');
+      .toContainText('# 결혼 준비 1년 참고 타임라인');
     await expect(result.getByTestId('flow-artifact-text-syntax-preview'))
-      .toContainText('## 2주 계획표');
+      .toContainText('## 기간별 준비');
     await expect(result.getByTestId('flow-artifact-text-syntax-preview'))
-      .not.toContainText('오픽 모의고사 2주 계획표 · 2주 계획표');
+      .not.toContainText('결혼 준비 1년 참고 타임라인 · 기간별 준비');
     const selector = page.getByTestId('flow-map-choose-child');
     await expect(selector).toHaveCount(1);
     await expect(selector.getByTestId('flow-map-selected-child-copy'))
-      .toContainText('오픽 모의고사 2주 계획표 선택됨');
+      .toContainText('결혼 준비 1년 참고 타임라인 선택됨');
     await expect(selector).not.toContainText('고르세요');
     await expectTestIdBeforeFirstRow(page, 'flow-map-choose-child');
 
     await result.getByRole('button', { name: 'Calendar', exact: true }).click();
     const context = result.getByTestId('flow-map-calendar-context');
-    await expect(context).toContainText('시작일');
+    await expect(context).toContainText('결혼식 날짜');
     await expect(context).toContainText('기준 일정입니다');
-    await expect(result.getByTestId('flow-capability-artifact-preview-row')).toHaveCount(14);
+    await expect(result.getByTestId('flow-capability-artifact-preview-row')).toHaveCount(6);
     await expect(result.getByTestId('flow-capability-artifact-preview-expand')).toHaveCount(0);
     await expectTestIdBeforeFirstRow(page, 'flow-artifact-calendar-preamble');
     await expectTestIdBeforeFirstRow(page, 'flow-map-choose-child');
@@ -82,18 +82,18 @@ test.describe('Flow Map approved preview parity', () => {
     await expect(result).toHaveAttribute('data-capability-selected-destination', 'memo');
     await expect(result.getByTestId('flow-artifact-text-syntax-preview')).toBeVisible();
     await expect(result.getByTestId('flow-artifact-text-syntax-preview'))
-      .toContainText('# 오픽 모의고사 1달 반복 계획');
+      .toContainText('# 결혼 준비 핵심 4가지 시작표');
     await expect(result.getByTestId('flow-artifact-text-syntax-preview'))
-      .toContainText('## 1달 반복 계획');
+      .toContainText('## 먼저 비교할 4가지');
     await expect(result.getByTestId('flow-artifact-text-syntax-preview'))
-      .not.toContainText('오픽 모의고사 1달 반복 계획 · 1달 반복 계획');
-    await expect(result.getByTestId('flow-capability-artifact-preview-row')).toHaveCount(5);
+      .not.toContainText('결혼 준비 핵심 4가지 시작표 · 먼저 비교할 4가지');
+    await expect(result.getByTestId('flow-capability-artifact-preview-row')).toHaveCount(4);
     await expect(result.getByTestId('flow-capability-artifact-preview-row').first()).toHaveAttribute(
       'data-item-id',
-      'curated-opic-course-row-import::opic-1m-w1',
+      'curated-wedding-gongysd-atoz::wedding-gongysd-venue',
     );
     await expect(selector.getByTestId('flow-map-selected-child-copy'))
-      .toContainText('오픽 모의고사 1달 반복 계획 선택됨');
+      .toContainText('결혼 준비 핵심 4가지 시작표 선택됨');
     await expectTestIdBeforeFirstRow(page, 'flow-map-choose-child');
   });
 });

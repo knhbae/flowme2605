@@ -17,6 +17,43 @@ export type RuntimeArchivedFlowPolicy = {
 };
 
 export const RUNTIME_ARCHIVED_FLOW_POLICIES: readonly RuntimeArchivedFlowPolicy[] = [
+  // CP1 actual source review: keep original bundles for provenance and saved copies,
+  // but do not supply these unsupported source-derived rows to new public execution.
+  {
+    slug: 'source-backed-moving-d30',
+    reason: 'source_mismatch',
+    evidence: '2026-10-03 AJD 원문 대조: D-10/D-3 구간과 현재 D-14/D-7 배치, D-1 사진 대상이 일치하지 않습니다.',
+  },
+  {
+    slug: 'source-backed-year-end-tax-submit',
+    reason: 'unsupported_source_claims',
+    evidence: '2026-10-03 국세청 원문은 게시물이 없다고 응답합니다. 기존 D-3/D-1 항목과 현행 제출 조건을 확인할 수 없습니다.',
+  },
+  {
+    slug: 'curated-opic-single-mock-review',
+    reason: 'source_mismatch',
+    evidence: '2026-10-03 실제 XLSX 대조: 원문의 7/14일 휴식과 회차별 보완·복습 행을 현재 실행 항목이 그대로 보존하지 않습니다.',
+  },
+  {
+    slug: 'curated-opic-course-row-import',
+    reason: 'source_mismatch',
+    evidence: '2026-10-03 실제 XLSX 대조: 원문은 5주 35일이며 마지막 일요일 휴식 대신 현재 항목에 원문에 없는 시험 전 회차 선택이 있습니다.',
+  },
+  {
+    slug: 'curated-reading-monthly-log',
+    reason: 'source_mismatch',
+    evidence: '2026-10-03 원문 대조: 월 5권 선택·미완독 허용과 아침 1시간 읽기 또는 쓰기가 현재 월 4권·주 1권·30분 배치를 뒷받침하지 않습니다.',
+  },
+  {
+    slug: 'curated-child-vaccination-first-year',
+    reason: 'source_mismatch',
+    evidence: '2026-10-03 KHMS 원문과 KDCA 2026 표 대조: RV1 2회/RV5 3회 조건을 현재 6개월 RV 3차 항목이 보존하지 않습니다. 기존 의료 실행 보류를 유지합니다.',
+  },
+  {
+    slug: 'curated-child-vaccination-booster-school-age',
+    reason: 'source_mismatch',
+    evidence: '2026-10-03 원문 대조: Hib·PCV 추가 접종의 12~15개월 구간과 현재 15~18개월 묶음이 일치하지 않습니다. 기존 의료 실행 보류를 유지합니다.',
+  },
   {
     slug: 'digital-detox-weekly',
     reason: 'unsupported_source_claims',

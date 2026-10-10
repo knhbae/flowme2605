@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { expect, test, type Locator, type Page } from '@playwright/test';
+import { openExistingPublicPlan } from './helpers/existing-public-plan';
 import {
   closeOpenMyFlowItemDetail,
   getOpenMyFlowItemDetail,
@@ -87,11 +88,11 @@ test('capabilityResult=off public export keeps legacy parity and saved export co
   await page.setViewportSize({ width: 390, height: 844 });
   await gotoLegacySavedPlanLibraryRoute(
     page,
-    '/f/moving-d30-basic?capabilityResult=off&quickLocalResult=off',
+    '/f/curated-wedding-naver-timeline?capabilityResult=off&quickLocalResult=off',
   );
   await page.evaluate(() => localStorage.clear());
   await page.reload();
-  await page.getByLabel('이사일').fill('2026-08-30');
+  await page.getByLabel('결혼식 날짜').fill('2026-08-30');
 
   await expect(page.getByTestId('public-flow-detail-workspace')).toHaveCount(0);
   const exportEntry = page.getByTestId('public-flow-export-secondary-entry');
@@ -104,7 +105,7 @@ test('capabilityResult=off public export keeps legacy parity and saved export co
   await expect(panel.getByTestId('my-flow-export-scope-summary')).toContainText('계획 전체');
   const calendar = panel.getByRole('button', { name: /캘린더 파일 받기/ });
   const previewCount = Number(await calendar.getAttribute('data-export-count'));
-  expect(previewCount).toBeGreaterThan(0);
+  expect(previewCount).toBe(6);
 
   const downloadPromise = page.waitForEvent('download');
   await calendar.click();
@@ -208,9 +209,9 @@ test('whole, selected, and current item exports share scope language and actual 
   const errors = collectErrors(page);
   await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
   await page.setViewportSize({ width: 390, height: 844 });
-  await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=source-backed&view=flows');
+  await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=source-backed&savedMap=curated-ajd-moving-d30&view=flows');
 
-  let flow = await openMyFlowLibraryFlow(page, 'source-backed-moving-d30', 'record');
+  let flow = await openMyFlowLibraryFlow(page, 'curated-ajd-moving-d30', 'record');
   const exportSurface = flow.getByTestId('my-flow-export-surface');
   await exportSurface.getByTestId('my-flow-export-entry').click();
   const panel = exportSurface.getByTestId('my-flow-export-panel');
@@ -231,7 +232,7 @@ test('whole, selected, and current item exports share scope language and actual 
   await capture(page, panel, '02-selected-items-mobile.png');
   await acknowledgeSavedTransfer(transferReceipt);
 
-  flow = await openMyFlowLibraryFlow(page, 'source-backed-moving-d30', 'plan');
+  flow = await openMyFlowLibraryFlow(page, 'curated-ajd-moving-d30', 'plan');
   const firstRow = flow.getByTestId('my-flow-execution-row-shell').first();
   await firstRow.getByRole('button', { name: /열기/ }).click();
   const detail = getOpenMyFlowItemDetail(page);
@@ -270,20 +271,15 @@ test('whole, selected, and current item exports share scope language and actual 
   expect(errors).toEqual([]);
 });
 
-test('routine export reports one series event and keeps the canonical RRULE', async ({ page }) => {
+test('existing monthly routine export reports one series event and keeps the canonical RRULE', async ({ page }) => {
   await installLegacySavedPlanLibraryNavigation(page);
   test.setTimeout(90_000);
   const errors = collectErrors(page);
   await page.setViewportSize({ width: 390, height: 844 });
-  await gotoLegacySavedPlanLibraryRoute(page, '/f/washer-tub-clean-monthly');
-  await page.evaluate(() => localStorage.clear());
-  await page.reload();
-  await page.getByTestId('public-flow-anchor-input').fill('2026-07-20');
-
-  const savedFlowSlug = await savePublicFlowAndGetFocusedSlug(
-    page,
-    page.getByTestId('public-flow-save-primary-mobile'),
-  );
+  // Historical monthly plan; the source remains held for NEW discovery/start.
+  const savedFlowSlug = await openExistingPublicPlan(page, 'washer-tub-clean-monthly', {
+    anchor: '2026-07-20',
+  });
   const flow = await openMyFlowLibraryFlow(page, savedFlowSlug, 'record');
   const entry = flow.getByTestId('my-flow-export-surface');
   await entry.getByTestId('my-flow-export-entry').click();

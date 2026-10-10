@@ -252,7 +252,7 @@ test('aircon filter manual registration carries sourceTrace through QA and publi
   assert.match(step.sourceTrace ?? '', /Samsung Service solution 28524/);
 });
 
-test('source-backed moving D-30 sourceTrace repair moves the homepage representative to QA-pass ready', () => {
+test('held moving D-30 retains sourceTrace and original review rows without implying current source parity', () => {
   const report = assessSourceBackedManualRegistrationReadiness();
 
   assert.ok(!report.blockedMapIds.includes('moving-d30'));
@@ -395,13 +395,14 @@ test('middle-school math sourceTrace repair moves the Mathbang URL representativ
   );
 });
 
-test('source-backed quality decisions separate homepage candidates from direct-route experiments', () => {
+test('source-backed quality decisions separate homepage candidates from direct-route experiments and source holds', () => {
   assert.deepEqual(
     getSourceBackedHomepageFlowMaps().map((map) => map.id),
-    ['moving-d30', 'middle-school-math-1'],
+    ['middle-school-math-1'],
   );
 
   assert.equal(getSourceBackedFlowMapQualityDecision('moving-d30').status, 'representative');
+  assert.equal(getSourceBackedFlowMapQualityDecision('moving-d30').publicExecutionEnabled, false);
   assert.equal(getSourceBackedFlowMapQualityDecision('middle-school-math-1').status, 'candidate');
   assert.equal(getSourceBackedFlowMapQualityDecision('baby-health-schedule').status, 'revise');
   assert.equal(getSourceBackedFlowMapQualityDecision('baby-health-schedule').homepageEligible, false);
@@ -994,7 +995,7 @@ test('aircon filter routine keeps current Samsung 1way scope, model check, and o
   assert.match(bundle.itemDetails[0]?.caution ?? '', /모델별 방법이 다를 수 있으므로 사용설명서/);
 });
 
-test('legacy opic duplicate map can stay published while the curated representative owns URL lookup', () => {
+test('legacy opic duplicate and held curated packages stay traceable without URL execution', () => {
   const decision = getSourceBackedFlowMapQualityDecision('opic-plan-map');
   const lookupableIds = getUrlFirstLookupableSourceBackedFlowMaps().map((map) => map.id);
   const publishPackage = buildSourceBackedFlowMapPublishPackage('opic-plan-map');
@@ -1002,12 +1003,12 @@ test('legacy opic duplicate map can stay published while the curated representat
   assert.equal(decision.status, 'candidate');
   assert.equal(decision.directRouteEnabled, false);
   assert.ok(!lookupableIds.includes('opic-plan-map'));
-  assert.ok(lookupableIds.includes('curated-opic-mock-course'));
+  assert.ok(!lookupableIds.includes('curated-opic-mock-course'));
   assert.ok(publishPackage);
   assert.equal(publishPackage.map.id, 'opic-plan-map');
 });
 
-test('curated OPIC sourceTrace repair moves the Mansour URL representative to QA-pass ready', () => {
+test('held curated OPIC retains sourceTrace and both original packages without enabling execution', () => {
   const report = assessSourceBackedManualRegistrationReadiness();
   const publishPackage = buildSourceBackedFlowMapPublishPackage('curated-opic-mock-course');
   const decision = getSourceBackedFlowMapQualityDecision('curated-opic-mock-course');
@@ -1034,9 +1035,11 @@ test('curated OPIC sourceTrace repair moves the Mansour URL representative to QA
   });
   assert.equal(decision.directRouteEnabled, true);
   assert.match(decision.reason, /two alternative schedules/u);
-  assert.match(decision.nextAction, /either the 2-week or 1-month Flow/u);
+  assert.match(decision.nextAction, /hold new save and export/u);
+  assert.equal(decision.publicExecutionEnabled, false);
+  assert.equal(decision.executionHoldReason, 'source_rows');
   assert.equal(getSourceBackedFlowMapQualityDecision('opic-plan-map').directRouteEnabled, false);
-  assert.ok(lookupableIds.includes('curated-opic-mock-course'));
+  assert.ok(!lookupableIds.includes('curated-opic-mock-course'));
   assert.ok(!lookupableIds.includes('opic-plan-map'));
 
   const twoWeek = publishPackage.public.childFlows.find((flow) => flow.slug === 'curated-opic-single-mock-review');
@@ -1073,7 +1076,7 @@ test('curated baby food records stay traceable while both creator schedules rema
   assert.ok(defaultHitRows.every((row) => row.riskLevel === 'medical_sensitive'));
 });
 
-test('legacy reading routine map can stay published while the curated monthly routine owns URL lookup', () => {
+test('legacy reading and held curated monthly packages stay traceable without URL execution', () => {
   const decision = getSourceBackedFlowMapQualityDecision('reading-routine-map');
   const lookupableIds = getUrlFirstLookupableSourceBackedFlowMaps().map((map) => map.id);
   const publishPackage = buildSourceBackedFlowMapPublishPackage('reading-routine-map');
@@ -1082,7 +1085,7 @@ test('legacy reading routine map can stay published while the curated monthly ro
   assert.equal(decision.status, 'revise');
   assert.equal(decision.directRouteEnabled, false);
   assert.ok(!lookupableIds.includes('reading-routine-map'));
-  assert.ok(lookupableIds.includes('curated-reading-routine-log'));
+  assert.ok(!lookupableIds.includes('curated-reading-routine-log'));
   assert.ok(publishPackage);
   assert.equal(publishPackage.map.id, 'reading-routine-map');
   assert.ok(curatedPublishPackage);
@@ -1092,7 +1095,7 @@ test('legacy reading routine map can stay published while the curated monthly ro
   assert.ok(curatedRows.every((row) => row.riskLevel === 'low'));
 });
 
-test('curated reading routine sourceTrace repair moves the representative to QA-pass ready', () => {
+test('held curated reading keeps original sourceTrace without implying source-defined cadence', () => {
   const report = assessSourceBackedManualRegistrationReadiness();
   const publishPackage = buildSourceBackedFlowMapPublishPackage('curated-reading-routine-log');
 
@@ -1427,10 +1430,7 @@ test('public Flow Map catalog shows unique ready routes while preserving direct 
   const ids = catalogMaps.map((map) => map.id);
 
   assert.deepEqual(ids, [
-    'moving-d30',
     'middle-school-math-1',
-    'curated-opic-mock-course',
-    'curated-reading-routine-log',
     'curated-new-car-purchase-guide',
     'curated-wedding-checklist-family',
     'curated-allblanc-workout-park',
@@ -1441,6 +1441,9 @@ test('public Flow Map catalog shows unique ready routes while preserving direct 
   assert.ok(!ids.includes('curated-child-vaccination-schedule'));
   assert.ok(!ids.includes('curated-ajd-moving-d30'));
   assert.ok(!ids.includes('moving-map'));
+  assert.ok(!ids.includes('moving-d30'));
+  assert.ok(!ids.includes('curated-opic-mock-course'));
+  assert.ok(!ids.includes('curated-reading-routine-log'));
   assert.ok(!ids.includes('new-car-map'));
   assert.ok(!ids.includes('homefit-map'));
 

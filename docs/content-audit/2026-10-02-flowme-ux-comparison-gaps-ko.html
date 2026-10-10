@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'none'; img-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>FlowMe · UX 비교 실험실</title>
+  <style>
+    :root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#163331;background:#f2f6f4;--line:#d9e4e0;--accent:#08796f;--muted:#536c64}
+    *{box-sizing:border-box}body{margin:0}main{max-width:1060px;margin:auto;padding:32px 24px 60px}h1{font-size:clamp(25px,3vw,32px);margin:0 0 14px;word-break:keep-all}h2{font-size:21px;margin:0 0 18px}h3{font-size:17px;margin:0 0 10px}p,li{font-size:15px;line-height:1.75}p{margin:10px 0}.muted,small{color:var(--muted)}a{color:var(--accent);overflow-wrap:anywhere}section{background:white;border:1px solid var(--line);border-radius:12px;padding:24px;margin-top:18px}label{font-size:14px;display:block;margin-bottom:6px}button,select,textarea{font:inherit;color:inherit;border:1px solid var(--line);border-radius:8px;background:white}button{min-height:48px;padding:10px 15px;cursor:pointer}button:disabled{cursor:not-allowed;opacity:.55}select{min-height:48px;padding:8px 12px;width:100%}textarea{width:100%;min-height:150px;padding:13px;line-height:1.7;resize:vertical}button[aria-pressed=true],.primary{background:var(--accent);color:white;border-color:var(--accent)}:focus-visible{outline:3px solid #67b5aa;outline-offset:3px}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.fields,.compare{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.fields{margin-bottom:20px}.paper{border-left:3px solid var(--line);padding:14px 18px;background:#f8faf9;min-width:0}.paper pre{font-size:14px;line-height:1.8;white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0}.status{padding:12px 16px;margin:14px 0;background:#e8f3ef;border-left:3px solid var(--accent);font-size:14px;line-height:1.7}.error{background:#fff1eb;color:#873e28;border-color:#bb7357}.metrics{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--muted);padding-top:15px;border-top:1px solid var(--line);margin-top:20px}.metrics strong{color:#163331;font-size:16px}.policy{border-top:1px solid var(--line);padding-top:15px;margin-top:15px}summary{cursor:pointer;min-height:48px;padding:12px 0;font-size:15px}.links{display:flex;gap:16px;flex-wrap:wrap;font-size:14px;margin-top:16px}.links a{min-height:48px;display:inline-flex;align-items:center}table{border-collapse:collapse;width:100%;font-size:14px;line-height:1.7}td,th{padding:12px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top;overflow-wrap:anywhere}th{color:var(--muted)}[hidden]{display:none!important}.skip{position:absolute;left:-10000px}.skip:focus{left:12px;top:12px;background:white;padding:12px;z-index:2}#storage-note,#concept-description,#purpose-description,#feedback{overflow-wrap:anywhere}ul{padding-left:20px}.locked-notice{margin-bottom:20px}
+    @media(max-width:650px){main{padding:24px 14px 40px}section{padding:20px 15px}.fields,.compare{grid-template-columns:minmax(0,1fr)}.row button{flex:1 1 140px}h2{font-size:20px}.paper{padding:12px}table,tbody,tr,td{display:block}thead{display:none}tr{padding:10px 0;border-bottom:1px solid var(--line)}td{padding:4px 0;border:0}td:first-child{font-weight:650}}
+    @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+  </style>
+</head>
+<body>
+  <a class="skip" href="#draft-lab">초안 저장 모의로 이동</a>
+  <main>
+    <header>
+      <h1>다음 UX를 비교하기</h1>
+      <p>개인 문서, 공유 경험·지식, 선택적 질문·기여를 같은 비교 도구에서 살펴봅니다. 아래 내용과 저장은 합성 모형이며 실제 앱·계정·DB·공개 게시와 연결되지 않습니다.</p>
+      <p class="muted">2026.10.02 · 이 HTML의 브라우저 렌더·모바일/태블릿·실기기·관찰 사용자 검사는 미실행입니다. UX2의 후속 QA와 기존 화면 캡처 검토는 아래에 따로 표시합니다.</p>
+      <p class="muted">최신 r6 후보는 다섯 화면 크기에서 30개 모두 통과했습니다. 개인 작성→기간 실행→새로고침, 공개 판본 선택→개인 사본→완료, 초안 저장 거절→수정→재거절→버튼 직접 저장을 확인했습니다. 저장 거절 안내 전체와 재시도 버튼이 보이고, 성공 뒤 이전 오류가 사라집니다. 브라우저 오류·최종 가로 넘침·허용 범위 밖 저장은 0건입니다. 합성 저장 경계의 검사이며 실제 계정·DB·기기 검증은 아닙니다. 좁은 어절 분리와 메뉴·복구 패널 밀도는 남습니다. 10/3 사용자 승인으로 이 HTML과 독립 시안의 새 화면 검사2건을 이번 완료 조건에서 제외하고 NOT_RUN 후속으로 남겼습니다. 요구 대조·좁은 갭 구현·앱 검증·보고는 마쳤으며 제품 전체 UX 완성 판정은 아닙니다. 개발계에는 반영하지 않았으며 아래 재보관 동작은 별도 합성 모형입니다.</p>
+      <p class="muted">새 빌드는 ViQGyXzeL-q-3GEbFJGgZ입니다. 담당자가 켠 3107 QA 서버에서 정확 판본과 합성 설정을 확인한 뒤 30개를 실행했습니다. 새 회귀9개 포함 관련110개·npm2,258개·제품 타입·새 빌드도 통과했습니다. 이전 r5의 30개와 통합2,931개는 당시 판본의 이력으로 보존하며 새 결과와 합산하지 않습니다. 실제 서비스로 전달한 로그인·저장 요청은0건이고, 3105 개발계는 그대로 유지합니다.</p>
+      <nav class="links" aria-label="비교 근거">
+        <a href="../specs/2026-10-02-alpha-ux-comparison-gaps/requirements.md">대표 요구 18군과 피드백 26개</a>
+        <a href="../specs/2026-10-02-alpha-ux-comparison-gaps/ux-review.md">목적별 추천과 감산 기준</a>
+        <a href="../specs/2026-10-02-alpha-ux-comparison-gaps/dots-review.md">Dots 일정·자유 편집 대조</a>
+        <a href="../specs/2026-10-02-alpha-ux-comparison-gaps/results.md">검사 결과·다음 UX 범위</a>
+        <a href="../specs/2026-10-02-alpha-ux-comparison-gaps/qa.md">판본별 QA와 재개 조건</a>
+      </nav>
+    </header>
+
+    <section aria-labelledby="compare-heading">
+      <h2 id="compare-heading">시작 객체와 사용 목적</h2>
+      <div class="fields">
+        <div><label for="concept">디자인 후보</label><select id="concept"><option value="tool">A 도구형 · 문서에서 시작</option><option value="community">B 커뮤니티형 · 질문과 경험에서 시작</option><option value="service">C 앱서비스형 · 오늘 할 일에서 시작</option><option value="knowledge">D 지식·로드맵형 · 주제와 단계에서 시작</option></select></div>
+        <div><label for="purpose">지금 할 일</label><select id="purpose"><option value="personal">개인 문서 작성·실행</option><option value="reuse">경험·지식 찾아 재사용</option><option value="contribute">질문·경험·개선 기여</option></select></div>
+      </div>
+      <div class="compare">
+        <div><h3 id="concept-title">문서에서 시작</h3><p id="concept-description"></p><p class="muted">배치 의도를 요약한 비교입니다. UX2 원본 네 시안의 화면을 복제하거나 렌더한 결과가 아닙니다.</p></div>
+        <div class="paper"><h3 id="purpose-title">개인 문서 작성·실행</h3><p id="purpose-description"></p><pre id="purpose-sample"></pre></div>
+      </div>
+      <p class="muted">`내 공간 / 둘러보기 / 내 활동`은 목적 이동입니다. 한 사람이 목적을 바꿀 수 있고, 읽기나 외부 출력만 하고 끝내도 됩니다. 디자인 선택은 이 창에서만 바뀌며 제품에 채택되지 않습니다.</p>
+    </section>
+
+    <section aria-labelledby="source-comparison-heading">
+      <h2 id="source-comparison-heading">네 시안과 지금 제품의 실제 차이</h2>
+      <p>UX2의 후속 QA와 첫 화면 12장·조작 상태 6장을 직접 읽었습니다. 아래는 그 시안과 제품의 대조이며 디자인 채택이나 제품 기능 추가가 아닙니다.</p>
+      <table><thead><tr><th>시안</th><th>지금 제품과 다른 점</th><th>개선해도 보존할 것</th></tr></thead><tbody>
+        <tr><td>A · 문서</td><td>문서 시작은 같지만 시안의 입력은 단순 모형입니다. 제품의 자유 입력·부분/전체 편집과 같지 않습니다.</td><td>문서 중심 위계를 비교하되 실제 편집기·같은 Item·원문 복귀를 유지</td></tr>
+        <tr><td>B · 경험·질문</td><td>시안은 글과 Flow를 한 피드에 둡니다. 제품은 Flow 찾기와 경험·질문·지식을 나눕니다.</td><td>관련 자료 왕복을 비교하되 글·원판·사본·제안의 의미를 합치지 않음</td></tr>
+        <tr><td>C · 오늘</td><td>시안은 오늘부터 시작하고 추가 폼을 접습니다. 제품은 문서 시작, 기간 목록의 추가 폼은 항상 보입니다.</td><td>전체 할 일·날짜 미정·지난 미완료와 키보드 경로를 유지</td></tr>
+        <tr><td>D · 주제·단계</td><td>시안은 가이드와 단계에서 찾습니다. 현재 공개 상세의 확인 경로는 판본별 Item 목록과 관련 글입니다.</td><td>원본에 실제 단계가 있는 자료만 묶기. 임의 단계를 만들지 않음</td></tr>
+      </tbody></table>
+      <details><summary>외형을 가져오면 안 되는 동작 차이</summary><ul><li>시안은 네 보기와 더보기의 날짜 미정, 제품은 여섯 보기입니다. 메뉴를 줄이는 것이 기능을 없애는 뜻은 아닙니다.</li><li>시안의 오늘은 당일만, 제품은 지난 미완료도 표시합니다. 화면 배치 선택과 조회 정책 선택은 다릅니다.</li><li>시안은 같은 날짜의 진행 변경을 여러 줄로 쌓지만 제품은 날짜별 최신 누적값을 갱신합니다.</li><li>시안의 개선 제안은 댓글 모형입니다. 제품의 제안 검토·판본·채택 권한을 대신하지 않습니다.</li><li>제품에는 이전 판본·CSV·일정/반복 출력 범위가 있습니다. 시안의 간단한 TXT/ICS 폼으로 대체하지 않습니다.</li><li>시안의 저장 실패·Undo는 로컬 고장 주입입니다. 제품의 확정 거절·결과 불명·계정·원 요청 확인과 다릅니다.</li></ul></details>
+      <p class="muted">UX2 원본의 47개 모형 검사와 네 안×3크기·8개 대표 여정은 별도 세션의 기록입니다. 이 HTML이나 제품 후보의 통과 수에 더하지 않습니다. 캡처 직접 검토는 새 브라우저 실행이나 사용자 선호 조사도 아닙니다.</p>
+    </section>
+
+    <section id="draft-lab" aria-labelledby="draft-heading">
+      <h2 id="draft-heading">초안을 보관하다가 실패했다면</h2>
+      <p>공개되지 않은 질문 초안 하나를 사용합니다. ‘전’은 명확한 거절 뒤 직접 재보관을 막는 비교 기준, ‘후’는 수정한 초안을 명시적으로 다시 보관하는 제안 모형입니다. 실제 제품 구현 결과는 별도 QA를 확인합니다.</p>
+      <div class="row" role="group" aria-label="저장 복구 비교">
+        <button id="before" type="button" aria-pressed="false">전 · 거절 뒤 다시 보관 불가</button>
+        <button id="after" type="button" aria-pressed="true">후 · 수정 후 명시 재보관</button>
+      </div>
+      <p id="behavior-note" class="muted"></p>
+      <div id="locked-note" class="status error locked-notice" hidden>이 실험의 저장본을 안전하게 읽을 수 없습니다. 손상된 값을 덮어쓰지 않고 입력·저장을 막았습니다. 다른 운영 자료는 읽거나 수정하지 않습니다.</div>
+      <div class="fields">
+        <div><label for="response">다음 보관 결과 모의</label><select id="response"><option value="success">정상 확정</option><option value="rejected">명확한 형식 거절 · 수정 필요</option><option value="error">요청 전 준비 오류</option><option value="unknown-before">결과 불명 · 모형 서버에 아직 반영 전</option><option value="unknown-after">결과 불명 · 모형 서버 반영 후 응답 유실</option></select></div>
+        <div><label for="receipt">같은 요청 확인 결과 모의</label><select id="receipt"><option value="confirmed">확정 결과 확인</option><option value="unresolved">아직 확인할 수 없음</option></select></div>
+      </div>
+      <label for="draft-text">비공개 질문 초안 · 가상 자료</label>
+      <textarea id="draft-text" maxlength="2000" spellcheck="false"></textarea>
+      <div class="row" style="margin-top:14px">
+        <button id="prepare" type="button" class="primary">변경 내용 확인</button>
+        <button id="resolve" type="button">같은 요청 확인</button>
+        <button id="reopen" type="button">이 실험의 보관본 다시 열기</button>
+      </div>
+      <div id="save-preview" class="policy" hidden aria-labelledby="preview-heading">
+        <h3 id="preview-heading">이 초안을 비공개로 보관합니다</h3>
+        <div class="compare"><div class="paper"><h3>마지막 확인된 초안</h3><pre id="preview-old"></pre></div><div class="paper"><h3>지금 입력한 초안</h3><pre id="preview-new"></pre></div></div>
+        <div class="row" style="margin-top:14px"><button id="confirm" type="button" class="primary">이 초안 보관 모의</button><button id="cancel" type="button">취소 · 입력 유지</button></div>
+      </div>
+      <p id="feedback" class="status" role="status" aria-live="polite"></p>
+      <div class="compare">
+        <div class="paper"><h3>마지막 확인된 보관본</h3><pre id="ack-text"></pre><p id="ack-revision" class="muted"></p></div>
+        <div class="paper"><h3>결과가 불명인 같은 요청</h3><pre id="pending-text"></pre><p id="pending-id" class="muted"></p></div>
+      </div>
+      <div class="metrics" aria-label="합성 모형의 거래 수">
+        <span>고유 보관 요청 <strong id="requests">0</strong></span><span>같은 요청 확인 <strong id="checks">0</strong></span><span>모형 성공 변경 <strong id="commits">0</strong></span>
+      </div>
+      <p id="storage-note" class="muted"></p>
+      <details><summary>거절·결과 불명·취소의 차이</summary><ul><li>명확히 거절됐으면 성공 변경은 없습니다. ‘후’에서는 수정한 같은 초안을 확인하고 새 명시 요청으로 다시 보관합니다.</li><li>결과 불명이면 기존 요청 ID와 당시 내용을 그대로 확인합니다. 이어 쓴 입력은 남기지만 자동으로 새 요청을 보내지 않습니다.</li><li>확정 결과를 확인한 뒤 이어 쓴 내용이 있으면, 사용자가 다시 내용을 확인하고 새 보관을 선택합니다.</li><li>취소와 변경 없음은 새 보관 요청을 만들지 않습니다. 이 모형에는 실제 공개·답글 전송·제안 채택 기능이 없습니다.</li></ul></details>
+    </section>
+
+    <section aria-labelledby="policy-heading">
+      <h2 id="policy-heading">날짜·메모 정책은 아직 고르는 중</h2>
+      <p>다음 UX 업무 범위는 초안 복구 화면입니다. 확정 거절·결과 불명·원 요청 확인 뒤 남은 입력을 구분하고 중복 안내를 줄입니다. 최종 화면안과 새 저장 정책을 채택하거나 구현한 상태는 아닙니다. 날짜·메모 선택지는 이 작업에 섞지 않습니다.</p>
+      <p>아래는 이번 요구 비교의 선택지입니다. 이 실험에서는 일정을 이동하거나 메모 문법·반복·마감일을 저장하지 않습니다.</p>
+      <table><thead><tr><th>질문</th><th>비교할 제안</th><th>현재 보존</th></tr></thead><tbody>
+        <tr><td>메모 이어쓰기</td><td>기존 반복 메모 속성 / 들여쓴 본문·빈 줄 종료</td><td>현재 `- 메모:` 호환과 같은 Item.note</td></tr>
+        <tr><td>다른 날짜 구획으로 이동</td><td>기존 날짜 유지 / 새 구획 따름의 명시 선택</td><td>같은 Item·원문 위치·과거 기록</td></tr>
+        <tr><td>같은 제목의 다른 날짜</td><td>이동 / 별개 복제 / 명시 반복 회차</td><td>제목만 보고 자동 병합하지 않음</td></tr>
+        <tr><td>예정일과 마감일</td><td>독립 due·due-only 목록·초과/임박 표시</td><td>별도 schema/영구 문법은 미확정</td></tr>
+      </tbody></table>
+      <p class="muted">정책 선택·제품 디자인 채택·전체26 피드백/424 요구 완료를 뜻하지 않습니다. 5D·전수 콘텐츠·실기기/관찰 사용자·공개 운영은 기존 후속입니다.</p>
+    </section>
+    <section aria-labelledby="dots-heading">
+      <h2 id="dots-heading">Dots 피드백에서 이어갈 일</h2>
+      <p>일정 시뮬레이션의 가상 인물3명·할 일30개는 실제 사람의6주 사용이나 이 후보의 검사 결과가 아닙니다. 원본 PDF와 현재 코드를 대조해 기능이 없는 경우, 진입을 찾기 어려운 경우, 새 정책이 필요한 경우를 나눴습니다.</p>
+      <table><thead><tr><th>제안</th><th>현재 상태</th><th>다음 비교·검사</th></tr></thead><tbody>
+        <tr><td>취소·보류·재개</td><td>일반 일정 취소 상태는 없음. 반복 회차 보류·제외와 완료 재개는 별도 지원</td><td>대상별 상태·날짜·기록 보존을 먼저 결정</td></tr>
+        <tr><td>반복 회차 설정</td><td>원본 기반 반복 사본·제작 인계에는 회차 UI가 있음. 새 개인 문서의 반복 생성 진입은 없음</td><td>기존 경로 발견성과 새 반복 생성 요구를 분리</td></tr>
+        <tr><td>오늘의 날짜 기준</td><td>실행 환경의 로컬 날짜를 사용. Dots 브라우저 시간대는 미확인</td><td>시간대·자정·오랜 뒤 복귀를 재현한 뒤 판정</td></tr>
+        <tr><td>예정일 변경 이력</td><td>날짜별 진행 기록은 있음. 일반 일정의 모든 날짜 변경 이력은 없음</td><td>회고에 필요한 최소 기록과 보존 범위를 비교</td></tr>
+        <tr><td>검색 범위·미정의 시간</td><td>기간·폴더·검색이 함께 적용됨. 날짜만 미정으로 바꾸면 시간은 유지</td><td>빈 결과에서 범위 해제, 날짜·시간 직접 삭제 결과 확인</td></tr>
+        <tr><td>같은 시각 안내</td><td>개별 할 일 보존·이동 가능. 종료 시각 없이 실제 충돌을 확정할 수 없음</td><td>필요가 확인되면 저장을 막지 않는 안내부터 비교</td></tr>
+        <tr><td>같은 원문인데 카드가 더 남음</td><td>v11의 독립 등록 유지 계약과 일치. 중간 저장 뒤 역편집은3, 저장 전 저장본 복원은2. 격리 후보의 해당 줄 메뉴에 등록/기록 유지 설명 추가</td><td>설명 추가 당시 새4/4·전체58/58 PASS. r6 메뉴 화면·키보드 경로도 통과. 복원 대상 발견성·붙여넣기/Undo 전수는 미검증, 자동 등록 해제는 정책 선택</td></tr>
+        <tr><td>설명·빈 줄 삽입 후 해석 변경</td><td>빈 줄만으로는 변하지 않음. 들여쓰기 없는 설명이 부모 문맥을 끝내 독립 등록을 유발</td><td>해석이 바뀌는 순간을 비교. 메모 귀속 문법은 임의로 변경하지 않음</td></tr>
+        <tr><td>텍스트 사본의 완료·이력</td><td>새ID에 문자 완료·개별 날짜를 읽고 원본의 다일 이력은 복사하지 않음</td><td>텍스트 복사·같은 Item 이동·참조를 구분. 완료 초기화/이력 복제는 별도 선택</td></tr>
+      </tbody></table>
+      <p class="muted">이 표는 처리 계획입니다. 새 취소·반복·영구 이력·시간대 정책을 채택하거나 기능을 추가한 기록이 아닙니다.</p>
+      <p class="muted">추가 자유 편집 PDF11쪽도 읽었습니다. 모델6개·실제 draft 함수3개, 총9개 메모리 진단은9/9입니다. 이 진단은 실제 앱 Undo·서버 새로고침·붙여넣기·실기기 검사가 아니며, Dots의 가상19줄/16카드/4완료와 합산하지 않습니다. 등록 상태 설명은 격리 후보에만 추가했고 현재 서비스에는 미반영입니다. 후보의 대표 화면 검사는 r6에서 다시 통과했지만 복원 대상의 발견성과 실제 붙여넣기·Undo 전수 검사는 남아 있습니다.</p>
+    </section>
+    <footer><p class="muted">네 후보는 UX2의 최신 source·QA·기존 캡처에서 비교했습니다. 이 세션의 새 시안 DOM/클릭과 이 HTML의 브라우저 렌더는 미실행입니다. 외부 시안 QA·코드·VM·기존 HTTP 제품 검사를 대신 통과 근거로 쓰지 않습니다. 원본 시안·개인/운영 자료는 변경하지 않습니다.</p></footer>
+  </main>
+
+  <script id="lab-model">
+  (function (root) {
+    'use strict';
+    const KEY = 'flow:poc:personal-workspace:v1:ux-comparison-lab:v1';
+    const MAX_TEXT = 2000, MAX_SEQUENCE = 100000;
+    // Up to four bodies: ack, remote, input, and pending OR rejected.
+    // JSON can escape each UTF-16 unit into six characters; metadata is bounded.
+    const MAX_SERIALIZED = MAX_TEXT * 6 * 4 + 2048;
+    const DOCUMENT = 'lab-question-1', ACTOR = 'lab-me';
+    const clone = value => JSON.parse(JSON.stringify(value));
+    const plain = value => value !== null && typeof value === 'object' && !Array.isArray(value);
+    const keys = (value, expected) => plain(value) && Object.keys(value).length === expected.length && expected.every(key => Object.prototype.hasOwnProperty.call(value, key));
+    const text = value => typeof value === 'string' && value.length <= MAX_TEXT;
+    const integer = value => Number.isInteger(value) && value >= 0 && value <= MAX_SEQUENCE;
+    const validDocument = value => keys(value, ['id','actor','revision','text']) && value.id === DOCUMENT && value.actor === ACTOR && integer(value.revision) && text(value.text);
+    const validRequest = value => keys(value, ['id','documentId','actor','baseRevision','text','applied']) && /^lab-request-[1-9]\d{0,5}$/.test(value.id) && value.documentId === DOCUMENT && value.actor === ACTOR && integer(value.baseRevision) && text(value.text) && typeof value.applied === 'boolean';
+    function initial() {
+      const document = { id: DOCUMENT, actor: ACTOR, revision: 0, text: '이사 준비 경험을 메모합니다.\n아직 공개하지 않았습니다.' };
+      return { version: 1, ack: clone(document), remote: clone(document), input: document.text, sequence: 0, requests: 0, checks: 0, commits: 0, pending: null, rejected: null };
+    }
+    function valid(state) {
+      if (!keys(state, ['version','ack','remote','input','sequence','requests','checks','commits','pending','rejected']) || state.version !== 1 || !validDocument(state.ack) || !validDocument(state.remote) || !text(state.input)) return false;
+      if (!['sequence','requests','checks','commits'].every(key => integer(state[key])) || state.sequence !== state.requests || state.commits !== state.remote.revision || state.ack.revision > state.remote.revision || state.commits > state.requests || state.pending && state.rejected) return false;
+      if (state.pending !== null) {
+        const request = state.pending;
+        if (!validRequest(request) || request.id !== 'lab-request-' + state.sequence || request.baseRevision !== state.ack.revision) return false;
+        if (request.applied ? state.remote.revision !== request.baseRevision + 1 || state.remote.text !== request.text : JSON.stringify(state.remote) !== JSON.stringify(state.ack)) return false;
+      } else if (JSON.stringify(state.ack) !== JSON.stringify(state.remote)) return false;
+      if (state.rejected !== null) {
+        if (!validRequest(state.rejected) || state.rejected.applied || state.rejected.id !== 'lab-request-' + state.sequence || state.rejected.baseRevision !== state.ack.revision) return false;
+      }
+      return true;
+    }
+    function parse(raw) {
+      if (typeof raw !== 'string' || raw.length > MAX_SERIALIZED) return null;
+      try { const state = JSON.parse(raw); return valid(state) ? clone(state) : null; } catch (_) { return null; }
+    }
+    function outcome(state, kind, message) { return { state: clone(state), kind, message }; }
+    function edit(state, value) {
+      if (!valid(state) || !text(value)) return outcome(initial(), 'invalid', '입력 또는 모형 상태를 읽을 수 없습니다.');
+      const next = clone(state); next.input = value; return outcome(next, 'edited', '입력은 아직 공개되지 않은 초안입니다.');
+    }
+    function save(state, behavior, response) {
+      if (!valid(state)) return outcome(initial(), 'invalid', '손상 상태는 저장하지 않습니다.');
+      if (!['before','after'].includes(behavior) || !['success','rejected','error','unknown-before','unknown-after'].includes(response)) return outcome(state, 'invalid', '지원하지 않는 모의 선택입니다.');
+      if (state.pending) return outcome(state, 'held', '결과가 불명입니다. 새 요청을 만들지 말고 같은 요청을 확인하세요.');
+      if (state.rejected && behavior === 'before') return outcome(state, 'blocked', '전: 거절 뒤 수정한 초안을 직접 다시 보관할 수 없습니다. 입력은 남아 있습니다.');
+      if (state.input === state.ack.text) return outcome(state, 'no-change', '변경이 없습니다. 새 보관 요청은 0건입니다.');
+      if (!state.input.trim()) return outcome(state, 'error', '빈 초안은 보관하지 않습니다. 입력을 이어 쓰세요.');
+      if (response === 'error') return outcome(state, 'error', '요청 전 준비 오류입니다. 입력은 남고 새 요청은 0건입니다.');
+      if (state.sequence >= MAX_SEQUENCE || state.remote.revision >= MAX_SEQUENCE) return outcome(state, 'limit', '이 실험의 거래 한도에 도달했습니다. 새 요청을 만들지 않습니다.');
+      const next = clone(state); next.sequence++; next.requests++;
+      const request = { id: 'lab-request-' + next.sequence, documentId: DOCUMENT, actor: ACTOR, baseRevision: next.ack.revision, text: next.input, applied: false };
+      next.rejected = null;
+      if (response === 'rejected') {
+        next.rejected = request;
+        return outcome(next, 'rejected', '형식 거절이 확정됐습니다. 이번 요청의 성공 변경은 0건이며 입력은 남아 있습니다. ‘후’에서 내용을 수정하고 명시적으로 다시 보관할 수 있습니다.');
+      }
+      if (response === 'unknown-before' || response === 'unknown-after') {
+        if (response === 'unknown-after') { request.applied = true; next.remote = { id: DOCUMENT, actor: ACTOR, revision: next.remote.revision + 1, text: request.text }; next.commits++; }
+        next.pending = request;
+        return outcome(next, 'unknown', '결과를 확인하지 못했습니다. 당시 요청 ID와 내용은 고정하고, 이어 쓴 입력은 따로 남깁니다.');
+      }
+      next.remote = { id: DOCUMENT, actor: ACTOR, revision: next.remote.revision + 1, text: request.text };
+      next.ack = clone(next.remote); next.commits++;
+      return outcome(next, 'saved', '이 모형의 비공개 초안 보관을 확인했습니다. 실제 계정 저장이나 게시가 아닙니다.');
+    }
+    function resolve(state, answer) {
+      if (!valid(state)) return outcome(initial(), 'invalid', '손상 상태의 요청은 확인하지 않습니다.');
+      if (!['confirmed','unresolved'].includes(answer)) return outcome(state, 'invalid', '지원하지 않는 확인 결과입니다.');
+      if (!state.pending) return outcome(state, 'no-change', '확인할 결과 불명 요청이 없습니다.');
+      if (state.checks >= MAX_SEQUENCE) return outcome(state, 'limit', '모형 확인 한도입니다. 상태를 그대로 유지합니다.');
+      const next = clone(state); next.checks++;
+      if (answer === 'unresolved') return outcome(next, 'unknown', '아직 결과 불명입니다. 같은 요청 ID·내용과 이어 쓴 입력을 유지했습니다.');
+      const request = next.pending;
+      if (!request.applied) { next.remote = { id: DOCUMENT, actor: ACTOR, revision: next.remote.revision + 1, text: request.text }; next.commits++; }
+      next.ack = clone(next.remote); next.pending = null;
+      return outcome(next, 'confirmed', next.input === next.ack.text ? '같은 요청의 확정 결과를 확인했습니다. 중복 성공 변경은 없습니다.' : '같은 요청을 확인했습니다. 그 뒤 이어 쓴 입력은 남아 있고 자동 후속 보관은 하지 않았습니다.');
+    }
+    function cancel(state) { return outcome(state, 'cancelled', '보관을 취소했습니다. 입력 유지, 새 요청 0건입니다.'); }
+    function storagePort(getStorage) {
+      let memory = null, mode = 'local', locked = false;
+      function read() {
+        let raw;
+        if (mode === 'memory') raw = memory;
+        else { try { raw = getStorage().getItem(KEY); } catch (_) { mode = 'memory'; raw = memory; } }
+        if (raw === null) { locked = false; return { state: initial(), mode, locked }; }
+        const state = parse(raw); locked = state === null; if (state) memory = raw;
+        return { state: state || initial(), mode, locked };
+      }
+      function write(state) {
+        if (locked || !valid(state)) return { ok: false, mode, locked };
+        const raw = JSON.stringify(state);
+        if (parse(raw) === null) return { ok: false, mode, locked };
+        if (mode === 'local') {
+          try { const current = getStorage().getItem(KEY); if (current !== null && parse(current) === null) { locked = true; return { ok: false, mode, locked }; } getStorage().setItem(KEY, raw); }
+          catch (_) { mode = 'memory'; }
+        }
+        memory = raw;
+        return { ok: true, mode, locked };
+      }
+      return Object.freeze({ read, write, info: () => ({ mode, locked }) });
+    }
+    const concepts = Object.freeze({
+      tool: { title: '문서에서 시작', description: 'A 도구형은 작성 중인 원문과 폴더 탐색을 우선합니다. 기간 보기는 같은 개인 Item을 보는 전환입니다.' },
+      community: { title: '질문과 경험에서 시작', description: 'B 커뮤니티형은 제목 중심의 질문·경험 목록을 우선합니다. 관련 Flow는 필요한 글에서 연결합니다.' },
+      service: { title: '오늘 할 일에서 시작', description: 'C 앱서비스형은 오늘 목록과 이어 할 일을 우선합니다. 추가 폼은 필요할 때 엽니다.' },
+      knowledge: { title: '주제와 단계에서 시작', description: 'D 지식·로드맵형은 가이드와 전체 단계, 관련 경험을 구분합니다. 모든 내용을 하나의 로드맵으로 강제하지 않습니다.' }
+    });
+    const purposes = Object.freeze({
+      personal: { title: '개인 문서 작성·실행', description: '일반 메모로 끝내거나 명시적으로 할 일을 추가합니다. 문서·기간·폴더는 같은 Item을 참조합니다.', sample: '가상 문서: 이사 준비\n메모: 작은 박스부터 정리하기\n할 일: 관리실에 전화\n문서 ↔ 오늘 ↔ 원문 위치' },
+      reuse: { title: '경험·지식 찾아 재사용', description: '공개 판본을 읽거나 외부 도구로 출력한 뒤 끝낼 수 있습니다. 개인 사본을 만들면 원본과 날짜·메모·진행을 구분합니다.', sample: '가상 공개 Flow: 이사 D-30 · v1.2\n읽기 → TXT/ICS 출력 후 종료\n또는 선택 개인 사본 → 내 일정·메모\n새 판본 자동 반영 없음' },
+      contribute: { title: '질문·경험·개선 기여', description: 'Flow 없이 질문할 수 있습니다. 답글·경험·공개 파생·개선 제안은 목적이 다르고, 개인 기록은 자동 공개하지 않습니다.', sample: '가상 질문: 박스를 얼마나 준비하면 좋을까요?\n관련 Flow: 선택 연결\n비공개 초안 보관 → 선택 게시\n이 모형에서는 실제 게시하지 않음' }
+    });
+    root.FlowUxComparisonLab = Object.freeze({ KEY, initial, valid, parse, edit, save, resolve, cancel, storagePort, concepts, purposes });
+  })(globalThis);
+  </script>
+  <script id="lab-ui">
+  (function () {
+    'use strict';
+    const api = globalThis.FlowUxComparisonLab, byId = id => document.getElementById(id);
+    const port = api.storagePort(() => globalThis.localStorage);
+    const loaded = port.read(); let state = loaded.state, locked = loaded.locked, behavior = 'after';
+    let last = locked ? '손상된 실험 저장본입니다. 쓰기를 막았습니다.' : '입력을 바꾼 뒤 변경 내용 확인을 선택하세요.';
+    const controls = ['draft-text','response','receipt','prepare','confirm','cancel','resolve','reopen'];
+    function render() {
+      byId('draft-text').value = state.input;
+      byId('before').setAttribute('aria-pressed', String(behavior === 'before'));
+      byId('after').setAttribute('aria-pressed', String(behavior === 'after'));
+      byId('behavior-note').textContent = behavior === 'before' ? '비교 기준: 명확한 거절 뒤 새 명시 재보관을 막는 상태를 모의합니다.' : '제안 모형: 명확히 거절된 비공개 초안만 수정→확인→새 명시 요청으로 재보관합니다.';
+      byId('locked-note').hidden = !locked;
+      controls.forEach(id => { byId(id).disabled = locked; });
+      byId('resolve').disabled = locked || !state.pending;
+      byId('ack-text').textContent = locked ? '읽기 차단' : state.ack.text;
+      byId('ack-revision').textContent = locked ? '' : '모형에서 확인된 revision ' + state.ack.revision + ' · 비공개 초안';
+      byId('pending-text').textContent = state.pending ? state.pending.text : '결과 불명 요청 없음';
+      byId('pending-id').textContent = state.pending ? state.pending.id + ' · 당시 내용을 고정해 확인' : '새 요청이 자동 생성되지 않습니다.';
+      ['requests','checks','commits'].forEach(id => { byId(id).textContent = String(state[id]); });
+      byId('feedback').textContent = last;
+      byId('feedback').className = 'status' + (locked || /거절|오류|불명|막는|불가/.test(last) ? ' error' : '');
+      const mode = port.info().mode;
+      byId('storage-note').textContent = locked ? '손상된 실험 키를 덮어쓰지 않았습니다. 다른 키는 읽거나 쓰지 않습니다.' : mode === 'memory' ? '로컬 파일의 저장 접근이 허용되지 않아 현재 창의 메모리만 사용합니다. 다시 열어 유지된다고 보장하지 않습니다.' : '이 실험 전용 키 하나만 보관합니다. 실제 앱·계정·DB 저장소는 읽거나 쓰지 않습니다.';
+    }
+    function apply(result) {
+      if (locked) return;
+      if (result.kind === 'invalid' || !api.valid(result.state)) { locked = true; last = '안전하지 않은 모형 상태라 입력·쓰기를 막았습니다.'; render(); return; }
+      const changed = JSON.stringify(state) !== JSON.stringify(result.state); state = result.state; last = result.message;
+      if (changed) { const saved = port.write(state); if (!saved.ok) { locked = true; last = '보관 상태를 읽을 수 없어 쓰기를 막았습니다.'; } }
+      render();
+    }
+    function compare() {
+      const concept = api.concepts[byId('concept').value], purpose = api.purposes[byId('purpose').value];
+      if (!concept || !purpose) return;
+      byId('concept-title').textContent = concept.title; byId('concept-description').textContent = concept.description;
+      byId('purpose-title').textContent = purpose.title; byId('purpose-description').textContent = purpose.description; byId('purpose-sample').textContent = purpose.sample;
+    }
+    byId('concept').addEventListener('change', compare); byId('purpose').addEventListener('change', compare);
+    ['before','after'].forEach(id => byId(id).addEventListener('click', () => { behavior = id; byId('save-preview').hidden = true; render(); }));
+    byId('draft-text').addEventListener('input', () => { apply(api.edit(state, byId('draft-text').value)); byId('save-preview').hidden = true; });
+    byId('prepare').addEventListener('click', () => {
+      if (locked) return;
+      byId('preview-old').textContent = state.ack.text; byId('preview-new').textContent = state.input;
+      byId('save-preview').hidden = false; byId('confirm').focus();
+    });
+    byId('confirm').addEventListener('click', () => { if (byId('save-preview').hidden || locked) return; byId('save-preview').hidden = true; apply(api.save(state, behavior, byId('response').value)); byId('prepare').focus(); });
+    byId('cancel').addEventListener('click', () => { if (locked) return; byId('save-preview').hidden = true; last = api.cancel(state).message; render(); byId('prepare').focus(); });
+    byId('resolve').addEventListener('click', () => { byId('save-preview').hidden = true; apply(api.resolve(state, byId('receipt').value)); });
+    byId('reopen').addEventListener('click', () => { const current = port.read(); state = current.state; locked = current.locked; byId('save-preview').hidden = true; last = locked ? '손상된 저장본의 입력·쓰기를 막았습니다.' : '이 실험의 보관본을 다시 읽었습니다. 결과 불명 요청과 이어 쓴 입력은 따로 유지합니다.'; render(); });
+    document.addEventListener('keydown', event => { if (event.key === 'Escape' && !byId('save-preview').hidden) { byId('cancel').click(); event.preventDefault(); } });
+    compare(); render();
+  })();
+  </script>
+</body>
+</html>

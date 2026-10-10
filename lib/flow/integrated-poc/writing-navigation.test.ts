@@ -33,11 +33,21 @@ test('missing duplicated or foreign line ownership cannot create a writing desti
   assert(!programCheckpointForWritingTarget(f.data, f.destination, f.doc.lines[0].id, foreign)!.writing!.foreign);
   f.doc.lines.push({ ...f.doc.lines[0] }); assert.equal(programCheckpointForWritingTarget(f.data, f.destination, f.doc.lines[0].id, null), null);
 });
-test('Space hands off explicit row intent to App instead of racing its later focus restoration', () => {
+test('Space delegates explicit row focus to App history and limits native restoration to the Alpha shell', () => {
   const space = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramSpace.tsx', import.meta.url), 'utf8');
   const app = readFileSync(new URL('../../../components/flow/integrated-poc/ProgramApp.tsx', import.meta.url), 'utf8');
   const open = space.slice(space.indexOf('async function openDocument(id:'), space.indexOf('async function newDocument('));
-  assert(open.includes('writingLineId: taskId')); assert(!open.includes('requestAnimationFrame'));
+  const alpha = readFileSync(new URL('../../../components/flow/integrated-poc/AlphaWorkspace.tsx', import.meta.url), 'utf8');
+  assert(open.includes('writingLineId: taskId'));
+  const nativeRestore = open.slice(open.indexOf('if (targetPosition && !props.onRegisterNavigation)'));
+  assert(nativeRestore.startsWith('if (targetPosition && !props.onRegisterNavigation)'));
+  assert.equal(open.match(/requestAnimationFrame\(/g)?.length, 1);
+  assert(nativeRestore.includes('requestAnimationFrame('));
+  assert(nativeRestore.includes('sourceFocusPorts.current[id]'));
+  assert(nativeRestore.includes('selectedRef.current !== id'));
+  assert(nativeRestore.includes('!programSame(positions.current[id], requested)'));
+  assert(app.includes('onRegisterNavigation={registered => { spaceNavigation.current = registered; }}'));
+  assert(!alpha.includes('onRegisterNavigation='));
   assert(app.includes('programCheckpointForWritingTarget(data, next, options.writingLineId, checkpoint)'));
   assert(app.includes('document.getElementById(checkpoint.focus)?.focus'));
 });

@@ -67,7 +67,7 @@ test('entry router removes the duplicate Home surface and opens the catalog', as
   await expect(page.locator('[data-home-recommendation-card="true"]')).toHaveCount(0);
   await expect(page.getByTestId('home-usage-example')).toHaveCount(0);
   const catalogCards = page.getByTestId('flow-map-catalog-card');
-  await expect(catalogCards).toHaveCount(9, { timeout: 30_000 });
+  await expect(catalogCards).toHaveCount(6, { timeout: 30_000 });
   await expect(page.getByTestId('platform-mobile-tabs')).toHaveAttribute(
     'data-p35-marker',
     'P35-ENTRY-ROUTER-3TAB',
@@ -75,18 +75,21 @@ test('entry router removes the duplicate Home surface and opens the catalog', as
   await capture(page, '01-entry-router-catalog-mobile.png');
 
   await assertDiscoveryCard(catalogCards.first());
-  const canonicalMovingCard = page
+  const heldMovingCard = page
     .getByTestId('single-flow-catalog-card')
     .filter({ hasText: '이사 D-30 준비' });
-  await expect(canonicalMovingCard).toHaveCount(1);
-  await expect(canonicalMovingCard.getByTestId('flow-card-support-meta')).toContainText(
-    '할 일 24개',
+  await expect(heldMovingCard).toHaveCount(0);
+  await expect(page.locator('a[href="/f/moving-d30-basic"]')).toHaveCount(0);
+  const vehicleCard = page
+    .getByTestId('single-flow-catalog-card')
+    .filter({ hasText: '자동차검사 D-14 준비' });
+  await expect(vehicleCard).toHaveCount(1);
+  await expect(vehicleCard.getByTestId('flow-card-support-meta')).toContainText(
+    '할 일 10개',
   );
   await expect(page.getByText('인기순', { exact: true })).toHaveCount(0);
 
   for (const href of [
-    '/f/curated-opic-single-mock-review',
-    '/f/curated-opic-course-row-import',
     '/f/curated-wedding-naver-timeline',
     '/f/curated-wedding-gongysd-atoz',
     '/f/curated-allblanc-morning-workout',
@@ -95,6 +98,9 @@ test('entry router removes the duplicate Home surface and opens the catalog', as
     await expect(page.locator(`a[href="${href}"]`)).toBeVisible();
   }
   await expect(page.locator('a[href="/flow-maps/curated-opic-mock-course"]')).toHaveCount(0);
+  await expect(page.locator('a[href="/f/curated-opic-single-mock-review"]')).toHaveCount(0);
+  await expect(page.locator('a[href="/f/curated-opic-course-row-import"]')).toHaveCount(0);
+  await expect(page.locator('a[href="/flow-maps/curated-reading-routine-log"]')).toHaveCount(0);
   await expect(page.locator('a[href="/flow-maps/curated-wedding-checklist-family"]')).toHaveCount(0);
   await expect(page.locator('a[href="/flow-maps/curated-allblanc-workout-park"]')).toHaveCount(0);
   await capture(page, '02-catalog-independent-flow-entry-mobile.png');
@@ -128,21 +134,18 @@ test('public save-before shows the whole Flow before one start decision', async 
   await capture(page, '03-public-save-before-mobile.png');
 });
 
-test('source-backed map and public Flow use the same artifact-first decision grammar', async ({ page }) => {
+test('an eligible public timeline and source-backed choices keep the artifact-first decision grammar', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await gotoLegacySavedPlanLibraryRoute(page, '/flow-maps/moving-d30');
-
-  await expect(page).toHaveURL('/f/moving-d30-basic');
-  await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
-  await expect(page).toHaveURL(withLegacySavedPlanLibraryRoute('/f/moving-d30-basic'));
+  await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-wedding-naver-timeline');
+  await expect(page).toHaveURL(withLegacySavedPlanLibraryRoute('/f/curated-wedding-naver-timeline'));
   const canonicalHero = page.getByTestId('public-flow-hero');
   await expect(canonicalHero).toHaveAttribute('data-visual-structure', 'artifact-first');
   await expect(canonicalHero.getByText('원문', { exact: true })).toBeVisible();
   const capability = canonicalHero.getByTestId('public-flow-capability-result');
   await capability.getByTestId('flow-capability-artifact-preview-expand').click();
-  await expect(capability.getByTestId('flow-capability-artifact-preview-row')).toHaveCount(24);
+  await expect(capability.getByTestId('flow-capability-artifact-preview-row')).toHaveCount(6);
   await expect(page.getByTestId('public-flow-save-primary-mobile')).toHaveAccessibleName(
-    '이사일 정하기',
+    '결혼식 날짜 정하기',
   );
   await expect(page.getByTestId('public-flow-adjust-entry-mobile')).toHaveAccessibleName('계획 수정');
   await capture(page, '04-source-backed-save-before-mobile.png');

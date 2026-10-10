@@ -1,291 +1,27 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { programClone, programFailure, programId, programResult, type ProgramData, type ProgramPublicationDraft, type ProgramPublicationDraftRow, type ProgramPublicItem, type ProgramTransition } from '@/lib/flow/integrated-poc/contract';
-import { programDate, validateProgramData, canPublishProgramSchedule } from '@/lib/flow/integrated-poc/program-data';
+import { restoreProgramDialogFocus } from '@/lib/flow/integrated-poc/dialog-return-focus';
+import { programClone, programFailure, programResult, type ProgramData, type ProgramPublicationDraft, type ProgramPublicationDraftRow } from '@/lib/flow/integrated-poc/contract';
+import { canPublishProgramSchedule } from '@/lib/flow/integrated-poc/program-data';
 import { programSame } from '@/lib/flow/integrated-poc/controller';
 import type { ProgramEditorFlush } from '@/lib/flow/integrated-poc/document-action';
-import { archiveProgramPublicFlow, publishProgramFlow, type PublishProgramFlowInput } from '@/lib/flow/integrated-poc/publication';
-import { classifyProgramUrl } from '@/lib/flow/integrated-poc/output';
 import { textWorkspaceModel as M } from '@/lib/flow/integrated-poc/text-workspace';
 import { programErrorMessage, type ProgramMutate, type ProgramNavigate } from '@/lib/flow/integrated-poc/ui-contract';
-import { programRecurringDraftFromSchedule, programRecurringScheduleFromDraft, programRecurringScheduleLabel } from '@/lib/flow/integrated-poc/public-recurrence-contract';
+import { programRecurringScheduleFromDraft, programRecurringScheduleLabel } from '@/lib/flow/integrated-poc/public-recurrence-contract';
 import { programPublicationSeriesSourcesCurrent, programPublicationSeriesSubchecks, inspectProgramPublicationSeries, applyProgramPublicationSeriesReview, type ProgramPublicationSeriesReview } from '@/lib/flow/integrated-poc/publication-series-draft';
 import { ProgramPublicationRecurrence } from './ProgramPublicationRecurrence';
 import { hasProgramOrdinaryPublicationSource, inspectProgramPublicationSource, applyProgramPublicationSource, type ProgramPublicationSourceReview, type ProgramPublicationSourceField } from '@/lib/flow/integrated-poc/publication-ordinary-source';
 import { ProgramPublicationSourceReviewPanel } from './ProgramPublicationSourceReview';
 import { ProgramPublicationTiming } from './ProgramPublicationTiming';
-import { programOrdinaryTimingDraft, programOrdinaryTimingFromDraft, programOrdinaryTimingLabel } from '@/lib/flow/integrated-poc/public-ordinary-time';
+import { programOrdinaryTimingLabel } from '@/lib/flow/integrated-poc/public-ordinary-time';
 import styles from './ProgramPublisher.module.css';
+import { fullRowText } from '@/lib/flow/integrated-poc/publication-editor';
 
-export type ProgramPublisherProps = { data: ProgramData; mutate: ProgramMutate; navigate: ProgramNavigate; documentId: string; onClose: () => void; today: string; externalRecovery?: React.ReactNode; onRegisterEditors?: (port: ProgramEditorFlush | null) => void };
+export type ProgramPublisherProps = { data: ProgramData; mutate: ProgramMutate; navigate: ProgramNavigate; documentId: string; onClose: () => void; today: string; storageScope?: 'local' | 'account'; readCurrentData?: () => ProgramData | null; externalRecovery?: React.ReactNode; onRegisterEditors?: (port: ProgramEditorFlush | null) => void };
+import { publicationDraftAt, programPublicationNativeValue, captureProgramPublicationInput, programPublicationRecoveryText, createProgramPublicationEditorPort, resolveProgramPrivatePublicationDraft, sameFingerprint, publicId, documentFingerprint, createProgramPublicationDraft, saveProgramPublicationDraft, programPublicationInput, publishProgramDocument, compareProgramPublication, resolveProgramPublicationComparison, archiveProgramPublication, type PublicationComparison, type PublicationConflictChoices } from '@/lib/flow/integrated-poc/publication-editor';
+export * from '@/lib/flow/integrated-poc/publication-editor';
 const same = programSame;
-const publicationDraftAt = (data: ProgramData, actorId: string, documentId: string) => data.spaces[actorId]?.publicationDrafts.find(row => row.documentId === documentId) ?? null;
-const draftTextFields = ['title', 'summary', 'category', 'situationsText', 'sourceLabel', 'sourceUrl'] as const;
-const rowTextFields = ['title', 'description', 'completionCriteria', 'sourceUrl', 'scheduleValue'] as const;
-const recurrenceTextFields = ['raw', 'end', 'startValue', 'time', 'timeZone'] as const;
-export type ProgramPublicationNativeValue = { field: string; itemId?: string; value: string };
-/** Restore only tagged strings after an explicit comparison choice. */
-export function programPublicationNativeValue(draft: ProgramPublicationDraft, field: string, itemId?: string): string | undefined {
-  if (!itemId) return draftTextFields.includes(field as typeof draftTextFields[number]) ? draft[field as typeof draftTextFields[number]] : undefined;
-  const row = draft.rows.find(item => item.itemId === itemId); if (!row) return undefined;
-  if (rowTextFields.includes(field as typeof rowTextFields[number])) return row[field as typeof rowTextFields[number]];
-  if (field === 'timing:time' || field === 'timing:timeZone') return row.scheduleKind !== 'recurring' ? row.timing?.[field.slice(7) as 'time' | 'timeZone'] ?? '' : undefined;
-  const key = field.startsWith('recurrence:') ? field.slice(11) as typeof recurrenceTextFields[number] : null;
-  return key && recurrenceTextFields.includes(key) && row.recurrence ? row.recurrence[key] : undefined;
-}
-/** Read only tagged editable fields, including native IME text not committed by React yet. */
-export function captureProgramPublicationInput(draft: ProgramPublicationDraft, values: ProgramPublicationNativeValue[]): ProgramPublicationDraft {
-  const next = programClone(draft);
-  for (const entry of values) {
-    if (entry.itemId) {
-      const row = next.rows.find(item => item.itemId === entry.itemId);
-      if (row && rowTextFields.includes(entry.field as typeof rowTextFields[number])) row[entry.field as typeof rowTextFields[number]] = entry.value;
-      if (row?.recurrence && entry.field.startsWith('recurrence:')) {
-        const key = entry.field.slice('recurrence:'.length) as typeof recurrenceTextFields[number];
-        if (recurrenceTextFields.includes(key)) row.recurrence[key] = entry.value;
-      }
-      if (row && row.scheduleKind !== 'recurring' && ['timing:time', 'timing:timeZone'].includes(entry.field)) {
-        const key = entry.field.slice(7) as 'time' | 'timeZone';
-        if (row.timing || entry.value) (row.timing ??= programOrdinaryTimingDraft())[key] = entry.value;
-      }
-    } else if (draftTextFields.includes(entry.field as typeof draftTextFields[number])) next[entry.field as typeof draftTextFields[number]] = entry.value;
-  }
-  return same(next, draft) ? draft : next;
-}
-export function programPublicationRecoveryText(draft: ProgramPublicationDraft): string {
-  // Do not export the sourceDocumentFingerprint: it contains the private source document.
-  return JSON.stringify({ title: draft.title, summary: draft.summary, category: draft.category, situationsText: draft.situationsText,
-    sourceKind: draft.sourceKind, sourceLabel: draft.sourceLabel, sourceUrl: draft.sourceUrl, derivedFrom: draft.derivedFrom,
-    rows: draft.rows.map(({ selected, title, description, completionCriteria, sourceUrl, scheduleKind, scheduleValue, recurrence, timing, subchecks }) =>
-      ({ selected, title, description, completionCriteria, sourceUrl, scheduleKind, scheduleValue, ...(recurrence ? { recurrence } : {}), ...(timing ? { timing } : {}), subchecks })) }, null, 2);
-}
-export function createProgramPublicationEditorPort(input: {
-  actorId: string; documentId: string; read: () => ProgramPublicationDraft | null; saved: () => ProgramPublicationDraft | null;
-  composing: () => boolean; busy: () => boolean; save: () => Promise<boolean>; lock: () => () => void;
-  handlesPrivateConflict?: boolean;
-}): ProgramEditorFlush {
-  const pending = () => input.composing() || input.busy() || !same(input.read(), input.saved());
-  return {
-    lockInput: input.lock,
-    hasPendingInput: pending,
-    pendingDocumentIds: () => pending() ? [input.documentId] : [],
-    captureDrafts: () => { const draft = input.read(); return draft ? [{ title: '공개 초안 입력 · 비공개 보관', raw: programPublicationRecoveryText(draft) }] : []; },
-    flushAll: async () => { try { return !input.composing() && !input.busy() && await input.save() && !pending(); } catch { return false; } },
-    blocksExternalSnapshot: (before, next) => pending() && (next.activeActorId !== input.actorId
-      || documentFingerprint(next, input.actorId, input.documentId) === null
-      || !input.handlesPrivateConflict && !same(publicationDraftAt(before, input.actorId, input.documentId), publicationDraftAt(next, input.actorId, input.documentId))),
-  };
-}
-/** Explicit private-draft choice. Public-version comparison remains a separate action. */
-export function resolveProgramPrivatePublicationDraft(data: ProgramData, actorId: string, mine: ProgramPublicationDraft,
-  expected: ProgramPublicationDraft | null, choice: 'mine' | 'stored'): ProgramTransition<string> {
-  if (data.activeActorId !== actorId || !data.spaces[actorId]) return programFailure(data, 'forbidden');
-  if (documentFingerprint(data, actorId, mine.documentId) === null) return programFailure(data, 'missing');
-  if (!same(publicationDraftAt(data, actorId, mine.documentId), expected)) return programFailure(data, 'conflict');
-  if (choice === 'stored') return { ok: true, data, changed: false, result: mine.documentId };
-  // Another tab may have published this document and removed its draft. Never turn
-  // an old create request into a second public Flow when keeping local input.
-  const linked = data.spaces[actorId].publications.filter(link => link.documentId === mine.documentId);
-  if (linked.some(link => link.flowId !== mine.flowId) || expected && expected.flowId !== mine.flowId) return programFailure(data, 'conflict');
-  return saveProgramPublicationDraft(data, actorId, mine, expected);
-}
-function fingerprint(value: unknown): string {
-  const ordered = (part: unknown): unknown => Array.isArray(part) ? part.map(ordered)
-    : part && typeof part === 'object' ? Object.fromEntries(Object.entries(part).sort(([a], [b]) => a.localeCompare(b)).map(([key, entry]) => [key, ordered(entry)])) : part;
-  return JSON.stringify(ordered(value));
-}
-function sameFingerprint(a: string | null, b: string | null): boolean {
-  if (a === null || b === null) return a === b;
-  try { return same(JSON.parse(a), JSON.parse(b)); } catch { return false; }
-}
-const publicId = (rowId: string) => `publication-${rowId}`;
-function documentFingerprint(data: ProgramData, actorId: string, documentId: string): string | null {
-  const space = data.spaces[actorId]; const document = space && M.getDocument(space.text, documentId);
-  return document && !space.archivedDocumentIds.includes(documentId) ? fingerprint(document) : null;
-}
-function fromPublic(item: ProgramPublicItem, rowId: string | null, origin: ProgramPublicationDraftRow['origin']): ProgramPublicationDraftRow {
-  return { rowId, origin, itemId: item.id, selected: true, title: item.title, description: item.description,
-    completionCriteria: item.completionCriteria, sourceUrl: item.sourceUrl ?? '', scheduleKind: item.schedule.kind,
-    scheduleValue: item.schedule.kind === 'fixed' ? item.schedule.date : item.schedule.kind === 'relative' ? String(item.schedule.days) : '',
-    ...(item.schedule.kind === 'recurring' ? { recurrence: programRecurringDraftFromSchedule(item.schedule) } : {}),
-    ...(item.schedule.kind !== 'recurring' && item.schedule.timing ? { timing: programOrdinaryTimingDraft(item.schedule.timing) } : {}),
-    subchecks: item.subchecks.map(check => ({ id: check.id, title: check.title })) };
-}
-
-export function createProgramPublicationDraft(data: ProgramData, documentId: string, now: string): ProgramPublicationDraft | null {
-  const actorId = data.activeActorId; const space = data.spaces[actorId]; const fingerprint = documentFingerprint(data, actorId, documentId);
-  if (!space || fingerprint === null) return null;
-  const retained = space.publicationDrafts.find(row => row.documentId === documentId);
-  if (retained) return programClone(retained);
-  const linkedFlows = space.publications.flatMap(link => data.public.flows.filter(flow => flow.id === link.flowId && link.documentId === documentId && flow.ownerId === actorId));
-  const linked = linkedFlows.find(flow => !flow.archived) ?? linkedFlows[0];
-  const current = linked && data.public.versions.find(version => version.id === linked.currentVersionId);
-  const rows: ProgramPublicationDraftRow[] = [];
-  for (const row of M.rowMeta(space.text, documentId)) {
-    if (row.kind !== 'task' && row.kind !== 'note') continue;
-    if (row.kind === 'note' && !row.text.trim()) continue;
-    const previous = current?.items.find(item => item.id === publicId(row.id));
-    if (previous) rows.push(fromPublic(previous, row.id, row.kind));
-    else rows.push({ rowId: row.id, origin: row.kind, itemId: publicId(row.id), selected: false,
-      title: row.kind === 'task' ? row.title ?? '' : '', description: '', completionCriteria: '', sourceUrl: '',
-      scheduleKind: 'undated', scheduleValue: '', subchecks: [] });
-  }
-  for (const item of current?.items ?? []) if (!rows.some(row => row.itemId === item.id)) rows.push(fromPublic(item, null, 'previous-public'));
-  const draft: ProgramPublicationDraft = { id: programId('publication-draft'), documentId, requestId: programId('publication-request'),
-    flowId: linked?.id ?? null, expectedVersionId: current?.id ?? null, sourceDocumentFingerprint: fingerprint,
-    title: current?.title ?? '', summary: current?.summary ?? '', category: linked?.category ?? '경험과 지식', situationsText: linked?.situations.join(', ') ?? '',
-    sourceKind: current?.source.kind === 'simulated-example' ? 'simulated-example' : 'user-text', sourceLabel: current?.source.label ?? '직접 작성한 내용',
-    sourceUrl: current?.source.url ?? '', derivedFrom: linked?.derivedFrom ?? null, rows, updatedAt: now };
-  const source = inspectProgramPublicationSeries(data, actorId, draft);
-  if (!source.ok) return null;
-  const grouped = applyProgramPublicationSeriesReview(data, actorId, draft, source.review, source.review.candidates.map(candidate => candidate.sourceKey), now);
-  return grouped.ok ? grouped.draft : null;
-}
-
-export function saveProgramPublicationDraft(data: ProgramData, actorId: string, draft: ProgramPublicationDraft, expected: ProgramPublicationDraft | null): ProgramTransition<string> {
-  if (data.activeActorId !== actorId || !data.spaces[actorId]) return programFailure(data, 'forbidden');
-  if (documentFingerprint(data, actorId, draft.documentId) === null) return programFailure(data, 'missing');
-  const existing = data.spaces[actorId].publicationDrafts.find(row => row.documentId === draft.documentId) ?? null;
-  if (!same(existing, expected)) return programFailure(data, 'conflict');
-  if (same(existing, draft)) return { ok: true, data, changed: false, result: draft.id };
-  const next = programClone(data); next.spaces[actorId].publicationDrafts = [...next.spaces[actorId].publicationDrafts.filter(row => row.documentId !== draft.documentId), programClone(draft)];
-  return validateProgramData(next) ? programResult(data, next, draft.id) : programFailure(data, 'invalid');
-}
-
-export function programPublicationInput(draft: ProgramPublicationDraft, actorId: string): PublishProgramFlowInput | null {
-  if (!draft.title.trim() || !draft.category.trim() || !draft.sourceLabel.trim()) return null;
-  if (draft.sourceUrl.trim() && classifyProgramUrl(draft.sourceUrl.trim(), []).kind === 'invalid') return null;
-  const items: ProgramPublicItem[] = [];
-  for (const row of draft.rows.filter(row => row.selected)) {
-    if (!['undated', 'fixed', 'relative', 'recurring'].includes(row.scheduleKind)) return null;
-    if (!row.title.trim() || row.sourceUrl.trim() && classifyProgramUrl(row.sourceUrl.trim(), []).kind === 'invalid') return null;
-    if (row.scheduleKind === 'fixed' && !programDate(row.scheduleValue) || row.scheduleKind === 'relative' && !/^[+-]?\d+$/.test(row.scheduleValue)) return null;
-    const days = Number(row.scheduleValue); if (row.scheduleKind === 'relative' && (!Number.isSafeInteger(days) || Math.abs(days) > 36600)) return null;
-    const recurring = row.scheduleKind === 'recurring' && row.recurrence ? programRecurringScheduleFromDraft(row.recurrence) : null;
-    if (row.scheduleKind === 'recurring' && !recurring) return null;
-    const timing = row.scheduleKind !== 'recurring' && row.timing ? programOrdinaryTimingFromDraft(row.timing) : undefined;
-    if (timing === null) return null;
-    const ordinaryTiming = timing && (timing.time || timing.timeZone) ? { timing } : {};
-    items.push({ id: row.itemId, title: row.title.trim(), description: row.description, completionCriteria: row.completionCriteria,
-      sourceUrl: row.sourceUrl.trim() || null, schedule: row.scheduleKind === 'fixed' ? { kind: 'fixed', date: row.scheduleValue, ...ordinaryTiming }
-        : row.scheduleKind === 'relative' ? { kind: 'relative', days, ...ordinaryTiming } : recurring ?? { kind: 'undated', ...ordinaryTiming },
-      subchecks: row.subchecks.map(check => ({ id: check.id, title: check.title })) });
-  }
-  if (!items.length) return null;
-  return { actorId, requestId: draft.requestId, ...(draft.flowId ? { flowId: draft.flowId, expectedVersionId: draft.expectedVersionId ?? undefined } : {}),
-    title: draft.title.trim(), summary: draft.summary, category: draft.category.trim(), situations: [...new Set(draft.situationsText.split(',').map(value => value.trim()).filter(Boolean))],
-    source: { kind: draft.sourceKind, label: draft.sourceLabel.trim(), url: draft.sourceUrl.trim() || null, checkedAt: null },
-    derivedFrom: draft.derivedFrom ? { flowId: draft.derivedFrom.flowId, versionId: draft.derivedFrom.versionId } : null, items };
-}
-
-/** One transaction publishes only the allowlisted public fields, adds its private
- * document link and removes the submitted private draft. */
-export function publishProgramDocument(data: ProgramData, actorId: string, draft: ProgramPublicationDraft, now: string): ProgramTransition<string> {
-  if (data.activeActorId !== actorId || !data.spaces[actorId]) return programFailure(data, 'forbidden');
-  if (!sameFingerprint(documentFingerprint(data, actorId, draft.documentId), draft.sourceDocumentFingerprint)) return programFailure(data, 'conflict');
-  if (!programPublicationSeriesSourcesCurrent(data, actorId, draft)) return programFailure(data, 'conflict');
-  const input = programPublicationInput(draft, actorId); if (!input) return programFailure(data, 'invalid');
-  const stored = data.spaces[actorId].publicationDrafts.find(row => row.id === draft.id);
-  const replay = data.receipts.find(row => row.actorId === actorId && row.id === draft.requestId && row.kind === 'publication');
-  if (!replay && !same(stored, draft)) return programFailure(data, 'conflict');
-  const published = publishProgramFlow(data, input, now); if (!published.ok) return published;
-  const version = published.data.public.versions.find(row => row.id === published.result); if (!version) return programFailure(data, 'missing');
-  const next = programClone(published.data); const space = next.spaces[actorId];
-  if (!space.publications.some(link => link.flowId === version.flowId && link.documentId === draft.documentId)) space.publications.push({ flowId: version.flowId, documentId: draft.documentId, creatorDraftId: space.creatorDraftImports?.find(entry => entry.documentId === draft.documentId)?.creatorDraftId ?? null });
-  const link = space.publications.find(link => link.flowId === version.flowId && link.documentId === draft.documentId)!;
-  const bindings = new Map((link.seriesBindings?.items ?? []).map(entry => [entry.key, entry.itemId]));
-  for (const row of draft.rows.filter(row => row.selected && row.seriesSource)) bindings.set(row.seriesSource!.key, row.itemId);
-  if (bindings.size) link.seriesBindings = { version: 1, items: [...bindings].map(([key, itemId]) => ({ key, itemId })) };
-  space.publicationDrafts = space.publicationDrafts.filter(row => row.id !== draft.id);
-  return validateProgramData(next) ? programResult(data, next, version.id) : programFailure(data, 'invalid');
-}
-
-type TopField = 'title' | 'summary' | 'category' | 'situationsText' | 'sourceKind' | 'sourceLabel' | 'sourceUrl';
-type RowField = 'title' | 'description' | 'completionCriteria' | 'sourceUrl' | 'schedule' | 'subchecks';
-export type PublicationConflictField = { key: string; label: string; draftText: string; latestText: string; kind: 'top' | 'row' | 'presence' | 'order'; field?: TopField | RowField; itemId?: string };
-export type PublicationComparison = {
-  flowId: string; latestVersionId: string; latestNumber: number; draftFingerprint: string; publicFingerprint: string;
-  sourceFingerprint: string; latest: ProgramPublicationDraft; fields: PublicationConflictField[];
-};
-export type PublicationConflictChoices = Record<string, 'draft' | 'latest'>;
-const topFields: [TopField, string][] = [['title', '공개 제목'], ['summary', '소개·본문'], ['category', '분야'], ['situationsText', '적용 상황'], ['sourceKind', '출처 유형'], ['sourceLabel', '출처 설명'], ['sourceUrl', '원문 URL']];
-const rowFields: [RowField, string][] = [['title', '제목'], ['description', '설명'], ['completionCriteria', '완료 기준'], ['sourceUrl', '항목 출처'], ['schedule', '일정'], ['subchecks', '하위 확인']];
-function rowValue(row: ProgramPublicationDraftRow, field: RowField): unknown {
-  return field === 'schedule' ? { kind: row.scheduleKind, value: row.scheduleValue, ...(row.scheduleKind === 'recurring' ? { recurrence: row.recurrence } : row.timing ? { timing: row.timing } : {}) } : row[field];
-}
-function fieldText(value: unknown): string {
-  if (value === '' || value === null || value === undefined) return '(없음)';
-  if (Array.isArray(value)) return value.map(item => typeof item === 'string' ? item : item.title).join('\n') || '(없음)';
-  if (typeof value === 'object' && value && 'kind' in value) {
-    const schedule = value as { kind: string; value: string; recurrence?: ProgramPublicationDraftRow['recurrence']; timing?: ProgramPublicationDraftRow['timing'] };
-    if (schedule.kind === 'recurring') { const parsed = schedule.recurrence && programRecurringScheduleFromDraft(schedule.recurrence); return parsed ? programRecurringScheduleLabel(parsed) : '반복 입력 확인 필요'; }
-    return [schedule.kind === 'undated' ? '날짜 미정' : schedule.kind === 'fixed' ? `고정 날짜 ${schedule.value}` : `기준일 ${schedule.value}일`, schedule.timing?.time, schedule.timing?.timeZone].filter(Boolean).join(' · ');
-  }
-  return String(value);
-}
-function fullRowText(row: ProgramPublicationDraftRow | undefined): string { return row ? rowFields.map(([field, label]) => `${label}: ${fieldText(rowValue(row, field))}`).join('\n') : '현재 초안에서 항목이 없어졌습니다. 다시 확인해 주세요.'; }
-
-export function compareProgramPublication(data: ProgramData, actorId: string, draft: ProgramPublicationDraft): PublicationComparison | null {
-  const flow = data.public.flows.find(row => row.id === draft.flowId && row.ownerId === actorId && !row.archived);
-  const version = flow && data.public.versions.find(row => row.id === flow.currentVersionId);
-  const sourceFingerprint = documentFingerprint(data, actorId, draft.documentId);
-  if (data.activeActorId !== actorId || !flow || !version || sourceFingerprint === null) return null;
-  const latest: ProgramPublicationDraft = { ...programClone(draft), title: version.title, summary: version.summary, category: flow.category, situationsText: flow.situations.join(', '),
-    sourceKind: version.source.kind === 'simulated-example' ? 'simulated-example' : 'user-text', sourceLabel: version.source.label, sourceUrl: version.source.url ?? '',
-    rows: version.items.map(item => { const old = draft.rows.find(row => row.itemId === item.id); return { ...fromPublic(item, old?.rowId ?? null, old?.origin ?? 'previous-public'), ...(old?.seriesSource ? { seriesSource: programClone(old.seriesSource) } : {}) }; }) };
-  const fields: PublicationConflictField[] = [];
-  for (const [field, label] of topFields) if (!same(draft[field], latest[field])) {
-    const display = (value: string) => field === 'sourceKind' ? value === 'simulated-example' ? '합성 예시' : '개인 작성' : fieldText(value);
-    fields.push({ key: `top:${field}`, kind: 'top', field, label, draftText: display(draft[field]), latestText: display(latest[field]) });
-  }
-  for (const itemId of new Set([...draft.rows.map(row => row.itemId), ...latest.rows.map(row => row.itemId)])) {
-    const own = draft.rows.find(row => row.itemId === itemId), incoming = latest.rows.find(row => row.itemId === itemId);
-    if (!own?.selected && !incoming) continue;
-    const title = own?.title || incoming?.title || '제목 없는 항목';
-    if (!!own?.selected !== !!incoming) fields.push({ key: `presence:${itemId}`, kind: 'presence', itemId, label: `${title} · 포함/제외`,
-      draftText: own?.selected ? `공개에 포함\n${fullRowText(own)}` : '공개에서 제외', latestText: incoming ? `공개에 포함\n${fullRowText(incoming)}` : '최신 판본에서 삭제됨' });
-    if (own && incoming) for (const [field, label] of rowFields) if (!same(rowValue(own, field), rowValue(incoming, field))) fields.push({ key: `row:${itemId}:${field}`, kind: 'row', itemId, field, label: `${title} · ${label}`, draftText: fieldText(rowValue(own, field)), latestText: fieldText(rowValue(incoming, field)) });
-  }
-  const ownOrder = draft.rows.filter(row => row.selected).map(row => row.itemId), latestOrder = latest.rows.map(row => row.itemId);
-  if (!same(ownOrder, latestOrder)) fields.push({ key: 'order', kind: 'order', label: '항목 순서', draftText: draft.rows.filter(row => row.selected).map(row => row.title).join('\n') || '(없음)', latestText: latest.rows.map(row => row.title).join('\n') || '(없음)' });
-  return { flowId: flow.id, latestVersionId: version.id, latestNumber: version.number, draftFingerprint: fingerprint(draft), publicFingerprint: fingerprint({ flow, version }), sourceFingerprint, latest, fields };
-}
-
-/** Resolutions update only the actor's persisted draft, never the public version. */
-export function resolveProgramPublicationComparison(data: ProgramData, actorId: string, draft: ProgramPublicationDraft, comparison: PublicationComparison, choices: PublicationConflictChoices, now: string): ProgramTransition<string> {
-  if (data.activeActorId !== actorId) return programFailure(data, 'forbidden');
-  const fresh = compareProgramPublication(data, actorId, draft);
-  if (!fresh || !same(fresh, comparison)) return programFailure(data, 'conflict');
-  if (comparison.fields.some(field => choices[field.key] !== 'draft' && choices[field.key] !== 'latest') || Object.keys(choices).some(key => !comparison.fields.some(field => field.key === key))) return programFailure(data, 'unresolved');
-  const next = programClone(draft);
-  for (const field of comparison.fields) {
-    if (choices[field.key] !== 'latest') continue;
-    if (field.kind === 'top') { const key = field.field as TopField; Object.assign(next, { [key]: comparison.latest[key] }); }
-    if (field.kind === 'presence') {
-      const incoming = comparison.latest.rows.find(row => row.itemId === field.itemId), own = next.rows.find(row => row.itemId === field.itemId);
-      if (own) own.selected = !!incoming; else if (incoming) next.rows.push(programClone(incoming));
-    }
-    if (field.kind === 'row') {
-      const incoming = comparison.latest.rows.find(row => row.itemId === field.itemId), own = next.rows.find(row => row.itemId === field.itemId); if (!incoming || !own) return programFailure(data, 'invalid');
-      if (field.field === 'schedule') { own.scheduleKind = incoming.scheduleKind; own.scheduleValue = incoming.scheduleValue;
-        if (incoming.recurrence) own.recurrence = programClone(incoming.recurrence); else delete own.recurrence;
-        if (incoming.timing) own.timing = programClone(incoming.timing); else delete own.timing; }
-      else { const key = field.field as Exclude<RowField, 'schedule'>; Object.assign(own, { [key]: programClone(incoming[key]) }); }
-    }
-  }
-  if (choices.order === 'latest') { const order = comparison.latest.rows.map(row => row.itemId); next.rows.sort((a, b) => { const index = (id: string) => { const found = order.indexOf(id); return found < 0 ? order.length : found; }; return index(a.itemId) - index(b.itemId); }); }
-  next.expectedVersionId = comparison.latestVersionId; next.updatedAt = now;
-  return saveProgramPublicationDraft(data, actorId, next, draft);
-}
-
-export function archiveProgramPublication(data: ProgramData, actorId: string, documentId: string, flowId: string, expectedVersionId: string): ProgramTransition<string> {
-  if (data.activeActorId !== actorId || !data.spaces[actorId]?.publications.some(link => link.flowId === flowId && link.documentId === documentId)) return programFailure(data, 'forbidden');
-  const flow = data.public.flows.find(row => row.id === flowId); if (!flow) return programFailure(data, 'missing');
-  if (flow.ownerId !== actorId) return programFailure(data, 'forbidden');
-  if (!flow.archived && flow.currentVersionId !== expectedVersionId) return programFailure(data, 'conflict');
-  return archiveProgramPublicFlow(data, actorId, flowId);
-}
 
 export function PublicationConflictReview({ comparison, choices, disabled, onChoice, onApply, onCancel }: { comparison: PublicationComparison; choices: PublicationConflictChoices; disabled: boolean; onChoice: (key: string, choice: 'draft' | 'latest') => void; onApply: () => void; onCancel: () => void }) {
   const remaining = comparison.fields.filter(field => !choices[field.key]).length;
@@ -299,7 +35,7 @@ export function PublicationConflictReview({ comparison, choices, disabled, onCho
   </section>;
 }
 
-export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, onRegisterEditors, externalRecovery }: ProgramPublisherProps) {
+export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, onRegisterEditors, externalRecovery, storageScope = 'local', readCurrentData }: ProgramPublisherProps) {
   const actorId = useRef(data.activeActorId).current; const dataRef = useRef(data); dataRef.current = data;
   const [draft, setDraft] = useState(() => createProgramPublicationDraft(data, documentId, new Date().toISOString()));
   const draftRef = useRef(draft); draftRef.current = draft;
@@ -346,7 +82,7 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
           if (composing.current.size) return false;
           const snapshot = programClone(read()!); const expected = savedRef.current;
           if (!same(snapshot, draftRef.current)) { snapshot.updatedAt = new Date().toISOString(); setCurrent(snapshot); }
-          const result = await mutate('공개 초안 저장', current => saveProgramPublicationDraft(current, actorId, snapshot, expected), { history: false });
+          const result = await mutate('공개 초안 저장', current => saveProgramPublicationDraft(current, actorId, snapshot, expected), { history: false, alphaSocial: { type: 'publication-save', draft: snapshot, expected } });
           if (!result.ok) { setMessage(programErrorMessage(result.reason)); return false; }
           savedRef.current = snapshot;
         }
@@ -367,15 +103,21 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
   const close = async () => {
     if (unavailable()) return;
     beginAction();
-    try { if (await save()) { dialog.current?.close(); onClose(); opener.current?.focus(); } } finally { endAction(); }
+    try { if (await save()) { dialog.current?.close(); onClose(); restoreProgramDialogFocus(opener.current); } } finally { endAction(); }
   };
   const port = createProgramPublicationEditorPort({ actorId, documentId, read, saved: () => savedRef.current,
     composing: () => composing.current.size > 0, busy: () => publishingRef.current, save, lock: lockInput, handlesPrivateConflict: true });
   const portRef = useRef(port); portRef.current = port;
   useEffect(() => {
     onRegisterEditors?.({ flushAll: () => portRef.current.flushAll(), lockInput: () => portRef.current.lockInput(),
+      acceptConfirmedSocialDrafts: next => {
+        if (next.activeActorId !== actorId || composing.current.size || flight.current || publishingRef.current || locks.current) return false;
+        const value = read(), stored = value && next.spaces[actorId]?.publicationDrafts.find(entry => entry.id === value.id);
+        if (!value || !stored || !same(value, stored) || same(savedRef.current, stored)) return false;
+        savedRef.current = programClone(stored); setMessage(''); return true;
+      },
       hasPendingInput: () => portRef.current.hasPendingInput!(), pendingDocumentIds: () => portRef.current.pendingDocumentIds!(),
-      captureDrafts: () => portRef.current.captureDrafts!(), blocksExternalSnapshot: (before, next) => portRef.current.blocksExternalSnapshot!(before, next) });
+      captureDrafts: () => portRef.current.captureDrafts!(), captureSocialDrafts: () => portRef.current.captureSocialDrafts!(), blocksExternalSnapshot: (before, next) => portRef.current.blocksExternalSnapshot!(before, next) });
     return () => onRegisterEditors?.(null);
   }, [onRegisterEditors]);
   useEffect(() => {
@@ -395,7 +137,7 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
     opener.current = document.activeElement as HTMLElement;
     if (dialog.current && !dialog.current.open) dialog.current.showModal();
     void save();
-    return () => { opener.current?.focus(); };
+    return () => { restoreProgramDialogFocus(opener.current); };
     // This component is keyed by actor/document in the owning shell.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -409,9 +151,9 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
       if (current.activeActorId !== actorId || !same(current.spaces[actorId]?.publicationDrafts.find(row => row.id === target.id), savedRef.current)) return programFailure(current, 'conflict');
       const next = programClone(current); next.spaces[actorId].publicationDrafts = next.spaces[actorId].publicationDrafts.filter(row => row.id !== target.id);
       return programResult(current, next, target.id);
-    }, { history: false });
+    }, { history: false, alphaSocial: { type: 'publication-discard', draftId: target.id, expected: target } });
     if (!result.ok) { setMessage(programErrorMessage(result.reason)); return; }
-    dialog.current?.close(); onClose(); opener.current?.focus();
+    dialog.current?.close(); onClose(); restoreProgramDialogFocus(opener.current);
     } catch { setMessage('초안을 지우지 못했습니다. 현재 입력은 유지했습니다.'); }
     finally { endAction(); }
   };
@@ -422,14 +164,15 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
       if (!await save()) return;
       const submitted = programClone(draftRef.current);
       let publishedFlowId: string | undefined;
-      const result = await mutate(submitted.flowId ? 'PoC 새 판본 공개' : 'PoC에 선택 내용 공개', current => {
+      const result = await mutate(storageScope === 'account' ? submitted.flowId ? '새 판본 공개' : '선택 내용 공개' : submitted.flowId ? 'PoC 새 판본 공개' : 'PoC에 선택 내용 공개', current => {
         const transition = publishProgramDocument(current, actorId, submitted, new Date().toISOString());
         if (transition.ok) publishedFlowId = transition.data.public.versions.find(row => row.id === transition.result)?.flowId;
         return transition;
-      }, { history: false });
+      }, { history: false, alphaSocial: { type: 'publication-submit', draft: submitted } });
       if (!result.ok) { setMessage(programErrorMessage(result.reason)); return; }
-      const version = dataRef.current.public.versions.find(row => row.id === result.result);
-      dialog.current?.close(); onClose(); navigate({ view: 'flow', id: publishedFlowId ?? version?.flowId ?? submitted.flowId ?? undefined });
+      if (result.presentationPending) { setMessage(programErrorMessage('presentation-pending')); return; }
+      const version = (readCurrentData?.() ?? dataRef.current).public.versions.find(row => row.id === result.result);
+      dialog.current?.close(); onClose(); navigate({ view: 'flow', id: result.flowId ?? version?.flowId ?? (storageScope === 'local' ? publishedFlowId : undefined) ?? submitted.flowId ?? undefined, ...(storageScope === 'account' ? { versionId: result.result } : {}) });
     } catch { setMessage('공개 결과를 확인하지 못했습니다. 초안과 요청 번호를 유지합니다. 최신 목록을 확인한 뒤 다시 시도해 주세요.'); }
     finally { endAction(); }
   };
@@ -452,7 +195,7 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
         const transition = resolveProgramPrivatePublicationDraft(current, actorId, mine, expected, choice);
         if (transition.ok) resolved = choice === 'mine' ? mine : createProgramPublicationDraft(current, documentId, new Date().toISOString());
         return transition;
-      }, { history: false });
+      }, { history: false, alphaSocial: { type: 'publication-private-resolve', draft: mine, expected, choice } });
       if (!result.ok || !resolved) { setMessage('비교한 뒤 저장 상태가 다시 바뀌었거나 공개 연결이 달라졌습니다. 입력을 유지했습니다. 최신 초안을 다시 비교해 주세요.'); return; }
       const next = resolved as ProgramPublicationDraft;
       savedRef.current = choice === 'mine' ? mine : expected;
@@ -490,7 +233,9 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
         const transition = resolveProgramPublicationComparison(current, actorId, submitted, comparison, choices, new Date().toISOString());
         if (transition.ok) updated = transition.data.spaces[actorId].publicationDrafts.find(row => row.id === submitted.id);
         return transition;
-      }, { history: false });
+      }, { history: false, alphaSocial: { type: 'publication-resolve', draft: submitted, choices, expectedVersionId: comparison.latestVersionId } });
+      if (result.ok && result.presentationPending) { setMessage(programErrorMessage('presentation-pending')); return; }
+      if (result.ok && storageScope === 'account') updated = readCurrentData?.()?.spaces[actorId]?.publicationDrafts.find(row => row.id === submitted.id);
       if (!result.ok || !updated) { setMessage(programErrorMessage(result.ok ? 'missing' : result.reason)); return; }
       savedRef.current = updated; setCurrent(updated); setComparison(null); setChoices({}); setPreview(false); setMessage('선택한 내용을 초안에 저장했습니다. 공개 미리보기에서 결과를 확인해 주세요.');
     } catch { setMessage('비교 결과를 저장하지 못했습니다. 초안과 선택을 유지했습니다.'); }
@@ -501,7 +246,7 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
     beginAction();
     try {
       if (!await save()) return;
-      const result = await mutate('공개 목록에서 내리기', current => archiveProgramPublication(current, actorId, documentId, archiveTarget.flowId, archiveTarget.versionId), { history: false });
+      const result = await mutate('공개 목록에서 내리기', current => archiveProgramPublication(current, actorId, documentId, archiveTarget.flowId, archiveTarget.versionId), { history: false, alphaSocial: { type: 'publication-archive', documentId, flowId: archiveTarget.flowId, expectedVersionId: archiveTarget.versionId } });
       if (!result.ok) { setMessage(programErrorMessage(result.reason)); return; }
       setArchiveTarget(null); setComparison(null); setPreview(false); setMessage('공개 목록에서 내렸습니다. 기존 판본·개인 사본·작성 중인 초안은 그대로 보관했습니다.');
     } catch { setMessage('공개 철회 결과를 확인하지 못했습니다. 초안은 유지했습니다. 현재 상태를 확인한 뒤 다시 시도해 주세요.'); }
@@ -542,7 +287,9 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
         if (!applied.ok) return programFailure(current, applied.reason);
         updated = applied.draft; changed = applied.changed;
         return saveProgramPublicationDraft(current, actorId, applied.draft, expected);
-      }, { history: false });
+      }, { history: false, alphaSocial: { type: 'publication-source', draft: submitted, expected, itemId: review.row.itemId, fields } });
+      if (result.ok && result.presentationPending) { setMessage(programErrorMessage('presentation-pending')); return; }
+      if (result.ok && storageScope === 'account') updated = readCurrentData?.()?.spaces[actorId]?.publicationDrafts.find(row => row.id === submitted.id);
       if (!result.ok || !updated) { setMessage(result.ok ? '비교 결과를 확인하지 못했습니다. 선택을 유지했습니다.' : programErrorMessage(result.reason)); return; }
       const next: ProgramPublicationDraft = updated;
       savedRef.current = next;
@@ -568,7 +315,7 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
     {externalRecovery}
     <header className={styles.header}><div><p>선택한 내용만 공유</p><h2 id="program-publisher-title">{currentFlow?.archived ? '공개 철회·보관 상태' : draft?.flowId ? '새 판본 공개' : '공개할 내용 고르기'}</h2></div><button type="button" disabled={blocked} onClick={() => void close()}>닫기 · 초안 보관</button></header>
     {!draft ? <p className={styles.error}>문서가 없거나 보관되었습니다. 공개할 내용을 다시 선택해 주세요.</p> : <>
-      <p className={styles.boundary}>이 기기의 로컬 PoC 목록에 공개합니다. 개인 메모·실행 날짜·진행·시간·문서 경로는 자동으로 포함하지 않습니다.</p>
+      <p className={styles.boundary}>{storageScope === 'account' ? '개발계의 다른 사용자에게 선택한 내용을 공개합니다.' : '이 기기의 로컬 PoC 목록에 공개합니다.'} 개인 메모·실행 날짜·진행·시간·문서 경로는 자동으로 포함하지 않습니다.</p>
       {privateChanged && <section className={styles.warning} aria-label="다른 탭 공개 초안 변경"><p>다른 탭에 저장된 비공개 초안이 바뀌었습니다. 이 화면의 입력은 유지했으며 자동으로 덮어쓰지 않습니다.</p><button type="button" disabled={blocked} onClick={() => { if (!unavailable()) setPrivateComparison({ stored: programClone(storedDraft) }); }}>최신 비공개 초안과 비교</button></section>}
       {privateComparison && <section className={styles.warning} aria-label="비공개 초안 비교"><h3>어느 초안을 보관할까요?</h3><p>공개 판본 비교와 다릅니다. 선택해도 공개하지 않습니다. 내 입력을 TXT로 보관한 뒤 선택할 수 있습니다.</p>
         <details open><summary>이 화면의 입력</summary><pre className={styles.pre}>{draft ? programPublicationRecoveryText(draft) : ''}</pre></details>
@@ -621,7 +368,7 @@ export function ProgramPublisher({ data, mutate, navigate, documentId, onClose, 
         </details>
       </div>}
       {message && <p className={styles.error} role="alert">{message}</p>}
-      <footer className={styles.footer}><div><small role="status">{saving ? '초안 저장 중…' : same(savedRef.current, draft) ? '이 기기에 초안 저장됨' : '입력 유지 중'}</small><details ref={recovery} className={styles.recovery}><summary>초안 보관·복구</summary><div className={styles.recoveryActions}><button type="button" onClick={keepInput}>공개 초안 입력 TXT 보관</button><button type="button" disabled={blocked} onClick={() => void save()}>초안 다시 저장</button><button type="button" className={styles.discard} disabled={blocked} onClick={() => setDiscarding(!discarding)}>초안 버리기</button></div></details></div><div className={styles.actions}>{preview ? <><button type="button" disabled={blocked} onClick={() => setPreview(false)}>수정하기</button><button type="button" className={styles.primary} disabled={blocked || privateChanged || sourceChanged || versionChanged || currentFlow?.archived || !input || !publicationReady} onClick={() => void publish()}>{publishing ? '공개 중…' : '이 내용으로 PoC에 공개'}</button></> : <button type="button" className={styles.primary} disabled={!input || blocked || sourceChanged || versionChanged || currentFlow?.archived} onClick={openPreview}>공개 내용 미리보기</button>}</div></footer>
+      <footer className={styles.footer}><div><small role="status">{saving ? '초안 저장 중…' : same(savedRef.current, draft) ? storageScope === 'account' ? '계정에 초안 저장됨' : '이 기기에 초안 저장됨' : '입력 유지 중'}</small><details ref={recovery} className={styles.recovery}><summary>초안 보관·복구</summary><div className={styles.recoveryActions}><button type="button" onClick={keepInput}>공개 초안 입력 TXT 보관</button><button type="button" disabled={blocked} onClick={() => void save()}>초안 다시 저장</button><button type="button" className={styles.discard} disabled={blocked} onClick={() => setDiscarding(!discarding)}>초안 버리기</button></div></details></div><div className={styles.actions}>{preview ? <><button type="button" disabled={blocked} onClick={() => setPreview(false)}>수정하기</button><button type="button" className={styles.primary} disabled={blocked || privateChanged || sourceChanged || versionChanged || currentFlow?.archived || !input || !publicationReady} onClick={() => void publish()}>{publishing ? '공개 중…' : storageScope === 'account' ? '이 내용으로 공개' : '이 내용으로 PoC에 공개'}</button></> : <button type="button" className={styles.primary} disabled={!input || blocked || sourceChanged || versionChanged || currentFlow?.archived} onClick={openPreview}>공개 내용 미리보기</button>}</div></footer>
       {discarding && <section className={styles.warning}><p>공개 초안만 버립니다. 개인 문서와 이미 공개한 판본은 유지됩니다.</p><button type="button" disabled={blocked} onClick={() => void discard()}>공개 초안 버리기</button><button type="button" onClick={() => setDiscarding(false)}>계속 작성</button></section>}
     </>}
   </dialog>;

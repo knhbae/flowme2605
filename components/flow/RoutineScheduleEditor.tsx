@@ -58,7 +58,7 @@ export function RoutineScheduleEditor({
   const { definition } = value;
   const endMode = definition.end.mode;
   const timeMode = definition.time ? 'timed' : 'all-day';
-  const fieldClassName = 'mt-1 min-h-10 w-full rounded-md border border-[var(--flowme-border)] bg-white px-3 py-2 text-sm text-[var(--flowme-text)] outline-none focus:border-[var(--flowme-action)] focus:ring-2 focus:ring-[var(--flowme-focus)] disabled:bg-slate-50 disabled:text-slate-400';
+  const fieldClassName = 'mt-1 min-h-10 w-full rounded-md border border-[var(--flowme-border)] bg-white px-3 py-2 text-sm text-[var(--flowme-text)] outline-hidden focus:border-[var(--flowme-action)] focus:ring-2 focus:ring-[var(--flowme-focus)] disabled:bg-slate-50 disabled:text-slate-400';
 
   return (
     <fieldset

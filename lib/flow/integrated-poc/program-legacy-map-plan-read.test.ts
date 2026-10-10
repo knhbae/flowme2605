@@ -11,7 +11,7 @@ import { programClone } from './contract';
 import { textWorkspaceModel as M } from './text-workspace';
 
 const actorId = 'local-user', now = '2026-09-14T00:00:00.000Z';
-function fixture(mapIds = ['curated-opic-mock-course']) {
+function fixture(mapIds = ['opic-plan-map']) {
   const keys: Record<string, string> = {};
   for (const mapId of mapIds) {
     keys[`flow:map:saved:${mapId}`] = JSON.stringify(buildSourceBackedFlowMapSavedSnapshot(mapId, { savedAt: now, anchor: '2026-09-30' }));
@@ -89,7 +89,7 @@ test('Map output mutation cannot become a cache and same-input corruption is fre
 });
 
 test('Map selected missing/foreign actor and a valid different Map cannot reuse another selected group', () => {
-  const f = fixture(['curated-opic-mock-course', 'curated-allblanc-workout-park']);
+  const f = fixture(['opic-plan-map', 'curated-allblanc-workout-park']);
   const before = JSON.stringify(f.data);
   assert.equal(readProgramLegacyMapPlan(f.data, actorId, 'saved-flow:missing:missing', now).ok, false);
   assert.equal(readProgramLegacyMapPlan(f.data, 'creator-minji', f.originals[0].ref, now).ok, false);

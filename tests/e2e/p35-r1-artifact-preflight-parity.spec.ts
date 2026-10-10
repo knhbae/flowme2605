@@ -75,10 +75,10 @@ async function openCapabilityResult(page: Page) {
 }
 
 test.describe('P35-R1 public capability-result parity', () => {
-  test('moving Calendar preview keeps one 24-item manifest before save', async ({ page }) => {
+  test('computer Calendar preview keeps one 9-item manifest before save', async ({ page }) => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
-    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/computer-skills-d30-study');
     await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
 
     const result = await openCapabilityResult(page);
@@ -89,24 +89,24 @@ test.describe('P35-R1 public capability-result parity', () => {
     );
     await expect(calendar).toHaveAttribute('data-capability-candidate-role', 'primary');
     await expect(calendar).toHaveAttribute('data-capability-candidate-state', 'available');
-    await expect(calendar).toHaveAttribute('data-capability-output-count', '24');
+    await expect(calendar).toHaveAttribute('data-capability-output-count', '9');
     await calendar.click();
 
     const selected = result.getByTestId('flow-capability-selected-preview');
     await expect(selected).toHaveAttribute('data-capability-destination', 'calendar');
-    await expect(selected).toHaveAttribute('data-capability-output-count', '24');
+    await expect(selected).toHaveAttribute('data-capability-output-count', '9');
     const rows = selected.getByTestId('flow-capability-artifact-preview-row');
-    await expect(rows).toHaveCount(24);
+    await expect(rows).toHaveCount(9);
     await expect(selected.locator('[data-testid="flow-capability-artifact-preview-row"]:visible'))
       .toHaveCount(3);
     await selected.getByTestId('flow-capability-artifact-preview-expand').click();
     await expect(selected.locator('[data-testid="flow-capability-artifact-preview-row"]:visible'))
-      .toHaveCount(24);
-    expect((await selected.getAttribute('data-capability-manifest-item-ids'))?.split(',')).toHaveLength(24);
+      .toHaveCount(9);
+    expect((await selected.getAttribute('data-capability-manifest-item-ids'))?.split(',')).toHaveLength(9);
     await expect(result.locator('[data-capability-candidate-state="disabled"]')).toHaveCount(0);
 
     await result.scrollIntoViewIfNeeded();
-    await capture(page, 'p35-r1-public-preflight-moving-390.png');
+    await capture(page, 'p35-r1-public-preflight-computer-390.png');
     await expectPageQuality(page);
     expect(errors).toEqual([]);
   });
@@ -119,39 +119,47 @@ test.describe('P35-R1 public capability-result parity', () => {
       {
         slug: 'vehicle-inspection-prep',
         shape: 'checklist',
+        primaryDestination: 'checklist',
+        candidateRole: 'primary',
         destination: 'checklist',
         count: 10,
       },
       {
         slug: 'source-backed-middle-school-math-1',
         shape: 'sheet',
+        primaryDestination: 'sheet',
+        candidateRole: 'primary',
         destination: 'sheet',
         count: 8,
       },
       {
-        slug: 'overseas-safety-register',
-        shape: 'checklist',
-        destination: 'checklist',
-        count: 4,
+        slug: 'curated-wedding-naver-timeline',
+        shape: 'memo',
+        primaryDestination: 'checklist',
+        candidateRole: 'available',
+        destination: 'memo',
+        count: 6,
       },
     ] as const;
 
     for (const candidate of cases) {
       await gotoLegacySavedPlanLibraryRoute(page, `/f/${candidate.slug}`);
       const result = await openCapabilityResult(page);
-      await expect(result).toHaveAttribute('data-capability-primary-destination', candidate.destination);
+      await expect(result).toHaveAttribute('data-capability-primary-destination', candidate.primaryDestination);
       const primary = result.locator(
         `[data-testid="flow-capability-result-choice"]`
         + `[data-capability-destination="${candidate.destination}"]`,
       );
       await expect(primary).toHaveAttribute('data-capability-candidate-state', 'available');
       await expect(primary).toHaveAttribute('data-capability-output-count', String(candidate.count));
-      await expect(primary).toHaveAttribute('data-capability-candidate-role', 'primary');
+      await expect(primary).toHaveAttribute('data-capability-candidate-role', candidate.candidateRole);
       await primary.click();
 
       const selected = result.getByTestId('flow-capability-selected-preview');
       await expect(selected).toHaveAttribute('data-capability-destination', candidate.destination);
       await expect(selected).toHaveAttribute('data-capability-output-count', String(candidate.count));
+      await expect(selected.getByTestId('flow-capability-artifact-preview'))
+        .toHaveAttribute('data-selected-shape', candidate.shape);
       const rows = selected.getByTestId('flow-capability-artifact-preview-row');
       await expect(rows).toHaveCount(candidate.count);
       if (candidate.count > 3) {

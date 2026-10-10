@@ -334,7 +334,7 @@ type PersonalWorkspacePocActiveMoveResolution =
   | { kind: 'folder'; folderId?: string; changed: boolean; message: string }
   | { kind: 'invalid'; message: string };
 
-const TARGET_CLASS = 'min-h-12 rounded-md px-3 py-2 text-sm font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:opacity-50';
+const TARGET_CLASS = 'min-h-12 rounded-md px-3 py-2 text-sm font-semibold focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] disabled:cursor-not-allowed disabled:opacity-50';
 const SECONDARY_CLASS = `${TARGET_CLASS} border border-[var(--flowme-border-strong)] bg-white text-[var(--flowme-action)]`;
 const PRIMARY_CLASS = `${TARGET_CLASS} bg-[var(--flowme-action)] text-white`;
 const PERSONAL_WORKSPACE_POC_BOTTOM_SHEET_SAFE_STYLE: CSSProperties = {
@@ -3324,7 +3324,7 @@ export function PersonalWorkspacePocSurface({
     <div id="personal-workspace-contextual-result" data-testid="personal-workspace-contextual-result"
       data-result-owner={visibleContextualResult.ownerId} data-result-operation={visibleContextualResult.operation}
       data-result-status={visibleContextualResult.status} data-result-ref={visibleOrigin?.ref}
-      tabIndex={-1} className="my-2 min-w-0 rounded-md border border-[var(--flowme-workspace-accent)] bg-[var(--flowme-workspace-accent-soft)] p-3 [overflow-wrap:anywhere] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">
+      tabIndex={-1} className="my-2 min-w-0 rounded-md border border-[var(--flowme-workspace-accent)] bg-[var(--flowme-workspace-accent-soft)] p-3 [overflow-wrap:anywhere] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">
       <div role="status" aria-live="polite" aria-atomic="true" data-testid="personal-workspace-contextual-announcement">
         <p className="text-sm font-semibold text-[var(--flowme-text)]">{visibleContextualResult.summary}</p>
         {visibleContextualResult.changes.map((change) => <p key={change.label} className="mt-1 text-sm text-[var(--flowme-text-secondary)]">{change.label}: {change.before} → {change.after}</p>)}
@@ -4266,7 +4266,7 @@ export function PersonalWorkspacePocSurface({
               <button
                 type="button"
                 data-testid="personal-workspace-move-to-trash"
-                className="min-h-12 w-full rounded-md border border-rose-300 bg-white px-3 py-2 text-sm font-semibold text-rose-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="min-h-12 w-full rounded-md border border-rose-300 bg-white px-3 py-2 text-sm font-semibold text-rose-800 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-rose-700 disabled:cursor-not-allowed disabled:opacity-50"
                 disabled={mutationPending}
                 onClick={() => void moveToTrash()}
               >휴지통으로 이동</button>
@@ -4381,7 +4381,7 @@ export function PersonalWorkspacePocSurface({
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--flowme-border)] pb-3">
         <div>
           <p className="text-xs font-semibold text-[var(--flowme-text-tertiary)]">폴더</p>
-          <h2 id="personal-workspace-view-heading" tabIndex={-1} className="text-2xl font-semibold text-[var(--flowme-text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">{sectionTitle}</h2>
+          <h2 id="personal-workspace-view-heading" tabIndex={-1} className="text-2xl font-semibold text-[var(--flowme-text)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">{sectionTitle}</h2>
         </div>
         <div className="flex flex-wrap gap-2">
           {!quickFormOpen && !folderFormOpen && activeFolderId ? (
@@ -4480,7 +4480,7 @@ export function PersonalWorkspacePocSurface({
                     <button
                       type="button"
                       data-personal-workspace-flow-open-trigger={encodeURIComponent(flow.ref)}
-                      className={`min-h-12 min-w-0 flex-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${
+                      className={`min-h-12 min-w-0 flex-1 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${
                         flowMoveActive ? 'text-right' : 'text-left'
                       }`}
                       onClick={() => openFlowDetail(flow.ref, getPersonalWorkspacePocFlowOpenSelector(flow.ref))}
@@ -4536,7 +4536,7 @@ export function PersonalWorkspacePocSurface({
                       type="button"
                       aria-label={`${displayTitle} 이동 옵션`}
                       data-personal-workspace-move-trigger={getPersonalWorkspacePocMoveTriggerToken(flow.ref, 'flow-card')}
-                      className="min-h-12 min-w-12 rounded-md text-lg font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                      className="min-h-12 min-w-12 rounded-md text-lg font-semibold focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                       onClick={() => openFlowMove(flow, 'flow-card')}
                     >…</button>
                   </div>
@@ -4565,7 +4565,7 @@ export function PersonalWorkspacePocSurface({
     <div data-testid="personal-workspace-trash-surface" className="grid gap-5">
       <div className="border-b border-[var(--flowme-border)] pb-3">
         <p className="text-xs font-semibold text-[var(--flowme-text-tertiary)]">이 기기의 개인공간</p>
-        <h2 id="personal-workspace-view-heading" tabIndex={-1} className="text-2xl font-semibold text-[var(--flowme-text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">휴지통</h2>
+        <h2 id="personal-workspace-view-heading" tabIndex={-1} className="text-2xl font-semibold text-[var(--flowme-text)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">휴지통</h2>
         <p className="mt-1 text-sm text-[var(--flowme-text-secondary)]">가져온 원본은 바꾸지 않고 이 개인공간에서만 숨깁니다.</p>
       </div>
       <label className="grid gap-1 text-sm font-semibold text-[var(--flowme-text)]">
@@ -4610,7 +4610,7 @@ export function PersonalWorkspacePocSurface({
                 <button
                   type="button"
                   data-testid="personal-workspace-trash-delete"
-                  className="min-h-12 rounded-md border border-rose-300 bg-white px-3 py-2 text-sm font-semibold text-rose-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-700"
+                  className="min-h-12 rounded-md border border-rose-300 bg-white px-3 py-2 text-sm font-semibold text-rose-800 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-rose-700"
                   onClick={() => setTrashDeleteTarget(row)}
                 >이 기기에서 영구 삭제</button>
               </div>
@@ -4626,7 +4626,7 @@ export function PersonalWorkspacePocSurface({
       <div className="flex flex-wrap items-end justify-between gap-3 border-b border-[var(--flowme-border)] pb-3">
         <div>
           <p className="text-xs font-semibold text-[var(--flowme-text-tertiary)]">개인 실행 위치</p>
-          <h2 id="personal-workspace-view-heading" tabIndex={-1} className="text-2xl font-semibold text-[var(--flowme-text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">{sectionTitle}</h2>
+          <h2 id="personal-workspace-view-heading" tabIndex={-1} className="text-2xl font-semibold text-[var(--flowme-text)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">{sectionTitle}</h2>
         </div>
         {section !== 'month' && !quickFormOpen && !folderFormOpen ? (
           <button type="button" data-testid="personal-workspace-quick-toggle" data-product-primary="quick-item-open" aria-expanded={false} aria-controls="personal-workspace-quick-form" className={PRIMARY_CLASS} onClick={toggleQuickForm}>빠른 할 일</button>
@@ -4660,7 +4660,7 @@ export function PersonalWorkspacePocSurface({
                   data-testid="personal-workspace-date-quick-add"
                   data-date={group.contextKey}
                   aria-label={`${group.label}에 빠른 할 일 추가`}
-                  className="flex min-h-12 min-w-12 items-center justify-center rounded-md text-xl font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                  className="flex min-h-12 min-w-12 items-center justify-center rounded-md text-xl font-semibold text-[var(--flowme-action)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                   onClick={() => openQuickFormForDate(group.contextKey, group.label)}
                 >+</button>
               ) : null}
@@ -4696,7 +4696,7 @@ export function PersonalWorkspacePocSurface({
                       data-testid="personal-workspace-date-quick-add"
                       data-date={date}
                       aria-label={`${label}에 빠른 할 일 추가`}
-                      className="flex min-h-12 min-w-12 items-center justify-center rounded-md text-xl font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+                      className="flex min-h-12 min-w-12 items-center justify-center rounded-md text-xl font-semibold text-[var(--flowme-action)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
                       onClick={() => openQuickFormForDate(date, label)}
                     >+</button>
                   </section>
@@ -5381,7 +5381,7 @@ export function PersonalWorkspacePocSurface({
         data-testid="personal-workspace-flow-item-detail"
         tabIndex={-1}
         aria-labelledby="personal-workspace-flow-item-detail-title"
-        className="min-w-0 rounded-md bg-[var(--flowme-surface-subtle)] p-4 [overflow-wrap:anywhere] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+        className="min-w-0 rounded-md bg-[var(--flowme-surface-subtle)] p-4 [overflow-wrap:anywhere] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
       >
         {!inSheet ? (
           <>
@@ -5538,7 +5538,7 @@ export function PersonalWorkspacePocSurface({
         />
         {result.ok ? (
           <details data-testid="personal-workspace-alternate-results" className="mt-6 border-t border-[var(--flowme-border)] pt-3">
-            <summary className="min-h-12 cursor-pointer py-3 text-sm font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">다른 방식으로 보기</summary>
+            <summary className="min-h-12 cursor-pointer py-3 text-sm font-semibold text-[var(--flowme-action)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">다른 방식으로 보기</summary>
             <div className="pt-2">
               <PersonalWorkspacePocResultPresenter
               projection={result.projection}
@@ -5619,7 +5619,7 @@ export function PersonalWorkspacePocSurface({
         )}
         {authoring && authoredRawText !== undefined ? (
           <details data-testid="personal-workspace-authored-source" className="mt-4 rounded-md border border-[var(--flowme-border)] bg-white p-4">
-            <summary className="min-h-12 cursor-pointer py-3 text-sm font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">
+            <summary className="min-h-12 cursor-pointer py-3 text-sm font-semibold text-[var(--flowme-action)] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]">
               {quickConversion ? '빠른 할 일 전환 기록 보기' : '작성 원문 보기'}
             </summary>
             <p className="mt-2 text-xs text-[var(--flowme-text-secondary)]">
@@ -5958,7 +5958,7 @@ export function PersonalWorkspacePocSurface({
               type="button"
               data-testid="personal-workspace-trash-delete-confirm-action"
               disabled={pending.current}
-              className="min-h-12 rounded-md bg-rose-700 px-3 py-2 text-sm font-semibold text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-700 disabled:cursor-not-allowed disabled:opacity-50"
+              className="min-h-12 rounded-md bg-rose-700 px-3 py-2 text-sm font-semibold text-white focus:outline-hidden focus-visible:ring-2 focus-visible:ring-rose-700 disabled:cursor-not-allowed disabled:opacity-50"
               onClick={async () => {
                 const target = trashDeleteTarget;
                 const outcome = await commitTransition({
@@ -6012,7 +6012,7 @@ export function PersonalWorkspacePocSurface({
               type="button"
               data-testid="personal-workspace-reset-confirm-action"
               disabled={pending.current}
-              className="min-h-12 rounded-md bg-rose-700 px-3 py-2 text-sm font-semibold text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-700 disabled:cursor-not-allowed disabled:opacity-50"
+              className="min-h-12 rounded-md bg-rose-700 px-3 py-2 text-sm font-semibold text-white focus:outline-hidden focus-visible:ring-2 focus-visible:ring-rose-700 disabled:cursor-not-allowed disabled:opacity-50"
               onClick={() => {
                 void resetWorkspace();
               }}
@@ -6248,7 +6248,7 @@ function WorkspaceMoveHandle({
       aria-describedby={describedBy}
       aria-controls="personal-workspace-move-panel"
       aria-expanded={expanded}
-      className={`flex min-h-12 min-w-12 touch-none select-none items-center justify-center rounded-md text-xl [-webkit-touch-callout:none] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${
+      className={`flex min-h-12 min-w-12 touch-none select-none items-center justify-center rounded-md text-xl [-webkit-touch-callout:none] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${
         expanded ? 'bg-[var(--flowme-workspace-accent-soft)] text-[var(--flowme-workspace-accent-strong)]' : 'text-slate-600'
       }`}
       onClick={() => {
@@ -6343,14 +6343,14 @@ function WorkspaceTaskRow({
           }`}
         />
       ) : null}
-      <button type="button" data-testid="personal-workspace-complete" aria-pressed={task.completed} aria-label={`${task.title} ${task.completed ? '다시 열기' : '완료'}`} className="flex min-h-12 min-w-12 items-center justify-center rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]" onClick={onComplete}>
+      <button type="button" data-testid="personal-workspace-complete" aria-pressed={task.completed} aria-label={`${task.title} ${task.completed ? '다시 열기' : '완료'}`} className="flex min-h-12 min-w-12 items-center justify-center rounded-md focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]" onClick={onComplete}>
         <span aria-hidden="true" className={`flex h-6 w-6 items-center justify-center rounded-full border-2 ${task.completed ? 'border-emerald-700 bg-emerald-700 text-white' : 'border-slate-400'}`}>{task.completed ? '✓' : ''}</span>
       </button>
       <button
         type="button"
         data-personal-workspace-task-open-trigger={encodeURIComponent(task.ref)}
         data-personal-workspace-move-trigger={getPersonalWorkspacePocMoveTriggerToken(task.ref, 'task-title')}
-        className={`min-h-12 min-w-0 rounded-md px-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${
+        className={`min-h-12 min-w-0 rounded-md px-2 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${
           corridorActive ? 'text-right' : 'text-left'
         }`}
         onClick={onOpen}
@@ -6377,7 +6377,7 @@ function WorkspaceTaskRow({
         type="button"
         aria-label={`${task.title} 더보기`}
         data-personal-workspace-move-trigger={getPersonalWorkspacePocMoveTriggerToken(task.ref, 'task-more')}
-        className="min-h-12 min-w-12 rounded-md text-lg font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+        className="min-h-12 min-w-12 rounded-md text-lg font-semibold focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
         onClick={() => onOpenMove('task-more')}
       >…</button>
     </article>

@@ -71,7 +71,8 @@ test('unload warning covers raw and output drafts but not public search presenta
   assert.equal(programDiscoveryHasUnstoredInput(state), false);
 });
 function fixture() {
-  const data = createProgramData(); const catalog = buildProgramCatalog(data.activeActorId); data.public.flows = catalog.flows; data.public.versions = catalog.versions;
+  const data = createProgramData(); const catalog = buildProgramCatalog(data.activeActorId); data.public.flows = catalog.flows;
+  data.public.versions = [...catalog.versions].sort((a, b) => Number(b.flowId === 'catalog-chiangmai-solo-trip-packing') - Number(a.flowId === 'catalog-chiangmai-solo-trip-packing'));
   return { data, catalog };
 }
 function props(): Discovery.ProgramDiscoveryProps {
@@ -130,9 +131,62 @@ test('actual source input handlers preserve other draft fields across URL change
 
 test('catalog renders real source-backed choices, review status and separate saved search without invented usage counters', () => {
   const html = renderToStaticMarkup(<ProgramDiscovery {...props()} />);
-  assert.ok(html.includes('이사 D-30 준비 Flow')); assert.ok(html.includes('치앙마이 혼자 여행')); assert.ok(html.includes('24개 항목'));
+  assert.ok(!html.includes('program-discovery-catalog-moving-d30-basic')); assert.ok(html.includes('치앙마이 혼자 여행')); assert.ok(html.includes('6개 항목'));
   assert.ok(html.includes('출처 재검토 필요')); assert.ok(html.includes('기존 내 Flow')); assert.ok(html.includes('공개 URL에서 시작'));
   assert.equal(html.includes('1460'), false); assert.equal(html.includes('480명이'), false);
+});
+
+test('genuinely empty public catalog keeps the existing URL entry without a meaningless filter reset', () => {
+  for (const archiveAll of [false, true]) {
+    const input = props();
+    if (archiveAll) input.data.public.flows.forEach(flow => { flow.archived = true; });
+    else { input.data.public.flows = []; input.data.public.versions = []; }
+    const before = JSON.stringify(input.data);
+    const html = renderToStaticMarkup(<ProgramDiscovery {...input} storageScope="account" />);
+    assert(html.includes('<h1>Flow 찾기</h1>')); assert(html.includes('아직 공개된 Flow가 없어요'));
+    assert(html.includes('공개 URL에서 시작')); assert(!html.includes('검색 조건 지우기')); assert(!html.includes('검색어나 분야'));
+    assert(!html.includes('내 문서에 가져오기')); assert.equal(JSON.stringify(input.data), before);
+  }
+});
+
+test('account discovery separates public choices from private copies and creator drafts while local copy stays scoped', () => {
+  const input = props(), before = JSON.stringify(input.data);
+  const account = renderToStaticMarkup(<ProgramDiscovery {...input} storageScope="account" />);
+  assert(account.includes('공개된 Flow 목록입니다')); assert(account.includes('개인 사본·실행 기록·비공개 제작 초안은 포함되지 않습니다'));
+  assert(!account.includes('로컬 PoC')); assert(!account.includes('기존 내 Flow'));
+  const local = renderToStaticMarkup(<ProgramDiscovery {...input} />);
+  assert(local.includes('공개 목록은 이 기기의 로컬 PoC')); assert(local.includes('기존 내 Flow'));
+  assert.equal(JSON.stringify(input.data), before);
+});
+
+test('creator entry appears beside search only when the host supplies navigation and rendering writes nothing', () => {
+  const input = props(), before = JSON.stringify(input.data); let calls = 0;
+  const onCreateFlow = () => { calls++; };
+  const html = renderToStaticMarkup(<ProgramDiscovery {...input} onCreateFlow={onCreateFlow} />);
+  assert.match(html, /<h1>Flow 찾기<\/h1><button type="button">Flow 만들기<\/button>/);
+  assert(!renderToStaticMarkup(<ProgramDiscovery {...input} />).includes('Flow 만들기'));
+  assert.equal(calls, 0); assert.equal(JSON.stringify(input.data), before);
+  const ast = ts.createSourceFile('ProgramDiscovery.tsx', source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+  let click: ts.JsxAttribute | undefined;
+  const visit = (node: ts.Node) => {
+    if (ts.isJsxAttribute(node) && node.name.getText(ast) === 'onClick' && node.initializer?.getText(ast) === '{onCreateFlow}') click = node;
+    ts.forEachChild(node, visit);
+  };
+  visit(ast); assert(click);
+  const expression = (click.initializer as ts.JsxExpression).expression!.getText(ast);
+  new Function('onCreateFlow', `return (${expression});`)(onCreateFlow)();
+  assert.equal(calls, 1); assert.equal(JSON.stringify(input.data), before);
+});
+
+test('account item deep-link detail keeps the public version and optional output apart from private records and public discussion', () => {
+  const input = props(), version = input.data.public.versions[0];
+  input.data.public.posts.push({ id: 'related-post', authorId: input.data.activeActorId, kind: 'experience', title: '연결된 경험', body: '공개 경험', topic: '',
+    flowId: version.flowId, versionId: version.id, itemId: null, evidencePostIds: [], media: [], createdAt: '2026-10-01T00:00:00Z', updatedAt: '2026-10-01T00:00:00Z', deleted: false });
+  const before = JSON.stringify(input.data);
+  const html = renderToStaticMarkup(<ProgramDiscovery {...input} storageScope="account" selectedFlowId={version.flowId} selectedItemId={version.items[0].id} />);
+  assert(html.includes('← Flow 목록')); assert(html.includes('개인 사본과 실행 기록은 따로 보관됩니다')); assert(html.includes('공개 글 ·'));
+  assert(!html.includes('로컬 PoC')); assert(html.includes('개인 사본을 만들지 않고 받을 수 있습니다')); assert(html.includes('내 문서에 가져오기'));
+  assert.equal(JSON.stringify(input.data), before);
 });
 
 test('controlled navigation state restores query/category/situation and preserves empty results', () => {
@@ -147,7 +201,7 @@ test('detail retains version/source/selection and shows file bytes with standalo
   const input = props(); const version = input.data.public.versions[0]; const state = createProgramDiscoveryNavigationState();
   state.details[version.id] = { selectedItemIds: version.items.slice(0, 2).map(row => row.id), anchor: '2026-10-15', format: 'ics' };
   const html = renderToStaticMarkup(<ProgramDiscovery {...input} selectedFlowId={version.flowId} navigationState={state} />);
-  assert.ok(html.includes('원문 열기')); assert.ok(html.includes('저장소에 보관된 원문')); assert.ok(html.includes('이사일'));
+  assert.ok(html.includes('원문 열기')); assert.ok(html.includes('저장소에 보관된 원문')); assert.ok(html.includes('출국일'));
   assert.ok(html.includes('value="2026-10-15"')); assert.ok(html.includes('ICS 파일 받기')); assert.ok(html.includes('실제 출력 내용'));
   assert.ok(html.includes('바이트')); assert.ok(html.includes('BEGIN:VCALENDAR')); assert.ok(html.includes('내 문서에 가져오기'));
   assert.equal((html.match(/type="checkbox" checked=""/g) ?? []).length, 2);
@@ -163,7 +217,7 @@ test('unsupported URL keeps pasted raw/title visible and never claims extraction
 
 test('missing public flow renders recovery instead of substituting unrelated source', () => {
   const html = renderToStaticMarkup(<ProgramDiscovery {...props()} selectedFlowId="deleted" />);
-  assert.ok(html.includes('이 Flow를 찾을 수 없습니다')); assert.ok(html.includes('둘러보기로 돌아가기')); assert.equal(html.includes('ICS 파일 받기'), false);
+  assert.ok(html.includes('이 Flow를 찾을 수 없습니다')); assert.ok(html.includes('Flow 목록으로 돌아가기')); assert.equal(html.includes('ICS 파일 받기'), false);
 });
 
 test('archived fixed-version deep link is readable with exact item and tombstone but cannot export or import', () => {

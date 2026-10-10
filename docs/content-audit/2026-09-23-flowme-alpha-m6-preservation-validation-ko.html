@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe M6 자료 보존·이관 검증</title>
+  <style>
+    :root{color-scheme:light;--ink:#172933;--muted:#52636b;--line:#cbd7d9;--paper:#f7f9f8;--surface:#fff;--teal:#08766d;--teal-pale:#e8f5f1;--amber:#815e20;--amber-pale:#fbf2de;--blue:#245a97}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.65 system-ui,-apple-system,"Malgun Gothic","Apple SD Gothic Neo",sans-serif}a{color:var(--blue);text-underline-offset:3px}a:focus-visible{outline:3px solid var(--blue);outline-offset:3px}main{max-width:1160px;margin:auto;padding:36px 28px 90px}h1,h2,h3,p{margin-top:0}h1{font-size:clamp(2rem,4vw,3.4rem);line-height:1.18;letter-spacing:-.045em;margin:0 0 18px}h2{font-size:1.55rem;line-height:1.35;letter-spacing:-.025em;margin:0 0 18px}h3{font-size:1.08rem;line-height:1.4;margin:0 0 6px}p{margin-bottom:14px}.intro{border-bottom:2px solid var(--ink);padding-bottom:28px}.meta{font-size:.9rem;color:var(--muted);margin-bottom:10px}.lead{font-size:1.14rem;max-width:760px;margin:0}.status{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(250px,.65fr);gap:30px;margin-top:26px;align-items:start}.status-main{background:var(--teal-pale);border-left:5px solid var(--teal);padding:19px 22px}.status-main strong{display:block;font-size:1.15rem;color:#075d56}.status-note{color:var(--muted);font-size:.94rem}.status-note p:last-child{margin:0}.toc{display:flex;gap:9px 18px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding:16px 0;margin-bottom:34px}.toc a{font-size:.92rem}.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:32px 0 42px}.metric{padding:20px 18px 18px;border-right:1px solid var(--line)}.metric:first-child{padding-left:0}.metric:last-child{border-right:0}.metric b{display:block;font-size:1.9rem;line-height:1.1;letter-spacing:-.04em;color:var(--teal)}.metric span{display:block;font-size:.9rem;color:var(--muted);margin-top:7px}section{margin:44px 0}.section-head{display:flex;gap:18px;align-items:baseline;justify-content:space-between}.section-head p{max-width:570px;color:var(--muted);font-size:.93rem}.feature-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 28px;border-top:1px solid var(--line)}.feature{padding:17px 0;border-bottom:1px solid var(--line)}.feature p{margin:0;color:var(--muted)}.scroll{overflow-x:auto;border-top:2px solid var(--ink)}table{width:100%;border-collapse:collapse;min-width:650px;text-align:left}th,td{padding:13px 12px;vertical-align:top;border-bottom:1px solid var(--line)}th{font-size:.86rem;color:var(--muted);font-weight:700;background:#edf2f1}td:first-child{font-weight:700;white-space:nowrap}td small{display:block;color:var(--muted);font-size:.86rem;line-height:1.5}.pass{color:#07665b;font-weight:700}.partial{color:var(--amber);font-weight:700}.matrix th,.matrix td{text-align:center}.matrix td:first-child,.matrix th:first-child{text-align:left}.matrix td{color:#07665b;font-weight:650}.matrix td:first-child{color:var(--ink)}.foot{font-size:.91rem;color:var(--muted);margin-top:12px}.two-col{display:grid;grid-template-columns:1fr 1fr;gap:30px}.panel{border-top:2px solid var(--ink);padding-top:16px}.panel p,.panel li{color:var(--muted)}.panel ul{margin:8px 0 0;padding-left:21px}.panel li+li{margin-top:7px}.warning{background:var(--amber-pale);padding:20px 22px;border-left:5px solid #b48735}.warning p:last-child{margin-bottom:0}.file-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 24px}.file-list div{border-top:1px solid var(--line);padding-top:12px}.file-list p{color:var(--muted);font-size:.91rem;margin:0}code{font: .88em/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;overflow-wrap:anywhere}.ledger{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}.ledger div{background:var(--surface);padding:15px 17px}.ledger b{display:block;font-size:1.04rem}.ledger span{display:block;color:var(--muted);font-size:.88rem}.evidence{border-top:1px solid var(--line);margin:0;padding:15px 0 0;color:var(--muted);font-size:.88rem}.evidence code{color:var(--ink)}footer{border-top:2px solid var(--ink);padding-top:19px;font-size:.9rem;color:var(--muted)}
+    @media(max-width:760px){main{padding:22px 16px 64px}.status,.two-col,.file-list{grid-template-columns:1fr}.status{gap:16px}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.metric:nth-child(2){border-right:0}.metric:nth-child(-n+2){border-bottom:1px solid var(--line)}.metric:nth-child(3){padding-left:0}.section-head{display:block}.ledger{grid-template-columns:repeat(2,minmax(0,1fr))}.toc{gap:8px 13px}}
+    @media(max-width:420px){.metrics{grid-template-columns:1fr 1fr}.metric{padding:16px 10px}.metric b{font-size:1.55rem}.ledger{grid-template-columns:1fr}.lead{font-size:1.04rem}table{min-width:600px}}
+    @media print{body{background:white}main{max-width:none;padding:0}.toc{display:none}section{break-inside:avoid}.scroll{overflow:visible}table{min-width:0;font-size:.85rem}.feature-list,.metrics,.two-col,.ledger{break-inside:avoid}}
+  </style>
+</head>
+<body>
+<main>
+  <header class="intro">
+    <p class="meta">FlowMe 실사용 알파 전환 · M6 검증 보고 · 2026-09-23 · 개발계와 합성 QA 자료 한정</p>
+    <h1>자료를 옮기고 되살리는 길은 연결했다.<br>실자료 투입 승인은 아직 아니다.</h1>
+    <p class="lead">v4.1·개발1·개발2의 기존 자료를 계정에 명시적으로 가져오고, 개인 기록과 사진 원본을 백업·복원하는 경로를 구현했다. 이번 판정은 개발계 자동 검사와 브라우저 시나리오에 한정한다.</p>
+    <div class="status">
+      <div class="status-main"><strong>M6 개발계 구현·검증 범위 통과</strong><span>실제 사용자 원본의 계정 귀속, 운영 복구 정책, 실제 기기·관찰 사용자, 배포는 다음 승인 단계다.</span></div>
+      <div class="status-note"><p>기준: 격리 worktree의 최신 main 기반 코드. 원래 <code>/my</code>와 운영 <code>flow:*</code> 저장 경로는 변경하지 않았다.</p><p>상세 원장: <a href="../specs/2026-09-12-flowme-integrated-product-poc-program/alpha-m6-preservation.md">M6 실행 기록</a></p></div>
+    </div>
+  </header>
+  <nav class="toc" aria-label="보고서 목차"><a href="#function">구현 범위</a><a href="#scenarios">시나리오 판정</a><a href="#checks">테스트·화면</a><a href="#data">데이터 경계</a><a href="#remaining">남은 결정</a><a href="#publication">발행 상태</a></nav>
+  <div class="metrics" aria-label="핵심 검증 수치">
+    <div class="metric"><b>8개</b><span>M6 시나리오별 판정</span></div><div class="metric"><b>66/66</b><span>최종 개발계 브라우저 확인</span></div><div class="metric"><b>20화면</b><span>4상태 × 5해상도</span></div><div class="metric"><b>0건</b><span>운영 저장 키 변경·운영 DB 쓰기</span></div>
+  </div>
+  <section id="function">
+    <div class="section-head"><h2>구현한 기능</h2><p>기존 자료는 자동 귀속하지 않는다. 사용자가 원본·계정·적용 범위를 보고 명시적으로 선택할 때만 변경한다.</p></div>
+    <div class="feature-list">
+      <div class="feature"><h3>선택 이관</h3><p>네 saved-plan origin과 Map·QuickItem, native 작업본/저장본/대기·복구 후보를 개인 계정 read model에 투영한다. 다른 actor의 개인 자료는 전송하지 않는다.</p></div>
+      <div class="feature"><h3>미리보기와 중복 방지</h3><p>충돌·미매핑 공개물·손상 원본은 적용하지 않는다. 같은 원본 재시도와 응답 유실 뒤 재확인은 같은 요청 ID를 쓴다.</p></div>
+      <div class="feature"><h3>계정 백업·복원</h3><p>원문, identity, 개인 기록·명령 이력, 참조, 연결된 사진 bytes를 서명된 버전 파일로 내보낸다. 복원은 현재 revision에 새 거래로 반영하고 공개 저장소를 되감지 않는다.</p></div>
+      <div class="feature"><h3>사진 소실 대응</h3><p>원본 Storage 객체가 없을 때 본인 private draft의 보존 bytes를 확인해 복원한다. 복원 사진을 공개 게시하려면 새로 첨부해야 한다.</p></div>
+      <div class="feature"><h3>큰 요청 재확인</h3><p>PoC 전용 IndexedDB에 계정별 대기 요청을 기록하고 저장 완료 후 서버에 보낸다. 새로고침·응답 유실 뒤에도 같은 ID를 확인한다.</p></div>
+      <div class="feature"><h3>이전 앱 안전 경계</h3><p>새 계정 계약을 모르는 재빌드 M5 화면은 개인공간을 열지 않고 멈춘다. 현재 M6 화면은 독립 세션에서 최신 자료를 다시 읽는다.</p></div>
+    </div>
+  </section>
+  <section id="scenarios">
+    <div class="section-head"><h2>시나리오별 판정</h2><p>‘통과’는 적힌 QA 범위의 결과다. 사용자 실자료·별도 운영 환경까지 확장하지 않는다.</p></div>
+    <div class="scroll"><table><thead><tr><th>시나리오</th><th>확인한 결과</th><th>범위·남은 검사</th></tr></thead><tbody>
+      <tr><td>M6-01 이관</td><td class="pass">합성 네 origin·native 후보의 선택 이관과 원문/identity 재접속 확인</td><td>실제 사용자 원본 계정 귀속은 D04 미결</td></tr>
+      <tr><td>M6-02 미리보기</td><td class="pass">취소·Escape·같은 원본·충돌·미매핑 거절, 적용 전 쓰기 0</td><td>개발계 QA·합성 자료</td></tr>
+      <tr><td>M6-03 사진 백업</td><td class="pass">Storage 소실 뒤 68-byte WebP의 본인 GET·재백업 해시 일치</td><td>손상된 원본 Storage bytes 경로는 미실행</td></tr>
+      <tr><td>M6-04 복원/재시도</td><td class="pass">CAS·응답 유실·reload 동일 요청, 8MB 대기 기록 복구</td><td>8MB는 실제 유효 백업 서버 복원이 아닌 브라우저 대기 상태 검사</td></tr>
+      <tr><td>M6-05 계정 권한</td><td class="pass">A/B 분리·타인 GET 404, 30MB quota·직접 공개 연결 거절, SQL 잠금 대기 중 세션 철회→거절</td><td>동시 취소/복원과 상위 게시/Undo API 우회 경로는 미실행</td></tr>
+      <tr><td>M6-06 복구 drill</td><td class="pass">같은 개발계의 별도 schema에 합성 8-table/6행·사진 68 bytes 복원</td><td>실서비스 snapshot·별도 프로젝트/지역·Auth/PITR 복원 아님</td></tr>
+      <tr><td>M6-07 이전 앱</td><td class="pass">M5 재빌드 fail-closed→M6 독립 재접속 26/26</td><td>실제 배포 rollback·DB downgrade 미실행</td></tr>
+      <tr><td>M6-08 화면/조작</td><td class="pass">66/66, 20화면·키보드/비드래그·복구 안내, 예상 밖 오류·가로 넘침 0</td><td>응답 유실 시험의 예상된 네트워크 오류 1건; 실제 Android/iOS/보조기술 미실행</td></tr>
+    </tbody></table></div>
+  </section>
+  <section id="checks">
+    <h2>자동 테스트와 브라우저 화면</h2>
+    <div class="two-col">
+      <div class="panel"><h3>최종 코드 자동 검사</h3><ul><li>보존 UI·IndexedDB 표적 <b>25/25</b></li><li>통합 회귀 219파일 <b>2,130/2,130</b></li><li><code>npm test</code> 추가 QA 후 재실행 <b>2,255/2,255</b></li><li>production build <b>PASS</b></li><li>추가 DEV SQL <b>13/13</b> · 잠금 대기 중 세션 철회 <b>6/6</b></li><li>문서 검사 4/4·로컬 링크 6,418, 보안 감사 취약점 0</li></ul><p class="foot">전체 별도 TypeScript 실행은 앞서 Node 4GB 메모리 부족으로 종료됐다. production build의 타입 검사는 통과했으며 OOM 실행을 타입 오류 0의 증거로 세지 않는다. 신규 QA 실행 도구의 strict 타입 검사는 보완 후 통과했다.</p></div>
+      <div class="panel"><h3>독립 브라우저</h3><p>백업, 이관 미리보기, 적용 뒤 개인공간, 복원 미리보기를 각 크기에서 검사했다. 가로 넘침·핵심 행동 접근 불가·page error·예상 밖 console error는 모두 0이었다.</p><p>예상한 응답 유실 주입으로 네트워크 오류 1건이 있었으며, 같은 요청을 조회해 중복 적용 없이 복구했다. 자동 브라우저는 실제 휴대전화 검사가 아니다.</p></div>
+    </div>
+    <div class="scroll"><table class="matrix" aria-label="화면별 해상도 검사"><thead><tr><th>화면</th><th>390×844</th><th>375×812</th><th>844×390</th><th>1024×768</th><th>1440×900</th></tr></thead><tbody><tr><td>백업</td><td>통과</td><td>통과</td><td>통과</td><td>통과</td><td>통과</td></tr><tr><td>이관 미리보기</td><td>통과</td><td>통과</td><td>통과</td><td>통과</td><td>통과</td></tr><tr><td>적용 뒤 개인공간</td><td>통과</td><td>통과</td><td>통과</td><td>통과</td><td>통과</td></tr><tr><td>복원 미리보기</td><td>통과</td><td>통과</td><td>통과</td><td>통과</td><td>통과</td></tr></tbody></table></div>
+    <p class="foot">844×390 가로 화면의 대화상자는 내부 스크롤로 이어진다. 핵심 행동은 스크롤 후 접근 가능하다는 검사 결과이며 첫 화면에 모두 보인다는 뜻은 아니다. 위 20화면은 제품 UI 검사이며 이 HTML 보고서 자체의 렌더 검사는 아니다.</p>
+  </section>
+  <section id="data">
+    <h2>데이터 경계와 QA 정리</h2>
+    <div class="two-col"><div class="panel"><h3>보존 확인</h3><p>브라우저에 심은 운영형 <code>flow:*</code> key/value는 시나리오 전후 byte-for-byte 같았다. 허용 PoC prefix 밖 <code>setItem</code>·<code>removeItem</code>·<code>clear</code> 호출은 0건이다. 운영 Supabase 프로젝트에는 이번 작업의 쓰기 호출이 없었다.</p><p>DR v2 실험 전후 개발계 서비스 8개 표와 Storage의 hash/count도 같았다. 합성 복구는 격리 schema에만 기록했다.</p></div><div class="panel"><h3>종료 상태</h3><p>개발계 QA A/B의 개인 문서, 참여 초안, 추가 이관 archive, 보존 사진, Storage 객체는 모두 0이다. A revision 417/B 70과 거래 원장은 삭제하지 않았다. 이전 검사에서 취소된 사진 registry 8행도 이번 정리 대상으로 삼지 않았다.</p><p>실제 운영 개인 자료의 byte-for-byte 비교를 수행했다고 주장하지 않는다. 원래 <code>/my</code> 코드·운영 writer는 수정하지 않았고 운영 DB 쓰기는 0건이다.</p></div></div>
+    <p>추가 SQL 13건의 임시 쓰기는 거래 전체를 되돌렸고 서비스 8표·Storage 목록 hash가 모두 같았다. 세션 철회 6건에서는 DB가 복원 RPC의 실제 대기와 그 세션의 소멸을 관찰했다. 계정·원장·archive 변경은 0건이며 이번 검사에 만든 두 로그인 세션도 종료했다.</p>
+    <p class="evidence">원본 증거는 공개 Git에 넣지 않는 로컬 전용 파일이다: <code>output/playwright/alpha-m6-live/m6-ui-1790125352932/results.json</code>, <code>output/alpha-m6/m6-ui-1790122995396/native-compat-report.json</code>, <code>output/alpha-m6/m6-private-media-1790123386974/results.json</code>, <code>output/alpha-m6/m6-private-media-1790123386974/synthetic-dr-v2-result.json</code>, <code>output/alpha-m6/m6-sql-probe-20260923/results.json</code>, <code>output/alpha-m6/m6-revoke-wait-1790127019922/results.json</code>. 사진 백업 원문·비밀값은 이 보고서에 싣지 않았다.</p>
+    <p class="foot">첫 세션 철회 검사에서는 잠금 대기를 관찰하지 못해 실패로 기록했다. 후속 검사는 잠금 보유 DB 연결이 대기와 세션 소멸을 직접 관찰해 통과했다. SQL의 공개 연결/삭제 글 재노출 검사는 DB trigger 검사이며 상위 게시/Undo API 자체를 실행한 것은 아니다.</p>
+  </section>
+  <section id="remaining">
+    <h2>남은 결함·결정과 다음 단계</h2>
+    <div class="warning"><h3>유일한 실제 자료를 넣기 전에는 M7 gate가 필요하다</h3><p>D03 백업 위치·보관 기간·허용 손실/복구 시간, D04 실제 원본과 QA 원본의 계정 귀속, D05 공개·신고·계정 삭제와 첨부 보존을 결정해야 한다. 대기 요청의 브라우저 보관 내용은 암호화되지 않는다.</p></div>
+    <div class="two-col" style="margin-top:26px"><div class="panel"><h3>이번 검증의 미실행</h3><ul><li>SQL 동시 commit/cancel 경쟁</li><li>원본 Storage bytes 손상, 이전 M5 앱의 복원 사진 렌더</li><li>상위 공개 게시/Undo API의 우회 음성 검사</li><li>별도 프로젝트·지역 복구와 실제 배포 rollback</li></ul></div><div class="panel"><h3>실사용 전 검증</h3><ul><li>실제 사용자 소유 원본을 선택하고 가져오기 전후 대조</li><li>큰 유효 백업의 서버 복원·장기 브라우저 보관 정책</li><li>실제 Android Chrome·iOS Safari·보조기술·OS 입력기</li><li>관찰 사용자 사용성·운영 복구·배포 승인</li></ul></div></div>
+  </section>
+  <section id="files"><h2>변경한 파일 묶음</h2><div class="file-list"><div><h3>이관·백업 모델</h3><p><code>lib/flow/integrated-poc/alpha-preservation/*</code>, <code>alpha-server/preservation-handler.ts</code>와 해당 테스트</p></div><div><h3>계정 화면</h3><p><code>components/flow/integrated-poc/AlphaPreservationPanel.tsx</code>·CSS·테스트, <code>AlphaWorkspace.tsx</code></p></div><div><h3>개발계 계약</h3><p><code>supabase/migrations/20260921142955_flowme_alpha_m6_preservation.sql</code>, <code>20260923010000_flowme_alpha_m6_private_media_restore.sql</code></p></div><div><h3>검증·원장</h3><p><code>scripts/alpha/m6-*.ts</code>, <a href="../specs/2026-09-12-flowme-integrated-product-poc-program/alpha-m6-preservation.md">M6 원장</a>과 현황 문서. M1–M5 선행 변경은 M6 변경 수로 합산하지 않음</p></div></div></section>
+  <section id="publication"><h2>발행·실사용 증거</h2><div class="ledger"><div><b>Commit 0</b><span>이번 M6 로컬 변경 미커밋</span></div><div><b>Push 0</b><span>원격 코드 공개 없음</span></div><div><b>PR 0</b><span>생성·병합 없음</span></div><div><b>Preview 0</b><span>배포 없음</span></div><div><b>Production 0</b><span>배포·운영 DB 쓰기 없음</span></div><div><b>관찰 사용자 0명</b><span>자동 QA를 사용자 검증으로 세지 않음</span></div></div></section>
+  <footer>이 문서는 2026-09-23의 격리 worktree·개발계 검증 스냅샷이다. HTML 파일 주소가 자동 브라우저 보안 정책으로 차단돼 이 보고서 자체의 desktop/390px 렌더 QA는 미실행이다. 최신 목표·결정 상태는 <a href="../specs/2026-09-12-flowme-integrated-product-poc-program/alpha-transition.md">실사용 알파 전환 원장</a>에서 확인한다.</footer>
+</main>
+</body>
+</html>

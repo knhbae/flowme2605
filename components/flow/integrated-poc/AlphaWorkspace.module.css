@@ -1,0 +1,167 @@
+.page { box-sizing: border-box; min-width: 0; min-height: 100dvh; width: 100%; max-width: 1520px; margin: 0 auto; padding: 16px max(16px, env(safe-area-inset-left)) 32px; color: var(--flowme-text); }
+.header { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
+.brand { font-size: 24px; font-weight: 800; color: var(--flowme-action); min-height: 48px; display: inline-flex; align-items: center; }
+.header h1 { font-size: 20px; font-weight: 700; }
+.account { min-width: 0; color: var(--flowme-text-secondary); font-size: 14px; overflow-wrap: anywhere; }
+.development { margin-left: auto; padding: 3px 7px; border: 1px solid var(--flowme-border); border-radius: 5px; color: var(--flowme-text-secondary); font-size: 12px; }
+.page button { min-height: 48px; min-width: 48px; }
+.page summary { min-height: 48px; align-content: center; }
+.page :global(#program-document-title) + button { flex-shrink: 0; }
+.page input:not([type="checkbox"]):not([type="radio"]), .page select { min-height: 48px; }
+.page label:has(input:is([type="checkbox"], [type="radio"], [type="file"])) { min-height: 48px; min-width: 48px; }
+.header button, .sync button, .problem > button, .recovery button, .tabs button { padding: 8px 14px; border: 1px solid var(--flowme-control-border); border-radius: 8px; background: var(--flowme-surface); color: var(--flowme-text); font-size: 14px; }
+.page button:disabled { opacity: .55; cursor: not-allowed; }
+.page button:focus-visible, .page a:focus-visible, .page summary:focus-visible { outline: var(--flowme-focus-outline); outline-offset: 3px; }
+.notice { font-size: 13px; overflow-wrap: anywhere; color: var(--flowme-text-secondary); padding-bottom: 4px; line-height: 1.5; }
+.notice summary { cursor: pointer; }
+.notice p { padding: 4px 0 12px; }
+.sync { display: flex; gap: 8px; align-items: center; justify-content: space-between; flex-wrap: wrap; border-block: 1px solid var(--flowme-border); padding: 4px 0; margin-bottom: 8px; }
+.sync > p { flex: 1 1 200px; font-weight: 650; }
+.sync small { display: block; font-weight: 400; font-size: 12px; color: var(--flowme-text-secondary); }
+.sync > div, .tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+.management { min-width: 0; font-size: 14px; }
+.management > summary { cursor: pointer; color: var(--flowme-text-secondary); }
+.management[open] { flex: 1 0 100%; }
+.managementBody { display: grid; gap: 12px; padding: 12px 0 4px; border-top: 1px solid var(--flowme-border); }
+.managementActions { display: flex; flex-wrap: wrap; gap: 8px; }
+.problem, .recovery { border: 1px solid var(--flowme-control-border); background: var(--flowme-surface); border-radius: 10px; padding: 16px; margin: 12px 0; }
+.problem p, .recovery p { margin-bottom: 12px; line-height: 1.6; }
+.problem h2, .recovery h2 { font-size: 16px; font-weight: 650; margin-bottom: 8px; }
+.problem button, .recovery button { margin: 4px 8px 4px 0; }
+.problem textarea, .recovery textarea { display: block; width: 100%; min-width: 0; min-height: 100px; max-height: 320px; padding: 10px; font-size: 16px; border: 1px solid var(--flowme-control-border); border-radius: 8px; }
+.problem summary, .recovery summary { min-height: 48px; align-content: center; cursor: pointer; }
+.recovery section { margin-block: 16px; }
+.message { margin-block: 12px; line-height: 1.6; }
+.empty { padding: 32px 0; }
+.tabs { margin-bottom: 6px; }
+.tabs button[aria-current="page"] { border-color: var(--flowme-action); color: var(--flowme-action); font-weight: 700; }
+.inspector { width: min(960px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); overflow: auto; margin: auto; border: 1px solid var(--flowme-control-border); border-radius: 14px; padding: 16px; color: var(--flowme-text); background: var(--flowme-surface); }
+.inspector::backdrop { background: rgb(0 0 0 / .4); }
+.page {
+  --flowme-bg: #faf9f6;
+  --flowme-surface: #fffefa;
+  --flowme-surface-subtle: #f4f5ef;
+  --flowme-surface-selected: #e8f0e8;
+  --flowme-text: #222b25;
+  --flowme-text-secondary: #59645d;
+  --flowme-action: #326449;
+  --flowme-action-hover: #254f38;
+  --flowme-action-strong: #254f38;
+  --flowme-action-soft: #e8f0e8;
+  --flowme-action-border: #b5ccb9;
+  --flowme-focus: #326449;
+  --flowme-border: #dde2d9;
+  --flowme-control-border: #a0aca0;
+  background: var(--flowme-bg);
+  font-size: 16px;
+  font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", system-ui, sans-serif;
+  line-height: 26px;
+  padding-block: 24px 32px;
+}
+.header { gap: 16px; }
+.header h1 { font-size: 16px; line-height: 26px; color: var(--flowme-text-secondary); font-weight: 500; }
+.brand { font-weight: 750; letter-spacing: 0; text-decoration: none; }
+.notice, .sync, .workspaceTools { font-size: 13px; line-height: 20px; }
+.notice { margin-block: 8px 16px; }
+.notice summary { min-height: 44px; }
+.sync { padding-block: 8px; margin-bottom: 16px; }
+.sync > p { color: var(--flowme-action-strong); font-size: 13px; line-height: 20px; }
+.sync:has(+ .problem) > p { color: var(--flowme-text); }
+.workspaceTools { margin-bottom: 16px; color: var(--flowme-text-secondary); }
+.workspaceTools > summary { cursor: pointer; width: fit-content; min-height: 44px; align-content: center; }
+.workspaceTools .tabs { padding-block: 8px; }
+.workspaceUtilities { display: flex; gap: 8px 24px; flex-wrap: wrap; margin-bottom: 8px; }
+.workspaceUtilities .workspaceTools { margin: 0; }
+.workspaceUtilities .workspaceTools[open] { flex-basis: 100%; }
+.tabs button[aria-current="page"] { background: var(--flowme-action-soft); }
+.inspector { background: var(--flowme-surface); }
+@media (max-width: 600px) {
+  .page { padding-inline: 12px; }
+  .header { gap: 8px; margin-bottom: 8px; }
+  .sync { gap: 4px 8px; padding-block: 4px; margin-bottom: 8px; }
+  .sync > p { flex-basis: 100px; margin: 0; font-size: 13px; }
+  .management:not([open]) { flex: 0 1 auto; }
+  .managementActions button { flex: 1 1 200px; }
+}
+@media (max-height: 500px) { .page { padding-top: 8px; } .header { gap: 8px; margin-bottom: 4px; } }
+/* Keep the warning visible beside the identity on wide screens. The
+   rest stays in normal flow; expanded warnings and errors can grow the page. */
+@media (min-width: 761px) {
+  .page { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-content: start; column-gap: 16px; }
+  .page > :not(.header):not(.notice) { grid-column: 1 / -1; }
+  .header { align-self: start; margin: 0; }
+  .header h1 { margin: 0; }
+  .development { margin-left: 0; }
+  .notice { align-self: start; padding: 0; }
+  .notice summary { min-height: 48px; }
+  .notice p { margin: 0; }
+  .sync > p { margin: 0; }
+}
+@media (min-width: 761px) and (max-height: 500px) {
+  .sync { padding: 0; margin-bottom: 4px; gap: 4px 8px; }
+  .tabs { margin-bottom: 4px; }
+}
+/* Compact identity/actions; warnings and save failures remain in normal flow. */
+.page { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-content: start; column-gap: 12px; padding-top: 12px; }
+.page > * { grid-column: 1 / -1; }
+.page > .header { grid-column: 1; grid-row: 1; margin: 0; gap: 8px; }
+.header h1 { margin: 0; }
+.development { margin-left: 0; }
+.sync { display: contents; }
+.sync > p { grid-column: 1; grid-row: 3; align-self: center; margin: 0; padding-block: 8px; }
+.sync > button { grid-column: 2; grid-row: 3; margin-block: 4px 12px; }
+.sync > .management { grid-column: 2; grid-row: 1; position: relative; align-self: start; }
+.management > summary { list-style: none; padding: 8px 12px; min-height: 48px; box-sizing: border-box; border: 1px solid var(--flowme-control-border); border-radius: 8px; background: var(--flowme-surface); color: var(--flowme-text); }
+.management > summary::-webkit-details-marker { display: none; }
+.management[open] { flex: none; }
+.managementBody { position: absolute; z-index: 60; right: 0; top: calc(100% + 4px); width: min(360px, calc(100vw - 24px)); box-sizing: border-box; max-height: calc(100dvh - 100px); overflow: auto; padding: 16px; border: 1px solid var(--flowme-border); border-radius: 12px; background: var(--flowme-surface); box-shadow: 0 8px 24px #222b251a; }
+.managementBody h2 { margin: 0; font-size: 16px; line-height: 26px; }
+.managementBody .workspaceUtilities { display: grid; gap: 8px; margin: 0; border-top: 1px solid var(--flowme-border); padding-top: 8px; }
+.page > .notice { grid-column: 1 / -1; grid-row: 2; margin: 0; border-bottom: 1px solid var(--flowme-border); }
+.notice summary { min-height: 44px; padding-block: 4px; box-sizing: border-box; }
+@media (max-width: 600px) {
+  .brand { font-size: 22px; }
+  .header h1 { font-size: 13px; }
+  .development { padding: 0 4px; font-size: 11px; }
+  .page { padding-top: 8px; }
+  .page > .notice { padding-bottom: 0; }
+  .sync > button { margin-block: 0; }
+}
+.sync > p:is([data-save-state="ready"], [data-save-state="saved"], [data-save-state="same-location"]) { color: var(--flowme-text-secondary); font-weight: 400; }
+.sync > button { border-color: transparent; background: transparent; color: var(--flowme-text-secondary); }
+
+/* Global destinations use the shell's existing guarded navigation. Personal
+   writing/today/classification controls remain in ProgramSpace. */
+.page > .header { flex-wrap: nowrap; gap: 8px; min-width: 0; }
+.header .destinationTitle { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.globalNavigation { display: flex; align-items: center; gap: 4px; min-width: 0; }
+.globalNavigation button { flex: 0 0 auto; padding: 8px; border-color: transparent; background: transparent; white-space: nowrap; }
+.globalNavigation button[aria-current="page"], .management > summary[aria-current="page"] { color: var(--flowme-action-strong); background: var(--flowme-action-soft); box-shadow: inset 0 -3px var(--flowme-action); font-weight: 700; }
+.management > summary { display: flex; align-items: center; justify-content: center; gap: 8px; min-width: 48px; }
+.management > summary::before { content: '…'; }
+.auxiliaryLabel { display: none; }
+@media (max-width: 1199px) {
+  .header .development { display: none; }
+}
+@media (max-width: 600px) {
+  .page { column-gap: 4px; }
+  .page > .header { gap: 4px; }
+  .brand { font-size: 18px; }
+  .globalNavigation { gap: 0; }
+  .globalNavigation button { padding-inline: 6px; font-size: 13px; }
+  .management > summary { padding-inline: 10px; }
+}
+@media (min-width: 1200px) {
+  .page { grid-template-columns: 216px minmax(0, 1fr) auto; column-gap: 24px; padding-inline: 32px; padding-top: 24px; }
+  .page > :not(.header):not(.sync) { grid-column: 2 / -1; }
+  .page > .header { grid-column: 1; grid-row: 1 / span 4; flex-direction: column; align-items: stretch; position: sticky; top: 24px; align-self: start; gap: 16px; }
+  .globalNavigation { flex-direction: column; align-items: stretch; gap: 8px; }
+  .globalNavigation button { width: 100%; padding: 12px 16px; text-align: left; }
+  .globalNavigation button[aria-current="page"] { box-shadow: inset 3px 0 var(--flowme-action); }
+  .header .development { align-self: start; }
+  .page > .notice { grid-column: 2 / -1; }
+  .sync > p { grid-column: 2; }
+  .sync > button { grid-column: 3; }
+  .sync > .management { grid-column: 3; }
+  .auxiliaryLabel { display: inline; }
+}

@@ -125,7 +125,7 @@ async function seedP29CalendarFlows(page: Page) {
 test.describe('P29-01 moving capability result and selected-plan handoff', () => {
   test('mobile reads the capability result before adjustment and lands on the selected personal copy', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-wedding-naver-timeline');
     await clearLocalState(page);
 
     const hero = page.getByTestId('public-flow-hero');
@@ -135,8 +135,8 @@ test.describe('P29-01 moving capability result and selected-plan handoff', () =>
     const selectedPreview = capability.getByTestId('flow-capability-selected-preview');
     await expect(capability).toHaveAttribute('data-capability-lifecycle', 'public_preview');
     await expect(capability).toHaveAttribute('data-capability-primary-destination', 'checklist');
-    await expect(selectedPreview).toHaveAttribute('data-capability-output-count', '24');
-    await expect(selectedPreview.getByTestId('flow-capability-artifact-preview')).toContainText('체크리스트 · 24개');
+    await expect(selectedPreview).toHaveAttribute('data-capability-output-count', '6');
+    await expect(selectedPreview.getByTestId('flow-capability-artifact-preview')).toContainText('체크리스트 · 6개');
     await expect(hero.getByRole('button', { name: /제목·날짜·메모 수정/ })).toHaveCount(0);
     await expect(selectedPreview.getByTestId('flow-capability-artifact-preview')).not.toHaveAttribute('open', '');
 
@@ -156,20 +156,20 @@ test.describe('P29-01 moving capability result and selected-plan handoff', () =>
       });
     });
     expect(focusOrder).toBe(true);
-    await capture(page, 'p29-01-moving-save-before-390.png');
+    await capture(page, 'p29-01-wedding-save-before-390.png');
 
     await page.getByTestId('public-flow-adjust-entry-mobile').click();
     const adjustment = page.getByTestId('public-flow-personal-adjustment');
     await expect(adjustment.getByTestId('public-flow-adjustment-kind-name')).toBeFocused();
     await expect(adjustment).toHaveAttribute('data-adjustment-kind', 'name');
-    await capture(page, 'p29-01-moving-adjust-390.png');
+    await capture(page, 'p29-01-wedding-adjust-390.png');
 
-    await adjustment.getByTestId('public-flow-adjustment-name-input').fill('우리 집 이사 준비');
+    await adjustment.getByTestId('public-flow-adjustment-name-input').fill('우리 결혼 준비');
     await adjustment.getByTestId('public-flow-adjustment-apply').click();
     await expect(adjustment).toHaveCount(0);
     await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
     const saveBanner = await savePublicFlow(page, page.getByTestId('public-flow-save-primary-mobile'));
-    await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toHaveText('저장됨 · 24개');
+    await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toHaveText('저장됨 · 6개');
     const personalCopyKey = new URL(page.url()).searchParams.get('flow') ?? '';
     expect(personalCopyKey).toMatch(/^personal-copy:/u);
     await expect(saveBanner).toHaveAttribute('data-personal-copy-key', personalCopyKey);
@@ -180,23 +180,23 @@ test.describe('P29-01 moving capability result and selected-plan handoff', () =>
       schemaVersion: 2,
       slug: personalCopyKey,
       personalCopyKey,
-      sourceFlowSlug: 'moving-d30-basic',
-      personalTitle: '우리 집 이사 준비',
-      savedItemCount: 24,
+      sourceFlowSlug: 'curated-wedding-naver-timeline',
+      personalTitle: '우리 결혼 준비',
+      savedItemCount: 6,
     });
     const selectedFlow = await openMyFlowLibraryFlow(page, personalCopyKey);
-    await expect(selectedFlow).toContainText('우리 집 이사 준비');
+    await expect(selectedFlow).toContainText('우리 결혼 준비');
     await expect(selectedFlow.getByTestId('my-flow-workspace-execute')).toHaveCount(1);
     await expect(page.getByTestId('public-flow-hero')).toHaveCount(0);
     await expect(page.getByTestId('public-flow-anchor-input')).toHaveCount(0);
     await expect(page.getByTestId('public-flow-mobile-save-cta')).toHaveCount(0);
-    await capture(page, 'p29-01-moving-selected-plan-390.png');
+    await capture(page, 'p29-01-wedding-selected-plan-390.png');
     await expectNoHorizontalOverflow(page);
   });
 
   test('wide uses a result canvas and context inspector without repeated row edits', async ({ page }) => {
     await page.setViewportSize({ width: 1024, height: 768 });
-    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-wedding-naver-timeline');
     await clearLocalState(page);
 
     const result = page.getByTestId('flow-save-before-primary-result');
@@ -212,22 +212,22 @@ test.describe('P29-01 moving capability result and selected-plan handoff', () =>
       capability.getByTestId('flow-capability-selected-preview').getByTestId('flow-capability-artifact-preview'),
     ).not.toHaveAttribute('open', '');
     await expect(page.getByRole('button', { name: /제목·날짜·메모 수정/ })).toHaveCount(0);
-    await capture(page, 'p29-01-moving-save-before-1024.png');
+    await capture(page, 'p29-01-wedding-save-before-1024.png');
 
     await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
     const saveBanner = await savePublicFlow(page, page.getByTestId('public-flow-save-primary'));
     const personalCopyKey = new URL(page.url()).searchParams.get('flow') ?? '';
     await expect(saveBanner).toHaveAttribute('data-personal-copy-key', personalCopyKey);
     await expect(await openMyFlowLibraryFlow(page, personalCopyKey)).toBeVisible();
-    await capture(page, 'p29-01-moving-selected-plan-1024.png');
+    await capture(page, 'p29-01-wedding-selected-plan-1024.png');
     await expectNoHorizontalOverflow(page);
 
     await page.setViewportSize({ width: 1440, height: 900 });
-    await capture(page, 'p29-01-moving-selected-plan-1440.png');
-    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
+    await capture(page, 'p29-01-wedding-selected-plan-1440.png');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-wedding-naver-timeline');
     await clearLocalState(page);
     await expect(page.getByTestId('public-flow-hero')).toBeVisible();
-    await capture(page, 'p29-01-moving-save-before-1440.png');
+    await capture(page, 'p29-01-wedding-save-before-1440.png');
     await expectNoHorizontalOverflow(page);
   });
 
@@ -411,7 +411,7 @@ test.describe('P29-05 Calendar scope and placement workspace', () => {
 test.describe('P29-06 artifact recommendation and export scope', () => {
   test('public capability result hands off one identity to saved transfer and receipt', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-wedding-naver-timeline');
     await clearLocalState(page);
     await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
 
@@ -423,9 +423,9 @@ test.describe('P29-06 artifact recommendation and export scope', () => {
       '[data-testid="flow-capability-result-choice"][data-capability-destination="calendar"]',
     ).click();
     await expect(publicSelected).toHaveAttribute('data-capability-destination', 'calendar');
-    await expect(publicSelected).toHaveAttribute('data-capability-output-count', '24');
+    await expect(publicSelected).toHaveAttribute('data-capability-output-count', '6');
     const publicItemIds = (await publicSelected.getAttribute('data-capability-manifest-item-ids')) ?? '';
-    expect(publicItemIds.split(',').filter(Boolean)).toHaveLength(24);
+    expect(publicItemIds.split(',').filter(Boolean)).toHaveLength(6);
     await expect(publicCapability.locator(
       '[data-testid="flow-capability-result-choice"][data-capability-candidate-role="primary"]',
     )).toHaveCount(1);
@@ -483,8 +483,8 @@ test.describe('P29-06 artifact recommendation and export scope', () => {
   test('selected and current item exports name their scope before the format', async ({ page }) => {
     await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
     await page.setViewportSize({ width: 390, height: 844 });
-    await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=source-backed&view=flows');
-    let flow = await openMyFlowLibraryFlow(page, 'source-backed-moving-d30', 'record');
+    await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=source-backed&savedMap=curated-ajd-moving-d30&view=flows');
+    let flow = await openMyFlowLibraryFlow(page, 'curated-ajd-moving-d30', 'record');
 
     const exportSurface = flow.getByTestId('my-flow-export-surface');
     await exportSurface.getByTestId('my-flow-export-entry').click();
@@ -509,7 +509,7 @@ test.describe('P29-06 artifact recommendation and export scope', () => {
     await exportSurface.getByTestId('my-flow-export-entry').click();
     await expect(panel).toHaveCount(0);
 
-    flow = await openMyFlowLibraryFlow(page, 'source-backed-moving-d30', 'plan');
+    flow = await openMyFlowLibraryFlow(page, 'curated-ajd-moving-d30', 'plan');
     const firstRow = flow.getByTestId('my-flow-execution-row-shell').first();
     await firstRow.getByRole('button', { name: /열기/ }).click();
     const itemExport = getOpenMyFlowItemDetail(page).getByTestId('my-flow-detail-portable-export');
@@ -539,7 +539,7 @@ test.describe('P29-07 shared visual and accessibility contract', () => {
     page.on('pageerror', (error) => browserErrors.push(`page:${error.message}`));
 
     const routes = [
-      '/f/moving-d30-basic',
+      '/f/curated-wedding-naver-timeline',
       '/f/curated-allblanc-morning-workout',
       '/my?demo=ux20&view=flows',
       '/calendar?demo=ux20',
@@ -566,7 +566,7 @@ test.describe('P29-07 shared visual and accessibility contract', () => {
 
   test('public, My Flow, Calendar, and receipts expose one consistent Flow identity anatomy', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-wedding-naver-timeline');
     await clearLocalState(page);
     const hero = page.getByTestId('public-flow-hero');
     await expect(hero).toHaveAttribute('data-flow-anatomy', 'save-before');
@@ -580,7 +580,7 @@ test.describe('P29-07 shared visual and accessibility contract', () => {
 
     await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
     const saveBanner = await savePublicFlow(page, page.getByTestId('public-flow-save-primary-mobile'));
-    await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toHaveText('저장됨 · 24개');
+    await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toHaveText('저장됨 · 6개');
     await expect(page.getByTestId('public-flow-saved-receipt')).toHaveCount(0);
 
     await gotoLegacySavedPlanLibraryRoute(page, '/my?demo=ux20&view=flows');
@@ -602,7 +602,7 @@ test.describe('P29-07 shared visual and accessibility contract', () => {
 
   test('mobile public controls keep 44px targets and keyboard focus remains visible', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-wedding-naver-timeline');
     await clearLocalState(page);
     const hero = page.getByTestId('public-flow-hero');
     const controls = hero.locator('button:visible, summary:visible');

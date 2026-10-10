@@ -1,0 +1,27 @@
+.panel { min-width: 0; border: 1px solid #cbd5e1; border-radius: 12px; padding: 16px; margin: 16px 0; overflow-wrap: anywhere; color: #172033; background: #fff; }
+.panel summary { min-height: 48px; cursor: pointer; font-weight: 700; padding: 10px 0; }
+.panel button { min-height: 48px; max-width: 100%; padding: 10px 14px; border: 1px solid #94a3b8; border-radius: 8px; color: #173d9b; background: #fff; text-align: left; white-space: normal; overflow-wrap: anywhere; cursor: pointer; }
+.panel button:disabled { cursor: default; opacity: .55; }
+.panel button[aria-pressed=true] { background: #e7edff; border-color: #315ad4; }
+.panel button:focus-visible, .panel input:focus-visible, .panel a:focus-visible, .panel summary:focus-visible { outline: 3px solid #315ad4; outline-offset: 3px; }
+.panel input { display: block; box-sizing: border-box; min-width: 0; width: 100%; min-height: 48px; border: 1px solid #94a3b8; border-radius: 8px; padding: 10px; color: #172033; background: #fff; }
+.panel section, .panel article { min-width: 0; margin: 16px 0; }
+.panel article { border-top: 1px solid #e2e8f0; padding-top: 8px; }
+.panel pre, .panel dd { white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; max-width: 100%; margin-left: 0; }
+.panel pre { max-height: 420px; overflow: auto; padding: 12px; background: #f5f7fb; }
+.panel dt { font-weight: 600; margin-top: 10px; }
+.panel p { line-height: 1.6; }
+.panel h2 { font-size: 1.4rem; font-weight: 750; line-height: 1.4; margin: 18px 0 12px; }
+.panel h3 { font-size: 1.15rem; font-weight: 700; line-height: 1.5; margin: 20px 0 8px; }
+.panel h4 { font-size: 1rem; font-weight: 700; line-height: 1.5; margin: 12px 0 8px; }
+.panel h5 { font-size: 1rem; font-weight: 650; margin: 16px 0 8px; }
+.panel li { line-height: 1.7; }
+.panel article ol { list-style: decimal; padding-left: 24px; }
+.panel article ul { list-style: disc; padding-left: 24px; }
+.panel blockquote { border-left: 3px solid #cbd5e1; padding-left: 12px; margin: 12px 0; }
+.panel p { margin: 10px 0; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.list { padding: 0; list-style: none; display: grid; gap: 8px; }
+.list button { width: 100%; }
+@media (min-width: 760px) { .list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 420px) { .panel { padding: 12px; } }

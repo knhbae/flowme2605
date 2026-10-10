@@ -27,6 +27,26 @@ const tasks = async (page: Page) => {
   return buildPersonalWorkspacePocTasks(view.payload.model, view.payload.state);
 };
 
+async function openLibrary(page: Page) {
+  if (!await page.locator('#program-library').isVisible()) {
+    await page.getByRole('button', { name: '글 찾기 · 내 문서와 할 일', exact: true }).click();
+    await expect(page.getByRole('dialog', { name: '글 찾기', exact: true })).toBeVisible();
+  }
+}
+
+async function nav(page: Page, name: string) {
+  const find = page.getByRole('dialog', { name: '글 찾기', exact: true });
+  if (await find.isVisible()) await find.getByRole('button', { name: '닫기', exact: true }).click();
+  const otherDate = ['주간', '월간', '날짜 미정'].includes(name);
+  if (otherDate) {
+    await page.getByRole('navigation', { name: '기본 이동', exact: true }).getByRole('button', { name: '오늘', exact: true }).click();
+    await page.getByRole('combobox', { name: '기간 보기', exact: true }).selectOption({ label: name });
+    return;
+  }
+  await page.getByRole('navigation', { name: '기본 이동', exact: true })
+    .getByRole('button', { name, exact: true }).click();
+}
+
 test('canonical Flow folder is inherited; one Item date/completion moves only its personal execution, projections and Undo survive reload', async ({ page }) => {
   test.setTimeout(150_000);
   page.setDefaultTimeout(15_000);
@@ -63,14 +83,24 @@ test('canonical Flow folder is inherited; one Item date/completion moves only it
   await page.goto('/my?personalWorkspacePoc=v1');
   // Current boot already projects compatible saved records read-only. Creating
   // the folder below is the first explicit Program write, not fixture injection.
-  await expect(page.getByRole('button', { name: `${TITLE} 개인 Flow`, exact: true })).toBeVisible();
+  await openLibrary(page);
+  const sourceDocument = page.getByRole('dialog', { name: '글 찾기', exact: true })
+    .getByRole('button', { name: new RegExp(`^${TITLE} .*개인 Flow$`) });
+  await expect(sourceDocument).toHaveCount(1);
+  await expect(sourceDocument).toBeVisible();
+  await expect(sourceDocument).toContainText(first.title);
   expect(await wire(page)).toBeNull();
   await page.getByText('폴더 정리', { exact: true }).click();
   await page.getByLabel('새 폴더 이름', { exact: true }).fill('Parent folder');
   await page.getByRole('button', { name: '폴더 만들기', exact: true }).click();
+  // The first async commit creates the envelope. Do not dereference null in a
+  // poll callback: callback exceptions abort expect.poll instead of retrying.
+  await expect(page.getByRole('status').filter({ hasText: '폴더 만들기 · 저장됨' })).toBeVisible();
+  await expect.poll(() => wire(page)).not.toBeNull();
   await expect.poll(async () => (await space(page)).savedBindings.length).toBe(1);
   const binding = (await space(page)).savedBindings[0];
   expect(binding.flowRef).toBe(flow.ref);
+  await page.getByRole('dialog', { name: '글 찾기', exact: true }).getByRole('button', { name: '닫기', exact: true }).click();
   await page.getByText('PoC 설정', { exact: true }).click();
   await page.getByRole('button', { name: /^기존 제작·실행 도구/ }).click();
   const legacy = page.getByRole('region', { name: '기존 계획과 개인 문서 연결', exact: true });
@@ -105,14 +135,13 @@ test('canonical Flow folder is inherited; one Item date/completion moves only it
   await expect.poll(async () => (await tasks(page)).find(task => task.ref === first.ref)?.completed).toBe(true);
   await legacy.getByRole('button', { name: '같은 개인 문서 열기', exact: true }).click();
   await expect(page.getByRole('heading', { name: TITLE, exact: true })).toBeVisible();
-  const nav = page.getByRole('navigation', { name: '개인공간 보기' });
-  await nav.getByRole('button', { name: '오늘', exact: true }).click();
+  await nav(page, '오늘');
   await expect(page.getByRole('button', { name: `${first.title} 작업`, exact: true })).toHaveCount(0);
   await expect(page.getByRole('button', { name: `${second.title} 작업`, exact: true })).toBeVisible();
-  await nav.getByRole('button', { name: '월간', exact: true }).click();
+  await nav(page, '월간');
   await expect(page.getByRole('button', { name: `${first.title} 다시 열기`, exact: true })).toHaveAttribute('aria-pressed', 'true');
   await expect(page.getByRole('button', { name: `${second.title} 작업`, exact: true })).toBeVisible();
-  await nav.getByRole('button', { name: '전체 할 일', exact: true }).click();
+  await nav(page, '분류');
   const row = page.locator('li[data-task-id]').filter({ has: page.getByRole('button', { name: `${first.title} 작업`, exact: true }) });
   await expect(row.getByRole('button', { name: `${first.title} 다시 열기`, exact: true })).toHaveAttribute('aria-pressed', 'true');
   const projected = M.tasks((await space(page)).text).filter(task => task.docId === binding.documentId);

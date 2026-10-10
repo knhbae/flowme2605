@@ -1,6 +1,5 @@
-/* Generated from v11 20707fa0/editor.css; source SHA256 fa41f20bac8614f2d2e8b17ca191e1aa39a6e85270bcc0975fa4ab91a3852637.
- * Regenerate: node scripts/personal-workspace-poc/program-vendor-text.mjs
- * Only core source is reused; no historical application, HTML or storage adapter. */
+/* Current runtime owner: lib/flow/integrated-poc/vendor/text-editor.css.
+ * Initially adapted from v11 20707fa0, then maintained with text-editor.cjs. */
 /* Static prototype: one native textarea and a presentation-only mirror. */
 .tle-root {
   --tle-line: 44px;
@@ -80,6 +79,16 @@
 .tle-move-target[hidden], .tle-move-target-button[hidden], .tle-move-depth-button[hidden], .tle-move-drop[hidden] { display: none !important; }
 .tle-root[data-move-phase="dragging"] { cursor: grabbing; }
 .tle-line-raw { color: #304b43; }
+/* Active document rows keep their original first Text node and RAW geometry.
+ * The inert layer repeats that exact prefix/title flow; icons consume no space.
+ * Do not apply the reading-view title inset, weight or wrapping here. */
+.tle-line-raw.tle-line-active-paint { color: transparent; }
+.tle-active-paint { position: absolute; inset: 0; color: #304b43; pointer-events: none; }
+.tle-active-syntax { color: transparent; }
+.tle-active-scope-name { font-weight: inherit; }
+.tle-active-scope-icon { position: absolute; top: 0; left: var(--tle-indent, 0px); width: 18px; height: 44px; display: flex; align-items: center; color: #468373; pointer-events: none; }
+.tle-active-scope-icon svg { width: 18px; height: 18px; }
+.tle-active-progress { position: absolute; top: 10px; left: -13px; }
 .tle-line-prose { color: #45534d; }
 .tle-line-property { color: #87928a; }
 .tle-line-subcheck { color: #526c62; }
@@ -102,6 +111,7 @@
   color: #1d6c53;
   font-weight: 700;
 }
+.tle-property-date-label { color: #62766b; font-weight: 400; }
 .tle-check-glyph {
   position: absolute;
   display: block;
@@ -158,6 +168,9 @@
 .tle-reference-open, .tle-task-date-open, .tle-task-origin-open { right: 8px; color: #879b90; }
 .tle-date-open { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; color: #705b38; }
 .tle-row-date { max-width: 44px; font: 600 12px/16px ui-monospace, monospace; white-space: nowrap; }
+.tle-scheduled-date-open { width: 88px; }
+.tle-row-date-kind { font: 400 10px/12px system-ui, sans-serif; color: #7f7564; }
+.tle-scheduled-date-open .tle-row-date { max-width: 88px; font: 600 11px/14px system-ui, sans-serif; }
 .tle-date-open svg { width: 10px; height: 10px; }
 .tle-scope-label { position: absolute; inset: 0 0 auto clamp(0px, var(--tle-indent, 0px), calc(100% - 136px)); display: flex; align-items: baseline; gap: 14px; height: 44px; padding-left: 36px; overflow: hidden; white-space: nowrap; }
 .tle-root .tle-scope-label { padding-left: 88px; }
@@ -166,9 +179,26 @@
 .tle-line-reference .tle-task-title { color: #3c6557; text-decoration: underline; text-decoration-color: #c4d8cc; text-underline-offset: 4px; }
 .tle-line[data-date-mismatch="true"] .tle-task-title { text-decoration-color: #c4a36e; }
 .tle-root[data-mode="text"] .tle-textarea, .tle-root.tle-composing .tle-textarea { color: #304b43; -webkit-text-fill-color: #304b43; }
-.tle-root[data-mode="text"] .tle-viewport, .tle-root.tle-composing .tle-viewport { visibility: hidden; }
-.tle-root[data-mode="text"] .tle-check-hit, .tle-root[data-mode="text"] .tle-row-open, .tle-root.tle-composing .tle-controls { display: none; }
+.tle-root[data-mode="text"] .tle-viewport { visibility: hidden; }
+.tle-root[data-mode="text"] .tle-check-hit, .tle-root[data-mode="text"] .tle-row-open { display: none; }
+/* Keep surrounding formatted rows visible while the native textarea owns IME.
+ * Masking only affects paint, so wrapping, scrolling, selection and hit targets
+ * remain those of the original textarea. Hidden mirror rows retain their size. */
+.tle-root[data-mode="live"].tle-composing .tle-textarea {
+  -webkit-mask-image: linear-gradient(to bottom, transparent var(--tle-composition-top, 0px), #000 var(--tle-composition-top, 0px), #000 var(--tle-composition-bottom, 0px), transparent var(--tle-composition-bottom, 0px));
+  mask-image: linear-gradient(to bottom, transparent var(--tle-composition-top, 0px), #000 var(--tle-composition-top, 0px), #000 var(--tle-composition-bottom, 0px), transparent var(--tle-composition-bottom, 0px));
+}
+.tle-root[data-mode="live"].tle-composing .tle-line-composition { visibility: hidden; }
 .tle-plus[hidden], .tle-row-menu[hidden], .tle-fold-toggle[hidden], .tle-check-hit[hidden], .tle-row-open[hidden] { display: none !important; }
+/* Reading owns formatted wrapping and height; native editing keeps the RAW
+ * ruler above. The same textarea stays focusable and retains native Undo. */
+.tle-root.tle-reading-view .tle-textarea { opacity: 0; pointer-events: none; }
+.tle-root.tle-reading-view .tle-viewport { overflow: auto; pointer-events: auto; }
+.tle-root.tle-reading-view .tle-presentation { position: relative; pointer-events: auto; }
+.tle-root:is(.tle-reading-view, .tle-folded-view) .tle-line-task { padding-left: var(--tle-task-prefix, 0px); }
+.tle-root:is(.tle-reading-view, .tle-folded-view) .tle-line-task .tle-hidden-syntax { position: absolute; top: 0; left: 0; max-width: 100%; overflow: hidden; white-space: pre; }
+.tle-root:is(.tle-reading-view, .tle-folded-view) :is(.tle-task-title, .tle-task-title-complete) { display: block; }
+.tle-root:is(.tle-reading-view, .tle-folded-view) .tle-indent-guide { height: 100%; }
 .tle-root.tle-folded-view .tle-textarea { visibility: hidden; pointer-events: none; }
 .tle-root.tle-folded-view .tle-viewport { visibility: visible; overflow: auto; pointer-events: auto; }
 .tle-root.tle-folded-view .tle-presentation { position: relative; pointer-events: auto; }
@@ -180,3 +210,17 @@
   .tle-plus { right: 5px; }
 }
 @media (prefers-reduced-motion: reduce) { .tle-root * { scroll-behavior: auto !important; } }
+/* A compact native ruler must not acquire per-row heights. Only the reading
+ * surface (native textarea inert) reserves independent 44px touch rows. */
+.tle-root:is(.tle-reading-view, .tle-folded-view) :is(.tle-line-task, .tle-line-scope) { min-height: 44px; }
+.tle-root.tle-folded-view .tle-line { min-height: 44px; }
+/* Paint on the first text line, not the centre of the 44px touch lane.
+ * Only decoration moves; textarea/mirror metrics and control hit boxes stay put. */
+.tle-root:is(.tle-reading-view, .tle-folded-view) .tle-check-glyph { top: max(0px, calc((var(--tle-line) - 18px) / 2)); }
+.tle-root:is(.tle-reading-view, .tle-folded-view) .tle-scope-open { display: flex; align-items: flex-start; justify-content: center; }
+.tle-root:is(.tle-reading-view, .tle-folded-view) .tle-scope-open svg { display: block; margin-top: max(0px, calc((var(--tle-line) - 20px) / 2)); }
+.tle-root:is(.tle-reading-view, .tle-folded-view) .tle-fold-toggle { line-height: var(--tle-line); text-align: center; }
+.tle-root:not(.tle-reading-view):not(.tle-folded-view) :is(.tle-active-scope-icon, .tle-indent-guide, .tle-scope-anchor, .tle-check-anchor, .tle-fold-anchor, .tle-scope-label) { height: var(--tle-line); }
+.tle-root:not(.tle-reading-view):not(.tle-folded-view) .tle-check-glyph { top: calc((var(--tle-line) - 18px) / 2); }
+.tle-root:not(.tle-reading-view):not(.tle-folded-view) .tle-active-progress { top: 0; }
+.tle-root:not(.tle-reading-view):not(.tle-folded-view):not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"]) :is(.tle-check-hit, .tle-row-open, .tle-fold-toggle) { display: none; }

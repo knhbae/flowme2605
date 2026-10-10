@@ -10,12 +10,20 @@ declare namespace editor {
     selection: Selection; selectionStart: number; selectionEnd: number;
     beforeLineId?: string | null; depth?: number;
   }
+  interface InputIntent {
+    kind: 'replace' | 'enter' | 'indent'; start: number; end: number; text: string;
+    selectionBefore: { start: number; end: number; direction: Selection['direction'] };
+    selectionAfter: { start: number; end: number; direction: Selection['direction'] };
+    outdent?: boolean; startLine?: number; endLine?: number;
+  }
   interface Options {
-    value?: string; label?: string;
+    value?: string; label?: string; controls?: boolean;
     getRowMeta?: () => TextEditorRowMeta[] | Record<number, TextEditorRowMeta>;
     isActionDisabled?: () => boolean;
     canApplyIndent?: (value: string, details: { outdent: boolean; startLine: number; endLine: number }) => boolean;
-    onChange?: (value: string) => void;
+    canApplyInput?: (value: string, intent: InputIntent) => boolean;
+    onInputRejected?: (intent: InputIntent) => void;
+    onChange?: (value: string, input?: { inputType: string; inputSplice?: { start: number; end: number; text: string } }) => void;
     onAction?: (action: Action) => unknown;
   }
   interface Instance {
@@ -41,6 +49,7 @@ declare namespace editor {
     unfoldAll(): void;
     undo(): boolean;
     refresh(): void;
+    refreshViewport(): void;
     setMode(mode: 'live' | 'text'): void;
     destroy(): void;
   }

@@ -92,18 +92,17 @@ test('public save opens the selected personal copy and keeps it reload-safe on m
   await expect(workspace.getByTestId('my-flow-whole-flow-outline')).toHaveAttribute('data-effective-row-count', '10');
 });
 
-test('canonical moving alias keeps direct selected-plan handoff and URL-first keeps its receipt contract', async ({ page }) => {
+test('an eligible public timeline keeps direct selected-plan handoff and URL-first keeps its receipt contract', async ({ page }) => {
   test.setTimeout(180_000);
   await installLegacySavedPlanLibraryNavigation(page);
   await page.setViewportSize({ width: 1024, height: 768 });
-  await gotoLegacySavedPlanLibraryRoute(page, '/flow-maps/moving-d30');
-  await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
+  await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-wedding-naver-timeline');
   await page.evaluate(() => localStorage.clear());
   await page.reload();
-  await expect(page).toHaveURL(withLegacySavedPlanLibraryRoute('/f/moving-d30-basic'));
+  await expect(page).toHaveURL(withLegacySavedPlanLibraryRoute('/f/curated-wedding-naver-timeline'));
   await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
   const mapSaveBanner = await savePublicFlow(page, page.getByTestId('public-flow-save-primary'));
-  await expect(mapSaveBanner.getByTestId('my-flow-save-banner-summary')).toContainText('24');
+  await expect(mapSaveBanner.getByTestId('my-flow-save-banner-summary')).toContainText('6');
   const selectedCopy = new URL(page.url()).searchParams.get('flow');
   expect(selectedCopy).toMatch(/^personal-copy:/u);
   await capture(page, '02-flow-map-post-save-selected-plan-wide.png');
@@ -111,8 +110,8 @@ test('canonical moving alias keeps direct selected-plan handoff and URL-first ke
   await expect(page.getByTestId('my-flow-save-banner')).toHaveCount(0);
   await openSavedPublicFlow(page);
   expect(new URL(page.url()).searchParams.get('flow')).toBe(selectedCopy);
-  const movingWorkspace = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'plan');
-  await expect(movingWorkspace.getByTestId('my-flow-whole-flow-outline')).toHaveAttribute('data-effective-row-count', '24');
+  const timelineWorkspace = await openMyFlowLibraryFlow(page, 'curated-wedding-naver-timeline', 'plan');
+  await expect(timelineWorkspace.getByTestId('my-flow-whole-flow-outline')).toHaveAttribute('data-effective-row-count', '6');
 
   await gotoLegacySavedPlanLibraryRoute(page, '/flows');
   const lookup = page.getByTestId('flow-url-lookup-entry');

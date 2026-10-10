@@ -49,7 +49,7 @@ test.describe('P35-03 one adjustment kind at a time', () => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
     await page.addInitScript(() => window.localStorage.clear());
-    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-wedding-naver-timeline');
 
     const { panel } = await openAdjustment(page, true);
     await expect(panel).toHaveAttribute('data-adjustment-kind', 'name');
@@ -65,7 +65,7 @@ test.describe('P35-03 one adjustment kind at a time', () => {
     await panel.getByTestId('public-flow-adjustment-kind-items').click();
     await panel.getByTestId('public-flow-adjustment-kind-name').click();
     await expect(panel.getByTestId('public-flow-adjustment-name-input')).toHaveValue('우리 집 이사 준비');
-    await expect(panel.getByTestId('public-flow-adjustment-result-before')).toContainText('이사 D-30 준비');
+    await expect(panel.getByTestId('public-flow-adjustment-result-before')).toContainText('결혼 준비 1년 참고 타임라인');
     await expect(panel.getByTestId('public-flow-adjustment-result-after')).toContainText('우리 집 이사 준비');
     await capture(page, 'p35-03-adjust-name-390.png');
 
@@ -79,7 +79,7 @@ test.describe('P35-03 one adjustment kind at a time', () => {
     await discardPrompt.getByRole('button', { name: '변경 버리기' }).click();
     await expect(panel).toHaveCount(0);
     await expect(page.getByTestId('public-flow-adjust-entry-mobile')).toBeFocused();
-    await expect(page.locator('[data-flow-identity-slot="title"]')).toHaveText('이사 D-30 준비');
+    await expect(page.locator('[data-flow-identity-slot="title"]')).toHaveText('결혼 준비 1년 참고 타임라인');
 
     const reopened = await openAdjustment(page, true);
     await reopened.panel.getByTestId('public-flow-adjustment-name-input').fill('우리 집 이사 준비');
@@ -96,7 +96,7 @@ test.describe('P35-03 one adjustment kind at a time', () => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
     await page.addInitScript(() => window.localStorage.clear());
-    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-wedding-naver-timeline');
     await page.getByTestId('public-flow-anchor-input').fill('2030-09-01');
     const oldSummary = await page.getByTestId('flow-artifact-result-summary').textContent();
 
@@ -139,7 +139,7 @@ test.describe('P35-03 one adjustment kind at a time', () => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
     await page.addInitScript(() => window.localStorage.clear());
-    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-wedding-naver-timeline');
 
     const publicEditEntry = page.getByTestId('public-flow-adjust-entry-mobile');
     await publicEditEntry.click();
@@ -184,14 +184,14 @@ test.describe('P35-03 one adjustment kind at a time', () => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 1024, height: 768 });
     await page.addInitScript(() => window.localStorage.clear());
-    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-wedding-naver-timeline');
     await page.getByTestId('public-flow-anchor-input').fill('2030-09-01');
 
     const { panel } = await openAdjustment(page, false);
     await panel.getByTestId('public-flow-adjustment-kind-items').click();
     await expect(panel).toHaveAttribute('data-adjustment-kind', 'items');
     const rows = panel.getByTestId('public-flow-adjustment-item-row');
-    await expect(rows).toHaveCount(24);
+    await expect(rows).toHaveCount(6);
     const firstItemId = await rows.nth(0).getAttribute('data-item-id');
     const secondItemId = await rows.nth(1).getAttribute('data-item-id');
     expect(firstItemId).toBeTruthy();
@@ -201,10 +201,10 @@ test.describe('P35-03 one adjustment kind at a time', () => {
     await expect(rows.nth(1)).toHaveAttribute('data-item-id', firstItemId ?? '');
     await rows.nth(0).getByRole('checkbox').uncheck();
     await rows.nth(1).getByRole('checkbox').uncheck();
-    await expect(panel.getByTestId('public-flow-adjustment-result-after')).toContainText('22개');
+    await expect(panel.getByTestId('public-flow-adjustment-result-after')).toContainText('4개');
     await expect(page.getByTestId('public-flow-capability-result')).toHaveAttribute(
       'data-capability-output-count',
-      '22',
+      '4',
     );
     await capture(page, 'p35-03-adjust-items-1024.png');
 
@@ -213,13 +213,13 @@ test.describe('P35-03 one adjustment kind at a time', () => {
     const capability = page.getByTestId('public-flow-capability-result');
     await expect(capability).toHaveAttribute(
       'data-capability-output-count',
-      '22',
+      '4',
     );
     await capability.getByTestId('flow-capability-artifact-preview-expand').click();
-    await expect(capability.getByTestId('flow-capability-artifact-preview-row')).toHaveCount(22);
+    await expect(capability.getByTestId('flow-capability-artifact-preview-row')).toHaveCount(4);
     const legacyStoredOrder = await page.evaluate(({ movedItemId }) => {
       const states = JSON.parse(
-        window.localStorage.getItem('flow_builder_mvp_item_state_moving-d30-basic') || '{}',
+        window.localStorage.getItem('flow_builder_mvp_item_state_curated-wedding-naver-timeline') || '{}',
       ) as Record<string, { personalOrder?: number }>;
       return movedItemId ? states[movedItemId]?.personalOrder : undefined;
     }, { movedItemId: secondItemId });

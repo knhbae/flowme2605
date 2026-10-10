@@ -21,7 +21,7 @@ import { programExecutionTasks } from './execution';
 
 const NOW = '2026-09-12T10:45:00.000Z', ACTOR = 'local-user';
 /** Genuine source-backed factory; readiness fault is explicitly simulated. */
-export function mapReviewFixture(mapId = 'moving-d30', injectHold = true) {
+export function mapReviewFixture(mapId = 'curated-ajd-moving-d30', injectHold = true) {
   const saved = buildSourceBackedFlowMapSavedSnapshot(mapId, { savedAt: NOW, anchor: '2026-09-30' });
   const persisted = buildSourceBackedFlowMapPersistenceRecord(mapId, { savedAt: NOW, anchor: '2026-09-30' });
   assert.ok(saved); assert.ok(persisted);
@@ -119,7 +119,7 @@ test('MR07 unrelated archived plan cannot block Map approval and its exact priva
 });
 
 test('MR08 genuine two-child Map reviews the whole group atomically and never permits a partial child acknowledgment', () => {
-  const f = mapReviewFixture('curated-opic-mock-course'); assert.equal(f.view.children.length, 2); assert.deepEqual(f.view.blockers, []);
+  const f = mapReviewFixture('curated-wedding-checklist-family'); assert.equal(f.view.children.length, 2); assert.deepEqual(f.view.blockers, []);
   const firstChild = f.view.children[0].ref;
   const partial = { ...f.action, sourceByItemRef: Object.fromEntries(f.view.items.filter(item => item.flowRef === firstChild).map(item => [item.itemRef, item.sourceUrls[0]])) };
   assert.equal(transitionProgramLegacyMapReview(f.payload.model.flows, undefined, partial).ok, false);
@@ -129,7 +129,9 @@ test('MR08 genuine two-child Map reviews the whole group atomically and never pe
   assert.equal(M.tasks(result.transition.data.spaces[ACTOR].text).length, f.view.items.length);
 });
 
-const QUALITY_HELD_MAPS = ['baby-health-schedule', 'year-end-tax-submit', 'curated-funmom-learning-park', 'curated-child-vaccination-schedule', 'baby-food-map'];
+// Keep all historic negatives and the genuine CP1 source_rows holds. Saved
+// contents/history remain exact; personal acknowledgment cannot unlock them.
+const QUALITY_HELD_MAPS = ['baby-health-schedule', 'year-end-tax-submit', 'curated-funmom-learning-park', 'curated-child-vaccination-schedule', 'baby-food-map', 'moving-d30', 'curated-opic-mock-course'];
 for (const mapId of QUALITY_HELD_MAPS) test(`MR09 actual quality-held ${mapId}: readiness-ready source cannot bypass Program execution gate`, () => {
   const f = mapReviewFixture(mapId, false), before = JSON.stringify(f.payload);
   assert.ok(f.payload.model.flows.every(flow => flow.presentation?.mapGroup?.executionState === 'executable'), 'genuine old readiness reader is executable; no hold is injected');
@@ -183,7 +185,7 @@ for (const mapId of QUALITY_HELD_MAPS) test(`MR10 already-saved checkbox ${mapId
 });
 
 test('MR11 a normal real Map remains executable without any personal review approval', () => {
-  const f = mapReviewFixture('moving-d30', false), view = prepareProgramLegacyView(f.data, { actorId: ACTOR, now: NOW }); assert.ok(view.ok);
+  const f = mapReviewFixture('curated-ajd-moving-d30', false), view = prepareProgramLegacyView(f.data, { actorId: ACTOR, now: NOW }); assert.ok(view.ok);
   assert.ok(programExecutionTasks(f.data.spaces[ACTOR]).length > 0);
   const result = applyProgramLegacyAction(f.data, { actorId: ACTOR, expectedToken: view.token, now: NOW, executionDate: '2026-09-12', action: { type: 'complete', itemRef: f.view.items[0].itemRef, completed: true, now: NOW } }); assert.ok(result.transition.ok);
 });

@@ -7,6 +7,7 @@ import {
 import {
   buildSourceBackedFlowMapPersistenceRecordUpdate,
   getSourceBackedFlowMapPersistenceStorageKey,
+  sourceBackedMyFlowBundles,
   type SourceBackedFlowMapSavedSnapshot,
   type SourceBackedFlowMapPersonalCopy,
   type SourceBackedFlowMapPersonalCopyStepOverride,
@@ -320,12 +321,32 @@ function preserveSavedArchivedBundles(
   stored: FlowBundle[],
   storage: BundleReadStorage,
 ): FlowBundle[] {
+  const seedSlugs = new Set(seedBundles.map(bundle => bundle.flow.slug));
+  const sourceOnlyBySlug = new Map(sourceBackedMyFlowBundles
+    .filter(bundle => !seedSlugs.has(bundle.flow.slug))
+    .map(bundle => [bundle.flow.slug, bundle]));
+  const hasExactSavedSourceIdentity = (original: FlowBundle): boolean => {
+    try {
+      const saved = normalizeSavedFlowRecord(JSON.parse(
+        storage.getItem(`${SAVED_FLOW_KEY_PREFIX}${original.flow.slug}`) || 'null',
+      ));
+      return Boolean(saved
+        && saved.slug === original.flow.slug
+        && (!saved.personalCopyKey || saved.personalCopyKey === saved.slug)
+        && (!saved.sourceFlowSlug || saved.sourceFlowSlug === original.flow.slug)
+        && (!saved.sourceFlowKey || saved.sourceFlowKey === original.flow.id));
+    } catch {
+      return false;
+    }
+  };
   const migrated = stored.map((bundle) => {
     const policy = getRuntimeArchivedFlowPolicy(bundle.flow.slug);
+    const sourceOriginal = sourceOnlyBySlug.get(bundle.flow.slug);
     if (
       !policy ||
       bundle.flow.status !== 'published' ||
-      !storage.getItem(`${SAVED_FLOW_KEY_PREFIX}${bundle.flow.slug}`)
+      !storage.getItem(`${SAVED_FLOW_KEY_PREFIX}${bundle.flow.slug}`) ||
+      (sourceOriginal && (bundle.flow.id !== sourceOriginal.flow.id || !hasExactSavedSourceIdentity(sourceOriginal)))
     ) {
       return bundle;
     }
@@ -341,7 +362,18 @@ function preserveSavedArchivedBundles(
     .map((bundle) => JSON.parse(JSON.stringify(bundle)) as FlowBundle)
     .map(toRetiredPersonalCopy);
 
-  return [...migrated, ...recovered];
+  // Map saves can contain records/snapshots without a stored source bundle.
+  // Recover only a matching saved identity, never a snapshot or public seed alone.
+  const recoveredSourceCopies = [...sourceOnlyBySlug.values()]
+    .filter(bundle => (
+      Boolean(getRuntimeArchivedFlowPolicy(bundle.flow.slug))
+      && !storedSlugs.has(bundle.flow.slug)
+      && hasExactSavedSourceIdentity(bundle)
+    ))
+    .map(bundle => JSON.parse(JSON.stringify(bundle)) as FlowBundle)
+    .map(toRetiredPersonalCopy);
+
+  return [...migrated, ...recovered, ...recoveredSourceCopies];
 }
 
 function resolveBundles(storage: BundleReadStorage): BundleReadResolution {

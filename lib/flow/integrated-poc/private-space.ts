@@ -12,6 +12,7 @@ import { programDocumentContentLock, programReferenceExecutionAccess } from './r
 import { programRecurringScheduleLabel, programRecurringScheduleStart } from './public-recurrence-contract';
 import { programPublicCopyItemStart } from './public-copy-recurrence';
 import { programOrdinaryScheduleLabel } from './public-ordinary-time';
+import { isPublicCatalogFlowOnHold } from '../public-source-review-policy';
 
 /** Compare the selected actor's entire private baseline before any mutation. */
 export type ProgramPrivateMutationBase = { actorId: string; requestId: string; expectedSpace: ProgramPrivateSpace };
@@ -308,6 +309,9 @@ export function importProgramPublicVersion(data: ProgramData, input: ImportProgr
     let copy = space.copies.find(copy => copy.flowId === version.flowId);
     if (copy && (copy.baseVersionId !== version.id || copy.anchor !== input.anchor)) return { result: copy.id, reason: 'conflict' };
     if (!copy) {
+      // Only new intake is held. Existing copies and idempotent receipt replay
+      // above keep the immutable version and personal execution state.
+      if (isPublicCatalogFlowOnHold(version.flowId)) return { result: '', reason: 'unresolved' };
       if (space.text.flows.length >= 100) return { result: '', reason: 'limit' };
       const folder = space.text.folders.find(folder => folder.id === 'folder-unfiled');
       if (!folder) return { result: '', reason: 'invalid' };

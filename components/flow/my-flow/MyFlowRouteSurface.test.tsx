@@ -184,3 +184,39 @@ test('empty legacy surface keeps the visible archived-lens action', () => {
   assert.match(markup, /data-testid="my-flow-open-archived"/u);
   assert.match(markup, />보관한 계획 1개 보기<\/button>/u);
 });
+
+for (const navigationState of ['hidden', 'missing-active-tab', 'visible-active-tab'] as const) {
+  test(`empty surface has a rendered accessible name with ${navigationState}`, () => {
+    const model = buildModel(false);
+    model.workspace.visible = false;
+    model.navigation = {
+      ...model.navigation,
+      visible: navigationState !== 'hidden',
+      tabs: navigationState === 'missing-active-tab' ? [] : [{ id: 'flow', label: '계획 목록' }],
+    };
+    model.empty = {
+      visible: true,
+      title: '저장한 계획이 없습니다',
+      description: '원본과 보관한 자료는 그대로 둡니다.',
+      archivedCount: 0,
+    };
+    const markup = renderToStaticMarkup(
+      <MyFlowRouteSurface model={model} actions={actions} renderers={renderers} />,
+    );
+    const section = markup.match(/<section\b[^>]*data-testid="my-flow-empty-state"[^>]*>/u)?.[0];
+    assert.ok(section, 'the empty surface remains visible');
+    const labelId = section.match(/aria-labelledby="([^"]+)"/u)?.[1];
+    assert.ok(labelId, 'the empty surface has an accessible name');
+    assert.ok(markup.includes(`id="${labelId}"`), 'its label points to an actual rendered element');
+    if (navigationState === 'visible-active-tab') {
+      assert.match(section, /role="tabpanel"/u);
+      assert.equal(labelId, 'my-flow-tab-flow');
+    } else {
+      assert.match(section, /role="region"/u);
+      assert.equal(labelId, 'my-flow-empty-state-heading');
+      assert.doesNotMatch(markup, /role="tabpanel"/u);
+    }
+    assert.match(markup, /원본과 보관한 자료는 그대로 둡니다/u);
+    assert.match(markup, /data-action-role="discover-public-flow"/u);
+  });
+}

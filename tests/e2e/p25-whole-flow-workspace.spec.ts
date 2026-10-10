@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { expect, test } from '@playwright/test';
+import { openExistingPublicPlan } from './helpers/existing-public-plan';
 import {
   closeOpenMyFlowItemDetail,
   expandMyFlowWholePlan,
@@ -29,59 +30,16 @@ function collectConsoleErrors(page: import('@playwright/test').Page) {
   return errors;
 }
 
-async function expectDirectSavedPlan(page: import('@playwright/test').Page) {
-  await expect.poll(() => {
-    const url = new URL(page.url());
-    return {
-      pathname: url.pathname,
-      view: url.searchParams.get('view'),
-      flow: url.searchParams.get('flow'),
-    };
-  }).toEqual({
-    pathname: '/my',
-    view: 'flows',
-    flow: expect.stringMatching(/^personal-copy:/u),
-  });
-  await expect(page.getByTestId('public-flow-saved-receipt')).toHaveCount(0);
-}
-
-async function setApprovedPublicCalendarAnchor(
-  page: import('@playwright/test').Page,
-  anchor: string,
-) {
-  const preview = page.getByTestId('public-flow-capability-result');
-  await preview.locator(
-    '[data-public-format-tab="true"][data-capability-destination="calendar"]',
-  ).click();
-  await page.getByTestId('public-flow-calendar-set-anchor').click();
-  const editor = page.getByTestId('public-flow-personal-adjustment');
-  await editor.getByTestId('public-flow-adjustment-anchor-input').fill(anchor);
-  await editor.getByTestId('public-flow-adjustment-apply').click();
-  await expect(editor).toHaveCount(0);
-}
-
-async function saveMovingFlow(page: import('@playwright/test').Page) {
-  await page.goto('/flow-maps/moving-d30');
-  await page.evaluate(() => window.localStorage.clear());
-  await page.reload();
-  await expect(page).toHaveURL('/f/moving-d30-basic');
-  await setApprovedPublicCalendarAnchor(page, '2030-08-15');
-  const wideSave = page.getByTestId('public-flow-save-primary');
-  if (await wideSave.isVisible()) {
-    await wideSave.click();
-  } else {
-    await page.getByTestId('public-flow-save-primary-mobile').click();
-  }
-  await expectDirectSavedPlan(page);
+async function openExistingMovingPlan(page: import('@playwright/test').Page) {
   await installLegacySavedPlanLibraryNavigation(page);
-  await gotoLegacySavedPlanLibraryRoute(page, page.url());
+  await openExistingPublicPlan(page);
 }
 
 test.describe('P25 whole Flow workspace', () => {
   test('mobile keeps the complete saved Flow visible and exposes a persistent completed view', async ({ page }) => {
     const consoleErrors = collectConsoleErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
-    await saveMovingFlow(page);
+    await openExistingMovingPlan(page);
 
     await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
     await expect(page.locator('main')).toHaveAttribute('data-p32-workspace-state', 'focused');
@@ -167,15 +125,7 @@ test.describe('P25 whole Flow workspace', () => {
   test('wide selected Flow uses the same whole-Flow outline contract', async ({ page }) => {
     const consoleErrors = collectConsoleErrors(page);
     await page.setViewportSize({ width: 1024, height: 768 });
-    await page.goto('/flow-maps/moving-d30');
-    await page.evaluate(() => window.localStorage.clear());
-    await page.reload();
-    await expect(page).toHaveURL('/f/moving-d30-basic');
-    await setApprovedPublicCalendarAnchor(page, '2030-08-15');
-    await page.getByTestId('public-flow-save-primary').click();
-    await expectDirectSavedPlan(page);
-    await installLegacySavedPlanLibraryNavigation(page);
-    await gotoLegacySavedPlanLibraryRoute(page, page.url());
+    await openExistingMovingPlan(page);
 
     await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
     const selectedFlow = await openMyFlowLibraryFlow(page, 'moving-d30-basic');
@@ -218,7 +168,7 @@ test.describe('P25 whole Flow workspace', () => {
   test('wide multi-Flow workspace exposes rail, outline, and detail without competing scope controls', async ({ page }) => {
     const consoleErrors = collectConsoleErrors(page);
     await page.setViewportSize({ width: 1024, height: 768 });
-    await saveMovingFlow(page);
+    await openExistingMovingPlan(page);
 
     await gotoLegacySavedPlanLibraryRoute(page, '/flow-maps/middle-school-math-1');
     await page.getByTestId('flow-map-save-all').click();

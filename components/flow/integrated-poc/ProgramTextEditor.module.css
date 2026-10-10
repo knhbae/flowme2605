@@ -1,5 +1,5 @@
 .editor { display: flex; flex-direction: column; min-width: 0; min-height: 480px; height: 100%; color: #233d36; background: #fff; }
-.toolbar { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; padding: 8px; border-bottom: 1px solid #e0e8e4; }
+.toolbar { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; padding: 4px; border-bottom: 1px solid #e0e8e4; }
 .editor :where(button) { min-width: 44px; min-height: 44px; padding: 8px 12px; border: 1px solid #cbd8d1; border-radius: 8px; background: #fff; color: #214c3d; font: inherit; cursor: pointer; }
 .editor button:hover:not(:disabled) { background: #edf5f0; }
 .editor button:disabled { opacity: .5; cursor: default; }
@@ -7,6 +7,13 @@
 .mode { display: flex; gap: 2px; }
 .mode button { border-color: transparent; }
 .mode button[aria-pressed='true'] { background: #e5f1ea; color: #124c35; }
+.editorTools { position: relative; flex: 0 0 auto; }
+.editorTools > summary { box-sizing: border-box; display: flex; align-items: center; justify-content: center; min-width: 48px; min-height: 48px; padding: 8px; border: 1px solid #cbd8d1; border-radius: 8px; background: #fff; color: #214c3d; list-style: none; cursor: pointer; }
+.editorTools > summary::-webkit-details-marker { display: none; }
+.editorTools > summary:focus-visible { outline: 2px solid #187952; outline-offset: 2px; }
+.editorTools[open] > summary { background: #edf5f0; }
+.editorToolActions { position: absolute; z-index: 10; right: 0; top: calc(100% + 4px); display: grid; gap: 6px; box-sizing: border-box; width: 180px; max-width: calc(100vw - 32px); padding: 8px; border: 1px solid #cbd8d1; border-radius: 8px; background: #fff; box-shadow: 0 8px 24px #15342620; }
+.editorToolActions button { text-align: left; white-space: nowrap; }
 .status { margin-left: auto; padding: 6px; font-size: 12px; color: #64766d; }
 .host { flex: 1; min-height: 390px; height: min(72dvh, 760px); position: relative; }
 .host :global(.tle-root) { min-height: 390px; border-radius: 0; }
@@ -22,6 +29,7 @@
 .dialog::backdrop { background: #17372b44; }
 .dialog header { position: sticky; top: -16px; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 12px; background: #fff; padding: 0 0 8px; }
 .dialog h3 { margin: 0; font-size: 17px; font-weight: 650; }
+.dateTarget { margin: 0; font-size: 14px; font-weight: 650; overflow-wrap: anywhere; }
 .dialog form, .choices { display: grid; gap: 8px; }
 .dialog form { margin-top: 14px; }
 .dialog label { display: grid; gap: 6px; font-size: 14px; }
@@ -34,14 +42,87 @@
 .dialog summary { padding: 12px 0; min-height: 44px; box-sizing: border-box; cursor: pointer; }
 .choices button { min-height: 48px; text-align: left; display: flex; gap: 8px; align-items: center; justify-content: space-between; white-space: normal; overflow-wrap: anywhere; }
 .choices small { flex-shrink: 0; }
+.menuTarget { margin: 0; font-size: 14px; font-weight: 650; word-break: keep-all; overflow-wrap: anywhere; }
+.registeredNotice { word-break: keep-all; overflow-wrap: anywhere; }
+.menuSection { display: grid; gap: 8px; padding-block: 8px; border-top: 1px solid #e0e8e4; }
+.menuSection h4 { margin: 0; font-size: 13px; font-weight: 650; color: #5e7467; }
+.menuGroup { border-top: 1px solid #e0e8e4; }
+.menuGroup > summary { min-height: 48px; font-weight: 650; color: #326449; }
+.menuGroup > summary:focus-visible { outline: 2px solid #326449; outline-offset: 2px; border-radius: 4px; }
+.menuGroup > .choices { padding-bottom: 8px; }
 .quickProgress { display: flex; gap: 6px; flex-wrap: wrap; }
 .quickProgress button { flex: 1; }
 @media (max-width: 600px) {
   .editor { min-height: 420px; }
-  .toolbar { gap: 3px; padding: 6px; }
-  .toolbar button { padding-inline: 9px; }
-  .status { font-size: 11px; padding: 4px; }
+  .toolbar { gap: 3px; padding: 4px; }
+  .toolbar button { min-width: 48px; min-height: 48px; padding-inline: 9px; }
+  .status { flex-basis: 100%; margin-left: 0; font-size: 11px; padding: 0 4px; }
   .host { height: 66dvh; min-height: 350px; }
   .host :global(.tle-root) { min-height: 350px; }
   .dialog { margin: auto auto 12px; max-height: 76dvh; }
 }
+@media (max-height: 500px) {
+  .editor { min-height: 260px; }
+  .host { height: 62dvh; min-height: 200px; }
+  .host :global(.tle-root) { min-height: 200px; }
+}
+@media (min-width: 761px) and (max-height: 500px) {
+  .toolbar { padding: 4px; gap: 4px; }
+  .status { padding: 4px; }
+}
+.folderPreview { display: grid; gap: 6px; margin: 8px 0 16px; padding: 10px 12px; border-left: 3px solid #237b70; background: #f1f6f3; overflow-wrap: anywhere; }
+.folderPreview small { color: #536c64; white-space: pre-wrap; }
+.contextHint { color: var(--muted, #5e6d70); font-size: .875rem; line-height: 1.5; overflow-wrap: anywhere; }
+.contextHint small { display: block; font-size: inherit; }
+.directWriting :global(.tle-textarea::placeholder) { color: #526966; -webkit-text-fill-color: #526966; opacity: 1; }
+/* Shared textarea/mirror padding keeps native caret and presentation aligned.
+   The current-line menu retains insert/date/move actions in one 44px lane. */
+@media (max-width: 600px) {
+  .directWriting :global(.tle-root[data-mode]:not([data-move-phase]):not(.tle-has-move-selection)) { --tle-pad-right: 60px; }
+  .directWriting :global(.tle-plus) { display: none; }
+}
+
+/* Native textarea and mirror must share metrics; keep the 44px row hit lane. */
+.editor { color: #222b25; background: #fffefa; border: 1px solid #dde2d9; border-radius: 12px; }
+.toolbar { padding: 8px; gap: 8px; border-color: #dde2d9; }
+.status { font-size: 13px; line-height: 20px; color: #59645d; }
+.host :global(.tle-root) { --tle-font: 16px; background: #fffefa; color: #222b25; }
+.host :global(.tle-root[data-mode="live"] .tle-textarea),
+.host :global(.tle-root[data-mode="live"] .tle-presentation) { font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", system-ui, sans-serif; }
+.host :global(.tle-viewport) { border-radius: 0 0 12px 12px; }
+/* Native controls keep the existing 44px row lane, not the shell's 48px. */
+.editor .host :global(.tle-root :is(.tle-check-hit,.tle-fold-toggle,.tle-row-open,.tle-plus,.tle-row-menu)) { min-height: 44px; min-width: 44px; height: 44px; }
+.mode button[aria-pressed='true'] { background: #e8f0e8; color: #254f38; }
+.editor :where(button), .editorTools > summary { color: #326449; border-color: #b5ccb9; }
+.dialog { background: #fffefa; color: #222b25; }
+.dialog header { background: #fffefa; }
+@media (max-width: 600px) {
+  .toolbar { gap: 4px; padding: 4px; }
+  .status { font-size: 13px; line-height: 20px; padding: 0 4px; }
+}
+/* Keep the native surface full width; row operations occupy a single outer rail.
+   Both native textarea and mirror use the same padding and 44px row ruler. */
+.editor { height: auto; min-height: 0; }
+.host { flex: 0 0 auto; height: max(352px, calc(100dvh - 280px)); height: calc(20px + round(down, max(352px, calc(100dvh - 300px)), 44px)); min-height: 352px; }
+.host :global(.tle-root) { min-height: 352px; }
+.host :global(.tle-root[data-mode]:not([data-move-phase]):not(.tle-has-move-selection)) { --tle-pad-right: 60px; }
+.host :global(.tle-controls) { background: linear-gradient(to left, #f4f5ef 52px, transparent 52px); }
+.host :global(.tle-plus) { display: none; }
+.host :global(.tle-scheduled-date-open) { width: 44px; }
+.host :global(.tle-scheduled-date-open .tle-row-date) { max-width: 44px; font-size: 12px; line-height: 16px; white-space: nowrap; }
+.host :global(.tle-scheduled-date-open .tle-row-date-kind) { font-size: 10px; line-height: 12px; }
+.status { flex: 0 0 auto; margin-left: auto; padding: 4px; }
+@media (max-width: 760px) {
+  .host { height: max(352px, calc(100dvh - 340px)); height: calc(20px + round(down, max(352px, calc(100dvh - 360px)), 44px)); }
+}
+/* The native buffer and mirror share one 26px text ruler. Touch targets are
+   separate: reading rows and the current-line menu retain 44px controls. */
+.host { height: var(--program-editor-visible-height, calc(100dvh - 360px)); min-height: 64px; }
+.host :global(.tle-root) { min-height: 64px; --tle-line: 26px; }
+.host :global(.tle-root.tle-has-move-selection),
+.host :global(.tle-root[data-move-phase="selected"]),
+.host :global(.tle-root[data-move-phase="dragging"]) { --tle-line: 44px; }
+.host :global(.tle-root:not(.tle-has-move-selection):not([data-move-phase="selected"]):not([data-move-phase="dragging"])) { --tle-pad-right: 60px; }
+.toolbar > button[aria-label="입력 되돌리기"], .editorTools > summary { border-color: transparent; background: transparent; }
+.status { font-size: 12px; font-weight: 400; color: #6d756f; }
+.host :global(.tle-row-date-kind) { color: #59645d; }

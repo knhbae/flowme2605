@@ -519,7 +519,7 @@ const specs: BatchSpec[] = [
       status: 'published',
       source_status: 'real',
       source_precision: 'exact',
-      source_checked_at: '2026-07-11',
+      source_checked_at: '2026-10-10',
       risk_level: 'low',
       primary_destination: 'memo',
       source_title: '트립닷컴 – 국내 여행 준비물 체크리스트! 알차게 챙겨가는 법',

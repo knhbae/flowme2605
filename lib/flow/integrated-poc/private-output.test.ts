@@ -66,7 +66,7 @@ test('CSV preserves quoting/multiline cells and formula shielding after removing
   assert.ok(csv.startsWith('\uFEFF"Flow","순서"')); assert.ok(csv.includes('"\t=SUM(1,2)"')); assert.ok(csv.includes('둘째 ""줄""')); assert.doesNotMatch(csv,/"판본"/);
 });
 test('excluded imported source is absent from task output while private added task remains', () => {
-  const f=fixture(); const catalog=buildProgramCatalog(f.actorId); f.data.public.flows=catalog.flows; f.data.public.versions=catalog.versions; const version=f.data.public.versions[0];
+  const f=fixture(); const catalog=buildProgramCatalog(f.actorId); f.data.public.flows=catalog.flows; f.data.public.versions=catalog.versions; const version=f.data.public.versions.find(row=>row.flowId==='catalog-chiangmai-solo-trip-packing')!;
   const imported=importProgramPublicVersion(f.data,{actorId:f.actorId,requestId:'private-output-import',expectedSpace:f.data.spaces[f.actorId],versionId:version.id,itemIds:version.items.map(x=>x.id),anchor:'2026-09-30'});
   assert.ok(imported.ok); const copy=imported.data.spaces[f.actorId].copies[0];
   const excluded=setProgramCopyInclusion(imported.data,{actorId:f.actorId,requestId:'private-output-exclude',expectedSpace:imported.data.spaces[f.actorId],copyId:copy.id,itemId:version.items[0].id,included:false}); assert.ok(excluded.ok);

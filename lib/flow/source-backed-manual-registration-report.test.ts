@@ -66,12 +66,12 @@ test('manual registration QA report shows the repaired aircon candidate as a QA 
   assert.match(html, /aircon-filter-cleaning/);
 });
 
-test('manual registration QA report prioritizes the remaining sourceTrace remediation queue', () => {
+test('manual registration QA report separates retained sourceTrace from current execution holds', () => {
   const report = buildSourceBackedManualRegistrationQaReport({
     generatedAt: '2026-07-06T00:00:00.000+09:00',
   });
 
-  assert.equal(report.summary.qaPassCount, 10);
+  assert.equal(report.summary.qaPassCount, 7);
   assert.equal(report.summary.registrationHoldCount, 0);
   assert.equal(report.summary.issueCounts.missing_source_trace.mapCount, 0);
   assert.equal(report.summary.issueCounts.missing_source_trace.stepCount, 0);
@@ -84,15 +84,16 @@ test('manual registration QA report prioritizes the remaining sourceTrace remedi
 
   const reading = report.rows.find((row) => row.mapId === 'curated-reading-routine-log');
   assert.ok(reading);
-  assert.equal(reading.status, 'qa_pass');
+  assert.equal(reading.lookupEligible, false);
+  assert.equal(reading.status, 'lookup_blocked');
   assert.equal(reading.missingSourceTraceStepCount, 0);
   assert.deepEqual(reading.issueCodes, []);
 
   const moving = report.rows.find((row) => row.mapId === 'moving-d30');
   assert.ok(moving);
-  assert.equal(moving.lookupEligible, true);
+  assert.equal(moving.lookupEligible, false);
   assert.equal(moving.qualityStatus, 'representative');
-  assert.equal(moving.status, 'qa_pass');
+  assert.equal(moving.status, 'lookup_blocked');
   assert.equal(moving.missingSourceTraceStepCount, 0);
   assert.deepEqual(moving.issueCodes, []);
 
@@ -122,9 +123,9 @@ test('manual registration QA report prioritizes the remaining sourceTrace remedi
 
   const opic = report.rows.find((row) => row.mapId === 'curated-opic-mock-course');
   assert.ok(opic);
-  assert.equal(opic.lookupEligible, true);
+  assert.equal(opic.lookupEligible, false);
   assert.equal(opic.qualityStatus, 'candidate');
-  assert.equal(opic.status, 'qa_pass');
+  assert.equal(opic.status, 'lookup_blocked');
   assert.equal(opic.missingSourceTraceStepCount, 0);
   assert.deepEqual(opic.issueCodes, []);
 

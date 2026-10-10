@@ -306,7 +306,7 @@ export function MovingD30Restart() {
   return (
     <main className="min-h-screen bg-slate-100 px-2 py-3 pb-28 text-slate-950 sm:px-4 sm:py-8 lg:pb-8">
       <div className="mx-auto grid max-w-6xl gap-5 lg:grid-cols-[1fr_340px]">
-        <section className="rounded-2xl border border-slate-200 bg-white px-3 py-4 shadow-sm sm:rounded-[28px] sm:p-6">
+        <section className="rounded-2xl border border-slate-200 bg-white px-3 py-4 shadow-xs sm:rounded-[28px] sm:p-6">
           <p className="text-sm font-semibold text-blue-600">이사 준비 · 다시 시작</p>
           <h1 className="mt-3 text-4xl font-bold tracking-normal">이사 D-30 준비</h1>
           <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600">
@@ -581,7 +581,7 @@ export function MovingD30Restart() {
         </section>
 
         <aside className="space-y-4">
-          <section id="moving-restart-export-panel" className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+          <section id="moving-restart-export-panel" className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-xs">
             <h2 className="text-lg font-bold">내보낼 파일</h2>
             <p className="mt-2 text-sm leading-6 text-slate-600">
               수정한 일정 기준으로 캘린더 파일, 체크리스트, 시트, FlowMe 저장을 선택합니다.
@@ -630,7 +630,7 @@ export function MovingD30Restart() {
             ) : null}
           </section>
 
-          <section data-testid="moving-source-section" className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+          <section data-testid="moving-source-section" className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-xs">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <h2 className="text-lg font-bold">출처 분리</h2>
@@ -664,7 +664,7 @@ export function MovingD30Restart() {
             </div>
           </section>
 
-          <section className="hidden rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm lg:block">
+          <section className="hidden rounded-[28px] border border-slate-200 bg-white p-5 shadow-xs lg:block">
             <h2 className="text-lg font-bold">선택한 항목 편집</h2>
             {selectedItem && editSurface === 'desktop' ? (
               <div className="mt-4">

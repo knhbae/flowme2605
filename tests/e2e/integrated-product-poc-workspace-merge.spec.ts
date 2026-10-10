@@ -16,7 +16,30 @@ const successfulWrites = (page: Page) => page.evaluate(() => (window as unknown 
 const state = async (page: Page) => JSON.parse((await raw(page))!) as ProgramEnvelope;
 const space = async (page: Page) => (await state(page)).data.spaces['local-user'];
 const row = (page: Page, title: string) => page.locator('li[data-task-id]').filter({ has: page.getByRole('button', { name: `${title} 작업`, exact: true }) });
-const nav = (page: Page, name: string) => page.getByRole('navigation', { name: '개인공간 보기' }).getByRole('button', { name, exact: true }).click();
+async function openLibrary(page: Page) {
+  if (!await page.locator('#program-library').isVisible()) {
+    await page.getByRole('button', { name: '글 찾기 · 내 문서와 할 일', exact: true }).click();
+    await expect(page.getByRole('dialog', { name: '글 찾기', exact: true })).toBeVisible();
+  }
+}
+
+async function openDisclosure(page: Page, name: string) {
+  const summary = page.locator('summary').filter({ hasText: new RegExp(`^${name}$`) });
+  if (await summary.locator('..').getAttribute('open') === null) await summary.click();
+}
+
+async function nav(page: Page, name: string) {
+  const find = page.getByRole('dialog', { name: '글 찾기', exact: true });
+  if (await find.isVisible()) await find.getByRole('button', { name: '닫기', exact: true }).click();
+  const otherDate = ['주간', '월간', '날짜 미정'].includes(name);
+  if (otherDate) {
+    await page.getByRole('navigation', { name: '기본 이동', exact: true }).getByRole('button', { name: '오늘', exact: true }).click();
+    await page.getByRole('combobox', { name: '기간 보기', exact: true }).selectOption({ label: name });
+    return;
+  }
+  await page.getByRole('navigation', { name: '기본 이동', exact: true })
+    .getByRole('button', { name, exact: true }).click();
+}
 
 async function reachable(action: Locator) {
   await action.scrollIntoViewIfNeeded();
@@ -84,6 +107,7 @@ async function setup(page: Page) {
 }
 
 async function quick(page: Page, title: string) {
+  await openDisclosure(page, '할 일 추가');
   await reachable(page.getByRole('button', { name: '추가', exact: true }));
   await page.getByLabel('빠른 할 일', { exact: true }).fill(title);
   await page.getByRole('button', { name: '추가', exact: true }).click();
@@ -94,21 +118,28 @@ const dimensions = [[375, 812], [390, 844], [844, 390], [1024, 768], [1440, 900]
 for (const [width, height] of dimensions) test(`current workspace ${width}x${height}: quick task, folder, periods, complete/reopen, undated, Undo and reload`, async ({ page }, info) => {
   await page.setViewportSize({ width, height });
   const verify = await setup(page);
+  await openLibrary(page);
   await page.getByText('폴더 정리', { exact: true }).click();
   await page.getByLabel('새 폴더 이름', { exact: true }).fill('Merge folder');
   await page.getByRole('button', { name: '폴더 만들기', exact: true }).click();
   await nav(page, '오늘'); await quick(page, 'Merge task');
   const task = M.tasks((await space(page)).text).find(t => t.title === 'Merge task')!;
   expect(task.date).toBe(DATE);
-  for (const view of ['주간', '월간', '전체 할 일']) { await nav(page, view); await expect(row(page, 'Merge task')).toHaveCount(1); }
+  for (const view of ['주간', '월간', '분류']) { await nav(page, view); await expect(row(page, 'Merge task')).toHaveCount(1); }
   await row(page, 'Merge task').getByRole('button').nth(1).click();
-  await page.getByText('문서 작업', { exact: true }).click();
-  await page.getByRole('combobox', { name: '문서 폴더', exact: true }).selectOption({ label: 'Merge folder' });
+  // Opening the source waits for editor flush before closing the library.
+  // Wait for that visible destination before opening management again.
+  await expect(page.getByRole('navigation', { name: '기본 이동', exact: true })
+    .getByRole('button', { name: '쓰기', exact: true })).toHaveAttribute('aria-current', 'page');
+  const documentTools = page.locator('summary[aria-label="현재 글 작업"]');
+  await expect(documentTools).toBeVisible();
+  await documentTools.click();
+  await page.getByRole('combobox', { name: '보관 위치', exact: true }).selectOption({ label: 'Merge folder' });
   await expect.poll(async () => (await space(page)).text.documents.find(d => d.id === task.docId)?.folderId).not.toBeNull();
   const assigned = await space(page), folder = assigned.text.folders.find(f => f.title === 'Merge folder')!;
   expect(assigned.text.documents.find(d => d.id === task.docId)?.folderId).toBe(folder.id);
   expect(M.tasks(assigned.text).find(t => t.id === task.id)?.date).toBe(DATE);
-  await page.getByText('문서 작업', { exact: true }).click();
+  await documentTools.click();
   await nav(page, '오늘');
   await row(page, 'Merge task').getByRole('button', { name: 'Merge task 완료', exact: true }).click();
   await expect(row(page, 'Merge task').getByRole('button', { name: 'Merge task 다시 열기', exact: true })).toHaveAttribute('aria-pressed', 'true');
@@ -141,7 +172,14 @@ test('current ordering: menu, keyboard, drag and touch-hold share order; cancel/
   const order = () => page.locator('li[data-task-id]').evaluateAll(rows => rows.map(r => r.getAttribute('data-task-id')));
   const originalOrder = await order();
   await row(page, 'Order C').getByRole('button', { name: 'Order C 작업', exact: true }).click();
-  await page.getByRole('dialog').getByRole('button', { name: '같은 날짜에서 위로', exact: true }).click();
+  const orderingDialog = page.getByRole('dialog');
+  const connections = orderingDialog.locator('details[data-detail-section="connections"]');
+  await expect(connections).toHaveJSProperty('open', false);
+  await connections.getByText('연결·이동·순서', { exact: true }).click();
+  await expect(connections).toHaveJSProperty('open', true);
+  const moveUp = orderingDialog.getByRole('button', { name: '같은 날짜에서 위로', exact: true });
+  await reachable(moveUp);
+  await moveUp.click();
   await page.keyboard.press('Escape');
   const expected = [originalOrder[0], originalOrder[2], originalOrder[1]];
   await expect.poll(order).toEqual(expected);
@@ -200,7 +238,7 @@ test('current ordering: menu, keyboard, drag and touch-hold share order; cancel/
   expect(await successfulWrites(page)).toBe(writesBeforeCancel);
   await touch.press('Enter');
   const dialog = page.getByRole('dialog');
-  await dialog.getByRole('button', { name: '날짜 적용', exact: true }).click();
+  await dialog.getByRole('button', { name: '날짜·시간 적용', exact: true }).click();
   await expect(page.getByRole('status').filter({ hasText: '이미 같은 상태입니다.' })).toBeVisible();
   expect(await raw(page)).toBe(before); // identical date is a no-op
   expect(await successfulWrites(page)).toBe(writesBeforeCancel);
@@ -210,12 +248,12 @@ test('current ordering: menu, keyboard, drag and touch-hold share order; cancel/
   await touch.click();
   await dialog.getByLabel('실행 날짜', { exact: true }).fill('2026-10-10');
   await page.evaluate(() => { (window as unknown as { __workspaceFail: boolean }).__workspaceFail = true; });
-  await dialog.getByRole('button', { name: '날짜 적용', exact: true }).click();
+  await dialog.getByRole('button', { name: '날짜·시간 적용', exact: true }).click();
   await expect(dialog.getByRole('alert')).toBeVisible();
   expect(await raw(page)).toBe(before);
   expect(await successfulWrites(page)).toBe(writesBeforeCancel);
   await page.evaluate(() => { (window as unknown as { __workspaceFail: boolean }).__workspaceFail = false; });
-  await dialog.getByRole('button', { name: '날짜 적용', exact: true }).click();
+  await dialog.getByRole('button', { name: '날짜·시간 적용', exact: true }).click();
   await expect.poll(async () => M.tasks((await space(page)).text).find(t => t.title === 'Order C')?.date).toBe('2026-10-10');
   await page.keyboard.press('Escape');
   await verify();

@@ -1,4 +1,7 @@
-import type { ProgramData } from './contract';
+import type { ProgramData, ProgramPublicationDraft, ProgramParticipationDraft } from './contract';
+import type { ProgramCreatorWorking } from './creator-workspace-contract';
+import type { ProgramProposalReviewDraft } from './review-drafts';
+import type { TextWorkspaceState } from './text-workspace';
 
 /** Flush the actual editor draft before opening an action based on committed text. */
 export async function prepareProgramDocumentAction(input: {
@@ -15,11 +18,26 @@ export async function prepareProgramDocumentAction(input: {
   return input.dirty() ? 'save-failed' : 'ready';
 }
 
+export type ProgramEditorDraft = { title: string; raw: string; documentId?: string };
+export type ProgramEditorSocialDraft =
+  | { kind: 'publication'; value: ProgramPublicationDraft }
+  | { kind: 'participation'; value: ProgramParticipationDraft }
+  | { kind: 'review'; value: { proposalId: string; draft: ProgramProposalReviewDraft } };
 export type ProgramEditorFlush = {
   flushAll: () => Promise<boolean>; lockInput: () => () => void;
   hasPendingInput?: () => boolean;
   pendingDocumentIds?: () => string[];
-  captureDrafts?: () => { title: string; raw: string }[];
+  captureDrafts?: () => ProgramEditorDraft[];
+  /** Called only after the shell proves an exact same-request private save. Never replace input. */
+  acceptConfirmedPrivateText?: (before: TextWorkspaceState, next: TextWorkspaceState) => boolean;
+  /** Explicit private social drafts; never restore these as personal raw documents. */
+  captureSocialDrafts?: () => ProgramEditorSocialDraft[];
+  /** Advance only an exact confirmed private draft after a lost response; never replace input. */
+  acceptConfirmedSocialDrafts?: (data: ProgramData) => boolean;
+  /** Full creator context, separate from text-only personal-document recovery. */
+  captureCreatorWorking?: () => ProgramCreatorWorking | null;
+  /** Acknowledge an exact full working match after a lost response, never replace local input. */
+  acceptConfirmedCreatorWorking?: (working: ProgramCreatorWorking | null) => boolean;
   /** Non-document editors can protect their own persisted draft on external changes. */
   blocksExternalSnapshot?: (before: ProgramData, next: ProgramData) => boolean;
 };

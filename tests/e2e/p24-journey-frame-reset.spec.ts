@@ -25,15 +25,15 @@ async function captureEvidence(page: import('@playwright/test').Page, filename: 
 test.describe('P24 save-personalize-execute journey frame', () => {
   test('source-backed save shows the artifact, supports light adjustment, and lands on the whole Flow', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/flow-maps/moving-d30');
+    await page.goto('/f/curated-wedding-naver-timeline');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
 
-    await expect(page).toHaveURL('/f/moving-d30-basic');
+    await expect(page).toHaveURL('/f/curated-wedding-naver-timeline');
     const movingCapability = page.getByTestId('public-flow-capability-result');
     const publicFormats = movingCapability.locator('[data-public-format-tab="true"]');
     await expect(publicFormats).toHaveCount(3);
-    await expect(page.getByTestId('public-flow-hero')).toContainText('이사 D-30 준비');
+    await expect(page.getByTestId('public-flow-hero')).toContainText('결혼 준비 1년 참고 타임라인');
     await expect(movingCapability).toHaveAttribute('data-capability-selected-destination', 'memo');
     await movingCapability.locator(
       '[data-public-format-tab="true"][data-capability-destination="calendar"]',
@@ -45,7 +45,7 @@ test.describe('P24 save-personalize-execute journey frame', () => {
     await expect(page.locator('body')).not.toContainText('이사일 1개를 넣으면 원문 체크리스트');
     await expect(page.getByTestId('public-flow-reference-details')).toHaveCount(0);
     await expect(page.getByTestId('public-flow-save-primary-mobile')).toHaveAccessibleName(
-      '이사일 설정 후 저장',
+      '결혼식 날짜 설정 후 저장',
     );
     await captureEvidence(page, '01-moving-artifact-first-mobile.png');
 
@@ -56,27 +56,27 @@ test.describe('P24 save-personalize-execute journey frame', () => {
     await adjustPanel.getByTestId('public-flow-adjustment-apply').click();
     await page.getByTestId('public-flow-adjust-entry-mobile').click();
     await captureEvidence(page, '02-moving-light-adjustment-mobile.png');
-    await adjustPanel.getByTestId('public-flow-adjustment-name-input').fill('내 이사 준비');
+    await adjustPanel.getByTestId('public-flow-adjustment-name-input').fill('내 결혼 준비');
     await adjustPanel.getByTestId('public-flow-adjustment-apply').click();
     await page.getByTestId('public-flow-adjust-entry-mobile').click();
     await adjustPanel.getByTestId('public-flow-adjustment-kind-items').click();
     const adjustmentRows = adjustPanel.getByTestId('public-flow-adjustment-item-row');
-    await expect(adjustmentRows).toHaveCount(24);
+    await expect(adjustmentRows).toHaveCount(6);
     const excludedRow = adjustmentRows.nth(1);
     const excludedItemId = await excludedRow.getAttribute('data-item-id');
     await excludedRow.getByRole('checkbox').uncheck();
     await adjustPanel.getByTestId('public-flow-adjustment-apply').click();
     const saveBanner = await savePublicFlow(page, page.getByTestId('public-flow-save-primary-mobile'));
-    await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toContainText('23');
+    await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toContainText('5');
     await openSavedPublicFlow(page, saveBanner);
     const personalCopyKey = new URL(page.url()).searchParams.get('flow') ?? '';
     expect(personalCopyKey).toMatch(/^personal-copy:/u);
-    const workspace = await openMyFlowLibraryFlow(page, 'moving-d30-basic');
-    await expect(workspace).toContainText('내 이사 준비');
+    const workspace = await openMyFlowLibraryFlow(page, 'curated-wedding-naver-timeline');
+    await expect(workspace).toContainText('내 결혼 준비');
     const approvedPlan = workspace.getByTestId('approved-my-plan-workspace');
     await expect(approvedPlan.getByTestId('my-plan-date-grouped-todos')).toHaveAttribute(
       'data-todo-row-count',
-      '23',
+      '5',
     );
     await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
     await captureEvidence(page, '03-moving-post-save-whole-flow-mobile.png');
@@ -86,9 +86,9 @@ test.describe('P24 save-personalize-execute journey frame', () => {
       itemStates: JSON.parse(
         window.localStorage.getItem(`flow_builder_mvp_item_state_${copyKey}`) ?? '{}',
       ),
-      legacySourceRecord: window.localStorage.getItem('flow:saved:moving-d30-basic'),
+      legacySourceRecord: window.localStorage.getItem('flow:saved:curated-wedding-naver-timeline'),
     }), personalCopyKey);
-    expect(stored.saved.personalTitle).toBe('내 이사 준비');
+    expect(stored.saved.personalTitle).toBe('내 결혼 준비');
     expect(excludedItemId).toBeTruthy();
     expect(stored.itemStates[excludedItemId as string]).toMatchObject({
       personalExcluded: true,
@@ -102,17 +102,17 @@ test.describe('P24 save-personalize-execute journey frame', () => {
 
   test('source-backed adjustment never exposes an active zero-item save action', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/flow-maps/moving-d30');
+    await page.goto('/f/curated-wedding-naver-timeline');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
-    await expect(page).toHaveURL('/f/moving-d30-basic');
+    await expect(page).toHaveURL('/f/curated-wedding-naver-timeline');
     await page.getByTestId('public-flow-adjust-entry-mobile').click();
 
     const adjustPanel = page.getByTestId('public-flow-personal-adjustment');
     await adjustPanel.getByTestId('public-flow-adjustment-kind-items').click();
     const checkboxes = adjustPanel.locator('input[type="checkbox"]');
     const checkboxCount = await checkboxes.count();
-    expect(checkboxCount).toBe(24);
+    expect(checkboxCount).toBe(6);
     for (let index = 0; index < checkboxCount; index += 1) {
       await checkboxes.nth(index).uncheck();
     }
@@ -132,7 +132,7 @@ test.describe('P24 save-personalize-execute journey frame', () => {
     await page.getByTestId('public-flow-personal-adjustment')
       .getByTestId('public-flow-adjustment-kind-items')
       .click();
-    await expect(page.getByTestId('public-flow-adjustment-result-after')).toContainText('24개');
+    await expect(page.getByTestId('public-flow-adjustment-result-after')).toContainText('6개');
     await expect(page.getByTestId('public-flow-adjustment-apply')).toBeEnabled();
   });
 
@@ -239,10 +239,10 @@ test.describe('P24 save-personalize-execute journey frame', () => {
 
   test('wide My Flow names saved Flow navigation as management, not a viewing range', async ({ page }) => {
     await page.setViewportSize({ width: 1024, height: 768 });
-    await page.goto('/flow-maps/moving-d30');
+    await page.goto('/f/curated-wedding-naver-timeline');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
-    await expect(page).toHaveURL('/f/moving-d30-basic');
+    await expect(page).toHaveURL('/f/curated-wedding-naver-timeline');
     await savePublicFlow(page, page.getByTestId('public-flow-save-primary'));
 
     await page.goto('/f/vehicle-inspection-prep');
