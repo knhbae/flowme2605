@@ -6,6 +6,8 @@ import {
 } from './execution-model';
 import { getPreviewFlowBundles } from './creator-channel-preview';
 import { seedBundles } from './seed-flows';
+import { isPublicFlowSourceOnHold } from './public-source-review-policy';
+import { getSourceFitAudit } from './source-fit';
 
 function bySlug(slug: string) {
   const bundle = seedBundles.find((item) => item.flow.slug === slug);
@@ -13,16 +15,21 @@ function bySlug(slug: string) {
   return bundle;
 }
 
-test('P0 representative flows are explicitly classified for landing and QA', () => {
-  assert.deepEqual(getRepresentativeFlowSlugs(), [
+test('held historical P0 plans remain readable but do not enter NEW representative landing', () => {
+  const historical = [
     'moving-d30-basic',
     'used-car-buying-check',
     'wedding-d180-basic',
     'english-study-30day-routine',
-  ]);
+  ];
+  assert.deepEqual(getRepresentativeFlowSlugs(), []);
 
-  for (const slug of getRepresentativeFlowSlugs()) {
-    assert.equal(normalizeExecutionModel(bySlug(slug)).exposureStatus, 'representative', slug);
+  for (const slug of historical) {
+    const bundle = bySlug(slug), before = JSON.stringify(bundle);
+    assert.equal(isPublicFlowSourceOnHold(slug), true, slug);
+    assert.equal(normalizeExecutionModel(bundle).exposureStatus, 'catalog_preview', slug);
+    assert.equal(JSON.stringify(bundle), before, 'existing source and execution shape are unchanged');
+    assert.ok(bundle.items.length > 0, 'historical source is retained, not deleted');
   }
   assert.equal(normalizeExecutionModel(bySlug('baby-food-menu-recipe')).exposureStatus, 'catalog_preview');
 });
@@ -37,7 +44,9 @@ test('source-fit audit decisions gate public exposure without removing direct ac
     'car-care-monthly-routine',
   ]) {
     const model = normalizeExecutionModel(bySlug(slug));
-    assert.equal(model.exposureStatus, 'source_review', slug);
+    assert.equal(isPublicFlowSourceOnHold(slug), true, slug);
+    assert.equal(model.exposureStatus, 'catalog_preview', slug);
+    assert.equal(getSourceFitAudit(slug)?.decision, 'reshape_before_featured', slug);
     assert.ok(model.migrationGaps.includes('source_fit_reshape_needed'), slug);
   }
 });

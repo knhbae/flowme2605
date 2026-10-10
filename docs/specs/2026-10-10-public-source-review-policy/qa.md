@@ -6,7 +6,9 @@
 
 추가12개 신규 시작 보류 승인을 인수해 총24개 정책을 적용했다. `approved-boundaries-tests-20261010T070024913Z.json`의 관련5파일은 153 PASS/0 FAIL/0 SKIP와 전후 source pin 동일이다. 실제 AppClient writer/reader 함수 AST를 가상 의존성으로 실행해 신규14개 exact source binding, 구판 무변이 거절, 같은 판본 재저장, 명시 개인 요일, 구판 본문 보호를 확인했다. URL 신규 시작·조회 정책, 구판 native 사본 재사용·reload, seed/자료실 불변 및 현재 공급 집계도 해당 범위에서 대조했다.
 
-첫 경계 실행의 124 PASS/13 FAIL과 그전155 PASS/1 FAIL은 삭제하지 않는다. 잘못된 slug/본문 기대값과 승인 전 노출 집계, 구판과 신규 공급을 섞은 기대값을 고쳤다. 검토일을 일괄 갱신하거나 미확인 본문을 통과시키지 않았다. 제품 타입 exit0은 `approved-boundaries-type-20261010T065519227Z.json`이며 정상 hook/build·새 CI·게시판본 UI·실계정·Alpha 단계는 별도 후속 근거가 필요하다.
+첫 경계 실행의 124 PASS/13 FAIL과 그전155 PASS/1 FAIL은 삭제하지 않는다. 잘못된 slug/본문 기대값과 승인 전 노출 집계, 구판과 신규 공급을 섞은 기대값을 고쳤다. 검토일을 일괄 갱신하거나 미확인 본문을 통과시키지 않았다. 마지막 제품 타입 exit0은 `approved-boundaries-type-20261010T070759113Z.json`이며 정상 hook/build·새 CI·게시판본 UI·실계정·Alpha 단계는 별도 후속 근거가 필요하다.
+
+첫 정상 push hook의 core 645건은643 PASS/2 FAIL이었다. `execution-model.test.ts`의 역사 대표 신규 노출과 보류/source-review 우선순위 기대값이며 최초 raw를 보존한다. 후속 검사는 hold 판정과 구판 Item/본문 불변, 기존 view/export와 source-fit 진단을 모두 유지한다. 실패를 생략하거나 hook을 우회하지 않는다.
 
 아래 hold12·미승인/차단 결과들은 각각 당시 판본의 역사 기록이다. 최신24개 보호나 새 제공판 성공으로 전용하지 않는다.
 

@@ -10,7 +10,9 @@
 
 최신 경계 관련5파일은 **153 PASS / 0 FAIL / 0 SKIP**, 소스 전후 SHA 일치다. 그전 124 PASS / 13 FAIL과 155 PASS / 1 FAIL은 원장에 보존했다. 새 정책과 구판 의미를 구분한 기대값 정정이며 기한 기준·불변 본문·ID·기존 사본 보호 assertion을 생략하지 않았다. 제품 타입 exit0의 정확 근거는 별도다. 아직 최신 코드의 정상 게시 hook/build, 새 정확 CI, 게시판본 브라우저 및 실제 Alpha 전환·실계정 재접속은 미실행이다.
 
-로컬 근거는 `output/content-source-revalidation-20261010/approved-boundaries-tests-20261010T070024913Z.json`과 같은 이름의 raw, `approved-boundaries-type-20261010T065519227Z.json`이다. 합성 저장소·함수 AST 검사 결과는 실서버 저장 성공으로 표시하지 않는다. Alpha는 기존 `f984aff4 / ZgI3GY_EgnvHGLAqr8gGs`다.
+로컬 근거는 `output/content-source-revalidation-20261010/approved-boundaries-tests-20261010T070024913Z.json`과 같은 이름의 raw, 마지막 `approved-boundaries-type-20261010T070759113Z.json`이다. 합성 저장소·함수 AST 검사 결과는 실서버 저장 성공으로 표시하지 않는다. Alpha는 기존 `f984aff4 / ZgI3GY_EgnvHGLAqr8gGs`다.
+
+정상 첫 commit `a97adb97`은 완료했고 push hook에서 core 645건 중643 PASS/2 FAIL로 중단했다. 실패는 보류된 역사 대표4개의 신규 노출과 source-review/보류 노출 우선순위의 이전 기대값이다. 실행 종류·view·원문·기록 보존은 그대로 검사하며, 신규 보류 정책을 테스트에서 구분하도록 관련1파일을 수정한다. 첫 실패 raw와 미게시 상태를 보존하고 정상 hook을 다시 거친다.
 
 ## 승인 범위 결정 대기 — 2026-10-10 06:29 UTC
 
