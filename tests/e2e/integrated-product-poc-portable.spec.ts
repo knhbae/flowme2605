@@ -1,6 +1,8 @@
 import { test, expect, type Page } from '@playwright/test';
 import { textWorkspaceModel as M } from '../../lib/flow/integrated-poc/text-workspace';
 import type { ProgramEnvelope } from '../../lib/flow/integrated-poc/contract';
+import { buildProgramCatalog } from '../../lib/flow/integrated-poc/catalog';
+import { isPublicCatalogFlowOnHold } from '../../lib/flow/public-source-review-policy';
 
 const URL = '/my?personalWorkspacePoc=v1';
 const KEY = 'flow:poc:personal-workspace:v1:program:state';
@@ -68,8 +70,10 @@ test('portable private journey: document, task date and time, completion, Undo a
   // original document journey, but reach its form through the visible UI.
   const titleInput = page.getByLabel('새 문서', { exact: true });
   await expect(titleInput).toBeHidden();
-  await page.getByRole('button', { name: '더보기 · 글 찾기와 문서 관리', exact: true }).click();
-  await page.getByText('이름을 정해 새 문서 만들기', { exact: true }).click();
+  await page.getByRole('button', { name: '글 찾기 · 내 문서와 할 일', exact: true }).click();
+  const find = page.getByRole('dialog', { name: '글 찾기', exact: true });
+  await expect(find).toBeVisible();
+  await find.locator('summary').filter({ hasText: /^이름을 정해 새 문서 만들기$/ }).click();
   await expect(titleInput).toBeVisible();
   await page.getByLabel('새 문서', { exact: true }).fill('Portable private document');
   await page.getByRole('button', { name: '만들기', exact: true }).click();
@@ -106,12 +110,22 @@ async function verifyPrivateCopyEditing(page: Page, inputMode: 'replace' | 'appe
   const verify = await audit(page);
   await page.goto(URL + '#flowme/discover');
   await expect(page.getByTestId('program-discovery')).toBeVisible();
-  await page.getByTestId('program-discovery').locator('article h2 button').first().click();
-  await page.getByLabel(/^이사일/).fill('2026-10-10');
+  // Moving is review-held for NEW starts. Select the existing supported travel
+  // source explicitly, never use catalog order or bypass that hold for this QA.
+  const catalog = buildProgramCatalog('creator-minji');
+  const coverage = catalog.coverage.find(row => row.sourceSlug === 'chiangmai-solo-trip-packing')!;
+  const version = catalog.versions.find(row => row.id === coverage.versionId)!;
+  expect(isPublicCatalogFlowOnHold(coverage.flowId)).toBe(false);
+  await page.getByTestId('program-discovery').getByRole('button', { name: version.title, exact: true }).click();
+  await expect(page.getByTestId('program-flow-detail').getByRole('heading', { name: version.title, exact: true })).toBeVisible();
+  await page.getByLabel(coverage.anchorLabel, { exact: false }).fill('2026-10-10');
   await page.getByRole('button', { name: '내 문서에 가져오기', exact: true }).click();
   await expect.poll(async () => (await wire(page)) && (await state(page)).data.spaces['local-user'].copies.length).toBe(1);
   const before = await state(page);
   const copy = before.data.spaces['local-user'].copies[0];
+  expect(copy.flowId).toBe(coverage.flowId);
+  expect(copy.baseVersionId).toBe(version.id);
+  expect(copy.includedItemIds).toEqual(version.items.map(item => item.id));
   expect(before.data.public.versions.some(version => version.id === copy.baseVersionId)).toBe(true);
   const editor = page.getByRole('region', { name: '개인 문서 편집', exact: true });
   const input = editor.locator('textarea');

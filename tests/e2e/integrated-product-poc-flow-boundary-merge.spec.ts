@@ -29,18 +29,21 @@ const tasks = async (page: Page) => {
 
 async function openLibrary(page: Page) {
   if (!await page.locator('#program-library').isVisible()) {
-    await page.getByRole('button', { name: '더보기 · 글 찾기와 문서 관리', exact: true }).click();
+    await page.getByRole('button', { name: '글 찾기 · 내 문서와 할 일', exact: true }).click();
+    await expect(page.getByRole('dialog', { name: '글 찾기', exact: true })).toBeVisible();
   }
 }
 
 async function nav(page: Page, name: string) {
+  const find = page.getByRole('dialog', { name: '글 찾기', exact: true });
+  if (await find.isVisible()) await find.getByRole('button', { name: '닫기', exact: true }).click();
   const otherDate = ['주간', '월간', '날짜 미정'].includes(name);
   if (otherDate) {
-    await openLibrary(page);
-    const summary = page.locator('summary').filter({ hasText: /^다른 날짜 보기$/ });
-    if (await summary.locator('..').getAttribute('open') === null) await summary.click();
+    await page.getByRole('navigation', { name: '기본 이동', exact: true }).getByRole('button', { name: '오늘', exact: true }).click();
+    await page.getByRole('combobox', { name: '기간 보기', exact: true }).selectOption({ label: name });
+    return;
   }
-  await page.getByRole('navigation', { name: otherDate ? '다른 날짜 보기' : '기본 이동', exact: true })
+  await page.getByRole('navigation', { name: '기본 이동', exact: true })
     .getByRole('button', { name, exact: true }).click();
 }
 
@@ -81,7 +84,11 @@ test('canonical Flow folder is inherited; one Item date/completion moves only it
   // Current boot already projects compatible saved records read-only. Creating
   // the folder below is the first explicit Program write, not fixture injection.
   await openLibrary(page);
-  await expect(page.getByRole('button', { name: `${TITLE} 개인 Flow`, exact: true })).toBeVisible();
+  const sourceDocument = page.getByRole('dialog', { name: '글 찾기', exact: true })
+    .getByRole('button', { name: new RegExp(`^${TITLE} .*개인 Flow$`) });
+  await expect(sourceDocument).toHaveCount(1);
+  await expect(sourceDocument).toBeVisible();
+  await expect(sourceDocument).toContainText(first.title);
   expect(await wire(page)).toBeNull();
   await page.getByText('폴더 정리', { exact: true }).click();
   await page.getByLabel('새 폴더 이름', { exact: true }).fill('Parent folder');
@@ -93,6 +100,7 @@ test('canonical Flow folder is inherited; one Item date/completion moves only it
   await expect.poll(async () => (await space(page)).savedBindings.length).toBe(1);
   const binding = (await space(page)).savedBindings[0];
   expect(binding.flowRef).toBe(flow.ref);
+  await page.getByRole('dialog', { name: '글 찾기', exact: true }).getByRole('button', { name: '닫기', exact: true }).click();
   await page.getByText('PoC 설정', { exact: true }).click();
   await page.getByRole('button', { name: /^기존 제작·실행 도구/ }).click();
   const legacy = page.getByRole('region', { name: '기존 계획과 개인 문서 연결', exact: true });
