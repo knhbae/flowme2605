@@ -5,6 +5,7 @@ import { createRequire } from 'node:module';
 import ts from 'typescript';
 import { PROGRAM_CATALOG_SLUGS } from '../../../lib/flow/integrated-poc/catalog';
 import { buildCatalogContent } from '../../../lib/flow/integrated-poc/catalog-content';
+import { isPublicFlowSourceOnHold } from '../../../lib/flow/public-source-review-policy';
 import { isNativeCreatorCatalogContentSource } from '../../../lib/flow/integrated-poc/native-creator-document-contract';
 import { executeAlphaCreatorIntent } from '../../../lib/flow/integrated-poc/alpha-creator/dispatch-source';
 import { buildCatalogLibrarySnapshot } from '../../../lib/flow/integrated-poc/catalog-library-source';
@@ -33,7 +34,7 @@ function harness() {
     const call = { label, action, metadata }; calls.push(call); return respond(call);
   };
   const context = {
-    PROGRAM_CATALOG_SLUGS, buildCatalogContent, isNativeCreatorCatalogContentSource, executeAlphaCreatorIntent, programErrorMessage,
+    PROGRAM_CATALOG_SLUGS, buildCatalogContent, isPublicFlowSourceOnHold, isNativeCreatorCatalogContentSource, executeAlphaCreatorIntent, programErrorMessage,
     programId: (prefix: string) => `${prefix}-test-${++ids}`, styles: new Proxy({}, { get: (_, key) => String(key) }),
     useMemo: (factory: () => unknown) => { const index = cursor++; if (!(index in slots)) slots[index] = factory(); return slots[index]; },
     useRef: (initial: unknown) => { const index = cursor++; if (!(index in slots)) slots[index] = { current: initial }; return slots[index]; },
@@ -70,13 +71,13 @@ test('busy rejection keeps selected catalog content and retries only after expli
 test('catalog preview, original-source disclosure, cancel and Escape cause zero mutations', () => {
   const h = harness(); const before = JSON.stringify(h.props.data);
   h.click('내용 확인');
-  assert(text(h.render()).includes('24개 항목'));
+  assert(text(h.render()).includes('6개 항목'));
   assert(nodes(h.render()).some(node => node.type === 'section' && node.props['aria-label'] === '가져올 콘텐츠 확인'));
   const sourceLink = nodes(h.render()).find(node => node.type === 'a'); assert(sourceLink);
   assert.equal(text(sourceLink.props.children), '원래 출처 열기'); assert.equal(sourceLink.props.target, '_blank');
   assert.equal(sourceLink.props.rel, 'noopener noreferrer');
   h.click('취소'); assert(!nodes(h.render()).some(node => node.type === 'section'));
-  h.click('내용 확인', 1); assert(text(h.render()).includes('출처 재검토가 필요한 콘텐츠'));
+  h.click('내용 확인'); assert(text(h.render()).includes('출처 재검토가 필요한 콘텐츠'));
   h.render().props.onKeyDown({ key: 'Escape' }); assert(!nodes(h.render()).some(node => node.type === 'section'));
   assert.equal(h.calls.length, 0); assert.equal(JSON.stringify(h.props.data), before);
 });
@@ -105,7 +106,7 @@ test('successful apply sends locator-only alphaCreator intent and executes the r
   assert.equal(h.calls.length, 1); const metadata = h.calls[0].metadata;
   assert.deepEqual(Object.keys(metadata), ['alphaCreator']);
   assert.deepEqual(Object.keys(metadata.alphaCreator).sort(), ['draftId', 'now', 'sourceSlug', 'sourceVersionId', 'type']);
-  assert.equal(metadata.alphaCreator.type, 'catalog-content-import'); assert.equal(metadata.alphaCreator.sourceSlug, PROGRAM_CATALOG_SLUGS[0]);
+  assert.equal(metadata.alphaCreator.type, 'catalog-content-import'); assert.equal(metadata.alphaCreator.sourceSlug, 'chiangmai-solo-trip-packing');
   assert(!JSON.stringify(metadata).includes('documentJson')); assert(!JSON.stringify(metadata).includes('contentJson'));
   assert(text(h.render()).includes('사용 기록은 포함하지 않았고, 아직 공개하지 않았습니다.'));
 });
@@ -128,4 +129,13 @@ test('existing content opens its creator draft instead of importing again', asyn
   const imported = h.button('가져온 콘텐츠 열기'); assert.equal(imported.props.disabled, false); imported.props.onClick();
   assert.deepEqual(h.navigation, [{ view: 'creator', id: h.calls[0].metadata.alphaCreator.draftId }]);
   assert.equal(h.calls.length, 1);
+});
+
+test('held legacy content keeps its readable source but offers no new preview or import', () => {
+  const h = harness(), before = JSON.stringify(h.props.data);
+  const moving = buildCatalogContent('moving-d30-basic', h.props.sourceLibrary); assert(moving.ok);
+  const movingRow = nodes(h.render()).find(node => node.type === 'li' && text(node).includes(moving.content.bundle.flow.title)); assert(movingRow);
+  assert(!nodes(movingRow).some(node => node.type === 'button'));
+  assert(text(movingRow).includes('새로 가져올 수 없습니다'));
+  assert.equal(h.calls.length, 0); assert.equal(JSON.stringify(h.props.data), before);
 });

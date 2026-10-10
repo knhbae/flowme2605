@@ -17,7 +17,7 @@ function withCheckedAt(bundle: FlowBundle, checkedAt: string): FlowBundle {
 }
 
 test('source freshness separates current, review-due, and stale user routes', () => {
-  const moving = seedBundles.find((bundle) => bundle.flow.slug === 'moving-d30-basic');
+  const moving = seedBundles.find((bundle) => bundle.flow.slug === 'blog-youtube-start');
   assert.ok(moving);
   const asOf = new Date('2026-07-11T00:00:00+09:00');
 
@@ -27,7 +27,7 @@ test('source freshness separates current, review-due, and stale user routes', ()
 });
 
 test('source freshness rejects future and malformed source review metadata', () => {
-  const moving = seedBundles.find((bundle) => bundle.flow.slug === 'moving-d30-basic');
+  const moving = seedBundles.find((bundle) => bundle.flow.slug === 'blog-youtube-start');
   assert.ok(moving);
   const asOf = new Date('2026-07-11T12:00:00+09:00');
 
@@ -71,10 +71,11 @@ test('current canonical seed has no missing or overdue normal user source checks
   const canonical = summarizeFlowSourceFreshness(seedBundles, asOf);
   const archived = summarizeFlowSourceFreshness(archivedBundles, asOf);
   const inventory = (value: typeof summary) => [value.publishedCount, value.normalUserRouteCount, value.previewOrHiddenCount];
-  // Match the canonical registry and the existing archive policy, not a stale lower bound.
-  assert.deepEqual(inventory(canonical), [153, 121, 32]);
+  // The approved twenty-four holds move only NEW intake to preview; no date or
+  // freshness threshold changes. Non-held routes still require current checks.
+  assert.deepEqual(inventory(canonical), [153, 97, 56]);
   assert.deepEqual(inventory(archived), [21, 10, 11]);
-  assert.deepEqual(inventory(summary), [132, 111, 21]);
+  assert.deepEqual(inventory(summary), [132, 87, 45]);
   const slugs = (bundles: FlowBundle[]) => bundles.map((bundle) => bundle.flow.slug).sort();
   // Source-backed additions also use this policy; only canonical members belong in this inventory.
   const canonicalSlugs = new Set(slugs(seedBundles));

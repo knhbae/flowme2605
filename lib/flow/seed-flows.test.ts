@@ -17,6 +17,9 @@ import {
   RUNTIME_ARCHIVED_FLOW_SLUGS,
 } from './runtime-content-policy';
 import { seedBundles } from './seed-flows';
+import { getCurrentPublicSourceBundle, getPublishedPublicSourceEdition } from './public-source-editions';
+import { isPublicFlowSourceOnHold } from './public-source-review-policy';
+import { realSourceChannelBundles } from './real-source-channel-batch';
 import { mergeSourceBackedMyFlowBundles, sourceBackedMyFlowBundles } from './source-backed-my-flow';
 import {
   collectUserFacingClaimText,
@@ -196,6 +199,10 @@ test('runtime content policy archives unsupported public routes without deleting
         return runtimeReviewBundles.some(bundle => bundle.flow.slug === policy.replacementSlug);
       }
       const replacement = runtimeReviewBundles.find((bundle) => bundle.flow.slug === policy.replacementSlug);
+      if (isPublicFlowSourceOnHold(policy.replacementSlug)) {
+        // Retained metadata is not a public fallback while NEW intake is held.
+        return !replacement || getPublicFlowIndexingPolicy(replacement).indexable;
+      }
       return !replacement || !getPublicFlowIndexingPolicy(replacement).indexable;
     }),
     [],
@@ -1341,7 +1348,7 @@ test('generated preview flows are executable and source-backed', () => {
 });
 
 test('normal user routes fail the standard suite when source review is due', () => {
-  const summary = summarizeFlowSourceFreshness(seedBundles, new Date());
+  const summary = summarizeFlowSourceFreshness(runtimeSeedBundles, new Date());
   const attention = summary.attention
     .slice(0, 20)
     .map((entry) => `${entry.slug}:${entry.bucket}:${entry.checkedAt ?? 'missing'}`)
@@ -1476,7 +1483,7 @@ test('squishy source row mismatch is a real preview hold without refreshing seed
 });
 
 test('standard source freshness gate rejects future and malformed review metadata', () => {
-  const moving = seedBundles.find((bundle) => bundle.flow.slug === 'moving-d30-basic');
+  const moving = seedBundles.find((bundle) => bundle.flow.slug === 'blog-youtube-start');
   assert.ok(moving);
   const asOf = new Date('2026-07-11T12:00:00+09:00');
   const future = {
@@ -1544,7 +1551,8 @@ test('source reachability targets include user-facing item detail links', () => 
       target.sourceUrl ===
       'https://efamily.scourt.go.kr/cs/CsBltnWrtGuide.do?bltnbordId=0000008&guideCd=0000008001&guideYn=Y',
   );
-  const washer = targets.find(
+  const heldTargets = collectSourceReachabilityTargets(published.filter(bundle => isPublicFlowSourceOnHold(bundle.flow.slug)));
+  const washer = heldTargets.find(
     (target) =>
       target.sourceUrl ===
       'https://raga-t.com/entry/%EC%84%B8%ED%83%81%EA%B8%B0-%ED%86%B5%EC%84%B8%EC%B2%99-%EB%B0%A9%EB%B2%95-%EC%99%84%EB%B2%BD-%EA%B0%80%EC%9D%B4%EB%93%9C',
@@ -1555,6 +1563,7 @@ test('source reachability targets include user-facing item detail links', () => 
   assert.deepEqual(eFamily?.linkRoles, ['item_detail']);
   assert.ok(eFamily?.slugs.includes('birth-registration-prep'));
   assert.deepEqual(washer?.linkRoles, ['flow_source', 'item_detail']);
+  assert.equal(targets.some(target => target.sourceUrl === washer?.sourceUrl), false);
 });
 
 test('source-fit audit links stay aligned with the current public source', () => {
@@ -1587,15 +1596,15 @@ test('public Flow indexing exposes only source-fit approved or exact real-source
   const reviewOnly = published.filter((bundle) => !getPublicFlowIndexingPolicy(bundle).indexable);
   const bySlug = new Map(published.map((bundle) => [bundle.flow.slug, bundle]));
 
-  assert.equal(indexable.length, 61);
-  assert.equal(reviewOnly.length, 88);
+  assert.equal(indexable.length, 43);
+  assert.equal(reviewOnly.length, 106);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('vehicle-inspection-prep')!).indexable, true);
   assert.deepEqual(cp1QuarantinedSourceSlugs.filter(slug => bySlug.has(slug)), []);
-  assert.equal(getPublicFlowIndexingPolicy(bySlug.get('new-car-delivery-check')!).indexable, true);
+  assert.equal(getPublicFlowIndexingPolicy(bySlug.get('new-car-delivery-check')!).indexable, false);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('first-passport-issue')!).indexable, true);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('closet-organize-1day')!).indexable, true);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('portfolio-4week')!).indexable, true);
-  assert.equal(getPublicFlowIndexingPolicy(bySlug.get('weekly-meal-plan')!).indexable, true);
+  assert.equal(getPublicFlowIndexingPolicy(bySlug.get('weekly-meal-plan')!).indexable, false);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('ev-subsidy-apply')!).indexable, true);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('adult-vaccine-schedule-check')!).indexable, true);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('used-car-ownership-transfer')!).indexable, true);
@@ -1699,8 +1708,9 @@ test('published user routes record source freshness while preview library stays 
   });
 
   // Dated source reviews hold dog adoption (09-04) and unsupported squishy timeline rows (09-20).
-  assert.ok(userRoutes.length >= 121);
-  assert.ok(previewOrHidden.length >= 32);
+  assert.equal(userRoutes.length, 97);
+  assert.equal(previewOrHidden.length, 56);
+  assert.equal(userRoutes.some(bundle => isPublicFlowSourceOnHold(bundle.flow.slug)), false);
 
   const demotedPreviewSlugs = [
     'digital-detox-weekly',
@@ -2323,4 +2333,83 @@ test('creator channel summaries separate sample candidates from reviewed source 
   assert.ok(samsung.next_content_action.includes('원본'));
   assert.equal(fitvely.sample_candidate_count, fitvely.preview_flow_count);
   assert.ok(fitvely.sensitive_count > 0);
+});
+
+test('archived infant legacy text remains unchanged rather than silently converting saved plans', () => {
+  const bundle = seedBundles.find((entry) => entry.flow.slug === 'infant-health-checkup-prep')!;
+  const detail = bundle.itemDetails!.find((entry) => entry.item_id === 'flow-infant-health-checkup-prep-item-2')!;
+  assert.match(detail.how ?? '', /2차 검진부터/);
+  assert(isRuntimeExcludedBundle(bundle));
+  assert.equal(getPublishedPublicSourceEdition(bundle.flow.slug), undefined);
+  assert.equal(bundle.flow.source_checked_at, '2026-07-11');
+  assert.equal(bundle.items.length, 6);
+});
+
+test('source revalidation 20261010 keeps license health checks before application with stable identities', () => {
+  const legacy = seedBundles.find((entry) => entry.flow.slug === 'real-safe-driving-license-renewal')!;
+  const bundle = getCurrentPublicSourceBundle(legacy);
+  assert.notDeepEqual(bundle, legacy);
+  assert.match(bundle.flow.description ?? '', /한국도로교통공단/);
+  assert.match(bundle.itemDetails![0].how ?? '', /마이페이지 또는 경찰청교통민원24/);
+  assert.match(bundle.itemDetails![0].how ?? '', /면허증 표기와 실제 기간은 다를 수/);
+  assert.equal(bundle.items[2].id, 'flow-real-safe-driving-license-renewal-item-3');
+  assert.equal(bundle.items[2].section_id, 'flow-real-safe-driving-license-renewal-section-1');
+  assert.equal(bundle.items[2].order, 3);
+  assert.equal(bundle.items[3].id, 'flow-real-safe-driving-license-renewal-item-4');
+  assert.equal(bundle.items[3].section_id, 'flow-real-safe-driving-license-renewal-section-1');
+  assert.equal(bundle.items[3].order, 4);
+  assert.deepEqual(bundle.items.filter((item) => item.section_id === bundle.sections[1].id).map((item) => item.id),
+    ['flow-real-safe-driving-license-renewal-item-5']);
+  assert.equal(bundle.flow.source_checked_at, '2026-10-10');
+
+  for (const entry of realSourceChannelBundles) {
+    for (const [index, item] of entry.items.entries()) {
+      const expectedIndex = Math.min(index < 2 ? 0 : 1, entry.sections.length - 1);
+      assert.equal(item.section_id, entry.sections[expectedIndex].id, `${entry.flow.slug}:${index}`);
+    }
+  }
+});
+
+test('source revalidation 20261010 removes unsupported packing quantities and aligns the weight action', () => {
+  const legacy = seedBundles.find((entry) => entry.flow.slug === 'travel-packing-list')!;
+  const bundle = getCurrentPublicSourceBundle(legacy);
+  assert.notDeepEqual(bundle, legacy);
+  assert.equal(bundle.items[1].id, 'creator-260601-travel-packing-list-item-1');
+  assert.equal(bundle.items[1].title, '예약 바우처 인쇄 사본 준비하기');
+  assert.equal(bundle.items[1].order, 1);
+  assert.equal(bundle.items[1].section_id, bundle.sections[0].id);
+  assert.match(bundle.itemDetails![1].why ?? '', /예약 바우처의 인쇄 사본.*권고/);
+  assert.match(bundle.itemDetails![1].why ?? '', /실제 이용처가 요구하는 형식.*해당 안내/);
+  assert.equal(bundle.itemDetails![1].completion_criteria, '예약 바우처 인쇄 사본을 준비했다.');
+  assert.match(bundle.flow.raw_text ?? '', /예약 바우처 인쇄 사본 준비하기/);
+  assert.equal(bundle.items[5].id, 'creator-260601-travel-packing-list-item-5');
+  assert.equal(bundle.items[5].title, '짐을 다 싼 뒤 캐리어 무게 확인하기');
+  assert.match(bundle.itemDetails![3].how ?? '', /긴 옷.*지퍼백/);
+  assert.match(bundle.itemDetails![4].how ?? '', /공항과 항공사 공식 안내/);
+  assert.match(bundle.itemDetails![5].how ?? '', /10일 이상 여행/);
+  assert.equal(bundle.itemDetails![5].completion_criteria, '가방 무게를 확인했다.');
+  const text = JSON.stringify(bundle);
+  assert.doesNotMatch(text, /50% 이상|1~2벌 적게|2~3일치|100ml|무거운 것 아래|캐리어 배치|숙소 주소를 캡처|오프라인 저장해야 합니다/);
+  assert.equal(bundle.flow.source_checked_at, '2026-10-10');
+});
+
+test('held meal retains historical title and does not publish an unqualified correction', () => {
+  const bundle = seedBundles.find((entry) => entry.flow.slug === 'weekly-meal-plan')!;
+  assert.equal(bundle.items[3].id, 'creator-260601-weekly-meal-plan-item-3');
+  assert.equal(bundle.items[3].title, '화요일 버섯샐러드 만들기');
+  assert.equal(getPublishedPublicSourceEdition(bundle.flow.slug), undefined);
+  assert.equal(isPublicFlowSourceOnHold(bundle.flow.slug), true);
+  assert.equal(bundle.flow.source_checked_at, '2026-07-11');
+});
+
+test('source revalidation 20261010 refreshes only the eligible domestic trip checklist', () => {
+  const bundle = seedBundles.find((entry) => entry.flow.slug === 'domestic-trip-d7')!;
+  assert.equal(bundle.flow.source_checked_at, '2026-10-10');
+  assert.equal(bundle.flow.updated_at, '2026-10-10T00:00:00.000Z');
+  assert.equal(bundle.flow.anchor_type, 'none');
+  assert.equal(bundle.flow.structure_type, 'checklist');
+  assert.equal(bundle.items.length, 7);
+  assert.ok(bundle.items.every((item) => item.day_offset === undefined));
+  assert.equal(getSourceFitAudit(bundle.flow.slug)?.decision, 'reshape_before_featured');
+  assert.equal(getPublicFlowIndexingPolicy(bundle).indexable, false);
 });

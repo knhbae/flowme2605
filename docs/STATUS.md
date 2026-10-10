@@ -1,5 +1,17 @@
 # Project Status
 
+## 진행 — 공개 출처 수정판14개와 신규 시작 보류24개 (2026-10-10)
+
+추가 미확인12개에 대해 사용자 원문 “신규 검색·시작만 보류”를 인수했다. 기존 hold12와 합친 정확24개에만 적용하며 기존 개인 계획·구판·기록은 유지한다. 아래06:29 차단은 승인 전 이력이고, 현재는 승인된 정책 연결·관련 검사→정상 게시·새 CI→Alpha 반영/복귀/재접속을 이어간다. 출처가 미확인인12개를 검토 PASS로 바꾸거나 검토일만 갱신하지 않는다. 완료·새 제공 상태는 단계별 실제 근거로만 기록한다.
+
+07:05 UTC 현재: 검토 완료14개 registry는 불변이며, 신규24개 정책·구판 보존·classic 신규 exact binding·암묵적 요일 제거를 연결했다. 관련5파일 153 PASS/0 FAIL/0 SKIP, 전후 source pin 동일이고 마지막 제품 타입도 exit0이다. 공개 선별 범위는 이번44개이며, 이미 로컬 커밋한 UX20개와 겹친1개를 뺀 f984 기준 누적63개다. 정상 게시 hook/build·새 CI·새 게시판 UI·실제 Alpha 적용은 아직 진행 전이다. 현재 제공은 f984/ZgI다.
+
+### 아래는 승인 전 06:29 및 06:17 판본 이력
+
+06:29 UTC 독립 재읽기에서 미확인 추가12개는 현 승인된 같은 행동 정정·일정 분리만으로 전체 적격을 더 만들 수 없음(0/12)을 확인했다. 같은 gate 차단이 세 연속 목표 턴에서 유지돼 콘텐츠 처리 범위 결정 대기로 분류한다. 추가12개 신규 발견/시작 보류 또는 행동·구조·조건·권리 해결안의 명시 결정 후 재개하며, 기존 일반 게시 승인은 유지한다. 아래 구현·검사 결과와 원래 목표는 보존하고 완료 처리하지 않는다. 새 코드/QA 실행·출처일자 갱신·추가 hold·실계정·운영·게시/CI/Alpha 조작0이다.
+
+`flow-whole-ux-editor-discovery-local-20261009`, HEAD `7a41035e` 이후 로컬 변경이다. [범위](./specs/2026-10-10-public-source-review-policy/spec.md)·[현재 결과](./specs/2026-10-10-public-source-review-policy/results.md)·[검사](./specs/2026-10-10-public-source-review-policy/qa.md). 정확본문 대조를 통과한14개 전체를 새 native 저장 경로에 연결했다. 기존 hold12·원본·구판 allowlist/seal/validator·개인계획은 보존한다. 신규9 제작 초안의 fake CAS 저장/새 접속/같은 사본 재사용과 원문의 실제 매일 반복·명시 개인 날짜/종료 저장을 추가 확인했다. 관련142 PASS/1 FAIL, 타입 exit0, 최신 build `uHrUhGLbYLkLWx5iybK_a`/1240 source stable이다. 이전9x의 desktop/390 주방 비교2 PASS는 그 판본의 이력이며 새 build 브라우저·실계정 저장 결과는 아니다. 유일 실패는 정상 공급 추가12개의 출처 재검토 미완료다(canonical13: 보관 영유아1 포함). pending46 정정은 적격 승격·검토일 변경0이며 추가12 신규 보류 선택은 미수신이다. 정상 게시·새 CI·Alpha 반영은 출처 gate에 막혀 미완료다. 현재 Alpha `f984aff4 / ZgI3GY_EgnvHGLAqr8gGs` 및 개인계획은 유지하고 전체 목표는 완료하지 않는다. 아래 날짜별 결과는 당시 이력이다.
+
 ## 진행 중 — 쓰기·오늘·분류 실제 저장 연결 (2026-10-07)
 
 사용자가 기존 로컬 후보와 필요한 정상 게시·PR213·새 CI·Alpha 반영·별도 시험계정 검증을 승인했다. [목표](./specs/2026-10-07-writing-today-classification-persistence/spec.md)·[결과](./specs/2026-10-07-writing-today-classification-persistence/results.md)·[QA](./specs/2026-10-07-writing-today-classification-persistence/qa.md). 기존 text aggregate에 일반 개인 Item 분류를 연결하고 항목 상세의 연결 메모 바로 열기를 추가했다. schema/API/권한 변경0. 관련50 PASS·타입613/진단0·build C9B61sdg-S1rMPIp0vRta, 가상 component host3134 desktop/390px 여정과 tab reload 보존을 확인했다. 합성 HTTP의 빈 controller 복원은 실제 서버 새 접속이 아니다. 새 게시/CI/Alpha/정상 계정 새 분류 저장은 진행 전이며 기존 제공판은 교체하지 않았다. 날짜 중복 시안은 미채택했다. 아래 Q2/uWm 결과와 서버 계약 미연결 문구는 당시 이력이다.

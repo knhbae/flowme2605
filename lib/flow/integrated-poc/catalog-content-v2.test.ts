@@ -1,15 +1,29 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { buildCatalogLibrarySnapshot } from './catalog-library-source';
+import { CATALOG_LIBRARY_VERSION } from './catalog-library';
+import { CATALOG_CONTENT_SEALS } from './catalog-content-seals';
+import { publishedSourceEditions } from '../public-source-edition-data';
+import { isPublicFlowSourceOnHold } from '../public-source-review-policy';
 import type { FlowBundle, FlowItem, FlowItemDetail } from '../types';
 import type { CanonicalAuthoringItem } from './native-creator-vendor/text-authoring/types';
 import { validateTextAuthoringDocument } from './native-creator-vendor/text-authoring/validation';
-import { adaptCatalogContentBundle, buildCatalogContent, CATALOG_CONTENT_SLUGS, CATALOG_CONTENT_V2_SLUGS, CATALOG_CONTENT_V3_SLUGS, CATALOG_CONTENT_V2_INITIAL_SLUGS,
+import { adaptCatalogContentBundle, buildCatalogContent, CATALOG_CONTENT_SLUGS, CATALOG_CONTENT_V2_SLUGS, CATALOG_CONTENT_V3_SLUGS, CATALOG_CONTENT_V2_INITIAL_SLUGS, CATALOG_CONTENT_V2_VERSION,
   catalogContentFingerprint, inspectCatalogContentCapability, projectCatalogContent, validateCatalogContent } from './catalog-content-source';
 const pack = buildCatalogLibrarySnapshot('2026-09-23T00:00:00.000Z');
 const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value));
 const lines = (text?: string) => (text?.split(/\r?\n/u) ?? []).filter(line => line.trim()).map(line => line.trim());
 const source = (slug: string) => clone(pack.bundles.find(row => row.flow.slug === slug)!) as unknown as FlowBundle;
+// Frozen replay must not select a newly reviewed source edition.
+const projectFrozenV2Content = (slug: string) => {
+  const original = source(slug);
+  const { status: _status, usage_count: _uses, copy_count: _copies, ...flow } = original.flow;
+  const content = { contractVersion: CATALOG_CONTENT_V2_VERSION, catalogVersion: CATALOG_LIBRARY_VERSION,
+    sourceSlug: slug, versionId: CATALOG_CONTENT_SEALS[slug].versionId, bundle: { ...original, flow } };
+  assert.equal(pack.catalogVersion, CATALOG_LIBRARY_VERSION);
+  assert.equal(validateCatalogContent(content), true);
+  return projectCatalogContent(content);
+};
 
 test('v1 two-source projection and replay preserve pre-v2 golden results', () => {
   assert.deepEqual(CATALOG_CONTENT_SLUGS, ['moving-d30-basic', 'chiangmai-solo-trip-packing']);
@@ -25,7 +39,7 @@ test('v1 two-source projection and replay preserve pre-v2 golden results', () =>
 test('frozen v2 initial five explicit private copies retain 26 unchanged Items', () => {
   let items = 0;
   for (const slug of CATALOG_CONTENT_V2_INITIAL_SLUGS) {
-    const result = buildCatalogContent(slug); assert.ok(result.ok); if (!result.ok) continue;
+    const result = projectFrozenV2Content(slug); assert.ok(result.ok); if (!result.ok) continue;
     assert.equal(result.content.contractVersion, 'flowme-catalog-content-v2');
     assert.equal('catalogVersion' in result.content && result.content.catalogVersion, pack.catalogVersion);
     const original = source(slug) as any; delete original.flow.status;
@@ -36,7 +50,7 @@ test('frozen v2 initial five explicit private copies retain 26 unchanged Items',
     assert.equal(result.document.revisionHistory.length, 1);
     assert.equal(validateTextAuthoringDocument(result.document).valid, true);
     assert.deepEqual(result, projectCatalogContent(clone(result.content)));
-    assert.deepEqual(result, buildCatalogContent(slug));
+    assert.deepEqual(result, projectFrozenV2Content(slug));
     items += result.itemMapping.length;
   }
   assert.equal(items, 26);
@@ -44,7 +58,7 @@ test('frozen v2 initial five explicit private copies retain 26 unchanged Items',
 
 test('v2 canonical fields retain every source explanation, how, completion, caution and link attribution', () => {
   for (const slug of CATALOG_CONTENT_V2_SLUGS) {
-    const result = buildCatalogContent(slug); assert.ok(result.ok); if (!result.ok) continue;
+    const result = projectFrozenV2Content(slug); assert.ok(result.ok); if (!result.ok) continue;
     for (const mapping of result.itemMapping) {
       const original: FlowItem = result.content.bundle.items.find(item => item.id === mapping.sourceItemId)!;
       const detail: FlowItemDetail | undefined = result.content.bundle.itemDetails?.find(item => item.item_id === original.id);
@@ -70,7 +84,7 @@ test('v2 canonical fields retain every source explanation, how, completion, caut
 
 test('flow and section common context remains exact in immutable source, never rewritten as new actions', () => {
   for (const slug of CATALOG_CONTENT_V2_SLUGS) {
-    const original = source(slug), result = buildCatalogContent(slug); assert.ok(result.ok); if (!result.ok) continue;
+    const original = source(slug), result = projectFrozenV2Content(slug); assert.ok(result.ok); if (!result.ok) continue;
     for (const field of ['description', 'warning', 'stop_conditions', 'principles', 'hold_section', 'source_checked_at', 'owner_user_id', 'creator_name'] as const) {
       assert.deepEqual(result.content.bundle.flow[field], original.flow[field]);
     }
@@ -81,7 +95,7 @@ test('flow and section common context remains exact in immutable source, never r
 });
 
 test('v2 cannot be forged by editing a field and recomputing the non-security fingerprint', () => {
-  const result = buildCatalogContent('travel-packing-list'); assert.ok(result.ok); if (!result.ok) return;
+  const result = projectFrozenV2Content('travel-packing-list'); assert.ok(result.ok); if (!result.ok) return;
   for (const mutate of [
     (v: any) => { v.bundle.items[0].title = 'replaced title'; },
     (v: any) => { v.bundle.items[0].source_type = 'official'; },
@@ -109,7 +123,12 @@ test('v2 cannot be forged by editing a field and recomputing the non-security fi
 });
 
 test('v2 source builder rejects altered current variants and ignores only publication use counters', () => {
-  const original = source('closet-organize-1day'), result = buildCatalogContent(original.flow.slug);
+  const original = source('closet-organize-1day'), result = projectFrozenV2Content(original.flow.slug);
+  // Adapting exact historical bytes retains their seal; the slug builder alone
+  // selects the separately reviewed edition for a new intake.
+  const current = buildCatalogContent(original.flow.slug);
+  assert.ok(current.ok); assert.ok(result.ok);
+  assert.notEqual(current.content.versionId, result.content.versionId);
   assert.deepEqual(adaptCatalogContentBundle(original), result);
   original.flow.usage_count = 91; original.flow.copy_count = 52;
   assert.deepEqual(adaptCatalogContentBundle(original), result);
@@ -121,9 +140,12 @@ test('v2 source builder rejects altered current variants and ignores only public
 test('capability covers all 177 without converting source exposure into permission; only explicit locators ready', () => {
   const capabilities = pack.bundles.map(bundle => inspectCatalogContentCapability(bundle.flow.slug));
   assert.equal(capabilities.length, 177);
-  assert.deepEqual(capabilities.filter(row => row.ready).map(row => row.sourceSlug).sort(), [...CATALOG_CONTENT_SLUGS, ...CATALOG_CONTENT_V2_SLUGS, ...CATALOG_CONTENT_V3_SLUGS].sort());
+  const explicitlyEnabled = [...new Set([...CATALOG_CONTENT_SLUGS, ...CATALOG_CONTENT_V2_SLUGS, ...CATALOG_CONTENT_V3_SLUGS,
+    ...publishedSourceEditions.map(edition => edition.sourceSlug)])].filter(slug => !isPublicFlowSourceOnHold(slug)).sort();
+  assert.deepEqual(capabilities.filter(row => row.ready).map(row => row.sourceSlug).sort(), explicitlyEnabled);
   for (const row of capabilities) {
     if (row.ready) { const projected = buildCatalogContent(row.sourceSlug); assert.ok(projected.ok); if (projected.ok) assert.equal(row.sourceVersionId, projected.content.versionId); }
+    else if (isPublicFlowSourceOnHold(row.sourceSlug)) assert.equal(row.reason, 'review-required');
     else assert.equal(buildCatalogContent(row.sourceSlug).ok, false);
   }
   const reason = (slug: string) => { const row = inspectCatalogContentCapability(slug); assert.equal(row.ready, false); return row.ready ? null : row.reason; };
@@ -131,9 +153,9 @@ test('capability covers all 177 without converting source exposure into permissi
   assert.equal(reason('digital-detox-weekly'), 'archived');
   assert.equal(reason('dog-adoption-first-week'), 'review-required');
   assert.equal(reason('baby-food-menu-recipe'), 'review-required');
-  assert.equal(reason('weekly-meal-plan'), 'unsupported-shape');
+  assert.equal(reason('weekly-meal-plan'), 'review-required');
   assert.equal(reason('infant-health-checkup-schedule'), 'unsupported-shape');
-  assert.equal(reason('wedding-d180-basic'), 'projection-loss');
-  assert.equal(reason('passport-renewal-docs'), 'not-enabled');
+  assert.equal(reason('wedding-d180-basic'), 'review-required');
+  assert.equal(reason('passport-renewal-docs'), 'review-required');
   assert.equal(reason('unknown'), 'not-enabled');
 });

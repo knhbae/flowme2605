@@ -1,4 +1,5 @@
 import { normalizeExecutionModel } from './execution-model';
+import { getCurrentPublicSourceBundle } from './public-source-editions';
 import type { FlowBundle } from './types';
 
 const DAY_IN_MS = 86_400_000;
@@ -143,7 +144,9 @@ export function classifyFlowSourceFreshness(
 export function summarizeFlowSourceFreshness(bundles: FlowBundle[], asOf = new Date()) {
   const classifications = bundles
     .filter((bundle) => bundle.flow.status === 'published')
-    .map((bundle) => classifyFlowSourceFreshness(bundle, asOf));
+    // Normal publication audits the exact qualified NEW source edition. Direct
+    // historical classification and saved-plan reads keep their original dates.
+    .map((bundle) => classifyFlowSourceFreshness(getCurrentPublicSourceBundle(bundle), asOf));
   const count = (bucket: FlowSourceFreshnessBucket) =>
     classifications.filter((classification) => classification.bucket === bucket).length;
 

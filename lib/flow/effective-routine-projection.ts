@@ -30,6 +30,10 @@ export type EffectiveRoutineProjectionOptions<TRow extends SavedRoutineOccurrenc
   seriesEndMode?: 'source' | 'none' | 'until' | 'count';
   time?: string;
   durationMinutes?: number;
+  /** Explicit personal choices. Callers opt in for edition-bound new plans;
+   * legacy source routines retain their original resolver path. */
+  personalRepeatByItemId?: Record<string, Pick<SavedRoutineRecurrenceDefinition,
+    'repeatPreset' | 'startDate' | 'time' | 'durationMinutes'>>;
   range: { start: string; end: string };
   executionRecords?: PersonalStructuralOccurrenceExecutionRecord[];
   resolveOccurrenceDate?: (input: {
@@ -146,27 +150,33 @@ export function buildEffectiveRoutineProjection<TRow extends SavedRoutineOccurre
 
   for (const row of options.rows) {
     const sourceRepeatRule = getSourceItemRepeatRule(options.bundle, row.id);
-    if (!sourceRepeatRule) continue;
+    const personal = options.personalRepeatByItemId?.[row.id];
+    if (personal?.repeatPreset === 'none') continue;
+    if (personal && !isPlainDate(personal.startDate)) continue;
+    if (!sourceRepeatRule && !personal?.repeatPreset) continue;
     const definition: SavedRoutineRecurrenceDefinition = {
       itemId: row.id,
-      startDate: row.date && isPlainDate(row.date) ? row.date : options.startDate,
+      startDate: personal?.startDate && isPlainDate(personal.startDate) ? personal.startDate
+        : row.date && isPlainDate(row.date) ? row.date : options.startDate,
       sourceRepeatRule,
+      repeatPreset: personal?.repeatPreset,
       selectedWeekdays: options.selectedWeekdays,
       endDate,
       occurrenceCount,
-      time: options.time,
-      durationMinutes: options.durationMinutes,
+      time: personal?.time ?? options.time,
+      durationMinutes: personal?.durationMinutes ?? options.durationMinutes,
     };
     const resolution = resolveSavedRoutineRecurrence(definition, identityNamespace);
     warnings.push(...resolution.warnings.map((warning) => `${row.id}:${warning}`));
     if (!resolution.series) continue;
     definitions[row.id] = definition;
-    repeatRuleByItemId[row.id] = sourceRepeatRule;
+    if (sourceRepeatRule) repeatRuleByItemId[row.id] = sourceRepeatRule;
     seriesByItemId[row.id] = resolution.series;
   }
 
-  if (Object.keys(definitions).length === 0) {
+  if (Object.keys(definitions).length === 0 && !options.personalRepeatByItemId?.[options.rows[0].id]?.repeatPreset) {
     const carrier = options.rows[0];
+    const carrierChoice = options.personalRepeatByItemId?.[carrier.id];
     const global = getFirstResolvableGlobalRule({
       bundle: options.bundle,
       identityNamespace,
@@ -175,8 +185,8 @@ export function buildEffectiveRoutineProjection<TRow extends SavedRoutineOccurre
       selectedWeekdays: options.selectedWeekdays,
       endDate,
       occurrenceCount,
-      time: options.time,
-      durationMinutes: options.durationMinutes,
+      time: carrierChoice?.time ?? options.time,
+      durationMinutes: carrierChoice?.durationMinutes ?? options.durationMinutes,
     });
     if (!global) {
       const attemptedWarnings = (options.bundle.repeatRules ?? []).flatMap((rule) =>
@@ -200,17 +210,18 @@ export function buildEffectiveRoutineProjection<TRow extends SavedRoutineOccurre
       selectedWeekdays: options.selectedWeekdays,
       endDate,
       occurrenceCount,
-      time: options.time,
-      durationMinutes: options.durationMinutes,
+      time: carrierChoice?.time ?? options.time,
+      durationMinutes: carrierChoice?.durationMinutes ?? options.durationMinutes,
     };
     repeatRuleByItemId[carrier.id] = global.rule;
     seriesByItemId[carrier.id] = global.series;
     warnings.push(...global.warnings.map((warning) => `${carrier.id}:${warning}`));
   }
 
+  if (Object.keys(definitions).length === 0) return unchanged(Array.from(new Set(warnings)));
   const carrierItemIds = Object.keys(definitions);
   const carrierRows = options.rows.filter((row) => carrierItemIds.includes(row.id));
-  const rows = expandSavedRoutineOccurrenceRows({
+  const occurrenceProjectionRows = expandSavedRoutineOccurrenceRows({
     identityNamespace,
     rows: carrierRows,
     definitions,
@@ -218,6 +229,8 @@ export function buildEffectiveRoutineProjection<TRow extends SavedRoutineOccurre
     executionRecords: options.executionRecords,
     resolveOccurrenceDate: options.resolveOccurrenceDate,
   });
+  const rows = options.personalRepeatByItemId === undefined ? occurrenceProjectionRows
+    : [...options.rows.filter(row => !carrierItemIds.includes(row.id)), ...occurrenceProjectionRows];
   const occurrenceRows = rows.filter((row) => Boolean(row.structuralOccurrenceId));
 
   return {

@@ -5,6 +5,7 @@ import { programId, type ProgramData } from '@/lib/flow/integrated-poc/contract'
 import type { ProgramMutate, ProgramNavigate } from '@/lib/flow/integrated-poc/ui-contract';
 import { classifyProgramUrl, makeProgramOutput, type ProgramOutput, type ProgramOutputFormat } from '@/lib/flow/integrated-poc/output';
 import { programCatalogMetadata } from '@/lib/flow/integrated-poc/catalog';
+import { isPublicCatalogFlowOnHold } from '@/lib/flow/public-source-review-policy';
 import { programRecurringScheduleLabel, PROGRAM_PUBLIC_RECURRENCE_WINDOW } from '@/lib/flow/integrated-poc/public-recurrence-contract';
 import { programOrdinaryTimingLabel } from '@/lib/flow/integrated-poc/public-ordinary-time';
 import { defaultProgramOutputRecurrenceWindow } from '@/lib/flow/integrated-poc/public-output-recurrence';
@@ -164,7 +165,7 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
     const warn = (event: BeforeUnloadEvent) => { if (stateRef.current.transient) { event.preventDefault(); event.returnValue = ''; } };
     window.addEventListener('beforeunload', warn); return () => window.removeEventListener('beforeunload', warn);
   }, []);
-  const flows = data.public.flows.filter(flow => !flow.archived);
+  const flows = data.public.flows.filter(flow => !flow.archived && !isPublicCatalogFlowOnHold(flow.id));
   const flow = selectedFlowId ? data.public.flows.find(row => row.id === selectedFlowId) : undefined;
   // Returning to a saved copy is navigation, not another import. Read only the
   // current actor's live documents; missing/trashed sources are not substitutes.
@@ -216,7 +217,8 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
   const outputOptions = detail ? { selectedItemIds: useItemIds, anchor: detail.anchor || null, format: detail.format,
     ...(selectedSeries.length ? { recurrenceWindow, recurrenceStarts } : {}) } : null;
   const output = version && outputOptions && !flow?.archived ? makeProgramOutput(version, { ...outputOptions, ...(outputBase ? {returnContext:{baseUrl:outputBase}} : {}) }, new Date()) : undefined;
-  const canUseVersion = version && outputOptions && !flow?.archived ? makeProgramOutput(version, { ...outputOptions, recurrenceWindow: undefined, format: 'txt' }, new Date()).ok : false;
+  const sourceOnHold = !!flow && isPublicCatalogFlowOnHold(flow.id);
+  const canUseVersion = version && outputOptions && !flow?.archived && !sourceOnHold ? makeProgramOutput(version, { ...outputOptions, recurrenceWindow: undefined, format: 'txt' }, new Date()).ok : false;
   const knownSources = flows.flatMap(row => {
     const current = data.public.versions.find(candidate => candidate.id === row.currentVersionId);
     return current?.source.url ? [{ url: current.source.url, version: current }] : [];
@@ -280,9 +282,10 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
       {existingCopyReturn}
       {storedCopy && !existingCopy && <section className={styles.notice} aria-label="기존 사본 확인"><p>이 Flow의 개인 사본이 있지만 지금 바로 열 수 없습니다. 내 공간에서 휴지통과 보관 상태를 확인해 주세요. 새 사본은 만들지 않습니다.</p><button type="button" disabled={pending} onClick={() => navigate({ view: 'space' })}>내 공간에서 확인</button></section>}
       <div className={styles.choiceActions}><button type="button" disabled={pending} onClick={() => showChoice('contents')}>내용 살펴보기</button>
-        {!storedCopy && <button type="button" className={styles.primary} disabled={pending || !version.items.length} onClick={() => showChoice('confirm')}>내 계획으로 시작</button>}
+        {!storedCopy && <button type="button" className={styles.primary} disabled={pending || !version.items.length || sourceOnHold} onClick={() => showChoice('confirm')}>내 계획으로 시작</button>}
       </div>
       {!storedCopy && <p className={styles.muted}>다음 화면에서 확인한 뒤 전체 항목을 내 문서에 가져옵니다. 공개 원본은 바꾸지 않습니다.</p>}
+      {sourceOnHold && <p className={styles.notice}>출처를 재검토하고 있어 새로 시작할 수 없습니다. 기존 개인 계획과 기록은 내 문서에서 이어 쓸 수 있습니다.</p>}
       <details className={styles.related}><summary>관련 이야기 · {related.length}개</summary><p className={styles.muted}>질문이나 경험을 읽을 수 있습니다. 글을 쓰지 않아도 이 Flow를 사용할 수 있습니다.</p>
         {related.map(post => <button className={styles.relatedPost} type="button" key={post.id} disabled={pending} onClick={() => navigate({ view: 'community', id: post.id })}>{post.title}</button>)}
         <button type="button" className={styles.linkButton} disabled={pending} onClick={() => navigate({ view: 'community' })}>이야기 보기</button>
@@ -327,9 +330,10 @@ export function ProgramDiscovery({ data, navigate, selectedFlowId, selectedVersi
             <div className={styles.choiceActions}><button type="button" className={styles.primary} disabled={pending || !canUseVersion}
               onClick={() => void run(() => onUseVersion(version.id, useItemIds, detail.anchor || null, Object.keys(recurrenceStarts).length ? recurrenceStarts : undefined), '내 문서에 개인 사본을 연결했습니다.')}>{pending ? '가져오는 중…' : '전체 항목으로 시작'}</button>
               <button type="button" disabled={pending} onClick={() => showChoice('intro')}>취소</button></div>
-          </> : <button type="button" className={styles.primary} disabled={pending || !version.items.length} onClick={() => showChoice('confirm')}>내 계획으로 시작</button>}
+          </> : <button type="button" className={styles.primary} disabled={pending || !version.items.length || sourceOnHold} onClick={() => showChoice('confirm')}>내 계획으로 시작</button>}
           {status}
         </section>}
+        {sourceOnHold && <p className={styles.notice}>출처를 재검토하고 있어 새로 시작할 수 없습니다. 기존 개인 계획과 기록은 내 문서에서 이어 쓸 수 있습니다.</p>}
         {firstChoice && existingCopy && <p className={styles.muted}>위의 ‘내 문서에서 이어보기’로 기존 날짜·진행을 이어갈 수 있습니다. 새 사본을 만들지 않습니다.</p>}
         {firstChoice && storedCopy && !existingCopy && <section className={styles.notice} aria-label="기존 사본 확인"><p>기존 사본의 휴지통·보관 상태를 내 공간에서 확인해 주세요. 새 사본은 만들지 않습니다.</p><button type="button" disabled={pending} onClick={() => navigate({ view: 'space' })}>내 공간에서 확인</button></section>}
         {version.items.some(item => item.schedule.kind === 'relative' || item.schedule.kind === 'recurring' && item.schedule.start.kind === 'relative') && <label className={styles.field}>{sourceMeta?.anchorLabel ?? '기준일'}<input type="date" value={detail.anchor} disabled={pending} onChange={event => patchDetail({ anchor: event.target.value })} /><small>{sourceMeta?.anchorHint || '상대 일정에만 적용됩니다. 원문에 고정된 날짜는 유지됩니다.'}</small></label>}

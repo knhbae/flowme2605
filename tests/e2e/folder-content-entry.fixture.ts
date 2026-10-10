@@ -33,7 +33,8 @@ export function prepareEntryText(initial: TextWorkspaceState): TextWorkspaceStat
 /** A narrow synthetic semantic overlay. The shared release fixture still owns
  * ALL Auth, unrecognized API/network denial, WS denial, operating sentinels,
  * console errors, viewport overflow and production static-asset SHA256 checks.
- * No catalog source pack, signed BFF or real Supabase call is used here. */
+ * An explicitly prepared account may hold the existing read-only catalog pack.
+ * No signed BFF or real Supabase call is used here. */
 export async function mockFolderContentEntry(page: Page, options: { catalog?: boolean; community?: boolean; holdFirstCreatorSaveReceipt?: boolean;
   holdFirstPrivateScheduleReceipt?: boolean; prepareAccount?: (account: AlphaAccount) => AlphaAccount; creatorExecution?: boolean } = {}) {
   const base = await mockCloudflareRelease(page, { document: { title: '합성 연결 문서', raw: '' }, prepareText: prepareEntryText });
@@ -206,7 +207,7 @@ export async function mockFolderContentEntry(page: Page, options: { catalog?: bo
       await base.assertBoundary(info);
       await info.attach('folder-content-synthetic-overlay', { contentType: 'application/json', body: JSON.stringify({
         evidence: 'Synthetic semantic dispatch + in-memory CAS; not real BFF, Auth/RLS, DB, OS IME or observed-user validation.',
-        forwardedAuth: 0, forwardedApi: 0, catalogFixture: 'explicit-unavailable-no-private-source-pack', publicHash, publicUnchanged: true, intercepted,
+        forwardedAuth: 0, forwardedApi: 0, catalogFixture: seed.space.catalogLibrary ? 'explicit-readonly-stored-source-pack' : 'explicit-unavailable-no-private-source-pack', publicHash, publicUnchanged: true, intercepted,
         ...server.diagnostics(), commands: commands.map(command => ({ kind: command.kind, requestId: command.requestId,
           expectedRevision: command.expectedRevision, ...(command.kind === 'creator' || command.kind === 'social' ? { intent: command.intent.type } : {}) })) }) });
     } };

@@ -9,7 +9,7 @@ import {
   lookupUrlFirstP0Input,
 } from './url-first-lookup';
 
-test('canonical URL lookup resolves the AJD moving source to the shared 24-item public Flow without fake usage counts', () => {
+test('canonical URL lookup retains AJD identity but holds new intake without exports or fake usage counts', () => {
   const noisyUrl = AJD_MOVING_SOURCE_URL
     .replace('https://www.ajd.co.kr', 'http://m.ajd.co.kr')
     .concat('?utm_source=blog&utm_medium=social#comment-12');
@@ -17,14 +17,17 @@ test('canonical URL lookup resolves the AJD moving source to the shared 24-item 
   assert.equal(canonicalizeFlowSourceUrl(noisyUrl), AJD_MOVING_SOURCE_URL);
 
   const result = lookupUrlFirstP0Input(noisyUrl);
-  assert.equal(result.status, 'hit');
+  assert.equal(result.status, 'needs_review');
   assert.equal(result.canonicalUrl, AJD_MOVING_SOURCE_URL);
   assert.equal(result.flowMapId, undefined);
   assert.equal(result.routeHref, '/f/moving-d30-basic');
   assert.equal(result.flowSlug, 'moving-d30-basic');
   assert.equal(result.sourceStatus, 'real');
-  assert.deepEqual(result.exportModes, ['calendar', 'markdown', 'checklist']);
-  assert.equal(result.canSaveToMyFlow, true);
+  assert.deepEqual(result.exportModes, []);
+  assert.equal(result.canSaveToMyFlow, false);
+  assert.equal(result.canExport, false);
+  assert.equal(result.saveMode, 'blocked');
+  assert.equal(result.gate?.kind, 'content_review');
   assert.equal(result.aiGeneration.enabled, false);
   assert.equal('usageCount' in result, false);
 });
@@ -56,10 +59,11 @@ test('source-backed canary URLs resolve to existing Flow Map hits', () => {
 
   for (const canary of canaries) {
     const result = lookupUrlFirstP0Input(canary.url);
-    assert.equal(result.status, 'hit');
+    const held = result.flowSlug === 'moving-d30-basic';
+    assert.equal(result.status, held ? 'needs_review' : 'hit');
     assert.equal(result.routeHref, canary.routeHref);
-    assert.equal(result.canSaveToMyFlow, true);
-    assert.equal(result.canExport, true);
+    assert.equal(result.canSaveToMyFlow, !held);
+    assert.equal(result.canExport, !held);
     assert.equal(result.aiGeneration.enabled, false);
     assert.equal('usageCount' in result, false);
   }
@@ -321,10 +325,12 @@ test('unknown URL stays a miss with user-facing disabled-generation copy', () =>
 test('Q3 URL lookup copy defaults to plans and exact rollback restores prior Flow wording', () => {
   const hit = lookupUrlFirstP0Input(AJD_MOVING_SOURCE_URL);
   const legacyHit = lookupUrlFirstP0Input(AJD_MOVING_SOURCE_URL, false);
-  assert.equal(hit.title, '이미 준비된 계획이 있어요');
-  assert.equal(hit.summary, '같은 원문 URL 기준으로 이사 D-30 계획을 다시 씁니다. 시작일만 바꾸고 미리볼 수 있습니다.');
-  assert.equal(legacyHit.title, '이미 변환된 Flow가 있어요');
-  assert.equal(legacyHit.summary, '같은 원문 URL 기준으로 이사 D-30 Flow를 재사용합니다. 시작일 옵션만 바꾸고 바로 미리볼 수 있습니다.');
+  assert.equal(hit.title, '출처 재검토 중');
+  assert.match(hit.summary, /새 계획으로 시작할 수 없습니다/u);
+  assert.equal(legacyHit.title, hit.title);
+  assert.equal(legacyHit.summary, hit.summary);
+  assert.equal(hit.canSaveToMyFlow, false);
+  assert.equal(legacyHit.canSaveToMyFlow, false);
 
   const reviewUrl = 'https://flowme.local/f/vehicle-inspection-prep?utm_campaign=share';
   const review = lookupUrlFirstP0Input(reviewUrl);
@@ -412,7 +418,7 @@ test('hit URL start package saves the selected start date and builds a markdown 
   assert.match(started.markdownExport?.content ?? '', /middle-school-math-1/);
 });
 
-test('AJD calendar start package writes the canonical public Flow identity', () => {
+test('AJD calendar start package holds new intake without creating a plan', () => {
   const result = lookupUrlFirstP0Input(AJD_MOVING_SOURCE_URL);
   const started = buildUrlFirstStartPackage(result, {
     startDate: '2026-08-01',
@@ -420,23 +426,21 @@ test('AJD calendar start package writes the canonical public Flow identity', () 
     savedAt: '2026-07-05T00:00:00.000Z',
   });
 
-  assert.equal(started.status, 'ready');
+  assert.equal(started.status, 'blocked');
   assert.equal(started.flowMapId, undefined);
-  assert.equal(started.flowSlug, 'moving-d30-basic');
-  assert.equal(started.targetHref, '/my?savedFlow=moving-d30-basic');
-  assert.ok(started.savedFlows.length > 0);
-  assert.deepEqual(
-    started.savedFlows.map((flow) => flow.slug),
-    ['moving-d30-basic'],
-  );
-  assert.ok(started.savedFlows.every((flow) => flow.selectedArtifactMode === 'calendar'));
+  assert.equal(started.flowSlug, undefined);
+  assert.equal(result.flowSlug, 'moving-d30-basic');
+  assert.equal(started.canSaveToMyFlow, false);
+  assert.deepEqual(started.savedFlows, []);
+  assert.equal(started.persistenceRecord, undefined);
+  assert.equal(started.markdownExport, undefined);
   assert.equal(started.savedMapSnapshot, undefined);
 });
 
 test('direct Flow start package lands on the canonical saved Flow receipt', () => {
-  const mapResult = lookupUrlFirstP0Input(AJD_MOVING_SOURCE_URL);
+  const mapResult = lookupUrlFirstP0Input('https://mathbang.net/13');
   const { flowMapId: _flowMapId, ...directFlowResult } = mapResult;
-  const started = buildUrlFirstStartPackage(directFlowResult, {
+  const started = buildUrlFirstStartPackage({ ...directFlowResult, flowSlug: 'source-backed-middle-school-math-1' }, {
     startDate: '2026-08-01',
     exportMode: 'calendar',
     savedAt: '2026-07-05T00:00:00.000Z',
@@ -444,8 +448,8 @@ test('direct Flow start package lands on the canonical saved Flow receipt', () =
 
   assert.equal(started.status, 'ready');
   assert.equal(started.flowMapId, undefined);
-  assert.equal(started.flowSlug, 'moving-d30-basic');
-  assert.equal(started.targetHref, '/my?savedFlow=moving-d30-basic');
+  assert.equal(started.flowSlug, 'source-backed-middle-school-math-1');
+  assert.equal(started.targetHref, '/my?savedFlow=source-backed-middle-school-math-1');
 });
 
 test('customized start package stores a personal title and excludes unchecked steps only in My Flow state', () => {

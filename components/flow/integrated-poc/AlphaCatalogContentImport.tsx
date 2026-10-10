@@ -4,6 +4,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import { PROGRAM_CATALOG_SLUGS } from '@/lib/flow/integrated-poc/catalog';
 import type { CatalogLibrarySnapshot } from '@/lib/flow/integrated-poc/catalog-library';
 import { buildCatalogContent } from '@/lib/flow/integrated-poc/catalog-content';
+import { isPublicFlowSourceOnHold } from '@/lib/flow/public-source-review-policy';
 import { isNativeCreatorCatalogContentSource } from '@/lib/flow/integrated-poc/native-creator-document-contract';
 import { executeAlphaCreatorIntent } from '@/lib/flow/integrated-poc/alpha-creator/dispatch';
 import type { AlphaCreatorIntent } from '@/lib/flow/integrated-poc/alpha-creator/contract';
@@ -18,10 +19,12 @@ export function AlphaCatalogContentImport({ data, mutate, navigate, sourceLibrar
   const [selected, setSelected] = useState<string | null>(null), [busy, setBusy] = useState(false), [message, setMessage] = useState('');
   const running = useRef(false);
   const entries = Object.entries(data.spaces[data.activeActorId]?.creatorWorkspace?.structureDrafts ?? {});
-  const existing = (slug: string) => entries.find(([, context]) => context.nativeDocument && isNativeCreatorCatalogContentSource(context.nativeDocument.source) && context.nativeDocument.source.sourceSlug === slug)?.[0];
+  const existing = (slug: string, versionId: string) => entries.find(([, context]) => context.nativeDocument
+    && isNativeCreatorCatalogContentSource(context.nativeDocument.source)
+    && context.nativeDocument.source.sourceSlug === slug && context.nativeDocument.source.versionId === versionId)?.[0];
   const preview = catalog.find(row => row.ok && row.content.sourceSlug === selected);
   async function apply() {
-    if (running.current || disabled || !preview?.ok) return;
+    if (running.current || disabled || !preview?.ok || isPublicFlowSourceOnHold(preview.content.sourceSlug)) return;
     running.current = true; setBusy(true); setMessage('콘텐츠를 가져오는 중…');
     const requestId = programId('catalog-import');
     const intent: AlphaCreatorIntent = { type: 'catalog-content-import', draftId: programId('creator'),
@@ -38,10 +41,11 @@ export function AlphaCatalogContentImport({ data, mutate, navigate, sourceLibrar
     <p>콘텐츠만 비공개 제작 사본으로 가져옵니다. 완료·개인 메모·이동한 날짜는 가져오지 않습니다.</p>
     <ul>{catalog.map((row, index) => row.ok ? <li key={row.content.sourceSlug}>
       <span>{row.content.bundle.flow.title}<small>{row.content.bundle.sections.length}개 구간 · {row.content.bundle.items.length}개 항목</small></span>
-      {existing(row.content.sourceSlug) ? <button type="button" disabled={disabled || busy} onClick={() => navigate({ view: 'creator', id: existing(row.content.sourceSlug) })}>가져온 콘텐츠 열기</button>
-        : <button type="button" disabled={disabled || busy} onClick={() => { setSelected(row.content.sourceSlug); setMessage(''); }}>내용 확인</button>}
+      {existing(row.content.sourceSlug, row.content.versionId) ? <button type="button" disabled={disabled || busy} onClick={() => navigate({ view: 'creator', id: existing(row.content.sourceSlug, row.content.versionId) })}>가져온 콘텐츠 열기</button>
+        : isPublicFlowSourceOnHold(row.content.sourceSlug) ? <p>출처를 재검토하고 있어 새로 가져올 수 없습니다. 기존 사본은 그대로 사용할 수 있습니다.</p>
+        : <button type="button" disabled={disabled || busy} onClick={() => { if (!isPublicFlowSourceOnHold(row.content.sourceSlug)) { setSelected(row.content.sourceSlug); setMessage(''); } }}>내용 확인</button>}
     </li> : <li key={index}>이 콘텐츠는 원본을 확인하지 못해 가져올 수 없습니다.</li>)}</ul>
-    {preview?.ok && <section aria-label="가져올 콘텐츠 확인">
+    {preview?.ok && !isPublicFlowSourceOnHold(preview.content.sourceSlug) && <section aria-label="가져올 콘텐츠 확인">
       <h2>{preview.content.bundle.flow.title}</h2><p>{preview.content.bundle.flow.description}</p>
       <p>원래 작성자: {preview.content.bundle.flow.creator_name ?? '표시 없음'} · 관리 사본은 현재 로그인 계정에 저장합니다.</p>
       <a href={preview.content.bundle.flow.source_url} target="_blank" rel="noopener noreferrer">원래 출처 열기</a>

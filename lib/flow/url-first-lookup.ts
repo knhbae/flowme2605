@@ -13,6 +13,7 @@ import {
 } from './source-backed-my-flow';
 import { toUserFacingMapTitle, toUserFacingSourceTitle } from './display-title';
 import { buildPostSaveHref } from './post-save-receipt';
+import { isPublicFlowSourceOnHold } from './public-source-review-policy';
 import type { FlowItemState } from './types';
 import {
   AJD_MOVING_CANONICAL_PUBLIC_SLUG,
@@ -502,7 +503,17 @@ export function lookupUrlFirstP0Input(input: string, q3CopyEnabled = true): UrlF
       ? q3LookupTemplatesByCanonicalUrl
       : legacyLookupTemplatesByCanonicalUrl;
     const template = lookupTemplatesByCanonicalUrl.get(canonicalUrl);
-    if (template) return withInput(template, input, canonicalUrl);
+    if (template) {
+      const result = withInput(template, input, canonicalUrl);
+      if (result.flowSlug && isPublicFlowSourceOnHold(result.flowSlug)) {
+        return { ...result, status: 'needs_review', title: '출처 재검토 중',
+          summary: '이 자료는 새 계획으로 시작할 수 없습니다. 기존 개인 계획은 내 공간에서 이어 쓸 수 있습니다.',
+          exportModes: [], canExport: false, canSaveToMyFlow: false, saveMode: 'blocked',
+          gate: { kind: 'content_review', title: '출처 재검토 중', reason: '이 자료의 신규 시작을 보류했습니다.',
+            requiredAction: '이미 저장한 개인 계획은 내 공간에서 이어 쓸 수 있습니다.' } };
+      }
+      return result;
+    }
     return buildMiss(input, canonicalUrl, q3CopyEnabled);
   } catch {
     return buildMiss(input, undefined, q3CopyEnabled);
@@ -741,6 +752,9 @@ export function buildUrlFirstStartPackage(
   const q3CopyEnabled = options.q3CopyEnabled !== false;
   const sourceBackedStartPackage = result.flowMapId ? buildSourceBackedFlowMapPublishPackage(result.flowMapId) : undefined;
   const dateAnchorLabel = getSourceBackedFlowMapDateAnchorCopy(sourceBackedStartPackage).label;
+  if (result.flowSlug && isPublicFlowSourceOnHold(result.flowSlug)) {
+    return buildUrlFirstBlockedStartPackage(result, '출처를 재검토하고 있어 새로 시작할 수 없습니다. 기존 개인 계획은 내 공간에서 이어 쓸 수 있습니다.', q3CopyEnabled);
+  }
   if (!result.canSaveToMyFlow || result.saveMode !== 'direct') {
     return buildUrlFirstBlockedStartPackage(
       result,

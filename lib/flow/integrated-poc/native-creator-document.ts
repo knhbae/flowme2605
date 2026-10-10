@@ -97,6 +97,24 @@ function validOperation(value:unknown):value is AuthoringCorrectionOperation {
 }
 type ReplayState={document:TextAuthoringDocument;recordUi:NativeCreatorRecordUi;effectiveAbsences?:NativeCreatorEffectiveAbsences;sourceRecurrences?:NativeCreatorSourceRecurrences;sourceSubchecks?:NativeCreatorSourceSubchecks};
 type ReplayHistory={effectiveAbsences?:NativeCreatorEffectiveAbsences;sourceRecurrences?:NativeCreatorSourceRecurrences;sourceSubchecks?:NativeCreatorSourceSubchecks};
+/** The first, not-yet-published reviewed codec keeps verified link attribution
+ * through a personal field reparse. Frozen vendor and legacy journals stay exact.
+ * A changed URL/category/lineage is new input; an explicit label edit wins. */
+function retainReviewedLinkAttribution(before:TextAuthoringDocument,after:TextAuthoringDocument):void {
+ const oldRows=new Map(before.parseResult.canonical.sourceRows.map(row=>[row.sourceRowId,row.rawText]));
+ const newRows=new Map(after.parseResult.canonical.sourceRows.map(row=>[row.sourceRowId,row.rawText]));
+ for(const item of after.parseResult.canonical.items){
+  const oldItems=before.parseResult.canonical.items.filter(old=>old.itemId===item.itemId);if(oldItems.length!==1)continue;
+  for(const category of ['sources','resources'] as const)for(const link of item[category]){
+   if(!link.sourceRowIds.length)continue;
+   const matches=oldItems[0][category].filter(old=>old.url===link.url&&same(old.sourceRowIds,link.sourceRowIds));
+   if(matches.length!==1)continue;
+   const previous=matches[0];
+   if(previous.type&&['official','reference','tool','creator'].includes(previous.type))link.type=previous.type;
+   if(link.sourceRowIds.every(rowId=>oldRows.has(rowId)&&newRows.has(rowId)&&oldRows.get(rowId)===newRows.get(rowId)))link.label=previous.label;
+  }
+ }
+}
 function applyPayload(document:TextAuthoringDocument,recordUi:NativeCreatorRecordUi,payload:NativeCreatorActionPayload,at:string,original:NativeCreatorDocumentProvenance,prior?:NativeCreatorEffectiveAbsences,undo?:NativeCreatorEffectiveAbsences,hasLegacyApply=false,recurrences?:NativeCreatorSourceRecurrences,undoRecurrences?:NativeCreatorSourceRecurrences,subchecks?:NativeCreatorSourceSubchecks,undoSubchecks?:NativeCreatorSourceSubchecks):ReplayState|null {
  const unchanged=():ReplayState=>({document,recordUi,...(prior?{effectiveAbsences:copy(prior)}:{}),...(recurrences?{sourceRecurrences:copy(recurrences)}:{}),...(subchecks?{sourceSubchecks:copy(subchecks)}:{})});
  const finish=(next:TextAuthoringDocument,ui=recordUi,sourceRecurrences=updateNativeSourceRecurrences(document,next,recurrences,payload,undoRecurrences),sourceSubchecks=updateNativeSourceSubchecks(subchecks,payload,undoSubchecks)):ReplayState=>{const effectiveAbsences=nextNativeCreatorAbsences(document,next,prior,payload,undo),effective=applyNativeCreatorAbsences(next,effectiveAbsences);if(!validateCandidateDocument(effective))throw Error('invalid-effective-document');return{document:effective,recordUi:ui,...(effectiveAbsences?{effectiveAbsences}:{}),...(sourceRecurrences?{sourceRecurrences}:{}),...(sourceSubchecks?{sourceSubchecks}:{})};};
@@ -143,6 +161,11 @@ function applyPayload(document:TextAuthoringDocument,recordUi:NativeCreatorRecor
  // boundary, not a raw reparse or canonical regeneration.
  const next:unknown=JSON.parse(JSON.stringify(applyAuthoringOperation(document,payload.operation,{actorLane:'creator',now:at})));
  if(!validateCandidateDocument(next)||next.documentId!==document.documentId)return null;
+ if('kind' in original&&original.kind==='catalog-content'&&original.versionId.startsWith('flowme-reviewed-source-v1:')
+  &&['sync_item_to_working_text','sync_working_text_from_input'].includes(payload.operation.type)){
+  retainReviewedLinkAttribution(document,next);
+  if(!validateCandidateDocument(next))return null;
+ }
  if(same(next,document))return unchanged();
  return finish(next);
 }

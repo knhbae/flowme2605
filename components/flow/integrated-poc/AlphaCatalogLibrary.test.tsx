@@ -10,7 +10,9 @@ import { executeAlphaCreatorIntent } from '../../../lib/flow/integrated-poc/alph
 import { createProgramData } from '../../../lib/flow/integrated-poc/program-data';
 import { programErrorMessage } from '../../../lib/flow/integrated-poc/ui-contract';
 import { CatalogLibraryContent } from './CatalogLibraryContent';
-import { CATALOG_CONTENT_SLUGS, CATALOG_CONTENT_V2_SLUGS, CATALOG_CONTENT_V3_SLUGS } from '../../../lib/flow/integrated-poc/catalog-content';
+import { inspectCatalogContentCapability } from '../../../lib/flow/integrated-poc/catalog-content';
+import { isPublicFlowSourceOnHold } from '../../../lib/flow/public-source-review-policy';
+import { getCurrentPublicSourceBundle, getCurrentPublicSourceEdition } from '../../../lib/flow/public-source-editions';
 const AlphaCatalogCopyActions = () => null;
 const raw = readFileSync(new URL('./AlphaCatalogLibrary.tsx', import.meta.url), 'utf8');
 const ast = ts.createSourceFile('ui.tsx', raw, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
@@ -25,7 +27,7 @@ function harness(stored = false) {
   if (stored) props.data.spaces[props.data.activeActorId].catalogLibrary = buildCatalogLibrarySnapshot('2026-09-23T00:00:00.000Z');
   let respond = async (_call: any): Promise<any> => ({ ok: true });
   props.mutate = async (...args: any[]) => { calls.push(args); return respond(args); };
-  const context = { React, CatalogLibraryContent, AlphaCatalogCopyActions, CATALOG_CONTENT_SLUGS, CATALOG_CONTENT_V2_SLUGS, CATALOG_CONTENT_V3_SLUGS, buildCatalogLibrarySnapshot, CATALOG_LIBRARY_VERSION, catalogLibrarySummary, executeAlphaCreatorIntent, programErrorMessage,
+  const context = { React, CatalogLibraryContent, AlphaCatalogCopyActions, inspectCatalogContentCapability, buildCatalogLibrarySnapshot, CATALOG_LIBRARY_VERSION, catalogLibrarySummary, executeAlphaCreatorIntent, programErrorMessage, isPublicFlowSourceOnHold, getCurrentPublicSourceBundle, getCurrentPublicSourceEdition,
     programId: () => `test-${++id}`, styles: {},
     useMemo: (fn: () => unknown) => { const i = cursor++; if (!(i in slots)) slots[i] = fn(); return slots[i]; },
     useRef: (value: unknown) => { const i = cursor++; if (!(i in slots)) slots[i] = { current: value }; return slots[i]; },
@@ -81,7 +83,7 @@ test('Escape from an unstored catalog detail keeps its preview list and restores
 
 test('copy capability count follows explicit contracts without claiming source or user validation', () => {
   const h = harness(true), content = text(h.render());
-  assert(content.includes(`${CATALOG_CONTENT_SLUGS.length + CATALOG_CONTENT_V2_SLUGS.length + CATALOG_CONTENT_V3_SLUGS.length}개 콘텐츠는 상세에서 제작 사본`));
+  assert(content.includes('20개 콘텐츠는 상세에서 제작 사본'));
   assert(!content.includes('검증된')); assert.equal(h.calls.length, 0);
 });
 test('disabled and busy imports prevent duplicate mutations with locator-only intent', async () => {
@@ -163,4 +165,20 @@ test('Map historical executable claims are disclosed as history, never current s
   assert(text(history).includes('현재 실행 가능 여부가 아닙니다'));
   const outside = nodes(section).filter(n => n.type === 'p' && !nodes(history).includes(n));
   assert(outside.every(n => !text(n).includes('바로 시작 가능'))); assert.equal(h.calls.length, 0);
+});
+
+test('qualified new edition and frozen original are explicitly comparable without changing stored source or personal data', () => {
+  const h = harness(true), before = JSON.stringify(h.props.data);
+  const original = h.props.data.spaces[h.props.data.activeActorId].catalogLibrary.bundles.find((b: any) => b.flow.slug === 'kitchen-reset-organize');
+  h.search(original.flow.title); h.click(original.flow.title);
+  const incoming = nodes(h.render()).find(n => n.type === CatalogLibraryContent);
+  assert(incoming); assert.equal(incoming.props.bundle.flow.source_checked_at, '2026-10-10');
+  assert(text(h.render()).includes('출처 대조를 마친 수정판'));
+  h.click('구판 원본 비교');
+  const frozen = nodes(h.render()).find(n => n.type === CatalogLibraryContent);
+  assert.deepEqual(frozen.props.bundle, original);
+  assert(text(h.render()).includes('이전 PoC 원본 판본'));
+  h.click('출처 대조 수정판 보기');
+  assert.deepEqual(nodes(h.render()).find(n => n.type === CatalogLibraryContent).props.bundle, incoming.props.bundle);
+  assert.equal(JSON.stringify(h.props.data), before); assert.equal(h.calls.length, 0);
 });

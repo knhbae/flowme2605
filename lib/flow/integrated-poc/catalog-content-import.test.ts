@@ -11,7 +11,11 @@ import { materializeAccount } from './alpha-persistence/program-adapter';
 import { inspectProgramNativeCreatorHandoff } from './creator-native-execution-adapter';
 import { fingerprintPersonalWorkspacePocAuthoringSource as fingerprint } from '../personal-workspace-poc-authoring';
 import { textWorkspaceModel as M } from './text-workspace';
-import { readNativeCreatorSourceDocument } from './native-creator-document';
+import { createNativeCreatorDocumentOwner, readNativeCreatorSourceDocument } from './native-creator-document';
+import { createProgramCreatorWorkspace } from './creator-workspace';
+import { captureProgramCreatorSavedRevision } from './creator-history-snapshot';
+import { transitionPersonalWorkspacePocCreatorDraftLibrary } from '../personal-workspace-poc-creator-drafts';
+import { isPublicFlowSourceOnHold } from '../public-source-review-policy';
 import { isNativeCreatorCatalogContentSource, type NativeCreatorCatalogContentSource } from './native-creator-document-contract';
 import { validateProgramCreatorNativeContext } from './creator-native-context';
 import { creatorWorkingFromRecord } from './creator-workspace';
@@ -21,7 +25,7 @@ import { preservesAlphaCreatorBoundary } from './alpha-creator/boundary';
 const OWNER='11111111-1111-4111-8111-111111111111', NOW='2026-09-23T05:00:00.000Z';
 const empty=():AlphaAccount=>({schema:ALPHA_SCHEMA,ownerId:OWNER,revision:0,source:{schema:PROGRAM_SCHEMA,actorId:OWNER,revision:0},space:createProgramPrivateSpace(),legacyReceipts:[],legacyUndo:[]});
 const command=(a:AlphaAccount,intent:AlphaCreatorIntent):AlphaCreatorCommand=>({schema:ALPHA_CREATOR_COMMAND_SCHEMA,kind:'creator',requestId:`import-test-${a.revision}`,expectedRevision:a.revision,intent});
-function intent(slug:string=CATALOG_CONTENT_SLUGS[0],draftId='imported'):AlphaCreatorIntent {
+function intent(slug:string='chiangmai-solo-trip-packing',draftId='imported'):AlphaCreatorIntent {
  const source=buildCatalogContent(slug);assert(source.ok);
  return {type:'catalog-content-import',draftId,sourceSlug:slug,sourceVersionId:source.content.versionId,now:NOW};
 }
@@ -32,11 +36,32 @@ function commit(a:AlphaAccount,i:AlphaCreatorIntent){
 }
 function withoutCreator(a:AlphaAccount){const copy=structuredClone(a);delete copy.space.creatorWorkspace;copy.revision=0;return canonicalJson(copy);}
 
-test('two explicit content imports create 2 private drafts, 30 items, 9 sections and nothing personal/public',()=>{
- let account=empty();const before=withoutCreator(account);
+// A valid sealed account saved BEFORE the hold, not a bypass of the current
+// NEW import. Build its unchanged record with the original pure save helpers.
+function historicalAccount(a:AlphaAccount,slug:string,draftId='imported'):AlphaAccount {
+ const p=buildCatalogContent(slug);assert(p.ok);
+ const source:NativeCreatorCatalogContentSource={kind:'catalog-content',version:1,storageKey:'flow:catalog-content:v1',
+  draftId:`catalog-content:${slug}`,sourceSlug:slug,versionId:p.content.versionId,revisionId:p.document.revision.revisionId,
+  contentJson:canonicalJson(p.content),documentJson:canonicalJson(p.document)};
+ const native=createNativeCreatorDocumentOwner({id:draftId,source},NOW);assert(native.ok);
+ const next=structuredClone(a),w=createProgramCreatorWorkspace(NOW);
+ const saved=transitionPersonalWorkspacePocCreatorDraftLibrary(w.library,{type:'save',draftId,expectedLibraryRevision:w.library.revision,
+  title:p.document.title,rawText:p.document.rawText,sourceFingerprint:fingerprint(p.document.rawText),now:NOW});assert(saved.changed);
+ w.library=saved.library;w.structureDrafts={[draftId]:{version:1,recordRevision:w.library.records[draftId].recordRevision,
+  contextRevision:1,savedAt:NOW,nativeDocument:native.owner,nativeSelection:source}};
+ captureProgramCreatorSavedRevision(w,w.library.records[draftId]);next.space.creatorWorkspace=w;
+ assert(isAccountForOwner(next,OWNER));return next;
+}
+
+test('held historical moving plus an explicit allowed import retain 2 drafts, 30 items, 9 sections and no personal/public changes',()=>{
+ const rejected=empty(),bytes=canonicalJson(rejected);
+ assert(!dispatchAlphaCreatorCommand(rejected,command(rejected,intent('moving-d30-basic'))).ok);
+ assert.equal(canonicalJson(rejected),bytes);
+ let account=historicalAccount(empty(),'moving-d30-basic','imported-0');const before=withoutCreator(account);
  for(const [n,slug] of CATALOG_CONTENT_SLUGS.entries()){
   const applied=commit(account,intent(slug,`imported-${n}`));account=applied.account;
-  assert.deepEqual(applied.result.changes.map(c=>c.field),['creatorWorkspace']);
+  assert.equal(applied.result.changed,n!==0);
+  assert.deepEqual(applied.result.changes.map(c=>c.field),n===0?[]:['creatorWorkspace']);
  }
  const w=account.space.creatorWorkspace!;assert.equal(Object.keys(w.library.records).length,2);assert.equal(w.working,null);
  let items=0,sections=0;
@@ -56,7 +81,7 @@ test('two explicit content imports create 2 private drafts, 30 items, 9 sections
 test('second import is no-op even after serialization or with a new proposed draft id',()=>{
  const a=commit(empty(),intent()).account;
  for(const value of [a,JSON.parse(JSON.stringify(a))]){
-  const r=commit(value,intent(CATALOG_CONTENT_SLUGS[0],'not-a-duplicate'));
+  const r=commit(value,intent('chiangmai-solo-trip-packing','not-a-duplicate'));
   assert.equal(r.result.changed,false);assert.equal(r.result.result,'imported');assert.deepEqual(r.result.changes,[]);assert.deepEqual(r.account,a);
  }
 });
@@ -65,7 +90,7 @@ test('content intake preserves unsaved working text and rejects identity collisi
  const working={draftId:'unfinished',title:'내 글',rawText:'아직 쓰는 중\r\n',baseRecordRevision:null};
  const a=commit(empty(),{type:'working',working,now:NOW}).account;
  const b=commit(a,intent()).account;assert.deepEqual(b.space.creatorWorkspace!.working,working);
- assert(!dispatchAlphaCreatorCommand(a,command(a,intent(CATALOG_CONTENT_SLUGS[0],'unfinished'))).ok);
+ assert(!dispatchAlphaCreatorCommand(a,command(a,intent('chiangmai-solo-trip-packing','unfinished'))).ok);
 });
 
 test('invalid locator, stale version, extra owner/content and stale account cannot mutate',()=>{
@@ -92,7 +117,7 @@ test('embedded source tampering and generic working-source injection fail closed
 test('archived imported content is not silently duplicated or unarchived',()=>{
  let a=commit(empty(),intent()).account;const lib=a.space.creatorWorkspace!.library;
  a=commit(a,{type:'library-action',now:NOW,action:{type:'archive',draftId:'imported',expectedLibraryRevision:lib.revision,expectedRecordRevision:1,now:NOW}}).account;
- const bytes=canonicalJson(a);assert(!dispatchAlphaCreatorCommand(a,command(a,intent(CATALOG_CONTENT_SLUGS[0],'new-id'))).ok);assert.equal(canonicalJson(a),bytes);
+ const bytes=canonicalJson(a);assert(!dispatchAlphaCreatorCommand(a,command(a,intent('chiangmai-solo-trip-packing','new-id'))).ok);assert.equal(canonicalJson(a),bytes);
 });
 
 test('imported draft opens, duplicates, renames, archives and restores with exact source retained',()=>{
@@ -109,7 +134,7 @@ test('imported draft opens, duplicates, renames, archives and restores with exac
 });
 
 for (const slug of [...CATALOG_CONTENT_SLUGS, ...CATALOG_CONTENT_V2_SLUGS, ...CATALOG_CONTENT_V3_SLUGS]) test(`catalog editing lifecycle preserves source through import/edit/save/preview/handoff/reload: ${slug}`, () => {
- const initial=empty(); initial.space.catalogLibrary=buildCatalogLibrarySnapshot(NOW);
+ const initial=isPublicFlowSourceOnHold(slug)?historicalAccount(empty(),slug):empty(); initial.space.catalogLibrary=buildCatalogLibrarySnapshot(NOW);
  const library=canonicalJson(initial.space.catalogLibrary), source=buildCatalogContent(slug); assert(source.ok);
  let a=commit(initial,intent(slug)).account;
  assert.equal(canonicalJson(a.space.text),canonicalJson(initial.space.text));

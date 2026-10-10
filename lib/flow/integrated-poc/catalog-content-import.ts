@@ -1,4 +1,5 @@
-import { buildCatalogContent } from './catalog-content';
+import { buildCatalogContent, projectCatalogContent } from './catalog-content';
+import { isPublicFlowSourceOnHold } from '../public-source-review-policy';
 import { createNativeCreatorDocumentOwner } from './native-creator-document';
 import { isNativeCreatorCatalogContentSource, type NativeCreatorCatalogContentSource } from './native-creator-document-contract';
 import { createProgramCreatorWorkspace } from './creator-workspace';
@@ -17,15 +18,24 @@ type Result = { ok: true; workspace: ProgramCreatorWorkspaceState; draftId: stri
  * bytes, arbitrary native DTO, legacy actor, or whole-account restore is accepted. */
 export function importCatalogContentWorkspace(before: ProgramCreatorWorkspaceState | undefined, input: CatalogContentImportInput, library: CatalogLibrarySnapshot): Result {
   try {
-    const projected = buildCatalogContent(input.sourceSlug, library);
-    if (!projected.ok || projected.content.versionId !== input.sourceVersionId) return { ok: false, reason: 'conflict' };
-    const contentJson = canonicalJson(projected.content);
     for (const [draftId, context] of Object.entries(before?.structureDrafts ?? {})) {
       const source = context.nativeDocument?.source;
       if (!source || !isNativeCreatorCatalogContentSource(source) || source.sourceSlug !== input.sourceSlug) continue;
-      if (source.contentJson !== contentJson || source.versionId !== input.sourceVersionId || before!.library.records[draftId]?.status !== 'active') return { ok: false, reason: 'conflict' };
+      const embedded = projectCatalogContent(JSON.parse(source.contentJson));
+      if (!embedded.ok || embedded.content.sourceSlug !== input.sourceSlug || embedded.content.versionId !== source.versionId
+        || source.contentJson !== canonicalJson(embedded.content) || source.documentJson !== canonicalJson(embedded.document)
+        || !before!.library.records[draftId]) return { ok: false, reason: 'conflict' };
+      // Another exact source edition is a different explicit intake, not an
+      // automatic update of this draft or its existing personal handoff.
+      if (source.versionId !== input.sourceVersionId) continue;
+      if (before!.library.records[draftId].status !== 'active') return { ok: false, reason: 'conflict' };
       return { ok: true, workspace: before!, draftId, changed: false };
     }
+    const projected = buildCatalogContent(input.sourceSlug, library);
+    if (!projected.ok || projected.content.versionId !== input.sourceVersionId) return { ok: false, reason: 'conflict' };
+    const contentJson = canonicalJson(projected.content);
+    // Keep validated existing-source replay; deny only a new creator intake.
+    if (isPublicFlowSourceOnHold(input.sourceSlug)) return { ok: false, reason: 'conflict' };
     if (before?.library.records[input.draftId] || before?.working?.draftId === input.draftId) return { ok: false, reason: 'conflict' };
     if (Object.keys(before?.library.records ?? {}).length >= 200) return { ok: false, reason: 'limit' };
     const source: NativeCreatorCatalogContentSource = { kind: 'catalog-content', version: 1, storageKey: 'flow:catalog-content:v1',

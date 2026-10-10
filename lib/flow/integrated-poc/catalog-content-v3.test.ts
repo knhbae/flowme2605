@@ -2,12 +2,15 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { buildCatalogLibrarySnapshot } from './catalog-library-source';
 import { buildCatalogContent, buildCatalogContentV3Candidate, CATALOG_CONTENT_V3_CANDIDATE_SLUGS,
+  CATALOG_CONTENT_SLUGS, CATALOG_CONTENT_V2_SLUGS,
   catalogContentFingerprint, inspectCatalogContentCapability, projectCatalogContent, validateCatalogContent,
   projectCatalogContentV3Candidate, validateCatalogContentV3Candidate, type CatalogContentBundle } from './catalog-content-source';
 import { validateTextAuthoringDocument } from './native-creator-vendor/text-authoring/validation';
 import { createNativeCreatorDocumentOwner, readNativeCreatorSourceDocument } from './native-creator-document';
 import type { NativeCreatorCatalogContentSource } from './native-creator-document-contract';
 import { canonicalJson } from './alpha-persistence/json';
+import { publishedSourceEditions } from '../public-source-edition-data';
+import { isPublicFlowSourceOnHold } from '../public-source-review-policy';
 
 const NOW = '2026-09-24T03:00:00.000Z';
 const pack = buildCatalogLibrarySnapshot(NOW);
@@ -51,7 +54,7 @@ for (const slug of CATALOG_CONTENT_V3_CANDIDATE_SLUGS) {
     assert.equal(canonicalJson(source), before);
   });
 }
-test('v3 activates exactly two sources and nineteen rows; all other unconnected sources stay closed', () => {
+test('v3 retains its exact two sources and nineteen rows alongside separately qualified reviewed intake', () => {
   assert.deepEqual(CATALOG_CONTENT_V3_CANDIDATE_SLUGS, ['curated-opic-single-mock-review', 'curated-opic-course-row-import']);
   let count = 0;
   for (const slug of CATALOG_CONTENT_V3_CANDIDATE_SLUGS) {
@@ -60,11 +63,23 @@ test('v3 activates exactly two sources and nineteen rows; all other unconnected 
   }
   assert.equal(count, 19);
   const ready = pack.bundles.filter(row => inspectCatalogContentCapability(row.flow.slug).ready);
-  assert.equal(ready.length, 13);
-  assert.equal(ready.reduce((sum, row) => sum + row.items.length, 0), 103);
+  const historicalSlugs = new Set<string>([...CATALOG_CONTENT_SLUGS, ...CATALOG_CONTENT_V2_SLUGS, ...CATALOG_CONTENT_V3_CANDIDATE_SLUGS]);
+  const historical = ready.filter(row => historicalSlugs.has(row.flow.slug));
+  assert.equal(historicalSlugs.size, 13);
+  const frozenHistorical = pack.bundles.filter(row => historicalSlugs.has(row.flow.slug));
+  assert.equal(frozenHistorical.reduce((sum, row) => sum + row.items.length, 0), 103);
+  assert.equal(historical.length, 11);
+  assert.equal(historical.reduce((sum, row) => sum + row.items.length, 0), 75);
+  const additional = publishedSourceEditions.map(edition => edition.sourceSlug).filter(slug => !historicalSlugs.has(slug)).sort();
+  assert.equal(additional.length, 9);
+  assert.deepEqual(ready.filter(row => !historicalSlugs.has(row.flow.slug)).map(row => row.flow.slug).sort(), additional);
+  assert.equal(ready.length, 20);
   const unavailable = pack.bundles.filter(row => !inspectCatalogContentCapability(row.flow.slug).ready);
-  assert.equal(unavailable.length, 164);
-  for (const slug of [...unavailable.map(row => row.flow.slug), 'unknown']) assert.equal(buildCatalogContent(slug).ok, false);
+  assert.equal(unavailable.length, 157);
+  for (const slug of [...unavailable.map(row => row.flow.slug), 'unknown']) {
+    if (isPublicFlowSourceOnHold(slug)) assert.equal(inspectCatalogContentCapability(slug).ready, false);
+    else assert.equal(buildCatalogContent(slug).ok, false);
+  }
   for (const slug of ['source-backed-moving-d30', 'curated-reading-monthly-log', 'infant-health-checkup-schedule', 'weekly-meal-plan', 'unknown']) assert.equal(buildCatalogContentV3Candidate(slug).ok, false);
 });
 test('nineteen rows retain daily/weekly row offsets without inventing daily repeats or dropping rest rows', () => {

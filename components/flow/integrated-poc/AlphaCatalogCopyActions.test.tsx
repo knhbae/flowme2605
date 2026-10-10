@@ -11,6 +11,8 @@ import { buildCatalogLibrarySnapshot } from '../../../lib/flow/integrated-poc/ca
 import { executeAlphaCreatorIntent } from '../../../lib/flow/integrated-poc/alpha-creator/dispatch-source';
 import { createProgramData } from '../../../lib/flow/integrated-poc/program-data';
 import { programErrorMessage } from '../../../lib/flow/integrated-poc/ui-contract';
+import { isPublicFlowSourceOnHold } from '../../../lib/flow/public-source-review-policy';
+import { getCurrentPublicSourceBundle } from '../../../lib/flow/public-source-editions';
 const raw = readFileSync(new URL('./AlphaCatalogCopyActions.tsx', import.meta.url), 'utf8');
 const ast = ts.createSourceFile('ui.tsx', raw, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
 const fn = ast.statements.find(n => ts.isFunctionDeclaration(n) && n.name?.text === 'AlphaCatalogCopyActions'); assert(fn);
@@ -21,11 +23,12 @@ const text = (v: any): string => typeof v === 'string' || typeof v === 'number' 
 function harness(slug = 'portfolio-4week') {
   const slots: any[] = []; let cursor = 0, id = 0; const calls: any[] = [], navigation: any[] = [], locks: boolean[] = [];
   const library = buildCatalogLibrarySnapshot('2026-09-23T00:00:00.000Z');
-  const props: any = { data: createProgramData(), library, bundle: structuredClone(library.bundles.find(b => b.flow.slug === slug)), disabled: false, variant: false,
+  const original = library.bundles.find(b => b.flow.slug === slug);
+  const props: any = { data: createProgramData(), library, bundle: original && getCurrentPublicSourceBundle(structuredClone(original)), disabled: false, variant: false,
     navigate: (next: unknown) => navigation.push(next), onBusyChange: (busy: boolean) => locks.push(busy) };
   let respond = async (args: any[]): Promise<any> => { const result = args[1](props.data); if (result.ok) props.data = result.data; return result; };
   props.mutate = async (...args: any[]) => { calls.push(args); return respond(args); };
-  const context = { React, buildCatalogContent, catalogContentFingerprint, canonicalJson, inspectCatalogContentCapability, isNativeCreatorCatalogContentSource, executeAlphaCreatorIntent, programErrorMessage,
+  const context = { React, buildCatalogContent, catalogContentFingerprint, canonicalJson, inspectCatalogContentCapability, isNativeCreatorCatalogContentSource, isPublicFlowSourceOnHold, executeAlphaCreatorIntent, programErrorMessage,
     programId: () => `test-${++id}`, styles: {},
     useMemo: (fn: () => unknown) => { const i = cursor++; if (!(i in slots)) slots[i] = fn(); return slots[i]; },
     useRef: (value: unknown) => { const i = cursor++; if (!(i in slots)) slots[i] = { current: value }; return slots[i]; },

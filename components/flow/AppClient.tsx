@@ -225,6 +225,9 @@ import {
 } from '@/lib/flow/completion-presentation';
 import { normalizeCompletionCriterion } from '@/lib/flow/completion-criterion';
 import { getRepresentativeFlowSlugs, normalizeExecutionModel, type FlowExportTarget } from '@/lib/flow/execution-model';
+import { isPublicFlowSourceOnHold } from '@/lib/flow/public-source-review-policy';
+import { getCurrentPublicSourceBundle, getSavedPublicSourceEdition, getReviewedPublicSourceVersion, selectSavedPublicSourceBundle } from '@/lib/flow/public-source-editions';
+import { getReviewedSourcePersonalRepeats } from '@/lib/flow/reviewed-source-personal-repeat';
 import { buildCalendarIcs, buildIcsCalendar, buildText, buildWorkbookSheets, buildXlsxBuffer } from '@/lib/flow/export';
 import { FLOW_EXPORT_FEEDBACK, FLOW_EXPORT_LABELS } from '@/lib/flow/export-labels';
 import {
@@ -2438,6 +2441,7 @@ function FlowUrlLookupResult({
 }) {
   const needsSourceRows = result.gate?.kind === 'source_rows';
   const needsMedicalSourceFit = result.gate?.kind === 'medical_source_fit';
+  const needsContentReview = result.gate?.kind === 'content_review';
   const primaryActionLabel = result.status === 'hit' && result.canSaveToMyFlow
     ? '저장 전 보기'
     : result.saveMode === 'blocked'
@@ -2445,7 +2449,7 @@ function FlowUrlLookupResult({
         ? '원문 자료 보기'
         : needsMedicalSourceFit
           ? '시작 전 확인'
-        : '최신 내용 확인'
+        : needsContentReview ? '출처 확인' : '최신 내용 확인'
       : result.routeHref
         ? '미리보기 열기'
         : '초안 요청 가능';
@@ -2711,7 +2715,7 @@ function FlowUrlLookupResult({
           </p>
           <div className="mt-1 flex flex-wrap gap-1.5">
             {result.saveMode === 'blocked' ? (
-              <span className="rounded-full bg-[var(--flowme-warning-soft)] px-2.5 py-1 text-xs font-semibold text-[var(--flowme-warning-strong)]">{needsSourceRows ? '원문 자료' : needsMedicalSourceFit ? '참고 원문' : '공식 원문'}</span>
+              <span className="rounded-full bg-[var(--flowme-warning-soft)] px-2.5 py-1 text-xs font-semibold text-[var(--flowme-warning-strong)]">{needsSourceRows ? '원문 자료' : needsMedicalSourceFit || needsContentReview ? '참고 원문' : '공식 원문'}</span>
             ) : exportModes.length > 0 ? (
               exportModes.map((label) => (
                 <span key={label} className="rounded-full bg-[var(--flowme-action-soft)] px-2.5 py-1 text-xs font-semibold text-[var(--flowme-action-strong)]">
@@ -7167,9 +7171,9 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
         || Boolean(progress.sourceFlowKey && entry.flow.id === progress.sourceFlowKey)
       ));
       if (!sourceProgressBundle) return items;
-      const progressBundle = sourceProgressBundle;
       const demoFixture = demoFixtureBySlug.get(progress.slug);
       const savedRecord = getSavedFlowRecord(progress.slug);
+      const progressBundle = selectSavedPublicSourceBundle(sourceProgressBundle, savedRecord);
       const anchor = progress.anchor ?? '';
       const checks = checksBySlug[progress.slug] ?? {};
       const itemStates = getItemStates(progress.slug);
@@ -7450,6 +7454,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
       );
       const effectiveSnapshot = buildEffectiveFlowSnapshot({
         bundle: progressBundle,
+        sourceVersion: savedRecord?.sourceVersion,
         effectiveTitle: savedMap?.personalCopy
           ? toUserFacingMapTitle(savedMap.title)
           : progress.title,
@@ -7741,7 +7746,8 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     shouldShowWeekdaySelection(flow.bundle)
       ? myFlowRoutineRuleDrafts[flow.progress.slug]?.weekdays ??
         flow.progress.weekdays ??
-        getRoutineWeekdayLabels(flow.bundle.repeatRules?.[0] ?? '', [])
+        (getSavedPublicSourceEdition(flow.bundle, flow.savedRecord)
+          ? [] : getRoutineWeekdayLabels(flow.bundle.repeatRules?.[0] ?? '', []))
       : [];
   const getMyFlowRoutineDraft = (flow: MySavedFlow): MyFlowRoutineRuleDraft => ({
     scope: 'this',
@@ -7814,8 +7820,9 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
   const getMyFlowCanonicalRoutineProjectionOptions = (
     flow: MySavedFlow,
   ): Omit<EffectiveRoutineProjectionOptions<MyFlowRow>, 'range'> | undefined => {
-    if (flow.bundle.flow.structure_type !== 'routine' || !flow.anchor) return undefined;
-    const anchor = flow.anchor;
+    const reviewedEdition = Boolean(getSavedPublicSourceEdition(flow.bundle, flow.savedRecord));
+    const anchor = flow.anchor || (reviewedEdition ? flow.rows.find((row) => row.date)?.date : undefined);
+    if (flow.bundle.flow.structure_type !== 'routine' || !anchor) return undefined;
     const executionRecords = getFlowOccurrenceExecutionRecords(
       flow.progress.slug,
       myFlowOccurrenceExecutionRecords,
@@ -7825,7 +7832,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
       identityNamespace: flow.progress.slug,
       rows: flow.rows.map((row) => ({
         ...row,
-        date: row.date ?? anchor,
+        date: reviewedEdition ? row.date : row.date ?? anchor,
       })),
       startDate: anchor,
       selectedWeekdays: getMyFlowRoutineWeekdays(flow),
@@ -7834,6 +7841,11 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
       occurrenceCount: getMyFlowRoutineDraft(flow).occurrenceCount,
       time: getMyFlowRoutineDraft(flow).time,
       durationMinutes: getMyFlowRoutineDraft(flow).durationMinutes,
+      ...(reviewedEdition
+        ? { personalRepeatByItemId: getReviewedSourcePersonalRepeats({
+            flowSlug: flow.progress.slug, rows: flow.rows,
+            drafts: myFlowCommittedItemDrafts, dateOverrides: myFlowDateOverrides,
+          }) } : {}),
       executionRecords,
       resolveOccurrenceDate: ({ itemId, originalDate }) => {
         const dateResolution = resolveMyFlowEffectiveDate({
@@ -7875,6 +7887,10 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
     );
     const expandedRows = [occurrenceVisibleRange, occurrenceExecutionRange]
       .flatMap((range) => {
+        if (flow.bundle.flow.structure_type === 'routine' && getSavedPublicSourceEdition(flow.bundle, flow.savedRecord)) {
+          const options = getMyFlowCanonicalRoutineProjectionOptions(flow);
+          return options ? buildEffectiveRoutineProjection({ ...options, range }).rows : baseRows;
+        }
         const personalDraftOccurrenceRows = expandPersonalDraftCalendarOccurrenceRows({
           personalDraftEligible: isPersonalDraftStructuralEditEligible(flow.bundle),
           identityNamespace: flow.progress.slug,
@@ -7884,15 +7900,17 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
         });
         const definitions = Object.fromEntries(baseRows.map((row) => {
           const item = flow.bundle.items.find((entry) => entry.id === row.id);
-          const baseDateKey = row.date
-            ? getMyFlowCalendarRowKey(flow.progress.slug, row.id, row.date)
-            : getMyFlowManualScheduleKey(flow.progress.slug, row.id);
+          const reviewedEdition = Boolean(getSavedPublicSourceEdition(flow.bundle, flow.savedRecord));
+          const baseDateKey = reviewedEdition && row.effectiveDateOverrideKey ? row.effectiveDateOverrideKey
+            : row.date ? getMyFlowCalendarRowKey(flow.progress.slug, row.id, row.date)
+              : getMyFlowManualScheduleKey(flow.progress.slug, row.id);
           const committedDraft = {
             ...(myFlowItemDrafts[getPersonalDraftProjectionValueKey(flow.progress.slug, row.id)] ?? {}),
             ...(myFlowItemDrafts[baseDateKey] ?? {}),
           };
           const sourceRepeatRule = item?.repeat_rule;
           const repeatPreset = committedDraft.repeatPreset;
+          if (reviewedEdition && Object.hasOwn(committedDraft, 'repeatPreset') && (!repeatPreset || repeatPreset === 'none')) return [row.id, undefined];
           if (!row.date || (!sourceRepeatRule && !repeatPreset)) return [row.id, undefined];
           const manualRepeatStartDate = !sourceRepeatRule && repeatPreset
             ? myFlowDateOverrides[baseDateKey] ?? row.date
@@ -7979,6 +7997,9 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
       }),
   );
   const generatedRoutineRows: MyFlowCalendarRow[] = visibleExecutionFlows.flatMap((flow) => {
+    // Exact reviewed sources already share the canonical item-level projection
+    // above. Do not revive a stopped/undated item with the legacy global fallback.
+    if (getSavedPublicSourceEdition(flow.bundle, flow.savedRecord)) return [];
     if (flow.bundle.flow.structure_type !== 'routine' || !flow.anchor) return [];
     if (baseCalendarRows.some((row) => row.flow.progress.slug === flow.progress.slug)) return [];
     const carrierRow = flow.rows[0];
@@ -10002,7 +10023,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
       ? getStoredMyFlowMapPersistenceRecord(savedMap.mapId)
       : undefined;
     const bundle = applySourceBackedPersistenceRecordToBundle(
-      sourceBundle,
+      selectSavedPublicSourceBundle(sourceBundle, savedRecord),
       mapPersistence,
       savedMap?.personalCopy,
     );
@@ -10850,6 +10871,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
 
     const locked = await withFlowUserDataWriteLock(() => {
       const storedMap = getSavedFlowMapIndexByFlowSlug()[flow.progress.slug];
+      const currentSavedRecord = getSavedFlowRecord(flow.progress.slug);
       const failStaleReuse = () => {
         refreshSavedFlowState();
         return {
@@ -10874,7 +10896,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
         : undefined;
       const currentEffectiveBundle = currentSourceBundle
         ? applySourceBackedPersistenceRecordToBundle(
-            currentSourceBundle,
+            selectSavedPublicSourceBundle(currentSourceBundle, currentSavedRecord),
             storedPersistence,
             storedMap?.personalCopy,
           )
@@ -10923,6 +10945,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
       if (
         !currentProgress
         || !currentEffectiveBundle
+        || currentSavedRecord?.sourceVersion !== flow.savedRecord?.sourceVersion
         || JSON.stringify(toReuseProgressIdentity(currentProgress))
           !== JSON.stringify(toReuseProgressIdentity(flow.progress))
         || JSON.stringify(currentEffectiveBundle) !== JSON.stringify(flow.bundle)
@@ -11057,6 +11080,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
 
           const nextRun = startFlowRunFromCompleted(flow.progress.slug, {
             previousRunId: completedRun.runId,
+            ...(flow.savedRecord?.sourceVersion ? { sourceVersion: flow.savedRecord.sourceVersion } : {}),
             reuseMode: reuseDraft.versionMode === 'latest'
               ? 'reviewed_version'
               : requiresAnchor ? 'new_anchor' : 'same_copy',
@@ -11258,7 +11282,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
         : undefined;
       const freshBundle = freshSourceBundle
         ? applySourceBackedPersistenceRecordToBundle(
-            freshSourceBundle,
+            selectSavedPublicSourceBundle(freshSourceBundle, getSavedFlowRecord(deleteDialog.flowSlug)),
             freshPersistence,
             freshSavedMap?.personalCopy,
           )
@@ -14042,6 +14066,7 @@ function MyFlowRuntime({ surface }: MyFlowRuntimeProps) {
               ? 'done'
               : 'pending';
       const calendarEligible = flow.bundle.flow.structure_type === 'routine'
+        && !getSavedPublicSourceEdition(flow.bundle, flow.savedRecord)
         ? Boolean(date && routineSeries)
         : Boolean(date) && (row.structuralCalendarIcsEligible ?? true);
       const scheduleState: PersonalStructuralListExportRow['scheduleState'] = !date
@@ -24488,7 +24513,10 @@ export function PublicFlow({ slug }: { slug: string }) {
   ]);
 
   useEffect(() => {
-    const found = mergeSourceBackedMyFlowBundles(readBundles()).find((item) => item.flow.slug === slug) ?? null;
+    const original = mergeSourceBackedMyFlowBundles(readBundles()).find((item) => item.flow.slug === slug) ?? null;
+    const found = original && (publicSessionProjectionEnabled
+      ? getCurrentPublicSourceBundle(original)
+      : selectSavedPublicSourceBundle(original, getSavedFlowRecord(slug)));
     const storedAnchor = publicSessionProjectionEnabled
       ? { mode: 'custom', anchor: '' }
       : getStoredAnchor(slug);
@@ -24544,6 +24572,7 @@ export function PublicFlow({ slug }: { slug: string }) {
           });
           const sourceSnapshot = buildEffectiveFlowSnapshot({
             bundle: found,
+            sourceVersion: savedRecord.sourceVersion,
             effectiveTitle: toContentDisplayTitle(found.flow.title),
             dateIntent: savedDateIntent,
             itemStates: loadedItemStates,
@@ -25776,6 +25805,19 @@ export function PublicFlow({ slug }: { slug: string }) {
     });
   };
   const commitPublicFlowLegacy = (commitDateIntent: typeof dateIntent) => {
+    const previousRecord = getSavedFlowRecord(bundle.flow.slug);
+    const reviewedSourceVersion = getReviewedPublicSourceVersion(bundle);
+    if (previousRecord && reviewedSourceVersion
+      && !getSavedPublicSourceEdition(bundle, previousRecord)) {
+      setPublicSaveError('기존 계획은 이전 원문 판본을 사용합니다. 내 공간에서 이어 쓰거나 새 계획을 선택해 주세요.');
+      focusPublicSaveFailure();
+      return;
+    }
+    if (isPublicFlowSourceOnHold(bundle.flow.slug)) {
+      setPublicSaveError('출처를 재검토하고 있어 새로 시작할 수 없습니다. 기존 개인 계획은 내 공간에서 이어 쓸 수 있습니다.');
+      focusPublicSaveFailure();
+      return;
+    }
     if (!commitDateIntent.canSave) {
       focusPublicDateInput();
       return;
@@ -25827,6 +25869,8 @@ export function PublicFlow({ slug }: { slug: string }) {
     });
     const record = saveFlowRecord(bundle.flow.slug, {
       ...commitSnapshot.savedFlowRecordInput,
+      ...(reviewedSourceVersion ? { sourceVersion: reviewedSourceVersion,
+        sourceFlowKey: bundle.flow.id, sourceFlowSlug: bundle.flow.slug } : {}),
       ...(publicApprovedPlanExecutionEnabled
         ? { selectedArtifactMode: publicEffectiveDestination }
         : {}),
@@ -25929,7 +25973,30 @@ export function PublicFlow({ slug }: { slug: string }) {
       window.location.assign(targetHref);
       return;
     }
+    if (isPublicFlowSourceOnHold(bundle.flow.slug)) {
+      const message = '출처를 재검토하고 있어 새로 시작할 수 없습니다. 기존 개인 계획은 내 공간에서 이어 쓸 수 있습니다.';
+      setPublicSaveLifecycle((current) => reducePublicSaveLifecycle(current, {
+        type: 'fail',
+        error: { code: 'source_review_pending', message },
+      }));
+      setPublicSaveError(message);
+      focusPublicSaveFailure();
+      return;
+    }
 
+    if (savingState.choice.kind === 'overwrite') {
+      const previousSourceVersion = getSavedFlowRecord(savingState.choice.personalCopyKey as string)?.sourceVersion;
+      const editionVersion = getReviewedPublicSourceVersion(bundle);
+      if (editionVersion && previousSourceVersion !== editionVersion) {
+        const message = '기존 계획은 이전 원문 판본을 사용합니다. 기존 계획을 열거나 새 계획으로 저장해 주세요.';
+        setPublicSaveLifecycle((current) => reducePublicSaveLifecycle(current, {
+          type: 'fail', error: { code: 'stale_existing_copy', message },
+        }));
+        setPublicSaveError(message);
+        focusPublicSaveFailure();
+        return;
+      }
+    }
     setPublicSaveError('');
     const { commitSnapshot, sourceSnapshot } = buildPublicSaveSnapshots(commitDateIntent);
     const personalCopyKey = savingState.choice.personalCopyKey as string;
@@ -27731,6 +27798,7 @@ function getWeekdaySelectionLabel(bundle: FlowBundle): string {
 function getInitialWeekdaySelection(bundle: FlowBundle | null): string[] {
   if (!bundle) return ['월', '수', '금'];
   if (bundle.flow.structure_type !== 'routine') return ['월', '수', '금'];
+  if (getReviewedPublicSourceVersion(bundle)) return [];
   return getRoutineWeekdayLabels(bundle.repeatRules?.[0] ?? '', []);
 }
 

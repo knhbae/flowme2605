@@ -5,6 +5,7 @@ import type { FlowBundle } from '@/lib/flow/types';
 import type { CatalogLibrarySnapshot } from '@/lib/flow/integrated-poc/catalog-library';
 import { canonicalJson } from '@/lib/flow/integrated-poc/alpha-persistence/json';
 import { isNativeCreatorCatalogContentSource } from '@/lib/flow/integrated-poc/native-creator-document-contract';
+import { isPublicFlowSourceOnHold } from '@/lib/flow/public-source-review-policy';
 import { executeAlphaCreatorIntent } from '@/lib/flow/integrated-poc/alpha-creator/dispatch';
 import { programId, type ProgramData } from '@/lib/flow/integrated-poc/contract';
 import { programErrorMessage, type ProgramMutate, type ProgramNavigate } from '@/lib/flow/integrated-poc/ui-contract';
@@ -31,18 +32,22 @@ export function AlphaCatalogCopyActions({ data, bundle, library, variant, mutate
   const workspace = data.spaces[data.activeActorId]?.creatorWorkspace;
   const existing = Object.entries(workspace?.structureDrafts ?? {}).find(([, context]) => {
     const source = context.nativeDocument?.source;
-    return source && isNativeCreatorCatalogContentSource(source) && source.sourceSlug === slug;
+    return projected.ok && source && isNativeCreatorCatalogContentSource(source)
+      && source.sourceSlug === slug && source.versionId === projected.content.versionId;
   });
   const normalized = { ...bundle, flow: { ...bundle.flow } };
   delete (normalized.flow as Partial<FlowBundle['flow']>).status;
   delete normalized.flow.usage_count; delete normalized.flow.copy_count;
   const sourceMatches = projected.ok && catalogContentFingerprint(normalized) === catalogContentFingerprint(projected.content.bundle)
     && canonicalJson(normalized) === canonicalJson(projected.content.bundle);
+  const sourceOnHold = isPublicFlowSourceOnHold(slug);
   const unavailable = variant ? '현재 작업 판본은 비교 열람만 가능합니다. 이전 PoC 원본 판본으로 돌아가 주세요.'
+    : sourceOnHold && existing ? ''
+    : sourceOnHold ? reasons['review-required']
     : !projected.ok ? reasons[capability.ready ? 'not-enabled' : capability.reason] ?? '원본을 확인하지 못해 제작 연결을 보류했습니다.'
       : !sourceMatches ? '자료실 원본과 제작용 원본이 달라 연결하지 않았습니다.' : '';
   async function apply() {
-    if (running.current || disabled || unavailable || existing || !preview || !projected.ok) return;
+    if (running.current || disabled || sourceOnHold || unavailable || existing || !preview || !projected.ok) return;
     running.current = true; setBusy(true); onBusyChange?.(true); setMessage('제작 사본을 저장하는 중…');
     const intent = { type: 'catalog-content-import' as const, sourceSlug: slug, sourceVersionId: projected.content.versionId,
       draftId: programId('creator'), now: new Date().toISOString() };

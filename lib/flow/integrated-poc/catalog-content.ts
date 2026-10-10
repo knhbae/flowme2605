@@ -1,4 +1,6 @@
 import { seedBundles } from '../seed-flows';
+import { isPublicFlowSourceOnHold } from '../public-source-review-policy';
+import { getPublishedPublicSourceEdition } from '../public-source-editions';
 import type { FlowBundle } from '../types';
 import { createTextAuthoringDocument } from './native-creator-vendor/text-authoring/parser';
 import type { TextAuthoringDocument } from './native-creator-vendor/text-authoring/types';
@@ -16,6 +18,9 @@ export const CATALOG_CONTENT_V2_WAVE2_SLUGS = ['samsung-aircon-seasonal-check', 
 // Additive capability only: the frozen v2 payload and projector never change.
 export const CATALOG_CONTENT_V2_SLUGS = [...CATALOG_CONTENT_V2_INITIAL_SLUGS, ...CATALOG_CONTENT_V2_WAVE2_SLUGS] as const;
 export const CATALOG_CONTENT_V3_VERSION = 'flowme-catalog-content-v3' as const;
+/** Additive reviewed edition. Old v1/v2/v3 embedded sources keep their validators. */
+export const CATALOG_CONTENT_REVIEWED_VERSION = 'flowme-catalog-content-reviewed-v1' as const;
+const REVIEWED_CATALOG_VERSION = 'flowme-reviewed-public-source-v1';
 /** Explicit single-day private copies, coordinated with the DEV v3 validator. */
 export const CATALOG_CONTENT_V3_SLUGS = ['curated-opic-single-mock-review', 'curated-opic-course-row-import'] as const;
 /** Compatibility name for the original projection preparation tests. */
@@ -29,7 +34,7 @@ type CatalogContentBase = {
   bundle: CatalogContentBundle;
 };
 export type CatalogContent = CatalogContentBase & ({ contractVersion: typeof CATALOG_CONTENT_VERSION }
-  | { contractVersion: typeof CATALOG_CONTENT_V2_VERSION | typeof CATALOG_CONTENT_V3_VERSION; catalogVersion: string });
+  | { contractVersion: typeof CATALOG_CONTENT_V2_VERSION | typeof CATALOG_CONTENT_V3_VERSION | typeof CATALOG_CONTENT_REVIEWED_VERSION; catalogVersion: string });
 export type CatalogContentProjectionResult = {
   ok: true; content: CatalogContent; document: TextAuthoringDocument;
   itemMapping: { sourceItemId: string; nativeItemId: string }[];
@@ -66,7 +71,7 @@ function safeContentUrl(value: unknown): value is string {
     && !/(^|[?&])(token|access_token|api[_-]?key|password|secret|authorization)=/i.test(url.search); }
   catch { return false; }
 }
-function validBundle(value: unknown, singleDay = false): value is CatalogContentBundle {
+function validBundle(value: unknown, singleDay = false, reviewed = false): value is CatalogContentBundle {
   if (!record(value) || !record(value.flow) || !Array.isArray(value.sections) || !Array.isArray(value.items)) return false;
   const flow = value.flow;
   const sectionRows = value.sections; const itemRows = value.items;
@@ -75,8 +80,13 @@ function validBundle(value: unknown, singleDay = false): value is CatalogContent
       && Number.isSafeInteger(item.day_offset)))) return false;
   if (!keysWithin(value, ['flow', 'sections', 'items', 'itemDetails', 'warnings', 'repeatRules', 'mealSlots', 'recipes'])
     || !keysWithin(flow, contentFlowKeys)) return false;
-  for (const key of ['repeatRules', 'mealSlots', 'recipes']) if (value[key] !== undefined && (!Array.isArray(value[key]) || value[key].length)) return false;
-  if (!['timeline', 'checklist'].includes(flow.structure_type as string)
+  for (const key of ['repeatRules', 'mealSlots', 'recipes']) {
+    if (value[key] === undefined) continue;
+    if (reviewed && key === 'repeatRules') {
+      if (!strings(value[key]) || value[key].some(rule => rule !== '매일') || new Set(value[key]).size !== value[key].length) return false;
+    } else if (!Array.isArray(value[key]) || value[key].length) return false;
+  }
+  if (!(reviewed ? ['timeline', 'checklist', 'routine'] : ['timeline', 'checklist']).includes(flow.structure_type as string)
     || (flow.content_type !== undefined && flow.content_type !== 'default')
     || !['start_date', 'end_date', 'none'].includes(flow.anchor_type as string) || !safeContentUrl(flow.source_url)) return false;
   if (['status', 'usage_count', 'copy_count'].some(key => key in flow)) return false;
@@ -96,14 +106,22 @@ function validBundle(value: unknown, singleDay = false): value is CatalogContent
   if (!value.sections.every(section => record(section) && keysWithin(section, ['id', 'flow_id', 'title', 'description', 'order']) && singleLine(section.id) && singleLine(section.title)
     && section.flow_id === flow.id && Number.isSafeInteger(section.order)
     && (section.description === undefined || typeof section.description === 'string'))) return false;
-  if (!value.items.length || !value.items.every(item => record(item) && keysWithin(item, singleDay ? [...contentItemKeys, 'duration_days'] : contentItemKeys) && singleLine(item.id) && singleLine(item.title)
+  const itemKeys = singleDay ? [...contentItemKeys, 'duration_days'] : reviewed ? [...contentItemKeys, 'repeat_rule'] : contentItemKeys;
+  if (!value.items.length || !value.items.every(item => record(item) && keysWithin(item, itemKeys) && singleLine(item.id) && singleLine(item.title)
     && ['todo', 'calendar'].includes(item.type as string)
     && item.flow_id === flow.id && Number.isSafeInteger(item.order) && typeof item.section_id === 'string'
     && sectionRows.some((section: unknown) => record(section) && section.id === item.section_id)
     && (item.description === undefined || typeof item.description === 'string')
     && (item.source_type === undefined || ['official', 'creator_experience', 'reference'].includes(item.source_type as string))
     && (item.risk_level === undefined || ['low', 'medium', 'medical_sensitive', 'financial_sensitive'].includes(item.risk_level as string))
-    && (item.day_offset === undefined || Number.isSafeInteger(item.day_offset) && Math.abs(item.day_offset as number) <= 36600))) return false;
+    && (item.day_offset === undefined || Number.isSafeInteger(item.day_offset) && Math.abs(item.day_offset as number) <= 36600)
+    && (!reviewed || item.repeat_rule === undefined || item.repeat_rule === '매일'))) return false;
+  if (reviewed) {
+    // Only the exact qualified edition can enter this branch. Preserve the
+    // currently reviewed daily cadence; do not invent dates, an end or count.
+    const itemRepeats = [...new Set(value.items.flatMap(item => record(item) && item.repeat_rule ? [item.repeat_rule] : []))].sort();
+    if (stableJson(itemRepeats) !== stableJson([...(value.repeatRules as string[] | undefined ?? [])].sort())) return false;
+  }
   if (!unique(value.items as { id: string }[]) || !unique(value.sections as { id: string }[])) return false;
   if (value.itemDetails !== undefined) {
     if (!Array.isArray(value.itemDetails) || !value.itemDetails.every(detail => record(detail) && keysWithin(detail, contentDetailKeys)
@@ -121,6 +139,13 @@ function validBundle(value: unknown, singleDay = false): value is CatalogContent
 
 /** Validate the embedded source; it deliberately does not consult a mutable seed. */
 export function validateCatalogContent(value: unknown): value is CatalogContent {
+  if (record(value) && value.contractVersion === CATALOG_CONTENT_REVIEWED_VERSION) {
+    if (Object.keys(value).sort().join(',') !== 'bundle,catalogVersion,contractVersion,sourceSlug,versionId'
+      || value.catalogVersion !== REVIEWED_CATALOG_VERSION || typeof value.sourceSlug !== 'string'
+      || typeof value.versionId !== 'string' || !validBundle(value.bundle, false, true)) return false;
+    const edition = getPublishedPublicSourceEdition(value.sourceSlug, value.versionId);
+    return !!edition && stableJson(value.bundle) === stableJson(contentBundle(edition.bundle));
+  }
   // v3 activation is shared by native replay, account restore and file intake.
   // Exact frozen content validation is mandatory on every one of these paths.
   if (record(value) && value.contractVersion === CATALOG_CONTENT_V3_VERSION) return validateCatalogContentV3Candidate(value);
@@ -151,18 +176,38 @@ function projectValidatedCatalogContent(value: CatalogContent): CatalogContentPr
   // Refuse interleaved section ordering rather than quietly changing item order.
   if (ordered.some((item, i) => item.id !== [...bundle.items].sort((a, b) => a.order - b.order)[i].id)) return { ok: false, reason: 'projection-loss' };
   const lines = [`# ${bundle.flow.title}`];
-  const property = (label: string, text?: string) => { if (text) for (const line of text.split(/\r?\n/u)) if (line.trim()) lines.push(`  ${label}: ${line}`); };
+  // Keep sealed historical v1/v2/v3 documents byte-exact. New reviewed intake
+  // uses the inspector's existing canonical property syntax so personal edits
+  // can synchronize without removing source/detail lines or relaxing guards.
+  const propertyPrefix = content.contractVersion === CATALOG_CONTENT_REVIEWED_VERSION ? '  - ' : '  ';
+  const reviewed = content.contractVersion === CATALOG_CONTENT_REVIEWED_VERSION;
+  const labels: Record<string, string> = { '상세': '설명', '방법': '설명', '완료기준': '완료 기준', '상대날짜': '상대 날짜', '링크': '자료' };
+  const pendingProperties = new Map<string, string[]>();
+  const property = (label: string, text?: string) => {
+    if (!text) return;
+    const values = text.split(/\r?\n/u).filter(line => line.trim());
+    if (!reviewed) { for (const line of values) lines.push(`${propertyPrefix}${label}: ${line}`); return; }
+    const canonical = labels[label] ?? label;
+    // The inspector already writes one line per editable property. Preserve
+    // every detail segment in that same representation; the immutable source
+    // payload still retains original field boundaries and text verbatim.
+    if (canonical === '자료') { for (const line of values) lines.push(`${propertyPrefix}${canonical}: ${line}`); return; }
+    pendingProperties.set(canonical, [...(pendingProperties.get(canonical) ?? []), ...values.map(line => line.trim())]);
+  };
   for (const section of sections) {
     lines.push('', `## ${section.title}`);
     for (const item of ordered.filter(row => row.section_id === section.id)) {
+      pendingProperties.clear();
       const detail = bundle.itemDetails?.find(row => row.item_id === item.id);
       lines.push(`- [ ] ${item.title}`);
       if (item.day_offset !== undefined) property('상대날짜', item.day_offset === 0 ? 'D-Day' : `D${item.day_offset > 0 ? '+' : ''}${item.day_offset}`);
+      if (reviewed && item.repeat_rule) property('반복', item.repeat_rule);
       property('상세', item.description); property('상세', detail?.why); property('방법', detail?.how);
       property('완료기준', detail?.completion_criteria); property('주의', detail?.caution);
       property('상세', detail?.source_fragment_text);
       property('출처', bundle.flow.source_url);
       for (const link of detail?.links ?? []) property('링크', `${link.label} ${link.url}`);
+      if (reviewed) for (const [label, values] of pendingProperties) lines.push(`${propertyPrefix}${label}: ${values.join(' / ')}`);
     }
   }
   const document = createTextAuthoringDocument(lines.join('\n'), { documentId: content.versionId,
@@ -184,21 +229,28 @@ function projectValidatedCatalogContent(value: CatalogContent): CatalogContentPr
       if (original) { link.type = original.type; link.label = original.label; }
     }
   }
-  if (content.contractVersion === CATALOG_CONTENT_V2_VERSION || content.contractVersion === CATALOG_CONTENT_V3_VERSION) {
+  if (content.contractVersion === CATALOG_CONTENT_V2_VERSION || content.contractVersion === CATALOG_CONTENT_V3_VERSION
+    || content.contractVersion === CATALOG_CONTENT_REVIEWED_VERSION) {
     // v1 replay is intentionally unchanged. v2 verifies effective fields, not
     // merely that the source text still exists somewhere in an opaque snapshot.
     const linesOf = (text?: string) => (text?.split(/\r?\n/u) ?? []).filter(line => line.trim()).map(line => line.trim());
     for (const [i, item] of native.items.entries()) {
       const source = ordered[i], detail = bundle.itemDetails?.find(row => row.item_id === source.id);
-      const expectedDetail = [source.description, detail?.why, detail?.how, detail?.source_fragment_text].flatMap(linesOf).join('\n');
+      const expectedDetail = [source.description, detail?.why, detail?.how, detail?.source_fragment_text].flatMap(linesOf).join(reviewed ? ' / ' : '\n');
       const sourceType = source.source_type === 'official' ? 'official' : source.source_type === 'creator_experience' ? 'creator' : 'reference';
+      const repeat = reviewed ? source.repeat_rule : undefined;
+      const repeatProperties = item.properties.filter(property => property.key === 'repeat');
+      const repeatMatches = repeat ? repeatProperties.length === 1 && repeatProperties[0].value === repeat
+        && (!item.recurrence || item.recurrence.raw === repeat && item.recurrence.frequency === 'daily'
+          && item.recurrence.interval === 1 && item.recurrence.end === undefined)
+        : repeatProperties.length === 0 && !item.recurrence;
       if ((item.detail ?? '') !== expectedDetail || (item.sourceDetail ?? '') !== expectedDetail
-        || (item.completion?.doneWhen ?? '') !== linesOf(detail?.completion_criteria).join('\n')
-        || stableJson(item.cautions) !== stableJson(linesOf(detail?.caution))
+        || (item.completion?.doneWhen ?? '') !== linesOf(detail?.completion_criteria).join(reviewed ? ' / ' : '\n')
+        || stableJson(item.cautions) !== stableJson(reviewed && linesOf(detail?.caution).length ? [linesOf(detail?.caution).join(' / ')] : linesOf(detail?.caution))
         || item.sources.length !== 1 || item.sources[0].url !== bundle.flow.source_url || item.sources[0].type !== sourceType
         || item.resources.length !== (detail?.links?.length ?? 0)
         || item.resources.some((link, index) => { const original = detail!.links![index]; return link.url !== original.url || link.label !== original.label || link.type !== original.type; })
-        || item.recurrence || !item.included || item.role !== 'item' || item.sourceChecked) return { ok: false, reason: 'projection-loss' };
+        || !repeatMatches || !item.included || item.role !== 'item' || item.sourceChecked) return { ok: false, reason: 'projection-loss' };
       item.sources[0].label = bundle.flow.source_title || '출처';
       if (content.contractVersion === CATALOG_CONTENT_V3_VERSION && (source.duration_days !== 1
         || item.schedule?.kind !== 'relative' || item.schedule.dayOffset !== source.day_offset
@@ -212,6 +264,8 @@ function projectValidatedCatalogContent(value: CatalogContent): CatalogContentPr
 }
 
 export function adaptCatalogContentBundle(source: FlowBundle, library?: CatalogLibrarySnapshot): CatalogContentProjectionResult {
+  const reviewed = source?.flow?.slug ? reviewedContent(source.flow.slug) : null;
+  if (reviewed && stableJson(contentBundle(source)) === stableJson(reviewed.bundle)) return projectCatalogContent(reviewed);
   if (CATALOG_CONTENT_V2_SLUGS.some(slug => slug === source?.flow?.slug)
     || CATALOG_CONTENT_V3_SLUGS.some(slug => slug === source?.flow?.slug)) {
     try {
@@ -234,6 +288,8 @@ export function adaptCatalogContentBundle(source: FlowBundle, library?: CatalogL
 }
 
 export function buildCatalogContent(slug: string, library?: CatalogLibrarySnapshot): CatalogContentProjectionResult {
+  const reviewed = reviewedContent(slug);
+  if (reviewed) return projectCatalogContent(reviewed);
   if (CATALOG_CONTENT_V3_SLUGS.some(candidate => candidate === slug)) {
     const content = frozenSingleDayContent(slug, library);
     return content ? projectCatalogContent(content) : { ok: false, reason: 'invalid-source' };
@@ -251,6 +307,14 @@ function contentBundle(source: FlowBundle): CatalogContentBundle {
   const bundle = JSON.parse(JSON.stringify(source));
   delete bundle.flow.status; delete bundle.flow.usage_count; delete bundle.flow.copy_count;
   return bundle;
+}
+
+function reviewedContent(slug: string): CatalogContent | null {
+  // New private intake is authorized by the exact qualified registry, never by
+  // public exposure or mechanical projection alone. Frozen locators stay exact.
+  const edition = getPublishedPublicSourceEdition(slug);
+  return edition ? { contractVersion: CATALOG_CONTENT_REVIEWED_VERSION, catalogVersion: REVIEWED_CATALOG_VERSION,
+    sourceSlug: slug, versionId: edition.version, bundle: contentBundle(edition.bundle) } : null;
 }
 function frozenContent(slug: string, library?: CatalogLibrarySnapshot): CatalogContent | null {
   if (!library || library.catalogVersion !== CATALOG_LIBRARY_VERSION) return null;
@@ -291,12 +355,13 @@ export function projectCatalogContentV3Candidate(value: unknown): CatalogContent
 
 export type CatalogContentCapability = { ready: true; sourceSlug: string; sourceVersionId: string; contractVersion: CatalogContent['contractVersion'] }
   | { ready: false; sourceSlug: string; reason: 'archived' | 'review-required' | 'unsupported-shape' | 'projection-loss' | 'not-enabled' };
-/** Precedence: explicit approved copies (v1 grandfathered) -> archived ->
+/** Precedence: held source -> exact qualified/explicit approved copies -> archived ->
  * review-required -> unsupported-shape -> projection-loss -> not-enabled.
  * Exposure is never treated as permission. Mechanical success alone cannot
  * enable a new source; all other sources remain read-only. */
 export function inspectCatalogContentCapability(slug: string, library?: CatalogLibrarySnapshot): CatalogContentCapability {
-  if (CATALOG_CONTENT_SLUGS.some(s => s === slug) || CATALOG_CONTENT_V2_SLUGS.some(s => s === slug)
+  if (isPublicFlowSourceOnHold(slug)) return { ready: false, sourceSlug: slug, reason: 'review-required' };
+  if (reviewedContent(slug) || CATALOG_CONTENT_SLUGS.some(s => s === slug) || CATALOG_CONTENT_V2_SLUGS.some(s => s === slug)
     || CATALOG_CONTENT_V3_SLUGS.some(s => s === slug)) {
     const projected = buildCatalogContent(slug, library);
     return projected.ok ? { ready: true, sourceSlug: slug, sourceVersionId: projected.content.versionId, contractVersion: projected.content.contractVersion }

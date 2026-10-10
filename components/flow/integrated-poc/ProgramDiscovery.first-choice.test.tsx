@@ -54,6 +54,43 @@ function saved() {
   return { props, version, space, copy };
 }
 
+function markHeld(props: Discovery.ProgramDiscoveryProps, version: ReturnType<typeof fixture>['version']) {
+  const originalId = version.flowId, heldId = 'catalog-childcare-fee-support-apply';
+  props.data.public.flows.find(flow => flow.id === originalId)!.id = heldId;
+  version.flowId = heldId; props.selectedFlowId = heldId;
+  for (const copy of props.data.spaces[props.data.activeActorId].copies) if (copy.flowId === originalId) copy.flowId = heldId;
+}
+
+test('held NEW source is absent from discovery but its direct reading never invokes a writer', () => {
+  const { props, version } = fixture(); markHeld(props, version);
+  const before = JSON.stringify(props.data);
+  const list = render({ ...props, selectedFlowId: undefined });
+  assert(!list.includes(`program-discovery-${version.flowId}`));
+  const intro = render(props);
+  assert.match(intro, /disabled=""[^>]*>내 계획으로 시작/);
+  assert.match(intro, /출처를 재검토/);
+  assert.equal(JSON.stringify(props.data), before);
+});
+
+test('held source confirmation stays disabled even when a valid output can be generated', () => {
+  const { props, version } = fixture(); markHeld(props, version);
+  const before = JSON.stringify(props.data), html = render(props, 'confirm');
+  assert.match(html, /disabled=""[^>]*>전체 항목으로 시작/);
+  assert.equal(JSON.stringify(props.data), before);
+});
+
+test('held source keeps the same existing copy resume entry at all reading stages', () => {
+  const { props, version, copy } = saved(); markHeld(props, version);
+  const before = JSON.stringify(props.data);
+  for (const stage of ['intro', 'contents', 'confirm'] as const) {
+    const html = render(props, stage);
+    assert.match(html, /내 문서에서 이어보기/);
+    assert.doesNotMatch(html, />전체 항목으로 시작</);
+  }
+  assert.equal(props.data.spaces[props.data.activeActorId].copies.filter(row => row.id === copy.id).length, 1);
+  assert.equal(JSON.stringify(props.data), before);
+});
+
 test('intro shows actual title, full summary, first item and total without writing or offering partial selection', () => {
   const { props, version } = fixture(), before = JSON.stringify(props.data);
   const html = render(props);

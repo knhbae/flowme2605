@@ -44,6 +44,21 @@ const cp1ReviewedSourceDelta = Object.freeze({
   ]),
 });
 
+// Only the eligible date changes the legacy seed. Four partial corrections stay
+// out of legacy plans; approved exact editions live in the separate registry.
+// This compares COMPLETE old/new bundles, not ignored fields.
+// The immutable 2026-09-23 pack is not rewritten. Review ledger SHA256:
+// a159ac34b08a62ce7f8fa32c52ef43f8b2c2dcf9a90f0b608a8011272b21549f.
+// Follow-up source comparison (license pre-application placement and paper copies):
+// 8b035394c5984555b3f02a9d1e31d4531c2bab9dfcc3c8145218464b31dabbee.
+const sourceReviewMinimumDelta = Object.freeze<Record<string, readonly [string, string]>>({
+  'domestic-trip-d7': ['67767ea3e43c4591d231fe1b38a135400d3b0fe2dcb7a954d36660e1ba09320e', 'a1d628d4802227854da4c09b6f118e8924ee31c27231fd25dec6330d4552de03'],
+  'infant-health-checkup-prep': ['9e4819cf9f5a780a3f5b62077da26bfcaaab1b708c9b99c29aafa59f17eca8be', '9e4819cf9f5a780a3f5b62077da26bfcaaab1b708c9b99c29aafa59f17eca8be'],
+  'real-safe-driving-license-renewal': ['8c7d17a1c0b48d85e93dd9db49af79d3da773695b896bdd1e3a4fc3197787429', '8c7d17a1c0b48d85e93dd9db49af79d3da773695b896bdd1e3a4fc3197787429'],
+  'travel-packing-list': ['4f1ecf0739a857531fbdf129b0782b0c6e0cc3590927e81af48193ef15d60964', '4f1ecf0739a857531fbdf129b0782b0c6e0cc3590927e81af48193ef15d60964'],
+  'weekly-meal-plan': ['e22b9d96ac957891fa9cc2488ea508b5efd7fd93f02e5f0df6b770256250dde4', 'e22b9d96ac957891fa9cc2488ea508b5efd7fd93f02e5f0df6b770256250dde4'],
+});
+
 function assertRetainedSource(saved: FlowBundle | undefined, current: FlowBundle) {
   const slug = current.flow.slug;
   assert(saved, `${slug}: missing frozen source`);
@@ -75,6 +90,12 @@ function assertRetainedSource(saved: FlowBundle | undefined, current: FlowBundle
     assert.equal(comparable.flow.source_checked_at, cp1ReviewedSourceDelta.newDate, `${slug}: reviewed source_checked_at`);
     comparable.flow.source_checked_at = oldDate;
   }
+  if (Object.hasOwn(sourceReviewMinimumDelta, slug)) {
+    const [before, after] = sourceReviewMinimumDelta[slug];
+    assert.equal(fingerprint(saved), before, `${slug}: exact historical source`);
+    assert.equal(fingerprint(comparable), after, `${slug}: exact minimum source correction`);
+    return changed;
+  }
   // Compare every retained field, but never print private nested source on failure.
   assert.equal(fingerprint(saved), fingerprint(comparable), `${slug}: unreviewed source delta`);
   return changed;
@@ -94,14 +115,48 @@ test('frozen source retains every field except counters and the exact public rev
     const saved = s.variants.find(v => v.slug === b.flow.slug)?.bundle ?? s.bundles.find(v => v.flow.slug === b.flow.slug);
     if (assertRetainedSource(saved, b)) changed.push(b.flow.slug);
   }
-  assert.deepEqual(changed.sort(), [...reviewedSourceDelta.slugs, ...Object.keys(cp1ReviewedSourceDelta.oldDates)].sort());
-  assert.equal(changed.length, 13);
+  assert.deepEqual(changed.sort(), [...reviewedSourceDelta.slugs, ...Object.keys(cp1ReviewedSourceDelta.oldDates), 'domestic-trip-d7'].sort());
+  assert.equal(changed.length, 14);
   assert.equal(fingerprint(s.maps), fingerprint(JSON.parse(JSON.stringify(sourceBackedMyFlowMaps))));
   assert.equal(fingerprint(s), frozenBefore); assert.equal(fingerprint(current), currentBefore);
   for (const b of [...s.bundles, ...s.variants.map(v => v.bundle)]) {
     assert(!Object.hasOwn(b.flow, 'usage_count')); assert(!Object.hasOwn(b.flow, 'copy_count'));
     assert.equal(b.flow.status, 'published'); // original provenance, not a new publication
   }
+});
+
+test('20261010 legacy source preservation rejects any other content, identity, date or policy delta', () => {
+  const snapshot = buildCatalogLibrarySnapshot(NOW);
+  const frozenBefore = fingerprint(snapshot), currentBefore = fingerprint(seedBundles);
+  assert.equal(Object.keys(sourceReviewMinimumDelta).length, 5);
+  for (const slug of Object.keys(sourceReviewMinimumDelta)) {
+    const saved = snapshot.bundles.find(bundle => bundle.flow.slug === slug)!;
+    const current = seedBundles.find(bundle => bundle.flow.slug === slug)!;
+    assert.equal(assertRetainedSource(saved, current), slug === 'domestic-trip-d7');
+    assert.equal(saved.flow.source_checked_at, '2026-07-11');
+    assert.equal(current.flow.source_checked_at, slug === 'domestic-trip-d7' ? '2026-10-10' : '2026-07-11');
+    for (const side of ['frozen', 'current'] as const) {
+      for (const mutate of [
+        (bundle: FlowBundle) => { bundle.flow.source_checked_at = '2026-10-11'; },
+        (bundle: FlowBundle) => { bundle.flow.source_url = 'https://example.invalid/unreviewed'; },
+        (bundle: FlowBundle) => { bundle.flow.source_status = 'preview'; },
+        (bundle: FlowBundle) => { bundle.flow.raw_text = (bundle.flow.raw_text ?? '') + '\nsynthetic mutation'; },
+        (bundle: FlowBundle) => { bundle.items[0].id += '-copy'; },
+        (bundle: FlowBundle) => { bundle.items[0].title += ' synthetic mutation'; },
+        (bundle: FlowBundle) => { bundle.items[0].day_offset = -99; },
+        (bundle: FlowBundle) => { bundle.itemDetails![0].how = 'unreviewed content'; },
+      ]) {
+        const before = clone(saved), after = clone(current);
+        mutate(side === 'frozen' ? before : after);
+        assert.throws(() => assertRetainedSource(before, after), assert.AssertionError);
+      }
+    }
+    const changedPack = clone(snapshot);
+    changedPack.bundles.find(bundle => bundle.flow.slug === slug)!.items[0].title += ' synthetic mutation';
+    assert.equal(validateCatalogLibrarySnapshot(changedPack), false);
+  }
+  assert.equal(fingerprint(snapshot), frozenBefore);
+  assert.equal(fingerprint(seedBundles), currentBefore);
 });
 
 test('CP1 exact review-date allowance rejects other slugs, dates, updated_at, content and source policy', () => {
