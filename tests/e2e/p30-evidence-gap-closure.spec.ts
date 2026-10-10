@@ -6,8 +6,8 @@ import {
   gotoLegacySavedPlanLibraryRoute,
   installLegacySavedPlanLibraryNavigation,
   openMyFlowLibraryFlow,
-  withLegacySavedPlanLibraryRoute,
 } from './helpers/my-flow-library';
+import { openExistingPublicPlan } from './helpers/existing-public-plan';
 
 const evidenceRoot = process.env.FLOWME_P30_EVIDENCE_DIR;
 
@@ -131,7 +131,7 @@ function expectWorkspaceBeforePersistentTabs(trace: FocusStep[], workspaceTestId
 test.describe('P30-01 mobile export fixed-layer correctness', () => {
   test('public quick-result confirmation occludes the fixed save command and keeps its primary action operable', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-wedding-naver-timeline');
     await clearLocalState(page);
 
     await expect(page.getByTestId('public-flow-detail-workspace')).toHaveCount(0);
@@ -190,7 +190,7 @@ test.describe('P30-01 mobile export fixed-layer correctness', () => {
         .toBe(true);
     }
     await capture(page, 'p30-01-public-export-open-390.png', {
-      route: '/f/moving-d30-basic',
+      route: '/f/curated-wedding-naver-timeline',
       viewport: { width: 390, height: 844 },
       primaryRect,
       fixedSaveCtaRect,
@@ -276,9 +276,9 @@ test.describe('P30-02 mobile workspace focus order', () => {
 });
 
 test.describe('P30-03 save-before decision and contextual adjustment', () => {
-  test('long Flow keeps the full selection list inside one atomic full-height editor', async ({ page }) => {
+  test('NEW six-item Flow keeps its atomic editor and an existing 24-item plan keeps the full list', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-wedding-naver-timeline');
     await clearLocalState(page);
     await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
 
@@ -301,15 +301,25 @@ test.describe('P30-03 save-before decision and contextual adjustment', () => {
 
     await adjustment.getByTestId('public-flow-adjustment-kind-items').click();
     await expect(adjustment.getByTestId('public-flow-adjustment-item-list')).toBeVisible();
-    await expect(adjustment.getByTestId('public-flow-adjustment-item-row')).toHaveCount(24);
+    await expect(adjustment.getByTestId('public-flow-adjustment-item-row')).toHaveCount(6);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     expect(overflow).toBeLessThanOrEqual(0);
-    await capture(page, 'p30-03-moving-item-selection-390.png', {
-      route: '/f/moving-d30-basic',
+    await capture(page, 'p30-03-wedding-item-selection-390.png', {
+      route: '/f/curated-wedding-naver-timeline',
       viewport: { width: 390, height: 844 },
-      visibleItemRows: 24,
+      visibleItemRows: 6,
       horizontalOverflow: overflow,
     });
+
+    const existingCopyKey = await openExistingPublicPlan(page);
+    const existingFlow = await openMyFlowLibraryFlow(page, existingCopyKey, 'plan');
+    await existingFlow.locator('[data-testid="my-flow-batch-mode-toggle"]:visible').first().click();
+    const savedEditor = page.getByTestId('saved-flow-editor-plan');
+    const savedRows = savedEditor.getByTestId('saved-flow-editor-item-row');
+    await expect(savedRows).toHaveCount(24);
+    await savedRows.last().scrollIntoViewIfNeeded();
+    await expect(savedRows.last()).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
   });
 });
 
@@ -553,7 +563,7 @@ test.describe('P30-06 routine advanced setting density', () => {
 });
 
 test.describe('P30-07 legacy composition consumer gate', () => {
-  test('public Flow stays artifact-first and the retired moving map resolves to the canonical frame', async ({ page }) => {
+  test('public Flow stays artifact-first while the retired moving alias cannot start a NEW plan', async ({ page }) => {
     const consoleErrors: string[] = [];
     page.on('console', (message) => {
       if (message.type() === 'error') consoleErrors.push(message.text());
@@ -561,34 +571,39 @@ test.describe('P30-07 legacy composition consumer gate', () => {
     page.on('pageerror', (error) => consoleErrors.push(error.message));
 
     await page.setViewportSize({ width: 390, height: 844 });
-    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-wedding-naver-timeline');
     await clearLocalState(page);
     const publicFrame = page.getByTestId('public-flow-hero');
     await expect(publicFrame).toHaveAttribute('data-experience-architecture', 'p35-result-first');
     await expect(publicFrame).toHaveAttribute('data-p30-marker', 'P30-SAVE-BEFORE-SINGLE-DECISION');
     expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
     await capture(page, 'p30-07-public-artifact-first-390.png', {
-      route: '/f/moving-d30-basic',
+      route: '/f/curated-wedding-naver-timeline',
       viewport: { width: 390, height: 844 },
       composition: 'artifact-first',
       deadConditionalConsumerCount: 0,
     });
 
     await page.setViewportSize({ width: 1024, height: 768 });
-    await gotoLegacySavedPlanLibraryRoute(page, '/flow-maps/moving-d30');
-    await expect(page).toHaveURL(withLegacySavedPlanLibraryRoute('/f/moving-d30-basic'));
-    const canonicalAliasFrame = page.getByTestId('public-flow-hero');
-    await expect(canonicalAliasFrame).toHaveAttribute('data-experience-architecture', 'p35-result-first');
-    await expect(page.getByTestId('flow-map-hero')).toHaveCount(0);
+    const heldAliasResponse = await page.request.get('/flow-maps/moving-d30');
+    expect(heldAliasResponse.status()).toBe(404);
+    expect(new URL(heldAliasResponse.url()).pathname).toBe('/f/moving-d30-basic');
+    const heldAliasHtml = await heldAliasResponse.text();
+    expect(heldAliasHtml).not.toContain('data-testid="public-flow-hero"');
+    expect(heldAliasHtml).not.toContain('data-testid="flow-map-hero"');
+    expect(heldAliasHtml).not.toContain('data-testid="public-flow-save-primary"');
+    await expect(page.getByTestId('public-flow-hero')).toHaveAttribute('data-experience-architecture', 'p35-result-first');
     expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
-    await capture(page, 'p30-07-source-backed-active-legacy-1024.png', {
-      route: '/flow-maps/moving-d30',
+    await capture(page, 'p30-07-public-artifact-first-1024.png', {
+      route: '/f/curated-wedding-naver-timeline',
       viewport: { width: 1024, height: 768 },
-      composition: 'canonical_alias',
+      composition: 'artifact-first',
+      heldAliasStatus: heldAliasResponse.status(),
       activeProductionConsumerCount: 0,
-      removalDecision: 'retired_by_p33_canonical_alias',
+      removalDecision: 'held_alias_preserves_canonical_identity_without_new_start',
       consoleErrorCount: consoleErrors.length,
     });
+
     expect(consoleErrors).toEqual([]);
   });
 });
@@ -603,7 +618,7 @@ test.describe('P30-08 desktop production matrix', () => {
 
     await page.setViewportSize({ width: 1440, height: 900 });
     const routes = [
-      { route: '/f/moving-d30-basic', filename: 'p30-08-public-save-before-1440.png' },
+      { route: '/f/curated-wedding-naver-timeline', filename: 'p30-08-public-save-before-1440.png' },
       { route: '/my?demo=ux20&view=flows', filename: 'p30-08-my-flow-1440.png' },
       { route: '/calendar?demo=ux50', filename: 'p30-08-calendar-1440.png' },
     ];

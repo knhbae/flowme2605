@@ -5,8 +5,12 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 import { seedBundles } from '../../lib/flow/seed-flows';
 import type { FlowBundle } from '../../lib/flow/types';
 
+// Historical saved/50-Item fixtures keep the original moving identity and bytes.
 const SOURCE_FLOW_SLUG = 'moving-d30-basic';
-const SOURCE_ROUTE = `/f/${SOURCE_FLOW_SLUG}`;
+const NEW_PUBLIC_FLOW_SLUG = 'computer-skills-d30-study';
+const NEW_PUBLIC_ROUTE = `/f/${NEW_PUBLIC_FLOW_SLUG}`;
+const NEW_PUBLIC_ITEM_STORAGE_KEY = `flow_builder_mvp_item_state_${NEW_PUBLIC_FLOW_SLUG}`;
+const NEW_PUBLIC_ANCHOR_STORAGE_KEY = `flow:${NEW_PUBLIC_FLOW_SLUG}:anchorDate`;
 const LEGACY_ITEM_STORAGE_KEY = `flow_builder_mvp_item_state_${SOURCE_FLOW_SLUG}`;
 const SAVED_FLOW_STORAGE_KEY = `flow:saved:${SOURCE_FLOW_SLUG}`;
 const BUNDLES_STORAGE_KEY = 'flow_builder_mvp_bundles_v11';
@@ -391,7 +395,7 @@ test.describe('P35 P1-04 final internal extremes and accessibility gate', () => 
     const errors = collectBrowserErrors(page);
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.setViewportSize(MOBILE_VIEWPORT);
-    await page.goto(SOURCE_ROUTE);
+    await page.goto(NEW_PUBLIC_ROUTE);
     await page.evaluate(() => {
       window.localStorage.clear();
       window.sessionStorage.clear();
@@ -758,23 +762,32 @@ test.describe('P35 P1-04 final internal extremes and accessibility gate', () => 
     await expect(page.getByTestId('flow-url-lookup-entry')).toBeVisible();
     expect(await storageWrites(page)).toEqual([]);
     expect(await page.evaluate(() => window.localStorage.length)).toBe(0);
-    await page.evaluate(({ legacyItemStorageKey }) => {
+    await page.evaluate(({ legacyItemStorageKey, publicItemStorageKey, publicAnchorStorageKey }) => {
       window.localStorage.clear();
       window.sessionStorage.clear();
       window.localStorage.setItem(
         legacyItemStorageKey,
         '{  "legacy-item" : { "note" : "keep exact bytes", "custom" : "sentinel" } }',
       );
+      window.localStorage.setItem(publicItemStorageKey, '{  "legacy-item" : { "note" : "keep exact bytes", "custom" : "sentinel" } }');
+      window.localStorage.setItem(publicAnchorStorageKey, ' { "mode" : "custom", "anchor" : "2031-09-08" } ');
       window.localStorage.setItem(
         'flow:moving-d30-basic:anchorDate',
         ' { "mode" : "custom", "anchor" : "2031-09-08" } ',
       );
       window.localStorage.setItem('flow:p1-04:sentinel', '  byte-for-byte sentinel  ');
       window.sessionStorage.setItem('flow:p1-04:session-sentinel', '  session byte sentinel  ');
-    }, { legacyItemStorageKey: LEGACY_ITEM_STORAGE_KEY });
+    }, {
+      legacyItemStorageKey: LEGACY_ITEM_STORAGE_KEY,
+      publicItemStorageKey: NEW_PUBLIC_ITEM_STORAGE_KEY,
+      publicAnchorStorageKey: NEW_PUBLIC_ANCHOR_STORAGE_KEY,
+    });
     const before = await rawStorageSnapshot(page);
+    const historicalBefore = await preservedStorageSnapshot(page, [
+      ...PRESERVED_LOCAL_STORAGE_KEYS, 'flow:moving-d30-basic:anchorDate',
+    ]);
 
-    await page.goto(SOURCE_ROUTE);
+    await page.goto(NEW_PUBLIC_ROUTE);
     await expect(page.locator('main').first()).toHaveAttribute('data-p35-p004-save-lifecycle', 'on');
     expect(await storageWrites(page)).toEqual([]);
     expect(await rawStorageSnapshot(page)).toEqual(before);
@@ -788,7 +801,7 @@ test.describe('P35 P1-04 final internal extremes and accessibility gate', () => 
       'q3Copy=off',
       'savedPlanLibrary=off',
     ].join('&');
-    await page.goto(`${SOURCE_ROUTE}?${publicExactOff}`);
+    await page.goto(`${NEW_PUBLIC_ROUTE}?${publicExactOff}`);
     const publicOff = page.locator('main').first();
     await expect(publicOff).toHaveAttribute('data-p35-p004-save-lifecycle', 'off');
     await expect(publicOff).toHaveAttribute('data-p35-p007-capability-result', 'off');
@@ -798,7 +811,7 @@ test.describe('P35 P1-04 final internal extremes and accessibility gate', () => 
     expect(await rawStorageSnapshot(page)).toEqual(before);
 
     const publicUppercase = publicExactOff.replaceAll('=off', '=OFF');
-    await page.goto(`${SOURCE_ROUTE}?${publicUppercase}`);
+    await page.goto(`${NEW_PUBLIC_ROUTE}?${publicUppercase}`);
     const publicOn = page.locator('main').first();
     await expect(publicOn).toHaveAttribute('data-p35-p004-save-lifecycle', 'on');
     await expect(publicOn).toHaveAttribute('data-p35-p007-capability-result', 'on');
@@ -807,7 +820,7 @@ test.describe('P35 P1-04 final internal extremes and accessibility gate', () => 
     expect(await storageWrites(page)).toEqual([]);
     expect(await rawStorageSnapshot(page)).toEqual(before);
 
-    await page.goto(`${SOURCE_ROUTE}?${publicExactOff}`);
+    await page.goto(`${NEW_PUBLIC_ROUTE}?${publicExactOff}`);
     expect(await storageWrites(page)).toEqual([]);
     await page.getByTestId('public-flow-adjust-entry-mobile').click();
     const editor = page.getByTestId('public-flow-personal-adjustment');
@@ -834,11 +847,11 @@ test.describe('P35 P1-04 final internal extremes and accessibility gate', () => 
           legacySentinel: stored['legacy-item']?.custom,
         };
       },
-      { storageKey: LEGACY_ITEM_STORAGE_KEY, itemId: changedItemId! },
+      { storageKey: NEW_PUBLIC_ITEM_STORAGE_KEY, itemId: changedItemId! },
     )).toEqual({ changedItemExcluded: true, legacySentinel: 'sentinel' });
     const explicitEditWrites = await storageWrites(page);
     expect(explicitEditWrites.map((write) => `${write.operation}:${write.area}:${write.key ?? ''}`)).toEqual([
-      `setItem:localStorage:${LEGACY_ITEM_STORAGE_KEY}`,
+      `setItem:localStorage:${NEW_PUBLIC_ITEM_STORAGE_KEY}`,
       'setItem:localStorage:flow:meta:last-visit',
     ]);
     expect(explicitEditWrites.some((write) => write.key === BUNDLES_STORAGE_KEY)).toBe(false);
@@ -860,22 +873,25 @@ test.describe('P35 P1-04 final internal extremes and accessibility gate', () => 
     const publicAnchor = page.locator('[data-testid="public-flow-anchor-input"]:visible').first();
     await expect(publicAnchor).toHaveValue('2031-09-08');
     await publicAnchor.fill('2031-09-10');
-    await expect.poll(() => page.evaluate(() => (
-      window.localStorage.getItem('flow:moving-d30-basic:anchorDate')
-    ))).toBe('{"mode":"custom","anchor":"2031-09-10"}');
+    await expect.poll(() => page.evaluate(key => (
+      window.localStorage.getItem(key)
+    ), NEW_PUBLIC_ANCHOR_STORAGE_KEY)).toBe('{"mode":"custom","anchor":"2031-09-10"}');
     expect((await storageWrites(page)).map(
       (write) => `${write.operation}:${write.area}:${write.key ?? ''}`,
     )).toEqual([
-      'setItem:localStorage:flow:moving-d30-basic:anchorDate',
+      `setItem:localStorage:${NEW_PUBLIC_ANCHOR_STORAGE_KEY}`,
       'setItem:localStorage:flow:meta:last-visit',
     ]);
+    expect(await preservedStorageSnapshot(page, [
+      ...PRESERVED_LOCAL_STORAGE_KEYS, 'flow:moving-d30-basic:anchorDate',
+    ])).toEqual(historicalBefore);
     expect(errors).toEqual([]);
   });
 
   test('all exact-off and uppercase controls keep eight rollback flags and raw storage byte-identical', async ({ page }) => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize(MOBILE_VIEWPORT);
-    await page.goto(SOURCE_ROUTE);
+    await page.goto(NEW_PUBLIC_ROUTE);
     await page.evaluate(({ legacyItemStorageKey }) => {
       window.localStorage.clear();
       window.sessionStorage.clear();
@@ -899,7 +915,7 @@ test.describe('P35 P1-04 final internal extremes and accessibility gate', () => 
       'visualSubtraction=off',
       'q3Copy=off',
     ].join('&');
-    await page.goto(`${SOURCE_ROUTE}?${publicExactOff}`);
+    await page.goto(`${NEW_PUBLIC_ROUTE}?${publicExactOff}`);
     const publicOff = page.locator('main').first();
     await expect(publicOff).toHaveAttribute('data-p35-p004-save-lifecycle', 'off');
     await expect(publicOff).toHaveAttribute('data-p35-p007-capability-result', 'off');
@@ -914,7 +930,7 @@ test.describe('P35 P1-04 final internal extremes and accessibility gate', () => 
     await capture(page, '04-all-exact-off-public-390x844.png');
 
     const publicUppercase = publicExactOff.replaceAll('=off', '=OFF');
-    await page.goto(`${SOURCE_ROUTE}?${publicUppercase}`);
+    await page.goto(`${NEW_PUBLIC_ROUTE}?${publicUppercase}`);
     const publicOn = page.locator('main').first();
     await expect(publicOn).toHaveAttribute('data-p35-p004-save-lifecycle', 'on');
     await expect(publicOn).toHaveAttribute('data-p35-p007-capability-result', 'on');

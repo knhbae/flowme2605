@@ -15,6 +15,9 @@ const viewports = [
   { name: '1440', width: 1440, height: 1000 },
 ] as const;
 
+const NEW_DATED_PUBLIC_ROUTE = '/f/computer-skills-d30-study';
+// Existing moving demo/saved identities below remain historical, not NEW public starts.
+
 const phase = process.env.FLOWME_P1_VISUAL_PHASE === 'before' ? 'before' : 'after';
 const captureEnabled = Boolean(process.env.FLOWME_P1_VISUAL_PHASE);
 const evidenceDirectory = path.resolve(
@@ -209,7 +212,7 @@ test.describe('P1-01 bounded visual subtraction', () => {
     const errors = collectBrowserErrors(page);
     for (const viewport of viewports) {
       await page.setViewportSize(viewport);
-      await page.goto(routeForPhase('/f/moving-d30-basic'));
+      await page.goto(routeForPhase(NEW_DATED_PUBLIC_ROUTE));
       const hero = page.getByTestId('public-flow-hero');
       const input = await getPublicCalendarAnchorInput(page);
       await expectSurfaceHealth(page, hero);
@@ -236,7 +239,7 @@ test.describe('P1-01 bounded visual subtraction', () => {
 
     if (phase === 'after') {
       await page.setViewportSize(viewports[0]);
-      await page.goto('/f/moving-d30-basic');
+      await gotoLegacySavedPlanLibraryRoute(page, NEW_DATED_PUBLIC_ROUTE);
       const input = await getPublicCalendarAnchorInput(page);
       await input.fill(await relativeDate(page, -365));
       await expect(page.getByText(/이미 지났어요/u)).toBeVisible();
@@ -285,13 +288,13 @@ test.describe('P1-01 bounded visual subtraction', () => {
     await expect(map.locator('[data-flow-ui="schedule-intent"]')).toHaveCount(1);
     await expect(map.getByTestId('flow-map-selection-summary')).toHaveCount(0);
 
-    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, NEW_DATED_PUBLIC_ROUTE);
     await expect(page.getByTestId('public-flow-hero')).toBeVisible();
     const storageBeforeRollback = await page.evaluate(() => ({
       local: Object.entries(window.localStorage).sort(([left], [right]) => left.localeCompare(right)),
       session: Object.entries(window.sessionStorage).sort(([left], [right]) => left.localeCompare(right)),
     }));
-    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic?visualSubtraction=off');
+    await gotoLegacySavedPlanLibraryRoute(page, `${NEW_DATED_PUBLIC_ROUTE}?visualSubtraction=off`);
     await (await getPublicCalendarAnchorInput(page)).fill(await relativeDate(page, 365));
     await expect(page.getByTestId('public-flow-hero').locator('.border-emerald-200.bg-emerald-50')).toHaveCount(1);
     const storageAfterRollback = await page.evaluate(() => ({

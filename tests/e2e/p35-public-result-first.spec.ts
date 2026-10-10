@@ -23,14 +23,14 @@ type Scenario = {
 
 const scenarios: Scenario[] = [
   {
-    route: '/f/moving-d30-basic',
+    route: '/f/computer-skills-d30-study',
     viewport: { width: 390, height: 844 },
     shape: 'checklist',
     resultLabel: '체크리스트',
-    itemCount: 24,
+    itemCount: 9,
     summaryPattern: /^날짜 없음$/u,
     setupVisible: true,
-    screenshot: 'p35-02-moving-save-before-390.png',
+    screenshot: 'p35-02-computer-save-before-390.png',
   },
   {
     route: '/f/vehicle-inspection-prep',
@@ -236,7 +236,7 @@ test.describe('P35-02 public result-first frame', () => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
     await installLegacySavedPlanLibraryNavigation(page);
-    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/computer-skills-d30-study');
     await page.evaluate(() => {
       window.localStorage.clear();
       window.sessionStorage.clear();
@@ -277,7 +277,7 @@ test.describe('P35-02 public result-first frame', () => {
     expect(await getFixedOverlapCount(page)).toBe(0);
     expect(errors).toEqual([]);
 
-    await capture(page, 'p35-02-moving-selected-detail-390.png');
+    await capture(page, 'p35-02-computer-selected-detail-390.png');
   });
 
   test('review-held source content stays honest and cannot enter the save frame', async ({ page }) => {

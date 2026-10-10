@@ -5,6 +5,8 @@ import { getOpenMyFlowItemDetail } from './helpers/my-flow-library';
 const FLOW_SLUG = 'moving-d30-basic';
 const SAVED_FLOW_KEY = `flow:saved:${FLOW_SLUG}`;
 const ANCHOR_KEY = `flow:${FLOW_SLUG}:anchorDate`;
+const NEW_PUBLIC_FLOW_SLUG = 'computer-skills-d30-study';
+const NEW_PUBLIC_ITEM_COUNT = 9;
 
 type P008InstrumentedWindow = Window & {
   __p008LocalStorageMutations?: number;
@@ -1009,7 +1011,7 @@ test.describe('P35 P0-08 saved-plan library', () => {
   test('390: public save deep-link opens the selected plan with one count-accurate banner only once', async ({ page }) => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto(`/f/${FLOW_SLUG}`);
+    await page.goto(`/f/${NEW_PUBLIC_FLOW_SLUG}`);
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
     const preview = page.getByTestId('public-flow-capability-result');
@@ -1042,8 +1044,9 @@ test.describe('P35 P0-08 saved-plan library', () => {
     const banner = page.getByTestId('my-flow-save-banner');
     await expect(banner).toBeVisible();
     await expect(banner).toHaveAttribute('data-personal-copy-key', personalCopyKey);
-    await expect(banner).toHaveAttribute('data-item-count', '24');
-    await expect(banner.getByTestId('my-flow-save-banner-summary')).toContainText('24');
+    await expect(banner).toHaveAttribute('data-item-count', String(NEW_PUBLIC_ITEM_COUNT));
+    await expect(banner.getByTestId('my-flow-save-banner-summary'))
+      .toContainText(String(NEW_PUBLIC_ITEM_COUNT));
     await expect(banner.getByTestId('my-flow-save-undo')).toBeVisible();
     const selectedPlan = page.locator(
       [

@@ -47,7 +47,7 @@ test.describe('P35-R2 contextual public item personalization', () => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
     await installLegacySavedPlanLibraryNavigation(page);
-    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/computer-skills-d30-study');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
     const preview = page.getByTestId('public-flow-capability-result');
@@ -79,8 +79,8 @@ test.describe('P35-R2 contextual public item personalization', () => {
     await expect(editor.getByText('순서', { exact: true })).toHaveCount(0);
     await expect(editor.getByText('삭제', { exact: true })).toHaveCount(0);
 
-    await editor.getByTestId('public-flow-item-editor-title-input').fill('이사 방식 최종 결정');
-    await editor.getByTestId('public-flow-item-editor-detail-input').fill('가족과 견적을 확인하고 최종 업체를 적어둡니다.');
+    await editor.getByTestId('public-flow-item-editor-title-input').fill('학습 범위 최종 정리');
+    await editor.getByTestId('public-flow-item-editor-detail-input').fill('필기와 실기 범위를 확인하고 약한 단원을 적어둡니다.');
     await editor.getByTestId('public-flow-item-editor-date-input').fill('2030-08-15');
     await capture(page, 'p35-r2-item-editor-390.png');
     await editor.getByTestId('public-flow-item-editor-save').click();
@@ -91,7 +91,7 @@ test.describe('P35-R2 contextual public item personalization', () => {
     const parentItem = parentEditor.locator(
       `[data-testid="public-flow-adjustment-item-row"][data-item-id="${itemId}"]`,
     );
-    await expect(parentItem).toContainText('이사 방식 최종 결정');
+    await expect(parentItem).toContainText('학습 범위 최종 정리');
     await expect(parentItem).toContainText('8월 15일');
     await parentEditor.getByTestId('public-flow-adjustment-apply').click();
 
@@ -99,7 +99,7 @@ test.describe('P35-R2 contextual public item personalization', () => {
     const editedRow = preview.locator(
       `[data-testid="flow-capability-artifact-preview-row"][data-item-id="${itemId}"]`,
     );
-    await expect(editedRow).toContainText('이사 방식 최종 결정');
+    await expect(editedRow).toContainText('학습 범위 최종 정리');
 
     await page.getByTestId('public-flow-adjust-entry-mobile').click();
     const reopenedParentEditor = page.getByTestId('public-flow-personal-adjustment');
@@ -116,7 +116,7 @@ test.describe('P35-R2 contextual public item personalization', () => {
     await expect(page.getByTestId('public-flow-adjust-entry-mobile')).toBeFocused();
 
     const saveBanner = await savePublicFlow(page, page.getByTestId('public-flow-save-primary-mobile'));
-    await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toContainText('24');
+    await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toHaveText('저장됨 · 9개');
     const personalCopyKey = new URL(page.url()).searchParams.get('flow') ?? '';
     expect(personalCopyKey).toMatch(/^personal-copy:/u);
     await page.reload();
@@ -132,8 +132,8 @@ test.describe('P35-R2 contextual public item personalization', () => {
       return entry ? { key: entry[0], value: entry[1] } : null;
     }, { savedItemId: itemId });
     expect(stored?.value).toEqual({
-      title: '이사 방식 최종 결정',
-      memo: '가족과 견적을 확인하고 최종 업체를 적어둡니다.',
+      title: '학습 범위 최종 정리',
+      memo: '필기와 실기 범위를 확인하고 약한 단원을 적어둡니다.',
       date: '2030-08-15',
     });
 
@@ -143,13 +143,15 @@ test.describe('P35-R2 contextual public item personalization', () => {
       `/my?view=flows&flow=${encodeURIComponent(personalCopyKey)}`,
     );
     const savedWorkspace = await openMyFlowLibraryFlow(page, personalCopyKey, 'plan');
-    await expect(savedWorkspace).toContainText('이사 방식 최종 결정');
+    await expect(savedWorkspace).toContainText('학습 범위 최종 정리');
     await expect(savedWorkspace).toContainText('8월 15일');
     await capture(page, 'p35-r2-my-flow-personalized-390.png');
     const savedRecord = await page.evaluate((copyKey) => JSON.parse(
       window.localStorage.getItem(`flow:saved:${copyKey}`) || 'null',
     ) as { anchor?: string; dateIntent?: string } | null, personalCopyKey);
     expect(savedRecord).toMatchObject({
+      sourceFlowSlug: 'computer-skills-d30-study',
+      savedItemCount: 9,
       anchor: '2030-09-01',
       dateIntent: 'custom',
     });
@@ -161,7 +163,7 @@ test.describe('P35-R2 contextual public item personalization', () => {
     const editedDateCell = page.locator('.fc-daygrid-day[data-date="2030-08-15"]');
     await expect(editedDateCell.locator('.fc-event')).toHaveCount(1);
     await editedDateCell.getByTestId('my-flow-calendar-date-button').click();
-    await expect(page.getByTestId('my-flow-selected-date-group')).toContainText('이사 방식 최종 결정');
+    await expect(page.getByTestId('my-flow-selected-date-group')).toContainText('학습 범위 최종 정리');
     await expectPageQuality(page);
     expect(errors).toEqual([]);
   });
@@ -170,7 +172,7 @@ test.describe('P35-R2 contextual public item personalization', () => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 1024, height: 768 });
     await installLegacySavedPlanLibraryNavigation(page);
-    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/computer-skills-d30-study');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
     await page.getByTestId('public-flow-anchor-input').fill('2030-09-01');

@@ -3,10 +3,12 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 import { FLOW_EXPORT_RECEIPT_CLEANUP_JOURNAL_STORAGE_KEY } from '../../lib/flow/export-receipt-cleanup-journal';
 import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
 
-const SOURCE_FLOW_SLUG = 'moving-d30-basic';
-const SOURCE_ROUTE = `/f/${SOURCE_FLOW_SLUG}`;
-const SAVED_FLOW_KEY = `flow:saved:${SOURCE_FLOW_SLUG}`;
-const ANCHOR_KEY = `flow:${SOURCE_FLOW_SLUG}:anchorDate`;
+const HISTORICAL_FLOW_SLUG = 'moving-d30-basic';
+const NEW_PUBLIC_FLOW_SLUG = 'computer-skills-d30-study';
+const NEW_PUBLIC_ROUTE = `/f/${NEW_PUBLIC_FLOW_SLUG}`;
+const NEW_PUBLIC_ITEM_COUNT = 9;
+const SAVED_FLOW_KEY = `flow:saved:${HISTORICAL_FLOW_SLUG}`;
+const ANCHOR_KEY = `flow:${HISTORICAL_FLOW_SLUG}:anchorDate`;
 const DATE_OVERRIDES_KEY = 'flow:my-flow:date-overrides';
 const MIXED_HELD_ITEM_ID = 'flow-moving-item-0';
 const MIXED_HELD_ITEM_SOURCE_DATE = '2031-08-02';
@@ -183,7 +185,7 @@ async function resetAndOpenPublic(
 ): Promise<Locator> {
   await page.setViewportSize(MOBILE_VIEWPORT);
   const legacySearch = [search, 'savedPlanLibrary=off'].filter(Boolean).join('&');
-  await page.goto(`${SOURCE_ROUTE}?${legacySearch}`);
+  await page.goto(`${NEW_PUBLIC_ROUTE}?${legacySearch}`);
   await page.evaluate(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
@@ -210,7 +212,7 @@ async function seedSavedMovingFlow(page: Page): Promise<void> {
       anchorKey,
       JSON.stringify({ mode: 'custom', anchor: '2031-09-01' }),
     );
-  }, { savedFlowKey: SAVED_FLOW_KEY, anchorKey: ANCHOR_KEY, slug: SOURCE_FLOW_SLUG });
+  }, { savedFlowKey: SAVED_FLOW_KEY, anchorKey: ANCHOR_KEY, slug: HISTORICAL_FLOW_SLUG });
 }
 
 async function openSavedTransferPanel(
@@ -223,8 +225,8 @@ async function openSavedTransferPanel(
   const viewport = options.viewport ?? MOBILE_VIEWPORT;
   const search = options.search ?? 'savedTransfer=on';
   await page.setViewportSize(viewport);
-  await page.goto(`/my?flow=${SOURCE_FLOW_SLUG}&savedPlanLibrary=off${search ? `&${search}` : ''}`);
-  const workspace = await openMyFlowLibraryFlow(page, SOURCE_FLOW_SLUG, 'record');
+  await page.goto(`/my?flow=${HISTORICAL_FLOW_SLUG}&savedPlanLibrary=off${search ? `&${search}` : ''}`);
+  const workspace = await openMyFlowLibraryFlow(page, HISTORICAL_FLOW_SLUG, 'record');
   const entry = workspace.getByTestId('my-flow-export-entry');
   await expect(entry).toBeVisible();
   await entry.click();
@@ -448,8 +450,8 @@ test.describe('P35 P0-09 quick local result and saved transfer', () => {
     await expect(page.locator('main[data-p35-q1-quick-eligible="true"]')).toBeVisible();
     const manifest = await readCapabilityManifest(capability);
     expect(manifest.destination).toBe('checklist');
-    expect(manifest.itemIds.split(',').filter(Boolean)).toHaveLength(24);
-    expect(manifest.outputCount).toBe('24');
+    expect(manifest.itemIds.split(',').filter(Boolean)).toHaveLength(NEW_PUBLIC_ITEM_COUNT);
+    expect(manifest.outputCount).toBe(String(NEW_PUBLIC_ITEM_COUNT));
 
     const quickEntry = page.getByTestId('public-flow-quick-result-entry');
     await expect(quickEntry).toBeVisible();
@@ -479,7 +481,7 @@ test.describe('P35 P0-09 quick local result and saved transfer', () => {
     await expect(feedback).toHaveAttribute('data-outcome', 'success');
     const clipboard = await clipboardState(page);
     expect(clipboard.writes).toBe(1);
-    expect((clipboard.text.match(/^- \[[ x]\] /gmu) ?? []).length).toBe(24);
+    expect((clipboard.text.match(/^- \[[ x]\] /gmu) ?? []).length).toBe(NEW_PUBLIC_ITEM_COUNT);
     expect(await rawStorageSnapshot(page)).toEqual(storageBefore);
     expect(await storageMutationLog(page)).toEqual([]);
     expect(await historySnapshot(page)).toEqual(historyBefore);
@@ -519,7 +521,7 @@ test.describe('P35 P0-09 quick local result and saved transfer', () => {
     await expectTransferMetadata(feedback, manifest, 'flow');
     const clipboard = await clipboardState(page);
     expect(clipboard.writes).toBe(1);
-    expect(clipboard.text).toContain('할 일 24개');
+    expect(clipboard.text).toContain(`할 일 ${NEW_PUBLIC_ITEM_COUNT}개`);
     expect(clipboard.text).toMatch(/\n1\. /u);
     expect(clipboard.text).not.toMatch(/^- \[[ x]\] /gmu);
     expect(await rawStorageSnapshot(page)).toEqual(storageBefore);
@@ -534,7 +536,7 @@ test.describe('P35 P0-09 quick local result and saved transfer', () => {
     const editor = page.getByTestId('public-flow-personal-adjustment');
     await expect(editor).toBeVisible();
     await editor.getByTestId('public-flow-adjustment-kind-name').click();
-    await editor.getByTestId('public-flow-adjustment-name-input').fill('우리 가족 이사 준비 확인본');
+    await editor.getByTestId('public-flow-adjustment-name-input').fill('내 컴활 준비 확인본');
     await editor.getByTestId('public-flow-adjustment-apply').click();
 
     await expect(page.locator('main[data-p35-q1-quick-eligible="false"]')).toBeVisible();
@@ -694,7 +696,7 @@ test.describe('P35 P0-09 quick local result and saved transfer', () => {
     expect(requests).toEqual([]);
 
     await page.reload();
-    const reopened = await openMyFlowLibraryFlow(page, SOURCE_FLOW_SLUG, 'record');
+    const reopened = await openMyFlowLibraryFlow(page, HISTORICAL_FLOW_SLUG, 'record');
     await reopened.getByTestId('my-flow-export-entry').click();
     receipt = reopened.getByTestId('my-flow-transfer-receipt');
     await expect(receipt).toBeVisible();
@@ -713,7 +715,7 @@ test.describe('P35 P0-09 quick local result and saved transfer', () => {
         JSON.stringify({ [overrideKey]: fixture.removedOverride }),
       );
     }, {
-      slug: SOURCE_FLOW_SLUG,
+      slug: HISTORICAL_FLOW_SLUG,
       itemId: MIXED_HELD_ITEM_ID,
       sourceDate: MIXED_HELD_ITEM_SOURCE_DATE,
       dateOverridesKey: DATE_OVERRIDES_KEY,
@@ -749,7 +751,7 @@ test.describe('P35 P0-09 quick local result and saved transfer', () => {
     await outcome.getByTestId('flow-transfer-success-close').click();
 
     await page.reload();
-    const reopened = await openMyFlowLibraryFlow(page, SOURCE_FLOW_SLUG, 'record');
+    const reopened = await openMyFlowLibraryFlow(page, HISTORICAL_FLOW_SLUG, 'record');
     await reopened.getByTestId('my-flow-export-entry').click();
     const receipt = reopened.getByTestId('my-flow-transfer-receipt');
     await expect(receipt).toHaveAttribute('data-transfer-request-id', requestId!);
@@ -862,7 +864,7 @@ test.describe('P35 P0-09 quick local result and saved transfer', () => {
 
     await openArchivedInventory(page);
     const archivedRow = page.locator(
-      `[data-testid="my-flow-mobile-archived-row"][data-flow-slug="${SOURCE_FLOW_SLUG}"]`,
+      `[data-testid="my-flow-mobile-archived-row"][data-flow-slug="${HISTORICAL_FLOW_SLUG}"]`,
     );
     await expect(archivedRow).toBeVisible();
     const archivedMenu = archivedRow.getByTestId('my-flow-archived-management-menu');
@@ -897,7 +899,7 @@ test.describe('P35 P0-09 quick local result and saved transfer', () => {
     await management.getByTestId('my-flow-archive-toggle').click();
     await openArchivedInventory(page);
     const archivedRow = page.locator(
-      `[data-testid="my-flow-mobile-archived-row"][data-flow-slug="${SOURCE_FLOW_SLUG}"]`,
+      `[data-testid="my-flow-mobile-archived-row"][data-flow-slug="${HISTORICAL_FLOW_SLUG}"]`,
     );
     const archivedMenu = archivedRow.getByTestId('my-flow-archived-management-menu');
     await archivedMenu.locator('summary').click();
@@ -942,7 +944,7 @@ test.describe('P35 P0-09 quick local result and saved transfer', () => {
     await management.getByTestId('my-flow-archive-toggle').click();
     await openArchivedInventory(page);
     const archivedRow = page.locator(
-      `[data-testid="my-flow-mobile-archived-row"][data-flow-slug="${SOURCE_FLOW_SLUG}"]`,
+      `[data-testid="my-flow-mobile-archived-row"][data-flow-slug="${HISTORICAL_FLOW_SLUG}"]`,
     );
     const archivedMenu = archivedRow.getByTestId('my-flow-archived-management-menu');
     await archivedMenu.locator('summary').click();
@@ -1009,7 +1011,7 @@ test.describe('P35 P0-09 quick local result and saved transfer', () => {
     await management.getByTestId('my-flow-archive-toggle').click();
     await openArchivedInventory(page);
     const archivedRow = page.locator(
-      `[data-testid="my-flow-mobile-archived-row"][data-flow-slug="${SOURCE_FLOW_SLUG}"]`,
+      `[data-testid="my-flow-mobile-archived-row"][data-flow-slug="${HISTORICAL_FLOW_SLUG}"]`,
     );
     const archivedMenu = archivedRow.getByTestId('my-flow-archived-management-menu');
     await archivedMenu.locator('summary').click();
@@ -1071,14 +1073,14 @@ test.describe('P35 P0-09 quick local result and saved transfer', () => {
 
     await seedSavedMovingFlow(page);
     await page.setViewportSize(TABLET_VIEWPORT);
-    await page.goto(`/my?flow=${SOURCE_FLOW_SLUG}&savedPlanLibrary=off&quickLocalResult=off`);
+    await page.goto(`/my?flow=${HISTORICAL_FLOW_SLUG}&savedPlanLibrary=off&quickLocalResult=off`);
     await expect(page.locator('main[data-p35-q1-saved-transfer="on"]')).toBeVisible();
-    let workspace = await openMyFlowLibraryFlow(page, SOURCE_FLOW_SLUG, 'record');
+    let workspace = await openMyFlowLibraryFlow(page, HISTORICAL_FLOW_SLUG, 'record');
     await expect(workspace.getByTestId('my-flow-export-entry')).toBeVisible();
 
-    await page.goto(`/my?flow=${SOURCE_FLOW_SLUG}&savedPlanLibrary=off&savedTransfer=off&quickLocalResult=on`);
+    await page.goto(`/my?flow=${HISTORICAL_FLOW_SLUG}&savedPlanLibrary=off&savedTransfer=off&quickLocalResult=on`);
     await expect(page.locator('main[data-p35-q1-saved-transfer="off"]')).toBeVisible();
-    workspace = await openMyFlowLibraryFlow(page, SOURCE_FLOW_SLUG, 'record');
+    workspace = await openMyFlowLibraryFlow(page, HISTORICAL_FLOW_SLUG, 'record');
     await workspace.getByTestId('my-flow-export-entry').click();
     await expect(workspace.getByTestId('my-flow-export-panel')).toHaveAttribute(
       'data-saved-transfer-surface',
@@ -1086,7 +1088,7 @@ test.describe('P35 P0-09 quick local result and saved transfer', () => {
     );
     await expect(workspace.getByTestId('my-flow-transfer-confirmation')).toHaveCount(0);
 
-    await page.goto(`/my?flow=${SOURCE_FLOW_SLUG}&savedPlanLibrary=off&savedTransfer=OFF`);
+    await page.goto(`/my?flow=${HISTORICAL_FLOW_SLUG}&savedPlanLibrary=off&savedTransfer=OFF`);
     await expect(page.locator('main[data-p35-q1-saved-transfer="on"]')).toBeVisible();
   });
 

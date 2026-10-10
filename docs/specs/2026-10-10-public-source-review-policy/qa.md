@@ -1,5 +1,26 @@
 # 승인 범위 1단계 검사
 
+## 신규 보류 정책과 기존 개인 계획을 분리한 후속 검사 — 2026-10-10 11:59 UTC
+
+게시 `bd3e86c95cc6c332f56e57d7ae34c355458e5159` / build `FhhLtchHkeyC-MSugfNJn`의 CI `38044068964`는 전체 성공이 아니다. Docs/Unit/Build·private catalog·required gate는 성공했지만 일반 E2E는 기존 45분 제한으로 취소됐다. 중단 전 425/760과 실패 39개의 원시 로그를 보존했다. 시간 제한·workflow·skip·제품 guard를 바꾸지 않았다.
+
+이번 후속은 test spec 42개와 기존 개인 계획용 helper 1개다. 제품 runtime은 bd3와 같다. 신규 저장은 현재 적격 source와 정확 개수로 확인하고, 보류 source의 과거 개인 계획은 격리 저장소에 한 번만 설치해 reload·편집·Undo에서 덮어쓰지 않는다. `savedPlanLibrary=off`의 legacy UI와 기본 새 UI는 서로 바꾸지 않았다. 현재 신규 저장 PASS를 기존 원문·24개 Item·canonical origin·숨겨진 완료행 Undo의 대체 증거로 쓰지 않는다.
+
+| 후속 원장 | 실제 결과 | 연결한 범위 |
+| --- | --- | --- |
+| `legacy-policy-contract-repair-p26-v3-and-remaining-four/receipt.json` | 42 PASS/0 FAIL | 앞선 default/legacy UI 혼동을 정정한 선택 사례. 처음 v2의 10 PASS/9 FAIL은 보존. |
+| `legacy-policy-contract-repair-current-public-three-and-share/receipt.json` | 42 PASS/0 FAIL | 현재 적격 결과·저장과 보류 직접 경로의 404/쓰기0을 분리. |
+| `legacy-policy-contract-repair-p0-r-public-current-first/receipt.json` | 148 PASS/2 FAIL | 원본 canonical registry와 quick eligibility가 다른 시험 자료를 같은 것으로 기대한 두 실패. |
+| `legacy-policy-contract-repair-final-temporal-historical-p1/receipt.json` | 14 PASS/1 FAIL | 짧은 computer9에서 계속 보이는 완료행에 숨김/Undo 안내를 기대한 fixture 불일치. |
+| `legacy-policy-contract-repair-canonical-and-current-quick-correction/receipt.json` | 20 PASS/0 FAIL | 기존 moving24의 실제 날짜 갱신 writer에서 정확 origin 생성, NEW computer9의 origin 미생성, wedding6의 실제 quick 상태와 held source 보호. |
+| `legacy-policy-contract-repair-temporal-new-historical-split-final/receipt.json` | 4 PASS/0 FAIL | 신규 computer9 날짜·저장과 기존 moving24 완료/Undo/reload/Calendar/재열기·순서를 별도 검증. |
+
+각 실행의 source/raw/results 전후 SHA를 로컬 원장에 유지한다. 실행을 합산해 고유 PASS 수로 부풀리지 않는다. 초기 source-bound 실행과 이후 확장된 ignored test config의 SHA가 다른 사실도 구분한다. 원문 robots 검사는 모든 meta tag의 noindex를 확인하며 duplicate locator 실패를 optional assertion으로 바꾸지 않았다.
+
+보류 fridge의 옛 공개 quick-disabled UI는 현재 신규 경로가 닫혀 미실행이다. wedding의 성공으로 그 UI를 대체하지 않는다. 원 fridge/passport의 source ID·내용과 held 404·저장 불변 검사는 남겼다. 생성된 합성 화면 PNG 17개는 로컬 원장·복구 가능한 Git 보관본으로 보존하고 이번 공개 후보에서는 제외했다.
+
+이 검사는 격리 브라우저·합성 저장소이며 실계정/실서버 쓰기0다. 이후 정상 hook/build·정확 새 HEAD의 CI·게시판본 화면·Alpha 전환/복귀/최종 제공·수정판 실계정 날짜/반복 저장과 새 접속은 별도로 확인해야 한다. 실물폰·OS IME·관찰 사용자 결과는 미검증이다.
+
 ## 후속 CI·기존 저장 계획 보호 — 2026-10-10 10:01 UTC
 
 정확 게시97 CI 실패는 보존한다. 원 private 319파일 3339사례의 최초 60FAIL을 source fixture·메뉴·locator 정합으로 수정한 뒤 full3339 PASS를 확인했다. 이후 실제 기존 계획 readiness 결함을 별도 수정했으며 관련5파일 155 PASS와 원 브라우저9 PASS, type/build `8KyEHtzVrNPqT3T6iEugM`을 확인했다. full3339를 이후 제품 수정까지의 성공으로 전용하지 않는다.

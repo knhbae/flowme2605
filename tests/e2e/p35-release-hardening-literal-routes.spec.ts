@@ -2,8 +2,8 @@ import { expect, test, type Page } from '@playwright/test';
 
 import { gotoLegacySavedPlanLibraryRoute } from './helpers/my-flow-library';
 
-async function saveRealMovingFlow(page: Page): Promise<string> {
-  await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
+async function saveRealStudyFlow(page: Page): Promise<string> {
+  await gotoLegacySavedPlanLibraryRoute(page, '/f/computer-skills-d30-study');
   await page.evaluate(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
@@ -18,6 +18,9 @@ async function saveRealMovingFlow(page: Page): Promise<string> {
   ), personalCopyKey);
   expect(savedRecord).toMatchObject({
     slug: personalCopyKey,
+    sourceFlowSlug: 'computer-skills-d30-study',
+    savedItemCount: 9,
+    selectedArtifactMode: 'calendar',
     anchor: '2030-09-01',
   });
   return personalCopyKey;
@@ -35,7 +38,7 @@ async function readFlowLocalStorageSnapshot(page: Page): Promise<string> {
 test.describe('P35 release hardening literal routes', () => {
   test('literal /my canonicalizes a real saved Flow into the approved next-sorted library', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    const personalCopyKey = await saveRealMovingFlow(page);
+    const personalCopyKey = await saveRealStudyFlow(page);
 
     await page.goto('/my');
     await expect(page).toHaveURL('/my?sort=next');
@@ -55,7 +58,7 @@ test.describe('P35 release hardening literal routes', () => {
 
   test('literal /my?savedPlanLibrary=off preserves flow:* bytes for a fresh one-Flow public save', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await saveRealMovingFlow(page);
+    await saveRealStudyFlow(page);
     const storageBeforeRollback = await readFlowLocalStorageSnapshot(page);
     expect(storageBeforeRollback).not.toBe('[]');
 

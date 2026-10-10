@@ -9,6 +9,7 @@ import {
   openMyFlowLibraryFlow,
 } from './helpers/my-flow-library';
 import { savePublicFlow } from './helpers/public-flow-save';
+import { openExistingPublicPlan } from './helpers/existing-public-plan';
 
 const evidenceRoot = process.env.FLOWME_P33_EVIDENCE_DIR;
 const runtimeErrorsByPage = new WeakMap<Page, string[]>();
@@ -46,52 +47,75 @@ async function expectNoHorizontalOverflow(page: Page) {
 }
 
 test.describe('P33 cross-entry canonical alignment', () => {
-  test('legacy AJD routes resolve to the one 24-item public detail', async ({ page }) => {
+  test('legacy AJD aliases keep canonical identity but block NEW public start', async ({ page }) => {
     test.setTimeout(60_000);
+    await page.goto('/flows');
+    await clearLocalState(page);
+    const savedBefore = await page.evaluate(() => Object.keys(localStorage)
+      .filter(key => key.startsWith('flow:saved:')).sort()
+      .map(key => [key, localStorage.getItem(key)]));
     const aliases = [
       '/flow-maps/moving-d30',
       '/flow-maps/curated-ajd-moving-d30',
       '/f/source-backed-moving-d30',
       '/f/curated-ajd-moving-d30',
+      '/f/moving-d30-basic',
     ];
 
     for (const alias of aliases) {
-      await page.goto(alias);
-      await expect(page).toHaveURL('/f/moving-d30-basic');
-      await expect(page.getByTestId('public-flow-capability-result').locator(
-        '[data-testid="flow-capability-result-choice"][data-capability-candidate-role="primary"]',
-      )).toHaveAttribute('data-capability-output-count', '24');
+      const response = await page.request.get(alias);
+      expect(response.status()).toBe(404);
+      expect(new URL(response.url()).pathname).toBe('/f/moving-d30-basic');
+      const html = await response.text();
+      expect(html).not.toContain('data-testid="public-flow-capability-result"');
+      expect(html).not.toContain('data-testid="public-flow-save-primary"');
+      expect(html).not.toContain('data-testid="public-flow-save-primary-mobile"');
     }
+    expect(await page.evaluate(() => Object.keys(localStorage)
+      .filter(key => key.startsWith('flow:saved:')).sort()
+      .map(key => [key, localStorage.getItem(key)]))).toEqual(savedBefore);
   });
 
-  test('Flow finding exposes one canonical AJD moving card and the shared detail', async ({ page }) => {
+  test('Flow finding hides held AJD NEW entry and URL lookup cannot create a private plan', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/flows');
     await clearLocalState(page);
     await page.getByTestId('flow-url-lookup-input').fill('이사 D-30');
 
     const results = page.getByTestId('flow-catalog-browse-results');
-    const movingCards = results
-      .getByTestId('single-flow-catalog-card')
-      .filter({ hasText: '이사 D-30 준비' });
-    await expect(movingCards).toHaveCount(1);
-    await expect(movingCards.getByTestId('flow-card-support-meta')).toContainText('할 일 24개');
+    await expect(results.getByTestId('single-flow-catalog-card').filter({ hasText: '이사 D-30 준비' })).toHaveCount(0);
     await expect(results.getByTestId('flow-map-catalog-card').filter({ hasText: '이사 D-30' })).toHaveCount(0);
-
-    await movingCards.getByRole('link', { name: /이사 D-30 준비.*더보기/ }).click();
-    await expect(page).toHaveURL('/f/moving-d30-basic');
-    await expect(page.getByTestId('public-flow-capability-result').locator(
-      '[data-testid="flow-capability-result-choice"][data-capability-candidate-role="primary"]',
-    )).toHaveAttribute('data-capability-output-count', '24');
-    await capture(page, 'p33-02-find-to-canonical-moving-390.png');
+    const savedBefore = await page.evaluate(() => Object.keys(localStorage)
+      .filter(key => key.startsWith('flow:saved:')).sort()
+      .map(key => [key, localStorage.getItem(key)]));
+    await page.getByTestId('flow-url-lookup-input').fill(
+      'https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363',
+    );
+    await page.getByTestId('flow-url-lookup-entry').getByRole('button', { name: '계획 찾기' }).click();
+    const heldResult = page.getByTestId('flow-url-lookup-result');
+    await expect(heldResult).toContainText('출처 재검토 중');
+    await expect(heldResult).toContainText('새 저장 중지');
+    await expect(heldResult.getByRole('link', { name: '미리보기에서 편집' })).toHaveCount(0);
+    await expect(heldResult.getByTestId('flow-url-quick-start')).toHaveCount(0);
+    expect(await page.evaluate(() => Object.keys(localStorage)
+      .filter(key => key.startsWith('flow:saved:')).sort()
+      .map(key => [key, localStorage.getItem(key)]))).toEqual(savedBefore);
+    for (const heldSlug of ['used-car-buying-check', 'overseas-safety-register']) {
+      const response = await page.request.get(`/f/${heldSlug}`);
+      expect(response.status()).toBe(404);
+      const html = await response.text();
+      expect(html).not.toContain('data-testid="public-flow-capability-result"');
+      expect(html).not.toContain('data-testid="public-flow-save-primary"');
+    }
+    await capture(page, 'p33-02-held-ajd-discovery-390.png');
     await expectNoHorizontalOverflow(page);
   });
 
-  test('moving and vehicle persist their one natural public result', async ({ page }) => {
+  test('eligible wedding and vehicle persist their one natural public result', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
 
     for (const candidate of [
-      { slug: 'moving-d30-basic', expectedCount: 24, initialShape: 'checklist', savedShape: 'calendar' },
+      { slug: 'curated-wedding-naver-timeline', expectedCount: 6, initialShape: 'checklist', savedShape: 'calendar' },
       { slug: 'vehicle-inspection-prep', expectedCount: 10, initialShape: 'checklist', savedShape: 'checklist' },
     ]) {
       await gotoLegacySavedPlanLibraryRoute(page, `/f/${candidate.slug}`);
@@ -104,7 +128,7 @@ test.describe('P33 cross-entry canonical alignment', () => {
       await expect(preview.locator(
         '[data-testid="flow-capability-result-choice"][data-capability-candidate-role="primary"]',
       )).toHaveAttribute('data-capability-output-count', String(candidate.expectedCount));
-      if (candidate.slug === 'moving-d30-basic') {
+      if (candidate.slug === 'curated-wedding-naver-timeline') {
         await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
         await expect(preview).toHaveAttribute(
           'data-capability-primary-destination',
@@ -229,15 +253,12 @@ test.describe('P33 cross-entry canonical alignment', () => {
     await expectNoHorizontalOverflow(page);
   });
 
-  test('direct save handoff, My Flow, Calendar, and export keep the canonical 24-item identity', async ({ page }) => {
+  test('existing My Flow, Calendar, and export keep the historical canonical 24-item identity', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await installLegacySavedPlanLibraryNavigation(page);
-    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
-    await clearLocalState(page);
-    await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
-    const saveBanner = await savePublicFlow(page, page.getByTestId('public-flow-save-primary'));
-    await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toHaveText('저장됨 · 24개');
-    const personalCopyKey = new URL(page.url()).searchParams.get('flow') ?? '';
+    const personalCopyKey = await openExistingPublicPlan(page);
+    await expect(page.getByTestId('public-flow-hero')).toHaveCount(0);
+    await expect(page.getByTestId('my-flow-save-banner')).toHaveCount(0);
     expect(personalCopyKey).toMatch(/^personal-copy:/u);
     const savedRecord = await page.evaluate((copyKey) => JSON.parse(
       window.localStorage.getItem(`flow:saved:${copyKey}`) || 'null',

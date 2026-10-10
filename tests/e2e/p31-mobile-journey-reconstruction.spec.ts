@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 
 import { expect, test, type Locator, type Page } from '@playwright/test';
+import { openExistingPublicPlan } from './helpers/existing-public-plan';
 import {
   expandMyFlowWholePlan,
   getMyFlowVisibleExecutionRows,
@@ -187,14 +188,7 @@ test.describe('P31 mobile journey reconstruction', () => {
     page.on('pageerror', (error) => errors.push(error.message));
 
     await page.setViewportSize({ width: 390, height: 844 });
-    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
-    await page.evaluate(() => window.localStorage.clear());
-    await page.reload();
-
-    await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
-    const saveBanner = await savePublicFlow(page, page.getByTestId('public-flow-save-primary-mobile'));
-    await openSavedPublicFlow(page, saveBanner);
-    const personalCopyKey = new URL(page.url()).searchParams.get('flow') ?? '';
+    const personalCopyKey = await openExistingPublicPlan(page);
     expect(personalCopyKey).toMatch(/^personal-copy:/u);
 
     let flow = await openMyFlowLibraryFlow(page, 'moving-d30-basic');

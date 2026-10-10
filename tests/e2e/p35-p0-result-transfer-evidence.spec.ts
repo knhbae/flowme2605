@@ -5,8 +5,9 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 
 import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
 
-const FLOW_SLUG = 'moving-d30-basic';
-const PUBLIC_ROUTE = `/f/${FLOW_SLUG}`;
+const HISTORICAL_FLOW_SLUG = 'moving-d30-basic';
+const NEW_PUBLIC_FLOW_SLUG = 'computer-skills-d30-study';
+const PUBLIC_ROUTE = `/f/${NEW_PUBLIC_FLOW_SLUG}`;
 const RECEIPT_STORAGE_KEY = 'flow:export-receipts:v1';
 const screenshotDir = path.join(
   process.cwd(),
@@ -93,7 +94,7 @@ async function seedSavedFlow(page: Page): Promise<void> {
       `flow:${slug}:anchorDate`,
       JSON.stringify({ mode: 'custom', anchor: '2031-09-01' }),
     );
-  }, FLOW_SLUG);
+  }, HISTORICAL_FLOW_SLUG);
 }
 
 async function openPublic(page: Page): Promise<void> {
@@ -107,8 +108,8 @@ async function openPublic(page: Page): Promise<void> {
 }
 
 async function openSavedTransferPanel(page: Page): Promise<Locator> {
-  await page.goto(`/my?flow=${FLOW_SLUG}&savedPlanLibrary=off&savedTransfer=on`);
-  const workspace = await openMyFlowLibraryFlow(page, FLOW_SLUG, 'record');
+  await page.goto(`/my?flow=${HISTORICAL_FLOW_SLUG}&savedPlanLibrary=off&savedTransfer=on`);
+  const workspace = await openMyFlowLibraryFlow(page, HISTORICAL_FLOW_SLUG, 'record');
   await workspace.getByTestId('my-flow-export-entry').click();
   const panel = workspace.getByTestId('my-flow-export-panel');
   await expect(panel).toBeVisible();
@@ -227,7 +228,7 @@ test.describe('P35 P0-09 retained result-transfer evidence', () => {
     await page.getByTestId('public-flow-adjust-entry-mobile').click();
     const editor = page.getByTestId('public-flow-personal-adjustment');
     await editor.getByTestId('public-flow-adjustment-kind-name').click();
-    await editor.getByTestId('public-flow-adjustment-name-input').fill('우리 가족 이사 준비 확인본');
+    await editor.getByTestId('public-flow-adjustment-name-input').fill('내 컴활 준비 확인본');
     await editor.getByTestId('public-flow-adjustment-apply').click();
     await expect(page.locator('main[data-p35-q1-quick-eligible="false"]')).toBeVisible();
     await expect(page.getByTestId('public-flow-quick-result-entry')).toHaveCount(0);

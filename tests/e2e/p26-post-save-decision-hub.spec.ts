@@ -78,21 +78,20 @@ test('mobile public save opens one selected plan before Flow-level export', asyn
 test('wide dated public save opens the selected plan with schedule, outline, and actions', async ({ page }) => {
   await installLegacySavedPlanLibraryNavigation(page);
   await page.setViewportSize({ width: 1024, height: 768 });
-  await gotoLegacySavedPlanLibraryRoute(page, '/flow-maps/moving-d30');
-  await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
+  await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-wedding-naver-timeline');
   await page.evaluate(() => localStorage.clear());
   await page.reload();
-  await expect(page).toHaveURL(/\/f\/moving-d30-basic\?savedPlanLibrary=off$/u);
+  await expect(page).toHaveURL(/\/f\/curated-wedding-naver-timeline\?savedPlanLibrary=off$/u);
   await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
   const saveBanner = await savePublicFlow(page, page.getByTestId('public-flow-save-primary'));
-  await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toContainText('24');
+  await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toContainText('6');
   await expect(page.getByTestId('public-flow-saved-receipt')).toHaveCount(0);
-  await capture(page, '02-moving-decision-hub-wide.png');
+  await capture(page, '02-wedding-timeline-decision-hub-wide.png');
 
   await openSavedPublicFlow(page, saveBanner);
   await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
-  const flow = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'plan');
-  await expect(flow.getByTestId('my-flow-whole-flow-outline')).toHaveAttribute('data-effective-row-count', '24');
+  const flow = await openMyFlowLibraryFlow(page, 'curated-wedding-naver-timeline', 'plan');
+  await expect(flow.getByTestId('my-flow-whole-flow-outline')).toHaveAttribute('data-effective-row-count', '6');
 });
 
 test('legacy seeded multi-Flow receipt chooses an honest Flow scope before opening export', async ({ page }) => {

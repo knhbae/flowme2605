@@ -14,6 +14,8 @@ const evidenceRoot = process.env.FLOWME_P35_R9_EVIDENCE_DIR;
 type RowScenario = {
   id: 'calendar' | 'checklist' | 'routine' | 'sheet' | 'memo';
   slug: string;
+  publicSlug?: string;
+  publicDestination?: 'memo';
   publicShape: 'calendar' | 'checklist' | 'flow_execution' | 'sheet' | 'memo';
   savedMode: 'calendar' | 'checklist' | 'sheet' | 'memo';
   executable: boolean;
@@ -24,6 +26,7 @@ const scenarios: RowScenario[] = [
   {
     id: 'calendar',
     slug: 'moving-d30-basic',
+    publicSlug: 'computer-skills-d30-study',
     publicShape: 'checklist',
     savedMode: 'calendar',
     executable: true,
@@ -53,6 +56,8 @@ const scenarios: RowScenario[] = [
   {
     id: 'memo',
     slug: 'pet-health-observation',
+    publicSlug: 'curated-wedding-naver-timeline',
+    publicDestination: 'memo',
     publicShape: 'memo',
     savedMode: 'memo',
     executable: false,
@@ -106,7 +111,7 @@ test.describe('P35-R9 shared execution row grammar', () => {
   for (const scenario of scenarios) {
     test(`${scenario.id} uses preview-neutral and saved-row contracts`, async ({ page }) => {
       await page.setViewportSize({ width: 390, height: 844 });
-      await gotoLegacySavedPlanLibraryRoute(page, `/f/${scenario.slug}`);
+      await gotoLegacySavedPlanLibraryRoute(page, `/f/${scenario.publicSlug ?? scenario.slug}`);
       await page.evaluate(() => window.localStorage.clear());
       await page.reload();
 
@@ -121,6 +126,16 @@ test.describe('P35-R9 shared execution row grammar', () => {
         '[data-testid="flow-capability-result-choice"]'
           + '[data-capability-candidate-role="primary"]',
       )).toHaveCount(1);
+      if (scenario.publicDestination) {
+        await expect(capability).toHaveAttribute('data-public-format-mode', 'default');
+        await expect(capability).toHaveAttribute('data-capability-primary-destination', 'checklist');
+        const memo = capability.locator(
+          '[data-testid="flow-capability-result-choice"][data-capability-destination="memo"]',
+        );
+        await expect(memo).toHaveAttribute('data-capability-candidate-role', 'available');
+        await expect(memo).toHaveAttribute('data-capability-output-count', '6');
+        await memo.click();
+      }
       const selectedPreview = capability.getByTestId('flow-capability-selected-preview');
       const preview = selectedPreview.getByTestId('flow-capability-artifact-preview');
       await expect(preview).toHaveAttribute('data-selected-shape', scenario.publicShape);

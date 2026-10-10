@@ -47,7 +47,7 @@ async function expectNoHorizontalOverflow(page: Page) {
 test.describe('P28 shared save-before experience', () => {
   test('public Flow exposes one actual-data shape and single-kind pre-save adjustment', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-wedding-naver-timeline');
     await clearLocalState(page);
 
     const hero = page.getByTestId('public-flow-hero');
@@ -57,10 +57,10 @@ test.describe('P28 shared save-before experience', () => {
     let artifactPreview = selectedPreview.getByTestId('flow-capability-artifact-preview');
     await expect(capability).toHaveAttribute('data-capability-lifecycle', 'public_preview');
     await expect(capability).toHaveAttribute('data-capability-primary-destination', 'checklist');
-    await expect(capability.getByTestId('flow-capability-artifact-preview-row')).toHaveCount(24);
+    await expect(capability.getByTestId('flow-capability-artifact-preview-row')).toHaveCount(6);
     await expect(artifactPreview).not.toHaveAttribute('open', '');
-    await expect(capability.getByTestId('flow-capability-artifact-preview-expand')).toHaveAccessibleName('나머지 21개 보기');
-    await capture(page, '00-mobile-save-before-moving-compact.png');
+    await expect(capability.getByTestId('flow-capability-artifact-preview-expand')).toHaveAccessibleName('나머지 3개 보기');
+    await capture(page, '00-mobile-save-before-wedding-compact.png');
     await capability.getByTestId('flow-capability-artifact-preview-expand').click();
     await expect(capability.getByTestId('flow-capability-artifact-preview-row').last()).toBeVisible();
 
@@ -77,13 +77,13 @@ test.describe('P28 shared save-before experience', () => {
       .getByTestId('flow-capability-selected-preview')
       .getByTestId('flow-capability-artifact-preview');
     await expect(artifactPreview).toHaveAttribute('data-primary-shape', 'calendar');
-    await expect(artifactPreview.getByRole('heading', { name: '캘린더 · 24개' })).toBeVisible();
+    await expect(artifactPreview.getByRole('heading', { name: '캘린더 · 6개' })).toBeVisible();
 
     await expect(hero.getByRole('button', { name: /제목·날짜·메모 수정/ })).toHaveCount(0);
     await page.getByTestId('public-flow-adjust-entry-mobile').click();
     const adjustment = page.getByTestId('public-flow-personal-adjustment');
     await expect(adjustment).toHaveAttribute('data-adjustment-kind', 'name');
-    await adjustment.getByTestId('public-flow-adjustment-name-input').fill('우리 집 이사 준비');
+    await adjustment.getByTestId('public-flow-adjustment-name-input').fill('우리 결혼 준비');
     await expect(adjustment.locator('[data-testid="public-flow-adjustment-title"]')).toHaveCount(0);
     await expect(adjustment.locator('[data-testid="public-flow-adjustment-date"]')).toHaveCount(0);
     await adjustment.getByTestId('public-flow-adjustment-apply').click();
@@ -94,19 +94,19 @@ test.describe('P28 shared save-before experience', () => {
     const saved = await page.evaluate((flowSlug) => JSON.parse(
       window.localStorage.getItem(`flow:saved:${flowSlug}`) || 'null',
     ), personalCopyKey);
-    expect(saved.personalTitle).toBe('우리 집 이사 준비');
+    expect(saved.personalTitle).toBe('우리 결혼 준비');
     expect(saved.anchor).toBe('2030-08-15');
     expect(saved).toMatchObject({
       schemaVersion: 2,
       slug: personalCopyKey,
       personalCopyKey,
-      sourceFlowSlug: 'moving-d30-basic',
-      savedItemCount: 24,
+      sourceFlowSlug: 'curated-wedding-naver-timeline',
+      savedItemCount: 6,
     });
-    await expect(await openMyFlowLibraryFlow(page, personalCopyKey)).toContainText('우리 집 이사 준비');
+    await expect(await openMyFlowLibraryFlow(page, personalCopyKey)).toContainText('우리 결혼 준비');
     await expect(page.getByTestId('public-flow-saved-receipt')).toHaveCount(0);
     await expect(page.getByTestId('public-flow-hero')).toHaveCount(0);
-    await capture(page, '01-mobile-save-before-moving-adjustment.png');
+    await capture(page, '01-mobile-save-before-wedding-adjustment.png');
     await expectNoHorizontalOverflow(page);
   });
 
@@ -115,23 +115,23 @@ test.describe('P28 shared save-before experience', () => {
     await gotoLegacySavedPlanLibraryRoute(page, '/flows');
     await clearLocalState(page);
     await page.getByTestId('flow-url-lookup-input').fill(
-      'https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363',
+      'https://mathbang.net/13',
     );
     await page.getByTestId('flow-url-lookup-entry').getByRole('button', { name: '계획 찾기' }).click();
 
     const result = page.getByTestId('flow-url-lookup-result');
     const sharedWorkspaceLink = result.getByRole('link', { name: '미리보기에서 편집' });
-    await expect(sharedWorkspaceLink).toHaveAttribute('href', '/f/moving-d30-basic');
+    await expect(sharedWorkspaceLink).toHaveAttribute('href', '/f/source-backed-middle-school-math-1');
     await expect(result.getByTestId('flow-url-quick-start')).not.toHaveAttribute('open', '');
     await sharedWorkspaceLink.click();
-    await expect(page).toHaveURL(withLegacySavedPlanLibraryRoute('/f/moving-d30-basic'));
+    await expect(page).toHaveURL(withLegacySavedPlanLibraryRoute('/f/source-backed-middle-school-math-1'));
     await expect(page.getByTestId('public-flow-hero')).toHaveAttribute('data-experience-architecture', 'p35-result-first');
     await expectNoHorizontalOverflow(page);
   });
 
   test('wide save-before keeps the capability result without duplicate export or detail workspaces', async ({ page }) => {
     await page.setViewportSize({ width: 1024, height: 768 });
-    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-wedding-naver-timeline');
     await clearLocalState(page);
 
     const capability = page.getByTestId('public-flow-capability-result');
@@ -140,11 +140,11 @@ test.describe('P28 shared save-before experience', () => {
     await expect(capability.getByTestId('flow-capability-selected-preview')).toBeVisible();
     await expect(page.getByTestId('public-flow-detail-workspace')).toHaveCount(0);
     await expect(page.getByTestId('public-flow-export-secondary-entry')).toHaveCount(0);
-    await capture(page, '02-wide-save-before-moving.png');
+    await capture(page, '02-wide-save-before-wedding.png');
     await expectNoHorizontalOverflow(page);
 
     await page.setViewportSize({ width: 1440, height: 900 });
-    await capture(page, '02b-desktop-save-before-moving.png');
+    await capture(page, '02b-desktop-save-before-wedding.png');
     await expectNoHorizontalOverflow(page);
   });
 
@@ -293,10 +293,9 @@ test.describe('P28 shared save-before experience', () => {
     await page.setViewportSize({ width: 390, height: 844 });
     const cases = [
       { slug: 'curated-allblanc-morning-workout', shape: 'checklist', renderer: 'flow-artifact-checklist-preview' },
-      { slug: 'moving-d30-basic', shape: 'checklist', renderer: 'flow-artifact-checklist-preview' },
-      { slug: 'used-car-buying-check', shape: 'checklist', renderer: 'flow-artifact-checklist-preview' },
+      { slug: 'curated-wedding-naver-timeline', shape: 'checklist', renderer: 'flow-artifact-checklist-preview' },
+      { slug: 'vehicle-inspection-prep', shape: 'checklist', renderer: 'flow-artifact-checklist-preview' },
       { slug: 'source-backed-middle-school-math-1', shape: 'sheet', renderer: 'flow-artifact-sheet-preview' },
-      { slug: 'overseas-safety-register', shape: 'checklist', renderer: 'flow-artifact-checklist-preview' },
     ];
 
     for (const candidate of cases) {

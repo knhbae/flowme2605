@@ -261,7 +261,7 @@ test.describe('P34 execution CRUD', () => {
 
   test('public save-before keeps the artifact visible inside one atomic adjustment editor', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-wedding-naver-timeline');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
 
@@ -276,12 +276,12 @@ test.describe('P34 execution CRUD', () => {
       'P35-ATOMIC-FULL-HEIGHT-EDITOR',
     );
     await expect(adjustment).toHaveAttribute('data-editor-transaction', 'atomic');
-    await expect(adjustment.getByTestId('public-flow-adjustment-result-before')).toContainText('24개');
+    await expect(adjustment.getByTestId('public-flow-adjustment-result-before')).toContainText('6개');
     await adjustment.getByTestId('public-flow-adjustment-kind-anchor').click();
     await expect(adjustment.getByTestId('public-flow-adjustment-anchor-input')).toHaveValue('2030-08-15');
     await expect(adjustment.getByTestId('public-flow-adjustment-item-row')).toHaveCount(0);
     await expect(capability).toBeVisible();
-    await capture(page, 'p34-03-moving-adjust-390.png');
+    await capture(page, 'p34-03-wedding-adjust-390.png');
   });
 
   test('routine and portable export expose scope before advanced controls', async ({ page }) => {

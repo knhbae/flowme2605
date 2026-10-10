@@ -22,6 +22,7 @@ function formatLocalDate(date: Date): string {
 type ShapeScenario = {
   id: 'calendar' | 'checklist' | 'routine' | 'sheet' | 'memo';
   slug: string;
+  publicDestination?: 'memo';
   publicShape: 'calendar' | 'checklist' | 'flow_execution' | 'sheet' | 'memo';
   savedMode: 'calendar' | 'checklist' | 'sheet' | 'memo';
   itemCount: number;
@@ -34,12 +35,12 @@ type ShapeScenario = {
 const scenarios: ShapeScenario[] = [
   {
     id: 'calendar',
-    slug: 'moving-d30-basic',
+    slug: 'computer-skills-d30-study',
     publicShape: 'checklist',
     savedMode: 'calendar',
-    itemCount: 24,
+    itemCount: 9,
     primaryDestination: 'calendar',
-    preflightCount: 24,
+    preflightCount: 9,
     anchor: '2030-09-01',
     executionKind: 'nearest_date_group',
   },
@@ -74,14 +75,15 @@ const scenarios: ShapeScenario[] = [
     executionKind: 'current_and_next_row',
   },
   {
-    id: 'safety-checklist',
-    slug: 'overseas-safety-register',
-    publicShape: 'checklist',
-    savedMode: 'checklist',
-    itemCount: 4,
-    primaryDestination: 'checklist',
-    preflightCount: 4,
-    executionKind: 'next_items',
+    id: 'memo',
+    slug: 'curated-wedding-naver-timeline',
+    publicDestination: 'memo',
+    publicShape: 'memo',
+    savedMode: 'memo',
+    itemCount: 6,
+    primaryDestination: 'memo',
+    preflightCount: 6,
+    executionKind: 'none',
   },
 ];
 
@@ -254,6 +256,16 @@ test.describe('P35-R7 bounded revision final gate', () => {
         '[data-testid="flow-capability-result-choice"]'
           + '[data-capability-candidate-role="primary"]',
       )).toHaveCount(1);
+      if (scenario.publicDestination) {
+        await expect(capability).toHaveAttribute('data-public-format-mode', 'default');
+        await expect(capability).toHaveAttribute('data-capability-primary-destination', 'checklist');
+        const memo = capability.locator(
+          '[data-testid="flow-capability-result-choice"][data-capability-destination="memo"]',
+        );
+        await expect(memo).toHaveAttribute('data-capability-candidate-role', 'available');
+        await expect(memo).toHaveAttribute('data-capability-output-count', String(scenario.itemCount));
+        await memo.click();
+      }
       const selectedPreview = capability.getByTestId('flow-capability-selected-preview');
       const preview = selectedPreview.getByTestId('flow-capability-artifact-preview');
       await expect(preview).toHaveAttribute('data-selected-shape', scenario.publicShape);
@@ -412,90 +424,103 @@ test.describe('P35-R7 bounded revision final gate', () => {
         );
       }
 
-      const completionShell = scenario.id === 'routine'
-        ? workspace
-          .getByTestId('my-flow-routine-current-occurrence')
-          .getByTestId('my-flow-execution-row-shell')
-          .first()
-        : execution.getByTestId('my-flow-execution-row-shell').first();
-      await expect(completionShell.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
-      const completionItemId = await completionShell
-        .locator('article[data-item-id]')
-        .getAttribute('data-item-id');
-      expect(completionItemId).toBeTruthy();
-      const firstOccurrenceId = scenario.id === 'routine'
-        ? await workspace.getByTestId('my-flow-routine-current-occurrence').getAttribute('data-occurrence-id')
-        : null;
-      await completionShell.getByRole('button', { name: /열기/ }).click();
-      let detail = getOpenMyFlowItemDetail(page);
-      let completion = detail.getByTestId('my-flow-task-complete-control');
-      await expect(completion).toHaveCount(1);
-      await expect(page.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
-      await completion.click();
-
-      if (scenario.id === 'routine') {
-        await expect(page.getByTestId('my-flow-completion-snackbar')).toHaveAttribute(
-          'data-completion-result',
-          'completed',
-        );
-        await closeOpenMyFlowItemDetail(page);
-        await page.getByTestId('my-flow-completion-undo').click();
-        await expect(
-          workspace.getByTestId('my-flow-routine-current-occurrence'),
-        ).toHaveAttribute('data-occurrence-id', firstOccurrenceId ?? '');
-        await workspace
-          .getByTestId('my-flow-routine-current-occurrence')
-          .getByRole('button', { name: /열기/ })
-          .click();
-        detail = getOpenMyFlowItemDetail(page);
-        completion = detail.getByTestId('my-flow-task-complete-control');
+      if (scenario.executionKind !== 'none') {
+        const completionShell = scenario.id === 'routine'
+          ? workspace
+            .getByTestId('my-flow-routine-current-occurrence')
+            .getByTestId('my-flow-execution-row-shell')
+            .first()
+          : execution.getByTestId('my-flow-execution-row-shell').first();
+        await expect(completionShell.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+        const completionItemId = await completionShell
+          .locator('article[data-item-id]')
+          .getAttribute('data-item-id');
+        expect(completionItemId).toBeTruthy();
+        const firstOccurrenceId = scenario.id === 'routine'
+          ? await workspace.getByTestId('my-flow-routine-current-occurrence').getAttribute('data-occurrence-id')
+          : null;
+        await completionShell.getByRole('button', { name: /열기/ }).click();
+        let detail = getOpenMyFlowItemDetail(page);
+        let completion = detail.getByTestId('my-flow-task-complete-control');
         await expect(completion).toHaveCount(1);
-        await expect(completion).not.toBeChecked();
-        await closeOpenMyFlowItemDetail(page);
+        await expect(page.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
+        await completion.click();
+
+        if (scenario.id === 'routine') {
+          await expect(page.getByTestId('my-flow-completion-snackbar')).toHaveAttribute(
+            'data-completion-result',
+            'completed',
+          );
+          await closeOpenMyFlowItemDetail(page);
+          await page.getByTestId('my-flow-completion-undo').click();
+          await expect(
+            workspace.getByTestId('my-flow-routine-current-occurrence'),
+          ).toHaveAttribute('data-occurrence-id', firstOccurrenceId ?? '');
+          await workspace
+            .getByTestId('my-flow-routine-current-occurrence')
+            .getByRole('button', { name: /열기/ })
+            .click();
+          detail = getOpenMyFlowItemDetail(page);
+          completion = detail.getByTestId('my-flow-task-complete-control');
+          await expect(completion).toHaveCount(1);
+          await expect(completion).not.toBeChecked();
+          await closeOpenMyFlowItemDetail(page);
+        } else {
+          await expect(page.getByTestId('my-flow-completion-snackbar')).toHaveCount(0);
+          await expect(workspace.getByTestId('my-flow-workspace-progress-summary')).toContainText(
+            `전체 1/${scenario.itemCount} 완료`,
+          );
+          await closeOpenMyFlowItemDetail(page);
+          const planToggle = workspace.getByTestId('my-flow-workspace-plan-toggle');
+          if (!(await outline.isVisible().catch(() => false))) {
+            await expect(planToggle).toBeVisible();
+            await planToggle.click();
+            await expect(outline).toBeVisible();
+          }
+          const expandAll = outline.getByTestId('my-flow-whole-flow-toggle-all-groups');
+          let completedRow = outline.locator(
+            `article[data-item-id="${completionItemId}"]`,
+          );
+          if (
+            !(await completedRow.isVisible().catch(() => false))
+            && await expandAll.isVisible().catch(() => false)
+          ) {
+            await expandAll.click();
+            completedRow = outline.locator(`article[data-item-id="${completionItemId}"]`);
+          }
+          await expect(completedRow).toBeVisible();
+          await expect(completedRow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+          await completedRow.getByRole('button', { name: /열기/ }).click();
+          detail = getOpenMyFlowItemDetail(page);
+          const reopen = detail.getByTestId('my-flow-task-complete-control');
+          await expect(reopen).toHaveCount(1);
+          await expect(reopen).toBeChecked();
+          await reopen.click();
+          await expect(workspace.getByTestId('my-flow-workspace-progress-summary')).toContainText(
+            `전체 0/${scenario.itemCount} 완료`,
+          );
+          await closeOpenMyFlowItemDetail(page);
+          const reopenedRow = execution.locator(
+            `article[data-item-id="${completionItemId}"]`,
+          );
+          await expect(reopenedRow).toBeVisible();
+          await expect(reopenedRow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+          await expect(page.getByTestId('my-flow-completion-snackbar')).toHaveAttribute(
+            'data-completion-result',
+            'reopened',
+          );
+        }
       } else {
-        await expect(page.getByTestId('my-flow-completion-snackbar')).toHaveCount(0);
-        await expect(workspace.getByTestId('my-flow-workspace-progress-summary')).toContainText(
-          `전체 1/${scenario.itemCount} 완료`,
-        );
-        await closeOpenMyFlowItemDetail(page);
-        const planToggle = workspace.getByTestId('my-flow-workspace-plan-toggle');
-        if (!(await outline.isVisible().catch(() => false))) {
-          await expect(planToggle).toBeVisible();
-          await planToggle.click();
-          await expect(outline).toBeVisible();
-        }
-        const expandAll = outline.getByTestId('my-flow-whole-flow-toggle-all-groups');
-        let completedRow = outline.locator(
-          `article[data-item-id="${completionItemId}"]`,
-        );
-        if (
-          !(await completedRow.isVisible().catch(() => false))
-          && await expandAll.isVisible().catch(() => false)
-        ) {
-          await expandAll.click();
-          completedRow = outline.locator(`article[data-item-id="${completionItemId}"]`);
-        }
-        await expect(completedRow).toBeVisible();
-        await expect(completedRow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
-        await completedRow.getByRole('button', { name: /열기/ }).click();
-        detail = getOpenMyFlowItemDetail(page);
-        const reopen = detail.getByTestId('my-flow-task-complete-control');
-        await expect(reopen).toHaveCount(1);
-        await expect(reopen).toBeChecked();
-        await reopen.click();
-        await expect(workspace.getByTestId('my-flow-workspace-progress-summary')).toContainText(
-          `전체 0/${scenario.itemCount} 완료`,
-        );
-        await closeOpenMyFlowItemDetail(page);
-        const reopenedRow = execution.locator(
-          `article[data-item-id="${completionItemId}"]`,
-        );
-        await expect(reopenedRow).toBeVisible();
-        await expect(reopenedRow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
-        await expect(page.getByTestId('my-flow-completion-snackbar')).toHaveAttribute(
-          'data-completion-result',
-          'reopened',
-        );
+        // Memo is a non-execution projection; source-specific safety execution
+        // remains covered by the pre-review saved-record continuity case.
+        await expect(workspace.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
+        expect(savedItemIds.split(',').filter(Boolean)).toHaveLength(scenario.itemCount);
+        const savedRecord = await page.evaluate(slug => JSON.parse(
+          localStorage.getItem(`flow:saved:${slug}`) ?? 'null',
+        ), scenario.slug);
+        expect(savedRecord).toMatchObject({
+          slug: scenario.slug, selectedArtifactMode: 'memo',
+        });
       }
       await capture(page, `p35-r7-${scenario.id}-session3-workspace-390.png`);
       await expectPageQuality(page);

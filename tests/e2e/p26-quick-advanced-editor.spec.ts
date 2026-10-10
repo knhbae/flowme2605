@@ -2,13 +2,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { expect, test, type Locator, type Page } from '@playwright/test';
+import { openExistingPublicPlan } from './helpers/existing-public-plan';
 import {
   closeOpenMyFlowItemDetail,
   getOpenMyFlowItemDetail,
   gotoLegacySavedPlanLibraryRoute,
   installLegacySavedPlanLibraryNavigation,
   openMyFlowLibraryFlow,
-  withLegacySavedPlanLibraryRoute,
 } from './helpers/my-flow-library';
 
 const evidenceRoot = process.env.FLOWME_P26_10_EVIDENCE_DIR;
@@ -46,26 +46,7 @@ async function seedMovingFlow(page: Page) {
 }
 
 async function saveMovingPersonalCopy(page: Page): Promise<string> {
-  await gotoLegacySavedPlanLibraryRoute(page, '/flow-maps/moving-d30');
-  await gotoLegacySavedPlanLibraryRoute(page, '/f/moving-d30-basic');
-  await page.evaluate(() => window.localStorage.clear());
-  await page.reload();
-  await expect(page).toHaveURL(withLegacySavedPlanLibraryRoute('/f/moving-d30-basic'));
-  await page.getByLabel('이사일').fill('2026-08-15');
-  await page.getByTestId('public-flow-save-primary-mobile').click();
-  await expect.poll(() => {
-    const url = new URL(page.url());
-    return {
-      pathname: url.pathname,
-      view: url.searchParams.get('view'),
-      flow: url.searchParams.get('flow'),
-    };
-  }).toEqual({
-    pathname: '/my',
-    view: 'flows',
-    flow: expect.stringMatching(/^personal-copy:/u),
-  });
-  return new URL(page.url()).searchParams.get('flow') ?? '';
+  return openExistingPublicPlan(page, 'moving-d30-basic', { anchor: '2026-08-15' });
 }
 
 async function enterEditMode(detail: Locator) {

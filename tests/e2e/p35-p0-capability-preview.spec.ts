@@ -5,8 +5,10 @@ import {
   openMyFlowLibraryFlow,
 } from './helpers/my-flow-library';
 
-const SOURCE_FLOW_SLUG = 'moving-d30-basic';
-const SOURCE_ROUTE = `/f/${SOURCE_FLOW_SLUG}`;
+const HISTORICAL_SOURCE_FLOW_SLUG = 'moving-d30-basic';
+const NEW_PUBLIC_FLOW_SLUG = 'computer-skills-d30-study';
+const NEW_PUBLIC_ROUTE = `/f/${NEW_PUBLIC_FLOW_SLUG}`;
+const NEW_PUBLIC_ITEM_COUNT = 9;
 const MOBILE_VIEWPORT = { width: 390, height: 844 } as const;
 
 type RawStorageSnapshot = Readonly<{
@@ -22,7 +24,7 @@ type HistorySnapshot = Readonly<{
 
 async function resetAndOpenPublicPreview(
   page: Page,
-  route = SOURCE_ROUTE,
+  route = NEW_PUBLIC_ROUTE,
 ): Promise<Locator> {
   await page.setViewportSize(MOBILE_VIEWPORT);
   await gotoLegacySavedPlanLibraryRoute(page, route);
@@ -100,7 +102,7 @@ async function seedSavedMovingFlow(page: Page): Promise<void> {
       `flow:${fixture.slug}:anchorDate`,
       JSON.stringify({ mode: 'custom', anchor: fixture.anchor }),
     );
-  }, { slug: SOURCE_FLOW_SLUG, anchor: '2031-09-01' });
+  }, { slug: HISTORICAL_SOURCE_FLOW_SLUG, anchor: '2031-09-01' });
 }
 
 test.describe('P35 P0-07 capability result preview', () => {
@@ -118,7 +120,7 @@ test.describe('P35 P0-07 capability result preview', () => {
 
     const preview = await resetAndOpenPublicPreview(
       page,
-      `${SOURCE_ROUTE}?quickLocalResult=off`,
+      `${NEW_PUBLIC_ROUTE}?quickLocalResult=off`,
     );
     await expect(page.locator('main[data-p35-p007-capability-result="on"]')).toBeVisible();
     await expect(page.locator('main[data-p35-q1-quick-local="off"]')).toBeVisible();
@@ -131,7 +133,7 @@ test.describe('P35 P0-07 capability result preview', () => {
     );
     await expect(primary).toHaveCount(1);
     await expect(primary).toHaveAttribute('data-capability-destination', 'checklist');
-    await expect(primary).toHaveAttribute('data-capability-output-count', '24');
+    await expect(primary).toHaveAttribute('data-capability-output-count', String(NEW_PUBLIC_ITEM_COUNT));
 
     const immediateAvailable = preview.locator(
       '[data-testid="flow-capability-result-choice"]'
@@ -145,7 +147,10 @@ test.describe('P35 P0-07 capability result preview', () => {
     );
     await expect(conditionalCalendar).toHaveCount(1);
     await expect(conditionalCalendar).toHaveAttribute('data-capability-output-count', '0');
-    await expect(conditionalCalendar).toHaveAttribute('data-capability-expected-output-count', '24');
+    await expect(conditionalCalendar).toHaveAttribute(
+      'data-capability-expected-output-count',
+      String(NEW_PUBLIC_ITEM_COUNT),
+    );
     await expect(
       conditionalCalendar.getByTestId('flow-capability-conditional-edit'),
     ).toHaveAttribute('data-condition-action', 'edit_schedule');
@@ -187,13 +192,16 @@ test.describe('P35 P0-07 capability result preview', () => {
     await expect(page.getByTestId('public-flow-saved-receipt')).toHaveCount(0);
   });
 
-  test('conditional Calendar uses the shared editor and becomes a 24-item ready result', async ({ page }) => {
+  test('conditional Calendar uses the shared editor and becomes a 9-item ready result', async ({ page }) => {
     const preview = await resetAndOpenPublicPreview(page);
     const conditionalCalendar = preview.locator(
       '[data-testid="flow-capability-conditional-result"][data-capability-destination="calendar"]',
     );
     await expect(conditionalCalendar).toHaveAttribute('data-capability-output-count', '0');
-    await expect(conditionalCalendar).toHaveAttribute('data-capability-expected-output-count', '24');
+    await expect(conditionalCalendar).toHaveAttribute(
+      'data-capability-expected-output-count',
+      String(NEW_PUBLIC_ITEM_COUNT),
+    );
 
     await conditionalCalendar.getByTestId('flow-capability-conditional-edit').click();
     const editor = page.getByTestId('public-flow-personal-adjustment');
@@ -221,7 +229,11 @@ test.describe('P35 P0-07 capability result preview', () => {
       '[data-testid="flow-capability-result-choice"][data-capability-destination="calendar"]',
     );
     await expect(calendarResult).toHaveAttribute('data-capability-candidate-role', 'primary');
-    await expect(calendarResult).toHaveAttribute('data-capability-output-count', '24');
+    await expect(calendarResult).toHaveAttribute(
+      'data-capability-output-count',
+      String(NEW_PUBLIC_ITEM_COUNT),
+    );
+    await expect(updatedPreview.getByRole('heading', { name: /2031년 8월 2일/u })).toHaveCount(1);
     await expect(updatedPreview.locator(
       '[data-testid="flow-capability-conditional-result"][data-capability-destination="calendar"]',
     )).toHaveCount(0);
@@ -236,8 +248,8 @@ test.describe('P35 P0-07 capability result preview', () => {
 
     await page.setViewportSize(MOBILE_VIEWPORT);
     await seedSavedMovingFlow(page);
-    await gotoLegacySavedPlanLibraryRoute(page, `/my?view=flows&flow=${SOURCE_FLOW_SLUG}`);
-    const workspace = await openMyFlowLibraryFlow(page, SOURCE_FLOW_SLUG);
+    await gotoLegacySavedPlanLibraryRoute(page, `/my?view=flows&flow=${HISTORICAL_SOURCE_FLOW_SLUG}`);
+    const workspace = await openMyFlowLibraryFlow(page, HISTORICAL_SOURCE_FLOW_SLUG);
     const transferEntry = workspace.getByTestId('my-flow-export-entry');
     await expect(transferEntry).toBeVisible();
     await expect(transferEntry).toHaveAttribute('data-action-role', 'transfer-to-own-tool');
@@ -271,7 +283,7 @@ test.describe('P35 P0-07 capability result preview', () => {
 
   test('capabilityResult=off restores the legacy public preview and export entry', async ({ page }) => {
     await page.setViewportSize(MOBILE_VIEWPORT);
-    await page.goto(`${SOURCE_ROUTE}?capabilityResult=off`);
+    await page.goto(`${NEW_PUBLIC_ROUTE}?capabilityResult=off`);
     await page.evaluate(() => {
       window.localStorage.clear();
       window.sessionStorage.clear();

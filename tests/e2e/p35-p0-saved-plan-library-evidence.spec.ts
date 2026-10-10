@@ -6,6 +6,8 @@ import { expect, test, type Page } from '@playwright/test';
 const FLOW_SLUG = 'moving-d30-basic';
 const SAVED_FLOW_KEY = `flow:saved:${FLOW_SLUG}`;
 const ANCHOR_KEY = `flow:${FLOW_SLUG}:anchorDate`;
+const NEW_PUBLIC_FLOW_SLUG = 'computer-skills-d30-study';
+const NEW_PUBLIC_ITEM_COUNT = 9;
 const screenshotDir = path.join(
   process.cwd(),
   'docs',
@@ -272,7 +274,7 @@ test.describe('P35 P0-08 saved-plan library visual evidence', () => {
   test('real public save opens detail and count banner at 390x844', async ({ page }) => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto(`/f/${FLOW_SLUG}`);
+    await page.goto(`/f/${NEW_PUBLIC_FLOW_SLUG}`);
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
     const capability = page.getByTestId('public-flow-capability-result');
@@ -292,7 +294,7 @@ test.describe('P35 P0-08 saved-plan library visual evidence', () => {
     const banner = shell.getByTestId('my-flow-save-banner');
     await expect(banner).toBeVisible();
     await expect(banner).toHaveAttribute('data-personal-copy-key', personalCopyKey);
-    await expect(banner).toHaveAttribute('data-item-count', '24');
+    await expect(banner).toHaveAttribute('data-item-count', String(NEW_PUBLIC_ITEM_COUNT));
     await expect(shell.locator(
       `[data-testid="my-flow-mobile-workspace"][data-flow-slug="${personalCopyKey}"]`,
     )).toBeVisible();

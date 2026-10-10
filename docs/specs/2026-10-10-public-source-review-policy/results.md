@@ -1,5 +1,19 @@
 # 공개 출처 수정판 — 현재 로컬 결과와 게시 준비
 
+## bd3 CI 후속과 정확 시험 의미 정정 — 2026-10-10 11:59 UTC
+
+검토 완료 수정판14개와 승인된 NEW hold24 정책은 그대로다. 기존 개인 계획의 본문·Item·날짜·메모·진행·원본 연결을 보존하며 source 검토일 일괄 변경0, 자동 전환0이다. 이 절의 후속은 test42개와 37줄 helper 1개이며 제품 runtime은 게시 bd3와 동일하다.
+
+정확 `bd3e86c95cc6c332f56e57d7ae34c355458e5159 / FhhLtchHkeyC-MSugfNJn`의 CI `38044068964`는 세 job 성공·일반 E2E 45분 취소로 전체 미완료다. 425/760 이후의 중단·실패39 원시 로그를 보존했다. 이전 성공 CI를 빌리거나 timeout·workflow·assertion·guard를 완화하지 않았다.
+
+새 계획의 적격 fixture와 보류 source의 과거 개인 기록을 분리했다. historical helper는 최초 한 번만 설치해 저장/Undo/reload 중 상태를 초기화하지 않는다. 기존 legacy flag를 유지하고, 날짜 필수 computer9·undated vehicle10·wedding6·math8·allblanc1의 실제 지원 의미와 개수를 대조했다. computer9의 origin 부재와 완료 안내 부재를 제품 결함으로 고치지 않았다. origin 생성은 기존 moving24의 정상 날짜 갱신으로, 숨겨진 완료행 Undo는 같은 역사 계획의 실제 완료·재열기 경로로 별도 확인했다.
+
+마지막 두 파일 전체20 PASS와 temporal 파일 전체4 PASS로 남은 세 fixture 실패를 닫았다. 앞선148 PASS/2 FAIL 및14 PASS/1 FAIL, v2 UI 진입 오류와 robots duplicate locator 실패는 그대로 남긴다. 원 fridge 공개 quick-disabled UI는 현재 미실행이며 대체 PASS를 주장하지 않는다. 상세한 실행별 결과와 한계는 [QA](./qa.md)의 최신 절에 있다.
+
+독립 검토자는 실제 diff·원본 assertions·source pin을 읽었으며 구현/브라우저/운영을 중복 실행하지 않았다. 합성 캡처17개는 private-safe 로컬 원장과 복구 가능한 stash에 보존했고 공개 stage에서 제외했다. 개인 원문·실제 ID·로그인 정보·실계정 캡처는 공개 후보에 넣지 않는다.
+
+정상 후속 commit/push·새 build·정확 새 CI·현재 binding과 필수 QA·실제 Alpha 단계·새 수정판의 실계정 저장/재접속은 이 절 작성 시 아직 미실행이다. Alpha는 `f984aff4 / ZgI3GY_EgnvHGLAqr8gGs`를 유지한다. 중간 QA로 전체 목표를 닫지 않고 이 후속을 계속한다. 아래는 판본별 당시 기록이다.
+
 ## 후속 CI 실패 수리 — 2026-10-10 10:01 UTC
 
 게시 HEAD `97f4170944cc9418762d2b79fa0eda582e492e08`의 CI `38038118969`는 통과하지 않았다. Docs/Unit/Build만 성공했고 private 계약 60개가 실패했으며, 일반 E2E는 45분 이후 취소됐다. 취소 전 실패와 원시 로그를 보존했고 이를 새 게시·Alpha 성공으로 재사용하지 않는다.

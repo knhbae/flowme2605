@@ -13,6 +13,7 @@ import {
   openPersonalDraftListExport,
 } from './helpers/my-flow-library';
 import { openSavedPublicFlow, savePublicFlow } from './helpers/public-flow-save';
+import { openExistingPublicPlan } from './helpers/existing-public-plan';
 
 async function openMyFlowLibraryFlow(
   page: Page,
@@ -1007,7 +1008,7 @@ test.describe('P24 execution trust regressions', () => {
     await page.setViewportSize({ width: 390, height: 844 });
 
     for (let iteration = 0; iteration < 5; iteration += 1) {
-      await page.goto('/f/new-car-delivery-check');
+await page.goto('/f/vehicle-inspection-prep');
       await page.evaluate(() => localStorage.clear());
       await page.reload();
       const saveArea = page.getByTestId('public-flow-mobile-save-cta');
@@ -1024,10 +1025,10 @@ test.describe('P24 execution trust regressions', () => {
       await openSavedPublicFlow(page, saveBanner);
       const savedFlow = await openMyFlowLibraryFlow(
         page,
-        'new-car-delivery-check',
+        'vehicle-inspection-prep',
       );
       await expect(savedFlow).toBeVisible({ timeout: 10_000 });
-      await expect(savedFlow).toContainText('신차 인수');
+      await expect(savedFlow).toContainText('자동차검사 D-14 준비');
       await expect(page.getByTestId('my-flow-empty-state')).toHaveCount(0);
     }
 
@@ -1053,20 +1054,10 @@ test.describe('P24 execution trust regressions', () => {
     });
     page.on('pageerror', (error) => consoleErrors.push(error.message));
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/flow-maps/moving-d30');
-    await page.evaluate(() => localStorage.clear());
-    await page.reload();
-    await expect(page).toHaveURL('/f/moving-d30-basic');
-    const capability = page.getByTestId('public-flow-capability-result');
-    await capability.locator(
-      '[data-public-format-tab="true"][data-capability-destination="calendar"]',
-    ).click();
-    await page.getByTestId('public-flow-calendar-set-anchor').click();
-    const adjustment = page.getByTestId('public-flow-personal-adjustment');
-    await adjustment.getByTestId('public-flow-adjustment-anchor-input').fill('2026-07-22');
-    await adjustment.getByTestId('public-flow-adjustment-apply').click();
-    await savePublicFlow(page, page.getByTestId('public-flow-save-primary-mobile'));
-    const personalCopyKey = new URL(page.url()).searchParams.get('flow') ?? '';
+    // Existing pre-review plan: do not create a NEW public copy from a held source.
+    const personalCopyKey = await openExistingPublicPlan(page, 'moving-d30-basic', {
+      anchor: '2026-07-22',
+    });
     expect(personalCopyKey).toMatch(/^personal-copy:/u);
 
     const openMovingEditor = async () => {
