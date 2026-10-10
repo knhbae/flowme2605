@@ -8,11 +8,12 @@ import { canonicalJson } from '../../lib/flow/integrated-poc/alpha-persistence/j
 import type { AlphaAccount } from '../../lib/flow/integrated-poc/alpha-persistence/contract';
 import { buildCatalogContent } from '../../lib/flow/integrated-poc/catalog-content-source';
 import { createNativeCreatorDocumentOwner } from '../../lib/flow/integrated-poc/native-creator-document';
-import { createProgramCreatorWorkspace } from '../../lib/flow/integrated-poc/creator-workspace';
+import { createProgramCreatorWorkspace, creatorWorkingFromRecord } from '../../lib/flow/integrated-poc/creator-workspace';
 import { captureProgramCreatorSavedRevision } from '../../lib/flow/integrated-poc/creator-history-snapshot';
 import { transitionPersonalWorkspacePocCreatorDraftLibrary } from '../../lib/flow/personal-workspace-poc-creator-drafts';
 import { fingerprintPersonalWorkspacePocAuthoringSource } from '../../lib/flow/personal-workspace-poc-authoring';
 import type { NativeCreatorCatalogContentSource } from '../../lib/flow/integrated-poc/native-creator-document-contract';
+import { isAlphaCreatorCommand } from '../../lib/flow/integrated-poc/alpha-creator/contract';
 if (process.env.FLOWME_CLOUDFLARE_QA_MODE !== 'local' || process.env.FLOWME_CLOUDFLARE_QA_LOCAL_PORT !== '3107')
   throw Error('reviewed-source-fixed-local-only');
 let exact: UxExactBuild;
@@ -43,7 +44,7 @@ for (const retained of [false, true]) test(`held source blocks NEW intake while 
   const frozen = library.bundles.find(row => row.flow.slug === 'moving-d30-basic')!;
   const mock = await mockFolderContentEntry(page, { prepareAccount: account => retained ? retainedCopy(account, library)
     : { ...account, space: { ...account.space, catalogLibrary: library } } });
-  const before = canonicalJson(await mock.current());
+  const before = await mock.current();
   await page.goto('/alpha#flowme/creator'); expect(await page.content()).toContain(exact.buildId); await login(page);
   const search = page.getByLabel('콘텐츠 검색', { exact: true }); await search.fill(frozen.flow.title);
   await keyboard(page.getByRole('button', { name: frozen.flow.title, exact: true }));
@@ -51,7 +52,7 @@ for (const retained of [false, true]) test(`held source blocks NEW intake while 
   await expect(detail.getByRole('button', { name: '제작 사본 내용 확인', exact: true })).toHaveCount(0);
   await expect(detail.getByRole('button', { name: '비공개 제작 사본으로 가져오기', exact: true })).toHaveCount(0);
   if (retained) {
-    await keyboard(detail.getByRole('button', { name: '가져온 콘텐츠 열기', exact: true }));
+    await keyboard(detail.getByRole('button', { name: '제작 사본 열기', exact: true }));
     const built = buildCatalogContent('moving-d30-basic', library);
     if (!built.ok) throw Error('held-source-fixture-required');
     await expect(page.getByLabel('제작 원문', { exact: true })).toHaveValue(built.document.rawText);
@@ -60,14 +61,34 @@ for (const retained of [false, true]) test(`held source blocks NEW intake while 
     await keyboard(page.getByRole('button', { name: '목록으로', exact: true }));
   }
   await page.screenshot({ path: info.outputPath(retained ? 'held-existing-copy.png' : 'held-new-start.png'), fullPage: true });
-  expect(canonicalJson(await mock.current())).toBe(before); expect(mock.commands).toHaveLength(0);
+  const after = await mock.current();
+  if (retained) {
+    // Opening an existing draft uses the existing working-selection CAS. It
+    // must not import, save/edit a record or change a personal plan.
+    expect(mock.commands).toHaveLength(1);
+    const command = mock.commands[0];
+    if (!isAlphaCreatorCommand(command) || command.intent.type !== 'working' || !command.intent.working)
+      throw Error('existing-copy-only-working-selection-required');
+    expect(command.intent.working.draftId).toBe('held-original-draft');
+    const expectedWorking = creatorWorkingFromRecord(before.space.creatorWorkspace!, 'held-original-draft');
+    expect(canonicalJson(command.intent.working)).toBe(canonicalJson(expectedWorking));
+    expect(canonicalJson(after.space.creatorWorkspace!.working)).toBe(canonicalJson(expectedWorking));
+    expect(after.revision).toBe(before.revision + 1);
+    expect(after.space.creatorWorkspace!.working!.draftId).toBe('held-original-draft');
+    expect(after.space.creatorWorkspace!.working!.rawText).toBe(before.space.creatorWorkspace!.library.records['held-original-draft'].rawText);
+    expect(canonicalJson({ ...after, revision: before.revision, space: { ...after.space,
+      creatorWorkspace: { ...after.space.creatorWorkspace!, working: before.space.creatorWorkspace!.working } } })).toBe(canonicalJson(before));
+  } else {
+    expect(canonicalJson(after)).toBe(canonicalJson(before)); expect(mock.commands).toHaveLength(0);
+  }
   await page.waitForLoadState('networkidle'); await mock.assertBoundary(info);
   const boundary = JSON.parse(info.attachments.find(row => row.name === 'release-boundary')!.body!.toString('utf8'));
   expect(boundary.realApiRequests).toBe(0); expect(boundary.forwardedSupabaseRequests).toBe(0);
   assertUxObservedAssets(exact, boundary.assets);
   await info.attach('held-source-result', { contentType: 'application/json', body: JSON.stringify({
     head: exact.head, buildId: exact.buildId, heldNewIntakeBlocked: true, retainedCopyRead: retained,
-    preservedAccount: true, personalCopiesAdded: 0, realBackendWrites: 0, syntheticAuthAndCAS: true }) });
+    savedRecordsAndPersonalPlansPreserved: true, syntheticWorkingSelectionWrites: retained ? 1 : 0,
+    personalCopiesAdded: 0, realBackendWrites: 0, syntheticAuthAndCAS: true }) });
   await page.route('**/*', route => route.abort('blockedbyclient')); await page.context().unrouteAll({ behavior: 'wait' });
 });
 async function keyboard(button: Locator) {
