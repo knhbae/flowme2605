@@ -22,6 +22,7 @@ function LoadedCatalogLibrary({ data, mutate, navigate, library, stored, disable
   const summary = catalogLibrarySummary(library);
   const readyCount = library.bundles.filter(row => inspectCatalogContentCapability(row.flow.slug, library).ready).length;
   const [preview, setPreview] = useState(false), [busy, setBusy] = useState(false), [message, setMessage] = useState('');
+  const [bulkPreview, setBulkPreview] = useState(false);
   const [query, setQuery] = useState(''), [filter, setFilter] = useState<'all' | 'archived' | 'maps'>('all'), [page, setPage] = useState(0);
   const [selected, setSelected] = useState<string | null>(null), [selectedMap, setSelectedMap] = useState<string | null>(null), [variant, setVariant] = useState(false);
   const [original, setOriginal] = useState(false);
@@ -44,27 +45,28 @@ function LoadedCatalogLibrary({ data, mutate, navigate, library, stored, disable
   const policy = library.policies.flows.find(row => row.slug === selected);
   const openFlow = (slug: string) => { setSelected(slug); setVariant(false); setOriginal(false); setMessage(''); onDetailChange?.(true); };
   async function apply() {
-    if (running.current || disabled || stored || !preview) return;
+    if (running.current || disabled || stored || !preview || !bulkPreview) return;
     running.current = true; setBusy(true); setMessage('전체 콘텐츠를 가져오는 중…');
     const intent = { type: 'catalog-library-import' as const, catalogVersion: CATALOG_LIBRARY_VERSION, now: new Date().toISOString() };
     const requestId = programId('catalog-library');
     try {
       const result = await mutate('전체 Flow 콘텐츠 비공개 가져오기', current => executeAlphaCreatorIntent(current, current.activeActorId, intent, requestId), { alphaCreator: intent });
       if (!result.ok) { setMessage(programErrorMessage(result.reason)); return; }
-      setPreview(false); setMessage('전체 콘텐츠를 비공개 자료실에 보관했습니다.');
+      setPreview(false); setBulkPreview(false); setMessage('전체 콘텐츠를 비공개 자료실에 보관했습니다.');
     } catch { setMessage('저장 결과를 확인하지 못했습니다. 서버 저장 상태를 확인해 주세요.'); }
     finally { running.current = false; setBusy(false); }
   }
-  return <details className={styles.panel} open={!!stored} onToggle={event => { if (!event.currentTarget.open) { if (busy) event.currentTarget.open = true; else closeDetail(); } }} onKeyDown={event => { if (event.key === 'Escape' && !busy) { if (!selected && !selectedMap) { setPreview(false); previewOpener.current?.focus(); } closeDetail(); setMessage(''); } }}>
+  return <details className={styles.panel} open={!!stored} onToggle={event => { if (!event.currentTarget.open) { if (busy) event.currentTarget.open = true; else closeDetail(); } }} onKeyDown={event => { if (event.key === 'Escape' && !busy) { if (!selected && !selectedMap) { setPreview(false); setBulkPreview(false); previewOpener.current?.focus(); } closeDetail(); setMessage(''); } }}>
     <summary>기존 Flow 콘텐츠</summary>
     <p>Flow {summary.bundles}개 · Flow Map {summary.maps}개 · 별도 현재 판본 {summary.variants}개</p>
     <p>비공개 원본 자료실입니다. 개인 사용 기록은 포함하지 않습니다. {readyCount}개 콘텐츠는 상세에서 제작 사본으로 연결할 수 있습니다. 나머지는 원본 열람을 유지합니다.</p>
-    {!stored && <><button type="button" ref={previewOpener} disabled={disabled || busy} onClick={() => setPreview(true)}>전체 콘텐츠 내용 확인</button>
-      {preview && <section aria-label="전체 콘텐츠 가져오기 확인"><p>Flow {summary.bundles}개와 Map {summary.maps}개의 구조·출처·보관 정책을 함께 보존합니다. 보관 대상 {summary.runtimeExcluded}개도 공개 상태로 바꾸지 않습니다.</p>
-        <button type="button" disabled={disabled || busy} onClick={() => void apply()}>{busy ? '가져오는 중…' : '전체 콘텐츠 비공개로 가져오기'}</button>
-        <button type="button" disabled={busy} onClick={() => { setPreview(false); setMessage('취소했습니다.'); }}>취소</button></section>}</>}
+    {!stored && <button type="button" ref={previewOpener} disabled={disabled || busy} onClick={() => setPreview(true)}>전체 콘텐츠 내용 확인</button>}
     {(stored || preview) && <>
       {!selected && !selectedMap && <>
+      {!stored && <><button type="button" disabled={disabled || busy} aria-expanded={bulkPreview} onClick={() => setBulkPreview(!bulkPreview)}>전체 자료실 보관 (선택)</button>
+        {bulkPreview && <section aria-label="전체 콘텐츠 가져오기 확인"><p>Flow 하나만 필요하면 아래 목록에서 선택하세요. 전체 보관은 Flow {summary.bundles}개와 Map {summary.maps}개의 구조·출처·보관 정책을 함께 저장합니다. 보관 대상 {summary.runtimeExcluded}개도 공개 상태로 바꾸지 않습니다.</p>
+          <button type="button" disabled={disabled || busy} onClick={() => void apply()}>{busy ? '가져오는 중…' : '전체 콘텐츠 비공개로 가져오기'}</button>
+          <button type="button" disabled={busy} onClick={() => { setBulkPreview(false); setMessage('취소했습니다.'); }}>취소</button></section>}</>}
       <label>콘텐츠 검색<input value={query} onChange={event => { setQuery(event.target.value); setPage(0); }} /></label>
       <div className={styles.actions}>{([['all', '전체 Flow'], ['archived', '보관 대상'], ['maps', 'Flow Map']] as const).map(([key, label]) => <button key={key} type="button" aria-pressed={filter === key} onClick={() => { setFilter(key); setPage(0); setSelected(null); setSelectedMap(null); }}>{label}</button>)}</div>
       <p>검색 결과 {rows.length}개 · {currentPage + 1}/{pages}쪽</p>
@@ -90,7 +92,7 @@ function LoadedCatalogLibrary({ data, mutate, navigate, library, stored, disable
         {bundle.flow.source_status === 'needs_review' && <p>출처 재검토 필요</p>}
         {[...new Set([bundle.flow.warning, bundle.flow.conversion_note, ...(bundle.warnings ?? [])].filter(Boolean))].map((warning, i) => <p key={i}>{warning}</p>)}
         <p>일정 기준: {bundle.flow.setup_anchor_label ?? ({ start_date: '시작일', end_date: '종료일', baby_age_month: '아이 개월 수', baby_birth_date: '아이 생일', none: '없음' })[bundle.flow.anchor_type]} {bundle.flow.setup_anchor_hint} · 개인 기준일은 설정하지 않았습니다.</p>
-        {stored && navigate && <AlphaCatalogCopyActions key={`${bundle.flow.slug}:${variant}:${original}`} data={data} bundle={bundle} library={library} variant={variant} mutate={mutate}
+        {navigate && <AlphaCatalogCopyActions key={`${bundle.flow.slug}:${variant}:${original}`} data={data} bundle={bundle} library={library} variant={variant} mutate={mutate}
           disabled={disabled} onBusyChange={setBusy} navigate={next => { closeDetail(); navigate(next); }} />}
         <CatalogLibraryContent bundle={bundle} />
         {bundle.flow.raw_text ? <details><summary>기존 원문 보기</summary><pre>{bundle.flow.raw_text}</pre></details> : <p>저장된 원문 없음 · 구조화된 콘텐츠만 보존되어 있습니다.</p>}

@@ -44,7 +44,7 @@ function harness(stored = false) {
 test('busy rejection preserves library preview without automatic retry, then accepts explicit retry', async () => {
   const h = harness(), before = JSON.stringify(h.props.data);
   h.respond(async () => ({ ok: false, reason: 'busy' }));
-  h.click('전체 콘텐츠 내용 확인'); h.click('전체 콘텐츠 비공개로 가져오기'); await h.settle();
+  h.click('전체 콘텐츠 내용 확인'); h.click('전체 자료실 보관 (선택)'); h.click('전체 콘텐츠 비공개로 가져오기'); await h.settle();
   assert.equal(JSON.stringify(h.props.data), before); assert.equal(h.calls.length, 1);
   assert.equal(h.button('전체 콘텐츠 비공개로 가져오기').props.disabled, false);
   assert(text(h.render()).includes(programErrorMessage('busy')));
@@ -59,7 +59,9 @@ test('busy rejection preserves library preview without automatic retry, then acc
 
 test('preview search cancel and Escape are read-only', () => {
   const h = harness(), before = JSON.stringify(h.props.data); h.click('전체 콘텐츠 내용 확인'); h.search('이사');
-  assert(text(h.render()).includes('177')); h.click('취소'); h.click('전체 콘텐츠 내용 확인'); h.render().props.onKeyDown({ key: 'Escape' });
+  assert(text(h.render()).includes('177')); h.click('전체 자료실 보관 (선택)'); h.click('취소');
+  assert(nodes(h.render()).some(n => n.type === 'input'), 'bulk cancel keeps the read-only browser open');
+  h.render().props.onKeyDown({ key: 'Escape' });
   assert.equal(h.calls.length, 0); assert.equal(JSON.stringify(h.props.data), before);
 });
 
@@ -86,8 +88,26 @@ test('copy capability count follows explicit contracts without claiming source o
   assert(content.includes('20개 콘텐츠는 상세에서 제작 사본'));
   assert(!content.includes('검증된')); assert.equal(h.calls.length, 0);
 });
+test('an unstored read-only library offers the same guarded single-source action without a bulk write', () => {
+  const h = harness(), before = JSON.stringify(h.props.data), routes: unknown[] = [];
+  h.props.navigate = (route: unknown) => routes.push(route);
+  h.click('전체 콘텐츠 내용 확인');
+  const source = h.props.sourceLibrary.bundles.find((row: any) => row.flow.slug === 'morning-routine-30day');
+  assert(source); h.search(source.flow.title); h.click(source.flow.title);
+  const action = nodes(h.render()).find(n => n.type === AlphaCatalogCopyActions);
+  assert(action, 'single-source action must not require a stored bulk library');
+  assert.equal(action.props.library, h.props.sourceLibrary);
+  assert.equal(action.props.bundle.flow.slug, source.flow.slug);
+  assert.equal(action.props.mutate, h.props.mutate);
+  assert.equal(action.props.disabled, false);
+  h.props.disabled = true;
+  assert.equal(nodes(h.render()).find(n => n.type === AlphaCatalogCopyActions).props.disabled, true);
+  assert.equal(h.calls.length, 0); assert.equal(JSON.stringify(h.props.data), before);
+  action.props.navigate({ type: 'creator' });
+  assert.equal(routes.length, 1); assert(nodes(h.render()).some(n => n.type === 'input'));
+});
 test('disabled and busy imports prevent duplicate mutations with locator-only intent', async () => {
-  const h = harness(); h.click('전체 콘텐츠 내용 확인'); h.props.disabled = true;
+  const h = harness(); h.click('전체 콘텐츠 내용 확인'); h.click('전체 자료실 보관 (선택)'); h.props.disabled = true;
   h.button('전체 콘텐츠 비공개로 가져오기').props.onClick(); assert.equal(h.calls.length, 0); h.props.disabled = false;
   let release: (v: unknown) => void = () => {}; h.respond(() => new Promise(resolve => { release = resolve; }));
   const b = h.button('전체 콘텐츠 비공개로 가져오기'); b.props.onClick(); b.props.onClick(); assert.equal(h.calls.length, 1);
@@ -121,7 +141,7 @@ test('raw absence and two original/current variants are explicit and read-only',
   assert.equal(h.calls.length, 0);
 });
 test('failed import remains retryable without claiming success', async () => {
-  const h = harness(); h.respond(async () => ({ ok: false, reason: 'conflict' })); h.click('전체 콘텐츠 내용 확인'); h.click('전체 콘텐츠 비공개로 가져오기'); await h.settle();
+  const h = harness(); h.respond(async () => ({ ok: false, reason: 'conflict' })); h.click('전체 콘텐츠 내용 확인'); h.click('전체 자료실 보관 (선택)'); h.click('전체 콘텐츠 비공개로 가져오기'); await h.settle();
   assert.equal(h.button('전체 콘텐츠 비공개로 가져오기').props.disabled, false); assert(!text(h.render()).includes('비공개 자료실에 보관했습니다.'));
 });
 test('detail receives focus and returning restores the original list button without losing query or page', () => {
@@ -181,4 +201,18 @@ test('qualified new edition and frozen original are explicitly comparable withou
   h.click('출처 대조 수정판 보기');
   assert.deepEqual(nodes(h.render()).find(n => n.type === CatalogLibraryContent).props.bundle, incoming.props.bundle);
   assert.equal(JSON.stringify(h.props.data), before); assert.equal(h.calls.length, 0);
+});
+
+test('bulk storage is a separate optional confirmation, never a prerequisite of read-only browsing', () => {
+  const h = harness(), before = JSON.stringify(h.props.data);
+  h.click('전체 콘텐츠 내용 확인');
+  assert.equal(h.button('전체 자료실 보관 (선택)').props['aria-expanded'], false);
+  assert(!nodes(h.render()).some(n => n.props['aria-label'] === '전체 콘텐츠 가져오기 확인'));
+  h.click('전체 자료실 보관 (선택)');
+  assert.equal(h.button('전체 자료실 보관 (선택)').props['aria-expanded'], true);
+  assert(nodes(h.render()).some(n => n.props['aria-label'] === '전체 콘텐츠 가져오기 확인'));
+  h.click('취소');
+  assert.equal(h.button('전체 자료실 보관 (선택)').props['aria-expanded'], false);
+  assert(nodes(h.render()).some(n => n.type === 'input'));
+  assert.equal(h.calls.length, 0); assert.equal(JSON.stringify(h.props.data), before);
 });
