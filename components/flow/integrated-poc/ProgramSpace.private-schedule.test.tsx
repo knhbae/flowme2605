@@ -151,7 +151,7 @@ function harness(seed: ProgramData, documentId: string, host: 'local' | 'account
     const nodes: any[] = [];
     function walk(value: any) { if (Array.isArray(value)) value.forEach(walk); else if (value?.props) { nodes.push(value); walk(value.props.children); } }
     walk(tree);
-    const dialog = nodes.find(node => node.type === 'dialog');
+    const dialog = nodes.find(node => node.type === 'dialog' && node.props['aria-labelledby'] === 'program-detail-title');
     dialog.props.ref.current = { close() {}, showModal() {}, open: true };
     reconcile?.();
     return { nodes, dialog, button: (text: string) => nodes.find(node => node.type === 'button' && label(node.props.children) === text),
@@ -287,7 +287,14 @@ test('PS05 unchanged submission and menu values create zero wire requests and su
 test('PS06 close and Escape cancellation discard only schedule drafts and return focus with zero mutations', async () => {
   for (const cancel of ['close', 'escape'] as const) {
     const f = publicFixture(), h = harness(f.data, f.documentId), before = JSON.stringify(f.data); await h.open(f.taskId); h.draft('2026-12-25', '23:59');
-    if (cancel === 'close') await h.click('닫기'); else { h.render().dialog.props.onCancel({ preventDefault() {} }); h.render(); }
+    if (cancel === 'close') {
+      const close = h.render().dialog.props.children;
+      const controls: any[] = [];
+      function walk(value: any) { if (Array.isArray(value)) value.forEach(walk); else if (value?.props) { controls.push(value); walk(value.props.children); } }
+      walk(close);
+      const button = controls.find(node => node.type === 'button' && node.props['aria-label'] === '닫기'); assert(button);
+      button.props.onClick(); h.render();
+    } else { h.render().dialog.props.onCancel({ preventDefault() {} }); h.render(); }
     assert.equal(h.render().schedule, undefined); assert.equal(h.calls.length, 0); assert.equal(h.requests.length, 0);
     assert.equal(h.successful, 0); assert.equal(JSON.stringify(h.data), before); assert.equal(h.focused, 1);
     await h.open(f.taskId); const form = h.render().schedule; assert.match(label(form.props.children), /날짜·시간 적용/);

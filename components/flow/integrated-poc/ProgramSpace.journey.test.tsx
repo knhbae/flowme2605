@@ -64,7 +64,7 @@ test('period navigation cannot hide a composing folder region or change its docu
   assert.deepEqual(h.calls, ['lock', 'flush', 'release']); assert.equal(h.locks(), 0); assert.equal(h.flushes(), 1);
   assert.match(h.messages.at(-1)!, /한글 입력을 마친 뒤/);
   assert.match(source, /onClick=\{\(\) => void changePeriod\(key, true\)\}/);
-  assert.match(source, /onClick=\{\(\) => void changePeriod\(key\)\}/);
+  assert.match(source, /aria-label="기간 보기"[^>]+onChange=\{event => \{ void changePeriod\(event.target.value as ProgramPeriod\); \}\}/);
 });
 
 test('period navigation cannot hide rejected folder input and shares the folder-task transition', async () => {
@@ -110,6 +110,7 @@ function libraryHarness(options: { mobile?: boolean; period?: string; pending?: 
   const documentHost = { dataset: { programDocument: id }, querySelector: () => editor };
   const focus = { body: {}, activeElement: {} as object | null };
   const context = { document: focus, readProgramFolderRegions, programDocumentContentLock, space, libraryReveal, selectedRef, presentation, dirty, recurrencePorts, inputLockCount,
+    libraryReturn: { current: null },
     setTaskNotice: (value: unknown) => assert.equal(value, null),
     workspaceRef: { current: space.text }, documentsRef: { current: options.missing ? [] : space.text.documents },
     libraryToggle: { current: button }, root: { current: { getClientRects: () => [{}], querySelectorAll: () => [documentHost] } },
@@ -450,6 +451,7 @@ function harness() {
   } } as Record<string, ((target: { documentId: string; lineId: string; raw: string }) => boolean) | null> };
   let reject = false, duringRun: (() => void) | undefined, contained = true;
   const context = { M, programFailure, programResult, programSame, normalizeProgramWritingPosition, programFolderAfterDocumentOpen, actorId, selected: id,
+    libraryReturn: { current: null }, libraryDialog: { current: null },
     setTaskNotice: (value: unknown) => assert.equal(value, null),
     dirty, inputLockCount, recurrencePorts, positions, selectedRef, presentation, documentsRef, sourceFocusPorts, pendingSourceFocus, dataRef,
     root: { current: { contains: (node: unknown) => contained && node === textarea } },

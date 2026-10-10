@@ -38,8 +38,8 @@ test('ordinary execution and working commands cannot create or change catalog so
  const personal=structuredClone(next);personal.space.position={...personal.space.position,folderId:'new-folder'} as typeof personal.space.position;assert.equal(preservesAlphaCreatorBoundary(a,personal,command(a).intent),false);
 });
 test('existing editable content and unsaved working text survive the full source intake exactly',()=>{
- const a=empty(),source=buildCatalogContent('moving-d30-basic');assert(source.ok);
- const first=dispatchAlphaCreatorCommand(a,{...command(a),intent:{type:'catalog-content-import',draftId:'old-editable',sourceSlug:'moving-d30-basic',sourceVersionId:source.content.versionId,now:NOW}});assert(first.ok);
+ const a=empty(),source=buildCatalogContent('chiangmai-solo-trip-packing');assert(source.ok);
+ const first=dispatchAlphaCreatorCommand(a,{...command(a),intent:{type:'catalog-content-import',draftId:'old-editable',sourceSlug:source.content.sourceSlug,sourceVersionId:source.content.versionId,now:NOW}});assert(first.ok);
  for(const c of first.changes){assert(c.present);Object.assign(a.space,{[c.field]:c.value});}
  const creator=canonicalJson(a.space.creatorWorkspace),{next}=applied(a);assert.equal(canonicalJson(next.space.creatorWorkspace),creator);
  const opened=dispatchAlphaCreatorCommand(next,{...command(next),intent:{type:'working',now:NOW,working:{draftId:'unsaved',title:'내 글',rawText:'보존할 글',baseRecordRevision:null}}});assert(opened.ok);assert.equal(opened.changes.some(c=>c.field==='catalogLibrary'),false);

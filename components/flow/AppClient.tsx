@@ -5211,6 +5211,11 @@ function getMyFlowContentReadiness(flow: MySavedFlow): MyFlowContentReadiness {
     return { kind: 'ready', label: '실행 가능' };
   }
   if (flow.bundle.flow.status === 'published') {
+    // Public source review blocks NEW discovery/start, not a plan that is
+    // already in the saved-workspace projection. Keep its original record.
+    if (isPublicFlowSourceOnHold(sourceFlowSlug)) {
+      return { kind: 'ready', label: '실행 가능' };
+    }
     if (getPublicFlowIndexingPolicy(flow.bundle).indexable) {
       return { kind: 'ready', label: '실행 가능' };
     }

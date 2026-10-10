@@ -21,7 +21,8 @@ function evaluate(expression: string, context: Record<string, unknown>) {
   return new Function('React', ...Object.keys(context), `${code}; return value;`)(React, ...Object.values(context));
 }
 function emptyResult(period: string, folderId = '', query = '', rows: unknown[] = []) {
-  const expression = find(node => ts.isJsxExpression(node) && node.expression?.getText(ast).startsWith('!executionRows.length &&') === true) as ts.JsxExpression;
+  const expression = find(node => ts.isJsxExpression(node) && node.expression?.getText(ast).startsWith('!executionRows.length &&') === true
+    && node.expression.getText(ast).includes('showAllTasksFromEmpty')) as ts.JsxExpression;
   return evaluate(expression.expression!.getText(ast), { styles, period, folderId, query, executionRows: rows, showAllTasksFromEmpty() {} });
 }
 

@@ -20,7 +20,7 @@ const code=ts.transpileModule(`const value=${handler.getText(ast)};`,{compilerOp
 const prepareCode=ts.transpileModule(preparation.getText(ast),{compilerOptions:{target:ts.ScriptTarget.ES2022}}).outputText;
 function actualOpenDocument(context:Record<string,unknown>){
   const prepare=new Function(...Object.keys(context),`${prepareCode};return prepareDocumentScopeChange;`)(...Object.values(context));
-  const dependencies={...context,prepareDocumentScopeChange:prepare};
+  const dependencies={libraryReturn:{current:null},libraryDialog:{current:null},...context,prepareDocumentScopeChange:prepare};
   return new Function(...Object.keys(dependencies),`${code};return value;`)(...Object.values(dependencies));
 }
 test('actual openDocument handler normalizes moved cache without mutation and hands exact focus to App history',async()=>{

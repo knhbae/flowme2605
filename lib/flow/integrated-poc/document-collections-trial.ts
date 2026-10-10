@@ -18,7 +18,7 @@ export function createDocumentCollectionsTrialData(): ProgramData {
   accept(createProgramDocument(data, { ...base(), requestId: 'trial-other-document', title: '개인 업무', raw: '보존할 글\n- [ ] 11시 회의 참석\n  - 날짜: 2026-10-06\n  - 메모: 가상 업무 메모\n- [ ] 제출 자료 최종 확인\n  - 날짜: 2026-10-06\n- [ ] 고객 회신 보내기\n  - 날짜: 2026-10-07' }));
   accept(createProgramDocument(data, { ...base(), requestId: 'trial-quick-document', title: '빠른 메모' }));
   const catalog = buildProgramCatalog('creator-minji');
-  const version = catalog.versions.find(row => row.flowId === 'catalog-moving-d30-basic');
+  const version = catalog.versions.find(row => row.flowId === 'catalog-chiangmai-solo-trip-packing');
   const flow = catalog.flows.find(row => row.id === version?.flowId);
   if (!version || !flow) throw new Error('missing-collection-trial-source');
   data.public.flows = [flow]; data.public.versions = [version];

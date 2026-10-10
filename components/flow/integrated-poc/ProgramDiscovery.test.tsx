@@ -71,7 +71,8 @@ test('unload warning covers raw and output drafts but not public search presenta
   assert.equal(programDiscoveryHasUnstoredInput(state), false);
 });
 function fixture() {
-  const data = createProgramData(); const catalog = buildProgramCatalog(data.activeActorId); data.public.flows = catalog.flows; data.public.versions = catalog.versions;
+  const data = createProgramData(); const catalog = buildProgramCatalog(data.activeActorId); data.public.flows = catalog.flows;
+  data.public.versions = [...catalog.versions].sort((a, b) => Number(b.flowId === 'catalog-chiangmai-solo-trip-packing') - Number(a.flowId === 'catalog-chiangmai-solo-trip-packing'));
   return { data, catalog };
 }
 function props(): Discovery.ProgramDiscoveryProps {
@@ -130,7 +131,7 @@ test('actual source input handlers preserve other draft fields across URL change
 
 test('catalog renders real source-backed choices, review status and separate saved search without invented usage counters', () => {
   const html = renderToStaticMarkup(<ProgramDiscovery {...props()} />);
-  assert.ok(html.includes('이사 D-30 준비 Flow')); assert.ok(html.includes('치앙마이 혼자 여행')); assert.ok(html.includes('24개 항목'));
+  assert.ok(!html.includes('program-discovery-catalog-moving-d30-basic')); assert.ok(html.includes('치앙마이 혼자 여행')); assert.ok(html.includes('6개 항목'));
   assert.ok(html.includes('출처 재검토 필요')); assert.ok(html.includes('기존 내 Flow')); assert.ok(html.includes('공개 URL에서 시작'));
   assert.equal(html.includes('1460'), false); assert.equal(html.includes('480명이'), false);
 });
@@ -200,7 +201,7 @@ test('detail retains version/source/selection and shows file bytes with standalo
   const input = props(); const version = input.data.public.versions[0]; const state = createProgramDiscoveryNavigationState();
   state.details[version.id] = { selectedItemIds: version.items.slice(0, 2).map(row => row.id), anchor: '2026-10-15', format: 'ics' };
   const html = renderToStaticMarkup(<ProgramDiscovery {...input} selectedFlowId={version.flowId} navigationState={state} />);
-  assert.ok(html.includes('원문 열기')); assert.ok(html.includes('저장소에 보관된 원문')); assert.ok(html.includes('이사일'));
+  assert.ok(html.includes('원문 열기')); assert.ok(html.includes('저장소에 보관된 원문')); assert.ok(html.includes('출국일'));
   assert.ok(html.includes('value="2026-10-15"')); assert.ok(html.includes('ICS 파일 받기')); assert.ok(html.includes('실제 출력 내용'));
   assert.ok(html.includes('바이트')); assert.ok(html.includes('BEGIN:VCALENDAR')); assert.ok(html.includes('내 문서에 가져오기'));
   assert.equal((html.match(/type="checkbox" checked=""/g) ?? []).length, 2);

@@ -60,12 +60,18 @@ test('three existing period views identify current location and have no writing-
   assert.match(collectionHtml, />전체 할 일<\/button>/); assert.doesNotMatch(collectionHtml, />분류<\/button>/);
 });
 
-test('one auxiliary menu retains document search, document actions and explicit new writing', () => {
-  const aside = find(n => ts.isJsxElement(n) && n.openingElement.tagName.getText(ast) === 'aside').getText(ast);
-  assert.match(aside, /내 문서·할 일 찾기/); assert.match(aside, /selectedDocumentTools/);
-  assert.match(aside, /beginWriting\(\)/); assert.match(aside, />새 글</);
-  assert.equal((source.match(/<summary>문서 작업<\/summary>/g) ?? []).length, 1);
-  assert.equal((source.match(/aria-label="더보기 · 글 찾기와 문서 관리"/g) ?? []).length, 1);
+test('one find dialog and current-writing menu retain document search, actions and explicit new writing', () => {
+  const dialog = find(n => ts.isJsxElement(n) && n.openingElement.tagName.getText(ast) === 'dialog'
+    && n.openingElement.getText(ast).includes('program-find-title')).getText(ast);
+  assert.match(dialog, /내 문서·할 일 찾기/);
+  const newWriting = find(n => ts.isJsxElement(n) && n.openingElement.tagName.getText(ast) === 'button'
+    && n.openingElement.getText(ast).includes('beginWriting()')).getText(ast);
+  assert.match(newWriting, />새 글</);
+  const tools = find(n => ts.isVariableDeclaration(n) && n.name.getText(ast) === 'selectedDocumentTools').getText(ast);
+  assert.match(tools, /현재 글 작업/); assert.match(tools, /문서 이름/); assert.match(tools, /문서 보관/);
+  assert.equal((source.match(/aria-label="현재 글 작업"/g) ?? []).length, 1);
+  assert.equal((source.match(/aria-label="글 찾기 · 내 문서와 할 일"/g) ?? []).length, 1);
+  assert.match(source, /\{selectedDocumentTools\}/);
   assert.doesNotMatch(source, /문서·폴더 열기|<summary>보기:/);
 });
 

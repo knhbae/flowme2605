@@ -32,7 +32,12 @@ function fixture(catalog = false) {
     space.text = M.addDocument(space.text, { title: `${actorId}-private-title` });
     space.text = M.editText(space.text, space.text.documents[0].id, `${actorId}-private-body`);
   }
-  if (catalog) { const built = buildProgramCatalog(data.activeActorId); data.public.flows = built.flows; data.public.versions = built.versions; }
+  if (catalog) {
+    const built = buildProgramCatalog(data.activeActorId);
+    data.public.flows = built.flows;
+    // Generic journeys start an available source; held-source reuse has its own tests.
+    data.public.versions = [...built.versions].sort((a, b) => Number(b.flowId === 'catalog-chiangmai-solo-trip-packing') - Number(a.flowId === 'catalog-chiangmai-solo-trip-packing'));
+  }
   const reject = () => { assert.fail('public browsing must not invoke a writer'); };
   const props: Discovery.ProgramDiscoveryProps = { data, mutate: reject, navigate: reject, onUseVersion: reject, onStartText: reject, today: '2026-10-03' };
   return props;
@@ -58,7 +63,8 @@ test('F02 no search results and ordinary public results retain their distinct re
   assert.doesNotMatch(noResults, /아직 공개된 Flow가 없어요/); assertPrivateHidden(noResults);
   state.query = '';
   const results = renderToStaticMarkup(<ProgramDiscovery {...input} navigationState={state} storageScope="account" />);
-  assert.match(results, /이사 D-30 준비 Flow/); assert.match(results, /내 문서 보기/); assertPrivateHidden(results);
+  assert.match(results, /치앙마이 혼자 여행/); assert.doesNotMatch(results, /program-discovery-catalog-moving-d30-basic/);
+  assert.match(results, /내 문서 보기/); assertPrivateHidden(results);
   assert.equal(JSON.stringify(input.data), before);
   const version = input.data.public.versions[0];
   const detail = renderToStaticMarkup(<ProgramDiscovery {...input} selectedFlowId={version.flowId} storageScope="account" />);

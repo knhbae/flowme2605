@@ -19,7 +19,7 @@ function accept(result: ProgramTransition<string>) {
 }
 function copiedFixture() {
   let data = prepareProgramInitialData().data;
-  const version = data.public.versions.find(row => row.flowId === 'catalog-moving-d30-basic')!;
+  const version = data.public.versions.find(row => row.flowId === 'catalog-chiangmai-solo-trip-packing')!;
   assert.equal(version.source.kind, 'repository-source');
   const item = version.items[0];
   const result = accept(importProgramPublicVersion(data, { ...base(data), versionId: version.id, itemIds: [item.id], anchor: '2026-11-05' }));
@@ -65,10 +65,10 @@ test('source URL follows the accepted field version, never the latest public ver
 test('only HTTP and HTTPS Item source URLs become links; an accepted absence does not fall back', () => {
   const f = copiedFixture();
   for (const sourceUrl of [null, '', 'javascript:alert(1)', 'data:text/html,test', 'file:///C:/test', '/relative', 'not a URL']) {
-    const data = programClone(f.data); data.public.versions[0].items.find(item => item.id === f.item.id)!.sourceUrl = sourceUrl;
+    const data = programClone(f.data); data.public.versions.find(row => row.id === f.version.id)!.items.find(item => item.id === f.item.id)!.sourceUrl = sourceUrl;
     assert.deepEqual(readProgramTaskOrigin(data, sourceTask(f)), { label: 'Flow에서 가져옴', sourceUrl: null });
   }
-  const data = programClone(f.data); data.public.versions[0].items.find(item => item.id === f.item.id)!.sourceUrl = 'http://example.org/source';
+  const data = programClone(f.data); data.public.versions.find(row => row.id === f.version.id)!.items.find(item => item.id === f.item.id)!.sourceUrl = 'http://example.org/source';
   assert.equal(readProgramTaskOrigin(data, sourceTask(f)).sourceUrl, 'http://example.org/source');
 });
 

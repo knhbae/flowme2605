@@ -95,7 +95,7 @@ function harness(seed: ProgramData, documentId: string) {
     const tree = loaded.exports.ProgramSpace({ data, mutate, navigate: (...args) => navigation.push(args), today: TODAY,
       selectedDocumentId: documentId, onUndo: async () => { await controller.undo!(data.activeActorId); },
       onRedo: async () => { await controller.redo!(data.activeActorId); }, onRegisterNavigation() {} });
-    const all = nodes(tree), dialog = all.find(node => node.type === 'dialog');
+    const all = nodes(tree), dialog = all.find(node => node.type === 'dialog' && node.props['aria-labelledby'] === 'program-detail-title');
     dialog.props.ref.current = { close() {}, showModal() {}, open: true };
     reconcile?.();
     return { all, dialog, rows: all.filter(node => node.type === 'li' && node.props['data-task-id']),
@@ -133,6 +133,7 @@ function harness(seed: ProgramData, documentId: string) {
     },
     close() { const button = nodes(render().dialog).find(node => node.type === 'button' && node.props['aria-label'] === '닫기'); assert(button); button.props.onClick(); render(); },
     queryDate(date: string) { const input = render().all.find(node => node.type === 'input' && node.props.id === 'program-query-date'); assert(input); input.props.onChange({ target: { value: date } }); return render(); },
+    async period(value: string) { const select = render().all.find(node => node.type === 'select' && node.props['aria-label'] === '기간 보기'); assert(select); select.props.onChange({ target: { value } }); await settle(); return render(); },
     destroy() { mountCleanup?.(); },
   };
 }
@@ -160,10 +161,10 @@ test('DR02 changed date moves the exact same-title item between period buckets a
   const f = fixture(), h = harness(f.data, f.documentId);
   try {
     await h.open(f.taskIds[0]); h.draft('2026-10-08', '17:45'); await h.submit(); h.close();
-    await h.click('주간'); h.queryDate('2026-10-05');
+    await h.click('오늘'); await h.period('week'); h.queryDate('2026-10-05');
     assert.deepEqual(h.render().rows.map(row => row.props['data-task-id']), [f.taskIds[0]]);
     h.queryDate('2026-10-12'); assert.deepEqual(h.render().rows.map(row => row.props['data-task-id']), [f.taskIds[1]]);
-    await h.click('월간'); assert.deepEqual(h.render().rows.map(row => row.props['data-task-id']), f.taskIds);
+    await h.period('month'); assert.deepEqual(h.render().rows.map(row => row.props['data-task-id']), f.taskIds);
     await h.click('오늘'); h.queryDate('2026-10-05'); assert.equal(h.render().rows.length, 0);
     h.queryDate('2026-10-08'); assert.deepEqual(h.render().rows.map(row => row.props['data-task-id']), [f.taskIds[0]]);
     const beforeReturn = programClone(h.data), row = h.render().rows[0];

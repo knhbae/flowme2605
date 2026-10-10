@@ -11,6 +11,7 @@ import ts from 'typescript';
 import { buildProgramCatalog } from '../../../lib/flow/integrated-poc/catalog';
 import { createProgramData } from '../../../lib/flow/integrated-poc/program-data';
 import { importProgramPublicVersion } from '../../../lib/flow/integrated-poc/private-space';
+import { isPublicCatalogFlowOnHold } from '../../../lib/flow/public-source-review-policy';
 import type * as Discovery from './ProgramDiscovery';
 
 const url = new URL('./ProgramDiscovery.tsx', import.meta.url), require = createRequire(url);
@@ -54,7 +55,7 @@ function click(node: Element) { (node.props.onClick as () => void)(); }
 function fixture(h: ReturnType<typeof harness>) {
   const data = createProgramData(), catalog = buildProgramCatalog(data.activeActorId);
   data.public.flows = catalog.flows; data.public.versions = catalog.versions;
-  const version = data.public.versions[0], navigationState = h.api.createProgramDiscoveryNavigationState();
+  const version = data.public.versions.find(row => row.flowId === 'catalog-chiangmai-solo-trip-packing')!, navigationState = h.api.createProgramDiscoveryNavigationState();
   navigationState.details[version.id] = { selectedItemIds: version.items.map(item => item.id), anchor: '2026-10-10', format: 'txt' };
   const destinations: unknown[] = [], imports: unknown[][] = [];
   const props: Discovery.ProgramDiscoveryProps = { data, navigationState, today: '2026-10-09', storageScope: 'account',
@@ -67,7 +68,8 @@ function fixture(h: ReturnType<typeof harness>) {
 test('public list exposes each actual current title, item count and source without reading private content', () => {
   const h = harness(), { props } = fixture(h), before = JSON.stringify(props.data), tree = h.render(props);
   const rows = walk(tree).filter(node => node.type === 'article');
-  assert.equal(rows.length, props.data.public.flows.filter(flow => !flow.archived).length);
+  assert.equal(rows.length, props.data.public.flows.filter(flow => !flow.archived && !isPublicCatalogFlowOnHold(flow.id)).length);
+  assert(!renderToStaticMarkup(tree).includes('program-discovery-catalog-moving-d30-basic'));
   for (const row of rows) {
     const titleButton = walk(row).find(node => node.type === 'button')!;
     const version = props.data.public.versions.find(version => version.title === text(titleButton.props.children as React.ReactNode))!;

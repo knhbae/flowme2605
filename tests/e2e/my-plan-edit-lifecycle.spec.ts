@@ -72,7 +72,7 @@ async function resetBrowserStorage(page: Page): Promise<void> {
 
 async function createCanonicalPersonalCopy(page: Page): Promise<CreatedOrigin> {
   await resetBrowserStorage(page);
-  await page.goto('/f/moving-d30-basic');
+  await page.goto('/f/vehicle-inspection-prep');
   await expect(page.getByTestId('public-flow-capability-result')).toBeVisible();
   const mobileSave = page.getByTestId('public-flow-save-primary-mobile');
   const saveButton = await mobileSave.isVisible().catch(() => false)
@@ -221,7 +221,7 @@ const ORIGINS: readonly OriginFixture[] = [
   {
     kind: 'canonical-personal-copy',
     label: 'canonical copy',
-    titleToken: '이사 준비',
+    titleToken: '자동차검사 준비',
     create: createCanonicalPersonalCopy,
   },
   {

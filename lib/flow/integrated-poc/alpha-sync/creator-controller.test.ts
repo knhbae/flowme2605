@@ -74,7 +74,7 @@ test('M4 creator mutation without semantic intent remains forbidden',async()=>{
 
 test('catalog intents execute on server without invoking a browser source builder', async () => {
   const f = setup(); await f.controller.refresh();
-  const source = buildCatalogContent('moving-d30-basic'); assert(source.ok);
+  const source = buildCatalogContent('chiangmai-solo-trip-packing'); assert(source.ok);
   const intents: AlphaCreatorIntent[] = [
     { type: 'catalog-library-import', catalogVersion: CATALOG_LIBRARY_VERSION, now },
     { type: 'catalog-content-import', draftId: 'catalog-draft', sourceSlug: source.content.sourceSlug, sourceVersionId: source.content.versionId, now },

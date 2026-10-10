@@ -33,7 +33,7 @@ const { ProgramDiscovery, createProgramDiscoveryNavigationState } = loaded.expor
 function fixture() {
   const data = createProgramData(), catalog = buildProgramCatalog(data.activeActorId);
   data.public.flows = catalog.flows; data.public.versions = catalog.versions;
-  const version = data.public.versions[0];
+  const version = data.public.versions.find(row => row.flowId === 'catalog-chiangmai-solo-trip-packing')!;
   version.items = version.items.slice(0, 4).map(item => ({ ...item, schedule: { kind: 'undated' as const } }));
   const noWrite = () => { assert.fail('rendering must not call navigation or writers'); };
   const props: Discovery.ProgramDiscoveryProps = { data, mutate: noWrite, navigate: noWrite, onUseVersion: noWrite,
@@ -41,7 +41,8 @@ function fixture() {
   return { props, version };
 }
 function render(props: Discovery.ProgramDiscoveryProps, stage: 'intro' | 'contents' | 'confirm' = 'intro', key?: string) {
-  hook = 0; presentation = stage === 'intro' ? null : { key: key ?? `${props.data.activeActorId}:${props.data.public.versions[0].id}`, stage };
+  const version = props.data.public.versions.find(row => row.flowId === props.selectedFlowId)!;
+  hook = 0; presentation = stage === 'intro' ? null : { key: key ?? `${props.data.activeActorId}:${version.id}`, stage };
   return renderToStaticMarkup(<ProgramDiscovery {...props} />);
 }
 function saved() {
@@ -51,7 +52,7 @@ function saved() {
   assert(result.ok); props.data = result.data;
   const space = props.data.spaces[props.data.activeActorId], copy = space.copies.find(row => row.id === result.result)!;
   space.text = M.editText(space.text, copy.documentId, M.raw(M.getDocument(space.text, copy.documentId)!) + '\n개인 sentinel memo');
-  return { props, version, space, copy };
+  return { props, version: props.data.public.versions.find(row => row.id === version.id)!, space, copy };
 }
 
 function markHeld(props: Discovery.ProgramDiscoveryProps, version: ReturnType<typeof fixture>['version']) {

@@ -373,7 +373,8 @@ test('M4 receipt acknowledgment preserves composition, locks, raw comparison cho
 function rawRehandoffData() {
   const data=rawUpdateData(false),actorId=data.activeActorId,catalog=buildProgramCatalog(actorId);
   data.public.flows=catalog.flows;data.public.versions=catalog.versions;
-  const version=data.public.versions[0],item=version.items.find(row=>row.schedule.kind!=='recurring');assert(item);
+  const version=data.public.versions.find(row=>row.flowId==='catalog-chiangmai-solo-trip-packing')!;
+  const item=version.items.find(row=>row.schedule.kind!=='recurring');assert(item);
   const imported=importProgramPublicVersion(data,{actorId,requestId:'rehandoff-existing-copy',expectedSpace:data.spaces[actorId],versionId:version.id,itemIds:[item.id],anchor:null});
   assert(imported.ok);assert.equal(imported.data.spaces[actorId].copies.length,1);return imported.data;
 }

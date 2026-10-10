@@ -1,5 +1,19 @@
 # 공개 출처 수정판 — 현재 로컬 결과와 게시 준비
 
+## 후속 CI 실패 수리 — 2026-10-10 10:01 UTC
+
+게시 HEAD `97f4170944cc9418762d2b79fa0eda582e492e08`의 CI `38038118969`는 통과하지 않았다. Docs/Unit/Build만 성공했고 private 계약 60개가 실패했으며, 일반 E2E는 45분 이후 취소됐다. 취소 전 실패와 원시 로그를 보존했고 이를 새 게시·Alpha 성공으로 재사용하지 않는다.
+
+제품 결함 1개를 수정했다. 신규 공개 검색·시작의 보류 정책이 기존 My Flow 저장 계획의 준비 판정에도 적용돼 일부 계획이 사라졌다. 기존 저장 projection에서 해당 보류 source는 실행 가능하게 유지한다. 외부 신규 시작·creator 가져오기·신규 저장 보류는 그대로며 retired/draft/불명 source·별도 map 품질 gate는 풀지 않았다. 오래된 check/anchor/memo 기록도 보존하고 새 savedRecord를 강제하지 않는다.
+
+private 계약의 오래된 source fixture·접힌 메뉴 진입·정확 dialog locator 16경로를 좁게 맞췄다. 최초 3279 PASS/60 FAIL 뒤 관련 20파일 270 PASS, 원래 full 319파일 3339 PASS를 각각 보존했다. full 3339는 위 제품 수정 전 실행이다. 수정 후 정확 관련 경계 155 PASS·기존 저장 계획 브라우저 9 PASS를 별도로 확인했다. build `8KyEHtzVrNPqT3T6iEugM`의 제품 타입·Next build exit0 및 소스 전후 동일을 확인했다.
+
+공개 E2E 4파일은 새 시작용 eligible 자료와 보류 source의 역사 사본을 분리했다. 이사 사본은 최초 한 번만 설치하고 reload에서 재주입하지 않으며 기존 24개·ID·날짜·메모·완료기준 assertions를 유지한다. 신규 저장 수는 vehicle 10개·날짜 필수 timeline computer 9개를 callsite에서 정확히 지정한다. vehicle의 의도된 undated checklist를 날짜 필수 fixture로 쓰지 않는다. Allblanc 재진입은 정상 키보드 활성화로 확인한다.
+
+고유 47사례는 최초 37 PASS/10 FAIL, 재검사 8 PASS/2 FAIL, 남은 2사례 2 PASS로 닫았다. 실행 합계57을 고유 PASS로 보고하지 않는다. skip·timeout 증가·assertion 완화0, 실제 계정·backend 쓰기0이다. source/selector/label 및 역사 completion/hidden-row Undo 맥락만 정정했다. 새 CI·Alpha·실계정 재접속은 아직 완료하지 않았다.
+
+정확 raw·소스 SHA는 `output/content-source-revalidation-20261010/`의 private-full-followup·approved-boundaries·saved-plan-readiness-build/browser 및 public-policy-browser-followup/retest/final-retest 원장에 local-only로 보존한다. Alpha `f984aff4 / ZgI3GY_EgnvHGLAqr8gGs`는 그대로다. 아래는 당시 이력이다.
+
 2026-10-10. 기준 HEAD는 `7a41035e614eacd56adfdd1a64ae233a581e4aeb`다. [승인 범위](./spec.md)·[검사와 한계](./qa.md)를 따른다. 이번 미커밋 변경은 해당 HEAD 이후 로컬 결과이며 이전 빌드 `OAo3FylW0MyzBzukq462E`에 포함됐다고 주장하지 않는다.
 
 ## 추가12개 보류 승인 인수 — 2026-10-10 07:05 UTC

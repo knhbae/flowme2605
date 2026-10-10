@@ -1,5 +1,13 @@
 # 승인 범위 1단계 검사
 
+## 후속 CI·기존 저장 계획 보호 — 2026-10-10 10:01 UTC
+
+정확 게시97 CI 실패는 보존한다. 원 private 319파일 3339사례의 최초 60FAIL을 source fixture·메뉴·locator 정합으로 수정한 뒤 full3339 PASS를 확인했다. 이후 실제 기존 계획 readiness 결함을 별도 수정했으며 관련5파일 155 PASS와 원 브라우저9 PASS, type/build `8KyEHtzVrNPqT3T6iEugM`을 확인했다. full3339를 이후 제품 수정까지의 성공으로 전용하지 않는다.
+
+공개 관련 고유47은 최초37PASS/10FAIL→표적8PASS/2FAIL→남은2PASS다. 반복 실행을 새 사례로 세지 않는다. 역사 moving24의 동일 ID·기록·source·출력과 신규 eligible 저장 vehicle10/computer9를 분리했다. 테스트의 default24를 제거하고 각 저장 수를 명시한다. Calendar disabled·취소·focus·storage 불변, 숨은 완료행 Undo, readonly·NEW hold·old copy 보호 assertions는 유지한다. source-link와 카드 활성화는 정상 키보드로 구분한다.
+
+원장은 `output/content-source-revalidation-20261010/{private-full-followup-2026-10-10T091834224Z,saved-plan-readiness-browser,public-policy-browser-followup,public-policy-browser-retest,public-policy-browser-final-retest}/receipt.json` 및 `approved-boundaries-tests-20261010T094017156Z.json`, `saved-plan-readiness-build-20261010T093249523Z/receipt.json`이다. 각 raw/result/source 전후 핀과 첫 FAIL을 보존한다. fixtureOnly/backendWrites0이며 실서버·실계정·새 CI·Alpha 전환·실물폰·OS IME·처음 사용자 이해도는 이 QA의 성공 범위가 아니다.
+
 검사·소스 읽기·원문 검토·제공 상태를 각각 기록한다. [결과](./results.md)·[범위](./spec.md).
 
 ## 현재 승인 경계 검사 — 2026-10-10 07:05 UTC

@@ -9,6 +9,8 @@ import { getRoutineWeekdayLabels } from '../../lib/flow/recurrence';
 import { buildEffectiveRoutineProjection } from '../../lib/flow/effective-routine-projection';
 import { buildMyFlowStepIcs } from '../../lib/flow/my-flow-step-export';
 import { seedBundles } from '../../lib/flow/seed-flows';
+import { isPublicFlowSourceOnHold, PUBLIC_SOURCE_REVIEW_HOLD_SLUGS } from '../../lib/flow/public-source-review-policy';
+import { getPublicFlowIndexingPolicy } from '../../lib/flow/route-indexing-policy';
 
 // Execute the actual component's small writer/reader functions, without React,
 // a browser, an account or a backend. Do not replace them with copied fixtures.
@@ -32,7 +34,7 @@ function writer(bundle: any, previousRecord?: any) {
   let stored: any, error: string | undefined, touches = 0;
   const subject = componentFunction('commitPublicFlowLegacy', {
     ...editions, bundle, getSavedFlowRecord: () => previousRecord,
-    isPublicFlowSourceOnHold: () => false, setPublicSaveError: (value: string) => { error = value; },
+    isPublicFlowSourceOnHold, setPublicSaveError: (value: string) => { error = value; },
     focusPublicSaveFailure: () => {}, focusPublicDateInput: () => {},
     buildEffectiveFlowSnapshot: () => ({ savedFlowRecordInput: { selectedArtifactMode: 'checklist' }, committed: { rows: [], excludedRows: [] } }),
     publicEffectiveDisplayTitle: bundle.flow.title, publicDisplayTitle: bundle.flow.title,
@@ -111,4 +113,42 @@ test('unversioned classic reader retains original travel/meal/license text, whil
   assert.deepEqual(selectSavedPublicSourceBundle(license, { sourceVersion: '2026-07-11' }), license);
   const meal = seedBundles.find(row => row.flow.slug === 'weekly-meal-plan')!;
   assert(meal.items.some(row => row.title === '화요일 버섯샐러드 만들기'));
+});
+
+test('actual saved-workspace readiness keeps all held-source plans usable without changing their records', () => {
+  const ready = componentFunction('getMyFlowContentReadiness', {
+    isRetiredPersonalCopyBundle: (bundle: any) => bundle.flow.tags?.includes('retired-personal-copy'),
+    isUrlFirstDraftSavedFlow: () => false, isPublicFlowSourceOnHold,
+    getPublicFlowIndexingPolicy, serviceCatalogFlowSlugs: new Set(),
+  });
+  for (const slug of PUBLIC_SOURCE_REVIEW_HOLD_SLUGS) {
+    const bundle = seedBundles.find(row => row.flow.slug === slug)!; assert(bundle, slug);
+    const flow = { bundle, progress: { slug, sourceSlug: slug },
+      savedRecord: { slug, savedAt: '2026-09-20T00:00:00.000Z' },
+      checks: { [bundle.items[0].id]: true }, memo: '가상 이전 개인 메모' };
+    const before = JSON.stringify(flow);
+    assert.equal(getPublicFlowIndexingPolicy(bundle).indexable, false, 'NEW discovery stays held');
+    assert.equal(ready(flow).kind, 'ready', slug);
+    const { savedRecord: _record, ...legacyCheckOnly } = flow;
+    assert.equal(ready(legacyCheckOnly).kind, 'ready', 'pre-schema personal check records remain usable');
+    assert.equal(JSON.stringify(flow), before, 'existing source, check and memo bytes stay unchanged');
+    const retired = { ...flow, bundle: { ...bundle, flow: { ...bundle.flow, tags: ['retired-personal-copy'] } } };
+    assert.equal(ready(retired).kind, 'retired', 'existing explicit retirement is not relaxed');
+    const draft = { ...flow, bundle: { ...bundle, flow: { ...bundle.flow, status: 'draft', source_status: 'needs_review' } } };
+    assert.equal(ready(draft).kind, 'review', 'a held draft is not promoted by the published-plan exception');
+  }
+  const unsupported = { bundle: { flow: { slug: 'unsupported-published-source', status: 'published' } },
+    progress: { slug: 'unsupported-published-source' } };
+  assert.equal(ready(unsupported).kind, 'review', 'unrelated unsupported published content stays held');
+});
+
+test('actual classic writer still refuses every held NEW start before any personal write', () => {
+  for (const slug of PUBLIC_SOURCE_REVIEW_HOLD_SLUGS) {
+    const bundle = seedBundles.find(row => row.flow.slug === slug)!; assert(bundle, slug);
+    const before = JSON.stringify(bundle), result = writer(bundle);
+    assert.equal(result.touches, 0, slug);
+    assert.equal(result.stored, undefined, slug);
+    assert.match(result.error ?? '', /출처를 재검토.*새로 시작할 수 없습니다/u);
+    assert.equal(JSON.stringify(bundle), before, 'NEW refusal does not rewrite source');
+  }
 });
