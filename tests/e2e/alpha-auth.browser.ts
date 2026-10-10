@@ -1,7 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import { login, openWorkspaceManagement, mockAlpha, session, sessionKey, users, emptyAccount, accountWithDocument, invalidAccountMarker, pairedSocialAccount, isSocialReadOrInit } from './alpha-auth.fixture';
 
-const workspaceHeading = (page: Page) => page.getByRole('heading', { name: '개인공간', exact: true });
+const workspaceHeading = (page: Page) => page.getByRole('heading', { name: '내 작업', exact: true });
 const workspaceStatus = (page: Page) => page.getByRole('region', { name: '서버 저장 상태', exact: true }).getByRole('status');
 async function expectWorkspaceReady(page: Page) {
   await expect(workspaceHeading(page)).toBeVisible();
@@ -491,7 +491,15 @@ async function inspectScreen(page: Page, label: string) {
     const box = await target.boundingBox(); expect(box, label).not.toBeNull();
     expect(box!.height, `${label}: action height`).toBeGreaterThanOrEqual(48);
     expect(box!.width, `${label}: action width`).toBeGreaterThanOrEqual(48);
-    expect(await target.evaluate(element => { const rect = element.getBoundingClientRect(); const top = document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2); return top === element || element.contains(top); }), `${label}: obscured action`).toBe(true);
+    const unobscured = () => target.evaluate(element => { const rect = element.getBoundingClientRect(); const top = document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2); return top === element || element.contains(top); });
+    // scrollIntoViewIfNeeded does not account for fixed tabs over an otherwise
+    // visible action. Use the normal wheel route before retaining the hit test.
+    if (!await unobscured()) {
+      const viewport = page.viewportSize()!;
+      await page.mouse.wheel(0, Math.ceil(box!.y + box!.height / 2 - viewport.height / 2));
+      await expect.poll(unobscured, { message: `${label}: obscured action` }).toBe(true);
+    }
+    expect(await unobscured(), `${label}: obscured action`).toBe(true);
   }
   await page.screenshot({ path: `output/playwright/alpha-m2/${label}.png`, fullPage: true });
 }
