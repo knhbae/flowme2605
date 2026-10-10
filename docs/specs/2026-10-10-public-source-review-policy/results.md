@@ -10,7 +10,7 @@ private 계약의 오래된 source fixture·접힌 메뉴 진입·정확 dialog 
 
 공개 E2E 4파일은 새 시작용 eligible 자료와 보류 source의 역사 사본을 분리했다. 이사 사본은 최초 한 번만 설치하고 reload에서 재주입하지 않으며 기존 24개·ID·날짜·메모·완료기준 assertions를 유지한다. 신규 저장 수는 vehicle 10개·날짜 필수 timeline computer 9개를 callsite에서 정확히 지정한다. vehicle의 의도된 undated checklist를 날짜 필수 fixture로 쓰지 않는다. Allblanc 재진입은 정상 키보드 활성화로 확인한다.
 
-고유 47사례는 최초 37 PASS/10 FAIL, 재검사 8 PASS/2 FAIL, 남은 2사례 2 PASS로 닫았다. 실행 합계57을 고유 PASS로 보고하지 않는다. skip·timeout 증가·assertion 완화0, 실제 계정·backend 쓰기0이다. source/selector/label 및 역사 completion/hidden-row Undo 맥락만 정정했다. 새 CI·Alpha·실계정 재접속은 아직 완료하지 않았다.
+고유 47사례는 최초 37 PASS/10 FAIL, 재검사 8 PASS/2 FAIL, 남은 2사례 2 PASS로 닫았다. 실행 합계59를 고유 PASS로 보고하지 않는다. skip·timeout 증가·assertion 완화0, 실제 계정·backend 쓰기0이다. source/selector/label 및 역사 completion/hidden-row Undo 맥락만 정정했다. 새 CI·Alpha·실계정 재접속은 아직 완료하지 않았다.
 
 정확 raw·소스 SHA는 `output/content-source-revalidation-20261010/`의 private-full-followup·approved-boundaries·saved-plan-readiness-build/browser 및 public-policy-browser-followup/retest/final-retest 원장에 local-only로 보존한다. Alpha `f984aff4 / ZgI3GY_EgnvHGLAqr8gGs`는 그대로다. 아래는 당시 이력이다.
 
