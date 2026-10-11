@@ -121,7 +121,7 @@ test('mobile note and non-note titles use the approved layout while all action t
   const declarations = new Map<string, string>();
   // Apply all base/mobile source declarations in order, not just the last media block.
   spaceCss.walkRules(rule => {
-    let parent = rule.parent;
+    let parent: postcss.Rule['parent'] | postcss.Document = rule.parent;
     while (parent) {
       if (parent.type === 'atrule' && parent.name === 'media' && !/^\(max-width:\s*760px\)$/.test(parent.params)) return;
       parent = parent.parent;
