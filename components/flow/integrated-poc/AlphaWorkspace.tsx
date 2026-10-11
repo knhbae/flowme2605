@@ -638,6 +638,41 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
   const modalRecovery = pending && snapshot?.status !== 'saving'
     ? <section className={styles.problem} aria-label="저장 결과 복구"><p>응답이 끊겨도 서버에 저장됐을 수 있습니다. 입력은 유지하고 같은 요청으로 확인합니다.</p><button type="button" disabled={snapshot?.busy} onClick={async () => { if (await controller.current?.resolvePending(true)) setMessage('저장 결과를 확인했습니다.'); }}>저장 결과 확인 · 같은 요청 재시도</button></section>
     : external || snapshot?.status === 'conflict' || snapshot?.draft && !pending && !snapshot.retryableRejectedDraft && !snapshot.retryableNativeHandoff && !snapshot.retryableRejectedSocialDraft ? <section className={styles.problem} aria-label="편집 중 변경 확인"><p>다른 변경이 먼저 저장되었습니다. 입력을 보관한 뒤 최신 내용을 확인해 주세요.</p><button disabled={snapshot?.busy} onClick={() => void openLatest()}>입력 보관 후 최신 내용 열기</button></section> : null;
+  // Presentation only: storage, pending authority and recovery actions stay
+  // unchanged. In personal space their disclosure does not resize the document.
+  const needsInputProtection = storageError || !localParticipationRecovery && (pending && snapshot?.status !== 'saving'
+    || (snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft) && !external && !pending
+    || external || snapshot?.status === 'conflict'
+    || snapshot?.draft && !pending && !snapshot.retryableRejectedDraft && !snapshot.retryableNativeHandoff && !snapshot.retryableRejectedSocialDraft);
+  const inputProtection = <>
+    {storageError && <p className={styles.problem} role="alert">브라우저의 입력 보관 상태를 확인하지 못했습니다. 쓰기를 멈췄습니다. 작성 중인 내용을 파일로 보관해 주세요.</p>}
+    {pending && snapshot?.status !== 'saving' && !localParticipationRecovery && <section className={styles.problem} aria-label="저장 결과 복구"><p>응답이 끊겨도 서버에 저장됐을 수 있습니다. 같은 요청으로 확인합니다.</p>
+      <button type="button" disabled={snapshot?.busy} onClick={async () => { if (await controller.current?.resolvePending(true)) setMessage('저장 결과를 확인했습니다.'); }}>저장 결과 확인 · 같은 요청 재시도</button></section>}
+    {(snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft) && !external && !pending && !localParticipationRecovery && <section className={styles.problem} aria-label="거절된 저장과 입력 보호"><p>{snapshot?.retryableNativeHandoff
+      ? '저장되지 않았습니다. 비교와 선택은 유지했습니다. 같은 선택으로 다시 적용해 주세요.'
+      : snapshot?.retryableRejectedSocialDraft ? '글 입력은 남아 있습니다. 내용을 수정하거나 ‘나중에 이어 쓰기’를 눌러 다시 보관해 주세요.'
+      : '저장되지 않았습니다. 입력은 남아 있습니다. 문서에서 내용을 수정한 뒤 ‘다시 저장’을 눌러 주세요.'}</p></section>}
+    {(external || snapshot?.status === 'conflict' || snapshot?.draft && !pending && !snapshot.retryableRejectedDraft && !snapshot.retryableNativeHandoff && !snapshot.retryableRejectedSocialDraft) && !localParticipationRecovery && <section className={styles.problem} aria-label="다른 기기 변경과 입력 보호">
+      <h2>내 입력과 서버의 변경을 확인해 주세요</h2><p>내 입력은 이 탭에 보관합니다. 최신 내용을 연 뒤 필요한 원문을 복구할 수 있습니다.</p>
+      {snapshot?.busy && <p role="status">서버 확인 중… 입력은 그대로 보관합니다.</p>}
+      <button type="button" disabled={snapshot?.busy} onClick={() => void openLatest()}>입력 보관 후 최신 내용 열기</button>
+      {snapshot?.draft && <AlphaConflictReview draft={snapshot.draft} account={snapshot.account}
+        onCopy={raw => navigator.clipboard.writeText(raw).then(() => setMessage('원문을 복사했습니다.'), () => setMessage('복사하지 못했습니다. 원문을 직접 선택해 주세요.'))} />}
+    </section>}
+  </>;
+  const personalRecovery = recoveries && <details name={destination.view === 'space' ? 'program-input-feedback' : undefined} className={destination.view === 'space' ? styles.inputRecovery : styles.recovery} open={unavailable || !localParticipationRecovery && (external || snapshot?.status === 'conflict')} onKeyDown={event => {
+    if (event.key !== 'Escape' || event.nativeEvent.isComposing || !event.currentTarget.open) return;
+    event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false;
+    event.currentTarget.querySelector('summary')?.focus({ preventScroll: true });
+  }}>
+    <summary>보관한 입력 {recoveries.drafts.length}개</summary>
+    <div className={destination.view === 'space' ? styles.inputRecoveryBody : undefined}>
+      {recoveries.drafts.map((draft, index) => <section key={index}><h2>{draft.title}</h2><textarea aria-label={`보관한 입력 ${index + 1}`} value={draft.raw} readOnly rows={5} />
+        <button type="button" onClick={() => void navigator.clipboard.writeText(draft.raw).then(() => setMessage('원문을 복사했습니다.'), () => setMessage('복사하지 못했습니다. 원문을 직접 선택해 주세요.'))}>원문 복사</button>
+        <button type="button" disabled={unavailable || pending || external || !!snapshot?.draft} onClick={() => void restoreDraft(index)}>새 문서로 복구</button></section>)}
+      <button type="button" onClick={clearDrafts}>보관 입력 버리기</button>
+    </div>
+  </details>;
   return <main className={styles.page} onInput={() => { queueMicrotask(captureInput); }} onCompositionEnd={() => { queueMicrotask(captureInput); }}>
     <header className={styles.header}><a className={styles.brand} href="/alpha" onClick={event => { event.preventDefault(); void navigate({ view: 'space' }); }}>FlowMe</a>
       {!unavailable && <nav className={styles.globalNavigation} aria-label="주요 메뉴">
@@ -650,8 +685,23 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
     <details className={styles.notice} aria-label="개발계 안내"><summary>공개한 내용은 로그인 사용자에게 보입니다. 중요한 자료의 유일본은 넣지 마세요.</summary>
       <p>개발용 통합 검증판 · 공개한 내용은 개발계의 다른 로그인 사용자에게 보입니다. 중요한 자료의 유일본은 아직 넣지 마세요.</p></details>
     <section className={styles.sync} aria-label="서버 저장 상태">
-      {!localParticipationRecovery && <p role="status" aria-live="polite" data-save-state={snapshot?.status}>{pending && snapshot?.status !== 'saving' ? '저장 결과 확인이 필요합니다' : snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft ? '저장 거절 · 입력 보존됨' : snapshot ? labels[snapshot.status] : '개인공간을 여는 중…'}</p>}
-      <button type="button" title="마지막으로 서버 저장에 성공한 변경을 되돌립니다" onClick={() => void history('undo')} disabled={!snapshot?.canUndo || external}>되돌리기</button>
+      <div className={styles.statusRow}>
+        {!localParticipationRecovery && <p role="status" aria-live="polite" data-save-state={snapshot?.status}>{pending && snapshot?.status !== 'saving' ? '저장 결과 확인이 필요합니다' : snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft ? '저장 거절 · 입력 보존됨' : snapshot ? labels[snapshot.status] : '개인공간을 여는 중…'}</p>}
+        {destination.view === 'space' && needsInputProtection && <details name="program-input-feedback" className={styles.inputRecovery} onKeyDown={event => {
+          if (event.key !== 'Escape' || event.nativeEvent.isComposing || !event.currentTarget.open) return;
+          event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false;
+          event.currentTarget.querySelector('summary')?.focus({ preventScroll: true });
+        }}><summary><span role="alert">{storageError ? '입력 보관 실패 · 확인' : pending ? '저장 결과 확인' : snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft ? '저장되지 않음 · 확인' : '입력 보호 · 확인'}</span></summary>
+          <div className={styles.inputRecoveryBody}>{inputProtection}</div>
+        </details>}
+        {destination.view === 'space' && personalRecovery}
+        {destination.view === 'space' && message && !participationMessage && <details name="program-input-feedback" className={styles.feedbackMessage}
+          onKeyDown={event => { if (event.key !== 'Escape' || event.nativeEvent.isComposing || !event.currentTarget.open) return; event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false; event.currentTarget.querySelector('summary')?.focus({ preventScroll: true }); }}>
+          <summary title={message}><span role="status">안내 · {message}</span></summary>
+          <div className={styles.inputRecoveryBody}><p className={styles.feedbackMessageText}>{message}</p></div>
+        </details>}
+        <button type="button" title="마지막으로 서버 저장에 성공한 변경을 되돌립니다" onClick={() => void history('undo')} disabled={!snapshot?.canUndo || external}>되돌리기</button>
+      </div>
       <details className={styles.management} aria-label="계정 및 자료 관리" onKeyDown={event => {
         if (event.key !== 'Escape' || event.nativeEvent.isComposing || !event.currentTarget.open) return;
         event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false;
@@ -675,27 +725,8 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
       email={email} accessToken={session.accessToken} returnFocusTarget={preservationOpener.current} onClose={closePreservation} onSaved={async () => {
         ownMutation.current++; try { await controller.current?.refresh(); setPresentation(value => value + 1); } finally { ownMutation.current--; }
       }} />}
-    {storageError && <p className={styles.problem} role="alert">브라우저의 입력 보관 상태를 확인하지 못했습니다. 쓰기를 멈췄습니다. 작성 중인 내용을 파일로 보관해 주세요.</p>}
-    {pending && snapshot?.status !== 'saving' && !localParticipationRecovery && <section className={styles.problem} aria-label="저장 결과 복구"><p>응답이 끊겨도 서버에 저장됐을 수 있습니다. 같은 요청으로 확인합니다.</p>
-      <button type="button" disabled={snapshot?.busy} onClick={async () => { if (await controller.current?.resolvePending(true)) setMessage('저장 결과를 확인했습니다.'); }}>저장 결과 확인 · 같은 요청 재시도</button></section>}
-    {(snapshot?.retryableRejectedDraft || snapshot?.retryableNativeHandoff || snapshot?.retryableRejectedSocialDraft) && !external && !pending && !localParticipationRecovery && <section className={styles.problem} aria-label="거절된 저장과 입력 보호"><p>{snapshot?.retryableNativeHandoff
-      ? '저장되지 않았습니다. 비교와 선택은 유지했습니다. 같은 선택으로 다시 적용해 주세요.'
-      : snapshot?.retryableRejectedSocialDraft ? '글 입력은 남아 있습니다. 내용을 수정하거나 ‘나중에 이어 쓰기’를 눌러 다시 보관해 주세요.'
-      : '저장되지 않았습니다. 입력은 남아 있습니다. 문서에서 내용을 수정한 뒤 ‘다시 저장’을 눌러 주세요.'}</p></section>}
-    {(external || snapshot?.status === 'conflict' || snapshot?.draft && !pending && !snapshot.retryableRejectedDraft && !snapshot.retryableNativeHandoff && !snapshot.retryableRejectedSocialDraft) && !localParticipationRecovery && <section className={styles.problem} aria-label="다른 기기 변경과 입력 보호">
-      <h2>내 입력과 서버의 변경을 확인해 주세요</h2><p>내 입력은 이 탭에 보관합니다. 최신 내용을 연 뒤 필요한 원문을 복구할 수 있습니다.</p>
-      {snapshot?.busy && <p role="status">서버 확인 중… 입력은 그대로 보관합니다.</p>}
-      <button type="button" disabled={snapshot?.busy} onClick={() => void openLatest()}>입력 보관 후 최신 내용 열기</button>
-      {snapshot?.draft && <AlphaConflictReview draft={snapshot.draft} account={snapshot.account}
-        onCopy={raw => navigator.clipboard.writeText(raw).then(() => setMessage('원문을 복사했습니다.'), () => setMessage('복사하지 못했습니다. 원문을 직접 선택해 주세요.'))} />}
-    </section>}
-    {recoveries && <details className={styles.recovery} open={unavailable || !localParticipationRecovery && (external || snapshot?.status === 'conflict')}>
-      <summary>보관한 입력 {recoveries.drafts.length}개</summary>
-      {recoveries.drafts.map((draft, index) => <section key={index}><h2>{draft.title}</h2><textarea aria-label={`보관한 입력 ${index + 1}`} value={draft.raw} readOnly rows={5} />
-        <button type="button" onClick={() => void navigator.clipboard.writeText(draft.raw).then(() => setMessage('원문을 복사했습니다.'), () => setMessage('복사하지 못했습니다. 원문을 직접 선택해 주세요.'))}>원문 복사</button>
-        <button type="button" disabled={unavailable || pending || external || !!snapshot?.draft} onClick={() => void restoreDraft(index)}>새 문서로 복구</button></section>)}
-      <button type="button" onClick={clearDrafts}>보관 입력 버리기</button>
-    </details>}
+    {destination.view !== 'space' && inputProtection}
+    {destination.view !== 'space' && personalRecovery}
     {creatorRecoveries && <details className={styles.recovery} open={unavailable || external || snapshot?.status === 'conflict'}>
       <summary>보관한 제작 입력 {creatorRecoveries.entries.length}개</summary>
       {creatorRecoveries.entries.map((entry, index) => <section key={index}><h2>{entry.working.title || '제작 중 원문'}</h2>
@@ -716,7 +747,7 @@ export function AlphaWorkspace({ config, session, email, onSignOut }: {
     </details>}
     {leave && <section className={styles.problem} aria-label="로그아웃 전 입력 확인"><p>저장하지 않은 입력을 이 탭에 보관한 뒤 로그아웃할 수 있습니다. 같은 계정으로 돌아와 복구하세요.</p>
       <button type="button" onClick={() => { if (captureInput()) void onSignOut(); }}>입력 보관 후 로그아웃</button><button type="button" onClick={() => setLeave(false)}>계속 작성</button></section>}
-    {message && !participationMessage && <p className={styles.message} role="status">{message}</p>}
+    {destination.view !== 'space' && message && !participationMessage && <p className={styles.message} role="status">{message}</p>}
     {unavailable ? <section className={styles.empty}><p>{snapshot?.status === 'session-expired' ? '계정을 다시 확인한 뒤 개인공간을 열 수 있습니다.' : '서버에서 개인공간을 확인하고 있습니다.'}</p></section> : <>
       {['activity', 'creator'].includes(destination.view) && <nav className={styles.tabs} aria-label="내 활동 종류"><button aria-current={destination.view === 'activity' ? 'page' : undefined} onClick={() => void navigate({ view: 'activity' })}>활동·공개 관리</button><button aria-current={destination.view === 'creator' ? 'page' : undefined} onClick={openCreatorEntry}>Flow 만들기</button></nav>}
       <div hidden={destination.view !== 'space'}>

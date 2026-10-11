@@ -200,6 +200,9 @@ function harness() {
     context.participationMessage = evaluate(initializer('participationMessage'), context);
     context.mutate = evaluate(initializer('mutate'), context); context.openLatest = evaluate(`(${declaration('openLatest')})`, context);
     context.workspaceTools = evaluate(initializer('workspaceTools'), context);
+    context.needsInputProtection = evaluate(initializer('needsInputProtection'), context);
+    context.inputProtection = evaluate(initializer('inputProtection'), context);
+    context.personalRecovery = evaluate(initializer('personalRecovery'), context);
     return evaluate(renderExpression, context);
   };
   const button = (name: string) => { const found = nodes(render()).filter(node => node.type === 'button' && text(node.props.children) === name); assert.equal(found.length, 1); return found[0]; };

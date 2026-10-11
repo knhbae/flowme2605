@@ -165,3 +165,33 @@
   .sync > .management { grid-column: 3; }
   .auxiliaryLabel { display: inline; }
 }
+
+/* Writing keeps server authority distinct from the editor's local save state. */
+.sync > p { grid-column: 1 / -1; }
+@media (min-width: 1200px) { .sync > p { grid-column: 2 / -1; } }
+@media (max-width: 760px) {
+  .page:has([data-program-period="documents"][aria-current="page"]) .sync > p:is([data-save-state="ready"], [data-save-state="saved"], [data-save-state="same-location"]) { padding-block: 2px; min-height: 20px; }
+  .page:has([data-program-period="documents"][aria-current="page"]) .notice summary { font-size: 12px; line-height: 18px; }
+}
+/* One fixed status row reserves the recovery trigger before it is needed.
+   Only user-opened content overlays; no textarea or document scroll owner changes. */
+.sync > .statusRow { position: relative; grid-column: 1 / -1; grid-row: 3; display: flex; flex-wrap: nowrap; align-items: center; gap: 6px; min-height: 44px; min-width: 0; }
+.statusRow > button { flex: 0 0 auto; min-height: 44px; border-color: transparent; background: transparent; color: var(--flowme-text-secondary); }
+.statusRow > p[data-save-state] { flex: 1 1 0; min-width: 0; margin: 0; padding: 0; font-size: 12px; line-height: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.statusRow > p:is([data-save-state="ready"], [data-save-state="saved"], [data-save-state="same-location"]) { color: var(--flowme-text-secondary); font-weight: 400; }
+.inputRecovery { flex: 0 1 auto; min-width: 44px; font-size: 12px; }
+.page .inputRecovery > summary { display: block; align-content: center; min-height: 44px; box-sizing: border-box; padding: 8px 6px; color: #805220; cursor: pointer; list-style: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.inputRecovery > summary::-webkit-details-marker { display: none; }
+.inputRecovery[open] > summary { background: #fff4e9; border-radius: 6px; }
+.inputRecoveryBody { position: absolute; z-index: 70; top: calc(100% + 4px); left: 0; right: 0; box-sizing: border-box; max-height: min(52dvh, 420px); overflow: auto; overscroll-behavior: contain; padding: 12px; border: 1px solid var(--flowme-control-border); border-radius: 10px; color: var(--flowme-text); background: var(--flowme-surface); box-shadow: 0 8px 24px #15342620; }
+.inputRecoveryBody .problem { margin: 0 0 8px; padding: 10px; }
+.inputRecoveryBody section { margin-block: 8px; }
+.inputRecoveryBody h2 { font-size: 16px; font-weight: 650; margin-bottom: 8px; }
+.inputRecoveryBody textarea { display: block; width: 100%; min-width: 0; min-height: 100px; max-height: 240px; padding: 10px; font: inherit; font-size: 16px; border: 1px solid var(--flowme-control-border); border-radius: 8px; }
+.inputRecoveryBody button { margin: 4px 8px 4px 0; }
+.statusRow > .feedbackMessage { flex: 1 1 0; min-width: 44px; margin: 0; padding: 0; color: var(--flowme-text-secondary); font-size: 12px; line-height: 20px; }
+.page .feedbackMessage > summary { display: flex; align-items: center; min-height: 44px; box-sizing: border-box; font-size: 12px; line-height: 20px; cursor: pointer; list-style: none; }
+.feedbackMessage > summary::-webkit-details-marker { display: none; }
+.feedbackMessage > summary > span { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.inputRecoveryBody > .feedbackMessageText { margin: 0; color: var(--flowme-text-secondary); font-size: 14px; line-height: 1.6; overflow-wrap: anywhere; }
+@media (min-width: 1200px) { .sync > .statusRow { grid-column: 2 / -1; } }

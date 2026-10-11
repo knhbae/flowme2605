@@ -913,7 +913,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
   const selectedDocumentTools = selectedDoc && !retentionSource && !selectedTrashed && <details key={selectedDoc.id} ref={documentMenu} onToggle={event => {
             const title = event.currentTarget.querySelector<HTMLInputElement>('input[name="title"]');
             if (!event.currentTarget.open && (!title || title.value === title.defaultValue)) formExpected.current = null;
-          }}><summary aria-label="현재 글 작업">현재 글 …</summary><div className={styles.documentTools} onInputCapture={() => { formExpected.current ??= space; }}>
+          }}><summary aria-label="현재 글 작업"><span className={styles.documentToolsLabel}>글 작업</span><span className={styles.documentToolsMarker} aria-hidden="true"> …</span></summary><div className={styles.documentTools} onInputCapture={() => { formExpected.current ??= space; }}>
             <form onSubmit={async event => { event.preventDefault(); const title = String(new FormData(event.currentTarget).get('title') ?? ''); await run('문서 이름 변경', current => renameProgramDocument(current, { ...base(current), documentId: selectedDoc.id, title })); }}><label>문서 이름<input key={selectedDoc.id + selectedDoc.title} name="title" defaultValue={selectedDoc.title} required /></label><button>이름 변경</button></form>
             {!collectionMode && <label>보관 위치<select value={selectedDoc.folderId} onChange={event => { const value = event.target.value; void run('폴더 이동', current => setProgramDocumentFolder(current, { ...base(current), documentId: selectedDoc.id, folderId: value })); }}>{folderOptions.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</select></label>}
             {props.capabilities?.publication !== false && props.onPublishDocument && <button disabled={preparingDocumentAction} onClick={() => void openDocumentAction(props.onPublishDocument!, { modalReturnFocus: true })}>선택해서 공개</button>}
@@ -929,6 +929,15 @@ export function ProgramSpace(props: ProgramSpaceProps) {
             <ProgramDocumentTrashAction key={selectedDoc.id} space={space} documentId={selectedDoc.id} disabled={preparingDocumentAction} onChange={changeDocumentTrash} />
           </div></details>;
 
+  // Writing states share one title/action heading and one guarded finder.
+  // Period views retain their existing entry position and search scope.
+  const findActions = <div className={styles.findActions}>
+    {period === 'documents' && <button className={styles.newWriting} disabled={preparingDocumentAction} onClick={() => void beginWriting()}>새 글</button>}
+    <button ref={libraryToggle} className={styles.libraryToggle} aria-label="글 찾기 · 내 문서와 할 일" aria-expanded={libraryOpen} aria-controls="program-library"
+      onPointerDown={event => { if (libraryComposing.current) { event.preventDefault(); event.stopPropagation(); return; } rememberFindFocus(); if (libraryReturn.current?.area) event.preventDefault(); }}
+      onClick={openFindPanel}>글 찾기</button>
+  </div>;
+
   const guardOccurrenceDraft = (event: React.SyntheticEvent) => {
     const pending = Object.entries(recurrencePorts.current).filter(([, port]) => port?.hasPendingInput?.());
     const editor = (event.target as HTMLElement).closest('[data-recurrence-editor]')?.getAttribute('data-recurrence-editor');
@@ -941,12 +950,7 @@ export function ProgramSpace(props: ProgramSpaceProps) {
     onClickCapture={guardOccurrenceDraft} onKeyDownCapture={event => { if (!['Tab', 'Shift', 'Escape'].includes(event.key)) guardOccurrenceDraft(event); }}>
     <div className={styles.contextActions}>
       <nav ref={viewMenu} className={styles.periods} aria-label="기본 이동">{mainPeriods.map(([key, label]) => <button key={key} data-program-period={key} aria-current={period === key || key === 'today' && ['week', 'month', 'undated'].includes(period) ? 'page' : undefined} onClick={() => void changePeriod(key, true)}>{key === 'all' && collectionMode ? '전체 할 일' : label}</button>)}</nav>
-      <div className={styles.findActions}>
-        {period === 'documents' && <button disabled={preparingDocumentAction} onClick={() => void beginWriting()}>새 글</button>}
-        <button ref={libraryToggle} className={styles.libraryToggle} aria-label="글 찾기 · 내 문서와 할 일" aria-expanded={libraryOpen} aria-controls="program-library"
-          onPointerDown={event => { if (libraryComposing.current) { event.preventDefault(); event.stopPropagation(); return; } rememberFindFocus(); if (libraryReturn.current?.area) event.preventDefault(); }}
-          onClick={openFindPanel}>글 찾기</button>
-      </div>
+      {period !== 'documents' && findActions}
     </div>
     <dialog ref={libraryDialog} id="program-library" className={styles.findDialog} aria-labelledby="program-find-title"
       onCancel={event => { event.preventDefault(); if (!libraryComposing.current) { cancelLibraryReveal(); setLibraryOpen(false); } }}>
@@ -985,8 +989,8 @@ export function ProgramSpace(props: ProgramSpaceProps) {
       {!detail && taskNoticeContent}
       <div hidden={period !== 'documents'}>
         <ProgramRecurrencePlanRecovery data={data} today={today} documentId={selected || undefined} disabled={preparingDocumentAction} onOpenSource={(id, line) => void openDocument(id, line)} />
-        {!selectedDoc ? selected ? <div className={styles.empty}><h1>문서를 찾을 수 없습니다</h1><p>이 문서가 삭제되었거나 현재 인물의 문서가 아닐 수 있습니다. 다른 문서로 자동 이동하지 않았습니다. 내 문서 목록이나 보관함에서 다시 선택해 주세요.</p><button onClick={() => { setShowArchived(false); setLibraryOpen(true); }}>내 문서 목록</button><button onClick={() => { setShowArchived(true); setLibraryOpen(true); }}>보관함 확인</button></div> : <div className={styles.empty}><h1>필요한 내용을 먼저 적으세요</h1><p>글과 할 일을 함께 적습니다. 이름과 위치는 나중에 정해도 됩니다.</p><button disabled={preparingDocumentAction} onClick={() => void beginWriting()}>바로 쓰기</button>{props.capabilities?.discovery !== false && <button onClick={() => props.navigate({ view: 'discover' })}>다른 사람의 Flow 둘러보기</button>}</div> : <>
-          <div className={styles.docHeading}><h1>{selectedDoc.title}</h1>{selectedDocumentTools}</div>
+        <div className={styles.docHeading}><h1>{selectedDoc ? selectedDoc.title : selected ? '문서를 찾을 수 없습니다' : '필요한 내용을 먼저 적으세요'}</h1><div className={styles.writingActions}>{period === 'documents' && findActions}{selectedDocumentTools}</div></div>
+        {!selectedDoc ? selected ? <div className={styles.empty}><p>이 문서가 삭제되었거나 현재 인물의 문서가 아닐 수 있습니다. 다른 문서로 자동 이동하지 않았습니다. 내 문서 목록이나 보관함에서 다시 선택해 주세요.</p><button onClick={() => { setShowArchived(false); setLibraryOpen(true); }}>내 문서 목록</button><button onClick={() => { setShowArchived(true); setLibraryOpen(true); }}>보관함 확인</button></div> : <div className={styles.empty}><p>글과 할 일을 함께 적습니다. 이름과 위치는 나중에 정해도 됩니다.</p>{props.capabilities?.discovery !== false && <button onClick={() => props.navigate({ view: 'discover' })}>다른 사람의 Flow 둘러보기</button>}</div> : <>
           {selectedTrashed && <ProgramDocumentTrashAction key={selectedDoc.id} space={space} documentId={selectedDoc.id} disabled={preparingDocumentAction} onChange={changeDocumentTrash} />}
           <ProgramDocumentProvenance data={data} documentId={selectedDoc.id} disabled={preparingDocumentAction || selectedTrashed} onOpenRevisions={props.capabilities?.revisionHistory !== false && props.onRevisionHistory ? () => void openDocumentAction(props.onRevisionHistory!) : undefined} onOpenCreatorDraft={props.capabilities?.creatorNavigation !== false ? draftId => void openDocumentAction(() => props.navigate({ view: 'creator', id: draftId })) : undefined} />
           {selectedQualityHold && <p role="status" className={styles.muted}>{selectedQualityHold} 해당 원본 항목과 실행 기록은 읽기 전용으로 남깁니다. 다른 자유 메모는 계속 쓸 수 있습니다.</p>}

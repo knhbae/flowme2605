@@ -36,3 +36,27 @@ test('source mapping never focuses, mutates, normalizes or reparses the native b
  assert(source.includes("listen(doc, 'copy', copyPresentation)"));
  assert(source.includes("event.inputType === 'insertFromPaste' && source"));
 });
+
+test('row ranges ending before appended controls copy only the unchanged source, not badge text',()=>{
+ const raw='  - [ ] 가상 확인',sourceNode={nodeType:3,textContent:raw};
+ const decoration=(kind:string,text='')=>({nodeType:1,textContent:text,classList:{contains:(name:string)=>name===kind}});
+ const row:any={hidden:false,dataset:{lineIndex:'0'},childNodes:[sourceNode,decoration('tle-row-control','40%'),decoration('tle-row-control','⌄')],textContent:raw+'40%⌄'};
+ row.closest=(selector:string)=>selector==='.tle-line'?row:null;
+ const context=vm.createContext({row,rows:[row],textarea:{value:raw},mirror:{contains:()=>true},rangeOfLine:()=>({start:0,end:raw.length,text:raw}),
+  doc:{createRange(){return{selectNodeContents(){},setEnd(){},toString(){return'';}};}}});
+ vm.runInContext(helper,context);
+ for(const offset of [1,2,3]) assert.equal(vm.runInContext(`presentationCopyPoint(row,${offset},false)`,context),raw.length);
+ assert.equal(vm.runInContext('presentationCopyPoint(row,0,true)',context),0);
+ assert.equal(vm.runInContext('presentationCopyPoint(row,4,false)',context),null);
+ // Shipped nested tasks append guides after controls. Scope construction adds
+ // its fold anchor between the scope and fold buttons; neither is source.
+ for(const tail of [
+  [decoration('tle-row-control','40%'),decoration('tle-indent-guide')],
+  [decoration('tle-check-anchor','✓'),decoration('tle-row-control','예정일10/12'),decoration('tle-indent-guide')],
+  [decoration('tle-row-control'),decoration('tle-fold-anchor'),decoration('tle-row-control','⌄'),decoration('tle-indent-guide')],
+ ]) {
+  row.childNodes=[sourceNode,...tail];row.textContent=raw+tail.map(node=>node.textContent).join('');
+  for(let offset=1;offset<=row.childNodes.length;offset++)
+   assert.equal(vm.runInContext(`presentationCopyPoint(row,${offset},false)`,context),raw.length);
+ }
+});

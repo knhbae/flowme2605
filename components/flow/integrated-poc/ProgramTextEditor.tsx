@@ -982,14 +982,18 @@ export function ProgramTextEditor(props: ProgramTextEditorProps) {
           {(props.onRedo || orderHistoryRef.current.hasEntries()) && <button type="button" hidden={!!props.folderId} disabled={disabled || draft.dirty} aria-label="다시 실행" onClick={event => { closeEditorTools(event.currentTarget); if (orderHistoryRef.current.hasEntries()) nativeHistory('historyRedo'); else void props.onRedo?.(); }}>다시 실행</button>}
         </div>
       </details>
-      <span className={styles.status} role="status" aria-live="polite">{props.readOnly ? props.disabledReason || '읽기 전용' : inputLocked ? '변경을 마치는 중… 입력을 잠시 보호합니다.' : draft.saving ? '저장 중…' : draft.error ? '저장되지 않은 입력' : draft.dirty || !!props.folderId && regionPending ? '편집 중' : '저장됨'}</span>
-    </div>
-    {draft.error && <div className={styles.error} role="alert"><p>{draft.error}</p><div>
+      {draft.error ? <details name="program-input-feedback" className={styles.saveFeedback} onKeyDown={event => {
+        if (event.key !== 'Escape' || event.nativeEvent.isComposing || composingRef.current || !event.currentTarget.open) return;
+        event.preventDefault(); event.stopPropagation(); event.currentTarget.open = false;
+        event.currentTarget.querySelector('summary')?.focus({ preventScroll: true });
+      }}><summary title={props.readOnly ? props.disabledReason || '읽기 전용' : draft.error}><span role="alert">{props.readOnly ? '읽기 전용 · 복구' : inputLocked ? '입력 보호 · 복구' : '저장 확인 필요 · 복구'}</span></summary><div className={styles.error}><p>{draft.error}</p><div>
       {progressConflict && <button type="button" onClick={showProgressConflict}>진행 조절 보기</button>}
       <button type="button" disabled={!!props.readOnly || draft.invalid || draft.saving} onClick={() => { void saveNow(); }}>다시 저장</button>
       <button type="button" onClick={downloadDraft}>입력한 원문 받기</button>
       <button type="button" disabled={inputLocked || draft.saving} onClick={() => { if (draftRef.current?.discard(propsRef.current.workspace)) { orderHistoryRef.current.clear(); orderPositionsRef.current = []; orderEpochRef.current++; editorRef.current?.setValue(draftRef.current.getState().raw, { preserveSelection: true }); } }}>저장본으로 되돌리기</button>
-    </div></div>}
+      </div></div></details>
+        : <span className={styles.status} role="status" aria-live="polite">{props.readOnly ? props.disabledReason || '읽기 전용' : inputLocked ? '변경을 마치는 중… 입력을 잠시 보호합니다.' : draft.saving ? '저장 중…' : draft.dirty || !!props.folderId && regionPending ? '편집 중' : '저장됨'}</span>}
+    </div>
     {moving && <div className={styles.moveNotice} role="status"><span>{moving.label} · 하위 {moving.descendantCount}줄</span><button type="button" onClick={() => setPanel({ kind: 'move', lineId: moving.lineId })}>위치 선택</button><button type="button" onClick={cancelMove}>이동 취소</button></div>}
     {message && !panel && <p className={styles.message} role="status">{message}</p>}
     {suggestion && <div className={regionStyles.actions} role="region" aria-label="폴더 연결 제안">{suggestion.folders.length > 0
