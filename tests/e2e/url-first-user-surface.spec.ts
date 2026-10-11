@@ -532,17 +532,22 @@ test('creator infant-feeding URL stops before an outdated start-age schedule or 
   await lookupUrl(page, 'https://blog.naver.com/01695258757/222768860919?utm_source=review');
 
   const result = page.getByTestId('flow-url-lookup-result');
-  await expect(result).toContainText('아이 상태에 맞는 확인이 필요해요');
-  await expect(result).toContainText('시작 시기와 메뉴를 아이 상태에 맞게 다시 확인');
+  await expect(result.getByRole('heading', { name: '출처 재검토 중', exact: true })).toBeVisible();
+  await expect(result).toContainText('이 자료는 새 계획으로 시작할 수 없습니다.');
+  await expect(result).toContainText('기존 개인 계획은 내 공간에서 이어 쓸 수 있습니다.');
+  await expect(result).toContainText('민간 식단표와 현재 공식 안내를 대조하기 전에는 저장하지 않아요.');
+  await expect(result).toContainText('이 자료의 신규 시작을 보류했습니다.');
   await expect(result).toContainText('참고 원문');
   await expect(result).not.toContainText('공식 원문');
   await expect(result).toContainText('새 저장 중지');
-  await expect(result.getByRole('link', { name: '시작 전 확인' })).toHaveAttribute(
+  await expect(result.getByRole('link', { name: '출처 확인', exact: true })).toHaveAttribute(
     'href',
     '/flow-maps/baby-food-map',
   );
   await expect(result.getByTestId('flow-url-start-panel')).toHaveCount(0);
   await expect(result.getByTestId('flow-url-supply-request')).toHaveCount(0);
+  await expect(result.getByTestId('flow-url-miss-draft-gate')).toHaveCount(0);
+  await expect(result.getByTestId('flow-url-supply-candidate-form')).toHaveCount(0);
   await expect(result).not.toContainText('Markdown');
   await expectCleanUrlFirstUserSurface(result);
   if (evidenceDir) await page.screenshot({ path: `${evidenceDir}/03-baby-food-url-first-blocked-mobile.png`, fullPage: true });
