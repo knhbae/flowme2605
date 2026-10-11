@@ -1596,9 +1596,10 @@ test('public Flow indexing exposes only source-fit approved or exact real-source
   const reviewOnly = published.filter((bundle) => !getPublicFlowIndexingPolicy(bundle).indexable);
   const bySlug = new Map(published.map((bundle) => [bundle.flow.slug, bundle]));
 
-  assert.equal(indexable.length, 43);
-  assert.equal(reviewOnly.length, 106);
-  assert.equal(getPublicFlowIndexingPolicy(bySlug.get('vehicle-inspection-prep')!).indexable, true);
+  assert.equal(indexable.length, 21);
+  assert.equal(reviewOnly.length, 128);
+  assert.equal(indexable.some(bundle => isPublicFlowSourceOnHold(bundle.flow.slug)), false);
+  assert.equal(getPublicFlowIndexingPolicy(bySlug.get('vehicle-inspection-prep')!).indexable, false);
   assert.deepEqual(cp1QuarantinedSourceSlugs.filter(slug => bySlug.has(slug)), []);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('new-car-delivery-check')!).indexable, false);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('first-passport-issue')!).indexable, true);
@@ -1606,9 +1607,9 @@ test('public Flow indexing exposes only source-fit approved or exact real-source
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('portfolio-4week')!).indexable, true);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('weekly-meal-plan')!).indexable, false);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('ev-subsidy-apply')!).indexable, true);
-  assert.equal(getPublicFlowIndexingPolicy(bySlug.get('adult-vaccine-schedule-check')!).indexable, true);
-  assert.equal(getPublicFlowIndexingPolicy(bySlug.get('used-car-ownership-transfer')!).indexable, true);
-  assert.equal(getPublicFlowIndexingPolicy(bySlug.get('small-business-fund-check')!).indexable, true);
+  assert.equal(getPublicFlowIndexingPolicy(bySlug.get('adult-vaccine-schedule-check')!).indexable, false);
+  assert.equal(getPublicFlowIndexingPolicy(bySlug.get('used-car-ownership-transfer')!).indexable, false);
+  assert.equal(getPublicFlowIndexingPolicy(bySlug.get('small-business-fund-check')!).indexable, false);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('curated-allblanc-morning-workout')!).indexable, true);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('curated-allblanc-no-jump-cardio')!).indexable, true);
   assert.equal(getPublicFlowIndexingPolicy(bySlug.get('curated-allblanc-lower-body')!).indexable, false);
@@ -1778,8 +1779,11 @@ test('normal routes keep known source contradictions out of user-facing copy', (
 
   assert.deepEqual(findLegacySourceClaimCopy(userRoutes), []);
 
-  const sample = userRoutes.find((bundle) => bundle.flow.slug === 'payday-finance-routine');
+  // Keep the original negative-copy fixture even though its NEW intake is held.
+  const sample = published.find((bundle) => bundle.flow.slug === 'payday-finance-routine');
   assert.ok(sample);
+  assert.equal(userRoutes.includes(sample), false);
+  assert.equal(isPublicFlowSourceOnHold(sample.flow.slug), true);
   const synthetic = {
     ...sample,
     flow: {
