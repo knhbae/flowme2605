@@ -118,7 +118,7 @@ test('visible saved Undo shares the fixed status row without entering the manage
   assert.doesNotMatch(classElement(shell, 'management').getText(shell), />되돌리기<\/button>/);
   assert.equal(declarations('./AlphaWorkspace.module.css', '.sync > .statusRow').get('grid-column'), '2 / -1');
   const style = declarations('./AlphaWorkspace.module.css', '.statusRow > button');
-  assert.equal(style.get('flex'), '0 0 auto'); assert.equal(style.get('min-height'), '44px');
+  assert.equal(style.get('flex'), '0 0 auto'); assert.equal(style.get('min-height'), '48px');
   const recovery = declarations('./AlphaWorkspace.module.css', '.inputRecovery');
   assert.equal(recovery.get('flex'), '0 1 auto'); assert.equal(recovery.get('min-width'), '44px');
   const summary = declarations('./AlphaWorkspace.module.css', '.page .inputRecovery > summary');
