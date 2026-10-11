@@ -8,6 +8,20 @@ const editor = read('./ProgramTextEditor.module.css');
 const space = read('./ProgramSpace.module.css');
 const shell = read('./AlphaWorkspace.module.css');
 
+test('Note A compact view rules cannot reflow the retained legacy workspace', () => {
+  const compact = space.match(/\/\* Note A local tools must not reflow the retained legacy workspace\.[\s\S]*?\*\/([\s\S]*?)\/\* A work note\./)?.[1];
+  assert(compact, 'the explicit compact Note A block must exist');
+  const selectors: string[] = [];
+  postcss.parse(compact).walkRules(rule => { selectors.push(...rule.selectors); });
+  assert.equal(selectors.length, 24);
+  for (const selector of selectors) {
+    assert(selector.startsWith(':where(.space[data-note-layout="true"]) '), selector);
+  }
+  // Zero-specificity scope lets the later fully-readable Note A title rule
+  // keep winning in source order, without touching /my.
+  assert.match(space, /\.space\[data-note-layout="true"\] \.periodHeading h1 \{ position: static;[^}]*overflow: visible;/);
+});
+
 test('compact header retains save status, permanent warning and all auxiliary routes', () => {
   const source = read('./AlphaWorkspace.tsx');
   for (const label of ['서버 저장 상태', '개발계 안내', '계정 및 자료 관리', 'Flow · 다른 도구', '문서 정리 방식', '백업 · 복원 · 가져오기']) assert(source.includes(label));

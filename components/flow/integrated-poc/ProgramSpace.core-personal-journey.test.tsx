@@ -46,10 +46,13 @@ test('P02 wider-period recovery preserves folder/query/date and follows existing
   for (const outcome of ['ready', 'input-lock', 'flush-rejected'] as const) {
     const view = { period: 'week', folderId: 'folder-preparation', query: '짐', date: '2026-10-03' };
     let flushes = 0, writes = 0, focuses = 0, releases = 0;
+    let blockedNotices = 0, clearedNotices = 0;
     const inputLockCount = { current: outcome === 'input-lock' ? 1 : 0 };
     const changePeriod = evaluate(`(${changeNode.getText(ast)})`, { inputLockCount, today: '2026-10-03', collectionMode: undefined,
       lockInput: () => () => { releases++; }, flushAllEditors: async () => { flushes++; return outcome !== 'flush-rejected'; },
       setPeriod: (period: string) => { view.period = period; }, setDate: (date: string) => { view.date = date; }, setMessage() {}, setTaskNotice() {},
+      showViewChangeBlocked: () => { blockedNotices++; },
+      setViewChangeNotice: (value: unknown) => { assert.equal(value, null); clearedNotices++; },
       mutate: () => { writes++; },
     });
     const invoke = evaluate(`(${recoveryNode.getText(ast)})`, { changePeriod,
@@ -62,6 +65,8 @@ test('P02 wider-period recovery preserves folder/query/date and follows existing
     assert.deepEqual(view, { period: outcome === 'ready' ? 'all' : 'week', folderId: 'folder-preparation', query: '짐', date: '2026-10-03' });
     assert.equal(writes, 0); assert.equal(focuses, outcome === 'ready' ? 1 : 0);
     assert.equal(flushes, outcome === 'input-lock' ? 0 : 1); assert.equal(releases, outcome === 'input-lock' ? 0 : 1);
+    assert.equal(blockedNotices, outcome === 'flush-rejected' ? 1 : 0);
+    assert.equal(clearedNotices, outcome === 'ready' ? 1 : 0);
   }
   let focusCalls = 0, frame: (() => void) | undefined;
   const view = { period: 'all' };

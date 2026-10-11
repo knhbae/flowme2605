@@ -112,9 +112,11 @@ test('MX06 changing the query or folder clears an unrelated recovery notice, wit
   queryFn({target:{value:'other'}});
   const folder=find(n=>ts.isFunctionDeclaration(n)&&n.name?.text==='changeFolder');
   for(const blocked of [false,true]){
-    let changed=0,cleared=0;
+    let changed=0,cleared=0,blockedNotices=0,clearedViewNotices=0;
     const folderFn=evaluate(`(${folder.getText(ast)})`,{cancelLibraryReveal(){},libraryReveal:{current:{epoch:0}},selectedRef:{current:'doc'},inputLockCount:{current:0},lockInput:()=>()=>{},
-      flushAllEditors:async()=>!blocked,setMessage(){},setFolderId:(value:string)=>{assert.equal(value,'folder-b');changed++;},setTaskNotice:(value:unknown)=>{assert.equal(value,null);cleared++;}});
+      flushAllEditors:async()=>!blocked,setMessage(){},setFolderId:(value:string)=>{assert.equal(value,'folder-b');changed++;},setTaskNotice:(value:unknown)=>{assert.equal(value,null);cleared++;},
+      showViewChangeBlocked:()=>{blockedNotices++;},setViewChangeNotice:(value:unknown)=>{assert.equal(value,null);clearedViewNotices++;}});
     await folderFn('folder-b');assert.equal(changed,blocked?0:1);assert.equal(cleared,changed);
+    assert.equal(blockedNotices,blocked?1:0);assert.equal(clearedViewNotices,changed);
   }
 });

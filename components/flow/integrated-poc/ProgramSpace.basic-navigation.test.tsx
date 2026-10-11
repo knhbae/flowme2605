@@ -24,15 +24,20 @@ test('basic navigation flushes before resetting scope; writing and today never c
   for (const next of ['documents', 'today', 'all']) for (const outcome of ['ready', 'locked', 'unsaved']) {
     const view = { period: 'all', folder: 'work', query: '찾는 글', date: '2026-10-09' };
     const trace: string[] = [];
+    let blockedNotices = 0, clearedNotices = 0;
     const work = evaluate(`(${change})`, {
       inputLockCount: { current: outcome === 'locked' ? 1 : 0 }, collectionMode: undefined, today: '2026-10-07',
       lockInput: () => () => trace.push('release'), flushAllEditors: async () => { trace.push('flush'); return outcome !== 'unsaved'; },
       setQuery: (v: string) => { trace.push('query'); view.query = v; }, setFolderId: (v: string) => { trace.push('folder'); view.folder = v; },
       setPeriod: (v: string) => { trace.push('period'); view.period = v; }, setDate: (v: string) => { trace.push('date'); view.date = v; },
       setMessage() {}, setTaskNotice() {}, setLibraryOpen() {},
+      showViewChangeBlocked: () => { blockedNotices++; },
+      setViewChangeNotice: (value: unknown) => { assert.equal(value, null); clearedNotices++; },
       beginWriting() { throw Error('writing navigation must not create'); }, mutate() { throw Error('view must not write'); },
     });
     assert.equal(await work(next, true), outcome === 'ready');
+    assert.equal(blockedNotices, outcome === 'unsaved' ? 1 : 0);
+    assert.equal(clearedNotices, outcome === 'ready' ? 1 : 0);
     if (outcome === 'ready') {
       assert.equal(trace[0], 'flush'); assert.equal(trace.at(-1), 'release');
       assert.equal(view.period, next); assert.equal(view.query, '');
