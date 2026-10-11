@@ -25,3 +25,5 @@ The existing 844x390 workspace E2E also failed because the Add target was occlud
 
 These are local compatibility results. They do not replace the fresh exact follow-up CI or actual Alpha application, and the currently served baseline remains unchanged.
 
+The subsequent committed-head compatibility check retained one failure: its Header contract still expected Note-only compact declarations on generic legacy selectors. The test now asserts the baseline legacy declarations and the zero-specificity Note selector separately, without changing product CSS, action targets, error visibility or Note title overrides. This is a test-contract correction, not a further visual redesign; the original failure is retained.
+
