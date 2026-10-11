@@ -1707,9 +1707,10 @@ test('published user routes record source freshness while preview library stays 
     return exposure === 'catalog_preview' || exposure === 'hidden';
   });
 
-  // Dated source reviews hold dog adoption (09-04) and unsupported squishy timeline rows (09-20).
-  assert.equal(userRoutes.length, 97);
-  assert.equal(previewOrHidden.length, 56);
+  // Approved NEW-intake holds include the exact 25 reviewed on 10-11;
+  // the source bodies, dates, and already saved plans are unchanged.
+  assert.equal(userRoutes.length, 72);
+  assert.equal(previewOrHidden.length, 81);
   assert.equal(userRoutes.some(bundle => isPublicFlowSourceOnHold(bundle.flow.slug)), false);
 
   const demotedPreviewSlugs = [
