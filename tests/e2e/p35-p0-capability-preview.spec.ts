@@ -6,9 +6,11 @@ import {
 } from './helpers/my-flow-library';
 
 const HISTORICAL_SOURCE_FLOW_SLUG = 'moving-d30-basic';
-const NEW_PUBLIC_FLOW_SLUG = 'computer-skills-d30-study';
+import { eligibleTimeline } from './helpers/eligible-public-source';
+
+const NEW_PUBLIC_FLOW_SLUG = eligibleTimeline.slug;
 const NEW_PUBLIC_ROUTE = `/f/${NEW_PUBLIC_FLOW_SLUG}`;
-const NEW_PUBLIC_ITEM_COUNT = 9;
+const NEW_PUBLIC_ITEM_COUNT = eligibleTimeline.itemCount;
 const MOBILE_VIEWPORT = { width: 390, height: 844 } as const;
 
 type RawStorageSnapshot = Readonly<{
@@ -192,7 +194,7 @@ test.describe('P35 P0-07 capability result preview', () => {
     await expect(page.getByTestId('public-flow-saved-receipt')).toHaveCount(0);
   });
 
-  test('conditional Calendar uses the shared editor and becomes a 9-item ready result', async ({ page }) => {
+  test('conditional Calendar uses the shared editor and becomes a 6-item ready result', async ({ page }) => {
     const preview = await resetAndOpenPublicPreview(page);
     const conditionalCalendar = preview.locator(
       '[data-testid="flow-capability-conditional-result"][data-capability-destination="calendar"]',
@@ -233,7 +235,7 @@ test.describe('P35 P0-07 capability result preview', () => {
       'data-capability-output-count',
       String(NEW_PUBLIC_ITEM_COUNT),
     );
-    await expect(updatedPreview.getByRole('heading', { name: /2031년 8월 2일/u })).toHaveCount(1);
+    await expect(updatedPreview.getByRole('heading', { name: /2030년 9월 1일/u })).toHaveCount(1);
     await expect(updatedPreview.locator(
       '[data-testid="flow-capability-conditional-result"][data-capability-destination="calendar"]',
     )).toHaveCount(0);

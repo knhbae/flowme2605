@@ -14,20 +14,22 @@ type StickyPrimaryEntry = {
 };
 
 const APPROVED_PUBLIC_SHARE_ROUTES = [
-  '/f/vehicle-inspection-prep',
-  '/f/computer-skills-d30-study',
+  '/f/curated-new-car-basic',
+  '/f/first-passport-issue',
   '/f/curated-wedding-naver-timeline',
   '/f/source-backed-middle-school-math-1',
 ];
 
 const PUBLIC_SHARE_ITEM_COUNTS: Record<string, number> = {
-  '/f/vehicle-inspection-prep': 10,
-  '/f/computer-skills-d30-study': 9,
+  '/f/curated-new-car-basic': 7,
+  '/f/first-passport-issue': 4,
   '/f/curated-wedding-naver-timeline': 6,
   '/f/source-backed-middle-school-math-1': 8,
 };
 
 const HELD_PUBLIC_SHARE_ROUTES = [
+  '/f/vehicle-inspection-prep',
+  '/f/computer-skills-d30-study',
   '/f/moving-d30-basic',
   '/f/fridge-cleanout-weekly-plan',
   '/f/washer-tub-clean-monthly',

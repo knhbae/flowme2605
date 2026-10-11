@@ -4,7 +4,7 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 
 const FIXED_CLOCK = '2026-08-10T09:00:00+09:00';
 const SORT_PLAN_COUNT = 6;
-const PUBLIC_FLOW_ROUTE = '/f/vehicle-inspection-prep';
+const PUBLIC_FLOW_ROUTE = '/f/first-passport-issue';
 
 type SortPlanFixture = Readonly<{
   planId: string;
@@ -674,7 +674,7 @@ test.describe('approved plan execution UX', () => {
     await expect.poll(() => new URL(page.url()).searchParams.get('sort')).toBe('name');
   });
 
-  test('public preview exposes only Text, Todo, Calendar and all 10 Todo rows are readonly detail links', async ({ page }) => {
+  test('public preview exposes only Text, Todo, Calendar and all 4 Todo rows are readonly detail links', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await installCleanStorage(page);
     await page.goto(PUBLIC_FLOW_ROUTE);
@@ -690,13 +690,13 @@ test.describe('approved plan execution UX', () => {
     await formatTabs.filter({ hasText: 'Todo' }).click();
     await expect(preview).toHaveAttribute('data-capability-selected-destination', 'checklist');
     const todo = page.getByTestId('flow-capability-artifact-preview-todo');
-    await expect(todo).toHaveAttribute('data-todo-row-count', '10');
+    await expect(todo).toHaveAttribute('data-todo-row-count', '4');
     const rows = todo.getByTestId('flow-capability-artifact-preview-row');
     const checkboxes = todo.getByTestId('flow-capability-artifact-preview-todo-checkbox');
     const detailLinks = todo.getByTestId('flow-capability-artifact-preview-todo-detail-link');
-    await expect(rows).toHaveCount(10);
-    await expect(checkboxes).toHaveCount(10);
-    await expect(detailLinks).toHaveCount(10);
+    await expect(rows).toHaveCount(4);
+    await expect(checkboxes).toHaveCount(4);
+    await expect(detailLinks).toHaveCount(4);
     await expect(checkboxes.first()).toHaveAttribute('aria-readonly', 'true');
     await expect(checkboxes.first()).toHaveAttribute('data-todo-checkbox', 'readonly');
 
@@ -713,7 +713,7 @@ test.describe('approved plan execution UX', () => {
     await expect(itemPreview).toHaveCount(0);
     await expect(detailLinks.first()).toBeFocused();
 
-    const lastDetailLink = detailLinks.nth(9);
+    const lastDetailLink = detailLinks.nth(3);
     await lastDetailLink.scrollIntoViewIfNeeded();
     await expect(lastDetailLink).toBeInViewport();
     await lastDetailLink.click();
@@ -769,8 +769,8 @@ test.describe('approved plan execution UX', () => {
     ] as const) {
       await test.step(`${surface.width}px empty Calendar hierarchy`, async () => {
         await page.setViewportSize({ width: surface.width, height: surface.height });
-        // Use an eligible timeline, not vehicle's intentionally undated checklist.
-        await page.goto('/f/computer-skills-d30-study');
+        // Use an eligible timeline, not the intentionally undated passport checklist.
+        await page.goto('/f/curated-wedding-naver-timeline');
         const preview = page.getByTestId('public-flow-capability-result');
         await preview.locator(
           '[data-public-format-tab="true"][data-capability-destination="calendar"]',
@@ -780,11 +780,11 @@ test.describe('approved plan execution UX', () => {
         const save = page.getByTestId(surface.saveTestId);
         await expect(save).toBeVisible();
         await expect(save).toBeDisabled();
-        await expect(save).toHaveText('시험일 설정 후 저장');
+        await expect(save).toHaveText('결혼식 날짜 설정 후 저장');
         const setAnchor = page.getByTestId('public-flow-calendar-set-anchor');
         await expect(setAnchor).toBeVisible();
         await expect(setAnchor).toBeEnabled();
-        await expect(setAnchor).toHaveText('시험일 설정');
+        await expect(setAnchor).toHaveText('결혼식 날짜 설정');
         const storageBefore = await localStorageRawSnapshot(page);
 
         await setAnchor.click();
@@ -830,14 +830,14 @@ test.describe('approved plan execution UX', () => {
   test('public warning uses a trapped mobile sheet and desktop modal dialog with focus return', async ({ page }) => {
     await installCleanStorage(page);
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/f/vehicle-inspection-prep');
+    await page.goto('/f/first-passport-issue');
 
     const mobileTrigger = page.getByTestId('public-flow-warning-disclosure-trigger');
     await expect(mobileTrigger).toHaveAccessibleName(/주의사항/u);
     await mobileTrigger.click();
     const mobileSheet = page.getByTestId('public-flow-warning-disclosure-sheet');
     await expect(mobileSheet).toBeVisible();
-    await expect(mobileSheet).toContainText('검사 기간, 수수료, 재검사 기준은 차량과 검사소 상황에 따라 달라질 수 있으므로 공식 안내를 확인하세요.');
+    await expect(mobileSheet).toContainText('사진 규격, 미성년자·대리 신청, 수수료, 처리 기간은 공식 기준을 따릅니다. 외교부 여권안내로 확인하세요.');
     await page.keyboard.press('Tab');
     expect(await mobileSheet.evaluate((sheet) => sheet.contains(document.activeElement))).toBe(true);
     await page.keyboard.press('Escape');
@@ -853,7 +853,7 @@ test.describe('approved plan execution UX', () => {
     await expect(dialog).toHaveAttribute('role', 'dialog');
     await expect(dialog).toHaveAttribute('aria-modal', 'true');
     await expect(dialog).toHaveAttribute('data-flow-context-presentation', 'desktop-dialog');
-    await expect(dialog).toContainText('검사 기간, 수수료, 재검사 기준은 차량과 검사소 상황에 따라 달라질 수 있으므로 공식 안내를 확인하세요.');
+    await expect(dialog).toContainText('사진 규격, 미성년자·대리 신청, 수수료, 처리 기간은 공식 기준을 따릅니다. 외교부 여권안내로 확인하세요.');
     await page.keyboard.press('Tab');
     expect(await dialog.evaluate((node) => node.contains(document.activeElement))).toBe(true);
     await page.keyboard.press('Escape');
@@ -928,6 +928,8 @@ test.describe('approved plan execution UX', () => {
     let editor = page.locator(
       '[data-testid="my-flow-item-detail"][data-detail-mode="edit"]',
     );
+    await expect(editor).toBeVisible();
+    await expect(editor).toHaveAttribute('aria-modal', 'true');
     await page.keyboard.press('Escape');
     await expect(editor).toHaveCount(0);
     await expect(page.getByTestId('my-flow-editor-discard-prompt')).toHaveCount(0);

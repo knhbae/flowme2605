@@ -4,9 +4,11 @@ import { FLOW_EXPORT_RECEIPT_CLEANUP_JOURNAL_STORAGE_KEY } from '../../lib/flow/
 import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
 
 const HISTORICAL_FLOW_SLUG = 'moving-d30-basic';
-const NEW_PUBLIC_FLOW_SLUG = 'computer-skills-d30-study';
+import { eligibleTimeline } from './helpers/eligible-public-source';
+
+const NEW_PUBLIC_FLOW_SLUG = eligibleTimeline.slug;
 const NEW_PUBLIC_ROUTE = `/f/${NEW_PUBLIC_FLOW_SLUG}`;
-const NEW_PUBLIC_ITEM_COUNT = 9;
+const NEW_PUBLIC_ITEM_COUNT = eligibleTimeline.itemCount;
 const SAVED_FLOW_KEY = `flow:saved:${HISTORICAL_FLOW_SLUG}`;
 const ANCHOR_KEY = `flow:${HISTORICAL_FLOW_SLUG}:anchorDate`;
 const DATE_OVERRIDES_KEY = 'flow:my-flow:date-overrides';

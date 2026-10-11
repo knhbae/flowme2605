@@ -14,6 +14,12 @@ const ITEM_DRAFTS_KEY = 'flow:my-flow:item-drafts';
 const LEGACY_ITEM_STATE_KEY = `flow_builder_mvp_item_state_${FLOW_SLUG}`;
 const EXECUTION_NOTES_KEY = `flow:my-flow:execution-notes:${FLOW_SLUG}`;
 const RUN_REGISTRY_KEY = `flow:run-registry:${FLOW_SLUG}`;
+const NEW_SOURCE_SLUG = 'curated-new-car-basic';
+const sameSourceKeys = {
+  legacy: `flow_builder_mvp_item_state_${NEW_SOURCE_SLUG}`,
+  execution: `flow:my-flow:execution-notes:${NEW_SOURCE_SLUG}`,
+  runs: `flow:run-registry:${NEW_SOURCE_SLUG}`,
+};
 const FIRST_ENTRY_SESSION_KEY = 'flowme:my-flow:first-entry-plan';
 const SENTINEL_DRAFT_KEY = 'other-flow::sentinel::draft-overlay';
 
@@ -41,7 +47,7 @@ function collectBrowserErrors(page: Page) {
 }
 
 async function seedCompatibilityStores(page: Page) {
-  await page.evaluate(({ keys, raw }) => {
+  await page.evaluate(({ keys, sameSource, raw }) => {
     window.localStorage.setItem(keys.itemDrafts, JSON.stringify({
       [keys.sentinelDraft]: {
         title: '다른 Flow 제목',
@@ -52,6 +58,9 @@ async function seedCompatibilityStores(page: Page) {
     window.localStorage.setItem(keys.legacy, raw.legacy);
     window.localStorage.setItem(keys.execution, raw.execution);
     window.localStorage.setItem(keys.runs, raw.runs);
+    window.localStorage.setItem(sameSource.legacy, raw.legacy);
+    window.localStorage.setItem(sameSource.execution, raw.execution);
+    window.localStorage.setItem(sameSource.runs, raw.runs);
   }, {
     keys: {
       itemDrafts: ITEM_DRAFTS_KEY,
@@ -61,19 +70,26 @@ async function seedCompatibilityStores(page: Page) {
       runs: RUN_REGISTRY_KEY,
     },
     raw: preservedRaw,
+    sameSource: sameSourceKeys,
   });
 }
 
 async function expectCompatibilityStoresPreserved(page: Page, memoKey: string, memo: string) {
-  const state = await page.evaluate(({ keys }) => ({
+  const state = await page.evaluate(({ keys, sameSource }) => ({
     itemDrafts: JSON.parse(window.localStorage.getItem(keys.itemDrafts) || '{}'),
     legacy: window.localStorage.getItem(keys.legacy),
     execution: window.localStorage.getItem(keys.execution),
     runs: window.localStorage.getItem(keys.runs),
+    sameSource: {
+      legacy: window.localStorage.getItem(sameSource.legacy),
+      execution: window.localStorage.getItem(sameSource.execution),
+      runs: window.localStorage.getItem(sameSource.runs),
+    },
     suspiciousMemoKeys: Object.keys(window.localStorage).filter((key) =>
       key.startsWith('flow:item-memo:') || key.startsWith('flow:my-flow:item-memo:'),
     ),
   }), {
+    sameSource: sameSourceKeys,
     keys: {
       itemDrafts: ITEM_DRAFTS_KEY,
       legacy: LEGACY_ITEM_STATE_KEY,
@@ -91,6 +107,7 @@ async function expectCompatibilityStoresPreserved(page: Page, memoKey: string, m
   expect(state.legacy).toBe(preservedRaw.legacy);
   expect(state.execution).toBe(preservedRaw.execution);
   expect(state.runs).toBe(preservedRaw.runs);
+  expect(state.sameSource).toEqual(preservedRaw);
   expect(state.suspiciousMemoKeys).toEqual([]);
 }
 
@@ -140,7 +157,8 @@ test.describe('P35 P0 My Flow first entry, completion, and memo facade', () => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
     await installLegacySavedPlanLibraryNavigation(page);
-    await gotoLegacySavedPlanLibraryRoute(page, `/f/${FLOW_SLUG}`);
+    // Both the original vehicle stores and NEW source-scoped stores coexist.
+    await gotoLegacySavedPlanLibraryRoute(page, `/f/${NEW_SOURCE_SLUG}`);
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
 
@@ -148,7 +166,7 @@ test.describe('P35 P0 My Flow first entry, completion, and memo facade', () => {
       page,
       page.getByTestId('public-flow-save-primary-mobile'),
     );
-    await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toHaveText('저장됨 · 10개');
+    await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toHaveText('저장됨 · 7개');
     const personalCopyKey = new URL(page.url()).searchParams.get('flow') ?? '';
     expect(personalCopyKey).toMatch(/^personal-copy:/u);
     await seedCompatibilityStores(page);
@@ -158,7 +176,7 @@ test.describe('P35 P0 My Flow first entry, completion, and memo facade', () => {
       `[data-testid="my-flow-mobile-workspace"][data-flow-slug="${personalCopyKey}"]`,
     );
     await expect(workspace).toBeVisible();
-    await expect(workspace).toHaveAttribute('data-effective-result-count', '10');
+    await expect(workspace).toHaveAttribute('data-effective-result-count', '7');
     await expect(workspace).toHaveAttribute('data-effective-date-state', 'undated');
     const effectivePersonalVersion = await workspace.getAttribute(
       'data-effective-personal-version',
@@ -174,7 +192,7 @@ test.describe('P35 P0 My Flow first entry, completion, and memo facade', () => {
     );
     await expect(workspace.getByTestId('my-flow-workspace-plan-content')).toHaveCount(0);
     await expect(workspace.getByTestId('my-flow-workspace-progress-summary')).toContainText(
-      '전체 0/10 완료',
+      '전체 0/7 완료',
     );
 
     const execution = workspace.getByTestId('my-flow-shape-aware-execution');
@@ -233,7 +251,7 @@ test.describe('P35 P0 My Flow first entry, completion, and memo facade', () => {
     await completion.click();
     await expect(completion).toBeChecked();
     await expect(workspace.getByTestId('my-flow-workspace-progress-summary')).toContainText(
-      '전체 1/10 완료',
+      '전체 1/7 완료',
     );
     await expect(
       execution.locator(`article[data-row-key="${opened.rowKey}"]`),
@@ -261,7 +279,7 @@ test.describe('P35 P0 My Flow first entry, completion, and memo facade', () => {
     await reopen.click();
     await expect(reopen).not.toBeChecked();
     await expect(workspace.getByTestId('my-flow-workspace-progress-summary')).toContainText(
-      '전체 0/10 완료',
+      '전체 0/7 완료',
     );
     await expectCompatibilityStoresPreserved(page, memoKey, memo);
 

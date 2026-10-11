@@ -23,21 +23,21 @@ type Scenario = {
 
 const scenarios: Scenario[] = [
   {
-    route: '/f/computer-skills-d30-study',
+    route: '/f/curated-wedding-naver-timeline',
     viewport: { width: 390, height: 844 },
     shape: 'checklist',
     resultLabel: '체크리스트',
-    itemCount: 9,
+    itemCount: 6,
     summaryPattern: /^날짜 없음$/u,
     setupVisible: true,
-    screenshot: 'p35-02-computer-save-before-390.png',
+    screenshot: 'p35-02-wedding-save-before-390.png',
   },
   {
-    route: '/f/vehicle-inspection-prep',
+    route: '/f/curated-new-car-basic',
     viewport: { width: 390, height: 844 },
     shape: 'checklist',
     resultLabel: '체크리스트',
-    itemCount: 10,
+    itemCount: 7,
     summaryPattern: /^날짜 없음$/u,
     setupVisible: false,
     screenshot: 'p35-02-undated-save-before-390.png',
@@ -236,7 +236,7 @@ test.describe('P35-02 public result-first frame', () => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
     await installLegacySavedPlanLibraryNavigation(page);
-    await gotoLegacySavedPlanLibraryRoute(page, '/f/computer-skills-d30-study');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-wedding-naver-timeline');
     await page.evaluate(() => {
       window.localStorage.clear();
       window.sessionStorage.clear();

@@ -72,7 +72,7 @@ async function assertReceiptSurvivesReload(page: Page, expectedHandoff: RegExp, 
 test('public save opens the selected personal copy and keeps it reload-safe on mobile', async ({ page }) => {
   await installLegacySavedPlanLibraryNavigation(page);
   await page.setViewportSize({ width: 390, height: 844 });
-  await gotoLegacySavedPlanLibraryRoute(page, '/f/vehicle-inspection-prep');
+  await gotoLegacySavedPlanLibraryRoute(page, '/f/first-passport-issue');
   await page.evaluate(() => localStorage.clear());
   await page.reload();
 
@@ -80,7 +80,7 @@ test('public save opens the selected personal copy and keeps it reload-safe on m
     page,
     page.getByTestId('public-flow-save-primary-mobile'),
   );
-  await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toContainText('10');
+  await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toContainText('4');
   const selectedCopy = new URL(page.url()).searchParams.get('flow');
   expect(selectedCopy).toMatch(/^personal-copy:/u);
   await capture(page, '01-public-post-save-selected-plan-mobile.png');
@@ -88,8 +88,8 @@ test('public save opens the selected personal copy and keeps it reload-safe on m
   await expect(page.getByTestId('my-flow-save-banner')).toHaveCount(0);
   await openSavedPublicFlow(page);
   expect(new URL(page.url()).searchParams.get('flow')).toBe(selectedCopy);
-  const workspace = await openMyFlowLibraryFlow(page, 'vehicle-inspection-prep', 'plan');
-  await expect(workspace.getByTestId('my-flow-whole-flow-outline')).toHaveAttribute('data-effective-row-count', '10');
+  const workspace = await openMyFlowLibraryFlow(page, 'first-passport-issue', 'plan');
+  await expect(workspace.getByTestId('my-flow-whole-flow-outline')).toHaveAttribute('data-effective-row-count', '4');
 });
 
 test('an eligible public timeline keeps direct selected-plan handoff and URL-first keeps its receipt contract', async ({ page }) => {

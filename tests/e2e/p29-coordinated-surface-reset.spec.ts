@@ -233,7 +233,7 @@ test.describe('P29-01 moving capability result and selected-plan handoff', () =>
 
   test('public source-backed flows use the shared artifact-first frame after rollout', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await gotoLegacySavedPlanLibraryRoute(page, '/f/vehicle-inspection-prep');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-new-car-basic');
     await clearLocalState(page);
     await expect(page.getByTestId('public-flow-hero')).toHaveAttribute('data-experience-architecture', 'p35-result-first');
     await expect(page.getByTestId('public-flow-saved-receipt')).toHaveCount(0);
@@ -243,7 +243,7 @@ test.describe('P29-01 moving capability result and selected-plan handoff', () =>
     await expect(capability).toHaveAttribute('data-capability-primary-destination', 'checklist');
     await expect(capability.locator(
       '[data-testid="flow-capability-result-choice"][data-capability-candidate-role="primary"]',
-    )).toHaveAttribute('data-capability-output-count', '10');
+    )).toHaveAttribute('data-capability-output-count', '7');
     await expect(page.getByTestId('public-flow-export-secondary-entry')).toHaveCount(0);
   });
 

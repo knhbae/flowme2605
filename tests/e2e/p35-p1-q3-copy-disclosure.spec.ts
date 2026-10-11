@@ -12,7 +12,7 @@ const viewports = [
   { name: '1440', width: 1440, height: 1000 },
 ] as const;
 
-const NEW_PUBLIC_ROUTE = '/f/computer-skills-d30-study';
+const NEW_PUBLIC_ROUTE = '/f/curated-wedding-naver-timeline';
 // Saved/archived moving and used-car fixtures retain their pre-review identities.
 
 const phase = process.env.FLOWME_P1_Q3_PHASE === 'before' ? 'before' : 'after';
@@ -260,11 +260,9 @@ test.describe('P1-02 Q3 copy and contextual disclosure', () => {
       'https://flowme.local/f/vehicle-inspection-prep?utm_campaign=q3-owned-copy',
       q3CopyEnabled,
     );
-    await expect(result).toContainText(
-      q3CopyEnabled
-        ? '원문 확인 전에는 내 계획 저장이 열리지 않습니다.'
-        : '원문 확인 전에는 내 Flow 저장이 열리지 않습니다.',
-    );
+    await expect(result).toContainText('출처 재검토 중');
+    await expect(result).toContainText('이 자료의 신규 시작을 보류했습니다.');
+    await expect(result.getByRole('button', { name: /내 (?:계획|Flow)에 저장/u })).toHaveCount(0);
     if (q3CopyEnabled) await expectNoLegacyOwnedCopy(result);
 
     result = await lookupOwnedCopy(

@@ -8,9 +8,11 @@ import {
   openMyFlowLibraryFlow,
 } from './helpers/my-flow-library';
 
-const NEW_PUBLIC_FLOW_SLUG = 'computer-skills-d30-study';
+import { eligibleTimeline } from './helpers/eligible-public-source';
+
+const NEW_PUBLIC_FLOW_SLUG = eligibleTimeline.slug;
 const NEW_PUBLIC_ROUTE = `/f/${NEW_PUBLIC_FLOW_SLUG}`;
-const NEW_PUBLIC_ITEM_COUNT = 9;
+const NEW_PUBLIC_ITEM_COUNT = eligibleTimeline.itemCount;
 const MOBILE_VIEWPORT = { width: 390, height: 844 } as const;
 const EVIDENCE_DIR = process.env.FLOWME_P0_06_EVIDENCE_DIR?.trim();
 
@@ -146,8 +148,11 @@ async function expectSharedEditor(
   await expect.poll(() => page.evaluate(() => document.body.style.overflow)).toBe('hidden');
 }
 
-async function createCanonicalPersonalCopy(page: Page): Promise<string> {
-  await resetAndOpenSource(page);
+async function createCanonicalPersonalCopy(
+  page: Page,
+  viewport: Readonly<{ width: number; height: number }> = MOBILE_VIEWPORT,
+): Promise<string> {
+  await resetAndOpenSource(page, viewport);
   await page.getByTestId('public-flow-anchor-input').fill('2031-08-15');
   await page.getByTestId('public-flow-save-primary-mobile').click();
   await expect.poll(() => {
@@ -279,7 +284,10 @@ test.describe('P35 P0-06 shared editor surface', () => {
   test('saved canonical personal-copy applies Item only to parent then persists on final Plan save and reload', async ({ page }) => {
     test.setTimeout(60_000);
     const errors = collectBrowserErrors(page);
-    const personalCopyKey = await createCanonicalPersonalCopy(page);
+    // The eligible six-item source must still exercise real scroll restoration.
+    // Use a short mobile viewport instead of dropping the nonzero-scroll check.
+    const viewport = { width: 390, height: 640 } as const;
+    const personalCopyKey = await createCanonicalPersonalCopy(page, viewport);
     expect(personalCopyKey).toMatch(/^personal-copy:/u);
 
     const flow = await openMyFlowLibraryFlow(page, personalCopyKey, 'plan');
@@ -294,7 +302,7 @@ test.describe('P35 P0-06 shared editor surface', () => {
       level: 'plan',
       commitRole: 'save-personal-overlay',
     });
-    await expectEditorGeometry(page, planEditor, MOBILE_VIEWPORT);
+    await expectEditorGeometry(page, planEditor, viewport);
     await captureEvidence(page, 'saved-plan-390');
     const planItemList = planEditor.getByTestId('saved-flow-editor-item-list');
     await planItemList.evaluate((element) => { element.scrollTop = 420; });
@@ -327,7 +335,7 @@ test.describe('P35 P0-06 shared editor surface', () => {
       level: 'item',
       commitRole: 'apply-item-to-parent-personal-draft',
     });
-    await expectEditorGeometry(page, itemEditor, MOBILE_VIEWPORT);
+    await expectEditorGeometry(page, itemEditor, viewport);
     await captureEvidence(page, 'saved-item-390');
     await expect(itemEditor.getByRole('link', { name: '원문 보기' })).toBeVisible();
     const savedItemTitle = '저장한 계획에서 시험 범위와 학습 일정을 최종 대조하기';

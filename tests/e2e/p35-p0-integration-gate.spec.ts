@@ -11,9 +11,11 @@ import {
 } from './helpers/my-flow-library';
 
 const HISTORICAL_FLOW_SLUG = 'moving-d30-basic';
-const NEW_PUBLIC_FLOW_SLUG = 'computer-skills-d30-study';
+import { eligibleTimeline } from './helpers/eligible-public-source';
+
+const NEW_PUBLIC_FLOW_SLUG = eligibleTimeline.slug;
 const NEW_PUBLIC_ROUTE = `/f/${NEW_PUBLIC_FLOW_SLUG}`;
-const NEW_PUBLIC_ITEM_COUNT = 9;
+const NEW_PUBLIC_ITEM_COUNT = eligibleTimeline.itemCount;
 const MAP_ROUTE = '/flow-maps/middle-school-math-1';
 const MOBILE_VIEWPORT = { width: 390, height: 844 } as const;
 const TABLET_VIEWPORT = { width: 1024, height: 768 } as const;

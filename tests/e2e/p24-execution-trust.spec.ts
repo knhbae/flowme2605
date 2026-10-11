@@ -1008,7 +1008,7 @@ test.describe('P24 execution trust regressions', () => {
     await page.setViewportSize({ width: 390, height: 844 });
 
     for (let iteration = 0; iteration < 5; iteration += 1) {
-await page.goto('/f/vehicle-inspection-prep');
+      await page.goto('/f/first-passport-issue');
       await page.evaluate(() => localStorage.clear());
       await page.reload();
       const saveArea = page.getByTestId('public-flow-mobile-save-cta');
@@ -1025,10 +1025,10 @@ await page.goto('/f/vehicle-inspection-prep');
       await openSavedPublicFlow(page, saveBanner);
       const savedFlow = await openMyFlowLibraryFlow(
         page,
-        'vehicle-inspection-prep',
+        'first-passport-issue',
       );
       await expect(savedFlow).toBeVisible({ timeout: 10_000 });
-      await expect(savedFlow).toContainText('자동차검사 D-14 준비');
+      await expect(savedFlow).toContainText('여권 신규 발급 준비');
       await expect(page.getByTestId('my-flow-empty-state')).toHaveCount(0);
     }
 

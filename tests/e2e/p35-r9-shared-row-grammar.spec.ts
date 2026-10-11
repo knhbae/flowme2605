@@ -26,7 +26,7 @@ const scenarios: RowScenario[] = [
   {
     id: 'calendar',
     slug: 'moving-d30-basic',
-    publicSlug: 'computer-skills-d30-study',
+    publicSlug: 'curated-wedding-naver-timeline',
     publicShape: 'checklist',
     savedMode: 'calendar',
     executable: true,
@@ -35,6 +35,7 @@ const scenarios: RowScenario[] = [
   {
     id: 'checklist',
     slug: 'vehicle-inspection-prep',
+    publicSlug: 'curated-new-car-basic',
     publicShape: 'checklist',
     savedMode: 'checklist',
     executable: true,

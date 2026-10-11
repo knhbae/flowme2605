@@ -39,7 +39,7 @@ async function expectClosedSourceRoute(page: import('@playwright/test').Page) {
 
 test.describe('field checklist workbench source density', () => {
   // The same public renderer's generic density contract remains live on eligible source.
-  for (const route of ['/f/vehicle-inspection-prep']) {
+  for (const route of ['/f/curated-new-car-basic']) {
     test(`${route} keeps source access out of repeated checklist row details`, async ({ page }) => {
       await page.setViewportSize({ width: 390, height: 844 });
       await gotoLegacySavedPlanLibraryRoute(page, route);
@@ -177,16 +177,11 @@ test.describe('field checklist workbench source density', () => {
     await expect(body).not.toContainText(/생활비\s*40%[^\n]{0,100}비상금\s*20%/u);
   });
 
-  test('/f/safe-inheritance-onestop keeps the official source reachable without unsupported urgency', async ({ page }) => {
+  test('/f/safe-inheritance-onestop is held without unsupported urgency or a NEW save action', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await gotoLegacySavedPlanLibraryRoute(page, '/f/safe-inheritance-onestop');
-
-    await expect(page.getByTestId('public-flow-review-only-gate')).toHaveCount(0);
-    await expect(getPublicIdentitySource(page).locator('a[href]')).toHaveAttribute(
-      'href',
-      'https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=17400000001&tp_seq=02',
-    );
-    await expect(page.getByTestId('public-flow-save-primary-mobile')).toBeVisible();
+    const response = await gotoLegacySavedPlanLibraryRoute(page, '/f/safe-inheritance-onestop');
+    expect(response?.status()).toBe(404);
+    await expectClosedSourceRoute(page);
     const body = page.locator('body');
     await expect(body).not.toContainText(/일부 재산[^\n]{0,100}6개월/u);
   });
@@ -205,23 +200,11 @@ test.describe('field checklist workbench source density', () => {
     }
   });
 
-  test('corrected official routes expose current source and save actions', async ({ page }) => {
+  test('reviewed eligible official route exposes its current source and save action', async ({ page }) => {
     const routes = [
       {
         route: '/f/ev-subsidy-apply',
         sourceUrl: 'https://ev.or.kr/nportal/buySupprt/initSubsiGuideAction.do',
-      },
-      {
-        route: '/f/adult-vaccine-schedule-check',
-        sourceUrl: 'https://nip.kdca.go.kr/irhp/mngm/goVcntMngm.do?menuCd=32&menuLv=3',
-      },
-      {
-        route: '/f/used-car-ownership-transfer',
-        sourceUrl: 'https://www.car365.go.kr/ccpt/cmmn/menu/redirectMenu.do?menuId=M610201004',
-      },
-      {
-        route: '/f/small-business-fund-check',
-        sourceUrl: 'https://ols.semas.or.kr/ols/man/SMAN010M/page.do',
       },
     ];
 
@@ -234,6 +217,21 @@ test.describe('field checklist workbench source density', () => {
         route.sourceUrl,
       );
       await expect(page.getByTestId('public-flow-save-primary-mobile')).toBeVisible();
+    }
+  });
+
+  test('newly held official routes refuse NEW start and preserve existing local records', async ({ page }) => {
+    await gotoLegacySavedPlanLibraryRoute(page, '/flows');
+    const recordsBefore = await page.evaluate(() => Object.fromEntries(
+      Object.keys(localStorage).sort().map((key) => [key, localStorage.getItem(key)]),
+    ));
+    for (const slug of ['adult-vaccine-schedule-check', 'used-car-ownership-transfer', 'small-business-fund-check']) {
+      const response = await gotoLegacySavedPlanLibraryRoute(page, `/f/${slug}`);
+      expect(response?.status()).toBe(404);
+      await expectClosedSourceRoute(page);
+      expect(await page.evaluate(() => Object.fromEntries(
+        Object.keys(localStorage).sort().map((key) => [key, localStorage.getItem(key)]),
+      ))).toEqual(recordsBefore);
     }
   });
 

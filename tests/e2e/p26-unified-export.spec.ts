@@ -122,7 +122,7 @@ test('capabilityResult=off public export keeps legacy parity and saved export co
 
   await gotoLegacySavedPlanLibraryRoute(
     page,
-    '/f/vehicle-inspection-prep?capabilityResult=off&quickLocalResult=off',
+    '/f/curated-new-car-basic?capabilityResult=off&quickLocalResult=off',
   );
   await expect(page.getByTestId('public-flow-detail-workspace')).toHaveCount(0);
   const undatedEntry = page.getByTestId('public-flow-export-secondary-entry');

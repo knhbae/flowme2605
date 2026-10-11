@@ -34,13 +34,20 @@ function formatCompactPlainDate(value: string): string {
   return `${month}/${day}`;
 }
 
+function formatCompactRange(start: string, end: string): string {
+  const includeYears = start.slice(0, 4) !== end.slice(0, 4);
+  const render = (value: string) => `${includeYears ? `${value.slice(0, 4)}.` : ''}${formatCompactPlainDate(value)}`;
+  return `${render(start)}~${render(end)}`;
+}
+
 const today = formatPlainDate(new Date());
 const mixedAnchor = addPlainDateDays(today, 7);
 const nextGroupDate = addPlainDateDays(today, 4);
-const mixedStudyAnchor = addPlainDateDays(today, 8);
+// Eligible timeline offsets give five past items and exactly one next-day item.
+const mixedStudyAnchor = addPlainDateDays(today, 31);
 const nextStudyGroupDate = addPlainDateDays(today, 1);
-const pastStudyStartDate = addPlainDateDays(today, -22);
-const pastStudyEndDate = addPlainDateDays(today, -6);
+const pastStudyStartDate = addPlainDateDays(today, -334);
+const pastStudyEndDate = addPlainDateDays(today, -60);
 const allPastAnchor = addPlainDateDays(today, -2);
 const nearestPastDate = addPlainDateDays(today, -1);
 
@@ -165,24 +172,24 @@ async function seedSavedFlow(page: Page, slug: string, selectedArtifactMode: str
 }
 
 test.describe('P35-R0 temporal first group', () => {
-  test('eligible NEW computer plan keeps the mixed-date warning and exact nine-item saved handoff', async ({ page }) => {
+  test('eligible NEW timeline keeps the mixed-date warning and exact six-item saved handoff', async ({ page }) => {
     test.setTimeout(60_000);
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
     await installLegacySavedPlanLibraryNavigation(page);
-    await gotoLegacySavedPlanLibraryRoute(page, '/f/computer-skills-d30-study');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-wedding-naver-timeline');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
 
     await page.getByTestId('public-flow-anchor-input').fill(mixedStudyAnchor);
     const warning = page.getByTestId('public-flow-past-date-warning');
     await expect(warning).toHaveAttribute('data-p35-marker', 'P35-R0-PAST-DATE-WARNING');
-    await expect(warning).toHaveAttribute('data-past-count', '6');
+    await expect(warning).toHaveAttribute('data-past-count', '5');
     const warningTrigger = warning.getByTestId('public-flow-past-date-warning-disclosure-trigger');
     await warningTrigger.click();
     const warningDetail = page.getByTestId('public-flow-past-date-warning-disclosure-detail');
     await expect(warningDetail).toContainText(
-      `${formatCompactPlainDate(pastStudyStartDate)}~${formatCompactPlainDate(pastStudyEndDate)}`,
+      formatCompactRange(pastStudyStartDate, pastStudyEndDate),
     );
     await expect(page.getByRole('heading', { name: '지난 할 일도 함께 저장돼요' })).toBeVisible();
     await capture(page, 'p35-r0-past-date-warning-390.png', warning);
@@ -190,7 +197,7 @@ test.describe('P35-R0 temporal first group', () => {
     await expect(warningTrigger).toBeFocused();
 
     const saveBanner = await savePublicFlow(page, page.getByTestId('public-flow-save-primary-mobile'));
-    await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toHaveText('저장됨 · 9개');
+    await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toHaveText('저장됨 · 6개');
     await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
 
     const personalCopyKey = new URL(page.url()).searchParams.get('flow') ?? '';
@@ -199,8 +206,8 @@ test.describe('P35-R0 temporal first group', () => {
       localStorage.getItem(`flow:saved:${key}`) ?? 'null',
     ), personalCopyKey);
     expect(savedRecord).toMatchObject({
-      slug: personalCopyKey, sourceFlowSlug: 'computer-skills-d30-study',
-      savedItemCount: 9, selectedArtifactMode: 'calendar', anchor: mixedStudyAnchor,
+      slug: personalCopyKey, sourceFlowSlug: 'curated-wedding-naver-timeline',
+      savedItemCount: 6, selectedArtifactMode: 'calendar', anchor: mixedStudyAnchor,
     });
 
     let workspace = await openSavedWorkspace(page, 'execute', personalCopyKey);
@@ -227,9 +234,9 @@ test.describe('P35-R0 temporal first group', () => {
     ).toEqual(['BUTTON']);
     await expect(firstTimelineRow.getByTestId('my-flow-task-complete-control')).toHaveCount(0);
     const disclosure = workspace.getByTestId('my-flow-past-items-disclosure');
-    await expect(disclosure).toContainText('저장된 지난 할 일 6개 보기');
+    await expect(disclosure).toContainText('저장된 지난 할 일 5개 보기');
     await expect(disclosure).not.toHaveAttribute('open', '');
-    await capture(page, 'p35-r0-computer-next-date-group-390.png', group);
+    await capture(page, 'p35-r0-wedding-next-date-group-390.png', group);
     await expectPageQuality(page);
 
     const initialRows = await snapshotRows(group);

@@ -122,18 +122,18 @@ test.describe('P35-08 final MECE gate', () => {
 
     const cases = [
       {
-        slug: 'computer-skills-d30-study',
+        slug: 'portfolio-4week',
         destination: 'checklist',
         shape: 'checklist',
-        outputCount: 9,
-        screenshot: 'p35-08-computer-result-390.png',
+        outputCount: 6,
+        screenshot: 'p35-08-portfolio-result-390.png',
       },
       {
-        slug: 'vehicle-inspection-prep',
+        slug: 'curated-new-car-basic',
         destination: 'checklist',
         shape: 'checklist',
-        outputCount: 10,
-        screenshot: 'p35-08-vehicle-result-390.png',
+        outputCount: 7,
+        screenshot: 'p35-08-new-car-result-390.png',
       },
       {
         slug: 'curated-allblanc-morning-workout',

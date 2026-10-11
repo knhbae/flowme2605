@@ -45,7 +45,7 @@ async function savedFlowRecords(page: Page) {
 test('mobile public save opens one selected plan before Flow-level export', async ({ page }) => {
   await installLegacySavedPlanLibraryNavigation(page);
   await page.setViewportSize({ width: 390, height: 844 });
-  await gotoLegacySavedPlanLibraryRoute(page, '/f/vehicle-inspection-prep');
+  await gotoLegacySavedPlanLibraryRoute(page, '/f/first-passport-issue');
   await page.evaluate(() => localStorage.clear());
   await page.reload();
   await page.getByTestId('public-flow-save-primary-mobile').click();
@@ -54,24 +54,24 @@ test('mobile public save opens one selected plan before Flow-level export', asyn
   await expect.poll(() => new URL(page.url()).searchParams.has('saveReceipt'), {
     timeout: 20_000,
   }).toBe(false);
-  await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toContainText('10');
+  await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toContainText('4');
   await expect(page.getByTestId('public-flow-saved-receipt')).toHaveCount(0);
   await openSavedPublicFlow(page, saveBanner);
 
-  const flow = await openMyFlowLibraryFlow(page, 'vehicle-inspection-prep', 'record');
+  const flow = await openMyFlowLibraryFlow(page, 'first-passport-issue', 'record');
   await expect(flow.getByTestId('my-flow-workspace-execute')).toHaveCount(1);
   const exportSurface = flow.getByTestId('my-flow-export-surface');
   await exportSurface.getByTestId('my-flow-export-entry').click();
   const exportPanel = exportSurface.getByTestId('my-flow-export-panel');
   await expect(exportPanel).toBeVisible();
   await expect(exportPanel).toHaveAttribute('data-export-scope', 'flow');
-  await expect(exportPanel).toHaveAttribute('data-export-included-count', '10');
+  await expect(exportPanel).toHaveAttribute('data-export-included-count', '4');
   await capture(page, '01-public-undated-decision-hub-mobile.png');
 
   const recordsBeforeReload = await savedFlowRecords(page);
   await page.reload();
   await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
-  await openMyFlowLibraryFlow(page, 'vehicle-inspection-prep', 'record');
+  await openMyFlowLibraryFlow(page, 'first-passport-issue', 'record');
   expect(await savedFlowRecords(page)).toEqual(recordsBeforeReload);
 });
 

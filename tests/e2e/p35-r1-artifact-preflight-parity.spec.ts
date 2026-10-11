@@ -75,10 +75,10 @@ async function openCapabilityResult(page: Page) {
 }
 
 test.describe('P35-R1 public capability-result parity', () => {
-  test('computer Calendar preview keeps one 9-item manifest before save', async ({ page }) => {
+  test('eligible timeline Calendar preview keeps one 6-item manifest before save', async ({ page }) => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
-    await gotoLegacySavedPlanLibraryRoute(page, '/f/computer-skills-d30-study');
+    await gotoLegacySavedPlanLibraryRoute(page, '/f/curated-wedding-naver-timeline');
     await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
 
     const result = await openCapabilityResult(page);
@@ -89,24 +89,24 @@ test.describe('P35-R1 public capability-result parity', () => {
     );
     await expect(calendar).toHaveAttribute('data-capability-candidate-role', 'primary');
     await expect(calendar).toHaveAttribute('data-capability-candidate-state', 'available');
-    await expect(calendar).toHaveAttribute('data-capability-output-count', '9');
+    await expect(calendar).toHaveAttribute('data-capability-output-count', '6');
     await calendar.click();
 
     const selected = result.getByTestId('flow-capability-selected-preview');
     await expect(selected).toHaveAttribute('data-capability-destination', 'calendar');
-    await expect(selected).toHaveAttribute('data-capability-output-count', '9');
+    await expect(selected).toHaveAttribute('data-capability-output-count', '6');
     const rows = selected.getByTestId('flow-capability-artifact-preview-row');
-    await expect(rows).toHaveCount(9);
+    await expect(rows).toHaveCount(6);
     await expect(selected.locator('[data-testid="flow-capability-artifact-preview-row"]:visible'))
       .toHaveCount(3);
     await selected.getByTestId('flow-capability-artifact-preview-expand').click();
     await expect(selected.locator('[data-testid="flow-capability-artifact-preview-row"]:visible'))
-      .toHaveCount(9);
-    expect((await selected.getAttribute('data-capability-manifest-item-ids'))?.split(',')).toHaveLength(9);
+      .toHaveCount(6);
+    expect((await selected.getAttribute('data-capability-manifest-item-ids'))?.split(',')).toHaveLength(6);
     await expect(result.locator('[data-capability-candidate-state="disabled"]')).toHaveCount(0);
 
     await result.scrollIntoViewIfNeeded();
-    await capture(page, 'p35-r1-public-preflight-computer-390.png');
+    await capture(page, 'p35-r1-public-preflight-wedding-390.png');
     await expectPageQuality(page);
     expect(errors).toEqual([]);
   });
@@ -117,12 +117,12 @@ test.describe('P35-R1 public capability-result parity', () => {
 
     const cases = [
       {
-        slug: 'vehicle-inspection-prep',
+        slug: 'curated-new-car-basic',
         shape: 'checklist',
         primaryDestination: 'checklist',
         candidateRole: 'primary',
         destination: 'checklist',
-        count: 10,
+        count: 7,
       },
       {
         slug: 'source-backed-middle-school-math-1',

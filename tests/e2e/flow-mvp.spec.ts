@@ -569,12 +569,12 @@ test('catalog opens a public Flow and the saved root entry continues in My Flow'
 
   await expect(page).toHaveURL('/flows');
   const movingCard = page
-    .getByTestId('single-flow-catalog-card')
-    .filter({ hasText: '자동차검사 D-14 준비' });
-  await movingCard.getByRole('link', { name: '자동차검사 D-14 준비 더보기' }).click();
-  await expect(page).toHaveURL('/f/vehicle-inspection-prep');
+    .getByTestId('flow-map-catalog-card')
+    .filter({ hasText: '결혼 준비 1년 참고 타임라인' });
+  await movingCard.getByRole('link', { name: '결혼 준비 1년 참고 타임라인 더보기' }).click();
+  await expect(page).toHaveURL('/f/curated-wedding-naver-timeline');
   await expect(page.getByTestId('flow-public-shell')).toBeVisible();
-  await savePublicFlowToSelectedPlan(page, page.getByTestId('public-flow-save-primary-mobile'), 10);
+  await savePublicFlowToSelectedPlan(page, page.getByTestId('public-flow-save-primary-mobile'), 6);
 
   await page.goto('/');
   await expect(page).toHaveURL(/\/my\?sort=next$/u);
@@ -593,7 +593,7 @@ test('wide discovery and My Flow keep action columns purposeful', async ({ page 
   await expect(page.getByTestId('flow-map-catalog-card')).toHaveCount(6);
   await expectNoHorizontalOverflow(page);
 
-  await page.goto('/f/vehicle-inspection-prep');
+  await page.goto('/f/first-passport-issue');
   const publicSetup = page.getByTestId('public-flow-primary-setup');
   const publicPreview = page.getByTestId('public-flow-capability-result');
   const publicDecision = page.getByTestId('flow-save-before-decision');
@@ -602,16 +602,16 @@ test('wide discovery and My Flow keep action columns purposeful', async ({ page 
   await expect(publicPreview).toHaveAttribute('data-capability-lifecycle', 'public_preview');
   await expect(publicPreview.locator(
     '[data-testid="flow-capability-result-choice"][data-capability-candidate-role="primary"]',
-  )).toHaveAttribute('data-capability-output-count', '10');
+  )).toHaveAttribute('data-capability-output-count', '4');
   await expect(publicDecision.getByTestId('public-flow-primary-setup')).toHaveCount(0);
   await expect(publicDecision.getByTestId('public-flow-save-primary')).toBeVisible();
   await expect(page.getByTestId('public-flow-detail-workspace')).toHaveCount(0);
   await expectNoHorizontalOverflow(page);
 
-  await page.goto('/f/vehicle-inspection-prep');
+  await page.goto('/f/first-passport-issue');
   await page.evaluate(() => window.localStorage.clear());
   await page.reload();
-  await savePublicFlowToSelectedPlan(page, page.getByTestId('public-flow-save-primary'), 10);
+  await savePublicFlowToSelectedPlan(page, page.getByTestId('public-flow-save-primary'), 4);
 
   const visibleFlowFindingLinks = await page.locator('a[href="/flows"]').evaluateAll((links) =>
     links.filter((link) => {
@@ -639,7 +639,7 @@ test('flow list exposes the seed and online-sourced flows', async ({ page }) => 
   await expect(flowMapCatalog.getByRole('heading', { name: '내 상황에 맞는 콘텐츠 고르기' })).toHaveCount(0);
   await expect(flowMapCatalog.getByTestId('flow-map-catalog-card')).toHaveCount(6);
   await expect(flowMapCatalog.locator('[data-testid="flow-map-catalog-card"][data-source-kind="curated-source"]')).toHaveCount(5);
-  await expect(flowMapCatalog.getByTestId('single-flow-catalog-card')).toHaveCount(1);
+  await expect(flowMapCatalog.getByTestId('single-flow-catalog-card')).toHaveCount(0);
   const firstCatalogCard = flowMapCatalog.getByTestId('flow-map-catalog-card').first();
   const firstCatalogCardTop = await firstCatalogCard.evaluate((element) => element.getBoundingClientRect().top);
   expect(firstCatalogCardTop).toBeLessThan(480);
@@ -648,7 +648,7 @@ test('flow list exposes the seed and online-sourced flows', async ({ page }) => 
   await expect(firstCatalogCard.getByTestId('flow-map-recommended-flow-link')).toHaveCount(0);
   await expect(firstCatalogCard.getByTestId('flow-card-source-link')).toHaveCount(1);
   await expect(flowMapCatalog.locator('a[href="/f/moving-d30-basic"]')).toHaveCount(0);
-  await expect(flowMapCatalog.locator('a[href="/f/vehicle-inspection-prep"]')).toBeVisible();
+  await expect(flowMapCatalog.locator('a[href="/f/vehicle-inspection-prep"]')).toHaveCount(0);
   await expect(flowMapCatalog.locator('a[href="/flow-maps/middle-school-math-1"]')).toBeVisible();
   await expect(flowMapCatalog.locator('a[href="/f/curated-wedding-naver-timeline"]')).toBeVisible();
   await expect(flowMapCatalog.locator('a[href="/f/curated-wedding-gongysd-atoz"]')).toBeVisible();
@@ -667,7 +667,7 @@ test('flow list exposes the seed and online-sourced flows', async ({ page }) => 
   await expect(page.getByTestId('curated-source-catalog-section')).toHaveCount(0);
   await expect(page.getByTestId('single-flow-catalog-section')).toHaveCount(0);
   const catalogCount = flowMapCatalog.getByTestId('flow-catalog-count');
-  await expect(catalogCount).toContainText('계획 7개');
+  await expect(catalogCount).toContainText('계획 6개');
   await expect(catalogCount).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
   await expect(page.getByText('필터 조정')).toHaveCount(0);
   await expect(page.getByRole('heading', { name: '이사 D-30 준비 Flow' })).toHaveCount(0);
@@ -712,9 +712,11 @@ test('flow finding URL lookup reuses existing source-backed Flows first', async 
 
   await lookup.getByLabel('URL 또는 메모').fill('https://flowme.local/f/vehicle-inspection-prep?utm_campaign=share');
   await lookup.getByRole('button', { name: '계획 찾기' }).click();
-  await expect(result).toContainText('원문 확인');
-  await expect(result.getByRole('link', { name: '미리보기 열기' })).toHaveAttribute('href', '/f/vehicle-inspection-prep');
-  await expect(result).toContainText('저장 대기');
+  await expect(result).toContainText('출처 재검토 중');
+  await expect(result.getByRole('link', { name: '출처 확인' })).toHaveAttribute('href', '/f/vehicle-inspection-prep');
+  await expect(result.getByRole('link', { name: '미리보기에서 편집' })).toHaveCount(0);
+  expect((await page.request.get('/f/vehicle-inspection-prep')).status()).toBe(404);
+  await expect(result).toContainText('이 자료의 신규 시작을 보류했습니다.');
   await expect(result.getByText('내 계획', { exact: true })).toHaveCount(0);
 
   await lookup.getByLabel('URL 또는 메모').fill('https://example.com/some-plan?utm_source=newsletter');
@@ -847,16 +849,16 @@ test('flow finding URL lookup saves production candidates without AI generation'
 
   await lookup.getByLabel('URL 또는 메모').fill('https://flowme.local/f/vehicle-inspection-prep?utm_campaign=share');
   await lookup.getByRole('button', { name: '계획 찾기' }).click();
-  await expect(result).toContainText('원문 확인');
-  await expect(result).toContainText('직접 손볼 초안 준비하기');
-  await result.getByLabel('계획 이름').fill('자동차검사 준비 보강 요청');
-  await result.getByLabel('원하는 결과').fill('원문 확인 뒤 실행 가능하게 만들 후보');
-  await result.getByRole('button', { name: '초안 준비하기' }).click();
+  await expect(result).toContainText('출처 재검토 중');
+  await expect(result).toContainText('이 자료의 신규 시작을 보류했습니다.');
+  await expect(result.getByTestId('flow-url-supply-candidate-form')).toHaveCount(0);
+  await expect(result.getByRole('button', { name: '내 계획에 저장' })).toHaveCount(0);
 
   storedCandidates = await page.evaluate(() => JSON.parse(window.localStorage.getItem('flow:url-first:supply-candidates') || '[]'));
-  expect(storedCandidates).toHaveLength(2);
-  expect(storedCandidates.map((candidate: { status: string }) => candidate.status).sort()).toEqual(['miss_request', 'needs_review_request']);
-  await expect(candidateList).toContainText('자동차검사 준비 보강 요청');
+  expect(storedCandidates).toHaveLength(1);
+  expect(storedCandidates.map((candidate: { status: string }) => candidate.status)).toEqual(['miss_request']);
+  await expect(candidateList).toContainText('예시 준비 체크리스트');
+  await expect(candidateList).not.toContainText('자동차검사 준비 보강 요청');
   await expectNoHorizontalOverflow(page);
 });
 
@@ -1149,7 +1151,7 @@ test('flow finding URL lookup starts a hit with date, option, My Flow save, and 
   await lookupAfterSave.getByLabel('URL 또는 메모').fill('https://flowme.local/f/vehicle-inspection-prep?utm_campaign=share');
   await lookupAfterSave.getByRole('button', { name: '계획 찾기' }).click();
   const blockedResult = page.getByTestId('flow-url-lookup-result');
-  await expect(blockedResult).toContainText('저장 대기');
+  await expect(blockedResult).toContainText('출처 재검토 중');
   await expect(blockedResult.getByLabel('시작일')).toHaveCount(0);
   await expect(blockedResult.getByRole('button', { name: '내 계획에 저장' })).toHaveCount(0);
   await expectNoHorizontalOverflow(page);
@@ -1652,8 +1654,8 @@ test('flow finding search and intent chips narrow commercial catalog cards', asy
   await expect(catalog.getByRole('textbox')).toHaveCount(1);
   await expect(page.getByTestId('flow-catalog-search')).toHaveCount(0);
 
-  await sharedInput.fill('자동차검사 D-14');
-  await expect(catalog.getByTestId('single-flow-catalog-card').filter({ hasText: '자동차검사 D-14 준비' })).toBeVisible();
+  await sharedInput.fill('결혼 준비 1년');
+  await expect(catalog.getByTestId('flow-map-catalog-card').filter({ hasText: '결혼 준비 1년 참고 타임라인' })).toBeVisible();
   await expect(catalog).not.toContainText('오픽 모의고사 2주 계획표');
   const memoAlternative = page.getByTestId('flow-discovery-memo-alternative');
   await expect(memoAlternative).toContainText('준비된 계획이 검색됐어요');
@@ -1683,14 +1685,14 @@ test('prepared discovery queries clear stale hidden filters instead of becoming 
   const catalog = page.getByTestId('flow-map-catalog-section');
   await catalog.getByRole('button', { name: '공부' }).click();
   const sharedInput = page.getByTestId('flow-url-lookup-input');
-  await sharedInput.fill('자동차검사 D-14 준비');
+  await sharedInput.fill('결혼 준비 1년 참고 타임라인');
   await expect(page.getByTestId('flow-discovery-memo-alternative')).toBeVisible();
 
   await catalog.getByRole('button', { name: '계획 찾기' }).click();
   await expect(page.getByTestId('flow-url-lookup-result')).toHaveCount(0);
   await expect(catalog.getByRole('button', { name: '전체' })).toHaveAttribute('aria-pressed', 'true');
-  await expect(catalog.getByTestId('single-flow-catalog-card').filter({
-    hasText: '자동차검사 D-14 준비',
+  await expect(catalog.getByTestId('flow-map-catalog-card').filter({
+    hasText: '결혼 준비 1년 참고 타임라인',
   })).toBeVisible();
 });
 
@@ -1720,8 +1722,8 @@ test('flow finding lookup can reveal the full catalog and editing the shared inp
   await expect(catalog.getByRole('button', { name: '공부' })).toHaveAttribute('aria-pressed', 'false');
   await expect(browseResults.locator(
     '[data-testid="flow-map-catalog-card"], [data-testid="single-flow-catalog-card"]',
-  )).toHaveCount(7);
-  await expect(catalog.getByTestId('flow-catalog-count')).toContainText('계획 7개');
+  )).toHaveCount(6);
+  await expect(catalog.getByTestId('flow-catalog-count')).toContainText('계획 6개');
 
   await sharedInput.fill('결혼');
   await expect(lookupResult).toHaveCount(0);
@@ -1870,11 +1872,11 @@ test('main user routes keep internal operation labels off the visible surface', 
     await expectNoVisibleSourceBrandSlug(page.locator('body'));
   }
 
-  await page.goto('/f/computer-skills-d30-study');
+  await page.goto('/f/curated-wedding-naver-timeline');
   await page.evaluate(() => window.localStorage.clear());
   await page.reload();
   await setApprovedPublicCalendarAnchor(page, '2026-07-22');
-  await savePublicFlowToSelectedPlan(page, page.getByTestId('public-flow-save-primary-mobile'), 9);
+  await savePublicFlowToSelectedPlan(page, page.getByTestId('public-flow-save-primary-mobile'), 6);
   await openPostSaveWorkspaceIfPresent(page);
   await expectNoInternalUserSurfaceCopy(page.locator('body'));
   await expectNoVisibleSourceBrandSlug(page.locator('body'));
@@ -1919,10 +1921,10 @@ test('p7 guardrail keeps user routes clean and restart prototype in its own buck
     await expectNoHorizontalOverflow(page);
   }
 
-  await page.goto('/f/vehicle-inspection-prep');
+  await page.goto('/f/first-passport-issue');
   await page.evaluate(() => window.localStorage.clear());
   await page.reload();
-  await savePublicFlowToSelectedPlan(page, page.getByTestId('public-flow-save-primary-mobile'), 10);
+  await savePublicFlowToSelectedPlan(page, page.getByTestId('public-flow-save-primary-mobile'), 4);
   const movingMyFlow = page.locator('body');
   await expectNoInternalUserSurfaceCopy(movingMyFlow);
   await expectNoVisibleSourceBrandSlug(movingMyFlow);
@@ -1960,18 +1962,18 @@ test('flow catalog title opens the current public Flow Map page', async ({ page 
   await page.goto('/flows');
 
   const movingCard = page
-    .getByTestId('single-flow-catalog-card')
-    .filter({ hasText: '자동차검사 D-14 준비' });
+    .getByTestId('flow-map-catalog-card')
+    .filter({ hasText: '결혼 준비 1년 참고 타임라인' });
   await movingCard.getByRole('link', { name: /더보기/ }).click();
 
-  await expect(page).toHaveURL('/f/vehicle-inspection-prep');
-  await expect(page.getByRole('heading', { name: '자동차검사 D-14 준비' })).toBeVisible();
+  await expect(page).toHaveURL('/f/curated-wedding-naver-timeline');
+  await expect(page.getByRole('heading', { name: '결혼 준비 1년 참고 타임라인' })).toBeVisible();
   const capability = page.getByTestId('public-flow-capability-result');
-  await expect(capability).toHaveAttribute('data-capability-output-count', '10');
+  await expect(capability).toHaveAttribute('data-capability-output-count', '6');
   await expect(capability).toHaveAttribute('data-capability-selected-destination', 'memo');
   await expect(capability.getByTestId('flow-artifact-text-syntax-preview')).toBeVisible();
   await expect(capability.getByTestId('flow-capability-artifact-preview-expand')).toHaveCount(0);
-  await expect(capability.locator('[data-testid="flow-capability-artifact-preview-row"]:visible')).toHaveCount(10);
+  await expect(capability.locator('[data-testid="flow-capability-artifact-preview-row"]:visible')).toHaveCount(6);
 });
 
 test('client navigation to a different public Flow resets the first result to Text', async ({ page }) => {
@@ -1989,19 +1991,19 @@ test('client navigation to a different public Flow resets the first result to Te
   await expect(page).toHaveURL('/flows');
   await page
     .getByTestId('flow-map-catalog-section')
-    .locator('a[href="/f/vehicle-inspection-prep"]')
+    .locator('a[href="/f/curated-wedding-naver-timeline"]')
     .first()
     .click();
 
-  await expect(page).toHaveURL('/f/vehicle-inspection-prep');
+  await expect(page).toHaveURL('/f/curated-wedding-naver-timeline');
   const vehicleCapability = page.getByTestId('public-flow-capability-result');
   await expect(vehicleCapability).toHaveAttribute('data-public-format-mode', 'approved');
   await expect(vehicleCapability).toHaveAttribute('data-capability-selected-destination', 'memo');
   const textSyntax = vehicleCapability.getByTestId('flow-artifact-text-syntax-preview');
   await expect(textSyntax).toBeVisible();
-  await expect(textSyntax).toContainText('# 자동차검사 D-14 준비');
+  await expect(textSyntax).toContainText('# 결혼 준비 1년 참고 타임라인');
   await expect(vehicleCapability.getByTestId('flow-capability-artifact-preview-expand')).toHaveCount(0);
-  await expect(vehicleCapability.locator('[data-testid="flow-capability-artifact-preview-row"]:visible')).toHaveCount(10);
+  await expect(vehicleCapability.locator('[data-testid="flow-capability-artifact-preview-row"]:visible')).toHaveCount(6);
 
   await vehicleCapability.getByRole('button', { name: 'Todo', exact: true }).click();
   await expect(vehicleCapability).toHaveAttribute('data-capability-selected-destination', 'checklist');
@@ -2029,20 +2031,25 @@ test('user-facing content titles hide trailing Flow suffix while keeping app lab
   await page.goto('/flows');
   await page.evaluate(() => window.localStorage.clear());
   await expect(page.getByRole('link', { name: '계획 찾기' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: '자동차검사 D-14 준비' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: '자동차검사 D-14 준비 Flow' })).toHaveCount(0);
+  // Current catalog titles have no trailing Flow. Actual stripping is exercised
+  // below with the eligible passport title and the untouched historical copy.
+  await expect(page.getByRole('heading', { name: '결혼 준비 1년 참고 타임라인' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '결혼 준비 1년 참고 타임라인 Flow' })).toHaveCount(0);
 
-  await page.goto('/f/vehicle-inspection-prep');
-  await expect(page.getByRole('heading', { name: '자동차검사 D-14 준비' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: '자동차검사 D-14 준비 Flow' })).toHaveCount(0);
+  await page.goto('/f/first-passport-issue');
+  await expect(page.getByRole('heading', { name: '여권 신규 발급 준비' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '여권 신규 발급 준비 Flow' })).toHaveCount(0);
 
-  await page.goto('/f/computer-skills-d30-study');
-  await setApprovedPublicCalendarAnchor(page, '2030-07-15');
-  const personalCopySlug = await savePublicFlowToSelectedPlan(
-    page,
-    page.getByTestId('public-flow-save-primary'),
-    9,
-  );
+  const personalCopySlug = 'computer-skills-d30-study';
+  const historicalSource = seedBundles.find((bundle) => bundle.flow.slug === personalCopySlug);
+  expect(historicalSource?.flow.title).toMatch(/ Flow$/u);
+  expect(historicalSource?.items).toHaveLength(9);
+  await page.evaluate((slug) => {
+    window.localStorage.setItem(`flow:saved:${slug}`, JSON.stringify({
+      slug, savedAt: '2030-07-01T00:00:00.000Z', selectedArtifactMode: 'calendar',
+      anchor: '2030-07-15', dateIntent: 'custom',
+    }));
+  }, personalCopySlug);
   await installLegacySavedPlanLibraryNavigation(page);
 
   await gotoLegacySavedPlanLibraryRoute(page, '/my');
@@ -2066,14 +2073,14 @@ test('user-facing content titles hide trailing Flow suffix while keeping app lab
 test('public save setup exposes date intent and formats user-facing dates', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
 
-  await page.goto('/f/vehicle-inspection-prep');
+  await page.goto('/f/first-passport-issue');
   const vehicleFrame = page.getByTestId('public-flow-hero');
   await expect(vehicleFrame).toHaveAttribute('data-visual-structure', 'artifact-first');
   await expect(page.getByTestId('public-flow-primary-setup')).toHaveCount(0);
   await expect(page.getByTestId('public-flow-adjust-entry-mobile')).toBeVisible();
   await expectNoUserFacingRawIsoDate(vehicleFrame);
 
-  await page.goto('/f/computer-skills-d30-study');
+  await page.goto('/f/curated-wedding-naver-timeline');
   const movingSetup = page.getByTestId('public-flow-hero');
   await expect(movingSetup.getByTestId('public-flow-anchor-input')).toHaveCount(0);
   await expect(page.getByTestId('public-flow-adjust-entry-mobile')).toBeVisible();
@@ -2094,7 +2101,7 @@ test('public save setup exposes date intent and formats user-facing dates', asyn
 test('eligible public setup remains visible while fridge and washer new routes are held', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
 
-  for (const route of ['/f/vehicle-inspection-prep', '/f/computer-skills-d30-study']) {
+  for (const route of ['/f/first-passport-issue', '/f/curated-wedding-naver-timeline']) {
     await page.goto(route);
 
     const setup = page.getByTestId('public-flow-hero');
@@ -2231,7 +2238,7 @@ test('flow discovery keeps legacy tag queries out of the representative catalog 
   await page.goto('/flows?tag=돈이%20걸린%20결정');
 
   await expect(page.getByRole('heading', { name: '필요한 계획 찾기' })).toBeVisible();
-  await expect(page.getByTestId('flow-map-catalog-section').getByTestId('single-flow-catalog-card')).toHaveCount(1);
+  await expect(page.getByTestId('flow-map-catalog-section').getByTestId('single-flow-catalog-card')).toHaveCount(0);
   await expect(page.getByText('필터 조정')).toHaveCount(0);
   await expect(page.getByLabel('태그')).toHaveCount(0);
   await expect(page.getByText('#돈이 걸린 결정').first()).toHaveCount(0);
@@ -2249,8 +2256,9 @@ test('creator profile aggregates eligible creator flows on its secondary profile
   await expect(page.getByText('총 실행')).toHaveCount(0);
   await expect(page.getByText('총 복사')).toHaveCount(0);
   await expect(page.locator('header')).toHaveAttribute('data-metric-policy', 'inventory-not-outcomes');
-  await expect(page.getByText('날짜 역산형', { exact: true })).toBeVisible();
-  await expect(page.getByRole('heading', { name: '자동차검사 D-14 준비' })).toBeVisible();
+  await expect(page.getByText('체크리스트형', { exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '전기차 구매보조금 신청 준비' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '자동차검사 D-14 준비' })).toHaveCount(0);
   await expect(page.getByRole('heading', { name: '자동차검사 D-14 준비 Flow' })).toHaveCount(0);
 });
 
@@ -2273,8 +2281,8 @@ test('creator directory exposes representative creator content links', async ({ 
   await page.goto('/creators');
 
   await expect(page.getByText('공개 승인 Flow').first()).toBeVisible();
-  await expect(page.locator('a[href="/f/real-samsung-aircon-seasonal-care"]').first()).toBeVisible();
-  await expect(page.locator('a[href="/f/real-samsung-washer-filter-care"]').first()).toBeVisible();
+  await expect(page.locator('a[href="/f/real-samsung-aircon-seasonal-care"]')).toHaveCount(0);
+  await expect(page.locator('a[href="/f/real-samsung-washer-filter-care"]')).toHaveCount(0);
   await expect(page.locator('a[href^="/f/channel-"]')).toHaveCount(0);
 });
 
@@ -2308,8 +2316,8 @@ test('creator channel can filter real source-backed flows', async ({ page }) => 
 
   await expect(page.locator('a[href="/f/real-samsung-aircon-seasonal-care"]').first()).toBeVisible();
   await expect(page.locator('a[href="/f/real-samsung-washer-filter-care"]').first()).toBeVisible();
-  await expect(page.locator('[data-testid="creator-profile-content-card"][data-public-indexable="false"]')).toHaveCount(0);
-  await expect(page.getByRole('link', { name: '검토 재고 열기' })).toHaveCount(0);
+  await expect(page.locator('[data-testid="creator-profile-content-card"][data-public-indexable="false"]')).toHaveCount(2);
+  await expect(page.getByRole('link', { name: '검토 재고 열기' })).toHaveCount(2);
   await expect(page.locator('a[href^="/f/channel-samsung-service-"]')).toHaveCount(0);
 });
 
@@ -2564,12 +2572,12 @@ test('text editor shows a public-style parsed preview while drafting', async ({ 
 
 test('my flow management uses one local library while calendar stays global', async ({ page }) => {
   await page.clock.install({ time: new Date('2026-06-01T09:00:00+09:00') });
-  await page.goto('/f/computer-skills-d30-study');
-  await setApprovedPublicCalendarAnchor(page, '2026-06-26');
+  await page.goto('/f/curated-wedding-naver-timeline');
+  await setApprovedPublicCalendarAnchor(page, '2027-06-01');
   const personalCopySlug = await savePublicFlowToSelectedPlan(
     page,
     page.getByTestId('public-flow-save-primary'),
-    9,
+    6,
   );
   await installLegacySavedPlanLibraryNavigation(page);
 
@@ -4885,10 +4893,9 @@ test('source-fit decisions keep archived and review-gated flows out of public ro
   await expectPublicFlowRouteClosed(page, '/f/study-exam-d30-plan');
   await expectPublicFlowRouteClosed(page, '/f/running-5k-4week');
 
-  await page.goto('/f/vehicle-inspection-prep');
+  await expectPublicFlowRouteClosed(page, '/f/vehicle-inspection-prep');
   await expect(page.getByTestId('source-fit-status')).toHaveCount(0);
-  const currentFlowRobots = await page.locator('meta[name="robots"]').getAttribute('content');
-  expect(currentFlowRobots ?? '').not.toMatch(/noindex/i);
+  await expect(page.getByTestId('public-flow-save-primary')).toHaveCount(0);
 
   for (const slug of ['new-car-delivery-check', 'fridge-cleanout-weekly-plan', 'washer-tub-clean-monthly']) {
     await expectPublicFlowRouteClosed(page, `/f/${slug}`);
@@ -4903,7 +4910,7 @@ test('source-fit decisions keep archived and review-gated flows out of public ro
 test('eligible mobile keeps save sticky and public preview actions inside the personal-plan boundary', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.clock.install({ time: new Date('2026-07-01T09:00:00+09:00') });
-  await page.goto('/f/vehicle-inspection-prep');
+  await page.goto('/f/first-passport-issue');
 
   await expect(page.getByLabel('Flow artifact workbench').getByRole('checkbox')).toHaveCount(0);
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
@@ -4986,8 +4993,8 @@ test('public share shell keeps the Flow finding escape reachable', async ({ page
   await page.setViewportSize({ width: 390, height: 844 });
 
   for (const route of [
-    '/f/vehicle-inspection-prep',
-    '/f/computer-skills-d30-study',
+    '/f/first-passport-issue',
+    '/f/curated-wedding-naver-timeline',
   ]) {
     await page.goto(route);
 
@@ -6040,7 +6047,7 @@ test('url-first p0 lab previews hit review miss and memo states without public n
 
   await page.getByRole('button', { name: '자동차검사 needs_review' }).click();
   await expect(page.getByTestId('url-first-result-card')).toContainText('상태 needs_review');
-  await expect(page.getByTestId('url-first-gate')).toContainText('원문 확인 전에는 캘린더 파일을 만들지 않습니다.');
+  await expect(page.getByTestId('url-first-gate')).toContainText('이 자료의 신규 시작을 보류했습니다.');
   await expect(page.getByTestId('url-first-result-card')).toContainText('저장 미리보기만');
 
   await page.getByRole('button', { name: '알 수 없는 URL' }).click();

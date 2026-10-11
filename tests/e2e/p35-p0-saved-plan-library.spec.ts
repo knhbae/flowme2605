@@ -5,8 +5,10 @@ import { getOpenMyFlowItemDetail } from './helpers/my-flow-library';
 const FLOW_SLUG = 'moving-d30-basic';
 const SAVED_FLOW_KEY = `flow:saved:${FLOW_SLUG}`;
 const ANCHOR_KEY = `flow:${FLOW_SLUG}:anchorDate`;
-const NEW_PUBLIC_FLOW_SLUG = 'computer-skills-d30-study';
-const NEW_PUBLIC_ITEM_COUNT = 9;
+import { eligibleTimeline } from './helpers/eligible-public-source';
+
+const NEW_PUBLIC_FLOW_SLUG = eligibleTimeline.slug;
+const NEW_PUBLIC_ITEM_COUNT = eligibleTimeline.itemCount;
 
 type P008InstrumentedWindow = Window & {
   __p008LocalStorageMutations?: number;

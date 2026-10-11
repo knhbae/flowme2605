@@ -138,7 +138,7 @@ test.describe('P24 save-personalize-execute journey frame', () => {
 
   test('public save preview stays compact and opens the saved whole Flow', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/f/vehicle-inspection-prep');
+    await page.goto('/f/first-passport-issue');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
 
@@ -146,7 +146,7 @@ test.describe('P24 save-personalize-execute journey frame', () => {
     await expect(vehicleCapability).toBeVisible();
     await expect(vehicleCapability.locator(
       '[data-testid="flow-capability-result-choice"][data-capability-candidate-role="primary"]',
-    )).toHaveAttribute('data-capability-output-count', '10');
+    )).toHaveAttribute('data-capability-output-count', '4');
     await expect(vehicleCapability.getByRole('checkbox')).toHaveCount(0);
     await expect(page.getByTestId('public-flow-description')).toHaveCount(0);
     await expect(page.getByTestId('public-flow-adjust-entry-mobile')).toBeVisible();
@@ -160,14 +160,14 @@ test.describe('P24 save-personalize-execute journey frame', () => {
       page,
       page.getByTestId('public-flow-save-primary-mobile'),
     );
-    await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toContainText('10');
+    await expect(saveBanner.getByTestId('my-flow-save-banner-summary')).toContainText('4');
     await openSavedPublicFlow(page, saveBanner);
-    const workspace = await openMyFlowLibraryFlow(page, 'vehicle-inspection-prep');
+    const workspace = await openMyFlowLibraryFlow(page, 'first-passport-issue');
     const approvedPlan = workspace.getByTestId('approved-my-plan-workspace');
     await expect(approvedPlan).toBeVisible();
     await expect(approvedPlan.getByTestId('my-plan-date-grouped-todos')).toHaveAttribute(
       'data-todo-row-count',
-      '10',
+      '4',
     );
     await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
     await captureEvidence(page, '06-vehicle-post-save-whole-flow-mobile.png');
@@ -175,14 +175,14 @@ test.describe('P24 save-personalize-execute journey frame', () => {
 
   test('Calendar excludes undated work while ordinary My Flow hides held records', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/f/vehicle-inspection-prep');
+    await page.goto('/f/first-passport-issue');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
     const capability = page.getByTestId('public-flow-capability-result');
     await expect(capability).toHaveAttribute('data-capability-selected-destination', 'memo');
     await expect(capability.getByTestId('flow-capability-selected-preview')).toHaveAttribute(
       'data-capability-output-count',
-      '10',
+      '4',
     );
     await page.getByTestId('public-flow-save-primary-mobile').click();
 
@@ -245,7 +245,7 @@ test.describe('P24 save-personalize-execute journey frame', () => {
     await expect(page).toHaveURL('/f/curated-wedding-naver-timeline');
     await savePublicFlow(page, page.getByTestId('public-flow-save-primary'));
 
-    await page.goto('/f/vehicle-inspection-prep');
+    await page.goto('/f/first-passport-issue');
     await savePublicFlow(page, page.getByTestId('public-flow-save-primary'));
     await page.goto('/my?view=flows');
 
