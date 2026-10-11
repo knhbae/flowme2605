@@ -154,7 +154,7 @@ test('capability covers all 177 without converting source exposure into permissi
   assert.equal(reason('dog-adoption-first-week'), 'review-required');
   assert.equal(reason('baby-food-menu-recipe'), 'review-required');
   assert.equal(reason('weekly-meal-plan'), 'review-required');
-  assert.equal(reason('infant-health-checkup-schedule'), 'unsupported-shape');
+  assert.equal(reason('infant-health-checkup-schedule'), 'review-required');
   assert.equal(reason('wedding-d180-basic'), 'review-required');
   assert.equal(reason('passport-renewal-docs'), 'review-required');
   assert.equal(reason('unknown'), 'not-enabled');

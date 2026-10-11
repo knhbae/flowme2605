@@ -85,7 +85,7 @@ test('Escape from an unstored catalog detail keeps its preview list and restores
 
 test('copy capability count follows explicit contracts without claiming source or user validation', () => {
   const h = harness(true), content = text(h.render());
-  assert(content.includes('20개 콘텐츠는 상세에서 제작 사본'));
+  assert(content.includes('17개 콘텐츠는 상세에서 제작 사본'));
   assert(!content.includes('검증된')); assert.equal(h.calls.length, 0);
 });
 test('an unstored read-only library offers the same guarded single-source action without a bulk write', () => {

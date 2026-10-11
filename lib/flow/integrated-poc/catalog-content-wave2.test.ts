@@ -36,7 +36,8 @@ test('wave2 adds exactly four private capabilities and 28 items without changing
   for(const source of pack.bundles) { const c=inspectCatalogContentCapability(source.flow.slug); const key=c.ready?'ready':c.reason; counts[key]=(counts[key]??0)+1; }
   // Frozen wave2 bytes, row counts and golden fingerprints above stay exact.
   // Nine additional sources are enabled only by their separate passed edition.
-  assert.deepEqual(counts,{ready:20,'review-required':98,archived:21,'not-enabled':17,'unsupported-shape':21,'projection-loss':0});
+  // The approved source hold removes three wave2 NEW intakes, not frozen replay.
+  assert.deepEqual(counts,{ready:17,'review-required':120,archived:21,'not-enabled':5,'unsupported-shape':14,'projection-loss':0});
 });
 
 test('wave2 exact original identity and source fields survive; no daily recurrence or source checks invented', () => {
@@ -72,12 +73,12 @@ test('appliance safety distinctions remain in effective canonical details and im
 
 test('mechanical support does not enable ambiguous anchors or sensitive sources even with low risk labels', () => {
   for(const [slug,reason] of [
-    ['real-samsung-aircon-seasonal-care','not-enabled'],
+    ['real-samsung-aircon-seasonal-care','review-required'],
     ['welfare-benefit-finder','review-required'],
     ['pension-estimate-check','review-required'],
     ['tax-refund-find','review-required'],
     ['passport-renewal-docs','review-required'],
-    ['adult-vaccine-schedule-check','not-enabled'],
+    ['adult-vaccine-schedule-check','review-required'],
     ['wedding-vendor-board','not-enabled'],
   ] as const) {
     assert.equal(buildCatalogContent(slug).ok,false);
